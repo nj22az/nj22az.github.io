@@ -3,7 +3,7 @@
   "titel": "Rollfördelning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Förklara vilket beslut eller vilken samordning som annars riskerar att ingen tar hand om.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilka beslut måste någon fatta: start, stopp, samordning med driften? 2) Vad händer med ett beslut som ”alla” ansvarar för? 3) Vem måste enligt metoden ha rollen? Annat fall: ett bogseruppdrag där ingen är utsedd befälhavare.",
+      "status": "utkast"
     }
   ],
   "losning": {

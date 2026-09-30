@@ -3,7 +3,7 @@
   "titel": "Samma effekt vid 400 V",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -26,7 +26,7 @@
       "I_{L} = P/(√3 U_{L} · PF)",
       "I_{låg}/I_{hög} = U_{hög}/U_{låg}"
     ],
-    "givet": "P = 1,0 MW och PF = 0,90. Jämför 400 V med 6 600 V.",
+    "givet": "Jämförelse med ett landnät på 400 V. P = 1,0 MW och PF = 0,90. Jämför 400 V med 6 600 V.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Räkna ut strömmen vid 400 V och kontrollera med kvoten mellan spänningarna.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna strömmen vid den låga spänningen med samma formel och samma P och PF. 2) Jämför med förhållandet mellan spänningarna: strömmen ökar lika många gånger som spänningen minskar. Exempel: 2,0 MW och PF = 0,85 vid 690 V ger cirka 1 970 A, och 11 000/690 ≈ 15,9 gånger mer än vid 11 kV.",
+      "status": "utkast"
     }
   ],
   "losning": {

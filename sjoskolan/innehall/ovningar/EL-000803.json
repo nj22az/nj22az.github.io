@@ -3,7 +3,7 @@
   "titel": "Riskbedömning av en länspump",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -50,11 +50,11 @@
     "publik": "elev",
     "resurser": [
       {
-        "url": "01B_Elsakerhet_och_riskbedomning/Elsakerhet_steg_for_steg.html",
+        "url": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Elsakerhet_steg_for_steg.html",
         "titel": "Elsäkerhet steg för steg"
       },
       {
-        "url": "01B_Elsakerhet_och_riskbedomning/Riskbedomning_mall.html",
+        "url": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Riskbedomning_mall.html",
         "titel": "Mall för riskbedömning"
       }
     ],

@@ -3,7 +3,7 @@
   "titel": "Osäkerhet",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -34,7 +34,7 @@
     "publik": "elev"
   },
   "losning": {
-    "text": "δ = 0,005 · 12,00 + 2 · 0,01 = 0,08 V. Intervall 11,92–12,08 V. 12,04 V ligger inom intervallet: avvikelsen kan inte hävdas säkert.",
+    "text": "Procentdelen: 0,5/100 · 12,00 = 0,060 V.\n\nSifferdelen: 2 · 0,01 = 0,020 V.\n\nAddera delarna: δ = 0,060 + 0,020 = 0,080 V. Intervallet blir 11,92–12,08 V.\n\n12,04 V ligger inom intervallet. Med de givna förenklingarna kan avvikelsen inte hävdas säkert.",
     "svar": [
       {
         "storhet": "δ",
@@ -64,5 +64,17 @@
       "varde": 0.01,
       "enhet": "V"
     }
-  }
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Procentdelen gäller avläst värde. Siffror betyder antal steg av instrumentets upplösning.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna procentdelen och sifferdelen var för sig i volt. Addera sedan och bilda intervallet kring mätvärdet.",
+      "status": "utkast"
+    }
+  ]
 }

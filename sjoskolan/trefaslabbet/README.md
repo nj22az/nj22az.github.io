@@ -36,3 +36,7 @@ node --test sjoskolan/trefaslabbet/model.test.mjs
 ## Labbprotokoll
 
 Station B, trefas (`stationB-protokoll.mjs`): SELV-rigg 12,2 V med lasterna 98, 103 och 101 Ω, hel och bruten neutralledare. Labbprotokollet under simulatorn (`../gemensamt/labbprotokoll.mjs`) har kontroller före start, mätningar med förväntat och uppmätt värde, ”Hämta avläsning”, felsökning, analys, utskrift, CSV och ett ifyllt exempel som räknas fram ur modellen. Stationspaket: `vecka-41/aktuell/Simulerade_stationer.html`.
+
+## Pekskärm
+
+Uppgiften (”Räkna först”) står först i HTML, sedan diagrammet och sist reglagen. Från 768 px står uppgift och reglage bredvid diagrammet; under 768 px blir flikarna en lista. Storlekar och tryckytor i `../gemensamt/labbpekskarm.css`. Beskedet efter ”Hämta avläsning” visas i mätningens ruta (`rowMessages`).

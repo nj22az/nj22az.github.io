@@ -258,14 +258,14 @@ def _f432a(D):
 @lararfacit('43-2b')
 def _f432b(D):
     m = 10 + D
-    return f'I_{{Δn}} = {m} mA: ' + ('löser (≥ 30 mA)' if m >= 30 else 'kan lösa; ska lösa senast vid 30 mA' if m >= 15 else 'löser inte (under 15 mA)')
+    return f'I_{{Δ}} = {m} mA (märkvärde I_{{Δn}} = 30 mA): ' + ('löser (≥ 30 mA)' if m >= 30 else 'kan lösa; ska lösa senast vid 30 mA' if m >= 15 else 'löser inte (under 15 mA)')
 
 
 @lararfacit('44-3')
 def _f443(D):
     P = (1.5 + D / 10) * 1e6
     I = P / (R3 * 6600 * 0.88)
-    return f'P = {n(P / 1e6, 1)} MW: I_{{L}} = {n(I, 0)} A vid 6,6 kV, {n(I * 15, 0)} A vid 440 V, CT sekundärt {n(I / 200, 2)} A'
+    return f'P = {n(P / 1e6, 1)} MW: I_{{L}} = {n(I, 0)} A vid 6,6 kV, {n(I * 15, 0)} A vid 440 V, CT 600/1 A sekundärt {n(I / 600, 2)} A'
 
 
 @lararfacit('45-2')

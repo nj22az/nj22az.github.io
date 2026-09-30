@@ -3,7 +3,7 @@
   "titel": "Sex poler",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -24,7 +24,7 @@
     "samband": [
       "n_{s} = 120f/p"
     ],
-    "givet": "p = 6 poler och f = 50 Hz.",
+    "givet": "Landnät. p = 6 poler och f = 50 Hz.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Sätt in p = 6. Svaret blir i r/min, eftersom formeln redan räknar om till minuter.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Använd n_{s} = 120 · f/p med p = antal poler. 2) Räkna i ordning: 120 · f först, dela sedan med p. Exempel ombord: 60 Hz och åtta poler ger n_{s} = 120 · 60/8 = 900 r/min.",
+      "status": "utkast"
     }
   ],
   "losning": {

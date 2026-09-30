@@ -1,0 +1,38 @@
+{
+  "id": "EL-000863",
+  "titel": "Din tur: belysningsnätet ombord",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Belysningsnätet ombord har U = 254 V RMS och f = 60 Hz. Räkna toppvärdet û och topp till topp U_{pp}."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-40/aktuell/lektioner.mjs LESSONS sinus bild tur-topp",
+        "revision": "ny",
+        "roll": "Din tur i genomgången och presentationen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "û = √2 · 254 ≈ 359 V. U_{pp} = 2 · û ≈ 718 V.",
+    "status": "migrerad"
+  }
+}

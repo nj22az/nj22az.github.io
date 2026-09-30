@@ -1,4 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
+import {poseAvatarOnBicycle} from './bicycle-pose.js';
+import {bicycleRiderFit} from '../world/bicycle-fit.js';
+import {seeded} from './recipe.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -26,6 +29,9 @@ export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump
 
 export function createAvatarAnimator(avatar){
  const {bones,measure:m}=avatar;
+ const individual=seeded(avatar.recipe.name||JSON.stringify(avatar.recipe));
+ const strideStyle=.92+individual()*.16,armStyle=.8+individual()*.25;
+ const posture=(individual()-.5)*.055,idleRate=.85+individual()*.3;
  const current=Object.fromEntries(JOINTS.map(j=>[j,new THREE.Vector3()]));
  const target=Object.fromEntries(JOINTS.map(j=>[j,new THREE.Vector3()]));
  const gazeLocal=new THREE.Vector3();
@@ -57,7 +63,8 @@ export function createAvatarAnimator(avatar){
   if(s.riding){
    // Pedalling: the knees go round, the hands are on the bars.
    const p=s.ridePhase||0;
-   targetRoot=(s.saddle??.8)-m.hipY+m.seatDrop;
+   const fit=s.bicycleFit||bicycleRiderFit(m);
+   targetRoot=fit.saddle*fit.scale-m.hipY+m.seatDrop;
    set('thighL',-1.05+Math.sin(p*Math.PI*2)*.38);set('kneeL',1.05+Math.cos(p*Math.PI*2)*.4);
    set('thighR',-1.05-Math.sin(p*Math.PI*2)*.38);set('kneeR',1.05-Math.cos(p*Math.PI*2)*.4);
    set('chest',.28);set('head',-.18);
@@ -76,22 +83,23 @@ export function createAvatarAnimator(avatar){
    else if(pose==='Wake'){const w=Math.max(0,Math.sin(time*.8));set('shoulderL',0,0,.4+w*2.2);set('shoulderR',0,0,-.4-w*2.2);}
   }else if(moving){
    // Walking and running: short legs, a quick step and a proper bounce.
-   const run=s.running||speed>2.6,stride=m.leg*(run?2.6:1.7);
+   const run=s.running||speed>2.6,stride=m.leg*(run?2.6:1.7)*strideStyle;
    phase+=speed/stride*Math.PI*2*dt*.5;
    const A=run?.95:Math.min(.62,.25+speed*.3),sp=Math.sin(phase),cp=Math.cos(phase);
    set('thighL',-sp*A);set('thighR',sp*A);
    set('kneeL',Math.max(0,Math.sin(phase-.9))*A*1.5+.05);set('kneeR',Math.max(0,Math.sin(phase+Math.PI-.9))*A*1.5+.05);
    set('footL',sp*A*.3);set('footR',-sp*A*.3);
-   set('shoulderL',sp*A*1.05,0,.16);set('shoulderR',-sp*A*1.05,0,-.16);
+   set('shoulderL',sp*A*armStyle,0,.12);set('shoulderR',-sp*A*armStyle,0,-.12);
    set('elbowL',run?-1.35:-.25-Math.max(0,-sp)*.3);set('elbowR',run?-1.35:-.25-Math.max(0,sp)*.3);
    set('hips',0,sp*.14,0);set('chest',run?.22:.05,-sp*.18,0);set('head',run?-.12:-.02,sp*.08,0);
-   targetHips=Math.abs(cp)*(run?.07:.04)*m.k-(run?.02:0);
+   targetHips=Math.abs(cp)*(run?.055:.025)*m.k-(run?.02:0);
    if(s.carrying){set('shoulderL',-1.15,0,.3);set('shoulderR',-1.15,0,-.3);set('elbowL',-.5);set('elbowR',-.5);}
   }else{
    // Standing: breathing, the weight moving from foot to foot, the odd look round.
    add('chest',Math.sin(time*1.6)*.025);set('hips',0,0,Math.sin(time*.45)*.035);add('head',Math.sin(time*.7)*.03,Math.sin(time*.31)*.12,Math.sin(time*.5)*.04);
    add('thighL',0,0,-Math.sin(time*.45)*.03);add('thighR',0,0,-Math.sin(time*.45)*.03);
-   targetHips=Math.sin(time*1.6)*.004;
+   add('chest',posture);add('head',0,Math.sin(time*.31*idleRate)*.035,0);
+   targetHips=Math.sin(time*1.6*idleRate)*.004;
    const pose=s.pose;
    if(pose==='CounterIdle'){set('shoulderL',-.5,0,.2);set('shoulderR',-.5,0,-.2);set('elbowL',-.95);set('elbowR',-.95);}
    else if(pose==='Interact'){set('shoulderL',-.75+Math.sin(time*4.5)*.18,0,.15);set('shoulderR',-.75+Math.sin(time*4.5+1.7)*.18,0,-.15);set('elbowL',-.8);set('elbowR',-.8);add('chest',.12);add('head',.2);}
@@ -121,8 +129,11 @@ export function createAvatarAnimator(avatar){
   const k=1-Math.exp(-dt*14);
   for(const j of JOINTS){current[j].lerp(target[j],k);bones[j].rotation.set(current[j].x,current[j].y,current[j].z);}
   rootY+=(targetRoot-rootY)*(s.seated||s.riding?1-Math.exp(-dt*9):k);hipsY+=(targetHips-hipsY)*k;lean+=(targetLean-lean)*k;
+  if(s.riding)rootY=targetRoot;
+  avatar.root.position.z=s.riding?.21*(s.bicycleFit||bicycleRiderFit(m)).scale:0;
   avatar.root.position.y=rootY+(s.seated||s.riding?0:(s.floorHeight||0));
-  bones.hips.position.y=m.hipY+hipsY;
+  bones.hips.position.y=m.hipY+(s.riding?0:hipsY);
+  if(s.riding)poseAvatarOnBicycle(avatar,s.ridePhase||0,s.bicycleFit||bicycleRiderFit(m));
   // The face: blinks, words, glances, and whatever it is feeling.
   blinkIn-=dt;if(blinkIn<=0&&blinkT<0){blinkT=0;blinkIn=1.8+Math.random()*3.8;}
   let blink=0;if(blinkT>=0){blinkT+=dt;blink=blinkT<.13?1:0;if(blinkT>=.13)blinkT=-1;}

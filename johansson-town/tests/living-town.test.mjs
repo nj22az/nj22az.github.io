@@ -57,10 +57,16 @@ test('izakaya borrows existing entities, updates guests and restores interaction
 });
 
 test('supper charges once, advances the evening, saves a memory and refuses insufficient funds',()=>{
- const dom=installDOM();let minutes=1100;const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({inside:'izakaya',names:['Aya','Reiko']})});
- acts.action('izakaya-menu');dom.button('Yakitori plate · ¥180');assert.equal(acts.state.yen,1020);assert.equal(minutes,1108);assert.ok(acts.state.notes.includes('Supper at Minato: Yakitori plate.'));
- dom.button('Listen to the table');assert.match(document.querySelector('#activityBody').firstChild.textContent,/Tama needs his own column/);
- acts.state.yen=0;acts.action('izakaya-menu');dom.button('Oden supper · ¥260');assert.equal(acts.state.yen,0);assert.equal(minutes,1108);
+ // Ordered from your seat: Nao cooks it and brings it over (people/izakaya-beer.js).
+ const dom=installDOM();let minutes=1100;const ordered=[];
+ const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({inside:'izakaya',names:['Aya','Reiko']}),
+  getBeerTable:()=>({drink:null,dish:null,order:null,naoHere:true}),onOrderDrink:id=>{ordered.push(id);return true;}});
+ acts.action('izakaya-table');dom.button('Order something to eat…');dom.button('焼き鳥盛合せ · ¥180');
+ assert.equal(acts.state.yen,1020);assert.equal(minutes,1102);assert.deepEqual(ordered,['yakitori']);
+ assert.ok(acts.state.notes.includes('Ordered a plate of yakitori at Minato.'));
+ acts.state.yen=100;acts.action('izakaya-table');dom.button('Order a drink…');dom.button('オリオン生 中ジョッキ · ¥450 (not enough yen)');
+ assert.equal(acts.state.yen,100);assert.deepEqual(ordered,['yakitori'],'nothing you cannot pay for');
+ acts.action('izakaya-menu');dom.button('Read the food');assert.match(document.querySelector('#activityBody').firstChild.textContent,/ほっけ焼き/);
 });
 
 test('Thuan visits after closing on alternate days and has off-duty conversation',()=>{
@@ -90,7 +96,9 @@ test('Thuan spends evenings at Minato, ramen, the canal and her own door',()=>{
 });
 
 test('izakaya exports load locally with bounded geometry and at most ten static draws',async()=>{
- for(const kind of ['exterior','interior']){const bytes=await readFile(new URL('../assets/models/izakaya/minato-'+kind+'.glb',import.meta.url));const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');let draws=0;gltf.scene.traverse(o=>{if(o.isMesh){draws++;assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));}});assert.ok(draws<=10);const box=new THREE.Box3().setFromObject(gltf.scene);assert.ok(box.getSize(new THREE.Vector3()).x<=13.1);
+ for(const kind of ['exterior','interior']){const bytes=await readFile(new URL('../assets/models/izakaya/minato-'+kind+'.glb',import.meta.url));const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');let draws=0;gltf.scene.traverse(o=>{if(o.isMesh){draws++;assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));}});assert.ok(draws<=10);const box=new THREE.Box3().setFromObject(gltf.scene),size=box.getSize(new THREE.Vector3());
+  // The interior carries Sato Ramen beside Minato, sharing its kitchen: 13 m of bar and 5 m of ramen shop.
+  assert.ok(size.x<=(kind==='interior'?18.2:13.1));assert.ok(size.z<=13.1);
   if(kind==='interior'){gltf.scene.updateMatrixWorld(true);IZAKAYA_SEATS.forEach(([x,z],i)=>{
    const hits=new THREE.Raycaster(new THREE.Vector3(x,1.5,z),new THREE.Vector3(0,-1,0)).intersectObject(gltf.scene,true);
    assert.ok(hits.length);assert.ok(Math.abs(hits[0].point.y-(i<5?.71:.565))<.015,'Runtime seat height matches the actual furniture');
@@ -109,9 +117,9 @@ test('izakaya hours and late guests cross midnight and close exactly at 03:00',(
   const mori=PROFILES.find(p=>p.name==='Officer Mori');for(const t of [1320,1439,0,359])assert.equal(residentPlan(mori,day+t,true).place,'patrol');
   assert.equal(residentPlan(mori,day+360).place,'home');
  }
- const dom=installDOM();let minutes=1618;const acts=createActivities({say(){},onWeather(){},onTime:v=>{minutes+=v;},getMinutes:()=>minutes});
- acts.action('izakaya-menu');dom.button('Yakitori plate · ¥180');const money=acts.state.yen;
- dom.button('Something else?');assert.equal(acts.paused,false,'Closing ends the menu');assert.equal(acts.state.yen,money);
+ const dom=installDOM();let minutes=1617;const acts=createActivities({say(){},onWeather(){},onTime:v=>{minutes+=v;},getMinutes:()=>minutes,getBeerTable:()=>({drink:null,dish:null,order:null,naoHere:true}),onOrderDrink:()=>true});
+ acts.action('izakaya-table');dom.button('Order a drink…');dom.button('ウーロン茶 · ¥150');const money=acts.state.yen;assert.equal(minutes,1619);
+ minutes=1620;acts.action('izakaya-table');assert.ok(!dom.has('Order a drink…')&&!dom.has('Order something to eat…'),'Last orders at 03:00');assert.equal(acts.state.yen,money);
 });
 
 test('ramen and Sakura reuse their residents and release them at the street door',()=>{
@@ -123,4 +131,13 @@ test('ramen and Sakura reuse their residents and release them at the street door
  assert.deepEqual(market.sync(1199),['Thuan']);market.sync(1200,1/30);assert.equal(yuri.parent,scene,'Walk to the exit before returning outside');
  for(let i=0;i<600;i++)market.sync(1200+i/30,1/30);
  assert.equal(yuri.parent,street);assert.equal(yuri.userData.inMarket,undefined);assert.equal(yuri.position.x,-4);assert.equal(yuri.position.z,-25.5);
+});
+
+test('at Minato you can stand somebody a drink, and they remember it',()=>{
+ const dom=installDOM();const treated=[];
+ const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1200,getSocialContext:()=>({inside:'izakaya',names:['Aya','Nao']}),onTreat:name=>treated.push(name)});
+ const yen=acts.state.yen;acts.action('resident','Aya');dom.button('Buy Aya a drink · ¥450');
+ assert.equal(acts.state.yen,yen-450);assert.equal(acts.state.treats.Aya,1);assert.deepEqual(treated,['Aya']);
+ assert.ok(acts.state.notes.includes('Bought Aya a drink at Minato.'));
+ acts.action('resident','Nao');assert.ok(!dom.has('Buy Nao a drink · ¥450'),'Nao is working');
 });

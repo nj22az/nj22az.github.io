@@ -28,6 +28,11 @@ import {fascia} from './okinawa/signs.js';
  * at local x 0 so that IZAKAYA_DOOR keeps meaning what it meant.
  */
 
+/**
+ * Sato Ramen against the alley flank, in the same local frame: from the flank wall out
+ * 3.3 m into the alley, the door at local x 3.47 (SATO_RAMEN_DOOR in dining-layout.js).
+ */
+export const SATO_ANNEX=Object.freeze({x0:2.71,x1:6.01,door:3.47,height:3.1});
 /** The frontage line, shared with the bookshop next door, in the plot's local frame. */
 export const MINATO=Object.freeze({
  width:6.7,depth:5.6,front:4.7,centreX:-.88,
@@ -328,9 +333,62 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   const bottle=new THREE.Mesh(new THREE.CylinderGeometry(.037,.041,.26,7),paint(0x3b4a2c,{roughness:.45}));
   bottle.position.set(x,.13,z);bottle.userData.staticProp=true;group.add(bottle);
  }
- // The compressor and the meter box on the south flank, which is what 1997 looks like.
- painted([.62,.5,.3],[southX+.14,1.05,front-1.5],0x7b7669,{roughness:.7});
- painted([.3,.38,.24],[southX+.14,1.75,front-2.35],0x8a8578);
+ // ---- Sato Ramen ------------------------------------------------------------------
+ // The single-storey corner shop against the alley flank, open at lunch while the bar is
+ // shut. Its kitchen is Minato's own line carried on through the wall (see
+ // tools/blender/build-minato-interior.py); out here it is a door, a noren and a sign.
+ const {x0:AX0,x1:AX1,door:AD,height:AH}=SATO_ANNEX,AZ0=back,AZ1=front-.1,AMX=(AX0+AX1)/2;
+ const ramen=new THREE.Group();ramen.name='Sato Ramen frontage';group.add(ramen);
+ const rbox=(size,pos,colour,extra)=>painted(size,pos,colour,extra,ramen);
+ box([AX1-AX0+.2,.18,AZ1-AZ0+.1],[AMX,.09,(AZ0+AZ1)/2],'concrete',0x8c8578);
+ rbox([AX1-AX0,AH,.2],[AMX,AH/2,AZ0+.1],0xb3a890,{roughness:.95});
+ rbox([.2,AH,AZ1-AZ0],[AX1-.1,AH/2,(AZ0+AZ1)/2],0xb5aa92,{roughness:.95});
+ // The street face: wall either side of the door and the window, and the lintel over both.
+ const dl=AD-.6,dr=AD+.6,wl=dr+.35,wr=AX1-.3;
+ rbox([dl-AX0,AH,.2],[(AX0+dl)/2,AH/2,AZ1-.1],0xb8ad95,{roughness:.95});
+ rbox([wl-dr,AH,.2],[(dr+wl)/2,AH/2,AZ1-.1],0xb8ad95,{roughness:.95});
+ rbox([AX1-wr,AH,.2],[(wr+AX1)/2,AH/2,AZ1-.1],0xb8ad95,{roughness:.95});
+ rbox([wr-wl,.9,.2],[(wl+wr)/2,.45,AZ1-.1],0xb8ad95,{roughness:.95});
+ rbox([dr-dl,AH-2.15,.2],[AD,2.15+(AH-2.15)/2,AZ1-.1],0xb8ad95,{roughness:.95});
+ rbox([wr-wl,AH-2.05,.2],[(wl+wr)/2,2.05+(AH-2.05)/2,AZ1-.1],0xb8ad95,{roughness:.95});
+ // A sliding glass door in an aluminium frame, and a steamed-up window beside it.
+ const glass=new THREE.MeshStandardMaterial({color:0xcfdcd8,roughness:.2,metalness:.1,transparent:true,opacity:.55});
+ for(const dx of [-.3,.3]){const pane=new THREE.Mesh(new THREE.BoxGeometry(.58,2.05,.03),glass);pane.position.set(AD+dx,1.1,AZ1-.02);ramen.add(pane);}
+ for(const dx of [-.6,0,.6])rbox([.05,2.15,.06],[AD+dx,1.1,AZ1+.01],0x9aa0a0,{roughness:.4,metalness:.5});
+ rbox([1.25,.06,.06],[AD,2.16,AZ1+.01],0x9aa0a0,{roughness:.4,metalness:.5});
+ const steam=new THREE.MeshStandardMaterial({color:0xe9ece6,roughness:.3,transparent:true,opacity:.72,emissive:0xffe8c0,emissiveIntensity:0});
+ const pane=new THREE.Mesh(new THREE.BoxGeometry(wr-wl,1.1,.03),steam);pane.position.set((wl+wr)/2,1.5,AZ1-.02);ramen.add(pane);pane.userData.ramenGlow=true;
+ rbox([wr-wl+.08,.06,.1],[(wl+wr)/2,.92,AZ1+.02],0x9aa0a0,{roughness:.4,metalness:.5});
+ // A shed roof falling to the alley, and a short awning over the door and the window.
+ const roof=rbox([AX1-AX0+.5,.12,AZ1-AZ0+.7],[AMX,AH+.25,(AZ0+AZ1)/2+.2],0x5a4a3c,{roughness:.8});roof.rotation.z=-.1;
+ const awning=rbox([dr-dl+2.1,.06,.7],[AD+.9,2.45,AZ1+.33],0x7a1f1a,{roughness:.7});awning.rotation.x=.18;
+ // The signboard: 中華そば さとう, red on cream, over the door.
+ const signCanvas=document.createElement('canvas');signCanvas.width=512;signCanvas.height=128;const sx=signCanvas.getContext('2d');
+ sx.fillStyle='#efe4c8';sx.fillRect(0,0,512,128);sx.strokeStyle='#7a1f1a';sx.lineWidth=10;sx.strokeRect(5,5,502,118);
+ sx.fillStyle='#a3241c';sx.textAlign='center';sx.textBaseline='middle';sx.font='bold 70px serif';sx.fillText('中華そば さとう',256,58);
+ sx.font='bold 20px sans-serif';sx.fillText('SATO RAMEN · LUNCH 11:00–14:00',256,108);
+ const signTex=new THREE.CanvasTexture(signCanvas);signTex.colorSpace=THREE.SRGBColorSpace;
+ const board=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.6),new THREE.MeshStandardMaterial({map:signTex,emissiveMap:signTex,emissive:0xffffff,emissiveIntensity:0,roughness:.8}));
+ board.position.set(AMX,2.85,AZ1+.02);board.userData.ramenGlow=true;board.name='Sato Ramen sign';ramen.add(board);
+ // The noren: red, ラーメン in white, out while Mrs Sato is open.
+ const norenCanvas=document.createElement('canvas');norenCanvas.width=256;norenCanvas.height=160;const nx=norenCanvas.getContext('2d');
+ nx.fillStyle='#9c2b22';nx.fillRect(0,0,256,160);nx.fillStyle='#f4ead2';nx.textAlign='center';nx.textBaseline='middle';nx.font='bold 56px serif';nx.fillText('ラーメン',128,80);
+ nx.fillStyle='#9c2b22';nx.fillRect(126,0,4,160);
+ const norenTex=new THREE.CanvasTexture(norenCanvas);norenTex.colorSpace=THREE.SRGBColorSpace;
+ const ramenNoren=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.75),new THREE.MeshStandardMaterial({map:norenTex,side:THREE.DoubleSide,roughness:.9}));
+ ramenNoren.position.set(AD,1.8,AZ1+.12);ramenNoren.name='Sato Ramen noren';ramen.add(ramenNoren);
+ // A menu board on the pavement, and the kitchen's vent up the alley flank with its cap.
+ const aframe=rbox([.5,.8,.08],[AX1-.55,.42,AZ1+.55],0x3b2a1e,{roughness:.8});aframe.rotation.x=-.12;
+ const menuCanvas=document.createElement('canvas');menuCanvas.width=128;menuCanvas.height=192;const mx=menuCanvas.getContext('2d');
+ mx.fillStyle='#1f2a22';mx.fillRect(0,0,128,192);mx.fillStyle='#f4ead2';mx.textAlign='center';mx.font='bold 20px serif';
+ ['醤油 450','味噌 500','塩 450','チャーシュー 650','餃子 250'].forEach((l,k)=>mx.fillText(l,64,30+k*34));
+ const menuTex=new THREE.CanvasTexture(menuCanvas);menuTex.colorSpace=THREE.SRGBColorSpace;
+ const chalk=new THREE.Mesh(new THREE.PlaneGeometry(.42,.66),new THREE.MeshStandardMaterial({map:menuTex,roughness:.9}));chalk.position.set(AX1-.55,.44,AZ1+.6);chalk.rotation.x=-.12;ramen.add(chalk);
+ rbox([.3,AH+.6,.3],[AX1+.18,(AH+.6)/2,AZ0+1.4],0x8a8e8a,{roughness:.5,metalness:.4});
+ rbox([.45,.12,.45],[AX1+.18,AH+.66,AZ0+1.4],0x6a6e6a,{roughness:.5,metalness:.4});
+ // The compressor and the meter box, moved out on to the alley flank.
+ painted([.62,.5,.3],[AX1+.14,1.05,front-1.5],0x7b7669,{roughness:.7});
+ painted([.3,.38,.24],[AX1+.14,1.75,front-2.35],0x8a8578);
 
  // ---- collision ----------------------------------------------------------------
  // The walls stop you and the recess does not, so the doorway stays a doorway. These
@@ -344,6 +402,9 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   // The crates and the kanban post, which are things in the street.
   {x:-2.3,z:front+.36,w:1.1,d:.5,height:.8},
   {x:southX+.2,z:front+.48,w:.34,d:.5,height:2.3},
+  // Sato Ramen, and its menu board on the pavement.
+  {x:AMX,z:(AZ0+AZ1)/2,w:AX1-AX0+.2,d:AZ1-AZ0,height:AH},
+  {x:AX1-.55,z:AZ1+.55,w:.55,d:.35,height:.9},
  );
 
  /**
@@ -365,5 +426,12 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   noren.visible=open;
  };
  lit(false,1);
- return {group,noren,lanterns,lit};
+ /** The ramen shop: noren out and the sign lit while Mrs Sato is serving. */
+ const ramenLit=(open,day)=>{
+  const dusk=1-THREE.MathUtils.clamp(day,0,1);
+  ramen.traverse(o=>{if(o.userData.ramenGlow)o.material.emissiveIntensity=open?.25+dusk*.5:0;});
+  ramenNoren.visible=open;
+ };
+ ramenLit(false,1);
+ return {group,noren,lanterns,lit,ramen:{group:ramen,noren:ramenNoren,lit:ramenLit}};
 }

@@ -3,7 +3,7 @@
   "titel": "Rätt motor för Δ-drift",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -23,7 +23,7 @@
     "samband": [
       "Δ-koppling ger U_{gren} = U_{L}"
     ],
-    "givet": "Nät 400 V. Motor A: Δ/Y 230/400 V. Motor B: Δ/Y 400/690 V.",
+    "givet": "Landström vid kaj, 50 Hz. Nät 400 V. Motor A: Δ/Y 230/400 V. Motor B: Δ/Y 400/690 V.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Jämför 400 V med motorernas Δ-spänning. Frågan gäller normal drift, inte hur motorn ska startas.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) För varje motor: vilken spänning hör till Δ-kopplingen? 2) Vilken av dem är lika med nätets spänning? 3) Vilken koppling blir det för den andra motorn? Annat fall: ombord med 440 V och en motor märkt Δ/Y 440/760 V.",
+      "status": "utkast"
     }
   ],
   "losning": {

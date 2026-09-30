@@ -3,7 +3,7 @@
   "titel": "Spolens reaktans",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 7,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,10 +35,15 @@
       "niva": "metod",
       "text": "Multiplicera 2, π, f och L. Kontrollera att L är i henry.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) L i henry: mH ÷ 1 000 (50 mH = 0,050 H). 2) X_{L} = 2π · f · L: multiplicera i ordning 2 · π · f · L. 3) Enheten blir Ω. Exempel: 60 Hz och 0,20 H ger 2 · π · 60 · 0,20 ≈ 75 Ω. Rimlighet: en spole på tiondelar av en henry ger tiotals Ω vid nätfrekvens, och högre f ger större X_{L}.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "X_{L} = 2π · 50 · 0,10 ≈ 31,4 Ω.",
+    "text": "Induktansen är redan i henry. Använd X_{L} = 2πfL.\n\nMultiplicera hela uttrycket: 2 · π · 50 · 0,10 ≈ 31,4 Ω.",
     "svar": [
       {
         "storhet": "X_{L}",

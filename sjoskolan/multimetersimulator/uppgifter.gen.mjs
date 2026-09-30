@@ -310,13 +310,13 @@ export const UPPGIFTER = [
    },
    {
     "task": "Mät spänningen över R1: röd på A och svart på B.",
-    "hint": "Voltmetern kopplas parallellt över R1. Räkna först: U1 = Ukälla · R1/(R1 + R2).",
+    "hint": "Voltmetern kopplas parallellt över R1. Räkna först: U1 = U_{källa} · R1/(R1 + R2).",
     "test": "multimetersimulator.stationA.6",
     "why": "Jämför med ditt förväntade värde. Räknar du med de uppmätta värdena blir avvikelsen liten."
    },
    {
     "task": "Mät spänningen över R2: röd på B och svart på N.",
-    "hint": "Kontrollera sedan slinglagen: Ukälla − U1 − U2 ska bli nära noll.",
+    "hint": "Kontrollera sedan slinglagen: U_{källa} − U1 − U2 ska bli nära noll.",
     "test": "multimetersimulator.stationA.7",
     "why": "Summan U1 + U2 ska vara lika med källspänningen, inom avläsningens upplösning."
    },
@@ -324,7 +324,7 @@ export const UPPGIFTER = [
     "task": "Mät strömmen. Bryt matningen. Öppna länken P–A, välj A ⎓ och flytta röd sladd till mA. Röd till P och svart till A. Slå på.",
     "hint": "Ampermetern ersätter länken så att strömmen går genom mätaren. Koppla om bara med bruten matning.",
     "test": "multimetersimulator.stationA.8",
-    "why": "Strömmen genom seriekretsen. Jämför med Ukälla/(R1 + R2). mA-uttagets inre resistans påverkar nästan inte här."
+    "why": "Strömmen genom seriekretsen. Jämför med U_{källa}/(R1 + R2). mA-uttagets inre resistans påverkar nästan inte här."
    },
    {
     "task": "Avsluta: bryt matningen, flytta röd sladd till V Ω och slut länken P–A. Kontrollera sedan instrumentet mot referensen igen.",

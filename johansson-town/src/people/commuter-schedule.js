@@ -1,3 +1,5 @@
+import {peninsulaActive} from '../world/town-mode.js';
+import {YARD_RESIDENT_NAMES} from '../world/yard-homes-layout.js';
 const shifts={
  // Day staff share the evening service; night staff return on the morning bus.
  // Work hours stay unchanged. Departure identifies the service's arrival time.
@@ -16,7 +18,12 @@ const shifts={
 };
 export const COMMUTER_SHIFTS=Object.freeze(Object.fromEntries(Object.entries(shifts).map(([name,shift])=>[name,Object.freeze(shift)])));
 const minuteOfDay=m=>((m%1440)+1440)%1440;
-export const shiftFor=profile=>COMMUTER_SHIFTS[typeof profile==='string'?profile:profile?.name]||null;
+/**
+ * On the peninsula Mrs Sato cooks the lunch at Sato Ramen: in on the 08:30 bus, fish from
+ * the harbour, the pots on at 10:30, serving 11:00 to 14:00, home on the 14:30.
+ */
+export const SATO_SHIFT=Object.freeze({arrival:510,start:630,finish:850,departure:870});
+export const shiftFor=profile=>{const name=typeof profile==='string'?profile:profile?.name;return name==='Mrs Sato'&&peninsulaActive()?SATO_SHIFT:COMMUTER_SHIFTS[name]||null;};
 function elapsed(profile,minutes){const shift=shiftFor(profile);return shift&&!shift.permanent?minuteOfDay(minutes-shift.arrival):null;}
 
 /**
@@ -73,7 +80,13 @@ export function shiftActive(profile,minutes){
  const shift=shiftFor(profile),e=elapsed(profile,minutes);
  return !!shift&&(shift.permanent||e>=shift.start-shift.arrival&&e<shift.finish-shift.arrival);
 }
+/** On the peninsula the Front-Row staff live in the yard behind the shop and never take the bus. */
+export const livesInYard=profile=>peninsulaActive()&&YARD_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);
+/** And two people live where they work: the harbour master in his office, Officer Mori at the police box. */
+export const LIVES_AT_WORK=Object.freeze(['Harbour master','Officer Mori']);
+export const livesAtWork=profile=>peninsulaActive()&&LIVES_AT_WORK.includes(typeof profile==='string'?profile:profile?.name);
 export function commuterPhase(profile,minutes,rain=false){
+ if(livesInYard(profile)||livesAtWork(profile))return 'town';
  const shift=shiftFor(profile),e=elapsed(profile,minutes);
  if(!shift)return 'town';
  if(shift.permanent)return 'permanent';

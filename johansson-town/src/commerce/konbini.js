@@ -231,3 +231,43 @@ export function receiptText(receipt){
  if(receipt.gift)tail.push(`カード満了 · ${receipt.gift}, on the house`);
  return ['桜商店 SAKURA SHŌTEN',`平成9年 ${clock}`,'','—————————————',...rows,...tail,'','ありがとうございました'].join('\n');
 }
+/**
+ * The hot-snack case beside the till: fried chicken, steamed buns, an American dog and
+ * a cup of oden, made in the shop and sold from behind the counter rather than off a
+ * shelf. Thuan tongs one into a paper sleeve; there is no basket step and no stock book
+ * line beyond the sale itself.
+ */
+export const HOT_SNACKS=Object.freeze([
+ {id:'karaage',jp:'からあげ',name:'Karaage bites',cost:180,unitCost:70,line:'Five pieces, hot from the fryer. Careful — the first one is always too hot.'},
+ {id:'nikuman',jp:'肉まん',name:'Nikuman bun',cost:120,unitCost:45,line:'A steamed pork bun from the steamer. She wraps it in thin paper so you can hold it.'},
+ {id:'amedog',jp:'アメリカンドッグ',name:'American dog',cost:130,unitCost:50,line:'Corn-batter sausage on a stick. Ketchup and mustard in one little snap pack.'},
+ {id:'oden',jp:'おでん',name:'Oden cup',cost:200,unitCost:80,line:'Daikon, egg and a fish cake from the pot, with a ladle of broth and a dab of karashi.'},
+]);
+const HOT_BY_ID=new Map(HOT_SNACKS.map(s=>[s.id,s]));
+
+/** Buys one hot snack at the counter: cash, straight into the bag, rung into the till. */
+export function buyHotSnack(state,id,minutes=0,thuanAvailable=true){
+ const snack=HOT_BY_ID.get(id);
+ if(!snack)return {ok:false,message:'That is not in the hot case today.'};
+ if(!sakuraHoursOpen(minutes))return {ok:false,message:'The hot case is switched off. Thuan returns at 09:00.'};
+ if(thuanAvailable===false)return {ok:false,message:SAKURA_AWAY_MESSAGE};
+ if(state.yen<snack.cost)return {ok:false,message:'You do not have enough yen for that.'};
+ if(state.inventory.length>=100)return {ok:false,message:'Your bag is full.'};
+ state.yen-=snack.cost;
+ state.inventory.push(snack.name);
+ recordSakuraSale(state,snack.cost,null,{minute:minutes,item:snack.name,buyer:'Johansson',unitCost:snack.unitCost});
+ return {ok:true,snack,message:snack.line};
+}
+
+/**
+ * What Thuan would put in your hand: something on the shelf you have not tried yet,
+ * or failing that anything in stock. Deterministic for the day, so asking twice in a
+ * row does not reroll her opinion.
+ */
+export function thuanRecommends(state,day=0){
+ const stocked=GROCERY_ITEMS.filter(item=>shelf(state,item.id)>0);
+ if(!stocked.length)return null;
+ const fresh=stocked.filter(item=>!state.konbini.tried.includes(item.id));
+ const pool=fresh.length?fresh:stocked;
+ return pool[((day%pool.length)+pool.length)%pool.length];
+}

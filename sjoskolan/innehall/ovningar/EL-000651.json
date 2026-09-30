@@ -3,7 +3,7 @@
   "titel": "Ström i en förgrening",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -21,7 +21,7 @@
     "scenario": "8,0 A går in i noden. 3,0 A lämnar noden i den övre grenen.",
     "fraga": "Bestäm I_{x} i den nedre grenen och skriv nodekvationen.",
     "samband": [
-      "Iin = Ikänd ut + I_{x}"
+      "I_{in} = Ikänd ut + I_{x}"
     ],
     "givet": "8,0 A in, 3,0 A i övre utgående gren och I_{x} i nedre utgående gren."
   },

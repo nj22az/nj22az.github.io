@@ -2,10 +2,10 @@
   "id": "EL-000100",
   "titel": "Avbrott i neutralledaren",
   "sprak": "sv",
-  "typ": "berakning",
-  "revision": 3,
+  "typ": "resonemang",
+  "revision": 5,
   "granskning": {
-    "status": "att-granska",
+    "status": "granskad",
     "kommentar": "Kontrollerat: bokens 400 V är linjespänningen i resonemanget, inget svarsvärde. Boken och kursen säger samma sak.",
     "numeriskt_kontrollerad": true
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Följ strömvägen och förklara varför laster med olika impedans då får olika stor del av spänningen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Rita de två lasterna och följ strömmen från den ena fasen till den andra när N saknas. 2) Vilken koppling bildar lasterna då: serie eller parallell? 3) Vilken spänning ligger över hela kedjan? 4) Hur delas en spänning mellan två olika stora resistanser i serie? Annat fall: en spänningsdelare med 1 kΩ och 3 kΩ får inte lika stora delar. Koppla det till vilken last som får mest.",
+      "status": "utkast"
     }
   ],
   "losning": {

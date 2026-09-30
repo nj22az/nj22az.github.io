@@ -3,7 +3,7 @@
   "titel": "Samma resistorer i Δ",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -25,7 +25,7 @@
       "Δ: U_{gren} = U_{L}; I_{gren} = U_{gren}/R",
       "I_{L} = √3 · I_{gren}"
     ],
-    "givet": "Symmetrisk Δ-last, tre resistorer på 40 Ω och U_{L} = 400 V RMS.",
+    "givet": "Landström vid kaj, 50 Hz. Symmetrisk Δ-last, tre resistorer på 40 Ω och U_{L} = 400 V RMS.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Räkna ut grenströmmen och multiplicera sedan med √3 för att få linjeströmmen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) I Δ ligger varje resistor mellan två faser: U_{gren} = U_{L}. 2) Grenströmmen: I_{gren} = U_{L}/R. 3) Linjeströmmen: I_{L} = √3 · I_{gren}. Exempel ombord: 20 Ω i Δ till 440 V ger I_{gren} = 22 A och I_{L} = 1,732 · 22 ≈ 38,1 A. Rimlighet: samma resistorer tar tre gånger så stor linjeström i Δ som i Y.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Två felhypoteser",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Jämför vilken av förklaringarna som stämmer med alla mätvärden, och ange vad nästa kontroll ska ta reda på.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad visar källans spänning under last om källans styrka? 2) Var försvinner resten av spänningen? 3) Vilken förklaring stämmer med alla tre värdena? 4) Vad ska nästa kontroll ta reda på?",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Eftersläpning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -25,7 +25,7 @@
       "n_{s} = 120f/p",
       "s% = 100 · (n_{s} − n)/n_{s}"
     ],
-    "givet": "f = 50 Hz, p = 4 och n = 1 440 r/min. Motorn går som motor, alltså inte som generator.",
+    "givet": "Landnät. f = 50 Hz, p = 4 och n = 1 440 r/min. Motorn går som motor, alltså inte som generator.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Räkna först ut n_{s}, sedan skillnaden n_{s} − n som andel av n_{s}, och gör om till procent.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna det synkrona varvtalet n_{s} = 120 · f/p. 2) Skillnaden n_{s} − n är eftersläpningen i r/min. 3) Dela med n_{s} och multiplicera med 100. Exempel ombord: en sexpolig motor på 60 Hz som går med 1 140 r/min har n_{s} = 1 200 r/min och s = 100 · 60/1 200 = 5,0 %. Rimlighet: en motor går alltid något långsammare än fältet.",
+      "status": "utkast"
     }
   ],
   "losning": {

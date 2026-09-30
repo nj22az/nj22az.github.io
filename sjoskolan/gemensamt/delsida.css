@@ -1,0 +1,47 @@
+/* En sida per del: Översikt, Teori, Exempel, Övningar, Labben (innehall/export/delsidor_veckor.py; vecka 40 har egen kopia) */
+.del-main{max-width:980px}.del-sida{max-width:76ch}
+.del-steg{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 24px;position:sticky;top:0;background:#fff;padding:8px 0;z-index:2;border-bottom:1px solid var(--sj-line,#cad8e2)}
+.del-steg a{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:4px 14px 4px 6px;border:1px solid var(--sj-line,#cad8e2);border-radius:999px;text-decoration:none;font-weight:700;background:#fff}
+.del-steg b{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--sj-accent,#064f91);color:#fff}
+.del-block{margin:12px 0 40px;scroll-margin-top:72px}.del-block>h2{display:flex;align-items:center;gap:12px;border-bottom:3px solid var(--sj-accent,#064f91);padding-bottom:6px}
+.del-block>h2 span{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--sj-accent,#064f91);color:#fff;font-size:22px}
+.del-block section,.del-ovning{scroll-margin-top:72px}
+.del-gor li{margin:8px 0}.del-mer{font-size:15px;color:var(--sj-muted,#4d6579)}
+.del-tur{margin:16px 0 24px;padding:8px 16px;border-left:8px solid var(--sj-accent,#064f91);background:var(--sj-soft,#edf4f9);border-radius:0 12px 12px 0}
+.del-ovning{margin:20px 0 28px;padding:14px 18px;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:#fff}
+.del-ovning h3{margin-top:0}.del-givet{color:var(--sj-muted,#4d6579)}
+.del-ovning .formula{font-weight:700;white-space:nowrap;font-size:inherit;display:inline;margin:0}
+.del-klar{margin-top:12px;min-height:44px;padding:6px 14px;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff;font:inherit;cursor:pointer}
+.del-ovning.klar{border-color:var(--sj-ok,#176844)}.del-ovning.klar .del-klar{background:var(--sj-ok,#176844);color:#fff;border-color:var(--sj-ok,#176844)}
+.del-status{font-weight:700;color:var(--sj-muted,#4d6579)}
+@media(max-width:700px){.del-steg{position:static;gap:6px}.del-steg a{min-height:40px;padding:2px 10px 2px 4px;font-size:15px}.del-steg b{width:26px;height:26px}}
+@media print{.del-steg,.del-klar,.art-nav,.school-nav{display:none}.del-ovning{break-inside:avoid}}
+
+.del-figur{margin:14px 0 18px}.del-figur img{display:block;width:100%;max-width:460px;height:auto;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff}
+.del-figur figcaption{font-size:14px;color:var(--sj-muted,#4d6579);margin-top:4px}
+.del-formel{font-size:21px;font-weight:700;color:var(--sj-accent,#064f91);margin:14px 0}
+.del-teori{margin:18px 0 30px;padding-bottom:10px;border-bottom:1px solid var(--sj-line,#cad8e2)}
+.del-exempel{margin:18px 0 30px;padding:10px 18px;border-left:8px solid var(--sj-accent,#064f91);background:var(--sj-soft,#edf4f9);border-radius:0 12px 12px 0}
+.del-start{padding:10px 16px;border:1px dashed var(--sj-accent,#064f91);border-radius:10px}
+.del-ovning .formula{white-space:normal;overflow-wrap:anywhere}
+/* Kort för teori och exempel: rubriken och formeln syns, texten öppnas ett avsnitt i taget */
+.del-verktyg{margin:6px 0 14px}.del-alla{min-height:44px;padding:6px 14px;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff;font:inherit;font-weight:700;color:var(--sj-accent,#064f91);cursor:pointer}
+details.del-kort{margin:10px 0;padding:0;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:#fff}
+details.del-kort.del-exempel{border-left:8px solid var(--sj-accent,#064f91)}
+.course-reading details.del-kort>summary{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;list-style:none;min-height:44px;font-weight:400}
+details.del-kort>summary::-webkit-details-marker{display:none}
+details.del-kort>summary::after{content:"Öppna";margin-left:auto;align-self:center;padding-left:8px;font-size:14px;font-weight:700;color:var(--sj-accent,#064f91);white-space:nowrap}
+details.del-kort[open]>summary::after{content:"Stäng"}
+details.del-kort[open]>summary{border-bottom:1px solid var(--sj-line,#cad8e2)}
+.kort-nr{flex:none;display:inline-grid;place-items:center;min-width:32px;height:32px;padding:0 6px;border-radius:16px;background:var(--sj-soft,#edf4f9);color:var(--sj-accent,#064f91);font-weight:700}
+.kort-text{display:flex;flex-direction:column;gap:4px;min-width:0}.kort-titel{font-weight:700;font-size:19px;line-height:1.3}
+.kort-formel{font-weight:700;color:var(--sj-accent,#064f91);font-size:16px;overflow-wrap:anywhere}
+.kort-kropp{padding:4px 18px 12px}
+.del-ova{margin:16px 0 4px;padding:10px 14px;border-radius:10px;background:var(--sj-soft,#edf4f9)}
+@media print{details.del-kort>summary::after{content:none}.steg-knappar{display:none}}
+.del-kontroll{margin:28px 0;padding:14px 18px;border:2px solid var(--sj-accent,#064f91);border-radius:12px;background:var(--sj-soft,#edf4f9)}.del-kontroll h3{margin-top:0}
+.kf{margin:14px 0;padding:12px 14px;background:#fff;border:1px solid var(--sj-line,#cad8e2);border-radius:10px}.kf fieldset{border:0;margin:0;padding:0}.kf legend{padding:0;margin-bottom:6px}
+.kf label{display:flex;gap:10px;align-items:flex-start;min-height:40px;padding:6px 4px;cursor:pointer}.kf input{margin-top:5px}.kf .kf-led{font-size:14px;color:var(--sj-muted,#4d6579)}
+.kf-svara{min-height:44px;padding:6px 16px;border:1px solid var(--sj-accent,#064f91);border-radius:8px;background:var(--sj-accent,#064f91);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.kf.ratt{border-color:var(--sj-ok,#176844)}.kf.fel{border-color:#9a330f}.kf.ratt .kf-utfall{color:var(--sj-ok,#176844);font-weight:700}.kf.fel .kf-utfall{color:#9a330f;font-weight:700}
+.steg-knappar{margin:10px 0 4px;display:flex;flex-wrap:wrap;gap:8px}

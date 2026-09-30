@@ -7,12 +7,32 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'lib'))
 import text as T  # noqa: E402
 
 SJO = Path(__file__).resolve().parents[2]
-LEDTRAD = {'begrepp': 'vad betyder storheterna?', 'metod': 'hur går jag vidare?', 'nasta-steg': 'nästa steg'}
+LEDTRAD = {'begrepp': 'vad betyder storheterna?', 'metod': 'hur går jag vidare?', 'nasta-steg': 'steg för steg'}
 
 
 def h(text):
     """Innehållstext till HTML (index som <sub>/<sup>)."""
     return T.html_text(text)
+
+
+def svarsvarde(sv):
+    """Ett facitvärde som text: postens avrundning ('heltal', '2 decimaler'); ett oavrundat tal (fler än fyra decimaler)
+    får tre värdesiffror, ett kort tal visas som det står. Decimalkomma och minustecken."""
+    import math
+    v = sv.get('varde')
+    if isinstance(v, str):
+        return v
+    a = sv.get('avrundning') or ''
+    if a == 'heltal':
+        d = 0
+    elif a.split()[:1] and a.split()[0].isdigit():
+        d = int(a.split()[0])
+    elif round(v, 4) == v:                                   # redan ett kort tal: visa som det står
+        return (str(int(v)) if v == int(v) else str(v)).replace('-', '−').replace('.', ',')
+    else:
+        d = max(0, 2 - math.floor(math.log10(abs(v))))
+    s = f'{round(v, d):.{d}f}'
+    return s.replace('-', '−').replace('.', ',')
 
 
 def attr(text):
@@ -59,8 +79,9 @@ def beteckningar_i(texter, alla, formler=()):
     return [b for _, b in sorted(ut, key=lambda x: x[0])]
 
 
-def beteckningar_html(lista, rubrik='Beteckningar', oppen=False, prefix=''):
-    """Ordlista som <details> (kort i löptexten, går att öppna när man behöver den)."""
+def beteckningar_html(lista, rubrik='Beteckningar', oppen=False, prefix='', trefas=False):
+    """Ordlista som <details> (kort i löptexten, går att öppna när man behöver den).
+    trefas: visa fältet trefas (trefassambandet). Används från vecka 41; den låsta vecka 40 visar det inte."""
     if not lista:
         return ''
     rader = []
@@ -69,7 +90,8 @@ def beteckningar_html(lista, rubrik='Beteckningar', oppen=False, prefix=''):
         enhet = f' <span class="bet-enhet">Enhet: {h(b["enhet"])}.</span>' if b.get('enhet') else ''
         exempel = f' {h(b["exempel"])}' if b.get('exempel') else ''
         obs = f' <strong>Obs:</strong> {h(b["obs"])}' if b.get('obs') else ''
-        rader.append(f'<div class="bet-rad" id="{prefix}bet-{b["id"]}"><dt>{h(b["visa"])}</dt><dd><strong>{h(b["namn"])}</strong>{extra}. {h(b["forklaring"])}{enhet}{exempel}{obs}</dd></div>')
+        tre = f' {h(b["trefas"])}' if trefas and b.get('trefas') else ''
+        rader.append(f'<div class="bet-rad" id="{prefix}bet-{b["id"]}"><dt>{h(b["visa"])}</dt><dd><strong>{h(b["namn"])}</strong>{extra}. {h(b["forklaring"])}{tre}{enhet}{exempel}{obs}</dd></div>')
     return (f'<details class="beteckningar"{" open" if oppen else ""}><summary>{h(rubrik)} ({len(lista)})</summary>'
             f'<dl class="bet-lista">{"".join(rader)}</dl></details>')
 

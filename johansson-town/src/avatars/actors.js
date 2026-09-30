@@ -11,13 +11,7 @@ import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
  * they are speaking -- so the avatars read the same flags, and nothing that moves people
  * about had to change.
  *
- * ?classic in the address brings back the old bodies, for comparison. Outside a browser
- * (the test suite) the old bodies stay the default so their own tests keep covering them;
- * configureAvatars(true) switches over.
  */
-let enabled=typeof WebGLRenderingContext!=='undefined'&&typeof location!=='undefined'&&!new URLSearchParams(location.search).has('classic');
-export const avatarsEnabled=()=>enabled;
-export function configureAvatars(on){enabled=!!on;}
 
 /** The player's own recipe, as the creator saved it; Johansson's until then. */
 export const PLAYER_RECIPE_KEY='johansson-town-avatar';
@@ -73,6 +67,8 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  actor.moving=actor.speed>(actor.moving?.03:.07);
  actor.gestureTime=Math.max(0,actor.gestureTime-dt);
  const outfit=u.outfit||'clothes';if(actor.outfit!==outfit){avatar.wear(outfit);actor.outfit=outfit;}
+ // At home the hat is on its hook (home-residents.js), not on the head.
+ const hatOn=!u.hatOff;if(actor.hatOn!==hatOn){avatar.setHat?.(hatOn);actor.hatOn=hatOn;}
  const riding=!!(u.playerControlled&&actor.isThuan);
  const seated=!riding&&(Number.isFinite(u.seatHeight)&&SEATED.includes(u.socialPose)||Number.isFinite(u.chairBlend)&&u.chairBlend>.5);
  const mood=u.thuanMood,feeling=mood&&mood.until>now?mood.expression:null;
@@ -80,7 +76,7 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  const sleeping=Number(u.sleepBlend)>.28||(u.sleeping&&!u.roomTransition);
  actor.animator.update(dt,{
   speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,floorHeight:(Number(u.floorHeight)||0)+(u.socialPose==='CounterIdle'?COUNTER_STEP:0),
-  pose:u.socialPose,seat:u.socialPose,riding,ridePhase:u.bicyclePhase||0,carrying:!!u.carrying,
+  pose:u.socialPose,seat:u.socialPose,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,
   waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
   talking:!!(u.chat?.speaking||u.speakingUntil>now),
   expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),

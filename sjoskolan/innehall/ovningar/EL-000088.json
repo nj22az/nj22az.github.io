@@ -3,7 +3,7 @@
   "titel": "Ström före och efter",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,10 +35,15 @@
       "niva": "metod",
       "text": "Vid samma aktiva effekt minskar strömmen när PF ökar. Använd samma P och U i båda beräkningarna och byt bara PF.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) I_{1} = P/(U · PF_{1}): räkna nämnaren först. 2) I_{2} = P/(U · PF_{2}) med samma P och U, bara PF byts. 3) Jämför: I_{2} ska bli mindre än I_{1}. Exempel: en pumpmotor på 1 380 W vid 230 V ger 1 380/(230 · 0,40) = 15,0 A vid PF 0,40 och 1 380/(230 · 0,80) = 7,5 A vid PF 0,80.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "Före: 1 800/(230 · 0,60) ≈ 13,0 A. Efter: 1 800/(230 · 0,90) ≈ 8,70 A.",
+    "text": "Behåll samma P och U. Byt bara effektfaktorn i I = P/(U · PF).\n\nFöre: I_{1} = 1 800/(230 · 0,60) ≈ 13,0 A.\n\nEfter: I_{2} = 1 800/(230 · 0,90) ≈ 8,70 A. Kontroll: bättre PF ger mindre ström.",
     "svar": [
       {
         "storhet": "I_{1}",

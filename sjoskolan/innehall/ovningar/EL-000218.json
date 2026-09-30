@@ -3,7 +3,7 @@
   "titel": "Hållningen uteblir",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,10 +39,15 @@
       "niva": "metod",
       "text": "Jämför käll- och spolspänning under START. Beskriv därefter en kontroll av hållvägens funktion.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Mät källspänningen och spolspänningen medan START hålls in. 2) Om båda är rätt, vad säger det om matningen? 3) Kontrollera sedan hållvägen: sluter kontakten när K1 drar, och är ledarna hela? Följ en säker mätplan.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "Mät matningen och spolspänningen under START. Är de rätt är matningen godkänd. Kontrollera sedan hållkontakten: sluter den när K1 drar, och är ledarna till den hela?",
+    "text": "Mät källspänningen och spolspänningen medan START hålls in. Är båda rätt räcker matningen. Pröva sedan hållvägen spänningslöst: resistansen över K1:s NO-kontakt och dess ledare medan K1 påverkas enligt instruktionen. Nära 0 Ω betyder att hållvägen är hel, mycket hög resistans att den är bruten. Spänning över hållkontakten under START visar alltid ungefär 0 V, eftersom START ligger parallellt.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

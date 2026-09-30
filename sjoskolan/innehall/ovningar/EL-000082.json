@@ -3,7 +3,7 @@
   "titel": "Aktiv effekt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,10 +35,15 @@
       "niva": "metod",
       "text": "Multiplicera S med cos φ. P kan aldrig bli större än S.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv P = S · cos φ. 2) cos φ är ett tal mellan 0 och 1 utan enhet, så VA blir W. 3) Kontroll: P kan aldrig bli större än S; vid cos φ = 1 är P = S. Exempel: S = 575 VA och cos φ = 0,80 ger P = 575 · 0,80 = 460 W.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "P = 920 · 0,75 = 690 W.",
+    "text": "Vid sinusform är cos φ samma som effektfaktorn. Den anger andelen aktiv effekt.\n\nP = 920 · 0,75 = 690 W. Kontroll: aktiv effekt är mindre än skenbar effekt.",
     "svar": [
       {
         "storhet": "P",

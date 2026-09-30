@@ -1,6 +1,7 @@
 import {createIzakayaTV} from './advertising-billboard.js';
 import {hangIzakayaPosters} from './interiors/izakaya-posters.js';
-import {DINING,restaurantCollider,restaurantApproach,izakayaPlot} from './dining-layout.js';
+import {DINING,restaurantCollider,restaurantApproach,izakayaPlot,SATO_RAMEN_DOOR} from './dining-layout.js';
+import {SATO_RAMEN,satoRamenOpen} from './sato-ramen-layout.js';
 import {prepareIzakayaGlass} from './shop-glass.js';
 import {buildMinatoFacade} from './minato-facade.js';
 import {peninsulaActive} from './town-mode.js';
@@ -8,7 +9,7 @@ import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
-import {IZAKAYA_PLAYER_SEATS} from '../people/izakaya-beer.js';
+import {IZAKAYA_PLAYER_SEATS,DISHES,DRINKS} from '../people/izakaya-beer.js';
 import {daylight, lanternGlow} from '../render/dusk.js';
 const assets=new Map();
 export async function preloadIzakaya(kinds=['exterior','interior']){
@@ -23,6 +24,8 @@ function asset(kind,parent){
  const source=assets.get(kind);if(!source)return false;
  const model=source.clone(true);model.userData.sharedAsset=true;model.name='Minato '+kind;model.traverse(o=>{if(o.isMesh){o.castShadow=!o.userData.clearWindow;o.receiveShadow=!o.userData.clearWindow;}});parent.add(model);return true;
 }
+/** The shared interior -- Minato, its kitchen and Sato Ramen -- into a room. False until it has loaded. */
+export const addMinatoInterior=room=>asset('interior',room);
 export function buildIzakaya(world,options){
  // Where it stands depends on the layout: see IZAKAYA_PLOTS in dining-layout.js.
  const plot=izakayaPlot();
@@ -86,7 +89,15 @@ export function buildIzakaya(world,options){
   (world.hourly||(world.hourly=[])).push(minutes=>{
    const h=((minutes%1440)+1440)%1440,open=h>=960||h<180;
    built.lit(open,daylight(minutes),lanternGlow(minutes));
+   built.ramen.lit(satoRamenOpen(minutes),daylight(minutes));
   });
+  // Sato Ramen, the lunch counter on the alley corner of the same building.
+  const ramen={id:SATO_RAMEN.id,title:SATO_RAMEN.title,jp:SATO_RAMEN.jp,sub:'LUNCH · SAME KITCHEN AS MINATO',x:SATO_RAMEN_DOOR[0],z:SATO_RAMEN_DOOR[1],color:0xa3241c,accent:'#a3241c',
+   line:'Mrs Sato’s shoyu, miso and shio ramen · lunch 11:00–14:00',door:[SATO_RAMEN_DOOR[0],0,SATO_RAMEN_DOOR[1]],opens:'11:00',entryFacing:plot.yaw};
+  ramen.exitPosition=[...ramen.door];
+  const old=options.sites.findIndex(s=>s.id===ramen.id);if(old>=0)options.sites.splice(old,1);options.sites.push(ramen);
+  const ramenEntrance=new THREE.Object3D();ramenEntrance.position.set(SATO_RAMEN_DOOR[0],1.2,SATO_RAMEN_DOOR[1]);ramenEntrance.name='Sato Ramen entrance';world.group.add(ramenEntrance);
+  options.register(ramenEntrance,'Come into Sato Ramen',()=>options.enter(ramen));
  }
  if(!suppliedExterior)registerDetail(world,{id:'izakaya-exterior',priority:1,x:plot.x,z:plot.z,radius:48,load:async()=>{
   await preloadIzakaya(['exterior']);if(!assets.has('exterior'))return false;
@@ -101,14 +112,18 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  // Complete the cutaway asset for first-person viewing. Keep the exit opening.
  box([13,.16,13],[0,3.88,0],0x574638,room,false);
  box([.2,1.02,13],[-6.4,3.3,0],0xe8c894,room,false);
- box([.2,3.15,13],[6.4,2.225,0],0xe8c894,room,false);
+ // The east wall stops at the counter: behind it the kitchen runs on into Sato Ramen.
+ box([.2,3.15,9.75],[6.4,2.225,1.525],0xe8c894,room,false);
  for(const x of [-4.15,4.15])box([4.7,3.8,.2],[x,1.9,6.4],0xe8c894,room,false);
  box([3.6,1.1,.2],[0,3.25,6.4],0xe8c894,room,false);
  const anchor=(position,label,fn)=>{const o=new THREE.Object3D();o.position.set(...position);room.add(o);reg(o,label,fn,true);return o;};
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.1,.68),new THREE.MeshStandardMaterial({map:signTexture('おかえりなさい','WELCOME BACK · MINATO','#b55049')}));sign.position.set(.5,3.1,-6.05);room.add(sign);
  for(const x of [-3.8,-2.3,-.8,.7,2.2])collider(x,-1.42,.6,.6,.71);
  // The counter runs from the guest ledge back to the steel work top on Nao's side.
- collider(-.8,-2.64,8.4,1.43,1.15);collider(-1,-5.95,7.2,.62,2.7);collider(4.65,-4.7,2.2,1.0,1.3);
+ collider(-.8,-2.64,8.4,1.43,1.15);
+ // The back bar and the cooking line along the back wall, and the staff gate at the
+ // counter's end: the kitchen is Nao's and Mrs Sato's, not a way through to the ramen shop.
+ collider(.875,-5.95,10.9,.75,2.7);collider(4.9,-3.1,3.0,.4,1.1);collider(6.45,-4.9,.2,3.1,2.7);
  for(const [x,z] of [[-3.5,2.2],[2.6,2]]){collider(x,z,2.5,1.35,1);for(const dz of [-1.08,1.08])collider(x,z+dz,2.5,.50,.6);}
  // The koagari, the sake barrels, crates of empties by the door and behind the counter,
  // the drinks fridge and the umbrella stand (see tools/blender/build-minato-interior.py).
@@ -121,24 +136,25 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  // Your own places: the end of the second table, and the window seat. Sitting there, Nao
  // takes your order and brings it over (people/izakaya-beer.js).
  for(const seat of Object.values(IZAKAYA_PLAYER_SEATS)){
-  const title=seat.id==='window'?'Minato window seat':'Minato table',o=anchor([seat.position[0],1,seat.position[2]],seat.label,()=>action('seat',title,'A warm table, a little conversation, and nowhere to hurry.'));
+  const title=seat.id==='window'?'Minato window seat':seat.counter?'Minato counter':'Minato table',o=anchor([seat.position[0],1,seat.position[2]],seat.label,()=>action('seat',title,'A warm table, a little conversation, and nowhere to hurry.'));
   o.userData.seat={...seat,izakaya:seat,pitch:0};
  }
- anchor([4.5,1.8,-5.5],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
+ anchor([-.4,2.5,-5.6],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
  return {name:'Minato',cutaway:true,television:createIzakayaTV({parent:room})};
 }
 
 /**
  * The tanzaku: the day's menu on strips of paper pinned along the back wall, one dish to
- * a strip, written top to bottom with the price at the foot. The four Nao will make you
- * are at the prices her menu charges; the rest are what a harbour izakaya had on its wall
- * in 1997. Drawn here rather than baked into the model so the brushwork stays sharp.
+ * a strip, written top to bottom with the price at the foot -- all of it orderable
+ * (people/izakaya-beer.js). Drawn here rather than baked into the model so the brushwork
+ * stays sharp.
  */
+// The same list the order service takes: every strip on the wall is something Nao will
+// bring you, at the price on the strip. Specials in red.
 const MENU_STRIPS=[
- ['焼き鳥盛合せ',180,true],['枝豆',120],['おでん',260,true],['生ビール 小',180],['冷奴',150],['だし巻き玉子',200],
- ['ほっけ焼き',280],['刺身盛合せ',320,true],['揚げ出し豆腐',180],['鶏の唐揚げ',220],['お茶漬け',180],
- ['日本酒 一合',220],['焼酎',200],['瓶ビール',260],['麦茶',100],['烏龍茶',100],
+ ...Object.values(DISHES).map(d=>[d.jp,d.price,['yakitori','oden','sashimi'].includes(d.id)]),
+ ...['draft','bottle','awamori','sake','can','oolong'].map(id=>[DRINKS[id].jp.replace(/ .*$/,m=>id==='draft'?'':m),DRINKS[id].price]),
 ];
 function hangMenuStrips(room){
  const cell=[64,256],canvas=document.createElement('canvas');canvas.width=cell[0]*MENU_STRIPS.length;canvas.height=cell[1];

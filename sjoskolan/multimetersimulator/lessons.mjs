@@ -9,7 +9,7 @@ export function acceptsAnswer(step, answer={}) {
   return false;
 }
 // Övningarna genereras ur innehållsdatabasen (uppgifter.gen.mjs); kontrollfunktionerna registreras i funktioner.mjs.
-import { UPPGIFTER } from './uppgifter.gen.mjs';
+import { UPPGIFTER } from './uppgifter.gen.mjs?v=20260929-index';
 import { FUNKTIONER } from './funktioner.mjs';
 export const LESSONS = UPPGIFTER.map((l) => ({ ...l, steps: l.steps.map((s) => (s.test ? { ...s, test: FUNKTIONER[s.test] } : s)) }));
 export const STATION_A = LESSONS.find((l) => l.id === 'stationA');

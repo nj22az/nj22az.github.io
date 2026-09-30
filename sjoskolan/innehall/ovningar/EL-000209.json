@@ -3,7 +3,7 @@
   "titel": "Upprepade mätningar",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -41,6 +41,11 @@
       "niva": "metod",
       "text": "Lägg ihop värdena och dela med tre. Räkna sedan variationsbredden för sig.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Medelvärdet: summan delat med antalet mätningar. 2) Variationsbredden: största minus minsta värdet. Exempel: 23,6, 24,1 och 24,2 V ger medel ≈ 23,97 V och variationsbredden 0,6 V.",
+      "status": "utkast"
     }
   ],
   "losning": {

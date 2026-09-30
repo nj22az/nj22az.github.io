@@ -3,7 +3,7 @@
   "titel": "Mätvärde med avvikelse",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Räkna ut nedre och övre gräns och jämför mätvärdet med båda.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna ut hur mycket procenttoleransen är i ohm. 2) Nedre gräns = nominellt − tolerans, övre = nominellt + tolerans. 3) Gör om mätvärdet till samma enhet. 4) Ligger det mellan gränserna? Annat fall: 470 Ω ±10 % mäts till 505 Ω. Räkna gränserna på samma sätt och jämför.",
+      "status": "utkast"
     }
   ],
   "losning": {

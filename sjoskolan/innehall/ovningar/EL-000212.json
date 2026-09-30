@@ -3,7 +3,7 @@
   "titel": "Uppdelning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Nämn minst fyra funktioner och ge ett exempel på vad som ska kontrolleras i en av dem.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Följ energin från där den kommer in till där den gör arbete. 2) Vad måste finnas på vägen för att pumpen ska få kraft, få ett startkommando och inte vara bortkopplad av ett skydd? 3) Ge varje del ett namn. 4) Välj en av dem och skriv vad du mäter där. Annat fall: en lampa som inte tänds – ström fram, strömbrytare, säkring, glödtråd.",
+      "status": "utkast"
     }
   ],
   "losning": {

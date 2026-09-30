@@ -3,7 +3,7 @@
   "titel": "Mätvärden i protokollet",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,12 +38,35 @@
       "niva": "metod",
       "text": "Räkna ut medelvärdet, jämför varje mätvärde med det och använd den största skillnaden.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Lägg ihop de tre mätvärdena och dela med 3. 2) Räkna varje värdes avvikelse från medelvärdet, utan tecken. 3) Ta den största avvikelsen, dela med medelvärdet och multiplicera med 100. Exempel ombord: 440, 436 och 446 V ger medel ≈ 440,67 V, största avvikelse 5,33 V och 100 · 5,33/440,67 ≈ 1,21 %.",
+      "status": "utkast"
     }
   ],
   "losning": {
     "text": "Medel = 400 V. Största avvikelse 2 V = 0,5 %.",
     "status": "migrerad",
-    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)",
+    "svar": [
+      {
+        "storhet": "medelvärde",
+        "varde": 400,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "största avvikelse",
+        "varde": 0.5,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "%"
+      }
+    ]
   },
   "referenser": {
     "ursprung": [

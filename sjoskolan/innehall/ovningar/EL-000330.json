@@ -3,7 +3,7 @@
   "titel": "Larmar övervakningen?",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Isolationen i L1 har sjunkit till 120 kΩ. L2 och L3 har 10 MΩ. Larmgränsen är 100 kΩ. Beräkna Riso i kΩ. Larmar övervakningen?"
+    "fraga": "Isolationen i L1 har sjunkit till 120 kΩ. L2 och L3 har 10 MΩ. Larmgränsen är 100 kΩ. Beräkna R_{iso} i kΩ. Larmar övervakningen?"
   },
   "referenser": {
     "ursprung": [
@@ -41,10 +41,10 @@
     }
   ],
   "losning": {
-    "text": "1/Riso = 1/120 + 2/10 000 kΩ⁻¹. Riso ≈ 118 kΩ. Det är över 100 kΩ, så övervakningen larmar inte ännu, trots att L1 är klart försämrad.",
+    "text": "1/R_{iso} = 1/120 + 2/10 000 kΩ⁻¹. R_{iso} ≈ 118 kΩ. Det är över 100 kΩ, så övervakningen larmar inte ännu, trots att L1 är klart försämrad.",
     "svar": [
       {
-        "storhet": "Riso",
+        "storhet": "R_{iso}",
         "varde": 117.187,
         "tolerans": {
           "rel": 0.02
@@ -83,7 +83,7 @@
     },
     "fraga": {
       "storhet": "Riso",
-      "etikett": "Riso",
+      "etikett": "R_{iso}",
       "enhet": "kΩ",
       "skala": 1000
     },

@@ -3,7 +3,7 @@
   "titel": "Jämförelse av vågformer",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 8,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -36,12 +36,51 @@
       "niva": "metod",
       "text": "Räkna effektivvärdet med rätt formel för varje vågform och jämför sedan ytorna över och under nollan för medelvärdet.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "Ett fullständigt svar har tre delar: 1) sinusens effektivvärde med U_{RMS} = û/√2, 2) fyrkantvågens effektivvärde med U_{RMS} = û, 3) medelvärdet för var och en, där du jämför ytan över nollan med ytan under (tecknet räknas). Avsluta med en mening om vilken vågform som ger högst effektivvärde vid samma toppvärde och varför.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "Sinus: 12/1,414 ≈ 8,49 V RMS. Fyrkant: 12 V RMS. Medelvärdet är 0 V för båda eftersom positiv och negativ yta är lika stora.",
+    "text": "Sinus: dela toppen med √2, alltså 12/√2 ≈ 8,49 V RMS.\n\nFyrkant: spänningens belopp är hela tiden 12 V, alltså 12 V RMS.\n\nBåda har lika stora positiva och negativa ytor. Medelvärdet med tecken är därför 0 V för båda.",
     "status": "migrerad",
-    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)",
+    "svar": [
+      {
+        "storhet": "U_{RMS}, sinus",
+        "varde": 8.48528137423857,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "U_{RMS}, fyrkant",
+        "varde": 12,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "Medelvärde, sinus",
+        "varde": 0,
+        "tolerans": {
+          "abs": 0.01
+        },
+        "enhet": "V"
+      },
+      {
+        "storhet": "Medelvärde, fyrkant",
+        "varde": 0,
+        "tolerans": {
+          "abs": 0.01
+        },
+        "enhet": "V"
+      }
+    ]
   },
   "referenser": {
     "ursprung": [

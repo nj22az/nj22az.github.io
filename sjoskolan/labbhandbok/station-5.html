@@ -1,0 +1,125 @@
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Labbhandbok: iordningställ motorstationen · Sjöskolan</title>
+<meta name="description" content="Så ställs motorstationen i ordning: motor och motorstartare som aldrig ansluts, Y- och Δ-koppling i plinten, delarna och lärarens referensmätning.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/images/apple-touch-icon.png">
+<link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928"><link rel="stylesheet" href="handbok.css?v=20260929">
+<script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/vecka-41/aktuell/">Vecka 41</a></nav>
+<main id="main-content" class="course-main"><article class="course-reading">
+<p class="course-kicker">Labbhandbok för läraren · station 5</p>
+<h1>Iordningställ motorstationen</h1>
+<p class="hb-intro">Motorn (pos 11) och motorstartaren (pos 15) är övningsobjekt. De ansluts aldrig till nätet. Eleverna kopplar Y och Δ med blecken i motorns plint, kontrollerar kopplingen med en multimeter och går igenom delarna på motorn och startaren.</p>
+<ul class="hb-meny" aria-label="Labbhandbokens sidor">
+<li><a href="index.html">1. Översikt och beslut</a></li>
+<li><a href="station-5.html" aria-current="page">2. Iordningställ motorstationen</a></li>
+<li><a href="vecka-41.html">3. Labbpasset vecka 41</a></li>
+<li><a href="vecka-40.html">4. Fredagen vecka 40</a></li>
+</ul>
+
+<div class="hb-panel hb-ok"><h2>Varför det här är säkert</h2>
+<p>Motorn och startaren har ingen nätkabel och ingen stickpropp. Det finns alltså ingen väg för nätspänning in i stationen. Multimetern mäter resistans med sin egen lilla mätström. DC-aggregatet står vid en annan station och kopplas aldrig till motorn. Kvarvarande risker är mekaniska: motorn är tung, plåtkanter kan vara vassa och bleck och muttrar kan tappas.</p></div>
+
+<h2 id="skylt">1. Skriv av märkskylten</h2>
+<p>Allt eleverna resonerar om kommer från skylten. Fyll i tabellen från den levererade motorn och fotografera skylten. Ett foto kan visas på skärm under passet.</p>
+<div class="hb-tabell"><table>
+<thead><tr><th>Uppgift på skylten</th><th>Värde</th><th>Används till</th></tr></thead>
+<tbody>
+<tr><td>Märkeffekt (axeleffekt) P<sub>axel</sub></td><td class="fyll"></td><td>Del 2: axeleffekt och tillförd effekt</td></tr>
+<tr><td>Spänning Δ/Y, till exempel 230/400 V</td><td class="fyll"></td><td>Vilken koppling motorn skulle ha på 400 V i land och på 440 V ombord</td></tr>
+<tr><td>Märkström Δ/Y</td><td class="fyll"></td><td>Del 2: linjeström, jämförelse mellan kopplingarna</td></tr>
+<tr><td>Frekvens</td><td class="fyll"></td><td>Del 1: 50 Hz i land, 60 Hz ombord</td></tr>
+<tr><td>cos φ</td><td class="fyll"></td><td>Del 2: trefaseffekt</td></tr>
+<tr><td>Varvtal</td><td class="fyll"></td><td>Vecka 43: synkront varvtal och eftersläpning</td></tr>
+<tr><td>Verkningsgrad eller IE-klass, om den finns</td><td class="fyll"></td><td>Del 2: P<sub>in</sub> = P<sub>axel</sub>/η</td></tr>
+<tr><td>Kapslingsklass (IP) och isolationsklass</td><td class="fyll"></td><td>Delar och miljö ombord</td></tr>
+</tbody></table></div>
+<p class="hb-liten">Underlaget anger WilTec 62004, 1,5 kW, med 400 V i produktnamnet och 415 V, 50 Hz i tillverkarens tekniska fält. Skriv bara in vad som står på skylten.</p>
+
+<h2>2. Ställ i ordning motorn</h2>
+<ol class="hb-steg">
+<li><strong>Placera motorn lågt och stadigt</strong> på ett bord eller en skiva, med fötterna nedåt och plinten åt eleverna. Lyft med två personer om vikten kräver det; vikten står i motorns dokumentation.</li>
+<li><strong>Öppna kopplingslådan</strong> (plintlådan). Lägg locket och skruvarna i en märkt låda.</li>
+<li><strong>Ta bort alla bleck</strong> och lägg dem i samma låda. Kontrollera att plintens sex lindningsändar är märkta U1, V1, W1 och U2, V2, W2. Saknas märkning, bestäm ändarna med resistansmätning (steg 3 nedan) och märk dem.</li>
+<li><strong>Hitta skyddsjordens anslutning</strong> i kopplingslådan och på stommen. Den ska eleverna kunna peka ut, även om motorn aldrig ansluts.</li>
+<li><strong>Kabelgenomföringen</strong> lämnas tom. Sätt en skylt: ”Ej ansluten, övningsobjekt. Anslut aldrig till nätet.”</li>
+</ol>
+
+<h2>3. Ställ i ordning startaren</h2>
+<ol class="hb-steg">
+<li><strong>Montera startaren</strong> på en skiva bredvid motorn, med locket av så att kontaktorn och överlastreläet syns. Samma skylt: ”Ej ansluten, övningsobjekt.”</li>
+<li><strong>Kontrollera att överlastreläet sitter på kontaktorn.</strong> För LE1D09-exemplet beställs det separat. Utan överlastreläet finns inga plintar 95–96 och 97–98 att visa.</li>
+<li><strong>Skriv ut startarens kopplingsschema</strong> för exakt den modell du har. Beteckningarna A1–A2, 13–14 och 95–96 ska kontrolleras mot den verkliga enheten.</li>
+</ol>
+
+<h2>4. Delar att gå igenom</h2>
+<p>Motorn plockas inte isär. Eleverna tittar på det som syns utan verktyg, och på kopplingslådan som du har öppnat.</p>
+<div class="hb-tabell"><table>
+<thead><tr><th>Del</th><th>Eleven ska kunna säga</th></tr></thead>
+<tbody>
+<tr><td>Märkskylt</td><td>Vilka uppgifter som finns och vad Δ/Y-spänningen betyder för kopplingen.</td></tr>
+<tr><td>Stomme med kylflänsar (statorns hölje)</td><td>Att statorlindningarna sitter i stommen och att flänsarna leder bort värme.</td></tr>
+<tr><td>Fläkt och fläktkåpa</td><td>Att fläkten sitter på axeln och kyler motorn. Motorn kyler sämre vid lågt varvtal.</td></tr>
+<tr><td>Axel och kilspår, lagersköldar</td><td>Att rotorn bärs av lager i lagersköldarna och att kraften tas ut via axeln och kilen.</td></tr>
+<tr><td>Kopplingslåda och plint</td><td>Sex lindningsändar, tre lindningar (U1–U2, V1–V2, W1–W2), bleck som bestämmer Y eller Δ.</td></tr>
+<tr><td>Skyddsjordens anslutning</td><td>Var skyddsledaren ansluts och varför stommen ska vara jordad.</td></tr>
+<tr><td>Kabelgenomföring</td><td>Att den tätar och håller kabeln, och vad IP-klassen betyder.</td></tr>
+<tr><td>Kontaktor K1: huvudkontakter och spole A1–A2</td><td>Att spolen drar kontaktorn och huvudkontakterna kopplar motorns tre faser.</td></tr>
+<tr><td>Hjälpkontakt 13–14</td><td>Att den är normalt öppen och används för självhållningen (vecka 43).</td></tr>
+<tr><td>Överlastrelä: 95–96, 97–98, inställningsratt, test och återställning</td><td>Att 95–96 är normalt sluten och bryter styrkretsen vid överlast, och att ratten ställs efter motorns märkström.</td></tr>
+<tr><td>Start- och stoppknapp, om de finns på kapslingen</td><td>START normalt öppen, STOPP normalt sluten.</td></tr>
+</tbody></table></div>
+
+<h2>5. Y och Δ i plinten</h2>
+<figure class="hb-figur"><img src="/sjoskolan/vecka-41/aktuell/figurer/v41_02-b21-1.png" alt="Motorns kopplingsplint: Y med bygel över W2, U2, V2 ger lindningsspänningen UL/√3; Δ med byglar U1–W2, V1–U2, W1–V2 ger lindningsspänningen UL" style="max-width:520px;width:100%;height:auto"><figcaption>Samma figur som i Del 2, bild 21. Plintens övre rad är W2, U2, V2 och den undre U1, V1, W1.</figcaption></figure>
+<ul>
+<li><strong>Y:</strong> blecken förbinder W2, U2 och V2 längs den övre raden. Den punkten är stjärnpunkten. Varje lindning ligger mellan en fas (U1, V1, W1) och stjärnpunkten.</li>
+<li><strong>Δ:</strong> tre bleck lodrätt: U1–W2, V1–U2 och W1–V2. Varje lindning ligger mellan två faser.</li>
+<li>Vilken koppling motorn ska ha i drift avgörs av skylten och nätets linjespänning: nätets U<sub>L</sub> lika med det högre märkvärdet ger Y, lika med det lägre ger Δ.</li>
+</ul>
+
+<h2 id="referens">6. Din referensmätning</h2>
+<p>Mät en gång själv innan passet. Då vet du vilka värden eleverna ska få, utan att gissa. Använd multimeterns resistansområde (pos 12 eller pos 16).</p>
+<ol class="hb-steg">
+<li><strong>Nollställ mätsladdarna.</strong> Håll mätspetsarna mot varandra och notera resistansen. Den dras av från varje mätvärde, eftersom lindningarnas resistans är några ohm.</li>
+<li><strong>Utan bleck:</strong> mät U1–U2, V1–V2 och W1–W2. Mät också mellan två olika lindningar, till exempel U1–V1. Där ska mätaren visa överområde (ingen förbindelse).</li>
+<li><strong>Y-koppla</strong> och mät U1–V1, V1–W1 och W1–U1.</li>
+<li><strong>Δ-koppla</strong> och mät samma tre par.</li>
+</ol>
+<div class="hb-tabell"><table>
+<thead><tr><th>Mätning</th><th>Förväntat samband</th><th>Ditt värde</th></tr></thead>
+<tbody>
+<tr><td>R<sub>U1–U2</sub>, R<sub>V1–V2</sub>, R<sub>W1–W2</sub> (bleck borttagna)</td><td>Lika inom några procent. Kalla medelvärdet R<sub>lindning</sub>.</td><td class="fyll"></td></tr>
+<tr><td>U1–V1 utan bleck</td><td>Överområde: lindningarna är skilda åt.</td><td class="fyll"></td></tr>
+<tr><td>U1–V1 i Y (samma för de andra paren)</td><td>Två lindningar i serie: 2 · R<sub>lindning</sub></td><td class="fyll"></td></tr>
+<tr><td>U1–V1 i Δ (samma för de andra paren)</td><td>En lindning parallellt med två i serie: R · 2R/(3R) = (2/3) · R<sub>lindning</sub></td><td class="fyll"></td></tr>
+<tr><td>Kvoten R<sub>Y</sub>/R<sub>Δ</sub></td><td>2/(2/3) = 3</td><td class="fyll"></td></tr>
+</tbody></table></div>
+<p>Kvoten 3 är samma trefaldiga skillnad som i Del 2: samma last tar tre gånger så stor linjeström i Δ som i Y vid samma linjespänning. Resistansmätningen visar det på den riktiga motorn utan att den körs.</p>
+<p class="hb-liten">Lindningsresistansen ändras med temperaturen. Notera rummets temperatur tillsammans med dina värden.</p>
+
+<h2 id="tangstation">7. Tångstationen (SELV, utan motorn)</h2>
+<p>Stationen visar hur en strömtång fungerar: den mäter summan av strömmarna som går genom käften. Utrustning: DC-aggregat (pos 01), en labbsladd (pos 05), UT210D (pos 16).</p>
+<ol class="hb-steg">
+<li><strong>Ställ aggregatet</strong> med utgången avslagen: spänning 2 V, strömgräns 2,0 A. Sladdarna tål 3 A.</li>
+<li><strong>Koppla en labbsladd från plus till minus</strong> och slå på utgången. Aggregatet går då i strömbegränsning och visar 2,0 A. Det är avsikten: strömmen bestäms av strömgränsen, inte av sladden.</li>
+<li><strong>Nollställ tången</strong> i läget DC A innan den läggs runt en ledare (knappen för nollställning).</li>
+<li>Eleverna mäter: sladden en gång genom käften, sladden lindad två varv genom käften, och sladden vikt som en hårnål så att både den utgående och den tillbakagående delen går genom käften.</li>
+</ol>
+<div class="hb-tabell"><table>
+<thead><tr><th>Tången runt</th><th>Förväntat</th><th>Kopplingen till trefas</th></tr></thead>
+<tbody>
+<tr><td>Sladden en gång</td><td>Samma som aggregatets visning, cirka 2,0 A</td><td>Så mäts en fasström: en ledare i taget.</td></tr>
+<tr><td>Sladden två varv</td><td>Dubbla värdet, cirka 4,0 A</td><td>Tången räknar varje gång strömmen passerar.</td></tr>
+<tr><td>Hårnål: ut och tillbaka i samma käft</td><td>Nära 0 A</td><td>Strömmarna tar ut varandra. Runt en hel trefaskabel till en symmetrisk last blir summan också noll, och därför ger en flerledarkabel ingen fasström. Samma princip används i jordfelsbrytaren.</td></tr>
+</tbody></table></div>
+<p class="hb-liten">Slå av utgången innan sladdarna kopplas om. Stationen ligger helt inom skyddsklenspänning.</p>
+
+<h2>8. Efter passet</h2>
+<ul class="hb-check">
+<li>Ta bort blecken, räkna dem och lägg dem i lådan. Vecka 44 mäts isolationen lindning mot gods, och fas–fas kräver att blecken är borttagna.</li>
+<li>Stäng kopplingslådan och sätt tillbaka locket på startaren om den ska flyttas.</li>
+<li>Spara din referenstabell. Den används igen vecka 44 och 45.</li>
+</ul>
+</article></main>
+</body></html>

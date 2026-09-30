@@ -3,7 +3,7 @@
   "titel": "STOPP-funktionen",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Följ båda vägarna när S0 öppnar och förklara varför båda då bryts.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Rita de två vägarna fram till spolen. 2) Ligger STOPP före eller efter förgreningen? 3) Vad händer med båda vägarna när STOPP öppnar? Pröva vad som skulle hända om STOPP låg bara i START-vägen.",
+      "status": "utkast"
     }
   ],
   "losning": {

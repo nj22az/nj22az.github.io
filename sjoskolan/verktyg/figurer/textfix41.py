@@ -10,7 +10,7 @@ WORDS = [('Trefastränaren', 'Trefasriggen'), ('trefastränare', 'trefasrigg'), 
 src, dst = sys.argv[1], sys.argv[2]
 
 f = "v41_01_Trefassystemets_grunder_elev.pptx"; p = Presentation(f"{src}/{f}")
-set_paras(shape(p.slides[6], 5), ["Ombord är 440 V vanligt. Generatorns fasspänning i Y är ≈ 254 V,", "men nätet har oftast ingen neutralledare. Vid ett jordfel kan en fas ha hela 440 V mot skrovet."])
+set_paras(shape(p.slides[6], 5), ["Ombord är 440 V vanligt. Generatorns fasspänning i Y är ≈ 254 V,", "men nätet har oftast ingen neutralledare. Vid ett jordfel får de två friska faserna hela 440 V mot skrovet."])
 set_paras(shape(p.slides[24], 13), ["Arbetsgång: Rita de tre visarna efter varandra, spets mot fot. Vad blir summan?"])
 set_paras(shape(p.slides[26], 10), ["Nodlagen: Σ in = Σ ut"])
 set_paras(shape(p.slides[26], 11), ["Iɴ är neutralledarens ström. Den för tillbaka strömmen från fas–neutral-lasterna."])

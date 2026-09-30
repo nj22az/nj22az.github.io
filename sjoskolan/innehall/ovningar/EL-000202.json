@@ -3,7 +3,7 @@
   "titel": "Tångens utgång",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -25,7 +25,7 @@
   "uppgift": {
     "fraga": "En strömtång ger 10 mV/A. En mätare visar 250 mV. Beräkna strömmen.",
     "samband": [
-      "I = Utång/k"
+      "I = U_{tång}/k"
     ],
     "givet": "Känslighet 10 mV/A och visning 250 mV. Bortse från nollfel och andra instrumentfel.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -33,13 +33,18 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "k är tångens känslighet i mV/A och Utång dess utspänning i mV.",
+      "text": "k är tångens känslighet i mV/A och U_{tång} dess utspänning i mV.",
       "status": "migrerad"
     },
     {
       "niva": "metod",
       "text": "Dela visningen med känsligheten – mV delat med mV/A ger A.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Känsligheten säger hur många mV tången ger per ampere. 2) Dela visningen med känsligheten, i samma enhet. Exempel: en tång med 100 mV/A som visar 3 200 mV ger I = 3 200/100 = 32 A.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -74,6 +74,7 @@ export function preloadSuppliedRooms(ids=Object.keys(files)){
       let meshes=0;
       gltf.scene.traverse(o=>{if(!o.isMesh)return;meshes++;
         for(const material of Array.isArray(o.material)?o.material:[o.material]){
+          if(id==='ramen-exterior')material.userData.keepPhysical=true;
           // Vertex-alpha shadow decals must not occlude the floor behind them.
           if(material.transparent){material.depthWrite=false;material.forceSinglePass=true;}
           if(material.map){material.map.magFilter=THREE.LinearFilter;material.map.anisotropy=2;}
@@ -224,7 +225,7 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     anchor([0,1.1,-1.65],'Read the pencilled note','read','An unfinished measurement','14 September 1997.\nThe instruments agree until the door closes. Do not move the large crystal. — K.');
     anchor([-1.5,.8,.5],'Inspect the compass','inspect','The compass','The needle points towards the door. Turn it, and it patiently finds the door again.');
   }else if(site.id==='office'){
-    buildOfficeWorkplace({room,reg,action});
+    buildOfficeWorkplace({room,reg,action,collider});
   }else if(site.id==='yuri-home'){
     room.add(new THREE.HemisphereLight(0xffebd0,0x74604d,1.5));
     const furnishings=new THREE.Group();furnishings.name='Shared apartment furnishings';room.add(furnishings);

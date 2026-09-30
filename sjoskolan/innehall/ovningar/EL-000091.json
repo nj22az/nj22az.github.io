@@ -3,7 +3,7 @@
   "titel": "Fasförskjutning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,12 +37,27 @@
       "niva": "metod",
       "text": "Dela den vinkeln lika mellan de tre faserna.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna antalet faser. 2) Dela ett helt varv, 360°, med antalet faser. 3) Svaret är vinkeln mellan två faser som följer på varandra. Exempel med ett annat antal: ett sexfassystem (som i en sexpulslikriktare) ger 360°/6 = 60°. Rimlighet: färre faser ger större vinkel mellan dem.",
+      "status": "utkast"
     }
   ],
   "losning": {
     "text": "360°/3 = 120°.",
     "status": "migrerad",
-    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)",
+    "svar": [
+      {
+        "storhet": "vinkel mellan faserna",
+        "varde": 120,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "°"
+      }
+    ]
   },
   "referenser": {
     "ursprung": [

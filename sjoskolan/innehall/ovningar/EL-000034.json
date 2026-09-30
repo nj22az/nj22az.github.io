@@ -3,7 +3,7 @@
   "titel": "Motorns inmatning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -22,7 +22,7 @@
   "uppgift": {
     "fraga": "En motor ger 600 W mekanisk effekt. Verkningsgraden är 75 %. Beräkna den tillförda elektriska effekten och förlusten.",
     "samband": [
-      "P_{in} = P_{ut}/η; Pförlust = P_{in} − P_{ut}"
+      "P_{in} = P_{ut}/η; P_{förlust} = P_{in} − P_{ut}"
     ],
     "givet": "η = 75 % = 0,75. Motorn går med jämn belastning.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."

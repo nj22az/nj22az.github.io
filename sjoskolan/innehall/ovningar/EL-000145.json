@@ -3,7 +3,7 @@
   "titel": "Provare med skada",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Ange hur provaren tas ur bruk och vad som krävs innan kontrollen kan göras.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Kan en provare med skadad kabel lita på? Tänk på både mätresultatet och ditt eget skydd. 2) Vad gör du med provaren? 3) Vad behöver finnas innan kontrollen görs?",
+      "status": "utkast"
     }
   ],
   "losning": {

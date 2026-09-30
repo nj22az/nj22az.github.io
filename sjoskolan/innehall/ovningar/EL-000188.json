@@ -3,7 +3,7 @@
   "titel": "Ändrad slingimpedans",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Räkna ut båda strömmarna och ange hur mycket strömmen ändras.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna felströmmen före ändringen. 2) Räkna den efter ändringen med samma spänning. 3) Jämför: hur många gånger ändrades Z_{s}, och hur många gånger ändrades I_{k}? Exempel: Z_{s} ökar från 0,20 till 0,60 Ω vid 230 V: I_{k} går från 1 150 A till cirka 383 A, alltså en tredjedel.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Skydd som löser för mycket",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Ange vilka data som behövs för att skilja mellan fel inställning, fel signal och en brytare som inte fungerade som den skulle.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilket skydd borde ha löst? 2) Varför kan fler löst: fel inställning, fel signal eller en brytare som inte bröt i tid? 3) Vilka data visar vad som hände: inställningar, mätdata, händelselogg och i vilken ordning brytarna löste?",
+      "status": "utkast"
     }
   ],
   "losning": {

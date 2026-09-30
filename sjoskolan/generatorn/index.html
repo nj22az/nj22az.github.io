@@ -1,0 +1,49 @@
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Generatorn i 3D · Sjöskolan</title>
+<meta name="description" content="Se varför trefasens spänningar ligger 120° isär: en generator med tre spolar 120° isär och en roterande magnet, med kurvorna ritade i takt.">
+<link rel="canonical" href="https://nj22az.github.io/sjoskolan/generatorn/"><link rel="icon" href="/assets/images/apple-touch-icon.png">
+<link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928">
+<style>
+.gen-main{max-width:1240px;margin:0 auto;padding:0 16px 48px}
+.gen-yta{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:start}
+@media(max-width:900px){.gen-yta{grid-template-columns:1fr}}
+#gen-3d{height:430px;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;overflow:hidden;background:#edf3f7}
+#gen-3d canvas{display:block;touch-action:none}
+.gen-hoger{border:1px solid var(--sj-line,#cad8e2);border-radius:12px;padding:12px 14px;background:#fff}
+#gen-graf{width:100%;height:auto;display:block}
+.gen-kontroll{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:10px 0}
+.gen-kontroll label{display:flex;align-items:center;gap:8px}.gen-kontroll input[type=range]{width:180px}
+#gen-varden{list-style:none;padding:0;margin:8px 0;display:flex;flex-wrap:wrap;gap:6px 20px;font-size:18px}
+#gen-just-nu{font-weight:700}
+</style>
+<script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/vecka-41/aktuell/">Vecka 41</a><a href="/sjoskolan/vecka-41/aktuell/Del_1.html">Del 1</a></nav>
+<main id="main-content" class="gen-main">
+<p class="course-kicker">Vecka 41 · del 1 · trefassystemets grunder</p>
+<h1>Generatorn i 3D</h1>
+<p class="sj-lead">Varför ligger de tre spänningarna 120° isär? För att generatorns tre spolar sitter 120° isär runt statorn. När magneten i mitten snurrar passerar nordpolen först spolen för L1, sedan L2 och sist L3.</p>
+<div class="gen-yta">
+<div id="gen-3d" aria-label="3D-bild av generatorn"></div>
+<div class="gen-hoger">
+<canvas id="gen-graf" width="760" height="360" role="img" aria-label="Fasspänningarna u1, u2 och u3 som funktion av rotorns vinkel, med en markör vid rotorns läge"></canvas>
+<div class="gen-kontroll">
+<button type="button" class="sj-btn" id="gen-kor" aria-pressed="false">Pausa</button>
+<label>Fart <input type="range" id="gen-fart" min="0.1" max="1.5" step="0.1" value="0.5"></label>
+<label>Rotorns vinkel <input type="range" id="gen-vinkel" min="0" max="359" step="1" value="0"> <span id="gen-vinkel-v">0°</span></label>
+</div>
+<div class="gen-kontroll"><span>Gå till:</span><button type="button" class="sj-btn" data-till="0">0°</button><button type="button" class="sj-btn" data-till="120">120°</button><button type="button" class="sj-btn" data-till="240">240°</button></div>
+<ul id="gen-varden" aria-live="polite"></ul>
+<p id="gen-just-nu"></p>
+</div>
+</div>
+<h2>Det här ska du se</h2>
+<ul>
+<li>Spolarna för L1, L2 och L3 sitter 120° isär. Därför ligger kurvorna 120° isär. Vrid rotorn 120° så har L2 samma värde som L1 hade.</li>
+<li>Summan u<sub>1</sub> + u<sub>2</sub> + u<sub>3</sub> är noll i varje ögonblick. Därför kan en symmetrisk last klara sig utan neutralledare (del 1, avsnitt 5).</li>
+<li>Toppvärdet 358 V motsvarar fasspänningen 254 V, som i fartygets 440 V-nät kopplat i Y: 254 · √2 ≈ 359 V.</li>
+<li>En verklig generator har fler spolar och en elektromagnet i rotorn. Principen är densamma.</li>
+</ul>
+<p class="sj-muted">Tillbaka till <a href="/sjoskolan/vecka-41/aktuell/Del_1.html#teori-2">del 1: tre sinusspänningar</a>. 3D-bilden använder three.js (MIT-licens).</p>
+</main>
+<script type="module" src="app.mjs?v=20260929"></script>
+</body></html>

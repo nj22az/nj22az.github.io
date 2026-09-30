@@ -3,7 +3,7 @@
   "titel": "Spänningsbegrepp",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Gör om till samma enhet och jämför varje värde med rätt gräns.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "status": "utkast",
+      "text": "1) Kontrollera för varje värde om det är AC eller DC. 2) Jämför med rätt gräns: över 1 000 V för AC och över 1 500 V för DC. 3) ”Över” betyder strikt större än gränsen. Exempel: 440 V AC är lågspänning, 11 kV AC är högspänning och 1 000 V DC är lågspänning eftersom DC-gränsen är högre."
     }
   ],
   "losning": {

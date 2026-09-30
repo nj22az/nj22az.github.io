@@ -3,7 +3,7 @@
   "titel": "Effekt i resistor",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,10 +35,15 @@
       "niva": "metod",
       "text": "Kvadrera effektivvärdet och dela med R. Använd inte toppvärdet i den här formeln.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv P = U_{RMS}²/R. 2) Kvadrera effektivvärdet först (U · U), dela sedan med R. 3) Kontroll: räkna I = U/R och sedan P = U · I; det ska ge samma tal. Exempel: en vattenkokare på 230 V med R = 23 Ω: 230² = 52 900, 52 900/23 = 2 300 W. Enheten blir W.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "P = 12,0²/24 = 6,0 W.",
+    "text": "En resistor utvecklar medeleffekten P = U²/R när U är effektivvärdet.\n\nKvadrera först: 12,0² = 144. Dela sedan: P = 144/24 = 6,0 W.",
     "svar": [
       {
         "storhet": "P",

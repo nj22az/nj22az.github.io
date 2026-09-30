@@ -3,7 +3,7 @@
   "titel": "Fara och konsekvens",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Bygg en orsakskedja utan att framställa en antagen spänningssättning som observation.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Fara: vad kan skada? 2) Händelse: vad kan inträffa? 3) Konsekvens: vilken skada kan det bli? Skriv en kedja: fara → händelse → konsekvens. Annat fall: en oljefläck på durken → någon halkar → brutet ben.",
+      "status": "utkast"
     }
   ],
   "losning": {

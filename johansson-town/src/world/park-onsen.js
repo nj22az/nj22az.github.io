@@ -17,7 +17,7 @@ import {registerDetail} from './detail-stream.js';
  * wall. The noren, the signs and the steam are made here; the noren and the name
  * board go up with the building.
  */
-import {ONSEN,onsenPoint,onsenOpen} from './onsen-layout.js';
+import {ONSEN,ONSEN_DOOR,ONSEN_APPROACH,onsenPoint,onsenOpen} from './onsen-layout.js';
 export {ONSEN,onsenPoint,onsenOpen};
 
 /** A rectangle in the model's frame; a quarter turn swaps its width and depth. */
@@ -25,7 +25,10 @@ function rect(x,z,w,d,height){const [wx,wz]=onsenPoint(x,z);return {id:'park-ons
 
 /** The model's own colliders: bathhouse, fenced bath, porch posts, fridge, bench, footbath. */
 export const ONSEN_COLLIDERS=Object.freeze([
- rect(0,2.1,7.6,4.6,3.3),
+ // Retain the footprint, but cut a shallow portal matching the model's 1.8m door.
+ // The room beyond stays solid: crossing here hands the actor to the indoor scene.
+ rect(0,1.7,7.6,3.8,3.3),
+ rect(-3.05,4,1.5,.8,3.3),rect(1.65,4,4.3,.8,3.3),
  rect(0,-3.65,7.6,6.9,1.9),
  rect(-2.4,5.2,.22,.22,2.6),rect(-.4,5.2,.22,.22,2.6),
  rect(-3.0,4.65,.66,.54,1.25),
@@ -121,7 +124,7 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
  const {notice,kanban}=signs(group),curtain=noren(),plumes=steam(group);
  const anchor=(x,y,z,label,fn)=>{const o=new THREE.Object3D();o.position.set(x,y,z);group.add(o);register?.(o,label,fn);return o;};
  // Through the noren: the bathhouse is a room you walk into (interiors/onsen.js).
- const [doorX,doorZ]=onsenPoint(-1.4,4.5),[outX,outZ]=onsenPoint(-1.4,5.4);
+ const [doorX,doorZ]=ONSEN_DOOR,[outX,outZ]=ONSEN_APPROACH;
  const site={id:'onsen',title:'Umi-no-yu',jp:'海の湯',sub:'HOT SPRING · FAMILY BATH',x:doorX,z:doorZ,color:0x3f5f7a,accent:'#253a5e',
   line:'Bath 10:00–22:00 · adults ¥300 · swimwear please',door:[doorX,0,doorZ],exitPosition:[outX,0,outZ],approachPosition:[outX,0,outZ],
   entryFacing:ONSEN.yaw,opens:'10:00'};

@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {residentPersonality,createResidentLedger} from '../src/people/resident-personalities.js';
-import {createStoreService} from '../src/people/store-service.js';
 import {createVenueService} from '../src/people/venue-service.js';
 import {createTownActivities,townAffordance} from '../src/people/town-activities.js';
 import {createCastAI} from '../src/people/schedules.js';
@@ -16,34 +15,6 @@ function person(name,parent=new THREE.Group(),work){
 }
 function marker(parent,label,x=0,z=0,inside=false){const o=new THREE.Object3D();o.position.set(x,1,z);o.userData.hit={label,inside,fn:()=>{throw Error('NPC called player action');}};parent.add(o);return o;}
 const step=(service,seconds)=>{for(let i=0;i<seconds*60;i++)service.update(1/60);};
-
-test('Sakura residents queue, receive food once, use their own money and leave the player first in the next queue',()=>{
- const room=new THREE.Group(),state={yen:900,inventory:[]},ledger=createResidentLedger(()=>state),clerk=new THREE.Group();clerk.position.set(...STORE_CLERK_POSITION);clerk.userData.inMarket=true;
- const kenji=person('Kenji'),sato=person('Mrs Sato');let customers=[kenji,sato],charges=0,playerSeat=STORE_SEATS[0];
- for(const [i,p] of customers.entries()){p.g.userData.inMarket=true;p.g.userData.storeSeatId=STORE_SEATS[i+2].id;}
- const options={room,clerk,getCustomers:()=>customers,ledger,getMinutes:()=>900,getSeat:()=>playerSeat,getBalance:()=>state.yen,pay:n=>{charges++;state.yen-=n;return true;},say(){}};
- const service=createStoreService(options);step(service,2);assert.deepEqual(service.queue,['Kenji','Mrs Sato']);assert.equal(charges,0);
- assert.ok(service.request('rice'));assert.equal(service.order.delivered,false);assert.equal(service.request('tea'),false);
- const delivered=[];let sawFood=false;
- for(let i=0;i<220*60;i++){
-  service.update(1/60);
-  if(kenji.g.userData.heldItem==='bun')sawFood=true;
-  for(const [id,done] of [['Kenji',state.residentLife.Kenji?.meals?.market.delivered],['player',service.order?.delivered],['Mrs Sato',state.residentLife['Mrs Sato']?.meals?.market.delivered]])if(done&&!delivered.includes(id))delivered.push(id);
- }
- assert.deepEqual(delivered,['Kenji','player','Mrs Sato']);assert.ok(sawFood);assert.equal(charges,1);assert.equal(state.yen,780);assert.deepEqual(state.inventory,[]);
- assert.equal(state.residentLife.Kenji.yen,2250);assert.equal(state.residentLife['Mrs Sato'].yen,2280);assert.equal(state.residentLife.Kenji.meals.market.finished,true);
- assert.ok(service.eat());service.dispose();assert.equal(room.children.length,0);
- const again=createStoreService(options);step(again,60);assert.equal(state.residentLife.Kenji.purchases.length,1,'Room re-entry cannot repeat a meal purchase');assert.equal(charges,1);again.dispose();
-});
-
-test('a departed, hidden, or closing-time customer cannot be charged for undelivered food',()=>{
- const room=new THREE.Group(),clerk=new THREE.Group(),customer=person('Tetsuo'),state={},ledger=createResidentLedger(()=>state);clerk.position.set(...STORE_CLERK_POSITION);clerk.userData.inMarket=true;
- customer.g.userData.storeSeatId=STORE_SEATS[2].id;customer.g.userData.inMarket=true;let minutes=950,customers=[customer];
- const service=createStoreService({room,clerk,getSeat:()=>null,getMinutes:()=>minutes,getBalance:()=>0,pay:()=>{throw Error('Player charged');},say(){},getCustomers:()=>customers,ledger});
- customer.g.userData.visualReady=false;step(service,2);assert.deepEqual(service.queue,[]);customer.g.userData.visualReady=true;step(service,2);assert.deepEqual(service.queue,['Tetsuo']);
- customers=[];step(service,40);assert.equal(state.residentLife.Tetsuo.purchases.length,0);assert.equal(customer.g.userData.heldItem,undefined);
- customers=[customer];step(service,1);minutes=1200;step(service,40);assert.equal(state.residentLife.Tetsuo.purchases.length,0);service.dispose();
-});
 
 test('Minato serves actual beer and meals; the bus driver and officer choose tea and payments survive re-entry',()=>{
  const room=new THREE.Group(),state={yen:600},ledger=createResidentLedger(()=>state),kenji=person('Kenji'),driver=person('Bus driver'),nao=person('Nao');

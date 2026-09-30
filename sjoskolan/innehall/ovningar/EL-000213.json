@@ -3,7 +3,7 @@
   "titel": "Mittpunkt",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Jämför punkterna och ringa in sträckan där spänningen försvinner.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Källan har rätt spänning, alltså fungerar början av kedjan. 2) Mittpunkten har ingen spänning. Mellan vilka punkter försvinner spänningen? 3) Vilken sträcka ska du prioritera?",
+      "status": "utkast"
     }
   ],
   "losning": {

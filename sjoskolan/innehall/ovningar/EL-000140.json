@@ -3,7 +3,7 @@
   "titel": "Rätt hänvisning i riskbedömning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Skriv en mall med dokument och motivering. Skriv aldrig en påhittad paragraf som om den vore fakta.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Namnge dokumentet och utgåvan. 2) Ange avsnittet som ska kontrolleras (skriv ”kontrolleras” om du inte vet). 3) Skriv varför det gäller just det här arbetet. 4) Skriv det som saknas som en öppen fråga. Bygg texten med de fyra delarna.",
+      "status": "utkast"
     }
   ],
   "losning": {

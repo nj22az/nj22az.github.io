@@ -3,7 +3,7 @@
   "titel": "Instrumentval",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "scenario": "Använd instrumentkorten M1 och M2. M1 har DC-spänningsmätning. M2 har DC, true-RMS AC 40–400 Hz, Ω för frånskilt mätobjekt och säkrad mA-ingång högst 200 mA. Korten gäller endast det beskrivna utbildningsfallet.",
+    "scenario": "Använd instrumentkorten M1 och M2. Tabellen Vad instrumentet kan mäta visar vilka mätningar varje instrument klarar (Ja) och inte klarar (Nej).",
     "fraga": "Välj instrument/funktion för 12 V DC, 12 V AC vid 50 Hz, cirka 4 mA DC och ett löst 1 kΩ-motstånd. Beskriv anslutning.",
     "instruktion": "egen lösning med metod och motivering."
   },
@@ -33,7 +33,20 @@
     "publik": "elev"
   },
   "losning": {
-    "status": "saknas",
-    "kalla": "Lärarguiden vecka 38"
-  }
+    "text": "I detta utbildningsfall kan M1 eller M2 användas för 12 V DC med DC-spänningsfunktionen parallellt. För 12 V AC vid 50 Hz stöder M2 AC-funktionen inom 40–400 Hz. För cirka 4 mA DC stöder M2 den säkrade mA-ingången, i avsedd seriekoppling och enligt stationens instruktion. För det lösa 1 kΩ-motståndet används M2:s Ω-funktion på ett spänningslöst avgränsat objekt. Detta är ett skärmfall; gör inga mätningar hemma.",
+    "status": "utkast",
+    "kalla": "Ny offentlig studievägledning för vecka 40, 2026-09-27"
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Bestäm först vilken storhet som mäts och om den är DC eller AC. Leta sedan upp raden i tabellen Vad instrumentet kan mäta och läs Finns och Mätområde.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Spänning mäts mellan två punkter. Strömmätning kräver en avsedd seriekoppling. Resistans mäts på avgränsat spänningslöst objekt.",
+      "status": "utkast"
+    }
+  ]
 }

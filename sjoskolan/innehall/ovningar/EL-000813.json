@@ -3,7 +3,7 @@
   "titel": "Grundprotokollet från den guidade labben",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 6,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Gör den guidade labben när du har gått igenom de tre delarna och uppgift 1–3.",
+    "fraga": "Gör den guidade labben när du har gått igenom del 2–4. Den görs på fredagens lektion; inlämning 6 kan du göra efteråt.",
     "delfragor": [
       {
         "id": "a",

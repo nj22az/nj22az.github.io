@@ -3,7 +3,7 @@
   "titel": "Larm utan stopp",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Förklara varför en last som fungerar inte betyder att isolationen är hel, och vad som behöver göras.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad händer vid det första felet i ett IT-system: stor eller liten ström? 2) Vad kan hända om ett andra fel kommer på en annan fas? 3) Vad ska göras med det första felet, och när?",
+      "status": "utkast"
     }
   ],
   "losning": {

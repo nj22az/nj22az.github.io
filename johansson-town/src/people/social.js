@@ -11,12 +11,14 @@ import {closingStockPending,closingPreparationPending} from '../commerce/shop-st
 import {BUS_STATION} from '../world/bus-station.js';
 import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
 import {PARK_BENCH} from '../world/park-layout.js';
-import {commuterPhase,shiftActive,shiftFor,departureFor} from './commuter-schedule.js';
+import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork,SATO_SHIFT} from './commuter-schedule.js';
+import {SATO_LUNCH,satoRamenOpen} from '../world/sato-ramen-layout.js';
 import {shoppingDistrictActive,peninsulaActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
 export {IZAKAYA_DOOR};
-export const RAMEN_DOOR=[...DINING.ramenDoor];
+export {RAMEN_DOOR} from '../world/dining-layout.js';
+import {RAMEN_DOOR} from '../world/dining-layout.js';
 export const THUAN_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
 export const minuteOfDay=m=>((m%1440)+1440)%1440;
 export const inTimeRange=(m,start,end)=>start!=null&&end!=null&&minuteOfDay(m-start)<end-start;
@@ -257,7 +259,60 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
  if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
  return {place:'evening',target:profile.evening,activity:'taking an evening stroll'};
 }
+/**
+ * The Front-Row staff at home in the yard: to work for their shift, a Sakura errand or
+ * an evening stop when one is due, and otherwise home — where they eat, read and, at
+ * night, sleep in their own beds for anybody who opens the door to see.
+ */
+/** Reiko and Tetsuo start in the afternoon; on a dry morning they take an hour on the park bench. */
+const MORNING_PARK=Object.freeze({Reiko:Object.freeze([660,720]),Tetsuo:Object.freeze([750,810])});
+/** Lunch at Sato Ramen, next door to the shop, for those who have a slot (sato-ramen-layout.js). */
+function satoLunch(profile,minutes){
+ const slot=SATO_LUNCH[profile.name];
+ return slot&&satoRamenOpen(minutes)&&inTimeRange(minutes,...slot)?{place:'ramen',target:RAMEN_DOOR,activity:'lunch at Sato Ramen'}:null;
+}
+function yardResidentPlan(profile,minutes,rain=false,state=null){
+ const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
+ if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
+ if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a shopping errand at Sakura'};
+ const morning=MORNING_PARK[profile.name];
+ // Aimed beside the bench, not at its step: with somebody already on it, they wait off to one side.
+ if(!rain&&morning&&inTimeRange(minutes,...morning))return {place:'park',target:[PARK_STAND[0]+1.4,PARK_STAND[1]+.9],activity:'sitting in the park'};
+ // Their evening stops were timed against the last bus; living next door, they take
+ // at most a couple of hours after work before heading home to bed.
+ const shift=shiftFor(profile),evening=shift&&minuteOfDay(minutes-shift.finish)<120?afterWorkPlan(profile,minutes,rain):null;
+ if(evening)return evening;
+ return {place:'home',target:profile.home,activity:rain?'sheltering at home':'at home in the yard'};
+}
+/**
+ * The two who live at their work. The harbour master keeps the office from half past
+ * six until five, walks the quay in the early evening and turns in behind the screen
+ * in the office by half past nine. Officer Mori sleeps through the morning in the
+ * tatami room behind the police box, keeps the front desk from four, takes supper at
+ * Sakura and walks the night patrol from ten until six.
+ */
+export const HARBOUR_MASTER_DAY=Object.freeze({start:390,finish:1020,turnIn:1230});
+export const MORI_DAY=Object.freeze({desk:960,patrol:1320,patrolEnd:360});
+function workplaceResidentPlan(profile,minutes,rain=false,state=null){
+ const m=minuteOfDay(minutes),home={place:'home',target:profile.home};
+ if(profile.name==='Harbour master'){
+  const day=HARBOUR_MASTER_DAY;
+  const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
+  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'buying lunch at Sakura'};
+  if(inTimeRange(m,day.start,day.finish))return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
+  if(!rain&&inTimeRange(m,day.finish,day.finish+75))return {place:'stroll',target:[0,-44],activity:'walking the quay to check the moorings'};
+  if(!rain&&inTimeRange(m,day.finish+75,day.turnIn-60))return {place:'park',target:[PARK_STAND[0]+.8,PARK_STAND[1]-.9],activity:'watching the evening from the park'};
+  return {...home,activity:inTimeRange(m,day.turnIn-60,day.start+1440)?'in his bed nook at the office':'at home in the office'};
+ }
+ const day=MORI_DAY;
+ if(inTimeRange(m,day.patrol,day.patrolEnd+1440))return {place:'patrol',target:NIGHT_PATROL[0],activity:'night patrol'};
+ if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'supper from Sakura before the night patrol'};
+ if(inTimeRange(m,day.desk,day.patrol))return {place:'work',target:profile.work,activity:'at the front desk of the police box'};
+ return {...home,activity:'resting in the room behind the police box'};
+}
 function commuterPlan(profile,minutes,rain=false,state=null){
+ if(livesAtWork(profile))return workplaceResidentPlan(profile,minutes,rain,state);
+ if(livesInYard(profile))return yardResidentPlan(profile,minutes,rain,state);
  const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
  // exit is the platform (clear of the tunnel mouth) — never roadEndZ/arch.
  if(phase==='away')return {place:'away',target:BUS_STATION.exit,activity:'away from the shopping district'};
@@ -275,6 +330,11 @@ function commuterPlan(profile,minutes,rain=false,state=null){
   const afterWork=afterWorkPlan(profile,minutes,rain);
   if(afterWork)return afterWork;
   return bus('walking to the Harbour Line for departure');
+ }
+ // Mrs Sato on the peninsula: fish at the harbour first, then her own kitchen.
+ if(profile.name==='Mrs Sato'&&peninsulaActive()&&phase==='town'){
+  if(shiftActive(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'cooking the lunch ramen at Sato Ramen'};
+  if(minuteOfDay(minutes-SATO_SHIFT.arrival)<SATO_SHIFT.start-SATO_SHIFT.arrival)return {place:'stroll',target:[3.2,-44],activity:'buying fish for the stock at the harbour'};
  }
  if(profile.name==='Bus driver')return {place:'station',target:BUS_STATION.driver,activity:'running the Harbour Line'};
  if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};

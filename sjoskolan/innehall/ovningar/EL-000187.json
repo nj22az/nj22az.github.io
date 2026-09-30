@@ -3,7 +3,7 @@
   "titel": "Förenklad felström",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -25,7 +25,7 @@
     "samband": [
       "I_{k} ≈ U_{0}/Zs"
     ],
-    "givet": "Förenklad beräkning med U_{0} = 230 V och Zs = 0,46 Ω.",
+    "givet": "TN-system i land. Förenklad beräkning med U_{0} = 230 V och Zs = 0,46 Ω.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Dela spänningen med slingimpedansen. Svaret räcker inte ensamt för att välja skydd.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Använd I_{k} ≈ U_{0}/Z_{s} med Z_{s} i ohm. 2) Dela. Exempel: U_{0} = 230 V och Z_{s} = 0,23 Ω ger I_{k} ≈ 1 000 A. Rimlighet: lägre slingimpedans ger större felström och snabbare utlösning.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -1,0 +1,68 @@
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Skicka resultat vecka 41 · Sjöskolan</title><meta name="description" content="Skriv ditt namn och skicka veckans resultat till läraren som en QR-kod."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-41/aktuell/Resultat.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260929">
+<style>
+.res-lage{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0 24px}
+.res-lage section{padding:14px 16px;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff}
+.res-lage h2{font-size:17px;margin:0 0 6px}.res-lage p{margin:4px 0}.res-lage .stort{font-size:26px;font-weight:700;color:var(--sj-accent,#064f91)}
+.res-form{max-width:34em}.res-form label{display:block;font-weight:700;margin:0 0 6px}
+.res-form input{display:block;width:100%;min-height:48px;font:inherit;padding:6px 12px;border:1px solid var(--sj-field,#5d7282);border-radius:8px}
+.res-form button{margin-top:12px}#res-fel{color:#9a330f;min-height:1.4em}
+.res-kod{margin:24px 0;padding:20px;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:#fff;max-width:520px}
+.res-kod svg{display:block;width:100%;max-width:440px;height:auto;margin:0 auto;background:#fff}
+.res-kod .vem{font-size:20px;font-weight:700;text-align:center;margin:12px 0 0}.res-kod .nar{text-align:center;color:var(--sj-muted,#4d6579);margin:2px 0 12px}
+.res-knappar{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+</style>
+<script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script>
+<script src="/sjoskolan/gemensamt/vendor/qrcode.js?v=1.4.4"></script></head>
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/vecka-41/aktuell/">Vecka 41</a></nav>
+<main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="index.html">← Vecka 41</a></div><article class="course-reading">
+<p class="course-kicker">Vecka 41 · redovisning</p><h1>Skicka dina resultat</h1>
+<p class="course-lead">Gör det här sist, när du är klar. Du skriver ditt namn och får en QR-kod med allt du har gjort på den här datorn eller telefonen. Du kan skicka flera gånger. Läraren använder den senaste koden.</p>
+<h2>Det här följer med</h2>
+<div class="res-lage" id="res-lage"><noscript>Sidan behöver JavaScript.</noscript></div>
+<form class="res-form" id="res-form"><label for="res-namn">Förnamn och efternamn</label><input id="res-namn" autocomplete="name" placeholder="Förnamn Efternamn" required><p id="res-fel" role="alert"></p><button class="sj-btn primary" type="submit">Skapa QR-kod</button></form>
+<div id="res-ut" aria-live="polite"></div>
+<h2>Så skickar du koden</h2>
+<ol><li>Ta en skärmbild av QR-koden.</li><li>Bifoga skärmbilden i inlämningsmejlet till <a href="mailto:nils@sjoskolan.se">nils@sjoskolan.se</a>, tillsammans med uträkningar och protokoll. I klassrummet kan läraren också läsa koden direkt från din skärm.</li><li>Använd samma namn som i inlämningen. Ditt D räknas ur namnet.</li></ol>
+<p>Resultaten ligger bara i din webbläsare och i koden. De skickas inte till någon server.</p>
+</article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+<script type="module">
+import {lage, lank} from './resultat.mjs?v=20260929';
+import {fulltNamn, sparatNamn, sparaNamn} from '../../gemensamt/elevtal.mjs?v=20260930';
+const esc = (s) => String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
+const inp = document.getElementById('res-namn');
+inp.value = sparatNamn();
+function visaLage() {
+  const L = lage(inp.value);
+  const ovn = L.ovningar.reduce((a, b) => a + b, 0), svar = L.svar.reduce((a, u) => a + u.ifyllda, 0), alla = L.svar.reduce((a, u) => a + u.falt.length, 0);
+  const st = L.stationer.map((s) => `Station ${s.bokstav}: ${s.p ? `${s.p[0]} av ${s.p[1]} mätningar` : 'inte påbörjad'}`).join(', ');
+  document.getElementById('res-lage').innerHTML = `
+<section><h2>Ditt tal</h2><p class="stort">${L.D ? 'D = ' + L.D : '–'}</p><p>${L.D ? 'Räknat ur namnet nedan.' : 'Skriv ditt namn nedan.'}</p></section>
+<section><h2>Övningar</h2><p class="stort">${ovn} av 30</p><p>Del 1: ${L.ovningar[0]}, del 2: ${L.ovningar[1]}, del 3: ${L.ovningar[2]} markerade som klara.</p></section>
+<section><h2>Kontrollfrågor</h2><p class="stort">${L.kontroll} av 9</p><p>Tre sist i varje del. <a href="Del_1.html#kontroll">Del 1</a> · <a href="Del_2.html#kontroll">Del 2</a> · <a href="Del_3.html#kontroll">Del 3</a></p></section>
+<section><h2>Inlämning, svar</h2><p class="stort">${svar} av ${alla}</p><p>${L.svar.map((u) => `Inlämning ${u.nr}: ${u.ifyllda} av ${u.falt.length}`).join(', ')}. <a href="Inlamning.html">Inlämningen</a></p></section>
+<section><h2>Stationerna</h2><p>${st}.</p><p><a href="Simulerade_stationer.html">Stationerna</a></p></section>
+<section><h2>Trefaslabbet</h2><p class="stort">${L.trefas}</p><p>uppgifter lösta. <a href="../../trefaslabbet/">Labbet</a></p></section>`;
+}
+visaLage();
+inp.addEventListener('input', visaLage);
+function svg(text) {
+  const q = qrcode(0, 'L'); q.addData(text, 'Byte'); q.make();
+  const n = q.getModuleCount(), m = 4, s = n + 2 * m;
+  let d = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c + m} ${r + m}h1v1h-1z`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${s} ${s}" shape-rendering="crispEdges" role="img" aria-label="QR-kod med dina resultat"><rect width="${s}" height="${s}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+}
+document.getElementById('res-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const namn = inp.value.trim().replace(/\s+/g, ' '), fel = document.getElementById('res-fel');
+  if (!fulltNamn(namn)) { fel.textContent = 'Skriv både förnamn och efternamn.'; return; }
+  fel.textContent = '';
+  sparaNamn(namn);
+  const {url, obj} = await lank(namn);
+  const nar = new Date(obj.t * 60000).toLocaleString('sv-SE', {dateStyle: 'short', timeStyle: 'short'});
+  document.getElementById('res-ut').innerHTML = `<div class="res-kod">${svg(url)}<p class="vem">${esc(namn)} · D = ${obj.d}</p><p class="nar">Vecka 41 · ${nar}</p>
+<div class="res-knappar"><button type="button" class="sj-btn" id="res-kopiera">Kopiera länken</button></div></div>`;
+  document.getElementById('res-kopiera').onclick = async (ev) => { try { await navigator.clipboard.writeText(url); ev.target.textContent = 'Länken är kopierad'; } catch { prompt('Kopiera länken:', url); } };
+  document.querySelector('.res-kod').scrollIntoView({behavior: 'smooth', block: 'start'});
+});
+</script></body></html>

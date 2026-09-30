@@ -3,7 +3,7 @@
   "titel": "Felström i en förenklad beräkning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Räkna ut strömmen och förklara att källans verkliga inre resistans och skydden påverkar vad som händer.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Använd I = U/R med den totala resistansen i kortslutningsvägen. 2) Fundera sedan på vad beräkningen inte tar med: källans inre resistans och skyddet. Exempel: 12 V genom 0,08 Ω ger I = 150 A i en förenklad beräkning.",
+      "status": "utkast"
     }
   ],
   "losning": {

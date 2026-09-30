@@ -3,7 +3,7 @@
   "titel": "Utan last och med last",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Använd värdena som mättes samtidigt under last. Räkna ut spänningsfallet och dela med strömmen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Spänningen som saknas vid lasten är spänningsfallet: ΔU = U_{källa} − U_{last}. 2) Resistansen: R = ΔU/I. Exempel: källan har 24 V och lasten 22 V vid 2,5 A: ΔU = 2 V och R = 2/2,5 = 0,8 Ω.",
+      "status": "utkast"
     }
   ],
   "losning": {

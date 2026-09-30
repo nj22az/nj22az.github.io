@@ -20,6 +20,7 @@ import importlib
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -33,7 +34,7 @@ SJO = ROT.parent
 BUILD = ROT / 'build'
 UTGAVA = ROT / 'utgava.json'
 # Exportörer i körordning. Lätta körs alltid; tunga bara på begäran (de kräver LibreOffice, python-pptx, boken …).
-LATTA = ['beteckningar', 'kurssidor', 'simulatorer', 'lektioner', 'arbetsblad', 'inlamning', 'tentamen', 'idregister']
+LATTA = ['beteckningar', 'kurssidor', 'simulatorer', 'lektioner', 'delsidor', 'delsidor_veckor', 'arbetsblad', 'arbetsrum', 'inlamning', 'tentamen', 'idregister']
 TUNGA = ['presentationer', 'larare', 'bok']
 
 
@@ -128,6 +129,7 @@ def cmd_bygg(a):
 
 # Sidor där varje förkortning ska vara förklarad (beteckningar.json). Vecka för vecka, när ordlistan täcker veckan.
 BETECKNINGSSIDOR = ['vecka-40/aktuell/Lektion_1.html', 'vecka-40/aktuell/Lektion_2.html', 'vecka-40/aktuell/Lektion_3.html',
+                    'vecka-40/aktuell/Del_1.html', 'vecka-40/aktuell/Del_2.html', 'vecka-40/aktuell/Del_3.html',
                     'vecka-40/aktuell/Formelstod_och_ovningar.html', 'vecka-40/aktuell/Inlamning.html', 'vecka-40/aktuell/lektioner.mjs',
                     'vaxelstromslabbet/uppgifter.gen.mjs', 'vecka-40/aktuell/kontrollfragor.gen.mjs']
 KANDA_ORD = {'EL', 'SJÖSKOLAN', 'PDF', 'GENERERAD', 'FIL', 'UPPGIFTER', 'GUIDADE', 'KONTROLLFRAGOR', 'LEKTIONER', 'LESSONS', 'REVISION', 'BASE', 'STEG', 'AV', 'DEL', 'OK'}
@@ -222,6 +224,21 @@ def cmd_kontrollera(a):
     brister = rapport(kat, con, tyst=True)
     brister['fel'] += oforklarade(kat)
     brister['fel'] += svar_i_ledtradar(kat)
+    # Numreringen vecka för vecka (Övning <del>.<nummer>, Inlämning <nummer>) följer registret i numrering.py.
+    # Låsta veckor (verktyg/las/veckolas.py): en klar vecka får inte ändras av misstag.
+    las = subprocess.run([sys.executable, str(ROT.parent / 'verktyg' / 'las' / 'veckolas.py'), 'kontrollera'], capture_output=True, text=True)
+    if las.returncode:
+        brister['fel'] += [r[4:] for r in las.stdout.splitlines() if r.startswith('FEL ')]
+    # Övningsfigurernas tal ska stå i övningen (verktyg/figurer/figurkontroll.py).
+    sys.path.insert(0, str(ROT.parent / 'verktyg' / 'figurer'))
+    import figurkontroll
+    brister['fel'] += figurkontroll.avvikelser()
+    import numrering
+    _, onskat = numrering.onskat()
+    for (yta, i), nr in onskat.items():
+        pl = json.loads((ROT / 'placeringar' / f'{yta}.json').read_text(encoding='utf-8'))['placeringar'][i]
+        if pl['nummer'] != nr:
+            brister['fel'].append(f'{yta}: {pl["ovning"]} har numret ”{pl["nummer"]}”, registret säger ”{nr}” (kör numrering.py --skriv)')
     # Maskinöversättning: varje elevsida laddar gemensamt/oversattning.js (formler och enheter markeras translate="no").
     for f in sorted(SJO.rglob('*.html')):
         rel = f.relative_to(SJO).as_posix()
@@ -230,6 +247,17 @@ def cmd_kontrollera(a):
         s = f.read_text(encoding='utf-8')
         if 'lock-data' not in s and 'oversattning.js' not in s:
             brister['fel'].append(f'{rel}: saknar gemensamt/oversattning.js (översättningsskydd för formler och enheter)')
+        # Facit med oavrundat tal (16,970562748477143): svaret ska följa postens avrundning (rendera.svarsvarde).
+        for m in re.finditer(r'<strong>Svar:</strong>(.*?)</p>', s):
+            if (x := re.search(r'\d,\d{7,}', m.group(1))):
+                brister['fel'].append(f'{rel}: oavrundat tal i facit: {x.group(0)}')
+    # Resurslänkar (”Använd:” på inlämningssidorna) skrivs relativt sjoskolan/, t.ex. vecka-38/aktuell/Elevuppgifter.html.
+    # En länk utan mapp (Elevuppgifter.html) pekade fel från inlämningssidan; se ANDRINGSLOGG.md.
+    for i, p in kat.poster.items():
+        for r in (p.get('referenser') or {}).get('resurser') or []:
+            u = re.split(r'[?#]', r.get('url') or '')[0]
+            if u and not u.startswith(('http://', 'https://')) and not (SJO / u).exists():
+                brister['fel'].append(f'{i}: resurslänken {r["url"]} finns inte (skriv sökvägen relativt sjoskolan/)')
     import notation
     brister['fel'] += [f'{plats}: notation {besk} (beteckningar.json, avradda; rätta med notation.py skriv-om)' for plats, besk in notation.kontrollera(kat.poster)]
     for b in brister['fel']:

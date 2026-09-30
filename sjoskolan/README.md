@@ -1,6 +1,8 @@
 # Sjöskolan – elevmaterial
 
-Publicerad kursöversikt för kalenderveckor 37–45. `vecka-XX/aktuell/` innehåller aktuella presentationer och övningsstöd.
+Publicerad kursöversikt för kalenderveckor 38–45. Kursen började måndag 14 september 2026 (vecka 38). `vecka-XX/aktuell/` innehåller aktuella presentationer och övningsstöd.
+
+Mappnamnen följer den ursprungliga planen och byts aldrig (länkar, nedladdningar, resultatkoder och sparade elevdata hänger på dem). `vecka-37/` är kursvecka 1 och visas som vecka 38. `vecka-38/` (Frånskiljning och mätteknik) undervisas måndag i vecka 40 och visas som en del av vecka 40. Veckan eleven ser står i `verktyg/veckosidor/bygg.py` (`vecka`), `verktyg/inlamning/bygg.py` och startsidan.
 
 ## Upphovsrätt och användning
 

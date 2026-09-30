@@ -3,7 +3,7 @@
   "titel": "Högspänning och strömtransformator",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -29,7 +29,7 @@
       },
       {
         "id": "c",
-        "text": "Strömtransformatorn har omsättningen 200/1 A. Beräkna sekundärströmmen."
+        "text": "Strömtransformatorn har omsättningen 600/1 A. Beräkna sekundärströmmen."
       }
     ],
     "svarsformat": "Beräkningar och förklaring."

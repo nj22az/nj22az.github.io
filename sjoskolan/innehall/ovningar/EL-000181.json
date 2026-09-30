@@ -3,7 +3,7 @@
   "titel": "TN-S",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Jämför ledarnas uppgift i normaldrift och vid fel. Skilj funktion från ett tillfälligt lika potentialvärde.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad gör N i normal drift? 2) Vad gör PE i normal drift, och vid fel? 3) Är de samma eller separata ledare i TN-S? Skriv en mening om N och en om PE.",
+      "status": "utkast"
     }
   ],
   "losning": {

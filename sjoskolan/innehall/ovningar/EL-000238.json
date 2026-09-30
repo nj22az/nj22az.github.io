@@ -3,7 +3,7 @@
   "titel": "Riskbedömning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Beskriv bristen, en möjlig följd och det första beslutet, och ange vad som måste läggas till innan arbetet börjar.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad saknas i planen? 2) Vad kan hända om det inte rättas? 3) Vilket beslut tas först: att starta eller att stoppa? 4) Vad måste läggas till innan arbetet får börja?",
+      "status": "utkast"
     }
   ],
   "losning": {

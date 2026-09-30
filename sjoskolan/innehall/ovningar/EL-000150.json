@@ -3,7 +3,7 @@
   "titel": "Samlad bedömning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Jämför kända kontroller med arbetsmetodens förutsättningar. Ange vad som måste klarläggas före start.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad kräver arbete utan spänning? 2) Är alla matningar kontrollerade? 3) Kan skyddsutrustning ersätta en kontroll av spänningslösheten? 4) Vad måste göras innan start?",
+      "status": "utkast"
     }
   ],
   "losning": {

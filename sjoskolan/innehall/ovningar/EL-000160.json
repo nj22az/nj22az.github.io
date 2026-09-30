@@ -3,7 +3,7 @@
   "titel": "Motorpaket",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Ange hur funktionerna samverkar. Verkligt val behöver motor-, start- och samordningsdata.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Normal manöver: vilken apparat startar och stoppar? 2) För hög belastning: vilket skydd? 3) Kortslutning i kabel eller motor: vilket skydd? Skriv en funktion per rad och säg vilka data ett verkligt val kräver.",
+      "status": "utkast"
     }
   ],
   "losning": {

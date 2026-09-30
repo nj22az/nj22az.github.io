@@ -2,8 +2,8 @@
 import { fmt, parseAnswer, isClose, C as Cx, PHASE } from './model.mjs';
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { DEFAULTS, CHALLENGES, PLATES, readouts, expected } from './lessons.mjs';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
-import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260929-not';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260928-pek';
+import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260928-flik';
 
 const $ = (id) => document.getElementById(id);
 const K = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee', slate: '#4a6378' };
@@ -310,14 +310,14 @@ function rig3F(patch) {
   state.values.neutral = { ...clone(RIG_3F), ...patch };
   renderControls(); renderChallengeSelect(); render(); updateUrl();
 }
-mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_B_3F_PROTOKOLL,
+mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_B_3F_PROTOKOLL, rowMessages: true,
   presets: [
     { label: 'Stationens trefasrigg: N hel', apply: () => rig3F({}), done: 'Trefasriggen är inställd: 12,2 V, tre laster, neutralledaren hel.' },
     { label: 'Bryt N', apply: () => rig3F({ neutral: false }), done: 'Neutralledaren är bruten. Alla tre laster är inkopplade.' },
     { label: 'Bryt N och koppla från L2-lasten', apply: () => rig3F({ neutral: false, on2: false }), done: 'Neutralledaren är bruten och L2-lasten frånkopplad.' },
   ],
   snapshot(plan) {
-    if (state.tab !== 'neutral') return { error: 'Byt till fliken ”Neutralledaren” för att mäta på trefasriggen.' };
+    if (state.tab !== 'neutral') return { error: 'Tryck på ”Stationens trefasrigg: N hel” överst i protokollet. Den öppnar fliken 2 Bruten neutralledare med riggens värden.' };
     if (state.challenge) return { error: 'Lämna uppgiften först (”Utforska fritt”), eller använd knapparna ovan för att ställa in riggen.' };
     const s = state.values.neutral, r = readouts('neutral', s), q = plan?.q || 'U1', n = plan?.need;
     if (n && ['UL', 'R1', 'R2', 'R3', 'on1', 'on2', 'on3', 'neutral'].some((k) => s[k] !== n[k])) {

@@ -3,7 +3,7 @@
   "titel": "Isolationsdata",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -25,7 +25,7 @@
   "uppgift": {
     "fraga": "Ett isolationsprov med 500 V ger en stabil läckström på 0,25 mA. Beräkna isolationsresistansen.",
     "samband": [
-      "R = Uprov/Iläck"
+      "R = U_{prov}/I_{läck}"
     ],
     "givet": "Isolationen räknas som en ren resistans: 500 V och 0,25 mA. Uppgiften är bara en beräkning.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Gör om läckströmmen till A, dela spänningen med strömmen och gör om svaret till MΩ.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Gör om strömmen till ampere: mA delat med 1 000. 2) R = U/I. 3) Gör om Ω till MΩ. Exempel: 1 000 V och 0,40 mA ger R = 1 000/0,00040 = 2 500 000 Ω = 2,5 MΩ. Rimlighet: liten läckström betyder hög isolationsresistans.",
+      "status": "utkast"
     }
   ],
   "losning": {

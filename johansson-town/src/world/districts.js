@@ -1,6 +1,8 @@
 import {DINING} from './dining-layout.js';
 import {buildLaneSurfaces} from './lane-surfaces.js?snappy=1';
 import {buildHomes} from './homes.js';
+import {buildYardHomes} from './yard-homes.js';
+import {buildKoban} from './koban.js';
 import {buildRamenRestaurant} from './supplied-rooms.js?snappy=1';
 import {buildTeaHouse} from './tea-house.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
@@ -71,6 +73,10 @@ export function buildDistricts(world,options){
     box([.09,2.35,.09],[x,1.175,z],'timber',0x655444);
   }
   if(!shoppingDistrictActive())buildHomes(world,options,box);
+  // The bookshop and workshop staff live in the yard behind Front-Row (yard-homes.js).
+  if(peninsulaActive())buildYardHomes(world,options);
+  // Officer Mori's police box, on the lawn corner at the bus plaza. See koban.js.
+  if(peninsulaActive())buildKoban(world,options);
   for(const batch of batches.values()){const m=new THREE.InstancedMesh(unit,batch.mat,batch.items.length);batch.items.forEach((v,i)=>m.setMatrixAt(i,v));m.castShadow=options.shadows;m.receiveShadow=true;group.add(m);}
   return {shutters,windows,animators,sign,library};
 }

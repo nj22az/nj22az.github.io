@@ -11,6 +11,9 @@ export function frontageMaterial(page){
   texture.flipY=false;texture.colorSpace=THREE.SRGBColorSpace;texture.needsUpdate=true;
   const material=new THREE.MeshStandardMaterial({map:texture,vertexColors:true,roughness:.93,metalness:0,envMapIntensity:.45});
   material.name='Main Street shared atlas '+page;material.onBeforeCompile=frontageShader;
+  // The custom UV1/UV2 atlas sampler must survive the global cel pass. Converting
+  // this material to toon drops its compile hook and repeats the entire atlas.
+  material.userData.keepPhysical=true;
   material.customProgramCacheKey=()=> 'main-street-repeating-atlas-v1';
   cached.set(page,material);return material;
  })();pending.set(page,task);task.then(()=>pending.delete(page),()=>pending.delete(page));return task;

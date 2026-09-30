@@ -3,7 +3,7 @@
   "titel": "Föreskrift eller standard",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Jämför vad dokumenten är till för och förklara varför du först måste kontrollera tillämpningsområdet.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vem ger ut en föreskrift, och är den bindande? 2) Vem ger ut en standard, och vad är den till för? 3) Varför måste du först ta reda på vad arbetet och objektet gäller innan du vet vilket dokument som styr? Skriv ett ord för varje dokument: ”krav” eller ”metod”.",
+      "status": "utkast"
     }
   ],
   "losning": {

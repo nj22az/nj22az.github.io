@@ -11,3 +11,7 @@ Filer: `model.mjs` (noder, kontakter och hållning), `lessons.mjs` (uppgifter), 
 ## Labbprotokoll
 
 Station C (`stationC-protokoll.mjs`): felmoduler med slumpat, dolt fel (fem feltyper och ”inget fel”), styrspänning 12 eller 24 V. Labbprotokollet under simulatorn (`../gemensamt/labbprotokoll.mjs`) har kontroller före start, mätningar med förväntat och uppmätt värde, ”Hämta avläsning”, felsökning, analys, utskrift, CSV och ett ifyllt exempel som räknas fram ur modellen. Stationspaket: `vecka-41/aktuell/Simulerade_stationer.html`.
+
+## Pekskärm
+
+S1 och S0 är knappar med läget i text (släppt / ✓ intryckt) och `aria-pressed`. Uppgiften står först i HTML; mellan 768 och 999 px står schemat över hela bredden med uppgift och reglage under, från 1000 px bredvid. Storlekar i `../gemensamt/labbpekskarm.css`. Beskedet efter ”Hämta avläsning” visas i mätningens ruta.

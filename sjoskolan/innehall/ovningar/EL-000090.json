@@ -3,7 +3,7 @@
   "titel": "Övertoner",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,10 +35,15 @@
       "niva": "metod",
       "text": "Räkna PF direkt ur mätvärdena och förklara varför cos φ ensam inte beskriver en förvrängd ström.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) PF = P/S med mätarens P och S; ett tal utan enhet, två decimaler. 2) Jämför med grundtonens cos φ. 3) Ett fullständigt svar förklarar två saker: vad övertonerna gör med strömmen och S, och varför de inte bidrar till P. Rimlighet: PF kan inte vara större än cos φ när strömmen är förvrängd.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "PF = 800/1 000 = 0,80. Den är lägre än cos φ = 0,95 eftersom övertonerna ökar strömmen och S utan att bidra till P.",
+    "text": "Använd den totala aktiva och skenbara effekten: PF = P/S = 800/1 000 = 0,80.\n\ncos φ = 0,95 avser grundtonen. Övertoner gör att det värdet inte ensamt beskriver hela strömmen.",
     "svar": [
       {
         "storhet": "PF",

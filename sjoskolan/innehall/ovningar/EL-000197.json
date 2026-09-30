@@ -3,7 +3,7 @@
   "titel": "Förregling",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Svara att orsaken ska utredas enligt instruktionen. Beskriv inte hur förreglingen kan förbikopplas.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad betyder det när en förregling stoppar en manöver? 2) Vad gör du först: stoppar, utreder eller provar igen? 3) Vilken instruktion styr? Förbikoppla aldrig en förregling.",
+      "status": "utkast"
     }
   ],
   "losning": {

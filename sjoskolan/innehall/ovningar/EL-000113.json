@@ -3,7 +3,7 @@
   "titel": "Observerade DC-värden",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Summera fallen och jämför med källan. Ange hur stor rest som återstår.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Summera spänningsfallen över de två resistorerna. 2) Jämför summan med källspänningen. 3) Räkna resten: källa minus summa. 4) Är resten mindre än det instrumentet kan visa? Annat fall: källa 24,10 V, fall 8,02 V och 16,05 V. Summa och rest räknas på samma sätt.",
+      "status": "utkast"
     }
   ],
   "losning": {

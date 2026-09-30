@@ -73,7 +73,8 @@ export const NEIGHBOURS=Object.freeze([
    'Thirty minutes, not a second more! — Oh, a visitor. My wife makes the andagi at the shop on Main Street. I referee, which is how I keep out of her kitchen.']},
  // Two who walk: one doing her shopping, one on his round.
  {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'doing her shopping',walk:true,speed:1.05,hours:[[H(8),H(12)],[H(15),H(19)]],
-  route:[[-37.6,-13],[-30,-13],[-24.6,-13.4],[-20,-13.6],[-12,-13.8],[-6.6,-14.2],[-6.6,-19.4],[-6.6,-14.2],[-12,-13.8],[-20,-13.6],[-24.6,-13.4],[-30,-13],[-37.6,-13],[-37.6,1.5],[-30,1.5],[-37.6,1.5]],
+  // Up the paved side of the alley: Sato Ramen stands on the other side, against Minato.
+  route:[[-37.6,-13],[-30,-13],[-24.6,-13.4],[-20,-13.6],[-19,-18.3],[-6.6,-18.3],[-6.6,-19.4],[-6.6,-18.3],[-19,-18.3],[-20,-13.6],[-24.6,-13.4],[-30,-13],[-37.6,-13],[-37.6,1.5],[-30,1.5],[-37.6,1.5]],
   lines:[
    'Sakura first, then Yonamine-san for fish, then home before the rice is ready. If I stop to talk the rice is ruined. So — quickly!',
    'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. It is always ready. He is always late.']},

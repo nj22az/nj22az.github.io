@@ -3,7 +3,7 @@
   "titel": "Beröringspunkter",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -22,7 +22,7 @@
   "uppgift": {
     "fraga": "Ett metallhölje ligger 60 V högre än en ledande konstruktion alldeles bredvid. En person kan röra vid båda samtidigt. Vilken spänning är det som gäller för beröringen?",
     "samband": [
-      "Uberöring = |VA − VB|"
+      "U_{beröring} = |VA − VB|"
     ],
     "givet": "Det är 60 V mellan höljet och konstruktionen. Båda kan röras samtidigt.",
     "instruktion": "Motivera ditt beslut."
@@ -37,12 +37,27 @@
       "niva": "metod",
       "text": "Det är skillnaden mellan dem som gäller, inte spänningen mot en godtycklig jordpunkt.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Leta upp de två ledande delar som personen kan röra samtidigt. 2) Beröringsspänningen är skillnaden i potential mellan just de två delarna, oavsett hur hög var och en är mot jord. Exempel ombord: en motorram ligger 45 V över skrovet och ett räcke har skrovets potential. Den som rör båda får en beröringsspänning på 45 V.",
+      "status": "utkast"
     }
   ],
   "losning": {
     "text": "60 V, potentialskillnaden mellan de två punkter personen kan beröra samtidigt.",
     "status": "migrerad",
-    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)",
+    "svar": [
+      {
+        "storhet": "beröringsspänning",
+        "varde": 60,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ]
   },
   "referenser": {
     "ursprung": [

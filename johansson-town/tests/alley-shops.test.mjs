@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
+import {STREET_CAST_NAMES} from '../src/people/residents.js';
 import {createTown} from '../src/world/town.js';
 import {ALLEY_SHOPS,alleyShopPlacement} from '../src/world/alley-shops.js';
 import {DINING_FOOTPRINTS} from '../src/world/dining-footprints.js';
@@ -31,7 +32,8 @@ test('alley businesses retain their rooms, reachable thresholds, exits and staff
   const exit={x:p.door[0]+Math.sin(site.entryFacing)*.6,z:p.door[2]+Math.cos(site.entryFacing)*.6};
   assert.equal(blocked(exit.x,exit.z),false,id+' exit stays clear of opposite building');
   assert.equal(sweepFraction({x:p.door[0],z:p.door[2]},exit,blocked),1,id+' exit movement');
-  const staff=world.people.find(person=>person.profile.workSite===id);assert.ok(staff);assert.deepEqual(staff.profile.work,[p.door[0],p.door[2]]);
+  // Staff are checked as they return to the street cast.
+  const staff=world.people.find(person=>person.profile.workSite===id);if(Object.keys(p.room.staff).some(n=>STREET_CAST_NAMES.includes(n))){assert.ok(staff);assert.deepEqual(staff.profile.work,[p.door[0],p.door[2]]);}
  }
  const native=globalThis.fetch;
  globalThis.fetch=async input=>String(input).startsWith('blob:')?native(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));

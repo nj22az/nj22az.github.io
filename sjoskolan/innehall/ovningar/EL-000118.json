@@ -3,7 +3,7 @@
   "titel": "Förberett fel",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,10 +38,15 @@
       "niva": "metod",
       "text": "Föreslå en orsak i hållvägen. Beskriv vilken observation som skulle stödja eller försvaga hypotesen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Beskriv vad som fungerar: K1 drar via START. 2) Beskriv vad som inte fungerar: strömvägen när START släpps. 3) Vilka delar ingår bara i den vägen som inte fungerar? Välj en av dem som hypotes. 4) Beskriv en mätning som ger olika resultat om hypotesen stämmer och om den inte stämmer. Annat fall: en lampa lyser bara när du håller i sladden, så leta i den delen som rörs.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "Hypotes: hållvägen är bruten, till exempel att K1:s NO-kontakt inte sluter eller att en ledare till den är av. Kontroll: mät över hållkontakten med K1 draget. Ungefär 0 V stöder att den sluter. Full spänning stöder hypotesen.",
+    "text": "Hypotes: hållvägen är bruten, till exempel att K1:s NO-kontakt inte sluter eller att en ledare till den är av. Kontroll: gör styrkretsen spänningslös enligt mätplanen och mät resistansen i hållvägen, från START-knappens ena anslutning via K1:s NO-kontakt till den andra, medan K1 påverkas med kontaktorns testfunktion eller enligt instruktionen. Nära 0 Ω: hållvägen är hel. Mycket hög resistans: hållvägen är bruten. Obs: att mäta spänning över hållkontakten medan START hålls in visar alltid ungefär 0 V, eftersom START ligger parallellt. Den mätningen skiljer inte orsakerna åt.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

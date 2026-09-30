@@ -3,7 +3,7 @@
   "titel": "Skyddsutrustning som enda åtgärd",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Förklara vad som saknas för att kunna bedöma om skyddet räcker. Vanliga arbetshandskar skyddar inte mot el.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad gör handskar: minskar de faran eller skyddar de bara personen? 2) Står det vilken elektrisk klass handskarna ska ha? 3) Vad saknas om hur faran minskas, arbetsmetoden och ansvaret? Skriv två saker som raden borde ha med.",
+      "status": "utkast"
     }
   ],
   "losning": {

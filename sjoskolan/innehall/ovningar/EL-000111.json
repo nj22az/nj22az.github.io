@@ -3,7 +3,7 @@
   "titel": "Kontroll före stationen",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Håll isär märkspänning och kontrollerat skydd. Ange vilken dokumentation instruktören måste kontrollera.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skilj på två frågor: hur hög är spänningen, och hur är kretsen skyddad? 2) Vad kräver SELV utöver låg spänning? Tänk på separation från kretsar med högre spänning. 3) Vilket papper eller vilken märkning visar det? Annat fall: en 24 V-adapter utan märkning. Skulle du lita på den bara för att det står 24 V?",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Arbetsgräns",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Ange vad som behöver klargöras: exakt vilken apparat, vilka delar som ingår, matningar och risker i närheten.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilken apparat är det exakt, med beteckning? 2) Vilka ledare och plintar ingår i arbetet? 3) Varifrån matas den, och finns det mer än en matning? 4) Vad finns i närheten som kan vara spänningssatt? Skriv minst tre av dem.",
+      "status": "utkast"
     }
   ],
   "losning": {

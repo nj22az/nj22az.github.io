@@ -3,7 +3,7 @@
   "titel": "Mätning under last",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -41,6 +41,11 @@
       "niva": "metod",
       "text": "Räkna först ut hela fallet och dra sedan bort returledarens del.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Hela slingans fall är källans spänning minus lastens. 2) Dra bort fallet i returledaren. Det som blir kvar ligger i framledaren. Exempel: källa 24 V, last 22 V och 0,8 V i returledaren ger slingfallet 2 V och 1,2 V i framledaren.",
+      "status": "utkast"
     }
   ],
   "losning": {

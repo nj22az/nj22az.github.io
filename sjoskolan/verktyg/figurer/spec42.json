@@ -10,13 +10,13 @@
    ],
    "7": [
     "th",
-    "v42_01_s07_berorings",
-    "Metallhölje med isolationsfel och bruten skyddsledare; en person rör höljet och står på ledande stålskrov. Beröringsspänningen är skillnaden mellan höljets och däckets potential"
+    "v42_01_s07_beroring3d",
+    "Beröringsspänning ombord: pumpmotor på gummidämpare på stålkrovet, med isolationsfel (fasen mot höljet) och bruten skyddsledare (PE). Höljet är jordat bara via PE. En person rör höljet med handen (A) och står på däck (B); U_beröring = |V_A − V_B|"
    ],
    "8": [
     "th",
-    "v42_01_s08_ljusbage",
-    "Ljusbåge mellan två strömskenor med pilar för värme, tryck, starkt ljus och splitter"
+    "v42_01_s08_ljusbage3d",
+    "Ljusbåge mellan skenorna L1 och L2 i ett öppet ställverksfack: värme och starkt ljus, tryckvåg och splitter av smält metall; även giftiga gaser och buller. Skada utan ström genom kroppen"
    ],
    "9": [
     "th",
@@ -61,8 +61,8 @@
   "slides": {
    "7": [
     "th",
-    "v42_02_s07_metoder",
-    "Områden kring en spänningssatt del: riskområde, närområde och utanför närområdet"
+    "v42_02_s07_zoner3d",
+    "Riskområde och närområde som skal runt en spänningssatt del, åt alla håll. En person står utanför närområdet. Med spänning: arbete i riskområdet; nära spänning: i närområdet; utan spänning: efter de fem säkerhetsåtgärderna"
    ],
    "8": [
     "th",
@@ -97,8 +97,8 @@
    ],
    "8": [
     "th",
-    "v42_03_s08_prova",
-    "Prova, mät, prova: spänningsprovaren kontrolleras mot känd källa före och efter mätningen på objektet"
+    "v42_03_s08_lasmark3d",
+    "Frånskiljare i läge 0 med hänglås och skylt (namn, datum, telefon); tvåpolig spänningsprovare mot de utgående plintarna L1, L2, L3 och PE: prova – mät – prova, mät mellan alla ledare och mot PE"
    ],
    "16": [
     "th",
@@ -107,8 +107,8 @@
    ],
    "21": [
     "th",
-    "v42_03_s21_jordning",
-    "Tre faser frånskilda; jordning och kortslutning nära arbetsstället och synlig därifrån"
+    "v42_03_s21_jordning3d",
+    "Frånskiljare med synligt brytställe; vid arbetsstället ett jordnings- och kortslutningsdon med klämmor på L1, L2 och L3 och jordledaren till jordskenan, som ansluts först och tas bort sist"
    ],
    "24": [
     "th",

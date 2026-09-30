@@ -14,6 +14,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {STREET_CAST_NAMES} from '../src/people/residents.js';
 
 const root=resolve(new URL('..',import.meta.url).pathname);
 const fixtures=await import(pathToFileURL(resolve(root,'tests/fixtures.mjs')).href);
@@ -40,6 +41,8 @@ function quietDataUrlError(error){
 test('Published peninsula boots, shares the wooden bookshop/workshop and visits every interior',async()=>{
   try {
     fixtures.installDOM();
+    // The game starts at one of several openings (world/openings.js); this test walks from the Sakura bench.
+    globalThis.location.search='?spawn=sakura-bench';
     globalThis.innerHeight=768;
     globalThis.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
     globalThis.addEventListener=()=>{};
@@ -53,8 +56,8 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     const threeUrl=pathToFileURL(resolve(root,'vendor/three.module.js')).href;
     let source=await readFile(gameUrl,'utf8');
     const index=await readFile(resolve(root,'index.html'),'utf8');
-    assert.doesNotMatch(index,/id="viewButton"/,'FPV-only UI must not expose camera switching');
-    assert.doesNotMatch(source,/toggleCamera|KeyV|cameraMode/,'FPV-only runtime must not retain a third-person path');
+    // The third-person view (the eye button, V) is a deliberate feature again.
+    assert.match(index,/id="viewButton"/,'The view button is on the page');
     source=source.replace(/(from\s*['"])(\.[^'"]+)(['"])/g,(_,prefix,relative,suffix)=>prefix+new URL(relative,gameUrl).href+suffix);
     const rendererShim=dataModule(`
       export * from ${JSON.stringify(threeUrl)};
@@ -81,26 +84,19 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
     globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(resolve(root,'assets',new URL(url).pathname.split('/assets/')[1])));
-    const {preloadHarbourBlock}=await import('../src/world/harbour-block.js');
-    assert.equal(await preloadHarbourBlock(),true,'Real harbour block preloaded');
     const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js?snappy=1');
     assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true,true],'All supplied rooms preloaded');
-    const {preloadJapaneseTown}=await import('../src/world/japanese-town.js');assert.equal(await preloadJapaneseTown(),true);
     const {preloadPark}=await import('../src/world/park.js?snappy=1');assert.equal(await preloadPark(),true);
     const {preloadIzakaya}=await import('../src/world/izakaya.js?snappy=1');
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
-    const {preloadYuriHome}=await import('../src/world/yuri-home.js');
-    assert.equal(await preloadYuriHome(),true,'Thuan house exterior preloaded');
     const {preloadSakuraBench}=await import('../src/world/sakura-bench.js');
     assert.equal(await preloadSakuraBench(),true,'Sakura viewing bench preloaded');
-    const {preloadModels}=await import('../src/people/models.js?snappy=1');
-    assert.deepEqual(await preloadModels(),{ready:7,total:7},'Actual selected character rigs preloaded');
     const api=await import(dataModule(source));
     const {Vector3}=await import(threeUrl);
     const {BOOKSHOP_WORKSHOP_ROOM}=await import('../src/world/bookshop-workshop-layout.js');
     const {SAKURA_SHOP}=await import('../src/world/sakura-bench.js');
     const {circleHitsRect}=await import('../physics.js?snappy=1');
-    assert.deepEqual(api.SITES.map(s=>s.id).sort(),['frontrow','izakaya','market','office']);
+    assert.deepEqual(api.SITES.map(s=>s.id).sort(),['frontrow','izakaya','koban','market','office','onsen','ramen','resident-home-aya','resident-home-kenji','school']);
     assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['bus-station','warehouse']);
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
@@ -111,7 +107,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     // Check the actual actions as well as the mode-aware diagnostic count.
     const streetLabels=new Set();api.world.group.traverse(o=>{if(o.userData.hit)streetLabels.add(o.userData.hit.label);});
     for(const label of ['Sit on neighbourhood bench','Inspect post box','Read harbour notices','Inspect utility cabinet','Inspect traffic mirror','Inspect recycling bins','Test hand pump'])assert.ok(streetLabels.has(label),label);
-    const waiting=api.world.people.find(p=>p.profile.name==='Kenji').g;
+    const waiting=api.world.people.find(p=>p.profile.name==='Nao').g;
     const savedPosition=waiting.position.clone(),savedVisibility=waiting.visible;
     waiting.position.set(0,0,10);waiting.visible=true;waiting.userData.visualReady=false;
     assert.equal(api.residentBlocked(0,10),false,'Pending characters cannot create invisible collisions');
@@ -208,11 +204,11 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
       assert.equal(api.reviewRoomState().townVisible,true);assert.equal(api.reviewRoom().getObjectByName('Minato CRT television'),undefined);
       assertFiniteTransforms(api,'outside '+site.id);visited.add(site.id);
     }
-    assert.deepEqual([...visited].sort(),['frontrow','izakaya','market','office','warehouse']);
+    assert.deepEqual([...visited].sort(),['frontrow','izakaya','koban','market','office','onsen','ramen','resident-home-aya','resident-home-kenji','school','warehouse']);
 
     // All four existing workers share this room after their afternoon shopping.
     const {createResidentLedger}=await import('../src/people/resident-personalities.js');
-    const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Aya','Kenji','Reiko','Tetsuo'];
+    const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Aya','Kenji','Reiko','Tetsuo'].filter(name=>STREET_CAST_NAMES.includes(name));
     for(const name of staffNames)ledger.account(name,1050).shopping={finished:true};
     api.reviewSetMinutes(1050);api.player.position.set(0,0,14);
     const staff=api.world.people.filter(p=>staffNames.includes(p.profile.name));

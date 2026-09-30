@@ -3,7 +3,7 @@
   "titel": "Intermittent fel",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Ange vilka värden och driftförhållanden som ska loggas samtidigt, och förklara varför ett värde utan last inte räcker.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) När syns felet: vid låg eller hög ström? 2) Vilka värden behöver mätas samtidigt: spänning, ström, spänningsfall över anslutningar? 3) Vad mer påverkar: temperatur, tid? 4) Varför räcker ett värde utan last inte?",
+      "status": "utkast"
     }
   ],
   "losning": {

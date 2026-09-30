@@ -3,7 +3,7 @@
   "titel": "Två schematyper",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Välj det underlag som visar hur ledarna faktiskt är dragna och förklara vad kretsschemat tillför.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad visar ett kretsschema: funktionen eller den verkliga dragningen? 2) Vad visar ett förbindningsschema eller en plintlista? 3) Vilket behöver du för att hitta den plint ledaren faktiskt sitter i?",
+      "status": "utkast"
     }
   ],
   "losning": {

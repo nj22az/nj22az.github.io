@@ -3,7 +3,7 @@
   "titel": "Isolationsprovning: skadad kabel",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -36,7 +36,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "I = Uprov/R. 50 kΩ = 50 000 Ω.",
+      "text": "I = U_{prov}/R. 50 kΩ = 50 000 Ω.",
       "status": "migrerad"
     }
   ],
@@ -44,7 +44,7 @@
     "text": "I = 500/50 000 = 0,010 A = 10 mA. Mycket över det en frisk kabel läcker. L2 ligger långt under en gräns på 1 MΩ.",
     "svar": [
       {
-        "storhet": "Iläck",
+        "storhet": "I_{läck}",
         "varde": 10,
         "tolerans": {
           "rel": 0.02
@@ -81,7 +81,7 @@
     },
     "fraga": {
       "storhet": "prov",
-      "etikett": "Iläck",
+      "etikett": "I_{läck}",
       "enhet": "mA"
     },
     "dolj": [

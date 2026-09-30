@@ -3,7 +3,7 @@
   "titel": "Trefasriggen",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Räkna ut grenspänningen från linjespänningen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) I en Y-last ligger varje gren mellan en fas och stjärnpunkten, alltså över fasspänningen. 2) Dela linjespänningen med √3. Exempel med en annan rigg: U_{L} = 18,0 V ger U_{gren} = 18,0/1,732 ≈ 10,39 V. Rimlighet: grenspänningen i Y är ungefär 58 % av linjespänningen.",
+      "status": "utkast"
     }
   ],
   "losning": {

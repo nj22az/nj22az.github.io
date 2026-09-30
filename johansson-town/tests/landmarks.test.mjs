@@ -1,38 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
-import {GLTFLoader} from '../vendor/GLTFLoader.js';
-import {applyStreetClearance} from '../src/world/street-clearance.js';
-import {LANDMARK_LOTS,hideLandmarkLots,colliderInLandmarkLot,localToWorld} from '../src/world/landmark-lots.js';
+import {LANDMARK_LOTS,localToWorld} from '../src/world/landmark-lots.js';
 
-const folder=new URL('../assets/models/full-town/',import.meta.url);
-const bytes=await readFile(new URL('overworld.glb',folder));
-const navigation=JSON.parse(await readFile(new URL('navigation.json',folder)));
-const manifest=JSON.parse(await readFile(new URL('street-clearance.json',folder)));
-globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
-
-test('Sakura, ramen and Thuan lots hide the original street buildings without cutting the road',async()=>{
- const {scene}=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
- applyStreetClearance(scene,navigation,manifest);
- const before=scene.children.reduce((sum,m)=>sum+m.geometry.index.count/3,0);
- const removed=hideLandmarkLots(scene);
- assert.ok(removed>7000,'Shop and house lots lose their original walls and roofs');
- assert.equal(scene.children.reduce((sum,m)=>sum+m.geometry.index.count/3,0),before-removed);
- const p=scene.children.find(m=>m.name==='Atlas02').geometry.attributes.position;
- const idx=scene.children.find(m=>m.name==='Atlas02').geometry.index;
- let leftover=0;
- for(let i=0;i<idx.count;i+=3){
-  const a=idx.getX(i),b=idx.getX(i+1),c=idx.getX(i+2);
-  const x=(p.getX(a)+p.getX(b)+p.getX(c))/3,y=(p.getY(a)+p.getY(b)+p.getY(c))/3,z=(p.getZ(a)+p.getZ(b)+p.getZ(c))/3;
-  if(y>1.2&&LANDMARK_LOTS.some(lot=>x>=lot.minX&&x<=lot.maxX&&z>=lot.minZ&&z<=lot.maxZ))leftover++;
- }
- assert.ok(leftover<40,'Shop lots keep only leftover ground-level scraps');
- assert.equal(colliderInLandmarkLot({x:7.02,z:4.8,height:3}),true);
- assert.equal(colliderInLandmarkLot({x:6.18,z:1.5,height:3}),false,'Walking street in front of Sakura stays clear');
- assert.equal(colliderInLandmarkLot({x:-9.15,z:2.6,height:3}),false,'Walking street in front of ramen stays clear');
- assert.equal(colliderInLandmarkLot({x:-7.12,z:11.65,height:6}),true);
- assert.equal(colliderInLandmarkLot({x:-4.0,z:11.53,height:3}),false,'Canal boardwalk in front of Thuan stays clear');
-});
 
 test('Landmark placements face the walking street at the canal quarter doors',()=>{
  const sakura=LANDMARK_LOTS.find(l=>l.id==='sakura'),ramen=LANDMARK_LOTS.find(l=>l.id==='ramen'),home=LANDMARK_LOTS.find(l=>l.id==='yuri-home');

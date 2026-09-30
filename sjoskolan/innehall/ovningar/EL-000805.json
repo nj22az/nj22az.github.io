@@ -3,7 +3,7 @@
   "titel": "Välj instrument och funktion",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -54,8 +54,8 @@
         "titel": "Instrument- och komponentkort"
       },
       {
-        "url": "Elevuppgifter.html",
-        "titel": "Elevuppgift V2-2"
+        "url": "vecka-38/aktuell/Elevuppgifter.html",
+        "titel": "Övning 1.2: Instrumentval"
       }
     ],
     "losning_publik": false

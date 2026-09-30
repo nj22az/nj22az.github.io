@@ -236,4 +236,4 @@ F=fig(4.3,3.0); ax=xf_axes(F,(0.14,0.16,0.82,0.66)); ax.bar([0,1],[12,8],color=[
 ax.set_xticks([0,1]); ax.set_xticklabels(["före","efter"],fontsize=14,color=INK); ax.set_yticks([]); ax.spines["left"].set_visible(False)
 ax.text(0,12.4,"I = 12 A",ha="center",fontsize=14); ax.text(1,8.4,"I = 8 A",ha="center",fontsize=14)
 ax.text(1.55,6,"P₂/P₁ = ?",ha="left",fontsize=16,color=RED); ax.set_xlim(-0.5,2.6)
-ax.set_ylim(0,15); ax.set_title("Strömmen i samma kabel, Pförlust = I²R",fontsize=13,color=INK); save(F,"v40_03_s32_ovn9")
+ax.set_ylim(0,15); ax.set_title("Strömmen i samma kabel, P_{förlust} = I²R",fontsize=13,color=INK); save(F,"v40_03_s32_ovn9")

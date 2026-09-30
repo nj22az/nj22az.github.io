@@ -3,7 +3,7 @@
   "titel": "TT-princip",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
   "uppgift": {
     "fraga": "Varför är det ofta jordfelsbrytaren som måste koppla bort ett fel i ett TT-system?",
     "samband": [
-      "Ifel ≈ U/Zfel"
+      "I_{fel} ≈ U/Z_{fel}"
     ],
     "givet": "TT-system där felströmmen går genom två separata jordtag. Jordfelsbrytaren känner av differensström.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Förklara varför felströmmen måste jämföras med skyddets utlösningsström och vad jordfelsbrytaren tillför.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilken väg tar felströmmen i TT: genom ett eller två jordtag? 2) Blir felströmmen stor eller liten jämfört med ett överströmsskydds utlösningsström? 3) Vad reagerar jordfelsbrytaren på i stället?",
+      "status": "utkast"
     }
   ],
   "losning": {

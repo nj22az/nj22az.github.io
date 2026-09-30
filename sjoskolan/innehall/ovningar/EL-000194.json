@@ -3,7 +3,7 @@
   "titel": "Strömtransformator",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Räkna först ut omsättningen och dela sedan primärströmmen med den.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna omsättningen: märkström primär delat med märkström sekundär. 2) Dela den verkliga primärströmmen med omsättningen. Exempel: en strömtransformator 300/5 A har kI = 60, och 150 A i primärledaren ger I_{2} = 150/60 = 2,5 A.",
+      "status": "utkast"
     }
   ],
   "losning": {

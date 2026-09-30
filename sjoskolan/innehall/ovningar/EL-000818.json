@@ -3,7 +3,7 @@
   "titel": "Beröringsspänning i en modell",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -17,7 +17,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Skyddsledaren till en maskin är av och ett isolationsfel har gjort höljet spänningssatt: 230 V mot det jordade däcket.",
+    "fraga": "Skyddsledaren till en maskin är av och ett isolationsfel har gjort höljet spänningssatt: 230 V mot det jordade däcket. Räkna i en modell av ett TN-system med jordad neutralpunkt, som i land eller i ett jordat delnät ombord. I ett isolerat IT-nät blir bilden en annan (vecka 44).",
     "delfragor": [
       {
         "id": "a",

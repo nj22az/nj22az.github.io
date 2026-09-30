@@ -56,6 +56,11 @@
             "type": "string",
             "description": "Fil eller dokument (relativt sjoskolan/ eller bok:)."
           },
+          "teori": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Teoriavsnittet på delsidan som ledtråd 1 hänvisar till. Utan fältet väljs avsnittet efter sambandets begrepp."
+          },
           "del": {
             "type": "string",
             "description": "Avsnitt på ytan, till exempel kapitel v41_02 eller bokkapitel 10."

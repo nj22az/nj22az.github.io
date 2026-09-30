@@ -45,6 +45,7 @@ LARARLOSEN=… LARARGUIDE_KLARTEXT=… python3 sjoskolan/innehall/innehall.py by
 BOKLOSEN=… python3 sjoskolan/innehall/innehall.py bygg bok   # bokens EPUB (kräver bok/bok.py packa-upp)
 (cd sjoskolan/innehall/bok/sattning && npm ci && node satt.mjs) # separat PDF-sättning ur uppdaterad EPUB-arbetskopia
 python3 sjoskolan/innehall/innehall.py kontrollera           # CI: är de genererade filerna aktuella?
+python3 sjoskolan/innehall/numrering.py --skriv             # numrera om enligt registret (Övning del.nummer, Inlämning N)
 python3 sjoskolan/innehall/innehall.py rapport               # ofullständiga poster, trasiga referenser, versionskrockar
 python3 sjoskolan/innehall/innehall.py anvands EL-000123     # var visas övningen?
 python3 sjoskolan/innehall/innehall.py hitta v41_02-q3       # id för ett gammalt ankare eller alias
@@ -113,3 +114,35 @@ provkapitel enligt `elteknik/files/manifest.json`. Klartext i `bok/.bok/` och `.
 `migrering/` innehåller engångsskripten (`extrahera.py` med `kallor.py`, `familjer.py`, `familjer_sidor.py`, `labbar.mjs`),
 inventeringen (`INVENTERING.md`, `inventering.json`), konfliktloggen (`konflikter.json`) och talkontrollen (`numerik.json`).
 De läser källorna ur git-revisionen `8cabde3` och körs inte igen efter migreringen. Boken: se `bok/README.md`.
+
+## Sammanhängande arbetsrum vecka 40
+
+`studieplan-v40.json` anger ordning, förklaringar som varje övning behöver och de gemensamma instrumentkorten.
+Fältet `vagledning` anger varje dels syfte, arbetsuppdrag, läsuppdrag och slutmål. Veckostarten och arbetsrummet
+använder samma data. Övningarnas `syfte` förklarar vad eleven tränar, och `stopp` visar gränsen mellan lektion och
+hemarbete. Övningarna följer numreringen i veckoplanen; förklaringen ligger alltid före uppgiften.
+Exportören `arbetsrum` hämtar 30 växelströmsövningar och fyra måndagsuppgifter genom `Atkomst(..., 'elev')` och
+skriver `vecka-40/aktuell/arbetsrum.gen.mjs`. Uppgifter, stegvis offentlig studievägledning (`losning.text`),
+ledtrådar och kontrollerbara svar redigeras endast i övningsposterna. Bokens skyddade `losning.steg` och
+lärarfält används inte av elevexportören. Den nya offentliga vägledningen är separat författad för elevens arbete.
+
+`Genomgang.html` är elevens gemensamma arbetsrum. Gamla länkar till Formelstöd och Elevuppgifter leder till
+rätt uppgift där. `?las=1` visar respektive blad för utskrift utan interaktiv rättning; instrumentkorten och
+figur 04 är även inbäddade i måndagens utskriftsblad. `veckosidor/bygg.py` bygger den förenklade veckostarten.
+
+`studieprogress.mjs` sparar lästa avsnitt, utkast, försök, visade lösningar och behov av hjälp under
+`sj-v40-studie-v1`. Läsmarkeringen kräver att alla textblock har visats i den synliga sidan; den bevisar inte
+förståelse. Tomma eller upprepade svar räknas inte som nya försök. Lösningen blir tillgänglig efter två
+olika giltigt ifyllda försök eller ett rätt svar. Öppna motiveringar bedöms av läraren. Gamla manuella
+bockar räknas inte längre i QR-resultatets oförändrade bitfält; inlämningssvar och labbdata behålls.
+Detta är pedagogisk hjälp i en statisk klient, inte ett skydd mot att läsa publika svar i källkoden.
+
+Tester efter `npm ci` i `vaxelstromslabbet`:
+
+```sh
+node --test sjoskolan/vecka-40/aktuell/arbetsrum*.test.mjs
+node --test sjoskolan/vecka-40/aktuell/resultat*.test.mjs
+```
+
+Browserkontrollen körs med `node sjoskolan/verktyg/qa/week40-workspace.cjs` när Playwright och Chromium finns.
+Sätt vid behov `PLAYWRIGHT_MODULE` till modulens absoluta sökväg och `BROWSER_EXECUTABLE` till Chromium.

@@ -3,7 +3,7 @@
   "titel": "Arbetsmetoder",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,10 +38,15 @@
       "niva": "metod",
       "text": "Ange de fyra namnen. Vid ett verkligt arbete måste valet av metod motiveras.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Metoderna skiljer sig i om anläggningen är spänningssatt och hur nära spänningsförande delar arbetet görs. 2) Två av metoderna handlar om själva spänningen. 3) Två handlar om avståndet till spänningsförande delar. Leta upp namnen i presentationen eller ESA och sortera dem i de två paren.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "Arbete utan spänning, arbete med spänning, arbete inom närområde och arbete utanför närområde.",
+    "text": "Arbete utan spänning, arbete med spänning (AMS), arbete inom närområde (arbete nära spänning) och arbete utanför närområde. Medan SS-EN 50110-1 har tre metoder, definierar ESA även arbete utanför närområde som en egen metod med specifika krav på riskhantering gentemot intilliggande anläggningsdelar.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

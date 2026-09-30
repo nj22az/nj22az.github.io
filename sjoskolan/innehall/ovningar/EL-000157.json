@@ -3,7 +3,7 @@
   "titel": "Spolspänning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,10 +37,15 @@
       "niva": "metod",
       "text": "Ta spolens spänning och strömart (AC eller DC) från dess märkning, inte huvudkontakternas värde.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Leta upp märkningen för varje del av apparaten: huvudkontakterna, spolen och hjälpkontakterna. 2) Varje märkvärde gäller bara sin del. 3) Spolen matas från manöverkretsen och ska ha spänningen som står på spolen. Exempel: ett relä med kontakter för 230 V AC och en spole märkt 12 V DC matas med 12 V DC i styrkretsen, även om kontakterna bryter 230 V.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "Spolens märkning, 24 V DC, styr manöverkretsens matning. 400 V gäller huvudkontakterna.",
+    "text": "Spolens märkning, 24 V DC, styr manöverkretsens matning. 440 V gäller huvudkontakterna.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

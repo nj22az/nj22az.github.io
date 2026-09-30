@@ -3,7 +3,7 @@
   "titel": "Förebyggande åtgärder",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Ange vad som görs med sladden nu och hur kontrollen före användning kan bli bättre.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Direkt: vad görs med sladden nu så att ingen annan använder den? 2) Förebyggande: hur uppstod skadan, och vad i förvaring, hantering eller kontroll kan ändras? 3) Skriv en åtgärd för varje. Annat fall: en trasig stege. Vad gör du med den nu, och vad ändrar du så att det inte händer igen?",
+      "status": "utkast"
     }
   ],
   "losning": {

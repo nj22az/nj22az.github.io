@@ -3,7 +3,7 @@
   "titel": "Toppvärde",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,12 +35,27 @@
       "niva": "metod",
       "text": "Multiplicera effektivvärdet med √2. Toppvärdet ska bli större än effektivvärdet.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv û = √2 · U_{RMS}. 2) Tryck √2 på räknaren (≈ 1,414) och multiplicera med effektivvärdet. 3) Ange svaret i V med en decimal. Kontroll: toppvärdet ska bli ungefär 40 % större än effektivvärdet, aldrig mindre. Exempel: fartygets 440 V RMS har toppvärdet 1,414 · 440 ≈ 622 V.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "û = 1,414 · 12,0 ≈ 17,0 V.",
+    "text": "Vi känner effektivvärdet men söker sinusens topp. Toppen är större, så vi multiplicerar med √2.\n\nû = √2 · 12,0 ≈ 16,97 V, avrundat 17,0 V.",
     "status": "migrerad",
-    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)",
+    "svar": [
+      {
+        "storhet": "û",
+        "varde": 16.970562748477143,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      }
+    ]
   },
   "referenser": {
     "ursprung": [

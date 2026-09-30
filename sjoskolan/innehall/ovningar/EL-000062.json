@@ -3,7 +3,7 @@
   "titel": "Frekvens från kurvan",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,10 +35,15 @@
       "niva": "metod",
       "text": "Gör om ms till s och dela sedan 1 med periodtiden.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Gör om periodtiden till sekunder: dela ms med 1 000 (till exempel 8,0 ms = 0,0080 s). 2) Tryck 1 ÷ T, så får du f i Hz. 3) Kontrollera enheten: en period på några ms ger en frekvens på hundratals Hz. Exempel: T = 8,0 ms ger f = 1/0,0080 = 125 Hz. Kortare period ska ge högre frekvens.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "f = 1/0,0040 s = 250 Hz.",
+    "text": "Byt till sekunder innan du använder f = 1/T.\n\n4,0 ms = 4,0/1 000 = 0,0040 s.\n\nf = 1/0,0040 = 250 Hz. Kontroll: 250 perioder på 0,0040 s ger en sekund.",
     "svar": [
       {
         "storhet": "f",

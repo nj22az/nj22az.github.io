@@ -8,26 +8,19 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
-<meta name="description" content="Johansson Town public information board. A first-person shopping district and working harbour, 1997.">
+<meta name="description" content="A small harbour town, 1997. Walk its streets, meet the residents, browse the shops and settle into daily life.">
 <style>:root,html,body{margin:0;background:#f7f5f2!important}</style>
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css?h=f933a859">
-<link rel="stylesheet" href="./polish.css?h=f02f77bf">
-<link rel="stylesheet" href="./viewport-fix.css?h=4e2ebec6">
-<link rel="stylesheet" href="./character-controls.css?h=957b6eee">
-<link rel="stylesheet" href="./office.css?h=8723f239">
-<link rel="stylesheet" href="./dialogue.css?h=89794fae">
-<link rel="stylesheet" href="./workshop.css?h=047b7ad5">
-<link rel="stylesheet" href="./context-controls.css?h=82e65c1a">
+<link rel="stylesheet" href="./base.css?h=c692e6cb">
+<link rel="stylesheet" href="./context-controls.css?h=f442bdb6">
 <title>Johansson Town</title>
-<link rel="stylesheet" href="living-town.css?h=15bfb223">
-<link rel="stylesheet" href="./landing.css?h=03b29d9b">
-<link rel="stylesheet" href="./sakura-ledger.css?h=3eaf0b98">
+<link rel="stylesheet" href="./landing.css?h=68bd7749">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-0fWgGcWi.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CRFK9PiW.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/icons-CuXD-OgH.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-Doq61Ose.js">
+<link rel="stylesheet" href="./tomodachi-ui.css?h=f083fafa">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-Bj-Ox8Eo.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-B-hU6XZF.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/icons-D2wbYvxv.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-BhHjziot.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-xOebpuup.js">
 </head>
 <body>
@@ -35,56 +28,162 @@
 <div id="ink"></div>
 <div id="threshold"></div>
 <button id="exitRoomButton" class="hidden" aria-label="Exit building to street">↶ Exit to street</button>
-<section id="start">
-  <a class="sr-only" href="#board">Skip to notice board</a>
+<section id="start" class="guide-open">
+  <div id="splash" class="splash" aria-hidden="true">
+    <div class="splash-mark">
+      <span class="splash-seal">港</span>
+      <span class="splash-word">Johansson<em>Co.</em></span>
+    </div>
+  </div>
+  <section id="title" class="title-screen" aria-labelledby="titleLogo">
+    <div class="title-sky" aria-hidden="true">
+      <span class="title-sun"></span>
+      <span class="title-cloud c1"></span><span class="title-cloud c2"></span><span class="title-cloud c3"></span>
+      <span class="title-spark s1">✦</span><span class="title-spark s2">✦</span><span class="title-spark s3">✦</span><span class="title-spark s4">✦</span>
+    </div>
+    <div class="title-town" aria-hidden="true"><img src="./assets/images/town-street.webp" width="1200" height="760" alt="" fetchpriority="high" decoding="async"></div>
+    <div class="title-center">
+      <p class="title-presents">JOHANSSON CO. PRESENTS</p>
+      <h1 id="titleLogo" class="title-logo">
+        <span class="sr-only">Johansson Town</span>
+        <span class="logo-jp" aria-hidden="true">ヨハンソン町</span>
+        <span class="logo-main" aria-hidden="true"><span style="--i:0">J</span><span style="--i:1">O</span><span style="--i:2">H</span><span style="--i:3">A</span><span style="--i:4">N</span><span style="--i:5">S</span><span style="--i:6">S</span><span style="--i:7">O</span><span style="--i:8">N</span></span>
+        <span class="logo-town" aria-hidden="true"><span style="--i:9">T</span><span style="--i:10">O</span><span style="--i:11">W</span><span style="--i:12">N</span></span>
+      </h1>
+      <p class="title-tag">A little harbour life · 1997</p>
+      <div class="title-menu">
+        <button id="enter" type="button"><span class="title-cursor" aria-hidden="true">▶</span><b>PRESS START</b></button>
+        <a class="title-guide" href="#board" data-guide-open><span class="title-cursor" aria-hidden="true">▶</span>TOWN GUIDE</a>
+      </div>
+      <div class="title-loading">
+        <div class="title-bar" aria-hidden="true"><span></span></div>
+        <div id="bootStatus" role="status">READY</div>
+      </div>
+    </div>
+    <footer class="title-foot">
+      <span>© 1997 JOHANSSON CO.</span>
+      <span class="title-hint">TOUCH · KEYBOARD · CONTROLLER</span>
+    </footer>
+  </section>
   <div class="board-wrap">
     <article id="board" class="board-frame">
       <div class="crop-marks" aria-hidden="true"></div>
 
       <header>
+        <nav class="guide-nav" aria-label="Visitor guide"><a href="#roll-heading">Residents</a><a href="#dir-heading">Places</a><a href="#visit-planning">Hours &amp; visiting</a><button type="button" data-town-enter>Enter town</button><a href="#title" data-guide-close>Title screen</a></nav>
         <div class="board-kicker">
-          <span>Johansson Town Public Information</span>
-          <span class="red" id="boardDoc">Document JT-HB-63-0913</span>
-          <span>Harbour District · Unofficial visitor board</span>
+          <span>JOHANSSON TOWN · VISITOR’S GUIDE</span>
+          <span class="sr-only" id="boardDoc">Document JT-HB-63-0913</span>
+          <span>HARBOUR DISTRICT · 1997</span>
         </div>
 
-        <div class="board-hero">
-          <p class="board-vert" aria-hidden="true">港町案内</p>
+        <div class="guide-heading"><p class="board-jp">ヨハンソン町</p><h1>Johansson Town</h1><p>A harbour neighbourhood of working quays, small shops and familiar faces.</p></div>
+      </header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <section aria-labelledby="roll-heading">
+        <div class="section-bar paper">
           <div>
-            <p class="board-tiny" id="boardDateLong">HEISEI 9 · 13 SEPTEMBER 1997</p>
-            <p class="board-jp">ヨハンソン町</p>
-            <h1>JOHANSSON<span> TOWN</span></h1>
-            <p class="board-lede">A harbour shopping district, 1997. First person. Walk the shops to the quay, then the outer pier and Harbour Line terminal.</p>
-          </div>
-          <div class="board-stamp">
-            <div class="board-seal" aria-hidden="true"><b>港</b></div>
-            <p class="board-tiny board-edition">HARBOUR OFFICE<br>REVISION 8<br>ENGLISH EDITION</p>
+            <p class="board-tiny">THE PEOPLE WHO MAKE THE PLACE</p>
+            <h2 id="roll-heading">Meet the residents</h2>
           </div>
         </div>
+        <p class="brochure-intro">Thuan opens Sakura. Nao keeps the evening going at Minato. Around them, the neighbourhood goes about its day — working, walking, talking and coming home.</p>
+        <div class="roll-grid" id="rollGrid"></div>
+      </section>
+      <section aria-labelledby="dir-heading">
+        <div class="section-bar paper">
+          <div>
+            <p class="board-tiny">THE NEIGHBOURHOOD</p>
+            <h2 id="dir-heading">Shops &amp; local places</h2>
+          </div>
+        </div>
+        <div class="place-grid" id="placesGrid"></div>
+      </section>
+      <section class="brochure-day" aria-labelledby="day-heading">
+        <div class="section-bar paper"><div><p class="board-tiny">AROUND THE NEIGHBOURHOOD</p><h2 id="day-heading">A day in Johansson Town</h2></div></div>
+        <div class="brochure-itinerary">
+          <article><span class="brochure-number">01</span><h3>Morning at Sakura</h3><p>A shop door opens, shelves fill, and the street wakes up. Drop in for something small and a familiar hello.</p><span class="brochure-stop">桜商店 · GROCERIES & DAILY GOODS</span></article>
+          <article><span class="brochure-number">02</span><h3>The long way round</h3><p>Browse the bookshop and workshop, follow the street towards the quay, or sit for a while and watch the town go by.</p><span class="brochure-stop">港町 · STREETS & HARBOUR</span></article>
+          <article><span class="brochure-number">03</span><h3>Stay for the evening</h3><p>When the lanterns come on, stop by Minato. Nao is there, and there’s always time for one more conversation.</p><span class="brochure-stop">みなと · THE NEIGHBOURHOOD IZAKAYA</span></article>
+        </div>
+      </section>
 
-        <section class="admit" aria-labelledby="enter-heading">
-          <p class="board-tiny">05 · ADMISSION</p>
-          <h2 id="enter-heading">Enter the three-dimensional town</h2>
-          <button id="enter" type="button">
-            <span>
-              <small>入町</small>
-              <b>ENTER TOWN</b>
-            </span>
-            <span class="arrow" aria-hidden="true">→</span>
-          </button>
-          <div id="bootStatus">READY</div>
-          <p>The live town is a first-person shopping district with a working port. Click for mouse look. Sound unlocks when you enter. Progress saves on this device.</p>
-          <p class="muted admit-note">N on this board cycles the clock, same as in town.</p>
+      <section aria-labelledby="stockroom-heading">
+        <div class="section-bar paper">
+          <div>
+            <p class="board-tiny">ANOTHER SIDE OF SAKURA</p>
+            <h2 id="stockroom-heading">Thuan's Storage</h2>
+          </div>
+          <p class="board-tiny">SAKURA SHŌTEN</p>
+        </div>
+        <a class="stockroom-card" href="/thuans-storage/">
+          <img src="/thuans-storage/cover.jpg" width="1200" height="630" alt="Thuan's Storage – the stockroom behind Sakura Shōten">
+          <span class="stockroom-text">
+            <span class="notice-no">BEHIND THE SHOP</span>
+            <b>Restock the konbini with Thuan</b>
+            <span>Walk Thuan through Sakura Shōten's stockroom, pick the day's list and restock the shelves. The day’s deliveries are waiting behind the shop.</span>
+            <span class="stockroom-go">Open the stockroom <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
+      </section>
+      <section aria-labelledby="poster-heading">
+        <div class="section-bar paper">
+          <div>
+            <p class="board-tiny">WHEN THE LANTERNS COME ON</p>
+            <h2 id="poster-heading">An evening at Minato</h2>
+          </div>
+        </div>
+        <div class="poster-wall">
+          <figure class="poster-card">
+            <img src="./assets/graphics/izakaya/minato-tori.webp" width="512" height="768" alt="MINATO TORI · 港鳥, print for Minato Izakaya">
+            <figcaption>
+              <p class="notice-no">港鳥</p>
+              <h3>MINATO TORI</h3>
+              <p>Charcoal yakitori until last pour. Hiroshi turns the skewers; Nao keeps the sauce.</p>
+            </figcaption>
+          </figure>
+          <figure class="poster-card">
+            <img src="./assets/graphics/izakaya/shiomachi-sake.webp" width="512" height="768" alt="SHIOMACHI · 潮待ち, print for Minato Izakaya">
+            <figcaption>
+              <p class="notice-no">潮待ち</p>
+              <h3>SHIOMACHI</h3>
+              <p>Junmai from the harbour brewery. Waiting for the tide, one cup at a time.</p>
+            </figcaption>
+          </figure>
+          <figure class="poster-card">
+            <img src="./assets/graphics/izakaya/minato-lanterns.webp" width="512" height="768" alt="MINATO · みなと, print for Minato Izakaya">
+            <figcaption>
+              <p class="notice-no">みなと</p>
+              <h3>MINATO</h3>
+              <p>The house poster. Red lanterns, the noren, and おかえりなさい — welcome back.</p>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
 
-        </section>
+      <details id="visit-planning" class="visit-planning">
+        <summary><span>Plan your visit</span><small>Starting time, street controls & opening hours</small><b aria-hidden="true">＋</b></summary>
+        <div class="planning-content">
         <div class="board-status">
           <div><span>Weekday</span><b id="statusWeekday">Sunday</b></div>
           <div><span>Weather</span><b>Clear</b></div>
           <div><span>Shops</span><b id="statusShops">—</b></div>
           <div><span>Period</span><b id="statusPeriod">AFTERNOON</b></div>
         </div>
-      </header>
-
       <div class="board-split">
         <section class="clock-panel" aria-labelledby="town-clock-heading">
           <div class="clock-head">
@@ -190,27 +289,6 @@
           </table>
         </div>
       </section>
-
-      <section aria-labelledby="dir-heading">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">08 · DISTRICT DIRECTORY</p>
-            <h2 id="dir-heading">Places</h2>
-          </div>
-        </div>
-        <div class="place-grid" id="placesGrid"></div>
-      </section>
-
-      <section aria-labelledby="roll-heading">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">09 · RESIDENT ROLL</p>
-            <h2 id="roll-heading">On the street</h2>
-          </div>
-        </div>
-        <div class="roll-grid" id="rollGrid"></div>
-      </section>
-
       <section aria-labelledby="noticeWhen">
         <div class="section-bar paper">
           <div>
@@ -241,63 +319,11 @@
           </article>
         </div>
       </section>
-
-      <section aria-labelledby="stockroom-heading">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">11 · SAKURA STOCKROOM</p>
-            <h2 id="stockroom-heading">Thuan's Storage</h2>
-          </div>
-          <p class="board-tiny">WORK IN PROGRESS</p>
         </div>
-        <a class="stockroom-card" href="/thuans-storage/">
-          <img src="/thuans-storage/cover.jpg" width="1200" height="630" alt="Thuan's Storage – the stockroom behind Sakura Shōten">
-          <span class="stockroom-text">
-            <span class="notice-no">A SIDE STORY FROM SAKURA SHŌTEN</span>
-            <b>Restock the konbini with Thuan</b>
-            <span>Walk Thuan through Sakura Shōten's stockroom, pick the day's list and restock the shelves. A playable demo, still being built.</span>
-            <span class="stockroom-go">Open the stockroom <span aria-hidden="true">→</span></span>
-          </span>
-        </a>
-      </section>
-
-      <section aria-labelledby="poster-heading">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">12 · MINATO WALL</p>
-            <h2 id="poster-heading">Posters in the izakaya</h2>
-          </div>
-        </div>
-        <div class="poster-wall">
-          <figure class="poster-card">
-            <img src="./assets/graphics/izakaya/minato-tori.webp" width="512" height="768" alt="MINATO TORI · 港鳥, print for Minato Izakaya">
-            <figcaption>
-              <p class="notice-no">港鳥</p>
-              <h3>MINATO TORI</h3>
-              <p>Charcoal yakitori until last pour. Hiroshi turns the skewers; Nao keeps the sauce.</p>
-            </figcaption>
-          </figure>
-          <figure class="poster-card">
-            <img src="./assets/graphics/izakaya/shiomachi-sake.webp" width="512" height="768" alt="SHIOMACHI · 潮待ち, print for Minato Izakaya">
-            <figcaption>
-              <p class="notice-no">潮待ち</p>
-              <h3>SHIOMACHI</h3>
-              <p>Junmai from a fictional harbour brewery. Waiting for the tide, one cup at a time.</p>
-            </figcaption>
-          </figure>
-          <figure class="poster-card">
-            <img src="./assets/graphics/izakaya/minato-lanterns.webp" width="512" height="768" alt="MINATO · みなと, print for Minato Izakaya">
-            <figcaption>
-              <p class="notice-no">みなと</p>
-              <h3>MINATO</h3>
-              <p>The house poster. Red lanterns, the noren, and おかえりなさい — welcome back.</p>
-            </figcaption>
-          </figure>
-        </div>
-      </section>
+      </details>
 
       <footer class="board-foot">
-        <p>Johansson Town is a first-person shopping district and working harbour in the 1990s. The clock on this board follows the weekday and hour where you are, mapped onto 1997, and so does the town. Choose SAVED or a start hour to set the town's clock yourself, at up to 4× speed. This English information edition is a visitor landing — not a historical survey.</p>
+        <p>Johansson Town · Harbour District · 1997.<br>Explore with touch, keyboard or controller. First- and third-person views. Your town remembers you on this device.</p>
         <p class="jp"><span id="boardJpDate">平成9年9月13日</span><span class="board-foot-line">HARBOUR DISTRICT · 1997</span></p>
       </footer>
     </article>
@@ -306,10 +332,7 @@
 <div id="hud" class="hidden">
   <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div class="status-stack"><div id="clock">16:42</div></div></div>
   <button id="waypoint" class="hidden" aria-label="Clear walking directions"></button>
-  <button id="cameraButton" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Camera</button>
-  <button id="viewButton" aria-pressed="false" aria-label="Switch between first- and third-person view (V)">3rd person</button>
-  <button id="movesButton" aria-label="Choose something for Johansson to do (G)">Moves</button>
-  <button id="directoryButton" aria-label="Open town menu" aria-controls="directory" aria-expanded="false">Town book</button>
+  <button id="directoryButton" aria-label="Open town menu" aria-controls="directory" aria-expanded="false">Menu</button>
 
 
 
@@ -317,13 +340,118 @@
   <div id="subtitle" role="status" aria-live="polite"></div>
   <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
 </div>
-<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="cameraMenuButton">CAMERA & CONTROLS</button><button id="notebookButton">NOTEBOOK</button><button id="playerButton">PLAYER</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1997 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
+<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="cameraButton" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Camera</button><button id="viewButton" aria-pressed="false" aria-label="Switch between first- and third-person view (V)">3rd person</button><button id="movesButton" aria-label="Choose something for Johansson to do (G)">Moves</button><button id="notebookButton">NOTEBOOK</button><button id="playerButton">PLAYER</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1997 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
 <div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1997</span><button id="closeActivity" aria-label="Close activity">Done <span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
 <div id="mobile" class="hidden"><button id="drink" class="control-off" aria-label="Drink held can">DRINK</button><div id="stick" class="touch-stick" aria-label="Movement area"><div id="stickBase" class="stick-base" aria-hidden="true"><div id="knob" class="stick-knob"></div></div></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="control-off" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="control-off" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="control-off" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
-<script src="./landing.js?v=books-workshop-3"></script>
+<script src="./resident-guide.js?v=resident-guide-1"></script>
+<script src="./landing.js?v=resident-guide-1"></script>
+<script>
+// Title screen: the Johansson Co. splash, the START menu, and the town guide page
+// behind it. Launching the game stays in index.html; this only presses its button.
+(() => {
+  const start = document.getElementById("start");
+  const splash = document.getElementById("splash");
+  const enter = document.getElementById("enter");
+  const guideLink = document.querySelector("[data-guide-open]");
+  const items = [enter, guideLink];
+  const SPLASH_KEY = "johansson-town-splash";
+
+  // The company mark plays once per visit; a tap or key skips it.
+  let splashSeen = start.classList.contains("guide-open");
+  try { splashSeen = splashSeen || sessionStorage.getItem(SPLASH_KEY) === "1"; } catch {}
+  const endSplash = () => {
+    if (splash.classList.contains("done")) return;
+    splash.classList.add("done");
+    try { sessionStorage.setItem(SPLASH_KEY, "1"); } catch {}
+    if (!start.classList.contains("guide-open")) enter.focus({ preventScroll: true });
+  };
+  if (splashSeen || matchMedia("(prefers-reduced-motion: reduce)").matches) endSplash();
+  else {
+    splash.addEventListener("animationend", (event) => { if (event.animationName === "splash-out") endSplash(); });
+    splash.addEventListener("pointerdown", endSplash);
+  }
+
+  const titleActive = () => !start.classList.contains("hidden") && !start.classList.contains("guide-open") && !start.classList.contains("booting");
+
+  function openGuide(event) {
+    event?.preventDefault();
+    start.classList.add("guide-open");
+    start.scrollTop = 0;
+    document.getElementById("board").focus?.({ preventScroll: true });
+  }
+  function closeGuide(event) {
+    event?.preventDefault();
+    start.classList.remove("guide-open");
+    enter.focus({ preventScroll: true });
+  }
+  document.querySelectorAll("[data-town-enter]").forEach(button => button.addEventListener("click", () => enter.click()));
+  guideLink.addEventListener("click", openGuide);
+  document.querySelectorAll("[data-guide-close]").forEach((link) => link.addEventListener("click", closeGuide));
+  document.getElementById("board").tabIndex = -1;
+
+  // A short two-note chime when START is pressed. The press is the user gesture
+  // browsers ask for, so this never autoplays.
+  function chime() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      [[988, 0], [1319, .09]].forEach(([freq, at]) => {
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(.0001, ctx.currentTime + at);
+        gain.gain.exponentialRampToValueAtTime(.06, ctx.currentTime + at + .01);
+        gain.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + at + (at ? .45 : .12));
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(ctx.currentTime + at);
+        osc.stop(ctx.currentTime + at + .5);
+      });
+      setTimeout(() => ctx.close(), 900);
+    } catch {}
+  }
+  enter.addEventListener("click", () => { if (!window.__JOHANSSON_BOOTING__) chime(); }, { capture: true });
+
+  document.addEventListener("keydown", (event) => {
+    if (!splash.classList.contains("done")) { endSplash(); event.preventDefault(); return; }
+    if (start.classList.contains("guide-open") && event.key === "Escape") { closeGuide(event); return; }
+    if (!titleActive()) return;
+    const index = items.indexOf(document.activeElement);
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const step = event.key === "ArrowDown" ? 1 : -1;
+      items[((index < 0 ? 0 : index + step) + items.length) % items.length].focus();
+    } else if ((event.key === "Enter" || event.key === " ") && index < 0) {
+      event.preventDefault();
+      enter.click();
+    }
+  });
+
+  // Controller: Start or A presses START, the d-pad moves the cursor.
+  let held = {};
+  function pollPads() {
+    if (start.classList.contains("hidden") || window.__JOHANSSON_RUNNING__) return;
+    let pads = [];
+    try { pads = navigator.getGamepads?.() || []; } catch {}
+    for (const pad of pads) {
+      if (!pad) continue;
+      const pressed = (i) => pad.buttons[i]?.pressed;
+      const edge = (i) => { const now = pressed(i), was = held[pad.index + ":" + i]; held[pad.index + ":" + i] = now; return now && !was; };
+      if (!splash.classList.contains("done")) { if (edge(9) || edge(0)) endSplash(); continue; }
+      if (!titleActive()) { if (edge(1) && start.classList.contains("guide-open")) closeGuide(); continue; }
+      const current = Math.max(0, items.indexOf(document.activeElement));
+      if (edge(12) || edge(13)) items[(current + 1) % items.length].focus();
+      if (edge(9)) enter.click();
+      else if (edge(0)) items[current].click();
+    }
+    requestAnimationFrame(pollPads);
+  }
+  window.addEventListener("gamepadconnected", () => requestAnimationFrame(pollPads), { once: true });
+})();
+</script>
 <script type="module">
 import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
 (() => {
@@ -353,6 +481,8 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
     if(window.__JOHANSSON_BOOTING__)return;
     window.__JOHANSSON_BOOTING__=true;
     enter.disabled=true;
+    document.getElementById('start').classList.remove('guide-open');
+    document.getElementById('start').classList.add('booting');
     status.textContent='LOADING GAME CODE…';
     window.__JOHANSSON_STARTUP__={startedAt:performance.now(),stage:'code'};
     try{unlockTownAudio();}catch(error){console.warn('Town audio unavailable:',error);}
@@ -363,7 +493,7 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-0fWgGcWi.js');
+      await import('./runtime/boot-Bj-Ox8Eo.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
@@ -372,10 +502,11 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
       console.error(err);
       status.textContent='START FAILED';
       fatal.querySelector('p').textContent=/WebGL|graphics context/i.test(err.message||'')
-        ? 'Safari could not start the 3D graphics engine. Close other tabs, then reload this page.'
+        ? 'The browser could not start the 3D graphics engine. Close other tabs, check that graphics acceleration is available, then reload this page.'
         : 'Johansson Town could not start: '+(err.message||'Unknown startup error')+'. Reload and try again.';
       fatal.classList.remove('hidden');
       window.__JOHANSSON_BOOTING__=false;
+      document.getElementById('start').classList.remove('booting');
       enter.disabled=false;
     }
   }

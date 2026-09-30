@@ -17,7 +17,7 @@ export const UPPGIFTER = [
   "task": "Isolationsresistansen mot skrovet är 3 MΩ i L1, 3 MΩ i L2 och 1,5 MΩ i L3. Vilket värde visar isolationsövervakningen?",
   "ask": {
    "key": "Riso",
-   "label": "Riso",
+   "label": "R_{iso}",
    "unit": "MΩ",
    "scale": 1000000
   },
@@ -25,7 +25,7 @@ export const UPPGIFTER = [
    "net"
   ],
   "hint": "Övervakningen lägger en likspänning mellan nätet och skrovet. Alla tre isolationsvägarna leder då parallellt.",
-  "solution": "1/Riso = 1/3 + 1/3 + 1/1,5 = 4/3. Riso = 0,75 MΩ. Den sämsta fasen drar ned hela nätets värde.",
+  "solution": "1/R_{iso} = 1/3 + 1/3 + 1/1,5 = 4/3. R_{iso} = 0,75 MΩ. Den sämsta fasen drar ned hela nätets värde.",
   "mistakes": [
    {
     "v": 1.5,
@@ -51,10 +51,10 @@ export const UPPGIFTER = [
    ],
    "larm": 100000
   },
-  "task": "Isolationen i L1 har sjunkit till 120 kΩ. L2 och L3 har 10 MΩ. Larmgränsen är 100 kΩ. Beräkna Riso i kΩ. Larmar övervakningen?",
+  "task": "Isolationen i L1 har sjunkit till 120 kΩ. L2 och L3 har 10 MΩ. Larmgränsen är 100 kΩ. Beräkna R_{iso} i kΩ. Larmar övervakningen?",
   "ask": {
    "key": "Riso",
-   "label": "Riso",
+   "label": "R_{iso}",
    "unit": "kΩ",
    "scale": 1000
   },
@@ -62,7 +62,7 @@ export const UPPGIFTER = [
    "net"
   ],
   "hint": "Räkna i kΩ: 10 MΩ = 10 000 kΩ. Jämför sedan med larmgränsen.",
-  "solution": "1/Riso = 1/120 + 2/10 000 kΩ⁻¹. Riso ≈ 118 kΩ. Det är över 100 kΩ, så övervakningen larmar inte ännu, trots att L1 är klart försämrad.",
+  "solution": "1/R_{iso} = 1/120 + 2/10 000 kΩ⁻¹. R_{iso} ≈ 118 kΩ. Det är över 100 kΩ, så övervakningen larmar inte ännu, trots att L1 är klart försämrad.",
   "mistakes": [
    {
     "v": 120,
@@ -155,7 +155,7 @@ export const UPPGIFTER = [
   "task": "Samma fel på L1. Varje fas har 1,0 µF kapacitans mot skrovet (kablar och filter). f = 50 Hz. Hur stor ström går i jordfelet? Svara i mA.",
   "ask": {
    "key": "Ifault",
-   "label": "Ifel",
+   "label": "I_{fel}",
    "unit": "mA",
    "scale": 0.001
   },
@@ -228,7 +228,7 @@ export const UPPGIFTER = [
   "mask": [
    "prov"
   ],
-  "hint": "R = Uprov/Iläck. Omvandla mA till A först.",
+  "hint": "R = U_{prov}/I_{läck}. Omvandla mA till A först.",
   "solution": "R = 500/0,00040 = 1 250 000 Ω = 1,25 MΩ. Det klarar en gräns på 1 MΩ med liten marginal. Jämför med samma motor torr.",
   "mistakes": [
    {
@@ -251,13 +251,13 @@ export const UPPGIFTER = [
   "task": "En kabel med skadad mantel har 50 kΩ mellan L2 och PE. Vilken läckström visar provaren vid 500 V? Svara i mA.",
   "ask": {
    "key": "prov",
-   "label": "Iläck",
+   "label": "I_{läck}",
    "unit": "mA"
   },
   "mask": [
    "prov"
   ],
-  "hint": "I = Uprov/R. 50 kΩ = 50 000 Ω.",
+  "hint": "I = U_{prov}/R. 50 kΩ = 50 000 Ω.",
   "solution": "I = 500/50 000 = 0,010 A = 10 mA. Mycket över det en frisk kabel läcker. L2 ligger långt under en gräns på 1 MΩ.",
   "mistakes": [
    {

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Utkast: Växelströmslabbet · Sjöskolan</title>
+<meta name="description" content="Utforska sinusspänning, reaktans, impedans och effekt i växelströmskretsar. Dra i reglagen, se kurvor och visardiagram och pröva dina egna beräkningar.">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../gemensamt/beteckningar.css?v=20260928"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260927"><link rel="stylesheet" href="lab.css?v=20260925-ac2"><link rel="stylesheet" href="../gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="../vecka-40/aktuell/ac-course.css?v=20260929"><link rel="stylesheet" href="guided.css?v=20260928-ux2"><link rel="stylesheet" href="workspace.css?v=20260928-ux2"><link rel="stylesheet" href="equipment.css?v=20260928-ux2"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
+<script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="ac-page">
+<nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-40/aktuell/">Vecka 40</a></nav>
+<main id="main-content" class="ac-app">
+  <p class="utkast-not" style="margin:12px 0;padding:10px 14px;border-left:6px solid #9a4a12;background:#fff7f0;border-radius:8px"><strong>Utkast för läraren.</strong> Det här är en kopia av fredagens labb som vi arbetar på. Eleverna använder <a href="../vaxelstromslabbet/?lage=guidad">den riktiga labben</a>. Svaren här sparas separat.</p><header class="ac-heading">
+    <div>
+      <p class="lab-kicker">Vecka 40 · labb</p>
+      <h1>Växelströmslabbet</h1>
+      <p>Förutsäg ett värde, läs av och förklara. Börja i guidad labb.</p>
+    </div>
+    <ul class="deck-links" aria-label="Genomgången vecka 40">
+      <li><a href="../vecka-40/aktuell/Del_1.html">Del 2: sinus</a></li>
+      <li><a href="../vecka-40/aktuell/Del_2.html">Del 3: spole och ström</a></li>
+      <li><a href="../vecka-40/aktuell/Del_3.html">Del 4: effekt</a></li>
+    </ul>
+  </header><p class="lab-start before"><strong>Först:</strong> gå igenom del 2–4 på <a href="/sjoskolan/vecka-40/aktuell/">veckans sida</a>: genomgång, film och övningar. Labben är veckans sista steg och bygger på det materialet.</p>
+
+  <div class="mode-picker" role="group" aria-label="Arbetssätt"><button type="button" data-mode="guidad" aria-pressed="true">Guidad labb · grunddel</button><button type="button" data-mode="fri" aria-pressed="false">Utforska och räkna vidare</button><button type="button" data-mode="station" aria-pressed="false">Station B · utökat protokoll</button></div>
+
+  <div class="ac-workspace">
+  <section id="guided-workspace" class="guide" aria-label="Guidad grundlabb"></section>
+  <section id="equipment-bench" class="equipment" aria-label="Simulerad utrustning"><p>Labbänken laddas. Uppgiften fungerar redan.</p></section>
+  </div>
+  <div id="free-workspace" hidden><p id="free-intro" class="station-intro">Här kan du ändra värden fritt eller välja en räkna-först-uppgift. Grundprotokollet finns under Guidad labb. Börja med genomgången innan du väljer fördjupning.</p>
+  <div class="tabs" role="tablist" aria-label="Del av labbet">
+    <button role="tab" id="tab-sinus" data-tab="sinus" aria-controls="lab" aria-selected="true"><span>1</span>Sinus och effektivvärde</button>
+    <button role="tab" id="tab-impedans" data-tab="impedans" aria-controls="lab" aria-selected="false" tabindex="-1"><span>2</span>Reaktans och impedans</button>
+    <button role="tab" id="tab-effekt" data-tab="effekt" aria-controls="lab" aria-selected="false" tabindex="-1"><span>3</span>Effekt och kompensering</button>
+  </div>
+
+  <div id="lab" class="lab" role="tabpanel" aria-labelledby="tab-sinus">
+    <section class="stage" aria-label="Diagram">
+      <div id="figures" class="figures"></div>
+      <dl id="readouts" class="readouts" aria-live="polite"></dl>
+      <p id="principle" class="principle"></p>
+    </section>
+    <aside class="panel">
+      <section class="controls-card" aria-labelledby="controls-title">
+        <div class="card-head"><h2 id="controls-title">Reglage</h2><button id="reset" class="plain">Återställ</button></div>
+        <p id="lock-note" class="lock-note" hidden>Värdena är låsta medan du löser uppgiften.</p>
+        <form id="controls" class="controls" autocomplete="off"></form>
+      </section>
+      <section class="challenge-card" aria-labelledby="challenge-title">
+        <div class="card-head"><h2 id="challenge-title">Räkna först</h2><span id="progress" class="progress"></span></div>
+        <label class="challenge-select">Uppgift<select id="challenge-select"></select></label>
+        <div id="challenge-body" hidden>
+          <p class="deck-ref" id="challenge-deck"></p>
+          <p id="challenge-task" class="task"></p>
+          <form id="answer-form" class="answer-form" autocomplete="off">
+            <label for="answer" id="answer-label">Svar</label>
+            <div class="answer-row"><input id="answer" inputmode="decimal" aria-describedby="answer-unit"><span id="answer-unit"></span><button class="primary" type="submit">Kontrollera</button></div>
+          </form>
+          <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details><div id="challenge-help"></div>
+          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+          <div class="challenge-actions"><button id="show-answer" class="plain" hidden>Visa facit</button><button id="leave" class="plain">Utforska fritt</button></div>
+        </div>
+        <p id="challenge-intro" class="muted">Välj en uppgift. Värdena ställs in och svaret döljs tills du har räknat.</p>
+      </section>
+    </aside>
+  </div>
+
+  </div>
+  <section id="station-workspace" hidden><div class="station-intro"><h2>Utökat stationsförsök</h2><p>Detta protokoll hör till Station B. Läs först fördjupningen om likriktat medelvärde och sinuskalibrerade mätare. Grundkälla 12,00 V och stationens källa 12,35 V är två olika undervisningsexempel.</p><p><a href="../vecka-40/aktuell/Genomgang.html?del=sinus&amp;avsnitt=likriktat">Genomgång före stationsförsöket</a></p><details><summary>Mätning och verklig rigg</summary><p>Här läser du simulerade instrument. Fysisk inkoppling görs först med lärarens godkända kopplingsschema och dokumenterade mätpunkter. Fråga läraren om underlaget innan du kopplar.</p></details></div><section id="labbprotokoll"></section></section>
+  <section id="lab-beteckningar" class="lab-beteckningar" aria-label="Förkortningar och beteckningar"></section>
+  <details class="teacher-notes"><summary>Simulatorn och verkligheten · säkerhet</summary><ul><li>Mät aldrig nätspänning med oscilloskopets jordade probe. Använd differentialprob och instrument med rätt CAT-klass.</li><li>I ett IT-nät ombord ger en jordad mätklämma på en fas ett jordfel.</li><li>En kondensator, även i en frekvensomriktare, kan hålla farlig spänning efter frånkoppling. Kontrollera urladdningen med mätning.</li><li>Simulatorn visar ideala komponenter och ren sinus. Verkliga mätvärden avviker.</li></ul></details>
+  <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
+</main>
+<footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+<script type="module" src="boot.mjs?v=20260930d"></script>
+<script type="module">import {hitta,ordlista} from "../gemensamt/beteckningar.mjs?v=20260928";import {UPPGIFTER,GUIDADE} from "./uppgifter.gen.mjs";const t=[...UPPGIFTER.flatMap(u=>[u.title,u.task,u.hint,u.ask.label]),...GUIDADE.flatMap(g=>[g.title,g.prompt,g.method,g.source,...g.fields.map(f=>f[1])]),"Effektivvärde U RMS PF = cos φ AC Qᶜ Δt f L C R P"];document.getElementById("lab-beteckningar").innerHTML=ordlista(hitta(t,t),"Förkortningar och beteckningar i labbet")+'<p class="muted"><a href="../vecka-40/aktuell/Beteckningar.html">Alla beteckningar för vecka 40</a></p>';</script>
+</body></html>
+

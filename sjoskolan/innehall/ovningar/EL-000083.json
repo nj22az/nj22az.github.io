@@ -3,7 +3,7 @@
   "titel": "Effekttriangel",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 6,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -35,10 +35,15 @@
       "niva": "metod",
       "text": "Räkna P och Q i samma enhet (W och var, inte kW). Räkna ut S innan du räknar P/S.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) S = √(P² + Q²): kvadrera, lägg ihop, dra roten ur. 2) PF = P/S, ett tal utan enhet. 3) Rimlighet: S är större än både P och Q, och PF ligger mellan 0 och 1. Exempel: P = 2 400 W och Q = 1 000 var ger S = √(5 760 000 + 1 000 000) = 2 600 VA och PF = 2 400/2 600 ≈ 0,92.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "S = √(600² + 800²) = 1 000 VA. PF = 600/1 000 = 0,60.",
+    "text": "P och Q är vinkelräta delar: S = √(600² + 800²) = 1 000 VA.\n\nOmvandla till fältets enhet: 1 000 VA = 1,00 kVA.\n\nPF = P/S = 600/1 000 = 0,60. PF saknar enhet.",
     "svar": [
       {
         "storhet": "S",

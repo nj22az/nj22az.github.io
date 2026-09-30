@@ -3,7 +3,7 @@
   "titel": "Differensström",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Dra returströmmen från den utgående strömmen och multiplicera med 1 000 för att få mA.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Ta strömmen ut minus strömmen tillbaka, utan tecken. 2) Gör om A till mA. Exempel: 8,000 A ut och 7,985 A tillbaka ger IΔ = 0,015 A = 15 mA. Rimlighet: skillnaden är ström som tar en annan väg, till exempel genom ett jordfel.",
+      "status": "utkast"
     }
   ],
   "losning": {

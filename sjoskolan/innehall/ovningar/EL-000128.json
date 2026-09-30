@@ -3,7 +3,7 @@
   "titel": "Efter strömgenomgång",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,10 +36,15 @@
       "niva": "metod",
       "text": "Vad rekommenderar du, och varför? Beskriv även rapporteringen enligt rutinen ombord.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad kan en strömgenomgång ge för skador som inte märks direkt? 2) Vad rekommenderar Elsäkerhetsverket efter en strömgenomgång? 3) Vad ska hända med arbetet och med rapporten enligt rutinen? Skriv rådet som du skulle säga det till kollegan.",
+      "status": "utkast"
     }
   ],
   "losning": {
-    "text": "Avbryt arbetet och gå till säker plats. Kontakta sjukvården, eftersom skador kan visa sig senare. Rapportera händelsen enligt arbetsplatsens rutin.",
+    "text": "Avbryt arbetet och gå till säker plats. Kontakta den som har sjukvårdsansvaret ombord, som tar kontakt med radiomedicinsk rådgivning (TMAS) till sjöss eller sjukvården i hamn. Skador kan visa sig senare. Rapportera händelsen enligt fartygets rutin.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

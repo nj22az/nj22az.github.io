@@ -1,0 +1,69 @@
+{
+  "id": "EL-000877",
+  "titel": "Blecken för fartygets nät",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En motor ombord har märkskylten Δ/Y 254/440 V, 60 Hz. Fartygets nät ger 440 V mellan faserna. Vilken koppling ska motorn ha, och hur lägger du blecken i plinten?",
+    "samband": [
+      "Nätets U_{L} = märkvärdet för driftkopplingen"
+    ],
+    "givet": "Ombord, 60 Hz. Märkskylt Δ/Y 254/440 V. Nätets linjespänning 440 V. Plintens övre rad är W2, U2, V2 och den undre U1, V1, W1.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Märkningen Δ/Y anger två linjespänningar: den lägre hör till Δ och den högre till Y.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Jämför nätets linjespänning med de två märkvärdena. Beskriv sedan var blecken ska ligga för den kopplingen.",
+      "status": "utkast"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Skriv upp vilken spänning som hör till Δ och vilken som hör till Y. 2) Hitta det märkvärde som är lika med nätets linjespänning. 3) Beskriv blecken: Y förbinder den övre raden till en stjärnpunkt, Δ har tre lodräta bleck. Annat fall: en motor märkt Δ/Y 230/400 V på ett nät med 230 V mellan faserna. Pröva båda kopplingarna där.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Y. Nätets 440 V är lika med det högre märkvärdet, som hör till Y. Blecken läggs längs den övre raden så att W2, U2 och V2 förbinds till en stjärnpunkt. Varje lindning får då 440/√3 ≈ 254 V, som är lindningens märkspänning.",
+    "status": "utkast",
+    "kalla": "Kursens facit (publikt)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q1",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 10 och 11",
+        "roll": "presentationens stöd- och övningsbild"
+      },
+      {
+        "kalla": "sjoskolan/labbhandbok/vecka-41.html",
+        "roll": "labbpasset med motorn, startaren och strömtången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

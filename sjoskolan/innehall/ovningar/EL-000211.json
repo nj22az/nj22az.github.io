@@ -3,7 +3,7 @@
   "titel": "Observation eller diagnos",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Avgör vilken mening som beskriver vad som hänt och vilken som gissar på en orsak.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Observation: något du har sett eller mätt. 2) Hypotes: en föreslagen orsak som måste prövas. 3) Läs meningarna och sortera dem. Annat fall: ”lampan lyser inte” och ”säkringen har gått”.",
+      "status": "utkast"
     }
   ],
   "losning": {

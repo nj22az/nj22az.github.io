@@ -1,8 +1,18 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {peninsulaActive} from '../town-mode.js';
 
 export const OFFICE_STAFF={'Harbour master':[-1.85,0,-1.20]};
 export const OFFICE_DESK_SEAT={position:[-2.52,0,-2.02],stand:[-1.85,0,-1.20],eyeY:1.18,yaw:0,pitch:0};
-export function buildOfficeWorkplace({room:parent,reg,action}){
+/**
+ * On the peninsula the harbour master lives here: a tatami mat and futon behind a
+ * folding screen on the east side, a tea stool, his coat on a stand. home-residents.js
+ * walks him to bed from these points.
+ */
+export const OFFICE_HOME_LAYOUT=Object.freeze({bounds:{minX:-3.37,maxX:3.37,minZ:-3.37,maxZ:3.37},spawn:[0,0,2.4],exit:[0,1.1,3.34],
+ door:[0,0,2.45],table:[-.9,0,1.35],bedside:[1.0,0,.95],bed:[2.1,.35,1.82],
+ cover:{position:[2.1,.41,1.22],width:1.1,length:1.3,axis:'z'},
+ hatHook:{mode:'stand',position:[2.9,1.76,-.45],yaw:Math.PI/2}});
+export function buildOfficeWorkplace({room:parent,reg,action,collider=()=>{}}){
  const room=new THREE.Group();room.name='Harbour office workplace';parent.add(room);
  const paper=new THREE.MeshStandardMaterial({color:0xe8e1c7,roughness:.92});
  const palette=new Map(),mat=c=>{if(!palette.has(c))palette.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.8}));return palette.get(c);};
@@ -40,6 +50,38 @@ export function buildOfficeWorkplace({room:parent,reg,action}){
  records([1.15,1.05,-2.40],'Open warehouse stock ledger','warehouse-stock');
  records([2.45,1.23,1.30],'Open berth record binders','berth-register');
  label('JOHANSSON HARBOUR',[0,2.48,-3.27],2.5,.28);
+ if(peninsulaActive())buildBedNook({room,box,label,reg,action,collider,mat});
  const visitorSeat=new THREE.Object3D();visitorSeat.position.set(1.14,.7,-2.05);visitorSeat.userData.npcInteraction=false;visitorSeat.userData.seat={position:[1.14,0,-2.05],stand:[1.14,0,-1.1],eyeY:1.2,yaw:0,pitch:0};room.add(visitorSeat);reg(visitorSeat,'Sit at the visitor desk',()=>action('seat','Visitor desk','A clean writing pad and the harbour ledgers are ready.'),true);
  return {computer,staff:OFFICE_STAFF};
+}
+
+function buildBedNook({room,box,reg,action,collider,mat}){
+ // A low tatami platform with the futon, head to the screen, feet to the door.
+ box('Harbour master tatami mat',[1.3,.1,2.3],[2.1,.05,.87],0xcbc38c);
+ for(const z of [-.27,2.01])box('Tatami edge',[1.3,.012,.05],[2.1,.106,z],0x3f4a3a);
+ const futon=box('Harbour master futon',[1.1,.12,2.15],[2.1,.16,.87],0xe9dfc8);futon.userData.bed=true;
+ box('Harbour master quilt',[1.05,.05,1.5],[2.1,.245,1.2],0x2c3e5c);box('Harbour master pillow',[.8,.12,.4],[2.1,.28,.35],0xf3e8d2);
+ collider(2.1,.87,1.3,2.3,.3);
+ // The folding screen: four leaves, paper on timber, zig-zagging along the west side.
+ const paper=new THREE.MeshStandardMaterial({color:0xf2ead2,roughness:.95});
+ for(let i=0;i<4;i++){
+  const leaf=box('Folding screen leaf',[.04,1.55,.5],[.38+(i%2)*.08,.8,-.35+i*.46],paper);leaf.rotation.y=(i%2?-1:1)*.2;
+  box('Screen frame',[.05,.05,.5],[.38+(i%2)*.08,1.6,-.35+i*.46],0x6d5238).rotation.y=leaf.rotation.y;
+ }
+ collider(.42,.34,.3,1.9,1.6);
+ // Beside the bed: an alarm clock, his glasses case, a tide table to fall asleep over.
+ box('Alarm clock',[.14,.12,.08],[1.55,.16,-.1],0xd7263d);box('Tide table',[.2,.02,.28],[1.55,.23,1.7],0xe8e1c7);
+ // Coat stand with the harbour master's jacket and cap, by the foot of the bed.
+ box('Coat stand pole',[.05,1.75,.05],[2.9,.88,-.45],0x6d5238);box('Coat stand foot',[.4,.04,.4],[2.9,.02,-.45],0x6d5238);
+ box('Harbour master jacket',[.42,.7,.14],[2.9,1.3,-.38],0x2c3e5c);// his cap goes on top when he is home
+ collider(2.9,-.45,.4,.4,1.8);
+ // A tea stool and a little table at the open side of the room.
+ box('Tea stool',[.36,.42,.36],[-.9,.21,1.35],0x6d5238);
+ box('Tea side table',[.55,.05,.4],[-.9,.6,.8],0x8a6a4a);box('Tea side table leg',[.06,.58,.06],[-.9,.29,.8],0x6d5238);
+ box('Kettle',[.18,.16,.18],[-1.0,.7,.8],0x9aa3a0);box('Tea cup',[.07,.07,.07],[-.75,.66,.82],0x3f7a55);
+ collider(-.9,.8,.55,.4,.62);
+ const inspect=(pos,label,title,text)=>{const o=new THREE.Object3D();o.name=label;o.position.set(...pos);room.add(o);o.userData.npcInteraction=false;reg(o,label,()=>action('inspect',title,text),true);};
+ inspect([2.1,.7,.9],'Inspect the bed behind the screen','The harbour master’s bed','A tatami mat and a futon behind the folding screen, the quilt folded square every morning at half past five. He says the harbour needs someone within earshot of the radio, and the stairs to a flat would only slow him down.');
+ inspect([-.9,1.0,.8],'Inspect the tea corner','Tea corner','A kettle, one cup and a tin of jasmine tea. The stool is where he reads the evening paper before turning in at nine.');
+ inspect([2.9,1.4,-.45],'Inspect the coat stand','Coat stand','The navy jacket, brushed and hung up at the end of the day, with his white cap on top when he is in. A tide table sticks out of the jacket pocket.');
 }

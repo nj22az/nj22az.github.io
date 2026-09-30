@@ -3,7 +3,7 @@
   "titel": "Efter åtgärd",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Ange vad som ska kontrolleras och dokumenteras, och skriv vad som fortfarande inte är provat.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Fungerar funktionen i det driftfall där felet uppstod? 2) Vilka säkerhetskontroller är föreskrivna efter en anslutning? 3) Hur dokumenteras återlämningen, och vad skrivs om det som inte är provat?",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -51,7 +51,7 @@ export function createKit({shadows=false}={}){
  /** Finishes with a picture on them, and how many metres one repeat of it covers. */
  const surfaces=new Map();
  /** Registers a textured finish: `name` then paints with `map`, projected in world space. */
- function surface(name,{map,metres=2,roughness=.95,side}={}){surfaces.set(name,{map,metres,roughness,side});}
+ function surface(name,{map,normalMap,normalScale,roughnessMap,aoMap,metres=2,roughness=.95,side}={}){surfaces.set(name,{map,normalMap,normalScale,roughnessMap,aoMap,metres,roughness,side});}
  const shared=(key,make)=>{if(!geometryCache.has(key))geometryCache.set(key,make());return geometryCache.get(key);};
  let parts=0;
 
@@ -93,7 +93,8 @@ export function createKit({shadows=false}={}){
   for(let i=0;i<n;i++){c[i*3]=colour.r;c[i*3+1]=colour.g;c[i*3+2]=colour.b;}
   g.setAttribute('color',new THREE.BufferAttribute(c,3));
   const cx=matrix.elements[12],cz=matrix.elements[14];
-  const key=finish+'|'+Math.floor(cx/CELL)+'|'+Math.floor(cz/CELL);
+  const bucketCell=finish==='plaster'?CELL*2:CELL;
+  const key=finish+'|'+Math.floor(cx/bucketCell)+'|'+Math.floor(cz/bucketCell);
   if(!buckets.has(key))buckets.set(key,{finish,list:[]});
   buckets.get(key).list.push(g);parts++;
   return g;
@@ -186,8 +187,9 @@ export function createKit({shadows=false}={}){
    if(!geometry)continue;
    geometry.computeBoundingSphere();
    const tex=surfaces.get(kind);
-   const spec=tex?{map:tex.map,roughness:tex.roughness,...(tex.side?{side:tex.side}:{})}:FINISHES[kind]||FINISHES.matte;
+   const spec=tex?Object.fromEntries(Object.entries({map:tex.map,normalMap:tex.normalMap,normalScale:tex.normalScale,roughnessMap:tex.roughnessMap,aoMap:tex.aoMap,aoMapIntensity:.35,roughness:tex.roughness,side:tex.side}).filter(([,v])=>v!==undefined)):FINISHES[kind]||FINISHES.matte;
    const material=materials[kind]??=new THREE.MeshStandardMaterial({vertexColors:true,...spec});
+   if(tex||['metal','gloss','roof'].includes(kind))material.userData.keepPhysical=true;
    const mesh=new THREE.Mesh(geometry,material);
    mesh.name=`${name}:${key}`;
    mesh.castShadow=shadows&&kind!=='thin'&&kind!=='glow';mesh.receiveShadow=true;

@@ -35,18 +35,16 @@
     { id: "park", code: "07", title: "Harbour Park", jp: "公園", sub: "Benches · trees", district: "East lawn", open: null, close: null, line: "Raised walk and benches looking back at the shotengai." },
     { id: "pier", code: "08", title: "Outer Pier", jp: "沖桟橋", sub: "Boards · night warning", district: "Harbour", open: null, close: null, line: "Connected western and eastern lanes, second jetty. Caution after dark." },
   ];
-  const RESIDENTS = [
-    { name: "Thuan", jp: "トゥアン", role: "Shopkeeper", place: "Sakura Shōten", start: 540, end: 1200 },
-    { name: "Aya", jp: "綾", role: "Bookseller", place: "Front-Row Books", start: 540, end: 1110 },
-    { name: "Kenji", jp: "健司", role: "Pattern maker", place: "Books & Workshop", start: 540, end: 1140 },
-    { name: "Mrs Sato", jp: "佐藤", role: "Quay stores", place: "Harbour Warehouse", start: 540, end: 1260 },
-    { name: "Reiko", jp: "玲子", role: "Evening press", place: "Books & Workshop", start: 900, end: 1470 },
-    { name: "Tetsuo", jp: "哲雄", role: "Night radio repair", place: "Books & Workshop", start: 1020, end: 1440 },
-    { name: "Nao", jp: "奈緒", role: "Izakaya owner", place: "Minato Izakaya", start: 960, end: 1620 },
-    { name: "Officer Mori", jp: "森", role: "Night patrol", place: "Street", start: 1200, end: 1800 },
-    { name: "Harbour master", jp: "港長", role: "24-hour quay authority", place: "Harbour Office", always: true },
-    { name: "Bus driver", jp: "運転士", role: "24-hour Harbour Line", place: "Bus Station", always: true },
-  ];
+  const DUTIES = {
+    Thuan: [540,1200], Aya: [540,1110], Kenji: [540,1140],
+    "Mrs Sato": [540,1260], Reiko: [900,1470], Tetsuo: [1020,1440],
+    Nao: [960,1620], "Officer Mori": [1320,1800]
+  };
+  const RESIDENTS = (window.JOHANSSON_RESIDENT_GUIDE || []).map(r => ({
+    ...r, start: DUTIES[r.name]?.[0], end: DUTIES[r.name]?.[1],
+    always: r.name === "Harbour master" || r.name === "Bus driver"
+  }));
+
 
   const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -190,12 +188,20 @@
         <h3>${place.title}</h3>
         <p>${place.line}</p>
       </article>`).join("");
-    rollGrid.innerHTML = RESIDENTS.map((r) => `
-      <div class="roll-card" data-resident="${r.name}">
-        <p class="duty"><span class="flag"></span> <span>${r.jp}</span></p>
-        <b>${r.name}</b>
-        <div class="muted">${r.role} · ${r.place}</div>
-      </div>`).join("");
+    // Resident content is authored in the guide catalogue, independent of the schedule engine.
+    const escape = value => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    rollGrid.innerHTML = RESIDENTS.map(r => `
+      <article class="roll-card" data-resident="${escape(r.name)}">
+        <img class="resident-portrait" src="./${escape(r.portrait)}" width="480" height="480" loading="lazy" decoding="async" alt="${escape(r.name)}, as seen around Johansson Town">
+        <div class="resident-copy">
+          <p class="resident-role">${escape(r.role)}</p>
+          <h3>${escape(r.name)}</h3>
+          <p class="resident-place">${escape(r.place)}</p>
+          <p class="resident-bio">${escape(r.bio)}</p>
+          <details class="resident-story"><summary>Backstory</summary><p>${escape(r.backstory)}</p></details>
+          ${r.start != null || r.always ? '<p class="duty"><span class="flag"></span></p>' : ''}
+        </div>
+      </article>`).join("");
   }
 
   function tick() {
@@ -242,8 +248,9 @@
     });
     rollGrid.querySelectorAll("[data-resident]").forEach((card) => {
       const r = RESIDENTS.find((x) => x.name === card.dataset.resident);
-      const duty = onDuty(r, minutes);
       const flag = card.querySelector(".flag");
+      if (!flag) return;
+      const duty = onDuty(r, minutes);
       flag.textContent = duty ? "ON DUTY" : "OFF";
       flag.parentElement.classList.toggle("on", duty);
     });
@@ -296,8 +303,9 @@
     setMode(ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length]);
   });
 
+  document.querySelectorAll('a[href="#visit-planning"]').forEach(link=>link.addEventListener('click',()=>{document.getElementById('visit-planning').open=true;}));
   renderStatic();
   ticks();
   tick();
-  setInterval(tick, 80);
+  setInterval(tick, 1000);
 })();

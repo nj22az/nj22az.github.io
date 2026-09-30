@@ -1,5 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
+import {createMaterials} from '../../render/materials.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GOYA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
@@ -23,6 +24,8 @@ import {windowGlow} from '../../render/dusk.js';
 export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={}){
  const group=new THREE.Group();group.name='Okinawan quarters';world.group.add(group);
  const kit=createKit({shadows});
+ const plaster=createMaterials().material('plaster');
+ kit.surface('plaster',{map:plaster.map,normalMap:plaster.normalMap,normalScale:plaster.normalScale,roughnessMap:plaster.roughnessMap,aoMap:plaster.aoMap,metres:2});
  kit.surface('coral',{map:coralStone(),metres:1.6});
  kit.surface('tile',{map:roofTile(),metres:.9,roughness:.8,side:THREE.DoubleSide});
  kit.surface('hana',{map:flowerBlock(),metres:.42});
@@ -313,7 +316,8 @@ function buildYardRow(kit,solid,{anchor,inspect,onAction}){
  solid(keiTruck(kit,-20.4,11.5,{ry:Math.PI/2,colour:0xdcd6c6,load:'crates'}));
  solid(fishCrates(kit,-17.6,8,{rows:2,cols:2,seed:21}));
  solid(planterBoxes(kit,-23.4,9.5,{ry:Math.PI/2,count:5,seed:22}));
- solid(laundry(kit,-21.8,4.6,{ry:Math.PI/2,length:2.4}));
+ // Moved west, beside the second yard house (yard-homes-layout.js), clear of the lane.
+ solid(laundry(kit,-23.3,5.2,{ry:Math.PI/2,length:2.2}));
  buildYardLife(kit,solid,{anchor,inspect,onAction});
  solid(gasBottles(kit,-16.4,17.8,{ry:Math.PI/2}));
  hibiscus(kit,-23.6,18.6,{seed:23});banana(kit,-23.4,-16.6,{seed:24});

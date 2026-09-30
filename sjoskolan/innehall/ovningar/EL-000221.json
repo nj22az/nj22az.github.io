@@ -3,7 +3,7 @@
   "titel": "Mätningens räckvidd",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Skriv en slutsats du kan dra direkt och en fråga som kräver mer data.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad säger ett värde utan last? 2) Vad säger det inte om källan under last? 3) Vilka mätningar behövs för den andra frågan? Skriv en slutsats du kan dra nu och en fråga som behöver mer data.",
+      "status": "utkast"
     }
   ],
   "losning": {

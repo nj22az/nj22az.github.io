@@ -1,3 +1,5 @@
+> **September 2026:** the character models (MakeHuman Thuan and Johansson, Nao's VRoid, the Meshy Thuan, the low-poly residents) and the retired districts were removed; everyone in town is now a code-built Shimanchu (`src/avatars/`). Their entries below are kept as history. Files can be recovered from git (see `docs/EXPANSION-NOTES.md`).
+
 > Current asset inventory: see [Main Street homes](../docs/MAIN-STREET-HOMES.md) and [resident provenance](characters/residents/PROVENANCE.md). Older cast descriptions below are historical; unused prototype binaries have been retired.
 
 # Asset licence ledger

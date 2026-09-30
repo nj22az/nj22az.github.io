@@ -3,7 +3,7 @@
   "titel": "Kort funktionsbeskrivning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Beskriv kontakternas lägen och strömvägen i varje läge och förklara vad som ändras när en knapp släpps.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vila: skriv läget för S0, S1, K1 och hållkontakten. 2) Start: vad ändras när S1 trycks? 3) Hållning: vad håller strömvägen när S1 släpps? 4) Stopp: vad bryts? Skriv ett stycke per läge.",
+      "status": "utkast"
     }
   ],
   "losning": {

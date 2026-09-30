@@ -3,7 +3,7 @@
   "titel": "Åtgärd utan orsak",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -39,6 +39,11 @@
       "niva": "metod",
       "text": "Förklara varför ett byte inte är en diagnos och ange vilken information som bör samlas in.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Om skyddet löser igen efter byte, vad pekar det på? 2) Vilka orsaker kan finnas: för stor last, felström, fel inställning eller fel skydd? 3) Vilka uppgifter behöver samlas in innan något byts igen?",
+      "status": "utkast"
     }
   ],
   "losning": {

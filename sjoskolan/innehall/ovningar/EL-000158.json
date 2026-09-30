@@ -3,7 +3,7 @@
   "titel": "Selektivitetsfall",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -36,6 +36,11 @@
       "niva": "metod",
       "text": "Ange vad som behöver utredas och vilka data från tillverkaren som behövs.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilket skydd borde ha löst ensamt? 2) Vad kallas det när det närmaste skyddet kopplar bort felet och resten fortsätter? 3) Vilka data behövs för att jämföra skydden: kurvor och felström?",
+      "status": "utkast"
     }
   ],
   "losning": {

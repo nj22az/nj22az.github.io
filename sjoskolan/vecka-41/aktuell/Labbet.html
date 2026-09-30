@@ -1,0 +1,111 @@
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Labbet fredag 9 oktober · Vecka 41 · Sjöskolan</title><meta name="description" content="Labbet vecka 41, fredag 11.00–16.00: koppla Y och Δ i en motors plint, gå igenom motorns och startarens delar, mät med strömtången och hitta ett fel i plinten."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-41/aktuell/Labbet.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928">
+<style>.st{border:1px solid var(--sj-line,#cad8e2);border-radius:12px;padding:16px 18px;margin:20px 0;background:#fff}.st h2{margin-top:0}.st ol{padding-left:24px}.st li{margin:6px 0}
+.regler{border-left:6px solid var(--sj-warn,#9a4a12);background:#fff7f0;border-radius:12px;padding:14px 18px;margin:16px 0}.regler h2{margin-top:0;font-size:22px}
+.prot{overflow-x:auto;margin:12px 0}.prot table{width:100%;border-collapse:collapse;font-size:15px;background:#fff}.prot th,.prot td{border:1px solid var(--sj-line,#cad8e2);padding:8px 10px;text-align:left;vertical-align:top}.prot th{background:var(--sj-soft,#edf4f9)}.prot td.fyll{min-width:6em;height:2.4em}
+.lab-knapp{margin:12px 0}.st-bild{margin:6px 0 14px}.st-bild img{display:block;width:100%;height:auto;border-radius:8px}.st-bild figcaption{font-size:14px;color:var(--sj-muted,#4d6579)}@media print{.school-nav,.course-breadcrumb,.lab-knapp{display:none}.st,.prot{break-inside:avoid}}</style>
+<script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="index.html">Vecka 41</a><a href="Inlamning.html">Inlämning</a></nav>
+<main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="index.html#labb">← Vecka 41</a></div><article class="course-reading">
+<p class="course-kicker">Vecka 41 · fredag 9 oktober 11.00–16.00, lunch 12.00–13.00</p>
+<h1>Labbet: motorn, startaren och strömtången</h1>
+<p class="sj-lead">Du kopplar Y och Δ i en riktig motors plint, kontrollerar kopplingen med multimeter, går igenom motorns och startarens delar och ser vad en strömtång mäter. Grupperna roterar mellan tre stationer, 40 minuter på varje. Sist letar varje grupp upp ett fel som läraren har lagt in i plinten.</p>
+<p class="lab-knapp"><button type="button" class="sj-btn" onclick="print()">Skriv ut protokollet</button></p>
+<p class="sj-panel week-note"><strong>Kan du inte komma?</strong> Gör samma stationer i <a href="../../motorlabbet/">Motorlabbet</a>, en 3D-simulator med samma protokoll.</p>
+
+<h2>Före labbet</h2>
+<ul>
+<li>Efter del 2, senast torsdag: läs genomgången av <a href="Del_3.html">del 3</a> själv (teori, exempel och presentationen) och gör övning 3.1–3.5.</li>
+<li>Skriv ditt namn, din grupp och dina förutsägelser i kolumnen Förväntat i protokollen nedan <strong>innan</strong> du mäter.</li>
+</ul>
+
+<div class="regler"><h2>Regler vid stationerna</h2>
+<ol>
+<li>Motorn och startaren är övningsobjekt. De ansluts aldrig till nätet, och det finns ingen nätkabel vid stationen.</li>
+<li>Blecken flyttas med mätsladdarna bortkopplade. Visa läraren innan du mäter en ny koppling.</li>
+<li>Vid tångstationen slås aggregatets utgång av innan sladden flyttas.</li>
+<li>Lyft inte motorn.</li>
+</ol></div>
+
+<section class="st" id="m"><h2>Station M: motorn, delar och koppling</h2>
+<figure class="st-bild"><img src="figurer/labbet-station-m.webp" width="1400" height="639" loading="lazy" alt="Station M i 3D: motorn med öppen kopplingslåda och märkskylt, multimetern på Ω med mätsladdarna till plinten"><figcaption>Stationen i 3D. Samma bänk finns i <a href="../../motorlabbet/">Motorlabbet</a>.</figcaption></figure>
+<ol>
+<li>Peka ut märkskylten, stommen med kylflänsar, fläktkåpan, axeln med kil, lagersköldarna, kopplingslådan med plinten och skyddsjordens anslutning. Säg vad varje del gör.</li>
+<li>Nollställ mätsladdarna: håll spetsarna mot varandra och skriv upp värdet. Det dras av från alla mätvärden.</li>
+<li>Utan bleck: mät U1–U2, V1–V2 och W1–W2, och sedan U1–V1.</li>
+<li>Lägg blecken för Y. Visa läraren. Mät U1–V1, V1–W1 och W1–U1.</li>
+<li>Lägg blecken för Δ. Visa läraren. Mät samma tre par. Räkna kvoten R<sub>Y</sub>/R<sub>Δ</sub>.</li>
+<li>Läs skylten: vilken koppling skulle motorn ha på 400 V i land? Står det något om 440 V och 60 Hz ombord?</li>
+<li>Ta bort blecken och lägg dem i lådan till nästa grupp.</li>
+</ol>
+<div class="prot"><table>
+<thead><tr><th colspan="4">Mätsladdarnas resistans: ______ Ω</th></tr><tr><th>Mätpunkter</th><th>Förväntat</th><th>Uppmätt (Ω)</th><th>Stämmer? Varför?</th></tr></thead>
+<tbody>
+<tr><td>U1–U2, V1–V2, W1–W2 utan bleck</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>U1–V1 utan bleck</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>U1–V1, V1–W1, W1–U1 i Y</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>U1–V1, V1–W1, W1–U1 i Δ</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>Kvoten R<sub>Y</sub>/R<sub>Δ</sub></td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>Koppling på 400 V enligt skylten</td><td colspan="3" class="fyll"></td></tr>
+</tbody></table></div></section>
+
+<section class="st" id="s"><h2>Station S: startaren och skylten</h2>
+<figure class="st-bild"><img src="figurer/labbet-station-s.webp" width="1400" height="699" loading="lazy" alt="Station S i 3D: startaren med locket av, kontaktor K1 och överlastrelä F2, multimetern på Ω med mätsladdarna på 95–96"><figcaption>Stationen i 3D. Samma bänk finns i <a href="../../motorlabbet/">Motorlabbet</a>.</figcaption></figure>
+<ol>
+<li>Hitta kontaktorn K1, huvudkontakterna, spolens plintar A1–A2, hjälpkontakten 13–14 och överlastreläet med 95–96 och inställningsratten. Märk dem på det utskrivna schemat.</li>
+<li>Mät spänningslöst: A1–A2, 13–14, 95–96 och en huvudkontakt.</li>
+<li>Tryck på överlastreläets testknapp och mät 95–96 igen. Återställ reläet.</li>
+<li>Vilken ström ska överlastreläet ställas på för motorn vid station M? Använd skylten.</li>
+<li>Räkna den tillförda effekten P<sub>in</sub> = √3 · U<sub>L</sub> · I<sub>L</sub> · cos φ och verkningsgraden η = P<sub>axel</sub>/P<sub>in</sub> med skyltens värden.</li>
+</ol>
+<div class="prot"><table>
+<thead><tr><th>Mätpunkter</th><th>Förväntat</th><th>Uppmätt</th><th>Slutsats</th></tr></thead>
+<tbody>
+<tr><td>A1–A2</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>13–14</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>95–96, före testknappen</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>95–96, efter testknappen</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>Överlastreläets inställning</td><td colspan="3" class="fyll"></td></tr>
+<tr><td>P<sub>in</sub> och η från skylten</td><td colspan="3" class="fyll"></td></tr>
+</tbody></table></div></section>
+
+<section class="st" id="t"><h2>Station T: strömtången (skyddsklenspänning)</h2>
+<figure class="st-bild"><img src="figurer/labbet-station-t.webp" width="1400" height="666" loading="lazy" alt="Station T i 3D: aggregatet med strömgräns 2,0 A, en labbsladd från plus till minus och strömtången runt sladden"><figcaption>Stationen i 3D. Samma bänk finns i <a href="../../motorlabbet/">Motorlabbet</a>.</figcaption></figure>
+<ol>
+<li>Aggregatets strömgräns är inställd av läraren. Utgången är avslagen.</li>
+<li>Nollställ tången i läget DC A med sladden utanför käften.</li>
+<li>Slå på utgången. Läs aggregatets ström och tångens värde med sladden en gång genom käften.</li>
+<li>Slå av. Lägg sladden två varv genom käften. Slå på och läs.</li>
+<li>Slå av. Vik sladden som en hårnål, så att både den utgående och den tillbakagående delen går genom käften. Slå på och läs.</li>
+<li>Förklara: varför visar tången nära noll runt en hel trefaskabel, och hur ska en fasström mätas?</li>
+</ol>
+<div class="prot"><table>
+<thead><tr><th colspan="4">Aggregatets ström: ______ A</th></tr><tr><th>Tången runt</th><th>Förväntat</th><th>Uppmätt (A)</th><th>Förklaring</th></tr></thead>
+<tbody>
+<tr><td>Sladden en gång</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>Sladden två varv</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+<tr><td>Hårnål, ut och tillbaka</td><td class="fyll"></td><td class="fyll"></td><td class="fyll"></td></tr>
+</tbody></table></div></section>
+
+<section class="st" id="f"><h2>Felsökning: hitta felet i plinten</h2>
+<p>Läraren har lagt in ett fel i plinten. Motorn ska vara Δ-kopplad. Ni har 15 minuter vid motorn.</p>
+<ol>
+<li>Mät U1–V1, V1–W1 och W1–U1 med mätsladdarna avdragna.</li>
+<li>Jämför med vad en hel Δ ska ge. Skriv en hypotes om vad som är fel.</li>
+<li>Välj en kontroll som skiljer mellan era hypoteser: en mätning eller en titt i plinten, med mätsladdarna bortkopplade.</li>
+<li>Rätta felet, visa läraren och mät igen.</li>
+</ol>
+<div class="prot"><table>
+<thead><tr><th colspan="2">Felsökningslogg</th></tr></thead>
+<tbody>
+<tr><td>Observation: U1–V1, V1–W1, W1–U1</td><td class="fyll"></td></tr>
+<tr><td>Hypotes</td><td class="fyll"></td></tr>
+<tr><td>Kontroll och resultat</td><td class="fyll"></td></tr>
+<tr><td>Slutsats, åtgärd och mätning efter rättning</td><td class="fyll"></td></tr>
+</tbody></table></div></section>
+
+<h2>Slutsats och inlämning</h2>
+<p>Skriv två eller tre meningar: vad mätningarna visar om Y och Δ, och vad tången mäter. Håll isär observation (vad mätaren visade) och slutsats (vad det betyder).</p>
+<p>Protokollet lämnas in som <a href="Inlamning.html#uppgift-3">inlämning 3</a> med veckans uppgifter senast söndag 11 oktober. Den allmänna mallen för riskbedömning och mätplan finns i <a href="Elevprotokoll.html">Elevprotokoll och riskmall</a>.</p>
+</article></main>
+<footer class="sj-footer"><p>Sjöskolan · Elteknik och ellära · Nils Johansson</p></footer>
+</body></html>

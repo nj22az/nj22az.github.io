@@ -3,7 +3,7 @@
   "titel": "Samma relä",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Förklara hur symbolerna hör ihop och hur korsreferensen hjälper dig att hitta den andra delen.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilken apparat har beteckningen? 2) Vad är spolen och vad är kontakten hos den apparaten? 3) Hur hittar du den andra delen på en annan sida (korsreferens)?",
+      "status": "utkast"
     }
   ],
   "losning": {

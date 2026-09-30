@@ -43,7 +43,7 @@ export const STATION_A_PROTOKOLL = {
     { title: 'Instrumentkontroll efter', storhet: 'U referens', punkter: 'Ref+ / Ref−', forv: 'referensens värde', tol: '±(0,5 % + 2 siffror)', need: { mode: 'dc', red: 'Ref+', black: 'Ref−' } },
   ],
   questions: [
-    { k: 'slinga', label: 'Slinglagen med dina mätvärden: Ukälla − U1 − U2 = ? Vad visar resten?', short: 'slinglagen', minWords: 5 },
+    { k: 'slinga', label: 'Slinglagen med dina mätvärden: U_{källa} − U1 − U2 = ? Vad visar resten?', short: 'slinglagen', minWords: 5 },
     { k: 'avvikelse', label: 'Förklara en avvikelse', short: 'förklaring av en avvikelse', minWords: 15, hint: 'Välj en mätning där uppmätt skiljer sig från förväntat. Är orsaken komponentens tolerans, källans verkliga spänning, instrumentets bidrag eller ett fel i kretsen? Motivera med dina siffror.' },
     { k: 'slutsats', label: 'Slutsats: vad visar dina mätningar, och vad visar de inte?', short: 'slutsats', minWords: 15 },
     { k: 'ejkontroll', label: 'Vad har du inte kontrollerat?', short: 'vad som inte är kontrollerat', minWords: 6 },

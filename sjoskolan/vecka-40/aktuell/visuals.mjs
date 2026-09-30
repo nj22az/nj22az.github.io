@@ -2,8 +2,11 @@
 const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
 const C={blue:'#064f91',orange:'#a94d0a',ink:'#163248',line:'#cad8e2',green:'#176844'};
 const line=(x1,y1,x2,y2,color=C.line)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="1.5"/>`;
-const text=(x,y,s,anchor='start',color=C.ink,size=14)=>`<text x="${x}" y="${y}" fill="${color}" text-anchor="${anchor}" font-family="Arial,sans-serif" font-size="${size}">${esc(s).replace(/_\{([^{}]*)\}/g,'<tspan baseline-shift="sub" font-size="75%">$1</tspan>')}</text>`;
-export function visual(kind,width=760,progress=1){
+// F: textskala. Presentationerna (verktyg/ac/figurbilder.py) ritar med större text för projektor.
+let F=1;
+const text=(x,y,s,anchor='start',color=C.ink,size=14)=>`<text x="${x}" y="${y}" fill="${color}" text-anchor="${anchor}" font-family="Arial,sans-serif" font-size="${+(size*F).toFixed(1)}">${esc(s).replace(/_\{([^{}]*)\}/g,'<tspan baseline-shift="sub" font-size="75%">$1</tspan>')}</text>`;
+export function visual(kind,width=760,progress=1,{skala=1}={}){
+ F=skala;
  const w=Math.max(280,Math.min(1000,width)),h=kind==='meters'?220:270;
  const title={wave:'Fartygets huvudnät, 440 volt RMS och 60 hertz',period:'En period vid 60 hertz tar 16,7 millisekunder',peak:'440 volt RMS har toppen 622 volt',rms:'Multimetern visar effektivvärdet 440 volt, toppen är 622 volt',calibration:'För en ren sinus visar båda mätartyperna kalibratorns effektivvärde',resistor:'Ström och spänning är i fas',rl:'Strömmen släpar efter spänningen i RL-kretsen',triangle:'Impedanstriangel för en fläktmotor: resistansen R 50 ohm, spolens reaktans X L 120 ohm och impedansen Z 130 ohm',power:'Samma aktiva effekt kräver större ström vid lägre effektfaktor',powerTriangle:'Effekttriangel för sinusformad last',meters:'Sinuskalibrerad mätare jämförd med 10 volt true RMS',radianer:'Ett helt varv är 360 grader eller 2 pi radianer. En radian är ungefär 57 grader.'}[kind]||'Undervisningsdiagram';
  let b='';
@@ -30,17 +33,21 @@ export function visual(kind,width=760,progress=1){
   rows.forEach((row,i)=>{const y=y0+i*57;b+=line(12,y+34,w-12,y+34)+text(14,y+21,row[0],'start',C.ink,w<420?13:16)+text(w-14,y+21,row[1],'end',C.blue,w<420?21:27);});
   if(kind==='power')b+=text(12,235,'U och P hålls oförändrade.');
  }else if(kind==='triangle'||kind==='powerTriangle'){
-  const a=kind==='triangle'?50:1380,hojd=kind==='triangle'?120:Math.sqrt(2760**2-1380**2),scale=Math.min((w-105)/a,145/hojd),ox=(w-a*scale)/2,oy=210,rx=ox+a*scale,ry=oy-hojd*scale;
-  b+=line(ox,oy,rx,oy,C.ink)+line(rx,oy,rx,ry,C.orange)+`<path d="M${ox},${oy} L${rx},${ry}" fill="none" stroke="${C.blue}" stroke-width="3"/>`;
-  b+=text((ox+rx)/2,238,kind==='triangle'?'R = 50 Ω':'P = 1 380 W','middle')+text(rx-4,ry-15,kind==='triangle'?'X_{L} ≈ 120 Ω':'Q ≈ 2 390 var','end',C.orange)+text(ox,55,kind==='triangle'?'|Z| ≈ 130 Ω':'S = 2 760 VA','start',C.blue,20);
+  // Rätvinklig triangel: vågrät katet (R eller P), lodrät katet (X_{L} eller Q), hypotenusa (|Z| eller S). Etiketterna står vid sin sida.
+  const tri=kind==='triangle',a=tri?50:1380,hojd=tri?120:Math.sqrt(2760**2-1380**2),scale=Math.min((w*0.4)/a,175/hojd),ox=(w-a*scale)/2,oy=220,rx=ox+a*scale,ry=oy-hojd*scale,k=12;
+  b+=`<path d="M${ox},${oy} L${rx},${oy}" stroke="${C.ink}" stroke-width="3"/><path d="M${rx},${oy} L${rx},${ry}" stroke="${C.orange}" stroke-width="3"/><path d="M${ox},${oy} L${rx},${ry}" fill="none" stroke="${C.blue}" stroke-width="3"/>`;
+  b+=`<path d="M${rx-k},${oy} L${rx-k},${oy-k} L${rx},${oy-k}" fill="none" stroke="${C.ink}" stroke-width="1.5"/>`;
+  b+=text((ox+rx)/2,oy+26,tri?'R = 50 Ω':'P = 1 380 W','middle',C.ink,15)+text(rx+12,(oy+ry)/2+5,tri?'X_{L} ≈ 120 Ω':'Q ≈ 2 390 var','start',C.orange,15)+text((ox+rx)/2-14,(oy+ry)/2,tri?'|Z| ≈ 130 Ω':'S = 2 760 VA','end',C.blue,17);
  }else{
   const TP=1000/60,SPAN=2*TP,left=46,right=16,top=42,bottom=42,X=t=>left+t/SPAN*(w-left-right),Y=v=>top+(1-v)/2*(h-top-bottom);
   [0,10,20,30].forEach(t=>{b+=line(X(t),top,X(t),h-bottom)+text(X(t),h-bottom+20,String(t),t===0?'start':'middle',C.ink,12);});
-  [-1,0,1].forEach(v=>{b+=line(left,Y(v),w-right,Y(v))+text(left-7,Y(v)+4,kind==='resistor'||kind==='rl'?(v===0?'0':v===1?'+1':'−1'):(v===0?'0':v===1?'622':'−622'),'end',C.ink,11);});
-  b+=text(left,18,kind==='resistor'||kind==='rl'?'Normaliserad amplitud':'Spänning (V)','start',C.ink,12)+text(w-right,h-3,'Tid (ms)','end',C.ink,12);
-  const path=(shift,color,dash='')=>{let d='';for(let n=0;n<=240;n++){const t=SPAN*n/240;d+=(n?'L':'M')+X(t).toFixed(2)+','+Y(Math.sin(2*Math.PI*t/TP-shift)).toFixed(2);}return `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.6"${dash?` stroke-dasharray="${dash}"`:''}/>`;};
-  b+=path(0,C.blue);if(kind==='resistor'||kind==='rl'){b+=path(kind==='rl'?Math.atan(120/50):0,C.orange,'7 5');b+=text(left,34,'u: hel linje   i: streckad','start',C.ink,12);}
-  if(kind==='period'){b+=line(X(0),Y(0)+26,X(TP),Y(0)+26,C.green)+text(X(TP/2),Y(0)+48,'T ≈ 16,7 ms','middle',C.green,14);}
+  // u och i har olika enheter: strömmen ritas lägre (0,6) så att båda kurvorna syns. Jämför tiden, inte höjden.
+  const ui=kind==='resistor'||kind==='rl';
+  [-1,0,1].forEach(v=>{b+=line(left,Y(v),w-right,Y(v))+(ui&&v!==0?'':text(left-7,Y(v)+4,v===0?'0':v===1?'622':'−622','end',C.ink,11));});
+  b+=text(left,18,ui?'u och i (olika skalor)':'Spänning (V)','start',C.ink,12)+text(w-right,h-3,'Tid (ms)','end',C.ink,12);
+  const path=(shift,color,dash='',amp=1)=>{let d='';for(let n=0;n<=240;n++){const t=SPAN*n/240;d+=(n?'L':'M')+X(t).toFixed(2)+','+Y(amp*Math.sin(2*Math.PI*t/TP-shift)).toFixed(2);}return `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.6"${dash?` stroke-dasharray="${dash}"`:''}/>`;};
+  b+=path(0,C.blue);if(ui){b+=path(kind==='rl'?Math.atan(120/50):0,C.orange,'7 5',0.6);b+=text(left,34,'u: hel linje   i: streckad','start',C.ink,12);}
+  if(kind==='period'){const yb=top-8;b+=`<path d="M${X(0)},${Y(0)} V${yb} H${X(TP)} V${Y(0)}" fill="none" stroke="${C.green}" stroke-width="2" stroke-dasharray="5 4"/>`+`<circle cx="${X(0)}" cy="${Y(0)}" r="4" fill="${C.green}"/><circle cx="${X(TP)}" cy="${Y(0)}" r="4" fill="${C.green}"/>`+text(X(w<560?TP:TP/2),yb-7,'T ≈ 16,7 ms','middle',C.green,14);}
   if(kind==='peak')b+=text(X(TP/4)+8,top-7,'û ≈ 622 V','start',C.blue,14);
   if(progress<1){const t=SPAN*Math.max(0,progress);b+=`<circle cx="${X(t)}" cy="${Y(Math.sin(2*Math.PI*t/TP))}" r="5" fill="${C.green}"/>`;}
  }

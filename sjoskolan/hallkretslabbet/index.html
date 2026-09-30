@@ -6,8 +6,7 @@
 <meta name="description" content="Tryck START och STOPP, lägg in fel och mät mellan punkter i en hållkrets.">
 <link rel="canonical" href="https://nj22az.github.io/sjoskolan/hallkretslabbet/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260927">
-<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926">
-<style>.btn-row{display:flex;gap:8px;flex-wrap:wrap}.toggle{font:inherit;font-weight:700;padding:10px 12px;border-radius:10px;border:2px solid #064f91;background:#fff;color:#064f91;cursor:pointer;flex:1 1 8rem;min-width:0}.toggle[aria-pressed="true"]{background:#064f91;color:#fff}.toggle:disabled{opacity:.55;cursor:not-allowed}</style>
+<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926"><link rel="stylesheet" href="../gemensamt/labbpekskarm.css?v=20260928">
 <script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="ac-page">
 <nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="/sjoskolan/vecka-43/aktuell/">Vecka 43</a></nav>
@@ -20,40 +19,38 @@
     </div>
     <ul class="deck-links" aria-label="Presentationer"><li><a href="../bildspel/?d=v43_03_Elscheman_och_dokumentation">v43_03 Elscheman</a></li><li><a href="../bildspel/?d=v41_03_Fysisk_traff_och_matning">v41_03 Mätning</a></li><li><a href="../filmer/#hallkretsen">Film: Hållkretsen</a></li></ul>
   </header><section class="lab-start" aria-labelledby="lab-start-h"><h2 id="lab-start-h">Så gör du</h2><p class="before"><strong>Först:</strong> gå igenom <a href="/sjoskolan/vecka-43/aktuell/">veckans bildspel, genomgång och övningar</a>. Labben är veckans sista steg och bygger på det materialet.</p><ol><li>Titta på schemat. Tryck S1 START och S0 STOPP och se när K1 drar.</li><li><strong>Förutsäg.</strong> Välj en uppgift under ”Räkna först”. Knapparna låses och mätvärdena döljs. Räkna ut svaret och skriv det.</li><li><strong>Läs av och jämför.</strong> Tryck ”Kontrollera”. Mätvärdena visas och du kan jämföra.</li><li><strong>Förklara.</strong> Välj ”Ny felmodul”, skriv vad du väntar dig innan varje mätning och förklara var felet sitter.</li></ol><button type="button" onclick="const s=document.getElementById('challenge-select');s.value=s.options[1].value;s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.challenge-card').scrollIntoView({behavior:'smooth',block:'start'})">Starta första uppgiften</button><p class="muted">Allt du gör sparas bara i den här webbläsaren.</p></section>
-  <div id="lab" class="lab">
+  <div id="lab" class="lab lab-bred">
+    <section class="challenge-card" aria-labelledby="challenge-title">
+      <div class="card-head"><h2 id="challenge-title">Räkna först</h2><span id="progress" class="progress"></span></div>
+      <label class="challenge-select">Uppgift<select id="challenge-select"></select></label>
+      <div id="challenge-body" hidden>
+        <p class="deck-ref" id="challenge-deck"></p>
+        <p id="challenge-task" class="task"></p>
+        <form id="answer-form" class="answer-form" autocomplete="off">
+          <label for="answer" id="answer-label">Svar</label>
+          <div class="answer-row"><input id="answer" inputmode="decimal" aria-describedby="answer-unit"><span id="answer-unit"></span><button class="primary" type="submit">Kontrollera</button></div>
+        </form>
+        <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details>
+        <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+        <div class="challenge-actions"><button id="show-answer" class="plain" hidden>Visa facit</button><button id="leave" class="plain">Utforska fritt</button></div>
+      </div>
+      <p id="challenge-intro" class="muted">Välj en uppgift. Kretsen ställs in och mätvärdena döljs tills du har räknat.</p>
+    </section>
     <section class="stage" aria-label="Schema och mätvärden">
       <div id="figures" class="figures"></div>
       <dl id="readouts" class="readouts" aria-live="polite"></dl>
       <p id="principle" class="principle"></p>
     </section>
-    <aside class="panel">
-      <section class="controls-card" aria-labelledby="controls-title">
-        <div class="card-head"><h2 id="controls-title">Knappar och mätare</h2><button id="reset" class="plain">Återställ</button></div>
-        <p id="lock-note" class="lock-note" hidden>Kretsen är låst medan du löser uppgiften.</p>
-        <div id="controls" class="controls"></div>
-      </section>
-      <section class="challenge-card" aria-labelledby="challenge-title">
-        <div class="card-head"><h2 id="challenge-title">Räkna först</h2><span id="progress" class="progress"></span></div>
-        <label class="challenge-select">Uppgift<select id="challenge-select"></select></label>
-        <div id="challenge-body" hidden>
-          <p class="deck-ref" id="challenge-deck"></p>
-          <p id="challenge-task" class="task"></p>
-          <form id="answer-form" class="answer-form" autocomplete="off">
-            <label for="answer" id="answer-label">Svar</label>
-            <div class="answer-row"><input id="answer" inputmode="decimal" aria-describedby="answer-unit"><span id="answer-unit"></span><button class="primary" type="submit">Kontrollera</button></div>
-          </form>
-          <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details>
-          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
-          <div class="challenge-actions"><button id="show-answer" class="plain" hidden>Visa facit</button><button id="leave" class="plain">Utforska fritt</button></div>
-        </div>
-        <p id="challenge-intro" class="muted">Välj en uppgift. Kretsen ställs in och mätvärdena döljs tills du har räknat.</p>
-      </section>
-    </aside>
+    <section class="controls-card" aria-labelledby="controls-title">
+      <div class="card-head"><h2 id="controls-title">Knappar och mätare</h2><button id="reset" class="plain">Återställ</button></div>
+      <p id="lock-note" class="lock-note" hidden>Kretsen är låst medan du löser uppgiften.</p>
+      <div id="controls" class="controls"></div>
+    </section>
   </div>
   <section id="labbprotokoll"></section>
   <details class="teacher-notes"><summary>Simulatorn och verkligheten · säkerhet</summary><ul><li>Hållkretsen är ett återstartsskydd: efter strömavbrott startar motorn inte själv.</li><li>Felsök i första hand spänningslöst. Mätning under spänning kräver kompetens, uppdrag och rätt utrustning.</li><li>Ombord har styrkretsar ofta 230 V AC. En högohmig mätare kan då visa spökspänning på en öppen ledare, där simulatorn visar ”flytande”.</li></ul></details>
   <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
 </main>
 <footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
-<script type="module" src="app.mjs?v=20260929-not"></script>
+<script type="module" src="app.mjs?v=20260928-pek"></script>
 </body></html>

@@ -3,7 +3,7 @@
   "titel": "Frånskiljare och brytare",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Förklara vilken märkning eller dokumentation som behövs innan du vet vad den får användas till.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad är en frånskiljare byggd för: bryta ström eller visa en säker brytpunkt? 2) Vad kan hända om den öppnas under last? 3) Vilket underlag visar vad den får bryta?",
+      "status": "utkast"
     }
   ],
   "losning": {

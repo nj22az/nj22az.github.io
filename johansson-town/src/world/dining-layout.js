@@ -43,11 +43,19 @@ const IZAKAYA_PLOTS=Object.freeze({
  peninsula:Object.freeze([-12.5,-10.43]),
 });
 export const IZAKAYA_DOOR=[-7.05,-20.4];
+/**
+ * The ramen counter's street door. On the old street that is Inakaya across the road; on
+ * the peninsula it is Sato Ramen, the single-storey corner shop on Minato's alley flank
+ * that shares its kitchen (minato-facade.js). izakayaPlot() sets it for the layout.
+ */
+export const RAMEN_DOOR=[...DINING.ramenDoor];
+export const SATO_RAMEN_DOOR=Object.freeze([-7.05,-13.9]);
 export const IZAKAYA_APPROACH=[-6.35,-20.4];
 export const IZAKAYA_LANE=[[0,-20.4],IZAKAYA_DOOR];
 export function izakayaPlot(){
  const [x,z]=IZAKAYA_PLOTS[peninsulaActive()?'peninsula':'street'];
  IZAKAYA_DOOR[1]=z;IZAKAYA_APPROACH[1]=z;IZAKAYA_LANE[0][1]=z;
+ const ramen=peninsulaActive()?SATO_RAMEN_DOOR:DINING.ramenDoor;RAMEN_DOOR[0]=ramen[0];RAMEN_DOOR[1]=ramen[1];
  return {x,z,yaw:DINING.izakayaYaw,door:IZAKAYA_DOOR};
 }
 const restaurantPlot=kind=>kind==='izakaya'?izakayaPlot()

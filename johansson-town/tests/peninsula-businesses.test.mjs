@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {satoRamenOpen} from '../src/world/sato-ramen-layout.js';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
@@ -21,6 +22,9 @@ import {BOOKSHOP_WORKSHOP_ROOM} from '../src/world/bookshop-workshop-layout.js';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
 import {ITEMS} from '../content-data.js';
 import {createActivities} from '../activities.js';
+import {STREET_CAST,STREET_CAST_NAMES} from '../src/people/residents.js';
+// Residents return to the street one at a time; checks on someone still away wait for them.
+const inCast=name=>STREET_CAST_NAMES.includes(name);
 
 function setup(){
  installDOM();globalThis.self=globalThis;
@@ -47,7 +51,7 @@ test('published businesses have reachable real doors and a clear passage beside 
   assert.equal(sites.some(s=>s.id==='form3d'),false);
   assert.ok(world.group.getObjectByName('Consolidated harbour office'));
   assert.equal(sites.find(s=>s.id==='frontrow').combinedWorkshop,true);
-  assert.equal(world.people.length,10);assert.equal(new Set(world.people.map(p=>p.profile.name)).size,10);
+  assert.equal(world.people.length,STREET_CAST.length);assert.equal(new Set(world.people.map(p=>p.profile.name)).size,STREET_CAST.length);
   for(const site of [...sites,world.warehouse.place]){
    const [x,,z]=site.door;assert.equal(blocked(x,z),false,site.id+' door');
    const path=nav.path({x:-3,z:-20},{x,z});assert.deepEqual(path.at(-1),[x,z],site.id+' reachable door');
@@ -56,10 +60,12 @@ test('published businesses have reachable real doors and a clear passage beside 
   assert.deepEqual(TOWN_DESTINATIONS.workshop,TOWN_DESTINATIONS.books);
   assert.deepEqual(TOWN_DESTINATIONS.books,[sites.find(s=>s.id==='frontrow').door[0],1.6]);
   const roles=Object.fromEntries(world.people.map(p=>[p.profile.name,p.profile.workSite]));
-  for(const name of ['Aya','Kenji','Reiko','Tetsuo'])assert.equal(roles[name],'frontrow');
-  assert.equal(roles['Harbour master'],'office');assert.equal(roles['Mrs Sato'],'warehouse');
+  for(const name of ['Aya','Kenji','Reiko','Tetsuo'].filter(inCast))assert.equal(roles[name],'frontrow');
+  if(inCast('Harbour master'))assert.equal(roles['Harbour master'],'office');if(inCast('Mrs Sato'))assert.equal(roles['Mrs Sato'],'ramen');
   for(let minute=0;minute<1440;minute+=10)for(const p of world.people){
-   const plan=residentPlan(p.profile,minute,false,c.state);assert.notEqual(plan.place,'ramen',p.profile.name+' must not enter an absent building');
+   // Sato Ramen is on the peninsula now, beside Minato: open at lunch, with Mrs Sato in from 10:30.
+   const plan=residentPlan(p.profile,minute,false,c.state);
+   if(plan.place==='ramen')assert.ok(p.profile.name==='Mrs Sato'?minute>=630&&minute<850:satoRamenOpen(minute),p.profile.name+' at Sato Ramen outside its hours at '+minute);
   }
  }finally{configureTownMode('legacy');}
 });
@@ -76,6 +82,8 @@ test('combined room preserves every content item, accessible workstations and fo
    const path=nav.path({x:r.layout.spawn[0],z:r.layout.spawn[2]},{x,z});assert.deepEqual(path.at(-1),[x,z],'Reachable station '+target);
   }
   const staff=c.world.people.filter(p=>p.profile.workSite==='frontrow');
+  // The shared shift below needs all four workers back in the street cast.
+  if(!['Aya','Kenji','Reiko','Tetsuo'].every(inCast)){r.layout.workshop.dispose();return;}
   // All four have finished their Sakura errand; exercise the shared work shift.
   const ledger=createResidentLedger(()=>c.state);
   for(const p of staff)ledger.account(p.profile.name,1050).shopping={finished:true};
@@ -101,9 +109,12 @@ test('restored supplied office and warehouse use their existing staff and workin
   const c=setup();globalThis.createImageBitmap=async()=>({width:256,height:256,close(){}});
   const native=fetch;globalThis.fetch=async url=>String(url).startsWith('blob:')?native(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
   try{assert.deepEqual(await preloadSuppliedRooms(['office']),[true]);}finally{globalThis.fetch=native;}
-  for(const [id,name,builder,minute] of [['office','Harbour master',buildSuppliedRoom,0],['warehouse','Mrs Sato',buildWarehouseInterior,1000]]){
+  // The harbour master sleeps in the office at night now, so meet him on duty in the morning.
+  // Mrs Sato cooks at Sato Ramen now; the warehouse keeps its interior with nobody assigned.
+  for(const [id,name,builder,minute] of [['office','Harbour master',buildSuppliedRoom,480],['warehouse','Nobody',buildWarehouseInterior,1000]]){
    const site=[...c.sites,...c.world.landmarks].find(s=>s.id===id),r=roomFor(c,site,builder);
    if(id==='office'){assert.ok(r.room.getObjectByName('Supplied office'));assert.ok(r.room.getObjectByName('Clerk CRT monitor'));assert.ok(c.targets.some(o=>o.userData.hit.label==='Open harbour spreadsheets'));}
+   if(!inCast(name))continue;
    startClock(c,minute);const service=staffService(c,r);service.enter(site,minute);
    const person=c.world.people.find(p=>p.profile.name===name);assert.equal(person.g.userData.inWorkplace,id);assert.equal(person.g.visible,true);
    const used=new Set();for(let i=0;i<900;i++){service.update(.1,minute+i*.05,false);if(person.g.userData.socialPose)used.add(person.g.userData.socialPose);}

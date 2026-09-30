@@ -3,7 +3,7 @@
   "titel": "Belastad delare",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -41,7 +41,7 @@
     }
   ],
   "losning": {
-    "text": "Rp = 2 · 2/(2 + 2) = 1 kΩ. Uut = 12 · 1/(1 + 1) = 6,0 V. Utan last hade det varit 8,0 V.",
+    "text": "Rp = 2 · 2/(2 + 2) = 1 kΩ. U_{ut} = 12 · 1/(1 + 1) = 6,0 V. Utan last hade det varit 8,0 V.",
     "svar": [
       {
         "storhet": "U_{ut}",

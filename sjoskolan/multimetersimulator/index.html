@@ -32,7 +32,7 @@
           <p id="divider-key" class="input-help" hidden>S = källans pluspol · M = mittpunkten · G = minuspol och referens (0 V).</p>
           <div id="loading-observation" class="loading-observation" hidden aria-live="polite"></div>
           <div id="circuit-controls" class="circuit-controls"></div>
-          <p id="input-help" class="input-help" hidden>Undervisningsmodell: välj mellan två mätaringångar. Detta är inte en ratt på skolans instrument. Rin betyder ingångsresistans.</p>
+          <p id="input-help" class="input-help" hidden>Undervisningsmodell: välj mellan två mätaringångar. Detta är inte en ratt på skolans instrument. R<sub>in</sub> betyder ingångsresistans.</p>
           <div id="wiring-guide" class="wiring-guide" hidden><h3>Kopplingshjälp · en sak i taget</h3><ol id="wiring-checklist"></ol></div>
           <p class="connection-help" id="connection-help">Välj en mätspets och tryck på en mätpunkt. Du kan också dra spetsen.</p>
           <div class="probe-selects"><label>Svart spets<select id="black-node" aria-label="Mätpunkt för svart spets"></select></label><label>Röd spets<select id="red-node" aria-label="Mätpunkt för röd spets"></select></label><button id="disconnect">Lossa båda</button></div>
@@ -94,7 +94,7 @@
       <div id="free-settings" hidden><label>Övningskrets<select id="free-circuit"><option value="lamp">Hyttbelysning</option><option value="resistor">Två resistorer</option><option value="fuse">Säkring</option><option value="divider">Spänningsdelare</option><option value="station">Station A · DC-delare</option></select></label><p>Prova olika uttag, områden och kopplingar. Du får återkoppling, men inga övningsresultat sparas.</p></div>
       <section id="loading-comparison" class="loading-comparison" hidden aria-label="Jämför spänningarna">
         <h3>Jämför dina resultat</h3><table><thead><tr><th>Koppling</th><th>U mellan M och G</th></tr></thead><tbody id="loading-results"></tbody></table><p>Vi jämför belopp. Ett minustecken visar att spetsarna är omvända.</p>
-        <details id="loading-working"><summary>Visa beräkningen och Kirchhoffs lag</summary><p>R2 och mätaren är parallella:</p><p class="formula">Rnedre = (R2 × Rin) / (R2 + Rin)<br>UM = 10 × Rnedre / (R1 + Rnedre)</p><p>Med 10 MΩ: Rnedre ≈ 909 kΩ → UM ≈ 4,76 V.<br>Med 1 MΩ: Rnedre = 500 kΩ → UM ≈ 3,33 V.</p><p>Med mätaren kvar mellan M och G: UR1 = 10 − UM. Vid 1 MΩ blir det 6,67 + 3,33 = 10,00 V.</p><p><strong>Flytta inte mätaren för att kontrollera denna summa.</strong> Flyttas den till S–M belastar den R1 i stället. En ensam 1 MΩ-mätare visar då 3,33 V där också, eftersom kretsen har ändrats.</p></details>
+        <details id="loading-working"><summary>Visa beräkningen och Kirchhoffs lag</summary><p>R2 och mätaren är parallella:</p><p class="formula">Rnedre = (R2 × R<sub>in</sub>) / (R2 + R<sub>in</sub>)<br>UM = 10 × Rnedre / (R1 + Rnedre)</p><p>Med 10 MΩ: Rnedre ≈ 909 kΩ → UM ≈ 4,76 V.<br>Med 1 MΩ: Rnedre = 500 kΩ → UM ≈ 3,33 V.</p><p>Med mätaren kvar mellan M och G: UR1 = 10 − UM. Vid 1 MΩ blir det 6,67 + 3,33 = 10,00 V.</p><p><strong>Flytta inte mätaren för att kontrollera denna summa.</strong> Flyttas den till S–M belastar den R1 i stället. En ensam 1 MΩ-mätare visar då 3,33 V där också, eftersom kretsen har ändrats.</p></details>
         <details><summary>Varför märktes det inte på hyttlampan?</summary><p>Hyttlampan är 120 Ω. En mätaringång på miljontals ohm tar mycket liten extra ström. Här är R2 hela 1 MΩ: mätarens extra gren får stor betydelse. I simulatorns lampkrets håller den ideala källan spänningen vid 12 V.</p></details>
       </section>
       <div class="principle"><h3 id="principle-title">V mäts parallellt</h3><p id="principle-text">Mätaren jämför två punkter. Kretsen behöver inte öppnas.</p></div>
@@ -107,5 +107,5 @@
   <noscript><p>Aktivera JavaScript för att använda simulatorn.</p></noscript>
 </main>
 <footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
-<script type="module" src="app.mjs?v=20260927-acceptance"></script>
+<script type="module" src="app.mjs?v=20260930-acceptance-index"></script>
 </body></html>

@@ -103,7 +103,7 @@ export function periodLabel(minutes){
 }
 
 export const PALETTE=Object.freeze({
- skyDay:0xb8dce9,
+ skyDay:0x86cff2,
  skyDuskApricot:0xe7b08a,
  skyDuskViolet:0x6a5b8c,
  skyNight:0x2c3a52,
@@ -111,10 +111,10 @@ export const PALETTE=Object.freeze({
  sunDay:0xffddb0,
  sunDusk:0xffb07a,
  sunNight:0x9aacd0,
- fillDay:0xdbe7f2,
+ fillDay:0xeef5ff,
  fillDusk:0xf0c4a8,
  fillNight:0x6a7a98,
- groundDay:0x6b5f8c,
+ groundDay:0x8a82b0,
  groundDusk:0x5a4a78,
  groundNight:0x3d3558,
  sakuraTube:0xfff1ce,

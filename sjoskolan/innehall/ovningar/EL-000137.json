@@ -3,7 +3,7 @@
   "titel": "Regelval ombord",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Lista uppgifterna och förklara hur du använder dem för att kontrollera tillämpningsområdet.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Tänk på vad som skiljer fartyg åt i regelverket: typ, storlek, fartområde, byggår. 2) Vilket system gäller fallet? 3) Förklara hur du med de uppgifterna kontrollerar tillämpningsområdet i föreskriften. Gissa ingen paragraf.",
+      "status": "utkast"
     }
   ],
   "losning": {

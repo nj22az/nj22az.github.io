@@ -3,7 +3,7 @@
   "titel": "Nödmatning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Ta reda på vilka nödlaster som finns, hur de reservmatas och vilka fel som kan slå ut både ordinarie utrustning och nödutrustning samtidigt.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilka laster måste fungera i nödläge? 2) Hur matas de om ordinarie matning faller bort? 3) Kan ett fel i den gemensamma fördelningen slå ut båda? Skriv frågan dokumentationen måste svara på.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Fasspänning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -24,7 +24,7 @@
     "samband": [
       "U_{F} = U_{L}/√3"
     ],
-    "givet": "Symmetrisk trefaskälla med U_{L} = 400 V. √3 ≈ 1,732.",
+    "givet": "Landström vid kaj, 50 Hz. Symmetrisk trefaskälla med U_{L} = 400 V. √3 ≈ 1,732.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Dela linjespänningen med √3 och skriv tydligt att svaret gäller mellan fas och neutral.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Kontrollera att det givna värdet är linjespänningen (mellan två faser). 2) Dela med √3 ≈ 1,732. 3) Svaret är spänningen mellan fas och neutral. Exempel ombord: U_{L} = 440 V ger U_{F} = 440/1,732 ≈ 254 V. Rimlighet: fasspänningen är alltid lägre än linjespänningen.",
+      "status": "utkast"
     }
   ],
   "losning": {

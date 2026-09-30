@@ -1,9 +1,12 @@
 import {householdFor,householdAt,householdNames} from './households.js';
+import {peninsulaActive} from '../world/town-mode.js';
 import {THUAN_APARTMENT_ROUTINES} from '../world/interiors/yuri-apartment-layout.js';
 // Repeatable household routines use the saved town clock, including night workers.
 const minute=m=>((m%1440)+1440)%1440;
 export function sleepHours(profile){
  if(profile.name==='Officer Mori')return {sleep:420,wake:900};
+ // On the peninsula he lives in the office and keeps early hours (social.js HARBOUR_MASTER_DAY).
+ if(profile.name==='Harbour master'&&peninsulaActive())return {sleep:1260,wake:330};
  if(profile.name==='Nao')return {sleep:240,wake:720};
  return {sleep:minute(profile.retire+20),wake:minute(profile.start-90)};
 }
@@ -22,13 +25,15 @@ export const homeOwner=site=>householdNames(site)[0]||null;
 
 export const HOME_LAYOUT={bounds:{minX:-3,maxX:3,minZ:-3,maxZ:3},spawn:[1.5,0,2],exit:[1.5,1.1,2.9],
  bed:[-1.75,.58,.65],bedside:[-.5,0,-.3],table:[1.1,0,-1.2],door:[1.5,0,2.45],
- cover:{position:[-1.75,.64,.05],width:1.10,length:1.30,axis:'z'}};
+ cover:{position:[-1.75,.64,.05],width:1.10,length:1.30,axis:'z'},
+ /** A peg by the door for the hat (home-residents.js). */
+ hatHook:{position:[2.93,1.6,1.2],yaw:-Math.PI/2}};
 export const SHARED_HOME_LAYOUT={bounds:{minX:-3.5,maxX:3.5,minZ:-3.4,maxZ:3.4},spawn:[0,0,2.6],exit:[0,1.1,3.3],door:[0,0,2.8]};
 export function homeLayoutFor(name){
  if(THUAN_APARTMENT_ROUTINES[name])return THUAN_APARTMENT_ROUTINES[name];
  const household=householdFor(name);if(!household||household.residents.length===1)return HOME_LAYOUT;
  const side=household.residents.indexOf(name)===0?-1:1,x=side*2.1;
  return {...SHARED_HOME_LAYOUT,bed:[x,.58,-.3],bedside:[side*.95,0,-.4],table:[side*.72,0,2.15],
-  cover:{position:[x,.64,-.9],width:1.1,length:1.3,axis:'z'}};
+  cover:{position:[x,.64,-.9],width:1.1,length:1.3,axis:'z'},hatHook:{position:[side*1.4,1.6,3.33],yaw:Math.PI}};
 }
 export const THUAN_HOME_LAYOUT=THUAN_APARTMENT_ROUTINES.Thuan;

@@ -3,7 +3,7 @@ import { solve, meter, fmt, parseAnswer, isClose } from './model.mjs';
 import { FAULTS } from './model.mjs';
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { POINTS, FAULT_TEXT, DEFAULTS, CHALLENGES, run, expected } from './lessons.mjs';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260928-pek';
 import { STATION_C_PROTOKOLL } from './stationC-protokoll.mjs?v=20260926';
 
 const $ = (id) => document.getElementById(id);
@@ -79,10 +79,12 @@ function schematic(s0, r) {
 function renderControls() {
   const s = state.s, locked = Boolean(state.challenge);
   const opt = (obj, cur) => Object.entries(obj).map(([k, v]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${esc(v)}</option>`).join('');
+  const focused = $('controls').contains(document.activeElement) ? document.activeElement.id : ''; // behåll fokus när reglagen ritas om
   $('controls').innerHTML = `
     <div class="control btn-row">
-      <button type="button" id="b-s1" class="toggle" aria-pressed="${s.s1}">S1 START: ${s.s1 ? 'intryckt' : 'släppt'}</button>
-      <button type="button" id="b-s0" class="toggle" aria-pressed="${s.s0}">S0 STOPP: ${s.s0 ? 'intryckt' : 'släppt'}</button>
+      <button type="button" id="b-s1" class="toggle" aria-pressed="${s.s1}" aria-describedby="b-hint">S1 START<span class="toggle-state">${s.s1 ? 'intryckt' : 'släppt'}</span></button>
+      <button type="button" id="b-s0" class="toggle" aria-pressed="${s.s0}" aria-describedby="b-hint">S0 STOPP<span class="toggle-state">${s.s0 ? 'intryckt' : 'släppt'}</span></button>
+      <p id="b-hint" class="muted btn-hint">Tryck en gång för att trycka in knappen, en gång till för att släppa den.</p>
     </div>
     <div class="control control-check"><label class="check"><input type="checkbox" id="c-supply"${s.supply ? ' checked' : ''}> Styrspänning till</label></div>
     <div class="control control-select"><label for="c-fault">Inlagt fel</label><select id="c-fault">${state.challenge?.hideFault ? '<option>Okänt fel</option>' : (state.module ? `<option value="modul" selected>Felmodul ${state.module}: ${state.revealed ? esc(FAULT_TEXT[s.fault]) : 'okänt fel'}</option>` : '') + opt(FAULT_TEXT, state.module ? '' : s.fault) + '<option value="ny">Ny felmodul (okänt fel)</option>'}</select></div>
@@ -100,6 +102,7 @@ function renderControls() {
   $('c-black').onchange = (e) => update({ black: e.target.value });
   $('controls').querySelectorAll('button,select,input').forEach((el) => { el.disabled = locked; });
   $('lock-note').hidden = !locked;
+  if (focused && $(focused) && !$(focused).disabled) $(focused).focus({ preventScroll: true });
 }
 function render() {
   const s = state.s; const r = solve(s, s.k1);
@@ -164,7 +167,7 @@ renderSelect(); render();
 const q = new URLSearchParams(location.search).get('uppgift'); if (q) start(q);
 
 // Labbprotokoll för Station C
-mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_C_PROTOKOLL,
+mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_C_PROTOKOLL, rowMessages: true,
   presets: [{ label: 'Ny felmodul (okänt fel)', apply: () => { if (state.challenge) leave(); newModule(); }, done: 'En ny felmodul är isatt. Felet visas inte förrän du väljer ”Visa felmodulens fel”.' },
     { label: 'Stationsrigg 12 V utan fel', apply: () => { if (state.challenge) leave(); state.module = 0; state.revealed = false; state.s = { ...DEFAULTS, U: 12 }; render(); }, done: 'Kretsen är i vila med 12 V styrspänning och utan fel.' }],
   snapshot(plan) {
@@ -173,8 +176,8 @@ mountProtocol(document.getElementById('labbprotokoll'), { ...STATION_C_PROTOKOLL
     const states = { vila: !s.s0 && !s.s1 && !s.k1, start: s.s1 && s.k1, hall: !s.s1 && !s.s0 && s.k1 };
     const stateText = { vila: 'kretsen i vila (K1 släppt, inga knappar intryckta)', start: 'START intryckt och K1 dragen', hall: 'START släppt och K1 dragen' };
     const nr = STATION_C_PROTOKOLL.rows.indexOf(plan) + 1;
-    if (n.red && (s.red !== n.red || s.black !== n.black)) { const nm = (x) => (x === 'P' ? '+U' : x === 'N' ? '0 V' : x); return { error: `Mätning ${nr} gäller röd sond på ${nm(n.red)} och svart på ${nm(n.black)}.` }; }
-    if (n.state && !states[n.state]) return { error: `Mätning ${nr} gäller ${stateText[n.state]}. Använd START och STOPP först.` };
+    if (n.red && (s.red !== n.red || s.black !== n.black)) { const nm = (x) => (x === 'P' ? '+U' : x === 'N' ? '0 V' : x); return { error: `Mätning ${nr} gäller röd sond på ${nm(n.red)} och svart på ${nm(n.black)}. Välj sonderna under ”Knappar och mätare” längre upp.` }; }
+    if (n.state && !states[n.state]) return { error: `Mätning ${nr} gäller ${stateText[n.state]}. Använd S1 START och S0 STOPP under ”Knappar och mätare” längre upp.` };
     if ((state.module || s.fault !== 'ingen') && nr) return { error: 'Mätning 1–7 gäller kretsen utan fel. Resultat från felmodulen skriver du i felsökningsdelen. Välj ”Stationsrigg 12 V utan fel”. Felmodulerna hör till felsökningsdelen.' };
     const drift = `${s.U} V, S0 ${s.s0 ? 'intryckt' : 'släppt'}, S1 ${s.s1 ? 'intryckt' : 'släppt'}, K1 ${s.k1 ? 'dragen' : 'släppt'}, styrspänning ${s.supply ? 'till' : 'från'}, ${state.module ? `felmodul ${state.module}` : FAULT_TEXT[s.fault].toLowerCase()}`;
     if (plan?.q === 'I') return { punkter: 'spolström', drift, varde: `${fmt(r.I * 1000)} mA` };

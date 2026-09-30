@@ -3,7 +3,7 @@
   "titel": "Saknade uppgifter",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Ange två osäkerheter och vilken kontroll var och en gör omöjlig.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad visar ett enlinjeschema? 2) Vad kan hända om det finns en reservmatning som ingen känner till? 3) Skriv två osäkerheter och vilken kontroll varje osäkerhet gör omöjlig.",
+      "status": "utkast"
     }
   ],
   "losning": {

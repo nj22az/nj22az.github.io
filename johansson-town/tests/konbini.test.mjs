@@ -360,8 +360,14 @@ test('the till backbar places impulse props behind Thuan without new SKUs',async
  try{
   const THREE=await import('../vendor/three.module.js');
   const {buildSakuraInterior}=await import('../src/world/interiors/sakura-interior.js');
-  const room=new THREE.Group(),hits=[];
-  buildSakuraInterior({room,reg:(o,label)=>hits.push(label),action(){},exit(){}});
+  const room=new THREE.Group(),hits=[],spots=new Map();
+  buildSakuraInterior({room,reg:(o,label)=>{hits.push(label);spots.set(label,o.position.clone());},action(){},exit(){}});
+  // The books live on Thuan's desk in the back office, behind the shop floor wall.
+  const ledger=spots.get('Read Sakura sales ledger');
+  assert.ok(ledger.z<-1.17&&ledger.x>4.6,'The ledger is in the back office, not on the counter: '+ledger.toArray());
+  assert.ok(hits.includes('Buy hot snacks from the case'),'The counter has a hot case');
+  let desk=0,hot=0;room.traverse(o=>{if(o.name==='Sakura office desk')desk++;if(o.name==='Sakura hot case header')hot++;});
+  assert.ok(desk&&hot,'Desk and hot-case header are built');
   assert.ok(hits.includes('Look over the till backbar'));
   assert.ok(hits.includes('Read Sakura sales ledger'),'Ledger kept');
   assert.ok(hits.includes('Ring service bell'),'Bell kept');

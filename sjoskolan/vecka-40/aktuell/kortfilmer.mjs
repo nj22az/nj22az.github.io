@@ -1,6 +1,6 @@
-import {lessonById} from './lektioner.mjs?v=20260930';
+import {lessonById} from './lektioner.mjs?v=20260930u';
 import {markHtml as m} from '../../gemensamt/markering.mjs?v=20260928';
-import {visual} from './visuals.mjs?v=20260929';
+import {visual} from './visuals.mjs?v=20260928fg';
 // Stegfilmerna har svensk text och inget ljud. Varje steg visas en bestämd tid; eleven kan pausa, stega och ändra takten.
 const STEG=20;
 const $=id=>document.getElementById(id);

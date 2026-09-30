@@ -3,7 +3,7 @@
   "titel": "Riskpoäng",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -41,6 +41,11 @@
       "niva": "metod",
       "text": "Räkna poängen före och efter och förklara varför en lägre poäng inte bevisar att kraven är uppfyllda.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Räkna poängen: sannolikhet · konsekvens, före och efter. 2) Vilket av de två talen ändrades, och vilket är oförändrat? 3) Vad säger poängen inte om krav och kontroller? Annat fall: 2 · 5 före och 1 · 5 efter. Samma resonemang.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -171,6 +171,20 @@ def skriv_deck(a, plats, placeringar):
                 continue
             satt_form(sh, mal, int(nr) if nr else None)
             andrat += 1
+    # Bildrubrikerna följer numreringsregistret (innehall/numrering.py): ”Övning 1.3” och ”Stöd till övning 1.3”.
+    for pl, p in placeringar:
+        if pl.get('kontroll') or not pl.get('nummer', '').startswith('Övning '):
+            continue
+        if int(re.search(r'vecka-(\d+)', plats).group(1)) <= 40:  # vecka 37–40 är klara och ändras inte (se verktyg/las)
+            continue
+        for bild, mall in ((pl.get('bild'), '{nr}'), (pl.get('stodbild'), 'Stöd till övning {k}')):
+            if not bild:
+                continue
+            mal = mall.format(nr=pl['nummer'], k=pl['nummer'][len('Övning '):])
+            for sh in slides[bild - 1].shapes:
+                if sh.has_text_frame and re.match(r'^(Stöd till övning|Övning) [\d.]+$', sh.text_frame.text.strip()) and sh.text_frame.text.strip() != mal:
+                    satt_form(sh, [mal])
+                    andrat += 1
     if andrat:
         prs.save(fil)
     return andrat, avvik
@@ -180,9 +194,52 @@ GENOMGANG_V40 = {'sinus': 'vecka-40/aktuell/v40_01_Sinusformad_vaxelspanning_ele
                  'effekt': 'vecka-40/aktuell/v40_03_Effekt_i_vaxelstromskretsar_elev.pptx'}
 
 
+def kompakt(sh, tom_under, ned_till=None):
+    """Brödtext som inte ryms i 21 pt med tomma rader mellan styckena (till exempel Så räknar du-bilderna) får
+    styckeavstånd i stället för tomma rader och den största storleken 21–14 pt som ryms ovanför formeln eller
+    sidfoten. Text som ryms lämnas orörd. Uppskattningen: Calibri ≈ 0,48 · storlek per tecken, radhöjd 1,2 · storlek.
+    Returnerar True om något ändrades."""
+    import math
+    from pptx.util import Emu, Pt
+    if sh is None:
+        return False
+    stycken = [stycke_text(p) for p in sh.text_frame.paragraphs]
+    text = [t for t in stycken if t.strip()]
+    if not text:
+        return False
+    bredd = sh.width / 12700
+    botten = 5950000 if tom_under else (ned_till or sh.top + sh.height)
+    hojd_max = (botten - sh.top) / 12700
+
+    def hojd(pt, tomma, luft):
+        rader = sum(max(1, math.ceil(len(t) * 0.48 * pt / bredd)) for t in text)
+        return rader * 1.2 * pt + (len(text) - 1) * (1.2 * pt if tomma else luft)
+
+    if hojd(21, True, 0) <= min(hojd_max, sh.height / 12700):
+        return False
+    storlek = next((pt for pt in range(21, 13, -1) if hojd(pt, False, 8) <= hojd_max), 14)
+    andrat = False
+    for p in list(sh.text_frame.paragraphs):
+        if not stycke_text(p).strip() and len(sh.text_frame.paragraphs) > 1:
+            p._p.getparent().remove(p._p)
+            andrat = True
+    for p in sh.text_frame.paragraphs:
+        if p.space_after != Pt(8):
+            p.space_after = Pt(8)
+            andrat = True
+        for r in p.runs:
+            if r.font.size != Pt(storlek):
+                r.font.size = Pt(storlek)
+                andrat = True
+    if sh.top + sh.height != botten:
+        sh.height = Emu(botten - sh.top)
+        andrat = True
+    return andrat
+
+
 def genomgang_v40():
     """Vecka 40:s presentationer följer genomgångens text (vecka-40/aktuell/lektioner.mjs): bild n + 1 = genomgångens bild n.
-    Formerna heter title, body och formula (verktyg/ac/build-decks.mjs). Etiketter i figurerna får nedsänkta index."""
+    Formerna heter title, body, formula, check och svar (verktyg/ac/build-decks.mjs, Din tur-bilderna). Etiketter i figurerna får nedsänkta index."""
     import json
     from pptx import Presentation
     js = "import('%s').then(m=>console.log(JSON.stringify(m.LESSONS)))" % (R.SJO / 'vecka-40' / 'aktuell' / 'lektioner.mjs').as_uri()
@@ -196,6 +253,9 @@ def genomgang_v40():
         for i, s in enumerate(l['slides']):
             former = {sh.name: sh for sh in _former(slides[i + 1]).values()}
             mal = {'title': [s['title']], 'body': [y for b in s['body'] for y in (b, '')][:-1], 'formula': [s['formula']] if s.get('formula') else None}
+            # Kontrollfrågan och, på Din tur-bilderna, svaret (visas vid klick) kommer ur innehållsdatabasen.
+            mal['check'] = [s['check']] if s.get('check') else None
+            mal['svar'] = [s['answer']] if s.get('tur') and s.get('answer') else None
             for namn, stycken in mal.items():
                 sh = former.get(namn)
                 if sh is None or stycken is None:
@@ -205,6 +265,10 @@ def genomgang_v40():
                 if [x for x in nu if x] != [re.sub(r'\s+', ' ', x).strip() for x in stycken if x]:  # stycke_text slår ihop blanktecken
                     satt_form(sh, stycken)
                     andrat += 1
+            kropp = former.get('body')
+            under = [former[n].top for n in ('formula', 'check') if kropp is not None and n in former and s.get(n) and former[n].top > kropp.top]
+            if kompakt(former.get('body'), tom_under=not under, ned_till=min(under) - 60000 if under else None):
+                andrat += 1
             for sh in former.values():
                 if sh.name.endswith('-label') and re.search(r'(?<![\w{])X[LC](?![\w}])', ' '.join(stycke_text(p) for p in sh.text_frame.paragraphs)):
                     satt_form(sh, [re.sub(r'(?<![\w{])X([LC])(?![\w}])', r'X_{\1}', stycke_text(p)) for p in sh.text_frame.paragraphs])

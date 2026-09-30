@@ -6,11 +6,25 @@ import {groundHeight} from '../world/layout.js?snappy=1';
 import {createRoomWalk,atDestination} from './room-walk.js';
 import {createSleepCover} from './sleep-cover.js';
 import {residentPersonality} from './resident-personalities.js';
+import {buildHatProp} from '../avatars/build.js';
+import {recipeFor} from '../avatars/cast.js';
 
 function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},getRain=()=>false,getState=()=>({})},name){
- let site=null,person=null,saved=null,layout=null,walker=null,cover=null,clock=0,rest=0,sleepBlend=0;
+ let site=null,person=null,saved=null,layout=null,walker=null,cover=null,hat=null,clock=0,rest=0,sleepBlend=0;
+ // Home, the hat comes off and goes on its hook; it goes back on at the door. A room
+ // with no hook for them leaves it on their head rather than make it vanish.
+ function hangHat(g){
+  const hook=layout.hatHook;if(!hook)return;
+  hat=buildHatProp(recipeFor(name),{mode:hook.mode||'wall'});if(!hat)return;
+  hat.position.set(...hook.position);hat.rotation.set(hook.tilt??(hook.mode==='stand'?0:.25),hook.yaw||0,0,'YXZ');
+  parent.add(hat);g.userData.hatOff=true;
+ }
+ function takeHat(g){
+  if(g)delete g.userData.hatOff;
+  if(!hat)return;hat.removeFromParent();hat.geometry.dispose();hat.material.dispose();hat=null;
+ }
  function restore(){
-  cover?.dispose();cover=null;
+  cover?.dispose();cover=null;takeHat(person?.g);
   if(!saved)return;
   const g=person.g,stillHome=residentPlan(person.profile,clock,getRain(),getState()).place==='home';
   saved.parent.add(g);g.position.set(person.profile.home[0],groundHeight(...person.profile.home),person.profile.home[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
@@ -27,6 +41,7 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
    const alreadyHome=g.userData.indoors==='home'&&!g.userData.justArrived;
    onBorrow(person,minutes);saved={parent:g.parent,rotation:g.quaternion.clone(),inside:g.userData.hit.inside};parent.add(g);
    cover=createSleepCover(parent,layout,residentPersonality(person.profile.name).top);
+   hangHat(g);
    g.position.set(...layout.door);g.rotation.set(0,0,0);g.userData.inHome=true;g.userData.indoors='home';g.userData.hit.inside=true;g.visible=true;
    if(alreadyHome){sleepBlend=homeRoutine(person.profile,minutes).id==='sleep'?1:0;g.position.set(...layout.bedside);rest=['sleep','wake','bedtime'].includes(homeRoutine(person.profile,minutes).id)?1:0;}
   }
@@ -52,7 +67,7 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
   g.quaternion.identity().slerp(lying,sleepBlend*amount);
   g.userData.sleepBlend=sleepBlend*amount;g.userData.socialPose=asleep||sleepBlend>.01?'Sleep':'Wake';if(!asleep&&sleepBlend<=.01)g.userData.seatHeight=to[1];
  }
- return {enter(next,minutes){restore();site=next;person=world.people.find(p=>p.profile.name===name);if(!person){site=null;return;}layout=homeLayoutFor(person.profile.name);walker=createRoomWalk(collides);update(0,minutes);},update,restore(){restore();site=null;walker?.clear();}};
+ return {enter(next,minutes){restore();site=next;person=world.people.find(p=>p.profile.name===name);if(!person){site=null;return;}layout=next.homeLayouts?.[name]||homeLayoutFor(person.profile.name);walker=createRoomWalk(collides);update(0,minutes);},update,restore(){restore();site=null;walker?.clear();}};
 }
 
 // Borrow each existing street actor independently. Entering a shared home cannot

@@ -3,7 +3,7 @@
   "titel": "Motorförluster",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -22,9 +22,9 @@
   "uppgift": {
     "fraga": "En motor tar 4,0 kW elektriskt och ger 3,4 kW på axeln. Bestäm verkningsgraden och förlusten.",
     "samband": [
-      "η = Paxel/P_{in}; Pförlust = P_{in} − Paxel"
+      "η = P_{axel}/P_{in}; P_{förlust} = P_{in} − P_{axel}"
     ],
-    "givet": "P_{in} = 4,0 kW och Paxel = 3,4 kW gäller vid samma belastning.",
+    "givet": "P_{in} = 4,0 kW och P_{axel} = 3,4 kW gäller vid samma belastning.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
@@ -37,6 +37,11 @@
       "niva": "metod",
       "text": "Dela axeleffekten med den tillförda effekten och multiplicera med 100 för procent. Räkna förlusten för sig.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Verkningsgraden är det nyttiga delat med det tillförda: η = P_{axel}/P_{in}. 2) Förlusten är skillnaden: P_{in} − P_{axel}. Exempel: en fläktmotor tar 7,5 kW och ger 6,6 kW på axeln: η = 6,6/7,5 = 0,88 = 88 % och förlusten 0,9 kW. Rimlighet: η ska ligga under 100 %.",
+      "status": "utkast"
     }
   ],
   "losning": {

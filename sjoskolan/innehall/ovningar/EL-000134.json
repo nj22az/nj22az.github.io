@@ -3,7 +3,7 @@
   "titel": "Säkerhetsåtgärder",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -38,6 +38,11 @@
       "niva": "metod",
       "text": "Förklara vilken risk som kvarstår efter enbart frånskiljning. Knyt varje risk till ytterligare åtgärd.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad gör frånskiljningen, och vad gör den inte? 2) Tänk på tre risker efteråt: att någon slår till igen, att spänningen inte är kontrollerad och att delar i närheten är spänningssatta. 3) Skriv en åtgärd till varje risk.",
+      "status": "utkast"
     }
   ],
   "losning": {

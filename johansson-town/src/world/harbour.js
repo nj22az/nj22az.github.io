@@ -8,11 +8,12 @@ import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
-import {buildStreetLamps} from './street-lamps.js';
+import {buildStreetLamps,STREET_LAMP_PLACEMENTS} from './street-lamps.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
 import {createHarbourBasin,tickOcean,setOceanWeather} from './ocean.js';
 import {buildStorefront} from './storefront.js?snappy=1';
+import {buildThuanFlat} from './thuan-flat.js';
 import {SAKURA_FRONT} from './interiors/sakura-layout.js';
 import {peninsulaActive} from './town-mode.js';
 
@@ -162,7 +163,10 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       // where the interior's own door is.
       if(peninsulaActive()){
        const centre=s.z+1.2,span={width:SAKURA_FRONT.width,depth:SAKURA_FRONT.depth,doorX:0};
-       shopDoors.push(buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}}).shopDoor);
+       const storefront=buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}});
+       shopDoors.push(storefront.shopDoor);
+       // Upstairs is Thuan's flat (thuan-flat.js).
+       buildThuanFlat(storefront);
        s.x=front;s.door=[front+1.95,0,centre];
        // Turned a quarter: the frontage runs along z and the shop runs back along -x.
        obstacle(front-span.depth/2,centre,span.depth,span.width);return;
@@ -197,7 +201,10 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Late-Shōwa street lamps: shopping street + quay approach. Emissive heads only
   // (no new PointLights); kept out of static batching so lanternGlow can update.
-  const streetLamps=buildStreetLamps({parent:group,colliders,shadows,mobile});
+  // The Front-Row gable pole is measured against the peninsula bookshop. The older
+  // layouts put Front-Row's alley door 0.2 m from it, so they go without that pole.
+  const streetLamps=buildStreetLamps({parent:group,colliders,shadows,mobile,
+   placements:peninsulaActive()?STREET_LAMP_PLACEMENTS:STREET_LAMP_PLACEMENTS.filter(p=>p.z!==-3.05)});
 
   // Useful street furniture sits in the block recesses, clear of junctions.
   const vending=createVendingMachine({shadows});vending.position.set(4.35,0,9.1);group.add(vending);

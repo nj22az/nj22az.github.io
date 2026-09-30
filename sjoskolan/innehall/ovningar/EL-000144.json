@@ -3,7 +3,7 @@
   "titel": "Lås och skylt",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,6 +40,11 @@
       "niva": "metod",
       "text": "Jämför den faktiska åtgärden med planens skyddsfunktion och motivera beslutet.",
       "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad gör en skylt, och vad gör ett lås? 2) Vad kräver planen: information eller att tillkoppling hindras? 3) Motivera beslutet med skillnaden mellan de två.",
+      "status": "utkast"
     }
   ],
   "losning": {

@@ -9,14 +9,14 @@ import {restoreWorkshop,advancePrint} from './src/workshop/production.js';
 import {createWorkshopUI} from './src/workshop/interface.js';
 import {loadWorkshopModel,printedItem} from './src/workshop/models.js';
 import {loadOfficeWorkbooks,createOfficeWorkbookView} from './src/office/workbooks.js';
-import {STORE_MENU} from './src/people/store-service.js';
+import {STORE_MENU} from './src/commerce/store-menu.js';
 import {restoreResidentLife} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,RADIO_821} from './src/progression/soft-quests.js';
 import {PROFILES} from './src/people/profiles.js';
 import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
 import {gossipAt,izakayaOpen,onsenInvitationDay} from './src/people/social.js';
-import {DRINKS} from './src/people/izakaya-beer.js';
+import {DRINKS,DISHES,menuItem} from './src/people/izakaya-beer.js';
 import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
 import {MEDICINES,STAMINA_DRINK} from './src/world/interiors/sakura-dressing.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
@@ -39,9 +39,9 @@ import {createThuanChat} from './src/people/thuan-chat.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
 import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorageWonHandshake} from './src/commerce/shop-stock.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
- checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen} from './src/commerce/konbini.js';
+ checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
+export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -249,6 +249,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }
     const greeting=onsenBath?'はぁ… 気持ちいい。\nYou came! Sit, sit — the water is perfect tonight. Listen: you can hear the sea on the other side of the fence. This is the best part of my whole day.':ramenVisit?'おつかれさま！\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.':offDuty?'あ、おつかれさま！\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.':met?'おかえり！\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?':'いらっしゃいませ！ トゥアンです。\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?';
     const title=onsenBath?'Thuan · Umi-no-yu':ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
+    const openHotCase=topic==='hot-case';if(openHotCase)topic=null;
     if(topic){show(title,replies[topic],[['Tell me something else',()=>thuanConversation()],['See you soon, Thuan',close]]);return;}
     // A conversation, not a menu. Two pieces of small talk at a time, rotated so the
     // next time you stop by she has something else to say, and the shop's paperwork
@@ -267,11 +268,50 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const fresh=smallTalk.filter(([,id])=>!asked.includes(id));
     const offered=(fresh.length>=2?fresh:smallTalk).slice(0,2);
     histories.set('Thuan/small-talk',[...asked,...offered.map(([,id])=>id)].slice(-5));
-    const paperwork=()=>show(title,'書類ね。\nThe shop side of things.',[
+    // The counter: everything a konbini clerk does for you besides ringing up the basket.
+    // Hot snacks from the case by the till, her pick of the shelves, the stamp card, and
+    // the paperwork, which she fetches from the back office rather than keeping it out.
+    const back=['Back to Thuan',()=>thuanConversation()];
+    const onDutyHere=getSocialContext().inside==='market'&&!offDuty&&!ramenVisit&&!onsenBath;
+    const hotCase=()=>show(title,'ホットスナック、いかがですか？\nFresh from the hot case — what would you like?',[
+      ...HOT_SNACKS.map(snack=>[`${snack.jp} ${snack.name} · ¥${snack.cost}`,()=>{
+        const result=buyHotSnack(state,snack.id,getMinutes(),getSocialContext().thuanAvailable!==false);
+        if(!result.ok){show(title,result.message,[back]);return;}
+        save();note('Bought '+snack.name.toLowerCase()+' from Sakura’s hot case.');
+        characterControl()?.feel?.('Thuan','happy',6);tone(880,.08);
+        show(title,'はい、どうぞ！\n'+result.message+'\n\n'+snack.name+' is in your bag.',[['Another one',hotCase],back],{mood:'happy'});
+      },state.yen<snack.cost,'Could I have '+snack.name.toLowerCase()+', please?']),
+      back]);
+    const recommend=()=>{
+      const pick=thuanRecommends(state,Math.floor(getMinutes()/1440));
+      if(!pick){show(title,'The shelves are nearly bare today. Come back after the delivery!',[back]);return;}
+      show(title,`これ、おすすめ！\nTry the ${pick.name.toLowerCase()} — ${pick.brand||'Sakura'}, ¥${pick.cost}. `+(EXAMINE_LINES[pick.id]||'I would buy it myself if I were not standing on this side of the counter.'),[
+        [`Into the basket · ¥${pick.cost}`,()=>{
+          const result=addToBasket(state,pick);save();
+          show(title,result.ok?'いいね！\n'+result.message:result.message,[back],{mood:result.ok?'happy':undefined});
+        }],
+        ['Maybe next time',()=>thuanConversation()]]);
+    };
+    const stampCard=()=>{
+      const n=state.konbini.stamps,marks='●'.repeat(n)+'○'.repeat(Math.max(0,CARD_STAMPS-n));
+      show(title,`スタンプカード\n${marks}\n\n${n} of ${CARD_STAMPS} stamps. One for every ¥300 at the till — fill it and the next green tea is on the house.`+(state.konbini.cards?`\nCards filled so far: ${state.konbini.cards}.`:''),[back]);
+    };
+    const paperwork=()=>show(title,'ちょっと待ってね。\nThe shop books live in the back office — I can fetch them.',[
       ['Sell items from my bag',workshopUI.selling],
       ['Read the shop ledger',shopLedger],
-      ['Back to Thuan',()=>thuanConversation()],
+      back,
     ]);
+    const counter=()=>show(title,'いらっしゃいませ！\nWhat can I do for you?',[
+      ...(onDutyHere?[['Hot snacks from the case',hotCase],['What do you recommend?',recommend]]:[]),
+      ['My stamp card',stampCard],
+      ['The shop side of things',paperwork],
+      back,
+    ]);
+    if(openHotCase){
+      if(onDutyHere&&getSocialContext().thuanAvailable!==false)hotCase();
+      else show('Sakura Shōten · Hot case',sakuraHoursOpen(getMinutes())?SAKURA_AWAY_MESSAGE:'The hot case is dark. Thuan switches it on at nine.',[['Close',close]]);
+      return;
+    }
     // Umi-no-yu: ask her along after work. She goes straight from locking up.
     const today=Math.floor(getMinutes()/1440),thuanProfile=PROFILES.find(p=>p.name==='Thuan');
     const onsenAsked=Number.isFinite(state.onsenDate)&&state.onsenDate>=today;
@@ -301,7 +341,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       ...(onsenBath?[]:[[onsenAsked?'Umi-no-yu after work — still on':'Come to Umi-no-yu after work',onsenAsked?()=>show(title,state.onsenDate===today?'Of course! After I lock up. The rock bath, by the sea wall.':'Tomorrow, after I lock up. I have not forgotten.',[['Back to Thuan',()=>thuanConversation()]]):inviteOnsen]]),
       ...offered.map(([label,id])=>[label,()=>thuanConversation(id)]),
       ['Ask her something',askThuan],
-      ['The shop side of things',paperwork],
+      ['At the counter',counter],
       ['See you soon, Thuan',close],
     ]);
   }
@@ -341,6 +381,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
     if(residentHomeDescription(name)||commuterMode)buttons.push([commuterMode?'How do you travel?':'Where do you live?',()=>show(name+' · '+(commuterMode?'Harbour Line':'Home'),commuterMode?commuterDescription(name):residentHomeDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
     if(name==='Nao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);
+    // Mingling at Minato: stand somebody a drink. They remember it.
+    if(getSocialContext().inside==='izakaya'&&name!=='Nao'&&name!=='Barfly'&&izakayaOpen(getMinutes()))buttons.push(['Buy '+name+' a drink · ¥'+DRINKS.draft.price,()=>treat(name)]);
     if(name==='Aya')buttons.push(['About Tama',()=>legacyResident(name)]);
     if(name==='Kenji')buttons.push(['How does the 3D printer work?',()=>show('Kenji · Form 3D','Yo bro, pick a pattern on the Form 3D machine. StepWise checks the material cost and what Thuan will pay. Start the print, let the machine run, then collect it. One of each in your bag. Thuan buys them at Sakura from nine till eight, using the money her shop earns.',[['Got it, bro',close]])]);
     if(name==='Kenji'&&state.kenjiEscort&&state.kenjiEscort!=='done')buttons.push(['Show me the workshop',()=>{onEscort();close();say('Kenji: Come on, bro. I’ll show you the way.',4);}]);
@@ -350,28 +392,56 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     buttons.push(['See you soon',close]);show(profile?name+' · '+profile.personality:name,text,buttons);if(text===row[1]&&row[3])townAudio.speak(row[3]);
   }
 
-  /** At your own table in Minato: order a beer, drink it, eat, or get up. */
+  /**
+   * At your seat in Minato -- a counter stool among the regulars, a table or the window:
+   * order anything on the wall you can pay for, drink it and eat it, or get up.
+   */
   function izakayaTable(){
-    const table=getBeerTable()||{},drink=table.drink,order=table.order,buttons=[];
-    let text=izakayaOpen(getMinutes())?'Lanterns, the radio low, the smell of the grill. Nao is behind the counter.':'Minato is closing. Nao is stacking the stools.';
-    if(order)text='Nao is '+(order.phase==='pouring'?'pouring your '+DRINKS[order.kind].en.toLowerCase():'on her way over with it')+'.';
-    else if(drink)text='Your '+DRINKS[drink.kind].en.toLowerCase()+' is in front of you'+(drink.left<drink.sips?', '+drink.left+' sips left':', untouched')+'.';
+    const table=getBeerTable()||{},drink=table.drink,dish=table.dish,order=table.order,buttons=[],open=izakayaOpen(getMinutes());
+    let text=open?'Lanterns, the radio low, the smell of the grill. Nao is behind the counter.':'Minato is closing. Nao is stacking the stools.';
+    if(order){const item=menuItem(order.kind);text='Nao is '+(order.phase==='cooking'?'at the '+DISHES[order.kind].station+' with your '+item.en.replace(/^(a|an|the) /,'').replace(/^(plate|bowl|flask) of /,''):order.phase==='pouring'?'pouring your '+item.en.toLowerCase():'on her way over with it')+'.';}
+    const onTable=[drink&&drink.left>0?'your '+DRINKS[drink.kind].en.toLowerCase().replace(/^(a|an) /,'')+(drink.left<drink.sips?' ('+drink.left+' sips left)':''):null,dish&&dish.left>0?DISHES[dish.kind].en+(dish.left<dish.bites?' ('+dish.left+' left)':''):null].filter(Boolean);
+    if(!order&&onTable.length)text+='\n\nIn front of you: '+onTable.join(' and ')+'.';
     if(drink&&drink.left>0)buttons.push([drink.left===drink.sips?'乾杯 · Kanpai, and drink':'Drink',()=>{close();onSip();}]);
-    if(!order&&(!drink||drink.left<=1)&&izakayaOpen(getMinutes())){
+    if(dish&&dish.left>0)buttons.push([dish.left===dish.bites?'いただきます · Eat':'Eat some more',()=>{close();onEat();}]);
+    if(!order&&open){
       if(!table.naoHere)text+='\n\nNao is not at the counter just now.';
-      else for(const d of Object.values(DRINKS))buttons.push([d.jp+' · ¥'+d.price,()=>{
-        if(!spend(d.price))return;
-        if(!onOrderDrink(d.id)){state.yen+=d.price;save();receipt('Minato','Nao is busy -- try again in a moment.');return;}
-        onTime(2);note('Ordered '+d.en.toLowerCase()+' at Minato.');close();say('「すみません、'+d.jp+'ください！」 Nao nods and reaches for '+(d.id==='draft'?'a mug.':d.id==='bottle'?'a big bottle.':d.id==='can'?'the fridge.':'the tea jug.'),4);
-      }]);
+      else{
+        if(!drink||drink.left<=1)buttons.push(['Order a drink…',()=>izakayaOrder('drinks')]);
+        if(!dish||dish.left<=0)buttons.push(['Order something to eat…',()=>izakayaOrder('food')]);
+      }
     }
-    buttons.push(['Something to eat',izakayaMenu],['Stand up',()=>{close();onStand();}],['Stay seated',close]);
-    show('居酒屋 みなと · your table',text,buttons);
+    buttons.push(['Stand up',()=>{close();onStand();}],['Stay seated',close]);
+    show('居酒屋 みなと · your seat',text,buttons);
+  }
+  /** Minato's wall, one list for drink and one for food. What you cannot pay for is marked, not hidden. */
+  function izakayaOrder(kind){
+    const items=Object.values(kind==='drinks'?DRINKS:DISHES);
+    show(kind==='drinks'?'Minato · to drink':'Minato · from the kitchen','You have ¥'+state.yen+'. Nao waits with her pad.',[
+      ...items.map(item=>[item.jp+' · ¥'+item.price+(state.yen<item.price?' (not enough yen)':''),()=>{
+        if(state.yen<item.price){receipt('Minato','Nao smiles: 今度ね。 Next time, then. You have ¥'+state.yen+'.');return;}
+        if(!spend(item.price))return;
+        if(!onOrderDrink(item.id)){state.yen+=item.price;save();receipt('Minato','Nao is busy -- try again in a moment.');return;}
+        onTime(2);note('Ordered '+item.en.toLowerCase()+' at Minato.');close();
+        say('「すみません、'+item.jp+'ください！」 '+(DISHES[item.id]?'Nao calls it back and goes to the '+DISHES[item.id].station+'.':'Nao nods and reaches for '+(item.id==='draft'?'a mug.':item.id==='bottle'?'a big bottle.':item.id==='can'?'the fridge.':item.id==='sake'?'the kettle for the tokkuri.':item.id==='awamori'?'the kame of awamori.':'the tea jug.')),4);
+      }]),
+      ['Back',izakayaTable]
+    ]);
+  }
+  /** A round for somebody at Minato: Nao pours it, they raise it, and the town remembers who bought it. */
+  function treat(name){
+    if(state.yen<DRINKS.draft.price){receipt(name,'You check your pockets: ¥'+state.yen+'. '+name+' laughs -- next time, then.');return;}
+    if(!spend(DRINKS.draft.price))return;
+    state.treats??={};const times=state.treats[name]=(state.treats[name]||0)+1;save();
+    onTime(2);onTreat(name);note('Bought '+name+' a drink at Minato.');
+    const lines=times===1?['乾杯！ That is very kind. The next one is mine -- I will remember.','Kanpai! Nao, did you see that? A gentleman.']:times<4?['Again? Then I owe you two. 乾杯！','You keep doing this. Sit down, then, and tell me about your day.']:['At this point you are a regular. Nao is going to put your name on a bottle.','乾杯、友よ。 To the harbour.'];
+    receipt(name,lines[(times+name.length)%lines.length]);
   }
   function izakayaMenu(){
     if(!izakayaOpen(getMinutes())){close();say('Minato closes at 03:00. Nao is locking up.');return;}
-    show('Minato · Tonight’s little pleasures','Nao: Choose something you like. The stories are on the house.',[
-      ...[['Yakitori plate',180,'Sweet soy glaze, three little skewers, and a very satisfied silence.'],['Edamame & barley tea',120,'Warm beans and cold barley tea. Nao settles a tiny saucer beside your cup.'],['Oden supper',260,'Daikon, egg and tofu, simmered until the day feels a little kinder.'],['Small beer',180,'A little glass of harbour lager. Someone at the next table starts a story.']].map(([name,cost,detail])=>[name+' · ¥'+cost,()=>{if(!izakayaOpen(getMinutes())){izakayaMenu();return;}if(!spend(cost))return;onTime(8);note('Supper at Minato: '+name+'.');show('Supper at Minato',detail,[['Listen to the table',izakayaGossip],['Something else?',izakayaMenu],['Enjoy the room',close]]);}]),
+    show('Minato · Tonight’s wall','Nao: Take a seat -- the counter, a table, wherever there is room -- and I will bring you anything on the wall. The stories are on the house.',[
+      ['Read the drinks',()=>show('Minato · to drink',Object.values(DRINKS).map(d=>d.jp+' · '+d.en+' · ¥'+d.price).join('\n'),[['Back',izakayaMenu]])],
+      ['Read the food',()=>show('Minato · from the kitchen',Object.values(DISHES).map(d=>d.jp+' · '+d.en+' · ¥'+d.price).join('\n'),[['Back',izakayaMenu]])],
       ['Just looking, thank you',close]
     ]);
   }
@@ -562,7 +632,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const service=getTableService();if(!service)return;
     const order=service.order;
     const server=service.server||'Thuan';const text=order?.delivered?'Your order is on the counter.':order?server+' is preparing your '+order.item.name.toLowerCase()+'.':'Take your time. '+server+' will prepare your order. Pay when it arrives.';
-    const buttons=order?.delivered?[[order.item.id==='tea'?'Drink tea':'Eat '+order.item.name,()=>{close();service.eat();}]]:order?[]:(service.menu||STORE_MENU).map(item=>[item.name+' · ¥'+item.cost,()=>{if(service.request(item.id))close();}]);
+    const drinkable=item=>item.id==='tea'||item.prop==='tea'||item.prop==='beer';
+    const buttons=order?.delivered?[[order.item.id==='tea'?'Drink tea':drinkable(order.item)?'Drink the '+order.item.name.replace(/, .*$/,''):'Eat '+order.item.name,()=>{close();service.eat();}]]:order?[]:(service.menu||STORE_MENU).map(item=>[(item.jp?item.jp+' · ':'')+item.name+' · ¥'+item.cost,()=>{if(service.request(item.id))close();}]);
     show(service.title||'Sakura · At the table',text,[...buttons,['Keep sitting',close],['Stand up',()=>{close();onStand();}]]);
   }
   function sit(name,detail){if(onSeat(name))return;show(name,detail||'A quiet place to sit.',[['Sit for ten minutes',()=>{onTime(10);receipt(name,'You sit for a while and listen to the town around you. Ten minutes pass.');}],['Leave',close]]);}
@@ -578,7 +649,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }catch(error){if(revision===modalRevision)receipt('Mail-order catalogue',error.message);}
   }
   function shopLedger(){
-    if(getSocialContext().inside!=='market'){receipt('Sakura sales ledger','The stock and sales books are on the counter at Sakura.');return;}
+    if(getSocialContext().inside!=='market'){receipt('Sakura sales ledger','The stock and sales books are in the back office at Sakura.');return;}
     show('Sakura Shōten · Shop ledger','Thuan’s sales, purchases and stock records.',[['Close ledger',close]]);modal.classList.add('sakura-records');
     ledgerView=createShopLedgerView(state,getMinutes);body.replaceChildren(ledgerView.element);
   }
@@ -745,6 +816,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'office-records':officeRecords(detail);break;
       case 'store-item':storeItem(detail);break;
       case 'shop-ledger':shopLedger();break;
+      case 'sakura-hot-snacks':thuanConversation('hot-case');break;
       case 'storage-restock':storageRestock();break;
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
@@ -789,7 +861,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
   $('#playerButton').onclick=players;
-  $('#creditsButton').onclick=()=>show('Credits','Nozomi appearance for Reiko: user-supplied Shenmue model, upload credited to Kiklox; embedded metadata declares CC BY 4.0. Geometry batching, material conversion and original movement clips by Johansson Town. Full source and provenance: assets/ATTRIBUTION.md.\nJohansson: MakeHuman base, skeleton, textures and clothing · CC0 1.0 (MakeHuman team), shaped and rigged with MPFB; face, painted skin and hair, print and all movements by Johansson Town.\nJapanese Town: Nazareno_rojas · CC BY 4.0. Complete supplied overworld, texture compression and static batching; original arrangement preserved. Source and licence: assets/models/full-town/CREDITS.md.\nThree.js r170 · MIT.\nBranching dialogue system: Godot Open Dialogue System by Tina Qin (QueenChristina) · MIT. Reimplemented in JavaScript from the GDScript; the dialogue data format and its rules are kept. Town dialogue is original writing.\nTouch joystick: Virtual Joystick for Godot by Marco Fazio (MarcoFazioRandom) \u00b7 MIT. Reimplemented in JavaScript; the joystick and visibility modes and the dead-zone output curve are kept, so the stick is drawn only where and when a thumb is down.\nCel shading, screen-space ink and the anime colour grade: Sakura Crossing by Kenton Wang (Kenton-GMI) \u00b7 MIT. The gradient ramps, the violet shadow-band patch, the depth second-difference line work and the split-tone grade are ported; the materials here are converted at runtime rather than authored, and photographic textures are only partly flattened.\nKonbini counter ritual, stamp card and receipt: inspired by Yorimichi by emaxsaun · MIT. Design only, no code; adapted to 1997, which had neither IC cards nor bag charges.\nEntry board design language: AsagaoUI by Hiroshi ISOBE · MIT, following the Japan Digital Agency design system. Colour ramps, type scale, spacing, rounding and focus ring ported as CSS; no framework code, icons or illustrations included.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\n21 fitted neighbours and the Yui fallback: Blender / MakeHuman system assets · CC0. Original scripted animations.\nQuaternius Ultimate Modular Men and Women: local fallback and archived bases/clips · CC0.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nCurrent Thuan: user-supplied Meshy Thoughtful Girl; Blender mesh/weight repairs, supplied walk/run, original idle and greeting.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
+  $('#creditsButton').onclick=()=>show('Credits','Everyone in town: Shimanchu islanders, original characters built in code by Johansson Town (src/avatars).\nThree.js r170 · MIT.\nBranching dialogue system: Godot Open Dialogue System by Tina Qin (QueenChristina) · MIT. Reimplemented in JavaScript from the GDScript; the dialogue data format and its rules are kept. Town dialogue is original writing.\nTouch joystick: Virtual Joystick for Godot by Marco Fazio (MarcoFazioRandom) \u00b7 MIT. Reimplemented in JavaScript; the joystick and visibility modes and the dead-zone output curve are kept, so the stick is drawn only where and when a thumb is down.\nCel shading, screen-space ink and the anime colour grade: Sakura Crossing by Kenton Wang (Kenton-GMI) \u00b7 MIT. The gradient ramps, the violet shadow-band patch, the depth second-difference line work and the split-tone grade are ported; the materials here are converted at runtime rather than authored, and photographic textures are only partly flattened.\nKonbini counter ritual, stamp card and receipt: inspired by Yorimichi by emaxsaun · MIT. Design only, no code; adapted to 1997, which had neither IC cards nor bag charges.\nEntry board design language: AsagaoUI by Hiroshi ISOBE · MIT, following the Japan Digital Agency design system. Colour ramps, type scale, spacing, rounding and focus ring ported as CSS; no framework code, icons or illustrations included.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);

@@ -131,7 +131,7 @@ function formHTML(def, data, ro, idp) {
       const r = data.rows?.[i] || {};
       h += `<li class="lp-row" data-row="${i}"><div class="lp-row-head"><strong>Mätning ${i + 1}${plan.title ? ` · ${markHtml(plan.title)}` : ''}</strong>${plan.optional ? '<span class="lp-opt">frivillig</span>' : ''}`;
       if (!ro && def.snapshot !== false) h += `<button type="button" class="lp-fetch" data-row="${i}">Hämta avläsning</button>`;
-      h += `</div><div class="lp-grid">`;
+      h += `</div>${def.rowMessages && !ro ? `<p class="lp-row-msg" id="${idp}msg${i}" role="status" aria-live="polite"></p>` : ''}<div class="lp-grid">`;
       for (const [k, defaultLabel] of ROW_FIELDS) {
         const l = plan.labels?.[k] || defaultLabel;
         const index = plan[k] && /_\{/.test(plan[k]);
@@ -198,6 +198,14 @@ export function mountProtocol(root, def) {
   root.setAttribute('aria-labelledby', `${def.key}-title`);
   const $ = (s) => root.querySelector(s);
   const msg = (t, warn = false) => { const el = $('.lp-msg'); el.textContent = t; el.classList.toggle('warn', warn); };
+  // def.rowMessages: beskedet efter ”Hämta avläsning” visas i mätningens egen ruta, så att det syns på mobil
+  // där rutan ligger långt under protokollets överkant. Utan flaggan är beteendet oförändrat.
+  const rowMsg = (i, t, warn = false) => {
+    const el = def.rowMessages && root.querySelector(`#${def.key}msg${i}`);
+    if (!el) return msg(t, warn);
+    root.querySelectorAll('.lp-row-msg').forEach((m) => { if (m !== el) m.textContent = ''; });
+    msg(''); el.textContent = t; el.classList.toggle('warn', warn);
+  };
 
   function refresh() {
     (def.rows || []).forEach((_, i) => {
@@ -221,14 +229,14 @@ export function mountProtocol(root, def) {
   form.addEventListener('click', (e) => {
     const b = e.target.closest('.lp-fetch'); if (!b) return;
     const i = Number(b.dataset.row), r = data.rows[i];
-    if (!String(r.forv || '').trim()) { msg(`Räkna först: skriv förväntat värde i mätning ${i + 1} innan du hämtar avläsningen.`, true); root.querySelector(`[data-p="rows.${i}.forv"]`).focus(); return; }
+    if (!String(r.forv || '').trim()) { rowMsg(i, `Räkna först: skriv förväntat värde i mätning ${i + 1} innan du hämtar avläsningen.`, true); root.querySelector(`[data-p="rows.${i}.forv"]`).focus(); return; }
     const s = def.snapshot?.(def.rows[i], i);
-    if (!s || s.error) { msg(s?.error || 'Det finns ingen avläsning att hämta just nu.', true); return; }
+    if (!s || s.error) { rowMsg(i, s?.error || 'Det finns ingen avläsning att hämta just nu.', true); return; }
     const t = new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
     Object.assign(r, { punkter: s.punkter ?? r.punkter, drift: s.drift ?? r.drift, uppm: s.varde, tid: t });
     for (const k of ['punkter', 'drift', 'uppm']) root.querySelector(`[data-p="rows.${i}.${k}"]`).value = r[k] || '';
     root.querySelector(`#${def.key}src${i}`).textContent = `Hämtat från simulatorn ${t}`;
-    msg(`Mätning ${i + 1}: ${s.varde} hämtat. Räkna avvikelsen och bedöm resultatet.`);
+    rowMsg(i, `Mätning ${i + 1}: ${s.varde} hämtat. Räkna avvikelsen och bedöm resultatet.`);
     save(); refresh();
   });
   // Kryssrutor och listor skickar change i vissa webbläsare
@@ -236,7 +244,7 @@ export function mountProtocol(root, def) {
     const p = e.target.dataset.p; if (!p || !(e.target.type === 'checkbox' || e.target.tagName === 'SELECT')) return;
     setPath(data, p, e.target.type === 'checkbox' ? e.target.checked : e.target.value); save(); refresh();
   });
-  root.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => { const p = def.presets[b.dataset.preset]; p.apply(); msg(p.done || `${p.label}: klart.`); }));
+  root.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => { const p = def.presets[b.dataset.preset]; p.apply(); root.querySelectorAll('.lp-row-msg').forEach((m) => { m.textContent = ''; }); msg(p.done || `${p.label}: klart.`); }));
   $('.lp-print').addEventListener('click', () => {
     const ex = $('.lp-example'); const open = ex?.open; if (ex) ex.open = false;
     document.body.classList.add('lp-printing'); window.print(); document.body.classList.remove('lp-printing'); if (ex) ex.open = open;

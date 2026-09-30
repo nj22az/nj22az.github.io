@@ -1,0 +1,50 @@
+{
+  "id": "EL-000873",
+  "titel": "Kontrollfråga 2.3",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 3,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En motor märkt Δ/Y 440/760 V ska anslutas till 440 V-nätet ombord. Vilken koppling ska den ha?",
+    "alternativ": [
+      "Y",
+      "Δ",
+      "Båda fungerar",
+      "Ingen av dem"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Jämför nätets huvudspänning med märkvärdena.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Nätets 440 V är lika med det lägre märkvärdet, som hör till Δ. I Y skulle lindningarna få för låg spänning.",
+    "status": "utkast",
+    "kommentar": "Δ"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_2.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

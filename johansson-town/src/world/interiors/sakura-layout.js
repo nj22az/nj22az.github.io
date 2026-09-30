@@ -89,6 +89,12 @@ export const SAKURA_LAYOUT={
   rect(-4.02,-3.2,.12,1.53),rect(-5.4,-2.48,2.82,.12),
   rect(4.60,-2.6,.12,2.7),rect(4.86,-1.17,.56,.12),rect(6.56,-1.17,.56,.12),
   rect(-2.16,-4.49,6.88,.86,2.3),rect(-6.26,-3.26,1.0,1.2,1.2),
+  // Thuan's desk in the back office (sakura-cheer.js BACK_OFFICE).
+  rect(6.4,-2.7,.7,1.2,.8),
+  // Lived-in pieces (sakura-life.js): Jaga-bō on his plinth, the assistant manager, the
+  // umbrella stand, the office fridge, the hand truck, crates and ladder in the back room.
+  rect(2.25,3.05,.72,.72,1.3),rect(-1.35,3.45,.42,.42,1.2),rect(1.2,3.55,.3,.3,1.0),
+  rect(4.98,-3.62,.48,.5,1.2),rect(5.35,-5.0,.4,.6,1.1),rect(-.95,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
  ]
 };
 // Each stocked unit has a real position. Opposite sides of an aisle use opposite
