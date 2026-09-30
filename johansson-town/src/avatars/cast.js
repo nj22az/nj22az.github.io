@@ -51,6 +51,17 @@ export const CAST_RECIPES=Object.freeze({
   brows:{style:'bushy',colour:'#8a8680',size:.6},nose:{style:'hook',size:.55},mouth:{style:'flat',size:.5},
   glasses:{style:'half',colour:'#2b2b2b'},wrinkles:.6,
   outfit:{top:'jacket',topColour:'#6b6f4a',bottom:'trousers',bottomColour:'#4a4238',shoes:'#3a2a1e',accent:'#e8d7b0'}}),
+ // The harbour master, who lives in his office, and Officer Mori at the police box.
+ 'Harbour master':R({name:'Harbour master',body:{height:.52,build:.68,skin:'#b5805d'},head:{size:.52,shape:.55,form:'round',jaw:.6,cheeks:.5},
+  hair:{style:'horseshoe',colour:'#b9b7b0'},eyes:{style:'gentle',colour:'#2a1d16',size:.45},
+  brows:{style:'bushy',colour:'#cfcdc6',size:.6},nose:{style:'wide',size:.55},mouth:{style:'flat',size:.5},
+  glasses:{style:'round',colour:'#2b2b2b'},facial:{style:'walrus',colour:'#dedbd3'},wrinkles:.55,
+  outfit:{top:'jacket',topColour:'#2c3e5c',bottom:'trousers',bottomColour:'#27304d',shoes:'#1c1c24',hat:'captain',hatColour:'#f4f1ea',accent:'#e0b93a'}}),
+ 'Officer Mori':R({name:'Officer Mori',body:{height:.7,build:.48,skin:'#c79872'},head:{size:.48,shape:.46,form:'oval',jaw:.5,cheeks:.4},
+  hair:{style:'crop',colour:'#4a4845'},eyes:{style:'round',colour:'#2a1d16',size:.62},
+  brows:{style:'worried',colour:'#3a3835',size:.55},nose:{style:'button',size:.45},mouth:{style:'smile',size:.45},
+  blush:.2,wrinkles:.2,
+  outfit:{top:'polo',topColour:'#9dbfe0',bottom:'trousers',bottomColour:'#27304d',shoes:'#1c1c24',hat:'police',hatColour:'#27304d',accent:'#e0b93a'}}),
 });
 
 /** The people of the new streets, drawn to their lines in neighbours.js. */

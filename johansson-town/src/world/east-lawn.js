@@ -5,6 +5,7 @@ import {GROUND_LAYER} from './ground-layers.js';
 import {buildEastGarden} from './east-garden.js';
 import {SCHOOL} from './school-layout.js';
 import {BEACH,beachHeight} from './beach-layout.js';
+import {inKobanPlot} from './koban-layout.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -181,7 +182,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  const leaves=TREE_LEAVES.map(color=>new THREE.MeshStandardMaterial({color,roughness:1}));
  const treeZ=EAST_LAWN.maxZ-.6,first=EAST_LAWN.minX+1.4,last=wall.x-1.6,count=13;
  // With a gap for the school gate, which the lawn's path runs through.
- const gate=SCHOOL.gate,clear=x=>Math.abs(x-gate.x)<gate.half+.9;
+ const gate=SCHOOL.gate,clear=x=>Math.abs(x-gate.x)<gate.half+.9||inKobanPlot(x,treeZ,1.1);// and the police box
  for(let i=0;i<count;i++){
   const x=first+i*(last-first)/(count-1),z=treeZ+(i%3-1)*.45,height=2.7+(i%4)*.4,radius=.78+(i%3)*.14;
   if(clear(x))continue;
@@ -203,6 +204,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   if(x>park.minX&&x<park.maxX&&z>park.minZ&&z<park.maxZ)continue;
   if(Math.abs(z+36)<2.2||Math.abs(z+18)<2.2)continue;
   if(Math.abs(x-SCHOOL.gate.x)<3.2&&z>14)continue;          // the way to the school gate
+  if(inKobanPlot(x,z,1))continue;                            // the police box
   if(wall.x-x>7&&treeZ-z>7)continue;
   clumps.push({x,z,size:.5+random()*.42,tint:Math.floor(random()*CLUMP_LEAVES.length)});
  }

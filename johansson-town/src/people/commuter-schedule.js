@@ -77,8 +77,11 @@ export function shiftActive(profile,minutes){
 }
 /** On the peninsula the Front-Row staff live in the yard behind the shop and never take the bus. */
 export const livesInYard=profile=>peninsulaActive()&&YARD_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);
+/** And two people live where they work: the harbour master in his office, Officer Mori at the police box. */
+export const LIVES_AT_WORK=Object.freeze(['Harbour master','Officer Mori']);
+export const livesAtWork=profile=>peninsulaActive()&&LIVES_AT_WORK.includes(typeof profile==='string'?profile:profile?.name);
 export function commuterPhase(profile,minutes,rain=false){
- if(livesInYard(profile))return 'town';
+ if(livesInYard(profile)||livesAtWork(profile))return 'town';
  const shift=shiftFor(profile),e=elapsed(profile,minutes);
  if(!shift)return 'town';
  if(shift.permanent)return 'permanent';

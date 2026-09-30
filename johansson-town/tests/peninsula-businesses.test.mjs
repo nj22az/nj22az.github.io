@@ -106,7 +106,8 @@ test('restored supplied office and warehouse use their existing staff and workin
   const c=setup();globalThis.createImageBitmap=async()=>({width:256,height:256,close(){}});
   const native=fetch;globalThis.fetch=async url=>String(url).startsWith('blob:')?native(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
   try{assert.deepEqual(await preloadSuppliedRooms(['office']),[true]);}finally{globalThis.fetch=native;}
-  for(const [id,name,builder,minute] of [['office','Harbour master',buildSuppliedRoom,0],['warehouse','Mrs Sato',buildWarehouseInterior,1000]]){
+  // The harbour master sleeps in the office at night now, so meet him on duty in the morning.
+  for(const [id,name,builder,minute] of [['office','Harbour master',buildSuppliedRoom,480],['warehouse','Mrs Sato',buildWarehouseInterior,1000]]){
    const site=[...c.sites,...c.world.landmarks].find(s=>s.id===id),r=roomFor(c,site,builder);
    if(id==='office'){assert.ok(r.room.getObjectByName('Supplied office'));assert.ok(r.room.getObjectByName('Clerk CRT monitor'));assert.ok(c.targets.some(o=>o.userData.hit.label==='Open harbour spreadsheets'));}
    if(!inCast(name))continue;

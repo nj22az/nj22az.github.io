@@ -52,7 +52,7 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
   g.quaternion.identity().slerp(lying,sleepBlend*amount);
   g.userData.sleepBlend=sleepBlend*amount;g.userData.socialPose=asleep||sleepBlend>.01?'Sleep':'Wake';if(!asleep&&sleepBlend<=.01)g.userData.seatHeight=to[1];
  }
- return {enter(next,minutes){restore();site=next;person=world.people.find(p=>p.profile.name===name);if(!person){site=null;return;}layout=homeLayoutFor(person.profile.name);walker=createRoomWalk(collides);update(0,minutes);},update,restore(){restore();site=null;walker?.clear();}};
+ return {enter(next,minutes){restore();site=next;person=world.people.find(p=>p.profile.name===name);if(!person){site=null;return;}layout=next.homeLayouts?.[name]||homeLayoutFor(person.profile.name);walker=createRoomWalk(collides);update(0,minutes);},update,restore(){restore();site=null;walker?.clear();}};
 }
 
 // Borrow each existing street actor independently. Entering a shared home cannot

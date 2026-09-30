@@ -11,7 +11,7 @@ import {closingStockPending,closingPreparationPending} from '../commerce/shop-st
 import {BUS_STATION} from '../world/bus-station.js';
 import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
 import {PARK_BENCH} from '../world/park-layout.js';
-import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard} from './commuter-schedule.js';
+import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork} from './commuter-schedule.js';
 import {shoppingDistrictActive,peninsulaActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
@@ -271,7 +271,33 @@ function yardResidentPlan(profile,minutes,rain=false,state=null){
  if(evening)return evening;
  return {place:'home',target:profile.home,activity:rain?'sheltering at home':'at home in the yard'};
 }
+/**
+ * The two who live at their work. The harbour master keeps the office from half past
+ * six until five, walks the quay in the early evening and turns in behind the screen
+ * in the office by half past nine. Officer Mori sleeps through the morning in the
+ * tatami room behind the police box, keeps the front desk from four, takes supper at
+ * Sakura and walks the night patrol from ten until six.
+ */
+export const HARBOUR_MASTER_DAY=Object.freeze({start:390,finish:1020,turnIn:1230});
+export const MORI_DAY=Object.freeze({desk:960,patrol:1320,patrolEnd:360});
+function workplaceResidentPlan(profile,minutes,rain=false,state=null){
+ const m=minuteOfDay(minutes),home={place:'home',target:profile.home};
+ if(profile.name==='Harbour master'){
+  const day=HARBOUR_MASTER_DAY;
+  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'buying lunch at Sakura'};
+  if(inTimeRange(m,day.start,day.finish))return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
+  if(!rain&&inTimeRange(m,day.finish,day.finish+75))return {place:'stroll',target:[0,-44],activity:'walking the quay to check the moorings'};
+  if(!rain&&inTimeRange(m,day.finish+75,day.turnIn-60))return {place:'park',target:[PARK_STAND[0]+.8,PARK_STAND[1]-.9],activity:'watching the evening from the park'};
+  return {...home,activity:inTimeRange(m,day.turnIn-60,day.start+1440)?'in his bed nook at the office':'at home in the office'};
+ }
+ const day=MORI_DAY;
+ if(inTimeRange(m,day.patrol,day.patrolEnd+1440))return {place:'patrol',target:NIGHT_PATROL[0],activity:'night patrol'};
+ if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'supper from Sakura before the night patrol'};
+ if(inTimeRange(m,day.desk,day.patrol))return {place:'work',target:profile.work,activity:'at the front desk of the police box'};
+ return {...home,activity:'resting in the room behind the police box'};
+}
 function commuterPlan(profile,minutes,rain=false,state=null){
+ if(livesAtWork(profile))return workplaceResidentPlan(profile,minutes,rain,state);
  if(livesInYard(profile))return yardResidentPlan(profile,minutes,rain,state);
  const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
  // exit is the platform (clear of the tunnel mouth) — never roadEndZ/arch.

@@ -27,10 +27,19 @@ git checkout 5c63eb8 -- johansson-town/assets/models/sea-cave
 
 On the street: Thuan, Nao, and the Front-Row staff — Aya and Reiko (books, evening press), Kenji and
 Tetsuo (workshop, radio repair) — who live in two yard houses behind the bookshop
-(`src/world/yard-homes*.js`) and sleep there instead of taking the bus. Still held back, in
-`STREET_CAST_NAMES`: Mrs Sato, the Harbour master, Officer Mori and the Bus driver; they would each
-need a home and a peninsula routine the same way. Thuan and Nao still commute; their flat above
-Sakura is dressed from outside only.
+(`src/world/yard-homes*.js`) and sleep there instead of taking the bus.
+
+The harbour master and Officer Mori live where they work (`livesAtWork` in
+`commuter-schedule.js`, `workplaceResidentPlan` in `social.js`). The harbour master sleeps behind a
+folding screen in the harbour office (`buildBedNook` in `interiors/office-workplace.js`). Mori has the
+police box, a chūzaisho on the lawn corner at the bus plaza (`src/world/koban*.js`,
+`interiors/koban.js`): front desk from 16:00, night patrol 22:00–06:00, asleep in the tatami room
+behind it through the morning. A site with `ownRoom` keeps its own interior as a home, and
+`homeLayouts` gives home-residents.js the bed and table inside it.
+
+Still held back, in `STREET_CAST_NAMES`: Mrs Sato and the Bus driver; they would each need a home and
+a peninsula routine the same way. Thuan and Nao still commute; their flat above Sakura is dressed
+from outside only. Everyone on the street is a recipe in `src/avatars/cast.js`.
 
 ## Retired in the cleanup (recover from `5c63eb8`)
 
