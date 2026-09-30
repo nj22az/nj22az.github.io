@@ -17,6 +17,7 @@ import {buildBusinessContent,BUSINESS_CONTENT_CATALOGUE} from './world/interiors
 import {WAREHOUSE} from './world/warehouse.js';
 import {assignWorkplaces} from './people/workplaces.js';
 import {createHomeResidents} from './people/home-residents.js';
+import {buildKobanInterior} from './world/interiors/koban.js';
 import {homeOwner} from './people/home-life.js';
 import {buildResidentHome} from './world/interiors/resident-home.js';
 import {createWorkplaceResidents} from './people/workplace-residents.js';
@@ -585,7 +586,9 @@ function roomShell(s){
  if(s.id==='market'){activeRoomLayout=SAKURA_LAYOUT;return;}
  if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
  if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior(shared);return;}
- activeRoomLayout=homeOwner(s)&&s.id!=='yuri-home'?buildResidentHome({...shared,profile:world.people.find(p=>p.profile.name===homeOwner(s)).profile,box}):s.id==='warehouse'?buildWarehouseInterior(shared):buildCompactShop(shared)||buildSuppliedRoom(shared);
+ if(s.id==='koban'){activeRoomLayout=buildKobanInterior(shared);return;}
+ // A home with a room of its own (the office, the police box) keeps it; everyone else gets a flat.
+ activeRoomLayout=homeOwner(s)&&s.id!=='yuri-home'&&!s.ownRoom?buildResidentHome({...shared,profile:world.people.find(p=>p.profile.name===homeOwner(s)).profile,box}):s.id==='warehouse'?buildWarehouseInterior(shared):buildCompactShop(shared)||buildSuppliedRoom(shared);
  if(activeRoomLayout||s.id==='izakaya')return;
  if(s.id==='market')return;
  throw Error('No interior defined for '+s.id);
