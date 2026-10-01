@@ -572,3 +572,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-10-01** Vecka 40, inlämning 6 d (EL-000812): frågan ”Hur mycket minskar förlusten …?” passade inte svarsrutan
   ”Ny kabelförlust i % av den tidigare”. Nu: ”Hur stor blir den nya förlusten i matningskabeln, i procent av den
   tidigare?” Facit och resultatkod oförändrade. Upplåst, ändrad, låst igen. Reviderad utan skyddade filer (regel 15).
+- **2026-10-01** Labbhandboken (`labbhandbok/index.html`, `station-5.html`, `vecka-40.html`, `vecka-41.html`) är nu
+  krypterad med lärarlösenordet som lärarportalen (`verktyg/larare/las.mjs`). Den var publik klartext med D-formlerna
+  för varje labbuppgift och svaren till fredagens stopp. Länkad från lärarportalen under Labbar. Äldre klartext finns
+  kvar i git-historiken.

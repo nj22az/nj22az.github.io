@@ -1,125 +1,42 @@
-<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Labbhandbok: iordningställ motorstationen · Sjöskolan</title>
-<meta name="description" content="Så ställs motorstationen i ordning: motor och motorstartare som aldrig ansluts, Y- och Δ-koppling i plinten, delarna och lärarens referensmätning.">
-<meta name="robots" content="noindex">
-<link rel="icon" href="/assets/images/apple-touch-icon.png">
-<link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928"><link rel="stylesheet" href="handbok.css?v=20260929">
-<script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
-<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/vecka-41/aktuell/">Vecka 41</a></nav>
-<main id="main-content" class="course-main"><article class="course-reading">
-<p class="course-kicker">Labbhandbok för läraren · station 5</p>
-<h1>Iordningställ motorstationen</h1>
-<p class="hb-intro">Motorn (pos 11) och motorstartaren (pos 15) är övningsobjekt. De ansluts aldrig till nätet. Eleverna kopplar Y och Δ med blecken i motorns plint, kontrollerar kopplingen med en multimeter och går igenom delarna på motorn och startaren.</p>
-<ul class="hb-meny" aria-label="Labbhandbokens sidor">
-<li><a href="index.html">1. Översikt och beslut</a></li>
-<li><a href="station-5.html" aria-current="page">2. Iordningställ motorstationen</a></li>
-<li><a href="vecka-41.html">3. Labbpasset vecka 41</a></li>
-<li><a href="vecka-40.html">4. Fredagen vecka 40</a></li>
-</ul>
-
-<div class="hb-panel hb-ok"><h2>Varför det här är säkert</h2>
-<p>Motorn och startaren har ingen nätkabel och ingen stickpropp. Det finns alltså ingen väg för nätspänning in i stationen. Multimetern mäter resistans med sin egen lilla mätström. DC-aggregatet står vid en annan station och kopplas aldrig till motorn. Kvarvarande risker är mekaniska: motorn är tung, plåtkanter kan vara vassa och bleck och muttrar kan tappas.</p></div>
-
-<h2 id="skylt">1. Skriv av märkskylten</h2>
-<p>Allt eleverna resonerar om kommer från skylten. Fyll i tabellen från den levererade motorn och fotografera skylten. Ett foto kan visas på skärm under passet.</p>
-<div class="hb-tabell"><table>
-<thead><tr><th>Uppgift på skylten</th><th>Värde</th><th>Används till</th></tr></thead>
-<tbody>
-<tr><td>Märkeffekt (axeleffekt) P<sub>axel</sub></td><td class="fyll"></td><td>Del 2: axeleffekt och tillförd effekt</td></tr>
-<tr><td>Spänning Δ/Y, till exempel 230/400 V</td><td class="fyll"></td><td>Vilken koppling motorn skulle ha på 400 V i land och på 440 V ombord</td></tr>
-<tr><td>Märkström Δ/Y</td><td class="fyll"></td><td>Del 2: linjeström, jämförelse mellan kopplingarna</td></tr>
-<tr><td>Frekvens</td><td class="fyll"></td><td>Del 1: 50 Hz i land, 60 Hz ombord</td></tr>
-<tr><td>cos φ</td><td class="fyll"></td><td>Del 2: trefaseffekt</td></tr>
-<tr><td>Varvtal</td><td class="fyll"></td><td>Vecka 43: synkront varvtal och eftersläpning</td></tr>
-<tr><td>Verkningsgrad eller IE-klass, om den finns</td><td class="fyll"></td><td>Del 2: P<sub>in</sub> = P<sub>axel</sub>/η</td></tr>
-<tr><td>Kapslingsklass (IP) och isolationsklass</td><td class="fyll"></td><td>Delar och miljö ombord</td></tr>
-</tbody></table></div>
-<p class="hb-liten">Underlaget anger WilTec 62004, 1,5 kW, med 400 V i produktnamnet och 415 V, 50 Hz i tillverkarens tekniska fält. Skriv bara in vad som står på skylten.</p>
-
-<h2>2. Ställ i ordning motorn</h2>
-<ol class="hb-steg">
-<li><strong>Placera motorn lågt och stadigt</strong> på ett bord eller en skiva, med fötterna nedåt och plinten åt eleverna. Lyft med två personer om vikten kräver det; vikten står i motorns dokumentation.</li>
-<li><strong>Öppna kopplingslådan</strong> (plintlådan). Lägg locket och skruvarna i en märkt låda.</li>
-<li><strong>Ta bort alla bleck</strong> och lägg dem i samma låda. Kontrollera att plintens sex lindningsändar är märkta U1, V1, W1 och U2, V2, W2. Saknas märkning, bestäm ändarna med resistansmätning (steg 3 nedan) och märk dem.</li>
-<li><strong>Hitta skyddsjordens anslutning</strong> i kopplingslådan och på stommen. Den ska eleverna kunna peka ut, även om motorn aldrig ansluts.</li>
-<li><strong>Kabelgenomföringen</strong> lämnas tom. Sätt en skylt: ”Ej ansluten, övningsobjekt. Anslut aldrig till nätet.”</li>
-</ol>
-
-<h2>3. Ställ i ordning startaren</h2>
-<ol class="hb-steg">
-<li><strong>Montera startaren</strong> på en skiva bredvid motorn, med locket av så att kontaktorn och överlastreläet syns. Samma skylt: ”Ej ansluten, övningsobjekt.”</li>
-<li><strong>Kontrollera att överlastreläet sitter på kontaktorn.</strong> För LE1D09-exemplet beställs det separat. Utan överlastreläet finns inga plintar 95–96 och 97–98 att visa.</li>
-<li><strong>Skriv ut startarens kopplingsschema</strong> för exakt den modell du har. Beteckningarna A1–A2, 13–14 och 95–96 ska kontrolleras mot den verkliga enheten.</li>
-</ol>
-
-<h2>4. Delar att gå igenom</h2>
-<p>Motorn plockas inte isär. Eleverna tittar på det som syns utan verktyg, och på kopplingslådan som du har öppnat.</p>
-<div class="hb-tabell"><table>
-<thead><tr><th>Del</th><th>Eleven ska kunna säga</th></tr></thead>
-<tbody>
-<tr><td>Märkskylt</td><td>Vilka uppgifter som finns och vad Δ/Y-spänningen betyder för kopplingen.</td></tr>
-<tr><td>Stomme med kylflänsar (statorns hölje)</td><td>Att statorlindningarna sitter i stommen och att flänsarna leder bort värme.</td></tr>
-<tr><td>Fläkt och fläktkåpa</td><td>Att fläkten sitter på axeln och kyler motorn. Motorn kyler sämre vid lågt varvtal.</td></tr>
-<tr><td>Axel och kilspår, lagersköldar</td><td>Att rotorn bärs av lager i lagersköldarna och att kraften tas ut via axeln och kilen.</td></tr>
-<tr><td>Kopplingslåda och plint</td><td>Sex lindningsändar, tre lindningar (U1–U2, V1–V2, W1–W2), bleck som bestämmer Y eller Δ.</td></tr>
-<tr><td>Skyddsjordens anslutning</td><td>Var skyddsledaren ansluts och varför stommen ska vara jordad.</td></tr>
-<tr><td>Kabelgenomföring</td><td>Att den tätar och håller kabeln, och vad IP-klassen betyder.</td></tr>
-<tr><td>Kontaktor K1: huvudkontakter och spole A1–A2</td><td>Att spolen drar kontaktorn och huvudkontakterna kopplar motorns tre faser.</td></tr>
-<tr><td>Hjälpkontakt 13–14</td><td>Att den är normalt öppen och används för självhållningen (vecka 43).</td></tr>
-<tr><td>Överlastrelä: 95–96, 97–98, inställningsratt, test och återställning</td><td>Att 95–96 är normalt sluten och bryter styrkretsen vid överlast, och att ratten ställs efter motorns märkström.</td></tr>
-<tr><td>Start- och stoppknapp, om de finns på kapslingen</td><td>START normalt öppen, STOPP normalt sluten.</td></tr>
-</tbody></table></div>
-
-<h2>5. Y och Δ i plinten</h2>
-<figure class="hb-figur"><img src="/sjoskolan/vecka-41/aktuell/figurer/v41_02-b21-1.png" alt="Motorns kopplingsplint: Y med bygel över W2, U2, V2 ger lindningsspänningen UL/√3; Δ med byglar U1–W2, V1–U2, W1–V2 ger lindningsspänningen UL" style="max-width:520px;width:100%;height:auto"><figcaption>Samma figur som i Del 2, bild 21. Plintens övre rad är W2, U2, V2 och den undre U1, V1, W1.</figcaption></figure>
-<ul>
-<li><strong>Y:</strong> blecken förbinder W2, U2 och V2 längs den övre raden. Den punkten är stjärnpunkten. Varje lindning ligger mellan en fas (U1, V1, W1) och stjärnpunkten.</li>
-<li><strong>Δ:</strong> tre bleck lodrätt: U1–W2, V1–U2 och W1–V2. Varje lindning ligger mellan två faser.</li>
-<li>Vilken koppling motorn ska ha i drift avgörs av skylten och nätets linjespänning: nätets U<sub>L</sub> lika med det högre märkvärdet ger Y, lika med det lägre ger Δ.</li>
-</ul>
-
-<h2 id="referens">6. Din referensmätning</h2>
-<p>Mät en gång själv innan passet. Då vet du vilka värden eleverna ska få, utan att gissa. Använd multimeterns resistansområde (pos 12 eller pos 16).</p>
-<ol class="hb-steg">
-<li><strong>Nollställ mätsladdarna.</strong> Håll mätspetsarna mot varandra och notera resistansen. Den dras av från varje mätvärde, eftersom lindningarnas resistans är några ohm.</li>
-<li><strong>Utan bleck:</strong> mät U1–U2, V1–V2 och W1–W2. Mät också mellan två olika lindningar, till exempel U1–V1. Där ska mätaren visa överområde (ingen förbindelse).</li>
-<li><strong>Y-koppla</strong> och mät U1–V1, V1–W1 och W1–U1.</li>
-<li><strong>Δ-koppla</strong> och mät samma tre par.</li>
-</ol>
-<div class="hb-tabell"><table>
-<thead><tr><th>Mätning</th><th>Förväntat samband</th><th>Ditt värde</th></tr></thead>
-<tbody>
-<tr><td>R<sub>U1–U2</sub>, R<sub>V1–V2</sub>, R<sub>W1–W2</sub> (bleck borttagna)</td><td>Lika inom några procent. Kalla medelvärdet R<sub>lindning</sub>.</td><td class="fyll"></td></tr>
-<tr><td>U1–V1 utan bleck</td><td>Överområde: lindningarna är skilda åt.</td><td class="fyll"></td></tr>
-<tr><td>U1–V1 i Y (samma för de andra paren)</td><td>Två lindningar i serie: 2 · R<sub>lindning</sub></td><td class="fyll"></td></tr>
-<tr><td>U1–V1 i Δ (samma för de andra paren)</td><td>En lindning parallellt med två i serie: R · 2R/(3R) = (2/3) · R<sub>lindning</sub></td><td class="fyll"></td></tr>
-<tr><td>Kvoten R<sub>Y</sub>/R<sub>Δ</sub></td><td>2/(2/3) = 3</td><td class="fyll"></td></tr>
-</tbody></table></div>
-<p>Kvoten 3 är samma trefaldiga skillnad som i Del 2: samma last tar tre gånger så stor linjeström i Δ som i Y vid samma linjespänning. Resistansmätningen visar det på den riktiga motorn utan att den körs.</p>
-<p class="hb-liten">Lindningsresistansen ändras med temperaturen. Notera rummets temperatur tillsammans med dina värden.</p>
-
-<h2 id="tangstation">7. Tångstationen (SELV, utan motorn)</h2>
-<p>Stationen visar hur en strömtång fungerar: den mäter summan av strömmarna som går genom käften. Utrustning: DC-aggregat (pos 01), en labbsladd (pos 05), UT210D (pos 16).</p>
-<ol class="hb-steg">
-<li><strong>Ställ aggregatet</strong> med utgången avslagen: spänning 2 V, strömgräns 2,0 A. Sladdarna tål 3 A.</li>
-<li><strong>Koppla en labbsladd från plus till minus</strong> och slå på utgången. Aggregatet går då i strömbegränsning och visar 2,0 A. Det är avsikten: strömmen bestäms av strömgränsen, inte av sladden.</li>
-<li><strong>Nollställ tången</strong> i läget DC A innan den läggs runt en ledare (knappen för nollställning).</li>
-<li>Eleverna mäter: sladden en gång genom käften, sladden lindad två varv genom käften, och sladden vikt som en hårnål så att både den utgående och den tillbakagående delen går genom käften.</li>
-</ol>
-<div class="hb-tabell"><table>
-<thead><tr><th>Tången runt</th><th>Förväntat</th><th>Kopplingen till trefas</th></tr></thead>
-<tbody>
-<tr><td>Sladden en gång</td><td>Samma som aggregatets visning, cirka 2,0 A</td><td>Så mäts en fasström: en ledare i taget.</td></tr>
-<tr><td>Sladden två varv</td><td>Dubbla värdet, cirka 4,0 A</td><td>Tången räknar varje gång strömmen passerar.</td></tr>
-<tr><td>Hårnål: ut och tillbaka i samma käft</td><td>Nära 0 A</td><td>Strömmarna tar ut varandra. Runt en hel trefaskabel till en symmetrisk last blir summan också noll, och därför ger en flerledarkabel ingen fasström. Samma princip används i jordfelsbrytaren.</td></tr>
-</tbody></table></div>
-<p class="hb-liten">Slå av utgången innan sladdarna kopplas om. Stationen ligger helt inom skyddsklenspänning.</p>
-
-<h2>8. Efter passet</h2>
-<ul class="hb-check">
-<li>Ta bort blecken, räkna dem och lägg dem i lådan. Vecka 44 mäts isolationen lindning mot gods, och fas–fas kräver att blecken är borttagna.</li>
-<li>Stäng kopplingslådan och sätt tillbaka locket på startaren om den ska flyttas.</li>
-<li>Spara din referenstabell. Den används igen vecka 44 och 45.</li>
-</ul>
-</article></main>
-</body></html>
+<!doctype html>
+<html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Labbhandbok: iordningställ motorstationen · Sjöskolan</title><link rel="icon" href="/assets/images/apple-touch-icon.png">
+<style>
+:root{--ink:#163248;--muted:#4d6579;--line:#cad8e2;--soft:#edf4f9;--field:#5d7282;--accent:#064f91;--accent-dark:#053f74;--warn:#9a4a12;--focus:#ffd43d}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:17px/1.65 Arial,Helvetica,sans-serif}
+.school-nav{display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:14px max(24px,calc((100% - 1160px)/2));font-size:16px}
+.school-nav a{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}.school-nav strong{letter-spacing:.08em;font-size:18px}
+main{max-width:560px;margin:10vh auto;padding:24px}.kicker{font-size:15px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0}
+h1{font-size:34px;line-height:1.15;margin:8px 0 16px}label{display:block;font-weight:700;margin:24px 0 8px}
+input{font:inherit;width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--field);border-radius:8px;background:#fff;color:inherit}
+button{font:inherit;font-weight:700;min-height:48px;margin-top:16px;padding:10px 22px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+button:hover{background:var(--accent-dark)}button:disabled{opacity:.6}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px;box-shadow:0 0 0 6px var(--focus)}#msg{min-height:1.6em;color:var(--warn)}a{color:var(--accent)}label.minns{display:flex;gap:10px;align-items:center;font-weight:400;margin:14px 0 0}label.minns input{width:22px;min-height:22px;margin:0}
+</style></head><body><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a></nav><main>
+<p class="kicker">Sjöskolan · lärarstöd</p><h1>Labbhandbok: iordningställ motorstationen</h1>
+<p>Sidan är till för lärare och är skyddad med lösenord.</p>
+<form id="f"><label for="pw">Lösenord</label><input id="pw" type="password" autocomplete="current-password" required><label class="minns"><input id="minns" type="checkbox"> Kom ihåg lösenordet på den här enheten (bara din egen telefon eller dator)</label><button id="go">Öppna</button><p id="msg" role="status" aria-live="polite"></p></form>
+</main>
+<script id="lock-data" type="application/json">{"v":1,"it":600000,"salt":"A4Xhbe7hYOfvLmynIn3BeQ==","iv":"YzJDr9/HZUdPeG6j","ct":"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"}</script>
+<script>
+(() => {
+  const d = JSON.parse(document.getElementById('lock-data').textContent), K = 'sjoskolan-lararlosen';
+  const bytes = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  async function open(pw, minns) {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
+    const k = await crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt: bytes(d.salt), iterations: d.it }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+    const html = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes(d.iv) }, k, bytes(d.ct)));
+    try { sessionStorage.setItem(K, pw); if (minns) localStorage.setItem(K, pw); } catch {}
+    document.open(); document.write(html); document.close();
+  }
+  const f = document.getElementById('f'), msg = document.getElementById('msg'), go = document.getElementById('go');
+  if (!window.crypto || !crypto.subtle) { msg.textContent = 'Webbläsaren saknar stöd för dekryptering. Öppna sidan via https i en aktuell webbläsare.'; go.disabled = true; return; }
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault(); go.disabled = true; msg.textContent = 'Öppnar …';
+    try { await open(document.getElementById('pw').value, document.getElementById('minns').checked); } catch { msg.textContent = 'Fel lösenord.'; go.disabled = false; }
+  });
+  // Sparat i fliken, eller på enheten om läraren har valt det (t.ex. för att läsa resultatkoder med telefonens kamera).
+  let saved = null; try { saved = sessionStorage.getItem(K) || localStorage.getItem(K); } catch {}
+  if (saved) open(saved).catch(() => { try { sessionStorage.removeItem(K); localStorage.removeItem(K); } catch {} });
+})();
+</script></body></html>
