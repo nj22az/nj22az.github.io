@@ -194,10 +194,40 @@ export function tickOcean(time) {
   oceanMaterial().uniforms.uTime.value = time;
 }
 
+let oceanWet = false, oceanLight = {day: 1, dusk: 0};
+
+/**
+ * The sea's colours for the hour, from the same clock as the sky and the sun.
+ *
+ * It used to stay tropical cyan through dusk and all night, the brightest thing on the
+ * screen after dark (docs/AMPLIFY-AUDIT.md, A6). Day is reef turquoise over cobalt;
+ * dusk warms the shallows toward gold and the horizon toward apricot; night drops to
+ * navy with a moonlit horizon. Rain greys it all a little.
+ */
+const SEA = {
+  day:   {deep: '#034056', mid: '#0b86a8', shallow: '#4fd4e2', horizon: '#c5e7f7', foam: '#f4fcff'},
+  dusk:  {deep: '#1f2f5a', mid: '#3d6f8f', shallow: '#c9b58a', horizon: '#f0b48c', foam: '#ffe6cf'},
+  night: {deep: '#030c1c', mid: '#0a2340', shallow: '#1d4b63', horizon: '#2c3a52', foam: '#9fb3c8'},
+  rain:  {deep: '#023848', mid: '#0a6a86', shallow: '#5aa9b3', horizon: '#a7bcc6', foam: '#e3eef1'},
+};
+const tmpA = new THREE.Color(), tmpB = new THREE.Color();
+function applySea() {
+  const u = oceanMaterial().uniforms, {day, dusk} = oceanLight;
+  for (const [key, uniform] of [['deep', u.uDeep], ['mid', u.uMid], ['shallow', u.uShallow], ['horizon', u.uHorizon], ['foam', u.uFoam]]) {
+    tmpA.set(SEA.night[key]).lerp(tmpB.set(SEA.day[key]), day);
+    if (dusk > 0) tmpA.lerp(tmpB.set(SEA.dusk[key]), dusk * .85);
+    if (oceanWet) tmpA.lerp(tmpB.set(SEA.rain[key]), .55 * Math.max(day, .3));
+    uniform.value.copy(tmpA);
+  }
+}
+
 export function setOceanWeather(wet) {
-  const u = oceanMaterial().uniforms;
-  u.uDeep.value.set(wet ? '#023848' : '#034056');
-  u.uMid.value.set(wet ? '#0a6a86' : '#0b86a8');
+  oceanWet = !!wet;applySea();
+}
+
+/** @param {{day:number,dusk:number}} light 0..1 daylight and dusk, from duskClock. */
+export function setOceanLight({day = 1, dusk = 0} = {}) {
+  oceanLight = {day, dusk};applySea();
 }
 
 export function isOceanMaterial(mat) {

@@ -56,7 +56,7 @@ function buildShell(map){
  g.setAttribute('color',new THREE.Float32BufferAttribute(colours,3));g.computeVertexNormals();
  // Kept out of the town's cel pass, which lifts every shadow to a tint: down here the dark
  // has to be dark, and the lantern has to be what shows the rock.
- const material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,side:THREE.DoubleSide});material.userData.keepPhysical=true;
+ const material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,side:THREE.DoubleSide});material.userData.keepPhysical=true;material.userData.keepPhysicalStrict=true;
  const mesh=new THREE.Mesh(g,material);
  mesh.name='Dungeon rock';mesh.receiveShadow=true;return mesh;
 }
@@ -73,7 +73,7 @@ function buildRubble(map){
   }
  }
  const g=new THREE.IcosahedronGeometry(1,0);
- const rubble=new THREE.MeshStandardMaterial({color:0x4f4466,roughness:1,flatShading:true});rubble.userData.keepPhysical=true;
+ const rubble=new THREE.MeshStandardMaterial({color:0x4f4466,roughness:1,flatShading:true});rubble.userData.keepPhysical=true;rubble.userData.keepPhysicalStrict=true;
  const mesh=new THREE.InstancedMesh(g,rubble,Math.max(1,spots.length));
  const d=new THREE.Object3D();
  spots.forEach(([x,z,s,r],i)=>{d.position.set(x,s*.5,z);d.scale.set(s,s*(r<.3?2.2:.8),s);d.rotation.set(r,r*5,0);d.updateMatrix();mesh.setMatrixAt(i,d.matrix);});

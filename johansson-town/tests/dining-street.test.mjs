@@ -27,7 +27,7 @@ test('both alley halves and restaurants face Main Street, with shared streaming 
   assert.equal(JSON.stringify({colliders:world.colliders,doors:sites.map(s=>s.door)}),before);
   assert.ok(world.group.getObjectByName('Minato exterior'));assert.ok(world.group.getObjectByName('Supplied ramen-exterior'));
   const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked);
-  for(const [id,door] of [['izakaya',DINING.izakayaDoor],['ramen',DINING.ramenDoor],['crystal-room',DINING.crystalDoor]]){
+  for(const [id,door] of [['izakaya',DINING.izakayaDoor],['ramen',DINING.ramenDoor]]){
    const site=sites.find(s=>s.id===id);assert.deepEqual([site.door[0],site.door[2]],door);assert.equal(blocked(...door),false);
    assert.ok(nav.path({x:0,z:NIGHT_LANE.z},{x:door[0],z:door[1]}).length,'Walk from main street to '+id);
    assert.equal(site.entryFacing,id==='izakaya'?Math.PI/2:-Math.PI/2,'Entrance faces Main Street from its own side');

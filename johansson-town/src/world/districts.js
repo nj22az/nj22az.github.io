@@ -44,7 +44,7 @@ export function buildDistricts(world,options){
     verb([x+w*.42,1.4,frontZ+.8],'Read meter','read','Electricity meter','A mechanical disc turns behind the glass. The last reading was entered in pencil.');
     colliders.push({x,z:z-d/2,w,d:.35,height:h},{x:x-w/2,z,w:.35,d,height:h},{x:x+w/2,z,w:.35,d,height:h});
     const s={id,x,z,title,jp,sub:'JOHANSSON町',color:colour,accent:'#4c655a',line:title+' · 14 September 1997',door:[x,0,frontZ+1],opens:'09:00'};
-    if(id==='ramen'||id==='crystal-room'){options.sites.push(s);const a=new THREE.Object3D();a.position.set(x,1.3,frontZ+.65);group.add(a);options.register(a,'Enter '+title,()=>options.enter(s));}else{verb([x,1,frontZ+.8],'Read '+title+' notice','read',title,'The curtains are drawn. A paper sign gives the evening opening hours.');}
+    if(id==='ramen'){options.sites.push(s);const a=new THREE.Object3D();a.position.set(x,1.3,frontZ+.65);group.add(a);options.register(a,'Enter '+title,()=>options.enter(s));}else{verb([x,1,frontZ+.8],'Read '+title+' notice','read',title,'The curtains are drawn. A paper sign gives the evening opening hours.');}
     return s;
   }
   // The peninsula keeps the ground and the seafront and nothing that is a shop. The
@@ -54,7 +54,6 @@ export function buildDistricts(world,options){
   if(shops)buildTeaHouse(world,options);
   if(shops&&!buildRamenRestaurant(world,options)){
     building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
-    if(!shoppingDistrictActive())building({id:'crystal-room',x:20.5,z:12,w:2.4,d:3,h:4,jp:'木の家',title:'The Timber House',colour:0x89745b});
   }
   // The western lane is the seafront service edge behind the shopping street.
   box([.45,1.0,78],[-38.4,-.05,-6],'concrete',0x808f83);

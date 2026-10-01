@@ -62,7 +62,7 @@ export function preloadSakuraInterior(){
   // materials back one by one, and it happens with stock toon too, not just with the
   // shadow-tint patch. The shop still goes through the ink and the grade, so it sits
   // in the same picture; only its shading stays as the model authored it.
-  model.traverse(o=>{if(o.isMesh){o.receiveShadow=true;o.castShadow=false;const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.roughness=.86;m.dithering=true;m.userData.keepPhysical=true;}}});return true;
+  model.traverse(o=>{if(o.isMesh){o.receiveShadow=true;o.castShadow=false;const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.roughness=.86;m.dithering=true;m.userData.keepPhysical=true;m.userData.keepPhysicalStrict=true;}}});return true;
  }catch(error){console.warn('Sakura interior unavailable:',error.message);return false;}finally{clearTimeout(timeout);pending=null;}})();return pending;
 }
 

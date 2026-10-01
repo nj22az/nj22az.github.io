@@ -128,7 +128,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   box([MAIN_ROAD.width,.2,4],[MAIN_ROAD.x,-.10,-40],0xb8b8af,[0,0,0],'road');
   const boardwalk=buildBoardwalk(group,{mobile,shadows,maxAnisotropy});
   for(const [left,right] of [[MAIN_ROAD.pavementWest,MAIN_ROAD.west],[MAIN_ROAD.east,MAIN_ROAD.pavementEast]]){
-    const pavement=directBox([right-left,.10,MAIN_ROAD.maxZ-MAIN_ROAD.minZ],[(left+right)/2,-.062,(MAIN_ROAD.maxZ+MAIN_ROAD.minZ)/2],0xc8c0b0,group,[0,0,0],false,'paving');pavement.name='Main Street footway';
+    const pavement=directBox([right-left,.10,MAIN_ROAD.maxZ-MAIN_ROAD.minZ],[(left+right)/2,-.062,(MAIN_ROAD.maxZ+MAIN_ROAD.minZ)/2],0xc6c3ba,group,[0,0,0],false,'paving');pavement.name='Main Street footway';
   }
   for(const x of [MAIN_ROAD.west+.15,MAIN_ROAD.east-.15])for(let z=10;z<MAIN_ROAD.maxZ-.8;z+=4.5)roadMark(.10,1.55,x,z,0xa99f7d);
   for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,MAIN_ROAD.maxZ-1.8,0xbeb79a);

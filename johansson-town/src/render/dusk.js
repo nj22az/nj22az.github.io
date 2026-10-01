@@ -108,7 +108,7 @@ export const PALETTE=Object.freeze({
  skyDuskViolet:0x6a5b8c,
  skyNight:0x2c3a52,
  skyRain:0xa7bcc6,
- sunDay:0xffddb0,
+ sunDay:0xfff0da,
  sunDusk:0xffb07a,
  sunNight:0x9aacd0,
  fillDay:0xeef5ff,

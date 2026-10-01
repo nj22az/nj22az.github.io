@@ -21,28 +21,27 @@ function finish(key,data,size){
 }
 
 /**
- * Crazy paving: irregular stones (a jittered Voronoi, wrapped so it tiles) in a few
- * warm pale tints, each softly domed, with light grout between them.
+ * Footway pavers, the way a 1990s Japanese town relaid its pavements: small
+ * interlocking concrete blocks in a running bond, mostly pale grey with the odd
+ * warmer block, each with a soft bevel and a fine joint. This replaces the crazy
+ * paving, whose stones read about a metre across at street level and made the ground
+ * the loudest thing in every shot (docs/AMPLIFY-AUDIT.md, §1). Near-neutral, so the
+ * material colour sets the tone. At the usual 3 m repeat a block is 30 x 15 cm.
  */
 export function paintedPaving(size=256){
  if(cache.has('paving'))return cache.get('paving');
- const cells=7,points=[];
- for(let j=0;j<cells;j++)for(let i=0;i<cells;i++)points.push([(i+.15+hash(i,j,1)*.7)/cells,(j+.15+hash(i,j,2)*.7)/cells,hash(i,j,3)]);
- const tints=[[236,234,228],[228,227,222],[242,240,234],[224,224,220],[234,231,224]];
- const data=new Uint8Array(size*size*4);
+ const cols=10,rows=20,data=new Uint8Array(size*size*4);
+ const tints=[[232,231,226],[226,225,221],[238,236,231],[229,226,220],[236,226,218]];
  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
-  const u=x/size,v=y/size;let d1=9,d2=9,tone=0;
-  for(const [px,py,t] of points)for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++){
-   const dx=u-(px+ox),dy=v-(py+oy),d=Math.hypot(dx,dy);
-   if(d<d1){d2=d1;d1=d;tone=t;}else if(d<d2)d2=d;
-  }
-  const edge=d2-d1,grout=1-THREE.MathUtils.smoothstep(edge,.006,.016);
-  const c=tints[Math.floor(tone*tints.length)%tints.length];
-  // A gentle dome: each stone a touch lighter in the middle than at its rim.
-  const dome=.94+.06*THREE.MathUtils.smoothstep(edge,.01,.07);
-  const speck=(hash(x,y,9)-.5)*6;
+  const v=y/size*rows,row=Math.floor(v),u=x/size*cols+(row%2?.5:0),col=Math.floor(u)%cols;
+  const fu=u-Math.floor(u),fv=v-row;
+  const edge=Math.min(fu,1-fu,(fv)*.5,(1-fv)*.5);
+  const joint=1-THREE.MathUtils.smoothstep(edge,.02,.045);
+  const tone=hash(col,row,3),c=tints[tone>.92?4:Math.floor(tone*4)];
+  const bevel=.95+.05*THREE.MathUtils.smoothstep(edge,.03,.12);
+  const speck=(hash(x,y,9)-.5)*5;
   const i=(y*size+x)*4;
-  for(let k=0;k<3;k++)data[i+k]=Math.round(THREE.MathUtils.clamp(THREE.MathUtils.lerp(c[k]*dome+speck,248,grout),0,255));
+  for(let k=0;k<3;k++)data[i+k]=Math.round(THREE.MathUtils.clamp(THREE.MathUtils.lerp(c[k]*bevel+speck,150,joint*.55),0,255));
   data[i+3]=255;
  }
  return finish('paving',data,size);
@@ -70,4 +69,32 @@ export function paintedTurf(size=256){
   data[i]=Math.round(light*.97);data[i+1]=Math.round(Math.min(255,light));data[i+2]=Math.round(light*.9);data[i+3]=255;
  }
  return finish('turf',data,size);
+}
+
+/**
+ * Asphalt, painted: a calm blue-grey with fine aggregate speckle and a few soft
+ * darker patches where the road has been dug up and made good, which every Japanese
+ * street of the 1990s had. Mid-light rather than near-black, so the ramp still has
+ * room to put a shadow on it and the cel line reads against it. Near-neutral, so the
+ * material colour sets the final grey.
+ */
+export function paintedAsphalt(size=256){
+ if(cache.has('asphalt'))return cache.get('asphalt');
+ const data=new Uint8Array(size*size*4);
+ const smooth=(x,y,f,s)=>{
+  const X=x*f,Y=y*f,ix=Math.floor(X),iy=Math.floor(Y);let a=X-ix,b=Y-iy;a=a*a*(3-2*a);b=b*b*(3-2*b);
+  const h=(i,j)=>hash(((i%f)+f)%f,((j%f)+f)%f,s);
+  return THREE.MathUtils.lerp(THREE.MathUtils.lerp(h(ix,iy),h(ix+1,iy),a),THREE.MathUtils.lerp(h(ix,iy+1),h(ix+1,iy+1),a),b);
+ };
+ for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+  const u=x/size,v=y/size;
+  const patch=smooth(u,v,3,4);
+  // A made-good patch: a hard-edged darker rectangle-ish blob, as painted.
+  const repair=patch>.78?-14:0;
+  const grain=hash(x,y,7),speck=grain>.9?16:grain<.06?-12:0;
+  const light=204+smooth(u,v,6,5)*10+repair+speck;
+  const i=(y*size+x)*4;
+  data[i]=Math.round(light*.97);data[i+1]=Math.round(light*.98);data[i+2]=Math.round(Math.min(255,light*1.02));data[i+3]=255;
+ }
+ return finish('asphalt',data,size);
 }

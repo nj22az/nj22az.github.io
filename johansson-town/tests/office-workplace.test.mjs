@@ -17,7 +17,7 @@ import {STREET_CAST_NAMES} from '../src/people/residents.js';
 test('one harbour clerk reaches the desk, types, files binders and leaves safely without player side effects',async()=>{
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:256,height:256,close(){}});
  const native=fetch;globalThis.fetch=async url=>String(url).startsWith('blob:')?native(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
- try{assert.deepEqual(await preloadSuppliedRooms(['office']),[true]);}finally{globalThis.fetch=native;}
+ try{assert.deepEqual(await preloadSuppliedRooms(['office']),[false],'The office has no file to fetch');}finally{globalThis.fetch=native;}
  const sites=createBusinesses(),scene=new THREE.Scene(),targets=[],register=(o,label,fn,inside=false)=>{o.userData.hit={label,fn,inside};targets.push(o);};
  const world=createTown({scene,sites,mobile:true,shadows:false,register,enter(){},onAction(){}});assignWorkplaces(world,sites);
  const site=sites.find(s=>s.id==='office'),room=new THREE.Group();scene.add(room);const colliders=[];let playerActions=0;

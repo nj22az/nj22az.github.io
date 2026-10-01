@@ -27,8 +27,8 @@ test('supplied models retain textures, correct material support and reachable ro
   globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:128,height:128,close(){}});
   globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
   try{
-    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true,true]);
-    for(const id of ['office']){
+    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true]);
+    for(const id of []){
       const folder=new URL('../assets/models/'+id+'/',import.meta.url);
       const manifest=JSON.parse(await readFile(new URL('manifest.json',folder),'utf8'));
       const bytes=await readFile(new URL(manifest.file,folder));
@@ -106,17 +106,14 @@ test('supplied models retain textures, correct material support and reachable ro
     }
     const world={group:new THREE.Group(),colliders:[]},sites=[],entries=[];
     const site=buildRamenRestaurant(world,{sites,register:(o,label,fn)=>entries.push({o,label,fn}),enter:s=>assert.equal(s.id,'ramen')});
-    assert.equal(sites.length,2);assert.equal(entries.length,2);entries[0].fn();
+    assert.equal(sites.length,1);assert.equal(entries.length,1);entries[0].fn();
     const blocked=(x,z)=>townBoundsBlocked(x,z,.28)||world.colliders.some(c=>circleHitsRect(x,z,.28,c));
     for(const z of [site.door[2],site.door[2]+.6,site.door[2]+.7])assert.equal(blocked(site.door[0],z),false,'Restaurant exit on walkable street');
     assert.equal(sweepFraction({x:0,z:site.door[2]},{x:site.door[0],z:site.door[2]},blocked),1,'Direct Main Street route reaches the restaurant');
     assert.ok(Math.hypot(site.door[0]-entries[0].o.position.x,site.door[2]-entries[0].o.position.z)<1,'Door prompt at the supplied entrance');
     const exterior=world.group.getObjectByName('Supplied ramen-exterior');
     assert.ok(exterior,'The Inakaya exterior replaces the old restaurant');
-    const neighbour=sites.find(s=>s.id==='crystal-room');
-    assert.ok(neighbour&&Math.abs(neighbour.door[0]-site.door[0])<4,'Crystal room is in the adjoining building');
-    assert.equal(blocked(neighbour.door[0],neighbour.door[2]),false,'Neighbour exit is clear');
-    assert.equal(sweepFraction({x:0,z:neighbour.door[2]},{x:neighbour.door[0],z:neighbour.door[2]},blocked),1);
+    assert.ok(!sites.some(s=>s.id==='crystal-room'),'The ripped crystal room is retired');
     const manifest=JSON.parse(await readFile(new URL('../assets/models/ramen/inakaya-manifest.json',import.meta.url)));
     const bytes=await readFile(new URL('../assets/models/ramen/'+manifest.file,import.meta.url));
     assert.equal(createHash('sha256').update(bytes).digest('hex'),manifest.sha256);
@@ -137,22 +134,31 @@ test('missing supplied models preserve the existing procedural buildings and roo
   const mod=await import('../src/world/supplied-rooms.js?load-failure=1');
   const originalFetch=globalThis.fetch,originalWarn=console.warn;globalThis.fetch=async()=>new Response('',{status:404});console.warn=()=>{};
   try{
-    assert.deepEqual(await mod.preloadSuppliedRooms(),[false,false,false,false,false]);
+    assert.deepEqual(await mod.preloadSuppliedRooms(),[false,false,false]);
     assert.equal(mod.buildRamenRestaurant({},{},{x:0,z:0}),false);
-    for(const id of ['office','ramen'])assert.equal(mod.buildSuppliedRoom({site:{id},room:new THREE.Group()}),null);
+    assert.equal(mod.buildSuppliedRoom({site:{id:'ramen'},room:new THREE.Group()}),null);
   }finally{globalThis.fetch=originalFetch;console.warn=originalWarn;}
 });
 
-test('crystal room is a connected surprise beside Sato Ramen with a reliable exit',async()=>{
- installDOM();const originalFetch=fetch;globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:128,height:128,close(){}});
- globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
- try{
-  const module=await import('../src/world/supplied-rooms.js?snappy=1');await module.preloadSuppliedRooms();
-  const room=new THREE.Group(),actions=[];let left=false;
-  const layout=module.buildSuppliedRoom({site:{id:'crystal-room'},room,reg:(o,label,fn)=>actions.push({o,label,fn}),collider(){},action(){},exit:()=>left=true});
-  const points=reachableFloor(layout);assert.ok(points.length>500);
-  for(const a of actions)assert.ok(points.some(p=>Math.hypot(p.x-a.o.position.x,p.z-a.o.position.z)<1.65),a.label+' reachable');
-  actions.find(a=>a.label==='Exit to street').fn();assert.equal(left,true);
-  let meshes=0;room.traverse(o=>{if(o.isMesh){meshes++;assert.ok(o.material.map,'Crystal illustration retained');}});assert.equal(meshes,16);
- }finally{globalThis.fetch=originalFetch;}
+test('the harbour office is an original room built in code, with its furniture on its colliders',()=>{
+ installDOM();
+ const layout=SUPPLIED_ROOM_LAYOUTS.office,room=new THREE.Group(),actions=[],colliders=[],calls=[];let exits=0;
+ const built=buildSuppliedRoom({site:{id:'office',line:'14 September 1997'},room,
+  reg:(object,label,fn,inside)=>actions.push({object,label,fn,inside}),
+  collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),action:(...args)=>calls.push(args),exit:()=>exits++});
+ assert.equal(built,layout);
+ const shell=room.children.find(o=>o.userData.officeShell);assert.ok(shell,'Procedural shell, no supplied model');
+ assert.ok(!room.children.some(o=>o.userData.sharedAsset),'Nothing loaded from a file');
+ const bounds=new THREE.Box3().setFromObject(shell);
+ assert.ok(Math.abs(bounds.min.y)<.01,'Floor at zero');assert.ok(bounds.max.y>2.65&&bounds.max.y<3.2,'Ceiling at human scale');
+ assert.ok(bounds.min.x<layout.bounds.minX&&bounds.max.x>layout.bounds.maxX,'Walls enclose the walkable bounds');
+ const points=reachableFloor(layout);assert.ok(points.length>500,'Connected usable floor area');
+ for(const {object,label,fn,inside} of actions){
+  assert.equal(inside,true);
+  assert.ok(points.some(p=>Math.hypot(p.x-object.position.x,p.z-object.position.z)<1.65),'Walk close enough to use '+label);
+  fn();
+ }
+ assert.equal(exits,1);assert.ok(calls.some(c=>c[0]==='office-records'));assert.ok(calls.some(c=>c[0]==='seat'));
+ const blocked=(x,z)=>suppliedRoomBoundsBlocked(layout,x,z,.28)||layout.colliders.some(c=>circleHitsRect(x,z,.28,c));
+ for(const pos of [[0,0],[-1.5,-1.05],[1.7,-1.15]])assert.equal(blocked(...pos),false,'Clear main aisle at '+pos);
 });

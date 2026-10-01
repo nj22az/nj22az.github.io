@@ -64,14 +64,17 @@ test('architectural fittings stay batched and leave the Sakura entrance clear',(
  root.updateMatrixWorld(true);assert.equal(ray.intersectObject(shop,true).length,0,'No fittings across the doorway at walking height');
 });
 
-test('district plaster keeps its physical maps and metre-sized UVs',()=>{
+test('district plaster joins the toon ramp with its painted map and metre-sized UVs',()=>{
+ // October 2026 look pass (docs/AMPLIFY-AUDIT.md, A1): architecture is no longer kept
+ // physical. The map survives as faint grain; normal, roughness and AO have no meaning
+ // under a ramp and are dropped.
  const kit=createKit(),map=new THREE.Texture(),normalMap=new THREE.Texture(),arm=new THREE.Texture();
  kit.surface('plaster',{map,normalMap,roughnessMap:arm,aoMap:arm,metres:2});
  kit.box(4,3,.2,0,1.5,0,0xe7dcc2,{finish:'plaster'});
  const root=new THREE.Group(),{meshes}=kit.finish(root);applyCelShading(root);
- assert.equal(meshes.length,1);assert.equal(meshes[0].material.map,map);assert.equal(meshes[0].material.normalMap,normalMap);
- assert.equal(meshes[0].material.roughnessMap,arm);assert.equal(meshes[0].material.aoMap,arm);
- assert.equal(meshes[0].material.isMeshStandardMaterial,true);assert.ok(meshes[0].geometry.attributes.uv.count>0);
+ assert.equal(meshes.length,1);assert.equal(meshes[0].material.isMeshToonMaterial,true);
+ assert.equal(meshes[0].material.map,map);assert.ok(meshes[0].material.userData.flatten.value<.5,'Photograph reduced to grain');
+ assert.ok(meshes[0].geometry.attributes.uv.count>0);
 });
 
 

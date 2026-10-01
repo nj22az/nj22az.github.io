@@ -1,7 +1,7 @@
 import {assetURL} from '../assets.js';
 import * as THREE from '../../vendor/three.module.js';
 import {applyWorldUV} from './world-uv.js';
-import {paintedPaving} from './toy-surfaces.js';
+import {paintedPaving,paintedAsphalt} from './toy-surfaces.js';
 
 const sharedTextures=new Map();
 // Paint is a light finish: the old dark stone photograph tinted every wall charcoal
@@ -19,6 +19,8 @@ const EXTRA_SURFACES={
   concrete:{map:'materials/oga-concrete.jpg',roughness:.95,bump:.022},
   // Crazy paving is painted (toy-surfaces.js), not the photograph: pale stones and grout.
   paving:{painted:paintedPaving,roughness:1},
+  // Asphalt is painted too: the photograph read as a real road under a toy town.
+  asphalt:{painted:paintedAsphalt,roughness:.9},
   bamboo:{map:'materials/oga-bamboo.jpg',normal:'materials/oga-bamboo-normal.jpg',roughness:.84}
 };
 

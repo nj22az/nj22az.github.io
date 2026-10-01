@@ -88,14 +88,14 @@ The following surfaces were discovered through the owner's [GameDev Free Resourc
 
 `models/street/potted-plant.glb`: [Banana Plant — Polygonal Mind](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/avatar-show/Banana_Plant.glb), discovered through the owner's [ToxSam OS3A Gallery](https://github.com/ToxSam/os3a-gallery). CC0 under the collection's [creator licence](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/License.md), included as `models/street/LICENSE-CC0.md`. Original geometry retained, embedded textures reduced to 512px, leaf blending changed to alpha testing, and repeated plants instanced in spatial cells. Original and shipped hashes are in `models/street/manifest.json`.
 
-## User-supplied office and ramen restaurant (2026-09-09)
+## User-supplied office and ramen restaurant (2026-09-09) — retired
+
+**Removed 1 October 2026.** Both files were game rips (Nintendo's *Tomodachi Life*, Sega's *Shenmue*); a Sketchfab upload cannot license them. The harbour office is now an original room built in `src/world/interiors/office-workplace.js` (`buildOfficeShell`), and the ramen restaurant model was not loaded by anything. The supplied *Tomodachi Life* crystal room was retired with them. Recover from git history only for reference, not for shipping.
 
 These two models were supplied by the owner and included at their express request. They are separate from the CC0 catalogue assets above. The following author, source and licence fields are preserved from the supplied GLBs; they are uploader metadata, not an independent rights verification for the original games.
 
 | Runtime model | Supplied source and attribution | Adaptation |
 | --- | --- | --- |
-| `models/office/office-interior.glb` | **3DS — Tomodachi Life — Interiors — 065 Office**; original game by Nintendo. Source upload: [Unknown Person / jkimmel694](https://sketchfab.com/jkimmel694), [model page](https://sketchfab.com/3d-models/3ds-tomodachi-life-interiors-065-office-e6d0799ea5f34c8a8ab57237a0208ff5). Embedded licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). | Removed 40 identical duplicate primitives, restored vertex-alpha shadow transparency, retained all 25 embedded images and tiled floor UVs, rotated the entrance, merged matching materials. 2,991 triangles; 28 draws. |
-| `models/ramen/ramen-restaurant.glb` | **Shenmue — Ramen Restaurant**; original game by Sega / AM2. Refurbished source upload: [Kiklox](https://sketchfab.com/kiklox), [model page](https://sketchfab.com/3d-models/shenmue-ramen-restaurant-a005cf77086246a6a192658c5574519a). Embedded licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). | Converted legacy specular/glossiness diffuse textures to core glTF base colour, retained all 56 embedded textures, fitted human scale and street-facing orientation, merged matching materials. 7,765 triangles; 56 draws. Shared between the exterior and interior. |
 
 Both models use unlit materials to preserve their baked texture/vertex lighting. Original source metadata, input/output SHA-256 hashes, transforms and counts are recorded in each model directory's `manifest.json`. The original uploads are not modified. Reproduction: `python tools/pack-supplied-rooms.py --office /path/to/office.glb --ramen /path/to/ramen.glb` (Python with NumPy). Collision shapes, interaction anchors and the original Sato Ramen fascia/roof trim are project additions. No CC0 licence is asserted for either supplied model.
 
@@ -147,7 +147,7 @@ Adapted for the east lane: fitted width/depth, grounded geometry, removed source
 foreground paving/poles, compacted unused vertices, reduced embedded texture sizes.
 Both buildings, their material assignments and transparent details are retained.
 The right doorway leads to the existing Sato Ramen interior; the timber doorway
-leads to the supplied crystal room, moved from StepWise Instruments.
+is closed (its crystal room was a game rip and was retired in October 2026).
 Rebuild with `python tools/pack-inakaya.py /path/to/japanese_restaurant_inakaya.glb`.
 Hashes, dimensions and texture sizes are recorded in `models/ramen/inakaya-manifest.json`.
 

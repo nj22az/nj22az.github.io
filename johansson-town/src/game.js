@@ -55,6 +55,7 @@ import {conversationViewport} from './conversation-layout.js';
 import {shelfAimScore} from './interact/aim.js';
 import {atmosphere} from './render/atmosphere.js?dusk-1';
 import {clock as duskClock, daylight} from './render/dusk.js';
+import {setOceanLight} from './world/ocean.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
 import {MOVES} from './avatars/moves.js';
@@ -89,7 +90,7 @@ const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
 const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=700,highTier=!mobile||tabletLike,shadows=highTier,canvas=$('#game');
 const renderDpr=()=>Math.min(window.devicePixelRatio||1,mobile?(tabletLike?1.45:1.2):2);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
-renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFShadowMap;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xb8dce9);scene.fog=null;// The near plane sets how much of the depth buffer the first metre eats, and at 7cm
 // it was eating most of it: a phone could not tell two centimetres apart at the far
 // end of the street, and the harbour came back from one as flashing texture. Nothing
@@ -950,6 +951,7 @@ function setTime(){
  const cell=52/(tabletLike?1024:2048),sx=Math.round(player.position.x/cell)*cell,sz=Math.round(player.position.z/cell)*cell;
  sun.position.set(sx-30,12+day*25,sz+12);sun.target.position.set(sx,0,sz);sun.target.updateMatrixWorld();
  townSky.update(camera,day,weather,!!current,c.sky);
+ setOceanLight({day,dusk:c.dusk});
  const air=atmosphere(day,weather,!!current,minutes);
  scene.background.set(air.sky);scene.fog=air.fog;
  ambient.intensity=air.ambient*CEL_FILL;
@@ -961,7 +963,7 @@ function setTime(){
  if(current?.id==='dungeon'){sun.intensity=0;bounce.intensity=0;ambient.intensity*=.12;scene.environmentIntensity=.03;scene.background.set(0x050404);scene.fog=DUNGEON_FOG;}
  // and the grade's shadow lift, which keeps the town's shade from ever going black, is
  // taken nearly off down there, or the whole cave sits behind a grey veil.
- pipeline?.tune({uLift:current?.id==='dungeon'?.003:GRADE_DEFAULTS.lift});
+ pipeline?.tune({uLift:current?.id==='dungeon'?.003:INK_OPTIONS.gradeOptions.lift??GRADE_DEFAULTS.lift});
  // Warmth only. Ink, shadow tint and flatten stay on their cel defaults.
  pipeline?.tune({uWarmth:c.gradeWarmth});
  $('.timecard small').textContent=c.period;

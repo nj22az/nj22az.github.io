@@ -177,8 +177,21 @@ export function bandsFor(material){
  */
 export function keepsPhysical(material,{skinned=false}={}){
  if(skinned)return true;
- return material.userData?.keepPhysical===true;
+ if(material.userData?.keepPhysical!==true)return false;
+ // Architecture used to be tagged keepPhysical wholesale, which left every wall, roof
+ // and frontage physically lit beside toon props: two renderers in one picture
+ // (docs/AMPLIFY-AUDIT.md, A1). Now the tag only holds for see-through glass, and for
+ // anything that insists with keepPhysicalStrict. Everything else joins the ramp.
+ if(material.userData.keepPhysicalStrict===true)return true;
+ return !!material.transparent&&(material.opacity??1)<.95;
 }
+
+/**
+ * How much of a photographed architectural map survives under the ramp. Walls and
+ * roofs are big, flat masses: at FLATTEN the photograph still reads as a photograph
+ * across a whole facade, so architecture keeps only a ghost of it as grain.
+ */
+export const ARCH_FLATTEN=0.3;
 
 const converted=new WeakMap();
 
@@ -228,7 +241,8 @@ export function celFrom(material,{tint=DEFAULT_TINT,bands=null}={}){
  if(Number.isFinite(metres))applyWorldUV(toon,metres);
  const base=typeof toon.onBeforeCompile==='function'?toon.onBeforeCompile:null;
  const baseKey=Number.isFinite(metres)?'worlduv'+metres:'';
- applyShadowTint(toon,tint,photographic(material)?FLATTEN:1,{base,baseKey});
+ const architectural=material.userData?.keepPhysical===true;
+ applyShadowTint(toon,tint,photographic(material)?(architectural?ARCH_FLATTEN:FLATTEN):1,{base,baseKey});
  converted.set(material,toon);
  return toon;
 }

@@ -101,8 +101,19 @@ vec3 linearToSRGB(vec3 c){
  return mix(c*12.92,1.055*pow(max(c,vec3(0.0031308)),vec3(1.0/2.4))-0.055,step(0.0031308,c));
 }
 
+// A soft shoulder above the knee. With tone mapping off, a strong sun on pale plaster
+// went straight past 1.0 and clipped to flat white; this rolls the brightest channel
+// into the last stretch of range and scales the others with it, so hue holds.
+vec3 shoulder(vec3 c){
+ const float knee=0.78;
+ float m=max(c.r,max(c.g,c.b));
+ if(m<=knee)return c;
+ float t=knee+(1.0-knee)*(1.0-exp(-(m-knee)/(1.0-knee)));
+ return c*(t/m);
+}
+
 void main(){
- vec3 raw=texture2D(tDiffuse,vUv).rgb*uExposure;
+ vec3 raw=shoulder(texture2D(tDiffuse,vUv).rgb*uExposure);
  vec3 c=raw;
  float l=dot(c,vec3(0.2126,0.7152,0.0722));
 
