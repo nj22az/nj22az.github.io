@@ -566,3 +566,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   använder egna lagringsnycklar. Övriga 3D-stationer är tydligt markerade som kommande.
   Kontroll: 24 modell-/sessionstester, 14 Chromium-kontroller vid 390, 820, 1024 och 1440 px; två pektester
   hoppas över i skrivbordsprojekten. Hela Station A, riktiga 3D-kontakter, armräckvidd, sparande, CSV och WebGL-reservläge.
+- **2026-10-01** Vecka 40, inlämning 7 (EL-000813): uppgiftstexten omformulerad. Den sa ”gör labben när du har gått
+  igenom del 2–4” och direkt efter ”den görs på fredagens lektion”, blandade labbet/labben och hade ”Stämde alla, välj …”.
+  Samma innehåll, tydligare ordning. Upplåst, ändrad, låst igen. Reviderad utan skyddade filer (regel 15).
