@@ -2,7 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {poseAvatarOnBicycle} from './bicycle-pose.js';
 import {bicycleRiderFit} from '../world/bicycle-fit.js';
 import {seeded} from './recipe.js';
-import {consumptionPhase,poseAvatarConsumption} from './consume.js';
+import {consumptionPhase,poseAvatarConsumption,drinkHeadTilt} from './consume.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -145,7 +145,10 @@ export function createAvatarAnimator(avatar){
   avatar.root.position.y=rootY+(s.seated||s.riding?0:(s.floorHeight||0));
   bones.hips.position.y=m.hipY+(s.riding?0:hipsY);
   if(s.riding)poseAvatarOnBicycle(avatar,s.ridePhase||0,s.bicycleFit||bicycleRiderFit(m));
-  else if(consumption)poseAvatarConsumption(avatar,consumption.lift,consumption.food,s.heldProp);
+  else if(consumption){
+   bones.head.rotation.x+=drinkHeadTilt(s.heldProp,consumption.lift,consumption.food);
+   poseAvatarConsumption(avatar,consumption.lift,consumption.food,s.heldProp);
+  }
   // The face: blinks, words, glances, and whatever it is feeling.
   blinkIn-=dt;if(blinkIn<=0&&blinkT<0){blinkT=0;blinkIn=1.8+Math.random()*3.8;}
   let blink=0;if(blinkT>=0){blinkT+=dt;blink=blinkT<.13?1:0;if(blinkT>=.13)blinkT=-1;}

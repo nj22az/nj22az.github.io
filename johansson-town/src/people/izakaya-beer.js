@@ -53,6 +53,28 @@ export const IZAKAYA_PLAYER_SEATS=Object.freeze({
 });
 
 /** A drink as a small prop: a mug with a head, a brown bottle and glass, a can, a tumbler. */
+/**
+ * A poured beer: the liquid empties from the top down, its head of foam stays a collar
+ * on whatever is left (thinning a little) and goes when the glass is drained, and a few
+ * bubbles keep rising from the bottom to the current level. Without this the whole
+ * level, foam and all, was squashed flat.
+ */
+function pour(g,liquid,head,height,radius){
+ const bottom=liquid.position.y-height/2,points=10,positions=new Float32Array(points*3),rise=[];
+ for(let i=0;i<points;i++){const a=i*2.4,r=radius*(.25+.7*((i*37)%10)/10);positions[i*3]=liquid.position.x+Math.cos(a)*r;positions[i*3+1]=bottom+((i*0.31)%1)*height;positions[i*3+2]=Math.sin(a)*r;rise.push(.012+((i*13)%7)*.004);}
+ const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
+ const bubbles=new THREE.Points(geometry,new THREE.PointsMaterial({color:0xfff2c4,size:.0035,transparent:true,opacity:.8,depthWrite:false}));bubbles.name='Beer bubbles';
+ g.add(bubbles);
+ g.userData.pour={liquid,head,bottom,height,headHeight:head.geometry.parameters.height,bubbles,rise};
+}
+function settlePour(u,dt){
+ const p=u.pour,left=u.portion,top=p.bottom+p.height*left;
+ p.liquid.scale.y=Math.max(.001,left);p.liquid.position.y=p.bottom+p.height*left/2;
+ p.head.visible=left>.03;p.head.scale.y=.55+.45*left;p.head.position.y=top+p.headHeight*p.head.scale.y/2;
+ const pos=p.bubbles.geometry.attributes.position;p.bubbles.visible=left>.05;
+ for(let i=0;i<pos.count;i++){let y=pos.getY(i)+p.rise[i]*dt*(left>.1?1:.3);if(y>top)y=p.bottom+(y-top)%Math.max(.005,top-p.bottom);pos.setY(i,y);}
+ pos.needsUpdate=true;
+}
 export function createDrinkProp(kind,{held=false}={}){
  const g=new THREE.Group();g.name='Minato drink · '+kind;
  const glass=new THREE.MeshStandardMaterial({color:0xdfe8e4,roughness:.08,metalness:0,transparent:true,opacity:.42,depthWrite:false});
@@ -64,6 +86,7 @@ export function createDrinkProp(kind,{held=false}={}){
   add(new THREE.CylinderGeometry(.045,.042,.15,20),glass,.075);
   const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.041,.039,.12,20),beer);liquid.position.y=.063;level.add(liquid);
   const head=new THREE.Mesh(new THREE.CylinderGeometry(.043,.041,.025,20),foam);head.position.y=.135;level.add(head);
+  pour(g,liquid,head,.12,.036);
   const handle=add(new THREE.TorusGeometry(.03,.007,8,16,Math.PI),glass,.08,.05);handle.rotation.z=-Math.PI/2;
  }else if(kind==='bottle'){
   const brown=new THREE.MeshStandardMaterial({color:0x5a2e10,roughness:.25,transparent:true,opacity:.48,depthWrite:false});
@@ -76,6 +99,7 @@ export function createDrinkProp(kind,{held=false}={}){
   add(new THREE.CylinderGeometry(.03,.027,.09,16),glass,.045,x);
   const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.027,.025,.07,16),beer);liquid.position.set(x,.037,0);level.add(liquid);
   const head=new THREE.Mesh(new THREE.CylinderGeometry(.028,.027,.012,16),foam);head.position.set(x,.078,0);level.add(head);
+  pour(g,liquid,head,.07,.022);
  }else if(kind==='can'){
   const can=add(new THREE.CylinderGeometry(.033,.033,.122,20),new THREE.MeshStandardMaterial({color:0xf2f2ee,roughness:.35,metalness:.55}),.061);
   add(new THREE.CylinderGeometry(.0335,.0335,.045,20),new THREE.MeshStandardMaterial({color:0x1e4f9c,roughness:.4,metalness:.4}),.07);
@@ -144,6 +168,10 @@ export function updatePropPortion(prop,dt){
  if(u.consumable==='food'){
   const amount=level.children.length*u.portion;
   level.children.forEach((piece,i)=>{piece.visible=i<Math.ceil(amount);piece.scale.setScalar(Math.min(1,Math.max(0,amount-i)));});
+ }else if(u.pour){
+  // The glass empties from the top; anything else poured (the bottle) empties with it.
+  level.scale.y=1;settlePour(u,dt);
+  for(const piece of level.children)if(piece!==u.pour.liquid&&piece!==u.pour.head){piece.userData.baseY??=piece.position.y;piece.scale.y=Math.max(.001,u.portion);piece.position.y=piece.userData.baseY*u.portion;}
  }else level.scale.y=Math.max(.001,u.portion);
 }
 export function createBiteProp(kind){

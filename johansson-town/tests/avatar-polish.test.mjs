@@ -79,3 +79,20 @@ test('resident props and portions work for named residents and a generic visitor
   delete entity.userData.heldItem;entity.userData.socialPose='Sit';updateAvatarActor(actor,1/30);assert.equal(actor.heldProp,null);assert.equal(actor.dishProp,null);actor.avatar.dispose();
  }
 });
+
+test('a beer keeps its head as it empties, bubbles stay in the beer, and the last sip tips further',async()=>{
+ const {drinkTilt}=await import('../src/avatars/consume.js');
+ const glass=createDrinkProp('draft'),u=glass.userData,p=u.pour;
+ assert.ok(p,'a poured beer has a liquid, a head and bubbles');
+ for(const left of [1,.6,.2]){
+  setPropPortion(glass,left,{immediate:true});for(let i=0;i<30;i++)updatePropPortion(glass,1/30);
+  const top=p.bottom+p.height*left,headBase=p.head.position.y-p.headHeight*p.head.scale.y/2;
+  assert.ok(Math.abs(headBase-top)<1e-6,'the foam sits on the beer at '+left);
+  assert.ok(p.head.visible,'there is still a head at '+left);
+  const pos=p.bubbles.geometry.attributes.position;for(let i=0;i<pos.count;i++)assert.ok(pos.getY(i)<=top+1e-6,'a bubble above the beer at '+left);
+ }
+ setPropPortion(glass,0,{immediate:true});assert.equal(glass.userData.level.visible,false,'an empty glass shows no beer and no foam');
+ const full=createDrinkProp('draft'),last=createDrinkProp('draft');setPropPortion(last,.05,{immediate:true});
+ assert.ok(drinkTilt(last,1)<drinkTilt(full,1),'the last mouthful is tipped further than the first');
+ assert.equal(drinkTilt(full,1,true),0,'food stays level');
+});
