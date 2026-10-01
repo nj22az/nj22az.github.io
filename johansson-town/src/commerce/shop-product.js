@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {mergeGeometries,mergeVertices} from '../../vendor/BufferGeometryUtils.js';
 import {getLabelMaterial,packagingSlot,ATLAS_COLS,ATLAS_ROWS} from '../world/interiors/store-advertising.js';
 import {STORE_BRANDS} from './brands.js';
 const templates=new Map(),bodyMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.62});
@@ -14,12 +14,17 @@ export function shopProductTemplate(id){
  if(['tea','water','cola','orange','soy','soda'].includes(id)){
   const color=({tea:0x657d3c,water:0xafd5d4,cola:0x443126,orange:0xe6a038,soy:0x392d23,soda:0xafd6da})[id],r=id==='soda'?.037:.046;
   cyl(r,.16,.08,color);cyl(.023,.035,.1775,color,r);cyl(.023,.05,.22,color);cyl(.025,.018,.254,brand.ink);
+  if(id!=='soda'){for(const y of [.025,.047,.151])part(new THREE.TorusGeometry(r-.002,.002,4,20).rotateX(Math.PI/2),color,[0,y,0]);}
   if(id==='soda'){cyl(.031,.026,.185,0xc4e1dc,.034);cyl(.025,.012,.245,0xe9e8d8);}
   label(new THREE.CylinderGeometry(r+.001,r+.001,.123,20,1,true,-Math.PI*.76,Math.PI*1.52),.085);
  }else if(['coffee','beer','tuna','peaches'].includes(id)){
   const r=id==='tuna'?.051:id==='peaches'?.053:.047,h=id==='tuna'?.046:id==='peaches'?.095:.135;
   cyl(r,h,h/2,brand.paper);cyl(r+.0015,.004,.004,0xa8b3ad);cyl(r+.0015,.004,h,0xcad0c8);
   part(new THREE.TorusGeometry(r*.79,.0014,4,20).rotateX(Math.PI/2),0x88958c,[0,h+.002,0]);
+  if(id==='coffee'||id==='beer'){
+   part(new THREE.TorusGeometry(.009,.002,4,12).rotateX(Math.PI/2),0x69766d,[0,h+.003,.005]);
+   if(id==='coffee')for(const y of [.024,.111])part(new THREE.TorusGeometry(r-.001,.0018,4,20).rotateX(Math.PI/2),0x88958c,[0,y,0]);
+  }
   label(new THREE.CylinderGeometry(r+.001,r+.001,h*.87,20,1,true,-Math.PI*.8,Math.PI*1.6),h/2);
  }else if(['noodles','yogurt'].includes(id)){
   const yogurt=id==='yogurt',r=yogurt?.048:.068,h=yogurt?.078:.13;
@@ -32,14 +37,24 @@ export function shopProductTemplate(id){
   label(new THREE.PlaneGeometry(w*.95,d*.95).rotateX(-Math.PI/2),h+.001);
  }else if(id==='milk'){
   box(.093,.177,.093,.0885,brand.paper);
-  part(new THREE.CylinderGeometry(0,.066,.055,4).rotateY(Math.PI/4),brand.paper,[0,.2045,0]);box(.082,.013,.006,.237,brand.ink);fronts(.086,.157,.093,.09);
+  // A folded gable with a full-length sealed ridge, rather than a pyramid cap.
+  const roof=new THREE.Shape();roof.moveTo(-.0465,0);roof.lineTo(.0465,0);roof.lineTo(0,.055);roof.closePath();
+  const roofGeometry=new THREE.ExtrudeGeometry(roof,{depth:.093,bevelEnabled:false});roofGeometry.rotateY(Math.PI/2);roofGeometry.translate(-.0465,0,0);
+  part(mergeVertices(roofGeometry),brand.paper,[0,.177,0]);roofGeometry.dispose();box(.093,.013,.006,.237,brand.ink);fronts(.086,.157,.093,.09);
  }else if(id==='bento'){
-  // A lidded tray, seen from above on the top shelf, so the print goes on the lid.
+  // Deli tray with visible rice, umeboshi, chicken and egg beneath a narrow belly band.
   const w=.19,h=.052,d=.135;
-  box(w,h*.62,d,h*.31,brand.ink);                        // the black tray
-  box(w+.004,h*.42,d+.004,h*.79,brand.paper);            // the paper lid band
-  label(new THREE.PlaneGeometry(w*.9,d*.86).rotateX(-Math.PI/2),h+.001);
-  box(w*.42,.004,d*.9,h+.002,brand.accent);              // the band across the lid
+  box(w,h*.62,d,h*.31,brand.ink);
+  part(new THREE.BoxGeometry(.077,.013,.113),0xf8f5e9,[-.048,.037,0]);
+  part(new THREE.SphereGeometry(.009,8,6).scale(1,.65,1),0xb83231,[-.048,.047,0]);
+  const nugget=new THREE.DodecahedronGeometry(.015);for(const z of [-.029,.004])part(mergeVertices(nugget),0xa55c2e,[.049,.038,z]);nugget.dispose();
+  part(new THREE.BoxGeometry(.045,.013,.024),0xe5bd48,[.05,.038,.04]);
+  // Pale vacuum-formed lip; no costly transmission pass on every stocked tray.
+  for(const z of [-d/2,d/2])part(new THREE.BoxGeometry(w+.004,.004,.003),0xd6e4df,[0,h-.003,z]);
+  for(const x of [-w/2,w/2])part(new THREE.BoxGeometry(.003,.004,d),0xd6e4df,[x,h-.003,0]);
+  box(.028,.003,d+.004,h-.001,brand.paper);
+  label(new THREE.PlaneGeometry(.028,d*.92).rotateX(-Math.PI/2),h+.001);
+  for(const z of [.063,.068])part(new THREE.BoxGeometry(w*.85,.003,.003),0xe4d4ae,[0,.048,z]);
  }else if(id==='sandwich'){
   // The wedge pack: a triangular prism on its side, cut corner up, which is the one
   // silhouette on a konbini shelf you recognise before you can read it.
