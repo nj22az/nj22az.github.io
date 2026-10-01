@@ -14,13 +14,13 @@
 <link rel="stylesheet" href="./base.css?h=11614073">
 <link rel="stylesheet" href="./context-controls.css?h=f442bdb6">
 <title>Johansson Town</title>
-<link rel="stylesheet" href="./landing.css?h=68bd7749">
+<link rel="stylesheet" href="./landing.css?h=46b226f7">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=f083fafa">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-CXd_JKpv.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-CdH_oE1Y.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-B-hU6XZF.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-D2wbYvxv.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-qPNoTV7r.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-Bw2-gniG.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-xOebpuup.js">
 </head>
 <body>
@@ -36,32 +36,29 @@
     </div>
   </div>
   <section id="title" class="title-screen" aria-labelledby="titleLogo">
-    <div class="title-sky" aria-hidden="true">
-      <span class="title-sun"></span>
-      <span class="title-cloud c1"></span><span class="title-cloud c2"></span><span class="title-cloud c3"></span>
-      <span class="title-spark s1">✦</span><span class="title-spark s2">✦</span><span class="title-spark s3">✦</span><span class="title-spark s4">✦</span>
-    </div>
     <div class="title-town" aria-hidden="true"><img src="./assets/images/town-street.webp" width="1200" height="760" alt="" fetchpriority="high" decoding="async"></div>
     <div class="title-center">
-      <p class="title-presents">JOHANSSON CO. PRESENTS</p>
-      <h1 id="titleLogo" class="title-logo">
-        <span class="sr-only">Johansson Town</span>
-        <span class="logo-jp" aria-hidden="true">ヨハンソン町</span>
-        <span class="logo-main" aria-hidden="true"><span style="--i:0">J</span><span style="--i:1">O</span><span style="--i:2">H</span><span style="--i:3">A</span><span style="--i:4">N</span><span style="--i:5">S</span><span style="--i:6">S</span><span style="--i:7">O</span><span style="--i:8">N</span></span>
-        <span class="logo-town" aria-hidden="true"><span style="--i:9">T</span><span style="--i:10">O</span><span style="--i:11">W</span><span style="--i:12">N</span></span>
-      </h1>
-      <p class="title-tag">A little harbour life · 1997</p>
+      <p class="title-presents">港町 · HARBOUR DISTRICT · 1997</p>
+      <h1 id="titleLogo" class="title-logo"><span class="logo-jp" lang="ja">ヨハンソン町</span><span class="logo-main">Johansson</span><span class="logo-town">Town</span></h1>
+      <p class="title-tag">Working quays. Familiar faces. A little harbour life.</p>
       <div class="title-menu">
-        <button id="enter" type="button"><span class="title-cursor" aria-hidden="true">▶</span><b>PRESS START</b></button>
-        <a class="title-guide" href="#board" data-guide-open><span class="title-cursor" aria-hidden="true">▶</span>TOWN GUIDE</a>
+        <button id="enter" type="button"><b>Enter Town</b><span aria-hidden="true"> →</span></button>
+        <a class="title-guide" href="#board" data-guide-open>Town guide</a>
+        <button id="title-preview" type="button">Harbour view</button>
       </div>
+      <p id="title-view-status" class="title-view-status" role="status">Explore the neighbourhood at your own pace.</p>
       <div class="title-loading">
         <div class="title-bar" aria-hidden="true"><span></span></div>
         <div id="bootStatus" role="status">READY</div>
       </div>
     </div>
+    <div class="title-tools" hidden>
+      <fieldset class="title-light"><legend class="sr-only">Harbour view lighting, for the preview only</legend><button type="button" data-title-time="720" aria-pressed="false">Day</button><button type="button" data-title-time="1110" aria-pressed="true">Sunset</button><button type="button" data-title-time="1320" aria-pressed="false">Night</button></fieldset>
+      <div class="title-camera-tools"><button type="button" id="title-tour" aria-pressed="true">Tour</button><button type="button" id="title-reset">Reset view</button><button type="button" id="title-sound" aria-pressed="false">Sound off</button><button type="button" id="title-settings-open">Settings</button></div>
+    </div>
+    <dialog id="title-settings" aria-labelledby="title-settings-heading"><form method="dialog"><h2 id="title-settings-heading">Harbour view</h2><p>These controls affect the title view. Set your town clock in the visitor guide.</p><label for="title-drift">Camera drift speed</label><input id="title-drift" type="range" min="0.5" max="2" step="0.25" value="1"><p>Drag the harbour to look around, or scroll to zoom. On touch screens, drag to look around.</p><button>Done</button></form></dialog>
     <footer class="title-foot">
-      <span>© 1997 JOHANSSON CO.</span>
+      <span>JOHANSSON CO. · ヨハンソン町</span>
       <span class="title-hint">TOUCH · KEYBOARD · CONTROLLER</span>
     </footer>
   </section>
@@ -356,7 +353,7 @@
   const splash = document.getElementById("splash");
   const enter = document.getElementById("enter");
   const guideLink = document.querySelector("[data-guide-open]");
-  const items = [enter, guideLink];
+  const items = [enter, guideLink, document.getElementById("title-preview")];
   const SPLASH_KEY = "johansson-town-splash";
 
   // The company mark plays once per visit; a tap or key skips it.
@@ -374,10 +371,11 @@
     splash.addEventListener("pointerdown", endSplash);
   }
 
-  const titleActive = () => !start.classList.contains("hidden") && !start.classList.contains("guide-open") && !start.classList.contains("booting");
+  const titleActive = () => !document.getElementById("title-settings").open && !start.classList.contains("hidden") && !start.classList.contains("guide-open") && !start.classList.contains("booting");
 
   function openGuide(event) {
     event?.preventDefault();
+    document.getElementById("title-settings").close();
     start.classList.add("guide-open");
     start.scrollTop = 0;
     document.getElementById("board").focus?.({ preventScroll: true });
@@ -391,29 +389,6 @@
   guideLink.addEventListener("click", openGuide);
   document.querySelectorAll("[data-guide-close]").forEach((link) => link.addEventListener("click", closeGuide));
   document.getElementById("board").tabIndex = -1;
-
-  // A short two-note chime when START is pressed. The press is the user gesture
-  // browsers ask for, so this never autoplays.
-  function chime() {
-    try {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return;
-      const ctx = new Ctx();
-      [[988, 0], [1319, .09]].forEach(([freq, at]) => {
-        const osc = ctx.createOscillator(), gain = ctx.createGain();
-        osc.type = "square";
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(.0001, ctx.currentTime + at);
-        gain.gain.exponentialRampToValueAtTime(.06, ctx.currentTime + at + .01);
-        gain.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + at + (at ? .45 : .12));
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(ctx.currentTime + at);
-        osc.stop(ctx.currentTime + at + .5);
-      });
-      setTimeout(() => ctx.close(), 900);
-    } catch {}
-  }
-  enter.addEventListener("click", () => { if (!window.__JOHANSSON_BOOTING__) chime(); }, { capture: true });
 
   document.addEventListener("keydown", (event) => {
     if (!splash.classList.contains("done")) { endSplash(); event.preventDefault(); return; }
@@ -453,7 +428,7 @@
 })();
 </script>
 <script type="module">
-import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
+import {unlockTownAudio,townAudio} from './runtime/audio-8OQDptIM.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
@@ -477,6 +452,33 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
     if(isIPhone&&!standalone())fsHelp.classList.remove('hidden');
   }
 
+  let bootPromise=null;
+  const viewButton=document.getElementById('title-preview'),viewStatus=document.getElementById('title-view-status');
+  const view=()=>window.__JOHANSSON_TITLE_VIEW__;
+  const cameraState=()=>view()?.camera.state;
+  function boot(){return bootPromise??=import('./runtime/boot-CdH_oE1Y.js');}
+  function syncTour(){const button=document.getElementById('title-tour');button.setAttribute('aria-pressed',String(!!cameraState()?.tour));button.disabled=!!view()?.camera.reducedMotion;}
+  viewButton.addEventListener('click',async()=>{
+    if(view()||window.__JOHANSSON_BOOTING__)return;
+    window.__JOHANSSON_PREVIEW_REQUESTED__=true;viewButton.disabled=true;viewStatus.textContent='Opening the harbour view…';
+    try{await boot();document.querySelector('.title-tools').hidden=false;syncTour();viewStatus.textContent='Drag to look around · Preview lighting does not change your town clock.';}
+    catch(error){viewStatus.textContent='The live view could not open. Reload to retry or return to the town guide.';console.warn(error);}
+  });
+  document.querySelectorAll('[data-title-time]').forEach(button=>button.addEventListener('click',()=>{
+    if(!cameraState())return;cameraState().minutes=Number(button.dataset.titleTime);
+    document.querySelectorAll('[data-title-time]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+  }));
+  document.getElementById('title-tour').addEventListener('click',()=>{if(cameraState()){cameraState().tour=!cameraState().tour;syncTour();}});
+  document.getElementById('title-reset').addEventListener('click',()=>{view()?.camera.reset();syncTour();});
+  document.getElementById('title').addEventListener('pointerup',syncTour);
+  document.getElementById('title-sound').addEventListener('click',event=>{
+    if(!cameraState())return;cameraState().sound=!cameraState().sound;window.__JOHANSSON_TITLE_SOUND__=cameraState().sound;
+    townAudio.setEnabled(cameraState().sound);event.currentTarget.setAttribute('aria-pressed',String(cameraState().sound));event.currentTarget.textContent=cameraState().sound?'Sound on':'Sound off';
+  });
+  const settings=document.getElementById('title-settings');
+  document.getElementById('title-settings-open').addEventListener('click',()=>settings.showModal());
+  document.getElementById('title-drift').addEventListener('input',event=>{if(cameraState())cameraState().speed=Number(event.target.value);});
+
   async function launch(){
     if(window.__JOHANSSON_BOOTING__)return;
     window.__JOHANSSON_BOOTING__=true;
@@ -485,7 +487,9 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
     document.getElementById('start').classList.add('booting');
     status.textContent='LOADING GAME CODE…';
     window.__JOHANSSON_STARTUP__={startedAt:performance.now(),stage:'code'};
-    try{unlockTownAudio();}catch(error){console.warn('Town audio unavailable:',error);}
+    settings.close();
+    if(typeof window.__JOHANSSON_TITLE_SOUND__==='boolean')townAudio.setEnabled(window.__JOHANSSON_TITLE_SOUND__);
+    try{if(window.__JOHANSSON_TITLE_SOUND__!==false){unlockTownAudio();townAudio.bells([[988,0],[1319,.09]],.12);}}catch(error){console.warn('Town audio unavailable:',error);}
     if(!isIPhone||standalone())fullscreen();
     const watchdog=setTimeout(()=>{
       if(!window.__JOHANSSON_RUNNING__){
@@ -493,7 +497,8 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-CXd_JKpv.js');
+      await boot();
+      view()?.enter();
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
