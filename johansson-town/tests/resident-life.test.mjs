@@ -23,7 +23,7 @@ test('Minato serves actual beer and meals; the bus driver and officer choose tea
  const options={room,place:'izakaya',getCustomers:()=>[kenji,driver],getStaff:()=>nao.g,getMinutes:()=>1100,ledger};
  const service=createVenueService(options);let beer=false,tea=false,eating=false;
  for(let i=0;i<55*60;i++){service.update(1/60);beer||=kenji.g.userData.heldItem==='beer';tea||=driver.g.userData.heldItem==='tea';eating||=kenji.g.userData.heldItem==='yakitori';}
- assert.ok(beer&&tea&&eating);assert.ok(room.getObjectByName('resident-prop-beer'));assert.equal(residentPersonality('Officer Mori').drink,'tea');assert.equal(state.yen,600);
+ assert.ok(beer&&tea&&eating);assert.ok(room.getObjectByName('Minato drink · draft'),'the beer is a real Minato glass on the counter');assert.equal(residentPersonality('Officer Mori').drink,'tea');assert.equal(state.yen,600);
  assert.equal(state.residentLife.Kenji.purchases.length,1);assert.equal(state.residentLife.Kenji.meals.izakaya.finished,true);service.dispose();assert.equal(room.children.length,0);assert.equal(kenji.g.userData.heldItem,undefined);
  const again=createVenueService(options);step(again,10);assert.equal(state.residentLife.Kenji.purchases.length,1);again.dispose();
 });

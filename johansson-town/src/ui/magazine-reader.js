@@ -19,7 +19,7 @@ function loadImage(path){
 }
 const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;};
 
-export function createMagazineReader({date}){
+export function createMagazineReader({date,buy=null}){
  const root=el('div','mag-reader'),{issues}=rackIssues(date);
  let view=null,keyHandler=null,disposed=false;
  function clearKeys(){if(keyHandler)document.removeEventListener('keydown',keyHandler);keyHandler=null;}
@@ -44,6 +44,10 @@ export function createMagazineReader({date}){
   const head=el('div','mag-head');
   const back=el('button','mag-back','‹ Rack');back.type='button';back.onclick=shelf;
   head.append(back,el('span','mag-title',`${title.name} · ${issue.dateLine}`));
+  // Reading at the rack is free; taking it home is ¥ at the till (activities.js).
+  if(buy){const b=el('button','mag-buy',`Buy · ¥${title.price}`);b.type='button';
+   b.onclick=()=>{const result=buy(title,issue);if(result?.ok){b.textContent='In your bag ✓';b.disabled=true;}else if(result?.message){b.textContent=result.message;}};
+   head.append(b);}
   const stage=el('div','mag-stage'),canvas=el('canvas','mag-page');canvas.width=PAGE_W;canvas.height=PAGE_H;
   canvas.setAttribute('role','img');stage.append(canvas);
   const nav=el('div','mag-nav'),next=el('button','mag-turn','◀ 次へ'),prev=el('button','mag-turn','戻る ▶'),count=el('span','mag-count');

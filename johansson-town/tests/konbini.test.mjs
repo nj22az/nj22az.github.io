@@ -368,7 +368,7 @@ test('the till backbar places impulse props behind Thuan without new SKUs',async
   assert.ok(hits.includes('Buy hot snacks from the case'),'The counter has a hot case');
   let desk=0,hot=0;room.traverse(o=>{if(o.name==='Sakura office desk')desk++;if(o.name==='Sakura hot case header')hot++;});
   assert.ok(desk&&hot,'Desk and hot-case header are built');
-  assert.ok(hits.includes('Look over the till backbar'));
+  assert.ok(hits.includes('Buy from the till counter'),'The till goods can be bought, not only looked at');
   assert.ok(hits.includes('Read Sakura sales ledger'),'Ledger kept');
   assert.ok(hits.includes('Ring service bell'),'Bell kept');
   let backbar=0;room.traverse(o=>{if(o.name&&(o.name.includes('backbar')||o.name==='Sakura postcard stand'||o.name==='Sakura backbar batteries'))backbar++;});

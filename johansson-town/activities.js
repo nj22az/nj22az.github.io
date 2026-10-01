@@ -5,7 +5,7 @@ import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {createMagazineReader} from './src/ui/magazine-reader.js';
 import {townCalendarAt} from './src/town-clock.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
-import {restoreSakura,buySakuraItem} from './src/commerce/sakura-economy.js';
+import {restoreSakura,buySakuraItem,recordSakuraSale} from './src/commerce/sakura-economy.js';
 import {printedModels} from './src/workshop/catalogue.js';
 import {restoreWorkshop,advancePrint} from './src/workshop/production.js';
 import {createWorkshopUI} from './src/workshop/interface.js';
@@ -494,13 +494,49 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
   // The medicine shelf behind Sakura's till. Nothing on it is self-service: you ask, and
   // Thuan reaches it down and tells you how many to take.
-  function sakuraMedicine(){
+  // Everything Thuan sells from behind the counter goes through one till: the hours, her
+  // being there, the yen, the bag, and a line in the shop ledger like any shelf sale.
+  function sakuraTillClosed(){
     const m=((getMinutes()%1440)+1440)%1440;
-    if(m<540||m>=1200){show('Medicine shelf','The till is closed. The boxes behind it wait for 09:00.',[['Back',close]]);return;}
-    const items=[...MEDICINES.filter(i=>['kaze','itami','ichou','megusuri','nodo','bansoko','shippu','katori','mushi','vitamin'].includes(i.id)),STAMINA_DRINK];
+    if(m<540||m>=1200)return 'The till is closed. Thuan returns at 09:00.';
+    if(getSocialContext().thuanAvailable===false)return 'Thuan is away from the counter for a bit.';
+    return null;
+  }
+  function sellAtTill(name,price,unitCost=Math.round(price*.65)){
+    const closed=sakuraTillClosed();if(closed)return {ok:false,message:closed};
+    if(state.yen<price)return {ok:false,message:'You do not have enough yen.'};
+    if(state.inventory.length>=100)return {ok:false,message:'Your bag is full.'};
+    state.yen-=price;state.inventory.push(name);
+    recordSakuraSale(state,price,null,{minute:getMinutes(),item:name,buyer:'Johansson',unitCost});save();townAudio.play('click',.35);
+    return {ok:true};
+  }
+  function sakuraMedicine(){
+    const closed=sakuraTillClosed();
+    if(closed){show('Medicine shelf',closed,[['Back',close]]);return;}
+    // Every box on the shelf, not a selection of them.
+    const items=[...MEDICINES,STAMINA_DRINK];
     show('くすり · Medicine shelf','Thuan: "What do you need? If it is more than a cold, the clinic boat comes on Thursdays."',[
-      ...items.map(item=>[`${item.jp} · ¥${item.price.toLocaleString('en-GB')}`,()=>{if(!spend(item.price))return;onTime(2);addItem(item.en);townAudio.play('click',.35);
+      ...items.map(item=>[`${item.jp}${item.sub?' '+item.sub:''} · ¥${item.price.toLocaleString('en-GB')}`,()=>{const result=sellAtTill(item.en,item.price);if(!result.ok){receipt(item.jp,result.message);return;}onTime(2);
         receipt(item.jp,item.en+' is in your bag. Thuan writes the dose on the box in marker, the way she does for everyone.');}]),
+      ['Nothing, thank you',close]]);
+  }
+  // The small things on the till cabinet: phone cards, stamps, ferry tickets, gum, matches.
+  const COUNTER_GOODS=Object.freeze([
+    {jp:'テレホンカード 50度',en:'Telephone card (50 units)',price:500},
+    {jp:'テレホンカード 105度',en:'Telephone card (105 units)',price:1000},
+    {jp:'切手 80円',en:'80-yen stamp',price:80,unitCost:80},
+    {jp:'はがき 50円',en:'Postcard stamp (50 yen)',price:50,unitCost:50},
+    {jp:'フェリー回数券',en:'Ferry punch card (11 rides)',price:3000,unitCost:2900},
+    {jp:'ガム',en:'Chewing gum',price:100},
+    {jp:'マッチ',en:'Box of matches',price:20},
+    {jp:'ライター',en:'Disposable lighter',price:100},
+  ]);
+  function sakuraCounterGoods(){
+    const closed=sakuraTillClosed();
+    if(closed){show('Till counter',closed,[['Back',close]]);return;}
+    show('レジ前 · At the till','Thuan: "Cards, stamps, ferry tickets. The gum is the only thing here anyone buys on impulse."',[
+      ...COUNTER_GOODS.map(item=>[`${item.jp} · ¥${item.price.toLocaleString('en-GB')}`,()=>{const result=sellAtTill(item.en,item.price,item.unitCost);
+        receipt(item.jp,result.ok?item.en+' is in your bag.':result.message);}]),
       ['Nothing, thank you',close]]);
   }
   // Local players: several people can keep their own progress on one device. Switching
@@ -654,7 +690,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   // 立ち読み at the magazine rack: today's issues, then page by page (src/ui/magazine-reader.js).
   function magazineRack(){
     show('Sakura · 雑誌・新聞','',[['Put it back',close]]);modal.classList.add('magazine-view');
-    magazineView=createMagazineReader({date:townCalendarAt(getMinutes()).date});body.replaceChildren(magazineView.element);
+    magazineView=createMagazineReader({date:townCalendarAt(getMinutes()).date,buy:(title,issue)=>sellAtTill(`${title.name} ${issue.dateLine}`,title.price,Math.round(title.price*.75))});body.replaceChildren(magazineView.element);
   }
   function shopLedger(){
     if(getSocialContext().inside!=='market'){receipt('Sakura sales ledger','The stock and sales books are in the back office at Sakura.');return;}
@@ -840,6 +876,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'onsen-milk':onsenMilk();break;
       case 'onsen-change':onsenChange();break;
       case 'sakura-medicine':sakuraMedicine();break;
+      case 'sakura-counter-goods':sakuraCounterGoods();break;
       case 'kyushoku':kyushoku(name,detail);break;
       case 'school-pantry':schoolPantry(name);break;
       case 'school-teacher':schoolTeacher(name);break;

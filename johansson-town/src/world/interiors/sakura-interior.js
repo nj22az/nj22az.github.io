@@ -100,8 +100,7 @@ function dressBackbar(room,anchor,action,materials){
   }
  }
  const look=SAKURA_BACKBAR.find(p=>p.id==='osusume');
- if(look)anchor([look.x-.15,1.2,look.z],'Look over the till backbar',()=>action('inspect','Sakura · Till backbar',
-  'Ferry cards, phone cards, stamps and gum on the eye-level strip. A postcard stand faces the queue. Thuan\u2019s radio sits low with spare batteries. The hot case and bell are on the counter; the books live in the back office.'));
+ if(look)anchor([look.x-.15,1.2,look.z],'Buy from the till counter',()=>action('sakura-counter-goods'));
 }
 export function buildSakuraInterior({room,reg,action,exit}){
  const layout=SAKURA_LAYOUT,unitPositions=new Map(),unitApproaches=new Map(),batches=[],materials=shopProductMaterials(),dummy=new THREE.Object3D(),zero=new THREE.Matrix4().makeScale(0,0,0);
