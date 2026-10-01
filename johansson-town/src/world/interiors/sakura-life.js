@@ -1,6 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {createShopProduct} from '../../commerce/shop-product.js';
 import {buildSakuraBackroom} from './sakura-backroom.js';
+import {buildSakuraRestroom} from './sakura-restroom.js';
 
 /**
  * The things that make Sakura somebody's shop rather than a set.
@@ -236,6 +237,7 @@ export function buildSakuraLife(room,{anchor,action}){
  const office=buildOfficeFun(room);
  buildStorage(room);
  const backroom=buildSakuraBackroom(room,{anchor,action});
+ const restroom=buildSakuraRestroom(room,{anchor,action});
  let last=0;
- return {tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);},mascot};
+ return {tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot};
 }
