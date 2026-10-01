@@ -432,6 +432,7 @@ as rules:
 | ![Oil jetty and tanker](amplify-audit/after-oil-jetty.jpg) | ![Car ferry](amplify-audit/after-car-ferry.jpg) |
 | ![Post office](amplify-audit/after-post-office.jpg) | ![Distribution poles](amplify-audit/after-poles.jpg) |
 | ![Broadleaf trees](amplify-audit/after-trees.jpg) | ![Clinic](amplify-audit/after-clinic.jpg) |
+| ![Dinner with Thuan in Naha](amplify-audit/after-naha-dinner.jpg) | |
 
 | Request | What was built | Where |
 |---|---|---|
@@ -446,8 +447,10 @@ as rules:
 | Sewage works | Clarifiers, an aeration basin, a sludge tank and an outfall on Kitano-jima. | `airport-island.js` |
 | Prettier trees | One shared broadleaf for the whole island: a trunk that flares into roots, and a crown of rounded lobes covered in leaf shingles over a dark core, with radial normals so the toon bands sweep across it as one mass. It comes in three forms: `round` (street and lawn trees), `column` (fukugi windbreaks) and `spread` (the banyan). It replaces every cone and sphere tree, including a light build for the headland. The uploaded Tomodachi tree was used as a style reference only. | `okinawa/trees.js`, `houses.js`, `school.js`, `east-lawn.js`, `forest-edge.js`, `coyote-tunnel.js` |
 | Clinic | 診療所 in the town hall's old meeting-room bay, with its own door. Pink tiles, the couch behind a pink curtain, the drip stand, the desk with a beige monitor and an X-ray lightbox, the green patient stool, a glass medicine cabinet (habu antivenom underneath), a Landolt-ring eye chart, and scales by the door. Dr Kakazu is at her desk and is in the household registry. Built from scratch; the uploaded hospital model was a reference only. | `interiors/town-hall.js` (`buildClinic`), `school.js` |
+| Dinner in the city | Restaurant Hoshizora on the top floor of a Naha hotel. The evening boat leaves from the ferry terminal (17:00–21:30, 50 minutes each way). It is a locked-camera scene in the Tomodachi framing: Johansson and Thuan seated side-on at a table for two, a window-wall of Naha at night behind them (towers, Kokusai-dōri neon, Tomari harbour), brass lamps, the red rail, a candle that flickers, and a waiter. The dinner menu covers the Ryūkyū course or steak, kūsu or wine, eating, toasting, talking (six conversations in Thuan's dry voice) and the last boat home. Thuan pays if you can't. Built from scratch; the uploaded restaurant model was a reference only. | `interiors/city-restaurant.js`, `city-dinner.js`, `activities.js` (`cityDinner`), `game.js` (`fixedCamera`) |
 
 **Still open:**
+- While you dine in Naha, the town's Thuan keeps her own schedule. She should be marked away for the evening.
 - The neighbours have homes and jobs in the registry, but they still keep to their spot rather than walking home at night. Doing that means turning them into scheduled residents.
 - Sakura's rebuild, the night and interior lighting, the park model, the horizon frame, the rest of Shimanchu 2, and the life engine (§8) remain.
 - The quarter's budget rose from 80 to 110 draws and from 120k to 150k triangles for Kitahama and the new poles. Measure on the iPad.

@@ -28,6 +28,7 @@ import {createShopify} from './src/commerce/shopify.js';
 import {townAudio} from './src/audio/town-audio.js?snappy=1';
 import {DIALOGUE} from './src/people/schedules.js?snappy=1';
 import {JOURNAL} from './content-data.js';
+import {CITY_RESTAURANT,DINNER_MENU} from './src/world/interiors/city-dinner.js';
 import {SAVE_KEY,readSave,readPlayers,activePlayer,addPlayer,switchPlayer,renamePlayer,touchPlayer,slotKey} from './src/save.js';
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
 import {createDialogueBox} from './src/dialogue/dialogue-box.js';
@@ -140,6 +141,28 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
   function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;save();return true;}
+  /**
+   * Dinner with Thuan in Naha (interiors/city-restaurant.js): the scene is fixed and this
+   * menu is how the evening goes. `dinner` is the scene's handle: serve, eat, toast, talk,
+   * and `leave`, which game.js sets to take the last boat home.
+   */
+  function cityDinner(title,dinner,lead=''){
+    if(!dinner)return;
+    const again=text=>cityDinner(title,dinner,text),buttons=[];
+    for(const item of DINNER_MENU){
+      if(item.dish?dinner.state.dish:dinner.state.drink)continue;
+      buttons.push([item.label+' · ¥'+item.price.toLocaleString('en'),()=>{
+        const paid=state.yen>=item.price;if(paid){state.yen-=item.price;save();}
+        dinner.serve(item);onTime(item.dish?20:5);note('Dinner with Thuan at Hoshizora, Naha.');
+        again(item.text+(paid?'':' Thuan has the bill before you can reach for it. “The shop had a good week. You get the next one.”'));}]);
+    }
+    if(dinner.state.dish)buttons.push(['Eat',()=>{dinner.eat();onTime(10);again(dinner.state.dish?'You eat, and talk with your mouth full, and Thuan pretends not to notice.':'Clean plates. The waiter takes them away with a small bow and asks if there will be coffee.');}]);
+    if(dinner.state.drink)buttons.push(['Raise a glass · 乾杯',()=>{dinner.toast();onTime(2);again(['“乾杯!” The glasses ring. “To the island,” you say. “To the shop,” she says, “and its rent.”','“Kanpai.” She clinks a little too hard and looks pleased about it.','A third toast, to the ferry for waiting. It has not promised to wait. Thuan says it will if the mayor is on it.'][(dinner.state.toasts-1)%3]);}]);
+    buttons.push(['Talk with Thuan',()=>{const line=dinner.talk();onTime(10);again(line);}]);
+    buttons.push(['Take the last boat home',()=>{close();onTime(CITY_RESTAURANT.crossing);dinner.leave?.();}]);
+    buttons.push(['Sit a while',close]);
+    show(title,lead||'A table for two by the window on the top floor, Naha laid out below: the hotel towers, the neon of Kokusai-dōri, the ferry lights at Tomari. Thuan has her good cardigan on. The waiter brings the menus.',buttons);
+  }
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
     const quest=['Speak to Aya beside the bookshop.','Find Tama, Aya’s cat, near the ramen stall. A fish might help.','Return to Aya with news of Tama.','Tama is safely home. Aya has paid you ¥500.'][state.quest];
@@ -889,6 +912,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'school-teacher':schoolTeacher(name);break;
       case 'school-taps':show('Wash station','Brass push taps over a concrete trough. You press one and it runs cold for exactly as long as you hold it. There is an orange net of soap hanging from the pipe, and somebody\'s blue sandal.',[['Rinse the sand off your feet',()=>{onTime(2);receipt('Wash station','Cold, clean, and the sand runs off down the trough. Your feet dry on the corridor concrete in a minute.');}],['Leave',close]]);break;
       case 'izakaya-gossip':izakayaGossip();break;
+      case 'city-dinner':cityDinner(name,detail);break;
+      case 'city-trip':show('Evening boat to Naha','Thuan is at the terminal in a cardigan over the yellow blouse, with a cloth bag and the ferry tickets already bought. Fifty minutes across to Tomari, a taxi up to Kokusai-dōri, and a table by the window at Hoshizora, on the top floor of the Hotel Ryūsei. The last boat back leaves at half past eleven.',[['Board with Thuan',()=>{close();onTime(CITY_RESTAURANT.crossing);detail?.go?.();}],['Not tonight',close]]);break;
       case 'cat':cat();break;
       case 'fishing':fishing();break;
       case 'arcade':arcade();break;
