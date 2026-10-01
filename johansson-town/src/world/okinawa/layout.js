@@ -129,3 +129,6 @@ export function mapPlan(){
 /** The gateball court on the lawn by the seawall, and the goya garden in the west yard. */
 export const GATEBALL=Object.freeze({minX:20,maxX:31.4,minZ:-37.5,maxZ:-32.2});
 export const GOYA=Object.freeze({minX:-23.4,maxX:-17.4,minZ:-11.4,maxZ:-4.2});
+
+// Kitahama lives in its own dependency-free module so residents.js can read it.
+export {KITAHAMA,plotGate} from '../kitahama-layout.js';

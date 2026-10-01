@@ -18,7 +18,7 @@ import {thuanHasCommutePriority,yieldAsideTarget,commuteCrowdRadii,residentCommi
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {createStaffBenchRoutine} from './staff-bench-routine.js';
-import {commuterPhase} from './commuter-schedule.js';
+import {commuterPhase,townPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
 export const DIALOGUE={
@@ -79,7 +79,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  const staffBreak=thuan&&world.staffBench?createStaffBenchRoutine({entity:thuan.g,seat:world.staffBench.seat,isOccupied:()=>{
   const p=getObserverPosition();return p&&Math.hypot(p.x-STAFF_BENCH.seat[0],p.z-STAFF_BENCH.seat[1])<.9;
  }}):null;
- const thuanCommutePriority=()=>thuanHasCommutePriority(thuan?.g,thuan?commuterPhase(thuan.profile,clockMinutes):null);
+ const thuanCommutePriority=()=>thuanHasCommutePriority(thuan?.g,thuan?townPhase(thuan.profile,clockMinutes):null);
  const yieldAsideForThuan=person=>{
   if(person===thuan||!thuanCommutePriority())return null;
   const tg=thuan.g,g=person.g;
@@ -262,7 +262,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     routes.delete(g);outside.push(p);continue;
    }
    if(g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
-   const phase=transit?commuterPhase(v,minutes,rain):'legacy';
+   const phase=transit?townPhase(v,minutes,rain):'legacy';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has
    // been a bus standing there for them to go in.

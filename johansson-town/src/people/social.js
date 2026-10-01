@@ -11,7 +11,7 @@ import {closingStockPending,closingPreparationPending} from '../commerce/shop-st
 import {transitStop,awayPlace} from '../world/transit.js';
 import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
 import {PARK_BENCH} from '../world/park-layout.js';
-import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork,SATO_SHIFT} from './commuter-schedule.js';
+import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork,livesInKitahama,SATO_SHIFT} from './commuter-schedule.js';
 import {SATO_LUNCH,satoRamenOpen} from '../world/sato-ramen-layout.js';
 import {shoppingDistrictActive,peninsulaActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
@@ -319,9 +319,17 @@ export const ferryWords=text=>typeof text!=='string'?text:text
  .replace(/(on|for|to) the Harbour Line/g,'$1 the ferry').replace(/next Harbour Line departure/g,'next ferry')
  .replace(/running the Harbour Line/g,'working the ferry').replace(/left by bus/g,'left on the ferry');
 function commuterPlan(...args){
- const plan=commuterPlanOn(...args);
+ const plan=kitahamaPlan(args[0],commuterPlanOn(...args));
  if(plan&&peninsulaActive()&&plan.activity)return {...plan,activity:ferryWords(plan.activity)};
  return plan;
+}
+/** Where the timetable said 'ferry', somebody who lives in Kitahama goes home instead. */
+function kitahamaPlan(profile,plan){
+ if(!plan||!livesInKitahama(profile))return plan;
+ const home={place:'home',target:profile.home};
+ if(plan.place==='away')return {...home,activity:'at home in Kitahama'};
+ if(plan.place==='bus')return {...home,activity:'walking home to Kitahama'};
+ return plan.activity?{...plan,activity:plan.activity.replace(/ before the last (bus|ferry)/,' before walking home').replace(/the Harbour Line/g,'home')}:plan;
 }
 function commuterPlanOn(profile,minutes,rain=false,state=null){
  if(livesAtWork(profile))return workplaceResidentPlan(profile,minutes,rain,state);

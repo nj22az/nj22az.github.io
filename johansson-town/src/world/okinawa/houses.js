@@ -230,6 +230,31 @@ export function coralWall(kit,x0,z0,x1,z1,{height=1.35,thickness=.45,gaps=[],see
  return out;
 }
 
+/**
+ * The wall a house built in the eighties or nineties got instead of coral: concrete
+ * block, rendered and painted, with a band of hana-burokku flower blocks along the top
+ * so the breeze gets through, and a coping. Same signature and colliders as coralWall,
+ * and a handful of boxes per run rather than a stone at a time.
+ */
+export function blockWall(kit,x0,z0,x1,z1,{height=1.35,thickness=.2,gaps=[],colour=0xe4ddcc}={}){
+ const alongX=Math.abs(x1-x0)>=Math.abs(z1-z0);
+ const a=alongX?Math.min(x0,x1):Math.min(z0,z1),b=alongX?Math.max(x0,x1):Math.max(z0,z1),fixed=alongX?z0:x0;
+ const runs=[];let start=a;
+ for(const [g0,g1] of [...gaps].sort((p,q)=>p[0]-q[0])){if(g0>start)runs.push([start,Math.min(g0,b)]);start=Math.max(start,g1);}
+ if(start<b)runs.push([start,b]);
+ const out=[],band=.42,base=height-band-.06;
+ for(const [s0,s1] of runs){
+  const len=s1-s0,mid=(s0+s1)/2,[x,z]=alongX?[mid,fixed]:[fixed,mid],[w,d]=alongX?[len,thickness]:[thickness,len];
+  kit.box(w,base,d,x,base/2,z,colour);
+  kit.box(w,band,d*.9,x,base+band/2,z,colour,{finish:'hana'});
+  kit.box(alongX?w+.04:thickness+.08,.06,alongX?thickness+.08:d+.04,x,base+band+.03,z,0xcfc8b6);
+  for(const u of [s0,s1]){const [px,pz]=alongX?[u,fixed]:[fixed,u];kit.box(thickness+.12,height+.12,thickness+.12,px,(height+.12)/2,pz,0xd8d1bf);}
+  const [cw,cd]=alongX?[len+.1,thickness+.1]:[thickness+.1,len+.1];
+  out.push(kit.rect(x-cw/2,x+cw/2,z-cd/2,z+cd/2,height+.2,'block-wall'));
+ }
+ return out;
+}
+
 /** The hinpun: a free-standing screen of stone inside the gate. */
 export function hinpun(kit,x,z,w=2.4,{alongX=true}={}){
  const [bw,bd]=alongX?[w,.42]:[.42,w];

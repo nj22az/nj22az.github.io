@@ -57,6 +57,7 @@ import {atmosphere} from './render/atmosphere.js?dusk-1';
 import {clock as duskClock, daylight} from './render/dusk.js';
 import {setOceanLight} from './world/ocean.js';
 import {buildMayorOffice,buildMayorHome} from './world/interiors/town-hall.js';
+import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
 import {MOVES} from './avatars/moves.js';
@@ -668,6 +669,7 @@ function roomShell(s){
  if(s.id==='market'){activeRoomLayout=SAKURA_LAYOUT;return;}
  if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
  if(s.id==='mayor-office'){activeRoomLayout=buildMayorOffice(shared);return;}
+ if(s.familyHome){activeRoomLayout=buildFamilyHome({...shared,household:s.familyHome,title:s.title});return;}
  if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,openMaker:()=>{leaveRoomIfModal();openAvatarMaker();},sleep:sleepUntilMorning});return;}
  if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior(shared);return;}
  if(s.id==='koban'){activeRoomLayout=buildKobanInterior(shared);return;}

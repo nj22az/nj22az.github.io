@@ -5,11 +5,13 @@ const EAST_LAWN_SOUTH=-38;
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
 import {createMaterials} from '../../render/materials.js';
-import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GOYA} from './layout.js';
+import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
-import {redTileHouse,concreteHouse,shopHouse,coralWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
+import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {utilityPole,wiresBetween,serviceDrop,keiTruck,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
 import {GROUND_LAYER} from '../ground-layers.js';
+import {plotGate} from './layout.js';
+import {residentsLine} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
 import {MAIN_ROAD} from '../main-road.js';
 import {WEST_YARD} from '../west-yard.js';
@@ -55,6 +57,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildGateball(kit,solid,{anchor,inspect,onAction});
  buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
  buildWires(kit,solid);
+ buildKitahama(kit,solid,{anchor,inspect,onAction});
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
@@ -127,14 +130,16 @@ function walledHouse(kit,solid,p,{anchor,onAction,seed=0,sideGate=null,windbreak
  const sideOf=dir=>{const v={north:[0,1],south:[0,-1],east:[1,0],west:[-1,0]}[dir];if(!v)return 0;const lx=Math.cos(ry),lz=-Math.sin(ry);return Math.sign(Math.round(v[0]*lx+v[1]*lz));};
  kit.at((p.minX+p.maxX)/2,(p.minZ+p.maxZ)/2,ry,()=>{
   const gate=[-.95,.95],side=sideOf(sideGate),wind=sideOf(windbreak)||-1;
-  solid(coralWall(kit,-hw,hd,hw,hd,{gaps:[gate],seed:50+seed,flowers:seed%2===0}));
-  solid(coralWall(kit,-hw,-hd,hw,-hd,{seed:60+seed,flowers:seed%2===1}));
-  solid(coralWall(kit,-hw,-hd,-hw,hd,{gaps:side<0?[[-.6,.6]]:[],seed:70+seed}));
-  solid(coralWall(kit,hw,-hd,hw,hd,{gaps:side>0?[[-.6,.6]]:[],seed:80+seed}));
+  // Old houses keep coral stone; houses built since the eighties got block walls.
+  const wall=p.wall==='block'?(x0,z0,x1,z1,o)=>blockWall(kit,x0,z0,x1,z1,o):(x0,z0,x1,z1,o)=>coralWall(kit,x0,z0,x1,z1,o);
+  solid(wall(-hw,hd,hw,hd,{gaps:[gate],seed:50+seed,flowers:seed%2===0}));
+  solid(wall(-hw,-hd,hw,-hd,{seed:60+seed,flowers:seed%2===1}));
+  solid(wall(-hw,-hd,-hw,hd,{gaps:side<0?[[-.6,.6]]:[],seed:70+seed}));
+  solid(wall(hw,-hd,hw,hd,{gaps:side>0?[[-.6,.6]]:[],seed:80+seed}));
   for(const gx of gate)shisa(kit,gx,1.53,hd,0,.7);
   kit.sign(nameplate(p.family,p.romaji),.42,.21,gate[1]+.45,1.05,hd+.24,{name:'nameplate'});
   const at=kit.point(gate[1]+.45,1,hd+1);
-  anchor(at.x,at.y,at.z,`Read the ${p.romaji} nameplate`,()=>onAction?.('read',`${p.family} · the ${p.romaji} house`,NAMEPLATES[p.id]));
+  anchor(at.x,at.y,at.z,`Read the ${p.romaji} nameplate`,()=>onAction?.('read',`${p.family} · the ${p.romaji} house`,[NAMEPLATES[p.id],residentsLine(p.id)].filter(Boolean).join('\n\n')));
   hibiscus(kit,gate[0]-1.1,hd-.9,{seed:90+seed});
   if(p.kind==='red-tile'){
    solid(hinpun(kit,0,hd-2,Math.min(2.6,W-3)));
@@ -482,12 +487,61 @@ function buildWires(kit,solid){
  }
 }
 
+/* -------------------------------- Kitahama -------------------------------- */
+
+/**
+ * The new district on the north-east land: the approach lane up from the beach, the
+ * cross lane, five standard walled homes (walledHouse, the same as Nishi-machi), a
+ * sugar-cane field and the pole line that brings power up from the station on Main
+ * Street. One plot is to let, with the board on its gate.
+ */
+function buildKitahama(kit,solid,ctx){
+ const K=KITAHAMA,lane=GROUND_LAYER.lane;
+ for(const L of [K.approach,K.lane]){
+  kit.block(L.minX,L.maxX,lane-.06,lane,L.minZ,L.maxZ,GROUND.concrete);
+  const alongZ=L.maxZ-L.minZ>L.maxX-L.minX;
+  if(alongZ)kit.block(L.maxX-.28,L.maxX,lane,lane+.015,L.minZ,L.maxZ,0x8d887d);
+  else kit.block(L.minX,L.maxX,lane,lane+.015,L.minZ,L.minZ+.28,0x8d887d);
+ }
+ K.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:30+i,windbreak:i<2?'south':'north'}));
+ // The house to let: a board on the gatepost and the shutters closed.
+ {const p=K.plots.find(q=>q.romaji==='To let'),x=(p.minX+p.maxX)/2;
+  kit.sign(poster({title:'貸家',lines:['FOR RENT','2DK · ¥28,000','役場 住民課まで'],bg:'#f4ecd6',band:'#c8432f'}),.6,.8,x-1.6,1.1,p.minZ-.3,{ry:Math.PI,name:'to-let sign'});}
+ // Sugar cane towards the point: rows of tall leaves, a little lighter at the tips.
+ const F=K.field,r=rng(303);
+ kit.block(F.minX,F.maxX,GROUND_LAYER.gravel,GROUND_LAYER.gravel+.03,F.minZ,F.maxZ,0x8a7a5a,'sand');
+ for(let x=F.minX+.5;x<F.maxX;x+=1.1)for(let z=F.minZ+.4;z<F.maxZ;z+=.8){
+  const h=1.9+r.next()*.7;
+  kit.box(.12,h,.12,x+(r.next()-.5)*.2,h/2,z,0x8aa04a);
+  kit.box(.7,.05,.18,x,h-.1,z,0x5f8f3a,{ry:r.next()*3,rz:.4});
+ }
+ solid({id:'cane-field',x:(F.minX+F.maxX)/2,z:(F.minZ+F.maxZ)/2,w:F.maxX-F.minX,d:F.maxZ-F.minZ,height:2});
+ ctx.inspect((F.minX+F.maxX)/2,1.2,F.minZ-.8,'Look at the cane field','Sugar cane · さとうきび',
+  'Head-high cane in rows, rattling in the wind off the point. The Tōmas and the Ueharas share it; in January everybody on the lane cuts for a fortnight and the lorry comes over on the ferry to take it to the mill on the main island.');
+ // The pole line: up the approach lane from the beach, then along the cross lane, with
+ // a drop to every house.
+ const poles=[];
+ const pole=(x,z,o={})=>{const p=utilityPole(kit,x,z,o);solid(p.collider);poles.push(p);return p;};
+ const up=[30,40,50,60].map((z,i)=>pole(K.approach.minX-.35,z,{face:Math.PI/2,transformer:i===3,lamp:i%2===0,seed:200+i}));
+ for(let i=0;i<up.length-1;i++)wiresBetween(kit,up[i],up[i+1]);
+ const across=[34.5,42,52.5].map((x,i)=>pole(x,K.lane.maxZ+.35,{face:Math.PI,transformer:false,lamp:true,seed:210+i}));
+ wiresBetween(kit,up[3],across[1],{sag:.5});wiresBetween(kit,across[0],across[1]);wiresBetween(kit,across[1],across[2]);
+ for(const p of K.plots){const {door}=plotGate(p,0);const near=across.reduce((a,b)=>Math.abs(b.anchors[0].x-door[0])<Math.abs(a.anchors[0].x-door[0])?b:a);
+  serviceDrop(kit,near,[door[0]+1.5,2.6,p.gate==='north'?p.minZ+3.2:p.maxZ-3.2]);}
+}
+
 /** What the nameplates say when you stop to read one. */
 const NAMEPLATES=Object.freeze({
  higa:'The Higas. Grandmother Higa sits on the verandah every afternoon shelling beans into a bowl and knows the time of every ferry by the sound of its horn off the breakwater. The shisa on the left gatepost has its mouth open to let luck in; the one on the right has it shut, to keep it.',
  kinjo:'The Kinjōs built in concrete after the 1971 typhoon took their old roof. Their son is a welder in Naha and sends money for the water tank to be painted every other year. The flower-block wall was his first job.',
  nakasone:'The Nakasones keep the lawn in front of Umi-no-yu cut, because nobody else will. Mr Nakasone plays the sanshin on the verandah after supper; if the wind is right you can hear it from the bath.',
  miyagi:'Mrs Miyagi is ninety-one, walks to the utaki every morning and has outlived two husbands and a typhoon that took the roof off everything else on this side. The shisa on her ridge is older than she is.',
+ kamiya:'Mrs Kamiya worked the post-office counter for thirty-one years and still corrects the postman\'s handwriting. Her gateball mallet hangs inside the gate.',
+ 'kitahama-1':'Thuan and Nao\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. Nao comes home after three in the morning and the gate latch is oiled so it does not wake anybody.',
+ 'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at nine and to the ramen counter at half past ten.',
+ 'kitahama-3':'Kōji Uehara\'s house. A wetsuit on the line, fish boxes stacked by the gate and a radio that plays the weather on the hour.',
+ 'kitahama-4':'The Tōmas. The postman\'s red Super Cub stands in the yard at night with its box padlocked. Mrs Tōma grows goya over the gate.',
+ 'kitahama-5':'An empty concrete house, swept and waiting, with the water off at the main.',
  tamaki:'The Tamakis run the ice plant on the east quay. Their daughter is at the school; her bicycle is the red one, and her swimming things are on the washing line most days of the year.',
  oshiro:'The Ōshiros. Old Mr Ōshiro was a sabani builder; his boat is the red one on the west quay. There is a bunch of bananas ripening by the kitchen door and, if you believe the neighbours, a habu in the fukugi that nobody has seen for years.',
 });

@@ -62,8 +62,9 @@ for(const dt of [1/60,1/30])test(`Thuan approaches, crosses the onsen threshold 
    assert.equal(sweepFraction(previous,g.position,blocked),1,'Every exit step obeys collision');
    assert.equal(g.visible,true);assert.equal(g.userData.indoors,undefined);
   }
-  assert.ok(g.position.x<18.5,'She exits the porch and continues towards her existing bus destination');
-  assert.equal(g.userData.place,'bus');assert.equal(ai.snapshot().Thuan.indoors,null);
+  assert.ok(g.position.x<18.5,'She exits the porch and continues towards home');
+  // Since the island grew she lives in Kitahama: after the bath she walks home, not to the ferry.
+  assert.equal(g.userData.place,'home');assert.equal(ai.snapshot().Thuan.indoors,null);
  }finally{configureTownMode('legacy');}
 });
 

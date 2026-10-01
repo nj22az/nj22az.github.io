@@ -20,11 +20,12 @@ test('Sato Ramen serves lunch from eleven to two, and its door is on the alley c
  assert.deepEqual(RAMEN_DOOR,[...DINING.ramenDoor],'the old street keeps Inakaya across the road');
 });
 
-test('Mrs Sato buys fish, cooks the lunch and goes home on the afternoon ferry; the regulars come for lunch',()=>{
+test('Mrs Sato buys fish, cooks the lunch and walks home to Kitahama; the regulars come for lunch',()=>{
  try{
   configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
   const sato=profile('Mrs Sato');
-  assert.equal(residentPlan(sato,520).place,'bus','off the 08:30');
+  assert.equal(residentPlan(sato,520).place,'home','at home in Kitahama before the auction');
+  assert.equal(residentPlan(sato,1000).place,'home','home again after the lunch service');
   assert.match(residentPlan(sato,570).activity,/fish/);
   for(const m of [640,700,800,835])assert.equal(residentPlan(sato,m).place,'ramen','in her kitchen at '+m);
   assert.notEqual(residentPlan(sato,1000).place,'ramen');

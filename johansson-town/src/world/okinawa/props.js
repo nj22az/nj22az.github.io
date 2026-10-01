@@ -31,16 +31,16 @@ export function utilityPole(kit,x,z,{h=9.2,face=0,transformer=true,lamp=false,gu
  const concrete=0xc9c5bc,steel=0x8e979a,porcelain=0xf2f0ea,black=0x2b2a30;
  kit.at(x,z,face,()=>{
   // Tapered shaft in three courses (a pole is spun concrete, not a cylinder), base, cap.
-  kit.cyl(.12,.15,h*.5,0,h*.75,0,concrete,{segments:10});
-  kit.cyl(.15,.18,h*.5,0,h*.25,0,concrete,{segments:10});
-  kit.cyl(.13,.13,.08,0,h+.04,0,0xb7b2a8,{segments:10});
-  kit.cyl(.24,.26,.22,0,.11,0,0xb7b2a8,{segments:10});
+  kit.cyl(.12,.15,h*.5,0,h*.75,0,concrete,{segments:7});
+  kit.cyl(.15,.18,h*.5,0,h*.25,0,concrete,{segments:7});
+  kit.cyl(.13,.13,.08,0,h+.04,0,0xb7b2a8,{segments:7});
+  kit.cyl(.24,.26,.22,0,.11,0,0xb7b2a8,{segments:7});
   // High voltage: the crossarm, its two braces, three pin insulators.
   const hv=h-.45;
   kit.box(2.1,.1,.1,0,hv,0,0x6f7579);
   for(const s of [-1,1])kit.rod([0,hv-.55,0],[s*.7,hv-.03,0],.025,steel);
   for(const i of [-1,0,1]){
-   kit.cyl(.06,.085,.18,i*.9,hv+.14,0,porcelain,{segments:8});
+   kit.cyl(.06,.085,.18,i*.9,hv+.14,0,porcelain,{segments:6});
    kit.cyl(.09,.09,.04,i*.9,hv+.1,0,porcelain,{segments:8});
    anchors.push(kit.point(i*.9,hv+.22,0));
   }
@@ -49,8 +49,8 @@ export function utilityPole(kit,x,z,{h=9.2,face=0,transformer=true,lamp=false,gu
    const ty=h-2.6;
    kit.box(.12,.12,1.3,0,ty+.95,.25,steel);
    for(const dx of [-.42,.42]){
-    kit.cyl(.24,.24,.78,dx,ty+.25,.42,0x9aa3a6,{segments:12});
-    kit.cyl(.26,.26,.05,dx,ty+.66,.42,0x7d8588,{segments:12});
+    kit.cyl(.24,.24,.78,dx,ty+.25,.42,0x9aa3a6,{segments:8});
+    kit.cyl(.26,.26,.05,dx,ty+.66,.42,0x7d8588,{segments:8});
     for(const b of [-.09,.09])kit.cyl(.03,.03,.16,dx+b,ty+.76,.42,porcelain,{segments:6});
     kit.box(.07,.34,.07,dx,hv-.5,.18,0x5b6164);
     kit.rod([dx,hv-.32,.18],[dx*.5,hv+.18,0],.008,black);
@@ -69,11 +69,11 @@ export function utilityPole(kit,x,z,{h=9.2,face=0,transformer=true,lamp=false,gu
   for(const k of [0,1,2])anchors.push(kit.point(0,lv+.35-k*.35,.34));
   // The riser cable, step bolts, plate and foot guard.
   kit.cyl(.035,.035,h-1.8,-.16,(h-1.8)/2,.05,black,{segments:5});
-  for(let y=2.4,i=0;y<h-.8;y+=.45,i++)kit.box(.22,.025,.025,i%2?.18:-.18,y,0,0x9aa2a6,{ry:i%2?0:Math.PI});
+  for(let y=2.4,i=0;y<h-.8;y+=.9,i++)kit.box(.22,.025,.025,i%2?.18:-.18,y,0,0x9aa2a6,{ry:i%2?0:Math.PI});
   kit.box(.2,.34,.03,0,2.1,.16,0xe8e3d4);
   kit.box(.16,.06,.031,0,2.2,.162,0x2b4a7a);
-  kit.cyl(.19,.19,1.6,0,.8,0,0xe0b93a,{segments:10});
-  for(let y=.2;y<1.6;y+=.4)kit.cyl(.195,.195,.18,0,y,0,0x2b2b2b,{segments:10});
+  kit.cyl(.19,.19,1.6,0,.8,0,0xe0b93a,{segments:7});
+  for(let y=.2;y<1.6;y+=.4)kit.cyl(.195,.195,.18,0,y,0,0x2b2b2b,{segments:7});
   if(guy){
    const foot=[0,0,-3.2];
    kit.rod([0,h-1.2,0],foot,.012,0x6f7579);

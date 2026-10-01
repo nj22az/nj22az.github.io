@@ -10,7 +10,20 @@ import {paintedTurf} from '../render/toy-surfaces.js';
 // water: from the road you saw a band of sea at the foot of the cliff and the painting
 // floating above it. The headland now carries the rock it is holding up.
 // South of the lawn the land runs out to the school's seawall and the tetrapods beyond it.
-export const COASTLINE=[[-40,-50],[-40,30],[-34,35],[-22,39],[-19,48],[11,49],[12,57.5],[47,57.5],[47.5,40],[45,29],[45,-43],[38,-50],[20,-50]];
+// October 2026: the island grew and lost its corners (docs/AMPLIFY-AUDIT.md, §12). What is
+// built stays where it was: the Nishi-machi seawall (x -40) and the harbour front (z -50)
+// are man-made and straight, and the beach keeps its line. The natural shore around
+// them is now irregular: a rocky point north-west of Nishi-machi, the new Kitahama
+// district and its cane field rounding the north-east, and a softened south-east corner.
+export const COASTLINE=[
+ [-40,-50],[-40,30],
+ [-43,32],[-47,36],[-49.5,41],[-48.5,46],[-44,49.5],[-38,50.5],[-31,49],[-25,46.5],[-21,47.5],
+ [-19,48],[11,49],[12,57.5],
+ [15,63],[20,70],[26,77],[33,83],[41,87],[49,87.5],[55,84.5],[59.5,79],[62,72],[62,64],[59,57],[55,52],[51,48.5],[48.5,46],
+ [47.5,40],[45,29],[45,-43],
+ [44,-46.5],[41.5,-49],[38,-50],[20,-50]];
+/** The land's bounding box, for the map and the residents' navigation grid. */
+export const COAST_BOUNDS=Object.freeze({minX:Math.min(...COASTLINE.map(p=>p[0])),maxX:Math.max(...COASTLINE.map(p=>p[0])),minZ:Math.min(...COASTLINE.map(p=>p[1])),maxZ:Math.max(...COASTLINE.map(p=>p[1]))});
 // The shore runs under the headland the tunnel goes through, and a boulder there stands
 // in the tunnel's road. Along Nishi-machi the seawall is the shore, so no boulders there.
 const underTunnel=(x,z)=>Math.abs(x-TUNNEL.x)<TUNNEL.bore.half+1.5&&z>TUNNEL.z-1;
@@ -31,7 +44,7 @@ export function buildPeninsula(parent){
  const rocks=[],dummy=new THREE.Object3D();
  for(let i=0;i<COASTLINE.length;i++){
   const a=COASTLINE[i],b=COASTLINE[(i+1)%COASTLINE.length],count=Math.floor(Math.hypot(b[0]-a[0],b[1]-a[1])/3);
-  for(let j=0;j<count;j++){const t=(j+.5)/count,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;if(z< -40||z>52||underTunnel(x,z)||x< -39&&z<30)continue;rocks.push({x,z,size:.65+.25*Math.sin(i*9+j*2.3)});}
+  for(let j=0;j<count;j++){const t=(j+.5)/count,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;if(z< -40||underTunnel(x,z)||x< -39&&z<30||x>44&&z>-43&&z<40)continue;rocks.push({x,z,size:.65+.25*Math.sin(i*9+j*2.3)});}
  }
  const shore=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),new THREE.MeshStandardMaterial({color:0x859080,roughness:1}),rocks.length);
  rocks.forEach((r,i)=>{dummy.position.set(r.x,-.35,r.z);dummy.scale.set(r.size*1.6,r.size*.7,r.size);dummy.rotation.set(.2,i*1.7,.15);dummy.updateMatrix();shore.setMatrixAt(i,dummy.matrix);});shore.name='Rocky peninsula shore';parent.add(shore);

@@ -142,8 +142,11 @@ test('they walk out to the pier and go aboard the ferry, rather than ending at a
  const built=createTown({scene,sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,
   register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const collides=(x,z,r=.32)=>built.colliders.some(c=>circleHitsRect(x,z,r,c));
- const profile=RESIDENTS.find(p=>p.name==='Thuan'),g=new THREE.Group();
- g.userData={name:'Thuan',visualReady:true};g.position.set(profile.work[0],0,profile.work[1]);scene.add(g);
+ // Everybody who lives on the island goes home on foot now; the ferry carries visitors.
+ // A day visitor with Thuan's hours is what this boards: the mechanics are the same.
+ const {shiftFor}=await import('../src/people/commuter-schedule.js');
+ const thuan=RESIDENTS.find(p=>p.name==='Thuan'),profile={...thuan,name:'Day visitor',shift:shiftFor(thuan)},g=new THREE.Group();
+ g.userData={name:'Day visitor',visualReady:true};g.position.set(profile.work[0],0,profile.work[1]);scene.add(g);
  const player=new THREE.Group();player.position.set(0,0,-30);
  const world={people:[{g,profile}],homes:new Map(),ferry:built.ferry,busStation:built.busStation,
   staffBench:built.staffBench,townMode:'peninsula'};
