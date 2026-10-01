@@ -137,7 +137,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   pair.forEach(m=>m.computeBoundingSphere());
   if(piece.look)anchor(piece.look,piece.title,()=>action('inspect',piece.title.replace(/^(Read|Look over) (the )?/,'Sakura · '),piece.text));
  }
- buildMagazineRack(room,{anchor,action});
+ const magazineRack=buildMagazineRack(room,{anchor,action});
  const ads=advertising.finish();
  // The posters hang on the shop's own walls, not across its windows (sakura-dressing.js):
  // the glass is for seeing in, and for the paper decorations that change with the season.
@@ -163,8 +163,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  const fill=new THREE.HemisphereLight(PALETTE.sakuraTube,0xd8d2c4,1.7);room.add(fill);
  let lightLevel=1;const tubes=[];
  const updateLighting=minutes=>{
-  // The decorations follow the real calendar, looked at once an hour.
-  decorations.refresh(townCalendarAt(minutes).date);
+  // The decorations and the magazine rack follow the town calendar, looked at once an hour.
+  decorations.refresh(townCalendarAt(minutes).date);magazineRack.refresh(townCalendarAt(minutes).date);
   lightLevel=fluorescent(minutes);fill.intensity=1.7*lightLevel;
   for(const tube of tubes)for(const mat of Array.isArray(tube.material)?tube.material:[tube.material]){
    mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;

@@ -1,4 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {MAGAZINE_TITLES,rackIssues} from './magazine-issues.js';
+import {drawCover,drawBackAd} from './magazine-art.js';
 
 /**
  * The magazine rack under Sakura's west window.
@@ -11,126 +13,26 @@ import * as THREE from '../../../vendor/three.module.js';
  * header sign. The folded papers ride on the top tier; the weeklies and monthlies
  * below, ten titles, each with a couple of copies behind the one on show.
  *
- * Every cover is drawn once into one atlas, and each title is one instanced draw. The
- * back of the rack faces the street through the window, so it carries a print too.
+ * Every cover is drawn into one atlas, and each title is one instanced draw. The covers
+ * are the issues on sale on the town date (magazine-issues.js) and are redrawn when the
+ * calendar turns one over. The back of the rack faces the street, so it carries a print.
  */
 export const MAGAZINE_RACK=Object.freeze({x:-4.3,z:3.52,width:1.96,depth:.56,height:1.6});
 
 const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
 const COLS=4,ROWS=4,CW=320,CH=440;
 const hash=(i,s=0)=>{const n=Math.sin(i*127.1+s*311.7)*43758.5453;return n-Math.floor(n);};
-
-/** The titles, original to the town, in the order their covers sit in the atlas. */
-export const RACK_TITLES=Object.freeze([
- {id:'hayabusa',name:'週刊少年ハヤブサ',kind:'shonen',thick:.024},
- {id:'playwave',name:'PLAY★WAVE',kind:'games',thick:.01},
- {id:'shimaaruki',name:'島あるき',kind:'guide',thick:.012},
- {id:'galisland',name:'GAL ISLAND',kind:'fashion',thick:.008},
- {id:'kakuto',name:'週刊格闘ファイト',kind:'sport',thick:.008},
- {id:'celanime',name:'月刊セルアニメ',kind:'anime',thick:.012},
- {id:'tvshima',name:'週刊テレビしま',kind:'tv',thick:.006},
- {id:'umikaze',name:'月刊 海風',kind:'umikaze',thick:.008},
- {id:'hoshizora',name:'週刊 星空',kind:'hoshizora',thick:.008},
- {id:'katsuo',name:'釣りと海',kind:'katsuo',thick:.01},
- {id:'minato',name:'みなと新聞',kind:'paper',paper:true},
- {id:'shimaspo',name:'島スポ',kind:'paper',paper:true},
- {id:'nippo',name:'沖縄日報',kind:'paper',paper:true},
-]);
+const RACK_TITLES=MAGAZINE_TITLES;
 const BACK_AD=13,EDGES=15;
 
-function drawCover(ctx,kind,id,w,h){
- const t=(s,x,y,size,colour,weight=900,align='center')=>{ctx.fillStyle=colour;ctx.font=`${weight} ${size}px ${MARU}`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(s,x,y);};
- const band=(y,hh,colour)=>{ctx.fillStyle=colour;ctx.fillRect(0,y,w,hh);};
- const barcode=(x,y)=>{ctx.fillStyle='#fff';ctx.fillRect(x,y,92,40);ctx.fillStyle='#111';let bx=x+6;for(let i=0;i<24&&bx<x+86;i++){const b=hash(i,id.length)>.5?3:1.5;ctx.fillRect(bx,y+4,b,26);bx+=b+2;}};
- const price=(p,colour='#fff')=>t(p,w-16,h-24,22,colour,800,'right');
- const ink=(lw=5)=>{ctx.lineWidth=lw;ctx.strokeStyle='#17141a';};
- if(kind==='shonen'){
-  const g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#f8862b');g.addColorStop(.5,'#e8432f');g.addColorStop(1,'#8c1d1d');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
-  ctx.save();ctx.translate(w/2,250);ctx.fillStyle='rgba(255,240,150,.28)';for(let a=0;a<24;a++){ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,400,a*Math.PI/12,a*Math.PI/12+.13);ctx.fill();}ctx.restore();
-  ctx.fillStyle='#ffe066';ctx.beginPath();const sp=[[160,180],[120,95],[140,170],[80,130],[118,200],[70,215],[130,235],[190,220],[250,235],[190,200],[242,130],[180,170],[200,95]];ctx.moveTo(...sp[0]);for(const p of sp)ctx.lineTo(...p);ctx.closePath();ctx.fill();ink();ctx.stroke();
-  ctx.fillStyle='#ffe2c4';ctx.fillRect(122,218,76,92);ctx.strokeRect(122,218,76,92);
-  ctx.fillStyle='#17141a';ctx.beginPath();ctx.moveTo(132,245);ctx.lineTo(154,256);ctx.lineTo(132,260);ctx.fill();ctx.beginPath();ctx.moveTo(188,245);ctx.lineTo(166,256);ctx.lineTo(188,260);ctx.fill();
-  ctx.fillStyle='#ffd93b';ctx.fillRect(10,12,w-20,74);ink(5);ctx.strokeRect(10,12,w-20,74);t('少年ハヤブサ',w/2,50,42,'#17141a');
-  ctx.fillStyle='#d42a2a';ctx.fillRect(14,94,120,26);t('週刊 36号',74,107,17,'#fff',800);
-  t('巻頭カラー40P!!',w/2,342,30,'#fff');band(362,44,'#1b78c4');t('風雲児 最終決戦へ!',w/2,384,22,'#fff',800);
-  barcode(14,h-46);price('¥200');
- }else if(kind==='games'){
-  ctx.fillStyle='#10162e';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#19b8d4';ctx.lineWidth=2;
-  for(let y=200;y<h;y+=22){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}for(let x=-w;x<w*2;x+=40){ctx.beginPath();ctx.moveTo(w/2,170);ctx.lineTo(x,h);ctx.stroke();}
-  band(0,84,'#ec4899');t('PLAY★WAVE',w/2,44,40,'#fff');
-  ctx.save();ctx.translate(w/2,205);ctx.fillStyle='#3bc4f2';ctx.beginPath();ctx.moveTo(0,-80);ctx.lineTo(74,-14);ctx.lineTo(46,62);ctx.lineTo(-46,62);ctx.lineTo(-74,-14);ctx.closePath();ctx.fill();ink(5);ctx.stroke();
-  ctx.fillStyle='#ffe066';ctx.beginPath();ctx.arc(-24,-4,11,0,Math.PI*2);ctx.arc(24,-4,11,0,Math.PI*2);ctx.fill();ctx.restore();
-  t('32ビット機',w/2,312,26,'#ffe066');t('頂上決戦!!',w/2,346,34,'#ffe066');band(372,34,'#10b981');t('隠しコマンド大全',w/2,389,19,'#fff',800);
-  barcode(14,h-46);price('¥380');
- }else if(kind==='guide'){
-  ctx.fillStyle='#fde66b';ctx.fillRect(0,0,w,h);band(12,76,'#d7263d');t('島あるき',w/2,50,46,'#fff');t('OKINAWA 9月号',w/2,104,18,'#7a1c1c',800);
-  ctx.fillStyle='#4fb7e8';ctx.fillRect(24,122,w-48,170);ctx.fillStyle='#ffffff';ctx.fillRect(24,232,w-48,60);ctx.fillStyle='#2a8fcc';ctx.fillRect(24,262,w-48,30);
-  // A red-tiled gate roof over the sea.
-  ctx.fillStyle='#c0392b';ctx.beginPath();ctx.moveTo(90,190);ctx.quadraticCurveTo(160,140,230,190);ctx.lineTo(220,200);ctx.lineTo(100,200);ctx.closePath();ctx.fill();ctx.fillStyle='#8a2a1c';ctx.fillRect(110,200,14,40);ctx.fillRect(196,200,14,40);
-  ink(4);ctx.strokeRect(24,122,w-48,170);
-  t('国際通り 徹底ガイド',w/2,320,22,'#17141a');band(342,40,'#9b59b6');t('★ 旧盆エイサーMAP ★',w/2,362,20,'#fff',800);
-  barcode(14,h-46);price('¥350','#17141a');
- }else if(kind==='fashion'){
-  ctx.fillStyle='#f2557a';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ff8fa8';for(let i=0;i<40;i++){ctx.beginPath();ctx.arc(hash(i,3)*w,hash(i,4)*h,10+hash(i,5)*8,0,Math.PI*2);ctx.fill();}
-  ctx.lineWidth=7;ctx.strokeStyle='#17141a';ctx.font=`900 46px ${MARU}`;ctx.textAlign='center';ctx.strokeText('GAL ISLAND',w/2,58);t('GAL ISLAND',w/2,58,46,'#ffe066');
-  for(const [x,y,r] of [[30,100,-.06],[170,118,.05]]){ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.fillStyle='#fff';ctx.fillRect(0,0,120,160);ctx.fillStyle='#fbcfe8';ctx.fillRect(8,8,104,120);ctx.fillStyle='#6b3a2a';ctx.beginPath();ctx.arc(60,62,30,Math.PI,0);ctx.fill();ctx.fillStyle='#ffd8bf';ctx.beginPath();ctx.arc(60,72,22,0,Math.PI*2);ctx.fill();t('♡',60,145,20,'#f2557a');ctx.restore();}
-  band(300,48,'#ffe066');t('ルーズソックス宣言!!',w/2,324,24,'#17141a');t('厚底サンダル 100連発',w/2,374,20,'#fff',800);
-  barcode(14,h-46);price('¥420');
- }else if(kind==='sport'){
-  const g=ctx.createRadialGradient(w/2,230,20,w/2,230,280);g.addColorStop(0,'#f98a2b');g.addColorStop(.6,'#b8231d');g.addColorStop(1,'#1c1917');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
-  t('格闘ファイト',w/2,48,40,'#fff');t('週刊',40,90,18,'#ffe066',800);
-  ctx.fillStyle='#120d0c';ctx.beginPath();ctx.arc(w/2,180,52,0,Math.PI*2);ctx.fill();ctx.fillRect(w/2-70,226,140,100);ctx.fillRect(w/2-120,236,60,26);ctx.fillRect(w/2+60,236,60,26);
-  t('沖縄大会 激闘!',w/2,346,30,'#ffe066');t('時間無制限 一本勝負',w/2,384,19,'#fff',800);
-  barcode(14,h-46);price('¥360');
- }else if(kind==='anime'){
-  ctx.fillStyle='#2e2a7a';ctx.fillRect(0,0,w,h);ctx.fillStyle='#3d3896';for(let i=0;i<6;i++)ctx.fillRect(0,110+i*48,w,22);
-  t('月刊',36,30,18,'#7fe3f5',800);t('セルアニメ',w/2,58,40,'#7fe3f5');
-  ctx.fillStyle='#9b5de5';ctx.beginPath();ctx.moveTo(w/2,104);ctx.lineTo(w/2+62,206);ctx.lineTo(w/2+40,296);ctx.lineTo(w/2-40,296);ctx.lineTo(w/2-62,206);ctx.closePath();ctx.fill();ink(5);ctx.stroke();
-  ctx.fillStyle='#5ef08a';ctx.fillRect(w/2-10,170,20,48);ctx.fillStyle='#ffe066';ctx.beginPath();ctx.moveTo(w/2,104);ctx.lineTo(w/2-8,78);ctx.lineTo(w/2+8,78);ctx.fill();
-  t('巨大ロボ 大特集',w/2,330,28,'#ffe066');t('付録: B2 両面ポスター',w/2,370,18,'#e2e8f0',800);
-  barcode(14,h-46);price('¥580');
- }else if(kind==='tv'){
-  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);band(0,80,'#2a8fcc');t('テレビしま',w/2,42,40,'#fff');t('週刊',30,98,16,'#2a8fcc',800);
-  ctx.fillStyle='#ffd93b';ctx.beginPath();ctx.arc(w/2,200,78,0,Math.PI*2);ctx.fill();ctx.fillStyle='#17141a';ctx.fillRect(w/2-50,170,100,66);ctx.fillStyle='#7fd1f0';ctx.fillRect(w/2-42,178,84,50);
-  ctx.strokeStyle='#17141a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(w/2-20,170);ctx.lineTo(w/2-40,138);ctx.moveTo(w/2+20,170);ctx.lineTo(w/2+40,138);ctx.stroke();
-  ctx.strokeStyle='#c9c4b6';ctx.lineWidth=1.5;for(let i=0;i<5;i++){const y=296+i*16;ctx.beginPath();ctx.moveTo(16,y);ctx.lineTo(w-16,y);ctx.stroke();}
-  t('9/13 → 9/19 番組表',w/2,300-14,20,'#d7263d');t('秋の新ドラマ 総まくり',w/2,380,19,'#17141a',800);
-  barcode(14,h-46);price('¥150','#17141a');
- }else if(kind==='umikaze'||kind==='hoshizora'||kind==='katsuo'){
-  const look={umikaze:['#d7e5ec','#20496b','#3d7fa6','うみかぜ','月刊 海風','港の夏、灯台めぐり'],hoshizora:['#2b3a5c','#f2e2b0','#c58a3a','ほしぞら','週刊 星空','秋の星座 早見表つき'],katsuo:['#f0e3c4','#2f5c45','#b5622f','かつお','釣りと海','カツオ一本釣り 同行記']}[kind];
-  const [paper,inkC,accent,jp,line,lead]=look;ctx.fillStyle=paper;ctx.fillRect(0,0,w,h);
-  t(line,w/2,56,42,inkC);t(jp,w/2,100,20,accent,800);
-  ctx.fillStyle=accent;ctx.fillRect(24,124,w-48,190);
-  if(kind==='hoshizora'){ctx.fillStyle='#f2e2b0';for(let i=0;i<30;i++){ctx.beginPath();ctx.arc(30+hash(i,8)*(w-60),130+hash(i,9)*170,1.5+hash(i,1)*2.5,0,Math.PI*2);ctx.fill();}ctx.beginPath();ctx.arc(230,170,24,0,Math.PI*2);ctx.fill();}
-  else if(kind==='umikaze'){ctx.fillStyle='#ffffff';ctx.fillRect(150,150,20,110);ctx.fillStyle='#d7263d';ctx.fillRect(150,170,20,16);ctx.fillRect(150,210,20,16);ctx.fillStyle='#20496b';ctx.fillRect(24,260,w-48,54);}
-  else {ctx.fillStyle='#2f5c45';ctx.fillRect(24,250,w-48,64);ctx.fillStyle='#d9e2e8';ctx.beginPath();ctx.ellipse(160,200,70,22,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(220,200);ctx.lineTo(250,180);ctx.lineTo(250,220);ctx.fill();}
-  t(lead,w/2,344,21,inkC,800);barcode(14,h-46);price(kind==='hoshizora'?'¥280':'¥450',inkC);
- }else if(kind==='paper'){
-  ctx.fillStyle='#ebe7d9';ctx.fillRect(0,0,w,h);
-  const mast={minato:['みなと新聞','夕刊','#8d3f31'],shimaspo:['島スポ','スポーツ','#1b5fb4'],nippo:['沖縄日報','朝刊','#2b2b2b']}[id];
-  ctx.fillStyle=mast[2];ctx.fillRect(14,14,w-28,70);t(mast[0],w/2-20,50,38,'#fff');t(mast[1],w-40,50,16,'#fff',800);
-  t('平成9年9月13日(土)',w/2,100,15,'#3a3530',700);
-  const head={minato:['台風16号 北上','週明け 船便に影響か'],shimaspo:['沖縄水産 劇的勝利!','秋季大会 4強へ'],nippo:['旧盆 帰省ラッシュ','那覇空港 混雑ピーク']}[id];
-  ctx.fillStyle=id==='shimaspo'?'#d7263d':'#17141a';ctx.font=`900 36px ${MARU}`;ctx.textAlign='center';ctx.fillText(head[0],w/2,148);t(head[1],w/2,192,22,'#3a3530');
-  ctx.fillStyle='#a8a296';ctx.fillRect(18,216,140,108);ctx.fillStyle='#57524a';for(let c=0;c<6;c++)for(let y=220;y<322;y+=12)ctx.fillRect(170+c*22,y,16,6);
-  ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,h-6);ctx.lineTo(w,h-6);ctx.stroke();
-  for(let y=340;y<h-16;y+=12){ctx.fillStyle='#6e695f';ctx.fillRect(18,y,w-36,5);}
- }
- ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=4;ctx.strokeRect(2,2,w-4,h-4);
-}
-
-function buildAtlas(){
- const canvas=document.createElement('canvas');canvas.width=COLS*CW;canvas.height=ROWS*CH;
- const ctx=canvas.getContext('2d');
- RACK_TITLES.forEach((title,i)=>{ctx.save();ctx.translate((i%COLS)*CW,Math.floor(i/COLS)*CH);ctx.beginPath();ctx.rect(0,0,CW,CH);ctx.clip();drawCover(ctx,title.kind,title.id,CW,CH);ctx.restore();});
- // The back cover: the shop's own PORT 88 canned-coffee advertisement.
- ctx.save();ctx.translate((BACK_AD%COLS)*CW,Math.floor(BACK_AD/COLS)*CH);
- ctx.fillStyle='#322823';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#bd4826';ctx.fillRect(0,CH-90,CW,90);
- ctx.fillStyle='#f5e5c1';ctx.fillRect(130,90,60,170);ctx.fillStyle='#bd4826';ctx.fillRect(130,150,60,50);
- ctx.font=`900 40px ${MARU}`;ctx.textAlign='center';ctx.fillStyle='#f5e5c1';ctx.fillText('PORT 88',CW/2,320);ctx.font=`800 22px ${MARU}`;ctx.fillText('港の朝に、一本。',CW/2,CH-46);ctx.restore();
+/** Draws every title's current issue into the atlas canvas. Returns the issue key. */
+function paintAtlas(canvas,date){
+ const ctx=canvas.getContext('2d'),{issues,key}=rackIssues(date);
+ issues.forEach(({title,issue},i)=>{ctx.save();ctx.translate((i%COLS)*CW,Math.floor(i/COLS)*CH);ctx.beginPath();ctx.rect(0,0,CW,CH);ctx.clip();drawCover(ctx,title,issue,CW,CH);ctx.restore();});
+ ctx.save();ctx.translate((BACK_AD%COLS)*CW,Math.floor(BACK_AD/COLS)*CH);drawBackAd(ctx,CW,CH);ctx.restore();
  // Page edges: newsprint cream, and the green recycled stock of the shōnen weekly.
  ctx.save();ctx.translate((EDGES%COLS)*CW,Math.floor(EDGES/COLS)*CH);ctx.fillStyle='#efe8d4';ctx.fillRect(0,0,CW,CH/2);ctx.fillStyle='#d3e6cc';ctx.fillRect(0,CH/2,CW,CH/2);ctx.restore();
- const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=8;return texture;
+ return key;
 }
 
 /** A cell of the atlas as UV bounds, inset a little so neighbours never bleed in. */
@@ -152,7 +54,7 @@ function titleGeometry(title,index){
  return g;
 }
 
-export function buildMagazineRack(room,{anchor,action}={}){
+export function buildMagazineRack(room,{anchor,action,date=new Date(1997,8,13)}={}){
  const R=MAGAZINE_RACK,group=new THREE.Group();group.name='Sakura magazine rack';
  // Built facing +z and turned to face the shop; the back stands to the window.
  group.position.set(R.x,0,R.z);group.rotation.y=Math.PI;room.add(group);
@@ -196,7 +98,10 @@ export function buildMagazineRack(room,{anchor,action}={}){
  add(new THREE.BoxGeometry(1.7,.2,.025),[enamel,enamel,enamel,enamel,signMat,signMat],0,1.57,-D/2+.04,'Magazine rack sign');
  for(const sx of [-.7,.7])add(tube(.12),enamel,sx,1.43+.06,-D/2+.04);
  // The stock. Each title is one instanced draw over the shared atlas.
- const atlas=buildAtlas(),material=new THREE.MeshStandardMaterial({map:atlas,roughness:.5});
+ const canvas=document.createElement('canvas');canvas.width=COLS*CW;canvas.height=ROWS*CH;
+ let issueKey=paintAtlas(canvas,date);
+ const atlas=new THREE.CanvasTexture(canvas);atlas.colorSpace=THREE.SRGBColorSpace;atlas.anisotropy=8;
+ const material=new THREE.MeshStandardMaterial({map:atlas,roughness:.5});
  const placed=RACK_TITLES.map(()=>[]),dummy=new THREE.Object3D();
  const magazines=RACK_TITLES.map((t,i)=>i).filter(i=>!RACK_TITLES[i].paper),papers=RACK_TITLES.map((t,i)=>i).filter(i=>RACK_TITLES[i].paper);
  const row=(tier,list,count,width,copies)=>{
@@ -219,9 +124,9 @@ export function buildMagazineRack(room,{anchor,action}={}){
   list.forEach(([x,y,z,lean,tilt],i)=>{dummy.position.set(x,y,z);dummy.rotation.set(-lean,0,tilt);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});
   mesh.computeBoundingSphere();group.add(mesh);
  });
- if(anchor&&action){
-  anchor([R.x,1.35,R.z-.5],'Read the magazines',()=>action('inspect','Sakura · 雑誌・新聞',
-   'The old cream rack under the window. 週刊少年ハヤブサ, PLAY★WAVE, 島あるき, GAL ISLAND, 格闘ファイト, セルアニメ, テレビしま, 海風, 星空 and 釣りと海 — and on top, みなと新聞, 島スポ and 沖縄日報, folded at the headlines.\nThe card says 立ち読み歓迎. Nobody minds how long you stand here.'));
- }
- return group;
+ if(anchor&&action)anchor([R.x,1.35,R.z-.5],'Read the magazines',()=>action('magazine-rack'));
+ return {group,
+  /** Puts the issues on sale on `date` on the rack; a no-op until one changes. */
+  refresh(date){const {key}=rackIssues(date);if(key===issueKey)return false;issueKey=paintAtlas(canvas,date);atlas.needsUpdate=true;return true;},
+  get issueKey(){return issueKey;}};
 }

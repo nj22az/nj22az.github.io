@@ -211,3 +211,10 @@ User-supplied `the-convenience-store.zip`, containing `source/8 16 20 convenianc
 The fictional packaging atlas at `graphics/konbini/packaging-atlas.webp` was generated for Johansson Town on 13 September 2026 with the built-in image-generation tool. It contains original NAGI, PORT 88, SAKURA, KOMOREBI, HANAMORI, SHIOFUMI, HOSHIMARU, SHIOSAI, MIZUNOWA, UMINEKO, YUNAGI and ASAMORI labels. It is used on both shelf goods and customers’ held goods. Existing generated shop posters are reused.
 
 `graphics/konbini/packaging-groceries.webp`: sixteen additional original fictional labels generated on 13 September 2026. The complete built-in generation prompt, cell order and asset path are recorded in `../art/store/advertising/packaging-groceries.json`. Runtime meshes distinguish cans, shaped bottles, foil bags, cartons and household boxes. The fitted refrigerator, sliding doors and lighting are original project geometry; the supplied bakery trays have been levelled to keep stock supported.
+
+## Magazines (assets/magazines/)
+
+Manga pages, the サクラ商店 4-koma and the セルアニメ posters are original artwork drawn
+by `tools/magazines/draw_pages.py` (Pillow). Lettering was rendered with WenQuanYi Zen
+Hei (GPL-2.0 with font exception); the images contain rendered glyphs only, no font
+data. All titles, characters and brands are fictional.

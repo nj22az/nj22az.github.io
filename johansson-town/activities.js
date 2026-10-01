@@ -2,6 +2,8 @@ import {isWorkshopSite} from './src/world/businesses.js';
 import {harbourTimetable} from './src/people/commuter-schedule.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
+import {createMagazineReader} from './src/ui/magazine-reader.js';
+import {townCalendarAt} from './src/town-clock.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
 import {restoreSakura,buySakuraItem} from './src/commerce/sakura-economy.js';
 import {printedModels} from './src/workshop/catalogue.js';
@@ -45,7 +47,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
-  let pendingAbsence=0,ledgerView=null;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
+  let pendingAbsence=0,ledgerView=null,magazineView=null;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
   try {
     const saved=readSave(localStorage);
@@ -87,10 +89,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
-  function close(){dialogueBox.close();modal.classList.remove('bag-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
+  function close(){dialogueBox.close();modal.classList.remove('bag-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
   function show(title,text,buttons=[],options={}){
     modal.classList.remove('bag-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
+    magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
     modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
     heading.textContent=title;body.classList.remove('signal');body.replaceChildren();
@@ -648,6 +651,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       }],['Back',close]]);
     }catch(error){if(revision===modalRevision)receipt('Mail-order catalogue',error.message);}
   }
+  // 立ち読み at the magazine rack: today's issues, then page by page (src/ui/magazine-reader.js).
+  function magazineRack(){
+    show('Sakura · 雑誌・新聞','',[['Put it back',close]]);modal.classList.add('magazine-view');
+    magazineView=createMagazineReader({date:townCalendarAt(getMinutes()).date});body.replaceChildren(magazineView.element);
+  }
   function shopLedger(){
     if(getSocialContext().inside!=='market'){receipt('Sakura sales ledger','The stock and sales books are in the back office at Sakura.');return;}
     show('Sakura Shōten · Shop ledger','Thuan’s sales, purchases and stock records.',[['Close ledger',close]]);modal.classList.add('sakura-records');
@@ -816,6 +824,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'office-records':officeRecords(detail);break;
       case 'store-item':storeItem(detail);break;
       case 'shop-ledger':shopLedger();break;
+      case 'magazine-rack':magazineRack();break;
       case 'sakura-hot-snacks':thuanConversation('hot-case');break;
       case 'storage-restock':storageRestock();break;
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
