@@ -1,4 +1,5 @@
-import {normalizeRecipe,seeded,PARTS} from './recipe.js';
+import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
+import {PROFILES} from '../people/profiles.js';
 import {residentPersonality} from '../people/resident-personalities.js';
 
 /**
@@ -102,14 +103,17 @@ const ACCESSORY_HAT={captain:['captain','#f4f1ea'],police:['police','#27304d'],d
  * the colours the resident personalities already give them, with a face made from their
  * name so it is the same face every time they are met.
  */
+const AGE_OF=new Map(PROFILES.map(p=>[p.name,p.age]));
+/** A drawn recipe at the life stage the resident's profile gives them. */
+const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name));return AGE_OF.has(name)&&recipe.age!==age?normalizeRecipe({...recipe,age}):recipe;};
 export function recipeFor(name=''){
- if(CAST_RECIPES[name])return CAST_RECIPES[name];
- if(NEIGHBOUR_RECIPES[name])return NEIGHBOUR_RECIPES[name];
+ if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
+ if(NEIGHBOUR_RECIPES[name])return aged(NEIGHBOUR_RECIPES[name],name);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];
  const feminine=/female/.test(style.source||'')||/^(Mrs |Aya|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name);
  const grey=/^#[a-f0-9]{6}$/i.test(style.hair||'')&&parseInt(style.hair.slice(1,3),16)>150;
  const hat=ACCESSORY_HAT[style.accessory]||(style.helmet?['helmet',style.helmet]:['none','#f4f1ea']);
- return normalizeRecipe({name,
+ return normalizeRecipe({name,age:ageClass(AGE_OF.get(name)),
   body:{height:.3+r()*.45,build:.3+(Math.min(1.2,style.width||1)-.85)*1.6,skin:style.skin||'#e8bf98'},
   head:{size:.38+r()*.22,shape:r(),form:any(PARTS.head),jaw:.25+r()*.5,cheeks:.25+r()*.5},
   hair:{style:grey&&!feminine?any(['horseshoe','buzz','crop']):feminine?any(['bob','long','ponytail','bun','sidepart']):any(['crop','sidepart','spiky','buzz']),colour:style.hair||'#1c1714',flip:r()<.5},

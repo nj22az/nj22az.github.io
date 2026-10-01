@@ -23,10 +23,21 @@ export const BONES=Object.freeze(['root','hips','spine','chest','neck','head','s
 const BI=Object.fromEntries(BONES.map((n,i)=>[n,i]));
 
 /** Every measurement of a body, from its recipe. Pure, for tests and the seat maths. */
+/**
+ * Height range and head scale per life stage. A child's head is about 0.38 of their
+ * height, an adult's 0.30; elders lose a little height. Adult is the original scale.
+ */
+const STAGES=Object.freeze({
+ child:{base:1.12,span:.2,head:1.3},
+ teen:{base:1.4,span:.28,head:1.08},
+ adult:{base:1.36,span:.44,head:1},
+ elder:{base:1.33,span:.34,head:1.02},
+});
 export function measure(recipe){
  const r=normalizeRecipe(recipe);
- const H=1.36+r.body.height*.44,k=H/1.6,build=r.body.build;
- const profile=headProfile(r.head),Rh=(.19+r.head.size*.055)*k,headSX=profile.width,headSY=profile.height;
+ const stage=STAGES[r.age]||STAGES.adult;
+ const H=stage.base+r.body.height*stage.span,k=H/1.6,build=r.body.build;
+ const profile=headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head,headSX=profile.width,headSY=profile.height;
  const neck=.065*k,body=H-Rh*2*headSY-neck;
  const leg=body*.5,torso=body-leg;
  const foot=.07*k,thigh=(leg-foot)*.5,shin=thigh;

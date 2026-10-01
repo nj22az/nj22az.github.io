@@ -20,6 +20,16 @@ export const PALETTE=Object.freeze({
  lips:Object.freeze(['#b8544a','#a8433e','#cc3d52','#e06a7a','#d8342c','#8a3a3a']),
 });
 
+/**
+ * Life stage. It sets height and how big the head is against the body, so a ten-year-
+ * old reads as a child and a grandmother as older at a glance, the way Tomodachi and
+ * Animal Crossing read age from proportion before anything else (docs/AMPLIFY-AUDIT.md,
+ * C1). Adult is the old single scale, unchanged.
+ */
+export const AGES=Object.freeze(['child','teen','adult','elder']);
+/** The life stage for an age in years. */
+export const ageClass=years=>!Number.isFinite(+years)?'adult':years<13?'child':years<19?'teen':years>=65?'elder':'adult';
+
 export const PARTS=Object.freeze({
  head:HEAD_FORMS,
  hair:Object.freeze(['crop','sidepart','bob','long','ponytail','braids','bun','spiky','perm','buzz','afro','horseshoe','bald']),
@@ -42,7 +52,7 @@ const colour=v=>/^#[0-9a-f]{6}$/i.test(String(v))?String(v).toLowerCase():null;
 
 /** The recipe every other one starts from: a friendly nobody. */
 export const DEFAULT_RECIPE=Object.freeze({
- v:1,name:'',
+ v:1,name:'',age:'adult',
  body:Object.freeze({height:.5,build:.5,skin:'#e8bf98'}),
  head:Object.freeze({size:.5,shape:.5,form:'oval',jaw:.5,cheeks:.5}),
  hair:Object.freeze({style:'crop',colour:'#1c1714',flip:false}),
@@ -66,7 +76,7 @@ export function normalizeRecipe(input={}){
  const col=(v,f)=>colour(v)||f;
  const flag=(v,f)=>v===undefined?f:!!v;
  return {
-  v:1,name:String(r.name||'').slice(0,24),
+  v:1,name:String(r.name||'').slice(0,24),age:pick(AGES,r.age,'adult'),
   body:sub('body',{height:num,build:num,skin:col}),
   head:sub('head',{size:num,shape:num,form:(v,f)=>pick(HEAD_FORMS,v,f),jaw:num,cheeks:num}),
   hair:sub('hair',{style:(v,f)=>pick(PARTS.hair,v,f),colour:col,flip:flag}),

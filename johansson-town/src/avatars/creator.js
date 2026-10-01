@@ -2,7 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from './build.js';
 import {createAvatarAnimator} from './animate.js';
 import {drawFace} from './face.js';
-import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe} from './recipe.js';
+import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
 import {CAST_RECIPES} from './cast.js';
 import {svg} from '../ui/icons.js';
 
@@ -41,6 +41,7 @@ const LABEL={
  */
 const TABS=[
  {id:'body',name:'Body',controls:[
+  {kind:'chips',at:'age',label:'Age',list:AGES},
   {kind:'slider',at:'body.height',label:'Height'},{kind:'slider',at:'body.build',label:'Build'},
   {kind:'colours',at:'body.skin',label:'Skin',palette:PALETTE.skin}]},
  {id:'head',name:'Face',controls:[
