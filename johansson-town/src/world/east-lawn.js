@@ -44,7 +44,7 @@ const TREE_LEAVES=[0x44664c,0x517a52,0x5d8254];
 const TURF_METRES=2.4;
 
 /** The green the lawn shows without a page to paint the turf on. */
-const BARE_TURF=0x6fae4a;
+const BARE_TURF=0x5a9446;
 
 /**
  * Ground drawn rather than fetched, for the surfaces the town supplies no photograph

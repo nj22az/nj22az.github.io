@@ -147,7 +147,7 @@ const INK_OPTIONS={
  inkOptions:{thickness:1.05,strength:.68,concaveAmount:.25},
  // Bright, soft and saturated, the way a life-sim island is: pale lilac shadows, a
  // gentle lift in the darks and almost no vignette.
- gradeOptions:{shadowTint:0xe0dcf0,lift:.045,saturation:1.15,warmth:.02,vignette:.05}
+ gradeOptions:{shadowTint:0xe0dcf0,lift:.045,saturation:1.08,warmth:.02,vignette:.05}
 };
 const inkRecovery=createInkRecovery({retries:4,cooldown:3500});
 let pipeline=null;
@@ -329,7 +329,9 @@ hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inve
 const VIEW_KEY='johansson-town-view';
 let thirdPerson=false,johansson=null,playerSpeed=0,playerRunning=false,thirdDistance=3.1;
 const shopCarry=createShopCarry({holder:()=>johansson});
-try{thirdPerson=globalThis.localStorage?.getItem(VIEW_KEY)==='third';}catch{}
+// Third person unless you have asked for your own eyes: a life-sim is about seeing your
+// islander in the town (docs/AMPLIFY-AUDIT.md, decision 5). V switches.
+try{thirdPerson=globalThis.localStorage?.getItem(VIEW_KEY)!=='first';}catch{}
 /**
  * The Shimanchu maker, from the Town book. The town stops while it is open (it is a
  * menu, not a pause in the telling) and whoever you make walks out of it.

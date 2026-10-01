@@ -59,7 +59,7 @@ export function buildPark(world,options){
  else{
   const vertices=[],indices=[];for(let z=0;z<=56;z++)for(let x=0;x<=56;x++)vertices.push(x*.5-14,(parkHeight(p.x+(x*.5-14)*s,p.z+(z*.5-14)*s)-p.lift)/s,z*.5-14);
   for(let z=0;z<56;z++)for(let x=0;x<56;x++){const i=z*57+x;indices.push(i,i+57,i+1,i+1,i+57,i+58);}
-  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geo.setIndex(indices);geo.computeVertexNormals();visuals.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x85946a,roughness:1})));
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geo.setIndex(indices);geo.computeVertexNormals();visuals.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:TURF_TINT,roughness:1})));
   const f=PARK_BENCH_FIT,seat=new THREE.Mesh(new THREE.BoxGeometry(.65*f.scale,.12*f.scale,1.8*f.scale),new THREE.MeshStandardMaterial({color:0x865f42}));seat.position.set(2.06,benchPoint(0,1.9,0)[1],0);visuals.add(seat);
  }
  if(!source)registerDetail(world,{id:'park',x:p.x,z:p.z,radius:38,load:async()=>{

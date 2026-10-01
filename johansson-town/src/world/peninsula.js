@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {TUNNEL} from './coyote-tunnel.js';
+import {paintedTurf} from '../render/toy-surfaces.js';
 
 // One shoreline shared by the ground, visible retaining edge and visitor map.
 // A closed headland: water separates every edge from the distant islands.
@@ -14,7 +15,11 @@ export const COASTLINE=[[-40,-50],[-40,30],[-34,35],[-22,39],[-19,48],[11,49],[1
 const underTunnel=(x,z)=>Math.abs(x-TUNNEL.x)<TUNNEL.bore.half+1.5&&z>TUNNEL.z-1;
 export function buildPeninsula(parent){
  const shape=new THREE.Shape();COASTLINE.forEach(([x,z],i)=>i?shape.lineTo(x,-z):shape.moveTo(x,-z));shape.closePath();
- const ground=new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshStandardMaterial({color:0x8b9279,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-.4;ground.name='Peninsula land';parent.add(ground);
+ // Unbuilt land is rough island grass, painted like the lawns, not a grey-khaki slab:
+ // from the harbour it was the largest flat colour in view (docs/AMPLIFY-AUDIT.md).
+ const groundMaterial=new THREE.MeshStandardMaterial({color:0x4f8540,roughness:1});
+ if(typeof document!=='undefined'&&document.createElement){try{const turf=paintedTurf().clone();turf.needsUpdate=true;turf.repeat.set(1/6,1/6);groundMaterial.map=turf;}catch{}}
+ const ground=new THREE.Mesh(new THREE.ShapeGeometry(shape),groundMaterial);ground.rotation.x=-Math.PI/2;ground.position.y=-.4;ground.name='Peninsula land';parent.add(ground);
  const positions=[],indices=[];
  for(let i=0;i<COASTLINE.length;i++){
   const a=COASTLINE[i],b=COASTLINE[(i+1)%COASTLINE.length],n=positions.length/3;
