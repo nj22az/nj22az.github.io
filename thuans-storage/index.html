@@ -30,7 +30,11 @@
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@500&family=Nunito:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <script type="module" crossorigin src="/thuans-storage/assets/storage-b714103c4afb.js"></script>
+    <!-- The night's boss is a townsperson built with Johansson Town's own avatar code
+         (src/game.js loads johansson-town/src/dungeon/pretend.js). That code imports the
+         town's Three.js r170; here it gets r186, the same version this game renders with. -->
+    <script type="importmap">{"imports":{"/johansson-town/vendor/three.module.js":"/thuans-storage/vendor/three-r186/three.module.js"}}</script>
+    <script type="module" crossorigin src="/thuans-storage/assets/storage-66e120fdd89d.js"></script>
     <link rel="stylesheet" crossorigin href="/thuans-storage/assets/ghpages-iDU7krLR.css">
     <link rel="stylesheet" href="./assets/playability.css?v=20261001b">
   </head>

@@ -5218,6 +5218,8 @@ function createBizarroBoss(look) {
       ball(.13, fur, 0, .27, -.05).scale.set(.85, .7, 1.1);
       break;
   }
+  // Everything so far is the stand-in mascot, hidden once the townsperson's own avatar arrives (game.js).
+  suit.traverse(node => { if (node instanceof q) node.userData.mascot = true; });
   // Worn out: stars round the head, the moment to shoo.
   const stars = new ur(); stars.position.y = 1.95; stars.visible = false; suit.add(stars);
   const gold = new Oi({color:0xffd75a});
@@ -5419,6 +5421,22 @@ const STORAGE_STEP = 1 / 60;
 // Tonight's boss from the sea cave (stockroom.js): how close Thuan must be to shoo it, how many
 // shoos it takes, and the cave coins it leaves behind (johansson-town/src/commerce/shop-stock.js).
 const SHOO_REACH = 1.7, BOSS_HP = 3, BOSS_YEN = 200;
+// The boss is the townsperson themselves, playing pretend: their own avatar from Johansson
+// Town's creator, with the animal's hood, paws and tail (johansson-town/src/dungeon/pretend.js),
+// a touch larger than life. It is loaded from the town; the simple mascot body stands in until
+// it arrives, or for good where it cannot load (the tests' sandbox).
+const PRETEND_SCALE = 1.06;
+let pretendLoad = null;
+function loadPretend() {
+  pretendLoad ??= (async () => {
+    // The town's avatars bring their own Three.js; it is not a second copy of this one in the
+    // scene's way, so keep it from announcing itself as one.
+    const before = window.__THREE__;
+    try { delete window.__THREE__; return await import('/johansson-town/src/dungeon/pretend.js'); }
+    finally { if (before !== undefined) window.__THREE__ = before; }
+  })().catch(() => null);
+  return pretendLoad;
+}
 
 function om({canvas,minimap,onHud,gltf=null}) {
   const renderer = new rd({canvas,antialias:true,powerPreference:'high-performance'});
@@ -5565,12 +5583,39 @@ function om({canvas,minimap,onHud,gltf=null}) {
   // animal on the suit. Each has a tell before it goes for Thuan and a worn-out moment after,
   // with stars round its head: shoo it then. Three shoos, and the head comes off.
   function resetBoss(){
+    boss?.pretend?.dispose?.();
     const look=world.boss;
     boss=look?{...look,name:look.who+' the '+look.animal,state:'waiting',x:world.hole.x,z:world.hole.z,yaw:Math.PI/2,t:0,hp:BOSS_HP,
       phase:0,said:0,path:[],replan:0,dirX:0,dirZ:0,cool:2,appear:0,hitThisRest:false,wander:null,pause:0}:null;
-    if(boss){const g=boss.body.group;g.visible=false;g.position.set(boss.x,0,boss.z);}
+    if(boss){const g=boss.body.group;g.visible=false;g.position.set(boss.x,0,boss.z);dressBoss(boss);}
     freeCells=maze.cells.map((v,i)=>v===0?i:-1).filter(i=>i>=0);
     bossDefeated=false;yenFound=0;stun=0;knockX=knockZ=0;shooCool=0;shooQueued=false;
+  }
+  /** Swap the stand-in mascot for the townsperson in their pretend costume, once it has loaded. */
+  function dressBoss(b){
+    loadPretend().then(mod=>{
+      if(!mod||boss!==b||b.pretend||disposed)return;
+      try{
+        const p=mod.buildPretend(b.who,{faceSize:256,shadows:true});
+        p.root.scale.setScalar(PRETEND_SCALE/BOSS_SIZE);b.body.suit.add(p.root);
+        b.body.suit.traverse(node=>{if(node.userData?.mascot)node.visible=false;});
+        b.body.stars.position.y=(p.height*PRETEND_SCALE+.22)/BOSS_SIZE;b.pretend=p;p.face('smile');
+      }catch{}
+    });
+  }
+  /** The stand-in's joints onto the avatar's bones. arms[0] and legs[0] are at -x: the avatar's right. */
+  function syncPretend(b){
+    const p=b.pretend,B=p.bones,body=b.body,e=o=>[o.rotation.x,o.rotation.y,o.rotation.z];
+    B.shoulderR.rotation.set(...e(body.arms[0]));B.shoulderL.rotation.set(...e(body.arms[1]));
+    B.thighR.rotation.set(...e(body.legs[0]));B.thighL.rotation.set(...e(body.legs[1]));
+    B.head.rotation.set(...e(body.head));
+    // Knees and elbows follow: folded to sit, bent in the stride, a little crook in the arms.
+    const sitting=body.legs[0].rotation.x<-1;
+    B.kneeR.rotation.x=sitting?1.45:Math.max(0,-body.legs[0].rotation.x)*.9+.05;
+    B.kneeL.rotation.x=sitting?1.45:Math.max(0,-body.legs[1].rotation.x)*.9+.05;
+    B.elbowR.rotation.x=B.elbowL.rotation.x=-.2;
+    const s=b.state;
+    p.face(s==='tired'?'surprised':s==='defeated'||s==='leaving'?'laugh':['beat','charge','skid','pound','jaws','lunge','rear','swipe','kick','bray'].includes(s)?'angry':'smile');
   }
   const bossAbout=()=>boss&&boss.state!=='waiting'&&boss.state!=='gone';
   const bossLine=()=>{const text=boss.lines[boss.said%boss.lines.length];boss.said++;return text;};
@@ -5725,7 +5770,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
       if(s==='tired'){body.arms[0].rotation.x=body.arms[1].rotation.x=-1.5+Math.sin(b.phase*10)*.3;body.legs[0].rotation.x=body.legs[1].rotation.x=-1.5+Math.cos(b.phase*10)*.3;}
       else{body.arms[0].rotation.x=-1.6+sway*.4;body.arms[1].rotation.x=-1.6-sway*.4;}
     }else if(a==='bear'){
-      if(s==='rear'){body.suit.scale.y=1.15;body.arms[0].rotation.set(-2.7,0,-.3);body.arms[1].rotation.set(-2.7,0,.3);body.head.rotation.x=-.3;}
+      if(s==='rear'){if(b.pretend)body.suit.position.y=.06;else body.suit.scale.y=1.15;body.arms[0].rotation.set(-2.7,0,-.3);body.arms[1].rotation.set(-2.7,0,.3);body.head.rotation.x=-.3;}
       else if(s==='swipe'){const k=1-b.t/.35;body.arms[0].rotation.set(-2.7+2.3*k,0,-.3-.6*k);body.arms[1].rotation.set(-2.7+2.3*k,0,.3+.6*k);}
       else if(s==='tired')sit();
       else body.suit.rotation.z=sway*.2;
@@ -5737,6 +5782,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     }
     g.position.set(b.x,b.moving&&a!=='crocodile'?Math.abs(Math.sin(b.phase*9))*.05:0,b.z);g.rotation.y=b.yaw;
     g.scale.setScalar(BOSS_SIZE*(.15+.85*b.appear));
+    if(b.pretend)syncPretend(b);
   }
   function talkToGuest(dt) {
     guestCooldown=Math.max(0,guestCooldown-dt);

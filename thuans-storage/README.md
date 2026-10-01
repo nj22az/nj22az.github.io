@@ -23,6 +23,14 @@ behaviour:
 - **Donkey** (Mrs Sato): grazes by the goods and will not be moved. Come up in front and she
   brays you back; come up behind and you get both back hooves, after which she is winded.
 
+The boss is plainly the townsperson playing pretend: their own avatar from Johansson Town's
+creator, in their own clothes, with the animal's hood in place of a hat, furry paws and a
+tail (`johansson-town/src/dungeon/pretend.js`), loaded from the town in the browser. Those
+modules import the town's Three.js; the import map in `index.html` hands them
+`vendor/three-r186/` instead (MIT, see its LICENSE), the same version this game renders with,
+because the r186 renderer cannot draw r170 objects. Where the town's code cannot load (the
+tests' sandbox), a simple mascot body in the same colours stands in.
+
 Each has a tell before it goes for Thuan and a worn-out moment after, with stars round its
 head. Shoo it then (Space or F, the gamepad's A, or Shoo! on touch): any other time it does
 not notice. Three shoos and the head comes off, the townsperson bows and goes back down
