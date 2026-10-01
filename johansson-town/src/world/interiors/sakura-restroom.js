@@ -15,7 +15,8 @@ import * as THREE from '../../../vendor/three.module.js';
  *
  * Positions are measured off the model, in the shop's frame (sakura-layout.js): the
  * room is x -6.82..-4.09, z -3.95..-2.58, its doorway on the east side around z -3.2.
- * Nothing here stands on the floor where you could walk except the slippers.
+ * The doorway is open: you can walk in, flush, wash your hands and read the sheet. The
+ * toilet and basin have colliders in sakura-layout.js; the slippers are walked over.
  */
 export const RESTROOM=Object.freeze({
  minX:-6.82,maxX:-4.09,minZ:-3.95,maxZ:-2.58,
@@ -119,6 +120,7 @@ function toiletFittings(k){
   const band=new THREE.Mesh(new THREE.CylinderGeometry(.047,.047,.1,12,1,true,-Math.PI/2,Math.PI),new THREE.MeshStandardMaterial({color:0x2c5fc8,roughness:.45,side:THREE.DoubleSide}));
   band.rotation.x=Math.PI/2;band.position.set(0,.02,.06);g.add(band);
  }
+ return {arm};
 }
 
 // ============================================================== basin and mirror
@@ -196,12 +198,19 @@ function notices(k){
 
 export function buildSakuraRestroom(room,{anchor,action}={}){
  const k=kit(room);
- tiles(k);const blades=ventilation(k);toiletFittings(k);basinFittings(k);notices(k);
+ tiles(k);const blades=ventilation(k),{arm}=toiletFittings(k);basinFittings(k);notices(k);
+ let now=0,flushedAt=-9;
  if(anchor&&action){
   const D=RESTROOM.doorway;
   anchor([D.x-.25,1.35,D.z],'Look into the restroom',()=>action('inspect','便所 · The restroom',
-   'Mint tiles, a mosaic floor still damp from the last mop, and the breeze-block vent letting the afternoon in over the cistern. The fan rattles on its cord.\n\nOn the wall, the cleaning sheet has Thuan’s hanko on every round of the day. Beside it: 紙以外は流さないで下さい. The little シーサー on the corner shelf has seen it all.'));
+   'Mint tiles, a mosaic floor still damp from the last mop, and the breeze-block vent letting the afternoon in over the cistern. The fan rattles on its cord.\n\nSlip on the blue slippers and go in. The little シーサー on the corner shelf has seen it all.'));
+  anchor([-6.4,1.0,-3.0],'Flush the toilet',()=>{flushedAt=now;action('inspect','便所 · Flush',
+   'You press the lever. The cistern roars, then the little spout on its lid runs clean water into the basin on top while the tank fills again: wash your hands on the way out, the way the old cisterns ask you to.');});
+  anchor([-5.18,1.15,-3.55],'Wash your hands',()=>action('inspect','便所 · Wash your hands',
+   'One push of the green soap globe, cold water from the tap, and the blue towel on its ring. The card on the wall says fifteen seconds under running water. You count them.'));
+  anchor([-5.0,1.6,-2.75],'Read the cleaning sheet',()=>action('inspect','清掃点検表 · Cleaning rounds',
+   '7:00, 11:00, 14:00, 18:00, 21:30 — 済, every one, each with the same small red hanko: トゥ.\nAbove it, in blue: お客様へのお願い — 紙以外は流さないで下さい.\nBeside it, a card for さんぴん茶, ¥110, 冷えてます.'));
  }
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
- return {tick(time){blades.rotation.z=reduce?0:time*9;}};
+ return {tick(time){now=time;blades.rotation.z=reduce?0:time*9;arm.rotation.x=.25+(time-flushedAt<.7?.7:0);}};
 }

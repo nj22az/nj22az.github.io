@@ -92,7 +92,8 @@ export const SAKURA_LAYOUT={
   rect(-6.4,.43,.9,4.03,2.25),rect(.4,-3.55,5.35,.8,2.3),
   rect(4.8,1.97,.52,3.78,1.0),rect(6.74,2.08,.18,3.48,2.0),rect(3.64,3.6,1.35,.57,1.06),
   rect(-.66,-3.99,7.82,.12),rect(5.62,-3.99,2.46,.12),
-  rect(-4.02,-3.2,.12,1.53),rect(-5.4,-2.48,2.82,.12),
+  // The restroom's east wall: two jambs either side of its doorway (z -3.66..-2.78).
+  rect(-4.02,-3.81,.12,.31),rect(-4.02,-2.6,.12,.33),rect(-5.4,-2.48,2.82,.12),
   rect(4.60,-2.6,.12,2.7),rect(4.86,-1.17,.56,.12),rect(6.56,-1.17,.56,.12),
   rect(-2.16,-4.49,6.88,.86,2.3),rect(-6.26,-3.26,1.0,1.2,1.2),
   // Thuan's desk in the back office (sakura-cheer.js BACK_OFFICE).
@@ -103,6 +104,8 @@ export const SAKURA_LAYOUT={
   rect(4.98,-3.62,.48,.5,1.2),rect(5.35,-5.0,.4,.6,1.1),rect(-.95,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
   // The stocked back room (sakura-backroom.js BACKROOM): bottle crates and the daisha at the
   // west end, the cardboard bundle on the east wall, the extinguisher by the delivery door.
+  // In the restroom (sakura-restroom.js): the pedestal basin on the south wall.
+  rect(-5.18,-3.72,.66,.46,1.0),
   rect(-5.19,-6.52,.86,.36,.9),rect(-5.27,-5.4,.66,.96,1.1),rect(5.51,-5.67,.26,.74,.6),rect(4.66,-6.58,.28,.28,.6),
  ]
 };
