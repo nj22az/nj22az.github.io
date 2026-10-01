@@ -156,7 +156,7 @@ export function buildOfficeShell(parent){
  // Water cooler by the door (collider -2.54,2.51).
  box('Water cooler body',[.36,1.0,.36],[-2.54,.5,2.51],0xe6e3d8);
  const bottle=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.42,16),new THREE.MeshStandardMaterial({color:0x8ecfe6,roughness:.3,transparent:true,opacity:.75}));bottle.name='Water cooler bottle';bottle.position.set(-2.54,1.22,2.51);shell.add(bottle);
- parent.add(new THREE.HemisphereLight(0xf4f8ee,0x8a8a7a,1.55));
- const lamp=new THREE.PointLight(0xf2f6ee,1.3,9,2);lamp.position.set(0,2.6,0);parent.add(lamp);
+ parent.add(new THREE.HemisphereLight(0xf4f8ee,0x8a8a7a,1.05));
+ const lamp=new THREE.PointLight(0xf2f6ee,.9,9,2);lamp.position.set(0,2.6,0);parent.add(lamp);
  return shell;
 }

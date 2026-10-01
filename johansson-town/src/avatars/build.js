@@ -441,6 +441,43 @@ function addBody(list,recipe,m,swim=false){
  }
 }
 
+/**
+ * Ink outlines for people: an inverted hull.
+ *
+ * The town's ink is a screen pass over the depth buffer, which finds a building's
+ * silhouette but loses a person against whatever is behind them, and never draws the
+ * line where hair meets face (docs/AMPLIFY-AUDIT.md, C5). So every avatar carries a
+ * second, back-faced copy of its body pushed out along the normals, as Guilty Gear
+ * Xrd and most cel-shaded games draw their characters. It shares the body's geometry
+ * and skeleton, so it animates with it and the hat's draw range applies to both.
+ * The line takes a darkened version of the colour under it rather than black, so a
+ * yellow shirt gets an ochre line and skin a warm brown, the way an animator inks.
+ */
+export const OUTLINE_WIDTH=.011;
+const outlineMaterials=new Map();
+export function outlineMaterial({skinned=true,colour=null,width=OUTLINE_WIDTH}={}){
+ const key=(skinned?'s':'m')+(colour??'v')+width;
+ if(outlineMaterials.has(key))return outlineMaterials.get(key);
+ const material=new THREE.MeshBasicMaterial({color:colour??0xffffff,vertexColors:colour==null,side:THREE.BackSide});
+ material.name='Shimanchu outline';material.userData.outline=true;
+ const uniform={value:width};
+ material.onBeforeCompile=shader=>{
+  shader.uniforms.uOutline=uniform;
+  shader.vertexShader='uniform float uOutline;\n'+shader.vertexShader.replace('#include <project_vertex>',
+   (skinned?'vec3 outlineN = normalize( objectNormal );\n':'vec3 outlineN = normalize( position );\n')+
+   'transformed += outlineN * uOutline;\n#include <project_vertex>');
+  if(colour==null)shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb *= vec3( 0.32, 0.27, 0.27 );');
+ };
+ material.customProgramCacheKey=()=>'shimanchu-outline-'+key;
+ outlineMaterials.set(key,material);return material;
+}
+function addOutline(parent,mesh,skinned){
+ const line=skinned?new THREE.SkinnedMesh(mesh.geometry,outlineMaterial({skinned:true})):new THREE.Mesh(mesh.geometry,outlineMaterial({skinned:false,colour:0x4a3028}));
+ line.name=mesh.name+' outline';line.castShadow=false;line.receiveShadow=false;line.frustumCulled=false;line.userData.outline=true;
+ if(skinned){line.bind(mesh.skeleton,mesh.bindMatrix);parent.add(line);}else mesh.add(line);
+ return line;
+}
+
 /** The face texture and the head it lives on. */
 function buildHead(recipe,m,faceSize){
  const canvas=document.createElement('canvas');canvas.width=canvas.height=faceSize;
@@ -525,6 +562,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  bones.head.add(face.head);
  const root=new THREE.Group();root.name='Shimanchu · '+(recipe.name||'resident');
  root.add(body);root.rotation.y=Math.PI;
+ const outline=addOutline(root,body,true);addOutline(face.head,face.head,false);
  const avatar={
   recipe,measure:m,root,body,bones,face,height:m.H,hasHat,
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
@@ -548,7 +586,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
     swimBody=new THREE.SkinnedMesh(g,material);swimBody.name='Shimanchu swimwear';swimBody.bind(body.skeleton,body.bindMatrix);
     swimBody.castShadow=shadows;swimBody.frustumCulled=false;root.add(swimBody);
    }
-   body.visible=outfit!=='swim';if(swimBody)swimBody.visible=outfit==='swim';
+   body.visible=outfit!=='swim';outline.visible=body.visible;if(swimBody)swimBody.visible=outfit==='swim';
   },
   dispose(){geometry.dispose();material.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();swimBody?.geometry.dispose();},
  };

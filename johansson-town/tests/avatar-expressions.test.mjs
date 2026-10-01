@@ -41,6 +41,6 @@ test('face repainting stays cached and preserves the two-draw avatar and current
  assert.equal(avatar.paintFace({expression:'surprised'}),true);
  assert.equal(avatar.paintFace({talk:1}),true);
  assert.equal(avatar.paintFace({talk:1}),false);
- let draws=0;avatar.root.traverse(o=>{if(o.isMesh&&o.visible)draws++;});assert.equal(draws,2);
+ let draws=0,lines=0;avatar.root.traverse(o=>{if(o.isMesh&&o.visible)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
  avatar.dispose();
 });

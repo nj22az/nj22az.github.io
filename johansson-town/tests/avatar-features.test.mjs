@@ -25,7 +25,7 @@ test('all hats and accessories remain in the two-draw skinned avatar through pos
  for(const hat of PARTS.hat)for(const earrings of PARTS.earrings){
   const a=buildAvatar({...CAST_RECIPES.Thuan,outfit:{...CAST_RECIPES.Thuan.outfit,hat},accessories:{earrings,neckwear:hat==='none'?'pendant':'scarf',pin:true}},{shadows:false});
   const anim=createAvatarAnimator(a);anim.play('Wave');anim.update(.1,{speed:1});a.root.updateMatrixWorld(true);
-  let draws=0;a.root.traverse(o=>{if(o.isMesh&&o.visible)draws++;});assert.equal(draws,2);
+  let draws=0,lines=0;a.root.traverse(o=>{if(o.isMesh&&o.visible)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
   for(const v of a.body.geometry.attributes.position.array)assert.ok(Number.isFinite(v));
   a.wear('swim');assert.equal(a.body.visible,false);a.wear('clothes');assert.equal(a.body.visible,true);a.dispose();
  }
@@ -34,7 +34,7 @@ test('a hat comes off without a third draw call, and the copy on the peg is the 
  const recipe=CAST_RECIPES['Officer Mori'],a=buildAvatar(recipe,{shadows:false});
  assert.ok(a.hasHat&&a.hatOn);const whole=a.body.geometry.attributes.position.count;
  a.setHat(false);assert.equal(a.hatOn,false);assert.ok(a.body.geometry.drawRange.count<whole,'the hat is no longer drawn');
- let draws=0;a.root.traverse(o=>{if(o.isMesh&&o.visible)draws++;});assert.equal(draws,2);
+ let draws=0,lines=0;a.root.traverse(o=>{if(o.isMesh&&o.visible)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
  a.setHat(true);assert.equal(a.hatOn,true);
  const prop=buildHatProp(recipe);assert.ok(prop?.isMesh&&!prop.isSkinnedMesh);
  assert.equal(prop.geometry.attributes.position.count,whole-a.body.geometry.drawRange.start-(a.setHat(false),a.body.geometry.drawRange.count),'the peg holds the hat that came off');
