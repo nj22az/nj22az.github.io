@@ -7,7 +7,8 @@ import {CHIME_TIMES,playSchoolChime} from '../../audio/school-chime.js';
 import {townCalendarAt} from '../../town-clock.js';
 
 /**
- * The 5・6年 classroom at Minato school, upstairs on the sea side.
+ * The 5・6年 classroom in the town hall (港町役場), on the ground floor, the sea side at
+ * the back and the veranda and forecourt at the front.
  *
  * Twelve pupils in a combined fifth-and-sixth-grade class, which is what a school of
  * thirty-one children has. The room follows the school day: lessons in rows facing the
@@ -173,31 +174,37 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
  const plate=new THREE.Mesh(new THREE.PlaneGeometry(.6,.19),new THREE.MeshStandardMaterial({map:plateTex}));plate.position.set(-3.35,2.4,corridorZ-.01);plate.rotation.y=Math.PI;room.add(plate);
 
  // ------------------------------------------------------------------ outside
- // The corridor beyond the doors, the hana-block balustrade, the field and the town.
+ // The veranda beyond the doors, the forecourt and the town, at eye level: the town hall
+ // is one storey (school.js buildTownHall), so there is no balustrade and no looking down.
  const corridor=new THREE.Group();corridor.name='Classroom corridor';room.add(corridor);
  box([12,.02,2.4],[0,-.01,corridorZ+1.4],mat(0xa8a69a,.9),corridor);
  box([12,.1,2.6],[0,W.height+.05,corridorZ+1.3],mat(0xcac7b9,.95),corridor);
- box([12,.35,.2],[0,.175,corridorZ+2.5],mat(0xefece2,.9),corridor);
- const hana=hanaBlockMaterial();
- for(const [a,b] of [[-6,-2.9],[-2.5,.7],[1.1,4.3],[4.7,6]])hanaScreen(corridor,hana,a,b,.35,1.15,corridorZ+2.5);
+ box([12,.15,.3],[0,.075,corridorZ+2.55],mat(0xc9c3b4,.9),corridor);
+ box([30,.02,14],[0,-.03,corridorZ+9.7],mat(0xc9c3b4,.95),corridor);
  for(const x of [-2.7,.9,4.5])box([.4,W.height,.4],[x,W.height/2,corridorZ+2.5],mat(0xe4e1d3,.92),corridor);
  box([12,.45,.22],[0,W.height-.2,corridorZ+2.5],mat(0xe4e1d3,.92),corridor);
  const fieldView=canvasTexture(1400,600,(ctx,w,h)=>{
-  const sky=ctx.createLinearGradient(0,0,0,h*.55);sky.addColorStop(0,'#8fc4e6');sky.addColorStop(1,'#d8ecf2');ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
-  for(let i=0;i<7;i++){ctx.fillStyle='rgba(255,255,255,.85)';const x=i*230+40,y=70+(i%3)*30;for(let k=0;k<5;k++){ctx.beginPath();ctx.arc(x+k*28,y-(k%2)*16,34-(k%3)*6,0,Math.PI*2);ctx.fill();}}
-  // Headland, town roofs, the park mound, fukugi, the field.
-  ctx.fillStyle='#5f7a4c';ctx.beginPath();ctx.moveTo(0,h*.52);ctx.quadraticCurveTo(w*.2,h*.26,w*.38,h*.5);ctx.lineTo(0,h*.6);ctx.fill();
-  for(let i=0;i<22;i++){ctx.fillStyle=['#9c8e7a','#b3a48a','#7b6f62','#c9b79a'][i%4];const x=w*.35+i*38,y=h*.5-((i*17)%25);ctx.fillRect(x,y,34,h*.58-y);}
-  ctx.fillStyle='#6f9a5a';ctx.beginPath();ctx.ellipse(w*.72,h*.56,w*.14,h*.1,0,Math.PI,0);ctx.fill();
-  for(let i=0;i<30;i++){ctx.fillStyle=i%2?'#2f5a31':'#3b6a3a';ctx.beginPath();ctx.ellipse(i*50+10,h*.62,26,50+(i%3)*10,0,0,Math.PI*2);ctx.fill();}
-  ctx.fillStyle='#b98a63';ctx.fillRect(0,h*.68,w,h*.32);ctx.fillStyle='#d6ccae';ctx.fillRect(0,h*.88,w,h*.12);
-  ctx.strokeStyle='rgba(247,244,232,.8)';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(w*.5,h*.8,w*.4,h*.06,0,0,Math.PI*2);ctx.stroke();
+  // Horizon at eye level: sky, the headland and the town's roofs, the fukugi along the
+  // grounds, the lawn with its flower beds, the flagpole, and the paved forecourt.
+  const hz=h*.52;
+  const sky=ctx.createLinearGradient(0,0,0,hz);sky.addColorStop(0,'#8fc4e6');sky.addColorStop(1,'#d8ecf2');ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
+  for(let i=0;i<7;i++){ctx.fillStyle='rgba(255,255,255,.85)';const x=i*230+40,y=60+(i%3)*28;for(let k=0;k<5;k++){ctx.beginPath();ctx.arc(x+k*28,y-(k%2)*16,34-(k%3)*6,0,Math.PI*2);ctx.fill();}}
+  ctx.fillStyle='#5f7a4c';ctx.beginPath();ctx.moveTo(0,hz);ctx.quadraticCurveTo(w*.18,hz-140,w*.36,hz);ctx.fill();
+  for(let i=0;i<20;i++){ctx.fillStyle=['#e4ddcc','#d8cfb8','#c4553a','#ece5d2'][i%4];const x=w*.36+i*42,y=hz-30-((i*17)%30);ctx.fillRect(x,y,38,hz-y+4);}
+  for(let i=0;i<30;i++){ctx.fillStyle=i%2?'#2f5a31':'#3b6a3a';ctx.beginPath();ctx.ellipse(i*50+10,hz+4,24,44+(i%3)*8,0,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle='#6f9f55';ctx.fillRect(0,hz+30,w,h*.2);
+  for(const x of [w*.2,w*.62]){ctx.fillStyle='#8a5a3a';ctx.fillRect(x,hz+60,w*.18,22);for(let i=0;i<40;i++){ctx.fillStyle=['#d8342c','#f4d23c','#e98aa6','#f4f1ea'][i%4];ctx.beginPath();ctx.arc(x+6+((i*37)%100)/100*(w*.18-12),hz+64+((i*53)%14),5,0,Math.PI*2);ctx.fill();}}
+  ctx.fillStyle='#8e979a';ctx.fillRect(w*.48,hz-210,6,270);ctx.fillStyle='#f4f1ea';ctx.fillRect(w*.485,hz-205,56,38);ctx.fillStyle='#c8102e';ctx.beginPath();ctx.arc(w*.485+28,hz-186,11,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#c9c3b4';ctx.fillRect(0,hz+30+h*.2,w,h);
  });
  const fieldPlane=new THREE.Mesh(new THREE.PlaneGeometry(40,17),new THREE.MeshBasicMaterial({map:fieldView}));
- fieldPlane.position.set(0,-2.6,corridorZ+16);fieldPlane.rotation.y=Math.PI;corridor.add(fieldPlane);
+ fieldPlane.position.set(0,2.25,corridorZ+16);fieldPlane.rotation.y=Math.PI;corridor.add(fieldPlane);
 
- // The sea side: the sunshade just outside, then the reef, the tetrapods and the sky.
+ // The sea side, at ground level: the window hood, a strip of weedy sand, the seawall a
+ // few metres off, and over it the reef and the sky.
  box([W.maxX-W.minX+2,.13,.75],[0,2.86,W.minZ-.58],mat(0xcac7b9,.95));
+ box([30,.02,4],[0,-.03,W.minZ-2.2],mat(0xb9b29b,.95));
+ box([30,1.05,.5],[0,.52,W.minZ-4.2],mat(0xbdb8aa,.92));box([30,.08,.6],[0,1.08,W.minZ-4.2],mat(0x8b877c,.9));
  const seaView=canvasTexture(1600,900,(ctx,w,h)=>{
   const horizon=h*.46;
   const sky=ctx.createLinearGradient(0,0,0,horizon);sky.addColorStop(0,'#6fb2e0');sky.addColorStop(1,'#cfe7f1');ctx.fillStyle=sky;ctx.fillRect(0,0,w,horizon);
@@ -214,7 +221,8 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   ctx.fillStyle='#bdb8aa';ctx.fillRect(0,h*.86,w,h*.14);ctx.fillStyle='#8b877c';ctx.fillRect(0,h*.86,w,6);
  });
  const seaPlane=new THREE.Mesh(new THREE.PlaneGeometry(34,19),new THREE.MeshBasicMaterial({map:seaView}));
- seaPlane.position.set(0,-.2,W.minZ-11);room.add(seaPlane);
+ // Its horizon sits at eye height, just over the seawall's top.
+ seaPlane.position.set(0,.85,W.minZ-11);room.add(seaPlane);
 
  // ------------------------------------------------------------------ front of the room
  const boardTex=canvasTexture(1400,380,()=>{});
@@ -529,7 +537,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
  anchor([3.3,1.1,-2.4],'Talk to '+TEACHER_EN,()=>action('school-teacher',phase));
  anchor([3.3,1.9,-2.6],'Watch the class TV',()=>{tvUntil=performance.now()+45000;drawTV(true);action('inspect','Classroom TV','教育テレビ at ten past two: "ふしぎの海", a programme about the coral reef, taped on the VHS deck last week. Everybody knows the part with the octopus.');});
  anchor([0,1.3,-3.1],'Look out to sea',()=>action('inspect','Classroom window','Over the sill, the sunshade, then the seawall and the tetrapods and the reef going from green to deep blue. The breeze comes in off it and moves the curtains. In June the whole class watched a waterspout from here.'));
- anchor([-3.35,1.1,3.3],'Go back down to the yard',exit);
+ anchor([-3.35,1.1,3.3],'Go out to the forecourt',exit);
 
  function boardText(){
   const m=menu;

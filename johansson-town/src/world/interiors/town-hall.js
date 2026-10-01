@@ -5,7 +5,7 @@ import * as THREE from '../../../vendor/three.module.js';
  * (町長室) and the mayor's home in the east wing (町長宅), where Johansson lives.
  *
  * The building is the old school (港小中学校, 1971). When the junior high closed in 1989
- * the town office moved in: the 5・6年 classroom upstairs is still a classroom
+ * the town office moved in. In 2026 the old two-storey block was replaced by a single-storey hall (school.js buildTownHall): the 5・6年 classroom is one of its rooms
  * (classroom.js), and the rooms along the field face became the town's.
  *
  * Both rooms follow the town's room contract: the door is on the +z wall, you enter

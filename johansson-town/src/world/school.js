@@ -349,7 +349,7 @@ export function buildSchool(world,options){
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1.9,SCHOOL.gate.z-.9],'Greet the shisa',say('Shisa on the gateposts',
   'A pair of glazed shisa, one on each post: the one on the right with its mouth open to take in good fortune, the one on the left with its mouth shut to keep it. Somebody has put a hibiscus flower behind the left one\'s ear.'));
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1,SCHOOL.gate.z-.7],'Read the town hall gate plate',say('港町役場 · Minato Town Hall',
-  'The town office, the assembly room, the mayor\'s office and, upstairs, the island school\'s one classroom: eight pupils, the 5th and 6th years together. Built in concrete in 1971 as the school after a typhoon took the wooden one; the town office moved in when the junior high closed in 1989. The mayor lives in the east wing.'));
+  'One storey, all of it on the forecourt: the town office, the meeting room, the community kitchen, the mayor\'s office, the island school\'s one classroom (eight pupils, the 5th and 6th years together) and, at the east end, the mayor\'s house. Built on the old school\'s footprint after the two-storey block from 1971 was taken down.'));
  anchor([SCHOOL.wash.x,1,SCHOOL.wash.z-.8],'Rinse your feet at the taps',()=>options.onAction?.('school-taps'));
  anchor([(SCHOOL.bikeShed.minX+SCHOOL.bikeShed.maxX)/2,1,SCHOOL.bikeShed.minZ+.4],'Look at the bicycles',say('Bike shed',
   'Bicycles under a zinc roof rusted through at the ribs: the town office staff\'s, two children\'s with names in marker on the mudguards, and the postman\'s spare.'));
