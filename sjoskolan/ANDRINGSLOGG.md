@@ -569,3 +569,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-10-01** Vecka 40, inlämning 7 (EL-000813): uppgiftstexten omformulerad. Den sa ”gör labben när du har gått
   igenom del 2–4” och direkt efter ”den görs på fredagens lektion”, blandade labbet/labben och hade ”Stämde alla, välj …”.
   Samma innehåll, tydligare ordning. Upplåst, ändrad, låst igen. Reviderad utan skyddade filer (regel 15).
+- **2026-10-01** Vecka 40, inlämning 6 d (EL-000812): frågan ”Hur mycket minskar förlusten …?” passade inte svarsrutan
+  ”Ny kabelförlust i % av den tidigare”. Nu: ”Hur stor blir den nya förlusten i matningskabeln, i procent av den
+  tidigare?” Facit och resultatkod oförändrade. Upplåst, ändrad, låst igen. Reviderad utan skyddade filer (regel 15).
