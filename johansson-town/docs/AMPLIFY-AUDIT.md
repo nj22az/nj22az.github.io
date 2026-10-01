@@ -331,6 +331,97 @@ Each phase ends with real screenshots at the same six camera positions used abov
 5. **Camera:** the docs lock first person. Tomodachi and Animal Crossing are third person and character-led. I
    recommend third person as the default, with first person for shops and interiors.
 
+## 10. Progress, 1 October 2026 (first build session)
+
+Decisions taken, following the recommendations in §9: **1997**; **family *shōten*** for
+Sakura (rebuild still to do); **third person outdoors, first person indoors**; the
+ripped office removed and replaced; and **new buildings sized to the grid**. The world
+has not been rescaled yet: the age axis fixed the worst scale mismatch (children) first.
+
+| | |
+|---|---|
+| ![Main street after](amplify-audit/after-main-street.jpg) | ![Third person after](amplify-audit/after-third-person.jpg) |
+| ![Dusk after](amplify-audit/after-dusk.jpg) | ![Harbour after](amplify-audit/after-harbour.jpg) |
+| ![Bookshop rebuilt](amplify-audit/after-bookshop.jpg) | ![Harbour office rebuilt](amplify-audit/after-harbour-office.jpg) |
+| ![Warehouse rebuilt](amplify-audit/after-warehouse.jpg) | ![Cast with outlines](amplify-audit/after-cast.jpg) |
+| ![Beach](amplify-audit/after-beach.jpg) | ![Quay](amplify-audit/after-quay.jpg) |
+
+**Done**
+
+| Audit item | What changed |
+|---|---|
+| A1, A2 two renderers, photo maps | Architecture joins the toon ramp. Photographed wall maps are kept only as faint grain (`ARCH_FLATTEN`). Only glass, the vertex-coloured Sakura interior, the dungeon and the legacy frontage atlas stay physically lit (`keepPhysicalStrict`). |
+| A4 clipping, lift override | A highlight shoulder in the grade; the lift override fixed; saturation 1.15 → 1.08. |
+| A5 soft shadows | `PCFShadowMap`, so shadow edges are hard. |
+| A6 sea ignores the clock | `setOceanLight` blends day, dusk, night and rain sea colours from `duskClock`. |
+| C5 no avatar outline | An inverted-hull ink shell on every body and head, tinted from the colour beneath. |
+| C1 no age axis | `age`: child, teen, adult or elder sets height and head proportion. Profiles drive it. Pupils are 1.2 m. The creator has an Age choice. |
+| B1–B3 off-style buildings | `GRID` in the kit. The bookshop, harbour office and warehouse are rebuilt as Okinawa '97 kit buildings. The warehouse no longer streams a 7 MB photo model. |
+| B5 licences | The Tomodachi office and crystal room and the Shenmue ramen model are removed. |
+| D year | Player-facing copy says 1997. Old docs are marked superseded. |
+| §1.5 blank flanks | Shop-house side walls get drainpipes, stair windows, mould bands and painted adverts for invented brands. |
+| Decision 5 camera | Third person by default. Rooms switch to first person and the street view returns at the door. |
+| **Ground** (user request) | See below. |
+
+**Ground coherence.** A raycast survey of the whole island on a 1.5 m grid found about
+twenty ground treatments: four kit greys, a photographed quay concrete, three sands,
+five coral whites and two paver tones. They were collapsed into seven families in
+`src/render/ground-palette.js`:
+
+| Family | Value | Where it is used |
+|---|---|---|
+| asphalt | #a9aeb4 | The main street (now a road, not a timber deck) and road boxes; painted, with edge lines, gutters and manholes |
+| pavers | #c6c3ba | Footways and grid lanes; painted interlocking blocks |
+| concrete | #b7b5ab | Quays, piers, village lanes and yards; painted 2 m bays |
+| coral | #e2dac8 | Nishi-machi ground |
+| sand | #e3d2a4 | Beach and gateball court |
+| gravel | #a29e93 | West yard and grove |
+| grass | #5c9848 | Lawns, park and open land |
+
+![Ground survey, colour and category](amplify-audit/ground-survey.jpg)
+
+**Still to do, in order**
+
+1. **Sakura.** Rebuild as an 8-bay family *shōten* on the kit (it is still the 14 m
+   glass front). It is the hero shot, so do it with care.
+2. **Night and interiors lighting pass.** Night is a grey haze rather than a scene lit
+   by its signs. The classroom and office interiors are overexposed.
+3. **The park model.** The Sketchfab park still loads; rebuild it from the kit.
+4. **Horizon frame.** From the air you can see the square sea and the sky dome
+   (reef, tetrapods, haze).
+5. **Shimanchu 2, the rest.** Mitten hands, hair shells, shoes, the 1990s wardrobe and
+   emotes. Then put Thuan's Storage on avatars and give critters the same material.
+6. **Life engine** (§7): relationships, wants, gifts, the Town Book catalogue,
+   gachapon, then the harbour job and the mystery.
+7. **Sakura interior licence.** The supplied convenience-store GLB has no licence on
+   record. Replace it with a kit room when Sakura is rebuilt.
+
+## 11. Lessons from this session (self-audit)
+
+These were caught by checking real screenshots after each change. They are worth keeping
+as rules:
+
+- **Rebuild the runtime before every commit that touches `src/`.** One commit went out
+  with a stale bundle. `tests/runtime-package.test.mjs` catches it, so run it, or the
+  full suite, before committing.
+- **Screenshot at a fixed hour.** The first comparison ran at the real clock (17:47)
+  and blamed golden-hour light on the materials. The capture script sets 12:00 before
+  entering the town.
+- **Probe before you fix.** The "khaki field" was not the land colour but the park's
+  stand-in mound, and the "orange road" was a timber deck over the whole street.
+  Raycasting the mesh under a pixel took a minute and saved a wrong fix.
+- **Horizontal surfaces take full sun.** A green that looks right on a swatch blows out
+  on the ground. Ground colours need to be darker than wall colours to read the same.
+- **Vertex-coloured supplied models can go black under `MeshToonMaterial`.** Keep them
+  physically lit with `keepPhysicalStrict` rather than forcing the ramp.
+- **Tests encode old intent.** Several failures were the new direction working: two
+  draws becoming four with outlines, kit plaster turning toon, the office no longer
+  being a file. Update those tests to state the new rule; don't revert the change.
+- **Budgets are part of the design.** The quarter's draw-call budget test caught the
+  wall adverts; naming them as signs put them in the right category.
+- **Third person needs room.** In a 3 m classroom the lens is mostly the back of a
+  head. That is why rooms are seen first person.
+
 ## Appendix: audit camera views
 
 ```js
