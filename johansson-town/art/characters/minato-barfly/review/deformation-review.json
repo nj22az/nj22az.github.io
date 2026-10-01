@@ -1,0 +1,52 @@
+{
+  "finger_displacement_m": {
+    "finger.thumb.L.1": 0.01860055021793265,
+    "finger.thumb.L.2": 0.01860058630323287,
+    "finger.index.L.1": 0.018600594908930984,
+    "finger.index.L.2": 0.01860054454598208,
+    "finger.index.L.3": 0.01860052000010707,
+    "finger.middle.L.1": 0.018600541416629295,
+    "finger.middle.L.2": 0.01860057163442009,
+    "finger.middle.L.3": 0.018600575839480934,
+    "finger.ring.L.1": 0.018600546012866013,
+    "finger.ring.L.2": 0.018600532810906432,
+    "finger.ring.L.3": 0.01860056136624426,
+    "finger.pinky.L.1": 0.018600580435709144,
+    "finger.pinky.L.2": 0.018600522738293934,
+    "finger.pinky.L.3": 0.018600563028711204,
+    "finger.thumb.R.1": 0.018600553347283954,
+    "finger.thumb.R.2": 0.01860058630323287,
+    "finger.index.R.1": 0.018600592170754743,
+    "finger.index.R.2": 0.01860054454598208,
+    "finger.index.R.3": 0.01860052000010707,
+    "finger.middle.R.1": 0.018600538678445182,
+    "finger.middle.R.2": 0.01860057163442009,
+    "finger.middle.R.3": 0.018600575839480934,
+    "finger.ring.R.1": 0.01860054288351348,
+    "finger.ring.R.2": 0.018600532810906432,
+    "finger.ring.R.3": 0.01860056136624426,
+    "finger.pinky.R.1": 0.018600577697530773,
+    "finger.pinky.R.2": 0.018600522738293934,
+    "finger.pinky.R.3": 0.018600563028711204
+  },
+  "morph_max_delta_m": {
+    "Barfly_Head/Smile": 0.01843020047519539,
+    "Barfly_Head/Frown": 0.012643352418977117,
+    "Barfly_Head/JawOpen": 0.025000005541368706,
+    "Barfly_Head/Blink.L": 0.02500000088475643,
+    "Barfly_Head/Blink.R": 0.02500000088475643,
+    "Eye white.L/Blink.L": 0.021159998850547774,
+    "Iris.L/Blink.L": 0.014720000361823827,
+    "Eye white.R/Blink.R": 0.021159998850547774,
+    "Iris.R/Blink.R": 0.014720000361823827
+  },
+  "poses": {
+    "Barfly_Drink_Loop": {
+      "mouth_to_glass_nearest_vertex_m": 0.5977716051183719
+    },
+    "Barfly_Sleep_Loop": {
+      "mouth_to_glass_nearest_vertex_m": 0.664968266969139
+    }
+  },
+  "deformation_controls_passed": true
+}
