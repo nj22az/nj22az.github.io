@@ -56,6 +56,7 @@ import {shelfAimScore} from './interact/aim.js';
 import {atmosphere} from './render/atmosphere.js?dusk-1';
 import {clock as duskClock, daylight} from './render/dusk.js';
 import {setOceanLight} from './world/ocean.js';
+import {buildMayorOffice,buildMayorHome} from './world/interiors/town-hall.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
 import {MOVES} from './avatars/moves.js';
@@ -666,6 +667,8 @@ function roomShell(s){
  if(s.id==='dungeon'){activeRoomLayout=dungeonLayout(shared);return;}
  if(s.id==='market'){activeRoomLayout=SAKURA_LAYOUT;return;}
  if(s.id==='school'){activeRoomLayout=buildClassroom(shared);return;}
+ if(s.id==='mayor-office'){activeRoomLayout=buildMayorOffice(shared);return;}
+ if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,openMaker:()=>{leaveRoomIfModal();openAvatarMaker();},sleep:sleepUntilMorning});return;}
  if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior(shared);return;}
  if(s.id==='koban'){activeRoomLayout=buildKobanInterior(shared);return;}
  if(s.id==='ramen'&&satoRamen()){activeRoomLayout=buildSatoRamenRoom(shared);return;}
@@ -1173,6 +1176,18 @@ function clockMenu(){
 }
 const formatAhead=m=>m<60?Math.round(m)+' min':Math.floor(m/60)+' h '+Math.round(m%60)+' min';
 const clockDescription=()=>(townClock.mode==='real'?'Real time':'Town clock '+townClock.speed+'×')+' · '+townClockLineAt(minutes);
+/**
+ * The futon at home: sleep through to half past six. The night passes the way an absence
+ * does (the residents go home, sleep and get up), and in real time the town then runs
+ * that far ahead of your own clock until you bring it back from the clock menu.
+ */
+function sleepUntilMorning(){
+ const day=Math.floor(minutes/1440)*1440;let wake=day+390;if(wake<=minutes+20)wake+=1440;
+ const gap=wake-minutes;
+ if(townClock.mode==='real'){townClock.pass(gap);activities.state.clockAhead=townClock.ahead;}
+ activities.close();advanceAbsentTown(gap);say('You sleep. Half past six, and the generator\'s thud from across the field.',5);
+}
+const leaveRoomIfModal=()=>activities.close();
 function advanceAbsentTown(townMinutes){
  if(!(townMinutes>0))return;
  if(townMinutes>MAX_ABSENCE_MINUTES){minutes+=townMinutes-MAX_ABSENCE_MINUTES;townMinutes=MAX_ABSENCE_MINUTES;}

@@ -70,22 +70,28 @@ const GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-se
 const SERIF='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 const HAND='"Klee","Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
 
+/**
+ * Eight pupils, the 5・6年 of a small island school, each from a household that lives
+ * on the island (Nishi-machi, the east row and the east-back houses), so every child in
+ * the room goes home to a door you can find.
+ */
 const PUPILS=[
  ['金城 ゆい',true,0xe98c9a,0x2d3a52,0x3f6fb0],['比嘉 けんた',false,0x3f7fc0,0x2c2f36,0x3f6fb0],['大城 さくら',true,0xf2d57e,0x4a5f8a,0xc2453b],
  ['宮城 だいき',false,0x4f9a6a,0x2d3a52,0xc2453b],['玉城 みゆ',true,0xb99ad8,0x2c2f36,0x3f6fb0],['新垣 りょう',false,0xe0e0dc,0x3b4a62,0xc2453b],
- ['島袋 あや',true,0x7fc6c9,0x2d3a52,0x3f6fb0],['仲宗根 たく',false,0xd9723c,0x2c2f36,0xc2453b],['上原 ななみ',true,0xf4f1ea,0x8a3a45,0x3f6fb0],
- ['知念 しょう',false,0x2f4f8a,0x55504a,0xc2453b],['平良 まい',true,0xf3a65a,0x2d3a52,0x3f6fb0],['当山 ゆうと',false,0x8a2f3a,0x2c2f36,0xc2453b],
+ ['仲宗根 たく',false,0xd9723c,0x2c2f36,0xc2453b],['仲村 まい',true,0xf3a65a,0x2d3a52,0x3f6fb0],
 ];
+export const PUPIL_HOMES=Object.freeze({'金城':'kinjo','比嘉':'higa','大城':'oshiro','宮城':'miyagi','玉城':'tamaki','新垣':'arakaki','仲宗根':'nakasone','仲村':'nakamura'});
+export const CLASS_SIZE=PUPILS.length;
 const HAIRS=[0x1b1512,0x231a14,0x16110e,0x2a1e16];
 const SKINS=[0xd9a57c,0xcf9870,0xe0b089,0xc98f66];
 /** The lunch squad this week. */
-const DUTY=[0,5,10];
+const DUTY=[0,3,6];
 
 /** Desk positions: [x, z, facing(+1 = toward the board, -1 = away, 'n'/'s' sideways)]. */
-const ROWS=[];for(const x of [2.0,.85,-.3])for(const z of [-2.4,-.8,.8,2.4])ROWS.push([x,z,1]);
-const HAN_CENTRES=[[1.55,-1.95],[1.55,1.75],[-1.15,-.1]];
+const ROWS=[];for(const x of [1.7,.35])for(const z of [-2.4,-.8,.8,2.4])ROWS.push([x,z,1]);
+const HAN_CENTRES=[[1.2,-1.6],[1.2,1.5]];
 const HAN=[];for(const [hx,hz] of HAN_CENTRES)for(const [dx,dz,f] of [[.225,-.33,-1],[.225,.33,-1],[-.225,-.33,1],[-.225,.33,1]])HAN.push([hx+dx,hz+dz,f]);
-const STACK=[];for(const x of [-1.2,-1.72,-2.24])for(const z of [-2.1,-1.35,-.6,.15])STACK.push([x,z,1]);
+const STACK=[];for(const x of [-1.2,-1.72])for(const z of [-2.1,-1.35,-.6,.15])STACK.push([x,z,1]);
 
 export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalendarAt(minutes)}){
  room.name='Minato school 5・6年 classroom';
@@ -363,7 +369,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   const unitData={unit,chair,tray,pos:new THREE.Vector3(),rot:0,target:null,solid:rect(0,0,.9,.66,.8)};
   units.push(unitData);return unitData;
  }
- for(let i=0;i<12;i++)buildUnit(i);
+ for(let i=0;i<CLASS_SIZE;i++)buildUnit(i);
  function setTray(u,menu,i){
   u.tray.clear();
   const add=(m,geo,pos)=>{const mesh=new THREE.Mesh(geo,m);mesh.position.set(...pos);u.tray.add(mesh);return mesh;};
@@ -405,7 +411,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
  broom.visible=false;
 
  // A spare desk by the window, for a visitor: Kinjō's brother moved to Naha in July.
- const spare=buildUnit(12);spare.target={x:-1.9,z:-2.85,rot:0,up:false};spare.pos.set(-1.9,0,-2.85);
+ const spare=buildUnit(CLASS_SIZE);spare.target={x:-1.9,z:-2.85,rot:0,up:false};spare.pos.set(-1.9,0,-2.85);
  const spareSeat=anchor([-2.3,.9,-2.85],'Sit at the spare desk',()=>action('seat','Spare desk','The empty desk by the window. Somebody has left a pencil in the groove and a folded paper crane in the drawer.'));
  spareSeat.userData.seat={position:[-2.35,0,-2.85],stand:[-2.9,0,-2.3],eyeY:1.05,yaw:-Math.PI/2,pitch:-.1};
 
@@ -426,7 +432,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   const chalk=(t,x,y,size,col='rgba(244,242,232,.92)',align='left')=>{ctx.fillStyle=col;ctx.font=`bold ${size}px ${HAND}`;ctx.textAlign=align;ctx.fillText(t,x,y);};
   const d=cal.date,wd='日月火水木金土'[d.getDay()];
   chalk(`${d.getMonth()+1}月${d.getDate()}日（${wd}）`,w-40,60,40,undefined,'right');
-  chalk('日直',w-120,130,32,'rgba(240,214,90,.95)','right');chalk('知念・玉城',w-40,172,32,undefined,'right');
+  chalk('日直',w-120,130,32,'rgba(240,214,90,.95)','right');chalk('玉城・仲村',w-40,172,32,undefined,'right');
   const menu=menuForWeekday(d.getDay());
   if(phase==='lesson'||phase==='morning'){
    chalk('算数　分数のわり算',60,70,48,'rgba(240,214,90,.95)');
@@ -462,7 +468,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   const lunch=p==='serving'||p==='lunch',clean=p==='cleaning';
   const spots=lunch?HAN:clean?STACK:ROWS;
   const chairsUp=clean||p==='after'||p==='closed'||p==='weekend';
-  units.slice(0,12).forEach((u,i)=>placeUnit(u,spots[i],chairsUp));
+  units.slice(0,CLASS_SIZE).forEach((u,i)=>placeUnit(u,spots[i],chairsUp));
  }
  function showPupils(p,cal){
   for(const k of kids)for(const f of [k.seated,k.standing,k.smockSeated,k.smockStanding])if(f){f.visible=false;delete f.userData.unit;}
@@ -502,8 +508,8 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   serving.visible=lunch;servingSolid.x=lunch?2.85:1e6;
   const [tx,tz]=lunch?TROLLEY_LUNCH:TROLLEY_HOME;trolley.position.set(tx,0,tz);trolley.rotation.y=lunch?0:Math.PI/2;
   trolleySolid.x=tx;trolleySolid.z=tz;trolleySolid.w=lunch?.95:.55;trolleySolid.d=lunch?.55:.95;
-  units.slice(0,12).forEach((u,i)=>{u.tray.visible=false;if(lunch&&menu){setTray(u,menu,i);u.tray.visible=p==='lunch'||i%3!==0;}});
-  if(instant)units.slice(0,12).forEach(u=>{const t=u.target;u.pos.set(t.x,0,t.z);u.rot=t.rot;apply(u,1);});
+  units.slice(0,CLASS_SIZE).forEach((u,i)=>{u.tray.visible=false;if(lunch&&menu){setTray(u,menu,i);u.tray.visible=p==='lunch'||i%3!==0;}});
+  if(instant)units.slice(0,CLASS_SIZE).forEach(u=>{const t=u.target;u.pos.set(t.x,0,t.z);u.rot=t.rot;apply(u,1);});
   drawBoard(p,cal);
  }
  function apply(u,chairUpAmount){
@@ -551,7 +557,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   if(p!==phase)setPhase(p,cal,phase===null);
   if(kyushokuAnchor.userData.hit)kyushokuAnchor.userData.hit.label=p==='serving'?'Line up for kyūshoku':p==='lunch'?'Join the class for kyūshoku':'Kyūshoku trolley';
   // Desks slide to where the phase wants them.
-  for(const u of units.slice(0,12)){
+  for(const u of units.slice(0,CLASS_SIZE)){
    const t=u.target;if(!t)continue;
    const k=1-Math.exp(-dt*2.2);u.pos.x+=(t.x-u.pos.x)*k;u.pos.z+=(t.z-u.pos.z)*k;
    let dr=Math.atan2(Math.sin(t.rot-u.rot),Math.cos(t.rot-u.rot));u.rot+=dr*k;apply(u);

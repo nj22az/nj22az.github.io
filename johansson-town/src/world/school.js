@@ -149,7 +149,7 @@ function plate(group,text,{w,h,at,rotY=0,bg='#f1ead6',fg='#1f2a26',font=SERIF,ve
 
 /** Room plates, hung out from the corridor ceiling over each door, as every school has them. */
 const ROOMS=[
- ['職員室','図書室'],['昇降口','音楽室'],['校長室','5・6年'],['保健室','中学1年'],['1・2年','中学2・3年'],['3・4年','理科室'],['放送室','視聴覚室'],
+ ['住民課','資料室'],['昇降口','会議室'],['総務課','5・6年'],['保健室','議場'],['町長室','公民館'],['産業課','図書室'],['町長宅','倉庫'],
 ];
 
 /** The noticeboard in the entrance: harbour safety, the typhoon shelter map, the co-op. */
@@ -212,9 +212,9 @@ export function buildSchool(world,options){
  buildFukugi(group,options.shadows);
 
  // Lettering.
- plate(onBuilding,'港町立港小中学校',{w:.42,h:1.18,at:[SCHOOL.gate.x-SCHOOL.gate.half,.88,SCHOOL.gate.z-.31],rotY:Math.PI,vertical:true,bg:'#e9dfc5',fg:'#1b1b1b',size:.62,name:'School gate plate'});
- plate(onBuilding,'港 小 中 学 校',{w:4.6,h:.56,at:[27,7.08,SCHOOL.corridor.minZ-.29],rotY:Math.PI,bg:'#e4e1d3',fg:'#2d5a4c',size:.78,name:'School name on parapet'});
- plate(onBuilding,'昇 降 口',{w:1.2,h:.3,at:[SCHOOL.genkan.x,2.62,B.minZ-.13],rotY:Math.PI,bg:'#e4e1d3',fg:'#2b2b2b',font:GOTHIC,size:.72,name:'Entrance plate'});
+ plate(onBuilding,'港町役場',{w:.42,h:1.18,at:[SCHOOL.gate.x-SCHOOL.gate.half,.88,SCHOOL.gate.z-.31],rotY:Math.PI,vertical:true,bg:'#e9dfc5',fg:'#1b1b1b',size:.62,name:'School gate plate'});
+ plate(onBuilding,'港 町 役 場',{w:4.6,h:.56,at:[27,7.08,SCHOOL.corridor.minZ-.29],rotY:Math.PI,bg:'#e4e1d3',fg:'#2d5a4c',size:.78,name:'School name on parapet'});
+ plate(onBuilding,'玄 関',{w:1.2,h:.3,at:[SCHOOL.genkan.x,2.62,B.minZ-.13],rotY:Math.PI,bg:'#e4e1d3',fg:'#2b2b2b',font:GOTHIC,size:.72,name:'Entrance plate'});
  ROOMS.forEach(([down,up],i)=>{
   const x=SCHOOL_COLUMNS[i]+.8;
   for(const [text,y] of [[down,B.floor+B.storey-.62],[up,B.floor+2*B.storey-.62]]){
@@ -230,11 +230,11 @@ export function buildSchool(world,options){
  const anchor=(at,label,fn)=>{const o=new THREE.Object3D();o.position.set(...at);group.add(o);options.register?.(o,label,fn);return o;};
  const say=(title,text)=>()=>options.onAction?.('inspect',title,text);
  options.register?.(board,'Read the noticeboard',()=>options.onAction?.('read','School noticeboard',
-  'Pinned in the entrance, one over another: 台風避難所 -- in a typhoon, the school gym and the community hall are the shelters, check your emergency bag. 港の安全 -- do not play on the quay or the tetrapods. From the fishing co-op, the youth section is taking crews for the harbour boat race (ハーリー) on the fourth day of the fifth month. A felt-pen map of the town with the shelters in red. This month\'s kyūshoku: goya champuru, sōki-jiru, fried aji. Lost: one blue sandal, left foot.'));
+  'Pinned in the entrance of the town hall, one over another: 台風避難所 -- in a typhoon, the school gym and the community hall are the shelters, check your emergency bag. 港の安全 -- do not play on the quay or the tetrapods. From the fishing co-op, the youth section is taking crews for the harbour boat race (ハーリー) on the fourth day of the fifth month. A felt-pen map of the town with the shelters in red. This month\'s kyūshoku: goya champuru, sōki-jiru, fried aji. Lost: one blue sandal, left foot.'));
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1.9,SCHOOL.gate.z-.9],'Greet the shisa',say('Shisa on the gateposts',
   'A pair of glazed shisa, one on each post: the one on the right with its mouth open to take in good fortune, the one on the left with its mouth shut to keep it. Somebody has put a hibiscus flower behind the left one\'s ear.'));
- anchor([SCHOOL.gate.x-SCHOOL.gate.half,1,SCHOOL.gate.z-.7],'Read the school gate plate',say('港町立港小中学校',
-  'Minato Town Elementary and Junior High School. Thirty-one pupils this year, all nine grades in one building. Founded 1948, rebuilt in concrete 1971 after the typhoon took the wooden one.'));
+ anchor([SCHOOL.gate.x-SCHOOL.gate.half,1,SCHOOL.gate.z-.7],'Read the town hall gate plate',say('港町役場 · Minato Town Hall',
+  'The town office, the assembly room, the mayor\'s office and, upstairs, the island school\'s one classroom: eight pupils, the 5th and 6th years together. Built in concrete in 1971 as the school after a typhoon took the wooden one; the town office moved in when the junior high closed in 1989. The mayor lives in the east wing.'));
  anchor([SCHOOL.wash.x,1,SCHOOL.wash.z-.8],'Rinse your feet at the taps',()=>options.onAction?.('school-taps'));
  anchor([(SCHOOL.bikeShed.minX+SCHOOL.bikeShed.maxX)/2,1,SCHOOL.bikeShed.minZ+.4],'Look at the bicycles',say('Bike shed',
   'Six bicycles under a zinc roof rusted through at the ribs. Baskets, bells, a name in marker on every mudguard. The junior-high kids ride in from the far end of the harbour road.'));
@@ -248,11 +248,22 @@ export function buildSchool(world,options){
  // The door. The school keeps a site like any building in town, so the map, the
  // directory and the doorway carry you in and out the way they do everywhere else.
  const door=[SCHOOL.genkan.x,0,B.minZ-.7];
- const site={id:'school',title:'Minato School',jp:'港小中学校',sub:'5・6年 CLASSROOM',x:SCHOOL.genkan.x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',
+ const site={id:'school',title:'Town Hall Classroom',jp:'港町役場 · 教室',sub:'5・6年 · 8 PUPILS',x:SCHOOL.genkan.x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',
   line:'Lessons 8:30–15:30 · kyūshoku 12:20 · visitors sign in at the staff room',door,exitPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],
   approachPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'07:30'};
  options.sites.push(site);
  anchor([SCHOOL.genkan.x,1.2,B.minZ-.5],'Go up to the 5・6年 classroom',()=>options.enter(site));
+ // The mayor's office and the mayor's home: two more doors along the field face, each
+ // its own room (interiors/town-hall.js), the way every door in town is its own site.
+ for(const [id,title,jp,sub,x,label,line] of [
+  ['mayor-office','Mayor’s Office','町長室','MINATO TOWN HALL',30.6,'Go into the mayor’s office','Office hours 8:30–17:15 · petitions in the tray'],
+  ['mayor-home','Mayor’s House','町長宅','JOHANSSON',37.7,'Go home','Your rooms in the east wing'],
+ ]){
+  const at=[x,0,B.minZ-.7],s={id,title,jp,sub,x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',line,door:at,exitPosition:[x,0,B.minZ-1.4],approachPosition:[x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'00:00'};
+  options.sites.push(s);
+  plate(onBuilding,jp,{w:.9,h:.26,at:[x,2.45,B.minZ-.13],rotY:Math.PI,bg:'#e4e1d3',fg:'#2b2b2b',font:GOTHIC,size:.72,name:'Door plate '+jp});
+  anchor([x,1.2,B.minZ-.5],label,()=>options.enter(s));
+ }
 
  let model=null;
  registerDetail(world,{id:'school',x:(B.minX+B.maxX)/2,z:(SCHOOL.minZ+SCHOOL.maxZ)/2,radius:80,load:async()=>{

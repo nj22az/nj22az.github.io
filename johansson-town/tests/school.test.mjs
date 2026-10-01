@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {installDOM} from './fixtures.mjs';
 import {SCHOOL,schoolAt,schoolColliders,FUKUGI} from '../src/world/school-layout.js';
-import {schoolPhase,menuForWeekday,KYUSHOKU_MENUS,buildClassroom,CLASSROOM} from '../src/world/interiors/classroom.js';
+import {schoolPhase,menuForWeekday,KYUSHOKU_MENUS,buildClassroom,CLASSROOM,CLASS_SIZE} from '../src/world/interiors/classroom.js';
 import {CHIME_TIMES,CHIME_NOTES} from '../src/audio/school-chime.js';
 import {createActivities} from '../activities.js?snappy=1';
 
@@ -52,12 +52,13 @@ test('the classroom rearranges its desks for lunch and puts a tray on every one'
  const layout=buildClassroom({room,reg,action(){},exit(){},calendar:cal});
  const settle=m=>{for(let i=0;i<120;i++)layout.tick(.25,m,i*.25);};
  settle(600);assert.equal(layout.phase,'lesson');
- const rows=layout.units.slice(0,12).map(u=>u.unit.position.clone());
- assert.ok(layout.units.slice(0,12).every(u=>Math.abs(u.unit.rotation.y)<.05),'In lessons every desk faces the board');
+ assert.equal(CLASS_SIZE,8,'A small island class: eight pupils');
+ const rows=layout.units.slice(0,CLASS_SIZE).map(u=>u.unit.position.clone());
+ assert.ok(layout.units.slice(0,CLASS_SIZE).every(u=>Math.abs(u.unit.rotation.y)<.05),'In lessons every desk faces the board');
  settle(760);assert.equal(layout.phase,'lunch');
- assert.ok(layout.units.slice(0,12).some(u=>Math.abs(Math.abs(u.unit.rotation.y)-Math.PI)<.05),'At lunch the desks are turned to face each other');
- assert.ok(layout.units.slice(0,12).every(u=>u.tray.visible&&u.tray.children.length>5),'Somebody has no lunch');
- assert.ok(layout.units.slice(0,12).some((u,i)=>u.unit.position.distanceTo(rows[i])>.3),'The desks never moved');
+ assert.ok(layout.units.slice(0,CLASS_SIZE).some(u=>Math.abs(Math.abs(u.unit.rotation.y)-Math.PI)<.05),'At lunch the desks are turned to face each other');
+ assert.ok(layout.units.slice(0,CLASS_SIZE).every(u=>u.tray.visible&&u.tray.children.length>5),'Somebody has no lunch');
+ assert.ok(layout.units.slice(0,CLASS_SIZE).some((u,i)=>u.unit.position.distanceTo(rows[i])>.3),'The desks never moved');
  // Every pupil at lunch is sitting at their own desk.
  const seated=layout.kids.map(k=>k.duty?k.smockSeated:k.seated);
  assert.ok(seated.every(f=>f.visible),'A pupil is missing from lunch');

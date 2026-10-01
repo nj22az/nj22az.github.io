@@ -36,11 +36,11 @@ export const NEIGHBOURS=Object.freeze([
    'いらっしゃい！ Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.',
    'Thuan-chan comes on Sundays and orders the small one and then eats half of mine. Tell her I said so.',
    'Since 1972 on this corner. The machine is older than the shop. It sounds like a tractor and it makes the best ice on the island.']},
- {name:'Mr Shimabukuro',look:'Mr Tanabe',height:1.66,role:'waiting for a head to cut',at:[6.55,-4.2],y:.08,face:[-1,0],pose:'Idle',hours:[[H(9),H(19)]],
+ {name:'Mr Shimabukuro',look:'Mr Tanabe',height:1.66,role:'minding the generators',at:[6.55,-4.2],y:.08,face:[-1,0],pose:'Idle',hours:[[H(7),H(19)]],
   lines:[
-   'A cut? You have — ah. No, I see. A shave, then. Very smooth head. I can make it smoother.',
-   'Every man in this town has sat in that chair. The harbour master, the bus driver, the priest from Naha when his car broke down. They all tell me everything. I tell nobody. Mostly.',
-   'The pole turns when I am open. The motor broke in 1990, so now it does not turn, and I am always open.']},
+   'Hear that? Two diesels, one running, one resting. Every light on this island comes through that switchboard. Mind the yellow line.',
+   'I used to cut hair in here, you know. Then the town needed a power station more than it needed another barber. The chairs are in my kitchen.',
+   'When the tanker is in at the oil jetty I take the truck down and bring the diesel up. Six trips. On typhoon days I sleep on a camp bed by the switchboard.']},
  {name:'Mrs Yonamine',look:'Naoko',height:1.56,role:'behind the fish counter',at:[-9.95,10.25],y:.08,face:[1,0],pose:'Interact',hours:[[H(7),H(15)]],
   lines:[
    'Irabu-chā, fresh this morning — the blue one, parrotfish. Sashimi with vinegar miso. Don’t make that face, try it first.',
@@ -82,7 +82,7 @@ export const NEIGHBOURS=Object.freeze([
   route:[[2.6,15.2],[2.6,-14.6],[4.3,-15.2],[4.3,-1.6],[5.4,2.4],[14,2.4],[14,9.2],[14,2.4],[5.4,2.4],[4.3,-1.6],[2.6,-1.2]],
   lines:[
    'Two collections a day, 10:30 and 16:30, same as the post box says. The post box is never wrong. I am sometimes wrong.',
-   'Letters for the Nakasones, a parcel for the barber, and a postcard for Sakura from somebody in Hanoi. I do not read postcards. The picture was very nice.']},
+   'Letters for the Nakasones, a parcel for the power station, and a postcard for Sakura from somebody in Hanoi. I do not read postcards. The picture was very nice.']},
 ]);
 
 /** Everything they can say, by name, for the conversation box. */
