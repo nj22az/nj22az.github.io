@@ -4,6 +4,7 @@ import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {createMagazineReader} from './src/ui/magazine-reader.js';
 import {townCalendarAt} from './src/town-clock.js';
+import {wantsAnother} from './src/people/drunk.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
 import {restoreSakura,buySakuraItem,recordSakuraSale} from './src/commerce/sakura-economy.js';
 import {printedModels} from './src/workshop/catalogue.js';
@@ -43,7 +44,7 @@ import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorag
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
+export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -421,8 +422,9 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function izakayaOrder(kind){
     const items=Object.values(kind==='drinks'?DRINKS:DISHES);
     show(kind==='drinks'?'Minato · to drink':'Minato · from the kitchen','You have ¥'+state.yen+'. Nao waits with her pad.',[
-      ...items.map(item=>[item.jp+' · ¥'+item.price+(state.yen<item.price?' (not enough yen)':''),()=>{
+      ...items.map(item=>[item.jp+' · ¥'+item.price+(state.yen<item.price?' (not enough yen)':item.alcohol>0&&!wantsAnother(getTipsy(),item.alcohol)?' (Nao says enough)':''),()=>{
         if(state.yen<item.price){receipt('Minato','Nao smiles: 今度ね。 Next time, then. You have ¥'+state.yen+'.');return;}
+        if(item.alcohol>0&&!wantsAnother(getTipsy(),item.alcohol)){receipt('Minato','Nao puts a glass of water in front of you: もう十分ですよ。 Enough for tonight -- drink this, and then home.');return;}
         if(!spend(item.price))return;
         if(!onOrderDrink(item.id)){state.yen+=item.price;save();receipt('Minato','Nao is busy -- try again in a moment.');return;}
         onTime(2);note('Ordered '+item.en.toLowerCase()+' at Minato.');close();

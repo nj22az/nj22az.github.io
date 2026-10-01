@@ -1,4 +1,5 @@
 import {TOWN_DESTINATIONS} from '../world/town-grid.js';
+import {soberUp} from './drunk.js';
 import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {RAMEN_DOOR,IZAKAYA_DOOR} from './social.js';
 import {homeRoutine} from './home-life.js';
@@ -248,7 +249,11 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  // and pointed at the shelter, which stopped being behind the bus when the bus stopped
  // coming down to the shelter.
  const alightingPoint=()=>(world.ferry||world.bus)?.door||transitStop().arrival;
- return {update(dt,minutes,rain){if(paused())return;clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
+ return {update(dt,minutes,rain){if(paused())return;
+  // Drink wears off on the town clock for everyone (drunk.js), wherever they are.
+  const passed=Number.isFinite(clockMinutes)?minutes-clockMinutes:0;
+  if(passed>0)for(const p of world.people){const u=p.g?.userData;if(u?.tipsy)u.tipsy=soberUp(u.tipsy,passed);}
+  clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
    if(g.userData.playerControlled){outside.push(p);continue;}

@@ -82,7 +82,7 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
   talking:!!(u.chat?.speaking||u.speakingUntil>now),
   expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
-  sleeping,gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,
+  sleeping,gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,tipsy:u.tipsy||0,
  });
  // Every resident uses the same hand fit and portion animation as the player.
  const heldKind=u.heldItem||(['Drink','DrinkStanding'].includes(u.socialPose)?'beer':u.socialPose==='Eat'?'rice':null);
@@ -168,7 +168,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
    // The root sits where game.js puts it; seated, it has already been lowered to the seat.
    animator.update(dt,{speed:state.speed||0,running:!!state.running,seated:!!state.seated,
     seatHeight:state.seated?avatar.measure.hipY-avatar.measure.seatDrop:undefined,seat:seatMove,airborne:!!state.airborne,
-    talking:time<speakUntil,expression,gaze:lookPoint,heldProp:held});
+    talking:time<speakUntil,expression,gaze:lookPoint,heldProp:held,tipsy:state.tipsy||0});
    if(state.seated)avatar.root.position.y=0;
    if(held?.userData.consumable){
     const c=animator.consumption;

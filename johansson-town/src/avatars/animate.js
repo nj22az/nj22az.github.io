@@ -38,7 +38,7 @@ export function createAvatarAnimator(avatar){
  const gazeLocal=new THREE.Vector3();
  let phase=0,time=Math.random()*10,rootY=0,hipsY=0,lean=0;
  let gesture=null,blinkIn=1+Math.random()*3,blinkT=-1,talkT=0,talkOpen=0,glance=[0,0],glanceIn=2,lastExpression='neutral';
- let consumption=null,consumeTime=0,lastConsume=null;
+ let consumption=null,consumeTime=0,lastConsume=null,driftX=0;
  const set=(j,x=0,y=0,z=0)=>target[j].set(x,y,z);
  const add=(j,x=0,y=0,z=0)=>target[j].add(new THREE.Vector3(x,y,z));
 
@@ -53,7 +53,7 @@ export function createAvatarAnimator(avatar){
   * @param {object} s what the body is doing:
   *   speed, running, seated, seatHeight, floorHeight, pose, riding, ridePhase, carrying,
   *   waving, talking, expression, sleeping, airborne, seat ('Sit'|'SitEat'|'Soak'),
-  *   gaze (a world point to look at)
+  *   gaze (a world point to look at), tipsy (0–4: how much they have drunk)
   */
  function update(dt,s={}){
   time+=dt;
@@ -118,6 +118,29 @@ export function createAvatarAnimator(avatar){
    else if(pose==='Sit'||pose==='Sleep'){set('head',.2);}
    if(s.carrying){set('shoulderL',-1.15,0,.3);set('shoulderR',-1.15,0,-.3);set('elbowL',-.5);set('elbowR',-.5);}
   }
+  // Drunk (tipsy 0–4, 2.5 is properly drunk): the body loses its line. A slow roll
+  // through hips and chest, a lolling head, a stride that comes out uneven and arms held
+  // out for balance; now and then a lurch. Standing, the whole body sways on its feet.
+  const drunk=THREE.MathUtils.clamp((s.tipsy||0)/2.5,0,1);
+  let drift=0;
+  if(drunk>0&&!s.riding&&!s.airborne){
+   const roll=Math.sin(time*1.7),lurch=Math.max(0,Math.sin(time*.43+Math.sin(time*.19)*2))**8;
+   if(s.seated){add('head',.22*drunk+Math.sin(time*.6)*.06*drunk,Math.sin(time*.37)*.1*drunk,Math.sin(time*.5)*.12*drunk);add('chest',.08*drunk,0,Math.sin(time*.5)*.05*drunk);}
+   else if(moving){
+    const uneven=1+Math.sin(phase*.5)*.35*drunk;
+    target.thighL.x*=uneven;target.thighR.x*=2-uneven;
+    add('hips',0,0,roll*.12*drunk);add('chest',.06*drunk+lurch*.25*drunk,0,-roll*.14*drunk);
+    add('head',.1*drunk,Math.sin(time*.8)*.15*drunk,roll*.18*drunk);
+    add('shoulderL',0,0,.35*drunk);add('shoulderR',0,0,-.35*drunk);
+    drift=roll*.07*drunk+lurch*Math.sign(Math.sin(time*.21))*.06*drunk;
+   }else{
+    add('hips',0,0,Math.sin(time*.9)*.06*drunk);add('chest',.04*drunk,0,-Math.sin(time*.9)*.08*drunk);
+    add('head',.12*drunk,Math.sin(time*.4)*.12*drunk,Math.sin(time*.9+.6)*.12*drunk);
+    add('thighL',0,0,.05*drunk);add('thighR',0,0,-.05*drunk);
+    drift=Math.sin(time*.9)*.04*drunk;
+   }
+  }
+  driftX+=(drift-driftX)*(1-Math.exp(-dt*6));
   if(s.airborne&&!s.seated){set('thighL',-.6);set('thighR',-.2);set('kneeL',1);set('kneeR',.6);set('shoulderL',-.3,0,1.6);set('shoulderR',-.3,0,-1.6);}
   // A feeling arriving brings its body with it, once.
   const expression=s.expression||'neutral';
@@ -141,6 +164,7 @@ export function createAvatarAnimator(avatar){
   for(const j of JOINTS){current[j].lerp(target[j],k);bones[j].rotation.set(current[j].x,current[j].y,current[j].z);}
   rootY+=(targetRoot-rootY)*(s.seated||s.riding?1-Math.exp(-dt*9):k);hipsY+=(targetHips-hipsY)*k;lean+=(targetLean-lean)*k;
   if(s.riding)rootY=targetRoot;
+  avatar.root.position.x=s.riding?0:driftX;
   avatar.root.position.z=s.riding?.21*(s.bicycleFit||bicycleRiderFit(m)).scale:0;
   avatar.root.position.y=rootY+(s.seated||s.riding?0:(s.floorHeight||0));
   bones.hips.position.y=m.hipY+(s.riding?0:hipsY);
