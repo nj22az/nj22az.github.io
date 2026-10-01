@@ -7,7 +7,11 @@ and return to the pink shop curtain. Receiving and dispatch bays connect to four
 stock departments with random shelf banks and clear cross-aisles.
 
 - WASD / arrows: walk. Shift: run. Drag: look. Escape: pause.
-- Touch: Move and Look pads, with a held Run button.
+- Touch: drag the left half to move and the right half to look. Sticks appear at
+  the initial touch position and disappear on release. Run appears while Move is
+  held; hold it to sprint. Two-thumb movement/look does not change the zoom.
+- List and Map open on demand and close when movement starts. Progress and Pause
+  remain available in the compact top bar. There is no optional Moonwalk mode.
 - Gamepad: left stick moves, right stick looks; shoulder / stick press runs.
 - “Let Thuan restock” follows a real route, collects the list and returns to the
   shop. Move or select “Take control” to take over. Assisted runs do not set a best time.
@@ -25,14 +29,15 @@ under `src/`. No dependency installation is required:
 
 ```sh
 node thuans-storage/scripts/build-runtime.mjs
-node --test thuans-storage/tests/playability.test.mjs
+node --test thuans-storage/tests/*.test.mjs
 ```
 
 The build produces a content-hashed runtime and updates `index.html`. Commit both
 the source and generated output. GitHub Pages serves the committed files directly.
 
 Tests cover 300 seeded layouts, collision sliding, keyboard and touch input reset,
-the actual GLB skeleton and animation weights, pause/resume, and four complete
+the actual GLB skeleton and animation weights, pause/resume, straight reverse movement, independent touch pointer ownership,
+contextual control resets, and four complete
 automatic restocking runs. Numerical tests use the real Three.js scene and skin;
 they substitute the GPU renderer and sound. They do not verify visual rendering
 or performance on a physical phone.

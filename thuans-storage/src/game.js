@@ -45,7 +45,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     const cell=_d(px,pz,maze),zone=bd(cell.c,cell.r,maze)?.name ?? 'Main aisle';
     onHud({phase,time,collected,total:required.length,list:required.map(({id,name,taken})=>({id,name,taken,needed:true})),
       readyToStock:collected===required.length,thuanReady:characterReady,pointerLocked:controls.isPointerLocked(),
-      zone,assisted,quote:reaction,reaction:reactionTime>0?reaction:'',autoRestocking:automatic,seed:maze.seed,
+      zone,moving:speed>0.08,assisted,quote:reaction,reaction:reactionTime>0?reaction:'',autoRestocking:automatic,seed:maze.seed,
       explored:[...explored].filter(key=>{const[c,r]=key.split(',').map(Number);return yd(c,r,maze);}).length/maze.cells.filter(v=>v===0).length,guestPrompt,guest:world.guest?{name:world.guest.name,id:world.guest.id}:null});
   }
   function chooseRoute() {
@@ -82,6 +82,21 @@ function om({canvas,minimap,onHud,gltf=null}) {
     const looking=Math.abs(look.x)>0.35||Math.abs(look.y)>0.35||Math.abs(input.lookHoldX)>0.06||Math.abs(input.lookHoldY)>0.06;
     lookIdle=looking?0:lookIdle+dt;
     let targetX=0,targetZ=0;
+    // Forward look: character heading. Face toward travel before stepping (no moonwalk).
+    const faceTowardTravel=(tx,tz)=>{
+      const travel=Math.hypot(tx,tz);
+      if(travel<1e-4)return {x:0,z:0,yaw:character.getHeading()};
+      const travelYaw=Math.atan2(-tx,-tz);
+      character.setHeading(travelYaw);
+      const facing=character.getHeading();
+      let delta=travelYaw-facing;
+      while(delta>Math.PI)delta-=Math.PI*2;
+      while(delta<-Math.PI)delta+=Math.PI*2;
+      // Turn in place when facing away; otherwise scale pace by alignment.
+      if(Math.abs(delta)>=0.9)return {x:0,z:0,yaw:travelYaw};
+      const align=alignedStep(delta);
+      return {x:tx*align,z:tz*align,yaw:travelYaw};
+    };
     if(automatic) {
       if(autoWait>0){autoWait-=dt;vx=vz=0;}
       else {
@@ -90,32 +105,43 @@ function om({canvas,minimap,onHud,gltf=null}) {
         if(route.length){
           const dx=route[0].x-px,dz=route[0].z-pz,distance=Math.hypot(dx,dz);
           const pace=Math.min(STORAGE_WALK_SPEED,distance/dt);
-          targetX=dx/distance*pace;targetZ=dz/distance*pace;
-          if(!look.x&&!input.lookHoldX)yaw=Sd(yaw,Math.atan2(-dx,-dz),1-Math.exp(-2.3*dt));
+          const faced=faceTowardTravel(dx/distance*pace,dz/distance*pace);
+          targetX=faced.x;targetZ=faced.z;
+          if(!look.x&&!input.lookHoldX)yaw=Sd(yaw,faced.yaw,1-Math.exp(-2.3*dt));
         }
       }
       vx=targetX;vz=targetZ;
     } else {
       const pace=input.sprint?STORAGE_RUN_SPEED:STORAGE_WALK_SPEED;
-      targetX=(Math.cos(yaw)*input.moveX-Math.sin(yaw)*input.moveY)*pace;
-      targetZ=(-Math.sin(yaw)*input.moveX-Math.cos(yaw)*input.moveY)*pace;
-      vx=X(vx,targetX,16,dt);vz=X(vz,targetZ,16,dt);
-      if(Math.hypot(targetX,targetZ)<0.01&&Math.hypot(vx,vz)<0.025)vx=vz=0;
+      const rawX=(Math.cos(yaw)*input.moveX-Math.sin(yaw)*input.moveY)*pace;
+      const rawZ=(-Math.sin(yaw)*input.moveX-Math.cos(yaw)*input.moveY)*pace;
+      const faced=faceTowardTravel(rawX,rawZ);
+      targetX=faced.x;targetZ=faced.z;
+      // No residual slide while turning in place — that was reading as a moonwalk.
+      if(Math.hypot(targetX,targetZ)<0.01){vx=vz=0;}
+      else {
+        vx=X(vx,targetX,16,dt);vz=X(vz,targetZ,16,dt);
+        if(Math.hypot(vx,vz)<0.025)vx=vz=0;
+      }
     }
     const oldX=px,oldZ=pz,next=moveStoragePlayer(px,pz,vx*dt,vz*dt,maze);
     px=next.x;pz=next.z;
     // Animation uses the distance actually travelled, not the requested speed.
     vx=(px-oldX)/dt;vz=(pz-oldZ)/dt;speed=Math.hypot(vx,vz);
-    if(speed>0.08)character.setHeading(Math.atan2(-vx,-vz));
-    // Snap camera behind when walking without active look input (shoulder recenter).
-    if(!automatic&&speed>0.35&&lookIdle>0.28){
+    if(speed>0.08){
+      const travelYaw=Math.atan2(-vx,-vz);
+      character.setHeading(travelYaw);
+    }
+    // Only recenter on forward input. Recentring during reverse/sideways input
+    // rotates the camera-relative travel vector every frame and steers in circles.
+    if(!automatic&&input.moveY>0.1&&Math.abs(input.moveX)<0.1&&speed>0.35&&lookIdle>0.28){
       yaw=Sd(yaw,Math.atan2(-vx,-vz),1-Math.exp(-3.4*dt));
     }
     if(speed>0.6)sound.footstep(speed);
     idleTime=speed<0.08?idleTime+dt:0;
     time+=dt;reveal();collect();talkToGuest(dt);
     if(world.items.filter(item=>item.needed).every(item=>item.taken)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
-      phase='won';automatic=false;speed=vx=vz=0;controls.reset();releasePointer();
+      phase='won';automatic=false;speed=vx=vz=0;controls.reset();controls.clearSprint();releasePointer();
       reaction='Everything is ready. Sakura is open.';reactionTime=10;
       character.setCelebrate(true);character.setWave(false);sound.win();emitHud();
     }
@@ -163,37 +189,22 @@ function om({canvas,minimap,onHud,gltf=null}) {
     event.preventDefault();
     boomLength=Math.max(2.55,Math.min(5.1,boomLength+Math.sign(event.deltaY)*0.18));
   }
-  let pinchStart=0;
-  function onTouchStart(event){
-    if(event.touches?.length===2){
-      const a=event.touches[0],b=event.touches[1];
-      pinchStart=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
-    }
-  }
-  function onTouchMove(event){
-    if(event.touches?.length!==2||!pinchStart)return;
-    const a=event.touches[0],b=event.touches[1];
-    const dist=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
-    const delta=(pinchStart-dist)*0.01;
-    pinchStart=dist;
-    boomLength=Math.max(2.55,Math.min(5.1,boomLength+delta));
-  }
   function resize(){const w=canvas.clientWidth||1,h=canvas.clientHeight||1;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   function releasePointer(){if(controls.isPointerLocked())document.exitPointerLock?.();}
-  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();releasePointer();emitHud();}
+  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();controls.clearSprint();releasePointer();emitHud();}
   function visibility(){if(document.hidden)pause();}
   function start(auto=false){
-    sound.unlock();controls.reset();accumulator=0;lastFrame=performance.now();
+    sound.unlock();controls.reset();controls.clearSprint();accumulator=0;lastFrame=performance.now();
     if(phase==='title'||phase==='paused'||phase==='restocking')phase='playing';
     automatic=auto;assisted ||= auto;route=[];autoTarget=null;character.setWave(false);cameraInitial=true;
+    // Leave the title pose: face into the stockroom (yaw), snap so she does not moonwalk on the first step.
+    character.setHeading(yaw,true);
     say(auto?'I will collect the list. You can take over at any time.':'Tea, biscuits, and a little order. Let us begin.',4);emitHud();
   }
   resetPosition();resize();
   const observer=new ResizeObserver(resize);observer.observe(canvas);
   window.addEventListener('resize',resize);window.addEventListener('blur',pause);document.addEventListener('visibilitychange',visibility);
   canvas.addEventListener('wheel',onWheel,{passive:false});
-  canvas.addEventListener('touchstart',onTouchStart,{passive:true});
-  canvas.addEventListener('touchmove',onTouchMove,{passive:true});
   renderer.setAnimationLoop(()=>{
     if(disposed)return;
     const now=performance.now(),dt=Math.min((now-lastFrame)/1000,0.1);lastFrame=now;
@@ -214,11 +225,11 @@ function om({canvas,minimap,onHud,gltf=null}) {
   emitHud();
   return {
     start:()=>start(false),autoRestock:()=>start(true),pause,
-    resume(){if(phase==='paused'){controls.reset();phase='playing';emitHud();}},
-    takeControl(){automatic=false;route=[];controls.reset();say('Your turn. I have the list.');emitHud();},
-    restart(seed){sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
+    resume(){if(phase==='paused'){controls.reset();controls.clearSprint();phase='playing';emitHud();}},
+    takeControl(){automatic=false;route=[];controls.reset();controls.clearSprint();say('Your turn. I have the list.');emitHud();},
+    restart(seed){sound.unlock();controls.reset();controls.clearSprint();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
     setMuted:muted=>sound.setMuted(muted),
-    setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:value=>controls.setTouchSprint(value),requestLock:()=>controls.tryPointerLock(canvas),
-    dispose(){disposed=true;renderer.setAnimationLoop(null);controls.detach();observer.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('blur',pause);document.removeEventListener('visibilitychange',visibility);canvas.removeEventListener('wheel',onWheel);canvas.removeEventListener('touchstart',onTouchStart);canvas.removeEventListener('touchmove',onTouchMove);releasePointer();sound.dispose();world.dispose();character.dispose();renderer.dispose();},
+    setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:(value,pointerId)=>controls.setTouchSprint(value,pointerId),requestLock:()=>controls.tryPointerLock(canvas),
+    dispose(){disposed=true;renderer.setAnimationLoop(null);controls.detach();observer.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('blur',pause);document.removeEventListener('visibilitychange',visibility);canvas.removeEventListener('wheel',onWheel);releasePointer();sound.dispose();world.dispose();character.dispose();renderer.dispose();},
   };
 }

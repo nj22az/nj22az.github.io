@@ -27,9 +27,12 @@ function Yp(maze) {
   const materials = {
     wall: new co({color:0xe9e2d4}), steel: new co({color:0x5a7074}),
     shelf: new co({color:0xc4c9bc}), wood: new co({color:0xa9845c}),
-    tape: new co({color:0xe8c86a}), dark: new co({color:0x4a5556}),
+    tape: new co({color:0xe8c86a,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),
+    dark: new co({color:0x4a5556}),
     lamp: new co({color:0xfff3dc,emissive:0xfff0d2,emissiveIntensity:0.72}),
-    sakura: new co({color:0xf3d0d8}), cream: new co({color:0xf7f1e6}),
+    // Decals/end-caps/posters: bias depth so they do not z-fight coplanar hosts.
+    sakura: new co({color:0xf3d0d8,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),
+    cream: new co({color:0xf7f1e6,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),
   };
   const productMaps = Ap();
   for (const def of ad) materials[def.id] = new co({map:productMaps.get(def.id)});
@@ -52,14 +55,14 @@ function Yp(maze) {
   for(let r=0;r<maze.rows;r++) for(let c=0;c<maze.cols;c++) {
     if(maze.cells[r*maze.cols+c]!==1) continue;
     const p=gd(c,r,maze);box('wall',p.x,cd/2,p.z,sd,cd,sd);
-    box('dark',p.x,0.18,p.z,sd+0.01,0.36,sd+0.01);
+    box('dark',p.x,0.19,p.z,sd+0.01,0.34,sd+0.01);
   }
   const random=ud(maze.seed^711);
   for(const bank of maze.shelves) {
     const centre=gd(bank.c+(bank.w-1)/2,bank.r+(bank.h-1)/2,maze);
     const width=bank.w*sd, depth=bank.h*sd;
     // Collision and visible rack extents agree, including the bottom plinth.
-    box('dark',centre.x,0.08,centre.z,width,0.16,depth);
+    box('dark',centre.x,0.09,centre.z,width,0.14,depth);
     for(const sx of [-1,1]) for(const sz of [-1,1]) {
       box('steel',centre.x+sx*(width/2-0.045),1.05,centre.z+sz*(depth/2-0.045),0.09,2.1,0.09);
     }
@@ -73,27 +76,35 @@ function Yp(maze) {
         const vertical=bank.h>bank.w;
         const x=cell.x+(vertical?(side?0.39:-0.39):0);
         const z=cell.z+(vertical?0:(side?0.39:-0.39));
-        box(def.id,x,0.45+level*0.62,z,vertical?0.58:1.15,0.4,vertical?1.15:0.58);
+        box(def.id,x,0.46+level*0.62,z,vertical?0.58:1.15,0.4,vertical?1.15:0.58);
       }
     }
     const signTexture=Sp(od[bank.zone].label,od[bank.zone].color);textures.push(signTexture);
     const sign=Wp(od[bank.zone].label,od[bank.zone].color,signTexture);
-    sign.position.set(centre.x,2.3,centre.z-depth/2-0.025);sign.rotation.y=Math.PI;group.add(sign);
-    // Warm cream + sakura end-cap plaques (late-Shōwa konbini stockroom charm).
-    box('cream',centre.x-width/2-0.02,1.15,centre.z,0.04,0.55,Math.min(depth,0.9));
-    box('sakura',centre.x+width/2+0.02,1.15,centre.z,0.04,0.55,Math.min(depth,0.9));
+    sign.position.set(centre.x,2.3,centre.z-depth/2-0.07);sign.rotation.y=Math.PI;group.add(sign);
+    // Warm cream + sakura end-cap plaques — offset off the rack so faces are not coplanar.
+    box('cream',centre.x-width/2-0.045,1.15,centre.z,0.035,0.55,Math.min(depth,0.9));
+    box('sakura',centre.x+width/2+0.045,1.15,centre.z,0.035,0.55,Math.min(depth,0.9));
   }
   // Soft wall posters — cream cards with sakura trim, never horror.
+  // Sit on the aisle face of the wall (not coplanar with the wall volume).
   const posterSpots=[[2,4],[18,4],[2,16],[18,16],[10,1]];
   for(const [c,r] of posterSpots){
     if(maze.cells[r*maze.cols+c]!==1) continue;
     const p=gd(c,r,maze);
-    box('cream',p.x,1.55,p.z,0.08,0.7,0.55);
-    box('sakura',p.x,1.55,p.z+(r<10?0.02:-0.02),0.02,0.62,0.48);
+    let ix=0,iz=0;
+    for(const [dc,dr] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nc=c+dc,nr=r+dr;
+      if(nc<0||nr<0||nc>=maze.cols||nr>=maze.rows) continue;
+      if(maze.cells[nr*maze.cols+nc]===0){ix=dc;iz=dr;break;}
+    }
+    const face=sd/2+0.03;
+    box('cream',p.x+ix*face,1.55,p.z+iz*face,ix?0.04:0.55,0.7,iz?0.04:0.55);
+    box('sakura',p.x+ix*(face+0.025),1.55,p.z+iz*(face+0.025),ix?0.02:0.48,0.62,iz?0.02:0.48);
   }
   // Continuous clear transport lanes, rather than a hazard border on every tile.
   for(const c of [8.8,11.2]) {
-    const p=gd(c,12,maze);box('tape',p.x,0.009,p.z,0.045,0.012,14*sd);
+    const p=gd(c,12,maze);box('tape',p.x,0.014,p.z,0.045,0.01,14*sd);
   }
   const receiving=maze.rooms[0],dispatch=maze.rooms[1];
   for(const room of [receiving,dispatch]) {
@@ -126,7 +137,14 @@ function Yp(maze) {
     carton.scale.set(0.45/1.6,0.48/1.6,0.45/1.6);carton.position.y=-0.26/1.6;mesh.add(carton);
     const labelTex=Sp(item.def.short||item.def.name,item.def.accent||0xf3d0d8);textures.push(labelTex);
     const label=Wp(item.def.short||item.def.name,item.def.accent||0xf3d0d8,labelTex);
-    label.scale.set(0.55,0.55,0.55);label.position.set(0,0.08,0.28);mesh.add(label);
+    label.scale.set(0.55,0.55,0.55);label.position.set(0,0.08,0.36);mesh.add(label);
+    label.traverse(node=>{
+      const mats=node.material?(Array.isArray(node.material)?node.material:[node.material]):[];
+      for(const mat of mats){
+        mat.polygonOffset=true;mat.polygonOffsetFactor=-2;mat.polygonOffsetUnits=-2;
+        if(mat.transparent)mat.depthWrite=false;
+      }
+    });
     mesh.position.set(x,0.5,z);mesh.scale.setScalar(1.6);group.add(mesh);
     return {...item,mesh,taken:false,name:item.def.name,x,z};
   });
