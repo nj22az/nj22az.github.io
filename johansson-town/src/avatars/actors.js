@@ -88,7 +88,7 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  const heldKind=u.heldItem||(['Drink','DrinkStanding'].includes(u.socialPose)?'beer':u.socialPose==='Eat'?'rice':null);
  if(actor.heldKind!==heldKind){
   disposeServing(actor.heldProp);disposeServing(actor.dishProp);actor.heldProp=null;actor.dishProp=null;actor.heldKind=heldKind;actor.portion=1;actor.consumedCycle=-1;
-  const drinks={beer:'draft',tea:'oolong',cup:'oolong',can:'can',bottle:'bottle',draft:'draft',oolong:'oolong',awamori:'awamori',sake:'sake'};
+  const drinks={beer:'draft',tea:'oolong',cup:'oolong',coffee:'coffee',mugicha:'mugicha',can:'can',bottle:'bottle',draft:'draft',oolong:'oolong',awamori:'awamori',sake:'sake'};
   const foods=['rice','bun','ramen','fish','yakitori','gyoza','edamame','sashimi','oden','hiyayakko','dashimaki','agedashi','karaage','ochazuke','chopsticks'];
   if(drinks[heldKind])actor.heldProp=createDrinkProp(drinks[heldKind],{held:true});
   else if(foods.includes(heldKind)){

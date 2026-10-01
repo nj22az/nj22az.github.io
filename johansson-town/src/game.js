@@ -8,6 +8,7 @@ import {buildClassroom} from './world/interiors/classroom.js';
 import {buildOnsenInterior,ONSEN_ROOM} from './world/interiors/onsen.js';
 import {realTownMinutes,clockCatchUp,townClockLineAt,readClockSetting,writeClockSetting,startingMinutes,createClock} from './town-clock.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
+import {createRamenKitchen} from './people/ramen-kitchen.js';
 import {RAMEN_LAYOUT} from './world/interiors/ramen-layout.js';
 import {SAKURA_LAYOUT} from './world/interiors/sakura-layout.js';
 import {createSakuraShop} from './people/sakura-shop.js';
@@ -21,7 +22,7 @@ import {buildKobanInterior} from './world/interiors/koban.js';
 import {chooseOpening} from './world/openings.js';
 import {createMotion,createAutoRun,swipeLook,steerYaw} from './input/touch-feel.js';
 import {buildSatoRamenRoom} from './world/interiors/sato-ramen.js';
-import {SATO_ROOM,SATO_COLLIDERS,SATO_MENU,SATO_RAMEN,satoRamenOpen} from './world/sato-ramen-layout.js';
+import {SATO_ROOM,SATO_COLLIDERS,SATO_MENU,SATO_RAMEN,SATO_GUEST_SEATS,SATO_LUNCH_DRINK,satoRamenOpen} from './world/sato-ramen-layout.js';
 import {transitStop} from './world/transit.js';
 import {buildDungeon} from './dungeon/dungeon.js';
 import {createFists,bestWeapon} from './interact/fists.js';
@@ -31,7 +32,7 @@ import {buildResidentHome} from './world/interiors/resident-home.js';
 import {createWorkplaceResidents} from './people/workplace-residents.js';
 import {createResidentLedger} from './people/resident-personalities.js';
 import {createTownActivities} from './people/town-activities.js';
-import {createVenueService} from './people/venue-service.js';
+import {createVenueService,MEALS} from './people/venue-service.js';
 import {buildWarehouseInterior} from './world/interiors/warehouse.js';
 import {createDetailStream} from './world/detail-stream.js';
 import {createTownSections} from './render/town-sections.js';
@@ -59,7 +60,7 @@ import {MOVES} from './avatars/moves.js';
 import {createAvatarJohansson,playerRecipe,savePlayerRecipe,importRecipeFromURL} from './avatars/actors.js';
 import {openCreator} from './avatars/creator.js';
 import {assetURL} from './assets.js';
-import {createBeerService,createDrinkProp,createBiteProp,setPropPortion} from './people/izakaya-beer.js';
+import {createBeerService,createDrinkProp,createBiteProp,setPropPortion,DRINKS} from './people/izakaya-beer.js';
 import {DRUNK,LAGER_ALCOHOL,soberUp,wantsAnother,drink as drinkUp} from './people/drunk.js';
 import {createShopCarry} from './interact/shop-carry.js';
 import {townAudio} from './audio/town-audio.js?snappy=1';
@@ -402,6 +403,17 @@ function sipDrink(){
  say(first?'乾杯！ The first mouthful is the coldest thing in Okinawa.':r.left?'Another mouthful. '+r.left+' left.':'The last of it. Nao glances over: もう一杯？',3);
  return true;
 }
+/** A mouthful of ramen, or a sip of what came with it, at a ramen counter (ramen-player-service.js). */
+function ramenMouthful(item,{drink,kind,start,finish}){
+ minutes+=1;townClock.pass(1);activities.state.clockAhead=townClock.ahead;
+ if(drink&&kind==='bottle')tipsy=drinkUp(tipsy,DRINKS.bottle.alcohol/6);
+ if(thirdPerson&&johansson?.ready){
+  johansson.play(drink?'SitDrink':'SitEat');
+  const prop=drink?createDrinkProp(kind,{held:true}):createBiteProp(kind);
+  if(drink){prop.userData.startPortion=start;prop.userData.finishPortion=finish;setPropPortion(prop,start,{immediate:true});}else{prop.userData.startPortion=1;prop.userData.finishPortion=0;}
+  johansson.hold(prop);clearTimeout(sipDrink.timer);sipDrink.timer=setTimeout(()=>johansson?.hold(null),2500);
+ }else if(drink)hands.sip(kind,start,finish);else hands.bite(kind);
+}
 /** E at the table with a dish in front of you: one mouthful of it. */
 function eatDish(){
  if(Math.max(sipDrink.busyUntil||0,eatDish.busyUntil||0)>performance.now())return false;
@@ -572,8 +584,11 @@ const satoRamen=()=>world.townMode==='peninsula';
 const ramenBlocked=(x,z,r=.3)=>satoRamen()?suppliedRoomBoundsBlocked(SATO_ROOM,x,z,r)||SATO_COLLIDERS.some(c=>circleHitsRect(x,z,r,c)):suppliedRoomBoundsBlocked(RAMEN_LAYOUT,x,z,r)||RAMEN_LAYOUT.colliders.some(c=>circleHitsRect(x,z,r,c));
 function hideRamen(){scene.add(ramenLife);ramenLife.visible=false;}
 const ramenGuests=createIndoorResidents({world,parent:ramenLife,collides:ramenBlocked,getRain:()=>weather,place:'ramen',onBorrow:npcActivities.release,getState:()=>activities.state}),homeGuests=createHomeResidents({world,parent:scene,getState:()=>activities.state,collides:environmentBlocked,onBorrow:npcActivities.release,getRain:()=>weather});
+// Mrs Sato's kitchen: she cooks and carries every bowl, the regulars' and yours (people/ramen-kitchen.js).
+const satoKitchen=satoRamen()?createRamenKitchen({getCook:()=>{const g=world.people.find(p=>p.profile.name==='Mrs Sato')?.g;return g&&g.visible&&g.userData.inRamen&&!g.userData.roomTransition?g:null;}}):null;
 const ramenMeals=createVenueService({room:ramenLife,place:'ramen',getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>p.g.userData.inRamen),
- ...(satoRamen()?{staffName:'Mrs Sato',venueName:'Sato Ramen',getStaff:()=>world.people.find(p=>p.profile.name==='Mrs Sato')?.g||null}:{})});
+ ...(satoRamen()?{staffName:'Mrs Sato',venueName:'Sato Ramen',getStaff:()=>world.people.find(p=>p.profile.name==='Mrs Sato')?.g||null,
+  kitchen:satoKitchen,meal:MEALS.lunch,drinkFor:name=>SATO_LUNCH_DRINK[name]||'mugicha',tableFor:p=>SATO_GUEST_SEATS[p.g.userData.ramenSeat]?.table}:{})});
 let storeClerk=world.people.find(p=>p.profile.name==='Thuan').g,storeWelcomed=false;
 const sakuraShop=createSakuraShop({world,scene,state:activities.state,ledger:residentLedger,register:reg,action:activities.action,exit:leaveRoom,getMinutes:()=>minutes,getPlayerSeat:()=>parkSeat?.storeSeatId,getPlayerPosition:()=>player.position,isInside:()=>current?.id==='market',pay:activities.spend,say,onBorrow:npcActivities.release,getRain:()=>weather,save:()=>{if(!catchingUp)activities.save();}});
 storeService=sakuraShop.service;
@@ -599,7 +614,8 @@ function addRoomProps(s){
   if(s.id==='onsen'){roomColliders.push(...activeRoomLayout.colliders);activeRoomLayout.tick(0,minutes);onsenGuests.sync(minutes);return;}
   if(activeRoomLayout){
     if(s.id==='ramen'){room.add(ramenLife);ramenLife.visible=true;ramenGuests.sync(minutes);ramenPlayerService=createRamenPlayerService({room,getSeat:()=>Number.isInteger(parkSeat?.ramenSeatId)?parkSeat:null,getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,say,
-      ...(satoRamen()?{menu:SATO_MENU,isOpen:satoRamenOpen,title:SATO_RAMEN.title,server:'Mrs Sato',closedLine:'Sato Ramen serves lunch, 11:00 to 14:00. Mrs Sato has put the stools up.'}:{})});}
+      onMouthful:ramenMouthful,canOrder:item=>item.prop==='beer'&&!wantsAnother(tipsy,DRINKS.bottle.alcohol)?'Mrs Sato shakes her head: もう十分ですよ。 Have a cold barley tea instead.':true,
+      ...(satoRamen()?{menu:SATO_MENU,isOpen:satoRamenOpen,title:SATO_RAMEN.title,server:'Mrs Sato',kitchen:satoKitchen,closedLine:'Sato Ramen serves lunch, 11:00 to 14:00. Mrs Sato has put the stools up.'}:{})});}
     if(homeOwner(s))homeGuests.enter(s,minutes);
     return;
   }
@@ -1081,7 +1097,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     if(homeOwner(current))homeGuests.update(dt,minutes);
     // The ramen counter: an order is cooked for five seconds, then set down in front of you.
     venueService?.update(dt);beerService?.update(dt);ramenPlayerService?.update(dt);
-    castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);neighbourChats.update(dt,minutes,weather);
+    castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);neighbourChats.update(dt,minutes,weather);
     if(!current&&!catchingUp){world.update(dt,elapsed,daylight(minutes),minutes);neighbours?.update(dt,minutes,player.position);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
 }
 /** Keeps the town on the device clock; a gap of more than a minute is caught up, not jumped. */

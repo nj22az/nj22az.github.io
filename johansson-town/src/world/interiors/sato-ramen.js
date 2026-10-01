@@ -39,12 +39,24 @@ export function buildSatoRamenRoom({room,reg,collider,action,exit}){
  // The menu on wooden plaques along the back wall, above the canopy.
  SATO_MENU.forEach((item,i)=>{
   const plaque=new THREE.Mesh(new THREE.PlaneGeometry(.26,.86),new THREE.MeshStandardMaterial({map:plaqueTexture(item),roughness:.8}));
-  plaque.position.set(6.95+i*.52,3.02,-6.16);plaque.rotation.z=(i%3-1)*.01;plaque.name='Menu plaque · '+item.name;group.add(plaque);
+  plaque.position.set(6.85+i*.44,3.02,-6.16);plaque.rotation.z=(i%3-1)*.01;plaque.name='Menu plaque · '+item.name;group.add(plaque);
  });
  // Steam off the two stock pots and the noodle boiler, rising and thinning out.
  const puffMaterial=new THREE.SpriteMaterial({map:steamTexture(),transparent:true,depthWrite:false,opacity:.5});
  const sources=[[8.28,1.15,-5.95],[8.92,1.15,-5.95],[7.25,.95,-5.95]],puffs=[];
  for(let i=0;i<12;i++){const s=new THREE.Sprite(puffMaterial.clone());s.userData.source=sources[i%3];s.userData.t=i/12;s.name='Steam';group.add(s);puffs.push(s);}
+ // The drinks corner on the back counter, where Mrs Sato pours (people/ramen-kitchen.js):
+ // a steel coffee urn, a jug of cold barley tea and a stack of cups.
+ {
+  const drinks=new THREE.Group();drinks.name='Sato Ramen drinks corner';drinks.position.set(10.72,.92,-3.2);group.add(drinks);
+  const steel=new THREE.MeshStandardMaterial({color:0xb9bcb8,roughness:.25,metalness:.75}),black=new THREE.MeshStandardMaterial({color:0x1d1d1d,roughness:.5});
+  const urn=new THREE.Mesh(new THREE.CylinderGeometry(.11,.12,.38,20),steel);urn.position.set(-.12,.19,0);drinks.add(urn);
+  const lid=new THREE.Mesh(new THREE.SphereGeometry(.11,16,8,0,Math.PI*2,0,Math.PI/2),steel);lid.position.set(-.12,.38,0);drinks.add(lid);
+  const tap=new THREE.Mesh(new THREE.BoxGeometry(.03,.03,.06),black);tap.position.set(-.12,.07,.13);drinks.add(tap);
+  const jug=new THREE.Mesh(new THREE.CylinderGeometry(.065,.07,.24,16),new THREE.MeshStandardMaterial({color:0xdfe8e4,roughness:.08,transparent:true,opacity:.42,depthWrite:false}));jug.position.set(.14,.12,.02);drinks.add(jug);
+  const tea=new THREE.Mesh(new THREE.CylinderGeometry(.06,.065,.18,16),new THREE.MeshStandardMaterial({color:0xa8682a,roughness:.25,transparent:true,opacity:.8}));tea.position.set(.14,.095,.02);drinks.add(tea);
+  for(let k=0;k<4;k++){const cup=new THREE.Mesh(new THREE.CylinderGeometry(.036,.028,.07,16),new THREE.MeshStandardMaterial({color:0xf4f1ea,roughness:.35}));cup.position.set(.32,.035+k*.05,-.02);drinks.add(cup);}
+ }
  const anchor=(position,label,fn)=>{const o=new THREE.Object3D();o.position.set(...position);o.name=label;group.add(o);reg(o,label,fn,true);return o;};
  [...SATO_COUNTER,...SATO_LEDGE].forEach((seat,i)=>{
   const ledge=i>=SATO_COUNTER.length,label=ledge?'Sit at the wall ledge':'Sit at the ramen counter';

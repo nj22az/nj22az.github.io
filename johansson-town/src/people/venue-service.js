@@ -9,18 +9,74 @@ import {LIMIT,wantsAnother,drink as drinkUp} from './drunk.js';
 const BEER=DRINKS.draft.alcohol,ROUND_GAP=20,MAX_ROUNDS=4,BARFLY_PACE=100;
 import {createResidentLedger,residentPersonality} from './resident-personalities.js';
 
-const LABELS={beer:'beer',tea:'green tea',rice:'rice',yakitori:'yakitori',fish:'grilled fish',ramen:'ramen'};
+const LABELS={beer:'beer',tea:'green tea',coffee:'hot coffee',mugicha:'cold barley tea',rice:'rice',yakitori:'yakitori',fish:'grilled fish',ramen:'ramen'};
+const DRINK_PROP={beer:'draft',coffee:'coffee',mugicha:'mugicha'};
+/**
+ * How a meal goes, in steps of `step` seconds through `pattern`: a mouthful on an 'eat'
+ * step, a sip on a 'drink' step, nothing on 'rest', until `bites` and `sips` are used up.
+ * The drink goes from `from` to `to` of a glass. Minato's supper is the old 42 seconds;
+ * Sato Ramen's lunch is a slow bowl with the drink between (MEALS.lunch).
+ */
+export const MEALS=Object.freeze({
+ supper:Object.freeze({step:3,pattern:['drink','rest','eat','rest'],bites:3,sips:4}),
+ round:Object.freeze({step:3,pattern:['drink','rest'],bites:0,sips:4}),
+ lunch:Object.freeze({step:4,pattern:['eat','rest','eat','rest','drink','rest','rest'],bites:8,sips:4,to:.45}),
+ linger:Object.freeze({step:4,pattern:['rest','rest','rest','rest','drink'],bites:0,sips:3,from:.45}),
+ refill:Object.freeze({step:4,pattern:['rest','rest','rest','drink','rest'],bites:0,sips:5}),
+});
+export function mealState(plan,t){
+ const k=Math.floor(t/plan.step),local=t-k*plan.step,act=i=>plan.pattern[i%plan.pattern.length];let eats=0,sips=0;
+ for(let i=0;i<k;i++){const a=act(i);if(a==='eat'&&eats<plan.bites)eats++;else if(a==='drink'&&sips<plan.sips)sips++;}
+ let action=act(k);if(action==='eat'&&eats>=plan.bites||action==='drink'&&sips>=plan.sips)action='rest';
+ const sw=consumptionPhase(local).swallow,from=plan.from??1,to=plan.to??0;
+ return {action,local,foodLeft:plan.bites?Math.max(0,1-(eats+(action==='eat'?sw:0))/plan.bites):0,
+  drinkLeft:from-(from-to)*Math.min(1,(sips+(action==='drink'?sw:0))/plan.sips),done:eats>=plan.bites&&sips>=plan.sips};
+}
 // Persistent meal records stop guests ordering again when the player re-enters.
 // A venue can keep its props under a hidden group and continue its dining cycle.
-export function createVenueService({room,place,getCustomers,getMinutes,getStaff=()=>null,ledger=createResidentLedger(),staffName=place==='izakaya'?'Nao':null,venueName=place==='ramen'?'Inakaya':'Minato'}){
+export function createVenueService({room,place,getCustomers,getMinutes,getStaff=()=>null,ledger=createResidentLedger(),staffName=place==='izakaya'?'Nao':null,venueName=place==='ramen'?'Inakaya':'Minato',drinkFor=null,tableFor=null,kitchen=null,meal=null}){
  const inside=place==='ramen'?'inRamen':'inIzakaya';
  const settings=new Map();let serving=null,timer=0;
  function clear(person){for(const key of ['heldItem','mealState','residentSpeech','heldPortion','foodPortion','consumeElapsed'])delete person.g.userData[key];}
- function remove(person){const setting=settings.get(person);if(!setting)return;for(const prop of [setting.food,setting.drink])disposeServing(prop);settings.delete(person);clear(person);if(serving===person){serving=null;timer=0;}}
+ function remove(person){kitchen?.cancel(person);const setting=settings.get(person);if(!setting)return;for(const prop of [setting.food,setting.drink])disposeServing(prop);settings.delete(person);clear(person);if(serving===person){serving=null;timer=0;}}
  function table(person,prop,side){
   const g=person.g,forward=new THREE.Vector3(-Math.sin(g.rotation.y),0,-Math.cos(g.rotation.y)),right=new THREE.Vector3(Math.cos(g.rotation.y),0,-Math.sin(g.rotation.y));
+  // A counter with a known top (Sato Ramen's stools): on it, in front of the stool.
+  const top=tableFor?.(person);if(top){prop.position.set(...top).addScaledVector(right,side*.15);return;}
   prop.position.copy(g.position).addScaledVector(forward,place==='ramen'?.40:g.userData.seatHeight>.65?.78:.60).addScaledVector(right,side*.15);
   prop.position.y=place==='ramen'?1.04:g.userData.seatHeight>.65?1.16:1.01;
+ }
+ const mealCost=record=>place==='ramen'?300:record.drinkOnly?180:({yakitori:180,fish:260,rice:150}[record.item]||180)+(record.drink==='beer'?180:120);
+ /** The bowl arrives: pay for it, say thank you. Without the yen, they go without. */
+ function settle(person,record,minutes){
+  if(ledger.purchase(person.profile.name,minutes,place+'-meal'+(record.drinkOnly?'-round-'+record.rounds:''),record.drinkOnly?'another '+record.drink:record.item+' + '+record.drink,mealCost(record))){record.delivered=true;person.g.userData.residentSpeech={text:place==='ramen'?'That smells wonderful.':'Thank you, Nao.',until:minutes+4};}
+  else record.finished=true;
+ }
+ /**
+  * After the bowl, at a counter with a kitchen: the rest of the drink a sip at a time,
+  * then a refill when the glass is empty -- the cook brings it over -- for as long as they stay.
+  */
+ function linger(person,setting,data,dt,minutes){
+  const L=setting.linger??={phase:'sipping',t:0,plan:MEALS.linger};
+  setting.food.visible=false;data.mealState='lingering';delete data.foodPortion;
+  if(L.phase==='sipping'){
+   L.t+=dt;const m=mealState(L.plan,L.t),drink=m.action==='drink';
+   setPropPortion(setting.drink,m.drinkLeft);updatePropPortion(setting.drink,dt);
+   data.consumeElapsed=m.local;data.heldPortion=drink?m.drinkLeft:undefined;data.heldItem=drink?setting.record.drink:null;
+   data.socialPose=drink?'Drink':'Sit';data.activity=(drink?'sipping ':'taking their time over ')+LABELS[setting.record.drink];
+   table(person,setting.drink,1);setting.drink.visible=!drink;
+   if(m.done){L.phase='waiting';L.t=25;}
+  }else{
+   delete data.heldItem;delete data.heldPortion;delete data.consumeElapsed;data.socialPose='Sit';
+   setting.drink.visible=L.phase==='waiting';
+   data.activity=L.phase==='refill'?'waiting for a refill of '+LABELS[setting.record.drink]:'chatting over an empty glass';
+   if(L.phase==='waiting'&&(L.t-=dt)<=0){
+    L.phase='refill';data.residentSpeech={text:'おかわり、お願いします。',until:minutes+4};
+    const asked=kitchen.request({items:[setting.record.drink],x:(tableFor?.(person)||[person.g.position.x])[0],label:person.profile.name+'’s',tag:person,
+     onServed:()=>{if(settings.get(person)!==setting)return;setPropPortion(setting.drink,1,{immediate:true});Object.assign(L,{phase:'sipping',t:0,plan:MEALS.refill});data.residentSpeech={text:'ありがとう。',until:minutes+3};}});
+    if(!asked)L.phase='waiting',L.t=60;
+   }
+  }
  }
  return {update(dt){
   const minutes=getMinutes(),present=getCustomers().filter(p=>p.profile.name!==staffName&&p.g.visible&&!p.g.userData.roomTransition);
@@ -42,11 +98,11 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
     continue;
    }
    const account=ledger.account(name,minutes),taste=residentPersonality(name);account.meals??={};
-   const record=account.meals[place]??={item:place==='ramen'?'ramen':taste.meal,drink:place==='ramen'||taste.drink==='beer'&&!wantsAnother(person.g.userData.tipsy,BEER)?'tea':taste.drink,delivered:false,eaten:0,finished:false};
+   const record=account.meals[place]??={item:place==='ramen'?'ramen':taste.meal,drink:place==='ramen'?drinkFor?.(name)||'tea':taste.drink==='beer'&&!wantsAnother(person.g.userData.tipsy,BEER)?'tea':taste.drink,delivered:false,eaten:0,finished:false};
    let setting=settings.get(person);if(setting&&setting.record!==record){remove(person);setting=null;}
    if(!setting){
-    const food=createDishProp(record.item==='fish'?'hokke':record.item),drink=createDrinkProp(record.drink==='beer'?'draft':'oolong');food.visible=drink.visible=false;room.add(food,drink);setting={record,food,drink};settings.set(person,setting);
-    if(!record.delivered&&!record.finished)person.g.userData.residentSpeech={text:place==='ramen'?'One ramen, please.':'A '+LABELS[record.drink]+' and '+LABELS[record.item]+', please, Nao.',until:minutes+5};
+    const food=createDishProp(record.item==='fish'?'hokke':record.item),drink=createDrinkProp(DRINK_PROP[record.drink]||'oolong');food.visible=drink.visible=false;room.add(food,drink);setting={record,food,drink};settings.set(person,setting);
+    if(!record.delivered&&!record.finished)person.g.userData.residentSpeech={text:place==='ramen'?(drinkFor?'One ramen and a '+LABELS[record.drink]+', please.':'One ramen, please.'):'A '+LABELS[record.drink]+' and '+LABELS[record.item]+', please, Nao.',until:minutes+5};
    }
    const data=person.g.userData,seated=Number.isFinite(data.seatHeight);
    // Another round? Only beer drinkers, only after a pause, and only while there is room under the limit.
@@ -54,37 +110,34 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
     Object.assign(record,{finished:false,delivered:false,eaten:0,drunk:0,drinkOnly:true,rounds:(record.rounds||1)+1});delete record.nextRound;
     setPropPortion(setting.drink,1,{immediate:true});data.residentSpeech={text:'Nao, another beer, please!',until:minutes+5};
    }
+   if(record.finished&&kitchen&&seated){linger(person,setting,data,dt,minutes);continue;}
    if(record.finished){const merry=(data.tipsy||0)>=LIMIT-1;data.socialPose=seated?'Sit':'Idle_Neutral';delete data.heldItem;delete data.heldPortion;delete data.foodPortion;delete data.consumeElapsed;data.mealState='finished';data.activity=merry?'merry after a few beers':'relaxing after '+LABELS[record.item];setting.food.visible=setting.drink.visible=false;continue;}
    if(!record.delivered){
     data.socialPose=seated?'Sit':'Idle_Neutral';data.mealState='ordered';data.activity=record.drinkOnly?'waiting for another beer':'waiting for '+LABELS[record.item]+' and '+LABELS[record.drink];
-    if(!serving){serving=person;timer=2.8;}
+    // With a kitchen, the cook makes it and brings it (ramen-kitchen.js); otherwise it simply arrives.
+    if(kitchen&&setting.requested!==false){
+     setting.requested??=kitchen.request({items:[record.item,record.drink],x:(tableFor?.(person)||[person.g.position.x])[0],label:name+'’s',tag:person,onServed:()=>{if(settings.get(person)===setting&&!record.delivered)settle(person,record,getMinutes());}});
+    }else if(!serving){serving=person;timer=2.8;}
    }else{
-    record.eaten+=dt;const phase=Math.floor(record.eaten/3)%4,drink=phase===0||record.drinkOnly&&phase===2,eat=!record.drinkOnly&&phase===2;
-    // Four sips and three bites finish within the existing 42-second meal.
-    const portion=(offset,mouthfuls)=>{const t=Math.max(0,record.eaten-offset);return record.eaten<offset?1:Math.max(0,1-(Math.floor(t/12)+consumptionPhase(t%12).swallow)/mouthfuls);};
-    const drinkLeft=portion(0,4),foodLeft=record.drinkOnly?0:portion(6,3);
+    record.eaten+=dt;
+    const m=mealState(record.drinkOnly?MEALS.round:meal||MEALS.supper,record.eaten),drink=m.action==='drink',eat=m.action==='eat',drinkLeft=m.drinkLeft,foodLeft=m.foodLeft;
     // Each mouthful of beer goes to the head as it goes down.
     if(record.drink==='beer'){const drunk=(1-drinkLeft)*BEER;data.tipsy=drinkUp(data.tipsy,drunk-(record.drunk||0));record.drunk=drunk;}
-    data.consumeElapsed=record.eaten%3;data.heldPortion=drink?drinkLeft:eat?1-consumptionPhase(data.consumeElapsed).swallow:undefined;data.foodPortion=foodLeft;
+    data.consumeElapsed=m.local;data.heldPortion=drink?drinkLeft:eat?1-consumptionPhase(data.consumeElapsed).swallow:undefined;data.foodPortion=foodLeft;
     setPropPortion(setting.food,foodLeft);setPropPortion(setting.drink,drinkLeft);updatePropPortion(setting.food,dt);updatePropPortion(setting.drink,dt);
     data.mealState='eating';data.socialPose=drink?(seated?'Drink':'DrinkStanding'):eat?(seated?'Eat':'EatStanding'):seated?'Sit':'Idle_Neutral';data.heldItem=drink?record.drink:eat?record.item:null;
-    data.activity=drink?'drinking '+LABELS[record.drink]+' at '+venueName:eat?'eating '+LABELS[record.item]:record.drinkOnly?'between sips':'enjoying supper';
+    data.activity=drink?'drinking '+LABELS[record.drink]+' at '+venueName:eat?'eating '+LABELS[record.item]:record.drinkOnly?'between sips':place==='ramen'?'blowing on the noodles':'enjoying supper';
     table(person,setting.food,-1);table(person,setting.drink,1);setting.food.visible=seated&&!eat&&!record.drinkOnly;setting.drink.visible=seated&&!drink;
-    if(record.eaten>=42){record.finished=true;record.nextRound=minutes+ROUND_GAP;setPropPortion(setting.food,0);setPropPortion(setting.drink,0);ledger.record(name,minutes,record.drinkOnly?'had another beer at '+place:'enjoyed '+LABELS[record.item]+' and '+LABELS[record.drink]+' at '+place);}
+    if(m.done){record.finished=true;record.nextRound=minutes+ROUND_GAP;setPropPortion(setting.food,0);if(!kitchen)setPropPortion(setting.drink,0);ledger.record(name,minutes,record.drinkOnly?'had another beer at '+place:'enjoyed '+LABELS[record.item]+' and '+LABELS[record.drink]+' at '+place);}
    }
   }
   // While Nao is bringing the player a drink, izakaya-beer.js has her.
-  const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData[inside]&&!candidate.userData.roomTransition&&!candidate.userData.playerService?candidate:null;if(staff){
+  const candidate=kitchen?null:getStaff(),staff=candidate&&candidate.visible&&candidate.userData[inside]&&!candidate.userData.roomTransition&&!candidate.userData.playerService?candidate:null;if(staff){
    const tidying=!serving&&Math.floor(minutes/6)%3!==2;
    staff.userData.serving=!!serving;staff.userData.socialPose=serving||tidying?'Use':'Idle_Neutral';
    staff.userData.activity=place==='ramen'?serving?'ladling a bowl of ramen for '+serving.profile.name:tidying?'minding the stock pots':'wiping down the ramen counter'
     :serving?'preparing '+settings.get(serving)?.record.drink+' for '+serving.profile.name:tidying?'tidying the Minato counter':'welcoming the evening guests';
   }
-  if(serving&&(place!=='izakaya'||staff)&&(timer-=dt)<=0){
-   const {record}=settings.get(serving),cost=place==='ramen'?300:record.drinkOnly?180:({yakitori:180,fish:260,rice:150}[record.item]||180)+(record.drink==='beer'?180:120);
-   if(ledger.purchase(serving.profile.name,minutes,place+'-meal'+(record.drinkOnly?'-round-'+record.rounds:''),record.drinkOnly?'another '+record.drink:record.item+' + '+record.drink,cost)){record.delivered=true;serving.g.userData.residentSpeech={text:place==='ramen'?'That smells wonderful.':'Thank you, Nao.',until:minutes+4};}
-   else record.finished=true;
-   serving=null;
-  }
- },dispose(){for(const person of [...settings.keys()])remove(person);const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData[inside]&&!candidate.userData.roomTransition?candidate:null;if(staff){delete staff.userData.serving;delete staff.userData.socialPose;}}};
+  if(serving&&(place!=='izakaya'||staff)&&(timer-=dt)<=0){settle(serving,settings.get(serving).record,minutes);serving=null;}
+ },dispose(){for(const person of [...settings.keys()])remove(person);if(kitchen)return;const candidate=getStaff(),staff=candidate&&candidate.visible&&candidate.userData[inside]&&!candidate.userData.roomTransition?candidate:null;if(staff){delete staff.userData.serving;delete staff.userData.socialPose;}}};
 }

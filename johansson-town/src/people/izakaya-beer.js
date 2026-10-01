@@ -105,13 +105,22 @@ export function createDrinkProp(kind,{held=false}={}){
   add(new THREE.CylinderGeometry(.0335,.0335,.045,20),new THREE.MeshStandardMaterial({color:0x1e4f9c,roughness:.4,metalness:.4}),.07);
   add(new THREE.CylinderGeometry(.0336,.0336,.008,20),new THREE.MeshStandardMaterial({color:0xc8322a,roughness:.4}),.095);
   void can;
+ }else if(kind==='coffee'){
+  // Hot coffee at the ramen counter: a thick white cup, on a saucer when it is set down.
+  const china=new THREE.MeshStandardMaterial({color:0xf4f1ea,roughness:.35});
+  const cup=add(new THREE.CylinderGeometry(.036,.028,.07,20,1,true),new THREE.MeshStandardMaterial({color:0xf4f1ea,roughness:.35,side:THREE.DoubleSide}),.035);void cup;
+  add(new THREE.CylinderGeometry(.028,.028,.004,20),china,.002);
+  const handle=add(new THREE.TorusGeometry(.017,.005,8,14,Math.PI),china,.04,.038);handle.rotation.z=-Math.PI/2;
+  if(!held)add(new THREE.CylinderGeometry(.062,.055,.008,24),china,-.004);
+  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.033,.028,.055,20),new THREE.MeshStandardMaterial({color:0x2b160a,roughness:.15}));liquid.position.y=.03;level.add(liquid);
  }else{
+  // Oolong, and the ramen counter's cold barley tea (mugicha), paler, in the same tumbler.
   add(new THREE.CylinderGeometry(.036,.032,.11,18),glass,.055);
-  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.033,.03,.085,18),new THREE.MeshStandardMaterial({color:0x7a3f18,roughness:.25,transparent:true,opacity:.85}));liquid.position.y=.045;level.add(liquid);
+  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.033,.03,.085,18),new THREE.MeshStandardMaterial({color:kind==='mugicha'?0xa8682a:0x7a3f18,roughness:.25,transparent:true,opacity:kind==='mugicha'?.78:.85}));liquid.position.y=.045;level.add(liquid);
   for(let i=0;i<3;i++){const ice=new THREE.Mesh(new THREE.BoxGeometry(.022,.022,.022),glass);ice.position.set((i-1)*.012,.08,(i%2)*.01);ice.rotation.set(i,i*.7,0);level.add(ice);}
  }
  g.userData.portion=1;g.userData.targetPortion=1;g.userData.consumable='drink';
- g.userData.rimHeight=kind==='draft'?.15:kind==='bottle'?.09:kind==='can'?.122:.11;
+ g.userData.rimHeight=kind==='draft'?.15:kind==='bottle'?.09:kind==='can'?.122:kind==='coffee'?.07:.11;
  g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
  return g;
 }

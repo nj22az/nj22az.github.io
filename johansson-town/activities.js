@@ -672,9 +672,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function tableService(){
     const service=getTableService();if(!service)return;
     const order=service.order;
-    const server=service.server||'Thuan';const text=order?.delivered?'Your order is on the counter.':order?server+' is preparing your '+order.item.name.toLowerCase()+'.':'Take your time. '+server+' will prepare your order. Pay when it arrives.';
-    const drinkable=item=>item.id==='tea'||item.prop==='tea'||item.prop==='beer';
-    const buttons=order?.delivered?[[order.item.id==='tea'?'Drink tea':drinkable(order.item)?'Drink the '+order.item.name.replace(/, .*$/,''):'Eat '+order.item.name,()=>{close();service.eat();}]]:order?[]:(service.menu||STORE_MENU).map(item=>[(item.jp?item.jp+' · ':'')+item.name+' · ¥'+item.cost,()=>{if(service.request(item.id))close();}]);
+    const server=service.server||'Thuan',started=order?.delivered&&order.total&&order.left<order.total;
+    const left=!started?'':order.left<=0?' It is all gone.':order.left/order.total>.6?' Most of it is still there.':order.left/order.total>.3?' About half is left.':' Nearly finished.';
+    const text=order?.delivered?'Your '+order.item.name.toLowerCase()+' is on the counter.'+left:order?server+' is preparing your '+order.item.name.toLowerCase()+'.':'Take your time. '+server+' will prepare your order. Pay when it arrives.';
+    const drinkable=item=>['tea','beer','mugicha','coffee'].includes(item.prop||item.id);
+    const buttons=order?.delivered&&!(order.left<=0)?[[drinkable(order.item)?(started?'Another sip':'Drink the '+order.item.name.replace(/, .*$/,'').toLowerCase()):(started?'Eat some more':'Eat the '+order.item.name.toLowerCase()),()=>{close();service.eat();}]]:order?.delivered?[]:order?[]:(service.menu||STORE_MENU).map(item=>[(item.jp?item.jp+' · ':'')+item.name+' · ¥'+item.cost,()=>{if(service.request(item.id))close();}]);
     show(service.title||'Sakura · At the table',text,[...buttons,['Keep sitting',close],['Stand up',()=>{close();onStand();}]]);
   }
   function sit(name,detail){if(onSeat(name))return;show(name,detail||'A quiet place to sit.',[['Sit for ten minutes',()=>{onTime(10);receipt(name,'You sit for a while and listen to the town around you. Ten minutes pass.');}],['Leave',close]]);}
