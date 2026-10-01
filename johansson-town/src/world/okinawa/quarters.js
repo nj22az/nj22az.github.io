@@ -217,7 +217,6 @@ function buildWestQuay(kit,solid,{inspect,anchor,onAction,vending}){
  solid(fishCrates(kit,-21.6,-42.2,{rows:2,cols:2,seed:5}));
  netPile(kit,-27.5,-41.5);solid({id:'net-pile',x:-27.3,z:-41.6,w:2.4,d:1.4,height:.6});
  solid(keiTruck(kit,-33.5,-40.4,{ry:0,load:'crates'}));
- vending(-36.2,-37.3,Math.PI/2);
  inspect(-31,1,-44,'Inspect the sabani','Sabani',
   'A narrow island fishing boat, cedar planked and painted, up on blocks for its bottom to be scraped. The sail is rolled along the thwarts. Old men still race these in the summer.');
  anchor(-29,1,Q.minZ+.9,'Fish from the west quay',()=>onAction?.('fishing'));

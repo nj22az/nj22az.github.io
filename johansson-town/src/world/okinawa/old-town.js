@@ -79,7 +79,9 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  };
  setShutter(1);
  // The vending pair at the south end of the frontage, with a bin between them and the door.
- vending(front+.45,S.minZ+1.1,Math.PI/2);vending(front+.45,S.minZ+2.3,Math.PI/2);
+ // One machine, not a bank: vending is kept to a few places worth stopping at (Sakura,
+ // the onsen lane, the fish quay) rather than every frontage (docs/AMPLIFY-AUDIT.md).
+ vending(front+.45,S.minZ+1.7,Math.PI/2);
  kit.cyl(.22,.19,.72,front+.4,.36,door-doorClear-.5,0x2f6fa8,{segments:12});kit.cyl(.24,.24,.05,front+.4,.74,door-doorClear-.5,0x3a3f42,{segments:12});
  solid({id:'sakura-bin',x:front+.4,z:door-doorClear-.5,w:.5,d:.5,height:.8});
  // Drink crates stacked the way empties are, against the glass beyond the vending machines.

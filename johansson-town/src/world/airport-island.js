@@ -75,11 +75,13 @@ export function buildAirportIsland({parent,shadows=false}={}){
  sock.rotation.z=Math.PI/2;
  // A few palms and a jetty toward the town, where a ferry will come in one day.
  const trunk=mat(0x6e5a44),frond=mat(0x3f6e3a);
- for(const [x,z] of [[-40,12],[-34,15],[26,-14],[33,-15],[-22,-15],[40,13]]){
+ for(const [x,z] of [[-46,-10],[-40,-14],[26,-14],[33,-15],[-22,-15],[40,13]]){
   add(new THREE.CylinderGeometry(.35,.5,7,6),trunk,x,4.4,z);
   const crown=add(new THREE.ConeGeometry(3,2.2,7),frond,x,8.4,z);crown.scale.y=.6;
  }
  const jetty=add(new THREE.BoxGeometry(4,.5,16),mat(0x9a958a),-44,.9,A.halfWidth+8);
+ const sewage=buildSewagePlant(add,mat);
+
  const plane=buildPlane();plane.visible=false;group.add(plane);
  let flight=null;
  /**
@@ -104,5 +106,36 @@ export function buildAirportIsland({parent,shadows=false}={}){
   plane.position.set(x,y,-4);plane.rotation.set(0,0,pitch);plane.visible=true;
   if(t>roll+climb){flight=null;plane.visible=false;}
  };
- return {group,plane,jetty,update};
+ return {group,plane,jetty,sewage,update};
+}
+
+/**
+ * The island's sewage works (下水処理場), at the west end of Kitano-jima, away from the
+ * town and downwind of the terminal: where the town's wastewater goes, across the
+ * strait in a pipe under the seabed. Two round clarifiers with their bridges, a long
+ * aeration basin, a sludge tank, the control building and the outfall pipe running
+ * out past the beach. Modelled large and simple like the rest of the island: it is
+ * read from across the water. Island frame, metres; the green top is at y = 1.1.
+ */
+export const SEWAGE_PLANT=Object.freeze({x:-33,z:9,title:'Kitano-jima Sewage Works',jp:'北野島下水処理場'});
+function buildSewagePlant(add,mat){
+ const P=SEWAGE_PLANT,top=1.1,concrete=mat(0xc9c6bc),water=mat(0x5f7f6e),dark=mat(0x4a6458),rail=mat(0x2f6f9f);
+ add(new THREE.BoxGeometry(24,.12,15),mat(0x9a9b94),P.x,top+.06,P.z);
+ for(const dx of [-6.5,1]){
+  add(new THREE.CylinderGeometry(4,4,1.8,24),concrete,P.x+dx,top+.9,P.z-3.2);
+  add(new THREE.CylinderGeometry(3.7,3.7,.1,24),water,P.x+dx,top+1.75,P.z-3.2);
+  add(new THREE.CylinderGeometry(.5,.5,.6,10),concrete,P.x+dx,top+2,P.z-3.2);
+  const bridge=add(new THREE.BoxGeometry(8,.25,.7),rail,P.x+dx,top+2.2,P.z-3.2);bridge.rotation.y=dx*.2;
+ }
+ add(new THREE.BoxGeometry(14,1.6,4.4),concrete,P.x-2,top+.8,P.z+3.6);
+ add(new THREE.BoxGeometry(13.4,.1,3.8),dark,P.x-2,top+1.56,P.z+3.6);
+ for(let x=-8;x<=4;x+=4)add(new THREE.BoxGeometry(.3,.3,4.6),rail,P.x+x,top+1.7,P.z+3.6);
+ add(new THREE.CylinderGeometry(1.8,1.8,4.2,16),mat(0x8fa39a),P.x+8.5,top+2.1,P.z+4);
+ add(new THREE.ConeGeometry(1.9,.9,16),mat(0x7d8f87),P.x+8.5,top+4.65,P.z+4);
+ add(new THREE.BoxGeometry(6,4,4.2),mat(0xe4e1d6),P.x+8,top+2,P.z-3.8);
+ add(new THREE.BoxGeometry(6.4,.4,4.6),mat(0x2f6f9f),P.x+8,top+4.2,P.z-3.8);
+ add(new THREE.BoxGeometry(5,1,.1),mat(0x3a4a50),P.x+8,top+2.6,P.z-1.66);
+ const outfall=add(new THREE.CylinderGeometry(.45,.45,18,8),mat(0x7a7d78),P.x-16,top-.4,P.z-12);
+ outfall.rotation.z=Math.PI/2;outfall.rotation.y=-.6;
+ return {position:[P.x,P.z]};
 }
