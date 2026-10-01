@@ -6,7 +6,9 @@ import {installDOM} from './fixtures.mjs';
 import {preloadPark,parkFoliage} from '../src/world/park.js?snappy=1';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {EAST_LAWN,buildEastLawn} from '../src/world/east-lawn.js';
-import {PARK} from '../src/world/park-layout.js';
+import {PARK,COURT_TERRACE,courtTerraceHeight} from '../src/world/park-layout.js';
+const nearTerraceWall=(x,z)=>z<COURT_TERRACE.minZ+.1&&x>COURT_TERRACE.minX-.6&&x<COURT_TERRACE.maxX;
+import {paintedTurf} from '../src/render/toy-surfaces.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
 import {circleHitsRect} from '../physics.js';
 
@@ -24,7 +26,8 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
   // Walking east must never be a step up. The park used to be a plinth with a
   // vertical face, and excluding its square from the lawn left a dead band one body
   // wide at its foot: you walked into an invisible wall on open grass.
-  else if(routeAt(x,z,.4).id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
+  // The gateball terrace ends in a retaining wall on its seaward side.
+  else if(!nearTerraceWall(x,z)&&!nearTerraceWall(x+.4,z)&&routeAt(x,z,.4).id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
    &&Math.abs(groundHeight(x+.4,z)-groundHeight(x,z))>.2)
    steps.push(x.toFixed(1)+','+z.toFixed(1)+' '+(groundHeight(x+.4,z)-groundHeight(x,z)).toFixed(2));
  }
@@ -85,17 +88,17 @@ test('the lawn wears the supplied park\u2019s own grass rather than a green of i
  globalThis.fetch=async url=>String(url).startsWith('blob:')?original(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
  try{
   const bare=buildEastLawn({parent:new THREE.Group(),colliders:[]});
-  // Before the model arrives the lawn is a plain green, and says so rather than
-  // quietly claiming it dressed itself.
+  // Before the model arrives the lawn already wears the painted turf the park's ground
+  // uses, so the two greens match from the first frame; with nothing fetched there is
+  // nothing more to hand over, and it says so.
   assert.equal(bare.useParkGreenery(parkFoliage()),false);
-  assert.equal(bare.lawn.material.map,null);
+  assert.ok(bare.lawn.material.map?.image===paintedTurf().image,'The bare lawn is a green of its own');
 
   assert.equal(await preloadPark(),true);
-  const {grass,bush}=parkFoliage();
+  const {grass}=parkFoliage();
   assert.ok(grass?.image,'The park model carries no lawn texture');
-  assert.ok(bush?.image,'The park model carries no shrub texture');
   const lawn=buildEastLawn({parent:new THREE.Group(),colliders:[]});
-  assert.equal(lawn.useParkGreenery({grass,bush}),true);
+  assert.equal(lawn.useParkGreenery({grass}),true);
   assert.equal(lawn.lawn.material.map.image,grass.image,'The lawn is not the park\u2019s grass');
   // Brought down, not left white: the supplied green is bright enough that the town's
   // sun and the grade together push it past white over an area this size.
@@ -108,18 +111,9 @@ test('the lawn wears the supplied park\u2019s own grass rather than a green of i
   for(let i=0;i<uv.count;i++){spanX=Math.max(spanX,Math.abs(uv.getX(i)));spanZ=Math.max(spanZ,Math.abs(uv.getY(i)));}
   assert.ok(spanX>4&&spanZ>4,'One tile stretched over the whole green');
   assert.deepEqual([lawn.lawn.material.map.repeat.x,lawn.lawn.material.map.repeat.y],[1,1]);
-  assert.equal(lawn.shrubs.material.map,bush,'The shrubs kept a colour of their own');
-  // The attribute has to survive, because the section renderer reads it every frame
-  // once it has seen it. What it must never hold is white: in the running game the
-  // cel pass had already swapped the shrubs' material for a MeshToonMaterial of its
-  // own, so the leaf went onto an orphan and only the whitening landed, and the lawn
-  // grew twenty-nine white blobs. A light green reads as planting either way.
-  assert.ok(lawn.shrubs.instanceColor,'Dropping the attribute outright crashes the section renderer');
-  const tints=[...lawn.shrubs.instanceColor.array];
-  assert.ok(!tints.every(v=>v===1),'The shrubs go white when the leaf fails to land');
-  // Colours are held in linear working space, so these are not the sRGB bytes.
-  assert.ok(tints.every(v=>v>.6),'The tint is too dark to let the park leaf read through it');
-  for(let i=0;i<tints.length;i+=3)assert.ok(tints[i+1]>tints[i]&&tints[i+1]>tints[i+2],'A shrub is not tinted green');
+  // No shrub clumps: from the hill they read as a scatter of boulders.
+  let planting=null;lawn.group.traverse(o=>{if(o.name==='East lawn planting')planting=o;});
+  assert.equal(planting,null,'The boulder-like shrub clumps are back on the lawn');
  }finally{globalThis.fetch=original;}
 });
 
@@ -201,3 +195,26 @@ test('the paths across the green lie on the ground rather than through it',async
  assert.ok(checked>1200,'The lanes are not subdivided at all: '+checked+' triangles');
  assert.deepEqual(sunk.slice(0,6),[],'Paving sunk under the grass it is laid on');
 });
+
+test('the gateball court stands level on the hill\u2019s ground, graded into it, walled toward the sea',async()=>{
+ configureTownMode(TOWN_MODES.PENINSULA);
+ const {groundHeight}=await import('../src/world/layout.js?terrace');
+ const T=COURT_TERRACE;
+ for(let x=T.minX+.2;x<T.maxX;x+=.8)for(let z=T.minZ+.2;z<T.maxZ;z+=.8)assert.equal(groundHeight(x,z),T.height,'The court is not level at '+[x,z]);
+ // Up on the hill's ground, not in a pit below it.
+ assert.ok(T.height>.5);
+ // From the hill and the lawn beside it, the ground comes to the terrace without a step.
+ for(const [x0,z0,dx,dz] of [[T.minX-3,-34,1,0],[22,T.maxZ+2.5,0,-1],[30,T.maxZ+2.5,0,-1]]){
+  let last=groundHeight(x0,z0);
+  for(let i=1;i<=16;i++){const h=groundHeight(x0+dx*i*.2,z0+dz*i*.2);assert.ok(Math.abs(h-last)<.12,'A step onto the terrace near '+[x0+dx*i*.2,z0+dz*i*.2]);last=h;}
+ }
+ // Toward the sea there is no bank: the wall holds the terrace up.
+ assert.equal(courtTerraceHeight(25,T.minZ-.2,0),null);
+ const parent=new THREE.Group(),colliders=[];
+ const {buildOkinawaQuarters}=await import('../src/world/okinawa/quarters.js');
+ buildOkinawaQuarters({group:parent,colliders},{register(){},onAction(){},shadows:false});
+ const wall=colliders.filter(c=>c.id==='gateball-wall');
+ assert.ok(wall.length&&wall.every(c=>c.z<T.minZ),'The terrace has no retaining wall on its seaward side');
+ assert.ok(wall.some(c=>circleHitsRect(25,T.minZ-.25,.3,c)),'You can walk off the terrace over the wall');
+});
+

@@ -71,6 +71,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
     if(w>=300&&site.id==='yuri-home'){ctx.fillStyle='#6b3a48';ctx.font='bold 12px sans-serif';ctx.fillText('THUAN & NAO',px(x)+7,pz(site.z)+4);}
     if(w>=300&&site.id==='warehouse'){ctx.fillStyle='#314d51';ctx.font='bold 12px sans-serif';ctx.fillText('WAREHOUSE',px(x)+7,pz(site.z)+4);}
     if(w>=300&&site.id==='bus-station'){ctx.fillStyle='#3f5f63';ctx.font='bold 12px sans-serif';ctx.fillText('HARBOUR LINE BUS',px(x)+7,pz(site.z)+4);}
+    if(w>=300&&site.id==='ferry-terminal'){ctx.fillStyle='#2b5a78';ctx.font='bold 12px sans-serif';ctx.fillText('FERRY',px(x)+7,pz(site.z)+4);}
   }
   if(target){const x=target.x??target.side*11.8;ctx.strokeStyle='#c45766';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px(x),pz(target.z),7,0,Math.PI*2);ctx.stroke();if(w>=300){ctx.fillStyle='#723b49';ctx.font='bold 12px sans-serif';ctx.fillText(target.title,px(x)+9,pz(target.z)-7);}}
   ctx.fillStyle='#9c4b34';for(const p of people.filter(p=>p.g.visible)){ctx.beginPath();ctx.arc(px(p.g.position.x),pz(p.g.position.z),1.5,0,Math.PI*2);ctx.fill();}

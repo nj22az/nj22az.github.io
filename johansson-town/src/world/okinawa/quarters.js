@@ -1,3 +1,6 @@
+import {COURT_TERRACE} from '../park-layout.js';
+/** The east lawn's south edge (east-lawn.js EAST_LAWN.minZ), where the seawall's return begins. */
+const EAST_LAWN_SOUTH=-38;
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
 import {createMaterials} from '../../render/materials.js';
@@ -376,7 +379,7 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  for(const x of [I.maxX-.4])kit.rod([x,.4,I.maxZ+.1],[x,I.height,I.maxZ+.1],.05,0x8e979a);
  solid(kit.rect(I.minX,I.maxX,I.minZ,I.maxZ,I.height,'ice-plant'));
  inspect(I.minX-1,1.2,I.minZ+2.7,'Inspect the ice plant','Minato ice plant · 製氷所',
-  'Block ice, crushed ice, flake ice. The chute swings out over the boats and fills a hold in four minutes with a roar you can hear at the bus stop. Inside it is winter all year; the men who work it wear jumpers in August and sit out on the quay at lunch to thaw.');
+  'Block ice, crushed ice, flake ice. The chute swings out over the boats and fills a hold in four minutes with a roar you can hear out on the ferry. Inside it is winter all year; the men who work it wear jumpers in August and sit out on the quay at lunch to thaw.');
  // Boats lying to the quay, a forklift, crates, the fuel pump.
  fishingBoat(kit,24.6,Q.minZ-2.1,{ry:0,colour:0x2f6fb8,name:'第三港丸'});
  fishingBoat(kit,33.6,Q.minZ-2.2,{ry:Math.PI,colour:0x8a3b2e,length:7.2});
@@ -424,8 +427,18 @@ function buildYardLife(kit,solid,{inspect}){
 
 /** Gateball on the lawn by the seawall: a sand court, three hoops, the goal post, a shelter. */
 function buildGateball(kit,solid,{anchor,inspect}){
- const G=GATEBALL,top=GROUND_LAYER.apron,cx=(G.minX+G.maxX)/2,cz=(G.minZ+G.maxZ)/2;
+ // The court is level on a terrace at the hill's own ground (COURT_TERRACE), graded into
+ // the hill with banks and held up on the seaward side by a stone wall.
+ const G=GATEBALL,T=COURT_TERRACE,H=T.height,top=H+GROUND_LAYER.apron,cx=(G.minX+G.maxX)/2,cz=(G.minZ+G.maxZ)/2;
  kit.block(G.minX,G.maxX,top-.05,top,G.minZ,G.maxZ,0xcdb88f,'sand');
+ // The wall fills the strip between the terrace and the seawall's south return, so no
+ // slope of lawn is left running up under it.
+ {const z0=EAST_LAWN_SOUTH,z1=T.minZ,x0=T.minX,x1=T.maxX;
+  kit.block(x0,x1,0,H+.02,z0,z1,0x8f8a7c);
+  kit.block(x0-.03,x1,H+.02,H+.08,z1-.3,z1+.04,0x6f6b60);
+  solid({id:'gateball-wall',x:(x0+x1)/2,z:(z0+z1)/2,w:x1-x0,d:z1-z0,height:H+.1});
+  // Its west end, where the bank comes down beside it.
+  kit.block(x0-.3,x0,0,H+.02,z0,z1,0x8f8a7c);}
  const line=(x0,x1,z0,z1)=>kit.block(x0,x1,top,top+.006,z0,z1,0xf4f1ea);
  line(G.minX+.3,G.maxX-.3,G.minZ+.3,G.minZ+.36);line(G.minX+.3,G.maxX-.3,G.maxZ-.36,G.maxZ-.3);
  line(G.minX+.3,G.minX+.36,G.minZ+.3,G.maxZ-.3);line(G.maxX-.36,G.maxX-.3,G.minZ+.3,G.maxZ-.3);
@@ -438,12 +451,12 @@ function buildGateball(kit,solid,{anchor,inspect}){
  for(const [i,[x,z]] of [[22.5,-35],[24.1,-33.9],[26,-36.2],[27.3,-34.4],[29.4,-33.2]].entries())kit.sphere(.04,x,top+.04,z,i%2?0xd8342c:0xf4f1ea,{detail:1});
  // The shelter on the seaward end, where the elders sit between turns.
  const sx0=G.maxX-.1,sx1=G.maxX+1.5;
- kit.block(sx0,sx1,2.3,2.4,G.minZ+.6,G.maxZ-.6,0x8a3b2e);
- for(const z of [G.minZ+.8,G.maxZ-.8])for(const x of [sx0+.1,sx1-.1]){kit.box(.1,2.3,.1,x,1.15,z,0x6e5a44);solid({id:'shelter-post',x,z,w:.14,d:.14,height:2.3});}
- kit.box(.45,.08,G.maxZ-G.minZ-2,sx1-.4,.46,cz,0x9a7a55);for(const dz of [-1.5,1.5])kit.box(.4,.44,.08,sx1-.4,.22,cz+dz,0x5d6468);
- solid({id:'gateball-bench',x:sx1-.4,z:cz,w:.5,d:G.maxZ-G.minZ-2,height:.5});
- for(let i=0;i<3;i++)kit.rod([sx1-.25,.02,cz-1+i*.5],[sx1-.15,.95,cz-1.1+i*.5],.02,[0xd8342c,0x2f6fb8,0xe0b93a][i]);
- inspect(cx,1,G.maxZ+.7,'Watch the gateball','Gateball · ゲートボール',
+ kit.block(sx0,sx1,H+2.3,H+2.4,G.minZ+.6,G.maxZ-.6,0x8a3b2e);
+ for(const z of [G.minZ+.8,G.maxZ-.8])for(const x of [sx0+.1,sx1-.1]){kit.box(.1,2.3,.1,x,H+1.15,z,0x6e5a44);solid({id:'shelter-post',x,z,w:.14,d:.14,height:H+2.3});}
+ kit.box(.45,.08,G.maxZ-G.minZ-2,sx1-.4,H+.46,cz,0x9a7a55);for(const dz of [-1.5,1.5])kit.box(.4,.44,.08,sx1-.4,H+.22,cz+dz,0x5d6468);
+ solid({id:'gateball-bench',x:sx1-.4,z:cz,w:.5,d:G.maxZ-G.minZ-2,height:H+.5});
+ for(let i=0;i<3;i++)kit.rod([sx1-.25,H+.02,cz-1+i*.5],[sx1-.15,H+.95,cz-1.1+i*.5],.02,[0xd8342c,0x2f6fb8,0xe0b93a][i]);
+ inspect(cx,H+1,G.maxZ+.7,'Watch the gateball','Gateball · ゲートボール',
   'Five a side, mallets and numbered balls, three hoops and a post, and a referee with a whistle and a stopwatch who is somehow also the loudest player. The Minato seniors play here at seven every morning before it gets hot. They have been losing to the team from the next village since 1985.');
 }
 
@@ -469,7 +482,7 @@ function buildWires(kit,solid){
 
 /** What the nameplates say when you stop to read one. */
 const NAMEPLATES=Object.freeze({
- higa:'The Higas. Grandmother Higa sits on the verandah every afternoon shelling beans into a bowl and knows the time of every bus by the sound of it in the tunnel. The shisa on the left gatepost has its mouth open to let luck in; the one on the right has it shut, to keep it.',
+ higa:'The Higas. Grandmother Higa sits on the verandah every afternoon shelling beans into a bowl and knows the time of every ferry by the sound of its horn off the breakwater. The shisa on the left gatepost has its mouth open to let luck in; the one on the right has it shut, to keep it.',
  kinjo:'The Kinjōs built in concrete after the 1971 typhoon took their old roof. Their son is a welder in Naha and sends money for the water tank to be painted every other year. The flower-block wall was his first job.',
  nakasone:'The Nakasones keep the lawn in front of Umi-no-yu cut, because nobody else will. Mr Nakasone plays the sanshin on the verandah after supper; if the wind is right you can hear it from the bath.',
  miyagi:'Mrs Miyagi is ninety-one, walks to the utaki every morning and has outlived two husbands and a typhoon that took the roof off everything else on this side. The shisa on her ridge is older than she is.',

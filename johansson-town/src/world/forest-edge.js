@@ -36,15 +36,19 @@ function signTexture(title,sub){
 export function buildForestEdge({parent,colliders,register=()=>{},onAction=()=>{},shadows=false,trees=true}={}){
  const group=new THREE.Group();group.name='Forest wall and bus-only road';parent.add(group);
  const roadLength=FOREST_EDGE.roadEndZ-FOREST_EDGE.roadStartZ,roadMiddle=(FOREST_EDGE.roadEndZ+FOREST_EDGE.roadStartZ)/2;
- const road=new THREE.Mesh(new THREE.BoxGeometry(MAIN_ROAD.width,.09,roadLength),new THREE.MeshStandardMaterial({color:0x60645d,roughness:.94}));
- road.name='bus-only forest road';road.position.set(FOREST_EDGE.roadX,GROUND_LAYER.apron-.045,roadMiddle);road.receiveShadow=!!shadows;group.add(road);
+ // Without the tree line this is the island's layout, where no bus runs: the old road up
+ // to the headland is a gravel footpath to the sea cave, between wide grass verges.
+ const footpath=!trees;
+ const road=new THREE.Mesh(new THREE.BoxGeometry(footpath?2.4:MAIN_ROAD.width,.09,roadLength),new THREE.MeshStandardMaterial({color:footpath?0x9c927c:0x60645d,roughness:footpath?1:.94}));
+ road.name=footpath?'sea cave footpath':'bus-only forest road';road.position.set(FOREST_EDGE.roadX,GROUND_LAYER.apron-.045,roadMiddle);road.receiveShadow=!!shadows;group.add(road);
  const vergeMat=new THREE.MeshStandardMaterial({color:0x798062,roughness:1});
+ const vergeWidth=footpath?(MAIN_ROAD.width-2.4)/2+2.1:2.1,vergeFrom=footpath?1.2:MAIN_ROAD.width/2;
  for(const side of [-1,1]){
-  const verge=new THREE.Mesh(new THREE.BoxGeometry(2.1,.055,roadLength+.4),vergeMat);verge.position.set(FOREST_EDGE.roadX+side*(MAIN_ROAD.width/2+1.05),GROUND_LAYER.grass-.0275,roadMiddle);verge.receiveShadow=!!shadows;group.add(verge);
+  const verge=new THREE.Mesh(new THREE.BoxGeometry(vergeWidth,.055,roadLength+.4),vergeMat);verge.position.set(FOREST_EDGE.roadX+side*(vergeFrom+vergeWidth/2),GROUND_LAYER.grass-.0275,roadMiddle);verge.receiveShadow=!!shadows;group.add(verge);
  }
  const trunkMat=new THREE.MeshStandardMaterial({color:0x4f4031,roughness:1});
  const leafMats=[0x42634b,0x4f7650,0x5b7f53].map(color=>new THREE.MeshStandardMaterial({color,roughness:1}));
- if(!trees)return {group,road,wall:null,marker:null,busRoute:{id:'bus-forest-road',width:MAIN_ROAD.width,surface:'asphalt',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,FOREST_EDGE.roadEndZ]]}};
+ if(!trees)return {group,road,wall:null,marker:null,busRoute:{id:'cave-path',width:MAIN_ROAD.width,surface:'gravel',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,FOREST_EDGE.roadEndZ]]}};
  const treeXs=[];
  for(let i=0;i<15;i++)treeXs.push(FOREST_EDGE.minX+.65+i*(FOREST_EDGE.maxX-FOREST_EDGE.minX-1.3)/14);
  for(const [row,zOffset] of [[0,-.18],[1,.72]])for(const [i,x] of treeXs.entries()){
@@ -65,5 +69,5 @@ export function buildForestEdge({parent,colliders,register=()=>{},onAction=()=>{
  const postMat=new THREE.MeshStandardMaterial({color:0x594938,roughness:1});
  for(const x of [FOREST_EDGE.roadX-1.8,FOREST_EDGE.roadX+1.8]){const post=new THREE.Mesh(new THREE.BoxGeometry(.1,2.1,.1),postMat);post.position.set(x,1.05,FOREST_EDGE.wallZ-.48);post.castShadow=!!shadows;group.add(post);}
  const marker=new THREE.Object3D();marker.name='forest-road-waypoint';marker.position.set(FOREST_EDGE.roadX,1,FOREST_EDGE.wallZ-.9);group.add(marker);register(marker,'Read the forest road notice',()=>onAction('read','Forest road notice','The road disappears into the trees. The Harbour Line has permission to continue beyond the wall; pedestrians must turn back at the bus terminal.'));
- return {group,road,wall,marker,busRoute:{id:'bus-forest-road',width:MAIN_ROAD.width,surface:'asphalt',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,FOREST_EDGE.roadEndZ]]}};
+ return {group,road,wall,marker,busRoute:{id:'cave-path',width:MAIN_ROAD.width,surface:'gravel',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,FOREST_EDGE.roadEndZ]]}};
 }

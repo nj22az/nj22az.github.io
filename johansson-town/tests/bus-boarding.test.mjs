@@ -1,7 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {createBusRun} from '../src/world/bus.js';
+import {createFerryRun as createBusRun,FERRY} from '../src/world/ferry.js';
+import {OUTER_PIER} from '../src/world/layout.js';
 import {HARBOUR_LINE} from '../src/people/commuter-schedule.js';
 import {BUS_STATION} from '../src/world/bus-station.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
@@ -60,17 +61,14 @@ test('nobody is put down on the platform unless the bus is at it',()=>{
  assert.ok(until(run,'away'),'The bus never goes');
  assert.equal(atTheStop(),false,'A departed bus still counts as standing at the stop');
 
- // and where they step off is the door they would have got on by: beside the front of
- // the bus, clear of its flank, on the road it is standing on. The bus stands at the
- // arch now rather than at the shelter, so the old test -- step off inside the bus
- // station's footprint -- was asking for somewhere the bus no longer goes.
+ // and where they step off is where they would have got on: the gangway's foot on the
+ // pier, beside the ferry lying alongside it, level with the gangway.
  assert.ok(until(run,'waiting',600),'The service never comes back');
  const step=run.door;
- assert.equal(step[1],run.doorway[1],'On and off happen at different ends of the bus');
- assert.ok(step[0]<run.doorway[0],'The door is on the far side of the bus from the kerb it opens onto');
- assert.ok(Math.abs(step[0]-run.bus.position.x)>1.2,'They step off into the side of the bus');
- assert.ok(step[1]<run.bus.position.z,'They step off at the back rather than the front');
- assert.ok(Math.abs(step[0]-MAIN_ROAD.x)<MAIN_ROAD.width/2,'They step off the edge of the road');
+ assert.equal(step[1],run.doorway[1],'On and off happen at different places along the ferry');
+ assert.ok(step[0]>run.doorway[0],'The gangway lands on the water side rather than the pier');
+ assert.ok(step[0]-run.bus.position.x>FERRY.beam/2,'They step off into the side of the ferry');
+ assert.ok(Math.abs(step[0]-OUTER_PIER.x)<OUTER_PIER.width/2,'They step off the edge of the pier');
 });
 
 test('with no bus modelled at all, people come and go as they always did',()=>{
@@ -129,7 +127,7 @@ test('nobody who was already away is left standing at the terminus',async()=>{
  }finally{configureTownMode(TOWN_MODES.LEGACY);}
 });
 
-test('they walk up the road and step into the bus, rather than ending at a kerb',async()=>{
+test('they walk out to the pier and go aboard the ferry, rather than ending at a kerb',async()=>{
  const {installDOM}=await import('./fixtures.mjs');
  const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');
  installDOM();globalThis.self=globalThis;
@@ -147,17 +145,18 @@ test('they walk up the road and step into the bus, rather than ending at a kerb'
  const profile=RESIDENTS.find(p=>p.name==='Thuan'),g=new THREE.Group();
  g.userData={name:'Thuan',visualReady:true};g.position.set(profile.work[0],0,profile.work[1]);scene.add(g);
  const player=new THREE.Group();player.position.set(0,0,-30);
- const world={people:[{g,profile}],homes:new Map(),bus:built.bus,busStation:built.busStation,
+ const world={people:[{g,profile}],homes:new Map(),ferry:built.ferry,busStation:built.busStation,
   staffBench:built.staffBench,townMode:'peninsula'};
  const ai=createCastAI({world,player,state:()=>({townMode:'peninsula',inventory:[],residentLocations:{}}),
   paused:()=>false,collides,getObserverPosition:()=>player.position});
 
- const bus=built.bus,door=bus.door;
+ // On the island the service is the ferry at the outer pier, boarded by its gangway.
+ const bus=built.ferry,door=bus.door;
  let walkedUp=false,stepped=false,inside=false,gone=false,stood=null;
  for(let m=1240;m<1345;m+=1/60){
   bus.update(1/60,m,g.visible&&g.userData.place==='bus'&&g.position.z>20);
   ai.update(1/60,m,false);
-  if(bus.phase==='waiting')stood=bus.bus.position.z;
+  if(bus.phase==='waiting')stood=bus.ferry.position.z;
   if(g.visible&&Math.hypot(g.position.x-door[0],g.position.z-door[1])<.9)walkedUp=true;
   if(g.userData.boarding){
    stepped=true;
@@ -168,12 +167,12 @@ test('they walk up the road and step into the bus, rather than ending at a kerb'
   if(stepped&&g.visible&&collides(g.position.x,g.position.z,.2))inside=true;
   if(!g.visible&&g.userData.place==='away')gone=true;
  }
- assert.ok(walkedUp,'She never reached the bus door at the arch');
+ assert.ok(walkedUp,'She never reached the ferry\u2019s gangway');
  assert.ok(stepped,'She never got on: she was written off at the kerb instead');
- assert.ok(inside,'She was taken off the street before she reached the inside of the bus');
- assert.ok(gone,'She stepped into the bus and stayed on the street');
+ assert.ok(inside,'She was taken off the pier before she was aboard');
+ assert.ok(gone,'She went aboard and stayed on the pier');
 
- // And the door she uses is up at the arch, not down at the old shelter.
- assert.ok(door[1]>BUS_STATION.maxZ,'The bus is boarded back down at the terminus');
- assert.ok(Math.abs(door[1]-stood)<5,'The door is nowhere near the bus it belongs to');
+ // And the gangway she uses is on the outer pier, beside the ferry lying alongside it.
+ assert.ok(door[1]<-50&&Math.abs(door[0])<4.1,'The ferry is not boarded from the pier');
+ assert.ok(Math.abs(door[1]-stood)<8,'The gangway is nowhere near the ferry it belongs to');
 });

@@ -1,5 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {createShopProduct} from '../../commerce/shop-product.js';
+import {buildSakuraBackroom} from './sakura-backroom.js';
+import {buildSakuraRestroom} from './sakura-restroom.js';
 
 /**
  * The things that make Sakura somebody's shop rather than a set.
@@ -13,7 +15,8 @@ import {createShopProduct} from '../../commerce/shop-product.js';
  *   games console on top, fairy lights, a cat clock, a rug, a plush Jaga-bō and manga.
  * - In the storage room: cardboard stand-ups from old campaigns leaning on the back wall
  *   either side of the delivery door (x 2.86..4.4, kept clear),
- *   a hand truck, a mop and bucket, stacked crates and a step ladder.
+ *   a hand truck, a mop and bucket, stacked crates and a step ladder. The stocked rack,
+ *   noticeboard, exit sign and delivery pieces are in sakura-backroom.js.
  *
  * All plain geometry and small canvas prints. Positions are in the shop's own frame
  * (sakura-layout.js): shop floor z -3.99..3.88, back room behind it, office to the east.
@@ -233,6 +236,8 @@ export function buildSakuraLife(room,{anchor,action}){
  const floor=buildShopFloor(room,anchor,action);
  const office=buildOfficeFun(room);
  buildStorage(room);
+ const backroom=buildSakuraBackroom(room,{anchor,action});
+ const restroom=buildSakuraRestroom(room,{anchor,action});
  let last=0;
- return {tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);},mascot};
+ return {tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot};
 }

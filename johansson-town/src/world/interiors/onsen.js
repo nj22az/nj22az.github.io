@@ -1,6 +1,10 @@
 import * as THREE from '../../../vendor/three.module.js';
-import {buildFigure,animateFigure} from '../../people/school-kids.js';
+import {buildAvatar} from '../../avatars/build.js';
+import {createAvatarAnimator} from '../../avatars/animate.js';
+import {recipeFor} from '../../avatars/cast.js';
 import {daylight} from '../../render/dusk.js';
+import {townCalendarAt} from '../../town-clock.js';
+import {buildOnsenLobby,hinokiTexture,LOBBY} from './onsen-lobby.js';
 
 /**
  * Inside Umi-no-yu: through the noren to the bandai, the changing room, the washing
@@ -10,6 +14,8 @@ import {daylight} from '../../render/dusk.js';
  * Umi-no-yu is a harbour bath that lets families and couples in together, so the sign by
  * the lockers asks for swimwear (水着着用) -- which is how you can share the water with a
  * friend. The pools are sunk below the floor: you walk round them and get in by the seats.
+ *
+ * The front of the house (genkan, bandai, lobby, noren) is dressed in onsen-lobby.js.
  *
  * Room frame: the street door is at +z, the sea at -z. Metres, floor at y = 0.
  */
@@ -26,6 +32,7 @@ const R=ONSEN_ROOM;
 /** Seats: where you sit, and where your weight goes. `soak` seats put you in the water. */
 export const ONSEN_SEATS=Object.freeze({
  bench:{id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.42},
+ tatami:{id:'tatami',label:'Sit on the tatami',position:[LOBBY.koagari.x-.25,0,LOBBY.koagari.z+.5],stand:[LOBBY.koagari.x,0,3.55],eyeY:LOBBY.koagari.h+.8,yaw:Math.PI,surfaceY:LOBBY.koagari.h+.07},
  massage:{id:'massage',label:'Sit in the massage chair',position:[4.25,0,3.55],stand:[3.4,0,3.55],eyeY:1.12,yaw:Math.PI/2,surfaceY:.46},
  ...Object.fromEntries([-1.9,-2.6,-3.3,-4.0].map((z,i)=>['wash'+i,{id:'wash'+i,label:'Wash at the tap',position:[-4.25,0,z],stand:[-3.45,0,z],eyeY:.98,yaw:Math.PI/2,surfaceY:.27,wash:true}])),
  indoor:{id:'indoor',label:'Get into the indoor bath',position:[3.1,0,-3.35],stand:[3.1,0,-1.66],eyeY:R.tub.floor+.78,yaw:Math.PI,surfaceY:R.tub.floor+.04,soak:true},
@@ -73,7 +80,7 @@ export function buildOnsenInterior({room,reg,action,exit}){
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);return o;};
  const seat=(spec,title,text)=>{const o=anchor([spec.position[0],.9,spec.position[2]],spec.label,()=>action('seat',title,text));o.userData.seat={...spec,onsen:spec.id,pitch:spec.soak?-.05:0};return o;};
 
- const wood=mat(0xc79f6e,.7),darkWood=mat(0x6b4a2e,.75),plaster=mat(0xeee6d3,.95),stone=mat(0x8c877c,.95),indigo=mat(0x253a5e,.9);
+ const wood=mat(0xc79f6e,.7),darkWood=mat(0x6b4a2e,.75),plaster=mat(0xeee6d3,.95),stone=mat(0x8c877c,.95);
  const tiles=new THREE.MeshStandardMaterial({map:tileTexture(120,150,160),roughness:.35});tiles.map.repeat.set(6,4);
  const wallTiles=new THREE.MeshStandardMaterial({map:tileTexture(214,222,220,[170,176,174]),roughness:.4});wallTiles.map.repeat.set(10,3);
  const flags=new THREE.MeshStandardMaterial({map:flagTexture(),roughness:.95});flags.map.repeat.set(3,2);
@@ -81,12 +88,14 @@ export function buildOnsenInterior({room,reg,action,exit}){
 
  // ---- Floors: wood indoors, tiles in the bath hall, flags outside; holes where the baths are.
  const floorRect=(x0,x1,z0,z1,m,y=0)=>{const f=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0),m);f.rotation.x=-Math.PI/2;f.position.set((x0+x1)/2,y,(z0+z1)/2);f.receiveShadow=true;f.name='Umi-no-yu floor';room.add(f);return f;};
- floorRect(-5,5,3.6,5,stone);floorRect(-5,5,R.hall.changing,3.6,wood);
+ const hinoki=hinokiTexture([5,3]),floorWood=hinoki?new THREE.MeshStandardMaterial({map:hinoki,roughness:.55}):wood;
+ floorRect(-5,5,3.6,5,stone);floorRect(-5,5,R.hall.changing,3.6,floorWood);
  floorRect(-5,R.tub.minX,R.hall.bath,R.hall.changing,tiles);floorRect(R.tub.minX,5,R.tub.maxZ,R.hall.changing,tiles);floorRect(R.tub.minX,5,R.hall.bath,R.tub.minZ,tiles);
  {const shape=new THREE.Shape();shape.moveTo(-5,-R.hall.bath);shape.lineTo(5,-R.hall.bath);shape.lineTo(5,-R.walls.minZ);shape.lineTo(-5,-R.walls.minZ);shape.closePath();
   const hole=new THREE.Path();hole.absellipse(R.pool.x,-R.pool.z,R.pool.rx,R.pool.rz,0,Math.PI*2,false);shape.holes.push(hole);
   const paving=new THREE.Mesh(new THREE.ShapeGeometry(shape,48),flags);paving.rotation.x=-Math.PI/2;paving.receiveShadow=true;paving.name='Rock bath paving';room.add(paving);}
- box([10,.04,1.4],[0,.02,3.55],darkWood,'Genkan step');
+ // The agarikamachi: the polished edge where the genkan stops and the wood floor starts.
+ box([10,.05,.12],[0,.025,3.6],darkWood,'Genkan step');
  // ---- Walls and ceilings.
  const wall=(x0,z0,x1,z1,h=R.walls.height,m=plaster,y=0)=>box([Math.max(.12,Math.abs(x1-x0)),h,Math.max(.12,Math.abs(z1-z0))],[(x0+x1)/2,y+h/2,(z0+z1)/2],m,'Umi-no-yu wall');
  wall(-5,5,-1,5);wall(1,5,5,5);wall(-1,5,1,5,.6,plaster,2.2);
@@ -109,22 +118,23 @@ export function buildOnsenInterior({room,reg,action,exit}){
  for(const [x0,x1,z] of [[-5,-.9,R.hall.front],[.9,5,R.hall.front],[-5,-.8,R.hall.changing],[.8,5,R.hall.changing],[-5,-1,R.hall.bath],[1,5,R.hall.bath]])rect((x0+x1)/2,z,x1-x0,.2,2.8);
 
  // ---- Genkan and bandai.
- for(let i=0;i<3;i++){const z=4.85-i*.34;box([.34,1.4,.32],[-4.8,.7,z],darkWood,'Getabako');for(let r=0;r<4;r++)box([.02,.26,.28],[-4.62,.2+r*.33,z],mat(0x8a6a48,.7),'Getabako door');}
  rect(-4.8,4.51,.4,1.05,1.4);
  box([.62,1.05,1.7],[-3.85,.525,2.55],darkWood,'Bandai counter');box([.7,.05,1.78],[-3.85,1.075,2.55],wood,'Bandai top');rect(-3.85,2.55,.66,1.74,1.1);
  box([.2,.12,.14],[-3.75,1.16,2.2],mat(0xd9c9a0,.6),'Ticket tray');
- const attendant=buildFigure({pose:'seated',adult:true,girl:true,shirt:0x6d8a74,bottom:0x3a3a42,hair:0x8a8680,skin:0xc99a74,name:'Umi-no-yu attendant'});
- attendant.position.set(-4.5,.05,2.6);attendant.rotation.y=Math.PI/2;room.add(attendant);animated.push(attendant);
- box([.5,.45,.5],[-4.5,.225,2.6],darkWood,'Attendant stool');rect(-4.5,2.6,.6,.6,1.2);
+ // Higa-san, a Shimanchu like everyone else, up on the bandai's raised floor so she can
+ // see over the counter -- which is the point of a bandai.
+ box([.9,.35,1.4],[-4.45,.175,2.6],darkWood,'Bandai platform');
+ box([.44,.4,.44],[-4.5,.55,2.6],wood,'Attendant stool');rect(-4.45,2.6,.9,1.4,1.2);
+ const attendant=new THREE.Group();attendant.name='Umi-no-yu attendant';attendant.position.set(-4.5,.35,2.6);attendant.rotation.y=-Math.PI/2;room.add(attendant);
+ // Her face is painted on a canvas, so without a page (the room tests) the stool is empty.
+ const higa=typeof document!=='undefined'&&document.createElement?buildAvatar(recipeFor('Mrs Higa'),{shadows:true,faceSize:256}):null,higaMotion=higa&&createAvatarAnimator(higa);if(higa)attendant.add(higa.root);
  anchor([-3.5,1.25,2.55],'Pay at the bandai · ¥300',()=>action('onsen-pay'));
  anchor([-3.5,1.25,3.1],'Talk to the attendant',()=>action('inspect','Umi-no-yu attendant',
   'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her crossword. "Swimwear in the bath, please -- it is a family bath. The rock bath is best after dark."'));
  const fee=canvasSign([['大人 ¥300',1],['タオル ¥100 · 牛乳 ¥100',.5]],{w:384,h:192,bg:'#fbf6ea',size:60});
  if(fee){const s=new THREE.Mesh(new THREE.PlaneGeometry(.7,.35),new THREE.MeshStandardMaterial({map:fee,roughness:.8}));s.position.set(-3.53,1.55,2.55);s.rotation.y=Math.PI/2;room.add(s);}
  // Coffee milk in the glass-fronted fridge, drunk standing, hand on hip.
- box([.62,1.6,.6],[4.6,.8,2.3],mat(0xe9e4da,.4),'Milk fridge');rect(4.6,2.3,.64,.62,1.6);
- box([.02,1.2,.5],[4.28,.95,2.3],glass,'Milk fridge glass');
- for(let r=0;r<3;r++)for(let c=0;c<4;c++)cyl(.028,.12,[4.5,.55+r*.38,2.1+c*.13],mat(r===1?0x9b6a3c:0xf3efe4,.4),'Milk bottle',10);
+ rect(4.6,2.3,.64,.62,1.6);
  anchor([4.2,1.1,2.3],'Buy coffee milk · ¥100',()=>action('onsen-milk'));
  // The massage chair, ¥100 for ten minutes.
  box([.75,.5,.8],[4.35,.25,3.55],mat(0x5a2c24,.55),'Massage chair seat');box([.18,.95,.8],[4.72,.8,3.55],mat(0x5a2c24,.55),'Massage chair back');
@@ -135,8 +145,8 @@ export function buildOnsenInterior({room,reg,action,exit}){
  const hands=[new THREE.Mesh(new THREE.BoxGeometry(.012,.13,.01),mat(0x222222)),new THREE.Mesh(new THREE.BoxGeometry(.008,.17,.01),mat(0x222222))];
  for(const h of hands){h.geometry.translate(0,h.geometry.parameters.height/2,0);h.position.z=.03;clock.add(h);}
  // The noren into the changing room.
- const norenMap=canvasSign([['ゆ',2.2]],{w:256,h:192,bg:'#253a5e',fg:'#f3efe4',size:70});
- for(let k=0;k<2;k++){const p=new THREE.Mesh(new THREE.PlaneGeometry(.88,.8),norenMap?new THREE.MeshStandardMaterial({map:norenMap,roughness:.9,side:THREE.DoubleSide}):indigo);p.position.set(-.45+k*.9,1.85,R.hall.front);room.add(p);}
+ // Noren, getabako, milk cooler, the tatami corner and the rest: onsen-lobby.js.
+ const lobby=buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seats:ONSEN_SEATS});
 
  // ---- Changing room.
  for(let i=0;i<6;i++)for(let r=0;r<2;r++){const z=1.25-i*.42;box([.45,.9,.4],[-4.75,.45+r*.95,z],mat(0xb9b2a0,.45),'Locker');box([.02,.12,.08],[-4.52,.55+r*.95,z+.12],mat(0xc9a13c,.3),'Locker key');}
@@ -239,13 +249,15 @@ export function buildOnsenInterior({room,reg,action,exit}){
  function tick(dt,minutes=720){
   time+=dt;
   const day=daylight(minutes),night=1-day;
+  lobby.tick(dt,minutes,day,townCalendarAt(minutes).weekday);
   seaMat.color.setRGB(.25+.75*day,.3+.7*day,.45+.55*day);
   lanternGlow.emissiveIntensity=night*1.4;outdoor.intensity=night*5;sun.intensity=day*1.6;
   for(const s of steam){const u=(s.userData.phase+time*s.userData.speed)%1,[x,y,z]=s.userData.base;s.position.set(x+Math.sin(u*6+x)*.15,y+.1+u*1.4,z);s.scale.setScalar(.35+u*.9);s.material.opacity=.3*Math.sin(u*Math.PI)*(.55+.45*night);}
   const k=time*1.3;tubWater.position.y=T.water+Math.sin(k)*.004;poolWater.position.y=P.water+Math.sin(k*.8+1)*.005;
   fanHead.rotation.y=Math.sin(time*.4)*.9;blades.rotation.z+=dt*18;
   const m=((minutes%1440)+1440)%1440;hands[0].rotation.z=-(m%720)/720*Math.PI*2;hands[1].rotation.z=-(m%60)/60*Math.PI*2;
-  animateFigure(attendant,time,3);
+  // Seated at the bandai; now and then she looks up from her crossword.
+  higaMotion?.update(dt,{speed:0,seated:true,seatHeight:.4,pose:Math.floor(time/9)%3===2?'Sit':'Read',expression:'neutral'});
  }
  tick(0);
  return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,dispose(){}};

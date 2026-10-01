@@ -1,3 +1,4 @@
+import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
 // Measured from the supplied convenience-store model, in metres at floor Y=0.
 const rect=(x,z,w,d,height=2.9)=>({x,z,w,d,height});
 
@@ -67,7 +68,12 @@ export const SHELF_ISLANDS={
  east:island({...FRONT_RUN,minX:-4.56,maxX:-.465},[-2.494,1.3315],[1.55,.05]),
 };
 /** The rest of the second gondola, which made the middle of the floor a corridor. */
-export const REMOVED_SHELVING=[{minX:-3.25,maxX:2.25,minY:-.1,maxY:1.6,minZ:-1.85,maxZ:-.5}];
+export const REMOVED_SHELVING=[
+ {minX:-3.25,maxX:2.25,minY:-.1,maxY:1.6,minZ:-1.85,maxZ:-.5},
+ // The model's four-metre magazine gondola under the west window. One slim rack stands
+ // there instead (sakura-magazine-rack.js).
+ {minX:-6.8,maxX:-2.55,minY:-.1,maxY:1.6,minZ:3.0,maxZ:3.85},
+];
 /** The run's own colliders, moved with it. A quarter turn swaps width for depth. */
 const turned=(id,r)=>{const [x,z]=SHELF_ISLANDS[id].place(r.x,r.z);return {x,z,w:r.d,d:r.w,height:r.height};};
 const GONDOLA=[['east',rect(-2.494,1.3315,4.046,1.223,1.5)],['middle',rect(.5455,1.3315,2.021,1.223,1.5)],['middle',rect(1.85,1.35,.57,1.2,1.55)],['west',rect(-1.50,-1.16,2.02,1.22,1.5)]];
@@ -82,11 +88,12 @@ export const SAKURA_LAYOUT={
  staff:[5.5,0,.85],staffYaw:Math.PI/2,checkout:[3.9,0,.85],stockroom:[.7,0,-5.5],register:[4.78,1.1,.85],
  colliders:[
   ...GONDOLA.map(([id,r])=>turned(id,r)),
-  rect(-4.65,3.40,4.12,.65,1.5),rect(-5.17,-2.16,2.04,.61,1.5),
+  rect(MAGAZINE_RACK.x,MAGAZINE_RACK.z,MAGAZINE_RACK.width,MAGAZINE_RACK.depth,MAGAZINE_RACK.height),rect(-5.17,-2.16,2.04,.61,1.5),
   rect(-6.4,.43,.9,4.03,2.25),rect(.4,-3.55,5.35,.8,2.3),
   rect(4.8,1.97,.52,3.78,1.0),rect(6.74,2.08,.18,3.48,2.0),rect(3.64,3.6,1.35,.57,1.06),
   rect(-.66,-3.99,7.82,.12),rect(5.62,-3.99,2.46,.12),
-  rect(-4.02,-3.2,.12,1.53),rect(-5.4,-2.48,2.82,.12),
+  // The restroom's east wall: two jambs either side of its doorway (z -3.66..-2.78).
+  rect(-4.02,-3.81,.12,.31),rect(-4.02,-2.6,.12,.33),rect(-5.4,-2.48,2.82,.12),
   rect(4.60,-2.6,.12,2.7),rect(4.86,-1.17,.56,.12),rect(6.56,-1.17,.56,.12),
   rect(-2.16,-4.49,6.88,.86,2.3),rect(-6.26,-3.26,1.0,1.2,1.2),
   // Thuan's desk in the back office (sakura-cheer.js BACK_OFFICE).
@@ -95,6 +102,11 @@ export const SAKURA_LAYOUT={
   // umbrella stand, the office fridge, the hand truck, crates and ladder in the back room.
   rect(2.25,3.05,.72,.72,1.3),rect(-1.35,3.45,.42,.42,1.2),rect(1.2,3.55,.3,.3,1.0),
   rect(4.98,-3.62,.48,.5,1.2),rect(5.35,-5.0,.4,.6,1.1),rect(-.95,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
+  // The stocked back room (sakura-backroom.js BACKROOM): bottle crates and the daisha at the
+  // west end, the cardboard bundle on the east wall, the extinguisher by the delivery door.
+  // In the restroom (sakura-restroom.js): the pedestal basin on the south wall.
+  rect(-5.18,-3.72,.66,.46,1.0),
+  rect(-5.19,-6.52,.86,.36,.9),rect(-5.27,-5.4,.66,.96,1.1),rect(5.51,-5.67,.26,.74,.6),rect(4.66,-6.58,.28,.28,.6),
  ]
 };
 // Each stocked unit has a real position. Opposite sides of an aisle use opposite
@@ -179,13 +191,12 @@ SAKURA_SHELVES.bun={x:-6.50,z:1.515,levels:[.9573,1.3203,1.6833],columns:4,yaw:M
 SAKURA_SHELVES.noodles.depth=.15;
 
 /**
- * Fittings the model came with that nothing ever stood on: the magazine rack under the
- * west window, the wall shelf by the back room, and the end cap on the middle island.
- * Empty shelving reads as an unfinished shop, and the rack across the whole window is
- * the first thing you see from the pavement.
+ * Fittings the model came with that nothing ever stood on: the wall shelf by the back
+ * room and the end cap on the middle island. (The magazine rack under the west window
+ * is its own piece now, in sakura-magazine-rack.js.)
+ * Empty shelving reads as an unfinished shop.
  *
- * None of it is stock. You cannot buy a magazine — you read it standing at the rack,
- * the way you do — and the delivery cartons are the shop's own. So it is dressed here
+ * None of it is stock: the delivery cartons are the shop's own. So it is dressed here
  * rather than listed in SAKURA_SHELVES: it never depletes and never needs restocking.
  * Shelf heights and the depth each level actually has are measured off the model.
  */
@@ -194,12 +205,7 @@ function dressed(piece){
  const on=SHELF_ISLANDS[piece.island],[x,z]=on.place(piece.x,piece.z),[lx,lz]=on.place(piece.look[0],piece.look[2]);
  return {...piece,x,z,yaw:piece.yaw+on.yaw,look:[lx,piece.look[1],lz]};
 }
-const MAGAZINES=[['magazine-rod',.267],['magazine-sea',.753],['magazine-night',1.240]];
 export const SAKURA_DRESSING=[
- ...MAGAZINES.map(([template,level],i)=>({id:template,template,levels:[level],x:-4.665,z:3.50,yaw:Math.PI,columns:15,rows:1,spacing:.255,depth:.12,
-  look:i===1?[-4.665,1.38,3.32]:null,title:'Read the magazines',
-  text:'The rack under the window. 月刊 海風, 週刊 星空 and 釣りと海, and the evening paper folded on the bottom shelf.\nNobody minds how long you stand here.'})),
- {id:'newspaper',template:'newspaper',levels:[.088],x:-4.665,z:3.42,yaw:Math.PI,columns:11,rows:1,spacing:.33,depth:.12,look:null},
  {id:'delivery',template:'stock',levels:[.088,.357,.670,.983,1.296],x:-5.165,z:-2.28,yaw:0,columns:5,rows:1,spacing:.365,depth:.25,
   look:[-5.165,1.44,-2.09],title:'Look over the delivery shelf',
   text:'Cartons off the morning van, waiting to be priced up and put out. Thuan works down them after closing.'},

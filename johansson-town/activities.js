@@ -2,8 +2,11 @@ import {isWorkshopSite} from './src/world/businesses.js';
 import {harbourTimetable} from './src/people/commuter-schedule.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
+import {createMagazineReader} from './src/ui/magazine-reader.js';
+import {townCalendarAt} from './src/town-clock.js';
+import {wantsAnother} from './src/people/drunk.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
-import {restoreSakura,buySakuraItem} from './src/commerce/sakura-economy.js';
+import {restoreSakura,buySakuraItem,recordSakuraSale} from './src/commerce/sakura-economy.js';
 import {printedModels} from './src/workshop/catalogue.js';
 import {restoreWorkshop,advancePrint} from './src/workshop/production.js';
 import {createWorkshopUI} from './src/workshop/interface.js';
@@ -16,7 +19,7 @@ import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,R
 import {PROFILES} from './src/people/profiles.js';
 import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
 import {gossipAt,izakayaOpen,onsenInvitationDay} from './src/people/social.js';
-import {DRINKS} from './src/people/izakaya-beer.js';
+import {DRINKS,DISHES,menuItem} from './src/people/izakaya-beer.js';
 import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
 import {MEDICINES,STAMINA_DRINK} from './src/world/interiors/sakura-dressing.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
@@ -41,11 +44,11 @@ import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorag
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
+export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
-  let pendingAbsence=0,ledgerView=null;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
+  let pendingAbsence=0,ledgerView=null,magazineView=null;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
   try {
     const saved=readSave(localStorage);
@@ -87,10 +90,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
-  function close(){dialogueBox.close();modal.classList.remove('bag-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
+  function close(){dialogueBox.close();modal.classList.remove('bag-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
   function show(title,text,buttons=[],options={}){
     modal.classList.remove('bag-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
+    magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
     modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
     heading.textContent=title;body.classList.remove('signal');body.replaceChildren();
@@ -381,6 +385,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
     if(residentHomeDescription(name)||commuterMode)buttons.push([commuterMode?'How do you travel?':'Where do you live?',()=>show(name+' · '+(commuterMode?'Harbour Line':'Home'),commuterMode?commuterDescription(name):residentHomeDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
     if(name==='Nao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);
+    // Mingling at Minato: stand somebody a drink. They remember it.
+    if(getSocialContext().inside==='izakaya'&&name!=='Nao'&&name!=='Barfly'&&izakayaOpen(getMinutes()))buttons.push(['Buy '+name+' a drink · ¥'+DRINKS.draft.price,()=>treat(name)]);
     if(name==='Aya')buttons.push(['About Tama',()=>legacyResident(name)]);
     if(name==='Kenji')buttons.push(['How does the 3D printer work?',()=>show('Kenji · Form 3D','Yo bro, pick a pattern on the Form 3D machine. StepWise checks the material cost and what Thuan will pay. Start the print, let the machine run, then collect it. One of each in your bag. Thuan buys them at Sakura from nine till eight, using the money her shop earns.',[['Got it, bro',close]])]);
     if(name==='Kenji'&&state.kenjiEscort&&state.kenjiEscort!=='done')buttons.push(['Show me the workshop',()=>{onEscort();close();say('Kenji: Come on, bro. I’ll show you the way.',4);}]);
@@ -390,28 +396,57 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     buttons.push(['See you soon',close]);show(profile?name+' · '+profile.personality:name,text,buttons);if(text===row[1]&&row[3])townAudio.speak(row[3]);
   }
 
-  /** At your own table in Minato: order a beer, drink it, eat, or get up. */
+  /**
+   * At your seat in Minato -- a counter stool among the regulars, a table or the window:
+   * order anything on the wall you can pay for, drink it and eat it, or get up.
+   */
   function izakayaTable(){
-    const table=getBeerTable()||{},drink=table.drink,order=table.order,buttons=[];
-    let text=izakayaOpen(getMinutes())?'Lanterns, the radio low, the smell of the grill. Nao is behind the counter.':'Minato is closing. Nao is stacking the stools.';
-    if(order)text='Nao is '+(order.phase==='pouring'?'pouring your '+DRINKS[order.kind].en.toLowerCase():'on her way over with it')+'.';
-    else if(drink)text='Your '+DRINKS[drink.kind].en.toLowerCase()+' is in front of you'+(drink.left<drink.sips?', '+drink.left+' sips left':', untouched')+'.';
+    const table=getBeerTable()||{},drink=table.drink,dish=table.dish,order=table.order,buttons=[],open=izakayaOpen(getMinutes());
+    let text=open?'Lanterns, the radio low, the smell of the grill. Nao is behind the counter.':'Minato is closing. Nao is stacking the stools.';
+    if(order){const item=menuItem(order.kind);text='Nao is '+(order.phase==='cooking'?'at the '+DISHES[order.kind].station+' with your '+item.en.replace(/^(a|an|the) /,'').replace(/^(plate|bowl|flask) of /,''):order.phase==='pouring'?'pouring your '+item.en.toLowerCase():'on her way over with it')+'.';}
+    const onTable=[drink&&drink.left>0?'your '+DRINKS[drink.kind].en.toLowerCase().replace(/^(a|an) /,'')+(drink.left<drink.sips?' ('+drink.left+' sips left)':''):null,dish&&dish.left>0?DISHES[dish.kind].en+(dish.left<dish.bites?' ('+dish.left+' left)':''):null].filter(Boolean);
+    if(!order&&onTable.length)text+='\n\nIn front of you: '+onTable.join(' and ')+'.';
     if(drink&&drink.left>0)buttons.push([drink.left===drink.sips?'乾杯 · Kanpai, and drink':'Drink',()=>{close();onSip();}]);
-    if(!order&&(!drink||drink.left<=1)&&izakayaOpen(getMinutes())){
+    if(dish&&dish.left>0)buttons.push([dish.left===dish.bites?'いただきます · Eat':'Eat some more',()=>{close();onEat();}]);
+    if(!order&&open){
       if(!table.naoHere)text+='\n\nNao is not at the counter just now.';
-      else for(const d of Object.values(DRINKS))buttons.push([d.jp+' · ¥'+d.price,()=>{
-        if(!spend(d.price))return;
-        if(!onOrderDrink(d.id)){state.yen+=d.price;save();receipt('Minato','Nao is busy -- try again in a moment.');return;}
-        onTime(2);note('Ordered '+d.en.toLowerCase()+' at Minato.');close();say('「すみません、'+d.jp+'ください！」 Nao nods and reaches for '+(d.id==='draft'?'a mug.':d.id==='bottle'?'a big bottle.':d.id==='can'?'the fridge.':'the tea jug.'),4);
-      }]);
+      else{
+        if(!drink||drink.left<=1)buttons.push(['Order a drink…',()=>izakayaOrder('drinks')]);
+        if(!dish||dish.left<=0)buttons.push(['Order something to eat…',()=>izakayaOrder('food')]);
+      }
     }
-    buttons.push(['Something to eat',izakayaMenu],['Stand up',()=>{close();onStand();}],['Stay seated',close]);
-    show('居酒屋 みなと · your table',text,buttons);
+    buttons.push(['Stand up',()=>{close();onStand();}],['Stay seated',close]);
+    show('居酒屋 みなと · your seat',text,buttons);
+  }
+  /** Minato's wall, one list for drink and one for food. What you cannot pay for is marked, not hidden. */
+  function izakayaOrder(kind){
+    const items=Object.values(kind==='drinks'?DRINKS:DISHES);
+    show(kind==='drinks'?'Minato · to drink':'Minato · from the kitchen','You have ¥'+state.yen+'. Nao waits with her pad.',[
+      ...items.map(item=>[item.jp+' · ¥'+item.price+(state.yen<item.price?' (not enough yen)':item.alcohol>0&&!wantsAnother(getTipsy(),item.alcohol)?' (Nao says enough)':''),()=>{
+        if(state.yen<item.price){receipt('Minato','Nao smiles: 今度ね。 Next time, then. You have ¥'+state.yen+'.');return;}
+        if(item.alcohol>0&&!wantsAnother(getTipsy(),item.alcohol)){receipt('Minato','Nao puts a glass of water in front of you: もう十分ですよ。 Enough for tonight -- drink this, and then home.');return;}
+        if(!spend(item.price))return;
+        if(!onOrderDrink(item.id)){state.yen+=item.price;save();receipt('Minato','Nao is busy -- try again in a moment.');return;}
+        onTime(2);note('Ordered '+item.en.toLowerCase()+' at Minato.');close();
+        say('「すみません、'+item.jp+'ください！」 '+(DISHES[item.id]?'Nao calls it back and goes to the '+DISHES[item.id].station+'.':'Nao nods and reaches for '+(item.id==='draft'?'a mug.':item.id==='bottle'?'a big bottle.':item.id==='can'?'the fridge.':item.id==='sake'?'the kettle for the tokkuri.':item.id==='awamori'?'the kame of awamori.':'the tea jug.')),4);
+      }]),
+      ['Back',izakayaTable]
+    ]);
+  }
+  /** A round for somebody at Minato: Nao pours it, they raise it, and the town remembers who bought it. */
+  function treat(name){
+    if(state.yen<DRINKS.draft.price){receipt(name,'You check your pockets: ¥'+state.yen+'. '+name+' laughs -- next time, then.');return;}
+    if(!spend(DRINKS.draft.price))return;
+    state.treats??={};const times=state.treats[name]=(state.treats[name]||0)+1;save();
+    onTime(2);onTreat(name);note('Bought '+name+' a drink at Minato.');
+    const lines=times===1?['乾杯！ That is very kind. The next one is mine -- I will remember.','Kanpai! Nao, did you see that? A gentleman.']:times<4?['Again? Then I owe you two. 乾杯！','You keep doing this. Sit down, then, and tell me about your day.']:['At this point you are a regular. Nao is going to put your name on a bottle.','乾杯、友よ。 To the harbour.'];
+    receipt(name,lines[(times+name.length)%lines.length]);
   }
   function izakayaMenu(){
     if(!izakayaOpen(getMinutes())){close();say('Minato closes at 03:00. Nao is locking up.');return;}
-    show('Minato · Tonight’s little pleasures','Nao: Choose something you like. The stories are on the house.',[
-      ...[['Yakitori plate',180,'Sweet soy glaze, three little skewers, and a very satisfied silence.'],['Edamame & barley tea',120,'Warm beans and cold barley tea. Nao settles a tiny saucer beside your cup.'],['Oden supper',260,'Daikon, egg and tofu, simmered until the day feels a little kinder.'],['Small beer',180,'A little glass of harbour lager. Someone at the next table starts a story.']].map(([name,cost,detail])=>[name+' · ¥'+cost,()=>{if(!izakayaOpen(getMinutes())){izakayaMenu();return;}if(!spend(cost))return;onTime(8);note('Supper at Minato: '+name+'.');show('Supper at Minato',detail,[['Listen to the table',izakayaGossip],['Something else?',izakayaMenu],['Enjoy the room',close]]);}]),
+    show('Minato · Tonight’s wall','Nao: Take a seat -- the counter, a table, wherever there is room -- and I will bring you anything on the wall. The stories are on the house.',[
+      ['Read the drinks',()=>show('Minato · to drink',Object.values(DRINKS).map(d=>d.jp+' · '+d.en+' · ¥'+d.price).join('\n'),[['Back',izakayaMenu]])],
+      ['Read the food',()=>show('Minato · from the kitchen',Object.values(DISHES).map(d=>d.jp+' · '+d.en+' · ¥'+d.price).join('\n'),[['Back',izakayaMenu]])],
       ['Just looking, thank you',close]
     ]);
   }
@@ -461,13 +496,49 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
   // The medicine shelf behind Sakura's till. Nothing on it is self-service: you ask, and
   // Thuan reaches it down and tells you how many to take.
-  function sakuraMedicine(){
+  // Everything Thuan sells from behind the counter goes through one till: the hours, her
+  // being there, the yen, the bag, and a line in the shop ledger like any shelf sale.
+  function sakuraTillClosed(){
     const m=((getMinutes()%1440)+1440)%1440;
-    if(m<540||m>=1200){show('Medicine shelf','The till is closed. The boxes behind it wait for 09:00.',[['Back',close]]);return;}
-    const items=[...MEDICINES.filter(i=>['kaze','itami','ichou','megusuri','nodo','bansoko','shippu','katori','mushi','vitamin'].includes(i.id)),STAMINA_DRINK];
+    if(m<540||m>=1200)return 'The till is closed. Thuan returns at 09:00.';
+    if(getSocialContext().thuanAvailable===false)return 'Thuan is away from the counter for a bit.';
+    return null;
+  }
+  function sellAtTill(name,price,unitCost=Math.round(price*.65)){
+    const closed=sakuraTillClosed();if(closed)return {ok:false,message:closed};
+    if(state.yen<price)return {ok:false,message:'You do not have enough yen.'};
+    if(state.inventory.length>=100)return {ok:false,message:'Your bag is full.'};
+    state.yen-=price;state.inventory.push(name);
+    recordSakuraSale(state,price,null,{minute:getMinutes(),item:name,buyer:'Johansson',unitCost});save();townAudio.play('click',.35);
+    return {ok:true};
+  }
+  function sakuraMedicine(){
+    const closed=sakuraTillClosed();
+    if(closed){show('Medicine shelf',closed,[['Back',close]]);return;}
+    // Every box on the shelf, not a selection of them.
+    const items=[...MEDICINES,STAMINA_DRINK];
     show('くすり · Medicine shelf','Thuan: "What do you need? If it is more than a cold, the clinic boat comes on Thursdays."',[
-      ...items.map(item=>[`${item.jp} · ¥${item.price.toLocaleString('en-GB')}`,()=>{if(!spend(item.price))return;onTime(2);addItem(item.en);townAudio.play('click',.35);
+      ...items.map(item=>[`${item.jp}${item.sub?' '+item.sub:''} · ¥${item.price.toLocaleString('en-GB')}`,()=>{const result=sellAtTill(item.en,item.price);if(!result.ok){receipt(item.jp,result.message);return;}onTime(2);
         receipt(item.jp,item.en+' is in your bag. Thuan writes the dose on the box in marker, the way she does for everyone.');}]),
+      ['Nothing, thank you',close]]);
+  }
+  // The small things on the till cabinet: phone cards, stamps, ferry tickets, gum, matches.
+  const COUNTER_GOODS=Object.freeze([
+    {jp:'テレホンカード 50度',en:'Telephone card (50 units)',price:500},
+    {jp:'テレホンカード 105度',en:'Telephone card (105 units)',price:1000},
+    {jp:'切手 80円',en:'80-yen stamp',price:80,unitCost:80},
+    {jp:'はがき 50円',en:'Postcard stamp (50 yen)',price:50,unitCost:50},
+    {jp:'フェリー回数券',en:'Ferry punch card (11 rides)',price:3000,unitCost:2900},
+    {jp:'ガム',en:'Chewing gum',price:100},
+    {jp:'マッチ',en:'Box of matches',price:20},
+    {jp:'ライター',en:'Disposable lighter',price:100},
+  ]);
+  function sakuraCounterGoods(){
+    const closed=sakuraTillClosed();
+    if(closed){show('Till counter',closed,[['Back',close]]);return;}
+    show('レジ前 · At the till','Thuan: "Cards, stamps, ferry tickets. The gum is the only thing here anyone buys on impulse."',[
+      ...COUNTER_GOODS.map(item=>[`${item.jp} · ¥${item.price.toLocaleString('en-GB')}`,()=>{const result=sellAtTill(item.en,item.price,item.unitCost);
+        receipt(item.jp,result.ok?item.en+' is in your bag.':result.message);}]),
       ['Nothing, thank you',close]]);
   }
   // Local players: several people can keep their own progress on one device. Switching
@@ -601,8 +672,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function tableService(){
     const service=getTableService();if(!service)return;
     const order=service.order;
-    const server=service.server||'Thuan';const text=order?.delivered?'Your order is on the counter.':order?server+' is preparing your '+order.item.name.toLowerCase()+'.':'Take your time. '+server+' will prepare your order. Pay when it arrives.';
-    const buttons=order?.delivered?[[order.item.id==='tea'?'Drink tea':'Eat '+order.item.name,()=>{close();service.eat();}]]:order?[]:(service.menu||STORE_MENU).map(item=>[item.name+' · ¥'+item.cost,()=>{if(service.request(item.id))close();}]);
+    const server=service.server||'Thuan',started=order?.delivered&&order.total&&order.left<order.total;
+    const left=!started?'':order.left<=0?' It is all gone.':order.left/order.total>.6?' Most of it is still there.':order.left/order.total>.3?' About half is left.':' Nearly finished.';
+    const text=order?.delivered?'Your '+order.item.name.toLowerCase()+' is on the counter.'+left:order?server+' is preparing your '+order.item.name.toLowerCase()+'.':'Take your time. '+server+' will prepare your order. Pay when it arrives.';
+    const drinkable=item=>['tea','beer','mugicha','coffee'].includes(item.prop||item.id);
+    const buttons=order?.delivered&&!(order.left<=0)?[[drinkable(order.item)?(started?'Another sip':'Drink the '+order.item.name.replace(/, .*$/,'').toLowerCase()):(started?'Eat some more':'Eat the '+order.item.name.toLowerCase()),()=>{close();service.eat();}]]:order?.delivered?[]:order?[]:(service.menu||STORE_MENU).map(item=>[(item.jp?item.jp+' · ':'')+item.name+' · ¥'+item.cost,()=>{if(service.request(item.id))close();}]);
     show(service.title||'Sakura · At the table',text,[...buttons,['Keep sitting',close],['Stand up',()=>{close();onStand();}]]);
   }
   function sit(name,detail){if(onSeat(name))return;show(name,detail||'A quiet place to sit.',[['Sit for ten minutes',()=>{onTime(10);receipt(name,'You sit for a while and listen to the town around you. Ten minutes pass.');}],['Leave',close]]);}
@@ -616,6 +690,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
         try{const url=await realShop.checkout(product.id);if(checkoutRevision!==modalRevision)return;show('Shopify checkout',`Real-world purchase · ${price}. Review the total and delivery details on Shopify.`,[['Return to town',close]]);const link=document.createElement('a');link.textContent='Continue to Shopify checkout';link.href=url;link.target='_blank';link.rel='noopener noreferrer';body.append(link);}catch(error){if(checkoutRevision===modalRevision)receipt('Mail-order catalogue',error.message);}
       }],['Back',close]]);
     }catch(error){if(revision===modalRevision)receipt('Mail-order catalogue',error.message);}
+  }
+  // 立ち読み at the magazine rack: today's issues, then page by page (src/ui/magazine-reader.js).
+  function magazineRack(){
+    show('Sakura · 雑誌・新聞','',[['Put it back',close]]);modal.classList.add('magazine-view');
+    magazineView=createMagazineReader({date:townCalendarAt(getMinutes()).date,buy:(title,issue)=>sellAtTill(`${title.name} ${issue.dateLine}`,title.price,Math.round(title.price*.75))});body.replaceChildren(magazineView.element);
   }
   function shopLedger(){
     if(getSocialContext().inside!=='market'){receipt('Sakura sales ledger','The stock and sales books are in the back office at Sakura.');return;}
@@ -761,7 +840,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       return;
     }
     const day=Math.floor(minutes/1440);
-    show('Thuan\'s stockroom','Cartons wait in the back room. Restock the shelves before the next open.',[
+    show('Thuan\'s stockroom','Cartons wait in the back room. Restock the shelves before the next open.\n\nThere is a hole at the back of the stockroom now, down to the old sea cave, and something big comes up through it at night. Somebody from town, in a suit. Mind the aisles.',[
       ['Play as Thuan',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=play&day='+day;}],
       ['Let Thuan restock',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=auto&day='+day;}],
       ['Leave',close],
@@ -772,8 +851,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     if(!handshake)return false;
     state.sakura=restoreSakura(state.sakura);
     applyStorageRestock(state,getMinutes());
+    // The night's boss from the sea cave (thuans-storage): seen off, it leaves its cave coins behind.
+    const boss=handshake.boss;
+    if(handshake.yen){state.yen+=handshake.yen;note('Saw off '+(boss?boss.who+' in a '+boss.animal+' suit':'a Bizarro visitor')+' in Thuan’s stockroom: ¥'+handshake.yen+' in old cave coins.');}
     save();
-    say('Shelves restocked.',4);
+    say(boss?.defeated?'Shelves restocked. And '+boss.who+' -- the '+boss.animal+' in the stockroom -- has gone back down the hole, leaving ¥'+handshake.yen+' in cave coins.':boss?'Shelves restocked, with a '+boss.animal+' still loose in the back room.':'Shelves restocked.',6);
     return true;
   }
   function action(kind,name,detail){
@@ -785,6 +867,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'office-records':officeRecords(detail);break;
       case 'store-item':storeItem(detail);break;
       case 'shop-ledger':shopLedger();break;
+      case 'magazine-rack':magazineRack();break;
       case 'sakura-hot-snacks':thuanConversation('hot-case');break;
       case 'storage-restock':storageRestock();break;
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
@@ -800,6 +883,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'onsen-milk':onsenMilk();break;
       case 'onsen-change':onsenChange();break;
       case 'sakura-medicine':sakuraMedicine();break;
+      case 'sakura-counter-goods':sakuraCounterGoods();break;
       case 'kyushoku':kyushoku(name,detail);break;
       case 'school-pantry':schoolPantry(name);break;
       case 'school-teacher':schoolTeacher(name);break;

@@ -173,6 +173,23 @@ export function createHarbourBasin() {
   return sea;
 }
 
+/**
+ * The height of the water surface at a point, for things that float on it or break
+ * it: the same four waves the shader lifts the sea with, less their small sideways
+ * drift, which at a splash's size does not show.
+ */
+/** How far above sea level the highest crest reaches. */
+export const WAVE_REACH = WAVES.reduce((sum, w) => sum + w.amplitude, 0);
+
+export function waveHeight(x, z, time) {
+  let y = SEA_LEVEL;
+  for (const w of WAVES) {
+    const l = Math.hypot(w.dx, w.dz) || 1, k = Math.PI * 2 / w.wavelength;
+    y += w.amplitude * Math.sin(k * ((w.dx * x + w.dz * z) / l - w.speed * time));
+  }
+  return y;
+}
+
 export function tickOcean(time) {
   oceanMaterial().uniforms.uTime.value = time;
 }

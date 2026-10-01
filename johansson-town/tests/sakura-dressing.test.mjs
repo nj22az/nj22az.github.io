@@ -32,7 +32,24 @@ test('medicine is asked for over the counter during opening hours',()=>{
  const dom=installDOM();let minutes=10*60;
  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>minutes,getSocialContext:()=>({})});
  const yen=acts.state.yen,kaze=MEDICINES.find(m=>m.id==='nodo');
- acts.action('sakura-medicine');dom.button(`${kaze.jp} · ¥${kaze.price.toLocaleString('en-GB')}`);
+ acts.action('sakura-medicine');dom.button(`${kaze.jp}${kaze.sub?' '+kaze.sub:''} · ¥${kaze.price.toLocaleString('en-GB')}`);
  assert.equal(acts.state.yen,yen-kaze.price);assert.ok(acts.state.inventory.includes(kaze.en));
  minutes=22*60;acts.action('sakura-medicine');assert.match(document.querySelector('#activityBody').firstChild.textContent,/closed/);
+});
+
+test('everything on show behind the counter is for sale: every medicine box and the till goods',()=>{
+ const dom=installDOM();const minutes=10*60;
+ const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>minutes,getSocialContext:()=>({})});
+ acts.state.yen=100000;
+ acts.action('sakura-medicine');
+ const labels=[...document.querySelector('#activityActions').children].map(b=>b.textContent);
+ for(const m of MEDICINES)assert.ok(labels.some(l=>l.startsWith(m.jp)&&l.endsWith('¥'+m.price.toLocaleString('en-GB'))),m.id+' is on the shelf but not for sale');
+ const taio=MEDICINES.find(m=>m.id==='taionkei'),before=acts.state.yen;
+ dom.button(`${taio.jp}${taio.sub?' '+taio.sub:''} · ¥${taio.price.toLocaleString('en-GB')}`);
+ assert.equal(acts.state.yen,before-taio.price);assert.ok(acts.state.inventory.includes(taio.en));
+ acts.action('sakura-counter-goods');
+ const counter=[...document.querySelector('#activityActions').children].map(b=>b.textContent);
+ for(const jp of ['テレホンカード','切手','フェリー回数券','ガム','マッチ'])assert.ok(counter.some(l=>l.startsWith(jp)),jp+' cannot be bought at the till');
+ const y=acts.state.yen;dom.button(counter.find(l=>l.startsWith('切手')));
+ assert.equal(acts.state.yen,y-80);assert.ok(acts.state.inventory.includes('80-yen stamp'));
 });

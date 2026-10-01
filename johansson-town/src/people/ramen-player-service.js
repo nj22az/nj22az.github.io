@@ -1,23 +1,66 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createResidentProp} from './resident-props.js';
+import {createDishProp,createDrinkProp,setPropPortion,updatePropPortion,disposeServing} from './izakaya-beer.js';
 export const RAMEN_MENU=Object.freeze([{id:'ramen',name:'Shoyu ramen',cost:300},{id:'rice',name:'Onigiri',cost:120},{id:'bun',name:'Steamed pork bun',cost:150},{id:'tea',name:'Green tea',cost:120}]);
-export function createRamenPlayerService({room,getSeat,getMinutes,getBalance,pay,say}){
+/** Drinks, and the glass each comes in (people/izakaya-beer.js). */
+const DRINK_PROPS={tea:'oolong',beer:'bottle',mugicha:'mugicha',coffee:'coffee'};
+/** How many mouthfuls a thing lasts you. */
+const MOUTHFULS={ramen:6,gyoza:6,rice:4,bun:3,tea:4,mugicha:4,coffee:4,beer:6};
+export const isRamenDrink=item=>!!DRINK_PROPS[item?.prop||item?.id];
+/**
+ * Order at a ramen counter seat: the cook takes it, cooks it and sets it down in front of
+ * you; then you eat it, or drink it, a mouthful at a time. The old street's Inakaya uses
+ * the defaults; Sato Ramen passes its own menu, lunch hours, cook and kitchen -- with a
+ * kitchen (people/ramen-kitchen.js) Mrs Sato cooks it and carries it over herself.
+ * `onMouthful(item,{drink,kind,start,finish})` is how the game shows each one.
+ */
+export function createRamenPlayerService({room,getSeat,getMinutes,getBalance,pay,say,menu=RAMEN_MENU,isOpen=null,title='Sato Ramen',server='The cook',closedLine='The ramen kitchen is closed. Please return after 09:00.',kitchen=null,onMouthful=()=>{},canOrder=()=>true}){
  let order=null,elapsed=0;const props=new Map();
- const open=()=>getMinutes()%1440>=540&&getMinutes()%1440<1260;
- const clear=()=>{for(const p of props.values())p.visible=false;order=null;};
- return {menu:RAMEN_MENU,title:'Sato Ramen',server:'The cook',get order(){return order;},
-  request(id){const item=RAMEN_MENU.find(i=>i.id===id),seat=getSeat();if(!item||!seat||order)return false;
-   if(!open()){say('The ramen kitchen is closed. Please return after 09:00.',4);return false;}
+ const open=()=>isOpen?isOpen(getMinutes()):getMinutes()%1440>=540&&getMinutes()%1440<1260;
+ const kindOf=item=>item.prop||item.id;
+ const makeProp=kind=>DRINK_PROPS[kind]?createDrinkProp(DRINK_PROPS[kind]):['ramen','gyoza','rice'].includes(kind)?createDishProp(kind):createResidentProp(kind);
+ const clear=()=>{kitchen?.cancel('player');for(const p of props.values())p.visible=false;order=null;};
+ function place(seat,kind){
+  let prop=props.get(kind);if(!prop){prop=makeProp(kind);props.set(kind,prop);room.add(prop);}
+  const forward=new THREE.Vector3(-Math.sin(seat.yaw),0,-Math.cos(seat.yaw));
+  if(seat.table)prop.position.set(...seat.table);else{prop.position.set(...seat.position).addScaledVector(forward,.38);prop.position.y=1.04;}
+  if(prop.userData.consumable)setPropPortion(prop,1,{immediate:true});prop.visible=true;return prop;
+ }
+ function deliver(){
+  if(!order||order.delivered)return;
+  if(!pay(order.item.cost)){say('There is not enough yen for this order.',4);clear();return;}
+  order.delivered=true;order.prop=place(order.seat,kindOf(order.item));
+  say(kitchen?server+': はい、どうぞ。 Your '+order.item.name.toLowerCase()+'.':'Your '+order.item.name.toLowerCase()+' is served. Enjoy your meal.',4);
+ }
+ return {menu,title,server,get order(){return order;},
+  request(id){const item=menu.find(i=>i.id===id),seat=getSeat();if(!item||!seat||order)return false;
+   if(!open()){say(closedLine,4);return false;}
    if(getBalance()<item.cost){say('You do not have enough yen.',3);return false;}
-   order={item,seat,delivered:false};elapsed=0;say('The cook takes your order and begins preparing it.',4);return true;
+   const refusal=canOrder(item);if(refusal!==true){say(refusal,4);return false;}
+   const kind=kindOf(item),total=MOUTHFULS[kind]||4;
+   order={item,seat,delivered:false,left:total,total,cooking:false};elapsed=0;
+   order.cooking=!!kitchen?.request({items:[kind],x:(seat.table||seat.position)[0],label:'your',tag:'player',onServed:deliver});
+   say(server+' takes your order and begins preparing it.',4);return true;
   },
-  update(dt){if(!order)return;if(getSeat()!==order.seat||!open()&&!order.delivered){clear();return;}if(order.delivered)return;
+  /** A bowl already in front of you: the lunch you sit down to, not one you ordered (world/openings.js). */
+  serveNow(id){
+   const item=menu.find(i=>i.id===id),seat=getSeat();if(!item||!seat)return false;
+   const total=MOUTHFULS[kindOf(item)]||4;order={item,seat,delivered:true,left:total,total,cooking:false};order.prop=place(seat,kindOf(item));return true;
+  },
+  update(dt){if(!order)return;if(getSeat()!==order.seat||!open()&&!order.delivered){clear();return;}
+   if(order.prop)updatePropPortion(order.prop,dt);
+   if(order.delivered||order.cooking)return;
    elapsed+=dt;if(elapsed<5)return;
-   if(!pay(order.item.cost)){say('There is not enough yen for this order.',4);clear();return;}
-   order.delivered=true;let prop=props.get(order.item.id);if(!prop){prop=createResidentProp(order.item.id);props.set(order.item.id,prop);room.add(prop);}
-   const seat=order.seat,forward=new THREE.Vector3(-Math.sin(seat.yaw),0,-Math.cos(seat.yaw));prop.position.set(...seat.position).addScaledVector(forward,.38);prop.position.y=1.04;prop.visible=true;say('Your '+order.item.name.toLowerCase()+' is served. Enjoy your meal.',4);
+   deliver();
   },
-  eat(){if(!order?.delivered)return false;const item=order.item;clear();say(item.id==='tea'?'You finish your green tea.':'You enjoy the '+item.name.toLowerCase()+'.',4);return true;},
-  cancel:clear,dispose(){clear();for(const prop of props.values()){prop.removeFromParent();prop.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});}props.clear();}
+  /** One mouthful, or one sip. False with nothing in front of you. The last one clears the counter. */
+  eat(){if(!order?.delivered||order.left<=0)return false;const item=order.item,kind=kindOf(item),drink=!!DRINK_PROPS[kind];
+   const start=order.left/order.total;order.left--;const finish=order.left/order.total;
+   if(order.prop?.userData.consumable)setPropPortion(order.prop,finish);
+   onMouthful(item,{drink,kind:drink?DRINK_PROPS[kind]:kind,start,finish,left:order.left});
+   if(order.left<=0){const done=order;setTimeout(()=>{if(order===done)clear();},1600);
+    say(drink?'You finish the '+item.name.toLowerCase()+'.':'You finish the '+item.name.toLowerCase()+'. ごちそうさまでした。',4);}
+   return true;},
+  cancel:clear,dispose(){clear();for(const prop of props.values())disposeServing(prop);props.clear();}
  };
 }

@@ -348,3 +348,28 @@ body.conversation-open #prompt,body.conversation-open #exitRoomButton,body.conve
 .workshop-app-frame{display:block;box-sizing:border-box;width:100%;height:58dvh;min-height:260px;border:2px solid #637b72;border-radius:8px;background:#f6f6f3}
 #activity.workshop-tool #activityActions{position:sticky;bottom:0;background:#f6eedb;padding-top:12px}
 @media(max-height:520px){.workshop-app-frame{height:48dvh;min-height:180px}}
+/* 立ち読み: the magazine rack reader (src/ui/magazine-reader.js) */
+#activity.magazine-view .activity-card{width:min(760px,100%)}
+#activity .mag-reader{display:flex;flex-direction:column;gap:12px}
+#activity .mag-reader .mag-hint{font-size:14px;line-height:1.4;color:#775c4a}
+#activity .mag-shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
+#activity .mag-cover{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:2px solid #eadfc8;border-radius:14px;background:#fffdf8;font-family:inherit;color:#293e48;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
+#activity .mag-cover:hover,#activity .mag-cover:focus-visible{transform:translateY(-3px);box-shadow:0 4px 0 #d5b998}
+#activity .mag-cover canvas{position:static;inset:auto;display:block;width:100%;height:auto;border-radius:3px;box-shadow:0 2px 6px #0003}
+#activity .mag-cover-name{font-size:12px;font-weight:800;line-height:1.25;text-align:center}
+#activity .mag-cover-issue{font-size:11px;color:#8a7766}
+#activity .mag-head{display:flex;align-items:center;gap:12px}
+#activity .mag-title{font-weight:800;font-size:15px;color:#28594f}
+#activity .mag-back,#activity .mag-turn{white-space:nowrap;flex-shrink:0;min-height:44px;padding:8px 16px;border:2px solid #98c7ae;border-radius:999px;background:#d7efdc;color:#214b3b;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer}
+#activity .mag-turn:disabled{opacity:.4;cursor:default}
+#activity .mag-buy{margin-left:auto;min-height:44px;padding:8px 16px;border:2px solid #e2b07a;border-radius:999px;background:#ffe8c4;color:#7a4314;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap}
+#activity .mag-buy:disabled{opacity:.7;cursor:default}
+#activity .mag-stage{display:flex;justify-content:center;perspective:1400px}
+#activity .mag-page{position:static;inset:auto;display:block;height:min(58dvh,620px);width:auto;max-width:100%;border-radius:4px;box-shadow:0 6px 18px #142e4133;background:#fbf8ee;touch-action:pan-y;cursor:pointer}
+#activity .mag-page.turn-next{animation:mag-turn-next .32s ease-out}
+#activity .mag-page.turn-prev{animation:mag-turn-prev .32s ease-out}
+@keyframes mag-turn-next{from{transform:rotateY(-70deg);transform-origin:right center;opacity:.4}to{transform:none;transform-origin:right center}}
+@keyframes mag-turn-prev{from{transform:rotateY(70deg);transform-origin:left center;opacity:.4}to{transform:none;transform-origin:left center}}
+#activity .mag-nav{display:flex;align-items:center;justify-content:center;gap:16px}
+#activity .mag-count{min-width:64px;text-align:center;font-weight:800;color:#52615c}
+@media (prefers-reduced-motion:reduce){#activity .mag-page.turn-next,#activity .mag-page.turn-prev{animation:none}}

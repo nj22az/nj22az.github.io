@@ -74,7 +74,8 @@ function buildCheer(room){
  const string=new THREE.MeshBasicMaterial({color:0xfff6e0});
  // Strings run across the shop floor from wall to wall, over the aisles.
  for(const z of [-2.6,-.6,1.4,3.1]){
-  const x0=-6.6,x1=4.3,sag=.12,y=2.42;
+  // The back string stops at the restroom wall (x -4.02) instead of running through it.
+  const x0=z<-2.4?-3.85:-6.6,x1=4.3,sag=.12,y=2.42;
   const pts=[];for(let i=0;i<=16;i++){const t=i/16;pts.push(new THREE.Vector3(x0+(x1-x0)*t,y-Math.sin(Math.PI*t)*sag,z));}
   const tube=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),48,.006,4),string);tube.name='Sakura bunting string';room.add(tube);
   const n=Math.floor((x1-x0)/.24);
@@ -150,6 +151,8 @@ export function buildSakuraCheer(room,{anchor,action}){
 export const SAKURA_PAINT=Object.freeze({
  'sakura-building':[0xf2f6fa,.5],'sakura-ceiling':[0xf8fbff,.72],'sakura-counter':[0xeef0f2,.34],
  'sakura-shelf':[0xf4f6f8,0],'sakura-shelf-ends':[0xf27aa4,0],'sakura-fridge':[0xf2f6f8,0],
+ // Porcelain rather than the model's grey; no normals either, so it needs some glow.
+ 'sakura-toilet':[0xf4f2ec,.42],
 });
 const paintFor=name=>SAKURA_PAINT[name]||SAKURA_PAINT[name.split(' ')[0]];
 export function paintSakuraShell(model){
@@ -164,8 +167,9 @@ export function paintSakuraShell(model){
 }
 /** Inner faces of the shop-floor walls, the band's height, and the counter's customer face. */
 export const SAKURA_BAND=Object.freeze({y0:2.56,y1:2.86,runs:Object.freeze([
- {x:-6.8,z0:-3.95,z1:3.2,yaw:Math.PI/2},
- {z:-3.93,x0:-6.8,x1:6.8,yaw:0},
+ // Both runs stop at the restroom (x < -4.02, z < -2.42), which has its own tiles.
+ {x:-6.8,z0:-2.42,z1:3.2,yaw:Math.PI/2},
+ {z:-3.93,x0:-4.02,x1:6.8,yaw:0},
  {x:6.8,z0:-1.1,z1:3.9,yaw:-Math.PI/2},
 ]),counter:{x:4.52,z0:.1,z1:3.84,y0:.08,y1:.92}});
 export function buildSakuraBand(room){

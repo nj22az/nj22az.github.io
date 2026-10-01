@@ -12,44 +12,44 @@ try{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/creator-drag-review.html',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body></body>'}));
   await page.goto('http://127.0.0.1:5173/creator-drag-review.html');
-  await page.evaluate(async()=>{const {openCreator}=await import('/src/avatars/creator.js');window.maker=openCreator();});
+  await page.evaluate(async()=>{const THREE=await import('/vendor/three.module.js');THREE.Scene.prototype.onBeforeRender=function(renderer,scene,camera){if(!renderer.getRenderTarget())window.creatorPreview={scene,camera,renderer};};const {openCreator}=await import('/src/avatars/creator.js');window.maker=openCreator();});
   const cdp=touch?await page.context().newCDPSession(page):null;
   const sendTouch=(type,x,y)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'||type==='touchCancel'?[]:[{x,y,id:1}]});
   async function select(feature){
-   if(touch)await page.getByLabel('Appearance category',{exact:true}).selectOption(feature);
+   if(touch)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption(feature);
    else await page.getByRole('tab',{name:feature[0].toUpperCase()+feature.slice(1),exact:true}).click();
   }
   async function featurePoint(feature,side){
-   // Project the actual head geometry/UVs, independently of creator hit testing.
+   // Project the rendered head geometry/UVs, independently of creator hit testing.
    // Nearest vertex is within the deliberately generous feature touch target.
    return page.evaluate(async({feature,side})=>{
     const THREE=await import('/vendor/three.module.js');
-    const {buildAvatar}=await import('/src/avatars/build.js');
     const {faceLayout}=await import('/src/avatars/face.js');
-    const r=window.maker.recipe,a=buildAvatar(r),l=faceLayout(r),m=a.measure;
+    const r=window.maker.recipe,l=faceLayout(r),{scene,camera}=window.creatorPreview,head=scene.getObjectByName('Shimanchu head');
     const x=feature==='eyes'?128+side*l.spread:feature==='brows'?128+side*l.browSpread:l[feature+'X'];
     const y=feature==='eyes'?l.eyeY:feature==='brows'?l.browY:l[feature+'Y'];
-    const g=a.face.head.geometry,uv=g.attributes.uv;let index=0,best=Infinity;
+    const g=head.geometry,uv=g.attributes.uv;let index=0,best=Infinity;
     for(let i=0;i<uv.count;i++){const d=(uv.getX(i)-x/256)**2+(uv.getY(i)-(1-y/256))**2;if(d<best){best=d;index=i;}}
-    const holder=new THREE.Group();holder.rotation.y=Math.PI;holder.add(a.root);holder.updateMatrixWorld(true);
-    const p=new THREE.Vector3().fromBufferAttribute(g.attributes.position,index);a.face.head.localToWorld(p);
+    scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
+    const p=new THREE.Vector3().fromBufferAttribute(g.attributes.position,index);head.localToWorld(p);
     const rect=document.querySelector('.shm-stage>canvas').getBoundingClientRect();
-    const camera=new THREE.PerspectiveCamera(28,rect.width/rect.height,.05,50);
-    const faceY=m.headCentre-m.Rh*.18;camera.position.set(0,faceY,m.Rh*8.6);camera.lookAt(0,faceY,0);camera.updateMatrixWorld(true);
-    p.project(camera);a.dispose();
+    p.project(camera);
     return {x:rect.left+(p.x+1)*rect.width/2,y:rect.top+(1-p.y)*rect.height/2};
    },{feature,side});
   }
   for(const feature of ['eyes','brows','nose','mouth']){
-   await select(feature);await page.waitForTimeout(1800);
+   await select(feature);await page.evaluate(()=>new Promise(resolve=>{let frames=0;function settled(){if(++frames>=45)resolve();else requestAnimationFrame(settled);}requestAnimationFrame(settled);}));
    for(const side of feature==='eyes'||feature==='brows'?[-1,1]:[1]){
     const before=await page.evaluate(()=>window.maker.recipe);
+    const geometry=await page.evaluate(()=>window.creatorPreview.scene.getObjectByName('Shimanchu head').geometry.uuid);
     const p=await featurePoint(feature,side),dx=side*12,dy=-9;
     if(touch)await sendTouch('touchStart',p.x,p.y);else {await page.mouse.move(p.x,p.y);await page.mouse.down();}
     for(let i=1;i<=6;i++){
      if(touch)await sendTouch('touchMove',p.x+dx*i/6,p.y+dy*i/6);else await page.mouse.move(p.x+dx*i/6,p.y+dy*i/6);
      await page.waitForTimeout(25);
     }
+    assert.equal(await page.evaluate(()=>window.creatorPreview.scene.getObjectByName('Shimanchu head').geometry.uuid),geometry,'drag repaints the face without rebuilding geometry');
+    assert.ok(await page.evaluate(()=>window.creatorPreview.renderer.info.render.calls<=3),'preview retains the three-draw budget');
     if(touch)await sendTouch('touchEnd');else await page.mouse.up();
     const after=await page.evaluate(()=>window.maker.recipe),horizontal=['eyes','brows'].includes(feature)?'spacing':'x';
     assert.ok(after[feature][horizontal]>before[feature][horizontal],`${width} ${feature} horizontal drag`);
@@ -73,7 +73,13 @@ try{
    await sendTouch('touchStart',p.x,p.y);await sendTouch('touchMove',p.x+10,p.y-8);await sendTouch('touchCancel');
    assert.deepEqual(await page.evaluate(()=>window.maker.recipe),before);
    await sendTouch('touchStart',p.x,p.y);await sendTouch('touchEnd');
-  }else{await page.mouse.click(p.x,p.y);}
+  }else{
+   await page.evaluate(()=>document.querySelector('.shm-stage>canvas').addEventListener('pointerdown',e=>window.dragPointer=e.pointerId,{once:true}));
+   await page.mouse.move(p.x,p.y);await page.mouse.down();await page.mouse.move(p.x+10,p.y-8);
+   await page.evaluate(()=>document.querySelector('.shm-stage>canvas').dispatchEvent(new PointerEvent('pointercancel',{pointerId:window.dragPointer})));
+   await page.mouse.up();assert.deepEqual(await page.evaluate(()=>window.maker.recipe),before,'mouse cancellation restores the gesture');
+   await page.mouse.click(p.x,p.y);
+  }
   assert.equal(await page.getByRole('button',{name:'Undo',exact:true}).isDisabled(),true);
   const range=page.locator('input[data-at="mouth.x"]');await range.focus();await page.keyboard.press('ArrowRight');
   assert.ok((await page.evaluate(()=>window.maker.recipe.mouth.x))>before.mouth.x,'keyboard slider remains usable');

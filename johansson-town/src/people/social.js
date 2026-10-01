@@ -8,15 +8,17 @@ import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
 import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
-import {BUS_STATION} from '../world/bus-station.js';
+import {transitStop,awayPlace} from '../world/transit.js';
 import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
 import {PARK_BENCH} from '../world/park-layout.js';
-import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork} from './commuter-schedule.js';
+import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork,SATO_SHIFT} from './commuter-schedule.js';
+import {SATO_LUNCH,satoRamenOpen} from '../world/sato-ramen-layout.js';
 import {shoppingDistrictActive,peninsulaActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
 export {IZAKAYA_DOOR};
-export const RAMEN_DOOR=[...DINING.ramenDoor];
+export {RAMEN_DOOR} from '../world/dining-layout.js';
+import {RAMEN_DOOR} from '../world/dining-layout.js';
 export const THUAN_HOME_DOOR=[...RESIDENTS.find(p=>p.name==='Thuan').home];
 export const minuteOfDay=m=>((m%1440)+1440)%1440;
 export const inTimeRange=(m,start,end)=>start!=null&&end!=null&&minuteOfDay(m-start)<end-start;
@@ -264,7 +266,13 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
  */
 /** Reiko and Tetsuo start in the afternoon; on a dry morning they take an hour on the park bench. */
 const MORNING_PARK=Object.freeze({Reiko:Object.freeze([660,720]),Tetsuo:Object.freeze([750,810])});
+/** Lunch at Sato Ramen, next door to the shop, for those who have a slot (sato-ramen-layout.js). */
+function satoLunch(profile,minutes){
+ const slot=SATO_LUNCH[profile.name];
+ return slot&&satoRamenOpen(minutes)&&inTimeRange(minutes,...slot)?{place:'ramen',target:RAMEN_DOOR,activity:'lunch at Sato Ramen'}:null;
+}
 function yardResidentPlan(profile,minutes,rain=false,state=null){
+ const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
  if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a shopping errand at Sakura'};
  const morning=MORNING_PARK[profile.name];
@@ -289,6 +297,7 @@ function workplaceResidentPlan(profile,minutes,rain=false,state=null){
  const m=minuteOfDay(minutes),home={place:'home',target:profile.home};
  if(profile.name==='Harbour master'){
   const day=HARBOUR_MASTER_DAY;
+  const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
   if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'buying lunch at Sakura'};
   if(inTimeRange(m,day.start,day.finish))return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
   if(!rain&&inTimeRange(m,day.finish,day.finish+75))return {place:'stroll',target:[0,-44],activity:'walking the quay to check the moorings'};
@@ -301,13 +310,26 @@ function workplaceResidentPlan(profile,minutes,rain=false,state=null){
  if(inTimeRange(m,day.desk,day.patrol))return {place:'work',target:profile.work,activity:'at the front desk of the police box'};
  return {...home,activity:'resting in the room behind the police box'};
 }
-function commuterPlan(profile,minutes,rain=false,state=null){
+/**
+ * On the island the commute is by ferry, and what people are doing says so. One place
+ * for it, rather than two copies of every line.
+ */
+export const ferryWords=text=>typeof text!=='string'?text:text
+ .replace(/the night shift bus/g,'the night ferry').replace(/the last bus/g,'the last ferry')
+ .replace(/(on|for|to) the Harbour Line/g,'$1 the ferry').replace(/next Harbour Line departure/g,'next ferry')
+ .replace(/running the Harbour Line/g,'working the ferry').replace(/left by bus/g,'left on the ferry');
+function commuterPlan(...args){
+ const plan=commuterPlanOn(...args);
+ if(plan&&peninsulaActive()&&plan.activity)return {...plan,activity:ferryWords(plan.activity)};
+ return plan;
+}
+function commuterPlanOn(profile,minutes,rain=false,state=null){
  if(livesAtWork(profile))return workplaceResidentPlan(profile,minutes,rain,state);
  if(livesInYard(profile))return yardResidentPlan(profile,minutes,rain,state);
- const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:BUS_STATION.queue,activity});
+ const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:transitStop().queue,activity});
  // exit is the platform (clear of the tunnel mouth) — never roadEndZ/arch.
- if(phase==='away')return {place:'away',target:BUS_STATION.exit,activity:'away from the shopping district'};
- if(phase==='arriving')return {place:'bus',target:BUS_STATION.arrival,activity:'arriving on the Harbour Line'};
+ if(phase==='away')return {place:'away',target:transitStop().exit,activity:awayPlace()};
+ if(phase==='arriving')return {place:'bus',target:transitStop().arrival,activity:'arriving on the Harbour Line'};
  // Thuan's own hour between locking up and the last bus. It has to be read before the
  // generic departing rule, which sends everybody straight to the queue — which is why
  // she has been walking past Minato's door every evening for the whole of her shift.
@@ -322,7 +344,12 @@ function commuterPlan(profile,minutes,rain=false,state=null){
   if(afterWork)return afterWork;
   return bus('walking to the Harbour Line for departure');
  }
- if(profile.name==='Bus driver')return {place:'station',target:BUS_STATION.driver,activity:'running the Harbour Line'};
+ // Mrs Sato on the peninsula: fish at the harbour first, then her own kitchen.
+ if(profile.name==='Mrs Sato'&&peninsulaActive()&&phase==='town'){
+  if(shiftActive(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'cooking the lunch ramen at Sato Ramen'};
+  if(minuteOfDay(minutes-SATO_SHIFT.arrival)<SATO_SHIFT.start-SATO_SHIFT.arrival)return {place:'stroll',target:[3.2,-44],activity:'buying fish for the stock at the harbour'};
+ }
+ if(profile.name==='Bus driver')return {place:'station',target:transitStop().driver,activity:'running the Harbour Line'};
  if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
  if(profile.name==='Officer Mori')return shiftActive(profile,minutes)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:bus('waiting for the night shift bus');
  if(profile.name==='Nao'){
@@ -376,7 +403,7 @@ export function residentPlan(profile,minutes,rain=false,state=null,mode=null){
  return commuter?commuterPlan(profile,minutes,rain,state):legacyResidentPlan(profile,minutes,rain,state);
 }
 export const GOSSIP=[
- {id:'yuri-evening',a:'Thuan',b:'Nao',line:'Thuan: I told the assistant manager I would be on the last bus.\nNao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Check the terminal timetable for her evening service.'},
+ {id:'yuri-evening',a:'Thuan',b:'Nao',line:'Thuan: I told the assistant manager I would be on the last ferry.\nNao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Check the terminal timetable for her evening service.'},
  {id:'apron',a:'Aya',b:'Reiko',line:'Aya: Tama needs his own column.\nReiko: What would he write?\nAya: Strong opinions about the window chair.',clue:'Aya and Reiko share Books & Press and commute in for their shifts.'},
  {id:'radio',a:'Kenji',b:'Tetsuo',line:'Kenji: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nKenji: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
  {id:'fish',a:'Harbour master',b:'Bus driver',line:'Bus driver: I arrived exactly on time.\nHarbour master: Which timetable?\nBus driver: The one I am writing now.',clue:'The harbour master keeps the office records; the bus driver works at the northern terminal.'},

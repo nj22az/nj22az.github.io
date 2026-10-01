@@ -51,7 +51,17 @@ test('consumeStorageWonHandshake clears the localStorage key once',()=>{
   };
   localStorage.setItem(STORAGE_WON_KEY,JSON.stringify({day:2,assisted:true,t:123}));
   const once=consumeStorageWonHandshake();
-  assert.deepEqual(once,{day:2,assisted:true,t:123});
+  assert.deepEqual(once,{day:2,assisted:true,boss:null,yen:0,t:123});
   assert.equal(localStorage.getItem(STORAGE_WON_KEY),null);
   assert.equal(consumeStorageWonHandshake(),null);
+});
+
+test('a boss seen off in the stockroom pays its cave coins; one still loose pays nothing',()=>{
+  const storage=new Map();
+  globalThis.localStorage={getItem:k=>storage.has(k)?storage.get(k):null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>storage.delete(k)};
+  localStorage.setItem(STORAGE_WON_KEY,JSON.stringify({day:3,boss:{who:'Bus driver',animal:'gorilla',defeated:true},yen:99999,t:1}));
+  const won=consumeStorageWonHandshake();
+  assert.deepEqual(won.boss,{who:'Bus driver',animal:'gorilla',defeated:true});assert.equal(won.yen,200);
+  localStorage.setItem(STORAGE_WON_KEY,JSON.stringify({day:3,boss:{who:'Tetsuo',animal:'bear',defeated:false},yen:200,t:1}));
+  assert.equal(consumeStorageWonHandshake().yen,0);
 });

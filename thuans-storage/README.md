@@ -6,6 +6,30 @@ Walk Thuan through Sakura Shōten's changing stockroom, collect six marked goods
 and return to the pink shop curtain. Receiving and dispatch bays connect to four
 stock departments with random shelf banks and clear cross-aisles.
 
+### The night's boss
+
+After Sakura closes, Thuan restocks it from the back room, and the back room has a hole in
+it now, low in the west wall, down to the old sea cave under the headland. Each night one of
+the townsfolk climbs up through it in their Bizarro Minato suit from Johansson Town's cave
+dungeon (`johansson-town/src/dungeon/costumes.js`), talking backwards. The suit is the
+behaviour:
+
+- **Gorilla** (the bus driver): knuckle-walks; from a distance down a clear aisle it beats
+  its chest, then charges in a straight line. Run it into the racks and it sits down seeing
+  stars. Too close and it jumps and pounds the floor.
+- **Crocodile** (Officer Mori): lies flat like a log by the goods on your list and drifts
+  closer; it lifts its jaws, lunges, snaps, then rolls over on its back, worn out.
+- **Bear** (Tetsuo): ambles after you, rears up roaring, swipes, then sits down heavily.
+- **Donkey** (Mrs Sato): grazes by the goods and will not be moved. Come up in front and she
+  brays you back; come up behind and you get both back hooves, after which she is winded.
+
+Each has a tell before it goes for Thuan and a worn-out moment after, with stars round its
+head. Shoo it then (Space or F, the gamepad's A, or Shoo! on touch): any other time it does
+not notice. Three shoos and the head comes off, the townsperson bows and goes back down
+the hole, leaving ¥200 in old cave coins. Being hit only knocks Thuan over for a moment;
+the list can always be finished. Played from the town (`?from=johansson-town`), the coins go
+into your purse and the town hears who it was.
+
 - WASD / arrows: walk. Shift: run. Drag: look. Escape: pause.
 - Touch: Move and Look pads, with a held Run button.
 - Gamepad: left stick moves, right stick looks; shoulder / stick press runs.

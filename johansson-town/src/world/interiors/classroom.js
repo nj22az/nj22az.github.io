@@ -2,7 +2,7 @@ import * as THREE from '../../../vendor/three.module.js';
 import {batchStaticProps} from '../../render/static-props.js';
 import {daylight} from '../../render/dusk.js';
 import {hanaBlockMaterial,hanaScreen} from '../school.js';
-import {buildFigure,setPose,animateFigure} from '../../people/school-kids.js';
+import {buildFigure,setPose,animateFigure} from '../../people/school-avatars.js';
 import {CHIME_TIMES,playSchoolChime} from '../../audio/school-chime.js';
 import {townCalendarAt} from '../../town-clock.js';
 
@@ -386,14 +386,14 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
 
  const kids=PUPILS.map(([name,girl,shirt,bottom,toe],i)=>{
   const common={shirt,bottom,girl,toe,hair:HAIRS[i%4],skin:SKINS[i%4],name};
-  const seated=buildFigure({...common,pose:'seated'}),standing=buildFigure({...common,pose:'standing'});
-  const duty=DUTY.includes(i),smockSeated=duty?buildFigure({...common,pose:'seated',smock:true}):null,smockStanding=duty?buildFigure({...common,pose:'standing',smock:true}):null;
-  for(const f of [seated,standing,smockSeated,smockStanding].filter(Boolean)){f.visible=false;f.userData.dynamicProp=true;room.add(f);}
+  // One avatar per child (and one in the lunch smock for the squad): it sits or stands by pose.
+  const seated=buildFigure({...common,pose:'seated'}),standing=seated;
+  const duty=DUTY.includes(i),smockSeated=duty?buildFigure({...common,pose:'seated',smock:true}):null,smockStanding=smockSeated;
+  for(const f of new Set([seated,smockSeated].filter(Boolean))){f.visible=false;f.userData.dynamicProp=true;room.add(f);}
   return {name,girl,seated,standing,smockSeated,smockStanding,duty,seed:i*1.7};
  });
- const teacherSeated=buildFigure({pose:'seated',adult:true,girl:true,shirt:0xe9e4d6,bottom:0x3a4a5e,hair:0x241a14,skin:0xd6a07a,name:TEACHER});
- const teacherStanding=buildFigure({pose:'standing',adult:true,girl:true,shirt:0xe9e4d6,bottom:0x3a4a5e,hair:0x241a14,skin:0xd6a07a,name:TEACHER});
- for(const f of [teacherSeated,teacherStanding]){f.visible=false;f.userData.dynamicProp=true;room.add(f);}
+ const teacherSeated=buildFigure({pose:'seated',adult:true,girl:true,shirt:0xe9e4d6,bottom:0x3a4a5e,hair:0x241a14,skin:0xd6a07a,name:TEACHER}),teacherStanding=teacherSeated;
+ teacherSeated.visible=false;teacherSeated.userData.dynamicProp=true;room.add(teacherSeated);
  const teacherSolid=rect(0,0,.5,.5,1.7);
  // The teacher's chair at lunch, pulled up to the end of a han.
  const teacherChair=new THREE.Group();teacherChair.userData.dynamicProp=true;teacherChair.position.set(-1.15,0,-.95);teacherChair.visible=false;room.add(teacherChair);
@@ -465,7 +465,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   units.slice(0,12).forEach((u,i)=>placeUnit(u,spots[i],chairsUp));
  }
  function showPupils(p,cal){
-  for(const k of kids)for(const f of [k.seated,k.standing,k.smockSeated,k.smockStanding])if(f)f.visible=false;
+  for(const k of kids)for(const f of [k.seated,k.standing,k.smockSeated,k.smockStanding])if(f){f.visible=false;delete f.userData.unit;}
   teacherSeated.visible=teacherStanding.visible=false;broom.visible=false;
   teacherSolid.x=1e6;teacherChair.visible=false;
   const seatKid=(k,i,smock)=>{const f=smock&&k.smockSeated?k.smockSeated:k.seated;f.visible=true;f.userData.unit=units[i];setPose(f,'desk');return f;};

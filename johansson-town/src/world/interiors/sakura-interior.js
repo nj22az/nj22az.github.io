@@ -11,6 +11,7 @@ import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLAND
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 import {buildSakuraCheer,paintSakuraShell,buildSakuraBand} from './sakura-cheer.js';
 import {buildSakuraLife} from './sakura-life.js';
+import {buildMagazineRack} from './sakura-magazine-rack.js';
 let model=null,pending=null;
 // The gondolas were cut into three islands and each one turned a quarter turn
 // (SHELF_ISLANDS in sakura-layout.js says where each one comes from and goes). The shop
@@ -99,8 +100,7 @@ function dressBackbar(room,anchor,action,materials){
   }
  }
  const look=SAKURA_BACKBAR.find(p=>p.id==='osusume');
- if(look)anchor([look.x-.15,1.2,look.z],'Look over the till backbar',()=>action('inspect','Sakura · Till backbar',
-  'Ferry cards, phone cards, stamps and gum on the eye-level strip. A postcard stand faces the queue. Thuan\u2019s radio sits low with spare batteries. The hot case and bell are on the counter; the books live in the back office.'));
+ if(look)anchor([look.x-.15,1.2,look.z],'Buy from the till counter',()=>action('sakura-counter-goods'));
 }
 export function buildSakuraInterior({room,reg,action,exit}){
  const layout=SAKURA_LAYOUT,unitPositions=new Map(),unitApproaches=new Map(),batches=[],materials=shopProductMaterials(),dummy=new THREE.Object3D(),zero=new THREE.Matrix4().makeScale(0,0,0);
@@ -136,6 +136,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   pair.forEach(m=>m.computeBoundingSphere());
   if(piece.look)anchor(piece.look,piece.title,()=>action('inspect',piece.title.replace(/^(Read|Look over) (the )?/,'Sakura · '),piece.text));
  }
+ const magazineRack=buildMagazineRack(room,{anchor,action});
  const ads=advertising.finish();
  // The posters hang on the shop's own walls, not across its windows (sakura-dressing.js):
  // the glass is for seeing in, and for the paper decorations that change with the season.
@@ -161,8 +162,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  const fill=new THREE.HemisphereLight(PALETTE.sakuraTube,0xd8d2c4,1.7);room.add(fill);
  let lightLevel=1;const tubes=[];
  const updateLighting=minutes=>{
-  // The decorations follow the real calendar, looked at once an hour.
-  decorations.refresh(townCalendarAt(minutes).date);
+  // The decorations and the magazine rack follow the town calendar, looked at once an hour.
+  decorations.refresh(townCalendarAt(minutes).date);magazineRack.refresh(townCalendarAt(minutes).date);
   lightLevel=fluorescent(minutes);fill.intensity=1.7*lightLevel;
   for(const tube of tubes)for(const mat of Array.isArray(tube.material)?tube.material:[tube.material]){
    mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;

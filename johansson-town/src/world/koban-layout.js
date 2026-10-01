@@ -11,7 +11,7 @@ export const KOBAN=Object.freeze({
  face:6.4,door:Object.freeze([5.75,21.9]),
  /** Walking in heads east, into the room. */
  inward:-Math.PI/2,
- address:'Minato Police Box, Bus Plaza corner',
+ address:'Minato Police Box, top of Main Street',
  resident:'Officer Mori',
 });
 

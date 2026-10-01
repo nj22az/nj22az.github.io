@@ -35,3 +35,12 @@ test('the rock bath lights its lantern and steams more after dark',()=>{
  const day=lantern.material.emissiveIntensity;layout.tick(.1,21*60+30);
  assert.ok(lantern.material.emissiveIntensity>day+.5);
 });
+
+test('Higa-san at the bandai is a Shimanchu like everyone else, up where she can see over the counter',async()=>{
+ const {installDOM}=await import('./fixtures.mjs');installDOM();
+ const {room,layout}=build();layout.tick(1/30,720);
+ const attendant=room.getObjectByName('Umi-no-yu attendant');
+ assert.ok(attendant.getObjectByName('Shimanchu body'),'built from her recipe, not a placeholder figure');
+ const head=new THREE.Vector3();attendant.getObjectByName('head')?.getWorldPosition(head);
+ assert.ok(head.y>1.1,'her head is above the bandai top at '+head.y.toFixed(2));
+});

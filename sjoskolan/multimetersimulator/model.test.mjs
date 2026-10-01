@@ -166,3 +166,21 @@ test('Station A: no rig displays the numbers from the v41_03 exercises',()=>{
       assert.ok(!bad.includes(v),`rig ${g.id}: ${v}`);
   }
 });
+
+
+test('Station A: R1/R2 checks accept autoranged Ω and kΩ on every rig and both probe orders',()=>{
+  const lesson=LESSONS.find(l=>l.id==='stationA');
+  for(const rig of RIGS)for(const [step,a,b] of [[2,'A','B'],[3,'B','N']])for(const [red,black] of [[a,b],[b,a]]){
+    const s=st({rig:rig.id,mode:'ohm',link:false,red,black});
+    const m=measure(s), check=lesson.steps[step].test;
+    assert.equal(check(s,m),true,`rig ${rig.id}, step ${step+1}: ${m.text} ${m.unit}`);
+    for(const patch of [{power:true},{link:true},{jack:'ma'},{red:'P'},{mode:'dc'}]){
+      const wrong={...s,...patch};assert.equal(check(wrong,measure(wrong)),false);
+    }
+    assert.equal(check(s,{...m,unit:'V ⎓'}),false);
+    assert.equal(check(s,{...m,code:'waiting'}),false);
+  }
+  const s=st({rig:6,mode:'ohm',link:false,red:'A',black:'B'});
+  assert.equal(measure(s).text,'961,8');assert.equal(measure(s).unit,'Ω');
+  assert.equal(lesson.steps[2].test(s,{...measure(s),value:700}),false);
+});

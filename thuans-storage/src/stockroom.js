@@ -186,6 +186,32 @@ function placeHarbourGuest(maze, random) {
   return { c: spot.c, r: spot.r, id: who.id, name: who.name, accent: who.accent, lines: who.lines.slice() };
 }
 
+// Bizarro Minato: the townsfolk in monster suits from the old sea cave under the
+// headland (johansson-town/src/dungeon/costumes.js -- kept in step by a test). A hole has
+// opened at the back of Thuan's stockroom, down to the cave, and each night one of them
+// climbs up through it and stays: the night's boss. The suit is the behaviour -- the bus
+// driver in a gorilla suit is a gorilla, Officer Mori in a crocodile suit lies in wait like a
+// crocodile -- each with a tell before it goes for you and a moment afterwards when it is
+// worn out, which is the moment to shoo it. Three shoos and the head comes off.
+const BIZARRO = [
+  { who: 'Bus driver', animal: 'gorilla', colour: 0x2e2a28, belly: 0x7d7068, lines: ['Hoo hoo! Doors opening! Doors closing! Doors opening!','Next stop: this one. Last stop: also this one.','Please stand clear of the bananas. Fares are free, exact change only.'] },
+  { who: 'Officer Mori', animal: 'crocodile', colour: 0x4f8a3a, belly: 0xc9d68a, lines: ['Stop! You are free to go!','Everyone is under arrest. Except the criminals.','Walk faster on the pavement, please. No hurry.'] },
+  { who: 'Tetsuo', animal: 'bear', colour: 0x5a3d2b, belly: 0xb58a64, lines: ['I only break radios now.','Grr. Welcome. Grr.','Every clock in the shop is right twice a year.'] },
+  { who: 'Mrs Sato', animal: 'donkey', colour: 0x8b8580, belly: 0xe8e0cf, lines: ['Hee-haw! No ramen today — only ramen!','The broth is cold and the stools are sold out.','Lunch is served at midnight, as always.'] },
+];
+/**
+ * The hole down to the sea cave: in the west wall at the cross-aisle between the
+ * departments (`wall` points from the floor cell into the wall). The boss climbs out of it
+ * a little into the shift and goes back down it when seen off.
+ */
+const SEA_CAVE_HOLE = { c: 1, r: 13, wall: [-1, 0] };
+const BOSS_EMERGE = 9;
+/** Tonight's boss: one of them, chosen by the night. Its own random stream, so layouts are unchanged. */
+function bizarroBoss(seed) {
+  const random = ud((seed ^ 0x5eaca5e) >>> 0), look = BIZARRO[Math.floor(random() * BIZARRO.length)];
+  return { ...look, lines: look.lines.slice(), emergeAt: BOSS_EMERGE };
+}
+
 // A warehouse footprint with a receiving bay, dispatch bay and four stock
 // departments. Shelf banks change orientation and position with the daily seed;
 // the central spine and cross-aisles remain clear in every layout.
@@ -245,7 +271,7 @@ function hd(seed = 1988, required = 6) {
     return { ...position, id: def.id, def, needed: needed.has(def.id) };
   });
   const guest = placeHarbourGuest({ cols, rows, cells, rooms, shelves, start, exit, items, seed }, random);
-  return { cols, rows, cells, rooms, shelves, start, exit, items, seed, guest };
+  return { cols, rows, cells, rooms, shelves, start, exit, items, seed, guest, hole: { ...SEA_CAVE_HOLE, wall: [...SEA_CAVE_HOLE.wall] }, boss: bizarroBoss(seed) };
 
 }
 

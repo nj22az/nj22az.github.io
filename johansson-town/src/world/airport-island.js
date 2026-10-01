@@ -1,0 +1,108 @@
+import * as THREE from '../../vendor/three.module.js';
+import {SEA_LEVEL} from './ocean.js';
+
+/**
+ * Kitano-jima: the airport island, out to the east-south-east.
+ *
+ * Not somewhere you can go yet. It is on the horizon from the quay and the east beach: a
+ * low green island with a runway along it, a control tower, a small terminal and a hangar,
+ * and now and then a plane taking off over the water. AIRPORT_ISLAND records where a ferry
+ * would tie up, for when the island becomes a place the ferry and the player can reach.
+ *
+ * It stands inside the camera's far plane (220 m) from the harbour, so it is modelled
+ * large and simple: nothing on it is smaller than a car.
+ */
+export const AIRPORT_ISLAND=Object.freeze({
+ id:'kitano-jima',title:'Kitano-jima Airport',jp:'北野島空港',
+ x:165,z:-118,yaw:-.22,
+ /** The island's half-extents along and across the runway. */
+ halfLength:62,halfWidth:20,
+ /** Where a ferry will lie alongside, on the island's town-facing shore (world metres). */
+ dock:Object.freeze([114,-92.5]),
+ /** The runway's ends in the island's own frame: planes take off toward +x. */
+ runway:Object.freeze({from:-50,to:50,width:8}),
+});
+
+/** Minutes past midnight of the day's departures. */
+export const AIRPORT_DEPARTURES=Object.freeze([555,760,975,1140]);
+
+function buildPlane(){
+ const plane=new THREE.Group();plane.name='Commuter plane';
+ const white=new THREE.MeshStandardMaterial({color:0xf2f0ea,roughness:.5});
+ const blue=new THREE.MeshStandardMaterial({color:0x2d5d8a,roughness:.5});
+ const body=new THREE.Mesh(new THREE.CylinderGeometry(.9,.7,12,10),white);body.rotation.z=Math.PI/2;plane.add(body);
+ const nose=new THREE.Mesh(new THREE.ConeGeometry(.9,1.8,10),white);nose.rotation.z=-Math.PI/2;nose.position.x=6.9;plane.add(nose);
+ const wing=new THREE.Mesh(new THREE.BoxGeometry(2.2,.18,16),white);wing.position.set(.8,.7,0);plane.add(wing);
+ const tail=new THREE.Mesh(new THREE.BoxGeometry(1.6,2.4,.16),blue);tail.position.set(-5.4,1.6,0);plane.add(tail);
+ const stab=new THREE.Mesh(new THREE.BoxGeometry(1.3,.14,5),white);stab.position.set(-5.5,.5,0);plane.add(stab);
+ const stripe=new THREE.Mesh(new THREE.CylinderGeometry(.92,.8,9,10,1,true),blue);stripe.rotation.z=Math.PI/2;stripe.scale.set(1,1,.35);stripe.position.y=-.1;plane.add(stripe);
+ for(const side of [-1,1]){const prop=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,1.8,8),blue);prop.rotation.z=Math.PI/2;prop.position.set(1.6,.5,side*3.2);plane.add(prop);}
+ return plane;
+}
+
+export function buildAirportIsland({parent,shadows=false}={}){
+ const A=AIRPORT_ISLAND;
+ const group=new THREE.Group();group.name='Kitano-jima airport island';
+ group.position.set(A.x,SEA_LEVEL,A.z);group.rotation.y=A.yaw;group.userData.horizon=true;parent.add(group);
+ const mat=color=>new THREE.MeshStandardMaterial({color,roughness:.95});
+ const add=(geometry,material,x,y,z)=>{const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.castShadow=false;m.receiveShadow=false;group.add(m);return m;};
+ // The island: a sand rim and a low green top, rounded at the ends.
+ const outline=(hl,hw)=>{const s=new THREE.Shape();s.moveTo(-hl+hw,-hw);s.lineTo(hl-hw,-hw);s.absarc(hl-hw,0,hw,-Math.PI/2,Math.PI/2,false);s.lineTo(-hl+hw,hw);s.absarc(-hl+hw,0,hw,Math.PI/2,Math.PI*1.5,false);return s;};
+ const slab=(shape,depth,material,y)=>{const g=new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:false,curveSegments:14});g.rotateX(-Math.PI/2);return add(g,material,0,y,0);};
+ slab(outline(A.halfLength+3,A.halfWidth+3),1.3,mat(0xd9c9a0),-.8);
+ slab(outline(A.halfLength,A.halfWidth),1.4,mat(0x6f9253),-.3);
+ // The runway, its centreline and the threshold bars.
+ const R=A.runway;
+ add(new THREE.BoxGeometry(R.to-R.from,.1,R.width),mat(0x4a4d4f),0,1.15,-4);
+ const paint=mat(0xf1efe6);
+ for(let x=R.from+4;x<R.to-4;x+=7)add(new THREE.BoxGeometry(3.2,.04,.4),paint,x,1.22,-4);
+ for(const end of [R.from+1.2,R.to-1.2])for(let k=-3;k<=3;k++)add(new THREE.BoxGeometry(1.6,.04,.5),paint,end,1.22,-4+k*1.05);
+ // Apron, terminal, hangar and tower on the town side of the runway.
+ add(new THREE.BoxGeometry(34,.08,10),mat(0x8a8c86),-6,1.13,8);
+ const terminal=add(new THREE.BoxGeometry(18,5,7),mat(0xe8e2d2),-10,3.6,13);
+ add(new THREE.BoxGeometry(18.6,.6,7.6),mat(0x2b5a78),-10,6.4,13);
+ add(new THREE.BoxGeometry(16,1.4,.1),new THREE.MeshStandardMaterial({color:0x2d4a55,roughness:.2,emissive:0xf0d8a0,emissiveIntensity:.05}),-10,3.8,9.46);
+ const hangar=new THREE.Mesh(new THREE.CylinderGeometry(6,6,14,16,1,false,0,Math.PI),mat(0xb7b9b4));
+ // A half-cylinder lying along the runway, its curve up.
+ hangar.rotation.z=Math.PI/2;hangar.position.set(14,1.1,12);group.add(hangar);
+ add(new THREE.CylinderGeometry(1.3,1.7,13,10),mat(0xe8e2d2),6,7.6,14);
+ add(new THREE.CylinderGeometry(2.6,2.2,2.4,10),new THREE.MeshStandardMaterial({color:0x2d4a55,roughness:.2,emissive:0xa9dcef,emissiveIntensity:.12}),6,15.2,14);
+ add(new THREE.CylinderGeometry(2.9,2.9,.4,10),mat(0x2b5a78),6,16.6,14);
+ const beacon=add(new THREE.SphereGeometry(.45,8,6),new THREE.MeshStandardMaterial({color:0xd8342c,emissive:0xd8342c,emissiveIntensity:.3}),6,17.3,14);
+ // The windsock at the runway's east end.
+ add(new THREE.CylinderGeometry(.15,.15,6,6),mat(0xd8d8d0),R.to-6,4,4);
+ const sock=add(new THREE.ConeGeometry(.7,3.2,8,1,true),new THREE.MeshStandardMaterial({color:0xe46a2a,roughness:.7,side:THREE.DoubleSide}),R.to-4.4,6.6,4);
+ sock.rotation.z=Math.PI/2;
+ // A few palms and a jetty toward the town, where a ferry will come in one day.
+ const trunk=mat(0x6e5a44),frond=mat(0x3f6e3a);
+ for(const [x,z] of [[-40,12],[-34,15],[26,-14],[33,-15],[-22,-15],[40,13]]){
+  add(new THREE.CylinderGeometry(.35,.5,7,6),trunk,x,4.4,z);
+  const crown=add(new THREE.ConeGeometry(3,2.2,7),frond,x,8.4,z);crown.scale.y=.6;
+ }
+ const jetty=add(new THREE.BoxGeometry(4,.5,16),mat(0x9a958a),-44,.9,A.halfWidth+8);
+ const plane=buildPlane();plane.visible=false;group.add(plane);
+ let flight=null;
+ /**
+  * @param {number} dt seconds
+  * @param {number} minutes the town clock
+  * @param {number} day 0 at night, 1 at noon
+  */
+ const update=(dt,minutes=0,day=1)=>{
+  beacon.material.emissiveIntensity=day<.4?1.4:(Math.sin(minutes*6)>0?.6:.1);
+  const m=((minutes%1440)+1440)%1440;
+  if(!flight){
+   const due=AIRPORT_DEPARTURES.find(t=>m>=t&&m<t+.5);
+   if(due!==undefined)flight={t:0};
+  }
+  if(!flight){plane.visible=false;return;}
+  // Rolling down the runway for twenty seconds, then climbing away east and out of sight.
+  flight.t+=Math.max(0,Math.min(.1,dt));
+  const t=flight.t,roll=20,climb=40;
+  let x,y,pitch;
+  if(t<roll){const u=t/roll;x=R.from+4+(R.to*.55-R.from-4)*u*u;y=2.05;pitch=0;}
+  else{const u=Math.min(1,(t-roll)/climb);x=R.to*.55+u*260;y=2.05+u*u*70+u*10;pitch=.12+.1*(1-u);}
+  plane.position.set(x,y,-4);plane.rotation.set(0,0,pitch);plane.visible=true;
+  if(t>roll+climb){flight=null;plane.visible=false;}
+ };
+ return {group,plane,jetty,update};
+}

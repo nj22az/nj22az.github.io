@@ -16,6 +16,17 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {STREET_CAST_NAMES} from '../src/people/residents.js';
 
+// The town's clock follows the real one (town-clock.js), so without this the smoke test
+// depended on the hour it was run at: after 20:00 Sakura had already shut and restocked
+// before the test's own day began, and the after-hours restock it checks never came. Ten
+// in the morning, with time still running from there.
+{
+ const RealDate=Date,started=RealDate.now(),base=new RealDate(2026,8,30,10,0,0).getTime();
+ globalThis.Date=class extends RealDate{
+  constructor(...args){super(...(args.length?args:[base+RealDate.now()-started]));}
+  static now(){return base+RealDate.now()-started;}
+ };
+}
 const root=resolve(new URL('..',import.meta.url).pathname);
 const fixtures=await import(pathToFileURL(resolve(root,'tests/fixtures.mjs')).href);
 const dataModule=source=>'data:text/javascript;base64,'+Buffer.from(source).toString('base64');
@@ -96,8 +107,8 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     const {BOOKSHOP_WORKSHOP_ROOM}=await import('../src/world/bookshop-workshop-layout.js');
     const {SAKURA_SHOP}=await import('../src/world/sakura-bench.js');
     const {circleHitsRect}=await import('../physics.js?snappy=1');
-    assert.deepEqual(api.SITES.map(s=>s.id).sort(),['frontrow','izakaya','koban','market','office','onsen','resident-home-aya','resident-home-kenji','school']);
-    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['bus-station','warehouse']);
+    assert.deepEqual(api.SITES.map(s=>s.id).sort(),['frontrow','izakaya','koban','market','office','onsen','ramen','resident-home-aya','resident-home-kenji','school']);
+    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['ferry-terminal','warehouse']);
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
     assert.equal(api.world.group.getObjectByName('west-shop:form3d'),undefined,'Only one bookshop/workshop exterior');
@@ -204,7 +215,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
       assert.equal(api.reviewRoomState().townVisible,true);assert.equal(api.reviewRoom().getObjectByName('Minato CRT television'),undefined);
       assertFiniteTransforms(api,'outside '+site.id);visited.add(site.id);
     }
-    assert.deepEqual([...visited].sort(),['frontrow','izakaya','koban','market','office','onsen','resident-home-aya','resident-home-kenji','school','warehouse']);
+    assert.deepEqual([...visited].sort(),['frontrow','izakaya','koban','market','office','onsen','ramen','resident-home-aya','resident-home-kenji','school','warehouse']);
 
     // All four existing workers share this room after their afternoon shopping.
     const {createResidentLedger}=await import('../src/people/resident-personalities.js');

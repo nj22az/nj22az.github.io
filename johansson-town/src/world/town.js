@@ -22,12 +22,14 @@ import {buildSakuraBench} from './sakura-bench.js';
 import {applyShopAddresses,TOWN_DESTINATIONS} from './town-grid.js';
 import {configureTownMode,peninsulaActive} from './town-mode.js';
 import {izakayaPlot} from './dining-layout.js';
+import {buildBeachLife} from './beach-life.js';
+import {buildAirportIsland} from './airport-island.js';
 import {buildEastLawn} from './east-lawn.js';
 import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
 import {buildCoyoteTunnel} from './coyote-tunnel.js';
 import {buildOkinawaQuarters} from './okinawa/quarters.js';
-import {createBusRun} from './bus.js';
+import {createFerryRun} from './ferry.js';
 import {windowGlow} from '../render/dusk.js';
 import {isOceanMaterial,tickOcean} from './ocean.js';
 
@@ -204,11 +206,14 @@ export function createTown(options){
    // The port is north, the shops are west; the east is the green side of the town and
    // the west is the working one, with the shop and the warehouse standing on it.
    world.westYard=buildWestYard({parent:world.group,colliders:world.colliders,shadows:options.shadows});
-   // The bus, and the only way out of the town: it comes out of the tunnel to the stop
-   // and backs into it again. See bus.js.
-   world.bus=createBusRun({parent:world.group,colliders:world.colliders,shadows:options.shadows});
+   // Nobody drives onto an island: the ferry calls at the outer pier. See ferry.js.
+   world.ferry=createFerryRun({parent:world.group,colliders:world.colliders,shadows:options.shadows});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,anisotropy:options.maxAnisotropy||4,
     heightAt:groundHeight,paved:pavedAt(),register:options.register,onAction:options.onAction});
+   // Crabs on the wet sand below the wall and fish leaping offshore. See beach-life.js.
+   world.beachLife=buildBeachLife({parent:world.group,shadows:options.shadows});
+   // Kitano-jima, the airport island on the horizon to the east. See airport-island.js.
+   world.airportIsland=buildAirportIsland({parent:world.group,shadows:options.shadows});
    // The lawn wears the supplied park's own grass, so the green and the mound it runs
    // up to are one field. The park model is streamed, and the lawn reaches further
    // north than the park's own radius, so it asks for the asset on its own account.
@@ -230,7 +235,7 @@ export function createTown(options){
   if(peninsulaActive())world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.combinedWorkshop)return h>=540||h<30;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
+  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.combinedWorkshop)return h>=540||h<30;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of STREET_CAST){
    const spawn=profile.work;
    let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
@@ -270,10 +275,10 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
-    world.eastLawn?.tick?.(time,minutes);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
-    world.busStation?.update(minutes,day);
+    world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.airportIsland?.update(dt,minutes,day);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
+    world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
-    world.bus?.update(dt,minutes);
+    world.ferry?.update(dt,minutes,time);world.bus?.update(dt,minutes);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
     if(world.shopDoors?.length){

@@ -6,7 +6,7 @@ import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {routeAt,groundHeight,MAP_BOUNDS} from '../src/world/layout.js?snappy=1';
 import {BEACH,beachHeight} from '../src/world/beach-layout.js';
 import {buildEastLawn,EAST_LAWN} from '../src/world/east-lawn.js';
-import {buildCoyoteTunnel,TUNNEL,headlandHeight} from '../src/world/coyote-tunnel.js';
+import {buildCoyoteTunnel,TUNNEL,headlandHeight,CAVE_MOUTH} from '../src/world/coyote-tunnel.js';
 import {circleHitsRect,townBoundsBlocked} from '../physics.js';
 
 test('both beach openings allow approach, descent, a shoreline walk and return without crossing walls',()=>{
@@ -40,14 +40,16 @@ test('headland feet follow rendered triangles, including the crown and slopes',(
  configureTownMode(TOWN_MODES.PENINSULA);installDOM();
  const parent=new THREE.Group(),colliders=[];const {hill}=buildCoyoteTunnel({parent,colliders});parent.updateMatrixWorld(true);
  const ray=new THREE.Raycaster();
- for(const [x,z] of [[-20,36],[-18.3,48.7],[-10.2,60.1],[0.3,65.7],[6.4,75.9],[-18,80]]){
+ for(const [x,z] of [[-20,36],[-18.3,48.7],[-10.2,60.1],[0.3,65.7],[6.4,75.9],[-3.5,70]]){
   assert.ok(routeAt(x,z,.32),'Headland is explorable');ray.set(new THREE.Vector3(x,60,z),new THREE.Vector3(0,-1,0));
   const hit=ray.intersectObject(hill)[0];assert.ok(hit);
   assert.ok(Math.abs(hit.point.y-groundHeight(x,z))<1e-4,`Ground/mesh mismatch at ${x},${z}`);
  }
- assert.equal(headlandHeight(TUNNEL.x,TUNNEL.z-2),null,'The road cut is not the hill surface');
- assert.ok(colliders.some(c=>circleHitsRect(TUNNEL.x,TUNNEL.z,.32,c)),'Tunnel remains bus-only');
- assert.ok(!colliders.some(c=>circleHitsRect(TUNNEL.x-12,TUNNEL.z+1,.32,c)),'Open hillside is not part of the portal wall');
+ assert.equal(headlandHeight(TUNNEL.x,TUNNEL.z-2),null,'The path up to the cave is not the hill surface');
+ assert.equal(headlandHeight(TUNNEL.x,CAVE_MOUTH.inside),null,'Inside the cave you walk on its floor, not on the hilltop');
+ assert.ok(colliders.some(c=>circleHitsRect(TUNNEL.x,CAVE_MOUTH.inside+1.2,.32,c)),'The cave has no end a couple of metres in');
+ assert.ok(!colliders.some(c=>circleHitsRect(TUNNEL.x,CAVE_MOUTH.z,.32,c)),'The cave mouth is walled off');
+ assert.ok(!colliders.some(c=>circleHitsRect(TUNNEL.x-12,TUNNEL.z+1,.32,c)),'Open hillside is not part of the cave rock');
  assert.ok(MAP_BOUNDS.maxZ>90,'The map includes the explorable headland');
 });
 

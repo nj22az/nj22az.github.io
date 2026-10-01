@@ -29,6 +29,8 @@ export function closingPreparationPending(state,minutes){const day=Math.floor(mi
 export const SOLD_OUT='Sorry, we’ve sold out. Please come back tomorrow.';
 
 const STORAGE_WON_KEY='johansson-town:storage-won';
+/** What a boss seen off in Thuan's stockroom drops (thuans-storage/src/game.js). */
+export const BOSS_YEN=200;
 
 /** True when any shelf can take units from its reserve. */
 export function shelvesNeedRestock(state){
@@ -71,9 +73,15 @@ export function consumeStorageWonHandshake(){
  try{
   const payload=JSON.parse(raw);
   if(!payload||typeof payload!=='object')return null;
+  // The night's boss, from the sea cave: who was in the suit, and whether Thuan saw them off.
+  const boss=payload.boss&&typeof payload.boss==='object'&&typeof payload.boss.who==='string'&&typeof payload.boss.animal==='string'
+   ?{who:payload.boss.who.slice(0,40),animal:payload.boss.animal.slice(0,20),defeated:payload.boss.defeated===true}:null;
   return {
    day:Number.isFinite(payload.day)?payload.day:null,
    assisted:payload.assisted===true,
+   boss,
+   // Cave coins come only from a boss seen off, and never more than one drops.
+   yen:boss?.defeated&&Number.isSafeInteger(payload.yen)&&payload.yen>0?Math.min(payload.yen,BOSS_YEN):0,
    t:Number.isFinite(payload.t)?payload.t:Date.now(),
   };
  }catch{return null;}

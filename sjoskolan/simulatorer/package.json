@@ -1,0 +1,13 @@
+{
+  "name": "sjoskolan-maskinrum-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test multimeter/model.test.mjs session.test.mjs",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "jsdom": "30.1.1"
+  }
+}

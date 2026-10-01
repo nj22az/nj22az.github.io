@@ -45,9 +45,11 @@ than expecting a clean run.
 
 ## Playing
 
-- **Touch:** left thumb moves; drag to look; the round button does whatever is nearby
-  (stand, take, talk, read); the tiles on the right open the town book, camera,
-  view and moves.
+- **Touch:** left thumb walks, and steers too: hold the stick off to one side and the
+  view turns that way. Push it to the rim for a moment to run. Drag anywhere else to
+  look (the same swipe turns the same on any screen). The round button does whatever
+  is nearby (stand, take, talk, read); the tiles on the right open the town book,
+  camera, view and moves. Tuning lives in `src/input/touch-feel.js`.
 - **Keyboard:** WASD / arrows, mouse look, Shift to run, Space to jump, E to interact,
   V to switch view, Q for the town book, N to cycle the time of day.
 - **Controller:** left stick moves, right stick looks, A interacts, Start on the title.

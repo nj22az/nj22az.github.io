@@ -17,6 +17,7 @@ import {buildThuanFlat} from './thuan-flat.js';
 import {SAKURA_FRONT} from './interiors/sakura-layout.js';
 import {peninsulaActive} from './town-mode.js';
 
+import {buildFerryTerminal} from './ferry.js';
 import {buildBusStation} from './bus-station.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {lanternGlow, windowGlow} from '../render/dusk.js';
@@ -213,7 +214,10 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Payphone sits fully on the west footway: narrowing Main Street to six metres
   // left it overhanging the kerb into the carriageway.
   box([1.1,2.5,1],[-7.1,1.25,17.2],0x457e73);box([.91,1.6,.91],[-7.1,1.55,17.2],0x648c87);box([.35,.65,.28],[-7.1,1.4,17.73],0x3d9c6c);label('電話','TELEPHONE',[-7.1,2.4,17.75],1,.28);anchor([-7.1,1,18.2],'Use payphone',()=>onAction('phone'));obstacle(-7.1,17.2,1.1,1);
-  const busStation=buildBusStation({parent:group,colliders,register,onAction,label,shadows});
+  // The island has no road out: its people come and go by the ferry from the outer pier,
+  // and the terminal on the quay takes the bus station's part. Elsewhere, the bus.
+  const busStation=peninsulaActive()?buildFerryTerminal({parent:group,colliders,register,onAction,label,shadows})
+   :buildBusStation({parent:group,colliders,register,onAction,label,shadows});
 
   // The one at [-7.4,-33] stood against the konbini's frontage, in front of the only
   // window the shop is read through from the street. The others are along the harbour.
@@ -251,7 +255,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const px=x+(c-(cols-1)/2)*.72,pz=z+(r%2)*.12;box([.62,.45,.72],[px,.32+r*.48,pz],colors[(r+c)%colors.length]);for(const sx of [-.25,.25])box([.04,.28,.76],[px+sx,.34+r*.48,pz],0x263537);}
     obstacle(x,z,cols*.78,.9);
   }
-  crateStack(-7.3,-44,2,3);crateStack(7.2,-46.2,3,2);
+  // On the island the ferry's ticket booth stands where the west stack was.
+  if(!peninsulaActive())crateStack(-7.3,-44,2,3);crateStack(7.2,-46.2,3,2);
 
   // Fishing-net drying rack.
   for(const x of [-10.2,-7.9])cyl(.06,2.4,[x,1.3,-46.4],0x655747);beam([-10.2,2.45,-46.4],[-7.9,2.45,-46.4],.055,0x655747);

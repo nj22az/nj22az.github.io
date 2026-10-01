@@ -1,5 +1,36 @@
 import {PARK_HEIGHTS} from './park-height.js';
 import {FULL_TOWN} from './full-town-state.js';
+import {GATEBALL} from './okinawa/layout.js';
+import {peninsulaActive} from './town-mode.js';
+/** Inside the gateball court the ground stays level; a low wall holds the hill back (quarters.js). */
+export const inGateball=(x,z)=>x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
+/**
+ * The gateball court stands on a level terrace up at the hill's own ground, not in a pit
+ * cut into its foot. Toward the hill (west and south) the terrace is graded into it with
+ * grass banks; toward the sea it is held up by a stone wall. It runs east past the court
+ * to take the elders' shelter and meets the seawall's inner face.
+ */
+export const COURT_TERRACE=Object.freeze({minX:GATEBALL.minX,maxX:33.2,minZ:GATEBALL.minZ,maxZ:GATEBALL.maxZ,height:.7,bank:2.2});
+export const onCourtTerrace=(x,z)=>{const T=COURT_TERRACE;return x>=T.minX&&x<=T.maxX&&z>=T.minZ&&z<=T.maxZ;};
+/**
+ * The terrace and its banks, given the ground that would be there without it; null where
+ * the terrace does not reach. North of the terrace is the retaining wall, so no bank.
+ */
+export function courtTerraceHeight(x,z,natural=0){
+ const T=COURT_TERRACE,p=activePark();
+ if(onCourtTerrace(x,z))return T.height;
+ if(x>T.maxX||(z<T.minZ&&x>=T.minX))return null;
+ // Round the north-west corner off steeply: the lawn there is a strip half a metre wide
+ // before the port, and a long bank would carry the rise out onto the quay.
+ // To the south the hill's own square begins half a metre off, so the bank has to have
+ // arrived at the hill's height by its edge; past the square's corner it widens again.
+ const gap=p.plaza?T.bank:p.z-p.half-T.maxZ;
+ const south=Math.min(T.bank,Math.max(.3,gap+Math.max(0,x-(p.x+p.half))+Math.max(0,p.x-p.half-x)));
+ const dx=Math.max(0,T.minX-x)/T.bank,dz=Math.max(0,z-T.maxZ)/south+Math.max(0,T.minZ-z)*5/T.bank,t=Math.hypot(dx,dz);
+ if(t>=1)return null;
+ const s=t*t*(3-2*t);
+ return T.height+(natural-T.height)*s;
+}
 /**
  * What the supplied park's ground textures are multiplied by.
  *
@@ -56,9 +87,10 @@ export function parkSkirtHeight(x,z){
  // the skirt would step by its own width along the corner where the rule flipped.
  const west=d?Math.max(0,(ex-x)/d):0;
  const reach=PARK_SKIRT+(PARK_SKIRT_WEST-PARK_SKIRT)*west;
- if(d>=reach)return null;
- const edge=parkHeight(ex,ez);
- return edge===null?null:edge*(1-d/reach);
+ const edge=d<reach?parkHeight(ex,ez):null;
+ const natural=edge===null?null:edge*(1-d/reach);
+ const terrace=peninsulaActive()?courtTerraceHeight(x,z,natural??0):null;
+ return terrace??natural;
 }
 export function parkApproachHeight(x,z){
  const p=activePark();if(p.plaza)return null;

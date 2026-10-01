@@ -126,6 +126,7 @@ const CSS=`
 .shm-dice button{display:grid;place-items:center;width:44px;height:44px;border:1px solid #e6e1d6;border-radius:14px;background:#fffaf0e8;color:inherit}
 .shm-poses{position:absolute;bottom:8px;left:12px;right:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:800}
 .shm-poses .shm-select{width:110px}
+.shm-poses .shm-angle{width:80px;padding:8px 6px}
 .shm-panel{display:grid;grid-template-rows:auto minmax(0,1fr);min-height:0;margin:0 12px 0 0;border:1px solid #e6e1d6;border-radius:20px;background:#fffaf0;overflow:hidden}
 .shm-tabs{display:flex;overflow-x:auto;padding:8px;gap:4px;border-bottom:1px solid #e6e1d6}
 .shm-tabs button{flex:0 0 auto;min-height:44px;padding:8px 12px;border:0;border-radius:12px;background:transparent;color:inherit;font-size:13px;font-weight:800}
@@ -167,7 +168,7 @@ const CSS=`
  .shm-slider{grid-template-columns:100px minmax(0,1fr)}
 }
 @media(max-width:520px){.shm-top h2{display:none}.shm-name{max-width:none}.shm-foot .shm-pill{padding:8px 10px}.shm-save{flex:1;padding:8px;font-size:13px}}
-@media(max-height:500px) and (orientation:portrait){.shm-main{grid-template-rows:minmax(0,28%) minmax(0,1fr)}}
+@media(max-height:500px) and (orientation:portrait){.shm-main{grid-template-rows:minmax(0,28%) minmax(0,1fr)}.shm-poses{top:8px;bottom:auto}}
 @media(max-height:500px) and (orientation:landscape){
  .shm-main{grid-template-columns:minmax(0,35%) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
  .shm-tabs{display:none}.shm-category{display:flex}.shm-top h2{font-size:16px}
@@ -187,7 +188,7 @@ const CSS=`
 export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
  let recipe=normalizeRecipe(start);const history=[];
- let tab='body',pose='idle';
+ let tab='body',pose='idle',previewFacing=0;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
  // ----- Layout -----
@@ -261,7 +262,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
    else rebuild();
    dirty=false;
   }
-  if(!dragging){spin+=spinVelocity*dt;spinVelocity*=Math.exp(-dt*3);if(Math.abs(spinVelocity)<.05)spin+=(0-spin)*Math.min(1,dt*1.5)*(pose==='walk'?0:1);}
+  if(!dragging){spin+=spinVelocity*dt;spinVelocity*=Math.exp(-dt*3);if(Math.abs(spinVelocity)<.05)spin+=(previewFacing-spin)*Math.min(1,dt*1.5)*(pose==='walk'?0:1);}
   // A body faces -z in the town; here it turns round to face you.
   if(!featureDrag)holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
   if(!featureDrag)animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,expression:pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
@@ -421,9 +422,11 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  let picturesDue=0;
  function renderPictures(){clearTimeout(picturesDue);picturesDue=setTimeout(()=>{cancelAnimationFrame(pictureFrame);pictureQueue=[...pictureJobs];paintQueued();},180);}
  function renderPoses(){
+  const angle=el('select',{className:'shm-select shm-angle',ariaLabel:'Preview angle'},el('option',{value:'front',textContent:'Front'}),el('option',{value:'back',textContent:'Back'}));
+  angle.onchange=()=>{previewFacing=angle.value==='back'?Math.PI:0;spin=previewFacing;spinVelocity=0;};
   const select=el('select',{className:'shm-select',ariaLabel:'Preview pose'},...POSES.map(([id,label])=>el('option',{value:id,textContent:label})));select.value=pose;
   select.onchange=()=>{pose=select.value;if(!['idle','walk','sit'].includes(pose))animator.play(pose);else animator.stop();};
-  poses.append(el('span',{textContent:'Preview pose'}),select);
+  poses.append(angle,select);
  }
 
  // ----- Buttons -----
