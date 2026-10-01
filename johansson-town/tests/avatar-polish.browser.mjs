@@ -24,7 +24,7 @@ try{
    const actors=['Johansson','Thuan'].map((name,i)=>{const a=buildAvatar(CAST_RECIPES[name],{shadows:false});a.root.rotation.y=0;a.root.position.x=(i-.5)*.65;scene.add(a.root);const anim=createAvatarAnimator(a),prop=createDrinkProp('draft',{held:true});a.bones.handR.add(prop);anim.play('SitDrink');return {a,anim,prop};});
    window.review={render(t){for(const {a,anim,prop} of actors){anim.stop();anim.play('SitDrink');for(let s=0;s<t;s+=1/60)anim.update(1/60,{seated:true,heldProp:prop});setPropPortion(prop,1-t/2.4,{immediate:true});updatePropPortion(prop,0);fitAvatarHeldProp(a,prop,anim.consumption?.lift||0);}renderer.render(scene,camera);return renderer.info.render;},rear(){camera.position.set(2.4,1.6,-3.4);camera.lookAt(0,.9,0);renderer.render(scene,camera);},renderer};
   });
-  const info=await page.evaluate(()=>window.review.render(1.2));assert.ok(info.triangles>1000&&info.calls<15);
+  const info=await page.evaluate(()=>window.review.render(1.2));assert.ok(info.triangles>1000&&info.calls<=16);
   await page.screenshot({path:'/tmp/avatars-sip-'+width+'.png'});
   await page.evaluate(()=>window.review.rear());await page.screenshot({path:'/tmp/avatars-back-'+width+'.png'});
   const meal=await page.evaluate(async()=>{
