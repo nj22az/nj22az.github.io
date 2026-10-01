@@ -10,6 +10,9 @@ import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
 import {RESIDENTS,THUAN_PROFILE,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
+import {transitStop,awayPlace} from '../world/transit.js';
+import {ferryWords} from './social.js';
+import {peninsulaActive} from '../world/town-mode.js';
 import {thuanHasCommutePriority,yieldAsideTarget,commuteCrowdRadii,residentCommitted} from './thuan-commute-yield.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
@@ -60,7 +63,8 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  // nobody is sent there when there is no bus in it.
  const clearOfTunnelMouth=target=>{
   if(!target||!Number.isFinite(target[0])||!Number.isFinite(target[1]))return target;
-  if(target[1]<=BUS_STATION.maxZ-0.35)return target;
+  // The island has no bus road or tunnel mouth to keep people off.
+  if(peninsulaActive()||target[1]<=BUS_STATION.maxZ-0.35)return target;
   return [...BUS_STATION.platform];
  };
  const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
@@ -86,7 +90,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    (x,z)=>collides(x,z,.32),(x,z)=>Math.abs(groundHeight(x,z)-g.position.y)<.45);
   return point?clearOfTunnelMouth(point):null;
  };
- const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?MARKET_THRESHOLD:place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:place==='bus'?BUS_STATION.queue:place==='work'&&profile.workSite?profile.work:null;
+ const indoorDoor=(profile,place)=>place==='home'?profile.home:place==='market'?MARKET_THRESHOLD:place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:place==='bus'?transitStop().queue:place==='work'&&profile.workSite?profile.work:null;
  function destination(person,target,tag){
   const key=person.g.userData.name+'/'+tag+'/'+target.join(',');if(destinations.has(key))return destinations.get(key);
   for(let radius=0;radius<=10;radius+=.85)for(let i=0;i<(radius?24:1);i++){
@@ -138,9 +142,17 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   let route=routes.get(g);if(!route||route.tag!==tag){route={tag,points:navigation.path(g.position,{x:target[0],z:target[1]}),at:0,stalled:0,checkpoint:g.position.clone()};routes.set(g,route);}
   route.stalled+=dt;
   if(g.position.distanceTo(route.checkpoint)>1){route.stalled=0;route.checkpoint.copy(g.position);}
-  if(route.stalled>3){
+  // Held up by a wall, give it three seconds; held up by a person right in front of you,
+  // step round them after one, the way people do on a pavement.
+  const faceToFace=route.stalled>1&&world.people.some(p=>p.g!==g&&p.g.visible&&!p.g.userData.indoors&&Math.hypot(p.g.position.x-g.position.x,p.g.position.z-g.position.z)<.9);
+  if(route.stalled>3||faceToFace){
    const obstacles=world.people.filter(p=>p.g!==g&&!p.g.userData.indoors&&!p.g.userData.inIzakaya&&!p.g.userData.inOnsen&&!p.g.userData.inMarket&&!p.g.userData.inRamen&&!p.g.userData.inHome).map(p=>p.g.position.clone());
-   const detour=createNavigation((x,z,r)=>collides(x,z,r)||obstacles.some(o=>Math.hypot(x-o.x,z-o.z)<r+.34));
+   // Somebody already standing within the margin must not wall off the start of the
+   // detour: a point is only refused for being nearer them than the walker is now, so
+   // the way round is open. Refusing every point in the margin left two people who met
+   // head-on with no detour at all, and they stood nose to nose for the rest of the hour.
+   const hx=g.position.x,hz=g.position.z;
+   const detour=createNavigation((x,z,r)=>collides(x,z,r)||obstacles.some(o=>{const d=Math.hypot(x-o.x,z-o.z);return d<r+.34&&d<Math.hypot(hx-o.x,hz-o.z)-.01;}));
    const points=detour.path(g.position,{x:target[0],z:target[1]});
    if(points.length){route.points=points;route.at=0;}route.stalled=0;route.checkpoint.copy(g.position);
   }
@@ -168,9 +180,17 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   const atMarketDoor=tag==='market'&&d<2.8;
   const candidates=atMarketDoor?[[nx,nz],[nx,g.position.z],[g.position.x,nz]]:[[nx,nz],[nx,g.position.z],[g.position.x,nz],[g.position.x-dz/d*step,g.position.z+dx/d*step],[g.position.x+dz/d*step,g.position.z-dx/d*step]];
   const beforeX=g.position.x,beforeZ=g.position.z;
-  for(const [x,z] of candidates){
+  // Only turning toward the route itself is progress. Two people who meet head-on
+  // otherwise turn to a sidestep, turn back to the route the next frame, and turn to the
+  // sidestep again, and since every turn restarted the stall clock the detour round
+  // each other was never planned: they stood nose to nose until one of their plans moved on.
+  const turned=onRoute=>{route.speed=0;if(onRoute){route.stalled=0;route.checkpoint.copy(g.position);}};
+  for(const [i,[x,z]] of candidates.entries()){
    if(Math.hypot(x-beforeX,z-beforeZ)<.000001)continue;
-   if(!clearOfPeople(x,z)||collides(x,z,.3)||Math.abs(groundHeight(x,z)-g.position.y)>step*.65+.025)continue;
+   // A slope is taken at its gradient; a kerb of a hand's height is stepped up in one go.
+   // The pier's deck stands ten centimetres above the quay, and without the kerb allowance
+   // everybody walking out to the ferry stopped dead at its edge.
+   if(!clearOfPeople(x,z)||collides(x,z,.3)||Math.abs(groundHeight(x,z)-g.position.y)>Math.max(step*.65+.025,.12))continue;
    // Face the actual clear step, including a detour, before advancing. Turning after
    // translation lets the walk clip carry them backwards or sideways around corners.
    const stepDx=x-beforeX,stepDz=z-beforeZ;
@@ -179,15 +199,15 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(!faceStep(g,stepDx,stepDz,dt)){
     // A deliberate turn is progress, not a blockage. Replanning mid-turn can choose
     // a grid point behind them and make them turn back and forth without leaving it.
-    route.speed=0;route.stalled=0;route.checkpoint.copy(g.position);return;
+    turned(i===0);return;
    }
    // faceStep may have completed the last fraction of the turn this frame. Measure
    // alignment again after it, so translation always agrees with the rendered body.
    const travel=alignedStep(travelError(g.rotation.y,stepDx,stepDz));
-   if(travel<=0){route.speed=0;route.stalled=0;route.checkpoint.copy(g.position);return;}
+   if(travel<=0){turned(i===0);return;}
    const ax=beforeX+stepDx*travel,az=beforeZ+stepDz*travel;
    if(travel<1&&(!clearOfPeople(ax,az)||collides(ax,az,.3))){
-    route.speed=0;route.stalled=0;route.checkpoint.copy(g.position);return;
+    turned(i===0);return;
    }
    g.position.set(ax,groundHeight(ax,az),az);route.speed=speed;break;
   }
@@ -197,7 +217,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  }
 
  /** True while the Harbour Line is standing at the terminus with its doors to you. */
- const atTheStop=()=>{const run=world.bus;return !run||['waiting','turning'].includes(run.phase);};
+ const atTheStop=()=>{const run=world.ferry||world.bus;return !run||['waiting','turning'].includes(run.phase);};
  /**
   * Somebody who has been waiting has got on once the bus they were waiting for has
   * pulled away. Without the memory they would blink out the moment their shift ended
@@ -213,7 +233,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   queued.set(g,place);return place;
  };
  function boarded(g){
-  const run=world.bus;
+  const run=world.ferry||world.bus;
   if(!run)return true;                                   // No service modelled: as before.
   // Somebody who has walked through the door is on it. Without this the hold put them
   // straight back on the pavement the frame after they got on, because the bus was
@@ -227,7 +247,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  // flank away from the carriageway. It used to be worked out as an offset from the bus
  // and pointed at the shelter, which stopped being behind the bus when the bus stopped
  // coming down to the shelter.
- const alightingPoint=()=>world.bus?.door||BUS_STATION.arrival;
+ const alightingPoint=()=>(world.ferry||world.bus)?.door||transitStop().arrival;
  return {update(dt,minutes,rain){if(paused())return;clockMinutes=minutes;const minute=((minutes%1440)+1440)%1440,transit=commuterMode(),day=Math.floor(minutes/1440);
   const outside=[];
   for(const p of world.people){const v=p.profile;if(!v)continue;const g=p.g;
@@ -250,7 +270,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // tunnel until the next service, which is now as much as two and a half hours.
    if(transit&&phase==='away'&&!initialised.has(g))seenAtStop.add(g);
    const holdForBus=transit&&phase==='away'&&!boarded(g);
-   if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity='away from the shopping district';g.userData.commuterAwayDay=day;routes.delete(g);continue;}
+   if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity=awayPlace();g.userData.commuterAwayDay=day;routes.delete(g);continue;}
    // Coming back is the same in reverse: nobody is put down on the platform until the
    // bus they would have been on is at it.
    if(transit&&phase==='arriving'&&(!g.visible||g.userData.commuterAwayDay===day)){
@@ -263,17 +283,17 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
    // Still on the platform: the plan has written them off as away, so put them back in
    // the queue rather than sending them walking up the bus road on foot.
-   if(holdForBus){g.visible=true;target=BUS_STATION.queue;tag='bus';g.userData.place='bus';g.userData.activity='waiting for the Harbour Line';}
+   if(holdForBus){g.visible=true;target=transitStop().queue;tag='bus';g.userData.place='bus';g.userData.activity=peninsulaActive()?'waiting for the ferry':'waiting for the Harbour Line';}
    // The bus stands at the arch, not at the shelter, so that is where it is boarded --
    // and they set off for it as soon as they are going, rather than waiting on the
    // platform for it to show and then having twelve metres of road to cover in the
    // time it stands there. They wait at the door instead, which is where you wait for
    // a bus that only stops in one place.
-   if(transit&&tag==='bus'&&world.bus&&phase!=='arriving'){
+   if(transit&&tag==='bus'&&(world.ferry||world.bus)&&phase!=='arriving'){
     // Each of them gets their own place in the queue: the same door for everybody put
     // the whole evening shift in one another's coats on the kerb.
     if(!Number.isFinite(g.userData.busQueue))g.userData.busQueue=queueNumber(g);
-    target=world.bus.queueSpot(g.userData.busQueue);
+    target=(world.ferry||world.bus).queueSpot(g.userData.busQueue);
    }
    if(tag==='patrol'){
     let index=patrols.get(g)||0;
@@ -292,7 +312,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     // Indoor saves name a place, whose threshold may have moved since saving.
     // If its schedule has changed, the resident leaves that door and walks onward.
     const rememberedDoor=transit&&remembered?.indoors==='home'?null:indoorDoor(v,remembered?.indoors),savedWalk=valid&&!transit&&!collides(...remembered.position,.32);
-    const spawn=rememberedDoor||(savedWalk?clearOfTunnelMouth(remembered.position):transit&&phase==='arriving'?BUS_STATION.arrival:clearOfTunnelMouth(target));
+    const spawn=rememberedDoor||(savedWalk?clearOfTunnelMouth(remembered.position):transit&&phase==='arriving'?transitStop().arrival:clearOfTunnelMouth(target));
     delete g.userData.indoors;
     if(rememberedDoor)g.userData.indoors=remembered.indoors;
     else if(!savedWalk&&indoorDoor(v,tag))g.userData.indoors=tag;
@@ -317,7 +337,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    }else if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag,plan.pace);
    // A passenger caught halfway through the step when the bus goes is put back on
    // their feet, rather than left holding a hand on a door that is not there.
-   if(g.userData.boarding&&!(transit&&tag==='bus'&&world.bus?.boarding)){
+   if(g.userData.boarding&&!(transit&&tag==='bus'&&(world.ferry||world.bus)?.boarding)){
     delete g.userData.boarding;delete g.userData.usingTownObject;
    }
    // Getting on, rather than ceasing to exist at the kerb. The last two metres are
@@ -328,10 +348,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // the bus they are plainly waiting for. Asking only for 'departing' meant the one
    // person whose departure time had come and gone -- which is everybody, by the time
    // the bus they are catching is standing there -- never got on it.
-   if(transit&&tag==='bus'&&(phase==='departing'||holdForBus)&&world.bus?.boarding&&(g.userData.boarding||arrived())){
-    const [insideX,insideZ]=world.bus.doorway;
+   if(transit&&tag==='bus'&&(phase==='departing'||holdForBus)&&(world.ferry||world.bus)?.boarding&&(g.userData.boarding||arrived())){
+    const [insideX,insideZ]=(world.ferry||world.bus).doorway;
     g.userData.boarding=true;g.userData.usingTownObject=true;
-    g.userData.activity='getting on the Harbour Line';
+    g.userData.activity=peninsulaActive()?'going aboard the ferry':'getting on the Harbour Line';
     const dx=insideX-g.position.x,dz=insideZ-g.position.z,reach=Math.hypot(dx,dz);
     if(reach>.3){
      const step=Math.min(reach,dt*1.1);
@@ -342,7 +362,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     world.busStation?.board(v.name,minutes);aboard.add(g);
     queued.delete(g);delete g.userData.busQueue;
     delete g.userData.boarding;delete g.userData.usingTownObject;
-    g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity='left by bus';
+    g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity=peninsulaActive()?ferryWords('left by bus'):'left by bus';
     g.visible=false;routes.delete(g);continue;
    }
    if(indoor&&(g.userData.indoors===tag||arrived())){
@@ -355,5 +375,5 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   // Ten distinct low-poly residents remain present; camera rank cannot hide a neighbour.
   outside.forEach(p=>{if(!(transit&&p.g.userData.commuterAwayDay===day))p.g.visible=true;});world.updateHomes?.(minutes);
   if(world.cat){const s=state();const spots=FULL_TOWN.active?FULL_TOWN.catTargets:[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
- },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,phase=commuterMode()?commuterPhase(p.profile,clockMinutes):'legacy',target=phase==='away'?BUS_STATION.exit:indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target&&phase!=='away'?inside:null,place:phase==='away'?'away':g.userData.place}];}));},pose(){}};
+ },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,phase=commuterMode()?commuterPhase(p.profile,clockMinutes):'legacy',target=phase==='away'?transitStop().exit:indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target&&phase!=='away'?inside:null,place:phase==='away'?'away':g.userData.place}];}));},pose(){}};
 }

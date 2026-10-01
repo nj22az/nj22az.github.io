@@ -43,6 +43,8 @@ export const SUPPLIED_ROOM_LAYOUTS={
 };
 
 export function suppliedRoomBoundsBlocked(layout,x,z,r=0){
+  // A room with walls of its own shape (the dungeon's tile grid) answers for itself.
+  if(layout.blocked)return layout.blocked(x,z,r);
   const b=layout.bounds;
   if(layout.floorPolygon){
     const inside=(px,pz)=>{let hit=false;const p=layout.floorPolygon;for(let i=0,j=p.length-1;i<p.length;j=i++){

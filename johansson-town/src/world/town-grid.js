@@ -2,6 +2,7 @@ import {ALLEY_BOOKS,ALLEY_WORKSHOP} from './business-layout.js';
 import {westShopDoor} from './west-shops.js';
 import {consolidateBusinesses} from './businesses.js';
 import {BUS_STATION} from './bus-station.js';
+import {transitStop} from './transit.js';
 import {PARK} from './park-layout.js';
 export const TOWN_GRID=Object.freeze({north:BUS_STATION.maxZ,south:-38,quay:-44,west:-16,east:PARK.x+PARK.half});
 export const SHOP_ADDRESSES=Object.freeze({
@@ -13,7 +14,8 @@ export const MARKET_DOOR=Object.freeze([SHOP_ADDRESSES.market.side*5.5,SHOP_ADDR
 export const MARKET_THRESHOLD=Object.freeze([SHOP_ADDRESSES.market.side*6.3,SHOP_ADDRESSES.market.z]);
 export const TEA_HOUSE=Object.freeze({x:8.4,z:13.4,door:[8.4,0,18.4]});
 export const TOWN_DESTINATIONS=Object.freeze({
- bus:[...BUS_STATION.queue],busArrival:[...BUS_STATION.arrival],busDriver:[...BUS_STATION.driver],
+ // The stop is read too: on the island it is the ferry terminal on the quay.
+ get bus(){return [...transitStop().queue];},get busArrival(){return [...transitStop().arrival];},get busDriver(){return [...transitStop().driver];},
  // Read rather than stored: which layout is running is not settled when this module
  // is first read, and on the peninsula these two shops stand on the west pavement
  // instead of in the night-market alley. Kenji and Tetsuo worked at the alley's door

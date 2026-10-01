@@ -97,7 +97,7 @@ export function recordFormSale(state,minutes){
  state.story.sold_form_day=townDay(minutes);
 }
 
-export const NOTICE_NUDGE='Harbour Line · last bus 20:40. Tickets at the terminal, not the till.';
+export const NOTICE_NUDGE='Minato Ferry · last sailing 22:00 from the outer pier. Tickets at the booth on the quay, not the till.';
 export const RADIO_821='Eighty-two-one: clear evening, light chop on the quay. Evening press as posted.';
 export const FORM3_NUDGE='Sakura — Thuan buys Form 3D prints.';
 export const QUAY_NUDGE='Quay before evening press.';

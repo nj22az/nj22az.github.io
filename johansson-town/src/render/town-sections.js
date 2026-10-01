@@ -30,6 +30,9 @@ export function createTownSections({mobile=false}={}){
     town.traverse(object=>{
       if(!object.isMesh&&!object.isLine&&!object.isPoints)return;
       if(object.userData.renderBatch)return;
+      // Scenery on the horizon -- the airport island -- is drawn from anywhere in town: it is
+      // far from every section by design, and the far plane is what limits it.
+      for(let p=object;p&&p!==town;p=p.parent)if(p.userData.horizon)return;
       let actor=null;
       for(let p=object;p&&p!==town;p=p.parent)if(p.userData.name||p.userData.character||p.userData.dynamicProp)actor=p;
       if(object.isSkinnedMesh&&!actor)actor=object;

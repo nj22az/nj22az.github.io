@@ -2,7 +2,8 @@ export const TOWN_MODES=Object.freeze({
  LEGACY:'legacy',
  SHOPPING:'shopping-district',
  /**
-  * The peninsula: the konbini, the park, the port, and one road out to the bus stop.
+  * The peninsula (an island, now): the konbini, the park, the port and the ferry, and the
+  * old sea cave in the headland at the top of Main Street.
   * Everything else the town has built up is switched off rather than deleted, so it
   * can be brought back a building at a time once this core is right.
   */

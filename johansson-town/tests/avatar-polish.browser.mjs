@@ -27,6 +27,49 @@ try{
   const info=await page.evaluate(()=>window.review.render(1.2));assert.ok(info.triangles>1000&&info.calls<15);
   await page.screenshot({path:'/tmp/avatars-sip-'+width+'.png'});
   await page.evaluate(()=>window.review.rear());await page.screenshot({path:'/tmp/avatars-back-'+width+'.png'});
+  const meal=await page.evaluate(async()=>{
+   const THREE=await import('/vendor/three.module.js'),{buildAvatar}=await import('/src/avatars/build.js'),{CAST_RECIPES}=await import('/src/avatars/cast.js'),{createAvatarAnimator}=await import('/src/avatars/animate.js');
+   const {createBiteProp,createDishProp,setPropPortion,updatePropPortion}=await import('/src/people/izakaya-beer.js'),{fitAvatarHeldProp}=await import('/src/avatars/consume.js');
+   const a=buildAvatar(CAST_RECIPES.Thuan),anim=createAvatarAnimator(a),bite=createBiteProp('sashimi'),dish=createDishProp('sashimi');
+   a.root.rotation.y=0;a.bones.handR.add(bite);a.bones.handL.add(dish);
+   const scene=new THREE.Scene();scene.add(a.root,new THREE.HemisphereLight(0xffffff,0x887b6b,2));
+   const camera=new THREE.PerspectiveCamera(32,innerWidth/innerHeight,.01,20);camera.position.set(1.5,1.5,3);camera.lookAt(0,.8,0);
+   const visible=()=>dish.userData.level.children.filter(o=>o.visible).length,start=visible();anim.play('SitEat');
+   for(let i=0;i<60;i++){
+    anim.update(1/30,{seated:true,heldProp:bite});setPropPortion(bite,1-anim.consumption.swallow);updatePropPortion(bite,1/30);fitAvatarHeldProp(a,bite,anim.consumption.lift);fitAvatarHeldProp(a,dish,0,'L');
+    window.review.renderer.render(scene,camera);
+   }
+   const biteLeft=bite.userData.portion;setPropPortion(dish,.5,{immediate:true});const half=visible();window.review.renderer.render(scene,camera);
+   setPropPortion(dish,0,{immediate:true});window.review.renderer.render(scene,camera);
+   return {start,half,empty:!dish.userData.level.visible,biteLeft,triangles:window.review.renderer.info.render.triangles};
+  });
+  assert.ok(meal.start>meal.half&&meal.half>0&&meal.empty&&meal.biteLeft<.1&&meal.triangles>1000,JSON.stringify(meal));
+  console.log('Gradual meal WebGL acceptance passed: '+width+'x'+height);
+  const combat=await page.evaluate(async()=>{
+   const THREE=await import('/vendor/three.module.js'),{buildDungeon}=await import('/src/dungeon/dungeon.js'),{createFists}=await import('/src/interact/fists.js');
+   const scene=new THREE.Scene(),room=new THREE.Group();scene.add(room);scene.add(new THREE.HemisphereLight(0xffffff,0x887b6b,2));
+   const run={hp:5,maxHp:5,loot:0,items:[],floor:2,seed:6};
+   const {dungeon:d}=buildDungeon({room,run}),c=d.creatures[0];
+   const animated=d.creatures.every(c=>c.animator);
+   d.update(1/60,{x:c.x+.3,z:c.z});const swipe=c.animator?.gesture;
+   d.update(.12,{x:c.x+.3,z:c.z});c.mesh.updateMatrixWorld(true);
+   const before=c.mesh.getObjectByName('shoulderR')?.rotation.x;
+   d.strike(c);const hurt=c.animator?.gesture;d.update(.08,{x:c.x+.3,z:c.z});
+   const after=c.mesh.getObjectByName('shoulderR')?.rotation.x;
+   const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.01,200);camera.position.set(c.x,1.6,c.z+3);camera.lookAt(c.x,1,c.z);scene.add(camera);
+   const fists=createFists({camera});fists.guard(true);fists.update(.5);
+   const view=camera.children.find(o=>/fists/.test(o.name)),right=view.children[0];
+   const rest=right.position.clone(),first=fists.punch();fists.update(.1);fists.update(.01);
+   const distance=rest.distanceTo(right.position);window.review.renderer.render(scene,camera);
+   const rendered=window.review.renderer.info.render.triangles;
+   fists.update(1);const second=fists.punch();fists.update(.1);fists.update(.01);window.review.renderer.render(scene,camera);
+   fists.update(1);fists.setWeapon('Driftwood club');fists.punch();fists.update(.15);fists.update(.01);window.review.renderer.render(scene,camera);
+   return {animated,swipe,hurt,before,after,distance,first,second,weapon:fists.weapon,rendered};
+  });
+  assert.equal(combat.animated,true);assert.equal(combat.swipe,'Swipe');assert.equal(combat.hurt,'Hurt');
+  assert.ok(Number.isFinite(combat.before)&&Math.abs(combat.after-combat.before)>.1,JSON.stringify(combat));
+  assert.ok(combat.distance>.05&&combat.rendered>1000);assert.equal(combat.first,1);assert.equal(combat.second,-1);assert.equal(combat.weapon,'Driftwood club');
+  console.log('Dungeon costume, hit, fist and weapon WebGL smoke passed: '+width+'x'+height);
   await page.evaluate(()=>window.review.renderer.dispose());assert.deepEqual(errors,[]);await page.close();
   console.log('Avatar WebGL front/rear and sipping passed: '+width+'x'+height);
  }

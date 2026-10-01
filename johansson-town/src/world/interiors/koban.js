@@ -69,7 +69,7 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
  const hours=sleepHours({name:'Officer Mori'});
  spot([-1.4,1.0,-.6],'Read the incident log','read','Minato Police Box · incident log',
   '13 Sep, 22:40 — Harbour round. Nothing to report.\n14 Sep, 01:15 — A cat in a fish crate at the quay. Cat declined to give a statement.\n14 Sep, 03:30 — Main Street quiet. Lamp outside Sakura flickering; noted for the electrician.\n14 Sep, 05:50 — End of patrol. Nothing to report.\n\n— Mori');
- spot([-2.0,1.0,-.55],'Inspect the telephone','inspect','Police box telephone','A black desk telephone with the numbers of the harbour office, the clinic over the tunnel and the station at Nago taped to the base. After hours it rings through to the room at the back.');
+ spot([-2.0,1.0,-.55],'Inspect the telephone','inspect','Police box telephone','A black desk telephone with the numbers of the harbour office, the clinic on the mainland and the ferry office taped to the base. After hours it rings through to the room at the back.');
  panel('Town map',1.5,1.05,[-3.34,1.6,-1.3],Math.PI/2,(x,w,h)=>{
   x.fillStyle='#e9e2c8';x.fillRect(0,0,w,h);x.fillStyle='#8cc6e0';x.fillRect(0,0,w,h*.12);x.fillRect(0,0,w*.06,h);
   x.fillStyle='#cfc6a6';x.fillRect(w*.4,h*.1,w*.1,h*.9);x.fillStyle='#9fcf7c';x.fillRect(w*.56,h*.2,w*.34,h*.55);
@@ -77,7 +77,7 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
   x.fillText('港 HARBOUR',w*.54,h*.09);x.fillText('さくら',w*.22,h*.42);x.fillText('公園 PARK',w*.62,h*.45);x.fillText('バス BUS',w*.3,h*.95);
   x.fillStyle='#d7263d';x.beginPath();x.arc(w*.55,h*.84,h*.035,0,Math.PI*2);x.fill();x.fillStyle='#3b3f55';x.fillText('← 駐在所',w*.58,h*.86);
   x.strokeStyle='#6b4a1c';x.lineWidth=8;x.strokeRect(4,4,w-8,h-8);});
- spot([-3.1,1.4,-1.3],'Read the town map','read','Town map','Minato on one sheet: the harbour at the top, Sakura and the shops down the west side, the park and the school on the green side, and a red dot here at the bus plaza. Pins mark the night patrol: up Main Street to the quay and back.');
+ spot([-3.1,1.4,-1.3],'Read the town map','read','Town map','Minato on one sheet: the harbour at the top, Sakura and the shops down the west side, the park and the school on the green side, and a red dot here at the top of Main Street, below the old sea cave. Pins mark the night patrol: up Main Street to the quay and back.');
  // Notices by the door, a lost-property shelf on the east wall.
  box('Notice board',[1.6,1.0,.03],[-1.9,1.55,-3.03],0xb98a55);
  const posters=[['指名手配','WANTED','Tama (cat)\nfor sleeping in fish crates','#f4e4c8'],['落とし物','LOST','One glove, left hand\nAsk at the desk','#e8f0f4'],['交通安全','SAFETY WEEK','Bicycles: lights on\nafter dark','#fff1c1']];
@@ -88,7 +88,7 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
  box('Lost umbrella',[.05,.05,.9],[3.05,.55,-1.5],0x2a8fcc);box('Lost glove',[.14,.04,.2],[3.05,1.04,-1.9],0xe8cf85);
  box('Lost sandal',[.12,.05,.26],[3.05,1.04,-1.25],0x7a4a2a);cyl('Lost sunhat',.17,.05,[3.05,1.5,-1.7],0xe9d49a,14);
  box('Lost toy boat',[.2,.1,.08],[3.05,1.52,-1.1],0xd7263d);
- spot([2.8,1.1,-1.5],'Look through lost property','inspect','Lost property','An umbrella left on the bus, one glove, one sandal, a sun hat and a small red boat with “Hana” on the hull. Each has a tag in Officer Mori’s careful handwriting and the date it was found.');
+ spot([2.8,1.1,-1.5],'Look through lost property','inspect','Lost property','An umbrella left on the ferry, one glove, one sandal, a sun hat and a small red boat with “Hana” on the hull. Each has a tag in Officer Mori’s careful handwriting and the date it was found.');
  // Tea things on a cabinet against the partition, and the wall clock above the desk.
  box('Tea cabinet',[.8,.8,.4],[.3,.4,.5],0x8a6a4a,true);
  cyl('Thermos',.07,.3,[.1,.95,.5],0xd7263d);box('Tea tin',[.1,.12,.1],[.35,.86,.5],0x3f7a55);
@@ -124,7 +124,7 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
  spot([2.85,1.1,2.5],'Inspect the television','inspect','Portable television','A small portable set with a bent aerial. The channel knob is stuck between the late news and the baseball.');
  spot([-2.3,.7,1.9],'Inspect Officer Mori’s futon','inspect','Officer Mori’s futon','Folded away in the afternoon and laid out again at seven in the morning, after the night patrol. If he is asleep, let him be.');
 
- const door=new THREE.Object3D();door.position.set(...KOBAN_ROOM.exit);group.add(door);reg(door,'Exit to the bus plaza',exit,true);
+ const door=new THREE.Object3D();door.position.set(...KOBAN_ROOM.exit);group.add(door);reg(door,'Exit to Main Street',exit,true);
  room.add(new THREE.HemisphereLight(0xfff3dc,0x8a8474,1.7));
  const lamp=new THREE.PointLight(0xfff1d0,1.4,8,2);lamp.position.set(-.5,2.6,-1);room.add(lamp);
  return {...KOBAN_ROOM,colliders:[]};
