@@ -170,7 +170,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
        buildThuanFlat(storefront);
        s.x=front;s.door=[front+1.95,0,centre];
        // Turned a quarter: the frontage runs along z and the shop runs back along -x.
-       obstacle(front-span.depth/2,centre,span.depth,span.width);return;
+       colliders.push({id:"sakura-shop-shell",x:front-span.depth/2,z:centre,w:span.depth,d:span.width,height:4.01});return;
       }
       shopDoors.push(buildStorefront({parent:group,site:s,register,enter,label,placement:{x:front,z:s.z,yaw:Math.PI/2,scale:1}}).shopDoor);
       s.x=front;s.door=[-5.5,0,s.z+2.5];

@@ -1,3 +1,4 @@
+import {sakuraUpperFloor,overlapsHeight} from './world/sakura-upstairs.js';
 import {createGamepadInput,createMenuRepeat,lookStep} from './input/analogue.js';
 import {createTouchSticks} from './input/touch-sticks.js';
 import {createCameraControls,navigateControls,focusableControls} from './input/camera-controls.js';
@@ -372,7 +373,7 @@ const tpPivot=new THREE.Vector3(),tpDir=new THREE.Vector3(),tpRight=new THREE.Ve
 /** Whether the camera itself would be inside something: walls and anything taller than the lens. */
 function cameraBlocked(x,z,y,r){
  const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;
- return (current?roomColliders:world.colliders).some(c=>(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c));
+ return (current?roomColliders:world.colliders).some(c=>overlapsHeight(c,y-.12,.24)&&circleHitsRect(x,z,r,c));
 }
 function placeThirdPerson(dt){
  // Seated, the lens rises a little so his head does not fill the view of the table. In a
@@ -755,12 +756,25 @@ function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touc
   const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d*(1+(1-facingDot)*1.4)+(o.userData.promptPenalty||0)-(/^Talk to /.test(h.label)?.6:0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();say(FORM3_NUDGE,6);}else say('You stand up.',2);}
 function doInteract(){if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
-function environmentBlocked(x,z,r=PLAYER_RADIUS){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;const list=current?roomColliders:world.colliders;return list.some(c=>circleHitsRect(x,z,r,c));}
+let playerSupportY=0;
+function upperFloorAt(x,z){return world.townMode==='peninsula'?sakuraUpperFloor(x,z,characters?.jumping?playerSupportY:player.position.y):null;}
+function playerFloor(x=player.position.x,z=player.position.z){
+ return current?0:upperFloorAt(x,z)??groundHeight(x,z);
+}
+function environmentBlocked(x,z,r=PLAYER_RADIUS){
+ const floor=playerFloor(x,z);
+ const upper=!current&&upperFloorAt(x,z)!==null;
+ // A floor edge cannot drop the walker straight through the building or over a rail.
+ if(!current&&player.position.y>3.7&&upperFloorAt(player.position.x,player.position.z)!==null&&!upper)return true;
+ const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);
+ if(bounds&&!upper)return true;
+ return (current?roomColliders:world.colliders).some(c=>overlapsHeight(c,floor)&&circleHitsRect(x,z,r,c));
+}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
 function inEntrance(x,z,r=1.2){return entrancePoints().some(([dx,dz])=>Math.hypot(x-dx,z-dz)<r);}
 function indoorNpc(g){return g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inRamen||g.userData.inHome||g.userData.inMarket;}
 function residentInView(g){if(g.userData.visualReady===false)return false;for(let node=g;node;node=node.parent)if(!node.visible)return false;return current?!!indoorNpc(g):!indoorNpc(g);}
-function overlapsResident(x,z){return world.people.some(p=>!p.g.userData.playerControlled&&residentInView(p.g)&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS));}
+function overlapsResident(x,z){return world.people.some(p=>!p.g.userData.playerControlled&&residentInView(p.g)&&Math.abs(p.g.position.y-player.position.y)<1.5&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS));}
 function residentBlocked(x,z){if(!current&&inEntrance(x,z))return false;return overlapsResident(x,z);}
 function collides(x,z){return environmentBlocked(x,z,PLAYER_RADIUS)||residentBlocked(x,z);}
 function staysOpen(site){return !site||site.id==='home'||homeOwner(site)||['warehouse','office','bus-station'].includes(site.id);}
@@ -889,6 +903,7 @@ function updatePlayer(dt){
   if(stoppedX||stoppedZ)reachTheTunnelMouth(nx,nz);
   turnQ.setFromAxisAngle(yAxis,Math.atan2(-moveVec.x,-moveVec.z));player.quaternion.slerp(turnQ,1-Math.pow(.001,dt));playerRunning=running;
  }
+ if(!current&&!seated&&!characters?.jumping){player.position.y=playerFloor();playerSupportY=player.position.y;}
  playerSpeed=THREE.MathUtils.damp(playerSpeed,Math.hypot(player.position.x-fromX,player.position.z-fromZ)/Math.max(dt,1e-3),12,dt);
  updateDoorways(dt);
  player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):1.7+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';tipsy=Math.max(0,tipsy-dt*.004);const sway=Math.min(1,tipsy/2.5);camera.rotation.set(pitch+Math.sin(elapsed*.9)*.012*sway,yaw+Math.sin(elapsed*.55)*.02*sway,Math.sin(elapsed*.7)*.025*sway);if(thirdPerson)placeThirdPerson(dt);
@@ -1068,7 +1083,7 @@ let followRealClock=true;
 const townClock=createClock(readClockSetting(globalThis.localStorage),minutes);
 function advanceTown(dt,playerPaused,fastForward=false){
     minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;activities.tick(dt);
-    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused){characters?.physics?.(dt,current?0:groundHeight(player.position.x,player.position.z));updatePlayer(dt);}
+    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused){characters?.physics?.(dt,playerFloor());updatePlayer(dt);}
     evictIfClosed();
     if(current?.id==='izakaya')izakayaGuests.sync(minutes,dt);
     if(current?.id==='onsen')onsenGuests.sync(minutes,dt);

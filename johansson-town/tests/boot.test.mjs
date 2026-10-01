@@ -139,6 +139,26 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     assert.ok(api.player.position.distanceTo(openingSit)<.001,'Sitting prevents walking');
     assert.ok(!api.world.colliders.some(c=>circleHitsRect(bench.seat.stand[0],bench.seat.stand[2],.28,c)),'Clear stand-up point');
     api.doInteract();assert.ok(api.player.position.distanceTo(new Vector3(...bench.seat.stand))<.2);
+    // Actual fixed-step movement must climb the support path and return through the
+    // doorway without reverting to street Y or colliding with the shop underneath.
+    api.player.position.set(-19.25,0,-36.6);api.reviewSetYaw(Math.PI);
+    api.keys.KeyW=true;
+    for(let i=0;i<180;i++)api.simulate(1/60);
+    api.keys.KeyW=false;
+    assert.ok(api.player.position.y>4,'The rear stair remains decorative');
+    assert.ok(api.player.position.z>-30.4,'Could not reach the landing');
+    // Put the walker in line with the threshold at the already reached floor height.
+    api.player.position.z=-29.65;api.reviewSetYaw(-Math.PI/2);
+    api.keys.KeyW=true;for(let i=0;i<75;i++)api.simulate(1/60);api.keys.KeyW=false;
+    assert.ok(api.player.position.x>-18,'The rear opening is blocked');
+    assert.ok(Math.abs(api.player.position.y-4.03)<.01,'Home floor grounding');
+    api.reviewSetYaw(Math.PI/2);api.keys.KeyW=true;
+    for(let i=0;i<75;i++)api.simulate(1/60);api.keys.KeyW=false;
+    assert.ok(api.player.position.x<-18.7,'Could not leave the home');
+    api.player.position.x=-19.25;api.player.position.z=-30.4;api.reviewSetYaw(0);
+    api.keys.KeyW=true;for(let i=0;i<160;i++)api.simulate(1/60);api.keys.KeyW=false;
+    assert.ok(api.player.position.z<-36.6,'Could not descend to the yard');
+    assert.ok(Math.abs(api.player.position.y)<.01,'Stair descent did not return to ground');
     api.player.position.set(0,0,14);api.reviewSetYaw(0);api.simulate(1/60);
     const runningStart=api.player.position.clone();
     for(let ahead=0;ahead<=.8;ahead+=.1)assert.ok(!api.world.colliders.some(c=>circleHitsRect(runningStart.x,runningStart.z-ahead,.34,c)),'Clear movement test route');
