@@ -1,4 +1,6 @@
 import {DINING,NIGHT_LANE,inDiningLane,IZAKAYA_LANE} from './dining-layout.js';
+import {oilJettyAt} from './oil-jetty-layout.js';
+const OIL_JETTY_ROUTE=Object.freeze({id:'oil-jetty',surface:'stone'});
 import {RESIDENTIAL,inResidential,residentialContains,residentialHeight} from './residential-layout.js';
 import {FULL_TOWN,fullHeight,fullContains} from './full-town-state.js';
 import {PARK,parkHeight,parkApproachHeight,parkSkirtHeight} from './park-layout.js';
@@ -92,6 +94,7 @@ function regionAt(x,z,r=0){
  if(peninsulaActive()&&Math.abs(x-FOREST_EDGE.roadX)<=MAIN_ROAD.width/2-r
   &&z>=MAIN_ROAD.maxZ&&z<=CAVE_MOUTH.inside+.4-r)return {id:'cave-path',surface:'gravel'};
  if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
+ if(peninsulaActive()&&oilJettyAt(x,z,r))return OIL_JETTY_ROUTE;
  // The park is asked first, so the lawn is the ground around its mound rather than a
  // lid over it, and its ramp keeps its own paving where the two overlap. Only the
  // peninsula has an east side clear enough to stand on.

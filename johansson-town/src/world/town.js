@@ -1,4 +1,5 @@
 import {buildDiningStreet} from './dining-street.js';
+import {buildOilJetty} from './oil-jetty.js';
 import {GROUND} from '../render/ground-palette.js';
 import {buildBicycle,BOOKSHOP_BICYCLE} from './bicycle.js';
 import {registerDetail} from './detail-stream.js';
@@ -215,6 +216,7 @@ export function createTown(options){
    world.beachLife=buildBeachLife({parent:world.group,shadows:options.shadows});
    // Kitano-jima, the airport island on the horizon to the east. See airport-island.js.
    world.airportIsland=buildAirportIsland({parent:world.group,shadows:options.shadows});
+   world.oilJetty=buildOilJetty(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
    // The lawn wears the supplied park's own grass, so the green and the mound it runs
    // up to are one field. The park model is streamed, and the lawn reaches further
    // north than the park's own radius, so it asks for the asset on its own account.
@@ -276,7 +278,7 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
-    world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.airportIsland?.update(dt,minutes,day);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
+    world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.airportIsland?.update(dt,minutes,day);world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
     world.ferry?.update(dt,minutes,time);world.bus?.update(dt,minutes);
