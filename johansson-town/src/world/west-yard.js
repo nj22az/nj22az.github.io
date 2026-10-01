@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {GROUND} from '../render/ground-palette.js';
 import {MAIN_ROAD} from './main-road.js';
 import {groundTexture} from './east-lawn.js';
 import {GROUND_LAYER} from './ground-layers.js';
@@ -43,13 +44,13 @@ export const westYardAt=(x,z,r=0)=>
 export function buildWestYard({parent,colliders=[],shadows=false}={}){
  const group=new THREE.Group();group.name='West yard and its boundary';parent.add(group);
  const width=WEST_YARD.maxX-WEST_YARD.minX,depth=WEST_YARD.maxZ-WEST_YARD.minZ;
- const grit=groundTexture('#b2ab98',[['#bbb4a1',300,7],['#a7a08e',260,8],['#c3bca9',150,5]],'#9b947f');
+ const grit=groundTexture('#e2e0da',[['#ebe9e3',300,7],['#d3d0c8',260,8],['#f2f0ea',150,5]],'#c9c6bd');
  if(grit)grit.repeat.set(width/2.6,depth/2.6);
  const ground=new THREE.Mesh(new THREE.BoxGeometry(width,.06,depth),
   // Brought down the way the park's grass is: this town's sun, its 1.75 fill and the
   // grade's exposure together push a mid grey past white, and a yard this size came out
   // as a sheet of paper.
-  new THREE.MeshStandardMaterial({color:grit?0x8a8576:0x6f6a5d,roughness:1,map:grit}));
+  new THREE.MeshStandardMaterial({color:grit?GROUND.gravel:0x6f6a5d,roughness:1,map:grit}));
  ground.name='west-yard-gravel';
  // Two centimetres under the paved routes, the same clearance the east lawn keeps.
  // The yard used to sit at exactly the height the lane surfacing draws at, so gravel

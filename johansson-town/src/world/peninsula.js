@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {GROUND} from '../render/ground-palette.js';
 import {TUNNEL} from './coyote-tunnel.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
 
@@ -17,7 +18,7 @@ export function buildPeninsula(parent){
  const shape=new THREE.Shape();COASTLINE.forEach(([x,z],i)=>i?shape.lineTo(x,-z):shape.moveTo(x,-z));shape.closePath();
  // Unbuilt land is rough island grass, painted like the lawns, not a grey-khaki slab:
  // from the harbour it was the largest flat colour in view (docs/AMPLIFY-AUDIT.md).
- const groundMaterial=new THREE.MeshStandardMaterial({color:0x4f8540,roughness:1});
+ const groundMaterial=new THREE.MeshStandardMaterial({color:GROUND.grass,roughness:1});
  if(typeof document!=='undefined'&&document.createElement){try{const turf=paintedTurf().clone();turf.needsUpdate=true;turf.repeat.set(1/6,1/6);groundMaterial.map=turf;}catch{}}
  const ground=new THREE.Mesh(new THREE.ShapeGeometry(shape),groundMaterial);ground.rotation.x=-Math.PI/2;ground.position.y=-.4;ground.name='Peninsula land';parent.add(ground);
  const positions=[],indices=[];

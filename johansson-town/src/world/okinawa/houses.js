@@ -287,7 +287,7 @@ export function banana(kit,x,z,{seed=8}={}){
  kit.cyl(.09,.13,2.1,x,1.05,z,0x6f7d3e,{segments:7});
  for(let i=0;i<6;i++){
   const a=i/6*Math.PI*2+r.next()*.4;
-  kit.box(.42,.02,1.7,x+Math.cos(a)*.75,2.15+r.next()*.25,z+Math.sin(a)*.75,i%2?0x5f9a3c:0x6ea846,{ry:-a+Math.PI/2,rx:.45,finish:'thin'});
+  kit.box(.42,.02,1.7,x+Math.cos(a)*.75,2.15+r.next()*.25,z+Math.sin(a)*.75,i%2?0x4c7d34:0x588c3c,{ry:-a+Math.PI/2,rx:.45,finish:"thin"});
  }
 }
 

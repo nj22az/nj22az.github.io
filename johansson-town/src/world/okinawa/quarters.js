@@ -1,4 +1,5 @@
 import {COURT_TERRACE} from '../park-layout.js';
+import {GROUND} from '../../render/ground-palette.js';
 /** The east lawn's south edge (east-lawn.js EAST_LAWN.minZ), where the seawall's return begins. */
 const EAST_LAWN_SOUTH=-38;
 import * as THREE from '../../../vendor/three.module.js';
@@ -74,18 +75,18 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
 function buildNishiGround(kit,solid){
  const y=GROUND_LAYER.gravel,lane=GROUND_LAYER.lane;
  // The quarter's ground: crushed coral and sand, and concrete for the walk and lanes.
- kit.block(NISHI.minX,NISHI.maxX,y-.06,y,NISHI.minZ,NISHI.maxZ,0xb9b09a,'sand');
+ kit.block(NISHI.minX,NISHI.maxX,y-.06,y,NISHI.minZ,NISHI.maxZ,GROUND.coral,'sand');
  const P=NISHI.promenade;
- kit.block(P.minX,P.maxX,lane-.06,lane,NISHI.quay.maxZ+.6,NISHI.maxZ,0xa9a498);
+ kit.block(P.minX,P.maxX,lane-.06,lane,NISHI.quay.maxZ+.6,NISHI.maxZ,GROUND.concrete);
  for(let z=NISHI.quay.maxZ+2;z<NISHI.maxZ;z+=2.5)kit.box(P.maxX-P.minX,.012,.04,(P.minX+P.maxX)/2,lane+.002,z,0x9d988c);
  for(const l of NISHI.lanes){
-  kit.block(P.maxX,WEST_YARD.minX+.5,lane-.06,lane,l.z-l.half,l.z+l.half,0xaaa598);
+  kit.block(P.maxX,WEST_YARD.minX+.5,lane-.06,lane,l.z-l.half,l.z+l.half,GROUND.concrete);
   // Concrete gutters with their slotted covers along each side.
   for(const s of [-1,1])kit.block(P.maxX,WEST_YARD.minX,lane,lane+.015,l.z+s*l.half-(s>0?.28:0),l.z+s*l.half+(s<0?.28:0),0x8d887d);
  }
  const Q=NISHI.quay;
  // Laid at the apron height: the second pier's deck runs in under its seaward edge.
- kit.block(Q.minX,Q.maxX,GROUND_LAYER.apron-.06,GROUND_LAYER.apron,Q.minZ,Q.maxZ+.6,0xa6a296);
+ kit.block(Q.minX,Q.maxX,GROUND_LAYER.apron-.06,GROUND_LAYER.apron,Q.minZ,Q.maxZ+.6,GROUND.concrete);
  // The seawall along the shore, and its quay edge along the harbour.
  const S=NISHI.seawall;
  kit.block(S.x-S.thickness/2,S.x+S.thickness/2,-.7,S.height,NISHI.minZ,NISHI.maxZ+.4,0xb9b4a6);
@@ -189,7 +190,7 @@ function netShed(kit,solid,p,{inspect}){
 /** The utaki: the neighbourhood's sacred grove, where nobody builds and nobody shouts. */
 function utaki(kit,solid,p,{anchor,onAction,inspect}){
  const cx=-30.8,cz=(p.minZ+p.maxZ)/2;
- kit.block(p.minX,p.maxX,GROUND_LAYER.gravel,GROUND_LAYER.gravel+.02,p.minZ,p.maxZ,0x8f8a6e,'sand');
+ kit.block(p.minX,p.maxX,GROUND_LAYER.gravel,GROUND_LAYER.gravel+.02,p.minZ,p.maxZ,GROUND.gravel,'sand');
  solid(coralWall(kit,p.minX,p.minZ,p.maxX,p.minZ,{height:.9,gaps:[[cx-1,cx+1]],seed:120}));
  solid(coralWall(kit,p.minX,p.minZ,p.minX,p.maxZ,{height:.9,seed:121}));
  solid(coralWall(kit,p.maxX,p.minZ,p.maxX,p.maxZ,{height:.9,seed:122}));
@@ -329,14 +330,14 @@ function buildYardRow(kit,solid,{anchor,inspect,onAction}){
 function buildEastBack(kit,solid,ctx){
  // The back lane behind the shops: a concrete strip with a gutter, down to the lawn.
  const L=EAST_BACK.lane;
- kit.block(L.minX,L.maxX,GROUND_LAYER.lane-.05,GROUND_LAYER.lane-.005,EAST_ROW.plots[0].minZ,EAST_ROW.plots[3].maxZ+2.4,0xaaa598);
+ kit.block(L.minX,L.maxX,GROUND_LAYER.lane-.05,GROUND_LAYER.lane-.005,EAST_ROW.plots[0].minZ,EAST_ROW.plots[3].maxZ+2.4,GROUND.concrete);
  kit.block(L.maxX-.3,L.maxX,GROUND_LAYER.lane-.005,GROUND_LAYER.lane+.01,EAST_ROW.plots[0].minZ,EAST_ROW.plots[3].maxZ+2.4,0x8d887d);
  EAST_BACK.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:10+i,windbreak:'east'}));
 }
 
 function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.lane;
- kit.block(Q.minX+.05,Q.maxX+.4,lane-.06,lane,Q.minZ,Q.maxZ+.55,0xa6a296);
+ kit.block(Q.minX+.05,Q.maxX+.4,lane-.06,lane,Q.minZ,Q.maxZ+.55,GROUND.concrete);
  // The quay edge, its yellow kerb, bollards and the tyres hung on its face.
  kit.block(Q.minX,Q.maxX+.4,-.7,lane,Q.minZ-.45,Q.minZ,0xa9a497);
  kit.block(Q.minX,Q.maxX+.4,lane,lane+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);
@@ -430,7 +431,7 @@ function buildGateball(kit,solid,{anchor,inspect}){
  // The court is level on a terrace at the hill's own ground (COURT_TERRACE), graded into
  // the hill with banks and held up on the seaward side by a stone wall.
  const G=GATEBALL,T=COURT_TERRACE,H=T.height,top=H+GROUND_LAYER.apron,cx=(G.minX+G.maxX)/2,cz=(G.minZ+G.maxZ)/2;
- kit.block(G.minX,G.maxX,top-.05,top,G.minZ,G.maxZ,0xcdb88f,'sand');
+ kit.block(G.minX,G.maxX,top-.05,top,G.minZ,G.maxZ,GROUND.sand,'sand');
  // The wall fills the strip between the terrace and the seawall's south return, so no
  // slope of lawn is left running up under it.
  {const z0=EAST_LAWN_SOUTH,z1=T.minZ,x0=T.minX,x1=T.maxX;

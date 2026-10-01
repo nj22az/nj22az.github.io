@@ -137,10 +137,12 @@ export function flowerBlock(){
 /** Packed sand and crushed coral: the ground of a yard or lane. */
 export function coralSand(){
  return paint(256,256,(ctx,w,h)=>{
-  ctx.fillStyle='#d9d0b8';ctx.fillRect(0,0,w,h);
+  // Near-white and near-neutral: the ground palette (render/ground-palette.js) sets the
+  // tone, so the same grit reads as bleached coral, beach sand or grove gravel.
+  ctx.fillStyle='#f1ede4';ctx.fillRect(0,0,w,h);
   let seed=11;const r=()=>(seed=seed*16807%2147483647)/2147483647;
-  for(let i=0;i<1400;i++){const t=190+Math.floor(r()*50);ctx.fillStyle=`rgba(${t},${t-6},${t-28},.8)`;ctx.fillRect(r()*w,r()*h,1+r()*3,1+r()*3);}
-  for(let i=0;i<120;i++){ctx.fillStyle='rgba(120,110,90,.35)';ctx.beginPath();ctx.arc(r()*w,r()*h,1+r()*2,0,Math.PI*2);ctx.fill();}
+  for(let i=0;i<1400;i++){const t=218+Math.floor(r()*36);ctx.fillStyle=`rgba(${t},${t-3},${t-10},.8)`;ctx.fillRect(r()*w,r()*h,1+r()*3,1+r()*3);}
+  for(let i=0;i<120;i++){ctx.fillStyle='rgba(150,142,126,.3)';ctx.beginPath();ctx.arc(r()*w,r()*h,1+r()*2,0,Math.PI*2);ctx.fill();}
  });
 }
 

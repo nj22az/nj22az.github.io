@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {GROUND} from '../render/ground-palette.js';
 import {paintedAsphalt} from '../render/toy-surfaces.js';
 import {BOARDWALK} from './layout.js?snappy=1';
 
@@ -16,7 +17,7 @@ export function buildBoardwalk(parent,options={}){
  const map=paintedAsphalt().clone();map.userData.sharedAsset=true;
  const length=BOARDWALK.maxZ-BOARDWALK.minZ;
  map.repeat.set(BOARDWALK.width/4,length/4);map.needsUpdate=true;
- const mat=new THREE.MeshStandardMaterial({color:0xa9aeb4,map,roughness:.9});mat.name='main-street-asphalt';
+ const mat=new THREE.MeshStandardMaterial({color:GROUND.asphalt,map,roughness:.9});mat.name='main-street-asphalt';
  const deck=new THREE.Mesh(new THREE.BoxGeometry(BOARDWALK.width,.20,length),mat);deck.name='harbour-boardwalk-deck';deck.position.set(BOARDWALK.x,-.10,(BOARDWALK.minZ+BOARDWALK.maxZ)/2);deck.receiveShadow=true;parent.add(deck);
  // Paint and iron lie in the road's own plane, so they win the depth test on a polygon
  // offset rather than on height: two millimetres of daylight flickers on a phone.

@@ -1,4 +1,5 @@
 import {NIGHT_LANE,inDiningLane} from './dining-layout.js';
+import {GROUND} from '../render/ground-palette.js';
 import {RESIDENTIAL,inResidential} from './residential-layout.js';
 import * as THREE from '../../vendor/three.module.js';
 import {ROUTES,activeRoutes,routeAt,groundHeight} from './layout.js?snappy=1';
@@ -89,7 +90,7 @@ export function buildLaneSurfaces(parent,library) {
   }
   for(const [surface,b] of batches){
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(b.positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));geometry.setIndex(b.indices);geometry.computeVertexNormals();
-    const material=surface==='residential'?new THREE.MeshStandardMaterial({color:0xb9b5a5,roughness:.94}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',0xc8c1af).clone();material.side=THREE.DoubleSide;
+    const material=surface==='residential'?new THREE.MeshStandardMaterial({color:GROUND.concrete,roughness:.94}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',surface==='wood'?0xc8c1af:surface==='asphalt'?GROUND.asphalt:GROUND.pavers).clone();material.side=THREE.DoubleSide;
     const mesh=new THREE.Mesh(geometry,material);mesh.name='grid-lanes:'+surface;mesh.receiveShadow=true;parent.add(mesh);
   }
 }

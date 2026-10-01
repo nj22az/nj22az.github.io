@@ -1,4 +1,5 @@
 import {PARK_HEIGHTS} from './park-height.js';
+import {GROUND} from '../render/ground-palette.js';
 import {FULL_TOWN} from './full-town-state.js';
 import {GATEBALL} from './okinawa/layout.js';
 import {peninsulaActive} from './town-mode.js';
@@ -40,7 +41,7 @@ export function courtTerraceHeight(x,z,natural=0){
  * the textures back inside the range the ramp can band. The lawn outside the park uses
  * the same green, so the two are one field.
  */
-export const TURF_TINT=0x5f9a4a,PARK_PATH_TINT=0xcfc2a0;
+export const TURF_TINT=GROUND.grass,PARK_PATH_TINT=0xcfc2a0;
 export const PARK={id:'harbour-park',x:15.8,z:-23.8,half:7.84,lift:1,scale:.56,surface:'stone'};
 export const COMPACT_PARK={id:'harbour-park',x:14.2,z:-16.4,half:4.2,halfX:5.2,halfZ:4,lift:0,plaza:true,surface:'stone'};
 export function activePark(){return FULL_TOWN.active?COMPACT_PARK:PARK;}

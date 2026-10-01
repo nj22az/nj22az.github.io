@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {GROUND} from '../render/ground-palette.js';
 import {MAIN_ROAD} from './main-road.js';
 import {PARK,PARK_SKIRT,TURF_TINT} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
@@ -44,7 +45,7 @@ const TREE_LEAVES=[0x44664c,0x517a52,0x5d8254];
 const TURF_METRES=2.4;
 
 /** The green the lawn shows without a page to paint the turf on. */
-const BARE_TURF=0x5a9446;
+const BARE_TURF=GROUND.grass;
 
 /**
  * Ground drawn rather than fetched, for the surfaces the town supplies no photograph
@@ -156,8 +157,8 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  }
  sand.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
  sand.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));sand.setIndex(indices);sand.computeVertexNormals();
- const grit=groundTexture('#d8caa4',[['#ded0aa',320,6],['#d0c199',260,7],['#e6dbbb',160,4]],'#cabb95');
- const shore=new THREE.Mesh(sand,new THREE.MeshStandardMaterial({color:grit?0xffffff:0xd8caa4,map:grit,roughness:1,side:THREE.DoubleSide}));
+ const grit=groundTexture('#e3d2a4',[['#e9d9b0',320,6],['#d8c595',260,7],['#efe4c4',160,4]],'#d4c191');
+ const shore=new THREE.Mesh(sand,new THREE.MeshStandardMaterial({color:grit?0xffffff:GROUND.sand,map:grit,roughness:1,side:THREE.DoubleSide}));
  shore.name='east-beach-sand';shore.receiveShadow=!!shadows;group.add(shore);
  for(const access of BEACH.accesses){
   const {fromX,toX,z,half}=access,y=beachHeight(toX,z);

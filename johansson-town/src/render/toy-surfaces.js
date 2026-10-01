@@ -98,3 +98,25 @@ export function paintedAsphalt(size=256){
  }
  return finish('asphalt',data,size);
 }
+
+/**
+ * Poured concrete, painted: pale and even, with the saw-cut joints of 2 m bays, a few
+ * hairline cracks and the faint mottling of salt spray. It replaces a photographed
+ * concrete that read as a real quay under a drawn town. Near-white, so the material
+ * colour sets the grey. At a 2 m repeat one tile is one bay.
+ */
+export function paintedConcrete(size=256){
+ if(cache.has('concrete'))return cache.get('concrete');
+ const data=new Uint8Array(size*size*4);
+ for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+  const u=x/size,v=y/size;
+  const edge=Math.min(u,1-u,v,1-v),joint=1-THREE.MathUtils.smoothstep(edge,.004,.012);
+  const mottle=(Math.sin(u*9.1+Math.sin(v*5.3)*1.7)+Math.sin(v*7.7+u*3.1))*2.2;
+  const crack=Math.abs(v-.62-Math.sin(u*14)*.03)<.0035&&u>.18&&u<.55?-28:0;
+  const speck=(hash(x,y,11)-.5)*7;
+  const light=236+mottle+speck+crack-joint*48;
+  const i=(y*size+x)*4;
+  data[i]=data[i+1]=Math.round(THREE.MathUtils.clamp(light,0,255));data[i+2]=Math.round(THREE.MathUtils.clamp(light-2,0,255));data[i+3]=255;
+ }
+ return finish('concrete',data,size);
+}
