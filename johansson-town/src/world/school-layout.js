@@ -38,6 +38,14 @@ export const SCHOOL=Object.freeze({
  bars:Object.freeze({x:38.3,z:32.5,w:2.6}),
  flagpole:Object.freeze({x:30.5,z:37.35}),
  sandpit:Object.freeze({minX:35.8,maxX:39.4,minZ:29.6,maxZ:31.6}),
+ /**
+  * Since the school became the town hall (港町役場 · 公民館): the island's power house,
+  * built on the west end of the old sports ground, the car park where the sandpit and
+  * the iron bars were, and a concrete canopy over the entrance.
+  */
+ powerHouse:Object.freeze({minX:13.9,maxX:19.4,minZ:29.4,maxZ:34.8,height:3.6,door:Object.freeze([20.1,32.1]),tank:Object.freeze([16.6,36.2])}),
+ parking:Object.freeze({minX:31,maxX:39.6,minZ:28.9,maxZ:32.4}),
+ canopy:Object.freeze({minX:18.8,maxX:22.2,minZ:35.9,maxZ:38.1,height:3.0}),
 });
 const B=SCHOOL.building;
 /** x of each column line along the breezeway, west to east. */
@@ -64,7 +72,12 @@ export function schoolColliders(){
  const s=SCHOOL.bikeShed;add('school-bike-shed',s.minX,s.maxX,s.minZ+.9,s.maxZ,2.3);
  const g=SCHOOL.gate;for(const side of [-1,1])add('school-gatepost',g.x+side*g.half-.35,g.x+side*g.half+.35,g.z-.35,g.z+.35,2.3);
  add('school-flagpole',SCHOOL.flagpole.x-.15,SCHOOL.flagpole.x+.15,SCHOOL.flagpole.z-.15,SCHOOL.flagpole.z+.15,9);
- const b=SCHOOL.bars;for(const dx of [-b.w/2,0,b.w/2])add('school-iron-bars',b.x+dx-.08,b.x+dx+.08,b.z-.08,b.z+.08,1.4);
+ // The iron bars went with the school; the power house, its fuel tank, the parked town
+ // vehicles and the canopy's two columns stand there now.
+ const ph=SCHOOL.powerHouse;add('town-hall-power-house',ph.minX,ph.maxX,ph.minZ,ph.maxZ,ph.height);
+ add('town-hall-fuel-tank',ph.tank[0]-1.6,ph.tank[0]+1.6,ph.tank[1]-.7,ph.tank[1]+.7,1.6);
+ for(const x of [32.4,35.4])add('town-hall-parked-vehicle',x-.8,x+.8,29.2,32.2,1.9);
+ const c=SCHOOL.canopy;for(const x of [c.minX+.2,c.maxX-.2])add('town-hall-canopy-column',x-.15,x+.15,c.minZ+.05,c.minZ+.35,c.height);
  for(const [x,z] of FUKUGI)add('school-fukugi',x-.35,x+.35,z-.35,z+.35,6);
  return list;
 }

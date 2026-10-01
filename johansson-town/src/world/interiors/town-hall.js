@@ -68,7 +68,7 @@ function plate(group,text,{w,h,at,ry=0,bg='#f3f0e4',fg='#23302a',font=GOTHIC,siz
  */
 /** What is in the tray this week: every petition is from somebody who lives here. */
 export const PETITIONS=Object.freeze([
- 'From Mr Shimabukuro, power station: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.',
+ 'From Mr Shimabukuro, the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.',
  'From Mrs Nakamura, 仲村ぜんざい: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.',
  'From the Higa household, Nishi-machi: May the children use the town hall field on Sunday for eisa practice? Grandmother Higa will supervise. Loudly.',
  'From the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.',
@@ -106,7 +106,7 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  anchor([0,1.0,-1.35],'Sit at the mayor’s desk',()=>action('seat','The mayor’s desk','Your desk. The chair still squeaks the way it did when it was the headmaster’s.'));
  anchor([.55,1.0,-1.5],'Read the petitions',()=>{const list=petitions();action('read','Petitions to the mayor',list.length?list.join('\n\n'):'The tray is empty. A quiet week on the island, or nobody has told you yet.');});
  anchor([-hw+.4,1.4,-.4],'Study the island map',()=>action('inspect','Map of Minato-chō','The island in hand-coloured ink, every lot numbered: the harbour, the shotengai, Nishi-machi inside its seawall, the new houses up at Kitahama, the oil jetty, the town hall and its field. Kitano-jima sits off the corner with its airport and the sewage works. Pins mark this year\'s roadworks.'));
- anchor([hw-.6,1.2,1.3],'Look through the minutes',()=>action('read','Town assembly minutes, 1997','Item 3: the generator\'s second set to be overhauled before typhoon season. Item 5: the ferry company asks for a longer ramp so the new cargo trucks can board. Item 7: Mrs Sato\'s complaint about the gulls, again. Item 9: the sewage works on Kitano-jima to be inspected by the prefecture in November.'));
+ anchor([hw-.6,1.2,1.3],'Look through the minutes',()=>action('read','Town assembly minutes, 1997','Item 3: the power house\'s second diesel set to be overhauled before typhoon season; the old barber\'s shop to be let to the post office. Item 5: the ferry company asks for a longer ramp so the new cargo trucks can board. Item 7: Mrs Sato\'s complaint about the gulls, again. Item 9: the sewage works on Kitano-jima to be inspected by the prefecture in November.'));
  return {...layoutFor(),office:true};
 }
 

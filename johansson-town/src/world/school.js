@@ -4,6 +4,7 @@ import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {SCHOOL,SCHOOL_COLUMNS,FUKUGI,schoolColliders} from './school-layout.js';
+import {createKit} from './okinawa/kit.js';
 import {playSchoolChime,CHIME_TIMES} from '../audio/school-chime.js';
 
 /**
@@ -42,26 +43,25 @@ function buildYard(group){
   ctx.fillStyle='#d6ccae';ctx.fillRect(0,0,w,h);
   const speckle=(x0,y0,x1,y1,colours,count,size)=>{for(let i=0;i<count;i++){ctx.fillStyle=colours[i%colours.length];const x=x0+rnd()*(x1-x0),y=y0+rnd()*(y1-y0),r=size*(.4+rnd());ctx.beginPath();ctx.ellipse(x,y,r,r*(.5+rnd()*.5),rnd()*3,0,Math.PI*2);ctx.fill();}};
   speckle(0,0,w,h,['#e2d9bd','#c9bf9f','#ece4cc','#bdb292'],9000,2.2);
-  // The field: red clay, scuffed paler where it is run on most.
-  const f=SCHOOL.field;
-  ctx.fillStyle='#b98a63';ctx.fillRect(X(f.minX),Z(f.minZ),(f.maxX-f.minX)*PX,(f.maxZ-f.minZ)*PX);
-  speckle(X(f.minX),Z(f.minZ),X(f.maxX),Z(f.maxZ),['#c79a73','#ad7d58','#cfa47e','#a37352'],7000,2.6);
-  // The track: two straights and two bends, chalked, a bit wavering.
-  const cx=(f.minX+f.maxX)/2,cz=(f.minZ+f.maxZ)/2,rz=(f.maxZ-f.minZ)/2-.9,straight=(f.maxX-f.minX)/2-rz-1.2;
-  ctx.strokeStyle='rgba(247,244,232,.88)';ctx.lineWidth=.07*PX;
-  for(const inset of [0,1.1]){
-   const r=(rz-inset)*PX;ctx.beginPath();
-   ctx.moveTo(X(cx-straight),Z(cz)-r);ctx.lineTo(X(cx+straight),Z(cz)-r);
-   ctx.arc(X(cx+straight),Z(cz),r,-Math.PI/2,Math.PI/2);ctx.lineTo(X(cx-straight),Z(cz)+r);
-   ctx.arc(X(cx-straight),Z(cz),r,Math.PI/2,Math.PI*1.5);ctx.stroke();
-  }
-  for(let k=0;k<2;k++){const x=X(cx-2+k*.25);ctx.beginPath();ctx.moveTo(x,Z(cz)-rz*PX);ctx.lineTo(x,Z(cz)-(rz-1.1)*PX);ctx.stroke();}
-  // The sandpit, a darker, looser sand.
-  const s=SCHOOL.sandpit;ctx.fillStyle='#cdb88f';ctx.fillRect(X(s.minX),Z(s.minZ),(s.maxX-s.minX)*PX,(s.maxZ-s.minZ)*PX);
-  speckle(X(s.minX),Z(s.minZ),X(s.maxX),Z(s.maxZ),['#bca57b','#d9c7a1'],600,3);
+  // The old sports ground, as the town hall uses it: a paved forecourt to the entrance,
+  // the car park on the east end with its white bays, a lawn with flower beds in the
+  // middle, and the power house on the west end (built in buildPowerHouse).
+  const f=SCHOOL.field,pk=SCHOOL.parking,ph=SCHOOL.powerHouse;
+  ctx.fillStyle='#6f9f55';ctx.fillRect(X(23.6),Z(f.minZ+.6),(pk.minX-24.4)*PX,(f.maxZ-f.minZ-1.6)*PX);
+  speckle(X(23.6),Z(f.minZ+.6),X(pk.minX-.8),Z(f.maxZ-1),['#79aa5d','#649650','#86b468'],3000,2.4);
+  for(const [x0,x1,z0,z1] of [[24.4,29.2,29.6,30.6],[24.4,29.2,34.4,35.4]]){ctx.fillStyle='#8a5a3a';ctx.fillRect(X(x0),Z(z0),(x1-x0)*PX,(z1-z0)*PX);
+   for(let i=0;i<60;i++){ctx.fillStyle=['#d8342c','#f4d23c','#e98aa6','#f4f1ea'][i%4];ctx.beginPath();ctx.arc(X(x0+.2+((i*37)%100)/100*(x1-x0-.4)),Z(z0+.2+((i*53)%100)/100*(z1-z0-.4)),.09*PX,0,Math.PI*2);ctx.fill();}}
+  // Forecourt pavers from the gate to the canopy.
+  ctx.fillStyle='#c9c3b4';ctx.fillRect(X(18.2),Z(SCHOOL.gate.z),(23.6-18.2)*PX,(SCHOOL.corridor.minZ-SCHOOL.gate.z)*PX);
+  ctx.strokeStyle='rgba(150,142,126,.5)';ctx.lineWidth=1;for(let z=SCHOOL.gate.z;z<SCHOOL.corridor.minZ;z+=.3){ctx.beginPath();ctx.moveTo(X(18.2),Z(z));ctx.lineTo(X(23.6),Z(z));ctx.stroke();}
+  // The car park: asphalt, white bays, a 来客用 (visitors) bay by the path.
+  ctx.fillStyle='#9fa4aa';ctx.fillRect(X(pk.minX),Z(pk.minZ),(pk.maxX-pk.minX)*PX,(pk.maxZ-pk.minZ)*PX);
+  ctx.fillStyle='#f2efe6';for(let x=pk.minX+.4;x<=pk.maxX;x+=2.6)ctx.fillRect(X(x),Z(pk.minZ+.2),.1*PX,(pk.maxZ-pk.minZ-.6)*PX);
+  ctx.font=`bold ${.5*PX}px ${GOTHIC}`;ctx.fillText('来客用',X(pk.maxX-2.2),Z(pk.maxZ-.6));
+  // The power house's concrete apron and the fuel tank's bund.
+  ctx.fillStyle='#b3ae9f';ctx.fillRect(X(ph.minX-.3),Z(ph.minZ-.4),(ph.maxX-ph.minX+1.6)*PX,(ph.tank[1]-ph.minZ+1.5)*PX);
   // Worn paths: gate to entrance, entrance to taps; the wet patch round the taps.
   ctx.strokeStyle='rgba(176,164,134,.5)';ctx.lineCap='round';ctx.lineWidth=1.4*PX;
-  ctx.beginPath();ctx.moveTo(X(SCHOOL.gate.x),Z(SCHOOL.gate.z));ctx.quadraticCurveTo(X(SCHOOL.gate.x+1),Z(30),X(SCHOOL.genkan.x),Z(SCHOOL.corridor.minZ));ctx.stroke();
   const tap=SCHOOL.wash;const wet=ctx.createRadialGradient(X(tap.x),Z(tap.z-.8),0,X(tap.x),Z(tap.z-.8),2.2*PX);
   wet.addColorStop(0,'rgba(120,112,92,.55)');wet.addColorStop(1,'rgba(120,112,92,0)');ctx.fillStyle=wet;ctx.fillRect(X(tap.x-3),Z(tap.z-3.2),6*PX,4*PX);
   // Under the bike shed, a concrete pad; behind the block, weeds in the sand.
@@ -193,6 +193,87 @@ function clockHands(group){
  * @param {object} world
  * @param {object} options register / onAction / enter / sites / shadows, as the town gives them
  */
+/**
+ * The model was built as a school, with iron bars, a sandpit kerb and a line of tyres on
+ * its sports ground, all merged into the same meshes as the building. Those triangles go
+ * when the model arrives: anything whose centre falls in one of these boxes (world
+ * metres, x0 x1 y0 y1 z0 z1).
+ */
+const SCHOOL_ONLY=Object.freeze([
+ [36.8,39.8,-.1,1.6,32.2,32.8],
+ [35.5,39.7,-.1,.3,29.3,31.9],
+ [13.3,14.4,-.1,.5,29.9,34.1],
+]);
+function stripSchoolYard(scene){
+ scene.updateMatrixWorld(true);
+ const v=new THREE.Vector3(),c=new THREE.Vector3();
+ scene.traverse(o=>{
+  if(!o.isMesh||!o.geometry.index)return;
+  const pos=o.geometry.attributes.position,idx=o.geometry.index.array,keep=[];
+  for(let i=0;i<idx.length;i+=3){
+   c.set(0,0,0);for(let k=0;k<3;k++)c.add(v.fromBufferAttribute(pos,idx[i+k]).applyMatrix4(o.matrixWorld));c.multiplyScalar(1/3);
+   if(SCHOOL_ONLY.some(([x0,x1,y0,y1,z0,z1])=>c.x>x0&&c.x<x1&&c.y>y0&&c.y<y1&&c.z>z0&&c.z<z1))continue;
+   keep.push(idx[i],idx[i+1],idx[i+2]);
+  }
+  if(keep.length!==idx.length)o.geometry.setIndex(keep);
+ });
+}
+
+/**
+ * The town hall's additions to the old school, all from the Okinawan kit: the power
+ * house (two diesel sets behind louvred walls, two exhaust stacks, the fuel tank in its
+ * bund, the cable going out to the poles), the concrete canopy over the entrance, the
+ * town's kei truck and car in the car park, the flags on the pole, and a monument sign
+ * by the gate. Returns nothing; colliders are in schoolColliders().
+ */
+function buildTownHallDressing(group,options){
+ const kit=createKit({shadows:options.shadows});
+ const ph=SCHOOL.powerHouse,wall=0xdcd6c6,trim=0x2f5f6a,steel=0x8e979a;
+ const cx=(ph.minX+ph.maxX)/2,cz=(ph.minZ+ph.maxZ)/2,H=ph.height;
+ kit.block(ph.minX,ph.maxX,0,H,ph.minZ,ph.maxZ,wall);
+ kit.block(ph.minX-.1,ph.maxX+.1,H,H+.15,ph.minZ-.1,ph.maxZ+.1,0xc8c2b5);
+ kit.block(ph.minX-.05,ph.maxX+.05,0,.3,ph.minZ-.05,ph.maxZ+.05,0xa9aa9c);
+ // Louvred vents down both long walls, and the steel double doors facing the forecourt.
+ for(const z of [ph.minZ-.03,ph.maxZ+.03])for(let x=ph.minX+.6;x<ph.maxX-.4;x+=1.3){kit.box(.9,.9,.04,x+.45,2.2,z,0x6f7579);for(let k=0;k<6;k++)kit.box(.86,.04,.06,x+.45,1.82+k*.15,z,0x4f5559);}
+ kit.box(.06,2.4,1.9,ph.maxX+.03,1.2,ph.door[1],0x6f8a8e);kit.box(.07,2.4,.04,ph.maxX+.05,1.2,ph.door[1],0x3a3d3f);
+ kit.box(.6,.4,.02,ph.maxX+.04,2.75,ph.door[1],0xe0b93a);
+ kit.box(.4,.16,.02,ph.maxX+.045,2.75,ph.door[1],0x2b2b2b);
+ // Two exhaust stacks with rain caps, sooty at the top, through the roof.
+ for(const z of [cz-1.2,cz+1.2]){kit.cyl(.17,.19,3.2,ph.minX+1.2,H+1.5,z,0x7a7d78,{segments:8});kit.cyl(.26,.26,.08,ph.minX+1.2,H+3.15,z,0x3a3d3f,{segments:8});kit.cyl(.18,.18,.5,ph.minX+1.2,H+2.85,z,0x4a4a46,{segments:8});}
+ // The day tank: a horizontal steel tank on saddles inside a low bund wall.
+ const [tx,tz]=ph.tank;
+ kit.block(tx-1.6,tx+1.6,0,.45,tz-.7,tz-.55,0xc8c2b5);kit.block(tx-1.6,tx+1.6,0,.45,tz+.55,tz+.7,0xc8c2b5);
+ kit.block(tx-1.6,tx-1.45,0,.45,tz-.7,tz+.7,0xc8c2b5);kit.block(tx+1.45,tx+1.6,0,.45,tz-.7,tz+.7,0xc8c2b5);
+ kit.cyl(.5,.5,2.6,tx,1.05,tz,0xe6e3d6,{rz:Math.PI/2,segments:14});
+ for(const dx of [-.8,.8])kit.box(.15,.6,.9,tx+dx,.3,tz,steel);
+ kit.box(1,.25,.02,tx,1.1,tz+.51,0xc0392b);
+ kit.rod([tx-1.3,1.05,tz],[ph.minX+2,1.05,ph.maxZ+.02],.04,0x3a3d3f);
+ // The cable out of the switchboard, up a riser pole to the town's lines.
+ kit.rod([ph.maxX-.4,H,ph.minZ+.3],[ph.maxX-.4,H+1.5,ph.minZ-.6],.05,0x2b2a30);
+ // The canopy over the entrance: a thin concrete slab on two round columns.
+ const c=SCHOOL.canopy;
+ kit.block(c.minX,c.maxX,c.height,c.height+.2,c.minZ,c.maxZ+.1,0xe4e1d3);
+ kit.block(c.minX,c.maxX,c.height+.2,c.height+.32,c.minZ,c.minZ+.12,trim);
+ for(const x of [c.minX+.2,c.maxX-.2])kit.cyl(.14,.14,c.height,x,c.height/2,c.minZ+.2,0xe4e1d3,{segments:12});
+ // The town's vehicles in their bays: the works kei truck and the white town car.
+ const truck=(x,z,col)=>{kit.box(1.4,1.1,1.1,x,.75,z-.9,col);kit.box(1.4,.5,1.9,x,.55,z+.6,col);kit.box(1.3,.04,1.8,x,.82,z+.6,0x5d6265);
+  for(const [dx,dz] of [[-.65,-.9],[.65,-.9],[-.65,1.1],[.65,1.1]])kit.cyl(.26,.26,.18,x+dx,.26,z+dz,0x1f2124,{rz:Math.PI/2,segments:10});
+  kit.box(1.32,.45,.04,x,1.0,z-1.46,0x5d7a84);};
+ truck(32.4,30.7,0xf2f0ea);
+ kit.box(1.6,.75,3.4,35.4,.6,30.7,0xf4f1ea);kit.box(1.4,.55,1.8,35.4,1.25,30.9,0xf4f1ea);kit.box(1.36,.42,.04,35.4,1.25,29.99,0x5d7a84);
+ for(const [dx,dz] of [[-.75,-1.1],[.75,-1.1],[-.75,1.1],[.75,1.1]])kit.cyl(.3,.3,.2,35.4+dx,.3,30.7+dz,0x1f2124,{rz:Math.PI/2,segments:10});
+ kit.box(.02,.3,.6,36.21,.8,30.7,0x2f6f9f);
+ // A monument sign of polished stone at the gate, the way every town hall has one.
+ const g=SCHOOL.gate;kit.box(2.4,1.3,.4,g.x+3.4,.65,g.z+.6,0x4a4f52,{finish:'gloss'});kit.box(2.6,.15,.55,g.x+3.4,.07,g.z+.6,0x9a958a);
+ kit.finish(group,'Town hall dressing');
+ plate(group,'港町役場 · 公民館',{w:2.1,h:.62,at:[g.x+3.4,.75,g.z+.39],rotY:Math.PI,bg:'#4a4f52',fg:'#efe6cc',size:.36,sub:'MINATO TOWN HALL · COMMUNITY CENTRE',name:'Town hall monument'});
+ plate(group,'発電所',{w:1.4,h:.4,at:[ph.maxX+.06,3.2,ph.door[1]],rotY:Math.PI/2,bg:'#e6ecef',fg:'#2f4f5a',size:.6,name:'Power house sign'});
+ // Flags on the old school's pole: Japan and the town.
+ const flag=(y,draw)=>{const t=canvasTexture(140,96,draw);const f=new THREE.Mesh(new THREE.PlaneGeometry(1.4,.95),new THREE.MeshStandardMaterial({map:t,side:THREE.DoubleSide,roughness:.9}));f.position.set(SCHOOL.flagpole.x-.74,y,SCHOOL.flagpole.z);f.rotation.y=Math.PI;f.name='Town hall flag';group.add(f);};
+ flag(8.2,(cx2,w0,h0)=>{cx2.fillStyle='#f4f1ea';cx2.fillRect(0,0,w0,h0);cx2.fillStyle='#c8102e';cx2.beginPath();cx2.arc(w0/2,h0/2,h0*.3,0,Math.PI*2);cx2.fill();});
+ flag(7.1,(cx2,w0,h0)=>{cx2.fillStyle='#2f6f9f';cx2.fillRect(0,0,w0,h0);cx2.fillStyle='#f4f1ea';cx2.font=`bold 50px ${SERIF}`;cx2.textAlign='center';cx2.textBaseline='middle';cx2.fillText('港',w0/2,h0/2);});
+}
+
 export function buildSchool(world,options){
  const group=new THREE.Group();group.name='Minato school';world.group.add(group);
  world.colliders.push(...schoolColliders());
@@ -210,6 +291,7 @@ export function buildSchool(world,options){
   base.position.set(SCHOOL.westWall,.15,(SCHOOL.minZ+SCHOOL.seawall.south)/2);base.receiveShadow=true;group.add(base);}
  world.colliders.push({id:'school-boundary-wall',x:SCHOOL.westWall,z:(SCHOOL.minZ+SCHOOL.seawall.south)/2,w:.3,d:SCHOOL.seawall.south-SCHOOL.minZ,height:1.8});
  buildFukugi(group,options.shadows);
+ buildTownHallDressing(group,options);
 
  // Lettering.
  plate(onBuilding,'港町役場',{w:.42,h:1.18,at:[SCHOOL.gate.x-SCHOOL.gate.half,.88,SCHOOL.gate.z-.31],rotY:Math.PI,vertical:true,bg:'#e9dfc5',fg:'#1b1b1b',size:.62,name:'School gate plate'});
@@ -237,13 +319,15 @@ export function buildSchool(world,options){
   'The town office, the assembly room, the mayor\'s office and, upstairs, the island school\'s one classroom: eight pupils, the 5th and 6th years together. Built in concrete in 1971 as the school after a typhoon took the wooden one; the town office moved in when the junior high closed in 1989. The mayor lives in the east wing.'));
  anchor([SCHOOL.wash.x,1,SCHOOL.wash.z-.8],'Rinse your feet at the taps',()=>options.onAction?.('school-taps'));
  anchor([(SCHOOL.bikeShed.minX+SCHOOL.bikeShed.maxX)/2,1,SCHOOL.bikeShed.minZ+.4],'Look at the bicycles',say('Bike shed',
-  'Six bicycles under a zinc roof rusted through at the ribs. Baskets, bells, a name in marker on every mudguard. The junior-high kids ride in from the far end of the harbour road.'));
- anchor([SCHOOL.bars.x,1,SCHOOL.bars.z-.7],'Try the iron bars',say('Iron bars (鉄棒)',
-  'Three heights of bar, painted yellow once. The paint has worn through to rust exactly where hands go. You manage one pull-up, and a small audience on the corridor would like you to try a forward roll.'));
+  'Bicycles under a zinc roof rusted through at the ribs: the town office staff\'s, two children\'s with names in marker on the mudguards, and the postman\'s spare.'));
+ anchor([SCHOOL.powerHouse.door[0]+.4,1.2,SCHOOL.powerHouse.door[1]],'Look in at the generators',say('Minato power station · 港町発電所',
+  'Through the open steel doors: two diesel generator sets, green and yellow, each as long as a kei truck, one thudding, one resting. A switchboard of black dials and red lamps runs along the back wall; the needles sit on 6,600 volts and 50 cycles. Every light on the island comes out of this room. The day tank outside is filled from the oil jetty when the tanker is in. Mr Shimabukuro keeps the logbook on a clipboard by the door.'));
+ anchor([SCHOOL.gate.x+3.4,1,SCHOOL.gate.z+1.2],'Read the monument',say('港町役場 · 公民館',
+  'Minato Town Hall and Community Centre. Polished granite, the characters cut and filled with gold that has mostly worn away. Underneath, smaller: 昭和四十六年 小中学校として建設 · 平成元年 役場として開庁 (built as the school, 1971; opened as the town hall, 1989).'));
  anchor([SCHOOL.genkan.x+6,1,SCHOOL.seawall.south-.8],'Look over the seawall',say('South seawall',
   'Tetrapods stacked against the wall, and beyond them the reef flat going green and then blue. In a typhoon the spray comes over this wall and salts the classroom windows white.'));
  anchor([SCHOOL.flagpole.x,1.1,SCHOOL.flagpole.z-.6],'Listen to the speakers',say('Horn speakers',
-  'Two grey horns on the flagpole and two on the tower. The chime comes out of them at 8:25, noon, 12:20, 15:30 and 17:00 -- the Westminster quarters, a little slow and a little flat, heard all over the harbour.'));
+  'Two grey horns on the flagpole and two on the tower: the town\'s 防災無線, the disaster radio. The chime comes out of them at 8:25, noon, 12:20, 15:30 and 17:00 -- the Westminster quarters, a little slow and a little flat, heard all over the harbour -- and typhoon warnings when there are any.'));
 
  // The door. The school keeps a site like any building in town, so the map, the
  // directory and the doorway carry you in and out the way they do everywhere else.
@@ -269,7 +353,8 @@ export function buildSchool(world,options){
  registerDetail(world,{id:'school',x:(B.minX+B.maxX)/2,z:(SCHOOL.minZ+SCHOOL.maxZ)/2,radius:80,load:async()=>{
   const response=await fetch(assetURL('models/school/minato-school.glb'));if(!response.ok)return false;
   const scene=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
-  scene.name='Minato school buildings';scene.userData.sharedAsset=true;
+  scene.name='Minato town hall buildings';scene.userData.sharedAsset=true;
+  stripSchoolYard(scene);
   scene.traverse(o=>{if(!o.isMesh)return;o.castShadow=!!options.shadows;o.receiveShadow=!!options.shadows;
    // Mould and rust are decals a few millimetres off the paint. Written into depth they
    // gave the ink pass an edge to draw, and every streak came out as a stuck-on tab.

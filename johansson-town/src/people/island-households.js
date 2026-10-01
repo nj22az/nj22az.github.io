@@ -14,7 +14,7 @@
  */
 export const ISLAND_HOUSEHOLDS=Object.freeze([
  // The town hall and the harbour.
- {home:'town-hall',address:'Town hall, east wing',members:[['Johansson','mayor of Minato-chō']]},
+ {home:'town-hall',address:'Town hall, east wing',members:[['Johansson','mayor of Minato-chō; lives over the shop, as he says, beside the community centre and the power house']]},
  {home:'office',address:'Harbour office (the bed behind the screen)',members:[['Harbour master','runs the harbour office and the moorings']]},
  {home:'koban',address:'Minato police box',members:[['Officer Mori','the island’s police officer: desk from four, night patrol']]},
  // The Front-Row yard.
@@ -24,7 +24,7 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'kitahama-1',address:'1 Kitahama',members:[['Thuan','keeps Sakura Shōten'],['Nao','runs Minato Izakaya']]},
  {home:'kitahama-2',address:'2 Kitahama',members:[['Mrs Sato','cooks at Sato Ramen; buys fish at the morning auction']]},
  {home:'kitahama-3',address:'3 Kitahama',members:[['Kōji','sorts the catch at the fish auction; crews on the Ōshiro boat']]},
- {home:'kitahama-4',address:'4 Kitahama',members:[['Postman Tōma','delivers the post: collections 10:30 and 16:30']]},
+ {home:'kitahama-4',address:'4 Kitahama',members:[['Postman Tōma','runs the post office and the round: collections 10:30 and 16:30']]},
  {home:'kitahama-5',address:'5 Kitahama',members:[],toLet:true},
  // Nishi-machi, inside the seawall.
  {home:'higa',address:'Higa house, Nishi-machi',members:[['Grandmother Higa','retired; keeps the verandah and knows every ferry by its horn'],['Mrs Higa','the bandai at Umi-no-yu'],['比嘉 けんた','pupil, 5・6年']]},
@@ -37,7 +37,7 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'kamiya',address:'Kamiya house, east back',members:[['Mrs Kamiya','retired post-office clerk; gateball every afternoon']]},
  // Above the shops.
  {home:'nakamura',address:'Above 仲村ぜんざい',members:[['Mrs Nakamura','makes shaved ice and zenzai'],['仲村 まい','pupil, 5・6年']]},
- {home:'shimabukuro',address:'Above the power station',members:[['Mr Shimabukuro','runs the power station']]},
+ {home:'shimabukuro',address:'Above the post office',members:[['Mr Shimabukuro','runs the power station at the town hall']]},
  {home:'arakaki',address:'Above 新垣菓子店',members:[['Mr Arakaki','gateball referee; fries the sata andagi at dawn'],['新垣 りょう','pupil, 5・6年']]},
  {home:'yonamine',address:'Above 与那嶺鮮魚店',members:[['Mrs Yonamine','sells fish from the morning boats'],['Yonamine-sensei','teaches the 5・6年 at the town hall']]},
 ].map(h=>Object.freeze({...h,members:Object.freeze(h.members.map(([name,purpose])=>Object.freeze({name,purpose})))})));

@@ -256,10 +256,11 @@ function buildPromenade(kit,solid,{anchor,onAction}){
 const SHOPS=Object.freeze({
  nakamura:{interior:'zenzai',jp:'仲村ぜんざい',en:'Nakamura · shaved ice & zenzai',bg:'#f6efd9',accent:'#2f7fa8',mark:'氷',upright:'ぜんざい',uprightBg:'#2f7fa8',
   buy:{label:'Buy a zenzai',title:'Nakamura Zenzai · 仲村ぜんざい',cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'}},
- // The island's power station: two diesel sets behind a roller shutter where the
- // barber used to be. Fuel comes in by tanker to the oil jetty and up by truck.
- shimabukuro:{interior:'generator',awning:false,jp:'港町発電所',en:'Minato power station · diesel',bg:'#e6ecef',accent:'#c99a1c',mark:'電',upright:'発電',uprightBg:'#2f4f5a',
-  inspect:{label:'Look in at the generators',title:'Minato Power Station · 港町発電所',text:'Two diesel generator sets, green and yellow, each the length of a kei truck, thudding away behind the open shutter. A switchboard of black dials and red lamps runs along the back wall; the needles sit on 6,600 volts and 50 cycles. The day tank by the door holds a night\'s fuel. Mr Shimabukuro keeps a logbook on a clipboard and a radio tuned to the weather. When the tanker comes in to the oil jetty, he fetches the diesel up in the truck.'}},
+ // The post office, in the shop-house that was the barber's and then, briefly, the
+ // power station before that moved to the town hall grounds. Postman Tōma's round starts
+ // and ends here; Mr Shimabukuro still rents the flat upstairs.
+ shimabukuro:{interior:'post',jp:'港町郵便局',en:'Minato post office',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:'郵便',uprightBg:'#c8102e',
+  inspect:{label:'Look into the post office',title:'Minato Post Office · 港町郵便局',text:'A counter with a brass scale, a rack of forms, the savings-book window and a wall of pigeonholes, one for every household on the island. Collections at 10:30 and 16:30. The mail goes over on the morning ferry and comes back on the afternoon one; a parcel from Naha takes two days, from Tokyo four.'}},
  'higa-saketen':{interior:'liquor',jp:'比嘉酒店',en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:'泡盛',uprightBg:'#8a3b2e',
   buy:{label:'Buy a bottle of awamori',title:'Higa Liquor · 比嘉酒店',cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Mr Higa will not sell you however you ask. He wraps a miniature in newspaper and tells you to keep it for a guest.'}},
  arakaki:{interior:'sweets',jp:'新垣菓子店',en:'Arakaki sweets · sata andagi',bg:'#fbf1d8',accent:'#2d6f63',upright:'菓子',uprightBg:'#2d6f63',
@@ -307,7 +308,7 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
  }
  kit.sign(poster({title:'♨ 海の湯',lines:['UMI-NO-YU','¥300 · 10:00–22:00','この先 →'],band:'#2f6f8a'}),.7,.98,EAST_ROW.minX+.2,1.7,L.minZ+.12,{ry:0,name:'onsen lane sign'});
  potPlant(kit,EAST_ROW.minX+.3,L.maxZ-.5,{seed:31});potPlant(kit,EAST_ROW.minX+.3,L.minZ+.5,{seed:32});
- // A vending machine against the power station's end wall, facing the lane, and bicycles parked by it.
+ // A vending machine against the post office's end wall, facing the lane, and bicycles parked by it.
  vending(EAST_ROW.minX+1.3,L.minZ+.62,0);
  bicycle(kit,EAST_ROW.minX+3,L.minZ+.55,{ry:0});
  solid({id:'bicycle',x:EAST_ROW.minX+3,z:L.minZ+.55,w:1.4,d:.4,height:1.1});

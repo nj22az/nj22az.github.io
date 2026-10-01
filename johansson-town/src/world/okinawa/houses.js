@@ -349,26 +349,16 @@ function shopInterior(kit,kind,{open,back,D,r,stock}){
   for(const x of [-open*.7,0])kit.cyl(.09,.06,.1,x,1.05,back+1.35,0xdfeef2,{segments:8,finish:'gloss'});
   for(const x of [open*.45]){kit.cyl(.35,.35,.05,x,.75,D-1.4,0xe8e2d0,{segments:14});kit.cyl(.05,.05,.72,x,.37,D-1.4,0x6d7478,{segments:6});
    for(const dz of [-.55,.55])kit.cyl(.16,.16,.45,x,.23,D-1.4+dz,0xc0392b,{segments:10});}
- }else if(kind==='generator'){
-  // Two diesel sets end-on to the street, the switchboard along the back wall, the
-  // day tank by the opening, and the exhaust stack through the roof. Lit inside, so
-  // the station glows at night like everything else that never closes.
-  for(const x of [-open*.48,open*.48]){
-   kit.box(1.1,.25,2.5,x,.13,back+1.55,0x5d6265);
-   kit.box(.95,1.05,1.7,x,.78,back+1.9,0x3f6f4a);
-   kit.box(.98,.85,.7,x,.68,back+.75,0xd9b23a);
-   for(let k=0;k<5;k++)kit.box(.9,.04,.02,x,.4+k*.14,back+.39,0x2b2b2b);
-   kit.box(.3,.3,.3,x,1.45,back+2.2,0x5d6265);
-   kit.cyl(.08,.08,1.6,x,2.3,back+2.3,0x8e8a80,{segments:8});
-  }
-  kit.box(open*2-.4,1.7,.3,0,1.05,back+.18,0x56646a);
-  for(let i=0;i<6;i++){const x=-open+.55+i*(open*2-1.1)/5;
-   kit.cyl(.09,.09,.03,x,1.45,back+.34,0xf4f1ea,{segments:12,rx:Math.PI/2,finish:'glow'});
-   kit.box(.07,.07,.03,x,1.15,back+.34,i%3?0x3fa35a:0xd8342c,{finish:'glow'});}
-  kit.cyl(.35,.35,1.1,open-.3,.55,D-.5,0xb8bec0,{segments:12});
-  kit.box(.5,.35,.03,open-.3,1.55,D-.2,0xe0b93a);
-  kit.cyl(.16,.18,2.6,-open*.48,6.1+1.0,back+.6,0x6f7579,{segments:10});
-  kit.cyl(.2,.2,.12,-open*.48,6.1+2.3,back+.6,0x3a3d3f,{segments:10});
+ }else if(kind==='post'){
+  // The counter with its glass screen and brass scale, the wall of pigeonholes behind,
+  // the form rack, and the round red post box out on the pavement.
+  counter(0,open*1.6,0x6d5a48);
+  kit.box(open*1.6,.5,.03,0,1.25,back+.95,0xcfe6ea,{finish:'gloss'});
+  kit.box(.3,.1,.25,-open*.4,1.06,back+1.2,0xc9a64a);
+  for(let row=0;row<5;row++)for(let col=0;col<Math.floor(open*2/.3);col++)kit.box(.26,.22,.05,-open+.3+col*.3,1.1+row*.26,back+.12,row%2?0xd8cfb8:0xe6dcc4);
+  kit.box(.5,1.2,.25,-open+.4,.6,D-1.2,0x8a6a4a);
+  kit.cyl(.22,.22,1.1,open+.25,.55,D+.35,0xc8102e,{segments:14});kit.sphere(.22,open+.25,1.1,D+.35,0xc8102e,{sy:.5});
+  kit.box(.32,.04,.06,open+.25,.9,D+.58,0x2b2b2b);
  }else if(kind==='fish'){
   // A sloped counter of crushed ice with the day's fish laid on it, out to the street.
   kit.box(open*2-.2,.85,1.1,0,.43,D-.9,0xb8bec0,{finish:'metal'});
