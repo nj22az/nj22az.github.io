@@ -34,16 +34,18 @@ export const FERRY_BERTH=Object.freeze({
  * schedules that walked people to the bus walk them here.
  */
 export const FERRY_TERMINAL=Object.freeze({
- id:'ferry-terminal',x:-7.3,z:-44.2,
- minX:-8.4,maxX:-3.7,minZ:-48,maxZ:-42.8,
+ // East of the pier's root, between it and the harbour office: it used to be a booth
+ // in front of the warehouse door.
+ id:'ferry-terminal',x:7.1,z:-47.3,
+ minX:4.7,maxX:9.5,minZ:-49.3,maxZ:-43.6,
  /** The gangway's foot on the pier, which is where the queue starts. */
  queue:Object.freeze([PIER_WEST+.6,FERRY_BERTH.gangwayZ]),
- /** Where somebody waiting stands: by the quay bench beside the booth, off the pier. */
- platform:Object.freeze([-5.8,-44.8]),
+ /** Where somebody waiting stands: under the terminal's canopy, off the pier. */
+ platform:Object.freeze([6.4,-42.9]),
  /** Where the people it brought step onto the pier. */
  arrival:Object.freeze([PIER_WEST+.9,FERRY_BERTH.gangwayZ+.9]),
- driver:Object.freeze([-6,-46.3]),
- exit:Object.freeze([-5.8,-44.8]),
+ driver:Object.freeze([5,-43.2]),
+ exit:Object.freeze([6.4,-42.9]),
 });
 
 /** The way in: from the open sea round the breakwater's west end to the berth, bow first. */
@@ -254,22 +256,33 @@ export function buildFerryTerminal({parent,colliders,register=()=>{},onAction=()
  const cyl=(r,hgt,pos,material)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,hgt,10),material);m.position.set(...pos);m.castShadow=!!shadows;group.add(m);return m;};
  const anchor=(pos,text,fn)=>{const a=new THREE.Object3D();a.position.set(...pos);group.add(a);register(a,text,fn);return a;};
  const y=GROUND_LAYER.apron;
- // The ticket booth: a cream box with a teal band and its window toward the pier. It
- // stands where the quay's crate stack stood; the quay bench beside it is the waiting room.
- const bx=T.x,bz=T.z;
- box([1.9,2.3,1.9],[bx,y+1.15,bz],cream);
- box([1.96,.3,1.96],[bx,y+2.1,bz],teal);
- box([2.3,.1,2.3],[bx,y+2.36,bz],timber);
- box([.05,.7,1.1],[bx+.96,y+1.35,bz],glass);
- box([.3,.06,1.1],[bx+1.1,y+.98,bz],timber);            // the ticket counter
- colliders.push({id:'ferry-booth',x:bx,z:bz,w:2,d:2,height:2.4});
- for(const dz of [-.8,.8]){const bulb=cyl(.09,.14,[bx+1.05,y+2.22,bz+dz],lampMat);lamps.push(bulb);}
+ // The terminal: a small concrete building on the quay east of the pier's root, the
+ // ticket office at its west end with the window on the pier, the waiting room behind
+ // glass, and a canopy on posts along the front where people stand for the boarding
+ // call. The name goes along the roof so it reads from the ferry coming in.
+ const W=T.maxX-T.minX,D=-45.3-T.minZ,cx=(T.minX+T.maxX)/2,cz=(T.minZ+(-45.3))/2,H=3;
+ box([W,H,D],[cx,y+H/2,cz],cream);
+ box([W+.1,.35,D+.1],[cx,y+H-.2,cz],teal);
+ box([W+.5,.14,D+2.2],[cx,y+H+.07,cz+.85],timber);                  // roof slab and canopy
+ for(const x of [T.minX+.3,T.maxX-.3])box([.14,H,.14],[x,y+H/2,-43.75],steel);
+ box([W-1.6,1.5,.06],[cx+.6,y+1.45,-45.27],glass);                    // the waiting room's glass front
+ box([.06,1.6,.06],[cx-.3,y+1.45,-45.24],steel);
+ box([.9,2.1,.06],[T.minX+1,y+1.05,-45.27],teal);                      // the door
+ box([.05,.7,1.4],[T.minX-.02,y+1.35,cz],glass);                       // the ticket window, on the pier
+ box([.35,.06,1.4],[T.minX-.2,y+.98,cz],timber);
+ colliders.push({id:'ferry-terminal',x:cx,z:cz,w:W,d:D,height:3.2});
+ for(const x of [T.minX+.3,T.maxX-.3])colliders.push({id:'ferry-canopy-post',x,z:-43.75,w:.2,d:.2,height:3});
+ // A bench under the canopy, and the lamps.
+ box([1.8,.08,.45],[cx+1,y+.45,-44.2],timber);for(const dx of [-.7,.7])box([.08,.42,.4],[cx+1+dx,y+.22,-44.2],steel);
+ colliders.push({id:'ferry-bench',x:cx+1,z:-44.2,w:1.9,d:.5,height:.5});
+ for(const x of [T.minX+1.2,T.maxX-1.2]){const bulb=cyl(.1,.14,[x,y+H-.15,-44.1],lampMat);lamps.push(bulb);}
+ label('フェリーターミナル','MINATO FERRY TERMINAL',[cx,y+H+.55,-45.2],4.2,.7,0,'#e5dcc0','#2b5a78',true);
  // The sign on its pole at the pier's root, where you turn onto it.
  cyl(.07,3,[-5.4,1.5,-47.6],steel);colliders.push({id:'ferry-sign',x:-5.4,z:-47.6,w:.16,d:.16,height:3});
  label('フェリー乗り場','MINATO FERRY · 3 SAILINGS DAILY',[-5.4,3.2,-47.5],3.4,.62,0,'#e5dcc0','#2b5a78',true);
- anchor([bx+1.2,1.1,bz],'Read the ferry timetable',()=>onAction('bus'));
- anchor([-4.7,1,-43.9],'Wait for the ferry',()=>onAction('bus'));
- anchor([-5.4,1,-47.1],'Look out for the ferry',()=>onAction('inspect','Minato ferry','The ferry is the only way on or off the island: three sailings a day, round the breakwater to the mainland and back. Tickets at the booth; the punch cards are sold at Sakura.'));
+ anchor([T.minX-.6,1.1,cz],'Read the ferry timetable',()=>onAction('bus'));
+ anchor([cx+1,1,-43.6],'Wait for the ferry',()=>onAction('bus'));
+ anchor([-5.4,1,-47.1],'Look out for the ferry',()=>onAction('inspect','Minato ferry','The ferry is the only way on or off the island: three sailings a day, round the breakwater to the mainland and back, cars and trucks on the deck. Tickets at the terminal; the punch cards are sold at Sakura.'));
  const place={id:T.id,title:'Minato Ferry Terminal',jp:'フェリー乗り場',sub:'ARRIVALS · DEPARTURES',x:T.x,z:T.z,line:'Three sailings a day to the mainland from the outer pier.',
   door:[T.platform[0],0,T.platform[1]],exitPosition:[T.platform[0],0,T.platform[1]]};
  const departures=[];

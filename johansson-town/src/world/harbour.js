@@ -259,12 +259,16 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     obstacle(x,z,cols*.78,.9);
   }
   // On the island the ferry's ticket booth stands where the west stack was.
-  if(!peninsulaActive())crateStack(-7.3,-44,2,3);crateStack(7.2,-46.2,3,2);
+  // On the island the ferry terminal stands where the second stack was.
+  if(!peninsulaActive()){crateStack(-7.3,-44,2,3);crateStack(7.2,-46.2,3,2);}
 
   // Fishing-net drying rack.
   for(const x of [-10.2,-7.9])cyl(.06,2.4,[x,1.3,-46.4],0x655747);beam([-10.2,2.45,-46.4],[-7.9,2.45,-46.4],.055,0x655747);
   for(let x=-9.95;x<-8.1;x+=.22)beam([x,.5,-46.38],[x,2.32,-46.38],.012,0x65736f);obstacle(-9.05,-46.4,2.5,.5);
 
+  // Period service kei-truck. On the island the ferry terminal stands here, and the town
+  // has its own trucks (the town hall's, and the ones the car ferry brings).
+  if(!peninsulaActive()){
   // Period service kei-truck — original procedural model, not a branded vehicle.
   const truck=new THREE.Group();truck.position.set(6.2,.12,-42.3);truck.rotation.y=.06;group.add(truck);
   directBox([1.55,.52,2.8],[0,.47,.15],0xd7d4c6,truck,[0,0,0],true);directBox([1.5,1.25,1.18],[0,1.15,-.73],0xdedbcf,truck,[0,0,0],true);directBox([1.28,.52,.055],[0,1.35,-1.335],0x385965,truck);
@@ -272,6 +276,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const x of [-.69,.69])for(const z of [-.88,1.03]){const wheel=directMesh(new THREE.TorusGeometry(.25,.09,7,16),material(0x252b2c),truck,[x,.38,z],[0,Math.PI/2,0]);wheel.castShadow=shadows;}
   box([.3,.13,.08],[5.75,.62,-40.72],0xb36b4b);box([.3,.13,.08],[6.65,.62,-40.72],0xe5cf8c);obstacle(6.2,-42.3,1.8,3.2);
 
+  }
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
   directBox([1.15,1.55,.85],[8.7,.88,-36.8],0xd8d8cc,group,[0,0,0],true);label('氷','ICE',[8.7,1.85,-36.35],.78,.5,0,'#dde1d7','#37636a');obstacle(8.7,-36.8,1.2,.9);
 
