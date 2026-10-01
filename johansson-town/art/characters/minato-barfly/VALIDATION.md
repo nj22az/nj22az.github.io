@@ -1,54 +1,58 @@
-# Local validation — 1 October 2026
+# Acceptance repair — 1 October 2026
 
-PR #111 was reapplied without conflicts to main `3557d778124b45746c2ae7cc7ee7af7ccc9f3516`, a descendant of the requested `019bc9a2e51f90904e1e1dc0c11be0b8d04abcae`. All original three files were absent from main. No live source, model manifest, save keys, schedule or runtime bundle was changed.
+Continued the validated PR #111 source at `6f31da1e41fb094370f4875c026e3596b21880d8`, already reapplied to `3557d778124b45746c2ae7cc7ee7af7ccc9f3516`. No second rebase, live registration, model manifest, save, schedule, service implementation or runtime bundle change was made.
 
-**Decision: retain draft; do not integrate this model.** Successful generation closes the old Blender dependency gap, but does not make the asset production-ready.
+**Decision: retain draft. Do not ship the bespoke model.** Technical animation/export checks pass. Visual acceptance remains incomplete, and isolated Chromium measurements do not establish whole-town performance on a physical phone.
 
-## Repairs and verified checks
+## Corrected failures
 
-- Executed locally with Blender Python `bpy` 4.2.0. Fixed four missing armature arguments that previously stopped generation; switched the preview to CPU Cycles for headless rendering.
-- Corrected the audit to examine each eye on its own side, require both eye meshes and check actual nonzero vertex weights rather than vertex-group names alone.
-- Corrected NLA track names so the GLB exports `Barfly_Drink_Loop` and `Barfly_Sleep_Loop`; removed unnecessary 100-fold review-strip repetition.
-- Built editable Blender source, PNG preview, skinned GLB and passing rig audit. GLB: 763,928 bytes, 9,001 exported vertices, 115 primitives/skinned meshes, 51 bones.
-- All 28 finger chains retain effective GLB weights. Individually rotating each finger in Blender moves its weighted geometry; see `review/deformation-review.json`.
-- Smile, Frown, JawOpen and left/right Blink targets have nonzero deltas in Blender and in the exported GLB (including sparse accessors). Both eye pairs have their correct blink targets. Control presence and motion are verified; clean facial expression appearance is not approved.
-- Both clips survive export, with 153 channels and duration approximately 1.042 seconds each.
-- The town's bundled Three.js GLTFLoader parses the GLB. Its AnimationMixer produces finite deformed vertices across seven samples at 02:59, 03:00, 09:59, 10:00, evening and midnight. The actual Minato guest attachment and venue service keep the actor in his existing seat, switch Drink/Sleep at the existing boundaries and never open a ledger or charge him. See `review/runtime-review.json`.
-- Four new export-audit regressions pass, including rejection of zero finger weights, inert morphs and incorrect clip names.
+- The drink chain is solved against a mouth contact target and baked to the existing arm/hand bones. The glass rim is now 0.0041 m from the mouth in Blender at frames 37–61, versus the previous approximately 0.598 m glass separation. Three.js exported skinning measures 0.0075 m to the amber cup surface during contact.
+- Both clips remain seated for their entire approximately 6.04-second loop; sleep breathes gently instead of returning upright. All four exported eye meshes retain closed blink morphs at start, middle, end and across repeated loop boundaries. Exported sleep head-centre excursion is approximately 0.00165 m.
+- Fingers form contiguous phalanges around the cup, with a visible rim, foam and base. Upper arm, elbow and forearm geometry now meet at bone joints, including during the sleep pose.
+- The thigh and shin now have distinct weighted geometry with an overlapping knee; the disconnected floating shoes from the original seated render are removed. The high bench deliberately leaves feet above the floor.
+- Oversized overlapping collar blocks were replaced with small flat lapels; raised shirt buttons were replaced with flat diamond motifs. These remove the previous oversized obstruction but do not yet establish an acceptable open-neck collar.
+- Rigid components are consolidated by material before export. **115 → 15 skinned primitives**, 710,120 bytes and 9,166 exported vertices. Morph-bearing head/eyes remain separate to preserve their facial controls and animation tracks. A regression rejects exports exceeding the 16-primitive candidate budget; this budget is not a phone-performance approval.
 
-## Failed acceptance gates
+## Preserved and verified
 
-![Neutral review](review/minato-barfly-review.webp)
+The regenerated audit passes with the same 51 bones, all 28 effectively weighted finger bones and five nonzero facial targets. Each finger still deforms independently after consolidation. Both expected clip names survive export, each with 158 channels including eye morph animation.
 
-![Drink pose at frame 13](review/Barfly_Drink_Loop.webp)
+The Three.js CPU guest/service harness passes all seven previous schedule samples: permanent seating, free beer and 03:00–10:00 sleep boundaries remain intact. The new exported-animation audit passes contact, persistent closed eyes, loop continuity, finite geometry and primitive budget checks. Five export regression tests pass. The existing four focused gameplay files remain 19 pass / 1 failure: the previously established unchanged-main `resident-prop-beer` expectation in `resident-life`.
 
-![Sleep pose at frame 13](review/Barfly_Sleep_Loop.webp)
+Local Blender Python 4.2 produced complete native scene, GLB, renders and passing audit. The initial final build and one repeat subsequently segfaulted during interpreter shutdown (exit 139), after export and audit completion. Both produced passing audit JSON. This repeatable Python-bpy shutdown failure remains an unresolved reproducibility defect. The independent Blender scene inspection and Three.js checks succeeded on those outputs. Native Blender CLI/Actions reproducibility remains to be confirmed with an assigned runner; no missing optional Draco library is required for this uncompressed export.
 
-- The drink hand/glass remains at waist level: the nearest glass vertex is approximately **0.598 m from the mouth** at the drink pose. The glass is an opaque amber cylinder; it lacks a convincing rim and grip.
-- Both clips interpolate from an upright/rest pose to a brief seated pose and back every 1.042 seconds. The sleep pose keeps the eyes open and returns upright; it is unsuitable for continuous overnight sleep.
-- Legs are single rigid thigh-weighted forms, with shoes on separate foot bones; the seated preview exposes floating feet and gaps. Floor-to-shoe clearance alone is not a failure for a high stool, but this geometry does not establish clean knee/shin deformation or seat contact.
-- The oversized cream collar overlaps the shirt, the leaf print appears as raised buttons and the hair details protrude. These render observations do not meet the requested visual standard.
-- There are 115 separate single-primitive skinned meshes. That is a substantial draw-call risk for one phone actor; no measured WebGL frame-rate or renderer call comparison is claimed. Consolidation and material reduction are required before performance approval.
-- The runtime neutral height measured at a drink sample is approximately 1.737 m; the source's nominal 1.72 m is not an exact measured height.
+## Render evidence and remaining visual defects
 
-## Browser and existing test limitations
+![Drink](review/Barfly_Drink_Loop.webp)
 
-The isolated browser harness was attempted with local Playwright Chromium at desktop 1280 and phone 390 widths. Chromium aborted before creating a page: `process_singleton_posix.cc: socket() failed: Operation not permitted`. **No WebGL render, phone frame-rate measurement or browser screenshot passed.** `review_browser.mjs` is retained for a permitted browser environment. CPU loading is not a substitute for this gate.
+![Sleep](review/Barfly_Sleep_Loop.webp)
 
-The four existing focused files (`living-town`, `resident-life`, `meal-motion`, `izakaya-beer`) yielded **19 passing / 1 failing** tests. The failure is `resident-life`: `room.getObjectByName('resident-prop-beer')` is absent after the finished meal. It reproduces in a separate, unchanged `3557d778` main worktree. The Barfly's permanent seat, free beer and overnight sleep tests pass. This PR does not change the unrelated service test or service implementation.
+![Phone drink](review/minato-390-1100.webp)
+
+![Phone sleep](review/minato-390-180.webp)
+
+- **Collar:** the small cream triangles still read as decoration on the chest rather than lapels meeting an open neckline. This is a visual rejection, despite removing the previous overlapping collar blocks.
+- **Cup and sip:** the fingers now surround the cup and rim contact is close, but the cup is still opaque amber and held upright through the sipping hold. It needs a convincing transparent vessel and sip tilt without losing contact or grip.
+- **Seated clothing:** thigh/knee/shin continuity is repaired, but the knee and trouser forms retain conspicuous hard junctions; the torso/belly shirt boundary also remains visible in the close phone render. Clean clothing deformation is not approved.
+
+## Chromium acceptance
+
+Chromium headless shell now launches without the earlier process-singleton socket failure. The harness serves a proper root document, so relative interior asset URLs resolve correctly, and views the front of the exported character.
+
+Real WebGL ran at desktop 1280×720/DPR 1 and phone 390×720/DPR 2 with mobile/touch emulation. Both loaded the actual Minato interior and candidate GLB, rendered drink/sleep poses and preserved the 03:00/10:00 service transitions. See `review/browser-review.json` for renderer calls and warmed render/animation timings. The final comparison records desktop p95 3.2 ms versus live-render baseline 0.4 ms, and phone p95 4.5 ms versus 0.5 ms; baseline rendering excludes an AnimationMixer and is not a full gameplay cost comparison. Separate pose screenshots capture exported closed eyes and cup contact, rather than a rest-frame screenshot alone.
+
+The candidate adds 13 renderer calls versus the live avatar in this isolated view (desktop total 23 versus 10; phone total 22 versus 9). Timing covers 120 synchronous render/animation samples after warm-up, with GPU completion; it is **not** a measured sustained whole-town frame rate or physical iPhone acceptance. GPU/CPU behaviour in this environment cannot establish physical phone approval. No bespoke GLB is registered or shipped.
 
 ## Reproduction
-
-From the repository root:
 
 ```sh
 blender --background --factory-startup --python johansson-town/art/characters/minato-barfly/build_barfly.py -- --output /tmp/barfly
 blender --background --factory-startup --python johansson-town/art/characters/minato-barfly/inspect_barfly.py -- --output /tmp/barfly
 node johansson-town/art/characters/minato-barfly/validate_glb.mjs /tmp/barfly/minato-barfly.glb
+node johansson-town/art/characters/minato-barfly/review_animation.mjs /tmp/barfly
 node johansson-town/art/characters/minato-barfly/review_runtime.mjs /tmp/barfly
 node --test johansson-town/tests/barfly-asset-validation.test.mjs
-# Requires Playwright, CODEX_PRIMARY_RUNTIME_NODE_MODULES and a permitted Chromium executable:
-TOWN_CHROMIUM_PATH=/path/to/chrome node johansson-town/art/characters/minato-barfly/review_browser.mjs /tmp/barfly
+TOWN_CHROMIUM_PATH=/path/to/headless_shell node johansson-town/art/characters/minato-barfly/review_browser.mjs /tmp/barfly
 ```
 
-For a Python bpy installation, replace the Blender command prefix with its Python executable and retain the script path and `-- --output` arguments. The review JSON and images are committed as evidence; the rejected GLB is reproducible and is not shipped to visitors. Actions now runs the deformation, export and CPU runtime checks and uploads their outputs when a runner is available. Visual approval remains manual.
+For Python bpy, replace the Blender command prefix with its Python executable. Chromium additionally requires Playwright through `CODEX_PRIMARY_RUNTIME_NODE_MODULES`. The PR contains source and review evidence, not the rejected generated runtime asset.

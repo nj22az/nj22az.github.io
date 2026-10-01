@@ -16,7 +16,7 @@ from pathlib import Path
 import bpy
 from mathutils import Vector
 
-VERSION = "1.0.1"
+VERSION = "1.1.0"
 
 
 def args_after_dashes():
@@ -97,6 +97,17 @@ def cylinder_between(name, a, b, radius, material, bone, armature, vertices=10):
     return smooth(o, material, bone, armature)
 
 
+def digit_points(side, finger, spread):
+    sign = -1 if side == "L" else 1
+    segments = 2 if finger == "thumb" else 3
+    if side == "R":
+        z = {"index":.985,"middle":.96,"ring":.935,"pinky":.91,"thumb":.94}[finger]
+        angles = [210,255,300] if finger == "thumb" else [150,95,40,-15]
+        return [(.51+.057*math.cos(math.radians(a)), -.09+.057*math.sin(math.radians(a)), z) for a in angles]
+    base = (sign*.48+sign*spread, -.045, .925)
+    return [(base[0]+sign*.014*i,base[1]-.018*i,base[2]-.018*i) for i in range(segments+1)]
+
+
 def make_rig():
     data = bpy.data.armatures.new("Barfly | full body, face and fingers")
     arm = bpy.data.objects.new("Barfly_Rig", data)
@@ -133,11 +144,10 @@ def make_rig():
         bone("hand."+side, (x*0.47,-0.01,0.98), (x*0.48,-0.04,0.91), "forearm."+side, True)
         for finger, spread in (("thumb",0.105),("index",0.07),("middle",0.025),("ring",-0.02),("pinky",-0.065)):
             segments = 2 if finger == "thumb" else 3
-            base = (x*0.48 + x*spread, -0.045, 0.925)
+            points = digit_points(side, finger, spread)
             for i in range(segments):
                 name = f"finger.{finger}.{side}.{i+1}"
-                start = (base[0] + x*0.014*i, base[1]-0.018*i, base[2]-0.018*i)
-                end = (start[0] + x*0.022, start[1]-0.008, start[2]-0.026)
+                start, end = points[i:i+2]
                 parent = f"hand.{side}" if i == 0 else f"finger.{finger}.{side}.{i}"
                 bone(name, start, end, parent)
     bpy.ops.object.mode_set(mode="OBJECT")
@@ -206,27 +216,31 @@ def build(output):
     # Broad, slightly stooped 1980s regular; default stance keeps every limb visible for review.
     uv("Torso | broad shirt", (0,0,1.28), (0.33,0.20,0.34), SHIRT, "chest", arm, 20, 12)
     uv("Belly | shirt", (0,-0.015,1.08), (0.30,0.205,0.25), SHIRT, "spine", arm, 20, 12)
-    cube("Open collar", (0,-0.19,1.48), (0.24,0.035,0.20), CREAM, "chest", arm, 0.025)
     # Two lapels imply the open-neck shirt without obscuring the face.
     for s in (-1,1):
-        lapel = cube("Collar lapel", (s*0.052,-0.213,1.43), (0.085,0.025,0.18), CREAM, "chest", arm, .012)
-        lapel.rotation_euler[1] = s*0.25
+        mesh=bpy.data.meshes.new("Tailored lapel")
+        mesh.from_pydata([(s*.035,-.166,1.48),(s*.105,-.158,1.47),(s*.075,-.19,1.405)],[],[(0,1,2) if s==1 else (2,1,0)])
+        lapel=bpy.data.objects.new("Collar lapel",mesh);scene.collection.objects.link(lapel)
+        smooth(lapel,CREAM,"chest",arm)
     # Loose trousers and shoes.
     uv("Trousers | hips", (0,0,0.91), (0.245,0.16,0.17), TROUSERS, "pelvis", arm)
     for s, side in ((-1,"L"),(1,"R")):
-        uv("Trouser leg", (s*.12,0,0.57), (.125,.14,.36), TROUSERS, "thigh."+side, arm)
+        cylinder_between("Trouser thigh", (s*.105,0,.91), (s*.12,0,.53), .115, TROUSERS, "thigh."+side, arm, 16)
+        uv("Trouser knee", (s*.12,0,.53), (.115,.115,.115), TROUSERS, "shin."+side, arm)
+        cylinder_between("Trouser shin", (s*.12,0,.53), (s*.12,-.01,.14), .095, TROUSERS, "shin."+side, arm, 16)
         uv("Shoe", (s*.12,-.08,.095), (.105,.21,.075), TROUSERS, "foot."+side, arm)
         uv("Sleeve", (s*.32,0,1.36), (.145,.18,.16), SHIRT, "upperarm."+side, arm)
-        cylinder_between("Forearm", (s*.40,0,1.20), (s*.47,-.01,.98), .075, SKIN, "forearm."+side, arm)
+        cylinder_between("Upper arm", (s*.27,0,1.39), (s*.40,0,1.17), .075, SKIN, "upperarm."+side, arm)
+        uv("Elbow", (s*.40,0,1.17), (.075,.075,.075), SKIN, "forearm."+side, arm)
+        cylinder_between("Forearm", (s*.40,0,1.17), (s*.47,-.01,.98), .075, SKIN, "forearm."+side, arm)
         uv("Hand", (s*.48,-.03,.93), (.065,.045,.08), SKIN, "hand."+side, arm)
         # Each phalanx is a separate weighted mesh so all 28 finger joints deform independently.
         for finger, spread in (("thumb",.105),("index",.07),("middle",.025),("ring",-.02),("pinky",-.065)):
             segs = 2 if finger == "thumb" else 3
-            base = (s*.48 + s*spread, -.045, .925)
+            points = digit_points(side, finger, spread)
             for i in range(segs):
                 bname = f"finger.{finger}.{side}.{i+1}"
-                start=(base[0]+s*.014*i,base[1]-.018*i,base[2]-.018*i)
-                end=(start[0]+s*.022,start[1]-.008,start[2]-.026)
+                start,end=points[i:i+2]
                 cylinder_between("Digit | "+bname,start,end,.016 if finger!="pinky" else .013,SKIN,bname,arm,8)
                 uv("Knuckle | "+bname,end,(.016,.015,.016),SKIN,bname,arm,10,6)
     # Neck and head.
@@ -262,7 +276,8 @@ def build(output):
             eye.shape_key_add(name="Basis")
             blink=eye.shape_key_add(name="Blink."+side)
             for vertex in eye.data.vertices:
-                blink.data[vertex.index].co.z *= .08
+                blink.data[vertex.index].co.z *= .02
+                blink.data[vertex.index].co.y += .05
         uv("Eyebrow", (s*.067,-.145,1.723), (.047,.018,.012), HAIR, "brow."+side, arm, 12, 6)
         uv("Eyelid", (s*.067,-.154,1.686), (.040,.010,.008), SKIN, "eyelid."+side, arm, 12, 6)
     uv("Nose", (0,-.16,1.65), (.029,.035,.042), SKIN, "head", arm, 12, 8)
@@ -274,40 +289,92 @@ def build(output):
     uv("Hair cap", (0,.005,1.80), (.172,.15,.078), HAIR, "head", arm, 20, 8)
     for i in range(7):
         x=(i-3)*.042
-        uv("Silver hair fleck", (x,-.098,1.823+0.012*(1-abs(i-3)/3)), (.012,.025,.018), HAIR_LIGHT if i%2==0 else HAIR, "head", arm, 10, 6)
+        uv("Silver hair fleck", (x,-.098,1.823+0.012*(1-abs(i-3)/3)), (.009,.006,.007), HAIR_LIGHT if i%2==0 else HAIR, "head", arm, 10, 6)
     # Repeating restrained leaf/diamond print on the front of the shirt.
     for row in range(4):
         z=1.12+row*.09
         for col in range(4):
             x=(col-1.5)*.115
-            y=-.192-(0.025 if abs(x)<.22 else 0)
-            p=uv("Aloha print", (x,y,z), (.018,.008,.028), LEAF if (row+col)%2 else CREAM, "chest", arm, 8, 5)
-            p.rotation_euler[1] = .4 if (row+col)%2 else -.4
+            y=-.20*math.sqrt(max(.05,1-(x/.33)**2-((z-1.28)/.34)**2))-.003
+            mesh=bpy.data.meshes.new("Flat shirt motif")
+            mesh.from_pydata([(x-.018,y,z),(x,y,z-.028),(x+.018,y,z),(x,y,z+.028)],[],[(0,1,2),(0,2,3)])
+            motif=bpy.data.objects.new("Aloha print",mesh);scene.collection.objects.link(motif)
+            smooth(motif,LEAF if (row+col)%2 else CREAM,"chest",arm)
     # Brass wristwatch on left wrist.
     watch = uv("Wristwatch | case", (-.476,-.025,.98), (.036,.02,.035), GOLD, "hand.L", arm, 12, 8)
     cube("Wristwatch | strap", (-.476,-.023,.98), (.09,.012,.018), GOLD, "hand.L", arm, .003)
     # Prop: a simple beer glass weighted to right hand.
-    bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=.055, depth=.15, location=(.49,-.08,.92))
+    bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=.055, depth=.15, location=(.51,-.09,.95))
     glass=smooth(bpy.context.object, BEER, "hand.R", arm)
     glass.name="BeerGlass | right hand prop"
+    # Visible rim, foam and handle; all share the right-hand skin binding.
+    for name,z,radius,depth,material in [("Beer foam",1.022,.051,.012,CREAM),("Beer base",.876,.055,.009,CREAM)]:
+        bpy.ops.mesh.primitive_cylinder_add(vertices=16,radius=radius,depth=depth,location=(.51,-.09,z))
+        obj=smooth(bpy.context.object,material,"hand.R",arm);obj.name=name
+    bpy.ops.mesh.primitive_torus_add(major_segments=16,minor_segments=6,major_radius=.054,minor_radius=.005,location=(.51,-.09,1.025))
+    smooth(bpy.context.object,CREAM,"hand.R",arm).name="Beer rim"
     # Seated bar stool is a separate static prop included only in Blender review scene.
     stool_mat=mat("Stool | dark timber",(.12,.075,.045))
-    cylinder_between("Review stool post",(0,.11,.03),(0,.11,.70),.035,stool_mat,None,None)
-    bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=.23, depth=.055, location=(0,.11,.72))
+    cylinder_between("Review stool post",(0,.11,.03),(0,.11,.53),.035,stool_mat,None,None)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=.23, depth=.055, location=(0,.11,.5375))
     smooth(bpy.context.object,stool_mat,None,None)
     bpy.context.object.name="Review stool seat"
     # Animation actions: repeating drink loop and overnight seated sleep pose.
-    seated={"pelvis.location":(0,0,-.16),"thigh.L":(-1.05,0,0),"thigh.R":(-1.05,0,0),"shin.L":(1.05,0,0),"shin.R":(1.05,0,0)}
-    drink_pose={**seated,"upperarm.R":(0.45,0.10,-0.05),"forearm.R":(-0.95,0.05,0.0),"hand.R":(-0.18,0,0),"head":(0.03,0,0)}
-    sleep_pose={**seated,"spine":(0.10,0.02,0),"head":(0.28,0.02,0.03),"upperarm.L":(0.18,0,0.1),"forearm.L":(-0.22,0,0),"upperarm.R":(0.18,0,-0.1),"forearm.R":(-0.22,0,0)}
-    act_drink=add_action(arm,"Barfly_Drink_Loop",[(13,drink_pose),(25,{})])
-    act_sleep=add_action(arm,"Barfly_Sleep_Loop",[(13,sleep_pose),(25,{})])
+    seated={"pelvis.location":(0,-.15,0),"thigh.L":(-math.pi/2,0,0),"thigh.R":(-math.pi/2,0,0),"shin.L":(math.pi/2,0,0),"shin.R":(math.pi/2,0,0)}
+    # Solve the two-arm chain against the rim contact target, then bake the
+    # rotations and remove the constraint/target: no new exported bones.
+    for name,value in seated.items():
+        if name.endswith(".location"):arm.pose.bones[name[:-9]].location=value
+        else:arm.pose.bones[name].rotation_mode="XYZ";arm.pose.bones[name].rotation_euler=value
+    target=bpy.data.objects.new("Drink wrist target",None);scene.collection.objects.link(target)
+    target.location=(.005,-.066,1.410)
+    ik=arm.pose.bones["forearm.R"].constraints.new("IK");ik.target=target;ik.chain_count=2
+    bpy.context.view_layer.update()
+    rotations={}
+    for name in ["upperarm.R","forearm.R"]:
+        bone=arm.pose.bones[name]
+        local=arm.convert_space(pose_bone=bone,matrix=bone.matrix,from_space="POSE",to_space="LOCAL")
+        rotations[name]=tuple(local.to_euler())
+    hand=arm.pose.bones["hand.R"]
+    desired=arm.data.bones["hand.R"].matrix_local.copy();desired.translation=hand.matrix.translation
+    local=arm.convert_space(pose_bone=hand,matrix=desired,from_space="POSE",to_space="LOCAL")
+    rotations["hand.R"]=tuple(local.to_euler())
+    arm.pose.bones["forearm.R"].constraints.remove(ik);bpy.data.objects.remove(target,do_unlink=True)
+    drink_pose={**seated,**rotations}
+    rest_pose={**seated,"upperarm.R":(.10,0,-.08),"forearm.R":(-.25,0,0),"hand.R":(0,0,0)}
+    sleep_pose={**seated,"spine":(.10,.02,0),"head":(.28,.02,.03),"upperarm.L":(.18,0,.1),"forearm.L":(-.22,0,0),"upperarm.R":(.18,0,-.1),"forearm.R":(-.22,0,0)}
+    act_drink=add_action(arm,"Barfly_Drink_Loop",[(1,rest_pose),(37,drink_pose),(61,drink_pose),(97,rest_pose),(145,rest_pose)])
+    act_sleep=add_action(arm,"Barfly_Sleep_Loop",[(1,sleep_pose),(73,{**sleep_pose,"spine":(.115,.02,0)}),(145,sleep_pose)])
+    # Each eye's exported morph animation follows the same named NLA clips.
+    for obj in scene.objects:
+        if obj.type!="MESH" or not obj.data.shape_keys:continue
+        keys=obj.data.shape_keys
+        for clip,value in [("Barfly_Drink_Loop",0.0),("Barfly_Sleep_Loop",1.0)]:
+            keys.animation_data_create();keys.animation_data.action=None
+            for key in keys.key_blocks:
+                if not key.name.startswith("Blink."):continue
+                for frame in [1,145]:key.value=value;key.keyframe_insert(data_path="value",frame=frame)
+            action=keys.animation_data.action;action.name=obj.name+" | "+clip
+            track=keys.animation_data.nla_tracks.new();track.name=clip;track.strips.new(clip,1 if value==0 else 147,action).extrapolation="NOTHING"
+            keys.animation_data.action=None
     # Keep both actions available as named NLA clips in the interchange export.
     arm.animation_data.action = act_drink
-    track=arm.animation_data.nla_tracks.new(); track.name="Barfly_Drink_Loop"; strip=track.strips.new("Barfly_Drink_Loop",1,act_drink); strip.repeat=1
-    track2=arm.animation_data.nla_tracks.new(); track2.name="Barfly_Sleep_Loop"; strip=track2.strips.new("Barfly_Sleep_Loop",27,act_sleep); strip.repeat=1
+    track=arm.animation_data.nla_tracks.new(); track.name="Barfly_Drink_Loop"; strip=track.strips.new("Barfly_Drink_Loop",1,act_drink); strip.repeat=1;strip.extrapolation="NOTHING"
+    track2=arm.animation_data.nla_tracks.new(); track2.name="Barfly_Sleep_Loop"; strip=track2.strips.new("Barfly_Sleep_Loop",147,act_sleep); strip.repeat=1;strip.extrapolation="NOTHING"
     arm.animation_data.action=None
-    scene.frame_end=52
+    scene.frame_end=292
+    # Consolidate rigid detail meshes by material. Morph-bearing head and eyes
+    # remain separate so their five facial targets and blink tracks survive.
+    batches={}
+    for obj in list(scene.objects):
+        if obj.type=="MESH" and not obj.data.shape_keys and any(m.type=="ARMATURE" for m in obj.modifiers):
+            marker=obj.vertex_groups.new(name="part:"+obj.name);marker.add(list(range(len(obj.data.vertices))),1,"REPLACE")
+            batches.setdefault(obj.data.materials[0].name,[]).append(obj)
+    for material,objects in batches.items():
+        bpy.ops.object.select_all(action="DESELECT")
+        for obj in objects:obj.select_set(True)
+        bpy.context.view_layer.objects.active=objects[0]
+        bpy.ops.object.join();bpy.context.object.name="Barfly batch | "+material
     # Match the resident profile's stated 1.72 m height.
     for obj in scene.objects:
         if obj.type == "ARMATURE" or (obj.type == "MESH" and any(m.type=="ARMATURE" and m.object==arm for m in obj.modifiers)):

@@ -41,6 +41,7 @@ jobs:
         run: |
           node --test johansson-town/tests/barfly-asset-validation.test.mjs
           node johansson-town/art/characters/minato-barfly/validate_glb.mjs "$RUNNER_TEMP/minato-barfly/minato-barfly.glb" > "$RUNNER_TEMP/minato-barfly/glb-review.json"
+          node johansson-town/art/characters/minato-barfly/review_animation.mjs "$RUNNER_TEMP/minato-barfly"
           node johansson-town/art/characters/minato-barfly/review_runtime.mjs "$RUNNER_TEMP/minato-barfly"
       - name: Validate exported files
         run: |

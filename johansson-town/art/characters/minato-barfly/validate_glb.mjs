@@ -20,6 +20,7 @@ export function validateGLB(bytes){
  const missingMorphs=['Smile','Frown','JawOpen','Blink.L','Blink.R'].filter(k=>!morphs[k]);
  const animations=(g.animations||[]).map(a=>({name:a.name,channels:a.channels.length,duration:Math.max(...a.samplers.map(s=>values(s.input).at(-1)[0]))}));
  const missingClips=['Barfly_Drink_Loop','Barfly_Sleep_Loop'].filter(n=>!animations.some(a=>a.name===n&&a.duration>0));
- return {bytes:bytes.length,primitives,vertices,weightedFingerCount:fingers.length-missingFingerWeights.length,missingFingerWeights,missingMorphs,animations,passed:!missingFingerWeights.length&&!missingMorphs.length&&!missingClips.length,missingClips};
+ const primitiveBudgetPassed=primitives<=16;
+ return {bytes:bytes.length,primitives,primitiveBudgetPassed,vertices,weightedFingerCount:fingers.length-missingFingerWeights.length,missingFingerWeights,missingMorphs,animations,passed:primitiveBudgetPassed&&!missingFingerWeights.length&&!missingMorphs.length&&!missingClips.length,missingClips};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const report=validateGLB(await readFile(process.argv[2]));console.log(JSON.stringify(report,null,2));if(!report.passed)process.exitCode=1;}

@@ -42,4 +42,4 @@ This PR delivers a reviewable character asset. It does not replace the live town
 
 ## Current validation status
 
-Locally generated with Blender 4.2 on 1 October 2026. Rig, effective finger weights, facial targets and CPU Three.js loading pass after builder/audit repairs. Visual and animation acceptance fail; browser/phone performance is unverified. **Keep draft and do not replace the live Barfly.** See [VALIDATION.md](VALIDATION.md) for renders, measurements and reproduction commands.
+Continued the validated branch on 1 October 2026. Export, all 51 bones/28 finger weights/five facial targets, persistent sleep and drink contact pass. Consolidation reduces 115 skinned primitives to 15. Desktop and phone-sized Chromium WebGL checks now run. Collar, cup/sip presentation and clothing junctions remain visually unapproved; whole-town physical phone performance is unverified. **Keep draft and do not replace the live Barfly.** See [VALIDATION.md](VALIDATION.md) for current renders, measurements and reproduction commands.
