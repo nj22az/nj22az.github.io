@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
 import {GROUND_LAYER} from './ground-layers.js';
+import {broadleafGeometry,TREE_GREENS} from './okinawa/trees.js';
 
 // The public road ends at a dense tree line. The final segment is deliberately
 // visual-only: the Harbour Line continues beyond the trees, while the player
@@ -46,15 +47,16 @@ export function buildForestEdge({parent,colliders,register=()=>{},onAction=()=>{
  for(const side of [-1,1]){
   const verge=new THREE.Mesh(new THREE.BoxGeometry(vergeWidth,.055,roadLength+.4),vergeMat);verge.position.set(FOREST_EDGE.roadX+side*(vergeFrom+vergeWidth/2),GROUND_LAYER.grass-.0275,roadMiddle);verge.receiveShadow=!!shadows;group.add(verge);
  }
- const trunkMat=new THREE.MeshStandardMaterial({color:0x4f4031,roughness:1});
  const leafMats=[0x42634b,0x4f7650,0x5b7f53].map(color=>new THREE.MeshStandardMaterial({color,roughness:1}));
  if(!trees)return {group,road,wall:null,marker:null,busRoute:{id:'cave-path',width:MAIN_ROAD.width,surface:'gravel',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,FOREST_EDGE.roadEndZ]]}};
  const treeXs=[];
  for(let i=0;i<15;i++)treeXs.push(FOREST_EDGE.minX+.65+i*(FOREST_EDGE.maxX-FOREST_EDGE.minX-1.3)/14);
+ const treeMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9});
+ const shapes=[0,1,2].map(variant=>broadleafGeometry({variant,form:'round',greens:TREE_GREENS.hill}));
  for(const [row,zOffset] of [[0,-.18],[1,.72]])for(const [i,x] of treeXs.entries()){
-  const z=FOREST_EDGE.wallZ+zOffset+(i%3-.9)*.18,height=2.5+(i%4)*.35,radius=.72+(i%3)*.12;
-  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.2,height*.75,7),trunkMat);trunk.position.set(x,height*.375,z);trunk.castShadow=!!shadows;group.add(trunk);
-  const crown=new THREE.Mesh(new THREE.ConeGeometry(radius,height*.82,7),leafMats[(i+row)%leafMats.length]);crown.position.set(x,height*.76,z);crown.scale.y=1.18;crown.castShadow=!!shadows;group.add(crown);
+  const z=FOREST_EDGE.wallZ+zOffset+(i%3-.9)*.18,height=3.4+(i%4)*.4;
+  const tree=new THREE.Mesh(shapes[(i+row)%3],treeMat);tree.name='Forest edge tree';
+  tree.position.set(x,0,z);tree.scale.setScalar(height);tree.rotation.y=i*2.1+row;tree.castShadow=!!shadows;group.add(tree);
  }
  // Low shrubs soften both ends of the wall and make the obstruction read as
  // natural under the canopy rather than as an invisible gameplay boundary.

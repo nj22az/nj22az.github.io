@@ -9,6 +9,7 @@ import {BEACH,beachHeight} from './beach-layout.js';
 import {inKobanPlot} from './koban-layout.js';
 import {GATEBALL} from './okinawa/layout.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
+import {broadleafGeometry} from './okinawa/trees.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -40,7 +41,6 @@ export const EAST_LAWN=Object.freeze({
 export const eastLawnAt=(x,z,r=0)=>
  x>=EAST_LAWN.minX+r&&x<=EAST_LAWN.maxX-r&&z>=EAST_LAWN.minZ+r&&z<=EAST_LAWN.maxZ-r;
 
-const TREE_LEAVES=[0x44664c,0x517a52,0x5d8254];
 /** How many metres of lawn one tile of the park's grass covers. */
 const TURF_METRES=2.4;
 
@@ -174,18 +174,16 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
 
 
  // A treeline closes the north end, where the land carries on past anything built.
- const trunkMat=new THREE.MeshStandardMaterial({color:0x4f4031,roughness:1});
- const leaves=TREE_LEAVES.map(color=>new THREE.MeshStandardMaterial({color,roughness:1}));
+ const treeMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9});
+ const shapes=[0,1,2].map(variant=>broadleafGeometry({variant}));
  const treeZ=EAST_LAWN.maxZ-.6,first=EAST_LAWN.minX+1.4,last=wall.x-1.6,count=13;
  // With a gap for the school gate, which the lawn's path runs through.
  const gate=SCHOOL.gate,clear=x=>Math.abs(x-gate.x)<gate.half+.9||inKobanPlot(x,treeZ,1.1);// and the police box
  for(let i=0;i<count;i++){
-  const x=first+i*(last-first)/(count-1),z=treeZ+(i%3-1)*.45,height=2.7+(i%4)*.4,radius=.78+(i%3)*.14;
+  const x=first+i*(last-first)/(count-1),z=treeZ+(i%3-1)*.45,height=3.6+(i%4)*.45;
   if(clear(x))continue;
-  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13,.21,height*.72,7),trunkMat);
-  trunk.position.set(x,height*.36,z);trunk.castShadow=!!shadows;group.add(trunk);
-  const crown=new THREE.Mesh(new THREE.ConeGeometry(radius,height*.85,7),leaves[i%leaves.length]);
-  crown.position.set(x,height*.75,z);crown.scale.y=1.2;crown.castShadow=!!shadows;group.add(crown);
+  const tree=new THREE.Mesh(shapes[i%3],treeMat);tree.name='East lawn tree';
+  tree.position.set(x,0,z);tree.scale.setScalar(height);tree.rotation.y=i*1.7;tree.castShadow=!!shadows;tree.receiveShadow=true;group.add(tree);
  }
  const west=first-1.1,eastEnd=last+1.1,g0=gate.x-gate.half-.35,g1=gate.x+gate.half+.35;
  colliders.push({id:'east-lawn-trees',x:(west+g0)/2,z:treeZ+.35,w:g0-west,d:1.5,height:5.4},

@@ -1,5 +1,6 @@
 import {rng} from './kit.js';
 import {wallAd,WALL_ADS} from './signs.js';
+import {broadleaf} from './trees.js';
 
 /**
  * The buildings and gardens of an Okinawan harbour town, made with the kit.
@@ -264,15 +265,9 @@ export function hinpun(kit,x,z,w=2.4,{alongX=true}={}){
  return [kit.rect(x-bw/2-.05,x+bw/2+.05,z-bd/2-.05,z+bd/2+.05,1.7,'hinpun')];
 }
 
-/** A fukugi: tall, narrow, dense and glossy, planted in rows as a windbreak. */
+/** A fukugi: tall, narrow and dense, planted in rows as a windbreak. */
 export function fukugi(kit,x,z,{h=5.5,seed=5}={}){
- const r=rng(seed);
- kit.cyl(.11,.17,h*.55,x,h*.275,z,0x4a3a2c,{segments:7});
- const greens=[C.leaf,0x2a5330,0x376a3d];
- for(let i=0;i<4;i++){
-  const y=h*(.42+i*.17),rad=(1.05-i*.14)*(.9+r.next()*.2);
-  kit.sphere(rad,x+(r.next()-.5)*.25,y,z+(r.next()-.5)*.25,r.pick(greens),{sy:1.25,finish:'gloss'});
- }
+ broadleaf(kit,x,z,{h,form:'column',seed});
  return kit.rect(x-.22,x+.22,z-.22,z+.22,h,'fukugi');
 }
 
@@ -287,11 +282,7 @@ export function gajumaru(kit,x,z,{seed=6,size=1}={}){
   const a=r.next()*Math.PI*2,rad=(1+r.next()*1.6)*s;
   kit.rod([x+Math.cos(a)*rad,3.4*s,z+Math.sin(a)*rad],[x+Math.cos(a)*rad*1.05,0,z+Math.sin(a)*rad*1.05],.035,0x7a6a56,{segments:4});
  }
- for(let i=0;i<5;i++){
-  const a=i/5*Math.PI*2,rad=(1.4+r.next()*.6)*s;
-  kit.sphere((1.7+r.next()*.7)*s,x+Math.cos(a)*rad,(4+r.next()*.8)*s,z+Math.sin(a)*rad,r.pick([0x3f6b3a,0x4d7a43,0x355f33]),{sy:.62});
- }
- kit.sphere(2.2*s,x,5*s,z,0x45733e,{sy:.6});
+ broadleaf(kit,x,z,{h:6.4*s,form:'spread',seed});
  return kit.rect(x-.8*s,x+.8*s,z-.8*s,z+.8*s,5,'gajumaru');
 }
 

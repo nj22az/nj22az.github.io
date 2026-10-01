@@ -431,6 +431,7 @@ as rules:
 | ![Kitahama](amplify-audit/after-kitahama.jpg) | ![The island](amplify-audit/after-island.jpg) |
 | ![Oil jetty and tanker](amplify-audit/after-oil-jetty.jpg) | ![Car ferry](amplify-audit/after-car-ferry.jpg) |
 | ![Post office](amplify-audit/after-post-office.jpg) | ![Distribution poles](amplify-audit/after-poles.jpg) |
+| ![Broadleaf trees](amplify-audit/after-trees.jpg) | ![Clinic](amplify-audit/after-clinic.jpg) |
 
 | Request | What was built | Where |
 |---|---|---|
@@ -443,6 +444,8 @@ as rules:
 | Oil jetty and tanker | A walkable jetty on piles with a manifold, a hose crane and a pipeline to the shore fuel depot. The coastal tanker calls every third day, 08:00–15:00. | `oil-jetty.js` |
 | Less clutter | Vending machines kept at three places (Sakura, the onsen lane, the fish quay). | `harbour.js`, `quarters.js` |
 | Sewage works | Clarifiers, an aeration basin, a sludge tank and an outfall on Kitano-jima. | `airport-island.js` |
+| Prettier trees | One shared broadleaf for the whole island: a trunk that flares into roots, and a crown of rounded lobes covered in leaf shingles over a dark core, with radial normals so the toon bands sweep across it as one mass. It comes in three forms: `round` (street and lawn trees), `column` (fukugi windbreaks) and `spread` (the banyan). It replaces every cone and sphere tree, including a light build for the headland. The uploaded Tomodachi tree was used as a style reference only. | `okinawa/trees.js`, `houses.js`, `school.js`, `east-lawn.js`, `forest-edge.js`, `coyote-tunnel.js` |
+| Clinic | 診療所 in the town hall's old meeting-room bay, with its own door. Pink tiles, the couch behind a pink curtain, the drip stand, the desk with a beige monitor and an X-ray lightbox, the green patient stool, a glass medicine cabinet (habu antivenom underneath), a Landolt-ring eye chart, and scales by the door. Dr Kakazu is at her desk and is in the household registry. Built from scratch; the uploaded hospital model was a reference only. | `interiors/town-hall.js` (`buildClinic`), `school.js` |
 
 **Still open:**
 - The neighbours have homes and jobs in the registry, but they still keep to their spot rather than walking home at night. Doing that means turning them into scheduled residents.

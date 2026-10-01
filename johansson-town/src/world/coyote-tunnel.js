@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {FOREST_EDGE} from './forest-edge.js';
+import {broadleafGeometry,TREE_GREENS} from './okinawa/trees.js';
 
 /**
  * The old sea cave in the headland at the top of Main Street.
@@ -148,19 +149,21 @@ function buildHill(parent,shadows,colliders){
   const h=hillHeight(x,z);if(h<1.6)continue;
   spots.push([x,h,z,.75+rnd()*.7,rnd()]);
  }
- const cone=new THREE.ConeGeometry(1,1,7);cone.translate(0,.5,0);
- const trees=new THREE.InstancedMesh(cone,new THREE.MeshStandardMaterial({color:0xffffff,roughness:.95,flatShading:true}),spots.length);
- const trunks=new THREE.InstancedMesh(new THREE.CylinderGeometry(.09,.16,1,6),new THREE.MeshStandardMaterial({color:0x534535,roughness:1}),spots.length);
- const dummy=new THREE.Object3D(),tint=new THREE.Color();
- spots.forEach(([x,y,z,s,r],i)=>{
-  // Walking-height trunks with crowns above them leave room under the canopy.
-  dummy.position.set(x,y+1.25*s,z);dummy.scale.set(s,2.5*s,s);dummy.rotation.set(0,0,0);dummy.updateMatrix();trunks.setMatrixAt(i,dummy.matrix);
-  colliders.push({id:'headland-tree',x,z,w:.32*s,d:.32*s,height:y+6*s});
-  dummy.position.set(x,y+2.2*s,z);dummy.scale.set(1.3*s,3.8*s,1.3*s);dummy.rotation.set(0,r*6,0);dummy.updateMatrix();
-  trees.setMatrixAt(i,dummy.matrix);trees.setColorAt(i,tint.setHex(0x2f4a2e).multiplyScalar(.85+r*.3));
+ // The island's broadleaf (okinawa/trees.js), in its lighter far-off build: the
+ // headland is seen from the town, not walked under.
+ const treeMat=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.95});
+ const dummy=new THREE.Object3D(),tint=new THREE.Color(),groups=[0,1,2].map(()=>[]);
+ spots.forEach((spot,i)=>groups[i%3].push(spot));
+ const meshes=groups.map((list,variant)=>{
+  const mesh=new THREE.InstancedMesh(broadleafGeometry({variant,lite:true,greens:TREE_GREENS.hill}),treeMat,list.length);
+  list.forEach(([x,y,z,s,r],i)=>{
+   colliders.push({id:'headland-tree',x,z,w:.32*s,d:.32*s,height:y+6*s});
+   dummy.position.set(x,y-.1,z);dummy.scale.setScalar(5.4*s);dummy.rotation.set(0,r*6,0);dummy.updateMatrix();
+   mesh.setMatrixAt(i,dummy.matrix);mesh.setColorAt(i,tint.setScalar(.85+r*.3));
+  });
+  mesh.name='Minato headland trees';mesh.castShadow=shadows;parent.add(mesh);return mesh;
  });
- trunks.name='Minato headland trunks';trunks.castShadow=shadows;parent.add(trunks);
- trees.name='Minato headland trees';trees.castShadow=shadows;parent.add(trees);
+ const trees=meshes[0];
  return {hill,trees};
 }
 

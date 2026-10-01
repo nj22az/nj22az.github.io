@@ -20,7 +20,7 @@ test('the town hall is one storey, built from the kit, on the old school block',
  const box=new THREE.Box3();hall.traverse(o=>{if(o.isMesh&&/Town hall building/.test(o.name))box.expandByObject(o);});
  assert.ok(box.min.x>SCHOOL.minX-2&&box.max.x<SCHOOL.maxX+2,'The hall stays on its ground');
  assert.ok(SCHOOL.building.parapet<4.5,'One storey');
- assert.deepEqual(sites.map(s=>s.id).sort(),['community-kitchen','mayor-home','mayor-office','school']);
+ assert.deepEqual(sites.map(s=>s.id).sort(),['clinic','community-kitchen','mayor-home','mayor-office','school']);
 });
 
 test('the grounds are walkable through the gate, and the block, the columns and the trees are solid',()=>{

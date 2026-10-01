@@ -3,6 +3,7 @@ import {GROUND_LAYER} from './ground-layers.js';
 import {SCHOOL,SCHOOL_COLUMNS,FUKUGI,schoolColliders} from './school-layout.js';
 import {createKit} from './okinawa/kit.js';
 import {shisa} from './okinawa/houses.js';
+import {broadleafGeometry} from './okinawa/trees.js';
 import {playSchoolChime,CHIME_TIMES} from '../audio/school-chime.js';
 
 /**
@@ -115,22 +116,19 @@ export function hanaScreen(group,{material,depth,tile},x0,x1,y0,y1,z,alongX=true
 
 /** Fukugi: tall, narrow, dense and dark, planted in lines against the wind. */
 function buildFukugi(group,shadows){
- const crown=new THREE.IcosahedronGeometry(1,2);
- {const p=crown.attributes.position,n=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),l=Math.hypot(x,y,z)||1;n[i*3]=x/l;n[i*3+1]=y/l;n[i*3+2]=z/l;}crown.setAttribute('normal',new THREE.BufferAttribute(n,3));}
- const trunks=new THREE.InstancedMesh(new THREE.CylinderGeometry(.12,.18,1,7),new THREE.MeshStandardMaterial({color:0x4a3a2c,roughness:1}),FUKUGI.length);
- const leaves=new THREE.InstancedMesh(crown,new THREE.MeshStandardMaterial({color:0xffffff,roughness:.7}),FUKUGI.length*3);
+ // The island's one tree in its windbreak form (okinawa/trees.js), two variants in turn.
+ const material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.85});
  const d=new THREE.Object3D(),c=new THREE.Color();
- FUKUGI.forEach(([x,z],i)=>{
-  const h=5.2+((i*37)%10)/10*1.6;
-  d.position.set(x,h*.22,z);d.scale.set(1,h*.44,1);d.rotation.set(0,0,0);d.updateMatrix();trunks.setMatrixAt(i,d.matrix);
-  for(let k=0;k<3;k++){
-   const y=h*(.45+k*.2),r=1.25-k*.25;
-   d.position.set(x+Math.sin(i+k)*.12,y,z+Math.cos(i*2+k)*.12);d.scale.set(r,h*.2+(2-k)*.25,r*.92);d.rotation.set(0,i*1.3+k,0);d.updateMatrix();
-   leaves.setMatrixAt(i*3+k,d.matrix);leaves.setColorAt(i*3+k,c.setHex(k===2?0x3e6b3a:0x2f5a31).multiplyScalar(.9+((i+k)%3)*.07));
-  }
+ [0,1].forEach(variant=>{
+  const spots=FUKUGI.filter((_,i)=>i%2===variant);
+  const trees=new THREE.InstancedMesh(broadleafGeometry({form:'column',variant}),material,spots.length);
+  spots.forEach(([x,z],i)=>{
+   const h=5.2+(((i*2+variant)*37)%10)/10*1.6;
+   d.position.set(x,0,z);d.scale.set(h,h,h);d.rotation.set(0,i*1.3+variant,0);d.updateMatrix();
+   trees.setMatrixAt(i,d.matrix);trees.setColorAt(i,c.setScalar(.9+((i+variant)%3)*.06));
+  });
+  trees.name='School fukugi';trees.castShadow=!!shadows;trees.receiveShadow=true;group.add(trees);
  });
- trunks.name='School fukugi trunks';leaves.name='School fukugi';
- for(const m of [trunks,leaves]){m.castShadow=!!shadows;m.receiveShadow=true;group.add(m);}
 }
 
 function plate(group,text,{w,h,at,rotY=0,bg='#f1ead6',fg='#1f2a26',font=SERIF,vertical=false,size=.7,sub=null,name}){
@@ -146,7 +144,7 @@ function plate(group,text,{w,h,at,rotY=0,bg='#f1ead6',fg='#1f2a26',font=SERIF,ve
 }
 
 /** Room plates, hung out from the corridor ceiling over each door, as every school has them. */
-const ROOMS=[['倉庫'],['玄関'],['教室'],['調理室'],['町長室'],['会議室'],['町長宅']];
+const ROOMS=[['倉庫'],['玄関'],['教室'],['調理室'],['町長室'],['診療所'],['町長宅']];
 
 /** The noticeboard in the entrance: harbour safety, the typhoon shelter map, the co-op. */
 function noticeboard(group){
@@ -250,7 +248,7 @@ function buildTownHallDressing(group,options){
  * along the forecourt, the way island village offices were built in the seventies and
  * eighties. A deep veranda runs the length of the front under the roof slab, on the old
  * column lines. Seven bays along it: store, the glass-doored entrance, the classroom,
- * the community kitchen, the mayor's office, the meeting room and the mayor's house at
+ * the community kitchen, the mayor's office, the clinic and the mayor's house at
  * the east end, each with its own door or windows. The parapet carries the name and a
  * clock; on the roof, two water tanks and an aerial. Also the yard furniture the old
  * model carried: the gateposts and their shisa, the bike shed, the wash taps and the
@@ -279,8 +277,8 @@ function buildTownHall(group,options){
    for(const dx of [-.5,.5])kit.box(.95,2.3,.05,SCHOOL.genkan.x+dx,1.3,zf-.05,glass,{finish:'glow'});
    kit.box(2.2,.08,.08,SCHOOL.genkan.x,2.47,zf-.06,alu,{finish:'metal'});kit.box(.06,2.3,.08,SCHOOL.genkan.x,1.3,zf-.07,alu,{finish:'metal'});
    window(cx-1.25,.8,1.5,1.9);return;}
-  const doorX={3:27.0,4:30.6,6:37.7}[i];
-  if(doorX!==undefined){door(doorX,.95,i===6?0x8a5a36:trim);window(doorX-1.1,.7);window(doorX+1.1,.7);return;}
+  const doorX={3:27.0,4:30.6,5:34.1,6:37.7}[i];
+  if(doorX!==undefined){door(doorX,.95,i===6?0x8a5a36:i===5?0xf2f0ea:trim);window(doorX-1.1,.7);window(doorX+1.1,.7);return;}
   window(cx-.85,1.4);window(cx+.85,1.4);
  });
  // The back and the ends: plain windows, with the mould band under the slab.
@@ -349,7 +347,7 @@ export function buildSchool(world,options){
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1.9,SCHOOL.gate.z-.9],'Greet the shisa',say('Shisa on the gateposts',
   'A pair of glazed shisa, one on each post: the one on the right with its mouth open to take in good fortune, the one on the left with its mouth shut to keep it. Somebody has put a hibiscus flower behind the left one\'s ear.'));
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1,SCHOOL.gate.z-.7],'Read the town hall gate plate',say('港町役場 · Minato Town Hall',
-  'One storey, all of it on the forecourt: the town office, the meeting room, the community kitchen, the mayor\'s office, the island school\'s one classroom (eight pupils, the 5th and 6th years together) and, at the east end, the mayor\'s house. Built on the old school\'s footprint after the two-storey block from 1971 was taken down.'));
+  'One storey, all of it on the forecourt: the town office, the community kitchen, the mayor\'s office, the clinic, the island school\'s one classroom (eight pupils, the 5th and 6th years together) and, at the east end, the mayor\'s house. Built on the old school\'s footprint after the two-storey block from 1971 was taken down.'));
  anchor([SCHOOL.wash.x,1,SCHOOL.wash.z-.8],'Rinse your feet at the taps',()=>options.onAction?.('school-taps'));
  anchor([(SCHOOL.bikeShed.minX+SCHOOL.bikeShed.maxX)/2,1,SCHOOL.bikeShed.minZ+.4],'Look at the bicycles',say('Bike shed',
   'Bicycles under a zinc roof rusted through at the ribs: the town office staff\'s, two children\'s with names in marker on the mudguards, and the postman\'s spare.'));
@@ -375,6 +373,7 @@ export function buildSchool(world,options){
  for(const [id,title,jp,sub,x,label,line] of [
   ['community-kitchen','Community Kitchen','調理室','COMMUNITY CENTRE',27.0,'Go into the community kitchen','Open to every household · the women’s association on Saturdays'],
   ['mayor-office','Mayor’s Office','町長室','MINATO TOWN HALL',30.6,'Go into the mayor’s office','Office hours 8:30–17:15 · petitions in the tray'],
+  ['clinic','Minato Clinic','診療所','DR KAKAZU',34.1,'Go into the clinic','Mon–Fri 9–12, 14–17 · Sat 9–12 · ring the bell after hours'],
   ['mayor-home','Mayor’s House','町長宅','JOHANSSON',37.7,'Go home','Your rooms in the east wing'],
  ]){
   const at=[x,0,B.minZ-.7],s={id,title,jp,sub,x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',line,door:at,exitPosition:[x,0,B.minZ-1.4],approachPosition:[x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'00:00'};

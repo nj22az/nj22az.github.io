@@ -16,6 +16,7 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  // The town hall and the harbour.
  {home:'town-hall',address:'Town hall, east wing',members:[['Johansson','mayor of Minato-chō; lives over the shop, as he says, beside the community centre and the power house']]},
  {home:'office',address:'Harbour office (the bed behind the screen)',members:[['Harbour master','runs the harbour office and the moorings']]},
+ {home:'clinic',address:'The doctor’s flat behind the town hall clinic',members:[['Dr Kakazu','the island doctor: posted from Naha for two years, surgery at the town hall clinic, on call at night']]},
  {home:'koban',address:'Minato police box',members:[['Officer Mori','the island’s police officer: desk from four, night patrol']]},
  // The Front-Row yard.
  {home:'resident-home-aya',address:'1 Front-Row Yard',members:[['Aya','bookshop assistant'],['Reiko','edits the evening paper']]},
