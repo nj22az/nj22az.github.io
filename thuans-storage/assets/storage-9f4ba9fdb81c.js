@@ -4413,6 +4413,36 @@ function placeHarbourGuest(maze, random) {
   return { c: spot.c, r: spot.r, id: who.id, name: who.name, accent: who.accent, lines: who.lines.slice() };
 }
 
+// Bizarro Minato: the townsfolk in monster suits from the old sea cave under the
+// headland (johansson-town/src/dungeon/costumes.js -- kept in step by a test). A hole
+// has opened at the back of Thuan's stockroom, down to the cave, and at night they come
+// up through it and carry off the cartons on her list, saying the opposite of what they
+// mean. What they get down the hole is sold out in Sakura tomorrow.
+const BIZARRO = [
+  { who: 'Officer Mori', animal: 'crocodile', colour: 0x4f8a3a, belly: 0xc9d68a, lines: ['Stop! You are free to go!','Everyone is under arrest. Except the criminals.','Walk faster on the pavement, please. No hurry.'] },
+  { who: 'Mrs Sato', animal: 'donkey', colour: 0x8b8580, belly: 0xe8e0cf, slow: true, lines: ['Hee-haw! No ramen today — only ramen!','The broth is cold and the stools are sold out.','Lunch is served at midnight, as always.'] },
+  { who: 'Nao', animal: 'octopus', colour: 0xd9607f, belly: 0xf2b0c0, lines: ['Last orders! Doors open in an hour.','Eight arms and not one beer.','Sit down, you are standing up.'] },
+  { who: 'Harbour master', animal: 'seagull', colour: 0xf2f0ea, belly: 0xb9bec2, slow: true, lines: ['All ships must sink on time.','The tide is out, so it is in.','Permission to leave port: denied, go ahead.'] },
+  { who: 'Kenji', animal: 'shark', colour: 0x5f7f95, belly: 0xe8eef0, lines: ['Beat my score and I will lose it for you, bro.','Star Port is a boat, bro. Everybody knows.','Nobody swims faster backwards than me.'] },
+  { who: 'Aya', animal: 'owl', colour: 0x8a6a4a, belly: 0xe8d8b8, lines: ['Shh! This is the loud section.','All our books are blank this week.','Who? Who? Not me. Who?'] },
+  { who: 'Reiko', animal: 'fox', colour: 0xd9782e, belly: 0xf4efe6, lines: ['Tomorrow’s news: nothing happened yesterday.','Read all about it, or do not.','The evening paper comes out in the morning.'] },
+  { who: 'Tetsuo', animal: 'bear', colour: 0x5a3d2b, belly: 0xb58a64, lines: ['I only break radios now.','Grr. Welcome. Grr.','Every clock in the shop is right twice a year.'] },
+];
+/**
+ * The hole down to the sea cave: in the west wall at the cross-aisle between the
+ * departments (`wall` points from the floor cell into the wall), so whatever they take
+ * has a long carry back to it. And when each visitor climbs out.
+ */
+const SEA_CAVE_HOLE = { c: 1, r: 13, wall: [-1, 0] };
+const INTRUDER_FIRST = 12, INTRUDER_GAP = 16;
+/** Who comes up tonight: two or three of them, never the same one twice. Its own random stream, so layouts are unchanged. */
+function bizarroNight(seed) {
+  const random = ud((seed ^ 0x5eaca5e) >>> 0), pool = BIZARRO.slice();
+  const count = random() < 0.6 ? 3 : 2, night = [];
+  for (let i = 0; i < count; i++) night.push(pool.splice(Math.floor(random() * pool.length), 1)[0]);
+  return night.map((look, i) => ({ ...look, lines: look.lines.slice(), emergeAt: INTRUDER_FIRST + i * INTRUDER_GAP }));
+}
+
 // A warehouse footprint with a receiving bay, dispatch bay and four stock
 // departments. Shelf banks change orientation and position with the daily seed;
 // the central spine and cross-aisles remain clear in every layout.
@@ -4472,7 +4502,7 @@ function hd(seed = 1988, required = 6) {
     return { ...position, id: def.id, def, needed: needed.has(def.id) };
   });
   const guest = placeHarbourGuest({ cols, rows, cells, rooms, shelves, start, exit, items, seed }, random);
-  return { cols, rows, cells, rooms, shelves, start, exit, items, seed, guest };
+  return { cols, rows, cells, rooms, shelves, start, exit, items, seed, guest, hole: { ...SEA_CAVE_HOLE, wall: [...SEA_CAVE_HOLE.wall] }, intruders: bizarroNight(seed) };
 
 }
 
@@ -5115,6 +5145,100 @@ function $f(e) {
 function ep(e,t=0,n=0){return new co({color:e,emissive:t,emissiveIntensity:n})}function tp(e){let t=new ur,n=new q(new Ga(.14,.15,.22,12),ep(e.color,e.color,.12));n.position.y=.11;let r=new q(new Ga(.155,.155,.03,12),ep(e.accent));return r.position.y=.23,t.add(n,r),t}function np(e){let t=new ur,n=new q(new Ga(.09,.09,.22,12),ep(e.color,3810332,.08));n.position.y=.11;let r=new q(new Xa(.092,.012,6,16),ep(e.accent,e.accent,.2));return r.rotation.x=Math.PI/2,r.position.y=.14,t.add(n,r),t}function rp(e){let t=new ur,n=new q(new Ka(.16,.22,3),ep(e.color));n.position.y=.12,n.rotation.y=Math.PI/6;let r=new q(new Ha(.12,.08,.04),ep(e.accent));return r.position.set(0,.04,.06),t.add(n,r),t}function ip(e){let t=new ur,n=new q(new Ha(.28,.1,.2),ep(e.color,e.color,.16));n.position.y=.06;let r=new q(new Ha(.3,.03,.22),ep(e.accent));return r.position.y=.1,t.add(n,r),t}function ap(e){let t=new ur,n=new q(new Ha(.22,.08,.14),ep(e.color));return n.position.y=.05,n.rotation.y=.2,t.add(n),t}function op(e){let t=new ur,n=new q(new Ha(.16,.04,.22),ep(e.color,e.color,.1));n.position.y=.04;let r=n.clone();return r.position.y=.08,r.rotation.y=.12,r.material=ep(e.accent),t.add(n,r),t}function sp(e){let t=new ur;for(let n=0;n<3;n++){let r=new q(new Ha(.2,.012,.14),ep(n===1?e.accent:e.color));r.position.set((n-1)*.02,.02+n*.014,0),r.rotation.y=(n-1)*.18,t.add(r)}return t}function cp(e){let t=new ur;for(let n of[-.05,.05]){let r=new q(new Ga(.035,.035,.16,8),ep(e.color,e.color,.15));r.position.set(n,.08,0);let i=new q(new Ga(.036,.036,.03,8),ep(e.accent));i.position.set(n,.16,0),t.add(r,i)}return t}var lp={tea:tp,coffee:np,onigiri:rp,biscuits:ip,soap:ap,notebooks:op,postcards:sp,batteries:cp};function up(e,t){let n=new ur,r=(lp[e.id]??ip)(e);r.position.y=.02,n.add(r);let i=new q(new Ja(.2,.28,20),new Oi({color:t?e.color:8025452,transparent:!0,opacity:t?.55:.18,side:2,depthWrite:!1}));return i.rotation.x=-Math.PI/2,i.position.y=.03,i.name=`glow`,n.add(i),n.userData.needed=t,n}function dp(e){return`#${e.toString(16).padStart(6,`0`)}`}var fp={tea:`茶`,coffee:`珈琲`,onigiri:`おにぎり`,biscuits:`桜菓子`,soap:`椿`,notebooks:`手帳`,postcards:`絵葉書`,batteries:`電池`},pp={drinks:`KEEP COOL`,dry:`THIS SIDE UP`,sundries:`HANDLE WITH CARE`,paper:`DO NOT BEND`};function mp(e,t=512,n=512){let r=document.createElement(`canvas`);r.width=t,r.height=n;let i=r.getContext(`2d`);if(!i)throw Error(`canvas`);e(i,t,n);let a=new Ra(r);return a.colorSpace=yt,a.anisotropy=8,a.needsUpdate=!0,a}function hp(e,t,n,r,i,a=`#f4e3a8`){e.save(),e.fillStyle=i;for(let i=0;i<5;i++){let a=i/5*Math.PI*2-Math.PI/2;e.beginPath(),e.ellipse(t+Math.cos(a)*r*.52,n+Math.sin(a)*r*.52,r*.4,r*.26,a,0,Math.PI*2),e.fill()}e.beginPath(),e.arc(t,n,r*.16,0,Math.PI*2),e.fillStyle=a,e.fill(),e.restore()}function gp(e,t,n,r,i){e.save(),e.fillStyle=i,e.beginPath(),e.ellipse(t,n,r*.38,r*.7,-.5,0,Math.PI*2),e.fill(),e.strokeStyle=`rgba(255,255,255,0.35)`,e.lineWidth=Math.max(1.5,r*.06),e.beginPath(),e.moveTo(t-r*.1,n+r*.55),e.quadraticCurveTo(t+r*.1,n,t-r*.05,n-r*.55),e.stroke(),e.restore()}function _p(e,t,n,r,i,a){let o=Math.min(a,r/2,i/2);e.beginPath(),e.moveTo(t+o,n),e.arcTo(t+r,n,t+r,n+i,o),e.arcTo(t+r,n+i,t,n+i,o),e.arcTo(t,n+i,t,n,o),e.arcTo(t,n,t+r,n,o),e.closePath()}function vp(e,t,n,r,i,a,o){switch(e.save(),e.translate(n,r),e.fillStyle=a,e.strokeStyle=a,e.lineJoin=`round`,e.lineCap=`round`,t){case`tea`:_p(e,-i*.28,-i*.18,i*.56,i*.5,i*.06),e.fill(),e.fillStyle=o,_p(e,-i*.32,-i*.28,i*.64,i*.14,i*.04),e.fill(),gp(e,i*.42,-i*.08,i*.42,a);break;case`coffee`:_p(e,-i*.22,-i*.38,i*.44,i*.76,i*.12),e.fill(),e.fillStyle=o,e.fillRect(-i*.22,-i*.06,i*.44,i*.16),e.strokeStyle=o,e.lineWidth=i*.06,e.beginPath(),e.moveTo(-i*.08,-i*.5),e.quadraticCurveTo(0,-i*.7,i*.1,-i*.5),e.moveTo(i*.04,-i*.5),e.quadraticCurveTo(i*.14,-i*.68,i*.2,-i*.5),e.stroke();break;case`onigiri`:e.beginPath(),e.moveTo(0,-i*.48),e.lineTo(i*.46,i*.38),e.lineTo(-i*.46,i*.38),e.closePath(),e.fill(),e.fillStyle=o,_p(e,-i*.16,i*.08,i*.32,i*.3,i*.04),e.fill();break;case`biscuits`:e.beginPath(),e.arc(0,0,i*.46,0,Math.PI*2),e.fill(),hp(e,0,0,i*.28,o,`#fff6ea`);break;case`soap`:_p(e,-i*.46,-i*.22,i*.92,i*.44,i*.2),e.fill(),hp(e,0,0,i*.2,o);break;case`notebooks`:_p(e,-i*.34,-i*.42,i*.56,i*.78,i*.04),e.fill(),e.fillStyle=o,_p(e,-i*.22,-i*.34,i*.56,i*.78,i*.04),e.fill(),e.fillStyle=a,e.fillRect(-i*.22,-i*.18,i*.56,i*.05),e.fillRect(-i*.22,.02*i,i*.56,i*.05);break;case`postcards`:e.fillRect(-i*.48,-i*.32,i*.96,i*.64),e.fillStyle=o,e.fillRect(i*.14,-i*.24,i*.26,i*.22),e.strokeStyle=o,e.lineWidth=i*.045,e.beginPath(),e.moveTo(-i*.36,i*.08),e.lineTo(i*.02,i*.08),e.moveTo(-i*.36,i*.18),e.lineTo(i*.18,i*.18),e.stroke();break;case`batteries`:for(let t of[-i*.22,i*.22])_p(e,t-i*.14,-i*.38,i*.28,i*.76,i*.06),e.fill(),e.fillStyle=o,e.fillRect(t-i*.14,-i*.38,i*.28,i*.16),e.fillStyle=a;break;default:hp(e,0,0,i*.45,a)}e.restore()}function yp(e,t,n,r=`#c4a06a`){e.fillStyle=r,e.fillRect(0,0,t,n),e.strokeStyle=`rgba(90, 58, 28, 0.16)`,e.lineWidth=2;for(let r=0;r<n;r+=7)e.beginPath(),e.moveTo(0,r),e.lineTo(t,r),e.stroke();e.fillStyle=`rgba(70, 44, 20, 0.12)`,e.fillRect(t*.47,0,8,n),e.fillRect(0,n*.48,t,6)}function bp(e){return mp((t,n,r)=>{yp(t,n,r,dp(e.accent===e.color?12886122:13349001));let i=dp(e.color),a=dp(e.accent);t.fillStyle=`rgba(244, 235, 227, 0.94)`,_p(t,n*.1,r*.12,n*.8,r*.76,18),t.fill(),t.strokeStyle=i,t.lineWidth=8,_p(t,n*.1,r*.12,n*.8,r*.76,18),t.stroke(),t.strokeStyle=a,t.lineWidth=3,_p(t,n*.14,r*.16,n*.72,r*.68,12),t.stroke(),vp(t,e.id,n*.5,r*.4,n*.28,i,a),t.fillStyle=i,t.textAlign=`center`,t.textBaseline=`middle`,t.font=`700 36px Nunito, ui-rounded, sans-serif`,t.fillText(e.short.toUpperCase(),n*.5,r*.62),t.font=`600 22px Nunito, sans-serif`,t.fillStyle=`#7a4e40`,t.fillText(fp[e.id]??`桜`,n*.5,r*.7),t.font=`700 14px IBM Plex Mono, ui-monospace, monospace`,t.fillStyle=i,t.fillText(`SAKURA SHŌTEN`,n*.5,r*.78),t.font=`600 12px IBM Plex Mono, ui-monospace, monospace`,t.fillStyle=`#8c5a4a`,t.fillText(pp[e.zone]??`STOCK`,n*.5,r*.84),hp(t,n*.2,r*.22,18,`#d49bb3`),hp(t,n*.8,r*.22,18,`#d49bb3`)},512,512)}function xp(e){return mp((t,n,r)=>{t.fillStyle=`#f4ebe3`,t.fillRect(0,0,n,r),t.fillStyle=dp(e.color),t.fillRect(0,0,n,18),t.fillRect(0,r-18,n,18),t.strokeStyle=dp(e.accent),t.lineWidth=10,t.strokeRect(16,28,n-32,r-56),vp(t,e.id,n*.5,r*.42,n*.34,dp(e.color),dp(e.accent)),t.fillStyle=dp(e.color),t.textAlign=`center`,t.font=`700 36px Nunito, sans-serif`,t.fillText(e.name,n*.5,r*.74),t.font=`600 20px Nunito, sans-serif`,t.fillStyle=`#7a4e40`,t.fillText(fp[e.id]??``,n*.5,r*.82),hp(t,n*.5,r*.9,16,`#d49bb3`)},384,512)}function Sp(e,t){return mp((n,r,i)=>{n.fillStyle=dp(t),n.fillRect(0,0,r,i),n.fillStyle=`rgba(244,235,227,0.16)`,n.fillRect(0,0,r,i*.38),n.strokeStyle=`#efe4d0`,n.lineWidth=8,n.strokeRect(10,8,r-20,i-16),hp(n,48,i*.5,22,`#f4ebe3`),n.fillStyle=`#f4ebe3`,n.textAlign=`left`,n.textBaseline=`middle`,n.font=`700 42px Nunito, sans-serif`,n.fillText(e.toUpperCase(),84,i*.5)},512,128)}function Cp(e,t,n){let r=n.map(e=>ad.find(t=>t.id===e)).filter(e=>!!e);return mp((n,i,a)=>{n.fillStyle=`#efe4d0`,n.fillRect(0,0,i,a),n.fillStyle=dp(t),n.fillRect(0,0,i,36),n.fillRect(0,a-36,i,36),n.strokeStyle=dp(t),n.lineWidth=8,n.strokeRect(18,48,i-36,a-96),n.fillStyle=dp(t),n.textAlign=`center`,n.font=`700 40px Fraunces, serif`,n.fillText(e,i*.5,92),n.font=`600 18px Nunito, sans-serif`,n.fillStyle=`#7a4e40`,n.fillText(`SAKURA SHŌTEN  ·  桜商店`,i*.5,122);let o=Math.max(1,r.length);r.forEach((e,t)=>{let r=(t+.5)/o*i;vp(n,e.id,r,a*.52,70,dp(e.color),dp(e.accent)),n.fillStyle=dp(e.color),n.font=`700 18px Nunito, sans-serif`,n.fillText(e.short,r,a*.72)}),hp(n,i*.5,a-70,22,`#d49bb3`)},768,512)}function wp(e){return mp((t,n,r)=>{t.fillStyle=`#f6edd8`,t.fillRect(0,0,n,r),t.fillStyle=`#d49bb3`,t.fillRect(0,0,n,14),t.fillStyle=`#7a4e40`,t.font=`700 22px Nunito, sans-serif`,t.textAlign=`center`,t.fillText(`STOCK LIST`,n*.5,42),t.font=`500 16px IBM Plex Mono, monospace`,e.split(`
 `).forEach((e,r)=>{t.fillText(e,n*.5,70+r*22)}),hp(t,n*.5,r-28,14,`#d49bb3`)},256,320)}function Tp(e){return mp((t,n,r)=>{t.fillStyle=dp(e.color),t.fillRect(0,0,n,r),t.fillStyle=`#f4ebe3`,t.fillRect(8,8,n-16,r-16),t.strokeStyle=dp(e.accent),t.lineWidth=4,t.strokeRect(14,14,n-28,r-28),vp(t,e.id,58,r*.52,42,dp(e.color),dp(e.accent)),t.fillStyle=dp(e.color),t.textAlign=`left`,t.textBaseline=`middle`,t.font=`700 36px Nunito, sans-serif`,t.fillText(e.short.toUpperCase(),100,r*.42),t.font=`600 18px Nunito, sans-serif`,t.fillStyle=`#7a4e40`,t.fillText(`${fp[e.id]??``}  ·  SAKURA SHŌTEN`,100,r*.68),hp(t,n-48,r*.5,16,`#d49bb3`)},640,160)}function Ep(e){return e.userData.persist=!0,e}var Dp=null,Op=null,kp=null;function Ap(){if(Dp)return Dp;Dp=new Map;for(let e of ad)Dp.set(e.id,Ep(bp(e)));return Dp}function jp(){if(Op)return Op;Op=new Map;for(let e of ad)Op.set(e.id,Ep(Tp(e)));return Op}function Mp(){if(kp)return kp;kp=new Map;for(let e of ad)kp.set(e.id,Ep(xp(e)));return kp}function Np(e,t=256){let n=document.createElement(`canvas`);n.width=t,n.height=t;let r=n.getContext(`2d`);if(!r)throw Error(`canvas`);e(r,t);let i=new Ra(n);return i.wrapS=ne,i.wrapT=ne,i.colorSpace=yt,i.anisotropy=4,i.needsUpdate=!0,i}function Pp(e){return e.userData.persist=!0,e}var Fp=null,Ip=null,Lp=null,Rp=null;function zp(){return Fp??=Pp(Np((e,t)=>{e.fillStyle=`#8f8a82`,e.fillRect(0,0,t,t);for(let n=0;n<140;n++){let r=110+n*17%50;e.fillStyle=`rgb(${r},${r-4},${r-10})`,e.fillRect(n*47%t,n*31%t,10+n%18,7+n%12)}e.fillStyle=`rgba(70, 64, 56, 0.18)`,e.fillRect(t*.2,t*.55,t*.5,t*.08),e.fillStyle=`#d6b23a`,e.fillRect(0,0,t,10),e.fillRect(0,t-10,t,10),e.fillRect(0,0,10,t),e.fillRect(t-10,0,10,t),e.fillStyle=`#2c2a26`,e.fillRect(0,0,t,3),e.fillRect(0,t-3,t,3)},512))}function Bp(e=0){let t=e%2==0?Ip:Lp;if(t)return t;let n=Pp(Np((t,n)=>{t.fillStyle=e%2==0?`#e4d5c2`:`#eadcc8`,t.fillRect(0,0,n,n);for(let r=0;r<90;r++){let i=200+(r*13+e*9)%28;t.fillStyle=`rgba(${i},${i-14},${i-28},0.22)`,t.fillRect((r*53+e*17)%n,r*29%n,18,11)}let r=n*.28;t.fillStyle=`#8c5a4a`,t.fillRect(0,n-r,n,r),t.fillStyle=`#c4a07a`,t.fillRect(0,n-r,n,10),t.fillStyle=`#d49bb3`,t.fillRect(0,n-r-14,n,10),t.fillStyle=`#efe4d0`,t.fillRect(0,n-16,n,16),[[.22,.32],[.72,.28],[.48,.52],[.18,.58],[.8,.55]].forEach(([r,i],a)=>{(a+e)%2==0&&(t.globalAlpha=.22,hp(t,r*n,i*n,28+a%3*8,a%2?`#b77890`:`#3d7a6e`),t.globalAlpha=1)}),t.globalAlpha=.18,t.fillStyle=`#7a4e40`,t.font=`700 42px Fraunces, serif`,t.textAlign=`center`,t.fillText(e%2==0?`桜`:`SAKURA`,n*.5,n*.42),t.globalAlpha=1,t.strokeStyle=`rgba(122, 78, 64, 0.18)`,t.lineWidth=6,t.strokeRect(18,18,n-36,n-r-40),t.fillStyle=`#d6b23a`,t.fillRect(n*.08,n*.08,36,10),t.fillRect(n*.08,n*.08,10,36)},512));return e%2==0?Ip=n:Lp=n,n}function Vp(){return Rp??=Pp(Np((e,t)=>{e.fillStyle=`#6b6560`,e.fillRect(0,0,t,t),e.fillStyle=`#5c5752`,e.fillRect(0,t*.45,t,t*.12),e.strokeStyle=`rgba(30, 26, 22, 0.28)`,e.lineWidth=4,e.beginPath(),e.moveTo(0,t*.2),e.lineTo(t,t*.2),e.moveTo(0,t*.8),e.lineTo(t,t*.8),e.stroke(),e.fillStyle=`rgba(243, 240, 220, 0.18)`,e.fillRect(t*.2,t*.42,t*.6,t*.16)}))}function Hp(e){let t=e>>>0;return()=>{t=t+1831565813>>>0;let e=t;return e=Math.imul(e^e>>>15,e|1),e^=e+Math.imul(e^e>>>7,e|61),((e^e>>>14)>>>0)/4294967296}}function Up(){let e=new ur,t=new Wa(.1,7),n=new co({color:Ad.charm,side:2,emissive:Ad.rose,emissiveIntensity:.28});for(let r=0;r<5;r++){let i=new q(t,n),a=r/5*Math.PI*2;i.position.set(Math.cos(a)*.08,Math.sin(a)*.08,.02),i.rotation.z=a,e.add(i)}let r=new q(new Ya(.045,8,6),new co({color:16049064,emissive:16049064,emissiveIntensity:.4}));return e.add(r),e}function Wp(e,t,n){let r=new ur,i=new q(new Ha(1.55,.38,.06),new co({color:t,emissive:t,emissiveIntensity:.12})),a=new q(new Ha(1.64,.46,.04),new co({color:Ad.wood}));a.position.z=-.01;let o=new q(new qa(1.48,.32),new co({map:n,color:16777215}));o.position.z=.035;let s=Up();return s.scale.setScalar(.62),s.position.set(-.62,0,.06),r.add(a,i,o,s),r}function Gp(){let e=new ur,t=new co({color:Ad.wood}),n=new co({color:Ad.roseDeep,emissive:Ad.rose,emissiveIntensity:.28}),r=new q(new Ha(.16,2.5,.16),t),i=r.clone();r.position.set(-.72,1.25,0),i.position.set(.72,1.25,0);let a=new q(new Ha(1.72,.18,.22),n);a.position.set(0,2.48,0);let o=new q(new qa(1.28,2.15),new co({color:Ad.rose,emissive:Ad.rose,emissiveIntensity:.4,transparent:!0,opacity:.62,side:2}));o.position.set(0,1.18,.04);let s=new q(new qa(.08,2.15),new co({color:Ad.cream,side:2}));s.position.set(-.22,1.18,.05);let c=s.clone();c.position.x=.22;let l=new us(Ad.rose,1.8,7.5,1.5);return l.position.set(0,1.7,.2),e.add(r,i,a,o,s,c,l),e}function Kp(){let e=new ur,t=new q(new Ga(.018,.018,1.15,6),new co({color:Ad.wood}));t.position.y=.7,t.rotation.z=.18;let n=new q(new Ha(.22,.08,.08),new co({color:Ad.cardboardDeep}));return n.position.set(.12,.14,0),e.add(t,n),e.name=`assistant-manager`,e}function qp(e){let t=[],n=[[1,0],[-1,0],[0,1],[0,-1]],r=e.rooms.find(e=>e.zone===`bay`),i=(e,t)=>!!r&&e>=r.c&&e<r.c+r.w&&t>=r.r&&t<r.r+r.h;for(let r=0;r<e.rows;r++)for(let a=0;a<e.cols;a++)if(vd(a,r,e))for(let[o,s]of n){let n=a+o,c=r+s;yd(n,c,e)&&(i(n,c)||t.push({c:a,r,dc:o,dr:s}))}return t}function Jp(e){let t=ad.filter(t=>t.zone===e);return t.length?t:ad}// Three.js aliases come from the preserved runtime: ur Group, q Mesh,
 // Ha BoxGeometry, co MeshLambertMaterial, da InstancedMesh, lr Object3D.
+// Also: Ya SphereGeometry, Ka ConeGeometry, Ga CylinderGeometry, Ua CapsuleGeometry,
+// Oi MeshBasicMaterial, us PointLight.
+
+/**
+ * One of Bizarro Minato in their suit: a townsperson's own face looking out from under
+ * the animal's hood, a suit in its colours, arms that swing, and a spot over the head to
+ * carry a stolen carton. The same nine animals as the sea cave (johansson-town/src/dungeon).
+ */
+function createBizarroIntruder(look) {
+  const root = new ur(); root.name = 'Bizarro ' + look.who + ' the ' + look.animal;
+  const suit = new ur(); root.add(suit);
+  const mats = new Map(), mat = c => { if (!mats.has(c)) mats.set(c, new co({color:c})); return mats.get(c); };
+  const fur = mat(look.colour), pale = mat(look.belly), skin = mat(0xe6bc98), black = mat(0x181416), white = mat(0xf7f5ef);
+  const add = (geometry, material, x, y, z, parent = suit) => { const m = new q(geometry, material); m.position.set(x, y, z); parent.add(m); return m; };
+  for (const sx of [-1, 1]) add(new Ha(.17, .5, .2), fur, sx * .12, .25, 0);
+  add(new Ua(.27, .5, 4, 10), fur, 0, .88, 0);
+  add(new Ya(.2, 16, 12), pale, 0, .86, .2).scale.set(.85, 1.2, .45);
+  const arms = [-1, 1].map(sx => { const pivot = new ur(); pivot.position.set(sx * .34, 1.15, 0); suit.add(pivot); add(new Ua(.075, .38, 3, 8), fur, 0, -.25, 0, pivot); add(new Ya(.08, 8, 6), pale, 0, -.5, 0, pivot); return pivot; });
+  const head = new ur(); head.position.y = 1.5; suit.add(head);
+  const R = .21;
+  add(new Ya(R, 14, 10), skin, 0, 0, 0, head);
+  for (const sx of [-1, 1]) add(new Ya(.025, 6, 4), black, sx * .075, .02, R * .92, head);
+  // The hood: over the crown and down the back, open at the face.
+  const hood = add(new Ya(R * 1.18, 16, 10, 0, Math.PI * 2, 0, Math.PI * .5), fur, 0, .02, -.02, head); hood.scale.set(1, 1.05, 1.05);
+  add(new Ya(R * 1.15, 14, 8), fur, 0, -.03, -.06, head).scale.set(1, 1, .75);
+  const cone = (r, h, m, x, y, z, rx = 0, rz = 0, seg = 8) => { const c = add(new Ka(r, h, seg), m, x, y, z, head); c.rotation.set(rx, 0, rz); return c; };
+  const ball = (r, m, x, y, z) => add(new Ya(r, 10, 8), m, x, y, z, head);
+  switch (look.animal) {
+    case 'crocodile':
+      add(new Ha(.2, .07, .34), fur, 0, .2, .3, head); add(new Ha(.18, .025, .3), pale, 0, .16, .31, head);
+      for (let i = 0; i < 5; i++) for (const sx of [-1, 1]) cone(.012, .035, white, sx * .085, .13, .2 + i * .055, Math.PI);
+      for (const sx of [-1, 1]) { ball(.06, fur, sx * .08, .26, .12); ball(.035, mat(0xe8d24a), sx * .08, .29, .15); }
+      break;
+    case 'donkey':
+      ball(.1, pale, 0, .1, .22).scale.set(1, .8, 1.2);
+      for (const sx of [-1, 1]) { const ear = cone(.05, .36, fur, sx * .12, .38, -.02, 0, sx * -.3); ear.scale.z = .55; cone(.028, .26, mat(0xd4707e), sx * .118, .37, .0, 0, sx * -.3).scale.z = .4; }
+      break;
+    case 'tanuki':
+      for (const sx of [-1, 1]) ball(.055, black, sx * .14, .22, -.01);
+      break;
+    case 'octopus':
+      ball(.28, fur, 0, .2, -.05).scale.set(1, 1.25, 1.05);
+      for (const sx of [-1, 1]) { ball(.05, white, sx * .1, .18, .24); ball(.025, black, sx * .1, .18, .28); }
+      for (let i = 0; i < 8; i++) { const a = Math.PI * .35 + i * (Math.PI * 1.3 / 7), arm = add(new Ga(.03, .012, .34, 6), fur, Math.cos(a) * .24, -.22, -Math.sin(a) * .2 - .02, head); arm.rotation.set(Math.sin(a) * .35, 0, Math.cos(a) * -.35); }
+      break;
+    case 'seagull':
+      cone(.045, .17, mat(0xe8b53a), 0, .04, .27, Math.PI / 2); ball(.02, mat(0xd9483a), 0, .01, .32);
+      break;
+    case 'shark':
+      { const fin = add(new Ka(.09, .24, 3), fur, 0, .3, -.02, head); fin.scale.z = .3; }
+      add(new Ha(.22, .03, .1), pale, 0, .1, .22, head);
+      for (let i = 0; i < 6; i++) cone(.012, .035, white, -.08 + i * .032, .08, .27, Math.PI);
+      break;
+    case 'owl':
+      for (const sx of [-1, 1]) { cone(.035, .12, fur, sx * .12, .28, 0, 0, sx * -.35, 5); ball(.06, pale, sx * .07, .14, .19); ball(.035, mat(0xe8a22a), sx * .07, .14, .23); }
+      cone(.025, .07, mat(0xd9902a), 0, .07, .23, Math.PI * .6, 0, 6);
+      break;
+    case 'fox':
+      cone(.06, .18, pale, 0, .07, .27, Math.PI / 2).scale.set(1, 1, .7); ball(.02, black, 0, .07, .36);
+      for (const sx of [-1, 1]) cone(.055, .16, fur, sx * .11, .29, 0, 0, sx * -.3, 4);
+      break;
+    case 'bear':
+      ball(.075, pale, 0, .06, .21).scale.set(1.1, .8, .9);
+      for (const sx of [-1, 1]) ball(.06, fur, sx * .15, .23, -.01);
+      break;
+  }
+  const carry = new ur(); carry.position.set(0, 2.05, 0); suit.add(carry);
+  root.traverse(node => { if (node instanceof q) node.castShadow = true; });
+  return { group: root, suit, arms, head, carry };
+}
+
+/** The hole down to the sea cave: a cracked opening low in the back wall, a pit in the floor, a violet glow. */
+function createSeaCaveHole(maze) {
+  const group = new ur(); group.name = 'Hole down to the old sea cave';
+  // Built as if the wall were to the south (+z), then turned to whichever wall it is in.
+  const p = gd(maze.hole.c, maze.hole.r, maze), [wc, wr] = maze.hole.wall || [0, 1];
+  const frame = new ur(); frame.position.set(p.x, 0, p.z); frame.rotation.y = Math.atan2(wc, wr); group.add(frame);
+  const wallZ = sd / 2 - .01;
+  const dark = new Oi({color:0x07040c}), glow = new Oi({color:0xb070ff}), rock = new co({color:0x6c5a80});
+  const opening = new q(new Ha(1.05, 1.15, .04), dark); opening.position.set(0, .58, wallZ); frame.add(opening);
+  // A jagged violet rim round the break.
+  [[-.55,.3,.5,.95],[.55,.35,-.45,.9],[0,1.18,.15,.9],[-.32,1.02,.8,.35],[.34,1.0,-.75,.35]].forEach(([x,y,rz,h]) => {
+    const edge = new q(new Ha(.06, h, .05), glow); edge.position.set(x, y, wallZ - .01); edge.rotation.z = rz; frame.add(edge);
+  });
+  for (let i = 0; i < 7; i++) { const chunk = new q(new Ha(.22, .16, .2), rock); chunk.position.set(-.7 + i * .24, .08, wallZ - .25 - (i % 2) * .15); chunk.rotation.set(i, i * 1.7, 0); frame.add(chunk); }
+  const pit = new q(new Ga(.55, .55, .02, 20), dark); pit.position.set(0, .012, .1); frame.add(pit);
+  const ring = new q(new Ga(.62, .62, .015, 20), glow); ring.position.set(0, .008, .1); frame.add(ring);
+  const light = new us(0xa060ff, 2.4, 6, 1.6); light.position.set(0, .7, -.2); frame.add(light);
+  // The sign the cave left behind, in mirror writing, upside down.
+  const texture = Sp('古洞 · SEA CAVE', 0x6c5a80), sign = Wp('古洞 · SEA CAVE', 0x6c5a80, texture);
+  sign.position.set(0, 1.75, wallZ - .02); sign.rotation.set(0, Math.PI, Math.PI); sign.scale.x = -1; frame.add(sign);
+  return { group, texture, light, x: p.x, z: p.z };
+}
+
 function Yp(maze) {
   const group = new ur();
   group.name = 'Sakura stockroom';
@@ -5267,7 +5391,10 @@ function Yp(maze) {
     group.add(guest.mesh);
     guest={...maze.guest,x:gp.x,z:gp.z,mesh:guest.mesh};
   }
-  return {group,items,exit:{...exitPosition,mesh:curtain},guest,lanterns,motes,dispose(){
+  const hole=createSeaCaveHole(maze);group.add(hole.group);textures.push(hole.texture);
+  // Bizarro Minato waits down the hole until its time; game.js brings each one up.
+  const intruders=(maze.intruders||[]).map(look=>{const body=createBizarroIntruder(look);body.group.visible=false;body.group.position.set(hole.x,0,hole.z);group.add(body.group);return {...look,body};});
+  return {group,items,exit:{...exitPosition,mesh:curtain},guest,lanterns,motes,hole,intruders,dispose(){
     const geometries=new Set(),mats=new Set();
     group.traverse(node=>{if(node instanceof q){geometries.add(node.geometry);for(const material of Array.isArray(node.material)?node.material:[node.material])mats.add(material);}});
     geometries.forEach(value=>value.dispose());mats.forEach(value=>value.dispose());textures.forEach(value=>value.dispose());
@@ -5277,6 +5404,10 @@ function Yp(maze) {
 const STORAGE_WALK_SPEED = 2.35;
 const STORAGE_RUN_SPEED = 4.2;
 const STORAGE_STEP = 1 / 60;
+// Bizarro Minato in the stockroom (stockroom.js): how fast they waddle, how close Thuan
+// must be to shoo one, what a shooed one drops, and how long a bop leaves her dizzy.
+const INTRUDER_SPEED = 1.35, INTRUDER_SLOW = 1.05, INTRUDER_CARRY = 0.75, RUMMAGE = 6;
+const SHOO_REACH = 1.45, SHOO_YEN = 50, BOP_REACH = 0.85, BOP_STUN = 0.7;
 
 function om({canvas,minimap,onHud,gltf=null}) {
   const renderer = new rd({canvas,antialias:true,powerPreference:'high-performance'});
@@ -5301,6 +5432,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
   let collectedBefore=0,explored=new Set(),lastPickup='';
   let simTime=0,cameraInitial=true;
   let boomLength=3.55,lookIdle=0.5,guestLine=0,guestCooldown=0,guestPrompt='';
+  let intruders=[],shooed=0,yenFound=0,stun=0,shooCool=0,shooHeld=false,shooQueued=false,chaseReplan=0;
   const focus=new G(),desired=new G(),cameraPosition=new G(),dummy=new lr();
   const dust=Array.from({length:28},(_,i)=>({x:(i*7%29)-14,z:(i*11%29)-14,y:0.6+(i%8)*0.2}));
   function say(text,seconds=3) {reaction=text;reactionTime=seconds;}
@@ -5310,6 +5442,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     time=0;simTime=0;idleTime=0;automatic=false;assisted=false;autoWait=0;route=[];autoTarget=null;
     explored=new Set();collectedBefore=0;lastPickup='';reaction='';reactionTime=0;
     cameraInitial=true;boomLength=3.55;lookIdle=0.5;guestLine=0;guestCooldown=0;guestPrompt='';character.group.position.set(px,0,pz);character.setHeading(yaw,true);
+    resetIntruders();
     character.setCelebrate(false);character.setWave(true);controls.reset();reveal();
   }
   function reveal() {
@@ -5317,15 +5450,26 @@ function om({canvas,minimap,onHud,gltf=null}) {
     for(let r=cell.r-3;r<=cell.r+3;r++)for(let c=cell.c-3;c<=cell.c+3;c++)explored.add(`${c},${r}`);
   }
   function emitHud() {
-    const required=world.items.filter(item=>item.needed),collected=required.filter(item=>item.taken).length;
+    const required=world.items.filter(item=>item.needed),collected=required.filter(item=>item.taken).length,lost=required.filter(item=>item.lost);
     const cell=_d(px,pz,maze),zone=bd(cell.c,cell.r,maze)?.name ?? 'Main aisle';
-    onHud({phase,time,collected,total:required.length,list:required.map(({id,name,taken})=>({id,name,taken,needed:true})),
-      readyToStock:collected===required.length,thuanReady:characterReady,pointerLocked:controls.isPointerLocked(),
+    onHud({phase,time,collected,total:required.length,list:required.map(({id,name,taken,lost})=>({id,name,taken,lost:!!lost,needed:true})),
+      readyToStock:required.every(item=>item.taken||item.lost),lost:lost.length,lostNames:lost.map(item=>item.name),lostIds:lost.map(item=>item.id),
+      shooed,yenFound,intrudersAbout:intruders.filter(v=>v.state!=='waiting'&&v.state!=='gone').length,intrudersTotal:intruders.length,
+      thief:intruders.find(v=>v.carrying)?.name??'',thuanReady:characterReady,pointerLocked:controls.isPointerLocked(),
       zone,assisted,quote:reaction,reaction:reactionTime>0?reaction:'',autoRestocking:automatic,seed:maze.seed,
       explored:[...explored].filter(key=>{const[c,r]=key.split(',').map(Number);return yd(c,r,maze);}).length/maze.cells.filter(v=>v===0).length,guestPrompt,guest:world.guest?{name:world.guest.name,id:world.guest.id}:null});
   }
   function chooseRoute() {
-    const from=_d(px,pz,maze),remaining=world.items.filter(item=>item.needed&&!item.taken);
+    const from=_d(px,pz,maze);
+    // A carton on its way down the hole comes first: after it, and shoo.
+    const thief=intruders.find(v=>v.carrying&&v.state==='flee');
+    // Then one going through a carton on the list: get there before they lift it.
+    const rummager=thief?null:intruders.find(v=>v.state==='rummage');
+    const chase=thief||rummager;
+    // Re-aimed every moment, so it skips the centre of her own cell: going back to it each
+    // time had her jittering on the spot while the thief walked off.
+    if(chase){const cell=_d(chase.x,chase.z,maze),path=storageRoute(maze,from,cell);if(path.length){route=(path.length>1?path.slice(1):path).map(c=>gd(c.c,c.r,maze));if(path.length===1)route.push({x:chase.x,z:chase.z});autoTarget={id:'thief'};chaseReplan=0.4;return;}}
+    const remaining=world.items.filter(item=>item.needed&&!item.taken&&!item.lost&&!item.carriedBy);
     const options=remaining.length?remaining:[{...maze.exit,id:'exit'}];
     let shortest=null,target=null;
     for(const item of options){const path=storageRoute(maze,from,item);if(path.length&&(!shortest||path.length<shortest.length)){shortest=path;target=item;}}
@@ -5336,7 +5480,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
   }
   function collect() {
     for(const item of world.items) {
-      if(item.taken||Math.hypot(item.x-px,item.z-pz)>0.85)continue;
+      if(item.taken||item.lost||item.carriedBy||Math.hypot(item.x-px,item.z-pz)>0.85)continue;
       item.taken=true;item.mesh.visible=false;lastPickup=item.id;sound.pickup();character.playPickup();
       if(item.needed){
         say(item.id==='tea'?'Tea tins. The kettle will be ready soon.':`${item.name}. That goes on the list.`);
@@ -5344,7 +5488,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
       }
     }
     const count=world.items.filter(item=>item.needed&&item.taken).length;
-    if(count>collectedBefore&&world.items.filter(item=>item.needed).every(item=>item.taken))say('All packed. Back to the pink shop curtain.',5);
+    if(count>collectedBefore&&world.items.filter(item=>item.needed).every(item=>item.taken||item.lost))say('All packed. Back to the pink shop curtain.',5);
     collectedBefore=count;
   }
   function step(dt) {
@@ -5352,13 +5496,24 @@ function om({canvas,minimap,onHud,gltf=null}) {
     const look=controls.consumeLook();
     const input=controls.actions;
     if(automatic&&(Math.hypot(input.moveX,input.moveY)>0.12)){automatic=false;route=[];say('Your turn. I have the list.');}
+    // Shoo: Space or F, the gamepad's A, or the touch button -- once per press.
+    const pads=navigator.getGamepads?.()??[],held=controls.has('Space')||controls.has('KeyF')||[...pads].some(pad=>pad?.buttons?.[0]?.pressed);
+    if((held&&!shooHeld)||shooQueued)shoo();shooHeld=held;shooQueued=false;shooCool=Math.max(0,shooCool-dt);
     // Orbit look — slightly snappier stick feel, pitch clamped like a soft third-person shoulder cam.
     yaw-=look.x*0.0045+input.lookHoldX*2.35*dt;
     pitch=Math.max(-0.72,Math.min(-0.08,pitch-look.y*0.0033-input.lookHoldY*1.65*dt));
     const looking=Math.abs(look.x)>0.35||Math.abs(look.y)>0.35||Math.abs(input.lookHoldX)>0.06||Math.abs(input.lookHoldY)>0.06;
     lookIdle=looking?0:lookIdle+dt;
     let targetX=0,targetZ=0;
-    if(automatic) {
+    if(automatic){
+      // Thuan shoos anyone in reach by herself, and re-aims at a moving thief.
+      if(intruders.some(v=>activeIntruder(v)&&Math.hypot(v.x-px,v.z-pz)<SHOO_REACH*.9))shoo();
+      if(autoTarget?.id==='thief'&&(chaseReplan-=dt)<=0)route=[];
+      if(autoTarget&&autoTarget.id!=='thief'&&autoTarget.id!=='exit'&&(autoTarget.carriedBy||autoTarget.lost||autoTarget.taken)){route=[];autoTarget=null;}
+      if(autoTarget&&autoTarget.id!=='thief'&&intruders.some(v=>v.carrying&&v.state==='flee'||v.state==='rummage')){route=[];autoTarget=null;}
+    }
+    if(stun>0){stun-=dt;targetX=targetZ=0;vx=X(vx,0,10,dt);vz=X(vz,0,10,dt);}
+    else if(automatic) {
       if(autoWait>0){autoWait-=dt;vx=vz=0;}
       else {
         if(!route.length)chooseRoute();
@@ -5389,11 +5544,105 @@ function om({canvas,minimap,onHud,gltf=null}) {
     }
     if(speed>0.6)sound.footstep(speed);
     idleTime=speed<0.08?idleTime+dt:0;
-    time+=dt;reveal();collect();talkToGuest(dt);
-    if(world.items.filter(item=>item.needed).every(item=>item.taken)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
+    time+=dt;reveal();collect();talkToGuest(dt);updateIntruders(dt);
+    if(world.items.filter(item=>item.needed).every(item=>item.taken||item.lost)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
       phase='won';automatic=false;speed=vx=vz=0;controls.reset();releasePointer();
-      reaction='Everything is ready. Sakura is open.';reactionTime=10;
+      const lost=world.items.filter(item=>item.needed&&item.lost).map(item=>item.name.toLowerCase());
+      reaction=lost.length?`Sakura opens without the ${lost.join(' or the ')}. Sold out until the next delivery.`:shooed?'Everything is ready, and nothing went down the hole. Sakura is open.':'Everything is ready. Sakura is open.';reactionTime=10;
       character.setCelebrate(true);character.setWave(false);sound.win();emitHud();
+    }
+  }
+  // ---- Bizarro Minato -------------------------------------------------------
+  function resetIntruders(){
+    intruders=(world.intruders||[]).map(look=>({...look,name:look.who+' the '+look.animal,state:'waiting',x:world.hole.x,z:world.hole.z,
+      path:[],target:null,carrying:null,stunned:0,bopCool:0,leave:0,said:0,appear:0,phase:Math.random()*6}));
+    for(const v of intruders){v.body.group.visible=false;v.body.group.scale.setScalar(1);v.body.carry.clear();}
+    shooed=0;yenFound=0;stun=0;shooCool=0;shooQueued=false;chaseReplan=0;
+    for(const item of world.items){delete item.lost;delete item.carriedBy;}
+  }
+  const activeIntruder=v=>v.state==='raid'||v.state==='rummage'||v.state==='flee';
+  const holeCell=()=>maze.hole;
+  function line(v){const text=v.lines[v.said%v.lines.length];v.said++;return text;}
+  function headFor(v,cell){const from=_d(v.x,v.z,maze),path=storageRoute(maze,from,cell);v.path=path.slice(1).map(c=>gd(c.c,c.r,maze));return path.length>0;}
+  function pickTarget(v){
+    // The nearest carton on the list that nobody else is after.
+    const from=_d(v.x,v.z,maze);let best=null,length=Infinity;
+    for(const item of world.items){
+      if(!item.needed||item.taken||item.lost||item.carriedBy||intruders.some(o=>o!==v&&o.target===item))continue;
+      const path=storageRoute(maze,from,item);if(path.length&&path.length<length){length=path.length;best=item;}
+    }
+    v.target=best;if(best)headFor(v,best);else{v.state='leaving';headFor(v,holeCell());}
+  }
+  function dropCarton(v){
+    const item=v.carrying;if(!item)return;
+    // It lands where they stood, on the nearest clear floor, for Thuan to pick back up.
+    const cell=_d(v.x,v.z,maze),p=gd(cell.c,cell.r,maze);
+    item.c=cell.c;item.r=cell.r;item.x=p.x;item.z=p.z;item.carriedBy=null;v.carrying=null;
+    v.body.carry.remove(item.mesh);world.group.add(item.mesh);item.mesh.position.set(p.x,0.5,p.z);item.mesh.scale.setScalar(1.6);
+  }
+  function shoo(){
+    if(shooCool>0||phase!=='playing')return;shooCool=0.35;character.playPickup();
+    let near=null,d=Infinity;
+    for(const v of intruders){if(!activeIntruder(v))continue;const dd=Math.hypot(v.x-px,v.z-pz);if(dd<d){d=dd;near=v;}}
+    if(!near||d>SHOO_REACH){if(near&&d<4)say('Shoo! — a little closer.',1.2);return;}
+    const had=near.carrying?.name;dropCarton(near);
+    near.state='stunned';near.stunned=0.9;near.target=null;shooed++;yenFound+=SHOO_YEN;sound.pickup();
+    say(`Shoo! ${near.name}${had?' drops the '+had.toLowerCase():''} and ¥${SHOO_YEN} in old cave coins: “${line(near)}”`,3.4);
+  }
+  function updateIntruders(dt){
+    for(const v of intruders){
+      const body=v.body,g=body.group;v.phase+=dt;v.bopCool=Math.max(0,v.bopCool-dt);
+      if(v.state==='waiting'){if(time>=v.emergeAt){v.state='raid';v.appear=0;g.visible=true;g.position.set(v.x,0,v.z);say(`Something climbs out of the hole at the back: ${v.name}. “${line(v)}”`,3.6);pickTarget(v);}continue;}
+      if(v.state==='gone')continue;
+      v.appear=Math.min(1,v.appear+dt*2.5);
+      let moving=false;
+      if(v.state==='stunned'){
+        v.stunned-=dt;body.suit.rotation.y+=dt*9;
+        if(v.stunned<=0){body.suit.rotation.y=0;v.state='leaving';headFor(v,holeCell());}
+      }else{
+        // Raiding: re-aim if the carton went (Thuan took it, or another got there first).
+        if(v.state==='raid'&&(!v.target||v.target.taken||v.target.lost||v.target.carriedBy))pickTarget(v);
+        if(v.state==='rummage'){moving=false;body.head.rotation.x=.45+Math.sin(v.phase*7)*.15;}else body.head.rotation.x=0;
+        const pace=v.state==='flee'?INTRUDER_CARRY:v.slow?INTRUDER_SLOW:INTRUDER_SPEED;
+        let step=pace*dt;
+        while(step>0&&v.path.length){
+          const [n]=v.path,dx=n.x-v.x,dz=n.z-v.z,dist=Math.hypot(dx,dz);
+          if(dist<=step){v.x=n.x;v.z=n.z;v.path.shift();step-=dist;}else{v.x+=dx/dist*step;v.z+=dz/dist*step;step=0;g.rotation.y=Math.atan2(dx,dz);}
+          moving=true;
+        }
+        if(!v.path.length){
+          if(v.state==='raid'&&v.target){
+            const item=v.target;
+            if(Math.hypot(item.x-v.x,item.z-v.z)<1.2){
+              // First they go through it, reading the labels backwards: the moment to get there.
+              v.state='rummage';v.rummage=RUMMAGE;
+              say(`${v.name} is going through the ${item.name.toLowerCase()} by the ${(bd(item.c,item.r,maze)?.name??'racks').toLowerCase()}. “${line(v)}”`,3.6);
+            }else headFor(v,item);
+          }else if(v.state==='rummage'){
+            const item=v.target;
+            if(!item||item.taken||item.lost||item.carriedBy){v.state='raid';pickTarget(v);}
+            else if((v.rummage-=dt)<=0){
+              // Up over the head and away: “Everything is free!”
+              item.carriedBy=v;v.carrying=item;v.target=null;v.state='flee';
+              world.group.remove(item.mesh);body.carry.add(item.mesh);item.mesh.position.set(0,0,0);item.mesh.scale.setScalar(1);
+              say(`${v.name} has the ${item.name.toLowerCase()}! After them, before the hole. “${line(v)}”`,3.6);headFor(v,holeCell());
+            }
+          }else if(v.state==='flee'||v.state==='leaving'){
+            const item=v.carrying;
+            if(item){item.lost=true;item.carriedBy=null;v.carrying=null;body.carry.remove(item.mesh);item.mesh.visible=false;
+              say(`${v.name} goes down the hole with the ${item.name.toLowerCase()}. Sakura will be out of it tomorrow.`,4);}
+            v.state='gone';g.visible=false;
+          }
+        }
+        // Bumping into one that is not carrying anything: a bop, a dizzy moment, a line.
+        if(v.state==='raid'&&v.bopCool<=0&&stun<=0&&Math.hypot(v.x-px,v.z-pz)<BOP_REACH){v.bopCool=3;stun=BOP_STUN;say(`${v.name} bops Thuan on the head. “${line(v)}”`,2.6);}
+      }
+      // A waddle: side to side as they go, arms up holding a carton overhead, a bow on the way out.
+      const sway=moving?Math.sin(v.phase*9):0;
+      g.position.set(v.x,moving?Math.abs(Math.sin(v.phase*9))*.06:0,v.z);g.scale.setScalar(.15+.85*v.appear);
+      if(v.state!=='stunned')body.suit.rotation.set(v.state==='leaving'&&!moving?.5:0,0,sway*.14);
+      const up=v.carrying?-2.9:0;
+      body.arms[0].rotation.set(up||sway*.6,0,v.carrying?-.25:.12);body.arms[1].rotation.set(up||-sway*.6,0,v.carrying?.25:-.12);
     }
   }
   function talkToGuest(dt) {
@@ -5492,6 +5741,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     start:()=>start(false),autoRestock:()=>start(true),pause,
     resume(){if(phase==='paused'){controls.reset();phase='playing';emitHud();}},
     takeControl(){automatic=false;route=[];controls.reset();say('Your turn. I have the list.');emitHud();},
+    shoo(){shooQueued=true;},
     restart(seed){sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
     setMuted:muted=>sound.setMuted(muted),
     setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:value=>controls.setTouchSprint(value),requestLock:()=>controls.tryPointerLock(canvas),
@@ -5513,11 +5763,14 @@ function storageBridgeParams() {
     return { fromTown: false, mode: null, day: null };
   }
 }
-function writeStorageWonHandshake({ day, assisted }) {
+// What Sakura gets back: the night's result, read by johansson-town/src/commerce/shop-stock.js.
+// `lost` are the goods Bizarro Minato carried down the hole (sold out tomorrow); `yen` the
+// cave coins the shooed ones dropped, which go in the player's purse.
+function writeStorageWonHandshake({ day, assisted, lost = [], shooed = 0, yen = 0 }) {
   try {
     localStorage.setItem(
       STORAGE_WON_KEY,
-      JSON.stringify({ day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, t: Date.now() }),
+      JSON.stringify({ day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, lost, shooed, yen, t: Date.now() }),
     );
   } catch {}
 }
@@ -5561,8 +5814,10 @@ function yg() {
                   if (e.phase === `won` && storageBridgeParams().fromTown && !window.__storageWonPosted) {
                     window.__storageWonPosted = true;
                     const bridge = storageBridgeParams();
-                    writeStorageWonHandshake({ day: bridge.day, assisted: !!e.assisted });
-                    returnToJohanssonTown();
+                    writeStorageWonHandshake({ day: bridge.day, assisted: !!e.assisted, lost: e.lostIds || [], shooed: e.shooed || 0, yen: e.yenFound || 0 });
+                    // A moment on the results first, so you see what you saved.
+                    window.setTimeout(returnToJohanssonTown, 2600);
+                    return;
                   }
                 },
               });
@@ -5716,19 +5971,24 @@ function yg() {
                       r.zone,
                     ],
                   }),
+                  r.intrudersAbout > 0 && (0, $.jsx)(`div`, {
+                    className: `hud-chip storage-intruders text-xs tracking-wide uppercase`,
+                    children: r.thief ? `${r.thief} has a carton!` : `${r.intrudersAbout} from the sea cave about`,
+                  }),
                   (0, $.jsx)(`ul`, {
                     className: `flex w-full flex-col gap-1 rounded-[20px] border border-paper/12 bg-ink/72 p-3 backdrop-blur-md`,
                     children: r.list.map((e) =>
                       (0, $.jsxs)(
                         `li`,
                         {
-                          className: `flex items-center gap-2 text-sm ${e.taken ? `text-muted line-through` : `text-paper`}`,
+                          className: `flex items-center gap-2 text-sm ${e.lost ? `storage-lost line-through` : e.taken ? `text-muted line-through` : `text-paper`}`,
                           children: [
                             (0, $.jsx)(E, {
                               className: `size-3.5 ${e.taken ? `text-harbour` : `text-paper/25`}`,
                               strokeWidth: 2.4,
                             }),
                             e.name,
+                            e.lost && (0, $.jsx)(`span`, { className: `storage-lost-tag`, children: `down the hole` }),
                           ],
                         },
                         e.id,
@@ -5776,7 +6036,7 @@ function yg() {
               }),
               (0, $.jsx)(`p`, {
                 className: `mt-3 text-sm leading-relaxed text-muted sm:text-[0.95rem]`,
-                children: `A new layout each shift. Help Thuan find six goods among the shelves, then bring them to the pink shop curtain.`,
+                children: `After closing, Thuan restocks Sakura from the back room — and the back room has a hole in it now, down to the old sea cave. Bizarro Minato climbs up through it: the whole town in monster suits, talking backwards, carrying off the cartons on her list. Fetch six goods and bring them to the pink shop curtain. What you save is on Sakura's shelves tomorrow; what goes down the hole is sold out.`,
               }),
               (0, $.jsxs)(`ul`, {
                 className: `storage-help mt-4 space-y-1.5 text-sm text-paper-dim`,
@@ -5788,7 +6048,10 @@ function yg() {
                     children: `Shift to run · walk up to marked goods to collect`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Touch: Move and Look pads · hold Run to hurry`,
+                    children: `Space or F to shoo a visitor: they drop the carton, and a coin from the cave`,
+                  }),
+                  (0, $.jsx)(`li`, {
+                    children: `Touch: Move and Look pads · hold Run to hurry · Shoo! when one is close`,
                   }),
                 ],
               }),
@@ -5897,11 +6160,37 @@ function yg() {
                     children: [
                       (0, $.jsx)(`dt`, {
                         className: `text-xs tracking-wide text-muted uppercase`,
-                        children: `Fetched`,
+                        children: `Saved`,
                       }),
                       (0, $.jsxs)(`dd`, {
                         className: `font-mono mt-1 text-lg`,
                         children: [r.collected, `/`, r.total],
+                      }),
+                    ],
+                  }),
+                  (0, $.jsxs)(`div`, {
+                    className: `rounded-2xl bg-paper/6 px-4 py-3`,
+                    children: [
+                      (0, $.jsx)(`dt`, {
+                        className: `text-xs tracking-wide text-muted uppercase`,
+                        children: `Shooed`,
+                      }),
+                      (0, $.jsx)(`dd`, {
+                        className: `font-mono mt-1 text-lg`,
+                        children: `${r.shooed || 0} · ¥${r.yenFound || 0}`,
+                      }),
+                    ],
+                  }),
+                  (0, $.jsxs)(`div`, {
+                    className: `rounded-2xl bg-paper/6 px-4 py-3`,
+                    children: [
+                      (0, $.jsx)(`dt`, {
+                        className: `text-xs tracking-wide text-muted uppercase`,
+                        children: `Down the hole`,
+                      }),
+                      (0, $.jsx)(`dd`, {
+                        className: `mt-1 text-sm leading-snug`,
+                        children: r.lostNames?.length ? r.lostNames.join(', ') : `Nothing`,
                       }),
                     ],
                   }),
@@ -5999,6 +6288,13 @@ function yg() {
               className: `absolute top-[max(0.75rem,env(safe-area-inset-top))] left-1/2 z-20 -translate-x-1/2 rounded-2xl border border-paper/12 bg-ink/70 px-3 py-2 text-sm`,
               onClick: () => n.current?.pause(),
               children: `Pause`,
+            }),
+            (0, $.jsx)(`button`, {
+              type: `button`,
+              className: `storage-shoo absolute right-[8.5rem] bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-20 h-12 min-w-20 rounded-2xl px-4 text-sm font-semibold ${r.intrudersAbout > 0 ? `` : `opacity-50`}`,
+              onPointerDown: (event) => { event.preventDefault(); n.current?.shoo(); },
+              style: {touchAction:"none",userSelect:"none"},
+              children: `Shoo!`,
             }),
           ],
         }),

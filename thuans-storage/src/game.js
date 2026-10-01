@@ -1,6 +1,10 @@
 const STORAGE_WALK_SPEED = 2.35;
 const STORAGE_RUN_SPEED = 4.2;
 const STORAGE_STEP = 1 / 60;
+// Bizarro Minato in the stockroom (stockroom.js): how fast they waddle, how close Thuan
+// must be to shoo one, what a shooed one drops, and how long a bop leaves her dizzy.
+const INTRUDER_SPEED = 1.35, INTRUDER_SLOW = 1.05, INTRUDER_CARRY = 0.75, RUMMAGE = 6;
+const SHOO_REACH = 1.45, SHOO_YEN = 50, BOP_REACH = 0.85, BOP_STUN = 0.7;
 
 function om({canvas,minimap,onHud,gltf=null}) {
   const renderer = new rd({canvas,antialias:true,powerPreference:'high-performance'});
@@ -25,6 +29,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
   let collectedBefore=0,explored=new Set(),lastPickup='';
   let simTime=0,cameraInitial=true;
   let boomLength=3.55,lookIdle=0.5,guestLine=0,guestCooldown=0,guestPrompt='';
+  let intruders=[],shooed=0,yenFound=0,stun=0,shooCool=0,shooHeld=false,shooQueued=false,chaseReplan=0;
   const focus=new G(),desired=new G(),cameraPosition=new G(),dummy=new lr();
   const dust=Array.from({length:28},(_,i)=>({x:(i*7%29)-14,z:(i*11%29)-14,y:0.6+(i%8)*0.2}));
   function say(text,seconds=3) {reaction=text;reactionTime=seconds;}
@@ -34,6 +39,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     time=0;simTime=0;idleTime=0;automatic=false;assisted=false;autoWait=0;route=[];autoTarget=null;
     explored=new Set();collectedBefore=0;lastPickup='';reaction='';reactionTime=0;
     cameraInitial=true;boomLength=3.55;lookIdle=0.5;guestLine=0;guestCooldown=0;guestPrompt='';character.group.position.set(px,0,pz);character.setHeading(yaw,true);
+    resetIntruders();
     character.setCelebrate(false);character.setWave(true);controls.reset();reveal();
   }
   function reveal() {
@@ -41,15 +47,26 @@ function om({canvas,minimap,onHud,gltf=null}) {
     for(let r=cell.r-3;r<=cell.r+3;r++)for(let c=cell.c-3;c<=cell.c+3;c++)explored.add(`${c},${r}`);
   }
   function emitHud() {
-    const required=world.items.filter(item=>item.needed),collected=required.filter(item=>item.taken).length;
+    const required=world.items.filter(item=>item.needed),collected=required.filter(item=>item.taken).length,lost=required.filter(item=>item.lost);
     const cell=_d(px,pz,maze),zone=bd(cell.c,cell.r,maze)?.name ?? 'Main aisle';
-    onHud({phase,time,collected,total:required.length,list:required.map(({id,name,taken})=>({id,name,taken,needed:true})),
-      readyToStock:collected===required.length,thuanReady:characterReady,pointerLocked:controls.isPointerLocked(),
+    onHud({phase,time,collected,total:required.length,list:required.map(({id,name,taken,lost})=>({id,name,taken,lost:!!lost,needed:true})),
+      readyToStock:required.every(item=>item.taken||item.lost),lost:lost.length,lostNames:lost.map(item=>item.name),lostIds:lost.map(item=>item.id),
+      shooed,yenFound,intrudersAbout:intruders.filter(v=>v.state!=='waiting'&&v.state!=='gone').length,intrudersTotal:intruders.length,
+      thief:intruders.find(v=>v.carrying)?.name??'',thuanReady:characterReady,pointerLocked:controls.isPointerLocked(),
       zone,assisted,quote:reaction,reaction:reactionTime>0?reaction:'',autoRestocking:automatic,seed:maze.seed,
       explored:[...explored].filter(key=>{const[c,r]=key.split(',').map(Number);return yd(c,r,maze);}).length/maze.cells.filter(v=>v===0).length,guestPrompt,guest:world.guest?{name:world.guest.name,id:world.guest.id}:null});
   }
   function chooseRoute() {
-    const from=_d(px,pz,maze),remaining=world.items.filter(item=>item.needed&&!item.taken);
+    const from=_d(px,pz,maze);
+    // A carton on its way down the hole comes first: after it, and shoo.
+    const thief=intruders.find(v=>v.carrying&&v.state==='flee');
+    // Then one going through a carton on the list: get there before they lift it.
+    const rummager=thief?null:intruders.find(v=>v.state==='rummage');
+    const chase=thief||rummager;
+    // Re-aimed every moment, so it skips the centre of her own cell: going back to it each
+    // time had her jittering on the spot while the thief walked off.
+    if(chase){const cell=_d(chase.x,chase.z,maze),path=storageRoute(maze,from,cell);if(path.length){route=(path.length>1?path.slice(1):path).map(c=>gd(c.c,c.r,maze));if(path.length===1)route.push({x:chase.x,z:chase.z});autoTarget={id:'thief'};chaseReplan=0.4;return;}}
+    const remaining=world.items.filter(item=>item.needed&&!item.taken&&!item.lost&&!item.carriedBy);
     const options=remaining.length?remaining:[{...maze.exit,id:'exit'}];
     let shortest=null,target=null;
     for(const item of options){const path=storageRoute(maze,from,item);if(path.length&&(!shortest||path.length<shortest.length)){shortest=path;target=item;}}
@@ -60,7 +77,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
   }
   function collect() {
     for(const item of world.items) {
-      if(item.taken||Math.hypot(item.x-px,item.z-pz)>0.85)continue;
+      if(item.taken||item.lost||item.carriedBy||Math.hypot(item.x-px,item.z-pz)>0.85)continue;
       item.taken=true;item.mesh.visible=false;lastPickup=item.id;sound.pickup();character.playPickup();
       if(item.needed){
         say(item.id==='tea'?'Tea tins. The kettle will be ready soon.':`${item.name}. That goes on the list.`);
@@ -68,7 +85,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
       }
     }
     const count=world.items.filter(item=>item.needed&&item.taken).length;
-    if(count>collectedBefore&&world.items.filter(item=>item.needed).every(item=>item.taken))say('All packed. Back to the pink shop curtain.',5);
+    if(count>collectedBefore&&world.items.filter(item=>item.needed).every(item=>item.taken||item.lost))say('All packed. Back to the pink shop curtain.',5);
     collectedBefore=count;
   }
   function step(dt) {
@@ -76,13 +93,24 @@ function om({canvas,minimap,onHud,gltf=null}) {
     const look=controls.consumeLook();
     const input=controls.actions;
     if(automatic&&(Math.hypot(input.moveX,input.moveY)>0.12)){automatic=false;route=[];say('Your turn. I have the list.');}
+    // Shoo: Space or F, the gamepad's A, or the touch button -- once per press.
+    const pads=navigator.getGamepads?.()??[],held=controls.has('Space')||controls.has('KeyF')||[...pads].some(pad=>pad?.buttons?.[0]?.pressed);
+    if((held&&!shooHeld)||shooQueued)shoo();shooHeld=held;shooQueued=false;shooCool=Math.max(0,shooCool-dt);
     // Orbit look — slightly snappier stick feel, pitch clamped like a soft third-person shoulder cam.
     yaw-=look.x*0.0045+input.lookHoldX*2.35*dt;
     pitch=Math.max(-0.72,Math.min(-0.08,pitch-look.y*0.0033-input.lookHoldY*1.65*dt));
     const looking=Math.abs(look.x)>0.35||Math.abs(look.y)>0.35||Math.abs(input.lookHoldX)>0.06||Math.abs(input.lookHoldY)>0.06;
     lookIdle=looking?0:lookIdle+dt;
     let targetX=0,targetZ=0;
-    if(automatic) {
+    if(automatic){
+      // Thuan shoos anyone in reach by herself, and re-aims at a moving thief.
+      if(intruders.some(v=>activeIntruder(v)&&Math.hypot(v.x-px,v.z-pz)<SHOO_REACH*.9))shoo();
+      if(autoTarget?.id==='thief'&&(chaseReplan-=dt)<=0)route=[];
+      if(autoTarget&&autoTarget.id!=='thief'&&autoTarget.id!=='exit'&&(autoTarget.carriedBy||autoTarget.lost||autoTarget.taken)){route=[];autoTarget=null;}
+      if(autoTarget&&autoTarget.id!=='thief'&&intruders.some(v=>v.carrying&&v.state==='flee'||v.state==='rummage')){route=[];autoTarget=null;}
+    }
+    if(stun>0){stun-=dt;targetX=targetZ=0;vx=X(vx,0,10,dt);vz=X(vz,0,10,dt);}
+    else if(automatic) {
       if(autoWait>0){autoWait-=dt;vx=vz=0;}
       else {
         if(!route.length)chooseRoute();
@@ -113,11 +141,105 @@ function om({canvas,minimap,onHud,gltf=null}) {
     }
     if(speed>0.6)sound.footstep(speed);
     idleTime=speed<0.08?idleTime+dt:0;
-    time+=dt;reveal();collect();talkToGuest(dt);
-    if(world.items.filter(item=>item.needed).every(item=>item.taken)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
+    time+=dt;reveal();collect();talkToGuest(dt);updateIntruders(dt);
+    if(world.items.filter(item=>item.needed).every(item=>item.taken||item.lost)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
       phase='won';automatic=false;speed=vx=vz=0;controls.reset();releasePointer();
-      reaction='Everything is ready. Sakura is open.';reactionTime=10;
+      const lost=world.items.filter(item=>item.needed&&item.lost).map(item=>item.name.toLowerCase());
+      reaction=lost.length?`Sakura opens without the ${lost.join(' or the ')}. Sold out until the next delivery.`:shooed?'Everything is ready, and nothing went down the hole. Sakura is open.':'Everything is ready. Sakura is open.';reactionTime=10;
       character.setCelebrate(true);character.setWave(false);sound.win();emitHud();
+    }
+  }
+  // ---- Bizarro Minato -------------------------------------------------------
+  function resetIntruders(){
+    intruders=(world.intruders||[]).map(look=>({...look,name:look.who+' the '+look.animal,state:'waiting',x:world.hole.x,z:world.hole.z,
+      path:[],target:null,carrying:null,stunned:0,bopCool:0,leave:0,said:0,appear:0,phase:Math.random()*6}));
+    for(const v of intruders){v.body.group.visible=false;v.body.group.scale.setScalar(1);v.body.carry.clear();}
+    shooed=0;yenFound=0;stun=0;shooCool=0;shooQueued=false;chaseReplan=0;
+    for(const item of world.items){delete item.lost;delete item.carriedBy;}
+  }
+  const activeIntruder=v=>v.state==='raid'||v.state==='rummage'||v.state==='flee';
+  const holeCell=()=>maze.hole;
+  function line(v){const text=v.lines[v.said%v.lines.length];v.said++;return text;}
+  function headFor(v,cell){const from=_d(v.x,v.z,maze),path=storageRoute(maze,from,cell);v.path=path.slice(1).map(c=>gd(c.c,c.r,maze));return path.length>0;}
+  function pickTarget(v){
+    // The nearest carton on the list that nobody else is after.
+    const from=_d(v.x,v.z,maze);let best=null,length=Infinity;
+    for(const item of world.items){
+      if(!item.needed||item.taken||item.lost||item.carriedBy||intruders.some(o=>o!==v&&o.target===item))continue;
+      const path=storageRoute(maze,from,item);if(path.length&&path.length<length){length=path.length;best=item;}
+    }
+    v.target=best;if(best)headFor(v,best);else{v.state='leaving';headFor(v,holeCell());}
+  }
+  function dropCarton(v){
+    const item=v.carrying;if(!item)return;
+    // It lands where they stood, on the nearest clear floor, for Thuan to pick back up.
+    const cell=_d(v.x,v.z,maze),p=gd(cell.c,cell.r,maze);
+    item.c=cell.c;item.r=cell.r;item.x=p.x;item.z=p.z;item.carriedBy=null;v.carrying=null;
+    v.body.carry.remove(item.mesh);world.group.add(item.mesh);item.mesh.position.set(p.x,0.5,p.z);item.mesh.scale.setScalar(1.6);
+  }
+  function shoo(){
+    if(shooCool>0||phase!=='playing')return;shooCool=0.35;character.playPickup();
+    let near=null,d=Infinity;
+    for(const v of intruders){if(!activeIntruder(v))continue;const dd=Math.hypot(v.x-px,v.z-pz);if(dd<d){d=dd;near=v;}}
+    if(!near||d>SHOO_REACH){if(near&&d<4)say('Shoo! — a little closer.',1.2);return;}
+    const had=near.carrying?.name;dropCarton(near);
+    near.state='stunned';near.stunned=0.9;near.target=null;shooed++;yenFound+=SHOO_YEN;sound.pickup();
+    say(`Shoo! ${near.name}${had?' drops the '+had.toLowerCase():''} and ¥${SHOO_YEN} in old cave coins: “${line(near)}”`,3.4);
+  }
+  function updateIntruders(dt){
+    for(const v of intruders){
+      const body=v.body,g=body.group;v.phase+=dt;v.bopCool=Math.max(0,v.bopCool-dt);
+      if(v.state==='waiting'){if(time>=v.emergeAt){v.state='raid';v.appear=0;g.visible=true;g.position.set(v.x,0,v.z);say(`Something climbs out of the hole at the back: ${v.name}. “${line(v)}”`,3.6);pickTarget(v);}continue;}
+      if(v.state==='gone')continue;
+      v.appear=Math.min(1,v.appear+dt*2.5);
+      let moving=false;
+      if(v.state==='stunned'){
+        v.stunned-=dt;body.suit.rotation.y+=dt*9;
+        if(v.stunned<=0){body.suit.rotation.y=0;v.state='leaving';headFor(v,holeCell());}
+      }else{
+        // Raiding: re-aim if the carton went (Thuan took it, or another got there first).
+        if(v.state==='raid'&&(!v.target||v.target.taken||v.target.lost||v.target.carriedBy))pickTarget(v);
+        if(v.state==='rummage'){moving=false;body.head.rotation.x=.45+Math.sin(v.phase*7)*.15;}else body.head.rotation.x=0;
+        const pace=v.state==='flee'?INTRUDER_CARRY:v.slow?INTRUDER_SLOW:INTRUDER_SPEED;
+        let step=pace*dt;
+        while(step>0&&v.path.length){
+          const [n]=v.path,dx=n.x-v.x,dz=n.z-v.z,dist=Math.hypot(dx,dz);
+          if(dist<=step){v.x=n.x;v.z=n.z;v.path.shift();step-=dist;}else{v.x+=dx/dist*step;v.z+=dz/dist*step;step=0;g.rotation.y=Math.atan2(dx,dz);}
+          moving=true;
+        }
+        if(!v.path.length){
+          if(v.state==='raid'&&v.target){
+            const item=v.target;
+            if(Math.hypot(item.x-v.x,item.z-v.z)<1.2){
+              // First they go through it, reading the labels backwards: the moment to get there.
+              v.state='rummage';v.rummage=RUMMAGE;
+              say(`${v.name} is going through the ${item.name.toLowerCase()} by the ${(bd(item.c,item.r,maze)?.name??'racks').toLowerCase()}. “${line(v)}”`,3.6);
+            }else headFor(v,item);
+          }else if(v.state==='rummage'){
+            const item=v.target;
+            if(!item||item.taken||item.lost||item.carriedBy){v.state='raid';pickTarget(v);}
+            else if((v.rummage-=dt)<=0){
+              // Up over the head and away: “Everything is free!”
+              item.carriedBy=v;v.carrying=item;v.target=null;v.state='flee';
+              world.group.remove(item.mesh);body.carry.add(item.mesh);item.mesh.position.set(0,0,0);item.mesh.scale.setScalar(1);
+              say(`${v.name} has the ${item.name.toLowerCase()}! After them, before the hole. “${line(v)}”`,3.6);headFor(v,holeCell());
+            }
+          }else if(v.state==='flee'||v.state==='leaving'){
+            const item=v.carrying;
+            if(item){item.lost=true;item.carriedBy=null;v.carrying=null;body.carry.remove(item.mesh);item.mesh.visible=false;
+              say(`${v.name} goes down the hole with the ${item.name.toLowerCase()}. Sakura will be out of it tomorrow.`,4);}
+            v.state='gone';g.visible=false;
+          }
+        }
+        // Bumping into one that is not carrying anything: a bop, a dizzy moment, a line.
+        if(v.state==='raid'&&v.bopCool<=0&&stun<=0&&Math.hypot(v.x-px,v.z-pz)<BOP_REACH){v.bopCool=3;stun=BOP_STUN;say(`${v.name} bops Thuan on the head. “${line(v)}”`,2.6);}
+      }
+      // A waddle: side to side as they go, arms up holding a carton overhead, a bow on the way out.
+      const sway=moving?Math.sin(v.phase*9):0;
+      g.position.set(v.x,moving?Math.abs(Math.sin(v.phase*9))*.06:0,v.z);g.scale.setScalar(.15+.85*v.appear);
+      if(v.state!=='stunned')body.suit.rotation.set(v.state==='leaving'&&!moving?.5:0,0,sway*.14);
+      const up=v.carrying?-2.9:0;
+      body.arms[0].rotation.set(up||sway*.6,0,v.carrying?-.25:.12);body.arms[1].rotation.set(up||-sway*.6,0,v.carrying?.25:-.12);
     }
   }
   function talkToGuest(dt) {
@@ -216,6 +338,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     start:()=>start(false),autoRestock:()=>start(true),pause,
     resume(){if(phase==='paused'){controls.reset();phase='playing';emitHud();}},
     takeControl(){automatic=false;route=[];controls.reset();say('Your turn. I have the list.');emitHud();},
+    shoo(){shooQueued=true;},
     restart(seed){sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
     setMuted:muted=>sound.setMuted(muted),
     setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:value=>controls.setTouchSprint(value),requestLock:()=>controls.tryPointerLock(canvas),

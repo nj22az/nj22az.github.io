@@ -186,6 +186,36 @@ function placeHarbourGuest(maze, random) {
   return { c: spot.c, r: spot.r, id: who.id, name: who.name, accent: who.accent, lines: who.lines.slice() };
 }
 
+// Bizarro Minato: the townsfolk in monster suits from the old sea cave under the
+// headland (johansson-town/src/dungeon/costumes.js -- kept in step by a test). A hole
+// has opened at the back of Thuan's stockroom, down to the cave, and at night they come
+// up through it and carry off the cartons on her list, saying the opposite of what they
+// mean. What they get down the hole is sold out in Sakura tomorrow.
+const BIZARRO = [
+  { who: 'Officer Mori', animal: 'crocodile', colour: 0x4f8a3a, belly: 0xc9d68a, lines: ['Stop! You are free to go!','Everyone is under arrest. Except the criminals.','Walk faster on the pavement, please. No hurry.'] },
+  { who: 'Mrs Sato', animal: 'donkey', colour: 0x8b8580, belly: 0xe8e0cf, slow: true, lines: ['Hee-haw! No ramen today — only ramen!','The broth is cold and the stools are sold out.','Lunch is served at midnight, as always.'] },
+  { who: 'Nao', animal: 'octopus', colour: 0xd9607f, belly: 0xf2b0c0, lines: ['Last orders! Doors open in an hour.','Eight arms and not one beer.','Sit down, you are standing up.'] },
+  { who: 'Harbour master', animal: 'seagull', colour: 0xf2f0ea, belly: 0xb9bec2, slow: true, lines: ['All ships must sink on time.','The tide is out, so it is in.','Permission to leave port: denied, go ahead.'] },
+  { who: 'Kenji', animal: 'shark', colour: 0x5f7f95, belly: 0xe8eef0, lines: ['Beat my score and I will lose it for you, bro.','Star Port is a boat, bro. Everybody knows.','Nobody swims faster backwards than me.'] },
+  { who: 'Aya', animal: 'owl', colour: 0x8a6a4a, belly: 0xe8d8b8, lines: ['Shh! This is the loud section.','All our books are blank this week.','Who? Who? Not me. Who?'] },
+  { who: 'Reiko', animal: 'fox', colour: 0xd9782e, belly: 0xf4efe6, lines: ['Tomorrow’s news: nothing happened yesterday.','Read all about it, or do not.','The evening paper comes out in the morning.'] },
+  { who: 'Tetsuo', animal: 'bear', colour: 0x5a3d2b, belly: 0xb58a64, lines: ['I only break radios now.','Grr. Welcome. Grr.','Every clock in the shop is right twice a year.'] },
+];
+/**
+ * The hole down to the sea cave: in the west wall at the cross-aisle between the
+ * departments (`wall` points from the floor cell into the wall), so whatever they take
+ * has a long carry back to it. And when each visitor climbs out.
+ */
+const SEA_CAVE_HOLE = { c: 1, r: 13, wall: [-1, 0] };
+const INTRUDER_FIRST = 12, INTRUDER_GAP = 16;
+/** Who comes up tonight: two or three of them, never the same one twice. Its own random stream, so layouts are unchanged. */
+function bizarroNight(seed) {
+  const random = ud((seed ^ 0x5eaca5e) >>> 0), pool = BIZARRO.slice();
+  const count = random() < 0.6 ? 3 : 2, night = [];
+  for (let i = 0; i < count; i++) night.push(pool.splice(Math.floor(random() * pool.length), 1)[0]);
+  return night.map((look, i) => ({ ...look, lines: look.lines.slice(), emergeAt: INTRUDER_FIRST + i * INTRUDER_GAP }));
+}
+
 // A warehouse footprint with a receiving bay, dispatch bay and four stock
 // departments. Shelf banks change orientation and position with the daily seed;
 // the central spine and cross-aisles remain clear in every layout.
@@ -245,7 +275,7 @@ function hd(seed = 1988, required = 6) {
     return { ...position, id: def.id, def, needed: needed.has(def.id) };
   });
   const guest = placeHarbourGuest({ cols, rows, cells, rooms, shelves, start, exit, items, seed }, random);
-  return { cols, rows, cells, rooms, shelves, start, exit, items, seed, guest };
+  return { cols, rows, cells, rooms, shelves, start, exit, items, seed, guest, hole: { ...SEA_CAVE_HOLE, wall: [...SEA_CAVE_HOLE.wall] }, intruders: bizarroNight(seed) };
 
 }
 

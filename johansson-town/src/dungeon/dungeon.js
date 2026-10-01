@@ -202,7 +202,10 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
   const chest={...c,mesh,open:false};
   reg(mesh,'Open the chest',()=>{
    if(chest.open)return;chest.open=true;mesh.userData.lid.rotation.x=-1.9;
-   if(chest.weapon){
+   // A carton from Thuan's stockroom, with her label on it, that Bizarro Minato carried down here.
+   const carton=!chest.weapon&&run.cartons?.length?run.cartons.shift():null;
+   if(carton){(run.recovered??=[]).push(carton);say('In the chest: Thuan’s carton of '+carton.name.toLowerCase()+', her label on it, one corner chewed. Take it up to Sakura.',4);}
+   else if(chest.weapon){
     run.items.push(chest.weapon);
     const better=!run.weapon||WEAPONS[chest.weapon].damage>WEAPONS[run.weapon].damage;
     if(better){run.weapon=chest.weapon;onWeapon(chest.weapon);}
@@ -230,7 +233,7 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
  const lantern=new THREE.PointLight(0xffdcaa,6,15,1.3);lantern.name='Your lantern';group.add(lantern);
  room.add(new THREE.HemisphereLight(0x39465a,0x14110e,.35));
 
- const refresh=()=>hud('♥'.repeat(Math.max(0,run.hp))+'♡'.repeat(Math.max(0,run.maxHp-run.hp))+' · B'+run.floor+' · ¥'+run.loot+(run.items.length?' · '+run.items.length+' found':''));
+ const refresh=()=>hud('♥'.repeat(Math.max(0,run.hp))+'♡'.repeat(Math.max(0,run.maxHp-run.hp))+' · B'+run.floor+' · ¥'+run.loot+(run.items.length?' · '+run.items.length+' found':'')+(run.recovered?.length?' · '+run.recovered.length+' of Thuan’s cartons':''));
  const blocked=(x,z,r=0)=>{
   for(const [dx,dz] of [[0,0],[r,0],[-r,0],[0,r],[0,-r],[r*.7,r*.7],[-r*.7,r*.7],[r*.7,-r*.7],[-r*.7,-r*.7]]){
    const [tx,ty]=worldTile(x+dx,z+dz);if(map.at(tx,ty)!==FLOOR||tx===map.stairs.x&&ty===map.stairs.y)return true;

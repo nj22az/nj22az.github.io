@@ -6,6 +6,11 @@ canvas { display:block; }
 .storage-error p {max-width:30rem;line-height:1.6;}
 .storage-error button {background:#f4e9dd;color:#211d1a;padding:.75rem 1.5rem;border-radius:.75rem;}
 [role="group"][aria-label="Move"]::after,[role="group"][aria-label="Look"]::after {content:attr(aria-label);position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:12px;font-weight:700;color:#fff;pointer-events:none;}
+.storage-lost {color:#c99aa8;}
+.storage-lost-tag {margin-left:auto;font-size:.65rem;letter-spacing:.06em;text-transform:uppercase;color:#b070ff;text-decoration:none;}
+.storage-intruders {border-color:#8a6ac0 !important;color:#e6d8ff;background:#2a2140cc !important;}
+.storage-shoo {background:#4a3a6e;color:#f3ecff;border:1px solid #9a7ad6;}
+.storage-shoo:active {background:#6a52a0;}
 @media (pointer:coarse) {
   .storage-speech {bottom:14.5rem;max-width:85vw;font-size:.875rem;}
   .storage-objective {bottom:12.5rem;font-size:.875rem;}

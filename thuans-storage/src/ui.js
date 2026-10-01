@@ -12,11 +12,14 @@ function storageBridgeParams() {
     return { fromTown: false, mode: null, day: null };
   }
 }
-function writeStorageWonHandshake({ day, assisted }) {
+// What Sakura gets back: the night's result, read by johansson-town/src/commerce/shop-stock.js.
+// `lost` are the goods Bizarro Minato carried down the hole (sold out tomorrow); `yen` the
+// cave coins the shooed ones dropped, which go in the player's purse.
+function writeStorageWonHandshake({ day, assisted, lost = [], shooed = 0, yen = 0 }) {
   try {
     localStorage.setItem(
       STORAGE_WON_KEY,
-      JSON.stringify({ day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, t: Date.now() }),
+      JSON.stringify({ day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, lost, shooed, yen, t: Date.now() }),
     );
   } catch {}
 }
@@ -60,8 +63,10 @@ function yg() {
                   if (e.phase === `won` && storageBridgeParams().fromTown && !window.__storageWonPosted) {
                     window.__storageWonPosted = true;
                     const bridge = storageBridgeParams();
-                    writeStorageWonHandshake({ day: bridge.day, assisted: !!e.assisted });
-                    returnToJohanssonTown();
+                    writeStorageWonHandshake({ day: bridge.day, assisted: !!e.assisted, lost: e.lostIds || [], shooed: e.shooed || 0, yen: e.yenFound || 0 });
+                    // A moment on the results first, so you see what you saved.
+                    window.setTimeout(returnToJohanssonTown, 2600);
+                    return;
                   }
                 },
               });
@@ -215,19 +220,24 @@ function yg() {
                       r.zone,
                     ],
                   }),
+                  r.intrudersAbout > 0 && (0, $.jsx)(`div`, {
+                    className: `hud-chip storage-intruders text-xs tracking-wide uppercase`,
+                    children: r.thief ? `${r.thief} has a carton!` : `${r.intrudersAbout} from the sea cave about`,
+                  }),
                   (0, $.jsx)(`ul`, {
                     className: `flex w-full flex-col gap-1 rounded-[20px] border border-paper/12 bg-ink/72 p-3 backdrop-blur-md`,
                     children: r.list.map((e) =>
                       (0, $.jsxs)(
                         `li`,
                         {
-                          className: `flex items-center gap-2 text-sm ${e.taken ? `text-muted line-through` : `text-paper`}`,
+                          className: `flex items-center gap-2 text-sm ${e.lost ? `storage-lost line-through` : e.taken ? `text-muted line-through` : `text-paper`}`,
                           children: [
                             (0, $.jsx)(E, {
                               className: `size-3.5 ${e.taken ? `text-harbour` : `text-paper/25`}`,
                               strokeWidth: 2.4,
                             }),
                             e.name,
+                            e.lost && (0, $.jsx)(`span`, { className: `storage-lost-tag`, children: `down the hole` }),
                           ],
                         },
                         e.id,
@@ -275,7 +285,7 @@ function yg() {
               }),
               (0, $.jsx)(`p`, {
                 className: `mt-3 text-sm leading-relaxed text-muted sm:text-[0.95rem]`,
-                children: `A new layout each shift. Help Thuan find six goods among the shelves, then bring them to the pink shop curtain.`,
+                children: `After closing, Thuan restocks Sakura from the back room — and the back room has a hole in it now, down to the old sea cave. Bizarro Minato climbs up through it: the whole town in monster suits, talking backwards, carrying off the cartons on her list. Fetch six goods and bring them to the pink shop curtain. What you save is on Sakura's shelves tomorrow; what goes down the hole is sold out.`,
               }),
               (0, $.jsxs)(`ul`, {
                 className: `storage-help mt-4 space-y-1.5 text-sm text-paper-dim`,
@@ -287,7 +297,10 @@ function yg() {
                     children: `Shift to run · walk up to marked goods to collect`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Touch: Move and Look pads · hold Run to hurry`,
+                    children: `Space or F to shoo a visitor: they drop the carton, and a coin from the cave`,
+                  }),
+                  (0, $.jsx)(`li`, {
+                    children: `Touch: Move and Look pads · hold Run to hurry · Shoo! when one is close`,
                   }),
                 ],
               }),
@@ -396,11 +409,37 @@ function yg() {
                     children: [
                       (0, $.jsx)(`dt`, {
                         className: `text-xs tracking-wide text-muted uppercase`,
-                        children: `Fetched`,
+                        children: `Saved`,
                       }),
                       (0, $.jsxs)(`dd`, {
                         className: `font-mono mt-1 text-lg`,
                         children: [r.collected, `/`, r.total],
+                      }),
+                    ],
+                  }),
+                  (0, $.jsxs)(`div`, {
+                    className: `rounded-2xl bg-paper/6 px-4 py-3`,
+                    children: [
+                      (0, $.jsx)(`dt`, {
+                        className: `text-xs tracking-wide text-muted uppercase`,
+                        children: `Shooed`,
+                      }),
+                      (0, $.jsx)(`dd`, {
+                        className: `font-mono mt-1 text-lg`,
+                        children: `${r.shooed || 0} · ¥${r.yenFound || 0}`,
+                      }),
+                    ],
+                  }),
+                  (0, $.jsxs)(`div`, {
+                    className: `rounded-2xl bg-paper/6 px-4 py-3`,
+                    children: [
+                      (0, $.jsx)(`dt`, {
+                        className: `text-xs tracking-wide text-muted uppercase`,
+                        children: `Down the hole`,
+                      }),
+                      (0, $.jsx)(`dd`, {
+                        className: `mt-1 text-sm leading-snug`,
+                        children: r.lostNames?.length ? r.lostNames.join(', ') : `Nothing`,
                       }),
                     ],
                   }),
@@ -498,6 +537,13 @@ function yg() {
               className: `absolute top-[max(0.75rem,env(safe-area-inset-top))] left-1/2 z-20 -translate-x-1/2 rounded-2xl border border-paper/12 bg-ink/70 px-3 py-2 text-sm`,
               onClick: () => n.current?.pause(),
               children: `Pause`,
+            }),
+            (0, $.jsx)(`button`, {
+              type: `button`,
+              className: `storage-shoo absolute right-[8.5rem] bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-20 h-12 min-w-20 rounded-2xl px-4 text-sm font-semibold ${r.intrudersAbout > 0 ? `` : `opacity-50`}`,
+              onPointerDown: (event) => { event.preventDefault(); n.current?.shoo(); },
+              style: {touchAction:"none",userSelect:"none"},
+              children: `Shoo!`,
             }),
           ],
         }),

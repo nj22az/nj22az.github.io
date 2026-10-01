@@ -69,7 +69,8 @@ test('game moves on touch, pauses without drift and automatic restocking complet
     game.restart(seed);game.autoRestock();
     for(let second=0;second<180&&hud.phase!=='won';second++)env.advance(1);
     assert.equal(hud.phase,'won',`automatic restock stalled at seed ${seed}: ${hud.collected}/${hud.total}`);
-    assert.equal(hud.collected,6);
+    // Bizarro Minato may get a carton down the hole; everything else is fetched.
+    assert.equal(hud.collected+hud.lost,6);assert.ok(hud.lost<=1,`Thuan let ${hud.lost} cartons go at seed ${seed}`);
     game.restart('same');assert.equal(hud.seed,seed);
   }
   game.dispose();assert.deepEqual(env.logs,[]);
@@ -98,4 +99,44 @@ test('harbour guests spawn on a fraction of seeds and never sit on restock short
   }
   assert.ok(withGuest>=50&&withGuest<=90,`expected ~25–40% guests, got ${withGuest}/200`);
   assert.deepEqual(api.hd(77).guest,api.hd(77).guest);
+});
+
+test('Bizarro Minato climbs out of the sea-cave hole, the same townsfolk in the same suits as the cave',async()=>{
+  const {COSTUMES}=await import('../../johansson-town/src/dungeon/costumes.js');
+  const seen=new Set();
+  for(let seed=0;seed<60;seed++){
+    const maze=api.hd(seed);
+    assert.ok(maze.intruders.length>=2&&maze.intruders.length<=3);
+    assert.equal(new Set(maze.intruders.map(v=>v.who)).size,maze.intruders.length,'nobody twice in a night');
+    assert.ok(api.yd(maze.hole.c,maze.hole.r,maze),'the hole opens onto floor');
+    assert.equal(api.vd(maze.hole.c+maze.hole.wall[0],maze.hole.r+maze.hole.wall[1],maze),true,'in a wall');
+    for(const item of maze.items)assert.ok(api.storageRoute(maze,maze.hole,item).length,'every carton can be reached from the hole');
+    for(const v of maze.intruders){
+      seen.add(v.who);const town=COSTUMES[v.who];
+      assert.ok(town,v.who+' is one of the cave’s townsfolk');assert.equal(v.animal,town.animal);assert.deepEqual([...v.lines],[...town.lines],'and talks the same backwards talk');
+    }
+  }
+  assert.ok(seen.size>=6,'most of the town turns up over a few nights');
+  assert.deepEqual(api.hd(5).intruders,api.hd(5).intruders);
+  assert.deepEqual(api.hd(5).items,api.hd(5).items);
+});
+
+test('left alone they carry cartons down the hole; Thuan restocking shoos them for cave coins',()=>{
+  let hud;
+  const game=api.createGame({canvas:env.canvas(),minimap:env.canvas(),gltf:model,onHud:value=>{hud=value;}});
+  // Standing still at the start: the night goes on without her.
+  game.restart(7);game.start();env.advance(120);
+  assert.ok(hud.lost>=1,'nobody stopped them, so something went down the hole');
+  assert.equal(hud.lostIds.length,hud.lost);assert.ok(hud.list.some(item=>item.lost));
+  assert.equal(hud.shooed,0);assert.equal(hud.yenFound,0);
+  assert.equal(hud.readyToStock,false,'the rest is still on the shelves for her');
+  // Restocking herself, she goes after them.
+  let shooed=0;
+  for(const seed of [1988,19,7,1,3,8,10,12]){
+    game.restart(seed);game.autoRestock();
+    for(let second=0;second<180&&hud.phase!=='won';second++)env.advance(1);
+    assert.equal(hud.phase,'won');assert.equal(hud.yenFound,hud.shooed*50);shooed+=hud.shooed;
+  }
+  assert.ok(shooed>=4,'she shoos them as she goes: '+shooed);
+  game.dispose();assert.deepEqual(env.logs,[]);
 });

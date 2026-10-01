@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {restoreSakura} from '../src/commerce/sakura-economy.js';
-import {SHOP_STOCK,closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorageWonHandshake,STORAGE_WON_KEY} from '../src/commerce/shop-stock.js';
+import {SHOP_STOCK,closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorageWonHandshake,STORAGE_WON_KEY,STORAGE_GOODS,stockSpec} from '../src/commerce/shop-stock.js';
 
 function depletedState(){
   const sakura=restoreSakura();
@@ -51,7 +51,27 @@ test('consumeStorageWonHandshake clears the localStorage key once',()=>{
   };
   localStorage.setItem(STORAGE_WON_KEY,JSON.stringify({day:2,assisted:true,t:123}));
   const once=consumeStorageWonHandshake();
-  assert.deepEqual(once,{day:2,assisted:true,t:123});
+  assert.deepEqual(once,{day:2,assisted:true,lost:[],shooed:0,yen:0,t:123},'an older handshake reads as a night with nothing lost');
   assert.equal(localStorage.getItem(STORAGE_WON_KEY),null);
   assert.equal(consumeStorageWonHandshake(),null);
+});
+
+test('what Bizarro Minato carried down the hole stays off the shelf, and is remembered for the sea cave',()=>{
+  const state=depletedState();
+  const result=applyStorageRestock(state,state.minutes,{lost:['biscuits','onigiri']});
+  assert.deepEqual(result.short.sort(),[stockSpec('biscuit').name,stockSpec('rice').name].sort());
+  assert.equal(state.sakura.stock.biscuit.shelf,stockSpec('biscuit').capacity-4,'the biscuits were not restocked');
+  assert.equal(state.sakura.stock.tea.shelf,stockSpec('tea').capacity,'everything else was');
+  assert.ok(state.sakura.journal.some(r=>r.kind==='Lost'&&r.buyer==='Bizarro Minato'));
+  state.sakura.caveCartons=['biscuit','rice','nonsense'];
+  assert.deepEqual(restoreSakura(state.sakura).caveCartons,['biscuit','rice'],'a save keeps the cartons waiting in the cave');
+  for(const good of Object.values(STORAGE_GOODS))assert.ok(stockSpec(good),good+' is a Sakura good');
+});
+
+test('the handshake keeps only real goods and no more coins than three visitors could drop',()=>{
+  const storage=new Map();
+  globalThis.localStorage={getItem:k=>storage.has(k)?storage.get(k):null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>storage.delete(k)};
+  localStorage.setItem(STORAGE_WON_KEY,JSON.stringify({day:3,lost:['tea','gold bars'],shooed:40,yen:99999,t:1}));
+  const read=consumeStorageWonHandshake();
+  assert.deepEqual(read.lost,['tea']);assert.equal(read.shooed,3);assert.equal(read.yen,150);
 });

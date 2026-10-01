@@ -29,6 +29,8 @@ export function closingPreparationPending(state,minutes){const day=Math.floor(mi
 export const SOLD_OUT='Sorry, we’ve sold out. Please come back tomorrow.';
 
 const STORAGE_WON_KEY='johansson-town:storage-won';
+/** Thuan's Storage cartons, as the Sakura goods they restock (thuans-storage/src/stockroom.js). */
+export const STORAGE_GOODS=Object.freeze({tea:'tea',coffee:'coffee',onigiri:'rice',biscuits:'biscuit',soap:'soap',notebooks:'notebook',postcards:'postcard',batteries:'battery'});
 
 /** True when any shelf can take units from its reserve. */
 export function shelvesNeedRestock(state){
@@ -40,10 +42,17 @@ export function shelvesNeedRestock(state){
  * mark that trading day complete. Safe to call twice: a second pass moves
  * nothing and leaves restockedDay unchanged.
  */
-export function applyStorageRestock(state,minutes){
- if(!state?.sakura?.stock)return {moved:0,dayMarked:false};
+export function applyStorageRestock(state,minutes,{lost=[]}={}){
+ if(!state?.sakura?.stock)return {moved:0,dayMarked:false,short:[]};
+ // What Bizarro Minato carried down the hole in the stockroom stays off the shelf until the next run.
+ const skip=new Set(lost.map(id=>STORAGE_GOODS[id]).filter(Boolean)),short=[];
  let moved=0;
  for(const item of SHOP_STOCK){
+  if(skip.has(item.id)){
+   short.push(item.name);
+   if(Array.isArray(state.sakura.journal)){state.sakura.journal.push({minute:minutes|0,kind:'Lost',item:item.name,buyer:'Bizarro Minato',quantity:0,revenue:0,cost:0,profit:0,cash:state.sakura.cash|0});state.sakura.journal=state.sakura.journal.slice(-400);}
+   continue;
+  }
   const count=restockItem(state,item.id,item.capacity);
   if(count){
    moved+=count;
@@ -59,7 +68,7 @@ export function applyStorageRestock(state,minutes){
  if(day!==null&&day>=0&&(state.sakura.restockedDay??-1)<day){
   state.sakura.restockedDay=day;dayMarked=true;
  }
- return {moved,dayMarked};
+ return {moved,dayMarked,short};
 }
 
 /** Read and clear the storage-won handshake written by thuans-storage. */
@@ -74,6 +83,10 @@ export function consumeStorageWonHandshake(){
   return {
    day:Number.isFinite(payload.day)?payload.day:null,
    assisted:payload.assisted===true,
+   lost:Array.isArray(payload.lost)?payload.lost.filter(id=>typeof id==='string'&&id in STORAGE_GOODS):[],
+   shooed:Number.isSafeInteger(payload.shooed)&&payload.shooed>0?Math.min(payload.shooed,3):0,
+   // Cave coins: ¥50 a shooed visitor, never more than the visitors could have dropped.
+   yen:Number.isSafeInteger(payload.yen)&&payload.yen>0?Math.min(payload.yen,150):0,
    t:Number.isFinite(payload.t)?payload.t:Date.now(),
   };
  }catch{return null;}
