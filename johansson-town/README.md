@@ -41,7 +41,7 @@ than expecting a clean run.
 | `assets/` | Models, textures, audio (see `assets/ATTRIBUTION.md`) |
 | `art/`, `tools/` | Source art and the Blender / packing pipelines that regenerate assets |
 | `creator/` | Standalone islander maker, used by share links |
-| `docs/` | Design notes; start with `ART_DIRECTION.md`, `SAKURA_STORE.md`, `EXPANSION-NOTES.md` |
+| `docs/` | Design notes; start with `AMPLIFY-AUDIT.md` (current audit, look and building-kit standards, roadmap), then `ART_DIRECTION.md`, `SAKURA_STORE.md`, `EXPANSION-NOTES.md` |
 
 ## Playing
 
