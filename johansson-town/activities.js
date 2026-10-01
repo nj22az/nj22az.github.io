@@ -47,7 +47,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
-  let pendingAbsence=0,ledgerView=null,magazineView=null;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
+  let pendingAbsence=0,ledgerView=null,magazineView=null;let state={...defaults},timer=null,modalOpen=false,pointerStartedInModal=false,previousFocus=null,radioStation=0;
 
   try {
     const saved=readSave(localStorage);
@@ -94,7 +94,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function show(title,text,buttons=[],options={}){
     modal.classList.remove('bag-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
-    modalRevision++;const revision=modalRevision;
+    modalRevision++;const revision=modalRevision;pointerStartedInModal=false;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
     heading.textContent=title;body.classList.remove('signal');body.replaceChildren();
     const p=document.createElement('p');p.textContent=text;body.append(p);actions.replaceChildren();
@@ -900,6 +900,10 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
 
   $('#closeActivity').onclick=close;
+  // A touch which opens a menu can retarget its click to a newly displayed button.
+  // Require pointer clicks to begin inside this menu; keyboard activation stays valid.
+  modal.addEventListener('pointerdown',()=>{pointerStartedInModal=true;});
+  modal.addEventListener('click',e=>{if(e.detail!==0&&!pointerStartedInModal){e.preventDefault();e.stopImmediatePropagation();}pointerStartedInModal=false;},true);
   modal.addEventListener('click',e=>{if(e.target===modal)close();});
   document.addEventListener('keydown',e=>{if(!modalOpen)return;if(e.code==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const focusable=[...modal.querySelectorAll('button:not(:disabled),a[href],iframe,input:not(:disabled),[tabindex="0"]')];const index=focusable.indexOf(document.activeElement);e.preventDefault();focusable[(index+(e.shiftKey?-1:1)+focusable.length)%focusable.length]?.focus();}});
   $('#notebookButton').onclick=inventory;
