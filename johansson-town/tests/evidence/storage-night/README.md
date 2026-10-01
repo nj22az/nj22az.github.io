@@ -38,3 +38,7 @@ Browser screenshots and JSON records are alongside this file. Both runtimes were
 ## Limits
 
 The corrected built runtime was tested locally; it has not been deployed to Pages. The tests accelerate the real fixed-step stockroom simulation and position the player for specific interactions. They do not establish an uninterrupted physical walk-through or hardware gamepad acceptance. Phone viewport/touch and WebGL functionality passed under software rendering; physical iPhone/iPad frame rates, WebKit and device GPU performance were not measured. No geometry, model, schedule, Photo Studio or warehouse implementation was changed.
+
+## Main advanced during final publication
+
+After this validation, main advanced by one commit to `302d97b36af05d8333ccc250334a159b5d4ae821` ("Thuan's Storage: one Bizarro boss a night, behaving like its suit"). It deliberately replaces the multiple carton thieves with a single boss, removes stolen-carton records and chest recovery, and changes the hand-off and rewards. There is substantive overlap in both games, stock/economy, UI and runtime packaging. PR #131 retains the tested repairs against the requested `ca049ba` as a draft; it has not been merged or deployed. Integrating the tested thief/carton behavior into the new boss design requires a gameplay decision. The results above apply to the requested baseline and its repaired runtime, not to acceptance of the new boss commit.
