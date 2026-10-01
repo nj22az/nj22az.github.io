@@ -1,4 +1,5 @@
 import {buildDiningStreet} from './dining-street.js';
+import {createFerryVehicles} from './ferry-vehicles.js';
 import {buildOilJetty} from './oil-jetty.js';
 import {GROUND} from '../render/ground-palette.js';
 import {buildBicycle,BOOKSHOP_BICYCLE} from './bicycle.js';
@@ -210,6 +211,7 @@ export function createTown(options){
    world.westYard=buildWestYard({parent:world.group,colliders:world.colliders,shadows:options.shadows});
    // Nobody drives onto an island: the ferry calls at the outer pier. See ferry.js.
    world.ferry=createFerryRun({parent:world.group,colliders:world.colliders,shadows:options.shadows});
+   world.ferryVehicles=createFerryVehicles({parent:world.group,run:world.ferry,getPlayerPosition:options.getPlayerPosition});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,anisotropy:options.maxAnisotropy||4,
     heightAt:groundHeight,paved:pavedAt(),register:options.register,onAction:options.onAction});
    // Crabs on the wet sand below the wall and fish leaping offshore. See beach-life.js.
@@ -281,7 +283,7 @@ export function createTown(options){
     world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.airportIsland?.update(dt,minutes,day);world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
-    world.ferry?.update(dt,minutes,time);world.bus?.update(dt,minutes);
+    world.ferry?.update(dt,minutes,time);world.ferryVehicles?.update(dt,minutes);world.bus?.update(dt,minutes);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
     if(world.shopDoors?.length){

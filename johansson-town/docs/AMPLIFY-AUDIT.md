@@ -422,6 +422,33 @@ as rules:
 - **Third person needs room.** In a 3 m classroom the lens is mostly the back of a
   head. That is why rooms are seen first person.
 
+## 12. Second build session: the island as a place people live
+
+| | |
+|---|---|
+| ![Town hall](amplify-audit/after-town-hall.jpg) | ![Power house](amplify-audit/after-power-house.jpg) |
+| ![Mayor's office](amplify-audit/after-mayor-office.jpg) | ![Mayor's home](amplify-audit/after-mayor-home.jpg) |
+| ![Kitahama](amplify-audit/after-kitahama.jpg) | ![The island](amplify-audit/after-island.jpg) |
+| ![Oil jetty and tanker](amplify-audit/after-oil-jetty.jpg) | ![Car ferry](amplify-audit/after-car-ferry.jpg) |
+| ![Post office](amplify-audit/after-post-office.jpg) | ![Distribution poles](amplify-audit/after-poles.jpg) |
+
+| Request | What was built | Where |
+|---|---|---|
+| Barber → generator | The barber became the power station; then, on request, the power house moved to the town hall grounds (its own louvred block, two stacks, day tank in a bund). The shop-house is now the post office. | `school.js` (`buildTownHallDressing`), `okinawa/quarters.js`, `houses.js` |
+| School → town hall | 港町役場 · 公民館. The class is cut to 8 pupils, each from an island household. It has the mayor's office (petitions, minutes, island map) and Mayor Johansson's home (tatami, futon sleeps to 06:30, the wardrobe mirror opens the maker). The exterior gets a forecourt, canopy, lawn and beds, a car park with the town's vehicles, flags and a monument; the school-only props are cut from the model. | `interiors/town-hall.js`, `school.js`, `classroom.js` |
+| Every NPC has a purpose and a home | `people/island-households.js` lists everyone, their home and their job, and nameplates read from it. Thuan, Nao and Mrs Sato live in Kitahama and walk home instead of taking the ferry. Families' houses have their own interior. | `island-households.js`, `kitahama-layout.js`, `island-homes.js`, `interiors/family-home.js` |
+| Bigger, less rectangular island | An irregular natural shore around the built edges (seawall, harbour, beach), and new land to the north-east for Kitahama: five standard walled homes, block walls, a cane field and its pole line. | `peninsula.js`, `okinawa/quarters.js` |
+| Car ferry | A ro-ro hull with the vehicle deck forward, the cabin and bridge aft, and a bow ramp that lands on the quay. On each call two vehicles drive off and up Main Street and two drive on; they wait for anyone in their path. | `ferry.js`, `ferry-vehicles.js` |
+| Realistic utility poles | Spun-concrete distribution poles with a 6.6 kV crossarm, transformers and cutouts, low-voltage racks, telephone cable, step bolts and guy wires; conductors sag by type. | `okinawa/props.js` |
+| Oil jetty and tanker | A walkable jetty on piles with a manifold, a hose crane and a pipeline to the shore fuel depot. The coastal tanker calls every third day, 08:00–15:00. | `oil-jetty.js` |
+| Less clutter | Vending machines kept at three places (Sakura, the onsen lane, the fish quay). | `harbour.js`, `quarters.js` |
+| Sewage works | Clarifiers, an aeration basin, a sludge tank and an outfall on Kitano-jima. | `airport-island.js` |
+
+**Still open:**
+- The neighbours have homes and jobs in the registry, but they still keep to their spot rather than walking home at night. Doing that means turning them into scheduled residents.
+- Sakura's rebuild, the night and interior lighting, the park model, the horizon frame, the rest of Shimanchu 2, and the life engine (§8) remain.
+- The quarter's budget rose from 80 to 110 draws and from 120k to 150k triangles for Kitahama and the new poles. Measure on the iPad.
+
 ## Appendix: audit camera views
 
 ```js
