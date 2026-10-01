@@ -11,6 +11,7 @@ import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLAND
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 import {buildSakuraCheer,paintSakuraShell,buildSakuraBand} from './sakura-cheer.js';
 import {buildSakuraLife} from './sakura-life.js';
+import {buildMagazineRack} from './sakura-magazine-rack.js';
 let model=null,pending=null;
 // The gondolas were cut into three islands and each one turned a quarter turn
 // (SHELF_ISLANDS in sakura-layout.js says where each one comes from and goes). The shop
@@ -136,6 +137,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   pair.forEach(m=>m.computeBoundingSphere());
   if(piece.look)anchor(piece.look,piece.title,()=>action('inspect',piece.title.replace(/^(Read|Look over) (the )?/,'Sakura · '),piece.text));
  }
+ buildMagazineRack(room,{anchor,action});
  const ads=advertising.finish();
  // The posters hang on the shop's own walls, not across its windows (sakura-dressing.js):
  // the glass is for seeing in, and for the paper decorations that change with the season.
