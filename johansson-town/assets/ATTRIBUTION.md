@@ -165,7 +165,9 @@ The playable ramen interior reuses this Inakaya asset. A cached geometry variant
 - Changes: baked transforms, texture-aware simplification, two 2048px JPEG textures, lit rough rock materials, uniform placement beyond the northern street boundary. No portion of the scan was cropped out.
 - Runtime file: `models/sea-cave/umanose.glb`. Rebuild with `node tools/pack-sea-cave.mjs /path/to/umanosehorseback_sea_cave.glb`. Source hash and geometry measurements are in `models/sea-cave/manifest.json`.
 
-## Old Warehouse (2026-09-11)
+## Old Warehouse (2026-09-11) — retired
+
+**Removed 1 October 2026.** The harbour warehouse is now built in code from the Okinawan kit (`src/world/warehouse.js`, `buildWarehouseShell`); the photographed model is no longer shipped.
 
 `models/warehouse/old-warehouse.glb` replaces the western harbour shed with the user-supplied **Old Warehouse** by [aswin.baskaran](https://sketchfab.com/aswin4550). [Source model](https://sketchfab.com/3d-models/old-warehouse-5ca553c34c524a85b3d72ce64da95e41); licence recorded in the supplied file: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 

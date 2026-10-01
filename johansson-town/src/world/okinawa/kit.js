@@ -23,6 +23,23 @@ const FINISHES=Object.freeze({
  roof:{roughness:.88,metalness:0,side:THREE.DoubleSide},
 });
 
+/**
+ * The one module every building is measured in (docs/AMPLIFY-AUDIT.md, §5.1).
+ *
+ * Japanese building runs on the ken and its half, so a door, a window and a shutter
+ * bay are all the same few sizes wherever they turn up. The town used nine storey
+ * heights and six door widths; new and rebuilt buildings take theirs from here.
+ */
+export const GRID=Object.freeze({
+ unit:.91,bay:1.82,block:.30,
+ storey:Object.freeze({shop:3.0,home:2.7}),slab:.15,parapet:.6,
+ door:Object.freeze({home:[.91,2.0],shop:[1.82,2.1]}),shutterBay:2.73,
+ window:Object.freeze({small:.91,wide:1.82,sill:.9,head:2.1}),
+ eave:Object.freeze({hip:.6,canopy:.9,hood:.3}),
+});
+/** Snaps a length to whole grid units (never below one). */
+export const snapToGrid=(metres,unit=GRID.unit)=>Math.max(1,Math.round(metres/unit))*unit;
+
 const colour=new THREE.Color();
 const tmp=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler(),s=new THREE.Vector3(),p=new THREE.Vector3();
 
