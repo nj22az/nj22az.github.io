@@ -1074,7 +1074,8 @@ function advanceTown(dt,playerPaused,fastForward=false){
     if(current?.id==='onsen')onsenGuests.sync(minutes,dt);
     if(current&&!catchingUp)activeRoomLayout?.tick?.(dt,minutes,elapsed);
     if(homeOwner(current))homeGuests.update(dt,minutes);
-    venueService?.update(dt);beerService?.update(dt);
+    // The ramen counter: an order is cooked for five seconds, then set down in front of you.
+    venueService?.update(dt);beerService?.update(dt);ramenPlayerService?.update(dt);
     castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);neighbourChats.update(dt,minutes,weather);
     if(!current&&!catchingUp){world.update(dt,elapsed,daylight(minutes),minutes);neighbours?.update(dt,minutes,player.position);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
 }

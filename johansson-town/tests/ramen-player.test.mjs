@@ -12,3 +12,12 @@ test('ramen orders charge only on delivery, cancel when leaving and cannot repla
  service.update(60);assert.equal(charges,1);assert.ok(service.eat());assert.equal(service.eat(),false);assert.ok(room.children.every(p=>!p.visible));
  assert.ok(service.request('ramen'));yen=0;service.update(5);assert.equal(charges,1);assert.equal(service.order,null);assert.ok(room.children.every(p=>!p.visible));service.dispose();assert.equal(room.children.length,0);
 });
+
+test('the game loop cooks the order: the frame drives the ramen counter every tick',async()=>{
+ // The service only moves an order on when update() is called. It once never was, so an
+ // order was taken and the bowl never came. Keep the call in the per-frame simulation.
+ const {readFile}=await import('node:fs/promises');
+ const source=await readFile(new URL('../src/game.js',import.meta.url),'utf8');
+ const frame=source.slice(source.indexOf('venueService?.update(dt)'),source.indexOf('castAI?.update(dt'));
+ assert.ok(frame.includes('ramenPlayerService?.update(dt)'),'ramenPlayerService.update is not called from the frame loop');
+});
