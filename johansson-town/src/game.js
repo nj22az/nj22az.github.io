@@ -62,7 +62,6 @@ import {createAvatarJohansson,playerRecipe,savePlayerRecipe,importRecipeFromURL}
 import {openCreator} from './avatars/creator.js';
 import {assetURL} from './assets.js';
 import {createBeerService,createDrinkProp,createBiteProp,setPropPortion,DRINKS} from './people/izakaya-beer.js';
-import {stockSpec} from './commerce/shop-stock.js';
 import {DRUNK,LAGER_ALCOHOL,soberUp,wantsAnother,drink as drinkUp} from './people/drunk.js';
 import {createShopCarry} from './interact/shop-carry.js';
 import {townAudio} from './audio/town-audio.js?snappy=1';
@@ -852,9 +851,7 @@ const DUNGEON_SITE={id:'dungeon',title:'The Old Sea Cave',jp:'古洞',get sub(){
 function enterDungeon(){
  if(current||roomLoading)return;
  // Whatever you have to hit with comes down with you; otherwise it is your fists.
- // Thuan's cartons that went down the hole in her stockroom are in the chests down here (thuans-storage).
- dungeonRun={hp:5,maxHp:5,loot:0,items:[],floor:1,seed:Math.floor(Math.random()*1e9),kills:0,weapon:bestWeapon(activities.state.inventory),
-  cartons:(activities.state.sakura?.caveCartons||[]).map(id=>({id,name:stockSpec(id)?.name||id})),recovered:[]};
+ dungeonRun={hp:5,maxHp:5,loot:0,items:[],floor:1,seed:Math.floor(Math.random()*1e9),kills:0,weapon:bestWeapon(activities.state.inventory)};
  fists?.setWeapon(dungeonRun.weapon);
  enterRoom(DUNGEON_SITE);
 }
@@ -880,13 +877,9 @@ function finishDungeon(){
  const run=dungeonRun;dungeonRun=null;fists?.setWeapon(null);fists?.guard(false);if(!run)return;
  const st=activities.state;
  if(run.lost){setTimeout(()=>say('You come to at the cave mouth with a headache and empty pockets. Whatever you found is down there still.',5),60);return;}
- st.yen=(st.yen||0)+run.loot;st.inventory=st.inventory||[];for(const item of run.items)st.inventory.push(item);
- // Thuan's cartons, back from the cave: straight onto Sakura's shelf.
- for(const carton of run.recovered||[]){const stock=st.sakura?.stock?.[carton.id],spec=stockSpec(carton.id);if(stock&&spec)stock.shelf=spec.capacity;if(st.sakura)st.sakura.caveCartons=(st.sakura.caveCartons||[]).filter(id=>id!==carton.id);activities.note?.('Brought Thuan’s '+carton.name.toLowerCase()+' back up from the sea cave.');}
- activities.save();
+ st.yen=(st.yen||0)+run.loot;st.inventory=st.inventory||[];for(const item of run.items)st.inventory.push(item);activities.save();
  const found=run.items.length?' and '+run.items.join(', '):'';
- const back=run.recovered?.length?' Thuan’s '+run.recovered.map(c=>c.name.toLowerCase()).join(' and ')+' go back on Sakura’s shelf.':'';
- setTimeout(()=>say((run.loot||run.items.length?'Out into the daylight with ¥'+run.loot+found+'. Deepest: B'+run.floor+'.':run.recovered?.length?'Out into the daylight.':'Out into the daylight again. Nothing found this time.')+back,6),60);
+ setTimeout(()=>say(run.loot||run.items.length?'Out into the daylight with ¥'+run.loot+found+'. Deepest: B'+run.floor+'.':'Out into the daylight again. Nothing found this time.',5),60);
 }
 let tunnelSignAt=-99;
 function reachTheTunnelMouth(x,z){

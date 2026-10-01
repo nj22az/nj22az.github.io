@@ -4,20 +4,24 @@
 // Oi MeshBasicMaterial, us PointLight.
 
 /**
- * One of Bizarro Minato in their suit: a townsperson's own face looking out from under
- * the animal's hood, a suit in its colours, arms that swing, and a spot over the head to
- * carry a stolen carton. The same nine animals as the sea cave (johansson-town/src/dungeon).
+ * The night's boss, in their suit: a townsperson's own face looking out from under the
+ * animal's hood, a suit in its colours, and joints game.js moves to make it behave like the
+ * animal -- legs on hip pivots (a donkey kicks), arms on shoulder pivots (a gorilla beats its
+ * chest and walks on its knuckles), and a ring of stars for when it is worn out. The same
+ * suits as the sea cave (johansson-town/src/dungeon/costumes.js).
  */
-function createBizarroIntruder(look) {
+function createBizarroBoss(look) {
   const root = new ur(); root.name = 'Bizarro ' + look.who + ' the ' + look.animal;
   const suit = new ur(); root.add(suit);
   const mats = new Map(), mat = c => { if (!mats.has(c)) mats.set(c, new co({color:c})); return mats.get(c); };
   const fur = mat(look.colour), pale = mat(look.belly), skin = mat(0xe6bc98), black = mat(0x181416), white = mat(0xf7f5ef);
   const add = (geometry, material, x, y, z, parent = suit) => { const m = new q(geometry, material); m.position.set(x, y, z); parent.add(m); return m; };
-  for (const sx of [-1, 1]) add(new Ha(.17, .5, .2), fur, sx * .12, .25, 0);
-  add(new Ua(.27, .5, 4, 10), fur, 0, .88, 0);
-  add(new Ya(.2, 16, 12), pale, 0, .86, .2).scale.set(.85, 1.2, .45);
-  const arms = [-1, 1].map(sx => { const pivot = new ur(); pivot.position.set(sx * .34, 1.15, 0); suit.add(pivot); add(new Ua(.075, .38, 3, 8), fur, 0, -.25, 0, pivot); add(new Ya(.08, 8, 6), pale, 0, -.5, 0, pivot); return pivot; });
+  // A gorilla is all shoulders and arms; the rest stand like people in suits.
+  const ape = look.animal === 'gorilla', chest = ape ? 1.3 : 1, reach = ape ? 1.55 : 1;
+  const legs = [-1, 1].map(sx => { const hip = new ur(); hip.position.set(sx * .12, .5, 0); suit.add(hip); add(new Ha(.17, .5, .2), fur, 0, -.25, 0, hip); return hip; });
+  add(new Ua(.27, .5, 4, 10), fur, 0, .88, 0).scale.set(chest, 1, ape ? 1.15 : 1);
+  add(new Ya(.2, 16, 12), pale, 0, .86, .2 * (ape ? 1.15 : 1)).scale.set(.85, 1.2, .45);
+  const arms = [-1, 1].map(sx => { const pivot = new ur(); pivot.position.set(sx * .34 * chest, 1.15, 0); suit.add(pivot); add(new Ua(.075 * (ape ? 1.4 : 1), .38 * reach, 3, 8), fur, 0, -.25 * reach, 0, pivot); add(new Ya(.08 * (ape ? 1.5 : 1), 8, 6), pale, 0, -.5 * reach, 0, pivot); return pivot; });
   const head = new ur(); head.position.y = 1.5; suit.add(head);
   const R = .21;
   add(new Ya(R, 14, 10), skin, 0, 0, 0, head);
@@ -65,13 +69,24 @@ function createBizarroIntruder(look) {
       ball(.075, pale, 0, .06, .21).scale.set(1.1, .8, .9);
       for (const sx of [-1, 1]) ball(.06, fur, sx * .15, .23, -.01);
       break;
+    case 'gorilla':
+      // A heavy brow, a grey leathery muzzle, small ears and a crest.
+      add(new Ha(.3, .06, .1), fur, 0, .2, .17, head).rotation.x = -.2;
+      ball(.09, pale, 0, .08, .21).scale.set(1.25, .75, .7);
+      for (const sx of [-1, 1]) { ball(.015, black, sx * .035, .1, .27); ball(.04, pale, sx * .2, .13, 0); }
+      ball(.13, fur, 0, .27, -.05).scale.set(.85, .7, 1.1);
+      break;
   }
-  const carry = new ur(); carry.position.set(0, 2.05, 0); suit.add(carry);
+  // Worn out: stars round the head, the moment to shoo.
+  const stars = new ur(); stars.position.y = 1.95; stars.visible = false; suit.add(stars);
+  const gold = new Oi({color:0xffd75a});
+  for (let i = 0; i < 5; i++) { const star = new q(new Ka(.05, .1, 5), gold), a = i / 5 * Math.PI * 2; star.position.set(Math.cos(a) * .32, 0, Math.sin(a) * .32); stars.add(star); }
   root.traverse(node => { if (node instanceof q) node.castShadow = true; });
-  return { group: root, suit, arms, head, carry };
+  return { group: root, suit, arms, legs, head, stars };
 }
 
 /** The hole down to the sea cave: a cracked opening low in the back wall, a pit in the floor, a violet glow. */
+const BOSS_SIZE = 1.25;
 function createSeaCaveHole(maze) {
   const group = new ur(); group.name = 'Hole down to the old sea cave';
   // Built as if the wall were to the south (+z), then turned to whichever wall it is in.
@@ -247,9 +262,10 @@ function Yp(maze) {
     guest={...maze.guest,x:gp.x,z:gp.z,mesh:guest.mesh};
   }
   const hole=createSeaCaveHole(maze);group.add(hole.group);textures.push(hole.texture);
-  // Bizarro Minato waits down the hole until its time; game.js brings each one up.
-  const intruders=(maze.intruders||[]).map(look=>{const body=createBizarroIntruder(look);body.group.visible=false;body.group.position.set(hole.x,0,hole.z);group.add(body.group);return {...look,body};});
-  return {group,items,exit:{...exitPosition,mesh:curtain},guest,lanterns,motes,hole,intruders,dispose(){
+  // Tonight's boss waits down the hole until its time; game.js brings it up. A head taller than Thuan.
+  let boss=null;
+  if(maze.boss){const body=createBizarroBoss(maze.boss);body.group.visible=false;body.group.scale.setScalar(BOSS_SIZE);body.group.position.set(hole.x,0,hole.z);group.add(body.group);boss={...maze.boss,body};}
+  return {group,items,exit:{...exitPosition,mesh:curtain},guest,lanterns,motes,hole,boss,dispose(){
     const geometries=new Set(),mats=new Set();
     group.traverse(node=>{if(node instanceof q){geometries.add(node.geometry);for(const material of Array.isArray(node.material)?node.material:[node.material])mats.add(material);}});
     geometries.forEach(value=>value.dispose());mats.forEach(value=>value.dispose());textures.forEach(value=>value.dispose());

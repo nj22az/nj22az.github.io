@@ -40,7 +40,7 @@ import {createThuanMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
 import {createThuanChat} from './src/people/thuan-chat.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
-import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorageWonHandshake,STORAGE_GOODS} from './src/commerce/shop-stock.js';
+import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorageWonHandshake} from './src/commerce/shop-stock.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
@@ -840,7 +840,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       return;
     }
     const day=Math.floor(minutes/1440);
-    show('Thuan\'s stockroom','Cartons wait in the back room. Restock the shelves before the next open.\n\nThere is a hole at the back of the stockroom now, down to the old sea cave, and something comes up through it at night. Whatever it carries off will be sold out tomorrow.',[
+    show('Thuan\'s stockroom','Cartons wait in the back room. Restock the shelves before the next open.\n\nThere is a hole at the back of the stockroom now, down to the old sea cave, and something big comes up through it at night. Somebody from town, in a suit. Mind the aisles.',[
       ['Play as Thuan',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=play&day='+day;}],
       ['Let Thuan restock',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=auto&day='+day;}],
       ['Leave',close],
@@ -850,14 +850,12 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const handshake=consumeStorageWonHandshake();
     if(!handshake)return false;
     state.sakura=restoreSakura(state.sakura);
-    const {short}=applyStorageRestock(state,getMinutes(),{lost:handshake.lost});
-    // They are down in the sea cave now, in its chests, for anyone brave enough to fetch them (dungeon.js).
-    if(handshake.lost.length){const cave=new Set(state.sakura.caveCartons||[]);for(const id of handshake.lost){const good=STORAGE_GOODS[id];if(good)cave.add(good);}state.sakura.caveCartons=[...cave];}
-    // The coins the shooed ones dropped in the stockroom: old cave money, still good at Sakura.
-    if(handshake.yen){state.yen+=handshake.yen;note('Found ¥'+handshake.yen+' in old sea-cave coins in Thuan’s stockroom.');}
+    applyStorageRestock(state,getMinutes());
+    // The night's boss from the sea cave (thuans-storage): seen off, it leaves its cave coins behind.
+    const boss=handshake.boss;
+    if(handshake.yen){state.yen+=handshake.yen;note('Saw off '+(boss?boss.who+' in a '+boss.animal+' suit':'a Bizarro visitor')+' in Thuan’s stockroom: ¥'+handshake.yen+' in old cave coins.');}
     save();
-    const caught=handshake.shooed?' You shooed '+handshake.shooed+' of them back down the hole'+(handshake.yen?' and picked up ¥'+handshake.yen+' in cave coins':'')+'.':'';
-    say(short.length?'Shelves restocked -- except '+short.join(' and ').toLowerCase()+': Bizarro Minato carried '+(short.length>1?'them':'it')+' down to the sea cave. They will be in its chests.'+caught:'Shelves restocked.'+caught,6);
+    say(boss?.defeated?'Shelves restocked. And '+boss.who+' -- the '+boss.animal+' in the stockroom -- has gone back down the hole, leaving ¥'+handshake.yen+' in cave coins.':boss?'Shelves restocked, with a '+boss.animal+' still loose in the back room.':'Shelves restocked.',6);
     return true;
   }
   function action(kind,name,detail){

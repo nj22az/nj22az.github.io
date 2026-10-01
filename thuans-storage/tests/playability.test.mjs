@@ -69,8 +69,7 @@ test('game moves on touch, pauses without drift and automatic restocking complet
     game.restart(seed);game.autoRestock();
     for(let second=0;second<180&&hud.phase!=='won';second++)env.advance(1);
     assert.equal(hud.phase,'won',`automatic restock stalled at seed ${seed}: ${hud.collected}/${hud.total}`);
-    // Bizarro Minato may get a carton down the hole; everything else is fetched.
-    assert.equal(hud.collected+hud.lost,6);assert.ok(hud.lost<=1,`Thuan let ${hud.lost} cartons go at seed ${seed}`);
+    assert.equal(hud.collected,6);
     game.restart('same');assert.equal(hud.seed,seed);
   }
   game.dispose();assert.deepEqual(env.logs,[]);
@@ -101,42 +100,69 @@ test('harbour guests spawn on a fraction of seeds and never sit on restock short
   assert.deepEqual(api.hd(77).guest,api.hd(77).guest);
 });
 
-test('Bizarro Minato climbs out of the sea-cave hole, the same townsfolk in the same suits as the cave',async()=>{
+test('each night one of Bizarro Minato comes up the sea-cave hole, in the same suit as in the cave',async()=>{
   const {COSTUMES}=await import('../../johansson-town/src/dungeon/costumes.js');
-  const seen=new Set();
+  const animals=new Set();
   for(let seed=0;seed<60;seed++){
-    const maze=api.hd(seed);
-    assert.ok(maze.intruders.length>=2&&maze.intruders.length<=3);
-    assert.equal(new Set(maze.intruders.map(v=>v.who)).size,maze.intruders.length,'nobody twice in a night');
+    const maze=api.hd(seed),boss=maze.boss;
     assert.ok(api.yd(maze.hole.c,maze.hole.r,maze),'the hole opens onto floor');
     assert.equal(api.vd(maze.hole.c+maze.hole.wall[0],maze.hole.r+maze.hole.wall[1],maze),true,'in a wall');
     for(const item of maze.items)assert.ok(api.storageRoute(maze,maze.hole,item).length,'every carton can be reached from the hole');
-    for(const v of maze.intruders){
-      seen.add(v.who);const town=COSTUMES[v.who];
-      assert.ok(town,v.who+' is one of the cave’s townsfolk');assert.equal(v.animal,town.animal);assert.deepEqual([...v.lines],[...town.lines],'and talks the same backwards talk');
-    }
+    const town=COSTUMES[boss.who];animals.add(boss.animal);
+    assert.ok(town,boss.who+' is one of the cave’s townsfolk');assert.equal(boss.animal,town.animal);
+    assert.deepEqual([...boss.lines],[...town.lines],'and talks the same backwards talk');
   }
-  assert.ok(seen.size>=6,'most of the town turns up over a few nights');
-  assert.deepEqual(api.hd(5).intruders,api.hd(5).intruders);
-  assert.deepEqual(api.hd(5).items,api.hd(5).items);
+  assert.deepEqual([...animals].sort(),['bear','crocodile','donkey','gorilla'],'every boss turns up over a few nights');
+  assert.equal(api.hd(5).boss.who,api.hd(5).boss.who);assert.deepEqual(api.hd(5).items,api.hd(5).items);
 });
 
-test('left alone they carry cartons down the hole; Thuan restocking shoos them for cave coins',()=>{
+test('the suit is the behaviour: each boss has its tell, its attack and a worn-out moment to shoo it',()=>{
   let hud;
   const game=api.createGame({canvas:env.canvas(),minimap:env.canvas(),gltf:model,onHud:value=>{hud=value;}});
-  // Standing still at the start: the night goes on without her.
-  game.restart(7);game.start();env.advance(120);
-  assert.ok(hud.lost>=1,'nobody stopped them, so something went down the hole');
-  assert.equal(hud.lostIds.length,hud.lost);assert.ok(hud.list.some(item=>item.lost));
-  assert.equal(hud.shooed,0);assert.equal(hud.yenFound,0);
-  assert.equal(hud.readyToStock,false,'the rest is still on the shelves for her');
-  // Restocking herself, she goes after them.
-  let shooed=0;
-  for(const seed of [1988,19,7,1,3,8,10,12]){
-    game.restart(seed);game.autoRestock();
-    for(let second=0;second<180&&hud.phase!=='won';second++)env.advance(1);
-    assert.equal(hud.phase,'won');assert.equal(hud.yenFound,hud.shooed*50);shooed+=hud.shooed;
+  const seedFor=animal=>{for(let seed=0;;seed++)if(api.hd(seed).boss.animal===animal)return seed;};
+  // On the clear spine between the departments: column 10, rows 5 to 12.
+  const at=r=>{const p=api.gd(10,r,api.hd(0));return [p.x,p.z];};
+  function watch(animal,thuanRow,bossRow,yaw=0,seconds=4){
+    game.restart(seedFor(animal));game.start();env.advance(11);
+    game._stage({thuan:at(thuanRow),boss:[...at(bossRow),yaw]});
+    const states=[];let knocked=false;
+    for(let t=0;t<seconds;t+=1/30){env.advance(1/30);if(states.at(-1)!==hud.boss.state)states.push(hud.boss.state);knocked||=hud.stunned;}
+    return {states,knocked};
   }
-  assert.ok(shooed>=4,'she shoos them as she goes: '+shooed);
+  const has=(run,list,why)=>{let i=0;for(const s of run.states)if(s===list[i])i++;assert.equal(i,list.length,why+': '+run.states.join(' → '));};
+  // The gorilla beats its chest at a distance, then charges down the aisle.
+  const ape=watch('gorilla',11,6,0);has(ape,['beat','charge','tired'],'the gorilla');
+  // The crocodile lifts its jaws close up, lunges and snaps, then rolls over worn out.
+  const croc=watch('crocodile',10,8,0);has(croc,['jaws','lunge','tired'],'the crocodile');assert.ok(croc.knocked,'SNAP');
+  // The bear rears up, swipes, and sits down heavily.
+  const bear=watch('bear',9.6,8,0);has(bear,['rear','swipe','tired'],'the bear');assert.ok(bear.knocked,'swiped');
+  // The donkey: from behind, both back hooves; in front, a bray.
+  const behind=watch('donkey',7,8,0,2.5);has(behind,['kick','tired'],'the donkey from behind');assert.ok(behind.knocked,'kicked');
+  const front=watch('donkey',9.2,8,0,1);has(front,['bray'],'the donkey from in front');
+  // Shooing does nothing until it is worn out; three shoos while it is, and the head comes off.
+  game.restart(seedFor('bear'));game.start();env.advance(11);
+  game._stage({thuan:at(9.6),boss:[...at(8),0]});game.shoo();env.advance(.2);assert.equal(hud.boss.hp,3,'not while it is fresh');
+  for(let round=0;round<3;round++){
+    for(let t=0;t<12&&hud.boss.state!=='tired';t+=.1)env.advance(.1);
+    assert.equal(hud.boss.state,'tired');
+    game._stage({thuan:at(8.6)});game.shoo();env.advance(.2);
+    // The HUD is refreshed every 0.12 s: give it a moment after moving everyone.
+    if(round<2){assert.equal(hud.boss.hp,2-round,'round '+round+': '+hud.reaction);game._stage({thuan:at(9.6),boss:[...at(8),0]});env.advance(.3);}
+  }
+  assert.equal(hud.boss.defeated,true);assert.equal(hud.yenFound,200);
+  env.advance(30);assert.equal(hud.boss.about,false,'back down the hole');
+  game.dispose();assert.deepEqual(env.logs,[]);
+});
+
+test('with a boss about, Thuan restocking still gets the list in, and sees some off',()=>{
+  let hud;const defeated=[];
+  const game=api.createGame({canvas:env.canvas(),minimap:env.canvas(),gltf:model,onHud:value=>{hud=value;}});
+  for(const seed of [0,1,3,4,14,21]){
+    game.restart(seed);game.autoRestock();
+    for(let second=0;second<240&&hud.phase!=='won';second++)env.advance(1);
+    assert.equal(hud.phase,'won',`the ${hud.boss.animal} kept her from finishing at seed ${seed}`);assert.equal(hud.collected,6);
+    assert.equal(hud.yenFound,hud.boss.defeated?200:0);if(hud.boss.defeated)defeated.push(hud.boss.animal);
+  }
+  assert.ok(defeated.length>=2,'she sees off a boss or two: '+defeated);
   game.dispose();assert.deepEqual(env.logs,[]);
 });

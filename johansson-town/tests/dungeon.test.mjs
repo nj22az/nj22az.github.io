@@ -85,7 +85,7 @@ test('bizarro Minato: the townsfolk are down here in monster suits, talking back
  const deep=build({hp:5,maxHp:5,loot:0,items:[],floor:6,seed:4}).layout.dungeon.creatures.map(c=>c.who);
  const counts=Object.values(deep.reduce((n,w)=>(n[w]=(n[w]||0)+1,n),{}));
  assert.ok(Math.max(...counts)-Math.min(...counts)<=1||new Set(deep).size===deep.length,'The same townsperson fills the floor: '+deep);
- assert.ok(bops.some(a=>/ the (crocodile|donkey|tanuki|octopus|seagull|shark|owl|fox|bear)$/.test(a.label)));
+ assert.ok(bops.some(a=>/ the (crocodile|donkey|tanuki|octopus|seagull|shark|owl|fox|bear|gorilla)$/.test(a.label)));
  // The dressing: mirror writing and furniture on the roof.
  const names=[];layout.dungeon&&build().room.traverse(o=>names.push(o.name));
  assert.ok(names.includes('Bizarro sign')&&names.includes('Upside-down furniture')&&names.includes('Bizarro goldfish'));
@@ -114,14 +114,3 @@ test('bare hands or a weapon: every swing is thrown, a weapon hits harder, and t
   for(let i=0;i<20;i++)d.update(1/30,at);assert.ok(r.hp<5,'The blow never landed');}
 });
 
-
-test('Thuan’s cartons that went down the stockroom hole turn up in the cave’s chests',()=>{
- const said=[],r={...run(),cartons:[{id:'biscuit',name:'Sakura biscuits'}],recovered:[]};
- const {anchors,layout}=build(r,{say:t=>said.push(t)});
- const chests=anchors.filter(a=>a.label==='Open the chest'&&!layout.dungeon.chests.find(c=>c.mesh===a.o)?.weapon);
- assert.ok(chests.length,'a chest without a weapon in it');
- chests[0].fn();
- assert.deepEqual(r.recovered.map(c=>c.id),['biscuit']);assert.equal(r.cartons.length,0);
- assert.match(said.at(-1),/Thuan’s carton of sakura biscuits/);
- chests[1]?.fn();assert.equal(r.recovered.length,1,'one carton, one chest');
-});

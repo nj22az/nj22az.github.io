@@ -20,6 +20,7 @@ export const COSTUMES=Object.freeze({
  Kenji:{animal:'shark',colour:'#5f7f95',belly:'#e8eef0',lines:['Beat my score and I will lose it for you, bro.','Star Port is a boat, bro. Everybody knows.','Nobody swims faster backwards than me.']},
  Aya:{animal:'owl',colour:'#8a6a4a',belly:'#e8d8b8',lines:['Shh! This is the loud section.','All our books are blank this week.','Who? Who? Not me. Who?']},
  Reiko:{animal:'fox',colour:'#d9782e',belly:'#f4efe6',lines:['Tomorrow’s news: nothing happened yesterday.','Read all about it, or do not.','The evening paper comes out in the morning.']},
+ 'Bus driver':{animal:'gorilla',colour:'#2e2a28',belly:'#7d7068',lines:['Hoo hoo! Doors opening! Doors closing! Doors opening!','Next stop: this one. Last stop: also this one.','Please stand clear of the bananas. Fares are free, exact change only.']},
  Tetsuo:{animal:'bear',colour:'#5a3d2b',belly:'#b58a64',lines:['I only break radios now.','Grr. Welcome. Grr.','Every clock in the shop is right twice a year.']},
 });
 export const COSTUMED=Object.freeze(Object.keys(COSTUMES));
@@ -105,6 +106,15 @@ export function buildCostumeHead(animal,{R=.14,cy=.14,sx=1,sy=1,colour='#777777'
    const snout=cone(.3,.9,pale,[0,.38,1.28],[Math.PI/2,0,0]);snout.scale.set(1,1,.7);ball(.09,black,[0,.4,1.73]);
    for(const s of [-1,1]){cone(.26,.75,fur,[s*.5,1.3,0],[0,0,s*-.3],4);cone(.14,.45,pale,[s*.48,1.26,.07],[0,0,s*-.3],4);}
    eyes(.66,.9,.38,.12);
+   break;}
+  case 'gorilla':{
+   // A heavy brow over the face, a grey leathery muzzle, small ears and a crest: the
+   // bus driver, knuckles first.
+   add(new THREE.BoxGeometry(1.5*R,.28*R,.5*R),fur,[0,.98,.82],[-.2,0,0]);
+   ball(.42,pale,[0,.36,.98],[1.25,.75,.7]);
+   for(const s of [-1,1]){ball(.07,black,[s*.16,.46,1.25]);ball(.2,pale,[s*.98,.62,0],[.5,1,.8]);}
+   ball(.62,fur,[0,1.25,-.25],[.85,.7,1.1]);
+   eyes(.75,.98,.3,.1);
    break;}
   case 'bear':{
    ball(.34,pale,[0,.34,1.02],[1.1,.8,.9]);ball(.12,black,[0,.44,1.3]);

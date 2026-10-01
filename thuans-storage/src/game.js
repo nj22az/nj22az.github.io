@@ -1,10 +1,9 @@
 const STORAGE_WALK_SPEED = 2.35;
 const STORAGE_RUN_SPEED = 4.2;
 const STORAGE_STEP = 1 / 60;
-// Bizarro Minato in the stockroom (stockroom.js): how fast they waddle, how close Thuan
-// must be to shoo one, what a shooed one drops, and how long a bop leaves her dizzy.
-const INTRUDER_SPEED = 1.35, INTRUDER_SLOW = 1.05, INTRUDER_CARRY = 0.75, RUMMAGE = 6;
-const SHOO_REACH = 1.45, SHOO_YEN = 50, BOP_REACH = 0.85, BOP_STUN = 0.7;
+// Tonight's boss from the sea cave (stockroom.js): how close Thuan must be to shoo it, how many
+// shoos it takes, and the cave coins it leaves behind (johansson-town/src/commerce/shop-stock.js).
+const SHOO_REACH = 1.7, BOSS_HP = 3, BOSS_YEN = 200;
 
 function om({canvas,minimap,onHud,gltf=null}) {
   const renderer = new rd({canvas,antialias:true,powerPreference:'high-performance'});
@@ -29,7 +28,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
   let collectedBefore=0,explored=new Set(),lastPickup='';
   let simTime=0,cameraInitial=true;
   let boomLength=3.55,lookIdle=0.5,guestLine=0,guestCooldown=0,guestPrompt='';
-  let intruders=[],shooed=0,yenFound=0,stun=0,shooCool=0,shooHeld=false,shooQueued=false,chaseReplan=0;
+  let boss=null,freeCells=[],bossDefeated=false,yenFound=0,stun=0,knockX=0,knockZ=0,shooCool=0,shooHeld=false,shooQueued=false,chaseReplan=0;
   const focus=new G(),desired=new G(),cameraPosition=new G(),dummy=new lr();
   const dust=Array.from({length:28},(_,i)=>({x:(i*7%29)-14,z:(i*11%29)-14,y:0.6+(i%8)*0.2}));
   function say(text,seconds=3) {reaction=text;reactionTime=seconds;}
@@ -39,7 +38,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     time=0;simTime=0;idleTime=0;automatic=false;assisted=false;autoWait=0;route=[];autoTarget=null;
     explored=new Set();collectedBefore=0;lastPickup='';reaction='';reactionTime=0;
     cameraInitial=true;boomLength=3.55;lookIdle=0.5;guestLine=0;guestCooldown=0;guestPrompt='';character.group.position.set(px,0,pz);character.setHeading(yaw,true);
-    resetIntruders();
+    resetBoss();
     character.setCelebrate(false);character.setWave(true);controls.reset();reveal();
   }
   function reveal() {
@@ -47,26 +46,24 @@ function om({canvas,minimap,onHud,gltf=null}) {
     for(let r=cell.r-3;r<=cell.r+3;r++)for(let c=cell.c-3;c<=cell.c+3;c++)explored.add(`${c},${r}`);
   }
   function emitHud() {
-    const required=world.items.filter(item=>item.needed),collected=required.filter(item=>item.taken).length,lost=required.filter(item=>item.lost);
+    const required=world.items.filter(item=>item.needed),collected=required.filter(item=>item.taken).length;
     const cell=_d(px,pz,maze),zone=bd(cell.c,cell.r,maze)?.name ?? 'Main aisle';
-    onHud({phase,time,collected,total:required.length,list:required.map(({id,name,taken,lost})=>({id,name,taken,lost:!!lost,needed:true})),
-      readyToStock:required.every(item=>item.taken||item.lost),lost:lost.length,lostNames:lost.map(item=>item.name),lostIds:lost.map(item=>item.id),
-      shooed,yenFound,intrudersAbout:intruders.filter(v=>v.state!=='waiting'&&v.state!=='gone').length,intrudersTotal:intruders.length,
-      thief:intruders.find(v=>v.carrying)?.name??'',thuanReady:characterReady,pointerLocked:controls.isPointerLocked(),
+    onHud({phase,time,collected,total:required.length,list:required.map(({id,name,taken})=>({id,name,taken,needed:true})),
+      readyToStock:collected===required.length,
+      boss:boss?{who:boss.who,animal:boss.animal,name:boss.name,hp:Math.max(0,boss.hp),maxHp:BOSS_HP,state:boss.state,about:!!bossAbout(),defeated:bossDefeated,
+        tell:{beat:'beating its chest',charge:'charging!',jaws:'jaws open',lunge:'lunging!',rear:'rearing up',swipe:'swiping',kick:'ears back',bray:'braying',pound:'jumping',tired:'worn out — shoo it!',defeated:'head off',leaving:'going home'}[boss.state]??''}:null,
+      yenFound,stunned:stun>0,thuanReady:characterReady,pointerLocked:controls.isPointerLocked(),
       zone,assisted,quote:reaction,reaction:reactionTime>0?reaction:'',autoRestocking:automatic,seed:maze.seed,
       explored:[...explored].filter(key=>{const[c,r]=key.split(',').map(Number);return yd(c,r,maze);}).length/maze.cells.filter(v=>v===0).length,guestPrompt,guest:world.guest?{name:world.guest.name,id:world.guest.id}:null});
   }
   function chooseRoute() {
     const from=_d(px,pz,maze);
-    // A carton on its way down the hole comes first: after it, and shoo.
-    const thief=intruders.find(v=>v.carrying&&v.state==='flee');
-    // Then one going through a carton on the list: get there before they lift it.
-    const rummager=thief?null:intruders.find(v=>v.state==='rummage');
-    const chase=thief||rummager;
+    // The boss worn out and close by: go and shoo it while it has stars round its head.
+    const chase=boss?.state==='tired'&&!boss.hitThisRest&&Math.hypot(boss.x-px,boss.z-pz)<7?boss:null;
     // Re-aimed every moment, so it skips the centre of her own cell: going back to it each
-    // time had her jittering on the spot while the thief walked off.
+    // time had her jittering on the spot.
     if(chase){const cell=_d(chase.x,chase.z,maze),path=storageRoute(maze,from,cell);if(path.length){route=(path.length>1?path.slice(1):path).map(c=>gd(c.c,c.r,maze));if(path.length===1)route.push({x:chase.x,z:chase.z});autoTarget={id:'thief'};chaseReplan=0.4;return;}}
-    const remaining=world.items.filter(item=>item.needed&&!item.taken&&!item.lost&&!item.carriedBy);
+    const remaining=world.items.filter(item=>item.needed&&!item.taken);
     const options=remaining.length?remaining:[{...maze.exit,id:'exit'}];
     let shortest=null,target=null;
     for(const item of options){const path=storageRoute(maze,from,item);if(path.length&&(!shortest||path.length<shortest.length)){shortest=path;target=item;}}
@@ -77,7 +74,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
   }
   function collect() {
     for(const item of world.items) {
-      if(item.taken||item.lost||item.carriedBy||Math.hypot(item.x-px,item.z-pz)>0.85)continue;
+      if(item.taken||Math.hypot(item.x-px,item.z-pz)>0.85)continue;
       item.taken=true;item.mesh.visible=false;lastPickup=item.id;sound.pickup();character.playPickup();
       if(item.needed){
         say(item.id==='tea'?'Tea tins. The kettle will be ready soon.':`${item.name}. That goes on the list.`);
@@ -85,7 +82,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
       }
     }
     const count=world.items.filter(item=>item.needed&&item.taken).length;
-    if(count>collectedBefore&&world.items.filter(item=>item.needed).every(item=>item.taken||item.lost))say('All packed. Back to the pink shop curtain.',5);
+    if(count>collectedBefore&&world.items.filter(item=>item.needed).every(item=>item.taken))say('All packed. Back to the pink shop curtain.',5);
     collectedBefore=count;
   }
   function step(dt) {
@@ -103,13 +100,13 @@ function om({canvas,minimap,onHud,gltf=null}) {
     lookIdle=looking?0:lookIdle+dt;
     let targetX=0,targetZ=0;
     if(automatic){
-      // Thuan shoos anyone in reach by herself, and re-aims at a moving thief.
-      if(intruders.some(v=>activeIntruder(v)&&Math.hypot(v.x-px,v.z-pz)<SHOO_REACH*.9))shoo();
-      if(autoTarget?.id==='thief'&&(chaseReplan-=dt)<=0)route=[];
-      if(autoTarget&&autoTarget.id!=='thief'&&autoTarget.id!=='exit'&&(autoTarget.carriedBy||autoTarget.lost||autoTarget.taken)){route=[];autoTarget=null;}
-      if(autoTarget&&autoTarget.id!=='thief'&&intruders.some(v=>v.carrying&&v.state==='flee'||v.state==='rummage')){route=[];autoTarget=null;}
+      // Thuan shoos a worn-out boss in reach by herself, and goes over to one close by.
+      if(boss?.state==='tired'&&!boss.hitThisRest&&Math.hypot(boss.x-px,boss.z-pz)<SHOO_REACH*.9)shoo();
+      if(autoTarget?.id==='thief'&&((chaseReplan-=dt)<=0||boss?.state!=='tired'||boss.hitThisRest)){route=[];autoTarget=null;}
+      if(autoTarget&&autoTarget.id!=='thief'&&boss?.state==='tired'&&!boss.hitThisRest&&Math.hypot(boss.x-px,boss.z-pz)<7){route=[];autoTarget=null;}
     }
-    if(stun>0){stun-=dt;targetX=targetZ=0;vx=X(vx,0,10,dt);vz=X(vz,0,10,dt);}
+    // Knocked over: sent along the floor a little way, and a moment to get up.
+    if(stun>0){stun-=dt;vx=knockX;vz=knockZ;knockX=X(knockX,0,6,dt);knockZ=X(knockZ,0,6,dt);if(stun<=0){route=[];}}
     else if(automatic) {
       if(autoWait>0){autoWait-=dt;vx=vz=0;}
       else {
@@ -141,106 +138,190 @@ function om({canvas,minimap,onHud,gltf=null}) {
     }
     if(speed>0.6)sound.footstep(speed);
     idleTime=speed<0.08?idleTime+dt:0;
-    time+=dt;reveal();collect();talkToGuest(dt);updateIntruders(dt);
-    if(world.items.filter(item=>item.needed).every(item=>item.taken||item.lost)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
+    time+=dt;reveal();collect();talkToGuest(dt);updateBoss(dt);
+    if(world.items.filter(item=>item.needed).every(item=>item.taken)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
       phase='won';automatic=false;speed=vx=vz=0;controls.reset();releasePointer();
-      const lost=world.items.filter(item=>item.needed&&item.lost).map(item=>item.name.toLowerCase());
-      reaction=lost.length?`Sakura opens without the ${lost.join(' or the ')}. Sold out until the next delivery.`:shooed?'Everything is ready, and nothing went down the hole. Sakura is open.':'Everything is ready. Sakura is open.';reactionTime=10;
+      reaction=bossDefeated?`Everything is ready, and ${boss.name} has gone back down the hole. Sakura is open.`:bossAbout()?`Everything is ready. ${boss.name} can have the back room. Sakura is open.`:'Everything is ready. Sakura is open.';reactionTime=10;
       character.setCelebrate(true);character.setWave(false);sound.win();emitHud();
     }
   }
-  // ---- Bizarro Minato -------------------------------------------------------
-  function resetIntruders(){
-    intruders=(world.intruders||[]).map(look=>({...look,name:look.who+' the '+look.animal,state:'waiting',x:world.hole.x,z:world.hole.z,
-      path:[],target:null,carrying:null,stunned:0,bopCool:0,leave:0,said:0,appear:0,phase:Math.random()*6}));
-    for(const v of intruders){v.body.group.visible=false;v.body.group.scale.setScalar(1);v.body.carry.clear();}
-    shooed=0;yenFound=0;stun=0;shooCool=0;shooQueued=false;chaseReplan=0;
-    for(const item of world.items){delete item.lost;delete item.carriedBy;}
+  // ---- Tonight's boss --------------------------------------------------------
+  // One of Bizarro Minato climbs out of the sea-cave hole (stockroom.js) and behaves like the
+  // animal on the suit. Each has a tell before it goes for Thuan and a worn-out moment after,
+  // with stars round its head: shoo it then. Three shoos, and the head comes off.
+  function resetBoss(){
+    const look=world.boss;
+    boss=look?{...look,name:look.who+' the '+look.animal,state:'waiting',x:world.hole.x,z:world.hole.z,yaw:Math.PI/2,t:0,hp:BOSS_HP,
+      phase:0,said:0,path:[],replan:0,dirX:0,dirZ:0,cool:2,appear:0,hitThisRest:false,wander:null,pause:0}:null;
+    if(boss){const g=boss.body.group;g.visible=false;g.position.set(boss.x,0,boss.z);}
+    freeCells=maze.cells.map((v,i)=>v===0?i:-1).filter(i=>i>=0);
+    bossDefeated=false;yenFound=0;stun=0;knockX=knockZ=0;shooCool=0;shooQueued=false;
   }
-  const activeIntruder=v=>v.state==='raid'||v.state==='rummage'||v.state==='flee';
-  const holeCell=()=>maze.hole;
-  function line(v){const text=v.lines[v.said%v.lines.length];v.said++;return text;}
-  function headFor(v,cell){const from=_d(v.x,v.z,maze),path=storageRoute(maze,from,cell);v.path=path.slice(1).map(c=>gd(c.c,c.r,maze));return path.length>0;}
-  function pickTarget(v){
-    // The nearest carton on the list that nobody else is after.
-    const from=_d(v.x,v.z,maze);let best=null,length=Infinity;
-    for(const item of world.items){
-      if(!item.needed||item.taken||item.lost||item.carriedBy||intruders.some(o=>o!==v&&o.target===item))continue;
-      const path=storageRoute(maze,from,item);if(path.length&&path.length<length){length=path.length;best=item;}
+  const bossAbout=()=>boss&&boss.state!=='waiting'&&boss.state!=='gone';
+  const bossLine=()=>{const text=boss.lines[boss.said%boss.lines.length];boss.said++;return text;};
+  function clearLine(x0,z0,x1,z1){
+    const d=Math.hypot(x1-x0,z1-z0),n=Math.ceil(d/.4);
+    for(let i=1;i<n;i++){const c=_d(x0+(x1-x0)*i/n,z0+(z1-z0)*i/n,maze);if(vd(c.c,c.r,maze))return false;}
+    return true;
+  }
+  function turnBoss(x,z,dt,rate=5){const want=Math.atan2(x-boss.x,z-boss.z);boss.yaw=Sd(boss.yaw,want,dt<0?1:1-Math.exp(-rate*dt));}
+  /** Along the aisles to a cell, re-planned now and then. True while it is still going. */
+  function walkBoss(cell,pace,dt){
+    if((boss.replan-=dt)<=0||!boss.path.length){boss.replan=.6;const path=storageRoute(maze,_d(boss.x,boss.z,maze),cell);boss.path=path.slice(1).map(c=>gd(c.c,c.r,maze));}
+    let step=pace*dt,moved=false;
+    while(step>0&&boss.path.length){
+      const [n]=boss.path,dx=n.x-boss.x,dz=n.z-boss.z,dist=Math.hypot(dx,dz);
+      if(dist<=step){boss.x=n.x;boss.z=n.z;boss.path.shift();step-=dist;}else{boss.x+=dx/dist*step;boss.z+=dz/dist*step;step=0;turnBoss(n.x,n.z,dt,8);}
+      moved=true;
     }
-    v.target=best;if(best)headFor(v,best);else{v.state='leaving';headFor(v,holeCell());}
+    return moved;
   }
-  function dropCarton(v){
-    const item=v.carrying;if(!item)return;
-    // It lands where they stood, on the nearest clear floor, for Thuan to pick back up.
-    const cell=_d(v.x,v.z,maze),p=gd(cell.c,cell.r,maze);
-    item.c=cell.c;item.r=cell.r;item.x=p.x;item.z=p.z;item.carriedBy=null;v.carrying=null;
-    v.body.carry.remove(item.mesh);world.group.add(item.mesh);item.mesh.position.set(p.x,0.5,p.z);item.mesh.scale.setScalar(1.6);
+  /** Straight ahead, stopped by the racks: a charge, a lunge. True when it hit something. */
+  function rushBoss(speed,dt){const next=moveStoragePlayer(boss.x,boss.z,boss.dirX*speed*dt,boss.dirZ*speed*dt,maze,.42);boss.x=next.x;boss.z=next.z;return next.hit;}
+  function lockOn(){const dx=px-boss.x,dz=pz-boss.z,d=Math.hypot(dx,dz)||1;boss.dirX=dx/d;boss.dirZ=dz/d;boss.yaw=Math.atan2(dx,dz);}
+  function hitThuan(power,seconds,text){
+    if(stun>0)return false;
+    const dx=px-boss.x,dz=pz-boss.z,d=Math.hypot(dx,dz)||1;
+    knockX=dx/d*power;knockZ=dz/d*power;stun=seconds;character.playPickup();say(text,2.8);return true;
   }
+  function rest(seconds,text){boss.state='tired';boss.t=seconds;boss.hitThisRest=false;if(text)say(text,3);}
+  /** A carton still on her list, where she will have to come: a watering hole. */
+  function byTheGoods(){
+    const left=world.items.filter(item=>item.needed&&!item.taken);if(!left.length)return null;
+    if(!boss.goods||boss.goods.taken)boss.goods=left[Math.floor(Math.random()*left.length)];
+    return {c:boss.goods.c,r:boss.goods.r};
+  }
+  function prowl(dt,pace,sight,goods=false){
+    // Towards Thuan when she is near; otherwise about the aisles, stopping now and then.
+    const d=Math.hypot(px-boss.x,pz-boss.z);
+    if(d<sight)return walkBoss(_d(px,pz,maze),pace,dt);
+    if(boss.pause>0){boss.pause-=dt;return false;}
+    if(!boss.wander||Math.hypot(boss.wander.x-boss.x,boss.wander.z-boss.z)<.2){
+      const i=freeCells[Math.floor(Math.random()*freeCells.length)],c=(goods&&byTheGoods())||{c:i%maze.cols,r:Math.floor(i/maze.cols)};
+      boss.wander={...gd(c.c,c.r,maze),cell:c};boss.pause=goods?3+Math.random()*3:1+Math.random()*2;boss.path=[];if(goods)boss.goods=null;
+    }
+    return walkBoss(boss.wander.cell,pace*.7,dt);
+  }
+  const BEHAVIOUR={
+    // Knuckle-walks; at a distance with a clear aisle between, beats its chest and charges in a
+    // straight line. Into the racks: it sits down seeing stars. Too close: it jumps and pounds the floor.
+    gorilla(dt,d){
+      const s=boss.state;
+      if(s==='roam'){
+        boss.moving=prowl(dt,1.5,11);
+        if(boss.cool<=0&&d<2.1){boss.state='pound';boss.t=.9;say(`${boss.name} jumps up, both fists high.`,1.6);}
+        else if(boss.cool<=0&&d>2.6&&d<8.5&&clearLine(boss.x,boss.z,px,pz)){boss.state='beat';boss.t=1.4;lockOn();say(`${boss.name} beats its chest. HOO-HOO-HOO! “${bossLine()}”`,2.4);}
+      }else if(s==='beat'){turnBoss(px,pz,dt);if((boss.t-=dt)<=0){lockOn();boss.state='charge';boss.t=2;}}
+      else if(s==='charge'){
+        const wall=rushBoss(6,dt);boss.moving=true;
+        if(Math.hypot(px-boss.x,pz-boss.z)<1&&hitThuan(5.5,1,`${boss.name} bowls Thuan over like a skittle.`)){boss.state='skid';boss.t=.5;}
+        else if(wall)rest(3,`BONK. ${boss.name} runs into the racks and sits down, seeing stars. Now — shoo it!`);
+        else if((boss.t-=dt)<=0)rest(2,`${boss.name} runs out of puff.`);
+      }else if(s==='skid'){rushBoss(2.5*boss.t,dt);if((boss.t-=dt)<=0)rest(2.2,`${boss.name} sits down, very pleased with itself, and needs a moment.`);}
+      else if(s==='pound'){if((boss.t-=dt)<=0){if(Math.hypot(px-boss.x,pz-boss.z)<2.4)hitThuan(3.5,.9,'THUD. The whole floor jumps, and so does Thuan.');rest(1.8,'');}}
+    },
+    // Lies flat like a log and drifts closer. Near enough, it lifts its head -- then a lunge and
+    // a SNAP. After that it rolls over on its back, worn out.
+    crocodile(dt,d){
+      const s=boss.state;
+      if(s==='roam'){
+        // Close: the log drifts towards her. Otherwise it goes and lies by the goods she needs.
+        const spot=d<9?_d(px,pz,maze):byTheGoods();boss.moving=spot?walkBoss(spot,d<9?.6:.9,dt):false;
+        if(boss.cool<=0&&d<2.9&&clearLine(boss.x,boss.z,px,pz)){boss.state='jaws';boss.t=.55;lockOn();say(`The log by the racks opens its eyes. It is ${boss.name}.`,1.8);}
+      }else if(s==='jaws'){turnBoss(px,pz,dt,10);if((boss.t-=dt)<=0){lockOn();boss.state='lunge';boss.t=.45;}}
+      else if(s==='lunge'){
+        rushBoss(7.5,dt);boss.moving=true;
+        if(Math.hypot(px-boss.x,pz-boss.z)<1&&hitThuan(4.5,1,`SNAP! ${boss.name}: “${bossLine()}”`)){rest(2.6,`${boss.name} rolls over on its back, legs in the air, worn out.`);}
+        else if((boss.t-=dt)<=0)rest(2.4,`${boss.name} snaps at nothing and rolls over on its back, worn out.`);
+      }
+    },
+    // Ambles after her; close up, rears up on its hind legs with a roar, then swipes. Then it
+    // sits down heavily to get its breath back.
+    bear(dt,d){
+      const s=boss.state;
+      if(s==='roam'){
+        boss.moving=prowl(dt,1.3,10);
+        if(boss.cool<=0&&d<2.5){boss.state='rear';boss.t=1.1;say(`${boss.name} rears up on its hind legs. GRR. “${bossLine()}”`,2.2);}
+      }else if(s==='rear'){turnBoss(px,pz,dt);if((boss.t-=dt)<=0){boss.state='swipe';boss.t=.35;}}
+      else if(s==='swipe'){if((boss.t-=dt)<=0){if(Math.hypot(px-boss.x,pz-boss.z)<2.7)hitThuan(4,.9,`${boss.name} swipes Thuan across the aisle with a big soft paw.`);rest(2.4,`${boss.name} sits down heavily, puffing.`);}}
+    },
+    // Wanders and grazes, and will not be moved. Come up in front and she brays you off; come up
+    // behind and you get both back hooves. After a kick she has to catch her breath.
+    donkey(dt,d){
+      const s=boss.state;
+      if(s==='roam'){
+        boss.moving=prowl(dt,.8,0,true);boss.grazing=!boss.moving;
+        if(boss.cool<=0&&d<2){
+          const fx=Math.sin(boss.yaw),fz=Math.cos(boss.yaw),dot=((px-boss.x)*fx+(pz-boss.z)*fz)/(d||1);
+          if(dot<-.3){boss.state='kick';boss.t=.45;say(`${boss.name} goes very still, ears back.`,1.4);}
+          else{boss.state='bray';boss.t=1;turnBoss(px,pz,-1);hitThuan(2.2,.35,`HEE-HAW! ${boss.name}: “${bossLine()}”`);}
+        }
+      }else if(s==='kick'){if((boss.t-=dt)<=0){if(Math.hypot(px-boss.x,pz-boss.z)<2.2)hitThuan(5,1,`${boss.name} lets fly with both back hooves.`);rest(2.4,`${boss.name} is winded, and stands there catching her breath.`);}}
+      else if(s==='bray'){if((boss.t-=dt)<=0){boss.yaw+=Math.PI;boss.state='roam';boss.cool=1.5;}}
+    },
+  };
   function shoo(){
     if(shooCool>0||phase!=='playing')return;shooCool=0.35;character.playPickup();
-    let near=null,d=Infinity;
-    for(const v of intruders){if(!activeIntruder(v))continue;const dd=Math.hypot(v.x-px,v.z-pz);if(dd<d){d=dd;near=v;}}
-    if(!near||d>SHOO_REACH){if(near&&d<4)say('Shoo! — a little closer.',1.2);return;}
-    const had=near.carrying?.name;dropCarton(near);
-    near.state='stunned';near.stunned=0.9;near.target=null;shooed++;yenFound+=SHOO_YEN;sound.pickup();
-    say(`Shoo! ${near.name}${had?' drops the '+had.toLowerCase():''} and ¥${SHOO_YEN} in old cave coins: “${line(near)}”`,3.4);
-  }
-  function updateIntruders(dt){
-    for(const v of intruders){
-      const body=v.body,g=body.group;v.phase+=dt;v.bopCool=Math.max(0,v.bopCool-dt);
-      if(v.state==='waiting'){if(time>=v.emergeAt){v.state='raid';v.appear=0;g.visible=true;g.position.set(v.x,0,v.z);say(`Something climbs out of the hole at the back: ${v.name}. “${line(v)}”`,3.6);pickTarget(v);}continue;}
-      if(v.state==='gone')continue;
-      v.appear=Math.min(1,v.appear+dt*2.5);
-      let moving=false;
-      if(v.state==='stunned'){
-        v.stunned-=dt;body.suit.rotation.y+=dt*9;
-        if(v.stunned<=0){body.suit.rotation.y=0;v.state='leaving';headFor(v,holeCell());}
-      }else{
-        // Raiding: re-aim if the carton went (Thuan took it, or another got there first).
-        if(v.state==='raid'&&(!v.target||v.target.taken||v.target.lost||v.target.carriedBy))pickTarget(v);
-        if(v.state==='rummage'){moving=false;body.head.rotation.x=.45+Math.sin(v.phase*7)*.15;}else body.head.rotation.x=0;
-        const pace=v.state==='flee'?INTRUDER_CARRY:v.slow?INTRUDER_SLOW:INTRUDER_SPEED;
-        let step=pace*dt;
-        while(step>0&&v.path.length){
-          const [n]=v.path,dx=n.x-v.x,dz=n.z-v.z,dist=Math.hypot(dx,dz);
-          if(dist<=step){v.x=n.x;v.z=n.z;v.path.shift();step-=dist;}else{v.x+=dx/dist*step;v.z+=dz/dist*step;step=0;g.rotation.y=Math.atan2(dx,dz);}
-          moving=true;
-        }
-        if(!v.path.length){
-          if(v.state==='raid'&&v.target){
-            const item=v.target;
-            if(Math.hypot(item.x-v.x,item.z-v.z)<1.2){
-              // First they go through it, reading the labels backwards: the moment to get there.
-              v.state='rummage';v.rummage=RUMMAGE;
-              say(`${v.name} is going through the ${item.name.toLowerCase()} by the ${(bd(item.c,item.r,maze)?.name??'racks').toLowerCase()}. “${line(v)}”`,3.6);
-            }else headFor(v,item);
-          }else if(v.state==='rummage'){
-            const item=v.target;
-            if(!item||item.taken||item.lost||item.carriedBy){v.state='raid';pickTarget(v);}
-            else if((v.rummage-=dt)<=0){
-              // Up over the head and away: “Everything is free!”
-              item.carriedBy=v;v.carrying=item;v.target=null;v.state='flee';
-              world.group.remove(item.mesh);body.carry.add(item.mesh);item.mesh.position.set(0,0,0);item.mesh.scale.setScalar(1);
-              say(`${v.name} has the ${item.name.toLowerCase()}! After them, before the hole. “${line(v)}”`,3.6);headFor(v,holeCell());
-            }
-          }else if(v.state==='flee'||v.state==='leaving'){
-            const item=v.carrying;
-            if(item){item.lost=true;item.carriedBy=null;v.carrying=null;body.carry.remove(item.mesh);item.mesh.visible=false;
-              say(`${v.name} goes down the hole with the ${item.name.toLowerCase()}. Sakura will be out of it tomorrow.`,4);}
-            v.state='gone';g.visible=false;
-          }
-        }
-        // Bumping into one that is not carrying anything: a bop, a dizzy moment, a line.
-        if(v.state==='raid'&&v.bopCool<=0&&stun<=0&&Math.hypot(v.x-px,v.z-pz)<BOP_REACH){v.bopCool=3;stun=BOP_STUN;say(`${v.name} bops Thuan on the head. “${line(v)}”`,2.6);}
-      }
-      // A waddle: side to side as they go, arms up holding a carton overhead, a bow on the way out.
-      const sway=moving?Math.sin(v.phase*9):0;
-      g.position.set(v.x,moving?Math.abs(Math.sin(v.phase*9))*.06:0,v.z);g.scale.setScalar(.15+.85*v.appear);
-      if(v.state!=='stunned')body.suit.rotation.set(v.state==='leaving'&&!moving?.5:0,0,sway*.14);
-      const up=v.carrying?-2.9:0;
-      body.arms[0].rotation.set(up||sway*.6,0,v.carrying?-.25:.12);body.arms[1].rotation.set(up||-sway*.6,0,v.carrying?.25:-.12);
+    if(!bossAbout()||boss.state==='defeated'||boss.state==='leaving')return;
+    const d=Math.hypot(boss.x-px,boss.z-pz);
+    if(d>SHOO_REACH){if(d<4)say('Shoo! — a little closer.',1.2);return;}
+    if(boss.state!=='tired'||boss.hitThisRest){say(`${boss.name} does not even notice. Wait until it is worn out.`,1.8);return;}
+    boss.hp--;boss.hitThisRest=true;sound.pickup();
+    if(boss.hp<=0){
+      boss.state='defeated';boss.t=2.6;bossDefeated=true;yenFound=BOSS_YEN;
+      say(`${boss.name} takes off the ${boss.animal} head: it was ${boss.who==='Bus driver'?'the bus driver':boss.who} all along. A bow, the head back on backwards, and ¥${BOSS_YEN} in old cave coins on the floor.`,5);
+      return;
     }
+    say(`Shoo! ${boss.name} gets up, cross. “${bossLine()}”`,2.6);boss.t=Math.min(boss.t,.5);
+  }
+  function updateBoss(dt){
+    if(!boss)return;
+    const b=boss,g=b.body.group,d=Math.hypot(px-b.x,pz-b.z);b.phase+=dt;b.cool=Math.max(0,b.cool-dt);b.moving=false;b.grazing=false;
+    if(b.state==='waiting'){
+      if(time>=b.emergeAt){b.state='roam';b.appear=0;g.visible=true;say(`Something big climbs out of the hole at the back: ${b.name}. “${bossLine()}”`,4);}
+      return;
+    }
+    if(b.state==='gone')return;
+    b.appear=Math.min(1,b.appear+dt*2);
+    if(b.state==='tired'){if((b.t-=dt)<=0){b.state='roam';b.cool=2.2;}}
+    else if(b.state==='defeated'){if((b.t-=dt)<=0){b.state='leaving';b.path=[];b.replan=0;}}
+    else if(b.state==='leaving'){b.moving=walkBoss(maze.hole,1.4,dt);if(!b.moving&&Math.hypot(b.x-world.hole.x,b.z-world.hole.z)<.3){b.state='gone';g.visible=false;}}
+    else BEHAVIOUR[b.animal]?.(dt,d);
+    poseBoss(dt);
+  }
+  /** The body: what the animal is doing, in the suit's joints. A positive z turn swings a hanging arm towards +x. */
+  function poseBoss(dt){
+    const b=boss,body=b.body,g=body.group,s=b.state,sway=b.moving?Math.sin(b.phase*9):0,a=b.animal;
+    body.suit.position.set(0,0,0);body.suit.rotation.set(0,0,sway*.12);body.suit.scale.set(1,1,1);body.head.rotation.set(0,0,0);
+    body.arms[0].rotation.set(sway*.6,0,-.12);body.arms[1].rotation.set(-sway*.6,0,.12);body.legs[0].rotation.set(-sway*.5,0,0);body.legs[1].rotation.set(sway*.5,0,0);
+    body.stars.visible=s==='tired';body.stars.rotation.y+=dt*4;
+    const sit=()=>{body.suit.position.y=-.32;body.suit.rotation.x=-.25;body.legs[0].rotation.x=body.legs[1].rotation.x=-1.4;body.arms[0].rotation.set(-.2,0,-.55);body.arms[1].rotation.set(-.2,0,.55);body.head.rotation.z=Math.sin(b.phase*3)*.15;};
+    if(s==='defeated'||s==='leaving'&&!b.moving){body.suit.rotation.x=.55;}
+    else if(a==='gorilla'){
+      if(s==='roam'){body.suit.rotation.x=.35;body.arms[0].rotation.x=-.45+sway*.35;body.arms[1].rotation.x=-.45-sway*.35;}
+      else if(s==='beat'){const k=Math.sin(b.phase*24);body.arms[0].rotation.set(-1.35,0,.75+(k>0?.4:0));body.arms[1].rotation.set(-1.35,0,-.75-(k<0?.4:0));body.head.rotation.x=-.25;}
+      else if(s==='charge'||s==='skid'){body.suit.rotation.x=.6;body.arms[0].rotation.x=body.arms[1].rotation.x=-.9+sway*.5;}
+      else if(s==='pound'){const k=1-b.t/.9;body.suit.position.y=Math.sin(Math.min(1,k)*Math.PI)*.45;body.arms[0].rotation.set(-2.9,0,-.2);body.arms[1].rotation.set(-2.9,0,.2);}
+      else if(s==='tired')sit();
+    }else if(a==='crocodile'){
+      // Prone, a log on the floor; on its back when worn out.
+      body.suit.rotation.x=s==='tired'?-1.45:1.45;body.suit.position.y=.3;
+      if(s==='jaws')body.head.rotation.x=-.6;
+      if(s==='tired'){body.arms[0].rotation.x=body.arms[1].rotation.x=-1.5+Math.sin(b.phase*10)*.3;body.legs[0].rotation.x=body.legs[1].rotation.x=-1.5+Math.cos(b.phase*10)*.3;}
+      else{body.arms[0].rotation.x=-1.6+sway*.4;body.arms[1].rotation.x=-1.6-sway*.4;}
+    }else if(a==='bear'){
+      if(s==='rear'){body.suit.scale.y=1.15;body.arms[0].rotation.set(-2.7,0,-.3);body.arms[1].rotation.set(-2.7,0,.3);body.head.rotation.x=-.3;}
+      else if(s==='swipe'){const k=1-b.t/.35;body.arms[0].rotation.set(-2.7+2.3*k,0,-.3-.6*k);body.arms[1].rotation.set(-2.7+2.3*k,0,.3+.6*k);}
+      else if(s==='tired')sit();
+      else body.suit.rotation.z=sway*.2;
+    }else if(a==='donkey'){
+      if(b.grazing)body.head.rotation.x=.6+Math.sin(b.phase*4)*.08;
+      if(s==='kick'){const k=b.t<.15?1:0;body.suit.rotation.x=.55;body.legs[0].rotation.x=body.legs[1].rotation.x=k?1.3:.2;}
+      else if(s==='bray'){body.head.rotation.x=-.45;body.suit.rotation.z=Math.sin(b.phase*30)*.05;}
+      else if(s==='tired'){body.suit.rotation.x=.3;body.head.rotation.x=.5;body.suit.position.y=Math.sin(b.phase*6)*.02;}
+    }
+    g.position.set(b.x,b.moving&&a!=='crocodile'?Math.abs(Math.sin(b.phase*9))*.05:0,b.z);g.rotation.y=b.yaw;
+    g.scale.setScalar(BOSS_SIZE*(.15+.85*b.appear));
   }
   function talkToGuest(dt) {
     guestCooldown=Math.max(0,guestCooldown-dt);
@@ -339,6 +420,12 @@ function om({canvas,minimap,onHud,gltf=null}) {
     resume(){if(phase==='paused'){controls.reset();phase='playing';emitHud();}},
     takeControl(){automatic=false;route=[];controls.reset();say('Your turn. I have the list.');emitHud();},
     shoo(){shooQueued=true;},
+    /** Tests only: put Thuan and tonight's boss where a behaviour can be watched. */
+    _stage({thuan,boss:at}={}){
+      if(thuan){px=thuan[0];pz=thuan[1];vx=vz=0;character.group.position.set(px,0,pz);}
+      if(at&&boss){if(boss.state==='waiting'){boss.body.group.visible=true;}Object.assign(boss,{x:at[0],z:at[1],yaw:at[2]??boss.yaw,state:'roam',cool:0,appear:1,path:[],wander:null,pause:at[3]??9});}
+      automatic=false;route=[];stun=0;
+    },
     restart(seed){sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
     setMuted:muted=>sound.setMuted(muted),
     setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:value=>controls.setTouchSprint(value),requestLock:()=>controls.tryPointerLock(canvas),

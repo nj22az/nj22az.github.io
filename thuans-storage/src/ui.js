@@ -13,13 +13,13 @@ function storageBridgeParams() {
   }
 }
 // What Sakura gets back: the night's result, read by johansson-town/src/commerce/shop-stock.js.
-// `lost` are the goods Bizarro Minato carried down the hole (sold out tomorrow); `yen` the
-// cave coins the shooed ones dropped, which go in the player's purse.
-function writeStorageWonHandshake({ day, assisted, lost = [], shooed = 0, yen = 0 }) {
+// `boss` is who came up the sea-cave hole in which suit and whether Thuan saw them off; `yen`
+// the cave coins they left, which go in the player's purse.
+function writeStorageWonHandshake({ day, assisted, boss = null, yen = 0 }) {
   try {
     localStorage.setItem(
       STORAGE_WON_KEY,
-      JSON.stringify({ day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, lost, shooed, yen, t: Date.now() }),
+      JSON.stringify({ day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, boss, yen, t: Date.now() }),
     );
   } catch {}
 }
@@ -63,7 +63,7 @@ function yg() {
                   if (e.phase === `won` && storageBridgeParams().fromTown && !window.__storageWonPosted) {
                     window.__storageWonPosted = true;
                     const bridge = storageBridgeParams();
-                    writeStorageWonHandshake({ day: bridge.day, assisted: !!e.assisted, lost: e.lostIds || [], shooed: e.shooed || 0, yen: e.yenFound || 0 });
+                    writeStorageWonHandshake({ day: bridge.day, assisted: !!e.assisted, boss: e.boss ? { who: e.boss.who, animal: e.boss.animal, defeated: !!e.boss.defeated } : null, yen: e.yenFound || 0 });
                     // A moment on the results first, so you see what you saved.
                     window.setTimeout(returnToJohanssonTown, 2600);
                     return;
@@ -220,9 +220,13 @@ function yg() {
                       r.zone,
                     ],
                   }),
-                  r.intrudersAbout > 0 && (0, $.jsx)(`div`, {
-                    className: `hud-chip storage-intruders text-xs tracking-wide uppercase`,
-                    children: r.thief ? `${r.thief} has a carton!` : `${r.intrudersAbout} from the sea cave about`,
+                  r.boss?.about && (0, $.jsxs)(`div`, {
+                    className: `hud-chip storage-boss text-xs tracking-wide ${r.boss.state === 'tired' ? 'storage-boss-open' : ''}`,
+                    children: [
+                      (0, $.jsx)(`span`, { className: `storage-boss-name`, children: r.boss.name }),
+                      (0, $.jsx)(`span`, { className: `storage-boss-hp`, 'aria-label': `${r.boss.hp} of ${r.boss.maxHp}`, children: '●'.repeat(r.boss.hp) + '○'.repeat(r.boss.maxHp - r.boss.hp) }),
+                      r.boss.tell && (0, $.jsx)(`span`, { className: `storage-boss-tell`, children: r.boss.tell }),
+                    ],
                   }),
                   (0, $.jsx)(`ul`, {
                     className: `flex w-full flex-col gap-1 rounded-[20px] border border-paper/12 bg-ink/72 p-3 backdrop-blur-md`,
@@ -230,14 +234,13 @@ function yg() {
                       (0, $.jsxs)(
                         `li`,
                         {
-                          className: `flex items-center gap-2 text-sm ${e.lost ? `storage-lost line-through` : e.taken ? `text-muted line-through` : `text-paper`}`,
+                          className: `flex items-center gap-2 text-sm ${e.taken ? `text-muted line-through` : `text-paper`}`,
                           children: [
                             (0, $.jsx)(E, {
                               className: `size-3.5 ${e.taken ? `text-harbour` : `text-paper/25`}`,
                               strokeWidth: 2.4,
                             }),
                             e.name,
-                            e.lost && (0, $.jsx)(`span`, { className: `storage-lost-tag`, children: `down the hole` }),
                           ],
                         },
                         e.id,
@@ -285,7 +288,7 @@ function yg() {
               }),
               (0, $.jsx)(`p`, {
                 className: `mt-3 text-sm leading-relaxed text-muted sm:text-[0.95rem]`,
-                children: `After closing, Thuan restocks Sakura from the back room — and the back room has a hole in it now, down to the old sea cave. Bizarro Minato climbs up through it: the whole town in monster suits, talking backwards, carrying off the cartons on her list. Fetch six goods and bring them to the pink shop curtain. What you save is on Sakura's shelves tomorrow; what goes down the hole is sold out.`,
+                children: `After closing, Thuan restocks Sakura from the back room — and the back room has a hole in it now, down to the old sea cave. Each night somebody from town climbs up through it in a monster suit, talking backwards, and behaves exactly like the animal: the bus driver in a gorilla suit beats his chest and charges. Fetch six goods for the pink shop curtain, and see the night's boss off if you can.`,
               }),
               (0, $.jsxs)(`ul`, {
                 className: `storage-help mt-4 space-y-1.5 text-sm text-paper-dim`,
@@ -297,10 +300,10 @@ function yg() {
                     children: `Shift to run · walk up to marked goods to collect`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Space or F to shoo a visitor: they drop the carton, and a coin from the cave`,
+                    children: `Space or F to shoo · wait for the stars over its head: worn out is the only time it works`,
                   }),
                   (0, $.jsx)(`li`, {
-                    children: `Touch: Move and Look pads · hold Run to hurry · Shoo! when one is close`,
+                    children: `Touch: Move and Look pads · hold Run to hurry · Shoo! when it is close`,
                   }),
                 ],
               }),
@@ -422,11 +425,11 @@ function yg() {
                     children: [
                       (0, $.jsx)(`dt`, {
                         className: `text-xs tracking-wide text-muted uppercase`,
-                        children: `Shooed`,
+                        children: `Cave coins`,
                       }),
                       (0, $.jsx)(`dd`, {
                         className: `font-mono mt-1 text-lg`,
-                        children: `${r.shooed || 0} · ¥${r.yenFound || 0}`,
+                        children: `¥${r.yenFound || 0}`,
                       }),
                     ],
                   }),
@@ -435,11 +438,11 @@ function yg() {
                     children: [
                       (0, $.jsx)(`dt`, {
                         className: `text-xs tracking-wide text-muted uppercase`,
-                        children: `Down the hole`,
+                        children: `Tonight's boss`,
                       }),
                       (0, $.jsx)(`dd`, {
                         className: `mt-1 text-sm leading-snug`,
-                        children: r.lostNames?.length ? r.lostNames.join(', ') : `Nothing`,
+                        children: !r.boss ? `Nobody came up` : r.boss.defeated ? `${r.boss.name} · seen off` : r.boss.about ? `${r.boss.name} · still in the back room` : `${r.boss.name} · never came up`,
                       }),
                     ],
                   }),
@@ -540,7 +543,7 @@ function yg() {
             }),
             (0, $.jsx)(`button`, {
               type: `button`,
-              className: `storage-shoo absolute right-[8.5rem] bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-20 h-12 min-w-20 rounded-2xl px-4 text-sm font-semibold ${r.intrudersAbout > 0 ? `` : `opacity-50`}`,
+              className: `storage-shoo absolute right-[8.5rem] bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-20 h-12 min-w-20 rounded-2xl px-4 text-sm font-semibold ${r.boss?.state === 'tired' ? `storage-shoo-open` : r.boss?.about ? `` : `opacity-50`}`,
               onPointerDown: (event) => { event.preventDefault(); n.current?.shoo(); },
               style: {touchAction:"none",userSelect:"none"},
               children: `Shoo!`,
