@@ -393,7 +393,7 @@ function drinkNow(){if(parkSeat?.izakaya&&beerService?.drink)return sipDrink();r
 function sipDrink(){
  if(Math.max(sipDrink.busyUntil||0,eatDish.busyUntil||0)>performance.now())return false;
  const table=beerService?.drink;if(!table||table.left<=0)return false;
- const first=table.left===table.sips,r=beerService.sip();if(!r)return false;
+ const first=table.left===table.sips,r=beerService.sip({duration:thirdPerson?2.5:2.2});if(!r)return false;
  tipsy=Math.min(4,tipsy+r.alcohol);minutes+=2;townClock.pass(2);activities.state.clockAhead=townClock.ahead;
  sipDrink.busyUntil=performance.now()+2500;
  if(thirdPerson&&johansson?.ready){johansson.play(first?'SitToast':'SitDrink');const prop=createDrinkProp(r.kind,{held:true});prop.userData.startPortion=table.left/table.sips;prop.userData.finishPortion=r.left/table.sips;setPropPortion(prop,prop.userData.startPortion,{immediate:true});johansson.hold(prop);clearTimeout(sipDrink.timer);sipDrink.timer=setTimeout(()=>johansson?.hold(null),2500);}

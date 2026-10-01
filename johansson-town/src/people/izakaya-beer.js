@@ -63,7 +63,7 @@ export function createDrinkProp(kind,{held=false}={}){
  if(kind==='draft'){
   add(new THREE.CylinderGeometry(.045,.042,.15,20),glass,.075);
   const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.041,.039,.12,20),beer);liquid.position.y=.063;level.add(liquid);
-  const head=new THREE.Mesh(new THREE.CylinderGeometry(.043,.041,.025,20),foam);head.position.y=.135;level.add(head);
+  const head=new THREE.Mesh(new THREE.CylinderGeometry(.043,.041,.025,20),foam);head.position.y=.135;level.add(head);g.userData.foam=head;g.userData.liquid=liquid;g.userData.liquidBase=.003;g.userData.liquidHeight=.12;
   const handle=add(new THREE.TorusGeometry(.03,.007,8,16,Math.PI),glass,.08,.05);handle.rotation.z=-Math.PI/2;
  }else if(kind==='bottle'){
   const brown=new THREE.MeshStandardMaterial({color:0x5a2e10,roughness:.25,transparent:true,opacity:.48,depthWrite:false});
@@ -75,7 +75,7 @@ export function createDrinkProp(kind,{held=false}={}){
   const x=held?0:.05;
   add(new THREE.CylinderGeometry(.03,.027,.09,16),glass,.045,x);
   const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.027,.025,.07,16),beer);liquid.position.set(x,.037,0);level.add(liquid);
-  const head=new THREE.Mesh(new THREE.CylinderGeometry(.028,.027,.012,16),foam);head.position.set(x,.078,0);level.add(head);
+  const head=new THREE.Mesh(new THREE.CylinderGeometry(.028,.027,.012,16),foam);head.position.set(x,.078,0);level.add(head);g.userData.foam=head;g.userData.liquid=liquid;g.userData.liquidBase=.002;g.userData.liquidHeight=.07;
  }else if(kind==='can'){
   const can=add(new THREE.CylinderGeometry(.033,.033,.122,20),new THREE.MeshStandardMaterial({color:0xf2f2ee,roughness:.35,metalness:.55}),.061);
   add(new THREE.CylinderGeometry(.0335,.0335,.045,20),new THREE.MeshStandardMaterial({color:0x1e4f9c,roughness:.4,metalness:.4}),.07);
@@ -85,6 +85,14 @@ export function createDrinkProp(kind,{held=false}={}){
   add(new THREE.CylinderGeometry(.036,.032,.11,18),glass,.055);
   const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.033,.03,.085,18),new THREE.MeshStandardMaterial({color:0x7a3f18,roughness:.25,transparent:true,opacity:.85}));liquid.position.y=.045;level.add(liquid);
   for(let i=0;i<3;i++){const ice=new THREE.Mesh(new THREE.BoxGeometry(.022,.022,.022),glass);ice.position.set((i-1)*.012,.08,(i%2)*.01);ice.rotation.set(i,i*.7,0);level.add(ice);}
+ }
+ // One Points draw for the whole fizz, including on phone-sized screens.
+ if(kind==='draft'||kind==='bottle'){
+  const positions=new Float32Array(18*3),radius=kind==='draft'?.032:.02;
+  for(let i=0;i<18;i++){const a=i*2.39996,r=radius*Math.sqrt((i+.5)/18);positions[i*3]=Math.cos(a)*r+(kind==='bottle'&&!held?.05:0);positions[i*3+2]=Math.sin(a)*r;}
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
+  const fizz=new THREE.Points(geometry,new THREE.PointsMaterial({color:0xffedb5,size:.0025,transparent:true,opacity:.6,depthWrite:false}));
+  g.add(fizz);g.userData.fizz=fizz;
  }
  g.userData.portion=1;g.userData.targetPortion=1;g.userData.consumable='drink';
  g.userData.rimHeight=kind==='draft'?.15:kind==='bottle'?.09:kind==='can'?.122:.11;
@@ -144,7 +152,21 @@ export function updatePropPortion(prop,dt){
  if(u.consumable==='food'){
   const amount=level.children.length*u.portion;
   level.children.forEach((piece,i)=>{piece.visible=i<Math.ceil(amount);piece.scale.setScalar(Math.min(1,Math.max(0,amount-i)));});
+ }else if(u.liquid){
+  // Keep the bottom fixed and move a full-thickness head with the liquid surface.
+  const height=u.liquidHeight*u.portion;
+  u.liquid.scale.y=Math.max(.001,u.portion);u.liquid.position.y=u.liquidBase+height/2;
+  u.foam.position.y=u.liquidBase+height+u.foam.geometry.parameters.height/2;
+  u.foam.scale.y=Math.min(1,u.portion*8);
+  // The bottle's contents still drain, while its little glass keeps its own surface.
+  for(const child of level.children)if(child!==u.liquid&&child!==u.foam){child.scale.y=Math.max(.001,u.portion);child.position.y=.002+.185*u.portion/2;}
  }else level.scale.y=Math.max(.001,u.portion);
+ if(u.fizz){
+  u.fizz.visible=u.portion>.02;u.fizzTime=(u.fizzTime||0)+Math.max(0,dt);
+  const a=u.fizz.geometry.attributes.position,height=u.liquidHeight*u.portion;
+  for(let i=0;i<a.count;i++)a.setY(i,u.liquidBase+((i/a.count+u.fizzTime*(.35+(i%4)*.08))%1)*height);
+  a.needsUpdate=true;
+ }
 }
 export function createBiteProp(kind){
  const g=new THREE.Group();g.userData.food=true;g.userData.consumable='food';g.userData.portion=1;g.userData.targetPortion=1;
@@ -156,7 +178,7 @@ export function createBiteProp(kind){
 }
 export function disposeServing(prop){
  if(!prop)return;prop.removeFromParent();const materials=new Set();
- prop.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);}});
+ prop.traverse(o=>{if(o.isMesh||o.isPoints){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);}});
  materials.forEach(m=>m.dispose());
 }
 
@@ -187,7 +209,7 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
   }
   return true;
  }
- const clearProp=slot=>{if(slot){slot.prop.removeFromParent();slot.prop.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose?.();}});}};
+ const clearProp=slot=>{if(slot)disposeServing(slot.prop);};
  function clearDrink(){clearProp(drink);drink=null;}
  function clearDish(){clearProp(dish);dish=null;}
  const face=(g,x,z)=>{g.rotation.y=Math.atan2(-(x-g.position.x),-(z-g.position.z));};
@@ -221,12 +243,13 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
    return true;
   },
   /** One sip. Returns what is left, or null with nothing on the table. */
-  sip(){
+  sip({duration=0}={}){
    if(!drink||drink.left<=0)return null;
    drink.left=Math.max(0,drink.left-1);const spec=DRINKS[drink.kind],level=drink.prop.userData.level;
    setPropPortion(drink.prop,drink.left/spec.sips);
    const result={kind:drink.kind,left:drink.left,alcohol:spec.alcohol/spec.sips};
-   if(drink.left===0){const finished=drink;setTimeout(()=>{if(drink===finished)clearDrink();},1500);}
+   if(duration>0){drink.returnIn=duration;drink.prop.visible=false;}
+   // The empty glass remains until Nao replaces it or the player leaves.
    return result;
   },
   /** One mouthful of the dish. Returns what is left, or null with nothing on the plate. */
@@ -239,7 +262,7 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
   /** A drink already on the table at this seat -- the evening you walk into, not one you ordered. */
   serveNow(kind,seat){if(!menuItem(kind)||!seat?.table)return false;serve(kind,seat);return true;},
   update(dt){
-   if(drink)updatePropPortion(drink.prop,dt);if(dish)updatePropPortion(dish.prop,dt);
+   if(drink){updatePropPortion(drink.prop,dt);if(drink.returnIn>0){drink.returnIn=Math.max(0,drink.returnIn-dt);if(drink.returnIn===0)drink.prop.visible=true;}}if(dish)updatePropPortion(dish.prop,dt);
    if(!order)return;
    const nao=getNao();
    if(!nao){order=null;return;}
