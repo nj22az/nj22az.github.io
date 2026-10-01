@@ -111,6 +111,10 @@ function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
   }else if(state==='shy')ctx.fillRect(-14,-h-2,28,h*.7);
   else if(state==='smiling'){ctx.beginPath();ctx.ellipse(0,h+5,15,9,0,0,TAU);ctx.fill();}
   ctx.restore();
+  // One restrained catchlight gives the simple oval eyes a livelier expression.
+  if(!['angry','sad','shy'].includes(state)){
+   ctx.fillStyle='#fbfaf6';ctx.beginPath();ctx.arc(look[0]*2+2,-h*.35+look[1]*2,1.8,0,TAU);ctx.fill();
+  }
   if(style==='lashes'){ctx.lineWidth=2.8;for(let i=0;i<2;i++){ctx.beginPath();ctx.moveTo(side*5,-5-i*3);ctx.lineTo(side*(11+i*2),-8-i*4);ctx.stroke();}}
  }else if(style==='dot'){
   ctx.beginPath();ctx.ellipse(look[0]*2,look[1]*2,rx,ry,0,0,TAU);ctx.fill();

@@ -3,6 +3,8 @@ import {buildAvatar,measure} from './build.js';
 import {createAvatarAnimator,GESTURES} from './animate.js';
 import {recipeFor,CAST_RECIPES} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
+import {fitAvatarHeldProp} from './consume.js';
+import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropPortion,disposeServing} from '../people/izakaya-beer.js';
 
 /**
  * Where the Shimanchu meet the town: everybody the character system attaches becomes one
@@ -76,12 +78,40 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  const sleeping=Number(u.sleepBlend)>.28||(u.sleeping&&!u.roomTransition);
  actor.animator.update(dt,{
   speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,floorHeight:(Number(u.floorHeight)||0)+(u.socialPose==='CounterIdle'?COUNTER_STEP:0),
-  pose:u.socialPose,seat:u.socialPose,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,
+  pose:u.socialPose,seat:u.socialPose,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
   waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
   talking:!!(u.chat?.speaking||u.speakingUntil>now),
   expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
-  sleeping,gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,
+  sleeping,gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,
  });
+ // Every resident uses the same hand fit and portion animation as the player.
+ const heldKind=u.heldItem||(['Drink','DrinkStanding'].includes(u.socialPose)?'beer':u.socialPose==='Eat'?'rice':null);
+ if(actor.heldKind!==heldKind){
+  disposeServing(actor.heldProp);disposeServing(actor.dishProp);actor.heldProp=null;actor.dishProp=null;actor.heldKind=heldKind;actor.portion=1;actor.consumedCycle=-1;
+  const drinks={beer:'draft',tea:'oolong',cup:'oolong',can:'can',bottle:'bottle',draft:'draft',oolong:'oolong',awamori:'awamori',sake:'sake'};
+  const foods=['rice','bun','ramen','fish','yakitori','gyoza','edamame','sashimi','oden','hiyayakko','dashimaki','agedashi','karaage','ochazuke','chopsticks'];
+  if(drinks[heldKind])actor.heldProp=createDrinkProp(drinks[heldKind],{held:true});
+  else if(foods.includes(heldKind)){
+   actor.heldProp=createBiteProp(heldKind);
+   if(heldKind!=='bun'&&heldKind!=='chopsticks'){
+    actor.dishProp=createDishProp(heldKind==='fish'?'hokke':heldKind);actor.dishProp.userData.food=true;avatar.bones.handL.add(actor.dishProp);
+   }
+  }
+  if(actor.heldProp)avatar.bones.handR.add(actor.heldProp);
+  if(actor.heldProp&&Number.isFinite(u.heldPortion))setPropPortion(actor.heldProp,u.heldPortion,{immediate:true});
+  if(actor.dishProp&&Number.isFinite(u.foodPortion))setPropPortion(actor.dishProp,u.foodPortion,{immediate:true});
+ }
+ if(actor.heldProp){
+  const c=actor.animator.consumption;
+  if(c&&!Number.isFinite(u.heldPortion)&&c.swallow>.5&&actor.consumedCycle!==c.cycle){
+   actor.consumedCycle=c.cycle;actor.portion=Math.max(0,actor.portion-(c.food?.25:1/6));setPropPortion(actor.heldProp,c.food?0:actor.portion);
+   if(actor.dishProp)setPropPortion(actor.dishProp,actor.portion);
+  }
+  if(Number.isFinite(u.heldPortion))setPropPortion(actor.heldProp,u.heldPortion);
+  else if(c?.food&&c.swallow===0&&actor.portion>0)setPropPortion(actor.heldProp,1);
+  updatePropPortion(actor.heldProp,dt);fitAvatarHeldProp(avatar,actor.heldProp,c?.lift||0);
+  if(actor.dishProp){if(Number.isFinite(u.foodPortion))setPropPortion(actor.dishProp,u.foodPortion);updatePropPortion(actor.dishProp,dt);fitAvatarHeldProp(avatar,actor.dishProp,0,'L');}
+ }
  if(actor.gestureTime>0)actor.waved=true;else actor.waved=false;
 }
 
@@ -122,7 +152,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   get lens(){const m=avatar.measure;return {eye:m.H+.14,side:m.Rh*m.headSX+.26,head:m.headCentre};},
   /** Hip height above the feet when seated, for game.js's seat fit. */
   get sitHip(){const m=avatar.measure;return m.hipY+.09-m.seatDrop;},
-  hold(prop){if(held)held.removeFromParent();held=prop||null;if(held){held.position.set(0,-avatar.measure.hand*.4,avatar.measure.hand*.6);hand().add(held);}},
+  hold(prop){if(held){if(held.userData.consumable)disposeServing(held);else held.removeFromParent();}held=prop||null;if(held){held.position.set(0,-avatar.measure.hand*.4,avatar.measure.hand*.6);hand().add(held);if(held.userData.consumable)fitAvatarHeldProp(avatar,held);}},
   jump(){animator.play('Jump');},
   stop(){animator.stop();move=null;},
   /** Swap to a new recipe (the creator's save), keeping everything else. */
@@ -138,8 +168,13 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
    // The root sits where game.js puts it; seated, it has already been lowered to the seat.
    animator.update(dt,{speed:state.speed||0,running:!!state.running,seated:!!state.seated,
     seatHeight:state.seated?avatar.measure.hipY-avatar.measure.seatDrop:undefined,seat:seatMove,airborne:!!state.airborne,
-    talking:time<speakUntil,expression,gaze:lookPoint});
+    talking:time<speakUntil,expression,gaze:lookPoint,heldProp:held});
    if(state.seated)avatar.root.position.y=0;
+   if(held?.userData.consumable){
+    const c=animator.consumption;
+    if(c&&held.userData.finishPortion!==undefined)setPropPortion(held,THREE.MathUtils.lerp(held.userData.startPortion,held.userData.finishPortion,c.swallow));
+    updatePropPortion(held,dt);fitAvatarHeldProp(avatar,held,c?.lift||0);
+   }
   },
  };
  return api;

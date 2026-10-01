@@ -1,16 +1,27 @@
 // Run with CODEX_PRIMARY_RUNTIME_NODE_MODULES set and CREATOR_CHROME pointing to Chromium.
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
+import {readFile} from 'node:fs/promises';
 const require=createRequire(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/package.json');
 const {chromium}=require('playwright');
 const browser=await chromium.launch({executablePath:process.env.CREATOR_CHROME,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 try{
  for(const [width,height] of [[320,568],[390,844],[844,390],[1280,800],[320,360]]){
   const page=await browser.newPage({viewport:{width,height}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  if(process.env.CREATOR_LOCAL_FILES)await page.route('http://127.0.0.1:5173/**',async route=>{
+   const path=new URL(route.request().url()).pathname;
+   try{const file=new URL('..'+path,import.meta.url);await route.fulfill({body:await readFile(file),contentType:path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'text/html'});}
+   catch{await route.fulfill({status:404,body:'Not found'});}
+  });
   await page.route('**/creator-review.html',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/tomodachi-ui.css"></head><body><button id="opener">Open</button></body></html>'}));
   await page.goto('http://127.0.0.1:5173/creator-review.html');
   await page.evaluate(async()=>{document.querySelector('#opener').focus();const {openCreator}=await import('/src/avatars/creator.js');window.maker=openCreator({onSave:r=>window.saved=r});});
   const mobile=width<=760||height<=500;
+  const original=await page.evaluate(()=>JSON.stringify(window.maker.recipe));
+  await page.getByRole('combobox',{name:'Preview angle',exact:true}).selectOption('back');
+  assert.equal(await page.getByRole('combobox',{name:'Preview angle',exact:true}).inputValue(),'back');
+  await page.getByRole('combobox',{name:'Preview angle',exact:true}).selectOption('front');
+  assert.equal(await page.evaluate(()=>JSON.stringify(window.maker.recipe)),original);
   for(const id of ['body','head','hair','eyes','brows','nose','mouth','extras','top','bottom','accessories','hat']){
    if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption(id);else await page.getByRole('tab',{name:({body:'Body',head:'Face',hair:'Hair',eyes:'Eyes',brows:'Brows',nose:'Nose',mouth:'Mouth',extras:'Glasses & beard',top:'Top',bottom:'Bottoms',accessories:'Accessories',hat:'Hats & bows'})[id],exact:true}).click();
    const bounds=await page.evaluate(()=>{const root=document.querySelector('.shm'),body=document.querySelector('.shm-body'),save=document.querySelector('.shm-save');return {overflow:root.scrollWidth>innerWidth,body:body.clientHeight,bottom:save.getBoundingClientRect().bottom};});

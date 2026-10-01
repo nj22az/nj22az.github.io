@@ -53,7 +53,7 @@ export const IZAKAYA_PLAYER_SEATS=Object.freeze({
 });
 
 /** A drink as a small prop: a mug with a head, a brown bottle and glass, a can, a tumbler. */
-export function createDrinkProp(kind){
+export function createDrinkProp(kind,{held=false}={}){
  const g=new THREE.Group();g.name='Minato drink · '+kind;
  const glass=new THREE.MeshStandardMaterial({color:0xdfe8e4,roughness:.08,metalness:0,transparent:true,opacity:.42,depthWrite:false});
  const beer=new THREE.MeshStandardMaterial({color:0xd9941e,roughness:.3,emissive:0x4a2a02,emissiveIntensity:.25});
@@ -66,12 +66,16 @@ export function createDrinkProp(kind){
   const head=new THREE.Mesh(new THREE.CylinderGeometry(.043,.041,.025,20),foam);head.position.y=.135;level.add(head);
   const handle=add(new THREE.TorusGeometry(.03,.007,8,16,Math.PI),glass,.08,.05);handle.rotation.z=-Math.PI/2;
  }else if(kind==='bottle'){
-  const brown=new THREE.MeshStandardMaterial({color:0x5a2e10,roughness:.25,transparent:true,opacity:.92});
-  add(new THREE.CylinderGeometry(.038,.038,.2,18),brown,.1,-.06);add(new THREE.CylinderGeometry(.013,.036,.08,14),brown,.24,-.06);
-  add(new THREE.CylinderGeometry(.034,.034,.05,18),new THREE.MeshStandardMaterial({color:0xf2f0e8,roughness:.6}),.1,-.06);
-  add(new THREE.CylinderGeometry(.03,.027,.09,16),glass,.045,.05);
-  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.027,.025,.07,16),beer);liquid.position.set(.05,.037,0);level.add(liquid);
-  const head=new THREE.Mesh(new THREE.CylinderGeometry(.028,.027,.012,16),foam);head.position.set(.05,.078,0);level.add(head);
+  const brown=new THREE.MeshStandardMaterial({color:0x5a2e10,roughness:.25,transparent:true,opacity:.48,depthWrite:false});
+  if(!held){
+   add(new THREE.CylinderGeometry(.038,.038,.2,18),brown,.1,-.06);add(new THREE.CylinderGeometry(.013,.036,.08,14),brown,.24,-.06);
+   add(new THREE.CylinderGeometry(.034,.034,.05,18),new THREE.MeshStandardMaterial({color:0xf2f0e8,roughness:.6}),.1,-.06);
+   const contents=new THREE.Mesh(new THREE.CylinderGeometry(.034,.034,.185,18),beer);contents.position.set(-.06,.095,0);level.add(contents);
+  }
+  const x=held?0:.05;
+  add(new THREE.CylinderGeometry(.03,.027,.09,16),glass,.045,x);
+  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.027,.025,.07,16),beer);liquid.position.set(x,.037,0);level.add(liquid);
+  const head=new THREE.Mesh(new THREE.CylinderGeometry(.028,.027,.012,16),foam);head.position.set(x,.078,0);level.add(head);
  }else if(kind==='can'){
   const can=add(new THREE.CylinderGeometry(.033,.033,.122,20),new THREE.MeshStandardMaterial({color:0xf2f2ee,roughness:.35,metalness:.55}),.061);
   add(new THREE.CylinderGeometry(.0335,.0335,.045,20),new THREE.MeshStandardMaterial({color:0x1e4f9c,roughness:.4,metalness:.4}),.07);
@@ -82,6 +86,8 @@ export function createDrinkProp(kind){
   const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.033,.03,.085,18),new THREE.MeshStandardMaterial({color:0x7a3f18,roughness:.25,transparent:true,opacity:.85}));liquid.position.y=.045;level.add(liquid);
   for(let i=0;i<3;i++){const ice=new THREE.Mesh(new THREE.BoxGeometry(.022,.022,.022),glass);ice.position.set((i-1)*.012,.08,(i%2)*.01);ice.rotation.set(i,i*.7,0);level.add(ice);}
  }
+ g.userData.portion=1;g.userData.targetPortion=1;g.userData.consumable='drink';
+ g.userData.rimHeight=kind==='draft'?.15:kind==='bottle'?.09:kind==='can'?.122:.11;
  g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
  return g;
 }
@@ -104,12 +110,14 @@ export function createDishProp(kind){
  }else if(kind==='edamame'||kind==='karaage'){
   bowl(.07,.045,0x2f5872);
   for(let k=0;k<(kind==='edamame'?9:6);k++){const a=k*2.3,r=.035*((k%3)/2+.3);add(kind==='edamame'?new THREE.BoxGeometry(.045,.014,.018):new THREE.SphereGeometry(.022,8,6),m(kind==='edamame'?0x7d9b45:0xb8742e),Math.cos(a)*r,.045,Math.sin(a)*r,level).rotation.y=a;}
- }else if(kind==='oden'||kind==='agedashi'||kind==='ochazuke'){
+ }else if(kind==='oden'||kind==='agedashi'||kind==='ochazuke'||kind==='ramen'||kind==='rice'){
   bowl(.075,.06,kind==='ochazuke'?0x2f5872:0x8a5a3a);
   add(new THREE.CylinderGeometry(.068,.068,.004,16),m(kind==='ochazuke'?0xb7a35c:0xa8732f),0,.045,0,level);
   if(kind==='oden'){add(new THREE.CylinderGeometry(.025,.025,.03,12),m(0xe3d3a6),-.025,.05,0,level);add(new THREE.SphereGeometry(.02,8,6),m(0xb98a4a),.025,.052,.01,level);}
   else if(kind==='agedashi')for(let k=0;k<2;k++)add(new THREE.BoxGeometry(.04,.03,.04),m(0xd7a55a),-.02+k*.04,.05,0,level);
-  else add(new THREE.BoxGeometry(.05,.004,.05),m(0x1f2a22),0,.05,0,level);
+  else if(kind==='ramen'||kind==='rice'){
+   for(let i=0;i<6;i++)add(new THREE.SphereGeometry(.016,8,6),m(0xe8cf7a),(i%3-1)*.025,.052,Math.floor(i/3)*.025-.012,level);
+  }else add(new THREE.BoxGeometry(.05,.004,.05),m(0x1f2a22),0,.05,0,level);
  }else if(kind==='hiyayakko'){
   plate(.12,.12,0x2f5872);add(new THREE.BoxGeometry(.07,.04,.07),m(0xf1ece0),0,.035,0,level);add(new THREE.BoxGeometry(.02,.01,.02),m(0xd9b35a),0,.06,0,level);
  }else if(kind==='gyoza'){
@@ -117,8 +125,39 @@ export function createDishProp(kind){
  }else{ // dashimaki
   plate(.2,.1,0xf1ece0);for(let k=0;k<4;k++)add(new THREE.BoxGeometry(.035,.035,.06),m(0xf0c94a),-.06+k*.04,.03,0,level);
  }
+ g.userData.portion=1;g.userData.targetPortion=1;g.userData.consumable='food';
  g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
  return g;
+}
+
+/** Smooth liquid levels; remove food portions in sequence rather than flattening a dish. */
+export function setPropPortion(prop,fraction,{immediate=false}={}){
+ const value=THREE.MathUtils.clamp(Number(fraction)||0,0,1);
+ prop.userData.targetPortion=value;
+ if(immediate){prop.userData.portion=value;updatePropPortion(prop,0);}
+}
+export function updatePropPortion(prop,dt){
+ const u=prop.userData,level=u.level;if(!level)return;
+ const target=u.targetPortion??1,current=u.portion??1;
+ u.portion=Math.abs(current-target)<.001?target:THREE.MathUtils.damp(current,target,7,Math.max(0,dt));
+ level.visible=u.portion>0;
+ if(u.consumable==='food'){
+  const amount=level.children.length*u.portion;
+  level.children.forEach((piece,i)=>{piece.visible=i<Math.ceil(amount);piece.scale.setScalar(Math.min(1,Math.max(0,amount-i)));});
+ }else level.scale.y=Math.max(.001,u.portion);
+}
+export function createBiteProp(kind){
+ const g=new THREE.Group();g.userData.food=true;g.userData.consumable='food';g.userData.portion=1;g.userData.targetPortion=1;
+ const wood=new THREE.MeshStandardMaterial({color:0xc9a26b,roughness:.6});
+ for(const x of [-.008,.008]){const stick=new THREE.Mesh(new THREE.BoxGeometry(.005,.005,.16),wood);stick.position.set(x,.02,.04);g.add(stick);}
+ const level=new THREE.Group();g.add(level);g.userData.level=level;
+ const food=new THREE.Mesh(new THREE.SphereGeometry(.018,8,6),new THREE.MeshStandardMaterial({color:kind==='edamame'?0x7d9b45:kind==='sashimi'?0xea8a5c:0xd9b27a,roughness:.6}));
+ food.position.set(0,.04,.10);level.add(food);return g;
+}
+export function disposeServing(prop){
+ if(!prop)return;prop.removeFromParent();const materials=new Set();
+ prop.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);}});
+ materials.forEach(m=>m.dispose());
 }
 
 /**
@@ -159,8 +198,7 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
   served++;
  }
  function eatFrom(slot,total){
-  slot.left=Math.max(0,slot.left-1);const level=slot.prop.userData.level;
-  if(level){level.scale.set(1,Math.max(.04,slot.left/total),1);if(slot.left===0)level.visible=false;}
+  slot.left=Math.max(0,slot.left-1);setPropPortion(slot.prop,slot.left/total);
  }
  return {
   /** The drink or dish on its way, if any. */
@@ -184,24 +222,24 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
   },
   /** One sip. Returns what is left, or null with nothing on the table. */
   sip(){
-   if(!drink)return null;
+   if(!drink||drink.left<=0)return null;
    drink.left=Math.max(0,drink.left-1);const spec=DRINKS[drink.kind],level=drink.prop.userData.level;
-   if(level)level.scale.y=Math.max(.04,drink.left/spec.sips);
-   if(drink.kind==='draft'&&level?.children[1])level.children[1].visible=drink.left>spec.sips*.5;
+   setPropPortion(drink.prop,drink.left/spec.sips);
    const result={kind:drink.kind,left:drink.left,alcohol:spec.alcohol/spec.sips};
-   if(drink.left===0)setTimeout(clearDrink,1500);
+   if(drink.left===0){const finished=drink;setTimeout(()=>{if(drink===finished)clearDrink();},1500);}
    return result;
   },
   /** One mouthful of the dish. Returns what is left, or null with nothing on the plate. */
   bite(){
    if(!dish||dish.left<=0)return null;
    eatFrom(dish,DISHES[dish.kind].bites);const result={kind:dish.kind,left:dish.left};
-   if(dish.left===0)setTimeout(clearDish,2500);
+   if(dish.left===0){const finished=dish;setTimeout(()=>{if(dish===finished)clearDish();},2500);}
    return result;
   },
   /** A drink already on the table at this seat -- the evening you walk into, not one you ordered. */
   serveNow(kind,seat){if(!menuItem(kind)||!seat?.table)return false;serve(kind,seat);return true;},
   update(dt){
+   if(drink)updatePropPortion(drink.prop,dt);if(dish)updatePropPortion(dish.prop,dt);
    if(!order)return;
    const nao=getNao();
    if(!nao){order=null;return;}
