@@ -51,7 +51,7 @@ test('consumeStorageWonHandshake clears the localStorage key once',()=>{
   };
   localStorage.setItem(STORAGE_WON_KEY,JSON.stringify({day:2,assisted:true,t:123}));
   const once=consumeStorageWonHandshake();
-  assert.deepEqual(once,{day:2,assisted:true,lost:[],shooed:0,yen:0,t:123},'an older handshake reads as a night with nothing lost');
+  assert.deepEqual(once,{day:2,player:null,assisted:true,lost:[],shooed:0,yen:0,t:123},'an older handshake reads as a night with nothing lost');
   assert.equal(localStorage.getItem(STORAGE_WON_KEY),null);
   assert.equal(consumeStorageWonHandshake(),null);
 });
@@ -60,7 +60,7 @@ test('what Bizarro Minato carried down the hole stays off the shelf, and is reme
   const state=depletedState();
   const result=applyStorageRestock(state,state.minutes,{lost:['biscuits','onigiri']});
   assert.deepEqual(result.short.sort(),[stockSpec('biscuit').name,stockSpec('rice').name].sort());
-  assert.equal(state.sakura.stock.biscuit.shelf,stockSpec('biscuit').capacity-4,'the biscuits were not restocked');
+  assert.equal(state.sakura.stock.biscuit.shelf,0,'the missing biscuits are sold out');
   assert.equal(state.sakura.stock.tea.shelf,stockSpec('tea').capacity,'everything else was');
   assert.ok(state.sakura.journal.some(r=>r.kind==='Lost'&&r.buyer==='Bizarro Minato'));
   state.sakura.caveCartons=['biscuit','rice','nonsense'];

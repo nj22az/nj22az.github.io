@@ -1,0 +1,42 @@
+[
+  {
+    "viewport": [
+      1440,
+      1000
+    ],
+    "nights": [
+      {
+        "day": 20727,
+        "yen": 50,
+        "shooed": 1
+      },
+      {
+        "day": 20728,
+        "yen": 50,
+        "shooed": 1
+      }
+    ],
+    "checks": "actual TIME menu night/morning/next night, real automatic stockroom routing and return, once-per-night balance, pending tea carton never resurrected",
+    "errors": []
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "nights": [
+      {
+        "day": 20727,
+        "yen": 50,
+        "shooed": 1
+      },
+      {
+        "day": 20728,
+        "yen": 50,
+        "shooed": 1
+      }
+    ],
+    "checks": "actual TIME menu night/morning/next night, real automatic stockroom routing and return, once-per-night balance, pending tea carton never resurrected",
+    "errors": []
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "viewport": [
+      1440,
+      1000
+    ],
+    "lost": [
+      "batteries",
+      "postcards"
+    ],
+    "shooReward": 50,
+    "recovered": "battery",
+    "checks": "spawn, collision bop, keyboard/touch shoo, no duplicate reward, reload, mid-event exit/return, actual town hand-off, sold-out shelves, actual cave chest/exit/reload, Photo Studio and warehouse",
+    "errors": []
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "lost": [
+      "batteries",
+      "postcards"
+    ],
+    "shooReward": 50,
+    "recovered": "battery",
+    "checks": "spawn, collision bop, keyboard/touch shoo, no duplicate reward, reload, mid-event exit/return, actual town hand-off, sold-out shelves, actual cave chest/exit/reload, Photo Studio and warehouse",
+    "errors": []
+  }
+]

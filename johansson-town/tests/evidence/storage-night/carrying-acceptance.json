@@ -1,0 +1,20 @@
+[
+  {
+    "viewport": [
+      1440,
+      1000
+    ],
+    "stolen": "batteries",
+    "checks": "carried carton drops and is collected once; second real keyboard/touch press cannot pay again; drop and coins survive reload; next-night checkpoint is independent",
+    "errors": []
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "stolen": "batteries",
+    "checks": "carried carton drops and is collected once; second real keyboard/touch press cannot pay again; drop and coins survive reload; next-night checkpoint is independent",
+    "errors": []
+  }
+]

@@ -62,7 +62,7 @@ import {createAvatarJohansson,playerRecipe,savePlayerRecipe,importRecipeFromURL}
 import {openCreator} from './avatars/creator.js';
 import {assetURL} from './assets.js';
 import {createBeerService,createDrinkProp,createBiteProp,setPropPortion,DRINKS} from './people/izakaya-beer.js';
-import {stockSpec} from './commerce/shop-stock.js';
+import {stockSpec,recoverStorageCarton} from './commerce/shop-stock.js';
 import {DRUNK,LAGER_ALCOHOL,soberUp,wantsAnother,drink as drinkUp} from './people/drunk.js';
 import {createShopCarry} from './interact/shop-carry.js';
 import {townAudio} from './audio/town-audio.js?snappy=1';
@@ -882,7 +882,7 @@ function finishDungeon(){
  if(run.lost){setTimeout(()=>say('You come to at the cave mouth with a headache and empty pockets. Whatever you found is down there still.',5),60);return;}
  st.yen=(st.yen||0)+run.loot;st.inventory=st.inventory||[];for(const item of run.items)st.inventory.push(item);
  // Thuan's cartons, back from the cave: straight onto Sakura's shelf.
- for(const carton of run.recovered||[]){const stock=st.sakura?.stock?.[carton.id],spec=stockSpec(carton.id);if(stock&&spec)stock.shelf=spec.capacity;if(st.sakura)st.sakura.caveCartons=(st.sakura.caveCartons||[]).filter(id=>id!==carton.id);activities.note?.('Brought Thuan’s '+carton.name.toLowerCase()+' back up from the sea cave.');}
+ for(const carton of run.recovered||[]){if(!st.sakura?.caveCartons?.includes(carton.id))continue;recoverStorageCarton(st,carton.id);activities.note?.('Brought Thuan’s '+carton.name.toLowerCase()+' back up from the sea cave.');}
  activities.save();
  const found=run.items.length?' and '+run.items.join(', '):'';
  const back=run.recovered?.length?' Thuan’s '+run.recovered.map(c=>c.name.toLowerCase()).join(' and ')+' go back on Sakura’s shelf.':'';

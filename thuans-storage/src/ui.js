@@ -6,7 +6,8 @@ function storageBridgeParams() {
     return {
       fromTown: q.get('from') === 'johansson-town',
       mode: q.get('mode') === 'auto' ? 'auto' : q.get('mode') === 'play' ? 'play' : null,
-      day: Number.isFinite(Number(q.get('day'))) ? Number(q.get('day')) : null,
+      day: q.has('day') && Number.isSafeInteger(Number(q.get('day'))) ? Number(q.get('day')) : null,
+      player: /^[\w-]{1,40}$/.test(q.get('player')||'') ? q.get('player') : 'player-1',
     };
   } catch {
     return { fromTown: false, mode: null, day: null };
@@ -15,17 +16,20 @@ function storageBridgeParams() {
 // What Sakura gets back: the night's result, read by johansson-town/src/commerce/shop-stock.js.
 // `lost` are the goods Bizarro Minato carried down the hole (sold out tomorrow); `yen` the
 // cave coins the shooed ones dropped, which go in the player's purse.
-function writeStorageWonHandshake({ day, assisted, lost = [], shooed = 0, yen = 0 }) {
+function writeStorageWonHandshake({ day, player, assisted, lost = [], shooed = 0, yen = 0 }) {
   try {
     localStorage.setItem(
       STORAGE_WON_KEY,
-      JSON.stringify({ day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, lost, shooed, yen, t: Date.now() }),
+      JSON.stringify({ player, day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, lost, shooed, yen, t: Date.now() }),
     );
   } catch {}
 }
 function returnToJohanssonTown() {
   window.location.href = '/johansson-town/';
 }
+function storageCheckpointKey(){const b=storageBridgeParams();return b.fromTown&&b.day!==null?'johansson-town:storage-night:'+b.player+':'+b.day:null;}
+function readStorageCheckpoint(){try{const key=storageCheckpointKey();return key?JSON.parse(localStorage.getItem(key)):null;}catch{return null;}}
+function saveStorageCheckpoint(data){try{const key=storageCheckpointKey();if(key)localStorage.setItem(key,JSON.stringify(data));}catch{}}
 function yg() {
   let e = (0, C.useRef)(null),
     t = (0, C.useRef)(null),
@@ -57,13 +61,14 @@ function yg() {
                 canvas: r,
                 minimap: i,
                 gltf: e,
+                resumeData:readStorageCheckpoint(),onCheckpoint:saveStorageCheckpoint,
                 onHud: (e) => {
                   let t = hm.getState();
                   (t.setHud(e), e.phase === `won` && !e.assisted && t.saveBest(e.time));
                   if (e.phase === `won` && storageBridgeParams().fromTown && !window.__storageWonPosted) {
                     window.__storageWonPosted = true;
                     const bridge = storageBridgeParams();
-                    writeStorageWonHandshake({ day: bridge.day, assisted: !!e.assisted, lost: e.lostIds || [], shooed: e.shooed || 0, yen: e.yenFound || 0 });
+                    writeStorageWonHandshake({ day: bridge.day, player:bridge.player, assisted: !!e.assisted, lost: e.lostIds || [], shooed: e.shooed || 0, yen: e.yenFound || 0 });
                     // A moment on the results first, so you see what you saved.
                     window.setTimeout(returnToJohanssonTown, 2600);
                     return;
