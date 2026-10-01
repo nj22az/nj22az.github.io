@@ -1,0 +1,48 @@
+// Local source harness: PHOTO_CHROME overrides the installed headless Chromium path.
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {readFile,mkdir} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+const require=createRequire(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/package.json');
+const {chromium}=require('playwright');
+const browser=await chromium.launch({executablePath:process.env.PHOTO_CHROME||'/root/.cache/ms-playwright/chromium_headless_shell-1161/chrome-linux/headless_shell',args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const evidence=new URL('../tests/evidence/photo-studio/',import.meta.url);await mkdir(evidence,{recursive:true});
+try{
+ for(const [width,height] of [[1440,1000],[390,844],[844,390],[320,568]]){
+  const page=await browser.newPage({viewport:{width,height},hasTouch:width<500,acceptDownloads:true});const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE ERROR',e.stack);});
+  await page.route('http://photo.test/**',async route=>{
+   const path=new URL(route.request().url()).pathname;
+   if(path==='/')return route.fulfill({contentType:'text/html',body:'<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/base.css"><link rel="stylesheet" href="/photo-mode.css"></head><body><button id="opener" style="position:fixed;z-index:100">Open photo studio</button><canvas id="game"></canvas></body></html>'});
+   try{await route.fulfill({body:await readFile(new URL('..'+path,import.meta.url)),contentType:path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'application/octet-stream'});}catch{await route.fulfill({status:404,body:'Not found'});}
+  });
+  await page.goto('http://photo.test/');
+  await page.evaluate(async()=>{
+   const THREE=await import('/vendor/three.module.js'),{createPhotoStudio}=await import('/src/photo/studio.js'),{buildWarehouseInterior}=await import('/src/world/interiors/warehouse.js');
+   const scene=new THREE.Scene(),room=new THREE.Group();scene.add(room);scene.background=new THREE.Color('#a6b8bc');buildWarehouseInterior({room,reg(){},collider(){},action(){},exit(){}});scene.add(new THREE.HemisphereLight(0xe8f0ea,0x766a56,2));
+   const renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#game'),antialias:true});renderer.setSize(innerWidth,innerHeight,false);
+   const gameCamera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,100);gameCamera.position.set(0,1.7,4.4);
+   const actor=new THREE.Group();actor.visible=false;actor.position.set(5,2,3);scene.add(actor);window.original=actor;window.openCount=0;window.closeCount=0;
+   window.studio=createPhotoStudio({scene,renderer,gameCamera,draw:view=>renderer.render(scene,view),getContext:()=>({position:new THREE.Vector3(0,0,4.4),yaw:0,cast:[{name:'Mrs Sato'}],hide:[actor]}),onOpen:()=>window.openCount++,onClose:()=>{window.closeCount++;renderer.setSize(innerWidth,innerHeight,false);}});
+   document.querySelector('#opener').onclick=()=>studio.open();const tick=()=>{requestAnimationFrame(tick);studio.render();};tick();
+  });
+  await page.getByRole('button',{name:'Open photo studio',exact:true}).click();
+  await page.getByLabel('Pose',{exact:true}).selectOption('Cheer');await page.getByLabel('Expression',{exact:true}).selectOption('surprised');
+  await page.getByLabel('Speech bubble',{exact:true}).fill('The cargo is HOW late?');
+  await page.getByLabel('Style',{exact:true}).selectOption('meme');await page.getByLabel('Top text · meme',{exact:true}).fill('ONE SMALL DELIVERY');await page.getByLabel('Bottom text · meme or comic',{exact:true}).fill('Six pallets later…');
+  const geometry=await page.evaluate(()=>{const root=document.querySelector('#photoStudio'),frame=document.querySelector('.photo-frame').getBoundingClientRect();return {overflow:root.scrollWidth>innerWidth,frame:{x:frame.x,y:frame.y,w:frame.width,h:frame.height},active:studio.active};});assert.equal(geometry.overflow,false);assert.ok(geometry.frame.w>150&&geometry.frame.h>120);assert.equal(geometry.active,true);
+  const captureButton=page.getByRole('button',{name:'Capture panel',exact:true});if(width<500)await captureButton.tap();else await captureButton.click();await page.waitForFunction(()=>studio.panelCount===1);
+  const first=await page.locator('.photo-film a').first().getAttribute('href');
+  const png=await page.evaluate(async url=>{const b=await(await fetch(url)).blob(),bitmap=await createImageBitmap(b),c=document.createElement('canvas');c.width=bitmap.width;c.height=bitmap.height;const x=c.getContext('2d');x.drawImage(bitmap,0,0);const p=x.getImageData(0,0,c.width,c.height).data;let varied=0;for(let i=0;i<p.length;i+=800)if(p[i]!==p[0]||p[i+1]!==p[1])varied++;return {w:bitmap.width,h:bitmap.height,bytes:b.size,varied};},first);assert.deepEqual([png.w,png.h],[1200,900]);assert.ok(png.bytes>20000&&png.varied>100,JSON.stringify(png));
+  for(const format of ['square','portrait']){await page.getByLabel('Format',{exact:true}).selectOption(format);await page.getByRole('button',{name:'Capture panel',exact:true}).click();await page.waitForFunction(n=>studio.panelCount===n,format==='square'?2:3);}
+  await page.getByRole('button',{name:'Capture panel',exact:true}).click();await page.waitForFunction(()=>studio.panelCount===4);assert.ok(await page.getByRole('button',{name:'Capture panel',exact:true}).isDisabled());
+  await page.getByRole('button',{name:'Save comic PNG',exact:true}).click();await page.getByRole('link',{name:'Download comic PNG',exact:true}).waitFor();
+  const comic=await page.evaluate(async()=>{const b=await(await fetch(document.querySelector('[data-comic-link] a').href)).blob(),im=await createImageBitmap(b);return {w:im.width,h:im.height,bytes:b.size};});assert.equal(comic.w,1200);assert.ok(comic.h>800&&comic.bytes>30000);
+  await page.getByLabel('Format',{exact:true}).selectOption('landscape');await page.screenshot({path:fileURLToPath(new URL(`${width}x${height}.png`,evidence))});
+  for(let i=0;i<4;i++)await page.getByRole('button',{name:'Add',exact:true}).click();assert.ok(await page.getByRole('button',{name:'Add',exact:true}).isDisabled());
+  await page.getByRole('button',{name:'Remove character',exact:true}).click();assert.equal(await page.getByRole('button',{name:'Add',exact:true}).isDisabled(),false);
+  await page.getByRole('button',{name:'Return to town',exact:true}).click();assert.equal(await page.evaluate(()=>studio.active),false);assert.equal(await page.evaluate(()=>original.visible),false);assert.deepEqual(await page.evaluate(()=>original.position.toArray()),[5,2,3]);assert.equal(await page.locator('body > #game').count(),1);assert.equal(await page.evaluate(()=>document.activeElement.id),'opener');
+  await page.getByRole('button',{name:'Open photo studio',exact:true}).click();assert.equal(await page.locator('.photo-film figure').count(),4);await page.getByRole('button',{name:'Remove panel 2',exact:true}).click();assert.equal(await page.locator('.photo-film figure').count(),3);
+  await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>studio.active),false);assert.equal(await page.evaluate(()=>closeCount),2);assert.deepEqual(errors,[]);
+  console.log(JSON.stringify({viewport:[width,height],png,comic,errors}));await page.close();
+ }
+}finally{await browser.close();}
