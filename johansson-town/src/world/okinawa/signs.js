@@ -187,3 +187,37 @@ export function catchFlag(seed=0){
   ctx.fillText('大漁',w*.34,h*.4);
  });
 }
+
+/**
+ * A painted wall advertisement, the kind sign-writers put on the blank side of a
+ * shop-house in the sixties and seventies and nobody painted over: a big panel of
+ * colour, the product in huge characters, a slogan, and twenty years of sun. Reds fade
+ * first, so the whole panel drifts toward cyan and chalk; the paint flakes at the
+ * edges. Every brand here is invented.
+ */
+export const WALL_ADS=Object.freeze([
+ {jp:'琉球サイダー',en:'RYUKYU CIDER',line:'冷えてます',bg:'#2f6f9f',ink:'#fff6e0',accent:'#e0b23c'},
+ {jp:'ミナト銀行',en:'MINATO BANK',line:'港とともに',bg:'#e9e1cc',ink:'#1f4e6b',accent:'#c8432f'},
+ {jp:'島ぞうり',en:'SHIMA ZORI',line:'はきやすい',bg:'#c8432f',ink:'#fff6e0',accent:'#f2d36b'},
+ {jp:'泡盛 南風',en:'AWAMORI HAEE',line:'島の酒',bg:'#1f3a34',ink:'#f3ead2',accent:'#d9a441'},
+ {jp:'でいご生命',en:'DEIGO LIFE',line:'家族の安心',bg:'#f1e6c8',ink:'#b8302a',accent:'#3f7f86'},
+]);
+export function wallAd({jp,en,line='',bg,ink,accent}=WALL_ADS[0],seed=1){
+ return paint(512,704,(ctx,w,h)=>{
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle=accent;ctx.lineWidth=18;ctx.strokeRect(22,22,w-44,h-44);
+  ctx.fillStyle=ink;ctx.textAlign='center';ctx.textBaseline='middle';
+  const chars=[...jp].filter(c=>c!==' '),size=Math.min(150,Math.floor((h-260)/chars.length));
+  ctx.font=`bold ${size}px ${SERIF}`;
+  chars.forEach((c,i)=>ctx.fillText(c,w/2,90+size*.55+i*size));
+  ctx.font=`bold 34px ${SANS}`;ctx.fillStyle=accent;ctx.fillText(line,w/2,h-118);
+  ctx.font=`bold 30px ${SANS}`;ctx.fillStyle=ink;ctx.fillText(en,w/2,h-64);
+  // Twenty years of sun: a chalky wash, stronger toward the top, that pulls every
+  // colour toward cyan-white; then flaking at the edges where the render shows through.
+  const fade=ctx.createLinearGradient(0,0,0,h);fade.addColorStop(0,'rgba(214,236,236,.42)');fade.addColorStop(1,'rgba(214,236,236,.16)');
+  ctx.fillStyle=fade;ctx.fillRect(0,0,w,h);
+  let s=seed*9301+49297;const r=()=>(s=(s*9301+49297)%233280)/233280;
+  ctx.fillStyle='rgba(226,220,204,.85)';
+  for(let i=0;i<46;i++){const edge=r()<.5,x=edge?(r()<.5?r()*40:w-r()*40):r()*w,y=edge?r()*h:(r()<.5?r()*36:h-r()*36);ctx.beginPath();ctx.ellipse(x,y,6+r()*18,4+r()*10,r()*3,0,Math.PI*2);ctx.fill();}
+ });
+}

@@ -1,4 +1,5 @@
 import {rng} from './kit.js';
+import {wallAd,WALL_ADS} from './signs.js';
 
 /**
  * The buildings and gardens of an Okinawan harbour town, made with the kit.
@@ -174,6 +175,23 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  kit.rod([W*.5,H,-D*.5],[W*.5,H+2.3,-D*.5],.022,C.steel);
  kit.rod([W*.5-.5,H+2.0,-D*.5],[W*.5+.5,H+2.0,-D*.5],.014,C.steel);
  for(const x of [-W+.5,W-.9])if(r.next()>.3)kit.box(.05,1.2+r.next(),.02,x,H-.8,D+.01,0x9d8f78);
+ // The side walls. A blank flank was the largest empty shape in any street view; a real
+ // one has a drainpipe at the back corner, a small frosted window to the stairs, a dark
+ // band of mould under the parapet and, often, an old painted advertisement.
+ for(const side of [-1,1]){
+  const x=side*(W+.03);
+  kit.rod([side*(W+.08),0,-D+.25],[side*(W+.08),H+.45,-D+.25],.05,0x9aa3a0);
+  kit.box(.05,.66,.56,x,ground+1.7,-D*.55,0xb8bec0,{finish:'metal'});
+  kit.box(.05,.56,.46,x+side*.01,ground+1.7,-D*.55,0xc9d6d8,{finish:'glow'});
+  kit.box(.02,.28,d-.3,side*(W+.004),H-.12,0,0xbdb4a2);
+ }
+ const adSide=r.next()>.5?1:-1,ad=WALL_ADS[Math.floor(r.next()*WALL_ADS.length)%WALL_ADS.length];
+ // About every other shop-house. Each advert is its own board, named as a sign so the
+ // quarter's batch budget (tests/okinawa-quarters.test.mjs) counts it with the signs.
+ const wantsAd=r.next()<.5;
+ if(wantsAd&&typeof document!=='undefined'&&document.createElement)try{
+  kit.sign(wallAd(ad,seed),Math.min(2.6,d*.38),Math.min(3.4,(H-ground)*1.1),adSide*(W+.035),ground+1.55,D*.18,{ry:adSide*Math.PI/2,depth:.02,edge:colour,name:'painted wall advert sign'});
+ }catch{}
  return [kit.rect(-W-.05,W+.05,-D-.05,back+.02,H+.6,'shop-house'),kit.rect(-W-.05,-open,back,D,ground,'shop-house'),kit.rect(open,W+.05,back,D,ground,'shop-house')];
 }
 
