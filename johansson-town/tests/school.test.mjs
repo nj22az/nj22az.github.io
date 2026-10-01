@@ -2,23 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
-import {GLTFLoader} from '../vendor/GLTFLoader.js';
+import {buildSchool} from '../src/world/school.js';
 import {installDOM} from './fixtures.mjs';
 import {SCHOOL,schoolAt,schoolColliders,FUKUGI} from '../src/world/school-layout.js';
 import {schoolPhase,menuForWeekday,KYUSHOKU_MENUS,buildClassroom,CLASSROOM,CLASS_SIZE} from '../src/world/interiors/classroom.js';
 import {CHIME_TIMES,CHIME_NOTES} from '../src/audio/school-chime.js';
 import {createActivities} from '../activities.js?snappy=1';
 
-test('the school model is one small campus: a handful of draws, and stains drawn as decals',async()=>{
+test('the town hall is one storey, built from the kit, on the old school block',()=>{
  installDOM();
- const bytes=await readFile(new URL('../assets/models/school/minato-school.glb',import.meta.url));
- assert.ok(bytes.length<3_200_000,'School model budget');
- const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
- let draws=0,triangles=0,stains=0;
- gltf.scene.traverse(o=>{if(!o.isMesh)return;draws++;triangles+=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;if(/stain/i.test(o.material.name))stains++;assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));});
- assert.ok(draws<=6,'School draws');assert.ok(triangles<45000,'School triangles');assert.equal(stains,1,'Stains are their own decal surface');
- const box=new THREE.Box3().setFromObject(gltf.scene);
- assert.ok(box.min.x>SCHOOL.minX-2&&box.max.x<SCHOOL.maxX+8,'The campus stays on its ground');
+ const world={group:new THREE.Group(),colliders:[]},sites=[];
+ buildSchool(world,{sites,register(){},enter(){},onAction(){}});
+ const hall=world.group.getObjectByName('Minato school');let triangles=0,building=0;
+ hall.traverse(o=>{if(!o.isMesh)return;const t=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;triangles+=t;if(/Town hall building/.test(o.name))building+=t;});
+ assert.ok(building>0,'The hall is built in code');assert.ok(triangles<60000,'Town hall triangles');
+ world.group.updateMatrixWorld(true);
+ const box=new THREE.Box3();hall.traverse(o=>{if(o.isMesh&&/Town hall building/.test(o.name))box.expandByObject(o);});
+ assert.ok(box.min.x>SCHOOL.minX-2&&box.max.x<SCHOOL.maxX+2,'The hall stays on its ground');
+ assert.ok(SCHOOL.building.parapet<4.5,'One storey');
+ assert.deepEqual(sites.map(s=>s.id).sort(),['community-kitchen','mayor-home','mayor-office','school']);
 });
 
 test('the grounds are walkable through the gate, and the block, the columns and the trees are solid',()=>{

@@ -1,10 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
-import {GLTFLoader} from '../../vendor/GLTFLoader.js';
-import {assetURL} from '../assets.js';
-import {registerDetail} from './detail-stream.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {SCHOOL,SCHOOL_COLUMNS,FUKUGI,schoolColliders} from './school-layout.js';
 import {createKit} from './okinawa/kit.js';
+import {shisa} from './okinawa/houses.js';
 import {playSchoolChime,CHIME_TIMES} from '../audio/school-chime.js';
 
 /**
@@ -148,9 +146,7 @@ function plate(group,text,{w,h,at,rotY=0,bg='#f1ead6',fg='#1f2a26',font=SERIF,ve
 }
 
 /** Room plates, hung out from the corridor ceiling over each door, as every school has them. */
-const ROOMS=[
- ['住民課','資料室'],['昇降口','会議室'],['総務課','5・6年'],['保健室','議場'],['町長室','公民館'],['産業課','図書室'],['町長宅','倉庫'],
-];
+const ROOMS=[['倉庫'],['玄関'],['教室'],['調理室'],['町長室'],['会議室'],['町長宅']];
 
 /** The noticeboard in the entrance: harbour safety, the typhoon shelter map, the co-op. */
 function noticeboard(group){
@@ -178,9 +174,10 @@ function noticeboard(group){
  return board;
 }
 
-/** The clock on the tower. Its face is in the model; the hands follow the town clock. */
+/** The clock over the entrance. Its face is built with the hall; the hands follow the town clock. */
 function clockHands(group){
- const centre=new THREE.Vector3(SCHOOL.genkan.x,8.35,SCHOOL.tower.minZ-.24);
+ // On the parapet over the entrance, beside the name.
+ const centre=new THREE.Vector3(SCHOOL.genkan.x-4.5,3.75,SCHOOL.corridor.minZ-.42);
  const black=new THREE.MeshStandardMaterial({color:0x1d1d1d,roughness:.6});
  const hand=(length,width)=>{const g=new THREE.Group();g.position.copy(centre);const m=new THREE.Mesh(new THREE.BoxGeometry(width,length,.02),black);m.position.y=length/2-.06;g.add(m);group.add(g);return g;};
  const hour=hand(.38,.06),minute=hand(.56,.04);
@@ -193,32 +190,6 @@ function clockHands(group){
  * @param {object} world
  * @param {object} options register / onAction / enter / sites / shadows, as the town gives them
  */
-/**
- * The model was built as a school, with iron bars, a sandpit kerb and a line of tyres on
- * its sports ground, all merged into the same meshes as the building. Those triangles go
- * when the model arrives: anything whose centre falls in one of these boxes (world
- * metres, x0 x1 y0 y1 z0 z1).
- */
-const SCHOOL_ONLY=Object.freeze([
- [36.8,39.8,-.1,1.6,32.2,32.8],
- [35.5,39.7,-.1,.3,29.3,31.9],
- [13.3,14.4,-.1,.5,29.9,34.1],
-]);
-function stripSchoolYard(scene){
- scene.updateMatrixWorld(true);
- const v=new THREE.Vector3(),c=new THREE.Vector3();
- scene.traverse(o=>{
-  if(!o.isMesh||!o.geometry.index)return;
-  const pos=o.geometry.attributes.position,idx=o.geometry.index.array,keep=[];
-  for(let i=0;i<idx.length;i+=3){
-   c.set(0,0,0);for(let k=0;k<3;k++)c.add(v.fromBufferAttribute(pos,idx[i+k]).applyMatrix4(o.matrixWorld));c.multiplyScalar(1/3);
-   if(SCHOOL_ONLY.some(([x0,x1,y0,y1,z0,z1])=>c.x>x0&&c.x<x1&&c.y>y0&&c.y<y1&&c.z>z0&&c.z<z1))continue;
-   keep.push(idx[i],idx[i+1],idx[i+2]);
-  }
-  if(keep.length!==idx.length)o.geometry.setIndex(keep);
- });
-}
-
 /**
  * The town hall's additions to the old school, all from the Okinawan kit: the power
  * house (two diesel sets behind louvred walls, two exhaust stacks, the fuel tank in its
@@ -274,6 +245,70 @@ function buildTownHallDressing(group,options){
  flag(7.1,(cx2,w0,h0)=>{cx2.fillStyle='#2f6f9f';cx2.fillRect(0,0,w0,h0);cx2.fillStyle='#f4f1ea';cx2.font=`bold 50px ${SERIF}`;cx2.textAlign='center';cx2.textBaseline='middle';cx2.fillText('港',w0/2,h0/2);});
 }
 
+/**
+ * The town hall itself: one storey of painted concrete on a plinth, twenty-five metres
+ * along the forecourt, the way island village offices were built in the seventies and
+ * eighties. A deep veranda runs the length of the front under the roof slab, on the old
+ * column lines. Seven bays along it: store, the glass-doored entrance, the classroom,
+ * the community kitchen, the mayor's office, the meeting room and the mayor's house at
+ * the east end, each with its own door or windows. The parapet carries the name and a
+ * clock; on the roof, two water tanks and an aerial. Also the yard furniture the old
+ * model carried: the gateposts and their shisa, the bike shed, the wash taps and the
+ * flagpole with its horn speakers.
+ */
+function buildTownHall(group,options){
+ const kit=createKit({shadows:options.shadows});
+ const x0=B.minX,x1=B.maxX,z0=SCHOOL.corridor.minZ,zf=B.minZ,zb=B.maxZ,H=B.storey,top=B.roof;
+ const wall=0xece5d2,trim=0x2f5f6a,slab=0xd8d2c2,alu=0xb8bec0,glass=0x5d7a84,plinth=0xa9aa9c,steel=0x8e979a;
+ kit.block(x0-.1,x1+.1,0,.3,zf-.05,zb+.1,plinth);
+ kit.block(x0,x1,.3,H,zf,zb,wall);
+ // Veranda floor, the roof slab over building and veranda, the parapet ring.
+ kit.block(x0,x1,0,.15,z0,zf,0xc9c3b4);
+ kit.block(x0-.3,x1+.3,H,top,z0-.3,zb+.2,slab);
+ for(const [a0,a1,c0,c1] of [[x0-.3,x1+.3,z0-.3,z0-.15],[x0-.3,x1+.3,zb+.05,zb+.2],[x0-.3,x0-.15,z0-.3,zb+.2],[x1+.15,x1+.3,z0-.3,zb+.2]])kit.block(a0,a1,top,B.parapet,c0,c1,wall);
+ kit.block(x0-.34,x1+.34,B.parapet,B.parapet+.07,z0-.34,z0-.12,trim);
+ kit.block(x0-.31,x1+.31,top-.35,top-.12,z0-.32,z0-.29,trim);
+ // Veranda columns on the old column lines.
+ for(const x of SCHOOL_COLUMNS)kit.box(.34,H,.34,x,H/2,z0+.2,wall);
+ // The front, bay by bay.
+ const bays=SCHOOL_COLUMNS.slice(0,-1).map((x,i)=>[(x+SCHOOL_COLUMNS[i+1])/2,SCHOOL_COLUMNS[i+1]-x]);
+ const door=(cx,w,c=trim)=>{kit.box(w+.16,2.25,.05,cx,1.27,zf-.03,alu,{finish:'metal'});kit.box(w,2.1,.05,cx,1.2,zf-.05,c);};
+ const window=(cx,w,y=1.65,h=1.3)=>{kit.box(w+.12,h+.12,.05,cx,y,zf-.03,alu,{finish:'metal'});kit.box(w,h,.05,cx,y,zf-.05,glass,{finish:'glow'});kit.box(.04,h,.06,cx,y,zf-.07,alu,{finish:'metal'});kit.box(w+.2,.07,.2,cx,y-h/2-.06,zf-.1,slab);};
+ bays.forEach(([cx,w],i)=>{
+  if(i===1){// The entrance: glass double doors and fixed glass either side.
+   for(const dx of [-.5,.5])kit.box(.95,2.3,.05,SCHOOL.genkan.x+dx,1.3,zf-.05,glass,{finish:'glow'});
+   kit.box(2.2,.08,.08,SCHOOL.genkan.x,2.47,zf-.06,alu,{finish:'metal'});kit.box(.06,2.3,.08,SCHOOL.genkan.x,1.3,zf-.07,alu,{finish:'metal'});
+   window(cx-1.25,.8,1.5,1.9);return;}
+  const doorX={3:27.0,4:30.6,6:37.7}[i];
+  if(doorX!==undefined){door(doorX,.95,i===6?0x8a5a36:trim);window(doorX-1.1,.7);window(doorX+1.1,.7);return;}
+  window(cx-.85,1.4);window(cx+.85,1.4);
+ });
+ // The back and the ends: plain windows, with the mould band under the slab.
+ for(let x=x0+1.6;x<x1-1;x+=2.4){kit.box(1.4,1.1,.05,x,1.7,zb+.03,glass,{finish:'glow'});kit.box(1.5,1.2,.04,x,1.7,zb+.02,alu,{finish:'metal'});}
+ kit.box(x1-x0,.3,.02,(x0+x1)/2,H-.2,zb+.04,0xbdb4a2);
+ for(const x of [x0+3,x0+9.5,x1-6])kit.box(.05,1.2,.02,x,H-.7,zb+.035,0x9d8f78);
+ // The clock face on the parapet (its hands are clockHands).
+ kit.cyl(.42,.42,.06,SCHOOL.genkan.x-4.5,3.75,z0-.34,0xf6f3ea,{rx:Math.PI/2,segments:24});
+ // Roof: two water tanks, an aerial, the horn speaker for the disaster radio.
+ for(const x of [x0+4,x1-5]){for(const [dx,dz] of [[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]])kit.box(.07,.8,.07,x+dx,top+.4,(zf+zb)/2+dz,steel);kit.box(1.2,.08,1.2,x,top+.84,(zf+zb)/2,steel);kit.cyl(.62,.62,1.3,x,top+1.53,(zf+zb)/2,0x2b2d2f,{segments:14,finish:'gloss'});}
+ kit.rod([x1-2,top,zb-1],[x1-2,top+3,zb-1],.03,steel);
+ // The gateposts with their shisa.
+ const g=SCHOOL.gate;
+ for(const s of [-1,1]){kit.box(.6,1.6,.6,g.x+s*g.half,.8,g.z,0xdcd6c6);kit.box(.7,.1,.7,g.x+s*g.half,1.65,g.z,slab);shisa(kit,g.x+s*g.half,1.7,g.z,Math.PI,.8);}
+ // The bike shed: a zinc roof on steel posts over a concrete pad.
+ const bs=SCHOOL.bikeShed;
+ for(const x of [bs.minX+.2,bs.maxX-.2])for(const z of [bs.minZ+1.1,bs.maxZ-.2])kit.box(.08,2.2,.08,x,1.1,z,steel);
+ kit.box(bs.maxX-bs.minX+.3,.06,bs.maxZ-bs.minZ-.4,(bs.minX+bs.maxX)/2,2.25,(bs.minZ+bs.maxZ)/2+.5,0x8a9aa0,{rx:.08});
+ for(let i=0;i<5;i++){const x=bs.minX+.6+i*.85;kit.box(.06,.6,1.5,x,.45,(bs.minZ+bs.maxZ)/2+.5,[0x3f7fc0,0xc8432f,0x2b2b2b,0x6ea05a,0xe8e2d0][i]);}
+ // The wash taps: a concrete trough with a row of brass taps.
+ const w=SCHOOL.wash;kit.box(w.w,.75,w.d,w.x,.375,w.z,0xc9c3b4);kit.box(w.w-.1,.06,w.d-.1,w.x,.76,w.z,0x8a9a9a);
+ for(let i=0;i<5;i++)kit.cyl(.03,.03,.25,w.x-w.w/2+.35+i*.53,.95,w.z+.25,0xc9a64a,{segments:6});
+ // The flagpole and its horn speakers.
+ const fp=SCHOOL.flagpole;kit.cyl(.3,.25,.25,fp.x,.125,fp.z,0xc9c3b4,{segments:12});kit.cyl(.055,.055,8.6,fp.x,4.5,fp.z,steel,{segments:8});
+ for(const a of [-1,1]){kit.rod([fp.x,6.8,fp.z],[fp.x+a*.35,6.6,fp.z-.35],.03,steel);kit.cyl(.08,.26,.5,fp.x+a*.45,6.55,fp.z-.45,0x9aa3a6,{rx:-1.1,segments:10});}
+ kit.finish(group,'Town hall building');
+}
+
 export function buildSchool(world,options){
  const group=new THREE.Group();group.name='Minato school';world.group.add(group);
  world.colliders.push(...schoolColliders());
@@ -282,9 +317,7 @@ export function buildSchool(world,options){
  // Everything fixed to the block or the gateposts goes up with them when the model
  // arrives: before that it would be hanging in the air where the building will be.
  const onBuilding=new THREE.Group();onBuilding.name='Minato school fittings';
- // The upper corridor's balustrade, bay by bay between the columns.
- for(let i=0;i<SCHOOL_COLUMNS.length-1;i++)
-  hanaScreen(onBuilding,hana,SCHOOL_COLUMNS[i]+.2,SCHOOL_COLUMNS[i+1]-.2,B.floor+B.storey+.35,B.floor+B.storey+1.15,SCHOOL.corridor.minZ+.1);
+ buildTownHall(group,options);
  // The boundary wall against the headland, and the wall of the bike shed's end.
  hanaScreen(group,hana,SCHOOL.westWall,0,.3,1.7,[SCHOOL.minZ,SCHOOL.seawall.south],false,'School boundary wall');
  {const base=new THREE.Mesh(new THREE.BoxGeometry(.2,.3,SCHOOL.seawall.south-SCHOOL.minZ),new THREE.MeshStandardMaterial({color:0xbdb8a9,roughness:.95}));
@@ -295,12 +328,12 @@ export function buildSchool(world,options){
 
  // Lettering.
  plate(onBuilding,'港町役場',{w:.42,h:1.18,at:[SCHOOL.gate.x-SCHOOL.gate.half,.88,SCHOOL.gate.z-.31],rotY:Math.PI,vertical:true,bg:'#e9dfc5',fg:'#1b1b1b',size:.62,name:'School gate plate'});
- plate(onBuilding,'港 町 役 場',{w:4.6,h:.56,at:[27,7.08,SCHOOL.corridor.minZ-.29],rotY:Math.PI,bg:'#e4e1d3',fg:'#2d5a4c',size:.78,name:'School name on parapet'});
+ plate(onBuilding,'港 町 役 場 · 公 民 館',{w:6.4,h:.5,at:[27,3.75,SCHOOL.corridor.minZ-.36],rotY:Math.PI,bg:'#e4e1d3',fg:'#2d5a4c',size:.78,name:'School name on parapet'});
  plate(onBuilding,'玄 関',{w:1.2,h:.3,at:[SCHOOL.genkan.x,2.62,B.minZ-.13],rotY:Math.PI,bg:'#e4e1d3',fg:'#2b2b2b',font:GOTHIC,size:.72,name:'Entrance plate'});
  ROOMS.forEach(([down,up],i)=>{
   const x=SCHOOL_COLUMNS[i]+.8;
-  for(const [text,y] of [[down,B.floor+B.storey-.62],[up,B.floor+2*B.storey-.62]]){
-   if(text==='昇降口')continue;
+  for(const [text,y] of [[down,2.55]]){
+   if(text==='玄関')continue;
    plate(onBuilding,text,{w:.62,h:.2,at:[x,y,B.minZ-.55],rotY:Math.PI/2,bg:'#f3f0e4',fg:'#23302a',font:GOTHIC,size:.66,name:'Room plate '+text});
    plate(onBuilding,text,{w:.62,h:.2,at:[x,y,B.minZ-.55],rotY:-Math.PI/2,bg:'#f3f0e4',fg:'#23302a',font:GOTHIC,size:.66,name:'Room plate '+text});
   }
@@ -336,10 +369,11 @@ export function buildSchool(world,options){
   line:'Lessons 8:30–15:30 · kyūshoku 12:20 · visitors sign in at the staff room',door,exitPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],
   approachPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'07:30'};
  options.sites.push(site);
- anchor([SCHOOL.genkan.x,1.2,B.minZ-.5],'Go up to the 5・6年 classroom',()=>options.enter(site));
+ anchor([SCHOOL.genkan.x,1.2,B.minZ-.5],'Go in to the classroom',()=>options.enter(site));
  // The mayor's office and the mayor's home: two more doors along the field face, each
  // its own room (interiors/town-hall.js), the way every door in town is its own site.
  for(const [id,title,jp,sub,x,label,line] of [
+  ['community-kitchen','Community Kitchen','調理室','COMMUNITY CENTRE',27.0,'Go into the community kitchen','Open to every household · the women’s association on Saturdays'],
   ['mayor-office','Mayor’s Office','町長室','MINATO TOWN HALL',30.6,'Go into the mayor’s office','Office hours 8:30–17:15 · petitions in the tray'],
   ['mayor-home','Mayor’s House','町長宅','JOHANSSON',37.7,'Go home','Your rooms in the east wing'],
  ]){
@@ -349,18 +383,7 @@ export function buildSchool(world,options){
   anchor([x,1.2,B.minZ-.5],label,()=>options.enter(s));
  }
 
- let model=null;
- registerDetail(world,{id:'school',x:(B.minX+B.maxX)/2,z:(SCHOOL.minZ+SCHOOL.maxZ)/2,radius:80,load:async()=>{
-  const response=await fetch(assetURL('models/school/minato-school.glb'));if(!response.ok)return false;
-  const scene=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;
-  scene.name='Minato town hall buildings';scene.userData.sharedAsset=true;
-  stripSchoolYard(scene);
-  scene.traverse(o=>{if(!o.isMesh)return;o.castShadow=!!options.shadows;o.receiveShadow=!!options.shadows;
-   // Mould and rust are decals a few millimetres off the paint. Written into depth they
-   // gave the ink pass an edge to draw, and every streak came out as a stuck-on tab.
-   if(/stain/i.test(o.material.name)){Object.assign(o.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});o.renderOrder=1;o.castShadow=false;}});
-  group.add(scene,onBuilding);model=scene;return true;
- }});
+ group.add(onBuilding);
 
  let lastMinute=null;
  function tick(time,minutes,listener){

@@ -154,3 +154,44 @@ export function buildMayorHome({room,reg,action,collider=()=>{},exit,openMaker=n
  anchor([0,1.7,-hd+.4],'Look at the photograph',()=>action('inspect','Photograph','Two pictures in one frame: a red wooden boathouse on a grey Swedish shore, and this harbour in 1979, the year you stepped off the ferry and did not get back on.'));
  return {...layoutFor(),home:true};
 }
+
+/**
+ * 調理室, the community centre's kitchen: where the women's association fries sata andagi
+ * for the eisa night, the class cooks once a term, and anybody can book the stoves for a
+ * family occasion. Two long steel work islands, a row of gas rings and the big rice
+ * cookers, the sink run under the window, a fridge, the dish cupboards, and the booking
+ * sheet on the wall.
+ */
+export const KITCHEN_BOOKINGS=Object.freeze([
+ '土 · Saturday: 婦人会 · women\'s association, andagi for the eisa night (Mrs Nakamura)',
+ '日 · Sunday: Higa family, 三十三回忌 memorial lunch',
+ '水 · Wednesday: 5・6年 cooking class, goya champurū (Yonamine-sensei)',
+ '金 · Friday: open to all, 18:00 -- bring your own fish (Kōji has promised tuna)',
+]);
+export function buildCommunityKitchen({room,reg,action,collider=()=>{}}){
+ const group=new THREE.Group();group.name='Community kitchen';room.add(group);
+ const box=shell(group,{floor:0xb9bfb0,wall:0xf1ece0,dado:0x9fb8a4});
+ const {w,d}=SHELL,hw=w/2,hd=d/2,steel=0xc4c9c6;
+ const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);o.userData.npcInteraction=false;group.add(o);reg(o,label,fn,true);};
+ // Two stainless work islands with their gas rings and a pan on each.
+ for(const x of [-1.2,1.2]){
+  box([1.5,.86,2.2],[x,.43,-.6],steel,'Work island');box([1.56,.04,2.26],[x,.88,-.6],0xdfe3e1);
+  for(const dz of [-.6,.3])box([.4,.04,.4],[x+.35,.91,-.6+dz],0x2b2b2b,'Gas ring');
+  box([.36,.12,.36],[x+.35,.99,-.9],0x3a3d3f,'Frying pan');
+  collider(x,-.6,1.5,2.2,.9);
+ }
+ // The sink run along the back wall, the rice cookers, the fridge, the cupboards.
+ box([w-1.2,.86,.6],[-.3,.43,-hd+.32],steel,'Sink run');box([1,.12,.45],[-.6,.84,-hd+.32],0x8e979a,'Sink');
+ collider(-.3,-hd+.32,w-1.2,.6,.9);
+ for(const x of [1.6,2.1])box([.38,.4,.38],[x,1.08,-hd+.32],0xf2efe6,'Rice cooker');
+ box([.75,1.8,.7],[hw-.42,.9,-hd+.4],0xe8ebe6,'Fridge');collider(hw-.42,-hd+.4,.75,.7,1.8);
+ box([.45,1.8,2.4],[-hw+.25,.9,.4],0x9a7a56,'Dish cupboards');collider(-hw+.25,.4,.45,2.4,1.8);
+ for(let i=0;i<6;i++)box([.04,.5,.3],[-hw+.48,1.2+((i/3)|0)*.55,-.3+(i%3)*.7],0xc2c8c6);
+ // The booking sheet and the aprons on their pegs.
+ box([.6,.8,.02],[hw-.04,1.5,1],0xf6f1e6,'Booking sheet');
+ for(let i=0;i<4;i++)box([.3,.55,.04],[1.2-i*.4,1.4,hd-.04],[0xe98aa6,0xf4f1ea,0x7fb0d8,0xf4d23c][i],'Apron');
+ anchor([hw-.5,1.4,1],'Read the booking sheet',()=>action('read','調理室 · bookings this week',KITCHEN_BOOKINGS.join('\n')));
+ anchor([1.2,1,.7],'Look at the work islands',()=>action('inspect','Community kitchen','Stainless steel worn soft at the edges, a ring of oil round the back burner that no amount of scrubbing will lift, and the smell of yesterday\'s andagi. A notice in Mrs Nakamura\'s hand: 使った物は元の場所へ -- put things back where you found them.'));
+ anchor([1.85,1.2,-hd+.8],'Look at the rice cookers',()=>action('inspect','Rice cookers','Two five-litre gas rice cookers, enough for the whole island at a funeral or a wedding. The newer one is from 1984.'));
+ return {...layoutFor(),kitchen:true};
+}

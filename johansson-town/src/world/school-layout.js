@@ -16,7 +16,9 @@ export const SCHOOL=Object.freeze({
  /** The yard you can walk on, wall to wall. */
  minX:12.4,maxX:40.6,minZ:24.6,maxZ:51.3,
  /** The classroom block: field face (north), sea face (south). */
- building:Object.freeze({minX:14.5,maxX:39.5,minZ:40.5,maxZ:48.5,floor:.15,storey:3.3,roof:6.75,parapet:7.45}),
+ // One storey since October 2026: the town hall is a single concrete building, not the
+ // old two-storey school (school.js buildTownHall).
+ building:Object.freeze({minX:14.5,maxX:39.5,minZ:40.5,maxZ:48.5,floor:.15,storey:3.3,roof:3.45,parapet:4.05}),
  /** The open breezeway along the field face, under the upper corridor. */
  corridor:Object.freeze({minZ:38.1,maxZ:40.5}),
  /** Column lines along the breezeway, one per structural bay. */
