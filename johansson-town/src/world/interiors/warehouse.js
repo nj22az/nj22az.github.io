@@ -1,6 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {createMaterials} from '../../render/materials.js?snappy=1';
 import {buildShopDoor} from '../shop-door.js';
+import {buildWarehousePortDetails} from './warehouse-port.js';
 import {batchStaticProps} from '../../render/static-props.js';
 
 export const WAREHOUSE_ROOM=Object.freeze({bounds:{minX:-2.8,maxX:2.8,minZ:-5.1,maxZ:5.1},spawn:[0,0,3.6],yaw:0,exit:[0,1.15,4.8],staff:{'Mrs Sato':[.55,0,-3.35]}});
@@ -48,5 +49,6 @@ export function buildWarehouseInterior({room,reg,collider,action,exit}){
  const lampMat=new THREE.MeshStandardMaterial({color:0xefe5bd,emissive:0xffdf9d,emissiveIntensity:.8});
  for(const z of [-2.7,2])box([.26,.07,1.35],[0,3.40,z],lampMat);
  const light=new THREE.PointLight(0xffe0a3,2.2,13,2);light.position.set(0,2.95,0);room.add(light);
- batchStaticProps(room);return WAREHOUSE_ROOM;
+ buildWarehousePortDetails({room,box,inspect,collider,wood,dark,steel,rope});
+ room.userData.portBatch=batchStaticProps(room);return WAREHOUSE_ROOM;
 }
