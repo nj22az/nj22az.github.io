@@ -95,6 +95,9 @@ export const SAKURA_LAYOUT={
   // umbrella stand, the office fridge, the hand truck, crates and ladder in the back room.
   rect(2.25,3.05,.72,.72,1.3),rect(-1.35,3.45,.42,.42,1.2),rect(1.2,3.55,.3,.3,1.0),
   rect(4.98,-3.62,.48,.5,1.2),rect(5.35,-5.0,.4,.6,1.1),rect(-.95,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
+  // The stocked back room (sakura-backroom.js BACKROOM): bottle crates and the daisha at the
+  // west end, the cardboard bundle on the east wall, the extinguisher by the delivery door.
+  rect(-5.19,-6.52,.86,.36,.9),rect(-5.27,-5.4,.66,.96,1.1),rect(5.51,-5.67,.26,.74,.6),rect(4.66,-6.58,.28,.28,.6),
  ]
 };
 // Each stocked unit has a real position. Opposite sides of an aisle use opposite
