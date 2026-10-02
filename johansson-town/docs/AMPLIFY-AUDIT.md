@@ -382,8 +382,7 @@ five coral whites and two paver tones. They were collapsed into seven families i
 
 **Still to do, in order**
 
-1. **Sakura.** Rebuild as an 8-bay family *shōten* on the kit (it is still the 14 m
-   glass front). It is the hero shot, so do it with care.
+1. ~~**Sakura.**~~ Done in the second session (§12): an original family *shōten*, inside and out.
 2. **Night and interiors lighting pass.** Night is a grey haze rather than a scene lit
    by its signs. The classroom and office interiors are overexposed.
 3. **The park model.** The Sketchfab park still loads; rebuild it from the kit.
@@ -393,8 +392,7 @@ five coral whites and two paver tones. They were collapsed into seven families i
    emotes. Then put Thuan's Storage on avatars and give critters the same material.
 6. **Life engine** (§7): relationships, wants, gifts, the Town Book catalogue,
    gachapon, then the harbour job and the mystery.
-7. **Sakura interior licence.** The supplied convenience-store GLB has no licence on
-   record. Replace it with a kit room when Sakura is rebuilt.
+7. ~~**Sakura interior licence.**~~ The GLB is deleted; the interior is original geometry.
 
 ## 11. Lessons from this session (self-audit)
 
@@ -432,7 +430,8 @@ as rules:
 | ![Oil jetty and tanker](amplify-audit/after-oil-jetty.jpg) | ![Car ferry](amplify-audit/after-car-ferry.jpg) |
 | ![Post office](amplify-audit/after-post-office.jpg) | ![Distribution poles](amplify-audit/after-poles.jpg) |
 | ![Broadleaf trees](amplify-audit/after-trees.jpg) | ![Clinic](amplify-audit/after-clinic.jpg) |
-| ![Dinner with Thuan in Naha](amplify-audit/after-naha-dinner.jpg) | |
+| ![Dinner with Thuan in Naha](amplify-audit/after-naha-dinner.jpg) | ![Sakura's frontage](amplify-audit/after-sakura-front.jpg) |
+| ![Sakura inside](amplify-audit/after-sakura-interior.jpg) | ![Sakura's counter](amplify-audit/after-sakura-counter.jpg) |
 
 | Request | What was built | Where |
 |---|---|---|
@@ -448,11 +447,12 @@ as rules:
 | Prettier trees | One shared broadleaf for the whole island: a trunk that flares into roots, and a crown of rounded lobes covered in leaf shingles over a dark core, with radial normals so the toon bands sweep across it as one mass. It comes in three forms: `round` (street and lawn trees), `column` (fukugi windbreaks) and `spread` (the banyan). It replaces every cone and sphere tree, including a light build for the headland. The uploaded Tomodachi tree was used as a style reference only. | `okinawa/trees.js`, `houses.js`, `school.js`, `east-lawn.js`, `forest-edge.js`, `coyote-tunnel.js` |
 | Clinic | 診療所 in the town hall's old meeting-room bay, with its own door. Pink tiles, the couch behind a pink curtain, the drip stand, the desk with a beige monitor and an X-ray lightbox, the green patient stool, a glass medicine cabinet (habu antivenom underneath), a Landolt-ring eye chart, and scales by the door. Dr Kakazu is at her desk and is in the household registry. Built from scratch; the uploaded hospital model was a reference only. | `interiors/town-hall.js` (`buildClinic`), `school.js` |
 | Dinner in the city | Restaurant Hoshizora on the top floor of a Naha hotel. The evening boat leaves from the ferry terminal (17:00–21:30, 50 minutes each way). It is a locked-camera scene in the Tomodachi framing: Johansson and Thuan seated side-on at a table for two, a window-wall of Naha at night behind them (towers, Kokusai-dōri neon, Tomari harbour), brass lamps, the red rail, a candle that flickers, and a waiter. The dinner menu covers the Ryūkyū course or steak, kūsu or wine, eating, toasting, talking (six conversations in Thuan's dry voice) and the last boat home. Thuan pays if you can't. Built from scratch; the uploaded restaurant model was a reference only. | `interiors/city-restaurant.js`, `city-dinner.js`, `activities.js` (`cityDinner`), `game.js` (`fixedCamera`) |
+| Sakura as a family shōten | **Inside:** the unlicensed convenience-store model is gone. The shop is built from its own measurements: terrazzo floor, honey-wood wainscot under cream plaster, beams over white ceiling boards, bare tubes on battens and enamel shades over the till, wooden gondolas with green end panels and cream price rails, a wooden counter with the shop's crest on a cloth, the bun cabinet with dagashi jars, the medicine boards, the back-room rack, the office and the restroom. The shelf tops come from the stock layout, so all 396 products stand on a board (tested). The shell joins the toon shading; only the tubes stay physically lit, because they glow. The pink chain band becomes hand-lettered wooden boards and the bunting is thinned. **Outside:** the 14 m glass becomes wooden sashes with mullions, a transom and kick panels, under a dark-wood signboard (桜商店 · since 1963) with a short red-tile hood. The flat upstairs belongs to the Sakurai family who own the shop (Grandmother Sakurai is in the registry); Thuan keeps it for them and lives in Kitahama. | `interiors/sakura-shell.js`, `sakura-interior.js`, `sakura-cheer.js`, `storefront.js`, `thuan-flat.js`, `island-households.js` |
 
 **Still open:**
 - While you dine in Naha, the town's Thuan keeps her own schedule. She should be marked away for the evening.
 - The neighbours have homes and jobs in the registry, but they still keep to their spot rather than walking home at night. Doing that means turning them into scheduled residents.
-- Sakura's rebuild, the night and interior lighting, the park model, the horizon frame, the rest of Shimanchu 2, and the life engine (§8) remain.
+- The night and interior lighting, the park model, the horizon frame, the rest of Shimanchu 2, and the life engine (§8) remain.
 - The quarter's budget rose from 80 to 110 draws and from 120k to 150k triangles for Kitahama and the new poles. Measure on the iPad.
 
 ## Appendix: audit camera views

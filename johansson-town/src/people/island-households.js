@@ -22,7 +22,8 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'resident-home-aya',address:'1 Front-Row Yard',members:[['Aya','bookshop assistant'],['Reiko','edits the evening paper']]},
  {home:'resident-home-kenji',address:'2 Front-Row Yard',members:[['Kenji','repairman at the workshop'],['Tetsuo','radio repairer']]},
  // Kitahama, the new lane on the north-east land.
- {home:'kitahama-1',address:'1 Kitahama',members:[['Thuan','keeps Sakura Shōten'],['Nao','runs Minato Izakaya']]},
+ {home:'market',address:'The flat over Sakura Shōten',members:[['Grandmother Sakurai','owns Sakura Shōten, which her parents opened in 1963; does the books on Sundays and minds the shop when Thuan is at the auction']]},
+ {home:'kitahama-1',address:'1 Kitahama',members:[['Thuan','keeps Sakura Shōten for the Sakurai family'],['Nao','runs Minato Izakaya']]},
  {home:'kitahama-2',address:'2 Kitahama',members:[['Mrs Sato','cooks at Sato Ramen; buys fish at the morning auction']]},
  {home:'kitahama-3',address:'3 Kitahama',members:[['Kōji','sorts the catch at the fish auction; crews on the Ōshiro boat']]},
  {home:'kitahama-4',address:'4 Kitahama',members:[['Postman Tōma','runs the post office and the round: collections 10:30 and 16:30']]},

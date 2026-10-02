@@ -3,7 +3,8 @@ import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import {localToWorld} from './landmark-lots.js';
 import {buildSakuraDetails} from './exterior-details.js';
-// Original Sakura shopfront: a lit glass frontage and real shelf silhouettes behind it.
+// Sakura's shopfront: a family shōten's wooden sashes and signboard under a tile hood,
+// with the real shop seen through the glass.
 
 /** How tall the sliding door is. The valance over it has to clear this. */
 const DOOR_HEIGHT=2.25;
@@ -26,9 +27,17 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
  const surfaces=createMaterials(),materials=new Map();function box(size,pos,color,kind=null){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.67}));const o=new THREE.Mesh(new THREE.BoxGeometry(...size),kind?surfaces.material(kind,color):materials.get(color));o.position.set(...pos);o.castShadow=true;o.receiveShadow=true;o.userData.staticProp=true;group.add(o);return o;}
  box([width,.18,depth],[0,.09,mid],0xdad9c8,'plaster');box([width,3.7,.18],[0,1.85,back-.09],0xeee7d1,'plaster');
  for(const wall of [-1,1])box([.18,3.8,depth],[wall*(half+.09),1.9,mid],0xd9d7c9,'plaster');
- box([width+.5,.22,depth+.5],[0,3.9,mid],0xd5d0bd);box([width+.3,.8,.45],[0,3.25,.12],0xb84e45);
- for(const y of [2.88,3.61])box([width+.32,.10,.49],[0,y,.13],0xf5d791);
- const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.12,.32)).toArray(),yaw};const wp=logo.getWorldPosition(new THREE.Vector3());label('桜商店','SAKURA · FOOD & DAILY GOODS',wp.toArray(),Math.min(width*.6,8.4)*sx,.62*sy,yaw,'#f6e8bb','#a6333c');
+ box([width+.5,.22,depth+.5],[0,3.9,mid],0xd5d0bd);
+ // A family shop's signboard, not a chain's band: a long board of dark wood with the
+ // name on a cream panel, under a short hood of red Okinawan tile.
+ box([width+.3,.8,.45],[0,3.25,.12],0x5b3f2a);
+ for(const y of [2.88,3.61])box([width+.32,.06,.49],[0,y,.13],0x3f2b1c);
+ {const hood=new THREE.Group();hood.position.set(0,3.98,.32);hood.rotation.x=.42;group.add(hood);
+  const tile=new THREE.MeshStandardMaterial({color:0xb5523a,roughness:.8}),ridge=new THREE.MeshStandardMaterial({color:0x8f3c2a,roughness:.8});
+  const slab=new THREE.Mesh(new THREE.BoxGeometry(width+.5,.06,.7),tile);slab.position.set(0,0,.2);slab.castShadow=true;slab.receiveShadow=true;hood.add(slab);
+  for(let x=-width/2-.2;x<=width/2+.2;x+=.26){const rib=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.7,6),ridge);rib.rotation.x=Math.PI/2;rib.position.set(x,.045,.2);hood.add(rib);}
+  const cap=new THREE.Mesh(new THREE.BoxGeometry(width+.56,.1,.12),ridge);cap.position.set(0,.04,-.12);hood.add(cap);}
+ const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.12,.32)).toArray(),yaw};const wp=logo.getWorldPosition(new THREE.Vector3());label('桜商店','SAKURA · FOOD & DAILY GOODS · SINCE 1963',wp.toArray(),Math.min(width*.6,8.4)*sx,.62*sy,yaw,'#f3e6c8','#4a2a18');
  const glazing=createShopGlass();
  // Glass to either side of the doorway, whatever the frontage is: a pane list authored
  // for a ten-metre shop leaves a wall of nothing when the shop is fourteen.
@@ -37,8 +46,14 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   const outer=side*(half-JAMB),inner=doorX+side*DOOR/2,run=Math.abs(outer-inner);
   if(run>.7)panes.push([(outer+inner)/2,run]);
  }
- for(const [lx,paneWidth] of panes){const pane=new THREE.Mesh(new THREE.PlaneGeometry(paneWidth,2.55),glazing);pane.position.set(lx,1.5,.02);pane.name='Sakura clear window pane';pane.userData.clearWindow=true;group.add(pane);for(const edge of [-1,1])box([.065,2.75,.09],[lx+edge*paneWidth/2,1.47,.055],0x879692);box([paneWidth,.08,.09],[lx,.15,.055],0x879692);}
- box([width,.1,.1],[0,2.82,.05],0x84938d);for(const lx of [doorX-.4,doorX+.4])box([.035,.5,.12],[lx,1.4,.12],0x465854);
+ for(const [lx,paneWidth] of panes){const pane=new THREE.Mesh(new THREE.PlaneGeometry(paneWidth,2.55),glazing);pane.position.set(lx,1.5,.02);pane.name='Sakura clear window pane';pane.userData.clearWindow=true;group.add(pane);for(const edge of [-1,1])box([.065,2.75,.09],[lx+edge*paneWidth/2,1.47,.055],0x4a3a2c);box([paneWidth,.08,.09],[lx,.15,.055],0x4a3a2c);
+  if(lx===doorX)continue;
+  // The shop window as sashes: wooden mullions about a pace apart, a transom bar with the
+  // fanlights over it, and a kick panel along the bottom.
+  const bays=Math.max(1,Math.round(paneWidth/1.45));
+  for(let i=1;i<bays;i++)box([.07,2.6,.08],[lx-paneWidth/2+paneWidth*i/bays,1.45,.06],0x4a3a2c);
+  box([paneWidth,.07,.08],[lx,2.15,.06],0x4a3a2c);box([paneWidth,.34,.05],[lx,.19,.045],0x6b4c32);}
+ box([width,.1,.1],[0,2.82,.05],0x4a3a2c);for(const lx of [doorX-.4,doorX+.4])box([.035,.5,.12],[lx,1.4,.12],0x465854);
  const cylinder=new THREE.CylinderGeometry(1,1,1,10);
  function round(radius,height,pos,color){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.55}));const m=new THREE.Mesh(cylinder,materials.get(color));m.scale.set(radius,height,radius);m.position.set(...pos);m.castShadow=true;m.receiveShadow=true;m.userData.staticProp=true;group.add(m);return m;}
  // Stand-in shelves, for when the real interior has not arrived yet. They read as a
