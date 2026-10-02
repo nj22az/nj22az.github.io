@@ -48,6 +48,13 @@ and they never get in the way of a quiet walk.
 | Learn: kakeibo with Thuan | Sakura's shop ledger; the player's yen | A purchase journal for the player, then a kakeibo Thuan can explain |
 | Learn: 90s computer | Harbour office workbook viewer with downloads | A window-and-icons shell around it, more file types, a published file list |
 
+## The port and the island
+
+The port grows into a Rishiri-style ferry port for passengers, cars and trucks, and the land
+grows towards the airport island. `RISHIRI-AUDIT.md` has the reference, the gaps and the open
+question of setting (Okinawa, the north, or a mix). Every machine in town (valves, motors,
+engines, generators) comes from one shared equipment library that study material can use too.
+
 ## Order of work
 
 1. ~~Direction and year~~ (this document).
