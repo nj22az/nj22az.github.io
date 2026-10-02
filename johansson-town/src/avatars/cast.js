@@ -81,7 +81,7 @@ export const CAST_RECIPES=castSet({
   hair:{style:'crop',colour:'#4a4845'},eyes:{style:'round',colour:'#2a1d16',size:.62},
   brows:{style:'worried',colour:'#3a3835',size:.55},nose:{style:'button',size:.45},mouth:{style:'smile',size:.45},
   blush:.2,wrinkles:.2,
-  outfit:{top:'polo',topColour:'#9dbfe0',bottom:'trousers',bottomColour:'#27304d',shoes:'#1c1c24',hat:'police',hatColour:'#27304d',accent:'#e0b93a'}}),
+  outfit:{top:'police',topColour:'#273858',bottom:'trousers',bottomColour:'#27304d',shoes:'#1c1c24',hat:'police',hatColour:'#27304d',accent:'#e0b93a'}}),
 });
 
 /** The people of the new streets, drawn to their lines in neighbours.js. */

@@ -16,6 +16,24 @@ export const DIALS=Object.freeze([
 export const DIAL_STEPS=8;
 
 /** The sixteen, indexed pace·talk·feelings·outlook (high = 1). */
+const ISLAND_MOMENTS=[
+ ['Notices what others miss and follows through.','Checking the quay lamps before a storm.'],
+ ['Makes room for people who need to be heard.','Sharing tea on a shaded porch.'],
+ ['Keeps memories vivid and welcomes a good listener.','Retelling a fishing adventure after supper.'],
+ ['Finds possibilities in an ordinary afternoon.','Sketching clouds from the garden bridge.'],
+ ['Brings care and patience to difficult work.','Finishing a small repair at the dock workshop.'],
+ ['Offers practical help without making a fuss.','Lending a ladder across the garden fence.'],
+ ['Makes it easy for friends to share their feelings.','Cheering loudest at the island school match.'],
+ ['Turns a detour into a new experience.','Following the coastal path past the cape.'],
+ ['Keeps a busy day manageable for everyone.','Organising the morning harbour deliveries.'],
+ ['Brings useful energy to a neighbour’s problem.','Carrying shopping home for someone else.'],
+ ['Helps a good idea find an audience.','Rehearsing for the Community Hall concert.'],
+ ['Draws newcomers into the fun.','Saving a seat at the festival table.'],
+ ['Makes decisions when everyone else hesitates.','Sorting out a delayed cargo delivery.'],
+ ['Finds the humour that eases a tense moment.','Making the shop queue laugh on a rainy day.'],
+ ['Stands up for friends with wholehearted feeling.','Arguing a point, then buying everyone supper.'],
+ ['Starts adventures and takes friends along.','Planning three outings before the ferry docks.'],
+];
 export const PERSONALITIES=Object.freeze([
  ['Lighthouse keeper','Steady and watchful. Keeps a promise to the letter.','#3d6a8a'],
  ['Porch sitter','In no hurry at all. Always has time to listen.','#8a5a2e'],
@@ -33,7 +51,7 @@ export const PERSONALITIES=Object.freeze([
  ['Joker','Quick, frank, and always up to something.','#d8342c'],
  ['Firecracker','Quick to flare up, quick to laugh. Big energy.','#c8402e'],
  ['Typhoon','Never still, says everything, enjoys every minute.','#45b7f0'],
-].map(([name,line,colour])=>Object.freeze({name,line,colour})));
+].map(([name,line,colour],i)=>Object.freeze({name,line,colour,strength:ISLAND_MOMENTS[i][0],islandMoment:ISLAND_MOMENTS[i][1]})));
 
 const clamp01=v=>Math.min(1,Math.max(0,Number.isFinite(+v)?+v:.5));
 /** A dial's value (0–1) as a step, 1–8. */

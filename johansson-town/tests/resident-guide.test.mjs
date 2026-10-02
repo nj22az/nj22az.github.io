@@ -13,6 +13,7 @@ test('every live resident has a biography, backstory and real model portrait',as
  assert.deepEqual(catalogue.map(r=>r.name).sort(),expected.sort());
  assert.equal(new Set(catalogue.map(r=>r.name)).size,catalogue.length);
  for(const r of catalogue){
+  assert.ok(r.islandPersonality?.ambition&&r.islandPersonality?.habit&&r.islandPersonality?.traits?.length===3,r.name+' has an island personality');assert.doesNotMatch(r.backstory,/Nils|homage|real life|fictional character|creator of this town/);
   for(const field of ['role','place','bio','backstory'])assert.ok(r[field]?.length>0,r.name+' '+field);
   const data=await read(r.portrait);
   assert.equal(data.subarray(0,4).toString(),'RIFF',r.name+' is a WebP image');
@@ -25,9 +26,9 @@ test('every live resident has a biography, backstory and real model portrait',as
  assert.equal(manifest.sha256,hash.digest('hex'),'Portraits must be regenerated after avatar source changes');
  assert.equal(manifest.count,catalogue.length);
 });
-test('town information opens first and keeps game launch and guide navigation',async()=>{
+test('title opens first and keeps game launch and separate guide navigation',async()=>{
  const html=(await read('index.html')).toString();
- assert.match(html,/<section id="start" class="guide-open">/);
+ assert.match(html,/<section id="start">/);assert.doesNotMatch(html,/class="logo-jp"/);
  assert.match(html,/data-town-enter/);assert.match(html,/data-guide-close/);
  assert.ok(html.indexOf('resident-guide.js')<html.indexOf('landing.js'));
  assert.doesNotMatch(html,/fictional|playable demo|still being built/i);

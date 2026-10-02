@@ -41,6 +41,7 @@ function buildSharedHome({profile,room,box,reg,collider,action,exit}){
   part([1.1,.055,1.62],[x,.48,-.77],style.top);part([.92,.16,.48],[x,.57,-1.57],0xf3e8d2);
   part([.6,.1,.6],[routine.table[0],.36,routine.table[2]],style.top);
   part([.9,1.7,.5],[-side*2.85,.85,-2.95],0x876b50,true);
+  if(name==='Thuan'){const wardrobe=new THREE.Object3D();wardrobe.position.set(-side*2.85,1,-2.3);room.add(wardrobe);reg(wardrobe,'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'),true);}
   for(let b=0;b<4;b++)part([.11,.26,.22],[-side*2.85-.2+b*.13,1.14,-2.64],b%2?style.top:0xc6b78d);
   const notes=part([.28,.018,.2],[routine.table[0],.754,1.35],0xe8ddbb);notes.name=name+' personal notes';
   hatPeg(part,routine.hatHook);

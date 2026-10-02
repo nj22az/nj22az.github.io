@@ -213,6 +213,7 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
   if(site.id==='office'){
     buildOfficeWorkplace({room,reg,action,collider});
   }else if(site.id==='yuri-home'){
+    const wardrobe=new THREE.Object3D();wardrobe.position.set(-2.8,1.1,-2);room.add(wardrobe);reg(wardrobe,'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'),true);
     room.add(new THREE.HemisphereLight(0xffebd0,0x74604d,1.5));
     const furnishings=new THREE.Group();furnishings.name='Shared apartment furnishings';room.add(furnishings);
     for(const [name,x,colour] of [['Thuan',-4.15,0xd49bb3],['Nao',-1.6,0xbd7557]]){

@@ -8,7 +8,7 @@ import {playerRecipe} from './actors.js';
 export function mountResidentPortraits(){
  const start=document.getElementById('start'),images=[...document.querySelectorAll('.resident-portrait')];
  let renderer=null,running=false;const pending=new Set();
- const active=()=>!start.classList.contains('hidden');
+ const active=()=>!start.classList.contains('hidden')&&start.classList.contains('guide-open');
  const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xffffff,0x71828a,2));
  const key=new THREE.DirectionalLight(0xffffff,3);key.position.set(-3,5,-4);scene.add(key);
  function release(){renderer?.dispose();renderer?.forceContextLoss();renderer=null;}
@@ -20,7 +20,7 @@ export function mountResidentPortraits(){
    if(!renderer){renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(480,480);renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.setClearColor('#faf7ef',1);}
    const name=img.closest('[data-resident]').dataset.resident,recipe=name==='Johansson'?playerRecipe():recipeFor(name),avatar=buildAvatar(recipe,{shadows:false,faceSize:512});
    try{scene.add(avatar.root);if(name==='Thuan'){
-    try{if(readSave(localStorage)?.thuanOutfit==='nozomi')avatar.wear('nozomi');}catch{}
+    try{const outfit=readSave(localStorage)?.thuanOutfit;if(['nozomi','sailor'].includes(outfit))avatar.wear(outfit);}catch{}
    }
    const h=avatar.height,view=img.dataset.portraitView,close=!!view,frame=h*(close?.42:1.12),camera=new THREE.OrthographicCamera(-frame/2,frame/2,frame/2,-frame/2,.1,20);const targetY=h*(close?.83:.51);const angle=view==='side'?Math.PI/2:view==='three-quarter'?.7:0;camera.position.set(Math.sin(angle)*4,targetY+.03,-Math.cos(angle)*4);camera.lookAt(0,targetY,0);scene.updateMatrixWorld(true);avatar.body.skeleton.update();renderer.render(scene,camera);img.src=renderer.domElement.toDataURL('image/webp',.9);img.dataset.liveRecipe=JSON.stringify(recipe);img.dataset.livePortrait='true';
    }finally{scene.remove(avatar.root);avatar.body.skeleton.dispose();avatar.dispose();renderer.renderLists.dispose();}

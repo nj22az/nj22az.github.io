@@ -1,3 +1,4 @@
+import {THUAN_SAILOR_OUTFIT} from './outfits.js';
 import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
@@ -295,12 +296,13 @@ function addHat(list,recipe,m){
  if(hat==='none')return;
  const S=[m.headSX*R,m.headSY*R,R];
  if(hat==='cap'||hat==='police'||hat==='captain'){
-  const crown=new THREE.SphereGeometry(1.1,24,12,0,Math.PI*2,0,Math.PI*.5);
-  part(list,crown,'head',c,M(0,m.headCentre+R*m.headSY*.23,0,-.08,0,0,S[0],S[1]*(hat==='cap'?.9:1.05),S[2]));
+  const police=hat==='police',crown=police?new THREE.CylinderGeometry(1.16,1.03,.4,28,1,true):new THREE.SphereGeometry(1.1,24,12,0,Math.PI*2,0,Math.PI*.5);
+  part(list,crown,'head',c,M(0,m.headCentre+R*m.headSY*(police?.95:.23),0,police?0:-.08,0,0,S[0],S[1]*(police?1:hat==='cap'?.9:1.05),S[2]));
+  if(police)part(list,new THREE.CircleGeometry(1.16,28),'head',c,M(0,m.headCentre+R*m.headSY*1.15,0,-Math.PI/2,0,0,S[0],S[2],1));
   // A shallow curved visor reads as a cap bill rather than a cloth band.
-  ball(list,R*.68,[0,m.headCentre+R*m.headSY*.25,R*.9],'head',hat==='cap'?c:'#1c1c24',[m.headSX*1.4,.07,1],20,8);
-  if(hat!=='cap'){part(list,new THREE.CylinderGeometry(R*1.12,R*1.12,R*.14,24,1,true),'head',hat==='captain'?'#1c1c24':'#e0b93a',M(0,m.headCentre+R*.26,0,-.08));
-   ball(list,R*.1,[0,m.headCentre+R*.62,R*1.02],'head','#e0b93a',[1,1,.4],8,6);}
+  ball(list,R*.68,[0,m.headCentre+R*m.headSY*(police?.68:.25),R*.9],'head',hat==='cap'?c:'#1c1c24',[m.headSX*1.4,.07,1],20,8);
+  if(hat!=='cap'){part(list,new THREE.CylinderGeometry(R*1.12,R*1.12,R*.14,24,1,true),'head',hat==='captain'?'#1c1c24':'#1c2742',M(0,m.headCentre+R*(police?.72:.26),0,-.08));
+   ball(list,R*.1,[0,m.headCentre+R*(police?.95:.62),R*1.02],'head','#e0b93a',[1,1,.4],8,6);}
  }else if(hat==='helmet'){
   if(hat!=='paperboat')part(list,new THREE.SphereGeometry(1.16,24,12,0,Math.PI*2,0,Math.PI*.52),'head',c,M(0,m.headCentre+R*m.headSY*.35,0,0,0,0,S[0],S[1]*.9,S[2]));
   part(list,new THREE.TorusGeometry(1.16,.045,6,24),'head',c,M(0,m.headCentre+R*m.headSY*.35,0,Math.PI/2,0,0,S[0],S[2],S[1]));
@@ -449,6 +451,7 @@ function addBody(list,recipe,m,swim=false){
   if(p.y<waist)return bottom;
   // Under a tank top the body is bare; the vest is its own garment, added below.
   if(tank)return skin;
+  if(['jacket','cardigan','festival'].includes(o.top)&&p.z>D*.18&&Math.abs(p.x)<W*.13)return o.accent;
   if(o.top==='sundress'&&(p.y-hipY)/m.torso>.78)return skin;
   return top;
  };
@@ -509,7 +512,7 @@ function addBody(list,recipe,m,swim=false){
 
  // Arms: one soft piece from shoulder to wrist, bending at the elbow; a sleeve over the
  // top that rounds into the shoulder; a round hand.
- const longSleeve=!swim&&['jacket','smock','hoodie','cardigan','festival','lighthouse','lantern','reef'].includes(o.top);
+ const longSleeve=!swim&&['jacket','smock','sailorlong','police','hoodie','cardigan','festival','lighthouse','lantern','reef'].includes(o.top);
  const armT=m.upper/(m.upper+m.fore);
  for(const s of ['L','R']){
   const sx=s==='L'?1:-1,sh=[sx*m.shoulderX,m.shoulderY,0],hd=[sx*(m.shoulderX+.015),m.shoulderY-m.upper-m.fore,0];
@@ -523,6 +526,7 @@ function addBody(list,recipe,m,swim=false){
   // A short sleeve is a wider bell over the top of the arm.
   if(!swim&&o.top==='kariyushi'){const len=m.upper*.76,cy=sh[1]-len/2;part(list,new THREE.CylinderGeometry(m.armR*1.2,m.armR*1.3,len,16,1,true),arm,top,M(sh[0]+sx*.008,cy,0,0,0,sx*.035));}
   else if(!swim&&!longSleeve&&!tank&&o.top!=='sundress')limb(list,sh,[sh[0]+sx*.006,sh[1]-m.upper*.58,0],m.armR*1.12,m.armR*1.16,top,{...arm,joints:[]});
+  if(!swim&&longSleeve){const cuffY=hd[1]+.035*m.k;part(list,new THREE.CylinderGeometry(m.armR*1.08,m.armR*1.08,.04*m.k,16,1,true),'elbow'+s,new THREE.Color(top).multiplyScalar(.82).getHex(),M(hd[0],cuffY,0));}
   // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
   // so a wave or a point reads as a hand rather than a ball on a stick.
   ball(list,m.hand,[hd[0],hd[1]-m.hand*.55,0],'hand'+s,skin,[.9,1.15,.78],12,10);
@@ -561,7 +565,7 @@ function addBody(list,recipe,m,swim=false){
   // The skirt hangs from the hips and, lower down, goes with the legs: seated, it lies on the lap.
   const drape=p=>{const leg=THREE.MathUtils.smoothstep(hipY-p.y,.02,.12),w=THREE.MathUtils.smoothstep(p.x,-W*.25,W*.25);return [['hips',1-leg],['thighL',leg*w],['thighR',leg*(1-w)]];};
   const skirt=new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,b==='pleatedskirt'?64:24,6,true);if(b==='pleatedskirt'){const pos=skirt.attributes.position;for(let i=0;i<pos.count;i++){const x=pos.getX(i),z=pos.getZ(i),f=1+.055*Math.cos(Math.atan2(z,x)*16);pos.setXYZ(i,x*f,pos.getY(i),z*f);}skirt.computeVertexNormals();}
-  part(list,skirt,drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):bottom,M(0,hipY+.03-len/2,0,0,0,0,1,1,D/W));
+  part(list,skirt,drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):bottom,M(0,waist-len/2,0,0,0,0,1,1,D/W));
  }
 }
 
@@ -689,7 +693,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  body.add(bones.root);body.bind(new THREE.Skeleton(list));
  body.castShadow=shadows;body.receiveShadow=true;body.frustumCulled=false;
  // Swimwear is a second body, swapped in at the onsen.
- let swimBody=null,alternativeBody=null,alternativeOutline=null;
+ let swimBody=null,alternativeBody=null,alternativeOutline=null,alternativeKey=null;
  const face=buildHead(recipe,m,faceSize);
  face.head.castShadow=shadows;face.head.receiveShadow=true;
  bones.head.add(face.head);
@@ -717,7 +721,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   },
   /** 'swim' or 'clothes'. */
   wear(outfit){
-   if(outfit==='nozomi'&&!alternativeBody){const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...SHOPPING_LANE_OUTFIT}}),parts=[];addBody(parts,r,m);addNose(parts,r,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);addHair(parts,r,m);const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());alternativeBody=new THREE.SkinnedMesh(g,bodyMaterial(r,m));alternativeBody.name='Thuan · Nozomi-inspired outfit';alternativeBody.bind(body.skeleton,body.bindMatrix);alternativeBody.castShadow=shadows;alternativeBody.frustumCulled=false;root.add(alternativeBody);alternativeOutline=addOutline(root,alternativeBody,true);}
+   if(['nozomi','sailor'].includes(outfit)&&alternativeKey!==outfit){alternativeBody?.removeFromParent();alternativeOutline?.removeFromParent();alternativeBody?.geometry.dispose();alternativeKey=outfit;const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...(outfit==='sailor'?THUAN_SAILOR_OUTFIT:SHOPPING_LANE_OUTFIT)}}),parts=[];addBody(parts,r,m);addNose(parts,r,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);addHair(parts,r,m);const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());alternativeBody=new THREE.SkinnedMesh(g,bodyMaterial(r,m));alternativeBody.name=outfit==='sailor'?'Thuan · harbour academy sailor':'Thuan · shopping lane outfit';alternativeBody.bind(body.skeleton,body.bindMatrix);alternativeBody.castShadow=shadows;alternativeBody.frustumCulled=false;root.add(alternativeBody);alternativeOutline=addOutline(root,alternativeBody,true);}
    if(outfit==='swim'&&!swimBody){
     const parts=[];addBody(parts,recipe,m,true);addNose(parts,recipe,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
     addHair(parts,{...recipe,outfit:{...recipe.outfit,hat:'none'}},m);
@@ -725,7 +729,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
     swimBody=new THREE.SkinnedMesh(g,material);swimBody.name='Shimanchu swimwear';swimBody.bind(body.skeleton,body.bindMatrix);
     swimBody.castShadow=shadows;swimBody.frustumCulled=false;root.add(swimBody);
    }
-   body.visible=outfit!=='swim'&&outfit!=='nozomi';outline.visible=body.visible;if(alternativeBody){alternativeBody.visible=outfit==='nozomi';alternativeOutline.visible=alternativeBody.visible;}if(swimBody)swimBody.visible=outfit==='swim';
+   body.visible=outfit!=='swim'&&!['nozomi','sailor'].includes(outfit);outline.visible=body.visible;if(alternativeBody){alternativeBody.visible=outfit===alternativeKey;alternativeOutline.visible=alternativeBody.visible;}if(swimBody)swimBody.visible=outfit==='swim';
   },
   dispose(){geometry.dispose();material.dispose();material.map?.dispose();if(alternativeBody){alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();swimBody?.geometry.dispose();alternativeBody?.geometry.dispose();},
  };

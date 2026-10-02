@@ -1,4 +1,4 @@
-import {ISLAND_OUTFITS,ISLAND_COSTUMES} from './outfits.js';
+import {ISLAND_OUTFITS,ISLAND_COSTUMES,outfitAllowedFor,appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from './build.js';
 import {createAvatarAnimator} from './animate.js';
@@ -7,6 +7,13 @@ import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGE
 import {CAST_RECIPES} from './cast.js';
 import {DIALS,DIAL_STEPS,dialStep,stepValue,personalityOf,voiceOf,MONTHS,daysIn,hello} from './personality.js';
 import {svg} from '../ui/icons.js';
+import {headProfile,shapeHeadPoint} from './head-profile.js';
+
+/** Front silhouettes drawn from the same profile deformation as the game head. */
+export function drawFaceFormThumb(canvas,form,skin='#f5d0ae'){
+ const ctx=canvas.getContext('2d'),profile=headProfile({form,shape:.5,jaw:.5,cheeks:.5});ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();ctx.scale(canvas.width/136,canvas.height/136);ctx.fillStyle=skin;ctx.strokeStyle='#344b57';ctx.lineWidth=3;ctx.beginPath();
+ for(let i=0;i<=80;i++){const a=i/80*Math.PI*2,p=shapeHeadPoint({x:Math.sin(a),y:Math.cos(a),z:0},profile),x=68+p.x*44*profile.width,y=67-p.y*49*profile.height;if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);}ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#344b57';for(const x of [55,81]){ctx.beginPath();ctx.arc(x,65,3.5,0,Math.PI*2);ctx.fill();}ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(68,71);ctx.lineTo(65,79);ctx.lineTo(70,79);ctx.stroke();ctx.beginPath();ctx.arc(68,82,10,.25,Math.PI-.25);ctx.stroke();ctx.restore();
+}
 
 /**
  * The Shimanchu maker: where somebody new moves to the island.
@@ -35,7 +42,7 @@ const LABEL={
  smile:'Smile',flat:'Flat',grin:'Grin',small:'Small',smirk:'Smirk',pout:'Pout',
  square:'Square',oval:'Oval',heart:'Heart',sun:'Shades',half:'Half-rim',
  moustache:'Moustache',walrus:'Walrus',stubble:'Stubble',beard:'Beard',goatee:'Goatee',
- lighthouse:'Lighthouse costume',lantern:'Lantern costume',reef:'Reef costume',sailor:'Sailor shirt',hoodie:'Hooded sweater',cardigan:'Cardigan',overalls:'Work overalls',sundress:'Sundress bodice',festival:'Festival coat',widepants:'Wide trousers',cropped:'Cropped trousers',culottes:'Culottes',pleatedskirt:'Pleated skirt',squid:'Squid cap',teapot:'Teapot hat',sunflower:'Sunflower bonnet',paperboat:'Paper-boat hat',mountain:'Mount Aoba hat',
+ lighthouse:'Lighthouse costume',lantern:'Lantern costume',reef:'Reef costume',sailorlong:'Long-sleeved sailor',police:'Police jacket',sailor:'Sailor shirt',hoodie:'Hooded sweater',cardigan:'Cardigan',overalls:'Work overalls',sundress:'Sundress bodice',festival:'Festival coat',widepants:'Wide trousers',cropped:'Cropped trousers',culottes:'Culottes',pleatedskirt:'Pleated skirt',squid:'Squid cap',teapot:'Teapot hat',sunflower:'Sunflower bonnet',paperboat:'Paper-boat hat',mountain:'Mount Aoba hat',
  tank:'Tank top',underwear:'Underwear',barefoot:'Bare feet',sneakers:'Sneakers',sandals:'Sandals',shoes:'Shoes',
  tee:'T-shirt',kariyushi:'Kariyushi',polo:'Polo',blouse:'Blouse',jacket:'Jacket',apron:'Apron',smock:'Smock',
  boots:'Boots',shorts:'Shorts',trousers:'Trousers',skirt:'Skirt',longskirt:'Long skirt',
@@ -58,7 +65,7 @@ const TABS=[
   {kind:'stepper',page:'adjust',at:'body.height',label:'Height',less:'Shorter',more:'Taller'},
   {kind:'stepper',page:'adjust',at:'body.build',label:'Build',less:'Slimmer',more:'Sturdier'}]},
  {id:'head',name:'Face',controls:[
-  {kind:'chips',page:'style',at:'head.form',label:'Face shape',list:PARTS.head},
+  {kind:'face-forms',page:'style',at:'head.form',label:'Face shape',list:PARTS.head},
   {kind:'toggle',page:'style',at:'freckles',label:'Freckles'},{kind:'toggle',page:'style',at:'mole',label:'Beauty spot'},
   {kind:'colours',page:'colour',at:'body.skin',label:'Skin',palette:PALETTE.skin},
   {kind:'stepper',page:'adjust',at:'head.size',label:'Head size',less:'Smaller head',more:'Bigger head'},
@@ -178,6 +185,7 @@ const CSS=`
 .shm-body{overflow-y:auto;overscroll-behavior:contain;padding:12px 16px 20px;scrollbar-width:thin}
 .shm-body h4{margin:16px 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#8a7a5a}
 .shm-body h4:first-child{margin-top:0}
+.shm-face-picker{display:grid;grid-template-columns:minmax(0,1fr) 50px;gap:12px;align-items:start}.shm-face-picker .shm-face-forms{grid-template-columns:repeat(3,minmax(0,1fr))}.shm-face-skin{flex-direction:column;flex-wrap:nowrap!important;gap:10px!important}.shm-face-forms button canvas{width:min(64px,100%);height:auto;aspect-ratio:1}
 .shm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:10px}
 .shm-grid button{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:92px;padding:6px 4px;border:3px solid #f0dcb0;border-radius:18px;background:#fff;color:inherit;font-size:11px;font-weight:800}
 .shm-grid button canvas{width:64px;height:64px;border-radius:14px;background:#f3ecdc}
@@ -208,7 +216,7 @@ const CSS=`
 .shm-pips button{flex:1;min-height:44px;border:2px solid #f0dcb0;border-radius:12px;background:#fff}
 .shm-pips button.on{background:#ffd9a8;border-color:#ffb766}
 .shm-pips button[aria-pressed=true]{background:#ff9d3c;border-color:#d9741a}
-.shm-type{margin:6px 0 14px;padding:14px 16px;border-radius:20px;color:#fff;font-weight:800}
+.shm-type{margin:6px 0 14px;padding:14px 16px;border-radius:20px;border:3px solid #d9b781;background:#fff6df;color:#35434d;font-weight:800}.shm-type small{font-size:10px;letter-spacing:.1em;color:#7f715e}.shm-persona-moment{margin-top:12px}.shm-persona-moment b{font-size:12px}.shm-persona-moment p{font-size:13px;line-height:1.45;margin:3px 0 0;font-weight:500}
 .shm-type strong{display:block;font-size:20px}
 .shm-type span{font-size:13px;font-weight:700;opacity:.95}
 .shm-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -250,9 +258,9 @@ const CSS=`
  * @param {(freq:number,type:string)=>void} [options.voice] plays one voice blip
  * @returns {{close:()=>void, get recipe():object}}
  */
-export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{}}={}){
+export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
- let recipe=normalizeRecipe(start);const history=[];
+ const wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];
  let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',previewFacing=0;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
@@ -396,6 +404,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  // ----- Editing -----
  function remember(){history.push(structuredClone(recipe));if(history.length>60)history.shift();undo.disabled=false;}
  function change(at,value,keep=true){
+  if(at.startsWith('outfit')&&!outfitAllowedFor(wardrobeOwner,at==='outfit'?value:{...recipe.outfit,[at.split('.')[1]]:value}))return;
   if(get(recipe,at)===value)return;
   if(keep)remember();
   set(recipe,at,value);recipe=normalizeRecipe(recipe);dirty=true;
@@ -425,7 +434,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function renderLook(){
   const t=TABS.find(x=>x.id===tab);
-  if(t.id==='top'&&page==='style'){for(const [title,presets] of [['Island outfit sets',ISLAND_OUTFITS],['Island costumes',ISLAND_COSTUMES]]){const sets=el('div',{className:'shm-swatches'});sets.setAttribute('aria-label',title);for(const preset of presets){const button=el('button',{type:'button'},preset.name);button.onclick=()=>change('outfit',{...recipe.outfit,...preset.outfit});sets.append(button);}body.append(el('h3',{},title),sets);}}
+  if(t.id==='top'&&page==='style'){for(const [title,presets] of [['Island outfit sets',ISLAND_OUTFITS],['Island costumes',ISLAND_COSTUMES]]){const sets=el('div',{className:'shm-swatches'});sets.setAttribute('aria-label',title);for(const preset of presets.filter(p=>outfitAllowedFor(wardrobeOwner,p.outfit))){const button=el('button',{type:'button'},preset.name);button.onclick=()=>change('outfit',{...recipe.outfit,...preset.outfit});sets.append(button);}body.append(el('h3',{},title),sets);}}
   if(t.wardrobe&&page==='style'){
    const off=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all clothes off'});
    off.onclick=()=>{remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});recipe=normalizeRecipe(recipe);dirty=true;renderBody();};
@@ -433,9 +442,14 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   }
   for(const control of t.controls.filter(c=>c.page===page)){
    if(control.label&&control.kind!=='toggle'&&control.kind!=='stepper')body.append(el('h4',{textContent:control.label}));
-   if(control.kind==='parts'){
+   if(control.kind==='face-forms'){
+    const grid=el('div',{className:'shm-grid shm-face-forms',role:'group',ariaLabel:'Face shapes'}),skin=el('div',{className:'shm-swatches shm-face-skin',role:'group',ariaLabel:'Skin tone'});
+    for(const form of control.list){const c=el('canvas',{width:136,height:136}),label=({'soft-square':'Soft square','soft-round':'Soft round',wide:'Broad'}[form]||form[0].toUpperCase()+form.slice(1)),b=el('button',{type:'button',ariaLabel:label,title:label},c,label);b.setAttribute('aria-pressed',String(recipe.head.form===form));b.onclick=()=>{change('head.form',form);pressed(grid,b);};drawFaceFormThumb(c,form,recipe.body.skin);grid.append(b);}
+    for(const [i,hex] of PALETTE.skin.entries()){const b=el('button',{type:'button',ariaLabel:'Skin tone '+(i+1),title:'Skin tone '+(i+1)});b.style.background=hex;b.setAttribute('aria-pressed',String(recipe.body.skin===hex));b.onclick=()=>{change('body.skin',hex);renderBody();};skin.append(b);}
+    body.append(el('div',{className:'shm-face-picker'},grid,skin));
+   }else if(control.kind==='parts'){
     const grid=el('div',{className:'shm-grid'});
-    for(const value of control.list){
+    for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){
      const c=el('canvas',{width:136,height:136});
      const b=el('button',{type:'button'},c,LABEL[value]||value);b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));
      b.onclick=()=>{change(control.at,value);pressed(grid,b);};
@@ -463,7 +477,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     body.append(b);
    }else if(control.kind==='chips'){
     const row=el('div',{className:'shm-chips'});
-    for(const value of control.list){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);};row.append(b);}
+    for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);};row.append(b);}
     body.append(row);
    }
   }
@@ -502,7 +516,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   body.append(swatches,el('div',{className:'shm-row',style:'margin-top:8px'},wear));
   body.append(el('h4',{textContent:'Personality'}));
   const card=el('div',{className:'shm-type',role:'status'});
-  const paintCard=()=>{const type=personalityOf(recipe.profile);card.style.background=type.colour;card.replaceChildren(el('strong',{textContent:type.name}),el('span',{textContent:type.line}));};
+  const paintCard=()=>{const type=personalityOf(recipe.profile);card.style.borderColor=type.colour;card.replaceChildren(el('small',{textContent:'ISLAND PERSONALITY'}),el('strong',{textContent:type.name}),el('span',{textContent:type.line}),el('div',{className:'shm-persona-moment'},el('b',{textContent:'♡ At their best'}),el('p',{textContent:type.strength})),el('div',{className:'shm-persona-moment'},el('b',{textContent:'☀ An island moment'}),el('p',{textContent:type.islandMoment})));};
   for(const dial of DIALS){
    const pips=el('div',{className:'shm-pips',role:'group',ariaLabel:dial.label});
    const paint=()=>{const s=dialStep(recipe.profile[dial.key]);[...pips.children].forEach((b,i)=>{b.classList.toggle('on',i<s);b.setAttribute('aria-pressed',String(i+1===s));});};
@@ -510,7 +524,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
    paint();
    body.append(el('div',{className:'shm-dial'},el('div',{},el('span',{textContent:dial.low}),el('strong',{textContent:dial.label}),el('span',{textContent:dial.high})),pips));
   }
-  paintCard();body.append(card);
+  paintCard();body.prepend(card);
   body.append(el('h4',{textContent:'Voice'}));
   body.append(stepper('Pitch',at('pitch'),'Lower voice','Higher voice',()=>sayLine('La la la!')),stepper('Speed',at('speed'),'Slower voice','Faster voice',()=>sayLine('La la la!')));
   const hear=el('button',{type:'button',className:'shm-pill',textContent:'Hear them'});hear.onclick=()=>sayLine(hello({...recipe,name:name.value}).split('\n')[0]);
@@ -520,7 +534,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   phrase.onfocus=()=>remember();phrase.oninput=()=>{recipe.profile.catchphrase=phrase.value.slice(0,40);};
   body.append(phrase);
  }
- function renderBody(){
+ function renderBody(){recipe.outfit=appropriateOutfit(wardrobeOwner,recipe.outfit);
   cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);pictureQueue=[];pictureJobs=[];
   body.replaceChildren();
   if(step==='start')renderStart();else if(step==='profile')renderProfile();else if(step==='look')renderLook();

@@ -408,3 +408,10 @@ body.conversation-open #prompt,body.conversation-open #exitRoomButton,body.conve
 #activity.flyer-view #activityBody{overflow:auto;min-height:0;white-space:normal;margin-bottom:12px}
 #activity.flyer-view #activityActions{flex-shrink:0}
 #activity.flyer-view .activity-card h2{font-size:23px;margin:12px 0}
+
+/* Shared action icons retain clear labels and normal keyboard/screen-reader names. */
+.icon-control{display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:44px}
+.icon-control>.ui-icon{width:22px;height:22px;flex:0 0 22px}
+.icon-control>span{min-width:0}
+
+.icon-control.hidden,.icon-control[hidden]{display:none!important}
