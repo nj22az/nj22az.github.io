@@ -124,7 +124,7 @@ const STEPS=[['start','Choose a face'],['look','Make them'],['profile','Who are 
 /** How far one press of a step button moves a value (0–1). */
 const NOTCH=1/16;
 
-const POSES=[['idle','Stand'],['Wave','Wave'],['Hop','Happy'],['walk','Walk'],['Kachashi','Dance'],['Bow','Bow'],['sit','Sit']];
+const POSES=[['idle','Stand'],['Wave','Wave'],['Hop','Happy'],['walk','Walk'],['Kachashi','Dance'],['Bow','Bow'],['Heart','Heart'],['Peace','Cheek'],['Coy','Coy'],['Tada','Ta-da!'],['HandsOnHips','Hips'],['HeelKick','Heel kick'],['sit','Sit']];
 
 const get=(r,at)=>at.split('.').reduce((o,k)=>o?.[k],r);
 function set(r,at,value){const keys=at.split('.'),last=keys.pop();let o=r;for(const k of keys)o=o[k];o[last]=value;}

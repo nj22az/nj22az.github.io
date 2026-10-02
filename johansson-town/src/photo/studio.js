@@ -5,6 +5,8 @@ import {CAST_RECIPES,recipeFor} from '../avatars/cast.js';
 import {playerRecipe} from '../avatars/actors.js';
 import {CAST_LIMIT,PHOTO_LIMIT,FORMATS,POSES,EXPRESSIONS,cleanCaption,frameSize,comicLayout,drawCaptions} from './layout.js';
 
+const POSE_LABELS={Kachashi:'Dance',Tada:'Ta-da!',HandsOnHips:'Hands on hips',HeelKick:'Heel kick'};
+
 export function poseStudioActor(actor){
  const animator=createAvatarAnimator(actor.avatar),duration=GESTURES[actor.pose],time=Number.isFinite(duration)?duration*.43:.7;
  if(duration)animator.play(actor.pose);
@@ -18,7 +20,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  const panels=[],actors=[],hidden=new Map();let opened=false,busy=false,dirty=true,selected=0,context,canvasHome,focusBefore,originalStyle;
  let azimuth=0,elevation=.1,distance=2.4,targetHeight=1.05,panX=0,panZ=0;
  const ui=document.createElement('section');ui.id='photoStudio';ui.hidden=true;ui.setAttribute('role','dialog');ui.setAttribute('aria-modal','true');ui.setAttribute('aria-labelledby','photoTitle');
- const options=values=>values.map(v=>`<option value="${v}">${v==='Kachashi'?'Dance':v}</option>`).join('');
+ const options=values=>values.map(v=>`<option value="${v}">${POSE_LABELS[v]||v}</option>`).join('');
  const range=(name,label,min,max,step,value)=>`<label>${label}<input name="${name}" aria-label="${label}" type="range" min="${min}" max="${max}" step="${step}" value="${value}"></label>`;
  ui.innerHTML=`<header><div><h2 id="photoTitle">Johansson Town · Photo studio</h2><p>Stage the cast. Make a memory, a meme or a comic.</p></div><button data-close>Return to town</button></header>
  <div class="photo-stage"><div class="photo-frame"><canvas class="photo-captions" aria-hidden="true"></canvas></div></div>
@@ -124,7 +126,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
   for(const [n,list] of [['pose',POSES],['expression',EXPRESSIONS]]){
    const box=document.createElement('div');box.className='photo-chips';box.dataset.chips=n;box.setAttribute('role','group');box.setAttribute('aria-label',n==='pose'?'Pose':'Expression');
    const title=document.createElement('span');title.className='photo-chips-title';title.textContent=n==='pose'?'Pose':'Expression';box.append(title);
-   for(const value of list){const b=document.createElement('button');b.type='button';b.className='photo-chip';b.dataset.value=value;b.textContent=value[0].toUpperCase()+value.slice(1);
+   for(const value of list){const b=document.createElement('button');b.type='button';b.className='photo-chip';b.dataset.value=value;b.textContent=POSE_LABELS[value]||value[0].toUpperCase()+value.slice(1);
     b.onclick=()=>{if(field(n).disabled)return;field(n).value=value;field(n).onchange();};box.append(b);}
    chipRows[n]=box;row.after(box);
   }

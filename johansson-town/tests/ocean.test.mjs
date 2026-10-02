@@ -29,3 +29,28 @@ test('harbour basin shares the same ocean material',()=>{
   assert.equal(basin.geometry.parameters.width,160);
   assert.equal(basin.geometry.parameters.height,86);
 });
+
+test('the sea knows how far it is from land: shallows at the beach, open water far out',async()=>{
+  const {shoreDistance,shoreDistanceTexture,SHORE_FIELD,oceanMaterial}=await import('../src/world/ocean.js');
+  assert.equal(shoreDistance(0,0),0,'the town is on land');
+  assert.ok(shoreDistance(46,0)<2,'the water off the beach is shallow');
+  assert.ok(shoreDistance(60,0)>10&&shoreDistance(60,0)<20,'the buoy floats in the azure');
+  assert.equal(shoreDistance(0,170),SHORE_FIELD.range,'open sea to the north');
+  assert.ok(shoreDistance(165,-118)===0,'the airport island is land too');
+  const tex=shoreDistanceTexture();
+  assert.equal(tex.image.width,SHORE_FIELD.size);
+  assert.equal(oceanMaterial().uniforms.uShore.value,tex);
+});
+
+test('distant islands and sea take the light of the hour',async()=>{
+  const {setOceanLight,oceanMaterial}=await import('../src/world/ocean.js');
+  const group=new THREE.Group();addHorizon(group);
+  let islands=null;group.traverse(o=>{if(o.name==='Distant islands')islands=o;});
+  assert.ok(islands&&islands.children.length>=5);
+  const mat=islands.children[0].material;
+  setOceanLight({day:0,dusk:0});const night=mat.color.r,glintNight=oceanMaterial().uniforms.uGlint.value;
+  setOceanLight({day:1,dusk:0});
+  assert.ok(mat.color.r>night,'islands brighten by day');
+  assert.equal(glintNight,0,'no sun glints at night');
+  assert.ok(oceanMaterial().uniforms.uGlint.value>.9);
+});

@@ -1,7 +1,7 @@
 export const PHOTO_LIMIT=4;
 export const CAST_LIMIT=6;
 export const FORMATS=Object.freeze({landscape:4/3,square:1,portrait:3/4});
-export const POSES=Object.freeze(['Idle','Wave','Cheer','Point','Shrug','Laugh','Think','Bow','Clap','Kachashi','Crouch','Sit']);
+export const POSES=Object.freeze(['Idle','Wave','Cheer','Point','Shrug','Laugh','Think','Bow','Clap','Kachashi','Crouch','Sit','Heart','Peace','Coy','Tada','HandsOnHips','HeelKick']);
 export const EXPRESSIONS=Object.freeze(['neutral','happy','laugh','smile','sad','angry','shy','surprised','worried','thinking','grumpy','content','sleep']);
 export const cleanCaption=text=>Array.from(String(text||'').replace(/[\u0000-\u001f]/g,' ')).slice(0,120).join('');
 export function frameSize(width,height,aspect){const w=Math.max(1,Math.min(width,height*aspect));return {width:Math.floor(w),height:Math.max(1,Math.floor(w/aspect))};}

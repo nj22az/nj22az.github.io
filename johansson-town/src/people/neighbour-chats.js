@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {lineFeeling} from '../avatars/body-language.js';
 import {residentPlan} from './social.js';
 
 const EXCHANGES=[
@@ -40,6 +41,8 @@ export function createNeighbourChats({world,observer,blocked=()=>false,state=()=
    if(active.pair.some((p,i)=>!eligible(p)||signature(p,minutes,rain)!==active.signatures[i])||blocked(point(active.pair[0]),point(active.pair[1]))){cancel();return;}
    const elapsed=clock-active.start;if(elapsed>=12){cancel();return;}
    const turn=Math.floor(elapsed/4),speaker=active.pair[turn%2];active.speaker=speaker;active.text=active.lines[turn];
+   // The speaker wears the feeling of the line; their personality decides the move.
+   if(active.feltTurn!==turn){active.feltTurn=turn;const f=lineFeeling(active.text);speaker.g.userData.lineFeeling=f?{expression:f,until:performance.now()+4000}:null;}
    active.pair.forEach(p=>{const partner=active.pair.find(q=>q!==p);p.g.userData.chat={speaking:p===speaker,time:elapsed,partner:partner.g,greeting:elapsed<1.8};p.g.userData.chatHold=true;
     if(place(p)==='street'){const dx=partner.g.position.x-p.g.position.x,dz=partner.g.position.z-p.g.position.z,heading=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(heading-p.g.rotation.y),Math.cos(heading-p.g.rotation.y));p.g.rotation.y+=delta*(1-Math.exp(-dt*5));}
    });return;

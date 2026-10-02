@@ -62,6 +62,7 @@ import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restau
 import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
+import {lineFeeling} from './avatars/body-language.js';
 import {MOVES} from './avatars/moves.js';
 import {createAvatarJohansson,playerRecipe,savePlayerRecipe,importRecipeFromURL} from './avatars/actors.js';
 import {openCreator} from './avatars/creator.js';
@@ -1186,6 +1187,8 @@ function setConversation(name,text=''){for(const g of [...world.people.map(p=>p.
  if(name){
   const speaker=name==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===name)?.g||world.neighbours?.find(g=>g.userData.name===name);
   if(speaker){speaker.userData.playerConversation=true;speaker.userData.chatHold=true;speaker.userData.speakingUntil=performance.now()+Math.min(6500,Math.max(1400,text.length*43));
+   // What the line feels like shows on the face, and the body follows (body-language.js).
+   const feeling=lineFeeling(text);speaker.userData.lineFeeling=feeling?{expression:feeling,until:performance.now()+3200}:null;
    // The camera is not taken off you any more: she turns to face you instead, and the
    // line appears over her shoulder. See people/facing.js.
    conversationLine={speaker,name,text};}
@@ -1398,7 +1401,7 @@ window.__JOHANSSON_POSE__={
 window.__JOHANSSON_BEER__=()=>beerService?{pending:beerService.pending,drink:beerService.drink,served:beerService.served}:null;
 window.__JOHANSSON_CAST__={
  get takes(){return (characters?.actors||[]).map(a=>({
-  name:a.entity?.userData?.name||'?',clip:a.current||null,
+  name:a.entity?.userData?.name||'?',clip:a.current||null,gesture:a.animator?.gesture||null,
   moving:!!a.moving,speed:+(a.speed||0).toFixed(2),activity:a.entity?.userData?.activity||null,indoors:a.entity?.userData?.indoors||null,visible:!!a.entity?.visible,flags:Object.keys(a.entity?.userData||{}).filter(k=>/^in[A-Z]/.test(k)&&a.entity.userData[k]===true),at:a.entity?[+a.entity.position.x.toFixed(2),+a.entity.position.z.toFixed(2),+a.entity.rotation.y.toFixed(2)]:null}));},
 };
 // Sakura's books, live rather than as last saved. The shop's day is settled on the

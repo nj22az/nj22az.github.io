@@ -65,6 +65,15 @@ time from a recipe in `src/avatars/`. **Town book → Make your islander** chang
 look; **Share** gives a `creator/?r=<code>` link, and `?avatar=<code>` imports one into
 the game.
 
+Each islander has a personality: four dials (pace, talk, feelings, outlook) in their recipe,
+one of sixteen island types (`src/avatars/personality.js`; the town's own people have
+authored dials in `TOWN_DIALS`). `src/avatars/body-language.js` turns the type into
+body language: the move a feeling brings (a happy Festival friend kicks up a heel, a
+Lighthouse keeper nods), what they do standing about, and what their hands do as they start
+a line. Dialogue lines carry a feeling read from the words. The playful poses (heart,
+hand by the cheek, coy look, ta-da, hands on hips, heel kick) are on the Moves menu, in the
+photo studio and in the maker's preview.
+
 ## More
 
 - `docs/EXPANSION-NOTES.md`: dormant systems worth building on (Shopify, the local AI
