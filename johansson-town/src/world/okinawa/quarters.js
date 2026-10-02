@@ -5,7 +5,7 @@ const EAST_LAWN_SOUTH=-38;
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
 import {createMaterials} from '../../render/materials.js';
-import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GOYA,KITAHAMA} from './layout.js';
+import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {utilityPole,wiresBetween,serviceDrop,keiTruck,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
@@ -54,7 +54,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildYardRow(kit,solid,{anchor,inspect,onAction});
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
- buildGateball(kit,solid,{anchor,inspect,onAction});
+ if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
  buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.

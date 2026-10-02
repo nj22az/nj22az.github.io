@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
+import {GATEBALL_ACTIVE} from '../world/okinawa/layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
 
 /**
@@ -16,7 +17,7 @@ import {GROUND_LAYER} from '../world/ground-layers.js';
  */
 const H=(h,m=0)=>h*60+m;
 
-export const NEIGHBOURS=Object.freeze([
+const ALL_NEIGHBOURS=Object.freeze([
  {name:'Grandmother Higa',look:'Fumiko',height:1.46,role:'on her verandah',at:[-29.8,-20.7],y:.47,face:[0,-1],pose:'Interact',hours:[[H(7),H(18,30)]],
   lines:[
    'あい、いらっしゃい。\nSit a moment. You are the one who talks to the girl at Sakura every day. She is a good girl. She counts my change twice so I do not have to.',
@@ -61,7 +62,8 @@ export const NEIGHBOURS=Object.freeze([
   lines:[
    'Auction is done, bro. What is left goes to Yonamine-san or to the freezer. You want a tuna head? Free. Great for soup. Nobody ever takes the tuna head.',
    'The Minato Maru came in at four with a full hold and the skipper is asleep on the wheel. That is the life.']},
- // The gateball players, on the court morning and late afternoon.
+ // The gateball players, on the court morning and late afternoon (only while there is a
+ // court: okinawa/layout.js GATEBALL_ACTIVE; NEIGHBOURS leaves them out otherwise).
  {name:'Mr Nakasone',look:'Hiroshi',height:1.64,role:'playing gateball',at:[22.6,-34.6],face:[1,.2],pose:'Interact',hours:[[H(7),H(10,30)],[H(16),H(18,30)]],
   lines:[
    'Red team, number three. Do not stand there, that is where my ball is going. Probably.',
@@ -86,6 +88,8 @@ export const NEIGHBOURS=Object.freeze([
    'Two collections a day, 10:30 and 16:30, same as the post box says. The post box is never wrong. I am sometimes wrong.',
    'Letters for the Nakasones, a parcel for Mr Shimabukuro at the power house, and a postcard for Sakura from somebody in Hanoi. I do not read postcards. The picture was very nice.']},
 ]);
+/** Who is about today: the gateball players only while there is a court. */
+export const NEIGHBOURS=Object.freeze(ALL_NEIGHBOURS.filter(n=>GATEBALL_ACTIVE||!/gateball|refereeing/.test(n.role)));
 
 /** Everything they can say, by name, for the conversation box. */
 export const NEIGHBOUR_TALK=Object.freeze(Object.fromEntries(NEIGHBOURS.map(n=>[n.name,n])));
