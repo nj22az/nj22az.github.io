@@ -95,6 +95,7 @@ for z in [1.61,1.86]:
  for i in range(12):
   t=i*math.tau/12;line('guard spoke',[(2.35,1.12,z),(2.35+.32*math.cos(t),1.12+.32*math.sin(t),z)],'steel',.004)
 # Folded bedding in the cupboard; the laid-out copy only appears at night.
+box('cupboard backing',(1.8,2.45,.08),(2.10,1.225,-2.96),'cedar')
 door=empty('FutonCupboardDoor',(2.25,0,-2.22))
 box('cupboard paper',(1.46,2.3,.055),(0,1.2,0),'paper',parent=door)
 for x in [-.73,.73]:box('cupboard stile',(.035,2.3,.065),(x,1.2,0),'cedar',parent=door)
