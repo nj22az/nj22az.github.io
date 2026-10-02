@@ -315,6 +315,11 @@ body.conversation-open #prompt,body.conversation-open #exitRoomButton,body.conve
 #activity.conversation.rpg #activityTitle::before{content:attr(data-speaker);font-size:15px}
 #activity.conversation.rpg.player-speaking #activityTitle{background:#9fd0f2}
 #activity.conversation.rpg.player-speaking #activityTitle::before{content:"Johansson"}
+/* The speaker's portrait, in a round frame on the panel's edge, with the name tab beside it. */
+#activity.conversation.rpg.has-portrait .activity-card::after{content:"";position:absolute;top:-40px;left:16px;width:62px;height:62px;border:3px solid #2e2a33;border-radius:50%;
+ background:var(--line-colour) var(--portrait) center 18%/135% no-repeat;box-shadow:0 3px 0 #2e2a3333}
+#activity.conversation.rpg.has-portrait #activityTitle{left:86px}
+#activity.conversation.rpg.has-portrait.player-speaking .activity-card::after{background-image:url("assets/images/residents/01.webp")}
 /* Leave: a round × on the panel's corner. */
 #activity.conversation.rpg .activity-card header{position:absolute;top:-17px;right:16px;z-index:1;margin:0}
 #activity.conversation.rpg #closeActivity{width:38px;height:38px;min-height:0;padding:0;border:3px solid #2e2a33;border-radius:50%;background:#fff;color:#2e2a33;font-size:0;box-shadow:0 3px 0 #2e2a3333;cursor:pointer}

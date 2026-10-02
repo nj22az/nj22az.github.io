@@ -30,6 +30,13 @@ export function speakerColour(name=''){
  return PALETTE[h%PALETTE.length];
 }
 
+/** The guide's portrait for a speaker, if they have one. */
+export function portraitFor(name,win=globalThis.window){
+ const guide=win?.JOHANSSON_RESIDENT_GUIDE;
+ if(!name||!Array.isArray(guide))return null;
+ return guide.find(r=>r.name===name)?.portrait||null;
+}
+
 /** Which conversation line a title belongs to: "Thuan · Heart of Sakura" is Thuan's. */
 export function splitTitle(title=''){
  const [speaker,...rest]=String(title).split('·').map(s=>s.trim());
@@ -144,6 +151,11 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
   // The name tab shows the speaker only (CSS reads data-speaker); the full title stays
   // in the heading for screen readers.
   modal.style?.setProperty?.('--line-colour',speakerColour(speaker));
+  // Their portrait beside the name tab, from the Visitor's Guide (resident-guide.js),
+  // so you see who is talking even while the camera is on Johansson.
+  const portrait=portraitFor(speaker,win);
+  modal.classList.toggle('has-portrait',!!portrait);
+  if(portrait)modal.style?.setProperty?.('--portrait',`url("${portrait}")`);
   const line=body.querySelector('p')||doc.createElement('p');
   if(!line.parentNode)body.append(line);
   line.classList.add('rpg-line');

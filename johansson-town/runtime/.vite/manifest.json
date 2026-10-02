@@ -17,7 +17,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-CRdtm0a5.js",
+    "file": "boot-q6ukT3J0.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -29,7 +29,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-By2SkXfP.js",
+    "file": "game-DzT8EJPq.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,

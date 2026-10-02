@@ -40,7 +40,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  const selectedActor=()=>actors[selected];
  function updateButtons(){field('actor').disabled=!actors.length;for(const name of ['pose','expression','actorX','actorY','actorZ','actorTurn','speech','bubbleLift'])field(name).disabled=!actors.length;$('[data-remove]').disabled=!actors.length;$('[data-add]').disabled=actors.length>=CAST_LIMIT;$('[data-capture]').disabled=busy||panels.length>=PHOTO_LIMIT;$('[data-comic]').disabled=busy||!panels.length;}
  function actorList(){field('actor').replaceChildren(...actors.map((a,i)=>new Option(`${i+1}. ${a.name}`,String(i))));field('actor').value=String(selected);syncActor();updateButtons();}
- function syncActor(){const a=selectedActor();if(!a)return;for(const [name,value] of Object.entries({pose:a.pose,expression:a.expression,actorX:a.x,actorY:a.y,actorZ:a.z,actorTurn:a.turn,speech:a.speech,bubbleLift:a.lift}))field(name).value=String(value);}
+ function syncActor(){const a=selectedActor();if(!a)return;queueMicrotask?.(()=>typeof syncChips==='function'&&syncChips());for(const [name,value] of Object.entries({pose:a.pose,expression:a.expression,actorX:a.x,actorY:a.y,actorZ:a.z,actorTurn:a.turn,speech:a.speech,bubbleLift:a.lift}))field(name).value=String(value);}
  function placeActor(a){a.holder.position.set(a.x,a.y,a.z);a.holder.rotation.y=Math.PI+a.turn*Math.PI/180;}
  function addActor(name){
   if(actors.length>=CAST_LIMIT)return;
@@ -116,7 +116,20 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
   }catch(e){close();throw e;}
  }
  field('actor').onchange=()=>{selected=Number(field('actor').value);syncActor();};
- for(const n of ['pose','expression'])field(n).onchange=()=>{const a=selectedActor();if(a){a[n]=field(n).value;poseStudioActor(a);}};
+ for(const n of ['pose','expression'])field(n).onchange=()=>{const a=selectedActor();if(a){a[n]=field(n).value;poseStudioActor(a);}syncChips();};
+ // Pose and expression as chips you tap, the way the rest of the town's menus work; the
+ // selects stay underneath for keyboards and screen readers.
+ const chipRows={};
+ {const row=field('pose').closest('.photo-row');row.classList.add('photo-row-selects');
+  for(const [n,list] of [['pose',POSES],['expression',EXPRESSIONS]]){
+   const box=document.createElement('div');box.className='photo-chips';box.dataset.chips=n;box.setAttribute('role','group');box.setAttribute('aria-label',n==='pose'?'Pose':'Expression');
+   const title=document.createElement('span');title.className='photo-chips-title';title.textContent=n==='pose'?'Pose':'Expression';box.append(title);
+   for(const value of list){const b=document.createElement('button');b.type='button';b.className='photo-chip';b.dataset.value=value;b.textContent=value[0].toUpperCase()+value.slice(1);
+    b.onclick=()=>{if(field(n).disabled)return;field(n).value=value;field(n).onchange();};box.append(b);}
+   chipRows[n]=box;row.after(box);
+  }
+  chipRows.pose.after(chipRows.expression);}
+ function syncChips(){for(const [n,box] of Object.entries(chipRows))for(const b of box.querySelectorAll('.photo-chip')){b.classList.toggle('on',b.dataset.value===field(n).value);b.disabled=field(n).disabled;}}
  for(const [n,key] of Object.entries({actorX:'x',actorY:'y',actorZ:'z',actorTurn:'turn',bubbleLift:'lift'}))field(n).oninput=()=>{const a=selectedActor();if(a){a[key]=Number(field(n).value);placeActor(a);}};
  field('speech').oninput=()=>{const a=selectedActor();if(a)a.speech=cleanCaption(field('speech').value);};
  for(const n of ['azimuth','elevation','distance','targetHeight','panX','panZ'])field(n).oninput=()=>{const v=Number(field(n).value);if(n==='azimuth')azimuth=v*Math.PI/180;if(n==='elevation')elevation=v*Math.PI/180;if(n==='distance')distance=v;if(n==='targetHeight')targetHeight=v;if(n==='panX')panX=v;if(n==='panZ')panZ=v;};

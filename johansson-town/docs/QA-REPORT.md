@@ -51,6 +51,8 @@ Severity:
 | O6 | Fixed | One string of paper flags, over the till end of the shop. |
 | O7 | Fixed | The nobori stand at the two corners of Sakura's frontage, clear of the window. |
 | O9 | Fixed | Voice blips: a soft note every few letters while a line types out, pitched per speaker in the Ryukyu scale. They play through the town's single audio context and follow the Sound setting. |
+| O5 | Fixed | The photo studio wears the town book's look (cream, rounded, one typeface), and Pose and Expression are chips you tap. The selects stay underneath for keyboards and screen readers. ![Photo studio](qa/after-studio.jpg) |
+| O8 | Fixed | The speaker's portrait from the Visitor's Guide sits in a round frame beside the name tab. ![Portrait](qa/after-portrait.jpg) |
 | O10 | Fixed | The flaky test was a resident walking through the door the ray test looked through. People are now left out of that check. |
 
 ## Open: logged for the next passes

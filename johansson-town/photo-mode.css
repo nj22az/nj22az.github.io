@@ -17,3 +17,22 @@
 .photo-status{font-size:12px;min-height:32px;color:#455346;margin:8px 0}.photo-film{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.photo-film figure{margin:0;min-width:0}.photo-film img{width:100%;height:70px;object-fit:contain;background:#263a36;border:1px solid #aaa997}.photo-film .photo-row button,.photo-film .photo-row a{font-size:11px!important;padding:5px!important;min-height:32px!important;text-align:center}
 @media(max-width:760px){#photoStudio{grid-template-columns:1fr;grid-template-rows:auto minmax(160px,45%) minmax(0,1fr);padding-bottom:env(safe-area-inset-bottom)}#photoStudio header{padding:7px 10px}#photoStudio header p{font-size:11px}#photoStudio h2{font-size:17px}.photo-stage{padding:6px}.photo-tools{border-left:0;border-top:1px solid #bbb5a3;padding:8px 12px}.photo-film{grid-template-columns:repeat(4,minmax(0,1fr))}.photo-film .photo-row{display:grid}.photo-film img{height:55px}}
 @media(max-height:480px) and (min-width:600px){#photoStudio{grid-template-columns:minmax(0,1fr) 280px;grid-template-rows:auto minmax(0,1fr)}.photo-tools{border-left:1px solid #bbb5a3}}
+/* The photo studio in the town book's dress (QA O5): cream, rounded, one typeface, the
+   pose and the face as chips you tap rather than lists you scroll. */
+#photoStudio{background:#fffaf0;color:#3b3f55;font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Arial Rounded MT Bold",system-ui,sans-serif}
+#photoStudio header{border-bottom:0;background:#fff;box-shadow:0 3px 0 #e6e1d6;z-index:1}
+#photoStudio h2{font:800 20px/1.2 inherit;font-family:inherit}
+#photoStudio button,#photoStudio select,#photoStudio input:not([type=range]),#photoStudio a{border:2px solid #e6e1d6;border-radius:14px;background:#fff;color:#3b3f55;font:700 14px/1.2 inherit;font-family:inherit;box-shadow:0 2px 0 #e6e1d6}
+#photoStudio .primary,#photoStudio [data-close]{background:#7ccc4a;border-color:#fff;color:#fff;box-shadow:0 3px 0 #57a52f}
+#photoStudio [data-close]{background:#ff8a65;box-shadow:0 3px 0 #e0643f}
+.photo-stage{background:radial-gradient(circle at 50% 40%,#bfe3f5,#86c4e3)}
+.photo-frame{border:6px solid #fff;border-radius:10px;box-shadow:0 6px 0 #0001,0 18px 40px #0003}
+.photo-tools{border-left:0;background:#fffaf0}
+#photoStudio details{margin:0 0 10px;padding:8px 12px;border:0;border-radius:18px;background:#fff;box-shadow:0 3px 0 #e6e1d6}
+#photoStudio summary{font-weight:800}
+#photoStudio input[type=range]{accent-color:#45b7f0}
+#photoStudio .photo-row-selects{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.photo-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.photo-chips-title{flex-basis:100%;font-size:12px;font-weight:800;color:#8a7f6f;letter-spacing:.06em;text-transform:uppercase}
+#photoStudio .photo-chip{min-height:36px;padding:6px 12px;border-radius:999px;font-size:13px;background:#f2f9ff;border-color:#d9e8f2;color:#2a8fcc;box-shadow:0 2px 0 #d9e8f2}
+#photoStudio .photo-chip.on{background:#ffc93c;border-color:#fff;color:#3b3f55;box-shadow:0 2px 0 #e8a415}
