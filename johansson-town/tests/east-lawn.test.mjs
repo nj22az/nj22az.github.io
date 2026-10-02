@@ -82,21 +82,20 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  assert.equal(ray.intersectObject(shore).length,1,'No sand above the beach');
 });
 
-test('the lawn wears the supplied park\u2019s own grass rather than a green of its own',async()=>{
+test('the lawn wears the park\u2019s own grass rather than a green of its own',async()=>{
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:256,height:256,close(){}});
  const original=fetch;
  globalThis.fetch=async url=>String(url).startsWith('blob:')?original(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
  try{
   const bare=buildEastLawn({parent:new THREE.Group(),colliders:[]});
-  // Before the model arrives the lawn already wears the painted turf the park's ground
-  // uses, so the two greens match from the first frame; with nothing fetched there is
-  // nothing more to hand over, and it says so.
-  assert.equal(bare.useParkGreenery(parkFoliage()),false);
+  // The lawn wears the painted turf from the first frame, and the park hands over the
+  // same turf: the two greens are one field.
   assert.ok(bare.lawn.material.map?.image===paintedTurf().image,'The bare lawn is a green of its own');
+  assert.equal(parkFoliage().grass?.image,paintedTurf().image,'The park is not on the town\u2019s turf');
 
   assert.equal(await preloadPark(),true);
   const {grass}=parkFoliage();
-  assert.ok(grass?.image,'The park model carries no lawn texture');
+  assert.ok(grass?.image,'The park has no lawn texture');
   const lawn=buildEastLawn({parent:new THREE.Group(),colliders:[]});
   assert.equal(lawn.useParkGreenery({grass}),true);
   assert.equal(lawn.lawn.material.map.image,grass.image,'The lawn is not the park\u2019s grass');

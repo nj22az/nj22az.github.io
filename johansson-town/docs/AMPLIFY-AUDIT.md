@@ -385,7 +385,7 @@ five coral whites and two paver tones. They were collapsed into seven families i
 1. ~~**Sakura.**~~ Done in the second session (§12): an original family *shōten*, inside and out.
 2. **Night and interiors lighting pass.** Night is a grey haze rather than a scene lit
    by its signs. The classroom and office interiors are overexposed.
-3. **The park model.** The Sketchfab park still loads; rebuild it from the kit.
+3. ~~**The park model.**~~ Done: Minato Park is drawn in the town's own style on the same mound (turf, gravel paths, a wooden bench under a kanhizakura that blooms pink in January–February, kit lamp posts, a concrete slide, hibiscus, a stone lantern and a name board). The Sketchfab model is removed. ![Park](amplify-audit/after-park.jpg)
 4. **Horizon frame.** From the air you can see the square sea and the sky dome
    (reef, tetrapods, haze).
 5. **Shimanchu 2, the rest.** Mitten hands, hair shells, shoes, the 1990s wardrobe and

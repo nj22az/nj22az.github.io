@@ -20,7 +20,9 @@ test('retained alley and vending assets fit their budget; streamed facades prese
  const world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
  assert.equal(requests.length,2,'Constructing the town starts no district model requests');
  const colliders=JSON.stringify(world.colliders),doors=JSON.stringify(sites.map(s=>[s.id,s.door]));
- for(const id of ['tea-house','ramen-exterior','izakaya-exterior','park','street-plants']){
+ // The park is drawn in place now (world/park.js) and fetches nothing, so it is not deferred.
+ assert.equal(world.details.some(d=>d.id==='park'),false,'the park still waits for a model');
+ for(const id of ['tea-house','ramen-exterior','izakaya-exterior','street-plants']){
   const detail=world.details.find(d=>d.id===id);assert.ok(detail,id+' is deferred');assert.equal(await detail.load(),true,id+' mounts its supplied model');
   assert.equal(JSON.stringify(world.colliders),colliders,id+' cannot change collision');assert.equal(JSON.stringify(sites.map(s=>[s.id,s.door])),doors,id+' cannot move entrances');
  }
