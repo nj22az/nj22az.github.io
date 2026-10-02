@@ -102,8 +102,9 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  kit.sign(poster({title:'アイス',lines:['BLUE CORAL','¥150','冷たい！'],band:'#2d7fb8'}),.5,.34,front+.68,.45,fz,{ry:Math.PI/2,depth:.01,name:'freezer card'});
  solid({id:'sakura-freezer',x:front+.36,z:fz,w:.66,d:1.15,height:.9});
  anchor(front+1.1,1,fz,'Buy a Blue Coral ice cream',()=>onAction?.('buy','Blue Coral ice cream',{cost:150,item:'Blue Coral ice cream',text:'Blue Coral, from the chest freezer outside Sakura: ube, salt cookie or the pink one that is guava. It starts melting before you have your change.'}));
- // Two nobori flags at the kerb: ice cream, and cold drinks.
- for(const [z,jp,bg] of [[fz-1.6,'アイスクリーム','#2d7fb8'],[S.minZ+4.9,'冷たい飲み物','#c8392e']]){
+ // At the two corners of the frontage, so they mark the shop without standing in front
+ // of its window.
+ for(const [z,jp,bg] of [[S.maxZ-.35,'アイスクリーム','#2d7fb8'],[S.minZ+.45,'冷たい飲み物','#c8392e']]){
   kit.cyl(.025,.025,2.8,front+.95,1.4,z,0x9aa0a4,{segments:6});kit.rod([front+.95,2.72,z],[front+.95,2.72,z+.5],.012,0x9aa0a4);
   kit.sign(vertical({jp,bg}),.46,1.9,front+.95,1.75,z+.26,{ry:Math.PI/2,depth:.01,both:true,name:'nobori'});
   solid({id:'nobori',x:front+.95,z,w:.1,d:.1,height:2.8});

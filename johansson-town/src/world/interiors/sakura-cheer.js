@@ -73,7 +73,9 @@ function buildCheer(room){
  const flagMats=colours.map(c=>new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide,toneMapped:false}));
  const string=new THREE.MeshBasicMaterial({color:0xfff6e0});
  // Strings run across the shop floor from wall to wall, over the aisles.
- for(const z of [-1.6,1.9]){
+ // One string of paper flags, over the till end of the shop: more than that was busy
+ // against the wood.
+ for(const z of [1.9]){
   // The back string stops at the restroom wall (x -4.02) instead of running through it.
   const x0=z<-2.4?-3.85:-6.6,x1=4.3,sag=.12,y=2.42;
   const pts=[];for(let i=0;i<=16;i++){const t=i/16;pts.push(new THREE.Vector3(x0+(x1-x0)*t,y-Math.sin(Math.PI*t)*sag,z));}

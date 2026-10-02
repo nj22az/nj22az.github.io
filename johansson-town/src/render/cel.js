@@ -244,7 +244,27 @@ export function celFrom(material,{tint=DEFAULT_TINT,bands=null}={}){
  const architectural=material.userData?.keepPhysical===true;
  applyShadowTint(toon,tint,photographic(material)?(architectural?ARCH_FLATTEN:FLATTEN):1,{base,baseKey});
  converted.set(material,toon);
+ linkLive(material,toon);
  return toon;
+}
+
+/**
+ * Keeps the original material steering what is drawn. Lots of the town holds on to the
+ * material it built and turns its glow up at dusk (window panes, lamps, nameplates), but
+ * the mesh now draws the toon copy, so those updates went nowhere and the town's windows
+ * stayed dark all night. The two now share one emissive colour, and the original's
+ * emissiveIntensity, opacity and visibility are forwarded to the copy.
+ */
+function linkLive(material,toon){
+ if(material.emissive&&material.emissive.isColor)toon.emissive=material.emissive;
+ for(const key of ['emissiveIntensity','opacity','visible']){
+  let own=material[key];
+  try{
+   Object.defineProperty(material,key,{configurable:true,enumerable:true,
+    get(){return own;},
+    set(value){own=value;toon[key]=value;if(key==='opacity')toon.needsUpdate=toon.needsUpdate;}});
+  }catch{}
+ }
 }
 
 /** Materials this pass should leave exactly as they are. */

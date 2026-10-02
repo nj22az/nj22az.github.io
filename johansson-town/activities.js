@@ -75,7 +75,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   const characterControl=()=>window.__JOHANSSON_CHARACTER_CONTROL__;
   const modal=$('#activity'),heading=$('#activityTitle'),body=$('#activityBody'),actions=$('#activityActions');
-  const dialogueBox=createDialogueBox({modal,heading,body,actions,isOpen:()=>modalOpen,leave:()=>close(),onPhase:phase=>onDialoguePhase(phase)});
+  const dialogueBox=createDialogueBox({modal,heading,body,actions,isOpen:()=>modalOpen,leave:()=>close(),onPhase:phase=>onDialoguePhase(phase),voice:(freq,type)=>{if(state.sound!==false)townAudio.blip(freq,type);}});
 
   const workshopUI=createWorkshopUI({state,show,close,save,say,note,getContext:getSocialContext,getMinutes,preview:previewPrint,body,modal});
 

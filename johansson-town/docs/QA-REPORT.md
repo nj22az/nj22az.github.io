@@ -35,6 +35,24 @@ Severity:
 | Q10 | S3 | HUD | Place name, clock and captions were 11–13 px on an iPad held at arm's length. | Any view on a tablet. | 14–17 px on tablets, and a larger action button. `tomodachi-ui.css` |
 | Q11 | S3 | Sakura | Hanging POP cards sat at eye level, and the rubber plant's leaves looked like flying saucers. | Walk in from the door. | Cards are raised and smaller; leaves are long ovals angled out from the stem. `sakura-cheer.js`, `sakura-life.js` |
 
+## Second pass (same day)
+
+| Before | After |
+|---|---|
+| ![Night, before](qa/before-night.jpg) | ![Night, after](qa/after-night.jpg) |
+| ![Aerial, before](qa/aerial-horizon.jpg) | ![Aerial, after](qa/after-aerial.jpg) |
+
+| # | Status | What was done |
+|---|---|---|
+| O1 | Fixed | The green slab was the Minato headland's skirt, 1.2 m under the water and showing through the shallows. It now sinks to 5.5 m and turns to sand and then reef below the tide line. The "square sea" left in the aerial shot is the audit camera's far plane cutting the sea from 110 m up. A player never sees it: at street level the sea runs to the fogged horizon. |
+| O2 | Fixed | Night is a clear blue night now: lower fill and exposure at night, and the grade's light and shadow tints go to moonlight blue. Lit windows and lamps were the real bug: the cel pass draws a toon copy of every material, so the town's dusk glow updates went to the originals and nothing lit up. `cel.js` now links the copy to its original, and every kit building's glass and lamps (town hall, Kitahama, island homes) follow the clock. ![Town hall at night](qa/after-night-townhall.jpg) |
+| O3 | By design | The Visitor's Guide as the landing page was a deliberate change (30 September), and a test pins it. Left as is. |
+| O4 | Fixed | On a portrait screen the third-person lens stands 1.3× further back and slightly higher. ![Portrait camera](qa/after-portrait-camera.jpg) |
+| O6 | Fixed | One string of paper flags, over the till end of the shop. |
+| O7 | Fixed | The nobori stand at the two corners of Sakura's frontage, clear of the window. |
+| O9 | Fixed | Voice blips: a soft note every few letters while a line types out, pitched per speaker in the Ryukyu scale. They play through the town's single audio context and follow the Sound setting. |
+| O10 | Fixed | The flaky test was a resident walking through the door the ray test looked through. People are now left out of that check. |
+
 ## Open: logged for the next passes
 
 | # | Sev | Area | Finding | Recommendation |

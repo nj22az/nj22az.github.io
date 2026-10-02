@@ -54,6 +54,14 @@ export const townAudio={
       osc.connect(env).connect(out);osc.start(t0+at);osc.stop(t0+at+decay+.05);
     }
   },
+  /** A dialogue voice blip: one short soft note (dialogue-box.js picks it per speaker). */
+  blip(freq,type='sine',volume=.06){
+    if(!enabled||!ctx||ctx.state!=='running')return;
+    const t=ctx.currentTime,osc=ctx.createOscillator(),env=ctx.createGain();
+    osc.type=type;osc.frequency.setValueAtTime(freq,t);
+    env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(volume,t+.006);env.gain.exponentialRampToValueAtTime(.0001,t+.06);
+    osc.connect(env).connect(master);osc.start(t);osc.stop(t+.07);
+  },
   get enabled(){return enabled;}
 };
 

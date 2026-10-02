@@ -207,6 +207,8 @@ export function createKit({shadows=false}={}){
    const spec=tex?Object.fromEntries(Object.entries({map:tex.map,normalMap:tex.normalMap,normalScale:tex.normalScale,roughnessMap:tex.roughnessMap,aoMap:tex.aoMap,aoMapIntensity:.35,roughness:tex.roughness,side:tex.side}).filter(([,v])=>v!==undefined)):FINISHES[kind]||FINISHES.matte;
    const material=materials[kind]??=new THREE.MeshStandardMaterial({vertexColors:true,...spec});
    if(tex||['metal','gloss','roof'].includes(kind))material.userData.keepPhysical=true;
+   // Window glass and lamps light up at dusk wherever they are built (town.js lightWindows).
+   if(kind==='glow'||kind==='lamp')material.userData.kitFinish=kind;
    const mesh=new THREE.Mesh(geometry,material);
    mesh.name=`${name}:${key}`;
    mesh.castShadow=shadows&&kind!=='thin'&&kind!=='glow';mesh.receiveShadow=true;

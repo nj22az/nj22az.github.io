@@ -252,6 +252,7 @@ const CEL_FILL=1.35;
 // With tone mapping off, the grade carries the overall level; flat bands need more
 // headroom than the rolled-off highlights AgX used to give.
 const CEL_EXPOSURE=1.04;
+const NIGHT_TINT=Object.freeze({light:GRADE_DEFAULTS.lightTint??0xffffff,shadow:0xe0dcf0});
 const ambient=new THREE.HemisphereLight(0xdbe7f2,0x6b5f8c,1.15);scene.add(ambient);
 const bounce=new THREE.DirectionalLight(0x9db6e8,1.25);bounce.position.set(26,16,-22);scene.add(bounce);
 const uplight=new THREE.DirectionalLight(0xc9b9e0,.35);uplight.position.set(4,-18,6);scene.add(uplight);
@@ -454,8 +455,10 @@ function placeThirdPerson(dt){
  const lens=johansson?.lens,tall=lens?lens.eye-1.6:0;
  const eye=(seated&&parkSeat?(parkSeat.soak?1.25:Math.min(1.45,parkSeat.eyeY-player.position.y)+.3):1.6)+tall;
  tpDir.set(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch));tpRight.set(Math.cos(yaw),0,-Math.sin(yaw));
- tpPivot.set(player.position.x,player.position.y+eye,player.position.z).addScaledVector(tpRight,lens?.side??.34);
- const want=current?2.2:3.2;let reach=want;
+ tpPivot.set(player.position.x,player.position.y+eye+(camera.aspect<1?.18:0),player.position.z).addScaledVector(tpRight,lens?.side??.34);
+ // On a portrait screen (an iPad held upright) the frame is narrow and his big Shimanchu
+ // head filled a third of it: the lens stands further back and a little higher there.
+ const portrait=camera.aspect<1,want=(current?2.2:3.2)*(portrait?1.32:1);let reach=want;
  // His own bench or chair is not in the way: only look for obstacles once clear of where he is.
  for(let d=.3;d<=want+.001;d+=.1){const x=tpPivot.x-tpDir.x*d,z=tpPivot.z-tpDir.z*d;if(Math.hypot(x-player.position.x,z-player.position.z)<.85)continue;if(cameraBlocked(x,z,tpPivot.y-tpDir.y*d,.16)){reach=Math.max(.3,d-.22);break;}}
  thirdDistance=reach<thirdDistance?reach:THREE.MathUtils.damp(thirdDistance,reach,4,dt);
@@ -1023,6 +1026,10 @@ function setTime(){
  bounce.intensity=c.bounce;
  renderer.toneMappingExposure=air.exposure;
  pipeline?.setExposure(air.exposure*CEL_EXPOSURE);
+ // Night is moonlight: the grade's light and shadow tints go blue as the day goes, so the
+ // street reads as night and the lit windows and lamps stand out warm against it.
+ {const night=Math.max(0,1-day-c.dusk*.6)*(current?0:1),mix=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t).getHex();
+  pipeline?.tune({uLightTint:mix(NIGHT_TINT.light,0xb4c2f4,night*.6),uShadowTint:mix(NIGHT_TINT.shadow,0x7d86c4,night*.8)});}
  // Underground the sun and the sky do not reach: the lantern, the torches and a little
  // cold fill are all the light there is, and the dark closes in a few tiles off.
  if(current?.id==='dungeon'){sun.intensity=0;bounce.intensity=0;ambient.intensity*=.12;scene.environmentIntensity=.03;scene.background.set(0x050404);scene.fog=DUNGEON_FOG;}

@@ -54,7 +54,9 @@ export function hillHeight(x,z){
  const waves=.35*Math.sin(x*.37+z*.21)+.28*Math.sin(x*.19-z*.43)+.2*Math.sin(x*.71+z*.53);
  // Out to the edges of the patch it comes down under the water, so it never ends in mid-air.
  const edge=smooth((34-Math.abs(dx+2))/9)*smooth((TUNNEL.z+58-z)/12);
- let h=(along*across+waves*smooth(dz/3+1))*edge-1.6*(1-edge);
+ // Deep enough at the rim to vanish into the water: at -1.6 the skirt showed through the
+ // shallows as a square of green from the air (docs/QA-REPORT.md, O1).
+ let h=(along*across+waves*smooth(dz/3+1))*edge-5.5*(1-edge);
  // To the east it comes down behind the school's boundary wall and goes under the yard.
  const east=smooth((dx-8.5)/6.5);h=h*(1-east)-1.2*east;
  // Just behind the portal the ground comes down onto the headwall's coping, so there is
@@ -119,13 +121,17 @@ function buildHill(parent,shadows,colliders){
  const {minX:X0,maxX:X1}=HEADLAND;
  const xs=hillXs,zs=hillZs;
  const positions=[],colours=[],index=[];
- const grass=new THREE.Color(0x4f6a3c),forest=new THREE.Color(0x3a5433),rock=new THREE.Color(0x6e6a5f),c=new THREE.Color();
+ const grass=new THREE.Color(0x4f6a3c),forest=new THREE.Color(0x3a5433),rock=new THREE.Color(0x6e6a5f),sandShore=new THREE.Color(0xd9c79a),reef=new THREE.Color(0x3f8a8c),c=new THREE.Color();
  for(let j=0;j<zs.length;j++)for(let i=0;i<xs.length;i++){
   const x=xs[i],z=zs[j],h=hillYs[j][i];positions.push(x,h,z);
   // Steep ground is bare rock; the rest is grass going over to woodland near the top.
   const e=.8,slope=Math.hypot(hillHeight(x+e,z)-hillHeight(x-e,z),hillHeight(x,z+e)-hillHeight(x,z-e))/(2*e);
   const tree=smooth((h-2.5)/5),bare=smooth((slope-.75)/.6);
   c.copy(grass).lerp(forest,tree).lerp(rock,bare);
+  // Below the tide line it is sand and then reef, the colours the sea shader expects to
+  // see through, not lawn.
+  const wet=smooth((-.2-h)/.6),deep=smooth((-1.4-h)/2);
+  c.lerp(sandShore,wet).lerp(reef,deep);
   const n=.93+.07*Math.sin(x*1.7+z*2.3);colours.push(c.r*n,c.g*n,c.b*n);
  }
  for(let j=0;j<zs.length-1;j++)for(let i=0;i<xs.length-1;i++){
