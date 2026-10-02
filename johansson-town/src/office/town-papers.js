@@ -30,11 +30,32 @@ export const TOWN_PAPERS=[
     "source": "notice:East beach"
   },
   {
+    "type": "Notice",
+    "title": "Rainflower is closed",
+    "organisation": "Town Services",
+    "text": "Mrs Kinjō serves flowers from 09:00 to 18:00. You may still look around the open shop.",
+    "source": "notice:Rainflower is closed"
+  },
+  {
+    "type": "Notice",
+    "title": "Rainflower Florist",
+    "organisation": "Town Services",
+    "text": "Fresh stems, potted greenery and hand-made wreaths. Mrs Kinjō works here from 09:00 to 18:00, and still reminds her husband that supper will not wait for the tide. The flowers are refreshed when the supply boat brings its morning delivery.",
+    "source": "notice:Rainflower Florist"
+  },
+  {
     "type": "Flyer",
     "title": "Forest road notice",
     "organisation": "Town Services",
     "text": "The road disappears into the trees. The Harbour Line has permission to continue beyond the wall; pedestrians must turn back at the bus terminal.",
     "source": "notice:Forest road notice"
+  },
+  {
+    "type": "Notice",
+    "title": "Front-Row collected editions",
+    "organisation": "Town Services",
+    "text": "Island histories, pocket poetry, sea guides and old magazines. Aya writes her recommendations on paper slips. Reiko leaves corrected newspaper proofs at the rear desk. You can walk the centre aisle, browse the east shelves and return to the window chair.",
+    "source": "notice:Front-Row collected editions"
   },
   {
     "type": "Notice",

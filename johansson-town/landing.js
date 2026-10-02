@@ -27,12 +27,17 @@
   };
   const PLACES = [
     { id: "market", code: "01", title: "Sakura Shōten", jp: "Sakura Shop", sub: "Daily goods", district: "Shopping street", open: 540, close: 1200, line: "Thuan’s convenience store. Tea, snacks, everyday things. Thuan at the till 09:00–20:00." },
-    { id: "frontrow", code: "02", title: "Front-Row Books", jp: "Front-Row Books", sub: "Books · press · repairs", district: "Main Street west", open: 540, close: 1470, line: "Aya’s books, a quiet reading corner, and Reiko’s evening newspaper. North of Minato, with a passage to the yard." },
+    { id: "frontrow", code: "02", title: "Front-Row Books", jp: "Front-Row Books", sub: "Books · newspapers · reading", district: "Main Street west", open: 540, close: 1470, line: "Aya’s books, a quiet reading corner, and Reiko’s evening newspaper. North of Minato, with a passage to the yard." },
     { id: "form3d", code: "03A", title: "Dock Electrical & Repair Workshop", jp: "Dock Electrical Workshop", sub: "INSTRUMENTS · ELECTRICAL · REPAIRS", district: "Western quay", open: 540, close: 1140, line: "Kenji and Tetsuo repair radios and instruments beside the harbour warehouse." },
     { id: "office", code: "03", title: "Johansson Harbour Office", jp: "Port Affairs and Technology Office", sub: "Marine service · records", district: "Quay", open: null, close: null, line: "Shipping records, tide tables, and Johansson’s marine files. Staffed around the clock." },
     { id: "izakaya", code: "04", title: "Minato Izakaya", jp: "Minato Izakaya", sub: "Lanterns · yakitori", district: "Main Street west", open: 960, close: 1620, line: "Opens at sixteen hundred. Last pour around three in the morning." },
     { id: "bus-station", code: "05", title: "Harbour Line Bus Station", jp: "Bus stop", sub: "Arrivals · departures", district: "Town terminus", open: null, close: null, line: "The northern terminus. Day staff arrive here and leave by the last bus." },
-    { id: "warehouse", code: "06", title: "Quay Warehouse", jp: "Warehouse", sub: "Fishing gear", district: "Quay", open: null, close: null, line: "Quay stores and fishing gear. Mrs Sato checks the ledger and shelves during her day shift. Open at all hours." },
+    { id: "warehouse", code: "06", title: "Quay Warehouse", jp: "Warehouse", sub: "Fishing gear", district: "Quay", open: null, close: null, line: "Quay stores and fishing gear. Mrs Sato balances warehouse duties with the lunch kitchen at Sato Ramen. Open at all hours." },
+    {id:"sato-ramen",code:"06A",title:"Sato Ramen",jp:"Sato Ramen",sub:"Lunch at the counter",district:"Minato corner",open:660,close:840,line:"Mrs Sato’s steaming stock pots and red stools. The kitchen is shared with Minato, with a clear passage around the counter."},
+    {id:"japanese-garden",code:"07A",title:"Aoba Japanese Garden",jp:"Japanese Garden",sub:"Pond · paths · onsen",district:"Garden district",open:null,close:null,line:"Take a slow walk past the pond, stone lanterns and garden planting, then visit the relocated onsen."},
+    {id:"airport",code:"09",title:"Kitano-jima Airport",jp:"Island Airport",sub:"Terminals · shops · growing island",district:"Airport district",open:null,close:null,line:"Explore the passenger district and its shops. Construction notices mark the next stage of the airport’s growth."},
+    {id:"rainflower-florist",code:"10A",title:"Rainflower Florist",jp:"Rainflower Florist",sub:"Flowers · pots · hand-made wreaths",district:"Rainflower Lane",open:540,close:1080,line:"Mrs Kinjō arranges fresh stems at the open shop front. Walk inside and choose a hand-wrapped bouquet for ¥250."},
+    {id:"blue-coral",code:"10",title:"Blue Coral Ice Cream",jp:"Blue Coral",sub:"Ice cream · island tea",district:"Rainflower Lane",open:null,close:null,line:"A teal wooden counter, a glass scoop case and a little cloud mural. Choose an ube and vanilla cone or a cold island tea."},
     { id: "park", code: "07", title: "Harbour Park", jp: "Park", sub: "Benches · trees", district: "East lawn", open: null, close: null, line: "Raised walk and benches looking back at the shotengai." },
     { id: "pier", code: "08", title: "Outer Pier", jp: "Oki Pier", sub: "Boards · night warning", district: "Harbour", open: null, close: null, line: "Connected western and eastern lanes, second jetty. Caution after dark." },
   ];
@@ -199,12 +204,17 @@
           <h3>${escape(r.name)}</h3>
           <p class="resident-place">${escape(r.place)}</p>
           <p class="resident-bio">${escape(r.bio)}</p>
-          <details class="resident-story"><summary>Backstory</summary><p>${escape(r.backstory)}</p></details>
+          <details class="resident-story"><summary>Open character profile</summary>
+          <div class="resident-model-sheet" aria-label="Game character views">${['front','three-quarter','side'].map(view=>`<figure><img class="resident-portrait" data-portrait-view="${view}" src="./${escape(r.portrait)}" width="480" height="480" loading="lazy" alt="${escape(r.name)} · ${view} face view"><figcaption>${view==='front'?'Face':view==='side'?'Side':'Three-quarter'}</figcaption></figure>`).join('')}</div>
+          <dl class="resident-facts"><dt>Occupation</dt><dd>${escape(r.role)}</dd><dt>Usually found</dt><dd>${escape(r.place)}</dd><dt>Appearance</dt><dd>Current in-game character and saved wardrobe</dd></dl>
+          <h4>Their story</h4><p>${escape(r.backstory)}</p><small>${escape(r.storyNote||'')}</small></details>
           ${r.start != null || r.always ? '<p class="duty"><span class="flag"></span></p>' : ''}
         </div>
       </article>`).join("");
   }
 
+  const catalogueSearch=document.getElementById('residentSearch');
+  catalogueSearch?.addEventListener('input',()=>{const q=catalogueSearch.value.trim().toLowerCase();let n=0;rollGrid.querySelectorAll('[data-resident]').forEach(card=>{const r=RESIDENTS.find(r=>r.name===card.dataset.resident);card.hidden=!`${r.name} ${r.role} ${r.place}`.toLowerCase().includes(q);if(!card.hidden)n++;});document.getElementById('catalogueCount').textContent=`${n} residents`;});
   function tick() {
     if (start.classList.contains("hidden")) return;
     const now = Date.now();

@@ -1,3 +1,5 @@
+import {buildTatamiHome} from './tatami-home.js';
+import {TATAMI_HOME_OWNER} from './tatami-home-layout.js';
 import {householdFor} from '../../people/households.js';
 import {RESIDENTS} from '../../people/residents.js';
 import * as THREE from '../../../vendor/three.module.js';
@@ -5,6 +7,7 @@ import {HOME_LAYOUT,SHARED_HOME_LAYOUT,homeLayoutFor,sleepHours} from '../../peo
 import {residentPersonality} from '../../people/resident-personalities.js';
 const time=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
 export function buildResidentHome({profile,room,box,reg,collider,action,exit}){
+ if(profile.name===TATAMI_HOME_OWNER)return buildTatamiHome({profile,room,box,reg,collider,action,exit});
  if(householdFor(profile.name)?.residents.length>1)return buildSharedHome({profile,room,box,reg,collider,action,exit});
  const style=residentPersonality(profile.name),colour=new THREE.Color(style.top),hours=sleepHours(profile);
  const part=(size,pos,c,solid=false)=>{const m=box(size,pos,c,room,false);if(solid)collider(pos[0],pos[2],size[0],size[2],pos[1]+size[1]/2);return m;};
