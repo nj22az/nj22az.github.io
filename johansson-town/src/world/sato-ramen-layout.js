@@ -4,7 +4,7 @@
  * room frame of the shared interior (tools/blender/build-minato-interior.py): the shop
  * is x 6.5 to 11.4, its door at the front (+z), its kitchen behind the counter (-z).
  */
-export const SATO_RAMEN=Object.freeze({id:'ramen',title:'Sato Ramen',jp:'中華そば さとう',open:660,close:840});
+export const SATO_RAMEN=Object.freeze({id:'ramen',title:'Sato Ramen',jp:"Ramen Sato",open:660,close:840});
 /** 11:00 to 14:00: a lunch counter. */
 export const satoRamenOpen=minutes=>{const m=((minutes%1440)+1440)%1440;return m>=SATO_RAMEN.open&&m<SATO_RAMEN.close;};
 
@@ -43,16 +43,16 @@ export const SATO_COLLIDERS=Object.freeze([
  * counter (people/resident-props.js, or the dish props in people/izakaya-beer.js).
  */
 export const SATO_MENU=Object.freeze([
- {id:'shoyu',name:'Shoyu ramen',jp:'醤油ラーメン',cost:450,prop:'ramen'},
- {id:'miso',name:'Miso ramen',jp:'味噌ラーメン',cost:500,prop:'ramen'},
- {id:'shio',name:'Shio ramen',jp:'塩ラーメン',cost:450,prop:'ramen'},
- {id:'chashu',name:'Chashu-men',jp:'チャーシュー麺',cost:650,prop:'ramen'},
- {id:'gyoza',name:'Gyoza, six',jp:'餃子',cost:250,prop:'gyoza'},
- {id:'rice',name:'A bowl of rice',jp:'ライス',cost:100,prop:'rice'},
- {id:'beer',name:'Orion, a bottle',jp:'瓶ビール',cost:400,prop:'beer'},
- {id:'tea',name:'Oolong tea',jp:'ウーロン茶',cost:120,prop:'tea'},
- {id:'mugicha',name:'Cold barley tea',jp:'冷たい麦茶',cost:100,prop:'mugicha'},
- {id:'coffee',name:'Hot coffee',jp:'ホットコーヒー',cost:200,prop:'coffee'},
+ {id:'shoyu',name:'Shoyu ramen',jp:"Soy sauce ramen",cost:450,prop:'ramen'},
+ {id:'miso',name:'Miso ramen',jp:"Miso ramen",cost:500,prop:'ramen'},
+ {id:'shio',name:'Shio ramen',jp:"Salt ramen",cost:450,prop:'ramen'},
+ {id:'chashu',name:'Chashu-men',jp:"Char siu noodles",cost:650,prop:'ramen'},
+ {id:'gyoza',name:'Gyoza, six',jp:"Gyoza",cost:250,prop:'gyoza'},
+ {id:'rice',name:'A bowl of rice',jp:"Rice",cost:100,prop:'rice'},
+ {id:'beer',name:'Orion, a bottle',jp:"Bottled beer",cost:400,prop:'beer'},
+ {id:'tea',name:'Oolong tea',jp:"Oolong tea",cost:120,prop:'tea'},
+ {id:'mugicha',name:'Cold barley tea',jp:"Cold barley tea",cost:100,prop:'mugicha'},
+ {id:'coffee',name:'Hot coffee',jp:"Hot coffee",cost:200,prop:'coffee'},
 ].map(item=>Object.freeze(item)));
 /**
  * Lunch at Sato Ramen for the people who live and work on the street, in minutes. Each

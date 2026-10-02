@@ -77,7 +77,7 @@ export function buildMagazineRack(room,{anchor,action,date=new Date(1997,8,13)}=
  add(tube(W-.04),enamel,0,1.45,-D/2+.04).rotation.z=Math.PI/2;
  // Back panel, with a print for the street on its far side.
  const backPrint=new THREE.CanvasTexture((()=>{const c=document.createElement('canvas');c.width=1024;c.height=512;const x=c.getContext('2d');x.fillStyle='#f6eadf';x.fillRect(0,0,1024,512);x.fillStyle='#f06b9a';x.fillRect(0,0,1024,120);x.fillStyle='#d7263d';x.fillRect(0,120,1024,14);
-  x.fillStyle='#fff';x.font=`900 72px ${MARU}`;x.textAlign='center';x.textBaseline='middle';x.fillText('本・雑誌・新聞',512,62);x.fillStyle='#b5455f';x.font=`800 54px ${MARU}`;x.fillText('BOOKS & MAGAZINES',512,260);x.font=`700 40px ${MARU}`;x.fillText('毎朝入荷 · サクラ商店',512,360);return c;})());
+  x.fillStyle='#fff';x.font=`900 72px ${MARU}`;x.textAlign='center';x.textBaseline='middle';x.fillText("Books, magazines, newspapers",512,62);x.fillStyle='#b5455f';x.font=`800 54px ${MARU}`;x.fillText('BOOKS & MAGAZINES',512,260);x.font=`700 40px ${MARU}`;x.fillText("Arrived every morning · Sakura Shop",512,360);return c;})());
  backPrint.colorSpace=THREE.SRGBColorSpace;
  add(new THREE.BoxGeometry(W-.06,1.2,.012),[enamel,enamel,enamel,enamel,enamel,new THREE.MeshStandardMaterial({map:backPrint,roughness:.6})],0,.78,-D/2+.04,'Magazine rack back panel');
  // Three stepped tiers: the papers on top, the magazines below, each leaning on a rail.
@@ -93,7 +93,7 @@ export function buildMagazineRack(room,{anchor,action,date=new Date(1997,8,13)}=
  }
  // The header sign, in the shop's pink.
  const signTex=new THREE.CanvasTexture((()=>{const c=document.createElement('canvas');c.width=1024;c.height=128;const x=c.getContext('2d');x.fillStyle='#f06b9a';x.fillRect(0,0,1024,128);x.fillStyle='#d7263d';x.fillRect(0,108,1024,20);
-  x.fillStyle='#fff';x.font=`900 58px ${MARU}`;x.textAlign='center';x.textBaseline='middle';x.fillText('雑誌・新聞',330,56);x.fillStyle='#fff6c8';x.font=`800 32px ${MARU}`;x.fillText('★ 毎朝入荷 · 立ち読み歓迎 ★',740,56);return c;})());
+  x.fillStyle='#fff';x.font=`900 58px ${MARU}`;x.textAlign='center';x.textBaseline='middle';x.fillText("Magazines/Newspapers",330,56);x.fillStyle='#fff6c8';x.font=`800 32px ${MARU}`;x.fillText("★ Arrived every morning · Welcome to browse ★",740,56);return c;})());
  signTex.colorSpace=THREE.SRGBColorSpace;const signMat=new THREE.MeshStandardMaterial({map:signTex,roughness:.5,emissive:0xffffff,emissiveMap:signTex,emissiveIntensity:.25});
  add(new THREE.BoxGeometry(1.7,.2,.025),[enamel,enamel,enamel,enamel,signMat,signMat],0,1.57,-D/2+.04,'Magazine rack sign');
  for(const sx of [-.7,.7])add(tube(.12),enamel,sx,1.43+.06,-D/2+.04);

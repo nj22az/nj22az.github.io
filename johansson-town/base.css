@@ -390,3 +390,15 @@ body.conversation-open #prompt,body.conversation-open #exitRoomButton,body.conve
 #activity .mag-nav{display:flex;align-items:center;justify-content:center;gap:16px}
 #activity .mag-count{min-width:64px;text-align:center;font-weight:800;color:#52615c}
 @media (prefers-reduced-motion:reduce){#activity .mag-page.turn-next,#activity .mag-page.turn-prev{animation:none}}
+
+/* Community Hall paperwork: plain office tables and A4-like document reading. */
+.town-archive nav,.archive-filters{display:flex;flex-wrap:wrap;gap:.6rem}.town-archive button{min-height:44px}.archive-filters label{display:grid;gap:.3rem;flex:1;min-width:130px}.archive-filters input,.archive-filters select,.town-archive textarea{font:inherit;padding:.6rem;max-width:100%;box-sizing:border-box}.archive-scroll{overflow:auto;max-height:45vh}.town-archive table{border-collapse:collapse;width:100%;font-size:.9rem}.town-archive th,.town-archive td{padding:.45rem;text-align:left;border-bottom:1px solid #c6c1b7}.town-archive dl{display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem}.town-archive dd{margin:0}.archive-paper{background:#fffdf5;color:#202720;padding:1rem;border:1px solid #b8b5a9}.town-archive pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}.archive-finding{padding:.8rem;border:1px solid #c6c1b7;margin:.6rem 0}.archive-finding label{display:grid}.archive-policy{font-size:.85rem}.town-archive textarea{width:100%;min-height:6rem}
+#activity.office-records{z-index:200}
+#activity.office-records .activity-card:has(.town-archive){width:min(1060px,100%)}
+#activity .town-archive .archive-filters{display:grid;grid-template-columns:2fr repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+#activity .town-archive .archive-filters label{min-width:0;display:grid;gap:6px}
+#activity .town-archive .archive-filters input,#activity .town-archive .archive-filters select,#activity .town-archive textarea{width:100%;min-width:0;background:#fffdf8;color:#293e48;border:1px solid #b8b5a9;border-radius:6px}
+#activity .town-archive table{min-width:680px;table-layout:auto}
+#activity .town-archive td:first-child button{white-space:nowrap}
+#activity .town-archive .archive-finding button{margin:4px 8px 4px 0}
+@media(max-width:620px){#activity .town-archive .archive-filters{grid-template-columns:repeat(2,minmax(0,1fr))}#activity .town-archive .archive-filters label:first-child{grid-column:1/-1}}

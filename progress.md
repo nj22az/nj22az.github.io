@@ -42,3 +42,12 @@ Follow-up: Nao's feet clip through the floor and her work pose sits in the air.
 
 - Found two separate calibration faults: Nao's standing `Use` action was a clone of her seated leg pose, and the generic seat-support measurement only searched for a Mixamo `Hips` bone while her VRM uses `J_Bip_C_Hips`.
 - Standing activity aliases now use a standing counter pose, VRM hips participate in measured chair placement, and Nao has a small 1.8 cm shoe clearance above the render floor.
+
+Current request: Implement English paperwork and a one-year, auditable Community Hall document archive; create a GitHub plan for a detailed Mii-style avatar creator.
+- Repository path supplied by the app is unavailable; the recovered primary path is an older unrelated checkout with uncommitted changes. Work continues in an isolated shallow checkout at /tmp/johansson-document-archive on codex/community-document-archive.
+- Created avatar roadmap issue #132 through the GitHub plugin, based on the existing creator and TomodachiShare feature examples.
+- Added per-save archive, linked shop documents, corrections/history, filters, exports and persistent audit notes. Physical archive interaction in the Community Hall office and kitchen.
+- English localisation covers source strings, authored dialogue and procedural signs/packaging; date formatting and Japanese-only prerecorded dialogue need explicit English handling.
+
+Community Hall implementation completed: searchable central register, rolling 365-day retention, transaction links, version history, audit notes/reports, printable A4 documents and CSV register export. Existing authored town papers and three office workbooks are indexed at build time. English localisation covers runtime labels/dialogue/signs and regenerated magazine pages; original Japanese voice provenance is retained but those recordings are disabled in English dialogue. GitHub avatar roadmap: https://github.com/nj22az/nj22az.github.io/issues/132.
+Validation: 538 non-boot tests passed; production/runtime builds passed; real Chromium starts the game and uses the physical Community Hall cabinet, and the register/audit screens were inspected at 1280×900 and 390×844 with no page overflow. The CPU boot smoke times out after 120 seconds on both this branch and unmodified HEAD (985cc8f), so it is reported separately. The sparse local preview lacks the unrelated /thuans-storage/cover.jpg guide image; no archive JavaScript errors occurred. Retained currently published runtime chunks for visitors with cached main-page HTML.

@@ -67,7 +67,7 @@ export function buildForestEdge({parent,colliders,register=()=>{},onAction=()=>{
  const wall=new THREE.Mesh(new THREE.BoxGeometry(FOREST_EDGE.maxX-FOREST_EDGE.minX+.8,.9,.72),new THREE.MeshStandardMaterial({color:0x39483a,roughness:1,transparent:true,opacity:.0}));
  wall.position.set((FOREST_EDGE.minX+FOREST_EDGE.maxX)/2,.55,FOREST_EDGE.wallZ+.08);group.add(wall);
  colliders.push({id:'forest-wall',x:(FOREST_EDGE.minX+FOREST_EDGE.maxX)/2,z:FOREST_EDGE.wallZ,w:FOREST_EDGE.maxX-FOREST_EDGE.minX+.8,d:.9,height:5.8});
- const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.7,.82),new THREE.MeshBasicMaterial({map:signTexture('林道','FOREST ROAD · BUS ONLY'),side:THREE.DoubleSide}));sign.position.set(FOREST_EDGE.roadX,2.15,FOREST_EDGE.wallZ-.5);group.add(sign);
+ const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.7,.82),new THREE.MeshBasicMaterial({map:signTexture("Forest road",'FOREST ROAD · BUS ONLY'),side:THREE.DoubleSide}));sign.position.set(FOREST_EDGE.roadX,2.15,FOREST_EDGE.wallZ-.5);group.add(sign);
  const postMat=new THREE.MeshStandardMaterial({color:0x594938,roughness:1});
  for(const x of [FOREST_EDGE.roadX-1.8,FOREST_EDGE.roadX+1.8]){const post=new THREE.Mesh(new THREE.BoxGeometry(.1,2.1,.1),postMat);post.position.set(x,1.05,FOREST_EDGE.wallZ-.48);post.castShadow=!!shadows;group.add(post);}
  const marker=new THREE.Object3D();marker.name='forest-road-waypoint';marker.position.set(FOREST_EDGE.roadX,1,FOREST_EDGE.wallZ-.9);group.add(marker);register(marker,'Read the forest road notice',()=>onAction('read','Forest road notice','The road disappears into the trees. The Harbour Line has permission to continue beyond the wall; pedestrians must turn back at the bus terminal.'));

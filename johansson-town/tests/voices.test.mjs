@@ -11,7 +11,7 @@ test('published voice topics have matching subtitles and real local WAVs',async(
   // A later rewrite of a resident's lines must not silently drop the wiring:
   // an unreachable clip would play audio under a subtitle that disagrees with it.
   assert.ok(row,clip.id+' still reaches a '+clip.resident+' line');
-  assert.equal(row[1],clip.ja+'\n'+clip.en);assert.equal(row[3],clip.id);
+  assert.equal(row[1],clip.en);assert.equal(row[3],null,'Japanese recordings must not play under English subtitles');
   const wav=await readFile(new URL('../assets/audio/voices/'+clip.id+'.wav',import.meta.url));
   assert.equal(wav.toString('ascii',0,4),'RIFF');assert.equal(wav.toString('ascii',8,12),'WAVE');assert.ok(wav.length>100000);
  }

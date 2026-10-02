@@ -120,7 +120,7 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   for(let i=0;i<6;i++){const tin=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.25,12),colour(i%2?0x6b7955:0x9d8854));tin.position.set(-2.55+i*.4,1.01,-2.2);room.add(tin);}
   anchor([-1.3,1,-1.78],'Inspect tea counter','inspect','Tea counter','Roasted hojicha, sencha and a handwritten recipe for dorayaki.');
   for(const [x,z] of [[-1.75,.1],[1.55,-.5]]){bench('Tea table',x,z,1.05,.9);for(const dx of [-.84,.84]){const s=chair(x+dx,z,dx<0?-Math.PI/2:Math.PI/2);s.userData.seat={position:[x+dx,0,z],stand:[x+dx,0,z+.8],eyeY:1.12,yaw:dx<0?-Math.PI/2:Math.PI/2,pitch:0};reg(s,'Sit for tea',()=>action('seat','Tea house chair','A warm cup and a little time to linger.'),true);}for(const dx of [-.3,.3]){const cup=new THREE.Mesh(new THREE.CylinderGeometry(.085,.065,.13,12),colour(0xd7dfc4));cup.position.set(x+dx,.965,z);room.add(cup);}}
-  board('一服どうぞ','CORNER TEA HOUSE',[.2,2.25,-2.81],2.6);
+  board("Have a drink, please.",'CORNER TEA HOUSE',[.2,2.25,-2.81],2.6);
  }
  return {...layout,compact:true,workshop};
 }

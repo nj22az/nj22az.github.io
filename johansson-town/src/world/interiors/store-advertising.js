@@ -4,9 +4,9 @@ import {STORE_BRANDS,BRAND_ATLAS_KEYS} from '../../commerce/brands.js';
 import {GROCERY_ITEMS as STORE_ITEMS} from '../../commerce/catalogue.js';
 
 export const POSTER_SPECS=Object.freeze([
- {id:'tea',file:'thuan-labels/golden-tea.webp',title:'GOLDEN MILK TEA · ゴールデンミルクティー',position:[-6.325,2.02,1.3],yaw:Math.PI/2,approach:[-5.15,1.55,1.3]},
- {id:'coffee',file:'thuan-labels/night-shift.webp',title:'NIGHT SHIFT · ナイトシフト',position:[-6.325,2.02,3.8],yaw:Math.PI/2,approach:[-5.15,1.55,3.8]},
- {id:'biscuit',file:'thuan-labels/stick-bites.webp',title:'STICK BITES · スティックバイツ',position:[6.325,2.02,2.8],yaw:-Math.PI/2,approach:[5.1,1.55,2.8]},
+ {id:'tea',file:'thuan-labels/golden-tea.webp',title:"GOLDEN MILK TEA · Golden milk tea",position:[-6.325,2.02,1.3],yaw:Math.PI/2,approach:[-5.15,1.55,1.3]},
+ {id:'coffee',file:'thuan-labels/night-shift.webp',title:"NIGHT SHIFT · Night shift",position:[-6.325,2.02,3.8],yaw:Math.PI/2,approach:[-5.15,1.55,3.8]},
+ {id:'biscuit',file:'thuan-labels/stick-bites.webp',title:"STICK BITES · Stick Bites",position:[6.325,2.02,2.8],yaw:-Math.PI/2,approach:[5.1,1.55,2.8]},
 ]);
 export const ATLAS_COLS=4,ATLAS_ROWS=20;
 const COLS=ATLAS_COLS,ROWS=ATLAS_ROWS,TW=256,TH=128;
@@ -70,7 +70,7 @@ export function getLabelMaterial(){
 function fallbackPoster(id){
  const b=STORE_BRANDS[id],c=document.createElement('canvas');c.width=256;c.height=384;const x=c.getContext('2d');
  x.fillStyle=b.paper;x.fillRect(0,0,256,384);x.fillStyle=b.ink;x.textAlign='center';x.font='bold 36px serif';x.fillText(b.name,128,78,235);
- emblem(x,b.symbol,128,185,55,b.ink);x.font='bold 28px serif';x.fillText(b.line,128,288,230);x.font='20px serif';x.fillText('さくら商店',128,350);
+ emblem(x,b.symbol,128,185,55,b.ink);x.font='bold 28px serif';x.fillText(b.line,128,288,230);x.font='20px serif';x.fillText("Sakura Shop",128,350);
  const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 export function getPosterMaterial(spec){

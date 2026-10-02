@@ -30,7 +30,7 @@ export function createRamenPlayerService({room,getSeat,getMinutes,getBalance,pay
   if(!order||order.delivered)return;
   if(!pay(order.item.cost)){say('There is not enough yen for this order.',4);clear();return;}
   order.delivered=true;order.prop=place(order.seat,kindOf(order.item));
-  say(kitchen?server+': はい、どうぞ。 Your '+order.item.name.toLowerCase()+'.':'Your '+order.item.name.toLowerCase()+' is served. Enjoy your meal.',4);
+  say(kitchen?server+": Here you are. Your "+order.item.name.toLowerCase()+'.':'Your '+order.item.name.toLowerCase()+' is served. Enjoy your meal.',4);
  }
  return {menu,title,server,get order(){return order;},
   request(id){const item=menu.find(i=>i.id===id),seat=getSeat();if(!item||!seat||order)return false;
@@ -59,7 +59,7 @@ export function createRamenPlayerService({room,getSeat,getMinutes,getBalance,pay
    if(order.prop?.userData.consumable)setPropPortion(order.prop,finish);
    onMouthful(item,{drink,kind:drink?DRINK_PROPS[kind]:kind,start,finish,left:order.left});
    if(order.left<=0){const done=order;setTimeout(()=>{if(order===done)clear();},1600);
-    say(drink?'You finish the '+item.name.toLowerCase()+'.':'You finish the '+item.name.toLowerCase()+'. ごちそうさまでした。',4);}
+    say(drink?'You finish the '+item.name.toLowerCase()+'.':'You finish the '+item.name.toLowerCase()+". Thank you for the meal.",4);}
    return true;},
   cancel:clear,dispose(){clear();for(const prop of props.values())disposeServing(prop);props.clear();}
  };

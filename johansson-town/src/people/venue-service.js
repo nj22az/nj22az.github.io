@@ -71,9 +71,9 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
    setting.drink.visible=L.phase==='waiting';
    data.activity=L.phase==='refill'?'waiting for a refill of '+LABELS[setting.record.drink]:'chatting over an empty glass';
    if(L.phase==='waiting'&&(L.t-=dt)<=0){
-    L.phase='refill';data.residentSpeech={text:'おかわり、お願いします。',until:minutes+4};
+    L.phase='refill';data.residentSpeech={text:"I'd like another helping, please.",until:minutes+4};
     const asked=kitchen.request({items:[setting.record.drink],x:(tableFor?.(person)||[person.g.position.x])[0],label:person.profile.name+'’s',tag:person,
-     onServed:()=>{if(settings.get(person)!==setting)return;setPropPortion(setting.drink,1,{immediate:true});Object.assign(L,{phase:'sipping',t:0,plan:MEALS.refill});data.residentSpeech={text:'ありがとう。',until:minutes+3};}});
+     onServed:()=>{if(settings.get(person)!==setting)return;setPropPortion(setting.drink,1,{immediate:true});Object.assign(L,{phase:'sipping',t:0,plan:MEALS.refill});data.residentSpeech={text:"Thank you.",until:minutes+3};}});
     if(!asked)L.phase='waiting',L.t=60;
    }
   }

@@ -13,7 +13,7 @@ import {SEA_LEVEL} from './ocean.js';
  * large and simple: nothing on it is smaller than a car.
  */
 export const AIRPORT_ISLAND=Object.freeze({
- id:'kitano-jima',title:'Kitano-jima Airport',jp:'北野島空港',
+ id:'kitano-jima',title:'Kitano-jima Airport',jp:"Kitanoshima Airport",
  x:165,z:-118,yaw:-.22,
  /** The island's half-extents along and across the runway. */
  halfLength:62,halfWidth:20,
@@ -117,7 +117,7 @@ export function buildAirportIsland({parent,shadows=false}={}){
  * out past the beach. Modelled large and simple like the rest of the island: it is
  * read from across the water. Island frame, metres; the green top is at y = 1.1.
  */
-export const SEWAGE_PLANT=Object.freeze({x:-33,z:9,title:'Kitano-jima Sewage Works',jp:'北野島下水処理場'});
+export const SEWAGE_PLANT=Object.freeze({x:-33,z:9,title:'Kitano-jima Sewage Works',jp:"Kitanojima Sewage Treatment Plant"});
 function buildSewagePlant(add,mat){
  const P=SEWAGE_PLANT,top=1.1,concrete=mat(0xc9c6bc),water=mat(0x5f7f6e),dark=mat(0x4a6458),rail=mat(0x2f6f9f);
  add(new THREE.BoxGeometry(24,.12,15),mat(0x9a9b94),P.x,top+.06,P.z);

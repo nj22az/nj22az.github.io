@@ -215,21 +215,21 @@ export function checkout(state,{warm=false,bag=true}={},minutes=0,thuanAvailable
 export function receiptText(receipt){
  if(!receipt)return '';
  const yen=n=>'¥'+n.toLocaleString('en-GB');
- const clock=String(Math.floor(receipt.minute/60)).padStart(2,'0')+':'+String(receipt.minute%60).padStart(2,'0');
+ const clock=String(Math.floor((receipt.minute%1440)/60)).padStart(2,'0')+':'+String(receipt.minute%60).padStart(2,'0');
  const rows=receipt.lines.map(line=>
-  `${line.jp} ${line.name}${line.count>1?' ×'+line.count:''}   ${yen(line.cost*line.count)}`);
+  `${line.name}${line.count>1?' ×'+line.count:''}   ${yen(line.cost*line.count)}`);
  const tail=[
   '',
-  `合計 TOTAL        ${yen(receipt.total)}`,
-  `(内消費税 5%      ${yen(Math.floor(receipt.total*5/105))})`,
-  `お預り  CASH      ${yen(receipt.tendered)}`,
-  `おつり  CHANGE    ${yen(receipt.change)}`
+  `TOTAL        ${yen(receipt.total)}`,
+  `(Includes consumption tax 5%      ${yen(Math.floor(receipt.total*5/105))})`,
+  `CASH TENDERED      ${yen(receipt.tendered)}`,
+  `CHANGE    ${yen(receipt.change)}`
  ];
- if(receipt.warmed.length)tail.push('',`温め済 WARMED · ${receipt.warmed.join(', ')}`);
- if(!receipt.bag)tail.push('袋辞退 · own bag');
- if(receipt.stampsEarned)tail.push('',`スタンプ +${receipt.stampsEarned} (${receipt.stampsAfter}/${CARD_STAMPS})`);
- if(receipt.gift)tail.push(`カード満了 · ${receipt.gift}, on the house`);
- return ['桜商店 SAKURA SHŌTEN',`平成9年 ${clock}`,'','—————————————',...rows,...tail,'','ありがとうございました'].join('\n');
+ if(receipt.warmed.length)tail.push('',`WARMED · ${receipt.warmed.join(', ')}`);
+ if(!receipt.bag)tail.push("Decline bag · own bag");
+ if(receipt.stampsEarned)tail.push('',`Stamp +${receipt.stampsEarned} (${receipt.stampsAfter}/${CARD_STAMPS})`);
+ if(receipt.gift)tail.push(`Stamp card completed · ${receipt.gift}, on the house`);
+ return ["SAKURA SHOP",`1997 · ${clock}`,'','—————————————',...rows,...tail,'',"Thank you very much"].join('\n');
 }
 /**
  * The hot-snack case beside the till: fried chicken, steamed buns, an American dog and
@@ -238,10 +238,10 @@ export function receiptText(receipt){
  * line beyond the sale itself.
  */
 export const HOT_SNACKS=Object.freeze([
- {id:'karaage',jp:'からあげ',name:'Karaage bites',cost:180,unitCost:70,line:'Five pieces, hot from the fryer. Careful — the first one is always too hot.'},
- {id:'nikuman',jp:'肉まん',name:'Nikuman bun',cost:120,unitCost:45,line:'A steamed pork bun from the steamer. She wraps it in thin paper so you can hold it.'},
- {id:'amedog',jp:'アメリカンドッグ',name:'American dog',cost:130,unitCost:50,line:'Corn-batter sausage on a stick. Ketchup and mustard in one little snap pack.'},
- {id:'oden',jp:'おでん',name:'Oden cup',cost:200,unitCost:80,line:'Daikon, egg and a fish cake from the pot, with a ladle of broth and a dab of karashi.'},
+ {id:'karaage',jp:"Fried chicken",name:'Karaage bites',cost:180,unitCost:70,line:'Five pieces, hot from the fryer. Careful — the first one is always too hot.'},
+ {id:'nikuman',jp:"Meat bun",name:'Nikuman bun',cost:120,unitCost:45,line:'A steamed pork bun from the steamer. She wraps it in thin paper so you can hold it.'},
+ {id:'amedog',jp:"Corn dog",name:'American dog',cost:130,unitCost:50,line:'Corn-batter sausage on a stick. Ketchup and mustard in one little snap pack.'},
+ {id:'oden',jp:"Oden",name:'Oden cup',cost:200,unitCost:80,line:'Daikon, egg and a fish cake from the pot, with a ladle of broth and a dab of karashi.'},
 ]);
 const HOT_BY_ID=new Map(HOT_SNACKS.map(s=>[s.id,s]));
 

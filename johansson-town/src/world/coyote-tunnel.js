@@ -258,7 +258,7 @@ function buildCaveMouth(group,shadows){
   ctx.fillStyle='#8a6f4e';ctx.fillRect(0,0,w,h);
   for(let i=0;i<14;i++){ctx.strokeStyle='rgba(60,40,24,.25)';ctx.beginPath();ctx.moveTo(0,i*19+5);ctx.lineTo(w,i*19+9);ctx.stroke();}
   ctx.fillStyle='#f1e9d6';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font='bold 76px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText('古 洞',w/2,h*.36);
+  ctx.font='bold 76px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText("Old Cave",w/2,h*.36);
   ctx.font='bold 26px sans-serif';ctx.fillText('THE OLD SEA CAVE',w/2,h*.7);
   ctx.font='18px sans-serif';ctx.fillText('Enter at your own risk',w/2,h*.87);
  });
@@ -300,7 +300,7 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
   register(anchor,'Go into the old sea cave',()=>onAction?.('dungeon'));
   const read=new THREE.Object3D();read.position.set(TUNNEL.x+W+.9,1.3,front-2);parent.add(read);
   register(read,'Read the cave sign',()=>onAction?.('inspect','The old sea cave',
-   'Painted on the board: 古洞, the old cave. The rope across the mouth is new straw each New Year. The fishermen say it goes down a long way under the headland, further than anyone has walked, and that things wash up in it that never came from the sea.'));
+   "Painted on the board: Old Cave, the old cave. The rope across the mouth is new straw each New Year. The fishermen say it goes down a long way under the headland, further than anyone has walked, and that things wash up in it that never came from the sea."));
  }
  /** True in the mouth of the cave, with a hand's margin: the way in. */
  const splat=(x,z)=>Math.abs(x-TUNNEL.x)<=R+.5&&z>=front-.9&&z<=CAVE_MOUTH.inside+.3;

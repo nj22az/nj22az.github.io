@@ -50,7 +50,7 @@ export function createMagazineReader({date,buy=null}){
    head.append(b);}
   const stage=el('div','mag-stage'),canvas=el('canvas','mag-page');canvas.width=PAGE_W;canvas.height=PAGE_H;
   canvas.setAttribute('role','img');stage.append(canvas);
-  const nav=el('div','mag-nav'),next=el('button','mag-turn','◀ 次へ'),prev=el('button','mag-turn','戻る ▶'),count=el('span','mag-count');
+  const nav=el('div','mag-nav'),next=el('button','mag-turn',"◀ Next"),prev=el('button','mag-turn',"Return ▶"),count=el('span','mag-count');
   next.type=prev.type='button';next.setAttribute('aria-label','Next page');prev.setAttribute('aria-label','Previous page');
   nav.append(next,count,prev);
   root.append(head,stage,nav,el('div','mag-hint','Read right to left: ◀ turns the page.'));

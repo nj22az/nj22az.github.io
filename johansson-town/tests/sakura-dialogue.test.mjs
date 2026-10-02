@@ -71,7 +71,7 @@ test('Thuan tires of being asked, and the count resets with the town day',()=>{
 test('the first meeting introduces her by name, and she is only met once',async()=>{
  const {acts}=await town();
  acts.thuanStory();
- assert.match(body(),/いらっしゃいませ。トゥアンです。/,'She gives her name in the shop phrase');
+ assert.match(body(),/Welcome.*Thuan/,'She gives her name in the shop phrase');
  assert.equal(acts.state.story.met_thuan,true,'Meeting her is remembered straight away');
  assert.ok(acts.state.notes.some(n=>n.includes('Met Thuan')));
  press('Go on');
@@ -106,7 +106,7 @@ test('closing up is offered only in the last hour, and only once',async()=>{
  acts.close();
  setMinutes(1160);           // 19:20, the last hour
  acts.thuanStory();readOn();
- assert.match(body(),/おつかれさま/,'The last hour has its own greeting');
+ assert.match(body(),/Good work today/,'The last hour has its own greeting');
  press('Need a hand closing?');
  press('Go on');
  assert.equal(acts.state.story.helped_close,true);

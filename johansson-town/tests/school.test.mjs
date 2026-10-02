@@ -42,7 +42,7 @@ test('the school day runs by the clock: rows, lunch in han, sōji, club, and not
  assert.equal(at(14,0),'lesson-pm');assert.equal(at(15,45),'club');assert.equal(at(17,0),'after');assert.equal(at(19,0),'closed');
  assert.equal(at(12,35,0),'weekend');assert.equal(at(12,35,6),'weekend');
  assert.equal(KYUSHOKU_MENUS.length,5);
- for(let wd=1;wd<=5;wd++){const m=menuForWeekday(wd);assert.ok(m.jp.includes('牛乳'),'No milk on day '+wd);}
+ for(let wd=1;wd<=5;wd++){const m=menuForWeekday(wd);assert.ok(m.jp.includes('Milk'),'No milk on day '+wd);}
  assert.equal(menuForWeekday(5).staple,'soba','Friday is Okinawa soba');
  assert.deepEqual(CHIME_TIMES,[505,720,740,930,1020]);assert.equal(CHIME_NOTES.length,16);
 });
@@ -73,8 +73,8 @@ test('a visitor eats kyūshoku at lunch only, and pays into the pantry jar to co
  const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({})});
  acts.action('kyushoku','lesson',menuForWeekday(1));
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/12:20/);
- const yen=acts.state.yen;acts.action('kyushoku','lunch',menuForWeekday(1));dom.button('Take a tray · いただきます');
- assert.equal(acts.state.yen,yen,'Kyūshoku charged the guest');assert.ok(acts.state.notes.some(n=>n.includes('ゴーヤーチャンプルー')));
+ const yen=acts.state.yen;acts.action('kyushoku','lunch',menuForWeekday(1));dom.button('Take a tray · Enjoy your meal');
+ assert.equal(acts.state.yen,yen,'Kyūshoku charged the guest');assert.ok(acts.state.notes.some(n=>n.includes('Goya Champuru')));
  acts.action('school-pantry','club');dom.button('Make sata andagi · ¥100 in the jar');
  assert.equal(acts.state.yen,yen-100);assert.ok(acts.state.inventory.includes('Sata andagi'));
  acts.action('school-pantry','lesson');assert.equal(dom.actions?.().length??1,1);

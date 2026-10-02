@@ -1,3 +1,4 @@
+import './build-town-papers.mjs';
 import {build} from 'vite';
 import {readFile,writeFile,readdir,unlink} from 'node:fs/promises';
 import {readFileSync,existsSync} from 'node:fs';

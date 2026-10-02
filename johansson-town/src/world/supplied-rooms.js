@@ -133,7 +133,7 @@ function buildInakayaPair(world,options){
     }});
   }
   const sites=[
-    {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:3.2,z:DINING.ramenDoor[1],
+    {id:'ramen',title:'Sato Ramen',jp:"Ramen Sato",sub:'COUNTER & KITCHEN',x:3.2,z:DINING.ramenDoor[1],
       color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00',door:[DINING.ramenDoor[0],0,DINING.ramenDoor[1]]},
   ];
   for(const site of sites){
@@ -157,7 +157,7 @@ export function buildRamenRestaurant(world,options,placement){
   if(!assets.has('ramen-exterior'))return false;
   const place=placement||{x:24,z:10,yaw:0,scale:1};
   const scale=place.scale??1,sx=scale.x??scale,sy=scale.y??scale,sz=scale.z??scale;
-  const site=place.site||{id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:place.x,z:place.z,
+  const site=place.site||{id:'ramen',title:'Sato Ramen',jp:"Ramen Sato",sub:'COUNTER & KITCHEN',x:place.x,z:place.z,
     color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00'};
   const [dx,dz]=localToWorld(place.x,place.z,place.yaw||0,scale,.65,4.7);
   site.door=[dx,0,dz];site.x=place.x;site.z=place.z;
@@ -187,7 +187,7 @@ function hangRamenNoren(building){
   ctx.fillStyle='#8b1e1e';ctx.fillRect(0,0,256,320);
   ctx.fillStyle='#f3e0c4';ctx.fillRect(6,0,116,300);ctx.fillRect(134,0,116,300);
   ctx.fillStyle='#8b1e1e';ctx.textAlign='center';ctx.font='700 52px sans-serif';
-  ctx.fillText('ら',64,110);ctx.fillText('ー',64,190);ctx.fillText('め',192,110);ctx.fillText('ん',192,190);
+  ctx.fillText("et al.",64,110);ctx.fillText('ー',64,190);ctx.fillText("Me",192,110);ctx.fillText("Hmm",192,190);
   const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
   const noren=new THREE.Mesh(new THREE.PlaneGeometry(1.8,1.5),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,transparent:true}));
   noren.name='Sato Ramen noren';noren.position.set(.65,1.65,4.42);building.add(noren);

@@ -19,7 +19,7 @@ const H=(h,m=0)=>h*60+m;
 export const NEIGHBOURS=Object.freeze([
  {name:'Grandmother Higa',look:'Fumiko',height:1.46,role:'on her verandah',at:[-29.8,-20.7],y:.47,face:[0,-1],pose:'Interact',hours:[[H(7),H(18,30)]],
   lines:[
-   'あい、いらっしゃい。\nSit a moment. You are the one who talks to the girl at Sakura every day. She is a good girl. She counts my change twice so I do not have to.',
+   "Hey, welcome.\nSit a moment. You are the one who talks to the girl at Sakura every day. She is a good girl. She counts my change twice so I do not have to.",
    'These are shima-rakkyō beans — no, you are right, rakkyō is an onion. I have been saying it wrong for seventy years and nobody corrects a grandmother.',
    'The bus? Eight minutes to, eight minutes past. I can hear it in the tunnel before it comes out. My husband drove that bus for thirty years.',
    'When the typhoon comes you close the amado, fill the bath with water and wait. The house has been here since before the war. It knows what to do.']},
@@ -35,7 +35,7 @@ export const NEIGHBOURS=Object.freeze([
    'My son runs the ice plant now. I told him: ice is a good business, it never goes off. He did not laugh either.']},
  {name:'Mrs Nakamura',look:'Yoshiko',height:1.52,role:'at the zenzai counter',at:[7.35,-10.55],y:.08,face:[-1,0],pose:'Idle',hours:[[H(10),H(19)]],
   lines:[
-   'いらっしゃい！ Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.',
+   "Welcome! Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.",
    'Thuan-chan comes on Sundays and orders the small one and then eats half of mine. Tell her I said so.',
    'Since 1972 on this corner. The machine is older than the shop. It sounds like a tractor and it makes the best ice on the island.']},
  {name:'Mr Shimabukuro',look:'Mr Tanabe',height:1.66,role:'minding the generators',at:[20.7,31.2],y:0,face:[1,0],pose:'Idle',hours:[[H(7),H(19)]],

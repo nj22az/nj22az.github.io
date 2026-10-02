@@ -53,7 +53,7 @@ function buildHotCase(room,anchor,action){
   const s=add(room,new THREE.CylinderGeometry(.004,.004,.06,6),stick,cx+.07,y0+.09,cz+.16+i*.05,'Sakura American dog stick');s.rotation.z=Math.PI/2;
  }
  // A header card facing the customer.
- const header=sign(512,128,(ctx,w,h)=>{ctx.fillStyle='#d7263d';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ffe28a';ctx.fillRect(0,h-14,w,14);signText(ctx,'ホットスナック',w/2,h*.42,58,'#ffffff');signText(ctx,'HOT SNACKS · あつあつ！',w/2,h*.8,24,'#ffe28a');});
+ const header=sign(512,128,(ctx,w,h)=>{ctx.fillStyle='#d7263d';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ffe28a';ctx.fillRect(0,h-14,w,14);signText(ctx,"Hot snack",w/2,h*.42,58,'#ffffff');signText(ctx,"HOT SNACKS · Hot!",w/2,h*.8,24,'#ffe28a');});
  card(room,header,C.d,C.d/4,cx-C.w/2-.012,y0+C.h+.07,cz,-Math.PI/2,'Sakura hot case header');
  anchor([cx-.3,y0+.25,cz],'Buy hot snacks from the case',()=>action('sakura-hot-snacks'));
  // Oden: a square steel pot with a lid half off and a ladle.
@@ -62,7 +62,7 @@ function buildHotCase(room,anchor,action){
  add(room,new THREE.BoxGeometry(.28,.01,.28),mat(0xc98a3a,{emissive:0x5a3210,emissiveIntensity:.3}),O.x,y0+.11,O.z,'Sakura oden broth');
  for(const [dx,dz,c] of [[-.07,-.07,0xf4f0e2],[.06,-.05,0xf7e7a0],[-.05,.07,0xd8b88a],[.07,.07,0xf4f0e2]])add(room,new THREE.SphereGeometry(.035,10,6),mat(c),O.x+dx,y0+.12,O.z+dz,'Sakura oden');
  const ladle=add(room,new THREE.CylinderGeometry(.006,.006,.3,6),steel,O.x+.1,y0+.22,O.z,'Sakura oden ladle');ladle.rotation.z=-.6;
- const oden=sign(256,128,(ctx,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#d7263d';ctx.lineWidth=10;ctx.strokeRect(5,5,w-10,h-10);signText(ctx,'おでん',w/2,h*.45,56,'#d7263d');signText(ctx,'1コ ¥70〜',w/2,h*.8,24,'#5a3a1a');});
+ const oden=sign(256,128,(ctx,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#d7263d';ctx.lineWidth=10;ctx.strokeRect(5,5,w-10,h-10);signText(ctx,"Oden",w/2,h*.45,56,'#d7263d');signText(ctx,"1Ko ¥70〜",w/2,h*.8,24,'#5a3a1a');});
  card(room,oden,.22,.11,O.x-.17,y0+.2,O.z,-Math.PI/2,'Sakura oden card');
 }
 
@@ -84,7 +84,7 @@ function buildCheer(room){
   for(let i=0;i<n;i++){const t=(i+.5)/n,m=new THREE.Mesh(flag,flagMats[i%flagMats.length]);m.position.set(x0+(x1-x0)*t,y-Math.sin(Math.PI*t)*sag,z);m.name='Sakura bunting';room.add(m);}
  }
  // Round POP cards hanging on threads over the islands: sale, new, oden, stamp card.
- const pops=[['新発売！','NEW',0xf06ba8,-4.2,-1.6],['お買い得','SALE',0xff6b6b,-1.2,.4],['おでん','始めました',0xffc93c,1.6,-1.6],['スタンプ','10コで お茶1本',0x5ec8f2,-2.8,2.3]];
+ const pops=[["New release!",'NEW',0xf06ba8,-4.2,-1.6],["Bargain",'SALE',0xff6b6b,-1.2,.4],["Oden","Started",0xffc93c,1.6,-1.6],["Stamp","10Kode Tea1items",0x5ec8f2,-2.8,2.3]];
  for(const [jp,en,colour,x,z] of pops){
   const hex='#'+colour.toString(16).padStart(6,'0');
   const tex=sign(256,256,(ctx,w,h)=>{ctx.fillStyle=hex;ctx.beginPath();ctx.arc(w/2,h/2,w/2-4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(w/2,h/2,w/2-22,0,Math.PI*2);ctx.fill();signText(ctx,jp,w/2,h*.45,jp.length>4?42:54,hex);signText(ctx,en,w/2,h*.68,en.length>4?22:30,'#3b3f55');});
@@ -93,13 +93,13 @@ function buildCheer(room){
   add(room,new THREE.CylinderGeometry(.003,.003,.5,4),string,x,2.7,z,'Sakura POP thread');
  }
  // Welcome mat inside the door, and paw-print stickers from the door to the till.
- const matTex=sign(512,256,(ctx,w,h)=>{ctx.fillStyle='#2a8fcc';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#ffffff';ctx.lineWidth=12;ctx.strokeRect(14,14,w-28,h-28);signText(ctx,'いらっしゃいませ',w/2,h*.45,62,'#ffffff');signText(ctx,'SAKURA SHŌTEN',w/2,h*.75,30,'#ffe28a');});
+ const matTex=sign(512,256,(ctx,w,h)=>{ctx.fillStyle='#2a8fcc';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#ffffff';ctx.lineWidth=12;ctx.strokeRect(14,14,w-28,h-28);signText(ctx,"Welcome",w/2,h*.45,62,'#ffffff');signText(ctx,'SAKURA SHŌTEN',w/2,h*.75,30,'#ffe28a');});
  const welcome=add(room,new THREE.PlaneGeometry(1.5,.75),new THREE.MeshStandardMaterial({map:matTex,roughness:1,polygonOffset:true,polygonOffsetFactor:-2}),0,.006,3.35,'Sakura welcome mat');welcome.rotation.x=-Math.PI/2;
  const paw=sign(128,128,(ctx,w,h)=>{ctx.fillStyle='#f06ba8';ctx.beginPath();ctx.ellipse(w/2,h*.62,26,22,0,0,Math.PI*2);ctx.fill();for(const [dx,dy] of [[-30,-14],[-11,-30],[11,-30],[30,-14]]){ctx.beginPath();ctx.arc(w/2+dx,h*.5+dy,10,0,Math.PI*2);ctx.fill();}});
  const pawMat=new THREE.MeshStandardMaterial({map:paw,transparent:true,roughness:1,polygonOffset:true,polygonOffsetFactor:-2,depthWrite:false});
  const steps=[[1.1,2.7],[1.6,2.3],[2.1,1.95],[2.6,1.6],[3.1,1.3],[3.6,1.05]];
  steps.forEach(([x,z],i)=>{const m=add(room,new THREE.PlaneGeometry(.2,.2),pawMat,x+(i%2?.08:-.08),.007,z,'Sakura floor sticker');m.rotation.set(-Math.PI/2,0,Math.atan2(3.6-1.1,1.05-2.7)+Math.PI);});
- const tillTex=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#ffc93c';ctx.fillRect(0,0,w,h);signText(ctx,'レジ ▶',w/2,h/2,54,'#3b3f55');});
+ const tillTex=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#ffc93c';ctx.fillRect(0,0,w,h);signText(ctx,"Cash register ▶",w/2,h/2,54,'#3b3f55');});
  const till=add(room,new THREE.PlaneGeometry(.5,.19),new THREE.MeshStandardMaterial({map:tillTex,roughness:1,polygonOffset:true,polygonOffsetFactor:-2}),3.95,.007,.85,'Sakura till sticker');till.rotation.set(-Math.PI/2,0,-Math.PI/2);
 }
 
@@ -125,12 +125,12 @@ function buildBackOffice(room,anchor,action){
  add(room,new THREE.BoxGeometry(.05,.42,.4),mat(0x5ec8f2),chair.x-.2,.7,chair.z,'Sakura office chair');
  for(const [dx,dz] of [[-1,-1],[1,-1],[-1,1],[1,1]])add(room,new THREE.CylinderGeometry(.015,.015,.44,6),dark,chair.x+dx*.17,.22,chair.z+dz*.17,'Sakura office chair leg');
  // The wall calendar and a shift rota pinned above the desk.
- const cal=sign(256,320,(ctx,w,h)=>{ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ff6b6b';ctx.fillRect(0,0,w,70);signText(ctx,'平成9年',w/2,36,40,'#ffffff');ctx.fillStyle='#3b3f55';ctx.font=`bold 20px ${MARU}`;ctx.textAlign='center';for(let d=0;d<30;d++)ctx.fillText(String(d+1),26+(d%7)*34,110+Math.floor(d/7)*44);ctx.strokeStyle='#d7263d';ctx.lineWidth=4;ctx.beginPath();ctx.arc(26+4*34,110+44*1,17,0,Math.PI*2);ctx.stroke();});
+ const cal=sign(256,320,(ctx,w,h)=>{ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ff6b6b';ctx.fillRect(0,0,w,70);signText(ctx,"Heisei9Year",w/2,36,40,'#ffffff');ctx.fillStyle='#3b3f55';ctx.font=`bold 20px ${MARU}`;ctx.textAlign='center';for(let d=0;d<30;d++)ctx.fillText(String(d+1),26+(d%7)*34,110+Math.floor(d/7)*44);ctx.strokeStyle='#d7263d';ctx.lineWidth=4;ctx.beginPath();ctx.arc(26+4*34,110+44*1,17,0,Math.PI*2);ctx.stroke();});
  card(room,cal,.36,.45,6.78,1.55,desk.z-.25,-Math.PI/2,'Sakura office calendar');
- const rota=sign(256,256,(ctx,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(0,0,w,h);signText(ctx,'シフト表',w/2,34,34,'#2a8fcc');ctx.fillStyle='#3b3f55';ctx.font=`bold 22px ${MARU}`;ctx.textAlign='left';['月 トゥアン 9-20','火 トゥアン 9-20','水 トゥアン 9-20','木 トゥアン 9-20','金 トゥアン 9-20'].forEach((l,i)=>ctx.fillText(l,22,84+i*36));});
+ const rota=sign(256,256,(ctx,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(0,0,w,h);signText(ctx,"Staff Schedule",w/2,34,34,'#2a8fcc');ctx.fillStyle='#3b3f55';ctx.font=`bold 22px ${MARU}`;ctx.textAlign='left';["Month Thuan 9-20","Fire Thuan 9-20","Water Thuan 9-20","Tree Thuan 9-20","Gold Thuan 9-20"].forEach((l,i)=>ctx.fillText(l,22,84+i*36));});
  card(room,rota,.3,.3,6.78,1.5,desk.z+.3,-Math.PI/2,'Sakura shift rota');
  // "Staff only", on the corridor side of the door.
- const plate=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#3b3f55';ctx.fillRect(0,0,w,h);signText(ctx,'事務所',w/2,h*.4,40,'#ffffff');signText(ctx,'STAFF ONLY',w/2,h*.78,20,'#ffc93c');});
+ const plate=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#3b3f55';ctx.fillRect(0,0,w,h);signText(ctx,"Office",w/2,h*.4,40,'#ffffff');signText(ctx,'STAFF ONLY',w/2,h*.78,20,'#ffc93c');});
  card(room,plate,.36,.135,door.x,2.2,door.z+.08,0,'Sakura office plate');
  anchor([desk.x-.4,top+.35,desk.z+.05],'Read Sakura sales ledger',()=>action('shop-ledger'));
 }
@@ -156,9 +156,9 @@ export function buildSakuraBand(room){
   ctx.fillStyle='#d9b27a';ctx.fillRect(0,0,w,H);
   for(let i=0;i<14;i++){ctx.strokeStyle=i%2?'rgba(120,80,40,.18)':'rgba(255,240,210,.18)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,8+i*8.5);ctx.bezierCurveTo(w*.3,4+i*8.5,w*.6,14+i*8.5,w,8+i*8.5);ctx.stroke();}
   ctx.fillStyle='#7c5230';ctx.fillRect(0,0,w,6);ctx.fillRect(0,H-6,w,6);
-  ctx.fillStyle='#3a2414';ctx.font=`bold 50px ${MARU}`;ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText('桜商店',28,H*.5);
-  ctx.font=`bold 30px ${MARU}`;ctx.fillText('食料品 · 日用雑貨 · 切手 · 船の回数券',250,H*.5);
-  ctx.fillStyle='#b8332c';ctx.beginPath();ctx.arc(w-52,H*.5,30,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6e6';ctx.font=`bold 34px ${MARU}`;ctx.textAlign='center';ctx.fillText('桜',w-52,H*.52);
+  ctx.fillStyle='#3a2414';ctx.font=`bold 50px ${MARU}`;ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText("Sakura Shop",28,H*.5);
+  ctx.font=`bold 30px ${MARU}`;ctx.fillText("Groceries · Daily miscellaneous goods · Stamp · Ship ticket",250,H*.5);
+  ctx.fillStyle='#b8332c';ctx.beginPath();ctx.arc(w-52,H*.5,30,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6e6';ctx.font=`bold 34px ${MARU}`;ctx.textAlign='center';ctx.fillText("Sakura",w-52,H*.52);
  });
  tex.wrapS=THREE.RepeatWrapping;
  const make=(length,x,z,yaw)=>{
@@ -175,7 +175,7 @@ export function buildSakuraBand(room){
  // have its logo printed on plastic.
  const front=sign(512,512,(ctx,w,H)=>{
   ctx.fillStyle='#2f4f6f';ctx.fillRect(0,0,w,H);ctx.fillStyle='#f6efe0';ctx.beginPath();ctx.arc(w/2,H*.42,140,0,Math.PI*2);ctx.fill();
-  signText(ctx,'桜',w/2,H*.43,170,'#b8332c');signText(ctx,'さくら商店',w/2,H*.85,60,'#f6efe0');
+  signText(ctx,"Sakura",w/2,H*.43,170,'#b8332c');signText(ctx,"Sakura Shop",w/2,H*.85,60,'#f6efe0');
  });
  const panel=add(room,new THREE.PlaneGeometry(.78,.78),new THREE.MeshBasicMaterial({map:front,toneMapped:false}),C.x-.016,(C.y0+C.y1)/2+.04,(C.z0+C.z1)/2,'Sakura counter front');
  panel.rotation.y=-Math.PI/2;

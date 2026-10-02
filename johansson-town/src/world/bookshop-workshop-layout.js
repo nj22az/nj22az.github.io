@@ -8,7 +8,7 @@ export const BOOKSHOP_WORKSHOP_ROOM=Object.freeze({
  staff:{Aya:[-2.6,0,1.2],Reiko:[-2.6,0,-1.9],Kenji:[.8,0,-1.9],Tetsuo:[2.7,0,-1.9]},
 });
 export const BOOKSHOP_WORKSHOP=Object.freeze({
- title:'Front-Row Books & Workshop',jp:'前列書房・工房',sub:'BOOKS · PRESS · REPAIRS',
+ title:'Front-Row Books & Workshop',jp:"Front row bookstore/workshop",sub:'BOOKS · PRESS · REPAIRS',
  combinedWorkshop:true,side:-1,
  line:'Aya’s books, Reiko’s evening press, and Kenji and Tetsuo’s workshop.',
  directions:'On the west pavement, north of Minato Izakaya. Books, printing and repairs share one entrance.',
