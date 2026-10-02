@@ -46,11 +46,23 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
  const L=faceLayout(avatar.recipe),head=b.head;
  const theta=Math.PI*.28+L.mouthY/256*Math.PI*.58,phi=Math.PI/2-.95+L.mouthX/256*1.9;
  const v=shapeHeadPoint(new THREE.Vector3(-Math.cos(phi)*Math.sin(theta),Math.cos(theta),Math.sin(phi)*Math.sin(theta)),m.profile);
- const mouth=head.localToWorld(new THREE.Vector3(v.x*m.Rh*m.headSX,m.headCentre-m.headY+v.y*m.Rh*m.headSY,v.z*m.Rh*.98+.025*m.k));
+ const lips=new THREE.Vector3(v.x*m.Rh*m.headSX,m.headCentre-m.headY+v.y*m.Rh*m.headSY,v.z*m.Rh*.98+.025*m.k);
  const rest=root.localToWorld(new THREE.Vector3(-m.shoulderX,m.shoulderY-m.upper*.75,m.depth*.75+m.fore*.45));
  const q=root.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),drinkTilt(prop,lift,food)));
  const contact=new THREE.Vector3(food?0:-.10*m.k,food?.04:(prop?.userData.rimHeight??.15)-.08*m.k,food?.115:.015*m.k).applyQuaternion(q);
- const target=rest.lerp(mouth.sub(contact),lift);reach(avatar,target);
+ // Big heads put the mouth beyond a short arm's reach. Then the head dips to meet the
+ // cup, the way anyone leans in to a drink, a little more each pass until it reaches.
+ const shoulder=b.shoulderR.getWorldPosition(new THREE.Vector3());
+ const span=(m.upper+m.fore)*.985;
+ let target=null;
+ for(let pass=0;pass<6;pass++){
+  head.updateWorldMatrix(true,false);
+  target=rest.clone().lerp(head.localToWorld(lips.clone()).sub(contact),lift);
+  const over=target.distanceTo(shoulder)-span;
+  if(over<=.0005||lift<.01)break;
+  head.rotation.x+=Math.min(.12,over/(m.Rh*1.1));
+ }
+ reach(avatar,target);
  // The palm is level, rather than inheriting the forearm's angle.
  b.handR.quaternion.copy(b.handR.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(q));b.handR.updateWorldMatrix(false,true);
 }

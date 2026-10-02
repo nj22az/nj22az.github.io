@@ -402,7 +402,7 @@ let creatorOpen=false;
 function openAvatarMaker(){
  if(creatorOpen)return;
  toggleDir(false);resetInput();document.exitPointerLock?.();creatorOpen=true;
- openCreator({recipe:playerRecipe(),shareLink:code=>new URL('./creator/?r='+code,location.href).href,
+ openCreator({recipe:playerRecipe(),voice:(freq,type)=>townAudio.blip?.(freq,type),shareLink:code=>new URL('./creator/?r='+code,location.href).href,
   onSave:r=>{savePlayerRecipe(r);ensureJohansson().setRecipe?.(r);if(!thirdPerson)setThirdPerson(true,false);say((r.name?r.name+' · ':'')+'Looking good. V switches between your eyes and this view.',4);},
   onClose:()=>{creatorOpen=false;resetInput();clock.getDelta();}});
 }

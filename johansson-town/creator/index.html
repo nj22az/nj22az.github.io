@@ -16,8 +16,13 @@ import {openCreator} from '../src/avatars/creator.js';
 import {playerRecipe,savePlayerRecipe} from '../src/avatars/actors.js';
 import {decodeRecipe} from '../src/avatars/recipe.js';
 const code=new URLSearchParams(location.search).get('r'),shared=code?decodeRecipe(code):null;
+// Voice blips for the maker's own page; in the town they go through the town's audio.
+let audio=null;
+const voice=(freq,type)=>{try{audio??=new (window.AudioContext||window.webkitAudioContext)();const t=audio.currentTime,o=audio.createOscillator(),g=audio.createGain();
+ o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+.09);o.connect(g).connect(audio.destination);o.start(t);o.stop(t+.1);}catch{}};
 openCreator({
  recipe:shared||playerRecipe(),
+ startAt:shared?'hello':'start',voice,
  saveLabel:'Walk the town as them',
  shareLink:c=>new URL('./?r='+c,location.href).href,
  onSave:recipe=>{savePlayerRecipe(recipe);},

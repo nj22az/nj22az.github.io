@@ -24,10 +24,12 @@ try{
   assert.equal(await page.evaluate(()=>JSON.stringify(window.maker.recipe)),original);
   for(const id of ['body','head','hair','eyes','brows','nose','mouth','extras','top','bottom','accessories','hat']){
    if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption(id);else await page.getByRole('tab',{name:({body:'Body',head:'Face',hair:'Hair',eyes:'Eyes',brows:'Brows',nose:'Nose',mouth:'Mouth',extras:'Glasses & beard',top:'Top',bottom:'Bottoms',accessories:'Accessories',hat:'Hats & bows'})[id],exact:true}).click();
-   const bounds=await page.evaluate(()=>{const root=document.querySelector('.shm'),body=document.querySelector('.shm-body'),save=document.querySelector('.shm-save');return {overflow:root.scrollWidth>innerWidth,body:body.clientHeight,bottom:save.getBoundingClientRect().bottom};});
+   const bounds=await page.evaluate(()=>{const root=document.querySelector('.shm'),body=document.querySelector('.shm-body'),save=document.querySelector('.shm-foot button:last-child');return {overflow:root.scrollWidth>innerWidth,body:body.clientHeight,bottom:save.getBoundingClientRect().bottom};});
    assert.equal(bounds.overflow,false);assert.ok(bounds.body>=90,JSON.stringify(bounds));assert.ok(bounds.bottom<=height);
   }
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('eyes');else await page.getByRole('tab',{name:'Eyes',exact:true}).click();
+  await page.getByRole('tab',{name:'Adjust',exact:true}).click();
+  const sizeBefore=await page.evaluate(()=>window.maker.recipe.eyes.size);await page.getByRole('button',{name:'Bigger',exact:true}).click();assert.ok((await page.evaluate(()=>window.maker.recipe.eyes.size))>sizeBefore);
   const eyeBefore=await page.evaluate(()=>window.maker.recipe.eyes.height);await page.getByRole('button',{name:'Move up',exact:true}).click();assert.ok((await page.evaluate(()=>window.maker.recipe.eyes.height))>eyeBefore);
   await page.getByRole('button',{name:'Undo',exact:true}).click();assert.equal(await page.evaluate(()=>window.maker.recipe.eyes.height),eyeBefore);
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('hat');else await page.getByRole('tab',{name:'Hats & bows',exact:true}).click();
@@ -38,13 +40,23 @@ try{
   const before=await page.evaluate(()=>JSON.stringify(window.maker.recipe));
   await page.getByRole('button',{name:'Randomise appearance'}).click();await page.getByRole('button',{name:'Undo',exact:true}).click();
   assert.equal(await page.evaluate(()=>JSON.stringify(window.maker.recipe)),before);
+  if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('body');else await page.getByRole('tab',{name:'Body',exact:true}).click();
   await page.getByLabel('Preview pose').selectOption('Wave');
   await page.getByRole('button',{name:'Share',exact:true}).click();await page.getByLabel('Import an islander').fill('http://[invalid?avatar=bad');
   await page.getByRole('button',{name:'Try the pasted one'}).click();assert.ok(await page.getByRole('button',{name:'That code did not work'}).isVisible());
   await page.keyboard.press('Escape');assert.ok(await page.locator('.shm').isVisible());assert.equal(await page.locator('.shm-share').count(),0);
   await page.getByRole('button',{name:'Share',exact:true}).click();const code=await page.getByLabel('Share link or code').inputValue();await page.getByLabel('Import an islander').fill(code);await page.getByRole('button',{name:'Try the pasted one'}).click();
   if(!mobile){await page.getByRole('tab',{name:'Hats & bows',exact:true}).focus();await page.keyboard.press('Home');assert.equal(await page.getByRole('tab',{name:'Body',exact:true}).getAttribute('aria-selected'),'true');}
-  await page.getByRole('button',{name:'Save and play'}).click();assert.equal(await page.evaluate(()=>window.saved.name),'Test islander');assert.equal(await page.locator('.shm').count(),0);assert.equal(await page.evaluate(()=>document.activeElement.id),'opener');assert.deepEqual(errors,[]);
+  // Who they are: the dials give a personality, and the birthday is kept.
+  await page.getByRole('button',{name:'Step 3: Who are they?'}).click();
+  for(const dial of ['Pace','Talk','Feelings','Outlook'])await page.getByRole('button',{name:dial+' 8 of 8',exact:true}).click();
+  assert.equal(await page.locator('.shm-type strong').textContent(),'Typhoon');
+  await page.getByLabel('Birthday month').selectOption('2');await page.getByLabel('Birthday day').selectOption('29');
+  await page.getByLabel('Catchphrase').fill('Haisai!');
+  const profile=await page.evaluate(()=>window.maker.recipe.profile);assert.equal(profile.month,2);assert.equal(profile.day,29);assert.equal(profile.catchphrase,'Haisai!');
+  await page.getByRole('button',{name:'Next',exact:true}).click();
+  assert.match(await page.locator('.shm-bubble').textContent({timeout:4000}).catch(()=>''),/^|Hey/);
+  await page.getByRole('button',{name:'Save and play'}).click();assert.equal(await page.evaluate(()=>window.saved.name),'Test islander');assert.equal(await page.evaluate(()=>window.saved.profile.catchphrase),'Haisai!');assert.equal(await page.locator('.shm').count(),0);assert.equal(await page.evaluate(()=>document.activeElement.id),'opener');assert.deepEqual(errors,[]);
   console.log(`Creator interactions and layout passed: ${width}x${height}`);await page.close();
  }
 }finally{await browser.close();}

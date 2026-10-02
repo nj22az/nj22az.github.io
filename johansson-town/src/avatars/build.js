@@ -24,14 +24,14 @@ const BI=Object.fromEntries(BONES.map((n,i)=>[n,i]));
 
 /** Every measurement of a body, from its recipe. Pure, for tests and the seat maths. */
 /**
- * Height range and head scale per life stage. A child's head is about 0.38 of their
- * height, an adult's 0.30; elders lose a little height. Adult is the original scale.
+ * Height range and head scale per life stage. A child's head is about 0.4 of their
+ * height, an adult's about a third, for the big-headed life-sim silhouette; elders lose a little height. Adult is the original scale.
  */
 const STAGES=Object.freeze({
- child:{base:1.12,span:.2,head:1.3},
- teen:{base:1.4,span:.28,head:1.08},
- adult:{base:1.36,span:.44,head:1},
- elder:{base:1.33,span:.34,head:1.02},
+ child:{base:1.12,span:.2,head:1.4},
+ teen:{base:1.4,span:.28,head:1.18},
+ adult:{base:1.36,span:.44,head:1.12},
+ elder:{base:1.33,span:.34,head:1.14},
 });
 export function measure(recipe){
  const r=normalizeRecipe(recipe);

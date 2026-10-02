@@ -236,3 +236,36 @@ function drawGlasses(ctx,L,glasses){
  ctx.beginPath();ctx.moveTo(128-L.spread+rx*(glasses.style==='round'||glasses.style==='half'?1:1.1),y-2);ctx.quadraticCurveTo(128,y-8,128+L.spread-rx*(glasses.style==='round'||glasses.style==='half'?1:1.1),y-2);ctx.stroke();
  ctx.restore();
 }
+
+/**
+ * One feature on its own, centred and enlarged on a skin-coloured tile: the pictures in
+ * the maker's part grids. Drawn with the same painters as the face, so a part looks in
+ * the grid exactly as it will on the head.
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {object} recipe normalized
+ * @param {'eyes'|'brows'|'nose'|'mouth'|'glasses'|'facial'} part
+ * @param {number} [size] canvas size in pixels
+ */
+export function drawPart(ctx,recipe,part,size=ctx.canvas.width){
+ const skin=recipe.body.skin,line='#2b2623';
+ // A neutral layout, so every tile in a grid is framed alike whatever the sliders say.
+ const flat={...recipe,eyes:{...recipe.eyes,height:.5,spacing:.5,size:.5,tilt:.5},brows:{...recipe.brows,height:.5,spacing:.5,size:.5,tilt:.5},
+  nose:{...recipe.nose,height:.5,x:.5,size:.5},mouth:{...recipe.mouth,height:.5,x:.5,size:.5,width:.5}};
+ const L=faceLayout(flat);
+ const focus={eyes:[128,L.eyeY,1.75],glasses:[128,L.eyeY,1.6],brows:[128,L.browY,2],nose:[128,L.noseY,3.4],mouth:[128,L.mouthY+2,2.7],facial:[128,(L.noseY+L.mouthY)/2+(recipe.facial.style==='beard'?18:recipe.facial.style==='goatee'?14:2),recipe.facial.style==='beard'?1.5:2.2]}[part]||[128,128,1];
+ const k=size/256;
+ ctx.save();ctx.setTransform(k,0,0,k,0,0);
+ ctx.canvas.__skin=skin;ctx.fillStyle=skin;ctx.fillRect(0,0,256,256);
+ ctx.translate(128,128);ctx.scale(focus[2],focus[2]);ctx.translate(-focus[0],-focus[1]);
+ ctx.lineCap='round';ctx.lineJoin='round';
+ if(part==='eyes'||part==='glasses')for(const s of [-1,1])drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,flat.eyes,'open',[0,0],L.eyeTilt,L.eyeW);
+ if(part==='brows'&&recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY,L.browS,s,flat.brows,L.browTilt,0);
+ if(part==='nose')drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);
+ if(part==='mouth')drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,flat.mouth,null,0,line,L.mouthW);
+ if(part==='facial'){drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,{...flat.mouth,style:'flat'},null,0,'rgba(43,38,35,.35)',L.mouthW);drawFacialHair(ctx,L,recipe.facial);}
+ if(part==='glasses')drawGlasses(ctx,L,recipe.glasses);
+ ctx.restore();
+ // "None" reads as an empty tile with a soft slash, the way a blank slot should.
+ const empty=(part==='brows'&&recipe.brows.style==='none')||(part==='nose'&&recipe.nose.style==='none')||(part==='glasses'&&recipe.glasses.style==='none')||(part==='facial'&&recipe.facial.style==='none');
+ if(empty){ctx.save();ctx.strokeStyle='rgba(43,38,35,.25)';ctx.lineWidth=size*.04;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(size*.3,size*.7);ctx.lineTo(size*.7,size*.3);ctx.stroke();ctx.restore();}
+}

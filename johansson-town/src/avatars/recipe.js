@@ -66,6 +66,9 @@ export const DEFAULT_RECIPE=Object.freeze({
  outfit:Object.freeze({top:'tee',topColour:'#3fa0c8',pattern:'none',bottom:'trousers',bottomColour:'#27304d',shoes:'#6d4a32',hat:'none',hatColour:'#f4f1ea',accent:'#f4d23c'}),
  accessories:Object.freeze({earrings:'none',neckwear:'none',colour:'#e0b93a',pin:false}),
  swim:Object.freeze({colour:'#2f5f9e'}),
+ // Who they are (personality.js): four dials, a voice, a birthday, a favourite colour
+ // and a catchphrase. Old recipes without one get this middle-of-the-road islander.
+ profile:Object.freeze({pace:.5,talk:.5,show:.5,outlook:.5,pitch:.5,speed:.5,month:7,day:1,favourite:'#3fa0c8',catchphrase:''}),
 });
 
 /** Any object in, a complete and safe recipe out. Unknown fields are dropped. */
@@ -90,6 +93,11 @@ export function normalizeRecipe(input={}){
   outfit:sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>['none','flowers','stripes','dots'].includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col}),
   accessories:sub('accessories',{earrings:(v,f)=>pick(PARTS.earrings,v,f),neckwear:(v,f)=>pick(PARTS.neckwear,v,f),colour:col,pin:flag}),
   swim:sub('swim',{colour:col}),
+  profile:(()=>{
+   const out=sub('profile',{pace:num,talk:num,show:num,outlook:num,pitch:num,speed:num,month:(v,f)=>Number.isInteger(+v)&&+v>=1&&+v<=12?+v:f,day:(v,f)=>Number.isInteger(+v)&&+v>=1&&+v<=31?+v:f,favourite:col,
+    catchphrase:(v,f)=>v===undefined?f:String(v).replace(/[\u0000-\u001f<>]/g,'').slice(0,40)});
+   out.day=Math.min(out.day,[31,29,31,30,31,30,31,31,30,31,30,31][out.month-1]);return out;
+  })(),
  };
 }
 
@@ -131,5 +139,6 @@ export function randomRecipe(seed=Math.random().toString(36)){
   blush:feminine?.3+r()*.4:r()*.2,freckles:r()<.12,mole:r()<.1,wrinkles:older?.5+r()*.5:0,
   outfit:{top:any(['tee','kariyushi','polo','blouse','jacket']),topColour:any(pal.cloth),pattern:r()<.3?any(['flowers','stripes','dots']):'none',
    bottom:feminine&&r()<.4?any(['skirt','longskirt']):any(['shorts','trousers']),bottomColour:any(['#27304d','#6d7478','#c8b48a','#2b2b2b','#9a6a42','#2f5f9e']),shoes:any(['#6d4a32','#2b2b2b','#f4f1ea','#d8342c']),hat:'none',hatColour:'#f4f1ea',accent:any(pal.cloth)},
+  profile:{pace:r(),talk:r(),show:r(),outlook:r(),pitch:feminine?.45+r()*.5:r()*.6,speed:r(),month:1+Math.floor(r()*12),day:1+Math.floor(r()*28),favourite:any(pal.cloth)},
  });
 }

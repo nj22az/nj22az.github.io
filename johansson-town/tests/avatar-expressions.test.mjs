@@ -34,7 +34,8 @@ test('every eye style renders distinct moods, speech and blinks without changing
 test('face repainting stays cached and preserves the two-draw avatar and current proportions',()=>{
  installDOM();
  const recipe=normalizeRecipe(),m=measure(recipe),avatar=buildAvatar(recipe,{shadows:false});
- assert.equal(m.Rh,(.19+recipe.head.size*.055)*m.k,'existing head radius');
+ // Adults wear the big-headed life-sim proportions: 1.12 of the original head.
+ assert.equal(m.Rh,(.19+recipe.head.size*.055)*m.k*1.12,'existing head radius');
  assert.equal(m.H,1.36+recipe.body.height*.44,'existing body height');
  assert.equal(avatar.paintFace({expression:'happy'}),true);
  assert.equal(avatar.paintFace({expression:'happy'}),false,'idle expressions do not re-upload the texture');

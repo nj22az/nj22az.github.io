@@ -1,19 +1,25 @@
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from './build.js';
 import {createAvatarAnimator} from './animate.js';
-import {drawFace} from './face.js';
+import {drawPart} from './face.js';
 import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
 import {CAST_RECIPES} from './cast.js';
+import {DIALS,DIAL_STEPS,dialStep,stepValue,personalityOf,voiceOf,MONTHS,daysIn,hello} from './personality.js';
 import {svg} from '../ui/icons.js';
 
 /**
- * The Shimanchu maker: where you make the person you walk the town as.
+ * The Shimanchu maker: where somebody new moves to the island.
  *
- * Laid out the way a character maker on a games console is -- a turning figure on one
- * side, a row of tabs on the other, each tab a grid of parts drawn as they will look,
- * then colours, then a few sliders -- and made for a thumb first: every target is big,
- * nothing needs a hover, and the figure turns with a drag. The parts, pictures and
- * layout are the town's own.
+ * It runs the way a life-sim's character maker does, in four steps:
+ *   1. Choose a face   -- a grid of faces to start from, so nobody begins from a blank.
+ *   2. Make them       -- a tab per feature. Each tab has Style (a grid of the parts,
+ *                         each drawn on its own), Colour, and Adjust: step buttons that
+ *                         move, size, space and tilt the part, a notch at a time.
+ *   3. Who are they?   -- birthday, favourite colour, four personality dials that give
+ *                         one of sixteen island personalities, a voice and a catchphrase.
+ *   4. Say hello       -- they wave and introduce themselves in their own voice.
+ * Thumb first: every target is at least 44 px, nothing needs a hover, and the figure
+ * turns with a drag. The parts, pictures, names and wording are the town's own.
  *
  * openCreator() works inside the game (from the Town book) and on its own page
  * (creator/), which is what a shared link opens.
@@ -33,145 +39,201 @@ const LABEL={
  cap:'Cap',captain:'Captain',police:'Police',helmet:'Helmet',straw:'Straw hat',headband:'Headband',kerchief:'Kerchief',
  beanie:'Beanie',beret:'Beret',bucket:'Bucket hat',ribbon:'Hair bow',studs:'Studs',hoops:'Hoops',pendant:'Pendant',scarf:'Scarf',
  flowers:'Flowers',stripes:'Stripes',dots:'Dots',
+ child:'Child',teen:'Teen',adult:'Adult',elder:'Elder',
 };
 
 /**
- * Every tab: a part grid (drawn as a face or as the figure), colours, sliders, switches.
- * `at` is where in the recipe a control writes, as 'section.field'.
+ * Every feature tab. Each control lives on one page of the tab: 'style', 'colour' or
+ * 'adjust'. `at` is where in the recipe a control writes, as 'section.field'.
+ * Steppers carry the words for their two buttons.
  */
 const TABS=[
  {id:'body',name:'Body',controls:[
-  {kind:'chips',at:'age',label:'Age',list:AGES},
-  {kind:'slider',at:'body.height',label:'Height'},{kind:'slider',at:'body.build',label:'Build'},
-  {kind:'colours',at:'body.skin',label:'Skin',palette:PALETTE.skin}]},
+  {kind:'chips',page:'style',at:'age',label:'Age',list:AGES},
+  {kind:'colours',page:'colour',at:'body.skin',label:'Skin',palette:PALETTE.skin},
+  {kind:'stepper',page:'adjust',at:'body.height',label:'Height',less:'Shorter',more:'Taller'},
+  {kind:'stepper',page:'adjust',at:'body.build',label:'Build',less:'Slimmer',more:'Sturdier'}]},
  {id:'head',name:'Face',controls:[
-  {kind:'chips',at:'head.form',label:'Face shape',list:PARTS.head},
-  {kind:'slider',at:'head.size',label:'Head size'},{kind:'slider',at:'head.shape',label:'Narrow ↔ broad'},
-  {kind:'slider',at:'head.jaw',label:'Jaw width'},{kind:'slider',at:'head.cheeks',label:'Cheek fullness'},
-  {kind:'slider',at:'blush',label:'Rosy cheeks'},{kind:'slider',at:'wrinkles',label:'Laughter lines'},
-  {kind:'toggle',at:'freckles',label:'Freckles'},{kind:'toggle',at:'mole',label:'Beauty spot'}]},
+  {kind:'chips',page:'style',at:'head.form',label:'Face shape',list:PARTS.head},
+  {kind:'toggle',page:'style',at:'freckles',label:'Freckles'},{kind:'toggle',page:'style',at:'mole',label:'Beauty spot'},
+  {kind:'colours',page:'colour',at:'body.skin',label:'Skin',palette:PALETTE.skin},
+  {kind:'stepper',page:'adjust',at:'head.size',label:'Head size',less:'Smaller head',more:'Bigger head'},
+  {kind:'stepper',page:'adjust',at:'head.shape',label:'Width',less:'Narrower',more:'Broader'},
+  {kind:'stepper',page:'adjust',at:'head.jaw',label:'Jaw',less:'Narrower jaw',more:'Wider jaw'},
+  {kind:'stepper',page:'adjust',at:'head.cheeks',label:'Cheeks',less:'Slimmer cheeks',more:'Fuller cheeks'},
+  {kind:'stepper',page:'adjust',at:'blush',label:'Rosy cheeks',less:'Less rosy',more:'More rosy'},
+  {kind:'stepper',page:'adjust',at:'wrinkles',label:'Laughter lines',less:'Fewer lines',more:'More lines'}]},
  {id:'hair',name:'Hair',controls:[
-  {kind:'parts',at:'hair.style',list:PARTS.hair,draw:'figure'},
-  {kind:'colours',at:'hair.colour',label:'Colour',palette:PALETTE.hair},
-  {kind:'toggle',at:'hair.flip',label:'Part on the other side'}]},
+  {kind:'parts',page:'style',at:'hair.style',list:PARTS.hair,draw:'head'},
+  {kind:'toggle',page:'style',at:'hair.flip',label:'Part on the other side'},
+  {kind:'colours',page:'colour',at:'hair.colour',label:'Colour',palette:PALETTE.hair}]},
  {id:'eyes',name:'Eyes',controls:[
-  {kind:'parts',at:'eyes.style',list:PARTS.eyes,draw:'face'},
-  {kind:'colours',at:'eyes.colour',label:'Colour',palette:PALETTE.eyes},
-  {kind:'slider',at:'eyes.size',label:'Size'},{kind:'slider',at:'eyes.width',label:'Eye width'},{kind:'slider',at:'eyes.spacing',label:'Closer ↔ apart'},
-  {kind:'slider',at:'eyes.height',label:'Lower ↔ higher',invert:true},{kind:'slider',at:'eyes.tilt',label:'Tilt'}]},
+  {kind:'parts',page:'style',at:'eyes.style',list:PARTS.eyes,draw:'eyes'},
+  {kind:'colours',page:'colour',at:'eyes.colour',label:'Colour',palette:PALETTE.eyes},
+  {kind:'position',page:'adjust',at:'eyes.height',horizontal:'eyes.spacing',paired:true},
+  {kind:'stepper',page:'adjust',at:'eyes.size',label:'Size',less:'Smaller',more:'Bigger'},
+  {kind:'stepper',page:'adjust',at:'eyes.width',label:'Stretch',less:'Taller eyes',more:'Wider eyes'},
+  {kind:'stepper',page:'adjust',at:'eyes.tilt',label:'Tilt',less:'Tilt down',more:'Tilt up'}]},
  {id:'brows',name:'Brows',controls:[
-  {kind:'parts',at:'brows.style',list:PARTS.brows,draw:'face'},
-  {kind:'colours',at:'brows.colour',label:'Colour',palette:PALETTE.hair},
-  {kind:'slider',at:'brows.size',label:'Size'},{kind:'slider',at:'brows.spacing',label:'Brow spacing'},{kind:'slider',at:'brows.height',label:'Lower ↔ higher',invert:true},{kind:'slider',at:'brows.tilt',label:'Tilt'}]},
+  {kind:'parts',page:'style',at:'brows.style',list:PARTS.brows,draw:'brows'},
+  {kind:'colours',page:'colour',at:'brows.colour',label:'Colour',palette:PALETTE.hair},
+  {kind:'position',page:'adjust',at:'brows.height',horizontal:'brows.spacing',paired:true},
+  {kind:'stepper',page:'adjust',at:'brows.size',label:'Size',less:'Smaller',more:'Bigger'},
+  {kind:'stepper',page:'adjust',at:'brows.tilt',label:'Tilt',less:'Tilt down',more:'Tilt up'}]},
  {id:'nose',name:'Nose',controls:[
-  {kind:'parts',at:'nose.style',list:PARTS.nose,draw:'face'},
-  {kind:'slider',at:'nose.size',label:'Size'},{kind:'slider',at:'nose.x',label:'Left / right'},{kind:'slider',at:'nose.height',label:'Lower ↔ higher',invert:true}]},
+  {kind:'parts',page:'style',at:'nose.style',list:PARTS.nose,draw:'nose'},
+  {kind:'position',page:'adjust',at:'nose.height',horizontal:'nose.x'},
+  {kind:'stepper',page:'adjust',at:'nose.size',label:'Size',less:'Smaller',more:'Bigger'}]},
  {id:'mouth',name:'Mouth',controls:[
-  {kind:'parts',at:'mouth.style',list:PARTS.mouth,draw:'face'},
-  {kind:'colours',at:'mouth.colour',label:'Lips',palette:PALETTE.lips},
-  {kind:'slider',at:'mouth.size',label:'Size'},{kind:'slider',at:'mouth.width',label:'Mouth width'},{kind:'slider',at:'mouth.x',label:'Left / right'},{kind:'slider',at:'mouth.height',label:'Lower ↔ higher',invert:true}]},
+  {kind:'parts',page:'style',at:'mouth.style',list:PARTS.mouth,draw:'mouth'},
+  {kind:'colours',page:'colour',at:'mouth.colour',label:'Lips',palette:PALETTE.lips},
+  {kind:'position',page:'adjust',at:'mouth.height',horizontal:'mouth.x'},
+  {kind:'stepper',page:'adjust',at:'mouth.size',label:'Size',less:'Smaller',more:'Bigger'},
+  {kind:'stepper',page:'adjust',at:'mouth.width',label:'Width',less:'Narrower',more:'Wider'}]},
  {id:'extras',name:'Glasses & beard',controls:[
-  {kind:'parts',at:'glasses.style',list:PARTS.glasses,draw:'face'},
-  {kind:'colours',at:'glasses.colour',label:'Frames',palette:['#2b2b2b','#8a4a3a','#c8a060','#e06a7a','#3d6a8a','#d8342c']},
-  {kind:'parts',at:'facial.style',list:PARTS.facial,draw:'face'},
-  {kind:'colours',at:'facial.colour',label:'Beard',palette:PALETTE.hair}]},
+  {kind:'parts',page:'style',at:'glasses.style',label:'Glasses',list:PARTS.glasses,draw:'glasses'},
+  {kind:'parts',page:'style',at:'facial.style',label:'Beard',list:PARTS.facial,draw:'facial'},
+  {kind:'colours',page:'colour',at:'glasses.colour',label:'Frames',palette:['#2b2b2b','#8a4a3a','#c8a060','#e06a7a','#3d6a8a','#d8342c']},
+  {kind:'colours',page:'colour',at:'facial.colour',label:'Beard',palette:PALETTE.hair}]},
  {id:'top',name:'Top',controls:[
-  {kind:'parts',at:'outfit.top',list:PARTS.top,draw:'figure'},
-  {kind:'chips',at:'outfit.pattern',list:['none','flowers','stripes','dots'],label:'Print'},
-  {kind:'colours',at:'outfit.topColour',label:'Colour',palette:PALETTE.cloth},
-  {kind:'colours',at:'outfit.accent',label:'Ribbons & print',palette:PALETTE.cloth}]},
+  {kind:'parts',page:'style',at:'outfit.top',list:PARTS.top,draw:'figure'},
+  {kind:'chips',page:'style',at:'outfit.pattern',list:['none','flowers','stripes','dots'],label:'Print'},
+  {kind:'colours',page:'colour',at:'outfit.topColour',label:'Colour',palette:PALETTE.cloth},
+  {kind:'colours',page:'colour',at:'outfit.accent',label:'Ribbons & print',palette:PALETTE.cloth}]},
  {id:'bottom',name:'Bottoms',controls:[
-  {kind:'parts',at:'outfit.bottom',list:PARTS.bottom,draw:'figure'},
-  {kind:'colours',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth},
-  {kind:'colours',at:'outfit.shoes',label:'Shoes',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6']},
-  {kind:'colours',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth}]},
+  {kind:'parts',page:'style',at:'outfit.bottom',list:PARTS.bottom,draw:'figure'},
+  {kind:'colours',page:'colour',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth},
+  {kind:'colours',page:'colour',at:'outfit.shoes',label:'Shoes',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6']},
+  {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth}]},
  {id:'accessories',name:'Accessories',controls:[
-  {kind:'parts',at:'accessories.earrings',label:'Earrings',list:PARTS.earrings,draw:'figure'},
-  {kind:'parts',at:'accessories.neckwear',label:'Neckwear',list:PARTS.neckwear,draw:'figure'},
-  {kind:'toggle',at:'accessories.pin',label:'Lapel pin'},
-  {kind:'colours',at:'accessories.colour',label:'Accessory colour',palette:PALETTE.cloth}]},
+  {kind:'parts',page:'style',at:'accessories.earrings',label:'Earrings',list:PARTS.earrings,draw:'head'},
+  {kind:'parts',page:'style',at:'accessories.neckwear',label:'Neckwear',list:PARTS.neckwear,draw:'figure'},
+  {kind:'toggle',page:'style',at:'accessories.pin',label:'Lapel pin'},
+  {kind:'colours',page:'colour',at:'accessories.colour',label:'Accessory colour',palette:PALETTE.cloth}]},
  {id:'hat',name:'Hats & bows',controls:[
-  {kind:'parts',at:'outfit.hat',list:PARTS.hat,draw:'figure'},
-  {kind:'colours',at:'outfit.hatColour',label:'Colour',palette:PALETTE.cloth}]},
+  {kind:'parts',page:'style',at:'outfit.hat',list:PARTS.hat,draw:'head'},
+  {kind:'colours',page:'colour',at:'outfit.hatColour',label:'Colour',palette:PALETTE.cloth}]},
 ];
-
-for(const t of TABS){
- if(!['eyes','brows','nose','mouth'].includes(t.id))continue;
- t.controls.splice(1,0,{kind:'position',label:'Position',at:t.id+'.height',horizontal:t.id+(t.id==='eyes'||t.id==='brows'?'.spacing':'.x'),paired:t.id==='eyes'||t.id==='brows'});
-}
+const PAGES=[['style','Style'],['colour','Colour'],['adjust','Adjust']];
+const STEPS=[['start','Choose a face'],['look','Make them'],['profile','Who are they?'],['hello','Say hello']];
+/** How far one press of a step button moves a value (0–1). */
+const NOTCH=1/16;
 
 const POSES=[['idle','Stand'],['Wave','Wave'],['Hop','Happy'],['walk','Walk'],['Kachashi','Dance'],['Bow','Bow'],['sit','Sit']];
 
 const get=(r,at)=>at.split('.').reduce((o,k)=>o?.[k],r);
 function set(r,at,value){const keys=at.split('.'),last=keys.pop();let o=r;for(const k of keys)o=o[k];o[last]=value;}
+/** Keeps the parts of a recipe that are who someone is when their looks change. */
+const keepSelf=(looks,self)=>normalizeRecipe({...looks,name:self.name,profile:self.profile});
 
 const CSS=`
-.shm{position:fixed;inset:0;z-index:4000;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;background:linear-gradient(160deg,#d9f1fa,#fffaf0 65%);color:var(--isle-ink,#3b3f55);font-family:var(--isle-font,"M PLUS Rounded 1c",system-ui,sans-serif);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.shm{position:fixed;inset:0;z-index:4000;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;background:radial-gradient(circle at 20% 10%,#fffbe8,#fff1cf 45%,#ffe4b8);color:var(--isle-ink,#3b3f55);font-family:var(--isle-font,"M PLUS Rounded 1c",system-ui,sans-serif);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .shm *{box-sizing:border-box;min-width:0}
 .shm button,.shm select,.shm input{font-family:inherit}
 .shm button{cursor:pointer}
 .shm button:focus-visible,.shm input:focus-visible,.shm select:focus-visible,.shm textarea:focus-visible{outline:3px solid #2a8fcc;outline-offset:2px}
 .shm button:disabled{opacity:.4;cursor:default}
 .shm .ui-icon{flex-shrink:0;width:20px;height:20px}
-.shm-top{display:flex;align-items:center;gap:12px;padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left))}
+.shm-top{display:flex;align-items:center;gap:10px;padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left))}
 .shm-top h2{margin:0;font-size:20px;white-space:nowrap}
-.shm-name{flex:1;max-width:280px;margin-left:auto;height:44px;padding:0 14px;border:1px solid #e6e1d6;border-radius:14px;background:#fffaf0;color:inherit;font-size:16px}
-.shm-pill,.shm-save,.shm-select{min-height:44px;padding:8px 14px;border:1px solid #e6e1d6;border-radius:14px;background:#fffaf0;color:inherit;font-size:14px;font-weight:800}
+.shm-top h2 small{display:block;font-size:12px;font-weight:700;color:#8a7a5a;letter-spacing:.04em}
+.shm-name{flex:1;max-width:260px;margin-left:auto;height:44px;padding:0 14px;border:2px solid #f0dcb0;border-radius:22px;background:#fff;color:inherit;font-size:16px;font-weight:700}
+.shm-pill,.shm-save,.shm-select,.shm-next{min-height:44px;padding:8px 16px;border:2px solid #f0dcb0;border-radius:22px;background:#fff;color:inherit;font-size:14px;font-weight:800}
 .shm-pill{display:inline-flex;align-items:center;justify-content:center;gap:7px}
-.shm-main{display:grid;grid-template-columns:minmax(0,40%) minmax(0,1fr);min-height:0}
+.shm-main{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);min-height:0}
+.shm[data-step=hello] .shm-main{grid-template-columns:minmax(0,1fr)}
+.shm[data-step=hello] .shm-panel{display:none}
 .shm-stage{position:relative;min-height:0;overflow:hidden}
 .shm-stage>canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
 .shm-dice{position:absolute;top:8px;left:12px;display:flex;gap:8px}
-.shm-dice button{display:grid;place-items:center;width:44px;height:44px;border:1px solid #e6e1d6;border-radius:14px;background:#fffaf0e8;color:inherit}
-.shm-poses{position:absolute;bottom:8px;left:12px;right:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:800}
+.shm-dice button{display:grid;place-items:center;width:44px;height:44px;border:2px solid #f0dcb0;border-radius:50%;background:#fffe;color:inherit}
+.shm-poses{position:absolute;bottom:8px;left:12px;right:12px;display:flex;align-items:center;justify-content:center;gap:8px}
 .shm-poses .shm-select{width:110px}
-.shm-poses .shm-angle{width:80px;padding:8px 6px}
-.shm-panel{display:grid;grid-template-rows:auto minmax(0,1fr);min-height:0;margin:0 12px 0 0;border:1px solid #e6e1d6;border-radius:20px;background:#fffaf0;overflow:hidden}
-.shm-tabs{display:flex;overflow-x:auto;padding:8px;gap:4px;border-bottom:1px solid #e6e1d6}
-.shm-tabs button{flex:0 0 auto;min-height:44px;padding:8px 12px;border:0;border-radius:12px;background:transparent;color:inherit;font-size:13px;font-weight:800}
-.shm-tabs button[aria-selected=true]{background:#45b7f0;color:#fff}
-.shm-category{display:none;padding:8px 12px;border-bottom:1px solid #e6e1d6;align-items:center;gap:10px;font-size:13px;font-weight:800}
+.shm-poses .shm-angle{width:84px;padding:8px 6px}
+.shm[data-focus=face] .shm-poses,.shm[data-step=hello] .shm-poses{display:none}
+.shm[data-step=start] .shm-panel>div:first-child,.shm[data-step=profile] .shm-panel>div:first-child,.shm[data-step=start] .shm-pages,.shm[data-step=profile] .shm-pages{display:none}
+.shm-bubble{position:absolute;left:50%;bottom:14px;width:min(560px,calc(100% - 24px));transform:translateX(-50%);padding:16px 20px;border:3px solid #3b3f55;border-radius:24px;background:#fffdf6;font-size:18px;font-weight:700;line-height:1.45;white-space:pre-line;box-shadow:0 6px 0 #3b3f5522}
+.shm-bubble[hidden]{display:none}
+.shm-panel{display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0;margin:0 12px 0 0;border:3px solid #f0dcb0;border-radius:26px;background:#fffdf6;overflow:hidden}
+.shm-tabs{display:flex;overflow-x:auto;padding:8px;gap:6px;border-bottom:2px solid #f6e8c8;scrollbar-width:none}
+.shm-tabs button{flex:0 0 auto;min-height:44px;padding:8px 14px;border:0;border-radius:22px;background:#fff4dc;color:inherit;font-size:13px;font-weight:800}
+.shm-tabs button[aria-selected=true]{background:#ff9d3c;color:#fff;box-shadow:0 3px 0 #d9741a}
+.shm-category{display:none;padding:8px 12px;border-bottom:2px solid #f6e8c8;align-items:center;gap:10px;font-size:13px;font-weight:800}
 .shm-category select{flex:1;width:100%}
+.shm-pages{display:flex;gap:4px;margin:8px 12px 0;padding:4px;border-radius:24px;background:#f6ecd6}
+.shm-pages button{flex:1;min-height:40px;border:0;border-radius:20px;background:transparent;color:#6b5d44;font-size:13px;font-weight:800}
+.shm-pages button[aria-selected=true]{background:#fff;color:#3b3f55;box-shadow:0 2px 0 #e3d2ac}
+.shm-pages[hidden]{display:none}
 .shm-body{overflow-y:auto;overscroll-behavior:contain;padding:12px 16px 20px;scrollbar-width:thin}
-.shm-body h4{margin:14px 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#686675}
+.shm-body h4{margin:16px 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#8a7a5a}
 .shm-body h4:first-child{margin-top:0}
-.shm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
-.shm-grid button{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:90px;padding:6px 4px;border:2px solid #e6e1d6;border-radius:14px;background:#fff;color:inherit;font-size:11px;font-weight:800}
-.shm-grid button canvas{width:60px;height:60px;border-radius:12px;background:#f3ecdc}
-.shm-grid button[aria-pressed=true]{border-color:#2a8fcc;background:#e1f4ff}
+.shm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:10px}
+.shm-grid button{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:92px;padding:6px 4px;border:3px solid #f0dcb0;border-radius:18px;background:#fff;color:inherit;font-size:11px;font-weight:800}
+.shm-grid button canvas{width:64px;height:64px;border-radius:14px;background:#f3ecdc}
+.shm-grid button[aria-pressed=true]{border-color:#ff9d3c;background:#fff4e2}
+.shm-grid button[aria-pressed=true]::after{content:"✓";position:absolute;top:-8px;right:-8px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#ff9d3c;color:#fff;font-size:13px}
+.shm-faces{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+.shm-faces button canvas{width:84px;height:84px;border-radius:50%}
 .shm-swatches{display:flex;flex-wrap:wrap;gap:10px;padding:3px}
-.shm-swatches button{width:44px;height:44px;border:4px solid #fff;border-radius:50%;box-shadow:0 0 0 1px #e6e1d6}
-.shm-swatches button[aria-pressed=true]{box-shadow:0 0 0 3px #2a8fcc}
-.shm-slider{display:grid;grid-template-columns:110px minmax(0,1fr);align-items:center;gap:10px;margin:8px 0}
-.shm-slider span{font-size:12px;font-weight:800}
-.shm-slider input{width:100%;height:44px;margin:0;accent-color:#2a8fcc}
+.shm-swatches button{width:44px;height:44px;border:4px solid #fff;border-radius:50%;box-shadow:0 0 0 2px #f0dcb0}
+.shm-swatches button[aria-pressed=true]{box-shadow:0 0 0 4px #ff9d3c}
+.shm-step{display:grid;grid-template-columns:96px 44px minmax(0,1fr) 44px;align-items:center;gap:8px;margin:8px 0}
+.shm-step>span{font-size:12px;font-weight:800}
+.shm-step button,.shm-pad button{display:grid;place-items:center;width:44px;height:44px;border:2px solid #f0dcb0;border-radius:50%;background:#fff;color:inherit;font-size:20px;font-weight:900;line-height:1}
+.shm-meter{display:flex;gap:3px;height:12px}
+.shm-meter i{flex:1;border-radius:6px;background:#efe3c8}
+.shm-meter i.on{background:#ff9d3c}
+.shm-pad{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:6px;justify-content:center;margin:4px 0 10px}
+.shm-pad .up{grid-area:1/2}.shm-pad .left{grid-area:2/1}.shm-pad .right{grid-area:2/3}.shm-pad .down{grid-area:3/2}
+.shm-pad b{grid-area:2/2;display:grid;place-items:center;font-size:11px;color:#8a7a5a}
 .shm-chips{display:flex;flex-wrap:wrap;gap:8px}
-.shm-chips button,.shm-toggle{min-height:44px;padding:8px 14px;border:1px solid #e6e1d6;border-radius:12px;background:#fff;color:inherit;font-size:13px;font-weight:800}
-.shm-chips button[aria-pressed=true],.shm-toggle[aria-pressed=true]{background:#e1f4ff;border-color:#2a8fcc}
+.shm-chips button,.shm-toggle{min-height:44px;padding:8px 16px;border:2px solid #f0dcb0;border-radius:22px;background:#fff;color:inherit;font-size:13px;font-weight:800}
+.shm-chips button[aria-pressed=true],.shm-toggle[aria-pressed=true]{background:#fff4e2;border-color:#ff9d3c}
 .shm-toggle{display:block;margin:10px 0}
+.shm-dial{margin:10px 0 14px}
+.shm-dial>div:first-child{display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#8a7a5a;margin-bottom:4px}
+.shm-dial>div:first-child strong{color:#3b3f55}
+.shm-pips{display:flex;gap:4px}
+.shm-pips button{flex:1;min-height:44px;border:2px solid #f0dcb0;border-radius:12px;background:#fff}
+.shm-pips button.on{background:#ffd9a8;border-color:#ffb766}
+.shm-pips button[aria-pressed=true]{background:#ff9d3c;border-color:#d9741a}
+.shm-type{margin:6px 0 14px;padding:14px 16px;border-radius:20px;color:#fff;font-weight:800}
+.shm-type strong{display:block;font-size:20px}
+.shm-type span{font-size:13px;font-weight:700;opacity:.95}
+.shm-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.shm-row select{flex:1;min-width:120px}
+.shm-text{width:100%;height:44px;padding:0 14px;border:2px solid #f0dcb0;border-radius:22px;background:#fff;color:inherit;font-size:16px}
 .shm-foot{display:flex;gap:8px;align-items:center;padding:8px max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
-.shm-save{margin-left:auto;background:#45b7f0;border-color:#2a8fcc;color:#fff;box-shadow:0 3px 0 #2a8fcc}
+.shm-dots{display:flex;gap:6px;margin:0 auto}
+.shm-dots button{display:grid;place-items:center;min-width:44px;height:44px;padding:0 10px;border:2px solid #f0dcb0;border-radius:22px;background:#fff;color:#8a7a5a;font-size:13px;font-weight:800}
+.shm-dots button[aria-current=step]{background:#3b3f55;border-color:#3b3f55;color:#fff}
+.shm-dots button span{display:none;margin-left:6px}
+.shm-dots button[aria-current=step] span{display:inline}
+.shm-next{background:#ff9d3c;border-color:#d9741a;color:#fff;box-shadow:0 3px 0 #d9741a}
+.shm-save{background:#45b7f0;border-color:#2a8fcc;color:#fff;box-shadow:0 3px 0 #2a8fcc}
 .shm-share{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:12px;background:#25374680}
-.shm-share>div{width:min(520px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;padding:20px;border:1px solid #e6e1d6;border-radius:20px;background:#fffaf0}
+.shm-share>div{width:min(520px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;padding:20px;border:3px solid #f0dcb0;border-radius:24px;background:#fffdf6}
 .shm-share h3{margin:0 0 8px}
 .shm-share p{margin:0 0 12px;font-size:13px;line-height:1.5}
-.shm-share textarea{width:100%;height:72px;padding:10px;border:1px solid #e6e1d6;border-radius:12px;background:#fff;font:16px ui-monospace,monospace;resize:none;overflow-wrap:anywhere}
+.shm-share textarea{width:100%;height:72px;padding:10px;border:2px solid #f0dcb0;border-radius:14px;background:#fff;font:16px ui-monospace,monospace;resize:none;overflow-wrap:anywhere}
 .shm-share .row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
 @media(max-width:760px){
  .shm-top h2{font-size:16px}
  .shm-tabs{display:none}.shm-category{display:flex}
  .shm-main{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,36%) minmax(0,1fr)}
+ .shm[data-step=hello] .shm-main{grid-template-rows:minmax(0,1fr)}
  .shm-panel{margin:0 10px}.shm-body{padding:12px}
- .shm-poses{justify-content:flex-end}.shm-poses>span{display:none}
- .shm-poses{left:auto;right:10px;bottom:8px}
- .shm-slider{grid-template-columns:100px minmax(0,1fr)}
+ .shm-poses{left:auto;right:10px;bottom:8px;justify-content:flex-end}
+ .shm-step{grid-template-columns:80px 44px minmax(0,1fr) 44px}
+ .shm-dots button[aria-current=step] span{display:none}
 }
-@media(max-width:520px){.shm-top h2{display:none}.shm-name{max-width:none}.shm-foot .shm-pill{padding:8px 10px}.shm-save{flex:1;padding:8px;font-size:13px}}
-@media(max-height:500px) and (orientation:portrait){.shm-main{grid-template-rows:minmax(0,28%) minmax(0,1fr)}.shm-poses{top:8px;bottom:auto}}
+@media(max-width:520px){.shm-top h2{display:none}.shm-name{max-width:none}.shm-foot .shm-pill{padding:8px 10px}.shm-dots{gap:3px}.shm-dots button{min-width:36px;padding:0 6px}}
+@media(max-height:500px) and (orientation:portrait){.shm-main{grid-template-rows:minmax(0,21%) minmax(0,1fr)}.shm-poses{top:8px;bottom:auto}.shm-top h2 small{display:none}.shm-pages{margin:4px 8px 0}.shm-pages button{min-height:34px}.shm-category{padding:4px 8px}.shm-top,.shm-foot{padding-top:4px;padding-bottom:4px}}
 @media(max-height:500px) and (orientation:landscape){
  .shm-main{grid-template-columns:minmax(0,35%) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
- .shm-tabs{display:none}.shm-category{display:flex}.shm-top h2{font-size:16px}
+ .shm-tabs{display:none}.shm-category{display:flex}.shm-top h2{font-size:16px}.shm-top h2 small{display:none}
  .shm-panel{margin-right:10px}.shm-top,.shm-foot{padding-top:4px;padding-bottom:4px}
+ .shm-dots button span{display:none!important}
 }
 `;
 
@@ -182,12 +244,14 @@ const CSS=`
  * @param {()=>void} [options.onClose]
  * @param {string} [options.saveLabel]
  * @param {(code:string)=>string} [options.shareLink] a link that opens a recipe code
+ * @param {'start'|'look'|'profile'|'hello'} [options.startAt] the step to open on
+ * @param {(freq:number,type:string)=>void} [options.voice] plays one voice blip
  * @returns {{close:()=>void, get recipe():object}}
  */
-export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null}={}){
+export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{}}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
  let recipe=normalizeRecipe(start);const history=[];
- let tab='body',pose='idle',previewFacing=0;
+ let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',previewFacing=0;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
  // ----- Layout -----
@@ -196,19 +260,25 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const iconButton=(icon,label,props={})=>{const b=el('button',{type:'button',ariaLabel:label,title:label,...props});b.innerHTML=svg(icon);return b;};
  const name=el('input',{className:'shm-name',value:recipe.name||'',placeholder:'Name',maxLength:24,ariaLabel:'Name'});
  const close=iconButton('close','Close',{className:'shm-pill'});
- root.append(el('div',{className:'shm-top'},el('h2',{textContent:'Make your islander'}),name,close));
+ const share=el('button',{className:'shm-pill',textContent:'Share'});
+ const title=el('h2',{});
+ root.append(el('div',{className:'shm-top'},title,name,share,close));
  const canvas=el('canvas',{ariaLabel:'Your islander. Drag to turn.'});
- const dice=iconButton('shuffle','Randomise appearance'),undo=iconButton('undo','Undo',{disabled:true});
+ const dice=iconButton('shuffle','Randomise appearance'),undo=iconButton('undo','Undo',{disabled:true}),reset=iconButton('reset','Start over');
  const poses=el('div',{className:'shm-poses'});
- const stage=el('div',{className:'shm-stage'},canvas,el('div',{className:'shm-dice'},dice,undo),poses);
+ const bubble=el('div',{className:'shm-bubble',hidden:true,role:'status'});
+ const stage=el('div',{className:'shm-stage'},canvas,el('div',{className:'shm-dice'},dice,undo,reset),poses,bubble);
  const category=el('select',{className:'shm-select',ariaLabel:'Appearance category'},...TABS.map(t=>el('option',{value:t.id,textContent:t.name})));
  const categoryRow=el('label',{className:'shm-category'},'Edit',category);
- const tabs=el('div',{className:'shm-tabs',role:'tablist',ariaLabel:'Appearance category'}),body=el('div',{className:'shm-body',id:'shm-body',role:'tabpanel'});
- const panelHead=el('div',{},tabs,categoryRow);
- root.append(el('div',{className:'shm-main'},stage,el('div',{className:'shm-panel'},panelHead,body)));
- const share=el('button',{className:'shm-pill',textContent:'Share'}),reset=iconButton('reset','Start over',{className:'shm-pill'});
- const save=el('button',{className:'shm-save',textContent:saveLabel});
- root.append(el('div',{className:'shm-foot'},share,reset,save));
+ const tabs=el('div',{className:'shm-tabs',role:'tablist',ariaLabel:'Appearance category'});
+ const pages=el('div',{className:'shm-pages',role:'tablist',ariaLabel:'Part, colour or adjust'});
+ const body=el('div',{className:'shm-body',id:'shm-body',role:'tabpanel'});
+ const panel=el('div',{className:'shm-panel'},el('div',{},tabs,categoryRow),pages,body);
+ root.append(el('div',{className:'shm-main'},stage,panel));
+ const back=el('button',{className:'shm-pill',textContent:'Back'});
+ const dots=el('nav',{className:'shm-dots',ariaLabel:'Steps'});
+ const next=el('button',{className:'shm-next'});
+ root.append(el('div',{className:'shm-foot'},back,dots,next));
  document.body.append(root);
  const viewport=window.visualViewport;
  const fitViewport=()=>{if(viewport){root.style.height=viewport.height+'px';root.style.top=viewport.offsetTop+'px';root.style.bottom='auto';}};
@@ -229,27 +299,39 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
  renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));renderer.outputColorSpace=THREE.SRGBColorSpace;
  const scene=new THREE.Scene();
- scene.add(new THREE.HemisphereLight(0xffffff,0xb8a88a,2.2));
+ scene.add(new THREE.HemisphereLight(0xffffff,0xc8a878,2.2));
  const sun=new THREE.DirectionalLight(0xfff4e0,1.9);sun.position.set(2,4,5);scene.add(sun);
- const floor=new THREE.Mesh(new THREE.CircleGeometry(.62,40),new THREE.MeshBasicMaterial({color:0xe9dcc0}));floor.rotation.x=-Math.PI/2;scene.add(floor);
+ const floor=new THREE.Mesh(new THREE.CircleGeometry(.62,40),new THREE.MeshBasicMaterial({color:0xf6d79c}));floor.rotation.x=-Math.PI/2;scene.add(floor);
  const holder=new THREE.Group();scene.add(holder);
  const camera=new THREE.PerspectiveCamera(28,1,.05,50);
  let avatar=null,animator=null,spin=0,spinVelocity=0,dragging=null,frame=0,dirty=true,clock=performance.now(),focus=0;
+ const frames={face:null,full:null};
  function rebuild(){
   if(avatar){avatar.root.removeFromParent();avatar.dispose();}
   avatar=buildAvatar(recipe,{shadows:false,faceSize:512});animator=createAvatarAnimator(avatar);holder.add(avatar.root);
   if(pose!=='idle'&&pose!=='walk'&&pose!=='sit')animator.play(pose);
+  // Frame from the real meshes, not from estimates, so a big head or a tall hat is
+  // never cut off and the face fills the view the same way for everybody.
+  avatar.root.updateMatrixWorld(true);
+  const m=avatar.measure,head=new THREE.Box3();
+  if(avatar.face?.head)head.setFromObject(avatar.face.head);else head.set(new THREE.Vector3(-m.Rh,m.headY,-m.Rh),new THREE.Vector3(m.Rh,m.headY+m.Rh*2,m.Rh));
+  frames.face={centre:head.getCenter(new THREE.Vector3()),size:head.getSize(new THREE.Vector3()).multiplyScalar(1.12)};
+  frames.full={centre:new THREE.Vector3(0,m.H*.5,0),size:new THREE.Vector3(m.width*2.2,m.H*1.04,m.depth)};
  }
  function resize(){
   const w=canvas.clientWidth||300,h=canvas.clientHeight||300;
   renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
  }
+ /** The distance at which a box of this size fits the view with some air round it. */
+ const fit=(size,air)=>{const t=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));return Math.max(size.y*air/2/t,size.x*air/2/(t*camera.aspect))+size.z/2;};
+ const faceFocus=()=>step==='look'&&FACE_TABS.has(tab);
  function aim(dt){
-  const m=avatar.measure,want=FACE_TABS.has(tab)?1:0;focus+=(want-focus)*Math.min(1,dt*5);
-  // Whole figure, or in close on the face for the face tabs.
-  const fullY=m.H*.52,fullD=m.H*2.5+1.2/camera.aspect*.4,faceY=m.headCentre-m.Rh*.18,faceD=m.Rh*8.6;
-  const y=THREE.MathUtils.lerp(fullY,faceY,focus),d=THREE.MathUtils.lerp(fullD,faceD,focus);
-  camera.position.set(0,y+.08*(1-focus),d);camera.lookAt(0,y,0);
+  const want=faceFocus()?1:0;focus+=(want-focus)*Math.min(1,dt*5);
+  const F=frames.face,B=frames.full;
+  // On the face tabs the head sits a little high, leaving room for the chin and neck.
+  const fullD=fit(B.size,1.18),faceD=fit(F.size,1.7);
+  const y=THREE.MathUtils.lerp(B.centre.y,F.centre.y-F.size.y*.05,focus),d=THREE.MathUtils.lerp(fullD,faceD,focus);
+  camera.position.set(0,y+.06*(1-focus),d);camera.lookAt(0,y,0);
  }
  function loop(){
   frame=requestAnimationFrame(loop);
@@ -258,7 +340,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   if(!dragging){spin+=spinVelocity*dt;spinVelocity*=Math.exp(-dt*3);if(Math.abs(spinVelocity)<.05)spin+=(previewFacing-spin)*Math.min(1,dt*1.5)*(pose==='walk'?0:1);}
   // A body faces -z in the town; here it turns round to face you.
   holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
-  animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,expression:pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
+  const talking=speech&&speech.typing;
+  animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,talk:talking?.5+.5*Math.sin(now/70):0,
+   expression:step==='hello'?'happy':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
   aim(dt);renderer.render(scene,camera);
  }
  canvas.addEventListener('pointerdown',e=>{dragging={x:e.clientX,spin,t:performance.now()};canvas.setPointerCapture(e.pointerId);});
@@ -267,24 +351,20 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;observer?.observe(canvas);resize();
 
  // ----- Part pictures -----
- // Faces are drawn flat, straight from the face painter. Hair, clothes and hats are the
- // figure itself, rendered small, a corner of the same canvas at a time.
+ // Face parts are drawn flat, one feature at a time, by the face painter. Hair, hats and
+ // clothes are the figure itself, rendered small and straight on.
  const thumbs=new Map();
- function faceThumb(r,c){
-  const src=document.createElement('canvas');src.width=src.height=256;drawFace(src.getContext('2d'),r,{expression:'neutral',size:256});
-  const ctx=c.getContext('2d');ctx.drawImage(src,40,34,176,176,0,0,c.width,c.height);
- }
  const thumbTarget=new THREE.WebGLRenderTarget(136,136);thumbTarget.texture.colorSpace=THREE.SRGBColorSpace;
  const thumbCamera=new THREE.PerspectiveCamera(30,1,.05,20),thumbScene=new THREE.Scene();
- thumbScene.add(new THREE.HemisphereLight(0xffffff,0xb8a88a,2.2));const thumbSun=sun.clone();thumbScene.add(thumbSun);
- function figureThumb(r,c,at){
+ thumbScene.add(new THREE.HemisphereLight(0xffffff,0xc8a878,2.2));const thumbSun=sun.clone();thumbScene.add(thumbSun);
+ function figureThumb(r,c,framing){
   const a=buildAvatar(r,{shadows:false,faceSize:128}),m=a.measure;
-  a.root.rotation.y=.45;thumbScene.add(a.root);a.root.updateMatrixWorld(true);
-  const onHead=at.startsWith('hair')||at==='outfit.hat'||at==='accessories.earrings';
-  const y=onHead?m.headCentre+m.Rh*.2:at==='outfit.bottom'?m.hipY*.7:m.hipY+m.torso*.55,d=onHead?m.Rh*5.4:at==='outfit.bottom'?m.H*.95:m.H*.85;
-  thumbCamera.position.set(0,y+(onHead?m.Rh*.4:.1),d);thumbCamera.lookAt(0,y,0);
+  a.root.rotation.y=framing==='figure'?.35:.2;thumbScene.add(a.root);a.root.updateMatrixWorld(true);
   const px=c.width;
-  renderer.setRenderTarget(thumbTarget);renderer.setClearColor(0xf3ecdc,1);renderer.clear();renderer.render(thumbScene,thumbCamera);
+  if(framing==='figure'){const y=r.__bottom?m.hipY*.7:m.hipY+m.torso*.5,d=r.__bottom?m.H*1.05:m.H*1.08;thumbCamera.position.set(0,y+.1,d);thumbCamera.lookAt(0,y,0);}
+  else{const hb=new THREE.Box3();if(a.face?.head)hb.setFromObject(a.face.head);else hb.set(new THREE.Vector3(-m.Rh,m.headY,-m.Rh),new THREE.Vector3(m.Rh,m.headY+m.Rh*2,m.Rh));
+   const c3=hb.getCenter(new THREE.Vector3()),s=hb.getSize(new THREE.Vector3());thumbCamera.position.set(0,c3.y+s.y*.08,c3.z+s.y*2.75);thumbCamera.lookAt(0,c3.y+s.y*.04,c3.z);}
+  renderer.setRenderTarget(thumbTarget);renderer.setClearColor(0xfff4dc,1);renderer.clear();renderer.render(thumbScene,thumbCamera);
   const pixels=new Uint8Array(px*px*4);renderer.readRenderTargetPixels(thumbTarget,0,0,px,px,pixels);
   const ctx=c.getContext('2d'),image=ctx.createImageData(px,px);
   for(let y=0;y<px;y++)image.data.set(pixels.subarray((px-1-y)*px*4,(px-y)*px*4),y*px*4);
@@ -292,78 +372,180 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   renderer.setRenderTarget(null);renderer.setClearColor(0x000000,0);
   a.root.removeFromParent();a.dispose();
  }
+ function cached(key,c,draw){
+  if(thumbs.has(key)){c.getContext('2d').drawImage(thumbs.get(key),0,0);return;}
+  draw();const copy=document.createElement('canvas');copy.width=c.width;copy.height=c.height;copy.getContext('2d').drawImage(c,0,0);thumbs.set(key,copy);
+ }
  function drawThumb(control,value,c){
   const r=structuredClone(recipe);set(r,control.at,value);
-  // Show a hat on the hat tab only, and a bare head for the hairstyles.
-  if(control.at.startsWith('hair'))r.outfit.hat='none';
-  const key=control.at+'|'+value+'|'+JSON.stringify(control.draw==='face'?{...r,outfit:0,body:{skin:r.body.skin}}:r);
-  if(thumbs.has(key)){c.getContext('2d').drawImage(thumbs.get(key),0,0);return;}
-  if(control.draw==='face')faceThumb(r,c);else figureThumb(r,c,control.at);
-  const copy=document.createElement('canvas');copy.width=c.width;copy.height=c.height;copy.getContext('2d').drawImage(c,0,0);thumbs.set(key,copy);
+  // A hat on the hat tab only, and a bare head for the hairstyles and earrings.
+  if(control.at!=='outfit.hat')r.outfit.hat='none';
+  if(control.at==='outfit.bottom')r.__bottom=true;
+  const flat=control.draw!=='head'&&control.draw!=='figure';
+  const key=control.at+'|'+value+'|'+JSON.stringify(flat?{eyes:r.eyes,brows:r.brows,nose:r.nose,mouth:r.mouth,glasses:r.glasses,facial:r.facial,skin:r.body.skin}:{...r,name:0,profile:0});
+  cached(key,c,()=>flat?drawPart(c.getContext('2d'),normalizeRecipe(r),control.draw,c.width):figureThumb(r,c,control.draw));
  }
 
- // ----- The panel -----
- function change(at,value,remember=true){
+ // ----- Editing -----
+ function remember(){history.push(structuredClone(recipe));if(history.length>60)history.shift();undo.disabled=false;}
+ function change(at,value,keep=true){
   if(get(recipe,at)===value)return;
-  if(remember){history.push(structuredClone(recipe));if(history.length>60)history.shift();}
-  set(recipe,at,value);recipe=normalizeRecipe(recipe);dirty=true;undo.disabled=false;
+  if(keep)remember();
+  set(recipe,at,value);recipe=normalizeRecipe(recipe);dirty=true;
  }
- function chooseTab(id){tab=id;category.value=id;renderTabs();renderBody();body.scrollTop=0;}
+ function chooseTab(id){tab=id;category.value=id;const t=TABS.find(x=>x.id===id);if(!t.controls.some(c=>c.page===page))page='style';renderTabs();renderBody();body.scrollTop=0;syncFocus();}
  category.onchange=()=>chooseTab(category.value);
  function renderTabs(){
   if(!tabs.children.length)tabs.append(...TABS.map(t=>{const b=el('button',{role:'tab',id:'shm-tab-'+t.id,textContent:t.name});b.setAttribute('aria-controls','shm-body');b.onclick=()=>chooseTab(t.id);return b;}));
   [...tabs.children].forEach((b,i)=>{const active=TABS[i].id===tab;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
-  body.setAttribute('aria-label',TABS.find(t=>t.id===tab).name);
+  const t=TABS.find(x=>x.id===tab);
+  pages.replaceChildren(...PAGES.filter(([id])=>t.controls.some(c=>c.page===id)).map(([id,label])=>{const b=el('button',{role:'tab',textContent:label});b.setAttribute('aria-selected',String(id===page));b.onclick=()=>{page=id;renderTabs();renderBody();};return b;}));
  }
  tabs.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const i=TABS.findIndex(t=>t.id===tab),n=e.key==='Home'?0:e.key==='End'?TABS.length-1:(i+(e.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;chooseTab(TABS[n].id);tabs.children[n].focus();tabs.children[n].scrollIntoView({block:'nearest',inline:'nearest'});};
- let pictureQueue=[],pictureJobs=[],pictureFrame=0;
- function renderBody(){
-  cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);pictureQueue=[];pictureJobs=[];
-  const t=TABS.find(x=>x.id===tab);body.replaceChildren();
-  for(const control of t.controls){
-   if(control.label)body.append(el('h4',{textContent:control.label}));
+ let pictureQueue=[],pictureJobs=[],pictureFrame=0,picturesDue=0;
+ // Pictures are drawn a few a frame, so a page opens at once and fills in.
+ function paintQueued(){pictureFrame=requestAnimationFrame(()=>{const t0=performance.now();while(pictureQueue.length&&performance.now()-t0<12)pictureQueue.shift()();if(pictureQueue.length)paintQueued();});}
+ function renderPictures(){clearTimeout(picturesDue);picturesDue=setTimeout(()=>{cancelAnimationFrame(pictureFrame);pictureQueue=[...pictureJobs];paintQueued();},180);}
+ const pressed=(row,b)=>{for(const x of row.children)x.setAttribute('aria-pressed',String(x===b));};
+ /** A meter of sixteen notches and the two buttons either side of it. */
+ function stepper(label,at,less,more,after=()=>{}){
+  const meter=el('div',{className:'shm-meter',ariaHidden:'true'});
+  const paint=()=>{const v=get(recipe,at);meter.replaceChildren(...Array.from({length:16},(_,i)=>el('i',{className:i<Math.round(v*16)?'on':''})));};
+  const bump=d=>{change(at,Math.round(Math.max(0,Math.min(1,get(recipe,at)+d))*16)/16);paint();after();};
+  const minus=el('button',{type:'button',textContent:'−',ariaLabel:less,title:less}),plus=el('button',{type:'button',textContent:'+',ariaLabel:more,title:more});
+  minus.onclick=()=>bump(-NOTCH);plus.onclick=()=>bump(NOTCH);paint();
+  return el('div',{className:'shm-step'},el('span',{textContent:label}),minus,meter,plus);
+ }
+ function renderLook(){
+  const t=TABS.find(x=>x.id===tab);
+  for(const control of t.controls.filter(c=>c.page===page)){
+   if(control.label&&control.kind!=='toggle'&&control.kind!=='stepper')body.append(el('h4',{textContent:control.label}));
    if(control.kind==='parts'){
     const grid=el('div',{className:'shm-grid'});
     for(const value of control.list){
      const c=el('canvas',{width:136,height:136});
-     const b=el('button',{},c,LABEL[value]||value);b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));
-     b.onclick=()=>{change(control.at,value);for(const x of grid.children)x.setAttribute('aria-pressed',String(x===b));};
+     const b=el('button',{type:'button'},c,LABEL[value]||value);b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));
+     b.onclick=()=>{change(control.at,value);pressed(grid,b);};
      grid.append(b);pictureJobs.push(()=>drawThumb(control,value,c));
     }
     body.append(grid);
    }else if(control.kind==='colours'){
     const row=el('div',{className:'shm-swatches'});
-    for(const hex of control.palette){const b=el('button',{ariaLabel:hex});b.style.background=hex;b.setAttribute('aria-pressed',String(get(recipe,control.at)===hex));
-     b.onclick=()=>{change(control.at,hex);for(const x of row.children)x.setAttribute('aria-pressed',String(x===b));if(t.controls.some(c=>c.kind==='parts'))renderPictures();};row.append(b);}
+    for(const hex of control.palette){const b=el('button',{type:'button',ariaLabel:hex});b.style.background=hex;b.setAttribute('aria-pressed',String(get(recipe,control.at)===hex));
+     b.onclick=()=>{change(control.at,hex);pressed(row,b);};row.append(b);}
     body.append(row);
    }else if(control.kind==='position'){
-    const row=el('div',{className:'shm-chips',role:'group',ariaLabel:'Position '+t.name.toLowerCase()});
-    const directions=[['arrow-left',control.paired?'Closer':'Move left',control.horizontal,-.04],['arrow-up','Move up',control.at,.04],['arrow-down','Move down',control.at,-.04],['arrow-right',control.paired?'Wider apart':'Move right',control.horizontal,.04]];
-    for(const [icon,label,at,delta] of directions){const b=iconButton(icon,label);b.onclick=()=>{change(at,Math.max(0,Math.min(1,get(recipe,at)+delta)));for(const range of body.querySelectorAll('input[type=range]'))if(range.dataset.at===at)range.value=range.dataset.invert==='true'?1-get(recipe,at):get(recipe,at);renderPictures();};row.append(b);}
-    body.append(row);
-   }else if(control.kind==='slider'){
-    const input=el('input',{type:'range',min:0,max:1,step:.01,value:control.invert?1-get(recipe,control.at):get(recipe,control.at),ariaLabel:control.label});
-    input.dataset.at=control.at;input.dataset.invert=String(!!control.invert);
-    let adjusting=false;
-    input.oninput=()=>{change(control.at,control.invert?1-+input.value:+input.value,!adjusting);adjusting=true;};
-    input.onchange=()=>{adjusting=false;};
-    body.lastChild.remove();body.append(el('label',{className:'shm-slider'},el('span',{textContent:control.label}),input));
+    body.append(el('h4',{textContent:'Position'}));
+    const pad=el('div',{className:'shm-pad',role:'group',ariaLabel:'Move '+t.name.toLowerCase()});
+    const directions=[['up','arrow-up','Move up',control.at,NOTCH],['down','arrow-down','Move down',control.at,-NOTCH],
+     ['left','arrow-left',control.paired?'Closer':'Move left',control.horizontal,-NOTCH],['right','arrow-right',control.paired?'Wider apart':'Move right',control.horizontal,NOTCH]];
+    for(const [cls,icon,label,at,delta] of directions){const b=iconButton(icon,label,{className:cls});b.onclick=()=>change(at,Math.round(Math.max(0,Math.min(1,get(recipe,at)+delta))*16)/16);pad.append(b);}
+    pad.append(el('b',{textContent:control.paired?'apart':'move'}));
+    body.append(pad);
+   }else if(control.kind==='stepper'){
+    body.append(stepper(control.label,control.at,control.less,control.more));
    }else if(control.kind==='toggle'){
-    const b=el('button',{className:'shm-toggle',textContent:control.label});b.setAttribute('aria-pressed',String(!!get(recipe,control.at)));
+    const b=el('button',{type:'button',className:'shm-toggle',textContent:control.label});b.setAttribute('aria-pressed',String(!!get(recipe,control.at)));
     b.onclick=()=>{change(control.at,!get(recipe,control.at));b.setAttribute('aria-pressed',String(!!get(recipe,control.at)));};
-    body.lastChild.remove();body.append(b);
+    body.append(b);
    }else if(control.kind==='chips'){
     const row=el('div',{className:'shm-chips'});
-    for(const value of control.list){const b=el('button',{textContent:LABEL[value]||value});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);for(const x of row.children)x.setAttribute('aria-pressed',String(x===b));renderPictures();};row.append(b);}
+    for(const value of control.list){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);};row.append(b);}
     body.append(row);
    }
   }
+ }
+ // Step 1: faces to start from. The first is whoever you came in with.
+ let faces=[],faceSeed=0;
+ function dealFaces(){faces=[recipe,...Array.from({length:11},()=>keepSelf(randomRecipe('face-'+Date.now().toString(36)+'-'+(faceSeed++)),recipe))];}
+ function renderStart(){
+  if(!faces.length)dealFaces();
+  body.append(el('h4',{textContent:'Pick someone to start from'}));
+  const grid=el('div',{className:'shm-grid shm-faces'});
+  faces.forEach((face,i)=>{
+   const c=el('canvas',{width:136,height:136});
+   const b=el('button',{type:'button',ariaLabel:i?'Face '+(i+1):'As they are'},c,i?'':'As they are');
+   b.setAttribute('aria-pressed',String(JSON.stringify({...face,name:0,profile:0})===JSON.stringify({...recipe,name:0,profile:0})));
+   b.onclick=()=>{remember();recipe=keepSelf(face,recipe);dirty=true;pressed(grid,b);};
+   grid.append(b);pictureJobs.push(()=>cached('face|'+JSON.stringify({...face,name:0,profile:0}),c,()=>figureThumb(face,c,'head')));
+  });
+  const more=el('button',{type:'button',className:'shm-pill',textContent:'Different faces'});
+  more.onclick=()=>{faces=[recipe];for(let i=0;i<11;i++)faces.push(keepSelf(randomRecipe('face-'+Date.now().toString(36)+'-'+(faceSeed++)),recipe));renderBody();};
+  body.append(grid,el('div',{className:'shm-row',style:'margin-top:14px'},more));
+ }
+ // Step 3: who they are.
+ function renderProfile(){
+  const p=recipe.profile,at=k=>'profile.'+k;
+  body.append(el('h4',{textContent:'Birthday'}));
+  const month=el('select',{className:'shm-select',ariaLabel:'Birthday month'},...MONTHS.map((m,i)=>el('option',{value:i+1,textContent:m})));month.value=p.month;
+  const day=el('select',{className:'shm-select',ariaLabel:'Birthday day'});
+  const fillDays=()=>{day.replaceChildren(...Array.from({length:daysIn(recipe.profile.month)},(_,i)=>el('option',{value:i+1,textContent:i+1})));day.value=recipe.profile.day;};fillDays();
+  month.onchange=()=>{change(at('month'),+month.value);fillDays();};day.onchange=()=>change(at('day'),+day.value);
+  body.append(el('div',{className:'shm-row'},month,day));
+  body.append(el('h4',{textContent:'Favourite colour'}));
+  const swatches=el('div',{className:'shm-swatches'});
+  for(const hex of PALETTE.cloth){const b=el('button',{type:'button',ariaLabel:'Favourite '+hex});b.style.background=hex;b.setAttribute('aria-pressed',String(p.favourite===hex));b.onclick=()=>{change(at('favourite'),hex);pressed(swatches,b);};swatches.append(b);}
+  const wear=el('button',{type:'button',className:'shm-pill',textContent:'Wear it'});wear.onclick=()=>change('outfit.topColour',recipe.profile.favourite);
+  body.append(swatches,el('div',{className:'shm-row',style:'margin-top:8px'},wear));
+  body.append(el('h4',{textContent:'Personality'}));
+  const card=el('div',{className:'shm-type',role:'status'});
+  const paintCard=()=>{const type=personalityOf(recipe.profile);card.style.background=type.colour;card.replaceChildren(el('strong',{textContent:type.name}),el('span',{textContent:type.line}));};
+  for(const dial of DIALS){
+   const pips=el('div',{className:'shm-pips',role:'group',ariaLabel:dial.label});
+   const paint=()=>{const s=dialStep(recipe.profile[dial.key]);[...pips.children].forEach((b,i)=>{b.classList.toggle('on',i<s);b.setAttribute('aria-pressed',String(i+1===s));});};
+   for(let i=1;i<=DIAL_STEPS;i++){const b=el('button',{type:'button',ariaLabel:`${dial.label} ${i} of ${DIAL_STEPS}`});b.onclick=()=>{change(at(dial.key),stepValue(i));paint();paintCard();if(dial.key==='show'){pose=i>4?'Hop':'idle';if(pose!=='idle')animator.play(pose);else animator.stop();}};pips.append(b);}
+   paint();
+   body.append(el('div',{className:'shm-dial'},el('div',{},el('span',{textContent:dial.low}),el('strong',{textContent:dial.label}),el('span',{textContent:dial.high})),pips));
+  }
+  paintCard();body.append(card);
+  body.append(el('h4',{textContent:'Voice'}));
+  body.append(stepper('Pitch',at('pitch'),'Lower voice','Higher voice',()=>sayLine('La la la!')),stepper('Speed',at('speed'),'Slower voice','Faster voice',()=>sayLine('La la la!')));
+  const hear=el('button',{type:'button',className:'shm-pill',textContent:'Hear them'});hear.onclick=()=>sayLine(hello({...recipe,name:name.value}).split('\n')[0]);
+  body.append(el('div',{className:'shm-row'},hear));
+  body.append(el('h4',{textContent:'Catchphrase'}));
+  const phrase=el('input',{className:'shm-text',value:p.catchphrase,maxLength:40,placeholder:'Haisai!',ariaLabel:'Catchphrase'});
+  phrase.onfocus=()=>remember();phrase.oninput=()=>{recipe.profile.catchphrase=phrase.value.slice(0,40);};
+  body.append(phrase);
+ }
+ function renderBody(){
+  cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);pictureQueue=[];pictureJobs=[];
+  body.replaceChildren();
+  if(step==='start')renderStart();else if(step==='profile')renderProfile();else if(step==='look')renderLook();
   pictureQueue=[...pictureJobs];paintQueued();
  }
- // Pictures are drawn a few a frame, so a tab opens at once and fills in.
- function paintQueued(){pictureFrame=requestAnimationFrame(()=>{const t0=performance.now();while(pictureQueue.length&&performance.now()-t0<8)pictureQueue.shift()();if(pictureQueue.length)paintQueued();});}
- let picturesDue=0;
- function renderPictures(){clearTimeout(picturesDue);picturesDue=setTimeout(()=>{cancelAnimationFrame(pictureFrame);pictureQueue=[...pictureJobs];paintQueued();},180);}
+
+ // ----- Voice -----
+ // The line types itself out in the bubble with a blip every other letter, pitched and
+ // paced from the profile, and the mouth moves while it does.
+ let speech=null;
+ function sayLine(text,show=false){
+  stopSpeech();
+  const v=voiceOf(recipe.profile);let i=0;speech={typing:true,timer:0};
+  if(show){bubble.hidden=false;bubble.textContent='';}
+  speech.timer=setInterval(()=>{
+   i++;if(show)bubble.textContent=text.slice(0,i);
+   const ch=text[i-1]||'';if(i%2&&/\w/.test(ch))voice(i%4===1?v.freq:v.freq*v.swing,v.type);
+   if(i>=text.length){clearInterval(speech.timer);speech.typing=false;}
+  },v.letterMs);
+ }
+ function stopSpeech(){if(speech){clearInterval(speech.timer);speech=null;}}
+
+ // ----- Steps -----
+ function syncFocus(){root.dataset.focus=faceFocus()?'face':'body';}
+ function goTo(id){
+  stopSpeech();bubble.hidden=true;step=id;root.dataset.step=id;
+  const index=STEPS.findIndex(s=>s[0]===id);
+  title.replaceChildren(document.createTextNode(STEPS[index][1]),el('small',{textContent:`Step ${index+1} of ${STEPS.length}`}));
+  dots.replaceChildren(...STEPS.map(([sid,label],i)=>{const b=el('button',{type:'button',ariaLabel:`Step ${i+1}: ${label}`},String(i+1),el('span',{textContent:label}));if(sid===id)b.setAttribute('aria-current','step');b.onclick=()=>goTo(sid);return b;}));
+  back.disabled=index===0;
+  const last=index===STEPS.length-1;next.className=last?'shm-save':'shm-next';next.textContent=last?saveLabel:'Next';
+  dice.hidden=id!=='look'&&id!=='start';
+  if(id==='hello'){pose='Wave';animator?.play('Wave');previewFacing=0;spin=0;setTimeout(()=>{if(step==='hello')sayLine(hello({...recipe,name:name.value}),true);},450);}
+  else if(pose==='Wave'){pose='idle';animator?.stop();}
+  renderTabs();renderBody();body.scrollTop=0;syncFocus();
+ }
+ back.onclick=()=>{const i=STEPS.findIndex(s=>s[0]===step);if(i>0)goTo(STEPS[i-1][0]);};
+ next.onclick=()=>{const i=STEPS.findIndex(s=>s[0]===step);if(i<STEPS.length-1)goTo(STEPS[i+1][0]);else finish(true);};
  function renderPoses(){
   const angle=el('select',{className:'shm-select shm-angle',ariaLabel:'Preview angle'},el('option',{value:'front',textContent:'Front'}),el('option',{value:'back',textContent:'Back'}));
   angle.onchange=()=>{previewFacing=angle.value==='back'?Math.PI:0;spin=previewFacing;spinVelocity=0;};
@@ -374,9 +556,10 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
 
  // ----- Buttons -----
  name.oninput=()=>{recipe.name=name.value.slice(0,24);};
- dice.onclick=()=>{history.push(structuredClone(recipe));const r=randomRecipe();r.name=recipe.name;recipe=normalizeRecipe(r);dirty=true;undo.disabled=!history.length;renderBody();};
+ // The dice change how someone looks, never who they are.
+ dice.onclick=()=>{remember();recipe=keepSelf(randomRecipe(),{...recipe,name:name.value});dirty=true;if(step==='start')faces[0]=recipe;renderBody();};
  undo.onclick=()=>{const r=history.pop();if(!r)return;recipe=r;name.value=recipe.name||'';dirty=true;undo.disabled=!history.length;renderBody();};
- reset.onclick=()=>{history.push(structuredClone(recipe));recipe=normalizeRecipe({...CAST_RECIPES.Johansson,name:recipe.name});dirty=true;undo.disabled=!history.length;renderBody();};
+ reset.onclick=()=>{remember();recipe=keepSelf(CAST_RECIPES.Johansson,{...recipe,name:name.value});dirty=true;renderBody();};
  share.onclick=()=>{
   const code=encodeRecipe({...recipe,name:name.value});const link=shareLink?.(code);
   const text=el('textarea',{value:link||code,readOnly:true,ariaLabel:'Share link or code'});
@@ -385,19 +568,19 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const layer=el('div',{className:'shm-share',role:'dialog',ariaModal:'true',ariaLabel:'Share your islander'},el('div',{},el('h3',{textContent:'Share your islander'}),el('p',{textContent:link?'Send this link and it opens the maker with your islander in it.':'This code is your islander. Anyone can paste it into their maker.'}),text,el('div',{className:'row'},copy),el('h3',{textContent:'Try someone else’s'}),paste,el('div',{className:'row'},use,done)));
   copy.onclick=async()=>{try{await navigator.clipboard.writeText(text.value);copy.textContent='Copied';}catch{text.select();}};
   use.onclick=()=>{const raw=paste.value.trim();let code=raw;try{if(raw.includes('=')){const url=new URL(raw,location.href);code=url.searchParams.get('r')||url.searchParams.get('avatar');}}catch{code='';}const r=decodeRecipe(code||'');
-   if(!r){use.textContent='That code did not work';return;}history.push(structuredClone(recipe));recipe=r;name.value=r.name||'';dirty=true;undo.disabled=false;renderBody();closeShare();};
+   if(!r){use.textContent='That code did not work';return;}remember();recipe=r;name.value=r.name||'';dirty=true;renderBody();closeShare();};
   done.onclick=closeShare;shareLayer=layer;for(const child of root.children)child.inert=true;root.append(layer);done.focus();
  };
  function finish(saving){
   if(!root.isConnected)return;
-  cancelAnimationFrame(frame);cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);observer?.disconnect();viewport?.removeEventListener('resize',fitViewport);viewport?.removeEventListener('scroll',fitViewport);
+  stopSpeech();cancelAnimationFrame(frame);cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);observer?.disconnect();viewport?.removeEventListener('resize',fitViewport);viewport?.removeEventListener('scroll',fitViewport);
   root.removeEventListener('keydown',swallow);root.removeEventListener('keyup',swallow);
   const out=normalizeRecipe({...recipe,name:name.value});
   avatar?.dispose();thumbTarget.dispose();renderer.dispose();renderer.forceContextLoss?.();floor.geometry.dispose();floor.material.dispose();root.remove();previousFocus?.focus?.();
   if(saving)onSave(out);onClose(out,saving);
  }
- close.onclick=()=>finish(false);save.onclick=()=>finish(true);
+ close.onclick=()=>finish(false);
 
- renderTabs();renderBody();renderPoses();loop();close.focus();
- return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;}};
+ rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
+ return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo};
 }

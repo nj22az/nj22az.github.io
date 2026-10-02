@@ -61,6 +61,23 @@ Severity:
 - **Wants.** Three residents a day want one thing from Sakura or the boats and wear a "!" card over their heads. Bringing it pays ¥100–200 and fills hearts fastest. The Town book lists who wants what.
 - **Hands and shoes.** Mitten hands with a thumb, and shoe soles (brown leather for elders).
 
+## Fourth pass: the islander maker, rebuilt
+
+The old maker was a long web form: sliders, 3D part pictures turned sideways (some blank), a face view cropped by the pose menus, and nothing about who the person is. It is now four steps, in the way a life-sim maker works, with the town's own art and words:
+
+1. **Choose a face.** Twelve faces to start from (the first is who you came in with), and *Different faces* deals more.
+2. **Make them.** A tab per feature, each with **Style** (part pictures: the face parts are drawn flat, one feature at a time; hair and hats are the head straight on), **Colour**, and **Adjust**: a move pad and − / + steps for size, stretch and tilt, a notch at a time, instead of sliders. The face view is framed from the real head, so nothing is cut off.
+3. **Who are they?** Birthday, favourite colour (and *Wear it*), four dials (Pace, Talk, Feelings, Outlook) that give one of sixteen island personalities, from *Lighthouse keeper* to *Typhoon*, a voice (pitch and speed, *Hear them*) and a catchphrase.
+4. **Say hello.** They wave and introduce themselves in their own voice.
+
+Avatars have bigger heads (adults 1.12×, children 1.4×) for the life-sim silhouette. Drinkers lean in to the cup when a short arm can't reach the bigger head.
+
+| | |
+|---|---|
+| ![Choose a face](qa/creator-ipad-1start.png) | ![Eye parts](qa/creator-desk-2eyes.png) |
+| ![Adjust](qa/creator-ipad-2eyes-adjust.png) | ![Who are they?](qa/creator-ipad-3profile.png) |
+| ![Say hello](qa/creator-desk-4hello.png) | |
+
 ## Open: logged for the next passes (all but O1's far-plane note are now fixed above)
 
 | # | Sev | Area | Finding | Recommendation |

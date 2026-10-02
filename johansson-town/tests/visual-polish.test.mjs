@@ -32,7 +32,7 @@ test('all five head forms have distinct geometry and stay in proportion at slide
   assert.ok([...av.face.head.geometry.attributes.position.array].every(Number.isFinite));av.dispose();
   for(const size of [0,1])for(const shape of [0,1]){
    const m=measure({head:{form,size,shape}}),ratio=2*m.Rh*m.headSY/m.H;
-   assert.ok(ratio>.21&&ratio<.38,`${form}: head occupies ${ratio} of height`);
+   assert.ok(ratio>.23&&ratio<.42,`${form}: head occupies ${ratio} of height`);
   }
  }
  assert.equal(shapes.size,5);
