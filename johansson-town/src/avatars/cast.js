@@ -11,7 +11,7 @@ const R=(o)=>normalizeRecipe(o);
 
 export const CAST_RECIPES=Object.freeze({
  Johansson:R({name:'Johansson',
-  body:{height:.72,build:.72,skin:'#dc9d7a'},head:{size:.48,shape:.45,form:'square',jaw:.75,cheeks:.55},
+  body:{height:.72,build:.72,silhouette:'masculine',skin:'#dc9d7a'},head:{size:.48,shape:.45,form:'square',jaw:.75,cheeks:.55},
   hair:{style:'horseshoe',colour:'#b8b4aa'},
   eyes:{style:'gentle',colour:'#3d6a8a',size:.45,spacing:.52,height:.5,tilt:.45},
   brows:{style:'bushy',colour:'#a8a49a',size:.6,height:.55,tilt:.45},
@@ -20,7 +20,7 @@ export const CAST_RECIPES=Object.freeze({
   outfit:{top:'kariyushi',topColour:'#7fb0d8',pattern:'flowers',bottom:'shorts',bottomColour:'#c8b48a',footwear:'sandals',shoes:'#6d4a32',accent:'#f4f1ea'},
   swim:{colour:'#2f5f9e'}}),
  Thuan:R({name:'Thuan',accessories:{earrings:'studs',neckwear:'pendant',colour:'#e0b93a'},
-  body:{height:.36,build:.35,skin:'#f1cfae'},head:{size:.48,shape:.48,form:'heart',jaw:.3,cheeks:.62},
+  body:{height:.36,build:.35,silhouette:'feminine',skin:'#f1cfae'},head:{size:.48,shape:.48,form:'heart',jaw:.3,cheeks:.62},
   hair:{style:'braids',colour:'#1c1714',flip:false},
   eyes:{style:'lashes',colour:'#2a1d16',size:.78,spacing:.5,height:.48,tilt:.55},
   brows:{style:'arched',colour:'#2a1d16',size:.42,height:.55,tilt:.5},

@@ -51,6 +51,7 @@ const LABEL={
 const TABS=[
  {id:'body',name:'Body',controls:[
   {kind:'chips',page:'style',at:'age',label:'Age',list:AGES},
+  {kind:'chips',page:'style',at:'body.silhouette',label:'Silhouette',list:PARTS.silhouette},
   {kind:'colours',page:'colour',at:'body.skin',label:'Skin',palette:PALETTE.skin},
   {kind:'stepper',page:'adjust',at:'body.height',label:'Height',less:'Shorter',more:'Taller'},
   {kind:'stepper',page:'adjust',at:'body.build',label:'Build',less:'Slimmer',more:'Sturdier'}]},

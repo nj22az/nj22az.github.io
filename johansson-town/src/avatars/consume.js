@@ -55,7 +55,7 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
  const shoulder=b.shoulderR.getWorldPosition(new THREE.Vector3());
  const span=(m.upper+m.fore)*.985;
  let target=null;
- for(let pass=0;pass<6;pass++){
+ for(let pass=0;pass<12;pass++){
   head.updateWorldMatrix(true,false);
   target=rest.clone().lerp(head.localToWorld(lips.clone()).sub(contact),lift);
   const over=target.distanceTo(shoulder)-span;
