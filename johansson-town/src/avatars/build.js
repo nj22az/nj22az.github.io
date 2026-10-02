@@ -434,7 +434,10 @@ function addBody(list,recipe,m,swim=false){
   part(list,new THREE.SphereGeometry(m.armR*1.3,16,12),capShare,swim?skin:top,M(sh[0]-sx*m.armR*.15,sh[1]+m.armR*.05,0,0,0,0,1,.92,Math.min(1.1,D/W*1.6)));
   // A short sleeve is a wider bell over the top of the arm.
   if(!swim&&!longSleeve)limb(list,sh,[sh[0]+sx*.006,sh[1]-m.upper*.58,0],m.armR*1.12,m.armR*1.16,top,{...arm,joints:[]});
-  ball(list,m.hand,[hd[0],hd[1]-m.hand*.55,0],'hand'+s,skin,[1,1.1,.95],12,10);
+  // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
+  // so a wave or a point reads as a hand rather than a ball on a stick.
+  ball(list,m.hand,[hd[0],hd[1]-m.hand*.55,0],'hand'+s,skin,[.9,1.15,.78],12,10);
+  ball(list,m.hand*.42,[hd[0]-sx*m.hand*.55,hd[1]-m.hand*.35,m.hand*.42],'hand'+s,skin,[1,1.2,1],8,6);
  }
  // Legs and shoes; shorts and skirts show the knees.
  const b=swim?'swim':o.bottom;
@@ -446,7 +449,10 @@ function addBody(list,recipe,m,swim=false){
   // Shorts and trunks: a wider piece over the top of the thigh.
   if(b==='shorts'||b==='swim')limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.04,hipY-m.thigh*(b==='swim'?.22:.55),0],m.legR*1.2,m.legR*1.26,bottom,{...leg,joints:[]});
   const shoe=swim?skin:o.shoes;
-  ball(list,m.legR*1.25,[sx*m.hipX,m.foot*.55,m.legR*.55],'foot'+s,shoe,[1,.62,1.75],12,8);
+  ball(list,m.legR*1.25,[sx*m.hipX,m.foot*.62,m.legR*.55],'foot'+s,shoe,[1,.6,1.75],12,8);
+  // The sole: white rubber on a sneaker, dark wood under an elder's sandal (setta), none
+  // on bare feet at the beach.
+  if(!swim)ball(list,m.legR*1.32,[sx*m.hipX,m.foot*.16,m.legR*.6],'foot'+s,recipe.age==='elder'?'#6b4a32':'#f2efe6',[1,.24,1.8],12,6);
  }
  if(b==='skirt'||b==='longskirt'){
   const len=b==='skirt'?m.thigh*.9:m.thigh+m.shin*.85;

@@ -313,6 +313,8 @@ body.conversation-open #prompt,body.conversation-open #exitRoomButton,body.conve
  box-shadow:0 3px 0 #2e2a3333;max-width:calc(100% - 100px);text-overflow:ellipsis}
 #activity.conversation.rpg #activityTitle{font-size:0}
 #activity.conversation.rpg #activityTitle::before{content:attr(data-speaker);font-size:15px}
+#activity.conversation.rpg #activityTitle[data-hearts]::after{content:attr(data-hearts);margin-left:8px;font-size:13px;letter-spacing:1px;color:#e2563f}
+#activity.conversation.rpg.player-speaking #activityTitle::after{content:none}
 #activity.conversation.rpg.player-speaking #activityTitle{background:#9fd0f2}
 #activity.conversation.rpg.player-speaking #activityTitle::before{content:"Johansson"}
 /* The speaker's portrait, in a round frame on the panel's edge, with the name tab beside it. */

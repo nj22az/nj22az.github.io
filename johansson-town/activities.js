@@ -33,6 +33,7 @@ import {SAVE_KEY,readSave,readPlayers,activePlayer,addPlayer,switchPlayer,rename
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
 import {createDialogueBox} from './src/dialogue/dialogue-box.js';
 import {giftableItems,takeGift,giftReaction} from './src/people/thuan-gifts.js';
+import {restoreFriendship,talked,gave,giftLine,wantLine,openWant,heartLine,levelName,wantPool,withArticle} from './src/people/friendship.js';
 import {NEIGHBOUR_TALK} from './src/people/neighbours.js';
 import {svg,itemIcon} from './src/ui/icons.js';
 import {TOWN_FINDS} from './src/commerce/sakura-economy.js';
@@ -54,7 +55,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   try {
     const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
-      state.sakura=saved.sakura;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.residentLocations=saved.residentLocations;
+      state.sakura=saved.sakura;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
@@ -98,7 +99,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
     modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
-    heading.textContent=title;body.classList.remove('signal');body.replaceChildren();
+    heading.textContent=title;delete heading.dataset.hearts;delete heading.dataset.level;body.classList.remove('signal');body.replaceChildren();
     const p=document.createElement('p');p.textContent=text;body.append(p);actions.replaceChildren();
     buttons.forEach(([label,fn,disabled=false,say])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;if(say!==undefined)b.dataset.say=say||'';b.onclick=()=>{if(modalOpen&&modalRevision===revision&&!b.disabled)fn();};actions.append(b);});
     const speaker=title.split('·')[0].trim();
@@ -426,13 +427,41 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     if(name==='Mrs Sato')buttons.push(['Umeboshi rice ball · ¥80',()=>{if(spend(80)){state.sprintUntil=performance.now()+20000;note('Umeboshi rice ball. Ready to move.');close();}}]);
     if(name==='Cold-storage kid')buttons.push(['Ice · ¥20',()=>{if(spend(20)){addItem('Ice');receipt(name,'Keep it out of the sun. That is the entire manual.');}}]);
     if(name==='Harbour master')buttons.push(['Sell a catch',()=>legacyResident(name)]);
-    buttons.push(['See you soon',close]);show(profile?name+' · '+profile.personality:name,text,buttons);if(text===row[1]&&row[3])townAudio.speak(row[3]);
+    // Friendship: a little for talking each day, more for presents, most for what they
+    // wanted today (src/people/friendship.js).
+    const minutesNow=getMinutes(),pool=wantPool();
+    talked(state,name,minutesNow);save();
+    const want=openWant(state,minutesNow,pool,name);
+    if(want)text+='\n\n'+wantLine(want);
+    const gifts=giftableItems(state.inventory);
+    if(gifts.length)buttons.splice(buttons.length,0,['Give a present…',()=>residentGift(name)]);
+    buttons.push(['See you soon',close]);show(profile?name+' · '+profile.personality:name,text,buttons);showHearts(name);if(text===row[1]&&row[3])townAudio.speak(row[3]);
   }
 
   /**
    * At your seat in Minato -- a counter stool among the regulars, a table or the window:
    * order anything on the wall you can pay for, drink it and eat it, or get up.
    */
+  /** The hearts on the name tab, for whoever is talking. */
+  function showHearts(name){const h=heading;if(!h)return;const r=state.friendship?.[name];h.dataset.hearts=heartLine(r?.points||0);h.dataset.level=levelName(r?.points||0);}
+  /** Giving a resident something from the bag. */
+  function residentGift(name){
+    const gifts=giftableItems(state.inventory);
+    if(!gifts.length){receipt(name,'Your bag has nothing to give just now.');return;}
+    const pool=wantPool(),want=openWant(state,getMinutes(),pool,name);
+    show(name+' · A present','What will you give '+name+'?'+(want?'\n(They mentioned '+withArticle(want.item.toLowerCase())+'.)':''),[
+      ...gifts.slice(0,8).map(item=>[item,()=>{
+        if(!takeGift(state.inventory,item))return;
+        const result=gave(state,name,item,getMinutes(),pool);
+        if(result.yen)state.yen+=result.yen;
+        note('Gave '+name+' '+item.toLowerCase()+'.');save();
+        const extra=(result.yen?`\n\n+¥${result.yen}`:'')+(result.up?`\n\n${name} and you are closer now: ${levelName(state.friendship[name].points)}.`:'');
+        show(name,giftLine(name,item,result)+extra,[['Thank you',close]]);showHearts(name);
+        onTreat(name);
+      }]),
+      ['Not now',()=>resident(name)]]);
+    showHearts(name);
+  }
   function izakayaTable(){
     const table=getBeerTable()||{},drink=table.drink,dish=table.dish,order=table.order,buttons=[],open=izakayaOpen(getMinutes());
     let text=open?'Lanterns, the radio low, the smell of the grill. Nao is behind the counter.':'Minato is closing. Nao is stacking the stools.';

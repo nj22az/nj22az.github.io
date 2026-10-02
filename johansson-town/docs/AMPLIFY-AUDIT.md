@@ -383,15 +383,17 @@ five coral whites and two paver tones. They were collapsed into seven families i
 **Still to do, in order**
 
 1. ~~**Sakura.**~~ Done in the second session (§12): an original family *shōten*, inside and out.
-2. **Night and interiors lighting pass.** Night is a grey haze rather than a scene lit
-   by its signs. The classroom and office interiors are overexposed.
+2. ~~**Night and interiors lighting pass.**~~ Night is moonlight blue, and every kit window and lamp follows the clock (the cel pass had been swallowing the glow; see QA-REPORT O2). Interior exposure still wants a look.
 3. ~~**The park model.**~~ Done: Minato Park is drawn in the town's own style on the same mound (turf, gravel paths, a wooden bench under a kanhizakura that blooms pink in January–February, kit lamp posts, a concrete slide, hibiscus, a stone lantern and a name board). The Sketchfab model is removed. ![Park](amplify-audit/after-park.jpg)
-4. **Horizon frame.** From the air you can see the square sea and the sky dome
-   (reef, tetrapods, haze).
-5. **Shimanchu 2, the rest.** Mitten hands, hair shells, shoes, the 1990s wardrobe and
-   emotes. Then put Thuan's Storage on avatars and give critters the same material.
-6. **Life engine** (§7): relationships, wants, gifts, the Town Book catalogue,
-   gachapon, then the harbour job and the mystery.
+4. **Horizon frame.** The green slab under the shallows is gone (QA-REPORT O1). Still to do: reef, tetrapods and haze at the map edge, for the high views.
+5. **Shimanchu 2, the rest.** Started: mitten hands with a thumb, shoe soles (brown
+   for elders), the tufted hair crescent. Still to do: hair shells, the 1990s wardrobe and
+   emotes beyond the want card. Then put Thuan's Storage on avatars and give critters the same material.
+6. **Life engine** (§7). First slice done in `people/friendship.js`: five hearts per
+   resident (talk once a day, presents, favourites), three residents a day want one
+   thing and wear a "!" card until they get it, which pays ¥100–200. Hearts show on the
+   name tab and in the Town book's Residents list. Still to do: resident-to-resident
+   relationships, the Town Book catalogue, gachapon, then the harbour job and the mystery.
 7. ~~**Sakura interior licence.**~~ The GLB is deleted; the interior is original geometry.
 
 ## 11. Lessons from this session (self-audit)

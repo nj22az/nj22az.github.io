@@ -55,7 +55,13 @@ Severity:
 | O8 | Fixed | The speaker's portrait from the Visitor's Guide sits in a round frame beside the name tab. ![Portrait](qa/after-portrait.jpg) |
 | O10 | Fixed | The flaky test was a resident walking through the door the ray test looked through. People are now left out of that check. |
 
-## Open: logged for the next passes
+## Third pass: life engine, first slice
+
+- **Friendship.** Each resident has five hearts. Talking (once a day) and presents fill them; their favourite counts double. The name tab shows the hearts.
+- **Wants.** Three residents a day want one thing from Sakura or the boats and wear a "!" card over their heads. Bringing it pays ¥100–200 and fills hearts fastest. The Town book lists who wants what.
+- **Hands and shoes.** Mitten hands with a thumb, and shoe soles (brown leather for elders).
+
+## Open: logged for the next passes (all but O1's far-plane note are now fixed above)
 
 | # | Sev | Area | Finding | Recommendation |
 |---|---|---|---|---|
