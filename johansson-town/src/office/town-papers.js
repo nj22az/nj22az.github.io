@@ -52,13 +52,6 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
-    "title": "Front-Row collected editions",
-    "organisation": "Town Services",
-    "text": "Island histories, pocket poetry, sea guides and old magazines. Aya writes her recommendations on paper slips. Reiko leaves corrected newspaper proofs at the rear desk. You can walk the centre aisle, browse the east shelves and return to the window chair.",
-    "source": "notice:Front-Row collected editions"
-  },
-  {
-    "type": "Notice",
     "title": "Class board",
     "organisation": "Town Services",
     "text": "Over the cubbies: the class goal, \"Everyone friendly, cheerful, and say hello,\" eight sheets of calligraphy -- Sea sea, Dream dream, Friend friend, Sky sky -- each with a red circle from the teacher. Kenta's essay about rowing in the Hāri boat race with his grandfather. The paper wheel of cleaning duties. Summer projects: reef creatures, how to make sata andagi, a typhoon diary. This week's lunch squad: Kinjō, Arakaki, Taira -- \"don't forget your smock, cap and mask.\"",
@@ -126,6 +119,13 @@ export const TOWN_PAPERS=[
     "organisation": "Town Services",
     "text": "Laid out in 1972 on the old lookout mound. The kanhizakura was planted by the class of that year and flowers in January, the first cherry in Japan. Please take your rubbish home. No ball games on the mound. — Minato Town Office",
     "source": "notice:Minato Park · Minato Park"
+  },
+  {
+    "type": "Notice",
+    "title": "Mr Fujita’s television",
+    "organisation": "Town Services",
+    "text": "A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. \"Sit, sit. The eighth innings is the only one worth watching. Have a can; they are cold, the box is new.\"",
+    "source": "notice:Mr Fujita’s television"
   },
   {
     "type": "Flyer",

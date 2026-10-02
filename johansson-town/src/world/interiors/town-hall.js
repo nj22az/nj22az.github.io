@@ -83,11 +83,12 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  const box=shell(group,{floor:0x9a8a74,wall:0xefe8d6,dado:0x8a6a4a});
  const {w,d}=SHELL,hw=w/2,hd=d/2;
  const anchor=(pos,label,fn,npc=false)=>{const o=new THREE.Object3D();o.position.set(...pos);o.userData.npcInteraction=npc;group.add(o);reg(o,label,fn,true);return o;};
+ const deskPartsStart=group.children.length;
  // Carpet, the desk and the chair behind it.
  box([3.2,.012,2.4],[0,.006,-1.2],0x7a2f2f,'Office carpet');
  box([2.3,.07,.95],[0,.76,-1.85],0x6b4a32,'Mayor’s desk top');
  for(const x of [-.75,.75])box([.32,.74,.8],[x,.37,-1.85],0x5a3f2a);
- collider(0,-1.85,2.35,1.0,.8);
+ collider(0,-1.45,2.35,1.0,.8);
  box([.55,.08,.5],[0,.48,-2.45],0x2a2a2a,'Mayor’s chair seat');box([.55,.7,.08],[0,.9,-2.72],0x2a2a2a,'Mayor’s chair back');
  const name=plate(group,"Mayor Johansson",{w:.56,h:.14,at:[0,.86,-1.43],ry:0,bg:'#2b2f2c',fg:'#e8dfc4',font:SERIF,size:.62});name.rotation.x=-.4;
  box([.36,.24,.02],[-.55,.9,-2.05],0x3a4a52,'Desk photo');box([.26,.02,.34],[.55,.79,-1.75],0xe8e2cf,'Petitions tray');
@@ -106,6 +107,12 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  box([.065,.14,.065],[.43,.85,-2.03],0x315644,'Pencil cup');
  for(let i=0;i<3;i++)box([.01,.18,.01],[.41+i*.018,.94,-2.03],0xcdb265,'Pencil');
  const mug=new THREE.Mesh(new THREE.CylinderGeometry(.055,.045,.09,12),mat(0xede5ca));mug.position.set(-.15,.86,-1.57);mug.name='Mayor’s tea cup';group.add(mug);
+ // The computer faces the chair; the nameplate faces visitors across the desk.
+ for(const furnishing of group.children.slice(deskPartsStart)){
+  if(['CRT monitor casing','CRT screen','Plate 港町役場','Keyboard','Keyboard key'].includes(furnishing.name)){furnishing.position.z=-3.7-furnishing.position.z;furnishing.rotation.y+=Math.PI;}
+  furnishing.position.z+=.4;
+ }
+
  // Built-in bookcase, cupboards and drawers, with a clear aisle around the desk.
  box([1.12,2.1,.4],[-2.48,1.05,-2.48],green,'Town reference bookcase');collider(-2.48,-2.48,1.12,.4,2.1);
  for(let row=0;row<4;row++){
@@ -120,8 +127,8 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  box([.015,.13,.02],[-.55,2.39,-hd+.075],0x313d35,'Clock hour hand');box([.14,.012,.02],[-.48,2.34,-hd+.075],0x313d35,'Clock minute hand');
  for(const x of [-hw+.02,hw-.02])for(const z of [-hd+.02,.1,hd-.02])box([.075,2.85,.075],[x,1.425,z],0x614934,'Office timber upright');
  for(let i=0;i<14;i++)box([w,.005,.009],[0,.003,-hd+.2+i*.39],0x716047,'Wood floor seam');
- anchor([-.7,1,-1.2],'Use the mayor’s computer',()=>action('document-archive','Community Hall Document Register'));
- anchor([1.2,1,-1.5],'Use the office telephone',()=>action('read','Town office telephone','The harbour master confirms Thursday’s supply ferry. Mori reports the crossing outside the school is clear. Thuan asks whether the bus-stop bench has reached the carpenter yet.'));
+ anchor([-.7,1,-.8],'Use the mayor’s computer',()=>action('document-archive','Community Hall Document Register'));
+ anchor([1.35,1,-1.2],'Use the office telephone',()=>action('read','Town office telephone','The harbour master confirms Thursday’s supply ferry. Mori reports the crossing outside the school is clear. Thuan asks whether the bus-stop bench has reached the carpenter yet.'));
  anchor([-2.4,1.1,-1.9],'Browse the town reference books',()=>action('read','Town reference library','Ferry timetables, old island surveys, typhoon preparedness manuals and annotated town budgets. The most-thumbed volume is the harbour maintenance handbook.'));
  anchor([-1.6,1,1.7],'Sit with a visitor',()=>action('seat','Town office visitor sofa','A comfortable green sofa for neighbours bringing their requests. The mayor keeps this corner informal: tea first, paperwork afterwards.'));
  // Flags behind the desk: Japan and the town's own, on stands.
@@ -140,7 +147,7 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  for(const dz of [-.75,.75]){box([1.2,.42,.55],[-1.6,.21,.8+dz],0x5d6f5a);box([1.2,.45,.14],[-1.6,.55,.8+dz+Math.sign(dz)*.24],0x5d6f5a);collider(-1.6,.8+dz,1.2,.55,.6);}
  box([.45,1.8,1.4],[hw-.3,.9,1.3],0x8a6a4a,'Cabinet of minutes');collider(hw-.3,1.3,.45,1.4,1.8);
  for(let i=0;i<8;i++)box([.05,.3,.22],[hw-.45,1.1+(i>3?.45:0),.85+(i%4)*.3],[0x2f4f6f,0x6f2f2f,0x2f5f3f][i%3]);
- const deskSeat=anchor([0,1.0,-1.05],'Sit at the mayor’s desk',()=>action('seat','The mayor’s desk','Your desk. The chair still squeaks the way it did when it was the headmaster’s.'));deskSeat.userData.seat={position:[0,0,-2.45],stand:[1.5,0,-2.2],eyeY:1.2,yaw:Math.PI,pitch:0};collider(0,-2.48,.55,.5,.75);
+ const deskSeat=anchor([1.4,1.0,-1.8],'Sit at the mayor’s desk',()=>action('seat','The mayor’s desk','Your desk. The chair still squeaks the way it did when it was the headmaster’s.'));deskSeat.userData.seat={position:[0,0,-2.05],stand:[1.5,0,-1.8],eyeY:1.2,yaw:Math.PI,pitch:0};collider(0,-2.08,.55,.5,.75);
  anchor([.55,1.0,-1.5],'Read the petitions',()=>{const list=petitions();action('read','Petitions to the mayor',list.length?list.join('\n\n'):'The tray is empty. A quiet week on the island, or nobody has told you yet.');});
  anchor([-hw+.4,1.4,-.4],'Study the island map',()=>action('inspect','Map of Minato-chō','The island in hand-coloured ink, every lot numbered: the harbour, the shotengai, Nishi-machi inside its seawall, the new houses up at Kitahama, the oil jetty, the town hall and its field. Kitano-jima sits off the corner with its airport and the sewage works. Pins mark this year\'s roadworks.'));
  plate(group,'文書台帳',{w:1.4,h:.3,at:[hw-.55,1.9,1.3],ry:-Math.PI/2,sub:'COMMUNITY HALL · ONE YEAR'});

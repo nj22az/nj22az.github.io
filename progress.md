@@ -123,3 +123,9 @@ Final integration: preserved main's Sakura rebuild (82297cc), regenerated runtim
 - Thuan changes at her actual shared home, saves the chosen sailor/shopping-lane/usual outfit, immediately updates the model and propagates to photos/guide. Mori wears the original navy police jacket and fitted peaked cap.
 - Mayor office: desk, CRT, keyboard, phone, tea, petitions, books, timber details, green filing furniture. Seated desk and archive access; furniture collision and navigable routes verified.
 - Responsive title/guide (desktop, phone, landscape), creator (five sizes), photo studio drag/remove/place/export (four sizes) and expired-import recovery checks passed. Final full game integration and publication recorded below when complete.
+
+Final integration: combined origin/main port shed, beach corner, bookshop, onsen, painted garments, izakaya and studio sets with this branch; regenerated the game runtime and model portraits.
+- Corrected the office chair clearance and side approach, physical seating position, and computer facing direction. Regression verifies solid furniture, walk routes and archive access.
+- Johansson has no dress/skirt tiles in the creator or photo wardrobe; previously saved dress outfits migrate to trousers and a kariyushi shirt. Thuan retains her wardrobe choices.
+- Combined full non-boot suite: 583 passed, 5 intentionally disabled gateball skips; additional mayor usability regression passed. Creator passed five viewport sizes. Studio drag/remove, locations, wardrobe, studio sets, film effects and PNG/comic export passed four sizes. Real compiled game passed desktop/phone entry (including an expired boot recovery), room relocation/return, home outfit saving, office seating and archive access, with no page errors.
+- Title/guide passed desktop/phone/landscape. Physical iPhone/iPad testing unavailable. Separate legacy boot harness excluded for its existing software-WebGL timeout; real game entry is covered by browser tests.

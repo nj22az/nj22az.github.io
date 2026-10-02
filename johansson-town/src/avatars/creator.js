@@ -1,4 +1,4 @@
-import {ISLAND_OUTFITS,ISLAND_COSTUMES} from './outfits.js';
+import {ISLAND_OUTFITS,ISLAND_COSTUMES,outfitAllowedFor,appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from './build.js';
 import {createAvatarAnimator} from './animate.js';
@@ -258,9 +258,9 @@ const CSS=`
  * @param {(freq:number,type:string)=>void} [options.voice] plays one voice blip
  * @returns {{close:()=>void, get recipe():object}}
  */
-export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{}}={}){
+export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
- let recipe=normalizeRecipe(start);const history=[];
+ const wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];
  let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',previewFacing=0;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
@@ -404,6 +404,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  // ----- Editing -----
  function remember(){history.push(structuredClone(recipe));if(history.length>60)history.shift();undo.disabled=false;}
  function change(at,value,keep=true){
+  if(at.startsWith('outfit')&&!outfitAllowedFor(wardrobeOwner,at==='outfit'?value:{...recipe.outfit,[at.split('.')[1]]:value}))return;
   if(get(recipe,at)===value)return;
   if(keep)remember();
   set(recipe,at,value);recipe=normalizeRecipe(recipe);dirty=true;
@@ -433,7 +434,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function renderLook(){
   const t=TABS.find(x=>x.id===tab);
-  if(t.id==='top'&&page==='style'){for(const [title,presets] of [['Island outfit sets',ISLAND_OUTFITS],['Island costumes',ISLAND_COSTUMES]]){const sets=el('div',{className:'shm-swatches'});sets.setAttribute('aria-label',title);for(const preset of presets){const button=el('button',{type:'button'},preset.name);button.onclick=()=>change('outfit',{...recipe.outfit,...preset.outfit});sets.append(button);}body.append(el('h3',{},title),sets);}}
+  if(t.id==='top'&&page==='style'){for(const [title,presets] of [['Island outfit sets',ISLAND_OUTFITS],['Island costumes',ISLAND_COSTUMES]]){const sets=el('div',{className:'shm-swatches'});sets.setAttribute('aria-label',title);for(const preset of presets.filter(p=>outfitAllowedFor(wardrobeOwner,p.outfit))){const button=el('button',{type:'button'},preset.name);button.onclick=()=>change('outfit',{...recipe.outfit,...preset.outfit});sets.append(button);}body.append(el('h3',{},title),sets);}}
   if(t.wardrobe&&page==='style'){
    const off=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all clothes off'});
    off.onclick=()=>{remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});recipe=normalizeRecipe(recipe);dirty=true;renderBody();};
@@ -448,7 +449,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     body.append(el('div',{className:'shm-face-picker'},grid,skin));
    }else if(control.kind==='parts'){
     const grid=el('div',{className:'shm-grid'});
-    for(const value of control.list){
+    for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){
      const c=el('canvas',{width:136,height:136});
      const b=el('button',{type:'button'},c,LABEL[value]||value);b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));
      b.onclick=()=>{change(control.at,value);pressed(grid,b);};
@@ -476,7 +477,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     body.append(b);
    }else if(control.kind==='chips'){
     const row=el('div',{className:'shm-chips'});
-    for(const value of control.list){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);};row.append(b);}
+    for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);};row.append(b);}
     body.append(row);
    }
   }
@@ -533,7 +534,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   phrase.onfocus=()=>remember();phrase.oninput=()=>{recipe.profile.catchphrase=phrase.value.slice(0,40);};
   body.append(phrase);
  }
- function renderBody(){
+ function renderBody(){recipe.outfit=appropriateOutfit(wardrobeOwner,recipe.outfit);
   cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);pictureQueue=[];pictureJobs=[];
   body.replaceChildren();
   if(step==='start')renderStart();else if(step==='profile')renderProfile();else if(step==='look')renderLook();

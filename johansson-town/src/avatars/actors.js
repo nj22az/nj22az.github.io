@@ -1,3 +1,4 @@
+import {appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,measure} from './build.js';
 import {createAvatarAnimator,GESTURES} from './animate.js';
@@ -18,11 +19,11 @@ import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropP
 /** The player's own recipe, as the creator saved it; Johansson's until then. */
 export const PLAYER_RECIPE_KEY='johansson-town-avatar';
 export function playerRecipe(storage=globalThis.localStorage){
- try{const saved=storage?.getItem(PLAYER_RECIPE_KEY);if(saved){const r=decodeRecipe(saved);if(r)return r;}}catch{}
+ try{const saved=storage?.getItem(PLAYER_RECIPE_KEY);if(saved){const r=decodeRecipe(saved);if(r)return {...r,outfit:appropriateOutfit('Johansson',r.outfit)};}}catch{}
  return CAST_RECIPES.Johansson;
 }
 export function savePlayerRecipe(recipe,storage=globalThis.localStorage){
- const code=encodeRecipe(recipe);try{storage?.setItem(PLAYER_RECIPE_KEY,code);}catch{}return code;
+ const code=encodeRecipe({...recipe,outfit:appropriateOutfit('Johansson',recipe.outfit)});try{storage?.setItem(PLAYER_RECIPE_KEY,code);}catch{}return code;
 }
 
 /**

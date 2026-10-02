@@ -22,3 +22,7 @@ export const ISLAND_COSTUMES=Object.freeze([
  {name:'Harbour lantern sprite',outfit:{top:'lantern',topColour:'#e8742a',bottom:'cropped',bottomColour:'#27304d',footwear:'sandals',shoes:'#9a6a42',accent:'#f4d23c',pattern:'none'}},
  {name:'Reef ribbon explorer',outfit:{top:'reef',topColour:'#3fa0c8',bottom:'trousers',bottomColour:'#3fa0c8',footwear:'boots',shoes:'#2f5f9e',accent:'#e98aa6',pattern:'none'}},
 ]);
+
+export const DRESS_BOTTOMS=Object.freeze(['skirt','longskirt','pleatedskirt']);
+export function outfitAllowedFor(name,outfit){return name!=='Johansson'||(outfit.top!=='sundress'&&!DRESS_BOTTOMS.includes(outfit.bottom));}
+export function appropriateOutfit(name,outfit){return name==='Johansson'?{...outfit,top:outfit.top==='sundress'?'kariyushi':outfit.top,bottom:DRESS_BOTTOMS.includes(outfit.bottom)?'pants':outfit.bottom}:{...outfit};}

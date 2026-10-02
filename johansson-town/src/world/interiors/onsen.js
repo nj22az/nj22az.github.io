@@ -5,6 +5,7 @@ import {recipeFor} from '../../avatars/cast.js';
 import {daylight} from '../../render/dusk.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildOnsenLobby,hinokiTexture,LOBBY} from './onsen-lobby.js';
+import {buildWashArea,WASH_SEATS} from './onsen-wash.js';
 
 /**
  * Inside Umi-no-yu: through the noren to the bandai, the changing room, the washing
@@ -34,7 +35,7 @@ export const ONSEN_SEATS=Object.freeze({
  bench:{id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.42},
  tatami:{id:'tatami',label:'Sit on the tatami',position:[LOBBY.koagari.x-.25,0,LOBBY.koagari.z+.5],stand:[LOBBY.koagari.x,0,3.55],eyeY:LOBBY.koagari.h+.8,yaw:Math.PI,surfaceY:LOBBY.koagari.h+.07},
  massage:{id:'massage',label:'Sit in the massage chair',position:[4.25,0,3.55],stand:[3.4,0,3.55],eyeY:1.12,yaw:Math.PI/2,surfaceY:.46},
- ...Object.fromEntries([-1.9,-2.6,-3.3,-4.0].map((z,i)=>['wash'+i,{id:'wash'+i,label:'Wash at the tap',position:[-4.25,0,z],stand:[-3.45,0,z],eyeY:.98,yaw:Math.PI/2,surfaceY:.27,wash:true}])),
+ ...WASH_SEATS,
  indoor:{id:'indoor',label:'Get into the indoor bath',position:[3.1,0,-3.35],stand:[3.1,0,-1.66],eyeY:R.tub.floor+.78,yaw:Math.PI,surfaceY:R.tub.floor+.04,soak:true},
  rock:{id:'rock',label:'Get into the rock bath',position:[.75,0,-6.45],stand:[.75,0,-4.75],eyeY:R.pool.floor+.82,yaw:0,surfaceY:R.pool.floor+.04,soak:true},
  rockBeside:{id:'rockBeside',label:'Get into the rock bath beside the rocks',position:[-.85,0,-6.55],stand:[-.6,0,-4.78],eyeY:R.pool.floor+.82,yaw:0,surfaceY:R.pool.floor+.04,soak:true}
@@ -172,18 +173,8 @@ export function buildOnsenInterior({room,reg,action,exit}){
   'Umi-no-yu is a family bath: husbands and wives, grandparents and children, friends from work. Swimwear in the water, please. Wash before you get in. No towels in the bath. Rock bath until 22:00.'),true);
 
  // ---- Bath hall: the washing places along the west wall, the indoor bath along the east.
- const bucket=mat(0xf2c230,.45);
- ONSEN_SEATS&&['wash0','wash1','wash2','wash3'].forEach((id,i)=>{
-  const s=ONSEN_SEATS[id],z=s.position[2];
-  box([.02,.62,.5],[-4.93,1.25,z],mirror,'Wash mirror');cyl(.018,.34,[-4.88,.78,z+.1],mat(0xbfc4c6,.25,{metalness:.8}),'Shower pipe',8);
-  cyl(.03,.05,[-4.85,.95,z+.1],mat(0xbfc4c6,.25,{metalness:.8}),'Shower head',10);
-  box([.12,.04,.5],[-4.88,.56,z],mat(0xd9d4c8,.4),'Tap shelf');
-  const stool=cyl(.16,.26,[-4.25,.13,z],mat(0xf3f0e8,.5),'Wash stool',16);void stool;
-  const b=new THREE.Mesh(new THREE.CylinderGeometry(.13,.11,.12,18,1,true),bucket);b.position.set(-4.62,.06,z-.18);room.add(b);
-  box([.1,.07,.05],[-4.86,.6,z-.12],mat(i%2?0xe7a0b5:0x9ec7e3,.5),'Soap');
-  rect(-4.25,z,.3,.3,.3);seat(s,'Washing place','You sit on the low stool, fill the yellow bucket and pour it over your shoulders. Soap, rinse, and again. Nobody gets into the bath until they have done this.');
- });
- rect(-4.85,-2.95,.3,2.6,1.5);
+ // The arai-ba, sentō-style: a tiled ledge of taps along the wall and an island down the middle (onsen-wash.js).
+ buildWashArea({room,box,cyl,rect,seat,mat});
  // The indoor tub: tiled walls rising from a sunk floor, the rim a little above your knee.
  const T=R.tub,tw=T.maxX-T.minX,td=T.maxZ-T.minZ,tx=(T.minX+T.maxX)/2,tz=(T.minZ+T.maxZ)/2;
  box([tw,.04,td],[tx,T.floor-.02,tz],tiles,'Indoor bath floor');

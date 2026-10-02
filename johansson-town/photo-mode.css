@@ -57,3 +57,8 @@
 #photoStudio .photo-chip{min-height:54px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px}#photoStudio .photo-chip svg{width:24px;height:24px}#photoStudio .photo-face{font-size:21px;line-height:24px}#photoStudio .photo-tabs span{font-size:12px}
 
 #photoStudio [data-close]::after{content:none}#photoStudio [data-close] svg{width:24px;height:24px}#photoStudio [data-close] span{font-size:0}
+.photo-swatches{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 8px}
+#photoStudio .photo-swatch{width:28px;height:28px;min-height:28px;padding:0;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #c6c1b0}
+#photoStudio .photo-swatch.on{box-shadow:0 0 0 3px #ffc93c}
+#photoStudio .photo-check{display:flex;align-items:center;gap:6px;min-height:36px}
+#photoStudio .photo-check input{width:auto}

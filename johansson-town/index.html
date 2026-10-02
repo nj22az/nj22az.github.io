@@ -19,13 +19,13 @@
 <link rel="stylesheet" href="./landing.css?h=ae65364d">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
-<link rel="stylesheet" href="./photo-mode.css?h=64f71069">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-DTUEahnX.js">
+<link rel="stylesheet" href="./photo-mode.css?h=678115f0">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-MYwQWESV.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-MrOxZM18.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CWODQqT0.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-Ctl7y9Gf.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-BZfyZHM7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-C9IsFoH5.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-NqW33uST.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-DWoz4KYz.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-B-dI77HX.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -346,7 +346,7 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON TOWN</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=e2014866"></script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-8ABDZ71s.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-CQlBW8kn.js";</script>
 <script src="./landing.js?h=a9321e19"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -465,7 +465,7 @@
 })();
 </script>
 <script type="module">
-import {unlockTownAudio} from './runtime/audio-ClU0jD91.js';
+import {unlockTownAudio} from './runtime/audio-D5HpRhZR.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
@@ -505,7 +505,7 @@ import {unlockTownAudio} from './runtime/audio-ClU0jD91.js';
       }
     },25000);
     try{
-      try { await import('./runtime/boot-DTUEahnX.js'); } catch (error) {
+      try { await import('./runtime/boot-MYwQWESV.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

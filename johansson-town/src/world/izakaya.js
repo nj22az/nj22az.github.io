@@ -174,7 +174,9 @@ function hangMenuStrips(room){
 }
 /** Warm light from the lanterns over the counter and the lamps over the tables. */
 function lightTheRoom(room){
- for(const [x,y,z,power] of [[-4,2.6,-2.35,6],[-.8,2.6,-2.35,6],[2.4,2.6,-2.35,6],[-3.5,2.1,2.2,4],[2.6,2.1,2,4],[5.3,1.95,1.8,4]]){
+ // Under each bell pendant over the counter and the tables, the back bar's shelf lights, and
+ // the koagari (tools/blender/build-minato-interior.py).
+ for(const [x,y,z,power] of [[-3.8,2.25,-2.25,3.6],[-2.3,2.25,-2.25,3.6],[-.8,2.25,-2.25,3.6],[.7,2.25,-2.25,3.6],[2.2,2.25,-2.25,3.6],[-2.9,1.9,-5.5,3],[-3.5,2.15,2.2,4],[2.6,2.15,2,4],[5.3,1.95,1.8,4]]){
   const light=new THREE.PointLight(0xffb36b,power,7,2);light.position.set(x,y,z);light.name='Minato lamp';room.add(light);
  }
 }
