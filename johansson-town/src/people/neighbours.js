@@ -86,12 +86,9 @@ const ALL_NEIGHBOURS=Object.freeze([
   lines:[
    'Thirty minutes, not a second more! — Oh, a visitor. My wife makes the andagi at the shop on Main Street. I referee, which is how I keep out of her kitchen.']},
  // Two who walk: one doing her shopping, one on his round.
- {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'doing her shopping',walk:true,speed:1.05,hours:[[H(8),H(12)],[H(15),H(19)]],
-  // Up the paved side of the alley: Sato Ramen stands on the other side, against Minato.
-  route:[[-37.6,-13],[-30,-13],[-24.6,-13.4],[-20,-13.6],[-19,-18.3],[-6.6,-18.3],[-6.6,-19.4],[-6.6,-18.3],[-19,-18.3],[-20,-13.6],[-24.6,-13.4],[-30,-13],[-37.6,-13],[-37.6,1.5],[-30,1.5],[-37.6,1.5]],
-  lines:[
-   'Sakura first, then Yonamine-san for fish, then home before the rice is ready. If I stop to talk the rice is ruined. So — quickly!',
-   'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. It is always ready. He is always late.']},
+ {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'arranging flowers at Rainflower Florist',at:[100.2,101],face:[-1,0],pose:'Interact',hours:[[H(9),H(18)]],
+  lines:['Welcome to Rainflower. Fresh stems, a small bouquet, or something green for your windowsill? I wrap everything by hand.',
+   'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. The flowers finish work on time; he never does.']},
  {name:'Postman Tōma',look:'Kenta',height:1.7,role:'on his round',walk:true,speed:1.25,hours:[[H(9),H(13)],[H(14),H(17)]],
   route:[[2.6,15.2],[2.6,-14.6],[4.3,-15.2],[4.3,-1.6],[5.4,2.4],[14,2.4],[14,9.2],[14,2.4],[5.4,2.4],[4.3,-1.6],[2.6,-1.2]],
   lines:[

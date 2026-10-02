@@ -12,3 +12,10 @@ export function controlVisibility({playing,paused,seated,inside,moving,running,c
   // The bag is only there when there is something in it.
   bagButton:available&&!!hasItems};
 }
+
+/** A doorway action belongs to the doorway, and cannot compete with a modal. */
+export function roomExitVisible({playing,inside,paused,seated,position,exit,radius=2.2}){
+ if(!playing||!inside||paused||seated||!position||!exit)return false;
+ const x=Array.isArray(exit)?exit[0]:exit.x,z=Array.isArray(exit)?exit[2]:exit.z;
+ return Number.isFinite(x)&&Number.isFinite(z)&&Math.hypot(position.x-x,position.z-z)<radius;
+}

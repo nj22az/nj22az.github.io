@@ -9,8 +9,19 @@ import {paint} from './kit.js';
 const SERIF='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 const SANS='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
 
+
+export const SIGN_JAPANESE=Object.freeze({"Port warehouse": "港倉庫", "Sakura Shop": "さくら商店", "Sakura": "桜", "Fisheries cooperative": "漁業協同組合", "Ryukyu Cider": "琉球サイダー", "Mosquito coil": "蚊取り線香", "Security camera": "防犯カメラ", "Ferry Terminal": "フェリー乗り場", "Warehouse ←": "港倉庫 ←", "Telephone": "公衆電話", "Ice": "氷", "Ice cream": "アイスクリーム", "Cold drinks": "冷たい飲み物", "Blue Coral": "ブルーコーラル", "Big catch": "大漁", "Tide table": "潮見表", "Johansson Shopping Street": "ヨハンソン商店街", "Island sandals": "島ぞうり", "Awamori South wind": "泡盛 南風", "Deigo Life Insurance": "でいご生命", "Minato Bank": "港銀行", "Harbour Travel": "みなと旅行", "Rainflower Florist": "雨花生花店", "Pocket Grocer": "まちの食品店", "Town Tailor": "町の仕立屋", "Secondhand Records": "中古レコード", "Blue Coral Ice Cream": "ブルーコーラル", "RAINFLOWER LANE": "雨花通り", "Welcome back": "おかえりなさい", "Izakaya Minato": "居酒屋みなと", "Ramen Sato": "らーめん佐藤", "Minato": "みなと", "Bookstore": "本屋", "Books": "本", "Repair": "修理", "Dock Electrical Workshop": "港の電気工房", "Maegeru Shobo/Printing": "前原書房・印刷", "Port Affairs and Technology Office": "港務技術事務所", "Ryukyu cuisine/Awamori": "琉球料理・泡盛", "Izakaya": "居酒屋", "Yakitori": "焼鳥", "Alcohol": "酒", "Oden": "おでん", "Assorted Yakitori": "焼鳥盛合せ", "Edamame": "枝豆", "Cold tofu": "冷奴", "Dashi-rolled egg": "だし巻き卵", "Grilled Atka mackerel": "ほっけ焼き", "Assorted sashimi": "刺身盛合せ", "Fried tofu": "揚げ出し豆腐", "Fried chicken": "唐揚げ", "Ochazuke": "お茶漬け", "Draft beer": "生ビール", "Bottled beer": "瓶ビール", "Awamori": "泡盛", "Sake": "日本酒", "Oolong tea": "烏龍茶", "Canned beer": "缶ビール", "Front-Row Books": "前原書房"});
+export const japaneseSign=text=>SIGN_JAPANESE[text]||text;
+/** Fit lettering by measured width rather than squeezing long words. */
+export function signText(ctx,text,x,y,maxWidth,size,font=SANS){
+ let fitted=size;ctx.font=`bold ${fitted}px ${font}`;
+ while(fitted>10&&ctx.measureText(text).width>maxWidth){fitted--;ctx.font=`bold ${fitted}px ${font}`;}
+ ctx.fillText(text,x,y,maxWidth);return fitted;
+}
+
 /** The long board over a shopfront. */
 export function fascia({jp,en,bg='#f3ead2',ink='#23313a',accent='#b8432f',mark=''}={}){
+ jp=japaneseSign(jp);mark=japaneseSign(mark);
  return paint(1024,192,(ctx,w,h)=>{
   ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
   // Sun and salt: a paler band along the top edge, and a few rust runs from the fixings.
@@ -20,15 +31,16 @@ export function fascia({jp,en,bg='#f3ead2',ink='#23313a',accent='#b8432f',mark='
   ctx.fillStyle=ink;ctx.textBaseline='middle';ctx.textAlign='center';
   const left=mark?120:0;
   if(mark){ctx.fillStyle=accent;ctx.beginPath();ctx.arc(96,h/2,58,0,Math.PI*2);ctx.fill();
-   ctx.fillStyle=bg;ctx.font=`bold 70px ${SANS}`;ctx.fillText(mark,96,h/2+3);ctx.fillStyle=ink;}
+   ctx.fillStyle=bg;ctx.font=`bold 70px ${SANS}`;signText(ctx,mark,96,h/2+3,100,70);ctx.fillStyle=ink;}
   ctx.font=`bold ${Math.min(104,Math.floor((w-left-80)/Math.max(1,[...jp].length)*.92))}px ${SERIF}`;
-  ctx.fillText(jp,(w+left)/2,h*.44);
-  if(en){ctx.font=`bold 26px ${SANS}`;ctx.fillStyle=accent;ctx.fillText(en.toUpperCase(),(w+left)/2,h*.84);}
+  signText(ctx,jp,(w+left)/2,h*.44,w-left-80,104,SERIF);
+  if(en){ctx.font=`bold 26px ${SANS}`;ctx.fillStyle=accent;signText(ctx,en.toUpperCase(),(w+left)/2,h*.84,w-left-80,26);}
  });
 }
 
 /** A tall board on the corner of a building, read from up the street. */
 export function vertical({jp,bg='#b8432f',ink='#fff6e0'}={}){
+ jp=japaneseSign(jp);
  return paint(128,512,(ctx,w,h)=>{
   ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
   ctx.strokeStyle=ink;ctx.lineWidth=6;ctx.strokeRect(8,8,w-16,h-16);
@@ -59,8 +71,8 @@ export function iceFlag(){
   for(let i=0;i<4;i++){const y=h*.72+i*18;ctx.beginPath();ctx.moveTo(0,y);
    for(let x=0;x<=w;x+=16)ctx.quadraticCurveTo(x+8,y-12,x+16,y);ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.fill();}
   ctx.fillStyle='#d42a2a';ctx.font=`bold 104px ${SERIF}`;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText("Ice",w/2,h*.32);
-  ctx.fillStyle='#2f6fb8';ctx.font=`bold 26px ${SANS}`;ctx.fillText("Zenzai",w/2,h*.56);
+  ctx.fillText("氷",w/2,h*.32);
+  ctx.fillStyle='#2f6fb8';ctx.font=`bold 26px ${SANS}`;signText(ctx,"SHAVED ICE",w/2,h*.56,w-12,19);
  });
 }
 
@@ -69,9 +81,9 @@ export function poster({title,lines=[],bg='#f4e7c4',ink='#2b2b2b',band='#d0572f'
  return paint(256,360,(ctx,w,h)=>{
   ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
   ctx.fillStyle=band;ctx.fillRect(0,0,w,70);
-  ctx.fillStyle='#fff';ctx.font=`bold 40px ${SANS}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(title,w/2,36);
+  ctx.fillStyle='#fff';ctx.font=`bold 40px ${SANS}`;ctx.textAlign='center';ctx.textBaseline='middle';signText(ctx,japaneseSign(title),w/2,36,w-24,40);
   ctx.fillStyle=ink;ctx.font=`bold 24px ${SANS}`;
-  lines.forEach((line,i)=>ctx.fillText(line,w/2,112+i*40));
+  lines.forEach((line,i)=>signText(ctx,line,w/2,112+i*40,w-28,24));
  });
 }
 
@@ -157,8 +169,8 @@ export function iceMural(){
   ctx.strokeStyle='#a8763a';ctx.lineWidth=3;for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(118+i*16,150);ctx.lineTo(150,280);ctx.stroke();}
   for(const [x,y,c] of [[130,135,'#f6efe0'],[172,132,'#e98aa6'],[151,95,'#8a5a3c']]){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,34,0,Math.PI*2);ctx.fill();}
   ctx.fillStyle='#fff';ctx.textAlign='left';ctx.textBaseline='middle';
-  ctx.font='bold 92px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText("Blue Coral",250,105);
-  ctx.font='bold 54px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText("Ice cream",254,190);
+  ctx.font='bold 92px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';signText(ctx,"ブルーコーラル",250,105,w-275,82);
+  ctx.font='bold 54px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText("アイスクリーム",254,190);
   ctx.fillStyle='#ffd45a';ctx.font='bold 30px sans-serif';ctx.fillText('BLUE CORAL ICE CREAM · OKINAWA · SINCE 1963',254,256);
   ctx.strokeStyle='#f3ead2';ctx.lineWidth=10;ctx.strokeRect(8,8,w-16,h-16);
  });
@@ -166,13 +178,14 @@ export function iceMural(){
 
 /** An enamel tin advert, rusting at the corners. */
 export function enamel({jp,en,bg='#f1e6c8',ink='#b8302a'}={}){
+ jp=japaneseSign(jp);
  return paint(256,384,(ctx,w,h)=>{
   ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
   ctx.strokeStyle=ink;ctx.lineWidth=10;ctx.strokeRect(12,12,w-24,h-24);
   const chars=[...jp],size=Math.min(84,Math.floor((h-110)/chars.length*.92));
   ctx.fillStyle=ink;ctx.font=`bold ${size}px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif`;ctx.textAlign='center';ctx.textBaseline='middle';
   chars.forEach((c,i)=>ctx.fillText(c,w/2,40+(i+.5)*(h-110)/chars.length));
-  ctx.font='bold 20px sans-serif';ctx.fillText(en.toUpperCase(),w/2,h-44);
+  ctx.font='bold 20px sans-serif';signText(ctx,en.toUpperCase(),w/2,h-44,w-40,20);
   ctx.fillStyle='rgba(120,60,30,.55)';for(const [x,y] of [[16,16],[w-26,20],[20,h-28],[w-30,h-24]]){ctx.beginPath();ctx.arc(x,y,10,0,Math.PI*2);ctx.fill();}
  });
 }
@@ -186,7 +199,7 @@ export function catchFlag(seed=0){
   ctx.fillStyle=b;ctx.beginPath();ctx.arc(w*.72,h*.42,70,0,Math.PI*2);ctx.fill();
   ctx.fillStyle=c;for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(0,h*.7+i*18);for(let x=0;x<=w;x+=24)ctx.quadraticCurveTo(x+12,h*.62+i*18,x+24,h*.7+i*18);ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.fill();}
   ctx.fillStyle='#fff';ctx.font='bold 76px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText("Big catch",w*.34,h*.4);
+  ctx.fillText("大漁",w*.34,h*.4);
  });
 }
 
@@ -209,11 +222,11 @@ export function wallAd({jp,en,line='',bg,ink,accent}=WALL_ADS[0],seed=1){
   ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
   ctx.strokeStyle=accent;ctx.lineWidth=18;ctx.strokeRect(22,22,w-44,h-44);
   ctx.fillStyle=ink;ctx.textAlign='center';ctx.textBaseline='middle';
-  const chars=[...jp].filter(c=>c!==' '),size=Math.min(150,Math.floor((h-260)/chars.length));
+  const chars=[...japaneseSign(jp)].filter(c=>c!==' '),size=Math.min(150,Math.floor((h-260)/chars.length));
   ctx.font=`bold ${size}px ${SERIF}`;
   chars.forEach((c,i)=>ctx.fillText(c,w/2,90+size*.55+i*size));
-  ctx.font=`bold 34px ${SANS}`;ctx.fillStyle=accent;ctx.fillText(line,w/2,h-118);
-  ctx.font=`bold 30px ${SANS}`;ctx.fillStyle=ink;ctx.fillText(en,w/2,h-64);
+  ctx.font=`bold 34px ${SANS}`;ctx.fillStyle=accent;signText(ctx,line,w/2,h-118,w-72,34);
+  ctx.font=`bold 30px ${SANS}`;ctx.fillStyle=ink;signText(ctx,en,w/2,h-64,w-72,30);
   // Twenty years of sun: a chalky wash, stronger toward the top, that pulls every
   // colour toward cyan-white; then flaking at the edges where the render shows through.
   const fade=ctx.createLinearGradient(0,0,0,h);fade.addColorStop(0,'rgba(214,236,236,.42)');fade.addColorStop(1,'rgba(214,236,236,.16)');
