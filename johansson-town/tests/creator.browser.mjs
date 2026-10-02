@@ -27,6 +27,11 @@ try{
    const bounds=await page.evaluate(()=>{const root=document.querySelector('.shm'),body=document.querySelector('.shm-body'),save=document.querySelector('.shm-foot button:last-child');return {overflow:root.scrollWidth>innerWidth,body:body.clientHeight,bottom:save.getBoundingClientRect().bottom};});
    assert.equal(bounds.overflow,false);assert.ok(bounds.body>=90,JSON.stringify(bounds));assert.ok(bounds.bottom<=height);
   }
+  if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('head');else await page.getByRole('tab',{name:'Face',exact:true}).click();
+  await page.getByRole('tab',{name:'Style',exact:true}).click();assert.equal(await page.locator('.shm-face-forms button').count(),12);
+  await page.getByRole('button',{name:'Pear',exact:true}).click();assert.equal(await page.evaluate(()=>maker.recipe.head.form),'pear');assert.equal(await page.getByRole('button',{name:'Pear',exact:true}).getAttribute('aria-pressed'),'true');
+  const skinBefore=await page.evaluate(()=>maker.recipe.body.skin);await page.locator('.shm-face-skin button').last().click();assert.notEqual(await page.evaluate(()=>maker.recipe.body.skin),skinBefore);await page.getByRole('button',{name:'Undo',exact:true}).click();assert.equal(await page.evaluate(()=>maker.recipe.body.skin),skinBefore);assert.equal(await page.evaluate(()=>maker.recipe.head.form),'pear');
+  await page.screenshot({path:'/tmp/face-form-creator-'+width+'x'+height+'.png'});
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('eyes');else await page.getByRole('tab',{name:'Eyes',exact:true}).click();
   await page.getByRole('tab',{name:'Adjust',exact:true}).click();
   const sizeBefore=await page.evaluate(()=>window.maker.recipe.eyes.size);await page.getByRole('button',{name:'Bigger',exact:true}).click();assert.ok((await page.evaluate(()=>window.maker.recipe.eyes.size))>sizeBefore);
@@ -58,7 +63,7 @@ try{
   // Who they are: the dials give a personality, and the birthday is kept.
   await page.getByRole('button',{name:'Step 3: Who are they?'}).click();
   for(const dial of ['Pace','Talk','Feelings','Outlook'])await page.getByRole('button',{name:dial+' 8 of 8',exact:true}).click();
-  assert.equal(await page.locator('.shm-type strong').textContent(),'Typhoon');
+  assert.equal(await page.locator('.shm-type strong').textContent(),'Typhoon');assert.match(await page.locator('.shm-type').textContent(),/Planning three outings/);await page.screenshot({path:'/tmp/island-personality-creator-'+width+'x'+height+'.png'});
   await page.getByLabel('Birthday month').selectOption('2');await page.getByLabel('Birthday day').selectOption('29');
   await page.getByLabel('Catchphrase').fill('Haisai!');
   const profile=await page.evaluate(()=>window.maker.recipe.profile);assert.equal(profile.month,2);assert.equal(profile.day,29);assert.equal(profile.catchphrase,'Haisai!');

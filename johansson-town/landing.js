@@ -206,8 +206,9 @@
           <p class="resident-bio">${escape(r.bio)}</p>
           <details class="resident-story"><summary>Open character profile</summary>
           <div class="resident-model-sheet" aria-label="Game character views">${['front','three-quarter','side'].map(view=>`<figure><img class="resident-portrait" data-portrait-view="${view}" src="./${escape(r.portrait)}" width="480" height="480" loading="lazy" alt="${escape(r.name)} · ${view} face view"><figcaption>${view==='front'?'Face':view==='side'?'Side':'Three-quarter'}</figcaption></figure>`).join('')}</div>
-          <dl class="resident-facts"><dt>Occupation</dt><dd>${escape(r.role)}</dd><dt>Usually found</dt><dd>${escape(r.place)}</dd><dt>Appearance</dt><dd>Current in-game character and saved wardrobe</dd></dl>
-          <h4>Their story</h4><p>${escape(r.backstory)}</p><small>${escape(r.storyNote||'')}</small></details>
+          <dl class="resident-facts"><dt>Occupation</dt><dd>${escape(r.role)}</dd><dt>Usually found</dt><dd>${escape(r.place)}</dd>${r.age?'<dt>Age</dt><dd>'+escape(r.age)+'</dd>':''}${r.friend?'<dt>Close friend</dt><dd>'+escape(r.friend)+'</dd>':''}</dl>
+          ${r.islandPersonality?`<section class="resident-personality" aria-label="Island personality"><p class="board-tiny">ISLAND PERSONALITY</p><h4>${escape(r.islandPersonality.title)}</h4><div class="resident-traits">${r.islandPersonality.traits.map(t=>`<span>${escape(t)}</span>`).join('')}</div>${r.dailyLife?`<blockquote>${escape(r.dailyLife)}</blockquote>`:''}<div class="resident-moments"><section><span aria-hidden="true">♡</span><h5>Favourite moment</h5><p>${escape(r.islandPersonality.favourite)}</p></section><section><span aria-hidden="true">☀</span><h5>A small habit</h5><p>${escape(r.islandPersonality.habit)}</p></section><section><span aria-hidden="true">☆</span><h5>Island ambition</h5><p>${escape(r.islandPersonality.ambition)}</p></section></div></section>`:''}
+          <h4>Life on the island</h4><p>${escape(r.backstory)}</p></details>
           ${r.start != null || r.always ? '<p class="duty"><span class="flag"></span></p>' : ''}
         </div>
       </article>`).join("");

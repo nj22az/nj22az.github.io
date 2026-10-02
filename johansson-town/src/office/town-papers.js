@@ -72,6 +72,20 @@ export const TOWN_PAPERS=[
     "source": "notice:For rent · Rental house"
   },
   {
+    "type": "Notice",
+    "title": "Town office telephone",
+    "organisation": "Community Hall",
+    "text": "The harbour master confirms Thursday’s supply ferry. Mori reports the crossing outside the school is clear. Thuan asks whether the bus-stop bench has reached the carpenter yet.",
+    "source": "notice:Town office telephone"
+  },
+  {
+    "type": "Notice",
+    "title": "Town reference library",
+    "organisation": "Community Hall",
+    "text": "Ferry timetables, old island surveys, typhoon preparedness manuals and annotated town budgets. The most-thumbed volume is the harbour maintenance handbook.",
+    "source": "notice:Town reference library"
+  },
+  {
     "type": "Minutes",
     "title": "Town assembly minutes, 1997",
     "organisation": "Community Hall",

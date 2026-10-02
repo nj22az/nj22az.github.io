@@ -36,3 +36,24 @@
 .photo-chips-title{flex-basis:100%;font-size:12px;font-weight:800;color:#8a7f6f;letter-spacing:.06em;text-transform:uppercase}
 #photoStudio .photo-chip{min-height:36px;padding:6px 12px;border-radius:999px;font-size:13px;background:#f2f9ff;border-color:#d9e8f2;color:#2a8fcc;box-shadow:0 2px 0 #d9e8f2}
 #photoStudio .photo-chip.on{background:#ffc93c;border-color:#fff;color:#3b3f55;box-shadow:0 2px 0 #e8a415}
+
+#photoStudio [hidden]{display:none!important}
+#photoStudio .photo-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:12px;position:sticky;top:0;background:#fffaf0;z-index:2;padding:4px 0}
+#photoStudio .photo-tabs button{display:grid;place-items:center;gap:4px;min-height:58px;padding:6px 2px;font-size:11px}
+#photoStudio .photo-tabs button[aria-pressed=true]{background:#ffdb68;border-color:#efc049}
+#photoStudio button .ui-icon{margin:auto;flex-shrink:0}
+#photoStudio [data-capture],#photoStudio [data-remove]{display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+#photoStudio [data-capture] .ui-icon,#photoStudio [data-remove] .ui-icon{margin:0}
+#photoStudio [data-close]{font-size:0;width:48px;height:48px;padding:10px}
+#photoStudio [data-close]::after{content:'×';font-size:30px;line-height:1}
+#photoStudio .photo-place-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#photoStudio .photo-place-grid button{display:grid;place-items:center;gap:8px;padding:12px 6px;min-height:86px;font-size:12px}
+#photoStudio .photo-place-grid button:hover{background:#edf7e8}
+#photoStudio .photo-precise{background:#f5f7fa;box-shadow:none;padding:4px 8px;margin-top:12px}
+#photoStudio header p{font-size:11px}
+#photoStudio .photo-frame{cursor:grab}#photoStudio .photo-frame:active{cursor:grabbing}
+@media(max-width:760px){#photoStudio{grid-template-rows:auto minmax(140px,46%) minmax(0,1fr)}#photoStudio .photo-tools{padding:6px 10px}#photoStudio .photo-tabs{margin-bottom:6px}#photoStudio .photo-tabs button{min-height:48px}#photoStudio .photo-tabs .ui-icon{width:20px;height:20px}}
+
+#photoStudio .photo-chip{min-height:54px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px}#photoStudio .photo-chip svg{width:24px;height:24px}#photoStudio .photo-face{font-size:21px;line-height:24px}#photoStudio .photo-tabs span{font-size:12px}
+
+#photoStudio [data-close]::after{content:none}#photoStudio [data-close] svg{width:24px;height:24px}#photoStudio [data-close] span{font-size:0}

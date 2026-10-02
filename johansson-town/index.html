@@ -13,18 +13,18 @@
 <link rel="icon" type="image/png" href="./assets/icons/town-192.png">
 <link rel="apple-touch-icon" href="./assets/icons/town-192.png">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./base.css?h=a48008c0">
+<link rel="stylesheet" href="./base.css?h=55c46465">
 <link rel="stylesheet" href="./context-controls.css?h=7dfa7c15">
 <title>Johansson Town</title>
-<link rel="stylesheet" href="./landing.css?h=1d80a65c">
+<link rel="stylesheet" href="./landing.css?h=ae65364d">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
-<link rel="stylesheet" href="./photo-mode.css?h=8649f431">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-CLNRD-4F.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-B-hU6XZF.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/icons-D2wbYvxv.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-CmU2F-bt.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-DmQqv1DP.js">
+<link rel="stylesheet" href="./photo-mode.css?h=64f71069">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-DTUEahnX.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/icons-MrOxZM18.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CWODQqT0.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-Ctl7y9Gf.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-BZfyZHM7.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-C9IsFoH5.js">
 </head>
 <body>
@@ -32,13 +32,8 @@
 <div id="ink"></div>
 <div id="threshold"></div>
 <button id="exitRoomButton" class="hidden" aria-label="Exit building to street">Exit to street</button>
-<section id="start" class="guide-open">
-  <div id="splash" class="splash" aria-hidden="true">
-    <div class="splash-mark">
-      <span class="splash-seal">Minato</span>
-      <span class="splash-word">Johansson<em>Co.</em></span>
-    </div>
-  </div>
+<section id="start">
+  <div id="splash" class="splash done" aria-hidden="true"></div>
   <section id="title" class="title-screen" aria-labelledby="titleLogo">
     <div class="title-sky" aria-hidden="true">
       <span class="title-sun"></span>
@@ -47,17 +42,15 @@
     </div>
     <div class="title-town" aria-hidden="true"><img src="./assets/images/town-street.webp" width="1200" height="760" alt="" fetchpriority="high" decoding="async"></div>
     <div class="title-center">
-      <p class="title-presents">JOHANSSON CO. PRESENTS</p>
       <h1 id="titleLogo" class="title-logo">
         <span class="sr-only">Johansson Town</span>
-        <span class="logo-jp" aria-hidden="true">Johansson Town</span>
         <span class="logo-main" aria-hidden="true"><span style="--i:0">J</span><span style="--i:1">O</span><span style="--i:2">H</span><span style="--i:3">A</span><span style="--i:4">N</span><span style="--i:5">S</span><span style="--i:6">S</span><span style="--i:7">O</span><span style="--i:8">N</span></span>
         <span class="logo-town" aria-hidden="true"><span style="--i:9">T</span><span style="--i:10">O</span><span style="--i:11">W</span><span style="--i:12">N</span></span>
       </h1>
       <p class="title-tag">A little harbour life · 1997</p>
       <div class="title-menu">
-        <button id="enter" type="button"><span class="title-cursor" aria-hidden="true">▶</span><b>PRESS START</b></button>
-        <a class="title-guide" href="#board" data-guide-open><span class="title-cursor" aria-hidden="true">▶</span>TOWN GUIDE</a>
+        <button id="enter" type="button"><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4l12 8-12 8z" fill="currentColor"/></svg><b>START</b></button>
+        <a class="title-guide" href="#board" data-guide-open><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 19V5M8 7h7"/></svg>TOWN GUIDE</a>
       </div>
       <div class="title-loading">
         <div class="title-bar" aria-hidden="true"><span></span></div>
@@ -66,7 +59,7 @@
     </div>
     <footer class="title-foot">
       <span>© 1997 JOHANSSON CO.</span>
-      <button id="installTown" type="button">Install on iPhone / iPad</button><span class="title-hint">TOUCH · KEYBOARD · CONTROLLER</span>
+      <button id="installTown" type="button" aria-label="Install on iPhone or iPad"><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 10v11h14V10M12 16V2M7 7l5-5 5 5"/></svg>Install app</button><span class="title-hint">TOUCH · KEYBOARD · CONTROLLER</span>
     </footer>
   </section>
   <div class="board-wrap">
@@ -74,14 +67,14 @@
       <div class="crop-marks" aria-hidden="true"></div>
 
       <header>
-        <nav class="guide-nav" aria-label="Visitor guide"><a href="#roll-heading">Residents</a><a href="#dir-heading">Places</a><a href="#visit-planning">Hours &amp; visiting</a><button type="button" data-town-enter>Enter town</button><a href="#title" data-guide-close>Title screen</a></nav>
+        <nav class="guide-nav" aria-label="Visitor guide"><a href="#roll-heading" aria-label="Residents" title="Residents" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 12a4 4 0 118 0a4 4 0 01-8 0M4 22v-2a8 8 0 0116 0v2"/></svg></a><a href="#dir-heading" aria-label="Places" title="Places" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16M15 5v16"/></svg></a><a href="#visit-planning" aria-label="Hours and visiting" title="Hours and visiting" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a9 9 0 100 18a9 9 0 000-18M12 7v5l4 2"/></svg></a><a href="#title" aria-label="Title screen" title="Title screen" data-guide-close ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8M5 9v12h14V9M9 21v-7h6v7"/></svg></a><button type="button" data-town-enter aria-label="Play Johansson Town" title="Play Johansson Town"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4l12 8-12 8z" fill="currentColor"/></svg></button></nav>
         <div class="board-kicker">
           <span>JOHANSSON TOWN · VISITOR’S GUIDE</span>
           <span class="sr-only" id="boardDoc">Document JT-HB-63-0913</span>
           <span>HARBOUR DISTRICT · 1997</span>
         </div>
 
-        <div class="guide-heading"><p class="board-jp">Johansson Town</p><h1>Johansson Town</h1><p>Your guide to a 1990s island: working quays, quiet gardens, small shops and familiar faces.</p></div>
+        <div class="guide-heading"><h1>Johansson Town</h1><p>Your guide to a 1990s island: working quays, quiet gardens, small shops and familiar faces.</p></div>
       </header>
 
 
@@ -98,7 +91,7 @@
 
 
 
-      <section class="island-brochure-hero" aria-label="Welcome to the island"><img src="./assets/images/town-street.webp" width="1200" height="760" alt="Johansson Town’s island shopping street"><div><p class="board-tiny">KITANO-JIMA VISITOR BUREAU · 1997 EDITION</p><h2>Take the long way home.</h2><p>Step off the boat into a town with time for you. Meet Thuan at Sakura, follow the harbour deliveries, browse a book, or spend the afternoon walking through the garden.</p><button type="button" data-town-enter>Explore the island</button><a href="#roll-heading">Meet your neighbours</a></div></section>
+      <section class="island-brochure-hero" aria-label="Welcome to the island"><img src="./assets/images/town-street.webp" width="1200" height="760" alt="Johansson Town’s island shopping street"><div><p class="board-tiny">KITANO-JIMA VISITOR BUREAU · 1997 EDITION</p><h2>Take the long way home.</h2><p>Step off the boat into a town with time for you. Meet Thuan at Sakura, follow the harbour deliveries, browse a book, or spend the afternoon walking through the garden.</p><a href="#roll-heading">Meet your neighbours</a></div></section>
       <section aria-labelledby="dir-heading">
         <div class="section-bar paper">
           <div>
@@ -352,9 +345,9 @@
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON TOWN</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
-<script src="./resident-guide.js?h=ba8f4ee4"></script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-225v_12D.js";</script>
-<script src="./landing.js?h=3fa024cf"></script>
+<script src="./resident-guide.js?h=e2014866"></script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-8ABDZ71s.js";</script>
+<script src="./landing.js?h=a9321e19"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
 // behind it. Launching the game stays in index.html; this only presses its button.
@@ -367,7 +360,7 @@
   const SPLASH_KEY = "johansson-town-splash";
 
   // The company mark plays once per visit; a tap or key skips it.
-  let splashSeen = start.classList.contains("guide-open");
+  let splashSeen = true;
   try { splashSeen = splashSeen || sessionStorage.getItem(SPLASH_KEY) === "1"; } catch {}
   const endSplash = () => {
     if (splash.classList.contains("done")) return;
@@ -387,11 +380,13 @@
     event?.preventDefault();
     start.classList.add("guide-open");
     start.scrollTop = 0;
+    history.replaceState(null,"",location.pathname+location.search);
     document.getElementById("board").focus?.({ preventScroll: true });
   }
   function closeGuide(event) {
     event?.preventDefault();
     start.classList.remove("guide-open");
+    history.replaceState(null,"",location.pathname+location.search);
     enter.focus({ preventScroll: true });
   }
   document.querySelectorAll("[data-town-enter]").forEach(button => button.addEventListener("click", () => enter.click()));
@@ -510,7 +505,14 @@ import {unlockTownAudio} from './runtime/audio-ClU0jD91.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-CLNRD-4F.js');
+      try { await import('./runtime/boot-DTUEahnX.js'); } catch (error) {
+        if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
+        const response=await fetch('./index.html',{cache:'no-store'});
+        if(!response.ok)throw error;
+        const fresh=await response.text(),match=fresh.match(/import\(['"]\.\/runtime\/(boot-[A-Za-z0-9_-]+\.js)['"]\)/);
+        if(!match)throw error;
+        await import('./runtime/'+match[1]);
+      }
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
