@@ -107,6 +107,13 @@ export const TOWN_PAPERS=[
     "source": "notice:Minato Park · Minato Park"
   },
   {
+    "type": "Notice",
+    "title": "Mr Fujita’s television",
+    "organisation": "Town Services",
+    "text": "A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. \"Sit, sit. The eighth innings is the only one worth watching. Have a can; they are cold, the box is new.\"",
+    "source": "notice:Mr Fujita’s television"
+  },
+  {
     "type": "Flyer",
     "title": "School noticeboard",
     "organisation": "Town Hall Classroom",
