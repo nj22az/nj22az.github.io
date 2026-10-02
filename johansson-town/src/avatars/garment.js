@@ -152,6 +152,7 @@ export function paintGarment(ctx,recipe,m,radiusAt){
    for(const s of [-1,1])poly([[s*.13*k,1.0],[s*.07*k,1.0],[-s*.06*k,.45],[-s*.13*k,.45]],o.accent);
    ctx.fillStyle=shade(o.accent,.85);ctx.fillRect(0,Y(.4),TW,Y(.3)-Y(.4));marks.push('bands','sash');break;
   }
+  case 'sailorlong':
   case 'sailor':{
    // A square collar at the back, its points tied in a V at the front with a scarf.
    const c=o.accent,w=lighten(c,.85);
@@ -161,6 +162,12 @@ export function paintGarment(ctx,recipe,m,radiusAt){
    });
    for(const s of [-1,1]){poly([[s*.012*k,1.0],[s*.16*k,1.0],[s*.03*k,.66],[s*.0*k,.66]],c);path([[s*.13*k,.985],[s*.02*k,.69]],w,line*1.2);}
    poly([[-.045*k,.7],[.045*k,.7],[0,.56]],'#d8342c');marks.push('collar','scarf');break;
+  }
+  case 'police':{
+   collar('#f4f1ea',{drop:.87,spread:.09});
+   poly([[-.016*k,.93],[.016*k,.93],[.027*k,.75],[0,.7],[-.027*k,.75]],'#18243d');
+   for(const side of [-1,1])for(const t of [.64,.49,.34])dotAt(side*W*.15,t,.009*k,'#d7b561');
+   pocket(-W*.25,.73,W*.19,.10,shade(top,.92));dotAt(W*.25,.76,.022*k,'#d7b561');marks.push('tie','badge','buttons');hemRound();break;
   }
   case 'overalls':{
    // The bib, its straps and their buttons, in the trousers' cloth.

@@ -1,3 +1,4 @@
+import {installIconControls} from './ui/icon-controls.js';
 // Benches and vending machines already have usable local stand-ins and hydrate
 // through the detail stream. Their downloads must not gate the first town frame.
 const status=document.querySelector('#bootStatus');
@@ -6,3 +7,5 @@ status.textContent='BUILDING TOWN…';
 await import('../touch-ui.js?ui=controls-3');
 await import('./game.js?snappy=1');
 void import('../webmcp.js').then(()=>import('../webmcp-characters.js')).catch(error=>console.warn('Town browser tools unavailable:',error));
+
+installIconControls();

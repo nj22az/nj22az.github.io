@@ -28,3 +28,15 @@ test('taking off a hat restores the original hairstyle and putting it on tucks i
  installDOM();const a=buildAvatar({...CAST_RECIPES.Thuan,hair:{...CAST_RECIPES.Thuan.hair,style:'bun'},outfit:{...CAST_RECIPES.Thuan.outfit,hat:'cap'}});
  const tucked=a.body.geometry.attributes.position.array.slice();a.setHat(false);assert.notDeepEqual(a.body.geometry.attributes.position.array,tucked,'original bun emerges when the hat is hung up');a.setHat(true);assert.deepEqual(a.body.geometry.attributes.position.array,tucked,'hat fits exactly as before');a.dispose();
 });
+
+test('Johansson wardrobe excludes dresses, migrates old saved skirts, and preserves Thuan choices',async()=>{
+ const {outfitAllowedFor}=await import('../src/avatars/outfits.js');
+ const {playerRecipe,savePlayerRecipe,PLAYER_RECIPE_KEY}=await import('../src/avatars/actors.js');
+ const {encodeRecipe}=await import('../src/avatars/recipe.js');
+ const values=new Map(),storage={getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)};
+ const outfit={...CAST_RECIPES.Johansson.outfit,top:'sundress',bottom:'pleatedskirt'};
+ assert.equal(outfitAllowedFor('Johansson',outfit),false);assert.equal(outfitAllowedFor('Thuan',outfit),true);
+ storage.setItem(PLAYER_RECIPE_KEY,encodeRecipe({...CAST_RECIPES.Johansson,outfit}));
+ assert.equal(playerRecipe(storage).outfit.bottom,'pants');assert.equal(playerRecipe(storage).outfit.top,'kariyushi');
+ savePlayerRecipe({...CAST_RECIPES.Johansson,outfit},storage);assert.equal(outfitAllowedFor('Johansson',playerRecipe(storage).outfit),true);
+});

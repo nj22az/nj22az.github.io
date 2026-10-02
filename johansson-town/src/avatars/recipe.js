@@ -40,7 +40,7 @@ export const PARTS=Object.freeze({
  mouth:Object.freeze(['smile','flat','grin','small','wide','smirk','pout']),
  glasses:Object.freeze(['none','round','square','sun','half']),
  facial:Object.freeze(['none','moustache','walrus','stubble','beard','goatee']),
- top:Object.freeze(['tank','tee','kariyushi','polo','blouse','jacket','apron','smock','sailor','hoodie','cardigan','overalls','sundress','festival','lighthouse','lantern','reef']),
+ top:Object.freeze(['tank','tee','kariyushi','polo','blouse','jacket','apron','smock','sailor','sailorlong','police','hoodie','cardigan','overalls','sundress','festival','lighthouse','lantern','reef']),
  bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt','widepants','cropped','culottes','pleatedskirt']),
  footwear:Object.freeze(['barefoot','sneakers','sandals','shoes','boots']),
  hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon','squid','teapot','sunflower','paperboat','mountain']),
