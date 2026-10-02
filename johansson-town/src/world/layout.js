@@ -16,11 +16,15 @@ import {WEST_YARD,westYardAt} from './west-yard.js';
 import {STAFF_YARD_ROUTE} from './staff-bench.js';
 import {SCHOOL,schoolAt} from './school-layout.js';
 import {NISHI,nishiAt,EAST_QUAY,eastQuayAt} from './okinawa/layout.js';
+import {KITAHAMA,kitahamaLaneAt} from './kitahama-layout.js';
+import {GROUND_LAYER} from './ground-layers.js';
+const KITAHAMA_ROUTE=Object.freeze({id:'kitahama-lane',surface:'stone'});
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
 export const OUTER_PIER=Object.freeze({x:0,z:-57.3,width:8.2,length:15.3,height:.098});
 /** The seaward edge of the quay, where its slab gives way to the outer pier. */
 export const QUAY_SOUTH=-50;
+
 const boardwalkRoute={id:'harbour-boardwalk',width:BOARDWALK.width,surface:'asphalt',points:[[BOARDWALK.x,BOARDWALK.maxZ],[BOARDWALK.x,BOARDWALK.minZ]]};
 export const ROUTES = [
  {id:'shotengai',width:MAIN_ROAD.width,surface:'asphalt',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,MAIN_ROAD.minZ]]},
@@ -122,11 +126,13 @@ function regionAt(x,z,r=0){
  if(peninsulaActive()&&nishiAt(x,z,r))return NISHI;
  // The auction shed and ice plant, on the quay east of the harbour office.
  if(peninsulaActive()&&eastQuayAt(x,z,r))return EAST_QUAY;
+ // Kitahama's lanes, laid on the island's ground.
+ if(peninsulaActive()&&kitahamaLaneAt(x,z,r))return KITAHAMA_ROUTE;
  if(peninsulaActive()){
   const surface=coastalSurface(x,z);
   if(surface&&(!(r>0)||RIM.every(([dx,dz])=>coastalSurface(x+dx*r,z+dz*r))))return surface;
  }
  return null;
 }
-export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(peninsulaActive()){const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(peninsulaActive()&&regionAt(x,z,0)?.id==='peninsula-ground')return -.4;return 0;}
+export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(peninsulaActive()){const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(peninsulaActive()&&kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;if(peninsulaActive()&&regionAt(x,z,0)?.id==='peninsula-ground')return -.4;return 0;}
 export const MAP_BOUNDS={get minX(){return peninsulaActive()?-52:-44},get maxX(){return peninsulaActive()?64:48},minZ:-72,get maxZ(){return peninsulaActive()?HEADLAND.maxZ:Math.max(TUNNEL.z+TUNNEL.depth+1,SCHOOL.seawall.south+6)}};

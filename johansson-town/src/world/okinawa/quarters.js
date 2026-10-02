@@ -57,7 +57,8 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildGateball(kit,solid,{anchor,inspect,onAction});
  buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
  buildWires(kit,solid);
- buildKitahama(kit,solid,{anchor,inspect,onAction});
+ // Kitahama stands on the island's ground, below the old town's datum.
+ kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction}),KITAHAMA.y);
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
@@ -528,7 +529,7 @@ function buildKitahama(kit,solid,ctx){
  const across=[34.5,42,52.5].map((x,i)=>pole(x,K.lane.maxZ+.35,{face:Math.PI,transformer:false,lamp:true,seed:210+i}));
  wiresBetween(kit,up[3],across[1],{sag:.5});wiresBetween(kit,across[0],across[1]);wiresBetween(kit,across[1],across[2]);
  for(const p of K.plots){const {door}=plotGate(p,0);const near=across.reduce((a,b)=>Math.abs(b.anchors[0].x-door[0])<Math.abs(a.anchors[0].x-door[0])?b:a);
-  serviceDrop(kit,near,[door[0]+1.5,2.6,p.gate==='north'?p.minZ+3.2:p.maxZ-3.2]);}
+  serviceDrop(kit,near,kit.point(door[0]+1.5,2.6,p.gate==='north'?p.minZ+3.2:p.maxZ-3.2).toArray());}
 }
 
 /** What the nameplates say when you stop to read one. */

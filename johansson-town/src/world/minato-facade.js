@@ -3,6 +3,7 @@ import {createMaterials} from '../render/materials.js?snappy=1';
 import {createKit} from './okinawa/kit.js';
 import {shisa,potPlant} from './okinawa/houses.js';
 import {fascia} from './okinawa/signs.js';
+import {glazeWithRoom} from '../render/window-interior.js';
 
 /**
  * Minato Izakaya, built rather than fetched.
@@ -154,6 +155,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   const paneH=groundH-.21-.21-.75/2-.375;
   const pane=new THREE.Mesh(new THREE.PlaneGeometry(runX-.12,groundH-1.38),
    new THREE.MeshStandardMaterial({color:0x4a4034,emissive:0xd8a557,emissiveIntensity:.1,roughness:.5}));
+  glazeWithRoom(pane);
   pane.position.set(midX,(0.75+groundH-.42)/2,front-.29);pane.userData.clearWindow=true;
   pane.userData.minatoGlow=true;group.add(pane);
   // Koshi: vertical slats across the pane, close enough to read as a screen and open
@@ -244,6 +246,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   for(const dx of [-.78,.78])painted([.08,1.3,.34],[x+dx,upperH-.99,front-.1],0x4a3a2a);
   const pane=new THREE.Mesh(new THREE.PlaneGeometry(1.5,1.1),
    new THREE.MeshStandardMaterial({color:0x5c6a6c,emissive:0xd0a35e,emissiveIntensity:.06,roughness:.35}));
+  glazeWithRoom(pane);
   pane.position.set(x,upperH-.99,front+.012);pane.userData.clearWindow=true;pane.userData.minatoGlow=true;group.add(pane);
   for(let i=0;i<7;i++)painted([.04,1.06,.03],[x-.66+i*.22,upperH-.99,front+.035],0x362b20);
   painted([1.5,.05,.035],[x,upperH-.99,front+.04],0x362b20);

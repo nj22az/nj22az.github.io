@@ -1,5 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
+import {markPane,sharedWindowMaterial} from '../../render/window-interior.js';
 
 /**
  * The building kit the Okinawan quarters are made with.
@@ -19,6 +20,8 @@ const FINISHES=Object.freeze({
  metal:{roughness:.5,metalness:.35},
  glow:{roughness:.7,metalness:0,emissive:0xffd9a0,emissiveIntensity:0},
  lamp:{roughness:.6,metalness:0,emissive:0xffc070,emissiveIntensity:0},
+ /** Window glass with a room behind it (render/window-interior.js). */
+ window:{},
  thin:{roughness:.8,metalness:0,side:THREE.DoubleSide},
  roof:{roughness:.88,metalness:0,side:THREE.DoubleSide},
 });
@@ -105,6 +108,7 @@ export function createKit({shadows=false}={}){
    }
    g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
   }
+  if(finish==='window'){g.computeBoundingBox();markPane(g,g.boundingBox);}
   colour.set(hex);
   const n=g.attributes.position.count,c=new Float32Array(n*3);
   for(let i=0;i<n;i++){c[i*3]=colour.r;c[i*3+1]=colour.g;c[i*3+2]=colour.b;}
@@ -174,11 +178,14 @@ export function createKit({shadows=false}={}){
   const g=new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:false,curveSegments:1});
   add(g,matrix,hex,finish);g.dispose();
  }
- /** A sagging wire between two points. */
+ /**
+  * A sagging wire between two points. The points are in the world, not the current
+  * frame: they are pole anchors, which kit.point() has already carried across.
+  */
  function wire(a,b,sag=.4,r=.02,hex=0x2b2a30){
   const av=new THREE.Vector3(...a),bv=new THREE.Vector3(...b),dist=av.distanceTo(bv);
   const g=new THREE.TubeGeometry(sagCurve(av,bv,sag*Math.min(1.6,dist/14)),10,r,3,false);
-  add(g,new THREE.Matrix4(),hex,'thin');g.dispose();
+  add(g,frame?frame.clone().invert():new THREE.Matrix4(),hex,'thin');g.dispose();
  }
 
  /** Where a local point lands in the world, under the current frame. */
@@ -205,13 +212,13 @@ export function createKit({shadows=false}={}){
    geometry.computeBoundingSphere();
    const tex=surfaces.get(kind);
    const spec=tex?Object.fromEntries(Object.entries({map:tex.map,normalMap:tex.normalMap,normalScale:tex.normalScale,roughnessMap:tex.roughnessMap,aoMap:tex.aoMap,aoMapIntensity:.35,roughness:tex.roughness,side:tex.side}).filter(([,v])=>v!==undefined)):FINISHES[kind]||FINISHES.matte;
-   const material=materials[kind]??=new THREE.MeshStandardMaterial({vertexColors:true,...spec});
+   const material=materials[kind]??=kind==='window'?sharedWindowMaterial():new THREE.MeshStandardMaterial({vertexColors:true,...spec});
    if(tex||['metal','gloss','roof'].includes(kind))material.userData.keepPhysical=true;
    // Window glass and lamps light up at dusk wherever they are built (town.js lightWindows).
    if(kind==='glow'||kind==='lamp')material.userData.kitFinish=kind;
    const mesh=new THREE.Mesh(geometry,material);
    mesh.name=`${name}:${key}`;
-   mesh.castShadow=shadows&&kind!=='thin'&&kind!=='glow';mesh.receiveShadow=true;
+   mesh.castShadow=shadows&&kind!=='thin'&&kind!=='glow'&&kind!=='window';mesh.receiveShadow=kind!=='window';
    parent.add(mesh);meshes.push(mesh);
   }
   buckets.clear();

@@ -57,13 +57,14 @@ export function redTileHouse(kit,{w=8.4,d=6.8,seed=1,wall=C.plaster}={}){
  kit.box(w,.18,.16,0,eaves-.09,D-.12,C.timber);                        // the beam over them
  // The front: sliding doors, a timber rail at knee height and paper-and-glass above it.
  kit.block(-W+.05,W-.05,floor,floor+.55,front,front+.04,C.timberLight);
- kit.block(-W+.05,W-.05,floor+.55,eaves-.25,front+.005,front+.03,0xefe8d6);
+ // Glass sliding doors (garasu-do) above the rail, with the room behind them.
+ kit.block(-W+.05,W-.05,floor+.55,eaves-.25,front+.005,front+.03,C.glass,'window');
  for(let i=0;i<=6;i++){const x=-W+.1+i*(w-.2)/6;kit.box(.07,eaves-floor-.25,.05,x,(floor+eaves-.25)/2,front+.04,C.timber);}
  kit.box(w-.1,.06,.05,0,floor+1.5,front+.04,C.timber);
  kit.box(w-.1,.22,.06,0,eaves-.14,front+.04,C.timber);
  // A small window high on each side, and the back.
- for(const side of [-1,1])kit.box(.05,.7,1.1,side*(W-.03),1.95,-D*.3,C.glass,{finish:'glow'});
- kit.box(1.4,.7,.05,W*.3,1.95,-D+.03,C.glass,{finish:'glow'});
+ for(const side of [-1,1])kit.box(.05,.7,1.1,side*(W-.03),1.95,-D*.3,C.glass,{finish:'window'});
+ kit.box(1.4,.7,.05,W*.3,1.95,-D+.03,C.glass,{finish:'window'});
  // The roof, and the white lime along its ridge and down its four hips.
  const roofH=1.55,over=.55,Wr=W+over,Dr=D+over,ridge=Math.max(Wr,Dr)*.35,long=Wr>=Dr;
  kit.hipRoof(w,d,roofH,0,eaves,0,C.roof,{overhang:over,ridgeFrac:.35,finish:'tile'});
@@ -92,20 +93,33 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  kit.block(-W-.02,W+.02,0,.35,-D-.02,D+.02,0xb9b3a6);                // a darker plinth
  kit.block(-W-.12,W+.12,H,H+.1,-D-.12,D+.12,0xc8c2b5);               // roof slab lip
  for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D]])kit.block(x0,x1,H+.1,H+.55,z0,z1,colour,'plaster');
- // Ground floor: aluminium sliding windows and a door under a thin concrete canopy.
- const window=(x,y,wd,ht)=>{
+ // Ground floor: aluminium sliding windows either side of a door under a thin concrete
+ // canopy. The openings are laid out from the house's own width, left to right with a
+ // pier of wall between each, so a narrow plot's house cannot put a window over its door.
+ const window=(x0,x1,y,ht)=>{
+  const wd=x1-x0,x=(x0+x1)/2;if(wd<.5)return;
   kit.box(wd+.12,ht+.12,.06,x,y,D+.03,0xb8bec0,{finish:'metal'});
-  kit.box(wd,ht,.05,x,y,D+.05,C.glass,{finish:'glow'});
-  kit.box(.04,ht,.06,x,y,D+.07,0xb8bec0,{finish:'metal'});
+  kit.box(wd,ht,.05,x,y,D+.05,C.glass,{finish:'window'});
+  if(wd>.8)kit.box(.04,ht,.06,x,y,D+.08,0xb8bec0,{finish:'metal'});
  };
- window(-W*.45,1.45,2.2,1.2);window(W*.55,1.2,.9,1.5);
- kit.box(.95,2.05,.06,W*.08,1.03,D+.03,0x7b8a8e);
- kit.box(1.5,.1,.9,W*.08,2.3,D+.45,0xc8c2b5);
+ // A run between two x's, at most `most` wide, kept centred in its bay.
+ const bay=(x0,x1,most)=>{const extra=Math.max(0,x1-x0-most)/2;return [x0+extra,x1-extra];};
+ const [doorW,doorH]=[.91,2.0],doorX=W*.2,pier=.35,edge=.45;
+ window(...bay(-W+edge,doorX-doorW/2-pier,2.4),1.45,1.2);
+ window(...bay(doorX+doorW/2+pier,W-edge,1.1),1.45,1.2);
+ // The door: an aluminium frame, a panel with a strip of frosted glass, a handle.
+ kit.box(doorW+.12,doorH+.06,.06,doorX,doorH/2+.03,D+.03,0xb8bec0,{finish:'metal'});
+ kit.box(doorW,doorH,.05,doorX,doorH/2,D+.05,0x7b8a8e);
+ kit.box(.22,1.1,.02,doorX-.2,1.25,D+.085,0xc9d6d8);
+ kit.box(.04,.22,.05,doorX+.33,1.0,D+.1,0xd8dcdc,{finish:'metal'});
+ kit.box(doorW+.55,.1,.9,doorX,doorH+.25,D+.45,0xc8c2b5);
  // Upper floor: a balcony with a flower-block screen, the Okinawan answer to sun and typhoons.
- kit.block(-W,W*.2,storey,storey+.12,D,D+1.1,0xc8c2b5);
- kit.block(-W,W*.2,storey+.12,storey+1.05,D+.95,D+1.1,colour,'hana');
+ kit.block(-W,doorX,storey,storey+.12,D,D+1.1,0xc8c2b5);
+ kit.block(-W,doorX,storey+.12,storey+1.05,D+.95,D+1.1,colour,'hana');
  kit.block(-W,-W+.12,storey+.12,storey+1.05,D,D+1.1,colour,'hana');
- window(-W*.4,storey+1.35,2.4,1.3);window(W*.62,storey+1.4,1.1,1.1);
+ // A glass door out to the balcony, and a window beside it over the front door.
+ window(...bay(-W+edge,doorX-pier,2.4),storey+1.1,2.0);
+ window(...bay(doorX+pier,W-edge,1.1),storey+1.4,1.1);
  // The outside stair up the east side to the roof, with its railing.
  kit.at(W+.55,0,0,()=>{
   const steps=16,rise=(H+.1)/steps,run=(d-.6)/steps;
@@ -157,7 +171,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  // Upstairs: two windows with their frames, a sill each, and a wall-hung air conditioner.
  for(const x of [-W*.48,W*.48]){
   kit.box(1.7,1.25,.06,x,ground+1.55,D+.03,0xb8bec0,{finish:'metal'});
-  kit.box(1.56,1.12,.05,x,ground+1.55,D+.05,C.glass,{finish:'glow'});
+  kit.box(1.56,1.12,.05,x,ground+1.55,D+.05,C.glass,{finish:'window'});
   kit.box(.04,1.12,.06,x,ground+1.55,D+.07,0xb8bec0,{finish:'metal'});
   kit.box(1.8,.07,.18,x,ground+.9,D+.08,0xc9c2b4);
  }

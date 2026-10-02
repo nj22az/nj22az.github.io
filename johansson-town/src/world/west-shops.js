@@ -75,7 +75,7 @@ export function buildWestShop({parent,site,register,enter,label,colliders,shadow
  // Upstairs: four aluminium sliders, a sill under each, an air conditioner and its stain.
  for(const wz of [z-half*.62,z-half*.2,z+half*.2,z+half*.62]){
   kit.box(.06,1.12,GRID.window.small+.4,WEST_FRONT+.03,G+1.55,wz,alu,{finish:'metal'});
-  kit.box(.05,1.0,GRID.window.small+.26,WEST_FRONT+.05,G+1.55,wz,0x5d7a84,{finish:'glow'});
+  kit.box(.05,1.0,GRID.window.small+.26,WEST_FRONT+.05,G+1.55,wz,0x5d7a84,{finish:'window'});
   kit.box(.06,1.0,.04,WEST_FRONT+.07,G+1.55,wz,alu,{finish:'metal'});
   kit.box(.18,.07,GRID.window.small+.5,WEST_FRONT+.08,G+.95,wz,slab);
  }

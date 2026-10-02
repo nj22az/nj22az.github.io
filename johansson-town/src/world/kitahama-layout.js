@@ -19,7 +19,17 @@ export const KITAHAMA=Object.freeze({
   {id:'kitahama-5',kind:'concrete',family:'貸家',romaji:'To let',minX:51.1,maxX:59.4,minZ:68,maxZ:77.5,gate:'south'},
  ].map(p=>Object.freeze({...p,wall:'block'}))),
  field:Object.freeze({minX:35,maxX:53,minZ:79,maxZ:83.2}),
+ /**
+  * Kitahama stands on the island's own ground, which lies 0.4 m below the old town's
+  * datum (coastal-ground.js PENINSULA_GROUND_Y). It was built at the datum, so its lanes
+  * and walls floated 0.4 m over the grass and anybody walking up the lane sank into it.
+  */
+ y:-.4,
 });
+/** Whether a circle of radius r stands on one of Kitahama's two lanes. */
+export function kitahamaLaneAt(x,z,r=0){
+ return [KITAHAMA.approach,KITAHAMA.lane].some(L=>x>=L.minX+r&&x<=L.maxX-r&&z>=L.minZ+r&&z<=L.maxZ-r);
+}
 /** A plot's gate, the point just outside it, and the heading of somebody walking in. */
 export function plotGate(p,out=.7){
  const cx=(p.minX+p.maxX)/2,cz=(p.minZ+p.maxZ)/2;

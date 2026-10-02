@@ -230,7 +230,10 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // ----- Working harbour district -----
   // Quay is deliberately built as one elevated slab with chunky edge geometry; no coplanar white strips.
-  box([38,.4,12],[0,-.105,-44],GROUND.concrete,[0,0,0],'wall');
+  // Its top sits just under the street (layout.js groundHeight 0 on the quay), 16 mm below
+  // the road slab that crosses it so the two never share a plane. It stood 9.5 cm proud,
+  // so everybody on the quay walked ankle-deep in the concrete.
+  box([38,.4,12],[0,-.216,-44],GROUND.concrete,[0,0,0],'wall');
   box([38,.6,.65],[0,-.12,-49.65],0x596568);
   box([38,.18,.55],[0,.19,-49.28],0x343f41);
 

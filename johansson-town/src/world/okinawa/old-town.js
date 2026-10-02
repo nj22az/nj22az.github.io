@@ -145,7 +145,7 @@ function dressSakura(kit,solid,{inspect}){
  // Windows on the street, one of them a door out onto the terrace over the shop.
  const window=(z,y,w,h)=>{
   kit.box(.06,h+.12,w+.12,x1+.03,y,z,0xb8bec0,{finish:'metal'});
-  kit.box(.05,h,w,x1+.05,y,z,C.glass,{finish:'glow'});
+  kit.box(.05,h,w,x1+.05,y,z,C.glass,{finish:'window'});
   kit.box(.06,h,.04,x1+.07,y,z,0xb8bec0,{finish:'metal'});
  };
  window(-31.4,roof+1.4,1.9,1.2);window(-27.3,roof+1.15,1.5,2);window(-23.2,roof+1.4,1.9,1.2);
@@ -153,12 +153,12 @@ function dressSakura(kit,solid,{inspect}){
  // The back and the north end have their windows too: a kitchen, a bathroom, a bedroom.
  for(const [z,w] of [[-26,1.6],[-22.6,1.2]]){
   kit.box(.06,1.12,w+.12,x0-.03,roof+1.45,z,0xb8bec0,{finish:'metal'});
-  kit.box(.05,1,w,x0-.05,roof+1.45,z,C.glass,{finish:'glow'});
+  kit.box(.05,1,w,x0-.05,roof+1.45,z,C.glass,{finish:'window'});
  }
  kit.box(.8,.5,.3,x0-.2,roof+.7,-24.3,0xe2e0d8);
  for(const x of [-15.6,-11.6]){
   kit.box(1.5,1.12,.06,x,roof+1.45,z1+.03,0xb8bec0,{finish:'metal'});
-  kit.box(1.38,1,.05,x,roof+1.45,z1+.05,C.glass,{finish:'glow'});
+  kit.box(1.38,1,.05,x,roof+1.45,z1+.05,C.glass,{finish:'window'});
  }
  // The terrace: the strip of shop roof in front of the flat, railed, with washing and pots.
  for(let z=S.minZ+.5;z<=S.maxZ-.5;z+=1.1)kit.rod([S.maxX-.2,roof,z],[S.maxX-.2,roof+1,z],.02,0x9aa0a4);

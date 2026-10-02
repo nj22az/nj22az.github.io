@@ -34,6 +34,7 @@ import {buildCoyoteTunnel} from './coyote-tunnel.js';
 import {buildOkinawaQuarters} from './okinawa/quarters.js';
 import {createFerryRun} from './ferry.js';
 import {windowGlow} from '../render/dusk.js';
+import {setWindowLight} from '../render/window-interior.js';
 import {isOceanMaterial,tickOcean} from './ocean.js';
 
 // Johansson Town district composition and street interactions.
@@ -273,7 +274,7 @@ export function createTown(options){
   // the town hall, Kitahama and the island homes used to stay dark all night.
   {const glass=new Set(),lamps=new Set();
    world.group.traverse(o=>{if(!o.isMesh)return;for(const m of Array.isArray(o.material)?o.material:[o.material]){const kind=m?.userData?.kitFinish;if(kind==='glow')glass.add(m.userData.celFrom||m);else if(kind==='lamp')lamps.add(m.userData.celFrom||m);}});
-   (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;});}
+   (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;});}
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}const glow=windowGlow(minutes);for(const m of districts.windows)m.material.emissiveIntensity=.02+glow*.78;};
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);
