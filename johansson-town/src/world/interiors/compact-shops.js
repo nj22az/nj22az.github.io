@@ -47,31 +47,25 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
 
  if(site.bookshop){
   addBookshopDetail({room,collider,reg,action});
-  // Keep the entrance and central aisle open between books, counter and reading table.
-  for(const z of [-.95,.45]){
-   box('Bookcase back',[.16,2.05,1.22],[-4.05,1.025,z],dark);
-   for(const y of [.32,.86,1.4,1.92]){
-    box('Book shelf',[.42,.055,1.22],[-3.93,y,z],wood);
-    for(let i=0;i<7;i++)box('Bound volume',[.24,.3+(i%3)*.03,.12],[-3.89,y+.2,z-.49+i*.16],[0x814c3e,0x4d6668,0xa49267,0x626f4f][i%4]);
-   }
-   collider(-3.93,z,.48,1.26,2.1);
-  }
+  // The walls are books to the ceiling (bookshop-detail.js); the floor keeps the
+  // entrance and central aisle open between the counter, the desks and the reading table.
   bench('Bookselling counter',-2.55,2.12,1.65,.55);
   box('Brass till',[.25,.19,.22],[-3.05,1,2.12],0x53685d);
   anchor([-2.55,1,2.12],'Browse the bookshop ledger','read','Books & evening papers','Aya keeps the reading copies and Reiko’s evening paper at the front counter.','Aya');
   const newspaper=anchor([-1.85,1,2.12],'Buy newspaper · ¥80','buy','Evening newspaper',{cost:80,item:'Evening newspaper',text:'Reiko’s evening edition, collected at Aya’s counter.'});newspaper.userData.npcInteraction=false;
-  bench('Newspaper and book wrapping desk',-2.55,-3.05,2.45,.64);
-  box('Wrapping paper roll',[.65,.11,.22],[-2.7,.97,-3.05],0xc8b493);
-  box('Evening newspaper proofs',[.48,.025,.36],[-2.0,.97,-3.05],0xf1ead8);
-  anchor([-1.65,1,-2.9],'Read the editor’s proofs','read','Editor’s desk','Corrections and harbour reports for the next edition.','Reiko');
-  bench('New arrivals display',1.62,-3.05,4.35,.64);
-  for(let i=0;i<12;i++)box('New and second-hand books',[.22,.11,.32],[.1+(i%6)*.53,1.0+Math.floor(i/6)*.13,-3.05],[0x814c3e,0x4d6668,0xa49267][i%3]);
+  bench('Newspaper and book wrapping desk',-2.55,-2.84,2.45,.5);
+  box('Wrapping paper roll',[.65,.11,.22],[-2.7,.97,-2.84],0xc8b493);
+  box('Evening newspaper proofs',[.48,.025,.36],[-2.0,.97,-2.84],0xf1ead8);
+  anchor([-1.65,1,-2.55],'Read the editor’s proofs','read','Editor’s desk','Corrections and harbour reports for the next edition.','Reiko');
+  bench('New arrivals display',1.62,-2.84,4.0,.5);
+  for(let i=0;i<12;i++)box('New and second-hand books',[.22,.11,.32],[.1+(i%6)*.53,1.0+Math.floor(i/6)*.13,-2.84],[0x814c3e,0x4d6668,0xa49267][i%3]);
   const usedBook=anchor([-1.4,1,2.12],'Buy a second-hand paperback · ¥300','buy','Second-hand paperback',{cost:300,item:'Second-hand paperback',text:'Aya wraps a well-loved paperback in brown paper.'});usedBook.userData.npcInteraction=false;
-  bench('Reading table',2.8,.4,1.45,.8);
-  anchor([1.4,1,-2.7],'Ask about the new arrivals','read','Aya’s book recommendations','A sea adventure, an island history, and a well-loved poetry collection. Aya will help you find a book without hurrying you.','Aya');
-  anchor([2.8,1,.4],'Browse the local history books','read','Local history reading table','Reading copies stay in the shop. Please return each book to its marked place.');
+  bench('Reading table',2.15,.4,1.45,.8);
+  anchor([1.4,1,-2.45],'Ask about the new arrivals','read','Aya’s book recommendations','A sea adventure, an island history, and a well-loved poetry collection. Aya will help you find a book without hurrying you.','Aya');
+  anchor([2.15,1,.4],'Browse the local history books','read','Local history reading table','Reading copies stay in the shop. Please return each book to its marked place.');
   const seat=chair(-3.7,2.85,Math.PI/2);seat.userData.seat={position:[-3.7,0,2.85],stand:[-3.02,0,2.95],eyeY:1.12,yaw:Math.PI/2,pitch:0};seat.userData.npcInteraction=false;reg(seat,'Sit in the reading chair',()=>action('seat','Reading chair','A quiet chair beside the window. Read for a while, with the harbour outside.'),true);
-  board('FRONT-ROW BOOKS','BOOKS · NEWSPAPERS · LOCAL STORIES',[0,2.4,-3.42],5.9);
+  // The name board hangs from the ceiling over the aisle, facing the door: the back wall is books.
+  board('FRONT-ROW BOOKS','BOOKS · NEWSPAPERS · LOCAL STORIES',[0,2.42,-1.4],2.6);
  }else if(site.id==='frontrow'){
   box('Bookcase back',[2.1,2.05,.18],[-1.45,1.025,-hd+.1],dark);
   for(const y of [.32,.86,1.4,1.92]){box('Book shelf',[2.1,.055,.3],[-1.45,y,-hd+.18],wood);for(let i=0;i<11;i++)box('Bound volume',[.11,.3+(i%3)*.03,.19],[-2.35+i*.18,y+.2,-hd+.20],[0x814c3e,0x4d6668,0xa49267,0x626f4f][i%4]);}
