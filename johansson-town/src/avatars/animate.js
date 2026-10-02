@@ -3,6 +3,7 @@ import {poseAvatarOnBicycle} from './bicycle-pose.js';
 import {bicycleRiderFit} from '../world/bicycle-fit.js';
 import {seeded} from './recipe.js';
 import {consumptionPhase,poseAvatarConsumption,drinkHeadTilt} from './consume.js';
+import {bodyLanguage} from './body-language.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -23,13 +24,25 @@ const ease=(t,d,edge=.25)=>Math.min(1,t/edge,(d-t)/edge);
 export const GESTURES=Object.freeze({
  Wave:1.6,Bow:1.5,Nod:1.1,HeadShake:1.2,Point:1.6,Shrug:1.3,Clap:1.8,Laugh:2,Think:2.4,LookAround:2.6,Stretch:2.2,
  PickUp:1.6,Fist:1.4,Jab:.42,JabL:.42,Swipe:.7,Hurt:.5,Jump:.9,Cheer:1.6,Hop:1.2,Gasp:1.6,Stomp:1.4,Slump:2.2,Fidget:2.4,SitEnjoyFood:3.8,SitPresentFood:4.2,SitToast:2.4,SitDrink:2.4,SitEat:2.4,Drink:2.4,Eat:2.4,
+ Heart:2.8,Peace:2.8,Coy:3,Tada:2.4,HandsOnHips:2.6,HeelKick:2.6,
  Talk:Infinity,Kachashi:Infinity,Crouch:Infinity,Phone:Infinity,FishIdle:Infinity,Reel:Infinity,
 });
 /** The body that goes with a feeling, played once when the feeling arrives. */
 export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump',angry:'Stomp',shy:'Fidget',surprised:'Gasp',worried:'Think'});
 
-export function createAvatarAnimator(avatar){
+/**
+ * @param {object} avatar from build.js
+ * @param {{lively?:boolean,random?:()=>number}} [options] lively: a resident living their
+ *   own life, who strikes their personality's poses standing about and as they start to
+ *   talk (body-language.js). Off for the player's body, the photo studio and the maker,
+ *   where somebody else says what the body does.
+ */
+export function createAvatarAnimator(avatar,{lively=false,random=Math.random}={}){
  const {bones,measure:m}=avatar;
+ const style=bodyLanguage(avatar.recipe?.profile||{});
+ const pick=list=>list[Math.floor(random()*list.length)];
+ const idleWait=()=>style.idleEvery[0]+random()*(style.idleEvery[1]-style.idleEvery[0]);
+ let idleIn=4+idleWait()*.6,wasTalking=false,quietFor=10;
  const individual=seeded(avatar.recipe.name||JSON.stringify(avatar.recipe));
  const strideStyle=.92+individual()*.16,armStyle=.8+individual()*.25;
  const posture=(individual()-.5)*.055,idleRate=.85+individual()*.3;
@@ -42,10 +55,13 @@ export function createAvatarAnimator(avatar){
  const set=(j,x=0,y=0,z=0)=>target[j].set(x,y,z);
  const add=(j,x=0,y=0,z=0)=>target[j].add(new THREE.Vector3(x,y,z));
 
- function play(name){
+ /** @param {number} [seconds] how long to hold a move that would otherwise loop. */
+ function play(name,seconds){
   if(!(name in GESTURES))return false;
-  gesture={name,t:0,d:GESTURES[name]};return true;
+  gesture={name,t:0,d:GESTURES[name]===Infinity&&seconds?seconds:GESTURES[name]};return true;
  }
+ /** A move of one's own choosing: loops are held for a few seconds, not for ever. */
+ const flourish=name=>play(name,2.6+random()*1.4);
  const stop=()=>{gesture=null;};
 
  /**
@@ -57,7 +73,7 @@ export function createAvatarAnimator(avatar){
   */
  function update(dt,s={}){
   time+=dt;
-  const action=gesture?.name||s.pose||s.seat;
+  const action=gesture?.name||s.pose||s.seat;avatar.setOpenHands?.(['SitEnjoyFood','SitPresentFood'].includes(action));
   const eating=['Eat','EatStanding','SitEat'].includes(action),drinking=['Drink','DrinkStanding','SitDrink','SitToast'].includes(action);
   if(eating||drinking){
    if(action!==lastConsume)consumeTime=0;
@@ -144,7 +160,19 @@ export function createAvatarAnimator(avatar){
   if(s.airborne&&!s.seated){set('thighL',-.6);set('thighR',-.2);set('kneeL',1);set('kneeR',.6);set('shoulderL',-.3,0,1.6);set('shoulderR',-.3,0,-1.6);}
   // A feeling arriving brings its body with it, once.
   const expression=s.expression||'neutral';
-  if(expression!==lastExpression){lastExpression=expression;const g=EMOTION_GESTURE[expression];if(g&&!s.seated&&!moving&&!gesture)play(g);}
+  // Which move depends on who they are: a happy Typhoon throws a ta-da, a happy
+  // Lighthouse keeper nods.
+  if(expression!==lastExpression){lastExpression=expression;const g=style.feel[expression]||EMOTION_GESTURE[expression];if(g&&!s.seated&&!moving&&!gesture)flourish(g);}
+  const talking=!!s.talking;
+  if(lively){
+   const free=!moving&&!s.seated&&!s.riding&&!s.airborne&&!s.sleeping&&!s.carrying&&!consumption&&(!s.pose||s.pose==='Idle')&&!s.heldProp;
+   // Starting to say something, after a pause: the hands go with the words.
+   if(talking&&!wasTalking&&quietFor>.8&&free&&!gesture&&random()<style.talkChance)flourish(pick(style.talk));
+   // Standing about with nothing to do: now and then, something of their own.
+   if(free&&!talking&&!gesture){idleIn-=dt;if(idleIn<=0){flourish(pick(style.idle));idleIn=idleWait();}}
+   else idleIn=Math.max(idleIn,2);
+  }
+  quietFor=talking?0:quietFor+dt;wasTalking=talking;
   if(s.waving&&!gesture)play('Wave');
   if(gesture){gesture.t+=dt;if(gesture.t>=gesture.d)gesture=null;else{const r=applyGesture(gesture,s);if(r?.root!==undefined)targetRoot+=r.root;}}
   // Looking at someone: the head turns, the chest helps with a big turn, and the eyes
@@ -238,6 +266,37 @@ export function createAvatarAnimator(avatar){
    }
    case 'SitToast':set('shoulderR',-1.9*q,0,-.2);set('elbowR',-.6*q);add('head',-.15*q);break;
    case 'SitDrink':{const lift=Math.max(0,Math.sin(t*2.6))**2;set('shoulderR',-.6-lift*1,0,-.25);set('elbowR',-.9-lift*1.2);break;}
+   // Playful poses for photos: struck, held while the move lasts, and kept alive with a
+   // little bounce. The head is big and the arms short, so every hand stays at or
+   // below the cheek.
+   case 'Heart':{
+    // Hands together in front of the chest, elbows out: a heart, the idol way.
+    set('shoulderL',-.8*q,0,.5*q);set('elbowL',-.45*q,0,-1.7*q);set('shoulderR',-.8*q,0,-.5*q);set('elbowR',-.45*q,0,1.7*q);
+    add('head',.06*q,0,.22*q+Math.sin(t*3.2)*.04*q);set('hips',0,0,-.05*q);set('thighR',-.12*q);set('kneeR',.3*q);
+    return {root:Math.abs(Math.sin(t*3.2))*.012*q};}
+   case 'Peace':{
+    // A hand up by the cheek, the other on the hip, and the hip out.
+    set('shoulderR',-.55*q,0,-1.25*q);set('elbowR',-1.9*q,0,-.2*q);
+    set('shoulderL',.15*q,0,.75*q);set('elbowL',-.3*q,0,-1.5*q);
+    add('head',.06*q,-.1*q,-.24*q);set('hips',0,.15*q,-.07*q);set('thighL',-.15*q);set('kneeL',.4*q);break;}
+   case 'Coy':{
+    // A fingertip at the chin, a hand on the hip, a sideways look.
+    set('shoulderR',-1.15*q,0,-.12*q);set('elbowR',-2.1*q);
+    set('shoulderL',.15*q,0,.75*q);set('elbowL',-.3*q,0,-1.5*q);
+    add('head',.12*q,.2*q,.2*q);add('chest',0,.12*q,-.05*q);set('hips',0,-.2*q,.08*q);set('thighR',-.1*q,0,-.06*q);set('kneeR',.3*q);break;}
+   case 'Tada':{
+    // Arms flung wide and a heel kicked up behind.
+    const pop=Math.min(1,t/.3);
+    set('shoulderL',-.15*q,0,1.9*q);set('shoulderR',-.15*q,0,-1.9*q);set('elbowL',0,0,.2*q);set('elbowR',0,0,-.2*q);
+    set('thighL',.35*q*pop);set('kneeL',1.3*q*pop);add('chest',-.12*q);add('head',-.15*q,0,.12*q);return {root:.03*q*pop};}
+   case 'HandsOnHips':
+    set('shoulderL',.15*q,0,.75*q);set('elbowL',-.3*q,0,-1.5*q);set('shoulderR',.15*q,0,-.75*q);set('elbowR',-.3*q,0,1.5*q);
+    add('chest',-.12*q);add('head',-.12*q,0,Math.sin(t*2.2)*.08*q);set('thighL',0,0,.12*q);set('thighR',0,0,-.12*q);break;
+   case 'HeelKick':
+    // Fists under the chin and one foot kicked up behind.
+    set('thighR',.45*q);set('kneeR',1.7*q+Math.sin(t*3)*.08*q);
+    set('shoulderL',-1.2*q,0,-.2*q);set('shoulderR',-1.2*q,0,.2*q);set('elbowL',-1.6*q);set('elbowR',-1.6*q);
+    add('head',.08*q,0,-.25*q);add('chest',.1*q,0,-.06*q);break;
    case 'Talk':set('shoulderR',-.55+Math.sin(t*3.1)*.25,0,-.2);set('elbowR',-1.1+Math.sin(t*4.3)*.3);set('shoulderL',-.35+Math.sin(t*2.3+1)*.2,0,.2);set('elbowL',-1+Math.sin(t*3.7)*.3);add('head',Math.sin(t*2.6)*.06);break;
    case 'Kachashi':{
     // The kachāshī: hands up at head height, wrists turning, stepping from foot to foot.
@@ -254,5 +313,5 @@ export function createAvatarAnimator(avatar){
   }
   return null;
  }
- return {update,play,stop,get gesture(){return gesture?.name||null;},get consumption(){return consumption;}};
+ return {update,play,stop,style,get gesture(){return gesture?.name||null;},get consumption(){return consumption;}};
 }

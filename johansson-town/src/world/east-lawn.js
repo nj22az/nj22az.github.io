@@ -7,7 +7,7 @@ import {buildEastGarden} from './east-garden.js';
 import {SCHOOL} from './school-layout.js';
 import {BEACH,beachHeight} from './beach-layout.js';
 import {inKobanPlot} from './koban-layout.js';
-import {GATEBALL} from './okinawa/layout.js';
+import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
 import {broadleafGeometry} from './okinawa/trees.js';
 
@@ -105,7 +105,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  // and the lawn stops at its retaining wall rather than sloping in under the sand.
  const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,PARK.x-PARK.half,PARK.x+PARK.half,GATEBALL.minX,GATEBALL.maxX);
  const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,PARK.z-PARK.half,PARK.z+PARK.half,GATEBALL.minZ,GATEBALL.maxZ);
- const onCourt=(x,z)=>x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
+ const onCourt=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
  const height=(x,z)=>heightAt?heightAt(x,z):0;
  const onMound=(x,z)=>Math.abs(x-PARK.x)<=PARK.half+.01&&Math.abs(z-PARK.z)<=PARK.half+.01;
  const vertices=[],turfUV=[],faces=[];

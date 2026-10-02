@@ -271,10 +271,10 @@ function buildTownHall(group,options){
  // The front, bay by bay.
  const bays=SCHOOL_COLUMNS.slice(0,-1).map((x,i)=>[(x+SCHOOL_COLUMNS[i+1])/2,SCHOOL_COLUMNS[i+1]-x]);
  const door=(cx,w,c=trim)=>{kit.box(w+.16,2.25,.05,cx,1.27,zf-.03,alu,{finish:'metal'});kit.box(w,2.1,.05,cx,1.2,zf-.05,c);};
- const window=(cx,w,y=1.65,h=1.3)=>{kit.box(w+.12,h+.12,.05,cx,y,zf-.03,alu,{finish:'metal'});kit.box(w,h,.05,cx,y,zf-.05,glass,{finish:'glow'});kit.box(.04,h,.06,cx,y,zf-.07,alu,{finish:'metal'});kit.box(w+.2,.07,.2,cx,y-h/2-.06,zf-.1,slab);};
+ const window=(cx,w,y=1.65,h=1.3)=>{kit.box(w+.12,h+.12,.05,cx,y,zf-.03,alu,{finish:'metal'});kit.box(w,h,.05,cx,y,zf-.05,glass,{finish:'window'});kit.box(.04,h,.06,cx,y,zf-.07,alu,{finish:'metal'});kit.box(w+.2,.07,.2,cx,y-h/2-.06,zf-.1,slab);};
  bays.forEach(([cx,w],i)=>{
   if(i===1){// The entrance: glass double doors and fixed glass either side.
-   for(const dx of [-.5,.5])kit.box(.95,2.3,.05,SCHOOL.genkan.x+dx,1.3,zf-.05,glass,{finish:'glow'});
+   for(const dx of [-.5,.5])kit.box(.95,2.3,.05,SCHOOL.genkan.x+dx,1.3,zf-.05,glass,{finish:'window'});
    kit.box(2.2,.08,.08,SCHOOL.genkan.x,2.47,zf-.06,alu,{finish:'metal'});kit.box(.06,2.3,.08,SCHOOL.genkan.x,1.3,zf-.07,alu,{finish:'metal'});
    window(cx-1.25,.8,1.5,1.9);return;}
   const doorX={3:27.0,4:30.6,5:34.1,6:37.7}[i];
@@ -282,7 +282,7 @@ function buildTownHall(group,options){
   window(cx-.85,1.4);window(cx+.85,1.4);
  });
  // The back and the ends: plain windows, with the mould band under the slab.
- for(let x=x0+1.6;x<x1-1;x+=2.4){kit.box(1.4,1.1,.05,x,1.7,zb+.03,glass,{finish:'glow'});kit.box(1.5,1.2,.04,x,1.7,zb+.02,alu,{finish:'metal'});}
+ for(let x=x0+1.6;x<x1-1;x+=2.4){kit.box(1.4,1.1,.05,x,1.7,zb+.03,glass,{finish:'window'});kit.box(1.5,1.2,.04,x,1.7,zb+.02,alu,{finish:'metal'});}
  kit.box(x1-x0,.3,.02,(x0+x1)/2,H-.2,zb+.04,0xbdb4a2);
  for(const x of [x0+3,x0+9.5,x1-6])kit.box(.05,1.2,.02,x,H-.7,zb+.035,0x9d8f78);
  // The clock face on the parapet (its hands are clockHands).

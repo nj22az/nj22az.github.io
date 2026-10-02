@@ -15,6 +15,13 @@ import {broadleafGeometry,TREE_GREENS} from './okinawa/trees.js';
  * The file keeps the name it had when the tunnel was a cartoon gag, and TUNNEL keeps its
  * name too: the map, the shore and the old bus code all place themselves by it.
  */
+/**
+ * October 2026: the island has no sea cave. The headland, its tunnel and the cave mouth
+ * are gone, and the land they stood on is plain island ground waiting for the new
+ * residential quarter (docs/RESIDENTIAL-PLAN.md). The dungeon under the cave is paused,
+ * not deleted: set this back to true and the hill, the cave and the way down return.
+ */
+export const CAVE_ACTIVE=false;
 export const TUNNEL=Object.freeze({
  x:FOREST_EDGE.roadX,
  // Beyond the end of the path, so there is a run of it between the old terminus and here.
@@ -87,6 +94,7 @@ function cellAt(lines,value){
  return lo;
 }
 export function headlandHeight(x,z){
+ if(!CAVE_ACTIVE)return null;
  const i=cellAt(hillXs,x),j=cellAt(hillZs,z);if(i<0||j<0)return null;
  const x0=hillXs[i],x1=hillXs[i+1],z0=hillZs[j],z1=hillZs[j+1];
  if(inCut((x0+x1)/2-TUNNEL.x,(z0+z1)/2-TUNNEL.z)||inCave(x-TUNNEL.x,z-TUNNEL.z))return null;

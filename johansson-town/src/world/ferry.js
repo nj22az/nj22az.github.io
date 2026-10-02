@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {waveHeight,SEA_LEVEL} from './ocean.js';
 import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js';
+import {glazeWithRoom} from '../render/window-interior.js';
 
 /**
  * The Minato ferry, and the terminal it calls at.
@@ -265,10 +266,10 @@ export function buildFerryTerminal({parent,colliders,register=()=>{},onAction=()
  box([W+.1,.35,D+.1],[cx,y+H-.2,cz],teal);
  box([W+.5,.14,D+2.2],[cx,y+H+.07,cz+.85],timber);                  // roof slab and canopy
  for(const x of [T.minX+.3,T.maxX-.3])box([.14,H,.14],[x,y+H/2,-43.75],steel);
- box([W-1.6,1.5,.06],[cx+.6,y+1.45,-45.27],glass);                    // the waiting room's glass front
+ glazeWithRoom(box([W-1.6,1.5,.06],[cx+.6,y+1.45,-45.27],glass));                    // the waiting room's glass front
  box([.06,1.6,.06],[cx-.3,y+1.45,-45.24],steel);
  box([.9,2.1,.06],[T.minX+1,y+1.05,-45.27],teal);                      // the door
- box([.05,.7,1.4],[T.minX-.02,y+1.35,cz],glass);                       // the ticket window, on the pier
+ glazeWithRoom(box([.05,.7,1.4],[T.minX-.02,y+1.35,cz],glass));                       // the ticket window, on the pier
  box([.35,.06,1.4],[T.minX-.2,y+.98,cz],timber);
  colliders.push({id:'ferry-terminal',x:cx,z:cz,w:W,d:D,height:3.2});
  for(const x of [T.minX+.3,T.maxX-.3])colliders.push({id:'ferry-canopy-post',x,z:-43.75,w:.2,d:.2,height:3});

@@ -1,3 +1,4 @@
+import {CAVE_ACTIVE} from '../src/world/coyote-tunnel.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
@@ -6,7 +7,7 @@ import {buildCoyoteTunnel,TUNNEL,CAVE_MOUTH,hillHeight} from '../src/world/coyot
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {circleHitsRect} from '../physics.js';
 
-test('the tunnel is gone: a low sea cave in a smaller wooded headland',()=>{
+test('the tunnel is gone: a low sea cave in a smaller wooded headland',{skip:!CAVE_ACTIVE&&'the cave is paused (CAVE_ACTIVE)'},()=>{
  installDOM();
  const parent=new THREE.Group(),colliders=[],anchors=[];
  const cave=buildCoyoteTunnel({parent,colliders,register:(o,label,fn)=>anchors.push({o,label,fn}),onAction:(...a)=>anchors.called=a});
@@ -33,7 +34,7 @@ test('the tunnel is gone: a low sea cave in a smaller wooded headland',()=>{
  cave.update(.1);assert.ok(cave.mouth.glow.emissiveIntensity>0);cave.update(1);assert.equal(cave.mouth.glow.emissiveIntensity,0);
 });
 
-test('the mouth knows when it has been walked into',()=>{
+test('the mouth knows when it has been walked into',{skip:!CAVE_ACTIVE&&'the cave is paused (CAVE_ACTIVE)'},()=>{
  installDOM();
  const {splat}=buildCoyoteTunnel({parent:new THREE.Group(),colliders:[]});
  assert.equal(splat(TUNNEL.x,CAVE_MOUTH.z),true,'Walking into the mouth is not reaching it');
@@ -41,7 +42,7 @@ test('the mouth knows when it has been walked into',()=>{
  assert.equal(splat(TUNNEL.x-TUNNEL.width,TUNNEL.z+TUNNEL.depth/2),false,'Open ground beside the hill counts as the mouth');
 });
 
-test('the path up to the cave is walkable gravel, into the mouth',async()=>{
+test('the path up to the cave is walkable gravel, into the mouth',{skip:!CAVE_ACTIVE&&'the cave is paused (CAVE_ACTIVE)'},async()=>{
  configureTownMode(TOWN_MODES.PENINSULA);
  try{
   const {routeAt,groundHeight}=await import('../src/world/layout.js');

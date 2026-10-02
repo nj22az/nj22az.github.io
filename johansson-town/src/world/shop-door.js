@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
+import {glazeWithRoom} from '../render/window-interior.js';
 
 // Metre-scale joinery. The handle, threshold and interaction share this doorway.
 export function buildShopDoor(parent,{name='shop-door',width=1.45,glass=true,shadows=false}={}){
@@ -14,7 +15,7 @@ export function buildShopDoor(parent,{name='shop-door',width=1.45,glass=true,sha
  const leaf=part([width,2.4,.10],[0,1.28,.23],wood,'door-leaf');
  let glazing=leaf;
  if(glass){
-  glazing=part([width-.24,1.28,.035],[0,1.75,.30],pane,'door-glazing');
+  glazing=glazeWithRoom(part([width-.24,1.28,.035],[0,1.75,.30],pane,'door-glazing'));
   for(const y of [1.08,1.75,2.42])part([width-.16,.055,.07],[0,y,.335],wood);
   part([.055,1.35,.07],[0,1.75,.335],wood);
  }

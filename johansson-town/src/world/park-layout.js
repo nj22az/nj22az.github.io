@@ -1,10 +1,10 @@
 import {PARK_HEIGHTS} from './park-height.js';
 import {GROUND} from '../render/ground-palette.js';
 import {FULL_TOWN} from './full-town-state.js';
-import {GATEBALL} from './okinawa/layout.js';
+import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
 import {peninsulaActive} from './town-mode.js';
 /** Inside the gateball court the ground stays level; a low wall holds the hill back (quarters.js). */
-export const inGateball=(x,z)=>x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
+export const inGateball=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
 /**
  * The gateball court stands on a level terrace up at the hill's own ground, not in a pit
  * cut into its foot. Toward the hill (west and south) the terrace is graded into it with
@@ -18,6 +18,7 @@ export const onCourtTerrace=(x,z)=>{const T=COURT_TERRACE;return x>=T.minX&&x<=T
  * the terrace does not reach. North of the terrace is the retaining wall, so no bank.
  */
 export function courtTerraceHeight(x,z,natural=0){
+ if(!GATEBALL_ACTIVE)return null;
  const T=COURT_TERRACE,p=activePark();
  if(onCourtTerrace(x,z))return T.height;
  if(x>T.maxX||(z<T.minZ&&x>=T.minX))return null;

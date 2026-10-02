@@ -43,7 +43,7 @@ import {NEIGHBOUR_TALK} from './src/people/neighbours.js';
 import {svg,itemIcon} from './src/ui/icons.js';
 import {TOWN_FINDS} from './src/commerce/sakura-economy.js';
 import {SAKURA_SCRIPT,sakuraEntry} from './src/dialogue/sakura-script.js';
-import {createThuanMind} from './src/people/thuan-mind.js';
+import {sharedMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
 import {createThuanChat} from './src/people/thuan-chat.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
@@ -241,7 +241,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   let thuanChat=null;
   function askThuan(){
     if(!thuanChat){
-      const mind=createThuanMind();
+      const mind=sharedMind();
       const voice=createThuanVoice({face:{setSpeaking(value){
         window.__JOHANSSON_CHARACTER_CONTROL__?.setSpeaking?.('Thuan',value);
       }}});

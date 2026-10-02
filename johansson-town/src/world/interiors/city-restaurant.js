@@ -197,7 +197,7 @@ export function buildCityRestaurant({room,reg,action,collider=()=>{},johansson=n
   for(const p of people){
    p.talking=Math.max(0,p.talking-dt);
    p.animator.update(dt,{speed:0,seated:p.seated,seatHeight:p.seatHeight??undefined,expression:p.expression,talking:p.talking>0,
-    gaze:p===him?b:p===her?a:a});
+    gaze:p===her&&state.presentation?new THREE.Vector3(0,1.5,2.35):p===him?b:a});
   }
   if(presentationPlate&&her){her.holder.updateMatrixWorld(true);const left=her.avatar.bones.handL.getWorldPosition(new THREE.Vector3()),right=her.avatar.bones.handR.getWorldPosition(new THREE.Vector3());presentationPlate.position.copy(group.worldToLocal(left.add(right).multiplyScalar(.5))).add(new THREE.Vector3(0,.04,0));}
  };

@@ -23,10 +23,10 @@ export function buildBlueCoralShop({world,group,register,onAction}){
   const c=document.createElement('canvas');c.width=768;c.height=256;const ctx=c.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,768,256);ctx.fillStyle=ink;ctx.textAlign='center';ctx.font='bold 48px serif';text.split('\n').forEach((line,i)=>ctx.fillText(line,384,70+i*64,736));const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;const m=new THREE.Mesh(new THREE.PlaneGeometry(width,height),new THREE.MeshBasicMaterial({map:texture}));m.rotation.y=-Math.PI/2;m.position.set(...pos);root.add(m);
  }
  sign('BLUE CORAL\nIsland ice cream',[.923,.49,0],2.4,.63);
- sign('BLUE CORAL\nIsland scoops · since 1981',[.30,2.74,0],3.3,.90,'#2f738d');
+ sign('BLUE CORAL\nIsland scoops · since 1981',[.30,3.32,0],3.3,.55,'#2f738d');
  sign('UBE · VANILLA · GUAVA\nOne cone ¥150\nFresh island scoops',[2.4,2.65,-2.25],2.1,.85);
  sign('ISLAND TEA\nCold bottle ¥120\nPlease order at the counter',[2.4,2.65,2.25],2.1,.85);
- if(typeof Image!=='undefined'){const t=new THREE.TextureLoader().load(FOOD_ART.icecream);t.colorSpace=THREE.SRGBColorSpace;const art=new THREE.Mesh(new THREE.PlaneGeometry(.78,.78),new THREE.MeshBasicMaterial({map:t,transparent:true,alphaTest:.02}));art.rotation.y=-Math.PI/2;art.position.set(2.39,2.67,0);root.add(art);}
+ if(typeof Image!=='undefined'){const t=new THREE.TextureLoader().load(FOOD_ART.icecream);t.colorSpace=THREE.SRGBColorSpace;const art=new THREE.Mesh(new THREE.PlaneGeometry(1.5,1.5),new THREE.MeshBasicMaterial({map:t,transparent:true,alphaTest:.02}));art.rotation.y=-Math.PI/2;art.position.set(2.39,2.38,0);root.add(art);}
  for(const z of [-2.4,2.4]){box('Pendant light cable',[.02,.58,.02],[1.3,2.94,z],0x374d55);const shade=new THREE.Mesh(new THREE.ConeGeometry(.3,.15,20,1,true),material(0xf4e8ca));shade.position.set(1.3,2.60,z);root.add(shade);}
  const seller=buildAvatar({name:'Blue Coral attendant',body:{silhouette:'feminine',height:.46},hair:{style:'bob',colour:'#3a2618'},outfit:{top:'apron',topColour:'#b2a2ce',bottom:'pleatedskirt',bottomColour:'#58687b',footwear:'shoes',shoes:'#f4f1ea',accent:'#f4f1ea'}},{shadows:false,faceSize:128});const staff=new THREE.Group();staff.position.set(2.6,0,.7);staff.rotation.y=-Math.PI/2;seller.root.rotation.y=0;staff.add(seller.root);root.add(staff);const motion=createAvatarAnimator(seller);
  const anchor=(z,label,fn)=>{const a=new THREE.Object3D();a.position.set(.05,1,z);root.add(a);register(a,label,fn);};

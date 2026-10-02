@@ -121,12 +121,17 @@ export function mapPlan(){
   [EAST_QUAY.shed.minX,EAST_QUAY.shed.maxX,EAST_QUAY.shed.minZ,EAST_QUAY.shed.maxZ],[EAST_QUAY.ice.minX,EAST_QUAY.ice.maxX,EAST_QUAY.ice.minZ,EAST_QUAY.ice.maxZ],
   [GOYA.minX,GOYA.maxX,GOYA.minZ,GOYA.maxZ],
   ...[...NISHI.plots,...EAST_BACK.plots].filter(p=>p.kind!=='grove').map(p=>{const cx=(p.minX+p.maxX)/2,cz=(p.minZ+p.maxZ)/2;return [cx-3.3,cx+3.3,cz-2.8,cz+2.8];})];
- const labels=[['NISHI-MACHI',-38.5,-8],['FISH AUCTION',20.5,-44],['UTAKI',-33,23],['GATEBALL',21,-34]];
- walks.push([GATEBALL.minX,GATEBALL.maxX,GATEBALL.minZ,GATEBALL.maxZ]);
+ const labels=[['NISHI-MACHI',-38.5,-8],['FISH AUCTION',20.5,-44],['UTAKI',-33,23],...(GATEBALL_ACTIVE?[['GATEBALL',21,-34]]:[])];
+ if(GATEBALL_ACTIVE)walks.push([GATEBALL.minX,GATEBALL.maxX,GATEBALL.minZ,GATEBALL.maxZ]);
  return {walks,yards,buildings,labels};
 }
 
-/** The gateball court on the lawn by the seawall, and the goya garden in the west yard. */
+/**
+ * The gateball court on the lawn by the seawall, and the goya garden in the west yard.
+ * The court is switched off (October 2026): nobody plays by the harbour office, and the
+ * lawn runs on to the seawall. GATEBALL_ACTIVE brings it, its terrace and players back.
+ */
+export const GATEBALL_ACTIVE=false;
 export const GATEBALL=Object.freeze({minX:20,maxX:31.4,minZ:-37.5,maxZ:-32.2});
 export const GOYA=Object.freeze({minX:-23.4,maxX:-17.4,minZ:-11.4,maxZ:-4.2});
 

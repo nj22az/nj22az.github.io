@@ -14,6 +14,9 @@ import {waveHeight,SEA_LEVEL,WAVE_REACH} from './ocean.js';
  *
  * Everything here is one instanced draw for the crabs and a handful of small meshes for
  * the fish and their rings, so it costs next to nothing when you are not looking.
+ *
+ * The beach is dressed for looking out to sea from: starfish and shells on the sand, a
+ * red swimming buoy riding the swell off the shallows, and a few sailing boats far out.
  */
 const crabLine=(()=>{
  // The last sand the highest wave does not reach, less a stride: the sea is drawn on a
@@ -114,6 +117,32 @@ function fishGeometry(){
  return g;
 }
 
+
+/** A five-armed starfish lying flat, about a metre across before scaling. */
+function starfishGeometry(){
+ const shape=new THREE.Shape();
+ for(let i=0;i<10;i++){const a=i/10*Math.PI*2+Math.PI/2,r=i%2?.2:.5;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?shape.lineTo(x,y):shape.moveTo(x,y);}
+ shape.closePath();
+ const geo=new THREE.ExtrudeGeometry(shape,{depth:.06,bevelEnabled:true,bevelThickness:.04,bevelSize:.05,bevelSegments:2});
+ geo.rotateX(-Math.PI/2);return geo;
+}
+/** A scallop shell: a flattened, ribbed half dome. */
+function shellGeometry(){
+ const geo=new THREE.SphereGeometry(.5,12,5,0,Math.PI*2,0,Math.PI/2),p=geo.attributes.position;
+ for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),a=Math.atan2(z,x);const rib=1+.07*Math.cos(a*12);p.setXYZ(i,x*rib,p.getY(i)*.45,z*rib*.9);}
+ geo.computeVertexNormals();return geo;
+}
+/** Where things lie on the dry sand, scattered but clear of the access ramps. */
+export function beachTreasures(random=Math.random,count=40){
+ const out=[];
+ while(out.length<count){
+  const x=CRAB_ZONE.minX+random()*(CRAB_ZONE.maxX-CRAB_ZONE.minX),z=CRAB_ZONE.minZ+random()*(CRAB_ZONE.maxZ-CRAB_ZONE.minZ);
+  if(BEACH.accesses.some(a=>Math.abs(z-a.z)<a.half+.6&&x<a.toX+1))continue;
+  out.push({x,z,y:beachHeight(x,z),turn:random()*Math.PI*2,size:.75+random()*.5,star:out.length%3===0});
+ }
+ return out;
+}
+
 export function buildBeachLife({parent,shadows=false,crabs=11,random=Math.random}={}){
  const group=new THREE.Group();group.name='Beach life';parent.add(group);
  // Moving things: the section renderer must draw them as they are each frame, not batch
@@ -147,6 +176,39 @@ export function buildBeachLife({parent,shadows=false,crabs=11,random=Math.random
   mesh.name='Splash ring';mesh.visible=false;mesh.renderOrder=2;offshore.add(mesh);
   rings.push({mesh,age:0,life:1.6,size:1,x:0,z:0});
  }
+ const dummy=new THREE.Object3D();
+ // Starfish and shells on the sand: two instanced draws.
+ const treasures=beachTreasures(random),stars=treasures.filter(t=>t.star),shells=treasures.filter(t=>!t.star);
+ const starMesh=new THREE.InstancedMesh(starfishGeometry(),new THREE.MeshStandardMaterial({roughness:.8}),stars.length);
+ const shellMesh=new THREE.InstancedMesh(shellGeometry(),new THREE.MeshStandardMaterial({roughness:.6}),shells.length);
+ const starColours=[0xf08a4b,0xe8693f,0xf4a259],shellColours=[0xfbe3e6,0xf6c7cf,0xfff4e6,0xe9d6f2],colour=new THREE.Color();
+ for(const [mesh,list,size,colours] of [[starMesh,stars,.17,starColours],[shellMesh,shells,.11,shellColours]]){
+  list.forEach((t,i)=>{
+   dummy.position.set(t.x-shore.position.x,(t.y??-.2)+.004,t.z-shore.position.z);dummy.rotation.set(0,t.turn,0);dummy.scale.setScalar(size*t.size);dummy.updateMatrix();
+   mesh.setMatrixAt(i,dummy.matrix);mesh.setColorAt(i,colour.set(colours[i%colours.length]));
+  });
+  mesh.name=mesh===starMesh?'Beach starfish':'Beach shells';mesh.receiveShadow=!!shadows;mesh.frustumCulled=false;shore.add(mesh);
+ }
+
+ // A red swimming buoy off the shallows, riding the swell.
+ const buoyAt={x:59,z:-3};
+ const buoyGroup=place('Swimming buoy',buoyAt.x,buoyAt.z);
+ const buoy=new THREE.Group();buoyGroup.add(buoy);
+ const red=new THREE.MeshStandardMaterial({color:0xe2392f,roughness:.45});
+ const ball=new THREE.Mesh(new THREE.SphereGeometry(.42,20,14),red);ball.scale.y=.85;buoy.add(ball);
+ const band=new THREE.Mesh(new THREE.TorusGeometry(.4,.045,6,24),new THREE.MeshStandardMaterial({color:0xfaf4ea,roughness:.6}));band.rotation.x=Math.PI/2;band.position.y=.1;buoy.add(band);
+ buoy.name='Swimming buoy';
+
+ // Sailing boats far out, white sails leaning, slowly crossing.
+ const boatsGroup=place('Distant sailing boats',150,10);
+ const sailMat=new THREE.MeshBasicMaterial({color:0xfdfdfb,side:THREE.DoubleSide,fog:false}),hullMat=new THREE.MeshBasicMaterial({color:0xf2f2ee,fog:false});
+ const sailGeo=new THREE.BufferGeometry();sailGeo.setAttribute('position',new THREE.Float32BufferAttribute([0,.3,0,0,3.6,0,1.7,.3,0,0,.3,0,-1.1,.3,0,0,3.1,0],3));sailGeo.computeVertexNormals();
+ const hullGeo=new THREE.BoxGeometry(3.2,.45,.9);
+ const boats=[[-24,-60,.5],[8,32,-.4],[30,-18,.25],[-10,95,.6]].map(([x,z,speed],i)=>{
+  const boat=new THREE.Group();boat.add(new THREE.Mesh(sailGeo,sailMat));const hull=new THREE.Mesh(hullGeo,hullMat);hull.position.y=.1;boat.add(hull);
+  boat.name='Sailing boat';boat.scale.setScalar(1+i%2*.3);boatsGroup.add(boat);return {boat,x,z,speed,lean:.12+i*.03};
+ });
+
  let clock=0,nextJump=2+random()*3;
  const splash=(x,z,size=1)=>{
   const ring=rings.find(r=>!r.mesh.visible)||rings.reduce((a,b)=>a.age>b.age?a:b);
@@ -157,7 +219,6 @@ export function buildBeachLife({parent,shadows=false,crabs=11,random=Math.random
   const a=random()*Math.PI*2;f.dx=Math.cos(a);f.dz=Math.sin(a);
   f.mesh.visible=true;f.mesh.rotation.set(0,-a,0);splash(f.x,f.z,.8);
  };
- const dummy=new THREE.Object3D();
  /**
   * @param {number} dt
   * @param {{x:number,z:number}|null} player  where the player is, or null indoors.
@@ -197,6 +258,14 @@ export function buildBeachLife({parent,shadows=false,crabs=11,random=Math.random
    // Nose up on the way out, down on the way back in.
    f.mesh.rotation.z=Math.atan2(4*f.height*(1-2*u),f.travel)*.9;
   }
+  // The buoy rides the water and leans with it; the boats creep along the horizon.
+  {const y=waveHeight(buoyAt.x,buoyAt.z,clock),ahead=waveHeight(buoyAt.x+.6,buoyAt.z,clock),beside=waveHeight(buoyAt.x,buoyAt.z+.6,clock);
+   buoy.position.y=y+.05;buoy.rotation.set((beside-y)*1.4,0,-(ahead-y)*1.4);}
+  for(const b of boats){
+   // Back and forth across the view from the beach, turning at either end.
+   const a=clock*.004*b.speed+b.x,z=b.z+55*Math.sin(a),heading=Math.cos(a)*b.speed>=0?-Math.PI/2:Math.PI/2;
+   b.boat.position.set(b.x,SEA_LEVEL+Math.sin(clock*.9+b.z)*.06,z);b.boat.rotation.set(Math.sin(clock*.7+b.x)*.04,heading,b.lean);
+  }
   for(const r of rings){
    if(!r.mesh.visible)continue;
    r.age+=dt;const u=r.age/r.life;
@@ -208,5 +277,5 @@ export function buildBeachLife({parent,shadows=false,crabs=11,random=Math.random
    r.mesh.material.opacity=.85*(1-u)*(1-u);
   }
  };
- return {group,crabs:people,fish,rings,crabMesh,tick};
+ return {group,crabs:people,fish,rings,crabMesh,buoy,boats,starMesh,shellMesh,tick};
 }

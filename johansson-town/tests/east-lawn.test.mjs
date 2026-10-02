@@ -11,6 +11,7 @@ const nearTerraceWall=(x,z)=>z<COURT_TERRACE.minZ+.1&&x>COURT_TERRACE.minX-.6&&x
 import {paintedTurf} from '../src/render/toy-surfaces.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
 import {circleHitsRect} from '../physics.js';
+import {GATEBALL_ACTIVE} from '../src/world/okinawa/layout.js';
 
 /** The peninsula land sits at this height, and the surrounding sea at this one. */
 const LAND=-.4,WATER=-.56;
@@ -195,7 +196,7 @@ test('the paths across the green lie on the ground rather than through it',async
  assert.deepEqual(sunk.slice(0,6),[],'Paving sunk under the grass it is laid on');
 });
 
-test('the gateball court stands level on the hill\u2019s ground, graded into it, walled toward the sea',async()=>{
+test('the gateball court stands level on the hill\u2019s ground, graded into it, walled toward the sea',{skip:!GATEBALL_ACTIVE&&'the court is switched off (okinawa/layout.js GATEBALL_ACTIVE)'},async()=>{
  configureTownMode(TOWN_MODES.PENINSULA);
  const {groundHeight}=await import('../src/world/layout.js?terrace');
  const T=COURT_TERRACE;

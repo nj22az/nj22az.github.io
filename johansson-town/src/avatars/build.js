@@ -673,6 +673,12 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  }
  const parts=[];
  addBody(parts,recipe,m,false);
+ // Fingers share the body's skinning and draw call, and fold inside the mitten at rest.
+ const fingerStart=parts.reduce((n,g)=>n+g.attributes.position.count,0);
+ for(const side of ['L','R']){const sx=side==='L'?1:-1,x=sx*(m.shoulderX+.015),y=m.shoulderY-m.upper-m.fore;
+  for(let i=0;i<4;i++)part(parts,new THREE.CapsuleGeometry(m.hand*.105,m.hand*(i===0||i===3?.40:.60),3,6),'hand'+side,recipe.body.skin,M(x+(i-1.5)*m.hand*.37,y-m.hand*(i===0||i===3?1.65:1.85),m.hand*.04,0,0,(i-1.5)*.16));
+ }
+ const fingerEnd=parts.reduce((n,g)=>n+g.attributes.position.count,0);
  addNose(parts,recipe,m);
  // Ears.
  for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
@@ -699,8 +705,12 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  // Keep the skeleton and face visible when a clothing mesh is swapped out.
  root.add(body,bones.root);root.rotation.y=Math.PI;
  const outline=addOutline(root,body,true);addOutline(face.head,face.head,false);
+ const openFingerPositions=geometry.attributes.position.array.slice(fingerStart*3,fingerEnd*3),closedFingerPositions=openFingerPositions.slice();
+ for(let i=fingerStart;i<fingerEnd;i++){const sx=geometry.attributes.skinIndex.getX(i)===BI.handL?1:-1,j=(i-fingerStart)*3;closedFingerPositions[j]=sx*(m.shoulderX+.015);closedFingerPositions[j+1]=m.shoulderY-m.upper-m.fore-m.hand*.55;closedFingerPositions[j+2]=0;}
+ geometry.attributes.position.array.set(closedFingerPositions,fingerStart*3);let handsOpen=false;
  const avatar={
   recipe,measure:m,root,body,bones,face,height:m.H,hasHat,
+  setOpenHands(on){on=!!on;if(handsOpen===on)return;handsOpen=on;geometry.attributes.position.array.set(on?openFingerPositions:closedFingerPositions,fingerStart*3);geometry.attributes.position.needsUpdate=true;},
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
   setHat(on){geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){for(const range of hatHairRanges){const source=on?range.tucked:range.original;geometry.attributes.position.array.set(source.position,range.offset);geometry.attributes.normal.array.set(source.normal,range.offset);}if(hatHairRanges.length){geometry.attributes.position.needsUpdate=true;geometry.attributes.normal.needsUpdate=true;}hairCovered=!!on;}},
   get hatOn(){return hasHat&&geometry.drawRange.count===Infinity;},

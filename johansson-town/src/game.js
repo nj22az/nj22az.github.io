@@ -67,6 +67,9 @@ import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restau
 import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
 import {createHands} from './interact/hands.js?ui=compact-3';
+import {lineFeeling} from './avatars/body-language.js';
+import {sharedMind,startMindIfChosen} from './people/thuan-mind.js';
+import {createNeighbourWriter} from './people/town-mind.js';
 import {MOVES} from './avatars/moves.js';
 import {createAvatarJohansson,playerRecipe,savePlayerRecipe,importRecipeFromURL} from './avatars/actors.js';
 import {openCreator} from './avatars/creator.js';
@@ -75,7 +78,9 @@ import {createBeerService,createDrinkProp,createBiteProp,setPropPortion,DRINKS} 
 import {DRUNK,LAGER_ALCOHOL,soberUp,wantsAnother,drink as drinkUp} from './people/drunk.js';
 import {createShopCarry} from './interact/shop-carry.js';
 import {townAudio} from './audio/town-audio.js?snappy=1';
-import {routeAt,groundHeight} from './world/layout.js?snappy=1';
+import {routeAt,groundHeight,planHeight,setWalkSurface} from './world/layout.js?snappy=1';
+import {createWalkSurface} from './world/walk-surface.js';
+import {COAST_BOUNDS} from './world/peninsula.js';
 import {createNeighbours} from './people/neighbours.js';
 import {drawTownMap} from './world/map.js?snappy=1';
 import * as THREE from '../vendor/three.module.js';
@@ -596,7 +601,10 @@ castAI=createCastAI({activities:npcActivities,world,player,getObserverPosition:(
 const workplaceResidents=createWorkplaceResidents({world,parent:scene,getEntrance:()=>activeRoomLayout?.spawn||[0,0,5.2],getLayout:()=>activeRoomLayout,getTargets:()=>interactables,collides:environmentBlocked,getPlayerPosition:()=>player.position,getState:()=>activities.state,ledger:residentLedger,onBorrow:npcActivities.release});
 const bookshopCustomers=createBookshopCustomers({world,parent:scene,getLayout:()=>activeRoomLayout,getPlayerPosition:()=>player.position,collides:environmentBlocked,getState:()=>activities.state,ledger:residentLedger,onBorrow:npcActivities.release,save:()=>activities.save()});
 const chatBlocked=(a,b)=>!clearChatLine(a,b,current?roomColliders:world.colliders);
-const neighbourChats=createNeighbourChats({world,observer:()=>player.position,blocked:chatBlocked,state:()=>activities.state});
+// The neighbours' small talk: written lines, or the town's language model when the
+// player has turned it on (it then starts by itself on later visits). See town-mind.js.
+const neighbourWriter=createNeighbourWriter({mind:sharedMind()});startMindIfChosen();
+const neighbourChats=createNeighbourChats({world,observer:()=>player.position,blocked:chatBlocked,state:()=>activities.state,writer:neighbourWriter});
 const chatBubble=createChatBubble({camera,canvas,target:g=>characters.conversationTarget(g),blocked:chatBlocked});
 // Whoever you are talking to turns to face you, unless they are mid-something, in
 // which case they answer over their shoulder. See people/facing.js.
@@ -1200,6 +1208,8 @@ function setConversation(name,text=''){for(const g of [...world.people.map(p=>p.
  if(name){
   const speaker=name==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===name)?.g||world.neighbours?.find(g=>g.userData.name===name);
   if(speaker){speaker.userData.playerConversation=true;speaker.userData.chatHold=true;speaker.userData.speakingUntil=performance.now()+Math.min(6500,Math.max(1400,text.length*43));
+   // What the line feels like shows on the face, and the body follows (body-language.js).
+   const feeling=lineFeeling(text);speaker.userData.lineFeeling=feeling?{expression:feeling,until:performance.now()+3200}:null;
    // The camera is not taken off you any more: she turns to face you instead, and the
    // line appears over her shoulder. See people/facing.js.
    conversationLine={speaker,name,text};}
@@ -1365,7 +1375,11 @@ function updateContextControls(){
  }
 }
 const invalidateDetails=()=>{townSections.invalidate();shopStreetView.invalidate();};
-const detailStream=createDetailStream({onChange:invalidateDetails});window.__JOHANSSON_STREAMING__=detailStream.stats;
+// Feet on whatever is drawn: lanes, aprons, decks (walk-surface.js). Laid once now and
+// again whenever a streamed detail arrives.
+const walkSurface=createWalkSurface({minX:COAST_BOUNDS.minX-2,maxX:COAST_BOUNDS.maxX+2,minZ:COAST_BOUNDS.minZ-2,maxZ:COAST_BOUNDS.maxZ+2,base:planHeight});
+{const t0=performance.now();walkSurface.add(town);setWalkSurface(walkSurface);window.__JOHANSSON_WALK__={ms:Math.round(performance.now()-t0),get triangles(){return walkSurface.triangles;}};}
+const detailStream=createDetailStream({onChange:()=>{invalidateDetails();walkSurface.add(town);}});window.__JOHANSSON_STREAMING__=detailStream.stats;
 // With ?audit in the address, a harness can put the player anywhere and look down on
 // the town from a fixed camera. Nothing reads it otherwise.
 if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__={
@@ -1390,6 +1404,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  get room(){return room;},get scene(){return scene;},get renderer(){return renderer;},get layout(){return activeRoomLayout;},
  get island(){return islandPlay;},
  get activities(){return activities;},get bookshopCustomers(){return bookshopCustomers.snapshot();},
+ /** The neighbours' small talk: how many chats so far, the one running, and how many the model has written. */
+ get chats(){const c=neighbourChats.current;return {count:neighbourChats.count,written:neighbourWriter.written,model:neighbourWriter.ready,current:c?{pair:c.pair.map(p=>p.profile.name),topic:c.topic,text:c.text}:null};},
 };
 if(window.__JOHANSSON_AUDIT__){
  window.advanceTime=ms=>window.__JOHANSSON_AUDIT__.step(ms);
@@ -1419,7 +1435,7 @@ window.__JOHANSSON_POSE__={
 window.__JOHANSSON_BEER__=()=>beerService?{pending:beerService.pending,drink:beerService.drink,served:beerService.served}:null;
 window.__JOHANSSON_CAST__={
  get takes(){return (characters?.actors||[]).map(a=>({
-  name:a.entity?.userData?.name||'?',clip:a.current||null,
+  name:a.entity?.userData?.name||'?',clip:a.current||null,gesture:a.animator?.gesture||null,
   moving:!!a.moving,speed:+(a.speed||0).toFixed(2),activity:a.entity?.userData?.activity||null,indoors:a.entity?.userData?.indoors||null,visible:!!a.entity?.visible,flags:Object.keys(a.entity?.userData||{}).filter(k=>/^in[A-Z]/.test(k)&&a.entity.userData[k]===true),at:a.entity?[+a.entity.position.x.toFixed(2),+a.entity.position.z.toFixed(2),+a.entity.rotation.y.toFixed(2)]:null}));},
 };
 // Sakura's books, live rather than as last saved. The shop's day is settled on the

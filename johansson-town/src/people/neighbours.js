@@ -4,6 +4,7 @@ import {createNavigation} from './navmesh.js';
 import {AIRPORT_COUNTER,airportWorld} from '../world/airport-ground.js';
 import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
+import {GATEBALL_ACTIVE} from '../world/okinawa/layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
 
 /**
@@ -20,7 +21,7 @@ import {GROUND_LAYER} from '../world/ground-layers.js';
  */
 const H=(h,m=0)=>h*60+m;
 
-export const NEIGHBOURS=Object.freeze([
+const ALL_NEIGHBOURS=Object.freeze([
  {name:'Riku',look:'Kenji',height:1.7,role:'checking the cargo yard',walk:true,route:DOCK_CREW_ROUTE,speed:.65,at:[-35.8,-38.3],face:[0,-1],hours:[[420,1320]],lines:['Rice for Sakura, fuses for the workshop, ice for the fishing boats. This quay keeps the whole island going.','The early boat brings supplies; the evening boat takes fish and outgoing post. Keep the workshop doorway clear, please.']},
  {name:'Emi Kado',look:'Reiko',height:1.61,role:'checking island freight manifests',at:[-23.1,-35.1],face:[1,0],pose:'Think',hours:[[360,1440]],lines:['Every parcel gets a line in the freight book. The Community Hall keeps our filed records for one year.','Kenji and Tetsuo are in the blue electrical workshop. The last cargo check is at ten; I stay for the late passenger boat.']},
  {name:'Haru',look:'Shin',height:1.76,role:'sorting the village catch',at:[151,188],face:[-1,0],hours:[[0,1440]],home:[127,182],routine:[{from:0,at:[127,182],role:'at home',home:true},{from:360,at:[151,188],role:'landing and sorting the catch'},{from:720,at:[126,206],role:'collecting lunch at the general store'},{from:780,at:[149,183],role:'mending fishing nets'},{from:1080,at:[127,182],role:'at home',home:true}],lines:['The airport takes our parcels, but the boats still set the pace of the village.','I land the catch at dawn, collect lunch from Mina and mend the nets before going home.']},
@@ -71,7 +72,8 @@ export const NEIGHBOURS=Object.freeze([
   lines:[
    'Auction is done, bro. What is left goes to Yonamine-san or to the freezer. You want a tuna head? Free. Great for soup. Nobody ever takes the tuna head.',
    'The Minato Maru came in at four with a full hold and the skipper is asleep on the wheel. That is the life.']},
- // The gateball players, on the court morning and late afternoon.
+ // The gateball players, on the court morning and late afternoon (only while there is a
+ // court: okinawa/layout.js GATEBALL_ACTIVE; NEIGHBOURS leaves them out otherwise).
  {name:'Mr Nakasone',look:'Hiroshi',height:1.64,role:'playing gateball',at:[22.6,-34.6],face:[1,.2],pose:'Interact',hours:[[H(7),H(10,30)],[H(16),H(18,30)]],
   lines:[
    'Red team, number three. Do not stand there, that is where my ball is going. Probably.',
@@ -96,6 +98,8 @@ export const NEIGHBOURS=Object.freeze([
    'Two collections a day, 10:30 and 16:30, same as the post box says. The post box is never wrong. I am sometimes wrong.',
    'Letters for the Nakasones, a parcel for Mr Shimabukuro at the power house, and a postcard for Sakura from somebody in Hanoi. I do not read postcards. The picture was very nice.']},
 ]);
+/** Who is about today: the gateball players only while there is a court. */
+export const NEIGHBOURS=Object.freeze(ALL_NEIGHBOURS.filter(n=>GATEBALL_ACTIVE||!/gateball|refereeing/.test(n.role)));
 
 /** Everything they can say, by name, for the conversation box. */
 export const NEIGHBOUR_TALK=Object.freeze(Object.fromEntries(NEIGHBOURS.map(n=>[n.name,n])));

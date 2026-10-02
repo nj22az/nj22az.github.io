@@ -1,4 +1,4 @@
-import {MODEL_BYTES} from './thuan-mind.js';
+import {MODEL_BYTES,optedIn,rememberOptIn} from './thuan-mind.js';
 
 /**
  * The player's side of an unscripted conversation with Thuan.
@@ -40,7 +40,7 @@ export function createThuanChat({show,close,body,mind,voice=null,onReply=()=>{},
  /** The offer. No bytes move until the player presses the button on this screen. */
  function offer(message){
   transcript.length=0;
-  show(title,message||`Thuan can answer in her own words, but that needs a language model running on this device: about ${megabytes(MODEL_BYTES)}MB, downloaded once and then kept by your browser. Her written conversation does not need it.`,
+  show(title,message||`Thuan can answer in her own words, but that needs a language model running on this device: about ${megabytes(MODEL_BYTES)}MB, downloaded once and then kept by your browser. Her written conversation does not need it. While it runs, the neighbours use it too, and make up their own small talk.`,
    [['Download and start',start],['Not now',close]]);
  }
 
@@ -79,7 +79,9 @@ export function createThuanChat({show,close,body,mind,voice=null,onReply=()=>{},
 
  /** Redraws the transcript and the input into the modal body. */
  function render(note=''){
-  show(title,note||'Ask her something.',[['Leave the counter',()=>{voice?.cancel?.();close();}]]);
+  show(title,note||'Ask her something.',[['Leave the counter',()=>{voice?.cancel?.();close();}],
+   // The model starts by itself on later visits once chosen; this is the way back.
+   ...(optedIn()?[['Don’t start the model next visit',()=>{rememberOptIn(false);render('Next visit the town will use its written lines until you start the model again.');}]]:[])]);
   const log=el('div','chat-log');
   for(const entry of transcript.slice(-8)){
    const row=el('p','chat-line chat-'+entry.role);

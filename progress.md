@@ -96,3 +96,7 @@ Latest request: create an English flyer for Thuan’s Sakura shop, inspired by t
 - Mounted a pinned copy on the harbour notice board and a pile at Sakura’s counter. Read it, take a free copy, reopen it through the bag, and retain it in the existing save. Repeat reads do not duplicate the keepsake or archive filing; the 100-item bag limit is respected.
 - Community Hall’s generated register includes the authored flyer and applies the existing one-year retention policy. Tall-paper reader keeps action buttons visible.
 - Full 558-test non-boot suite passes; printed flyer visually inspected. Final browser interaction checks in progress.
+
+- Release integration (2026-10-02): combined current main 6048627 with the document/dock/island branches, preserving drawn-surface ground alignment, window interiors and character body language. The three inactive gateball residents are omitted from the live landing guide; its 40 portraits were regenerated from game recipes.
+- Added original food cutouts, Sakura flyer reader/pickup/archive, Blue Coral shop, island outfits/funny hats/costumes, occasional seated dinner greeting/presentation gestures and Home Screen installation/update support.
+- Final non-boot suite: 571 passed, five existing inactive-gateball tests skipped. Browser installation/offline/update/reopen test passed, including storage preservation. Inspected original wardrobe, ice-cream shop and both dinner poses. Full software-rendered boot remains excluded (also times out on unchanged main). Physical iPhone/iPad performance remains unmeasured.

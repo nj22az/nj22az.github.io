@@ -20,6 +20,9 @@ import {buildParkOnsen} from './park-onsen.js';
 import {buildSchool} from './school.js';
 import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
+import {BUS_STATION} from './bus-station.js';
+import {paintedTurf} from '../render/toy-surfaces.js';
+import {GROUND_LAYER} from './ground-layers.js';
 import { createTown as createBaseTown } from './harbour.js?snappy=1';
 import { createPropFactory, createLivingProps } from '../../prop-factory.js';
 import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
@@ -34,10 +37,11 @@ import {buildAirportIsland} from './airport-island.js';
 import {buildEastLawn} from './east-lawn.js';
 import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
-import {buildCoyoteTunnel} from './coyote-tunnel.js';
+import {buildCoyoteTunnel,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {buildOkinawaQuarters} from './okinawa/quarters.js';
 import {createFerryRun} from './ferry.js';
 import {windowGlow} from '../render/dusk.js';
+import {setWindowLight} from '../render/window-interior.js';
 import {isOceanMaterial,tickOcean} from './ocean.js';
 
 // Johansson Town district composition and street interactions.
@@ -208,8 +212,18 @@ export function createTown(options){
   world.forestEdge=forestEdge;
   // The road out of town ends at the Minato Tunnel through the headland, which only the
   // bus goes through. See coyote-tunnel.js.
+  // Without the cave there is no footpath up to it either.
+  if(peninsulaActive()&&!CAVE_ACTIVE){
+   forestEdge.group.removeFromParent();
+   // The old terminus at the top of Main Street stays at the street's height -- it is the
+   // way round to the police box -- as a lawn on a low bank, over the island ground.
+   const B=BUS_STATION,turf=new THREE.MeshStandardMaterial({color:GROUND.grass,roughness:1});
+   try{const map=paintedTurf().clone();map.needsUpdate=true;map.repeat.set(1/6,1/6);turf.map=map;}catch{}
+   const bank=new THREE.Mesh(new THREE.BoxGeometry(B.maxX-B.minX,.42,B.maxZ-B.minZ),[0,1,2,3,4,5].map(i=>i===2?turf:new THREE.MeshStandardMaterial({color:0x8e8a78,roughness:1})));
+   bank.position.set((B.minX+B.maxX)/2,GROUND_LAYER.grass-.21,(B.minZ+B.maxZ)/2);bank.name='Main Street end lawn';bank.receiveShadow=true;world.group.add(bank);
+  }
   if(peninsulaActive()){
-   world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
+   if(CAVE_ACTIVE)world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
     register:options.register,onAction:options.onAction,shadows:options.shadows});
    // The port is north, the shops are west; the east is the green side of the town and
    // the west is the working one, with the shop and the warehouse standing on it.
@@ -280,7 +294,7 @@ export function createTown(options){
   // the town hall, Kitahama and the island homes used to stay dark all night.
   {const glass=new Set(),lamps=new Set();
    world.group.traverse(o=>{if(!o.isMesh)return;for(const m of Array.isArray(o.material)?o.material:[o.material]){const kind=m?.userData?.kitFinish;if(kind==='glow')glass.add(m.userData.celFrom||m);else if(kind==='lamp')lamps.add(m.userData.celFrom||m);}});
-   (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;});}
+   (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;});}
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}const glow=windowGlow(minutes);for(const m of districts.windows)m.material.emissiveIntensity=.02+glow*.78;};
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);

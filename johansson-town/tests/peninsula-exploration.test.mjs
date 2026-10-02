@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
+import {CAVE_ACTIVE} from '../src/world/coyote-tunnel.js';
 import {installDOM} from './fixtures.mjs';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {routeAt,groundHeight,MAP_BOUNDS} from '../src/world/layout.js?snappy=1';
@@ -32,11 +33,11 @@ test('dry ground around the peninsula is admitted and the sea remains blocked',(
  for(const p of [[-20,32],[-31,32],[43,33],[44,55],[8,54]])assert.equal(townBoundsBlocked(...p,.32),false,'Unbuilt dry land '+p);
  for(const p of [[-41,0],[48,0],[45.9,0],[48,40],[12,-51],[0,315]])assert.equal(townBoundsBlocked(...p,.32),true,'Sea '+p);
  assert.equal(townBoundsBlocked(45.5,0,.32),true,'The whole body must stay on dry sand');
- assert.equal(groundHeight(44,55),-.4,'Feet rest on the visible coastal slab');
+ assert.equal(groundHeight(47,50),-.4,'Feet rest on the visible coastal slab');assert.ok(Math.abs(groundHeight(44,55)-(-.4+.04))<1e-9,'Feet rest on the Kitahama lane, laid on the island ground');
  assert.ok(beachHeight(47,0)<BEACH.waterY,'Underwater sand stays outside walking limits');
 });
 
-test('headland feet follow rendered triangles, including the crown and slopes',()=>{
+test('headland feet follow rendered triangles, including the crown and slopes',{skip:!CAVE_ACTIVE&&'the headland is gone (coyote-tunnel.js CAVE_ACTIVE)'},()=>{
  configureTownMode(TOWN_MODES.PENINSULA);installDOM();
  const parent=new THREE.Group(),colliders=[];const {hill}=buildCoyoteTunnel({parent,colliders});parent.updateMatrixWorld(true);
  const ray=new THREE.Raycaster();
