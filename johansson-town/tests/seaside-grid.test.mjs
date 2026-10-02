@@ -41,11 +41,11 @@ test('three short shop blocks connect all interiors, homes and port landmarks',a
 test('the closed shore exposes sea on all four sides and old empty outskirts cannot be walked',()=>{
  const group=new THREE.Group(),ground=buildPeninsula(group);group.updateMatrixWorld(true);
  const ray=new THREE.Raycaster(),land=(x,z)=>{ray.set(new THREE.Vector3(x,20,z),new THREE.Vector3(0,-1,0));return ray.intersectObject(ground).length>0;};
- for(const p of [[-43,0],[48,0],[0,55],[0,-53]])assert.equal(land(...p),false,'surrounding sea '+p);
- for(const p of [[0,100],[0,46],[0,-76],[4.2,-62],[-45,-30],[46,36]])assert.equal(townBoundsBlocked(...p,.32),true,'retired area is blocked '+p);
+ for(const p of [[-43,0],[48,0],[0,315],[0,-53]])assert.equal(land(...p),false,'surrounding sea '+p);
+ for(const p of [[0,320],[165,310],[0,-76],[4.2,-62],[-45,-30],[46,36]])assert.equal(townBoundsBlocked(...p,.32),true,'retired area is blocked '+p);
  for(const p of [[0,0],[-36,10],[38,12],[0,-44]])assert.equal(land(...p),true,'street stays on land '+p);
  assert.equal(townBoundsBlocked(0,-62,.32),false,'working pier remains accessible');
- const area=(MAP_BOUNDS.maxX-MAP_BOUNDS.minX)*(MAP_BOUNDS.maxZ-MAP_BOUNDS.minZ);assert.ok(area<120*156*.65,'at least 35% smaller map envelope');
+ const area=(MAP_BOUNDS.maxX-MAP_BOUNDS.minX)*(MAP_BOUNDS.maxZ-MAP_BOUNDS.minZ);assert.ok(area<480*500,'Expanded island and airport retain a bounded map envelope');
  const spine=ROUTES.find(r=>r.id==='shotengai');assert.ok(Math.abs(spine.points[0][1]-spine.points[1][1])<75,'short main street');
 });
 

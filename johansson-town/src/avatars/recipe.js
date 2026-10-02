@@ -41,7 +41,7 @@ export const PARTS=Object.freeze({
  facial:Object.freeze(['none','moustache','walrus','stubble','beard','goatee']),
  top:Object.freeze(['tank','tee','kariyushi','polo','blouse','jacket','apron','smock']),
  bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt']),
- footwear:Object.freeze(['barefoot','sneakers','sandals','shoes']),
+ footwear:Object.freeze(['barefoot','sneakers','sandals','shoes','boots']),
  hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon']),
  earrings:Object.freeze(['none','studs','hoops']),
  neckwear:Object.freeze(['none','pendant','scarf']),
@@ -93,7 +93,7 @@ export function normalizeRecipe(input={}){
   glasses:sub('glasses',{style:(v,f)=>pick(PARTS.glasses,v,f),colour:col}),
   facial:sub('facial',{style:(v,f)=>pick(PARTS.facial,v,f),colour:col}),
   blush:num(r.blush,d.blush),freckles:!!r.freckles,mole:!!r.mole,wrinkles:num(r.wrinkles,d.wrinkles),
-  outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>['none','flowers','stripes','dots'].includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col})),
+  outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>['none','flowers','stripes','dots'].includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,bottomPattern:(v)=>v==='plaid'?'plaid':'none',footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col})),
   accessories:sub('accessories',{earrings:(v,f)=>pick(PARTS.earrings,v,f),neckwear:(v,f)=>pick(PARTS.neckwear,v,f),colour:col,pin:flag}),
   swim:sub('swim',{colour:col}),
   profile:(()=>{
@@ -154,7 +154,7 @@ export function randomRecipe(seed=Math.random().toString(36)){
   facial:{style:!feminine&&r()<.3?any(PARTS.facial.slice(1)):'none',colour:'#3a2618'},
   blush:feminine?.3+r()*.4:r()*.2,freckles:r()<.12,mole:r()<.1,wrinkles:older?.5+r()*.5:0,
   outfit:{top:any(['tee','kariyushi','polo','blouse','jacket']),topColour:any(pal.cloth),pattern:r()<.3?any(['flowers','stripes','dots']):'none',
-   bottom:feminine&&r()<.4?any(['skirt','longskirt']):any(['shorts','trousers']),bottomColour:any(['#27304d','#6d7478','#c8b48a','#2b2b2b','#9a6a42','#2f5f9e']),shoes:any(['#6d4a32','#2b2b2b','#f4f1ea','#d8342c']),footwear:any(['sneakers','sandals','shoes']),hat:'none',hatColour:'#f4f1ea',accent:any(pal.cloth)},
+   bottom:feminine&&r()<.4?any(['skirt','longskirt']):any(['shorts','trousers']),bottomColour:any(['#27304d','#6d7478','#c8b48a','#2b2b2b','#9a6a42','#2f5f9e']),shoes:any(['#6d4a32','#2b2b2b','#f4f1ea','#d8342c']),footwear:any(['sneakers','sandals','shoes','boots']),hat:'none',hatColour:'#f4f1ea',accent:any(pal.cloth)},
   profile:{pace:r(),talk:r(),show:r(),outlook:r(),pitch:feminine?.45+r()*.5:r()*.6,speed:r(),month:1+Math.floor(r()*12),day:1+Math.floor(r()*28),favourite:any(pal.cloth)},
  });
 }

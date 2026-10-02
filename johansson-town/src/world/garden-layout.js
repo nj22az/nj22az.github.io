@@ -1,0 +1,6 @@
+/** The garden has a level bathhouse terrace and a shallow pond; slopes grade outside. */
+export const GARDEN=Object.freeze({id:'aoba-garden',title:'Aoba Traditional Garden',minX:-49,maxX:-5,minZ:107,maxZ:154,y:0,entry:Object.freeze([-28,108]),pond:Object.freeze({x:-34,z:132,rx:7,rz:5,waterY:-.14}),onsen:Object.freeze({x:-14,z:131}),shrine:Object.freeze({x:-35,z:149})});
+export const GARDEN_PATHS=[{id:'garden-entry',peninsula:true,width:2.5,surface:'stone',points:[[-47,110],[-28,108],[-28,118],[-23,125],[-20,129.6]]},{id:'garden-pond-loop',peninsula:true,width:2.2,surface:'gravel',points:[[-28,118],[-42,120],[-45,132],[-41,143],[-28,145],[-23,137],[-23,125],[-28,118]]},{id:'garden-bridge',peninsula:true,width:2.2,surface:'wood',points:[[-44,132],[-24,132]]},{id:'garden-shrine',peninsula:true,width:2.4,surface:'stone',points:[[-35,143],[-35,146]]}];
+export function inGarden(x,z,pad=0){return x>=GARDEN.minX-pad&&x<=GARDEN.maxX+pad&&z>=GARDEN.minZ-pad&&z<=GARDEN.maxZ+pad;}
+export function gardenPondAt(x,z,r=0){const p=GARDEN.pond;return ((x-p.x)/(p.rx+r))**2+((z-p.z)/(p.rz+r))**2<1;}
+export function gardenHeight(x,z){if(!inGarden(x,z))return null;if(Math.abs(z-132)<=1.15&&x>=-44&&x<=-24)return .1;if(gardenPondAt(x,z))return -.35;return GARDEN.y;}

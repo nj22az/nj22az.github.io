@@ -1,8 +1,9 @@
+import {GARDEN} from './garden-layout.js';
 /**
  * Where Umi-no-yu stands, without the building: people plan walks to its door from this,
  * and park-onsen.js builds the bathhouse on it.
  */
-export const ONSEN=Object.freeze({x:24.5,z:4.5,yaw:-Math.PI/2,opens:600,closes:1320,fee:300});
+export const ONSEN=Object.freeze({x:GARDEN.onsen.x,z:GARDEN.onsen.z,yaw:-Math.PI/2,opens:600,closes:1320,fee:300});
 
 /** A point in the model's own frame, in the town's. */
 export function onsenPoint(x,z){

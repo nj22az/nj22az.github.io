@@ -12,7 +12,11 @@ Sources:
 - Hokkaido government, airport location and development: https://www.souya.pref.hokkaido.lg.jp/kk/wkk/127636.html
 - Rishiri municipal museum, island form: https://rishiri-town.jp/教育/利尻町博物館/利尻の自然・歴史/
 
-## What the game has now
+## Implementation update — 2 October 2026
+
+The garden, mountain, far-coast village, reachable ferry/commuter journey, development records and large airport construction district are now implemented in the island branch. The user requested a much larger airport than the original small-terminal reference: two public concourses and eight shops are open, with a third terminal fenced for construction. See [the playable implementation guide](ISLAND-GARDEN-AND-AIRPORT.md) for completed features and remaining work. The original baseline and development sequence below explain the design context.
+
+## Original baseline
 
 The present terrain is a small flat peninsula with coastal quarters and a working harbour. `src/world/peninsula.js` defines its shared coastline. The separate Kitano-jima airport is currently a horizon model: it has a runway, terminal, hangar, departure animation and a recorded future ferry landing, but no player access or functioning passenger journey. This is the largest airport gameplay gap.
 

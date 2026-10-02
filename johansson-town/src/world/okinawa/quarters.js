@@ -297,8 +297,8 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
  solid({id:'zenzai-bench',x:EAST_ROW.minX-.45,z:n.minZ+1.4,w:.5,d:1.5,height:.5});
  // The lane up to Umi-no-yu: stepping stones, lanterns and the bath's own sign.
  const L=EAST_ROW.onsenLane,lz=(L.minZ+L.maxZ)/2;
- kit.block(MAIN_ROAD.pavementEast,ONSEN_DOOR[0]-1.6,GROUND_LAYER.lane-.05,GROUND_LAYER.lane+.012,lz-1.1,lz+1.1,0xcbc3b0);
- for(let x=MAIN_ROAD.pavementEast+.6;x<ONSEN_DOOR[0]-2;x+=.9)kit.box(.6,.03,.8,x,GROUND_LAYER.lane+.027,lz+Math.sin(x*1.3)*.2,0xa9a293);
+ kit.block(MAIN_ROAD.pavementEast,18.9,GROUND_LAYER.lane-.05,GROUND_LAYER.lane+.012,lz-1.1,lz+1.1,0xcbc3b0);
+ for(let x=MAIN_ROAD.pavementEast+.6;x<18.5;x+=.9)kit.box(.6,.03,.8,x,GROUND_LAYER.lane+.027,lz+Math.sin(x*1.3)*.2,0xa9a293);
  for(const s of [-1,1]){
   const z=lz+s*2.3;
   kit.box(.28,.9,.28,EAST_ROW.minX+.2,.45,z,0xcfc8b4,{finish:'coral'});

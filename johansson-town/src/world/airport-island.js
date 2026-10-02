@@ -4,7 +4,7 @@ import {SEA_LEVEL} from './ocean.js';
 /**
  * Kitano-jima: the airport island, out to the east-south-east.
  *
- * Not somewhere you can go yet. It is on the horizon from the quay and the east beach: a
+ * Reached by the local Minato ferry. It is on the horizon from the quay and the east beach: a
  * low green island with a runway along it, a control tower, a small terminal and a hangar,
  * and now and then a plane taking off over the water. AIRPORT_ISLAND records where a ferry
  * would tie up, for when the island becomes a place the ferry and the player can reach.
@@ -26,7 +26,7 @@ export const AIRPORT_ISLAND=Object.freeze({
 /** Minutes past midnight of the day's departures. */
 export const AIRPORT_DEPARTURES=Object.freeze([555,760,975,1140]);
 
-function buildPlane(){
+export function buildPlane(){
  const plane=new THREE.Group();plane.name='Commuter plane';
  const white=new THREE.MeshStandardMaterial({color:0xf2f0ea,roughness:.5});
  const blue=new THREE.MeshStandardMaterial({color:0x2d5d8a,roughness:.5});
@@ -83,7 +83,7 @@ export function buildAirportIsland({parent,shadows=false}={}){
  const sewage=buildSewagePlant(add,mat);
 
  const plane=buildPlane();plane.visible=false;group.add(plane);
- let flight=null;
+ let flight=null,lastDeparture=null,departures=AIRPORT_DEPARTURES;
  /**
   * @param {number} dt seconds
   * @param {number} minutes the town clock
@@ -93,8 +93,8 @@ export function buildAirportIsland({parent,shadows=false}={}){
   beacon.material.emissiveIntensity=day<.4?1.4:(Math.sin(minutes*6)>0?.6:.1);
   const m=((minutes%1440)+1440)%1440;
   if(!flight){
-   const due=AIRPORT_DEPARTURES.find(t=>m>=t&&m<t+.5);
-   if(due!==undefined)flight={t:0};
+   const due=departures.find(t=>m>=t&&m<t+.5&&lastDeparture!==Math.floor(minutes/1440)+':'+t);
+   if(due!==undefined){flight={t:0};lastDeparture=Math.floor(minutes/1440)+':'+due;}
   }
   if(!flight){plane.visible=false;return;}
   // Rolling down the runway for twenty seconds, then climbing away east and out of sight.
@@ -106,7 +106,7 @@ export function buildAirportIsland({parent,shadows=false}={}){
   plane.position.set(x,y,-4);plane.rotation.set(0,0,pitch);plane.visible=true;
   if(t>roll+climb){flight=null;plane.visible=false;}
  };
- return {group,plane,jetty,sewage,update};
+ return {group,plane,jetty,sewage,update,setDepartures:times=>{departures=times;}};
 }
 
 /**

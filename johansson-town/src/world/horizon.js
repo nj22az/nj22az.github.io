@@ -5,6 +5,6 @@ export function addHorizon(parent){
  const sea=createSurroundingOcean();
  parent.add(sea);
  const mesh=new THREE.PlaneGeometry(600,300,60,30);mesh.rotateX(-Math.PI/2);const p=mesh.attributes.position,colors=[];
- for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i)+265,edge=Math.min(1,Math.max(0,(z-115)/60));const ridge=14+30*Math.exp(-Math.pow((x+70)/75,2))+18*Math.exp(-Math.pow((x-110)/65,2))+5*Math.sin(x*.055+z*.026)+4*Math.cos(z*.08);p.setXYZ(i,x,edge*ridge-1,z);const c=new THREE.Color(0x6e8265).lerp(new THREE.Color(0x9ca68b),Math.max(0,Math.min(1,z/600)));colors.push(c.r,c.g,c.b);}
- mesh.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));mesh.computeVertexNormals();const hills=new THREE.Mesh(mesh,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1}));hills.name='Distant wooded ridge';parent.add(hills);return hills;
+ for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i)+650,edge=Math.min(1,Math.max(0,(z-500)/60));const ridge=14+30*Math.exp(-Math.pow((x+70)/75,2))+18*Math.exp(-Math.pow((x-110)/65,2))+5*Math.sin(x*.055+z*.026)+4*Math.cos(z*.08);p.setXYZ(i,x,edge*ridge-1,z);const c=new THREE.Color(0x6e8265).lerp(new THREE.Color(0x9ca68b),Math.max(0,Math.min(1,z/600)));colors.push(c.r,c.g,c.b);}
+ mesh.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));mesh.computeVertexNormals();const hills=new THREE.Mesh(mesh,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1}));hills.name='Distant wooded ridge';hills.userData.horizon=true;parent.add(hills);return hills;
 }

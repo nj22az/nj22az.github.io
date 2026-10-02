@@ -302,5 +302,29 @@
     "bio": "Tōma carries letters, parcels and postcards around a route paced by the day’s two collections.",
     "backstory": "The postbox plate says 10:30 and 16:30, and he trusts its accuracy even when he doubts his own. A parcel for the barber and a postcard for Sakura make the round more personal than a list of addresses. He insists he does not read postcards, while allowing that the pictures can be very nice.",
     "portrait": "assets/images/residents/38.webp"
+  },
+  {
+    "name": "Haru",
+    "role": "Fisherman",
+    "place": "Hoshizaki Fishing Village",
+    "bio": "Haru lands the morning catch, collects lunch from Mina and spends the afternoon repairing nets.",
+    "backstory": "He grew up above the village pier. The airport carries some of his parcels, but the weather and boats still shape his working day.",
+    "portrait": "assets/images/residents/39.webp"
+  },
+  {
+    "name": "Mina",
+    "role": "Village shopkeeper",
+    "place": "Hoshizaki General Store",
+    "bio": "Mina keeps island tea, rice crackers and postcards ready for fishing families and occasional visitors.",
+    "backstory": "Her family store opens early and closes before supper. She is helping prepare the guesthouse while keeping the village familiar to its neighbours.",
+    "portrait": "assets/images/residents/40.webp"
+  },
+  {
+    "name": "Jun",
+    "role": "Airport clerk",
+    "place": "Kitano-jima Airport",
+    "bio": "Jun checks commuter tickets, cabin bags and the weather before boarding.",
+    "backstory": "Jun lives in staff accommodation beside the terminal. Lunch is taken on the passenger walkway; maintenance records go through the dock workshop and Community Hall.",
+    "portrait": "assets/images/residents/41.webp"
   }
 ]

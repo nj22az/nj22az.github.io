@@ -340,9 +340,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   for(const mesh of createHarbourInstances(batches.values(),{shadows,cellSize:harbourCellSize,consolidate:harbourBatching}))group.add(mesh);
 
-  let wet=false;const rainCount=mobile?260:600,positions=new Float32Array(rainCount*3);
-  for(let i=0;i<rainCount;i++){positions[i*3]=(Math.random()-.5)*32;positions[i*3+1]=Math.random()*16;positions[i*3+2]=(Math.random()-.5)*120;}
-  const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.Points(rainGeo,new THREE.PointsMaterial({color:0xadc8ca,size:.052,transparent:true,opacity:.58,depthWrite:false}));rain.visible=false;group.add(rain);
+  let wet=false;const rainCount=mobile?260:600,positions=new Float32Array(rainCount*6);
+  for(let i=0;i<rainCount;i++){const x=(Math.random()-.5)*32,y=Math.random()*16,z=(Math.random()-.5)*70;positions.set([x,y,z,x+.025,y+.65,z-.01],i*6);}
+  const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.LineSegments(rainGeo,new THREE.LineBasicMaterial({color:0xadc8ca,transparent:true,opacity:.36,depthWrite:false}));rain.visible=false;rain.name='Local rain streaks';rain.userData.dynamicProp=true;group.add(rain);
 
   return {
     group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,streetLamps,
@@ -391,7 +391,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       // Diagonal pairs step together, as a cat's do; standing still they settle.
       catLegs.forEach((hip,i)=>{const swing=catResting?0:Math.sin(time*11+(i===0||i===3?0:Math.PI))*.45;hip.rotation.x=THREE.MathUtils.damp(hip.rotation.x,swing,14,dt);});
       catTail.rotation.z=Math.sin(time*(catResting?.9:2.4))*.22;
-      if(wet){for(let i=0;i<rainCount;i++){positions[i*3+1]-=dt*12;if(positions[i*3+1]<0)positions[i*3+1]=16;}rainGeo.attributes.position.needsUpdate=true;}
+      if(wet){if(playerPos)rain.position.copy(playerPos);for(let i=0;i<rainCount;i++){positions[i*6+1]-=dt*12;if(positions[i*6+1]<0)positions[i*6+1]=16;positions[i*6+4]=positions[i*6+1]+.65;}rainGeo.attributes.position.needsUpdate=true;}
     }
   };
 }

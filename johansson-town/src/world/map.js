@@ -1,3 +1,6 @@
+import {ISLAND} from './island-plan.js';
+import {GARDEN} from './garden-layout.js';
+import {airportWorld} from './airport-ground.js';
 import {DINING_COLLIDERS} from './dining-layout.js';
 import {COASTLINE} from './peninsula.js';
 import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS,peninsulaContains} from './full-town-state.js';
@@ -29,7 +32,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
   ctx.fillStyle=FULL_TOWN.active?'#7ea3a8':'#eadfbe';ctx.fillRect(0,0,w,h);
   if(!FULL_TOWN.active){ctx.fillStyle='#89b5b5';ctx.fillRect(0,0,mapWidth,h);ctx.fillStyle='#eadfbe';ctx.beginPath();COASTLINE.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();}
   if(!FULL_TOWN.active&&peninsulaActive()){
-    ctx.fillStyle='#8d9e77';for(const [x,z] of headlandPatches)ctx.fillRect(px(x),pz(z+4),4*scale,4*scale);
+    ctx.fillStyle='#91a776';ctx.beginPath();ctx.ellipse(px(ISLAND.mountain.x),pz(ISLAND.mountain.z),76*scale,76*scale,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#415c40';ctx.font='bold 11px sans-serif';ctx.fillText('MOUNT AOBA',px(24),pz(175));ctx.fillStyle='#6a9988';ctx.beginPath();ctx.ellipse(px(GARDEN.pond.x),pz(GARDEN.pond.z),7*scale,5*scale,0,0,Math.PI*2);ctx.fill();const corners=[[-65,-23],[65,-23],[65,20],[178,20],[178,132],[-54,132],[-54,23],[-65,23]].map(p=>airportWorld(...p));ctx.fillStyle='#b4bc97';ctx.beginPath();corners.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();ctx.fillStyle='#8d9e77';for(const [x,z] of headlandPatches)ctx.fillRect(px(x),pz(z+4),4*scale,4*scale);
     const tide=BEACH_DRY_EDGE_X;
     ctx.fillStyle='#dfcf9d';ctx.fillRect(px(BEACH.profile[0][0]),pz(BEACH.maxZ),(tide-BEACH.profile[0][0])*scale,(BEACH.maxZ-BEACH.minZ)*scale);
     ctx.strokeStyle='#8b8268';ctx.lineWidth=Math.max(2,2*scale);

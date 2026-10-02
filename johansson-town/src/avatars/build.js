@@ -1,3 +1,4 @@
+import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {normalizeRecipe} from './recipe.js';
@@ -482,6 +483,7 @@ function addBody(list,recipe,m,swim=false){
    }
   }else{
    ball(list,m.legR*1.25,[sx*m.hipX,m.foot*.62,m.legR*.55],'foot'+s,o.shoes,[1,.6,wear==='shoes'?1.85:1.75],12,8);
+   if(wear==='boots')limb(list,[sx*m.hipX,m.foot,0],[sx*m.hipX,m.foot+m.shin*.65,0],m.legR*1.08,m.legR*1.05,o.shoes,{bone:'knee'+s,joints:[]});
    // The sole: white rubber on a sneaker, dark under a leather shoe or an elder's.
    ball(list,m.legR*1.32,[sx*m.hipX,m.foot*.16,m.legR*.6],'foot'+s,wear==='shoes'?'#2b2622':recipe.age==='elder'?'#6b4a32':'#f2efe6',[1,.24,1.8],12,6);
   }
@@ -490,7 +492,7 @@ function addBody(list,recipe,m,swim=false){
   const len=b==='skirt'?m.thigh*.9:m.thigh+m.shin*.85;
   // The skirt hangs from the hips and, lower down, goes with the legs: seated, it lies on the lap.
   const drape=p=>{const leg=THREE.MathUtils.smoothstep(hipY-p.y,.02,.12),w=THREE.MathUtils.smoothstep(p.x,-W*.25,W*.25);return [['hips',1-leg],['thighL',leg*w],['thighR',leg*(1-w)]];};
-  part(list,new THREE.CylinderGeometry(W*.47,W*.62+len*.25,len,24,6,true),drape,bottom,M(0,hipY+.03-len/2,0,0,0,0,1,1,D/W));
+  part(list,new THREE.CylinderGeometry(W*.47,W*.62+len*.25,len,24,6,true),drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):bottom,M(0,hipY+.03-len/2,0,0,0,0,1,1,D/W));
  }
 }
 
@@ -609,7 +611,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  body.add(bones.root);body.bind(new THREE.Skeleton(list));
  body.castShadow=shadows;body.receiveShadow=true;body.frustumCulled=false;
  // Swimwear is a second body, swapped in at the onsen.
- let swimBody=null;
+ let swimBody=null,alternativeBody=null,alternativeOutline=null;
  const face=buildHead(recipe,m,faceSize);
  face.head.castShadow=shadows;face.head.receiveShadow=true;
  bones.head.add(face.head);
@@ -632,6 +634,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   },
   /** 'swim' or 'clothes'. */
   wear(outfit){
+   if(outfit==='nozomi'&&!alternativeBody){const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...SHOPPING_LANE_OUTFIT}}),parts=[];addBody(parts,r,m);addNose(parts,r,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);addHair(parts,r,m);const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());alternativeBody=new THREE.SkinnedMesh(g,material);alternativeBody.name='Thuan · Nozomi-inspired outfit';alternativeBody.bind(body.skeleton,body.bindMatrix);alternativeBody.castShadow=shadows;alternativeBody.frustumCulled=false;root.add(alternativeBody);alternativeOutline=addOutline(root,alternativeBody,true);}
    if(outfit==='swim'&&!swimBody){
     const parts=[];addBody(parts,recipe,m,true);addNose(parts,recipe,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
     addHair(parts,{...recipe,outfit:{...recipe.outfit,hat:'none'}},m);
@@ -639,9 +642,9 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
     swimBody=new THREE.SkinnedMesh(g,material);swimBody.name='Shimanchu swimwear';swimBody.bind(body.skeleton,body.bindMatrix);
     swimBody.castShadow=shadows;swimBody.frustumCulled=false;root.add(swimBody);
    }
-   body.visible=outfit!=='swim';outline.visible=body.visible;if(swimBody)swimBody.visible=outfit==='swim';
+   body.visible=outfit!=='swim'&&outfit!=='nozomi';outline.visible=body.visible;if(alternativeBody){alternativeBody.visible=outfit==='nozomi';alternativeOutline.visible=alternativeBody.visible;}if(swimBody)swimBody.visible=outfit==='swim';
   },
-  dispose(){geometry.dispose();material.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();swimBody?.geometry.dispose();},
+  dispose(){geometry.dispose();material.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();swimBody?.geometry.dispose();alternativeBody?.geometry.dispose();},
  };
  avatar.paintFace({});
  return avatar;

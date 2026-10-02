@@ -36,7 +36,7 @@ const LABEL={
  moustache:'Moustache',walrus:'Walrus',stubble:'Stubble',beard:'Beard',goatee:'Goatee',
  tank:'Tank top',underwear:'Underwear',barefoot:'Bare feet',sneakers:'Sneakers',sandals:'Sandals',shoes:'Shoes',
  tee:'T-shirt',kariyushi:'Kariyushi',polo:'Polo',blouse:'Blouse',jacket:'Jacket',apron:'Apron',smock:'Smock',
- shorts:'Shorts',trousers:'Trousers',skirt:'Skirt',longskirt:'Long skirt',
+ boots:'Boots',shorts:'Shorts',trousers:'Trousers',skirt:'Skirt',longskirt:'Long skirt',
  cap:'Cap',captain:'Captain',police:'Police',helmet:'Helmet',straw:'Straw hat',headband:'Headband',kerchief:'Kerchief',
  beanie:'Beanie',beret:'Beret',bucket:'Bucket hat',ribbon:'Hair bow',studs:'Studs',hoops:'Hoops',pendant:'Pendant',scarf:'Scarf',
  flowers:'Flowers',stripes:'Stripes',dots:'Dots',

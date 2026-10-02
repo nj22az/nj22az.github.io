@@ -1,3 +1,5 @@
+import {buildIslandLandscape} from './island-landscape.js';
+import {buildTraditionalGarden} from './traditional-garden.js';
 import {buildDiningStreet} from './dining-street.js';
 import {createFerryVehicles} from './ferry-vehicles.js';
 import {buildOilJetty} from './oil-jetty.js';
@@ -45,7 +47,7 @@ function anchor(parent,pos,label,fn,register){
 }
 
 function replaceCableLines(group,mobile){
-  const lines=[];group.traverse(o=>{if(o.isLine&&o.geometry?.getAttribute('position'))lines.push(o);});if(!lines.length)return 0;
+  const lines=[];group.traverse(o=>{if(o.isLine&&!o.userData.dynamicProp&&o.geometry?.getAttribute('position'))lines.push(o);});if(!lines.length)return 0;
   const segments=[],a=new THREE.Vector3(),b=new THREE.Vector3();
   for(const line of lines){
     const pos=line.geometry.getAttribute('position');
@@ -240,6 +242,7 @@ export function createTown(options){
   if(peninsulaActive())world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
+  if(peninsulaActive()){world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});}
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of STREET_CAST){
    const spawn=profile.work;

@@ -1,3 +1,4 @@
+import {restoreIsland} from './src/island/services.js';
 import {restoreArchive,seedArchive,fileDocument,retainArchive} from './src/office/archive.js';
 import {createArchiveView} from './src/office/archive-ui.js';
 import {isWorkshopSite} from './src/world/businesses.js';
@@ -57,7 +58,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   try {
     const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
-      state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
+      state.thuanOutfit=saved.thuanOutfit==='nozomi'?'nozomi':'clothes';state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
