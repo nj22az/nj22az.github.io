@@ -361,20 +361,41 @@ export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','
 function addBody(list,recipe,m,swim=false){
  const o=recipe.outfit,skin=recipe.body.skin,top=swim?skin:o.topColour,bottom=swim?recipe.swim.colour:o.bottomColour;
  const W=m.width,D=m.depth,hipY=m.hipY;
- // The torso: a lathe, full width up to square shoulders that round off into the neck,
- // in its clothes.
- const prof=[[0,-.1],[.86,-.08],[1,.05],[1.01,.13],[1.01,.15],[1.02,.3],[1.01,.5],[1,.66],[1,.78],[.97,.86],[.88,.93],[.7,.98],[.46,1.01],[.22,1.03],[0,1.04]];
+ // The base layer everyone has on under their clothes: a tank top and underwear.
+ const tank=!swim&&o.top==='tank',briefs=!swim&&o.bottom==='underwear';
+ // The torso: a lathe, full width up to square shoulders that round off into the neck.
+ // A sturdier build carries a little more round the middle, so a bare torso is shaped
+ // like a body rather than a box.
+ const belly=1+(recipe.body.build-.5)*.12;
+ const prof=[[0,-.1],[.86,-.08],[1,.05],[1.01,.13],[1.01,.15],[1.02*belly,.3],[1.01*(1+(belly-1)*.6),.5],[1,.66],[.985,.74],[.95,.8],[.88,.87],[.76,.93],[.58,.98],[.38,1.01],[.19,1.03],[0,1.04]];
  const lathe=new THREE.LatheGeometry(prof.map(([r,y])=>new THREE.Vector2(r,y)),28);
  // The hem sits on a row of the lathe, so it is a clean line rather than a zigzag.
- const waist=hipY+m.torso*.13;
+ // Underwear sits lower than a waistband.
+ const waist=hipY+m.torso*(briefs?.05:.13);
  const stripe=o.pattern==='stripes';
  const torsoColour=p=>{
   if(swim)return p.y<waist?bottom:skin;
   if(p.y<waist)return bottom;
+  // Under a tank top the body is bare; the vest is its own garment, added below.
+  if(tank)return skin;
   if(stripe&&Math.floor((p.y-waist)/(m.torso*.12))%2)return '#f4f1ea';
   return top;
  };
  part(list,lathe,'chest',torsoColour,M(0,hipY,0,0,0,0,W/2,m.torso,D/2));
+ if(tank){
+  // The vest: a thin shell over the body from the waist to straight across the chest,
+  // so its edge is a clean line, and two straps that follow the shoulders over the top.
+  const top0=.77,rows=prof.filter(([,y])=>y>=.05&&y<=top0).concat([[latheRadius(prof,top0),top0]]);
+  const shell=new THREE.LatheGeometry(rows.map(([r,y])=>new THREE.Vector2(r*1.025,y)),28);
+  part(list,shell,'chest',top,M(0,hipY,0,0,0,0,W/2,m.torso,D/2));
+  const sx=.4,at=t=>{const r=latheRadius(prof,t)*1.025;return D/2*Math.sqrt(Math.max(0,r*r-sx*sx))+.004*m.k;};
+  for(const side of [-1,1]){
+   const x=side*W/2*sx,pts=[.77,.9,1.0].map(t=>[x,hipY+m.torso*t,at(t)]);
+   pts.push([x,hipY+m.torso*1.035,0]);
+   const path=pts.concat(pts.slice(0,-1).reverse().map(([px,py,pz])=>[px,py,-pz]));
+   for(let i=1;i<path.length;i++)tube(list,path[i-1],path[i],.016*m.k,'chest',top,6);
+  }
+ }
  // A swimmer's top, for anyone who would wear one.
  if(swim&&wearsSwimTop(recipe))
   part(list,new THREE.CylinderGeometry(W*.52,W*.52,m.torso*.2,16,1,true),'chest',recipe.swim.colour,M(0,hipY+m.torso*.66,0,0,0,0,1,1,D/W));
@@ -431,9 +452,9 @@ function addBody(list,recipe,m,swim=false){
   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
   // it stretches over a raised arm rather than coming apart from the body.
   const capShare=p=>{const w=THREE.MathUtils.smoothstep(Math.abs(p.x),m.shoulderX-m.armR*1.1,m.shoulderX+m.armR*.3);return [['chest',1-w],['shoulder'+s,w]];};
-  part(list,new THREE.SphereGeometry(m.armR*1.3,16,12),capShare,swim?skin:top,M(sh[0]-sx*m.armR*.15,sh[1]+m.armR*.05,0,0,0,0,1,.92,Math.min(1.1,D/W*1.6)));
+  part(list,new THREE.SphereGeometry(m.armR*1.3,16,12),capShare,swim||tank?skin:top,M(sh[0]-sx*m.armR*.15,sh[1]+m.armR*.05,0,0,0,0,1,.92,Math.min(1.1,D/W*1.6)));
   // A short sleeve is a wider bell over the top of the arm.
-  if(!swim&&!longSleeve)limb(list,sh,[sh[0]+sx*.006,sh[1]-m.upper*.58,0],m.armR*1.12,m.armR*1.16,top,{...arm,joints:[]});
+  if(!swim&&!longSleeve&&!tank)limb(list,sh,[sh[0]+sx*.006,sh[1]-m.upper*.58,0],m.armR*1.12,m.armR*1.16,top,{...arm,joints:[]});
   // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
   // so a wave or a point reads as a hand rather than a ball on a stick.
   ball(list,m.hand,[hd[0],hd[1]-m.hand*.55,0],'hand'+s,skin,[.9,1.15,.78],12,10);
@@ -448,11 +469,22 @@ function addBody(list,recipe,m,swim=false){
   limb(list,hp,an,m.legR*1.02,m.legR*.86,trousers?bottom:skin,leg);
   // Shorts and trunks: a wider piece over the top of the thigh.
   if(b==='shorts'||b==='swim')limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.04,hipY-m.thigh*(b==='swim'?.22:.55),0],m.legR*1.2,m.legR*1.26,bottom,{...leg,joints:[]});
-  const shoe=swim?skin:o.shoes;
-  ball(list,m.legR*1.25,[sx*m.hipX,m.foot*.62,m.legR*.55],'foot'+s,shoe,[1,.6,1.75],12,8);
-  // The sole: white rubber on a sneaker, dark wood under an elder's sandal (setta), none
-  // on bare feet at the beach.
-  if(!swim)ball(list,m.legR*1.32,[sx*m.hipX,m.foot*.16,m.legR*.6],'foot'+s,recipe.age==='elder'?'#6b4a32':'#f2efe6',[1,.24,1.8],12,6);
+  // Underwear: short briefs, snug over the top of the thigh.
+  if(b==='underwear')limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.02,hipY-m.thigh*.16,0],m.legR*1.12,m.legR*1.14,bottom,{...leg,joints:[]});
+  // Feet: bare (and at the beach), or in sandals, sneakers or leather shoes.
+  const wear=swim?'barefoot':o.footwear;
+  if(wear==='barefoot'||wear==='sandals'){
+   ball(list,m.legR*1.12,[sx*m.hipX,m.foot*.55,m.legR*.5],'foot'+s,skin,[1,.55,1.7],12,8);
+   if(wear==='sandals'){
+    // Setta: a flat sole and a thong strap over the top of the foot.
+    ball(list,m.legR*1.24,[sx*m.hipX,m.foot*.12,m.legR*.55],'foot'+s,recipe.age==='elder'?'#6b4a32':'#c8a878',[1,.18,1.8],12,6);
+    ball(list,m.legR*.42,[sx*m.hipX,m.foot*.55+m.legR*.55,m.legR*.95],'foot'+s,o.shoes,[2.3,.5,.8],10,6);
+   }
+  }else{
+   ball(list,m.legR*1.25,[sx*m.hipX,m.foot*.62,m.legR*.55],'foot'+s,o.shoes,[1,.6,wear==='shoes'?1.85:1.75],12,8);
+   // The sole: white rubber on a sneaker, dark under a leather shoe or an elder's.
+   ball(list,m.legR*1.32,[sx*m.hipX,m.foot*.16,m.legR*.6],'foot'+s,wear==='shoes'?'#2b2622':recipe.age==='elder'?'#6b4a32':'#f2efe6',[1,.24,1.8],12,6);
+  }
  }
  if(b==='skirt'||b==='longskirt'){
   const len=b==='skirt'?m.thigh*.9:m.thigh+m.shin*.85;

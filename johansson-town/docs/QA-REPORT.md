@@ -78,6 +78,16 @@ Avatars have bigger heads (adults 1.12×, children 1.4×) for the life-sim silho
 | ![Adjust](qa/creator-ipad-2eyes-adjust.png) | ![Who are they?](qa/creator-ipad-3profile.png) |
 | ![Say hello](qa/creator-desk-4hello.png) | |
 
+### Follow-up: iPad layout and the wardrobe
+
+- **The figure no longer spreads over the menus on iPad.** The preview canvas had no fixed box, and Safari grew it on every resize. It is now pinned inside a small frame in the top-right corner, with its buttons underneath, and the menus have the rest of the screen on the left (tested at iPad portrait and landscape, phone and desktop; the browser test checks the figure stays in its frame).
+- **Clothes are add-ons.** Everyone has a base layer on: a white tank top (its own garment, with straps), underwear and bare feet. Tops, bottoms, shoes (bare feet, sneakers, sandals, shoes), hats and accessories are put on over it, and *Take all clothes off* goes back to the base. The bare body has rounder shoulders and a little more round the middle for sturdier builds.
+- **Johansson** keeps his kariyushi, shorts and now setta sandals as worn items. Residents written before the wardrobe stay dressed.
+
+| | | |
+|---|---|---|
+| ![iPad wardrobe](qa/creator-ipad-wardrobe.png) | ![Base layer](qa/creator-base-layer.png) | ![Phone](qa/creator-phone.png) |
+
 ## Open: logged for the next passes (all but O1's far-plane note are now fixed above)
 
 | # | Sev | Area | Finding | Recommendation |

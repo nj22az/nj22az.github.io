@@ -17,7 +17,7 @@ export const CAST_RECIPES=Object.freeze({
   brows:{style:'bushy',colour:'#a8a49a',size:.6,height:.55,tilt:.45},
   nose:{style:'wide',size:.6,height:.48},mouth:{style:'smile',colour:'#a8433e',size:.55,height:.5},
   facial:{style:'stubble',colour:'#b8b4aa'},wrinkles:.7,blush:.35,
-  outfit:{top:'kariyushi',topColour:'#7fb0d8',pattern:'flowers',bottom:'shorts',bottomColour:'#c8b48a',shoes:'#6d4a32',accent:'#f4f1ea'},
+  outfit:{top:'kariyushi',topColour:'#7fb0d8',pattern:'flowers',bottom:'shorts',bottomColour:'#c8b48a',footwear:'sandals',shoes:'#6d4a32',accent:'#f4f1ea'},
   swim:{colour:'#2f5f9e'}}),
  Thuan:R({name:'Thuan',accessories:{earrings:'studs',neckwear:'pendant',colour:'#e0b93a'},
   body:{height:.36,build:.35,skin:'#f1cfae'},head:{size:.48,shape:.48,form:'heart',jaw:.3,cheeks:.62},

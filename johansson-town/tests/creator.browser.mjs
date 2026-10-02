@@ -22,8 +22,8 @@ try{
   assert.equal(await page.getByRole('combobox',{name:'Preview angle',exact:true}).inputValue(),'back');
   await page.getByRole('combobox',{name:'Preview angle',exact:true}).selectOption('front');
   assert.equal(await page.evaluate(()=>JSON.stringify(window.maker.recipe)),original);
-  for(const id of ['body','head','hair','eyes','brows','nose','mouth','extras','top','bottom','accessories','hat']){
-   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption(id);else await page.getByRole('tab',{name:({body:'Body',head:'Face',hair:'Hair',eyes:'Eyes',brows:'Brows',nose:'Nose',mouth:'Mouth',extras:'Glasses & beard',top:'Top',bottom:'Bottoms',accessories:'Accessories',hat:'Hats & bows'})[id],exact:true}).click();
+  for(const id of ['body','head','hair','eyes','brows','nose','mouth','extras','top','bottom','shoes','hat','accessories']){
+   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption(id);else await page.getByRole('tab',{name:({body:'Body',head:'Face',hair:'Hair',eyes:'Eyes',brows:'Brows',nose:'Nose',mouth:'Mouth',extras:'Glasses & beard',top:'Top',bottom:'Bottoms',shoes:'Shoes',accessories:'Accessories',hat:'Hats & bows'})[id],exact:true}).click();
    const bounds=await page.evaluate(()=>{const root=document.querySelector('.shm'),body=document.querySelector('.shm-body'),save=document.querySelector('.shm-foot button:last-child');return {overflow:root.scrollWidth>innerWidth,body:body.clientHeight,bottom:save.getBoundingClientRect().bottom};});
    assert.equal(bounds.overflow,false);assert.ok(bounds.body>=90,JSON.stringify(bounds));assert.ok(bounds.bottom<=height);
   }
@@ -36,6 +36,14 @@ try{
   await page.getByRole('button',{name:'Beanie',exact:true}).click();assert.equal(await page.evaluate(()=>window.maker.recipe.outfit.hat),'beanie');
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('accessories');else await page.getByRole('tab',{name:'Accessories',exact:true}).click();
   await page.getByRole('button',{name:'Hoops',exact:true}).click();assert.equal(await page.evaluate(()=>window.maker.recipe.accessories.earrings),'hoops');
+  // The wardrobe: clothes come off down to the base layer, and go back on one at a time.
+  await page.getByRole('button',{name:'Take all clothes off',exact:true}).click();
+  assert.deepEqual(await page.evaluate(()=>{const o=window.maker.recipe.outfit;return [o.top,o.bottom,o.footwear,window.maker.recipe.accessories.earrings];}),['tank','underwear','barefoot','none']);
+  if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('shoes');else await page.getByRole('tab',{name:'Shoes',exact:true}).click();
+  await page.getByRole('button',{name:'Sandals',exact:true}).click();assert.equal(await page.evaluate(()=>window.maker.recipe.outfit.footwear),'sandals');
+  // The figure stays in its frame, clear of the menus.
+  const frame=await page.evaluate(()=>{const s=document.querySelector('.shm-stage').getBoundingClientRect(),c=document.querySelector('.shm-stage canvas').getBoundingClientRect(),p=document.querySelector('.shm-panel').getBoundingClientRect();return {inside:c.width<=s.width+1&&c.height<=s.height+1,clear:s.left>=p.right-1||s.top>=p.bottom-1};});
+  assert.deepEqual(frame,{inside:true,clear:true});
   await page.getByLabel('Name',{exact:true}).fill('Test islander');
   const before=await page.evaluate(()=>JSON.stringify(window.maker.recipe));
   await page.getByRole('button',{name:'Randomise appearance'}).click();await page.getByRole('button',{name:'Undo',exact:true}).click();

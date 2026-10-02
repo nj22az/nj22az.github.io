@@ -34,6 +34,7 @@ const LABEL={
  smile:'Smile',flat:'Flat',grin:'Grin',small:'Small',smirk:'Smirk',pout:'Pout',
  square:'Square',oval:'Oval',heart:'Heart',sun:'Shades',half:'Half-rim',
  moustache:'Moustache',walrus:'Walrus',stubble:'Stubble',beard:'Beard',goatee:'Goatee',
+ tank:'Tank top',underwear:'Underwear',barefoot:'Bare feet',sneakers:'Sneakers',sandals:'Sandals',shoes:'Shoes',
  tee:'T-shirt',kariyushi:'Kariyushi',polo:'Polo',blouse:'Blouse',jacket:'Jacket',apron:'Apron',smock:'Smock',
  shorts:'Shorts',trousers:'Trousers',skirt:'Skirt',longskirt:'Long skirt',
  cap:'Cap',captain:'Captain',police:'Police',helmet:'Helmet',straw:'Straw hat',headband:'Headband',kerchief:'Kerchief',
@@ -95,24 +96,28 @@ const TABS=[
   {kind:'parts',page:'style',at:'facial.style',label:'Beard',list:PARTS.facial,draw:'facial'},
   {kind:'colours',page:'colour',at:'glasses.colour',label:'Frames',palette:['#2b2b2b','#8a4a3a','#c8a060','#e06a7a','#3d6a8a','#d8342c']},
   {kind:'colours',page:'colour',at:'facial.colour',label:'Beard',palette:PALETTE.hair}]},
- {id:'top',name:'Top',controls:[
+ // The wardrobe. Everyone has the base layer on (tank top, underwear, bare feet);
+ // clothes are added over it, and the first tile of each grid takes them off again.
+ {id:'top',name:'Top',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.top',list:PARTS.top,draw:'figure'},
   {kind:'chips',page:'style',at:'outfit.pattern',list:['none','flowers','stripes','dots'],label:'Print'},
   {kind:'colours',page:'colour',at:'outfit.topColour',label:'Colour',palette:PALETTE.cloth},
   {kind:'colours',page:'colour',at:'outfit.accent',label:'Ribbons & print',palette:PALETTE.cloth}]},
- {id:'bottom',name:'Bottoms',controls:[
+ {id:'bottom',name:'Bottoms',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.bottom',list:PARTS.bottom,draw:'figure'},
   {kind:'colours',page:'colour',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth},
-  {kind:'colours',page:'colour',at:'outfit.shoes',label:'Shoes',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6']},
   {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth}]},
- {id:'accessories',name:'Accessories',controls:[
+ {id:'shoes',name:'Shoes',wardrobe:true,controls:[
+  {kind:'parts',page:'style',at:'outfit.footwear',list:PARTS.footwear,draw:'feet'},
+  {kind:'colours',page:'colour',at:'outfit.shoes',label:'Colour',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6']}]},
+ {id:'hat',name:'Hats & bows',wardrobe:true,controls:[
+  {kind:'parts',page:'style',at:'outfit.hat',list:PARTS.hat,draw:'head'},
+  {kind:'colours',page:'colour',at:'outfit.hatColour',label:'Colour',palette:PALETTE.cloth}]},
+ {id:'accessories',name:'Accessories',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'accessories.earrings',label:'Earrings',list:PARTS.earrings,draw:'head'},
   {kind:'parts',page:'style',at:'accessories.neckwear',label:'Neckwear',list:PARTS.neckwear,draw:'figure'},
   {kind:'toggle',page:'style',at:'accessories.pin',label:'Lapel pin'},
   {kind:'colours',page:'colour',at:'accessories.colour',label:'Accessory colour',palette:PALETTE.cloth}]},
- {id:'hat',name:'Hats & bows',controls:[
-  {kind:'parts',page:'style',at:'outfit.hat',list:PARTS.hat,draw:'head'},
-  {kind:'colours',page:'colour',at:'outfit.hatColour',label:'Colour',palette:PALETTE.cloth}]},
 ];
 const PAGES=[['style','Style'],['colour','Colour'],['adjust','Adjust']];
 const STEPS=[['start','Choose a face'],['look','Make them'],['profile','Who are they?'],['hello','Say hello']];
@@ -140,21 +145,24 @@ const CSS=`
 .shm-name{flex:1;max-width:260px;margin-left:auto;height:44px;padding:0 14px;border:2px solid #f0dcb0;border-radius:22px;background:#fff;color:inherit;font-size:16px;font-weight:700}
 .shm-pill,.shm-save,.shm-select,.shm-next{min-height:44px;padding:8px 16px;border:2px solid #f0dcb0;border-radius:22px;background:#fff;color:inherit;font-size:14px;font-weight:800}
 .shm-pill{display:inline-flex;align-items:center;justify-content:center;gap:7px}
-.shm-main{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);min-height:0}
+.shm-main{display:grid;grid-template-columns:minmax(0,1fr) clamp(112px,32%,340px);gap:12px;min-height:0;padding:0 max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left))}
 .shm[data-step=hello] .shm-main{grid-template-columns:minmax(0,1fr)}
 .shm[data-step=hello] .shm-panel{display:none}
-.shm-stage{position:relative;min-height:0;overflow:hidden}
-.shm-stage>canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
-.shm-dice{position:absolute;top:8px;left:12px;display:flex;gap:8px}
-.shm-dice button{display:grid;place-items:center;width:44px;height:44px;border:2px solid #f0dcb0;border-radius:50%;background:#fffe;color:inherit}
-.shm-poses{position:absolute;bottom:8px;left:12px;right:12px;display:flex;align-items:center;justify-content:center;gap:8px}
-.shm-poses .shm-select{width:110px}
-.shm-poses .shm-angle{width:84px;padding:8px 6px}
-.shm[data-focus=face] .shm-poses,.shm[data-step=hello] .shm-poses{display:none}
+.shm-side{display:flex;flex-direction:column;gap:8px;min-height:0}
+.shm-stage{position:relative;flex:0 1 auto;width:100%;aspect-ratio:3/4;max-height:100%;min-height:0;overflow:hidden;border:3px solid #f0dcb0;border-radius:24px;background:radial-gradient(circle at 50% 35%,#fffdf6,#ffeccc)}
+.shm[data-step=hello] .shm-stage{flex:1;aspect-ratio:auto;border:0;background:transparent}
+.shm-stage>canvas{position:absolute;inset:0;display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.shm-dice{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.shm-dice button{display:grid;place-items:center;width:44px;height:44px;border:2px solid #f0dcb0;border-radius:50%;background:#fff;color:inherit}
+.shm-poses{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px}
+.shm-poses .shm-select{flex:1 1 90px;min-width:0}
+.shm[data-focus=face] .shm-poses,.shm[data-step=hello] .shm-poses,.shm[data-step=hello] .shm-dice{display:none}
 .shm[data-step=start] .shm-panel>div:first-child,.shm[data-step=profile] .shm-panel>div:first-child,.shm[data-step=start] .shm-pages,.shm[data-step=profile] .shm-pages{display:none}
+.shm-note{margin:0 0 8px;font-size:13px;line-height:1.45;color:#6b5d44}
+.shm-undress{margin-bottom:6px}
 .shm-bubble{position:absolute;left:50%;bottom:14px;width:min(560px,calc(100% - 24px));transform:translateX(-50%);padding:16px 20px;border:3px solid #3b3f55;border-radius:24px;background:#fffdf6;font-size:18px;font-weight:700;line-height:1.45;white-space:pre-line;box-shadow:0 6px 0 #3b3f5522}
 .shm-bubble[hidden]{display:none}
-.shm-panel{display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0;margin:0 12px 0 0;border:3px solid #f0dcb0;border-radius:26px;background:#fffdf6;overflow:hidden}
+.shm-panel{display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0;margin:0;border:3px solid #f0dcb0;border-radius:26px;background:#fffdf6;overflow:hidden}
 .shm-tabs{display:flex;overflow-x:auto;padding:8px;gap:6px;border-bottom:2px solid #f6e8c8;scrollbar-width:none}
 .shm-tabs button{flex:0 0 auto;min-height:44px;padding:8px 14px;border:0;border-radius:22px;background:#fff4dc;color:inherit;font-size:13px;font-weight:800}
 .shm-tabs button[aria-selected=true]{background:#ff9d3c;color:#fff;box-shadow:0 3px 0 #d9741a}
@@ -220,21 +228,12 @@ const CSS=`
 @media(max-width:760px){
  .shm-top h2{font-size:16px}
  .shm-tabs{display:none}.shm-category{display:flex}
- .shm-main{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,36%) minmax(0,1fr)}
- .shm[data-step=hello] .shm-main{grid-template-rows:minmax(0,1fr)}
- .shm-panel{margin:0 10px}.shm-body{padding:12px}
- .shm-poses{left:auto;right:10px;bottom:8px;justify-content:flex-end}
- .shm-step{grid-template-columns:80px 44px minmax(0,1fr) 44px}
+ .shm-body{padding:12px}
+ .shm-step{grid-template-columns:72px 44px minmax(0,1fr) 44px}
  .shm-dots button[aria-current=step] span{display:none}
 }
-@media(max-width:520px){.shm-top h2{display:none}.shm-name{max-width:none}.shm-foot .shm-pill{padding:8px 10px}.shm-dots{gap:3px}.shm-dots button{min-width:36px;padding:0 6px}}
-@media(max-height:500px) and (orientation:portrait){.shm-main{grid-template-rows:minmax(0,21%) minmax(0,1fr)}.shm-poses{top:8px;bottom:auto}.shm-top h2 small{display:none}.shm-pages{margin:4px 8px 0}.shm-pages button{min-height:34px}.shm-category{padding:4px 8px}.shm-top,.shm-foot{padding-top:4px;padding-bottom:4px}}
-@media(max-height:500px) and (orientation:landscape){
- .shm-main{grid-template-columns:minmax(0,35%) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
- .shm-tabs{display:none}.shm-category{display:flex}.shm-top h2{font-size:16px}.shm-top h2 small{display:none}
- .shm-panel{margin-right:10px}.shm-top,.shm-foot{padding-top:4px;padding-bottom:4px}
- .shm-dots button span{display:none!important}
-}
+@media(max-width:520px){.shm-top h2{display:none}.shm-name{max-width:none}.shm-foot .shm-pill{padding:8px 10px}.shm-dots{gap:3px}.shm-dots button{min-width:36px;padding:0 6px}.shm-main{gap:8px;padding:0 8px}.shm-grid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:8px}.shm-step{grid-template-columns:56px 40px minmax(0,1fr) 40px;gap:4px}.shm-step button{width:40px;height:40px}}
+@media(max-height:500px){.shm-top h2 small{display:none}.shm-pages{margin:4px 8px 0}.shm-pages button{min-height:34px}.shm-category{padding:4px 8px}.shm-top,.shm-foot{padding-top:4px;padding-bottom:4px}.shm-tabs{display:none}.shm-category{display:flex}.shm-dots button span{display:none!important}}
 `;
 
 /**
@@ -267,14 +266,18 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const dice=iconButton('shuffle','Randomise appearance'),undo=iconButton('undo','Undo',{disabled:true}),reset=iconButton('reset','Start over');
  const poses=el('div',{className:'shm-poses'});
  const bubble=el('div',{className:'shm-bubble',hidden:true,role:'status'});
- const stage=el('div',{className:'shm-stage'},canvas,el('div',{className:'shm-dice'},dice,undo,reset),poses,bubble);
+ // The figure lives in a small frame in the corner, with its buttons underneath, so
+ // the menus have the room. The canvas is pinned inside the frame: left to size
+ // itself, Safari grows a canvas each time it is resized, over everything else.
+ const stage=el('div',{className:'shm-stage'},canvas,bubble);
+ const side=el('div',{className:'shm-side'},stage,el('div',{className:'shm-dice'},dice,undo,reset),poses);
  const category=el('select',{className:'shm-select',ariaLabel:'Appearance category'},...TABS.map(t=>el('option',{value:t.id,textContent:t.name})));
  const categoryRow=el('label',{className:'shm-category'},'Edit',category);
  const tabs=el('div',{className:'shm-tabs',role:'tablist',ariaLabel:'Appearance category'});
  const pages=el('div',{className:'shm-pages',role:'tablist',ariaLabel:'Part, colour or adjust'});
  const body=el('div',{className:'shm-body',id:'shm-body',role:'tabpanel'});
  const panel=el('div',{className:'shm-panel'},el('div',{},tabs,categoryRow),pages,body);
- root.append(el('div',{className:'shm-main'},stage,panel));
+ root.append(el('div',{className:'shm-main'},panel,side));
  const back=el('button',{className:'shm-pill',textContent:'Back'});
  const dots=el('nav',{className:'shm-dots',ariaLabel:'Steps'});
  const next=el('button',{className:'shm-next'});
@@ -359,9 +362,10 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  thumbScene.add(new THREE.HemisphereLight(0xffffff,0xc8a878,2.2));const thumbSun=sun.clone();thumbScene.add(thumbSun);
  function figureThumb(r,c,framing){
   const a=buildAvatar(r,{shadows:false,faceSize:128}),m=a.measure;
-  a.root.rotation.y=framing==='figure'?.35:.2;thumbScene.add(a.root);a.root.updateMatrixWorld(true);
+  a.root.rotation.y=framing==='figure'?.35:framing==='feet'?.6:.2;thumbScene.add(a.root);a.root.updateMatrixWorld(true);
   const px=c.width;
-  if(framing==='figure'){const y=r.__bottom?m.hipY*.7:m.hipY+m.torso*.5,d=r.__bottom?m.H*1.05:m.H*1.08;thumbCamera.position.set(0,y+.1,d);thumbCamera.lookAt(0,y,0);}
+  if(framing==='feet'){const y=m.foot*1.6+m.legR,d=m.H*.42;thumbCamera.position.set(0,y+m.H*.12,d);thumbCamera.lookAt(0,y,0);}
+  else if(framing==='figure'){const y=r.__bottom?m.hipY*.7:m.hipY+m.torso*.5,d=r.__bottom?m.H*1.05:m.H*1.08;thumbCamera.position.set(0,y+.1,d);thumbCamera.lookAt(0,y,0);}
   else{const hb=new THREE.Box3();if(a.face?.head)hb.setFromObject(a.face.head);else hb.set(new THREE.Vector3(-m.Rh,m.headY,-m.Rh),new THREE.Vector3(m.Rh,m.headY+m.Rh*2,m.Rh));
    const c3=hb.getCenter(new THREE.Vector3()),s=hb.getSize(new THREE.Vector3());thumbCamera.position.set(0,c3.y+s.y*.08,c3.z+s.y*2.75);thumbCamera.lookAt(0,c3.y+s.y*.04,c3.z);}
   renderer.setRenderTarget(thumbTarget);renderer.setClearColor(0xfff4dc,1);renderer.clear();renderer.render(thumbScene,thumbCamera);
@@ -381,7 +385,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   // A hat on the hat tab only, and a bare head for the hairstyles and earrings.
   if(control.at!=='outfit.hat')r.outfit.hat='none';
   if(control.at==='outfit.bottom')r.__bottom=true;
-  const flat=control.draw!=='head'&&control.draw!=='figure';
+  const flat=!['head','figure','feet'].includes(control.draw);
   const key=control.at+'|'+value+'|'+JSON.stringify(flat?{eyes:r.eyes,brows:r.brows,nose:r.nose,mouth:r.mouth,glasses:r.glasses,facial:r.facial,skin:r.body.skin}:{...r,name:0,profile:0});
   cached(key,c,()=>flat?drawPart(c.getContext('2d'),normalizeRecipe(r),control.draw,c.width):figureThumb(r,c,control.draw));
  }
@@ -418,6 +422,11 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function renderLook(){
   const t=TABS.find(x=>x.id===tab);
+  if(t.wardrobe&&page==='style'){
+   const off=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all clothes off'});
+   off.onclick=()=>{remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});recipe=normalizeRecipe(recipe);dirty=true;renderBody();};
+   body.append(el('p',{className:'shm-note',textContent:'Underneath it all: a tank top, underwear and bare feet. Tap something to put it on; the first picture takes it off.'}),off);
+  }
   for(const control of t.controls.filter(c=>c.page===page)){
    if(control.label&&control.kind!=='toggle'&&control.kind!=='stepper')body.append(el('h4',{textContent:control.label}));
    if(control.kind==='parts'){
