@@ -11,14 +11,17 @@ import {createAvatarAnimator} from '../src/avatars/animate.js';
 import {CAST_RECIPES,NEIGHBOUR_RECIPES,recipeFor} from '../src/avatars/cast.js';
 import {randomRecipe} from '../src/avatars/recipe.js';
 const q=new URLSearchParams(location.search);
-const names=(q.get('who')||[...Object.keys(CAST_RECIPES),...Object.keys(NEIGHBOUR_RECIPES).slice(0,5)].join(',')).split(',');
+// ?tops=polo,tee&base=Thuan&pattern=dots dresses one person in each top, side by side.
+const tops=q.get('tops')?.split(',');
+const names=tops?tops.map(()=>q.get('base')||'Thuan'):(q.get('who')||[...Object.keys(CAST_RECIPES),...Object.keys(NEIGHBOUR_RECIPES).slice(0,5)].join(',')).split(',');
 const pose=q.get('pose')||'idle',turn=+(q.get('turn')||0);
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(devicePixelRatio);renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;document.body.append(renderer.domElement);
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xcfe6ee);
 scene.add(new THREE.HemisphereLight(0xffffff,0x8a8070,1.6));const sun=new THREE.DirectionalLight(0xffffff,1.6);sun.position.set(3,6,5);scene.add(sun);
 const floor=new THREE.Mesh(new THREE.CircleGeometry(20,40),new THREE.MeshStandardMaterial({color:0xd8cfb8}));floor.rotation.x=-Math.PI/2;scene.add(floor);
 const people=names.map((name,i)=>{
- const recipe=name==='random'?randomRecipe('lineup'+i):recipeFor(name);
+ let recipe=name==='random'?randomRecipe('lineup'+i):recipeFor(name);
+ if(tops)recipe={...recipe,outfit:{...recipe.outfit,top:tops[i],...(q.get('pattern')?{pattern:q.get('pattern')}:{}),...(q.get('colour')?{topColour:'#'+q.get('colour')}:{})}};
  const a=buildAvatar(recipe,{faceSize:512});const holder=new THREE.Group();holder.add(a.root);
  holder.position.x=(i-(names.length-1)/2)*.85;holder.rotation.y=Math.PI+turn;scene.add(holder);
  const anim=createAvatarAnimator(a);
@@ -28,6 +31,8 @@ const people=names.map((name,i)=>{
 const camera=new THREE.PerspectiveCamera(30,innerWidth/innerHeight,.1,100);
 const span=Math.max(2.4,names.length*.85);camera.position.set(0,1.1,span*1.6+1);camera.lookAt(0,.8,0);
 if(q.get('close')){camera.position.set(0,1.45,1.25);camera.lookAt(0,1.35,0);}
+// ?body=1 frames the clothes: chest to shoes, near enough to read a collar.
+if(q.get('body')){camera.position.set(0,.85,1.9*Math.max(1,names.length/3));camera.lookAt(0,.75,0);}
 const clock=new THREE.Clock();let t=0;
 function frame(){requestAnimationFrame(frame);const dt=Math.min(.05,clock.getDelta());t+=dt;
  for(const p of people){

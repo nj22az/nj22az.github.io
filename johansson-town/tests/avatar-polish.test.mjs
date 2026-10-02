@@ -25,15 +25,18 @@ test('face UVs never interpolate a second face across the rear seam',()=>{
  }
 });
 
-test('shirt collar panels and buttons are on the same +z front as the face',()=>{
+test('shirt collars and buttons are painted on the +z front, with nothing stuck on',()=>{
  for(const top of ['kariyushi','polo','blouse','jacket','smock']){
-  const a=buildAvatar({...CAST_RECIPES.Thuan,outfit:{...CAST_RECIPES.Thuan.outfit,top,pattern:'none'}});
-  const {position:P,normal:N}=a.body.geometry.attributes,m=a.measure;let panels=0;
-  for(let i=0;i<P.count;i+=3){
-   const y=(P.getY(i)+P.getY(i+1)+P.getY(i+2))/3;
-   if(y>m.neckY-.12*m.k&&y<m.neckY-.02*m.k&&[0,1,2].every(j=>Math.abs(P.getX(i+j))<.09*m.k&&P.getZ(i+j)>m.depth*.25&&N.getZ(i+j)>.8))panels++;
+  const a=buildAvatar({...CAST_RECIPES.Thuan,outfit:{...CAST_RECIPES.Thuan.outfit,top,pattern:'flowers'}});
+  assert.ok(a.garment.marks.some(m=>m==='collar'||m==='lapels'),top+' has a collar drawn');
+  // The torso carries the garment's UVs, centred on the front; every other part samples the empty strip.
+  const {position:P,uv:U}=a.body.geometry.attributes,m=a.measure;let front=0;
+  for(let i=0;i<P.count;i++){
+   const v=U.getY(i);
+   if(v>.05){if(P.getZ(i)>m.depth*.4&&Math.abs(P.getX(i))<.02*m.k&&P.getY(i)>m.hipY)assert.ok(Math.abs(U.getX(i)-.5)<.05),front++;}
+   else assert.ok(Math.abs(U.getX(i)-.5)<1e-6&&Math.abs(v-.02)<1e-6);
   }
-  assert.ok(panels>=2,top+' has outward-facing front collar panels');a.dispose();
+  assert.ok(front>0,'the front of the torso is mapped');a.dispose();
  }
 });
 
