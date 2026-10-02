@@ -189,9 +189,10 @@ function makeQuad(fragmentShader,uniforms){
  * @param {number} [options.superScale] render-target scale; >1 supersamples for cleaner ink
  * @param {number} [options.pixelBudget] hard ceiling on render-target pixels
  * @param {boolean} [options.fxaa]
+ * @param {number} [options.samples] MSAA samples for the scene target (WebGL2 only)
  * @param {number} [options.ink] ink colour
  */
-export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxaa=true,ink=0x2b2a33,inkOptions={},gradeOptions={}}={}){
+export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxaa=true,samples=4,ink=0x2b2a33,inkOptions={},gradeOptions={}}={}){
  const capabilities=renderer.capabilities||{};
  // Half-float keeps the grade from banding. Where it is not available the chain
  // still runs, just on eight bits.
@@ -202,7 +203,12 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   stencilBuffer:false,
   colorSpace:THREE.NoColorSpace
  };
- const rtScene=new THREE.WebGLRenderTarget(2,2,{...targetOptions,depthBuffer:true});
+ // Hardware multisampling on the scene itself: the geometry edges are resolved before
+ // the ink and the grade ever see them, which supersampling alone only approximated
+ // (and the pixel budget turned off on large tablets). Tile-based mobile GPUs resolve
+ // MSAA on chip, so on an iPad it costs next to nothing.
+ const msaa=halfFloat&&samples>0?Math.min(samples,capabilities.maxSamples||4):0;
+ const rtScene=new THREE.WebGLRenderTarget(2,2,{...targetOptions,depthBuffer:true,samples:msaa});
  rtScene.depthTexture=new THREE.DepthTexture(2,2);
  rtScene.depthTexture.format=THREE.DepthFormat;
  rtScene.depthTexture.type=THREE.UnsignedIntType;
@@ -241,7 +247,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
  const fxaaPass=makeQuad(FXAA_FRAGMENT,{tDiffuse:{value:null},uTexel:{value:new THREE.Vector2(1,1)}});
 
  const size=new THREE.Vector2(0,0);
- const state={ink:true,grade:true,fxaa,scale:superScale};
+ const state={ink:true,grade:true,fxaa,scale:superScale,samples:msaa};
  let width=0,height=0;
 
  /** Sizes the targets to whatever the renderer is currently drawing into. */

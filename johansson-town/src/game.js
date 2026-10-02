@@ -91,7 +91,24 @@ const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const touch=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
 const mobile=isIOS||touch,tabletLike=touch&&Math.min(innerWidth,innerHeight)>=700,highTier=!mobile||tabletLike,shadows=highTier,canvas=$('#game');
-const renderDpr=()=>Math.min(window.devicePixelRatio||1,mobile?(tabletLike?1.45:1.2):2);
+// Tablets draw close to their screen: at 1.45 a 2x iPad stretched a small picture up and
+// every edge stair-stepped. Phones stay a little lower to keep the frame rate.
+let dprScale=1;
+const renderDpr=()=>Math.max(1,Math.min(window.devicePixelRatio||1,mobile?(tabletLike?1.85:1.5):2)*dprScale);
+/**
+ * Keeps the frame rate up on slower devices: if frames average slower than about 24 a
+ * second for a few seconds, the drawing buffer steps down a notch (never below 1x), and
+ * it never steps back up within the session, so the picture does not pump.
+ */
+const dprGovernor={time:0,frames:0,cooldown:4};
+function governResolution(dt){
+ if(!mobile||document.hidden)return;
+ dprGovernor.cooldown-=dt;dprGovernor.time+=dt;dprGovernor.frames++;
+ if(dprGovernor.time<3)return;
+ const average=dprGovernor.time/dprGovernor.frames;dprGovernor.time=0;dprGovernor.frames=0;
+ if(dprGovernor.cooldown>0||average<1/24||dprScale<=.62)return;
+ dprScale=Math.max(.6,dprScale-.13);dprGovernor.cooldown=5;resizeRenderer();
+}
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance',alpha:false,stencil:false,preserveDrawingBuffer:false});
 renderer.setPixelRatio(renderDpr());renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.PCFShadowMap;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xb8dce9);scene.fog=null;// The near plane sets how much of the depth buffer the first metre eats, and at 7cm
@@ -138,7 +155,10 @@ const INK_OPTIONS={
  // expensive thing here. renderDpr already holds a phone's draw buffer well below
  // its screen, so a modest factor there costs little and is what stops the ink
  // stair-stepping when the small buffer is scaled back up to a 3x display.
- superScale:mobile?(tabletLike?1.4:1.25):1.5,
+ // With MSAA on the scene target (ink-pipeline.js) supersampling is no longer what
+ // keeps edges clean, so mobile renders at its drawing buffer and spends the budget
+ // on resolution instead.
+ superScale:mobile?1:1.25,samples:4,
  pixelBudget:mobile?2.4e6:4.6e6,
  // FXAA is a single pass and it is the one that resolves the line work, so it is
  // worth having on the devices whose buffers need it most.
@@ -375,7 +395,7 @@ function roomView(entering,site){
  if(entering){if(thirdPerson&&site?.id!=='onsen'){streetThirdPerson=true;thirdPerson=false;hands.firstPersonVisible=true;}}
  else if(streetThirdPerson){streetThirdPerson=null;thirdPerson=true;ensureJohansson();hands.firstPersonVisible=false;}
 }
-function setThirdPerson(value,announce=true){if(bicycleRide&&value!==true){if(announce)say('Thuan stays in view while she rides.',2);return;}streetThirdPerson=null;thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'1st person':'3rd person';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
+function setThirdPerson(value,announce=true){if(bicycleRide&&value!==true){if(announce)say('Thuan stays in view while she rides.',2);return;}streetThirdPerson=null;thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'Behind him':'His own eyes';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
 function startBicycleRide(entry){
  if(bicycleRide||current||seated)return;
  const bike=entry||world.bicycle,thuan=world.people.find(p=>p.profile?.name==='Thuan');
@@ -577,15 +597,17 @@ function overShoulder(near,far,ux,uz,side,out){
 }
 function frameConversation(dt){
  const speaker=conversationLine?.speaker;
- if(!speaker?.visible||seated||bicycleRide)return;
+ if(!speaker?.visible||bicycleRide)return;
  speakerHead.copy(characters.conversationTarget(speaker));
  playerHead.set(player.position.x,player.position.y+(johansson?.lens?.head??1.58),player.position.z);
  const dx=speakerHead.x-playerHead.x,dz=speakerHead.z-playerHead.z,dist=Math.hypot(dx,dz);
  if(dist<.2||dist>8)return;
  const k=1-Math.exp(-dt*4),want=Math.atan2(-dx,-dz);
- facingSpeaker.setFromAxisAngle(yAxis,want);player.quaternion.slerp(facingSpeaker,k);
+ // Sitting down, you turn your head rather than your body: the view swings round to
+ // whoever is talking, and the bench stays where it is.
+ if(!seated){facingSpeaker.setFromAxisAngle(yAxis,want);player.quaternion.slerp(facingSpeaker,k);}
  yaw+=Math.atan2(Math.sin(want-yaw),Math.cos(want-yaw))*k;
- if(!thirdPerson){
+ if(!thirdPerson||seated){
   const wantPitch=THREE.MathUtils.clamp(Math.atan2(speakerHead.y-(player.position.y+1.6),dist)-.06,-.3,.12);
   pitch+=(wantPitch-pitch)*k;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);return;
  }
@@ -1035,7 +1057,7 @@ function updateDirectory(){
  const progress=travelProgress(activities.state);
  row('Make your islander','Change how you look: face, hair, clothes and all. Share it with a link.',openAvatarMaker,'avatar-maker');
  row(progress.unlocked?'Town shortcuts unlocked':'Town shortcuts · '+progress.completed+'/'+progress.total+' favours',progress.unlocked?'Quick travel is ready. Choose a place below.':'Bring Tama home and finish Kenji’s workshop escort.',()=>{toggleDir(false);activities.action('travel-progress');},'travel-progress');
- const destination=(site,title)=>{row((progress.unlocked?'Go to ':'Find on foot · ')+(title||site.title),progress.unlocked?site.sub:placeDirections(site),()=>visitPlace(site),site.id);grid.lastChild.dataset.travel=progress.unlocked?'ready':'locked';};
+ const destination=(site,title)=>{row(title||site.title,progress.unlocked?site.sub:placeDirections(site),()=>visitPlace(site),site.id);grid.lastChild.dataset.travel=progress.unlocked?'ready':'locked';};
  const teaHouse=SITES.find(s=>s.id==='tea-house');
  if(teaHouse)destination(teaHouse,'Corner Tea House');
  const izakaya=SITES.find(s=>s.id==='izakaya');
@@ -1283,7 +1305,9 @@ function updateContextControls(){
  }
  if(stickHintUntil&&(now>stickHintUntil||touchSticks.moving)){touchSticks.hint(false);stickHintUntil=0;}
  // Soft quest: quay before evening press (~18:30), once per calendar dayKey if picked.
- if(started&&activities?.state&&minutes>=1110){
+ // Time of day, not minutes since the save began: it used to fire on load from day two.
+ const dayMinute=((minutes%1440)+1440)%1440;
+ if(started&&activities?.state&&dayMinute>=1080&&dayMinute<1170){
   ensureDailyQuests(activities.state);
   if(hasDailyQuest(activities.state,'quay_before_press')&&!isDailyDone(activities.state,'quay_before_press')){
    const visited=activities.state.visited||[];
@@ -1298,7 +1322,7 @@ const detailStream=createDetailStream({onChange:invalidateDetails});window.__JOH
 // With ?audit in the address, a harness can put the player anywhere and look down on
 // the town from a fixed camera. Nothing reads it otherwise.
 if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__={
- teleport(x,z,facing){player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;},
+ teleport(x,z,facing){if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;},
  camera:null,
  photo:()=>openPhotoStudio(),
  get photoActive(){return !!photoStudio?.active;},
@@ -1306,6 +1330,7 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  enter(id){const s=id===CITY_RESTAURANT.id?NAHA_TRIP:SITES.find(site=>site.id===id);return s?enterRoom(s):null;},
  leave(){leaveRoom();},
  interact(){doInteract();},
+ get conversation(){const sp=conversationLine?.speaker;if(!sp)return {name:conversationName,speaker:null};const w=sp.getWorldPosition(new THREE.Vector3()),t=characters.conversationTarget(sp);return {name:conversationName,visible:sp.visible,seated,third:thirdPerson,speaker:w.toArray().map(v=>+v.toFixed(2)),target:t?.toArray?.().map(v=>+v.toFixed(2)),player:player.position.toArray().map(v=>+v.toFixed(2)),yaw:+yaw.toFixed(2)};},
  use(label){const o=interactables.find(o=>o.userData.hit?.label===label);if(!o)return false;active={...o.userData.hit,object:o};o.userData.hit.fn();return true;},
  get active(){return active?.label||null;},
  near(r=3.2){const q=new THREE.Vector3();return interactables.map(o=>{o.getWorldPosition(q);return [o.userData.hit?.label,+q.distanceTo(player.position).toFixed(2),o.visible,!!o.userData.hit?.inside];}).filter(x=>x[1]<r);},
@@ -1365,7 +1390,7 @@ detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:3
 }
 let detailsStarted=false;
 
-function loop(){requestAnimationFrame(loop);if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}if(creatorOpen){clock.getDelta();return;}izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine){chatBubble.render(conversationLine?null:(neighbourChats.current||residentSpeech()));updateConversationLift(frameDt);}if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}if(creatorOpen){clock.getDelta();return;}izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);governResolution(frameDt);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine){chatBubble.render(conversationLine?null:(neighbourChats.current||residentSpeech()));updateConversationLift(frameDt);}if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
 
 function renderOutdoor(){
   const audit=window.__JOHANSSON_AUDIT__?.camera;

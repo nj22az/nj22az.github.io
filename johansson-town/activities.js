@@ -392,7 +392,17 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     show(name+' · '+spec.role,line,buttons);
   }
   function resident(name){
-    if(name==='Thuan'){thuanConversation();return;}
+    if(name==='Thuan'){
+      // In the shop, only if she is actually there: before nine and on her breaks the
+      // bell is answered by nobody, or by Grandmother Sakurai from upstairs.
+      const social=getSocialContext();
+      if(social.inside==='market'&&social.thuanAvailable===false){
+        const m=((getMinutes()%1440)+1440)%1440,early=m<540;
+        receipt('Sakura Shōten',early?'The bell rings on in the empty shop. From upstairs, Grandmother Sakurai: “Thuan opens at nine, dear. Come back with the ferry.”':'The bell rings on. Thuan is away from the counter for a minute; the radio keeps the shop company.');
+        return;
+      }
+      thuanConversation();return;
+    }
 
     const all=DIALOGUE[name];if(!all){legacyResident(name);return;}
     const history=histories.get(name)||[];
@@ -681,7 +691,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
 
   function tone(){townAudio.play('click',.35);}
-  function toggleSound(){state.sound=!state.sound;townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';save();}
+  function toggleSound(){state.sound=!state.sound;townAudio.setEnabled(state.sound);$('#soundButton').textContent=state.sound?'On':'Off';save();}
 
   function inspect(name,detail){if(name==='Convex traffic mirror'){note('Traffic mirror: Tama was behind me. No cat when I turned.');say('A ginger shape in the mirror. Behind you: only the street.',5);}show(name,detail||'A thumb-sized clean patch marks the part everybody touches.',[['Close',close]]);}
   function read(name,detail){if(/harbour notice/i.test(String(name))&&hasDailyQuest(state,'notice')&&!isDailyDone(state,'notice')){markDailyDone(state,'notice');save();say(NOTICE_NUDGE,6);}show(name,detail||'One corner is pinned with a bent brass tack. Read the complete dispatch at the Field Notes rack.',[['Put it back',close]]);}
@@ -936,7 +946,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   document.addEventListener('keydown',e=>{if(!modalOpen)return;if(e.code==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const focusable=[...modal.querySelectorAll('button:not(:disabled),a[href],iframe,input:not(:disabled),[tabindex="0"]')];const index=focusable.indexOf(document.activeElement);e.preventDefault();focusable[(index+(e.shiftKey?-1:1)+focusable.length)%focusable.length]?.focus();}});
   $('#notebookButton').onclick=inventory;
   $('#soundButton').onclick=toggleSound;
-  $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';save();};
+  $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'Rain':'Clear';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
   $('#playerButton').onclick=players;
   $('#creditsButton').onclick=()=>show('Credits','Everyone in town: Shimanchu islanders, original characters built in code by Johansson Town (src/avatars).\nThree.js r170 · MIT.\nBranching dialogue system: Godot Open Dialogue System by Tina Qin (QueenChristina) · MIT. Reimplemented in JavaScript from the GDScript; the dialogue data format and its rules are kept. Town dialogue is original writing.\nTouch joystick: Virtual Joystick for Godot by Marco Fazio (MarcoFazioRandom) \u00b7 MIT. Reimplemented in JavaScript; the joystick and visibility modes and the dead-zone output curve are kept, so the stick is drawn only where and when a thumb is down.\nCel shading, screen-space ink and the anime colour grade: Sakura Crossing by Kenton Wang (Kenton-GMI) \u00b7 MIT. The gradient ramps, the violet shadow-band patch, the depth second-difference line work and the split-tone grade are ported; the materials here are converted at runtime rather than authored, and photographic textures are only partly flattened.\nKonbini counter ritual, stamp card and receipt: inspired by Yorimichi by emaxsaun · MIT. Design only, no code; adapted to 1997, which had neither IC cards nor bag charges.\nEntry board design language: AsagaoUI by Hiroshi ISOBE · MIT, following the Japan Digital Agency design system. Colour ramps, type scale, spacing, rounding and focus ring ported as CSS; no framework code, icons or illustrations included.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
@@ -944,6 +954,6 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   // Storage restock handshake may arrive while the tab was on thuans-storage.
-  consumeStorageRestock();$('#soundButton').textContent=state.sound?'SOUND ON':'SOUND OFF';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'RAIN':'CLEAR';
+  consumeStorageRestock();$('#soundButton').textContent=state.sound?'On':'Off';radioStation=state.radioStation||0;save();onWeather(state.weather);$('#weatherButton').textContent=state.weather?'Rain':'Clear';
   return {action,inventory,bag,close,save,spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

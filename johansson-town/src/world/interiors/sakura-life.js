@@ -115,7 +115,7 @@ function buildShopFloor(parent,anchor,action){
  mesh(new THREE.CylinderGeometry(.19,.19,.02,16),std(0x5b3d24),PLANT.x,.35,PLANT.z,'Assistant manager soil');
  mesh(new THREE.CylinderGeometry(.018,.022,.9,6),std(0x5b6b3a),PLANT.x,.8,PLANT.z,'Assistant manager stem');
  const leaf=std(0x3f8f46,{side:THREE.DoubleSide});
- for(let i=0;i<9;i++){const a=i*2.4,y=.55+i*.09,l=mesh(new THREE.SphereGeometry(.09,10,6),leaf,PLANT.x+Math.cos(a)*.11,y,PLANT.z+Math.sin(a)*.11,'Assistant manager leaf');l.scale.set(1,.18,.55);l.rotation.set(.3,-a,.5);}
+ for(let i=0;i<9;i++){const a=i*2.4,y=.55+i*.09,l=mesh(new THREE.SphereGeometry(.09,10,6),leaf,PLANT.x+Math.cos(a)*.11,y,PLANT.z+Math.sin(a)*.11,'Assistant manager leaf');l.scale.set(1.7,.14,.75);l.rotation.set(0,-a,.55);l.position.x+=Math.cos(a)*.08;l.position.z+=Math.sin(a)*.08;}
  const tag=canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#d7263d';ctx.lineWidth=8;ctx.strokeRect(4,4,w-8,h-8);text(ctx,'副店長',w/2,h*.42,50,'#3b3f55');text(ctx,'ASST. MANAGER',w/2,h*.8,20,'#d7263d');});
  print(tag,.16,.08,PLANT.x,.28,PLANT.z+.155,0,'Assistant manager name tag');
  anchor([PLANT.x,.9,PLANT.z],'Say hello to the assistant manager',()=>action('inspect','副店長 · The assistant manager',

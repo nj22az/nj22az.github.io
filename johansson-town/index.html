@@ -11,17 +11,17 @@
 <meta name="description" content="A small harbour town, 1997. Walk its streets, meet the residents, browse the shops and settle into daily life.">
 <style>:root,html,body{margin:0;background:#f7f5f2!important}</style>
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./base.css?h=95373a9f">
+<link rel="stylesheet" href="./base.css?h=44460628">
 <link rel="stylesheet" href="./context-controls.css?h=f442bdb6">
 <title>Johansson Town</title>
 <link rel="stylesheet" href="./landing.css?h=68bd7749">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
-<link rel="stylesheet" href="./tomodachi-ui.css?h=f083fafa">
+<link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
 <link rel="stylesheet" href="./photo-mode.css?h=0f8cb630">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-B3VHYozh.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-Bo8J1Nrm.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-B-hU6XZF.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-D2wbYvxv.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-Dz0Dnvb3.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-vb2Bl2Vt.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-xOebpuup.js">
 </head>
 <body>
@@ -341,7 +341,7 @@
   <div id="subtitle" role="status" aria-live="polite"></div>
   <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
 </div>
-<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="cameraButton" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Camera</button><button id="viewButton" aria-pressed="false" aria-label="Switch between first- and third-person view (V)">3rd person</button><button id="photoButton" aria-label="Open photo studio (P)">Photo studio</button><button id="movesButton" aria-label="Choose something for Johansson to do (G)">Moves</button><button id="notebookButton">NOTEBOOK</button><button id="playerButton">PLAYER</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1997 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
+<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town book</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory" aria-label="Close the town book">×</button></div><nav id="townControls" class="menu-apps" aria-label="Things to do"><button id="notebookButton" class="app-tile" data-icon="page">Field book</button><button id="photoButton" class="app-tile" data-icon="camera" aria-label="Open photo studio (P)">Photo studio</button><button id="movesButton" class="app-tile" data-icon="moves" aria-label="Choose something for Johansson to do (G)">Moves</button><button id="playerButton" class="app-tile" data-icon="person">Player &amp; save</button><button id="cameraButton" class="app-tile" data-icon="game" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Controls</button></nav><section class="menu-settings" aria-label="Settings"><h3>Settings</h3><div class="setting-row"><span>View</span><button id="viewButton" aria-pressed="false" aria-label="Switch between first- and third-person view (V)">Behind him</button></div><div class="setting-row"><span>Clock</span><button id="timeButton">Set the time</button></div><div class="setting-row"><span>Weather</span><button id="weatherButton">Clear</button></div><div class="setting-row"><span>Sound</span><button id="soundButton">On</button></div><div class="setting-row"><span>Screen</span><button id="fullscreenButton">Full screen</button></div></section><details class="menu-map"><summary>Map of the town</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1997 · <span id="saveState">Progress saved</span> <button id="creditsButton">Credits</button></div></div></div>
 <div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1997</span><button id="closeActivity" aria-label="Close activity">Done <span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
 <div id="mobile" class="hidden"><button id="drink" class="control-off" aria-label="Drink held can">DRINK</button><div id="stick" class="touch-stick" aria-label="Movement area"><div id="stickBase" class="stick-base" aria-hidden="true"><div id="knob" class="stick-knob"></div></div></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="control-off" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="control-off" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="control-off" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
@@ -393,25 +393,35 @@
   document.querySelectorAll("[data-guide-close]").forEach((link) => link.addEventListener("click", closeGuide));
   document.getElementById("board").tabIndex = -1;
 
-  // A short two-note chime when START is pressed. The press is the user gesture
-  // browsers ask for, so this never autoplays.
+  // The Johansson Co. jingle when START is pressed: our own, not a borrowed blip. Four
+  // plucked notes climbing the Ryukyu scale (sol, ti, do, mi), the way a sanshin opens a
+  // song, then a soft open fifth that rings out like the harbour bell. The press is the
+  // user gesture browsers ask for, so this never autoplays.
   function chime() {
     try {
       const Ctx = window.AudioContext || window.webkitAudioContext;
       if (!Ctx) return;
-      const ctx = new Ctx();
-      [[988, 0], [1319, .09]].forEach(([freq, at]) => {
-        const osc = ctx.createOscillator(), gain = ctx.createGain();
-        osc.type = "square";
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(.0001, ctx.currentTime + at);
-        gain.gain.exponentialRampToValueAtTime(.06, ctx.currentTime + at + .01);
-        gain.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + at + (at ? .45 : .12));
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(ctx.currentTime + at);
-        osc.stop(ctx.currentTime + at + .5);
-      });
-      setTimeout(() => ctx.close(), 900);
+      const ctx = new Ctx(), t0 = ctx.currentTime + .02;
+      const out = ctx.createGain(); out.gain.value = .9;
+      const tone = ctx.createBiquadFilter(); tone.type = "lowpass"; tone.frequency.value = 3200; tone.Q.value = .4;
+      out.connect(tone).connect(ctx.destination);
+      // A pluck: a triangle for the body, a quieter octave sine for the bite, quick decay.
+      const pluck = (freq, at, level, decay) => {
+        for (const [type, mult, share] of [["triangle", 1, 1], ["sine", 2, .35], ["sine", 3, .08]]) {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.type = type; osc.frequency.value = freq * mult;
+          osc.detune.setValueAtTime(-8, t0 + at); osc.detune.linearRampToValueAtTime(0, t0 + at + .04);
+          gain.gain.setValueAtTime(.0001, t0 + at);
+          gain.gain.exponentialRampToValueAtTime(level * share, t0 + at + .008);
+          gain.gain.exponentialRampToValueAtTime(.0001, t0 + at + decay);
+          osc.connect(gain).connect(out);
+          osc.start(t0 + at); osc.stop(t0 + at + decay + .05);
+        }
+      };
+      // G4 B4 C5 E5, then C5 and G5 together, held.
+      [[392, 0], [493.9, .11], [523.3, .22], [659.3, .33]].forEach(([f, at]) => pluck(f, at, .05, .42));
+      pluck(523.3, .5, .04, 1.3); pluck(784, .5, .028, 1.4);
+      setTimeout(() => ctx.close(), 2200);
     } catch {}
   }
   enter.addEventListener("click", () => { if (!window.__JOHANSSON_BOOTING__) chime(); }, { capture: true });
@@ -494,7 +504,7 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-B3VHYozh.js');
+      await import('./runtime/boot-Bo8J1Nrm.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
@@ -516,8 +526,8 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
   retry.addEventListener('click',()=>location.reload());
   fsButton.addEventListener('click',fullscreen);
   fsClose.addEventListener('click',()=>fsHelp.classList.add('hidden'));
-  document.addEventListener('fullscreenchange',()=>{fsButton.textContent=document.fullscreenElement?'EXIT FULL SCREEN':'FULL SCREEN'});
-  document.addEventListener('webkitfullscreenchange',()=>{fsButton.textContent=document.webkitFullscreenElement?'EXIT FULL SCREEN':'FULL SCREEN'});
+  document.addEventListener('fullscreenchange',()=>{fsButton.textContent=document.fullscreenElement?'Leave full screen':'Full screen'});
+  document.addEventListener('webkitfullscreenchange',()=>{fsButton.textContent=document.webkitFullscreenElement?'Leave full screen':'Full screen'});
 })();
 </script>
 </body>

@@ -86,8 +86,9 @@ function buildCheer(room){
  for(const [jp,en,colour,x,z] of pops){
   const hex='#'+colour.toString(16).padStart(6,'0');
   const tex=sign(256,256,(ctx,w,h)=>{ctx.fillStyle=hex;ctx.beginPath();ctx.arc(w/2,h/2,w/2-4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(w/2,h/2,w/2-22,0,Math.PI*2);ctx.fill();signText(ctx,jp,w/2,h*.45,jp.length>4?42:54,hex);signText(ctx,en,w/2,h*.68,en.length>4?22:30,'#3b3f55');});
-  for(const yaw of [0,Math.PI/2])card(room,tex,.42,.42,x,2.05,z,yaw,'Sakura hanging POP');
-  add(room,new THREE.CylinderGeometry(.003,.003,.7,4),string,x,2.61,z,'Sakura POP thread');
+  // Hung high enough to clear a grown-up's eye line: at 2.05 m they sat in your face.
+  for(const yaw of [0,Math.PI/2])card(room,tex,.36,.36,x,2.27,z,yaw,'Sakura hanging POP');
+  add(room,new THREE.CylinderGeometry(.003,.003,.5,4),string,x,2.7,z,'Sakura POP thread');
  }
  // Welcome mat inside the door, and paw-print stickers from the door to the till.
  const matTex=sign(512,256,(ctx,w,h)=>{ctx.fillStyle='#2a8fcc';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#ffffff';ctx.lineWidth=12;ctx.strokeRect(14,14,w-28,h-28);signText(ctx,'いらっしゃいませ',w/2,h*.45,62,'#ffffff');signText(ctx,'SAKURA SHŌTEN',w/2,h*.75,30,'#ffe28a');});

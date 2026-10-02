@@ -191,7 +191,7 @@ function hairCap(style,flip){
 
 /**
  * A horseshoe: a band round the back of the head and over the ears, open at the face,
- * rising a little behind. Built as its own strip so both edges stay clean.
+ * rising well up behind into a tufted crescent. Built as its own strip so both edges stay clean.
  */
 function hairRing(spec){
  const open=.95,W=48,g=new THREE.SphereGeometry(spec.radius,W,8,Math.PI/2+open,Math.PI*2-open*2,.1,1);
@@ -201,7 +201,11 @@ function hairRing(spec){
   // starting at its pole leaves out half the triangles of its top row.)
   const u=(i%(W+1))/W,phi=Math.PI/2+open+u*(Math.PI*2-open*2),back=THREE.MathUtils.smoothstep(-Math.sin(phi),-.3,1);
   // Top edge from just above the ears at the front to higher behind; bottom at the nape.
-  const top=Math.acos(.1+back*.2),bottom=Math.acos(-.42-back*.12),theta=top+(1-uv.getY(i))*(bottom-top);
+  // Seen from behind an even band read as a bandage round the eyes: it rises well up the
+  // back of the head now, so it is a crescent of hair rather than a strip, and its top
+  // edge is tufted instead of ruled.
+  const tufts=(1-Math.abs(Math.sin(u*Math.PI*11)))*.09*back;
+  const top=Math.acos(.06+back*.5)+tufts,bottom=Math.acos(-.42-back*.12),theta=top+(1-uv.getY(i))*(bottom-top);
   const ends=THREE.MathUtils.smoothstep(Math.min(u,1-u),0,.08);
   const t=THREE.MathUtils.lerp(bottom-.12,theta,.35+.65*ends);
   pos.setXYZ(i,-Math.cos(phi)*Math.sin(t)*spec.radius,Math.cos(t)*spec.radius,Math.sin(phi)*Math.sin(t)*spec.radius);
