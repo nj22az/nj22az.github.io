@@ -99,3 +99,28 @@ so there is no repeat of the floating-lane bug. Extend `tests/ground-clearance` 
 - Does Thuan move into the quarter's apartment block, or keep the Kitahama red-tile house she shares with Nao?
 - Keep Aya and Kenji (yard homes behind Main Street), or retire them with the yard homes?
 - Should the headland keep a viewpoint path to its top once the cave is gone?
+
+## Built (2 October 2026)
+
+Answers to the open questions: Thuan keeps the Kitahama red-tile house she shares with Nao; Aya and Kenji stay
+in the yard homes; the headland has no viewpoint. The walking cast on the island is already the nine-person street
+cast (`STREET_CAST_NAMES`), so nobody else was retired yet.
+
+- **The cave is gone** and the dungeon is paused (`CAVE_ACTIVE=false`).
+- **The quarter** is Kitahama grown west (`kitahama-layout.js`, `okinawa/kitahama-quarter.js`):
+  - the spine lane continuing the cross lane west, Fukugi Lane north to a dead end, Well Lane south to the rubbish
+    point, and a footpath down past the school;
+  - seven more walled homes (12 in all, two old red-tile ones for the grandparents), each household in
+    `island-households.js` with a nameplate story;
+  - Kitahama Heights, four flats with an open corridor, an outside stair, balconies with washing and mailboxes
+    (Mr Fujita's flat is number 3, when he is not in his shed on the pier);
+  - the pocket park (swing, sandpit, a bench under a gajumaru, three lit vending machines), the rubbish cage
+    under its net and the notice board;
+  - the pole line along the spine and up Fukugi Lane with a transformer and a drop to every house; a kei truck at
+    the dead end, a dog house, bicycles.
+- **The anchored cast** (`people/anchored-cast.js`): core, key and kept tiers; home, work, evening, bed time,
+  a day off and named leisure places for everybody who walks. `tests/residential-quarter.test.mjs` checks the
+  lanes, gates, overlaps, shared places and the cast record.
+
+Next: home lights that follow their residents, the key cast's leisure trips on their days off, and then moving
+residents into the quarter one at a time.

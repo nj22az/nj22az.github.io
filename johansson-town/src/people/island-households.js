@@ -28,6 +28,15 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'kitahama-3',address:'3 Kitahama',members:[['Kōji','sorts the catch at the fish auction; crews on the Ōshiro boat']]},
  {home:'kitahama-4',address:'4 Kitahama',members:[['Postman Tōma','runs the post office and the round: collections 10:30 and 16:30']]},
  {home:'kitahama-5',address:'5 Kitahama',members:[],toLet:true},
+ // The residential quarter west of the cross lane (docs/RESIDENTIAL-PLAN.md).
+ {home:'kitahama-6',address:'6 Kitahama',members:[['Grandfather Taira','retired cane farmer; leads the Kitahama cane cut every January'],['Grandmother Taira','weaves bashōfu cloth on the verandah loom']]},
+ {home:'kitahama-7',address:'7 Kitahama',members:[['Mr Chinen','drives the island water lorry'],['Mrs Chinen','nurse at the town hall clinic']]},
+ {home:'kitahama-8',address:'8 Kitahama',members:[['Ms Uezu','deckhand on the ferry, a week on and a week off']]},
+ {home:'kitahama-9',address:'9 Kitahama',members:[['Grandmother Gushiken','teaches the sanshin on her verandah on Saturday mornings']]},
+ {home:'kitahama-10',address:'10 Kitahama',members:[['Mr Tamashiro','retired; grows goya and papaya over the wall'],['Mrs Tamashiro','retired; runs the lane’s rubbish rota and the notice board']]},
+ {home:'kitahama-11',address:'11 Kitahama',members:[['Mr Iha','electrician at the power station; mends the lane lights']]},
+ {home:'kitahama-12',address:'12 Kitahama',members:[['Mrs Kohagura','cuts hair in her front room, Tuesday to Saturday']]},
+ {home:'kitahama-flats',address:'Kitahama Heights, Fukugi Lane',members:[['Ms Ganaha','sells tickets at the ferry office (flat 1)'],['Mr Higa Jr','apprentice at the boatyard (flat 2)'],['Mr Fujita','retired fisherman (flat 3); found most days in his shed on the pier']]},
  // Nishi-machi, inside the seawall.
  {home:'higa',address:'Higa house, Nishi-machi',members:[['Grandmother Higa','retired; keeps the verandah and knows every ferry by its horn'],['Mrs Higa','the bandai at Umi-no-yu'],["Higa Kenta","pupil, Years 5–6"]]},
  {home:'kinjo',address:'Kinjō house, Nishi-machi',members:[['Uncle Kinjō','retired fisherman; fishes off the seawall'],['Mrs Kinjō','keeps house and the family accounts'],["Kinjo Yui","pupil, Years 5–6"]]},

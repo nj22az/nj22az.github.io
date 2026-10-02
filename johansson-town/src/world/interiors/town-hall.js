@@ -97,7 +97,7 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  box([.68,.025,.38],[-.42,.81,-1.75],0x263c34,'Leather writing blotter');
  box([.34,.24,.29],[-.8,.95,-1.98],0xd9d4b8,'CRT monitor casing');
  box([.28,.18,.015],[-.8,.96,-1.825],0x263c38,'CRT screen');
- plate(group,'港町役場',{w:.25,h:.14,at:[-.8,.96,-1.814],bg:'#263c38',fg:'#bcd8a6',sub:'TOWN OFFICE'});
+ const workstationDisplay=plate(group,'港町役場',{w:.25,h:.14,at:[-.8,.96,-1.814],bg:'#263c38',fg:'#bcd8a6',sub:'TOWN OFFICE'});
  box([.38,.025,.13],[-.8,.82,-1.67],0xd8d4bb,'Keyboard');
  for(let i=0;i<9;i++)box([.025,.008,.055],[-.94+i*.035,.838,-1.67],0x777c70,'Keyboard key');
  box([.26,.055,.19],[.92,.82,-2.0],0x324b43,'Desk telephone');
@@ -109,7 +109,7 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  const mug=new THREE.Mesh(new THREE.CylinderGeometry(.055,.045,.09,12),mat(0xede5ca));mug.position.set(-.15,.86,-1.57);mug.name='Mayor’s tea cup';group.add(mug);
  // The computer faces the chair; the nameplate faces visitors across the desk.
  for(const furnishing of group.children.slice(deskPartsStart)){
-  if(['CRT monitor casing','CRT screen','Plate 港町役場','Keyboard','Keyboard key'].includes(furnishing.name)){furnishing.position.z=-3.7-furnishing.position.z;furnishing.rotation.y+=Math.PI;}
+  if((['CRT monitor casing','CRT screen','Keyboard','Keyboard key'].includes(furnishing.name)||furnishing===workstationDisplay)){furnishing.position.z=-3.7-furnishing.position.z;furnishing.rotation.y+=Math.PI;}
   furnishing.position.z+=.4;
  }
 

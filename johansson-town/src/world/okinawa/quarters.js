@@ -10,6 +10,8 @@ import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock
 import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {utilityPole,wiresBetween,serviceDrop,keiTruck,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
 import {GROUND_LAYER} from '../ground-layers.js';
+import {KITAHAMA_LANES} from '../kitahama-layout.js';
+import {buildKitahamaQuarter} from './kitahama-quarter.js';
 import {plotGate} from './layout.js';
 import {residentsLine} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
@@ -41,8 +43,8 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  const anchor=(x,y,z,label,fn)=>{const a=new THREE.Object3D();a.position.set(x,y,z);group.add(a);register?.(a,label,fn);return a;};
  const inspect=(x,y,z,label,title,text)=>anchor(x,y,z,label,()=>onAction?.('inspect',title,text));
  const vendings=[];
- const vending=(x,z,ry)=>{
-  const machine=createVendingMachine({shadows});machine.position.set(x,0,z);machine.rotation.y=ry;group.add(machine);vendings.push(machine);
+ const vending=(x,z,ry,y=0)=>{
+  const machine=createVendingMachine({shadows});machine.position.set(x,y,z);machine.rotation.y=ry;group.add(machine);vendings.push(machine);
   colliders.push({id:'vending',x,z,w:Math.abs(Math.sin(ry))>.5?1:1.25,d:Math.abs(Math.sin(ry))>.5?1.25:1,height:2.2});
   anchor(x+Math.sin(ry)*.95,1,z+Math.cos(ry)*.95,'Buy a drink',()=>onAction?.('vending'));
  };
@@ -58,7 +60,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
- kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction}),KITAHAMA.y);
+ kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
@@ -499,13 +501,13 @@ function buildWires(kit,solid){
  */
 function buildKitahama(kit,solid,ctx){
  const K=KITAHAMA,lane=GROUND_LAYER.lane;
- for(const L of [K.approach,K.lane]){
+ for(const L of KITAHAMA_LANES){
   kit.block(L.minX,L.maxX,lane-.06,lane,L.minZ,L.maxZ,GROUND.concrete);
   const alongZ=L.maxZ-L.minZ>L.maxX-L.minX;
   if(alongZ)kit.block(L.maxX-.28,L.maxX,lane,lane+.015,L.minZ,L.maxZ,0x8d887d);
   else kit.block(L.minX,L.maxX,lane,lane+.015,L.minZ,L.minZ+.28,0x8d887d);
  }
- K.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:30+i,windbreak:i<2?'south':'north'}));
+ K.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:30+i,windbreak:p.gate==='north'?'south':p.gate==='south'?'north':p.gate==='west'?'east':'west'}));
  // The house to let: a board on the gatepost and the shutters closed.
  {const p=K.plots.find(q=>q.romaji==='To let'),x=(p.minX+p.maxX)/2;
   kit.sign(poster({title:"Rental house",lines:['FOR RENT','2DK · ¥28,000',"Office To the Residents Division"],bg:'#f4ecd6',band:'#c8432f'}),.6,.8,x-1.6,1.1,p.minZ-.3,{ry:Math.PI,name:'to-let sign'});}
@@ -528,8 +530,10 @@ function buildKitahama(kit,solid,ctx){
  for(let i=0;i<up.length-1;i++)wiresBetween(kit,up[i],up[i+1]);
  const across=[34.5,42,52.5].map((x,i)=>pole(x,K.lane.maxZ+.35,{face:Math.PI,transformer:false,lamp:true,seed:210+i}));
  wiresBetween(kit,up[3],across[1],{sag:.5});wiresBetween(kit,across[0],across[1]);wiresBetween(kit,across[1],across[2]);
- for(const p of K.plots){const {door}=plotGate(p,0);const near=across.reduce((a,b)=>Math.abs(b.anchors[0].x-door[0])<Math.abs(a.anchors[0].x-door[0])?b:a);
+ for(const p of K.plots.filter(q=>Number(q.id.split('-')[1])<6)){const {door}=plotGate(p,0);const near=across.reduce((a,b)=>Math.abs(b.anchors[0].x-door[0])<Math.abs(a.anchors[0].x-door[0])?b:a);
   serviceDrop(kit,near,kit.point(door[0]+1.5,2.6,p.gate==='north'?p.minZ+3.2:p.maxZ-3.2).toArray());}
+ // The residential quarter to the west: flats, park, rubbish point, poles (kitahama-quarter.js).
+ buildKitahamaQuarter(kit,solid,ctx,{across});
 }
 
 /** What the nameplates say when you stop to read one. */
@@ -544,6 +548,13 @@ const NAMEPLATES=Object.freeze({
  'kitahama-3':'Kōji Uehara\'s house. A wetsuit on the line, fish boxes stacked by the gate and a radio that plays the weather on the hour.',
  'kitahama-4':'The Tōmas. The postman\'s red Super Cub stands in the yard at night with its box padlocked. Mrs Tōma grows goya over the gate.',
  'kitahama-5':'An empty concrete house, swept and waiting, with the water off at the main.',
+ 'kitahama-6':'The Tairas\' house, the oldest on the lane: red tile, a hinpun with a crack the grandfather says the 1959 typhoon put there, and a loom on the verandah under a sheet. The cane knives hang inside the gate, oiled, from January to January.',
+ 'kitahama-7':'The Chinens. The water lorry is parked at the end of Fukugi Lane because it will not fit through the gate. A nurse\'s bicycle with a basket, and a rota for the clinic\'s night calls taped inside the kitchen window.',
+ 'kitahama-8':'Ms Uezu\'s house: a week of washing on the line when she is home, and the shutters down the week she is on the ferry. A neighbour waters the bougainvillea.',
+ 'kitahama-9':'Grandmother Gushiken\'s house. On Saturday mornings the verandah is full of children with sanshin and the lane is full of the same three notes, getting better.',
+ 'kitahama-10':'The Tamashiros keep the lane. Goya over the wall, papaya by the gate, the rubbish rota pinned inside the gatepost and a dog called Kuro who barks at the postman\'s Super Cub and nothing else.',
+ 'kitahama-11':'Mr Iha\'s house. A coil of cable by the gate, a ladder on the wall and the brightest porch light in Kitahama, which he says is a test.',
+ 'kitahama-12':'Mrs Kohagura\'s front room is a hair salon from Tuesday to Saturday: one chair, a hood dryer from 1979 and the island\'s gossip, in that order.',
  tamaki:'The Tamakis run the ice plant on the east quay. Their daughter is at the school; her bicycle is the red one, and her swimming things are on the washing line most days of the year.',
  oshiro:'The Ōshiros. Old Mr Ōshiro was a sabani builder; his boat is the red one on the west quay. There is a bunch of bananas ripening by the kitchen door and, if you believe the neighbours, a habu in the fukugi that nobody has seen for years.',
 });
