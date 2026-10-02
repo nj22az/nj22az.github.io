@@ -1,3 +1,4 @@
+import {residentRecipe} from './wardrobe.js';
 import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
 import {PROFILES} from '../people/profiles.js';
 import {residentPersonality} from '../people/resident-personalities.js';
@@ -8,8 +9,13 @@ import {residentPersonality} from '../people/resident-personalities.js';
  * her braids with the yellow ties, the side part, round rose glasses and lipstick.
  */
 const R=(o)=>normalizeRecipe(o);
+const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō']);
+const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).map(([name,r])=>{
+ const female=PROFILES.find(p=>p.name===name)?.female??FEMALE_NEIGHBOURS.has(name);
+ return [name,normalizeRecipe({...r,body:{...r.body,silhouette:r.body.silhouette==='neutral'?(female?'feminine':'masculine'):r.body.silhouette}})];
+})));
 
-export const CAST_RECIPES=Object.freeze({
+export const CAST_RECIPES=castSet({
  Johansson:R({name:'Johansson',
   body:{height:.72,build:.72,silhouette:'masculine',skin:'#dc9d7a'},head:{size:.48,shape:.45,form:'square',jaw:.75,cheeks:.55},
   hair:{style:'horseshoe',colour:'#b8b4aa'},
@@ -78,7 +84,7 @@ export const CAST_RECIPES=Object.freeze({
 });
 
 /** The people of the new streets, drawn to their lines in neighbours.js. */
-export const NEIGHBOUR_RECIPES=Object.freeze({
+export const NEIGHBOUR_RECIPES=castSet({
  Haru:R({head:{form:'square',jaw:.72,cheeks:.4},body:{height:.63,build:.58,skin:'#bf875f'},hair:{style:'crop',colour:'#302419'},eyes:{style:'narrow'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'smile'},facial:{style:'stubble',colour:'#302419'},outfit:{top:'polo',topColour:'#607c84',bottom:'shorts',bottomColour:'#7b7155',hat:'cap',hatColour:'#c4b486'}}),
  Mina:R({head:{form:'oval',jaw:.35,cheeks:.6},body:{height:.4,build:.45,skin:'#d8ac87'},hair:{style:'bun',colour:'#3b2920'},eyes:{style:'gentle',size:.48},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'smile'},outfit:{top:'apron',topColour:'#849267',bottom:'longskirt',bottomColour:'#5c6e75'}}),
  Jun:R({head:{form:'narrow',jaw:.4,cheeks:.3},body:{height:.53,build:.4,skin:'#dbb393'},hair:{style:'sidepart',colour:'#29241e'},eyes:{style:'almond'},brows:{style:'straight'},nose:{style:'line'},mouth:{style:'small'},glasses:{style:'half',colour:'#5b5c52'},outfit:{top:'polo',topColour:'#e0dac7',bottom:'trousers',bottomColour:'#3e596d'}}),
@@ -111,14 +117,15 @@ const AGE_OF=new Map(PROFILES.map(p=>[p.name,p.age]));
 /** A drawn recipe at the life stage the resident's profile gives them. */
 const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name));return AGE_OF.has(name)&&recipe.age!==age?normalizeRecipe({...recipe,age}):recipe;};
 export function recipeFor(name=''){
+ const saved=residentRecipe(name);if(saved)return saved;
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
  if(NEIGHBOUR_RECIPES[name])return aged(NEIGHBOUR_RECIPES[name],name);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];
- const feminine=/female/.test(style.source||'')||/^(Mrs |Aya|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name);
+ const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Aya|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name));
  const grey=/^#[a-f0-9]{6}$/i.test(style.hair||'')&&parseInt(style.hair.slice(1,3),16)>150;
  const hat=ACCESSORY_HAT[style.accessory]||(style.helmet?['helmet',style.helmet]:['none','#f4f1ea']);
  return normalizeRecipe({name,age:ageClass(AGE_OF.get(name)),
-  body:{height:.3+r()*.45,build:.3+(Math.min(1.2,style.width||1)-.85)*1.6,skin:style.skin||'#e8bf98'},
+  body:{silhouette:feminine?'feminine':'masculine',height:.3+r()*.45,build:.3+(Math.min(1.2,style.width||1)-.85)*1.6,skin:style.skin||'#e8bf98'},
   head:{size:.38+r()*.22,shape:r(),form:any(PARTS.head),jaw:.25+r()*.5,cheeks:.25+r()*.5},
   hair:{style:grey&&!feminine?any(['horseshoe','buzz','crop']):feminine?any(['bob','long','ponytail','bun','sidepart']):any(['crop','sidepart','spiky','buzz']),colour:style.hair||'#1c1714',flip:r()<.5},
   eyes:{style:any(PARTS.eyes),size:.35+r()*.35,spacing:.4+r()*.2,tilt:.4+r()*.2},

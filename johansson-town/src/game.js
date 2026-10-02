@@ -1,3 +1,5 @@
+import {recipeFor} from './avatars/cast.js';
+import {saveResidentRecipe} from './avatars/wardrobe.js';
 import {createIslandPlay,NAHA_ARRIVALS} from './island/play.js';
 import {buildAirportArrivals} from './world/interiors/airport-arrivals.js';
 import {createBookshopCustomers} from './people/bookshop-customers.js';
@@ -403,11 +405,12 @@ try{thirdPerson=globalThis.localStorage?.getItem(VIEW_KEY)!=='first';}catch{}
  * menu, not a pause in the telling) and whoever you make walks out of it.
  */
 let creatorOpen=false;
-function openAvatarMaker(){
+function openAvatarMaker(name=null){
+ if(typeof name!=='string')name=null;
  if(creatorOpen)return;
  toggleDir(false);resetInput();document.exitPointerLock?.();creatorOpen=true;
- openCreator({recipe:playerRecipe(),voice:(freq,type)=>townAudio.blip?.(freq,type),shareLink:code=>new URL('./creator/?r='+code,location.href).href,
-  onSave:r=>{savePlayerRecipe(r);ensureJohansson().setRecipe?.(r);if(!thirdPerson)setThirdPerson(true,false);say((r.name?r.name+' · ':'')+'Looking good. V switches between your eyes and this view.',4);},
+ openCreator({recipe:name?recipeFor(name):playerRecipe(),saveLabel:name?'Save appearance':'Save and play',voice:(freq,type)=>townAudio.blip?.(freq,type),shareLink:code=>new URL('./creator/?r='+code,location.href).href,
+  onSave:r=>{if(name){saveResidentRecipe(name,r);if(name==='Thuan'){activities.state.thuanOutfit='clothes';const actor=characters.actors.find(a=>a.entity?.userData.name===name);if(actor)actor.entity.userData.alternativeOutfit='clothes';activities.save();}characters.refresh(name);say(name+' has a new look.',3);return;}savePlayerRecipe(r);ensureJohansson().setRecipe?.(r);if(!thirdPerson)setThirdPerson(true,false);say((r.name?r.name+' · ':'')+'Looking good. V switches between your eyes and this view.',4);},
   onClose:()=>{creatorOpen=false;resetInput();clock.getDelta();}});
 }
 // A shared link (?avatar=code) is somebody to walk the town as.
@@ -1097,6 +1100,7 @@ function updateDirectory(){
  const row=(title,sub,fn,id)=>{const b=document.createElement('button');b.className='dir-item';if(id)b.dataset.id=id;const strong=document.createElement('b'),small=document.createElement('span');strong.textContent=title;small.textContent=sub;b.append(strong,small);b.onclick=fn;grid.append(b);};
  const progress=travelProgress(activities.state);
  row('Make your islander','Change how you look: face, hair, clothes and all. Share it with a link.',openAvatarMaker,'avatar-maker');
+ row('Resident wardrobes','Choose a resident, then change their hair, hat and clothes.',()=>{const grid=$('#directoryGrid');grid.replaceChildren();row('Back to Town book','Return to the town menu',updateDirectory);for(const {name,player:isPlayer} of characters.listCharacters())if(!isPlayer)row(name,'Hair, hats, clothes and appearance',()=>openAvatarMaker(name));},'resident-wardrobes');
  row(progress.unlocked?'Town shortcuts unlocked':'Town shortcuts · '+progress.completed+'/'+progress.total+' favours',progress.unlocked?'Quick travel is ready. Choose a place below.':'Bring Tama home and finish Kenji’s workshop escort.',()=>{toggleDir(false);activities.action('travel-progress');},'travel-progress');
  const destination=(site,title)=>{row(title||site.title,progress.unlocked?site.sub:placeDirections(site),()=>visitPlace(site),site.id);grid.lastChild.dataset.travel=progress.unlocked?'ready':'locked';};
  const teaHouse=SITES.find(s=>s.id==='tea-house');

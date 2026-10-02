@@ -193,7 +193,7 @@
     const escape = value => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     rollGrid.innerHTML = RESIDENTS.map(r => `
       <article class="roll-card" data-resident="${escape(r.name)}">
-        <img class="resident-portrait" src="./${escape(r.portrait)}" width="480" height="480" loading="lazy" decoding="async" alt="${escape(r.name)}, as seen around Johansson Town">
+        <img class="resident-portrait" src="./${escape(r.portrait)}?v=${encodeURIComponent(window.JOHANSSON_PORTRAIT_MODULE || 'live')}" width="480" height="480" loading="lazy" decoding="async" alt="${escape(r.name)}, as seen around Johansson Town">
         <div class="resident-copy">
           <p class="resident-role">${escape(r.role)}</p>
           <h3>${escape(r.name)}</h3>
@@ -306,6 +306,7 @@
 
   document.querySelectorAll('a[href="#visit-planning"]').forEach(link=>link.addEventListener('click',()=>{document.getElementById('visit-planning').open=true;}));
   renderStatic();
+  import(window.JOHANSSON_PORTRAIT_MODULE || "./src/avatars/guide-portraits.js").then(m=>m.mountResidentPortraits()).catch(error=>console.warn("Resident portraits:",error.message));
   ticks();
   tick();
   setInterval(tick, 1000);

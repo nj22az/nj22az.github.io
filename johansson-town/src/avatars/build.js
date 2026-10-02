@@ -218,6 +218,7 @@ function hairRing(spec){
 }
 
 function addHair(list,recipe,m){
+ const hairStart=list.length;
  const c=recipe.hair.colour,style=recipe.hair.style,side=recipe.hair.flip?-1:1;
  const R=m.Rh,cx=0,cy=m.headCentre-m.headY,S=[m.headSX*R,m.headSY*R,R*.98];
  // Hair and hat are built in head-bone space, then carried to model space.
@@ -242,6 +243,13 @@ function addHair(list,recipe,m){
  }
  if(style==='sidepart'||style==='braids'){ball(list,R*.34,at(side*R*.5,cy+R*.62,R*.62),'head',c,[1.4,.55,.7],10,6);}
  if(style==='bob'||style==='long'){ball(list,R*.4,at(0,cy+R*.52,R*.72),'head',c,[2,.5,.6],10,6);}
+ // Hair is tucked under full hats, while fringes, braids and tails stay below them.
+ if(!['none','headband','ribbon'].includes(recipe.outfit.hat))for(const g of list.slice(hairStart)){
+  const pos=g.attributes.position;g.userData.hatHair={position:pos.array.slice(),normal:g.attributes.normal.array.slice()};for(let i=0;i<pos.count;i++){
+   const x=pos.getX(i)/S[0],y=(pos.getY(i)-m.headCentre)/S[1],z=pos.getZ(i)/S[2],r=Math.hypot(x,y,z);
+   if(y>.3&&r>1.035){const f=1.035/r;pos.setXYZ(i,x*f*S[0],m.headCentre+y*f*S[1],z*f*S[2]);}
+  }g.computeVertexNormals();
+ }
 }
 
 /**
@@ -272,24 +280,31 @@ function headband(style,profile){
  return {geometry:g,knot};
 }
 
+export function hatFit(recipe,m=measure(recipe)){
+ return {brimY:m.headCentre+m.Rh*m.headSY*.55,crownHeight:m.Rh*m.headSY*.8};
+}
 function addHat(list,recipe,m){
  const hat=recipe.outfit.hat,c=recipe.outfit.hatColour,R=m.Rh,top=m.headCentre+R*m.headSY*.2;
  if(hat==='none')return;
  const S=[m.headSX*R,m.headSY*R,R];
  if(hat==='cap'||hat==='police'||hat==='captain'){
   const crown=new THREE.SphereGeometry(1.1,24,12,0,Math.PI*2,0,Math.PI*.5);
-  part(list,crown,'head',c,M(0,m.headCentre+R*.08,0,-.08,0,0,S[0],S[1]*(hat==='cap'?.9:1.05),S[2]));
-  const brim=new THREE.CylinderGeometry(R*.85,R*.85,.015,20,1,false,-Math.PI*.35,Math.PI*.7);
-  part(list,brim,'head',hat==='cap'?c:'#1c1c24',M(0,m.headCentre+R*.2,R*.55,.18,0,0,1,1,1));
+  part(list,crown,'head',c,M(0,m.headCentre+R*m.headSY*.23,0,-.08,0,0,S[0],S[1]*(hat==='cap'?.9:1.05),S[2]));
+  // A shallow curved visor reads as a cap bill rather than a cloth band.
+  ball(list,R*.68,[0,m.headCentre+R*m.headSY*.25,R*.9],'head',hat==='cap'?c:'#1c1c24',[m.headSX*1.4,.07,1],20,8);
   if(hat!=='cap'){part(list,new THREE.CylinderGeometry(R*1.12,R*1.12,R*.14,24,1,true),'head',hat==='captain'?'#1c1c24':'#e0b93a',M(0,m.headCentre+R*.26,0,-.08));
    ball(list,R*.1,[0,m.headCentre+R*.62,R*1.02],'head','#e0b93a',[1,1,.4],8,6);}
  }else if(hat==='helmet'){
-  part(list,new THREE.SphereGeometry(1.16,24,12,0,Math.PI*2,0,Math.PI*.52),'head',c,M(0,m.headCentre+R*.05,0,0,0,0,...S));
-  part(list,new THREE.TorusGeometry(R*1.16*m.headSX,R*.05,6,24),'head',c,M(0,m.headCentre+R*.03,0,Math.PI/2));
+  part(list,new THREE.SphereGeometry(1.16,24,12,0,Math.PI*2,0,Math.PI*.52),'head',c,M(0,m.headCentre+R*m.headSY*.35,0,0,0,0,S[0],S[1]*.9,S[2]));
+  part(list,new THREE.TorusGeometry(1.16,.045,6,24),'head',c,M(0,m.headCentre+R*m.headSY*.35,0,Math.PI/2,0,0,S[0],S[2],S[1]));
  }else if(hat==='straw'){
-  part(list,new THREE.CylinderGeometry(R*2.1,R*2.1,.02,28),'head',c,M(0,top+R*.18,0,-.06));
-  part(list,new THREE.CylinderGeometry(R*.8,R*.95,R*.55,20),'head',c,M(0,top+R*.42,0,-.06));
-  part(list,new THREE.CylinderGeometry(R*.97,R*.97,R*.12,20,1,true),'head','#d8342c',M(0,top+R*.25,0,-.06));
+  const fit=hatFit(recipe,m),y=fit.brimY;
+  // An annulus leaves room for the head; the crown has an open underside.
+  part(list,new THREE.RingGeometry(R*.98,R*2.1,32),'head',c,M(0,y,0,-Math.PI/2,0,0,m.headSX,1,1));
+  part(list,new THREE.RingGeometry(R*.98,R*2.1,32),'head',c,M(0,y-.012*m.k,0,Math.PI/2,0,0,m.headSX,1,1));
+  part(list,new THREE.CylinderGeometry(R*.78,R*1.08,fit.crownHeight,24,1,true),'head',c,M(0,y+fit.crownHeight/2,0,0,0,0,m.headSX,1,1));
+  part(list,new THREE.CircleGeometry(R*.78,24),'head',c,M(0,y+fit.crownHeight,0,-Math.PI/2,0,0,m.headSX,1,1));
+  part(list,new THREE.CylinderGeometry(R*1.045,R*1.09,R*.12*m.headSY,24,1,true),'head','#d8342c',M(0,y+R*.06*m.headSY,0,0,0,0,m.headSX,1,1));
  }else if(hat==='beanie'){
   part(list,new THREE.SphereGeometry(1.17,20,12,0,Math.PI*2,0,Math.PI*.49),'head',c,M(0,m.headCentre+R*.12,0,0,0,0,...S));
   part(list,new THREE.TorusGeometry(1.14,.09,6,24),'head',c,M(0,m.headCentre+R*.18,0,Math.PI/2,0,0,S[0],S[2],S[1]));
@@ -298,7 +313,7 @@ function addHat(list,recipe,m){
   ball(list,R,[R*.15,m.headCentre+R*m.headSY*.83,0],'head',c,[m.headSX*1.35,.38,1.25],20,12);
   part(list,new THREE.CylinderGeometry(R*.055,R*.055,R*.15,6),'head',c,M(R*.15,m.headCentre+R*m.headSY*1.2,0));
  }else if(hat==='bucket'){
-  const y=m.headCentre+R*m.headSY*.73;
+  const y=m.headCentre+R*m.headSY*.88;
   part(list,new THREE.CylinderGeometry(R*.93,R*1.13,R*.62,20),'head',c,M(0,y,0,0,0,0,m.headSX,1,1));
   part(list,new THREE.CylinderGeometry(R*1.12,R*1.5,R*.16,24,1,true),'head',c,M(0,y-R*.33,0,0,0,0,m.headSX,1,1));
  }else if(hat==='ribbon'){
@@ -427,11 +442,20 @@ function addBody(list,recipe,m,swim=false){
   }
  }
  if(!swim&&o.top==='apron'){
-  // Below the waist it follows the legs, so sitting down folds it onto the lap.
-  const lap=p=>{if(p.y>hipY-.01)return [['hips',1]];const w=THREE.MathUtils.smoothstep(p.x,-W*.2,W*.2);return [['thighL',w],['thighR',1-w]];};
-  part(list,new THREE.BoxGeometry(W*.78,m.torso*.95+m.thigh*.55,.02,6,10,1),lap,o.topColour,M(0,hipY+m.torso*.2-m.thigh*.1,D/2+.012));
-  part(list,new THREE.TorusGeometry(W*.52,.012,4,20),'chest',o.topColour,M(0,waist+.02,0,Math.PI/2,0,0,1,D/W,1));
+  const topY=hipY+m.torso*.75,bottomY=hipY-m.thigh*.78;
+  const apron=new THREE.PlaneGeometry(W*.7,topY-bottomY,8,14);apron.translate(0,(topY+bottomY)/2,0);
+  const positions=apron.attributes.position,skirt=['skirt','longskirt'].includes(o.bottom),len=o.bottom==='longskirt'?m.thigh+m.shin*.85:m.thigh*.9;
+  for(let i=0;i<positions.count;i++){
+   const y=positions.getY(i),t=(y-hipY)/m.torso;
+   const radius=y>=hipY?W/2*latheRadius(prof,t):skirt?THREE.MathUtils.lerp(m.hips*.53,m.hips*.66+len*.22,THREE.MathUtils.clamp((hipY+.03-y)/len,0,1)):W*.52;
+   const x=positions.getX(i)*(y>hipY?1-THREE.MathUtils.clamp(t,0,1)*.25:1);
+   positions.setXYZ(i,x,y,radius*D/W*Math.sqrt(Math.max(.05,1-(x/radius)**2))+.025*m.k);
+  }apron.computeVertexNormals();
+  // Follow the blouse above the waist and fold onto the lap below it.
+  const drape=p=>{if(p.y>hipY){const chest=THREE.MathUtils.smoothstep(p.y,hipY,hipY+m.torso*.35);return [['hips',1-chest],['chest',chest]];}const leg=THREE.MathUtils.smoothstep(hipY-p.y,.02,.12),w=THREE.MathUtils.smoothstep(p.x,-W*.25,W*.25);return [['hips',1-leg],['thighL',leg*w],['thighR',leg*(1-w)]];};
+  part(list,apron,drape,new THREE.Color(o.topColour).multiplyScalar(1.12).getHex());
  }
+
  // The print: little flowers or dots over the shirt front and back.
  if(!swim&&(o.pattern==='flowers'||o.pattern==='dots')){
   // Laid flat on the cloth, facing out: a print, not buttons.
@@ -499,7 +523,7 @@ function addBody(list,recipe,m,swim=false){
   const len=b==='skirt'?m.thigh*.9:m.thigh+m.shin*.85;
   // The skirt hangs from the hips and, lower down, goes with the legs: seated, it lies on the lap.
   const drape=p=>{const leg=THREE.MathUtils.smoothstep(hipY-p.y,.02,.12),w=THREE.MathUtils.smoothstep(p.x,-W*.25,W*.25);return [['hips',1-leg],['thighL',leg*w],['thighR',leg*(1-w)]];};
-  part(list,new THREE.CylinderGeometry(W*.47,W*.62+len*.25,len,24,6,true),drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):bottom,M(0,hipY+.03-len/2,0,0,0,0,1,1,D/W));
+  part(list,new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,24,6,true),drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):bottom,M(0,hipY+.03-len/2,0,0,0,0,1,1,D/W));
  }
 }
 
@@ -610,6 +634,9 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  // The hat goes in last, so taking it off is drawing one range shorter: people hang it
  // up when they get home (home-residents.js) and put it back on to go out.
  const hatStart=parts.reduce((n,g)=>n+g.attributes.position.count,0);addHat(parts,recipe,m);
+ const hatHairRanges=[];let hairOffset=0;
+ for(const g of parts){if(g.userData.hatHair)hatHairRanges.push({offset:hairOffset,original:g.userData.hatHair,tucked:{position:g.attributes.position.array.slice(),normal:g.attributes.normal.array.slice()}});hairOffset+=g.attributes.position.count*3;}
+ let hairCovered=true;
  const geometry=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
  const hasHat=geometry.attributes.position.count>hatStart;
  geometry.computeBoundingSphere();
@@ -629,7 +656,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const avatar={
   recipe,measure:m,root,body,bones,face,height:m.H,hasHat,
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
-  setHat(on){geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);},
+  setHat(on){geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){for(const range of hatHairRanges){const source=on?range.tucked:range.original;geometry.attributes.position.array.set(source.position,range.offset);geometry.attributes.normal.array.set(source.normal,range.offset);}if(hatHairRanges.length){geometry.attributes.position.needsUpdate=true;geometry.attributes.normal.needsUpdate=true;}hairCovered=!!on;}},
   get hatOn(){return hasHat&&geometry.drawRange.count===Infinity;},
   faceState:{expression:'neutral',blink:0,talk:0,look:[0,0]},
   /** Repaint the face if what it is doing has changed. */

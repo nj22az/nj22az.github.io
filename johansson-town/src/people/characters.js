@@ -132,5 +132,5 @@ export function createCharacters(options={}){
     const target=models.conversationTarget(entity);if(target)return target;
     const fallback=entity.getWorldPosition(new THREE.Vector3());fallback.y+=(CAST[entity.userData.name]?.height||1.75)*.9;return fallback;
   }
-  return {get jumping(){return jumping;},wear:(entity,outfit)=>models.wear(entity,outfit),attach,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>actors.length,profiles:CAST,mode:'local-skinned-direct',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
+  return {refresh:name=>models.refresh(entities.get(name)),get jumping(){return jumping;},wear:(entity,outfit)=>models.wear(entity,outfit),attach,gesture,jump,update,physics:updateJump,actors,conversationTarget,preloaded:()=>actors.length,profiles:CAST,mode:'local-skinned-direct',listCharacters,getCharacter,moveNPC,faceCharacter,releaseCharacter};
 }

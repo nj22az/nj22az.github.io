@@ -1,3 +1,4 @@
+import {disposeServing} from './izakaya-beer.js';
 import * as THREE from '../../vendor/three.module.js';
 import {createAvatarActor,updateAvatarActor,avatarConversationTarget} from '../avatars/actors.js';
 
@@ -16,6 +17,7 @@ export function createLocalCharacters({shadows=false}={}){
     const actor=createAvatarActor(entity,entity.userData.name||name,{shadows});
     byEntity.set(entity,actor);actors.push(actor);return actor;
   }
+  function refresh(entity){const old=byEntity.get(entity);if(!old)return false;disposeServing(old.heldProp);disposeServing(old.dishProp);old.model.removeFromParent();old.avatar.body.skeleton.dispose();old.avatar.dispose();Object.assign(old,createAvatarActor(entity,entity.userData.name,{shadows}));return true;}
   function update(dt){for(const actor of actors)updateAvatarActor(actor,dt);}
   function conversationTarget(entity,target=new THREE.Vector3()){
     const actor=byEntity.get(entity);return actor?avatarConversationTarget(actor,target):null;
@@ -23,5 +25,5 @@ export function createLocalCharacters({shadows=false}={}){
   /** 'swim' puts a resident into their swimwear, anything else back into their clothes. */
   function wear(entity,outfit){const actor=byEntity.get(entity);if(!actor)return false;actor.avatar.wear(outfit);actor.outfit=outfit;return true;}
   function gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(!(actor.gestureTime>0))actor.gestureTime=1.6;return true;}
-  return {attach,update,actors,conversationTarget,wear,gesture};
+  return {attach,refresh,update,actors,conversationTarget,wear,gesture};
 }

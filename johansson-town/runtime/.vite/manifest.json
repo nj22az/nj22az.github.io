@@ -1,4 +1,8 @@
 {
+  "_actors-cdcPOIkn.js": {
+    "file": "actors-cdcPOIkn.js",
+    "name": "actors"
+  },
   "_icons-D2wbYvxv.js": {
     "file": "icons-D2wbYvxv.js",
     "name": "icons"
@@ -16,8 +20,17 @@
       "_town-audio-C9IsFoH5.js"
     ]
   },
+  "src/avatars/guide-portraits.js": {
+    "file": "portraits-ChgKiiEf.js",
+    "name": "portraits",
+    "src": "src/avatars/guide-portraits.js",
+    "isEntry": true,
+    "imports": [
+      "_actors-cdcPOIkn.js"
+    ]
+  },
   "src/boot.js": {
-    "file": "boot-Br2m9odn.js",
+    "file": "boot-Bo4EU-O4.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -29,11 +42,12 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-9kXKyzH4.js",
+    "file": "game-Dq0zh1xG.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
+      "_actors-cdcPOIkn.js",
       "_town-audio-C9IsFoH5.js",
       "_icons-D2wbYvxv.js"
     ]
