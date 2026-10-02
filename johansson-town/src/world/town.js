@@ -16,6 +16,9 @@ import {buildParkOnsen} from './park-onsen.js';
 import {buildSchool} from './school.js';
 import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
+import {BUS_STATION} from './bus-station.js';
+import {paintedTurf} from '../render/toy-surfaces.js';
+import {GROUND_LAYER} from './ground-layers.js';
 import { createTown as createBaseTown } from './harbour.js?snappy=1';
 import { createPropFactory, createLivingProps } from '../../prop-factory.js';
 import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
@@ -30,7 +33,7 @@ import {buildAirportIsland} from './airport-island.js';
 import {buildEastLawn} from './east-lawn.js';
 import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
-import {buildCoyoteTunnel} from './coyote-tunnel.js';
+import {buildCoyoteTunnel,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {buildOkinawaQuarters} from './okinawa/quarters.js';
 import {createFerryRun} from './ferry.js';
 import {windowGlow} from '../render/dusk.js';
@@ -204,8 +207,18 @@ export function createTown(options){
   world.forestEdge=forestEdge;
   // The road out of town ends at the Minato Tunnel through the headland, which only the
   // bus goes through. See coyote-tunnel.js.
+  // Without the cave there is no footpath up to it either.
+  if(peninsulaActive()&&!CAVE_ACTIVE){
+   forestEdge.group.removeFromParent();
+   // The old terminus at the top of Main Street stays at the street's height -- it is the
+   // way round to the police box -- as a lawn on a low bank, over the island ground.
+   const B=BUS_STATION,turf=new THREE.MeshStandardMaterial({color:GROUND.grass,roughness:1});
+   try{const map=paintedTurf().clone();map.needsUpdate=true;map.repeat.set(1/6,1/6);turf.map=map;}catch{}
+   const bank=new THREE.Mesh(new THREE.BoxGeometry(B.maxX-B.minX,.42,B.maxZ-B.minZ),[0,1,2,3,4,5].map(i=>i===2?turf:new THREE.MeshStandardMaterial({color:0x8e8a78,roughness:1})));
+   bank.position.set((B.minX+B.maxX)/2,GROUND_LAYER.grass-.21,(B.minZ+B.maxZ)/2);bank.name='Main Street end lawn';bank.receiveShadow=true;world.group.add(bank);
+  }
   if(peninsulaActive()){
-   world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
+   if(CAVE_ACTIVE)world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
     register:options.register,onAction:options.onAction,shadows:options.shadows});
    // The port is north, the shops are west; the east is the green side of the town and
    // the west is the working one, with the shop and the warehouse standing on it.

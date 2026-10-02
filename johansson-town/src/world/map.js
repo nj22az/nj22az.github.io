@@ -6,7 +6,7 @@ import {PARK,activePark} from './park-layout.js';
 import {activeRoutes,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
 import {FOREST_EDGE} from './forest-edge.js';
 import {MAIN_ROAD} from './main-road.js';
-import {TUNNEL,HEADLAND,headlandHeight} from './coyote-tunnel.js';
+import {TUNNEL,HEADLAND,headlandHeight,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {BEACH,BEACH_DRY_EDGE_X} from './beach-layout.js';
 // Small cached patches show the walkable headland beyond the original coastal slab.
 const headlandPatches=[];
@@ -34,7 +34,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
     ctx.fillStyle='#dfcf9d';ctx.fillRect(px(BEACH.profile[0][0]),pz(BEACH.maxZ),(tide-BEACH.profile[0][0])*scale,(BEACH.maxZ-BEACH.minZ)*scale);
     ctx.strokeStyle='#8b8268';ctx.lineWidth=Math.max(2,2*scale);
     for(const access of BEACH.accesses){ctx.beginPath();ctx.moveTo(px(access.fromX),pz(access.z));ctx.lineTo(px(access.toX),pz(access.z));ctx.stroke();}
-    if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 10px sans-serif';ctx.fillText('EAST BEACH',px(36),pz(-8));ctx.fillText('HEADLAND',px(-19),pz(65));}
+    if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 10px sans-serif';ctx.fillText('EAST BEACH',px(36),pz(-8));if(CAVE_ACTIVE)ctx.fillText('HEADLAND',px(-19),pz(65));}
   }
   if(FULL_TOWN.active){
     const g=FULL_TOWN.grid;

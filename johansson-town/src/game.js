@@ -73,7 +73,9 @@ import {createBeerService,createDrinkProp,createBiteProp,setPropPortion,DRINKS} 
 import {DRUNK,LAGER_ALCOHOL,soberUp,wantsAnother,drink as drinkUp} from './people/drunk.js';
 import {createShopCarry} from './interact/shop-carry.js';
 import {townAudio} from './audio/town-audio.js?snappy=1';
-import {routeAt,groundHeight} from './world/layout.js?snappy=1';
+import {routeAt,groundHeight,planHeight,setWalkSurface} from './world/layout.js?snappy=1';
+import {createWalkSurface} from './world/walk-surface.js';
+import {COAST_BOUNDS} from './world/peninsula.js';
 import {createNeighbours} from './people/neighbours.js';
 import {drawTownMap} from './world/map.js?snappy=1';
 import * as THREE from '../vendor/three.module.js';
@@ -1358,7 +1360,11 @@ function updateContextControls(){
  }
 }
 const invalidateDetails=()=>{townSections.invalidate();shopStreetView.invalidate();};
-const detailStream=createDetailStream({onChange:invalidateDetails});window.__JOHANSSON_STREAMING__=detailStream.stats;
+// Feet on whatever is drawn: lanes, aprons, decks (walk-surface.js). Laid once now and
+// again whenever a streamed detail arrives.
+const walkSurface=createWalkSurface({minX:COAST_BOUNDS.minX-2,maxX:COAST_BOUNDS.maxX+2,minZ:COAST_BOUNDS.minZ-2,maxZ:COAST_BOUNDS.maxZ+2,base:planHeight});
+{const t0=performance.now();walkSurface.add(town);setWalkSurface(walkSurface);window.__JOHANSSON_WALK__={ms:Math.round(performance.now()-t0),get triangles(){return walkSurface.triangles;}};}
+const detailStream=createDetailStream({onChange:()=>{invalidateDetails();walkSurface.add(town);}});window.__JOHANSSON_STREAMING__=detailStream.stats;
 // With ?audit in the address, a harness can put the player anywhere and look down on
 // the town from a fixed camera. Nothing reads it otherwise.
 if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__={

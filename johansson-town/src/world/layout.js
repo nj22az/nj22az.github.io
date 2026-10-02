@@ -7,7 +7,7 @@ import {PARK,parkHeight,parkApproachHeight,parkSkirtHeight} from './park-layout.
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 import {BUS_STATION,BUS_STATION_ROUTES} from './bus-station.js';
 import {FOREST_EDGE} from './forest-edge.js';
-import {TUNNEL,HEADLAND,CAVE_MOUTH} from './coyote-tunnel.js';
+import {TUNNEL,HEADLAND,CAVE_MOUTH,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {coastalSurface} from './coastal-ground.js';
 import {beachAccessHeight} from './beach-layout.js';
 import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
@@ -95,7 +95,7 @@ function regionAt(x,z,r=0){
  if(x>=BUS_STATION.minX+r&&x<=BUS_STATION.maxX-r&&z>=BUS_STATION.minZ+r&&z<=BUS_STATION.maxZ-r)return {id:BUS_STATION.id,surface:'stone'};
  // The footpath up past the old terminus to the sea cave, and a couple of metres into
  // its mouth, where the way down into the dungeon is.
- if(peninsulaActive()&&Math.abs(x-FOREST_EDGE.roadX)<=MAIN_ROAD.width/2-r
+ if(CAVE_ACTIVE&&peninsulaActive()&&Math.abs(x-FOREST_EDGE.roadX)<=MAIN_ROAD.width/2-r
   &&z>=MAIN_ROAD.maxZ&&z<=CAVE_MOUTH.inside+.4-r)return {id:'cave-path',surface:'gravel'};
  if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
  if(peninsulaActive()&&oilJettyAt(x,z,r))return OIL_JETTY_ROUTE;
@@ -134,5 +134,14 @@ function regionAt(x,z,r=0){
  }
  return null;
 }
-export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(peninsulaActive()){const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(peninsulaActive()&&kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;if(peninsulaActive()&&regionAt(x,z,0)?.id==='peninsula-ground')return -.4;return 0;}
+/**
+ * Installs the drawn-surface lift (walk-surface.js); null takes it away again. It is kept
+ * on the global object because this module is loaded under more than one URL (game.js asks
+ * for it with ?snappy=1), and every copy has to stand people on the same ground.
+ */
+export function setWalkSurface(surface){globalThis.__JOHANSSON_WALK_SURFACE__=surface||null;}
+/** Where feet go: the plan's ground, lifted onto whatever slab is drawn over it. */
+export function groundHeight(x,z){const h=planHeight(x,z),walk=globalThis.__JOHANSSON_WALK_SURFACE__;return walk?h+walk.lift(x,z):h;}
+/** The ground from the plan alone: regions and their nominal heights. */
+export function planHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(peninsulaActive()){const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(peninsulaActive()&&kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;if(peninsulaActive()&&regionAt(x,z,0)?.id==='peninsula-ground')return -.4;return 0;}
 export const MAP_BOUNDS={get minX(){return peninsulaActive()?-52:-44},get maxX(){return peninsulaActive()?64:48},minZ:-72,get maxZ(){return peninsulaActive()?HEADLAND.maxZ:Math.max(TUNNEL.z+TUNNEL.depth+1,SCHOOL.seawall.south+6)}};
