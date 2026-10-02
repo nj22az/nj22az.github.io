@@ -206,9 +206,9 @@ The user supplied `street_2.glb`, **Street 2** by **Pasha**. Its embedded metada
 The office and Seinfeld apartment retain their existing source attribution. Redundant furniture was removed and replaced with original procedural furnishings for the office workstation and two sleeping corners. Both manifests record the refit and original source hashes.
 
 
-## Sakura convenience-store interior
+## Sakura Shōten interior
 
-User-supplied `the-convenience-store.zip`, containing `source/8 16 20 conveniance_store.glb`. The archive supplies no author or licence document; no licence is inferred. The prepared interior retains the supplied architecture, aisle fixtures, refrigerators, checkout booth and back room. Static fittings are batched and recoloured; source merchandise, original advertising and opaque glass are replaced with interactive fictional stock and shop artwork. Source digest and preparation details: `models/sakura-interior/source.json`; reproducible preparation: `scripts/prepare-sakura-interior.py`.
+Original procedural geometry (`src/world/interiors/sakura-shell.js`), built for Johansson Town from the shop's own measurements. It replaced a user-supplied convenience-store model that had no licence on record, which is no longer shipped.
 
 The fictional packaging atlas at `graphics/konbini/packaging-atlas.webp` was generated for Johansson Town on 13 September 2026 with the built-in image-generation tool. It contains original NAGI, PORT 88, SAKURA, KOMOREBI, HANAMORI, SHIOFUMI, HOSHIMARU, SHIOSAI, MIZUNOWA, UMINEKO, YUNAGI and ASAMORI labels. It is used on both shelf goods and customers’ held goods. Existing generated shop posters are reused.
 

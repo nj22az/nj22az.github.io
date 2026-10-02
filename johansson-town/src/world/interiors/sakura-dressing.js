@@ -25,7 +25,7 @@ function canvasTexture(width,height,draw){
 }
 
 // ================================================================== the medicine shelf
-/** The boards behind the counter, measured off sakura-interior.glb. */
+/** The boards behind the counter (sakura-shell.js builds them to these measurements). */
 export const MEDICINE_SHELF=Object.freeze({front:6.675,back:6.83,levels:Object.freeze([1.1,1.385,1.669,1.954]),minZ:.6,maxZ:3.64});
 
 /**
