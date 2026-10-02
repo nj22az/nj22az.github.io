@@ -61,12 +61,12 @@ test('supper charges once, advances the evening, saves a memory and refuses insu
  const dom=installDOM();let minutes=1100;const ordered=[];
  const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({inside:'izakaya',names:['Aya','Reiko']}),
   getBeerTable:()=>({drink:null,dish:null,order:null,naoHere:true}),onOrderDrink:id=>{ordered.push(id);return true;}});
- acts.action('izakaya-table');dom.button('Order something to eat…');dom.button('焼き鳥盛合せ · ¥180');
+ acts.action('izakaya-table');dom.button('Order something to eat…');dom.button('Assorted Yakitori · ¥180');
  assert.equal(acts.state.yen,1020);assert.equal(minutes,1102);assert.deepEqual(ordered,['yakitori']);
  assert.ok(acts.state.notes.includes('Ordered a plate of yakitori at Minato.'));
- acts.state.yen=100;acts.action('izakaya-table');dom.button('Order a drink…');dom.button('オリオン生 中ジョッキ · ¥450 (not enough yen)');
+ acts.state.yen=100;acts.action('izakaya-table');dom.button('Order a drink…');dom.button('Orion draught, medium mug · ¥450 (not enough yen)');
  assert.equal(acts.state.yen,100);assert.deepEqual(ordered,['yakitori'],'nothing you cannot pay for');
- acts.action('izakaya-menu');dom.button('Read the food');assert.match(document.querySelector('#activityBody').firstChild.textContent,/ほっけ焼き/);
+ acts.action('izakaya-menu');dom.button('Read the food');assert.match(document.querySelector('#activityBody').firstChild.textContent,/Grilled Atka mackerel/);
 });
 
 test('Thuan visits after closing on alternate days and has off-duty conversation',()=>{
@@ -118,7 +118,7 @@ test('izakaya hours and late guests cross midnight and close exactly at 03:00',(
   assert.equal(residentPlan(mori,day+360).place,'home');
  }
  const dom=installDOM();let minutes=1617;const acts=createActivities({say(){},onWeather(){},onTime:v=>{minutes+=v;},getMinutes:()=>minutes,getBeerTable:()=>({drink:null,dish:null,order:null,naoHere:true}),onOrderDrink:()=>true});
- acts.action('izakaya-table');dom.button('Order a drink…');dom.button('ウーロン茶 · ¥150');const money=acts.state.yen;assert.equal(minutes,1619);
+ acts.action('izakaya-table');dom.button('Order a drink…');dom.button('Oolong tea · ¥150');const money=acts.state.yen;assert.equal(minutes,1619);
  minutes=1620;acts.action('izakaya-table');assert.ok(!dom.has('Order a drink…')&&!dom.has('Order something to eat…'),'Last orders at 03:00');assert.equal(acts.state.yen,money);
 });
 

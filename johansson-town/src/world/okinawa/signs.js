@@ -59,8 +59,8 @@ export function iceFlag(){
   for(let i=0;i<4;i++){const y=h*.72+i*18;ctx.beginPath();ctx.moveTo(0,y);
    for(let x=0;x<=w;x+=16)ctx.quadraticCurveTo(x+8,y-12,x+16,y);ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.fill();}
   ctx.fillStyle='#d42a2a';ctx.font=`bold 104px ${SERIF}`;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('氷',w/2,h*.32);
-  ctx.fillStyle='#2f6fb8';ctx.font=`bold 26px ${SANS}`;ctx.fillText('ぜんざい',w/2,h*.56);
+  ctx.fillText("Ice",w/2,h*.32);
+  ctx.fillStyle='#2f6fb8';ctx.font=`bold 26px ${SANS}`;ctx.fillText("Zenzai",w/2,h*.56);
  });
 }
 
@@ -157,8 +157,8 @@ export function iceMural(){
   ctx.strokeStyle='#a8763a';ctx.lineWidth=3;for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(118+i*16,150);ctx.lineTo(150,280);ctx.stroke();}
   for(const [x,y,c] of [[130,135,'#f6efe0'],[172,132,'#e98aa6'],[151,95,'#8a5a3c']]){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,34,0,Math.PI*2);ctx.fill();}
   ctx.fillStyle='#fff';ctx.textAlign='left';ctx.textBaseline='middle';
-  ctx.font='bold 92px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText('ブルーコーラル',250,105);
-  ctx.font='bold 54px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText('アイスクリーム',254,190);
+  ctx.font='bold 92px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText("Blue Coral",250,105);
+  ctx.font='bold 54px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText("Ice cream",254,190);
   ctx.fillStyle='#ffd45a';ctx.font='bold 30px sans-serif';ctx.fillText('BLUE CORAL ICE CREAM · OKINAWA · SINCE 1963',254,256);
   ctx.strokeStyle='#f3ead2';ctx.lineWidth=10;ctx.strokeRect(8,8,w-16,h-16);
  });
@@ -186,7 +186,7 @@ export function catchFlag(seed=0){
   ctx.fillStyle=b;ctx.beginPath();ctx.arc(w*.72,h*.42,70,0,Math.PI*2);ctx.fill();
   ctx.fillStyle=c;for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(0,h*.7+i*18);for(let x=0;x<=w;x+=24)ctx.quadraticCurveTo(x+12,h*.62+i*18,x+24,h*.7+i*18);ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.fill();}
   ctx.fillStyle='#fff';ctx.font='bold 76px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('大漁',w*.34,h*.4);
+  ctx.fillText("Big catch",w*.34,h*.4);
  });
 }
 
@@ -198,11 +198,11 @@ export function catchFlag(seed=0){
  * edges. Every brand here is invented.
  */
 export const WALL_ADS=Object.freeze([
- {jp:'琉球サイダー',en:'RYUKYU CIDER',line:'冷えてます',bg:'#2f6f9f',ink:'#fff6e0',accent:'#e0b23c'},
- {jp:'ミナト銀行',en:'MINATO BANK',line:'港とともに',bg:'#e9e1cc',ink:'#1f4e6b',accent:'#c8432f'},
- {jp:'島ぞうり',en:'SHIMA ZORI',line:'はきやすい',bg:'#c8432f',ink:'#fff6e0',accent:'#f2d36b'},
- {jp:'泡盛 南風',en:'AWAMORI HAEE',line:'島の酒',bg:'#1f3a34',ink:'#f3ead2',accent:'#d9a441'},
- {jp:'でいご生命',en:'DEIGO LIFE',line:'家族の安心',bg:'#f1e6c8',ink:'#b8302a',accent:'#3f7f86'},
+ {jp:"Ryukyu Cider",en:'RYUKYU CIDER',line:"It's cold",bg:'#2f6f9f',ink:'#fff6e0',accent:'#e0b23c'},
+ {jp:"Minato Bank",en:'MINATO BANK',line:"With the port",bg:'#e9e1cc',ink:'#1f4e6b',accent:'#c8432f'},
+ {jp:"Island sandals",en:'SHIMA ZORI',line:"Easy to wear",bg:'#c8432f',ink:'#fff6e0',accent:'#f2d36b'},
+ {jp:"Awamori South wind",en:'AWAMORI HAEE',line:"Island sake",bg:'#1f3a34',ink:'#f3ead2',accent:'#d9a441'},
+ {jp:"Deigo Life Insurance",en:'DEIGO LIFE',line:"Family peace of mind",bg:'#f1e6c8',ink:'#b8302a',accent:'#3f7f86'},
 ]);
 export function wallAd({jp,en,line='',bg,ink,accent}=WALL_ADS[0],seed=1){
  return paint(512,704,(ctx,w,h)=>{

@@ -28,7 +28,7 @@ export function laneEdges(){
 // route: crossing lanes never produce coplanar, overlapping road meshes.
 export function lanePatches(routes=activeRoutes().slice(3)) {
   const rects=[];
-  for(const route of routes) {
+  for(const route of routes.filter(r=>!r.terrain)) {
     const half=route.width/2;
     for(let i=1;i<route.points.length;i++) {
       const a=route.points[i-1],b=route.points[i];

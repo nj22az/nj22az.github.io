@@ -1,0 +1,10 @@
+import {parseAst} from 'rollup/parseAst';
+import {readFile,readdir,writeFile} from 'node:fs/promises';
+const root=new URL('../',import.meta.url),files=[];
+async function scan(dir){for(const e of await readdir(new URL(dir,root),{withFileTypes:true})){if(e.isDirectory())await scan(dir+e.name+'/');else if(e.name.endsWith('.js'))files.push(dir+e.name);}}
+await scan('src/');for(const e of await readdir(root))if(e.endsWith('.js'))files.push(e);
+const values=[];for(const path of files){if(path==='src/people/voice-lines.js')continue;const src=await readFile(new URL(path,root),'utf8');const ast=parseAst(src);function walk(n){if(!n||typeof n!=='object')return;if(n.type==='Literal'&&typeof n.value==='string'&&/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(n.value))values.push({path,start:n.start,end:n.end,value:n.value});if(n.type==='TemplateElement'&&/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(n.value.raw))values.push({path,start:n.start,end:n.end,value:n.value.raw,template:true});for(const [k,v] of Object.entries(n)){if(k==='raw')continue;if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')walk(v);}}walk(ast);}
+if(process.argv.includes('--json'))await writeFile('/tmp/town-english-inventory.json',JSON.stringify(values,null,2));console.log(values.length,'strings');
+const parts=[...new Set(values.flatMap(x=>x.value.match(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}][\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}、。・〜ー！？]*[！？]?/gu)||[]))];console.log(parts.length,'phrases');console.log(parts.join('\n'));
+
+if(values.length)process.exitCode=1;

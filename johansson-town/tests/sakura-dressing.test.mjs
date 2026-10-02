@@ -49,7 +49,7 @@ test('everything on show behind the counter is for sale: every medicine box and 
  assert.equal(acts.state.yen,before-taio.price);assert.ok(acts.state.inventory.includes(taio.en));
  acts.action('sakura-counter-goods');
  const counter=[...document.querySelector('#activityActions').children].map(b=>b.textContent);
- for(const jp of ['テレホンカード','切手','フェリー回数券','ガム','マッチ'])assert.ok(counter.some(l=>l.startsWith(jp)),jp+' cannot be bought at the till');
- const y=acts.state.yen;dom.button(counter.find(l=>l.startsWith('切手')));
+ for(const jp of ['Telephone card','Stamp','Ferry ticket','Gum','Match'])assert.ok(counter.some(l=>l.startsWith(jp)),jp+' cannot be bought at the till');
+ const y=acts.state.yen;dom.button(counter.find(l=>l.startsWith('Stamp')));
  assert.equal(acts.state.yen,y-80);assert.ok(acts.state.inventory.includes('80-yen stamp'));
 });

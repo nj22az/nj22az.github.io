@@ -15,7 +15,7 @@ test('weeklies turn over on their own on-sale day, monthlies on the 1st, papers 
  const guide=title('shimaaruki');
  assert.equal(issueFor(guide,day(9,1)).key,issueFor(guide,day(9,30)).key);
  assert.notEqual(issueFor(guide,day(9,30)).key,issueFor(guide,day(10,1)).key);
- assert.equal(issueFor(guide,day(9,13)).dateLine,'10月号','monthlies carry next month on the cover');
+ assert.equal(issueFor(guide,day(9,13)).dateLine,'October 1997','monthlies carry next month on the cover');
  for(const id of ['minato','shimaspo','nippo']){
   const t=title(id);assert.notEqual(issueFor(t,day(9,13)).head,issueFor(t,day(9,14)).head,id+' changes daily');
   assert.notEqual(issueFor(t,day(9,13)).head,issueFor(t,day(9,20)).head,id+' differs a week later');

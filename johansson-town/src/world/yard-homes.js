@@ -73,7 +73,7 @@ export function buildYardHomes(world,options){
   // The home site: its door, who lives there, and the heading you walk in with.
   const profile={name:household.residents[0]};
   let site=options.sites.find(s=>s.id===household.id);
-  if(!site){site={id:household.id,jp:'住まい',sub:'FRONT-ROW YARD',color:0xd4c6ad,accent:'#776953'};options.sites.push(site);}
+  if(!site){site={id:household.id,jp:"Home",sub:'FRONT-ROW YARD',color:0xd4c6ad,accent:'#776953'};options.sites.push(site);}
   Object.assign(site,{title:household.title,line:spec.address,homeOwner:profile.name,homeOwners:[...household.residents],homeEntry:'yard-'+spec.number,
    door:[spec.door[0],.02,spec.door[1]],entryFacing:spec.inward,x:spec.door[0],z:spec.door[1]});
   site.exitPosition=[...site.door];

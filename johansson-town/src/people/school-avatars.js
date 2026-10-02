@@ -4,7 +4,7 @@ import {createAvatarAnimator} from '../avatars/animate.js';
 import {normalizeRecipe} from '../avatars/recipe.js';
 
 /**
- * The children of the 5・6年 class and their teacher, as Shimanchu like everyone else in
+ * The children of the Years 5–6 class and their teacher, as Shimanchu like everyone else in
  * town -- built from recipes, animated by the same animator -- behind the interface the
  * classroom already used for its placeholder figures: buildFigure, setPose and
  * animateFigure. A figure faces +z in its own frame; the classroom turns it.

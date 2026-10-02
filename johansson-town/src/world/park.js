@@ -82,7 +82,7 @@ export function buildPark(world,options){
  {const [x,z]=at(-13.2,-2.2),y=ground(x,z);for(const dz of [-.5,.5])kit.box(.08,1.3,.08,x,y+.65,z+dz,0x6b4a32);
   const c=typeof document!=='undefined'&&document.createElement?document.createElement('canvas'):null;
   if(c&&c.getContext?.('2d')){c.width=512;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#f3e6c8';ctx.fillRect(0,0,512,192);ctx.strokeStyle='#6b4a32';ctx.lineWidth=12;ctx.strokeRect(6,6,500,180);
-   ctx.fillStyle='#3a2a1a';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 84px "Hiragino Mincho ProN","Noto Serif CJK JP",serif';ctx.fillText('港 公 園',256,80);ctx.font='bold 30px sans-serif';ctx.fillText('MINATO PARK',256,154);
+   ctx.fillStyle='#3a2a1a';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 84px "Hiragino Mincho ProN","Noto Serif CJK JP",serif';ctx.fillText("Minato Public Garden",256,80);ctx.font='bold 30px sans-serif';ctx.fillText('MINATO PARK',256,154);
    const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;kit.sign(t,1.3,.5,x,y+1.15,z,{ry:-Math.PI/2,name:'Minato Park board',both:true});}}
  const {materials}=kit.finish(group,'Harbour Park');
 
@@ -99,7 +99,7 @@ export function buildPark(world,options){
  const bench=new THREE.Object3D();bench.position.set(PARK_BENCH.stand[0],PARK_BENCH.position[1]+1,PARK_BENCH.stand[2]);bench.userData.seat=PARK_BENCH;world.group.add(bench);
  options.register(bench,'Sit and watch the town and harbour',()=>options.onAction('seat','Harbour Park bench','A quiet view across the rooftops and port, under the old cherry.'));
  const sign=new THREE.Object3D();{const [x,z]=at(-13.2,-2.2);sign.position.set(x-.6,ground(x,z)+1.1,z);}world.group.add(sign);
- options.register(sign,'Read the park board',()=>options.onAction('read','港公園 · Minato Park','Laid out in 1972 on the old lookout mound. The kanhizakura was planted by the class of that year and flowers in January, the first cherry in Japan. Please take your rubbish home. No ball games on the mound. — Minato Town Office'));
+ options.register(sign,'Read the park board',()=>options.onAction('read',"Minato Park · Minato Park",'Laid out in 1972 on the old lookout mound. The kanhizakura was planted by the class of that year and flowers in January, the first cherry in Japan. Please take your rubbish home. No ball games on the mound. — Minato Town Office'));
  const pools=createLightPools(world.group,PARK_LAMPS.map(([lx,lz])=>{const [x,z]=at(lx,lz);return {x,z,y:ground(x,z),radius:2.6};}));
  (world.hourly||(world.hourly=[])).push(minutes=>{const glow=lanternGlow(minutes);pools.update(glow);if(materials.lamp)materials.lamp.emissiveIntensity=.1+glow*1.6;dress(minutes);});
  world.park={group,bench,seat:PARK_BENCH,loaded:true,pools,trees};

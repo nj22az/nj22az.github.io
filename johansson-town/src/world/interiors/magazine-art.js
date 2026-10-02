@@ -52,8 +52,8 @@ export function drawCover(ctx,title,issue,w=320,h=440){
   ctx.fillStyle='#17141a';ctx.beginPath();ctx.moveTo(-28,245);ctx.lineTo(-6,256);ctx.lineTo(-28,260);ctx.fill();ctx.beginPath();ctx.moveTo(28,245);ctx.lineTo(6,256);ctx.lineTo(28,260);ctx.fill();
   if(v>=2){ctx.strokeStyle='#3bc4f2';ctx.lineWidth=6;ctx.strokeRect(-110,150,220,190);}
   ctx.restore();
-  rect(10,12,W-20,74,'#ffd93b');ink(5);ctx.strokeRect(10,12,W-20,74);t('少年ハヤブサ',W/2,50,42,'#17141a');
-  rect(14,94,150,26,'#d42a2a');t(`週刊 ${issue.number}号`,89,107,17,'#fff',800);
+  rect(10,12,W-20,74,'#ffd93b');ink(5);ctx.strokeRect(10,12,W-20,74);t("Boy Hayabusa",W/2,50,42,'#17141a');
+  rect(14,94,150,26,'#d42a2a');t(`Weekly ${issue.number}Issue`,89,107,17,'#fff',800);
   fit(issue.sub,W/2,342,30,'#fff',W-30);rect(0,362,W,44,'#1b78c4');fit(issue.head,W/2,384,22,'#fff',W-24,800);
   barcode(14,H-46,1);price();break;}
  case 'games':{
@@ -65,7 +65,7 @@ export function drawCover(ctx,title,issue,w=320,h=440){
   fit(issue.head,W/2,330,30,'#ffe066',W-24);rect(0,360,W,36,'#10b981');fit(issue.sub,W/2,378,19,'#fff',W-24,800);
   barcode(14,H-46,2);price();break;}
  case 'guide':{
-  rect(0,0,W,H,accent('#fde66b',v,30));rect(0,12,W,76,'#d7263d');t('島あるき',W/2,50,46,'#fff');t('OKINAWA · '+issue.dateLine,W/2,104,17,'#7a1c1c',800);
+  rect(0,0,W,H,accent('#fde66b',v,30));rect(0,12,W,76,'#d7263d');t("Walking around the island",W/2,50,46,'#fff');t('OKINAWA · '+issue.dateLine,W/2,104,17,'#7a1c1c',800);
   rect(24,122,W-48,170,['#4fb7e8','#e9a24b','#3c8d4f','#7a6fb0'][v]);rect(24,232,W-48,60,'#ffffff');rect(24,262,W-48,30,'#2a8fcc');
   if(v===2){ctx.fillStyle='#24603a';for(let i=0;i<7;i++){ctx.beginPath();ctx.arc(40+i*40,200,30,0,Math.PI*2);ctx.fill();}}
   else{ctx.fillStyle='#c0392b';ctx.beginPath();ctx.moveTo(90,190);ctx.quadraticCurveTo(160,140,230,190);ctx.lineTo(220,200);ctx.lineTo(100,200);ctx.closePath();ctx.fill();rect(110,200,14,40,'#8a2a1c');rect(196,200,14,40,'#8a2a1c');}
@@ -80,7 +80,7 @@ export function drawCover(ctx,title,issue,w=320,h=440){
   barcode(14,H-46,4);price();break;}
  case 'sport':{
   const g=ctx.createRadialGradient(W/2,230,20,W/2,230,280);g.addColorStop(0,accent('#f98a2b',v,20));g.addColorStop(.6,'#b8231d');g.addColorStop(1,'#1c1917');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  t('格闘ファイト',W/2,48,40,'#fff');t(`週刊 ${issue.number}号`,16,90,16,'#ffe066',800,'left');
+  t("Combat Fight",W/2,48,40,'#fff');t(`Weekly ${issue.number}Issue`,16,90,16,'#ffe066',800,'left');
   ctx.fillStyle='#120d0c';ctx.beginPath();ctx.arc(W/2,180,52,0,Math.PI*2);ctx.fill();rect(W/2-70,226,140,100,'#120d0c');
   if(v%2){rect(W/2-120,200,60,26,'#120d0c');rect(W/2+60,200,60,26,'#120d0c');}else{rect(W/2-120,236,60,26,'#120d0c');rect(W/2+60,236,60,26,'#120d0c');}
   if(v===3){ctx.fillStyle='#d42a2a';ctx.beginPath();ctx.arc(W/2,180,52,Math.PI*1.1,Math.PI*1.9);ctx.fill();}
@@ -88,19 +88,19 @@ export function drawCover(ctx,title,issue,w=320,h=440){
   barcode(14,H-46,5);price();break;}
  case 'anime':{
   rect(0,0,W,H,accent('#2e2a7a',v,40));ctx.fillStyle='rgba(255,255,255,.07)';for(let i=0;i<6;i++)ctx.fillRect(0,110+i*48,W,22);
-  t('月刊',36,30,18,'#7fe3f5',800);t('セルアニメ',W/2,58,40,'#7fe3f5');t(issue.dateLine,W-16,92,15,'#e2e8f0',800,'right');
+  t("Monthly",36,30,18,'#7fe3f5',800);t("Cell animation",W/2,58,40,'#7fe3f5');t(issue.dateLine,W-16,92,15,'#e2e8f0',800,'right');
   ctx.fillStyle=accent('#9b5de5',v,60);ctx.beginPath();ctx.moveTo(W/2,104);ctx.lineTo(W/2+62,206);ctx.lineTo(W/2+40,296);ctx.lineTo(W/2-40,296);ctx.lineTo(W/2-62,206);ctx.closePath();ctx.fill();ink(5);ctx.stroke();
   rect(W/2-10,170,20,48,'#5ef08a');ctx.fillStyle='#ffe066';ctx.beginPath();ctx.moveTo(W/2,104);ctx.lineTo(W/2-8,78);ctx.lineTo(W/2+8,78);ctx.fill();
   fit(issue.head,W/2,330,28,'#ffe066',W-24);fit(issue.sub,W/2,370,18,'#e2e8f0',W-24,800);
   barcode(14,H-46,6);price();break;}
  case 'tv':{
-  rect(0,0,W,H,'#ffffff');rect(0,0,W,80,accent('#2a8fcc',v,45));t('テレビしま',W/2,42,40,'#fff');t(`週刊 ${issue.number}号`,16,98,15,'#2a8fcc',800,'left');
+  rect(0,0,W,H,'#ffffff');rect(0,0,W,80,accent('#2a8fcc',v,45));t("TV Island",W/2,42,40,'#fff');t(`Weekly ${issue.number}Issue`,16,98,15,'#2a8fcc',800,'left');
   ctx.fillStyle=accent('#ffd93b',v,30);ctx.beginPath();ctx.arc(W/2,200,78,0,Math.PI*2);ctx.fill();rect(W/2-50,170,100,66,'#17141a');rect(W/2-42,178,84,50,['#7fd1f0','#f7a8c4','#a6e57c','#ffd27a'][v]);
   ctx.strokeStyle='#17141a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(W/2-20,170);ctx.lineTo(W/2-40,138);ctx.moveTo(W/2+20,170);ctx.lineTo(W/2+40,138);ctx.stroke();
-  t(`${shortDate(issue.saleDate)} → ${issue.until} 番組表`,W/2,286,19,'#d7263d');fit(issue.head,W/2,330,24,'#17141a',W-24);fit(issue.sub,W/2,372,18,'#555',W-24,800);
+  t(`${shortDate(issue.saleDate)} → ${issue.until} Program list`,W/2,286,19,'#d7263d');fit(issue.head,W/2,330,24,'#17141a',W-24);fit(issue.sub,W/2,372,18,'#555',W-24,800);
   barcode(14,H-46,7);price('#17141a');break;}
  case 'umikaze':case 'hoshizora':case 'katsuo':{
-  const look={umikaze:['#d7e5ec','#20496b','#3d7fa6','うみかぜ','月刊 海風'],hoshizora:['#2b3a5c','#f2e2b0','#c58a3a','ほしぞら','週刊 星空'],katsuo:['#f0e3c4','#2f5c45','#b5622f','かつお','釣りと海']}[title.kind];
+  const look={umikaze:['#d7e5ec','#20496b','#3d7fa6',"Sea breeze","Monthly Sea breeze"],hoshizora:['#2b3a5c','#f2e2b0','#c58a3a',"Starzora","Weekly Starry sky"],katsuo:['#f0e3c4','#2f5c45','#b5622f',"Bonito","Fishing and the sea"]}[title.kind];
   const [paper,inkC,base,jp,line]=look,acc=accent(base,v,35);rect(0,0,W,H,paper);
   t(line,W/2,56,42,inkC);t(jp+' · '+issue.dateLine,W/2,100,17,acc,800);rect(24,124,W-48,190,acc);
   if(title.kind==='hoshizora'){ctx.fillStyle='#f2e2b0';for(let i=0;i<30;i++){ctx.beginPath();ctx.arc(30+hash(i,8+v)*(W-60),130+hash(i,9)*170,1.5+hash(i,1)*2.5,0,Math.PI*2);ctx.fill();}ctx.beginPath();ctx.arc(80+v*45,170,24,0,Math.PI*2);ctx.fill();}
@@ -123,7 +123,7 @@ export function drawCover(ctx,title,issue,w=320,h=440){
 export function drawBackAd(ctx,w=320,h=440){
  const {t,rect,done}=pen(ctx,w,h);
  rect(0,0,320,440,'#322823');rect(0,350,320,90,'#bd4826');rect(130,90,60,170,'#f5e5c1');rect(130,150,60,50,'#bd4826');
- t('PORT 88',160,320,40,'#f5e5c1');t('港の朝に、一本。',160,394,22,'#f5e5c1',800);done();
+ t('PORT 88',160,320,40,'#f5e5c1');t("One in the morning at the port.",160,394,22,'#f5e5c1',800);done();
 }
 
 // ==================================================================== pages
@@ -132,17 +132,17 @@ const header=(p,title,label,colour='#2b2b2b')=>{p.rect(0,0,320,34,colour);p.t(la
 const footer=(p,n)=>p.t(String(n),160,428,11,'#888',700);
 
 function contents(title,issue,colour){
- return ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'目次 CONTENTS',colour);
-  const items=[issue.head,issue.sub,...title.subs.filter(s=>s!==issue.sub).slice(0,3),'読者のページ','次号予告'];
+ return ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"Table of contents CONTENTS",colour);
+  const items=[issue.head,issue.sub,...title.subs.filter(s=>s!==issue.sub).slice(0,3),"Reader's page","Next issue preview"];
   items.forEach((s,i)=>{p.rect(18,52+i*44,6,30,colour);p.fit(s,40,67+i*44,17,'#2b2b2b',230,800);p.ctx.textAlign='left';p.t(String(4+i*6),300,67+i*44,15,colour,800,'right');});
   p.t(title.en,160,400,12,'#777',700);footer(p,3);});
 }
 function tvListings(title,issue){
- const channels=['しまテレビ','南西放送','港TV','NHK沖縄'];
- const shows=['ニュース','連続ドラマ','クイズ!','時代劇','プロ野球','アニメ','歌番組','映画劇場','天気予報','料理の時間','お笑い','ドキュメント'];
+ const channels=["Shima TV","Southwest Broadcasting","MinatoTV","NHKOkinawa"];
+ const shows=["News","Serial drama","Quiz!","Historical drama","Professional baseball","Anime","Song program","Movie theater","Weather forecast","Cooking time","Comedy","Document"];
  return [0,1,2,3].map(d=>ctx=>(w,h)=>page(ctx,w,h,p=>{
   const day=new Date(issue.saleDate.getFullYear(),issue.saleDate.getMonth(),issue.saleDate.getDate()+d*2);
-  header(p,title,`${shortDate(day)}(${WEEKDAYS[day.getDay()]}) 番組表`,'#2a8fcc');
+  header(p,title,`${shortDate(day)}(${WEEKDAYS[day.getDay()]}) Program list`,'#2a8fcc');
   channels.forEach((c,ci)=>{p.rect(10+ci*76,42,72,22,['#2a8fcc','#d7263d','#3c8d4f','#555'][ci]);p.t(c,46+ci*76,53,12,'#fff',800);});
   for(let hr=0;hr<11;hr++){p.t(String(17+hr>23?17+hr-24:17+hr),6,82+hr*30,10,'#999',700,'left');
    channels.forEach((c,ci)=>{const s=shows[Math.floor(hash(hr*7+ci*13,day.getDate()+d)*shows.length)];p.rect(10+ci*76,70+hr*30,72,27,hr%2?'#f2efe4':'#fff');p.fit(s,46+ci*76,83+hr*30,11,'#2b2b2b',66,700);});}
@@ -150,12 +150,12 @@ function tvListings(title,issue){
 }
 function games(title,issue){
  return [
-  ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'攻略! '+issue.head,'#ec4899');
+  ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"Strategy! "+issue.head,'#ec4899');
    for(let i=0;i<4;i++){const x=16+(i%2)*150,y=48+Math.floor(i/2)*150;p.rect(x,y,138,100,'#10162e');p.ctx.fillStyle=['#3bc4f2','#ffe066','#5ef08a','#f2557a'][i];
     for(let b=0;b<6;b++)p.ctx.fillRect(x+10+hash(b,i)*100,y+20+hash(b,i+5)*60,18,14);p.lines(x,y+108,138,3,10,'#6e695f',i);}
-   p.rect(16,350,288,60,'#fff3c4');p.t('隠しコマンド: ↑↑↓↓←→←→ B A',160,380,15,'#d7263d',900);footer(p,8);}),
-  ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'新作ソフト 発売カレンダー','#10162e');
-   ['冒険RPG ミナトクエスト','格闘 ストリートシーサー','レース 南国サーキット','パズル ハブとマングース','野球 熱闘甲子園','シューティング 星の海'].forEach((g,i)=>{const d=new Date(issue.saleDate.getFullYear(),issue.saleDate.getMonth(),issue.saleDate.getDate()+7+i*5);
+   p.rect(16,350,288,60,'#fff3c4');p.t("Hidden command: ↑↑↓↓←→←→ B A",160,380,15,'#d7263d',900);footer(p,8);}),
+  ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"New software Release calendar",'#10162e');
+   ["AdventureRPG Minato Quest","Fighting Street Shisa","Lace Tropical Circuit","Puzzle Habu and Mongoose","Baseball Fighting Koshien","Shooting Sea of Stars"].forEach((g,i)=>{const d=new Date(issue.saleDate.getFullYear(),issue.saleDate.getMonth(),issue.saleDate.getDate()+7+i*5);
     p.rect(16,48+i*58,288,50,i%2?'#eef4fb':'#fff');p.t(shortDate(d),24,73+i*58,14,'#ec4899',900,'left');p.fit(g,190,66+i*58,15,'#2b2b2b',190,800);p.t('¥'+(5800+i*400).toLocaleString(),296,86+i*58,11,'#666',700,'right');});footer(p,12);}),
  ];
 }
@@ -163,47 +163,47 @@ function guide(title,issue){
  return [
   ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'MAP · '+issue.sub,'#d7263d');
    p.rect(16,46,288,300,'#9fd6f0');p.ctx.fillStyle='#e9dfb8';p.ctx.beginPath();p.ctx.moveTo(150,60);p.ctx.bezierCurveTo(230,90,200,180,230,260);p.ctx.bezierCurveTo(240,320,170,340,120,320);p.ctx.bezierCurveTo(70,250,110,180,90,120);p.ctx.closePath();p.ctx.fill();
-   [['港',150,290],['国際通り',170,240],['首里',190,200],['やんばる',160,90],['空港',110,300]].forEach(([n,x,y],i)=>{p.ctx.fillStyle='#d7263d';p.ctx.beginPath();p.ctx.arc(x,y,6,0,Math.PI*2);p.ctx.fill();p.t(n,x+10,y,12,'#2b2b2b',800,'left');});
+   [["Minato",150,290],["Kokusai Street",170,240],["Shuri",190,200],["Yanbaru",160,90],["Airport",110,300]].forEach(([n,x,y],i)=>{p.ctx.fillStyle='#d7263d';p.ctx.beginPath();p.ctx.arc(x,y,6,0,Math.PI*2);p.ctx.fill();p.t(n,x+10,y,12,'#2b2b2b',800,'left');});
    p.lines(16,360,288,4,12,'#6e695f',3);footer(p,10);}),
-  ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'おすすめの店','#9b59b6');
-   ['サクラ商店 — 港前のコンビニ','佐藤ラーメン — 夜11時まで','みなと居酒屋 — 泡盛100種','港のパン屋 — 朝6時から','本屋 — 古地図あります'].forEach((s,i)=>{p.rect(16,46+i*72,80,62,['#ffc93c','#f2557a','#3bc4f2','#a6e57c','#c9a0dc'][i]);p.fit(s,206,62+i*72,14,'#2b2b2b',200,800);p.lines(104,74+i*72,200,2,10,'#8a857a',i);});footer(p,14);}),
+  ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"Recommended stores",'#9b59b6');
+   ["Sakura Shop — Convenience store in front of the port","Sato Ramen — Night11Until the hour","Minato Izakaya — Awamori100Seed","Port Bakery — Morning6From time","Bookstore — Old maps available"].forEach((s,i)=>{p.rect(16,46+i*72,80,62,['#ffc93c','#f2557a','#3bc4f2','#a6e57c','#c9a0dc'][i]);p.fit(s,206,62+i*72,14,'#2b2b2b',200,800);p.lines(104,74+i*72,200,2,10,'#8a857a',i);});footer(p,14);}),
  ];
 }
 function fashion(title,issue){
- return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'プリクラ手帳 大公開','#f2557a');
+ return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"Purikura notebook Big reveal",'#f2557a');
   for(let i=0;i<12;i++){const x=16+(i%3)*98,y=46+Math.floor(i/3)*90;p.rect(x,y,90,82,'#fff');p.rect(x+4,y+4,82,60,['#fbcfe8','#bae6fd','#fde68a','#bbf7d0'][(i+issue.variant)%4]);
-   p.ctx.fillStyle='#6b3a2a';p.ctx.beginPath();p.ctx.arc(x+45,y+34,16,Math.PI,0);p.ctx.fill();p.ctx.fillStyle='#ffd8bf';p.ctx.beginPath();p.ctx.arc(x+45,y+40,12,0,Math.PI*2);p.ctx.fill();p.t(['ずっ友','チョベリグ','♡LOVE','またね'][i%4],x+45,y+73,10,'#f2557a',900);}
+   p.ctx.fillStyle='#6b3a2a';p.ctx.beginPath();p.ctx.arc(x+45,y+34,16,Math.PI,0);p.ctx.fill();p.ctx.fillStyle='#ffd8bf';p.ctx.beginPath();p.ctx.arc(x+45,y+40,12,0,Math.PI*2);p.ctx.fill();p.t(["Friends","Chovelig",'♡LOVE',"See you soon"][i%4],x+45,y+73,10,'#f2557a',900);}
   footer(p,9);}),
-  ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'ポケベル暗号 早見表','#9b59b6');
-   [['0840','おはよう'],['14106','あいしてる'],['724106','なにしてる'],['3341','さみしい'],['49','至急'],['0833','おやすみ'],['8181','バイバイ']].forEach(([c,m],i)=>{p.rect(30,48+i*50,100,40,'#2b2b2b');p.t(c,80,68+i*50,20,'#5ef08a',900);p.t(m,150,68+i*50,18,'#2b2b2b',800,'left');});footer(p,11);})];
+  ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"Pager code Quick reference table",'#9b59b6');
+   [['0840',"Good morning"],['14106',"I love you"],['724106',"What are you doing?"],['3341',"Lonely"],['49',"Urgent"],['0833',"Good night"],['8181',"Bye-bye"]].forEach(([c,m],i)=>{p.rect(30,48+i*50,100,40,'#2b2b2b');p.t(c,80,68+i*50,20,'#5ef08a',900);p.t(m,150,68+i*50,18,'#2b2b2b',800,'left');});footer(p,11);})];
 }
 function sport(title,issue){
- return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'試合結果 '+shortDate(issue.saleDate),'#b8231d');
-  ['ハブ島田','シーサー金城','マングース比嘉','風雲・照屋','嵐の宮城','覆面X'].forEach((n,i)=>{const r=hash(i,issue.number)>.5;p.rect(16,48+i*56,288,48,i%2?'#f6eee6':'#fff');p.t(n,26,72+i*56,15,'#2b2b2b',800,'left');p.t(r?'○ 勝':'● 負',220,72+i*56,15,r?'#b8231d':'#555',900);p.t(`${8+Math.floor(hash(i,3)*20)}分${Math.floor(hash(i,4)*59)}秒`,296,72+i*56,12,'#666',700,'right');});footer(p,7);}),
-  ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'巡業日程','#1c1917');
-   ['那覇市民体育館','宜野湾 海浜公園','沖縄市 体育館','名護 21世紀の森','石垣 総合体育館','宮古 市民会館'].forEach((s,i)=>{const d=new Date(issue.saleDate.getFullYear(),issue.saleDate.getMonth(),issue.saleDate.getDate()+3+i*4);p.t(`${shortDate(d)}(${WEEKDAYS[d.getDay()]})`,24,60+i*56,15,'#b8231d',900,'left');p.t(s,24,82+i*56,15,'#2b2b2b',800,'left');p.t('18:30',296,70+i*56,14,'#666',700,'right');});footer(p,15);})];
+ return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"Match results "+shortDate(issue.saleDate),'#b8231d');
+  ["Hub Shimada","Shisa Kinjo","Mongoose Higa","Fuun Teruya","Storm of Miyagi","MaskedX"].forEach((n,i)=>{const r=hash(i,issue.number)>.5;p.rect(16,48+i*56,288,48,i%2?'#f6eee6':'#fff');p.t(n,26,72+i*56,15,'#2b2b2b',800,'left');p.t(r?"○ Victory":"● Negative",220,72+i*56,15,r?'#b8231d':'#555',900);p.t(`${8+Math.floor(hash(i,3)*20)}min${Math.floor(hash(i,4)*59)}sec`,296,72+i*56,12,'#666',700,'right');});footer(p,7);}),
+  ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"Tour schedule",'#1c1917');
+   ["Naha Civic Gymnasium","Ginowan Seaside Park","Okinawa City Gymnasium","Nago 21Century Forest","Stone wall General gymnasium","Miyako Civic Hall"].forEach((s,i)=>{const d=new Date(issue.saleDate.getFullYear(),issue.saleDate.getMonth(),issue.saleDate.getDate()+3+i*4);p.t(`${shortDate(d)}(${WEEKDAYS[d.getDay()]})`,24,60+i*56,15,'#b8231d',900,'left');p.t(s,24,82+i*56,15,'#2b2b2b',800,'left');p.t('18:30',296,70+i*56,14,'#666',700,'right');});footer(p,15);})];
 }
 function anime(title,issue){
- return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'秋の新番組 放送表','#2e2a7a');
-  ['機動海神ミナト','星くず学園','ハヤブサ風雲児','ぼくらの夏休み','魔法少女ゴーヤ','宇宙船シーサー号'].forEach((s,i)=>{p.rect(16,46+i*60,70,52,['#9b5de5','#f2557a','#ffb703','#3bc4f2','#5ef08a','#ef476f'][i]);p.fit(s,196,62+i*60,15,'#2b2b2b',200,800);p.t(`毎週${WEEKDAYS[(i+1)%7]}曜 ${17+i%3}:00`,196,84+i*60,12,'#666',700);});footer(p,5);})];
+ return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"New autumn program Broadcast list",'#2e2a7a');
+  ["Mobile Sea God Minato","Stardust Academy","Hayabusa Fuunji","Our summer vacation","Magical Girl Goya","Spaceship Shisa"].forEach((s,i)=>{p.rect(16,46+i*60,70,52,['#9b5de5','#f2557a','#ffb703','#3bc4f2','#5ef08a','#ef476f'][i]);p.fit(s,196,62+i*60,15,'#2b2b2b',200,800);p.t(`Weekly${WEEKDAYS[(i+1)%7]}Day of the week ${17+i%3}:00`,196,84+i*60,12,'#666',700);});footer(p,5);})];
 }
 function sea(title,issue){
- if(title.kind==='katsuo')return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'潮見表 '+issue.dateLine,'#2f5c45');
+ if(title.kind==='katsuo')return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"Tide chart "+issue.dateLine,'#2f5c45');
   p.ctx.strokeStyle='#2a8fcc';p.ctx.lineWidth=3;p.ctx.beginPath();for(let x=0;x<=288;x+=4){const y=150-Math.sin((x/288)*Math.PI*4+issue.variant)*60;x?p.ctx.lineTo(16+x,y):p.ctx.moveTo(16,y);}p.ctx.stroke();
-  for(let d=0;d<7;d++){p.rect(16,240+d*24,288,20,d%2?'#eef3ea':'#fff');p.t(`${d+1}日 満潮 ${5+d}:${(d*13%60).toString().padStart(2,'0')} 干潮 ${11+d}:${(d*29%60).toString().padStart(2,'0')}`,24,250+d*24,12,'#2b2b2b',700,'left');}footer(p,4);})];
- if(title.kind==='hoshizora')return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'今週の星空','#2b3a5c');
+  for(let d=0;d<7;d++){p.rect(16,240+d*24,288,20,d%2?'#eef3ea':'#fff');p.t(`${d+1}Day High tide ${5+d}:${(d*13%60).toString().padStart(2,'0')} Low tide ${11+d}:${(d*29%60).toString().padStart(2,'0')}`,24,250+d*24,12,'#2b2b2b',700,'left');}footer(p,4);})];
+ if(title.kind==='hoshizora')return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"This week's starry sky",'#2b3a5c');
   p.rect(16,44,288,288,'#14203b');p.ctx.strokeStyle='#33446b';p.ctx.lineWidth=1;p.ctx.beginPath();p.ctx.arc(160,188,140,0,Math.PI*2);p.ctx.stroke();
   for(let i=0;i<70;i++){p.ctx.fillStyle='#f2e2b0';p.ctx.beginPath();p.ctx.arc(30+hash(i,issue.number)*260,58+hash(i,2)*260,hash(i,3)*2.2+.6,0,Math.PI*2);p.ctx.fill();}
   p.ctx.strokeStyle='#c58a3a';p.ctx.lineWidth=1.5;p.ctx.beginPath();[[90,120],[130,140],[160,110],[200,150],[240,130]].forEach(([x,y],i)=>i?p.ctx.lineTo(x,y):p.ctx.moveTo(x,y));p.ctx.stroke();
-  p.t('ペガスス座 · 南の空 21時',160,352,15,'#2b3a5c',800);p.lines(16,372,288,3,12,'#6e695f',5);footer(p,6);})];
- return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'港町スケッチ','#20496b');
+  p.t("Pegasus · Southern sky 21h",160,352,15,'#2b3a5c',800);p.lines(16,372,288,3,12,'#6e695f',5);footer(p,6);})];
+ return [ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"Port town sketch",'#20496b');
   p.rect(16,46,288,200,'#d7e5ec');p.rect(16,190,288,56,'#3d7fa6');p.rect(150,90,18,100,'#fff');p.rect(150,110,18,14,'#d7263d');
   p.lines(16,262,288,12,12,'#6e695f',9);footer(p,12);})];
 }
 function newspaperPage(title,issue){
- return [ctx=>(w,h)=>page(ctx,w,h,p=>{p.rect(0,0,320,440,'#ebe7d9');header(p,title,'2面 · 地域',title.colour);
+ return [ctx=>(w,h)=>page(ctx,w,h,p=>{p.rect(0,0,320,440,'#ebe7d9');header(p,title,"2Face · Region",title.colour);
   for(let c=0;c<3;c++){p.fit(title.heads[(issue.variant+c+1)%title.heads.length],16+c*98+46,56,14,'#17141a',90,900);p.lines(16+c*98,72,92,24,13,'#57524a',c+issue.variant);}
-  p.rect(16,394,288,30,'#fff');p.t('広告 · サクラ商店 毎朝6時から',160,409,13,'#d7263d',800);})];
+  p.rect(16,394,288,30,'#fff');p.t("Advertisement · Sakura Shop Every morning6From time",160,409,13,'#d7263d',800);})];
 }
 
 /**

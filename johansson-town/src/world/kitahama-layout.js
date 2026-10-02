@@ -12,11 +12,11 @@ export const KITAHAMA=Object.freeze({
  /** The cross lane the houses face. */
  lane:Object.freeze({minX:33,maxX:59,minZ:64.5,maxZ:67.5}),
  plots:Object.freeze([
-  {id:'kitahama-1',kind:'red-tile',family:'トゥアン・ナオ',romaji:'Thuan & Nao',minX:33.5,maxX:41.6,minZ:55,maxZ:64,gate:'north'},
-  {id:'kitahama-2',kind:'concrete',family:'佐藤',romaji:'Sato',minX:45,maxX:54,minZ:55,maxZ:64,gate:'north'},
-  {id:'kitahama-3',kind:'concrete',family:'上原',romaji:'Uehara',minX:33.5,maxX:41.8,minZ:68,maxZ:77.5,gate:'south'},
-  {id:'kitahama-4',kind:'red-tile',family:'当間',romaji:'Tōma',minX:42.3,maxX:50.6,minZ:68,maxZ:77.5,gate:'south'},
-  {id:'kitahama-5',kind:'concrete',family:'貸家',romaji:'To let',minX:51.1,maxX:59.4,minZ:68,maxZ:77.5,gate:'south'},
+  {id:'kitahama-1',kind:'red-tile',family:"Tuan Nao",romaji:'Thuan & Nao',minX:33.5,maxX:41.6,minZ:55,maxZ:64,gate:'north'},
+  {id:'kitahama-2',kind:'concrete',family:"Sato",romaji:'Sato',minX:45,maxX:54,minZ:55,maxZ:64,gate:'north'},
+  {id:'kitahama-3',kind:'concrete',family:"Uehara",romaji:'Uehara',minX:33.5,maxX:41.8,minZ:68,maxZ:77.5,gate:'south'},
+  {id:'kitahama-4',kind:'red-tile',family:"For the time being",romaji:'Tōma',minX:42.3,maxX:50.6,minZ:68,maxZ:77.5,gate:'south'},
+  {id:'kitahama-5',kind:'concrete',family:"Rental house",romaji:'To let',minX:51.1,maxX:59.4,minZ:68,maxZ:77.5,gate:'south'},
  ].map(p=>Object.freeze({...p,wall:'block'}))),
  field:Object.freeze({minX:35,maxX:53,minZ:79,maxZ:83.2}),
  /**

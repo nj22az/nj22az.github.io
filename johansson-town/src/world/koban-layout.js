@@ -5,7 +5,7 @@
  * off the Harbour Line. Front office on the street side, his tatami room behind.
  */
 export const KOBAN=Object.freeze({
- id:'koban',title:'Minato Police Box',jp:'駐在所',
+ id:'koban',title:'Minato Police Box',jp:"Police station",
  x:8.9,z:21,w:5,d:4.2,height:3.1,
  /** The street face is the west wall; the door is in its south half, near the plaza. */
  face:6.4,door:Object.freeze([5.75,21.9]),

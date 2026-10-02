@@ -42,9 +42,9 @@ for(const dt of [1/60,1/30])test(`Thuan approaches, crosses the onsen threshold 
  try{
   const {world,person,g,state,blocked,ai}=setup();
   ai.update(dt,1190,false); // Initialise during her existing shop shift, before the invitation.
-  delete g.userData.indoors;g.visible=true;g.position.set(15,0,3);
+  delete g.userData.indoors;g.visible=true;g.position.set(-28,0,108);
   const guests=createIndoorResidents({world,parent:new THREE.Group(),place:'onsen',layout:{entrance:ONSEN_ROOM.spawn},getState:()=>state});
-  for(let t=0;t<30&&!g.userData.indoors;t+=dt){
+  for(let t=0;t<100&&!g.userData.indoors;t+=dt){
    const previous=g.position.clone();ai.update(dt,1215,false);
    assert.equal(sweepFraction(previous,g.position,blocked),1,'Every approach step obeys collision');
    if(!g.userData.indoors){assert.equal(g.visible,true);assert.deepEqual(guests.sync(1215,dt),[],'No borrowing before crossing');}
@@ -57,12 +57,12 @@ for(const dt of [1/60,1/30])test(`Thuan approaches, crosses the onsen threshold 
   assert.deepEqual(guests.sync(1215,dt),['Thuan'],'Indoor hand-off works after entry');
   guests.restore();
   assert.equal(g.userData.inOnsen,undefined);assert.equal(g.userData.outfit,undefined);
-  for(let t=0;t<20&&g.position.x>18.5;t+=dt){
+  for(let t=0;t<30;t+=dt){
    const previous=g.position.clone();ai.update(dt,1300,false);
    assert.equal(sweepFraction(previous,g.position,blocked),1,'Every exit step obeys collision');
    assert.equal(g.visible,true);assert.equal(g.userData.indoors,undefined);
   }
-  assert.ok(g.position.x<18.5,'She exits the porch and continues towards home');
+  assert.ok(Math.hypot(g.position.x-ONSEN_DOOR[0],g.position.z-ONSEN_DOOR[1])>.3,'She leaves the threshold and continues home');
   // Since the island grew she lives in Kitahama: after the bath she walks home, not to the ferry.
   assert.equal(g.userData.place,'home');assert.equal(ai.snapshot().Thuan.indoors,null);
  }finally{configureTownMode('legacy');}
@@ -75,7 +75,7 @@ test('an old indoor onsen save resolves the current threshold and can still leav
   ai.update(1/30,1215,false);
   assert.deepEqual([g.position.x,g.position.z],ONSEN_DOOR);assert.equal(g.userData.indoors,'onsen');
   assert.equal(blocked(g.position.x,g.position.z),false);
-  for(let t=0;t<20&&g.position.x>18.5;t+=1/30)ai.update(1/30,1300,false);
-  assert.ok(g.position.x<18.5);assert.equal(g.visible,true);assert.equal(g.userData.indoors,undefined);
+  for(let t=0;t<30;t+=1/30)ai.update(1/30,1300,false);
+  assert.ok(Math.hypot(g.position.x-ONSEN_DOOR[0],g.position.z-ONSEN_DOOR[1])>.3);assert.equal(g.visible,true);assert.equal(g.userData.indoors,undefined);
  }finally{configureTownMode('legacy');}
 });

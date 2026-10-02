@@ -39,7 +39,7 @@ function paintSkyline(ctx){
   }
  }
  // Neon on the near blocks: the signs of Kokusai-dōri.
- const neon=[['ホテル','#ff6ab0'],['カラオケ','#6af0ff'],['ステーキ','#ffd24a'],['A&W','#ff8a3a'],['那覇','#9aff8a'],['パチンコ','#ff5a5a']];
+ const neon=[["Hotel",'#ff6ab0'],["Karaoke",'#6af0ff'],["Steak",'#ffd24a'],['A&W','#ff8a3a'],["Naha",'#9aff8a'],["Pachinko",'#ff5a5a']];
  ctx.font='bold 34px "Hiragino Kaku Gothic ProN","Noto Sans CJK JP",sans-serif';ctx.textBaseline='middle';
  neon.forEach(([t,c],i)=>{const x=120+i*320+rnd()*80,y=SKY_H*(.62+rnd()*.12);ctx.shadowColor=c;ctx.shadowBlur=16;ctx.fillStyle=c;ctx.fillText(t,x,y);});
  ctx.shadowBlur=0;
@@ -156,17 +156,20 @@ export function buildCityRestaurant({room,reg,action,collider=()=>{},johansson=n
  const headOf=p=>p?new THREE.Vector3().setFromMatrixPosition(p.holder.matrixWorld).add(new THREE.Vector3(0,1.15,0)):null;
 
  // The dinner: what has been ordered and what the scene should be doing.
- const state={dish:null,drink:null,eaten:0,talks:0,toasts:0};
+ const state={dish:null,drink:null,eaten:0,talks:0,toasts:0,presentation:null};
+ let dinnerTime=0,nextPresentation=Infinity,presentationUntil=0,presentationPlate=null;
+ const clearPresentation=()=>{presentationPlate?.removeFromParent();presentationPlate=null;state.presentation=null;if(state.dish)places[1][state.dish==='course'?'course':'steak'].visible=true;};
+ const present=gesture=>{if(!her||!state.dish)return;clearPresentation();state.presentation=gesture;presentationUntil=dinnerTime+(gesture==='SitEnjoyFood'?3.8:4.2);her.animator.play(gesture);her.expression='smile';if(gesture==='SitPresentFood'){const source=places[1][state.dish==='course'?'course':'steak'];presentationPlate=source.clone();presentationPlate.position.set(0,0,0);presentationPlate.name='Thuan presents her actual dinner';presentationPlate.visible=true;if(state.dish==='course'){const plate=new THREE.Mesh(new THREE.CylinderGeometry(.13,.11,.02,24),mat(0xffffff));presentationPlate.add(plate);}group.add(presentationPlate);source.visible=false;}};
  const play=(p,g)=>p?.animator.play(g);
  const dinner={
   state,
   serve(item){
-   if(item.dish){state.dish=item.dish;state.eaten=0;places.forEach(pl=>{pl.course.visible=item.dish==='course';pl.steak.visible=item.dish==='steak';pl.course.scale.setScalar(1);pl.steak.scale.setScalar(1);});}
+   if(item.dish){clearPresentation();state.dish=item.dish;state.eaten=0;places.forEach(pl=>{pl.course.visible=item.dish==='course';pl.steak.visible=item.dish==='steak';pl.course.scale.setScalar(1);pl.steak.scale.setScalar(1);});}
    if(item.drink){state.drink=item.drink;places.forEach(pl=>{pl.fill.visible=true;pl.fill.material=mat(item.drink==='wine'?0x6a1020:0xe8d8a0,{roughness:.2});});}
-   play(waiter,'Bow');if(her)her.expression='happy';
+   play(waiter,'Bow');if(item.dish){present('SitEnjoyFood');nextPresentation=dinnerTime+10;}else if(her)her.expression='smile';
   },
   eat(){
-   if(!state.dish)return false;
+   if(!state.dish)return false;clearPresentation();nextPresentation=dinnerTime+30;
    state.eaten=Math.min(3,state.eaten+1);const k=1-state.eaten/3*.85;
    places.forEach(pl=>{(state.dish==='course'?pl.course:pl.steak).scale.setScalar(k);});
    play(him,'SitEat');setTimeout(()=>play(her,'SitEat'),500);
@@ -174,26 +177,29 @@ export function buildCityRestaurant({room,reg,action,collider=()=>{},johansson=n
    return true;
   },
   toast(){
-   if(!state.drink)return false;state.toasts++;
+   if(!state.drink)return false;clearPresentation();nextPresentation=dinnerTime+25;state.toasts++;
    play(him,'SitToast');play(her,'SitToast');if(her)her.expression='laugh';return true;
   },
   talk(){
    const line=DINNER_TALK[state.talks%DINNER_TALK.length];state.talks++;
-   if(her){her.talking=4;setTimeout(()=>play(her,state.talks%2?'Laugh':'Nod'),1800);}
+   if(her){her.talking=4;if(state.dish&&state.talks%3===0){present('SitEnjoyFood');nextPresentation=dinnerTime+30;}else setTimeout(()=>play(her,state.talks%2?'Laugh':'Nod'),1800);}
    if(him)him.talking=2;return line;
   },
  };
  let time=0;
  const tick=(dt)=>{
-  dt=Math.min(.1,dt||0);time+=dt;
+  dt=Math.min(.1,dt||0);time+=dt;dinnerTime+=dt;
+  if(state.presentation&&dinnerTime>=presentationUntil)clearPresentation();
+  if(state.dish&&!state.presentation&&dinnerTime>=nextPresentation&&!her?.animator.gesture){present('SitPresentFood');nextPresentation=dinnerTime+45;}
   candle.intensity=.75+Math.sin(time*13)*.06+Math.sin(time*7.3)*.05;flame.scale.y=1+Math.sin(time*11)*.15;
   group.updateMatrixWorld();
   const a=headOf(him),b=headOf(her);
   for(const p of people){
    p.talking=Math.max(0,p.talking-dt);
    p.animator.update(dt,{speed:0,seated:p.seated,seatHeight:p.seatHeight??undefined,expression:p.expression,talking:p.talking>0,
-    gaze:p===him?b:p===her?a:a});
+    gaze:p===her&&state.presentation?new THREE.Vector3(0,1.5,2.35):p===him?b:a});
   }
+  if(presentationPlate&&her){her.holder.updateMatrixWorld(true);const left=her.avatar.bones.handL.getWorldPosition(new THREE.Vector3()),right=her.avatar.bones.handR.getWorldPosition(new THREE.Vector3());presentationPlate.position.copy(group.worldToLocal(left.add(right).multiplyScalar(.5))).add(new THREE.Vector3(0,.04,0));}
  };
  tick(0);
  // One thing to do from where you sit: the dinner itself.

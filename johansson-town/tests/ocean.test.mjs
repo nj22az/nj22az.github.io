@@ -35,7 +35,7 @@ test('the sea knows how far it is from land: shallows at the beach, open water f
   assert.equal(shoreDistance(0,0),0,'the town is on land');
   assert.ok(shoreDistance(46,0)<2,'the water off the beach is shallow');
   assert.ok(shoreDistance(60,0)>10&&shoreDistance(60,0)<20,'the buoy floats in the azure');
-  assert.equal(shoreDistance(0,170),SHORE_FIELD.range,'open sea to the north');
+  assert.equal(shoreDistance(0,400),SHORE_FIELD.range,'open sea to the north');
   assert.ok(shoreDistance(165,-118)===0,'the airport island is land too');
   const tex=shoreDistanceTexture();
   assert.equal(tex.image.width,SHORE_FIELD.size);

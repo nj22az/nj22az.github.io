@@ -9,7 +9,7 @@ import {normalizeRecipe} from '../../avatars/recipe.js';
  * (町長宅), where Johansson lives.
  *
  * The building is the old school (港小中学校, 1971). When the junior high closed in 1989
- * the town office moved in. In 2026 the old two-storey block was replaced by a single-storey hall (school.js buildTownHall): the 5・6年 classroom is one of its rooms
+ * the town office moved in. In 2026 the old two-storey block was replaced by a single-storey hall (school.js buildTownHall): the Years 5–6 classroom is one of its rooms
  * (classroom.js), and the rooms along the field face became the town's.
  *
  * Both rooms follow the town's room contract: the door is on the +z wall, you enter
@@ -73,7 +73,7 @@ function plate(group,text,{w,h,at,ry=0,bg='#f3f0e4',fg='#23302a',font=GOTHIC,siz
 /** What is in the tray this week: every petition is from somebody who lives here. */
 export const PETITIONS=Object.freeze([
  'From Mr Shimabukuro, the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.',
- 'From Mrs Nakamura, 仲村ぜんざい: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.',
+ "From Mrs Nakamura, Nakamura Zenzai: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.",
  'From the Higa household, Nishi-machi: May the children use the town hall field on Sunday for eisa practice? Grandmother Higa will supervise. Loudly.',
  'From the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.',
  'From Thuan, Sakura Shōten: A request for a bench at the bus stop by the ferry. People wait there with their shopping.',
@@ -89,18 +89,18 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  for(const x of [-.75,.75])box([.32,.74,.8],[x,.37,-1.85],0x5a3f2a);
  collider(0,-1.85,1.9,.9,.8);
  box([.55,.08,.5],[0,.48,-2.45],0x2a2a2a,'Mayor’s chair seat');box([.55,.7,.08],[0,.9,-2.72],0x2a2a2a,'Mayor’s chair back');
- const name=plate(group,'町長 ヨハンソン',{w:.56,h:.14,at:[0,.86,-1.43],ry:0,bg:'#2b2f2c',fg:'#e8dfc4',font:SERIF,size:.62});name.rotation.x=-.4;
+ const name=plate(group,"Mayor Johansson",{w:.56,h:.14,at:[0,.86,-1.43],ry:0,bg:'#2b2f2c',fg:'#e8dfc4',font:SERIF,size:.62});name.rotation.x=-.4;
  box([.36,.24,.02],[-.55,.9,-2.05],0x3a4a52,'Desk photo');box([.26,.02,.34],[.55,.79,-1.75],0xe8e2cf,'Petitions tray');
  // Flags behind the desk: Japan and the town's own, on stands.
  const flag=(x,draw)=>{box([.03,2.1,.03],[x,1.05,-hd+.25],0xc9a64a);const f=new THREE.Mesh(new THREE.PlaneGeometry(.7,.48),new THREE.MeshStandardMaterial({map:canvasTexture(140,96,draw),side:THREE.DoubleSide,roughness:.9}));f.position.set(x+.36,1.78,-hd+.25);group.add(f);};
  flag(-1.6,(c,w0,h0)=>{c.fillStyle='#f4f1ea';c.fillRect(0,0,w0,h0);c.fillStyle='#c8102e';c.beginPath();c.arc(w0/2,h0/2,h0*.3,0,Math.PI*2);c.fill();});
- flag(1.2,(c,w0,h0)=>{c.fillStyle='#2f6f9f';c.fillRect(0,0,w0,h0);c.fillStyle='#f4f1ea';c.font=`bold 44px ${SERIF}`;c.textAlign='center';c.textBaseline='middle';c.fillText('港',w0/2,h0/2);});
+ flag(1.2,(c,w0,h0)=>{c.fillStyle='#2f6f9f';c.fillRect(0,0,w0,h0);c.fillStyle='#f4f1ea';c.font=`bold 44px ${SERIF}`;c.textAlign='center';c.textBaseline='middle';c.fillText("Minato",w0/2,h0/2);});
  // The island map on the west wall.
  const map=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.4),new THREE.MeshStandardMaterial({roughness:.9,map:canvasTexture(440,280,(c,w0,h0)=>{
   c.fillStyle='#7fb7cf';c.fillRect(0,0,w0,h0);c.fillStyle='#e8dcb8';c.beginPath();
   c.moveTo(70,250);c.lineTo(70,70);c.bezierCurveTo(140,30,250,20,330,60);c.bezierCurveTo(400,90,420,160,380,210);c.lineTo(330,250);c.closePath();c.fill();
-  c.fillStyle='#5c9848';c.fillRect(250,60,90,70);c.fillStyle='#a9aeb4';c.fillRect(150,70,14,180);c.fillStyle='#2b2b2b';c.font=`bold 22px ${GOTHIC}`;c.fillText('港町',120,160);
-  c.font=`bold 16px ${GOTHIC}`;c.fillText('北野島 →',350,262);c.strokeStyle='#3a3a3a';c.lineWidth=4;c.strokeRect(2,2,w0-4,h0-4);})}));
+  c.fillStyle='#5c9848';c.fillRect(250,60,90,70);c.fillStyle='#a9aeb4';c.fillRect(150,70,14,180);c.fillStyle='#2b2b2b';c.font=`bold 22px ${GOTHIC}`;c.fillText("Minato Town",120,160);
+  c.font=`bold 16px ${GOTHIC}`;c.fillText("Kitanojima →",350,262);c.strokeStyle='#3a3a3a';c.lineWidth=4;c.strokeRect(2,2,w0-4,h0-4);})}));
  map.position.set(-hw+.04,1.65,-.4);map.rotation.y=Math.PI/2;map.name='Island map';group.add(map);
  // Visitors' sofas round a low table, and the cabinet of minutes.
  box([.9,.05,.55],[-1.6,.42,.8],0x6b4a32,'Low table');collider(-1.6,.8,.9,.55,.45);
@@ -110,6 +110,9 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  anchor([0,1.0,-1.35],'Sit at the mayor’s desk',()=>action('seat','The mayor’s desk','Your desk. The chair still squeaks the way it did when it was the headmaster’s.'));
  anchor([.55,1.0,-1.5],'Read the petitions',()=>{const list=petitions();action('read','Petitions to the mayor',list.length?list.join('\n\n'):'The tray is empty. A quiet week on the island, or nobody has told you yet.');});
  anchor([-hw+.4,1.4,-.4],'Study the island map',()=>action('inspect','Map of Minato-chō','The island in hand-coloured ink, every lot numbered: the harbour, the shotengai, Nishi-machi inside its seawall, the new houses up at Kitahama, the oil jetty, the town hall and its field. Kitano-jima sits off the corner with its airport and the sewage works. Pins mark this year\'s roadworks.'));
+ plate(group,'DOCUMENT REGISTER',{w:1.4,h:.3,at:[hw-.55,1.9,1.3],ry:-Math.PI/2,sub:'COMMUNITY HALL · ONE YEAR'});
+ anchor([hw-.8,1.0,1.3],'Open the document register',()=>action('document-archive','Community Hall Document Register'));
+ for(let month=0;month<12;month++){const folder=box([.045,.28,.22],[hw-.45,.5+(month>5?.36:0),.72+(month%6)*.2],0xb5a16c,'Archive folder '+(month+1));}
  anchor([hw-.6,1.2,1.3],'Look through the minutes',()=>action('read','Town assembly minutes, 1997','Item 3: the power house\'s second diesel set to be overhauled before typhoon season; the old barber\'s shop to be let to the post office. Item 5: the ferry company asks for a longer ramp so the new cargo trucks can board. Item 7: Mrs Sato\'s complaint about the gulls, again. Item 9: the sewage works on Kitano-jima to be inspected by the prefecture in November.'));
  return {...layoutFor(),office:true};
 }
@@ -167,10 +170,10 @@ export function buildMayorHome({room,reg,action,collider=()=>{},exit,openMaker=n
  * sheet on the wall.
  */
 export const KITCHEN_BOOKINGS=Object.freeze([
- '土 · Saturday: 婦人会 · women\'s association, andagi for the eisa night (Mrs Nakamura)',
- '日 · Sunday: Higa family, 三十三回忌 memorial lunch',
- '水 · Wednesday: 5・6年 cooking class, goya champurū (Yonamine-sensei)',
- '金 · Friday: open to all, 18:00 -- bring your own fish (Kōji has promised tuna)',
+ "Saturday: Women's Association · women's association, andagi for the eisa night (Mrs Nakamura)",
+ "Sunday: Higa family, 33rd anniversary memorial lunch",
+ "Wednesday: Years 5–6 cooking class, goya champurū (Yonamine-sensei)",
+ "Friday: open to all, 18:00 -- bring your own fish (Kōji has promised tuna)",
 ]);
 export function buildCommunityKitchen({room,reg,action,collider=()=>{}}){
  const group=new THREE.Group();group.name='Community kitchen';room.add(group);
@@ -194,8 +197,9 @@ export function buildCommunityKitchen({room,reg,action,collider=()=>{}}){
  // The booking sheet and the aprons on their pegs.
  box([.6,.8,.02],[hw-.04,1.5,1],0xf6f1e6,'Booking sheet');
  for(let i=0;i<4;i++)box([.3,.55,.04],[1.2-i*.4,1.4,hd-.04],[0xe98aa6,0xf4f1ea,0x7fb0d8,0xf4d23c][i],'Apron');
- anchor([hw-.5,1.4,1],'Read the booking sheet',()=>action('read','調理室 · bookings this week',KITCHEN_BOOKINGS.join('\n')));
- anchor([1.2,1,.7],'Look at the work islands',()=>action('inspect','Community kitchen','Stainless steel worn soft at the edges, a ring of oil round the back burner that no amount of scrubbing will lift, and the smell of yesterday\'s andagi. A notice in Mrs Nakamura\'s hand: 使った物は元の場所へ -- put things back where you found them.'));
+ anchor([hw-.5,1.0,1.5],'Open the Community Hall archive',()=>action('document-archive','Community Hall Document Register'));
+ anchor([hw-.5,1.4,1],'Read the booking sheet',()=>action('read',"Community Kitchen · bookings this week",KITCHEN_BOOKINGS.join('\n')));
+ anchor([1.2,1,.7],'Look at the work islands',()=>action('inspect','Community kitchen',"Stainless steel worn soft at the edges, a ring of oil round the back burner that no amount of scrubbing will lift, and the smell of yesterday's andagi. A notice in Mrs Nakamura's hand: Return used items to their original locations -- put things back where you found them."));
  anchor([1.85,1.2,-hd+.8],'Look at the rice cookers',()=>action('inspect','Rice cookers','Two five-litre gas rice cookers, enough for the whole island at a funeral or a wedding. The newer one is from 1984.'));
  return {...layoutFor(),kitchen:true};
 }
@@ -209,7 +213,7 @@ export function buildCommunityKitchen({room,reg,action,collider=()=>{}}){
  *
  * Drawn from scratch to the room contract; nothing in it is anybody else's model.
  */
-export const CLINIC_HOURS=Object.freeze(['月〜金 · Mon–Fri 9:00–12:00, 14:00–17:00','土 · Sat 9:00–12:00','After hours: ring the bell, the doctor lives behind the clinic','Emergencies to Naha by the ferry, or the prefecture helicopter from Kitano-jima']);
+export const CLINIC_HOURS=Object.freeze(["Mon–Fri · Mon–Fri 9:00–12:00, 14:00–17:00","Earth · Sat 9:00–12:00",'After hours: ring the bell, the doctor lives behind the clinic','Emergencies to Naha by the ferry, or the prefecture helicopter from Kitano-jima']);
 export const DOCTOR='Dr Kakazu';
 const DOCTOR_RECIPE={name:DOCTOR,age:'adult',body:{height:.42,build:.4,skin:'#e3b48e'},head:{size:.46,shape:.5,form:'oval',jaw:.35,cheeks:.4},
  hair:{style:'ponytail',colour:'#1f1813'},eyes:{style:'almond',colour:'#2a1d16',size:.5},brows:{style:'straight',colour:'#1f1813',size:.45},
@@ -261,7 +265,7 @@ export function buildClinic({room,reg,action,collider=()=>{}}){
  // The eye chart: Landolt rings shrinking down the card.
  const eye=canvasTexture(160,320,(c,W,H)=>{c.fillStyle='#fbfaf4';c.fillRect(0,0,W,H);c.fillStyle='#111';let y=26,size=20;const gaps=[0,1.5,3,.5,2,2.5,1,3.5];
   for(let row=0;row<8;row++){const n=Math.min(5,1+row);for(let i=0;i<n;i++){const x=W/2+(i-(n-1)/2)*(size*2.6);c.lineWidth=size*.4;c.beginPath();const g=gaps[(row+i)%8]*Math.PI/2;c.arc(x,y,size*.8,g+.35,g+Math.PI*2-.35);c.strokeStyle='#111';c.stroke();}y+=size*2.3+4;size*=.72;}
-  c.font='bold 12px sans-serif';c.fillText('視力表',W/2-18,H-8);});
+  c.font='bold 12px sans-serif';c.fillText("Visual acuity chart",W/2-18,H-8);});
  box([.46,.86,.03],[-.75,1.5,-hd+.03],0xdedcd4,'Eye chart frame');
  const chart=new THREE.Mesh(new THREE.PlaneGeometry(.4,.8),new THREE.MeshStandardMaterial({map:eye,roughness:.8}));chart.position.set(-.75,1.5,-hd+.05);chart.name='Eye chart';group.add(chart);
  // The medicine cabinet by the door: white steel, glass front, rows of bottles.
@@ -280,7 +284,7 @@ export function buildClinic({room,reg,action,collider=()=>{}}){
  box([.36,.06,.36],[hw-.4,.03,2.0],0xe8ebe6,'Scales');box([.04,1.9,.04],[hw-.1,.95,2.0],0xd8d2c4,'Height rod');box([.2,.03,.12],[hw-.18,1.62,2.0],0xd8d2c4);
  box([.4,.42,1.2],[hw-.25,.21,.5],0x7fa7b8,'Waiting bench');collider(hw-.25,.5,.42,1.2,.45);
  // The hours board inside the door, and a calendar from the pharmacy in Naha.
- const hours=plate(group,'診療所',{w:.7,h:.36,at:[1.2,1.75,hd-.03],ry:Math.PI,bg:'#f8f4ea',fg:'#c0392b',sub:'月〜金 9–12 · 14–17 · 土 9–12'});hours.name='Clinic hours';
+ const hours=plate(group,"Clinic",{w:.7,h:.36,at:[1.2,1.75,hd-.03],ry:Math.PI,bg:'#f8f4ea',fg:'#c0392b',sub:"Mon–Fri 9–12 · 14–17 · Earth 9–12"});hours.name='Clinic hours';
  box([.36,.5,.02],[-1.85,1.6,-hd+.03],0xf8f4ea,'Pharmacy calendar');box([.32,.18,.02],[-1.85,1.73,-hd+.04],0x7fb0d8);
  // The doctor at her desk, turned to the patient's stool.
  let doctor=null;
@@ -290,13 +294,13 @@ export function buildClinic({room,reg,action,collider=()=>{}}){
   const seat=new THREE.Group();seat.name=DOCTOR;seat.position.set(chair[0],0,chair[1]);seat.rotation.y=-Math.PI/2+.4;
   doctor.root.rotation.y=0;seat.add(doctor.root);group.add(seat);
  }
- anchor([stool[0],.9,stool[1]],'Sit down for a check-up',()=>action('inspect','Check-up · '+DOCTOR,'She wheels round, warms the stethoscope on her palm and listens: front, back, "breathe in, hold it." Blood pressure 132 over 84. "The salt in the champurū, Mayor, and the awamori. Walk to the lighthouse and back twice a week and come and see me after Obon." She writes it on a pink card and puts it in the chart rack under ヨ.'));
- anchor([-.75,1.4,-hd+.4],'Read the eye chart',()=>action('inspect','視力表 · eye chart','Rings with a gap in them, smaller row by row: say which way the gap points. You get to the sixth row before the rings close up. 1.0 in the right eye, 0.8 in the left; the reading glasses stay.'));
- anchor([1.45,1.6,-hd+.5],'Look at the X-ray',()=>action('inspect','Chest film','Somebody\'s ribs on the lightbox, a name in marker on the corner tape: 大城. The doctor has drawn a small circle on the left lung and written 古い · old, nothing to worry about, with a smiling face.'));
- anchor([mx+.5,1.3,mz],'Look in the medicine cabinet',()=>action('read','Medicine cabinet','Brown bottles and white boxes behind glass, every shelf labelled in the doctor\'s neat katakana: 解熱剤 for fevers, 胃薬 for stomachs, the habu antivenom in the fridge underneath (two vials, checked monthly, the date on the door), seasickness tablets for the ferry, sting cream for jellyfish season, and one shelf that just says 子供 · children.'));
+ anchor([stool[0],.9,stool[1]],'Sit down for a check-up',()=>action('inspect','Check-up · '+DOCTOR,"She wheels round, warms the stethoscope on her palm and listens: front, back, \"breathe in, hold it.\" Blood pressure 132 over 84. \"The salt in the champurū, Mayor, and the awamori. Walk to the lighthouse and back twice a week and come and see me after Obon.\" She writes it on a pink card and puts it in the chart rack under Yo."));
+ anchor([-.75,1.4,-hd+.4],'Read the eye chart',()=>action('inspect',"Visual acuity chart · eye chart",'Rings with a gap in them, smaller row by row: say which way the gap points. You get to the sixth row before the rings close up. 1.0 in the right eye, 0.8 in the left; the reading glasses stay.'));
+ anchor([1.45,1.6,-hd+.5],'Look at the X-ray',()=>action('inspect','Chest film',"Somebody's ribs on the lightbox, a name in marker on the corner tape: Oshiro. The doctor has drawn a small circle on the left lung and written old · old, nothing to worry about, with a smiling face."));
+ anchor([mx+.5,1.3,mz],'Look in the medicine cabinet',()=>action('read','Medicine cabinet',"Brown bottles and white boxes behind glass, every shelf labelled in the doctor's neat katakana: Antipyretic for fevers, Stomach medicine for stomachs, the habu antivenom in the fridge underneath (two vials, checked monthly, the date on the door), seasickness tablets for the ferry, sting cream for jellyfish season, and one shelf that just says Children · children."));
  anchor([hw-.4,1,2.0],'Weigh yourself',()=>action('inspect','Scales','The needle swings and settles at 84 kilograms. The doctor, without turning round: "Shoes on, Mayor. Call it eighty-three."'));
  anchor([cx+.3,.9,-1.2],'Look at the couch',()=>action('inspect','Examination couch','Green vinyl under a roll of paper sheet, the curtain on its rail half drawn. Every child on the island has had a splinter out here, and most of the fishermen a fish hook.'));
- anchor([1.2,1.6,hd-.4],'Read the clinic hours',()=>action('read','港町診療所 · Minato Clinic',CLINIC_HOURS.join('\n')));
+ anchor([1.2,1.6,hd-.4],'Read the clinic hours',()=>action('read',"Minato Clinic · Minato Clinic",CLINIC_HOURS.join('\n')));
  const layout={...layoutFor(),clinic:true};
  if(doctor){const animator=doctor.animator;layout.tick=(dt)=>animator.update(Math.min(.1,dt||0),{speed:0,seated:true,seatHeight:.47,expression:'smile'});layout.tick(0);}
  return layout;

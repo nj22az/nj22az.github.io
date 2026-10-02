@@ -17,7 +17,7 @@ export function createShopRefrigerator(room,reg){
  }
  // One batch for each material keeps the cold cabinet inexpensive on mobile.
  for(const material of [white,frame,dark,light]){const gs=parts.filter(p=>p.material===material).map(p=>p.g);if(!gs.length)continue;const mesh=new THREE.Mesh(mergeGeometries(gs),material);gs.forEach(g=>g.dispose());group.add(mesh);}
- const c=document.createElement('canvas');c.width=1024;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#36594f';ctx.fillRect(0,0,1024,96);ctx.fillStyle='#fbf1d6';ctx.font='bold 36px sans-serif';ctx.textAlign='center';ctx.fillText('冷たい飲み物   ·   DRINKS & DAIRY',512,62);
+ const c=document.createElement('canvas');c.width=1024;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#36594f';ctx.fillRect(0,0,1024,96);ctx.fillStyle='#fbf1d6';ctx.font='bold 36px sans-serif';ctx.textAlign='center';ctx.fillText("Cold drinks   ·   DRINKS & DAIRY",512,62);
  const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;const sign=new THREE.Mesh(new THREE.PlaneGeometry(4.65,.16),new THREE.MeshBasicMaterial({map:texture,toneMapped:false}));sign.position.set(.395,2.19,-3.157);group.add(sign);
  const glass=new THREE.MeshStandardMaterial({color:0xb4d9d4,transparent:true,opacity:.075,roughness:.15,metalness:.05,depthWrite:false,side:THREE.DoubleSide});
  const doors=[];

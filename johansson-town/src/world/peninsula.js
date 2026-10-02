@@ -1,3 +1,4 @@
+import {ISLAND_COAST} from './island-plan.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GROUND} from '../render/ground-palette.js';
 import {TUNNEL} from './coyote-tunnel.js';
@@ -16,10 +17,9 @@ import {paintedTurf} from '../render/toy-surfaces.js';
 // them is now irregular: a rocky point north-west of Nishi-machi, the new Kitahama
 // district and its cane field rounding the north-east, and a softened south-east corner.
 export const COASTLINE=[
- [-40,-50],[-40,30],
- [-43,32],[-47,36],[-49.5,41],[-48.5,46],[-44,49.5],[-38,50.5],[-31,49],[-25,46.5],[-21,47.5],
- [-19,48],[11,49],[12,57.5],
- [15,63],[20,70],[26,77],[33,83],[41,87],[49,87.5],[55,84.5],[59.5,79],[62,72],[62,64],[59,57],[55,52],[51,48.5],[48.5,46],
+ [-40,-50],[-40,30],[-43,32],[-47,36],[-49.5,41],[-48.5,46],[-44,49.5],[-38,50.5],
+ ...ISLAND_COAST,
+ [62,64],[59,57],[55,52],[51,48.5],[48.5,46],
  [47.5,40],[45,29],[45,-43],
  [44,-46.5],[41.5,-49],[38,-50],[20,-50]];
 /** The land's bounding box, for the map and the residents' navigation grid. */

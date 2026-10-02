@@ -38,16 +38,16 @@ export function buildKoban(world,options){
  mesh(new THREE.BoxGeometry(.06,1.0,1.4),std(0x9aa3a0),west,1.65,z-1.1,'Police box window frame');
  glazeWithRoom(mesh(new THREE.PlaneGeometry(1.3,.9),pane(),west-.02,1.65,z-1.1,'Police box window')).rotation.y=-Math.PI/2;
  for(let i=0;i<5;i++)mesh(new THREE.BoxGeometry(.02,.03,1.28),std(0xe8e4d8),west-.04,1.3+i*.17,z-1.1,'Window blind slat');
- const sign=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([['駐在所',70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),west-.02,2.95,z,'Police box sign');sign.rotation.y=-Math.PI/2;
+ const sign=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([["Police station",70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),west-.02,2.95,z,'Police box sign');sign.rotation.y=-Math.PI/2;
  // The plaza side is what you see stepping off the bus: the sign again, and the red
  // lamp on the corner, where it shows up Main Street and across the plaza both.
  const south=z+d/2+.01;
- const plaza=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([['駐在所',70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),x-.9,2.95,south,'Police box plaza sign');void plaza;
+ const plaza=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([["Police station",70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),x-.9,2.95,south,'Police box plaza sign');void plaza;
  mesh(new THREE.SphereGeometry(.22,16,12),new THREE.MeshStandardMaterial({color:0xff3b30,emissive:0xff2a1a,emissiveIntensity:1.2,roughness:.3}),face-.2,3.25,south+.2,'Red police lamp');
  mesh(new THREE.BoxGeometry(.3,.06,.3),std(0x9aa3a0),face-.1,3.0,south+.1,'Lamp bracket');
  // The notice board and the police bicycle on the forecourt.
  mesh(new THREE.BoxGeometry(.06,.9,1.2),std(0xb98a55),west-.03,1.45,z+.25,'Police notice board');
- const notice=mesh(new THREE.PlaneGeometry(1.1,.8),new THREE.MeshStandardMaterial({map:signTexture([['お知らせ',52,40],['WANTED: TAMA (CAT)',26,92],['LOST: ONE GLOVE',26,130]],{w:420,h:300,bg:'#fff8e6',ink:'#3b3f55'}),roughness:.9}),west-.07,1.45,z+.25,'Police notices');notice.rotation.y=-Math.PI/2;
+ const notice=mesh(new THREE.PlaneGeometry(1.1,.8),new THREE.MeshStandardMaterial({map:signTexture([["Notice",52,40],['WANTED: TAMA (CAT)',26,92],['LOST: ONE GLOVE',26,130]],{w:420,h:300,bg:'#fff8e6',ink:'#3b3f55'}),roughness:.9}),west-.07,1.45,z+.25,'Police notices');notice.rotation.y=-Math.PI/2;
  const bike=new THREE.Group();bike.name='Police bicycle';bike.position.set(face-.55,0,z-1.9);bike.rotation.y=Math.PI/2;group.add(bike);
  const frame=std(0xf4f1ea),tyre=std(0x1c1c20);
  for(const bx of [-.52,.52]){const wheel=new THREE.Mesh(new THREE.TorusGeometry(.32,.035,6,20),tyre);wheel.position.set(bx,.34,0);bike.add(wheel);}

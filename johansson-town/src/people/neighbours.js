@@ -1,3 +1,7 @@
+import {DOCK_CREW_ROUTE} from '../world/docklands-layout.js';
+import {groundHeight} from '../world/layout.js';
+import {createNavigation} from './navmesh.js';
+import {AIRPORT_COUNTER,airportWorld} from '../world/airport-ground.js';
 import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
 import {GATEBALL_ACTIVE} from '../world/okinawa/layout.js';
@@ -18,9 +22,15 @@ import {GROUND_LAYER} from '../world/ground-layers.js';
 const H=(h,m=0)=>h*60+m;
 
 const ALL_NEIGHBOURS=Object.freeze([
+ {name:'Riku',look:'Kenji',height:1.7,role:'checking the cargo yard',walk:true,route:DOCK_CREW_ROUTE,speed:.65,at:[-35.8,-38.3],face:[0,-1],hours:[[420,1320]],lines:['Rice for Sakura, fuses for the workshop, ice for the fishing boats. This quay keeps the whole island going.','The early boat brings supplies; the evening boat takes fish and outgoing post. Keep the workshop doorway clear, please.']},
+ {name:'Emi Kado',look:'Reiko',height:1.61,role:'checking island freight manifests',at:[-23.1,-35.1],face:[1,0],pose:'Think',hours:[[360,1440]],lines:['Every parcel gets a line in the freight book. The Community Hall keeps our filed records for one year.','Kenji and Tetsuo are in the blue electrical workshop. The last cargo check is at ten; I stay for the late passenger boat.']},
+ {name:'Haru',look:'Shin',height:1.76,role:'sorting the village catch',at:[151,188],face:[-1,0],hours:[[0,1440]],home:[127,182],routine:[{from:0,at:[127,182],role:'at home',home:true},{from:360,at:[151,188],role:'landing and sorting the catch'},{from:720,at:[126,206],role:'collecting lunch at the general store'},{from:780,at:[149,183],role:'mending fishing nets'},{from:1080,at:[127,182],role:'at home',home:true}],lines:['The airport takes our parcels, but the boats still set the pace of the village.','I land the catch at dawn, collect lunch from Mina and mend the nets before going home.']},
+ {name:'Mina',look:'Yui',height:1.6,role:'keeping the village store',at:[126,206],face:[0,1],hours:[[0,1440]],home:[126,202.8],routine:[{from:0,at:[126,205.5],role:'at home',home:true},{from:480,at:[126,206],role:'opening the village general store'},{from:720,at:[130,208],role:'taking a lunch break'},{from:780,at:[126,206],role:'serving village customers'},{from:1080,at:[126,205.5],role:'at home',home:true}],lines:['Tea, rice crackers and postcards. Most customers are our neighbours.','The new guesthouse will bring a few visitors, but this will still be a quiet fishing village.']},
+ {name:'Jun',look:'Daichi',height:1.7,role:'checking commuter tickets',at:airportWorld(-16,18.5),face:[1,0],hours:[[0,1440]],home:airportWorld(-20,18.5),routine:[{from:0,at:airportWorld(-20,18.5),role:'off duty',home:true},{from:420,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:720,at:airportWorld(-26,18.5),role:'taking lunch beside the terminal'},{from:780,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:1200,at:airportWorld(-20,18.5),role:'off duty',home:true}],lines:['Check in ten minutes before your flight. Keep your cabin bag with you.','The ground-service radio goes to Kenji and Tetsuo at the docks. The test sheet comes back with it.']},
+
  {name:'Grandmother Higa',look:'Fumiko',height:1.46,role:'on her verandah',at:[-29.8,-20.7],y:.47,face:[0,-1],pose:'Interact',hours:[[H(7),H(18,30)]],
   lines:[
-   'あい、いらっしゃい。\nSit a moment. You are the one who talks to the girl at Sakura every day. She is a good girl. She counts my change twice so I do not have to.',
+   "Hey, welcome.\nSit a moment. You are the one who talks to the girl at Sakura every day. She is a good girl. She counts my change twice so I do not have to.",
    'These are shima-rakkyō beans — no, you are right, rakkyō is an onion. I have been saying it wrong for seventy years and nobody corrects a grandmother.',
    'The bus? Eight minutes to, eight minutes past. I can hear it in the tunnel before it comes out. My husband drove that bus for thirty years.',
    'When the typhoon comes you close the amado, fill the bath with water and wait. The house has been here since before the war. It knows what to do.']},
@@ -36,7 +46,7 @@ const ALL_NEIGHBOURS=Object.freeze([
    'My son runs the ice plant now. I told him: ice is a good business, it never goes off. He did not laugh either.']},
  {name:'Mrs Nakamura',look:'Yoshiko',height:1.52,role:'at the zenzai counter',at:[7.35,-10.55],y:.08,face:[-1,0],pose:'Idle',hours:[[H(10),H(19)]],
   lines:[
-   'いらっしゃい！ Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.',
+   "Welcome! Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.",
    'Thuan-chan comes on Sundays and orders the small one and then eats half of mine. Tell her I said so.',
    'Since 1972 on this corner. The machine is older than the shop. It sounds like a tractor and it makes the best ice on the island.']},
  {name:'Mr Shimabukuro',look:'Mr Tanabe',height:1.66,role:'minding the generators',at:[20.7,31.2],y:0,face:[1,0],pose:'Idle',hours:[[H(7),H(19)]],
@@ -109,7 +119,7 @@ export function routePoint(route,distance){
 }
 
 /** The ground under a neighbour: the gateball court stands on its terrace, everywhere else is level. */
-const groundAt=(x,z)=>inGateball(x,z)?COURT_TERRACE.height+GROUND_LAYER.apron:0;
+const groundAt=(x,z)=>inGateball(x,z)?COURT_TERRACE.height+GROUND_LAYER.apron:groundHeight(x,z);
 const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
 
 /**
@@ -119,7 +129,7 @@ const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
  * @param {(kind:string,name:string)=>void} options.onAction
  * @param {{attach:Function}} [options.characters]
  */
-export function createNeighbours({parent,register,onAction,characters}={}){
+export function createNeighbours({parent,register,onAction,characters,blocked=()=>false}={}){
  const people=NEIGHBOURS.map((spec,i)=>{
   const g=new THREE.Group();g.name=spec.name;g.userData.name=spec.name;g.userData.neighbour=true;
   g.userData.activity=spec.role;g.userData.socialPose=spec.pose||null;
@@ -130,7 +140,7 @@ export function createNeighbours({parent,register,onAction,characters}={}){
   register?.(g,'Talk to '+spec.name,()=>onAction?.('neighbour',spec.name));
   return {g,spec,travelled:i*7};
  });
- let talking=null,talkUntil=0;
+ const navigation=createNavigation(blocked);let talking=null,talkUntil=0;
  return {
   people,
   entities:people.map(p=>p.g),
@@ -150,6 +160,7 @@ export function createNeighbours({parent,register,onAction,characters}={}){
    const now=performance.now();
    for(const p of people){
     const {g,spec}=p;
+    if(spec.routine){const m=((minutes%1440)+1440)%1440,phase=[...spec.routine].reverse().find(p=>m>=p.from);if(!p.routine){g.position.set(phase.at[0],groundAt(...phase.at),phase.at[1]);p.routine=phase;}if(p.routine!==phase){p.routine=phase;p.path=navigation.path(g.position,{x:phase.at[0],z:phase.at[1]});}g.userData.activity=phase.role;if(!g.userData.playerConversation&&p.path?.length){const to=p.path[0],dx=to[0]-g.position.x,dz=to[1]-g.position.z,len=Math.hypot(dx,dz),step=Math.min(len,dt*.75);if(len<.07)p.path.shift();else {const x=g.position.x+dx/len*step,z=g.position.z+dz/len*step;if(!blocked(x,z,.32)){g.position.set(x,groundAt(x,z),z);faceAlong(g,dx,dz);}}}if(phase.home&&!p.path?.length){g.visible=false;continue;}}
     const awake=neighbourAwake(spec,minutes);
     const near=!viewer||Math.hypot(g.position.x-viewer.x,g.position.z-viewer.z)<45;
     g.visible=awake&&near;

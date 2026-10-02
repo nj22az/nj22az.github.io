@@ -56,7 +56,7 @@ function buildYard(group){
   // The car park: asphalt, white bays, a 来客用 (visitors) bay by the path.
   ctx.fillStyle='#9fa4aa';ctx.fillRect(X(pk.minX),Z(pk.minZ),(pk.maxX-pk.minX)*PX,(pk.maxZ-pk.minZ)*PX);
   ctx.fillStyle='#f2efe6';for(let x=pk.minX+.4;x<=pk.maxX;x+=2.6)ctx.fillRect(X(x),Z(pk.minZ+.2),.1*PX,(pk.maxZ-pk.minZ-.6)*PX);
-  ctx.font=`bold ${.5*PX}px ${GOTHIC}`;ctx.fillText('来客用',X(pk.maxX-2.2),Z(pk.maxZ-.6));
+  ctx.font=`bold ${.5*PX}px ${GOTHIC}`;ctx.fillText("For guests",X(pk.maxX-2.2),Z(pk.maxZ-.6));
   // The power house's concrete apron and the fuel tank's bund.
   ctx.fillStyle='#b3ae9f';ctx.fillRect(X(ph.minX-.3),Z(ph.minZ-.4),(ph.maxX-ph.minX+1.6)*PX,(ph.tank[1]-ph.minZ+1.5)*PX);
   // Worn paths: gate to entrance, entrance to taps; the wet patch round the taps.
@@ -144,7 +144,7 @@ function plate(group,text,{w,h,at,rotY=0,bg='#f1ead6',fg='#1f2a26',font=SERIF,ve
 }
 
 /** Room plates, hung out from the corridor ceiling over each door, as every school has them. */
-const ROOMS=[['倉庫'],['玄関'],['教室'],['調理室'],['町長室'],['診療所'],['町長宅']];
+const ROOMS=[["Warehouse"],["Entrance"],["Classroom"],["Community Kitchen"],["Mayor’s Office"],["Clinic"],["Mayor’s Home"]];
 
 /** The noticeboard in the entrance: harbour safety, the typhoon shelter map, the co-op. */
 function noticeboard(group){
@@ -156,15 +156,15 @@ function noticeboard(group){
   const note=(x,y,nw,nh,bg,rot,lines,head)=>{ctx.save();ctx.translate(x+nw/2,y+nh/2);ctx.rotate(rot);ctx.fillStyle=bg;ctx.fillRect(-nw/2,-nh/2,nw,nh);
    ctx.fillStyle='#b3382c';ctx.beginPath();ctx.arc(0,-nh/2+8,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2a2520';ctx.textAlign='center';
    ctx.font=`bold 20px ${GOTHIC}`;ctx.fillText(head,0,-nh/2+34);ctx.font=`13px ${GOTHIC}`;lines.forEach((l,i)=>ctx.fillText(l,0,-nh/2+58+i*18));ctx.restore();};
-  note(26,26,200,160,'#f4efdf',-.03,['台風のときは','港小体育館・公民館へ','非常持出袋の確認を','Typhoon shelters:','school gym, community hall'],'台風避難所');
-  note(242,30,170,150,'#fff7c9',.02,['岸壁で遊ばない','Do not play on','the quay or the','tetrapods'],'港の安全');
-  note(430,24,186,176,'#e3f0e6',-.015,['ハーリー大会','旧暦五月四日','漁協 青年部','Harbour boat race','co-op youth section'],'漁協より');
-  note(40,206,250,168,'#f6f1e6',.01,['避難場所地図','Shelter map'],'港町 避難地図');
+  note(26,26,200,160,'#f4efdf',-.03,["When there is a typhoon","To Minato Elementary Gymnasium/Community Center","Check your emergency bag",'Typhoon shelters:','school gym, community hall'],"Typhoon shelter");
+  note(242,30,170,150,'#fff7c9',.02,["Don't play on the quay",'Do not play on','the quay or the','tetrapods'],"Port Safety");
+  note(430,24,186,176,'#e3f0e6',-.015,["Harley Tournament","May 4th of the lunar calendar","Fisheries cooperative Youth group",'Harbour boat race','co-op youth section'],"From the Fisheries Association");
+  note(40,206,250,168,'#f6f1e6',.01,["Evacuation site map",'Shelter map'],"Minato Town Evacuation map");
   // The map on that notice: the harbour, the school, the hall, drawn with a felt pen.
   ctx.strokeStyle='#3f6f9a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(60,330);ctx.quadraticCurveTo(160,300,270,340);ctx.stroke();
-  ctx.fillStyle='#b3382c';ctx.fillRect(120,290,26,18);ctx.fillRect(200,300,20,14);ctx.fillStyle='#2a2520';ctx.font=`11px ${GOTHIC}`;ctx.fillText('学校',120,284);ctx.fillText('公民館',196,296);
-  note(312,210,150,160,'#f4efdf',-.02,['給食だより','九月','ゴーヤーチャンプルー','ソーキ汁','あじフライ'],'給食');
-  note(478,214,140,150,'#ffe1d6',.03,['落とし物','Lost: one','blue sandal','(left foot)'],'おとしもの');
+  ctx.fillStyle='#b3382c';ctx.fillRect(120,290,26,18);ctx.fillRect(200,300,20,14);ctx.fillStyle='#2a2520';ctx.font=`11px ${GOTHIC}`;ctx.fillText("School",120,284);ctx.fillText("Community Hall",196,296);
+  note(312,210,150,160,'#f4efdf',-.02,["School lunch news","September","Goya Champuru","Soki soup","Fried horse mackerel"],"School lunch");
+  note(478,214,140,150,'#ffe1d6',.03,["Lost item",'Lost: one','blue sandal','(left foot)'],"Otoshimono");
  });
  // On the wall between the column and the entrance, where you wait for the doors.
  const board=new THREE.Mesh(new THREE.BoxGeometry(.95,.78,.05),[...Array(4).fill(new THREE.MeshStandardMaterial({color:0x5c4b39})),new THREE.MeshStandardMaterial({color:0x5c4b39}),new THREE.MeshStandardMaterial({map,roughness:.9})]);
@@ -235,12 +235,12 @@ function buildTownHallDressing(group,options){
  // A monument sign of polished stone at the gate, the way every town hall has one.
  const g=SCHOOL.gate;kit.box(2.4,1.3,.4,g.x+3.4,.65,g.z+.6,0x4a4f52,{finish:'gloss'});kit.box(2.6,.15,.55,g.x+3.4,.07,g.z+.6,0x9a958a);
  kit.finish(group,'Town hall dressing');
- plate(group,'港町役場 · 公民館',{w:2.1,h:.62,at:[g.x+3.4,.75,g.z+.39],rotY:Math.PI,bg:'#4a4f52',fg:'#efe6cc',size:.36,sub:'MINATO TOWN HALL · COMMUNITY CENTRE',name:'Town hall monument'});
- plate(group,'発電所',{w:1.4,h:.4,at:[ph.maxX+.06,3.2,ph.door[1]],rotY:Math.PI/2,bg:'#e6ecef',fg:'#2f4f5a',size:.6,name:'Power house sign'});
+ plate(group,"Community Hall · Community Hall",{w:2.1,h:.62,at:[g.x+3.4,.75,g.z+.39],rotY:Math.PI,bg:'#4a4f52',fg:'#efe6cc',size:.36,sub:'MINATO TOWN HALL · COMMUNITY CENTRE',name:'Town hall monument'});
+ plate(group,"Power plant",{w:1.4,h:.4,at:[ph.maxX+.06,3.2,ph.door[1]],rotY:Math.PI/2,bg:'#e6ecef',fg:'#2f4f5a',size:.6,name:'Power house sign'});
  // Flags on the old school's pole: Japan and the town.
  const flag=(y,draw)=>{const t=canvasTexture(140,96,draw);const f=new THREE.Mesh(new THREE.PlaneGeometry(1.4,.95),new THREE.MeshStandardMaterial({map:t,side:THREE.DoubleSide,roughness:.9}));f.position.set(SCHOOL.flagpole.x-.74,y,SCHOOL.flagpole.z);f.rotation.y=Math.PI;f.name='Town hall flag';group.add(f);};
  flag(8.2,(cx2,w0,h0)=>{cx2.fillStyle='#f4f1ea';cx2.fillRect(0,0,w0,h0);cx2.fillStyle='#c8102e';cx2.beginPath();cx2.arc(w0/2,h0/2,h0*.3,0,Math.PI*2);cx2.fill();});
- flag(7.1,(cx2,w0,h0)=>{cx2.fillStyle='#2f6f9f';cx2.fillRect(0,0,w0,h0);cx2.fillStyle='#f4f1ea';cx2.font=`bold 50px ${SERIF}`;cx2.textAlign='center';cx2.textBaseline='middle';cx2.fillText('港',w0/2,h0/2);});
+ flag(7.1,(cx2,w0,h0)=>{cx2.fillStyle='#2f6f9f';cx2.fillRect(0,0,w0,h0);cx2.fillStyle='#f4f1ea';cx2.font=`bold 50px ${SERIF}`;cx2.textAlign='center';cx2.textBaseline='middle';cx2.fillText("Minato",w0/2,h0/2);});
 }
 
 /**
@@ -325,13 +325,13 @@ export function buildSchool(world,options){
  buildTownHallDressing(group,options);
 
  // Lettering.
- plate(onBuilding,'港町役場',{w:.42,h:1.18,at:[SCHOOL.gate.x-SCHOOL.gate.half,.88,SCHOOL.gate.z-.31],rotY:Math.PI,vertical:true,bg:'#e9dfc5',fg:'#1b1b1b',size:.62,name:'School gate plate'});
- plate(onBuilding,'港 町 役 場 · 公 民 館',{w:6.4,h:.5,at:[27,3.75,SCHOOL.corridor.minZ-.36],rotY:Math.PI,bg:'#e4e1d3',fg:'#2d5a4c',size:.78,name:'School name on parapet'});
- plate(onBuilding,'玄 関',{w:1.2,h:.3,at:[SCHOOL.genkan.x,2.62,B.minZ-.13],rotY:Math.PI,bg:'#e4e1d3',fg:'#2b2b2b',font:GOTHIC,size:.72,name:'Entrance plate'});
+ plate(onBuilding,"Community Hall",{w:.42,h:1.18,at:[SCHOOL.gate.x-SCHOOL.gate.half,.88,SCHOOL.gate.z-.31],rotY:Math.PI,vertical:true,bg:'#e9dfc5',fg:'#1b1b1b',size:.62,name:'School gate plate'});
+ plate(onBuilding,"Minato Town Role Place · Public People Hall",{w:6.4,h:.5,at:[27,3.75,SCHOOL.corridor.minZ-.36],rotY:Math.PI,bg:'#e4e1d3',fg:'#2d5a4c',size:.78,name:'School name on parapet'});
+ plate(onBuilding,"Gen Seki",{w:1.2,h:.3,at:[SCHOOL.genkan.x,2.62,B.minZ-.13],rotY:Math.PI,bg:'#e4e1d3',fg:'#2b2b2b',font:GOTHIC,size:.72,name:'Entrance plate'});
  ROOMS.forEach(([down,up],i)=>{
   const x=SCHOOL_COLUMNS[i]+.8;
   for(const [text,y] of [[down,2.55]]){
-   if(text==='玄関')continue;
+   if(text==="Entrance")continue;
    plate(onBuilding,text,{w:.62,h:.2,at:[x,y,B.minZ-.55],rotY:Math.PI/2,bg:'#f3f0e4',fg:'#23302a',font:GOTHIC,size:.66,name:'Room plate '+text});
    plate(onBuilding,text,{w:.62,h:.2,at:[x,y,B.minZ-.55],rotY:-Math.PI/2,bg:'#f3f0e4',fg:'#23302a',font:GOTHIC,size:.66,name:'Room plate '+text});
   }
@@ -343,27 +343,27 @@ export function buildSchool(world,options){
  const anchor=(at,label,fn)=>{const o=new THREE.Object3D();o.position.set(...at);group.add(o);options.register?.(o,label,fn);return o;};
  const say=(title,text)=>()=>options.onAction?.('inspect',title,text);
  options.register?.(board,'Read the noticeboard',()=>options.onAction?.('read','School noticeboard',
-  'Pinned in the entrance of the town hall, one over another: 台風避難所 -- in a typhoon, the school gym and the community hall are the shelters, check your emergency bag. 港の安全 -- do not play on the quay or the tetrapods. From the fishing co-op, the youth section is taking crews for the harbour boat race (ハーリー) on the fourth day of the fifth month. A felt-pen map of the town with the shelters in red. This month\'s kyūshoku: goya champuru, sōki-jiru, fried aji. Lost: one blue sandal, left foot.'));
+  "Pinned in the entrance of the town hall, one over another: Typhoon shelter -- in a typhoon, the school gym and the community hall are the shelters, check your emergency bag. Port Safety -- do not play on the quay or the tetrapods. From the fishing co-op, the youth section is taking crews for the harbour boat race (Harbour Boat Race) on the fourth day of the fifth month. A felt-pen map of the town with the shelters in red. This month's kyūshoku: goya champuru, sōki-jiru, fried aji. Lost: one blue sandal, left foot."));
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1.9,SCHOOL.gate.z-.9],'Greet the shisa',say('Shisa on the gateposts',
   'A pair of glazed shisa, one on each post: the one on the right with its mouth open to take in good fortune, the one on the left with its mouth shut to keep it. Somebody has put a hibiscus flower behind the left one\'s ear.'));
- anchor([SCHOOL.gate.x-SCHOOL.gate.half,1,SCHOOL.gate.z-.7],'Read the town hall gate plate',say('港町役場 · Minato Town Hall',
+ anchor([SCHOOL.gate.x-SCHOOL.gate.half,1,SCHOOL.gate.z-.7],'Read the town hall gate plate',say("Community Hall · Minato Town Hall",
   'One storey, all of it on the forecourt: the town office, the community kitchen, the mayor\'s office, the clinic, the island school\'s one classroom (eight pupils, the 5th and 6th years together) and, at the east end, the mayor\'s house. Built on the old school\'s footprint after the two-storey block from 1971 was taken down.'));
  anchor([SCHOOL.wash.x,1,SCHOOL.wash.z-.8],'Rinse your feet at the taps',()=>options.onAction?.('school-taps'));
  anchor([(SCHOOL.bikeShed.minX+SCHOOL.bikeShed.maxX)/2,1,SCHOOL.bikeShed.minZ+.4],'Look at the bicycles',say('Bike shed',
   'Bicycles under a zinc roof rusted through at the ribs: the town office staff\'s, two children\'s with names in marker on the mudguards, and the postman\'s spare.'));
- anchor([SCHOOL.powerHouse.door[0]+.4,1.2,SCHOOL.powerHouse.door[1]],'Look in at the generators',say('Minato power station · 港町発電所',
+ anchor([SCHOOL.powerHouse.door[0]+.4,1.2,SCHOOL.powerHouse.door[1]],'Look in at the generators',say("Minato power station · Minatocho Power Plant",
   'Through the open steel doors: two diesel generator sets, green and yellow, each as long as a kei truck, one thudding, one resting. A switchboard of black dials and red lamps runs along the back wall; the needles sit on 6,600 volts and 50 cycles. Every light on the island comes out of this room. The day tank outside is filled from the oil jetty when the tanker is in. Mr Shimabukuro keeps the logbook on a clipboard by the door.'));
- anchor([SCHOOL.gate.x+3.4,1,SCHOOL.gate.z+1.2],'Read the monument',say('港町役場 · 公民館',
-  'Minato Town Hall and Community Centre. Polished granite, the characters cut and filled with gold that has mostly worn away. Underneath, smaller: 昭和四十六年 小中学校として建設 · 平成元年 役場として開庁 (built as the school, 1971; opened as the town hall, 1989).'));
+ anchor([SCHOOL.gate.x+3.4,1,SCHOOL.gate.z+1.2],'Read the monument',say("Community Hall · Community Hall",
+  "Minato Town Hall and Community Centre. Polished granite, the characters cut and filled with gold that has mostly worn away. Underneath, smaller: 1971 Constructed as an elementary and junior high school · 1989 Opened as a town hall (built as the school, 1971; opened as the town hall, 1989)."));
  anchor([SCHOOL.genkan.x+6,1,SCHOOL.seawall.south-.8],'Look over the seawall',say('South seawall',
   'Tetrapods stacked against the wall, and beyond them the reef flat going green and then blue. In a typhoon the spray comes over this wall and salts the classroom windows white.'));
  anchor([SCHOOL.flagpole.x,1.1,SCHOOL.flagpole.z-.6],'Listen to the speakers',say('Horn speakers',
-  'Two grey horns on the flagpole and two on the tower: the town\'s 防災無線, the disaster radio. The chime comes out of them at 8:25, noon, 12:20, 15:30 and 17:00 -- the Westminster quarters, a little slow and a little flat, heard all over the harbour -- and typhoon warnings when there are any.'));
+  "Two grey horns on the flagpole and two on the tower: the town's Disaster prevention radio, the disaster radio. The chime comes out of them at 8:25, noon, 12:20, 15:30 and 17:00 -- the Westminster quarters, a little slow and a little flat, heard all over the harbour -- and typhoon warnings when there are any."));
 
  // The door. The school keeps a site like any building in town, so the map, the
  // directory and the doorway carry you in and out the way they do everywhere else.
  const door=[SCHOOL.genkan.x,0,B.minZ-.7];
- const site={id:'school',title:'Town Hall Classroom',jp:'港町役場 · 教室',sub:'5・6年 · 8 PUPILS',x:SCHOOL.genkan.x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',
+ const site={id:'school',title:'Town Hall Classroom',jp:"Community Hall · Classroom",sub:"Years 5–6 · 8 PUPILS",x:SCHOOL.genkan.x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',
   line:'Lessons 8:30–15:30 · kyūshoku 12:20 · visitors sign in at the staff room',door,exitPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],
   approachPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'07:30'};
  options.sites.push(site);
@@ -371,10 +371,10 @@ export function buildSchool(world,options){
  // The mayor's office and the mayor's home: two more doors along the field face, each
  // its own room (interiors/town-hall.js), the way every door in town is its own site.
  for(const [id,title,jp,sub,x,label,line] of [
-  ['community-kitchen','Community Kitchen','調理室','COMMUNITY CENTRE',27.0,'Go into the community kitchen','Open to every household · the women’s association on Saturdays'],
-  ['mayor-office','Mayor’s Office','町長室','MINATO TOWN HALL',30.6,'Go into the mayor’s office','Office hours 8:30–17:15 · petitions in the tray'],
-  ['clinic','Minato Clinic','診療所','DR KAKAZU',34.1,'Go into the clinic','Mon–Fri 9–12, 14–17 · Sat 9–12 · ring the bell after hours'],
-  ['mayor-home','Mayor’s House','町長宅','JOHANSSON',37.7,'Go home','Your rooms in the east wing'],
+  ['community-kitchen','Community Kitchen',"Community Kitchen",'COMMUNITY CENTRE',27.0,'Go into the community kitchen','Open to every household · the women’s association on Saturdays'],
+  ['mayor-office','Mayor’s Office',"Mayor’s Office",'MINATO TOWN HALL',30.6,'Go into the mayor’s office','Office hours 8:30–17:15 · petitions in the tray'],
+  ['clinic','Minato Clinic',"Clinic",'DR KAKAZU',34.1,'Go into the clinic','Mon–Fri 9–12, 14–17 · Sat 9–12 · ring the bell after hours'],
+  ['mayor-home','Mayor’s House',"Mayor’s Home",'JOHANSSON',37.7,'Go home','Your rooms in the east wing'],
  ]){
   const at=[x,0,B.minZ-.7],s={id,title,jp,sub,x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',line,door:at,exitPosition:[x,0,B.minZ-1.4],approachPosition:[x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'00:00'};
   options.sites.push(s);

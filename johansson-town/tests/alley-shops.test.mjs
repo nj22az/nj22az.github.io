@@ -60,10 +60,11 @@ test('alley businesses retain their rooms, reachable thresholds, exits and staff
   assert.equal(sweepFraction({x:-3.5,z:p.door[2]},{x:p.door[0],z:p.door[2]},blocked),1,'Straight approach across Main Street');
   ray.set(new THREE.Vector3(p.door[0],1.3,p.door[2]+.2),direction);ray.far=2;
   // People walk past the doors on the town clock; one in the doorway is not the facade
-  // hiding it, so they are left out of the check.
+  // hiding it, so they are left out of the check. Transparent rain streaks
+  // also cross this ray but do not obscure the entrance.
   const people=new Set([...(world.people||[]).map(p=>p.g),...(world.neighbours||[])]);
   const isPerson=o=>{for(let q=o;q;q=q.parent)if(people.has(q))return true;return false;};
-  const hits=ray.intersectObjects(world.group.children,true).filter(h=>h.object.layers.mask!==1<<31&&!isPerson(h.object));
+  const hits=ray.intersectObjects(world.group.children,true).filter(h=>h.object.layers.mask!==1<<31&&!isPerson(h.object)&&!(h.object.isLineSegments&&h.object.userData.dynamicProp));
   assert.ok(hits.some(h=>h.object.name==='door-glazing'),'visible joinery at '+id);
   assert.equal(hits[0].object.name,'door-glazing','source facade does not hide '+id+' entrance');
  }

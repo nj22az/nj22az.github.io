@@ -115,7 +115,7 @@ function buildCostumed(who){
 /** Mirror-writing signs of the town's shops, and furniture hanging from the roof. */
 function dressBizarro(group,map){
  const random=seeded(map.seed*11+map.floor);
- const signs=[['さくら','SAKURA','#a6333c'],['みなと','MINATO IZAKAYA','#2b3a4a'],['中華そば','SATO RAMEN','#a34e3d'],['港','HARBOUR OFFICE','#2b5a78'],['交番','KOBAN','#1f2d4a']];
+ const signs=[["Sakura",'SAKURA','#a6333c'],["Minato",'MINATO IZAKAYA','#2b3a4a'],["Ramen",'SATO RAMEN','#a34e3d'],["Minato",'HARBOUR OFFICE','#2b5a78'],["Police box",'KOBAN','#1f2d4a']];
  const H=WALL_HEIGHT;
  const walls=[];
  for(const r of map.rooms)for(let x=r.x;x<r.x+r.w;x++)if(map.at(x,r.y-1)===WALL)walls.push([x,r.y]);
@@ -260,7 +260,7 @@ export function buildDungeon({room,reg=()=>{},run,say=()=>{},hud=()=>{},onDescen
  }
  const spawn=[sx+.6,0,sz+.6];
  refresh();
- say(run.floor===1?'古洞 · Down the rope into Bizarro Minato. The whole town is down here in monster suits, and everything is backwards.':'Floor B'+run.floor+'. Further down, and further backwards.',4.5);
+ say(run.floor===1?"Old Cave · Down the rope into Bizarro Minato. The whole town is down here in monster suits, and everything is backwards.":'Floor B'+run.floor+'. Further down, and further backwards.',4.5);
  return {
   bounds:{minX:0,maxX:map.w*TILE,minZ:0,maxZ:map.h*TILE},
   spawn,exit:[sx,1.1,sz],yaw:0,noDoorway:true,colliders:[],

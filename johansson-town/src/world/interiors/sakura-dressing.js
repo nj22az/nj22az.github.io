@@ -33,25 +33,25 @@ export const MEDICINE_SHELF=Object.freeze({front:6.675,back:6.83,levels:Object.f
  * the same kind of thing cost over a Japanese counter in 1997, tax included.
  */
 export const MEDICINES=Object.freeze([
- {id:'kaze',jp:'ミナトかぜ薬',sub:'総合かぜ薬 顆粒',en:'Minato cold granules',price:1380,size:[.09,.13,.045],bg:'#f7f4ec',band:'#c8312c',ink:'#1d2a55',side:'#f2eee2'},
- {id:'itami',jp:'イタミノン',sub:'解熱鎮痛薬 20錠',en:'Itaminon pain tablets',price:880,size:[.08,.11,.035],bg:'#f6d24a',band:'#2d5aa6',ink:'#1b1b1b',side:'#f0c83a'},
- {id:'ichou',jp:'シオカゼ胃腸薬',sub:'食べすぎ・もたれ',en:'Shiokaze stomach medicine',price:1100,size:[.1,.12,.045],bg:'#3f8a5e',band:'#f4efe0',ink:'#ffffff',side:'#377a53'},
- {id:'megusuri',jp:'アイクール',sub:'目薬 15ml',en:'Eye Cool eye drops',price:480,size:[.05,.09,.03],bg:'#8ed0ea',band:'#1e6ea8',ink:'#0f3355',side:'#7fc4df'},
- {id:'nodo',jp:'島レモンのど飴',sub:'のどあめ',en:'Island-lemon throat sweets',price:150,size:[.1,.13,.03],bg:'#f39a2e',band:'#fff3c2',ink:'#6b2a0c',side:'#e98c22'},
- {id:'bansoko',jp:'キズバン',sub:'救急ばんそうこう 30枚',en:'Kizuban plasters',price:350,size:[.09,.07,.035],bg:'#f2a6b4',band:'#ffffff',ink:'#7a1f33',side:'#eb97a7'},
- {id:'shippu',jp:'ヒヤッと湿布',sub:'肩こり・腰痛',en:'Hiyatto cooling compresses',price:980,size:[.12,.16,.03],bg:'#ffffff',band:'#2f6fb6',ink:'#123b75',side:'#e8eef6'},
- {id:'katori',jp:'蚊取り線香',sub:'渦巻 10巻',en:'Mosquito coils',price:320,size:[.15,.15,.1],bg:'#2e7a3c',band:'#d7342a',ink:'#fff7d6',side:'#276a33'},
- {id:'mushi',jp:'虫よけスプレー',sub:'ハブクラゲ注意',en:'Insect repellent',price:640,size:[.07,.16,.05],bg:'#a8d94a',band:'#1f5a2c',ink:'#16361b',side:'#99c93e'},
- {id:'ugai',jp:'うがい薬',sub:'のどの殺菌',en:'Throat gargle',price:720,size:[.07,.15,.05],bg:'#8a4a1c',band:'#f5e2b4',ink:'#fff4dc',side:'#7a4018'},
- {id:'vitamin',jp:'ビタミンC 1000',sub:'60粒',en:'Vitamin C tablets',price:900,size:[.08,.12,.05],bg:'#ffb21f',band:'#e2442b',ink:'#ffffff',side:'#f5a414'},
- {id:'taionkei',jp:'体温計',sub:'電子体温計',en:'Digital thermometer',price:1800,size:[.05,.17,.03],bg:'#ffffff',band:'#1c3a78',ink:'#1c3a78',side:'#eef1f6'},
- {id:'houtai',jp:'包帯',sub:'伸縮 5cm',en:'Bandage roll',price:280,size:[.07,.07,.07],bg:'#e9eef0',band:'#3c8a9c',ink:'#1d4550',side:'#dde4e6'},
- {id:'menbou',jp:'綿棒',sub:'200本',en:'Cotton buds',price:180,size:[.09,.1,.09],bg:'#bfe6f5',band:'#ffffff',ink:'#1e5b76',side:'#aedcef'},
- {id:'drink10',jp:'ハーバーD',sub:'10本パック',en:'Harbour-D stamina drink, 10 pack',price:1500,size:[.14,.13,.1],bg:'#6a2f14',band:'#f2c230',ink:'#fff3c8',side:'#5c2911'},
+ {id:'kaze',jp:"Minato cold medicine",sub:"Comprehensive cold medicine Granules",en:'Minato cold granules',price:1380,size:[.09,.13,.045],bg:'#f7f4ec',band:'#c8312c',ink:'#1d2a55',side:'#f2eee2'},
+ {id:'itami',jp:"Itaminon",sub:"Antipyretic analgesic 20Lock",en:'Itaminon pain tablets',price:880,size:[.08,.11,.035],bg:'#f6d24a',band:'#2d5aa6',ink:'#1b1b1b',side:'#f0c83a'},
+ {id:'ichou',jp:"Shiokaze gastrointestinal medicine",sub:"Eating too much/leaning back",en:'Shiokaze stomach medicine',price:1100,size:[.1,.12,.045],bg:'#3f8a5e',band:'#f4efe0',ink:'#ffffff',side:'#377a53'},
+ {id:'megusuri',jp:"Eye Cool",sub:"Eye drops 15ml",en:'Eye Cool eye drops',price:480,size:[.05,.09,.03],bg:'#8ed0ea',band:'#1e6ea8',ink:'#0f3355',side:'#7fc4df'},
+ {id:'nodo',jp:"Island lemon throat candy",sub:"Throat candy",en:'Island-lemon throat sweets',price:150,size:[.1,.13,.03],bg:'#f39a2e',band:'#fff3c2',ink:'#6b2a0c',side:'#e98c22'},
+ {id:'bansoko',jp:"Kizuban",sub:"First aid bandage 30pieces",en:'Kizuban plasters',price:350,size:[.09,.07,.035],bg:'#f2a6b4',band:'#ffffff',ink:'#7a1f33',side:'#eb97a7'},
+ {id:'shippu',jp:"Hiyatsu poultice",sub:"Stiff shoulders/back pain",en:'Hiyatto cooling compresses',price:980,size:[.12,.16,.03],bg:'#ffffff',band:'#2f6fb6',ink:'#123b75',side:'#e8eef6'},
+ {id:'katori',jp:"Mosquito coil",sub:"Swirl 10Volume",en:'Mosquito coils',price:320,size:[.15,.15,.1],bg:'#2e7a3c',band:'#d7342a',ink:'#fff7d6',side:'#276a33'},
+ {id:'mushi',jp:"Insect spray",sub:"Beware of jellyfish",en:'Insect repellent',price:640,size:[.07,.16,.05],bg:'#a8d94a',band:'#1f5a2c',ink:'#16361b',side:'#99c93e'},
+ {id:'ugai',jp:"Mouthwash",sub:"Throat sterilization",en:'Throat gargle',price:720,size:[.07,.15,.05],bg:'#8a4a1c',band:'#f5e2b4',ink:'#fff4dc',side:'#7a4018'},
+ {id:'vitamin',jp:"VitaminC 1000",sub:"60grain",en:'Vitamin C tablets',price:900,size:[.08,.12,.05],bg:'#ffb21f',band:'#e2442b',ink:'#ffffff',side:'#f5a414'},
+ {id:'taionkei',jp:"Thermometer",sub:"Electronic thermometer",en:'Digital thermometer',price:1800,size:[.05,.17,.03],bg:'#ffffff',band:'#1c3a78',ink:'#1c3a78',side:'#eef1f6'},
+ {id:'houtai',jp:"Bandage",sub:"Stretching 5cm",en:'Bandage roll',price:280,size:[.07,.07,.07],bg:'#e9eef0',band:'#3c8a9c',ink:'#1d4550',side:'#dde4e6'},
+ {id:'menbou',jp:"Cotton swab",sub:"200items",en:'Cotton buds',price:180,size:[.09,.1,.09],bg:'#bfe6f5',band:'#ffffff',ink:'#1e5b76',side:'#aedcef'},
+ {id:'drink10',jp:"HarborD",sub:"10Book pack",en:'Harbour-D stamina drink, 10 pack',price:1500,size:[.14,.13,.1],bg:'#6a2f14',band:'#f2c230',ink:'#fff3c8',side:'#5c2911'},
 ]);
 const byId=new Map(MEDICINES.map(m=>[m.id,m]));
 /** The single bottle, sold one at a time from the row on the drinks board. */
-export const STAMINA_DRINK=Object.freeze({id:'drink',jp:'ハーバーD',en:'Harbour-D stamina drink',price:150});
+export const STAMINA_DRINK=Object.freeze({id:'drink',jp:"HarborD",en:'Harbour-D stamina drink',price:150});
 
 /** Board by board, bottom to top: which boxes, and how many facings of each. */
 const PLANOGRAM=[
@@ -78,7 +78,7 @@ function medicineAtlas(){
    else{let s=64;ctx.font=`bold ${s}px ${GOTHIC}`;while(ctx.measureText(m.jp).width>W*.9&&s>20){s-=2;ctx.font=`bold ${s}px ${GOTHIC}`;}ctx.fillText(m.jp,W/2,H*.28);}
    ctx.font=`bold 22px ${GOTHIC}`;ctx.fillStyle=m.ink;ctx.fillText(m.sub,W/2,H*.88,W*.9);
    // The regulatory mark: 第2類医薬品 did not exist until 2009; in 1997 the box said 医薬品.
-   ctx.strokeStyle=m.ink;ctx.lineWidth=3;ctx.strokeRect(W*.06,H*.05,64,26);ctx.font=`bold 16px ${GOTHIC}`;ctx.fillText('医薬品',W*.06+32,H*.05+14);
+   ctx.strokeStyle=m.ink;ctx.lineWidth=3;ctx.strokeRect(W*.06,H*.05,64,26);ctx.font=`bold 16px ${GOTHIC}`;ctx.fillText("Pharmaceuticals",W*.06+32,H*.05+14);
    ctx.fillStyle=m.side;ctx.fillRect(0,H,W,24);
    ctx.restore();
   });
@@ -131,10 +131,10 @@ export function buildMedicineShelf(room){
  });
  for(const mesh of [glass,neck,cap,label]){mesh.name='Sakura stamina drinks';mesh.userData.sharedAsset=true;room.add(mesh);}
  // The header over it, and the licence that lets her sell any of it.
- const header=canvasTexture(640,90,(ctx,w,h)=>{ctx.fillStyle='#1f5a8c';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ffffff';ctx.font=`bold 54px ${GOTHIC}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('くすり　医薬品',w*.4,h/2+2);ctx.font=`bold 22px ${GOTHIC}`;ctx.fillText('お声かけください',w*.83,h/2+2);});
+ const header=canvasTexture(640,90,(ctx,w,h)=>{ctx.fillStyle='#1f5a8c';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ffffff';ctx.font=`bold 54px ${GOTHIC}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("Medicine　Pharmaceuticals",w*.4,h/2+2);ctx.font=`bold 22px ${GOTHIC}`;ctx.fillText("Please give us a shout",w*.83,h/2+2);});
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.21),new THREE.MeshStandardMaterial({map:header,roughness:.6}));
  sign.position.set(S.back-.005,2.3,1.75);sign.rotation.y=-Math.PI/2;sign.name='Medicine shelf sign';sign.userData.sharedAsset=true;room.add(sign);
- const licence=canvasTexture(300,190,(ctx,w,h)=>{ctx.fillStyle='#7a5a32';ctx.fillRect(0,0,w,h);ctx.fillStyle='#fbf7ea';ctx.fillRect(12,12,w-24,h-24);ctx.fillStyle='#222';ctx.textAlign='center';ctx.font=`bold 22px ${SERIF}`;ctx.fillText('医薬品販売業許可証',w/2,48);ctx.font=`15px ${SERIF}`;ctx.fillText('特例販売業',w/2,78);ctx.fillText('桜商店　トゥアン',w/2,104);ctx.fillText('沖縄県知事',w/2,130);ctx.fillText('平成九年四月一日',w/2,156);ctx.fillStyle='#c0322c';ctx.beginPath();ctx.arc(w-54,146,16,0,Math.PI*2);ctx.fill();});
+ const licence=canvasTexture(300,190,(ctx,w,h)=>{ctx.fillStyle='#7a5a32';ctx.fillRect(0,0,w,h);ctx.fillStyle='#fbf7ea';ctx.fillRect(12,12,w-24,h-24);ctx.fillStyle='#222';ctx.textAlign='center';ctx.font=`bold 22px ${SERIF}`;ctx.fillText("Pharmaceutical sales business license",w/2,48);ctx.font=`15px ${SERIF}`;ctx.fillText("Special sales business",w/2,78);ctx.fillText("Sakura Shop　Thuan",w/2,104);ctx.fillText("Governor of Okinawa Prefecture",w/2,130);ctx.fillText("1 April 1997",w/2,156);ctx.fillStyle='#c0322c';ctx.beginPath();ctx.arc(w-54,146,16,0,Math.PI*2);ctx.fill();});
  const frame=new THREE.Mesh(new THREE.PlaneGeometry(.34,.215),new THREE.MeshStandardMaterial({map:licence,roughness:.5}));
  frame.position.set(S.back-.005,2.3,3.05);frame.rotation.y=-Math.PI/2;frame.name='Medicine licence';frame.userData.sharedAsset=true;room.add(frame);
  return {boxes,bottles:glass,sign,licence:frame};
@@ -166,10 +166,10 @@ function eisaPoster(){
    ctx.fillStyle='#c8312c';ctx.beginPath();ctx.ellipse(0,-120,34,28,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#14100e';
    ctx.fillRect(-26,-220,52,10);ctx.restore();
   }
-  ctx.fillStyle='#fff6dc';ctx.textAlign='center';ctx.font=`bold 96px ${SERIF}`;ctx.fillText('エイサー',w/2,150);
-  ctx.font=`bold 40px ${SERIF}`;ctx.fillText('港町 青年会',w/2,215);
+  ctx.fillStyle='#fff6dc';ctx.textAlign='center';ctx.font=`bold 96px ${SERIF}`;ctx.fillText("Acer",w/2,150);
+  ctx.font=`bold 40px ${SERIF}`;ctx.fillText("Minato Town Youth Association",w/2,215);
   ctx.fillStyle='#14100e';ctx.fillRect(0,h-78,w,78);ctx.fillStyle='#ffe9a8';ctx.font=`bold 30px ${GOTHIC}`;
-  ctx.fillText('旧盆 ウークイの夜　港まつり広場',w/2,h-44);ctx.font=`18px ${GOTHIC}`;ctx.fillText('平成九年　主催 港町青年会・漁協',w/2,h-16);
+  ctx.fillText("Old Obon Night of Ukui　Port Festival Plaza",w/2,h-44);ctx.font=`18px ${GOTHIC}`;ctx.fillText("1997　Sponsored Minato Town Youth Association/Fishery Cooperative",w/2,h-16);
  });
 }
 export function hangWallPosters(room,{anchor,action}){
@@ -186,9 +186,9 @@ export function hangWallPosters(room,{anchor,action}){
   }
   const normal=new THREE.Vector3(Math.sin(spot.yaw),0,Math.cos(spot.yaw));
   const at=new THREE.Vector3(...spot.position).addScaledVector(normal,.3);
-  anchor([at.x,Math.min(1.8,spot.position[1]),at.z],spec?'Read '+spec.id+' poster':'Read the Eisa poster',()=>action('inspect',spec?spec.title:'エイサー · Eisa poster',
+  anchor([at.x,Math.min(1.8,spot.position[1]),at.z],spec?'Read '+spec.id+' poster':'Read the Eisa poster',()=>action('inspect',spec?spec.title:"Acer · Eisa poster",
    spec?'Thuan’s own label, printed for the shop, taped up where you see it as you walk in.':
-   'The youth association’s Eisa: drummers and dancers down the harbour road on the last night of Obon, ending at the festival ground. Thuan has written "休みます 8/17" underneath in marker -- closed that evening, so she can go.'));
+   "The youth association’s Eisa: drummers and dancers down the harbour road on the last night of Obon, ending at the festival ground. Thuan has written \"Rest 8/17\" underneath in marker -- closed that evening, so she can go."));
   meshes.push(mesh);
  }
  return meshes;

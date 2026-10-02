@@ -1,3 +1,5 @@
+> Superseded layout: Front-Row Books now contains only Aya/Reiko, books, newspapers and reading space. Kenji/Tetsuo and their equipment have moved to the separate western-quay industrial workshop. See `ISLAND-AND-AIRPORT-ROADMAP.md` and `src/world/dock-workshop-layout.js`. The material below records the earlier combined layout.
+
 # Shared bookshop workshop and restored harbour office
 
 19 September 2026. Combined-building update for the peninsula layout.

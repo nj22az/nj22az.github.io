@@ -1,3 +1,4 @@
+import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
 import {GROUND} from '../render/ground-palette.js';
 import {ALLEY_SHOPS,buildAlleyShop} from './alley-shops.js';
@@ -142,6 +143,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
+    if(s.industrialWorkshop){harbourShops.push(buildDockWorkshop({parent:group,site:s,register,enter,label,colliders}));return;}
     if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider);return;}
     // The alley units are a recessed door in the side of the supplied night-market
     // kit. The peninsula does not build that kit, so on this layout a shop that has a
@@ -202,7 +204,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     beam([px,5.7,z],[px+toward*.7,5.7,z],.06);box([.6,.12,.26],[px+toward*.75,5.65,z],0xdac08d);
     if(z===-32||z===28){const light=new THREE.PointLight(0xffd7a0,0,22,2);light.userData.nightIntensity=18;light.position.set(px+toward*.75,4.8,z);group.add(light);lampLights.push(light);}
   }
-  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label('ヨハンソン商店街','JOHANSSON SHOPPING STREET',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d',false,true);
+  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label("Johansson Shopping Street",'JOHANSSON SHOPPING STREET',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d',false,true);
 
   // Late-Shōwa street lamps: shopping street + quay approach. Emissive heads only
   // (no new PointLights); kept out of static batching so lanternGlow can update.
@@ -219,7 +221,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   obstacle(4.35,9.1,1.3,1);anchor([4.35,1,10.1],'Buy a drink',()=>onAction('vending'));}
   // Payphone sits fully on the west footway: narrowing Main Street to six metres
   // left it overhanging the kerb into the carriageway.
-  box([1.1,2.5,1],[-7.1,1.25,17.2],0x457e73);box([.91,1.6,.91],[-7.1,1.55,17.2],0x648c87);box([.35,.65,.28],[-7.1,1.4,17.73],0x3d9c6c);label('電話','TELEPHONE',[-7.1,2.4,17.75],1,.28);anchor([-7.1,1,18.2],'Use payphone',()=>onAction('phone'));obstacle(-7.1,17.2,1.1,1);
+  box([1.1,2.5,1],[-7.1,1.25,17.2],0x457e73);box([.91,1.6,.91],[-7.1,1.55,17.2],0x648c87);box([.35,.65,.28],[-7.1,1.4,17.73],0x3d9c6c);label("Telephone",'TELEPHONE',[-7.1,2.4,17.75],1,.28);anchor([-7.1,1,18.2],'Use payphone',()=>onAction('phone'));obstacle(-7.1,17.2,1.1,1);
   // The island has no road out: its people come and go by the ferry from the outer pier,
   // and the terminal on the quay takes the bus station's part. Elsewhere, the bus.
   const busStation=peninsulaActive()?buildFerryTerminal({parent:group,colliders,register,onAction,label,shadows})
@@ -246,7 +248,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // The warehouse stands at the quay in every layout. It was switched off while the
   // peninsula was stripped back to its ground, and it is the first building back.
   const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
-  label('倉庫 ←','WAREHOUSE · LEFT AT THE QUAY',[-7.3,2.7,-35],3.2,.72);
+  label("Warehouse ←",'WAREHOUSE · LEFT AT THE QUAY',[-7.3,2.7,-35],3.2,.72);
   cyl(.045,2.3,[-7.3,1.15,-35],0x655444);obstacle(-7.3,-35,.12,.12);
 
   function bollard(x,z){
@@ -284,7 +286,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   }
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
-  directBox([1.15,1.55,.85],[8.7,.88,-36.8],0xd8d8cc,group,[0,0,0],true);label('氷','ICE',[8.7,1.85,-36.35],.78,.5,0,'#dde1d7','#37636a');obstacle(8.7,-36.8,1.2,.9);
+  directBox([1.15,1.55,.85],[8.7,.88,-36.8],0xd8d8cc,group,[0,0,0],true);label("Ice",'ICE',[8.7,1.85,-36.35],.78,.5,0,'#dde1d7','#37636a');obstacle(8.7,-36.8,1.2,.9);
 
   for(const [x,z] of [[-17.1,-48],[16.3,-47.2]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
 
@@ -344,9 +346,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   for(const mesh of createHarbourInstances(batches.values(),{shadows,cellSize:harbourCellSize,consolidate:harbourBatching}))group.add(mesh);
 
-  let wet=false;const rainCount=mobile?260:600,positions=new Float32Array(rainCount*3);
-  for(let i=0;i<rainCount;i++){positions[i*3]=(Math.random()-.5)*32;positions[i*3+1]=Math.random()*16;positions[i*3+2]=(Math.random()-.5)*120;}
-  const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.Points(rainGeo,new THREE.PointsMaterial({color:0xadc8ca,size:.052,transparent:true,opacity:.58,depthWrite:false}));rain.visible=false;group.add(rain);
+  let wet=false;const rainCount=mobile?260:600,positions=new Float32Array(rainCount*6);
+  for(let i=0;i<rainCount;i++){const x=(Math.random()-.5)*32,y=Math.random()*16,z=(Math.random()-.5)*70;positions.set([x,y,z,x+.025,y+.65,z-.01],i*6);}
+  const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));const rain=new THREE.LineSegments(rainGeo,new THREE.LineBasicMaterial({color:0xadc8ca,transparent:true,opacity:.36,depthWrite:false}));rain.visible=false;rain.name='Local rain streaks';rain.userData.dynamicProp=true;group.add(rain);
 
   return {
     group,colliders,people,cat,details,warehouse:harbourWarehouse,busStation,streetLamps,
@@ -395,7 +397,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       // Diagonal pairs step together, as a cat's do; standing still they settle.
       catLegs.forEach((hip,i)=>{const swing=catResting?0:Math.sin(time*11+(i===0||i===3?0:Math.PI))*.45;hip.rotation.x=THREE.MathUtils.damp(hip.rotation.x,swing,14,dt);});
       catTail.rotation.z=Math.sin(time*(catResting?.9:2.4))*.22;
-      if(wet){for(let i=0;i<rainCount;i++){positions[i*3+1]-=dt*12;if(positions[i*3+1]<0)positions[i*3+1]=16;}rainGeo.attributes.position.needsUpdate=true;}
+      if(wet){if(playerPos)rain.position.copy(playerPos);for(let i=0;i<rainCount;i++){positions[i*6+1]-=dt*12;if(positions[i*6+1]<0)positions[i*6+1]=16;positions[i*6+4]=positions[i*6+1]+.65;}rainGeo.attributes.position.needsUpdate=true;}
     }
   };
 }

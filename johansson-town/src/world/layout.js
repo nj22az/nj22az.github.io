@@ -1,3 +1,7 @@
+import {DOCKLANDS,docklandsAt} from './docklands-layout.js';
+import {ISLAND_ROUTES} from './island-plan.js';
+import {airportSurface} from './airport-ground.js';
+import {COAST_BOUNDS} from './peninsula.js';
 import {DINING,NIGHT_LANE,inDiningLane,IZAKAYA_LANE} from './dining-layout.js';
 import {oilJettyAt} from './oil-jetty-layout.js';
 const OIL_JETTY_ROUTE=Object.freeze({id:'oil-jetty',surface:'stone'});
@@ -58,6 +62,7 @@ export const ROUTES = [
  {id:'east-service',legacy:true,width:3,surface:'stone',points:[[26,-44],[26,SHOP_CROSSING_Z]]},
  {id:'east-market-cut',legacy:true,width:3,surface:'stone',points:[[0,-33.5],[16,-33.5]]},
  STAFF_YARD_ROUTE,
+ ...ISLAND_ROUTES,
 ];
 export function activeRoutes(){return ROUTES.filter(route=>
  (!shoppingDistrictActive()||!route.legacy)&&(!route.peninsula||peninsulaActive()));}
@@ -107,6 +112,7 @@ function regionAt(x,z,r=0){
   if(x>=MAIN_ROAD.west&&x<=MAIN_ROAD.east)return z<=BOARDWALK.maxZ?boardwalkRoute:ROUTES[0];
   return {id:'main-street-pavement',surface:'stone'};
  }
+ if(peninsulaActive()&&docklandsAt(x,z,r))return DOCKLANDS;
  if(Math.abs(x)<=19-r&&z>=-49.7&&z<=-38)return ROUTES[1];
  if(Math.abs(x)<=OUTER_PIER.width/2-r&&z>=OUTER_PIER.z-OUTER_PIER.length/2+r&&z<=-49.7)return ROUTES[2];
  const route=LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||activeRoutes().slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=route.width/2-r));
@@ -129,6 +135,7 @@ function regionAt(x,z,r=0){
  // Kitahama's lanes, laid on the island's ground.
  if(peninsulaActive()&&kitahamaLaneAt(x,z,r))return KITAHAMA_ROUTE;
  if(peninsulaActive()){
+  const airport=airportSurface(x,z,r);if(airport)return airport;
   const surface=coastalSurface(x,z);
   if(surface&&(!(r>0)||RIM.every(([dx,dz])=>coastalSurface(x+dx*r,z+dz*r))))return surface;
  }
@@ -142,6 +149,5 @@ function regionAt(x,z,r=0){
 export function setWalkSurface(surface){globalThis.__JOHANSSON_WALK_SURFACE__=surface||null;}
 /** Where feet go: the plan's ground, lifted onto whatever slab is drawn over it. */
 export function groundHeight(x,z){const h=planHeight(x,z),walk=globalThis.__JOHANSSON_WALK_SURFACE__;return walk?h+walk.lift(x,z):h;}
-/** The ground from the plan alone: regions and their nominal heights. */
-export function planHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(peninsulaActive()){const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(peninsulaActive()&&kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;if(peninsulaActive()&&regionAt(x,z,0)?.id==='peninsula-ground')return -.4;return 0;}
-export const MAP_BOUNDS={get minX(){return peninsulaActive()?-52:-44},get maxX(){return peninsulaActive()?64:48},minZ:-72,get maxZ(){return peninsulaActive()?HEADLAND.maxZ:Math.max(TUNNEL.z+TUNNEL.depth+1,SCHOOL.seawall.south+6)}};
+export function planHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(peninsulaActive()){if(docklandsAt(x,z))return DOCKLANDS.y;const garden=coastalSurface(x,z);if(garden?.id==='aoba-garden')return garden.y;const airport=airportSurface(x,z);if(airport)return airport.y;const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(peninsulaActive()&&kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;if(peninsulaActive()&&regionAt(x,z,0)?.id==='peninsula-ground')return -.4;return 0;}
+export const MAP_BOUNDS={get minX(){return peninsulaActive()?COAST_BOUNDS.minX-3:-44},get maxX(){return peninsulaActive()?380:48},minZ:-185,get maxZ(){return peninsulaActive()?COAST_BOUNDS.maxZ+3:Math.max(TUNNEL.z+TUNNEL.depth+1,SCHOOL.seawall.south+6)}};

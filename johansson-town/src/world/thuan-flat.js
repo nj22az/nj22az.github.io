@@ -60,10 +60,10 @@ export function buildThuanFlat(parent,{halfWidth=4.6}={}){
  mesh(new THREE.CylinderGeometry(.04,.05,.1,10),std(0x7ccc4a),-2.55,FLOOR+.05,-.35,'Watering can');
  // A glass wind chime by the balcony door, with its paper tail.
  mesh(new THREE.SphereGeometry(.06,12,8,0,Math.PI*2,0,Math.PI*.55),std(0xbfe6ff,{transparent:true,opacity:.7,side:THREE.DoubleSide}),-.9,6.45,-.5,'Furin');
- const tail=tex(64,160,(ctx,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(0,0,w,h);ctx.fillStyle='#d7263d';ctx.font=`bold 30px ${MARU}`;ctx.textAlign='center';ctx.fillText('夏',w/2,60);ctx.fillStyle='#2a8fcc';ctx.fillRect(10,100,44,6);});
+ const tail=tex(64,160,(ctx,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(0,0,w,h);ctx.fillStyle='#d7263d';ctx.font=`bold 30px ${MARU}`;ctx.textAlign='center';ctx.fillText("Summer",w/2,60);ctx.fillStyle='#2a8fcc';ctx.fillRect(10,100,44,6);});
  mesh(new THREE.PlaneGeometry(.07,.18),new THREE.MeshStandardMaterial({map:tail,side:THREE.DoubleSide}),-.9,6.25,-.5,'Furin tail');
  // The family's nameplate by the balcony door.
- const plate=tex(256,96,(ctx,w,h)=>{ctx.fillStyle='#f4e4c8';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#6b4a1c';ctx.lineWidth=6;ctx.strokeRect(3,3,w-6,h-6);ctx.fillStyle='#3b3f55';ctx.font=`bold 48px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('桜井',w/2,h/2);});
+ const plate=tex(256,96,(ctx,w,h)=>{ctx.fillStyle='#f4e4c8';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#6b4a1c';ctx.lineWidth=6;ctx.strokeRect(3,3,w-6,h-6);ctx.fillStyle='#3b3f55';ctx.font=`bold 48px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("Sakurai",w/2,h/2);});
  mesh(new THREE.PlaneGeometry(.36,.135),new THREE.MeshStandardMaterial({map:plate,roughness:.8}),.95,5.95,WALL+.02,"Sakurai nameplate");
  return group;
 }

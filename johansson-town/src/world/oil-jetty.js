@@ -17,7 +17,7 @@ import {OIL_JETTY,TANKER_CALL,oilJettyAt} from './oil-jetty-layout.js';
 export {OIL_JETTY,TANKER_CALL,oilJettyAt};
 
 function buildTanker(){
- const kit=createKit({}),g=new THREE.Group();g.name='Coastal tanker 第八港油丸';
+ const kit=createKit({}),g=new THREE.Group();g.name="Coastal tanker 8th Port Aburamaru";
  const L=24,B=5.6;
  // Hull: black below, red topsides, a raked bow and a square stern; deck at 2 m.
  kit.extrude([[-L/2,0],[L/2-3,0],[L/2,1.2],[L/2+.4,2.4],[-L/2,2.4]],B,new THREE.Matrix4().makeTranslation(0,-1,-B/2),0xb8432f);
@@ -64,8 +64,8 @@ export function buildOilJetty(world,{register,onAction,shadows=false}={}){
  world.colliders.push({id:'fuel-depot',x:T.x,z:T.z,w:5.2,d:5.2,height:3.4},{id:'jetty-manifold',x:H.minX+1.6,z:H.maxZ-.8,w:1.3,d:.9,height:1},{id:'jetty-crane',x:H.maxX-1.2,z:H.maxZ-1,w:.5,d:.5,height:4});
  const tanker=buildTanker();tanker.visible=false;group.add(tanker);
  const anchor=(x,z,label,fn)=>{const o=new THREE.Object3D();o.position.set(x,1.2,z);o.name=label;group.add(o);register?.(o,label,fn);};
- anchor(T.x+2.8,T.z+2.8,'Read the depot board',()=>onAction?.('read','Minato fuel depot · 港町燃料基地','危険物 · 火気厳禁. Diesel oil (軽油), 120 kilolitres. Filled from the tanker at the oil jetty every third day; drawn by the town truck for the power house at the town hall. In a typhoon the valves are closed and the jetty is out of bounds.'));
- anchor(H.minX+1,H.minZ+.8,'Look at the tanker berth',()=>onAction?.('inspect','The tanker berth',tanker.visible?'第八港油丸 is alongside, rust-streaked red with a white house aft. A hose as thick as your arm runs from her manifold up the crane and into the jetty\'s pipeline, and the deck smells of diesel. Her crew of four are playing cards in the shade of the bridge.':'Nobody alongside. Fender tyres, a coil of mooring rope, and a chalkboard: 次回入港 -- next call, the day after tomorrow at eight.'));
+ anchor(T.x+2.8,T.z+2.8,'Read the depot board',()=>onAction?.('read',"Minato fuel depot · Port Town Fuel Base","Hazardous materials · No open flames allowed. Diesel oil (Light oil), 120 kilolitres. Filled from the tanker at the oil jetty every third day; drawn by the town truck for the power house at the town hall. In a typhoon the valves are closed and the jetty is out of bounds."));
+ anchor(H.minX+1,H.minZ+.8,'Look at the tanker berth',()=>onAction?.('inspect','The tanker berth',tanker.visible?"8th Port Aburamaru is alongside, rust-streaked red with a white house aft. A hose as thick as your arm runs from her manifold up the crane and into the jetty's pipeline, and the deck smells of diesel. Her crew of four are playing cards in the shade of the bridge.":"Nobody alongside. Fender tyres, a coil of mooring rope, and a chalkboard: Next port arrival -- next call, the day after tomorrow at eight."));
  const start=new THREE.Vector3(140,SEA_LEVEL,-70),berth=new THREE.Vector3(J.berth.x,SEA_LEVEL,J.berth.z);
  return {group,tanker,update(dt,minutes,time=0){
   const day=Math.floor(minutes/1440),m=((minutes%1440)+1440)%1440,C=TANKER_CALL;
