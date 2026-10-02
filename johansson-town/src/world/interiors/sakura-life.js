@@ -39,7 +39,7 @@ function kit(parent,name){
 }
 
 /** Jaga-bō, drawn flat: for the stand-ups, the office board and his speech card. */
-function drawJagabo(ctx,cx,cy,s){
+export function drawJagabo(ctx,cx,cy,s){
  ctx.save();ctx.translate(cx,cy);ctx.scale(s,s);
  ctx.fillStyle='#e8b95c';ctx.strokeStyle='#6b4a1c';ctx.lineWidth=6;
  ctx.beginPath();for(let i=0;i<=40;i++){const a=i/40*Math.PI*2,r=1+.07*Math.sin(a*5)+.04*Math.cos(a*3);ctx.lineTo(Math.cos(a)*90*r,Math.sin(a)*110*r);}ctx.closePath();ctx.fill();ctx.stroke();
@@ -53,7 +53,9 @@ function drawJagabo(ctx,cx,cy,s){
 }
 
 // ============================================================ Jaga-bō, in the round
-export const MASCOT=Object.freeze({x:2.25,z:3.05,r:.36});
+// By the west window between the magazine rack and the assistant manager: he stood at
+// (2.25, 3.05), square in the walk from the door to the till.
+export const MASCOT=Object.freeze({x:-2.45,z:3.42,r:.36});
 function buildMascot(parent,anchor,action){
  const {group,mesh,box}=kit(parent,'Jaga-bo mascot');
  group.position.set(MASCOT.x,0,MASCOT.z);group.rotation.y=Math.PI*.92;
