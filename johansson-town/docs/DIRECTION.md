@@ -46,7 +46,7 @@ and they never get in the way of a quiet walk.
 | Relax: walk, talk, small activities | Day clock, residents with routines, friendship hearts, daily wants, shops, izakaya, workshop printing | Keep the first minute calm; fix world edge and night (QA O1/O2) |
 | Side stories | **Trade quests** (this change, `TRADE-QUESTS.md`) | More stories; residents mention finished stories in passing |
 | Learn: engine room | Sjöskolan's standalone engine room (`sjoskolan/simulatorer/`) | A room by the town hall where you, as Johansson, explore it, as the workshop opens StepWise |
-| Machines for study material | **Equipment library** (`/equipment/`): butterfly valve, induction motor, generator, diesel engine; viewer with exploded view, cutaway, labels and PNG export | Pump, switchboard and coupling; then place the machines in the town's workshops |
+| Machines for study material | **Equipment library** (`/equipment/`): butterfly valve, induction motor, generator, diesel engine, centrifugal pump, coupling, switchboard; viewer with exploded view, cutaway, labels, PNG export and step-by-step service procedures | Heat exchanger, purifier, compressor; place the machines in the town's electrical workshop |
 | Teach: Johansson on site | Johansson's avatar, copied into `sjoskolan/simulatorer/character/` | One shared avatar source for the town and Sjöskolan; instructor scenes for theory lessons |
 | Learn: motor teardown | Workshop bench, Form 3D models, Sjöskolan's electrical motor model | Mechanical parts and an exploded-view bench |
 | Learn: kakeibo with Thuan | Sakura's shop ledger; the player's yen | A purchase journal for the player, then a kakeibo Thuan can explain |

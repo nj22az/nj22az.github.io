@@ -33,6 +33,21 @@
     <label class="eq-check"><input id="eq-labels" type="checkbox"><span data-text="labels">Etiketter</span></label>
     <div id="eq-model-controls"></div>
    </div>
+   <section class="eq-service" id="eq-service" hidden>
+    <h3 id="eq-service-heading">Service och underhåll</h3>
+    <select id="eq-proc" aria-labelledby="eq-service-heading"></select>
+    <div id="eq-steps" hidden>
+     <p id="eq-step-count" class="eq-step-count"></p>
+     <p id="eq-step-text" class="eq-step-text"></p>
+     <p id="eq-step-tool" class="eq-step-note" hidden></p>
+     <p id="eq-step-check" class="eq-step-note" hidden></p>
+     <div class="eq-step-buttons">
+      <button type="button" id="eq-step-back">Tillbaka</button>
+      <button type="button" id="eq-step-next">Nästa</button>
+      <button type="button" id="eq-step-exit">Avsluta</button>
+     </div>
+    </div>
+   </section>
    <div class="eq-actions">
     <button type="button" id="eq-save" data-text="save">Spara bild (PNG)</button>
     <button type="button" id="eq-link" data-text="link">Kopiera länk</button>

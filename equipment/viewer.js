@@ -7,17 +7,19 @@
  *   ?model=induction-motor&lang=sv&explode=0.6&cutaway=1&labels=1&part=rotor&connection=star
  */
 import * as THREE from '../johansson-town/vendor/three.module.js';
-import {EQUIPMENT,buildEquipment,setExplode,setCutaway,highlight} from './catalogue.js';
+import {EQUIPMENT,buildEquipment,setExplode,setCutaway,highlight,showProcedureStep,clearProcedure} from './catalogue.js';
 
 const UI={
  sv:{home:'Nils Johansson',heading:'Utrustning',hint:'Dra för att vrida · nyp eller rulla för att zooma · tryck på en del',
   nowebgl:'Den här webbläsaren kan inte visa 3D. Listan över delarna fungerar ändå.',explode:'Sprängskiss',cutaway:'Genomskärning',
   labels:'Etiketter',save:'Spara bild (PNG)',link:'Kopiera länk',copied:'Länken är kopierad',parts:'Delar',models:'Maskiner',
-  pick:'Välj en del i listan eller tryck på modellen.',on:'På',off:'Av',file:'utrustning'},
+  pick:'Välj en del i listan eller tryck på modellen.',on:'På',off:'Av',file:'utrustning',
+  service:'Service och underhåll',choose:'Välj ett arbete …',step:'Steg',of:'av',back:'Tillbaka',next:'Nästa',exit:'Avsluta',tool:'Verktyg',check:'Kontroll',done:'Klart. Avsluta för att se hela maskinen igen.',interlock:'Förregling'},
  en:{home:'Nils Johansson',heading:'Equipment',hint:'Drag to turn · pinch or scroll to zoom · tap a part',
   nowebgl:'This browser cannot show 3D. The list of parts still works.',explode:'Exploded view',cutaway:'Cutaway',
   labels:'Labels',save:'Save picture (PNG)',link:'Copy link',copied:'Link copied',parts:'Parts',models:'Machines',
-  pick:'Choose a part from the list, or tap the model.',on:'On',off:'Off',file:'equipment'},
+  pick:'Choose a part from the list, or tap the model.',on:'On',off:'Off',file:'equipment',
+  service:'Service and maintenance',choose:'Choose a job …',step:'Step',of:'of',back:'Back',next:'Next',exit:'Finish',tool:'Tool',check:'Check',done:'Done. Finish to see the whole machine again.',interlock:'Interlock'},
 };
 const $=s=>document.querySelector(s);
 const params=new URLSearchParams(location.search);
@@ -26,6 +28,7 @@ const state={
  model:EQUIPMENT.some(e=>e.id===params.get('model'))?params.get('model'):EQUIPMENT[0].id,
  explode:Math.max(0,Math.min(1,Number(params.get('explode'))||0)),
  cutaway:params.get('cutaway')==='1',labels:params.get('labels')==='1',part:params.get('part')||null,
+ proc:params.get('proc')||null,step:Math.max(0,Number(params.get('step'))||0),
 };
 if(params.get('embed')==='1')document.body.classList.add('embed');
 
@@ -34,9 +37,17 @@ const canvas=$('#eq-canvas');
 let renderer=null;
 try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});}catch{$('.eq-fallback').hidden=false;}
 renderer?.setPixelRatio(Math.min(2,devicePixelRatio||1));
-if(renderer)renderer.outputColorSpace=THREE.SRGBColorSpace;
+if(renderer){renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;}
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xe9e5dc);
-scene.add(new THREE.HemisphereLight(0xffffff,0x8d8778,1.4));
+// Reflections: a soft studio (a pale room with a few bright panels) baked into an environment
+// map, so steel, copper and brass read as metal rather than grey plastic.
+if(renderer){
+ const room=new THREE.Scene(),wall=new THREE.Mesh(new THREE.BoxGeometry(20,10,20),new THREE.MeshBasicMaterial({color:0x8a8780,side:THREE.BackSide}));room.add(wall);
+ const light=new THREE.MeshBasicMaterial({color:0xffffff});
+ for(const [size,at] of [[[10,.1,6],[0,4.9,0]],[[.1,4,6],[-9.9,2,0]],[[.1,3,6],[9.9,1,-4]],[[6,2,.1],[0,1,-9.9]]]){const panel=new THREE.Mesh(new THREE.BoxGeometry(...size),light);panel.position.set(...at);room.add(panel);}
+ const pmrem=new THREE.PMREMGenerator(renderer);scene.environment=pmrem.fromScene(room,.04).texture;pmrem.dispose();
+}
+scene.add(new THREE.HemisphereLight(0xffffff,0x8d8778,.9));
 const sun=new THREE.DirectionalLight(0xffffff,1.6);sun.position.set(3,5,4);scene.add(sun);
 const fill=new THREE.DirectionalLight(0xffffff,.5);fill.position.set(-4,2,-3);scene.add(fill);
 const camera=new THREE.PerspectiveCamera(35,1,.01,100);
@@ -93,6 +104,7 @@ function load(id){
  setExplode(model,state.explode);setCutaway(model,state.cutaway);
  if(!model.parts.some(p=>p.id===state.part))state.part=null;
  highlight(model,state.part);
+ if(!model.procedures.some(p=>p.id===state.proc))state.proc=null;
  render();
 }
 
@@ -107,7 +119,7 @@ function render(){
   b.setAttribute('aria-current',String(e.id===state.model));b.onclick=()=>{if(e.id!==state.model){state.part=null;load(e.id);}};return b;}));
  $('#eq-title').textContent=model.title[state.lang];$('#eq-summary').textContent=model.summary[state.lang];
  $('#eq-explode').value=state.explode;$('#eq-cutaway').checked=state.cutaway;$('#eq-labels').checked=state.labels;
- const box=$('#eq-model-controls');box.replaceChildren(...model.controls.map(controlFor));
+ renderControls();renderService();
  const list=$('#eq-parts');list.replaceChildren(...model.parts.map((p,i)=>{const li=document.createElement('li'),b=document.createElement('button');b.type='button';
   const n=document.createElement('span');n.className='eq-num';n.textContent=String(i+1);b.append(n,p.name[state.lang]);
   b.dataset.part=p.id;b.setAttribute('aria-pressed',String(p.id===state.part));b.onclick=()=>select(p.id===state.part?null:p.id);li.append(b);return li;}));
@@ -116,13 +128,16 @@ function render(){
  $('#eq-part-text').textContent=part?part.text[state.lang]:text('pick');
  buildMarkers();
 }
+function renderControls(){$('#eq-model-controls').replaceChildren(...model.controls.map(controlFor));}
 function controlFor(c){
  const label=c.label[state.lang];
  if(c.type==='toggle'){const l=document.createElement('label');l.className='eq-check';const i=document.createElement('input');i.type='checkbox';i.checked=c.value;
   i.onchange=()=>{c.set(i.checked);sync();};const s=document.createElement('span');s.textContent=label;l.append(i,s);return l;}
  if(c.type==='choice'){const d=document.createElement('div');d.className='eq-choice';d.setAttribute('role','group');d.setAttribute('aria-label',label);const s=document.createElement('span');s.textContent=label;d.append(s);
   for(const o of c.options){const b=document.createElement('button');b.type='button';b.textContent=o.label[state.lang];b.setAttribute('aria-pressed',String(c.value===o.value));
-   b.onclick=()=>{c.set(o.value);for(const x of d.querySelectorAll('button'))x.setAttribute('aria-pressed',String(x===b));sync();};d.append(b);}
+   b.dataset.value=o.value;b.onclick=()=>{c.set(o.value);for(const x of d.querySelectorAll('button'))x.setAttribute('aria-pressed',String(x.dataset.value===String(c.value)));
+    // A refusal (an interlock) is explained where the part texts go.
+    sync();if(c.note){$('#eq-part-name').textContent=text('interlock');$('#eq-part-text').textContent=c.note[state.lang];}};d.append(b);}
   return d;}
  const l=document.createElement('label');l.className='eq-row';const s=document.createElement('span');s.textContent=label;
  const i=document.createElement('input');i.type='range';i.min=c.min;i.max=c.max;i.step=c.step||1;i.value=c.value;
@@ -155,6 +170,7 @@ let syncTimer=0;
 function sync(){
  clearTimeout(syncTimer);syncTimer=setTimeout(()=>{
   const q=new URLSearchParams({model:state.model,lang:state.lang});
+  if(state.proc){q.set('proc',state.proc);q.set('step',state.step);}
   if(state.explode)q.set('explode',state.explode);if(state.cutaway)q.set('cutaway','1');if(state.labels)q.set('labels','1');if(state.part)q.set('part',state.part);
   for(const c of model.controls){const v=c.type==='toggle'?(c.value?'1':''):String(c.value);if(v)q.set(c.id,v);}
   if(document.body.classList.contains('embed'))q.set('embed','1');
@@ -165,6 +181,41 @@ function sync(){
  $('#eq-part-name').textContent=part?part.name[state.lang]:model.title[state.lang];$('#eq-part-text').textContent=part?part.text[state.lang]:text('pick');
  markers.forEach(m=>m.el.classList.toggle('selected',m.part.id===state.part));
 }
+
+// Service: step through a maintenance job. Parts come off in order, the step's parts glow,
+// and the tool and the check for the step are named.
+function renderService(){
+ const box=$('#eq-service'),procs=model.procedures;box.hidden=!procs.length;
+ $('#eq-explode').disabled=!!state.proc;
+ if(!procs.length)return;
+ $('#eq-service-heading').textContent=text('service');
+ const sel=$('#eq-proc');sel.replaceChildren(new Option(text('choose'),''),...procs.map(p=>new Option(p.title[state.lang],p.id)));sel.value=state.proc||'';
+ const steps=$('#eq-steps');steps.hidden=!state.proc;
+ if(!state.proc)return;
+ const proc=procs.find(p=>p.id===state.proc);state.step=Math.min(state.step,proc.steps.length-1);
+ const {focus}=showProcedureStep(model,proc.id,state.step);renderControls();faceParts(focus);
+ const st=proc.steps[state.step];
+ $('#eq-step-count').textContent=`${text('step')} ${state.step+1} ${text('of')} ${proc.steps.length}`;
+ $('#eq-step-text').textContent=st[state.lang];
+ const tool=$('#eq-step-tool');tool.hidden=!st.tool;if(st.tool)tool.textContent=`${text('tool')}: ${st.tool[state.lang]}`;
+ const check=$('#eq-step-check');check.hidden=!st.check;if(st.check)check.textContent=`${text('check')}: ${st.check[state.lang]}`;
+ $('#eq-step-back').textContent=text('back');$('#eq-step-next').textContent=state.step===proc.steps.length-1?text('exit'):text('next');$('#eq-step-exit').textContent=text('exit');
+ $('#eq-step-back').disabled=state.step===0;
+}
+/** Turns the view towards the parts a step is about, so the work is never round the back. */
+function faceParts(ids){
+ const box=new THREE.Box3();for(const p of model.parts)if(ids.includes(p.id)&&p.object.visible)box.expandByObject(p.object);
+ if(box.isEmpty())return;
+ const centre=box.getCenter(new THREE.Vector3()),whole=new THREE.Box3().setFromObject(model.group).getCenter(new THREE.Vector3());
+ const dx=centre.x-whole.x,dz=centre.z-whole.z;
+ if(Math.hypot(dx,dz)>.05)view.theta=Math.atan2(dx,dz);
+ view.target.lerp(centre,.6);
+}
+function endProcedure(){state.proc=null;state.step=0;clearProcedure(model);setExplode(model,state.explode);setCutaway(model,state.cutaway);highlight(model,state.part);renderControls();renderService();sync();}
+$('#eq-proc').addEventListener('change',e=>{if(!e.target.value){endProcedure();return;}state.proc=e.target.value;state.step=0;setExplode(model,0);renderService();sync();});
+$('#eq-step-back').addEventListener('click',()=>{state.step=Math.max(0,state.step-1);renderService();sync();});
+$('#eq-step-next').addEventListener('click',()=>{const proc=model.procedures.find(p=>p.id===state.proc);if(state.step>=proc.steps.length-1){endProcedure();return;}state.step++;renderService();sync();});
+$('#eq-step-exit').addEventListener('click',endProcedure);
 
 $('#eq-explode').addEventListener('input',e=>{state.explode=Number(e.target.value);setExplode(model,state.explode);sync();});
 $('#eq-cutaway').addEventListener('change',e=>{state.cutaway=e.target.checked;setCutaway(model,state.cutaway);sync();});

@@ -75,3 +75,15 @@ body.embed .eq-main{grid-template-columns:1fr 300px}
  .eq-panel{border-left:0;border-top:1px solid var(--line)}
  body.embed .eq-main{grid-template-columns:1fr;grid-template-rows:minmax(300px,60vh) auto}
 }
+
+.eq-service{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.eq-service h3{margin:0 0 8px;font-size:15px}
+.eq-service select{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font:inherit}
+.eq-step-count{margin:10px 0 4px;color:var(--muted);font-size:13px}
+.eq-step-text{margin:0 0 8px;font-weight:500}
+.eq-step-note{margin:0 0 6px;font-size:14px;padding:6px 8px;border-radius:8px;background:var(--panel);border:1px solid var(--line)}
+.eq-step-buttons{display:flex;gap:6px;margin-top:8px}
+.eq-step-buttons button{flex:1;border:1px solid var(--accent);background:var(--panel);color:var(--accent);border-radius:8px;padding:7px}
+#eq-step-next{background:var(--accent);color:var(--accent-ink)}
+.eq-step-buttons button:disabled{opacity:.4;cursor:default}
+input[type=range]:disabled{opacity:.4}
