@@ -1,3 +1,4 @@
+import {addSakuraFlyer} from '../sakura-flyers.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {createShopProduct} from '../../commerce/shop-product.js';
 import {buildSakuraBackroom} from './sakura-backroom.js';
@@ -232,6 +233,8 @@ function buildStorage(parent){
 }
 
 export function buildSakuraLife(room,{anchor,action}){
+ addSakuraFlyer(room,{position:[4.88,1.015,2.10],width:.25,rotation:[-Math.PI/2,0,.16],stack:true});
+ anchor([4.5,1.2,2.10],'Pick up Thuan’s shop flyer',()=>action('sakura-flyer','Sakura counter'));
  const mascot=buildMascot(room,anchor,action);
  const floor=buildShopFloor(room,anchor,action);
  const office=buildOfficeFun(room);

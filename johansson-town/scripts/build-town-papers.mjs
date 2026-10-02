@@ -1,8 +1,11 @@
+import './build-sakura-flyer.mjs';
+import {FLYER_PAPER} from '../src/commerce/sakura-flyer.js';
 /** Index existing authored public paperwork without requiring a player to read it. */
 import {parseAst} from 'rollup/parseAst';
 import {readFile,readdir,writeFile} from 'node:fs/promises';
 const root=new URL('../',import.meta.url),papers=[],files=[];
 async function scan(dir){for(const e of await readdir(new URL(dir,root),{withFileTypes:true})){if(e.isDirectory())await scan(dir+e.name+'/');else if(e.name.endsWith('.js'))files.push(dir+e.name);}}
+papers.push(FLYER_PAPER);
 await scan('src/world/');
 for(const path of files){const src=await readFile(new URL(path,root),'utf8');const ast=parseAst(src);function walk(n){if(!n||typeof n!=='object')return;
  if(n.type==='CallExpression'&&n.arguments?.[0]?.value==='read'&&typeof n.arguments[1]?.value==='string'&&typeof n.arguments[2]?.value==='string'){const title=n.arguments[1].value;if(!papers.some(p=>p.title===title))papers.push({type:/minutes/i.test(title)?'Minutes':/booking|schedule|timetable/i.test(title)?'Schedule':/poster|festival|notice/i.test(title)?'Flyer':'Notice',title,organisation:path.includes('town-hall')?'Community Hall':path.includes('school')?'Town Hall Classroom':'Town Services',text:n.arguments[2].value,source:'notice:'+title});}

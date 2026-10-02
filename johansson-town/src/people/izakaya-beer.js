@@ -1,3 +1,4 @@
+import {attachFoodCutout,updateFoodCutout} from './food-cutouts.js';
 import * as THREE from '../../vendor/three.module.js';
 
 /**
@@ -158,6 +159,7 @@ export function createDishProp(kind){
  }else{ // dashimaki
   plate(.2,.1,0xf1ece0);for(let k=0;k<4;k++)add(new THREE.BoxGeometry(.035,.035,.06),m(0xf0c94a),-.06+k*.04,.03,0,level);
  }
+ attachFoodCutout(g,kind);
  g.userData.portion=1;g.userData.targetPortion=1;g.userData.consumable='food';
  g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
  return g;
@@ -173,7 +175,7 @@ export function updatePropPortion(prop,dt){
  const u=prop.userData,level=u.level;if(!level)return;
  const target=u.targetPortion??1,current=u.portion??1;
  u.portion=Math.abs(current-target)<.001?target:THREE.MathUtils.damp(current,target,7,Math.max(0,dt));
- level.visible=u.portion>0;
+ level.visible=u.portion>0;updateFoodCutout(prop);
  if(u.consumable==='food'){
   const amount=level.children.length*u.portion;
   level.children.forEach((piece,i)=>{piece.visible=i<Math.ceil(amount);piece.scale.setScalar(Math.min(1,Math.max(0,amount-i)));});
@@ -193,7 +195,7 @@ export function createBiteProp(kind){
 }
 export function disposeServing(prop){
  if(!prop)return;prop.removeFromParent();const materials=new Set();
- prop.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);}});
+ prop.traverse(o=>{if(o.isMesh||o.isSprite){if(o.isMesh)o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);}});
  materials.forEach(m=>m.dispose());
 }
 

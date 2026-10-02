@@ -326,5 +326,21 @@
     "bio": "Jun checks commuter tickets, cabin bags and the weather before boarding.",
     "backstory": "Jun lives in staff accommodation beside the terminal. Lunch is taken on the passenger walkway; maintenance records go through the dock workshop and Community Hall.",
     "portrait": "assets/images/residents/41.webp"
+  },
+  {
+    "name": "Riku",
+    "role": "Dock cargo crew",
+    "place": "Western quay",
+    "bio": "Riku checks the containers and walks the cargo circuit, from the morning supplies boat to the evening fish dispatch.",
+    "backstory": "He knows which crates go to Sakura and which radio parts belong at Kenji and Tetsuo’s workshop.",
+    "portrait": "assets/images/residents/riku.webp"
+  },
+  {
+    "name": "Emi Kado",
+    "role": "Harbour freight clerk",
+    "place": "Western quay dispatch desk",
+    "bio": "Emi records incoming supplies, outgoing post and chilled fish, and stays to see the late passenger boat home.",
+    "backstory": "Every shipment has a paper trail. The Community Hall keeps a filed copy of her freight notices for one year.",
+    "portrait": "assets/images/residents/emi-kado.webp"
   }
 ]

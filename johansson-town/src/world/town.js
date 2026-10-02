@@ -1,3 +1,5 @@
+import {buildDocklandsLife} from './docklands-life.js';
+import {addSakuraFlyer} from './sakura-flyers.js';
 import {buildIslandLandscape} from './island-landscape.js';
 import {buildTraditionalGarden} from './traditional-garden.js';
 import {buildDiningStreet} from './dining-street.js';
@@ -149,7 +151,8 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.postbox(2.4,16.4,Math.PI/2));
   inspect([1.75,1,16.4],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
   addWithCollider(group,colliders,factory.noticeBoard(3.2,-37.3,0));
-  read([3.2,1,-36.6],'Read harbour notices','Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.');
+  addSakuraFlyer(group,{position:[3.57,1.55,-37.215],width:.43});
+  anchor(group,[3.2,1,-36.6],'Read Thuan’s shop flyer · harbour notice board',()=>options.onAction?.('sakura-flyer','Harbour notice board'),options.register);interactions++;
 
   addWithCollider(group,colliders,factory.utilityCabinet(-7,13.8,0));// On the footway, clear of the six-metre carriageway.
   inspect([-5.55,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
@@ -237,6 +240,7 @@ export function createTown(options){
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   world.bicycle=street.bicycle;
+  if(peninsulaActive())world.docklandsLife=buildDocklandsLife(world,options);
   if(!FULL_TOWN.active)buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
   // Thuan's break. Only the peninsula has a yard behind the shop to put it in.
   if(peninsulaActive())world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
@@ -289,6 +293,7 @@ export function createTown(options){
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.airportIsland?.update(dt,minutes,day);world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
+    world.docklandsLife?.update(time,minutes);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
     world.ferry?.update(dt,minutes,time);world.ferryVehicles?.update(dt,minutes);world.bus?.update(dt,minutes);

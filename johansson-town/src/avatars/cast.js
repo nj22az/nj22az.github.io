@@ -85,6 +85,8 @@ export const CAST_RECIPES=castSet({
 
 /** The people of the new streets, drawn to their lines in neighbours.js. */
 export const NEIGHBOUR_RECIPES=castSet({
+ Riku:R({body:{silhouette:'masculine',height:.56,build:.55,skin:'#c89a74'},hair:{style:'crop',colour:'#33271f'},eyes:{style:'round'},brows:{style:'thick'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#587d83',bottom:'trousers',bottomColour:'#505f65',hat:'helmet',hatColour:'#dabb55'}}),
+ 'Emi Kado':R({body:{silhouette:'feminine',height:.43,build:.42,skin:'#d1a079'},hair:{style:'ponytail',colour:'#3c2c24'},eyes:{style:'almond'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#a77e67',bottom:'trousers',bottomColour:'#465d69',hat:'cap',hatColour:'#465d69'}}),
  Haru:R({head:{form:'square',jaw:.72,cheeks:.4},body:{height:.63,build:.58,skin:'#bf875f'},hair:{style:'crop',colour:'#302419'},eyes:{style:'narrow'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'smile'},facial:{style:'stubble',colour:'#302419'},outfit:{top:'polo',topColour:'#607c84',bottom:'shorts',bottomColour:'#7b7155',hat:'cap',hatColour:'#c4b486'}}),
  Mina:R({head:{form:'oval',jaw:.35,cheeks:.6},body:{height:.4,build:.45,skin:'#d8ac87'},hair:{style:'bun',colour:'#3b2920'},eyes:{style:'gentle',size:.48},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'smile'},outfit:{top:'apron',topColour:'#849267',bottom:'longskirt',bottomColour:'#5c6e75'}}),
  Jun:R({head:{form:'narrow',jaw:.4,cheeks:.3},body:{height:.53,build:.4,skin:'#dbb393'},hair:{style:'sidepart',colour:'#29241e'},eyes:{style:'almond'},brows:{style:'straight'},nose:{style:'line'},mouth:{style:'small'},glasses:{style:'half',colour:'#5b5c52'},outfit:{top:'polo',topColour:'#e0dac7',bottom:'trousers',bottomColour:'#3e596d'}}),

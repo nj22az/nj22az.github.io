@@ -295,7 +295,7 @@ function addHat(list,recipe,m){
   if(hat!=='cap'){part(list,new THREE.CylinderGeometry(R*1.12,R*1.12,R*.14,24,1,true),'head',hat==='captain'?'#1c1c24':'#e0b93a',M(0,m.headCentre+R*.26,0,-.08));
    ball(list,R*.1,[0,m.headCentre+R*.62,R*1.02],'head','#e0b93a',[1,1,.4],8,6);}
  }else if(hat==='helmet'){
-  part(list,new THREE.SphereGeometry(1.16,24,12,0,Math.PI*2,0,Math.PI*.52),'head',c,M(0,m.headCentre+R*m.headSY*.35,0,0,0,0,S[0],S[1]*.9,S[2]));
+  if(hat!=='paperboat')part(list,new THREE.SphereGeometry(1.16,24,12,0,Math.PI*2,0,Math.PI*.52),'head',c,M(0,m.headCentre+R*m.headSY*.35,0,0,0,0,S[0],S[1]*.9,S[2]));
   part(list,new THREE.TorusGeometry(1.16,.045,6,24),'head',c,M(0,m.headCentre+R*m.headSY*.35,0,Math.PI/2,0,0,S[0],S[2],S[1]));
  }else if(hat==='straw'){
   const fit=hatFit(recipe,m),y=fit.brimY;
@@ -316,6 +316,26 @@ function addHat(list,recipe,m){
   const y=m.headCentre+R*m.headSY*.88;
   part(list,new THREE.CylinderGeometry(R*.93,R*1.13,R*.62,20),'head',c,M(0,y,0,0,0,0,m.headSX,1,1));
   part(list,new THREE.CylinderGeometry(R*1.12,R*1.5,R*.16,24,1,true),'head',c,M(0,y-R*.33,0,0,0,0,m.headSX,1,1));
+ }else if(['squid','teapot','sunflower','paperboat','mountain'].includes(hat)){
+  // A fitted open dome provides one consistent hat/hair boundary for every novelty.
+  if(hat!=='paperboat')part(list,new THREE.SphereGeometry(1.16,24,12,0,Math.PI*2,0,Math.PI*.49),'head',c,M(0,m.headCentre+R*m.headSY*.35,0,0,0,0,S[0],S[1]*.86,S[2]));
+  const y=m.headCentre+R*m.headSY*1.16;
+  if(hat==='squid'){
+   ball(list,R*.6,[0,y+R*.20,0],'head',c,[1,.9,1],16,12);
+   for(const sx of [-1,1]){ball(list,R*.12,[sx*R*.25,y+R*.2,R*.53],'head','#f4f1ea',[1,1,.45],10,8);ball(list,R*.055,[sx*R*.25,y+R*.2,R*.59],'head','#27304d',[1,1,.4],8,6);for(const z of [-.45,.05])tube(list,[sx*R*.78,y-R*.18,z*R],[sx*R*.96,y-R*.65,z*R],R*.10,'head',c,8);}
+  }else if(hat==='teapot'){
+   ball(list,R*.62,[0,y+R*.14,0],'head',c,[1.15,.72,1],16,12);
+   part(list,new THREE.TorusGeometry(R*.38,R*.07,8,18),'head',c,M(-R*.66,y+R*.14,0));
+   part(list,new THREE.ConeGeometry(R*.17,R*.55,12),'head',c,M(R*.69,y+R*.25,0,0,0,-.9));ball(list,R*.12,[0,y+R*.67,0],'head',recipe.outfit.accent,[1,.6,1],10,8);
+  }else if(hat==='sunflower'){
+   for(let i=0;i<10;i++){const a=i*Math.PI/5;ball(list,R*.25,[Math.cos(a)*R*.45,y+R*.44+Math.sin(a)*R*.45,R*.25],'head','#f4d23c',[1,.65,.25],10,8);}
+   ball(list,R*.29,[0,y+R*.44,R*.31],'head','#9a6a42',[1,1,.3],12,10);
+  }else if(hat==='mountain'){
+   part(list,new THREE.ConeGeometry(R*.75,R*.86,12),'head',c,M(0,y+R*.26,0));part(list,new THREE.ConeGeometry(R*.31,R*.38,12),'head','#f4f1ea',M(0,y+R*.69,0));
+  }else{
+   for(const side of [-1,1]){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([-R*1.25,y,side*R*.65,R*1.25,y,side*R*.65,0,y+R*.67,0],3));g.computeVertexNormals();part(list,g,'head','#f4f1ea');}
+   part(list,new THREE.BoxGeometry(R*2.45,R*.16,R*.11),'head',c,M(0,y-R*.02,R*.66));
+  }
  }else if(hat==='ribbon'){
   const x=R*m.headSX*.68,y=m.headCentre+R*m.headSY*.85,z=R*.52;
   for(const sign of [-1,1])ball(list,R*.2,[x+sign*R*.16,y,z],'head',c,[1.1,.7,.45],10,8);
@@ -397,6 +417,7 @@ function addBody(list,recipe,m,swim=false){
   if(p.y<waist)return bottom;
   // Under a tank top the body is bare; the vest is its own garment, added below.
   if(tank)return skin;
+  if(o.top==='sundress'&&(p.y-hipY)/m.torso>.78)return skin;
   if(o.top==='kariyushi'&&p.z>D*.18){const t=(p.y-hipY)/m.torso;if(t>.77&&Math.abs(p.x)<W*.27*Math.min(1,(t-.77)/.25))return skin;}
   if(stripe&&Math.floor((p.y-waist)/(m.torso*.12))%2)return '#f4f1ea';
   return top;
@@ -422,7 +443,7 @@ function addBody(list,recipe,m,swim=false){
  // Neck.
  tube(list,[0,m.neckY-.02,0],[0,m.headY+.01,0],m.armR*1.2,'neck',skin,8);
  // Collars and the apron.
- if(!swim&&['polo','kariyushi','smock','jacket','blouse'].includes(o.top)){
+ if(!swim&&['polo','kariyushi','smock','jacket','blouse','sailor','cardigan','festival'].includes(o.top)){
   // Folded collar points and a button placket identify the +z front. A torus
   // around the neck reads as a rolled, backwards collar from either side.
   const hawaiian=o.top==='kariyushi',trim=hawaiian?new THREE.Color(top).multiplyScalar(1.12).getHex():'#f4f1ea';
@@ -439,6 +460,29 @@ function addBody(list,recipe,m,swim=false){
   for(const t of (hawaiian?[.25,.41,.57,.73]:[.4,.56,.72])){
    const y=hipY+m.torso*t;
    ball(list,(hawaiian?.009:.006)*m.k,[0,y,surface(y)],'chest','#f4f1ea',[1,1,.45],8,6);
+  }
+ }
+ if(!swim&&['hoodie','cardigan','sailor','festival','overalls','sundress'].includes(o.top)){
+  const front=t=>D/2*latheRadius(prof,t)+.015*m.k;
+  if(o.top==='hoodie'){part(list,new THREE.SphereGeometry(m.width*.35,16,12,0,Math.PI*2,0,Math.PI*.75),'chest',top,M(0,m.neckY-.045,-D*.32,.9,0,0,1,.7,.55));for(const x of [-.026,.026])tube(list,[x*m.k,m.neckY-.04,front(.82)],[x*m.k,m.neckY-.2,front(.66)],.004*m.k,'chest',o.accent,5);part(list,new THREE.BoxGeometry(W*.48,m.torso*.15,.016*m.k),'chest',new THREE.Color(top).multiplyScalar(.85).getHex(),M(0,hipY+m.torso*.35,front(.35)));}
+  if(o.top==='cardigan'||o.top==='festival'){for(const x of [-W*.08,W*.08])part(list,new THREE.BoxGeometry(W*.07,m.torso*.74,.014*m.k),'chest',o.accent,M(x,hipY+m.torso*.51,front(.5)));for(let i=0;i<4;i++)ball(list,.011*m.k,[0,hipY+m.torso*(.28+i*.15),front(.28+i*.15)],'chest',o.accent,[1,1,.4],8,6);}
+  if(o.top==='sailor'){part(list,new THREE.BoxGeometry(W*.68,m.torso*.2,.015*m.k),'chest',o.accent,M(0,m.neckY-.14,-D*.40));for(const sx of [-1,1])tube(list,[sx*W*.20,m.neckY-.055,front(.90)],[0,m.neckY-.26,front(.62)],.016*m.k,'chest',o.accent,6);part(list,new THREE.BoxGeometry(W*.10,m.torso*.21,.018*m.k),'chest',o.accent,M(0,m.neckY-.28,front(.55)));}
+  if(o.top==='overalls'||o.top==='sundress'){const colour=o.top==='overalls'?bottom:top;for(const sx of [-1,1])tube(list,[sx*W*.25,hipY+m.torso*.57,front(.57)],[sx*W*.25,m.neckY-.055,front(.95)],.022*m.k,'chest',colour,8);const bib=new THREE.PlaneGeometry(W*.64,m.torso*.47,8,10);const pos=bib.attributes.position;for(let i=0;i<pos.count;i++){const y=hipY+m.torso*.38+pos.getY(i),x=pos.getX(i);pos.setXYZ(i,x,y,front((y-hipY)/m.torso)*Math.sqrt(Math.max(.1,1-(x/(W*.5))**2))+.012*m.k);}bib.computeVertexNormals();part(list,bib,'chest',colour);}
+ }
+ // Original festival costumes are attached to the chest; limbs keep their normal rig.
+ if(!swim&&['lighthouse','lantern','reef'].includes(o.top)){
+  const cy=hipY+m.torso*.52;
+  if(o.top==='lantern'){
+   part(list,new THREE.SphereGeometry(1,24,16),'chest',top,M(0,cy,0,0,0,0,W*.63,m.torso*.55,D*.68));
+   for(const t of [.12,.9])part(list,new THREE.CylinderGeometry(W*.48,W*.48,.026*m.k,24),'chest',o.accent,M(0,hipY+m.torso*t,0,0,0,0,1,1,D/W));
+   for(const angle of [-.9,-.45,0,.45,.9]){const pts=[];for(let i=0;i<=10;i++){const a=-1.05+i*.21;pts.push([Math.sin(angle)*W*.64*Math.cos(a),cy+Math.sin(a)*m.torso*.55,Math.cos(angle)*D*.69*Math.cos(a)]);}for(let i=1;i<pts.length;i++)tube(list,pts[i-1],pts[i],.007*m.k,'chest',o.accent,5);}
+  }else if(o.top==='lighthouse'){
+   for(const t of [.25,.60])part(list,new THREE.CylinderGeometry(W*.51,W*.51,m.torso*.11,24,1,true),'chest',o.accent,M(0,hipY+m.torso*t,0,0,0,0,1,1,D/W));
+   part(list,new THREE.TorusGeometry(W*.11,.012*m.k,8,18),'chest',o.accent,M(0,hipY+m.torso*.79,D*.38));
+   ball(list,W*.09,[0,hipY+m.torso*.79,D*.38],'chest','#7fb0d8',[1,1,.2],12,8);
+  }else{
+   for(const side of [-1,1]){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([side*W*.42,hipY+m.torso*.24,-D*.15,side*W*.9,hipY+m.torso*.49,-D*.15,side*W*.42,hipY+m.torso*.83,-D*.15],3));g.computeVertexNormals();part(list,g,'chest',o.accent);const back=g.clone();back.scale(1,1,-1);part(list,back,'chest',o.accent);}
+   for(let i=0;i<3;i++)ball(list,.026*m.k,[(i-1)*W*.19,cy,D*.52],'chest',o.accent,[1,1,.35],8,6);
   }
  }
  if(!swim&&o.top==='apron'){
@@ -473,7 +517,7 @@ function addBody(list,recipe,m,swim=false){
  }
  // Arms: one soft piece from shoulder to wrist, bending at the elbow; a sleeve over the
  // top that rounds into the shoulder; a round hand.
- const longSleeve=!swim&&['jacket','smock'].includes(o.top);
+ const longSleeve=!swim&&['jacket','smock','hoodie','cardigan','festival','lighthouse','lantern','reef'].includes(o.top);
  const armT=m.upper/(m.upper+m.fore);
  for(const s of ['L','R']){
   const sx=s==='L'?1:-1,sh=[sx*m.shoulderX,m.shoulderY,0],hd=[sx*(m.shoulderX+.015),m.shoulderY-m.upper-m.fore,0];
@@ -483,10 +527,10 @@ function addBody(list,recipe,m,swim=false){
   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
   // it stretches over a raised arm rather than coming apart from the body.
   const capShare=p=>{const w=THREE.MathUtils.smoothstep(Math.abs(p.x),m.shoulderX-m.armR*1.1,m.shoulderX+m.armR*.3);return [['chest',1-w],['shoulder'+s,w]];};
-  part(list,new THREE.SphereGeometry(m.armR*1.3,16,12),capShare,swim||tank?skin:top,M(sh[0]-sx*m.armR*.15,sh[1]+m.armR*.05,0,0,0,0,1,.92,Math.min(1.1,D/W*1.6)));
+  part(list,new THREE.SphereGeometry(m.armR*1.3,16,12),capShare,swim||tank||o.top==='sundress'?skin:top,M(sh[0]-sx*m.armR*.15,sh[1]+m.armR*.05,0,0,0,0,1,.92,Math.min(1.1,D/W*1.6)));
   // A short sleeve is a wider bell over the top of the arm.
   if(!swim&&o.top==='kariyushi'){const len=m.upper*.76,cy=sh[1]-len/2;part(list,new THREE.CylinderGeometry(m.armR*1.25,m.armR*1.42,len,16,1,true),arm,top,M(sh[0]+sx*.008,cy,0,0,0,sx*.035));part(list,new THREE.CylinderGeometry(m.armR*1.43,m.armR*1.43,.008*m.k,16,1,true),arm,new THREE.Color(top).multiplyScalar(.88).getHex(),M(sh[0]+sx*.014,sh[1]-len,0));part(list,FLOWER,'shoulder'+s,'#f8f6ef',M(sh[0],cy,m.armR*1.44,0,0,sx*.3,.038*m.k,.038*m.k,.038*m.k));}
-  else if(!swim&&!longSleeve&&!tank)limb(list,sh,[sh[0]+sx*.006,sh[1]-m.upper*.58,0],m.armR*1.12,m.armR*1.16,top,{...arm,joints:[]});
+  else if(!swim&&!longSleeve&&!tank&&o.top!=='sundress')limb(list,sh,[sh[0]+sx*.006,sh[1]-m.upper*.58,0],m.armR*1.12,m.armR*1.16,top,{...arm,joints:[]});
   // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
   // so a wave or a point reads as a hand rather than a ball on a stick.
   ball(list,m.hand,[hd[0],hd[1]-m.hand*.55,0],'hand'+s,skin,[.9,1.15,.78],12,10);
@@ -497,8 +541,9 @@ function addBody(list,recipe,m,swim=false){
  for(const s of ['L','R']){
   const sx=s==='L'?1:-1,hp=[sx*m.hipX,hipY,0],kn=[sx*m.hipX,hipY-m.thigh,0],an=[sx*m.hipX,m.foot,0];
   const leg={bone:'thigh'+s,joints:[[m.thigh/(hipY-m.foot),'thigh'+s,'knee'+s]]};
-  const trousers=b==='trousers';
-  limb(list,hp,an,m.legR*1.02,m.legR*.86,trousers?bottom:skin,leg);
+  const trousers=b==='trousers'||b==='widepants';
+  limb(list,hp,an,m.legR*(b==='widepants'?1.32:1.02),m.legR*(b==='widepants'?1.28:.86),trousers?bottom:skin,leg);
+  if(b==='cropped'||b==='culottes'){const end=b==='cropped'?m.foot+m.shin*.35:hipY-m.thigh*1.12;limb(list,hp,[hp[0],end,0],m.legR*(b==='culottes'?1.55:1.12),m.legR*(b==='culottes'?1.7:1.16),bottom,leg);}
   // Shorts and trunks: a wider piece over the top of the thigh.
   if(b==='shorts'||b==='swim')limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.04,hipY-m.thigh*(b==='swim'?.22:.55),0],m.legR*1.2,m.legR*1.26,bottom,{...leg,joints:[]});
   // Underwear: short briefs, snug over the top of the thigh.
@@ -519,11 +564,12 @@ function addBody(list,recipe,m,swim=false){
    ball(list,m.legR*1.32,[sx*m.hipX,m.foot*.16,m.legR*.6],'foot'+s,wear==='shoes'?'#2b2622':recipe.age==='elder'?'#6b4a32':'#f2efe6',[1,.24,1.8],12,6);
   }
  }
- if(b==='skirt'||b==='longskirt'){
-  const len=b==='skirt'?m.thigh*.9:m.thigh+m.shin*.85;
+ if(b==='skirt'||b==='longskirt'||b==='pleatedskirt'){
+  const len=b==='skirt'||b==='pleatedskirt'?m.thigh*.9:m.thigh+m.shin*.85;
   // The skirt hangs from the hips and, lower down, goes with the legs: seated, it lies on the lap.
   const drape=p=>{const leg=THREE.MathUtils.smoothstep(hipY-p.y,.02,.12),w=THREE.MathUtils.smoothstep(p.x,-W*.25,W*.25);return [['hips',1-leg],['thighL',leg*w],['thighR',leg*(1-w)]];};
-  part(list,new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,24,6,true),drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):bottom,M(0,hipY+.03-len/2,0,0,0,0,1,1,D/W));
+  const skirt=new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,b==='pleatedskirt'?64:24,6,true);if(b==='pleatedskirt'){const pos=skirt.attributes.position;for(let i=0;i<pos.count;i++){const x=pos.getX(i),z=pos.getZ(i),f=1+.055*Math.cos(Math.atan2(z,x)*16);pos.setXYZ(i,x*f,pos.getY(i),z*f);}skirt.computeVertexNormals();}
+  part(list,skirt,drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):bottom,M(0,hipY+.03-len/2,0,0,0,0,1,1,D/W));
  }
 }
 

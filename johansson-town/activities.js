@@ -1,3 +1,5 @@
+import {foodArtForItem} from './src/commerce/food-art.js';
+import {FLYER_ITEM,FLYER_PATH,FLYER_PAPER,collectSakuraFlyer} from './src/commerce/sakura-flyer.js';
 import {restoreIsland} from './src/island/services.js';
 import {restoreArchive,seedArchive,fileDocument,retainArchive} from './src/office/archive.js';
 import {createArchiveView} from './src/office/archive-ui.js';
@@ -97,10 +99,10 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
   }
-  function close(){dialogueBox.close();modal.classList.remove('bag-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
+  function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
   function show(title,text,buttons=[],options={}){
-    modal.classList.remove('bag-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
+    modal.classList.remove('bag-view','flyer-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
     modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
@@ -125,7 +127,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const grid=document.createElement('div');grid.className='bag-grid';
     for(const [item,n] of counts){
       const tile=document.createElement('button');tile.type='button';tile.className='bag-tile';
-      tile.innerHTML=svg(itemIcon(item,{printed:models.has(item)}),{size:34});
+      const art=foodArtForItem(item);if(art){const image=document.createElement('img');image.src=art;image.alt='';image.width=70;image.height=70;image.style.objectFit='contain';tile.append(image);}else tile.innerHTML=svg(itemIcon(item,{printed:models.has(item)}),{size:34});
       const label=document.createElement('span');label.className='bag-name';label.textContent=item;tile.append(label);
       if(n>1){const count=document.createElement('b');count.className='bag-n';count.textContent='×'+n;tile.append(count);}
       tile.setAttribute('aria-label',n>1?`${item}, ${n}`:item);
@@ -133,7 +135,19 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     }
     body.append(grid);
   }
+  function sakuraFlyer(location='Bag'){
+    fileDocument(state,FLYER_PAPER,getMinutes());save();
+    const owned=state.inventory.includes(FLYER_ITEM);
+    show('Sakura Shop · neighbourhood flyer',owned?'Your copy, picked up in town.':'A bright paper flyer from Thuan’s shop. You can take a free copy.',[
+      ...(!owned?[['Take a free copy',()=>{if(collectSakuraFlyer(state)){note('Picked up Thuan’s Sakura shop flyer. A copy is filed at Community Hall.');sakuraFlyer(location);}else say('Your bag is full. Make some room for a flyer.');}]]:[]),
+      ...(location==='Harbour notice board'?[['Other harbour notices',()=>read('Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.')]]:[]),
+      ...(location==='Bag'?[['Back to the bag',bag]]:[]),['Put it away',close]
+    ]);
+    modal.classList.add('flyer-view');
+    const image=document.createElement('img');image.src=FLYER_PATH;image.alt=FLYER_PAPER.text;image.width=900;image.height=1280;image.style.cssText='display:block;width:100%;height:auto;max-width:620px;margin:12px auto;box-shadow:0 4px 18px #0003';body.append(image);
+  }
   function bagItem(item){
+    if(item===FLYER_ITEM){sakuraFlyer();return;}
     const model=printedModels(state.inventory).find(m=>m.name===item);
     const drinkable=['Canned coffee','Green tea'].includes(item)&&state.inventory.includes(item);
     const spec=GROCERY_ITEMS.find(g=>g.name===item),find=TOWN_FINDS.find(f=>f.name===item);
@@ -143,7 +157,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       :'Something you picked up in town.';
     show(item,text,[...(drinkable?[['Drink it',()=>{close();onDrink(item);}]]:[]),...(model?[['Look at it',()=>previewPrint(model)]]:[]),['Back to the bag',bag],['Close',close]]);
     modal.classList.add('bag-view');
-    const hero=document.createElement('div');hero.className='bag-hero';hero.innerHTML=svg(itemIcon(item,{printed:!!model}),{size:56});body.prepend(hero);
+    const hero=document.createElement('div');hero.className='bag-hero';hero.innerHTML=svg(itemIcon(item,{printed:!!model}),{size:56});if(foodArtForItem(item)){hero.innerHTML='';const image=document.createElement('img');image.src=foodArtForItem(item);image.alt=item;image.width=160;image.height=160;image.style.objectFit='contain';hero.append(image);}body.prepend(hero);
   }
   function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;const now=getMinutes(),place=getSocialContext().inside||'Town Services',transaction='PLAYER-'+state.documentArchive.sequence+'-'+now;const receipt=fileDocument(state,{type:'Receipt',title:heading.textContent||'Town service payment',organisation:({'market':'Sakura Shop','frontrow':'Front-Row Books','ramen':'Sato Ramen','izakaya':'Minato Izakaya','onsen':'Minato Onsen'})[place]||place,transaction,amount:n,text:'CASH RECEIPT\nService: '+(heading.textContent||'Town service')+'\nPaid: ¥'+n+'\nPayer: visitor\nWallet balance: ¥'+state.yen},now);if(receipt)fileDocument(state,{type:'Ledger entry',title:'Visitor payment posting',organisation:receipt.organisation,transaction,amount:n,links:[receipt.id],text:receipt.text},now);save();return true;}
@@ -967,6 +981,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'cat':cat();break;
       case 'fishing':fishing();break;
       case 'arcade':arcade();break;
+      case 'sakura-flyer':sakuraFlyer(name);break;
       case 'inspect':inspect(name,detail);break;
       case 'read':if(typeof detail==='string')fileDocument(state,{type:'Notice',title:name,text:detail,source:'notice:'+name,organisation:'Community Hall'},getMinutes());save();read(name,detail);break;
       case 'machine':operate(name,detail);break;

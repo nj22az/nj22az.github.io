@@ -59,3 +59,5 @@ if(pruned)console.log('Pruned stale runtime chunks:',pruned);
 await writeFile(resolve(root,'runtime/source.json'),JSON.stringify({sha256:await runtimeSourceHash(root)},null,2)+'\n');
 console.log('Stylesheet hashes:',cssHashes.join(', '));
 console.log('Published runtime entry points:',boot,audio,'files:',(await readdir(resolve(root,'runtime'))).filter(f=>f.endsWith('.js')).length);
+
+const swPath=resolve(root,'sw.js');if(existsSync(swPath)){const release=createHash('sha256').update(await runtimeSourceHash(root));for(const path of ['index.html','manifest.webmanifest',...cssHashes.map(item=>item.split(' ')[0]),...(await readdir(resolve(root,'assets/food'))).map(name=>'assets/food/'+name),...(await readdir(resolve(root,'assets/icons'))).map(name=>'assets/icons/'+name)])release.update(path).update(await readFile(resolve(root,path)));const version=release.digest('hex').slice(0,20);await writeFile(swPath,(await readFile(swPath,'utf8')).replace(/const VERSION = '[^']*';/,`const VERSION = '${version}';`));}

@@ -90,3 +90,9 @@ Latest steering: Postman Tōma’s cap resembles underwear, Mina’s apron inter
 - Authored feminine/masculine silhouettes across the named village cast; generated residents use profile female metadata. Saved creator choices remain explicit and independent of face/hair/clothes.
 - Inspected updated Tōma, Mina (front/back) and Mrs Kamiya render. Hats clear their hair/head and Mina’s apron hem no longer clips into the skirt. GitHub plugin and git remote both confirm nj22az/nj22az.github.io, branch codex/island-airport-growth, PR135.
 - Final village/wardrobe verification: 556 non-boot tests pass; all 41 fallback portraits regenerated and compiled runtime rebuilt. Village comparison screenshots inspected. Browser wardrobe save refreshes the live actor and guide custom appearances survive reload.
+
+Latest request: create an English flyer for Thuan’s Sakura shop, inspired by the supplied 1990s convenience-store flyer, readable on a notice board or collectible.
+- Original SVG artwork uses a sakura emblem, rice/tea/crisp illustrations and the shop’s original Jaga-bo mascot. The build regenerates prices from the catalogue and the stamp offer from the checkout rules. Map places both Sakura and Front-Row Books west of Main Street, bookshop to the north.
+- Mounted a pinned copy on the harbour notice board and a pile at Sakura’s counter. Read it, take a free copy, reopen it through the bag, and retain it in the existing save. Repeat reads do not duplicate the keepsake or archive filing; the 100-item bag limit is respected.
+- Community Hall’s generated register includes the authored flyer and applies the existing one-year retention policy. Tall-paper reader keeps action buttons visible.
+- Full 558-test non-boot suite passes; printed flyer visually inspected. Final browser interaction checks in progress.

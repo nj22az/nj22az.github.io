@@ -1,3 +1,4 @@
+import {DOCKLANDS,docklandsAt} from './docklands-layout.js';
 import {ISLAND_ROUTES} from './island-plan.js';
 import {airportSurface} from './airport-ground.js';
 import {COAST_BOUNDS} from './peninsula.js';
@@ -107,6 +108,7 @@ function regionAt(x,z,r=0){
   if(x>=MAIN_ROAD.west&&x<=MAIN_ROAD.east)return z<=BOARDWALK.maxZ?boardwalkRoute:ROUTES[0];
   return {id:'main-street-pavement',surface:'stone'};
  }
+ if(peninsulaActive()&&docklandsAt(x,z,r))return DOCKLANDS;
  if(Math.abs(x)<=19-r&&z>=-49.7&&z<=-38)return ROUTES[1];
  if(Math.abs(x)<=OUTER_PIER.width/2-r&&z>=OUTER_PIER.z-OUTER_PIER.length/2+r&&z<=-49.7)return ROUTES[2];
  const route=LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||activeRoutes().slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=route.width/2-r));
@@ -133,5 +135,5 @@ function regionAt(x,z,r=0){
  }
  return null;
 }
-export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(peninsulaActive()){const garden=coastalSurface(x,z);if(garden?.id==='aoba-garden')return garden.y;const airport=airportSurface(x,z);if(airport)return airport.y;const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(peninsulaActive()&&regionAt(x,z,0)?.id==='peninsula-ground')return -.4;return 0;}
+export function groundHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(peninsulaActive()){if(docklandsAt(x,z))return DOCKLANDS.y;const garden=coastalSurface(x,z);if(garden?.id==='aoba-garden')return garden.y;const airport=airportSurface(x,z);if(airport)return airport.y;const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(peninsulaActive()&&regionAt(x,z,0)?.id==='peninsula-ground')return -.4;return 0;}
 export const MAP_BOUNDS={get minX(){return peninsulaActive()?COAST_BOUNDS.minX-3:-44},get maxX(){return peninsulaActive()?380:48},minZ:-185,get maxZ(){return peninsulaActive()?COAST_BOUNDS.maxZ+3:Math.max(TUNNEL.z+TUNNEL.depth+1,SCHOOL.seawall.south+6)}};
