@@ -52,13 +52,6 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
-    "title": "Front-Row collected editions",
-    "organisation": "Town Services",
-    "text": "Island histories, pocket poetry, sea guides and old magazines. Aya writes her recommendations on paper slips. Reiko leaves corrected newspaper proofs at the rear desk. You can walk the centre aisle, browse the east shelves and return to the window chair.",
-    "source": "notice:Front-Row collected editions"
-  },
-  {
-    "type": "Notice",
     "title": "Class board",
     "organisation": "Town Services",
     "text": "Over the cubbies: the class goal, \"Everyone friendly, cheerful, and say hello,\" eight sheets of calligraphy -- Sea sea, Dream dream, Friend friend, Sky sky -- each with a red circle from the teacher. Kenta's essay about rowing in the Hāri boat race with his grandfather. The paper wheel of cleaning duties. Summer projects: reef creatures, how to make sata andagi, a typhoon diary. This week's lunch squad: Kinjō, Arakaki, Taira -- \"don't forget your smock, cap and mask.\"",

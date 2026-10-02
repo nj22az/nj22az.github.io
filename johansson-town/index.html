@@ -20,12 +20,12 @@
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
 <link rel="stylesheet" href="./photo-mode.css?h=440963e2">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-KT-nrXop.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-CMYIwmm5.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-B-hU6XZF.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-D2wbYvxv.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-DPC6H5yA.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-B4mzw5jJ.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/actors-DrjUROUa.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-C9IsFoH5.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-B-dI77HX.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -470,7 +470,7 @@
 })();
 </script>
 <script type="module">
-import {unlockTownAudio} from './runtime/audio-ClU0jD91.js';
+import {unlockTownAudio} from './runtime/audio-D5HpRhZR.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
@@ -510,7 +510,7 @@ import {unlockTownAudio} from './runtime/audio-ClU0jD91.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-KT-nrXop.js');
+      await import('./runtime/boot-CMYIwmm5.js');
       clearTimeout(watchdog);
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
