@@ -1,4 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
+import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
+import {GROUND_LAYER} from '../world/ground-layers.js';
 
 /**
  * The people who live and work in the new streets.
@@ -102,6 +104,8 @@ export function routePoint(route,distance){
  const [a]=legs[0];return {x:a[0],z:a[1],dx:0,dz:1,total};
 }
 
+/** The ground under a neighbour: the gateball court stands on its terrace, everywhere else is level. */
+const groundAt=(x,z)=>inGateball(x,z)?COURT_TERRACE.height+GROUND_LAYER.apron:0;
 const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
 
 /**
@@ -116,7 +120,7 @@ export function createNeighbours({parent,register,onAction,characters}={}){
   const g=new THREE.Group();g.name=spec.name;g.userData.name=spec.name;g.userData.neighbour=true;
   g.userData.activity=spec.role;g.userData.socialPose=spec.pose||null;
   const start=spec.walk?routePoint(spec.route,i*7):{x:spec.at[0],z:spec.at[1],dx:spec.face[0],dz:spec.face[1]};
-  g.position.set(start.x,spec.y||0,start.z);faceAlong(g,start.dx,start.dz);
+  g.position.set(start.x,spec.y??groundAt(start.x,start.z),start.z);faceAlong(g,start.dx,start.dz);
   parent.add(g);
   characters?.attach(g,spec.look,spec.height);
   register?.(g,'Talk to '+spec.name,()=>onAction?.('neighbour',spec.name));
@@ -150,7 +154,7 @@ export function createNeighbours({parent,register,onAction,characters}={}){
     if(spec.walk&&!held){
      p.travelled+=spec.speed*dt;
      const at=routePoint(spec.route,p.travelled);
-     g.position.x=at.x;g.position.z=at.z;faceAlong(g,at.dx,at.dz);
+     g.position.x=at.x;g.position.z=at.z;if(spec.y==null)g.position.y=groundAt(at.x,at.z);faceAlong(g,at.dx,at.dz);
     }else if(!spec.walk&&!held&&spec.face){
      // Back to their work once you have gone.
      const want=Math.atan2(spec.face[0],spec.face[1])+Math.PI,diff=Math.atan2(Math.sin(want-g.rotation.y),Math.cos(want-g.rotation.y));
