@@ -218,21 +218,27 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     }
     assert.deepEqual([...visited].sort(),['clinic','community-kitchen','form3d','frontrow','home-kitahama-10','home-kitahama-11','home-kitahama-12','home-kitahama-3','home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kitahama-7','home-kitahama-8','home-kitahama-9','izakaya','koban','market','mayor-home','mayor-office','office','onsen','ramen','resident-home-aya','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school','warehouse']);
 
-    // All four existing workers share this room after their afternoon shopping.
+    // After their afternoon shopping the staff are back at work: Aya and Reiko in the
+    // bookshop, Kenji and Tetsuo at the dock workshop, where repairs moved.
     const {createResidentLedger}=await import('../src/people/resident-personalities.js');
     const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Aya','Kenji','Reiko','Tetsuo'].filter(name=>STREET_CAST_NAMES.includes(name));
+    const placeOf={Aya:'frontrow',Reiko:'frontrow',Kenji:'form3d',Tetsuo:'form3d'};
     for(const name of staffNames)ledger.account(name,1050).shopping={finished:true};
     api.reviewSetMinutes(1050);api.player.position.set(0,0,14);
     const staff=api.world.people.filter(p=>staffNames.includes(p.profile.name));
     for(let i=0;i<600&&!staff.every(p=>p.g.userData.indoors==='work');i++)api.simulate(.1);
-    await api.enterRoom(books);
-    for(const name of staffNames){const p=api.world.people.find(p=>p.profile.name===name);assert.equal(p.profile.workSite,'frontrow');assert.equal(p.g.userData.inWorkplace,'frontrow',name+' works in the shared room');assert.equal(p.g.visible,true);}
+    const workshop=api.SITES.find(s=>s.id==='form3d');
+    for(const site of [books,workshop]){
+     await api.enterRoom(site);
+     for(const name of staffNames.filter(n=>placeOf[n]===site.id)){const p=api.world.people.find(p=>p.profile.name===name);assert.equal(p.profile.workSite,site.id);assert.equal(p.g.userData.inWorkplace,site.id,name+' works at '+site.id);assert.equal(p.g.visible,true);}
+     if(site===books)api.leaveRoom();
+    }
     const choose=label=>{const button=document.querySelector('#activityActions').children.find(b=>b.textContent===label);assert.ok(button,'Action: '+label);assert.equal(button.disabled,false);button.onclick();};
     api.reviewRoom().getObjectByName('content-stepwise').userData.hit.fn();assert.match(document.querySelector('#activityTitle').textContent,/StepWise/);choose('Use this pattern in Form 3D');
     const workshopBalance=api.activities.state.yen;choose('Print model · ¥40');
     api.leaveRoom();for(let i=0;i<90;i++)api.simulate(.1);assert.equal(api.activities.state.workshop.job.remaining,0,'Printing progresses outside');
-    // Old saved workshop addresses must resolve to this same room too.
-    await api.enterRoom({id:'form3d'});assert.equal(api.reviewCurrentRoom().id,'frontrow');
+    // Old saved addresses (the electronics shop, StepWise) resolve to the dock workshop.
+    await api.enterRoom({id:'stepwise'});assert.equal(api.reviewCurrentRoom().id,'form3d');
     api.reviewRoom().getObjectByName('Use Form 3D printer').userData.hit.fn();choose('Collect model');
     assert.ok(api.activities.state.inventory.includes('Johansson cable ring'));assert.equal(api.activities.state.yen,workshopBalance-40);api.leaveRoom();
 

@@ -301,6 +301,9 @@ const SITES=createPeninsulaBusinesses();
 
 const interactables=[],roomColliders=[],doors=new Map();
 let catchingUp=false,hiddenAt=0;
+// Declared before the activities are created: they restore a saved clock time through
+// onTime() at creation, which reads this. Declared further down, a saved game could not start.
+let followRealClock=true;
 // Goods off Sakura's shelves, held up to read (item-viewer.js). Made the first time
 // something is picked up.
 let itemViewer=null;
@@ -1234,7 +1237,6 @@ let elapsed=0,mapTick=0,stepTick=0,accumulator=0,saveTick=0;
 // you were away it runs at the old fast-forward rate, a town minute a simulated second.
 // It can also be set: a start time chosen on the board before you enter, or from the TIME
 // menu, running at one, ten or sixty times real speed (see town-clock.js).
-let followRealClock=true;
 const townClock=createClock(readClockSetting(globalThis.localStorage),minutes);
 function advanceTown(dt,playerPaused,fastForward=false){
     minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;if(!fastForward)islandPlay?.tick(dt);activities.tick(dt);
