@@ -89,6 +89,9 @@ export function openWant(state,minutes,names,name){
  return record(state,name).wantDoneDay===dayOf(minutes)?null:want;
 }
 
+/** Friendship from elsewhere (a finished trade quest): adds points, returns the new hearts. */
+export function bond(state,name,points){const r=record(state,name);r.points=Math.min(999,r.points+Math.max(0,points|0));return heartsFor(r.points);}
+
 /** Talking: a little friendship, once a day each. Returns the points gained. */
 export function talked(state,name,minutes){
  const r=record(state,name),day=dayOf(minutes);

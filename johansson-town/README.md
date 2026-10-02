@@ -36,12 +36,13 @@ than expecting a clean run.
 | `src/commerce/` | Stock, the konbini basket and checkout, hot snacks, the shop ledger |
 | `src/render/` | Cel shading, ink/grade pipeline, sky, dusk clock, painted ground textures |
 | `src/interact/` | Held drinks, carrying shop goods |
+| `src/progression/` | Soft daily quests, travel shortcuts and trade quests |
 | `src/ui/` | Icons and HUD dressing |
 | `*.css` (root) | HUD and page styles; `tomodachi-ui.css` is the current HUD skin, loaded last |
 | `assets/` | Models, textures, audio (see `assets/ATTRIBUTION.md`) |
 | `art/`, `tools/` | Source art and the Blender / packing pipelines that regenerate assets |
 | `creator/` | Standalone islander maker, used by share links |
-| `docs/` | Design notes; start with `AMPLIFY-AUDIT.md` (current audit, look and building-kit standards, roadmap), then `ART_DIRECTION.md`, `SAKURA_STORE.md`, `EXPANSION-NOTES.md` |
+| `docs/` | Design notes; start with `DIRECTION.md` (what the town is for), then `AMPLIFY-AUDIT.md` (current audit, look and building-kit standards, roadmap), then `ART_DIRECTION.md`, `SAKURA_STORE.md`, `EXPANSION-NOTES.md` |
 
 ## Playing
 
@@ -57,6 +58,9 @@ than expecting a clean run.
 At Sakura, pick things off the shelves (one goes in your hand, more in a basket), pay
 Thuan at the counter, buy hot snacks, and ask her what she recommends. Progress saves
 on the device.
+
+Someone in town with a teal **?** over their head has a side story: ten swaps around town
+that end with a keepsake (`docs/TRADE-QUESTS.md`).
 
 ## Characters
 

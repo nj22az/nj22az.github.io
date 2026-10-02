@@ -17,7 +17,8 @@ import {restoreResidentLife} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,RADIO_821} from './src/progression/soft-quests.js';
 import {PROFILES} from './src/people/profiles.js';
-import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
+import {RESIDENTS,residentHomeDescription,STREET_CAST_NAMES} from './src/people/residents.js';
+import {restoreTrade,questStarter,heldGood,startQuest,offerGood,tradeSummary,KEEPSAKES,personIn} from './src/progression/trade-quest.js';
 import {gossipAt,izakayaOpen,onsenInvitationDay} from './src/people/social.js';
 import {DRINKS,DISHES,menuItem} from './src/people/izakaya-beer.js';
 import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
@@ -55,7 +56,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   try {
     const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
-      state.sakura=saved.sakura;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
+      state.sakura=saved.sakura;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.trade=saved.trade;state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
@@ -70,6 +71,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   state.sakura=restoreSakura(state.sakura);
   state.townCleanup=restoreTownCleanup(state.townCleanup);
   state.workshop=restoreWorkshop(state.workshop,state.inventory);
+  state.trade=restoreTrade(state.trade,STREET_CAST_NAMES);
   state.townMode='shopping-district';
 
   const commuterDescription=name=>name==='Harbour master'?'The harbour office is staffed around the clock. I stay on the quay.':name==='Bus driver'?'I work the Harbour Line and stay at the northern terminal.':'I commute into the shopping district on the Harbour Line and leave by bus after my shift.';
@@ -167,7 +169,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
     const quest=['Speak to Aya beside the bookshop.','Find Tama, Aya’s cat, near the ramen stall. A fish might help.','Return to Aya with news of Tama.','Tama is safely home. Aya has paid you ¥500.'][state.quest];
-    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Konbini passport',konbiniPassport],['Back to town',close]]);
+    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${tradeSummary(state.trade,getMinutes())}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Keepsakes',keepsakes],['Konbini passport',konbiniPassport],['Back to town',close]]);
     const map=onMap();if(map)body.append(map);
   }
 
@@ -433,6 +435,10 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     talked(state,name,minutesNow);save();
     const want=openWant(state,minutesNow,pool,name);
     if(want)text+='\n\n'+wantLine(want);
+    // Trade quests: a side story told in ten swaps (src/progression/trade-quest.js).
+    if(questStarter(state.trade,minutesNow)===name){const who=personIn(name);text+='\n\n'+who.charAt(0).toUpperCase()+who.slice(1)+' seems troubled about something.';buttons.push(['Is something the matter?',()=>tradeStart(name)]);}
+    const carried=heldGood(state.trade);
+    if(carried)buttons.push(['Show them the '+carried.name.charAt(0).toLowerCase()+carried.name.slice(1),()=>tradeOffer(name)]);
     const gifts=giftableItems(state.inventory);
     if(gifts.length)buttons.splice(buttons.length,0,['Give a present…',()=>residentGift(name)]);
     buttons.push(['See you soon',close]);show(profile?name+' · '+profile.personality:name,text,buttons);showHearts(name);if(text===row[1]&&row[3])townAudio.speak(row[3]);
@@ -442,6 +448,28 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
    * At your seat in Minato -- a counter stool among the regulars, a table or the window:
    * order anything on the wall you can pay for, drink it and eat it, or get up.
    */
+  /** Hearing out today's side story and taking the first thing to trade. */
+  function tradeStart(name){
+    const result=startQuest(state.trade,name,STREET_CAST_NAMES,getMinutes());
+    if(!result.ok){resident(name);return;}
+    note('Side story: '+result.story.title+'. '+name+' gave you '+result.good.phrase+' to trade on.');save();
+    show(name+' · '+result.story.title,result.line,[['I will see what I can do',close]]);showHearts(name);
+  }
+  /** Showing what you carry for the side story: a swap, the ending, or a polite no. */
+  function tradeOffer(name){
+    const result=offerGood(state,name,STREET_CAST_NAMES,getMinutes());
+    if(result.kind==='none'){resident(name);return;}
+    if(result.kind==='no'){show(name,result.line,[['Ask something else',()=>resident(name)],['See you soon',close]]);showHearts(name);return;}
+    save();
+    if(result.kind==='trade'){show(name+' · A swap',result.line,[['Swap',close]]);say('Swapped for '+result.good.phrase+'.',4);}
+    else{note('Side story finished: '+result.story.title+'.'+(result.surprise.keepsake?' Kept the '+result.surprise.keepsake.name+'.':''));show(name+' · '+result.story.title,result.line,[['Thank you',close]]);}
+    showHearts(name);
+  }
+  /** The keepsakes from finished side stories. */
+  function keepsakes(){
+    const owned=KEEPSAKES.filter(k=>state.trade.keepsakes.includes(k.name));
+    show('Keepsakes · '+owned.length+' of '+KEEPSAKES.length,owned.length?owned.map(k=>k.name+' — '+k.line).join('\n\n'):'Nothing yet. Help someone with a side story: when someone seems troubled, ask what is the matter.',[['Back to the field book',inventory],['Close',close]]);
+  }
   /** The hearts on the name tab, for whoever is talking. */
   function showHearts(name){const h=heading;if(!h)return;const r=state.friendship?.[name];h.dataset.hearts=heartLine(r?.points||0);h.dataset.level=levelName(r?.points||0);}
   /** Giving a resident something from the bag. */

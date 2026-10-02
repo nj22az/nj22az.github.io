@@ -45,6 +45,7 @@ import {buildSuppliedRoom,suppliedRoomBoundsBlocked,preloadSuppliedRooms,supplie
 import {FULL_TOWN} from './world/full-town-state.js';
 import {travelProgress} from './progression/travel.js';
 import {openWant,wantPool,heartLine,withArticle} from './people/friendship.js';
+import {questStarter} from './progression/trade-quest.js';
 import {ensureDailyQuests,form3NudgeAllowed,hasDailyQuest,isDailyDone,markDailyDone,FORM3_NUDGE,QUAY_NUDGE,RADIO_821} from './progression/soft-quests.js';
 import {buildIzakayaRoom,preloadIzakaya,izakayaReady} from './world/izakaya.js?snappy=1';
 import {createIzakayaGuests} from './people/izakaya-guests.js';
@@ -106,23 +107,25 @@ const dprGovernor={time:0,frames:0,cooldown:4};
  * A "!" card over anyone who wants something today (people/friendship.js), the way a
  * life sim shows who has something to ask. Checked every couple of seconds, not every frame.
  */
-let wantCardTexture=null,wantCardTimer=0;
-function wantCard(){
- if(wantCardTexture)return wantCardTexture;
+const wantCardTextures={};let wantCardTimer=0;
+/** The "!" for a want; a teal "?" over whoever has a side story to tell (progression/trade-quest.js). */
+function wantCard(story=false){
+ const key=story?'story':'want';if(wantCardTextures[key])return wantCardTextures[key];
  const c=document.createElement('canvas');c.width=c.height=128;const ctx=c.getContext('2d');
  ctx.fillStyle='#ffffff';ctx.strokeStyle='#2e2a33';ctx.lineWidth=8;ctx.beginPath();ctx.roundRect?.(14,10,100,92,26);if(!ctx.roundRect)ctx.rect(14,10,100,92);ctx.fill();ctx.stroke();
  ctx.beginPath();ctx.moveTo(52,100);ctx.lineTo(64,122);ctx.lineTo(76,100);ctx.fill();ctx.stroke();ctx.fillStyle='#ffffff';ctx.fillRect(50,94,28,10);
- ctx.fillStyle='#e2563f';ctx.font='900 72px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('!',64,58);
- wantCardTexture=new THREE.CanvasTexture(c);wantCardTexture.colorSpace=THREE.SRGBColorSpace;return wantCardTexture;
+ ctx.fillStyle=story?'#2f8f83':'#e2563f';ctx.font='900 72px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(story?'?':'!',64,58);
+ const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;return wantCardTextures[key]=texture;
 }
 function updateWantCards(dt){
  if((wantCardTimer-=dt)>0||!activities?.state)return;wantCardTimer=2;
  const names=wantPool();
  for(const p of world.people){
-  const g=p.g,name=g.userData.name,want=!current&&openWant(activities.state,minutes,names,name);
+  const g=p.g,name=g.userData.name,story=!current&&questStarter(activities.state.trade,minutes)===name,want=story||!current&&openWant(activities.state,minutes,names,name);
   let card=g.userData.wantCard;
   if(!want){if(card)card.visible=false;continue;}
-  if(!card){card=new THREE.Sprite(new THREE.SpriteMaterial({map:wantCard(),depthTest:true,transparent:true}));card.scale.set(.42,.42,1);card.name='Want card';card.raycast=()=>{};card.userData.dynamicProp=true;g.add(card);g.userData.wantCard=card;}
+  if(card&&card.material.map!==wantCard(story)){card.material.map=wantCard(story);card.material.needsUpdate=true;}
+  if(!card){card=new THREE.Sprite(new THREE.SpriteMaterial({map:wantCard(story),depthTest:true,transparent:true}));card.scale.set(.42,.42,1);card.name='Want card';card.raycast=()=>{};card.userData.dynamicProp=true;g.add(card);g.userData.wantCard=card;}
   const head=characters?.conversationTarget?.(g);card.position.set(0,head?Math.max(1.6,head.y-g.position.y+.62):2.2,0);card.visible=true;
  }
 }
@@ -1096,7 +1099,7 @@ function updateDirectory(){
  if(izakaya){destination(izakaya,'Minato Izakaya');grid.lastChild.className+=' izakaya-shortcut';}
  section('Street');SITES.filter(s=>!['izakaya','tea-house'].includes(s.id)).forEach(s=>destination(s));
  (world.landmarks||[]).forEach(s=>destination(s));
- section('Residents');const wantNames=wantPool();world.people.forEach(p=>{const name=p.g.userData.name,want=openWant(activities.state,minutes,wantNames,name),hearts=heartLine(activities.state.friendship?.[name]?.points||0);row(name,hearts+' · '+(want?'Would like '+withArticle(want.item.toLowerCase()):p.g.userData.activity||'On the street'),()=>{activities.note(p.g.userData.name+' · '+(p.g.userData.activity||'on the street'));toggleDir(false);});});
+ section('Residents');const wantNames=wantPool();world.people.forEach(p=>{const name=p.g.userData.name,want=openWant(activities.state,minutes,wantNames,name),hearts=heartLine(activities.state.friendship?.[name]?.points||0);row(name,hearts+' · '+(questStarter(activities.state.trade,minutes)===name?'Has a favour to ask':want?'Would like '+withArticle(want.item.toLowerCase()):p.g.userData.activity||'On the street'),()=>{activities.note(p.g.userData.name+' · '+(p.g.userData.activity||'on the street'));toggleDir(false);});});
  section('Reading and records');content.items.forEach(i=>row(i.title,i.place,()=>{const site=SITES.find(s=>s.id===i.siteId);if(site)markPlace(site);else toggleDir(false);}));
   section('Signals');[['82.1 Harbour Service',RADIO_821],['89.4 JOJO','Journal requests'],['95.7 Sports','Prefectural baseball'],['Payphone','Near the bookshop'],['Minato Ferry','Outer pier · 3 sailings daily']].forEach(([a,b])=>row(a,b,()=>{toggleDir(false);say(a==='82.1 Harbour Service'?b:a+' · '+b,4);}));
 }
