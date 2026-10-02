@@ -157,7 +157,8 @@ export function createItemViewer({onClose=()=>{}}={}){
   const spec=stockSpec(id)||{},brand=STORE_BRANDS[id==='bun'?'buns':id]||{};
   held=buildPack(id,renderer);pivot.add(held);
   yaw=targetYaw=-.35;pitch=targetPitch=.12;zoom=targetZoom=1;idle=0;
-  $('.iv-brand').textContent=[brand.name,brand.jp,brand.line].filter(Boolean).join(' · ');
+  const same=(a,b)=>String(a||'').replace(/\s/g,'').toLowerCase()===String(b||'').replace(/\s/g,'').toLowerCase();
+  $('.iv-brand').textContent=[brand.name,same(brand.jp,brand.name)?'':brand.jp,brand.line].filter(Boolean).join(' · ');
   $('.iv-name').textContent=spec.name||data.title||id;
   $('.iv-price').textContent=spec.cost!=null?'¥'+spec.cost:'';
   // The stock text opens with the brand, which the card already shows above it.

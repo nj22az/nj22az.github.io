@@ -37,7 +37,7 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   const slab=new THREE.Mesh(new THREE.BoxGeometry(width+.5,.06,.7),tile);slab.position.set(0,0,.2);slab.castShadow=true;slab.receiveShadow=true;hood.add(slab);
   for(let x=-width/2-.2;x<=width/2+.2;x+=.26){const rib=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.7,6),ridge);rib.rotation.x=Math.PI/2;rib.position.set(x,.045,.2);hood.add(rib);}
   const cap=new THREE.Mesh(new THREE.BoxGeometry(width+.56,.1,.12),ridge);cap.position.set(0,.04,-.12);hood.add(cap);}
- const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.12,.32)).toArray(),yaw};const wp=logo.getWorldPosition(new THREE.Vector3());label('桜商店','SAKURA · FOOD & DAILY GOODS · SINCE 1963',wp.toArray(),Math.min(width*.6,8.4)*sx,.62*sy,yaw,'#f3e6c8','#4a2a18');
+ const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.12,.32)).toArray(),yaw};const wp=logo.getWorldPosition(new THREE.Vector3());label("Sakura Shop",'SAKURA · FOOD & DAILY GOODS · SINCE 1963',wp.toArray(),Math.min(width*.6,8.4)*sx,.62*sy,yaw,'#f3e6c8','#4a2a18');
  const glazing=createShopGlass();
  // Glass to either side of the doorway, whatever the frontage is: a pane list authored
  // for a ten-metre shop leaves a wall of nothing when the shop is fourteen.
@@ -194,7 +194,7 @@ function hangNoren(group,x,y,z){
  ctx.fillStyle='#6f1f2c';ctx.fillRect(0,0,512,144);
  ctx.fillStyle='#f4e4c8';ctx.fillRect(8,10,496,124);
  ctx.fillStyle='#6f1f2c';ctx.textAlign='center';ctx.textBaseline='middle';
- ctx.font='700 74px serif';ctx.fillText('桜商店',256,66);
+ ctx.font='700 74px serif';ctx.fillText("Sakura Shop",256,66);
  ctx.font='600 22px sans-serif';ctx.fillText('SAKURA SHŌTEN',256,116);
  const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(2.0,.56),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,transparent:true}));

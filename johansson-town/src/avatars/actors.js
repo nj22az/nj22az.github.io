@@ -68,7 +68,7 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  actor.speed=THREE.MathUtils.damp(actor.speed,measured,20,dt);
  actor.moving=actor.speed>(actor.moving?.03:.07);
  actor.gestureTime=Math.max(0,actor.gestureTime-dt);
- const outfit=u.outfit||'clothes';if(actor.outfit!==outfit){avatar.wear(outfit);actor.outfit=outfit;}
+ const outfit=u.outfit==='swim'?'swim':actor.isThuan?(u.alternativeOutfit||'clothes'):(u.outfit||'clothes');if(actor.outfit!==outfit){avatar.wear(outfit);actor.outfit=outfit;}
  // At home the hat is on its hook (home-residents.js), not on the head.
  const hatOn=!u.hatOff;if(actor.hatOn!==hatOn){avatar.setHat?.(hatOn);actor.hatOn=hatOn;}
  const riding=!!(u.playerControlled&&actor.isThuan);

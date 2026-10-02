@@ -20,39 +20,39 @@ const GOTHIC='"Hiragino Kaku Gothic ProN","Noto Sans CJK JP","Yu Gothic",sans-se
  * shop-product.js), its weight, its flash and what the illustration shows.
  */
 export const PACKS=Object.freeze({
- tea:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'香り高い',art:'tea',tag:'すっきり飲みやすい'},
- coffee:{shape:'can',size:[.094,.135,.094],net:'190g',flash:'微糖',art:'coffee',tag:'港の朝の一本'},
- rice:{shape:'bag',size:[.15,.12,.09],net:'1個',flash:'手にぎり風',art:'rice',tag:'紀州梅使用'},
- biscuit:{shape:'box',size:[.18,.22,.075],net:'12枚',flash:'バター香る',art:'biscuit',tag:'さくさく焼き上げ'},
- soap:{shape:'box',size:[.1,.065,.04],net:'100g',flash:'やさしい',art:'soap',tag:'花の香り'},
- notebook:{shape:'flat',size:[.18,.252,.006],net:'30枚',flash:'7mm罫',art:'notebook',tag:'セミB5'},
- postcard:{shape:'flat',size:[.148,.1,.004],net:'1枚',flash:'港町',art:'postcard',tag:'港の朝'},
- battery:{shape:'box',size:[.105,.15,.03],net:'4本',flash:'長持ち',art:'battery',tag:'アルカリ乾電池'},
- cola:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'刺激的',art:'cola',tag:'しゅわっと爽快'},
- water:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'天然水',art:'water',tag:'島の湧き水'},
- beer:{shape:'can',size:[.094,.135,.094],net:'350ml',flash:'生',art:'beer',tag:'港町の地ビール'},
- noodles:{shape:'cup',size:[.136,.13,.136],net:'78g',flash:'しょうゆ味',art:'noodles',tag:'熱湯3分'},
- milk:{shape:'carton',size:[.093,.2,.093],net:'500ml',flash:'成分無調整',art:'milk',tag:'あさもり牧場'},
- chips:{shape:'bag',size:[.16,.22,.07],net:'60g',flash:'うすしお味',art:'chips',tag:'パリパリおいしい'},
- crackers:{shape:'bag',size:[.16,.22,.07],net:'12枚',flash:'しょうゆ味',art:'crackers',tag:'香ばし醤油'},
- chocolate:{shape:'flat',size:[.17,.1,.018],net:'50g',flash:'ミルク',art:'chocolate',tag:'くちどけなめらか'},
- candy:{shape:'bag',size:[.16,.22,.07],net:'90g',flash:'5つの味',art:'candy',tag:'果汁入り'},
- curry:{shape:'box',size:[.16,.13,.045],net:'200g',flash:'中辛',art:'curry',tag:'10皿分'},
- soy:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'本醸造',art:'soy',tag:'こいくち'},
- soup:{shape:'box',size:[.14,.17,.05],net:'8食',flash:'あわせ',art:'soup',tag:'お湯を注ぐだけ'},
- peaches:{shape:'can',size:[.106,.095,.106],net:'425g',flash:'白桃',art:'peaches',tag:'シロップ漬け'},
- tuna:{shape:'can',size:[.102,.046,.102],net:'80g',flash:'油漬',art:'tuna',tag:'まぐろフレーク'},
- detergent:{shape:'box',size:[.18,.255,.095],net:'1.0kg',flash:'白さが、きもちいい。',art:'detergent',tag:'洗たく洗剤'},
- tissues:{shape:'box',size:[.22,.075,.11],net:'160組',flash:'やわらか',art:'tissues',tag:'2枚重ね'},
- toothpaste:{shape:'box',size:[.205,.05,.045],net:'120g',flash:'薬用',art:'toothpaste',tag:'ミントの香り'},
- orange:{shape:'carton',size:[.093,.2,.093],net:'500ml',flash:'果汁100%',art:'orange',tag:'みかん'},
- soda:{shape:'bottle',size:[.074,.26,.074],net:'200ml',flash:'ラムネ',art:'soda',tag:'ビー玉入り'},
- yogurt:{shape:'cup',size:[.096,.078,.096],net:'400g',flash:'プレーン',art:'yogurt',tag:'生乳100%'},
- bread:{shape:'bag',size:[.19,.235,.12],net:'6枚',flash:'ミルク',art:'bread',tag:'ふんわり食パン'},
- bento:{shape:'tray',size:[.19,.052,.135],net:'1食',flash:'幕の内',art:'bento',tag:'本日の手づくり'},
- sandwich:{shape:'box',size:[.12,.12,.052],net:'2切',flash:'たまご',art:'sandwich',tag:'ふわふわ玉子'},
- pudding:{shape:'cup',size:[.076,.062,.076],net:'85g',flash:'カスタード',art:'pudding',tag:'とろける'},
- bun:{shape:'bag',size:[.15,.12,.09],net:'1個',flash:'ほかほか',art:'bun',tag:'肉まん'},
+ tea:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'Fragrant',art:'tea',tag:'Clean and easy'},
+ coffee:{shape:'can',size:[.094,.135,.094],net:'190g',flash:'Less sugar',art:'coffee',tag:'One for the harbour morning'},
+ rice:{shape:'bag',size:[.15,.12,.09],net:'1 piece',flash:'Hand-pressed',art:'rice',tag:'Kishu plum inside'},
+ biscuit:{shape:'box',size:[.18,.22,.075],net:'12 pieces',flash:'Real butter',art:'biscuit',tag:'Baked crisp'},
+ soap:{shape:'box',size:[.1,.065,.04],net:'100g',flash:'Gentle',art:'soap',tag:'Flower scent'},
+ notebook:{shape:'flat',size:[.18,.252,.006],net:'30 sheets',flash:'7mm ruled',art:'notebook',tag:'Semi-B5'},
+ postcard:{shape:'flat',size:[.148,.1,.004],net:'1 card',flash:'Harbour town',art:'postcard',tag:'Harbour morning'},
+ battery:{shape:'box',size:[.105,.15,.03],net:'4 pack',flash:'Long life',art:'battery',tag:'Alkaline AA'},
+ cola:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'Extra fizz',art:'cola',tag:'Crisp and cold'},
+ water:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'Natural',art:'water',tag:'Island spring water'},
+ beer:{shape:'can',size:[.094,.135,.094],net:'350ml',flash:'Draft',art:'beer',tag:'The harbour town lager'},
+ noodles:{shape:'cup',size:[.136,.13,.136],net:'78g',flash:'Soy sauce',art:'noodles',tag:'Ready in 3 minutes'},
+ milk:{shape:'carton',size:[.093,.2,.093],net:'500ml',flash:'Whole milk',art:'milk',tag:'Asamori Dairy'},
+ chips:{shape:'bag',size:[.16,.22,.07],net:'60g',flash:'Lightly salted',art:'chips',tag:'Crunchy and good'},
+ crackers:{shape:'bag',size:[.16,.22,.07],net:'12 pieces',flash:'Soy sauce',art:'crackers',tag:'Toasted soy glaze'},
+ chocolate:{shape:'flat',size:[.17,.1,.018],net:'50g',flash:'Milk',art:'chocolate',tag:'Melts smoothly'},
+ candy:{shape:'bag',size:[.16,.22,.07],net:'90g',flash:'5 flavours',art:'candy',tag:'Made with fruit juice'},
+ curry:{shape:'box',size:[.16,.13,.045],net:'200g',flash:'Medium hot',art:'curry',tag:'Serves 10'},
+ soy:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'Brewed',art:'soy',tag:'Dark soy'},
+ soup:{shape:'box',size:[.14,.17,.05],net:'8 servings',flash:'Mixed miso',art:'soup',tag:'Just add hot water'},
+ peaches:{shape:'can',size:[.106,.095,.106],net:'425g',flash:'White peach',art:'peaches',tag:'In light syrup'},
+ tuna:{shape:'can',size:[.102,.046,.102],net:'80g',flash:'In oil',art:'tuna',tag:'Tuna flakes'},
+ detergent:{shape:'box',size:[.18,.255,.095],net:'1.0kg',flash:'Whiter whites',art:'detergent',tag:'Laundry powder'},
+ tissues:{shape:'box',size:[.22,.075,.11],net:'160 pairs',flash:'Soft',art:'tissues',tag:'2-ply'},
+ toothpaste:{shape:'box',size:[.205,.05,.045],net:'120g',flash:'Medicated',art:'toothpaste',tag:'Mint flavour'},
+ orange:{shape:'carton',size:[.093,.2,.093],net:'500ml',flash:'100% juice',art:'orange',tag:'Mandarin'},
+ soda:{shape:'bottle',size:[.074,.26,.074],net:'200ml',flash:'Ramune',art:'soda',tag:'Marble inside'},
+ yogurt:{shape:'cup',size:[.096,.078,.096],net:'400g',flash:'Plain',art:'yogurt',tag:'100% fresh milk'},
+ bread:{shape:'bag',size:[.19,.235,.12],net:'6 slices',flash:'Milk',art:'bread',tag:'Soft white loaf'},
+ bento:{shape:'tray',size:[.19,.052,.135],net:'1 meal',flash:'Makunouchi',art:'bento',tag:'Made by hand today'},
+ sandwich:{shape:'box',size:[.12,.12,.052],net:'2 halves',flash:'Egg',art:'sandwich',tag:'Fluffy egg salad'},
+ pudding:{shape:'cup',size:[.076,.062,.076],net:'85g',flash:'Custard',art:'pudding',tag:'Melt-in-the-mouth'},
+ bun:{shape:'bag',size:[.15,.12,.09],net:'1 piece',flash:'Piping hot',art:'bun',tag:'Pork bun'},
 });
 
 const brandFor=id=>STORE_BRANDS[id==='bun'?'buns':id]||STORE_BRANDS.stock;
@@ -206,7 +206,7 @@ function illustrate(ctx,art,x,y,s,brand,id){
    ctx.strokeStyle='#d8b878';ctx.lineWidth=u*.05;ctx.beginPath();ctx.moveTo(-u*.85,u*.55);ctx.lineTo(u*.85,u*.55);ctx.lineTo(0,-u*.7);ctx.closePath();ctx.stroke();
    break;}
   case 'soap':{
-   ctx.fillStyle='#f8c8cf';ctx.beginPath();ctx.roundRect(-u*.6,-u*.3,u*1.2,u*.6,u*.25);ctx.fill();text(ctx,'花',0,0,u*.35,'#b95a6e');
+   ctx.fillStyle='#f8c8cf';ctx.beginPath();ctx.roundRect(-u*.6,-u*.3,u*1.2,u*.6,u*.25);ctx.fill();
    for(let i=0;i<8;i++){ctx.strokeStyle='rgba(255,255,255,.95)';ctx.lineWidth=u*.02;ctx.beginPath();ctx.arc((R()-.5)*u*1.6,(R()-.9)*u*.8,u*(.05+R()*.12),0,Math.PI*2);ctx.stroke();}
    drawFlower(ctx,u*.65,u*.5,u*.28,'#f4a6b8');
    break;}
@@ -284,7 +284,7 @@ export function drawFront(id,w=1024,h=1024){
  ctx.fillStyle=brand.ink;ctx.fillRect(0,0,w,h*.2);ctx.fillStyle=brand.accent;ctx.fillRect(0,h*.2,w,h*.022);ctx.fillRect(0,h*.965,w,h*.035);
  drawSymbol(ctx,brand.symbol,w*.1,h*.1,m*.12,brand.paper);
  text(ctx,brand.name,w*.55,h*.075,Math.round(m*.1),brand.paper,{font:GOTHIC,maxWidth:w*.78});
- text(ctx,brand.jp,w*.55,h*.155,Math.round(m*.055),brand.paper,{maxWidth:w*.78});
+ if(brand.jp&&brand.jp.replace(/\s/g,'').toLowerCase()!==brand.name.replace(/\s/g,'').toLowerCase())text(ctx,brand.jp,w*.55,h*.155,Math.round(m*.055),brand.paper,{maxWidth:w*.78});
  // The line's name, big, in the brand's ink with a white keyline, as a printed pack has it.
  text(ctx,brand.line,w*.5,h*.31,Math.round(m*.11),brand.ink,{stroke:'#ffffff',strokeWidth:m*.022,maxWidth:w*.92});
  // What is inside, framed in a window like a photograph on the pack.
@@ -297,22 +297,48 @@ export function drawFront(id,w=1024,h=1024){
  illustrate(ctx,pack.art,ix,iy,is*.92,brand,id);ctx.restore();
  if(id==='chips')drawJagabo(ctx,w*.82,h*.78,m*.0016);
  // The flash, the tag line and the weight.
- if(pack.flash)burst(ctx,w*.17,h*.44,m*.12,brand.accent,pack.flash.length>6?pack.flash.slice(0,6)+'\n'+pack.flash.slice(6):pack.flash,'#fff',m*.04);
+ // Two words go on two lines; the flash is a badge, not a sentence.
+ if(pack.flash){const words=pack.flash.split(' '),label=words.length>1?words.slice(0,Math.ceil(words.length/2)).join(' ')+'\n'+words.slice(Math.ceil(words.length/2)).join(' '):pack.flash;
+  burst(ctx,w*.17,h*.44,m*.13,brand.accent,label,'#fff',m*Math.min(.04,.3/Math.max(...label.split('\n').map(l=>l.length))));}
  if(pack.tag)text(ctx,pack.tag,w*.5,h*.405,Math.round(m*.045),brand.ink,{maxWidth:w*.6});
- text(ctx,'内容量 '+pack.net,w*.96,h*.935,Math.round(m*.04),brand.ink,{align:'right',font:GOTHIC});
+ text(ctx,'Net '+pack.net,w*.96,h*.935,Math.round(m*.04),brand.ink,{align:'right',font:GOTHIC});
  return c;
 }
 
 const INGREDIENTS={
- chips:'じゃがいも（国産）、植物油、食塩',crackers:'うるち米、しょうゆ、砂糖、のり',biscuit:'小麦粉、バター、砂糖、鶏卵、食塩',
- chocolate:'砂糖、カカオマス、全粉乳、ココアバター、香料',candy:'砂糖、水あめ、果汁、酸味料、香料、着色料',curry:'小麦粉、牛脂、カレー粉、食塩、砂糖、香辛料',
- noodles:'油揚げめん（小麦粉、植物油、食塩）、スープ（しょうゆ、食塩、香辛料）、具材（なると、ねぎ）',soup:'みそ、わかめ、ねぎ、豆腐、かつお節エキス',
- tuna:'まぐろ、大豆油、食塩、野菜エキス',peaches:'白桃、砂糖、酸味料',soy:'大豆、小麦、食塩',rice:'ごはん、梅干し、のり、食塩',bun:'小麦粉、豚肉、玉ねぎ、しょうゆ、砂糖',
- bread:'小麦粉、牛乳、砂糖、バター、イースト、食塩',tea:'緑茶、ビタミンC',coffee:'牛乳、コーヒー、砂糖、乳化剤',cola:'糖類、炭酸、カラメル色素、酸味料、香料、カフェイン',
- water:'水（鉱水）',beer:'麦芽、ホップ',milk:'生乳100%',orange:'みかん果汁100%',soda:'砂糖、炭酸、酸味料、香料',yogurt:'生乳、乳製品',pudding:'牛乳、砂糖、鶏卵、カラメルソース',
- bento:'ごはん、焼き鮭、卵焼き、から揚げ、煮物、漬物',sandwich:'パン、鶏卵、マヨネーズ、食塩、こしょう',
- soap:'石けん素地、香料、グリセリン',detergent:'界面活性剤、炭酸塩、蛍光増白剤、酵素',tissues:'パルプ100%',toothpaste:'炭酸カルシウム、グリセリン、香料、フッ化ナトリウム',
- battery:'アルカリ乾電池 LR6 1.5V',notebook:'上質紙 30枚 · 7mm罫 · 糸綴じ',postcard:'郵便はがき · 港町の朝の風景',
+ chips:'Potatoes, vegetable oil, salt',
+ crackers:'Rice, soy sauce, sugar, nori',
+ biscuit:'Wheat flour, butter, sugar, egg, salt',
+ chocolate:'Sugar, cocoa mass, whole milk powder, cocoa butter, flavouring',
+ candy:'Sugar, glucose syrup, fruit juice, acidulant, flavouring, colour',
+ curry:'Wheat flour, beef fat, curry powder, salt, sugar, spices',
+ noodles:'Fried noodles (wheat flour, vegetable oil, salt), soup (soy sauce, salt, spices), toppings (naruto, spring onion)',
+ soup:'Miso, wakame, spring onion, tofu, bonito extract',
+ tuna:'Tuna, soybean oil, salt, vegetable extract',
+ peaches:'White peaches, sugar, acidulant',
+ soy:'Soybeans, wheat, salt',
+ rice:'Rice, pickled plum, nori, salt',
+ bun:'Wheat flour, pork, onion, soy sauce, sugar',
+ bread:'Wheat flour, milk, sugar, butter, yeast, salt',
+ tea:'Green tea, vitamin C',
+ coffee:'Milk, coffee, sugar, emulsifier',
+ cola:'Sugars, carbonation, caramel colour, acidulant, flavouring, caffeine',
+ water:'Water (mineral water)',
+ beer:'Malt, hops',
+ milk:'100% fresh milk',
+ orange:'100% mandarin juice',
+ soda:'Sugar, carbonation, acidulant, flavouring',
+ yogurt:'Fresh milk, dairy products',
+ pudding:'Milk, sugar, egg, caramel sauce',
+ bento:'Rice, grilled salmon, rolled omelette, fried chicken, simmered vegetables, pickles',
+ sandwich:'Bread, egg, mayonnaise, salt, pepper',
+ soap:'Soap base, fragrance, glycerin',
+ detergent:'Surfactants, carbonates, optical brightener, enzymes',
+ tissues:'100% pulp',
+ toothpaste:'Calcium carbonate, glycerin, flavouring, sodium fluoride',
+ battery:'Alkaline battery LR6 1.5V',
+ notebook:'Fine paper · 30 sheets · 7mm ruled · sewn binding',
+ postcard:'Postcard · a morning on the harbour',
 };
 const FOOD=new Set(['chips','crackers','biscuit','chocolate','candy','curry','noodles','soup','tuna','peaches','rice','bun','bread','tea','coffee','cola','water','beer','milk','orange','soda','yogurt','pudding','bento','sandwich','soy']);
 
@@ -321,16 +347,18 @@ export function drawBack(id,w=1024,h=1024){
  const brand=brandFor(id),pack=PACKS[id]||{net:''};
  const c=canvas(w,h),ctx=c.getContext('2d'),m=Math.min(w,h),pad=w*.07;
  ctx.fillStyle=brand.paper;ctx.fillRect(0,0,w,h);ctx.fillStyle=brand.ink;ctx.fillRect(0,0,w,h*.1);
- text(ctx,brand.name+' · '+brand.jp+' · '+brand.line,w/2,h*.05,Math.round(m*.042),brand.paper,{maxWidth:w*.9});
+ text(ctx,brand.name+' · '+brand.line,w/2,h*.05,Math.round(m*.042),brand.paper,{maxWidth:w*.9});
  // The panel every pack carries, in a ruled white box.
  const bx=pad,by=h*.14,bw=w-pad*2,bh=h*.5;
  ctx.fillStyle='#fffdf7';ctx.fillRect(bx,by,bw,bh);ctx.strokeStyle='#2a2a2a';ctx.lineWidth=m*.004;ctx.strokeRect(bx,by,bw,bh);
- const food=FOOD.has(id),rows=[['名称',brand.line],[food?'原材料名':'成分',INGREDIENTS[id]||'—'],['内容量',pack.net],[food?'賞味期限':'製造',food?'底面に記載':'1997年'],['保存方法',food?'直射日光・高温多湿を避けて保存':'乳幼児の手の届かない所に保管'],['製造者','株式会社'+brand.jp+' 沖縄県島尻郡港町1-'+(seedOf(id)%40+1)]];
+ const food=FOOD.has(id),rows=[['Product',brand.line],[food?'Ingredients':'Contents',INGREDIENTS[id]||'—'],['Net',pack.net],[food?'Best before':'Made',food?'See base':'1997'],['Storage',food?'Keep cool, dry and out of the sun':'Keep out of reach of children'],['Maker',brand.name+' Co. · 1-'+(seedOf(id)%40+1)+' Harbour Town, Okinawa']];
  const rh=bh/rows.length,col=bw*.24,fs=Math.round(m*.032);
  rows.forEach(([k,v],i)=>{const y=by+i*rh;if(i){ctx.beginPath();ctx.moveTo(bx,y);ctx.lineTo(bx+bw,y);ctx.stroke();}
   text(ctx,k,bx+col/2,y+rh/2,fs,'#2a2a2a',{font:GOTHIC});
   // Long ingredient lists wrap onto a second line.
-  ctx.font=`normal ${fs}px ${GOTHIC}`;const max=bw-col-pad*.4;let line=v,rest='';while(ctx.measureText(line).width>max&&line.length>1){rest=line.slice(-1)+rest;line=line.slice(0,-1);}
+  ctx.font=`normal ${fs}px ${GOTHIC}`;const max=bw-col-pad*.4;let line=v,rest='';
+  // Wrap at a space, so a word is never cut in two.
+  while(ctx.measureText(line).width>max&&line.includes(' ')){const at=line.lastIndexOf(' ');rest=line.slice(at+1)+(rest?' '+rest:'');line=line.slice(0,at);}
   text(ctx,line,bx+col+pad*.2,y+rh*(rest?.33:.5),fs,'#2a2a2a',{font:GOTHIC,weight:'normal',align:'left'});
   if(rest)text(ctx,rest,bx+col+pad*.2,y+rh*.7,fs,'#2a2a2a',{font:GOTHIC,weight:'normal',align:'left',maxWidth:max});
  });
@@ -339,14 +367,14 @@ export function drawBack(id,w=1024,h=1024){
  const ny=by+bh+h*.04;
  if(food){
   const R=rng(seedOf(id)+3),kcal=Math.round(40+R()*480);
-  text(ctx,'栄養成分表示（1'+(['tea','coffee','cola','water','beer','milk','orange','soda'].includes(id)?'本':'袋')+'当たり）',bx,ny,Math.round(m*.03),brand.ink,{align:'left',font:GOTHIC});
-  text(ctx,`エネルギー ${kcal}kcal · たんぱく質 ${(R()*12).toFixed(1)}g · 脂質 ${(R()*25).toFixed(1)}g · 炭水化物 ${(R()*60).toFixed(1)}g · ナトリウム ${Math.round(R()*900)}mg`,bx,ny+h*.045,Math.round(m*.026),'#2a2a2a',{align:'left',font:GOTHIC,weight:'normal',maxWidth:bw});
- }else text(ctx,'使用上の注意をよく読んでお使いください。',bx,ny,Math.round(m*.03),brand.ink,{align:'left',font:GOTHIC});
+  text(ctx,'Nutrition (per '+(['tea','coffee','cola','water','beer','milk','orange','soda'].includes(id)?'bottle':'pack')+')',bx,ny,Math.round(m*.03),brand.ink,{align:'left',font:GOTHIC});
+  text(ctx,`Energy ${kcal}kcal · Protein ${(R()*12).toFixed(1)}g · Fat ${(R()*25).toFixed(1)}g · Carbohydrate ${(R()*60).toFixed(1)}g · Sodium ${Math.round(R()*900)}mg`,bx,ny+h*.045,Math.round(m*.026),'#2a2a2a',{align:'left',font:GOTHIC,weight:'normal',maxWidth:bw});
+ }else text(ctx,'Read the directions carefully before use.',bx,ny,Math.round(m*.03),brand.ink,{align:'left',font:GOTHIC});
  // The barcode, the recycling mark and the customer line.
  barcode(ctx,w-pad-w*.36,h*.78,w*.36,h*.12,id);
  const rx=pad+m*.07,ry=h*.86;ctx.strokeStyle=brand.ink;ctx.lineWidth=m*.008;ctx.beginPath();ctx.moveTo(rx,ry-m*.06);ctx.lineTo(rx+m*.06,ry+m*.04);ctx.lineTo(rx-m*.06,ry+m*.04);ctx.closePath();ctx.stroke();
- text(ctx,['tea','cola','water','soy','soda'].includes(id)?'PET':['coffee','beer','tuna','peaches'].includes(id)?'缶':'プラ',rx,ry+m*.012,Math.round(m*.03),brand.ink,{font:GOTHIC});
- text(ctx,'お客様相談室 0120-'+String(100+seedOf(id)%900)+'-'+String(1000+seedOf(id)%9000),pad,h*.95,Math.round(m*.026),'#2a2a2a',{align:'left',font:GOTHIC,weight:'normal'});
+ text(ctx,['tea','cola','water','soy','soda'].includes(id)?'PET':['coffee','beer','tuna','peaches'].includes(id)?'CAN':'PLA',rx,ry+m*.012,Math.round(m*.03),brand.ink,{font:GOTHIC});
+ text(ctx,'Customer line 0120-'+String(100+seedOf(id)%900)+'-'+String(1000+seedOf(id)%9000),pad,h*.95,Math.round(m*.026),'#2a2a2a',{align:'left',font:GOTHIC,weight:'normal'});
  return c;
 }
 

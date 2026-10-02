@@ -9,8 +9,8 @@ import {buildPark} from '../src/world/park.js';
 test('peninsula ground leaves the surrounding sea uncovered and supports the Main Street homes',()=>{
  const group=new THREE.Group(),ground=buildPeninsula(group);group.updateMatrixWorld(true);
  const ray=new THREE.Raycaster(),hit=(x,z)=>{ray.set(new THREE.Vector3(x,10,z),new THREE.Vector3(0,-1,0));return ray.intersectObject(ground).length>0;};
- assert.ok(hit(0,0));assert.equal(hit(0,100),false,'Sea separates the northern coast from the distant islands');
- for(const p of [[-55,0],[57,0],[0,-70],[30,95]])assert.equal(hit(...p),false,'Sea is exposed');
+ assert.ok(hit(0,0));assert.equal(hit(0,315),false,'Sea separates the expanded northern coast from distant islands');
+ for(const p of [[-55,0],[57,0],[0,-70],[30,320]])assert.equal(hit(...p),false,'Sea is exposed');
  for(const p of [[-12,24],[-12,4],[-12,-15]])assert.ok(hit(...p),'The new frontage has continuous land underneath');
 });
 

@@ -131,7 +131,7 @@ export function buildOnsenInterior({room,reg,action,exit}){
  anchor([-3.5,1.25,2.55],'Pay at the bandai · ¥300',()=>action('onsen-pay'));
  anchor([-3.5,1.25,3.1],'Talk to the attendant',()=>action('inspect','Umi-no-yu attendant',
   'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her crossword. "Swimwear in the bath, please -- it is a family bath. The rock bath is best after dark."'));
- const fee=canvasSign([['大人 ¥300',1],['タオル ¥100 · 牛乳 ¥100',.5]],{w:384,h:192,bg:'#fbf6ea',size:60});
+ const fee=canvasSign([["Adult ¥300",1],["Towel ¥100 · Milk ¥100",.5]],{w:384,h:192,bg:'#fbf6ea',size:60});
  if(fee){const s=new THREE.Mesh(new THREE.PlaneGeometry(.7,.35),new THREE.MeshStandardMaterial({map:fee,roughness:.8}));s.position.set(-3.53,1.55,2.55);s.rotation.y=Math.PI/2;room.add(s);}
  // Coffee milk in the glass-fronted fridge, drunk standing, hand on hip.
  rect(4.6,2.3,.64,.62,1.6);
@@ -166,9 +166,9 @@ export function buildOnsenInterior({room,reg,action,exit}){
  const fanHead=new THREE.Group();fanHead.position.y=1.12;fan.add(fanHead);
  fanHead.add(new THREE.Mesh(new THREE.TorusGeometry(.18,.01,6,24),mat(0x8fb3c6,.5)));const blades=new THREE.Mesh(new THREE.CircleGeometry(.16,5),mat(0x9fc6d8,.5,{side:THREE.DoubleSide,transparent:true,opacity:.7}));fanHead.add(blades);
  rect(3.85,1.2,.35,.35,1.3);
- const swim=canvasSign([['水着着用',1],['FAMILY BATH · SWIMWEAR PLEASE',.34]],{w:512,h:200,bg:'#fbf6ea',fg:'#8a2f22',size:84});
+ const swim=canvasSign([["Wearing swimsuit",1],['FAMILY BATH · SWIMWEAR PLEASE',.34]],{w:512,h:200,bg:'#fbf6ea',fg:'#8a2f22',size:84});
  const swimSign=new THREE.Mesh(new THREE.PlaneGeometry(.8,.31),swim?new THREE.MeshStandardMaterial({map:swim,roughness:.8}):plaster);swimSign.position.set(1.6,1.6,R.hall.changing+.07);room.add(swimSign);
- reg(swimSign,'Read the notice by the bath door',()=>action('inspect','水着着用 · Swimwear please',
+ reg(swimSign,'Read the notice by the bath door',()=>action('inspect',"Wearing swimsuit · Swimwear please",
   'Umi-no-yu is a family bath: husbands and wives, grandparents and children, friends from work. Swimwear in the water, please. Wash before you get in. No towels in the bath. Rock bath until 22:00.'),true);
 
  // ---- Bath hall: the washing places along the west wall, the indoor bath along the east.

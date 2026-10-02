@@ -29,7 +29,7 @@ export const addMinatoInterior=room=>asset('interior',room);
 export function buildIzakaya(world,options){
  // Where it stands depends on the layout: see IZAKAYA_PLOTS in dining-layout.js.
  const plot=izakayaPlot();
- const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',x:plot.x,z:plot.z,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–03:00',door:[plot.door[0],0,plot.door[1]],opens:'16:00'};
+ const site={id:'izakaya',title:'Minato Izakaya',jp:"Izakaya Minato",sub:'SUPPER & STORIES',x:plot.x,z:plot.z,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–03:00',door:[plot.door[0],0,plot.door[1]],opens:'16:00'};
  const facadeColliders=[];
  const approach=restaurantApproach('izakaya');site.exitPosition=[...site.door];site.approachPosition=[approach[0],0,approach[1]];site.entryFacing=plot.yaw;
  options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(plot.x,0,plot.z);exterior.rotation.y=plot.yaw;world.group.add(exterior);
@@ -74,7 +74,7 @@ export function buildIzakaya(world,options){
   placeholder.name='Minato placeholder';placeholder.position.set(-.91,2,1.11);exterior.add(placeholder);
  }
  // Warm readable bilingual sign remains a runtime canvas so it does not require font textures in GLB.
- const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#36241e';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#ffe4af';ctx.font='bold 70px serif';ctx.fillText('居酒屋 みなと',384,88);ctx.font='26px sans-serif';ctx.fillText('MINATO · SUPPER & STORIES',384,146);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
+ const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#36241e';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#ffe4af';ctx.font='bold 70px serif';ctx.fillText("Izakaya Minato",384,88);ctx.font='26px sans-serif';ctx.fillText('MINATO · SUPPER & STORIES',384,146);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.5,.68),new THREE.MeshStandardMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.3}));sign.position.set(0,3.35,4.3);sign.visible=!suppliedExterior;exterior.add(sign);
  const entrance=new THREE.Object3D();entrance.position.set(...site.door);entrance.position.y=1.2;world.group.add(entrance);options.register(entrance,'Come into Minato Izakaya',()=>options.enter(site));
  // The new facade has a recessed closed door and an asymmetric footprint.
@@ -117,7 +117,7 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  for(const x of [-4.15,4.15])box([4.7,3.8,.2],[x,1.9,6.4],0xe8c894,room,false);
  box([3.6,1.1,.2],[0,3.25,6.4],0xe8c894,room,false);
  const anchor=(position,label,fn)=>{const o=new THREE.Object3D();o.position.set(...position);room.add(o);reg(o,label,fn,true);return o;};
- const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.1,.68),new THREE.MeshStandardMaterial({map:signTexture('おかえりなさい','WELCOME BACK · MINATO','#b55049')}));sign.position.set(.5,3.1,-6.05);room.add(sign);
+ const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.1,.68),new THREE.MeshStandardMaterial({map:signTexture("Welcome back",'WELCOME BACK · MINATO','#b55049')}));sign.position.set(.5,3.1,-6.05);room.add(sign);
  for(const x of [-3.8,-2.3,-.8,.7,2.2])collider(x,-1.42,.6,.6,.71);
  // The counter runs from the guest ledge back to the steel work top on Nao's side.
  collider(-.8,-2.64,8.4,1.43,1.15);

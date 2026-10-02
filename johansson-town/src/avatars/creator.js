@@ -1,3 +1,4 @@
+import {ISLAND_OUTFITS,ISLAND_COSTUMES} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from './build.js';
 import {createAvatarAnimator} from './animate.js';
@@ -34,9 +35,10 @@ const LABEL={
  smile:'Smile',flat:'Flat',grin:'Grin',small:'Small',smirk:'Smirk',pout:'Pout',
  square:'Square',oval:'Oval',heart:'Heart',sun:'Shades',half:'Half-rim',
  moustache:'Moustache',walrus:'Walrus',stubble:'Stubble',beard:'Beard',goatee:'Goatee',
+ lighthouse:'Lighthouse costume',lantern:'Lantern costume',reef:'Reef costume',sailor:'Sailor shirt',hoodie:'Hooded sweater',cardigan:'Cardigan',overalls:'Work overalls',sundress:'Sundress bodice',festival:'Festival coat',widepants:'Wide trousers',cropped:'Cropped trousers',culottes:'Culottes',pleatedskirt:'Pleated skirt',squid:'Squid cap',teapot:'Teapot hat',sunflower:'Sunflower bonnet',paperboat:'Paper-boat hat',mountain:'Mount Aoba hat',
  tank:'Tank top',underwear:'Underwear',barefoot:'Bare feet',sneakers:'Sneakers',sandals:'Sandals',shoes:'Shoes',
  tee:'T-shirt',kariyushi:'Kariyushi',polo:'Polo',blouse:'Blouse',jacket:'Jacket',apron:'Apron',smock:'Smock',
- shorts:'Shorts',trousers:'Trousers',skirt:'Skirt',longskirt:'Long skirt',
+ boots:'Boots',shorts:'Shorts',trousers:'Trousers',skirt:'Skirt',longskirt:'Long skirt',
  cap:'Cap',captain:'Captain',police:'Police',helmet:'Helmet',straw:'Straw hat',headband:'Headband',kerchief:'Kerchief',
  beanie:'Beanie',beret:'Beret',bucket:'Bucket hat',ribbon:'Hair bow',studs:'Studs',hoops:'Hoops',pendant:'Pendant',scarf:'Scarf',
  flowers:'Flowers',stripes:'Stripes',dots:'Dots',
@@ -51,6 +53,7 @@ const LABEL={
 const TABS=[
  {id:'body',name:'Body',controls:[
   {kind:'chips',page:'style',at:'age',label:'Age',list:AGES},
+  {kind:'chips',page:'style',at:'body.silhouette',label:'Silhouette',list:PARTS.silhouette},
   {kind:'colours',page:'colour',at:'body.skin',label:'Skin',palette:PALETTE.skin},
   {kind:'stepper',page:'adjust',at:'body.height',label:'Height',less:'Shorter',more:'Taller'},
   {kind:'stepper',page:'adjust',at:'body.build',label:'Build',less:'Slimmer',more:'Sturdier'}]},
@@ -422,6 +425,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function renderLook(){
   const t=TABS.find(x=>x.id===tab);
+  if(t.id==='top'&&page==='style'){for(const [title,presets] of [['Island outfit sets',ISLAND_OUTFITS],['Island costumes',ISLAND_COSTUMES]]){const sets=el('div',{className:'shm-swatches'});sets.setAttribute('aria-label',title);for(const preset of presets){const button=el('button',{type:'button'},preset.name);button.onclick=()=>change('outfit',{...recipe.outfit,...preset.outfit});sets.append(button);}body.append(el('h3',{},title),sets);}}
   if(t.wardrobe&&page==='style'){
    const off=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all clothes off'});
    off.onclick=()=>{remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});recipe=normalizeRecipe(recipe);dirty=true;renderBody();};

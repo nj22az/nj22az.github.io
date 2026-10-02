@@ -211,7 +211,7 @@ export const SAKURA_DRESSING=[
   text:'Cartons off the morning van, waiting to be priced up and put out. Thuan works down them after closing.'},
  {id:'promotion',template:'curry',island:'middle',levels:[.202,.334,.805,.937],x:1.87,z:1.355,yaw:Math.PI/2,columns:5,rows:1,spacing:.18,depth:.05,
   look:[2.06,1.08,1.355],title:'Read the end-cap promotion',
-  text:'日の出カレールウ — the month\u2019s offer, stacked at the end of the aisle with a hand-lettered card.'},
+  text:"Hinode Curry Roux — the month’s offer, stacked at the end of the aisle with a hand-lettered card."},
 ].map(dressed);
 
 /**
@@ -229,7 +229,7 @@ export const SAKURA_BACKBAR=Object.freeze([
   {id:'stamps',band:'eye',x:6.42,y:.961,z:1.1,note:'Sakura postage stamps'},
   {id:'gum',band:'eye',x:6.42,y:.98,z:.84,note:'Chewing gum'},
   {id:'matches',band:'eye',x:6.42,y:.967,z:.5,note:'Matches and lighter'},
-  {id:'osusume',band:'mid',x:6.52,y:1.015,z:1.28,note:'本日のおすすめ'},
+  {id:'osusume',band:'mid',x:6.52,y:1.015,z:1.28,note:"Today's Recommendations"},
   {id:'postcard-stand',band:'mid',x:6.40,y:.77,z:.90,note:'Harbour postcard stand'},
   {id:'radio',band:'low',x:6.40,y:.42,z:.55,note:'Shop radio'},
   {id:'batteries',band:'low',x:6.40,y:.40,z:.84,note:'Spare batteries face-out'},

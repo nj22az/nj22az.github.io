@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {drawFace,EXPRESSION_NAMES} from '../src/avatars/face.js';
 import {normalizeRecipe,PARTS} from '../src/avatars/recipe.js';
 import {buildAvatar,measure} from '../src/avatars/build.js';
+import {createAvatarAnimator} from '../src/avatars/animate.js';
 import {installDOM} from './fixtures.mjs';
 
 function drawing(recipe,state={}){
@@ -44,4 +45,13 @@ test('face repainting stays cached and preserves the two-draw avatar and current
  assert.equal(avatar.paintFace({talk:1}),false);
  let draws=0,lines=0;avatar.root.traverse(o=>{if(o.isMesh&&o.visible)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
  avatar.dispose();
+});
+
+
+test('surprise raises both hands once and leaves walking and seated actions in control',()=>{
+ installDOM();const a=buildAvatar(normalizeRecipe()),anim=createAvatarAnimator(a);
+ anim.update(.35,{expression:'surprised'});assert.ok(a.bones.elbowL.rotation.x<-.5&&a.bones.elbowR.rotation.x<-.5,'both hands rise for a startled reaction');
+ for(let i=0;i<120;i++)anim.update(1/60,{expression:'surprised'});assert.equal(anim.gesture,null,'a held emotion does not repeat the gesture endlessly');
+ anim.stop();anim.update(.1,{expression:'neutral'});anim.update(.1,{expression:'surprised',speed:1});assert.equal(anim.gesture,null,'walking keeps its stride');
+ anim.update(.1,{expression:'neutral'});anim.update(.1,{expression:'surprised',seated:true});assert.equal(anim.gesture,null,'seated activities keep their pose');a.dispose();
 });

@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {installDOM} from './fixtures.mjs';
+import {GARDEN} from '../src/world/garden-layout.js';
 import {ONSEN,ONSEN_COLLIDERS,onsenPoint,onsenOpen} from '../src/world/park-onsen.js';
 import {createActivities} from '../activities.js?snappy=1';
 
@@ -23,10 +24,10 @@ test('Umi-no-yu is a small model: a handful of draws, sane geometry, and it face
  assert.ok(doorX<ONSEN.x&&backX>ONSEN.x,'Entrance toward town, bath toward the sea');
 });
 
-test('Umi-no-yu stays on the lawn and clear of the pond, the seawall and the park paths',()=>{
+test('Umi-no-yu sits in the traditional garden and clear of the pond',()=>{
  for(const c of ONSEN_COLLIDERS){
-  assert.ok(c.x-c.w/2>6&&c.x+c.w/2<33.2,'Inside the east lawn');
-  assert.ok(c.z-c.d/2>0&&c.z+c.d/2<12,'Between the park and the bus road');
+  assert.ok(c.x-c.w/2>GARDEN.minX&&c.x+c.w/2<GARDEN.maxX,'Inside the garden terrace');
+  assert.ok(c.z-c.d/2>GARDEN.minZ&&c.z+c.d/2<GARDEN.maxZ,'Inside the garden terrace');
  }
 });
 

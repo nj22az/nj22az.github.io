@@ -277,14 +277,14 @@ export function buildFerryTerminal({parent,colliders,register=()=>{},onAction=()
  box([1.8,.08,.45],[cx+1,y+.45,-44.2],timber);for(const dx of [-.7,.7])box([.08,.42,.4],[cx+1+dx,y+.22,-44.2],steel);
  colliders.push({id:'ferry-bench',x:cx+1,z:-44.2,w:1.9,d:.5,height:.5});
  for(const x of [T.minX+1.2,T.maxX-1.2]){const bulb=cyl(.1,.14,[x,y+H-.15,-44.1],lampMat);lamps.push(bulb);}
- label('フェリーターミナル','MINATO FERRY TERMINAL',[cx,y+H+.55,-45.2],4.2,.7,0,'#e5dcc0','#2b5a78',true);
+ label("Ferry Terminal",'MINATO FERRY TERMINAL',[cx,y+H+.55,-45.2],4.2,.7,0,'#e5dcc0','#2b5a78',true);
  // The sign on its pole at the pier's root, where you turn onto it.
  cyl(.07,3,[-5.4,1.5,-47.6],steel);colliders.push({id:'ferry-sign',x:-5.4,z:-47.6,w:.16,d:.16,height:3});
- label('フェリー乗り場','MINATO FERRY · 3 SAILINGS DAILY',[-5.4,3.2,-47.5],3.4,.62,0,'#e5dcc0','#2b5a78',true);
+ label("Ferry Terminal",'MINATO FERRY · 3 SAILINGS DAILY',[-5.4,3.2,-47.5],3.4,.62,0,'#e5dcc0','#2b5a78',true);
  anchor([T.minX-.6,1.1,cz],'Read the ferry timetable',()=>onAction('bus'));
  anchor([cx+1,1,-43.6],'Wait for the ferry',()=>onAction('bus'));
  anchor([-5.4,1,-47.1],'Look out for the ferry',()=>onAction('inspect','Minato ferry','The ferry is the only way on or off the island: three sailings a day, round the breakwater to the mainland and back, cars and trucks on the deck. Tickets at the terminal; the punch cards are sold at Sakura.'));
- const place={id:T.id,title:'Minato Ferry Terminal',jp:'フェリー乗り場',sub:'ARRIVALS · DEPARTURES',x:T.x,z:T.z,line:'Three sailings a day to the mainland from the outer pier.',
+ const place={id:T.id,title:'Minato Ferry Terminal',jp:"Ferry Terminal",sub:'ARRIVALS · DEPARTURES',x:T.x,z:T.z,line:'Three sailings a day to the mainland from the outer pier.',
   door:[T.platform[0],0,T.platform[1]],exitPosition:[T.platform[0],0,T.platform[1]]};
  const departures=[];
  return {group,place,queue:[...T.queue],arrival:[...T.arrival],driver:[...T.driver],exit:[...T.exit],departures,

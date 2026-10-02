@@ -49,7 +49,7 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
  box('Partition',[5.0,2.9,.1],[-.9,1.45,.8],wall,true);
  box('Partition',[.5,2.9,.1],[3.15,1.45,.8],wall,true);
  box('Partition lintel',[1.3,.7,.1],[2.25,2.55,.8],wall);
- panel('Noren',1.2,.62,[2.25,1.88,.74],Math.PI,(x,w,h)=>{x.fillStyle='#27304d';x.fillRect(0,0,w,h);x.fillStyle='#f4f1ea';x.fillRect(w/2-3,h*.35,6,h*.65);x.font=`bold ${h*.36}px ${MARU}`;x.textAlign='center';x.textBaseline='middle';x.fillText('森',w*.25,h*.42);x.fillText('家',w*.75,h*.42);},256);
+ panel('Noren',1.2,.62,[2.25,1.88,.74],Math.PI,(x,w,h)=>{x.fillStyle='#27304d';x.fillRect(0,0,w,h);x.fillStyle='#f4f1ea';x.fillRect(w/2-3,h*.35,6,h*.65);x.font=`bold ${h*.36}px ${MARU}`;x.textAlign='center';x.textBaseline='middle';x.fillText("Forest",w*.25,h*.42);x.fillText("House",w*.75,h*.42);},256);
 
  // The front office: desk facing the door, the visitor's stool, the town map.
  box('Officer desk top',[1.5,.06,.75],[-1.4,.75,-.6],0x8a6a4a);
@@ -74,13 +74,13 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
   x.fillStyle='#e9e2c8';x.fillRect(0,0,w,h);x.fillStyle='#8cc6e0';x.fillRect(0,0,w,h*.12);x.fillRect(0,0,w*.06,h);
   x.fillStyle='#cfc6a6';x.fillRect(w*.4,h*.1,w*.1,h*.9);x.fillStyle='#9fcf7c';x.fillRect(w*.56,h*.2,w*.34,h*.55);
   x.fillStyle='#3b3f55';x.font=`bold ${h*.06}px ${MARU}`;x.textAlign='left';
-  x.fillText('港 HARBOUR',w*.54,h*.09);x.fillText('さくら',w*.22,h*.42);x.fillText('公園 PARK',w*.62,h*.45);x.fillText('バス BUS',w*.3,h*.95);
-  x.fillStyle='#d7263d';x.beginPath();x.arc(w*.55,h*.84,h*.035,0,Math.PI*2);x.fill();x.fillStyle='#3b3f55';x.fillText('← 駐在所',w*.58,h*.86);
+  x.fillText("Minato HARBOUR",w*.54,h*.09);x.fillText("Sakura",w*.22,h*.42);x.fillText("Park PARK",w*.62,h*.45);x.fillText("Bus BUS",w*.3,h*.95);
+  x.fillStyle='#d7263d';x.beginPath();x.arc(w*.55,h*.84,h*.035,0,Math.PI*2);x.fill();x.fillStyle='#3b3f55';x.fillText("← Police station",w*.58,h*.86);
   x.strokeStyle='#6b4a1c';x.lineWidth=8;x.strokeRect(4,4,w-8,h-8);});
  spot([-3.1,1.4,-1.3],'Read the town map','read','Town map','Minato on one sheet: the harbour at the top, Sakura and the shops down the west side, the park and the school on the green side, and a red dot here at the top of Main Street, below the old sea cave. Pins mark the night patrol: up Main Street to the quay and back.');
  // Notices by the door, a lost-property shelf on the east wall.
  box('Notice board',[1.6,1.0,.03],[-1.9,1.55,-3.03],0xb98a55);
- const posters=[['指名手配','WANTED','Tama (cat)\nfor sleeping in fish crates','#f4e4c8'],['落とし物','LOST','One glove, left hand\nAsk at the desk','#e8f0f4'],['交通安全','SAFETY WEEK','Bicycles: lights on\nafter dark','#fff1c1']];
+ const posters=[["Wanted",'WANTED','Tama (cat)\nfor sleeping in fish crates','#f4e4c8'],["Lost item",'LOST','One glove, left hand\nAsk at the desk','#e8f0f4'],["Traffic safety",'SAFETY WEEK','Bicycles: lights on\nafter dark','#fff1c1']];
  posters.forEach(([jp,en,body,bg],i)=>panel('Poster '+en,.44,.6,[-2.4+i*.5,1.55,-3.01],0,(x,w,h)=>{x.fillStyle=bg;x.fillRect(0,0,w,h);x.fillStyle=i?'#27304d':'#d7263d';x.font=`bold ${w*.16}px ${MARU}`;x.textAlign='center';x.fillText(jp,w/2,h*.18);x.font=`bold ${w*.1}px ${MARU}`;x.fillText(en,w/2,h*.3);x.fillStyle='#3b3f55';x.font=`${w*.075}px ${MARU}`;body.split('\n').forEach((l,j)=>x.fillText(l,w/2,h*.72+j*w*.1));if(!i){x.fillStyle='#e8a050';x.beginPath();x.ellipse(w/2,h*.47,w*.2,h*.1,0,0,Math.PI*2);x.fill();}},256));
  spot([-1.9,1.3,-2.8],'Read the notices','read','Police box notices','WANTED: Tama, a ginger cat, for repeatedly sleeping in the fish crates at the quay. Approach with a sardine.\nLOST: One glove, left hand. The right one is also lost, but separately.\nTraffic Safety Week: bicycle lamps on after dark.');
  box('Lost property shelf',[.4,1.5,1.6],[3.15,.75,-1.5],0x8a6a4a,true);
@@ -98,7 +98,7 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
   x.fillStyle='#27304d';for(let i=0;i<12;i++){const a=i/12*Math.PI*2;x.fillRect(w/2+Math.sin(a)*w*.38-3,h/2-Math.cos(a)*h*.38-3,6,6);}
   x.strokeStyle='#27304d';x.lineCap='round';x.lineWidth=8;x.beginPath();x.moveTo(w/2,h/2);x.lineTo(w/2+w*.2,h/2);x.stroke();x.lineWidth=5;x.beginPath();x.moveTo(w/2,h/2);x.lineTo(w/2,h/2-h*.32);x.stroke();},128).material.transparent=true;
  panel('Emergency poster',.5,.36,[.3,1.75,.745],Math.PI,(x,w,h)=>{x.fillStyle='#d7263d';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.textAlign='center';x.font=`bold ${h*.42}px ${MARU}`;x.fillText('110',w/2,h*.52);x.font=`bold ${h*.13}px ${MARU}`;x.fillText('EMERGENCY',w/2,h*.8);},256);
- panel('Calendar',.34,.48,[-2.6,1.7,.745],Math.PI,(x,w,h)=>{x.fillStyle='#fffaf0';x.fillRect(0,0,w,h);x.fillStyle='#2a8fcc';x.fillRect(0,0,w,h*.38);x.fillStyle='#fff';x.textAlign='center';x.font=`bold ${h*.14}px ${MARU}`;x.fillText('9月 1997',w/2,h*.24);
+ panel('Calendar',.34,.48,[-2.6,1.7,.745],Math.PI,(x,w,h)=>{x.fillStyle='#fffaf0';x.fillRect(0,0,w,h);x.fillStyle='#2a8fcc';x.fillRect(0,0,w,h*.38);x.fillStyle='#fff';x.textAlign='center';x.font=`bold ${h*.14}px ${MARU}`;x.fillText("9Month 1997",w/2,h*.24);
   x.fillStyle='#3b3f55';x.font=`${h*.05}px ${MARU}`;for(let d=1;d<=30;d++){const c=(d+0)%7,r=Math.floor((d+0)/7);x.fillStyle=c===0?'#d7263d':'#3b3f55';x.fillText(String(d),w*(.1+c*.13),h*(.48+r*.1));}},256);
  box('Potted plant',[.32,.32,.32],[-3.0,.16,-2.7],0xb95c3c);
  const leaves=new THREE.Mesh(new THREE.SphereGeometry(.3,10,8),mat(0x3f8f46));leaves.position.set(-3.0,.6,-2.7);leaves.scale.set(1,1.3,1);group.add(leaves);

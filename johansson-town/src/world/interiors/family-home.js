@@ -36,7 +36,7 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  if(!empty){box([.55,1.3,.55],[-hw+.32,.65,-.3],0xe8ebe6,'Fridge');collider(-hw+.32,-.3,.6,.6,1.3);}
  if(empty){
   box([.3,.01,.42],[0,.01,.6],0xf4ecd6,'Rental note');
-  anchor([0,.5,.6],'Read the rental note',()=>action('read','For rent · 貸家','2DK, tatami, kitchen and bath, water tank on the roof. ¥28,000 a month. Enquiries to the town hall, 住民課. Somebody new could live here.'));
+  anchor([0,.5,.6],'Read the rental note',()=>action('read',"For rent · Rental house","2DK, tatami, kitchen and bath, water tank on the roof. ¥28,000 a month. Enquiries to the town hall, Residents Division. Somebody new could live here."));
   return {...FAMILY_HOME_LAYOUT,home:true,toLet:true};
  }
  // The family altar: lacquer cabinet, the tablets, offerings of fruit and an incense bowl.

@@ -11,8 +11,8 @@ magazine-art.js). These are the pages that are drawn once and shipped as images:
 The reader picks the chapter, gag page and poster from the issue on sale
 (magazine-issues.js), so they turn over with the town calendar.
 
-Pure Pillow, no other dependencies. Japanese text needs a font with kana and kanji;
-pass --font, or it looks for WenQuanYi Zen Hei / Noto Sans CJK in the usual places.
+Pure Pillow, no other dependencies. English lettering uses Arial or DejaVu Sans;
+pass --font to choose another installed font.
 
     pip install pillow
     python3 tools/magazines/draw_pages.py            # writes assets/magazines/
@@ -25,6 +25,8 @@ W, H = 600, 840
 INK, PAPER = 20, 250
 ROOT = Path(__file__).resolve().parents[2]
 FONT_CANDIDATES = [
+    '/System/Library/Fonts/Supplemental/Arial.ttf',
+    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
     '/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc',
     '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc',
     '/usr/share/fonts/noto-cjk/NotoSansCJK-Bold.ttc',
@@ -39,22 +41,24 @@ def font(size):
 
 
 # ------------------------------------------------------------------ drawing kit
-VERTICAL = {'ー': '｜', '－': '｜', '〜': '≀', '「': '﹁', '」': '﹂', '（': '︵', '）': '︶', '、': '︑', '。': '︒'}
+VERTICAL = {'-': '｜', '－': '｜', '〜': '≀', '「': '﹁', '」': '﹂', '（': '︵', '）': '︶', '、': '︑', '。': '︒'}
+
+
+def english_lines(text):
+    import textwrap
+    return "\n".join(textwrap.fill(line, width=14) for line in text.split("\n"))
 
 
 def vtext(d, x, y, text, size, fill=INK, columns_gap=1.15):
-    """Japanese vertical text: columns run top to bottom, right to left. `\n` starts a column."""
-    f = font(size)
-    text = text.replace('…', '・・')  # few CJK fonts carry a vertical ellipsis
-    for col, line in enumerate(text.split('\n')):
-        cx = x - col * size * columns_gap
-        for row, ch in enumerate(line):
-            d.text((cx, y + row * size * 1.04), VERTICAL.get(ch, ch), font=f, fill=fill, anchor='mt')
+    """English speech runs horizontally; retain the art's anchor contract."""
+    tw, _ = vsize(text, size)
+    d.multiline_text((x - tw / 2 + size / 2, y), english_lines(text), font=font(size), fill=fill, anchor='ma', align='center', spacing=2)
 
 
 def vsize(text, size, columns_gap=1.15):
-    lines = text.replace('…', '・・').split('\n')
-    return (len(lines) - 1) * size * columns_gap + size, max(len(l) for l in lines) * size * 1.04
+    lines = english_lines(text).split("\n")
+    f = font(size)
+    return max(f.getlength(line) for line in lines), len(lines) * (size + 2)
 
 
 def bubble(d, cx, cy, text, size=22, shout=False):
@@ -210,7 +214,7 @@ def plant(d, cx, cy, s=1.0, tall=1.0, tag=True):
         d.ellipse([cx + side * 4 * s - (0 if side > 0 else 30 * s), y - 9 * s, cx + side * 4 * s + (30 * s if side > 0 else 0), y + 9 * s], fill=110, outline=INK, width=2)
     if tag:
         d.rectangle([cx - 20 * s, cy + 12 * s, cx + 20 * s, cy + 26 * s], fill=PAPER, outline=INK, width=2)
-        d.text((cx, cy + 19 * s), '副店長', font=font(max(9, int(10 * s))), fill=INK, anchor='mm')
+        d.text((cx, cy + 19 * s), 'Assistant Manager', font=font(max(9, int(10 * s))), fill=INK, anchor='mm')
 
 
 def kid(d, cx, cy, s=1.0, face='open'):
@@ -246,29 +250,29 @@ def counter(d, box, y):
 # Each chapter: four pages, each a list of panels (fractions of the page) with what is in
 # them. Pages read right to left, top to bottom, as manga do.
 CHAPTERS = [
-    ('第一話 南の海から来た男', [
-        [((0, 0, 1, .42), 'sea', '島に…\n着いた', None), ((.5, .42, 1, 1), 'hero', 'ここが\nみなと町か', 'calm'), ((0, .42, .5, 1), 'kid', '兄ちゃん\nだれ？', None)],
-        [((0, 0, 1, .5), 'rival', 'ハヤテ…\n来たか', None), ((.45, .5, 1, 1), 'hero', '黒潮！', 'shock'), ((0, .5, .45, 1), 'sfx', 'ザッ', None)],
-        [((0, 0, 1, .55), 'clash', 'ドドドド', None), ((0, .55, 1, 1), 'hero', '勝負だ！', 'fierce')],
-        [((0, 0, .5, .5), 'kid', 'がんばれ\n兄ちゃん！', None), ((.5, 0, 1, .5), 'hero', 'まかせろ', 'calm'), ((0, .5, 1, 1), 'next', '次号\n嵐の決闘', None)],
+    ('Episode 1 The man from the southern sea', [
+        [((0, 0, 1, .42), 'sea', 'On the island…\nArrived', None), ((.5, .42, 1, 1), 'hero', 'Here\nMinato town?', 'calm'), ((0, .42, .5, 1), 'kid', 'Brother\nWho?', None)],
+        [((0, 0, 1, .5), 'rival', 'Hayate…\nDid you come?', None), ((.45, .5, 1, 1), 'hero', 'Kuroshio!', 'shock'), ((0, .5, .45, 1), 'sfx', 'That', None)],
+        [((0, 0, 1, .55), 'clash', 'Dododo', None), ((0, .55, 1, 1), 'hero', 'It\'s a game!', 'fierce')],
+        [((0, 0, .5, .5), 'kid', 'Good luck\nBrother!', None), ((.5, 0, 1, .5), 'hero', 'Leave it to me', 'calm'), ((0, .5, 1, 1), 'next', 'Next issue\nStorm Duel', None)],
     ]),
-    ('第二話 嵐の決闘', [
-        [((0, 0, 1, .4), 'storm', 'ゴオオオ', None), ((.5, .4, 1, 1), 'rival', 'この嵐で\n逃げ場はない', None), ((0, .4, .5, 1), 'hero', 'ふん', 'calm')],
-        [((0, 0, 1, .6), 'clash', 'バキィ', None), ((0, .6, .55, 1), 'hero', 'くっ…', 'shock'), ((.55, .6, 1, 1), 'sfx', 'ズザザ', None)],
-        [((0, 0, .5, 1), 'hero', '風よ…\n力を！', 'fierce'), ((.5, 0, 1, .5), 'sea', '', None), ((.5, .5, 1, 1), 'sfx', 'ヒュオオ', None)],
-        [((0, 0, 1, .6), 'clash', '疾風斬！', None), ((0, .6, 1, 1), 'next', '次号\n覚醒の刻', None)],
+    ('Episode 2 Storm Duel', [
+        [((0, 0, 1, .4), 'storm', 'Gooooooo', None), ((.5, .4, 1, 1), 'rival', 'In this storm\nThere is no escape', None), ((0, .4, .5, 1), 'hero', 'Hmph', 'calm')],
+        [((0, 0, 1, .6), 'clash', 'Bucky', None), ((0, .6, .55, 1), 'hero', 'Damn it…', 'shock'), ((.55, .6, 1, 1), 'sfx', 'Zuzaza', None)],
+        [((0, 0, .5, 1), 'hero', 'Wind…\nPower!', 'fierce'), ((.5, 0, 1, .5), 'sea', '', None), ((.5, .5, 1, 1), 'sfx', 'Huoooh', None)],
+        [((0, 0, 1, .6), 'clash', 'Gale slash!', None), ((0, .6, 1, 1), 'next', 'Next issue\nTime of Awakening', None)],
     ]),
-    ('第三話 覚醒の刻', [
-        [((0, 0, .5, .5), 'hero', 'この力は…', 'shock'), ((.5, 0, 1, .5), 'kid', '兄ちゃんの\n髪が光った！', None), ((0, .5, 1, 1), 'aura', 'キィィン', None)],
-        [((0, 0, 1, .45), 'rival', 'ばかな…！', None), ((0, .45, 1, 1), 'clash', 'ドォン', None)],
-        [((.5, 0, 1, 1), 'hero', '島のみんなを\n守るんだ', 'fierce'), ((0, 0, .5, .5), 'sea', '', None), ((0, .5, .5, 1), 'kid', 'うん！', None)],
-        [((0, 0, 1, .55), 'aura', 'ゴゴゴゴ', None), ((0, .55, 1, 1), 'next', '次号\n最終決戦', None)],
+    ('Episode 3 Time of Awakening', [
+        [((0, 0, .5, .5), 'hero', 'This power is…', 'shock'), ((.5, 0, 1, .5), 'kid', 'Brother\'s\nMy hair shines!', None), ((0, .5, 1, 1), 'aura', 'Kiin', None)],
+        [((0, 0, 1, .45), 'rival', 'Idiot…！', None), ((0, .45, 1, 1), 'clash', 'Doon', None)],
+        [((.5, 0, 1, 1), 'hero', 'Everyone on the island\nProtect it', 'fierce'), ((0, 0, .5, .5), 'sea', '', None), ((0, .5, .5, 1), 'kid', 'Yeah!', None)],
+        [((0, 0, 1, .55), 'aura', 'Gogogogo', None), ((0, .55, 1, 1), 'next', 'Next issue\nFinal battle', None)],
     ]),
-    ('第四話 最終決戦', [
-        [((0, 0, 1, .4), 'storm', '', None), ((0, .4, .5, 1), 'rival', '終わりだ\nハヤテ', None), ((.5, .4, 1, 1), 'hero', 'まだだ！', 'fierce')],
-        [((0, 0, 1, .7), 'clash', '風雲\n疾風斬', None), ((0, .7, 1, 1), 'sfx', 'ズドォン', None)],
-        [((0, 0, 1, .5), 'sea', '朝だ…', None), ((.5, .5, 1, 1), 'rival', '見事だ…', None), ((0, .5, .5, 1), 'hero', 'また\n会おう', 'calm')],
-        [((0, 0, 1, .55), 'kid', '兄ちゃん\nかっこいい！', None), ((0, .55, 1, 1), 'next', '第一部\n完', None)],
+    ('Episode 4 Final battle', [
+        [((0, 0, 1, .4), 'storm', '', None), ((0, .4, .5, 1), 'rival', 'It\'s over\nHayate', None), ((.5, .4, 1, 1), 'hero', 'Not yet!', 'fierce')],
+        [((0, 0, 1, .7), 'clash', 'Wind cloud\nGale slash', None), ((0, .7, 1, 1), 'sfx', 'Zudwon', None)],
+        [((0, 0, 1, .5), 'sea', 'It\'s morning…', None), ((.5, .5, 1, 1), 'rival', 'Stunning…', None), ((0, .5, .5, 1), 'hero', 'Again\nLet\'s meet', 'calm')],
+        [((0, 0, 1, .55), 'kid', 'Brother\nCool!', None), ((0, .55, 1, 1), 'next', 'Part 1\nComplete', None)],
     ]),
 ]
 
@@ -281,7 +285,7 @@ def draw_chapter_page(chapter, page_no):
     top = 26
     if page_no == 0:  # chapter title strip down the right edge
         d.rectangle([W - 74, 26, W - 26, H - 60], fill=INK)
-        vtext(d, W - 50, 40, title, 26, fill=PAPER)
+        d.text((W - 50, (H - 34) / 2), 'HAYATE', font=font(13), fill=PAPER, anchor='mm')
         right = W - 86
     else:
         right = W - m
@@ -339,60 +343,60 @@ def draw_chapter_page(chapter, page_no):
             vtext(d, (x0 + x1) / 2 + 20, y0 + 30, text, 40, fill=PAPER)
         elif text:
             bubble(d, x0 + (x1 - x0) * (.78 if seed % 2 else .24), y0 + 26 + vsize(text, 22)[1] / 2 + 10, text, 22, shout='！' in text)
-    d.text((W / 2, H - 30), f'風雲児ハヤテ  {page_no + 1}', font=font(16), fill=INK, anchor='mm')
+    d.text((W / 2, H - 30), f'Hayate: Island Adventures — {page_no + 1}', font=font(16), fill=INK, anchor='mm')
     return img
 
 
 # --------------------------------------------------------- サクラ商店4コマ
 # Gag strips: four panels each, top to bottom. Each panel: (scene, [(who, line), ...]).
 GAGS = [
-    ('副店長', [
-        ('shop', [('thuan', '副店長\nおはよう')]),
+    ('Assistant Manager', [
+        ('shop', [('thuan', 'Assistant Manager\nGood morning')]),
         ('plant', []),
-        ('shop', [('kid', '植木に\nあいさつ？')]),
-        ('shop', [('thuan', '遅刻しないのは\n彼だけなの')]),
+        ('shop', [('kid', 'For plants\nGreetings?')]),
+        ('shop', [('thuan', 'Don\'t be late\nHe\'s the only one')]),
     ]),
-    ('じゃが坊', [
-        ('jagabo', [('kid', 'なでなで')]),
+    ('Jagabo', [
+        ('jagabo', [('kid', 'Stroke')]),
         ('jagabo_rattle', []),
-        ('jagabo_cross', [('kid', 'どっち\n見てるの！？')]),
-        ('jagabo_cross', [('sign', '両方')]),
+        ('jagabo_cross', [('kid', 'Which?\nI\'m watching you! ?')]),
+        ('jagabo_cross', [('sign', 'Both')]),
     ]),
-    ('おでん', [
-        ('shop', [('thuan', 'おでん\n始めました')]),
-        ('shop', [('kid', '大根\nください')]),
-        ('shop', [('thuan', 'まだ\n煮えてません')]),
-        ('sign', [('sign', 'おでん\n始めそう\nです')]),
+    ('Oden', [
+        ('shop', [('thuan', 'Oden\nStarted')]),
+        ('shop', [('kid', 'Radish\nPlease')]),
+        ('shop', [('thuan', 'Not yet\nNot cooked')]),
+        ('sign', [('sign', 'Oden\nAbout to start\nYes.')]),
     ]),
-    ('立ち読み', [
+    ('Browse', [
         ('rack', [('kid', '…')]),
         ('rack_evening', [('kid', '…')]),
-        ('shop', [('thuan', '立ち読み歓迎…\nとは書いたけど')]),
-        ('rack_evening', [('kid', '次号は\nいつ？')]),
+        ('shop', [('thuan', 'Welcome to browse…\nAlthough I wrote that')]),
+        ('rack_evening', [('kid', 'Next issue\nWhen?')]),
     ]),
-    ('ミラー', [
-        ('mirror', [('kid', 'ミラーに\nネコが…')]),
-        ('street', [('kid', 'いない')]),
-        ('mirror', [('kid', 'やっぱり\nいる')]),
-        ('cat_top', [('cat', 'にゃ')]),
+    ('Mirror', [
+        ('mirror', [('kid', 'To the mirror\nThe cat…')]),
+        ('street', [('kid', 'Not there')]),
+        ('mirror', [('kid', 'As expected\nThere is')]),
+        ('cat_top', [('cat', 'Nya')]),
     ]),
-    ('台風', [
-        ('shop', [('kid', '台風でも\n開いてる？')]),
-        ('shop', [('thuan', 'コンビニは\n24時間よ')]),
+    ('Typhoon', [
+        ('shop', [('kid', 'Even in a typhoon\nIs it open?')]),
+        ('shop', [('thuan', 'Convenience store\n24It\'s time')]),
         ('storm', []),
-        ('shop_cards', [('thuan', '…という\n予定でした')]),
+        ('shop_cards', [('thuan', '…Said\nIt was planned.')]),
     ]),
-    ('スタンプカード', [
-        ('shop', [('kid', 'スタンプ\n10個！')]),
-        ('shop', [('thuan', 'お茶1本\nどうぞ')]),
-        ('shop', [('kid', 'カード\nもう1枚')]),
-        ('shop_tired', [('thuan', '…はい')]),
+    ('Stamp card', [
+        ('shop', [('kid', 'Stamp\n10Pieces!')]),
+        ('shop', [('thuan', 'Tea1items\nPlease')]),
+        ('shop', [('kid', 'Card\nAlready1pieces')]),
+        ('shop_tired', [('thuan', '…Yes')]),
     ]),
-    ('昇進', [
-        ('plant', [('thuan', '副店長\n昇進です')]),
+    ('Promotion', [
+        ('plant', [('thuan', 'Assistant Manager\nPromotion')]),
         ('plant_tall', []),
-        ('shop', [('kid', 'お給料は？')]),
-        ('plant_tall', [('thuan', 'お水です')]),
+        ('shop', [('kid', 'What is your salary?')]),
+        ('plant_tall', [('thuan', 'Water')]),
     ]),
 ]
 
@@ -489,27 +493,27 @@ def draw_gag_page(index):
     img = Image.new('L', (W, H), PAPER)
     d = ImageDraw.Draw(img)
     d.rectangle([0, 0, W, 64], fill=INK)
-    d.text((W / 2, 32), 'サクラ商店4コマ', font=font(30), fill=PAPER, anchor='mm')
+    d.text((W / 2, 32), 'Sakura Shop Comics', font=font(30), fill=PAPER, anchor='mm')
     col_w = (W - 26 * 3) / 2
     for strip in range(2):
         title, panels = GAGS[(index * 2 + strip) % len(GAGS)]
         x1 = W - 26 - strip * (col_w + 26)
         x0 = x1 - col_w
-        d.text(((x0 + x1) / 2, 88), f'「{title}」', font=font(22), fill=INK, anchor='mm')
+        d.text(((x0 + x1) / 2, 88), f'"{title}"', font=font(22), fill=INK, anchor='mm')
         ph = (H - 110 - 50 - 3 * 10) / 4
         for i, (scene, lines) in enumerate(panels):
             y0 = 110 + i * (ph + 10)
             draw_gag_panel(img, (x0, y0, x1, y0 + ph), scene, lines, index * 10 + strip * 4 + i)
-    d.text((W / 2, H - 26), '作・画 みなと商店街まんが研究会', font=font(15), fill=INK, anchor='mm')
+    d.text((W / 2, H - 26), 'Writing/Illustration Minato Shopping District Manga Study Group', font=font(15), fill=INK, anchor='mm')
     return img
 
 
 # ------------------------------------------------------- セルアニメ posters
 POSTERS = [
-    ('機動海神ミナト', ((240, 120, 60), (40, 30, 90)), (155, 93, 229)),
-    ('宇宙船シーサー号', ((10, 20, 60), (60, 20, 90)), (239, 71, 111)),
-    ('星くず学園', ((255, 190, 120), (240, 100, 140)), (58, 196, 242)),
-    ('魔法少女ゴーヤ', ((170, 230, 170), (40, 140, 90)), (255, 183, 3)),
+    ('Mobile Sea God Minato', ((240, 120, 60), (40, 30, 90)), (155, 93, 229)),
+    ('Spaceship Shisa', ((10, 20, 60), (60, 20, 90)), (239, 71, 111)),
+    ('Stardust Academy', ((255, 190, 120), (240, 100, 140)), (58, 196, 242)),
+    ('Magical Girl Goya', ((170, 230, 170), (40, 140, 90)), (255, 183, 3)),
 ]
 
 
@@ -545,8 +549,8 @@ def draw_poster(index):
             d.ellipse([ex - 6, cy - 90, ex + 6, cy - 78], fill=(255, 255, 255))
         d.arc([cx - 24, cy - 20, cx + 24, cy + 10], 20, 160, fill=(20, 20, 30), width=5)
     d.rectangle([0, H - 170, W, H], fill=(20, 20, 30))
-    d.text((W / 2, H - 112), name, font=font(52), fill=(255, 255, 255), anchor='mm', stroke_width=3, stroke_fill=tuple(acc))
-    d.text((W / 2, H - 50), '月刊セルアニメ 特製ポスター', font=font(22), fill=(255, 224, 102), anchor='mm')
+    d.text((W / 2, H - 112), name, font=font(min(52, int(540 / max(1, font(1).getlength(name))))), fill=(255, 255, 255), anchor='mm', stroke_width=3, stroke_fill=tuple(acc))
+    d.text((W / 2, H - 50), 'Monthly Cell Anime Special poster', font=font(22), fill=(255, 224, 102), anchor='mm')
     return img
 
 
@@ -558,12 +562,12 @@ def save(img, path, colours):
 def main():
     global FONT_PATH
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--font', help='a TrueType/OpenType font with Japanese glyphs')
+    ap.add_argument('--font', help='a TrueType/OpenType font with English glyphs')
     ap.add_argument('--out', default=str(ROOT / 'assets' / 'magazines'))
     args = ap.parse_args()
     FONT_PATH = args.font or next((p for p in FONT_CANDIDATES if os.path.exists(p)), None)
     if not FONT_PATH:
-        raise SystemExit('No Japanese font found; pass --font /path/to/font.ttc')
+        raise SystemExit('No suitable font found; pass --font /path/to/font.ttc')
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     for c in range(len(CHAPTERS)):

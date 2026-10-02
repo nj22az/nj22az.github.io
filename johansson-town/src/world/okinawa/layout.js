@@ -32,9 +32,9 @@ export const NISHI=Object.freeze({
  /** The plots between the lanes, from the walk to the yard wall. */
  plots:Object.freeze([
   {id:'net-shed',kind:'shed',minZ:-37.8,maxZ:-29.3},
-  {id:'higa',kind:'red-tile',family:'比嘉',romaji:'Higa',minZ:-25.7,maxZ:-14.8,gate:'south'},
-  {id:'kinjo',kind:'concrete',family:'金城',romaji:'Kinjō',minZ:-11.2,maxZ:-.2,gate:'north'},
-  {id:'oshiro',kind:'red-tile',family:'大城',romaji:'Ōshiro',minZ:3.3,maxZ:14.2,gate:'south'},
+  {id:'higa',kind:'red-tile',family:"Higa",romaji:'Higa',minZ:-25.7,maxZ:-14.8,gate:'south'},
+  {id:'kinjo',kind:'concrete',family:"Kinjo",romaji:'Kinjō',minZ:-11.2,maxZ:-.2,gate:'north'},
+  {id:'oshiro',kind:'red-tile',family:"Oshiro",romaji:'Ōshiro',minZ:3.3,maxZ:14.2,gate:'south'},
   {id:'utaki',kind:'grove',minZ:17.8,maxZ:28.8},
  ].map(p=>Object.freeze({...p,minX:-36.1,maxX:-25.6}))),
 });
@@ -82,11 +82,11 @@ export const EAST_BACK=Object.freeze({
  lane:Object.freeze({minX:EAST_ROW.maxX,maxX:EAST_ROW.maxX+2.6}),
  plots:Object.freeze([
   // Gates on the green in front of Umi-no-yu, with the houses backed onto the trees.
-  {id:'nakasone',kind:'red-tile',family:'仲宗根',romaji:'Nakasone',minX:16.2,maxX:24.6,minZ:10.4,maxZ:21.6,gate:'south'},
-  {id:'miyagi',kind:'red-tile',family:'宮城',romaji:'Miyagi',minX:25.4,maxX:32.9,minZ:10.4,maxZ:21.6,gate:'south'},
-  {id:'tamaki',kind:'concrete',family:'玉城',romaji:'Tamaki',minX:16.2,maxX:24.2,minZ:-14.4,maxZ:-3.6,gate:'north'},
+  {id:'nakasone',kind:'red-tile',family:"Nakasone",romaji:'Nakasone',minX:16.2,maxX:24.6,minZ:10.4,maxZ:21.6,gate:'south'},
+  {id:'miyagi',kind:'red-tile',family:"Miyagi",romaji:'Miyagi',minX:25.4,maxX:32.9,minZ:10.4,maxZ:21.6,gate:'south'},
+  {id:'tamaki',kind:'concrete',family:"Tamaki",romaji:'Tamaki',minX:16.2,maxX:24.2,minZ:-14.4,maxZ:-3.6,gate:'north'},
   // Between the park and the seawall, its gate on the garden with the pond.
-  {id:'kamiya',kind:'red-tile',family:'神谷',romaji:'Kamiya',minX:24.8,maxX:32.9,minZ:-30.8,maxZ:-19.6,gate:'north'},
+  {id:'kamiya',kind:'red-tile',family:"Kamiya",romaji:'Kamiya',minX:24.8,maxX:32.9,minZ:-30.8,maxZ:-19.6,gate:'north'},
  ].map(Object.freeze)),
 });
 

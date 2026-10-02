@@ -209,7 +209,7 @@ void main() {
  * of the island (peninsula.js) and the airport island offshore. Zero on land, rising
  * to `range` metres out, which counts as open water.
  */
-export const SHORE_FIELD=Object.freeze({minX:-150,maxX:250,minZ:-200,maxZ:180,size:256,range:80});
+export const SHORE_FIELD=Object.freeze({minX:-150,maxX:390,minZ:-200,maxZ:410,size:384,range:80});
 
 function segmentDistance(px,pz,ax,az,bx,bz){
   const dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((px-ax)*dx+(pz-az)*dz)/(dx*dx+dz*dz||1)));

@@ -4,7 +4,7 @@
  * (activities.js) can read it without the scene (city-restaurant.js).
  */
 export const CITY_RESTAURANT=Object.freeze({
- id:'city-restaurant',title:'Restaurant Hoshizora',jp:'レストラン 星空 · 那覇',sub:'WITH THUAN',
+ id:'city-restaurant',title:'Restaurant Hoshizora',jp:"Restaurant Starry sky · Naha",sub:'WITH THUAN',
  /** When the evening boat to Naha runs, and the last one back. */
  sailFrom:17*60,sailUntil:21*60+30,crossing:50,
 });

@@ -50,7 +50,7 @@
   {
     "name": "Aya",
     "role": "Bookseller",
-    "place": "Front-Row Books & Workshop",
+    "place": "Front-Row Books",
     "bio": "Aya has claimed the window seat and has a habit of marking the funny parts of borrowed books.",
     "backstory": "She and Reiko share a home, so a bookshop day often carries on as a conversation about the evening paper. Emi lends her practical kindness in the form of generous pockets. Aya once tried to involve Tama in a tiny apron fitting; the cat has maintained his refusal.",
     "portrait": "assets/images/residents/07.webp"
@@ -58,7 +58,7 @@
   {
     "name": "Kenji",
     "role": "Pattern maker and repairman",
-    "place": "Front-Row Books & Workshop",
+    "place": "Dock Electrical & Repair Workshop",
     "bio": "An enthusiastic tinkerer who believes almost any everyday object could work a little better.",
     "backstory": "Kenji’s workbench is where small repairs turn into experiments. Tetsuo provides a running commentary on their success, while apprentice Kenta brings new ideas of his own. The two repairmen share a home as well as a workshop, giving the discussion plenty of time to continue.",
     "portrait": "assets/images/residents/08.webp"
@@ -146,7 +146,7 @@
   {
     "name": "Reiko",
     "role": "Newspaper editor",
-    "place": "Front-Row Books & Workshop",
+    "place": "Front-Row Books",
     "bio": "Curious and quick with a pencil, Reiko keeps the evening press supplied with neighbourhood news.",
     "backstory": "She shares a home with Aya and a lively professional friendship with Officer Mori. His thorough reports can be short on incident, so even a remark about lunch may find its way into print. She is careful to tell visitors when the pencil is finally put away.",
     "portrait": "assets/images/residents/19.webp"
@@ -154,7 +154,7 @@
   {
     "name": "Tetsuo",
     "role": "Radio repairer",
-    "place": "Front-Row Books & Workshop",
+    "place": "Dock Electrical & Repair Workshop",
     "bio": "A deadpan music lover who handles radios gently and treats static as a form of conversation.",
     "backstory": "Repairs, spare screws and competing weather bulletins are familiar parts of his working life. Kenji shares both his workshop and his home, ensuring that their disagreements about volume are never entirely finished. A well-tuned radio remains his preferred answer to a quiet room.",
     "portrait": "assets/images/residents/20.webp"
@@ -264,30 +264,6 @@
     "portrait": "assets/images/residents/33.webp"
   },
   {
-    "name": "Mr Nakasone",
-    "role": "Gateball player",
-    "place": "Gateball court",
-    "bio": "Red team, number three: Nakasone approaches the local matches with competitive confidence.",
-    "backstory": "The next village’s former baseball player is a recurring grievance and a welcome challenge. Mrs Kamiya has spent years advising him to hit less hard. Afterwards the players go to Nakamura’s, where the winning team is expected to pay.",
-    "portrait": "assets/images/residents/34.webp"
-  },
-  {
-    "name": "Mrs Kamiya",
-    "role": "Gateball player",
-    "place": "Gateball court",
-    "bio": "Kamiya believes gateball is a game of patience, particularly when playing alongside Nakasone.",
-    "backstory": "Fifty years of patience have not exhausted her supply of pointed advice. Morning and late-afternoon matches give structure to the day, with zenzai at Nakamura’s afterwards. She keeps careful track of whose team ought to settle the bill.",
-    "portrait": "assets/images/residents/35.webp"
-  },
-  {
-    "name": "Mr Arakaki",
-    "role": "Gateball referee",
-    "place": "Gateball court",
-    "bio": "Arakaki keeps a firm eye on the thirty-minute limit and a tactful distance from his wife’s kitchen.",
-    "backstory": "His wife makes andagi on Main Street. Refereeing gives him a useful occupation during the games and a ready explanation for being out of the way. The arrival of a visitor is one of the few things that interrupts his attention to the clock.",
-    "portrait": "assets/images/residents/36.webp"
-  },
-  {
     "name": "Mrs Kinjō",
     "role": "Neighbour",
     "place": "Shopping street",
@@ -302,5 +278,45 @@
     "bio": "Tōma carries letters, parcels and postcards around a route paced by the day’s two collections.",
     "backstory": "The postbox plate says 10:30 and 16:30, and he trusts its accuracy even when he doubts his own. A parcel for the barber and a postcard for Sakura make the round more personal than a list of addresses. He insists he does not read postcards, while allowing that the pictures can be very nice.",
     "portrait": "assets/images/residents/38.webp"
+  },
+  {
+    "name": "Haru",
+    "role": "Fisherman",
+    "place": "Hoshizaki Fishing Village",
+    "bio": "Haru lands the morning catch, collects lunch from Mina and spends the afternoon repairing nets.",
+    "backstory": "He grew up above the village pier. The airport carries some of his parcels, but the weather and boats still shape his working day.",
+    "portrait": "assets/images/residents/39.webp"
+  },
+  {
+    "name": "Mina",
+    "role": "Village shopkeeper",
+    "place": "Hoshizaki General Store",
+    "bio": "Mina keeps island tea, rice crackers and postcards ready for fishing families and occasional visitors.",
+    "backstory": "Her family store opens early and closes before supper. She is helping prepare the guesthouse while keeping the village familiar to its neighbours.",
+    "portrait": "assets/images/residents/40.webp"
+  },
+  {
+    "name": "Jun",
+    "role": "Airport clerk",
+    "place": "Kitano-jima Airport",
+    "bio": "Jun checks commuter tickets, cabin bags and the weather before boarding.",
+    "backstory": "Jun lives in staff accommodation beside the terminal. Lunch is taken on the passenger walkway; maintenance records go through the dock workshop and Community Hall.",
+    "portrait": "assets/images/residents/41.webp"
+  },
+  {
+    "name": "Riku",
+    "role": "Dock cargo crew",
+    "place": "Western quay",
+    "bio": "Riku checks the containers and walks the cargo circuit, from the morning supplies boat to the evening fish dispatch.",
+    "backstory": "He knows which crates go to Sakura and which radio parts belong at Kenji and Tetsuo’s workshop.",
+    "portrait": "assets/images/residents/riku.webp"
+  },
+  {
+    "name": "Emi Kado",
+    "role": "Harbour freight clerk",
+    "place": "Western quay dispatch desk",
+    "bio": "Emi records incoming supplies, outgoing post and chilled fish, and stays to see the late passenger boat home.",
+    "backstory": "Every shipment has a paper trail. The Community Hall keeps a filed copy of her freight notices for one year.",
+    "portrait": "assets/images/residents/emi-kado.webp"
   }
 ]
