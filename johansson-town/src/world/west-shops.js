@@ -105,7 +105,7 @@ export function buildWestShop({parent,site,register,enter,label,colliders,shadow
   const recess=solid([.08,1.94,run],[WEST_FRONT-.12,1.65,bay],0x302c24);recess.name='Display window recess';
   for(const y of [.68,SHOPFRONT])solid([.24,.10,run+.12],[WEST_FRONT+.01,y,bay],alu).name='Display window rail';
   for(const zz of [inner,outer])solid([.24,2.0,.10],[WEST_FRONT+.01,1.65,zz],alu).name='Display window stile';
-  if(side<0){
+  if(side<0||site.bookshop){
    for(const y of [.92,1.70]){
     solid([.18,.06,run-.18],[WEST_FRONT+.01,y,bay],trim).name='Book display shelf';
     for(let i=0;i<9;i++)solid([.10,.36+(i%3)*.04,.17],[WEST_FRONT+.035,y+.23,bay-run/2+.25+i*(run-.5)/9],[0x884934,0x52655e,0xa18b57][i%3]).name='Book in street display';

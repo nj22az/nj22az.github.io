@@ -50,7 +50,7 @@
   {
     "name": "Aya",
     "role": "Bookseller",
-    "place": "Front-Row Books & Workshop",
+    "place": "Front-Row Books",
     "bio": "Aya has claimed the window seat and has a habit of marking the funny parts of borrowed books.",
     "backstory": "She and Reiko share a home, so a bookshop day often carries on as a conversation about the evening paper. Emi lends her practical kindness in the form of generous pockets. Aya once tried to involve Tama in a tiny apron fitting; the cat has maintained his refusal.",
     "portrait": "assets/images/residents/07.webp"
@@ -58,7 +58,7 @@
   {
     "name": "Kenji",
     "role": "Pattern maker and repairman",
-    "place": "Front-Row Books & Workshop",
+    "place": "Dock Electrical & Repair Workshop",
     "bio": "An enthusiastic tinkerer who believes almost any everyday object could work a little better.",
     "backstory": "Kenji’s workbench is where small repairs turn into experiments. Tetsuo provides a running commentary on their success, while apprentice Kenta brings new ideas of his own. The two repairmen share a home as well as a workshop, giving the discussion plenty of time to continue.",
     "portrait": "assets/images/residents/08.webp"
@@ -146,7 +146,7 @@
   {
     "name": "Reiko",
     "role": "Newspaper editor",
-    "place": "Front-Row Books & Workshop",
+    "place": "Front-Row Books",
     "bio": "Curious and quick with a pencil, Reiko keeps the evening press supplied with neighbourhood news.",
     "backstory": "She shares a home with Aya and a lively professional friendship with Officer Mori. His thorough reports can be short on incident, so even a remark about lunch may find its way into print. She is careful to tell visitors when the pencil is finally put away.",
     "portrait": "assets/images/residents/19.webp"
@@ -154,7 +154,7 @@
   {
     "name": "Tetsuo",
     "role": "Radio repairer",
-    "place": "Front-Row Books & Workshop",
+    "place": "Dock Electrical & Repair Workshop",
     "bio": "A deadpan music lover who handles radios gently and treats static as a form of conversation.",
     "backstory": "Repairs, spare screws and competing weather bulletins are familiar parts of his working life. Kenji shares both his workshop and his home, ensuring that their disagreements about volume are never entirely finished. A well-tuned radio remains his preferred answer to a quiet room.",
     "portrait": "assets/images/residents/20.webp"
