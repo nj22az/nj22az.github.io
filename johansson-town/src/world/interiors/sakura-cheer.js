@@ -72,19 +72,11 @@ function buildCheer(room){
  const flag=new THREE.BufferGeometry();flag.setAttribute('position',new THREE.Float32BufferAttribute([-.09,0,0,.09,0,0,0,-.17,0],3));flag.computeVertexNormals();
  const flagMats=colours.map(c=>new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide,toneMapped:false}));
  const string=new THREE.MeshBasicMaterial({color:0xfff6e0});
- // Strings run across the shop floor from wall to wall, over the aisles.
- // One string of paper flags, over the till end of the shop: more than that was busy
- // against the wood.
- for(const z of [1.9]){
-  // The back string stops at the restroom wall (x -4.02) instead of running through it.
-  const x0=z<-2.4?-3.85:-6.6,x1=4.3,sag=.12,y=2.42;
-  const pts=[];for(let i=0;i<=16;i++){const t=i/16;pts.push(new THREE.Vector3(x0+(x1-x0)*t,y-Math.sin(Math.PI*t)*sag,z));}
-  const tube=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),48,.006,4),string);tube.name='Sakura bunting string';room.add(tube);
-  const n=Math.floor((x1-x0)/.24);
-  for(let i=0;i<n;i++){const t=(i+.5)/n,m=new THREE.Mesh(flag,flagMats[i%flagMats.length]);m.position.set(x0+(x1-x0)*t,y-Math.sin(Math.PI*t)*sag,z);m.name='Sakura bunting';room.add(m);}
- }
+ // No bunting: one promotion band and a card at each end cap say more than flags across
+ // the whole ceiling did (docs/SAKURA-SHOP-PLAN.md).
  // Round POP cards hanging on threads over the islands: sale, new, oden, stamp card.
- const pops=[["New release!",'NEW',0xf06ba8,-4.2,-1.6],["Bargain",'SALE',0xff6b6b,-1.2,.4],["Oden","Started",0xffc93c,1.6,-1.6],["Stamp","10Kode Tea1items",0x5ec8f2,-2.8,2.3]];
+ // One card, over what it is about: the new crisps. The till canopy already says oden.
+ const pops=[["New release!",'NEW',0xf06ba8,-1.55,1.9]];
  for(const [jp,en,colour,x,z] of pops){
   const hex='#'+colour.toString(16).padStart(6,'0');
   const tex=sign(256,256,(ctx,w,h)=>{ctx.fillStyle=hex;ctx.beginPath();ctx.arc(w/2,h/2,w/2-4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(w/2,h/2,w/2-22,0,Math.PI*2);ctx.fill();signText(ctx,jp,w/2,h*.45,jp.length>4?42:54,hex);signText(ctx,en,w/2,h*.68,en.length>4?22:30,'#3b3f55');});

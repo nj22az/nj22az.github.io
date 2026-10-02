@@ -94,7 +94,7 @@ east wall.
 1. `sakura-layout.js`: put the three islands in parallel (one transform, as now) and regroup the bays by category.
 2. A new `sakura-chiller.js`: an open multi-deck case on the west wall. It holds rice balls, bento,
    sandwiches, bread, yoghurt and pudding, which come out of the cold cabinet and the dry shelf.
-3. Grow the cold cabinet to five doors; move the ice-cream chest beside it.
+3. The cold cabinet holds drinks only (the ice-cream chest stays by the window: there is no free wall beside the cabinet without blocking the restroom door).
 4. Move the buns' stock to a counter steamer, and remove the bun cabinet.
 5. A copy machine and fax by the east window. `shop-stock.js` gains the fill lines, with full-facing capacity per board.
 6. Tests: every product sits on a board, every stand point is clear, the door-to-drinks-to-till route is walkable,
@@ -105,3 +105,18 @@ east wall.
 Pick any item off a shelf to look at it up close. Each line's packaging is drawn as a large, readable label:
 brand, Japanese name, an illustration, the price and the small print. You can turn it, read the back,
 then put it back or take it to the till. See `src/world/interiors/item-viewer.js`.
+
+## Built (2 October 2026)
+
+- Gondolas by category: pantry (west), sweets (middle, children's lines low), daily goods (east).
+- An open chiller on the west wall for rice balls, bento, sandwiches, bread, pudding and yoghurt, in place
+  of the bun cabinet. The cold cabinet holds drinks only, with beer in the column nearest the till.
+- A bun steamer on the counter beside the hot case.
+- Every line is faced 24 deep (the buns 12), each board holding its share in full rows. Facings are spaced
+  by the pack's own size.
+- Front end caps on the west and middle gondolas (a ramen week and the new crisps). The east gondola has
+  none, because its end is the walk from the door to the till.
+- A copy machine and fax by the east window.
+- The bunting is gone, and one hanging card remains.
+- Walkers who hit a corner fall back to the planner's own route (room-walk.js); the smoothed one had
+  Thuan stuck at the west end cap with a carton.

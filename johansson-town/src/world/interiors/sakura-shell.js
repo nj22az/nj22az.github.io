@@ -1,6 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
-import {SAKURA_LAYOUT,AISLE_LEVELS,SAKURA_SHELVES} from './sakura-layout.js';
+import {SAKURA_LAYOUT,AISLE_LEVELS,SAKURA_SHELVES,CHILLER,BUN_STEAMER,FRONT_ENDCAPS,COPY_MACHINE} from './sakura-layout.js';
 import {MEDICINE_SHELF} from './sakura-dressing.js';
 import {BACKROOM} from './sakura-backroom.js';
 import {RESTROOM} from './sakura-restroom.js';
@@ -176,17 +176,45 @@ function buildEndcap(){
  return mesh(material());
 }
 
-/** Wall shelving: the bun cabinet, the delivery shelf, the medicine boards and the back-room rack. */
+/** The front end caps (FRONT_ENDCAPS): two boards and a header card, facing the window. */
+function buildFrontEndcaps(){
+ const {span,mesh}=parts('sakura-shelf-ends front');
+ for(const E of FRONT_ENDCAPS){
+  const x0=E.x-E.w/2,x1=E.x+E.w/2,z0=E.z-E.d/2,z1=E.z+E.d/2;
+  span(x0+.03,x1-.03,0,.12,z0,z1-.03,C.plinth);
+  span(x0,x1,0,1.5,z0,z0+.04,C.end);
+  for(const x of [x0,x1-.04])span(x,x+.04,0,1.2,z0,z1,C.end);
+  for(const level of E.levels)span(x0+.04,x1-.04,level-.022,level,z0+.04,z1-.02,C.wood);
+  span(x0+.08,x1-.08,1.22,1.46,z0+.04,z0+.06,C.rail);
+ }
+ return mesh(material());
+}
+
+/** Wall shelving: the open chiller, the bun steamer, the copy machine, the delivery shelf, the medicine boards and the back-room rack. */
 function buildWallShelving(){
  const {span,cyl,mesh}=parts('sakura-shelf');
- // The bun cabinet on the west wall (x -6.85..-5.95, z -1.6..2.45): a cupboard, two boards above.
- const bun=SAKURA_SHELVES.bun,bx0=-6.82,bx1=-6.0,bz0=-1.55,bz1=2.42;
- span(bx0,bx1,0,bun.levels[0],bz0,bz1,C.woodDark);
- for(const y of bun.levels.slice(1))span(bx0,bx1-.02,y-.022,y,bz0,bz1,C.wood);
- span(bx0,bx1,2.16,2.22,bz0,bz1,C.woodDark);
- for(const z of [bz0,bz1])span(bx0,bx1,bun.levels[0],2.22,z-.02,z+.02,C.woodDark);
- span(bx0-.02,bx0+.02,bun.levels[0],2.22,bz0,bz1,C.wainscot);
- for(let z=-1.2;z<.7;z+=.42){cyl(.1,.28,-6.55,bun.levels[0]+.14,z,0xdfeef0);cyl(.104,.04,-6.55,bun.levels[0]+.3,z,[0xd8433a,0x3a7fc0,0xf2b632,0x6aa84f][Math.round((z+1.2)/.42)%4]);cyl(.085,.18,-6.55,bun.levels[0]+.1,z,[0xf2a0b4,0xf6d24a,0x9fd7f0,0xf28c3a][Math.round((z+1.2)/.42)%4]);}
+ // The open chiller on the west wall (CHILLER): a dark well at the foot, four stepped
+ // decks narrowing as they rise, a white back, end panels and a lit canopy on top.
+ {const K=CHILLER,L=K.levels;
+  span(K.x0,K.x1,0,L[0]-.02,K.z0,K.z1,0x3a4a50);
+  span(K.x1-.06,K.x1,L[0]-.02,L[0]+.1,K.z0,K.z1,0xdfe6e8);
+  L.forEach((y,i)=>{const front=K.x1-.06-i*.08;span(K.x0,front,y-.025,y,K.z0+.02,K.z1-.02,0xe9eeef);span(front-.015,front,y-.03,y+.05,K.z0+.02,K.z1-.02,C.rail);});
+  span(K.x0,K.x0+.04,L[0],K.canopy,K.z0,K.z1,0xf4f6f6);
+  for(const z of [K.z0,K.z1])span(K.x0,K.x1,0,K.canopy+.18,z-.03,z+.03,0x2f5f4a);
+  span(K.x0,K.x1-.18,K.canopy,K.canopy+.18,K.z0,K.z1,0x2f5f4a);
+  span(K.x1-.2,K.x1-.16,K.canopy-.02,K.canopy+.02,K.z0+.05,K.z1-.05,0xfffbee);
+  // The two bays' dividers, so each pair of lines reads as its own section.
+  for(const z of [-.27,1.11])span(K.x0+.04,K.x1-.3,L[0],K.canopy,z-.012,z+.012,0xcfd8da);}
+ // The bun steamer on the counter (BUN_STEAMER): a steel base, glass all round, two racks.
+ {const B=BUN_STEAMER,x0=B.x-B.w/2,x1=B.x+B.w/2,z0=B.z-B.d/2,z1=B.z+B.d/2,y0=B.top;
+  span(x0,x1,y0,y0+.06,z0,z1,0xc9ced2);span(x0,x1,y0+B.h-.04,y0+B.h,z0,z1,0xd7263d);
+  span(x1-.02,x1,y0+.06,y0+B.h-.04,z0,z1,0xc9ced2);
+  for(const y of [1.02,1.215])span(x0+.02,x1-.02,y-.006,y,z0+.02,z1-.02,0xb8bec0);}
+ // The copy machine by the east window, with the fax on its own little table beside it.
+ {const M=COPY_MACHINE,x0=M.x-M.w/2,x1=M.x+M.w/2,z0=M.z-M.d/2,z1=M.z+M.d/2;
+  span(x0,x1,0,.08,z0,z1,0x3a3e40);span(x0,x1,.08,.9,z0,z1,0xe9e6dc);span(x0+.02,x1-.02,.9,.96,z0+.02,z1-.02,0x5d6a70);
+  span(x0+.08,x0+.34,.97,.99,z0+.06,z0+.2,0x2a6a3a);span(x0+.06,x1-.06,.5,.54,z0-.02,z0,0xb8bec0);
+  span(x1+.05,x1+.45,0,.7,z0+.1,z1-.05,C.woodDark);span(x1+.1,x1+.4,.7,.82,z0+.15,z1-.12,0xe9e6dc);span(x1+.12,x1+.25,.82,.86,z0+.2,z0+.35,0x2b2e30);}
  // The delivery shelf by the restroom (x -6.19..-4.15, z -2.47..-1.86): bare steel.
  for(const y of [.088,.357,.670,.983,1.296])span(-6.17,-4.17,y-.02,y,-2.46,-1.87,C.steel);
  for(const x of [-6.15,-4.19])for(const z of [-2.45,-1.88])span(x-.02,x+.02,0,1.45,z-.02,z+.02,0x7d878a);
@@ -285,7 +313,7 @@ function buildRegister(){
 export function buildSakuraShell(){
  const page=typeof document!=='undefined'&&!!document.createElement;
  const root=new THREE.Group();root.name='Sakura shōten interior';
- root.add(buildShell(),...buildCeilingAndFloor(page),buildWallShelving(),buildCounter(),buildTubes(),buildBattens(),buildRestroomFittings(),buildDoors(),buildRegister(),buildEndcap());
+ root.add(buildShell(),...buildCeilingAndFloor(page),buildWallShelving(),buildCounter(),buildTubes(),buildBattens(),buildRestroomFittings(),buildDoors(),buildRegister(),buildEndcap(),buildFrontEndcaps());
  for(const id of ['east','middle','west'])root.add(...buildIsland(id));
  root.traverse(o=>{if(o.isMesh)o.receiveShadow=true;});
  return root;
