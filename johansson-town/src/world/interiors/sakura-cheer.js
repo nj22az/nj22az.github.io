@@ -169,14 +169,81 @@ export function buildSakuraBand(room){
   if(r.x!=null)make(r.z1-r.z0,r.x,(r.z0+r.z1)/2,r.yaw);
   else make(r.x1-r.x0,(r.x0+r.x1)/2,r.z,r.yaw);
  }
- // The counter's customer face in the chain colours, with the logo in the middle.
- const C=B.counter,len=C.z1-C.z0,ch=C.y1-C.y0;
- // A cloth with the shop's crest hung on the counter's wooden face, where a chain would
- // have its logo printed on plastic.
- const front=sign(512,512,(ctx,w,H)=>{
-  ctx.fillStyle='#2f4f6f';ctx.fillRect(0,0,w,H);ctx.fillStyle='#f6efe0';ctx.beginPath();ctx.arc(w/2,H*.42,140,0,Math.PI*2);ctx.fill();
-  signText(ctx,'桜',w/2,H*.43,170,'#b8332c');signText(ctx,'さくら商店',w/2,H*.85,60,'#f6efe0');
+ // The shop's crest now rides on the till canopy, once, rather than on the counter too.
+ buildTillCanopy(room);buildCigaretteRack(room);buildTillFloor(room);
+}
+
+/**
+ * The till canopy: a hung fascia the length of the counter, white with the konbini's
+ * yellow-orange-red stripes and Sakura's round crest in the middle, the way every till
+ * in 1997 had its chain's band over it. Tubes underneath (sakura-shell.js buildTubes).
+ */
+export const TILL_CANOPY=Object.freeze({x0:4.25,x1:5.25,y0:2.18,y1:2.5,z0:-.02,z1:3.98});
+function buildTillCanopy(room){
+ const T=TILL_CANOPY,len=T.z1-T.z0,h=T.y1-T.y0;
+ const face=sign(2048,Math.round(2048*h/len),(ctx,w,H)=>{
+  ctx.fillStyle='#fbf8f0';ctx.fillRect(0,0,w,H);
+  const band=H*.17;
+  [['#f2c21a',H-band*3],['#f08a1c',H-band*2],['#d7263d',H-band]].forEach(([c,y])=>{ctx.fillStyle=c;ctx.fillRect(0,y,w,band);});
+  ctx.fillStyle='#d7263d';ctx.fillRect(0,0,w,H*.05);
+  const textY=(H-band*3)*.55;
+  signText(ctx,'たばこ · 切手 · 船の回数券',w*.2,textY,Math.round(H*.24),'#3a2a1e');
+  signText(ctx,'ホットスナック · おでん',w*.8,textY,Math.round(H*.24),'#3a2a1e');
+  // The crest: a round badge breaking over the stripes, as the chains' logos did.
+  const cx=w/2,cy=H*.5,r=H*.47;
+  ctx.fillStyle='#d7263d';ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fbf8f0';ctx.beginPath();ctx.arc(cx,cy,r*.86,0,Math.PI*2);ctx.fill();
+  // Five petals round a gold heart.
+  ctx.fillStyle='#f2a6b8';for(let k=0;k<5;k++){const a=k*Math.PI*2/5-Math.PI/2;ctx.beginPath();ctx.ellipse(cx+Math.cos(a)*r*.3,cy-r*.12+Math.sin(a)*r*.3,r*.2,r*.13,a,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle='#f2c21a';ctx.beginPath();ctx.arc(cx,cy-r*.12,r*.1,0,Math.PI*2);ctx.fill();
+  signText(ctx,'さくら',cx,cy+r*.5,Math.round(r*.4),'#d7263d');
+  signText(ctx,'SAKURA SHŌTEN',cx-w*.11,H*.14+band*.1,Math.round(H*.1),'#fbf8f0');
  });
- const panel=add(room,new THREE.PlaneGeometry(.78,.78),new THREE.MeshBasicMaterial({map:front,toneMapped:false}),C.x-.016,(C.y0+C.y1)/2+.04,(C.z0+C.z1)/2,'Sakura counter front');
- panel.rotation.y=-Math.PI/2;
+ const plain=new THREE.MeshStandardMaterial({color:0xf3eee2,roughness:.8});
+ const front=new THREE.MeshBasicMaterial({map:face,toneMapped:false});
+ // BoxGeometry faces: +x, -x, +y, -y, +z, -z. The customer side is -x.
+ const box=add(room,new THREE.BoxGeometry(T.x1-T.x0,h,len),[plain,front,plain,plain,plain,plain],(T.x0+T.x1)/2,(T.y0+T.y1)/2,(T.z0+T.z1)/2,'Sakura till canopy');
+ return box;
+}
+
+/**
+ * Cigarettes behind the till, over the medicine boards: a glass-fronted case of packs in
+ * rows, every brand in its own colours, the way a konbini sells them from behind the
+ * counter. Drawn on one board, so it costs one draw.
+ */
+function buildCigaretteRack(room){
+ const z0=.6,z1=3.64,y0=2.14,y1=2.52,x=6.8;
+ const packs=['#f4f1ea|#1e3c8c','#ffffff|#c8102e','#1d1d1d|#d4af37','#f4f1ea|#2e7d32','#2a4a8a|#f4f1ea','#f2e6c8|#7a3b1a','#e8e8e8|#5b6dc1','#c8102e|#ffffff','#f4f1ea|#e07a10','#0f5132|#f4f1ea','#ffffff|#3a7fc0','#3b2b6a|#e8d48a'];
+ const tex=sign(2048,256,(ctx,w,H)=>{
+  ctx.fillStyle='#ece6d8';ctx.fillRect(0,0,w,H);
+  const rows=2,cols=34,pw=w/cols,ph=H/rows;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+   const [bg,fg]=packs[(c*7+r*5)%packs.length].split('|'),x0=c*pw+pw*.14,y0=r*ph+ph*.1,ww=pw*.72,hh=ph*.62;
+   ctx.fillStyle=bg;ctx.fillRect(x0,y0,ww,hh);ctx.fillStyle=fg;ctx.fillRect(x0,y0+hh*.36,ww,hh*.2);ctx.fillRect(x0+ww*.3,y0+hh*.08,ww*.4,hh*.16);
+   ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=2;ctx.strokeRect(x0,y0,ww,hh);
+   // The price strip under each column.
+   ctx.fillStyle='#fffdf4';ctx.fillRect(x0,y0+hh+ph*.06,ww,ph*.16);ctx.fillStyle='#2a2a2a';ctx.font=`bold ${Math.round(ph*.12)}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(['220','250','230','240','270','300'][(c+r)%6],x0+ww/2,y0+hh+ph*.14);
+  }
+ });
+ const board=add(room,new THREE.PlaneGeometry(z1-z0,y1-y0),new THREE.MeshBasicMaterial({map:tex,toneMapped:false}),x,(y0+y1)/2,(z0+z1)/2,'Sakura cigarette rack');
+ board.rotation.y=-Math.PI/2;
+ const frame=mat(0x6f553b);
+ add(room,new THREE.BoxGeometry(.16,.03,z1-z0+.06),frame,x-.06,y0-.015,(z0+z1)/2,'Sakura cigarette rack');
+ add(room,new THREE.BoxGeometry(.16,.03,z1-z0+.06),frame,x-.06,y1+.015,(z0+z1)/2,'Sakura cigarette rack');
+ add(room,new THREE.BoxGeometry(.01,y1-y0,z1-z0),new THREE.MeshStandardMaterial({color:0xeef6f6,transparent:true,opacity:.18,roughness:.05,depthWrite:false}),x-.13,(y0+y1)/2,(z0+z1)/2,'Sakura cigarette rack glass');
+}
+
+/** Dark green tiles at the till, in front of the counter and behind it, as in a konbini. */
+function buildTillFloor(room){
+ const tile=.3,tex=sign(256,256,(ctx,w,H)=>{
+  ctx.fillStyle='#1f4a3c';ctx.fillRect(0,0,w,H);
+  for(const [x,y,c] of [[0,0,'#24564a'],[128,128,'#24564a'],[128,0,'#1c4337'],[0,128,'#1c4337']]){ctx.fillStyle=c;ctx.fillRect(x+4,y+4,120,120);}
+  ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(10,10,40,6);ctx.fillRect(138,138,40,6);
+ });
+ tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+ for(const [x0,x1] of [[3.05,4.54],[5.06,6.67]]){
+  const z0=.0,z1=3.9,t=tex.clone();t.needsUpdate=true;t.repeat.set((x1-x0)/(tile*2),(z1-z0)/(tile*2));
+  const floor=add(room,new THREE.PlaneGeometry(x1-x0,z1-z0),new THREE.MeshStandardMaterial({map:t,roughness:.35}),(x0+x1)/2,.006,(z0+z1)/2,'Sakura till floor');
+  floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;
+ }
 }

@@ -13,7 +13,7 @@ import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
  *
  * A 1960s harbour shōten that has taken on konbini habits: terrazzo floor, honey-wood
  * wainscot under cream plaster, a ceiling of white boards on dark beams with bare tubes
- * on battens and two enamel shades over the counter; wooden gondolas with green end
+ * on battens and a striped till canopy over the counter; wooden gondolas with green end
  * panels and cream price rails; a long wooden counter; the glass bun cabinet on the west
  * wall with dagashi jars on top; an ice-cream chest by the window; the medicine boards
  * behind the till; a steel rack in the back room; the office and the restroom.
@@ -210,15 +210,25 @@ function buildWallShelving(){
  return mesh(material());
 }
 
-/** The counter: wood on a dark plinth, a glass case in its customer face, top at 1.0 m. */
+/**
+ * The counter, the way a 1990s konbini till reads: a long run of warm wood-veneer bays
+ * framed in dark rails, a pale laminate top with a dark edge band, and a black kick
+ * plinth set back underneath. Top at 1.0 m; the customer stands at x < 4.54.
+ */
+export const SAKURA_COUNTER=Object.freeze({x0:4.54,x1:5.06,z0:.08,z1:3.86,top:1.0,bay:.62});
 function buildCounter(){
  const {span,mesh}=parts('sakura-counter');
- const x0=4.54,x1=5.06,z0=.08,z1=3.86,top=1.0;
- span(x0+.04,x1,0,.1,z0,z1,C.plinth);
- span(x0,x1,.1,top-.04,z0,z1,C.wood);
- span(x0-.03,x1+.03,top-.04,top,z0-.03,z1+.03,C.woodDark);
- // Panels on the customer face.
- for(let z=z0+.35;z<z1-.2;z+=.62)span(x0-.012,x0,.2,.86,z-.24,z+.24,C.wainscot);
+ const {x0,x1,z0,z1,top,bay}=SAKURA_COUNTER,rail=0x33200f,veneer=0x7e5634,laminate=0xe6dccb;
+ span(x0+.06,x1,0,.12,z0,z1,0x2a2420);
+ span(x0,x1,.12,top-.04,z0,z1,0x5e3e24);
+ // The customer face: a rail along the foot and the head, a stile between every bay.
+ span(x0-.02,x0,.12,.19,z0,z1,rail);span(x0-.02,x0,top-.13,top-.04,z0,z1,rail);
+ const bays=Math.round((z1-z0)/bay),w=(z1-z0)/bays;
+ for(let i=0;i<bays;i++){const a=z0+i*w;span(x0-.014,x0,.19,top-.13,a+.03,a+w-.03,veneer);}
+ for(let i=0;i<=bays;i++){const a=z0+i*w;span(x0-.02,x0,.12,top-.04,a-.03,a+.03,rail);}
+ // The laminate top, overhanging the customer side, with its dark edge band.
+ span(x0-.06,x1+.03,top-.04,top,z0-.03,z1+.03,laminate);
+ span(x0-.075,x0-.055,top-.055,top+.004,z0-.035,z1+.035,0x3a2818);
  // The flap at the north end, where Thuan comes through.
  span(x0,x1,top,top+.02,z0,z0+.06,C.woodDark);
  return mesh(material());
@@ -229,13 +239,15 @@ function buildTubes(){
  const {span,mesh}=parts('sakura-light'),y=SAKURA_SHELL.ceiling-.2;
  const runs=[[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,3.2],[5.6,.4,3.4],[-2.2,-6.4,-4.4],[2.2,-6.4,-4.4],[5.7,-3.6,-1.6]];
  for(const [x,z0,z1] of runs)for(let z=z0;z<z1-.4;z+=1.32)span(x-.03,x+.03,y-.03,y+.03,z,z+1.2,0xfffbee);
+ // Two bare tubes under the till canopy, lighting the counter top.
+ for(const x of [4.55,4.95])for(const z of [.3,2.05])span(x-.025,x+.025,2.12,2.17,z,z+1.6,0xfffbee);
  return mesh(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.4,emissive:0xfff3d6,emissiveIntensity:1}));
 }
 function buildBattens(){
  const {span,mesh}=parts('sakura-battens'),y=SAKURA_SHELL.ceiling-.13;
  for(const [x,z0,z1] of [[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,3.2],[5.6,.4,3.4],[-2.2,-6.4,-4.4],[2.2,-6.4,-4.4],[5.7,-3.6,-1.6]])span(x-.07,x+.07,y-.04,y+.04,z0,z1-.4,C.wood);
- // Two enamel shades over the counter, green outside, white within.
- for(const z of [1.2,2.8]){span(5.58,5.62,SAKURA_SHELL.ceiling-.7,SAKURA_SHELL.ceiling,z-.02,z+.02,0x2b2b2b);span(5.35,5.85,SAKURA_SHELL.ceiling-.8,SAKURA_SHELL.ceiling-.68,z-.25,z+.25,0x3f6e58);}
+ // Over the counter hangs the till canopy (sakura-cheer.js buildTillCanopy); its rods.
+ for(const z of [.25,1.95,3.7])for(const x of [4.45,5.15])span(x-.012,x+.012,2.5,SAKURA_SHELL.ceiling,z-.012,z+.012,0x2b2b2b);
  return mesh(material());
 }
 
