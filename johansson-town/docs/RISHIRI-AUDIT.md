@@ -39,7 +39,12 @@ real island is like, how today's town compares, and what to build.
 | Ring road and cycling road | A main road, a short coast road, a bicycle | A coast road that will one day go round |
 | Cold north: snow, wind, kombu summer | Okinawa, 1997: sanshin, shisa, gōya, awamori | **Conflict, see below** |
 
-## The decision this needs: Okinawa or the north?
+## Decided: option 3, a made-up mountain island (October 2026)
+
+The town becomes a made-up mountain island that takes Rishiri's port, mountain and roads, in a
+milder climate, and keeps its residents. The options below are kept for the record.
+
+## The decision: Okinawa or the north?
 
 The town is written as Okinawa. That shows in the residents' names and voices, the
 Ryukyu-scale jingle, palm trees, shisa, the konbini stock, and most of the trade-quest goods
@@ -78,6 +83,9 @@ Build in steps, so the town keeps working at each one:
    setting allows, kombu drying.
 
 ## Shared equipment library (applies whatever the setting)
+
+**Started:** `/equipment/` (see `equipment/README.md`) has a butterfly valve, an induction motor, a
+generator and a diesel engine, with a study viewer.
 
 Every machine in the town should come from one library that study material can also use:
 butterfly valves, electric motors, engines, generators, pumps, switchboards. Each model is

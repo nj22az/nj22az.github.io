@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>Utrustning · Equipment</title>
+ <meta name="description" content="Maskiner i 3D för undervisning: vridspjällventil, asynkronmotor, synkrongenerator och dieselmotor. Sprängskiss, genomskärning, etiketter och bild att spara.">
+ <link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+ <header class="eq-bar">
+  <a class="eq-home" href="/" data-text="home">Nils Johansson</a>
+  <h1 data-text="heading">Utrustning</h1>
+  <div class="eq-lang" role="group" aria-label="Språk / Language">
+   <button type="button" data-lang="sv" aria-pressed="true">Svenska</button>
+   <button type="button" data-lang="en" aria-pressed="false">English</button>
+  </div>
+ </header>
+ <main class="eq-main">
+  <nav class="eq-models" aria-label="Maskiner" data-label="models"></nav>
+  <section class="eq-stage" aria-label="3D-vy">
+   <canvas id="eq-canvas" aria-label="3D-modell"></canvas>
+   <div class="eq-markers" aria-hidden="true"></div>
+   <p class="eq-hint" data-text="hint">Dra för att vrida · nyp eller rulla för att zooma · tryck på en del</p>
+   <p class="eq-fallback" hidden data-text="nowebgl">Den här webbläsaren kan inte visa 3D. Listan över delarna fungerar ändå.</p>
+  </section>
+  <aside class="eq-panel">
+   <h2 id="eq-title"></h2>
+   <p id="eq-summary" class="eq-summary"></p>
+   <div class="eq-controls">
+    <label class="eq-row"><span data-text="explode">Sprängskiss</span><input id="eq-explode" type="range" min="0" max="1" step="0.01" value="0"></label>
+    <label class="eq-check"><input id="eq-cutaway" type="checkbox"><span data-text="cutaway">Genomskärning</span></label>
+    <label class="eq-check"><input id="eq-labels" type="checkbox"><span data-text="labels">Etiketter</span></label>
+    <div id="eq-model-controls"></div>
+   </div>
+   <div class="eq-actions">
+    <button type="button" id="eq-save" data-text="save">Spara bild (PNG)</button>
+    <button type="button" id="eq-link" data-text="link">Kopiera länk</button>
+   </div>
+   <section class="eq-detail" aria-live="polite">
+    <h3 id="eq-part-name"></h3>
+    <p id="eq-part-text"></p>
+   </section>
+   <h3 class="eq-parts-heading" data-text="parts">Delar</h3>
+   <ol id="eq-parts" class="eq-parts"></ol>
+  </aside>
+ </main>
+ <script type="module" src="viewer.js"></script>
+</body>
+</html>

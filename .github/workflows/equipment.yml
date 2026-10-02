@@ -1,0 +1,22 @@
+name: Equipment library
+
+on:
+  push:
+    paths: ['equipment/**', 'johansson-town/vendor/three.module.js', '.github/workflows/equipment.yml']
+  pull_request:
+    paths: ['equipment/**', 'johansson-town/vendor/three.module.js', '.github/workflows/equipment.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22.16.0'
+          package-manager-cache: false
+      - name: Every model builds, is described in Swedish and English, explodes and moves correctly
+        run: node --test equipment/tests/*.test.mjs

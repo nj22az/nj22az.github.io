@@ -112,6 +112,13 @@ assets/
   video/                # Video assets
 ```
 
+## Equipment library
+
+`equipment/` holds machines in 3D (valves, motors, generators, engines) built from named parts with Swedish and
+English names and texts, for Johansson Town, Sjöskolan's lessons and study material. Models take `THREE` as an
+argument and use `johansson-town/vendor/three.module.js`. `equipment/index.html` is the study viewer. Read
+`equipment/README.md` before adding a machine; `node --test equipment/tests/*.test.mjs` runs in CI.
+
 ## Sjöskolan
 
 **Läs `sjoskolan/ANDRINGSLOGG.md` först.** Där står reglerna från tidigare fel (ledtrådar utan svaret, verkliga exempel,

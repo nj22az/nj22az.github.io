@@ -28,6 +28,9 @@ and they never get in the way of a quiet walk.
   Sjöskolan scenes (like `sjoskolan/simulatorer/`, which already uses his avatar), not part of
   the town. Both use the same character, so his look should come from one shared recipe
   rather than separate copies that drift apart.
+- **The island is made up, after Rishiri.** A mountain island with Rishiri's port, mountain and
+  ring road, in a milder climate than the real one. The residents stay; the most Okinawan details
+  (palms, some goods) get a light pass later.
 - **Thuan is the lead** at Sakura, and Yuri does not exist (unchanged).
 - **The cast is the street cast** (`STREET_CAST_NAMES` in `src/people/residents.js`). Anyone who
   takes part in quests must be reachable on the street.
@@ -43,6 +46,7 @@ and they never get in the way of a quiet walk.
 | Relax: walk, talk, small activities | Day clock, residents with routines, friendship hearts, daily wants, shops, izakaya, workshop printing | Keep the first minute calm; fix world edge and night (QA O1/O2) |
 | Side stories | **Trade quests** (this change, `TRADE-QUESTS.md`) | More stories; residents mention finished stories in passing |
 | Learn: engine room | Sjöskolan's standalone engine room (`sjoskolan/simulatorer/`) | A room by the town hall where you, as Johansson, explore it, as the workshop opens StepWise |
+| Machines for study material | **Equipment library** (`/equipment/`): butterfly valve, induction motor, generator, diesel engine; viewer with exploded view, cutaway, labels and PNG export | Pump, switchboard and coupling; then place the machines in the town's workshops |
 | Teach: Johansson on site | Johansson's avatar, copied into `sjoskolan/simulatorer/character/` | One shared avatar source for the town and Sjöskolan; instructor scenes for theory lessons |
 | Learn: motor teardown | Workshop bench, Form 3D models, Sjöskolan's electrical motor model | Mechanical parts and an exploded-view bench |
 | Learn: kakeibo with Thuan | Sakura's shop ledger; the player's yen | A purchase journal for the player, then a kakeibo Thuan can explain |
@@ -52,7 +56,8 @@ and they never get in the way of a quiet walk.
 
 The port grows into a Rishiri-style ferry port for passengers, cars and trucks, and the land
 grows towards the airport island. `RISHIRI-AUDIT.md` has the reference, the gaps and the open
-question of setting (Okinawa, the north, or a mix). Every machine in town (valves, motors,
+setting decision: **a made-up mountain island** that borrows Rishiri's port, mountain and
+roads in a milder climate, and keeps the residents. Every machine in town (valves, motors,
 engines, generators) comes from one shared equipment library that study material can use too.
 
 ## Order of work
