@@ -1,3 +1,4 @@
+import {bookshopVisitPlan} from './bookshop-visits.js';
 import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visits.js';
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
 import {DINING,IZAKAYA_DOOR} from '../world/dining-layout.js';
@@ -319,7 +320,8 @@ export const ferryWords=text=>typeof text!=='string'?text:text
  .replace(/(on|for|to) the Harbour Line/g,'$1 the ferry').replace(/next Harbour Line departure/g,'next ferry')
  .replace(/running the Harbour Line/g,'working the ferry').replace(/left by bus/g,'left on the ferry');
 function commuterPlan(...args){
- const plan=kitahamaPlan(args[0],commuterPlanOn(...args));
+ const scheduled=kitahamaPlan(args[0],commuterPlanOn(...args));
+ const plan=peninsulaActive()?bookshopVisitPlan(args[0],args[1],scheduled,args[3]):scheduled;
  if(plan&&peninsulaActive()&&plan.activity)return {...plan,activity:ferryWords(plan.activity)};
  return plan;
 }

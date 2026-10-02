@@ -1,3 +1,4 @@
+import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
 import {GROUND} from '../render/ground-palette.js';
 import {ALLEY_SHOPS,buildAlleyShop} from './alley-shops.js';
@@ -142,6 +143,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
+    if(s.industrialWorkshop){harbourShops.push(buildDockWorkshop({parent:group,site:s,register,enter,label,colliders}));return;}
     if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider);return;}
     // The alley units are a recessed door in the side of the supplied night-market
     // kit. The peninsula does not build that kit, so on this layout a shop that has a
