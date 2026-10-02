@@ -26,14 +26,21 @@ try{
    document.querySelector('#opener').onclick=()=>studio.open();const tick=()=>{requestAnimationFrame(tick);studio.render();};tick();
   });
   await page.getByRole('button',{name:'Open photo studio',exact:true}).click();
-  await page.getByLabel('Pose',{exact:true}).selectOption('Cheer');await page.getByLabel('Expression',{exact:true}).selectOption('surprised');
+  await page.locator('select[name=pose]').selectOption('Cheer');await page.locator('select[name=expression]').selectOption('surprised');
   await page.getByLabel('Speech bubble',{exact:true}).fill('The cargo is HOW late?');
   await page.getByLabel('Style',{exact:true}).selectOption('meme');await page.getByLabel('Top text · meme',{exact:true}).fill('ONE SMALL DELIVERY');await page.getByLabel('Bottom text · meme or comic',{exact:true}).fill('Six pallets later…');
   const geometry=await page.evaluate(()=>{const root=document.querySelector('#photoStudio'),frame=document.querySelector('.photo-frame').getBoundingClientRect();return {overflow:root.scrollWidth>innerWidth,frame:{x:frame.x,y:frame.y,w:frame.width,h:frame.height},active:studio.active};});assert.equal(geometry.overflow,false);assert.ok(geometry.frame.w>150&&geometry.frame.h>120);assert.equal(geometry.active,true);
   const captureButton=page.getByRole('button',{name:'Capture panel',exact:true});if(width<500)await captureButton.tap();else await captureButton.click();await page.waitForFunction(()=>studio.panelCount===1);
   const first=await page.locator('.photo-film a').first().getAttribute('href');
   const png=await page.evaluate(async url=>{const b=await(await fetch(url)).blob(),bitmap=await createImageBitmap(b),c=document.createElement('canvas');c.width=bitmap.width;c.height=bitmap.height;const x=c.getContext('2d');x.drawImage(bitmap,0,0);const p=x.getImageData(0,0,c.width,c.height).data;let varied=0;for(let i=0;i<p.length;i+=800)if(p[i]!==p[0]||p[i+1]!==p[1])varied++;return {w:bitmap.width,h:bitmap.height,bytes:b.size,varied};},first);assert.deepEqual([png.w,png.h],[1200,900]);assert.ok(png.bytes>20000&&png.varied>100,JSON.stringify(png));
+  // Dress, set and film: a sailor top on a sunset backdrop, in black and white.
+  await page.getByRole('button',{name:'Line up',exact:true}).click();await page.locator('summary',{hasText:'Wardrobe'}).click();await page.getByLabel('Top',{exact:true}).selectOption('sailor');
+  await page.locator('[data-swatches="topColour"] .photo-swatch').nth(7).click();
+  assert.equal(await page.evaluate(()=>document.querySelector('select[name=wearTop]').value),'sailor');
+  await page.getByLabel('Backdrop',{exact:true}).selectOption('sunset');await page.getByLabel('Film',{exact:true}).selectOption('mono');
   for(const format of ['square','portrait']){await page.getByLabel('Format',{exact:true}).selectOption(format);await page.getByRole('button',{name:'Capture panel',exact:true}).click();await page.waitForFunction(n=>studio.panelCount===n,format==='square'?2:3);}
+  // The black-and-white film is in the saved pixels, not only on the preview.
+  const grey=await page.evaluate(async url=>{const b=await(await fetch(url)).blob(),im=await createImageBitmap(b),c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');x.drawImage(im,0,0);const p=x.getImageData(0,0,c.width,c.height).data;let tinted=0,n=0;for(let i=0;i<p.length;i+=4000){n++;if(Math.max(p[i],p[i+1],p[i+2])-Math.min(p[i],p[i+1],p[i+2])>20)tinted++;}return tinted/n;},await page.locator('.photo-film a').nth(1).getAttribute('href'));assert.ok(grey<.02,'mono film baked in: '+grey);
   await page.getByRole('button',{name:'Capture panel',exact:true}).click();await page.waitForFunction(()=>studio.panelCount===4);assert.ok(await page.getByRole('button',{name:'Capture panel',exact:true}).isDisabled());
   await page.getByRole('button',{name:'Save comic PNG',exact:true}).click();await page.getByRole('link',{name:'Download comic PNG',exact:true}).waitFor();
   const comic=await page.evaluate(async()=>{const b=await(await fetch(document.querySelector('[data-comic-link] a').href)).blob(),im=await createImageBitmap(b);return {w:im.width,h:im.height,bytes:b.size};});assert.equal(comic.w,1200);assert.ok(comic.h>800&&comic.bytes>30000);
