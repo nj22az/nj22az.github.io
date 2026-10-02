@@ -35,6 +35,20 @@ test('entry, bedside and tea cushion remain accessible and inspection describes 
  for(const p of [home.spawn,home.door,home.table,home.bedside])assert.ok(!colliders.some(c=>circleHitsRect(p[0],p[2],.32,c)),String(p));
  home.tick(0,3*60);assert.equal(home.snapshot().futon.phase,'laid out');assert.equal(room.getObjectByName('LaidFuton').visible,true);
  const inspect=prompts.find(p=>p.label==='Inspect the futon cupboard');inspect.fn();assert.match(actions.at(-1)[2],/laid out/);
- home.tick(2,sleepHours(profile).wake+60);assert.equal(home.snapshot().futon.phase,'stored');assert.equal(room.getObjectByName('LaidFuton').visible,false);
+ home.tick(0,sleepHours(profile).wake+60);home.prepareBedding({g:new THREE.Group()},{move:()=>true},2);home.tick(2,sleepHours(profile).wake+60);assert.equal(home.snapshot().futon.phase,'stored');assert.equal(room.getObjectByName('LaidFuton').visible,false);
  home.dispose();
+});
+test('Mrs Sato walks to the cupboard to prepare bedding, then folds it before breakfast',async()=>{
+ const {createHomeResidents}=await import('../src/people/home-residents.js');
+ const street=new THREE.Group(),room=new THREE.Group(),g=new THREE.Group();street.add(g);g.position.set(profile.home[0],0,profile.home[1]);g.userData={name:profile.name,hit:{inside:false},indoors:'home'};
+ const rects=[];const home=buildTatamiHome({profile,room,box:(s,p,c,parent)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...s),new THREE.MeshBasicMaterial({color:c}));m.position.fromArray(p);parent.add(m);return m;},collider:(x,z,w,d)=>rects.push({x,z,w,d}),reg(){},action(){},exit(){}});
+ const bounds=home.bounds,blocked=(x,z,r=.32)=>x<bounds.minX+r||x>bounds.maxX-r||z<bounds.minZ+r||z>bounds.maxZ-r||rects.some(c=>circleHitsRect(x,z,r,c));
+ const actors=createHomeResidents({world:{people:[{profile,g}]},parent:room,collides:blocked});const {sleep,wake}=sleepHours(profile);
+ home.tick(0,sleep-30);actors.enter({homeOwner:profile.name,homeLayouts:{[profile.name]:home}},sleep-30);
+ let cupboardVisit=false;
+ for(let i=0;i<900;i++){home.tick(1/30,sleep-10);actors.update(1/30,sleep-10);cupboardVisit ||= Math.hypot(g.position.x-2.05,g.position.z+1.4)<.2;assert.ok(!blocked(g.position.x,g.position.z),'bedding work stays on walkable floor');}
+ assert.ok(cupboardVisit,'takes bedding from cupboard');assert.equal(home.snapshot().futon.phase,'laid out');assert.equal(home.snapshot().beddingActivity,null);
+ for(let i=0;i<900;i++){home.tick(1/30,wake+16);actors.update(1/30,wake+16);}
+ assert.equal(home.snapshot().futon.phase,'stored');assert.equal(home.snapshot().beddingActivity,null);
+ actors.restore();home.dispose();
 });

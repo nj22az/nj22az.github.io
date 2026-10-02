@@ -6,7 +6,7 @@ import {buildShopDoor} from './shop-door.js';
 // towards the main street (+X), with its roof clear of the west service lane.
 export const WAREHOUSE=Object.freeze({x:-13.6,z:-42.4,scale:.55,yaw:-Math.PI/2,groundY:.095,sourceMinY:-.022709667682647705});
 export const WAREHOUSE_PLACE=Object.freeze({
- id:'warehouse',title:'Harbour Warehouse',jp:"Port warehouse",sub:'WESTERN QUAY',
+ id:'warehouse',title:'Harbour Warehouse',jp:"港倉庫",sub:'WESTERN QUAY',
  x:WAREHOUSE.x,z:WAREHOUSE.z,color:0x9a9588,accent:'#314d51',
  line:'Fishing gear, ice and quay stores · open at all hours.',
  door:Object.freeze([-8.6,0,-38.65]),exitPosition:Object.freeze([-8.6,0,-38.65]),entryFacing:Math.PI/2,
@@ -74,7 +74,6 @@ export function buildWarehouse(world,options={}){
  // phone; three makes the plinth read as a plinth and settles the depth test with it.
  footing.name='Warehouse concrete footing';footing.position.set(WAREHOUSE.x,-.175,WAREHOUSE.z);footing.receiveShadow=true;group.add(footing);
  group.add(buildWarehouseShell({shadows:options.shadows}));
- options.label?.("Port warehouse",'HARBOUR WAREHOUSE',[-10.48,2.2,-46.35],2.75,.88,Math.PI/2,'#e0dac2','#314d51');
  addStreetDoor(group);
  const marker=new THREE.Object3D();marker.name='warehouse-entrance';marker.position.set(-9.45,1.25,WAREHOUSE_PLACE.door[2]);group.add(marker);
  options.register?.(marker,'Enter Harbour Warehouse',()=>options.enter?.(WAREHOUSE_PLACE));

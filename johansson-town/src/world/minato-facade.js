@@ -2,7 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {createKit} from './okinawa/kit.js';
 import {shisa,potPlant} from './okinawa/houses.js';
-import {fascia} from './okinawa/signs.js';
+import {fascia,japaneseSign,signText} from './okinawa/signs.js';
 import {glazeWithRoom} from '../render/window-interior.js';
 
 /**
@@ -55,7 +55,7 @@ function norenTexture(){
  for(let i=0;i<150;i++){ctx.fillStyle=i%2?'#27364a':'#18222f';const x=Math.random()*512;ctx.fillRect(x,0,2+Math.random()*4,256);}
  ctx.globalAlpha=1;
  ctx.fillStyle='#ddd2b8';ctx.textAlign='center';ctx.textBaseline='middle';
- ctx.font='bold 116px serif';ctx.fillText("Minato",256,128);
+ ctx.font='bold 116px serif';ctx.fillText("みなと",256,128);
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 
@@ -67,7 +67,7 @@ function chochinTexture(word){
  ctx.strokeStyle='rgba(60,20,14,.35)';ctx.lineWidth=2;
  for(let y=10;y<256;y+=14){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(256,y);ctx.stroke();}
  ctx.fillStyle='#1c1410';ctx.textAlign='center';ctx.textBaseline='middle';
- const chars=[...word],size=Math.min(62,200/chars.length);
+ const chars=[...japaneseSign(word)],size=Math.min(62,200/chars.length);
  ctx.font=`bold ${size}px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif`;
  // u=0 faces the street, so the front word straddles the seam; the back one is at u=.5.
  for(const cx of [0,256,128])chars.forEach((ch,k)=>ctx.fillText(ch,cx,128+(k-(chars.length-1)/2)*size*1.05));
@@ -81,10 +81,10 @@ function kanbanTexture(){
  ctx.fillStyle='#e0bc7c';ctx.textAlign='center';ctx.textBaseline='middle';
  ctx.font='bold 150px serif';
  // Vertical writing, which is how a kanban is read.
- "Izakaya".split('').forEach((c,i)=>ctx.fillText(c,128,150+i*165));
+ "居酒屋".split('').forEach((c,i)=>ctx.fillText(c,128,150+i*165));
  ctx.fillStyle='#d8534a';ctx.fillRect(58,648,140,6);
  ctx.fillStyle='#e8d6ae';ctx.font='bold 130px serif';
- "Minato".split('').forEach((c,i)=>ctx.fillText(c,128,742+i*100));
+ "みなと".split('').forEach((c,i)=>ctx.fillText(c,128,742+i*100));
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 
@@ -96,7 +96,7 @@ function menuTexture(){
  ctx.fillStyle='#cfc6ad';ctx.textAlign='left';ctx.font='bold 34px serif';ctx.fillText("Today",18,44);
  ctx.font='26px serif';
  for(const [i,line] of ["Yakitori  ￥180","Fried horse mackerel ￥320","Cold tofu    ￥200","Edamame    ￥150","Draft beer  ￥400"].entries())
-  ctx.fillText(line,18,96+i*46);
+  signText(ctx,line,18,96+i*46,220,24);
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 
@@ -368,7 +368,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  // The signboard: 中華そば さとう, red on cream, over the door.
  const signCanvas=document.createElement('canvas');signCanvas.width=512;signCanvas.height=128;const sx=signCanvas.getContext('2d');
  sx.fillStyle='#efe4c8';sx.fillRect(0,0,512,128);sx.strokeStyle='#7a1f1a';sx.lineWidth=10;sx.strokeRect(5,5,502,118);
- sx.fillStyle='#a3241c';sx.textAlign='center';sx.textBaseline='middle';sx.font='bold 70px serif';sx.fillText("Ramen Sato",256,58);
+ sx.fillStyle='#a3241c';sx.textAlign='center';sx.textBaseline='middle';sx.font='bold 70px serif';signText(sx,"中華そば さとう",256,58,470,70);
  sx.font='bold 20px sans-serif';sx.fillText('SATO RAMEN · LUNCH 11:00–14:00',256,108);
  const signTex=new THREE.CanvasTexture(signCanvas);signTex.colorSpace=THREE.SRGBColorSpace;
  const board=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.6),new THREE.MeshStandardMaterial({map:signTex,emissiveMap:signTex,emissive:0xffffff,emissiveIntensity:0,roughness:.8}));

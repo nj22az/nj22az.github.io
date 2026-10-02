@@ -1,3 +1,4 @@
+import {addBookshopDetail} from './bookshop-detail.js';
 import {DOCK_WORKSHOP_ROOM} from '../dock-workshop-layout.js';
 import {buildWorkshopMachine} from '../../workshop/machine.js';
 import * as THREE from '../../../vendor/three.module.js';
@@ -45,6 +46,7 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
  room.add(new THREE.HemisphereLight(0xffead0,0x777465,1.35));const light=new THREE.PointLight(0xffdba4,1.35,8,2);light.position.set(0,2.35,0);room.add(light);
 
  if(site.bookshop){
+  addBookshopDetail({room,collider,reg,action});
   // Keep the entrance and central aisle open between books, counter and reading table.
   for(const z of [-.95,.45]){
    box('Bookcase back',[.16,2.05,1.22],[-4.05,1.025,z],dark);

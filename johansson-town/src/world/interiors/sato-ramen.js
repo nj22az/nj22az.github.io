@@ -1,12 +1,12 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {addMinatoInterior} from '../izakaya.js?snappy=1';
-import {SATO_ROOM,SATO_COUNTER,SATO_LEDGE,SATO_COLLIDERS,SATO_MENU,SATO_RAMEN} from '../sato-ramen-layout.js';
+import {SATO_ROOM,SATO_COUNTER,SATO_LEDGE,SATO_CORNER,SATO_COLLIDERS,SATO_MENU,SATO_RAMEN} from '../sato-ramen-layout.js';
 
 /**
  * Inside Sato Ramen. The room is the shared interior model, so the kitchen behind the
  * counter is Minato's own line carried on round the corner; this adds what only the
  * ramen shop has: white lunch light, the wooden menu plaques, the steam off the pots,
- * and its eight seats, each served by Mrs Sato across the counter or at the ledge.
+ * and its counter and window seats, each served by Mrs Sato across the counter or at the ledge.
  */
 const MINCHO='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 
@@ -19,8 +19,8 @@ function plaqueTexture(item){
  const c=document.createElement('canvas');c.width=96;c.height=320;const x=c.getContext('2d');
  x.fillStyle='#8a5a36';x.fillRect(0,0,96,320);x.strokeStyle='#5a3a22';x.lineWidth=6;x.strokeRect(3,3,90,314);
  x.fillStyle='#f4ead2';x.textAlign='center';x.textBaseline='middle';
- const chars=[...item.jp],size=Math.min(40,230/chars.length);x.font=`bold ${size}px ${MINCHO}`;
- chars.forEach((ch,k)=>x.fillText(ch,48,22+size/2+k*size*1.02));
+ const chars=[...item.jp],size=Math.min(33,205/chars.length);x.font=`bold ${size}px ${MINCHO}`;chars.forEach((ch,i)=>x.fillText(ch,36,23+(i+.5)*size));
+ x.save();x.translate(78,140);x.rotate(-Math.PI/2);x.font='bold 12px serif';x.fillText(item.name,0,0,240);x.restore();
  x.fillStyle='#ffd27a';x.font=`bold 24px ${MINCHO}`;x.fillText('¥'+item.cost,48,296);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
 }
@@ -58,9 +58,10 @@ export function buildSatoRamenRoom({room,reg,collider,action,exit}){
   for(let k=0;k<4;k++){const cup=new THREE.Mesh(new THREE.CylinderGeometry(.036,.028,.07,16),new THREE.MeshStandardMaterial({color:0xf4f1ea,roughness:.35}));cup.position.set(.32,.035+k*.05,-.02);drinks.add(cup);}
  }
  const anchor=(position,label,fn)=>{const o=new THREE.Object3D();o.position.set(...position);o.name=label;group.add(o);reg(o,label,fn,true);return o;};
- [...SATO_COUNTER,...SATO_LEDGE].forEach((seat,i)=>{
-  const ledge=i>=SATO_COUNTER.length,label=ledge?'Sit at the wall ledge':'Sit at the ramen counter';
-  const o=anchor([seat.position[0],1,seat.position[2]],label,()=>action('seat',ledge?'Sato Ramen ledge':'Sato Ramen counter','A red stool and a glass of cold water. Mrs Sato nods at you over the steam.'));
+ anchor([10.8,1,-3.9],'Inspect the ramen kitchen',()=>action('inspect','Sato Ramen kitchen','Steel stock pots simmer under the extractor. A clear passage at the counter’s right end leads to the shared Minato kitchen; the range, sink and counters remain solid.'));
+ [...SATO_COUNTER,...SATO_LEDGE,...SATO_CORNER].forEach((seat,i)=>{
+  const corner=i>=SATO_COUNTER.length+SATO_LEDGE.length,ledge=!corner&&i>=SATO_COUNTER.length,label=corner?'Sit at the window table':ledge?'Sit at the wall ledge':'Sit at the ramen counter';
+  const o=anchor([seat.position[0],1,seat.position[2]],label,()=>action('seat',corner?'Sato Ramen window table':ledge?'Sato Ramen ledge':'Sato Ramen counter','A red stool and a glass of cold water. Mrs Sato nods at you over the steam.'));
   o.userData.seat={ramenSeatId:i,position:[...seat.position],stand:[...seat.stand],eyeY:seat.height+.6,yaw:seat.yaw,pitch:0,table:[...seat.table],surfaceY:seat.height};
  });
  anchor([6.95,1.3,3.0],'Read the ticket machine',()=>action('read',SATO_RAMEN.title+' · ticket machine',SATO_MENU.map(item=>item.jp+' · '+item.name+' · ¥'+item.cost).join('\n')+'\n\nTake a seat and order: when the machine is being temperamental, which is usually, Mrs Sato takes the money over the counter.'));

@@ -205,11 +205,12 @@ function dressSakura(kit,solid,{inspect}){
 function dressWarehouse(kit,solid,{inspect}){
  // Its name on the street wall, big enough to read from the top of Main Street.
  const x=-10.52;
- kit.sign(fascia({jp:"Port warehouse",en:'Minato harbour warehouse · stores & ice',bg:'#e9e4d6',accent:'#314d51',ink:'#1f3336'}),4.6,1,x+.04,3.9,-44.1,{ry:Math.PI/2,depth:.06,name:'warehouse sign'});
+ kit.sign(fascia({jp:"Port warehouse",en:'Minato harbour warehouse · stores & ice',bg:'#e9e4d6',accent:'#314d51',ink:'#1f3336'}),3.8,.9,x+.5,4.55,-43.1,{ry:Math.PI/2,depth:.06,name:'warehouse sign'});
  kit.sign(enamel({jp:"Fisheries cooperative",en:'fisheries co-op',bg:'#1f5f94',ink:'#f4f0e4'}),.6,.9,x+.04,2,-40.2,{ry:Math.PI/2,depth:.02,name:'enamel sign'});
  // Floats in a net hung from the wall, and crates at its foot on the quay side.
- buoys(kit,x+.25,2.3,-45.9,{count:9,seed:4});
- kit.box(.05,1.2,1.2,x+.06,2.5,-45.9,0x2f5a4a,{finish:'thin'});
+ buoys(kit,x+.25,1.75,-46.5,{count:5,seed:4});
+ for(const z of [-46.85,-46.5,-46.15])kit.rod([x+.25,2.45,z],[x+.25,1.65,z],.012,0x796e52);
+
  solid(fishCrates(kit,-14.8,-49,{rows:1,cols:3,seed:12}));
 }
 

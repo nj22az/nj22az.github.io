@@ -1,3 +1,5 @@
+import {buildCargoShipping} from './cargo-shipping.js';
+import {addDocklandsDetail} from './docklands-detail.js';
 import * as THREE from '../../vendor/three.module.js';
 import {DOCKLANDS as D,cargoShift} from './docklands-layout.js';
 /** A compact working port, built in local geometry, with pedestrian access to every door. */
@@ -30,5 +32,7 @@ export function buildDocklandsLife(world,{register,onAction}={}){
  anchor([-19.1,1,-44.9],'Inspect workshop forklift',()=>onAction?.('inspect','Dock electrical test bay','Tetsuo checks the lift limit switch and Kenji repairs the fork carriage. The test bay stays separate from the walking route. Come into the blue workshop for electrical and instrument repairs.'));
  anchor([-21,1,-35.1],'Read the island freight board',()=>onAction?.('read','Island freight and dock shifts','WESTERN QUAY · ISLAND LIFELINE\nCargo crews: 07:00–22:00. Early boat: ice, rice and shop supplies. Afternoon: post, repair parts and village parcels. Evening: chilled fish and outgoing mail.\nRiku walks the cargo circuit; Emi Kado checks manifests at the dispatch desk. Ferry passengers use the marked main quay. Dock Electrical & Repairs is beside the warehouse. Keep its doorway and the hoist bay clear.'));
  box('Dock dispatch desk',[1.6,.9,.8],[-21,.45,-34.5],0x6f7565,group,true);
- return {group,forklift,forks,hook,cable,update(time,minutes){const open=cargoShift(minutes),lift=open?.16+(Math.sin(time*.45)+1)*.18:.16;forks.position.y=lift;const rope=open?2.5+Math.sin(time*.16)*.45:3;cable.scale.y=rope/3;cable.position.y=5.2-rope/2;hook.position.y=5.2-rope;for(const m of lamps)m.emissiveIntensity=minutes%1440>=1080||minutes%1440<360?1.4:0;}};
+ const shipping=buildCargoShipping(world,{register,onAction});world.cargoShipping=shipping;
+ addDocklandsDetail(world,group,{register,onAction});
+ return {group,forklift,forks,hook,cable,update(time,minutes){shipping.update(time,minutes);const open=cargoShift(minutes),lift=open?.16+(Math.sin(time*.45)+1)*.18:.16;forks.position.y=lift;const rope=open?2.5+Math.sin(time*.16)*.45:3;cable.scale.y=rope/3;cable.position.y=5.2-rope/2;hook.position.y=5.2-rope;for(const m of lamps)m.emissiveIntensity=minutes%1440>=1080||minutes%1440<360?1.4:0;}};
 }

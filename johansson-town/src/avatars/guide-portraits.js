@@ -17,12 +17,12 @@ export function mountResidentPortraits(){
   try{while(pending.size&&active()){
    const img=pending.values().next().value;pending.delete(img);
    if(!img.isConnected)continue;
-   if(!renderer){renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(480,480);renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.setClearColor('#e9eff2',1);}
+   if(!renderer){renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(480,480);renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.setClearColor('#faf7ef',1);}
    const name=img.closest('[data-resident]').dataset.resident,recipe=name==='Johansson'?playerRecipe():recipeFor(name),avatar=buildAvatar(recipe,{shadows:false,faceSize:512});
    try{scene.add(avatar.root);if(name==='Thuan'){
     try{if(readSave(localStorage)?.thuanOutfit==='nozomi')avatar.wear('nozomi');}catch{}
    }
-   const h=avatar.height,frame=h*1.12,camera=new THREE.OrthographicCamera(-frame/2,frame/2,frame/2,-frame/2,.1,20);camera.position.set(.3,h*.58,-4);camera.lookAt(0,h*.51,0);scene.updateMatrixWorld(true);avatar.body.skeleton.update();renderer.render(scene,camera);img.src=renderer.domElement.toDataURL('image/webp',.9);img.dataset.liveRecipe=JSON.stringify(recipe);img.dataset.livePortrait='true';
+   const h=avatar.height,view=img.dataset.portraitView,close=!!view,frame=h*(close?.42:1.12),camera=new THREE.OrthographicCamera(-frame/2,frame/2,frame/2,-frame/2,.1,20);const targetY=h*(close?.83:.51);const angle=view==='side'?Math.PI/2:view==='three-quarter'?.7:0;camera.position.set(Math.sin(angle)*4,targetY+.03,-Math.cos(angle)*4);camera.lookAt(0,targetY,0);scene.updateMatrixWorld(true);avatar.body.skeleton.update();renderer.render(scene,camera);img.src=renderer.domElement.toDataURL('image/webp',.9);img.dataset.liveRecipe=JSON.stringify(recipe);img.dataset.livePortrait='true';
    }finally{scene.remove(avatar.root);avatar.body.skeleton.dispose();avatar.dispose();renderer.renderLists.dispose();}
    await new Promise(resolve=>setTimeout(resolve,0));
   }}catch(error){console.warn('Resident portrait fallback:',error.message);}
@@ -30,7 +30,8 @@ export function mountResidentPortraits(){
  }
  const observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting&&!entry.target.dataset.livePortrait)pending.add(entry.target);draw();},{rootMargin:'120px'});
  images.forEach(img=>observer.observe(img));
- const refresh=()=>{for(const img of images){delete img.dataset.livePortrait;const box=img.getBoundingClientRect();if(box.bottom>0&&box.top<innerHeight+120)pending.add(img);}draw();};
+ document.querySelectorAll('.resident-story').forEach(detail=>detail.addEventListener('toggle',()=>{if(detail.open)refresh();}));
+ const refresh=()=>{for(const img of images){delete img.dataset.livePortrait;const box=img.getBoundingClientRect();if(box.height>0&&box.bottom>0&&box.top<innerHeight+120)pending.add(img);}draw();};
  addEventListener('johansson-appearance-change',refresh);addEventListener('storage',refresh);
  new MutationObserver(()=>{if(active())refresh();else{pending.clear();if(!running)release();}}).observe(start,{attributes:true,attributeFilter:['class']});
  return {refresh};

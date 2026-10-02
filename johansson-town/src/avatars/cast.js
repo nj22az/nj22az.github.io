@@ -127,7 +127,7 @@ export function recipeFor(name=''){
  const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Aya|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name));
  const grey=/^#[a-f0-9]{6}$/i.test(style.hair||'')&&parseInt(style.hair.slice(1,3),16)>150;
  const hat=ACCESSORY_HAT[style.accessory]||(style.helmet?['helmet',style.helmet]:['none','#f4f1ea']);
- return normalizeRecipe(withTownDials({name,age:ageClass(AGE_OF.get(name)),
+ const generated=normalizeRecipe(withTownDials({name,age:ageClass(AGE_OF.get(name)),
   body:{silhouette:feminine?'feminine':'masculine',height:.3+r()*.45,build:.3+(Math.min(1.2,style.width||1)-.85)*1.6,skin:style.skin||'#e8bf98'},
   head:{size:.38+r()*.22,shape:r(),form:any(PARTS.head),jaw:.25+r()*.5,cheeks:.25+r()*.5},
   hair:{style:grey&&!feminine?any(['horseshoe','buzz','crop']):feminine?any(['bob','long','ponytail','bun','sidepart']):any(['crop','sidepart','spiky','buzz']),colour:style.hair||'#1c1714',flip:r()<.5},
@@ -141,4 +141,6 @@ export function recipeFor(name=''){
   outfit:{top:style.accessory==='apron'?'apron':style.accessory==='hawaiian'?'kariyushi':feminine?'blouse':'polo',topColour:style.top||'#3fa0c8',pattern:style.accessory==='hawaiian'?'flowers':'none',
    bottom:feminine&&style.top===style.trousers?'longskirt':'trousers',bottomColour:style.trousers||'#27304d',shoes:'#2b2b2b',hat:hat[0],hatColour:hat[1],accent:style.accent||'#f4d23c'},
  }));
+ if(name==='Hana')return normalizeRecipe({...generated,outfit:{...generated.outfit,top:'sailor',topColour:'#f3ecd9',bottom:'pleatedskirt',bottomColour:'#343959',footwear:'shoes',shoes:'#483b36',hat:'none',accent:'#428b88',pattern:'none'}});
+ return generated;
 }

@@ -307,7 +307,7 @@ export function createTown(options){
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.airportIsland?.update(dt,minutes,day);world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
-    world.docklandsLife?.update(time,minutes);
+    world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
     world.ferry?.update(dt,minutes,time);world.ferryVehicles?.update(dt,minutes);world.bus?.update(dt,minutes);

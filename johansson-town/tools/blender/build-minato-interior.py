@@ -62,6 +62,7 @@ def mat(name, color, rough=.7, metal=0., glow=0., alpha=1.):
     return m
 
 M = dict(
+    ramenplaster=mat('Ramen sage plaster','868d68',.96),
     smoke=mat('Smoked cedar', '3f2a1c', .78),
     floorA=mat('Cedar floor', '76502f', .74),
     floorB=mat('Cedar floor, darker board', '65432a', .76),
@@ -486,9 +487,9 @@ while zz < RZ1 - .01:
         if xx > RX1: break
         cube('Quarry tile', (.29, .04, .29), (xx, .02, zz + .15), M['quarry'] if (row + col) % 3 else M['quarryB'])
     zz += .3; row += 1
-cube('Ramen back wall', (RW + .2, 3.8, .2), (RCX, 1.9, RZ0), M['plaster'])
-cube('Ramen east wall', (.2, 3.8, RD + .2), (RX1 + .1, 1.9, RCZ), M['plaster'])
-cube('Ramen west face', (.04, 3.8, RZ1 + 3.35), (RX0 + .02, 1.9, (RZ1 - 3.35) / 2), M['plaster'])
+cube('Ramen back wall', (RW + .2, 3.8, .2), (RCX, 1.9, RZ0), M['ramenplaster'])
+cube('Ramen east wall', (.2, 3.8, RD + .2), (RX1 + .1, 1.9, RCZ), M['ramenplaster'])
+cube('Ramen west face', (.04, 3.8, RZ1 + 3.35), (RX0 + .02, 1.9, (RZ1 - 3.35) / 2), M['ramenplaster'])
 for side, fx in ((1, RX0 + .05), (-1, RX1 - .01)):
     cube('Ramen wall tile', (.02, 1.1, RZ1 + 3.3), (fx, .55, (RZ1 - 3.3) / 2), M['tile'])
     for k in range(1, 4): cube('Tile joint', (.03, .008, RZ1 + 3.3), (fx, k * .275, (RZ1 - 3.3) / 2), M['grout'])
@@ -496,9 +497,9 @@ cube('Ramen kitchen tile', (RW, 1.1, .02), (RCX, 1.45, RZ0 + .125), M['tile'])
 for k in range(1, 16): cube('Tile joint', (.008, 1.1, .005), (RX0 + k * .3, 1.45, RZ0 + .138), M['grout'])
 # The front wall with the door on the right, the noren inside it, and a window.
 DX, DW = 9.75, 1.3
-cube('Ramen front wall', (DX - DW / 2 - RX0, 3.8, .2), ((RX0 + DX - DW / 2) / 2, 1.9, RZ1), M['plaster'])
-cube('Ramen front wall', (RX1 - DX - DW / 2, 3.8, .2), ((RX1 + DX + DW / 2) / 2, 1.9, RZ1), M['plaster'])
-cube('Ramen door lintel', (DW, 1.6, .2), (DX, 3.0, RZ1), M['plaster'])
+cube('Ramen front wall', (DX - DW / 2 - RX0, 3.8, .2), ((RX0 + DX - DW / 2) / 2, 1.9, RZ1), M['ramenplaster'])
+cube('Ramen front wall', (RX1 - DX - DW / 2, 3.8, .2), ((RX1 + DX + DW / 2) / 2, 1.9, RZ1), M['ramenplaster'])
+cube('Ramen door lintel', (DW, 1.6, .2), (DX, 3.0, RZ1), M['ramenplaster'])
 cube('Ramen door glass', (DW - .1, 2.1, .02), (DX, 1.1, RZ1 + .06), M['glass'])
 for dx in (-DW / 2, 0, DW / 2): cube('Door frame', (.05, 2.2, .06), (DX + dx, 1.1, RZ1 + .05), M['steel'])
 cube('Door frame', (DW, .05, .06), (DX, 2.2, RZ1 + .05), M['steel'])
@@ -549,14 +550,14 @@ cube('Doorway lintel', (1.1, .1, .12), (11.0, 2.08, RZ0 + .16), M['smoke'])
 for k in range(2): cube('Noren panel', (.42, .8, .01), (10.78 + k * .44, 1.62, RZ0 + .2), M['noren'])
 
 # The counter, a match for Minato's, and five chrome stools with red tops.
-cube('Ramen counter carcass', (RW - .3, .95, .75), (RCX + .05, .475, -2.55), M['smoke'])
-for k in range(23):
-    cube('Counter front slat', (.1, .86, .03), (RX0 + .35 + k * .197, .52, -2.155), M['wainscot'])
-cube('Ramen guest ledge', (RW - .2, .07, .55), (RCX + .05, 1.075, -2.2), M['honey'], bevel=.02)
-cube('Ramen serving shelf', (RW - .3, .06, .26), (RCX + .05, 1.25, -2.6), M['honey'], bevel=.015)
-cube('Ramen work top cabinet', (RW - .3, .88, .58), (RCX + .05, .44, -3.06), M['steel'])
-cube('Ramen work top', (RW - .25, .035, .62), (RCX + .05, .9, -3.06), M['steel'])
-RSTOOLS = (7.2, 8.1, 9.0, 9.9, 10.8)
+# A real open passage at the east end, wide enough for a person and a bowl tray.
+cube('Ramen counter carcass', (3.5, .95, .75), (8.4, .475, -2.55), M['smoke'])
+for k in range(17):cube('Counter front slat', (.1, .86, .03), (6.8+k*.197,.52,-2.155),M['wainscot'])
+cube('Ramen guest ledge', (3.6,.07,.55),(8.4,1.075,-2.2),M['honey'],bevel=.015)
+cube('Ramen serving shelf',(3.5,.06,.26),(8.4,1.25,-2.6),M['honey'])
+cube('Ramen work top cabinet',(3.5,.88,.58),(8.4,.44,-3.06),M['steel'])
+cube('Ramen work top',(3.55,.035,.62),(8.4,.9,-3.06),M['steel'])
+RSTOOLS=(7.1,7.8,8.5,9.2,9.9)
 for sx in RSTOOLS:
     cyl('Ramen stool top', .19, .08, (sx, .72, -1.42), M['vinyl'], 16)
     cyl('Ramen stool post', .03, .66, (sx, .36, -1.42), M['steel'], 10)
@@ -604,6 +605,48 @@ for px, py, pz in ((-3.5, 2.3, 2.2), (2.6, 2.3, 2.0), (KX, 2.15, .5), (KX, 2.15,
     pendant(px, py, pz)
 
 cube('Entry mat', (2.1, .02, .9), (0, .05, 5.5), M['vinyl'])
+
+# A lived-in lounge corner: old upholstered bench, walnut tables and amber globes.
+upholstery=mat('Worn olive upholstery','807254',.95)
+for z in (4.15,5.0):
+ cube('Lounge seat',(.72,.18,.78),(-5.62,.47,z),upholstery,bevel=.045)
+ cube('Lounge back',(.16,.70,.78),(-5.94,.88,z),upholstery,bevel=.035)
+ cube('Lounge plinth',(.60,.40,.75),(-5.62,.20,z),M['smoke'])
+ cube('Lounge table',(.66,.055,.66),(-4.6,.72,z),M['honey'],bevel=.015)
+ cyl('Lounge table post',.035,.68,(-4.6,.35,z),M['steel'],10)
+ for ang in (0,math.pi/2):cube('Lounge table foot',(.60,.04,.06),(-4.6,.04,z),M['darksteel'],rot=ang)
+ cyl('Lounge pendant cord',.009,.60,(-5.1,3.35,z),M['lacquer'],6)
+ ball('Amber globe lamp',(.18,.18,.18),(-5.1,2.98,z),M['bulb'],12,8)
+ cube('Table menu',(.10,.19,.015),(-4.6,.84,z-.15),M['label'])
+# Small practical details around the ramen cooking line.
+cube('Ramen extractor',(3.3,.32,.86),(8.55,2.40,-5.94),M['hood'],bevel=.03)
+cube('Ramen extractor duct',(.42,1.05,.42),(8.55,3.06,-6.11),M['hood'])
+for i in range(7):cube('Hood filter seam',(.035,.02,.72),(7.25+i*.38,2.23,-5.94),M['darksteel'])
+for x in (7.0,9.7):
+ cube('Cloth',(.16,.012,.22),(x,1.0,-5.52),M['label'])
+ cyl('Sauce bottle',.036,.23,(x,1.08,-5.92),M['brown'],10)
+ cube('Bottle label',(.065,.10,.003),(x,1.08,-5.883),M['label'])
+
+# Sato's window table and old television, inspired by a modest 1990s diner.
+cube('Ramen corner table',(1.35,.07,1.05),(7.65,.75,1.15),M['honey'],bevel=.015)
+for x in (7.13,8.17):
+ for z in (.75,1.55):cube('Corner table leg',(.07,.72,.07),(x,.36,z),M['smoke'])
+for z in (.35,1.95):
+ cube('Corner chair seat',(.45,.07,.44),(7.65,.46,z),M['honey'])
+ cube('Corner chair back',(.45,.43,.06),(7.65,.73,z+(-.22 if z<1 else .22)),M['smoke'])
+ for x in (7.48,7.82):
+  for dz in (-.17,.17):cube('Corner chair leg',(.035,.43,.035),(x,.23,z+dz),M['smoke'])
+cube('Ramen window ledge',(1.8,.06,.25),(7.8,1.12,3.53),M['honey'])
+cube('TV corner shelf',(1.0,.08,.8),(10.78,2.76,2.96),M['honey'])
+cube('Old television',(.66,.48,.42),(10.78,3.04,2.98),M['smoke'],bevel=.02)
+cube('Television glass',(.51,.36,.014),(10.71,3.06,3.198),M['darksteel'],bevel=.02)
+for y in (2.97,3.1):cyl('TV dial',.032,.016,(11.05,y,3.21),M['honey'],8,axis='z')
+cyl('Table condiment jar',.035,.12,(8.03,.85,1.38),M['red'],10)
+cube('Chopstick holder',(.12,.10,.06),(8.10,.84,1.13),M['honey'])
+# Dark timber dado, green plaster above, clearly different from the shared kitchen tile.
+for z in (-1.25,0,1.25,2.5):
+ cube('Ramen cedar panel',(.03,.95,1.20),(6.57,.5,z),M['wainscot'])
+ cube('Ramen timber cap',(.045,.06,1.20),(6.60,1.01,z),M['honey'])
 
 # --------------------------------------------------------------------------- export
 # The game allows the room ten draws. Every finish above keeps its colour, but as a

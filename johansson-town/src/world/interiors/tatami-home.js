@@ -31,6 +31,7 @@ export function buildTatamiHome({profile,room,box,reg,collider,action,exit}){
  box([.85,.16,.4],[.65,.23,-1.42],0xeee4cb,fallbackBed,false);
  // Furniture footprints leave both the entry and the bedtime route clear.
  collider(-1.95,-2.57,1.25,.56,1.35);collider(-1.65,1.45,1.18,.78,.39);collider(2.35,1.8,.66,.42,1.44);
+ let workRequired=false,workStage=null,workAge=0,observedNeed=null;
  let disposed=false,model=null,elapsed=0,lastMinutes=0,bedding={amount:0,phase:'stored'};
  const routine=createFutonRoutine(profile);
  function apply(){
@@ -55,5 +56,11 @@ export function buildTatamiHome({profile,room,box,reg,collider,action,exit}){
  anchor([-1.65,.55,1.1],'Read daily routine',()=>action('read',profile.name+' at home','Tea at the low table, a quiet fan, and bedding stored until evening. Usually sleeps at '+fmt(hours.sleep)+' and wakes at '+fmt(hours.wake)+'.'));
  anchor(TATAMI_HOME_LAYOUT.exit,'Exit to Main Street',exit);
  shell.add(new THREE.HemisphereLight(0xfff0d4,0x887958,1.5));const lamp=new THREE.PointLight(0xffe7b7,1.5,9,2);lamp.position.set(0,2.4,-.65);shell.add(lamp);
- return {...TATAMI_HOME_LAYOUT,home:true,ready,tick(dt,minutes){elapsed+=dt;lastMinutes=minutes;bedding=routine.update(dt,minutes);apply();},snapshot(){return {owner:profile.name,modelReady:!!model,minutes:lastMinutes,futon:{...bedding}};},dispose(){disposed=true;}};
+ return {...TATAMI_HOME_LAYOUT,home:true,ready,tick(dt,minutes){elapsed+=dt;lastMinutes=minutes;const needed=['bedtime','sleep','wake'].includes(homeRoutine(profile,minutes).id);
+ if(observedNeed!==null&&needed!==observedNeed){workRequired=true;workStage='walk';workAge=0;}observedNeed=needed;
+ bedding=routine.update(workRequired&&workStage==='walk'?0:dt,minutes);apply();},
+ prepareBedding(person,walker,dt){if(!workRequired)return false;const g=person.g,target=bedding.needed?[2.05,0,-1.4]:TATAMI_HOME_LAYOUT.bedside;
+ g.userData.activity=bedding.needed?'taking the futon out of the cupboard':'folding the futon away';
+ if(workStage==='walk'){if(!walker.move(person,target,dt))return true;workStage='arrange';}
+ g.rotation.set(0,bedding.needed?Math.PI:0,0);g.userData.socialPose='Interact';workAge+=dt;if(workAge>=1.8){workRequired=false;workStage=null;}return true;},snapshot(){return {owner:profile.name,modelReady:!!model,minutes:lastMinutes,beddingActivity:workRequired?(bedding.needed?'taking out':'putting away'):null,futon:{...bedding}};},dispose(){disposed=true;}};
 }

@@ -1,3 +1,4 @@
+import {japaneseSign,signText} from './world/okinawa/signs.js';
 import {recipeFor} from './avatars/cast.js';
 import {saveResidentRecipe} from './avatars/wardrobe.js';
 import {createIslandPlay,NAHA_ARRIVALS} from './island/play.js';
@@ -53,7 +54,7 @@ import {openWant,wantPool,heartLine,withArticle} from './people/friendship.js';
 import {ensureDailyQuests,form3NudgeAllowed,hasDailyQuest,isDailyDone,markDailyDone,FORM3_NUDGE,QUAY_NUDGE,RADIO_821} from './progression/soft-quests.js';
 import {buildIzakayaRoom,preloadIzakaya,izakayaReady} from './world/izakaya.js?snappy=1';
 import {createIzakayaGuests} from './people/izakaya-guests.js';
-import {controlVisibility} from './interact/control-visibility.js';
+import {controlVisibility,roomExitVisible} from './interact/control-visibility.js';
 import {createTownSky} from './render/sky.js';
 import {bicycleRiderFit,bicycleBlocked} from './world/bicycle-fit.js';
 import {createBicycleController} from './world/bicycle-controller.js';
@@ -160,7 +161,7 @@ const toon=(c,map=null)=>new THREE.MeshStandardMaterial({color:c,map,roughness:.
 const boxGeo=s=>{const k=s.join(',');if(!boxCache.has(k))boxCache.set(k,new THREE.BoxGeometry(...s));return boxCache.get(k)};
 function box(size,pos,color,parent,outline=true){const g=boxGeo(size),m=new THREE.Mesh(g,toon(color));m.position.set(...pos);m.castShadow=shadows;m.receiveShadow=shadows;parent.add(m);if(false&&outline){const o=new THREE.Mesh(g,outlineMat);o.position.copy(m.position);o.rotation.copy(m.rotation);o.scale.set(1.018,1.018,1.018);parent.add(o)}return m}
 function mesh(geo,pos,color,parent,outline=true){const m=new THREE.Mesh(geo,toon(color));m.position.set(...pos);m.castShadow=shadows;m.receiveShadow=shadows;parent.add(m);if(false&&outline){const o=new THREE.Mesh(geo,outlineMat);o.position.copy(m.position);o.scale.set(1.022,1.022,1.022);parent.add(o)}return m}
-function signTex(a,b,accent='#9b4035'){const c=document.createElement('canvas');c.width=512;c.height=128;const x=c.getContext('2d');x.fillStyle='#efe3c7';x.fillRect(0,0,512,128);x.fillStyle=accent;x.fillRect(0,0,14,128);x.strokeStyle='#252821';x.lineWidth=5;x.strokeRect(5,5,502,118);x.fillStyle='#252821';x.textAlign='center';x.textBaseline='middle';x.font='700 43px Yu Gothic,system-ui';x.fillText(a,256,50);x.font='800 15px system-ui';x.fillText(b.toUpperCase(),256,99);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t}
+function signTex(a,b,accent='#9b4035'){const c=document.createElement('canvas');c.width=512;c.height=128;const x=c.getContext('2d');x.fillStyle='#efe3c7';x.fillRect(0,0,512,128);x.fillStyle=accent;x.fillRect(0,0,14,128);x.strokeStyle='#252821';x.lineWidth=5;x.strokeRect(5,5,502,118);x.fillStyle='#252821';x.textAlign='center';x.textBaseline='middle';x.font='700 43px Yu Gothic,system-ui';signText(x,japaneseSign(a),256,50,465,43);x.font='800 15px system-ui';signText(x,b.toUpperCase(),256,99,465,15);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t}
 
 const townSections=createTownSections({mobile});window.__JOHANSSON_SECTIONS__=townSections.stats;
 const shopStreetView=createShopStreetView();window.__JOHANSSON_SHOP_VIEW__=shopStreetView.stats;
@@ -737,10 +738,10 @@ function addRoomProps(s){
     if(s.id==='ramen'){room.add(ramenLife);ramenLife.visible=true;ramenGuests.sync(minutes);ramenPlayerService=createRamenPlayerService({room,getSeat:()=>Number.isInteger(parkSeat?.ramenSeatId)?parkSeat:null,getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,say,
       onMouthful:ramenMouthful,canOrder:item=>item.prop==='beer'&&!wantsAnother(tipsy,DRINKS.bottle.alcohol)?"Mrs Sato shakes her head: You’ve had enough. Have a cold barley tea instead.":true,
       ...(satoRamen()?{menu:SATO_MENU,isOpen:satoRamenOpen,title:SATO_RAMEN.title,server:'Mrs Sato',kitchen:satoKitchen,closedLine:'Sato Ramen serves lunch, 11:00 to 14:00. Mrs Sato has put the stools up.'}:{})});}
-    if(homeOwner(s)){activeRoomLayout.tick?.(0,minutes,elapsed);homeGuests.enter(s,minutes);}
+    if(homeOwner(s)){activeRoomLayout.tick?.(0,minutes,elapsed);homeGuests.enter(activeRoomLayout.prepareBedding?{...s,homeLayouts:{[homeOwner(s)]:activeRoomLayout}}:s,minutes);}
     return;
   }
-  if(s.id==='izakaya'){izakayaTV=buildIzakayaRoom({room,box,reg,collider:roomCollider,action:activities.action,exit:leaveRoom,signTexture:signTex}).television;izakayaGuests.sync(minutes);startVenueService('izakaya');beerService=createBeerService({room,say,blocked:environmentBlocked,getNao:()=>{const n=world.people.find(p=>p.profile.name==='Nao')?.g;return n&&n.userData.inIzakaya&&n.visible&&!n.userData.roomTransition?n:null;}});const light=new THREE.HemisphereLight(0xffdfaa,0x886d5f,1.6);room.add(light);return;}
+  if(s.id==='izakaya'){activeRoomLayout=buildIzakayaRoom({room,box,reg,collider:roomCollider,action:activities.action,exit:leaveRoom,signTexture:signTex});izakayaTV=activeRoomLayout.television;izakayaGuests.sync(minutes);startVenueService('izakaya');beerService=createBeerService({room,say,blocked:environmentBlocked,getNao:()=>{const n=world.people.find(p=>p.profile.name==='Nao')?.g;return n&&n.userData.inIzakaya&&n.visible&&!n.userData.roomTransition?n:null;}});const light=new THREE.HemisphereLight(0xffdfaa,0x886d5f,1.6);room.add(light);return;}
 
 }
 
@@ -1346,6 +1347,8 @@ $('#jump').addEventListener?.('pointerdown',()=>pressedControls.add('jump'));
 function updateContextControls(){
  document.body.classList.toggle('hud-seated',!!seated);
  const blocked=cameraControls.active||roomLoading||activities.paused||inspector?.active||!$('#directory').classList.contains('hidden')||!$('#qte').classList.contains('hidden');
+ const exit=activeRoomLayout?.exit||roomDoorway||[0,0,3.8];
+ $('#exitRoomButton').classList.toggle('hidden',!roomExitVisible({playing:started,inside:!!current,paused:blocked,seated,position:player.position,exit}));
  const now=performance.now();
  if(!blocked&&(move2.lengthSq()>.02||Math.hypot(touchSticks.move.x,touchSticks.move.y)>.05)){controlsMovingUntil=now+1400;controlsTouchedAt=now;}
  // Hold the action button for a moment after its target is lost. Walking past scenery
