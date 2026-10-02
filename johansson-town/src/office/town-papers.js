@@ -93,6 +93,20 @@ export const TOWN_PAPERS=[
     "source": "notice:Minato fuel depot · Port Town Fuel Base"
   },
   {
+    "type": "Notice",
+    "title": "The swing",
+    "organisation": "Town Services",
+    "text": "The chains squeak on the forward stroke and not on the back one. Mr Iha oils them every spring and the squeak comes back by the summer. Somebody has written a name in felt pen on the left seat and somebody else has crossed it out.",
+    "source": "notice:The swing"
+  },
+  {
+    "type": "Flyer",
+    "title": "Kitahama notice board",
+    "organisation": "Town Services",
+    "text": "Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at the Tairas'.\n\nSanshin with Mrs Gushiken, Saturdays at half past nine on her verandah. Beginners welcome; bring your own picks.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Iha will check the lane lights.\n\nFound: a child's blue sandal, left foot. Ask at number 10.",
+    "source": "notice:Kitahama notice board"
+  },
+  {
     "type": "Flyer",
     "title": "Umi-no-yu notice",
     "organisation": "Town Services",
