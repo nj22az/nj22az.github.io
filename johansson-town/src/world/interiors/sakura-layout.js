@@ -100,7 +100,7 @@ export const SAKURA_LAYOUT={
   rect(6.4,-2.7,.7,1.2,.8),
   // Lived-in pieces (sakura-life.js): Jaga-bō on his plinth, the assistant manager, the
   // umbrella stand, the office fridge, the hand truck, crates and ladder in the back room.
-  rect(2.25,3.05,.72,.72,1.3),rect(-1.35,3.45,.42,.42,1.2),rect(1.2,3.55,.3,.3,1.0),
+  rect(-2.45,3.42,.72,.72,1.3),rect(-1.35,3.45,.42,.42,1.2),rect(1.2,3.55,.3,.3,1.0),
   rect(4.98,-3.62,.48,.5,1.2),rect(5.35,-5.0,.4,.6,1.1),rect(-.95,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
   // The stocked back room (sakura-backroom.js BACKROOM): bottle crates and the daisha at the
   // west end, the cardboard bundle on the east wall, the extinguisher by the delivery door.
