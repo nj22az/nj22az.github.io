@@ -74,6 +74,13 @@ a line. Dialogue lines carry a feeling read from the words. The playful poses (h
 hand by the cheek, coy look, ta-da, hands on hips, heel kick) are on the Moves menu, in the
 photo studio and in the maker's preview.
 
+Neighbours stop for a chat when they pass within a few metres of each other, near enough
+for you to overhear (`src/people/neighbour-chats.js`). What they say follows their
+temperament: written small talk about the cat, the ferry, typhoons, Tamagotchis and
+gossip (`chat-lines.js`), or, once you have started the local language model at Thuan's
+counter ("Ask her something"), conversations it writes for each pair from who they are
+(`town-mind.js`).
+
 ## More
 
 - `docs/EXPANSION-NOTES.md`: dormant systems worth building on (Shopify, the local AI

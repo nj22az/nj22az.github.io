@@ -14,7 +14,7 @@ git checkout 5c63eb8 -- johansson-town/assets/models/sea-cave
 | System | Where | State | Could become |
 |---|---|---|---|
 | Shopify storefront | `src/commerce/shopify.js`, `shopify-config.js`, the mail-order catalogue at Sakura's counter | Wired in, `enabled:false`, no store token | A real merch / print-on-demand shop for the Form 3D models: add a public Storefront token and product map (`docs/shopify-storefront-validation.txt`). |
-| Thuan's local AI chat | `src/people/thuan-mind.js`, `thuan-chat.js`, `thuan-voice.js` ("Ask her something") | Live, opt-in; downloads a ~670 MB model in the browser via WebLLM | Unscripted conversation for any resident; a smaller model or a server option. |
+| The town's local AI | `src/people/thuan-mind.js` (one shared model, `sharedMind`), `thuan-chat.js`, `thuan-voice.js` ("Ask her something"), `town-mind.js` (neighbours' small talk) | Live, opt-in; downloads a ~670 MB model in the browser via WebLLM. Once chosen it starts by itself on later visits, and the neighbours' chats are then written by it, ahead of time, from each speaker's personality; written lines (`chat-lines.js`) otherwise | Talking to any resident yourself; a smaller model or a server option. |
 | WebMCP tools | `webmcp.js`, `webmcp-characters.js`, `WEBMCP.md` | Live, loaded lazily | Agent-driven playtesting, guided tours, AI co-players. |
 | Avatar creator | `src/avatars/creator.js`, `creator/`, `tools/avatar-preview.html` | Live (Town book → Make your islander, share links) | Shareable islander codes, NPC authoring, a cast editor. |
 | Office workbooks | `src/office/workbooks.js`, `assets/office-workbooks/`, `scripts/build-office-workbooks.mjs` | Live in the harbour office | Spreadsheet puzzles and records tied to quests. |
