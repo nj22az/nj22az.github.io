@@ -1,3 +1,5 @@
+import {createKit} from './okinawa/kit.js';
+import {utilityPole,wiresBetween} from './okinawa/props.js';
 import {japaneseSign,signText} from './okinawa/signs.js';
 import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
@@ -207,27 +209,18 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     throw Error('No street frontage defined for '+s.id);
   });
 
-  // Utility poles and overhead cables.
-  for(const side of [-1,1])for(const z of [-32,11,17]){
-    const px=side<0?-7.2:.8,toward=side<0?1:-1;
-    if(z<=BOARDWALK.maxZ){
-      if(z===-32){
-        // Low deck lights replace the southern overhead power poles.
-        cyl(.10,.85,[px,.425,z],0x3b4848);box([.22,.10,.22],[px,.9,z],0xe7c080);obstacle(px,z,.25,.25);
-        const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(px,1,z);group.add(light);lampLights.push(light);
-      }
-      continue;
-    }
-    cyl(.13,8,[px,4,z],0x574f49);obstacle(px,z,.38,.38);box([1.8,.14,.18],[px,7.3,z],0x4b534e);
-    for(const dx of [-.8,0,.8]){
-      cyl(.08,.26,[px+dx,7.52,z],0xc6cac1);
-      // Pole to pole only: the line used to run sixteen metres on past the last pole, to the
-      // tunnel that is gone, and hung in mid-air over the grass.
-      const span={11:6}[z];
-      if(span){const points=[];for(let k=0;k<=8;k++){const u=(k/4-1)*span/2;points.push(new THREE.Vector3(px+dx,7.58+42*(Math.cosh(u/42)-Math.cosh(span/2/42)),z+k*span/8));}const g=new THREE.BufferGeometry().setFromPoints(points);group.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x263234})));}
-    }
-    beam([px,5.7,z],[px+toward*.7,5.7,z],.06);box([.6,.12,.26],[px+toward*.75,5.65,z],0xdac08d);
-    if(z===-32||z===28){const light=new THREE.PointLight(0xffd7a0,0,22,2);light.userData.nightIntensity=18;light.position.set(px+toward*.75,4.8,z);group.add(light);lampLights.push(light);}
+  // Low deck lights remain at the southern quay, separate from the overhead grid.
+  for(const px of [-7.2,.8]){
+   cyl(.10,.85,[px,.425,-32],0x3b4848);box([.22,.10,.22],[px,.9,-32],0xe7c080);obstacle(px,-32,.25,.25);
+   const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(px,1,-32);group.add(light);lampLights.push(light);
+  }
+  // The old shopping-street feeder uses the same concrete poles and insulators as town.
+  {const kit=createKit({shadows});
+   for(const side of [-1,1]){const poles=[];for(const z of (side<0?[7.5,18.5]:[11,17])){
+    const p=utilityPole(kit,side<0?-7.2:.8,z,{face:side<0?Math.PI/2:-Math.PI/2,transformer:z===11,lamp:true});
+    colliders.push(p.collider);poles.push(p);
+   }wiresBetween(kit,poles[0],poles[1]);}
+   kit.finish(group,'Shopping street electrical feeder');
   }
   for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label("Johansson Shopping Street",'JOHANSSON SHOPPING STREET',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d',false,true);
 
