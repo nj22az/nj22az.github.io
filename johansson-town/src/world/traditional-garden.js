@@ -1,5 +1,4 @@
-import {paintedTurf} from '../render/toy-surfaces.js';
-import {GROUND} from '../render/ground-palette.js';
+import {broadleafGeometry} from './okinawa/trees.js';
 import {nearestSegment} from './island-plan.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GARDEN_AUTHOR as GARDEN,GARDEN_PATHS_AUTHOR as GARDEN_PATHS,gardenPoint,GARDEN_SCALE} from './garden-layout.js';
@@ -7,11 +6,14 @@ import {GARDEN_AUTHOR as GARDEN,GARDEN_PATHS_AUTHOR as GARDEN_PATHS,gardenPoint,
 export function buildTraditionalGarden({world,register,onAction}){
  const group=new THREE.Group();group.name='Aoba Traditional Garden';world.group.add(group);group.scale.set(GARDEN_SCALE,1,GARDEN_SCALE);group.position.set(-6.6,0,-30.2);const addCollider=c=>{const [x,z]=gardenPoint(c.x,c.z);world.colliders.push({...c,x,z,w:c.w*GARDEN_SCALE,d:c.d*GARDEN_SCALE});};const mats=new Map(),mat=c=>{if(!mats.has(c))mats.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.95}));return mats.get(c);};
  const box=(name,size,pos,c,solid=false)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));o.name=name;o.position.set(...pos);group.add(o);if(solid)addCollider({id:name,x:pos[0],z:pos[2],w:size[0],d:size[2],height:pos[1]+size[1]/2});return o;};
- const lawnShape=new THREE.Shape();const gx=GARDEN;for(const [i,[x,z]] of [[gx.minX,gx.minZ],[gx.maxX,gx.minZ],[gx.maxX,gx.maxZ],[gx.minX,gx.maxZ]].entries())i?lawnShape.lineTo(x,-z):lawnShape.moveTo(x,-z);lawnShape.closePath();const hole=new THREE.Path();hole.absellipse(gx.pond.x,-gx.pond.z,gx.pond.rx,gx.pond.rz,0,Math.PI*2,true);lawnShape.holes.push(hole);const lawn=new THREE.Mesh(new THREE.ShapeGeometry(lawnShape),new THREE.MeshStandardMaterial({color:GROUND.grass,map:paintedTurf(),roughness:1}));const lp=lawn.geometry.attributes.position;for(let i=0;i<lp.count;i++){const [x,z]=gardenPoint(lp.getX(i),-lp.getY(i));lawn.geometry.attributes.uv.setXY(i,x/2.4,z/2.4);}lawn.rotation.x=-Math.PI/2;lawn.position.y=.007;lawn.name='Garden lawn with open pond basin';group.add(lawn);
  const cylinder=(name,r,h,x,y,z,c,solid=false)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.08,h,12),mat(c));o.name=name;o.position.set(x,y,z);group.add(o);if(solid)addCollider({id:name,x,z,w:r*2,d:r*2,height:y+h/2});return o;};
  const anchor=(pos,label,kind,title,text)=>{const a=new THREE.Object3D();a.position.set(...pos);group.add(a);register(a,label,()=>onAction(kind,title,text));return a;};
- for(const [x,z] of [[-47,122],[-45,146],[-9,146],[-7,120],[-20,150],[-40,111]]){cylinder('Garden shade tree trunk',.22,2.5,x,1.25,z,0x756247,true);for(const [dx,dy,dz] of [[0,0,0],[-1,.2,.3],[1,-.1,-.4]]){const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(1.5,1),mat(0x426f45));crown.position.set(x+dx,3.3+dy,z+dz);crown.scale.set(1.1,.8,1);crown.castShadow=true;group.add(crown);}}
- for(const route of GARDEN_PATHS)for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz),bridge=route.id==='garden-bridge';const paving=box(bridge?'Wooden garden bridge':'Garden stepping path',[route.width,bridge?.18:.035,len],[(a[0]+b[0])/2,bridge?.01:.02,(a[1]+b[1])/2],bridge?0x826849:0xaba990);paving.rotation.y=Math.atan2(dx,dz);}
+ const treeMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95});
+ for(const [i,[x,z]] of [[-47,122],[-45,146],[-9,146],[-7,120],[-20,150],[-40,111]].entries()){
+  const tree=new THREE.Mesh(broadleafGeometry({form:'spread',variant:i+1}),treeMaterial);tree.name='Garden shade tree';tree.position.set(x,0,z);tree.scale.setScalar(4);tree.castShadow=true;group.add(tree);
+  addCollider({id:'Garden shade tree trunk',x,z,w:.44,d:.44,height:2.5});
+ }
+ for(const route of GARDEN_PATHS.filter(r=>r.id==='garden-bridge'))for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz),bridge=route.id==='garden-bridge';const paving=box(bridge?'Wooden garden bridge':'Garden stepping path',[route.width,bridge?.18:.035,len],[(a[0]+b[0])/2,bridge?.01:.02,(a[1]+b[1])/2],bridge?0x826849:0xaba990);paving.rotation.y=Math.atan2(dx,dz);}
  // The wide stone torii, open at ground level; the curved lintel is a solid mesh.
  for(const x of [-31,-25]){box('Torii stone footing',[1.3,.35,1.4],[x,.18,113],0x747c70,true);cylinder('Torii stone pillar',.38,4.4,x,2.3,113,0x8c9185,true);}
  box('Torii lower beam',[8,.42,.55],[-28,3.55,113],0x82897e);const shape=new THREE.Shape();shape.moveTo(-4.8,0);shape.quadraticCurveTo(0,-.65,4.8,0);shape.lineTo(4.8,.5);shape.quadraticCurveTo(0,-.1,-4.8,.5);shape.closePath();const lintel=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:.65,bevelEnabled:false}),mat(0x717b70));lintel.position.set(-28,4.65,112.65);lintel.name='Curved weathered stone torii lintel';group.add(lintel);

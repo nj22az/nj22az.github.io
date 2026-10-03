@@ -42,3 +42,9 @@ test('dry-weather garden visits use the existing residents and respect rain rout
  const {residentPlan}=await import('../src/people/social.js');const {RESIDENTS}=await import('../src/people/residents.js');
  for(const [name,minute] of [['Reiko',690],['Tetsuo',780],['Thuan',905]]){const profile=RESIDENTS.find(p=>p.name===name),plan=residentPlan(profile,minute,false,{townMode:'peninsula'});assert.equal(plan.place,'park');assert.ok(plan.activity.includes('Aoba Garden'));assert.ok(plan.target[0]<0&&plan.target[1]>34);assert.notEqual(residentPlan(profile,minute,true,{townMode:'peninsula'}).place,'park');}
 });
+
+test('visible garden approaches match walking heights across the whole entrance, not only the path',()=>{
+ world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Continuous neighbourhood garden ground','Aoba lowland shared terrain','Peninsula land'].includes(o.name))surfaces.push(o);});
+ const ray=new THREE.Raycaster();for(const x of [-34,-29,-24,-19,-14,-9])for(const z of [29,30.5,32,33.5,35]){ray.set(new THREE.Vector3(x,1,z),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(surfaces,false)[0];assert.ok(hit,'drawn ground at '+[x,z]);assert.ok(Math.abs(hit.point.y-groundHeight(x,z))<.025,'visible height disagrees at '+[x,z]+': '+hit.point.y+' / '+groundHeight(x,z));}
+ const {position,normal}=world.group.getObjectByName('Continuous neighbourhood garden ground').geometry.attributes;for(let i=0;i<position.count;i++)assert.ok(normal.getY(i)>0,'upward terrain normal');
+});
