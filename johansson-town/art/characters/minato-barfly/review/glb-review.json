@@ -1,0 +1,23 @@
+{
+  "bytes": 710120,
+  "primitives": 15,
+  "primitiveBudgetPassed": true,
+  "vertices": 9166,
+  "weightedFingerCount": 28,
+  "missingFingerWeights": [],
+  "missingMorphs": [],
+  "animations": [
+    {
+      "name": "Barfly_Drink_Loop",
+      "channels": 158,
+      "duration": 6.041666507720947
+    },
+    {
+      "name": "Barfly_Sleep_Loop",
+      "channels": 158,
+      "duration": 6.041666507720947
+    }
+  ],
+  "passed": true,
+  "missingClips": []
+}
