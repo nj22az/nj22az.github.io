@@ -266,8 +266,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // The warehouse stands at the quay in every layout. It was switched off while the
   // peninsula was stripped back to its ground, and it is the first building back.
   const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
-  label("Warehouse ←",'WAREHOUSE · LEFT AT THE QUAY',[-7.3,2.7,-35],3.2,.72);
-  cyl(.045,2.3,[-7.3,1.15,-35],0x655444);obstacle(-7.3,-35,.12,.12);
+  // The warehouse already has a fascia; a roadside panel hid its entrance from the quay.
 
   function bollard(x,z){
     directCyl(.22,.48,[x,.35,z],0x2f3c3f,group,[0,0,0],true,12);directCyl(.31,.12,[x,.61,z],0x2f3c3f);obstacle(x,z,.48,.48);
@@ -288,9 +287,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // On the island the ferry terminal stands where the second stack was.
   if(!peninsulaActive()){crateStack(-7.3,-44,2,3);crateStack(7.2,-46.2,3,2);}
 
-  // Fishing-net drying rack.
-  for(const x of [-10.2,-7.9])cyl(.06,2.4,[x,1.3,-46.4],0x655747);beam([-10.2,2.45,-46.4],[-7.9,2.45,-46.4],.055,0x655747);
-  for(let x=-9.95;x<-8.1;x+=.22)beam([x,.5,-46.38],[x,2.32,-46.38],.012,0x65736f);obstacle(-9.05,-46.4,2.5,.5);
+  // Nets dry beside the north wall, clear of both the loading bay and pedestrian door.
+  for(const x of [-14.75,-12.45])cyl(.06,2.4,[x,1.3,-35.7],0x655747);beam([-14.75,2.45,-35.7],[-12.45,2.45,-35.7],.055,0x655747);
+  for(let x=-14.5;x<-12.65;x+=.22)beam([x,.5,-35.68],[x,2.32,-35.68],.012,0x65736f);obstacle(-13.6,-35.7,2.5,.5);
 
   // Period service kei-truck. On the island the ferry terminal stands here, and the town
   // has its own trucks (the town hall's, and the ones the car ferry brings).

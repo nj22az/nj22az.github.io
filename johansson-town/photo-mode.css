@@ -62,3 +62,5 @@
 #photoStudio .photo-swatch.on{box-shadow:0 0 0 3px #ffc93c}
 #photoStudio .photo-check{display:flex;align-items:center;gap:6px;min-height:36px}
 #photoStudio .photo-check input{width:auto}
+
+#photoStudio [data-edit-mode][aria-pressed="true"]{background:#f8d86a;border-color:#c8a13d}

@@ -46,6 +46,12 @@ try{
   assert.deepEqual(await page.evaluate(()=>{const o=window.maker.recipe.outfit;return [o.top,o.bottom,o.footwear,window.maker.recipe.accessories.earrings];}),['tank','underwear','barefoot','none']);
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('shoes');else await page.getByRole('tab',{name:'Shoes',exact:true}).click();
   await page.getByRole('button',{name:'Sandals',exact:true}).click();assert.equal(await page.evaluate(()=>window.maker.recipe.outfit.footwear),'sandals');
+  if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('top');else await page.getByRole('tab',{name:'Top',exact:true}).click();
+  const preset=page.getByRole('button',{name:'Harbour Sunday jacket',exact:true});await preset.click();
+  assert.deepEqual(await page.evaluate(()=>[maker.recipe.outfit.top,maker.recipe.outfit.bottom]),['jacket','trousers']);
+  await page.waitForTimeout(1800);assert.equal(await preset.locator('canvas').count(),1);
+  const painted=await preset.locator('canvas').evaluate(c=>{const p=c.getContext('2d').getImageData(0,0,c.width,c.height).data;return p.some((v,i)=>i%4===3&&v>0);});assert.ok(painted,'Outfit preview must contain rendered pixels');
+  await page.screenshot({path:'/tmp/island-wardrobe-creator-'+width+'x'+height+'.png'});
   // The figure stays in its frame, clear of the menus.
   const frame=await page.evaluate(()=>{const s=document.querySelector('.shm-stage').getBoundingClientRect(),c=document.querySelector('.shm-stage canvas').getBoundingClientRect(),p=document.querySelector('.shm-panel').getBoundingClientRect();return {inside:c.width<=s.width+1&&c.height<=s.height+1,clear:s.left>=p.right-1||s.top>=p.bottom-1};});
   assert.deepEqual(frame,{inside:true,clear:true});

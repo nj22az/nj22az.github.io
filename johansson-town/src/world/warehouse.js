@@ -14,13 +14,10 @@ export const WAREHOUSE_PLACE=Object.freeze({
 });
 export function warehouseColliders(){
  // Stable before and after streaming. Leave the main street, quay approach
- // and western service lane clear; match the loose source props separately.
+ // and western service lane clear. The old imported loose props are gone;
+ // their invisible colliders must not remain in front of the new kit shell.
  return [
   {x:-13.64,z:-42.44,w:6.14,d:11.03,height:5.9},
-  {x:-8.30,z:-42.4,w:1.24,d:1.05,height:2.3}, // ladder
-  {x:-9.28,z:-44.05,w:2.2,d:2.2,height:1.9}, // timber stack
-  {x:-9.9,z:-41,w:.82,d:1.14,height:.68}, // cylinders
-  ...[-45.04,-39.58].map(z=>({x:-8.82,z,w:.16,d:.16,height:2.3})),
  ].map(c=>({...c,warehouse:true}));
 }
 /**
@@ -75,6 +72,7 @@ export function buildWarehouse(world,options={}){
  footing.name='Warehouse concrete footing';footing.position.set(WAREHOUSE.x,-.175,WAREHOUSE.z);footing.receiveShadow=true;group.add(footing);
  group.add(buildWarehouseShell({shadows:options.shadows}));
  addStreetDoor(group);
+ options.label?.('入口','ENTRANCE',[-10.12,2.85,WAREHOUSE_PLACE.door[2]],1.05,.38,Math.PI/2);
  const marker=new THREE.Object3D();marker.name='warehouse-entrance';marker.position.set(-9.45,1.25,WAREHOUSE_PLACE.door[2]);group.add(marker);
  options.register?.(marker,'Enter Harbour Warehouse',()=>options.enter?.(WAREHOUSE_PLACE));
  // Built in code, so it is ready from the first frame; load() stays for the detail stream.
