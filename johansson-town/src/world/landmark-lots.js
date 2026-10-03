@@ -12,40 +12,7 @@ export const LANDMARK_LOTS=Object.freeze([
   x:-6.91,z:11.60,yaw:Math.PI/2,scale:{x:.84,y:.92,z:.533}},
 ].map(Object.freeze));
 
-export function lotContains(lot,x,z,y=1){
- return x>=lot.minX&&x<=lot.maxX&&z>=lot.minZ&&z<=lot.maxZ&&y>=lot.minY&&y<=lot.maxY;
-}
-
-export function colliderInLandmarkLot(c){
- if((c.height??0)<1.8)return false;
- return LANDMARK_LOTS.some(lot=>lotContains(lot,c.x,c.z,(c.minY??0)+(c.height??0)/2));
-}
-
 export function localToWorld(x,z,yaw,scale,lx,lz){
  const sx=scale.x??scale,sz=scale.z??scale,c=Math.cos(yaw),s=Math.sin(yaw);
  return [x+lx*sx*c+lz*sz*s,z-lx*sx*s+lz*sz*c];
-}
-
-export function hideLandmarkLots(scene){
- let removed=0;
- scene.traverse(mesh=>{
-  if(!mesh.isMesh||!mesh.geometry?.index)return;
-  const p=mesh.geometry.attributes.position,idx=mesh.geometry.index,kept=[];
-  for(let i=0;i<idx.count;i+=3){
-   const a=idx.getX(i),b=idx.getX(i+1),c=idx.getX(i+2);
-   const x=(p.getX(a)+p.getX(b)+p.getX(c))/3,y=(p.getY(a)+p.getY(b)+p.getY(c))/3,z=(p.getZ(a)+p.getZ(b)+p.getZ(c))/3;
-   if(LANDMARK_LOTS.some(lot=>lotContains(lot,x,z,y))){removed++;continue;}
-   kept.push(a,b,c);
-  }
-  if(kept.length<idx.count)mesh.geometry.setIndex(kept);
- });
- return removed;
-}
-
-export function landmarkLotColliders(offsetX=0){
- return [
-  {x:7.02+offsetX,z:5.0,w:5.4,d:4.5,height:3.4},
-  {x:-10.08+offsetX,z:6.15,w:5.15,d:4.25,height:3.1},
-  {x:-7.12+offsetX,z:11.65,w:3.75,d:4.7,height:6.3},
- ];
 }

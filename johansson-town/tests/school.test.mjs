@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {buildSchool} from '../src/world/school.js';
 import {installDOM} from './fixtures.mjs';

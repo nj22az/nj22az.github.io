@@ -2,7 +2,6 @@
 // so they remain sharp on Retina displays and cannot fail because an external asset host is unavailable.
 import {svg,iconUrl,actionFor} from './src/ui/icons.js';
 const coarse=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
-const canvas=document.querySelector('#game');
 const stick=document.querySelector('#stick');
 const knob=document.querySelector('#knob');
 const act=document.querySelector('#act');

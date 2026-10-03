@@ -9,7 +9,7 @@ import {VOICE_LINES} from './voice-lines.js';
 import {createNavigation} from './navmesh.js?snappy=1';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
-import {RESIDENTS,THUAN_PROFILE,residentHomeDescription} from './residents.js';
+import {RESIDENTS,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {transitStop,awayPlace} from '../world/transit.js';
 import {ferryWords} from './social.js';

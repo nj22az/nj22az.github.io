@@ -38,7 +38,6 @@ const CSS=`
 `;
 
 function texture(canvas,renderer){const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t;}
-const px=(metres)=>Math.max(256,Math.min(1024,Math.round(metres*4096/64)*64));
 
 /** The pack as a mesh, from its shape in PACKS and its faces from packaging-art.js. */
 export function buildPack(id,renderer){

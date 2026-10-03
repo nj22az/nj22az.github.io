@@ -1,4 +1,3 @@
-import {DINING} from './dining-layout.js';
 import {buildIslandHomes} from './island-homes.js';
 import {buildLaneSurfaces} from './lane-surfaces.js?snappy=1';
 import {buildHomes} from './homes.js';
@@ -7,7 +6,7 @@ import {buildKoban} from './koban.js';
 import {buildRamenRestaurant} from './supplied-rooms.js?snappy=1';
 import {buildTeaHouse} from './tea-house.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
-import {ROUTES,groundHeight,nearestOnSegment} from './layout.js?snappy=1';
+import {ROUTES} from './layout.js?snappy=1';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 

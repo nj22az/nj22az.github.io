@@ -8,7 +8,6 @@ import {createTownActivities,townAffordance} from '../src/people/town-activities
 import {createCastAI} from '../src/people/schedules.js';
 import {createIzakayaGuests} from '../src/people/izakaya-guests.js';
 import {createWorkplaceResidents} from '../src/people/workplace-residents.js';
-import {STORE_SEATS,STORE_CLERK_POSITION} from '../src/world/interiors/store-layout.js';
 
 function person(name,parent=new THREE.Group(),work){
  const source=RESIDENTS.find(p=>p.name===name),profile=work?{...source,work}:source,g=new THREE.Group();g.userData={name,hit:{inside:false},visualReady:true};g.position.set(profile.work[0],0,profile.work[1]);parent.add(g);return {g,profile};

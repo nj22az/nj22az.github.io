@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {readFile,mkdir} from 'node:fs/promises';
+import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 const require=createRequire(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/package.json'),{chromium}=require('playwright');
 const browser=await chromium.launch({executablePath:process.env.PHOTO_CHROME||'/root/.cache/ms-playwright/chromium_headless_shell-1161/chrome-linux/headless_shell',args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});

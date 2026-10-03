@@ -9,7 +9,7 @@ import {DINING,NIGHT_LANE,DINING_COLLIDERS} from '../src/world/dining-layout.js'
 import {RESIDENTS} from '../src/people/residents.js';
 import {RAMEN_DOOR,IZAKAYA_DOOR,residentPlan} from '../src/people/social.js';
 import {createNavigation} from '../src/people/navmesh.js?snappy=1';
-import {routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
+import {groundHeight} from '../src/world/layout.js?snappy=1';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js?snappy=1';
 import {lanePatches} from '../src/world/lane-surfaces.js?snappy=1';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from '../src/world/main-road.js';

@@ -17,7 +17,6 @@ import {getPosterMaterial,POSTER_SPECS} from './store-advertising.js';
  *    and persimmons in autumn, stars and snowflakes in December, and New Year in January.
  */
 const GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
-const MARU='"Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
 const SERIF='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 function canvasTexture(width,height,draw){
  const c=document.createElement('canvas');c.width=width;c.height=height;draw(c.getContext('2d'),width,height);

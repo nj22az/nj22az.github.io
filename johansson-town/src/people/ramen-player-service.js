@@ -6,14 +6,6 @@ export const RAMEN_MENU=Object.freeze([{id:'ramen',name:'Shoyu ramen',cost:300},
 const DRINK_PROPS={tea:'oolong',beer:'bottle',mugicha:'mugicha',coffee:'coffee'};
 /** How many mouthfuls a thing lasts you. */
 const MOUTHFULS={ramen:6,gyoza:6,rice:4,bun:3,tea:4,mugicha:4,coffee:4,beer:6};
-export const isRamenDrink=item=>!!DRINK_PROPS[item?.prop||item?.id];
-/**
- * Order at a ramen counter seat: the cook takes it, cooks it and sets it down in front of
- * you; then you eat it, or drink it, a mouthful at a time. The old street's Inakaya uses
- * the defaults; Sato Ramen passes its own menu, lunch hours, cook and kitchen -- with a
- * kitchen (people/ramen-kitchen.js) Mrs Sato cooks it and carries it over herself.
- * `onMouthful(item,{drink,kind,start,finish})` is how the game shows each one.
- */
 export function createRamenPlayerService({room,getSeat,getMinutes,getBalance,pay,say,menu=RAMEN_MENU,isOpen=null,title='Sato Ramen',server='The cook',closedLine='The ramen kitchen is closed. Please return after 09:00.',kitchen=null,onMouthful=()=>{},canOrder=()=>true}){
  let order=null,elapsed=0;const props=new Map();
  const open=()=>isOpen?isOpen(getMinutes()):getMinutes()%1440>=540&&getMinutes()%1440<1260;

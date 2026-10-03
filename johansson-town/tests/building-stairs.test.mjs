@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {createKit} from '../src/world/okinawa/kit.js';
-import {stairFlight,stairLanding} from '../src/world/okinawa/stairs.js';
+import {stairFlight} from '../src/world/okinawa/stairs.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
 import {standingHitsRect,canStepBetween} from '../physics.js';
 for(const axis of ['x','z'])for(const direction of [-1,1])test(`stair traversal ${axis}/${direction} in a rotated building`,()=>{

@@ -36,7 +36,6 @@ export const BACKROOM=Object.freeze({
  extinguisher:Object.freeze({x:4.66,z:-6.58,r:.15}),
 });
 
-const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
 const canvasTex=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;};
 const say=(ctx,s,x,y,size,colour,align='center',weight='bold')=>boardText(ctx,s,x,y,size,colour,align==='left'?ctx.canvas.width-x-12:align==='right'?x-12:Math.min(x,ctx.canvas.width-x)*2-16,align,weight);
 const std=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.75,...extra});

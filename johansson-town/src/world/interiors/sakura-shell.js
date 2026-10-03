@@ -1,6 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
-import {SAKURA_LAYOUT,AISLE_LEVELS,SAKURA_SHELVES,CHILLER,BUN_STEAMER,FRONT_ENDCAPS,COPY_MACHINE} from './sakura-layout.js';
+import {SAKURA_LAYOUT,AISLE_LEVELS,CHILLER,BUN_STEAMER,FRONT_ENDCAPS,COPY_MACHINE} from './sakura-layout.js';
 import {MEDICINE_SHELF} from './sakura-dressing.js';
 import {BACKROOM} from './sakura-backroom.js';
 import {RESTROOM} from './sakura-restroom.js';

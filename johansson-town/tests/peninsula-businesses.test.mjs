@@ -18,7 +18,6 @@ import {buildBusinessContent,BUSINESS_CONTENT_CATALOGUE} from '../src/world/inte
 import {buildWarehouseInterior} from '../src/world/interiors/warehouse.js';
 import {preloadSuppliedRooms,buildSuppliedRoom,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
 import {TOWN_DESTINATIONS} from '../src/world/town-grid.js';
-import {BOOKSHOP_WORKSHOP_ROOM} from '../src/world/bookshop-workshop-layout.js';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
 import {ITEMS} from '../content-data.js';
 import {createActivities} from '../activities.js';

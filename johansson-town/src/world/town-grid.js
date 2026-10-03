@@ -3,10 +3,7 @@ import {peninsulaActive} from './town-mode.js';
 import {ALLEY_BOOKS,ALLEY_WORKSHOP} from './business-layout.js';
 import {westShopDoor} from './west-shops.js';
 import {consolidateBusinesses} from './businesses.js';
-import {BUS_STATION} from './bus-station.js';
 import {transitStop} from './transit.js';
-import {PARK} from './park-layout.js';
-export const TOWN_GRID=Object.freeze({north:BUS_STATION.maxZ,south:-38,quay:-44,west:-16,east:PARK.x+PARK.half});
 export const SHOP_ADDRESSES=Object.freeze({
  market:{side:-1,z:-28.5},
 });

@@ -10,22 +10,6 @@ import {rng} from './kit.js';
  * harbour street is cluttered with.
  */
 
-/**
- * A Japanese concrete distribution pole, as they stood on every island street in 1997.
- *
- * From the top: a cap; the 6.6 kV crossarm with three pin insulators; below it the
- * fuse cutouts and one or two transformer cans on a bracket (when `transformer`); the
- * 100/200 V low-voltage line on three spool insulators racked up the pole's side; the
- * black telephone cable lower still, with its grey closure box; galvanised step bolts
- * from 2.4 m up, alternating sides; the numbered plate; and the yellow-and-black guard
- * at the foot. `guy` adds the stay wire and its yellow sleeve, for the last pole in a
- * line. `face` turns the pole about y. The returned anchors are, in order, the three
- * high-voltage conductors, the telephone cable and the three low-voltage conductors, so
- * wiresBetween() pairs like with like and serviceDrop() takes the low-voltage line.
- */
-export const POLE_ANCHORS=7;
-// Every part is matte: a pole's steel is galvanised grey, and a metal finish would put
-// each pole's small parts in buckets of their own and cost the quarter draw calls.
 export function utilityPole(kit,x,z,{h=9.8,face=0,transformer=true,lamp=false,guy=false,seed=1}={}){
  h=Math.max(9.8,h);
  const r=rng(seed),anchors=[];

@@ -18,11 +18,5 @@ export function configureTownMode(mode=TOWN_MODES.LEGACY){
  activeMode=Object.values(TOWN_MODES).includes(mode)?mode:TOWN_MODES.LEGACY;
  return activeMode;
 }
-export const currentTownMode=()=>activeMode;
-/**
- * True for every layout that is not the archived residential one. The homes, the west
- * service lane and the other legacy fixtures hang off this, and the peninsula wants
- * them off for the same reasons the shopping district does.
- */
 export const shoppingDistrictActive=()=>activeMode!==TOWN_MODES.LEGACY;
 export const peninsulaActive=()=>activeMode===TOWN_MODES.PENINSULA;

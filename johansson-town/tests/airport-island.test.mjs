@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {buildAirportIsland,AIRPORT_ISLAND,AIRPORT_DEPARTURES} from '../src/world/airport-island.js';
 import {onPeninsulaLand} from '../src/world/coastal-ground.js';
-import {COASTLINE} from '../src/world/peninsula.js';
 
 test('the airport island is on the horizon, inside the far plane, and not on the town',()=>{
  const parent=new THREE.Group(),island=buildAirportIsland({parent});

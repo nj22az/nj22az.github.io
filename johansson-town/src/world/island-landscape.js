@@ -1,10 +1,10 @@
 import {buildAobaRadio} from './aoba-radio.js';
 import {terrainPathPolygons} from './terrain-path.js';
-import {inGarden,inGardenGround} from './garden-layout.js';
+import {inGardenGround} from './garden-layout.js';
 import {buildShoppingLane} from './shopping-lane.js';
 import {buildAirportDistrict} from './airport-district.js';
 import * as THREE from '../../vendor/three.module.js';
-import {ISLAND,TERRAIN_GRID,MOUNTAIN_VERTICES,islandTerrainHeight,ISLAND_ROUTES,ISLAND_LANDMARKS,COAST_ROAD} from './island-plan.js';
+import {TERRAIN_GRID,MOUNTAIN_VERTICES,islandTerrainHeight,ISLAND_ROUTES,ISLAND_LANDMARKS,COAST_ROAD} from './island-plan.js';
 import {GROUND} from '../render/ground-palette.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
 import {onPeninsulaLand,coastalSurface} from './coastal-ground.js';

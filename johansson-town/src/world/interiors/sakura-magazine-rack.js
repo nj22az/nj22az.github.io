@@ -99,7 +99,7 @@ export function buildMagazineRack(room,{anchor,action,date=new Date(1997,8,13)}=
  for(const sx of [-.7,.7])add(tube(.12),enamel,sx,1.43+.06,-D/2+.04);
  // The stock. Each title is one instanced draw over the shared atlas.
  const canvas=document.createElement('canvas');canvas.width=COLS*CW;canvas.height=ROWS*CH;
- let issueKey=paintAtlas(canvas,date);
+ let lastDay=null;let issueKey=paintAtlas(canvas,date);
  const atlas=new THREE.CanvasTexture(canvas);atlas.colorSpace=THREE.SRGBColorSpace;atlas.anisotropy=8;
  const material=new THREE.MeshStandardMaterial({map:atlas,roughness:.5});
  const placed=RACK_TITLES.map(()=>[]),dummy=new THREE.Object3D();
@@ -127,6 +127,7 @@ export function buildMagazineRack(room,{anchor,action,date=new Date(1997,8,13)}=
  if(anchor&&action)anchor([R.x,1.35,R.z-.5],'Read the magazines',()=>action('magazine-rack'));
  return {group,
   /** Puts the issues on sale on `date` on the rack; a no-op until one changes. */
-  refresh(date){const {key}=rackIssues(date);if(key===issueKey)return false;issueKey=paintAtlas(canvas,date);atlas.needsUpdate=true;return true;},
+  // Called every frame; covers only change with the date, so only a new day is looked at.
+  refresh(date){const day=date.getFullYear()*400+date.getMonth()*32+date.getDate();if(day===lastDay)return false;lastDay=day;const {key}=rackIssues(date);if(key===issueKey)return false;issueKey=paintAtlas(canvas,date);atlas.needsUpdate=true;return true;},
   get issueKey(){return issueKey;}};
 }

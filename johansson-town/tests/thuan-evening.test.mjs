@@ -10,7 +10,6 @@ import {PARK_BENCH} from '../src/world/park-layout.js';
 import {EAST_LAWN} from '../src/world/east-lawn.js';
 import {COMMUTER_SHIFTS} from '../src/people/commuter-schedule.js';
 import {RESIDENTS} from '../src/people/residents.js';
-import {FERRY_TERMINAL} from '../src/world/ferry.js';
 import {MARKET_THRESHOLD} from '../src/world/town-grid.js';
 
 const THUAN=RESIDENTS.find(p=>p.name==='Thuan');

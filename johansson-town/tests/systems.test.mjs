@@ -7,7 +7,6 @@ import {fileURLToPath} from 'node:url';
 import * as THREE from '../vendor/three.module.js';
 import {createTown} from '../src/world/town.js?snappy=1';
 import {createActivities} from '../activities.js?snappy=1';
-import {createCharacters} from '../src/people/characters.js?snappy=1';
 import {createCastAI,DIALOGUE} from '../src/people/schedules.js?snappy=1';
 import {ROUTES,activeRoutes,routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
 import {TOWN_DESTINATIONS} from '../src/world/town-grid.js';

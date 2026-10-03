@@ -102,15 +102,6 @@ export function nishiAt(x,z,r=0){
  return x>=NISHI.minX+r&&x<=NISHI.maxX-r&&z>=NISHI.minZ+r&&z<=NISHI.maxZ-r;
 }
 
-/** Where the yard wall is broken for each lane, as [minZ,maxZ] openings. */
-export function yardWallGaps(){
- return NISHI.lanes.map(l=>[l.z-l.half,l.z+l.half]);
-}
-
-/**
- * What the map draws for these streets: walks and lanes as paving, plots as yards, and
- * the buildings on them as blocks. Rectangles, [minX,maxX,minZ,maxZ].
- */
 export function mapPlan(){
  const walks=[[NISHI.promenade.minX,NISHI.promenade.maxX,NISHI.minZ,NISHI.maxZ],[NISHI.quay.minX,NISHI.quay.maxX,NISHI.quay.minZ,NISHI.quay.maxZ],
   ...NISHI.lanes.map(l=>[NISHI.promenade.maxX,WEST_YARD.minX,l.z-l.half,l.z+l.half]),

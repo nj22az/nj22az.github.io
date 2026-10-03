@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFile,access} from 'node:fs/promises';
+import {readFile} from 'node:fs/promises';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 

@@ -38,7 +38,7 @@ import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {FULL_TOWN} from './full-town-state.js';
 import {buildSakuraBench} from './sakura-bench.js';
-import {applyShopAddresses,TOWN_DESTINATIONS} from './town-grid.js';
+import {applyShopAddresses} from './town-grid.js';
 import {configureTownMode,peninsulaActive} from './town-mode.js';
 import {izakayaPlot} from './dining-layout.js';
 import {buildBeachLife} from './beach-life.js';
