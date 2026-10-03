@@ -1,4 +1,5 @@
 import {test} from 'node:test';
+import {kitanoRoadAt} from '../src/world/kitano-link-plan.js';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {readFile} from 'node:fs/promises';
@@ -28,13 +29,14 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
   // vertical face, and excluding its square from the lawn left a dead band one body
   // wide at its foot: you walked into an invisible wall on open grass.
   // The gateball terrace ends in a retaining wall on its seaward side.
-  else if(!nearTerraceWall(x,z)&&!nearTerraceWall(x+.4,z)&&routeAt(x,z,.4).id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
+  // Kitano Road's embankment has retaining walls of its own; the lawn meets them, not the road.
+  else if(!nearTerraceWall(x,z)&&!nearTerraceWall(x+.4,z)&&!kitanoRoadAt(x,z,-.5)&&!kitanoRoadAt(x+.4,z,-.5)&&routeAt(x,z,.4).id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
    &&Math.abs(groundHeight(x+.4,z)-groundHeight(x,z))>.2)
    steps.push(x.toFixed(1)+','+z.toFixed(1)+' '+(groundHeight(x+.4,z)-groundHeight(x,z)).toFixed(2));
  }
  assert.deepEqual(off.slice(0,6),[],'Ground east of the road you still cannot stand on');
  assert.deepEqual(steps.slice(0,6),[],'The east side steps rather than slopes');
- assert.equal(routeAt(28,4).surface,'grass');
+ assert.equal(routeAt(28,12).surface,'grass');
  // And the kerb itself. The pavement gives up a body's radius short of its east edge
  // and the lawn only began a radius past it, so the two together left a band 0.7m wide
  // that both would have covered and neither would accept: twenty metres of invisible
@@ -48,7 +50,7 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
  assert.equal(routeAt(PARK.x,PARK.z).id,PARK.id);
  assert.ok(groundHeight(PARK.x,PARK.z)>1,'The park keeps its mound');
  // and the lawn stops where the town does.
- assert.equal(routeAt(EAST_LAWN.maxX+1.5,0)?.surface,'sand','The beach beyond the seawall is walkable');
+ assert.equal(routeAt(EAST_LAWN.maxX+1.5,10)?.surface,'sand','The beach beyond the seawall is walkable');
  configureTownMode(TOWN_MODES.LEGACY);
  assert.ok(!routeAt(28,4),'Only the peninsula has an east side to stand on');
  configureTownMode(TOWN_MODES.PENINSULA);
@@ -59,7 +61,7 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  const parent=new THREE.Group(),colliders=[];
  const {shore}=buildEastLawn({parent,colliders});
  const wall=colliders.filter(c=>c.id==='east-seawall');
- assert.equal(wall.length,4,'The wall retains its south return and two beach openings');
+ assert.equal(wall.length,5,'The wall retains its south return, two beach openings and the opening for Kitano Road');
  for(const z of [-30,-15,10,19])assert.ok(wall.some(c=>circleHitsRect(EAST_LAWN.wall.x,z,.36,c)),'You can walk through the seawall at z='+z);
  // The north end is closed by something you can see rather than by ground that simply
  // stops, so the treeline is solid and stands where the trees are drawn.

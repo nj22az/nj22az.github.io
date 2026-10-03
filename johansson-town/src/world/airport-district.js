@@ -32,5 +32,5 @@ export function buildAirportDistrict({world,register,onAction}){
  box('Construction crane mast',[1,24,1],[164,13.1,111],0xcc9b45);box('Construction crane arm',[42,.65,.65],[149,25,111],0xcc9b45);
  sign('AIRPORT HOTEL · FUTURE PHASE',48,108,24,3.5,0x91613b);
  anchor(48,111,'Read the airport district masterplan','read','Kitano-jima airport district','An island airport with a ferry plaza, two open terminal concourses, eight local shops, gate wings and a reserved third terminal. Future phases include an airport hotel, more passenger routes and cargo handling. The 1997 island commuter service continues while the larger airport is being built.');
- for(const [x,z] of [[-43,98],[-22,114],[26,96],[82,110],[158,31],[166,69]]){box('Airport garden planter',[4,.6,4],[x,1.4,z],0xb5ae94,true);const tree=new THREE.Mesh(new THREE.IcosahedronGeometry(3,1),material(0x49754a));tree.position.set(x,5.1,z);root.add(tree);}
+ for(const [x,z] of [[-43,98],[-10,121],[26,96],[82,110],[158,31],[166,69]]){box('Airport garden planter',[4,.6,4],[x,1.4,z],0xb5ae94,true);const tree=new THREE.Mesh(new THREE.IcosahedronGeometry(3,1),material(0x49754a));tree.position.set(x,5.1,z);root.add(tree);}
 }

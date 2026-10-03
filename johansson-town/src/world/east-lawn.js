@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {KITANO_SEAWALL_GAP} from './kitano-link-plan.js';
 import {applyTerrainNormals} from './terrain-surface.js';
 import {GROUND} from '../render/ground-palette.js';
 import {MAIN_ROAD} from './main-road.js';
@@ -144,7 +145,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  };
  // Real openings in the mesh and collision wall lead down to the sand.
  let wallFrom=EAST_LAWN.minZ-wall.depth/2;
- for(const access of [...BEACH.accesses,{z:EAST_LAWN.maxZ+wall.depth/2,half:0}]){
+ for(const access of [...BEACH.accesses,KITANO_SEAWALL_GAP,{z:EAST_LAWN.maxZ+wall.depth/2,half:0}].sort((a,b)=>a.z-b.z)){
   const wallTo=access.z-access.half;
   if(wallTo>wallFrom)parapet(wall.depth,wallTo-wallFrom,wall.x,(wallFrom+wallTo)/2);
   wallFrom=access.z+access.half;

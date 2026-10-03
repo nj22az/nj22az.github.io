@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {kitanoRoadAt} from './kitano-link-plan.js';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 
 /**
@@ -24,7 +25,8 @@ export const CHAIN_RUNS=Object.freeze([
 /** Planters at the corners of the crossings, on the east footway. */
 export const PLANTERS=Object.freeze([
  // Near the kerb, so the walking line along the shopfronts (the postman's round) stays clear.
- [MAIN_ROAD.east+1.25,SHOP_CROSSING_Z+2.55],[MAIN_ROAD.east+1.25,SHOP_CROSSING_Z-2.55],
+ // The south one stands clear of Kitano Road's mouth, which opens opposite the crossing.
+ [MAIN_ROAD.east+1.25,SHOP_CROSSING_Z+2.55],[MAIN_ROAD.east+1.25,-1.7],
 ]);
 
 const POST_SPACING=2.4;
@@ -57,7 +59,7 @@ export function buildStreetFurniture({parent,colliders=[],heightAt=()=>0,shadows
  const postGeo=new THREE.CylinderGeometry(.13,.14,.86,14),capGeo=new THREE.SphereGeometry(.13,14,8,0,Math.PI*2,0,Math.PI/2),eyeGeo=new THREE.TorusGeometry(.055,.02,6,12);
  const linkGeo=new THREE.TorusGeometry(.055,.017,5,10);linkGeo.scale(1.45,1,1);
  const posts=[],links=[];
- const existing=colliders.slice(),occupied=(x,z,r=.35)=>existing.some(c=>Math.abs(c.x-x)<(c.w||0)/2+r&&Math.abs(c.z-z)<(c.d||0)/2+r&&!/seawall/.test(c.id||''));
+ const existing=colliders.slice(),occupied=(x,z,r=.35)=>existing.some(c=>Math.abs(c.x-x)<(c.w||0)/2+r&&Math.abs(c.z-z)<(c.d||0)/2+r&&!/seawall/.test(c.id||''))||!!kitanoRoadAt(x,z,-r);
  for(const [x0,z0,x1,z1] of CHAIN_RUNS){
   const len=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.round(len/POST_SPACING)),dir=new THREE.Vector3(x1-x0,0,z1-z0).normalize();
   // A post that would land on something already there (a garden wall, a tree) is left

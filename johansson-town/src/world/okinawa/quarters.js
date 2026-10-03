@@ -297,7 +297,9 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
  const depth=EAST_ROW.maxX-EAST_ROW.minX,x=(EAST_ROW.minX+EAST_ROW.maxX)/2;
  for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction});
  // The strip of ground between the pavement and the shop fronts, paved to match.
- kit.block(MAIN_ROAD.pavementEast-.05,EAST_ROW.minX+.05,GROUND_LAYER.apron-.05,GROUND_LAYER.apron,EAST_ROW.plots[0].minZ,EAST_ROW.plots[3].maxZ,0xb9b0a0);
+ // Kitano Road crosses it where the old lane was, and lays its own surface there.
+ for(const [z0,z1] of [[EAST_ROW.plots[0].minZ,EAST_ROW.onsenLane.minZ],[EAST_ROW.onsenLane.maxZ,EAST_ROW.plots[3].maxZ]])
+  kit.block(MAIN_ROAD.pavementEast-.05,EAST_ROW.minX+.05,GROUND_LAYER.apron-.05,GROUND_LAYER.apron,z0,z1,0xb9b0a0);
  // The shaved-ice flag outside Nakamura's, and a bench for eating it on.
  const n=EAST_ROW.plots[0];
  kit.cyl(.03,.03,2.6,EAST_ROW.minX-.35,1.3,n.maxZ-.4,0x9aa0a4,{segments:6});
@@ -306,23 +308,8 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
  kit.box(1.4,.08,.4,EAST_ROW.minX-.45,.45,n.minZ+1.4,0x3a6e8f);
  for(const dz of [-.55,.55])kit.box(.06,.42,.36,EAST_ROW.minX-.45,.21,n.minZ+1.4+dz,0x5d6468);
  solid({id:'zenzai-bench',x:EAST_ROW.minX-.45,z:n.minZ+1.4,w:.5,d:1.5,height:.5});
- // The lane up to Umi-no-yu: stepping stones, lanterns and the bath's own sign.
- const L=EAST_ROW.onsenLane,lz=(L.minZ+L.maxZ)/2;
- kit.block(MAIN_ROAD.pavementEast,18.9,GROUND_LAYER.lane-.05,GROUND_LAYER.lane+.012,lz-1.1,lz+1.1,0xcbc3b0);
- for(let x=MAIN_ROAD.pavementEast+.6;x<18.5;x+=.9)kit.box(.6,.03,.8,x,GROUND_LAYER.lane+.027,lz+Math.sin(x*1.3)*.2,0xa9a293);
- for(const s of [-1,1]){
-  const z=lz+s*2.3;
-  kit.box(.28,.9,.28,EAST_ROW.minX+.2,.45,z,0xcfc8b4,{finish:'coral'});
-  kit.box(.4,.35,.4,EAST_ROW.minX+.2,1.08,z,0xf3ead2,{finish:'lamp'});
-  kit.box(.5,.08,.5,EAST_ROW.minX+.2,1.3,z,0x5d4431);
-  solid({id:'lane-lantern',x:EAST_ROW.minX+.2,z,w:.45,d:.45,height:1.3});
- }
- kit.sign(poster({title:"♨ Sea Bath",lines:['UMI-NO-YU','¥300 · 10:00–22:00',"Beyond this →"],band:'#2f6f8a'}),.7,.98,EAST_ROW.minX+.2,1.7,L.minZ+.12,{ry:0,name:'onsen lane sign'});
- potPlant(kit,EAST_ROW.minX+.3,L.maxZ-.5,{seed:31});potPlant(kit,EAST_ROW.minX+.3,L.minZ+.5,{seed:32});
- // A vending machine against the post office's end wall, facing the lane, and bicycles parked by it.
- vending(EAST_ROW.minX+1.3,L.minZ+.62,0);
- bicycle(kit,EAST_ROW.minX+3,L.minZ+.55,{ry:0});
- solid({id:'bicycle',x:EAST_ROW.minX+3,z:L.minZ+.55,w:1.4,d:.4,height:1.1});
+ // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
+ // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
  bicycle(kit,EAST_ROW.minX-.5,EAST_ROW.plots[2].minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
  solid({id:'bicycle',x:EAST_ROW.minX-.5,z:EAST_ROW.plots[2].minZ+1.6,w:.4,d:1.4,height:1.1});
  // Behind the row: the back yards, with washing and a kei truck.

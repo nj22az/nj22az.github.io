@@ -16,7 +16,8 @@ import {SEA_LEVEL} from './ocean.js';
  */
 export const BREAKWATERS=Object.freeze({
  west:Object.freeze({x0:-40.35,x1:-41.6,minZ:-38,maxZ:29}),
- offshore:Object.freeze([Object.freeze({x:54.5,minZ:-24,maxZ:-8}),Object.freeze({x:54.5,minZ:2,maxZ:18})]),
+ // The gap between them is where Kitano Bridge crosses (kitano-link-plan.js), with room either side.
+ offshore:Object.freeze([Object.freeze({x:54.5,minZ:-26,maxZ:-10.5}),Object.freeze({x:54.5,minZ:3.5,maxZ:19})]),
 });
 
 /** One tetrapod, about 1.9 m across: a core and four tapered legs along a tetrahedron. */

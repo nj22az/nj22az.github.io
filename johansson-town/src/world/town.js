@@ -3,7 +3,8 @@ import {addSakuraFlyer} from './sakura-flyers.js';
 import {buildIslandLandscape} from './island-landscape.js';
 import {buildTraditionalGarden} from './traditional-garden.js';
 import {buildDiningStreet} from './dining-street.js';
-import {createFerryVehicles} from './ferry-vehicles.js';
+import {createTownTraffic} from './town-traffic.js';
+import {buildKitanoLink} from './kitano-link.js';
 import {buildOilJetty} from './oil-jetty.js';
 import {GROUND} from '../render/ground-palette.js';
 import {buildBicycle,BOOKSHOP_BICYCLE} from './bicycle.js';
@@ -239,7 +240,10 @@ export function createTown(options){
    world.westYard=buildWestYard({parent:world.group,colliders:world.colliders,shadows:options.shadows});
    // Nobody drives onto an island: the ferry calls at the outer pier. See ferry.js.
    world.ferry=createFerryRun({parent:world.group,colliders:world.colliders,shadows:options.shadows});
-   world.ferryVehicles=createFerryVehicles({parent:world.group,run:world.ferry,getPlayerPosition:options.getPlayerPosition});
+   // Kitano Road and Kitano Bridge to the airport island, and the traffic on them: the car
+   // ferry's vehicles and the island's own cars. See kitano-link.js and town-traffic.js.
+   world.kitanoLink=buildKitanoLink({parent:world.group,colliders:world.colliders,shadows:options.shadows});
+   world.traffic=createTownTraffic({parent:world.group,colliders:world.colliders,ferry:world.ferry,getPlayerPosition:options.getPlayerPosition,people:()=>world.people||[]});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,anisotropy:options.maxAnisotropy||4,
     heightAt:groundHeight,paved:pavedAt(),register:options.register,onAction:options.onAction});
    // Crabs on the wet sand below the wall and fish leaping offshore. See beach-life.js.
@@ -341,7 +345,7 @@ export function createTown(options){
     world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
-    world.ferry?.update(dt,minutes,time);world.ferryVehicles?.update(dt,minutes);world.bus?.update(dt,minutes);
+    world.ferry?.update(dt,minutes,time);world.traffic?.update(dt,minutes);world.bus?.update(dt,minutes);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
     if(world.shopDoors?.length){
