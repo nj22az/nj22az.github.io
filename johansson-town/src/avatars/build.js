@@ -6,7 +6,7 @@ import {normalizeRecipe} from './recipe.js';
 import {drawFace,faceLayout} from './face.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {celFrom} from '../render/cel.js';
-import {GARMENT,PLAIN_UV,torsoUV,paintGarment} from './garment.js';
+import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG} from './garment.js';
 
 /**
  * Builds a Shimanchu from a recipe.
@@ -126,7 +126,7 @@ function tube(list,a,b,r,bone,hex,segments=10){
  * from one bone to the next over a soft band -- and `root` lends the top of the limb to
  * the body, so a shoulder or hip rounds off instead of hinging on a seam.
  */
-function limb(list,a,b,r0,r1,hex,{bone,joints=[],root=null,soft=.13,segments=14}={}){
+function limb(list,a,b,r0,r1,hex,{bone,joints=[],root=null,soft=.13,segments=14,uvAt=null}={}){
  const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A),len=d.length(),dir=d.clone().normalize();
  // A capsule with rings all along it (three's own has none between its caps), so the
  // skin has somewhere to bend.
@@ -151,7 +151,7 @@ function limb(list,a,b,r0,r1,hex,{bone,joints=[],root=null,soft=.13,segments=14}
   if(root){const w=root[1]*(1-THREE.MathUtils.smoothstep(t,-.04,root[2]??.2));out=out.map(([n,x])=>[n,x*(1-w)]);out.push([root[0],w]);}
   return out;
  };
- part(list,g,share,hex,new THREE.Matrix4().compose(A.clone().add(B).multiplyScalar(.5),q,new THREE.Vector3(1,1,1)));
+ part(list,g,share,hex,new THREE.Matrix4().compose(A.clone().add(B).multiplyScalar(.5),q,new THREE.Vector3(1,1,1)),uvAt);
 }
 const ball=(list,r,at,bone,hex,s=[1,1,1],w=12,h=8)=>part(list,new THREE.SphereGeometry(r,w,h),bone,hex,M(at[0],at[1],at[2],0,0,0,...s));
 
@@ -512,21 +512,27 @@ function addBody(list,recipe,m,swim=false){
 
  // Arms: one soft piece from shoulder to wrist, bending at the elbow; a sleeve over the
  // top that rounds into the shoulder; a round hand.
- const longSleeve=!swim&&['jacket','smock','sailorlong','police','hoodie','cardigan','festival','lighthouse','lantern','reef'].includes(o.top);
+ const longSleeve=!swim&&SLEEVED_LONG.includes(o.top);
  const armT=m.upper/(m.upper+m.fore);
  for(const s of ['L','R']){
   const sx=s==='L'?1:-1,sh=[sx*m.shoulderX,m.shoulderY,0],hd=[sx*(m.shoulderX+.015),m.shoulderY-m.upper-m.fore,0];
   const arm={bone:'shoulder'+s,joints:[[armT,'shoulder'+s,'elbow'+s]]};
-  limb(list,sh,hd,m.armR*1.04,m.armR*.86,swim||!longSleeve?skin:top,arm);
+  // A long sleeve is the arm itself, in the shirt, with the print and the cuff painted on.
+  limb(list,sh,hd,m.armR*1.04,m.armR*.86,swim||!longSleeve?skin:top,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
   // The shoulder: a rounded cap over the joint, in the shirt, that joins the arm to the
   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
   // it stretches over a raised arm rather than coming apart from the body.
   const capShare=p=>{const w=THREE.MathUtils.smoothstep(Math.abs(p.x),m.shoulderX-m.armR*1.1,m.shoulderX+m.armR*.3);return [['chest',1-w],['shoulder'+s,w]];};
-  part(list,new THREE.SphereGeometry(m.armR*1.14,16,12),capShare,swim||tank||o.top==='sundress'?skin:top,M(sh[0]-sx*m.armR*.15,sh[1]+m.armR*.05,0,0,0,0,1,.92,Math.min(1.1,D/W*1.6)));
-  // A short sleeve is a wider bell over the top of the arm.
-  if(!swim&&o.top==='kariyushi'){const len=m.upper*.76,cy=sh[1]-len/2;part(list,new THREE.CylinderGeometry(m.armR*1.2,m.armR*1.3,len,16,1,true),arm,top,M(sh[0]+sx*.008,cy,0,0,0,sx*.035));}
-  else if(!swim&&!longSleeve&&!tank&&o.top!=='sundress')limb(list,sh,[sh[0]+sx*.006,sh[1]-m.upper*.58,0],m.armR*1.12,m.armR*1.16,top,{...arm,joints:[]});
-  if(!swim&&longSleeve){const cuffY=hd[1]+.035*m.k;part(list,new THREE.CylinderGeometry(m.armR*1.08,m.armR*1.08,.04*m.k,16,1,true),'elbow'+s,new THREE.Color(top).multiplyScalar(.82).getHex(),M(hd[0],cuffY,0));}
+  // Flattened on top so the shoulder slopes from the neck rather than standing up in a pad.
+  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||o.top==='sundress'?skin:top,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.78,Math.min(1.1,D/W*1.6)));
+  // A short sleeve: one closed, rounded sleeve over the top of the arm, starting inside the
+  // shoulder cap and lent to the chest at its top, so the shirt runs from the neck to the
+  // hem without a seam. A kariyushi's is a little roomier and boxier, as real ones are.
+  // Its print and its hem band are painted (garment.js), not separate pieces.
+  if(!swim&&!longSleeve&&!tank&&o.top!=='sundress'){
+   const roomy=o.top==='kariyushi',a0=[sh[0]-sx*m.armR*.05,sh[1]+m.armR*.08,0],a1=[sh[0]+sx*.008,sh[1]-m.upper*(roomy?.52:.56),0];
+   limb(list,a0,a1,m.armR*(roomy?1.24:1.16),m.armR*(roomy?1.3:1.2),top,{...arm,joints:[],root:['chest',.55,.3],uvAt:p=>sleeveUV(p,a0,a1,sx)});
+  }
   // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
   // so a wave or a point reads as a hand rather than a ball on a stick.
   ball(list,m.hand,[hd[0],hd[1]-m.hand*.55,0],'hand'+s,skin,[.9,1.15,.78],12,10);

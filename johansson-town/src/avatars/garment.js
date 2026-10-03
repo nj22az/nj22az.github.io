@@ -13,9 +13,11 @@ import * as THREE from '../../vendor/three.module.js';
  *
  * The texture: u runs once round the body, 0.5 at the front (+z) and the seam at the
  * back; v carries the torso from just below the hips (t=T0) to the top of the neck
- * (t=T1). The strip under V0 is left empty for every other part of the body to sample.
+ * (t=T1). Below it, a band carries the sleeves (both share it: u runs round the arm,
+ * 0.5 at its front, v down from the shoulder to the hem or cuff). The strip at the very
+ * bottom is left empty for every other part of the body to sample.
  */
-export const GARMENT=Object.freeze({width:512,height:256,V0:.06,T0:-.1,T1:1.05});
+export const GARMENT=Object.freeze({width:512,height:352,V0:.3,T0:-.1,T1:1.05,SLEEVE:Object.freeze({v0:.06,v1:.28})});
 /** Where every part that is not the torso samples: the empty strip. */
 export const PLAIN_UV=Object.freeze([.5,.02]);
 
@@ -24,6 +26,15 @@ export function torsoUV(p,m){
  const u=.5+Math.atan2(p.x/(m.width/2),p.z/(m.depth/2))/(Math.PI*2);
  const t=(p.y-m.hipY)/m.torso;
  return [u,GARMENT.V0+(1-GARMENT.V0)*THREE.MathUtils.clamp((t-GARMENT.T0)/(GARMENT.T1-GARMENT.T0),0,1)];
+}
+
+/** A sleeve's UV at a model-space point: round the arm from a (shoulder) to b (hem). */
+export function sleeveUV(p,a,b,side){
+ const ax=b[0]-a[0],ay=b[1]-a[1],az=b[2]-a[2],len=Math.hypot(ax,ay,az)||1;
+ const rx=p.x-a[0],ry=p.y-a[1],rz=p.z-a[2],t=THREE.MathUtils.clamp((rx*ax+ry*ay+rz*az)/(len*len),0,1);
+ // The arm hangs down, so round it is the x-z plane; the front (+z) is u = 0.5 either side.
+ const u=.5+Math.atan2(rx*side,rz)/(Math.PI*2),S=GARMENT.SLEEVE;
+ return [u,S.v1-(S.v1-S.v0)*t];
 }
 
 const shade=(hex,f)=>'#'+new THREE.Color(hex).multiplyScalar(f).getHexString();
@@ -184,5 +195,32 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   case 'sundress':for(const s of [-1,1]){poly([[s*W*.3,.8],[s*W*.18,.8],[s*W*.16,1.02],[s*W*.28,1.02]],top,{width:line*.8});poly([[s*W*.3,.8],[s*W*.18,.8],[s*W*.16,1.02],[s*W*.28,1.02]],top,{back:true,width:line*.8});}ctx.fillStyle=shade(top,.7);ctx.fillRect(0,Y(.795),TW,line*.8);marks.push('straps');break;
   case 'apron':collar('#f8f6ef',{drop:.88,spread:.1,round:true});break;
  }
+
+ // The sleeves' band: the print carried on round the arm, and a hem or a cuff.
+ {const S=GARMENT.SLEEVE,yTop=(1-S.v1)*TH,yBot=(1-S.v0)*TH,h=yBot-yTop,col=o.top,long=SLEEVED_LONG.includes(col);
+  const sleeveCirc=Math.PI*2*m.armR*(long?1.04:1.2),sleeveLen=long?m.upper+m.fore:m.upper*.6;
+  const pxU=TW/sleeveCirc,pxV=h/sleeveLen;
+  if(o.pattern==='stripes'){ctx.fillStyle='#f4f1ea';const band=m.torso*.12*pxV;for(let y=yTop+band;y<yBot;y+=band*2)ctx.fillRect(0,y,TW,Math.min(band,yBot-y));}
+  if(o.pattern==='flowers'||o.pattern==='dots'){
+   const flowers=o.pattern==='flowers',r=m.k*(flowers?(col==='kariyushi'?.05:.036):.016),petal=flowers?'#f8f6ef':o.accent;
+   const cols=flowers?4:8,rows=Math.max(1,Math.round(sleeveLen/(r*4)));
+   for(let row=0;row<rows;row++)for(let c=0;c<cols;c++){
+    const cx=((c+(row%2)*.5+.25)/cols)*TW,cy=yTop+(row+.5)/rows*h*.82;
+    for(const off of [0,-TW,TW]){ctx.save();ctx.translate(cx+off,cy);ctx.scale(r*pxU,r*pxV);ctx.rotate(row*1.3+c);
+     if(flowers){ctx.fillStyle=petal;for(let k=0;k<5;k++){ctx.beginPath();ctx.ellipse(Math.cos(k*1.2566)*.5,Math.sin(k*1.2566)*.5,.42,.42,0,0,Math.PI*2);ctx.fill();}ctx.fillStyle='#f4c83c';ctx.beginPath();ctx.arc(0,0,.28,0,Math.PI*2);ctx.fill();}
+     else{ctx.fillStyle=petal;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();}
+     ctx.restore();}
+   }
+  }
+  // The hem of a short sleeve, or the cuff of a long one: a band and a line above it.
+  if(!['tank','sundress'].includes(col)){
+   const bandH=Math.max(3,(long?.03:.018)*m.k*pxV),ink=shade(o.topColour,.5);
+   ctx.fillStyle=col==='kariyushi'?lighten(o.topColour,.22):shade(o.topColour,.86);ctx.fillRect(0,yBot-bandH,TW,bandH);
+   ctx.fillStyle=ink;ctx.fillRect(0,yBot-bandH-1.2,TW,1.2);
+   marks.push(long?'cuffs':'sleeve-hems');
+  }
+ }
  return marks;
 }
+/** Tops whose sleeves run to the wrist (build.js longSleeve). */
+export const SLEEVED_LONG=Object.freeze(['jacket','smock','sailorlong','police','hoodie','cardigan','festival','lighthouse','lantern','reef']);

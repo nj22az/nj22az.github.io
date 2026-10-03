@@ -56,8 +56,9 @@ export function buildDistricts(world,options){
   if(shops&&!buildRamenRestaurant(world,options)){
     building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:"Ramen Sato",title:'Sato Ramen',roof:1,colour:0xb6a98a});
   }
-  // The western lane is the seafront service edge behind the shopping street.
-  box([.45,1.0,78],[-38.4,-.05,-6],'concrete',0x808f83);
+  // The western lane is the seafront service edge behind the shopping street. The island
+  // has its own seawall (okinawa/quarters.js), and this one ran down the middle of its walk.
+  if(!peninsulaActive())box([.45,1.0,78],[-38.4,-.05,-6],'concrete',0x808f83);
   // The heron fishes the seawall, which the peninsula keeps out of reach behind the yard.
   if(!peninsulaActive()){
   for(const [x,z] of [[-41,-22],[-43,-8]]){const bird=new THREE.Group();bird.position.set(x,.18,z);const body=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshStandardMaterial({color:0xb8bcb0,roughness:1}));body.scale.set(1,1.6,1);bird.add(body);group.add(bird);}
