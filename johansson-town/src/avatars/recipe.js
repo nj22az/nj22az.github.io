@@ -55,7 +55,7 @@ const colour=v=>/^#[0-9a-f]{6}$/i.test(String(v))?String(v).toLowerCase():null;
 /** The recipe every other one starts from: a friendly nobody. */
 export const DEFAULT_RECIPE=Object.freeze({
  v:1,name:'',age:'adult',
- body:Object.freeze({height:.5,build:.5,silhouette:'neutral',skin:'#e8bf98'}),
+ body:Object.freeze({height:.5,build:.5,proportion:'classic',silhouette:'neutral',skin:'#e8bf98'}),
  head:Object.freeze({size:.5,shape:.5,form:'oval',jaw:.5,cheeks:.5}),
  hair:Object.freeze({style:'crop',colour:'#1c1714',flip:false}),
  eyes:Object.freeze({style:'round',colour:'#2a1d16',size:.5,width:.5,spacing:.5,height:.5,tilt:.5}),
@@ -84,7 +84,7 @@ export function normalizeRecipe(input={}){
  const flag=(v,f)=>v===undefined?f:!!v;
  return {
   v:1,name:String(r.name||'').slice(0,24),age:pick(AGES,r.age,'adult'),
-  body:sub('body',{height:num,build:num,silhouette:(v)=>pick(PARTS.silhouette,v,'neutral'),skin:col}),
+  body:sub('body',{height:num,build:num,proportion:(v)=>pick(['classic','rounded'],v,'classic'),silhouette:(v)=>pick(PARTS.silhouette,v,'neutral'),skin:col}),
   head:sub('head',{size:num,shape:num,form:(v,f)=>pick(HEAD_FORMS,v,f),jaw:num,cheeks:num}),
   hair:sub('hair',{style:(v,f)=>pick(PARTS.hair,v,f),colour:col,flip:flag}),
   eyes:sub('eyes',{style:(v,f)=>pick(PARTS.eyes,v,f),colour:col,size:num,width:num,spacing:num,height:num,tilt:num}),
