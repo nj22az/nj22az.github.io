@@ -83,6 +83,41 @@ terminal; on a ship add an external earth point on the frame too. Both are in th
 - **IEC dimensions.** D 24 k6, E 50, F 8, GA 27, DS M8, H 90, A 140, B 125, C 56, K 10 and FF165 (P 200, N 130 j6, M 165, S 12,
   T 3.5) match IEC 60072-1. The model is built to these numbers; switch on *Dimensions* to see them.
 
+## Workshop: tool kit and strip-down procedure
+
+The tool list and the eight-step strip-down were checked against this motor and are now the *Workshop* tab: each step moves
+its parts on the model, lists its tools and checks, and runs backwards as the rebuild. A step 0 (isolate, prove dead, as-found
+tests, unbolt from the pump, match-mark) comes first; seven tools were added. The model was changed to match the list: four
+M8 tie-rods (13 mm, 18–22 Nm) clamp both shields, put in from the NDE and screwed into tapped lugs in the DE flange (from the DE
+side the Ø200 flange is in the way), and the box lid has M5 hex screws (8 mm).
+
+**Major**
+
+- **No isolation step.** Add lock-out and a two-pole tester; prove dead at the studs *and* at TP1–TP2, which may be fed separately.
+- **Key before coupling, and the key does not slide.** The coupling sits on the key, so it comes off first. The keyway is closed at
+  both ends; tapping the key toward the shoulder jams it. Rock it out by one end.
+- **Rotor “magnetic attraction” and the film.** An unpowered cage rotor has no magnetic pull; the load is its weight on the bore once
+  the NDE shield is off. 0.5 mm film will not enter a 0.35 mm radial gap: use 0.1–0.2 mm, fed in as the rotor moves.
+- **Heater at 110 °C.** Sealed 2RS bearings: 80 °C maximum.
+- **Micrometer range.** 25–50 mm cannot measure the Ø20 NDE seat or the Ø18 fan seat; add 0–25 mm.
+- **Internal circlip pliers.** Step 8 removes the DIN 472 ring that locates the 6205 in the flange bore; the kit has only external pliers.
+- **Copper anti-seize on aluminium at sea** drives galvanic corrosion of the shields. Use nickel anti-seize.
+
+**Minor**
+
+- M5 terminal nuts are 8 mm, not 10 mm (step 2); this motor has no M6 hardware.
+- Terminal nuts (2.5 Nm) are below a 5–50 Nm wrench: add a 1–6 Nm torque screwdriver.
+- Add a bore gauge for the Ø52 and Ø47 H7 shield bores (fretting from a turning outer ring).
+- Prop the NDE shaft stub before the NDE shield comes off, or the rotor drops onto the bore.
+- Runout acceptance: IEC 60072-1, 0.040 mm (0.021 mm reduced class), unless the customer asks for less.
+- The fan circlip is DIN 471 – 18: pliers for 10–25 mm, not 20–25 mm.
+- Feeler gauges cannot reach the gap of an assembled TEFC motor; judge it from rub marks and runout.
+- The shields are aluminium, not cast iron: they dent and go oval rather than crack. Pad the mallet.
+- Match-mark with paint on outside faces; a punch burr on a register stops the joint from seating.
+
+**Checked:** the order cowl → fan → tie-rods → NDE shield → DE flange with rotor → bearings works with the DE bearing locating in
+the flange, and the 13 mm, 16/17 mm and 8 mm sizes and the 18–22 Nm tie-rod torque fit the motor as modelled.
+
 ## For the electrician on board
 
 - Connection: **Y for 400 V** (links W2–U2–V2), **Δ for 230 V** (links U1–W2, V1–U2, W1–V2). Set the overload to the nameplate
@@ -94,8 +129,8 @@ terminal; on a ship add an external earth point on the frame too. Both are in th
 
 ## What the model shows
 
-All 31 parts are separate objects with their own build step, explode direction and notes: frame and feet, laminated stator core
+All 30 parts are separate objects with their own build step, explode direction and notes: frame and feet, laminated stator core
 with 36 semi-closed slots, slot liners and wedges, the double-layer winding (36 coils, each end winding traced coil by coil and
 coloured by phase on demand), three PTCs, the skewed cage rotor, shaft with keyway and M8 centre, key, both bearings with balls and
-seals, wave spring, lip seal, B3 shield or FF165 flange, screws, fan, circlip, cowl with grille, terminal box with porcelain
+seals, wave spring, lip seal, B3 shield or FF165 flange, tie-rods, fan, circlip, cowl with grille, terminal box with porcelain
 board, studs, Y or Δ links, leads, PE, PTC block, gland, lid and rating plate.

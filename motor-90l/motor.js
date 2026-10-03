@@ -563,16 +563,15 @@ function bearing({ d, D, B, Z, dw }, xc) {
 
 // ---------- end shields ----------
 function shieldLugs(sgn, xFace) {
-  const lugs = [], bolts = [];
+  const lugs = [];
   for (const deg of BOSS_ANGLES) {
     const a = deg * DEG;
     const u = BOSS_R * Math.cos(a), v = BOSS_R * Math.sin(a);
     const lug = cylX(6.5, Math.min(sgn * X.frame, xFace), Math.max(sgn * X.frame, xFace), 24);
     lug.translate(0, v, -u);
     lugs.push(lug, radialBox((sgn * X.frame + xFace) / 2, Math.abs(xFace - sgn * X.frame), 74, BOSS_R, 9, Math.atan2(v, u)));
-    bolts.push(orient(hexBolt(10, 4), V3(xFace, v, -u), V3(sgn, 0, 0)));
   }
-  return { lugs: merge(lugs), bolts: merge(bolts) };
+  return { lugs: merge(lugs) };
 }
 
 function shieldNDE() {
@@ -584,8 +583,8 @@ function shieldNDE() {
   for (let i = 0; i < 6; i++) ribs.push(radialBox(94, 4, 32, 70, 3, (i + 0.5) * TAU / 6));
   const cowlLugs = [];
   for (const deg of [90, 210, 330]) cowlLugs.push(radialBox(91, 6, 76, 96.4, 10, deg * DEG));
-  const { lugs, bolts } = shieldLugs(1, 92);
-  return { body: merge([body, ...ribs, lugs, ...cowlLugs]), bolts };
+  const { lugs } = shieldLugs(1, 92);
+  return { body: merge([body, ...ribs, lugs, ...cowlLugs]) };
 }
 
 function shieldDE_B3() {
@@ -595,8 +594,8 @@ function shieldDE_B3() {
   ], 96);
   const ribs = [];
   for (let i = 0; i < 6; i++) ribs.push(radialBox(-94.5, 5, 32, 72, 3.5, (i + 0.5) * TAU / 6));
-  const { lugs, bolts } = shieldLugs(-1, -92);
-  return { body: merge([body, ...ribs, lugs]), bolts };
+  const { lugs } = shieldLugs(-1, -92);
+  return { body: merge([body, ...ribs, lugs]) };
 }
 
 function flangeDE_B5() {
@@ -615,8 +614,21 @@ function flangeDE_B5() {
   ], 96);
   const ribs = [];
   for (let i = 0; i < 4; i++) ribs.push(radialBox(-98, 14, 80, 96, 4, i * TAU / 4));
-  const { lugs, bolts } = shieldLugs(-1, -92);
-  return { body: merge([flange, spigot, body, ...ribs, lugs]), bolts };
+  const { lugs } = shieldLugs(-1, -92);
+  return { body: merge([flange, spigot, body, ...ribs, lugs]) };
+}
+
+// Four M8 tie-rods (8.8, 13 mm AF): heads at the NDE lugs, threaded into tapped lugs in the DE shield or flange,
+// so they come out toward the NDE once the cowl and fan are off (the Ø200 flange blocks the DE side).
+export const TIE_ROD = Object.freeze({ thread: 'M8', AF: 13, torque: [18, 22] });
+function tieRods() {
+  const out = [];
+  for (const deg of BOSS_ANGLES) {
+    const a = deg * DEG, p = (x) => V3(x, BOSS_R * Math.sin(a), -BOSS_R * Math.cos(a));
+    const rod = cylX(4, -97, 92, 16); rod.translate(0, p(0).y, p(0).z); out.push(rod);
+    out.push(orient(hexBolt(TIE_ROD.AF, 5.3), p(92), V3(1, 0, 0)));
+  }
+  return merge(out);
 }
 
 function lipSeal() {
@@ -700,12 +712,9 @@ function boxLid() {
   const seal = extrudeY(roundedRect(BOX.half * 2 - 1, BOX.half * 2 - 1, 7.5, BOX.x, 0), BOX.top, BOX.top + 0.8);
   const screws = [];
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
-    const g = new THREE.CylinderGeometry(3.4, 3.4, 2.4, 24);
-    g.translate(BOX.x + sx * 38, BOX.top + 6.7, sz * 38);
+    const g = hexBolt(8, 3.5, true);
+    g.translate(BOX.x + sx * 38, BOX.top + 5.5, sz * 38);
     screws.push(g);
-    const slot = new THREE.BoxGeometry(5, 0.6, 0.9);
-    slot.translate(BOX.x + sx * 38, BOX.top + 7.95, sz * 38);
-    screws.push(slot);
   }
   return { lid: merge([lid, crown]), seal, screws: merge(screws) };
 }
@@ -881,10 +890,9 @@ export function buildMotor() {
   part('shieldDE', 'DE end shield (B3)', 6, [-330, 0, 0], [mesh(de3.body, 'paintLathe', 'de-shield')], { cut: true, mount: ['B3'] });
   const de5 = flangeDE_B5();
   part('flangeDE', 'DE flange FF165 (B5)', 6, [-330, 0, 0], [mesh(de5.body, 'paintLathe', 'de-flange')], { cut: true, mount: ['B5', 'B35'] });
-  part('boltsDE', 'DE shield screws', 6, [-390, 0, 0], [mesh(de3.bolts, 'zinc', 'de-bolts')]);
+  part('tieRods', 'Tie-rods M8 (4×)', 6, [150, 160, 0], [mesh(tieRods(), 'zinc', 'tie-rods')]);
   const nde = shieldNDE();
   part('shieldNDE', 'NDE end shield', 6, [110, 0, 0], [mesh(nde.body, 'paintLathe', 'nde-shield')], { cut: true });
-  part('boltsNDE', 'NDE shield screws', 6, [150, 0, 0], [mesh(nde.bolts, 'zinc', 'nde-bolts')]);
 
   // fan, circlip, cowl
   part('fan', 'Cooling fan', 7, [190, 0, 0], [mesh(fanGeometry(), 'pp', 'fan')], { spins: true });

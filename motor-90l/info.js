@@ -91,9 +91,12 @@ export const PART_INFO = {
     spec: 'FF165: P = Ø200, N = Ø130 j6 spigot (T = 3.5), M = Ø165 PCD, 4 × Ø12 for M10, LA = 12 mm. Spigot concentric to the shaft within 0.08 mm, face square within 0.10 mm.',
     service: 'Clean the spigot and face before mounting; a burr here bends the pump shaft line.',
   },
-  boltsDE: { what: 'Four screws holding the DE shield to the frame bosses.', spec: 'M6 × 25, 8.8, zinc plated.', service: 'Tighten in a cross pattern, 9 Nm.' },
+  tieRods: {
+    what: 'Four through-bolts that clamp both end shields to the frame. Each goes in from the NDE through the shield lug and the frame bosses, and screws into a tapped lug in the DE shield or flange.',
+    spec: 'M8 × 200, property class 8.8, zinc plated · 13 mm AF heads · 18–22 Nm.',
+    service: 'Tighten in a cross pattern in two stages (10 Nm, then 18–22 Nm), turning the shaft by hand between stages. A shaft that stiffens means a cocked shield.',
+  },
   shieldNDE: { what: 'Non-drive-end shield with the NDE bearing housing, wave spring seat and cowl lugs.', spec: 'Cast aluminium, bearing bore Ø47 H7.', service: 'Check the bearing bore for fretting (polished or rusty patches): the outer ring has been turning.' },
-  boltsNDE: { what: 'Four screws holding the NDE shield.', spec: 'M6 × 25, 8.8, zinc plated.', service: 'Cross pattern, 9 Nm. Turn the shaft by hand after tightening: it must turn freely.' },
   fan: {
     what: 'External cooling fan with straight radial blades, so it cools equally in both directions of rotation.',
     spec: 'Polypropylene, Ø178 mm, keyed and held by a circlip.',
@@ -139,7 +142,7 @@ export const STEPS = [
   { title: 'Impregnate', text: 'Pre-heat to 105 °C, VPI in class H resin, cure 4 h at 150 °C. Then hi-pot 1800 V and IR ≥ 100 MΩ at 500 V DC.' },
   { title: 'Rotor and shaft', text: 'Shrink the rotor onto the shaft, skim the OD to Ø89.3 (0.35 mm air gap), balance to G2.5 with a half key.' },
   { title: 'Bearings', text: 'Fit the 6205 and 6204 (sealed bearings ≤ 80 °C), insert the wave spring in the NDE housing.' },
-  { title: 'End shields', text: 'Slide the rotor into the stator, fit the NDE shield, then the DE shield or flange with its seal. Cross-tighten; check runout and that the shaft turns freely.' },
+  { title: 'End shields', text: 'Slide the rotor into the stator, fit the NDE shield, then the DE shield or flange with its seal. Draw both up with the four M8 tie-rods, 18–22 Nm in a cross pattern; check runout and that the shaft turns freely.' },
   { title: 'Fan and cowl', text: 'Fit the fan and circlip, then the cowl.' },
   { title: 'Terminal box', text: 'Terminate the six leads and the PTCs, fit links for the ordered voltage, PE, gland, lid and rating plate. Final test run.' },
 ];

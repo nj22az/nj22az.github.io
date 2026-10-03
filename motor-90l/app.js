@@ -3,6 +3,7 @@ import { OrbitControls } from './vendor/OrbitControls.js';
 import { RoomEnvironment } from './vendor/RoomEnvironment.js';
 import { buildMotor, PHASE_COLORS, X } from './motor.js';
 import { PART_INFO, STEPS, AUDIT } from './info.js';
+import { TOOLS, STEPS as SERVICE, WORKSHOP_AUDIT, movesAfter } from './service.js';
 import { summary, RATING, IEC, CORE } from './calc.mjs';
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -25,6 +26,7 @@ scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environmentIntensity = 0.85;
 
 const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 30);
+const EXPLODED = { pos: new THREE.Vector3(-0.12, 0.62, 1.42), target: new THREE.Vector3(0.09, 0.03, 0) };
 const HOME = { pos: new THREE.Vector3(-0.50, 0.30, 0.74), target: new THREE.Vector3(0.0, 0.0, 0) };
 camera.position.copy(HOME.pos);
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -63,6 +65,8 @@ const COPPER = new THREE.Color(0xc0692e);
 
 for (const p of parts.values()) {
   p.base = p.group.position.clone();
+  p.off = new THREE.Vector3();
+  p.goal = new THREE.Vector3();
   p.materials = [];
   const meshes = [];
   p.group.traverse(o => { if (o.isMesh) meshes.push(o); });
@@ -86,6 +90,7 @@ for (const p of parts.values()) {
 const state = {
   explode: 0, explodeTarget: 0, step: STEPS.length - 1, cut: false, run: false, phases: false,
   delta: false, mount: 'B35', dims: false, selected: null, hover: null, spin: 0,
+  apart: false, proc: null, stepParts: [],
 };
 const groundFor = { B3: -IEC.H, B5: -IEC.P / 2 - 0.5, B35: -IEC.H - 12 };
 
@@ -127,6 +132,7 @@ function setEmissive(id, amount) {
 }
 function refreshHighlights() {
   for (const id of parts.keys()) setEmissive(id, 0);
+  for (const id of state.stepParts) setEmissive(id, 0.3);
   if (state.hover && state.hover !== state.selected) setEmissive(state.hover, 0.22);
   if (state.selected) setEmissive(state.selected, 0.45);
 }
@@ -232,7 +238,7 @@ function dim(a, b, text, mount) {
   dim([X.shoulder - 2, -m, m], [X.shoulder - 2, m, -m], 'M 165', FL);
 })();
 function updateDims() {
-  const on = state.dims && state.explode < 0.02 && state.step === STEPS.length - 1;
+  const on = state.dims && !state.apart && state.step === STEPS.length - 1;
   dimGroup.visible = on;
   for (const d of dimLabels) {
     const ok = on && (!d.mount || d.mount.includes(state.mount));
@@ -353,6 +359,101 @@ function showTab(name) {
 }
 document.querySelectorAll('[role=tab]').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
 
+// ---------- workshop ----------
+function flyExploded() {
+  const t = EXPLODED.target.clone(), pos = EXPLODED.pos.clone();
+  if (view.clientWidth / view.clientHeight < 0.8) { t.x = 0.02; pos.sub(t).multiplyScalar(1.5).add(t); }
+  flyTo(t, pos, 900);
+}
+
+const toolById = Object.fromEntries(TOOLS.map(t => [t.id, t]));
+const flagsFor = key => WORKSHOP_AUDIT.filter(a => a[4] === key);
+const totalMin = list => list.reduce((n, s) => n + s.min, 0);
+
+function workshopStep() {
+  const box = $('#ws-step');
+  const pr = state.proc;
+  document.querySelectorAll('[data-wsmode]').forEach(b => b.setAttribute('aria-pressed', String(!!pr && b.dataset.wsmode === pr.mode)));
+  if (!pr) {
+    box.innerHTML = `<p>Choose <strong>Strip down</strong> to take the motor apart in ${SERVICE.length - 1} steps after preparation (≈ ${totalMin(SERVICE)} min), or <strong>Rebuild</strong> to put it back together (≈ ${totalMin(SERVICE.map(s => s.re))} min). The model moves each part as you go.</p>`;
+    $('#ws-prev').disabled = $('#ws-next').disabled = true;
+    $('#ws-count').textContent = '';
+    return;
+  }
+  const n = SERVICE.length, d = pr.mode === 'dis' ? pr.i : n - 1 - pr.i;
+  const st = SERVICE[d], body = pr.mode === 'dis' ? st : st.re;
+  const notes = flagsFor('step:' + d);
+  // strip-down keeps the workshop's numbering: 0 is preparation, 1–8 the steps
+  const num = pr.mode === 'dis' ? pr.i : pr.i + 1;
+  $('#ws-count').textContent = pr.mode === 'dis' ? `${num} / ${n - 1}` : `${num} / ${n}`;
+  $('#ws-prev').disabled = pr.i === 0;
+  $('#ws-next').disabled = pr.i === n - 1;
+  const chips = body.tools.map(id => {
+    const t = toolById[id];
+    const flag = flagsFor(id).some(a => a[0] !== 'ok');
+    return `<button type="button" class="tool${flag ? ' flagged' : ''}" data-tool="${id}" title="${t.use}">${t.name}</button>`;
+  }).join('');
+  box.innerHTML = `
+    <h3>${pr.mode === 'dis' ? 'Strip down' : 'Rebuild'} ${num}. ${body.title} <span class="muted">· ${body.min} min</span></h3>
+    <div class="tools">${chips}</div>
+    <ol class="work">${body.work.map(w => `<li>${w}</li>`).join('')}</ol>
+    <p class="check"><strong>Check</strong> ${body.check}</p>
+    ${pr.mode === 'dis' ? notes.map(a => `<p class="note sev-${a[0]}"><span class="chip">${sevLabel[a[0]]} · ${a[1]}</span> <strong>${a[2]}.</strong> ${a[3]}</p>`).join('') : ''}`;
+  box.querySelectorAll('[data-tool]').forEach(b => b.addEventListener('click', () => {
+    const li = document.getElementById('tool-' + b.dataset.tool);
+    li.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    li.classList.remove('flash'); void li.offsetWidth; li.classList.add('flash');
+  }));
+}
+
+function applyWorkshop() {
+  const pr = state.proc, n = SERVICE.length;
+  const d = pr.mode === 'dis' ? pr.i : n - 1 - pr.i;
+  const moves = pr.mode === 'dis' ? movesAfter(d) : movesAfter(d - 1);
+  for (const p of parts.values()) p.goal.set(...(moves[p.id] || [0, 0, 0]));
+  state.stepParts = Object.keys(SERVICE[d].moves).filter(id => parts.get(id).group.visible);
+  refreshHighlights();
+  workshopStep();
+}
+
+function enterWorkshop(mode) {
+  if (state.step !== STEPS.length - 1) setStep(STEPS.length - 1);
+  state.explodeTarget = 0;
+  $('#explode').value = 0;
+  if (state.cut) { state.cut = false; $('#cut').setAttribute('aria-pressed', 'false'); applyCut(); }
+  const first = !state.proc;
+  state.proc = { mode, i: 0 };
+  applyWorkshop();
+  if (first) flyExploded();
+}
+
+function leaveWorkshop() {
+  state.proc = null;
+  state.stepParts = [];
+  refreshHighlights();
+  workshopStep();
+}
+
+function toolKit() {
+  const groups = [...new Set(TOOLS.map(t => t.group))];
+  $('#tool-list').innerHTML = groups.map(g => `<h4>${g}</h4><ul>${TOOLS.filter(t => t.group === g).map(t => {
+    const fl = flagsFor(t.id).filter(a => a[0] !== 'ok');
+    return `<li id="tool-${t.id}"><strong>${t.name}</strong>${t.size ? ` <span class="muted">${t.size}</span>` : ''}${t.added ? ' <span class="chip sev-ok">added</span>' : ''}
+      <div>${t.use}</div>${fl.map(a => `<div class="note sev-${a[0]}"><span class="chip">${sevLabel[a[0]]}</span> ${a[3]}</div>`).join('')}</li>`;
+  }).join('')}</ul>`).join('');
+  const count = sv => WORKSHOP_AUDIT.filter(a => a[0] === sv).length;
+  $('#ws-audit').innerHTML = ['major', 'minor', 'ok'].map(sv => `<span class="chip sev-${sv}">${count(sv)} ${sevLabel[sv].toLowerCase()}</span>`).join(' ');
+}
+
+document.querySelectorAll('[data-wsmode]').forEach(b => b.addEventListener('click', () => enterWorkshop(b.dataset.wsmode)));
+$('#ws-prev').addEventListener('click', () => { if (state.proc && state.proc.i > 0) { state.proc.i--; applyWorkshop(); } });
+$('#ws-next').addEventListener('click', () => { if (state.proc && state.proc.i < SERVICE.length - 1) { state.proc.i++; applyWorkshop(); } });
+$('#ws-reset').addEventListener('click', () => {
+  leaveWorkshop();
+  for (const p of parts.values()) p.goal.set(0, 0, 0);
+  flyTo(HOME.target.clone(), HOME.pos.clone(), 900);
+});
+
 // ---------- controls ----------
 function setStep(s) {
   state.step = s;
@@ -382,12 +483,13 @@ const toggle = (sel, key, after) => {
   });
 };
 
-const EXPLODED = { pos: new THREE.Vector3(-0.30, 0.55, 1.30), target: new THREE.Vector3(0.0, 0.03, 0) };
 $('#explode').addEventListener('input', e => {
   const was = state.explodeTarget;
   state.explodeTarget = +e.target.value / 100;
+  if (state.proc) leaveWorkshop();
+  for (const p of parts.values()) p.goal.copy(p.explode).multiplyScalar(state.explodeTarget);
   // frame the whole spread once when it opens, and come home when it closes
-  if (was <= 0.25 && state.explodeTarget > 0.25) flyTo(EXPLODED.target.clone(), EXPLODED.pos.clone(), 900);
+  if (was <= 0.25 && state.explodeTarget > 0.25) flyExploded();
   if (was > 0 && state.explodeTarget === 0) flyTo(HOME.target.clone(), HOME.pos.clone(), 900);
 });
 $('#step').addEventListener('input', e => setStep(+e.target.value));
@@ -449,13 +551,19 @@ let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
-  if (Math.abs(state.explode - state.explodeTarget) > 1e-4) {
-    state.explode += (state.explodeTarget - state.explode) * Math.min(1, dt * 7);
-    for (const p of parts.values()) p.group.position.copy(p.base).addScaledVector(p.explode, ease(state.explode));
-    updateDims();
+  let moving = false, apart = false;
+  for (const p of parts.values()) {
+    if (p.off.distanceToSquared(p.goal) > 1e-4) {
+      p.off.lerp(p.goal, Math.min(1, dt * 5));
+      if (p.off.distanceToSquared(p.goal) < 0.01) p.off.copy(p.goal);
+      p.group.position.copy(p.base).add(p.off);
+      moving = true;
+    }
+    if (p.off.lengthSq() > 0.25) apart = true;
   }
+  if (apart !== state.apart || moving) { state.apart = apart; updateDims(); }
   if (state.run) state.spin += dt * Math.PI; // 0.5 rev/s: 1440 min⁻¹ slowed 48 ×
-  for (const p of parts.values()) if (p.spins) p.group.rotation.x = state.explode < 0.01 ? state.spin : 0;
+  for (const p of parts.values()) if (p.spins) p.group.rotation.x = state.apart ? 0 : state.spin;
   if (tween) {
     const t = Math.min(1, (now - tween.t0) / tween.ms), k = ease(t);
     controls.target.lerpVectors(tween.fromT, tween.toT, k);
@@ -469,6 +577,8 @@ function frame(now) {
 }
 
 partsList();
+toolKit();
+workshopStep();
 specs();
 audit();
 setStep(STEPS.length - 1);
@@ -476,5 +586,5 @@ setMount('B35');
 setDelta(false);
 showTab('parts');
 requestAnimationFrame(frame);
-window.__motor = { camera, controls, flyTo, parts, state, setStep, setMount, setDelta, select, exportGLB, root, applyCut, applyPhases, updateDims };
+window.__motor = { enterWorkshop, applyWorkshop, camera, controls, flyTo, parts, state, setStep, setMount, setDelta, select, exportGLB, root, applyCut, applyPhases, updateDims };
 document.body.classList.add('ready');

@@ -11,7 +11,8 @@ No build step. Serve the site root (`python3 -m http.server`) and open `/motor-9
 | `calc.test.mjs` | `node --test motor-90l/calc.test.mjs` |
 | `motor.js` | The model: every part as its own group, axis along x, drive end toward −x, feet at y = −90 mm |
 | `info.js` | Part descriptions, service notes, build steps and audit findings |
-| `app.js`, `index.html` | Viewer: explode, build steps, cutaway, Y/Δ links, B3/B5/B35, dimensions, phase colours, `.glb` export |
+| `service.js` | Workshop tool kit, strip-down and rebuild steps (with the part moves for the model) and the workshop audit |
+| `app.js`, `index.html` | Viewer: workshop strip-down/rebuild, explode, build steps, cutaway, Y/Δ links, B3/B5/B35, dimensions, phase colours, `.glb` export |
 | `vendor/` | three.js r170 (MIT): core, OrbitControls, RoomEnvironment, GLTFExporter, BufferGeometryUtils |
 
 Johansson Town also runs three.js r170, so the parts and the exported `.glb` (metres, one node per part) can move into the

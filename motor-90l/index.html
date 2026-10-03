@@ -74,6 +74,26 @@ header.title p { margin: 0; color: var(--muted); font-size: 14px; }
 #audit-list li { padding: 10px 0; border-top: 1px solid var(--line); }
 #audit-list strong { display: block; margin: 6px 0 2px; }
 #audit-list p { margin: 0 0 4px; }
+.ws-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.ws-bar .seg button { min-height: 36px; padding: 0 12px; border: 1px solid var(--line); background: var(--bg2); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.ws-bar .seg button[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+#ws-count { font-variant-numeric: tabular-nums; color: var(--muted); min-width: 3em; text-align: center; }
+#ws-reset { margin-left: auto; }
+#ws-step { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg2); }
+#ws-step h3 { margin: 0 0 8px; font-size: 16px; }
+.tools { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.tool { border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--ink); font: inherit; font-size: 12px; padding: 3px 9px; cursor: pointer; }
+.tool.flagged { border-color: var(--major); }
+.work { margin: 6px 0; padding-left: 20px; }
+.work li { margin: 4px 0; }
+.check strong { color: var(--accent); margin-right: 4px; }
+.ws-h { margin: 18px 0 2px; font-size: 16px; }
+#tool-list h4 { margin: 14px 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+#tool-list ul { list-style: none; margin: 0; padding: 0; }
+#tool-list li { padding: 7px 0; border-top: 1px solid var(--line); }
+#tool-list .note { margin-top: 4px; font-size: 13px; }
+#tool-list li.flash { animation: flash 1.4s ease; }
+@keyframes flash { 0%, 40% { background: color-mix(in srgb, var(--accent) 22%, transparent); } 100% { background: transparent; } }
 .link { border: 0; background: none; color: var(--accent); font: inherit; font-weight: 600; padding: 0; cursor: pointer; }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; vertical-align: top; padding: 6px 4px; border-top: 1px solid var(--line); }
@@ -129,6 +149,7 @@ body:not(.ready) #bar, body:not(.ready) #panel { visibility: hidden; }
   <div class="tabs" role="tablist">
     <button type="button" role="tab" data-tab="parts" aria-selected="true">Parts</button>
     <button type="button" role="tab" data-tab="specs" aria-selected="false">Data</button>
+    <button type="button" role="tab" data-tab="workshop" aria-selected="false">Workshop</button>
     <button type="button" role="tab" data-tab="audit" aria-selected="false">Audit</button>
   </div>
   <section class="tabpanel" role="tabpanel" id="tab-parts">
@@ -138,6 +159,19 @@ body:not(.ready) #bar, body:not(.ready) #panel { visibility: hidden; }
   <section class="tabpanel" role="tabpanel" id="tab-specs" hidden>
     <table id="spec-table"></table>
     <p class="muted">Dimensions in the model are millimetres from the IEC tables; the axis is the shaft centre line. Switch on “Dimensions” to check them on the model.</p>
+  </section>
+  <section class="tabpanel" role="tabpanel" id="tab-workshop" hidden>
+    <div class="ws-bar">
+      <span class="seg" role="group" aria-label="Procedure"><button type="button" data-wsmode="dis" aria-pressed="false">Strip down</button><button type="button" data-wsmode="re" aria-pressed="false">Rebuild</button></span>
+      <button type="button" class="btn" id="ws-prev" aria-label="Previous step">‹</button>
+      <span id="ws-count"></span>
+      <button type="button" class="btn" id="ws-next" aria-label="Next step">›</button>
+      <button type="button" class="link" id="ws-reset">Assemble</button>
+    </div>
+    <div id="ws-step"></div>
+    <h3 class="ws-h">Tool kit</h3>
+    <p class="muted">The workshop's list checked against this motor: <span id="ws-audit"></span></p>
+    <div id="tool-list"></div>
   </section>
   <section class="tabpanel" role="tabpanel" id="tab-audit" hidden>
     <p>The specification was checked from three seats: the design engineer, the marine electrician and the manufacturer. Every number below is calculated in <code>calc.mjs</code>.</p>
