@@ -4,6 +4,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createTown} from '../src/world/town.js';
 import {configureTownMode} from '../src/world/town-mode.js';
+import {GARDEN} from '../src/world/garden-layout.js';
 import {ONSEN_DOOR,onsenPoint} from '../src/world/onsen-layout.js';
 import {createNavigation} from '../src/people/navmesh.js';
 import {createCastAI} from '../src/people/schedules.js';
@@ -42,7 +43,7 @@ for(const dt of [1/60,1/30])test(`Thuan approaches, crosses the onsen threshold 
  try{
   const {world,person,g,state,blocked,ai}=setup();
   ai.update(dt,1190,false); // Initialise during her existing shop shift, before the invitation.
-  delete g.userData.indoors;g.visible=true;g.position.set(-28,0,108);
+  delete g.userData.indoors;g.visible=true;g.position.set(GARDEN.entry[0],0,GARDEN.entry[1]);
   const guests=createIndoorResidents({world,parent:new THREE.Group(),place:'onsen',layout:{entrance:ONSEN_ROOM.spawn},getState:()=>state});
   for(let t=0;t<100&&!g.userData.indoors;t+=dt){
    const previous=g.position.clone();ai.update(dt,1215,false);

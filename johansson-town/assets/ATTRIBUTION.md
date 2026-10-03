@@ -220,3 +220,7 @@ Manga pages, the サクラ商店 4-koma and the セルアニメ posters are orig
 by `tools/magazines/draw_pages.py` (Pillow). Lettering was rendered with WenQuanYi Zen
 Hei (GPL-2.0 with font exception); the images contain rendered glyphs only, no font
 data. All titles, characters and brands are fictional.
+
+### IKEA home furniture
+
+LACK side table (30449908) and IVAR pine cabinet (70033766): IKEA / Inter IKEA Systems. Downloaded from IKEA's published product-viewer GLBs using the discovery approach in [IKEA 3D Model Download Button](https://github.com/apinanaivot/IKEA-3D-Model-Download-Button). Exact model URLs and original files are retained in `models/furniture/SOURCES.json`. Blender variants remove photographic textures, simplify dense meshes and use the town's cel materials. The downloader's code license does not grant a license to IKEA's designs or models; no open asset license is asserted.
