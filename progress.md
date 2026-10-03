@@ -138,3 +138,6 @@ Final release also preserves f08e8af's Kitahama residential-quarter and anchored
 - Shortened/recentred Sakura gondolas, moved their endcaps and stock approaches with them, brought goods forward, and split the long daily-goods shelf into two compact bays. Kept all 33 stock lines and the existing real inventory economy.
 - Found the medicine shelf's back board exactly coplanar with the shop wall at x=6.82. Moved the entire display clear of the wall, reduced its width, stocked fuller rows and fitted a Japanese/English header.
 - Checks: all 594 non-boot tests completed: 589 passed, five deliberately disabled gateball skips. Product raycast checks confirm every unit is supported and unobstructed; navigation checks reach every shelf. Park bench and Sakura entry/exit verified in the compiled game at desktop and phone sizes with zero page errors. Final compiled phone park/shelf/till views reviewed; bench seating and shop exit passed with no errors. Skill client completed three gameplay captures with text state and no errors.
+
+2026-10-03 — Remove the park slide at the user’s request:
+- Removed the entire slide, both collision footprints and its separate gravel patch. Restored matching grass; retained the park paths, bench, cherry, planting and lamps.

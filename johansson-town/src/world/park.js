@@ -14,7 +14,7 @@ import {townCalendarAt} from '../town-clock.js';
  * Harbour Park, built in the town's own hand (docs/AMPLIFY-AUDIT.md, §10): the mound it
  * always stood on, turfed, with a gravel ring round the old cherry and a path up from
  * the street; a wooden bench under the tree looking out over the roofs to the port; the
- * three lamp posts; a concrete slide for the children from the town hall; hibiscus; a
+ * three lamp posts; hibiscus; a
  * stone lantern; and the board with its name. It replaces a supplied Sketchfab garden
  * (CC-BY), which was photographic in a town that is drawn.
  *
@@ -51,8 +51,7 @@ export function buildPark(world,options){
   for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){
    const x=p.x-half+i/N*half*2,z=p.z-half+j/N*half*2;positions.push(x,ground(x,z)+GROUND_LAYER.grass,z);uv.push(x/2.4,z/2.4);
    const ring=Math.abs(Math.hypot(x-tx,z-tz)-2.35),approach=Math.abs(z-p.z)<.62&&x<tx-2.2;
-   const play=Math.hypot((x-(p.x+8.4*s))/1.7,(z-(p.z+9.1*s))/2.5)<1;
-   const onPath=ring<.48||approach||play,kerb=!onPath&&(ring<.56||(Math.abs(z-p.z)<.7&&x<tx-2.2));
+   const onPath=ring<.48||approach,kerb=!onPath&&(ring<.56||(Math.abs(z-p.z)<.7&&x<tx-2.2));
    c.copy(onPath?path:kerb?edge:turf);colours.push(c.r,c.g,c.b);
   }
   for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*(N+1)+i;index.push(a,a+N+1,a+1,a+1,a+N+1,a+N+2);}
@@ -72,24 +71,6 @@ export function buildPark(world,options){
  for(const [lx,lz] of PARK_LAMPS){const [x,z]=at(lx,lz),y=ground(x,z);
   kit.cyl(.12,.16,.3,x,y+.15,z,0x9a958a,{segments:10});kit.cyl(.05,.06,3.1,x,y+1.75,z,0x2f5a4a,{segments:8});
   kit.sphere(.2,x,y+3.4,z,0xfff4dc,{finish:'lamp'});kit.cyl(.16,.2,.06,x,y+3.2,z,0x2f5a4a,{segments:10});}
- // A modest 1970s playground slide: an open steel frame, ladder and silver chute.
- // Dimensions are in metres like the town furniture, rather than a featureless plinth.
- {const [x,z]=at(8.4,8.6),y=ground(x,z),green=0x356653,steel=0x9ba8a7;
-  for(const dx of [-.4,.4])for(const dz of [-.3,.3])kit.rod([x+dx,ground(x+dx,z+dz),z+dz],[x+dx,y+1.42,z+dz],.035,green);
-  kit.box(.9,.08,.7,x,y+1.4,z,0x926c45);
-  for(const dx of [-.4,.4]){
-   kit.rod([x+dx,y+.08,z-1.12],[x+dx,y+1.45,z-.3],.035,green);
-   kit.rod([x+dx,y+1.42,z-.3],[x+dx,y+1.95,z-.3],.035,green);
-   kit.rod([x+dx,y+1.95,z-.3],[x+dx,y+1.95,z+.36],.035,green);
-   kit.rod([x+dx,y+1.95,z+.36],[x+dx,y+1.42,z+.36],.035,green);
-  }
-  for(let k=1;k<=5;k++){const t=k/6;kit.rod([x-.4,y+.08+1.37*t,z-1.12+.82*t],[x+.4,y+.08+1.37*t,z-1.12+.82*t],.035,steel);}
-  const endY=ground(x,z+2.7)+.16,drop=y+1.42-endY,run=2.34,length=Math.hypot(drop,run),angle=Math.atan2(drop,run),midY=(y+1.42+endY)/2;
-  kit.box(.64,.045,length,x,midY,z+1.53,steel,{rx:angle,finish:'metal'});
-  for(const dx of [-.34,.34])kit.box(.035,.13,length,x+dx,midY+.06,z+1.53,green,{rx:angle});
-  kit.box(.68,.06,.3,x,endY,z+2.8,steel,{finish:'metal'});
-  world.colliders.push({id:'park-slide-platform',x,z:z-.3,w:.95,d:1.6,height:y+1.95,park:true},
-   {id:'park-slide-chute',x,z:z+1.65,w:.76,d:2.65,height:y+1.5,park:true});}
  // Hibiscus round the edge, a stone lantern by the path, and the park's name.
  for(const [lx,lz,seed] of [[-9,-9,3],[9.5,-8.5,5],[-9.5,9,8],[0,10.5,11],[-3,-10.5,14]]){const [x,z]=at(lx,lz);kit.at(x,z,0,()=>hibiscus(kit,0,0,{seed,size:.55}),ground(x,z));}
  {const [x,z]=at(-4.2,1.6),y=ground(x,z);kit.box(.36,.12,.36,x,y+.06,z,0xa8a294);kit.cyl(.06,.08,.6,x,y+.42,z,0xa8a294,{segments:8});kit.box(.42,.32,.42,x,y+.86,z,0xb4ae9f);kit.box(.2,.18,.06,x,y+.86,z+.22,0xffe0a0,{finish:'lamp'});kit.box(.56,.1,.56,x,y+1.07,z,0x9a958a);kit.sphere(.09,x,y+1.18,z,0x9a958a);
