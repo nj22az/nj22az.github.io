@@ -1,3 +1,4 @@
+import {addOwnedCharacter} from '../people/owned-characters.js';
 import {japaneseSign,signText} from './okinawa/signs.js';
 import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './interiors/shared-dining-layout.js';
 import {createIzakayaTV} from './advertising-billboard.js';
@@ -135,7 +136,14 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  anchor([4.1,1,-3.8],'Inspect the shared kitchen',()=>action('inspect','Minato and Sato shared kitchen','The ramen stock pots, sink, prep board and range share a working aisle. Walk around the counter through the open passage. Please keep clear while Nao and Mrs Sato are carrying hot bowls.'));
  anchor([-.4,2.5,-5.6],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
- return {name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
+ const barfly=addOwnedCharacter({parent:room,kind:'barfly',position:[-5.3,0,1.35],yaw:.35});
+ collider(-5.3,1.35,.9,.75,1.5);
+ anchor([-5.3,1,1.35],'Talk to Barfly',()=>{barfly.play('Wave');setTimeout(()=>barfly.play('Idle'),2200);action('read','Barfly','An old harbour hand with a flowered shirt and a story for every tide. He comes to Minato for the music, the company and the first cold glass after a long day. “Take your time. The boat will still be there.”');});
+ const moose=addOwnedCharacter({parent:room,kind:'merry_Moose',position:[-4.4,1.3,-2.6]});
+ const cat=addOwnedCharacter({parent:room,kind:'Maneki_neko_Colorful',position:[-3.9,1.3,-2.6]});
+ anchor([-4.4,1.6,-2.6],'Look at Merry Moose',()=>action('inspect','Merry Moose','Nao’s cheerful wooden mascot watches over the counter. Everyone has a different story about how it reached the island.'));
+ const owned=[barfly,moose,cat];
+ return {owned,ownedUpdate:dt=>owned.forEach(actor=>actor.update(dt)),dispose:()=>owned.forEach(actor=>actor.dispose()),name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
 }
 
 /**

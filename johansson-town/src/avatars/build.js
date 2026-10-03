@@ -40,15 +40,16 @@ export function measure(recipe){
  const r=normalizeRecipe(recipe);
  const stage=STAGES[r.age]||STAGES.adult;
  const H=stage.base+r.body.height*stage.span,k=H/1.6,build=r.body.build;
- const profile=headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head,headSX=profile.width,headSY=profile.height;
+ const profile=headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head*(r.body.proportion==='rounded'?1.30:1),headSX=profile.width,headSY=profile.height;
+ const rounded=r.body.proportion==='rounded';
  const neck=.055*k,body=H-Rh*2*headSY-neck;
- const leg=body*.47,torso=body-leg;
+ const leg=body*(rounded?.37:.47),torso=body-leg;
  const foot=.07*k,thigh=(leg-foot)*.5,shin=thigh;
  const legR=(.058+build*.024)*k,armR=(.045+build*.016)*k;
  const feminine=r.body.silhouette==='feminine',masculine=r.body.silhouette==='masculine';
- const width=(.3+build*.15)*k*(feminine?.94:masculine?1.08:1),depth=(.2+build*.09)*k;
+ const width=(.3+build*.15)*k*(rounded?1.20:1)*(feminine?.94:masculine?1.08:1),depth=(.2+build*.09)*k*(rounded?1.15:1);
  const hips=width*(feminine?1.13:masculine?.9:1),waistRatio=feminine?.79:masculine?.98:.96;
- const upper=.22*k,fore=.2*k,hand=.056*k;
+ const upper=(rounded?.18:.22)*k,fore=(rounded?.16:.2)*k,hand=.056*k;
  const hipY=leg,chestY=hipY+torso*.5,neckY=hipY+torso,headY=neckY+neck;
  return {H,k,Rh,headSX,headSY,profile,neck,torso,leg,foot,thigh,shin,legR,armR,width,hips,waistRatio,depth,upper,fore,hand,hipY,chestY,neckY,headY,
   // The arm hangs from just inside the torso's edge, below its top, so the shoulder

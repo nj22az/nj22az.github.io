@@ -60,6 +60,7 @@ try{
   await page.getByRole('button',{name:'Randomise appearance'}).click();await page.getByRole('button',{name:'Undo',exact:true}).click();
   assert.equal(await page.evaluate(()=>JSON.stringify(window.maker.recipe)),before);
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('body');else await page.getByRole('tab',{name:'Body',exact:true}).click();
+  await page.getByRole('tab',{name:'Style',exact:true}).click();await page.getByRole('button',{name:'Rounded',exact:true}).click();assert.equal(await page.evaluate(()=>maker.recipe.body.proportion),'rounded');
   await page.getByLabel('Preview pose').selectOption('Wave');
   await page.getByRole('button',{name:'Share',exact:true}).click();await page.getByLabel('Import an islander').fill('http://[invalid?avatar=bad');
   await page.getByRole('button',{name:'Try the pasted one'}).click();assert.ok(await page.getByRole('button',{name:'That code did not work'}).isVisible());
@@ -75,7 +76,7 @@ try{
   const profile=await page.evaluate(()=>window.maker.recipe.profile);assert.equal(profile.month,2);assert.equal(profile.day,29);assert.equal(profile.catchphrase,'Haisai!');
   await page.getByRole('button',{name:'Next',exact:true}).click();
   assert.match(await page.locator('.shm-bubble').textContent({timeout:4000}).catch(()=>''),/^|Hey/);
-  await page.getByRole('button',{name:'Save and play'}).click();assert.equal(await page.evaluate(()=>window.saved.name),'Test islander');assert.equal(await page.evaluate(()=>window.saved.profile.catchphrase),'Haisai!');assert.equal(await page.locator('.shm').count(),0);assert.equal(await page.evaluate(()=>document.activeElement.id),'opener');assert.deepEqual(errors,[]);
+  await page.getByRole('button',{name:'Save and play'}).click();assert.equal(await page.evaluate(()=>window.saved.name),'Test islander');assert.equal(await page.evaluate(()=>window.saved.body.proportion),'rounded');assert.equal(await page.evaluate(()=>window.saved.profile.catchphrase),'Haisai!');assert.equal(await page.locator('.shm').count(),0);assert.equal(await page.evaluate(()=>document.activeElement.id),'opener');assert.deepEqual(errors,[]);
   console.log(`Creator interactions and layout passed: ${width}x${height}`);await page.close();
  }
 }finally{await browser.close();}
