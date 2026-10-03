@@ -1,3 +1,4 @@
+import {stairFlight,stairLanding} from './stairs.js';
 import {KITAHAMA} from '../kitahama-layout.js';
 import {plotGate} from './layout.js';
 import {poster,nameplate} from './signs.js';
@@ -88,13 +89,12 @@ function buildFlats(kit,solid,{anchor,onAction}){
   kit.block(x0-1.0,x0-.96,y+.12,y+1.0,z-1.2,z+1.2,0xd8d2c4);
   kit.at(x0-.55,z,Math.PI/2,()=>laundry(kit,0,0,{length:1.9,seed:Math.round(z*7+y)}),y+.1);
  }
- // The outside stair along the south gable, up to the corridor.
- const steps=14,rise=H/steps,sx0=x0+.4,run=(x1+.3-sx0)/steps,sz0=z0-1.05,sz1=z0-.05;
- for(let i=0;i<steps;i++){const x=sx0+i*run;kit.block(x,x+run+.02,i*rise,(i+1)*rise,sz0,sz1,0xcfc9bb);}
- kit.block(x1+.2,cx1,H-.08,H+.08,sz0,z0,0xcfc9bb);
- for(let i=0;i<=steps;i+=2){const x=sx0+i*run;kit.box(.04,.95,.04,x,i*rise+.47,sz0+.02,steel);}
- kit.rod([sx0,.95,sz0+.02],[x1+.3,H+.95,sz0+.02],.025,steel);
- solid(kit.rect(sx0,cx1,sz0,sz1,H,'flats-stair'));
+ // A broad flight reaches the same finished level as the open corridor.
+ const sz0=z0-1.6,sz1=z0-.2,sx0=x1-4.9;
+ stairFlight(kit,solid,{id:'flats-stair',x:sx0,z:(sz0+sz1)/2,length:4.9,height:H+.08,axis:'x'});
+ stairLanding(kit,{id:'flats-landing',x0:x1,x1:cx1,z0:sz0,z1:z0+.1,y:H+.08},solid);
+ kit.level(cx0,cx1,z0,z1,H+.08,'flats-corridor');
+ solid({...kit.rect(cx1-.05,cx1+.025,sz0,z1,1,'flats-corridor-rail'),minY:kit.point(0,H+.08,0).y});
  // The name on the parapet, mailboxes at the foot of the stair, bicycles by the door.
  kit.sign(poster({title:'KITAHAMA HEIGHTS',lines:['4 FLATS · ENQUIRIES AT THE TOWN HALL'],bg:'#f2ede0',band:'#3f6f8a'}),1.6,.5,x1+.04,H*2+.15,(z0+z1)/2,{ry:Math.PI/2,name:'flats sign'});
  const mx=A.maxX-.55,mz=A.minZ+1.6;

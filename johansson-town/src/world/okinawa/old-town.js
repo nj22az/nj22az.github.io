@@ -1,3 +1,4 @@
+import {stairFlight,stairLanding} from './stairs.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {paint} from './kit.js';
 import {fascia,iceMural,enamel,catchFlag,poster,vertical} from './signs.js';
@@ -178,21 +179,18 @@ function dressSakura(kit,solid,{inspect}){
  for(const z of [-29,-25.6]){kit.rod([x1-.9,top+.45,z],[x1-.9,top+2.4,z],.05,0x6d7478);}
  kit.box(.08,.08,4,x1-.9,top+2.4,-27.3,0x6d7478);
  kit.sign(fascia({jp:"Sakura Shop",en:'Sakura · food & daily goods',bg:'#fbf3dc',accent:'#b84e45',ink:'#a6333c',mark:"Sakura"}),4.2,1.2,x1-.84,top+1.55,-27.3,{ry:Math.PI/2,depth:.08,name:'Sakura rooftop sign'});
- // The outside stair up the back from the yard to the flat's door.
- // It climbs the south end of the back wall, steep as these steel stairs are, so the
- // shop's back door, its crates and Thuan's bench further along are left as they were;
- // the landing runs on over the door at first-floor height.
- const sx=S.minX-.52,from=S.minZ+.3,to=-30.4,steps=16,rise=roof/steps,run=(to-from)/steps;
- for(let i=0;i<steps;i++)kit.box(1,.1,run+.03,sx,rise*(i+1)-.05,from+run*(i+.5),0xcdc7ba);
- kit.block(sx-.5,S.minX,roof-.14,roof,to,to+1.5,0xcdc7ba);
- for(const z of [from+1.2,to-.1])kit.box(.12,roof,.12,sx-.42,roof/2,z,0x9aa0a4);
- kit.rod([sx-.48,1,from],[sx-.48,roof+1,to],.025,0x9aa0a4);kit.rod([sx-.48,roof+1,to],[sx-.48,roof+1,to+1.5],.025,0x9aa0a4);
- for(let i=1;i<steps;i+=3)kit.rod([sx-.48,rise*i,from+run*i],[sx-.48,rise*i+1,from+run*i],.015,0x9aa0a4);
+ // A full-length flight along the yard wall, with a clear foot and door landing.
+ const sx=S.minX-.85,from=S.minZ+.3,to=from+6.72;
+ stairFlight(kit,solid,{id:'sakura-stair',x:sx,z:from,length:to-from,height:roof});
+ stairLanding(kit,{id:'sakura-landing',x0:sx-.7,x1:S.minX+.02,z0:to,z1:to+1.5,y:roof},solid);
+ kit.rod([sx-.725,roof+1,to],[sx-.725,roof+1,to+1.5],.03,0x788386);
+ solid({...kit.rect(sx-.75,sx-.7,to,to+1.5,1,'sakura-landing-rail'),minY:kit.point(0,roof,0).y});
+ kit.rod([sx-.725,roof+1,to+1.5],[S.minX,roof+1,to+1.5],.03,0x788386);
+ solid({...kit.rect(sx-.75,S.minX,to+1.475,to+1.525,1,'sakura-landing-end'),minY:kit.point(0,roof,0).y});
  kit.box(.06,2,.9,S.minX-.02,roof+1,to+.75,0x7b8a8e);
- solid({id:'sakura-stair',x:sx,z:(from+to)/2,w:1.05,d:to-from,height:roof+1});
  // The back wall: condensers up out of reach, the pipes and the meters.
- for(const z of [-31.2,-29.6])kit.box(.32,.6,.85,S.minX-.2,2.7,z,0xe2e0d8);
- for(const z of [-30.8,-29.2])kit.rod([S.minX-.08,.1,z],[S.minX-.08,2.4,z],.03,0x9aa0a4);
+ for(const z of [-24.6,-23.1])kit.box(.32,.6,.85,S.minX-.2,2.7,z,0xe2e0d8);
+ for(const z of [-24.2,-22.7])kit.rod([S.minX-.08,.1,z],[S.minX-.08,2.4,z],.03,0x9aa0a4);
  kit.box(.2,.45,.35,S.minX-.12,1.6,-22.8,0x8a8578);kit.box(.18,.35,.3,S.minX-.12,1.6,-21.9,0x9a958a);
  // Side walls: the ice-cream mural facing up the street, enamel tins facing the quay.
  kit.sign(iceMural(),7.4,2.15,(S.minX+S.maxX)/2-.6,2.05,S.maxZ+.04,{name:'Blue Coral mural'});

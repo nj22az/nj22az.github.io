@@ -36,3 +36,10 @@ export function sweepFraction(start,end,isBlocked,step=.14){
   }
   return safe;
 }
+
+/** Vertical overlap for a standing person; raised floors do not erase walls above them. */
+export function standingHitsRect(x,z,r,y,c,height=1.82){
+ const bottom=c.minY||0,top=Number.isFinite(c.height)?bottom+c.height:Infinity;
+ return bottom<y+height&&top>y+.03&&circleHitsRect(x,z,r,c);
+}
+export function canStepBetween(from,to){return Math.abs(to-from)<=.24;}
