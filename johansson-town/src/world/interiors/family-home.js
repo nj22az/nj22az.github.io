@@ -1,12 +1,22 @@
 import * as THREE from '../../../vendor/three.module.js';
 
 /**
- * Inside an island family's house: one tatami room the way Okinawan homes are laid out,
- * with the family altar (仏壇, the tōtōmē) against the back wall where the ancestors'
- * tablets stand, a low table, a futon for each person who lives here folded against the
- * wall by day, the kitchen through the side, the television, and a nameboard by the door
- * that says who they are and what they do (people/island-households.js). A house to let
- * is the same room, swept and empty, with the rental note on the floor.
+ * Inside an island family's house, planned the way it would have been built (see
+ * docs/BUILDING-AUDIT.md). It used to be one tatami box for every house on the island,
+ * red-tile or concrete, with no entrance, no toilet and no bath -- while the house to let
+ * advertised "2DK, kitchen and bath". The shell is the same 6.4 x 5.6 m; inside:
+ *
+ *  - concrete (the 1970s-80s block house, kind 'concrete'): a 2DK. Genkan with its step and
+ *    shoe cupboard; toilet and bath off to the east; the dining-kitchen across the front;
+ *    two tatami rooms at the back divided by fusuma, the altar in the west one and the
+ *    futons in the east.
+ *  - red-tile (the older house, kind 'red-tile'): ichibanza (the guest room, with its
+ *    tokonoma) and nibanza (the family room, with the tōtōmē, the altar) along the front,
+ *    opening into each other through fusuma; behind them the kitchen with a small bath and
+ *    toilet, and uraza, where the family sleeps.
+ *
+ * Every room has a door gap at least 0.8 m wide, and every partition is solid, so you walk
+ * round the house the way its plan says. A house to let is the same plan, swept and empty.
  *
  * Room contract as everywhere: door on +z, enter facing -z, bounds/spawn/exit.
  */
@@ -15,7 +25,8 @@ const mats=new Map();
 const mat=c=>{if(!mats.has(c))mats.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.85}));return mats.get(c);};
 export const FAMILY_HOME_LAYOUT=Object.freeze({bounds:{minX:-W/2+.05,maxX:W/2-.05,minZ:-D/2+.05,maxZ:D/2-.05},spawn:[0,0,D/2-.6],exit:[0,1.1,D/2-.04],yaw:0});
 
-export function buildFamilyHome({room,reg,action,collider=()=>{},household,title='Home'}){
+export function buildFamilyHome({room,reg,action,collider=()=>{},household,title='Home',kind='concrete'}){
+ const redTile=kind==='red-tile';
  const group=new THREE.Group();group.name='Family home · '+title;room.add(group);
  const box=(size,pos,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...pos);m.receiveShadow=true;if(name)m.name=name;group.add(m);return m;};
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);o.userData.npcInteraction=false;group.add(o);reg(o,label,fn,true);};
@@ -32,31 +43,94 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  group.add(new THREE.HemisphereLight(0xfff0d8,0x8a7a64,1.15));
  const lamp=new THREE.PointLight(0xffe8c8,.7,8,2);lamp.position.set(0,2.4,0);group.add(lamp);
  // The kitchen through the west side; a house to let comes with it.
- box([.6,.9,1.6],[-hw+.32,.45,1.0],0xd8d2c4,'Kitchen counter');box([.62,.04,1.62],[-hw+.32,.92,1.0],0x9aa3a6);collider(-hw+.32,1.0,.6,1.6,.95);
- if(!empty){box([.55,1.3,.55],[-hw+.32,.65,-.3],0xe8ebe6,'Fridge');collider(-hw+.32,-.3,.6,.6,1.3);}
+ // In the concrete house it runs along the dining-kitchen's west wall; in the red-tile
+ // house the kitchen is at the back, beside the bath.
+ const K=redTile?{x:-.15,z:-hd+.34,w:1.4,d:.6,fx:.3,fz:-.68}:{x:-hw+.32,z:1.0,w:.6,d:1.6,fx:-hw+.32,fz:-.3};
+ box([K.w,.9,K.d],[K.x,.45,K.z],0xd8d2c4,'Kitchen counter');box([K.w+.02,.04,K.d+.02],[K.x,.92,K.z],0x9aa3a6);collider(K.x,K.z,K.w,K.d,.95);
+ if(!empty){box([.55,1.3,.55],[K.fx,.65,K.fz],0xe8ebe6,'Fridge');collider(K.fx,K.fz,.6,.6,1.3);}
+ // ---- The plan: partitions with door gaps, and the rooms' own fittings. ----
+ const wallMat=redTile?0xf1e6cc:0xeee3cc,frame=0x5a4430;
+ /** A partition from (x1,z1) to (x2,z2), axis-aligned, with gaps [from,to] along it. */
+ const partition=(x1,z1,x2,z2,gaps=[],{name='Partition',fusuma=false}={})=>{
+  const alongX=Math.abs(z2-z1)<1e-6,a0=alongX?Math.min(x1,x2):Math.min(z1,z2),a1=alongX?Math.max(x1,x2):Math.max(z1,z2),fixed=alongX?z1:x1;
+  let at=a0;const spans=[];for(const [g0,g1] of [...gaps].sort((p,q)=>p[0]-q[0])){if(g0>at)spans.push([at,g0]);at=Math.max(at,g1);}if(a1>at)spans.push([at,a1]);
+  for(const [p0,p1] of spans){const len=p1-p0,mid=(p0+p1)/2;
+   const size=alongX?[len,H,.08]:[.08,H,len],pos=alongX?[mid,H/2,fixed]:[fixed,H/2,mid];
+   box(size,pos,fusuma?0xf6efdc:wallMat,name);
+   if(fusuma){// Paper panels in a dark frame, a panel to every 0.9 m.
+    const n=Math.max(1,Math.round(len/.9));for(let k=0;k<=n;k++){const t=p0+len*k/n;box(alongX?[.04,1.8,.1]:[.1,1.8,.04],alongX?[t,.9,fixed]:[fixed,.9,t],frame);}
+    box(alongX?[len,.05,.1]:[.1,.05,len],alongX?[mid,1.8,fixed]:[fixed,1.8,mid],frame);}
+   else box(alongX?[len,.05,.1]:[.1,.05,len],alongX?[mid,.95,fixed]:[fixed,.95,mid],frame);
+   collider(pos[0],pos[2],size[0]+.04,size[2]+.04,H);}
+  // A head beam over each opening.
+  for(const [g0,g1] of gaps){const len=g1-g0,mid=(g0+g1)/2;box(alongX?[len,H-2.0,.08]:[.08,H-2.0,len],alongX?[mid,2.0+(H-2.0)/2,fixed]:[fixed,2.0+(H-2.0)/2,mid],wallMat);}
+ };
+ const floorPatch=(x0,x1,z0,z1,c,name)=>box([x1-x0,.012,z1-z0],[(x0+x1)/2,.012,(z0+z1)/2],c,name);
+ /** A toilet or bath room; the fitting stands at the end away from its door. */
+ const wetRoom=(x0,x1,z0,z1,label,toilet,doorAt='z0')=>{
+  floorPatch(x0+.04,x1-.04,z0+.04,z1-.04,0xd8e4e6,label+' floor');
+  const far=doorAt==='z0'?z1:z0,dir=doorAt==='z0'?-1:1,fz=far+dir*.33,cx=(x0+x1)/2;
+  if(toilet){box([.4,.4,.55],[cx,.2,fz],0xf4f6f6,'Toilet');box([.42,.5,.16],[cx,.65,far+dir*.1],0xeef2f2,'Toilet cistern');}
+  else{box([x1-x0-.2,.55,.6],[cx,.28,fz],0x7fb8c8,'Bath (ofuro)');box([x1-x0-.3,.04,.5],[cx,.56,fz],0xbfe0e8);box([.12,.6,.12],[x0+.2,1.2,(z0+z1)/2],0x9aa3a6,'Shower');}
+  collider(cx,fz,x1-x0-.1,.6,.6);
+ };
+ let altar,table,futons,tv,board;
+ if(!redTile){
+  // Concrete 2DK.
+  floorPatch(-.75,.75,1.85,hd-.04,0x9a9c96,'Genkan tiles');
+  box([1.5,.06,.12],[0,.03,1.82],0x8a6a46,'Genkan step (agarikamachi)');
+  partition(.75,1.2,.75,hd);                     // genkan / toilet
+  partition(.75,1.2,hw,1.2,[[.95,1.65],[2.3,3.0]]); // toilet and bath doors face the DK
+  partition(1.75,1.2,1.75,hd);                   // toilet / bath
+  wetRoom(.79,1.71,1.24,hd-.04,'Toilet',true,'z0');wetRoom(1.79,hw-.04,1.24,hd-.04,'Bath',false,'z0');
+  box([.32,1.0,.9],[-.58,.5,2.3],0x8a6a46,'Getabako (shoe cupboard)');collider(-.58,2.3,.34,.9,1.0);
+  floorPatch(-hw+.04,.75,-.6,1.82,0xc9b48c,'DK floor');floorPatch(.79,hw-.04,-.6,1.16,0xc9b48c,'DK floor');
+  box([1.2,.06,.8],[-1.3,.72,.35],0x8a6a46,'Dining table');for(const [x,z] of [[-1.3,-.25],[-1.3,.95],[-2.15,.35],[-.45,.35]])box([.38,.45,.38],[x,.22,z],0x6b4a32,'Dining chair');collider(-1.3,.35,1.3,.9,.75);
+  partition(-hw,-.6,hw,-.6,[[-1.2,-.4],[1.1,2.0]],{fusuma:true});
+  partition(0,-hd,0,-.6,[[-1.9,-1.1]],{fusuma:true});
+  altar={x:-1.6,z:-hd+.3};table={x:-2.25,z:-1.45};tv={x:2.55,z:-.33,ry:0};board={x:.7,z:2.2,ry:-Math.PI/2};
+  futons={x0:.5,z:-hd+.5,step:.72,along:'x'};
+ }else{
+  // The older Okinawan house: ichibanza and nibanza at the front, kitchen and uraza behind.
+  partition(0,-.4,0,hd-1.2,[[.25,1.25]],{fusuma:true});        // ichibanza | nibanza
+  partition(-hw,-.4,hw,-.4,[[-1.6,-.8],[.5,1.3]]);           // front rooms | back rooms
+  partition(.6,-hd,.6,-.4,[[-1.7,-.9]]);                   // kitchen | uraza
+  partition(-hw,-1.45,-.9,-1.45,[[-3.0,-2.35],[-1.95,-1.15]]); // kitchen | toilet and bath
+  partition(-2.2,-hd,-2.2,-1.45);partition(-.9,-hd,-.9,-1.45);
+  wetRoom(-hw+.04,-2.24,-hd+.04,-1.49,'Toilet',true,'z1');wetRoom(-2.16,-.94,-hd+.04,-1.49,'Bath',false,'z1');
+  floorPatch(-hw+.04,.56,-1.41,-.44,0xa58a68,'Kitchen boards');floorPatch(-.86,.56,-hd+.04,-1.41,0xa58a68,'Kitchen boards');
+  // Tokonoma: a raised alcove in the ichibanza with a hanging scroll and a vase.
+  box([.5,.12,1.0],[hw-.27,.06,.2],0x6d5238,'Tokonoma');box([.03,1.0,.5],[hw-.07,1.35,.2],0xe9e0c4,'Hanging scroll');box([.1,.22,.1],[hw-.27,.23,.45],0x3f6a8a,'Ikebana vase');collider(hw-.27,.2,.52,1.0,.2);
+  altar={x:-2.4,z:-.4+.3};table={x:1.6,z:1.0};tv={x:-hw+.55,z:1.1,ry:Math.PI/2};board={x:1.6,z:hd-.05,ry:0};
+  futons={x0:1.0,z:-hd+.5,step:.62,along:'x'};
+ }
  if(empty){
   box([.3,.01,.42],[0,.01,.6],0xf4ecd6,'Rental note');
   anchor([0,.5,.6],'Read the rental note',()=>action('read',"For rent · Rental house","2DK, tatami, kitchen and bath, water tank on the roof. ¥28,000 a month. Enquiries to the town hall, Residents Division. Somebody new could live here."));
   return {...FAMILY_HOME_LAYOUT,home:true,toLet:true};
  }
  // The family altar: lacquer cabinet, the tablets, offerings of fruit and an incense bowl.
- box([1.2,1.3,.5],[-1.2,.65,-hd+.3],0x3a2a20,'Butsudan');box([1.0,.5,.05],[-1.2,1.1,-hd+.56],0x8a6a2a);
- for(let i=0;i<3;i++)box([.08,.32,.04],[-1.5+i*.3,1.12,-hd+.5],0x1c1612,'Ancestral tablet');
- box([.18,.08,.18],[-1.2,1.32,-hd+.42],0xd9a43a,'Incense bowl');
- for(const [x,c] of [[-1.55,0xe8742a],[-.85,0xf4d23c]])box([.12,.12,.12],[x,1.36,-hd+.42],c,'Offering');
- collider(-1.2,-hd+.3,1.2,.5,1.3);
- // Low table and cushions; the TV in the corner.
- box([1.1,.05,.75],[.2,.36,-.3],0x6b4a32,'Low table');collider(.2,-.3,1.1,.75,.4);
- for(const [x,z] of [[.2,.35],[.2,-.95],[-.55,-.3],[.95,-.3]])box([.48,.07,.48],[x,.04,z],0x3f6f8a);
- box([.8,.42,.4],[hw-.6,.21,-hd+.3],0x6b4a32);box([.58,.44,.42],[hw-.6,.64,-hd+.32],0x2b2b2b,'Television');collider(hw-.6,-hd+.3,.8,.4,.9);
- // One futon per person, folded along the east wall, each in their own colour.
- household.members.forEach((m,i)=>{const c=[0x2c3e5c,0xb2453b,0x3f6a4a,0x8a6aa8][i%4];
-  box([.95,.36,.7],[hw-.55,.18+i*.0,-.6+i*.78],0xe9dfc8,'Futon '+m.name);box([.9,.1,.65],[hw-.55,.41,-.6+i*.78],c);});
- collider(hw-.55,-.6+(household.members.length-1)*.39,.95,household.members.length*.78,.5);
+ // Its back is to a wall and it faces into its room (+z).
+ {const a=altar;box([1.2,1.3,.5],[a.x,.65,a.z],0x3a2a20,'Butsudan');box([1.0,.5,.05],[a.x,1.1,a.z+.26],0x8a6a2a);
+ for(let i=0;i<3;i++)box([.08,.32,.04],[a.x-.3+i*.3,1.12,a.z+.2],0x1c1612,'Ancestral tablet');
+ box([.18,.08,.18],[a.x,1.32,a.z+.12],0xd9a43a,'Incense bowl');
+ for(const [dx,c] of [[-.35,0xe8742a],[.35,0xf4d23c]])box([.12,.12,.12],[a.x+dx,1.36,a.z+.12],c,'Offering');
+ collider(a.x,a.z,1.2,.5,1.3);}
+ // Low table and cushions in the tatami room; the television.
+ box([1.1,.05,.75],[table.x,.36,table.z],0x6b4a32,'Low table');collider(table.x,table.z,1.1,.75,.4);
+ for(const [dx,dz] of [[0,.62],[0,-.62],[-.75,0],[.75,0]])box([.48,.07,.48],[table.x+dx,.04,table.z+dz],0x3f6f8a,'Zabuton');
+ {const g=new THREE.Group();g.position.set(tv.x,0,tv.z);g.rotation.y=tv.ry;group.add(g);
+  const add=(size,at,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);if(name)m.name=name;g.add(m);};
+  add([.8,.42,.4],[0,.21,0],0x6b4a32,'TV stand');add([.58,.44,.42],[0,.64,.02],0x2b2b2b,'Television');
+  collider(tv.x,tv.z,Math.abs(Math.sin(tv.ry))>.5?.4:.8,Math.abs(Math.sin(tv.ry))>.5?.8:.4,.9);}
+ // One futon per person, folded along the back wall of the sleeping room, each in their own colour.
+ household.members.forEach((m,i)=>{const c=[0x2c3e5c,0xb2453b,0x3f6a4a,0x8a6aa8][i%4],x=futons.x0+i*futons.step;
+  box([.58,.36,.95],[x,.18,futons.z],0xe9dfc8,'Futon '+m.name);box([.54,.1,.9],[x,.41,futons.z],c);});
+ if(household.members.length)collider(futons.x0+(household.members.length-1)*futons.step/2,futons.z,household.members.length*futons.step,.95,.5);
  // Who lives here, on the board by the door.
- box([.5,.7,.03],[1.6,1.5,hd-.05],0xf4ecd6,'Household board');
- anchor([1.6,1.4,hd-.4],'Read the household board',()=>action('read',title,household.members.map(m=>m.name+' — '+m.purpose).join('\n')));
- anchor([-1.2,1.1,-hd+.9],'Look at the family altar',()=>action('inspect','Tōtōmē · the family altar','The ancestors\' tablets in their lacquer case, a bowl of incense ash, an orange and a box of sweets. On the first and fifteenth of the month somebody lights three sticks and says the family\'s news out loud.'));
+ {const g=new THREE.Group();g.position.set(board.x,1.5,board.z);g.rotation.y=board.ry;group.add(g);const m=new THREE.Mesh(new THREE.BoxGeometry(.5,.7,.03),mat(0xf4ecd6));m.name='Household board';g.add(m);}
+ anchor([board.x+(board.ry?-.35:0),1.4,board.z-(board.ry?0:.35)],'Read the household board',()=>action('read',title,household.members.map(m=>m.name+' — '+m.purpose).join('\n')));
+ anchor([altar.x,1.1,altar.z+.7],'Look at the family altar',()=>action('inspect','Tōtōmē · the family altar','The ancestors\' tablets in their lacquer case, a bowl of incense ash, an orange and a box of sweets. On the first and fifteenth of the month somebody lights three sticks and says the family\'s news out loud.'));
  if(household?.members?.some(m=>m.name==='Thuan')){box([.85,1.8,.5],[-hw+.45,.9,-hd+.65],0x765343,'Thuan’s wardrobe');collider(-hw+.45,-hd+.65,.85,.5,1.8);anchor([-hw+.7,1.1,-hd+1.15],'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'));}
  return {...FAMILY_HOME_LAYOUT,home:true};
 }

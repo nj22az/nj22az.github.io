@@ -39,7 +39,11 @@ function buildSharedHome({profile,room,box,reg,collider,action,exit}){
  part([7,2.8,.12],[0,1.4,-3.4],0xe3d8bd);
  part([1.9,.12,.7],[0,.68,1.35],0x98724e,true);
  household.residents.forEach((name,i)=>{
-  const side=i?-1:1,style=residentPersonality(name),p=RESIDENTS.find(p=>p.name===name),routine=homeLayoutFor(name),x=routine.bed[0],hours=sleepHours(p);
+  // The routine may be measured for another room (Thuan's is the Yuri apartment, where
+  // her futon is at x -4.15). In this 7 m room that put the futon outside the wall, so a
+  // bed that would not fit keeps to its own side of this room instead.
+  const side=i?-1:1,style=residentPersonality(name),p=RESIDENTS.find(p=>p.name===name),routine=homeLayoutFor(name),hours=sleepHours(p);
+  const half=(layout.bounds.maxX-layout.bounds.minX)/2,x=Math.abs(routine.bed[0])<=half-.7?routine.bed[0]:-side*2.1;
   const bed=part([1.2,.18,2.15],[x,.36,-1.05],0xe9dfc8,true);bed.name=name+' futon';
   part([1.1,.055,1.62],[x,.48,-.77],style.top);part([.92,.16,.48],[x,.57,-1.57],0xf3e8d2);
   part([.6,.1,.6],[routine.table[0],.36,routine.table[2]],style.top);

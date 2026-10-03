@@ -1,0 +1,580 @@
+[
+ {
+  "id": "clinic",
+  "title": "Minato Clinic",
+  "kind": "civic",
+  "w": 6.6,
+  "h": 5.6,
+  "m2": 37,
+  "jo": 22.8,
+  "tsubo": 11.2,
+  "ceiling": 2.85,
+  "moduleOff": 0.23,
+  "rooms": 1,
+  "roomSizes": [
+   40.7
+  ],
+  "doors": 0,
+  "missing": [
+   "toilet"
+  ]
+ },
+ {
+  "id": "community-kitchen",
+  "title": "Community Kitchen",
+  "kind": "civic",
+  "w": 6.6,
+  "h": 5.6,
+  "m2": 37,
+  "jo": 22.8,
+  "tsubo": 11.2,
+  "ceiling": 2.85,
+  "moduleOff": 0.23,
+  "rooms": 1,
+  "roomSizes": [
+   40.9
+  ],
+  "doors": 0,
+  "missing": [
+   "counter",
+   "toilet"
+  ]
+ },
+ {
+  "id": "koban",
+  "title": "Minato Police Box",
+  "kind": "civic",
+  "w": 6.8,
+  "h": 3.9,
+  "m2": 26.5,
+  "jo": 16.4,
+  "tsubo": 8,
+  "ceiling": null,
+  "moduleOff": 0.43,
+  "rooms": 1,
+  "roomSizes": [
+   26.1
+  ],
+  "doors": 1,
+  "missing": [
+   "toilet"
+  ]
+ },
+ {
+  "id": "mayor-office",
+  "title": "Mayor’s Office",
+  "kind": "civic",
+  "w": 6.6,
+  "h": 5.6,
+  "m2": 37,
+  "jo": 22.8,
+  "tsubo": 11.2,
+  "ceiling": 2.85,
+  "moduleOff": 0.23,
+  "rooms": 1,
+  "roomSizes": [
+   40.3
+  ],
+  "doors": 0,
+  "missing": [
+   "counter",
+   "toilet"
+  ]
+ },
+ {
+  "id": "office",
+  "title": "Johansson Harbour Office",
+  "kind": "civic",
+  "w": 6.74,
+  "h": 6.74,
+  "m2": 45.4,
+  "jo": 28,
+  "tsubo": 13.7,
+  "ceiling": 2.9,
+  "moduleOff": 0.37,
+  "rooms": 1,
+  "roomSizes": [
+   49.1
+  ],
+  "doors": 1,
+  "missing": [
+   "toilet"
+  ]
+ },
+ {
+  "id": "onsen",
+  "title": "Umi-no-yu",
+  "kind": "civic",
+  "w": 10,
+  "h": 1.4,
+  "m2": 14,
+  "jo": 8.6,
+  "tsubo": 4.2,
+  "ceiling": 2.8,
+  "moduleOff": 0.42,
+  "rooms": 1,
+  "roomSizes": [
+   16.6
+  ],
+  "doors": 1,
+  "missing": [
+   "toilet"
+  ]
+ },
+ {
+  "id": "school",
+  "title": "Town Hall Classroom",
+  "kind": "civic",
+  "w": 9,
+  "h": 7.2,
+  "m2": 64.8,
+  "jo": 40,
+  "tsubo": 19.6,
+  "ceiling": 3,
+  "moduleOff": 0.1,
+  "rooms": 1,
+  "roomSizes": [
+   66.4
+  ],
+  "doors": 1,
+  "missing": [
+   "counter",
+   "toilet"
+  ]
+ },
+ {
+  "id": "home-kitahama-10",
+  "title": "Mr Tamashiro & Mrs Tamashiro’s home",
+  "kind": "home",
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
+  "rooms": 1,
+  "roomSizes": [
+   39.2
+  ],
+  "doors": 0,
+  "missing": [
+   "entrance"
+  ]
+ },
+ {
+  "id": "home-kitahama-11",
+  "title": "Mr Iha’s home",
+  "kind": "home",
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
+  "rooms": 1,
+  "roomSizes": [
+   39.1
+  ],
+  "doors": 0,
+  "missing": [
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "home-kitahama-12",
+  "title": "Mrs Kohagura’s home",
+  "kind": "home",
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
+  "rooms": 1,
+  "roomSizes": [
+   39.1
+  ],
+  "doors": 0,
+  "missing": [
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "home-kitahama-3",
+  "title": "Kōji’s home",
+  "kind": "home",
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
+  "rooms": 1,
+  "roomSizes": [
+   39.1
+  ],
+  "doors": 0,
+  "missing": [
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "home-kitahama-4",
+  "title": "Postman Tōma’s home",
+  "kind": "home",
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
+  "rooms": 1,
+  "roomSizes": [
+   39.2
+  ],
+  "doors": 0,
+  "missing": [
+   "entrance"
+  ]
+ },
+ {
+  "id": "home-kitahama-5",
+  "title": "House to let",
+  "kind": "home",
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
+  "rooms": 1,
+  "roomSizes": [
+   39.1
+  ],
+  "doors": 0,
+  "missing": [
+   "butsudan",
+   "bedding",
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "home-kitahama-6",
+  "title": "Grandfather Taira & Grandmother Taira’s home",
+  "kind": "home",
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
+  "rooms": 1,
+  "roomSizes": [
+   39.2
+  ],
+  "doors": 0,
+  "missing": [
+   "entrance"
+  ]
+ },
+ {
+  "id": "home-kitahama-7",
+  "title": "Mr Chinen & Mrs Chinen’s home",
+  "kind": "home",
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
+  "rooms": 1,
+  "roomSizes": [
+   39.1
+  ],
+  "doors": 0,
+  "missing": [
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "home-kitahama-8",
+  "title": "Ms Uezu’s home",
+  "kind": "home",
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
+  "rooms": 1,
+  "roomSizes": [
+   39.1
+  ],
+  "doors": 0,
+  "missing": [
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "home-kitahama-9",
+  "title": "Grandmother Gushiken’s home",
+  "kind": "home",
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
+  "rooms": 1,
+  "roomSizes": [
+   39.2
+  ],
+  "doors": 0,
+  "missing": [
+   "entrance"
+  ]
+ },
+ {
+  "id": "mayor-home",
+  "title": "Mayor’s House",
+  "kind": "home",
+  "w": 6.6,
+  "h": 5.6,
+  "m2": 37,
+  "jo": 22.8,
+  "tsubo": 11.2,
+  "ceiling": 2.85,
+  "moduleOff": 0.23,
+  "rooms": 1,
+  "roomSizes": [
+   41
+  ],
+  "doors": 0,
+  "missing": [
+   "toilet",
+   "bath",
+   "butsudan",
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "resident-home-aya",
+  "title": "Aya & Reiko’s home",
+  "kind": "home",
+  "w": 7,
+  "h": 6.8,
+  "m2": 47.6,
+  "jo": 29.4,
+  "tsubo": 14.4,
+  "ceiling": null,
+  "moduleOff": 0.43,
+  "rooms": 1,
+  "roomSizes": [
+   47.7
+  ],
+  "doors": 1,
+  "missing": [
+   "kitchen",
+   "toilet",
+   "bath",
+   "butsudan",
+   "bedding",
+   "entrance",
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "resident-home-kenji",
+  "title": "Kenji & Tetsuo’s home",
+  "kind": "home",
+  "w": 7,
+  "h": 6.8,
+  "m2": 47.6,
+  "jo": 29.4,
+  "tsubo": 14.4,
+  "ceiling": null,
+  "moduleOff": 0.43,
+  "rooms": 1,
+  "roomSizes": [
+   47.7
+  ],
+  "doors": 1,
+  "missing": [
+   "kitchen",
+   "toilet",
+   "bath",
+   "butsudan",
+   "bedding",
+   "entrance",
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "resident-home-mrs-sato",
+  "title": "Mrs Sato’s home",
+  "kind": "home",
+  "w": 5.98,
+  "h": 5.96,
+  "m2": 35.6,
+  "jo": 22,
+  "tsubo": 10.8,
+  "ceiling": 2.8,
+  "moduleOff": 0.41,
+  "rooms": 1,
+  "roomSizes": [
+   38.7
+  ],
+  "doors": 1,
+  "missing": [
+   "kitchen",
+   "toilet",
+   "bath",
+   "butsudan",
+   "bedding",
+   "entrance",
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "resident-home-thuan",
+  "title": "Thuan & Nao’s home",
+  "kind": "home",
+  "w": 7,
+  "h": 6.8,
+  "m2": 47.6,
+  "jo": 29.4,
+  "tsubo": 14.4,
+  "ceiling": null,
+  "moduleOff": 0.43,
+  "rooms": 1,
+  "roomSizes": [
+   47.7
+  ],
+  "doors": 1,
+  "missing": [
+   "kitchen",
+   "toilet",
+   "bath",
+   "butsudan",
+   "bedding",
+   "entrance",
+   "tokonoma"
+  ]
+ },
+ {
+  "id": "form3d",
+  "title": "Dock Electrical & Repair Workshop",
+  "kind": "shop",
+  "w": 8.56,
+  "h": 7.16,
+  "m2": 61.3,
+  "jo": 37.8,
+  "tsubo": 18.5,
+  "ceiling": 2.75,
+  "moduleOff": 0.37,
+  "rooms": 2,
+  "roomSizes": [
+   56.7,
+   6.8
+  ],
+  "doors": 1,
+  "missing": [
+   "counter",
+   "toilet",
+   "storage"
+  ]
+ },
+ {
+  "id": "frontrow",
+  "title": "Front-Row Books",
+  "kind": "shop",
+  "w": 8.56,
+  "h": 7.16,
+  "m2": 61.3,
+  "jo": 37.8,
+  "tsubo": 18.5,
+  "ceiling": 2.75,
+  "moduleOff": 0.37,
+  "rooms": 2,
+  "roomSizes": [
+   51.7,
+   6.8
+  ],
+  "doors": 1,
+  "missing": [
+   "toilet",
+   "storage"
+  ]
+ },
+ {
+  "id": "izakaya",
+  "title": "Minato Izakaya",
+  "kind": "shop",
+  "w": 18.1,
+  "h": 13,
+  "m2": 235.3,
+  "jo": 145.2,
+  "tsubo": 71.2,
+  "ceiling": 3.8,
+  "moduleOff": 0.26,
+  "rooms": 1,
+  "roomSizes": [
+   234.2
+  ],
+  "doors": 1,
+  "missing": [
+   "counter",
+   "toilet"
+  ]
+ },
+ {
+  "id": "market",
+  "title": "Sakura Shōten",
+  "kind": "shop",
+  "w": 13.72,
+  "h": 7.9,
+  "m2": 108.4,
+  "jo": 66.9,
+  "tsubo": 32.8,
+  "ceiling": 2.82,
+  "moduleOff": 0.29,
+  "rooms": 1,
+  "roomSizes": [
+   112.5
+  ],
+  "doors": 1,
+  "missing": []
+ },
+ {
+  "id": "ramen",
+  "title": "Sato Ramen",
+  "kind": "shop",
+  "w": 18.1,
+  "h": 13,
+  "m2": 235.3,
+  "jo": 145.2,
+  "tsubo": 71.2,
+  "ceiling": 3.8,
+  "moduleOff": 0.26,
+  "rooms": 1,
+  "roomSizes": [
+   236.7
+  ],
+  "doors": 1,
+  "missing": [
+   "counter",
+   "toilet",
+   "storage"
+  ]
+ }
+]

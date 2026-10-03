@@ -25,7 +25,7 @@ export function buildIslandHomes(world,options){
   if(residents){
    Object.assign(site,{homeOwner:residents[0],homeOwners:[...residents],homeEntry:p.id});
    for(const name of residents)homes.set(name,{owner:name,household:householdFor(name)?.id,address:site.line,door:[...door],building:'kitahama',occupied:false});
-  }else Object.assign(site,{familyHome:household||{members:[],toLet:true},ownRoom:true});
+  }else Object.assign(site,{familyHome:household||{members:[],toLet:true},houseKind:p.kind||'concrete',ownRoom:true});
   options.sites.push(site);
   const anchor=new THREE.Object3D();anchor.name='kitahama entrance:'+p.id;anchor.position.set(door[0],1.3,door[1]);world.group.add(anchor);
   options.register?.(anchor,(household?.toLet?'Look round ':'Visit ')+title,()=>options.enter(site));
