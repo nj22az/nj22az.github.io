@@ -523,12 +523,13 @@ function buildKitahama(kit,solid,ctx){
  ctx.inspect((F.minX+F.maxX)/2,1.2,F.minZ-.8,'Look at the cane field',"Sugar cane · Sugar cane",
   'Head-high cane in rows, rattling in the wind off the point. The Tōmas and the Ueharas share it; in January everybody on the lane cuts for a fortnight and the lorry comes over on the ferry to take it to the mill on the main island.');
  // The pole line: up the approach lane from the beach, then along the cross lane, with
- // a drop to every house.
+ // a drop to every house. Poles stand on the lane's own verge, a quarter-metre in from its
+ // edge: set outside the edge, they stood inside the garden walls.
  const poles=[];
  const pole=(x,z,o={})=>{const p=utilityPole(kit,x,z,o);solid(p.collider);poles.push(p);return p;};
- const up=[30,40,50,60].map((z,i)=>pole(K.approach.minX-.35,z,{face:Math.PI/2,transformer:i===3,lamp:i%2===0,seed:200+i}));
+ const up=[30,40,50,60].map((z,i)=>pole(K.approach.minX+.25,z,{face:Math.PI/2,transformer:i===3,lamp:i%2===0,seed:200+i}));
  for(let i=0;i<up.length-1;i++)wiresBetween(kit,up[i],up[i+1]);
- const across=[34.5,42,52.5].map((x,i)=>pole(x,K.lane.maxZ+.35,{face:Math.PI,transformer:false,lamp:true,seed:210+i}));
+ const across=[34.5,42,52.5].map((x,i)=>pole(x,K.lane.maxZ-.25,{face:Math.PI,transformer:false,lamp:true,seed:210+i}));
  wiresBetween(kit,up[3],across[1],{sag:.5});wiresBetween(kit,across[0],across[1]);wiresBetween(kit,across[1],across[2]);
  for(const p of K.plots.filter(q=>Number(q.id.split('-')[1])<6)){const {door}=plotGate(p,0);const near=across.reduce((a,b)=>Math.abs(b.anchors[0].x-door[0])<Math.abs(a.anchors[0].x-door[0])?b:a);
   serviceDrop(kit,near,kit.point(door[0]+1.5,2.6,p.gate==='north'?p.minZ+3.2:p.maxZ-3.2).toArray());}

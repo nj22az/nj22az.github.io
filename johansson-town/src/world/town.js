@@ -16,6 +16,9 @@ import {STREET_CAST} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
 import {buildStreetFurniture} from './street-furniture.js';
+import {ishiganto,stopMarking,roadSign,edgeLines} from './road-standards.js';
+import {KITAHAMA} from './kitahama-layout.js';
+import {COAST_ROAD} from './island-plan.js';
 import {lanePatches} from './lane-surfaces.js?snappy=1';
 import {buildParkOnsen} from './park-onsen.js';
 import {buildSchool} from './school.js';
@@ -260,6 +263,16 @@ export function createTown(options){
    // the crossings. Laid last, so it can step round everything already standing.
    // See street-furniture.js.
    world.streetFurniture=buildStreetFurniture({parent:world.group,colliders:world.colliders,heightAt:groundHeight,shadows:options.shadows});
+   // Public roads to the 1997 standard beyond Main Street (road-standards.js): Kitahama's
+   // T-junctions get their ishiganto and the approach its stop control; the coastal road
+   // gets its white edge lines.
+   {
+    const g=new THREE.Group();g.name='Road standards';world.group.add(g);const ky=KITAHAMA.y;
+    for(const [x,z,ry] of [[43.3,67.88,Math.PI],[23.5,64.12,0],[11.5,67.88,Math.PI]])ishiganto(g,{x,z,y:ky,ry});
+    stopMarking(g,{x:43.3,z:63.7,y:ky,width:KITAHAMA.approach.maxX-KITAHAMA.approach.minX});
+    roadSign(g,'stop',{x:KITAHAMA.approach.minX+.22,z:63.2,y:ky,ry:Math.PI,colliders:world.colliders});
+    edgeLines(g,COAST_ROAD,{width:5,heightAt:groundHeight});
+   }
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
     await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});
   }

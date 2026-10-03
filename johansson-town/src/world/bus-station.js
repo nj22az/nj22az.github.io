@@ -30,7 +30,7 @@ export const BUS_STATION=Object.freeze({
  exit:Object.freeze([MAIN_ROAD.x-2.3,23.05]),
 });
 export const BUS_STATION_ROUTES=Object.freeze([
- {id:'bus-approach',width:6,surface:'asphalt',points:[[BUS_STATION.x,MAIN_ROAD.maxZ],[BUS_STATION.x,BUS_STATION.maxZ]]},
+ {id:'bus-approach',width:MAIN_ROAD.width,surface:'asphalt',points:[[BUS_STATION.x,MAIN_ROAD.maxZ],[BUS_STATION.x,BUS_STATION.maxZ]]},
  {id:'bus-platform',width:3.8,surface:'stone',points:[[-8.7,BUS_STATION.queue[1]],[2.2,BUS_STATION.queue[1]]]},
 ]);
 

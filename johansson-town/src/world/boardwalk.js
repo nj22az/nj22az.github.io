@@ -23,12 +23,13 @@ export function buildBoardwalk(parent,options={}){
  // offset rather than on height: two millimetres of daylight flickers on a phone.
  const decal=()=>({depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
  const dummy=new THREE.Object3D();
- // White edge lines, dashed: 2 m of paint, 1 m gap, each side.
+ // White edge lines, solid, each side.
  const paint=new THREE.MeshStandardMaterial({color:0xf2efe6,roughness:.8,...decal()});
  const dashes=Math.floor(length/3),joints=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),paint,dashes*2);
  joints.name='main-street-edge-lines';joints.receiveShadow=true;joints.renderOrder=1;
  let n=0;for(const side of [-1,1])for(let i=0;i<dashes;i++){
-  dummy.position.set(BOARDWALK.x+side*(BOARDWALK.width/2-.32),0,BOARDWALK.minZ+1.5+i*3);dummy.scale.set(.12,.003,2);dummy.updateMatrix();joints.setMatrixAt(n++,dummy.matrix);}
+  // Solid, not dashed: an edge line (外側線) is continuous; the dashes butt end to end.
+  dummy.position.set(BOARDWALK.x+side*(BOARDWALK.width/2-.3),0,BOARDWALK.minZ+1.5+i*3);dummy.scale.set(.15,.003,3.02);dummy.updateMatrix();joints.setMatrixAt(n++,dummy.matrix);}
  joints.instanceMatrix.needsUpdate=true;joints.computeBoundingSphere();parent.add(joints);
  // Gutters: a darker concrete strip against each kerb.
  const edgeMaterial=new THREE.MeshStandardMaterial({color:0x8d918f,roughness:.95,...decal()});

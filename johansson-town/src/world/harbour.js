@@ -11,6 +11,7 @@ import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
+import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts} from './road-standards.js';
 import {buildStreetLamps,STREET_LAMP_PLACEMENTS} from './street-lamps.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
 import {addHorizon} from './horizon.js';
@@ -147,14 +148,23 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       }
     }
   }
-  for(const x of [MAIN_ROAD.west+.15,MAIN_ROAD.east-.15])for(let z=10;z<MAIN_ROAD.maxZ-.8;z+=4.5)roadMark(.10,1.55,x,z,0xa99f7d);
-  for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,MAIN_ROAD.maxZ-1.8,0xbeb79a);
+  // Road paint to the 1997 standard (road-standards.js): solid white edge lines the
+  // length of the street (the deck section draws its own to the same spec), and where the
+  // road meets the lawn at its north end, 車止め posts rather than a crossing to nowhere.
+  edgeLines(group,[[MAIN_ROAD.x,BOARDWALK.maxZ],[MAIN_ROAD.x,MAIN_ROAD.maxZ-.2]],{width:MAIN_ROAD.width});
+  roadEndPosts(group,{x0:MAIN_ROAD.west+.45,x1:MAIN_ROAD.east-.45,z:MAIN_ROAD.maxZ+.4,colliders});
   [[-4.1,18.2,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));
 
   // Two perpendicular crossings define the short rectangular shopping blocks. Where
   // they fall on the timber boardwalk there is no traffic to stop and nothing to paint:
   // a zebra on deck boards reads as a mistake, so those are left as plain boards.
-  for(const z of [SHOP_CROSSING_Z,-18])if(z>BOARDWALK.maxZ)for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,z,0xbeb79a);
+  // Both crossings: white zebra bars, kerbs dropped (see the kerbstones above), yellow
+  // warning blocks at each end, and the blue crossing sign on the footway.
+  for(const z of [SHOP_CROSSING_Z,-18]){
+    zebraCrossing(group,{x0:MAIN_ROAD.west+.15,x1:MAIN_ROAD.east-.15,z});
+    tactileStrip(group,{x:MAIN_ROAD.west-.38,z,w:.3,d:3});tactileStrip(group,{x:MAIN_ROAD.east+.38,z,w:.3,d:3});
+    roadSign(group,'crossing',{x:MAIN_ROAD.west-.42,z:z+1.75,ry:0,colliders});roadSign(group,'crossing',{x:MAIN_ROAD.east+.12,z:z-1.75,ry:Math.PI,colliders});
+  }
 
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
