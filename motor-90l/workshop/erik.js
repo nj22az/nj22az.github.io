@@ -1,16 +1,35 @@
-// Tetsuo from Johansson Town, rigged for bench work: walk, lean, look, and two-bone IK so his hands
-// land on real points of the motor (studs, shaft, isolator). The avatar is the town's own build.js.
+// Erik, rigged for bench work: walk, lean, look, and two-bone IK so his hands land on real points of
+// the motor (studs, shaft, isolator). He is built with Johansson Town's own avatar code, so he can move
+// into the town's cast (src/avatars/cast.js) as he is.
 import * as THREE from 'three';
 import { buildAvatar } from '/johansson-town/src/avatars/build.js';
-import { recipeFor } from '/johansson-town/src/avatars/cast.js';
+
+/**
+ * Erik: an old Swedish sailor, forty years in engine rooms, who settled on the island and now runs
+ * the electrical bench at the dock workshop. Fair, weathered, white beard, skipper's cap.
+ */
+export const ERIK_RECIPE = Object.freeze({
+  v: 1, name: 'Erik', age: 'elder',
+  body: { height: 0.62, build: 0.62, silhouette: 'masculine', skin: '#f0cdb4' },
+  head: { size: 0.5, shape: 0.55, form: 'soft-square', jaw: 0.6, cheeks: 0.5 },
+  hair: { style: 'crop', colour: '#e9e6e0' },
+  eyes: { style: 'gentle', colour: '#4c7aa6', size: 0.45 },
+  brows: { style: 'bushy', colour: '#e4e0d8', size: 0.6 },
+  nose: { style: 'wide', size: 0.55 },
+  mouth: { style: 'smile', colour: '#b8544a', size: 0.45 },
+  facial: { style: 'beard', colour: '#ece9e3' },
+  blush: 0.45, wrinkles: 0.75,
+  outfit: { top: 'jacket', topColour: '#24324f', bottom: 'trousers', bottomColour: '#3b3d42', footwear: 'boots', shoes: '#2b2420',
+    hat: 'captain', hatColour: '#1d2840', accent: '#f4f1ea' },
+});
 
 const V = () => new THREE.Vector3();
 const _q = new THREE.Quaternion(), _a = V(), _b = V(), _c = V(), _d = V();
 
-export function createTetsuo() {
-  const av = buildAvatar(recipeFor('Tetsuo'), { shadows: true });
+export function createErik() {
+  const av = buildAvatar(ERIK_RECIPE, { shadows: true });
   const holder = new THREE.Group();
-  holder.name = 'Tetsuo';
+  holder.name = 'Erik';
   holder.add(av.root);
   const B = av.bones, m = av.measure;
   const props = { R: new THREE.Group(), L: new THREE.Group() };
@@ -106,26 +125,38 @@ export function createTetsuo() {
   // Fade when he stands between the camera and the work (his head is wider than the terminal box).
   const own = [];
   holder.traverse(o => { if (o.isMesh) own.push(o); });
+  // A see-through toon body shows the inside of its own head, so a ghosted Erik is a flat pale silhouette instead.
+  const ghostMat = new THREE.MeshBasicMaterial({ color: 0xdfe8ee, transparent: true, opacity: 0.3, depthWrite: false });
+  const originals = new Map(own.map(mesh => [mesh, mesh.material]));
   let opacity = 1;
   function setOpacity(o) {
     if (Math.abs(o - opacity) < 0.005) return;
     opacity = o;
-    for (const mesh of own) for (const mt of [].concat(mesh.material)) {
-      mt.transparent = o < 0.99; mt.opacity = o; mt.depthWrite = o >= 0.99;
+    const ghosted = o < 0.97;
+    ghostMat.opacity = 0.12 + 0.5 * o;
+    for (const mesh of own) {
+      if (mesh.userData.outline) { mesh.visible = !ghosted; continue; }
+      mesh.material = ghosted ? ghostMat : originals.get(mesh);
     }
   }
   const head = av.face.head;
   head.geometry.computeBoundingSphere();
   const _s = new THREE.Sphere();
-  // blocking: 0 (clear) … 1 (the line of sight runs through his head or chest)
-  function blocking(from, to) {
+  // blocking: 0 (clear) … 1 — does his head (with the cap) or chest cover the point the camera looks at,
+  // seen from the camera, and is it nearer than that point?
+  function blocking(camera, to) {
     _s.copy(head.geometry.boundingSphere).applyMatrix4(head.matrixWorld);
-    const line = new THREE.Line3(from, to), p = V();
+    const toDist = camera.position.distanceTo(to);
+    const tp = to.clone().project(camera);
     let worst = 0;
-    for (const [c, r] of [[_s.center, _s.radius * 1.05], [B.chest.getWorldPosition(V()), m.width * 0.6]]) {
-      line.closestPointToPoint(c, true, p);
-      if (p.distanceTo(from) < 0.05 || p.distanceTo(to) < 0.02) continue;
-      worst = Math.max(worst, THREE.MathUtils.clamp(1.4 - p.distanceTo(c) / r, 0, 1));
+    for (const [c, r] of [[_s.center.clone(), _s.radius * 1.45], [B.chest.getWorldPosition(V()), m.width * 0.6]]) {
+      const d = camera.position.distanceTo(c);
+      if (d > toDist - 0.02) continue;
+      const cp = c.clone().project(camera);
+      // projected radius in NDC (vertical), corrected for aspect horizontally
+      const rN = r / (d * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
+      const dx = (tp.x - cp.x) * camera.aspect, dy = tp.y - cp.y;
+      worst = Math.max(worst, THREE.MathUtils.clamp(1.3 - Math.hypot(dx, dy) / rN, 0, 1));
     }
     return worst;
   }

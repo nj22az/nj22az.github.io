@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { buildWorkshop } from './scene.js';
-import { createTetsuo } from './tetsuo.js';
+import { createErik } from './erik.js';
 import { CHAPTERS, SHOTS, START } from './routine.js';
 import { PHASE_COLORS } from '../motor.js';
 
@@ -18,8 +18,8 @@ view.appendChild(renderer.domElement);
 
 const W = buildWorkshop(renderer);
 const { scene, motor, iso, tools: T, dust, field, points } = W;
-const tetsuo = createTetsuo();
-scene.add(tetsuo.holder);
+const erik = createErik();
+scene.add(erik.holder);
 
 const camera = new THREE.PerspectiveCamera(38, 1, 0.02, 30);
 camera.position.set(...SHOTS.wide[0]);
@@ -182,7 +182,7 @@ function applyTools(i) {
   const want = toolsAt(i);
   for (const side of ['R', 'L']) {
     const obj = want[side] ? TOOL_OBJ[want[side]] : null;
-    if (holdState[side] !== obj) { tetsuo.hold(side, obj); holdState[side] = obj; }
+    if (holdState[side] !== obj) { erik.hold(side, obj); holdState[side] = obj; }
   }
   const held = new Set(Object.values(holdState));
   T.tester.rest.visible = !held.has(T.tester.R);
@@ -223,10 +223,14 @@ function placeTags(i) {
 
 // ---------- camera director ----------
 const camGoal = { pos: new THREE.Vector3(...SHOTS.wide[0]), at: new THREE.Vector3(...SHOTS.wide[1]) };
-function shotAt(i) {
+const WORK_SHOTS = new Set(['boxTop', 'meter', 'shaft', 'cut', 'fins', 'grille', 'nameplate', 'cable', 'prove']);
+function shotName(i) {
   let k = i;
   while (k > 0 && !beats[k].cam) k--;
-  const [p, a] = SHOTS[beats[k].cam || 'wide'];
+  return beats[k].cam || 'wide';
+}
+function shotAt(i) {
+  const [p, a] = SHOTS[shotName(i)];
   const pos = new THREE.Vector3(...p), at = new THREE.Vector3(...a);
   // pull back on tall narrow screens
   const aspect = view.clientWidth / view.clientHeight;
@@ -300,7 +304,7 @@ function resize() {
 new ResizeObserver(resize).observe(view);
 resize();
 
-let last = performance.now(), ghost = 1;
+let last = performance.now(), ghost = 1, lastBlock = null;
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
@@ -313,7 +317,7 @@ function frame(now) {
   camPoint.copy(camera.position);
   applyState(stateAt(t), playing ? dt * speed : 0);
   applyTools(i);
-  tetsuo.apply(poseAt(t, playing ? dt * speed : 0), dt);
+  erik.apply(poseAt(t, playing ? dt * speed : 0), dt);
   updateLeads();
   if (follow) {
     const g = shotAt(i);
@@ -324,10 +328,14 @@ function frame(now) {
     controls.target.copy(camGoal.at);
   }
   controls.update();
-  // ghost Tetsuo while he hides what he is working on
-  const block = tetsuo.blocking(camera.position, controls.target);
-  ghost += ((block > 0.3 ? 0.28 : 1) - ghost) * Math.min(1, dt * 6);
-  tetsuo.setOpacity(ghost);
+  scene.updateMatrixWorld(); camera.updateMatrixWorld();
+  // ghost Erik while he hides what he is working on
+  // only in the close work shots: in the wide and face shots he is the subject
+  const shot = shotName(beatAt(t));
+  const block = follow && !WORK_SHOTS.has(shot) ? 0 : erik.blocking(camera, controls.target);
+  lastBlock = [shot, block];
+  ghost += ((block > 0.05 ? 0.28 : 1) - ghost) * Math.min(1, dt * 6);
+  erik.setOpacity(ghost);
   renderer.render(scene, camera);
   placeTags(i);
   uiTick();
@@ -336,5 +344,5 @@ function frame(now) {
 
 buildChapters();
 requestAnimationFrame(frame);
-window.__ws = { seek, setPlaying, get time() { return time; }, TOTAL, CHAPTERS, beats, camera, controls, tetsuo, setFollow(v) { follow = v; } };
+window.__ws = { get ghost() { return [ghost, lastBlock]; }, seek, setPlaying, get time() { return time; }, TOTAL, CHAPTERS, beats, camera, controls, erik, setFollow(v) { follow = v; } };
 document.body.classList.add('ready');

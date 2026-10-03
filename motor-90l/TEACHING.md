@@ -1,6 +1,6 @@
 # Teaching basic electrotechnology with the 90L motor
 
-Tetsuo's routine (`workshop/`) is the first set of lessons: Tetsuo from Johansson Town does a real job on the bilge
+Erik's routine (`workshop/`) is the first set of lessons: Erik, an old Swedish sailor who settled on the island, does a real job on the bilge
 pump motor, and the 3D model shows what you cannot see on a real bench. Each chapter has a *Learn* card with the theory
 and the numbers, all worked out in `calc.mjs` from this motor's design.
 
@@ -28,7 +28,7 @@ and the numbers, all worked out in `calc.mjs` from this motor's design.
 7. **The PTC chain.** Thermistor in the winding → relay → contactor; trip and reset, and why a megger kills a PTC.
 8. **The magnetic circuit.** Flux through yoke, teeth and air gap in the cutaway; why a 0.35 mm gap matters.
 9. **Dry out a flooded motor.** Insulation low after the pump room flooded → heat → retest.
-10. **Bearing change.** The workshop strip-down on the motor page, with Tetsuo doing the steps.
+10. **Bearing change.** The workshop strip-down on the motor page, with Erik doing the steps.
 
 Each one is a symptom, measurements on the model, a diagnosis and a fix. If they become Sjöskolan exercises, the text
 goes in `sjoskolan/innehall/` and uses the course notation (U_{pp}, I_{L} …), as CLAUDE.md requires.

@@ -1,10 +1,10 @@
-// The Dock Electrical Workshop bench: room, isolator, the motor (IM B3 on the bench), Tetsuo's instruments.
+// The Dock Electrical Workshop bench: room, isolator, the motor (IM B3 on the bench), Erik's instruments.
 // World units are metres; the motor itself is built in millimetres and scaled.
 import * as THREE from 'three';
 import { RoomEnvironment } from '../vendor/RoomEnvironment.js';
 import { buildMotor, TERMINALS, BOX, BOX_INSIDE, X } from '../motor.js';
 
-// Johansson Town people are drawn big-headed (Tetsuo's head is ~0.47 m across), so the town sizes props up to
+// Johansson Town people are drawn big-headed (Erik's head is ~0.47 m across), so the town sizes props up to
 // read next to them. The motor and the bench kit follow: K × true size.
 export const K = 1.7;
 export const BENCH_Y = 0.5;
@@ -108,7 +108,7 @@ function isolator(scene) {
   const tag = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.08), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: canvasTex(200, 320, (c) => {
     c.fillStyle = '#fff'; c.fillRect(0, 0, 200, 320); c.fillStyle = '#c4231c'; c.fillRect(0, 0, 200, 90);
     c.fillStyle = '#fff'; c.font = '700 40px Arial'; c.fillText('DANGER', 22, 60);
-    c.fillStyle = '#111'; c.font = '700 26px Arial'; ['DO NOT', 'OPERATE', '', 'Locked by:', 'TETSUO'].forEach((t, i) => c.fillText(t, 16, 130 + i * 36));
+    c.fillStyle = '#111'; c.font = '700 26px Arial'; ['DO NOT', 'OPERATE', '', 'Locked by:', 'ERIK'].forEach((t, i) => c.fillText(t, 16, 130 + i * 36));
   }) }));
   tag.position.set(0.0, -0.06, 0.004); lock.add(tag);
   lock.scale.setScalar(0.0001);
@@ -205,7 +205,7 @@ function dti(scene, motorRoot) {
   const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.0015, 0.0015, 0.03, 8), mat(0xc0c4c8, { metalness: 1 })); stem.position.set(0, 0.125, -0.09); g.add(stem);
   // stands in front of the motor, its stem resting on the top of the shaft extension
   const tip = motorRoot.localToWorld(new THREE.Vector3(X.shaftTip + 10, 12, 0));
-  // base behind the shaft (Tetsuo's side), dial facing the front
+  // base behind the shaft (Erik's side), dial facing the front
   g.scale.setScalar(K);
   g.position.set(tip.x, tip.y - 0.11 * K, tip.z - 0.09 * K);
   g.rotation.y = Math.PI;

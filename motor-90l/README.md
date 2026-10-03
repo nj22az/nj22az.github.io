@@ -13,11 +13,11 @@ No build step. Serve the site root (`python3 -m http.server`) and open `/motor-9
 | `info.js` | Part descriptions, service notes, build steps and audit findings |
 | `service.js` | Workshop tool kit, strip-down and rebuild steps (with the part moves for the model) and the workshop audit |
 | `app.js`, `index.html` | Viewer: workshop strip-down/rebuild, explode, build steps, cutaway, Y/Δ links, B3/B5/B35, dimensions, phase colours, `.glb` export |
-| `workshop/` | Tetsuo's routine: the town's own Tetsuo (`johansson-town/src/avatars`) does lock-off, prove dead, Y/Δ, winding tests, bearings, cleaning and a test run, with a *Learn* card per chapter. `routine.js` is the script (beats: pose, hand targets, tools, state, camera), `tetsuo.js` the IK rig, `scene.js` the workshop bench, `app.js` the player |
+| `workshop/` | Erik's routine: Erik, an old Swedish sailor settled on the island (built with `johansson-town/src/avatars`), does lock-off, prove dead, Y/Δ, winding tests, bearings, cleaning and a test run, with a *Learn* card per chapter. `routine.js` is the script (beats: pose, hand targets, tools, state, camera), `erik.js` his recipe and IK rig, `scene.js` the workshop bench, `app.js` the player |
 | `TEACHING.md` | The lessons in the routine and the next ones to build |
 | `vendor/` | three.js r170 (MIT): core, OrbitControls, RoomEnvironment, GLTFExporter, BufferGeometryUtils |
 
-The workshop page loads three.js from `johansson-town/vendor/` (the same r170 build), so Tetsuo and the motor share one
+The workshop page loads three.js from `johansson-town/vendor/` (the same r170 build), so Erik and the motor share one
 three.js instance. Town characters are drawn big-headed, so the workshop shows the motor and tools at 1.7 × true size,
 the way the town sizes its props.
 

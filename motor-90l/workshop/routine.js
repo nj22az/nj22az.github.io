@@ -1,4 +1,4 @@
-// Tetsuo's routine on the bilge pump motor, as a timeline of beats.
+// Erik's routine on the bilge pump motor, as a timeline of beats.
 // A beat: d (s), say, pose {at:[x,z], face, lean, R, L, look, twist, mood}, tool {R, L},
 // set {numeric state reached at the end of the beat}, now {state from the start of the beat}, cam (shot name).
 // Hand targets are point names from scene.js, or {sweep:[a, b], n} to brush back and forth.
@@ -34,7 +34,7 @@ export const CHAPTERS = [
 <p>The rule is three words: <strong>isolate, secure, prove dead</strong>. One lock per person, and the key stays in your pocket.</p>
 <p class="aug">On the model: the cable runs from the gland to the starter on the wall. That cable is what you are making safe.</p>`,
     beats: [
-      { d: 4.5, cam: 'wide', say: 'This is the bilge pump motor from the pump room. Before we touch it, we take the power away. Not off. Away.', pose: at(BENCH, { look: 'cam', mood: 'neutral' }) },
+      { d: 6, cam: 'wide', say: 'Forty years in engine rooms, and I still start the same way. This is the bilge pump motor. Before we touch it, we take the power away. Not off. Away.', pose: at(BENCH, { look: 'cam', mood: 'neutral' }) },
       { d: 3, cam: 'wide', pose: { at: ISO, face: Math.PI, walk: true, look: 'isolator' } },
       { d: 3, cam: 'isolator', say: 'Stop first, then the isolator to OFF.', pose: { at: ISO, face: Math.PI, R: 'isolator', look: 'isolator' }, set: { iso: 1 } },
       { d: 3.5, cam: 'isolator', say: 'My lock, my tag. The key stays in my pocket until I am finished.', pose: { at: ISO, face: Math.PI, R: 'hasp', L: 'hasp', look: 'hasp' }, set: { lock: 1 } },
@@ -66,7 +66,7 @@ export const CHAPTERS = [
 <p><strong>Star (Y)</strong> on 400 V: U<sub>phase</sub> = U<sub>L</sub> / √3 = 400 / 1.73 = <strong>231 V</strong> per winding, and I<sub>L</sub> = I<sub>phase</sub> = ${fmt(S.Istar)} A.</p>
 <p><strong>Delta (Δ)</strong> on 230 V: U<sub>phase</sub> = U<sub>L</sub> = <strong>230 V</strong> per winding, and I<sub>L</sub> = √3 · I<sub>phase</sub> = ${fmt(S.Idelta)} A.</p>
 <p>Same voltage on each winding, same power: P = √3 · U<sub>L</sub> · I<sub>L</sub> · cos φ · η = 1.5 kW either way. Wrong links on 400 V (Δ) puts 400 V on 230 V windings: about three times the magnetising current, and the winding burns.</p>
-<p class="aug">On the model: the winding turns into its phase colours (U brown, V black, W grey) while Tetsuo moves the links.</p>`,
+<p class="aug">On the model: the winding turns into its phase colours (U brown, V black, W grey) while Erik moves the links.</p>`,
     beats: [
       { d: 4.5, cam: 'nameplate', say: 'Read the plate first. 230 delta, 400 star. Our ship is 400 volts.', tool: {}, pose: at(BENCH, { look: 'nameplate', lean: 0.06 }), now: { phases: 1 } },
       { d: 4.5, cam: 'boxTop', say: 'Star: W2, U2 and V2 joined together. Each winding sees 400 over root three. 231 volts.', pose: at(BENCH, { R: 'links', lean: 0.14, look: 'links' }) },
@@ -96,7 +96,7 @@ export const CHAPTERS = [
     learn: `<p>The rotor runs on two ball bearings. The <strong>drive end 6205</strong> is held in the shield and takes the pump's axial push; the <strong>non-drive end 6204</strong> floats on a wave spring, so the shaft can grow with heat.</p>
 <p>By hand you feel three things: smooth or notchy (damaged races), tight (misaligned shield or bent shaft), and play when you lift the shaft (worn bearing). A healthy one turns smooth with only the seals' drag.</p>
 <p><strong>Runout</strong> is how far the shaft tip wobbles as it turns. IEC 60072-1 allows 0.040 mm for a Ø24 shaft.</p>
-<p class="aug">On the model: the cutaway shows the balls rolling between the rings as Tetsuo turns the shaft.</p>`,
+<p class="aug">On the model: the cutaway shows the balls rolling between the rings as Erik turns the shaft.</p>`,
     beats: [
       { d: 4.5, cam: 'shaft', say: 'Turn it by hand. Slowly. Listen with your fingers.', tool: {}, pose: at(LEFT, { R: 'shaftTip', lean: 0.1, look: 'shaftTip' }), set: { shaft: 1 } },
       { d: 4.5, cam: 'cut', say: 'Inside, the balls roll between the rings. Smooth, quiet, a little drag from the seals. Good.', pose: at(LEFT, { R: 'shaftTip', lean: 0.1, look: 'shaftTip' }), now: { cut: 1 }, set: { shaft: 2 } },
@@ -110,7 +110,7 @@ export const CHAPTERS = [
     learn: `<p>The motor turns ${fmt(1500 / 0.835 - 1500, 0)} W of losses into heat (P<sub>in</sub> − P<sub>out</sub> = 1500 / 0.835 − 1500). The fan blows it along the fins. Dust and salt are a blanket on those fins.</p>
 <p>A useful rule: every <strong>10 K hotter halves the life of the insulation</strong>. A clogged bilge-pump motor often shows up first as PTC trips.</p>
 <p>Inspect while you clean: gland tight on the outer sheath, feet bolts tight, no cracks at the feet, drain plugs in place.</p>
-<p class="aug">On the model: the dust on the fins and the grille disappears where Tetsuo brushes.</p>`,
+<p class="aug">On the model: the dust on the fins and the grille disappears where Erik brushes.</p>`,
     beats: [
       { d: 4.5, cam: 'fins', say: 'Dust on the fins is a blanket. The motor runs hot, the thermistors trip, and someone blames the motor.', tool: { R: 'brush' }, pose: at(BENCH, { R: { sweep: ['finsA', 'finsB'], n: 3 }, lean: 0.12, look: 'finsB' }), set: { fins: 0.5 } },
       { d: 4, cam: 'fins', pose: at(BENCH, { R: { sweep: ['finsA', 'finsB'], n: 3 }, lean: 0.12, look: 'finsA' }), set: { fins: 0 } },
@@ -134,7 +134,7 @@ export const CHAPTERS = [
       { d: 3, cam: 'isolator', say: '1.9, 1.9, 2.0 amps. Balanced.', pose: { at: ISO, face: Math.PI, R: 'cores', look: 'cores' }, now: { clamp: '2.0 A' } },
       { d: 3, cam: 'wide', tool: {}, pose: { at: BENCH, face: 0, walk: true, look: 'shaftTip' }, now: { clamp: '' } },
       { d: 5.5, cam: 'cut', say: 'Inside, the field turns at 1500. The rotor chases it and never quite catches up. That gap is the slip, and the slip is the torque.', pose: at(BENCH, { look: 'box', mood: 'content' }), now: { cut: 1, field: 1, phases: 1 } },
-      { d: 4.5, cam: 'face', say: 'Quiet, balanced, cool. That one goes back to the pump room.', pose: at(BENCH, { look: 'cam', mood: 'smile' }), now: { cut: 0, field: 0, phases: 0 } },
+      { d: 4.5, cam: 'face', say: 'Quiet, balanced, cool. She goes back to the pump room. Good work — fika?', pose: at(BENCH, { look: 'cam', mood: 'smile' }), now: { cut: 0, field: 0, phases: 0 } },
     ],
   },
 ];
