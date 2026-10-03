@@ -30,7 +30,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-BST-DP4U.js",
+    "file": "boot-BTQ73IPS.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -45,7 +45,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-kDmvua5t.js",
+    "file": "game-BG7khBw_.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,

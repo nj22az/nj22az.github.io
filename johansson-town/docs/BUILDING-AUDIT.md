@@ -27,24 +27,24 @@ Footprints are sensible. Most houses are 5–7 m a side, 10–13 tsubo, which is
 
 | Building | Size (m) | Tsubo | Jō | Ceiling (m) | Off module (m) | Rooms | Missing |
 |---|---|---|---|---|---|---|---|
-| Minato Clinic | 6.6 × 5.6 | 11.2 | 22.8 | 2.85 | 0.23 | 1 | toilet |
-| Community Kitchen | 6.6 × 5.6 | 11.2 | 22.8 | 2.85 | 0.23 | 1 | counter, toilet |
-| Minato Police Box | 6.8 × 3.9 | 8 | 16.4 | — | 0.43 | 1 | toilet |
-| Mayor’s Office | 6.6 × 5.6 | 11.2 | 22.8 | 2.85 | 0.23 | 1 | counter, toilet |
-| Johansson Harbour Office | 6.74 × 6.74 | 13.7 | 28 | 2.9 | 0.37 | 1 | toilet |
-| Umi-no-yu | 10 × 1.4 | 4.2 | 8.6 | 2.8 | 0.42 | 1 | toilet |
+| Minato Clinic (*after*) | 6.6 × 5.6 | 11.2 | 22.8 | 2.85 | 0.23 | 2 | none |
+| Community Kitchen (*after*) | 6.6 × 5.6 | 11.2 | 22.8 | 2.85 | 0.23 | 1 | none (hall WC here) |
+| Minato Police Box (*after*) | 6.8 × 3.9 office + 6.8 × 2.3 room | 8 | 16.4 | — | 0.43 | 2 | none (WC behind the officer’s room) |
+| Mayor’s Office | 6.6 × 5.6 | 11.2 | 22.8 | 2.85 | 0.23 | 1 | none (hall WC) |
+| Johansson Harbour Office (*after*) | 6.74 × 6.74 | 13.7 | 28 | 2.9 | 0.37 | 1 | none |
+| Umi-no-yu | 9.7 × 13.7 | 40 | 81 | 2.8 | — | 4 | toilet |
 | Town Hall Classroom | 9 × 7.2 | 19.6 | 40 | 3 | 0.1 | 1 | counter, toilet |
 | Kitahama family homes ×10 (*after*) | 6.4 × 5.6 | 10.8 | 22.1 | 2.7 | 0.14 | 1 | none (see below) |
-| Mayor’s House | 6.6 × 5.6 | 11.2 | 22.8 | 2.85 | 0.23 | 1 | toilet, bath, butsudan, tokonoma |
-| Aya & Reiko’s home | 7 × 6.8 | 14.4 | 29.4 | — | 0.43 | 1 | kitchen, toilet, bath, butsudan, bedding, entrance, tokonoma |
-| Kenji & Tetsuo’s home | 7 × 6.8 | 14.4 | 29.4 | — | 0.43 | 1 | the same |
-| Thuan & Nao’s home | 7 × 6.8 | 14.4 | 29.4 | — | 0.43 | 1 | the same |
+| Mayor’s House (*after*) | 6.6 × 5.6 | 11.2 | 22.8 | 2.85 | 0.23 | 1 | butsudan, tokonoma (a single foreigner’s home) |
+| Aya & Reiko’s home (*after*) | 5.4 × 3.0 | 4.9 | 10 | 2.5 | — | 1 | bath (they use Umi-no-yu) |
+| Kenji & Tetsuo’s home (*after*) | 5.4 × 3.4 | 5.6 | 11.3 | 2.5 | — | 1 | bath (they use Umi-no-yu) |
+| Thuan & Nao’s home (*after*) | 6.4 × 5.6 | 10.8 | 22.1 | 2.7 | 0.14 | 1 | none (red-tile, entered from the veranda) |
 | Mrs Sato’s home | 5.98 × 5.96 | 10.8 | 22 | 2.8 | 0.41 | 1 | the same |
 | Dock Electrical & Repair | 8.56 × 7.16 | 18.5 | 37.8 | 2.75 | 0.37 | 2 | counter, toilet, storage |
 | Front-Row Books | 8.56 × 7.16 | 18.5 | 37.8 | 2.75 | 0.37 | 2 | toilet, storage |
 | Minato Izakaya | 18.1 × 13 | 71.2 | 145.2 | 3.8 | 0.26 | 1 | counter, toilet |
 | Sakura Shōten | 13.72 × 7.9 | 32.8 | 66.9 | 2.82 | 0.29 | 1 | none |
-| Sato Ramen | 18.1 × 13 | 71.2 | 145.2 | 3.8 | 0.26 | 1 | counter, toilet, storage |
+| Sato Ramen | 4.3 × 5.1 | 6.6 | 13.5 | 3.8 | — | 1 | toilet (shares the izakaya’s) |
 
 A dash for the ceiling means the room has no ceiling mesh: you look up into the roof void.
 
@@ -58,14 +58,15 @@ Severity:
 | # | Sev | Building | Finding | Status |
 |---|---|---|---|---|
 | B1 | A | All 10 Kitahama family homes | **One bare 6.4 × 5.6 m box**: 22 jō with no partition, no toilet, no bath and no entrance step. Red-tile and concrete houses had the *same* inside. The house to let advertised “2DK, kitchen and bath”, but there were none. | **Fixed.** Two real plans; see below. |
-| B2 | A | Thuan & Nao’s home | **The futon was laid outside the wall.** The shared-home bed position was not clamped to the room. | **Fixed.** The bed is kept inside the walls. |
+| B2 | A | Thuan & Nao’s home | **The futon was laid outside the wall.** Their in-home routine was measured for another flat, so Thuan walked to a bed at x −4.15, outside the room. | **Fixed.** Every house now gives each resident their own bed, seat and hat peg (`homeLayouts`). |
 | B3 | B | Onsen → every room | The onsen renamed the shared room group, so later rooms reported “Umi-no-yu interior”. | **Fixed.** The name is reset when a room is cleared. |
-| B4 | B | Aya, Kenji, Thuan | Three households live in one identical shell: same plan, no kitchen, toilet or bath, and no ceiling. | **Open.** Each needs its own plan: a 1DK flat for Aya and Reiko, an old wooden house for Kenji and Tetsuo, and the flat above the shop for Thuan. |
-| B5 | B | Clinic, community kitchen, mayor’s office, mayor’s house | Four different uses share one 6.6 × 5.6 m shell. A clinic needs a waiting room, a consulting room and a WC; a mayor’s house is a home. | **Open.** |
-| B6 | B | Izakaya and Sato Ramen | Both share an **18 × 13 m** hall with a 3.8 m ceiling, the size of a gymnasium. A 1980s Okinawan izakaya is 15–20 tsubo: a counter of 8 stools, a 6-jō zashiki and a kitchen behind a noren. | **Open.** Shrink to about 9 × 6 m and add a kitchen and WC. |
-| B7 | C | Every shop and civic building except Sakura | **No toilet.** The Building Standards Act asks for sanitary facilities in any building people work in all day. | **Open.** |
-| B8 | C | Umi-no-yu | Only a 10 × 1.4 m strip can be walked: the entrance passage. There is no changing room (脱衣所) and no washing area. | **Open.** |
+| B4 | A | Aya, Kenji, Thuan | Three households lived in one identical 7 × 6.8 m shell with no kitchen, toilet or bath. The yard houses were **4.2 m wide outside** and 7 m wide inside. | **Fixed.** The yard houses are 5.6 m wide, the most the yard takes beside the laundry. Inside each is a staff 1K drawn to its walls (see below). Thuan and Nao live in a red-tile Kitahama house like their neighbours’. |
+| B5 | B | Clinic, community kitchen, mayor’s office, mayor’s house | Four different uses share one 6.6 × 5.6 m shell. A clinic needs a waiting room, a consulting room and a WC; a mayor’s house is a home. | **Partly fixed.** The clinic has a waiting room (bench, scales, dispensary cabinet) in front of the consulting room, and a patients’ WC with a sample hatch. The mayor’s house has its WC and a small tiled bath. See B10 for the shell itself. |
+| B6 | B | Izakaya | The izakaya is a **13 × 13 m** hall (51 tsubo) with a 3.8 m ceiling. A 1980s Okinawan izakaya is 15–20 tsubo: a counter of 8 stools, a 6-jō zashiki and a kitchen behind a noren. Sato Ramen, measured at 18 × 13 m in the first pass, is really **4.3 × 5.1 m** (6.6 tsubo, right for a counter shop): the survey had read the izakaya model it shares. | **Open.** The izakaya is one model; shrinking it to about 9 × 6 m and adding a kitchen and WC means rebuilding it. |
+| B7 | C | Every shop and civic building except Sakura | **No toilet.** The Building Standards Act asks for sanitary facilities in any building people work in all day. | **Mostly fixed.** WCs in the mayor’s house, the clinic, the kōban (behind Officer Mori’s room), the harbour office, both yard houses and Thuan and Nao’s house. The hall’s public WC is off the community kitchen and serves the mayor’s office and the classroom. Front-Row Books and the repair workshop are served by their staff houses in the yard behind. **Open:** the izakaya and Umi-no-yu. |
+| B8 | C | Umi-no-yu | The first pass measured a 10 × 1.4 m strip. That was the survey: the bathhouse is **9.7 × 13.7 m**, with lobby, changing room, bath hall and rock bath. It has **no WC**. | **Open.** Put the WC off the changing room, in the west locker bay; the bath’s seat positions have to move with it. |
 | B9 | B | Most buildings | Outer walls sit 0.1–0.43 m off the half-ken grid. A carpenter would build to the grid; it also keeps tatami whole. | **Open.** Snap interiors to 0.91 m when they are rebuilt. |
+| B10 | B | Town hall rooms | The four rooms along the field face are **6.6 m wide inside, but their doors are 3.6 m apart** on the building. Each room is nearly twice as wide as its bay. | **Open.** Rebuild them to a 2-ken (3.64 m) bay, about 3.5 × 5.6 m each: still 12 jō, enough for an office, a kitchen or a clinic. |
 
 ## The family homes, redrawn
 
@@ -84,6 +85,32 @@ Severity:
 - **Living.** A dining kitchen (DK) and two tatami rooms behind fusuma.
 
 `tests/family-home-plan.test.mjs` checks that every room and fitting can be reached on foot, in both kinds.
+
+## The shared houses, redrawn
+
+| Yard staff house (Aya & Reiko) | Thuan & Nao (red-tile) |
+|---|---|
+| ![Yard house](building-plans/yard-home-top.png) | ![Thuan and Nao](building-plans/thuan-home-top.png) |
+
+**Yard staff house (1K).** It is drawn for a door on the east of the front wall, and mirrored for Kenji and Tetsuo’s, whose door is on the west.
+- **Entrance:** a genkan with its step, and the WC off it.
+- **Kitchen:** sink and two gas rings on the back wall, the fridge, a table for two and a shelf (books for Aya and Reiko, a radio bench for Kenji).
+- **Tatami room:** behind fusuma, where the two futons are laid out at night.
+- **No bath:** like half the town, they go to Umi-no-yu, and the note on the fridge says so.
+
+The houses outside were widened from 4.2 to 5.6 m to hold it.
+
+![Yard houses outside](building-plans/yard-homes-outside.png)
+
+**Thuan & Nao.** Their house is the red-tile plan, lived in by two working people. There is no altar. Their futons are laid out in the uraza, they eat at the low table in the ichibanza, and Thuan’s wardrobe stands against the nibanza wall. A laid futon is walked onto, so it has no collider.
+
+## Town hall rooms
+
+| Clinic | Mayor’s house |
+|---|---|
+| ![Clinic](building-plans/clinic-top.png) | ![Mayor’s house](building-plans/mayor-home-top.png) |
+
+`tests/resident-home-plan.test.mjs` walks every resident from the door to the table, to bed, and back. It covers the yard houses, Thuan and Nao (both house kinds), Officer Mori and the harbour master. `tests/town-hall-plan.test.mjs` checks that every room in the mayor’s house, the clinic and the hall WC can be reached.
 
 ## Opening the plans in Khaaka
 

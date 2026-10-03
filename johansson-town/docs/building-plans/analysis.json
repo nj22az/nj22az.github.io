@@ -12,12 +12,10 @@
   "moduleOff": 0.23,
   "rooms": 1,
   "roomSizes": [
-   40.7
+   39.9
   ],
   "doors": 0,
-  "missing": [
-   "toilet"
-  ]
+  "missing": []
  },
  {
   "id": "community-kitchen",
@@ -32,12 +30,11 @@
   "moduleOff": 0.23,
   "rooms": 1,
   "roomSizes": [
-   40.9
+   40.6
   ],
   "doors": 0,
   "missing": [
-   "counter",
-   "toilet"
+   "counter"
   ]
  },
  {
@@ -94,12 +91,10 @@
   "moduleOff": 0.37,
   "rooms": 1,
   "roomSizes": [
-   49.1
+   48.7
   ],
   "doors": 1,
-  "missing": [
-   "toilet"
-  ]
+  "missing": []
  },
  {
   "id": "onsen",
@@ -357,12 +352,10 @@
   "moduleOff": 0.23,
   "rooms": 1,
   "roomSizes": [
-   41
+   40.6
   ],
   "doors": 0,
   "missing": [
-   "toilet",
-   "bath",
    "butsudan",
    "tokonoma"
   ]
@@ -371,25 +364,21 @@
   "id": "resident-home-aya",
   "title": "Aya & Reiko’s home",
   "kind": "home",
-  "w": 7,
-  "h": 6.8,
-  "m2": 47.6,
-  "jo": 29.4,
-  "tsubo": 14.4,
-  "ceiling": null,
-  "moduleOff": 0.43,
+  "w": 5.4,
+  "h": 3,
+  "m2": 16.2,
+  "jo": 10,
+  "tsubo": 4.9,
+  "ceiling": 2.5,
+  "moduleOff": 0.27,
   "rooms": 1,
   "roomSizes": [
-   47.7
+   19
   ],
-  "doors": 1,
+  "doors": 0,
   "missing": [
-   "kitchen",
-   "toilet",
    "bath",
    "butsudan",
-   "bedding",
-   "entrance",
    "tokonoma"
   ]
  },
@@ -397,25 +386,21 @@
   "id": "resident-home-kenji",
   "title": "Kenji & Tetsuo’s home",
   "kind": "home",
-  "w": 7,
-  "h": 6.8,
-  "m2": 47.6,
-  "jo": 29.4,
-  "tsubo": 14.4,
-  "ceiling": null,
-  "moduleOff": 0.43,
+  "w": 5.4,
+  "h": 3.4,
+  "m2": 18.4,
+  "jo": 11.3,
+  "tsubo": 5.6,
+  "ceiling": 2.5,
+  "moduleOff": 0.24,
   "rooms": 1,
   "roomSizes": [
-   47.7
+   21.9
   ],
-  "doors": 1,
+  "doors": 0,
   "missing": [
-   "kitchen",
-   "toilet",
    "bath",
    "butsudan",
-   "bedding",
-   "entrance",
    "tokonoma"
   ]
  },
@@ -449,26 +434,21 @@
   "id": "resident-home-thuan",
   "title": "Thuan & Nao’s home",
   "kind": "home",
-  "w": 7,
-  "h": 6.8,
-  "m2": 47.6,
-  "jo": 29.4,
-  "tsubo": 14.4,
-  "ceiling": null,
-  "moduleOff": 0.43,
+  "w": 6.4,
+  "h": 5.6,
+  "m2": 35.8,
+  "jo": 22.1,
+  "tsubo": 10.8,
+  "ceiling": 2.7,
+  "moduleOff": 0.14,
   "rooms": 1,
   "roomSizes": [
-   47.7
+   39.2
   ],
-  "doors": 1,
+  "doors": 0,
   "missing": [
-   "kitchen",
-   "toilet",
-   "bath",
    "butsudan",
-   "bedding",
-   "entrance",
-   "tokonoma"
+   "entrance"
   ]
  },
  {
