@@ -1,11 +1,12 @@
 # Simulatorer · Maskinrummet
 
-First published increment of the course's unnumbered final simulator section. Only Station A is implemented here; the other station cards explicitly link to the existing course labs while their engine-room versions are developed.
+Final simulator section of the course. Station A (multimeter) and Station B (week 40, AC) are implemented, both with Erik, the engine room's electrician; the other station cards link to the existing course labs while their engine-room versions are developed (`PLAN-ERIK.md`).
 
 ## Implemented
 
 - Navigable Three.js engine room with generator, distribution board, pump and guarded equipment footprints.
 - Johansson's actual avatar recipe, face and skeleton, copied from Johansson Town. Work clothing, helmet, glasses, boots and attached earmuffs. This is a SELV teaching bench, not an authorisation to work on live shipboard equipment.
+- **Erik in Station A**: he stands at the right-hand end of the bench. *Erik visar steget* makes him point out, with his own arms (same CCD as Johansson), the dial, jacks, link P–A, supply and probe points for the current step, with a ring on the target and a speech bubble. Script: `stationA-manus.mjs` (one entry per step, no numbers, only points the step names; tested). Text list without WebGL.
 - Multimeter with all nine Station A steps, seven rigs, free exploration, reference source, autoranged Ω/kΩ, protection and wiring interlocks. The electrical model is independent of the renderer.
 - Real scene-ray picking and select controls; the original shoulder/elbow skeleton reaches the selected probe contacts. Fixed-length probes follow the hands; leads follow the grip positions.
 - Keyboard and held touch-button navigation; equipment collisions and canvas-scoped keyboard controls. Two bench camera positions. Static views render on demand; walking animates.

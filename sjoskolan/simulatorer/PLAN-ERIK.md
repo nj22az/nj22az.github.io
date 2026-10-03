@@ -46,8 +46,8 @@ svar i Eriks repliker (jämförs mot alla svar i databasen), `innehall.py kontro
 
 ## Ordning och etapper
 
-1. **Station B** med Erik, rummet som modul (`rum.mjs`) och Visa-motorn. Station A oförändrad (dess test ska gå igenom).
-2. **Erik i Station A**: en knapp ”Erik visar” per steg.
+1. **Station B** med Erik, **klar**, rummet som modul (`rum.mjs`) och Visa-motorn. Station A oförändrad (dess test ska gå igenom).
+2. **Erik i Station A**: en knapp ”Erik visar” per steg. **Klar** (`stationA-manus.mjs`).
 3. **Station D** (motorn finns redan i full detalj) och **station 0** (Eriks frånskiljning finns redan som rutin).
 4. **Station C och E**, sedan **F och G**.
 5. **Felsökningen X**, och därefter märks sektionen som komplett, när varje station har klarat räkne- och

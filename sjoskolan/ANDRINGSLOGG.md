@@ -584,3 +584,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   modellfilerna är kopior med hash i `snapshot.json`. Rummet ligger i `rum.mjs`, Station A oförändrad (testerna går
   igenom). Plan för övriga stationer: `simulatorer/PLAN-ERIK.md`.
   Regel: Erik säger aldrig ett svar eller elevens tal, och kliver åt sidan när avläsningen visas så att eleven ser instrumentet.
+- **2026-10-03** Maskinrummet, Station A: Erik står nu vid bänken i huvudsidans 3D-rum (`simulatorer/`), bredvid
+  Johansson. Knappen *Erik visar steget* låter honom peka ut, med sina egna armar, vred, uttag, länk P–A, matning och
+  var spetsarna ska sitta i varje av de nio stegen. Det han pekar på markeras med en ring. Manuset ligger i
+  `simulatorer/stationA-manus.mjs`, ett inslag per steg. Test: Erik nämner inga tal och pekar bara på mätpunkter som
+  steget självt nämner. Utan WebGL visas stegen som text. Stegen, kontrollerna och protokollet är oförändrade.
+  Regel: i ett steg där eleven själv ska koppla visar Erik var, men det är eleven som kopplar och läser av.
