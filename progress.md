@@ -213,3 +213,9 @@ Final release also preserves f08e8af's Kitahama residential-quarter and anchored
 - Hollow cabins now have seats, a steering wheel and clear windows; avatar driving pose keeps hands toward the wheel. Community hall parked vehicles use the same occupied-sized models and named assignments.
 - Removed clock-change/end-of-dwell teleporting. Returning ferry traffic waits on land while the ramp is closed. Vehicles wait for all pedestrians instead of crawling through residents.
 - Passed 30 focused checks: 14 ownership/fit/network/ferry checks, 13 avatar/community hall checks, 3 runtime packaging checks. A full-day traffic check asserts real driver occupancy and non-overlapping parking, with only purposeful daily trips. Browser client captured the real Tetsuo seated in his green truck; screenshots inspected at /tmp/owned-vehicle-final-game-view. No browser errors.
+
+2026-10-03 — Believable 1990s road vehicle models
+- Replaced the shared boxy vehicle shell with distinct original compact hatchback, cab-over kei pickup and corrugated delivery truck bodies. Added tapered cabins, sloping glazing, closed crowned roofs, wheel arches, rounded tyres, steel rims, door seams/handles, mirrors, wipers, bumpers, grilles and paired lamps.
+- Kept hollow cabins, right-hand seats and existing resident drivers; lowered seat/roof proportions while retaining adult headroom. Pickup load bed has a tailgate and freight; delivery box has rear doors and latch bars.
+- Merged opaque detail into one body mesh plus one lamp mesh per vehicle, keeping four transparent panes and existing traffic dimensions, ownership and purposeful trip logic.
+- Passed 18 focused ownership, headroom, full-day traffic, pedestrian, community hall and runtime checks. Inspected cel-shaded front/rear fleet views and the compiled game's occupied Tetsuo pickup with the original develop-web-game client. No browser page errors; temporary visual audit pages do not ship.
