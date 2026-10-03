@@ -95,11 +95,15 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   updateLighting(getMinutes());
  };
 
+ // Rooms behind the shop floor: nobody sees them through the front windows, so from the
+ // street they are not drawn (about 200 draw calls on a phone). Inside, they are.
+ const BEHIND=new Set(['Sakura back room stock','Sakura restroom','Sakura office life']);
+ const backRooms=on=>group.traverse(o=>{if(BEHIND.has(o.name))o.visible=on;});
  return {group,colliders,service,retail,display,blocked,layout,ready:display.ready,
   enter(parent){
    parent.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);
    const frame=frontFrame();if(frame)frame.visible=true;
-   lit(false);
+   lit(false);backRooms(true);
    group.visible=true;showPeople(true);display.updateStock(state.sakura.stock);
    // The door chime: a bright little arpeggio of our own as the automatic door opens.
    townAudio.bells([[1319,0],[1568,.13],[2093,.26],[1760,.44],[2093,.57],[2637,.72]],.32);
@@ -123,12 +127,12 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    group.position.set(...frontage.position)
     .add(new THREE.Vector3(0,0,-fit*(layout.frontZ??3.91)).applyAxisAngle(UP,frontage.yaw));
    const frame=frontFrame();if(frame)frame.visible=false;
-   lit(true);
+   lit(true);backRooms(false);
    group.visible=true;showPeople(false);
    display.updateStock(state.sakura.stock);
    return true;
   },
-  hide(){scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);},
+  hide(){scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);},
   update(dt){
    // The shop's lights are for the inside of the shop. The interior stays in the street
    // scene so you can see it through the glass, but a light has no walls: left on, its

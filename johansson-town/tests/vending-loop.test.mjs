@@ -24,7 +24,9 @@ test('the specials board lists food and drinks with prices, served in shop hours
 
 test('the vending machine is a full machine with a can display, not a placeholder',()=>{
  installDOM();const g=createVendingMachine();
- const names=[];g.traverse(o=>{if(o.name)names.push(o.name);});
+ const names=g.userData.parts;
  for(const part of ['Vending cabinet','Vending glass','Vending money panel','Take-out pocket','Coin return lever'])assert.ok(names.includes(part),part);
- let cans=0;g.traverse(o=>{if(o.geometry?.type==='CylinderGeometry'&&o.geometry.parameters.height===.12)cans++;});assert.ok(cans>=12);
+ assert.ok(names.filter(n=>n==='can').length>=12,'a full display of cans');
+ // And it is drawn as a handful of meshes, not a hundred.
+ let meshes=0;g.traverse(o=>{if(o.isMesh)meshes++;});assert.ok(meshes<=12,meshes+' meshes');
 });
