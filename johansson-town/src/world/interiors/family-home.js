@@ -36,7 +36,7 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  if(!empty){box([.55,1.3,.55],[-hw+.32,.65,-.3],0xe8ebe6,'Fridge');collider(-hw+.32,-.3,.6,.6,1.3);}
  if(empty){
   box([.3,.01,.42],[0,.01,.6],0xf4ecd6,'Rental note');
-  anchor([0,.5,.6],'Read the rental note',()=>action('read','For rent · 貸家','2DK, tatami, kitchen and bath, water tank on the roof. ¥28,000 a month. Enquiries to the town hall, 住民課. Somebody new could live here.'));
+  anchor([0,.5,.6],'Read the rental note',()=>action('read',"For rent · Rental house","2DK, tatami, kitchen and bath, water tank on the roof. ¥28,000 a month. Enquiries to the town hall, Residents Division. Somebody new could live here."));
   return {...FAMILY_HOME_LAYOUT,home:true,toLet:true};
  }
  // The family altar: lacquer cabinet, the tablets, offerings of fruit and an incense bowl.
@@ -57,5 +57,6 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  box([.5,.7,.03],[1.6,1.5,hd-.05],0xf4ecd6,'Household board');
  anchor([1.6,1.4,hd-.4],'Read the household board',()=>action('read',title,household.members.map(m=>m.name+' — '+m.purpose).join('\n')));
  anchor([-1.2,1.1,-hd+.9],'Look at the family altar',()=>action('inspect','Tōtōmē · the family altar','The ancestors\' tablets in their lacquer case, a bowl of incense ash, an orange and a box of sweets. On the first and fifteenth of the month somebody lights three sticks and says the family\'s news out loud.'));
+ if(household?.members?.some(m=>m.name==='Thuan')){box([.85,1.8,.5],[-hw+.45,.9,-hd+.65],0x765343,'Thuan’s wardrobe');collider(-hw+.45,-hd+.65,.85,.5,1.8);anchor([-hw+.7,1.1,-hd+1.15],'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'));}
  return {...FAMILY_HOME_LAYOUT,home:true};
 }

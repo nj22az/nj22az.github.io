@@ -1,13 +1,14 @@
 import * as THREE from '../../vendor/three.module.js';
+import {applyTerrainNormals} from './terrain-surface.js';
 import {GROUND} from '../render/ground-palette.js';
 import {MAIN_ROAD} from './main-road.js';
-import {PARK,PARK_SKIRT,TURF_TINT} from './park-layout.js';
+import {PARK,PARK_SKIRT,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {buildEastGarden} from './east-garden.js';
 import {SCHOOL} from './school-layout.js';
 import {BEACH,beachHeight} from './beach-layout.js';
 import {inKobanPlot} from './koban-layout.js';
-import {GATEBALL} from './okinawa/layout.js';
+import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
 import {broadleafGeometry} from './okinawa/trees.js';
 
@@ -74,7 +75,7 @@ export function groundTexture(base,marks,strokes){
 }
 
 /** Roughly how wide one cell of the lawn's grid is. */
-const CELL=1.2;
+const CELL=.6;
 
 /**
  * @param {object} options
@@ -101,11 +102,14 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   for(let v=from;v<to;v+=CELL)set.add(v);
   return [...set].sort((a,b)=>a-b);
  };
+ // Carry the mound's edge samples into the lawn: matching heights alone leaves
+ // hairline gaps when a coarse triangle bridges a bend in a finer border.
  // The gateball court's edges too: the court is level ground cut into the hill's foot,
  // and the lawn stops at its retaining wall rather than sloping in under the sand.
- const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,PARK.x-PARK.half,PARK.x+PARK.half,GATEBALL.minX,GATEBALL.maxX);
- const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,PARK.z-PARK.half,PARK.z+PARK.half,GATEBALL.minZ,GATEBALL.maxZ);
- const onCourt=(x,z)=>x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
+ const boundary=axis=>Array.from({length:PARK_TERRAIN_SEGMENTS+1},(_,i)=>PARK[axis]-PARK.half+i/PARK_TERRAIN_SEGMENTS*PARK.half*2);
+ const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,...boundary('x'),GATEBALL.minX,GATEBALL.maxX);
+ const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,...boundary('z'),GATEBALL.minZ,GATEBALL.maxZ);
+ const onCourt=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
  const height=(x,z)=>heightAt?heightAt(x,z):0;
  const onMound=(x,z)=>Math.abs(x-PARK.x)<=PARK.half+.01&&Math.abs(z-PARK.z)<=PARK.half+.01;
  const vertices=[],turfUV=[],faces=[];
@@ -124,7 +128,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  const turf=new THREE.BufferGeometry();
  turf.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
  turf.setAttribute('uv',new THREE.Float32BufferAttribute(turfUV,2));
- turf.setIndex(faces);turf.computeVertexNormals();
+ turf.setIndex(faces);applyTerrainNormals(turf,height);
  const lawn=new THREE.Mesh(turf,new THREE.MeshStandardMaterial({color:BARE_TURF,roughness:1}));
  lawn.name='east-lawn-grass';lawn.receiveShadow=!!shadows;group.add(lawn);
 

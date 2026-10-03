@@ -1,3 +1,7 @@
+import {buildDocklandsLife} from './docklands-life.js';
+import {addSakuraFlyer} from './sakura-flyers.js';
+import {buildIslandLandscape} from './island-landscape.js';
+import {buildTraditionalGarden} from './traditional-garden.js';
 import {buildDiningStreet} from './dining-street.js';
 import {createFerryVehicles} from './ferry-vehicles.js';
 import {buildOilJetty} from './oil-jetty.js';
@@ -17,6 +21,9 @@ import {buildParkOnsen} from './park-onsen.js';
 import {buildSchool} from './school.js';
 import {buildDistricts} from './districts.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
+import {BUS_STATION} from './bus-station.js';
+import {paintedTurf} from '../render/toy-surfaces.js';
+import {GROUND_LAYER} from './ground-layers.js';
 import { createTown as createBaseTown } from './harbour.js?snappy=1';
 import { createPropFactory, createLivingProps } from '../../prop-factory.js';
 import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
@@ -27,14 +34,17 @@ import {applyShopAddresses,TOWN_DESTINATIONS} from './town-grid.js';
 import {configureTownMode,peninsulaActive} from './town-mode.js';
 import {izakayaPlot} from './dining-layout.js';
 import {buildBeachLife} from './beach-life.js';
+import {buildBeachCorner} from './beach-corner.js';
+import {buildPortShed} from './port-shed.js';
 import {buildAirportIsland} from './airport-island.js';
 import {buildEastLawn} from './east-lawn.js';
 import {buildWestYard} from './west-yard.js';
 import {buildForestEdge} from './forest-edge.js';
-import {buildCoyoteTunnel} from './coyote-tunnel.js';
+import {buildCoyoteTunnel,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {buildOkinawaQuarters} from './okinawa/quarters.js';
 import {createFerryRun} from './ferry.js';
 import {windowGlow} from '../render/dusk.js';
+import {setWindowLight} from '../render/window-interior.js';
 import {isOceanMaterial,tickOcean} from './ocean.js';
 
 // Johansson Town district composition and street interactions.
@@ -46,7 +56,7 @@ function anchor(parent,pos,label,fn,register){
 }
 
 function replaceCableLines(group,mobile){
-  const lines=[];group.traverse(o=>{if(o.isLine&&o.geometry?.getAttribute('position'))lines.push(o);});if(!lines.length)return 0;
+  const lines=[];group.traverse(o=>{if(o.isLine&&!o.userData.dynamicProp&&o.geometry?.getAttribute('position'))lines.push(o);});if(!lines.length)return 0;
   const segments=[],a=new THREE.Vector3(),b=new THREE.Vector3();
   for(const line of lines){
     const pos=line.geometry.getAttribute('position');
@@ -148,7 +158,8 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.postbox(2.4,16.4,Math.PI/2));
   inspect([1.75,1,16.4],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
   addWithCollider(group,colliders,factory.noticeBoard(3.2,-37.3,0));
-  read([3.2,1,-36.6],'Read harbour notices','Harbour notice board','Notices cover tide times, a lost glove, fish-market hours and a warning about the outer pier after dark.');
+  addSakuraFlyer(group,{position:[3.57,1.55,-37.215],width:.43});
+  anchor(group,[3.2,1,-36.6],'Read Thuan’s shop flyer · harbour notice board',()=>options.onAction?.('sakura-flyer','Harbour notice board'),options.register);interactions++;
 
   addWithCollider(group,colliders,factory.utilityCabinet(-7,13.8,0));// On the footway, clear of the six-metre carriageway.
   inspect([-5.55,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
@@ -205,8 +216,18 @@ export function createTown(options){
   world.forestEdge=forestEdge;
   // The road out of town ends at the Minato Tunnel through the headland, which only the
   // bus goes through. See coyote-tunnel.js.
+  // Without the cave there is no footpath up to it either.
+  if(peninsulaActive()&&!CAVE_ACTIVE){
+   forestEdge.group.removeFromParent();
+   // The old terminus at the top of Main Street stays at the street's height -- it is the
+   // way round to the police box -- as a lawn on a low bank, over the island ground.
+   const B=BUS_STATION,turf=new THREE.MeshStandardMaterial({color:GROUND.grass,roughness:1});
+   try{const map=paintedTurf().clone();map.needsUpdate=true;map.repeat.set(1/6,1/6);turf.map=map;}catch{}
+   const bank=new THREE.Mesh(new THREE.BoxGeometry(B.maxX-B.minX,.42,B.maxZ-B.minZ),[0,1,2,3,4,5].map(i=>i===2?turf:new THREE.MeshStandardMaterial({color:0x8e8a78,roughness:1})));
+   bank.position.set((B.minX+B.maxX)/2,GROUND_LAYER.grass-.21,(B.minZ+B.maxZ)/2);bank.name='Main Street end lawn';bank.receiveShadow=true;world.group.add(bank);
+  }
   if(peninsulaActive()){
-   world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
+   if(CAVE_ACTIVE)world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
     register:options.register,onAction:options.onAction,shadows:options.shadows});
    // The port is north, the shops are west; the east is the green side of the town and
    // the west is the working one, with the shop and the warehouse standing on it.
@@ -218,6 +239,10 @@ export function createTown(options){
     heightAt:groundHeight,paved:pavedAt(),register:options.register,onAction:options.onAction});
    // Crabs on the wet sand below the wall and fish leaping offshore. See beach-life.js.
    world.beachLife=buildBeachLife({parent:world.group,shadows:options.shadows});
+   // A quiet corner at the north end to sit and listen to the sea. See beach-corner.js.
+   world.beachCorner=buildBeachCorner({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows});
+   // Mr Fujita's shed on the working pier, where he watches the ballgame with a beer. See port-shed.js.
+   world.portShed=buildPortShed({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows});
    // Kitano-jima, the airport island on the horizon to the east. See airport-island.js.
    world.airportIsland=buildAirportIsland({parent:world.group,shadows:options.shadows});
    world.oilJetty=buildOilJetty(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
@@ -241,12 +266,14 @@ export function createTown(options){
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   world.bicycle=street.bicycle;
+  if(peninsulaActive())world.docklandsLife=buildDocklandsLife(world,options);
   if(!FULL_TOWN.active)buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
   // Thuan's break. Only the peninsula has a yard behind the shop to put it in.
   if(peninsulaActive())world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.combinedWorkshop)return h>=540||h<30;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
+  if(peninsulaActive()){world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});}
+  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of STREET_CAST){
    const spawn=profile.work;
    let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
@@ -279,7 +306,7 @@ export function createTown(options){
   // the town hall, Kitahama and the island homes used to stay dark all night.
   {const glass=new Set(),lamps=new Set();
    world.group.traverse(o=>{if(!o.isMesh)return;for(const m of Array.isArray(o.material)?o.material:[o.material]){const kind=m?.userData?.kitFinish;if(kind==='glow')glass.add(m.userData.celFrom||m);else if(kind==='lamp')lamps.add(m.userData.celFrom||m);}});
-   (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;});}
+   (world.hourly??=[]).push(minutes=>{const glow=windowGlow(minutes);setWindowLight(glow);for(const m of glass)m.emissiveIntensity=glow*.75;for(const m of lamps)m.emissiveIntensity=.1+glow*1.6;});}
   world.isOpen=isOpen;world.updateHours=minutes=>{for(const fn of world.hourly||[])fn(minutes);for(const {mesh,id} of districts.shutters){const open=isOpen(options.sites.find(s=>s.id===id),minutes);mesh.position.y=1.3;mesh.visible=false;mesh.userData.closed=!open;}const glow=windowGlow(minutes);for(const m of districts.windows)m.material.emissiveIntensity=.02+glow*.78;};
   let normalTick=-1;
   const staticProps=batchStaticProps(world.group);
@@ -291,7 +318,8 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
-    world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.airportIsland?.update(dt,minutes,day);world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
+    world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes);world.airportIsland?.update(dt,minutes,day);world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
+    world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
     world.ferry?.update(dt,minutes,time);world.ferryVehicles?.update(dt,minutes);world.bus?.update(dt,minutes);

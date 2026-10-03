@@ -2,7 +2,8 @@ import * as THREE from '../../vendor/three.module.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {createKit} from './okinawa/kit.js';
 import {shisa,potPlant} from './okinawa/houses.js';
-import {fascia} from './okinawa/signs.js';
+import {fascia,japaneseSign,signText} from './okinawa/signs.js';
+import {glazeWithRoom} from '../render/window-interior.js';
 
 /**
  * Minato Izakaya, built rather than fetched.
@@ -54,7 +55,7 @@ function norenTexture(){
  for(let i=0;i<150;i++){ctx.fillStyle=i%2?'#27364a':'#18222f';const x=Math.random()*512;ctx.fillRect(x,0,2+Math.random()*4,256);}
  ctx.globalAlpha=1;
  ctx.fillStyle='#ddd2b8';ctx.textAlign='center';ctx.textBaseline='middle';
- ctx.font='bold 116px serif';ctx.fillText('みなと',256,128);
+ ctx.font='bold 116px serif';ctx.fillText("みなと",256,128);
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 
@@ -66,7 +67,7 @@ function chochinTexture(word){
  ctx.strokeStyle='rgba(60,20,14,.35)';ctx.lineWidth=2;
  for(let y=10;y<256;y+=14){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(256,y);ctx.stroke();}
  ctx.fillStyle='#1c1410';ctx.textAlign='center';ctx.textBaseline='middle';
- const chars=[...word],size=Math.min(62,200/chars.length);
+ const chars=[...japaneseSign(word)],size=Math.min(62,200/chars.length);
  ctx.font=`bold ${size}px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif`;
  // u=0 faces the street, so the front word straddles the seam; the back one is at u=.5.
  for(const cx of [0,256,128])chars.forEach((ch,k)=>ctx.fillText(ch,cx,128+(k-(chars.length-1)/2)*size*1.05));
@@ -80,10 +81,10 @@ function kanbanTexture(){
  ctx.fillStyle='#e0bc7c';ctx.textAlign='center';ctx.textBaseline='middle';
  ctx.font='bold 150px serif';
  // Vertical writing, which is how a kanban is read.
- '居酒屋'.split('').forEach((c,i)=>ctx.fillText(c,128,150+i*165));
+ "居酒屋".split('').forEach((c,i)=>ctx.fillText(c,128,150+i*165));
  ctx.fillStyle='#d8534a';ctx.fillRect(58,648,140,6);
  ctx.fillStyle='#e8d6ae';ctx.font='bold 130px serif';
- 'みなと'.split('').forEach((c,i)=>ctx.fillText(c,128,742+i*100));
+ "みなと".split('').forEach((c,i)=>ctx.fillText(c,128,742+i*100));
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 
@@ -92,10 +93,10 @@ function menuTexture(){
  const canvas=document.createElement('canvas');canvas.width=256;canvas.height=352;
  const ctx=canvas.getContext('2d');
  ctx.fillStyle='#20242a';ctx.fillRect(0,0,256,352);
- ctx.fillStyle='#cfc6ad';ctx.textAlign='left';ctx.font='bold 34px serif';ctx.fillText('本日',18,44);
+ ctx.fillStyle='#cfc6ad';ctx.textAlign='left';ctx.font='bold 34px serif';ctx.fillText("Today",18,44);
  ctx.font='26px serif';
- for(const [i,line] of ['やきとり  ￥180','あじフライ ￥320','冷奴    ￥200','枝豆    ￥150','生ビール  ￥400'].entries())
-  ctx.fillText(line,18,96+i*46);
+ for(const [i,line] of ["Yakitori  ￥180","Fried horse mackerel ￥320","Cold tofu    ￥200","Edamame    ￥150","Draft beer  ￥400"].entries())
+  signText(ctx,line,18,96+i*46,220,24);
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 
@@ -154,6 +155,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   const paneH=groundH-.21-.21-.75/2-.375;
   const pane=new THREE.Mesh(new THREE.PlaneGeometry(runX-.12,groundH-1.38),
    new THREE.MeshStandardMaterial({color:0x4a4034,emissive:0xd8a557,emissiveIntensity:.1,roughness:.5}));
+  glazeWithRoom(pane);
   pane.position.set(midX,(0.75+groundH-.42)/2,front-.29);pane.userData.clearWindow=true;
   pane.userData.minatoGlow=true;group.add(pane);
   // Koshi: vertical slats across the pane, close enough to read as a screen and open
@@ -244,6 +246,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   for(const dx of [-.78,.78])painted([.08,1.3,.34],[x+dx,upperH-.99,front-.1],0x4a3a2a);
   const pane=new THREE.Mesh(new THREE.PlaneGeometry(1.5,1.1),
    new THREE.MeshStandardMaterial({color:0x5c6a6c,emissive:0xd0a35e,emissiveIntensity:.06,roughness:.35}));
+  glazeWithRoom(pane);
   pane.position.set(x,upperH-.99,front+.012);pane.userData.clearWindow=true;pane.userData.minatoGlow=true;group.add(pane);
   for(let i=0;i<7;i++)painted([.04,1.06,.03],[x-.66+i*.22,upperH-.99,front+.035],0x362b20);
   painted([1.5,.05,.035],[x,upperH-.99,front+.04],0x362b20);
@@ -256,7 +259,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  // The painted board between the floors: what the place is, for anyone up the street.
  {
   const board=new THREE.Mesh(new THREE.BoxGeometry(4.4,.56,.06),[paint(0x3a2c20),paint(0x3a2c20),paint(0x3a2c20),paint(0x3a2c20),
-   new THREE.MeshStandardMaterial({map:fascia({jp:'琉球料理・泡盛',en:'Minato izakaya · Ryukyu cooking & awamori',bg:'#efe2c2',accent:'#8a3b2e',ink:'#2b1d17'}),roughness:.8}),paint(0x3a2c20)]);
+   new THREE.MeshStandardMaterial({map:fascia({jp:"Ryukyu cuisine/Awamori",en:'Minato izakaya · Ryukyu cooking & awamori',bg:'#efe2c2',accent:'#8a3b2e',ink:'#2b1d17'}),roughness:.8}),paint(0x3a2c20)]);
   board.position.set(centreX,eaveY+.62,front+.02);board.userData.staticProp=true;group.add(board);
  }
  // A shisa on the eave over the door, and pot plants either side of the step.
@@ -294,7 +297,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  for(const [i,x] of [centreX-1.9,centreX,centreX+1.9].entries()){
   const hang=new THREE.Group();hang.position.set(x,eaveY-.2,front+.46);group.add(hang);
   painted([.03,.2,.03],[0,-.1,0],0x2b231a,undefined,hang);
-  const map=chochinTexture(['やきとり','酒','おでん'][i]);
+  const map=chochinTexture(["Yakitori","Alcohol","Oden"][i]);
   const body=new THREE.Mesh(lanternShape,
    new THREE.MeshStandardMaterial({map,emissiveMap:map,color:0xffffff,emissive:0xffb27a,emissiveIntensity:0,roughness:.9,side:THREE.DoubleSide}));
   // The clock changes this material; a static batch would freeze a cloned copy.
@@ -365,14 +368,14 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  // The signboard: 中華そば さとう, red on cream, over the door.
  const signCanvas=document.createElement('canvas');signCanvas.width=512;signCanvas.height=128;const sx=signCanvas.getContext('2d');
  sx.fillStyle='#efe4c8';sx.fillRect(0,0,512,128);sx.strokeStyle='#7a1f1a';sx.lineWidth=10;sx.strokeRect(5,5,502,118);
- sx.fillStyle='#a3241c';sx.textAlign='center';sx.textBaseline='middle';sx.font='bold 70px serif';sx.fillText('中華そば さとう',256,58);
+ sx.fillStyle='#a3241c';sx.textAlign='center';sx.textBaseline='middle';sx.font='bold 70px serif';signText(sx,"中華そば さとう",256,58,470,70);
  sx.font='bold 20px sans-serif';sx.fillText('SATO RAMEN · LUNCH 11:00–14:00',256,108);
  const signTex=new THREE.CanvasTexture(signCanvas);signTex.colorSpace=THREE.SRGBColorSpace;
  const board=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.6),new THREE.MeshStandardMaterial({map:signTex,emissiveMap:signTex,emissive:0xffffff,emissiveIntensity:0,roughness:.8}));
  board.position.set(AMX,2.85,AZ1+.02);board.userData.ramenGlow=true;board.name='Sato Ramen sign';ramen.add(board);
  // The noren: red, ラーメン in white, out while Mrs Sato is open.
  const norenCanvas=document.createElement('canvas');norenCanvas.width=256;norenCanvas.height=160;const nx=norenCanvas.getContext('2d');
- nx.fillStyle='#9c2b22';nx.fillRect(0,0,256,160);nx.fillStyle='#f4ead2';nx.textAlign='center';nx.textBaseline='middle';nx.font='bold 56px serif';nx.fillText('ラーメン',128,80);
+ nx.fillStyle='#9c2b22';nx.fillRect(0,0,256,160);nx.fillStyle='#f4ead2';nx.textAlign='center';nx.textBaseline='middle';nx.font='bold 56px serif';nx.fillText("Ramen",128,80);
  nx.fillStyle='#9c2b22';nx.fillRect(126,0,4,160);
  const norenTex=new THREE.CanvasTexture(norenCanvas);norenTex.colorSpace=THREE.SRGBColorSpace;
  const ramenNoren=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.75),new THREE.MeshStandardMaterial({map:norenTex,side:THREE.DoubleSide,roughness:.9}));
@@ -381,7 +384,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
  const aframe=rbox([.5,.8,.08],[AX1-.55,.42,AZ1+.55],0x3b2a1e,{roughness:.8});aframe.rotation.x=-.12;
  const menuCanvas=document.createElement('canvas');menuCanvas.width=128;menuCanvas.height=192;const mx=menuCanvas.getContext('2d');
  mx.fillStyle='#1f2a22';mx.fillRect(0,0,128,192);mx.fillStyle='#f4ead2';mx.textAlign='center';mx.font='bold 20px serif';
- ['醤油 450','味噌 500','塩 450','チャーシュー 650','餃子 250'].forEach((l,k)=>mx.fillText(l,64,30+k*34));
+ ["Soy sauce 450","Miso 500","Salt 450","Char siu 650","Gyoza 250"].forEach((l,k)=>mx.fillText(l,64,30+k*34));
  const menuTex=new THREE.CanvasTexture(menuCanvas);menuTex.colorSpace=THREE.SRGBColorSpace;
  const chalk=new THREE.Mesh(new THREE.PlaneGeometry(.42,.66),new THREE.MeshStandardMaterial({map:menuTex,roughness:.9}));chalk.position.set(AX1-.55,.44,AZ1+.6);chalk.rotation.x=-.12;ramen.add(chalk);
  rbox([.3,AH+.6,.3],[AX1+.18,(AH+.6)/2,AZ0+1.4],0x8a8e8a,{roughness:.5,metalness:.4});

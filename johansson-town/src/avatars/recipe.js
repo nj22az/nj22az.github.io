@@ -31,6 +31,7 @@ export const AGES=Object.freeze(['child','teen','adult','elder']);
 export const ageClass=years=>!Number.isFinite(+years)?'adult':years<13?'child':years<19?'teen':years>=65?'elder':'adult';
 
 export const PARTS=Object.freeze({
+ silhouette:Object.freeze(['neutral','feminine','masculine']),
  head:HEAD_FORMS,
  hair:Object.freeze(['crop','sidepart','bob','long','ponytail','braids','bun','spiky','perm','buzz','afro','horseshoe','bald']),
  eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle']),
@@ -39,10 +40,10 @@ export const PARTS=Object.freeze({
  mouth:Object.freeze(['smile','flat','grin','small','wide','smirk','pout']),
  glasses:Object.freeze(['none','round','square','sun','half']),
  facial:Object.freeze(['none','moustache','walrus','stubble','beard','goatee']),
- top:Object.freeze(['tank','tee','kariyushi','polo','blouse','jacket','apron','smock']),
- bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt']),
- footwear:Object.freeze(['barefoot','sneakers','sandals','shoes']),
- hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon']),
+ top:Object.freeze(['tank','tee','kariyushi','polo','blouse','jacket','apron','smock','sailor','sailorlong','police','hoodie','cardigan','overalls','sundress','festival','lighthouse','lantern','reef']),
+ bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt','widepants','cropped','culottes','pleatedskirt']),
+ footwear:Object.freeze(['barefoot','sneakers','sandals','shoes','boots']),
+ hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon','squid','teapot','sunflower','paperboat','mountain']),
  earrings:Object.freeze(['none','studs','hoops']),
  neckwear:Object.freeze(['none','pendant','scarf']),
 });
@@ -54,7 +55,7 @@ const colour=v=>/^#[0-9a-f]{6}$/i.test(String(v))?String(v).toLowerCase():null;
 /** The recipe every other one starts from: a friendly nobody. */
 export const DEFAULT_RECIPE=Object.freeze({
  v:1,name:'',age:'adult',
- body:Object.freeze({height:.5,build:.5,skin:'#e8bf98'}),
+ body:Object.freeze({height:.5,build:.5,silhouette:'neutral',skin:'#e8bf98'}),
  head:Object.freeze({size:.5,shape:.5,form:'oval',jaw:.5,cheeks:.5}),
  hair:Object.freeze({style:'crop',colour:'#1c1714',flip:false}),
  eyes:Object.freeze({style:'round',colour:'#2a1d16',size:.5,width:.5,spacing:.5,height:.5,tilt:.5}),
@@ -83,7 +84,7 @@ export function normalizeRecipe(input={}){
  const flag=(v,f)=>v===undefined?f:!!v;
  return {
   v:1,name:String(r.name||'').slice(0,24),age:pick(AGES,r.age,'adult'),
-  body:sub('body',{height:num,build:num,skin:col}),
+  body:sub('body',{height:num,build:num,silhouette:(v)=>pick(PARTS.silhouette,v,'neutral'),skin:col}),
   head:sub('head',{size:num,shape:num,form:(v,f)=>pick(HEAD_FORMS,v,f),jaw:num,cheeks:num}),
   hair:sub('hair',{style:(v,f)=>pick(PARTS.hair,v,f),colour:col,flip:flag}),
   eyes:sub('eyes',{style:(v,f)=>pick(PARTS.eyes,v,f),colour:col,size:num,width:num,spacing:num,height:num,tilt:num}),
@@ -93,7 +94,7 @@ export function normalizeRecipe(input={}){
   glasses:sub('glasses',{style:(v,f)=>pick(PARTS.glasses,v,f),colour:col}),
   facial:sub('facial',{style:(v,f)=>pick(PARTS.facial,v,f),colour:col}),
   blush:num(r.blush,d.blush),freckles:!!r.freckles,mole:!!r.mole,wrinkles:num(r.wrinkles,d.wrinkles),
-  outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>['none','flowers','stripes','dots'].includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col})),
+  outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>['none','flowers','stripes','dots'].includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,bottomPattern:(v)=>v==='plaid'?'plaid':'none',footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col})),
   accessories:sub('accessories',{earrings:(v,f)=>pick(PARTS.earrings,v,f),neckwear:(v,f)=>pick(PARTS.neckwear,v,f),colour:col,pin:flag}),
   swim:sub('swim',{colour:col}),
   profile:(()=>{
@@ -154,7 +155,7 @@ export function randomRecipe(seed=Math.random().toString(36)){
   facial:{style:!feminine&&r()<.3?any(PARTS.facial.slice(1)):'none',colour:'#3a2618'},
   blush:feminine?.3+r()*.4:r()*.2,freckles:r()<.12,mole:r()<.1,wrinkles:older?.5+r()*.5:0,
   outfit:{top:any(['tee','kariyushi','polo','blouse','jacket']),topColour:any(pal.cloth),pattern:r()<.3?any(['flowers','stripes','dots']):'none',
-   bottom:feminine&&r()<.4?any(['skirt','longskirt']):any(['shorts','trousers']),bottomColour:any(['#27304d','#6d7478','#c8b48a','#2b2b2b','#9a6a42','#2f5f9e']),shoes:any(['#6d4a32','#2b2b2b','#f4f1ea','#d8342c']),footwear:any(['sneakers','sandals','shoes']),hat:'none',hatColour:'#f4f1ea',accent:any(pal.cloth)},
+   bottom:feminine&&r()<.4?any(['skirt','longskirt','widepants','cropped','culottes','pleatedskirt']):any(['shorts','trousers']),bottomColour:any(['#27304d','#6d7478','#c8b48a','#2b2b2b','#9a6a42','#2f5f9e']),shoes:any(['#6d4a32','#2b2b2b','#f4f1ea','#d8342c']),footwear:any(['sneakers','sandals','shoes','boots']),hat:'none',hatColour:'#f4f1ea',accent:any(pal.cloth)},
   profile:{pace:r(),talk:r(),show:r(),outlook:r(),pitch:feminine?.45+r()*.5:r()*.6,speed:r(),month:1+Math.floor(r()*12),day:1+Math.floor(r()*28),favourite:any(pal.cloth)},
  });
 }

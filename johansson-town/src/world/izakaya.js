@@ -1,3 +1,5 @@
+import {japaneseSign,signText} from './okinawa/signs.js';
+import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './interiors/shared-dining-layout.js';
 import {createIzakayaTV} from './advertising-billboard.js';
 import {hangIzakayaPosters} from './interiors/izakaya-posters.js';
 import {DINING,restaurantCollider,restaurantApproach,izakayaPlot,SATO_RAMEN_DOOR} from './dining-layout.js';
@@ -29,7 +31,7 @@ export const addMinatoInterior=room=>asset('interior',room);
 export function buildIzakaya(world,options){
  // Where it stands depends on the layout: see IZAKAYA_PLOTS in dining-layout.js.
  const plot=izakayaPlot();
- const site={id:'izakaya',title:'Minato Izakaya',jp:'居酒屋 みなと',sub:'SUPPER & STORIES',x:plot.x,z:plot.z,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–03:00',door:[plot.door[0],0,plot.door[1]],opens:'16:00'};
+ const site={id:'izakaya',title:'Minato Izakaya',jp:"Izakaya Minato",sub:'SUPPER & STORIES',x:plot.x,z:plot.z,color:0xc98a65,accent:'#b55049',line:'Nao’s place · small plates, old friends and new stories · 16:00–03:00',door:[plot.door[0],0,plot.door[1]],opens:'16:00'};
  const facadeColliders=[];
  const approach=restaurantApproach('izakaya');site.exitPosition=[...site.door];site.approachPosition=[approach[0],0,approach[1]];site.entryFacing=plot.yaw;
  options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(plot.x,0,plot.z);exterior.rotation.y=plot.yaw;world.group.add(exterior);
@@ -74,7 +76,7 @@ export function buildIzakaya(world,options){
   placeholder.name='Minato placeholder';placeholder.position.set(-.91,2,1.11);exterior.add(placeholder);
  }
  // Warm readable bilingual sign remains a runtime canvas so it does not require font textures in GLB.
- const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#36241e';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#ffe4af';ctx.font='bold 70px serif';ctx.fillText('居酒屋 みなと',384,88);ctx.font='26px sans-serif';ctx.fillText('MINATO · SUPPER & STORIES',384,146);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
+ const c=document.createElement('canvas');c.width=768;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#36241e';ctx.fillRect(0,0,768,192);ctx.textAlign='center';ctx.fillStyle='#ffe4af';ctx.font='bold 70px serif';signText(ctx,japaneseSign("Izakaya Minato"),384,88,700,70);ctx.font='26px sans-serif';ctx.fillText('MINATO · SUPPER & STORIES',384,146);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.5,.68),new THREE.MeshStandardMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.3}));sign.position.set(0,3.35,4.3);sign.visible=!suppliedExterior;exterior.add(sign);
  const entrance=new THREE.Object3D();entrance.position.set(...site.door);entrance.position.y=1.2;world.group.add(entrance);options.register(entrance,'Come into Minato Izakaya',()=>options.enter(site));
  // The new facade has a recessed closed door and an asymmetric footprint.
@@ -117,18 +119,8 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  for(const x of [-4.15,4.15])box([4.7,3.8,.2],[x,1.9,6.4],0xe8c894,room,false);
  box([3.6,1.1,.2],[0,3.25,6.4],0xe8c894,room,false);
  const anchor=(position,label,fn)=>{const o=new THREE.Object3D();o.position.set(...position);room.add(o);reg(o,label,fn,true);return o;};
- const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.1,.68),new THREE.MeshStandardMaterial({map:signTexture('おかえりなさい','WELCOME BACK · MINATO','#b55049')}));sign.position.set(.5,3.1,-6.05);room.add(sign);
- for(const x of [-3.8,-2.3,-.8,.7,2.2])collider(x,-1.42,.6,.6,.71);
- // The counter runs from the guest ledge back to the steel work top on Nao's side.
- collider(-.8,-2.64,8.4,1.43,1.15);
- // The back bar and the cooking line along the back wall, and the staff gate at the
- // counter's end: the kitchen is Nao's and Mrs Sato's, not a way through to the ramen shop.
- collider(.875,-5.95,10.9,.75,2.7);collider(4.9,-3.1,3.0,.4,1.1);collider(6.45,-4.9,.2,3.1,2.7);
- for(const [x,z] of [[-3.5,2.2],[2.6,2]]){collider(x,z,2.5,1.35,1);for(const dz of [-1.08,1.08])collider(x,z+dz,2.5,.50,.6);}
- // The koagari, the sake barrels, crates of empties by the door and behind the counter,
- // the drinks fridge and the umbrella stand (see tools/blender/build-minato-interior.py).
- collider(5.3,1.8,2.0,5.4,.4);collider(-5.88,-.35,.7,1.5,.6);collider(-5.35,5.75,1.05,.4,.62);
- collider(-5.72,-5.0,.85,1.9,1.9);collider(-2.35,5.95,.3,.3,.6);
+ const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.1,.68),new THREE.MeshStandardMaterial({map:signTexture("Welcome back",'WELCOME BACK · MINATO','#b55049')}));sign.position.set(.5,3.1,-6.05);room.add(sign);
+ for(const c of SHARED_DINING_COLLIDERS)collider(c.x,c.z,c.w,c.d,c.height);
  hangMenuStrips(room);lightTheRoom(room);
  anchor([0,1,5.5],'Step outside',exit);
  anchor([3.55,1.15,-2.05],'Order something delicious',()=>action('izakaya-menu'));
@@ -139,9 +131,11 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
   const title=seat.id==='window'?'Minato window seat':seat.counter?'Minato counter':'Minato table',o=anchor([seat.position[0],1,seat.position[2]],seat.label,()=>action('seat',title,'A warm table, a little conversation, and nowhere to hurry.'));
   o.userData.seat={...seat,izakaya:seat,pitch:0};
  }
+ for(const z of [4.15,5.0]){const o=anchor([-5.52,.8,z],'Sit in the cosy bar corner',()=>action('seat','Minato lounge corner','A worn upholstered bench, a small wooden table and a warm globe light.'));o.userData.seat={position:[-5.52,0,z],stand:[-3.9,0,z],eyeY:1.12,yaw:Math.PI/2,pitch:0};}
+ anchor([4.1,1,-3.8],'Inspect the shared kitchen',()=>action('inspect','Minato and Sato shared kitchen','The ramen stock pots, sink, prep board and range share a working aisle. Walk around the counter through the open passage. Please keep clear while Nao and Mrs Sato are carrying hot bowls.'));
  anchor([-.4,2.5,-5.6],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
- return {name:'Minato',cutaway:true,television:createIzakayaTV({parent:room})};
+ return {name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
 }
 
 /**
@@ -161,7 +155,7 @@ function hangMenuStrips(room){
  const ctx=canvas.getContext('2d');ctx.textAlign='center';ctx.textBaseline='middle';
  MENU_STRIPS.forEach(([name,price,special],i)=>{
   const x=i*cell[0];ctx.fillStyle=special?'#e9d9b4':'#f3e8cc';ctx.fillRect(x+3,0,cell[0]-6,cell[1]);
-  ctx.fillStyle=special?'#b3382c':'#2a221c';const chars=[...name.replace(/ /g,'')],size=Math.min(34,196/chars.length);
+  ctx.fillStyle=special?'#b3382c':'#2a221c';const chars=[...japaneseSign(name).replace(/ /g,'')],size=Math.min(34,196/chars.length);
   ctx.font=`bold ${size}px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif`;
   chars.forEach((ch,k)=>ctx.fillText(ch,x+cell[0]/2,14+size/2+k*size*1.02));
   ctx.fillStyle='#b3382c';ctx.font='bold 19px serif';ctx.fillText('¥'+price,x+cell[0]/2,cell[1]-18);
@@ -180,7 +174,9 @@ function hangMenuStrips(room){
 }
 /** Warm light from the lanterns over the counter and the lamps over the tables. */
 function lightTheRoom(room){
- for(const [x,y,z,power] of [[-4,2.6,-2.35,6],[-.8,2.6,-2.35,6],[2.4,2.6,-2.35,6],[-3.5,2.1,2.2,4],[2.6,2.1,2,4],[5.3,1.95,1.8,4]]){
+ // Under each bell pendant over the counter and the tables, the back bar's shelf lights, and
+ // the koagari (tools/blender/build-minato-interior.py).
+ for(const [x,y,z,power] of [[-3.8,2.25,-2.25,3.6],[-2.3,2.25,-2.25,3.6],[-.8,2.25,-2.25,3.6],[.7,2.25,-2.25,3.6],[2.2,2.25,-2.25,3.6],[-2.9,1.9,-5.5,3],[-3.5,2.15,2.2,4],[2.6,2.15,2,4],[5.3,1.95,1.8,4]]){
   const light=new THREE.PointLight(0xffb36b,power,7,2);light.position.set(x,y,z);light.name='Minato lamp';room.add(light);
  }
 }

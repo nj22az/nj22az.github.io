@@ -5,11 +5,13 @@ const EAST_LAWN_SOUTH=-38;
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
 import {createMaterials} from '../../render/materials.js';
-import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GOYA,KITAHAMA} from './layout.js';
+import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
 import {utilityPole,wiresBetween,serviceDrop,keiTruck,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
 import {GROUND_LAYER} from '../ground-layers.js';
+import {KITAHAMA_LANES} from '../kitahama-layout.js';
+import {buildKitahamaQuarter} from './kitahama-quarter.js';
 import {plotGate} from './layout.js';
 import {residentsLine} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
@@ -41,8 +43,8 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  const anchor=(x,y,z,label,fn)=>{const a=new THREE.Object3D();a.position.set(x,y,z);group.add(a);register?.(a,label,fn);return a;};
  const inspect=(x,y,z,label,title,text)=>anchor(x,y,z,label,()=>onAction?.('inspect',title,text));
  const vendings=[];
- const vending=(x,z,ry)=>{
-  const machine=createVendingMachine({shadows});machine.position.set(x,0,z);machine.rotation.y=ry;group.add(machine);vendings.push(machine);
+ const vending=(x,z,ry,y=0)=>{
+  const machine=createVendingMachine({shadows});machine.position.set(x,y,z);machine.rotation.y=ry;group.add(machine);vendings.push(machine);
   colliders.push({id:'vending',x,z,w:Math.abs(Math.sin(ry))>.5?1:1.25,d:Math.abs(Math.sin(ry))>.5?1.25:1,height:2.2});
   anchor(x+Math.sin(ry)*.95,1,z+Math.cos(ry)*.95,'Buy a drink',()=>onAction?.('vending'));
  };
@@ -54,10 +56,11 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildYardRow(kit,solid,{anchor,inspect,onAction});
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
- buildGateball(kit,solid,{anchor,inspect,onAction});
+ if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
  buildEastQuay(kit,solid,{anchor,inspect,onAction,vending});
  buildWires(kit,solid);
- buildKitahama(kit,solid,{anchor,inspect,onAction});
+ // Kitahama stands on the island's ground, below the old town's datum.
+ kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
@@ -189,7 +192,7 @@ function netShed(kit,solid,p,{inspect}){
  solid({id:'net-shed',x:(x0+2.8+x1)/2,z:(z0+z1)/2,w:x1-x0-2.8,d:z1-z0,height:h});
  for(let z=z0;z<=z1;z+=(z1-z0)/4)solid({id:'net-shed-post',x:x0+.1,z,w:.25,d:.25,height:h});
  inspect(x0-.4,1.2,(z0+z1)/2,'Inspect the net shed','Net shed',
-  'Nets for the reef, mended where the coral took them, heaped on the floor with their floats. The orange ones are new; the glass ones are older than the harbour office. A sign on the post says 網の上を歩かないで — don’t walk on the nets.');
+  "Nets for the reef, mended where the coral took them, heaped on the floor with their floats. The orange ones are new; the glass ones are older than the harbour office. A sign on the post says Don't walk on the net — don’t walk on the nets.");
 }
 
 /** The utaki: the neighbourhood's sacred grove, where nobody builds and nobody shouts. */
@@ -210,8 +213,8 @@ function utaki(kit,solid,p,{anchor,onAction,inspect}){
  solid({id:'utaki-stone',x:cx,z:cz-.6,w:1.5,d:1,height:.8});
  anchor(cx,1,cz-1.6,'Pray at the utaki',()=>onAction?.('shrine','Nishi-machi utaki',
   'The grove at the top of the quarter. There is no shrine building and no gate, only the old banyan, the fukugi round it and a stone where the women of the street leave rice, salt and incense. People lower their voices before they reach the wall.'));
- inspect(cx+2.4,1,p.minZ-.9,'Read the utaki notice','御嶽 · Utaki',
-  'A hand-lettered board: 御嶽につき立入りはご遠慮ください. This is a sacred place; please do not go in without reason. Underneath, in a child’s writing, somebody has added: the cat is allowed.');
+ inspect(cx+2.4,1,p.minZ-.9,'Read the utaki notice',"Utaki · Utaki",
+  "A hand-lettered board: Please refrain from entering the Utaki.. This is a sacred place; please do not go in without reason. Underneath, in a child’s writing, somebody has added: the cat is allowed.");
 }
 
 function buildWestQuay(kit,solid,{inspect,anchor,onAction,vending}){
@@ -254,20 +257,20 @@ function buildPromenade(kit,solid,{anchor,onAction}){
 /* ------------------------------- Shop-houses ------------------------------ */
 
 const SHOPS=Object.freeze({
- nakamura:{interior:'zenzai',jp:'仲村ぜんざい',en:'Nakamura · shaved ice & zenzai',bg:'#f6efd9',accent:'#2f7fa8',mark:'氷',upright:'ぜんざい',uprightBg:'#2f7fa8',
-  buy:{label:'Buy a zenzai',title:'Nakamura Zenzai · 仲村ぜんざい',cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'}},
+ nakamura:{interior:'zenzai',jp:"Nakamura Zenzai",en:'Nakamura · shaved ice & zenzai',bg:'#f6efd9',accent:'#2f7fa8',mark:"Ice",upright:"Zenzai",uprightBg:'#2f7fa8',
+  buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'}},
  // The post office, in the shop-house that was the barber's and then, briefly, the
  // power station before that moved to the town hall grounds. Postman Tōma's round starts
  // and ends here; Mr Shimabukuro still rents the flat upstairs.
- shimabukuro:{interior:'post',jp:'港町郵便局',en:'Minato post office',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:'郵便',uprightBg:'#c8102e',
-  inspect:{label:'Look into the post office',title:'Minato Post Office · 港町郵便局',text:'A counter with a brass scale, a rack of forms, the savings-book window and a wall of pigeonholes, one for every household on the island. Collections at 10:30 and 16:30. The mail goes over on the morning ferry and comes back on the afternoon one; a parcel from Naha takes two days, from Tokyo four.'}},
- 'higa-saketen':{interior:'liquor',jp:'比嘉酒店',en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:'泡盛',uprightBg:'#8a3b2e',
-  buy:{label:'Buy a bottle of awamori',title:'Higa Liquor · 比嘉酒店',cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Mr Higa will not sell you however you ask. He wraps a miniature in newspaper and tells you to keep it for a guest.'}},
- arakaki:{interior:'sweets',jp:'新垣菓子店',en:'Arakaki sweets · sata andagi',bg:'#fbf1d8',accent:'#2d6f63',upright:'菓子',uprightBg:'#2d6f63',
-  buy:{label:'Buy sata andagi',title:'Arakaki Sweets · 新垣菓子店',cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile. Three to a paper bag, still warm, sugar on your fingers.'}},
- yonamine:{interior:'fish',anchorDz:2.3,jp:'与那嶺鮮魚店',en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:'魚',upright:'鮮魚',uprightBg:'#9a4a2a',
-  inspect:{label:'Look at the fish',title:'Yonamine Fish · 与那嶺鮮魚店',text:'Blue parrotfish, a red snapper, mackerel on ice and a tray of mozuku seaweed. Mrs Yonamine buys from the morning boats and sells out by three. Irabu-chā — the blue parrotfish — is best as sashimi, she says, with vinegared miso.'}},
- 'coin-laundry':{interior:'laundry',jp:'コインランドリー',en:'Coin laundry · open 24 hours',bg:'#e9f0f6',accent:'#3a6a9a',upright:'洗濯',uprightBg:'#3a6a9a',
+ shimabukuro:{interior:'post',jp:"Minato Town Post Office",en:'Minato post office',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:"Postal",uprightBg:'#c8102e',
+  inspect:{label:'Look into the post office',title:"Minato Post Office · Minato Town Post Office",text:'A counter with a brass scale, a rack of forms, the savings-book window and a wall of pigeonholes, one for every household on the island. Collections at 10:30 and 16:30. The mail goes over on the morning ferry and comes back on the afternoon one; a parcel from Naha takes two days, from Tokyo four.'}},
+ 'higa-saketen':{interior:'liquor',jp:"Higa Liquor Store",en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
+  buy:{label:'Buy a bottle of awamori',title:"Higa Liquor · Higa Liquor Store",cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Mr Higa will not sell you however you ask. He wraps a miniature in newspaper and tells you to keep it for a guest.'}},
+ arakaki:{interior:'sweets',jp:"Aragaki Confectionery Store",en:'Arakaki sweets · sata andagi',bg:'#fbf1d8',accent:'#2d6f63',upright:"Sweets",uprightBg:'#2d6f63',
+  buy:{label:'Buy sata andagi',title:"Arakaki Sweets · Aragaki Confectionery Store",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile. Three to a paper bag, still warm, sugar on your fingers.'}},
+ yonamine:{interior:'fish',anchorDz:2.3,jp:"Yonamine Fresh Fish Store",en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:"Fish",upright:"Fresh fish",uprightBg:'#9a4a2a',
+  inspect:{label:'Look at the fish',title:"Yonamine Fish · Yonamine Fresh Fish Store",text:'Blue parrotfish, a red snapper, mackerel on ice and a tray of mozuku seaweed. Mrs Yonamine buys from the morning boats and sells out by three. Irabu-chā — the blue parrotfish — is best as sashimi, she says, with vinegared miso.'}},
+ 'coin-laundry':{interior:'laundry',jp:"Coin laundry",en:'Coin laundry · open 24 hours',bg:'#e9f0f6',accent:'#3a6a9a',upright:"Laundry",uprightBg:'#3a6a9a',
   inspect:{label:'Look into the coin laundry',title:'Coin laundry',text:'Four washers, two dryers and a bench, with a stack of old manga and a sign about not leaving washing overnight that everybody ignores. One dryer is going round with somebody’s towels in it. It smells of warm cotton.'}},
 });
 
@@ -297,8 +300,8 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
  solid({id:'zenzai-bench',x:EAST_ROW.minX-.45,z:n.minZ+1.4,w:.5,d:1.5,height:.5});
  // The lane up to Umi-no-yu: stepping stones, lanterns and the bath's own sign.
  const L=EAST_ROW.onsenLane,lz=(L.minZ+L.maxZ)/2;
- kit.block(MAIN_ROAD.pavementEast,ONSEN_DOOR[0]-1.6,GROUND_LAYER.lane-.05,GROUND_LAYER.lane+.012,lz-1.1,lz+1.1,0xcbc3b0);
- for(let x=MAIN_ROAD.pavementEast+.6;x<ONSEN_DOOR[0]-2;x+=.9)kit.box(.6,.03,.8,x,GROUND_LAYER.lane+.027,lz+Math.sin(x*1.3)*.2,0xa9a293);
+ kit.block(MAIN_ROAD.pavementEast,18.9,GROUND_LAYER.lane-.05,GROUND_LAYER.lane+.012,lz-1.1,lz+1.1,0xcbc3b0);
+ for(let x=MAIN_ROAD.pavementEast+.6;x<18.5;x+=.9)kit.box(.6,.03,.8,x,GROUND_LAYER.lane+.027,lz+Math.sin(x*1.3)*.2,0xa9a293);
  for(const s of [-1,1]){
   const z=lz+s*2.3;
   kit.box(.28,.9,.28,EAST_ROW.minX+.2,.45,z,0xcfc8b4,{finish:'coral'});
@@ -306,7 +309,7 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
   kit.box(.5,.08,.5,EAST_ROW.minX+.2,1.3,z,0x5d4431);
   solid({id:'lane-lantern',x:EAST_ROW.minX+.2,z,w:.45,d:.45,height:1.3});
  }
- kit.sign(poster({title:'♨ 海の湯',lines:['UMI-NO-YU','¥300 · 10:00–22:00','この先 →'],band:'#2f6f8a'}),.7,.98,EAST_ROW.minX+.2,1.7,L.minZ+.12,{ry:0,name:'onsen lane sign'});
+ kit.sign(poster({title:"♨ Sea Bath",lines:['UMI-NO-YU','¥300 · 10:00–22:00',"Beyond this →"],band:'#2f6f8a'}),.7,.98,EAST_ROW.minX+.2,1.7,L.minZ+.12,{ry:0,name:'onsen lane sign'});
  potPlant(kit,EAST_ROW.minX+.3,L.maxZ-.5,{seed:31});potPlant(kit,EAST_ROW.minX+.3,L.minZ+.5,{seed:32});
  // A vending machine against the post office's end wall, facing the lane, and bicycles parked by it.
  vending(EAST_ROW.minX+1.3,L.minZ+.62,0);
@@ -361,7 +364,7 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  for(const [x,z] of cols){kit.box(.22,S.height,.22,x,S.height/2,z,0x5e7078,{finish:'metal'});solid({id:'auction-column',x,z,w:.3,d:.3,height:S.height});}
  kit.gableRoof(S.maxX-S.minX,S.maxZ-S.minZ,.9,(S.minX+S.maxX)/2,S.height,(S.minZ+S.maxZ)/2,0x7a8f96,{overhang:.7});
  for(let x=S.minX-.6;x<S.maxX+.7;x+=.45)kit.box(.04,.04,S.maxZ-S.minZ+1.4,x,S.height+.46,(S.minZ+S.maxZ)/2,0x6c8088,{rx:0});
- kit.sign(fascia({jp:'港漁協 せり市場',en:'Minato fisheries co-op · fish auction',bg:'#eef3f1',accent:'#2f6f8a',mark:'魚'}),6,.9,(S.minX+S.maxX)/2,S.height-.3,S.maxZ+.02,{name:'auction sign'});
+ kit.sign(fascia({jp:"Port Fisheries Association Auction market",en:'Minato fisheries co-op · fish auction',bg:'#eef3f1',accent:'#2f6f8a',mark:"Fish"}),6,.9,(S.minX+S.maxX)/2,S.height-.3,S.maxZ+.02,{name:'auction sign'});
  // Inside: rows of crates with the morning's catch, a scale and the price board.
  const r=rng(77),catchColours=[0x9fb4c0,0xc85a4a,0x5a8fb0,0xb0b8b8,0x6fa0c8];
  for(let row=0;row<3;row++)for(let k=0;k<6;k++){
@@ -372,24 +375,24 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  solid({id:'auction-catch',x:S.minX+1.2+2.75,z:S.minZ+2+1.8,w:6.4,d:4.2,height:.5});
  kit.box(.6,.9,.6,S.maxX-1.2,.55,S.minZ+1.2,0xc9cdd0,{finish:'metal'});
  kit.box(1.6,1,.08,S.maxX-.3,1.7,(S.minZ+S.maxZ)/2,0x2c3a33,{ry:Math.PI/2});
- kit.sign(poster({title:'本日のせり',lines:['マグロ  ¥2,800','グルクン ¥900','イラブチャー ¥1,200','セーイカ ¥1,500'],bg:'#2c3a33',ink:'#f2efe4',band:'#8a3b2e'}),1.1,1.5,S.maxX-.36,1.75,(S.minZ+S.maxZ)/2,{ry:-Math.PI/2,name:'auction prices'});
- inspect((S.minX+S.maxX)/2,1.2,S.maxZ+1,'Inspect the auction shed','Minato fish auction · せり市場',
+ kit.sign(poster({title:"Today's auction",lines:["Tuna  ¥2,800","Gurukun ¥900","Irabuchar ¥1,200","Seika ¥1,500"],bg:'#2c3a33',ink:'#f2efe4',band:'#8a3b2e'}),1.1,1.5,S.maxX-.36,1.75,(S.minZ+S.maxZ)/2,{ry:-Math.PI/2,name:'auction prices'});
+ inspect((S.minX+S.maxX)/2,1.2,S.maxZ+1,'Inspect the auction shed',"Minato fish auction · Auction market",
   'The boats are in by five and the auction is at six: a bell, a man with a clipboard shouting numbers too fast for anyone but the buyers, and a floor hosed down by seven. What is left in the crates now went unsold, and will be somebody\'s supper. Tuna, gurukun, blue parrotfish, a cuttlefish the size of a cat.');
  // The ice plant: a tall concrete block with its chute swung out over the quay.
  kit.block(I.minX,I.maxX,0,I.height,I.minZ,I.maxZ,0xd8d4ca);
  kit.block(I.minX-.05,I.maxX+.05,0,.4,I.minZ-.05,I.maxZ+.05,0xb3ad9f);
  kit.block(I.minX-.02,I.minX,0,2.8,I.minZ+1.2,I.minZ+4.2,0x8e9699,'metal');
  for(let y=.3;y<2.8;y+=.18)kit.box(.03,.04,3,I.minX-.03,y,I.minZ+2.7,0x7b8285);
- kit.sign(vertical({jp:'製氷',bg:'#2f6f8a'}),.9,3.4,I.minX-.05,4.6,I.maxZ-1.1,{ry:-Math.PI/2,depth:.06,name:'ice sign'});
+ kit.sign(vertical({jp:"Ice making",bg:'#2f6f8a'}),.9,3.4,I.minX-.05,4.6,I.maxZ-1.1,{ry:-Math.PI/2,depth:.06,name:'ice sign'});
  kit.rod([(I.minX+I.maxX)/2,I.height-1,I.minZ],[(I.minX+I.maxX)/2,3.2,Q.minZ+.8],.28,0x9aa3a6,{segments:8,finish:'metal'});
  kit.box(.8,.6,.8,(I.minX+I.maxX)/2,I.height-.8,I.minZ-.3,0x9aa3a6,{finish:'metal'});
  for(const x of [I.minX+1.4,I.maxX-1.4]){kit.box(1.4,.9,1.2,x,I.height+.45,(I.minZ+I.maxZ)/2,0xe6e6e0);kit.cyl(.45,.45,.06,x,I.height+.93,(I.minZ+I.maxZ)/2,0x3a3f42,{segments:12});}
  for(const x of [I.maxX-.4])kit.rod([x,.4,I.maxZ+.1],[x,I.height,I.maxZ+.1],.05,0x8e979a);
  solid(kit.rect(I.minX,I.maxX,I.minZ,I.maxZ,I.height,'ice-plant'));
- inspect(I.minX-1,1.2,I.minZ+2.7,'Inspect the ice plant','Minato ice plant · 製氷所',
+ inspect(I.minX-1,1.2,I.minZ+2.7,'Inspect the ice plant',"Minato ice plant · Ice factory",
   'Block ice, crushed ice, flake ice. The chute swings out over the boats and fills a hold in four minutes with a roar you can hear out on the ferry. Inside it is winter all year; the men who work it wear jumpers in August and sit out on the quay at lunch to thaw.');
  // Boats lying to the quay, a forklift, crates, the fuel pump.
- fishingBoat(kit,24.6,Q.minZ-2.1,{ry:0,colour:0x2f6fb8,name:'第三港丸'});
+ fishingBoat(kit,24.6,Q.minZ-2.1,{ry:0,colour:0x2f6fb8,name:"Daisan Minatomaru"});
  fishingBoat(kit,33.6,Q.minZ-2.2,{ry:Math.PI,colour:0x8a3b2e,length:7.2});
  kit.box(1.1,1,1.8,S.maxX+1.1,.55,S.maxZ-1.2,0xe0b93a);kit.box(.9,.06,1.2,S.maxX+1.1,.2,S.minZ+5.5,0x3a3f42);
  for(const dx of [-.3,.3])kit.box(.06,2,.06,S.maxX+1.1+dx,1,S.maxZ-2.2,0x3a3f42);
@@ -398,7 +401,7 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  kit.box(.5,1.4,.4,I.maxX-.4,.7,Q.maxZ-.9,0xc0392b);kit.box(.3,.3,.06,I.maxX-.4,1.1,Q.maxZ-1.12,0xf2efe4);
  solid({id:'fuel-pump',x:I.maxX-.4,z:Q.maxZ-.9,w:.6,d:.5,height:1.4});
  vending(S.minX-.9,S.maxZ-.6,Math.PI/2);
- inspect(24.6,1,Q.minZ+.9,'Look at the boats','第三港丸 · Minato Maru No. 3',
+ inspect(24.6,1,Q.minZ+.9,'Look at the boats',"Daisan Minatomaru · Minato Maru No. 3",
   'The Minato Maru is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));
 }
@@ -420,7 +423,7 @@ function buildYardLife(kit,solid,{inspect}){
  for(let i=0;i<34;i++)kit.sphere(.35+r.next()*.25,G.minX+.3+r.next()*(G.maxX-G.minX-.6),2.18,G.minZ+.3+r.next()*(G.maxZ-G.minZ-.6),r.pick([0x4f8a3e,0x3f7a36,0x5c9446]),{sy:.35,detail:0});
  for(let i=0;i<16;i++){const x=G.minX+.5+r.next()*(G.maxX-G.minX-1),z=G.minZ+.5+r.next()*(G.maxZ-G.minZ-1);kit.sphere(.08,x,1.78,z,0x6fa84a,{sy:2.6,detail:1});}
  inspect((G.minX+G.maxX)/2,1,G.maxZ+.8,'Look at the goya trellis','Goya trellis',
-  'Bitter melon, ゴーヤー, grown up a net until it roofs the whole bed: in summer it is the coolest place in the yard. The warty green gourds hanging through are for chanpurū, fried with tofu, egg and a little spam. Whoever planted it has written 取らないで on a card — please don’t pick.');
+  "Bitter melon, Goya, grown up a net until it roofs the whole bed: in summer it is the coolest place in the yard. The warty green gourds hanging through are for chanpurū, fried with tofu, egg and a little spam. Whoever planted it has written Don't take it on a card — please don’t pick.");
  // The bicycle shed at the top of the yard, and what gathers round a working yard.
  const bx0=-24,bx1=-19.4,bz0=15.8,bz1=19.6;
  kit.block(bx0,bx1,2.15,2.25,bz0,bz1,0x8c9ea3);
@@ -464,7 +467,7 @@ function buildGateball(kit,solid,{anchor,inspect}){
  kit.box(.45,.08,G.maxZ-G.minZ-2,sx1-.4,H+.46,cz,0x9a7a55);for(const dz of [-1.5,1.5])kit.box(.4,.44,.08,sx1-.4,H+.22,cz+dz,0x5d6468);
  solid({id:'gateball-bench',x:sx1-.4,z:cz,w:.5,d:G.maxZ-G.minZ-2,height:H+.5});
  for(let i=0;i<3;i++)kit.rod([sx1-.25,H+.02,cz-1+i*.5],[sx1-.15,H+.95,cz-1.1+i*.5],.02,[0xd8342c,0x2f6fb8,0xe0b93a][i]);
- inspect(cx,H+1,G.maxZ+.7,'Watch the gateball','Gateball · ゲートボール',
+ inspect(cx,H+1,G.maxZ+.7,'Watch the gateball',"Gateball · Gateball",
   'Five a side, mallets and numbered balls, three hoops and a post, and a referee with a whistle and a stopwatch who is somehow also the loudest player. The Minato seniors play here at seven every morning before it gets hot. They have been losing to the team from the next village since 1985.');
 }
 
@@ -498,16 +501,16 @@ function buildWires(kit,solid){
  */
 function buildKitahama(kit,solid,ctx){
  const K=KITAHAMA,lane=GROUND_LAYER.lane;
- for(const L of [K.approach,K.lane]){
+ for(const L of KITAHAMA_LANES){
   kit.block(L.minX,L.maxX,lane-.06,lane,L.minZ,L.maxZ,GROUND.concrete);
   const alongZ=L.maxZ-L.minZ>L.maxX-L.minX;
   if(alongZ)kit.block(L.maxX-.28,L.maxX,lane,lane+.015,L.minZ,L.maxZ,0x8d887d);
   else kit.block(L.minX,L.maxX,lane,lane+.015,L.minZ,L.minZ+.28,0x8d887d);
  }
- K.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:30+i,windbreak:i<2?'south':'north'}));
+ K.plots.forEach((p,i)=>walledHouse(kit,solid,p,{...ctx,seed:30+i,windbreak:p.gate==='north'?'south':p.gate==='south'?'north':p.gate==='west'?'east':'west'}));
  // The house to let: a board on the gatepost and the shutters closed.
  {const p=K.plots.find(q=>q.romaji==='To let'),x=(p.minX+p.maxX)/2;
-  kit.sign(poster({title:'貸家',lines:['FOR RENT','2DK · ¥28,000','役場 住民課まで'],bg:'#f4ecd6',band:'#c8432f'}),.6,.8,x-1.6,1.1,p.minZ-.3,{ry:Math.PI,name:'to-let sign'});}
+  kit.sign(poster({title:"Rental house",lines:['FOR RENT','2DK · ¥28,000',"Office To the Residents Division"],bg:'#f4ecd6',band:'#c8432f'}),.6,.8,x-1.6,1.1,p.minZ-.3,{ry:Math.PI,name:'to-let sign'});}
  // Sugar cane towards the point: rows of tall leaves, a little lighter at the tips.
  const F=K.field,r=rng(303);
  kit.block(F.minX,F.maxX,GROUND_LAYER.gravel,GROUND_LAYER.gravel+.03,F.minZ,F.maxZ,0x8a7a5a,'sand');
@@ -517,7 +520,7 @@ function buildKitahama(kit,solid,ctx){
   kit.box(.7,.05,.18,x,h-.1,z,0x5f8f3a,{ry:r.next()*3,rz:.4});
  }
  solid({id:'cane-field',x:(F.minX+F.maxX)/2,z:(F.minZ+F.maxZ)/2,w:F.maxX-F.minX,d:F.maxZ-F.minZ,height:2});
- ctx.inspect((F.minX+F.maxX)/2,1.2,F.minZ-.8,'Look at the cane field','Sugar cane · さとうきび',
+ ctx.inspect((F.minX+F.maxX)/2,1.2,F.minZ-.8,'Look at the cane field',"Sugar cane · Sugar cane",
   'Head-high cane in rows, rattling in the wind off the point. The Tōmas and the Ueharas share it; in January everybody on the lane cuts for a fortnight and the lorry comes over on the ferry to take it to the mill on the main island.');
  // The pole line: up the approach lane from the beach, then along the cross lane, with
  // a drop to every house.
@@ -527,8 +530,10 @@ function buildKitahama(kit,solid,ctx){
  for(let i=0;i<up.length-1;i++)wiresBetween(kit,up[i],up[i+1]);
  const across=[34.5,42,52.5].map((x,i)=>pole(x,K.lane.maxZ+.35,{face:Math.PI,transformer:false,lamp:true,seed:210+i}));
  wiresBetween(kit,up[3],across[1],{sag:.5});wiresBetween(kit,across[0],across[1]);wiresBetween(kit,across[1],across[2]);
- for(const p of K.plots){const {door}=plotGate(p,0);const near=across.reduce((a,b)=>Math.abs(b.anchors[0].x-door[0])<Math.abs(a.anchors[0].x-door[0])?b:a);
-  serviceDrop(kit,near,[door[0]+1.5,2.6,p.gate==='north'?p.minZ+3.2:p.maxZ-3.2]);}
+ for(const p of K.plots.filter(q=>Number(q.id.split('-')[1])<6)){const {door}=plotGate(p,0);const near=across.reduce((a,b)=>Math.abs(b.anchors[0].x-door[0])<Math.abs(a.anchors[0].x-door[0])?b:a);
+  serviceDrop(kit,near,kit.point(door[0]+1.5,2.6,p.gate==='north'?p.minZ+3.2:p.maxZ-3.2).toArray());}
+ // The residential quarter to the west: flats, park, rubbish point, poles (kitahama-quarter.js).
+ buildKitahamaQuarter(kit,solid,ctx,{across});
 }
 
 /** What the nameplates say when you stop to read one. */
@@ -543,6 +548,13 @@ const NAMEPLATES=Object.freeze({
  'kitahama-3':'Kōji Uehara\'s house. A wetsuit on the line, fish boxes stacked by the gate and a radio that plays the weather on the hour.',
  'kitahama-4':'The Tōmas. The postman\'s red Super Cub stands in the yard at night with its box padlocked. Mrs Tōma grows goya over the gate.',
  'kitahama-5':'An empty concrete house, swept and waiting, with the water off at the main.',
+ 'kitahama-6':'The Tairas\' house, the oldest on the lane: red tile, a hinpun with a crack the grandfather says the 1959 typhoon put there, and a loom on the verandah under a sheet. The cane knives hang inside the gate, oiled, from January to January.',
+ 'kitahama-7':'The Chinens. The water lorry is parked at the end of Fukugi Lane because it will not fit through the gate. A nurse\'s bicycle with a basket, and a rota for the clinic\'s night calls taped inside the kitchen window.',
+ 'kitahama-8':'Ms Uezu\'s house: a week of washing on the line when she is home, and the shutters down the week she is on the ferry. A neighbour waters the bougainvillea.',
+ 'kitahama-9':'Grandmother Gushiken\'s house. On Saturday mornings the verandah is full of children with sanshin and the lane is full of the same three notes, getting better.',
+ 'kitahama-10':'The Tamashiros keep the lane. Goya over the wall, papaya by the gate, the rubbish rota pinned inside the gatepost and a dog called Kuro who barks at the postman\'s Super Cub and nothing else.',
+ 'kitahama-11':'Mr Iha\'s house. A coil of cable by the gate, a ladder on the wall and the brightest porch light in Kitahama, which he says is a test.',
+ 'kitahama-12':'Mrs Kohagura\'s front room is a hair salon from Tuesday to Saturday: one chair, a hood dryer from 1979 and the island\'s gossip, in that order.',
  tamaki:'The Tamakis run the ice plant on the east quay. Their daughter is at the school; her bicycle is the red one, and her swimming things are on the washing line most days of the year.',
  oshiro:'The Ōshiros. Old Mr Ōshiro was a sabani builder; his boat is the red one on the west quay. There is a bunch of bananas ripening by the kitchen door and, if you believe the neighbours, a habu in the fukugi that nobody has seen for years.',
 });

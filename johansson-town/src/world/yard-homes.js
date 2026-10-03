@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {HOUSEHOLDS} from '../people/households.js';
 import {windowGlow} from '../render/dusk.js';
 import {YARD_HOMES} from './yard-homes-layout.js';
+import {glazeWithRoom} from '../render/window-interior.js';
 
 /**
  * The yard houses behind Front-Row Books & Workshop (yard-homes-layout.js).
@@ -51,7 +52,7 @@ export function buildYardHomes(world,options){
    if(Math.abs(wx-doorX)<.8)continue;
    mesh(new THREE.BoxGeometry(.95,.8,.05),std(spec.trim),wx,1.55,face,'Yard home window frame');
    const pane=new THREE.MeshStandardMaterial({color:0x9fc4d6,emissive:0xffd89a,emissiveIntensity:0,roughness:.2});glass.push(pane);
-   mesh(new THREE.PlaneGeometry(.82,.66),pane,wx,1.55,face+front*.03,'Yard home window').rotation.y=front>0?0:Math.PI;
+   glazeWithRoom(mesh(new THREE.PlaneGeometry(.82,.66),pane,wx,1.55,face+front*.03,'Yard home window')).rotation.y=front>0?0:Math.PI;
   }
   const plate=document.createElement('canvas');plate.width=256;plate.height=96;const ctx=plate.getContext('2d');
   ctx.fillStyle='#f4e4c8';ctx.fillRect(0,0,256,96);ctx.strokeStyle='#6b4a1c';ctx.lineWidth=6;ctx.strokeRect(3,3,250,90);
@@ -76,7 +77,7 @@ export function buildYardHomes(world,options){
   // The home site: its door, who lives there, and the heading you walk in with.
   const profile={name:household.residents[0]};
   let site=options.sites.find(s=>s.id===household.id);
-  if(!site){site={id:household.id,jp:'住まい',sub:'FRONT-ROW YARD',color:0xd4c6ad,accent:'#776953'};options.sites.push(site);}
+  if(!site){site={id:household.id,jp:"Home",sub:'FRONT-ROW YARD',color:0xd4c6ad,accent:'#776953'};options.sites.push(site);}
   Object.assign(site,{title:household.title,line:spec.address,homeOwner:profile.name,homeOwners:[...household.residents],homeEntry:'yard-'+spec.number,
    door:[spec.door[0],.02,spec.door[1]],entryFacing:spec.inward,x:spec.door[0],z:spec.door[1]});
   site.exitPosition=[...site.door];

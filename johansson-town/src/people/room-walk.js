@@ -28,7 +28,12 @@ export function createRoomWalk(blocked=()=>false,{bounds={minX:-8,maxX:8,minZ:-8
   }
   if(step<=0)return false;
   const x=g.position.x+dx/d*step,z=g.position.z+dz/d*step;
-  if(!blocked(x,z,radius))g.position.set(x,0,z);
+  if(!blocked(x,z,radius)){g.position.set(x,0,z);route.stuck=0;}
+  // The smoothed route checks its shortcuts every ten centimetres, and a corner can fall
+  // between two checks: the step into it is refused and, with nothing to change the
+  // route, a walker would stand at that corner for good. Blocked for a moment, fall back
+  // to the planner's own route, which keeps its margin round every corner.
+  else if((route.stuck=(route.stuck||0)+dt)>.4&&!route.raw){route.points=nav.path(g.position,{x:target[0],z:target[2]});route.raw=true;route.stuck=0;}
   return false;
  },forget(person){routes.delete(person);},clear(){routes.clear();nav.clearCache();}};
 }

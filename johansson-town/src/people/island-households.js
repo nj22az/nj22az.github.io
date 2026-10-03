@@ -28,20 +28,29 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'kitahama-3',address:'3 Kitahama',members:[['Kōji','sorts the catch at the fish auction; crews on the Ōshiro boat']]},
  {home:'kitahama-4',address:'4 Kitahama',members:[['Postman Tōma','runs the post office and the round: collections 10:30 and 16:30']]},
  {home:'kitahama-5',address:'5 Kitahama',members:[],toLet:true},
+ // The residential quarter west of the cross lane (docs/RESIDENTIAL-PLAN.md).
+ {home:'kitahama-6',address:'6 Kitahama',members:[['Grandfather Taira','retired cane farmer; leads the Kitahama cane cut every January'],['Grandmother Taira','weaves bashōfu cloth on the verandah loom']]},
+ {home:'kitahama-7',address:'7 Kitahama',members:[['Mr Chinen','drives the island water lorry'],['Mrs Chinen','nurse at the town hall clinic']]},
+ {home:'kitahama-8',address:'8 Kitahama',members:[['Ms Uezu','deckhand on the ferry, a week on and a week off']]},
+ {home:'kitahama-9',address:'9 Kitahama',members:[['Grandmother Gushiken','teaches the sanshin on her verandah on Saturday mornings']]},
+ {home:'kitahama-10',address:'10 Kitahama',members:[['Mr Tamashiro','retired; grows goya and papaya over the wall'],['Mrs Tamashiro','retired; runs the lane’s rubbish rota and the notice board']]},
+ {home:'kitahama-11',address:'11 Kitahama',members:[['Mr Iha','electrician at the power station; mends the lane lights']]},
+ {home:'kitahama-12',address:'12 Kitahama',members:[['Mrs Kohagura','cuts hair in her front room, Tuesday to Saturday']]},
+ {home:'kitahama-flats',address:'Kitahama Heights, Fukugi Lane',members:[['Ms Ganaha','sells tickets at the ferry office (flat 1)'],['Mr Higa Jr','apprentice at the boatyard (flat 2)'],['Mr Fujita','retired fisherman (flat 3); found most days in his shed on the pier']]},
  // Nishi-machi, inside the seawall.
- {home:'higa',address:'Higa house, Nishi-machi',members:[['Grandmother Higa','retired; keeps the verandah and knows every ferry by its horn'],['Mrs Higa','the bandai at Umi-no-yu'],['比嘉 けんた','pupil, 5・6年']]},
- {home:'kinjo',address:'Kinjō house, Nishi-machi',members:[['Uncle Kinjō','retired fisherman; fishes off the seawall'],['Mrs Kinjō','keeps house and the family accounts'],['金城 ゆい','pupil, 5・6年']]},
- {home:'oshiro',address:'Ōshiro house, Nishi-machi',members:[['Mr Ōshiro','fisherman; builds and mends sabani'],['大城 さくら','pupil, 5・6年']]},
+ {home:'higa',address:'Higa house, Nishi-machi',members:[['Grandmother Higa','retired; keeps the verandah and knows every ferry by its horn'],['Mrs Higa','the bandai at Umi-no-yu'],["Higa Kenta","pupil, Years 5–6"]]},
+ {home:'kinjo',address:'Kinjō house, Nishi-machi',members:[['Uncle Kinjō','retired fisherman; fishes off the seawall'],['Mrs Kinjō','keeps house and the family accounts'],["Kinjo Yui","pupil, Years 5–6"]]},
+ {home:'oshiro',address:'Ōshiro house, Nishi-machi',members:[['Mr Ōshiro','fisherman; builds and mends sabani'],["Oshiro Sakura","pupil, Years 5–6"]]},
  // Behind the east row.
- {home:'nakasone',address:'Nakasone house, east back',members:[['Mr Nakasone','retired; gateball and the sanshin'],['仲宗根 たく','pupil, 5・6年']]},
- {home:'miyagi',address:'Miyagi house, east back',members:[['Mrs Miyagi','the oldest on the island; keeps the utaki'],['宮城 だいき','pupil, 5・6年 (her great-grandson)']]},
- {home:'tamaki',address:'Tamaki house, east back',members:[['Mr Tamaki','runs the ice plant on the east quay'],['玉城 みゆ','pupil, 5・6年']]},
+ {home:'nakasone',address:'Nakasone house, east back',members:[['Mr Nakasone','retired; gateball and the sanshin'],["Nakasone Taku","pupil, Years 5–6"]]},
+ {home:'miyagi',address:'Miyagi house, east back',members:[['Mrs Miyagi','the oldest on the island; keeps the utaki'],["Miyagi Daiki","pupil, Years 5–6 (her great-grandson)"]]},
+ {home:'tamaki',address:'Tamaki house, east back',members:[['Mr Tamaki','runs the ice plant on the east quay'],["Tamaki Miyu","pupil, Years 5–6"]]},
  {home:'kamiya',address:'Kamiya house, east back',members:[['Mrs Kamiya','retired post-office clerk; gateball every afternoon']]},
  // Above the shops.
- {home:'nakamura',address:'Above 仲村ぜんざい',members:[['Mrs Nakamura','makes shaved ice and zenzai'],['仲村 まい','pupil, 5・6年']]},
+ {home:'nakamura',address:"Above Nakamura Zenzai",members:[['Mrs Nakamura','makes shaved ice and zenzai'],["Nakamura Mai","pupil, Years 5–6"]]},
  {home:'shimabukuro',address:'Above the post office',members:[['Mr Shimabukuro','runs the power station at the town hall']]},
- {home:'arakaki',address:'Above 新垣菓子店',members:[['Mr Arakaki','gateball referee; fries the sata andagi at dawn'],['新垣 りょう','pupil, 5・6年']]},
- {home:'yonamine',address:'Above 与那嶺鮮魚店',members:[['Mrs Yonamine','sells fish from the morning boats'],['Yonamine-sensei','teaches the 5・6年 at the town hall']]},
+ {home:'arakaki',address:"Above Aragaki Confectionery Store",members:[['Mr Arakaki','gateball referee; fries the sata andagi at dawn'],["Arakaki Ryo","pupil, Years 5–6"]]},
+ {home:'yonamine',address:"Above Yonamine Fresh Fish Store",members:[['Mrs Yonamine','sells fish from the morning boats'],['Yonamine-sensei',"teaches the Years 5–6 at the town hall"]]},
 ].map(h=>Object.freeze({...h,members:Object.freeze(h.members.map(([name,purpose])=>Object.freeze({name,purpose})))})));
 
 /** Where somebody lives, or null. */

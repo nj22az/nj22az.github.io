@@ -76,6 +76,24 @@ export function parseReply(raw){
  };
 }
 
+/** The player said yes to the model once; the browser keeps the weights, so next time
+ * the town can bring it up by itself (see startMindIfChosen). */
+export const MIND_OPT_IN_KEY='johansson-town-mind';
+export function rememberOptIn(on,storage=globalThis.localStorage){try{on?storage?.setItem(MIND_OPT_IN_KEY,'1'):storage?.removeItem(MIND_OPT_IN_KEY);}catch{}}
+export function optedIn(storage=globalThis.localStorage){try{return storage?.getItem(MIND_OPT_IN_KEY)==='1';}catch{return false;}}
+
+let shared=null;
+/** The one model the whole town shares: Thuan's chat and the neighbours' small talk. */
+export function sharedMind(options){return shared||(shared=createThuanMind(options));}
+/**
+ * If the player has turned the model on before, start it quietly once the town is up.
+ * Never the first download: that is only ever the player's choice (thuan-chat.js).
+ */
+export function startMindIfChosen({delay=12000,mind=sharedMind()}={}){
+ if(!optedIn())return null;
+ return new Promise(resolve=>setTimeout(()=>resolve(mind.load()),delay));
+}
+
 /**
  * @param {object} [options]
  * @param {(status:{stage:string,progress:number,text:string})=>void} [options.onProgress]
@@ -84,8 +102,10 @@ export function parseReply(raw){
  * @param {Navigator} [options.navigatorRef] injectable: navigator is read-only under test
  */
 export function createThuanMind({onProgress=()=>{},loadWebLLM=()=>import(/* @vite-ignore */ WEB_LLM_URL),model=MODEL_ID,navigatorRef=undefined}={}){
- let engine=null,loading=null,failed=null;
+ let engine=null,loading=null,failed=null,queue=Promise.resolve();
  const history=[];
+ // One model, one request at a time: Thuan and the neighbours (town-mind.js) take turns.
+ const run=job=>{const next=queue.then(job,job);queue=next.catch(()=>{});return next;};
 
  const report=(stage,progress,text)=>{try{onProgress({stage,progress,text});}catch{}};
 
@@ -110,6 +130,7 @@ export function createThuanMind({onProgress=()=>{},loadWebLLM=()=>import(/* @vit
      report(progress>=1?'ready':'downloading',progress,info?.text||'Loading…');
     }});
     report('ready',1,'Thuan is listening.');
+    rememberOptIn(true);
     return {ok:true};
    }catch(error){
     failed=error?.message||String(error);
@@ -138,10 +159,10 @@ export function createThuanMind({onProgress=()=>{},loadWebLLM=()=>import(/* @vit
    {role:'user',content:line}
   ];
   try{
-   const response=await engine.chat.completions.create({
+   const response=await run(()=>engine.chat.completions.create({
     messages,temperature:.7,max_tokens:160,
     response_format:{type:'json_object'}
-   });
+   }));
    const reply=parseReply(response?.choices?.[0]?.message?.content??'');
    if(!reply)return null;
    history.push({role:'user',content:line},{role:'assistant',content:JSON.stringify(reply)});
@@ -158,6 +179,19 @@ export function createThuanMind({onProgress=()=>{},loadWebLLM=()=>import(/* @vit
   get error(){return failed;},
   get downloadBytes(){return MODEL_BYTES;},
   load,ask,
+  /**
+   * A raw JSON completion for the rest of the town (town-mind.js). Never starts the
+   * download: null unless the player has already brought the model up.
+   * @param {{role:string,content:string}[]} messages
+   * @returns {Promise<string|null>}
+   */
+  async complete(messages,{temperature=.9,max_tokens=220}={}){
+   if(!engine)return null;
+   try{
+    const response=await run(()=>engine.chat.completions.create({messages,temperature,max_tokens,response_format:{type:'json_object'}}));
+    return response?.choices?.[0]?.message?.content??null;
+   }catch(error){failed=error?.message||String(error);return null;}
+  },
   reset(){history.length=0;},
   async dispose(){
    history.length=0;

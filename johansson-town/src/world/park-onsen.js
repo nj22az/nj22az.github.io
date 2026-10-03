@@ -51,7 +51,7 @@ function noren(){
  const map=canvasTexture(384,256,(ctx,w,h)=>{
   ctx.fillStyle='#253a5e';ctx.fillRect(0,0,w,h);
   ctx.fillStyle='#f3efe4';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font=`bold 150px ${SERIF}`;ctx.fillText('ゆ',w/2,h*.55);
+  ctx.font=`bold 150px ${SERIF}`;ctx.fillText("Yu",w/2,h*.55);
   ctx.font=`bold 30px ${SERIF}`;ctx.fillText('♨',w*.17,h*.2);ctx.fillText('♨',w*.83,h*.2);
  });
  const material=new THREE.MeshStandardMaterial({map,roughness:.9,side:THREE.DoubleSide});
@@ -68,7 +68,7 @@ function signs(group){
  const board=canvasTexture(512,140,(ctx,w,h)=>{
   ctx.fillStyle='#3a2a1c';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#c9a86a';ctx.lineWidth=5;ctx.strokeRect(8,8,w-16,h-16);
   ctx.fillStyle='#f1e2bd';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font=`bold 74px ${SERIF}`;ctx.fillText('♨ 海の湯',w/2,h*.44);
+  ctx.font=`bold 74px ${SERIF}`;ctx.fillText("♨ Sea Bath",w/2,h*.44);
   ctx.font='bold 20px sans-serif';ctx.fillText('UMI-NO-YU · HOT SPRING',w/2,h*.82);
  });
  const kanban=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.41),new THREE.MeshStandardMaterial({map:board,roughness:.8}));
@@ -76,7 +76,7 @@ function signs(group){
  // The notice by the path: hours, fee, and what is in the water.
  const notice=canvasTexture(256,320,(ctx,w,h)=>{
   ctx.fillStyle='#efe6cf';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2b2520';ctx.textAlign='center';
-  ctx.font=`bold 34px ${SERIF}`;ctx.fillText('海の湯',w/2,44);
+  ctx.font=`bold 34px ${SERIF}`;ctx.fillText("Sea Bath",w/2,44);
   ctx.font='16px sans-serif';
   ['Harbour hot spring','','Bath 10:00 – 22:00','Adults ¥300 · Children ¥150','Footbath: free, any hour','','Sodium chloride spring','42°C at the spout','Towel ¥100 at the desk'].forEach((line,i)=>ctx.fillText(line,w/2,82+i*24));
   ctx.fillStyle='#b3382c';ctx.font='bold 15px sans-serif';ctx.fillText('Please wash before you bathe',w/2,h-18);
@@ -125,7 +125,7 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
  const anchor=(x,y,z,label,fn)=>{const o=new THREE.Object3D();o.position.set(x,y,z);group.add(o);register?.(o,label,fn);return o;};
  // Through the noren: the bathhouse is a room you walk into (interiors/onsen.js).
  const [doorX,doorZ]=ONSEN_DOOR,[outX,outZ]=ONSEN_APPROACH;
- const site={id:'onsen',title:'Umi-no-yu',jp:'海の湯',sub:'HOT SPRING · FAMILY BATH',x:doorX,z:doorZ,color:0x3f5f7a,accent:'#253a5e',
+ const site={id:'onsen',title:'Umi-no-yu',jp:"Sea Bath",sub:'HOT SPRING · FAMILY BATH',x:doorX,z:doorZ,color:0x3f5f7a,accent:'#253a5e',
   line:'Bath 10:00–22:00 · adults ¥300 · swimwear please',door:[doorX,0,doorZ],exitPosition:[outX,0,outZ],approachPosition:[outX,0,outZ],
   entryFacing:ONSEN.yaw,opens:'10:00'};
  sites?.push(site);

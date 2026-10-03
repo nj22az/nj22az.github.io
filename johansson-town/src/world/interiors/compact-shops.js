@@ -1,3 +1,5 @@
+import {addBookshopDetail} from './bookshop-detail.js';
+import {DOCK_WORKSHOP_ROOM} from '../dock-workshop-layout.js';
 import {buildWorkshopMachine} from '../../workshop/machine.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {createMaterials} from '../../render/materials.js';
@@ -9,21 +11,21 @@ import {BOOKSHOP_WORKSHOP_ROOM} from '../bookshop-workshop-layout.js';
 export const TEA_ROOM={width:6.6,depth:5.8,bounds:{minX:-3.3,maxX:3.3,minZ:-2.9,maxZ:2.9},doorX:0,spawn:[0,0,2.25],exit:[0,1.1,2.78],yaw:0};
 export function compactRoomLayout(id){return id==='tea-house'?TEA_ROOM:alleyBusinessLayout(id)?.room;}
 
-// The combined shops use the floor area of two adjoining supplied alley units.
+// Each business owns its room layout and furniture.
 // Furniture and approaches are authored together; there is no generic room shell.
 export function buildCompactShop({site,room,reg,collider,action,exit}){
  let workshop=null;
- const layout=site.combinedWorkshop?BOOKSHOP_WORKSHOP_ROOM:compactRoomLayout(site.id);if(!layout)return null;
+ const layout=site.bookshop?BOOKSHOP_WORKSHOP_ROOM:site.industrialWorkshop?DOCK_WORKSHOP_ROOM:compactRoomLayout(site.id);if(!layout)return null;
  const {width:w,depth:d,doorX}=layout,hw=w/2,hd=d/2;
  room.name=site.title+' interior';
- const surfaces=createMaterials(),wood=surfaces.material('timber',0x92734f),dark=surfaces.material('timber',0x574837),plaster=surfaces.material('plaster',0xd8cbb1),floor=surfaces.material('timber',0x9b8464);
+ const surfaces=createMaterials(),wood=surfaces.material('timber',0x92734f),dark=surfaces.material('timber',0x574837),plaster=surfaces.material('plaster',0xd8cbb1),floor=surfaces.material(site.industrialWorkshop?'concrete':'timber',site.industrialWorkshop?0x92958c:0x9b8464);
  const palette=new Map();const colour=c=>{if(!palette.has(c))palette.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.82}));return palette.get(c);};
  function box(name,size,pos,mat,solid=false){const m=new THREE.Mesh(new THREE.BoxGeometry(...size),typeof mat==='number'?colour(mat):mat);m.name=name;m.position.set(...pos);m.receiveShadow=true;room.add(m);if(solid)collider(pos[0],pos[2],size[0]+.03,size[2]+.03,pos[1]+size[1]/2);return m;}
  function anchor(pos,label,kind,title,text,worker){const o=new THREE.Object3D();o.name=label;o.position.set(...pos);room.add(o);if(worker)o.userData.workers=[worker];reg(o,label,kind==='exit'?exit:()=>action(kind,title,text),true);return o;}
  function board(title,sub,pos,width=1.5){const c=document.createElement('canvas');c.width=512;c.height=160;const ctx=c.getContext('2d');ctx.fillStyle='#e6d7b7';ctx.fillRect(0,0,512,160);ctx.fillStyle='#3d4942';ctx.textAlign='center';ctx.font='bold 36px serif';ctx.fillText(title,256,65,480);ctx.font='21px sans-serif';ctx.fillText(sub,256,120,480);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const m=new THREE.Mesh(new THREE.PlaneGeometry(width,.44),new THREE.MeshBasicMaterial({map:t}));m.position.set(...pos);room.add(m);}
  function bench(name,x,z,width,depth=.48){box(name,[width,.10,depth],[x,.85,z],wood,true);for(const dx of [-width/2+.08,width/2-.08])box(name+' leg',[.07,.80,depth-.10],[x+dx,.4,z],dark);}
  function chair(x,z,yaw=0){const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=yaw;room.add(g);const part=(size,pos)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),wood);m.position.set(...pos);g.add(m);};part([.43,.08,.43],[0,.46,0]);part([.43,.45,.06],[0,.72,.19]);for(const dx of [-.16,.16])for(const dz of [-.16,.16])part([.045,.44,.045],[dx,.22,dz]);collider(x,z,.48,.48,.96);return g;}
- box('Fitted timber floor',[w+.16,.12,d+.16],[0,-.06,0],floor);
+ box(site.industrialWorkshop?'Workshop concrete floor':'Fitted timber floor',[w+.16,.12,d+.16],[0,-.06,0],floor);
  box('Plaster rear wall',[w+.16,2.75,.12],[0,1.375,-hd-.06],plaster);
  for(const x of [-hw-.06,hw+.06])box('Side wall',[.12,2.75,d+.24],[x,1.375,0],plaster);
  for(const [a,b] of [[-hw,doorX-.52],[doorX+.52,hw]])if(b>a)box('Street wall',[b-a,2.75,.12],[(a+b)/2,1.375,hd+.06],plaster);
@@ -32,7 +34,7 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
  for(const z of [-hd,hd])box('Wall skirting',[w,.14,.08],[0,.1,z],dark);
  for(const x of [-hw,hw])box('Wall skirting',[.08,.14,d],[x,.1,0],dark);
  const door=buildShopDoor(room,{name:site.id+'-inside-door',width:1.0});door.group.position.set(doorX,0,hd-.02);door.group.rotation.y=Math.PI;
- anchor(layout.exit,'Exit to '+(site.combinedWorkshop?'Main Street':site.id==='tea-house'?'North Street':peninsulaActive()?'the street':'the shopping alley'),'exit');
+ anchor(layout.exit,'Exit to '+(site.bookshop?'Main Street':site.id==='tea-house'?'North Street':peninsulaActive()?'the street':'the shopping alley'),'exit');
  // A small illuminated shop window gives the front wall a clear street orientation.
  const windowX=doorX<0?Math.min(hw-.65,doorX+2):Math.max(-hw+.65,doorX-1.8);
  box('Window surround',[1.08,1.22,.06],[windowX,1.75,hd-.02],dark);
@@ -43,46 +45,27 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
  for(const x of [-w*.25,w*.25])box('Ceiling strip',[.14,.055,Math.min(1.1,d*.5)],[x,2.7,0],lamp);
  room.add(new THREE.HemisphereLight(0xffead0,0x777465,1.35));const light=new THREE.PointLight(0xffdba4,1.35,8,2);light.position.set(0,2.35,0);room.add(light);
 
- if(site.combinedWorkshop){
-  // Keep the entrance and central aisle open. Books and the press occupy the left;
-  // printing patterns and instrument repairs share the rear-right workbench.
-  for(const z of [-.95,.45]){
-   box('Bookcase back',[.16,2.05,1.22],[-4.05,1.025,z],dark);
-   for(const y of [.32,.86,1.4,1.92]){
-    box('Book shelf',[.42,.055,1.22],[-3.93,y,z],wood);
-    for(let i=0;i<7;i++)box('Bound volume',[.24,.3+(i%3)*.03,.12],[-3.89,y+.2,z-.49+i*.16],[0x814c3e,0x4d6668,0xa49267,0x626f4f][i%4]);
-   }
-   collider(-3.93,z,.48,1.26,2.1);
-  }
+ if(site.bookshop){
+  addBookshopDetail({room,collider,reg,action});
+  // The walls are books to the ceiling (bookshop-detail.js); the floor keeps the
+  // entrance and central aisle open between the counter, the desks and the reading table.
   bench('Bookselling counter',-2.55,2.12,1.65,.55);
   box('Brass till',[.25,.19,.22],[-3.05,1,2.12],0x53685d);
   anchor([-2.55,1,2.12],'Browse the bookshop ledger','read','Books & evening papers','Aya keeps the reading copies and Reiko’s evening paper at the front counter.','Aya');
   const newspaper=anchor([-1.85,1,2.12],'Buy newspaper · ¥80','buy','Evening newspaper',{cost:80,item:'Evening newspaper',text:'Reiko’s evening edition, collected at Aya’s counter.'});newspaper.userData.npcInteraction=false;
-  bench('Editor and printing bench',-2.55,-3.05,2.45,.64);
-  box('Press bed',[.66,.07,.4],[-2.7,.96,-3.05],0x53615b);
-  for(const x of [-2.97,-2.43])box('Press cheek',[.065,.43,.42],[x,1.15,-3.05],0x53615b);
-  const roller=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.56,12),colour(0x303832));roller.rotation.z=Math.PI/2;roller.position.set(-2.7,1.32,-3.05);room.add(roller);
-  const wheel=new THREE.Mesh(new THREE.TorusGeometry(.18,.024,6,20),colour(0x404c47));wheel.rotation.y=Math.PI/2;wheel.position.set(-2.34,1.3,-3.05);room.add(wheel);
-  anchor([-2.7,1.05,-2.9],'Operate the printing press','machine','Printing press','Reiko prepares proofs and the evening edition beside the book shelves.','Reiko');
-  anchor([-1.65,1,-2.9],'Read the editor’s proofs','read','Editor’s desk','Corrections and harbour reports for the next edition.','Reiko');
-  bench('Shared repair bench',1.62,-3.05,4.35,.64);
-  box('Tool board',[1.8,.38,.06],[1,2.05,-3.42],dark);
-  for(let i=0;i<5;i++){box('Hanging hand tool',[.04,.31,.07],[.35+i*.29,2.02,-3.36],0x8b9994);box('Tool grip',[.07,.11,.07],[.35+i*.29,2.14,-3.36],0x7b4e38);}
-  workshop=buildWorkshopMachine({room,x:.7,z:-3.05});
-  anchor([.7,1.25,-2.8],'Use Form 3D printer','workshop','Form 3D printer',null,'Kenji');
-  box('Oscilloscope',[.58,.36,.35],[2.28,1.08,-3.05],0x596c63);
-  box('Oscilloscope screen',[.32,.22,.025],[2.20,1.10,-2.86],0x324f45);
-  box('Signal trace',[.25,.012,.018],[2.20,1.10,-2.84],0xb3c491);
-  box('Repair radio',[.36,.25,.26],[3.35,1,-3.05],0x6f503d);
-  for(let i=0;i<5;i++)box('Radio grille',[.016,.16,.025],[3.21+i*.045,1,-2.91],0xd0b992);
-  anchor([2.28,1.18,-2.85],'Test the bench calibrator','machine','Bench calibrator','Tetsuo checks zero, span and reference values here.','Tetsuo');
-  anchor([3.35,1.05,-2.85],'Tune workshop radio','radio','Workshop radio','Harbour weather and late-night music from Tetsuo’s restored radio.','Tetsuo');
-  bench('Pattern display',3.70,.45,.58,2.4);
-  box('Star Port cabinet',[.60,1.48,.47],[2.4,.74,2.96],0x4b414d,true);
-  box('Star Port screen',[.46,.43,.028],[2.4,1.09,2.705],0x344f57);
-  const arcade=anchor([2.4,1,2.66],'Play Star Port','arcade','Star Port');arcade.userData.npcInteraction=false;
-  const seat=chair(-3.7,2.85,Math.PI/2);seat.userData.seat={position:[-3.7,0,2.85],stand:[-3.02,0,2.95],eyeY:1.12,yaw:Math.PI/2,pitch:0};seat.userData.npcInteraction=false;reg(seat,'Sit in the reading chair',()=>action('seat','Reading chair','Books and the workshop share this quiet street address.'),true);
-  board('FRONT-ROW BOOKS & WORKSHOP','BOOKS · EVENING PRESS · FORM 3D · REPAIRS',[0,2.4,-3.42],5.9);
+  bench('Newspaper and book wrapping desk',-2.55,-2.84,2.45,.5);
+  box('Wrapping paper roll',[.65,.11,.22],[-2.7,.97,-2.84],0xc8b493);
+  box('Evening newspaper proofs',[.48,.025,.36],[-2.0,.97,-2.84],0xf1ead8);
+  anchor([-1.65,1,-2.55],'Read the editor’s proofs','read','Editor’s desk','Corrections and harbour reports for the next edition.','Reiko');
+  bench('New arrivals display',1.62,-2.84,4.0,.5);
+  for(let i=0;i<12;i++)box('New and second-hand books',[.22,.11,.32],[.1+(i%6)*.53,1.0+Math.floor(i/6)*.13,-2.84],[0x814c3e,0x4d6668,0xa49267][i%3]);
+  const usedBook=anchor([-1.4,1,2.12],'Buy a second-hand paperback · ¥300','buy','Second-hand paperback',{cost:300,item:'Second-hand paperback',text:'Aya wraps a well-loved paperback in brown paper.'});usedBook.userData.npcInteraction=false;
+  bench('Reading table',2.15,.4,1.45,.8);
+  anchor([1.4,1,-2.45],'Ask about the new arrivals','read','Aya’s book recommendations','A sea adventure, an island history, and a well-loved poetry collection. Aya will help you find a book without hurrying you.','Aya');
+  anchor([2.15,1,.4],'Browse the local history books','read','Local history reading table','Reading copies stay in the shop. Please return each book to its marked place.');
+  const seat=chair(-3.7,2.85,Math.PI/2);seat.userData.seat={position:[-3.7,0,2.85],stand:[-3.02,0,2.95],eyeY:1.12,yaw:Math.PI/2,pitch:0};seat.userData.npcInteraction=false;reg(seat,'Sit in the reading chair',()=>action('seat','Reading chair','A quiet chair beside the window. Read for a while, with the harbour outside.'),true);
+  // The name board hangs from the ceiling over the aisle, facing the door: the back wall is books.
+  board('FRONT-ROW BOOKS','BOOKS · NEWSPAPERS · LOCAL STORIES',[0,2.42,-1.4],2.6);
  }else if(site.id==='frontrow'){
   box('Bookcase back',[2.1,2.05,.18],[-1.45,1.025,-hd+.1],dark);
   for(const y of [.32,.86,1.4,1.92]){box('Book shelf',[2.1,.055,.3],[-1.45,y,-hd+.18],wood);for(let i=0;i<11;i++)box('Bound volume',[.11,.3+(i%3)*.03,.19],[-2.35+i*.18,y+.2,-hd+.20],[0x814c3e,0x4d6668,0xa49267,0x626f4f][i%4]);}
@@ -102,6 +85,7 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   board('FRONT-ROW BOOKS & PRESS','READING COPIES · LOCAL NEWS',[0,2.38,-hd+.08],3.7);
  }else if(site.id==='form3d'){
   bench('Shared repair bench',0,-hd+.32,w-.3,.54);
+  if(site.industrialWorkshop){bench('Pattern and calculation table',3.2,.3,.7,2.6);box('Electrical distribution board',[.55,.85,.13],[-hw+.09,1.8,-1],0x78847e);anchor([-hw+.3,1.3,-1],'Read the electrical safety checklist','read','Workshop safety checklist','Isolate the supply, check the meter and record the test before returning equipment to service.');}
   box('Tool board',[1.8,.38,.06],[-1.02,2.05,-hd+.08],dark);
   for(let i=0;i<5;i++){box('Hanging hand tool',[.04,.31,.07],[-1.65+i*.29,2.02,-hd+.13],0x8b9994);box('Tool grip',[.07,.11,.07],[-1.65+i*.29,2.14,-hd+.13],0x7b4e38);}
   workshop=buildWorkshopMachine({room,x:-1.24,z:-hd+.32});
@@ -120,7 +104,7 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   for(let i=0;i<6;i++){const tin=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.25,12),colour(i%2?0x6b7955:0x9d8854));tin.position.set(-2.55+i*.4,1.01,-2.2);room.add(tin);}
   anchor([-1.3,1,-1.78],'Inspect tea counter','inspect','Tea counter','Roasted hojicha, sencha and a handwritten recipe for dorayaki.');
   for(const [x,z] of [[-1.75,.1],[1.55,-.5]]){bench('Tea table',x,z,1.05,.9);for(const dx of [-.84,.84]){const s=chair(x+dx,z,dx<0?-Math.PI/2:Math.PI/2);s.userData.seat={position:[x+dx,0,z],stand:[x+dx,0,z+.8],eyeY:1.12,yaw:dx<0?-Math.PI/2:Math.PI/2,pitch:0};reg(s,'Sit for tea',()=>action('seat','Tea house chair','A warm cup and a little time to linger.'),true);}for(const dx of [-.3,.3]){const cup=new THREE.Mesh(new THREE.CylinderGeometry(.085,.065,.13,12),colour(0xd7dfc4));cup.position.set(x+dx,.965,z);room.add(cup);}}
-  board('一服どうぞ','CORNER TEA HOUSE',[.2,2.25,-2.81],2.6);
+  board("Have a drink, please.",'CORNER TEA HOUSE',[.2,2.25,-2.81],2.6);
  }
  return {...layout,compact:true,workshop};
 }

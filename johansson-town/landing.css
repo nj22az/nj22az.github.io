@@ -593,7 +593,7 @@
 }
 .logo-main {
   margin-top: .35rem;
-  font: 400 clamp(2.6rem, 12.5vw, 7.5rem)/1.05 var(--ts-pop);
+  font: 400 clamp(2rem, 10.4vw, 7.5rem)/1.05 var(--ts-pop);
   letter-spacing: .01em;
 }
 /* Outline and extrusion are stacked shadows, so the yellow fill stays whole. */
@@ -807,3 +807,21 @@
 .board-kicker,.section-bar .board-tiny,.brochure-stop { font-size:.75rem; }
 @media(max-width:960px) { .roll-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:560px) { .roll-grid { grid-template-columns:1fr; } .resident-copy { padding:1rem; } .resident-portrait { max-height:20rem; } .guide-heading { padding-top:1.25rem; } }
+/* Visitor brochure and the live resident model sheets. */
+.island-brochure-hero{display:grid;grid-template-columns:1.25fr 1fr;gap:24px;padding:28px 0;border-bottom:1px solid #b7aa89;margin-bottom:20px;align-items:center}.island-brochure-hero>img{width:100%;height:280px;object-fit:cover;border:8px solid #f7f0de;box-shadow:0 3px 12px #493b2926}.island-brochure-hero h2{font-size:clamp(28px,4vw,46px);line-height:1.05;font-family:Georgia,serif;margin:10px 0}.island-brochure-hero p{line-height:1.7}.island-brochure-hero button{padding:12px 20px;border:1px solid #435c50;background:#435c50;color:#fff9e9;border-radius:4px;cursor:pointer}.island-brochure-hero a{display:inline-block;margin:12px;color:#435c50}.catalogue-search{display:flex;align-items:center;gap:12px;margin:18px 0;font-family:Georgia,serif}.catalogue-search input{flex:1;min-width:0;padding:12px;border:1px solid #a79d80;background:#fffcf2;border-radius:4px;font:inherit}.roll-card[hidden]{display:none}.resident-model-sheet{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:16px 0}.resident-model-sheet figure{margin:0;min-width:0}.resident-model-sheet img{width:100%;height:auto;aspect-ratio:1;object-fit:contain;background:#faf7ef;border-radius:4px}.resident-model-sheet figcaption{font-size:11px;text-align:center;color:#67614f}.resident-facts{display:grid;grid-template-columns:90px 1fr;gap:8px;font-size:12px}.resident-facts dt{font-weight:bold}.resident-facts dd{margin:0}.resident-story>p{line-height:1.7}.resident-story small{display:block;color:#756d58;margin-top:12px}.resident-story h4{font-family:Georgia,serif;font-size:17px;margin:18px 0 8px}.resident-story[open]{grid-column:1/-1}.resident-story summary{cursor:pointer;color:#3d5c50}.resident-copy{min-width:0}
+@media(max-width:650px){.island-brochure-hero{grid-template-columns:1fr}.island-brochure-hero>img{height:210px}.catalogue-search{display:block}.catalogue-search input{display:block;width:100%;box-sizing:border-box;margin-top:8px}}
+@media(min-width:760px){.roll-card:has(.resident-story[open]){grid-column:1/-1;display:grid;grid-template-columns:minmax(260px,32%) 1fr;align-items:start}.roll-card:has(.resident-story[open])>.resident-portrait{position:sticky;top:16px;max-height:520px}.roll-card:has(.resident-story[open]) .resident-model-sheet{max-width:510px}.roll-card:has(.resident-story[open]) .resident-copy{padding:24px}}
+
+.title-action-icon{width:24px;height:24px;flex:0 0 24px}.title-center .title-menu :is(button,a){display:flex!important;align-items:center;justify-content:center;gap:12px}.title-center{padding-top:clamp(2rem,8vh,5rem)}
+
+#installTown{display:inline-flex;align-items:center;gap:8px;min-height:44px}
+
+.resident-personality{margin:20px 0;padding:20px;border:1px solid #e4cba0;border-radius:18px;background:#fff4d8}.resident-personality h4{margin:5px 0 12px;font-size:24px}.resident-traits{display:flex;flex-wrap:wrap;gap:7px}.resident-traits span{padding:6px 10px;border-radius:999px;background:#fffdf4;border:1px solid #ead5ad;font-size:12px}.resident-personality blockquote{margin:16px 0;padding-left:14px;border-left:3px solid #c28a4a;font-family:Georgia,serif;line-height:1.6}.resident-moments{display:grid;gap:12px;margin-top:16px}.resident-moments section{display:grid;grid-template-columns:30px 1fr;gap:3px 10px}.resident-moments section>span{grid-row:1/3;font-size:26px;color:#866339}.resident-moments h5{margin:0;font-size:13px;color:#695a3b}.resident-moments p{font-size:14px;line-height:1.5}.resident-story>p{margin-bottom:12px}
+
+/* Guide navigation stays below iOS chrome, with one clear play action. */
+#start.guide-open .board-wrap { padding-top:calc(env(safe-area-inset-top, 0px) + 18px); }
+#start .guide-nav { position:sticky; top:env(safe-area-inset-top,0px); z-index:3; flex-wrap:nowrap; justify-content:space-between; gap:8px; padding:10px; background:#fffdf8; border:1px solid #ded4bf; border-radius:16px; }
+#start .guide-nav :is(a,button) { display:flex; align-items:center; justify-content:center; width:48px; height:48px; min-width:44px; padding:0; border-radius:12px; text-decoration:none; }
+#start .guide-nav a:hover { background:#eee8d9; }
+#start .guide-nav svg { width:25px; height:25px; }
+#start .guide-nav :is(a,button):focus-visible { outline:3px solid #e9aa48; outline-offset:3px; }

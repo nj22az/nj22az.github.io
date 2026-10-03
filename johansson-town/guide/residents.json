@@ -1,306 +1,828 @@
 [
   {
     "name": "Johansson",
-    "role": "Marine engineer",
-    "place": "Harbour Office",
-    "bio": "A familiar figure on the quay, equally at home with an engine drawing or a conversation over tea.",
-    "backstory": "Years at sea taught Johansson to listen before taking things apart. The harbour office gives him a place to keep his records, help with repairs and watch the neighbourhood settle into its evening rhythm.",
-    "portrait": "assets/images/residents/01.webp"
+    "role": "Engineer and island resident",
+    "place": "Harbour Office and Dock Electrical & Repairs",
+    "bio": "Curious about how things work, Johansson enjoys practical projects, small-town life and a good conversation over dinner.",
+    "backstory": "Johansson arrived with a toolbox, a bundle of notebooks and a habit of taking the long way to learn a place. A failed harbour radio first brought him to Kenji and Tetsuo’s workshop; helping with the repair made him a familiar face at the quay. He now keeps the Harbour Office’s service records, follows deliveries from ship to shop, and spends spare afternoons testing ideas at the workshop. Airport expansion excites him, although he insists that a growing island still needs its bookshop, bathhouse and working boats. Aya saves unusual technical books for him. Thuan knows when a long day calls for a quiet tea rather than another question. He is happiest when a practical improvement gives his neighbours more time to enjoy their island.",
+    "portrait": "assets/images/residents/01.webp",
+    "islandPersonality": {
+      "title": "Practical dreamer",
+      "traits": [
+        "Curious",
+        "dependable",
+        "quietly adventurous"
+      ],
+      "habit": "Tests repaired radios on the walk back from the quay.",
+      "ambition": "Connect the harbour and airport without losing the island’s small shops.",
+      "favourite": "A late supper at Minato"
+    }
   },
   {
     "name": "Thuan",
-    "role": "Shopkeeper",
-    "place": "Sakura Shōten",
-    "bio": "Thuan keeps Sakura stocked, remembers her neighbours’ small preferences and finds time for a quiet seat between errands.",
-    "backstory": "She has made the shop a meeting place as much as a convenience store. A postcard from Hanoi, a carefully counted handful of change and the plants by the doorway are all part of her working day. On Sundays she visits Mrs Nakamura for zenzai, usually ordering less than she ends up eating.",
-    "portrait": "assets/images/residents/02.webp"
+    "role": "Vietnamese shopkeeper",
+    "place": "Sakura Shop",
+    "bio": "A warm, independent Vietnamese woman who runs Sakura, the island’s small shop for everyday provisions.",
+    "backstory": "Thuan came to the island from Vietnam and made Sakura her livelihood one shelf at a time. At first she wrote every supplier’s name in a little notebook; now she recognises the harbour deliveries by the sound of the cart outside. Her shelves hold tea, rice, soap, batteries and small treats, but regulars also come for her clear advice and easy welcome. She shares a home with Nao, whose late bar evenings overlap with her early shop mornings. The two trade leftovers, gossip and reminders to get some sleep. Away from the till, Thuan tends the plants beside Sakura, visits Mrs Kinjō for flowers and enjoys choosing a good meal. Johansson is becoming a favourite companion for those dinners. She has plans for the shop’s future, and she intends to build them at her own pace.",
+    "portrait": "assets/images/residents/02.webp",
+    "islandPersonality": {
+      "title": "Neighbourhood spark",
+      "traits": [
+        "Warm",
+        "independent",
+        "observant"
+      ],
+      "habit": "Sets aside a regular’s favourite tea before they ask.",
+      "ambition": "Make Sakura the shop every island household can rely on.",
+      "favourite": "An evening stroll after closing Sakura"
+    }
   },
   {
     "name": "Nao",
     "role": "Izakaya owner",
     "place": "Minato Izakaya",
     "bio": "A generous host with a quick reply, Nao makes room for newcomers and keeps the regulars fed long after sunset.",
-    "backstory": "Her evenings are measured in warm plates and familiar voices. Masaru brings suggestions for the specials; she decides which deserve a place on the menu. She shares a home with Thuan, whose early shop mornings begin while Minato’s last conversations are still ending.",
-    "portrait": "assets/images/residents/03.webp"
+    "backstory": "Her evenings are measured in warm plates and familiar voices. Masaru brings suggestions for the specials; she decides which deserve a place on the menu. She shares a home with Thuan, whose early shop mornings begin while Minato’s last conversations are still ending. The shared cooking aisle connects her bar to Sato’s lunch counter. In the west corner a worn upholstered bench and small tables give neighbours a place to linger beneath amber globe lamps. She keeps that corner for unhurried conversations rather than turning every seat into a hurried meal.",
+    "portrait": "assets/images/residents/03.webp",
+    "age": 34,
+    "friend": "Masaru",
+    "dailyLife": "Come in, come in. The spare chair has been expecting you.",
+    "islandPersonality": {
+      "title": "The generous host",
+      "traits": [
+        "Welcoming",
+        "witty",
+        "quick-thinking"
+      ],
+      "habit": "Keeps one spare chair for whoever arrives last.",
+      "ambition": "Turn ordinary evenings into stories people remember.",
+      "favourite": "The amber-lit corner of Minato"
+    }
   },
   {
     "name": "Mr Ōshiro",
     "role": "Boatbuilder",
     "place": "Sabani yard",
     "bio": "Mr Ōshiro tends a cedar sabani with the care other people reserve for a family heirloom.",
-    "backstory": "He built the boat in 1968 from Yakushima cedar and still scrapes and tars her himself. Fourth place in the 1979 race remains a perfectly respectable subject for conversation. His son recommends fibreglass; Ōshiro sees no reason to replace something that has carried him this far.",
-    "portrait": "assets/images/residents/04.webp"
+    "backstory": "He built the boat in 1968 from Yakushima cedar and still scrapes and tars her himself. Fourth place in the 1979 race remains a perfectly respectable subject for conversation. His son recommends fibreglass; Ōshiro sees no reason to replace something that has carried him this far. His yard is a place to pause and watch patient hands at work. A visitor who asks about the boat will hear about timber, tar and the difference between a repair and a replacement. The new airport changes the horizon, but he still measures a good day by the weather at the quay.",
+    "portrait": "assets/images/residents/04.webp",
+    "islandPersonality": {
+      "title": "Patient master",
+      "traits": [
+        "Proud",
+        "meticulous",
+        "loyal"
+      ],
+      "habit": "Runs a thumb over the cedar grain before beginning work.",
+      "ambition": "Sail his sabani in one more island race.",
+      "favourite": "The boatyard on a calm morning"
+    }
   },
   {
     "name": "Uncle Kinjō",
     "role": "Fisherman",
     "place": "Seawall",
     "bio": "Kinjō watches the tide, guards his bait from the net-shed cat and hopes for gurukun for supper.",
-    "backstory": "His son now runs the ice plant. Kinjō considers this proof of sound family judgement, though the joke about ice never going off has yet to receive its due appreciation. Mrs Kinjō’s rice is invariably ready before he thinks the fishing should stop.",
-    "portrait": "assets/images/residents/05.webp"
+    "backstory": "His son now runs the ice plant. Kinjō considers this proof of sound family judgement, though the joke about ice never going off has yet to receive its due appreciation. Mrs Kinjō’s rice is invariably ready before he thinks the fishing should stop. He carries the island’s old rhythms into its expanding harbour. A cargo ship can pass his fishing spot without changing his opinion of the tide. Ask after supper and he will have another reason to stay a little longer; ask about the catch and he will show you what the morning brought.",
+    "portrait": "assets/images/residents/05.webp",
+    "islandPersonality": {
+      "title": "Tide-wise teaser",
+      "traits": [
+        "Patient",
+        "mischievous",
+        "stubborn"
+      ],
+      "habit": "Checks his bait twice whenever the net-shed cat appears.",
+      "ambition": "Bring home a catch worthy of Mrs Kinjō’s supper.",
+      "favourite": "The seawall before sunset"
+    }
   },
   {
     "name": "Mrs Nakamura",
     "role": "Zenzai shopkeeper",
     "place": "Main Street corner",
     "bio": "Beans simmer from early morning at Nakamura’s counter; the ice is shaved only when an order arrives.",
-    "backstory": "She has served this corner since 1972. The old shaving machine sounds like a tractor, but she trusts its work. The gateball players come after their matches, and Thuan’s Sunday visit has become another small fixture in the week.",
-    "portrait": "assets/images/residents/06.webp"
+    "backstory": "She has served this corner since 1972. The old shaving machine sounds like a tractor, but she trusts its work. The gateball players come after their matches, and Thuan’s Sunday visit has become another small fixture in the week. Her small counter belongs to the everyday street rather than a tourist spectacle. The regulars know the sound of the shaving machine and the patience needed for the beans. She notices children growing up, shopkeepers taking their breaks and unfamiliar visitors learning to order their first bowl.",
+    "portrait": "assets/images/residents/06.webp",
+    "islandPersonality": {
+      "title": "Keeper of sweet comforts",
+      "traits": [
+        "Gentle",
+        "precise",
+        "generous"
+      ],
+      "habit": "Remembers who wants extra beans in their zenzai.",
+      "ambition": "Keep the shop’s summer recipe in the family.",
+      "favourite": "The shaded bench outside her shop"
+    }
   },
   {
     "name": "Aya",
     "role": "Bookseller",
-    "place": "Front-Row Books & Workshop",
+    "place": "Front-Row Books",
     "bio": "Aya has claimed the window seat and has a habit of marking the funny parts of borrowed books.",
-    "backstory": "She and Reiko share a home, so a bookshop day often carries on as a conversation about the evening paper. Emi lends her practical kindness in the form of generous pockets. Aya once tried to involve Tama in a tiny apron fitting; the cat has maintained his refusal.",
-    "portrait": "assets/images/residents/07.webp"
+    "backstory": "She and Reiko share a home, so a bookshop day often carries on as a conversation about the evening paper. Emi lends her practical kindness in the form of generous pockets. Aya once tried to involve Tama in a tiny apron fitting; the cat has maintained his refusal. Her shelves now hold pocket poetry, island histories and practical sea guides. Recommendations are tucked into volumes on little paper slips. Visitors can ask a question, buy a second-hand paperback or stay in the window chair while the next edition takes shape at Reiko’s desk.",
+    "portrait": "assets/images/residents/07.webp",
+    "age": 24,
+    "friend": "Emi",
+    "dailyLife": "Window seat is mine. I bookmark the funny parts — apparently that is not how a lending library works.",
+    "islandPersonality": {
+      "title": "A quiet enthusiast",
+      "traits": [
+        "Thoughtful",
+        "playful",
+        "attentive"
+      ],
+      "habit": "Leaves paper bookmarks beside books she wants someone to discover.",
+      "ambition": "Build a shelf of books written by island residents.",
+      "favourite": "The bookshop window seat"
+    }
   },
   {
     "name": "Kenji",
     "role": "Pattern maker and repairman",
-    "place": "Front-Row Books & Workshop",
+    "place": "Dock Electrical & Repair Workshop",
     "bio": "An enthusiastic tinkerer who believes almost any everyday object could work a little better.",
-    "backstory": "Kenji’s workbench is where small repairs turn into experiments. Tetsuo provides a running commentary on their success, while apprentice Kenta brings new ideas of his own. The two repairmen share a home as well as a workshop, giving the discussion plenty of time to continue.",
-    "portrait": "assets/images/residents/08.webp"
+    "backstory": "Kenji’s workbench is where small repairs turn into experiments. Tetsuo provides a running commentary on their success, while apprentice Kenta brings new ideas of his own. The two repairmen share a home as well as a workshop, giving the discussion plenty of time to continue. Around town, Tetsuo is one of the familiar people in Kenji’s day. Visitors usually find Kenji at Dock Electrical & Repair Workshop. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Tetsuo says my repairs are too loud. His radio can be heard from the pier.",
+    "portrait": "assets/images/residents/08.webp",
+    "age": 32,
+    "friend": "Tetsuo",
+    "dailyLife": "I fixed the kettle. It now whistles in a slightly more confident key.",
+    "islandPersonality": {
+      "title": "The careful maker",
+      "traits": [
+        "Inventive",
+        "patient",
+        "dry-witted"
+      ],
+      "habit": "Lines up his tools before touching a new repair.",
+      "ambition": "Make the docks’ workshop useful to every household.",
+      "favourite": "A finished repair that looks effortless"
+    }
   },
   {
     "name": "Mrs Sato",
-    "role": "Quay storekeeper",
-    "place": "Quay Warehouse",
+    "role": "Ramen cook and quay storekeeper",
+    "place": "Sato Ramen and Quay Warehouse",
     "bio": "Formidable about ledgers and generous about supper, Sato notices who has eaten and who has merely said they have.",
-    "backstory": "The quay stores have made her familiar with the neighbourhood’s daily needs. She and Fumiko describe their conversations as keeping the oral history, which is a useful distinction when anybody accuses them of gossip. A large bowl is usually waiting when Fumiko arrives for tea.",
-    "portrait": "assets/images/residents/09.webp"
+    "backstory": "The quay stores have made her familiar with the neighbourhood’s daily needs. She and Fumiko describe their conversations as keeping the oral history, which is a useful distinction when anybody accuses them of gossip. A large bowl is usually waiting when Fumiko arrives for tea. At lunch she works the stock pots in Sato Ramen, sharing Minato’s kitchen with Nao. The steaming bowls and freight ledgers are different kinds of work, but both reward the same habits: remembering what people need and doing things properly. At home in Kitahama she keeps a quiet six-mat room. A pendulum clock hangs above the tea cabinet, the standing fan turns through the humid months, and a floor cushion waits beside the low table. The futon comes out of the cupboard at night and returns there after waking, leaving the room open again for tea.",
+    "portrait": "assets/images/residents/09.webp",
+    "age": 68,
+    "friend": "Fumiko",
+    "dailyLife": "You look hungry. Yes, I say that to everyone. I am usually right.",
+    "islandPersonality": {
+      "title": "Everyone’s lunch aunt",
+      "traits": [
+        "Nurturing",
+        "brisk",
+        "perceptive"
+      ],
+      "habit": "Warms a bowl before asking how your morning went.",
+      "ambition": "Send every lunch customer back into the day well fed.",
+      "favourite": "The first quiet cup after lunch service"
+    }
   },
   {
     "name": "Harbour master",
     "role": "Harbour master",
     "place": "Harbour Office",
     "bio": "A steady presence at the quay, with dry wit and an unofficial weather forecast supplied by his knees.",
-    "backstory": "A working harbour teaches patience with people as well as tides. He has heard Mr Fujita’s fishing stories often enough to recognise the enlargements, but still asks how they end. His desk holds the records that let the rest of the quay get on with its day.",
-    "portrait": "assets/images/residents/10.webp"
+    "backstory": "A working harbour teaches patience with people as well as tides. He has heard Mr Fujita’s fishing stories often enough to recognise the enlargements, but still asks how they end. His desk holds the records that let the rest of the quay get on with its day. Cargo calls and passenger arrivals share his attention. A manifest, a changing forecast and a late parcel are all reasons to check the quay again. He points visitors toward the right door and relies on the dock workshop when a piece of equipment begins behaving badly.",
+    "portrait": "assets/images/residents/10.webp",
+    "age": 58,
+    "friend": "Mr Fujita",
+    "dailyLife": "I can predict rain by my knees. The radio insists on taking all the credit.",
+    "islandPersonality": {
+      "title": "Steady as the quay",
+      "traits": [
+        "Watchful",
+        "practical",
+        "quietly kind"
+      ],
+      "habit": "Checks the tide board before the radio forecast.",
+      "ambition": "Keep the island supplied through any weather.",
+      "favourite": "Watching the morning cargo come in"
+    }
   },
   {
     "name": "Bus driver",
     "role": "Harbour Line driver",
     "place": "Bus Station",
     "bio": "A patient storyteller who collects opening sentences along with his passengers.",
-    "backstory": "The terminus brings him a changing audience and an endless supply of small local news. Naoko passes on the endings to stories that begin on his route. He regards waiting at the last stop as a good opportunity to hear what the town has been doing.",
-    "portrait": "assets/images/residents/11.webp"
+    "backstory": "The terminus brings him a changing audience and an endless supply of small local news. Naoko passes on the endings to stories that begin on his route. He regards waiting at the last stop as a good opportunity to hear what the town has been doing. His route connects work, shopping and the last journey home. He notices who is carrying groceries, who has missed lunch and who wants a little company at the terminus. The growing airport gives him new faces to remember without changing his affection for the familiar stops.",
+    "portrait": "assets/images/residents/11.webp",
+    "age": 49,
+    "friend": "Naoko",
+    "dailyLife": "I collect passengers and opening sentences. The best stories start at the last stop.",
+    "islandPersonality": {
+      "title": "Collector of stories",
+      "traits": [
+        "Friendly",
+        "punctual",
+        "curious"
+      ],
+      "habit": "Recognises regulars by the way they wave at the stop.",
+      "ambition": "Keep every village connected to the harbour.",
+      "favourite": "The last coastal loop in golden light"
+    }
   },
   {
     "name": "Cold-storage kid",
     "role": "Ice store assistant",
     "place": "Quay ice store",
     "bio": "Quiet at first, and unexpectedly funny once the conversation has warmed up.",
-    "backstory": "The ice store gives him plenty of time to listen to Kenta rehearse introductions and explain inventions. He has become the apprentice’s most reliable audience, even if the cold slows the applause. He is more comfortable making a dry joke than drawing attention to himself.",
-    "portrait": "assets/images/residents/12.webp"
+    "backstory": "The ice store gives him plenty of time to listen to Kenta rehearse introductions and explain inventions. He has become the apprentice’s most reliable audience, even if the cold slows the applause. He is more comfortable making a dry joke than drawing attention to himself. Each supply day connects the ice store to the fishing quay. He sees the island from its less glamorous side: crates, wet floors, careful counts and the work that happens before visitors arrive. He likes being useful without becoming the loudest person in the room.",
+    "portrait": "assets/images/residents/12.webp",
+    "age": 19,
+    "friend": "Kenta",
+    "dailyLife": "I work with ice. Breaking it socially is the difficult part.",
+    "islandPersonality": {
+      "title": "The shy apprentice",
+      "traits": [
+        "Reserved",
+        "reliable",
+        "unexpectedly funny"
+      ],
+      "habit": "Rehearses greetings while stacking empty ice boxes.",
+      "ambition": "Become trusted enough to run a delivery alone.",
+      "favourite": "Tea with Kenta after their shifts"
+    }
   },
   {
     "name": "Officer Mori",
     "role": "Police officer",
     "place": "Town streets",
     "bio": "An earnest night patrolman whose careful reports occasionally become material for the evening paper.",
-    "backstory": "Mori takes the ordinary safety of the streets seriously. Reiko takes an equally serious interest in finding something printable in his reports. The cat’s refusal to acknowledge his authority remains one of the more persistent local difficulties.",
-    "portrait": "assets/images/residents/13.webp"
+    "backstory": "Mori takes the ordinary safety of the streets seriously. Reiko takes an equally serious interest in finding something printable in his reports. The cat’s refusal to acknowledge his authority remains one of the more persistent local difficulties. Around town, Reiko is one of the familiar people in Officer Mori’s day. Visitors usually find Officer Mori at Town streets. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Reiko asked for a statement. I gave her three pages. She printed the bit about my lunch.",
+    "portrait": "assets/images/residents/13.webp",
+    "age": 45,
+    "friend": "Reiko",
+    "dailyLife": "No suspicious activity today. Except someone teaching the cat to ignore me.",
+    "islandPersonality": {
+      "title": "A considerate watchman",
+      "traits": [
+        "Conscientious",
+        "composed",
+        "lightly amused"
+      ],
+      "habit": "Checks on an elderly neighbour on the way back to the kōban.",
+      "ambition": "Make the streets feel safe without making them feel watched.",
+      "favourite": "A quiet patrol through Main Street"
+    }
   },
   {
     "name": "Hana",
-    "role": "School pupil and artist",
+    "role": "School pupil",
     "place": "School and hillside shrine",
-    "bio": "Hana sketches neighbours waiting for the bus and finds the best rooflines from the shrine.",
-    "backstory": "Her drawings turn familiar streets into stories. Daichi is a favourite subject, especially when he claims he cannot pose and then produces several heroic expressions. She brings the sketchbook; he has appointed himself specialist pencil carrier.",
-    "portrait": "assets/images/residents/14.webp"
+    "bio": "Hana heads to class in an ivory sailor blouse, a sea-green tie and a navy pleated skirt, then stops to talk on the way home.",
+    "backstory": "Her drawings turn familiar streets into stories. Daichi is a favourite subject, especially when he claims he cannot pose and then produces several heroic expressions. She brings the sketchbook; he has appointed himself specialist pencil carrier. Her uniform is made for the island school: pale cloth for the warm climate, a sea-green collar and tie, and a practical dark pleated skirt. She is still the same Hana, with the same friends and school life; her new outfit gives that existing story a clearer presence in the street.",
+    "portrait": "assets/images/residents/14.webp",
+    "age": 17,
+    "friend": "Daichi",
+    "dailyLife": "I sketch everyone while they wait for the bus. Sitting still is their contribution.",
+    "islandPersonality": {
+      "title": "Sketchbook explorer",
+      "traits": [
+        "Observant",
+        "imaginative",
+        "spirited"
+      ],
+      "habit": "Draws people waiting for the bus in the margins of her homework.",
+      "ambition": "Illustrate a little guide to the island’s hidden corners.",
+      "favourite": "The garden bridge after school"
+    }
   },
   {
     "name": "Daichi",
     "role": "School pupil",
     "place": "School and playing fields",
     "bio": "A gentle aspiring baseball player whose ambitions are considerably larger than his present accuracy.",
-    "backstory": "Hana has already drawn him as a famous player, complete with a ball large enough to hit. Between practice and school he follows her up to the shrine with the pencils. It is a modest contribution to an adventure he is very pleased to be part of.",
-    "portrait": "assets/images/residents/15.webp"
+    "backstory": "Hana has already drawn him as a famous player, complete with a ball large enough to hit. Between practice and school he follows her up to the shrine with the pencils. It is a modest contribution to an adventure he is very pleased to be part of. Around town, Hana is one of the familiar people in Daichi’s day. Visitors usually find Daichi at School and playing fields. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Hana drew me as a famous player. She made the ball enormous so I could hit it.",
+    "portrait": "assets/images/residents/15.webp",
+    "age": 17,
+    "friend": "Hana",
+    "dailyLife": "One day I will pitch a perfect game. Today I am working on finding the ball.",
+    "islandPersonality": {
+      "title": "Tomorrow’s champion",
+      "traits": [
+        "Enthusiastic",
+        "competitive",
+        "good-hearted"
+      ],
+      "habit": "Pats his schoolbag twice to check the ball is still there.",
+      "ambition": "Pitch a perfect game for the island school team.",
+      "favourite": "An empty patch of ground and a friend to practise with"
+    }
   },
   {
     "name": "Mr Fujita",
     "role": "Retired fisherman",
     "place": "Outer Pier",
     "bio": "Cheerful, sociable and always ready to describe a catch that has improved since the last telling.",
-    "backstory": "Retirement has left him time to fish and even more time to talk about it. The harbour master knows the stories well, while Mr Tanabe treats the larger fish as an opportunity for philosophical discussion. Fujita sees both responses as encouragement.",
-    "portrait": "assets/images/residents/16.webp"
+    "backstory": "Retirement has left him time to fish and even more time to talk about it. The harbour master knows the stories well, while Mr Tanabe treats the larger fish as an opportunity for philosophical discussion. Fujita sees both responses as encouragement. Around town, Harbour master is one of the familiar people in Mr Fujita’s day. Visitors usually find Mr Fujita at Outer Pier. A conversation can begin with the day's work and continue into ordinary neighbourhood news. The harbour master has heard this story before. He still asks how it ends.",
+    "portrait": "assets/images/residents/16.webp",
+    "age": 73,
+    "friend": "Harbour master",
+    "dailyLife": "The fish was enormous. Ask me tomorrow; I expect it will have grown.",
+    "islandPersonality": {
+      "title": "The seasoned storyteller",
+      "traits": [
+        "Sociable",
+        "sentimental",
+        "teasing"
+      ],
+      "habit": "Adds one detail to a fishing story every time he tells it.",
+      "ambition": "Pass his knowledge of the coast to the younger crews.",
+      "favourite": "A long chat beside the harbour office"
+    }
   },
   {
     "name": "Masaru",
     "role": "Fisherman",
     "place": "Harbour and Minato",
     "bio": "A boisterous fisherman who thinks every good catch should become a good supper.",
-    "backstory": "He has a cook’s enthusiasm and an ample supply of menu suggestions for Nao. Not every catch is large enough to justify the description, which gives her useful material for teasing him. The evening usually brings him back to Minato to see what actually reached the plates.",
-    "portrait": "assets/images/residents/17.webp"
+    "backstory": "He has a cook’s enthusiasm and an ample supply of menu suggestions for Nao. Not every catch is large enough to justify the description, which gives her useful material for teasing him. The evening usually brings him back to Minato to see what actually reached the plates. Around town, Nao is one of the familiar people in Masaru’s day. Visitors usually find Masaru at Harbour and Minato. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Nao lets me suggest specials. She very sensibly ignores most of them.",
+    "portrait": "assets/images/residents/17.webp",
+    "age": 51,
+    "friend": "Nao",
+    "dailyLife": "A good catch is a good supper. A poor catch is a very long story.",
+    "islandPersonality": {
+      "title": "A wholehearted fisherman",
+      "traits": [
+        "Bold",
+        "generous",
+        "cheerful"
+      ],
+      "habit": "Brings Nao the catch he thinks deserves the chalkboard.",
+      "ambition": "Earn a place for local fish on every restaurant menu.",
+      "favourite": "Minato’s supper rush"
+    }
   },
   {
     "name": "Yoshiko",
     "role": "Bathhouse keeper",
     "place": "Onsen",
     "bio": "A calm neighbourhood anchor who recommends a hot bath, a clean towel and a little patience.",
-    "backstory": "The bathhouse has made her practiced at restoring order without fuss. She knows how to dry a damaged book slowly and how to let a neighbour recover their spirits at the same pace. Sato’s well-informed questions and Hiroshi’s singing are regular features of her day.",
-    "portrait": "assets/images/residents/18.webp"
+    "backstory": "The bathhouse has made her practiced at restoring order without fuss. She knows how to dry a damaged book slowly and how to let a neighbour recover their spirits at the same pace. Sato’s well-informed questions and Hiroshi’s singing are regular features of her day. Around town, Mrs Sato is one of the familiar people in Yoshiko’s day. Visitors usually find Yoshiko at Onsen. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Sato pretends she does not gossip. She just asks exceptionally well-informed questions.",
+    "portrait": "assets/images/residents/18.webp",
+    "age": 61,
+    "friend": "Mrs Sato",
+    "dailyLife": "A hot bath, a clean towel, a little patience. Most days need all three.",
+    "islandPersonality": {
+      "title": "The calm centre",
+      "traits": [
+        "Patient",
+        "reassuring",
+        "firm"
+      ],
+      "habit": "Straightens the towel pile while listening to someone’s troubles.",
+      "ambition": "Keep the bathhouse a restful meeting place for neighbours.",
+      "favourite": "The steam rising after dusk"
+    }
   },
   {
     "name": "Reiko",
     "role": "Newspaper editor",
-    "place": "Front-Row Books & Workshop",
+    "place": "Front-Row Books",
     "bio": "Curious and quick with a pencil, Reiko keeps the evening press supplied with neighbourhood news.",
-    "backstory": "She shares a home with Aya and a lively professional friendship with Officer Mori. His thorough reports can be short on incident, so even a remark about lunch may find its way into print. She is careful to tell visitors when the pencil is finally put away.",
-    "portrait": "assets/images/residents/19.webp"
+    "backstory": "She shares a home with Aya and a lively professional friendship with Officer Mori. His thorough reports can be short on incident, so even a remark about lunch may find its way into print. She is careful to tell visitors when the pencil is finally put away. Around town, Officer Mori is one of the familiar people in Reiko’s day. Visitors usually find Reiko at Front-Row Books. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Mori writes beautiful incident reports. Unfortunately nothing ever happens.",
+    "portrait": "assets/images/residents/19.webp",
+    "age": 36,
+    "friend": "Officer Mori",
+    "dailyLife": "Nothing is off the record until I put my pencil away. There. What did you hear?",
+    "islandPersonality": {
+      "title": "The curious correspondent",
+      "traits": [
+        "Sharp",
+        "sociable",
+        "persistent"
+      ],
+      "habit": "Taps her pencil twice before asking the real question.",
+      "ambition": "Print a town paper people keep rather than throw away.",
+      "favourite": "A new story at the bookshop press"
+    }
   },
   {
     "name": "Tetsuo",
     "role": "Radio repairer",
-    "place": "Front-Row Books & Workshop",
+    "place": "Dock Electrical & Repair Workshop",
     "bio": "A deadpan music lover who handles radios gently and treats static as a form of conversation.",
-    "backstory": "Repairs, spare screws and competing weather bulletins are familiar parts of his working life. Kenji shares both his workshop and his home, ensuring that their disagreements about volume are never entirely finished. A well-tuned radio remains his preferred answer to a quiet room.",
-    "portrait": "assets/images/residents/20.webp"
+    "backstory": "Repairs, spare screws and competing weather bulletins are familiar parts of his working life. Kenji shares both his workshop and his home, ensuring that their disagreements about volume are never entirely finished. A well-tuned radio remains his preferred answer to a quiet room. Around town, Kenji is one of the familiar people in Tetsuo’s day. Visitors usually find Tetsuo at Dock Electrical & Repair Workshop. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Kenji has repaired my radio twice. I keep finding extra screws.",
+    "portrait": "assets/images/residents/20.webp",
+    "age": 40,
+    "friend": "Kenji",
+    "dailyLife": "Turn it gently. Radios have feelings. Mostly static, but feelings.",
+    "islandPersonality": {
+      "title": "Listener to small mysteries",
+      "traits": [
+        "Analytical",
+        "gentle",
+        "absorbed"
+      ],
+      "habit": "Turns a tuning knob as though the radio might answer back.",
+      "ambition": "Keep old receivers singing long after their owners expect.",
+      "favourite": "A clear broadcast after a difficult repair"
+    }
   },
   {
     "name": "Emi",
     "role": "Seamstress",
     "place": "Shopping street",
     "bio": "Warm and quietly daring, Emi saves fabric scraps because each still has something useful to become.",
-    "backstory": "Aya keeps her supplied with adventure novels. Emi returns the favour through thoughtful sewing, including pockets deep enough to carry a book. Her patience extends to small experiments, although persuading Tama to wear an apron has proved beyond the current pattern.",
-    "portrait": "assets/images/residents/21.webp"
+    "backstory": "Aya keeps her supplied with adventure novels. Emi returns the favour through thoughtful sewing, including pockets deep enough to carry a book. Her patience extends to small experiments, although persuading Tama to wear an apron has proved beyond the current pattern. Around town, Aya is one of the familiar people in Emi’s day. Visitors usually find Emi at Shopping street. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Aya lends me adventure novels. I repay her in pockets deep enough to hide one.",
+    "portrait": "assets/images/residents/21.webp",
+    "age": 29,
+    "friend": "Aya",
+    "dailyLife": "I keep little fabric scraps. They are not clutter; they are future possibilities.",
+    "islandPersonality": {
+      "title": "Maker of possibilities",
+      "traits": [
+        "Creative",
+        "tender",
+        "resourceful"
+      ],
+      "habit": "Saves tiny fabric scraps in carefully labelled envelopes.",
+      "ambition": "Sew something special for the island’s next festival.",
+      "favourite": "Choosing cloth with Aya"
+    }
   },
   {
     "name": "Mr Tanabe",
     "role": "Shrine caretaker",
     "place": "Hillside shrine",
     "bio": "A playful philosopher who listens to the bell and encourages visitors to make one small practical promise.",
-    "backstory": "Years of tending the shrine have made him attentive to familiar things that change a little each day. Fujita’s expanding fish stories provide a dependable counterpoint to the quiet. Tanabe is happy to hear a visitor’s intention, but happier still when it becomes an action.",
-    "portrait": "assets/images/residents/22.webp"
+    "backstory": "Years of tending the shrine have made him attentive to familiar things that change a little each day. Fujita’s expanding fish stories provide a dependable counterpoint to the quiet. Tanabe is happy to hear a visitor’s intention, but happier still when it becomes an action. Around town, Mr Fujita is one of the familiar people in Mr Tanabe’s day. Visitors usually find Mr Tanabe at Hillside shrine. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Fujita says his fish was a sign of good fortune. It was certainly a sign of good appetite.",
+    "portrait": "assets/images/residents/22.webp",
+    "age": 66,
+    "friend": "Mr Fujita",
+    "dailyLife": "The shrine bell sounds different every day. Or perhaps I am getting better at listening.",
+    "islandPersonality": {
+      "title": "Quiet bell keeper",
+      "traits": [
+        "Reflective",
+        "gracious",
+        "attentive"
+      ],
+      "habit": "Waits for the shrine bell’s last note to fade.",
+      "ambition": "Keep the shrine garden welcoming in every season.",
+      "favourite": "A still morning at the shrine steps"
+    }
   },
   {
     "name": "Naoko",
     "role": "Postal worker",
     "place": "Post office and town streets",
     "bio": "Brisk and observant, Naoko remembers every door and most of the people behind them.",
-    "backstory": "Her work connects households that might otherwise miss one another’s news. The bus driver saves stories for her, and she delivers their endings around town. She values a readable address almost as much as a polite doorway.",
-    "portrait": "assets/images/residents/23.webp"
+    "backstory": "Her work connects households that might otherwise miss one another’s news. The bus driver saves stories for her, and she delivers their endings around town. She values a readable address almost as much as a polite doorway. Around town, Bus driver is one of the familiar people in Naoko’s day. Visitors usually find Naoko at Post office and town streets. A conversation can begin with the day's work and continue into ordinary neighbourhood news. The bus driver saves stories for me. I deliver the endings to everyone else.",
+    "portrait": "assets/images/residents/23.webp",
+    "age": 33,
+    "friend": "Bus driver",
+    "dailyLife": "I know every door in this town. Some of them are more polite than their owners.",
+    "islandPersonality": {
+      "title": "The familiar knock",
+      "traits": [
+        "Confident",
+        "sociable",
+        "tactful"
+      ],
+      "habit": "Knows which gates need a gentle lift before they open.",
+      "ambition": "Make sure nobody on the island feels forgotten.",
+      "favourite": "A chat at the last door on her route"
+    }
   },
   {
     "name": "Hiroshi",
     "role": "Grocer",
     "place": "Shopping street",
     "bio": "Proud of his vegetables and his singing, though the vegetables remain a difficult audience.",
-    "backstory": "His ambition to sing at the bathhouse is still under negotiation with Yoshiko, who has proposed a quieter performance. Work brings him into the daily trade of the street; supper brings him into its conversations. A cold tea at Sakura is his straightforward advice after a harbour walk.",
-    "portrait": "assets/images/residents/24.webp"
+    "backstory": "His ambition to sing at the bathhouse is still under negotiation with Yoshiko, who has proposed a quieter performance. Work brings him into the daily trade of the street; supper brings him into its conversations. A cold tea at Sakura is his straightforward advice after a harbour walk. Around town, Yoshiko is one of the familiar people in Hiroshi’s day. Visitors usually find Hiroshi at Shopping street. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Yoshiko says I may sing at the bathhouse if I agree to sing quietly. Negotiations continue.",
+    "portrait": "assets/images/residents/24.webp",
+    "age": 54,
+    "friend": "Yoshiko",
+    "dailyLife": "I sing to the vegetables. The aubergines are a difficult audience.",
+    "islandPersonality": {
+      "title": "The everyday optimist",
+      "traits": [
+        "Proud",
+        "generous",
+        "tuneful"
+      ],
+      "habit": "Sings softly while setting out the vegetables.",
+      "ambition": "Grow produce good enough to become an island speciality.",
+      "favourite": "The grocer’s display after morning deliveries"
+    }
   },
   {
     "name": "Fumiko",
     "role": "Neighbour",
     "place": "Main Street and onsen",
     "bio": "A fearless neighbourhood aunt who regards age as permission to speak plainly.",
-    "backstory": "She and Mrs Sato keep what they call the oral history of the neighbourhood. Tea can become supper, and an ordinary bench can become the centre of an afternoon’s news. Fumiko has no intention of leaving a good observation unsaid.",
-    "portrait": "assets/images/residents/25.webp"
+    "backstory": "She and Mrs Sato keep what they call the oral history of the neighbourhood. Tea can become supper, and an ordinary bench can become the centre of an afternoon’s news. Fumiko has no intention of leaving a good observation unsaid. Around town, Mrs Sato is one of the familiar people in Fumiko’s day. Visitors usually find Fumiko at Main Street and onsen. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Sato and I never gossip. We maintain the oral history of the neighbourhood.",
+    "portrait": "assets/images/residents/25.webp",
+    "age": 77,
+    "friend": "Mrs Sato",
+    "dailyLife": "At my age you can say almost anything. I am making up for lost time.",
+    "islandPersonality": {
+      "title": "The fearless aunt",
+      "traits": [
+        "Frank",
+        "funny",
+        "affectionate"
+      ],
+      "habit": "Claims she is checking the weather while listening to neighbourhood news.",
+      "ambition": "Make sure the younger neighbours learn to look after one another.",
+      "favourite": "A bench and an unhurried conversation"
+    }
   },
   {
     "name": "Kenta",
     "role": "Apprentice engineer",
     "place": "Front-Row Books & Workshop",
     "bio": "A sweetly awkward inventor whose time-saving machines tend to require lengthy explanations.",
-    "backstory": "The workshop offers him room to try things under Kenji’s eye. The cold-store assistant is a faithful listener to both his inventions and his rehearsed introductions. Kenta is learning that a practical machine and a practical conversation both benefit from fewer moving parts.",
-    "portrait": "assets/images/residents/26.webp"
+    "backstory": "The workshop offers him room to try things under Kenji’s eye. The cold-store assistant is a faithful listener to both his inventions and his rehearsed introductions. Kenta is learning that a practical machine and a practical conversation both benefit from fewer moving parts. Around town, Cold-storage kid is one of the familiar people in Kenta’s day. Visitors usually find Kenta at Front-Row Books & Workshop. A conversation can begin with the day's work and continue into ordinary neighbourhood news. The cold-store lad laughs at my jokes. Slowly, but the room is very cold.",
+    "portrait": "assets/images/residents/26.webp",
+    "age": 21,
+    "friend": "Cold-storage kid",
+    "dailyLife": "I made a machine to save time. Explaining it takes most of the afternoon.",
+    "islandPersonality": {
+      "title": "Hopeful inventor",
+      "traits": [
+        "Ingenious",
+        "awkward",
+        "earnest"
+      ],
+      "habit": "Sketches improvements on the backs of delivery slips.",
+      "ambition": "Build a machine the whole workshop actually wants to use.",
+      "favourite": "Tea with the cold-store lad"
+    }
   },
   {
     "name": "Barfly",
     "role": "Minato regular",
     "place": "Minato Izakaya",
     "bio": "Unhurried and firmly attached to his counter stool, the regular needs little introduction to Nao.",
-    "backstory": "He has watched enough evenings at Minato to know when the lanterns need attention. Nao knows his usual order and the end of the counter has become his settled vantage point. Last buses have come and gone without greatly disturbing the arrangement.",
-    "portrait": "assets/images/residents/27.webp"
+    "backstory": "He has watched enough evenings at Minato to know when the lanterns need attention. Nao knows his usual order and the end of the counter has become his settled vantage point. Last buses have come and gone without greatly disturbing the arrangement. Around town, Nao is one of the familiar people in Barfly’s day. Visitors usually find Barfly at Minato Izakaya. A conversation can begin with the day's work and continue into ordinary neighbourhood news. I have been at this stool long enough to know when the lanterns need trimming.",
+    "portrait": "assets/images/residents/27.webp",
+    "age": 43,
+    "friend": "Nao",
+    "dailyLife": "Another one? Nao knows my usual. I am staying right here.",
+    "islandPersonality": {
+      "title": "Master of the slow evening",
+      "traits": [
+        "Relaxed",
+        "sociable",
+        "loyal"
+      ],
+      "habit": "Notices a loose lantern hook before anyone else looks up.",
+      "ambition": "Keep his favourite corner of Minato exactly welcoming enough.",
+      "favourite": "The stool at the end of Nao’s counter"
+    }
   },
   {
     "name": "Grandmother Higa",
     "role": "Long-time neighbour",
     "place": "Her verandah",
     "bio": "Higa offers a seat, an observation about Sakura and advice on preparing a house for a typhoon.",
-    "backstory": "Her house has stood since before the war. Her husband drove the bus for thirty years, and she can still hear its approach before it emerges from the tunnel. She appreciates the way Thuan counts her change carefully, and occasionally allows a visitor to correct the name of an onion.",
-    "portrait": "assets/images/residents/28.webp"
+    "backstory": "Her house has stood since before the war. Her husband drove the bus for thirty years, and she can still hear its approach before it emerges from the tunnel. She appreciates the way Thuan counts her change carefully, and occasionally allows a visitor to correct the name of an onion. Her verandah is a place where island time slows down. She watches practical changes closely, from a shopkeeper’s careful counting to the sounds of the transport route. Visitors may leave with a corrected plant name, a family story or a better idea of what matters to the neighbourhood.",
+    "portrait": "assets/images/residents/28.webp",
+    "islandPersonality": {
+      "title": "A living island memory",
+      "traits": [
+        "Wise",
+        "playful",
+        "resilient"
+      ],
+      "habit": "Pauses at the same shady wall on her morning walk.",
+      "ambition": "Teach the children the stories behind the island’s old place names.",
+      "favourite": "The village shade after lunch"
+    }
   },
   {
     "name": "Mr Shimabukuro",
     "role": "Barber",
     "place": "Main Street barber shop",
     "bio": "A patient barber who has heard the confidences of nearly every man in town.",
-    "backstory": "The harbour master, bus driver and even a stranded visiting priest have sat in his chair. The pole’s motor stopped in 1990, leaving its owner with a permanently open-looking shop. He keeps his customers’ secrets, allowing himself only the occasional qualification.",
-    "portrait": "assets/images/residents/29.webp"
+    "backstory": "The harbour master, bus driver and even a stranded visiting priest have sat in his chair. The pole’s motor stopped in 1990, leaving its owner with a permanently open-looking shop. He keeps his customers’ secrets, allowing himself only the occasional qualification. The work takes patience and an ear for a motor that sounds wrong. Customers recognise his calm manner before they recognise the details of the repair. His corner of town is a reminder that ordinary services keep an island comfortable as it grows.",
+    "portrait": "assets/images/residents/29.webp",
+    "islandPersonality": {
+      "title": "The cheerful confidant",
+      "traits": [
+        "Chatty",
+        "careful",
+        "discreet"
+      ],
+      "habit": "Brushes the chair clean before a customer reaches it.",
+      "ambition": "Make his barbershop a place people leave feeling lighter.",
+      "favourite": "The first appointment of a fine morning"
+    }
   },
   {
     "name": "Mrs Yonamine",
     "role": "Fishmonger",
     "place": "Fish counter",
     "bio": "Yonamine sells the morning catch briskly and recommends trying parrotfish before passing judgement.",
-    "backstory": "The auction begins at six, and by mid-afternoon her fish is sold or claimed by the cat. She champions mozuku with the authority of family experience. Kōji’s remaining catch and Tamaki’s ice help keep the counter supplied.",
-    "portrait": "assets/images/residents/30.webp"
+    "backstory": "The auction begins at six, and by mid-afternoon her fish is sold or claimed by the cat. She champions mozuku with the authority of family experience. Kōji’s remaining catch and Tamaki’s ice help keep the counter supplied. The fish counter connects the boats to the island’s kitchens. She judges the day by what has landed rather than by a printed menu, and her recommendations are practical ones. Good ice, a prompt delivery and customers willing to try the local catch make her work easier.",
+    "portrait": "assets/images/residents/30.webp",
+    "islandPersonality": {
+      "title": "Straight-talking provider",
+      "traits": [
+        "Brisk",
+        "honest",
+        "generous"
+      ],
+      "habit": "Checks each fish before agreeing to the morning’s price.",
+      "ambition": "Give every household a good supper at a fair price.",
+      "favourite": "The fish market just as the boats arrive"
+    }
   },
   {
     "name": "Mrs Miyagi",
     "role": "Keeper of local traditions",
     "place": "Utaki",
     "bio": "Miyagi visits the utaki early, bringing rice, salt and incense with quiet regularity.",
-    "backstory": "She has kept the morning visit since she was a girl. For her, the important offering is returning, rather than paying. When the walk becomes too much, her granddaughter will take up the practice and carry it onward.",
-    "portrait": "assets/images/residents/31.webp"
+    "backstory": "She has kept the morning visit since she was a girl. For her, the important offering is returning, rather than paying. When the walk becomes too much, her granddaughter will take up the practice and carry it onward. The grove offers a different pace from the shopping street and cargo quay. Her visits are small, repeated acts rather than a display for visitors. She is happy for people to explore quietly, and the family continuity matters to her more than the airport’s newest buildings.",
+    "portrait": "assets/images/residents/31.webp",
+    "islandPersonality": {
+      "title": "Festival guardian",
+      "traits": [
+        "Dedicated",
+        "patient",
+        "expressive"
+      ],
+      "habit": "Practises an old dance step while sweeping the hall.",
+      "ambition": "See the next generation lead the island festival.",
+      "favourite": "Music drifting from Community Hall"
+    }
   },
   {
     "name": "Mr Tamaki",
     "role": "Ice plant operator",
     "place": "Quay ice plant",
     "bio": "Tamaki keeps block, crushed and flake ice moving through the harbour’s early working hours.",
-    "backstory": "He now runs the plant while his father, Uncle Kinjō, fishes from the seawall. Summer demand can reach forty tonnes a day. The floor is wet, the orders are specific, and his father’s daily business joke remains unchanged.",
-    "portrait": "assets/images/residents/32.webp"
+    "backstory": "He now runs the plant while his father, Uncle Kinjō, fishes from the seawall. Summer demand can reach forty tonnes a day. The floor is wet, the orders are specific, and his father’s daily business joke remains unchanged. Ice is easy to overlook until a delivery is late. His work keeps the catch fresh between the boats, counter and outgoing freight. A visitor sees the stacks and wet floor; he sees the day’s timing and the people relying on each load.",
+    "portrait": "assets/images/residents/32.webp",
+    "islandPersonality": {
+      "title": "The cool-headed organiser",
+      "traits": [
+        "Methodical",
+        "dependable",
+        "wry"
+      ],
+      "habit": "Counts the ice blocks aloud even when nobody is listening.",
+      "ambition": "Keep every fishing crew supplied on the hottest days.",
+      "favourite": "The hum of a well-maintained ice plant"
+    }
   },
   {
     "name": "Kōji",
     "role": "Catch sorter",
     "place": "Fish auction quay",
     "bio": "Kōji sorts what remains after the auction and makes a persistent case for tuna-head soup.",
-    "backstory": "His mornings follow the returning boats, beginning before most of the shopping street is awake. Unsold catch goes to Yonamine or the freezer. Watching a skipper sleep at the wheel after a full night’s fishing gives him a clear picture of the work behind each landing.",
-    "portrait": "assets/images/residents/33.webp"
-  },
-  {
-    "name": "Mr Nakasone",
-    "role": "Gateball player",
-    "place": "Gateball court",
-    "bio": "Red team, number three: Nakasone approaches the local matches with competitive confidence.",
-    "backstory": "The next village’s former baseball player is a recurring grievance and a welcome challenge. Mrs Kamiya has spent years advising him to hit less hard. Afterwards the players go to Nakamura’s, where the winning team is expected to pay.",
-    "portrait": "assets/images/residents/34.webp"
-  },
-  {
-    "name": "Mrs Kamiya",
-    "role": "Gateball player",
-    "place": "Gateball court",
-    "bio": "Kamiya believes gateball is a game of patience, particularly when playing alongside Nakasone.",
-    "backstory": "Fifty years of patience have not exhausted her supply of pointed advice. Morning and late-afternoon matches give structure to the day, with zenzai at Nakamura’s afterwards. She keeps careful track of whose team ought to settle the bill.",
-    "portrait": "assets/images/residents/35.webp"
-  },
-  {
-    "name": "Mr Arakaki",
-    "role": "Gateball referee",
-    "place": "Gateball court",
-    "bio": "Arakaki keeps a firm eye on the thirty-minute limit and a tactful distance from his wife’s kitchen.",
-    "backstory": "His wife makes andagi on Main Street. Refereeing gives him a useful occupation during the games and a ready explanation for being out of the way. The arrival of a visitor is one of the few things that interrupts his attention to the clock.",
-    "portrait": "assets/images/residents/36.webp"
+    "backstory": "His mornings follow the returning boats, beginning before most of the shopping street is awake. Unsold catch goes to Yonamine or the freezer. Watching a skipper sleep at the wheel after a full night’s fishing gives him a clear picture of the work behind each landing. By the time the street grows busy, much of his morning is already done. He works between skippers, ice and the fish counter, finding a use for what the auction leaves behind. He likes practical food and the knowledge that a difficult night at sea has not been wasted.",
+    "portrait": "assets/images/residents/33.webp",
+    "islandPersonality": {
+      "title": "The keen-eyed sorter",
+      "traits": [
+        "Quick",
+        "observant",
+        "ambitious"
+      ],
+      "habit": "Can spot a mixed crate before it reaches his sorting bench.",
+      "ambition": "Earn the crews’ trust as the island’s best catch sorter.",
+      "favourite": "The moment the morning catch is laid out"
+    }
   },
   {
     "name": "Mrs Kinjō",
-    "role": "Neighbour",
-    "place": "Shopping street",
-    "bio": "Her shopping circuit runs from Sakura to Yonamine’s fish counter and home before the rice is ready.",
-    "backstory": "She knows that a short conversation can become a long one on this street. Her husband’s fishing timetable rarely agrees with supper. Visitors heading for the seawall may find themselves entrusted with the familiar message that the rice is already waiting.",
-    "portrait": "assets/images/residents/37.webp"
+    "role": "Florist",
+    "place": "Rainflower Florist",
+    "bio": "Mrs Kinjō arranges island-grown stems, wraps bouquets by hand and sends her fisherman husband familiar reminders about supper.",
+    "backstory": "She knows that a short conversation can become a long one on this street. Her husband’s fishing timetable rarely agrees with supper. Visitors heading for the seawall may find themselves entrusted with the familiar message that the rice is already waiting. She now tends the flower shop on Rainflower Lane from nine until six. Buckets of fresh stems, leafy pots and hand-made wreaths make the open front a cheerful stop along the rainy street. A bouquet is wrapped in plain brown paper, ready for a home or a dinner table. Her husband, neighbours and place in island life remain the same.",
+    "portrait": "assets/images/residents/37.webp",
+    "islandPersonality": {
+      "title": "A grower of small joys",
+      "traits": [
+        "Warm",
+        "artistic",
+        "down-to-earth"
+      ],
+      "habit": "Turns every bouquet once to check it looks kind from all sides.",
+      "ambition": "Fill Rainflower Lane with flowers grown on the island.",
+      "favourite": "Her flower-shop doorway after watering"
+    }
   },
   {
     "name": "Postman Tōma",
     "role": "Postman",
     "place": "Town delivery round",
     "bio": "Tōma carries letters, parcels and postcards around a route paced by the day’s two collections.",
-    "backstory": "The postbox plate says 10:30 and 16:30, and he trusts its accuracy even when he doubts his own. A parcel for the barber and a postcard for Sakura make the round more personal than a list of addresses. He insists he does not read postcards, while allowing that the pictures can be very nice.",
-    "portrait": "assets/images/residents/38.webp"
+    "backstory": "The postbox plate says 10:30 and 16:30, and he trusts its accuracy even when he doubts his own. A parcel for the barber and a postcard for Sakura make the round more personal than a list of addresses. He insists he does not read postcards, while allowing that the pictures can be very nice. Letters give him a different map of the island, shaped by names and remembered doorways. Cargo arrivals bring another part of the round; shopkeepers give him news between parcels. He enjoys a familiar greeting, then checks the time so the next collection still happens when promised.",
+    "portrait": "assets/images/residents/38.webp",
+    "islandPersonality": {
+      "title": "The cheerful messenger",
+      "traits": [
+        "Energetic",
+        "courteous",
+        "curious"
+      ],
+      "habit": "Rings his bicycle bell twice at the harbour turn.",
+      "ambition": "Deliver every letter before the afternoon heat settles in.",
+      "favourite": "A cool drink at Sakura between rounds"
+    }
+  },
+  {
+    "name": "Haru",
+    "role": "Fisherman",
+    "place": "Hoshizaki Fishing Village",
+    "bio": "Haru lands the morning catch, collects lunch from Mina and spends the afternoon repairing nets.",
+    "backstory": "He grew up above the village pier. The airport carries some of his parcels, but the weather and boats still shape his working day. Visitors usually find him among ropes and nets rather than in a souvenir display. What leaves the village as a parcel began as somebody’s early morning work. He appreciates practical help, a clear forecast and Mina remembering what he likes for lunch.",
+    "portrait": "assets/images/residents/39.webp",
+    "islandPersonality": {
+      "title": "A horizon chaser",
+      "traits": [
+        "Adventurous",
+        "patient",
+        "reserved"
+      ],
+      "habit": "Watches the cloud edges before choosing a fishing route.",
+      "ambition": "Find a dependable new fishing ground beyond the cape.",
+      "favourite": "The first light outside Hoshizaki"
+    }
+  },
+  {
+    "name": "Mina",
+    "role": "Village shopkeeper",
+    "place": "Hoshizaki General Store",
+    "bio": "Mina keeps island tea, rice crackers and postcards ready for fishing families and occasional visitors.",
+    "backstory": "Her family store opens early and closes before supper. She is helping prepare the guesthouse while keeping the village familiar to its neighbours. The little store is the village’s everyday meeting point. She hears about damaged nets, arriving guests and family errands before they become notices. Postcards interest the occasional visitor; tea and rice crackers bring the fishing families back. She wants the village to welcome people at its own pace.",
+    "portrait": "assets/images/residents/40.webp",
+    "islandPersonality": {
+      "title": "Village anchor",
+      "traits": [
+        "Practical",
+        "welcoming",
+        "resourceful"
+      ],
+      "habit": "Keeps a small notebook of things her neighbours need.",
+      "ambition": "Help the village prosper without losing its familiar rhythms.",
+      "favourite": "A quiet moment at her shop’s open door"
+    }
+  },
+  {
+    "name": "Jun",
+    "role": "Airport clerk",
+    "place": "Kitano-jima Airport",
+    "bio": "Jun checks commuter tickets, cabin bags and the weather before boarding.",
+    "backstory": "Jun lives in staff accommodation beside the terminal. Lunch is taken on the passenger walkway; maintenance records go through the dock workshop and Community Hall. As the terminals expand, small responsibilities still shape the job: answering a passenger’s question, checking a bag and listening to the weather report. Jun knows a flight depends on people far beyond the boarding counter, including the engineers and freight clerks at the docks.",
+    "portrait": "assets/images/residents/41.webp",
+    "islandPersonality": {
+      "title": "A calm departure companion",
+      "traits": [
+        "Polite",
+        "organised",
+        "quietly ambitious"
+      ],
+      "habit": "Straightens the departure board before the first passenger arrives.",
+      "ambition": "Make the growing airport feel as welcoming as the island itself.",
+      "favourite": "The terminal windows at sunset"
+    }
+  },
+  {
+    "name": "Riku",
+    "role": "Dock cargo crew",
+    "place": "Western quay",
+    "bio": "Riku checks the containers and walks the cargo circuit, from the morning supplies boat to the evening fish dispatch.",
+    "backstory": "He knows which crates go to Sakura and which radio parts belong at Kenji and Tetsuo’s workshop. His cargo circuit is part of the island’s daily exchange. The containers can look anonymous until he tells you which hold shop deliveries and which contain repair spares. He works around the hoist, keeps the pedestrian passage clear and watches for the next supply ship.",
+    "portrait": "assets/images/residents/riku.webp",
+    "islandPersonality": {
+      "title": "The willing pair of hands",
+      "traits": [
+        "Strong",
+        "cheerful",
+        "conscientious"
+      ],
+      "habit": "Checks a pallet strap twice before signalling the lift.",
+      "ambition": "Become the crew member everyone trusts with a difficult load.",
+      "favourite": "A break by the quay after unloading"
+    }
+  },
+  {
+    "name": "Emi Kado",
+    "role": "Harbour freight clerk",
+    "place": "Western quay dispatch desk",
+    "bio": "Emi records incoming supplies, outgoing post and chilled fish, and stays to see the late passenger boat home.",
+    "backstory": "Every shipment has a paper trail. The Community Hall keeps a filed copy of her freight notices for one year. She is the link between the working quay and its records. A delivery is checked against a manifest, a correction is kept legible and the dispatch copy stays available for a later question. She treats the paperwork as a practical way to help people trust what reached the island.",
+    "portrait": "assets/images/residents/emi-kado.webp",
+    "islandPersonality": {
+      "title": "Keeper of the cargo trail",
+      "traits": [
+        "Precise",
+        "curious",
+        "unflappable"
+      ],
+      "habit": "Puts a pencil dot beside each crate she has checked herself.",
+      "ambition": "Make every island delivery easy to trace from ship to shop.",
+      "favourite": "A reconciled manifest and a fresh cup of tea"
+    }
   }
 ]

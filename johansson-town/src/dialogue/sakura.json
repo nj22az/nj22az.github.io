@@ -3,7 +3,7 @@
     "name": "Thuan",
     "voice": "shop",
     "text": [
-      "いらっしゃいませ。トゥアンです。",
+      "Welcome. I’m Thuan.",
       "I keep the till and the plants. The plants are the harder job."
     ],
     "action": [
@@ -31,7 +31,7 @@
     "name": "Thuan",
     "voice": "shop",
     "text": [
-      "おかえり。"
+      "Welcome back."
     ],
     "choices": [
       {
@@ -59,7 +59,7 @@
     "name": "Thuan",
     "voice": "shop",
     "text": [
-      "おつかれさま。We are almost done."
+      "Good work today.We are almost done."
     ],
     "choices": [
       {
@@ -155,7 +155,7 @@
     "voice": "shop",
     "text": [
       "Sit if you like. The stool is not going anywhere.",
-      "Eight hours of いらっしゃいませ and then the radio gets to pick."
+      "Eight hours of Welcome and then the radio gets to pick."
     ],
     "action": [
       "set sat_after_close true"
@@ -173,7 +173,7 @@
     "name": "Thuan",
     "voice": "shop",
     "text": [
-      "いらっしゃい。",
+      "Welcome.",
       "Same till. Different dust."
     ],
     "choices": [
@@ -229,7 +229,7 @@
     "name": "Thuan",
     "voice": "shop",
     "text": [
-      "おかえり。",
+      "Welcome back.",
       "Cooler's still loud. That's normal."
     ],
     "choices": [

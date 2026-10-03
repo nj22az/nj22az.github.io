@@ -1,3 +1,4 @@
+import {appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,measure} from './build.js';
 import {createAvatarAnimator,GESTURES} from './animate.js';
@@ -18,11 +19,11 @@ import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropP
 /** The player's own recipe, as the creator saved it; Johansson's until then. */
 export const PLAYER_RECIPE_KEY='johansson-town-avatar';
 export function playerRecipe(storage=globalThis.localStorage){
- try{const saved=storage?.getItem(PLAYER_RECIPE_KEY);if(saved){const r=decodeRecipe(saved);if(r)return r;}}catch{}
+ try{const saved=storage?.getItem(PLAYER_RECIPE_KEY);if(saved){const r=decodeRecipe(saved);if(r)return {...r,outfit:appropriateOutfit('Johansson',r.outfit)};}}catch{}
  return CAST_RECIPES.Johansson;
 }
 export function savePlayerRecipe(recipe,storage=globalThis.localStorage){
- const code=encodeRecipe(recipe);try{storage?.setItem(PLAYER_RECIPE_KEY,code);}catch{}return code;
+ const code=encodeRecipe({...recipe,outfit:appropriateOutfit('Johansson',recipe.outfit)});try{storage?.setItem(PLAYER_RECIPE_KEY,code);}catch{}return code;
 }
 
 /**
@@ -52,7 +53,7 @@ export function createAvatarActor(entity,name,{shadows=false}={}){
  for(const child of entity.children)child.visible=false;
  entity.add(avatar.root);
  entity.userData.visualReady=true;entity.userData.visualSource='Shimanchu · '+(recipe.name||name);
- return {isAvatar:true,avatar,animator:createAvatarAnimator(avatar),entity,model:avatar.root,mixer:null,actions:new Map(),
+ return {isAvatar:true,avatar,animator:createAvatarAnimator(avatar,{lively:true}),entity,model:avatar.root,mixer:null,actions:new Map(),
   current:null,last:entity.position.clone(),gestureTime:0,speed:0,moving:false,wasVisible:true,height:avatar.height,
   isThuan:name==='Thuan',outfit:'clothes'};
 }
@@ -68,12 +69,12 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  actor.speed=THREE.MathUtils.damp(actor.speed,measured,20,dt);
  actor.moving=actor.speed>(actor.moving?.03:.07);
  actor.gestureTime=Math.max(0,actor.gestureTime-dt);
- const outfit=u.outfit||'clothes';if(actor.outfit!==outfit){avatar.wear(outfit);actor.outfit=outfit;}
+ const outfit=u.outfit==='swim'?'swim':actor.isThuan?(u.alternativeOutfit||'clothes'):(u.outfit||'clothes');if(actor.outfit!==outfit){avatar.wear(outfit);actor.outfit=outfit;}
  // At home the hat is on its hook (home-residents.js), not on the head.
  const hatOn=!u.hatOff;if(actor.hatOn!==hatOn){avatar.setHat?.(hatOn);actor.hatOn=hatOn;}
  const riding=!!(u.playerControlled&&actor.isThuan);
  const seated=!riding&&(Number.isFinite(u.seatHeight)&&SEATED.includes(u.socialPose)||Number.isFinite(u.chairBlend)&&u.chairBlend>.5);
- const mood=u.thuanMood,feeling=mood&&mood.until>now?mood.expression:null;
+ const mood=u.thuanMood,line=u.lineFeeling,feeling=mood&&mood.until>now?mood.expression:line&&line.until>now?line.expression:null;
  const engaged=!!(u.playerConversation||u.chat||actor.gestureTime);
  const sleeping=Number(u.sleepBlend)>.28||(u.sleeping&&!u.roomTransition);
  actor.animator.update(dt,{
@@ -139,7 +140,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   play(name,{face}={}){
    move=name;if(face)api.express(face,3);
    const map={Bow:'Bow',Wave:'Wave'};if(!animator.play(map[name]||name))animator.play('Nod');
-   const faces={Wave:'happy',Clap:'happy',Kachashi:'laugh',Laugh:'laugh',Think:'thinking',Shrug:'worried',HeadShake:'grumpy',Bow:'content',Nod:'content',Stretch:'content',LookAround:'surprised',SitToast:'happy'};
+   const faces={Wave:'happy',Clap:'happy',Kachashi:'laugh',Laugh:'laugh',Think:'thinking',Shrug:'worried',HeadShake:'grumpy',Bow:'content',Nod:'content',Stretch:'content',LookAround:'surprised',SitToast:'happy',Heart:'happy',Peace:'laugh',Coy:'smile',Tada:'laugh',HandsOnHips:'content',HeelKick:'happy'};
    if(faces[name])api.express(faces[name],(GESTURES[name]===Infinity?4:GESTURES[name]||2)+.6);
   },
   express(name,seconds=3){expression=name;expressionUntil=seconds>0?time+seconds:0;},

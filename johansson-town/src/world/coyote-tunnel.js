@@ -15,6 +15,13 @@ import {broadleafGeometry,TREE_GREENS} from './okinawa/trees.js';
  * The file keeps the name it had when the tunnel was a cartoon gag, and TUNNEL keeps its
  * name too: the map, the shore and the old bus code all place themselves by it.
  */
+/**
+ * October 2026: the island has no sea cave. The headland, its tunnel and the cave mouth
+ * are gone, and the land they stood on is plain island ground waiting for the new
+ * residential quarter (docs/RESIDENTIAL-PLAN.md). The dungeon under the cave is paused,
+ * not deleted: set this back to true and the hill, the cave and the way down return.
+ */
+export const CAVE_ACTIVE=false;
 export const TUNNEL=Object.freeze({
  x:FOREST_EDGE.roadX,
  // Beyond the end of the path, so there is a run of it between the old terminus and here.
@@ -87,6 +94,7 @@ function cellAt(lines,value){
  return lo;
 }
 export function headlandHeight(x,z){
+ if(!CAVE_ACTIVE)return null;
  const i=cellAt(hillXs,x),j=cellAt(hillZs,z);if(i<0||j<0)return null;
  const x0=hillXs[i],x1=hillXs[i+1],z0=hillZs[j],z1=hillZs[j+1];
  if(inCut((x0+x1)/2-TUNNEL.x,(z0+z1)/2-TUNNEL.z)||inCave(x-TUNNEL.x,z-TUNNEL.z))return null;
@@ -260,7 +268,7 @@ function buildCaveMouth(group,shadows){
   ctx.fillStyle='#8a6f4e';ctx.fillRect(0,0,w,h);
   for(let i=0;i<14;i++){ctx.strokeStyle='rgba(60,40,24,.25)';ctx.beginPath();ctx.moveTo(0,i*19+5);ctx.lineTo(w,i*19+9);ctx.stroke();}
   ctx.fillStyle='#f1e9d6';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font='bold 76px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText('古 洞',w/2,h*.36);
+  ctx.font='bold 76px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText("Old Cave",w/2,h*.36);
   ctx.font='bold 26px sans-serif';ctx.fillText('THE OLD SEA CAVE',w/2,h*.7);
   ctx.font='18px sans-serif';ctx.fillText('Enter at your own risk',w/2,h*.87);
  });
@@ -302,7 +310,7 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
   register(anchor,'Go into the old sea cave',()=>onAction?.('dungeon'));
   const read=new THREE.Object3D();read.position.set(TUNNEL.x+W+.9,1.3,front-2);parent.add(read);
   register(read,'Read the cave sign',()=>onAction?.('inspect','The old sea cave',
-   'Painted on the board: 古洞, the old cave. The rope across the mouth is new straw each New Year. The fishermen say it goes down a long way under the headland, further than anyone has walked, and that things wash up in it that never came from the sea.'));
+   "Painted on the board: Old Cave, the old cave. The rope across the mouth is new straw each New Year. The fishermen say it goes down a long way under the headland, further than anyone has walked, and that things wash up in it that never came from the sea."));
  }
  /** True in the mouth of the cave, with a hand's margin: the way in. */
  const splat=(x,z)=>Math.abs(x-TUNNEL.x)<=R+.5&&z>=front-.9&&z<=CAVE_MOUTH.inside+.3;

@@ -1,3 +1,6 @@
+import {ISLAND} from './island-plan.js';
+import {GARDEN} from './garden-layout.js';
+import {airportWorld} from './airport-ground.js';
 import {DINING_COLLIDERS} from './dining-layout.js';
 import {COASTLINE} from './peninsula.js';
 import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS,peninsulaContains} from './full-town-state.js';
@@ -6,7 +9,7 @@ import {PARK,activePark} from './park-layout.js';
 import {activeRoutes,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
 import {FOREST_EDGE} from './forest-edge.js';
 import {MAIN_ROAD} from './main-road.js';
-import {TUNNEL,HEADLAND,headlandHeight} from './coyote-tunnel.js';
+import {TUNNEL,HEADLAND,headlandHeight,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {BEACH,BEACH_DRY_EDGE_X} from './beach-layout.js';
 // Small cached patches show the walkable headland beyond the original coastal slab.
 const headlandPatches=[];
@@ -29,12 +32,12 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
   ctx.fillStyle=FULL_TOWN.active?'#7ea3a8':'#eadfbe';ctx.fillRect(0,0,w,h);
   if(!FULL_TOWN.active){ctx.fillStyle='#89b5b5';ctx.fillRect(0,0,mapWidth,h);ctx.fillStyle='#eadfbe';ctx.beginPath();COASTLINE.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();}
   if(!FULL_TOWN.active&&peninsulaActive()){
-    ctx.fillStyle='#8d9e77';for(const [x,z] of headlandPatches)ctx.fillRect(px(x),pz(z+4),4*scale,4*scale);
+    ctx.fillStyle='#91a776';ctx.beginPath();ctx.ellipse(px(ISLAND.mountain.x),pz(ISLAND.mountain.z),76*scale,76*scale,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#415c40';ctx.font='bold 11px sans-serif';ctx.fillText('MOUNT AOBA',px(24),pz(175));ctx.fillStyle='#6a9988';ctx.beginPath();ctx.ellipse(px(GARDEN.pond.x),pz(GARDEN.pond.z),7*scale,5*scale,0,0,Math.PI*2);ctx.fill();const corners=[[-65,-23],[65,-23],[65,20],[178,20],[178,132],[-54,132],[-54,23],[-65,23]].map(p=>airportWorld(...p));ctx.fillStyle='#b4bc97';ctx.beginPath();corners.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();ctx.fillStyle='#8d9e77';for(const [x,z] of headlandPatches)ctx.fillRect(px(x),pz(z+4),4*scale,4*scale);
     const tide=BEACH_DRY_EDGE_X;
     ctx.fillStyle='#dfcf9d';ctx.fillRect(px(BEACH.profile[0][0]),pz(BEACH.maxZ),(tide-BEACH.profile[0][0])*scale,(BEACH.maxZ-BEACH.minZ)*scale);
     ctx.strokeStyle='#8b8268';ctx.lineWidth=Math.max(2,2*scale);
     for(const access of BEACH.accesses){ctx.beginPath();ctx.moveTo(px(access.fromX),pz(access.z));ctx.lineTo(px(access.toX),pz(access.z));ctx.stroke();}
-    if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 10px sans-serif';ctx.fillText('EAST BEACH',px(36),pz(-8));ctx.fillText('HEADLAND',px(-19),pz(65));}
+    if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 10px sans-serif';ctx.fillText('EAST BEACH',px(36),pz(-8));if(CAVE_ACTIVE)ctx.fillText('HEADLAND',px(-19),pz(65));}
   }
   if(FULL_TOWN.active){
     const g=FULL_TOWN.grid;
@@ -77,5 +80,5 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
   ctx.fillStyle='#9c4b34';for(const p of people.filter(p=>p.g.visible)){ctx.beginPath();ctx.arc(px(p.g.position.x),pz(p.g.position.z),1.5,0,Math.PI*2);ctx.fill();}
   ctx.save();ctx.translate(px(player.x),pz(player.z));ctx.rotate(Math.PI+yaw);ctx.fillStyle='#862f27';ctx.beginPath();ctx.moveTo(0,-5);ctx.lineTo(3.5,4);ctx.lineTo(-3.5,4);ctx.closePath();ctx.fill();ctx.restore();
   if(legend){ctx.fillStyle='#f4e9ce';ctx.fillRect(mapWidth,0,legend,h);ctx.fillStyle='#3b514c';ctx.font='bold 15px sans-serif';ctx.fillText('TOWN DIRECTORY',mapWidth+12,28);sites.forEach((site,i)=>{ctx.font='bold 11px sans-serif';ctx.fillText((i+1)+'. '+site.title,mapWidth+12,56+i*Math.min(32,(h-96)/sites.length),legend-22);});ctx.font='11px sans-serif';ctx.fillText('MAIN STREET → HARBOUR',mapWidth+12,h-24,legend-22);}
-  ctx.fillStyle='#3b514c';ctx.font='bold '+Math.max(10,w*.048)+'px serif';ctx.fillText('観光案内図',8,15);ctx.font=Math.max(9,w*.037)+'px serif';ctx.fillText('平成九年',8,h-7);
+  ctx.fillStyle='#3b514c';ctx.font='bold '+Math.max(10,w*.048)+'px serif';ctx.fillText("Tourist guide map",8,15);ctx.font=Math.max(9,w*.037)+'px serif';ctx.fillText("1997",8,h-7);
 }

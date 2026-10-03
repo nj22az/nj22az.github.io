@@ -1,3 +1,4 @@
+import {TATAMI_HOME_LAYOUT,TATAMI_HOME_OWNER} from '../world/interiors/tatami-home-layout.js';
 import {householdFor,householdAt,householdNames} from './households.js';
 import {peninsulaActive} from '../world/town-mode.js';
 import {THUAN_APARTMENT_ROUTINES} from '../world/interiors/yuri-apartment-layout.js';
@@ -30,6 +31,7 @@ export const HOME_LAYOUT={bounds:{minX:-3,maxX:3,minZ:-3,maxZ:3},spawn:[1.5,0,2]
  hatHook:{position:[2.93,1.6,1.2],yaw:-Math.PI/2}};
 export const SHARED_HOME_LAYOUT={bounds:{minX:-3.5,maxX:3.5,minZ:-3.4,maxZ:3.4},spawn:[0,0,2.6],exit:[0,1.1,3.3],door:[0,0,2.8]};
 export function homeLayoutFor(name){
+ if(name===TATAMI_HOME_OWNER)return TATAMI_HOME_LAYOUT;
  if(THUAN_APARTMENT_ROUTINES[name])return THUAN_APARTMENT_ROUTINES[name];
  const household=householdFor(name);if(!household||household.residents.length===1)return HOME_LAYOUT;
  const side=household.residents.indexOf(name)===0?-1:1,x=side*2.1;

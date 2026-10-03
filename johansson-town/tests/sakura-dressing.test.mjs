@@ -49,7 +49,17 @@ test('everything on show behind the counter is for sale: every medicine box and 
  assert.equal(acts.state.yen,before-taio.price);assert.ok(acts.state.inventory.includes(taio.en));
  acts.action('sakura-counter-goods');
  const counter=[...document.querySelector('#activityActions').children].map(b=>b.textContent);
- for(const jp of ['テレホンカード','切手','フェリー回数券','ガム','マッチ'])assert.ok(counter.some(l=>l.startsWith(jp)),jp+' cannot be bought at the till');
- const y=acts.state.yen;dom.button(counter.find(l=>l.startsWith('切手')));
+ for(const jp of ['Telephone card','Stamp','Ferry ticket','Gum','Match'])assert.ok(counter.some(l=>l.startsWith(jp)),jp+' cannot be bought at the till');
+ const y=acts.state.yen;dom.button(counter.find(l=>l.startsWith('Stamp')));
  assert.equal(acts.state.yen,y-80);assert.ok(acts.state.inventory.includes('80-yen stamp'));
+});
+
+test('the medicine cabinet clears the wall rather than flickering on its inner face',async()=>{
+ const {SAKURA_SHELL}=await import('../src/world/interiors/sakura-shell.js');
+ const wallFace=SAKURA_SHELL.eastX-.04;
+ assert.ok(wallFace-(MEDICINE_SHELF.back+.03)>=.05,'The cabinet back must clear the plaster by five centimetres');
+ const room=new THREE.Group();installDOM();const shelf=buildMedicineShelf(room);
+ const bounds=new THREE.Box3().setFromObject(shelf.boxes);
+ assert.ok(bounds.max.x<wallFace-.05,'Medicine packaging must clear the wall');
+ assert.ok(bounds.min.z>=MEDICINE_SHELF.minZ&&bounds.max.z<=MEDICINE_SHELF.maxZ,'All facings fit the shortened display');
 });

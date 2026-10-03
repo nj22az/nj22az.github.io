@@ -31,7 +31,7 @@ export function buildHarbourOffice({parent,site,register,enter,label,shadows}){
  kit.block(-3.6,3.6,.32,.42,0,.03,trim);
  // Windows: aluminium sliders in the reveals.
  for(const x of [-2.2,2.2]){
-  kit.box(1.7,1.5,.05,x,1.9,-.08,0x425755,{finish:'glow'});
+  kit.box(1.7,1.5,.05,x,1.9,-.08,0x425755,{finish:'window'});
   for(const dx of [-.85,0,.85])kit.box(.05,1.5,.08,x+dx,1.9,-.03,alu,{finish:'metal'});
   for(const y of [1.15,2.65])kit.box(1.75,.06,.08,x,y,-.03,alu,{finish:'metal'});
   kit.box(1.85,.07,.2,x,1.1,.06,slab);

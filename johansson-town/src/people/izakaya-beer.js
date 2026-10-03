@@ -1,3 +1,4 @@
+import {attachFoodCutout,updateFoodCutout} from './food-cutouts.js';
 import * as THREE from '../../vendor/three.module.js';
 
 /**
@@ -9,12 +10,12 @@ import * as THREE from '../../vendor/three.module.js';
  * and oolong tea for anyone who is not drinking.
  */
 export const DRINKS=Object.freeze({
- draft:Object.freeze({id:'draft',jp:'オリオン生 中ジョッキ',en:'Orion draught, a frosted mug',price:450,sips:6,alcohol:1,pour:4.2,line:'はい、オリオン生です！ Cold from the tap.'}),
- bottle:Object.freeze({id:'bottle',jp:'オリオン 大瓶',en:'Orion large bottle and a small glass',price:600,sips:8,alcohol:1.4,pour:2,line:'大瓶ね。 Pour for yourself -- or I pour the first one.'}),
- can:Object.freeze({id:'can',jp:'オリオン 缶',en:'Orion can, 350 ml',price:300,sips:4,alcohol:.8,pour:1.2,line:'缶のまま？ Straight from the can, then.'}),
- awamori:Object.freeze({id:'awamori',jp:'泡盛 ロック',en:'awamori on the rocks',price:250,sips:5,alcohol:1.6,pour:1.8,line:'泡盛です。 Slowly -- it is older than you think.'}),
- sake:Object.freeze({id:'sake',jp:'日本酒 一合',en:'a flask of warm sake',price:220,sips:5,alcohol:1.3,pour:2.4,line:'熱燗です。 Careful, the tokkuri is hot.'}),
- oolong:Object.freeze({id:'oolong',jp:'ウーロン茶',en:'Oolong tea over ice',price:150,sips:4,alcohol:0,pour:1.6,line:'ウーロン茶です。 Plenty of ice.'})
+ draft:Object.freeze({id:'draft',jp:"Orion draught, medium mug",en:'Orion draught, a frosted mug',price:450,sips:6,alcohol:1,pour:4.2,line:"One Orion draught! Cold from the tap."}),
+ bottle:Object.freeze({id:'bottle',jp:"Orion Large bottle",en:'Orion large bottle and a small glass',price:600,sips:8,alcohol:1.4,pour:2,line:"It's a big bottle. Pour for yourself -- or I pour the first one."}),
+ can:Object.freeze({id:'can',jp:"Orion Can",en:'Orion can, 350 ml',price:300,sips:4,alcohol:.8,pour:1.2,line:"Still in the can? Straight from the can, then."}),
+ awamori:Object.freeze({id:'awamori',jp:"Awamori on the rocks",en:'awamori on the rocks',price:250,sips:5,alcohol:1.6,pour:1.8,line:"Awamori. Slowly -- it is older than you think."}),
+ sake:Object.freeze({id:'sake',jp:"Warm sake, one flask",en:'a flask of warm sake',price:220,sips:5,alcohol:1.3,pour:2.4,line:"Hot sake. Careful, the tokkuri is hot."}),
+ oolong:Object.freeze({id:'oolong',jp:"Oolong tea",en:'Oolong tea over ice',price:150,sips:4,alcohol:0,pour:1.6,line:"Oolong tea. Plenty of ice."})
 });
 /**
  * The food on Minato's wall, each cooked where it would be: skewers and fish over the
@@ -22,16 +23,16 @@ export const DRINKS=Object.freeze({
  * for the cold dishes. `cook` is how long Nao is at it; `bites` how long it lasts you.
  */
 export const DISHES=Object.freeze({
- yakitori:Object.freeze({id:'yakitori',jp:'焼き鳥盛合せ',en:'a plate of yakitori',price:180,bites:4,station:'grill',cook:6,line:'焼き鳥です。 Two tare, two salt.'}),
- edamame:Object.freeze({id:'edamame',jp:'枝豆',en:'a bowl of edamame',price:120,bites:3,station:'prep',cook:2,line:'枝豆です。 Salted while they were hot.'}),
- oden:Object.freeze({id:'oden',jp:'おでん',en:'a bowl of oden',price:260,bites:4,station:'oden',cook:3,line:'おでんです。 The daikon has been in since four.'}),
- hiyayakko:Object.freeze({id:'hiyayakko',jp:'冷奴',en:'cold tofu with ginger',price:150,bites:3,station:'prep',cook:2,line:'冷奴です。 Ginger and a little soy.'}),
- dashimaki:Object.freeze({id:'dashimaki',jp:'だし巻き玉子',en:'a rolled dashi omelette',price:200,bites:3,station:'range',cook:5,line:'だし巻きです。 Still warm in the middle.'}),
- hokke:Object.freeze({id:'hokke',jp:'ほっけ焼き',en:'grilled hokke',price:280,bites:4,station:'grill',cook:7,line:'ほっけです。 Lemon on the side.'}),
- sashimi:Object.freeze({id:'sashimi',jp:'刺身盛合せ',en:'the sashimi plate',price:320,bites:4,station:'prep',cook:4,line:'刺身です。 Masaru brought the tuna this morning.'}),
- agedashi:Object.freeze({id:'agedashi',jp:'揚げ出し豆腐',en:'agedashi tofu',price:180,bites:3,station:'fryer',cook:5,line:'揚げ出しです。 Mind the broth, it is hot.'}),
- karaage:Object.freeze({id:'karaage',jp:'鶏の唐揚げ',en:'chicken karaage',price:220,bites:4,station:'fryer',cook:6,line:'唐揚げです。 Straight out of the oil.'}),
- ochazuke:Object.freeze({id:'ochazuke',jp:'お茶漬け',en:'ochazuke to finish',price:180,bites:3,station:'range',cook:4,line:'お茶漬けです。 The way to end an evening.'}),
+ yakitori:Object.freeze({id:'yakitori',jp:"Assorted Yakitori",en:'a plate of yakitori',price:180,bites:4,station:'grill',cook:6,line:"Yakitori. Two tare, two salt."}),
+ edamame:Object.freeze({id:'edamame',jp:"Edamame",en:'a bowl of edamame',price:120,bites:3,station:'prep',cook:2,line:"Edamame. Salted while they were hot."}),
+ oden:Object.freeze({id:'oden',jp:"Oden",en:'a bowl of oden',price:260,bites:4,station:'oden',cook:3,line:"Oden. The daikon has been in since four."}),
+ hiyayakko:Object.freeze({id:'hiyayakko',jp:"Cold tofu",en:'cold tofu with ginger',price:150,bites:3,station:'prep',cook:2,line:"It's cold tofu. Ginger and a little soy."}),
+ dashimaki:Object.freeze({id:'dashimaki',jp:"Dashi-rolled egg",en:'a rolled dashi omelette',price:200,bites:3,station:'range',cook:5,line:"Dashi roll. Still warm in the middle."}),
+ hokke:Object.freeze({id:'hokke',jp:"Grilled Atka mackerel",en:'grilled hokke',price:280,bites:4,station:'grill',cook:7,line:"It's Hokke. Lemon on the side."}),
+ sashimi:Object.freeze({id:'sashimi',jp:"Assorted sashimi",en:'the sashimi plate',price:320,bites:4,station:'prep',cook:4,line:"Sashimi. Masaru brought the tuna this morning."}),
+ agedashi:Object.freeze({id:'agedashi',jp:"Fried tofu",en:'agedashi tofu',price:180,bites:3,station:'fryer',cook:5,line:"It's fried. Mind the broth, it is hot."}),
+ karaage:Object.freeze({id:'karaage',jp:"Fried chicken",en:'chicken karaage',price:220,bites:4,station:'fryer',cook:6,line:"It's fried chicken. Straight out of the oil."}),
+ ochazuke:Object.freeze({id:'ochazuke',jp:"Ochazuke",en:'ochazuke to finish',price:180,bites:3,station:'range',cook:4,line:"Ochazuke. The way to end an evening."}),
 });
 export const MINATO_MENU=Object.freeze([...Object.values(DISHES),...Object.values(DRINKS)]);
 export const menuItem=id=>DRINKS[id]||DISHES[id]||null;
@@ -158,6 +159,7 @@ export function createDishProp(kind){
  }else{ // dashimaki
   plate(.2,.1,0xf1ece0);for(let k=0;k<4;k++)add(new THREE.BoxGeometry(.035,.035,.06),m(0xf0c94a),-.06+k*.04,.03,0,level);
  }
+ attachFoodCutout(g,kind);
  g.userData.portion=1;g.userData.targetPortion=1;g.userData.consumable='food';
  g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
  return g;
@@ -173,7 +175,7 @@ export function updatePropPortion(prop,dt){
  const u=prop.userData,level=u.level;if(!level)return;
  const target=u.targetPortion??1,current=u.portion??1;
  u.portion=Math.abs(current-target)<.001?target:THREE.MathUtils.damp(current,target,7,Math.max(0,dt));
- level.visible=u.portion>0;
+ level.visible=u.portion>0;updateFoodCutout(prop);
  if(u.consumable==='food'){
   const amount=level.children.length*u.portion;
   level.children.forEach((piece,i)=>{piece.visible=i<Math.ceil(amount);piece.scale.setScalar(Math.min(1,Math.max(0,amount-i)));});
@@ -193,7 +195,7 @@ export function createBiteProp(kind){
 }
 export function disposeServing(prop){
  if(!prop)return;prop.removeFromParent();const materials=new Set();
- prop.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);}});
+ prop.traverse(o=>{if(o.isMesh||o.isSprite){if(o.isMesh)o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);}});
  materials.forEach(m=>m.dispose());
 }
 

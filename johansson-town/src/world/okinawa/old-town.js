@@ -35,8 +35,8 @@ function shutterTexture(){
   ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
   for(let y=0;y<h;y+=9){ctx.fillStyle='rgba(60,66,70,.35)';ctx.fillRect(0,y,w,2);ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(0,y+2,w,1);}
   ctx.fillStyle='#a6333c';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font='bold 64px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText('桜商店',w/2,h*.46);
-  ctx.font='bold 22px sans-serif';ctx.fillText('SAKURA · OPEN 9:00 – 20:00 · また明日',w/2,h*.72);
+  ctx.font='bold 64px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText("Sakura Shop",w/2,h*.46);
+  ctx.font='bold 22px sans-serif';ctx.fillText("SAKURA · OPEN 9:00 – 20:00 · See you tomorrow",w/2,h*.72);
   ctx.fillStyle='rgba(110,70,40,.25)';for(const x of [60,w-80])ctx.fillRect(x,h*.2,3,h*.7);
  });
 }
@@ -99,12 +99,12 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  kit.box(.62,.78,1.1,front+.36,.39,fz,0xf1efe8);kit.box(.64,.06,1.12,front+.36,.8,fz,0x2d7fb8);
  kit.box(.5,.02,.98,front+.36,.84,fz,0xbfe0ee,{finish:'gloss'});
  for(let k=0;k<6;k++)kit.box(.12,.05,.12,front+.26+(k%2)*.2,.78,fz-.35+Math.floor(k/2)*.35,[0xe98aa6,0xf6efe0,0x8a5a3c][k%3]);
- kit.sign(poster({title:'アイス',lines:['BLUE CORAL','¥150','冷たい！'],band:'#2d7fb8'}),.5,.34,front+.68,.45,fz,{ry:Math.PI/2,depth:.01,name:'freezer card'});
+ kit.sign(poster({title:"Ice",lines:['BLUE CORAL','¥150',"It's cold!"],band:'#2d7fb8'}),.5,.34,front+.68,.45,fz,{ry:Math.PI/2,depth:.01,name:'freezer card'});
  solid({id:'sakura-freezer',x:front+.36,z:fz,w:.66,d:1.15,height:.9});
  anchor(front+1.1,1,fz,'Buy a Blue Coral ice cream',()=>onAction?.('buy','Blue Coral ice cream',{cost:150,item:'Blue Coral ice cream',text:'Blue Coral, from the chest freezer outside Sakura: ube, salt cookie or the pink one that is guava. It starts melting before you have your change.'}));
  // At the two corners of the frontage, so they mark the shop without standing in front
  // of its window.
- for(const [z,jp,bg] of [[S.maxZ-.35,'アイスクリーム','#2d7fb8'],[S.minZ+.45,'冷たい飲み物','#c8392e']]){
+ for(const [z,jp,bg] of [[S.maxZ-.35,"Ice cream",'#2d7fb8'],[S.minZ+.45,"Cold drinks",'#c8392e']]){
   kit.cyl(.025,.025,2.8,front+.95,1.4,z,0x9aa0a4,{segments:6});kit.rod([front+.95,2.72,z],[front+.95,2.72,z+.5],.012,0x9aa0a4);
   kit.sign(vertical({jp,bg}),.46,1.9,front+.95,1.75,z+.26,{ry:Math.PI/2,depth:.01,both:true,name:'nobori'});
   solid({id:'nobori',x:front+.95,z,w:.1,d:.1,height:2.8});
@@ -113,7 +113,7 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  kit.box(.14,.5,.36,front+.07,1.75,S.maxZ-.2,0xd8d4ca);kit.box(.02,.2,.2,front+.15,1.8,S.maxZ-.2,0x2c3a33);
  for(const z of [S.minZ+.12,S.maxZ-.12]){kit.cyl(.045,.045,2.7,front+.06,1.35,z,0x9aa0a4,{segments:8});for(let y=.6;y<2.6;y+=1.1)kit.box(.1,.06,.1,front+.08,y,z,0x6d7478);}
  kit.box(.18,.14,.26,front+.12,2.52,S.maxZ-.5,0xe8e6e0);kit.box(.1,.08,.08,front+.24,2.5,S.maxZ-.5,0x2b2b2b);
- kit.sign(enamel({jp:'防犯カメラ',en:'CCTV in operation',bg:'#f4d23c',ink:'#1f1f1f'}),.28,.42,front+.02,2.05,S.maxZ-.55,{ry:Math.PI/2,depth:.01,name:'camera plate'});
+ kit.sign(enamel({jp:"Security camera",en:'CCTV in operation',bg:'#f4d23c',ink:'#1f1f1f'}),.28,.42,front+.02,2.05,S.maxZ-.55,{ry:Math.PI/2,depth:.01,name:'camera plate'});
  // A rack at the edge of the boardwalk with two bicycles in it, the air conditioner on the
  // south flank, and two sheets of paper the wind took off the notice board.
  kit.box(.06,.06,1.8,front+1.22,.35,S.minZ+1.7,0x9aa0a4,{finish:'metal'});
@@ -145,7 +145,7 @@ function dressSakura(kit,solid,{inspect}){
  // Windows on the street, one of them a door out onto the terrace over the shop.
  const window=(z,y,w,h)=>{
   kit.box(.06,h+.12,w+.12,x1+.03,y,z,0xb8bec0,{finish:'metal'});
-  kit.box(.05,h,w,x1+.05,y,z,C.glass,{finish:'glow'});
+  kit.box(.05,h,w,x1+.05,y,z,C.glass,{finish:'window'});
   kit.box(.06,h,.04,x1+.07,y,z,0xb8bec0,{finish:'metal'});
  };
  window(-31.4,roof+1.4,1.9,1.2);window(-27.3,roof+1.15,1.5,2);window(-23.2,roof+1.4,1.9,1.2);
@@ -153,12 +153,12 @@ function dressSakura(kit,solid,{inspect}){
  // The back and the north end have their windows too: a kitchen, a bathroom, a bedroom.
  for(const [z,w] of [[-26,1.6],[-22.6,1.2]]){
   kit.box(.06,1.12,w+.12,x0-.03,roof+1.45,z,0xb8bec0,{finish:'metal'});
-  kit.box(.05,1,w,x0-.05,roof+1.45,z,C.glass,{finish:'glow'});
+  kit.box(.05,1,w,x0-.05,roof+1.45,z,C.glass,{finish:'window'});
  }
  kit.box(.8,.5,.3,x0-.2,roof+.7,-24.3,0xe2e0d8);
  for(const x of [-15.6,-11.6]){
   kit.box(1.5,1.12,.06,x,roof+1.45,z1+.03,0xb8bec0,{finish:'metal'});
-  kit.box(1.38,1,.05,x,roof+1.45,z1+.05,C.glass,{finish:'glow'});
+  kit.box(1.38,1,.05,x,roof+1.45,z1+.05,C.glass,{finish:'window'});
  }
  // The terrace: the strip of shop roof in front of the flat, railed, with washing and pots.
  for(let z=S.minZ+.5;z<=S.maxZ-.5;z+=1.1)kit.rod([S.maxX-.2,roof,z],[S.maxX-.2,roof+1,z],.02,0x9aa0a4);
@@ -177,7 +177,7 @@ function dressSakura(kit,solid,{inspect}){
  for(const y of [top+2,top+2.35])kit.rod([x0+3,y,-22.6],[x0+3,y,-21.4],.015,0x8e979a);
  for(const z of [-29,-25.6]){kit.rod([x1-.9,top+.45,z],[x1-.9,top+2.4,z],.05,0x6d7478);}
  kit.box(.08,.08,4,x1-.9,top+2.4,-27.3,0x6d7478);
- kit.sign(fascia({jp:'桜商店',en:'Sakura · food & daily goods',bg:'#fbf3dc',accent:'#b84e45',ink:'#a6333c',mark:'桜'}),4.2,1.2,x1-.84,top+1.55,-27.3,{ry:Math.PI/2,depth:.08,name:'Sakura rooftop sign'});
+ kit.sign(fascia({jp:"Sakura Shop",en:'Sakura · food & daily goods',bg:'#fbf3dc',accent:'#b84e45',ink:'#a6333c',mark:"Sakura"}),4.2,1.2,x1-.84,top+1.55,-27.3,{ry:Math.PI/2,depth:.08,name:'Sakura rooftop sign'});
  // The outside stair up the back from the yard to the flat's door.
  // It climbs the south end of the back wall, steep as these steel stairs are, so the
  // shop's back door, its crates and Thuan's bench further along are left as they were;
@@ -196,8 +196,8 @@ function dressSakura(kit,solid,{inspect}){
  kit.box(.2,.45,.35,S.minX-.12,1.6,-22.8,0x8a8578);kit.box(.18,.35,.3,S.minX-.12,1.6,-21.9,0x9a958a);
  // Side walls: the ice-cream mural facing up the street, enamel tins facing the quay.
  kit.sign(iceMural(),7.4,2.15,(S.minX+S.maxX)/2-.6,2.05,S.maxZ+.04,{name:'Blue Coral mural'});
- kit.sign(enamel({jp:'琉球サイダー',en:'Ryukyu cider'}),.7,1.05,S.maxX-2,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
- kit.sign(enamel({jp:'蚊取線香',en:'mosquito coils',bg:'#2a6a4a',ink:'#f4e6b0'}),.7,1.05,S.maxX-3,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
+ kit.sign(enamel({jp:"Ryukyu Cider",en:'Ryukyu cider'}),.7,1.05,S.maxX-2,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
+ kit.sign(enamel({jp:"Mosquito coil",en:'mosquito coils',bg:'#2a6a4a',ink:'#f4e6b0'}),.7,1.05,S.maxX-3,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
  inspect(S.maxX-2.2,1.2,S.maxZ+1.2,'Look at the ice-cream mural','Blue Coral mural',
   'Painted straight onto the wall in 1981 and touched up every summer since by whoever has the paint. The pink scoop is guava. Thuan says the man who painted it still comes in for his cigarettes and complains that nobody has got the blue right.');
 }
@@ -205,11 +205,12 @@ function dressSakura(kit,solid,{inspect}){
 function dressWarehouse(kit,solid,{inspect}){
  // Its name on the street wall, big enough to read from the top of Main Street.
  const x=-10.52;
- kit.sign(fascia({jp:'港倉庫',en:'Minato harbour warehouse · stores & ice',bg:'#e9e4d6',accent:'#314d51',ink:'#1f3336'}),4.6,1,x+.04,3.9,-44.1,{ry:Math.PI/2,depth:.06,name:'warehouse sign'});
- kit.sign(enamel({jp:'漁協',en:'fisheries co-op',bg:'#1f5f94',ink:'#f4f0e4'}),.6,.9,x+.04,2,-40.2,{ry:Math.PI/2,depth:.02,name:'enamel sign'});
+ kit.sign(fascia({jp:"Port warehouse",en:'Minato harbour warehouse · stores & ice',bg:'#e9e4d6',accent:'#314d51',ink:'#1f3336'}),3.8,.9,x+.5,4.55,-43.1,{ry:Math.PI/2,depth:.06,name:'warehouse sign'});
+ kit.sign(enamel({jp:"Fisheries cooperative",en:'fisheries co-op',bg:'#1f5f94',ink:'#f4f0e4'}),.6,.9,x+.04,2,-40.2,{ry:Math.PI/2,depth:.02,name:'enamel sign'});
  // Floats in a net hung from the wall, and crates at its foot on the quay side.
- buoys(kit,x+.25,2.3,-45.9,{count:9,seed:4});
- kit.box(.05,1.2,1.2,x+.06,2.5,-45.9,0x2f5a4a,{finish:'thin'});
+ buoys(kit,x+.25,1.75,-46.5,{count:5,seed:4});
+ for(const z of [-46.85,-46.5,-46.15])kit.rod([x+.25,2.45,z],[x+.25,1.65,z],.012,0x796e52);
+
  solid(fishCrates(kit,-14.8,-49,{rows:1,cols:3,seed:12}));
 }
 
@@ -224,10 +225,10 @@ function dressOffice(kit,solid,{inspect}){
  }
  solid({id:'office-flagpole',x,z,w:.4,d:.4,height:7});
  // A life ring by the door and the tide board beside it.
- kit.sign(poster({title:'潮汐表',lines:['TIDES · 潮','満潮 06:12  18:40','干潮 00:05  12:28','波 1.0m'],band:'#1f5f94'}),.8,1.1,11.2,1.6,-38.33,{depth:.03,name:'tide board'});
- inspect(11.2,1.2,-37.6,'Read the tide board','Tide board · 潮汐表',
-  'Chalked up by the harbour master at six every morning: high water, low water, the swell, and underneath, in smaller writing, whether it is a good day for the reef. Today it says 良 — good.');
- inspect(x+1,1.4,z+.8,'Look at the big-catch flags','大漁旗 · Big-catch flags',
+ kit.sign(poster({title:"Tide table",lines:["TIDES · Tide","High tide 06:12  18:40","Low tide 00:05  12:28","Wave 1.0m"],band:'#1f5f94'}),.8,1.1,11.2,1.6,-38.33,{depth:.03,name:'tide board'});
+ inspect(11.2,1.2,-37.6,'Read the tide board',"Tide board · Tide table",
+  "Chalked up by the harbour master at six every morning: high water, low water, the swell, and underneath, in smaller writing, whether it is a good day for the reef. Today it says Good — good.");
+ inspect(x+1,1.4,z+.8,'Look at the big-catch flags',"Great catch flag · Big-catch flags",
   'Tairyō-bata: the flags a boat flies coming home with a full hold, in colours you can see from the reef. The harbour office keeps three on its pole all year, which the skippers say is either optimism or tempting fate.');
 }
 
@@ -238,7 +239,7 @@ function dressBookshop(kit,solid,{inspect}){
  for(let i=0;i<9;i++)kit.box(.26,.2+(i%3)*.03,.1,x,.84,z-.52+i*.13,[0xb8432f,0x2f6fa8,0xe0c060,0x3f7f5a,0xd8cfb8][i%5]);
  for(const dz of [-.55,.55])kit.box(.06,.66,.06,x,.33,z+dz,0x4a3a2a);
  solid({id:'book-cart',x,z,w:.32,d:1.4,height:1});
- kit.sign(poster({title:'¥100',lines:['文庫本','PAPERBACKS'],band:'#8a3b2e'}),.34,.46,x+.17,1.35,z,{ry:Math.PI/2,depth:.02,name:'book cart card'});
+ kit.sign(poster({title:'¥100',lines:["Paperback",'PAPERBACKS'],band:'#8a3b2e'}),.34,.46,x+.17,1.35,z,{ry:Math.PI/2,depth:.02,name:'book cart card'});
  inspect(x+.9,1,z,'Browse the ¥100 cart','Front-Row ¥100 cart',
   'Paperbacks with their covers curled by the sea air: detective stories, a Ryūkyū cookery book, three copies of the same romance and a tide table from 1989. Aya puts it out at nine and brings it in when it rains, which is most afternoons in June.');
 }

@@ -17,7 +17,7 @@ export function buildWarehousePortDetails({room,box,inspect,collider,wood,dark,s
  inspect([.7,1.4,-1.7],'Cargo hoist','A manual chain hoist runs along the overhead rail. Loads are kept out of the marked centre aisle.');
  // One atlas for all readable cargo faces; labels face into the aisle.
  const c=document.createElement('canvas');c.width=512;c.height=512;const ctx=c.getContext('2d');
- const labels=[['QUAY STORES','港の倉庫','#314d51'],['LUNCHEON MEAT','ポーク缶','#21447b'],['BOTTLED BEER','瓶ビール','#903d32'],['DRIED KELP','昆布','#466447']];
+ const labels=[['QUAY STORES',"Port warehouse",'#314d51'],['LUNCHEON MEAT',"Tinned Pork",'#21447b'],['BOTTLED BEER',"Bottled beer",'#903d32'],['DRIED KELP',"Kelp",'#466447']];
  labels.forEach(([a,b,colour],i)=>{const y=i*128;ctx.fillStyle='#d3bb87';ctx.fillRect(0,y,512,128);ctx.strokeStyle=colour;ctx.lineWidth=6;ctx.strokeRect(8,y+8,496,112);ctx.fillStyle=colour;ctx.textAlign='center';ctx.font='bold 30px sans-serif';ctx.fillText(a,256,y+49);ctx.font='24px sans-serif';ctx.fillText(b+' · WESTERN QUAY',256,y+87);});
  const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;
  const labelMat=new THREE.MeshStandardMaterial({map:texture,roughness:1});

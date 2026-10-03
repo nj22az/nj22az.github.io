@@ -5,7 +5,7 @@ import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-adv
 import {createShopRefrigerator} from './shop-refrigerator.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './sakura-dressing.js';
-import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SAKURA_TILL_CABINET} from './sakura-layout.js';
+import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SAKURA_TILL_CABINET,BUN_STEAMER,COPY_MACHINE} from './sakura-layout.js';
 import {buildSakuraShell} from './sakura-shell.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 import {buildSakuraCheer,buildSakuraBand} from './sakura-cheer.js';
@@ -71,8 +71,10 @@ export function buildSakuraInterior({room,reg,action,exit}){
  for(const spec of SHOP_STOCK){const shelf=SAKURA_SHELVES[spec.id];if(!shelf)continue;
   const template=shopProductTemplate(spec.id),pair=[template.body,template.art].map((geometry,i)=>{const mesh=new THREE.InstancedMesh(geometry,materials[i],spec.capacity);mesh.name='Sakura '+spec.id+(i?' packaging':' goods');room.add(mesh);return mesh;});
   const matrices=[],perLevel=spec.capacity/shelf.levels.length,columns=shelf.columns||6,rows=perLevel/columns;
+  // Faced by the pack's own size: never closer than its width across or its depth back.
+  const size=template.bounds.getSize(new THREE.Vector3()),gap={spacing:Math.max(shelf.spacing,size.x+.012),depth:Math.max(shelf.depth,size.z+.01)};
   for(let slot=0;slot<spec.capacity;slot++){
-   const local=slot%perLevel,along=(local%columns-(columns-1)/2)*shelf.spacing,depth=(Math.floor(local/columns)-(rows-1)/2)*shelf.depth;
+   const local=slot%perLevel,along=(local%columns-(columns-1)/2)*gap.spacing,depth=(Math.floor(local/columns)-(rows-1)/2)*gap.depth;
    const x=shelf.x+Math.cos(shelf.yaw)*along+Math.sin(shelf.yaw)*depth,z=shelf.z-Math.sin(shelf.yaw)*along+Math.cos(shelf.yaw)*depth;
    const y=shelf.levels[Math.floor(slot/perLevel)]+.002-template.bounds.min.y;
    dummy.position.set(x,y,z);dummy.rotation.set(0,shelf.yaw,0);dummy.updateMatrix();matrices.push(dummy.matrix.clone());pair.forEach(m=>m.setMatrixAt(slot,dummy.matrix));
@@ -81,7 +83,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   pair.forEach(m=>m.computeBoundingSphere());batches.push({spec,pair,matrices});
   const front=new THREE.Vector3(Math.sin(shelf.yaw),0,Math.cos(shelf.yaw));
   for(const level of shelf.levels)advertising.label(spec.id==='bun'?'buns':spec.id,[shelf.x+front.x*(shelf.fridge!=null?.34:.12),level-.025,shelf.z+front.z*(shelf.fridge!=null?.34:.12)],.23,.075,{price:spec.id!=='bun',yaw:shelf.yaw});
-  const o=anchor([shelf.x+front.x*.17,shelf.levels.at(-1)+.14,shelf.z+front.z*.17],'Examine '+(spec.brand||'SAKURA')+' · '+spec.name,()=>action('store-item',spec.name,{...spec,jp:spec.jp||'肉まん',text:spec.text||'A wrapped steamed bun to take away.'}));o.userData.storeItem=spec.id;
+  const o=anchor([shelf.x+front.x*.17,shelf.levels.at(-1)+.14,shelf.z+front.z*.17],'Examine '+(spec.brand||'SAKURA')+' · '+spec.name,()=>action('store-item',spec.name,{...spec,jp:spec.jp||"Meat bun",text:spec.text||'A wrapped steamed bun to take away.'}));o.userData.storeItem=spec.id;
  }
  // Fittings the model came with that nothing stood on (SAKURA_DRESSING). Instanced the
  // same way as the goods, but never restocked: none of it is for sale.
@@ -97,6 +99,14 @@ export function buildSakuraInterior({room,reg,action,exit}){
   pair.forEach(m=>m.computeBoundingSphere());
   if(piece.look)anchor(piece.look,piece.title,()=>action('inspect',piece.title.replace(/^(Read|Look over) (the )?/,'Sakura · '),piece.text));
  }
+ // The bun steamer's glass, and the copy machine (their frames are in sakura-shell.js).
+ {const B=BUN_STEAMER,glass=new THREE.MeshStandardMaterial({color:0xf4fbfb,transparent:true,opacity:.22,roughness:.05,depthWrite:false});
+  const pane=(w,h,d,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),glass);m.position.set(x,y,z);m.name='Sakura bun steamer glass';room.add(m);};
+  const y=B.top+.06+(B.h-.1)/2,h=B.h-.1;
+  pane(.008,h,B.d,B.x-B.w/2,y,B.z);for(const s of [-1,1])pane(B.w,h,.008,B.x,y,B.z+s*B.d/2);
+  anchor([B.x-.35,1.25,B.z],'Ask for a steamed bun',()=>action('sakura-hot-snacks'));}
+ anchor([COPY_MACHINE.x,1.1,COPY_MACHINE.z-.45],'Use the copy machine',()=>action('inspect','Copy machine · fax',
+  'Ten yen a copy, fifty a page to fax. The fishermen\u2019s co-op sends its catch sheets to Naha from here every morning, and the lid is warm by nine.'));
  const magazineRack=buildMagazineRack(room,{anchor,action});
  const ads=advertising.finish();
  // The posters hang on the shop's own walls, not across its windows (sakura-dressing.js):

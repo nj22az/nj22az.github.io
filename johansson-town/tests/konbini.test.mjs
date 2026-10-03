@@ -156,18 +156,18 @@ test('the receipt reads like something the till printed',()=>{
  addToBasket(state,'rice');addToBasket(state,'rice');addToBasket(state,'tea');
  const {receipt}=checkout(state,{warm:true,bag:false},610);
  const text=receiptText(receipt);
- assert.match(text,/桜商店 SAKURA SHŌTEN/);
+ assert.match(text,/SAKURA SHOP/);
  assert.match(text,/10:10/,'It carries the hour of the visit');
- assert.match(text,/おにぎり Plum rice ball ×2/,'Two of a thing is one line');
- assert.match(text,/合計 TOTAL/);
- assert.match(text,/おつり  CHANGE/);
- assert.match(text,/温め済 WARMED · Plum rice ball/);
- assert.match(text,/袋辞退 · own bag/,'Declining a bag is noted, never charged');
+ assert.match(text,/Plum rice ball ×2/,'Two of a thing is one line');
+ assert.match(text,/TOTAL/);
+ assert.match(text,/CHANGE/);
+ assert.match(text,/WARMED · Plum rice ball/);
+ assert.match(text,/Decline bag · own bag/,'Declining a bag is noted, never charged');
  // No bag charge -- that came in 2020. This used to look for a stray '¥3', which the
  // receipt's tax line now legitimately prints; it asks for the thing itself instead.
  assert.doesNotMatch(text,/レジ袋|bag fee|bag charge/i,'Bags were free in 1997');
- assert.match(text,/内消費税 5%/,'The till shows the five per cent that came in that April');
- assert.match(text,/ありがとうございました/);
+ assert.match(text,/Includes consumption tax 5%/,'The till shows the five per cent that came in that April');
+ assert.match(text,/Thank you very much/);
  assert.equal(receiptText(null),'');
 });
 
@@ -197,18 +197,18 @@ test('the shelf fills a basket and the counter runs the whole exchange',async()=
  assert.equal(acts.state.yen,start,'Nothing is paid for at the shelf');
  acts.konbiniCounter();
  // Warming is offered because a rice ball is in the basket.
- assert.match(body(),/温めますか/,'She offers to warm it');
+ assert.match(body(),/Would you like that warmed/,'She offers to warm it');
  dom.button('Yes, please');
- assert.match(body(),/袋はご利用ですか/,'then asks about a bag');
+ assert.match(body(),/Would you like a bag/,'then asks about a bag');
  dom.button('I have my own');
- assert.match(body(),/合計 ¥230/,'then reads out the total');
- assert.match(body(),/スタンプカード/,'and mentions the stamp card');
+ assert.match(body(),/Total ¥230/,'then reads out the total');
+ assert.match(body(),/Stamp card/,'and mentions the stamp card');
  dom.button('Pay ¥230 in cash');
- assert.match(body(),/ありがとうございました/,'She thanks you first');
+ assert.match(body(),/Thank you very much/,'She thanks you first');
  dom.button('Look at the receipt');
- assert.match(body(),/レシート|SAKURA SHŌTEN/,'A receipt is printed');
- assert.match(body(),/温め済 WARMED · Plum rice ball/);
- assert.match(body(),/袋辞退/,'Declining the bag is on it');
+ assert.match(body(),/Receipt|SAKURA SHOP/,'A receipt is printed');
+ assert.match(body(),/WARMED · Plum rice ball/);
+ assert.match(body(),/Decline bag/,'Declining the bag is on it');
  assert.equal(acts.state.yen,start-230);
  assert.deepEqual(acts.state.inventory.sort(),['Green tea','Plum rice ball']);
  assert.equal(acts.state.konbini.basket.length,0);
@@ -218,10 +218,10 @@ test('soap is never offered warm, and the basket can be put back',async()=>{
  const {dom,acts}=await counter();
  pick(acts,dom,'soap');
  acts.konbiniCounter();
- assert.doesNotMatch(body(),/温めますか/,'A bar of soap is not microwaved');
- assert.match(body(),/袋はご利用ですか/);
+ assert.doesNotMatch(body(),/Would you like that warmed/,'A bar of soap is not microwaved');
+ assert.match(body(),/Would you like a bag/);
  dom.button('Put something back');
- assert.match(title(),/かご · Basket/,'The basket opens for a rethink');
+ assert.match(title(),/Basket · Basket/,'The basket opens for a rethink');
  assert.match(body(),/1 item\(s\) · ¥90/);
  dom.button('Put back Sakura soap');
  assert.match(body(),/empty/,'An emptied basket says so');
@@ -236,11 +236,11 @@ test('the passport records the visit, the card and the last receipt',async()=>{
  acts.inventory();
  dom.button('Konbini passport');
  assert.match(body(),/Visits: 1/);
- assert.match(body(),/スタンプカード/);
+ assert.match(body(),/Stamp card/);
  assert.match(body(),/Tried 1 of/);
  assert.match(body(),/Green tea/);
  dom.button('Last receipt');
- assert.match(body(),/ありがとうございました/,'The kept receipt is still readable');
+ assert.match(body(),/Thank you very much/,'The kept receipt is still readable');
  // and it survives a reload
  acts.save();
  const saved=JSON.parse(localStorage.getItem(SAVE_KEY));

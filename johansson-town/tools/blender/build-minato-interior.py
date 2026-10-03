@@ -62,6 +62,7 @@ def mat(name, color, rough=.7, metal=0., glow=0., alpha=1.):
     return m
 
 M = dict(
+    ramenplaster=mat('Ramen sage plaster','868d68',.96),
     smoke=mat('Smoked cedar', '3f2a1c', .78),
     floorA=mat('Cedar floor', '76502f', .74),
     floorB=mat('Cedar floor, darker board', '65432a', .76),
@@ -69,7 +70,7 @@ M = dict(
     table=mat('Table cedar', '6e4a2f', .5),
     hood=mat('Hood steel', '7a8082', .45, .55),
     wainscot=mat('Wainscot boards', '553a26', .72),
-    plaster=mat('Earth plaster', 'c9a878', .92),
+    plaster=mat('Earth plaster', 'b98d5e', .92),
     steel=mat('Brushed steel', 'aeb3b3', .34, .75),
     darksteel=mat('Blackened steel', '3b3f40', .5, .6),
     glass=mat('Display glass', 'd8ecef', .05, 0, 0, .22),
@@ -106,6 +107,13 @@ M = dict(
     nori=mat('Nori', '1f2a22', .6), noodle=mat('Noodles', 'e8cf7a', .5), oil=mat('Fryer oil', 'b8862a', .15),
     tube=mat('Fluorescent tube', 'fff4dc', .4, 0, 3.0), lacq_red=mat('Red lacquer', '9c2b22', .35),
     ticket=mat('Ticket machine cream', 'ddd4bc', .45),
+    # The bar: a polished top, a lacquered arm-rail, a smoked mirror behind the bottles,
+    # brass, oxblood leather and a burgundy carpet under the booth.
+    bartop=mat('Bar top mahogany', '5c2c1a', .26), mirror=mat('Smoked mirror', '2f2a28', .12, .65),
+    brass=mat('Brass', 'b08a3a', .32, .8), leather=mat('Oxblood leather', '7a1f1e', .36),
+    button=mat('Leather button', '4a1010', .4), carpet=mat('Burgundy carpet', '5a1a22', .95),
+    whisky=mat('Whisky amber', '8a4a14', .18), gin=mat('Gin bottle blue', '2b4f7a', .18),
+    speaker=mat('Speaker cloth', '22201e', .9),
 )
 
 def loc(v): return (v[0], -v[2], v[1])
@@ -226,7 +234,11 @@ cube('Counter carcass', (8.3, .95, .75), (-.8, .475, -2.55), M['smoke'])
 for k in range(42):
     cube('Counter front slat', (.1, .86, .03), (-4.9 + k * .197, .52, -2.155), M['wainscot'])
 cube('Counter kick', (8.3, .09, .05), (-.8, .045, -2.14), M['smoke'])
-cube('Guest ledge', (8.4, .07, .55), (-.8, 1.075, -2.2), M['honey'], bevel=.02)
+cube('Guest ledge', (8.4, .07, .55), (-.8, 1.075, -2.2), M['bartop'], bevel=.02)
+# The arm-rail along the guests' edge, round and lacquered, the way a bar counter ends.
+cyl('Counter arm-rail', .045, 8.4, (-.8, 1.07, -1.93), M['lacquer'], 16, axis='x')
+for k in range(9): cube('Arm-rail bracket', (.04, .06, .05), (-4.8 + k * 1.0, 1.02, -1.96), M['brass'])
+cyl('Foot rail', .02, 8.2, (-.8, .2, -1.98), M['brass'], 10, axis='x')
 for k in range(9): cube('Serving shelf bracket', (.06, .14, .18), (-4.8 + k * 1.0, 1.16, -2.6), M['smoke'])
 cube('Serving shelf', (8.3, .06, .26), (-.8, 1.25, -2.6), M['honey'], bevel=.015)
 cube('Work top cabinet', (8.3, .88, .58), (-.8, .44, -3.06), M['steel'])
@@ -256,6 +268,17 @@ for cx in (-3.05, -.05, 1.45):
     cyl('Shichimi tin', .018, .07, (cx + .02, 1.145, -2.36), M['brown'], 10)
     cube('Toothpick box', (.04, .06, .04), (cx + .08, 1.14, -2.35), M['honey'])
     cyl('Glass ashtray', .06, .025, (cx + .02, 1.123, -2.02), M['clear'], 12)
+
+# On the serving shelf by the tap: the evening's open bottles, the shaker and glasses.
+cube('Open whisky', (.08, .22, .08), (-.95, 1.39, -2.62), M['whisky'], bevel=.008)
+cyl('Open whisky neck', .017, .07, (-.95, 1.535, -2.62), M['whisky'], 8)
+cube('Open whisky label', (.065, .08, .004), (-.95, 1.37, -2.578), M['cream'])
+cyl('Open gin', .04, .22, (-.78, 1.39, -2.62), M['gin'], 10)
+cyl('Open gin neck', .017, .08, (-.78, 1.54, -2.62), M['gin'], 8)
+cyl('Shaker', .038, .17, (.42, 1.365, -2.6), M['steel'], 14)
+cone('Shaker cap', .038, .02, .06, (.42, 1.48, -2.6), M['steel'], 14)
+for gx in (.55, .64, .73):
+    cyl('Rocks glass', .036, .075, (gx, 1.318, -2.6), M['clear'], 12)
 
 # Till and the beckoning cat at the kitchen end.
 cube('Till', (.32, .16, .28), (3.0, 1.19, -2.28), M['cream'], bevel=.02)
@@ -303,26 +326,58 @@ for k in range(4): cube('Cupboard door seam', (.012, .74, .005), (-4.4 + k * .9,
 cyl('Rice cooker', .15, .22, (-3.6, 1.03, -5.95), M['porcelain'], 14)
 cyl('Rice cooker lid', .14, .04, (-3.6, 1.16, -5.95), M['steel'], 14)
 for k in range(5): cube('Stacked plates', (.26, .012, .26), (-2.7, .93 + k * .014, -5.95), M['blue'])
-for y in (1.3, 1.75, 2.2):
-    cube('Bottle shelf', (3.3, .045, .32), (-2.85, y, -6.08), M['smoke'])
-    for k in range(4): cube('Shelf bracket', (.04, .1, .28), (-4.4 + k * 1.03, y - .07, -6.1), M['smoke'])
+# The back bar: a smoked mirror behind five lit shelves of bottles, kept whisky and
+# sake, shochu and a few imported ones, each shelf with a warm strip under its lip.
+cube('Back bar mirror', (3.3, 1.75, .02), (-2.875, 1.9, -6.27), M['mirror'])
+for xx in (-4.55, -1.2): cube('Back bar stile', (.08, 1.85, .34), (xx, 1.92, -6.1), M['smoke'])
+cube('Back bar cornice', (3.5, .14, .4), (-2.875, 2.9, -6.08), M['smoke'], bevel=.02)
+SHELVES = (1.08, 1.42, 1.76, 2.1, 2.44)
+for y in SHELVES:
+    cube('Bottle shelf', (3.25, .03, .3), (-2.875, y, -6.1), M['honey'])
+    cube('Shelf light', (3.1, .012, .02), (-2.875, y - .022, -5.97), M['bulb'])
 def bottle(x, y, z, kind):
+    if kind == 'whisky':   # square-shouldered, amber, the kept bottles of the regulars
+        cube('Bottle', (.075, .2, .075), (x, y + .1, z), M['whisky'], bevel=.008)
+        cyl('Bottle neck', .016, .07, (x, y + .235, z), M['whisky'], 8)
+        cyl('Bottle cap', .019, .025, (x, y + .28, z), M['lacquer'], 8)
+        cube('Bottle label', (.06, .07, .004), (x, y + .09, z + .039), rng.choice([M['label'], M['cream'], M['red']]))
+        if rng.random() > .5: cube('Keep tag', (.05, .03, .004), (x, y + .22, z + .02), M['label'])
+        return
     if kind == 'isshobin':
-        body, neck, h, r = rng.choice([M['green'], M['brown']]), None, .3, .05
+        body, h, r = rng.choice([M['green'], M['brown']]), .3, .05
     elif kind == 'shochu':
         body, h, r = M['clear'], .22, .042
+    elif kind == 'gin':
+        body, h, r = M['gin'], .22, .04
     else:
         body, h, r = M['brown'], .2, .045
     cyl('Bottle', r, h, (x, y + h / 2, z), body, 8)
     cone('Bottle shoulder', r, r * .45, .05, (x, y + h + .025, z), body, 8)
     cyl('Bottle neck', r * .42, .07, (x, y + h + .085, z), body, 8)
     cube('Bottle label', (r * 1.5, h * .5, .004), (x, y + h * .45, z + r + .001), M['label'] if rng.random() > .3 else M['red'])
-    if kind == 'keep':   # a customer's kept bottle, with a card on the neck
-        cube('Keep tag', (.05, .03, .004), (x, y + h + .06, z + r * .5), M['label'])
-for y in (1.3, 1.75, 2.2):
-    for k in range(9):
-        kind = ('isshobin', 'shochu', 'keep')[(k + int(y * 10)) % 3] if y > 1.4 else ('keep', 'shochu')[k % 2]
-        bottle(-4.3 + k * .345 + rng.uniform(-.02, .02), y + .02, -6.08, kind)
+for n, y in enumerate(SHELVES):
+    kinds = ('whisky', 'whisky', 'gin', 'shochu') if n < 2 else ('isshobin', 'shochu', 'whisky') if n < 4 else ('whisky', 'keep')
+    room = .34 if n == 4 else .3
+    for k in range(int(3.1 // .22)):
+        if y + room > 2.86: break
+        kind = kinds[(k * 7 + n) % len(kinds)]
+        if kind == 'isshobin' and y > 2.2: kind = 'whisky'
+        bottle(-4.38 + k * .22 + rng.uniform(-.015, .015), y + .016, -6.1 + rng.uniform(-.03, .03), kind)
+# Brass sconces either side of the back bar and along the west wall.
+def sconce(x, y, z, facing):
+    cube('Sconce plate', (.12, .16, .03) if facing == 'z' else (.03, .16, .12), (x, y, z), M['brass'])
+    off = (0, 0, .09) if facing == 'z' else (.09, 0, 0)
+    cone('Sconce shade', .05, .11, .16, (x + off[0], y + .06, z + off[2]), M['brass'], 14)
+    ball('Sconce bulb', (.045, .05, .045), (x + off[0], y + .1, z + off[2]), M['bulb'], 10, 6)
+for sx in (-4.85, -.95): sconce(sx, 2.45, -6.27, 'z')
+for sz in (-1.0, 3.4): sconce(-6.27, 2.35, sz, 'x')
+# The speakers, up on brackets in the west corners, the cloth gone shiny where it is touched.
+for sz in (-4.7, 4.6):
+    cube('Speaker cabinet', (.3, .46, .3), (-6.08, 2.55, sz), M['lacquer'], bevel=.015)
+    cube('Speaker grille', (.01, .4, .25), (-5.925, 2.55, sz), M['speaker'])
+    cyl('Speaker woofer', .095, .012, (-5.915, 2.48, sz), M['darksteel'], 18, axis='x')
+    cyl('Speaker tweeter', .035, .012, (-5.915, 2.68, sz), M['darksteel'], 12, axis='x')
+    cube('Speaker bracket', (.26, .04, .06), (-6.17, 2.3, sz), M['darksteel'])
 
 # The cooking line along the rest of the back wall, on white tile.
 cube('Kitchen tile', (7.5, 1.1, .02), (2.55, 1.45, -6.275), M['tile'])
@@ -411,6 +466,18 @@ for tx, tz in ((-3.5, 2.2), (2.6, 2.0)):
     for dx in (-1.1, 1.1):
         for dz in (-.55, .55): cube('Table leg', (.08, .82, .08), (tx + dx, .41, tz + dz), M['smoke'])
     for dz in (-1.08, 1.08):
+        if tx < 0:
+            # The west table is a booth: tufted oxblood banquettes with high backs, on carpet.
+            side = 1 if dz > 0 else -1
+            # The seat's top at .565, where izakaya.js sits people at the tables.
+            cube('Booth plinth', (2.5, .43, .44), (tx, .215, tz + dz), M['smoke'])
+            cube('Booth seat', (2.5, .14, .46), (tx, .495, tz + dz), M['leather'], bevel=.04)
+            cube('Booth back', (2.5, .66, .14), (tx, .82, tz + dz + side * .21), M['leather'], bevel=.05)
+            cube('Booth top rail', (2.54, .05, .18), (tx, 1.17, tz + dz + side * .21), M['bartop'], bevel=.015)
+            for row in range(2):
+                for k in range(9):
+                    ball('Tuft button', (.016, .016, .01), (tx - 1.1 + k * .275 + (row % 2) * .1375, .7 + row * .22, tz + dz + side * .138), M['button'], 6, 4)
+            continue
         cube('Bench cushion', (2.5, .06, .42), (tx, .53, tz + dz), M['vinyl'], bevel=.02)
         cube('Bench board', (2.5, .04, .42), (tx, .48, tz + dz), M['smoke'])
         for dx in (-1.1, 1.1): cube('Bench support', (.08, .46, .36), (tx + dx, .23, tz + dz), M['smoke'])
@@ -432,6 +499,8 @@ for tx, tz in ((-3.5, 2.2), (2.6, 2.0)):
     for k in range(3):
         cube('Skewer', (.26, .01, .01), (tx + .8, .97, tz - .34 + k * .04), M['honey'])
         for j in range(4): cube('Yakitori', (.035, .028, .03), (tx + .72 + j * .05, .98, tz - .34 + k * .04), M['glaze'])
+
+cube('Booth carpet', (3.3, .012, 3.0), (-3.5, .046, 2.2), M['carpet'])   # on the boards (their top is at .04)
 
 # --------------------------------------------------------------------------- koagari
 KX, KZ, KL = 5.3, 1.8, 5.4     # centre x, centre z, length along the wall
@@ -486,9 +555,9 @@ while zz < RZ1 - .01:
         if xx > RX1: break
         cube('Quarry tile', (.29, .04, .29), (xx, .02, zz + .15), M['quarry'] if (row + col) % 3 else M['quarryB'])
     zz += .3; row += 1
-cube('Ramen back wall', (RW + .2, 3.8, .2), (RCX, 1.9, RZ0), M['plaster'])
-cube('Ramen east wall', (.2, 3.8, RD + .2), (RX1 + .1, 1.9, RCZ), M['plaster'])
-cube('Ramen west face', (.04, 3.8, RZ1 + 3.35), (RX0 + .02, 1.9, (RZ1 - 3.35) / 2), M['plaster'])
+cube('Ramen back wall', (RW + .2, 3.8, .2), (RCX, 1.9, RZ0), M['ramenplaster'])
+cube('Ramen east wall', (.2, 3.8, RD + .2), (RX1 + .1, 1.9, RCZ), M['ramenplaster'])
+cube('Ramen west face', (.04, 3.8, RZ1 + 3.35), (RX0 + .02, 1.9, (RZ1 - 3.35) / 2), M['ramenplaster'])
 for side, fx in ((1, RX0 + .05), (-1, RX1 - .01)):
     cube('Ramen wall tile', (.02, 1.1, RZ1 + 3.3), (fx, .55, (RZ1 - 3.3) / 2), M['tile'])
     for k in range(1, 4): cube('Tile joint', (.03, .008, RZ1 + 3.3), (fx, k * .275, (RZ1 - 3.3) / 2), M['grout'])
@@ -496,9 +565,9 @@ cube('Ramen kitchen tile', (RW, 1.1, .02), (RCX, 1.45, RZ0 + .125), M['tile'])
 for k in range(1, 16): cube('Tile joint', (.008, 1.1, .005), (RX0 + k * .3, 1.45, RZ0 + .138), M['grout'])
 # The front wall with the door on the right, the noren inside it, and a window.
 DX, DW = 9.75, 1.3
-cube('Ramen front wall', (DX - DW / 2 - RX0, 3.8, .2), ((RX0 + DX - DW / 2) / 2, 1.9, RZ1), M['plaster'])
-cube('Ramen front wall', (RX1 - DX - DW / 2, 3.8, .2), ((RX1 + DX + DW / 2) / 2, 1.9, RZ1), M['plaster'])
-cube('Ramen door lintel', (DW, 1.6, .2), (DX, 3.0, RZ1), M['plaster'])
+cube('Ramen front wall', (DX - DW / 2 - RX0, 3.8, .2), ((RX0 + DX - DW / 2) / 2, 1.9, RZ1), M['ramenplaster'])
+cube('Ramen front wall', (RX1 - DX - DW / 2, 3.8, .2), ((RX1 + DX + DW / 2) / 2, 1.9, RZ1), M['ramenplaster'])
+cube('Ramen door lintel', (DW, 1.6, .2), (DX, 3.0, RZ1), M['ramenplaster'])
 cube('Ramen door glass', (DW - .1, 2.1, .02), (DX, 1.1, RZ1 + .06), M['glass'])
 for dx in (-DW / 2, 0, DW / 2): cube('Door frame', (.05, 2.2, .06), (DX + dx, 1.1, RZ1 + .05), M['steel'])
 cube('Door frame', (DW, .05, .06), (DX, 2.2, RZ1 + .05), M['steel'])
@@ -549,14 +618,14 @@ cube('Doorway lintel', (1.1, .1, .12), (11.0, 2.08, RZ0 + .16), M['smoke'])
 for k in range(2): cube('Noren panel', (.42, .8, .01), (10.78 + k * .44, 1.62, RZ0 + .2), M['noren'])
 
 # The counter, a match for Minato's, and five chrome stools with red tops.
-cube('Ramen counter carcass', (RW - .3, .95, .75), (RCX + .05, .475, -2.55), M['smoke'])
-for k in range(23):
-    cube('Counter front slat', (.1, .86, .03), (RX0 + .35 + k * .197, .52, -2.155), M['wainscot'])
-cube('Ramen guest ledge', (RW - .2, .07, .55), (RCX + .05, 1.075, -2.2), M['honey'], bevel=.02)
-cube('Ramen serving shelf', (RW - .3, .06, .26), (RCX + .05, 1.25, -2.6), M['honey'], bevel=.015)
-cube('Ramen work top cabinet', (RW - .3, .88, .58), (RCX + .05, .44, -3.06), M['steel'])
-cube('Ramen work top', (RW - .25, .035, .62), (RCX + .05, .9, -3.06), M['steel'])
-RSTOOLS = (7.2, 8.1, 9.0, 9.9, 10.8)
+# A real open passage at the east end, wide enough for a person and a bowl tray.
+cube('Ramen counter carcass', (3.5, .95, .75), (8.4, .475, -2.55), M['smoke'])
+for k in range(17):cube('Counter front slat', (.1, .86, .03), (6.8+k*.197,.52,-2.155),M['wainscot'])
+cube('Ramen guest ledge', (3.6,.07,.55),(8.4,1.075,-2.2),M['honey'],bevel=.015)
+cube('Ramen serving shelf',(3.5,.06,.26),(8.4,1.25,-2.6),M['honey'])
+cube('Ramen work top cabinet',(3.5,.88,.58),(8.4,.44,-3.06),M['steel'])
+cube('Ramen work top',(3.55,.035,.62),(8.4,.9,-3.06),M['steel'])
+RSTOOLS=(7.1,7.8,8.5,9.2,9.9)
 for sx in RSTOOLS:
     cyl('Ramen stool top', .19, .08, (sx, .72, -1.42), M['vinyl'], 16)
     cyl('Ramen stool post', .03, .66, (sx, .36, -1.42), M['steel'], 10)
@@ -595,15 +664,65 @@ def akachochin(x, y, z):
     for dy in (-.28, .28): cyl('Lantern cap', .11, .04, (x, y + dy, z), M['lacquer'], 12)
     for dy in (-.14, 0, .14): ring('Lantern rib', .2 * math.sqrt(1 - (dy / .31) ** 2), .006, (x, y + dy, z), M['lacquer'])
     cyl('Lantern cord', .008, 3.62 - (y + .3), (x, (3.62 + y + .3) / 2, z), M['lacquer'], 6)
-for lx in (-4.0, -.8, 2.4): akachochin(lx, 2.9, -2.35)
+def bell(x, y, z):
+    # Black bell shades in a row over the counter, each pooling light on the bar top.
+    cone('Bar pendant shade', .17, .065, .3, (x, y, z), M['lacquer'], 18)
+    cyl('Bar pendant collar', .068, .05, (x, y + .17, z), M['darksteel'], 12)
+    ball('Bar pendant bulb', (.06, .05, .06), (x, y - .14, z), M['bulb'], 10, 6)
+    cyl('Bar pendant cord', .007, 3.62 - (y + .2), (x, (3.62 + y + .2) / 2, z), M['lacquer'], 6)
+for lx in (-3.8, -2.3, -.8, .7, 2.2): bell(lx, 2.45, -2.25)
+akachochin(-5.2, 2.9, 5.6)   # one lantern left, by the door
 def pendant(x, y, z):
     cone('Enamel shade', .24, .05, .16, (x, y, z), M['enamel'], 16)
     ball('Bulb', (.05, .06, .05), (x, y - .09, z), M['bulb'], 10, 6)
     cyl('Pendant cord', .007, 3.7 - y, (x, (3.7 + y) / 2, z), M['lacquer'], 6)
-for px, py, pz in ((-3.5, 2.3, 2.2), (2.6, 2.3, 2.0), (KX, 2.15, .5), (KX, 2.15, 3.1)):
+for px, py, pz in ((KX, 2.15, .5), (KX, 2.15, 3.1)):   # the koagari keeps its enamel shades
     pendant(px, py, pz)
+for px, pz in ((-3.5, 2.2), (2.6, 2.0)): bell(px, 2.35, pz)   # the tables have the bar's
 
 cube('Entry mat', (2.1, .02, .9), (0, .05, 5.5), M['vinyl'])
+
+# A lived-in lounge corner: old upholstered bench, walnut tables and amber globes.
+upholstery=mat('Worn olive upholstery','807254',.95)
+for z in (4.15,5.0):
+ cube('Lounge seat',(.72,.18,.78),(-5.62,.47,z),upholstery,bevel=.045)
+ cube('Lounge back',(.16,.70,.78),(-5.94,.88,z),upholstery,bevel=.035)
+ cube('Lounge plinth',(.60,.40,.75),(-5.62,.20,z),M['smoke'])
+ cube('Lounge table',(.66,.055,.66),(-4.6,.72,z),M['honey'],bevel=.015)
+ cyl('Lounge table post',.035,.68,(-4.6,.35,z),M['steel'],10)
+ for ang in (0,math.pi/2):cube('Lounge table foot',(.60,.04,.06),(-4.6,.04,z),M['darksteel'],rot=ang)
+ cyl('Lounge pendant cord',.009,.60,(-5.1,3.35,z),M['lacquer'],6)
+ ball('Amber globe lamp',(.18,.18,.18),(-5.1,2.98,z),M['bulb'],12,8)
+ cube('Table menu',(.10,.19,.015),(-4.6,.84,z-.15),M['label'])
+# Small practical details around the ramen cooking line.
+cube('Ramen extractor',(3.3,.32,.86),(8.55,2.40,-5.94),M['hood'],bevel=.03)
+cube('Ramen extractor duct',(.42,1.05,.42),(8.55,3.06,-6.11),M['hood'])
+for i in range(7):cube('Hood filter seam',(.035,.02,.72),(7.25+i*.38,2.23,-5.94),M['darksteel'])
+for x in (7.0,9.7):
+ cube('Cloth',(.16,.012,.22),(x,1.0,-5.52),M['label'])
+ cyl('Sauce bottle',.036,.23,(x,1.08,-5.92),M['brown'],10)
+ cube('Bottle label',(.065,.10,.003),(x,1.08,-5.883),M['label'])
+
+# Sato's window table and old television, inspired by a modest 1990s diner.
+cube('Ramen corner table',(1.35,.07,1.05),(7.65,.75,1.15),M['honey'],bevel=.015)
+for x in (7.13,8.17):
+ for z in (.75,1.55):cube('Corner table leg',(.07,.72,.07),(x,.36,z),M['smoke'])
+for z in (.35,1.95):
+ cube('Corner chair seat',(.45,.07,.44),(7.65,.46,z),M['honey'])
+ cube('Corner chair back',(.45,.43,.06),(7.65,.73,z+(-.22 if z<1 else .22)),M['smoke'])
+ for x in (7.48,7.82):
+  for dz in (-.17,.17):cube('Corner chair leg',(.035,.43,.035),(x,.23,z+dz),M['smoke'])
+cube('Ramen window ledge',(1.8,.06,.25),(7.8,1.12,3.53),M['honey'])
+cube('TV corner shelf',(1.0,.08,.8),(10.78,2.76,2.96),M['honey'])
+cube('Old television',(.66,.48,.42),(10.78,3.04,2.98),M['smoke'],bevel=.02)
+cube('Television glass',(.51,.36,.014),(10.71,3.06,3.198),M['darksteel'],bevel=.02)
+for y in (2.97,3.1):cyl('TV dial',.032,.016,(11.05,y,3.21),M['honey'],8,axis='z')
+cyl('Table condiment jar',.035,.12,(8.03,.85,1.38),M['red'],10)
+cube('Chopstick holder',(.12,.10,.06),(8.10,.84,1.13),M['honey'])
+# Dark timber dado, green plaster above, clearly different from the shared kitchen tile.
+for z in (-1.25,0,1.25,2.5):
+ cube('Ramen cedar panel',(.03,.95,1.20),(6.57,.5,z),M['wainscot'])
+ cube('Ramen timber cap',(.045,.06,1.20),(6.60,1.01,z),M['honey'])
 
 # --------------------------------------------------------------------------- export
 # The game allows the room ten draws. Every finish above keeps its colour, but as a

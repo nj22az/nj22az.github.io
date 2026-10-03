@@ -101,7 +101,7 @@ export function createRamenKitchen({getCook}){
      if(turnTo(g,facing(task.station),dt)){task.phase='working';pose(g,{socialPose:task.station==='pass'?'CarryIdle':'Use',carrying:task.station==='pass',activity:task.activity});}
     }else if(task.phase==='working'){
      if((task.work-=dt)<=0){
-      if(task.station==='pass'){finish(task);task.phase='bowing';task.work=.8;pose(g,{socialPose:'Greet',activity:'はい、どうぞ'});}
+      if(task.station==='pass'){finish(task);task.phase='bowing';task.work=.8;pose(g,{socialPose:'Greet',activity:"Here you are"});}
       else if(!next(task,g)){finish(task);task=null;}
      }
     }else if(task.phase==='bowing'){

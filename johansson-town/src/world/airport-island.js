@@ -4,7 +4,7 @@ import {SEA_LEVEL} from './ocean.js';
 /**
  * Kitano-jima: the airport island, out to the east-south-east.
  *
- * Not somewhere you can go yet. It is on the horizon from the quay and the east beach: a
+ * Reached by the local Minato ferry. It is on the horizon from the quay and the east beach: a
  * low green island with a runway along it, a control tower, a small terminal and a hangar,
  * and now and then a plane taking off over the water. AIRPORT_ISLAND records where a ferry
  * would tie up, for when the island becomes a place the ferry and the player can reach.
@@ -13,7 +13,7 @@ import {SEA_LEVEL} from './ocean.js';
  * large and simple: nothing on it is smaller than a car.
  */
 export const AIRPORT_ISLAND=Object.freeze({
- id:'kitano-jima',title:'Kitano-jima Airport',jp:'北野島空港',
+ id:'kitano-jima',title:'Kitano-jima Airport',jp:"Kitanoshima Airport",
  x:165,z:-118,yaw:-.22,
  /** The island's half-extents along and across the runway. */
  halfLength:62,halfWidth:20,
@@ -26,7 +26,7 @@ export const AIRPORT_ISLAND=Object.freeze({
 /** Minutes past midnight of the day's departures. */
 export const AIRPORT_DEPARTURES=Object.freeze([555,760,975,1140]);
 
-function buildPlane(){
+export function buildPlane(){
  const plane=new THREE.Group();plane.name='Commuter plane';
  const white=new THREE.MeshStandardMaterial({color:0xf2f0ea,roughness:.5});
  const blue=new THREE.MeshStandardMaterial({color:0x2d5d8a,roughness:.5});
@@ -83,7 +83,7 @@ export function buildAirportIsland({parent,shadows=false}={}){
  const sewage=buildSewagePlant(add,mat);
 
  const plane=buildPlane();plane.visible=false;group.add(plane);
- let flight=null;
+ let flight=null,lastDeparture=null,departures=AIRPORT_DEPARTURES;
  /**
   * @param {number} dt seconds
   * @param {number} minutes the town clock
@@ -93,8 +93,8 @@ export function buildAirportIsland({parent,shadows=false}={}){
   beacon.material.emissiveIntensity=day<.4?1.4:(Math.sin(minutes*6)>0?.6:.1);
   const m=((minutes%1440)+1440)%1440;
   if(!flight){
-   const due=AIRPORT_DEPARTURES.find(t=>m>=t&&m<t+.5);
-   if(due!==undefined)flight={t:0};
+   const due=departures.find(t=>m>=t&&m<t+.5&&lastDeparture!==Math.floor(minutes/1440)+':'+t);
+   if(due!==undefined){flight={t:0};lastDeparture=Math.floor(minutes/1440)+':'+due;}
   }
   if(!flight){plane.visible=false;return;}
   // Rolling down the runway for twenty seconds, then climbing away east and out of sight.
@@ -106,7 +106,7 @@ export function buildAirportIsland({parent,shadows=false}={}){
   plane.position.set(x,y,-4);plane.rotation.set(0,0,pitch);plane.visible=true;
   if(t>roll+climb){flight=null;plane.visible=false;}
  };
- return {group,plane,jetty,sewage,update};
+ return {group,plane,jetty,sewage,update,setDepartures:times=>{departures=times;}};
 }
 
 /**
@@ -117,7 +117,7 @@ export function buildAirportIsland({parent,shadows=false}={}){
  * out past the beach. Modelled large and simple like the rest of the island: it is
  * read from across the water. Island frame, metres; the green top is at y = 1.1.
  */
-export const SEWAGE_PLANT=Object.freeze({x:-33,z:9,title:'Kitano-jima Sewage Works',jp:'北野島下水処理場'});
+export const SEWAGE_PLANT=Object.freeze({x:-33,z:9,title:'Kitano-jima Sewage Works',jp:"Kitanojima Sewage Treatment Plant"});
 function buildSewagePlant(add,mat){
  const P=SEWAGE_PLANT,top=1.1,concrete=mat(0xc9c6bc),water=mat(0x5f7f6e),dark=mat(0x4a6458),rail=mat(0x2f6f9f);
  add(new THREE.BoxGeometry(24,.12,15),mat(0x9a9b94),P.x,top+.06,P.z);

@@ -57,18 +57,18 @@ function caseLabel({brand,jp,line,count,ink,accent,seed}){
   say(ctx,count,174,232,40,ink);
   // Carrier slip, the barcode and 天地無用.
   ctx.fillStyle='#fbfaf4';ctx.fillRect(344,48,148,150);ctx.fillStyle='#3f7d4e';ctx.fillRect(344,48,148,26);
-  say(ctx,'南風便',418,62,18,'#ffffff');say(ctx,'サクラ商店 様',418,96,18,'#2b2b2b');
+  say(ctx,"South wind flight",418,62,18,'#ffffff');say(ctx,"Sakura Shop Dear",418,96,18,'#2b2b2b');
   ctx.fillStyle='#222';let x=356;for(let i=0;i<26&&x<480;i++){const b=hash(i,seed+9)>.5?3:5;ctx.fillRect(x,116,b,44);x+=b+(hash(i,seed+7)>.5?3:2);}
   say(ctx,'49'+String(1000+seed*37).slice(0,4)+'-'+String(seed*911%9000+1000),418,180,15,'#333','center','normal');
-  say(ctx,'天地無用',418,236,30,'#c23a32');
+  say(ctx,"Tenchi Muyo",418,236,30,'#c23a32');
   ctx.strokeStyle='#c23a32';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(400,288);ctx.lineTo(400,262);ctx.moveTo(390,272);ctx.lineTo(400,260);ctx.lineTo(410,272);ctx.moveTo(436,288);ctx.lineTo(436,262);ctx.moveTo(426,272);ctx.lineTo(436,260);ctx.lineTo(446,272);ctx.stroke();
  });
 }
 const CASES={
- tea:{brand:'NAGI',jp:'なぎ',line:'緑茶',count:'500ml × 24本',ink:'#224b35',accent:'#738c43',seed:3,size:[.40,.25,.28],stack:2},
- coffee:{brand:'PORT 88',jp:'ポート88',line:'缶コーヒー',count:'185g × 30缶',ink:'#5a2a1c',accent:'#bd4826',seed:5,size:[.38,.14,.26],stack:3},
- noodles:{brand:'YUNAGI',jp:'ゆうなぎ',line:'ラーメン',count:'12食入',ink:'#8d3028',accent:'#394e41',seed:7,size:[.46,.31,.33],stack:1},
- water:{brand:'MIZUNOWA',jp:'みずのわ',line:'天然水',count:'2L × 6本',ink:'#2e6572',accent:'#6dabae',seed:11,size:[.33,.33,.22],stack:1},
+ tea:{brand:'NAGI',jp:"Nagi",line:"Green tea",count:"500ml × 24items",ink:'#224b35',accent:'#738c43',seed:3,size:[.40,.25,.28],stack:2},
+ coffee:{brand:'PORT 88',jp:"Port88",line:"Canned coffee",count:"185g × 30Can",ink:'#5a2a1c',accent:'#bd4826',seed:5,size:[.38,.14,.26],stack:3},
+ noodles:{brand:'YUNAGI',jp:"Yuunagi",line:"Ramen",count:"12Meal included",ink:'#8d3028',accent:'#394e41',seed:7,size:[.46,.31,.33],stack:1},
+ water:{brand:'MIZUNOWA',jp:"Mizunowa",line:"Natural water",count:"2L × 6items",ink:'#2e6572',accent:'#6dabae',seed:11,size:[.33,.33,.22],stack:1},
 };
 
 function kit(parent,name){
@@ -103,8 +103,8 @@ function stockRack(k){
  const tray=std(0xb88f5c,{roughness:.9});
  const roll=std(0xf6f3ec,{roughness:.95}),rollPrint=new THREE.MeshStandardMaterial({roughness:.9,map:canvasTex(256,256,(ctx,w,h)=>{
   ctx.fillStyle='#f6f3ec';ctx.fillRect(0,0,w,h);ctx.fillStyle='#f0a6b8';for(let i=0;i<14;i++){ctx.beginPath();ctx.arc(hash(i,4)*w,hash(i,5)*h,10,0,Math.PI*2);ctx.fill();}
-  ctx.fillStyle='#ffffff';ctx.fillRect(28,92,200,72);say(ctx,'さくら',128,116,30,'#c4566e');say(ctx,'12ロール',128,146,22,'#6b4a52');})});
- const tissue=new THREE.MeshStandardMaterial({roughness:.8,map:canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#dce5d2';ctx.fillRect(0,0,w,h);ctx.fillStyle='#99b6a0';ctx.fillRect(0,h-28,w,28);say(ctx,'KOMACHI',w/2,44,34,'#c25a58');say(ctx,'5箱パック',w/2,h-14,18,'#ffffff');})});
+  ctx.fillStyle='#ffffff';ctx.fillRect(28,92,200,72);say(ctx,"Sakura",128,116,30,'#c4566e');say(ctx,"12Roll",128,146,22,'#6b4a52');})});
+ const tissue=new THREE.MeshStandardMaterial({roughness:.8,map:canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#dce5d2';ctx.fillRect(0,0,w,h);ctx.fillStyle='#99b6a0';ctx.fillRect(0,h-28,w,28);say(ctx,'KOMACHI',w/2,44,34,'#c25a58');say(ctx,"5Box pack",w/2,h-14,18,'#ffffff');})});
  const banjyu=std(0x3d8fcf,{roughness:.4});
  // Shrink-wrapped trays of the shop's own cans and bottles, from the shelf templates.
  const products={},[productBody,productArt]=shopProductMaterials();
@@ -179,8 +179,8 @@ function stockRack(k){
  const body=new THREE.Mesh(new THREE.BoxGeometry(.07,.2,.045),std(0x2a2e33,{roughness:.5}));body.position.y=.1;handy.add(body);
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(.05,.045),new THREE.MeshBasicMaterial({color:0x8fbf8a,toneMapped:false}));screen.position.set(0,.15,-.0235);screen.rotation.y=Math.PI;handy.add(screen);
  const led=new THREE.Mesh(new THREE.BoxGeometry(.012,.006,.006),new THREE.MeshBasicMaterial({color:0x6cff6c,toneMapped:false}));led.position.set(.045,.04,-.072);handy.add(led);
- const clip=canvasTex(256,320,(ctx,w,h)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,w,h);say(ctx,'棚卸し表',w/2,30,26,'#2b2b2b');ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;for(let y=60;y<h-10;y+=24){ctx.beginPath();ctx.moveTo(14,y);ctx.lineTo(w-14,y);ctx.stroke();}
-  ['緑茶 24','缶コーヒー 30','ラーメン 12','天然水 6','麦酒 20'].forEach((s,i)=>{say(ctx,s,20,72+i*24,15,'#2f4a8a','left','normal');say(ctx,'✓',w-30,72+i*24,18,'#c23a32');});});
+ const clip=canvasTex(256,320,(ctx,w,h)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,w,h);say(ctx,"Stock Count",w/2,30,26,'#2b2b2b');ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;for(let y=60;y<h-10;y+=24){ctx.beginPath();ctx.moveTo(14,y);ctx.lineTo(w-14,y);ctx.stroke();}
+  ["Green tea 24","Canned coffee 30","Ramen 12","Natural water 6","Beer 20"].forEach((s,i)=>{say(ctx,s,20,72+i*24,15,'#2f4a8a','left','normal');say(ctx,'✓',w-30,72+i*24,18,'#c23a32');});});
  const board=new THREE.Mesh(new THREE.BoxGeometry(.2,.006,.27),std(0x8a6a4a));board.position.set(ex-.22,top+.003,R.front+.17);board.rotation.y=.08;board.name='Stocktake clipboard';k.group.add(board);
  const sheet=new THREE.Mesh(new THREE.PlaneGeometry(.18,.23),new THREE.MeshStandardMaterial({map:clip,roughness:.95}));sheet.rotation.set(-Math.PI/2,0,Math.PI+.08);sheet.position.set(ex-.22,top+.007,R.front+.18);k.group.add(sheet);
  return {led};
@@ -195,19 +195,19 @@ function noticeboard(k){
   const pin=(x,y,c='#d7263d')=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fill();};
   // Shift roster.
   ctx.save();ctx.translate(40,36);ctx.rotate(-.015);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,330,430);
-  say(ctx,'シフト表 9月',165,30,28,'#2b2b2b');ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;
-  const days=['月','火','水','木','金','土','日'],who=['トゥアン 早','トゥアン 通し','店長 早 / トゥアン 遅','トゥアン 早','トゥアン 遅','トゥアン 通し','店長'];
+  say(ctx,"Staff Schedule 9Month",165,30,28,'#2b2b2b');ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;
+  const days=["Month","Fire","Water","Tree","Gold","Earth","Day"],who=["Thuan Early","Thuan Full shift","Manager Early / Thuan Late","Thuan Early","Thuan Late","Thuan Full shift","Manager"];
   days.forEach((d,i)=>{const y=74+i*44;ctx.beginPath();ctx.moveTo(14,y+22);ctx.lineTo(316,y+22);ctx.stroke();say(ctx,d,34,y,22,'#c23a32');say(ctx,who[i],70,y,20,'#2b2b2b','left','normal');});
-  say(ctx,'副店長(鉢植え): 毎日 窓ぎわ',165,400,17,'#3f8f46');ctx.restore();pin(205,40);
+  say(ctx,"Assistant Manager(Potted plants): Every day By the window",165,400,17,'#3f8f46');ctx.restore();pin(205,40);
   // Delivery times.
   ctx.save();ctx.translate(400,40);ctx.rotate(.02);ctx.fillStyle='#ffe28a';ctx.fillRect(0,0,320,200);
-  say(ctx,'納品時間',160,30,28,'#7a3a12');
-  [['米飯','6:00 / 11:00 / 16:00'],['飲料','5:00'],['雑誌・新聞','4:30'],['常温 (南風便)','火・金 14:00']].forEach(([a,b],i)=>{say(ctx,a,18,76+i*34,19,'#2b2b2b','left');say(ctx,b,302,76+i*34,19,'#2b2b2b','right','normal');});
+  say(ctx,"Delivery time",160,30,28,'#7a3a12');
+  [["Rice",'6:00 / 11:00 / 16:00'],["Beverage",'5:00'],["Magazines/Newspapers",'4:30'],["Normal temperature (South wind flight)","Tuesday/Friday 14:00"]].forEach(([a,b],i)=>{say(ctx,a,18,76+i*34,19,'#2b2b2b','left');say(ctx,b,302,76+i*34,19,'#2b2b2b','right','normal');});
   ctx.restore();pin(560,44,'#2a8fcc');
   // 5S.
   ctx.save();ctx.translate(410,262);ctx.rotate(-.025);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,310,210);
-  ctx.fillStyle='#c23a32';ctx.fillRect(0,0,310,40);say(ctx,'バックヤード 5S',155,21,24,'#ffffff');
-  ['整理: 通路に台車を置かない','整頓: 先入れ先出し','清掃: 冷蔵庫の霜取り 水曜','清潔: 手洗い・消毒','しつけ: P箱は返却まで黄色の場所'].forEach((s,i)=>say(ctx,s,16,66+i*30,17,'#2b2b2b','left','normal'));
+  ctx.fillStyle='#c23a32';ctx.fillRect(0,0,310,40);say(ctx,"Backyard 5S",155,21,24,'#ffffff');
+  ["Organize: Do not place trolleys on the aisle","Tidying up: First in, first out","Cleaning: Defrosting the refrigerator Wednesday","Cleanliness: Hand washing/disinfection","Discipline: PThe box will remain in the yellow area until it is returned."].forEach((s,i)=>say(ctx,s,16,66+i*30,17,'#2b2b2b','left','normal'));
   ctx.restore();pin(565,266);
  });
  const frame=k.mesh(new THREE.BoxGeometry(.04,.84,1.24),std(0x7a5530),N.x+.02,N.y,N.z,'Staff noticeboard');void frame;
@@ -225,7 +225,7 @@ function exitSign(k){
   ctx.moveTo(92,72);ctx.lineTo(80,118);ctx.moveTo(80,118);ctx.lineTo(108,140);ctx.lineTo(102,168);ctx.moveTo(80,118);ctx.lineTo(56,150);
   ctx.moveTo(90,80);ctx.lineTo(118,96);ctx.lineTo(136,84);ctx.moveTo(88,82);ctx.lineTo(62,96);ctx.stroke();
   ctx.fillStyle='#f4fff6';ctx.fillRect(140,30,10,h-60);
-  say(ctx,'非常口',330,76,64,'#f4fff6','center','900');say(ctx,'EXIT',330,142,40,'#f4fff6');
+  say(ctx,"Emergency exit",330,76,64,'#f4fff6','center','900');say(ctx,'EXIT',330,142,40,'#f4fff6');
  });
  k.mesh(new THREE.BoxGeometry(.64,.26,.06),std(0xeef1ee),S.x,S.y,S.z+.03,'Exit sign housing');
  k.plane(tex,.6,.225,S.x,S.y,S.z+.062,0,'Exit sign',true);
@@ -234,7 +234,7 @@ function exitSign(k){
 function beerCrates(k){
  const C=BACKROOM.crates;
  const side=canvasTex(256,160,(ctx,w,h)=>{ctx.fillStyle='#e8b923';ctx.fillRect(0,0,w,h);ctx.fillStyle='#d4a516';for(let x=18;x<w-18;x+=30)ctx.fillRect(x,108,18,34);
-  say(ctx,'UMINEKO',w/2,40,40,'#9f2f24');say(ctx,'うみねこ麦酒 大びん20本',w/2,82,18,'#9f2f24');});
+  say(ctx,'UMINEKO',w/2,40,40,'#9f2f24');say(ctx,"Umineko Beer Large bottle20items",w/2,82,18,'#9f2f24');});
  const yellow=std(0xe8b923,{roughness:.4}),print=new THREE.MeshStandardMaterial({map:side,roughness:.4});
  const mats=[print,print,yellow,yellow,print,print],bottle=std(0x5a3418,{roughness:.2,metalness:.1});
  // Two stacks against the back wall, side by side, the east one a crate shorter.
@@ -277,7 +277,7 @@ function daisha(k){
  const onigiri=new THREE.CylinderGeometry(.06,.06,.04,3);
  for(let a=0;a<4;a++)for(let b=0;b<2;b++){const o=add(onigiri,film,-.05-.21+a*.14,ty-.024,-.1+b*.2);o.rotation.y=b?Math.PI:0;}
  // Delivery slip tucked under the top crate's rim.
- const slip=canvasTex(128,96,(ctx,w,h)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,w,h);say(ctx,'米飯 11:00',w/2,28,20,'#2b2b2b');say(ctx,'おにぎり 32',w/2,62,18,'#c23a32');});
+ const slip=canvasTex(128,96,(ctx,w,h)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,w,h);say(ctx,"Rice 11:00",w/2,28,20,'#2b2b2b');say(ctx,"Onigiri 32",w/2,62,18,'#c23a32');});
  const s=new THREE.Mesh(new THREE.PlaneGeometry(.12,.09),new THREE.MeshStandardMaterial({map:slip,roughness:.9}));s.position.set(-.05,ty-.01,-.221);s.rotation.y=Math.PI;g.add(s);
 }
 
@@ -287,7 +287,7 @@ function extinguisher(k){
  k.mesh(new THREE.CylinderGeometry(.085,.085,.46,18),red,E.x,.27,E.z,'Fire extinguisher');
  k.mesh(new THREE.CylinderGeometry(.03,.04,.06,10),std(0x2a2a2a),E.x,.53,E.z,'Extinguisher valve');
  const hose=k.mesh(new THREE.CylinderGeometry(.012,.012,.32,8),std(0x1a1a1a),E.x+.09,.36,E.z+.03,'Extinguisher hose');hose.rotation.z=.2;
- const sign=canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#d8302b';ctx.fillRect(0,0,w,h);say(ctx,'消火器',w/2,h/2,64,'#ffffff','center','900');});
+ const sign=canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#d8302b';ctx.fillRect(0,0,w,h);say(ctx,"Fire extinguisher",w/2,h/2,64,'#ffffff','center','900');});
  k.plane(sign,.3,.15,E.x,1.25,-6.745,0,'Extinguisher sign');
 }
 
@@ -298,10 +298,10 @@ export function buildSakuraBackroom(room,{anchor,action}={}){
  k.finish();
  if(anchor&&action){
   const N=BACKROOM.noticeboard;
-  anchor([N.x+.5,1.5,N.z],'Read the staff noticeboard',()=>action('inspect','バックヤード · Staff noticeboard',
-   'Thuan’s September roster, with her name on nearly every line; the delivery times for rice, drinks and the papers; and the back-room 5S rules in red.\n\nAt the bottom of the roster, in her handwriting: 副店長(鉢植え) — the assistant manager — "every day, by the window".'));
+  anchor([N.x+.5,1.5,N.z],'Read the staff noticeboard',()=>action('inspect',"Backyard · Staff noticeboard",
+   "Thuan’s September roster, with her name on nearly every line; the delivery times for rice, drinks and the papers; and the back-room 5S rules in red.\n\nAt the bottom of the roster, in her handwriting: Assistant Manager(Potted plants) — the assistant manager — \"every day, by the window\"."));
   const D=BACKROOM.daisha;
-  anchor([D.x,.9,D.z],'Look at the rice delivery',()=>action('inspect','番重 · The 11:00 rice delivery',
+  anchor([D.x,.9,D.z],'Look at the rice delivery',()=>action('inspect',"Banju · The 11:00 rice delivery",
    'Four blue trays of onigiri and bento off the morning van, parked on the daisha at the end of the room. They go out on the shelves before the lunch crowd; the empty trays go back on the 16:00 run.'));
  }
  return {tick(time){rack.led.visible=Math.sin(time*2.4)>-.6;}};

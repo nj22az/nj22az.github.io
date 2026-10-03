@@ -24,7 +24,7 @@ test('existing v1 saves retain their features and gain safe silhouette defaults'
  assert.equal(safe.head.form,'oval');assert.equal(safe.head.jaw,1);assert.equal(safe.head.cheeks,0);
 });
 
-test('all five head forms have distinct geometry and stay in proportion at slider limits',()=>{
+test('all face forms have distinct geometry and stay in proportion at slider limits',()=>{
  const shapes=new Set();
  for(const form of PARTS.head){
   const av=buildAvatar({...recipeFor('Thuan'),head:{form,size:.5,shape:.5,jaw:.5,cheeks:.5}});
@@ -35,7 +35,7 @@ test('all five head forms have distinct geometry and stay in proportion at slide
    assert.ok(ratio>.23&&ratio<.42,`${form}: head occupies ${ratio} of height`);
   }
  }
- assert.equal(shapes.size,5);
+ assert.equal(shapes.size,PARTS.head.length);
  const names=['Johansson','Thuan','Nao','Mr Ōshiro','Uncle Kinjō','Mrs Nakamura'];
  assert.ok(new Set(names.map(n=>recipeFor(n).head.form)).size>=4);
 });

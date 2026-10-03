@@ -15,7 +15,7 @@
 const DEFAULT_PREFERENCE=Object.freeze({
  // Thuan is Vietnamese, keeping a shop in a Japanese harbour town, speaking English.
  langs:['vi','ja','en-GB','en'],
- names:['Linh','Mai','Kyoko','O-ren','Google 日本語','Samantha','Female','Karen','Martha']
+ names:['Linh','Mai','Kyoko','O-ren',"Google Japanese",'Samantha','Female','Karen','Martha']
 });
 
 /** Scores a voice: language first, then a known-good name, then anything female. */

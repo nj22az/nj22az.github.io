@@ -149,3 +149,9 @@
 .neighbour-chat strong{display:block;font-size:11px;color:#925443;margin-bottom:3px}
 .neighbour-chat span{display:block}
 .neighbour-chat:after{content:'';position:absolute;left:50%;bottom:-7px;width:10px;height:10px;background:#fff3d9;border-right:2px solid #b59670;border-bottom:2px solid #b59670;transform:rotate(45deg)}
+
+/* Door action occupies the free left rail, below location and navigation. */
+#exitRoomButton{top:auto;bottom:max(24px,env(safe-area-inset-bottom));left:max(16px,env(safe-area-inset-left));border:1px solid #d4c49b;border-radius:14px;background:#173238ed;color:#fff4dd;box-shadow:none;font-size:13px;min-height:48px}
+#exitRoomButton.hidden{display:none!important}
+@media(pointer:coarse){#exitRoomButton{top:max(158px,calc(env(safe-area-inset-top) + 148px));bottom:auto;max-width:calc(100vw - 88px)}}
+body.inspecting #exitRoomButton,body.conversation-open #exitRoomButton{visibility:hidden}

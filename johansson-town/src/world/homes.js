@@ -17,7 +17,7 @@ export function buildHomes(world,options){
  for(const household of HOUSEHOLDS){
   const entry=RESIDENTIAL_ENTRIES[household.entry],profile=RESIDENTS.find(p=>p.name===household.residents[0]);
   let site=options.sites.find(s=>s.id===household.id);
-  if(!site){site={id:household.id,jp:'住まい',sub:'MAIN STREET',color:0xd4c6ad,accent:'#776953'};options.sites.push(site);}
+  if(!site){site={id:household.id,jp:"Home",sub:'MAIN STREET',color:0xd4c6ad,accent:'#776953'};options.sites.push(site);}
   Object.assign(site,{title:household.title,line:household.address,homeOwner:household.residents[0],homeOwners:[...household.residents],homeEntry:household.entry,door:[profile.home[0],.02,profile.home[1]],entryFacing:entry.angle,x:entry.facade[0]-.3,z:entry.door[1]});site.exitPosition=[...site.door];
   for(const name of household.residents)homes.set(name,{owner:name,household:household.id,address:household.address,door:profile.home,building:entry.buildingId,occupied:false});
  }

@@ -32,9 +32,9 @@ export const NISHI=Object.freeze({
  /** The plots between the lanes, from the walk to the yard wall. */
  plots:Object.freeze([
   {id:'net-shed',kind:'shed',minZ:-37.8,maxZ:-29.3},
-  {id:'higa',kind:'red-tile',family:'比嘉',romaji:'Higa',minZ:-25.7,maxZ:-14.8,gate:'south'},
-  {id:'kinjo',kind:'concrete',family:'金城',romaji:'Kinjō',minZ:-11.2,maxZ:-.2,gate:'north'},
-  {id:'oshiro',kind:'red-tile',family:'大城',romaji:'Ōshiro',minZ:3.3,maxZ:14.2,gate:'south'},
+  {id:'higa',kind:'red-tile',family:"Higa",romaji:'Higa',minZ:-25.7,maxZ:-14.8,gate:'south'},
+  {id:'kinjo',kind:'concrete',family:"Kinjo",romaji:'Kinjō',minZ:-11.2,maxZ:-.2,gate:'north'},
+  {id:'oshiro',kind:'red-tile',family:"Oshiro",romaji:'Ōshiro',minZ:3.3,maxZ:14.2,gate:'south'},
   {id:'utaki',kind:'grove',minZ:17.8,maxZ:28.8},
  ].map(p=>Object.freeze({...p,minX:-36.1,maxX:-25.6}))),
 });
@@ -82,11 +82,11 @@ export const EAST_BACK=Object.freeze({
  lane:Object.freeze({minX:EAST_ROW.maxX,maxX:EAST_ROW.maxX+2.6}),
  plots:Object.freeze([
   // Gates on the green in front of Umi-no-yu, with the houses backed onto the trees.
-  {id:'nakasone',kind:'red-tile',family:'仲宗根',romaji:'Nakasone',minX:16.2,maxX:24.6,minZ:10.4,maxZ:21.6,gate:'south'},
-  {id:'miyagi',kind:'red-tile',family:'宮城',romaji:'Miyagi',minX:25.4,maxX:32.9,minZ:10.4,maxZ:21.6,gate:'south'},
-  {id:'tamaki',kind:'concrete',family:'玉城',romaji:'Tamaki',minX:16.2,maxX:24.2,minZ:-14.4,maxZ:-3.6,gate:'north'},
+  {id:'nakasone',kind:'red-tile',family:"Nakasone",romaji:'Nakasone',minX:16.2,maxX:24.6,minZ:10.4,maxZ:21.6,gate:'south'},
+  {id:'miyagi',kind:'red-tile',family:"Miyagi",romaji:'Miyagi',minX:25.4,maxX:32.9,minZ:10.4,maxZ:21.6,gate:'south'},
+  {id:'tamaki',kind:'concrete',family:"Tamaki",romaji:'Tamaki',minX:16.2,maxX:24.2,minZ:-14.4,maxZ:-3.6,gate:'north'},
   // Between the park and the seawall, its gate on the garden with the pond.
-  {id:'kamiya',kind:'red-tile',family:'神谷',romaji:'Kamiya',minX:24.8,maxX:32.9,minZ:-30.8,maxZ:-19.6,gate:'north'},
+  {id:'kamiya',kind:'red-tile',family:"Kamiya",romaji:'Kamiya',minX:24.8,maxX:32.9,minZ:-30.8,maxZ:-19.6,gate:'north'},
  ].map(Object.freeze)),
 });
 
@@ -121,12 +121,17 @@ export function mapPlan(){
   [EAST_QUAY.shed.minX,EAST_QUAY.shed.maxX,EAST_QUAY.shed.minZ,EAST_QUAY.shed.maxZ],[EAST_QUAY.ice.minX,EAST_QUAY.ice.maxX,EAST_QUAY.ice.minZ,EAST_QUAY.ice.maxZ],
   [GOYA.minX,GOYA.maxX,GOYA.minZ,GOYA.maxZ],
   ...[...NISHI.plots,...EAST_BACK.plots].filter(p=>p.kind!=='grove').map(p=>{const cx=(p.minX+p.maxX)/2,cz=(p.minZ+p.maxZ)/2;return [cx-3.3,cx+3.3,cz-2.8,cz+2.8];})];
- const labels=[['NISHI-MACHI',-38.5,-8],['FISH AUCTION',20.5,-44],['UTAKI',-33,23],['GATEBALL',21,-34]];
- walks.push([GATEBALL.minX,GATEBALL.maxX,GATEBALL.minZ,GATEBALL.maxZ]);
+ const labels=[['NISHI-MACHI',-38.5,-8],['FISH AUCTION',20.5,-44],['UTAKI',-33,23],...(GATEBALL_ACTIVE?[['GATEBALL',21,-34]]:[])];
+ if(GATEBALL_ACTIVE)walks.push([GATEBALL.minX,GATEBALL.maxX,GATEBALL.minZ,GATEBALL.maxZ]);
  return {walks,yards,buildings,labels};
 }
 
-/** The gateball court on the lawn by the seawall, and the goya garden in the west yard. */
+/**
+ * The gateball court on the lawn by the seawall, and the goya garden in the west yard.
+ * The court is switched off (October 2026): nobody plays by the harbour office, and the
+ * lawn runs on to the seawall. GATEBALL_ACTIVE brings it, its terrace and players back.
+ */
+export const GATEBALL_ACTIVE=false;
 export const GATEBALL=Object.freeze({minX:20,maxX:31.4,minZ:-37.5,maxZ:-32.2});
 export const GOYA=Object.freeze({minX:-23.4,maxX:-17.4,minZ:-11.4,maxZ:-4.2});
 
