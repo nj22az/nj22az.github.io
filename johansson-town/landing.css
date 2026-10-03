@@ -841,7 +841,8 @@
 #loadingFact { margin: 0; font: 600 clamp(.95rem, 2.5vw, 1.1rem)/1.55 system-ui, sans-serif; min-height: 4.65em; }
 @media (max-height: 620px) { #start.booting .title-tag, #start.booting .title-foot { display: none; }
   #start.booting .title-center { padding-top: .75rem; padding-bottom: .75rem; }
-  #start.booting .title-logo { font-size: clamp(2rem, 8vh, 4rem); }
+  #start.booting .logo-main { font-size: clamp(1.6rem, 9vh, 3rem); }
+  #start.booting .logo-town { font-size: clamp(1.2rem, 6vh, 2rem); }
   .island-fact { padding: .65rem 1rem; margin-bottom: .75rem; }
   #start .title-loading { margin-top: .75rem; }
 }
