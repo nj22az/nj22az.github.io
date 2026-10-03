@@ -80,7 +80,7 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   const slab=new THREE.Mesh(new THREE.BoxGeometry(width+.5,.06,.7),tile);slab.position.set(0,0,.2);slab.castShadow=true;slab.receiveShadow=true;hood.add(slab);
   for(let x=-width/2-.2;x<=width/2+.2;x+=.26){const rib=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.7,6),ridge);rib.rotation.x=Math.PI/2;rib.position.set(x,.045,.2);hood.add(rib);}
   const cap=new THREE.Mesh(new THREE.BoxGeometry(width+.56,.1,.12),ridge);cap.position.set(0,.04,-.12);hood.add(cap);}
- const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.12,.32)).toArray(),yaw};const wp=logo.getWorldPosition(new THREE.Vector3());buildSignboard(group,{width});
+ const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.18,.02)).toArray(),yaw};buildSignboard(group,{width});
  const glazing=createShopGlass();
  // Glass to either side of the doorway, whatever the frontage is: a pane list authored
  // for a ten-metre shop leaves a wall of nothing when the shop is fourteen.
@@ -97,38 +97,7 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   for(let i=1;i<bays;i++)box([.07,2.6,.08],[lx-paneWidth/2+paneWidth*i/bays,1.45,.06],0x4a3a2c);
   box([paneWidth,.07,.08],[lx,2.15,.06],0x4a3a2c);box([paneWidth,.34,.05],[lx,.19,.045],0x6b4c32);}
  box([width,.1,.1],[0,2.82,.05],0x4a3a2c);for(const lx of [doorX-.4,doorX+.4])box([.035,.5,.12],[lx,1.4,.12],0x465854);
- const cylinder=new THREE.CylinderGeometry(1,1,1,10);
- function round(radius,height,pos,color){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.55}));const m=new THREE.Mesh(cylinder,materials.get(color));m.scale.set(radius,height,radius);m.position.set(...pos);m.castShadow=true;m.receiveShadow=true;m.userData.staticProp=true;group.add(m);return m;}
- // Stand-in shelves, for when the real interior has not arrived yet. They read as a
- // shop at street distance, but they are not the shop you walk into, so they are
- // grouped on their own and hidden the moment the supplied interior is in place.
- const standIn=new THREE.Group();standIn.name='Sakura stand-in fittings';group.add(standIn);
- const keep=object=>{standIn.add(object);return object;};
- // Everything here is measured off the frontage rather than written down, because the
- // frontage is not one size any more: the canal lot is ten metres and the harbour shop
- // is fourteen. The numbers below were authored for the ten, and at fourteen they left
- // the shelves huddled in one corner with four metres of lit, empty floor beside them —
- // which from the pavement reads as a shop that has been cleared out.
- const runFrom=doorX+DOOR/2+.4,runTo=half-1.1,runWidth=Math.max(2.6,runTo-runFrom),runX=(runFrom+runTo)/2;
- const bottles=Math.max(4,Math.round(runWidth/.52)),pitch=runWidth/bottles;
- const shelfZ=-depth*.244,frontZ=shelfZ+.35,goodsZ=shelfZ+.18;
- for(const [row,y] of [.48,1.22,1.96].entries()){
-  keep(box([runWidth,.055,.65],[runX,y,shelfZ],0xdcdcc9));keep(box([runWidth,.07,.045],[runX,y,frontZ],0xb84e45));
-  for(let n=0;n<bottles;n++){
-   const x=runFrom+(n+.5)*pitch,z=goodsZ,color=[0x477454,0xb65241,0xd8b56e][row];
-   if(row===0){keep(round(.13,.30,[x,y+.18,z],color));for(const dy of [.035,.335])keep(round(.134,.023,[x,y+dy,z],0xc9ccbf));keep(round(.133,.10,[x,y+.19,z],0xf2e4c3));}
-   else if(row===1){keep(round(.115,.30,[x,y+.18,z],color));keep(round(.057,.15,[x,y+.395,z],color));keep(round(.060,.045,[x,y+.485,z],0xe7d4a8));keep(round(.118,.11,[x,y+.19,z],0xf2e4c3));}
-   else{keep(box([.30,.36,.25],[x,y+.21,z],color));keep(box([.27,.13,.01],[x,y+.23,z+.13],0xf2e4c3));keep(box([.12,.04,.25],[x,y+.41,z],0xe7d4a8));}
-  }
- }
- // Two strips, spread over the floor they light rather than over the floor a smaller
- // shop used to have, and long enough to reach the back of this one.
- for(const lx of [doorX-.3,runX+.55])
-  {const light=box([.45,.06,depth*.34],[lx,3.64,-depth*.28],0xfff6d4);light.material=light.material.clone();light.material.emissive.set(0xfff3c6);light.material.emissiveIntensity=.8;}
- // The counter, on the door's side of the shop where the till goes.
- const tillX=(-half+1.1+doorX-DOOR/2-.4)/2;
- keep(box([Math.max(1.6,doorX-DOOR/2-.4-(-half+1.1)),1.0,.8],[tillX,.5,shelfZ-.6],0xc4ac84,'bamboo'));
- keep(box([.55,.35,.45],[tillX,1.18,shelfZ-.55],0xe1d8bb));
+ // The persistent shop provides all furnishings and stock; no street-only replicas.
  const mat=box([1.7,.035,.8],[doorX,.21,.55],0x777064);mat.userData.storeEntrance=true;
  const flag=box([.06,2.4,.42],[half+.05,2.15,.22],0xb84e45);flag.userData.banner=true;
  // Clear of the doorway. It used to hang from 1.08 to 2.63, straight across the
@@ -157,7 +126,6 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   }
   box([.9,.06,.7],[half-4.4,.03,wall-.52],0x5d5a50);             // a pallet, flat
  }
- site.standInFittings=standIn;
  const [ax,az]=localToWorld(x,z,yaw,scale,doorX,.85);
  const anchor=new THREE.Object3D();anchor.position.set(ax,1.2,az);parent.add(anchor);register?.(anchor,'Enter '+site.title,()=>enter(site));
  const door=buildSlidingDoor({group,doorX,width:DOOR,glazing,box});

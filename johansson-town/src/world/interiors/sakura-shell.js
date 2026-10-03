@@ -86,16 +86,6 @@ function buildShell(){
  wallX(W+.04,P,F,1);wallX(E-.04,P,F,-1);
  wallZ(P+.04,-3.96,3.25,1);wallZ(P+.04,4.39,E,1);wallZ(P+.04,W,-3.96,1,{wains:false});
  span(3.25,4.39,2.2,top,P-.04,P+.04,C.plaster);
- // The front: no glass here (the storefront has it), only the frame. A kick panel under
- // each pane, posts between them, the transom bar and a band of wall to the ceiling.
- const doorHalf=.95;
- for(const [x0,x1] of [[W,-doorHalf],[doorHalf,E]]){
-  span(x0,x1,0,.32,F-.04,F+.06,C.wainscotDark);
-  const n=Math.max(1,Math.round((x1-x0)/1.45));
-  for(let i=0;i<=n;i++){const x=x0+(x1-x0)*i/n;span(x-.05,x+.05,0,2.55,F-.04,F+.06,C.woodDark);}
- }
- span(W,E,2.5,2.6,F-.05,F+.07,C.woodDark);span(W,E,2.6,top,F-.03,F+.05,C.plaster);
- for(const x of [-doorHalf,doorHalf])span(x-.06,x+.06,0,2.6,F-.05,F+.07,C.woodDark);
  // The back room: concrete, plain, its own walls round x -5.76..5.76.
  for(const [x,face] of [[S.backWestX,-1],[S.backEastX,1]])span(x-.04,x+.04,0,top,B,P,C.concrete);
  span(S.backWestX,S.backEastX,0,top,B-.08,B,C.concrete);
@@ -112,6 +102,23 @@ function buildShell(){
  // Ceiling beams across the shop, dark wood on the white boards.
  for(let x=-6.2;x<=6.3;x+=1.55)span(x-.07,x+.07,top-.16,top,P,F,C.beam);
  span(W,E,top-.12,top,-.02-.06,-.02+.06,C.beam);
+ return mesh(material());
+}
+
+/** Indoor facade; the street storefront supplies its own frame outside. */
+function buildFrontFrame(){
+ const {span,mesh}=parts('sakura-front-frame');
+ const S=SAKURA_SHELL,W=S.westX,E=S.eastX,F=S.floorFront,top=S.ceiling;
+ // The front: no glass here (the storefront has it), only the frame. A kick panel under
+ // each pane, posts between them, the transom bar and a band of wall to the ceiling.
+ const doorHalf=.95;
+ for(const [x0,x1] of [[W,-doorHalf],[doorHalf,E]]){
+  span(x0,x1,0,.32,F-.04,F+.06,C.wainscotDark);
+  const n=Math.max(1,Math.round((x1-x0)/1.45));
+  for(let i=0;i<=n;i++){const x=x0+(x1-x0)*i/n;span(x-.05,x+.05,0,2.55,F-.04,F+.06,C.woodDark);}
+ }
+ span(W,E,2.5,2.6,F-.05,F+.07,C.woodDark);span(W,E,2.6,top,F-.03,F+.05,C.plaster);
+ for(const x of [-doorHalf,doorHalf])span(x-.06,x+.06,0,2.6,F-.05,F+.07,C.woodDark);
  return mesh(material());
 }
 
@@ -315,7 +322,7 @@ function buildRegister(){
 export function buildSakuraShell(){
  const page=typeof document!=='undefined'&&!!document.createElement;
  const root=new THREE.Group();root.name='Sakura shōten interior';
- root.add(buildShell(),...buildCeilingAndFloor(page),buildWallShelving(),buildCounter(),buildTubes(),buildBattens(),buildRestroomFittings(),buildDoors(),buildRegister(),buildEndcap(),buildFrontEndcaps());
+ root.add(buildShell(),buildFrontFrame(),...buildCeilingAndFloor(page),buildWallShelving(),buildCounter(),buildTubes(),buildBattens(),buildRestroomFittings(),buildDoors(),buildRegister(),buildEndcap(),buildFrontEndcaps());
  for(const id of ['east','middle','west'])root.add(...buildIsland(id));
  root.traverse(o=>{if(o.isMesh)o.receiveShadow=true;});
  return root;

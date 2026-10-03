@@ -1,3 +1,4 @@
+import {addOwnedCharacter} from '../../people/owned-characters.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildAvatar} from '../../avatars/build.js';
 import {createAvatarAnimator} from '../../avatars/animate.js';
@@ -154,7 +155,12 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  anchor([hw-.8,1.0,1.3],'Open the document register',()=>action('document-archive','Community Hall Document Register'));
  for(let month=0;month<12;month++){const folder=box([.045,.28,.22],[hw-.45,.5+(month>5?.36:0),.72+(month%6)*.2],0xb5a16c,'Archive folder '+(month+1));}
  anchor([hw-.6,1.2,1.3],'Look through the minutes',()=>action('read','Town assembly minutes, 1997','Item 3: the power house\'s second diesel set to be overhauled before typhoon season; the old barber\'s shop to be let to the post office. Item 5: the ferry company asks for a longer ramp so the new cargo trucks can board. Item 7: Mrs Sato\'s complaint about the gulls, again. Item 9: the sewage works on Kitano-jima to be inspected by the prefecture in November.'));
- return {...layoutFor(),office:true};
+ // Tiny keepsakes sit on the filing cabinet, leaving the writing desk clear.
+ const moose=addOwnedCharacter({parent:group,kind:'merry_Moose',height:.18,position:[2.6,.8,-2.44]});
+ const thuan=addOwnedCharacter({parent:group,kind:'thuanFigurine',height:.24,position:[2.85,.8,-2.44],yaw:Math.PI});
+ anchor([2.65,1,-2.05],'Look at the office figurines',()=>action('inspect','Island keepsakes','A tiny Merry Moose and a carefully detailed Thuan watch over the annual accounts. The mayor dusts them before every town assembly.'));
+ const owned=[moose,thuan];
+ return {...layoutFor(),office:true,owned,dispose:()=>owned.forEach(prop=>prop.dispose())};
 }
 
 /**

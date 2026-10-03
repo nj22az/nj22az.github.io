@@ -1,3 +1,4 @@
+import {addOwnedCharacter} from '../../people/owned-characters.js';
 import {addSakuraFlyer} from '../sakura-flyers.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {createShopProduct} from '../../commerce/shop-product.js';
@@ -170,21 +171,12 @@ function buildShopFloor(parent,anchor,action){
   umbrella(0xd7263d,0,.05);umbrella(0x27304d,1,-.04);umbrella(0xffffff,3,.06,true);
  }
  // On the counter, Thuan's side: a beckoning cat and a charity box.
- const cat=new THREE.Group();cat.position.set(4.92,1.0,2.72);cat.rotation.y=-Math.PI/2;cat.name='Maneki-neko';group.add(cat);
- const white=std(0xfaf7f0,{roughness:.4}),red=std(0xd7263d),gold=std(0xffc93c,{metalness:.5,roughness:.3});
- const add=(g,m,x,y,z)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);cat.add(o);return o;};
- add(new THREE.SphereGeometry(.07,14,10),white,0,.07,0).scale.set(1,1.1,.85);
- add(new THREE.SphereGeometry(.06,14,10),white,0,.18,.01);
- for(const s of [-1,1]){const e=add(new THREE.ConeGeometry(.02,.04,6),white,s*.035,.24,0);e.rotation.z=-s*.3;}
- add(new THREE.TorusGeometry(.045,.008,6,16),red,0,.13,.01).rotation.x=Math.PI/2;
- add(new THREE.CylinderGeometry(.018,.018,.006,12),gold,0,.12,.055).rotation.x=Math.PI/2;
- for(const s of [-1,1])add(new THREE.SphereGeometry(.006,6,4),std(0x222222),s*.02,.19,.065);
- const paw=new THREE.Group();paw.position.set(.055,.15,.02);cat.add(paw);
- const pawMesh=new THREE.Mesh(new THREE.CapsuleGeometry(.014,.05,4,6),white);pawMesh.position.y=.03;paw.add(pawMesh);
+ const cat=addOwnedCharacter({parent:group,kind:'Maneki_neko_Colorful',height:.23,position:[4.82,1.0,1.45],yaw:-Math.PI/2});
+ anchor([4.4,1.2,1.45],'Look at Thuan’s lucky cat',()=>action('inspect','Maneki-neko · Lucky cat','Thuan keeps her colourful lucky cat beside the till. It welcomes every customer, from the first newspaper buyer to the last harbour worker of the evening.'));
  box(.1,.14,.08,4.9,1.07,.2,0xffffff,'Charity box');
  const charity=canvasTex(256,256,(ctx,w,h)=>{ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#7ccc4a';ctx.fillRect(0,0,w,70);text(ctx,"Donation box",w/2,36,44,'#ffffff');text(ctx,"Thank you",w/2,130,30,'#3b3f55');ctx.fillStyle='#3b3f55';ctx.fillRect(80,190,96,10);});
  print(charity,.075,.075,4.849,1.08,.2,-Math.PI/2,'Charity box label');
- return {tick(time){paw.rotation.x=-.6+Math.sin(time*3.2)*.55;}};
+ return {tick(){},dispose:()=>cat.dispose()};
 }
 
 // ================================================================== the office
@@ -283,5 +275,5 @@ export function buildSakuraLife(room,{anchor,action}){
  const backroom=buildSakuraBackroom(room,{anchor,action});
  const restroom=buildSakuraRestroom(room,{anchor,action});
  let last=0;
- return {tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot};
+ return {tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot,dispose:()=>floor.dispose()};
 }

@@ -115,13 +115,6 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
-    "title": "Barfly",
-    "organisation": "Town Services",
-    "text": "An old harbour hand with a flowered shirt and a story for every tide. He comes to Minato for the music, the company and the first cold glass after a long day. “Take your time. The boat will still be there.”",
-    "source": "notice:Barfly"
-  },
-  {
-    "type": "Notice",
     "title": "Minato fuel depot · Port Town Fuel Base",
     "organisation": "Town Services",
     "text": "Hazardous materials · No open flames allowed. Diesel oil (Light oil), 120 kilolitres. Filled from the tanker at the oil jetty every third day; drawn by the town truck for the power house at the town hall. In a typhoon the valves are closed and the jetty is out of bounds.",

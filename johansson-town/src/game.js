@@ -733,7 +733,6 @@ storeService=sakuraShop.service;
 function showShopThroughWindow(){
  const site=SITES.find(s=>s.id==='market');
  if(!site?.streetFrontage||!sakuraShop.street(town,site.streetFrontage)){sakuraShop.hide();return false;}
- if(site.standInFittings)site.standInFittings.visible=false;
  shopStreetView.invalidate();townSections.invalidate();
  return true;
 }
@@ -1524,7 +1523,7 @@ for(const detail of world.details||[])detailStream.add(detail);
 
 detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:38,load:()=>world.warehouse?.load()});
 // The real shop behind the real window. It streams with the rest of the street rather
-// than blocking the entry gate, and the stand-in shelves hold the window until it lands.
+// than blocking the entry gate. All visible furnishings come from this same room.
 {
  const market=SITES.find(s=>s.id==='market'),front=market?.streetFrontage?.position;
  if(front)detailStream.add({id:'sakura-interior',priority:1,x:front[0],z:front[2],radius:40,

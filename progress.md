@@ -190,3 +190,19 @@ Final release also preserves f08e8af's Kitahama residential-quarter and anchored
 - Avatar creator Body → Rounded uses Barfly-inspired head/torso/limb proportions. Classic saved avatars retain their existing proportions; Rounded survives saving and sharing.
 - Validation: 23 targeted avatar, owned-rig and business checks; 3 runtime-package checks; real-browser screenshots of the asset gallery, repair workshop, fitted Minato interior and classic/rounded comparison. Verified independent bone animation, transitions and disposal with no browser errors. Original game skill client used for all four visual views.
 - Final creator interaction suite passed at 320×568, 390×844, 844×390, 1280×800 and 320×360, including choosing Rounded and retaining it through share/import/save.
+
+2026-10-03 — Connected neighbourhood parks and user-owned display props
+- Replaced the long eastern detour with a direct town walk to Aoba Garden, plus a graded garden-to-Kitahama footpath and an opening in the bamboo fence.
+- Fixed overlapping garden banks that introduced abrupt 0.4 m drops. Shared turf colour, texture scale and terrain normals now tie the garden to its surroundings. Corrected path triangle winding after the visual check showed dark backfaces.
+- Verified exact routes with player and NPC collision to both garden benches, Harbour Park and all 12 residential gates, including the game's rendered walking surface. Reiko, Tetsuo and Thuan use Aoba during their existing dry-weather park routines.
+- Moved the supplied Maneki-neko beside Thuan's register; placed 18 cm Merry Moose and 24 cm preserved detailed Thuan figurines on the mayor's filing cabinet, leaving the desk clear.
+- Repurposed Barfly as a 48 cm Hawaii Lager advertising display at Minato's counter, with Japanese and English branding. These props create no extra residents.
+- Visual checks: actual office figurines, Sakura counter cat, Minato advertisement and the connected garden. Originals and source provenance preserved.
+
+2026-10-03 — Aoba entrance and the real konbini window view
+- Replaced overlapping lawn, bank and raised path meshes with one terrain mesh using walking heights. The old lowland mesh clears the detailed area. Shared grass, pavers and broadleaf trees connect the garden visually to town.
+- Direct town walk leads to a marked timber entrance, with six-metre graded lawn banks and signs facing visitors.
+- Sakura keeps its actual internal walls visible outside. Only its duplicate indoor facade frame hides; the room threshold aligns with the storefront glass and floor. Removed all street-only placeholder furnishings; the persistent shop supplies the same fittings and live stock inside and outside.
+- All 34 focused checks passed: neighbourhood access, shop cycle/glazing/door, onsen, park seam/apron and runtime package. Coverage compares rendered approach heights with walking heights and verifies shelf identity and stock across entering/leaving.
+- Actual compiled-game forward movement passed through the entrance from (0,27) to (-7.39,34.02). Inspected garden and shop screenshots from the front and both oblique street angles. Original develop-web-game client completed with state and screenshot at /tmp/konbini-final-game-view; no browser page errors. Temporary audit HTML and frame throttling do not ship.
+- The old runtime also passed sampled direct walks, so the precise old blocking collider was not reproduced. The competing visible terrain was confirmed. New checks cover the rendered approach plus complete town-to-bench routes.
