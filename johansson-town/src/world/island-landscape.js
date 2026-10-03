@@ -1,11 +1,13 @@
 import {buildAobaRadio} from './aoba-radio.js';
 import {terrainPathPolygons} from './terrain-path.js';
-import {inGarden} from './garden-layout.js';
+import {inGarden,inGardenGround} from './garden-layout.js';
 import {buildShoppingLane} from './shopping-lane.js';
 import {buildAirportDistrict} from './airport-district.js';
 import * as THREE from '../../vendor/three.module.js';
 import {ISLAND,TERRAIN_GRID,MOUNTAIN_VERTICES,islandTerrainHeight,ISLAND_ROUTES,ISLAND_LANDMARKS,COAST_ROAD} from './island-plan.js';
-import {onPeninsulaLand} from './coastal-ground.js';
+import {GROUND} from '../render/ground-palette.js';
+import {paintedTurf} from '../render/toy-surfaces.js';
+import {onPeninsulaLand,coastalSurface} from './coastal-ground.js';
 import {groundHeight} from './layout.js';
 import {AIRPORT_LANDING,AIRPORT_COUNTER,AIRPORT_HEIGHT,airportWorld} from './airport-ground.js';
 /** Geometry and walking heights consume the same authored plan. */
@@ -15,10 +17,10 @@ export function buildIslandLandscape({world,register,onAction,mobile=false}){
  const box=(name,size,pos,c,solid=false,parent=group)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));mesh.name=name;mesh.position.set(...pos);parent.add(mesh);if(solid)world.colliders.push({id:name,x:pos[0],z:pos[2],w:size[0],d:size[2],height:pos[1]+size[1]/2});return mesh;};
  const anchor=(pos,label,kind,title,text)=>{const a=new THREE.Object3D();a.position.set(...pos);group.add(a);register(a,label,()=>onAction(kind,title,text));return a;};
  function sign(text,x,z,width=4,y=groundHeight(x,z)+2){const canvas=document.createElement('canvas');canvas.width=768;canvas.height=160;const ctx=canvas.getContext('2d');ctx.fillStyle='#e6dec2';ctx.fillRect(0,0,768,160);ctx.fillStyle='#355447';ctx.font='bold 42px sans-serif';ctx.textAlign='center';ctx.fillText(text,384,95,740);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,.65),new THREE.MeshBasicMaterial({map:texture}));mesh.position.set(x,y,z);group.add(mesh);return mesh;}
- const G=TERRAIN_GRID,n=Math.round((G.maxX-G.minX)/G.step)+1,positions=[],indices=[],colours=[];
- MOUNTAIN_VERTICES.forEach((h,i)=>{const x=G.minX+i%n*G.step,z=G.minZ+Math.floor(i/n)*G.step;positions.push(x,h+.006,z);const c=new THREE.Color(h>35?0x7a8470:h>15?0x557d48:0x779d59);colours.push(c.r,c.g,c.b);});
- for(let iz=0;iz<n-1;iz++)for(let ix=0;ix<n-1;ix++){const x=G.minX+ix*G.step,z=G.minZ+iz*G.step;if([[x,z],[x+3,z],[x,z+3],[x+3,z+3]].some(p=>inGarden(...p)))continue;if(![[x,z],[x+3,z],[x,z+3],[x+3,z+3]].every(p=>onPeninsulaLand(...p)))continue;const a=iz*n+ix;indices.push(a,a+n,a+1,a+1,a+n,a+n+1);}
- const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(colours,3));geo.setIndex(indices);geo.computeVertexNormals();const mountain=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1}));mountain.name='Aoba lowland shared terrain';mountain.userData.horizon=true;mountain.receiveShadow=true;group.add(mountain);
+ const G=TERRAIN_GRID,n=Math.round((G.maxX-G.minX)/G.step)+1,positions=[],indices=[],colours=[],uv=[];
+ MOUNTAIN_VERTICES.forEach((h,i)=>{const x=G.minX+i%n*G.step,z=G.minZ+Math.floor(i/n)*G.step;if(z<97)h=coastalSurface(x,z)?.y??h;positions.push(x,h+.006,z);uv.push(x/6,-z/6);const c=new THREE.Color(h>35?0x7a8470:h>15?0x557d48:GROUND.grass);colours.push(c.r,c.g,c.b);});
+ for(let iz=0;iz<n-1;iz++)for(let ix=0;ix<n-1;ix++){const x=G.minX+ix*G.step,z=G.minZ+iz*G.step;if(inGardenGround(x+1.5,z+1.5,3))continue;if(![[x,z],[x+3,z],[x,z+3],[x+3,z+3]].every(p=>onPeninsulaLand(...p)))continue;const a=iz*n+ix;indices.push(a,a+n,a+1,a+1,a+n,a+n+1);}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(colours,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(indices);geo.computeVertexNormals();const mountain=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,map:paintedTurf(),roughness:1}));mountain.name='Aoba lowland shared terrain';mountain.userData.horizon=true;mountain.receiveShadow=true;group.add(mountain);
  // Short strips follow the same height triangles, including switchbacks.
  for(const route of ISLAND_ROUTES.filter(r=>!r.id.startsWith('garden-'))){const p=[],idx=[];for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz),steps=Math.ceil(len/.65),ox=-dz/len*route.width/2,oz=dx/len*route.width/2;for(let j=0;j<steps;j++){const t=j/steps,u=(j+1)/steps,x=a[0]+dx*t,z=a[1]+dz*t,xx=a[0]+dx*u,zz=a[1]+dz*u;const quad=[[x-ox,z-oz],[x+ox,z+oz],[xx+ox,zz+oz],[xx-ox,zz-oz]];for(const polygon of terrainPathPolygons(quad)){const start=p.length/3;for(const [px,pz] of polygon)p.push(px,groundHeight(px,pz)+.018,pz);for(let k=1;k<polygon.length-1;k++)idx.push(start,start+k,start+k+1);}}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(idx);g.computeVertexNormals();const road=new THREE.Mesh(g,mat(route.surface==='asphalt'?0x70756c:0xb7a98a));road.name=route.id;road.material.side=THREE.DoubleSide;group.add(road);}
  const trees=[],dummy=new THREE.Object3D();for(let i=0;i<(mobile?65:110);i++){const angle=i*2.399,r=20+(i*17%53),x=40+Math.cos(angle)*r,z=175+Math.sin(angle)*r;if(ISLAND_ROUTES.some(q=>q.points.some(p=>Math.hypot(p[0]-x,p[1]-z)<6))||x<0&&z<160||x>27&&x<43&&z>155&&z<173)continue;trees.push([x,islandTerrainHeight(x,z),z]);}
