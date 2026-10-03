@@ -18,8 +18,10 @@ export function addHorizon(parent){
  */
 export const DISTANT_ISLANDS=Object.freeze([
  // x, z, length, height, depth, turn
- [196,38,46,15,16,.15],[178,-34,14,6,8,-.3],[150,128,38,10,14,.7],
- [-36,198,52,13,18,-.1],[-196,70,40,11,16,1.4],[-150,-120,30,8,12,.8],[60,-196,34,9,12,.05],
+ // A ring beyond both coasts: the island grew south and the airport island east, and
+ // four of the old ones ended up standing on land as blue hills (tests/horizon.test.mjs).
+ [400,-30,48,15,16,.15],[300,-280,30,8,12,-.3],[40,-330,42,11,14,.05],[-210,-230,34,9,12,.8],
+ [-260,60,46,13,16,1.4],[-220,300,40,11,14,-.1],[320,250,40,12,16,.7],
 ].map(Object.freeze));
 function addDistantIslands(parent){
  const top=new THREE.Color('#6f98c4'),foot=new THREE.Color('#b6d4ea'),tmp=new THREE.Color();
