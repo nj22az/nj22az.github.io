@@ -108,8 +108,8 @@ function buildNishiGround(kit,solid){
  }
  for(let x=Q.minX+3;x<Q.maxX-1;x+=6){kit.cyl(.16,.2,.42,x,.24,Q.minZ+.35,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,Q.minZ+.35,0x3a3f42,{segments:10});solid({id:'bollard',x,z:Q.minZ+.35,w:.45,d:.45,height:.5});}
  // At the north end the quarter meets the headland: a stone bank with pandanus on it.
- kit.block(NISHI.minX,NISHI.maxX,0,.9,NISHI.maxZ,NISHI.maxZ+.6,0xd3cab0,'coral');
- solid({id:'nishi-north-bank',x:(NISHI.minX+NISHI.maxX)/2,z:NISHI.maxZ+.3,w:NISHI.maxX-NISHI.minX,d:.6,height:.9});
+ kit.block(NISHI.minX+3.2,NISHI.maxX,0,.9,NISHI.maxZ,NISHI.maxZ+.6,0xd3cab0,'coral');
+ solid({id:'nishi-north-bank',x:(NISHI.minX+3.2+NISHI.maxX)/2,z:NISHI.maxZ+.3,w:NISHI.maxX-NISHI.minX-3.2,d:.6,height:.9});
 }
 
 function buildNishiPlots(kit,solid,ctx){
@@ -297,7 +297,9 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
  const depth=EAST_ROW.maxX-EAST_ROW.minX,x=(EAST_ROW.minX+EAST_ROW.maxX)/2;
  for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction});
  // The strip of ground between the pavement and the shop fronts, paved to match.
- kit.block(MAIN_ROAD.pavementEast-.05,EAST_ROW.minX+.05,GROUND_LAYER.apron-.05,GROUND_LAYER.apron,EAST_ROW.plots[0].minZ,EAST_ROW.plots[3].maxZ,0xb9b0a0);
+ // Kitano Road crosses it where the old lane was, and lays its own surface there.
+ for(const [z0,z1] of [[EAST_ROW.plots[0].minZ,EAST_ROW.onsenLane.minZ],[EAST_ROW.onsenLane.maxZ,EAST_ROW.plots[3].maxZ]])
+  kit.block(MAIN_ROAD.pavementEast-.05,EAST_ROW.minX+.05,GROUND_LAYER.apron-.05,GROUND_LAYER.apron,z0,z1,0xb9b0a0);
  // The shaved-ice flag outside Nakamura's, and a bench for eating it on.
  const n=EAST_ROW.plots[0];
  kit.cyl(.03,.03,2.6,EAST_ROW.minX-.35,1.3,n.maxZ-.4,0x9aa0a4,{segments:6});
@@ -306,23 +308,8 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
  kit.box(1.4,.08,.4,EAST_ROW.minX-.45,.45,n.minZ+1.4,0x3a6e8f);
  for(const dz of [-.55,.55])kit.box(.06,.42,.36,EAST_ROW.minX-.45,.21,n.minZ+1.4+dz,0x5d6468);
  solid({id:'zenzai-bench',x:EAST_ROW.minX-.45,z:n.minZ+1.4,w:.5,d:1.5,height:.5});
- // The lane up to Umi-no-yu: stepping stones, lanterns and the bath's own sign.
- const L=EAST_ROW.onsenLane,lz=(L.minZ+L.maxZ)/2;
- kit.block(MAIN_ROAD.pavementEast,18.9,GROUND_LAYER.lane-.05,GROUND_LAYER.lane+.012,lz-1.1,lz+1.1,0xcbc3b0);
- for(let x=MAIN_ROAD.pavementEast+.6;x<18.5;x+=.9)kit.box(.6,.03,.8,x,GROUND_LAYER.lane+.027,lz+Math.sin(x*1.3)*.2,0xa9a293);
- for(const s of [-1,1]){
-  const z=lz+s*2.3;
-  kit.box(.28,.9,.28,EAST_ROW.minX+.2,.45,z,0xcfc8b4,{finish:'coral'});
-  kit.box(.4,.35,.4,EAST_ROW.minX+.2,1.08,z,0xf3ead2,{finish:'lamp'});
-  kit.box(.5,.08,.5,EAST_ROW.minX+.2,1.3,z,0x5d4431);
-  solid({id:'lane-lantern',x:EAST_ROW.minX+.2,z,w:.45,d:.45,height:1.3});
- }
- kit.sign(poster({title:"♨ Sea Bath",lines:['UMI-NO-YU','¥300 · 10:00–22:00',"Beyond this →"],band:'#2f6f8a'}),.7,.98,EAST_ROW.minX+.2,1.7,L.minZ+.12,{ry:0,name:'onsen lane sign'});
- potPlant(kit,EAST_ROW.minX+.3,L.maxZ-.5,{seed:31});potPlant(kit,EAST_ROW.minX+.3,L.minZ+.5,{seed:32});
- // A vending machine against the post office's end wall, facing the lane, and bicycles parked by it.
- vending(EAST_ROW.minX+1.3,L.minZ+.62,0);
- bicycle(kit,EAST_ROW.minX+3,L.minZ+.55,{ry:0});
- solid({id:'bicycle',x:EAST_ROW.minX+3,z:L.minZ+.55,w:1.4,d:.4,height:1.1});
+ // The old lane up to the sea bath between the shop-houses is Kitano Road now (kitano-link.js):
+ // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
  bicycle(kit,EAST_ROW.minX-.5,EAST_ROW.plots[2].minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
  solid({id:'bicycle',x:EAST_ROW.minX-.5,z:EAST_ROW.plots[2].minZ+1.6,w:.4,d:1.4,height:1.1});
  // Behind the row: the back yards, with washing and a kei truck.
@@ -405,10 +392,10 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  kit.box(1.1,1,1.8,S.maxX+1.1,.55,S.maxZ-1.2,0xe0b93a);kit.box(.9,.06,1.2,S.maxX+1.1,.2,S.minZ+5.5,0x3a3f42);
  for(const dx of [-.3,.3])kit.box(.06,2,.06,S.maxX+1.1+dx,1,S.maxZ-2.2,0x3a3f42);
  solid({id:'forklift',x:S.maxX+1.1,z:S.maxZ-1.5,w:1.2,d:2.4,height:2});
- solid(fishCrates(kit,Q.minX+.8,Q.maxZ-1.6,{rows:2,cols:3,seed:31}));
+ solid(fishCrates(kit,Q.minX+2.1,Q.maxZ-1.6,{rows:2,cols:3,seed:31}));
  kit.box(.5,1.4,.4,I.maxX-.4,.7,Q.maxZ-.9,0xc0392b);kit.box(.3,.3,.06,I.maxX-.4,1.1,Q.maxZ-1.12,0xf2efe4);
  solid({id:'fuel-pump',x:I.maxX-.4,z:Q.maxZ-.9,w:.6,d:.5,height:1.4});
- vending(S.minX-.9,S.maxZ-.6,Math.PI/2);
+ vending(S.minX-.9,S.maxZ-1.9,-Math.PI/2);
  inspect(24.6,1,Q.minZ+.9,'Look at the boats',"Daisan Minatomaru · Minato Maru No. 3",
   'The Minato Maru is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));

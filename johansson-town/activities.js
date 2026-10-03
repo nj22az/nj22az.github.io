@@ -25,7 +25,8 @@ import {PROFILES} from './src/people/profiles.js';
 import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
 import {gossipAt,izakayaOpen,onsenInvitationDay} from './src/people/social.js';
 import {DRINKS,DISHES,menuItem} from './src/people/izakaya-beer.js';
-import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
+import {VENDING_PRODUCTS,DRINKABLE,EMPTY_CAN,CAN_REFUND} from './src/commerce/vending-catalogue.js';
+import {SAKURA_SPECIALS,SPECIAL_BY_NAME,specialsOpen} from './src/commerce/sakura-specials.js';
 import {MEDICINES,STAMINA_DRINK} from './src/world/interiors/sakura-dressing.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
 import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
@@ -51,7 +52,7 @@ import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorag
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
+export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -149,17 +150,42 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function bagItem(item){
     if(item===FLYER_ITEM){sakuraFlyer();return;}
     const model=printedModels(state.inventory).find(m=>m.name===item);
-    const drinkable=['Canned coffee','Green tea'].includes(item)&&state.inventory.includes(item);
+    const special=SPECIAL_BY_NAME[item];
+    const drinkable=(DRINKABLE.has(item)||special?.kind==='drink')&&state.inventory.includes(item);
+    const edible=special?.kind==='food'&&state.inventory.includes(item);
     const spec=GROCERY_ITEMS.find(g=>g.name===item),find=TOWN_FINDS.find(f=>f.name===item);
     const text=model?'A model you printed on the Form 3. Thuan would put it by the till.'
+      :item===EMPTY_CAN?`Empty. The recycling box by Sakura’s door takes cans: Thuan gives ¥${CAN_REFUND} a can.`
+      :special?`${special.note}. From the board at Sakura.`
       :spec?spec.text:find?`Worth ¥${find.price} back at Sakura’s till.`
       :item==='Sea bream'?'Fresh from the pier. Nao — or Thuan — would know what to do with it.'
       :'Something you picked up in town.';
-    show(item,text,[...(drinkable?[['Drink it',()=>{close();onDrink(item);}]]:[]),...(model?[['Look at it',()=>previewPrint(model)]]:[]),['Back to the bag',bag],['Close',close]]);
+    show(item,text,[...(drinkable?[['Drink it',()=>{close();onDrink(item);}]]:[]),...(edible?[['Eat it',()=>{close();onSnack(item);}]]:[]),...(model?[['Look at it',()=>previewPrint(model)]]:[]),['Back to the bag',bag],['Close',close]]);
     modal.classList.add('bag-view');
     const hero=document.createElement('div');hero.className='bag-hero';hero.innerHTML=svg(itemIcon(item,{printed:!!model}),{size:56});if(foodArtForItem(item)){hero.innerHTML='';const image=document.createElement('img');image.src=foodArtForItem(item);image.alt=item;image.width=160;image.height=160;image.style.objectFit='contain';hero.append(image);}body.prepend(hero);
   }
-  function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
+  function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||DRINKABLE.has(item)||SPECIAL_BY_NAME[item]||['Sea bream','Ice',EMPTY_CAN].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
+  /**
+   * The recycling box by Sakura's door. Every empty can in your pockets goes in, and
+   * Thuan pays a small refund out of the shop's own till (she sells the aluminium on).
+   */
+  function recycleCans(){
+    const n=state.inventory.filter(i=>i===EMPTY_CAN).length;
+    if(!n){receipt('Recycling box','A blue box with a round hole in the lid, for empty cans. Thuan gives ¥'+CAN_REFUND+' a can, from the till.');return;}
+    state.inventory=state.inventory.filter(i=>i!==EMPTY_CAN);
+    // From the till when it has it; a few coins from her own purse when it does not.
+    const shop=state.sakura,pay=n*CAN_REFUND;if(shop)shop.cash=Math.max(0,shop.cash-pay);state.yen+=pay;
+    onTime(1);onMove('Give');townAudio.play('clunk',.5);save();
+    receipt('Recycling box',`${n} empty can${n>1?'s':''} rattle${n>1?'':'s'} into the box.`+` Thuan counts ¥${pay} into your hand.`);
+  }
+  /** The specials board behind the counter: order from Thuan while the hot case is on. */
+  function specialsMenu(){
+    if(!specialsOpen(getMinutes())){receipt('Specials board','The hot case is off. Thuan serves the specials from 09:00 to 20:00.');return;}
+    show('Today’s specials','Chalked up behind the counter. Thuan wraps it or pours it while you wait.',[
+      ...SAKURA_SPECIALS.map(sp=>[`${sp.name} · ¥${sp.price}`,()=>{if(!spend(sp.price))return;addItem(sp.name);recordSakuraSale(state,sp.price,null,{minute:getMinutes(),item:sp.name,buyer:'Johansson'});onTime(2);save();townAudio.play('click',.35);
+        receipt('Thuan',sp.kind==='food'?`One ${sp.name.toLowerCase()}, wrapped in paper. It is in your bag. Eat it while it is warm.`:`One ${sp.name.toLowerCase()}, with a straw. It is in your bag.`);}]),
+      ['Maybe later',close]]);
+  }
   function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;const now=getMinutes(),place=getSocialContext().inside||'Town Services',transaction='PLAYER-'+state.documentArchive.sequence+'-'+now;const receipt=fileDocument(state,{type:'Receipt',title:heading.textContent||'Town service payment',organisation:({'market':'Sakura Shop','frontrow':'Front-Row Books','ramen':'Sato Ramen','izakaya':'Minato Izakaya','onsen':'Minato Onsen'})[place]||place,transaction,amount:n,text:'CASH RECEIPT\nService: '+(heading.textContent||'Town service')+'\nPaid: ¥'+n+'\nPayer: visitor\nWallet balance: ¥'+state.yen},now);if(receipt)fileDocument(state,{type:'Ledger entry',title:'Visitor payment posting',organisation:receipt.organisation,transaction,amount:n,links:[receipt.id],text:receipt.text},now);save();return true;}
   /**
    * Dinner with Thuan in Naha (interiors/city-restaurant.js): the scene is fixed and this
@@ -691,7 +717,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const social=getSocialContext(),gossip=gossipAt(getMinutes(),social.names||[]);note(gossip.clue);
     show('Overheard at Minato',gossip.line+'\n\n'+gossip.clue,[['Stay a little longer',()=>{onTime(7);izakayaGossip();}],['Back to the evening',close]]);
   }
-  function vending(){show("MINATO DRINKS · Vending machine",'A harbour break. Choose a chilled drink · ¥120.',[...VENDING_PRODUCTS.map(product=>[product.label,()=>buyDrink(product)]),['Leave',close]]);}
+  function vending(){show("MINATO DRINKS · Vending machine",'Cold drinks behind the blue buttons, hot behind the red. ¥120 each. Drink it now or keep it in your bag; the empty can goes to the recycling box by Sakura’s door.',[...VENDING_PRODUCTS.map(product=>[product.label,()=>buyDrink(product)]),['Leave',close]]);}
   function buyDrink(product){if(!spend(product.price))return;onTime(1);onMove('Give');const name=product.inventoryName;addItem(name);townAudio.play('clunk',.7);close();if(!onPurchase(name))receipt('Thank you',`${product.brand} — ${name} is in your bag.`);}
 
   function legacyResident(name){
@@ -960,6 +986,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
       case 'vending':vending();break;
+      case 'recycle-cans':recycleCans();break;
+      case 'sakura-specials':specialsMenu();break;
       case 'resident':resident(name);break;
       case 'neighbour':neighbour(name);break;
       case 'visit-home':show(name,'Choose an apartment to visit.',[...detail.map(home=>[home.name,()=>{close();home.enter();}]),['Back',close]]);break;
@@ -1004,7 +1032,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   $('#weatherButton').onclick=()=>{state.weather=!state.weather;onWeather(state.weather);$('#weatherButton').textContent=state.weather?'Rain':'Clear';save();};
   $('#timeButton').onclick=()=>onTime('cycle');
   $('#playerButton').onclick=players;
-  $('#creditsButton').onclick=()=>show('Credits','Everyone in town: Shimanchu islanders, original characters built in code by Johansson Town (src/avatars).\nThree.js r170 · MIT.\nBranching dialogue system: Godot Open Dialogue System by Tina Qin (QueenChristina) · MIT. Reimplemented in JavaScript from the GDScript; the dialogue data format and its rules are kept. Town dialogue is original writing.\nTouch joystick: Virtual Joystick for Godot by Marco Fazio (MarcoFazioRandom) \u00b7 MIT. Reimplemented in JavaScript; the joystick and visibility modes and the dead-zone output curve are kept, so the stick is drawn only where and when a thumb is down.\nCel shading, screen-space ink and the anime colour grade: Sakura Crossing by Kenton Wang (Kenton-GMI) \u00b7 MIT. The gradient ramps, the violet shadow-band patch, the depth second-difference line work and the split-tone grade are ported; the materials here are converted at runtime rather than authored, and photographic textures are only partly flattened.\nKonbini counter ritual, stamp card and receipt: inspired by Yorimichi by emaxsaun · MIT. Design only, no code; adapted to 1997, which had neither IC cards nor bag charges.\nEntry board design language: AsagaoUI by Hiroshi ISOBE · MIT, following the Japan Digital Agency design system. Colour ramps, type scale, spacing, rounding and focus ring ported as CSS; no framework code, icons or illustrations included.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
+  $('#creditsButton').onclick=()=>show('Credits','Everyone in town: Shimanchu islanders, original characters built in code by Johansson Town (src/avatars).\nThree.js r170 · MIT.\nBranching dialogue system: Godot Open Dialogue System by Tina Qin (QueenChristina) · MIT. Reimplemented in JavaScript from the GDScript; the dialogue data format and its rules are kept. Town dialogue is original writing.\nTouch joystick: Virtual Joystick for Godot by Marco Fazio (MarcoFazioRandom) \u00b7 MIT. Reimplemented in JavaScript; the joystick and visibility modes and the dead-zone output curve are kept, so the stick is drawn only where and when a thumb is down.\nCel shading, screen-space ink and the anime colour grade: Sakura Crossing by Kenton Wang (Kenton-GMI) \u00b7 MIT. The gradient ramps, the violet shadow-band patch, the depth second-difference line work and the split-tone grade are ported; the materials here are converted at runtime rather than authored, and photographic textures are only partly flattened.\nKonbini counter ritual, stamp card and receipt: inspired by Yorimichi by emaxsaun · MIT. Design only, no code; adapted to 1997, which had neither IC cards nor bag charges.\nEntry board design language: AsagaoUI by Hiroshi ISOBE · MIT, following the Japan Digital Agency design system. Colour ramps, type scale, spacing, rounding and focus ring ported as CSS; no framework code, icons or illustrations included.\nVending Machine: Don Carson / Poly Pizza · CC BY 3.0. Adapted materials, glass removed, original fictional branding added. Source and licence links: assets/ATTRIBUTION.md.\nPoly Haven / Texture Haven: asphalt, plaster, timber and roof albedo, normal and packed ARM maps · CC0.\nIndustrial Sunset 02 environment lighting: Sergej Majboroda / Poly Haven · CC0.\nTomonoura centreline data: © OpenStreetMap contributors · ODbL 1.0. The local extract and adapted layout are included with the source.\nOpenGameArt: concrete and bamboo by YCbCr; stone paving by para · CC0.\nPotted plant: Polygonal Mind, discovered through ToxSam OS3A · CC0.\nMinato Izakaya exterior: BenMaher, Izakaya - Low Poly Building · CC BY 4.0 per supplied source metadata. Texture and entrance adaptations by Johansson Town.\nOffice interior: user-supplied Tomodachi Life model, source upload by Unknown Person.\nSato Ramen exterior and interior: Japanese Restaurant Inakaya by Jellepostma, CC BY 4.0. Adapted customer aisle, seating and interactions by Johansson Town. Source and licence links: assets/ATTRIBUTION.md.\nLACK side table and IVAR pine cabinet: IKEA / Inter IKEA Systems. Adapted in Blender for the town palette. Model sources: assets/models/furniture/SOURCES.json.\nTown geometry, procedural fallback and original rendered Foley/instrumental loops: Johansson Town.\nQwen3-TTS CustomVoice: four generated Japanese dialogue clips, model licence Apache 2.0; provenance in assets/audio/voices/.\nambientCG remains a proposed source; its assets are not included in this revision.\nSee assets/ATTRIBUTION.md for the licence ledger.',[['Close',close]]);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);

@@ -66,7 +66,7 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  const SH=2.55,width=S.maxZ-S.minZ-.6,tex=shutterTexture();
  const shutterMat=new THREE.MeshStandardMaterial({map:tex,roughness:.55,metalness:.3});
  const curtain=new THREE.Mesh(new THREE.PlaneGeometry(width,SH),shutterMat);
- curtain.rotation.y=Math.PI/2;curtain.position.set(front+.07,SH/2+.05,(S.minZ+S.maxZ)/2);
+ curtain.rotation.y=Math.PI/2;curtain.position.set(front+.18,SH/2+.05,(S.minZ+S.maxZ)/2);
  curtain.name='Sakura roller shutter';curtain.userData.dynamicProp=true;curtain.receiveShadow=true;group.add(curtain);
  const rail=new THREE.Mesh(new THREE.BoxGeometry(.08,.08,width),new THREE.MeshStandardMaterial({color:0x6d7478,roughness:.5,metalness:.4}));
  rail.userData.dynamicProp=true;group.add(rail);
@@ -75,7 +75,7 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
   open=o;const shown=Math.max(.02,1-o);
   curtain.scale.y=shown;curtain.position.y=.05+SH-SH*shown/2;
   tex.repeat.set(1,shown);tex.offset.set(0,0);
-  rail.position.set(front+.08,.05+SH-SH*shown,(S.minZ+S.maxZ)/2);
+  rail.position.set(front+.2,.05+SH-SH*shown,(S.minZ+S.maxZ)/2);
   curtain.visible=shown>.03;
  };
  setShutter(1);
@@ -83,8 +83,17 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  // One machine, not a bank: vending is kept to a few places worth stopping at (Sakura,
  // the onsen lane, the fish quay) rather than every frontage (docs/AMPLIFY-AUDIT.md).
  vending(front+.45,S.minZ+1.7,Math.PI/2);
- kit.cyl(.22,.19,.72,front+.4,.36,door-doorClear-.5,0x2f6fa8,{segments:12});kit.cyl(.24,.24,.05,front+.4,.74,door-doorClear-.5,0x3a3f42,{segments:12});
- solid({id:'sakura-bin',x:front+.4,z:door-doorClear-.5,w:.5,d:.5,height:.8});
+ // The can recycling box (空きかん): a blue box with a round hole in the lid. Bring your
+ // empties back here and Thuan gives a little for each from the till.
+ {const bx=front+.4,bz=door-doorClear-.5;
+  kit.box(.44,.72,.5,bx,.36,bz,0x2f6fa8);kit.box(.48,.05,.54,bx,.745,bz,0x24558a);kit.cyl(.08,.08,.012,bx,.776,bz,0x1b1d20,{segments:16});
+  if(typeof document!=='undefined'&&document.createElement){const c=document.createElement('canvas');c.width=256;c.height=320;const ctx=c.getContext('2d');
+   if(ctx){ctx.fillStyle='#f4f6f2';ctx.fillRect(0,0,256,320);ctx.fillStyle='#2f6fa8';ctx.fillRect(0,0,256,70);ctx.fillStyle='#ffffff';ctx.font='bold 46px "Hiragino Sans","Noto Sans CJK JP",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('空きかん',128,38);
+    ctx.fillStyle='#24303a';ctx.font='bold 44px sans-serif';ctx.fillText('CANS',128,118);ctx.font='26px sans-serif';ctx.fillText('Empty cans here',128,168);ctx.fillText('¥10 back at the till',128,204);
+    ctx.strokeStyle='#2f6fa8';ctx.lineWidth=10;ctx.beginPath();ctx.arc(128,262,34,0,7);ctx.stroke();for(let k=0;k<3;k++){const a=k*Math.PI*2/3-Math.PI/2;ctx.beginPath();ctx.moveTo(128+Math.cos(a)*34,262+Math.sin(a)*34);ctx.lineTo(128+Math.cos(a+.6)*24,262+Math.sin(a+.6)*24);ctx.stroke();}
+    const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;kit.sign(t,.34,.42,bx+.225,.38,bz,{ry:Math.PI/2,name:'Can recycling label'});}}
+  solid({id:'sakura-bin',x:bx,z:bz,w:.5,d:.56,height:.8});
+  anchor(bx+.6,1,bz,'Return empty cans',()=>onAction?.('recycle-cans'));}
  // Drink crates stacked the way empties are, against the glass beyond the vending machines.
  const crateAt=[[0,0,0],[0,1,0],[0,2,0],[0,0,.56],[0,1,.56],[.02,0,1.1]];
  crateAt.forEach(([dx,ly,dz],i)=>{kit.box(.46,.28,.5,front+.3+dx,.14+ly*.28,S.minZ+3.4+dz,i%2?0x2f6fb8:0xc8392e);kit.box(.4,.04,.44,front+.3+dx,.28+ly*.28,S.minZ+3.4+dz,0x2f3140);});
@@ -115,12 +124,11 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  for(const z of [S.minZ+.12,S.maxZ-.12]){kit.cyl(.045,.045,2.7,front+.06,1.35,z,0x9aa0a4,{segments:8});for(let y=.6;y<2.6;y+=1.1)kit.box(.1,.06,.1,front+.08,y,z,0x6d7478);}
  kit.box(.18,.14,.26,front+.12,2.52,S.maxZ-.5,0xe8e6e0);kit.box(.1,.08,.08,front+.24,2.5,S.maxZ-.5,0x2b2b2b);
  kit.sign(enamel({jp:"Security camera",en:'CCTV in operation',bg:'#f4d23c',ink:'#1f1f1f'}),.28,.42,front+.02,2.05,S.maxZ-.55,{ry:Math.PI/2,depth:.01,name:'camera plate'});
- // A rack at the edge of the boardwalk with two bicycles in it, the air conditioner on the
- // south flank, and two sheets of paper the wind took off the notice board.
- kit.box(.06,.06,1.8,front+1.22,.35,S.minZ+1.7,0x9aa0a4,{finish:'metal'});
- for(const dz of [-.8,0,.8])kit.rod([front+1.22,0,S.minZ+1.7+dz],[front+1.22,.35,S.minZ+1.7+dz],.02,0x9aa0a4);
- bicycle(kit,front+1.25,S.minZ+1.3,{ry:0,colour:0x3a7a5a});bicycle(kit,front+1.25,S.minZ+2.1,{ry:0,colour:0xd9d2c0});
- solid({id:'sakura-bikes',x:front+1.25,z:S.minZ+1.7,w:1.3,d:1.4,height:1.1});
+ // Bicycles park in the side service court, leaving the vending face and pavement clear.
+ for(const z of [S.maxZ-3.8,S.maxZ-1.8]){
+  bicycle(kit,S.minX-1.9,z,{ry:0,colour:0x3a7a5a});
+  solid({id:'sakura-bikes',x:S.minX-1.9,z,w:1.6,d:.65,height:1.1});
+ }
  kit.box(.95,.62,.32,-12.4,1.4,S.minZ-.2,0xe2e0d8);kit.cyl(.2,.2,.04,-12.2,1.4,S.minZ-.37,0x3a3f42,{rx:Math.PI/2,segments:12});
  for(let y=1.2;y<1.6;y+=.1)kit.box(.5,.02,.02,-12.6,y,S.minZ-.37,0x7b8285);
  kit.box(.3,.004,.4,front+2.2,.012,-24.6,0xf4f1ea,{ry:.7});kit.box(.3,.004,.4,front+3.1,.012,-23.9,0xe8e2d0,{ry:-1.1});

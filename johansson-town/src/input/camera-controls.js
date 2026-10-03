@@ -18,7 +18,7 @@ export function createCameraControls({onChange,onCentre,onOpen,onClose}){
  <label class="camera-check"><input type="checkbox" name="bob"> Walking camera motion</label>
  <div class="camera-actions"><button type="button" data-centre>Centre view</button><button type="button" data-reset>Reset settings</button></div>
  <dl><dt>Left stick</dt><dd>Walk · D-pad in menus</dd><dt>Right stick</dt><dd>Look · click to level the camera</dd><dt>A / Cross</dt><dd>Interact or select</dd><dt>B / Circle</dt><dd>Back</dd><dt>X / Square</dt><dd>Drink</dd><dt>Y / Triangle</dt><dd>Inventory</dd><dt>LB / L1 · RB / R1</dt><dd>Hold to run · jump</dd><dt>RT / R2</dt><dd>Hold to look closer</dd><dt>Menu / Options</dt><dd>Town book</dd></dl>
- <p class="camera-help">Touch: MOVE and LOOK sticks, or swipe the view. Keyboard: C settings · Home centre · I/J/K/L look. In object inspection, right stick rotates; triggers zoom.</p></div>`;
+ <p class="camera-help">Mouse: left click to walk or interact. Hold right click and drag to look. Touch: MOVE and LOOK sticks, or swipe the view. Keyboard: C settings · Home centre · I/J/K/L look. In object inspection, right stick rotates; triggers zoom.</p></div>`;
  document.body.append(panel);
  const inputs=[...panel.querySelectorAll('input')];
  function sync(){for(const input of inputs){const key=input.name;if(input.type==='checkbox')input.checked=settings[key];else{input.value=String(settings[key]);const output=panel.querySelector(`[data-value="${key}"]`);output.textContent=key==='fov'?settings[key]+'°':key==='deadzone'?Math.round(settings[key]*100)+'%':settings[key].toFixed(1)+'×';}}}

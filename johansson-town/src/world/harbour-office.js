@@ -46,7 +46,7 @@ export function buildHarbourOffice({parent,site,register,enter,label,shadows}){
  for(const [dx,dz] of [[-3.2,-6.8],[-3.2,-6.2],[-2.6,-6.8]])kit.rod([dx,H+.15,dz],[dx,H+.65,dz],.018,0x7a4a32);
  // A wall air conditioner and the mould and rust the sea air leaves.
  kit.box(.8,.55,.3,3.85,1.9,-3.6,0xe2e0d8,{ry:Math.PI/2});
- kit.box(.02,.3,7.1,0,H-.1,.005,0xbdb4a2);
+ kit.box(7.1,.3,.02,0,H-.1,.018,0xbdb4a2);
  for(const x of [-3.3,1.5])kit.box(.05,1.0,.02,x,H-.55,.008,0x9d8f78);
  kit.finish(group,'Harbour office shell');
  const door=buildShopDoor(group,{name:'office-quay-door',width:1.4,shadows});door.group.position.z=.13;

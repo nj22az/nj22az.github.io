@@ -55,13 +55,9 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  };
  const UP=new THREE.Vector3(0,1,0);
 
- /**
-  * The supplied interior brings its own walls, ceiling and floor. Seen from the street
-  * they swallow the shopfront — they are taller than it, and unlit from outside they
-  * read as a black mass over the fascia. The exterior already has a shell, so through
-  * the window we show the fittings inside it and leave the building to the building.
-  */
- const shell=()=>group.getObjectByName('sakura-building');
+ // Keep the real walls and partitions in both views. Only the duplicate facade
+ // frame is hidden outside, where the storefront already supplies it.
+ const frontFrame=()=>group.getObjectByName('sakura-front-frame');
  /**
   * What the interior scales to behind the glass.
   *
@@ -102,7 +98,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  return {group,colliders,service,retail,display,blocked,layout,ready:display.ready,
   enter(parent){
    parent.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);
-   const walls=shell();if(walls)walls.visible=true;
+   const frame=frontFrame();if(frame)frame.visible=true;
    lit(false);
    group.visible=true;showPeople(true);display.updateStock(state.sakura.stock);
    // The door chime: a bright little arpeggio of our own as the automatic door opens.
@@ -126,13 +122,13 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    group.rotation.set(0,frontage.yaw,0);
    group.position.set(...frontage.position)
     .add(new THREE.Vector3(0,0,-fit*(layout.frontZ??3.91)).applyAxisAngle(UP,frontage.yaw));
-   const walls=shell();if(walls)walls.visible=false;
+   const frame=frontFrame();if(frame)frame.visible=false;
    lit(true);
    group.visible=true;showPeople(false);
    display.updateStock(state.sakura.stock);
    return true;
   },
-  hide(){scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);const walls=shell();if(walls)walls.visible=true;showPeople(true);},
+  hide(){scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);},
   update(dt){
    // The shop's lights are for the inside of the shop. The interior stays in the street
    // scene so you can see it through the glass, but a light has no walls: left on, its

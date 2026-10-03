@@ -136,12 +136,10 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   case 'blouse':collar('#f8f6ef',{drop:.88,spread:.1,round:true});placket(.97,hem+.04,.018);buttons([.85,.69,.53,.37],.007,'#f8f6ef');break;
   case 'smock':collar('#f8f6ef',{drop:.88,spread:.1,round:true});pocket(0,.42,W*.5,.16,shade(top,.94));hemRound();break;
   case 'kariyushi':{
-   // An open neck: a V of skin, lapels folded back over it, buttons down the front.
+   // An open neck: a V of skin down to the first button. The collar itself is modelled
+   // (collar-mesh.js, from Blender) and lies over the edges of this V.
    const skin=recipe.body.skin;
-   poly([[-.07*k,1.0],[.07*k,1.0],[0,.8]],skin,{stroke:null});
-   const lapel=lighten(top,.22);marks.push('lapels');
-   for(const s of [-1,1])poly([[s*.012*k,1.0],[s*.14*k,.995],[s*.12*k,.9],[s*.012*k,.79]],lapel,{width:line*1.2});
-   ctx.fillStyle=lapel;ctx.fillRect(0,Y(1.035),TW,Y(.975)-Y(1.035));
+   poly([[-.04*k,1.0],[.04*k,1.0],[0,.80]],skin,{stroke:null});marks.push('open neck');
    placket(.8,hem+.03,.02);buttons([.72,.58,.44,.3],.0085,'#f8f6ef');
    pocket(W*.25,.62,W*.22,.17,top);hemRound();break;
   }

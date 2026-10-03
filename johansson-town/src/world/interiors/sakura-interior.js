@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {buildSpecialsBoard} from './sakura-specials-board.js';
 import {SHOP_STOCK} from '../../commerce/shop-stock.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
 import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-advertising.js';
@@ -118,6 +119,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  // The ledger lives on Thuan's desk in the back office now; the counter carries the hot
  // case, the oden and the bell (sakura-cheer.js).
  buildSakuraCheer(room,{anchor,action});
+ // The specials board on the wall behind the counter (sakura-specials-board.js).
+ buildSpecialsBoard(room,{anchor,action});
  buildSakuraBand(room);
  const life=buildSakuraLife(room,{anchor,action});
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
@@ -141,7 +144,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   }
  };
  let mounted=false,last='';
- return {layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
+ return {dispose:()=>life.dispose(),layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};

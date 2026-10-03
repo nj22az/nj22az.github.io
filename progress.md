@@ -148,3 +148,74 @@ Final release also preserves f08e8af's Kitahama residential-quarter and anchored
 - Moved Sakura's intersecting cargo-yard light, cargo pallet and wall condensers clear of the flight. Lamp posts now have physical collisions.
 - Verification: 597 active tests passed (5 intentional gateball skips); actual runtime audit found 357 elevated surface records and no blocked stair centres. Johansson walked from y=.02 to y=4.01 and back down. Inspected desktop/phone Sakura captures and standalone house/Sakura construction previews.
 - Final integration: merged concurrent main changes, rebuilt the compiled runtime, and reran the full suite (598 passing, 5 intentional skips). Added a whole-town regression covering every flight and landing, including lamp/pole overlap; all seven staircase tests pass.
+
+## 2026-10-03 · Town coherence, quiet exploration and mouse play
+
+- Replaced oversized Mount Aoba with a lowland radio station and a genuinely walkable stair/roof lookout. Moved the traditional garden into the neighbourhood; connected its entries and bathhouse terrace with clear, graded paths.
+- Connected all 45 distinct utility poles to the plant feeder. Cleared poles from stairs, parked vehicles and auction crates. Corrected harbour-office trim orientation, separated Sakura shutters from glazing, moved bikes to the service court, shrank bilingual direction signs and rebuilt tapered fishing-boat hulls.
+- Added slow harbour gulls/garden butterflies, seated outdoor ambience, and independent cel-shaded 3D clouds/smiling sun on the title screen.
+- Downloaded IKEA LACK/IVAR product GLBs using the supplied repository's discovery method, retained source URLs and credits, processed them in Blender and streamed small cel-shaded variants into resident homes with measured collision/fallbacks.
+- Changed the town book to a small corner panel with icon tiles and collapsed settings/map/places. Quick activities use compact bottom trays, documents retain readable space, and controls use a small corner sheet. Removed decorative activity heading and redundant Done wording.
+- Left click walks to visible ground or approaches an interactive object. Routes use the same radius and floor heights as normal collision. Keyboard/controller input, a different room, right-button looking or a stalled path cancels mouse walking. Right click and hold drags the camera without pointer lock. A small ground ring marks the destination.
+- Verification: 607 tests passed before menu changes (602 pass/5 skip); 608 tests after compact UI (603 pass/5 skip). Three mouse route tests cover obstacle clearance, unbroken walls, changed rooms and cancellation. Actual browser checks confirmed UI dimensions at 900×700 and 390×780, collapsible settings and GLB loading, plus radio stairs up/down and a successful vending purchase. Final mouse/full-suite results recorded below when complete.
+- Final full suite: 611 tests, 606 passed, 5 skipped, 0 failures. Real mouse browser: click queued a route and moved Johansson; holding right mouse changed yaw/pitch, cancelled walking, and never locked the pointer. Menu clicks stayed separate. No page errors.
+
+## 2026-10-03 · Sakura staff board and delivery stock
+
+- Replaced long translated weekday names with M/T/W/T/F/S/S and Japanese day symbols, a compact September heading, separate name/time columns, short Japanese delivery labels and 5S reminders. Text is fitted and clipped within each paper cell, including wide fallback fonts; English remains available through the existing inspection action.
+- Built original rounded onigiri with grain texture, nori and a small salmon/price sticker. Replaced block bottle necks with labelled amber shoulder-and-neck beer bottles and crown caps inside open returnable crates. The 100 bottles share three instanced draws.
+- Targeted stockroom/Sakura checks passed; isolated browser render and the web-game skill client produced inspected screenshots with no page or console errors. Staff board and stockroom screenshots are /tmp/stockroom-board.png and /tmp/stockroom-skill-clean/shot-0.png.
+- Wider suite: 616 passed and 5 skipped; one existing home-life test fixture lacked the browser ProgressEvent used by async furniture loading. Added that event to the shared DOM fixture and reran home life, stockroom, Sakura business/dressing, English inventory and runtime checks together: all passed. No production loading workaround was introduced.
+
+2026-10-03 — Island loading postcards
+- START now paints a readable island-fact card before importing the heavy game module. Twelve original island/resident facts rotate randomly every six seconds without repeats in a round or at the round boundary.
+- Retained honest startup stages and immediate entry when ready; timers stop on success or failure. Compact landscape layout and reduced-motion loading bar supported.
+- Browser verification at 390x844, 1280x800 and 844x390: card stays onscreen, facts rotate, ready stops rotation, startup failure restores START/retry. Delayed boot module used to inspect loading reliably; no page errors on successful paths.
+- Original web-game Playwright client ran and title screenshot inspected; runtime package checks 3/3 pass. Runtime rebuilt, historical cached chunks restored.
+
+2026-10-03 — Harbour access and character presentation audit
+- Moved the fishing-net rack to the warehouse north wall, removed invisible collision boxes left from the old imported exterior, marked the pedestrian entrance, and removed duplicate warehouse/ferry panels that obscured the frontage. The loading shutter remains a shutter; the marked timber door enters the working interior.
+- Extended the port access regression to verify the complete radius-aware navigation route from the warehouse to Mr Fujita’s open shed, every path segment, and the cleared loading frontage.
+- Blended torso skin weights from hips to chest: the waistband no longer moves outwards with chest gestures. Added a posed-front-waist regression. Reduced inflated shoulder caps/short sleeves; the shared rig improves the creator, photo studio and town together.
+- Photo studio has visible Move/Turn modes, drag-to-rotate, 1-degree turning and .01 position adjustments. Whole island outfit sets work without losing pose/placement. Thuan’s current sailor/shopping outfit is reflected in the actual editable recipe, so the wardrobe and own-clothes reset agree with her appearance.
+- Creator outfit sets have queued, cached pictures of the full outfit. Johansson’s legacy skirt migration now yields the valid trousers style rather than an unsupported pants value.
+- Verified original web-game client screenshots of cleared warehouse, shed and creator. Photo studio browser tests passed at 1440x1000, 390x844, 844x390, 320x568, including rotate, dress, capture, location change and exit. Creator checks passed five screen sizes; additional outfit selection/picture checks passed phone and desktop. Avatar/wardrobe, businesses, ferry/access, photo layout/poses, English scenery policy and runtime package tests pass. No new browser page errors.
+
+2026-10-03 — Owner-supplied island sculpts
+- Inspected all four GLBs in Nils’s my_own3d_Assets folder. Sources were static single meshes; Barfly was a four-pose sheet. Originals are unchanged.
+- Separated the complete standing Barfly and authored a nine-bone weighted skin with Idle, Wave and Work clips. Repaired shoulder weighting after a browser render caught sleeve distortion during the greeting.
+- Authored Jonsson’s seven-bone working rig, retaining the kneeling engine-repair pose and keeping the engine/base fixed. Jonsson works in the dock workshop; an interaction introduces his island occupation. These are stationary working/greeting rigs, not navigation or facial-animation rigs.
+- Merry Moose has clean matte surfaces, readable geometry lettering, complete pupils and small eye highlights. He and the supplied lucky cat stand on the clear left end of Minato’s counter. Barfly stands clear of the tables and service aisles.
+- Added demand-loaded cel-shaded assets with shared cached resources and separate instance skeletons/mixers. Room disposal stops their mixers. Four runtime exports are approximately 5 MB together; originals total roughly 113 MB. Editable packed Blender scenes and exports saved in my_own3d_Assets/Prepared-for-Johansson-Town.
+- Avatar creator Body → Rounded uses Barfly-inspired head/torso/limb proportions. Classic saved avatars retain their existing proportions; Rounded survives saving and sharing.
+- Validation: 23 targeted avatar, owned-rig and business checks; 3 runtime-package checks; real-browser screenshots of the asset gallery, repair workshop, fitted Minato interior and classic/rounded comparison. Verified independent bone animation, transitions and disposal with no browser errors. Original game skill client used for all four visual views.
+- Final creator interaction suite passed at 320×568, 390×844, 844×390, 1280×800 and 320×360, including choosing Rounded and retaining it through share/import/save.
+
+2026-10-03 — Connected neighbourhood parks and user-owned display props
+- Replaced the long eastern detour with a direct town walk to Aoba Garden, plus a graded garden-to-Kitahama footpath and an opening in the bamboo fence.
+- Fixed overlapping garden banks that introduced abrupt 0.4 m drops. Shared turf colour, texture scale and terrain normals now tie the garden to its surroundings. Corrected path triangle winding after the visual check showed dark backfaces.
+- Verified exact routes with player and NPC collision to both garden benches, Harbour Park and all 12 residential gates, including the game's rendered walking surface. Reiko, Tetsuo and Thuan use Aoba during their existing dry-weather park routines.
+- Moved the supplied Maneki-neko beside Thuan's register; placed 18 cm Merry Moose and 24 cm preserved detailed Thuan figurines on the mayor's filing cabinet, leaving the desk clear.
+- Repurposed Barfly as a 48 cm Hawaii Lager advertising display at Minato's counter, with Japanese and English branding. These props create no extra residents.
+- Visual checks: actual office figurines, Sakura counter cat, Minato advertisement and the connected garden. Originals and source provenance preserved.
+
+2026-10-03 — Aoba entrance and the real konbini window view
+- Replaced overlapping lawn, bank and raised path meshes with one terrain mesh using walking heights. The old lowland mesh clears the detailed area. Shared grass, pavers and broadleaf trees connect the garden visually to town.
+- Direct town walk leads to a marked timber entrance, with six-metre graded lawn banks and signs facing visitors.
+- Sakura keeps its actual internal walls visible outside. Only its duplicate indoor facade frame hides; the room threshold aligns with the storefront glass and floor. Removed all street-only placeholder furnishings; the persistent shop supplies the same fittings and live stock inside and outside.
+- All 34 focused checks passed: neighbourhood access, shop cycle/glazing/door, onsen, park seam/apron and runtime package. Coverage compares rendered approach heights with walking heights and verifies shelf identity and stock across entering/leaving.
+- Actual compiled-game forward movement passed through the entrance from (0,27) to (-7.39,34.02). Inspected garden and shop screenshots from the front and both oblique street angles. Original develop-web-game client completed with state and screenshot at /tmp/konbini-final-game-view; no browser page errors. Temporary audit HTML and frame throttling do not ship.
+- The old runtime also passed sampled direct walks, so the precise old blocking collider was not reproduced. The competing visible terrain was confirmed. New checks cover the rendered approach plus complete town-to-bench routes.
+
+2026-10-03 — Owned, occupied road vehicles
+- Replaced the island cars' repeating eight-minute laps with daily parts and cargo-manifest appointments. Ferry freight trips leave on the morning call and return on afternoon/evening calls.
+- Every live road vehicle has an existing resident owner/driver and a named purpose. The actual resident is borrowed into the right-hand driving seat; unavailable residents leave their cars parked. Vehicle flags exclude drivers from street AI and pedestrian obstacles. Returning island drivers step out beside their car, restoring their prior flags.
+- Hollow cabins now have seats, a steering wheel and clear windows; avatar driving pose keeps hands toward the wheel. Community hall parked vehicles use the same occupied-sized models and named assignments.
+- Removed clock-change/end-of-dwell teleporting. Returning ferry traffic waits on land while the ramp is closed. Vehicles wait for all pedestrians instead of crawling through residents.
+- Passed 30 focused checks: 14 ownership/fit/network/ferry checks, 13 avatar/community hall checks, 3 runtime packaging checks. A full-day traffic check asserts real driver occupancy and non-overlapping parking, with only purposeful daily trips. Browser client captured the real Tetsuo seated in his green truck; screenshots inspected at /tmp/owned-vehicle-final-game-view. No browser errors.
+
+2026-10-03 — Believable 1990s road vehicle models
+- Replaced the shared boxy vehicle shell with distinct original compact hatchback, cab-over kei pickup and corrugated delivery truck bodies. Added tapered cabins, sloping glazing, closed crowned roofs, wheel arches, rounded tyres, steel rims, door seams/handles, mirrors, wipers, bumpers, grilles and paired lamps.
+- Kept hollow cabins, right-hand seats and existing resident drivers; lowered seat/roof proportions while retaining adult headroom. Pickup load bed has a tailgate and freight; delivery box has rear doors and latch bars.
+- Merged opaque detail into one body mesh plus one lamp mesh per vehicle, keeping four transparent panes and existing traffic dimensions, ownership and purposeful trip logic.
+- Passed 18 focused ownership, headroom, full-day traffic, pedestrian, community hall and runtime checks. Inspected cel-shaded front/rear fleet views and the compiled game's occupied Tetsuo pickup with the original develop-web-game client. No browser page errors; temporary visual audit pages do not ship.

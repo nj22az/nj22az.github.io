@@ -14,7 +14,7 @@ test('local vending GLB fits its existing collider and renders as one opaque bod
  assert.equal(mesh.geometry.groups.length,0);assert.equal(mesh.material.transparent,false);
  assert.equal(mesh.geometry.attributes.color.count,mesh.geometry.attributes.position.count);
 });
-test('vending remains usable with a visible fallback when model loading fails',()=>{
- installDOM();const group=createVendingMachine();assert.equal(group.children.length,3);
+test('vending is drawn in code, so it is always there and never waits on a download',()=>{
+ installDOM();const group=createVendingMachine();assert.ok(group.children.length>20);
  assert.ok(group.children.every(child=>child.isMesh));
 });

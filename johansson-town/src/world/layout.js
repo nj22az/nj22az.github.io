@@ -1,6 +1,7 @@
 import {DOCKLANDS,docklandsAt} from './docklands-layout.js';
 import {ISLAND_ROUTES} from './island-plan.js';
 import {airportSurface} from './airport-ground.js';
+import {kitanoRoadAt} from './kitano-link-plan.js';
 import {COAST_BOUNDS} from './peninsula.js';
 import {DINING,NIGHT_LANE,inDiningLane,IZAKAYA_LANE} from './dining-layout.js';
 import {oilJettyAt} from './oil-jetty-layout.js';
@@ -103,6 +104,9 @@ function regionAt(x,z,r=0){
  // its mouth, where the way down into the dungeon is.
  if(CAVE_ACTIVE&&peninsulaActive()&&Math.abs(x-FOREST_EDGE.roadX)<=MAIN_ROAD.width/2-r
   &&z>=MAIN_ROAD.maxZ&&z<=CAVE_MOUTH.inside+.4-r)return {id:'cave-path',surface:'gravel'};
+ // Kitano Road and its bridge, east of Main Street's kerb: asked before the lawn, the beach
+ // and the airport, which it crosses on its own level. See kitano-link-plan.js.
+ if(peninsulaActive()&&x>MAIN_ROAD.pavementEast){const road=kitanoRoadAt(x,z,r);if(road)return road;}
  if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
  if(peninsulaActive()&&oilJettyAt(x,z,r))return OIL_JETTY_ROUTE;
  // The park is asked first, so the lawn is the ground around its mound rather than a
@@ -150,5 +154,5 @@ function regionAt(x,z,r=0){
 export function setWalkSurface(surface){globalThis.__JOHANSSON_WALK_SURFACE__=surface||null;}
 /** Where feet go: the plan's ground, lifted onto whatever slab is drawn over it. */
 export function groundHeight(x,z){const h=planHeight(x,z),walk=globalThis.__JOHANSSON_WALK_SURFACE__;return walk?(walk.level?.(x,z)??(h+walk.lift(x,z))):h;}
-export function planHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(peninsulaActive()){if(docklandsAt(x,z))return DOCKLANDS.y;const garden=coastalSurface(x,z);if(garden?.id==='aoba-garden')return garden.y;const airport=airportSurface(x,z);if(airport)return airport.y;const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(peninsulaActive()&&kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;if(peninsulaActive()&&regionAt(x,z,0)?.id==='peninsula-ground')return -.4;return 0;}
+export function planHeight(x,z){if(FULL_TOWN.active)return fullHeight(x,z,parkHeight);if(peninsulaActive()){if(x>MAIN_ROAD.pavementEast){const road=kitanoRoadAt(x,z);if(road)return road.y;}if(docklandsAt(x,z))return DOCKLANDS.y;const garden=coastalSurface(x,z);if(garden?.id==='aoba-garden')return garden.y;const airport=airportSurface(x,z);if(airport)return airport.y;const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=!shoppingDistrictActive()?residentialHeight(x,z):null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(peninsulaActive()&&kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;if(peninsulaActive()&&regionAt(x,z,0)?.id==='peninsula-ground')return -.4;return 0;}
 export const MAP_BOUNDS={get minX(){return peninsulaActive()?COAST_BOUNDS.minX-3:-44},get maxX(){return peninsulaActive()?380:48},minZ:-185,get maxZ(){return peninsulaActive()?COAST_BOUNDS.maxZ+3:Math.max(TUNNEL.z+TUNNEL.depth+1,SCHOOL.seawall.south+6)}};

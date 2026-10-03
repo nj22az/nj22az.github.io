@@ -1,6 +1,6 @@
 # Johansson Town: a road to the airport, and a working port beside it
 
-3 October 2026. A plan, not yet built. It joins Kitano-jima, the airport island, to the main island with a bridge.
+3 October 2026. Phases 1 and 2 are built (see *Progress* below); the rest is the plan. It joins Kitano-jima, the airport island, to the main island with a bridge.
 It gives the island one road network that cars, the bus and lorries drive realistically, and it moves the heavy
 port beside the airport. The town keeps what a small island town keeps at its quay.
 
@@ -19,6 +19,44 @@ port beside the airport. The town keeps what a small island town keeps at its qu
 
 Distance across the water: the main island's south-east corner (44,-46.5) is about 50 m from the airport district's
 west edge, and the shortest crossing (x 45→83.5 at z ≈ -1) runs through the middle of the east beach.
+
+## Progress
+
+**Decisions (agreed):** the car ferry gets its own name and timetable; the player rides the bus and watches the
+traffic (no driving for now); the west quay goes back to fishing boats and the auction.
+
+**The landing moved from the south-east corner to the east lawn.** Surveying the corridor showed that no road can
+reach the south-east corner from Main Street without demolishing something the town keeps:
+- the harbour office (x 9.7–16.9) and the ferry terminal (x 4.7–9.5) leave no gap between them;
+- east of the office, the fish auction's canopy columns stand at z -48 on the quay apron;
+- the east quay buildings and the ice plant fill the rest of the waterfront.
+
+The alley between the post office and Higa Liquor (z ≈ 3.3) is already a straight east–west opening from Main Street,
+and from the lawn the airport district's north-west corner is only about 40 m across the water. So:
+- **Kitano Road** leaves Main Street at a T-junction opposite the shop crossing. It runs east through the old lane and
+  across the lawn at grade, with a zebra crossing there. Past the walled garden it rises on a coral-stone embankment
+  and crosses the beach on a causeway.
+- **Kitano Bridge** (38 m) has a navigation span at its crest, east of the breakwaters, with 2.7 m clearance.
+- The road comes down a ramp onto the district and ends at the **Terminal A car park**.
+
+The cost is that the beach is now two walks, one from each opening in the seawall, either side of the causeway.
+
+**Built:**
+- `kitano-link-plan.js`: centreline, long section, cross-section and the walkable region.
+- `road-network.js`: lanes, turning curves, the driver's rules.
+- `town-traffic.js`: Main Street's two lanes, Kitano Road's two lanes, the car park loop and bays, the quay bays and
+  the ferry ramp.
+- `kitano-link.js`: the road, the embankment, the causeway and the bridge.
+- The car ferry's four vehicles now drive off, over the bridge and park at the airport. Two others drive back aboard
+  before the ramp goes up, and next call they swap.
+- Two island cars run between the quay and the airport by day.
+- Gates in `tests/kitano-link.test.mjs`:
+  - gradient at or under 8 %, bends of at least 30 m, clearance at least 2.5 m;
+  - walkable end to end;
+  - every lane on ground and clear of colliders;
+  - piers in the sea and no tetrapods under the deck;
+  - a day of traffic at 60× with nobody stuck and no overlaps;
+  - a car waits for you.
 
 ## The target
 
@@ -63,10 +101,7 @@ west edge, and the shortest crossing (x 45→83.5 at z ≈ -1) runs through the 
 - abutments and piers in the water with scour rock, so it reads as standing in the sea, not floating;
 - a short causeway on the airport side, on the same reclaimed foundation.
 
-The south-east corner is the right landing:
-- the oil jetty's depot that stands there leaves for Kitano anyway;
-- a landing at z ≈ -1 would cut the east beach (and its quiet corner) in half;
-- this route goes directly to the port and terminal A, and the bridge is seen from the harbour, which is where people look.
+(The plan first put the landing at the south-east corner. It moved to the east lawn: see *Progress*.)
 
 ## Roads and driving
 
@@ -84,8 +119,7 @@ One road network for everything that drives (`world/road-network.js`):
 - **One height model:** the road is laid as its own surface (walk-surface lift), so wheels sit on the deck, the bridge
   and the ramps rather than on the plan's ground. That was the roadmap's engineering prerequisite.
 - **Roads:**
-  - **Harbour Road**, new. From the foot of Main Street east along z ≈ -33 at the foot of the east lawn, to the bridgehead.
-    It is a single carriageway with a footway, as the public-realm standard says.
+  - **Kitano Road** (built), from Main Street across the east lawn to the bridge: two lanes and a footway on the harbour side.
   - **The bridge.**
   - **The Port Road** on Kitano: past the RoPax lanes, the cargo gate and the tank farm gate, to the terminals.
   - **The coastal road** joined to Harbour Road at its town end (43,40). It already has its edge lines.

@@ -10,6 +10,20 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Aoba Radio, 76.4 FM",
+    "organisation": "Town Services",
+    "text": "Since 1986, Aoba Radio has broadcast the ferry notices, weather, school announcements and the evening request show. The technician checks the transmitter after breakfast. The old oversized hill has given way to a small public station yard. Take the outside stairs to the roof lookout; please keep the aerial enclosure clear.",
+    "source": "notice:Aoba Radio, 76.4 FM"
+  },
+  {
+    "type": "Notice",
+    "title": "Aoba lookout",
+    "organisation": "Town Services",
+    "text": "The homes of Kitahama lie along the southern lane. Beyond them are the town hall, the harbour roofs and the boat channel. On clear evenings the lights of Kitano-jima show across the water.",
+    "source": "notice:Aoba lookout"
+  },
+  {
+    "type": "Notice",
     "title": "Blue Coral attendant",
     "organisation": "Town Services",
     "text": "Welcome! The ube scoop is our favourite. Take your time at the glass counter; the little benches outside catch the sea breeze.",
@@ -101,6 +115,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "On the fridge",
+    "organisation": "Town Services",
+    "text": "No bath in this house: Umi-no-yu after the shop shuts, ¥300 with a towel. Rubbish: burnables Tuesday and Friday, cans on Wednesday to the box at Sakura. Rent is paid to Front-Row, ¥18,000 a month.",
+    "source": "notice:On the fridge"
+  },
+  {
+    "type": "Notice",
     "title": "Minato fuel depot · Port Town Fuel Base",
     "organisation": "Town Services",
     "text": "Hazardous materials · No open flames allowed. Diesel oil (Light oil), 120 kilolitres. Filled from the tanker at the oil jetty every third day; drawn by the town truck for the power house at the town hall. In a typhoon the valves are closed and the jetty is out of bounds.",
@@ -119,6 +140,13 @@ export const TOWN_PAPERS=[
     "organisation": "Town Services",
     "text": "Rubbish: burnable on Tuesdays and Fridays, cans and bottles on Wednesdays, out by eight and under the nets, because of the crows.\n\nThe cane cut is on Monday the 12th of January from seven. Everybody on the lane, lunch at the Tairas'.\n\nSanshin with Mrs Gushiken, Saturdays at half past nine on her verandah. Beginners welcome; bring your own picks.\n\nTyphoon season: tie down your water tanks, fill the bath, shutters up by Friday. Mr Iha will check the lane lights.\n\nFound: a child's blue sandal, left foot. Ask at number 10.",
     "source": "notice:Kitahama notice board"
+  },
+  {
+    "type": "Notice",
+    "title": "Your neighbourhood garden",
+    "organisation": "Town Services",
+    "text": "The garden is just along the paved walk beyond the terminal. Follow the green park signs to the stone gate, the pond and Umi-no-yu. The western homes also have a direct walk from the seawall.",
+    "source": "notice:Your neighbourhood garden"
   },
   {
     "type": "Flyer",
@@ -147,6 +175,13 @@ export const TOWN_PAPERS=[
     "organisation": "Town Hall Classroom",
     "text": "Pinned in the entrance of the town hall, one over another: Typhoon shelter -- in a typhoon, the school gym and the community hall are the shelters, check your emergency bag. Port Safety -- do not play on the quay or the tetrapods. From the fishing co-op, the youth section is taking crews for the harbour boat race (Harbour Boat Race) on the fourth day of the fifth month. A felt-pen map of the town with the shelters in red. This month's kyūshoku: goya champuru, sōki-jiru, fried aji. Lost: one blue sandal, left foot.",
     "source": "notice:School noticeboard"
+  },
+  {
+    "type": "Notice",
+    "title": "Minato power station",
+    "organisation": "Town Services",
+    "text": "The two diesel generators feed the island at 6,600 volts through a buried cable to the outgoing pole. The northern feeder serves the terminal and homes; the eastern feeder serves Kitahama, Rainflower Lane and Aoba Radio. Pole transformers reduce the voltage for shops and houses. The station keeps a standby generator for storms.",
+    "source": "notice:Minato power station"
   },
   {
     "title": "Petitions to the mayor",

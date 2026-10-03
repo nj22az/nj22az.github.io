@@ -1,9 +1,13 @@
+import {buildQuietLife} from './quiet-life.js';
+import {buildTownPower} from './town-power.js';
+import {buildParkAccess} from './park-access.js';
 import {buildDocklandsLife} from './docklands-life.js';
 import {addSakuraFlyer} from './sakura-flyers.js';
 import {buildIslandLandscape} from './island-landscape.js';
 import {buildTraditionalGarden} from './traditional-garden.js';
 import {buildDiningStreet} from './dining-street.js';
-import {createFerryVehicles} from './ferry-vehicles.js';
+import {createTownTraffic} from './town-traffic.js';
+import {buildKitanoLink} from './kitano-link.js';
 import {buildOilJetty} from './oil-jetty.js';
 import {GROUND} from '../render/ground-palette.js';
 import {buildBicycle,BOOKSHOP_BICYCLE} from './bicycle.js';
@@ -195,8 +199,27 @@ function addStreetLife(world,options,factory){
   for(const [dx,c] of [[-.28,0x4c6f62],[.28,0x6a6651]]){factory.cylinder(recycleGroup,.25,.78,[dx,.49,0],c,10);factory.box(recycleGroup,[.54,.08,.54],[dx,.91,0],0x384547);}colliders.push({x:5.05,z:-21.7,w:1.1,d:.65});
   inspect([4.55,1,-21.2],'Inspect recycling bins','Neighbourhood recycling','Glass bottles are separated from steel cans. The labels are faded from sun and salt air.');
 
-  const pump=factory.box(group,[.65,.85,.55],[-7.4,.52,-31.2],0x536568);factory.cylinder(group,.16,.45,[-7.4,1.12,-31.2],0x3d4c4e,12);colliders.push({x:-7.4,z:-31.2,w:.72,d:.62});
-  machine([-6.8,1,-30.7],'Test hand pump','Harbour hand pump','A small utility pump used to rinse fish boxes and clean the pavement. The handle and check valve operate correctly.');
+  // The hand pump (手押しポンプ) for rinsing fish boxes stands on the quay by the
+  // warehouse. It used to be a box and a drum at (-7.4,-31.2), which Sakura's frontage
+  // has since been built over, so it stood half inside the shop window.
+  {
+   const P=[-6.6,-42.4],iron=new THREE.MeshStandardMaterial({color:0x2f6b55,roughness:.55,metalness:.25}),concrete=new THREE.MeshStandardMaterial({color:0xb9b5aa,roughness:.95}),zinc=new THREE.MeshStandardMaterial({color:0xa8b0b2,roughness:.4,metalness:.6});
+   const pump=new THREE.Group();pump.name='Harbour hand pump';pump.position.set(P[0],0,P[1]);group.add(pump);
+   const add=(geometry,material,x,y,z)=>{const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;pump.add(m);return m;};
+   add(new THREE.BoxGeometry(.7,.22,.7),concrete,0,.11,0);
+   add(new THREE.CylinderGeometry(.1,.12,.6,16),iron,0,.52,0);
+   add(new THREE.CylinderGeometry(.13,.11,.08,16),iron,0,.86,0);
+   add(new THREE.SphereGeometry(.06,10,8),iron,0,.93,0);
+   const spout=add(new THREE.CylinderGeometry(.035,.03,.26,10),iron,.17,.64,0);spout.rotation.z=Math.PI/2+.25;
+   // The lever: a pivot lug on top and a long handle raised at rest.
+   const lever=add(new THREE.CylinderGeometry(.018,.018,.62,8),iron,-.22,1.02,0);lever.rotation.z=-1.05;
+   add(new THREE.SphereGeometry(.03,8,6),iron,-.48,1.17,0);
+   // A galvanised bucket under the spout.
+   add(new THREE.CylinderGeometry(.15,.12,.26,16,1,true),zinc,.38,.35,0).material.side=THREE.DoubleSide;
+   add(new THREE.TorusGeometry(.15,.008,6,18),zinc,.38,.48,0).rotation.x=Math.PI/2;
+   colliders.push({x:P[0]+.1,z:P[1],w:.95,d:.75});
+  }
+  machine([-5.9,1,-42.4],'Work the hand pump','Harbour hand pump','A cast-iron hand pump on a concrete plinth, for rinsing fish boxes and sluicing the quay. Two strokes of the handle and the water comes, cold, from the well under the harbour.');
 
   return {interactions,lights,bicycle};
 }
@@ -239,7 +262,10 @@ export function createTown(options){
    world.westYard=buildWestYard({parent:world.group,colliders:world.colliders,shadows:options.shadows});
    // Nobody drives onto an island: the ferry calls at the outer pier. See ferry.js.
    world.ferry=createFerryRun({parent:world.group,colliders:world.colliders,shadows:options.shadows});
-   world.ferryVehicles=createFerryVehicles({parent:world.group,run:world.ferry,getPlayerPosition:options.getPlayerPosition});
+   // Kitano Road and Kitano Bridge to the airport island, and the traffic on them: the car
+   // ferry's vehicles and the island's own cars. See kitano-link.js and town-traffic.js.
+   world.kitanoLink=buildKitanoLink({parent:world.group,colliders:world.colliders,shadows:options.shadows});
+   world.traffic=createTownTraffic({parent:world.group,colliders:world.colliders,ferry:world.ferry,getPlayerPosition:options.getPlayerPosition,people:()=>world.people||[],register:options.register,onAction:options.onAction});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,anisotropy:options.maxAnisotropy||4,
     heightAt:groundHeight,paved:pavedAt(),register:options.register,onAction:options.onAction});
    // Crabs on the wet sand below the wall and fish leaping offshore. See beach-life.js.
@@ -291,7 +317,7 @@ export function createTown(options){
   if(peninsulaActive())world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  if(peninsulaActive()){world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});}
+  if(peninsulaActive()){world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);}
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of STREET_CAST){
    const spawn=profile.work;
@@ -337,11 +363,11 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
-    world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes);world.homeLights?.update(minutes);world.airportIsland?.update(dt,minutes,day);world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
+    world.quietLife?.update(time);world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes);world.homeLights?.update(minutes);world.airportIsland?.update(dt,minutes,day);world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
     world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
-    world.ferry?.update(dt,minutes,time);world.ferryVehicles?.update(dt,minutes);world.bus?.update(dt,minutes);
+    world.ferry?.update(dt,minutes,time);world.traffic?.update(dt,minutes);world.bus?.update(dt,minutes);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
     if(world.shopDoors?.length){
