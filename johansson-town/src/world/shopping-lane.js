@@ -23,7 +23,8 @@ export function buildShoppingLane({world,register,onAction}){
  }
  for(const [x,z] of [[94.2,98.5],[94.2,103.5],[94.2,104.5]]){box('Flower display bucket',[.6,.6,.6],[x,.3,z],0x726c52,true);for(let i=0;i<5;i++){const stem=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,.65,5),mat(0x477052));stem.position.set(x+(i%3-1)*.12,.8,z+(Math.floor(i/3)-.5)*.18);group.add(stem);const f=new THREE.Mesh(new THREE.IcosahedronGeometry(.14,0),mat([0xe8c55a,0xd98fa3,0xf2e5c1][i%3]));f.position.copy(stem.position);f.position.y=1.12;group.add(f);}}
  box('Red drinks vending machine',[.8,1.9,1.1],[85.8,.95,112.8],0x963c39,true);box('Vending machine selection panel',[.04,1,.85],[86.23,1.25,112.8],0xd4d6c7);anchor(87,112.8,'Buy a cold drink on Rainflower Lane','rainflower-shop','Lane drinks machine',{item:'Cold island soda',price:100});
- for(const [x,z] of [[84.5,95],[95.5,128]]){box('Street utility pole',[.25,10,.25],[x,5,z],0x777c72,true);box('Utility cross arm',[4,.16,.15],[x,8.9,z],0x74776b);}
+ // Clear of the kerbstones beside them, not standing in them.
+ for(const [x,z] of [[84.25,95],[95.75,128]]){box('Street utility pole',[.25,10,.25],[x,5,z],0x777c72,true);box('Utility cross arm',[4,.16,.15],[x,8.9,z],0x74776b);}
  for(const offset of [-.65,.65]){const pts=[];for(let i=0;i<=12;i++){const t=i/12;pts.push(new THREE.Vector3(84.5+11*t+offset,9-Math.sin(t*Math.PI)*.8,95+33*t));}group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0x454d48})));}
  sign('RAINFLOWER LANE',84.35,2,95,5);
  anchor(88,96,'Read the Rainflower Lane guide','read','Rainflower Lane','A narrow neighbourhood shopping street off the eastern coastal road. Browse the flower stand, walk into Blue Coral for an island ice cream, buy a cold drink and walk between the weathered shop-houses. Rain darkens the paving; overhead wires lead toward the old upper floor windows.');
