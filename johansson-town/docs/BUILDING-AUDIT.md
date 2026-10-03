@@ -6,12 +6,37 @@
 
 ## Method
 
-The plans were measured from the game itself.
-- **Walls.** Each building was entered through the audit harness (`?audit`). Rays were cast along every 0.91 m grid line at 0.6, 1.2 and 1.95 m above the floor. A hit at full height is wall; a hit only lower down is furniture.
-- **Extent.** The extent is the floor mesh under the player.
-- **Grid.** The grid is the half-ken (半間, 0.91 m), the module every Okinawan carpenter used. One ken is 1.82 m, one tsubo 3.3 m², one jō (one tatami) 1.62 m².
-- **Fittings.** Each plan was checked for what the building type needs. Homes need a kitchen, toilet, bath, butsudan or tōtōmē, bedding, an entrance and a tokonoma. Shops need a counter, toilet and storage; civic rooms need a counter and toilet.
-- **Site plan.** The site plan holds the footprint of every building in town (50 of them).
+The original one-off browser survey was not retained as a generator. Its documented extent rule, “the floor mesh under the player”, explains the onsen's exact 10 × 1.4 m result: that is the first underlying genkan slab (`floorRect(-5,5,3.6,5)`), not the compound interior. The prose was subsequently corrected, but its JSON analysis and plan remained stale.
+
+The repeatable correction uses `scripts/building-survey.mjs` and `scripts/build-building-audit.mjs`:
+- **Extent:** the current runtime layout's movement bounds and, where defined, its floor polygon. Never one floor hit, nor a whole-scene box that includes the sea backdrop or a neighbouring venue.
+- **Geometry:** execute the same interior builders with a headless canvas stub for signage. Sample all named floor surfaces at the movement datum on a 0.2 m grid, including nested transforms. Pool holes and lowered bath floors remain excluded. This is supporting floor coverage, **not net walkable area**: fittings and player clearance require navigation checks.
+- **Plans:** green polygons show sampled floor support; brown polygons show full-height walls and collision fittings. Layout-only plans show the movement polygon and available authored colliders, not a verified geometry survey. No room count or door count is inferred from coarse ray hits.
+- **Grid:** the drawing grid remains 0.91 m. Movement clearance bounds are not wall centre lines, so they cannot verify the former “off module” finding.
+- **Fittings:** positive named geometry is recorded. Legacy missing-fitting lists are not an automatic proof of absence, particularly for shared facilities or layout-only evidence.
+- **Scope:** eleven interiors cover the remaining open findings and the compound kōban. Other analysis rows and the town site plan remain historical; they were not re-surveyed by this correction. The generated rows carry the exact source revision and method.
+
+<!-- full-domain-survey:start -->
+Survey source: `1f88e2d237694f7bbd81bdf4d68430200bfd382b`. Regenerate with `node scripts/build-building-audit.mjs`, then `python3 scripts/render-building-plans.py onsen koban clinic community-kitchen mayor-office mayor-home frontrow form3d ramen izakaya school` from `johansson-town/`.
+
+| Interior | Movement extent (m) | Domain (m²) | Sampled floor (m²) | Evidence |
+|---|---|---|---|---|
+| Umi-no-yu | 9.7 × 13.65 | 132.405 | 112.589 | Current builder geometry |
+| Minato Police Box | 6.6 × 6 | 39.6 | 39.6 | Current builder geometry |
+| Minato Clinic | 6.5 × 5.5 | 35.75 | 35.75 | Current builder geometry |
+| Community Kitchen | 6.5 × 5.5 | 35.75 | 35.75 | Current builder geometry |
+| Mayor’s Office | 6.5 × 5.5 | 35.75 | 35.75 | Current builder geometry |
+| Mayor’s House | 6.5 × 5.5 | 35.75 | 35.75 | Current builder geometry |
+| Front-Row Books | 8.4 × 7 | 58.8 | 58.8 | Current builder geometry |
+| Dock Electrical & Repair Workshop | 8.4 × 7 | 58.8 | 58.8 | Current builder geometry |
+| Sato Ramen | 17.4 × 12.4 | 202.26 | not sampled | Current layout only |
+| Minato Izakaya | 17.4 × 12.4 | 202.26 | not sampled | Current layout only |
+| Town Hall Classroom | 8.58 × 6.84 | 58.687 | not sampled | Current layout only |
+<!-- full-domain-survey:end -->
+
+![Corrected compound onsen plan](building-plans/onsen.png)
+
+**Open-finding re-check:** B5/B10 capture the full civic shells, so their architectural questions are not caused by a partial-floor selection. B6 needs revised shared-venue interpretation. B7/B8 fitting provision cannot be inferred from extent; the onsen builder supplies lockers, washing and baths, but no WC. B9 requires structural wall-centre measurements rather than clearance bounds. The kōban also had a partial survey: its office slab omitted the tatami room and WC. Its regenerated evidence now includes both main floor surfaces and the WC floor.
 
 ## The site
 
@@ -21,9 +46,9 @@ The plans were measured from the game itself.
 
 Footprints are sensible. Most houses are 5–7 m a side, 10–13 tsubo, which is a normal 1970s concrete house on a Kitahama plot. There is one note: **19 of the old-town houses share one 6.9 × 6.3 m footprint.** A real street has some variety, but a public-housing (県営住宅) row like this is true to life.
 
-## Every building
+## Original architectural inventory (historical measurements)
 
-`Rooms` counts connected spaces; doorways join rooms, so a house with sliding doors counts as one. `Off module` is how far the outer walls sit from the half-ken grid.
+The table below records the earlier architectural inventory. Use the generated current measurement table above for extents; do not interpret these historical room counts, module offsets or missing lists as new measurement results.
 
 | Building | Size (m) | Tsubo | Jō | Ceiling (m) | Off module (m) | Rooms | Missing |
 |---|---|---|---|---|---|---|---|
@@ -62,11 +87,11 @@ Severity:
 | B3 | B | Onsen → every room | The onsen renamed the shared room group, so later rooms reported “Umi-no-yu interior”. | **Fixed.** The name is reset when a room is cleared. |
 | B4 | A | Aya, Kenji, Thuan | Three households lived in one identical 7 × 6.8 m shell with no kitchen, toilet or bath. The yard houses were **4.2 m wide outside** and 7 m wide inside. | **Fixed.** The yard houses are 5.6 m wide, the most the yard takes beside the laundry. Inside each is a staff 1K drawn to its walls (see below). Thuan and Nao live in a red-tile Kitahama house like their neighbours’. |
 | B5 | B | Clinic, community kitchen, mayor’s office, mayor’s house | Four different uses share one 6.6 × 5.6 m shell. A clinic needs a waiting room, a consulting room and a WC; a mayor’s house is a home. | **Partly fixed.** The clinic has a waiting room (bench, scales, dispensary cabinet) in front of the consulting room, and a patients’ WC with a sample hatch. The mayor’s house has its WC and a small tiled bath. See B10 for the shell itself. |
-| B6 | B | Izakaya | The izakaya is a **13 × 13 m** hall (51 tsubo) with a 3.8 m ceiling. A 1980s Okinawan izakaya is 15–20 tsubo: a counter of 8 stools, a 6-jō zashiki and a kitchen behind a noren. Sato Ramen, measured at 18 × 13 m in the first pass, is really **4.3 × 5.1 m** (6.6 tsubo, right for a counter shop): the survey had read the izakaya model it shares. | **Open.** The izakaya is one model; shrinking it to about 9 × 6 m and adding a kitchen and WC means rebuilding it. |
-| B7 | C | Every shop and civic building except Sakura | **No toilet.** The Building Standards Act asks for sanitary facilities in any building people work in all day. | **Mostly fixed.** WCs in the mayor’s house, the clinic, the kōban (behind Officer Mori’s room), the harbour office, both yard houses and Thuan and Nao’s house. The hall’s public WC is off the community kitchen and serves the mayor’s office and the classroom. Front-Row Books and the repair workshop are served by their staff houses in the yard behind. **Open:** the izakaya and Umi-no-yu. |
-| B8 | C | Umi-no-yu | The first pass measured a 10 × 1.4 m strip. That was the survey: the bathhouse is **9.7 × 13.7 m**, with lobby, changing room, bath hall and rock bath. It has **no WC**. | **Open.** Put the WC off the changing room, in the west locker bay; the bath’s seat positions have to move with it. |
-| B9 | B | Most buildings | Outer walls sit 0.1–0.43 m off the half-ken grid. A carpenter would build to the grid; it also keeps tatami whole. | **Open.** Snap interiors to 0.91 m when they are rebuilt. |
-| B10 | B | Town hall rooms | The four rooms along the field face are **6.6 m wide inside, but their doors are 3.6 m apart** on the building. Each room is nearly twice as wide as its bay. | **Open.** Rebuild them to a 2-ken (3.64 m) bay, about 3.5 × 5.6 m each: still 12 jō, enough for an office, a kitchen or a clinic. |
+| B6 | B | Izakaya | The original survey conflated model extent, venue size and movement extent. Current Minato and Sato entrances both use the same **17.4 × 12.4 m** movement envelope and **202.26 m²** L-shaped domain. The former 4.3 × 5.1 m isolated ramen layout is not the current default path. This shared domain must not be counted twice as two independent rooms. | **Needs a separate venue-area review.** Do not justify resizing the working shared interior using the former single-floor/model measurement. Kitchen counters exist in the current shared collision layout; WC absence was not established by this layout-only check. |
+| B7 | C | Every shop and civic building except Sakura | **No toilet.** The Building Standards Act asks for sanitary facilities in any building people work in all day. | **Mostly fixed.** WCs in the mayor’s house, the clinic, the kōban (behind Officer Mori’s room), the harbour office, both yard houses and Thuan and Nao’s house. The hall’s public WC is off the community kitchen and serves the mayor’s office and the classroom. Front-Row Books and the repair workshop are served by their staff houses in the yard behind. **Remaining:** no WC geometry in the current onsen builder; izakaya WC provision needs a separate geometry/shared-facility check. Extent alone cannot establish missing fittings. |
+| B8 | C | Umi-no-yu | The first survey selected only the entrance slab. Current runtime bounds are **9.7 × 13.65 m** (132.405 m² domain). All five indoor floor slabs plus rock-bath paving are included. Lockers, washing stations and both baths are retained and recorded. No WC is built by this builder. | **Measurement error corrected.** The separate WC provision finding remains open; this audit correction makes no gameplay or layout changes. |
+| B9 | B | Most buildings | Outer walls sit 0.1–0.43 m off the half-ken grid. A carpenter would build to the grid; it also keeps tatami whole. | **Unverified by this correction.** Movement bounds include clearance and cannot establish wall-centre module offsets. Survey wall centres separately before recommending changes. |
+| B10 | B | Town hall rooms | The four rooms along the field face are **6.6 m wide inside, but their doors are 3.6 m apart** on the building. Current builders give all four rooms a 6.5 × 5.5 m movement domain within their 6.6 × 5.6 m shells. The full floor was captured; this is not an entrance-only measurement. The exterior bay comparison remains a separate source finding. | **Open.** Rebuild them to a 2-ken (3.64 m) bay, about 3.5 × 5.6 m each: still 12 jō, enough for an office, a kitchen or a clinic. |
 
 ## The family homes, redrawn
 
@@ -118,4 +143,4 @@ The houses outside were widened from 4.2 to 5.6 m to hold it.
 2. **File → Open** and choose any `docs/building-plans/*.khaaka.json`.
 3. Units are metres, and the grid is the half-ken (0.91 m). Walls are wall objects; furniture is in polygons.
 
-`analysis.json` holds the numbers in the table above.
+`analysis.json` contains the current generated measurement rows and historical rows outside this pass. `measurement-review.json` records scope, source and positive geometry evidence. Room counts, ceiling heights and missing-fitting lists outside the measured scope remain historical.

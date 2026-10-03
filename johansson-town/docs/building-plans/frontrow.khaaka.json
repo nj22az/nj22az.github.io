@@ -14,908 +14,1236 @@
  "view": {
   "x": 60,
   "y": 80,
-  "zoom": 1.5452537915657512
+  "zoom": 1
  },
  "objects": [
   {
    "id": 1,
-   "type": "wall",
-   "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 0.2,
-   "y1": 0.3,
-   "x2": 8.9,
-   "y2": 0.3,
-   "thickness": 0.2
+   "label": "Movement domain (not net walkable area)",
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 8.4,
+     "y": 0
+    },
+    {
+     "x": 8.4,
+     "y": 7
+    },
+    {
+     "x": 0,
+     "y": 7
+    }
+   ],
+   "fill": "#f1eee5",
+   "stroke": "#f1eee5"
   },
   {
    "id": 2,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 0.3,
-   "y1": 0.4,
-   "x2": 0.3,
-   "y2": 7.5,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 0
+    },
+    {
+     "x": 8.4,
+     "y": 0
+    },
+    {
+     "x": 8.4,
+     "y": 0.2
+    },
+    {
+     "x": 0,
+     "y": 0.2
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 3,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 0.5,
-   "y1": 0.4,
-   "x2": 0.5,
-   "y2": 3.1,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 0.2
+    },
+    {
+     "x": 8.4,
+     "y": 0.2
+    },
+    {
+     "x": 8.4,
+     "y": 0.4
+    },
+    {
+     "x": 0,
+     "y": 0.4
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 4,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 0.6,
-   "y1": 0.5,
-   "x2": 1.8,
-   "y2": 0.5,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 0.4
+    },
+    {
+     "x": 8.4,
+     "y": 0.4
+    },
+    {
+     "x": 8.4,
+     "y": 0.6
+    },
+    {
+     "x": 0,
+     "y": 0.6
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 5,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 2,
-   "y1": 0.5,
-   "x2": 2.6,
-   "y2": 0.5,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 0.6
+    },
+    {
+     "x": 8.4,
+     "y": 0.6
+    },
+    {
+     "x": 8.4,
+     "y": 0.8
+    },
+    {
+     "x": 0,
+     "y": 0.8
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 6,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 2.8,
-   "y1": 0.5,
-   "x2": 4.4,
-   "y2": 0.5,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 0.8
+    },
+    {
+     "x": 8.4,
+     "y": 0.8
+    },
+    {
+     "x": 8.4,
+     "y": 1
+    },
+    {
+     "x": 0,
+     "y": 1
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 7,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 4.5,
-   "y1": 0.5,
-   "x2": 6.4,
-   "y2": 0.5,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 1
+    },
+    {
+     "x": 8.4,
+     "y": 1
+    },
+    {
+     "x": 8.4,
+     "y": 1.2
+    },
+    {
+     "x": 0,
+     "y": 1.2
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 8,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 6.6,
-   "y1": 0.5,
-   "x2": 7.1,
-   "y2": 0.5,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 1.2
+    },
+    {
+     "x": 8.4,
+     "y": 1.2
+    },
+    {
+     "x": 8.4,
+     "y": 1.4
+    },
+    {
+     "x": 0,
+     "y": 1.4
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 9,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 7.3,
-   "y1": 0.5,
-   "x2": 8.3,
-   "y2": 0.5,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 1.4
+    },
+    {
+     "x": 8.4,
+     "y": 1.4
+    },
+    {
+     "x": 8.4,
+     "y": 1.6
+    },
+    {
+     "x": 0,
+     "y": 1.6
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 10,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 8.7,
-   "y1": 0.4,
-   "x2": 8.7,
-   "y2": 1.3,
-   "thickness": 0.4
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 1.6
+    },
+    {
+     "x": 8.4,
+     "y": 1.6
+    },
+    {
+     "x": 8.4,
+     "y": 1.8
+    },
+    {
+     "x": 0,
+     "y": 1.8
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 11,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 8.45,
-   "y1": 0.6,
-   "x2": 8.45,
-   "y2": 3.5,
-   "thickness": 0.1
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 1.8
+    },
+    {
+     "x": 8.4,
+     "y": 1.8
+    },
+    {
+     "x": 8.4,
+     "y": 2
+    },
+    {
+     "x": 0,
+     "y": 2
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 12,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 8.8,
-   "y1": 1.3,
-   "x2": 8.8,
-   "y2": 7.5,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 2
+    },
+    {
+     "x": 8.4,
+     "y": 2
+    },
+    {
+     "x": 8.4,
+     "y": 2.2
+    },
+    {
+     "x": 0,
+     "y": 2.2
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 13,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 8.6,
-   "y1": 1.4,
-   "x2": 8.6,
-   "y2": 2.7,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 2.2
+    },
+    {
+     "x": 8.4,
+     "y": 2.2
+    },
+    {
+     "x": 8.4,
+     "y": 2.4
+    },
+    {
+     "x": 0,
+     "y": 2.4
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 14,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 8.6,
-   "y1": 2.8,
-   "x2": 8.6,
-   "y2": 4.7,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 2.4
+    },
+    {
+     "x": 8.4,
+     "y": 2.4
+    },
+    {
+     "x": 8.4,
+     "y": 2.6
+    },
+    {
+     "x": 0,
+     "y": 2.6
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 15,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 0.55,
-   "y1": 3.1,
-   "x2": 0.55,
-   "y2": 5.4,
-   "thickness": 0.1
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 2.6
+    },
+    {
+     "x": 8.4,
+     "y": 2.6
+    },
+    {
+     "x": 8.4,
+     "y": 2.8
+    },
+    {
+     "x": 0,
+     "y": 2.8
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 16,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 0.45,
-   "y1": 3.2,
-   "x2": 0.45,
-   "y2": 4,
-   "thickness": 0.1
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 2.8
+    },
+    {
+     "x": 8.4,
+     "y": 2.8
+    },
+    {
+     "x": 8.4,
+     "y": 3
+    },
+    {
+     "x": 0,
+     "y": 3
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 17,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 8.45,
-   "y1": 3.6,
-   "x2": 8.45,
-   "y2": 6.9,
-   "thickness": 0.1
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 3
+    },
+    {
+     "x": 8.4,
+     "y": 3
+    },
+    {
+     "x": 8.4,
+     "y": 3.2
+    },
+    {
+     "x": 0,
+     "y": 3.2
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 18,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 0.45,
-   "y1": 4.1,
-   "x2": 0.45,
-   "y2": 5.4,
-   "thickness": 0.1
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 3.2
+    },
+    {
+     "x": 8.4,
+     "y": 3.2
+    },
+    {
+     "x": 8.4,
+     "y": 3.4
+    },
+    {
+     "x": 0,
+     "y": 3.4
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 19,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 8.6,
-   "y1": 4.8,
-   "x2": 8.6,
-   "y2": 6.9,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 3.4
+    },
+    {
+     "x": 8.4,
+     "y": 3.4
+    },
+    {
+     "x": 8.4,
+     "y": 3.6
+    },
+    {
+     "x": 0,
+     "y": 3.6
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 20,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 3.95,
-   "y1": 6.9,
-   "x2": 3.95,
-   "y2": 7.5,
-   "thickness": 0.1
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 3.6
+    },
+    {
+     "x": 8.4,
+     "y": 3.6
+    },
+    {
+     "x": 8.4,
+     "y": 3.8
+    },
+    {
+     "x": 0,
+     "y": 3.8
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 21,
-   "type": "polygon",
-   "label": "tall unit",
-   "closed": true,
-   "fill": "#c9c2b8",
-   "stroke": "#5a4f45",
+   "label": "",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 4.2,
-     "y": 6.9
+     "x": 0,
+     "y": 3.8
     },
     {
-     "x": 4.9,
-     "y": 6.9
+     "x": 8.4,
+     "y": 3.8
     },
     {
-     "x": 4.9,
-     "y": 7.3
+     "x": 8.4,
+     "y": 4
     },
     {
-     "x": 4.2,
-     "y": 7.3
+     "x": 0,
+     "y": 4
     }
-   ]
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 22,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 5.1,
-   "y1": 6.9,
-   "x2": 5.1,
-   "y2": 7.4,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 4
+    },
+    {
+     "x": 8.4,
+     "y": 4
+    },
+    {
+     "x": 8.4,
+     "y": 4.2
+    },
+    {
+     "x": 0,
+     "y": 4.2
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 23,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 4.1,
-   "y1": 7,
-   "x2": 4.1,
-   "y2": 7.3,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 4.2
+    },
+    {
+     "x": 8.4,
+     "y": 4.2
+    },
+    {
+     "x": 8.4,
+     "y": 4.4
+    },
+    {
+     "x": 0,
+     "y": 4.4
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 24,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 2.2,
-   "y1": 7.35,
-   "x2": 3.3,
-   "y2": 7.35,
-   "thickness": 0.3
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 4.4
+    },
+    {
+     "x": 8.4,
+     "y": 4.4
+    },
+    {
+     "x": 8.4,
+     "y": 4.6
+    },
+    {
+     "x": 0,
+     "y": 4.6
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 25,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 0.4,
-   "y1": 7.4,
-   "x2": 2.2,
-   "y2": 7.4,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 4.6
+    },
+    {
+     "x": 8.4,
+     "y": 4.6
+    },
+    {
+     "x": 8.4,
+     "y": 4.8
+    },
+    {
+     "x": 0,
+     "y": 4.8
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 26,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 3.3,
-   "y1": 7.4,
-   "x2": 3.9,
-   "y2": 7.4,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 4.8
+    },
+    {
+     "x": 8.4,
+     "y": 4.8
+    },
+    {
+     "x": 8.4,
+     "y": 5
+    },
+    {
+     "x": 0,
+     "y": 5
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 27,
-   "type": "wall",
    "label": "",
-   "stroke": "#3b2f2a",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x1": 5.2,
-   "y1": 7.4,
-   "x2": 8.7,
-   "y2": 7.4,
-   "thickness": 0.2
+   "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
+   "points": [
+    {
+     "x": 0,
+     "y": 5
+    },
+    {
+     "x": 8.4,
+     "y": 5
+    },
+    {
+     "x": 8.4,
+     "y": 5.2
+    },
+    {
+     "x": 0,
+     "y": 5.2
+    }
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 28,
-   "type": "polygon",
    "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 2.3,
-     "y": 0.6
+     "x": 0,
+     "y": 5.2
     },
     {
-     "x": 2.7,
-     "y": 0.6
+     "x": 8.4,
+     "y": 5.2
     },
     {
-     "x": 2.7,
-     "y": 0.7
+     "x": 8.4,
+     "y": 5.4
     },
     {
-     "x": 2.3,
-     "y": 0.7
+     "x": 0,
+     "y": 5.4
     }
-   ]
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 29,
-   "type": "polygon",
    "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 6,
-     "y": 0.6
+     "x": 0,
+     "y": 5.4
     },
     {
-     "x": 6.4,
-     "y": 0.6
+     "x": 8.4,
+     "y": 5.4
     },
     {
-     "x": 6.4,
-     "y": 0.7
+     "x": 8.4,
+     "y": 5.6
     },
     {
-     "x": 6,
-     "y": 0.7
+     "x": 0,
+     "y": 5.6
     }
-   ]
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 30,
-   "type": "polygon",
    "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 6.9,
-     "y": 0.6
+     "x": 0,
+     "y": 5.6
     },
     {
-     "x": 7.4,
-     "y": 0.6
+     "x": 8.4,
+     "y": 5.6
     },
     {
-     "x": 7.4,
-     "y": 0.7
+     "x": 8.4,
+     "y": 5.8
     },
     {
-     "x": 6.9,
-     "y": 0.7
+     "x": 0,
+     "y": 5.8
     }
-   ]
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 31,
-   "type": "polygon",
    "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 0.8,
-     "y": 0.7
+     "x": 0,
+     "y": 5.8
     },
     {
-     "x": 0.9,
-     "y": 0.7
+     "x": 8.4,
+     "y": 5.8
     },
     {
-     "x": 0.9,
-     "y": 1.2
+     "x": 8.4,
+     "y": 6
     },
     {
-     "x": 0.8,
-     "y": 1.2
+     "x": 0,
+     "y": 6
     }
-   ]
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 32,
-   "type": "polygon",
    "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 3.1,
-     "y": 0.7
+     "x": 0,
+     "y": 6
     },
     {
-     "x": 3.2,
-     "y": 0.7
+     "x": 8.4,
+     "y": 6
     },
     {
-     "x": 3.2,
-     "y": 1.2
+     "x": 8.4,
+     "y": 6.2
     },
     {
-     "x": 3.1,
-     "y": 1.2
+     "x": 0,
+     "y": 6.2
     }
-   ]
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 33,
-   "type": "polygon",
    "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 4.2,
-     "y": 0.7
+     "x": 0,
+     "y": 6.2
     },
     {
-     "x": 4.3,
-     "y": 0.7
+     "x": 8.4,
+     "y": 6.2
     },
     {
-     "x": 4.3,
-     "y": 1.2
+     "x": 8.4,
+     "y": 6.4
     },
     {
-     "x": 4.2,
-     "y": 1.2
+     "x": 0,
+     "y": 6.4
     }
-   ]
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 34,
-   "type": "polygon",
    "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 8,
-     "y": 0.7
+     "x": 0,
+     "y": 6.4
     },
     {
-     "x": 8.1,
-     "y": 0.7
+     "x": 8.4,
+     "y": 6.4
     },
     {
-     "x": 8.1,
-     "y": 1.2
+     "x": 8.4,
+     "y": 6.6
     },
     {
-     "x": 8,
-     "y": 1.2
+     "x": 0,
+     "y": 6.6
     }
-   ]
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 35,
-   "type": "polygon",
    "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 3,
-     "y": 0.8
+     "x": 0,
+     "y": 6.6
     },
     {
-     "x": 3.1,
-     "y": 0.8
+     "x": 8.4,
+     "y": 6.6
     },
     {
-     "x": 3.1,
-     "y": 1.2
+     "x": 8.4,
+     "y": 6.8
     },
     {
-     "x": 3,
-     "y": 1.2
+     "x": 0,
+     "y": 6.8
     }
-   ]
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 36,
-   "type": "polygon",
    "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 4.1,
-     "y": 0.8
+     "x": 0,
+     "y": 6.8
     },
     {
-     "x": 4.2,
-     "y": 0.8
+     "x": 8.4,
+     "y": 6.8
     },
     {
-     "x": 4.2,
-     "y": 1.2
+     "x": 8.4,
+     "y": 7
     },
     {
-     "x": 4.1,
-     "y": 1.2
+     "x": 0,
+     "y": 7
     }
-   ]
+   ],
+   "fill": "#d9e7d5",
+   "stroke": "#d9e7d5"
   },
   {
    "id": 37,
-   "type": "polygon",
-   "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
+   "label": "Solid fitting",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 8.1,
-     "y": 0.8
+     "x": 0,
+     "y": 0
     },
     {
-     "x": 8.2,
-     "y": 0.8
+     "x": 8.4,
+     "y": 0
     },
     {
-     "x": 8.2,
-     "y": 1.2
+     "x": 8.4,
+     "y": 0.355
     },
     {
-     "x": 8.1,
-     "y": 1.2
+     "x": 0,
+     "y": 0.355
     }
-   ]
+   ],
+   "fill": "#ad9c85",
+   "stroke": "#ad9c85"
   },
   {
    "id": 38,
-   "type": "polygon",
-   "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
+   "label": "Solid fitting",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 0.6,
-     "y": 1.7
+     "x": 8.045,
+     "y": 0.325
     },
     {
-     "x": 0.7,
-     "y": 1.7
+     "x": 8.4,
+     "y": 0.325
     },
     {
-     "x": 0.7,
-     "y": 2.2
+     "x": 8.4,
+     "y": 6.515
     },
     {
-     "x": 0.6,
-     "y": 2.2
+     "x": 8.045,
+     "y": 6.515
     }
-   ]
+   ],
+   "fill": "#ad9c85",
+   "stroke": "#ad9c85"
   },
   {
    "id": 39,
-   "type": "polygon",
-   "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
+   "label": "Solid fitting",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 6,
-     "y": 3.8
+     "x": 0,
+     "y": 0.325
     },
     {
-     "x": 6.1,
-     "y": 3.8
+     "x": 0.355,
+     "y": 0.325
     },
     {
-     "x": 6.1,
-     "y": 4.6
+     "x": 0.355,
+     "y": 5.015
     },
     {
-     "x": 6,
-     "y": 4.6
+     "x": 0,
+     "y": 5.015
     }
-   ]
+   ],
+   "fill": "#ad9c85",
+   "stroke": "#ad9c85"
   },
   {
    "id": 40,
-   "type": "polygon",
-   "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
+   "label": "Solid fitting",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 7.3,
-     "y": 3.8
+     "x": 7.307,
+     "y": 4.2
     },
     {
-     "x": 7.4,
-     "y": 3.8
+     "x": 8.05,
+     "y": 4.2
     },
     {
-     "x": 7.4,
-     "y": 4.6
+     "x": 8.05,
+     "y": 4.7
     },
     {
-     "x": 7.3,
-     "y": 4.6
+     "x": 7.307,
+     "y": 4.7
     }
-   ]
+   ],
+   "fill": "#ad9c85",
+   "stroke": "#ad9c85"
   },
   {
    "id": 41,
-   "type": "polygon",
-   "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
+   "label": "Solid fitting",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 7.2,
-     "y": 3.9
+     "x": 0.81,
+     "y": 5.33
     },
     {
-     "x": 7.3,
-     "y": 3.9
+     "x": 2.49,
+     "y": 5.33
     },
     {
-     "x": 7.3,
-     "y": 4.6
+     "x": 2.49,
+     "y": 5.91
     },
     {
-     "x": 7.2,
-     "y": 4.6
+     "x": 0.81,
+     "y": 5.91
     }
-   ]
+   ],
+   "fill": "#ad9c85",
+   "stroke": "#ad9c85"
   },
   {
    "id": 42,
-   "type": "polygon",
-   "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
+   "label": "Solid fitting",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 1.2,
-     "y": 5.7
+     "x": 0.41,
+     "y": 0.395
     },
     {
-     "x": 1.3,
-     "y": 5.7
+     "x": 2.89,
+     "y": 0.395
     },
     {
-     "x": 1.3,
-     "y": 6.2
+     "x": 2.89,
+     "y": 0.925
     },
     {
-     "x": 1.2,
-     "y": 6.2
+     "x": 0.41,
+     "y": 0.925
     }
-   ]
+   ],
+   "fill": "#ad9c85",
+   "stroke": "#ad9c85"
   },
   {
    "id": 43,
-   "type": "polygon",
-   "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
+   "label": "Solid fitting",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 2.6,
-     "y": 5.7
+     "x": 3.805,
+     "y": 0.395
     },
     {
-     "x": 2.8,
-     "y": 5.7
+     "x": 7.835,
+     "y": 0.395
     },
     {
-     "x": 2.8,
-     "y": 6.2
+     "x": 7.835,
+     "y": 0.925
     },
     {
-     "x": 2.6,
-     "y": 6.2
+     "x": 3.805,
+     "y": 0.925
     }
-   ]
+   ],
+   "fill": "#ad9c85",
+   "stroke": "#ad9c85"
   },
   {
    "id": 44,
-   "type": "polygon",
-   "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
+   "label": "Solid fitting",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 1,
-     "y": 6.4
+     "x": 5.61,
+     "y": 3.485
     },
     {
-     "x": 1.1,
-     "y": 6.4
+     "x": 7.09,
+     "y": 3.485
     },
     {
-     "x": 1.1,
-     "y": 6.9
+     "x": 7.09,
+     "y": 4.315
     },
     {
-     "x": 1,
-     "y": 6.9
+     "x": 5.61,
+     "y": 4.315
     }
-   ]
+   ],
+   "fill": "#ad9c85",
+   "stroke": "#ad9c85"
   },
   {
    "id": 45,
-   "type": "polygon",
-   "label": "",
-   "closed": true,
-   "fill": "#efe3c8",
-   "stroke": "#9a8a6a",
+   "label": "Solid fitting",
    "strokeWidth": 1,
+   "type": "polygon",
+   "closed": true,
    "points": [
     {
-     "x": 0.9,
-     "y": 6.5
+     "x": 0.26,
+     "y": 6.11
     },
     {
-     "x": 1,
-     "y": 6.5
+     "x": 0.74,
+     "y": 6.11
     },
     {
-     "x": 1,
-     "y": 6.9
+     "x": 0.74,
+     "y": 6.59
     },
     {
-     "x": 0.9,
-     "y": 6.9
+     "x": 0.26,
+     "y": 6.59
     }
-   ]
+   ],
+   "fill": "#ad9c85",
+   "stroke": "#ad9c85"
   },
   {
    "id": 46,
-   "type": "door",
-   "label": "Exit to Main Street",
-   "stroke": "#874f0e",
-   "fill": "#e8f0ff",
-   "strokeWidth": 2,
-   "x": 4.13,
-   "y": 7.25,
-   "w": 0.8,
-   "rot": 0
-  },
-  {
-   "id": 47,
+   "label": "",
+   "strokeWidth": 1,
    "type": "text",
-   "label": "",
+   "x": 0,
+   "y": -0.7,
+   "text": "Front-Row Books · movement domain 8.4 × 7 m · 58.8 m²",
+   "size": 16,
    "fill": "#1c2433",
-   "stroke": "#1c2433",
-   "strokeWidth": 1,
-   "x": 0.1,
-   "y": -0.6,
-   "text": "Front-Row Books (frontrow) · 9.06 × 7.66 m · 21.0 tsubo · ceiling 2.75 m",
-   "size": 16
-  },
-  {
-   "id": 48,
-   "type": "measure",
-   "label": "",
-   "stroke": "#c0392b",
-   "fill": "#e8f0ff",
-   "strokeWidth": 1,
-   "x1": 0,
-   "y1": 7.959999847412109,
-   "x2": 9.0600004196167,
-   "y2": 7.959999847412109
-  },
-  {
-   "id": 49,
-   "type": "measure",
-   "label": "",
-   "stroke": "#c0392b",
-   "fill": "#e8f0ff",
-   "strokeWidth": 1,
-   "x1": 9.3600004196167,
-   "y1": 0,
-   "x2": 9.3600004196167,
-   "y2": 7.659999847412109
+   "stroke": "#1c2433"
   }
  ],
- "nextId": 50
+ "nextId": 47
 }
