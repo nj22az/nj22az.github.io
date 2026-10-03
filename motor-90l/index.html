@@ -36,10 +36,12 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); c
 header.title { position: fixed; top: 16px; left: 16px; max-width: min(520px, calc(100vw - 32px)); pointer-events: none; }
 header.title a { pointer-events: auto; color: var(--muted); font-size: 13px; text-decoration: none; }
 header.title a:hover { color: var(--accent); }
+header.title .cta { display: inline-block; margin-top: 8px; padding: 6px 12px; border-radius: 8px; background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 14px; }
+header.title .cta:hover { color: var(--accent-ink); filter: brightness(1.1); }
 header.title h1 { margin: 4px 0 2px; font-size: clamp(20px, 3vw, 28px); letter-spacing: -0.01em; }
 header.title p { margin: 0; color: var(--muted); font-size: 14px; }
 
-#caption { position: fixed; left: 16px; top: 112px; max-width: min(440px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--line);
+#caption { position: fixed; left: 16px; top: 150px; max-width: min(440px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--line);
   border-radius: var(--radius); padding: 10px 12px; font-size: 14px; line-height: 1.45; backdrop-filter: blur(8px); }
 
 #panel { position: fixed; top: 16px; right: 16px; bottom: 16px; width: 360px; display: flex; flex-direction: column; background: var(--panel);
@@ -142,6 +144,7 @@ body:not(.ready) #bar, body:not(.ready) #panel { visibility: hidden; }
   <a href="/">← The Office of Nils Johansson</a>
   <h1>IEC 90L-4 pump motor</h1>
   <p>1.5 kW · 4-pole · 230 Δ / 400 Y V · TEFC IP66 — built to IEC 60072-1, then audited.</p>
+  <a class="cta" href="workshop/">Watch Tetsuo's routine on this motor →</a>
 </header>
 <div id="caption" hidden></div>
 

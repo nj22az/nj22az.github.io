@@ -129,6 +129,16 @@ export function ironCheck(core = CORE, s = SLOT, poles = RATING.poles) {
   return { yoke, Byoke, tooth, Btooth };
 }
 
+// Phase resistance of the corrected winding (25 turns/coil, 12 coils in series, Ø1.00 mm) at temperature T (°C).
+// Mean turn: two slot sides of the 110 mm stack plus two end turns spanning 7 of 36 slots at r ≈ 54 mm.
+export function phaseResistance(T = 20, core = CORE) {
+  const chord = 2 * 54 * Math.sin(Math.PI * core.coilPitchSlots / core.slots);
+  const meanTurn = 2 * (core.stack + 10) + 2 * 1.35 * chord;     // mm
+  const turns = 25 * 12, area = Math.PI * 1.0 ** 2 / 4;           // mm²
+  const R20 = 0.0172 * turns * meanTurn / 1000 / area;            // Ω, copper 0.0172 Ω·mm²/m
+  return R20 * (235 + T) / (235 + 20);
+}
+
 export function summary() {
   const ns = syncSpeed(RATING.f, RATING.poles);
   return {
@@ -148,6 +158,7 @@ export function summary() {
     flangeBelowFeet: IEC.P / 2 - IEC.H,
     shrinkLoss: shrinkLoss(CORE.OD, 60, 80),
     iron: ironCheck(),
+    R20: phaseResistance(20),
     J: lineCurrent(RATING.P, RATING.U_star, RATING.eta, RATING.pf) / (CORE.strands * Math.PI * CORE.wire ** 2 / 4),
   };
 }

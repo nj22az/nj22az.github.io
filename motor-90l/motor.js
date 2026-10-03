@@ -691,6 +691,7 @@ export const TERMINALS = {
   W2: [STUD_X[1], STUD_Z[0]], U2: [STUD_X[1], STUD_Z[1]], V2: [STUD_X[1], STUD_Z[2]],
 };
 const FLOOR = BOX.y0 + 7, BOARD_TOP = FLOOR + 10;
+export const BOX_INSIDE = Object.freeze({ floor: FLOOR, boardTop: BOARD_TOP, earth: [BOX.x - 30, 30], tp: [[BOX.x + 30, -30], [BOX.x + 30, -24]] });
 
 function terminalBox() {
   const h = BOX.half * 2;
