@@ -131,6 +131,20 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const [left,right] of [[MAIN_ROAD.pavementWest,MAIN_ROAD.west],[MAIN_ROAD.east,MAIN_ROAD.pavementEast]]){
     const pavement=directBox([right-left,.10,MAIN_ROAD.maxZ-MAIN_ROAD.minZ],[(left+right)/2,-.062,(MAIN_ROAD.maxZ+MAIN_ROAD.minZ)/2],GROUND.pavers,group,[0,0,0],false,'paving');pavement.name='Main Street footway';
   }
+  // Kerbstones: a light concrete edge between footway and carriageway on both sides,
+  // dropped flush where the two crossings meet the road so a pram (or a player) rolls
+  // straight across. Low enough to step over without a hitch.
+  {
+    const kerb=new THREE.MeshStandardMaterial({color:0xd9d6cc,roughness:.9});
+    const gaps=[SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6]).sort((a,b)=>a[0]-b[0]);
+    for(const x of [MAIN_ROAD.west-.09,MAIN_ROAD.east+.09]){
+      let z0=MAIN_ROAD.minZ;
+      for(const [a,b] of [...gaps,[MAIN_ROAD.maxZ,MAIN_ROAD.maxZ]]){
+        if(b>z0&&a>z0){const len=a-z0;const k=new THREE.Mesh(new THREE.BoxGeometry(.18,.11,len),kerb);k.position.set(x,.025,z0+len/2);k.name='Main Street kerb';k.receiveShadow=true;k.castShadow=false;group.add(k);}
+        z0=Math.max(z0,b);
+      }
+    }
+  }
   for(const x of [MAIN_ROAD.west+.15,MAIN_ROAD.east-.15])for(let z=10;z<MAIN_ROAD.maxZ-.8;z+=4.5)roadMark(.10,1.55,x,z,0xa99f7d);
   for(let x=MAIN_ROAD.west+.55;x<MAIN_ROAD.east-.3;x+=1.15)roadMark(.62,1.8,x,MAIN_ROAD.maxZ-1.8,0xbeb79a);
   [[-4.1,18.2,1.15,.45,.2],[-1.7,10,.8,.35,-.3]].forEach(v=>puddle(...v));

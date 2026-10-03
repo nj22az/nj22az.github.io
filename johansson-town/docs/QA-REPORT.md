@@ -88,6 +88,29 @@ Avatars have bigger heads (adults 1.12×, children 1.4×) for the life-sim silho
 |---|---|---|
 | ![iPad wardrobe](qa/creator-ipad-wardrobe.png) | ![Base layer](qa/creator-base-layer.png) | ![Phone](qa/creator-phone.png) |
 
+## Environment audit: street grid and clipping (3 October)
+
+Measured rather than eyeballed: a top-down orthographic plan of the town, and a scan of all 3,630 meshes and 480 colliders against the game's own ground and surface map, looking for props that float, sink into the ground, overlap a building or stand in the roadway.
+
+| Finding | Cause | Fix |
+|---|---|---|
+| Sakura and the west shops stood straight on the asphalt; their bikes, nobori and the cat were in the road | Main Street was 6 m of carriageway with a 1 m west "pavement" under the shopfronts, and no kerb on either side | 4.5 m carriageway; a 2.5 m west footway; light concrete kerbs both sides, dropped at the two crossings. Everything that reads `MAIN_ROAD` (routes, lanes, deck, ferry traffic) follows. Thuan's bike moved onto the footway |
+| A white halo round Sakura from the air; flat, washed-out light all over town | Sakura's interior hemisphere fill (1.7) and two 17 m point lights stayed on outdoors. A light has no walls | The shop's lights switch on only while you are inside. The town's own daylight fill is raised to keep shaded walls warm |
+| A crooked orange roof off the grid behind Front-Row | The yard home's hip roof was rotated 45° and then stretched, which shears it into a rhombus | The rotation is baked into the geometry before the stretch |
+| The stone lantern at the sea cave showed only its roof | Placed at y 0 on a hill 0.73 m high | Stands on the headland surface |
+| The west yard was a speckled grey patchwork from above | Gravel texture | The same painted lawn as the east green |
+
+Nothing floats. The collider overlaps that remain are wall corners meeting, which is correct.
+
+**Standard street furniture** (from the reference): white chain bollards along the sea wall, stepping round the waterfront gardens, and brick flower planters at the north crossing. One design each, in `street-furniture.js`.
+
+| Before | After |
+|---|---|
+| ![Sakura, before](qa/env-before-sakura.png) | ![Sakura, after](qa/env-after-sakura.png) |
+| ![Sea wall](qa/env-after-seawall.png) | ![Crossing](qa/env-after-crossing.png) |
+
+![Plan after](qa/env-after-plan.png)
+
 ## Open: logged for the next passes (all but O1's far-plane note are now fixed above)
 
 | # | Sev | Area | Finding | Recommendation |

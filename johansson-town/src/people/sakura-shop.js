@@ -14,6 +14,8 @@ import {townAudio} from '../audio/town-audio.js?snappy=1';
 
 // A single persistent shop owns stock, staff and customer jobs everywhere in town.
 export function createSakuraShop({world,scene,state,ledger,register,action,exit,getMinutes,getPlayerPosition,isInside,onBorrow=()=>{},getRain=()=>false,save=()=>{}}){
+ // Re-checked twice a second too: the interior's lights arrive when its model loads.
+ let lightsInside=null,lightCheck=0;
  const group=new THREE.Group();group.name='Sakura Shōten continuous shop';group.userData.sharedAsset=true;group.visible=false;scene.add(group);
  if(state.sakura.playerClaim){returnShopStock(state,state.sakura.playerClaim);delete state.sakura.playerClaim;}
  for(const account of Object.values(state.residentLife||{})){
@@ -131,6 +133,12 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    return true;
   },
   hide(){scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);const walls=shell();if(walls)walls.visible=true;showPeople(true);},
-  update(dt){display.tick?.(performance.now()/1000);if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);},
+  update(dt){
+   // The shop's lights are for the inside of the shop. The interior stays in the street
+   // scene so you can see it through the glass, but a light has no walls: left on, its
+   // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
+   // roof and the road. Outside, the shop shows through the window by its own glow.
+   {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0){lightsInside=inside;lightCheck=.5;group.traverse(o=>{if(o.isLight)o.visible=inside;});}}
+   display.tick?.(performance.now()/1000);if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);},
  };
 }

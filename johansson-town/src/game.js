@@ -1359,6 +1359,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  photo:()=>openPhotoStudio(),
  get photoActive(){return !!photoStudio?.active;},
  get world(){return world;},
+ /** The ground and the surface under a point, as the simulation reads them (clipping audits). */
+ ground(x,z){return groundHeight(x,z);},route(x,z){const r=routeAt(x,z);return r?{id:r.id,surface:r.surface}:null;},
  enter(id){const s=id===CITY_RESTAURANT.id?NAHA_TRIP:SITES.find(site=>site.id===id);return s?enterRoom(s):null;},
  leave(){leaveRoom();},
  interact(){doInteract();},

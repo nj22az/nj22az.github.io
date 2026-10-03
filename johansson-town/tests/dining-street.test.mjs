@@ -44,7 +44,7 @@ test('both alley halves and restaurants face Main Street, with shared streaming 
 test('six-metre roadway and continuous pavement support the frontages without the old alley floor or wires',()=>{
  const {world}=make(),group=world.diningStreet.group;assert.equal(world.diningStreet.ready,true);world.group.updateMatrixWorld(true);
  const ray=new THREE.Raycaster(),footways=world.group.children.filter(o=>o.name==='Main Street footway'),blocked=(x,z)=>townBoundsBlocked(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
- const deckBounds=new THREE.Box3().setFromObject(world.boardwalk.deck);assert.equal(deckBounds.max.x-deckBounds.min.x,6);assert.equal((deckBounds.max.x+deckBounds.min.x)/2,MAIN_ROAD.x);
+ const deckBounds=new THREE.Box3().setFromObject(world.boardwalk.deck);assert.equal(deckBounds.max.x-deckBounds.min.x,MAIN_ROAD.width);assert.equal((deckBounds.max.x+deckBounds.min.x)/2,MAIN_ROAD.x);
  let floors=0,draws=0;group.traverse(o=>{if(o.isMesh){draws++;assert.ok(!['ground','pole'].includes(o.material.name),'No detached spanning wires or old alley floor');}});assert.ok(draws<=30,'Keep shared material batches after splitting');
  // Compacting the town ended Main Street, its footway and its pavement together at
  // z=20.5; the bus station forecourt beyond the seam is its own ground, covered by

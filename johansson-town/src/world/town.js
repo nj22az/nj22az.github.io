@@ -11,6 +11,7 @@ import {batchStaticProps} from '../render/static-props.js';
 import {STREET_CAST} from '../people/residents.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
+import {buildStreetFurniture} from './street-furniture.js';
 import {lanePatches} from './lane-surfaces.js?snappy=1';
 import {buildParkOnsen} from './park-onsen.js';
 import {buildSchool} from './school.js';
@@ -155,7 +156,8 @@ function addStreetLife(world,options,factory){
   // Thuan's bicycle stands on the west footway, a short walk from Sakura. The
   // peninsula keeps it as an interactive ride; archived layouts keep the bookshop
   // inspection spot and its original placement.
-  const bicycleSpot=peninsulaActive()?{x:-4.85,z:-23.2}:BOOKSHOP_BICYCLE;
+  // On the west footway, between Sakura's front and the kerb (the carriageway is narrower now).
+  const bicycleSpot=peninsulaActive()?{x:-5.8,z:-23.2}:BOOKSHOP_BICYCLE;
   const bicycle=buildBicycle({...bicycleSpot,shadows:options.shadows,animated:true});
   bicycle.object.name="Thuan's commuter bicycle";
   addWithCollider(group,colliders,bicycle);
@@ -229,6 +231,10 @@ export function createTown(options){
    // The streets that fill the rest of the peninsula in: Nishi-machi behind the west
    // yard, and shop-houses along both kerbs of Main Street. See okinawa/layout.js.
    world.quarters=buildOkinawaQuarters(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
+   // The standard street furniture: chain bollards along the sea wall, brick planters at
+   // the crossings. Laid last, so it can step round everything already standing.
+   // See street-furniture.js.
+   world.streetFurniture=buildStreetFurniture({parent:world.group,colliders:world.colliders,heightAt:groundHeight,shadows:options.shadows});
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
     await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});
   }

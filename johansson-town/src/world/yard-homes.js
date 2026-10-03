@@ -27,7 +27,11 @@ export function buildYardHomes(world,options){
   mesh(new THREE.BoxGeometry(w,h,d),std(spec.walls),x,h/2+.18,z,'Yard home walls');
   // Roof: red tiles in a shallow hip with a shisa, or a flat slab with a water tank.
   if(spec.roof==='tile'){
-   const roof=mesh(new THREE.ConeGeometry(Math.hypot(w,d)*.62,1.1,4,1),std(0xc4553a,{roughness:.7}),x,h+.18+.55,z,'Yard home tiled roof');roof.rotation.y=Math.PI/4;roof.scale.set(1,1,d/w);
+   // The quarter turn is baked into the cone before it is stretched to the house's
+   // depth: as a rotation on the mesh, the stretch ran along a diagonal and sheared the
+   // roof into a skewed rhombus, crooked against the walls and the street grid.
+   const roofGeometry=new THREE.ConeGeometry(Math.hypot(w,w)*.62,1.1,4,1);roofGeometry.rotateY(Math.PI/4);
+   const roof=mesh(roofGeometry,std(0xc4553a,{roughness:.7}),x,h+.18+.55,z,'Yard home tiled roof');roof.scale.set(1,1,d/w);
    const shisa=new THREE.Group();shisa.position.set(x,h+.18+1.12,z);shisa.name='Shisa';group.add(shisa);
    const clay=std(0xd2804a,{roughness:.9});
    const body=new THREE.Mesh(new THREE.SphereGeometry(.13,10,8),clay);body.scale.set(1,.9,1.2);shisa.add(body);

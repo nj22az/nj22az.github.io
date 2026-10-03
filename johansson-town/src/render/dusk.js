@@ -195,7 +195,10 @@ export function clock(minutes,{rain=false,inside=false}={}){
   groundFill:groundFill(minutes),
   // A clear island night: deep blue fill and the lit windows and lamps doing the work,
   // rather than a grey haze at sixty per cent of the day (docs/QA-REPORT.md, O2).
-  ambient:inside?1.05:(.36+day*.57+dusk*.1),
+  // Daylight fill is generous: a sunny island town has soft, light shadows, and shaded
+  // walls keep their colour instead of going grey. (Sakura's interior fill used to leak
+  // into the street and do this job by accident; it is switched off outdoors now.)
+  ambient:inside?1.05:(.36+day*.84+dusk*.1),
   bounce:(.34+day*1.06)*(rain?.8:1),
   exposure:inside?1.08:.8+day*.28+dusk*.08,
   gradeWarmth:gradeWarmth(minutes),

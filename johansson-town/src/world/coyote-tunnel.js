@@ -248,7 +248,9 @@ function buildCaveMouth(group,shadows){
  // A stone lantern beside the path, lit in the evening.
  const stone=new THREE.MeshStandardMaterial({color:0x9a958a,roughness:.95});
  const glow=new THREE.MeshStandardMaterial({color:0xf2d59a,roughness:.6,emissive:0xf2b25a,emissiveIntensity:0});
- const lantern=new THREE.Group();lantern.position.set(-W-.9,0,face-2.2);lantern.name='Stone lantern';group.add(lantern);
+ // It stands on the headland's own surface there, which rises above the path's level;
+ // at y 0 it sank half a metre into the hill with only its roof showing.
+ const lantern=new THREE.Group();{const lx=-W-.9,lz=face-2.2,h=headlandHeight(TUNNEL.x+lx,TUNNEL.z+lz);lantern.position.set(lx,Number.isFinite(h)?Math.max(0,h-.04):0,lz);}lantern.name='Stone lantern';group.add(lantern);
  for(const [geo,y,mat] of [[new THREE.CylinderGeometry(.28,.34,.18,6),.09,stone],[new THREE.CylinderGeometry(.1,.12,.7,8),.53,stone],[new THREE.BoxGeometry(.42,.12,.42),.94,stone],
   [new THREE.BoxGeometry(.3,.3,.3),1.15,glow],[new THREE.ConeGeometry(.42,.32,4),1.46,stone],[new THREE.SphereGeometry(.07,6,4),1.66,stone]]){
   const m=new THREE.Mesh(geo,mat);m.position.y=y;if(geo.type==='ConeGeometry')m.rotation.y=Math.PI/4;m.castShadow=shadows;lantern.add(m);
