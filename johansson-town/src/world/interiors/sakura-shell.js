@@ -157,6 +157,8 @@ function buildIsland(id){
    const lip=side<0?a:b;shelf.span(Math.min(lip,lip-side*.018),Math.max(lip,lip-side*.018),level-.05,level+.012,inZ0,inZ1,C.rail);
   }
  }
+ // Two compact bays on the daily-goods island, with a visible upright between them.
+ if(id==='east')ends.span(x0,x1,.12,1.5,R.z-.018,R.z+.018,C.end);
  // A header board on the spine with the shop's hand-painted aisle card.
  shelf.span(R.x-.015,R.x+.015,1.48,1.5,inZ0,inZ1,C.woodDark);
  for(const z of [z0+.025,z1-.025])ends.span(x0,x1,0,1.5,z-.025,z+.025,C.end);
@@ -220,11 +222,11 @@ function buildWallShelving(){
  for(const x of [-6.15,-4.19])for(const z of [-2.45,-1.88])span(x-.02,x+.02,0,1.45,z-.02,z+.02,0x7d878a);
  // The medicine boards behind the till, over the cabinet, and the cupboard beside it.
  const M=MEDICINE_SHELF;
- span(M.back-.01,M.back+.03,.9,2.1,.3,3.8,C.woodDark);
+ span(M.back-.01,M.back+.03,.98,2.1,M.minZ-.08,M.maxZ+.08,C.woodDark);
  for(const y of M.levels)span(M.front-.02,M.back,y-.02,y,M.minZ-.08,M.maxZ+.08,C.wood);
- for(const z of [.3,3.8])span(M.front-.02,M.back+.03,.9,2.1,z-.02,z+.02,C.woodDark);
- span(M.front-.02,M.back+.03,2.08,2.12,.3,3.8,C.woodDark);
- span(6.24,6.83,0,.9,1.88,3.8,C.wainscot);span(6.22,6.83,.9,.94,1.88,3.8,C.woodDark);
+ for(const z of [M.minZ-.08,M.maxZ+.08])span(M.front-.02,M.back+.03,.98,2.1,z-.02,z+.02,C.woodDark);
+ span(M.front-.02,M.back+.03,2.08,2.12,M.minZ-.08,M.maxZ+.08,C.woodDark);
+ span(6.24,6.73,0,.9,1.88,3.8,C.wainscot);span(6.22,6.73,.9,.94,1.88,3.8,C.woodDark);
  // The back-room rack: two steel units, four boards.
  const K=BACKROOM.rack;
  for(const [a,b] of K.units){
