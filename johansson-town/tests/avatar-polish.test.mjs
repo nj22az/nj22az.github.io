@@ -25,14 +25,14 @@ test('face UVs never interpolate a second face across the rear seam',()=>{
  }
 });
 
-test('the kariyushi collar: a modelled stand round the neck, notched lapels drawn over an open V',()=>{
+test('the kariyushi collar is cloth: a stand round the neck, notched leaves and lapels over an open V, with a shadow under them',()=>{
  for(const name of ['Johansson','Thuan']){
   const a=buildAvatar({...CAST_RECIPES[name],outfit:{...CAST_RECIPES[name].outfit,top:'kariyushi'}}),m=a.measure,P=a.body.geometry.attributes.position;
   let stand=0;
   for(let i=0;i<P.count;i++)if(P.getY(i)>m.neckY+m.torso*.045&&Math.abs(P.getX(i))<.03*m.k&&P.getZ(i)<-m.armR*1.2)stand++;
   assert.ok(stand>0,name+'\'s collar rises behind the neck, clear of it');
   assert.ok(a.garment.marks.includes('open neck'),'the V of skin is open');
-  assert.ok(a.garment.marks.includes('lapels'),'the collar leaves and lapels are drawn, with their ink edge');a.dispose();
+  assert.ok(a.garment.marks.includes('collar shadow'),'the collar casts its toon shadow on the shirt');a.dispose();
  }
 });
 

@@ -2,12 +2,12 @@ import {THUAN_SAILOR_OUTFIT} from './outfits.js';
 import {SPRING_BONES,SPRING_PARENT,springRest,chainShare,quarterShare,hemSpec,createSprings} from './springs.js';
 import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 import * as THREE from '../../vendor/three.module.js';
-import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {mergeGeometries,mergeVertices} from '../../vendor/BufferGeometryUtils.js';
 import {normalizeRecipe} from './recipe.js';
 import {drawFace,faceLayout} from './face.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {celFrom} from '../render/cel.js';
-import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG} from './garment.js';
+import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG,CAMP_COLLAR} from './garment.js';
 
 /**
  * Builds a Shimanchu from a recipe.
@@ -77,6 +77,43 @@ const PARENT={...SPRING_PARENT,hips:'root',spine:'hips',chest:'spine',neck:'ches
 const tmpColour=new THREE.Color();
 /** The torso lathe's radius at a fraction of its height. */
 /** The camp collar from Blender (tools/blender/kariyushi_collar.py), body-relative. */
+/**
+ * The camp collar's leaf and lapel, one piece of cloth each side: the CAMP_COLLAR outline
+ * laid onto the chest and given a few millimetres of thickness, so it has an edge the ink
+ * outline follows and catches the light, plain cloth with no print. The outline is cut
+ * into small triangles first so the cloth bends with the chest rather than cutting into it.
+ */
+function campCollar(list,m,prof,colour){
+ const W=m.width,D=m.depth,mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+ for(const s of [-1,1]){
+  const outline=CAMP_COLLAR.map(([f,t])=>new THREE.Vector2(f,t));
+  let tris=THREE.ShapeUtils.triangulateShape(outline,[]).map(t=>t.map(i=>[outline[i].x,outline[i].y]));
+  for(let k=0;k<3;k++)tris=tris.flatMap(([a,b,c])=>{const ab=mid(a,b),bc=mid(b,c),ca=mid(c,a);return [[a,ab,ca],[ab,b,bc],[ca,bc,c],[ab,bc,ca]];});
+  // On the chest, lifted off it: out from the body's axis, and up a little where the chest
+  // turns over into the shoulder.
+  const at=([f,t],lift)=>{const r=latheRadius(prof,t),x=s*f*W/2*r,z=D/2*r*Math.sqrt(Math.max(0,1-f*f)),q=Math.hypot(x,z)||1,k=1+lift/q;
+   return new THREE.Vector3(x*k,m.hipY+t*m.torso+lift*THREE.MathUtils.smoothstep(t,.9,1.02),z*k);};
+  const top=.011*m.k,under=.003*m.k,pos=[],centre=at([.5,.84],0);
+  const face=(a,b,c)=>{const n=new THREE.Vector3().subVectors(b,a).cross(new THREE.Vector3().subVectors(c,a)),out=a.clone().add(b).add(c).multiplyScalar(1/3).sub(centre.clone().multiplyScalar(.2));
+   if(n.dot(out)<0)[b,c]=[c,b];pos.push(a.x,a.y,a.z,b.x,b.y,b.z,c.x,c.y,c.z);};
+  for(const [a,b,c] of tris){face(at(a,top),at(b,top),at(c,top));const A=at(a,under),B=at(b,under),C=at(c,under),n=new THREE.Vector3().subVectors(B,A).cross(new THREE.Vector3().subVectors(C,A));
+   // The underside faces into the body.
+   if(n.dot(A)>0)pos.push(A.x,A.y,A.z,C.x,C.y,C.z,B.x,B.y,B.z);else pos.push(A.x,A.y,A.z,B.x,B.y,B.z,C.x,C.y,C.z);}
+  // The edge all round, in the same steps as the triangles' edges.
+  const ring=[];CAMP_COLLAR.forEach((p,i)=>{const q=CAMP_COLLAR[(i+1)%CAMP_COLLAR.length];for(let j=0;j<8;j++)ring.push([p[0]+(q[0]-p[0])*j/8,p[1]+(q[1]-p[1])*j/8]);});
+  const c2=at([.45,.85],top);
+  ring.forEach((p,i)=>{const q=ring[(i+1)%ring.length],a=at(p,under),b=at(q,under),c=at(q,top),d=at(p,top),n=new THREE.Vector3().subVectors(b,a).cross(new THREE.Vector3().subVectors(d,a)),away=a.clone().add(c).multiplyScalar(.5).sub(c2);
+   if(n.dot(away)>=0)pos.push(a.x,a.y,a.z,b.x,b.y,b.z,c.x,c.y,c.z,a.x,a.y,a.z,c.x,c.y,c.z,d.x,d.y,d.z);else pos.push(a.x,a.y,a.z,c.x,c.y,c.z,b.x,b.y,b.z,a.x,a.y,a.z,d.x,d.y,d.z,c.x,c.y,c.z);});
+  let g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  g=mergeVertices(g,1e-5);g.computeVertexNormals();
+  // A light ink line round the collar, none along the open V: there the outline would
+  // draw on the skin beside the edge and cross where the lapels meet at the button.
+  const piece=part(list,g,'chest',colour),Q=piece.attributes.position,ink=piece.attributes.ink;
+  for(let i=0;i<Q.count;i++){const t=(Q.getY(i)-m.hipY)/m.torso,f=Math.abs(Q.getX(i))/(W/2*latheRadius(prof,THREE.MathUtils.clamp(t,0,1.04))),edgeV=.035+(.62-.035)*THREE.MathUtils.clamp((t-.73)/.28,0,1);
+   ink.setX(i,.55*THREE.MathUtils.smoothstep(f-edgeV,.04,.14));}
+ }
+}
+
 function latheRadius(prof,t){for(let i=1;i<prof.length;i++){const [r0,y0]=prof[i-1],[r1,y1]=prof[i];if(t<=y1)return r0+(r1-r0)*((t-y0)/((y1-y0)||1));}return prof.at(-1)[0];}
 /**
  * A part: geometry in model space, painted, bound to one bone -- or, for a limb, shared
@@ -494,13 +531,14 @@ function addBody(list,recipe,m,swim=false){
  // a real edge in silhouette and catches the light, so it reads as a collar, not a bib.
  // The collar's stand is modelled: a band of the shirt round the back and sides of the
  // neck, open at the front, rolling a little outward at the top, so the collar wraps the
- // neck from every side. Its leaves and lapels on the front are drawn (garment.js).
+ // neck from every side. Its leaves and lapels on the front are cloth too (campCollar).
  if(!swim&&o.top==='kariyushi'){
-  const ri=m.armR*1.08+.004*m.k,t=.007*m.k,h=.045*m.k,roll=.012*m.k,open=.95;
+  const ri=m.armR*1.08+.004*m.k,t=.007*m.k,h=.04*m.k,roll=.012*m.k,open=.68;
   const band=new THREE.LatheGeometry([[ri,0],[ri+t,0],[ri+t+roll,h],[ri+roll*.6,h]].map(([r,y])=>new THREE.Vector2(r,y)).concat([new THREE.Vector2(ri,0)]),24,open,Math.PI*2-open*2);
-  // It runs down to nothing at the front, where it turns into the drawn leaves.
-  const P=band.attributes.position;for(let i=0;i<P.count;i++){const a=Math.abs(Math.atan2(P.getX(i),P.getZ(i)));P.setY(i,P.getY(i)*THREE.MathUtils.smoothstep(a,open,open+.9));}band.computeVertexNormals();
+  // It runs down to nothing at the front, where it turns into the collar's leaves.
+  const P=band.attributes.position;for(let i=0;i<P.count;i++){const a=Math.abs(Math.atan2(P.getX(i),P.getZ(i)));P.setY(i,P.getY(i)*THREE.MathUtils.smoothstep(a,open,open+1.1));}band.computeVertexNormals();
   part(list,band,'chest',top,M(0,m.neckY-.012*m.k,0));
+  campCollar(list,m,prof,top);
  }
  // A hood lies on the back; everything else on the front of a top is painted.
  if(!swim&&o.top==='hoodie')part(list,new THREE.SphereGeometry(m.width*.35,16,12,0,Math.PI*2,0,Math.PI*.75),'chest',top,M(0,m.neckY-.045,-D*.32,.9,0,0,1,.7,.55));
