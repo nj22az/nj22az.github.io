@@ -1,0 +1,15 @@
+.lesson-b h2{margin:4px 0 6px;font-size:24px}.lesson-b .pick{display:block;font-size:14px;margin-bottom:14px}.lesson-b .pick select{display:block;width:100%;margin-top:5px}
+.lesson-b .source{color:#2a4d63;font-weight:600}.steps{list-style:none;display:flex;flex-wrap:wrap;gap:6px;padding:0;margin:12px 0 16px}
+.steps li{font-size:14px;padding:4px 10px;border:1px solid #bccbd4;border-radius:999px;color:#526774}.steps li[aria-current]{background:#064f91;color:#fff;border-color:#064f91}.steps li.klart{background:#e6f0e3;color:#24502c;border-color:#9fc39b}
+#work .prompt{font-size:17px;font-weight:600}#work label{display:block;font-size:15px;margin:12px 0}#work input,#work textarea{display:block;width:100%;font:inherit;font-size:17px;padding:10px;margin-top:6px;border:1px solid #9fb1bc;border-radius:5px;box-sizing:border-box}
+#work button.primary,.row button.primary{background:#064f91;color:#fff;border-color:#064f91}#work form>button.primary{width:100%;margin-top:6px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}#err{color:#8c3d21;min-height:1.2em}
+.erik-note{border-left:3px solid #1d2840;padding-left:12px}.erik-lines{padding-left:20px}.erik-lines li{margin:8px 0;color:#526774}.erik-lines li.now{color:#163248;font-weight:600}
+.verdict{font-weight:700;padding:10px 12px;border-radius:6px}.verdict.ok{background:#e6f0e3;color:#24502c}.verdict.fel{background:#fbeee4;color:#8c3d21}
+.readings div{border-top:1px solid #d3dee4;padding:8px 0}.readings dt{font-weight:700}.readings dd{margin:2px 0;font-size:15px}
+.read{font-size:15px;border-top:1px solid #bccbd4;padding-top:12px;margin-top:18px}.muted{color:#526774;font-size:14px}.saved{color:#24502c;font-weight:600}
+.erik-say{min-height:1.5em;font-size:16px;color:#1d2840;font-weight:600;margin:10px 0 0}
+.erik-bubble{position:absolute;left:12px;right:12px;bottom:46px;z-index:3;background:#fffdf5;border:1px solid #c9b989;border-radius:10px;padding:10px 14px;font-size:15px;line-height:1.4;color:#1d2840;box-shadow:0 4px 14px rgba(0,0,0,.15);pointer-events:none}
+.protocol table{width:100%;border-collapse:collapse;font-size:14px}.protocol th,.protocol td{border-top:1px solid #d3dee4;padding:6px;text-align:left;vertical-align:top}
+@media(max-width:900px){.erik-bubble{font-size:14px;bottom:40px}.protocol table{display:block;overflow-x:auto}}
+@media print{.room-column,#work .row,#task-pick,.pick{display:none}}

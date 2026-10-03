@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 const route='/sjoskolan/simulatorer/';
-const modulePath='/sjoskolan/simulatorer/app.mjs?v=20260930-room1';
+const modulePath='/sjoskolan/simulatorer/app.mjs?v=20261003-erik-a';
 async function inspect(page){return page.evaluate(async path=>(await import(path)).inspect(),modulePath);}
 async function probe(page,name){await page.locator('#scene canvas').scrollIntoViewIfNeeded();const point=await page.evaluate(async ([path,name])=>(await import(path)).contactScreen(name),[modulePath,name]);await page.mouse.click(point.x,point.y);}
 async function fit(page){const r=await page.evaluate(()=>({w:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));expect(r.scroll).toBeLessThanOrEqual(r.w+1);}
@@ -50,4 +50,25 @@ test('protocol requires prediction and matching wiring, exports CSV and persists
  await page.locator('.protocol > summary').click();const row0=page.locator('[data-p="rows.0.forv"]');const fetch=page.locator('.lp-fetch[data-row="0"]');await fetch.click();await expect(page.locator('.lp-row-msg').first()).toContainText('Räkna först');await row0.fill('5,00 V');await fetch.click();await expect(page.locator('[data-p="rows.0.uppm"]')).toHaveValue('5,01 V ⎓');
  await page.locator('[data-p="rows.1.forv"]').fill('1000 Ω');await page.locator('.lp-fetch[data-row="1"]').click();await expect(page.locator('.lp-row-msg').nth(1)).toContainText('annan koppling');
  const download=page.waitForEvent('download');await page.locator('.lp-csv').click();expect((await download).suggestedFilename()).toBe('maskinrum-stationA-v1-protokoll.csv');await page.reload();await page.locator('.protocol > summary').click();await expect(page.locator('[data-p="rows.0.uppm"]')).toHaveValue('5,01 V ⎓');expect(await page.evaluate(()=>localStorage.getItem('sjoskolan-protokoll-stationA'))).toBeNull();
+});
+
+test('Erik visar varje steg i Station A: pekar med armarna, säger inget tal och stannar vid nästa steg',async({page},info)=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(route);await expect(page.locator('#scene canvas')).toBeVisible();await expect(page.locator('#scene-status')).toBeHidden();
+ const s=(await inspect(page)).scene;expect(s.erik.character).toBe('Erik');expect(s.character).toBe('Johansson');
+ await page.locator('#erik-show').click();await expect(page.locator('#erik-bubble')).toContainText('Erik:');
+ await expect(page.locator('#erik-lines li')).toHaveCount(3);expect((await inspect(page)).scene.erik.playing).toBe(true);
+ await page.waitForTimeout(4200);await page.screenshot({path:info.outputPath('erik-pekar.png')});
+ const arms=(await inspect(page)).scene.erik.handError;expect(arms.R).toBeLessThan(.03);expect(arms.L).toBeLessThan(.03);
+ await page.locator('#erik-skip').click();await expect(page.locator('#erik-show')).toHaveText('Erik visar igen');
+ expect(await page.locator('#erik-lines').innerText()).not.toMatch(/(?<![A-Za-zÅÄÖåäö])\d/);
+ await page.locator('#mode').selectOption('dc');await page.locator('#red').selectOption('Ref+');await page.locator('#black').selectOption('Ref−');await page.locator('#check').click();await page.locator('#next').click();
+ await expect(page.locator('#erik-lines')).toBeHidden();expect((await inspect(page)).scene.erik.playing).toBe(false);
+ await page.locator('#free').click();await expect(page.locator('#erik-box')).toBeHidden();
+ expect(errors).toEqual([]);
+});
+test('Erik i 2D-läget: stegen som text',async({page})=>{
+ await page.addInitScript(()=>{const orig=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(t,...a){return /webgl/.test(t)?null:orig.call(this,t,...a);};});
+ await page.goto(route);await expect(page.locator('#scene-status')).toContainText('3D är inte tillgängligt');
+ await page.locator('#erik-show').click();await expect(page.locator('#erik-lines li')).toHaveCount(3);await expect(page.locator('#erik-bubble')).toBeHidden();
 });

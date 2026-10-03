@@ -1,8 +1,9 @@
-import {createSession} from './session.mjs?v=20260930-room1';
+import {createSession} from './session.mjs?v=20261003-erik-a';
 import {RIGS,MODES} from './multimeter/model.mjs';
 import {STATION_A_PROTOKOLL} from './multimeter/stationA-protokoll.mjs';
 import {mountProtocol} from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
 import {markHtml} from '../gemensamt/markering.mjs';
+import {ERIK_STATION_A} from './stationA-manus.mjs?v=20261003-erik-a';
 const $=s=>document.querySelector(s);
 let storage;try{storage=localStorage;}catch{}
 const session=createSession(storage);let room=null,active='black',flat=false,view='bench',alternate=false;
@@ -34,23 +35,38 @@ function render(){
   $('#check').hidden=session.free||session.passed;$('#next').hidden=session.free||!session.passed||p.done;
   $('#progress').textContent=`${p.done?'Station A genomförd.':`${p.stage} av 9 steg genomförda.`} ${p.records.length} sparade mätningar. Framsteg sparas separat från veckolabbet.`;
   $('#storage-status').textContent=session.storageOK?'':'Webbläsaren kan inte spara lokalt. Du kan fortsätta öva och exportera protokollet.';
+  $('#erik-box').hidden=session.free||p.done;
   room?.setState(s);renderFlat();
 }
+// Erik visar steget: han pekar ut det uppgiften säger, i 3D eller som text i 2D-läget. Avläsningen gör eleven.
+function erikReset(){room?.erikStop();$('#erik-lines').hidden=true;$('#erik-lines').innerHTML='';$('#erik-bubble').hidden=true;$('#erik-skip').hidden=true;$('#erik-show').textContent='Erik visar steget';}
+function erikLine(i,say){for(const [k,li] of [...$('#erik-lines').children].entries())li.classList.toggle('now',k===i);$('#erik-bubble').innerHTML=`<strong>Erik:</strong> ${markHtml(say)}`;$('#erik-bubble').hidden=flat||!room;}
+function erikDone(){$('#erik-skip').hidden=true;$('#erik-show').textContent='Erik visar igen';setTimeout(()=>{if(!room?.inspect().erik.playing)$('#erik-bubble').hidden=true;},2500);}
+$('#erik-show').addEventListener('click',()=>{
+  const stage=session.progress.stage,beats=ERIK_STATION_A[stage]||[];erikReset();
+  $('#erik-lines').innerHTML=beats.map(b=>`<li>${markHtml(b.say)}</li>`).join('');$('#erik-lines').hidden=false;
+  if(!room||flat){erikDone();return;}
+  if(view!=='bench')setView('bench');
+  const r=$('#viewport').getBoundingClientRect();if(r.top<0||r.bottom>innerHeight)$('#viewport').scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  $('#erik-skip').hidden=false;$('#erik-show').textContent='Erik visar …';
+  room.erikShow(beats,{onBeat:b=>erikLine(beats.indexOf(b),b.say),onDone:erikDone});
+});
+$('#erik-skip').addEventListener('click',()=>room?.erikFinish());
 for(const id of ['mode','jack','rig','red','black'])$('#'+id).addEventListener('change',e=>change(id,id==='rig'?Number(e.target.value):e.target.value||null));
 $('#power').addEventListener('click',()=>change('power',!session.state.power));$('#link').addEventListener('click',()=>change('link',!session.state.link));
 $('#disconnect').addEventListener('click',()=>{const e=session.change('red',null)||session.change('black',null);message(e);render();});
 $('#reset-protection').addEventListener('click',()=>{message(session.resetProtection());render();});
 $('#check').addEventListener('click',()=>{const ok=session.check();message(ok?session.step.why:`Kontrollera mätfunktion, uttag, matning, länk och mätpunkter. ${session.reading().detail}`);render();});
-$('#next').addEventListener('click',()=>{session.next();$('#hint').open=false;message('');render();});
-$('#free').addEventListener('click',()=>{session.setFree(!session.free);message('');render();});
-$('#restart').addEventListener('click',()=>{session.restart();message('Stegen är återställda. Tidigare mätningar och protokoll finns kvar.');render();});
+$('#next').addEventListener('click',()=>{session.next();erikReset();$('#hint').open=false;message('');render();});
+$('#free').addEventListener('click',()=>{session.setFree(!session.free);erikReset();message('');render();});
+$('#restart').addEventListener('click',()=>{session.restart();erikReset();message('Stegen är återställda. Tidigare mätningar och protokoll finns kvar.');render();});
 function choose(probe){active=probe;room?.setActive(probe);for(const id of ['black','red'])$('#choose-'+id).setAttribute('aria-pressed',String(id===probe));}
 for(const id of ['black','red'])$('#choose-'+id).addEventListener('click',()=>choose(id));
 function pick(probe,node){if(view==='overview')setView('bench');change(probe,node);}
 $('#flat-diagram').addEventListener('click',e=>{const node=e.target.closest('[data-node]');if(node)pick(active,node.dataset.node);});
 $('#flat-diagram').addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)&&e.target.dataset.node){e.preventDefault();pick(active,e.target.dataset.node);}});
 function setFlat(value){flat=value;$('#flat-diagram').toggleAttribute('hidden',!flat);$('#scene').hidden=flat;$('#flat').setAttribute('aria-pressed',String(flat));$('#flat').textContent=flat?'Visa 3D-maskinrum':'Använd 2D-vy';room?.setVisible(!flat);$('#walk-controls').hidden=flat||view!=='overview';}
-function setView(value){view=value;room?.setView(value);$('#bench').setAttribute('aria-pressed',String(view==='bench'));$('#overview').setAttribute('aria-pressed',String(view==='overview'));$('#walk-controls').hidden=flat||view!=='overview';$('#room-caption').textContent=view==='bench'?'Johansson · elektrisk verkstad · SELV':'Johansson · maskinrum · WASD / piltangenter';}
+function setView(value){view=value;room?.setView(value);$('#bench').setAttribute('aria-pressed',String(view==='bench'));$('#overview').setAttribute('aria-pressed',String(view==='overview'));$('#walk-controls').hidden=flat||view!=='overview';$('#room-caption').textContent=view==='bench'?'Johansson och Erik · elektrisk verkstad · SELV':'Johansson · maskinrum · WASD / piltangenter';if(view!=='bench'){room?.erikStop();$('#erik-bubble').hidden=true;$('#erik-skip').hidden=true;}}
 $('#bench').addEventListener('click',()=>setView('bench'));$('#overview').addEventListener('click',()=>setView('overview'));$('#camera').addEventListener('click',()=>{alternate=!alternate;room?.setAlternate(alternate);$('#camera').setAttribute('aria-pressed',String(alternate));});
 $('#flat').addEventListener('click',()=>{if(room)setFlat(!flat);else{setFlat(true);$('#scene-status').hidden=false;$('#scene-status').textContent='3D är inte tillgängligt. Alla mätningar fungerar i 2D-vyn.';}});
 for(const button of document.querySelectorAll('[data-move]')){
@@ -62,7 +78,7 @@ for(const button of document.querySelectorAll('[data-move]')){
 mountProtocol($('#protocol'),{...STATION_A_PROTOKOLL,key:'maskinrum-stationA-v1',rowMessages:true,station:'Maskinrummet · elektrisk verkstad · Station A',snapshot(plan){const m=session.reading(),s=session.state,n=plan?.need||{};const wrong=[];if(n.mode&&s.mode!==n.mode)wrong.push(`välj ${MODES[n.mode]}`);if(n.red&&(s.red!==n.red||s.black!==n.black))wrong.push(`röd på ${n.red} och svart på ${n.black}`);if(n.pair&&[s.red,s.black].sort().join()!==n.pair.slice().sort().join())wrong.push(`spetsarna på ${n.pair.join(' och ')}`);if(n.power!==undefined&&s.power!==n.power)wrong.push(n.power?'slå på matningen':'bryt matningen');if(n.link!==undefined&&s.link!==n.link)wrong.push(n.link?'slut länken P–A':'öppna länken P–A');if(wrong.length)return {error:`Den här protokollraden kräver en annan koppling: ${wrong.join(', ')}.`};if(m.code!=='reading')return {error:'Anslut mätaren och välj rätt mätfunktion först.'};return {varde:`${m.text} ${m.unit}`,punkter:`röd ${s.red} / svart ${s.black}`,drift:`${MODES[s.mode]}, ${s.jack}-uttag, rigg ${s.rig}, matning ${s.power?'till':'bruten'}, länk ${s.link?'sluten':'öppen'}`};}});
 render();
 try{
-  const {mountRoom}=await import('./scene.mjs?v=20260930-room1');
+  const {mountRoom}=await import('./scene.mjs?v=20261003-erik-a');
   room=mountRoom($('#scene'),{onPick:pick,onFailure(){setFlat(true);$('#scene-status').hidden=false;$('#scene-status').textContent='3D-vyn avbröts. Fortsätt med samma mätning i 2D.';}});room.setActive(active);room.setState(session.state);$('#scene-status').hidden=true;
 }catch(error){console.warn('Maskinrum: 2D-reservläge',error);setFlat(true);$('#scene-status').textContent='3D är inte tillgängligt. Alla mätningar fungerar i 2D-vyn.';$('#overview').disabled=true;$('#camera').disabled=true;}
 export function inspect(){return {state:session.state,progress:session.progress,scene:room?.inspect()||null,flat};}
