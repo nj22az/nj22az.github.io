@@ -25,8 +25,19 @@ test('face UVs never interpolate a second face across the rear seam',()=>{
  }
 });
 
+test('the kariyushi collar is modelled: it stands behind the neck and lies over an open V',()=>{
+ for(const name of ['Johansson','Thuan']){
+  const a=buildAvatar({...CAST_RECIPES[name],outfit:{...CAST_RECIPES[name].outfit,top:'kariyushi'}}),m=a.measure,P=a.body.geometry.attributes.position;
+  let stand=0;
+  for(let i=0;i<P.count;i++)if(P.getY(i)>m.neckY+m.torso*.045&&Math.abs(P.getX(i))<.03*m.k&&P.getZ(i)<-m.armR*1.2)stand++;
+  assert.ok(stand>0,name+'\'s collar rises behind the neck, clear of it');
+  assert.ok(a.garment.marks.includes('open neck'),'the V of skin is painted under it');
+  assert.ok(!a.garment.marks.includes('lapels'),'no painted lapels as well');a.dispose();
+ }
+});
+
 test('shirt collars and buttons are painted on the +z front, with nothing stuck on',()=>{
- for(const top of ['kariyushi','polo','blouse','jacket','smock']){
+ for(const top of ['polo','blouse','jacket','smock']){
   const a=buildAvatar({...CAST_RECIPES.Thuan,outfit:{...CAST_RECIPES.Thuan.outfit,top,pattern:'flowers'}});
   assert.ok(a.garment.marks.some(m=>m==='collar'||m==='lapels'),top+' has a collar drawn');
   // The torso carries the garment's UVs, centred on the front; every other part samples the empty strip.

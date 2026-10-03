@@ -7,6 +7,7 @@ import {drawFace,faceLayout} from './face.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {celFrom} from '../render/cel.js';
 import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG} from './garment.js';
+import {COLLAR_MESH} from './collar-mesh.js';
 
 /**
  * Builds a Shimanchu from a recipe.
@@ -73,6 +74,12 @@ const PARENT={hips:'root',spine:'hips',chest:'spine',neck:'chest',head:'neck',sh
 
 const tmpColour=new THREE.Color();
 /** The torso lathe's radius at a fraction of its height. */
+/** The camp collar from Blender (tools/blender/kariyushi_collar.py), body-relative. */
+let collarBase=null;
+function collarGeometry(){
+ if(!collarBase){collarBase=new THREE.BufferGeometry();collarBase.setAttribute('position',new THREE.Float32BufferAttribute(COLLAR_MESH.positions,3));collarBase.setIndex(COLLAR_MESH.indices);collarBase.computeVertexNormals();}
+ return collarBase;
+}
 function latheRadius(prof,t){for(let i=1;i<prof.length;i++){const [r0,y0]=prof[i-1],[r1,y1]=prof[i];if(t<=y1)return r0+(r1-r0)*((t-y0)/((y1-y0)||1));}return prof.at(-1)[0];}
 /**
  * A part: geometry in model space, painted, bound to one bone -- or, for a limb, shared
@@ -479,6 +486,10 @@ function addBody(list,recipe,m,swim=false){
   part(list,new THREE.CylinderGeometry(W*.52,W*.52,m.torso*.2,16,1,true),'chest',recipe.swim.colour,M(0,hipY+m.torso*.66,0,0,0,0,1,1,D/W));
  // Neck.
  tube(list,[0,m.neckY-.02,0],[0,m.headY+.01,0],m.armR*1.2,'neck',skin,8);
+ // A kariyushi's open camp collar is modelled, not painted: a stand behind the neck that
+ // rolls into the fall over the shoulders and folds back down the front to the V. It is
+ // a real edge in silhouette and catches the light, so it reads as a collar, not a bib.
+ if(!swim&&o.top==='kariyushi')part(list,collarGeometry(),'chest',top,M(0,m.neckY,0,0,0,0,W,m.torso,D));
  // A hood lies on the back; everything else on the front of a top is painted.
  if(!swim&&o.top==='hoodie')part(list,new THREE.SphereGeometry(m.width*.35,16,12,0,Math.PI*2,0,Math.PI*.75),'chest',top,M(0,m.neckY-.045,-D*.32,.9,0,0,1,.7,.55));
  // Original festival costumes are attached to the chest; limbs keep their normal rig.
