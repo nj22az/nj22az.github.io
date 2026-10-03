@@ -375,7 +375,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const a=buildAvatar(r,{shadows:false,faceSize:128}),m=a.measure;
   a.root.rotation.y=framing==='figure'?.35:framing==='feet'?.6:.2;thumbScene.add(a.root);a.root.updateMatrixWorld(true);
   const px=c.width;
-  if(framing==='feet'){const y=m.foot*1.6+m.legR,d=m.H*.42;thumbCamera.position.set(0,y+m.H*.12,d);thumbCamera.lookAt(0,y,0);}
+  if(framing==='outfit'){const y=m.H*.5;thumbCamera.position.set(0,y,m.H*2.7);thumbCamera.lookAt(0,y,0);}
+  else if(framing==='feet'){const y=m.foot*1.6+m.legR,d=m.H*.42;thumbCamera.position.set(0,y+m.H*.12,d);thumbCamera.lookAt(0,y,0);}
   else if(framing==='figure'){const y=r.__bottom?m.hipY*.7:m.hipY+m.torso*.5,d=r.__bottom?m.H*1.05:m.H*1.08;thumbCamera.position.set(0,y+.1,d);thumbCamera.lookAt(0,y,0);}
   else{const hb=new THREE.Box3();if(a.face?.head)hb.setFromObject(a.face.head);else hb.set(new THREE.Vector3(-m.Rh,m.headY,-m.Rh),new THREE.Vector3(m.Rh,m.headY+m.Rh*2,m.Rh));
    const c3=hb.getCenter(new THREE.Vector3()),s=hb.getSize(new THREE.Vector3());thumbCamera.position.set(0,c3.y+s.y*.08,c3.z+s.y*2.75);thumbCamera.lookAt(0,c3.y+s.y*.04,c3.z);}
@@ -434,7 +435,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function renderLook(){
   const t=TABS.find(x=>x.id===tab);
-  if(t.id==='top'&&page==='style'){for(const [title,presets] of [['Island outfit sets',ISLAND_OUTFITS],['Island costumes',ISLAND_COSTUMES]]){const sets=el('div',{className:'shm-swatches'});sets.setAttribute('aria-label',title);for(const preset of presets.filter(p=>outfitAllowedFor(wardrobeOwner,p.outfit))){const button=el('button',{type:'button'},preset.name);button.onclick=()=>change('outfit',{...recipe.outfit,...preset.outfit});sets.append(button);}body.append(el('h3',{},title),sets);}}
+  if(t.id==='top'&&page==='style'){for(const [title,presets] of [['Island outfit sets',ISLAND_OUTFITS],['Island costumes',ISLAND_COSTUMES]]){const sets=el('div',{className:'shm-grid'});sets.setAttribute('aria-label',title);for(const preset of presets.filter(p=>outfitAllowedFor(wardrobeOwner,p.outfit))){const c=el('canvas',{width:136,height:136}),button=el('button',{type:'button',ariaLabel:preset.name,title:preset.name},c,preset.name);button.onclick=()=>change('outfit',{...recipe.outfit,...preset.outfit});sets.append(button);pictureJobs.push(()=>{const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...preset.outfit}});cached('outfit|'+preset.name+'|'+JSON.stringify(r),c,()=>figureThumb(r,c,'outfit'));});}body.append(el('h3',{},title),sets);}}
   if(t.wardrobe&&page==='style'){
    const off=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all clothes off'});
    off.onclick=()=>{remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});recipe=normalizeRecipe(recipe);dirty=true;renderBody();};
