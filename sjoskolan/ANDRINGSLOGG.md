@@ -576,3 +576,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   krypterad med lärarlösenordet som lärarportalen (`verktyg/larare/las.mjs`). Den var publik klartext med D-formlerna
   för varje labbuppgift och svaren till fredagens stopp. Länkad från lärarportalen under Labbar. Äldre klartext finns
   kvar i git-historiken.
+- **2026-10-03** Maskinrummet, Station B · Växelström med Erik (`simulatorer/vaxelstrom/`): vecka 40:s guidade labb i
+  3D med samma åtta uppgifter (EL-000337–344), samma D-värden och samma protokoll, och ett nytt steg där Erik,
+  maskinrummets elektriker, visar mätningen innan avläsningen syns. Bänken är SELV (kalibrator, källa, oscilloskop,
+  R och L, M1 True RMS och M2 sinuskalibrerad); X_{L} och |Z| mäts som U/I. Landströmmens 230 V vid kaj hanterar
+  bara Erik (lastbank R/L och effektanalysator). Eriks repliker innehåller inga svar (test). Vecka 40 orörd och låst;
+  modellfilerna är kopior med hash i `snapshot.json`. Rummet ligger i `rum.mjs`, Station A oförändrad (testerna går
+  igenom). Plan för övriga stationer: `simulatorer/PLAN-ERIK.md`.
+  Regel: Erik säger aldrig ett svar eller elevens tal, och kliver åt sidan när avläsningen visas så att eleven ser instrumentet.

@@ -1,4 +1,4 @@
-import {createSession} from './session.mjs?v=20260930-room1';
+import {createSession} from './session.mjs?v=20261003-erik';
 import {RIGS,MODES} from './multimeter/model.mjs';
 import {STATION_A_PROTOKOLL} from './multimeter/stationA-protokoll.mjs';
 import {mountProtocol} from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
@@ -62,7 +62,7 @@ for(const button of document.querySelectorAll('[data-move]')){
 mountProtocol($('#protocol'),{...STATION_A_PROTOKOLL,key:'maskinrum-stationA-v1',rowMessages:true,station:'Maskinrummet · elektrisk verkstad · Station A',snapshot(plan){const m=session.reading(),s=session.state,n=plan?.need||{};const wrong=[];if(n.mode&&s.mode!==n.mode)wrong.push(`välj ${MODES[n.mode]}`);if(n.red&&(s.red!==n.red||s.black!==n.black))wrong.push(`röd på ${n.red} och svart på ${n.black}`);if(n.pair&&[s.red,s.black].sort().join()!==n.pair.slice().sort().join())wrong.push(`spetsarna på ${n.pair.join(' och ')}`);if(n.power!==undefined&&s.power!==n.power)wrong.push(n.power?'slå på matningen':'bryt matningen');if(n.link!==undefined&&s.link!==n.link)wrong.push(n.link?'slut länken P–A':'öppna länken P–A');if(wrong.length)return {error:`Den här protokollraden kräver en annan koppling: ${wrong.join(', ')}.`};if(m.code!=='reading')return {error:'Anslut mätaren och välj rätt mätfunktion först.'};return {varde:`${m.text} ${m.unit}`,punkter:`röd ${s.red} / svart ${s.black}`,drift:`${MODES[s.mode]}, ${s.jack}-uttag, rigg ${s.rig}, matning ${s.power?'till':'bruten'}, länk ${s.link?'sluten':'öppen'}`};}});
 render();
 try{
-  const {mountRoom}=await import('./scene.mjs?v=20260930-room1');
+  const {mountRoom}=await import('./scene.mjs?v=20261003-erik');
   room=mountRoom($('#scene'),{onPick:pick,onFailure(){setFlat(true);$('#scene-status').hidden=false;$('#scene-status').textContent='3D-vyn avbröts. Fortsätt med samma mätning i 2D.';}});room.setActive(active);room.setState(session.state);$('#scene-status').hidden=true;
 }catch(error){console.warn('Maskinrum: 2D-reservläge',error);setFlat(true);$('#scene-status').textContent='3D är inte tillgängligt. Alla mätningar fungerar i 2D-vyn.';$('#overview').disabled=true;$('#camera').disabled=true;}
 export function inspect(){return {state:session.state,progress:session.progress,scene:room?.inspect()||null,flat};}

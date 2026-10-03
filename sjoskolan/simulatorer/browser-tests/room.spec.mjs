@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 const route='/sjoskolan/simulatorer/';
-const modulePath='/sjoskolan/simulatorer/app.mjs?v=20260930-room1';
+const modulePath='/sjoskolan/simulatorer/app.mjs?v=20261003-erik';
 async function inspect(page){return page.evaluate(async path=>(await import(path)).inspect(),modulePath);}
 async function probe(page,name){await page.locator('#scene canvas').scrollIntoViewIfNeeded();const point=await page.evaluate(async ([path,name])=>(await import(path)).contactScreen(name),[modulePath,name]);await page.mouse.click(point.x,point.y);}
 async function fit(page){const r=await page.evaluate(()=>({w:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));expect(r.scroll).toBeLessThanOrEqual(r.w+1);}

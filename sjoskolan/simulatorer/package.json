@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test multimeter/model.test.mjs session.test.mjs",
+    "test": "node --test multimeter/model.test.mjs session.test.mjs vaxelstrom/session.test.mjs",
     "test:browser": "playwright test"
   },
   "devDependencies": {

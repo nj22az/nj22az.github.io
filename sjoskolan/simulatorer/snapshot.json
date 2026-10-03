@@ -13,7 +13,6 @@
   "three": "../../johansson-town/vendor/three.module.js (r170)",
   "nextStations": [
     "generatorn",
-    "vaxelstromslabbet",
     "trefaslabbet",
     "motorlabbet",
     "hallkretslabbet",
@@ -29,5 +28,19 @@
   "vendorFiles": {
     "johansson-town/vendor/three.module.js": "89074684ade72d694575eed82346b55cd11a48f06dc9e368f427d3858b220977",
     "johansson-town/vendor/BufferGeometryUtils.js": "3de832095679e56578beddf70f3e90846a47ec8a886fa8eb21c973cdaef88922"
+  },
+  "stationB": {
+    "sourceCommit": "e4eeb7b83f0632731a98ae4db98b876b413e77fa",
+    "stage": "Station B: vecka 40:s guidade växelströmslabb med Erik",
+    "sourceFiles": {
+      "sjoskolan/vaxelstromslabbet/model.mjs": "ac45e13ae7f83fdbe98358bfa07743e73867d8532dc35351833e25886802fbdc",
+      "sjoskolan/vaxelstromslabbet/lessons.mjs": "6a97947c96e65d5b4c941b49facfab818de49efabecb2a30b9d4d2b1a900177e",
+      "sjoskolan/vaxelstromslabbet/guided-lessons.mjs": "53e0c92d7b22be60729eb541739087fbf948da6bd542312bf262e259bf4959a2",
+      "sjoskolan/vaxelstromslabbet/uppgifter.gen.mjs": "8ef03572939644f467d9ec68043c6ef635a6a8b0c0a51e24a0725cc69521ea64"
+    },
+    "changes": {
+      "vaxelstrom/guided-lessons.mjs": "bara sökvägen till ../../gemensamt/elevtal.mjs"
+    },
+    "content": "EL-000337–344 (innehall/ovningar), via uppgifter.gen.mjs"
   }
 }
