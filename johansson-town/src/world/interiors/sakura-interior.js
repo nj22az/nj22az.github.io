@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {buildSpecialsBoard} from './sakura-specials-board.js';
 import {SHOP_STOCK} from '../../commerce/shop-stock.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
 import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-advertising.js';
@@ -118,6 +119,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  // The ledger lives on Thuan's desk in the back office now; the counter carries the hot
  // case, the oden and the bell (sakura-cheer.js).
  buildSakuraCheer(room,{anchor,action});
+ // The specials board on the wall behind the counter (sakura-specials-board.js).
+ buildSpecialsBoard(room,{anchor,action});
  buildSakuraBand(room);
  const life=buildSakuraLife(room,{anchor,action});
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));

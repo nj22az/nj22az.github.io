@@ -226,7 +226,7 @@ function buildWallShelving(){
  for(const y of M.levels)span(M.front-.02,M.back,y-.02,y,M.minZ-.08,M.maxZ+.08,C.wood);
  for(const z of [M.minZ-.08,M.maxZ+.08])span(M.front-.02,M.back+.03,.98,2.1,z-.02,z+.02,C.woodDark);
  span(M.front-.02,M.back+.03,2.08,2.12,M.minZ-.08,M.maxZ+.08,C.woodDark);
- span(6.24,6.73,0,.9,1.88,3.8,C.wainscot);span(6.22,6.73,.9,.94,1.88,3.8,C.woodDark);
+ span(6.24,6.73,0,.9,1.88,3.52,C.wainscot);span(6.22,6.73,.9,.94,1.88,3.52,C.woodDark);
  // The back-room rack: two steel units, four boards.
  const K=BACKROOM.rack;
  for(const [a,b] of K.units){
@@ -234,7 +234,7 @@ function buildWallShelving(){
   for(const x of [a+.02,b-.02])for(const z of [K.front+.02,K.back-.02])span(x-.02,x+.02,0,2.25,z-.02,z+.02,0x6f7a7c);
  }
  // The ice-cream chest by the window (x 2.97..4.32, z 3.31..3.88): white, a sliding glass lid.
- span(2.99,4.3,0,.84,3.32,3.86,0xf4f6f2);span(2.99,4.3,.84,.88,3.32,3.86,0x3a7fc0);
+ span(2.99,4.3,0,.84,3.0,3.54,0xf4f6f2);span(2.99,4.3,.84,.88,3.0,3.54,0x3a7fc0);
  // The magazine rack's plinth so it does not float on the terrazzo.
  const R=MAGAZINE_RACK;span(R.x-R.width/2,R.x+R.width/2,0,.06,R.z-R.depth/2,R.z+R.depth/2,C.plinth);
  return mesh(material());
@@ -270,14 +270,14 @@ function buildTubes(){
  const runs=[[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,3.2],[5.6,.4,3.4],[-2.2,-6.4,-4.4],[2.2,-6.4,-4.4],[5.7,-3.6,-1.6]];
  for(const [x,z0,z1] of runs)for(let z=z0;z<z1-.4;z+=1.32)span(x-.03,x+.03,y-.03,y+.03,z,z+1.2,0xfffbee);
  // Two bare tubes under the till canopy, lighting the counter top.
- for(const x of [4.55,4.95])for(const z of [.3,2.05])span(x-.025,x+.025,2.12,2.17,z,z+1.6,0xfffbee);
+ for(const x of [4.55,4.95])for(const z of [.3,1.8])span(x-.025,x+.025,2.12,2.17,z,z+1.6,0xfffbee);
  return mesh(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.4,emissive:0xfff3d6,emissiveIntensity:1}));
 }
 function buildBattens(){
  const {span,mesh}=parts('sakura-battens'),y=SAKURA_SHELL.ceiling-.13;
  for(const [x,z0,z1] of [[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,3.2],[5.6,.4,3.4],[-2.2,-6.4,-4.4],[2.2,-6.4,-4.4],[5.7,-3.6,-1.6]])span(x-.07,x+.07,y-.04,y+.04,z0,z1-.4,C.wood);
  // Over the counter hangs the till canopy (sakura-cheer.js buildTillCanopy); its rods.
- for(const z of [.25,1.95,3.7])for(const x of [4.45,5.15])span(x-.012,x+.012,2.5,SAKURA_SHELL.ceiling,z-.012,z+.012,0x2b2b2b);
+ for(const z of [.25,1.95,3.3])for(const x of [4.45,5.15])span(x-.012,x+.012,2.5,SAKURA_SHELL.ceiling,z-.012,z+.012,0x2b2b2b);
  return mesh(material());
 }
 

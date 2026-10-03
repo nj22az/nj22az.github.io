@@ -2,13 +2,13 @@ import * as THREE from '../../vendor/three.module.js';
 import {consumptionPhase,drinkTilt} from '../avatars/consume.js';
 import {createDrinkProp,setPropPortion,updatePropPortion,disposeServing} from '../people/izakaya-beer.js';
 
-export function createHands({scene,camera,say,consume,onDrink=()=>{}}){
+export function createHands({scene,camera,say,consume,onDrink=()=>{},canColour=null}){
  // The can is held in front of the first-person camera; `view` hides it when the camera is behind him.
  const view=new THREE.Group(),hold=new THREE.Group();camera.add(view);view.add(hold);scene.add(camera);hold.position.set(.24,-.29,-.48);hold.rotation.set(.1,-.2,-.15);
  const can=new THREE.Mesh(new THREE.CylinderGeometry(.047,.047,.145,20),new THREE.MeshStandardMaterial({color:0x91734e,roughness:.42,metalness:.45}));hold.add(can);
  const rim=new THREE.Mesh(new THREE.TorusGeometry(.043,.003,6,20),new THREE.MeshStandardMaterial({color:0xb8bab1,roughness:.22,metalness:.7}));rim.rotation.x=Math.PI/2;rim.position.y=.075;hold.add(rim);hold.visible=false;
  const dropped=hold.clone(true);scene.add(dropped);dropped.visible=false;let name=null,drop=0,drink=0,autoDrink=false;
- function offer(item,position,drinkAfter=false){name=item;autoDrink=drinkAfter;hold.position.set(.24,-.29,-.48);hold.rotation.set(.1,-.2,-.15);drop=.6;drink=0;hold.visible=false;dropped.visible=true;dropped.position.copy(position||camera.position);dropped.position.y=(position?.y||0)+.45;say(item+' · R to drink',3);}
+ function offer(item,position,drinkAfter=false){name=item;if(canColour){const c=canColour(item);can.material.color.setHex(c);for(const o of dropped.children)if(o.geometry?.type==='CylinderGeometry')o.material.color?.setHex(c);}autoDrink=drinkAfter;hold.position.set(.24,-.29,-.48);hold.rotation.set(.1,-.2,-.15);drop=.6;drink=0;hold.visible=false;dropped.visible=true;dropped.position.copy(position||camera.position);dropped.position.y=(position?.y||0)+.45;say(item+' · R to drink',3);}
  // A sip from a drink on the table, on the same clock and tilt as every avatar's (consume.js): it comes up to the mouth and goes back down.
  let sipProp=null,sipT=0;const SIP=2.4;
  function sip(kind,start=1,finish=Math.max(0,start-.2)){if(sipT>0)return false;disposeServing(sipProp);sipProp=createDrinkProp(kind,{held:true});setPropPortion(sipProp,start,{immediate:true});sipProp.userData.startPortion=start;sipProp.userData.finishPortion=finish;sipProp.position.set(.08,-.34,-.42);sipProp.rotation.set(.15,0,-.05);view.add(sipProp);sipT=SIP;onDrink();return true;}

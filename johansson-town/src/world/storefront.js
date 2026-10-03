@@ -6,6 +6,49 @@ import {buildSakuraDetails} from './exterior-details.js';
 // Sakura's shopfront: a family shōten's wooden sashes and signboard under a tile hood,
 // with the real shop seen through the glass.
 
+/**
+ * The signboard's face, painted for the board it hangs on. It used to be the town's
+ * generic label: a 3:1 canvas stretched over a 13:1 board, which pulled every letter
+ * four times wide. This one is painted at the board's own proportions: the shop's crest,
+ * さくら商店 in a serif face, and the English in two lines beside it.
+ */
+function buildSignboard(group,{width}){
+ const w=Math.min(width*.86,12.6),h=.6,W=4096,H=Math.round(W*h/w);
+ if(typeof document==='undefined'||!document.createElement)return null;
+ const c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');if(!ctx)return null;
+ // Cream enamel with a double brown rule round it.
+ ctx.fillStyle='#f6ead0';ctx.fillRect(0,0,W,H);
+ ctx.strokeStyle='#4a2a18';ctx.lineWidth=H*.06;ctx.strokeRect(H*.06,H*.06,W-H*.12,H*.88);
+ ctx.lineWidth=H*.015;ctx.strokeRect(H*.14,H*.14,W-H*.28,H*.72);
+ // The crest: five pink petals round a gold heart in a red ring.
+ const cx=H*.85,cy=H/2,r=H*.33;
+ ctx.fillStyle='#c8202a';ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.fill();ctx.fillStyle='#fbf6ea';ctx.beginPath();ctx.arc(cx,cy,r*.84,0,7);ctx.fill();
+ ctx.fillStyle='#f19bb0';for(let k=0;k<5;k++){const a=k*Math.PI*2/5-Math.PI/2;ctx.beginPath();ctx.ellipse(cx+Math.cos(a)*r*.38,cy+Math.sin(a)*r*.38,r*.28,r*.19,a,0,7);ctx.fill();}
+ ctx.fillStyle='#e9b42a';ctx.beginPath();ctx.arc(cx,cy,r*.13,0,7);ctx.fill();
+ // The name, large and spaced, then a rule, then the English.
+ ctx.fillStyle='#3a2414';ctx.textBaseline='middle';ctx.textAlign='left';
+ ctx.font='bold '+Math.round(H*.6)+'px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP","Noto Serif JP",serif';
+ // Measure the whole line first, so crest, name and English sit centred on the board.
+ const name='さくら商店',gap=H*.1,nameFont='bold '+Math.round(H*.62)+'px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP","Noto Serif JP",serif';
+ const enFont='bold '+Math.round(H*.3)+'px Georgia,"Times New Roman",serif',subFont=Math.round(H*.19)+'px Georgia,"Times New Roman",serif';
+ ctx.font=nameFont;const nameW=[...name].reduce((s,ch)=>s+ctx.measureText(ch).width+gap,-gap);
+ ctx.font=enFont;const enW=Math.max(ctx.measureText('SAKURA SHŌTEN').width,(ctx.font=subFont,ctx.measureText('FOOD & DAILY GOODS · SINCE 1963').width));
+ const total=r*2+H*.5+nameW+H*.7+enW,start=(W-total)/2;
+ // Redraw the crest at its centred place (the first one was at the left edge).
+ ctx.fillStyle='#f6ead0';ctx.fillRect(cx-r-4,cy-r-4,r*2+8,r*2+8);
+ const crestX=start+r;ctx.fillStyle='#c8202a';ctx.beginPath();ctx.arc(crestX,cy,r,0,7);ctx.fill();ctx.fillStyle='#fbf6ea';ctx.beginPath();ctx.arc(crestX,cy,r*.84,0,7);ctx.fill();
+ ctx.fillStyle='#f19bb0';for(let k=0;k<5;k++){const a=k*Math.PI*2/5-Math.PI/2;ctx.beginPath();ctx.ellipse(crestX+Math.cos(a)*r*.38,cy+Math.sin(a)*r*.38,r*.28,r*.19,a,0,7);ctx.fill();}
+ ctx.fillStyle='#e9b42a';ctx.beginPath();ctx.arc(crestX,cy,r*.13,0,7);ctx.fill();
+ ctx.fillStyle='#3a2414';ctx.font=nameFont;let x=start+r*2+H*.5;for(const ch of name){ctx.fillText(ch,x,H*.53);x+=ctx.measureText(ch).width+gap;}
+ const rule=x-gap+H*.35;ctx.fillStyle='#4a2a18';ctx.fillRect(rule,H*.22,H*.025,H*.56);
+ ctx.fillStyle='#3a2414';ctx.font=enFont;ctx.fillText('SAKURA SHŌTEN',rule+H*.35,H*.38);
+ ctx.fillStyle='#8a3a2a';ctx.font=subFont;ctx.fillText('FOOD & DAILY GOODS · SINCE 1963',rule+H*.35,H*.68);
+ const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=8;
+ const face=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:tex,roughness:.6,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:.05}));
+ face.position.set(0,3.25,.352);face.name='Sakura signboard';group.add(face);
+ return face;
+}
+
 /** How tall the sliding door is. The valance over it has to clear this. */
 const DOOR_HEIGHT=2.25;
 /**
@@ -37,7 +80,7 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
   const slab=new THREE.Mesh(new THREE.BoxGeometry(width+.5,.06,.7),tile);slab.position.set(0,0,.2);slab.castShadow=true;slab.receiveShadow=true;hood.add(slab);
   for(let x=-width/2-.2;x<=width/2+.2;x+=.26){const rib=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.7,6),ridge);rib.rotation.x=Math.PI/2;rib.position.set(x,.045,.2);hood.add(rib);}
   const cap=new THREE.Mesh(new THREE.BoxGeometry(width+.56,.1,.12),ridge);cap.position.set(0,.04,-.12);hood.add(cap);}
- const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.12,.32)).toArray(),yaw};const wp=logo.getWorldPosition(new THREE.Vector3());label("Sakura Shop",'SAKURA · FOOD & DAILY GOODS · SINCE 1963',wp.toArray(),Math.min(width*.6,8.4)*sx,.62*sy,yaw,'#f3e6c8','#4a2a18');
+ const logo=new THREE.Object3D();logo.position.set(0,3.24,.38);group.add(logo);group.updateMatrixWorld(true);site.streetFrontage={position:group.localToWorld(new THREE.Vector3(0,.12,.32)).toArray(),yaw};const wp=logo.getWorldPosition(new THREE.Vector3());buildSignboard(group,{width});
  const glazing=createShopGlass();
  // Glass to either side of the doorway, whatever the frontage is: a pane list authored
  // for a ten-metre shop leaves a wall of nothing when the shop is fourteen.
@@ -194,7 +237,8 @@ function hangNoren(group,x,y,z){
  ctx.fillStyle='#6f1f2c';ctx.fillRect(0,0,512,144);
  ctx.fillStyle='#f4e4c8';ctx.fillRect(8,10,496,124);
  ctx.fillStyle='#6f1f2c';ctx.textAlign='center';ctx.textBaseline='middle';
- ctx.font='700 74px serif';ctx.fillText("Sakura Shop",256,66);
+ // A noren carries the shop's name in kana, not in English.
+ ctx.font='700 80px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText('さくら',256,64);
  ctx.font='600 22px sans-serif';ctx.fillText('SAKURA SHŌTEN',256,116);
  const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(2.0,.56),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,transparent:true}));

@@ -133,13 +133,17 @@ export function buildSakuraCheer(room,{anchor,action}){
  buildBackOffice(room,anchor,action);
 }
 
-/** Inner faces of the shop-floor walls, the band's height, and the counter's customer face. */
+/**
+ * Inner faces of the shop-floor walls, the band's height, and the counter's customer face.
+ * Everything stops short of the shop window, which is at local z 3.61: past it, the
+ * interior shows on the street side of the glass.
+ */
 export const SAKURA_BAND=Object.freeze({y0:2.56,y1:2.86,runs:Object.freeze([
  // Both runs stop at the restroom (x < -4.02, z < -2.42), which has its own tiles.
  {x:-6.8,z0:-2.42,z1:3.2,yaw:Math.PI/2},
  {z:-3.93,x0:-4.02,x1:6.8,yaw:0},
- {x:6.8,z0:-1.1,z1:3.9,yaw:-Math.PI/2},
-]),counter:{x:4.52,z0:.1,z1:3.84,y0:.08,y1:.92}});
+ {x:6.8,z0:-1.1,z1:3.52,yaw:-Math.PI/2},
+]),counter:{x:4.52,z0:.1,z1:3.52,y0:.08,y1:.92}});
 export function buildSakuraBand(room){
  const B=SAKURA_BAND,h=B.y1-B.y0;
  // A family shop's boards rather than a chain's band: planed wood round the top of the
@@ -170,7 +174,9 @@ export function buildSakuraBand(room){
  * yellow-orange-red stripes and Sakura's round crest in the middle, the way every till
  * in 1997 had its chain's band over it. Tubes underneath (sakura-shell.js buildTubes).
  */
-export const TILL_CANOPY=Object.freeze({x0:4.25,x1:5.25,y0:2.18,y1:2.5,z0:-.02,z1:3.98});
+// It stops short of the shop window (the glass is at local z 3.61); it used to run
+// 0.37 m out through the pane, a shelf floating over the street.
+export const TILL_CANOPY=Object.freeze({x0:4.25,x1:5.25,y0:2.18,y1:2.5,z0:-.02,z1:3.45});
 function buildTillCanopy(room){
  const T=TILL_CANOPY,len=T.z1-T.z0,h=T.y1-T.y0;
  const face=sign(2048,Math.round(2048*h/len),(ctx,w,H)=>{
@@ -204,7 +210,7 @@ function buildTillCanopy(room){
  * counter. Drawn on one board, so it costs one draw.
  */
 function buildCigaretteRack(room){
- const z0=.6,z1=3.64,y0=2.14,y1=2.52,x=6.8;
+ const z0=.6,z1=3.5,y0=2.14,y1=2.52,x=6.8;
  const packs=['#f4f1ea|#1e3c8c','#ffffff|#c8102e','#1d1d1d|#d4af37','#f4f1ea|#2e7d32','#2a4a8a|#f4f1ea','#f2e6c8|#7a3b1a','#e8e8e8|#5b6dc1','#c8102e|#ffffff','#f4f1ea|#e07a10','#0f5132|#f4f1ea','#ffffff|#3a7fc0','#3b2b6a|#e8d48a'];
  const tex=sign(2048,256,(ctx,w,H)=>{
   ctx.fillStyle='#ece6d8';ctx.fillRect(0,0,w,H);
@@ -234,7 +240,7 @@ function buildTillFloor(room){
  });
  tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
  for(const [x0,x1] of [[3.05,4.54],[5.06,6.67]]){
-  const z0=.0,z1=3.9,t=tex.clone();t.needsUpdate=true;t.repeat.set((x1-x0)/(tile*2),(z1-z0)/(tile*2));
+  const z0=.0,z1=3.56,t=tex.clone();t.needsUpdate=true;t.repeat.set((x1-x0)/(tile*2),(z1-z0)/(tile*2));
   const floor=add(room,new THREE.PlaneGeometry(x1-x0,z1-z0),new THREE.MeshStandardMaterial({map:t,roughness:.35}),(x0+x1)/2,.006,(z0+z1)/2,'Sakura till floor');
   floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;
  }

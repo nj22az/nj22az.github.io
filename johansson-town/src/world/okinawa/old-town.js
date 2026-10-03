@@ -83,8 +83,17 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  // One machine, not a bank: vending is kept to a few places worth stopping at (Sakura,
  // the onsen lane, the fish quay) rather than every frontage (docs/AMPLIFY-AUDIT.md).
  vending(front+.45,S.minZ+1.7,Math.PI/2);
- kit.cyl(.22,.19,.72,front+.4,.36,door-doorClear-.5,0x2f6fa8,{segments:12});kit.cyl(.24,.24,.05,front+.4,.74,door-doorClear-.5,0x3a3f42,{segments:12});
- solid({id:'sakura-bin',x:front+.4,z:door-doorClear-.5,w:.5,d:.5,height:.8});
+ // The can recycling box (空きかん): a blue box with a round hole in the lid. Bring your
+ // empties back here and Thuan gives a little for each from the till.
+ {const bx=front+.4,bz=door-doorClear-.5;
+  kit.box(.44,.72,.5,bx,.36,bz,0x2f6fa8);kit.box(.48,.05,.54,bx,.745,bz,0x24558a);kit.cyl(.08,.08,.012,bx,.776,bz,0x1b1d20,{segments:16});
+  if(typeof document!=='undefined'&&document.createElement){const c=document.createElement('canvas');c.width=256;c.height=320;const ctx=c.getContext('2d');
+   if(ctx){ctx.fillStyle='#f4f6f2';ctx.fillRect(0,0,256,320);ctx.fillStyle='#2f6fa8';ctx.fillRect(0,0,256,70);ctx.fillStyle='#ffffff';ctx.font='bold 46px "Hiragino Sans","Noto Sans CJK JP",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('空きかん',128,38);
+    ctx.fillStyle='#24303a';ctx.font='bold 44px sans-serif';ctx.fillText('CANS',128,118);ctx.font='26px sans-serif';ctx.fillText('Empty cans here',128,168);ctx.fillText('¥10 back at the till',128,204);
+    ctx.strokeStyle='#2f6fa8';ctx.lineWidth=10;ctx.beginPath();ctx.arc(128,262,34,0,7);ctx.stroke();for(let k=0;k<3;k++){const a=k*Math.PI*2/3-Math.PI/2;ctx.beginPath();ctx.moveTo(128+Math.cos(a)*34,262+Math.sin(a)*34);ctx.lineTo(128+Math.cos(a+.6)*24,262+Math.sin(a+.6)*24);ctx.stroke();}
+    const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;kit.sign(t,.34,.42,bx+.225,.38,bz,{ry:Math.PI/2,name:'Can recycling label'});}}
+  solid({id:'sakura-bin',x:bx,z:bz,w:.5,d:.56,height:.8});
+  anchor(bx+.6,1,bz,'Return empty cans',()=>onAction?.('recycle-cans'));}
  // Drink crates stacked the way empties are, against the glass beyond the vending machines.
  const crateAt=[[0,0,0],[0,1,0],[0,2,0],[0,0,.56],[0,1,.56],[.02,0,1.1]];
  crateAt.forEach(([dx,ly,dz],i)=>{kit.box(.46,.28,.5,front+.3+dx,.14+ly*.28,S.minZ+3.4+dz,i%2?0x2f6fb8:0xc8392e);kit.box(.4,.04,.44,front+.3+dx,.28+ly*.28,S.minZ+3.4+dz,0x2f3140);});
