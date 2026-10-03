@@ -131,3 +131,10 @@ Final integration: combined origin/main port shed, beach corner, bookshop, onsen
 - Title/guide passed desktop/phone/landscape. Physical iPhone/iPad testing unavailable. Separate legacy boot harness excluded for its existing software-WebGL timeout; real game entry is covered by browser tests.
 
 Final release also preserves f08e8af's Kitahama residential-quarter and anchored-cast work. Clean combined suite: 591 tests, 586 passed, 5 intentional skips, zero failures. Final office regression includes the computer facing the mayor, chair clearance, solid furniture and archive access. Published runtime entry: boot-DdaBh4yS.js.
+
+2026-10-03 — Park coherence and Sakura shelving:
+- Replaced the park's untextured square lawn with the surrounding town's painted turf, using the same world UVs, grass colour, height offset, boundary samples and sampled terrain normals. Added a regression check for seamless border height, lighting and texture alignment.
+- Rebuilt the featureless concrete slide as an open green steel playground frame, ladder and silver chute, with a gravel footprint and matching solid collision. Restored Japanese lettering on the physical park sign.
+- Shortened/recentred Sakura gondolas, moved their endcaps and stock approaches with them, brought goods forward, and split the long daily-goods shelf into two compact bays. Kept all 33 stock lines and the existing real inventory economy.
+- Found the medicine shelf's back board exactly coplanar with the shop wall at x=6.82. Moved the entire display clear of the wall, reduced its width, stocked fuller rows and fitted a Japanese/English header.
+- Checks: all 594 non-boot tests completed: 589 passed, five deliberately disabled gateball skips. Product raycast checks confirm every unit is supported and unobstructed; navigation checks reach every shelf. Park bench and Sakura entry/exit verified in the compiled game at desktop and phone sizes with zero page errors. Final compiled phone park/shelf/till views reviewed; bench seating and shop exit passed with no errors. Skill client completed three gameplay captures with text state and no errors.

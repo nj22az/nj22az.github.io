@@ -77,15 +77,15 @@ export const REMOVED_SHELVING=[
 ];
 /** The run's own colliders, moved with it. A quarter turn swaps width for depth. */
 const turned=(id,r)=>{const [x,z]=SHELF_ISLANDS[id].place(r.x,r.z);return {x,z,w:r.d,d:r.w,height:r.height};};
-const GONDOLA=[['east',rect(-2.494,1.3315,4.046,1.223,1.5)],['middle',rect(.5455,1.3315,2.021,1.223,1.5)],['middle',rect(1.85,1.35,.57,1.2,1.55)],['west',rect(-1.50,-1.16,2.02,1.22,1.5)]];
+const GONDOLA=[['east',rect(-2.494,1.3315,3.3,1.223,1.5)],['middle',rect(.832,1.3315,1.95,1.223,1.5)],['middle',rect(2.092,1.35,.57,1.2,1.55)],['west',rect(-1.50,-1.16,1.95,1.22,1.5)]];
 /**
  * End caps on the front of the west and middle gondolas, facing the window: the first
  * thing you see down each aisle from the door. The east gondola has none -- its end is
  * the walk from the door to the till. The middle gondola's back end keeps its own.
  */
 export const FRONT_ENDCAPS=Object.freeze([
- Object.freeze({id:'west-front',x:-4.05,z:1.8365,w:1.0,d:.42,levels:Object.freeze([.35,.82])}),
- Object.freeze({id:'middle-front',x:-1.55,z:1.5515,w:1.0,d:.42,levels:Object.freeze([.35,.82])}),
+ Object.freeze({id:'west-front',x:-4.05,z:1.7815,w:1.0,d:.42,levels:Object.freeze([.35,.82])}),
+ Object.freeze({id:'middle-front',x:-1.55,z:1.515,w:1.0,d:.42,levels:Object.freeze([.35,.82])}),
 ]);
 /** The copy machine by the east window, its fax on a table beside it. */
 export const COPY_MACHINE=Object.freeze({x:2.1,z:3.5,w:.62,d:.56});
@@ -163,7 +163,7 @@ function bay(ids,site,x,z,yaw,stand){
  // (the heavier ones, low down) taking any left over.
  for(const [i,id] of ids.entries()){
   const take=share+(i<extra?1:0);
-  SAKURA_SHELVES[id]={x:px,z:pz,levels:AISLE_LEVELS.slice(level,level+take),yaw:facing,stand:[sx,0,sz],spacing:.22,depth:.12,columns:facingsFor(shelfCapacity(id)/take,8)};
+  SAKURA_SHELVES[id]={x:px+Math.sin(facing)*.14,z:pz+Math.cos(facing)*.14,levels:AISLE_LEVELS.slice(level,level+take),yaw:facing,stand:[sx,0,sz],spacing:.23,depth:.12,columns:facingsFor(shelfCapacity(id)/take,8)};
   level+=take;
  }
 }
@@ -173,16 +173,16 @@ function bay(ids,site,x,z,yaw,stand){
  * door's own line, and daily goods on the long east island, nearest the till.
  */
 // Pantry: the noodles, soups and curry on one face, the bottles and tins on the other.
-bay(['noodles','soup','curry'],'west',-1.48,-.93,0,[-1.48,0,-.11]);
-bay(['soy','tuna','peaches'],'west',-1.48,-1.39,Math.PI,[-1.48,0,-2.21]);
+bay(['noodles','soup','curry'],'west',-1.50,-.93,0,[-1.50,0,-.11]);
+bay(['soy','tuna','peaches'],'west',-1.50,-1.39,Math.PI,[-1.50,0,-2.21]);
 // Sweets: crisps and crackers at a grown-up's eye, chocolate and sweets low for children.
-bay(['chips','crackers','biscuit'],'middle',.55,1.56,0,[.55,0,2.38]);
-bay(['candy','chocolate'],'middle',.55,1.10,Math.PI,[.55,0,.28]);
+bay(['chips','crackers','biscuit'],'middle',.832,1.56,0,[.832,0,2.38]);
+bay(['candy','chocolate'],'middle',.832,1.10,Math.PI,[.832,0,.28]);
 // Daily goods: washing, paper, the bathroom; then batteries and stationery.
-bay(['detergent','soap'],'east',-3.6,1.56,0,[-3.6,0,2.38]);
-bay(['tissues','toothpaste'],'east',-1.48,1.56,0,[-1.48,0,2.38]);
-bay(['battery','notebook'],'east',-3.6,1.10,Math.PI,[-3.6,0,.28]);
-bay(['postcard'],'east',-1.48,1.10,Math.PI,[-1.48,0,.28]);
+bay(['detergent','soap'],'east',-3.319,1.56,0,[-3.319,0,2.38]);
+bay(['tissues','toothpaste'],'east',-1.669,1.56,0,[-1.669,0,2.38]);
+bay(['battery','notebook'],'east',-3.319,1.10,Math.PI,[-3.319,0,.28]);
+bay(['postcard'],'east',-1.669,1.10,Math.PI,[-1.669,0,.28]);
 /**
  * The cold cabinet at the back is the shop's magnet: drinks only, four columns of five
  * shelves, every shelf full. Fresh food has gone to the open chiller on the west wall,
@@ -237,14 +237,14 @@ export const SAKURA_DRESSING=[
  {id:'delivery',template:'stock',levels:[.088,.357,.670,.983,1.296],x:-5.165,z:-2.28,yaw:0,columns:5,rows:1,spacing:.365,depth:.25,
   look:[-5.165,1.44,-2.09],title:'Look over the delivery shelf',
   text:'Cartons off the morning van, waiting to be priced up and put out. Thuan works down them after closing.'},
- {id:'promotion',template:'curry',island:'middle',levels:[.202,.334,.805,.937],x:1.87,z:1.355,yaw:Math.PI/2,columns:5,rows:1,spacing:.18,depth:.05,
-  look:[2.06,1.08,1.355],title:'Read the end-cap promotion',
+ {id:'promotion',template:'curry',island:'middle',levels:[.202,.334,.805,.937],x:2.112,z:1.355,yaw:Math.PI/2,columns:5,rows:1,spacing:.18,depth:.05,
+  look:[2.302,1.08,1.355],title:'Read the end-cap promotion',
   text:"Hinode Curry Roux — the month’s offer, stacked at the end of the aisle with a hand-lettered card."},
  // The front end caps (FRONT_ENDCAPS): this week's ramen offer, and the new crisps.
- {id:'ramen-week',template:'noodles',levels:[.35,.82],x:-4.05,z:1.86,yaw:0,columns:5,rows:2,spacing:.18,depth:.15,
+ {id:'ramen-week',template:'noodles',levels:[.35,.82],x:-4.05,z:1.80,yaw:0,columns:5,rows:2,spacing:.18,depth:.15,
   look:[-4.05,1.3,2.3],title:'Read the ramen-week card',
   text:'Ramen week: any two YUNAGI cups for ¥280. Thuan has written underneath, in smaller letters, that the kettle by the till is for customers.'},
- {id:'new-crisps',template:'chips',levels:[.35,.82],x:-1.55,z:1.57,yaw:0,columns:5,rows:2,spacing:.18,depth:.12,
+ {id:'new-crisps',template:'chips',levels:[.35,.82],x:-1.55,z:1.54,yaw:0,columns:5,rows:2,spacing:.18,depth:.12,
   look:[-1.55,1.3,2.0],title:'Read the new-release card',
   text:'New: KOGANE lightly salted. Jaga-bō on the bag, Jaga-bō on the card, Jaga-bō by the window. The rep is very proud of him.'},
 ].map(dressed);

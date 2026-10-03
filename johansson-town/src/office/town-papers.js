@@ -129,10 +129,10 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
-    "title": "Minato Park · Minato Park",
+    "title": "Minato Park",
     "organisation": "Town Services",
     "text": "Laid out in 1972 on the old lookout mound. The kanhizakura was planted by the class of that year and flowers in January, the first cherry in Japan. Please take your rubbish home. No ball games on the mound. — Minato Town Office",
-    "source": "notice:Minato Park · Minato Park"
+    "source": "notice:Minato Park"
   },
   {
     "type": "Notice",

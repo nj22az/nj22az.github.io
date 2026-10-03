@@ -1,11 +1,13 @@
 import * as THREE from '../../vendor/three.module.js';
-import {PARK,PARK_BENCH,PARK_BENCH_FIT,benchPoint,parkHeight,activePark,parkBench,TURF_TINT,PARK_PATH_TINT} from './park-layout.js';
+import {PARK,PARK_BENCH,PARK_BENCH_FIT,benchPoint,parkHeight,parkSkirtHeight,parkApproachHeight,activePark,parkBench,TURF_TINT,PARK_PATH_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {createLightPools} from './light-pools.js';
 import {lanternGlow} from '../render/dusk.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
 import {createKit} from './okinawa/kit.js';
 import {hibiscus} from './okinawa/houses.js';
 import {broadleafGeometry} from './okinawa/trees.js';
+import {GROUND_LAYER} from './ground-layers.js';
+import {applyTerrainNormals} from './terrain-surface.js';
 import {townCalendarAt} from '../town-clock.js';
 
 /**
@@ -41,20 +43,21 @@ export function buildPark(world,options){
  const s=p.scale||1,half=p.half,shadows=!!options.shadows;
  const group=new THREE.Group();group.name='Harbour Park';world.group.add(group);
  const at=(lx,lz)=>[p.x+lx*s,p.z+lz*s];
- const ground=(x,z)=>parkHeight(x,z)??p.lift;
+ const ground=(x,z)=>parkApproachHeight(x,z)??parkHeight(x,z)??parkSkirtHeight(x,z)??0;
  const [tx,tz]=at(...PARK_TREE);
 
  // The mound: a heightfield over the square, turf with the gravel ring and the path in.
- {const N=72,positions=[],colours=[],index=[],turf=new THREE.Color(TURF_TINT),path=new THREE.Color(PARK_PATH_TINT),edge=new THREE.Color(0x8f8a74),c=new THREE.Color();
+ {const N=PARK_TERRAIN_SEGMENTS,positions=[],colours=[],uv=[],index=[],turf=new THREE.Color(TURF_TINT),path=new THREE.Color(PARK_PATH_TINT),edge=new THREE.Color(0x8f8a74),c=new THREE.Color();
   for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){
-   const x=p.x-half+i/N*half*2,z=p.z-half+j/N*half*2;positions.push(x,ground(x,z),z);
+   const x=p.x-half+i/N*half*2,z=p.z-half+j/N*half*2;positions.push(x,ground(x,z)+GROUND_LAYER.grass,z);uv.push(x/2.4,z/2.4);
    const ring=Math.abs(Math.hypot(x-tx,z-tz)-2.35),approach=Math.abs(z-p.z)<.62&&x<tx-2.2;
-   const onPath=ring<.48||approach,kerb=!onPath&&(ring<.6||(Math.abs(z-p.z)<.74&&x<tx-2.2));
-   c.copy(onPath?path:kerb?edge:turf);const n=.95+.05*Math.sin(x*3.1+z*2.3);colours.push(c.r*n,c.g*n,c.b*n);
+   const play=Math.hypot((x-(p.x+8.4*s))/1.7,(z-(p.z+9.1*s))/2.5)<1;
+   const onPath=ring<.48||approach||play,kerb=!onPath&&(ring<.56||(Math.abs(z-p.z)<.7&&x<tx-2.2));
+   c.copy(onPath?path:kerb?edge:turf);colours.push(c.r,c.g,c.b);
   }
   for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*(N+1)+i;index.push(a,a+N+1,a+1,a+1,a+N+1,a+N+2);}
-  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(colours,3));geo.setIndex(index);geo.computeVertexNormals();
-  const mound=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1}));mound.name='Harbour Park ground';mound.receiveShadow=true;group.add(mound);}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(colours,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(index);applyTerrainNormals(geo,ground);
+  const mound=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,map:parkFoliage().grass,roughness:1}));mound.name='Harbour Park ground';mound.receiveShadow=true;group.add(mound);}
 
  const kit=createKit({shadows});
  // The bench under the tree, at the seat the town has always sat on: slats on cast legs,
@@ -69,12 +72,24 @@ export function buildPark(world,options){
  for(const [lx,lz] of PARK_LAMPS){const [x,z]=at(lx,lz),y=ground(x,z);
   kit.cyl(.12,.16,.3,x,y+.15,z,0x9a958a,{segments:10});kit.cyl(.05,.06,3.1,x,y+1.75,z,0x2f5a4a,{segments:8});
   kit.sphere(.2,x,y+3.4,z,0xfff4dc,{finish:'lamp'});kit.cyl(.16,.2,.06,x,y+3.2,z,0x2f5a4a,{segments:10});}
- // The concrete slide in the far corner: steps up one side, a polished chute down the other.
- {const [x,z]=at(8.4,8.6),y=ground(x,z),H=1.6;
-  kit.box(1.2,H,1.2,x,y+H/2,z,0xd8d2c4);kit.box(1.3,.1,1.3,x,y+H+.05,z,0xc9c2b0);
-  for(let k=0;k<5;k++){const h=.32*(k+1);kit.box(.26,h,.8,x-1.75+k*.24,y+h/2,z,0xd8d2c4);kit.box(.26,.04,.8,x-1.75+k*.24,y+h+.02,z,0xc9c2b0);}
-  kit.box(.7,.08,2.8,x,y+H/2+.05,z+1.75,0xb8c4c8,{rx:.61});for(const sx of [-.38,.38])kit.box(.06,.25,2.8,x+sx,y+H/2+.17,z+1.75,0xd8d2c4,{rx:.61});
-  world.colliders.push({x:x-.4,z:z+.6,w:2.2,d:3.4,height:y+H+.2,park:true});}
+ // A modest 1970s playground slide: an open steel frame, ladder and silver chute.
+ // Dimensions are in metres like the town furniture, rather than a featureless plinth.
+ {const [x,z]=at(8.4,8.6),y=ground(x,z),green=0x356653,steel=0x9ba8a7;
+  for(const dx of [-.4,.4])for(const dz of [-.3,.3])kit.rod([x+dx,ground(x+dx,z+dz),z+dz],[x+dx,y+1.42,z+dz],.035,green);
+  kit.box(.9,.08,.7,x,y+1.4,z,0x926c45);
+  for(const dx of [-.4,.4]){
+   kit.rod([x+dx,y+.08,z-1.12],[x+dx,y+1.45,z-.3],.035,green);
+   kit.rod([x+dx,y+1.42,z-.3],[x+dx,y+1.95,z-.3],.035,green);
+   kit.rod([x+dx,y+1.95,z-.3],[x+dx,y+1.95,z+.36],.035,green);
+   kit.rod([x+dx,y+1.95,z+.36],[x+dx,y+1.42,z+.36],.035,green);
+  }
+  for(let k=1;k<=5;k++){const t=k/6;kit.rod([x-.4,y+.08+1.37*t,z-1.12+.82*t],[x+.4,y+.08+1.37*t,z-1.12+.82*t],.035,steel);}
+  const endY=ground(x,z+2.7)+.16,drop=y+1.42-endY,run=2.34,length=Math.hypot(drop,run),angle=Math.atan2(drop,run),midY=(y+1.42+endY)/2;
+  kit.box(.64,.045,length,x,midY,z+1.53,steel,{rx:angle,finish:'metal'});
+  for(const dx of [-.34,.34])kit.box(.035,.13,length,x+dx,midY+.06,z+1.53,green,{rx:angle});
+  kit.box(.68,.06,.3,x,endY,z+2.8,steel,{finish:'metal'});
+  world.colliders.push({id:'park-slide-platform',x,z:z-.3,w:.95,d:1.6,height:y+1.95,park:true},
+   {id:'park-slide-chute',x,z:z+1.65,w:.76,d:2.65,height:y+1.5,park:true});}
  // Hibiscus round the edge, a stone lantern by the path, and the park's name.
  for(const [lx,lz,seed] of [[-9,-9,3],[9.5,-8.5,5],[-9.5,9,8],[0,10.5,11],[-3,-10.5,14]]){const [x,z]=at(lx,lz);kit.at(x,z,0,()=>hibiscus(kit,0,0,{seed,size:.55}),ground(x,z));}
  {const [x,z]=at(-4.2,1.6),y=ground(x,z);kit.box(.36,.12,.36,x,y+.06,z,0xa8a294);kit.cyl(.06,.08,.6,x,y+.42,z,0xa8a294,{segments:8});kit.box(.42,.32,.42,x,y+.86,z,0xb4ae9f);kit.box(.2,.18,.06,x,y+.86,z+.22,0xffe0a0,{finish:'lamp'});kit.box(.56,.1,.56,x,y+1.07,z,0x9a958a);kit.sphere(.09,x,y+1.18,z,0x9a958a);
@@ -82,7 +97,7 @@ export function buildPark(world,options){
  {const [x,z]=at(-13.2,-2.2),y=ground(x,z);for(const dz of [-.5,.5])kit.box(.08,1.3,.08,x,y+.65,z+dz,0x6b4a32);
   const c=typeof document!=='undefined'&&document.createElement?document.createElement('canvas'):null;
   if(c&&c.getContext?.('2d')){c.width=512;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#f3e6c8';ctx.fillRect(0,0,512,192);ctx.strokeStyle='#6b4a32';ctx.lineWidth=12;ctx.strokeRect(6,6,500,180);
-   ctx.fillStyle='#3a2a1a';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 84px "Hiragino Mincho ProN","Noto Serif CJK JP",serif';ctx.fillText("Minato Public Garden",256,80);ctx.font='bold 30px sans-serif';ctx.fillText('MINATO PARK',256,154);
+   ctx.fillStyle='#3a2a1a';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 84px "Hiragino Mincho ProN","Noto Serif CJK JP",serif';ctx.fillText("港公園",256,80);ctx.font='bold 30px sans-serif';ctx.fillText('MINATO PARK',256,154);
    const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;kit.sign(t,1.3,.5,x,y+1.15,z,{ry:-Math.PI/2,name:'Minato Park board',both:true});}}
  const {materials}=kit.finish(group,'Harbour Park');
 
@@ -99,7 +114,7 @@ export function buildPark(world,options){
  const bench=new THREE.Object3D();bench.position.set(PARK_BENCH.stand[0],PARK_BENCH.position[1]+1,PARK_BENCH.stand[2]);bench.userData.seat=PARK_BENCH;world.group.add(bench);
  options.register(bench,'Sit and watch the town and harbour',()=>options.onAction('seat','Harbour Park bench','A quiet view across the rooftops and port, under the old cherry.'));
  const sign=new THREE.Object3D();{const [x,z]=at(-13.2,-2.2);sign.position.set(x-.6,ground(x,z)+1.1,z);}world.group.add(sign);
- options.register(sign,'Read the park board',()=>options.onAction('read',"Minato Park · Minato Park",'Laid out in 1972 on the old lookout mound. The kanhizakura was planted by the class of that year and flowers in January, the first cherry in Japan. Please take your rubbish home. No ball games on the mound. — Minato Town Office'));
+ options.register(sign,'Read the park board',()=>options.onAction('read','Minato Park','Laid out in 1972 on the old lookout mound. The kanhizakura was planted by the class of that year and flowers in January, the first cherry in Japan. Please take your rubbish home. No ball games on the mound. — Minato Town Office'));
  const pools=createLightPools(world.group,PARK_LAMPS.map(([lx,lz])=>{const [x,z]=at(lx,lz);return {x,z,y:ground(x,z),radius:2.6};}));
  (world.hourly||(world.hourly=[])).push(minutes=>{const glow=lanternGlow(minutes);pools.update(glow);if(materials.lamp)materials.lamp.emissiveIntensity=.1+glow*1.6;dress(minutes);});
  world.park={group,bench,seat:PARK_BENCH,loaded:true,pools,trees};

@@ -26,7 +26,7 @@ function canvasTexture(width,height,draw){
 
 // ================================================================== the medicine shelf
 /** The boards behind the counter (sakura-shell.js builds them to these measurements). */
-export const MEDICINE_SHELF=Object.freeze({front:6.675,back:6.83,levels:Object.freeze([1.1,1.385,1.669,1.954]),minZ:.6,maxZ:3.64});
+export const MEDICINE_SHELF=Object.freeze({front:6.50,back:6.70,levels:Object.freeze([1.1,1.385,1.669,1.954]),minZ:.75,maxZ:3.25});
 
 /**
  * What is on it. Fictional brands of the period, drawn as their boxes; prices are what
@@ -57,8 +57,8 @@ export const STAMINA_DRINK=Object.freeze({id:'drink',jp:"HarborD",en:'Harbour-D 
 const PLANOGRAM=[
  [['megusuri',4],['bansoko',3],['houtai',3],['nodo',4],['menbou',2],['mushi',3],['megusuri',3]],
  [['kaze',5],['itami',5],['ichou',4],['ugai',3],['nodo',3]],
- [['bottles',12],['vitamin',3],['drink10',3]],
- [['katori',3],['shippu',4],['taionkei',4],['katori',2],['houtai',2]],
+ [['bottles',30],['vitamin',5],['drink10',4]],
+ [['katori',5],['shippu',6],['taionkei',4],['katori',2],['houtai',2]],
 ];
 
 const CELL=256,ATLAS_COLS=4;
@@ -131,7 +131,7 @@ export function buildMedicineShelf(room){
  });
  for(const mesh of [glass,neck,cap,label]){mesh.name='Sakura stamina drinks';mesh.userData.sharedAsset=true;room.add(mesh);}
  // The header over it, and the licence that lets her sell any of it.
- const header=canvasTexture(640,90,(ctx,w,h)=>{ctx.fillStyle='#1f5a8c';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ffffff';ctx.font=`bold 54px ${GOTHIC}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("Medicine　Pharmaceuticals",w*.4,h/2+2);ctx.font=`bold 22px ${GOTHIC}`;ctx.fillText("Please give us a shout",w*.83,h/2+2);});
+ const header=canvasTexture(640,90,(ctx,w,h)=>{ctx.fillStyle='#1f5a8c';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 40px ${GOTHIC}`;ctx.fillText('おくすり・日用品',w*.34,32,w*.61);ctx.font=`bold 17px ${GOTHIC}`;ctx.fillText('MEDICINE & DAILY CARE',w*.34,68,w*.61);ctx.font=`bold 22px ${GOTHIC}`;ctx.fillText('お声がけください',w*.81,32,w*.32);ctx.font=`bold 15px ${GOTHIC}`;ctx.fillText('ASK THUAN',w*.81,67,w*.32);});
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.21),new THREE.MeshStandardMaterial({map:header,roughness:.6}));
  sign.position.set(S.back-.005,2.3,1.75);sign.rotation.y=-Math.PI/2;sign.name='Medicine shelf sign';sign.userData.sharedAsset=true;room.add(sign);
  const licence=canvasTexture(300,190,(ctx,w,h)=>{ctx.fillStyle='#7a5a32';ctx.fillRect(0,0,w,h);ctx.fillStyle='#fbf7ea';ctx.fillRect(12,12,w-24,h-24);ctx.fillStyle='#222';ctx.textAlign='center';ctx.font=`bold 22px ${SERIF}`;ctx.fillText("Pharmaceutical sales business license",w/2,48);ctx.font=`15px ${SERIF}`;ctx.fillText("Special sales business",w/2,78);ctx.fillText("Sakura Shop　Thuan",w/2,104);ctx.fillText("Governor of Okinawa Prefecture",w/2,130);ctx.fillText("1 April 1997",w/2,156);ctx.fillStyle='#c0322c';ctx.beginPath();ctx.arc(w-54,146,16,0,Math.PI*2);ctx.fill();});
