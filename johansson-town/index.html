@@ -20,11 +20,11 @@
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
 <link rel="stylesheet" href="./photo-mode.css?h=678115f0">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-BgjBu99-.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-aQmWHIEf.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-MrOxZM18.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CWODQqT0.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-CbtgSakF.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-CZmDRpES.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-CWgkKSGM.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-CUnY3Zoc.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-7PjwmOKd.js">
 </head>
 <body>
@@ -346,7 +346,7 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON TOWN</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=e2014866"></script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-Bo2X_LF7.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-BMyBzhos.js";</script>
 <script src="./landing.js?h=a9321e19"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -505,7 +505,7 @@ import {unlockTownAudio} from './runtime/audio-CBa7Ywpb.js';
       }
     },25000);
     try{
-      try { await import('./runtime/boot-BgjBu99-.js'); } catch (error) {
+      try { await import('./runtime/boot-aQmWHIEf.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

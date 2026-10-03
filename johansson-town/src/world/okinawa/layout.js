@@ -23,7 +23,8 @@ export const NISHI=Object.freeze({
  /** The quarter, from the seawall to the yard wall. */
  minX:-39.2,maxX:WEST_YARD.minX,minZ:-49.5,maxZ:29.3,
  /** The seawall along the shore, and the walk behind it. */
- seawall:Object.freeze({x:-39.55,thickness:.6,height:.95}),
+ // A sitting height: from the benches behind it you look over it at the sea.
+ seawall:Object.freeze({x:-39.55,thickness:.6,height:.7}),
  promenade:Object.freeze({minX:-39.2,maxX:-36.4}),
  /** The concrete apron that runs on from the quay, round to the second pier. */
  quay:Object.freeze({minX:-39.2,maxX:-19,minZ:-49.5,maxZ:-38.6}),

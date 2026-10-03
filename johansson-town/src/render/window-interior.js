@@ -22,6 +22,25 @@ import * as THREE from '../../vendor/three.module.js';
 export const WINDOW_ROOM=Object.freeze({depth:3,storey:2.8,sill:.95});
 
 const shared={glow:{value:0},daylight:{value:1},sky:{value:new THREE.Color(0xbcd4dc)}};
+/**
+ * Homes whose lights follow the people in them (world/home-lights.js). Each is a box in
+ * world space and a level: 1 somebody is in and up, 0 nobody (or asleep), between for a
+ * lamp left on. A pane inside a box takes its home's level; every other window in town
+ * keeps the hashed one, so most of the town still looks lived-in on its own.
+ */
+export const HOME_LIGHT_SLOTS=24;
+const homeA=Array.from({length:HOME_LIGHT_SLOTS},()=>new THREE.Vector4(0,0,0,-1)),homeB=Array.from({length:HOME_LIGHT_SLOTS},()=>new THREE.Vector4());
+shared.homeA={value:homeA};shared.homeB={value:homeB};
+/** Registers a home's box; returns its slot, or -1 when the table is full. */
+export function registerHomeLight([minX,minY,minZ],[maxX,maxY,maxZ]){
+ const slot=homeA.findIndex(v=>v.w<0);if(slot<0)return -1;
+ homeA[slot].set(minX,minY,minZ,1);homeB[slot].set(maxX,maxY,maxZ,0);return slot;
+}
+/** A home's light: 0 dark .. 1 lit. */
+export function setHomeLight(slot,level){if(slot>=0&&slot<HOME_LIGHT_SLOTS&&homeA[slot].w>=0)homeA[slot].w=Math.max(0,Math.min(1,level));}
+export function homeLightLevel(slot){return homeA[slot]?.w;}
+/** Frees every slot (a town rebuilt from scratch, or a test). */
+export function clearHomeLights(){for(const v of homeA)v.set(0,0,0,-1);}
 const materials=new Set();
 
 /** Sets every window material's light: `glow` 0 by day to 1 at night (town-clock windowGlow). */
@@ -37,7 +56,7 @@ export function windowInteriorMaterial({name='window interior'}={}){
  material.name=name;
  material.userData.windowInterior=true;
  material.onBeforeCompile=shader=>{
-  shader.uniforms.uGlow=shared.glow;shader.uniforms.uDaylight=shared.daylight;shader.uniforms.uSky=shared.sky;
+  shader.uniforms.uGlow=shared.glow;shader.uniforms.uDaylight=shared.daylight;shader.uniforms.uSky=shared.sky;shader.uniforms.uHomeA=shared.homeA;shader.uniforms.uHomeB=shared.homeB;
   shader.vertexShader=shader.vertexShader
    .replace('#include <common>',`#include <common>
 attribute vec3 winMin;
@@ -61,10 +80,20 @@ vWinMax=(modelMatrix*vec4(winMax,1.0)).xyz;`);
 uniform float uGlow;
 uniform float uDaylight;
 uniform vec3 uSky;
+uniform vec4 uHomeA[${HOME_LIGHT_SLOTS}];
+uniform vec4 uHomeB[${HOME_LIGHT_SLOTS}];
 varying vec3 vIWorld;
 varying vec3 vINormal;
 varying vec3 vWinMin;
 varying vec3 vWinMax;
+// A registered home's light level for a pane centred at p, or the fallback.
+float homeLit(vec3 p,float fallback){
+ for(int i=0;i<${HOME_LIGHT_SLOTS};i++){
+  vec4 a=uHomeA[i];if(a.w<0.)continue;vec3 b=uHomeB[i].xyz;
+  if(all(greaterThanEqual(p,a.xyz))&&all(lessThanEqual(p,b)))return a.w;
+ }
+ return fallback;
+}
 float wHash(vec3 p){p=fract(p*vec3(.1031,.1030,.0973));p+=dot(p,p.yxz+33.33);return fract((p.x+p.y)*p.z);}
 vec3 wLin(vec3 c){return pow(c,vec3(2.2));}
 vec3 wPick4(float h,vec3 a,vec3 b,vec3 c,vec3 d){return h<.25?a:h<.5?b:h<.75?c:d;}
@@ -91,7 +120,7 @@ vec3 windowRoom(){
  float gu=clamp((pt-tLo)/max(width,.01),0.,1.),gv=clamp((vIWorld.y-lo.y)/max(size.y,.01),0.,1.);
  float inward=-out_*va;
  // Daylight inside is dimmer than out; at night most rooms have the light on.
- float lit=step(.22,seed3);
+ float lit=homeLit(centre,step(.22,seed3));
  float night=uGlow;
  vec3 lamp=mix(vec3(1.),wLin(vec3(1.,.82,.58))*1.25,night)*lit;
  float level=mix(.62*uDaylight+.08,0.,night)+night*1.0;
@@ -157,7 +186,7 @@ vec3 windowRoom(){
 }`)
    .replace('vec4 diffuseColor = vec4( diffuse, opacity );','vec4 diffuseColor = vec4( windowRoom(), opacity );');
  };
- material.customProgramCacheKey=()=>'window-interior-1';
+ material.customProgramCacheKey=()=>'window-interior-2';
  materials.add(material);
  return material;
 }

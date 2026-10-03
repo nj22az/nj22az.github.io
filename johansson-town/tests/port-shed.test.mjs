@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {buildPortShed,PORT_SHED,tvProgramme} from '../src/world/port-shed.js';
+import {buildPortShed,PORT_SHED,SHED_PIER,tvProgramme} from '../src/world/port-shed.js';
 import {circleHitsRect} from '../physics.js';
 installDOM();
 
@@ -17,5 +17,10 @@ test('Mr Fujita’s shed: the ballgame in the afternoon, a beer in his hand, the
  for(let z=-66;z<=-50;z+=.5)assert.ok(!colliders.some(c=>circleHitsRect(-35.3,z,.3,c)),'pier walk is open at z='+z);
  // He sits facing his set.
  assert.ok(PORT_SHED.tv[1]<PORT_SHED.chair[1],'the TV is in front of him (to the south, where he faces)');
+ // It stands wholly on the pier's deck, not over the water.
+ const P=SHED_PIER,hx=PORT_SHED.depth/2,hz=PORT_SHED.width/2;
+ assert.ok(PORT_SHED.x-hx>=P.minX&&PORT_SHED.x+hx<=P.maxX&&PORT_SHED.z-hz>=P.minZ&&PORT_SHED.z+hz<=P.maxZ,'the shed is on the deck');
+ // You can walk in through the end towards the quay, beside his chair.
+ for(const z of [PORT_SHED.z+hz+.6,PORT_SHED.z+hz-.4,PORT_SHED.z+.5])assert.ok(!colliders.some(c=>circleHitsRect(PORT_SHED.x-.55,z,.25,c)),'the way in is open at z='+z);
  shed.dispose();
 });

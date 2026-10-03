@@ -15,8 +15,10 @@ import {createAvatarActor,updateAvatarActor} from '../avatars/actors.js';
  *
  * Pier frame: the shed stands on the west edge of the L-pier, open to the east.
  */
-export const PORT_SHED=Object.freeze({x:-37.9,z:-58,width:3.6,depth:2.6,y:0,
- chair:[-37.55,-57.2],tv:[-37.75,-59.35]});
+export const PORT_SHED=Object.freeze({x:-36.95,z:-58,width:3.6,depth:2.4,y:0,
+ chair:[-36.6,-57.2],tv:[-36.8,-59.35]});
+/** The pier's timber deck the shed stands on (measured from the harbour's own deck). */
+export const SHED_PIER=Object.freeze({minX:-38.25,maxX:-33.75,minZ:-64.3,maxZ:-48});
 const S=PORT_SHED;
 
 function corrugated(){
@@ -69,7 +71,8 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
  box([D,.06,W],[0,.03,0],plank,'Shed floor');
  // Back (west) wall and the two ends in corrugated iron; the east side is open.
  box([.04,2.05,W],[-hx,1.03,0],ironMat,'Shed back wall');
- for(const s of [-1,1])box([D,2.05,.04],[0,1.03,s*hz],ironMat,'Shed end wall');
+ // The far end is iron; the end towards the quay is open, so you walk up to him and the set.
+ box([D,2.05,.04],[0,1.03,-hz],ironMat,'Shed end wall');
  // Posts and a lintel along the open front.
  for(const z of [-hz,0,hz])box([.09,2.25,.09],[hx,1.12,z],timber,'Shed post');
  box([.1,.12,W+.1],[hx,2.2,0],timber,'Shed lintel');
@@ -115,17 +118,24 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
  for(const [fx,fy,fz,c] of [[-hx+.15,1.75,-1.2,0x6fae9a],[-hx+.15,1.45,-.75,0x7fb7d8],[-hx+.15,1.25,-1.05,0x9ecf8a],[0,1.95,1.1,0x7fb7d8]]){const f=new THREE.Mesh(new THREE.SphereGeometry(.1,12,8),std(c,.15,{transparent:true,opacity:.75}));f.position.set(fx,fy,fz);g.add(f);}
  // Outside: buoys, a stack of crates round the corner and a plastic chair for visitors.
  for(const [ox,oz,c] of [[hx+.35,-hz+.3,0xe2542e],[hx+.5,-hz+.65,0xf2c230]]){const b=new THREE.Mesh(new THREE.SphereGeometry(.17,12,8),std(c,.5));b.position.set(ox,.17,oz);g.add(b);}
- for(let i=0;i<3;i++)box([.5,.28,.36],[hx-.35,.14+i*.28,hz+.3],std(i%2?0x2f6fa8:0x3d8a5a,.6),'Fish crate');
- const stool=new THREE.Group();stool.position.set(hx+.7,0,.3);g.add(stool);
+ for(let i=0;i<3;i++)box([.5,.28,.36],[hx-.35,.14+i*.28,-hz-.3],std(i%2?0x2f6fa8:0x3d8a5a,.6),'Fish crate');
+ const stool=new THREE.Group();stool.position.set(-hx+.45,0,hz+.55);stool.rotation.y=-Math.PI/2;g.add(stool);
  const plastic=std(0xd8d2c4,.6);{const seat=new THREE.Mesh(new THREE.BoxGeometry(.42,.04,.42),plastic);seat.position.y=.44;stool.add(seat);const back=new THREE.Mesh(new THREE.BoxGeometry(.04,.4,.42),plastic);back.position.set(.2,.66,0);stool.add(back);for(const [lx,lz] of [[-.18,-.18],[-.18,.18],[.18,-.18],[.18,.18]]){const l=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.44,6),plastic);l.position.set(lx,.22,lz);stool.add(l);}}
 
  // Walls and furniture are solid; the open front lets you step up and look in.
  const wx=S.x,wz=S.z;
  colliders.push({x:wx-hx,z:wz,w:.12,d:W,height:2.1,portShed:true});
- for(const s of [-1,1])colliders.push({x:wx,z:wz+s*hz,w:D,d:.12,height:2.1,portShed:true});
+ colliders.push({x:wx,z:wz-hz,w:D,d:.12,height:2.1,portShed:true});
  colliders.push({x:S.tv[0],z:S.tv[1],w:.62,d:.48,height:.95,portShed:true},{x:S.chair[0],z:S.chair[1],w:.7,d:.7,height:.9,portShed:true});
- colliders.push({x:wx+hx-.35,z:wz+hz+.3,w:.55,d:.4,height:.9,portShed:true});
+ colliders.push({x:wx+hx-.35,z:wz-hz-.3,w:.55,d:.4,height:.9,portShed:true});
 
+ // ---- The pier under it: timber piles along both edges into the water, and a fender
+ // beam, so the deck reads as a pier standing in the harbour rather than a slab on it.
+ {const P=SHED_PIER,pier=new THREE.Group();pier.name='Pier piles';parent.add(pier);
+  const pile=new THREE.CylinderGeometry(.13,.15,1.7,8),pileMat=std(0x4a3b2c,.95),beam=std(0x5a4632,.9);
+  for(let z=P.maxZ-1.5;z>=P.minZ;z-=2.4)for(const x of [P.minX+.05,P.maxX-.05]){const m=new THREE.Mesh(pile,pileMat);m.position.set(x,-.82,z);m.castShadow=shadows;pier.add(m);}
+  for(const x of [P.minX-.04,P.maxX+.04]){const b=new THREE.Mesh(new THREE.BoxGeometry(.12,.22,P.maxZ-P.minZ-1),beam);b.position.set(x,-.1,(P.minZ+P.maxZ)/2-.5);pier.add(b);}
+ }
  // ---- Mr Fujita, in his chair.
  const fujita=new THREE.Group();fujita.name='Mr Fujita';fujita.userData.name='Mr Fujita';fujita.userData.walkSurface=false;
  fujita.position.set(cx,.02,cz);g.add(fujita);

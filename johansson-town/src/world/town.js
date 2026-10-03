@@ -36,6 +36,8 @@ import {izakayaPlot} from './dining-layout.js';
 import {buildBeachLife} from './beach-life.js';
 import {buildBeachCorner} from './beach-corner.js';
 import {buildPortShed} from './port-shed.js';
+import {createHomeLights} from './home-lights.js';
+import {buildBreakwaters} from './breakwaters.js';
 import {buildAirportIsland} from './airport-island.js';
 import {buildEastLawn} from './east-lawn.js';
 import {buildWestYard} from './west-yard.js';
@@ -243,6 +245,10 @@ export function createTown(options){
    world.beachCorner=buildBeachCorner({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows});
    // Mr Fujita's shed on the working pier, where he watches the ballgame with a beer. See port-shed.js.
    world.portShed=buildPortShed({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows});
+   // Kitahama's windows light when the people who live there are in and up. See home-lights.js.
+   world.homeLights=createHomeLights({people:()=>world.people});
+   // Tetrapods at the foot of the west seawall and two breakwaters off the east beach.
+   world.breakwaters=buildBreakwaters({parent:world.group,shadows:options.shadows});
    // Kitano-jima, the airport island on the horizon to the east. See airport-island.js.
    world.airportIsland=buildAirportIsland({parent:world.group,shadows:options.shadows});
    world.oilJetty=buildOilJetty(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
@@ -318,7 +324,7 @@ export function createTown(options){
   const doorTraffic=[];
   world.update=(dt,time,day,minutes=1002)=>{
     world.updateHours(minutes);world.updateDiningStreet?.(day);
-    world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes);world.airportIsland?.update(dt,minutes,day);world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
+    world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes);world.homeLights?.update(minutes);world.airportIsland?.update(dt,minutes,day);world.oilJetty?.update(dt,minutes,time);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
     world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // Three daily services, each with a fifteen-minute stop.
