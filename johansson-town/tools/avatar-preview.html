@@ -24,12 +24,13 @@ const people=names.map((name,i)=>{
  if(tops)recipe={...recipe,outfit:{...recipe.outfit,top:tops[i],...(q.get('pattern')?{pattern:q.get('pattern')}:{}),...(q.get('colour')?{topColour:'#'+q.get('colour')}:{})}};
  const a=buildAvatar(recipe,{faceSize:512});const holder=new THREE.Group();holder.add(a.root);
  holder.position.x=(i-(names.length-1)/2)*.85;holder.rotation.y=Math.PI+turn;scene.add(holder);
- const anim=createAvatarAnimator(a);
+ const anim=createAvatarAnimator(a);if(q.get('wear'))a.wear(q.get('wear'));
  if(['kachashi','wave','bow','clap','think','shrug','cheer'].includes(pose))anim.play(pose[0].toUpperCase()+pose.slice(1));
  return {a,anim,holder};
 });
 const camera=new THREE.PerspectiveCamera(30,innerWidth/innerHeight,.1,100);
 const span=Math.max(2.4,names.length*.85);camera.position.set(0,1.1,span*1.6+1);camera.lookAt(0,.8,0);
+if(q.get('chest')){camera.position.set(0,1.15,1.05);camera.lookAt(0,1.0,0);}
 if(q.get('close')){camera.position.set(0,1.45,1.25);camera.lookAt(0,1.35,0);}
 // ?body=1 frames the clothes: chest to shoes, near enough to read a collar.
 if(q.get('body')){camera.position.set(0,.85,1.9*Math.max(1,names.length/3));camera.lookAt(0,.75,0);}
@@ -37,7 +38,9 @@ const clock=new THREE.Clock();let t=0;
 function frame(){requestAnimationFrame(frame);const dt=Math.min(.05,clock.getDelta());t+=dt;
  for(const p of people){
   const state={speed:pose==='walk'?1.2:pose==='run'?3.5:0,running:pose==='run',seated:pose==='sit',seatHeight:.45,expression:['happy','sad','angry','shy','surprised','laugh','thinking'].includes(pose)?pose:'neutral',talking:pose==='talk',waving:false};
-  p.anim.update(dt,state);
+  // ?swing=1: turn on the spot, to see hair and hems swing (springs.js).
+  if(q.get('swing'))p.holder.rotation.y=Math.PI+turn+Math.sin(t*2.4)*.9;
+  p.anim.update(dt,state);p.a.springs?.update(dt);
  }
  renderer.render(scene,camera);}
 frame();window.__READY__=true;

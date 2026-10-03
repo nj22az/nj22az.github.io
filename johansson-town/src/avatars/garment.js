@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {hemSpec} from './springs.js';
 
 /**
  * The shirt, painted.
@@ -70,7 +71,9 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=line*.8;ctx.stroke();}
  };
  const buttons=(ts,r,fill)=>{for(const t of ts)dotAt(0,t,r*m.k,fill,shade(fill,.6));marks.push('buttons:'+ts.length);};
- const k=m.k,neck=.92,hem=.15;
+ // An island shirt is worn out over the shorts, so its cloth (and print) runs down to its own hem (springs.js).
+ const out=o.top==='kariyushi'?hemSpec(recipe,m):null;
+ const k=m.k,neck=.92,hem=out?Math.max(GARMENT.T0+.02,(out.waist-out.length-m.hipY)/m.torso+.01):.15;
 
  // Stripes and prints first, so collars and pockets sit over them.
  if(o.pattern==='stripes'&&!['tank','overalls','sundress'].includes(o.top)){
@@ -138,10 +141,16 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   case 'kariyushi':{
    // An open neck: a V of skin, lapels folded back over it, buttons down the front.
    const skin=recipe.body.skin;
-   poly([[-.07*k,1.0],[.07*k,1.0],[0,.8]],skin,{stroke:null});
+   // An open camp collar: the V of skin stays open, each lapel lies beside it with its point
+   // out toward the shoulder, and the collar band goes round the back of the neck only.
+   // Placed as fractions of the cloth's half-width at each height: up by the neck the body
+   // is narrow, and a fixed width in metres would run round to the sides.
+   const fx=(f,t)=>f*W/2*radiusAt(t);
+   poly([[-fx(.72,.99),.99],[fx(.72,.99),.99],[0,.77]],skin,{stroke:null});
    const lapel=lighten(top,.22);marks.push('lapels');
-   for(const s of [-1,1])poly([[s*.012*k,1.0],[s*.14*k,.995],[s*.12*k,.9],[s*.012*k,.79]],lapel,{width:line*1.2});
-   ctx.fillStyle=lapel;ctx.fillRect(0,Y(1.035),TW,Y(.975)-Y(1.035));
+   for(const s of [-1,1])poly([[s*fx(.72,.99),.99],[s*fx(.86,.95),.95],[s*fx(.6,.86),.86],[s*.012*k,.77]],lapel,{width:line*1.2});
+   ctx.fillStyle=lapel;const gap=[X(-fx(.72,.99),1.0),X(fx(.72,.99),1.0)].sort((a,b)=>a-b);
+   ctx.fillRect(0,Y(1.04),gap[0],Y(.99)-Y(1.04));ctx.fillRect(gap[1],Y(1.04),TW-gap[1],Y(.99)-Y(1.04));
    placket(.8,hem+.03,.02);buttons([.72,.58,.44,.3],.0085,'#f8f6ef');
    pocket(W*.25,.62,W*.22,.17,top);hemRound();break;
   }
