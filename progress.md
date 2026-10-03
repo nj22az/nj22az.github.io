@@ -141,3 +141,9 @@ Final release also preserves f08e8af's Kitahama residential-quarter and anchored
 
 2026-10-03 — Remove the park slide at the user’s request:
 - Removed the entire slide, both collision footprints and its separate gravel patch. Restored matching grass; retained the park paths, bench, cherry, planting and lamps.
+
+## Exterior stair audit · 3 October 2026
+- Replaced every exterior stair constructor (Sakura, concrete houses, Kitahama flats) with flights at <=180 mm rise and >=260 mm tread, two handrails, supporting stringers and level landings. House stairs use a switchback and an opening through the roof parapet.
+- Registered transformed tread/corridor/roof walking levels; movement rejects abrupt side entry, while height-aware collisions retain rails, parapets, walls and roof equipment. Collider bottoms follow the lowered Kitahama datum.
+- Moved Sakura's intersecting cargo-yard light, cargo pallet and wall condensers clear of the flight. Lamp posts now have physical collisions.
+- Verification: 597 active tests passed (5 intentional gateball skips); actual runtime audit found 357 elevated surface records and no blocked stair centres. Johansson walked from y=.02 to y=4.01 and back down. Inspected desktop/phone Sakura captures and standalone house/Sakura construction previews.

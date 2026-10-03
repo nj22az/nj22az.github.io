@@ -23,7 +23,7 @@ export function createWalkSurface({minX,maxX,minZ,maxZ,base,cell=WALK.cell,step=
  const nx=Math.ceil((maxX-minX)/cell)+1,nz=Math.ceil((maxZ-minZ)/cell)+1;
  const lift=new Float32Array(nx*nz);
  const baseAt=new Float32Array(nx*nz).fill(NaN);
- const seen=new WeakSet();
+ const seen=new WeakSet(),levelRoots=new WeakSet(),levels=[];
  const ground=(i,j)=>{const k=j*nx+i;let b=baseAt[k];if(Number.isNaN(b)){b=base(minX+i*cell,minZ+j*cell);baseAt[k]=b;}return b;};
  const a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),e1=new THREE.Vector3(),e2=new THREE.Vector3(),nrm=new THREE.Vector3(),m=new THREE.Matrix4(),inst=new THREE.Matrix4();
  let triangles=0;
@@ -78,9 +78,11 @@ export function createWalkSurface({minX,maxX,minZ,maxZ,base,cell=WALK.cell,step=
   /** Lays every static, opaque mesh under `root` not laid yet. Safe to call again. */
   add(root){
    if(!root)return 0;root.updateMatrixWorld(true);const before=triangles;
-   root.traverse(o=>{if(!o.isMesh||seen.has(o))return;seen.add(o);if(!skipped(o))addMesh(o);});
+   root.traverse(o=>{if(o.userData?.walkLevels&&!levelRoots.has(o)){levelRoots.add(o);levels.push(...o.userData.walkLevels);}if(!o.isMesh||seen.has(o))return;seen.add(o);if(!skipped(o))addMesh(o);});
    return triangles-before;
   },
+  level(x,z){let y=null;for(const s of levels)if(x>=s.minX-1e-7&&x<=s.maxX+1e-7&&z>=s.minZ-1e-7&&z<=s.maxZ+1e-7)y=Math.max(y??-Infinity,s.y);return y;},
+  get levels(){return levels;},
   /** How far above the plan's ground the drawn surface is at x,z (0 where nothing is). */
   lift(x,z){
    const i=Math.round((x-minX)/cell),j=Math.round((z-minZ)/cell);

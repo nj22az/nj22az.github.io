@@ -1,3 +1,4 @@
+import {stairFlight,stairLanding} from './stairs.js';
 import {rng} from './kit.js';
 import {wallAd,WALL_ADS} from './signs.js';
 import {broadleaf} from './trees.js';
@@ -92,7 +93,7 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  kit.block(-W,W,0,H,-D,D,colour,'plaster');
  kit.block(-W-.02,W+.02,0,.35,-D-.02,D+.02,0xb9b3a6);                // a darker plinth
  kit.block(-W-.12,W+.12,H,H+.1,-D-.12,D+.12,0xc8c2b5);               // roof slab lip
- for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D]])kit.block(x0,x1,H+.1,H+.55,z0,z1,colour,'plaster');
+ for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D-1.0]])kit.block(x0,x1,H+.1,H+.55,z0,z1,colour,'plaster');
  // Ground floor: aluminium sliding windows either side of a door under a thin concrete
  // canopy. The openings are laid out from the house's own width, left to right with a
  // pier of wall between each, so a narrow plot's house cannot put a window over its door.
@@ -120,13 +121,17 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  // A glass door out to the balcony, and a window beside it over the front door.
  window(...bay(-W+edge,doorX-pier,2.4),storey+1.1,2.0);
  window(...bay(doorX+pier,W-edge,1.1),storey+1.4,1.1);
- // The outside stair up the east side to the roof, with its railing.
- kit.at(W+.55,0,0,()=>{
-  const steps=16,rise=(H+.1)/steps,run=(d-.6)/steps;
-  for(let i=0;i<steps;i++)kit.box(1,rise*.9+.12,run+.02,0,rise*(i+.5),D-.3-run*(i+.5),0xcdc7ba);
-  kit.rod([.48,1.05,D-.3],[.48,H+1.05,-D+.3],.03,C.steel);
-  for(let i=0;i<=4;i++){const t=i/4;kit.rod([.48,t*H,D-.3-t*(d-.6)],[.48,t*H+1.05,D-.3-t*(d-.6)],.02,C.steel);}
- });
+ // Two ordinary flights share a turn landing, fitting inside the side-yard strip.
+ const rails=[],solid=c=>rails.push(c),length=4.16,bottom=D-1.0,turn=bottom-length,mid=(H+.1)/2;
+ stairFlight(kit,solid,{id:'house-stair-lower',x:W+2.15,z:bottom,width:1.3,length,height:mid,direction:-1});
+ stairLanding(kit,{id:'house-turn',x0:W+.2,x1:W+2.8,z0:turn-1.0,z1:turn,y:mid},solid);
+ stairFlight(kit,solid,{id:'house-stair-upper',x:W+.85,z:turn,width:1.3,length,height:mid,base:mid});
+ stairLanding(kit,{id:'house-roof-landing',x0:W-.3,x1:W+1.5,z0:bottom,z1:bottom+1.0,y:H+.1},solid);
+ kit.level(-W+.15,W-.15,-D+.15,D-.15,H+.1,'house-roof');
+ // Guard the outer edge of both landings, leaving the flight ends open.
+ for(const [x0,x1,z0,z1,y] of [[W+.2,W+2.8,turn-1.0,turn-.95,mid],[W+2.75,W+2.8,turn-1.0,turn,mid],[W+1.45,W+1.5,bottom,bottom+1.0,H+.1]]){
+  kit.block(x0,x1,y,y+1,z0,z1,0x788386);solid({...kit.rect(x0,x1,z0,z1,1,'house-landing-rail'),minY:kit.point(0,y,0).y});
+ }
  // On the roof: the tank on its frame, a TV aerial, washing.
  kit.at(-W*.35,-D*.3,0,()=>{
   for(const [x,z] of [[-.45,-.45],[.45,-.45],[.45,.45],[-.45,.45]])kit.box(.07,.9,.07,x,H+.55,z,C.steel,{finish:'metal'});
@@ -140,7 +145,9 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  kit.box(.8,.55,.3,-W-.18,1.8,-D*.2,0xe2e0d8,{ry:Math.PI/2});
  kit.box(.04,1.2,.2,-W-.01,1.0,-D*.2,0xa9a397);
  if(r.next()>.5)kit.box(.03,1.6,.18,W-.6,H-1,D+.01,0xaaa496);
- return [kit.rect(-W-.1,W+1.1,-D-.1,D+.1,H+.6,'okinawa-house')];
+ return [kit.rect(-W-.02,W+.02,-D-.02,D+.02,H+.1,'okinawa-house'),...rails,
+ ...[[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,bottom],[W-.14,W,bottom+1.0,D]].filter(([a,b,c,d])=>d>c).map(([a,b,c,d])=>({...kit.rect(a,b,c,d,.5,'house-parapet'),minY:kit.point(0,H+.1,0).y})),
+ {...kit.rect(-W*.35-.65,-W*.35+.65,-D*.3-.65,-D*.3+.65,2.5,'house-tank'),minY:kit.point(0,H+.1,0).y}];
 }
 
 /**

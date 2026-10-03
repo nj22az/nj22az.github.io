@@ -1,0 +1,32 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import * as THREE from '../vendor/three.module.js';
+import {createKit} from '../src/world/okinawa/kit.js';
+import {stairFlight,stairLanding} from '../src/world/okinawa/stairs.js';
+import {createWalkSurface} from '../src/world/walk-surface.js';
+import {standingHitsRect,canStepBetween} from '../physics.js';
+for(const axis of ['x','z'])for(const direction of [-1,1])test(`stair traversal ${axis}/${direction} in a rotated building`,()=>{
+ const kit=createKit(),group=new THREE.Group(),colliders=[];
+ kit.at(10,20,Math.PI/2,()=>{
+  const spec={id:'test',x:0,z:0,length:4.16,height:2.85,width:1.3,axis,direction};
+  const flight=stairFlight(kit,c=>colliders.push(c),spec);
+  assert.ok(flight.rise<=.18);assert.ok(flight.tread>=.26-1e-9);
+ });kit.finish(group);
+ const surface=createWalkSurface({minX:-20,maxX:40,minZ:-20,maxZ:40,base:()=>0});surface.add(group);
+ assert.equal(surface.levels.length,16);
+ let previous=0;
+ for(const s of surface.levels){const x=(s.minX+s.maxX)/2,z=(s.minZ+s.maxZ)/2,y=surface.level(x,z);assert.ok(canStepBetween(previous,y));assert.ok(!colliders.some(c=>standingHitsRect(x,z,.32,y,c)));previous=y;}
+ assert.equal(previous,2.85);assert.equal(surface.level(35,35),null);
+});
+test('stairs reject side entry and elevated guards still block at roof level',()=>{
+ assert.equal(canStepBetween(0,2.85),false);
+ assert.equal(standingHitsRect(0,0,.32,5.7,{x:0,z:0,w:6,d:6,height:5.7}),false);
+ assert.equal(standingHitsRect(0,0,.32,5.7,{x:0,z:0,w:.05,d:6,minY:5.7,height:1}),true);
+ assert.equal(standingHitsRect(0,0,.32,0,{x:0,z:0,w:.05,d:6,minY:5.7,height:1}),false);
+});
+
+test('raised barriers follow the lowered coastal district datum',()=>{
+ const kit=createKit(),colliders=[];kit.at(0,0,0,()=>stairFlight(kit,c=>colliders.push(c),{id:'coast',x:0,z:0,length:4.16,height:2.85,base:2.85}),-.4);
+ assert.equal(colliders[0].minY,2.45);
+ assert.equal(kit.rect(-1,1,-1,1,3).minY,undefined);
+});

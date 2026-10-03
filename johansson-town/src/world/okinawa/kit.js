@@ -67,6 +67,7 @@ export function sagCurve(a,b,sag,segments=12){
 
 export function createKit({shadows=false}={}){
  const buckets=new Map();
+ const walkLevels=[];
  const geometryCache=new Map();
  /** Finishes with a picture on them, and how many metres one repeat of it covers. */
  const surfaces=new Map();
@@ -196,7 +197,7 @@ export function createKit({shadows=false}={}){
   */
  function rect(x0,x1,z0,z1,height=3,id=''){
   const a=point(x0,0,z0),b=point(x1,0,z1);
-  return {id,x:(a.x+b.x)/2,z:(a.z+b.z)/2,w:Math.abs(b.x-a.x),d:Math.abs(b.z-a.z),height};
+  return {id,x:(a.x+b.x)/2,z:(a.z+b.z)/2,w:Math.abs(b.x-a.x),d:Math.abs(b.z-a.z),height,...(a.y?{minY:a.y}:{})};
  }
  const signs=[];
  /** A painted board, w×h, facing local +z (after `ry`), made at finish time. */
@@ -204,7 +205,12 @@ export function createKit({shadows=false}={}){
   signs.push({texture,w,h,depth,edge,name,both,matrix:(frame?frame.clone():new THREE.Matrix4()).multiply(trs(x,y,z,0,ry))});
  }
  /** Every bucket becomes one mesh under `parent`. Returns the meshes, keyed by finish. */
+ function level(x0,x1,z0,z1,y,id){
+  const a=point(x0,y,z0),b=point(x1,y,z1);
+  walkLevels.push({id,minX:Math.min(a.x,b.x),maxX:Math.max(a.x,b.x),minZ:Math.min(a.z,b.z),maxZ:Math.max(a.z,b.z),y:a.y});
+ }
  function finish(parent,name='Okinawan quarter'){
+  (parent.userData.walkLevels??=[]).push(...walkLevels);
   const meshes=[],materials={};
   for(const [key,{finish:kind,list}] of buckets){
    const geometry=mergeGeometries(list,false);list.forEach(g=>g.dispose());
@@ -234,7 +240,7 @@ export function createKit({shadows=false}={}){
   signs.length=0;
   return {meshes,materials,parts};
  }
- return {at,point,rect,sign,surface,add,box,block,cyl,rod,sphere,hipRoof,gableRoof,extrude,wire,finish,get parts(){return parts;}};
+ return {at,point,rect,level,sign,surface,add,box,block,cyl,rod,sphere,hipRoof,gableRoof,extrude,wire,finish,get parts(){return parts;}};
 }
 
 /** A canvas painted by `draw`, as a texture. */
