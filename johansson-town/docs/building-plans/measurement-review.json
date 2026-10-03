@@ -1,0 +1,1062 @@
+{
+ "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+ "method": "Full runtime movement bounds/polygon; all datum floor meshes; no first-hit or whole-scene extent",
+ "entries": [
+  {
+   "id": "onsen",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 10,
+    "h": 1.4,
+    "m2": 14
+   },
+   "measurement": {
+    "method": "runtime-builder-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -4.85,
+     "maxX": 4.85,
+     "minZ": -8.8,
+     "maxZ": 4.85
+    },
+    "floorPolygon": [
+     [
+      -4.85,
+      -8.8
+     ],
+     [
+      4.85,
+      -8.8
+     ],
+     [
+      4.85,
+      4.85
+     ],
+     [
+      -4.85,
+      4.85
+     ]
+    ],
+    "floorArea": 112.589,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [
+     "Umi-no-yu floor",
+     "Umi-no-yu floor",
+     "Umi-no-yu floor",
+     "Umi-no-yu floor",
+     "Umi-no-yu floor",
+     "Rock bath paving"
+    ],
+    "scope": "Complete movement domain; not net walkable area"
+   },
+   "domainArea": 132.405,
+   "features": [
+    "Andon",
+    "Andon base",
+    "Andon top",
+    "Attendant stool",
+    "Bandai counter",
+    "Bandai ledger",
+    "Bandai platform",
+    "Bandai top",
+    "Basket shelf",
+    "Bath rock",
+    "Bench leg",
+    "Board frame",
+    "Ceiling beam",
+    "Chabudai",
+    "Chabudai leg",
+    "Changing bench",
+    "Cooler shelf",
+    "Desk bell",
+    "Drain grate bar",
+    "Drain gutter",
+    "Dressing counter",
+    "Dressing counter base",
+    "Eave post",
+    "Fence rail",
+    "Frosted sliding door",
+    "Fukugi trunk",
+    "Genkan arai-dashi",
+    "Genkan step",
+    "Getabako",
+    "Getabako door",
+    "Getabako tag",
+    "Glass mullion",
+    "Hair dryer",
+    "Indoor bath floor",
+    "Indoor bath rim",
+    "Indoor bath wall",
+    "Indoor bath water",
+    "Karan bar",
+    "Karan push cap",
+    "Karan spout",
+    "Koagari",
+    "Koagari edge",
+    "Kyusu",
+    "Kyusu handle",
+    "Kyusu spout",
+    "Lantern base",
+    "Lantern ledge",
+    "Lantern light",
+    "Lobby CRT",
+    "Lobby wainscot",
+    "Locker",
+    "Locker key",
+    "Massage chair arm",
+    "Massage chair back",
+    "Massage chair seat",
+    "Milk bottle",
+    "Milk bottle neck",
+    "Milk cap",
+    "Milk cooler",
+    "Milk cooler glass",
+    "Milk cooler light",
+    "Milk cooler plinth",
+    "Milk cooler side",
+    "Milk cooler sign",
+    "Milk cooler top",
+    "Mirror",
+    "Mirror frame",
+    "Noren",
+    "Noren rod",
+    "Outdoor eave",
+    "Push-button phone",
+    "Rattan basket",
+    "Rock bath paving",
+    "Rock bath water",
+    "Scales",
+    "Senbei tin",
+    "Shampoo bottle",
+    "Shimanchu body",
+    "Shimanchu body outline",
+    "Shimanchu head",
+    "Shimanchu head outline",
+    "Shimanchu · Mrs Higa",
+    "Shoji sill",
+    "Shoji window",
+    "Shower head",
+    "Shower riser",
+    "Soap",
+    "Spout stone",
+    "Stacked stools and buckets",
+    "Steam",
+    "Takegaki fence",
+    "Tatami",
+    "Ticket tray",
+    "Today’s bath board",
+    "Travel poster",
+    "Umi-no-yu attendant",
+    "Umi-no-yu floor",
+    "Umi-no-yu glass",
+    "Umi-no-yu interior",
+    "Umi-no-yu lobby",
+    "Umi-no-yu sea view",
+    "Umi-no-yu wall",
+    "Wainscot rail",
+    "Wash island cap",
+    "Wash island ledge",
+    "Wash island ledge top",
+    "Wash island partition",
+    "Wash ledge",
+    "Wash ledge top",
+    "Wash mirror",
+    "Wash stool",
+    "Wash wall mosaic",
+    "Yellow bucket",
+    "Yunomi",
+    "Zabuton",
+    "chest",
+    "elbowL",
+    "elbowR",
+    "footL",
+    "footR",
+    "handL",
+    "handR",
+    "head",
+    "hips",
+    "kneeL",
+    "kneeR",
+    "neck",
+    "root",
+    "shoulderL",
+    "shoulderR",
+    "spine",
+    "thighL",
+    "thighR"
+   ],
+   "review": "Built current runtime geometry; fittings recorded positively only"
+  },
+  {
+   "id": "koban",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 6.8,
+    "h": 3.9,
+    "m2": 26.5
+   },
+   "measurement": {
+    "method": "runtime-builder-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -3.3,
+     "maxX": 3.3,
+     "minZ": -3,
+     "maxZ": 3
+    },
+    "floorPolygon": [
+     [
+      -3.3,
+      -3
+     ],
+     [
+      3.3,
+      -3
+     ],
+     [
+      3.3,
+      3
+     ],
+     [
+      -3.3,
+      3
+     ]
+    ],
+    "floorArea": 39.6,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [
+     "Police box office floor",
+     "Tatami room floor",
+     "Toilet floor"
+    ],
+    "scope": "Complete movement domain; not net walkable area"
+   },
+   "domainArea": 39.6,
+   "features": [
+    "Alarm clock",
+    "Calendar",
+    "Clothes rail",
+    "Curtain",
+    "Desk blotter",
+    "Desk lamp shade",
+    "Desk lamp stem",
+    "Door lintel",
+    "Emergency poster",
+    "Front wall beside the door",
+    "Futon quilt",
+    "Glass door",
+    "Hat peg",
+    "Hat peg plate",
+    "Incident log",
+    "Inspect Officer Mori’s futon",
+    "Inspect the spare uniform",
+    "Inspect the tea things",
+    "Inspect the telephone",
+    "Inspect the television",
+    "Kitchen stool",
+    "Look through lost property",
+    "Lost glove",
+    "Lost property shelf",
+    "Lost sandal",
+    "Lost sunhat",
+    "Lost toy boat",
+    "Lost umbrella",
+    "Minato Police Box interior",
+    "Noren",
+    "Notice board",
+    "Officer Mori futon",
+    "Officer chair back",
+    "Officer chair post",
+    "Officer chair seat",
+    "Officer desk modesty panel",
+    "Officer desk pedestal",
+    "Officer desk top",
+    "Partition",
+    "Partition lintel",
+    "Pen pot",
+    "Pillow",
+    "Police box back wall",
+    "Police box front wall",
+    "Police box office floor",
+    "Police box wall",
+    "Portable television",
+    "Poster LOST",
+    "Poster SAFETY WEEK",
+    "Poster WANTED",
+    "Potted plant",
+    "Read Officer Mori’s notebook",
+    "Read the incident log",
+    "Read the notices",
+    "Read the town map",
+    "Rice bowl",
+    "Shelf board",
+    "Sit on the visitor’s stool",
+    "Spare uniform shirt",
+    "Spare uniform trousers",
+    "TV cabinet",
+    "TV screen",
+    "Table leg",
+    "Tatami border",
+    "Tatami room floor",
+    "Tatami room window",
+    "Tea cabinet",
+    "Tea cup",
+    "Tea table",
+    "Tea tin",
+    "Telephone body",
+    "Telephone handset",
+    "Thermos",
+    "Toilet",
+    "Toilet cistern",
+    "Toilet floor",
+    "Town map",
+    "Visitor stool",
+    "WC wall",
+    "Wainscot",
+    "Wall clock"
+   ],
+   "review": "Built current runtime geometry; fittings recorded positively only"
+  },
+  {
+   "id": "clinic",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 6.6,
+    "h": 5.6,
+    "m2": 37
+   },
+   "measurement": {
+    "method": "runtime-builder-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -3.25,
+     "maxX": 3.25,
+     "minZ": -2.75,
+     "maxZ": 2.75
+    },
+    "floorPolygon": [
+     [
+      -3.25,
+      -2.75
+     ],
+     [
+      3.25,
+      -2.75
+     ],
+     [
+      3.25,
+      2.75
+     ],
+     [
+      -3.25,
+      2.75
+     ]
+    ],
+    "floorArea": 35.75,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [
+     "Floor",
+     "Clinic tiles",
+     "Toilet floor"
+    ],
+    "scope": "Complete movement domain; not net walkable area"
+   },
+   "domainArea": 35.75,
+   "features": [
+    "Cabinet door stile",
+    "Cabinet drawers",
+    "Cabinet glass",
+    "Ceiling",
+    "Clinic",
+    "Clinic hours",
+    "Clinic tiles",
+    "Couch pad",
+    "Couch pillow",
+    "Couch step rail",
+    "Curtain rail",
+    "Desk drawers",
+    "Doctor’s chair",
+    "Doctor’s desk",
+    "Dr Kakazu",
+    "Drip bag",
+    "Drip stand",
+    "Examination couch",
+    "Eye chart",
+    "Eye chart frame",
+    "Floor",
+    "Height rod",
+    "Instrument trolley",
+    "Keyboard",
+    "Kidney dish",
+    "Lightbox",
+    "Medicine cabinet",
+    "Monitor",
+    "Monitor screen",
+    "Mouse",
+    "Paper sheet",
+    "Partition",
+    "Patient charts",
+    "Patient stool",
+    "Pen pot",
+    "Pharmacy calendar",
+    "Plate WC",
+    "Privacy curtain",
+    "Sample hatch",
+    "Scales",
+    "Shimanchu body",
+    "Shimanchu body outline",
+    "Shimanchu head",
+    "Shimanchu head outline",
+    "Shimanchu · Dr Kakazu",
+    "Step",
+    "Steriliser",
+    "Stethoscope",
+    "Toilet",
+    "Toilet cistern",
+    "Toilet floor",
+    "Waiting bench",
+    "Waiting room partition",
+    "X-ray film",
+    "chest",
+    "elbowL",
+    "elbowR",
+    "footL",
+    "footR",
+    "handL",
+    "handR",
+    "head",
+    "hips",
+    "kneeL",
+    "kneeR",
+    "neck",
+    "root",
+    "shoulderL",
+    "shoulderR",
+    "spine",
+    "thighL",
+    "thighR"
+   ],
+   "review": "Built current runtime geometry; fittings recorded positively only"
+  },
+  {
+   "id": "community-kitchen",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 6.6,
+    "h": 5.6,
+    "m2": 37
+   },
+   "measurement": {
+    "method": "runtime-builder-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -3.25,
+     "maxX": 3.25,
+     "minZ": -2.75,
+     "maxZ": 2.75
+    },
+    "floorPolygon": [
+     [
+      -3.25,
+      -2.75
+     ],
+     [
+      3.25,
+      -2.75
+     ],
+     [
+      3.25,
+      2.75
+     ],
+     [
+      -3.25,
+      2.75
+     ]
+    ],
+    "floorArea": 35.75,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [
+     "Floor",
+     "Toilet floor"
+    ],
+    "scope": "Complete movement domain; not net walkable area"
+   },
+   "domainArea": 35.75,
+   "features": [
+    "Apron",
+    "Booking sheet",
+    "Ceiling",
+    "Community kitchen",
+    "Dish cupboards",
+    "Floor",
+    "Fridge",
+    "Frying pan",
+    "Gas ring",
+    "Partition",
+    "Plate WC",
+    "Rice cooker",
+    "Sink",
+    "Sink run",
+    "Toilet",
+    "Toilet cistern",
+    "Toilet floor",
+    "Work island"
+   ],
+   "review": "Built current runtime geometry; fittings recorded positively only"
+  },
+  {
+   "id": "mayor-office",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 6.6,
+    "h": 5.6,
+    "m2": 37
+   },
+   "measurement": {
+    "method": "runtime-builder-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -3.25,
+     "maxX": 3.25,
+     "minZ": -2.75,
+     "maxZ": 2.75
+    },
+    "floorPolygon": [
+     [
+      -3.25,
+      -2.75
+     ],
+     [
+      3.25,
+      -2.75
+     ],
+     [
+      3.25,
+      2.75
+     ],
+     [
+      -3.25,
+      2.75
+     ]
+    ],
+    "floorArea": 35.75,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [
+     "Floor",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam",
+     "Wood floor seam"
+    ],
+    "scope": "Complete movement domain; not net walkable area"
+   },
+   "domainArea": 35.75,
+   "features": [
+    "Annual accounts ledger",
+    "Archive folder 1",
+    "Archive folder 10",
+    "Archive folder 11",
+    "Archive folder 12",
+    "Archive folder 2",
+    "Archive folder 3",
+    "Archive folder 4",
+    "Archive folder 5",
+    "Archive folder 6",
+    "Archive folder 7",
+    "Archive folder 8",
+    "Archive folder 9",
+    "Bookcase shelf",
+    "Brass drawer handle",
+    "CRT monitor casing",
+    "CRT screen",
+    "Cabinet of minutes",
+    "Ceiling",
+    "Clock hour hand",
+    "Clock minute hand",
+    "Credenza drawer",
+    "Desk photo",
+    "Desk telephone",
+    "Floor",
+    "Green filing credenza",
+    "Island map",
+    "Keyboard",
+    "Keyboard key",
+    "Leather writing blotter",
+    "Low table",
+    "Mayor’s chair back",
+    "Mayor’s chair seat",
+    "Mayor’s desk top",
+    "Mayor’s office",
+    "Mayor’s tea cup",
+    "Office carpet",
+    "Office timber upright",
+    "Office wall clock",
+    "Pencil",
+    "Pencil cup",
+    "Petition paper",
+    "Petitions tray",
+    "Plate Mayor Johansson",
+    "Plate 文書台帳",
+    "Plate 港町役場",
+    "Plate 町長室",
+    "Telephone receiver",
+    "Town reference bookcase",
+    "Town reference volume",
+    "Town seal box",
+    "Wood floor seam",
+    "merry_Moose",
+    "thuanFigurine"
+   ],
+   "review": "Built current runtime geometry; fittings recorded positively only"
+  },
+  {
+   "id": "mayor-home",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 6.6,
+    "h": 5.6,
+    "m2": 37
+   },
+   "measurement": {
+    "method": "runtime-builder-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -3.25,
+     "maxX": 3.25,
+     "minZ": -2.75,
+     "maxZ": 2.75
+    },
+    "floorPolygon": [
+     [
+      -3.25,
+      -2.75
+     ],
+     [
+      3.25,
+      -2.75
+     ],
+     [
+      3.25,
+      2.75
+     ],
+     [
+      -3.25,
+      2.75
+     ]
+    ],
+    "floorArea": 35.75,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [
+     "Tatami floor",
+     "Toilet floor",
+     "Bath floor"
+    ],
+    "scope": "Complete movement domain; not net walkable area"
+   },
+   "domainArea": 35.75,
+   "features": [
+    "Bath (ofuro)",
+    "Bath floor",
+    "Bookshelf",
+    "Ceiling",
+    "Fridge",
+    "Futon",
+    "Gas rings",
+    "Genkan step",
+    "Kitchen counter",
+    "Low table",
+    "Mayor’s home",
+    "Partition",
+    "Photograph frame",
+    "Pillow",
+    "Quilt",
+    "Shower",
+    "Sink",
+    "TV cabinet",
+    "Tatami floor",
+    "Tea tray",
+    "Teacup",
+    "Television",
+    "Television screen",
+    "Toilet",
+    "Toilet cistern",
+    "Toilet floor",
+    "Wardrobe",
+    "Wardrobe mirror",
+    "Zabuton"
+   ],
+   "review": "Built current runtime geometry; fittings recorded positively only"
+  },
+  {
+   "id": "frontrow",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 8.56,
+    "h": 7.16,
+    "m2": 61.3
+   },
+   "measurement": {
+    "method": "runtime-builder-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -4.2,
+     "maxX": 4.2,
+     "minZ": -3.5,
+     "maxZ": 3.5
+    },
+    "floorPolygon": [
+     [
+      -4.2,
+      -3.5
+     ],
+     [
+      4.2,
+      -3.5
+     ],
+     [
+      4.2,
+      3.5
+     ],
+     [
+      -4.2,
+      3.5
+     ]
+    ],
+    "floorArea": 58.8,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [
+     "Fitted timber floor"
+    ],
+    "scope": "Complete movement domain; not net walkable area"
+   },
+   "domainArea": 58.8,
+   "features": [
+    "Ask about the new arrivals",
+    "Bookcase backs",
+    "Bookcase timber",
+    "Books",
+    "Bookselling counter",
+    "Bookselling counter leg",
+    "Brass till",
+    "Browse the bookshop ledger",
+    "Browse the local history books",
+    "Buy a second-hand paperback · ¥300",
+    "Buy newspaper · ¥80",
+    "Ceiling strip",
+    "Door lintel",
+    "Evening newspaper proofs",
+    "Exit to Main Street",
+    "Fitted timber floor",
+    "Front-Row Books interior",
+    "Front-Row bookshop: floor-to-ceiling shelves",
+    "Ladder rail brackets",
+    "Library ladder",
+    "New and second-hand books",
+    "New arrivals display",
+    "New arrivals display leg",
+    "Newspaper and book wrapping desk",
+    "Newspaper and book wrapping desk leg",
+    "Plaster rear wall",
+    "Read the editor’s proofs",
+    "Reading table",
+    "Reading table leg",
+    "Section card: Bargains · ¥100",
+    "Section card: Children’s",
+    "Section card: Classics",
+    "Section card: Cookery",
+    "Section card: Essays",
+    "Section card: Ferry Reading",
+    "Section card: Fiction",
+    "Section card: Island History",
+    "Section card: Local Authors",
+    "Section card: Magazines",
+    "Section card: Maps & Charts",
+    "Section card: Mystery",
+    "Section card: Nature",
+    "Section card: New in Paperback",
+    "Section card: Newspapers",
+    "Section card: Picture Books",
+    "Section card: Poetry",
+    "Section card: Rare & Old",
+    "Section card: Sea & Boats",
+    "Section card: Second-hand",
+    "Section card: Travel",
+    "Side wall",
+    "Street wall",
+    "Street window",
+    "Timber ceiling",
+    "Wall skirting",
+    "Window joinery",
+    "Window surround",
+    "Wrapping paper roll",
+    "door-glazing",
+    "door-handle",
+    "door-jamb",
+    "door-leaf",
+    "door-lintel",
+    "door-recess",
+    "door-threshold",
+    "frontrow-inside-door"
+   ],
+   "review": "Built current runtime geometry; fittings recorded positively only"
+  },
+  {
+   "id": "form3d",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 8.56,
+    "h": 7.16,
+    "m2": 61.3
+   },
+   "measurement": {
+    "method": "runtime-builder-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -4.2,
+     "maxX": 4.2,
+     "minZ": -3.5,
+     "maxZ": 3.5
+    },
+    "floorPolygon": [
+     [
+      -4.2,
+      -3.5
+     ],
+     [
+      4.2,
+      -3.5
+     ],
+     [
+      4.2,
+      3.5
+     ],
+     [
+      -4.2,
+      3.5
+     ]
+    ],
+    "floorArea": 58.8,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [
+     "Workshop concrete floor"
+    ],
+    "scope": "Complete movement domain; not net walkable area"
+   },
+   "domainArea": 58.8,
+   "features": [
+    "Brass nozzle",
+    "Ceiling strip",
+    "Dock Electrical & Repair interior",
+    "Door lintel",
+    "Electrical distribution board",
+    "Exit to the street",
+    "Form 3D printing machine",
+    "Gantry top",
+    "Gantry upright",
+    "Hanging hand tool",
+    "Instrument control",
+    "Jonsson",
+    "Moving print rail",
+    "Oscilloscope",
+    "Oscilloscope screen",
+    "Pattern and calculation table",
+    "Pattern and calculation table leg",
+    "Plaster rear wall",
+    "Play Star Port",
+    "Print bed",
+    "Print head",
+    "Printer base",
+    "Printer status lamp",
+    "Radio grille",
+    "Read the electrical safety checklist",
+    "Repair radio",
+    "Shared repair bench",
+    "Shared repair bench leg",
+    "Side wall",
+    "Signal trace",
+    "Star Port cabinet",
+    "Star Port screen",
+    "Street wall",
+    "Street window",
+    "Talk to Jonsson",
+    "Test the bench calibrator",
+    "Timber ceiling",
+    "Tool board",
+    "Tool grip",
+    "Tune workshop radio",
+    "Use Form 3D printer",
+    "Wall skirting",
+    "Window joinery",
+    "Window surround",
+    "Workshop concrete floor",
+    "door-glazing",
+    "door-handle",
+    "door-jamb",
+    "door-leaf",
+    "door-lintel",
+    "door-recess",
+    "door-threshold",
+    "form3d-inside-door"
+   ],
+   "review": "Built current runtime geometry; fittings recorded positively only"
+  },
+  {
+   "id": "ramen",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 18.1,
+    "h": 13,
+    "m2": 235.3
+   },
+   "measurement": {
+    "method": "runtime-layout-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -6.2,
+     "maxX": 11.2,
+     "minZ": -6.2,
+     "maxZ": 6.2
+    },
+    "floorPolygon": [
+     [
+      -6.2,
+      -6.2
+     ],
+     [
+      11.2,
+      -6.2
+     ],
+     [
+      11.2,
+      3.5
+     ],
+     [
+      6.2,
+      3.5
+     ],
+     [
+      6.2,
+      6.2
+     ],
+     [
+      -6.2,
+      6.2
+     ]
+    ],
+    "floorArea": null,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [],
+    "scope": "Shared Minato / Sato interior; same domain, not two independent areas"
+   },
+   "domainArea": 202.26,
+   "features": [],
+   "review": "Layout-only: extent verified; geometry and missing fittings require separate inspection"
+  },
+  {
+   "id": "izakaya",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 18.1,
+    "h": 13,
+    "m2": 235.3
+   },
+   "measurement": {
+    "method": "runtime-layout-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -6.2,
+     "maxX": 11.2,
+     "minZ": -6.2,
+     "maxZ": 6.2
+    },
+    "floorPolygon": [
+     [
+      -6.2,
+      -6.2
+     ],
+     [
+      11.2,
+      -6.2
+     ],
+     [
+      11.2,
+      3.5
+     ],
+     [
+      6.2,
+      3.5
+     ],
+     [
+      6.2,
+      6.2
+     ],
+     [
+      -6.2,
+      6.2
+     ]
+    ],
+    "floorArea": null,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [],
+    "scope": "Shared Minato / Sato interior; same domain, not two independent areas"
+   },
+   "domainArea": 202.26,
+   "features": [],
+   "review": "Layout-only: extent verified; geometry and missing fittings require separate inspection"
+  },
+  {
+   "id": "school",
+   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "previous": {
+    "w": 9,
+    "h": 7.2,
+    "m2": 64.8
+   },
+   "measurement": {
+    "method": "runtime-layout-full-domain",
+    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "bounds": {
+     "minX": -4.28,
+     "maxX": 4.3,
+     "minZ": -3.42,
+     "maxZ": 3.42
+    },
+    "floorPolygon": [
+     [
+      -4.28,
+      -3.42
+     ],
+     [
+      4.3,
+      -3.42
+     ],
+     [
+      4.3,
+      3.42
+     ],
+     [
+      -4.28,
+      3.42
+     ]
+    ],
+    "floorArea": null,
+    "floorSampleStep": 0.2,
+    "floorMeshes": [],
+    "scope": "Complete movement domain; not net walkable area"
+   },
+   "domainArea": 58.687,
+   "features": [],
+   "review": "Layout-only: extent verified; geometry and missing fittings require separate inspection"
+  }
+ ]
+}
