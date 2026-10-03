@@ -67,7 +67,7 @@ export function sagCurve(a,b,sag,segments=12){
 
 export function createKit({shadows=false}={}){
  const buckets=new Map();
- const walkLevels=[];
+ const walkLevels=[],powerNodes=[],powerSpans=[];
  const geometryCache=new Map();
  /** Finishes with a picture on them, and how many metres one repeat of it covers. */
  const surfaces=new Map();
@@ -209,8 +209,11 @@ export function createKit({shadows=false}={}){
   const a=point(x0,y,z0),b=point(x1,y,z1);
   walkLevels.push({id,minX:Math.min(a.x,b.x),maxX:Math.max(a.x,b.x),minZ:Math.min(a.z,b.z),maxZ:Math.max(a.z,b.z),y:a.y});
  }
+ const powerNode=p=>powerNodes.push(p);
+ const powerSpan=(a,b)=>powerSpans.push({from:a.id,to:b.id});
  function finish(parent,name='Okinawan quarter'){
   (parent.userData.walkLevels??=[]).push(...walkLevels);
+  parent.userData.powerNetwork={nodes:powerNodes,spans:powerSpans};
   const meshes=[],materials={};
   for(const [key,{finish:kind,list}] of buckets){
    const geometry=mergeGeometries(list,false);list.forEach(g=>g.dispose());
@@ -240,7 +243,7 @@ export function createKit({shadows=false}={}){
   signs.length=0;
   return {meshes,materials,parts};
  }
- return {at,point,rect,level,sign,surface,add,box,block,cyl,rod,sphere,hipRoof,gableRoof,extrude,wire,finish,get parts(){return parts;}};
+ return {at,point,rect,level,powerNode,powerSpan,sign,surface,add,box,block,cyl,rod,sphere,hipRoof,gableRoof,extrude,wire,finish,get parts(){return parts;}};
 }
 
 /** A canvas painted by `draw`, as a texture. */

@@ -108,8 +108,8 @@ function buildNishiGround(kit,solid){
  }
  for(let x=Q.minX+3;x<Q.maxX-1;x+=6){kit.cyl(.16,.2,.42,x,.24,Q.minZ+.35,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,Q.minZ+.35,0x3a3f42,{segments:10});solid({id:'bollard',x,z:Q.minZ+.35,w:.45,d:.45,height:.5});}
  // At the north end the quarter meets the headland: a stone bank with pandanus on it.
- kit.block(NISHI.minX,NISHI.maxX,0,.9,NISHI.maxZ,NISHI.maxZ+.6,0xd3cab0,'coral');
- solid({id:'nishi-north-bank',x:(NISHI.minX+NISHI.maxX)/2,z:NISHI.maxZ+.3,w:NISHI.maxX-NISHI.minX,d:.6,height:.9});
+ kit.block(NISHI.minX+3.2,NISHI.maxX,0,.9,NISHI.maxZ,NISHI.maxZ+.6,0xd3cab0,'coral');
+ solid({id:'nishi-north-bank',x:(NISHI.minX+3.2+NISHI.maxX)/2,z:NISHI.maxZ+.3,w:NISHI.maxX-NISHI.minX-3.2,d:.6,height:.9});
 }
 
 function buildNishiPlots(kit,solid,ctx){
@@ -405,10 +405,10 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  kit.box(1.1,1,1.8,S.maxX+1.1,.55,S.maxZ-1.2,0xe0b93a);kit.box(.9,.06,1.2,S.maxX+1.1,.2,S.minZ+5.5,0x3a3f42);
  for(const dx of [-.3,.3])kit.box(.06,2,.06,S.maxX+1.1+dx,1,S.maxZ-2.2,0x3a3f42);
  solid({id:'forklift',x:S.maxX+1.1,z:S.maxZ-1.5,w:1.2,d:2.4,height:2});
- solid(fishCrates(kit,Q.minX+.8,Q.maxZ-1.6,{rows:2,cols:3,seed:31}));
+ solid(fishCrates(kit,Q.minX+2.1,Q.maxZ-1.6,{rows:2,cols:3,seed:31}));
  kit.box(.5,1.4,.4,I.maxX-.4,.7,Q.maxZ-.9,0xc0392b);kit.box(.3,.3,.06,I.maxX-.4,1.1,Q.maxZ-1.12,0xf2efe4);
  solid({id:'fuel-pump',x:I.maxX-.4,z:Q.maxZ-.9,w:.6,d:.5,height:1.4});
- vending(S.minX-.9,S.maxZ-.6,Math.PI/2);
+ vending(S.minX-.9,S.maxZ-1.9,-Math.PI/2);
  inspect(24.6,1,Q.minZ+.9,'Look at the boats',"Daisan Minatomaru · Minato Maru No. 3",
   'The Minato Maru is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));

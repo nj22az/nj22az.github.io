@@ -825,3 +825,8 @@
 #start .guide-nav a:hover { background:#eee8d9; }
 #start .guide-nav svg { width:25px; height:25px; }
 #start .guide-nav :is(a,button):focus-visible { outline:3px solid #e9aa48; outline-offset:3px; }
+
+/* The illustrated sky remains the fallback when WebGL is unavailable. */
+.title-sky.has-3d-sky > .title-sun,
+.title-sky.has-3d-sky > .title-cloud { display: none; }
+.title-sky canvas { position: absolute; inset: 0; width: 100%; height: 100%; }

@@ -1,3 +1,4 @@
+import {addIkeaFurniture} from './ikea-furniture.js';
 import {buildTatamiHome} from './tatami-home.js';
 import {TATAMI_HOME_OWNER} from './tatami-home-layout.js';
 import {householdFor} from '../../people/households.js';
@@ -22,6 +23,8 @@ export function buildResidentHome({profile,room,box,reg,collider,action,exit}){
  for(let i=0;i<5;i++)part([.1,.3,.24],[2.1+i*.13,1.3,-2.15],i%2?colour:0xc7b77a);
  const radio=part([.45,.25,.23],[1.1,.86,-1.9],0x485c58);reg(radio,'Inspect '+profile.name+'’s belongings',()=>action('inspect',profile.name+' at home',profile.role+'. '+(profile.personality||'A familiar room with a place for everything.')+' A radio, favourite books and tomorrow’s notes sit beside the table.'),true);
  const note=new THREE.Object3D();note.position.set(2,1,1.9);room.add(note);reg(note,'Read daily routine',()=>action('read',profile.name+'’s routine','Usually sleeps at '+time(hours.sleep)+' and wakes at '+time(hours.wake)+'. Work, meals and walks continue outside. You may stay here while the day passes.'),true);
+ addIkeaFurniture({room,box,collider,reg,action,kind:'lack',x:2.35,z:.65});
+ addIkeaFurniture({room,box,collider,reg,action,kind:'ivar',x:-1.7,z:-2.55});
  hatPeg(part,HOME_LAYOUT.hatHook);
  const door=new THREE.Object3D();door.position.set(...HOME_LAYOUT.exit);room.add(door);reg(door,'Exit to Main Street',exit,true);
  room.add(new THREE.HemisphereLight(0xffe4b4,0x887867,1.6));
@@ -47,6 +50,8 @@ function buildSharedHome({profile,room,box,reg,collider,action,exit}){
   hatPeg(part,routine.hatHook);
   reg(notes,'Inspect '+name+'’s belongings',()=>action('inspect',name+' at home',p.role+'. '+name+' keeps a separate futon, wardrobe and place at the table. Usually sleeps at '+time(hours.sleep)+' and wakes at '+time(hours.wake)+'.'),true);
  });
+ addIkeaFurniture({room,box,collider,reg,action,kind:'lack',x:2.95,z:.55});
+ addIkeaFurniture({room,box,collider,reg,action,kind:'ivar',x:0,z:-3.0});
  const door=new THREE.Object3D();door.position.set(...layout.exit);room.add(door);reg(door,'Exit to Main Street',exit,true);
  room.add(new THREE.HemisphereLight(0xffe4b4,0x887867,1.6));return {...layout,home:true};
 }

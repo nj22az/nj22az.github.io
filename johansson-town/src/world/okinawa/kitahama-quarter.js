@@ -37,7 +37,7 @@ export function buildKitahamaQuarter(kit,solid,{anchor,onAction,vending},{across
  const spine=[27.5,16,6].map((x,i)=>pole(x,K.spine.maxZ-.25,{face:Math.PI,transformer:i===1,lamp:true,seed:240+i}));
  if(across[0])wiresBetween(kit,across[0],spine[0]);
  for(let i=0;i<spine.length-1;i++)wiresBetween(kit,spine[i],spine[i+1]);
- const north=[76,86,93].map((z,i)=>pole(K.fukugiLane.minX+.25,z,{face:Math.PI/2,transformer:false,lamp:i!==1,seed:250+i}));
+ const north=[76,86,89].map((z,i)=>pole(K.fukugiLane.minX+.25,z,{face:Math.PI/2,transformer:false,lamp:i!==1,seed:250+i}));
  wiresBetween(kit,spine[0],north[0],{sag:.5});wiresBetween(kit,north[0],north[1]);wiresBetween(kit,north[1],north[2]);
  const well=pole(K.wellLane.maxX-.25,57,{face:-Math.PI/2,transformer:false,lamp:true,seed:260});wiresBetween(kit,spine[1],well,{sag:.5});
  const nearest=(x,z)=>poles.reduce((a,b)=>Math.hypot(b.anchors[0].x-x,b.anchors[0].z-z)<Math.hypot(a.anchors[0].x-x,a.anchors[0].z-z)?b:a);

@@ -26,7 +26,8 @@ import {rng} from './kit.js';
 export const POLE_ANCHORS=7;
 // Every part is matte: a pole's steel is galvanised grey, and a metal finish would put
 // each pole's small parts in buckets of their own and cost the quarter draw calls.
-export function utilityPole(kit,x,z,{h=9.2,face=0,transformer=true,lamp=false,guy=false,seed=1}={}){
+export function utilityPole(kit,x,z,{h=9.8,face=0,transformer=true,lamp=false,guy=false,seed=1}={}){
+ h=Math.max(9.8,h);
  const r=rng(seed),anchors=[];
  const concrete=0xc9c5bc,steel=0x8e979a,porcelain=0xf2f0ea,black=0x2b2a30;
  kit.at(x,z,face,()=>{
@@ -86,11 +87,13 @@ export function utilityPole(kit,x,z,{h=9.2,face=0,transformer=true,lamp=false,gu
    kit.box(.3,.03,.42,0,h-5.72,1.35,0xfff0c8,{finish:'lamp'});
   }
  });
- return {anchors,top:h,collider:{id:'utility-pole',x,z,w:.4,d:.4,height:h},seed:r.next()};
+ const foot=kit.point(x,0,z),pole={id:`pole:${foot.x.toFixed(2)}:${foot.z.toFixed(2)}`,x:foot.x,z:foot.z,y:foot.y,anchors,top:h,collider:kit.rect(x-.2,x+.2,z-.2,z+.2,h,'utility-pole'),seed:r.next()};
+ kit.powerNode(pole);return pole;
 }
 
 /** Cables from each anchor of one pole to the matching anchor of the next. */
 export function wiresBetween(kit,a,b,{sag=.45}={}){
+ kit.powerSpan(a,b);
  const n=Math.min(a.anchors.length,b.anchors.length);
  // High voltage is strung tight and thin; the telephone cable is thick and sags most.
  for(let i=0;i<n;i++)kit.wire(a.anchors[i].toArray(),b.anchors[i].toArray(),i<3?sag*.7:i===3?sag*1.5:sag,i===3?.032:i<3?.012:.018,0x2b2a30);
@@ -242,12 +245,18 @@ export function planterBoxes(kit,x,z,{ry=0,count=3,seed=13}={}){
 export function fishingBoat(kit,x,z,{ry=0,y=-.55,colour=0x2f6fb8,length=8,name=''}={}){
  const L=length,B=2.3;
  kit.at(x,z,ry,()=>{
-  const half=L/2,shape=[[-half,-.6],[half-1.2,-.6],[half+.3,.9],[half+.1,1.1],[-half,1.0]];
-  for(const s of [-1,1])kit.extrude(shape,.08,new THREE.Matrix4().makeTranslation(0,y,s*B/2-(s>0?.08:0)),0xf1efe8);
-  for(const s of [-1,1])kit.box(L-.9,.16,.1,-.35,y+.85,s*(B/2+.02),colour);
-  kit.box(L-1.2,.1,B-.1,-.5,y+.6,0,0x8e8b82);
-  kit.box(.12,1.6,B,-half+.06,y+.2,0,0xf1efe8);
-  kit.box(.2,.3,B-.3,half-.9,y+.35,0,0xf1efe8,{rz:.9});
+  const half=L/2,stations=[[-half,.78],[-half+.65,1.02],[0,1.15],[half-1.1,.8],[half+.3,.025]],vertices=[],indices=[];
+  // A closed hull with a pointed bow and a submerged keel, rather than two flat side plates.
+  for(const [sx,beam] of stations)for(const [by,bz] of [[1,1],[.25,1],[-.45,.55],[-.65,0],[-.45,-.55],[.25,-1],[1,-1]])vertices.push(sx,y+by,beam*bz);
+  for(let i=0;i<stations.length-1;i++)for(let k=0;k<7;k++){const a=i*7+k,b=i*7+(k+1)%7;indices.push(a,b,a+7,b,b+7,a+7);}
+  for(const i of [0,stations.length-1])for(let k=1;k<6;k++)indices.push(i*7,i*7+k,i*7+k+1);
+  const hull=new THREE.BufferGeometry();hull.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));hull.setIndex(indices);hull.computeVertexNormals();kit.add(hull,new THREE.Matrix4(),0xe0dfd3,'thin');hull.dispose();
+  kit.box(L-1.3,.1,B-.25,-.5,y+.62,0,0x9a9686);
+  for(const s of [-1,1]){
+   for(let i=1;i<stations.length;i++){const a=stations[i-1],b=stations[i];kit.rod([a[0],y+.99,s*a[1]],[b[0],y+.99,s*b[1]],.075,colour);}
+   for(let i=0;i<4;i++){const bx=-half+1.2+i*(L-2.5)/4;kit.rod([bx,y+1,s*1.05],[bx,y+1.5,s*1.05],.018,0x7b888b);}
+   kit.rod([-half+1.2,y+1.5,s*1.05],[half-1.2,y+1.5,s*.8],.018,0x7b888b);
+  }
   // Wheelhouse, its windows, the mast and the lamps.
   kit.box(1.8,1.5,1.7,-half+1.8,y+1.35,0,0xf1efe8);
   kit.box(1.95,.1,1.85,-half+1.8,y+2.12,0,colour);
@@ -257,6 +266,8 @@ export function fishingBoat(kit,x,z,{ry=0,y=-.55,colour=0x2f6fb8,length=8,name='
   kit.rod([-half+2,y+4.6,0],[half-.4,y+.95,0],.012,0x3a3a3a);
   kit.rod([-half+2,y+4.6,0],[-half+.2,y+1,0],.012,0x3a3a3a);
   kit.box(.12,.12,.12,-half+2,y+5.1,0,0xfff0c8,{finish:'lamp'});
+  kit.box(.04,.52,1.3,-half+2.76,y+1.55,0,0xc5ccca);
+  for(const z of [-.43,.43])kit.box(.08,.52,.035,-half+2.77,y+1.55,z,0x2e3c44);
   // Fenders along the side it lies to, and a heap of gear on the deck.
   for(let i=0;i<4;i++)kit.cyl(.22,.22,.45,-half+1.5+i*1.6,y+.55,B/2+.18,0x222326,{segments:8});
   kit.box(1.2,.5,.9,.8,y+.9,0,0x2f6fb8);
