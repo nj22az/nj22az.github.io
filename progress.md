@@ -166,3 +166,9 @@ Final release also preserves f08e8af's Kitahama residential-quarter and anchored
 - Built original rounded onigiri with grain texture, nori and a small salmon/price sticker. Replaced block bottle necks with labelled amber shoulder-and-neck beer bottles and crown caps inside open returnable crates. The 100 bottles share three instanced draws.
 - Targeted stockroom/Sakura checks passed; isolated browser render and the web-game skill client produced inspected screenshots with no page or console errors. Staff board and stockroom screenshots are /tmp/stockroom-board.png and /tmp/stockroom-skill-clean/shot-0.png.
 - Wider suite: 616 passed and 5 skipped; one existing home-life test fixture lacked the browser ProgressEvent used by async furniture loading. Added that event to the shared DOM fixture and reran home life, stockroom, Sakura business/dressing, English inventory and runtime checks together: all passed. No production loading workaround was introduced.
+
+2026-10-03 — Island loading postcards
+- START now paints a readable island-fact card before importing the heavy game module. Twelve original island/resident facts rotate randomly every six seconds without repeats in a round or at the round boundary.
+- Retained honest startup stages and immediate entry when ready; timers stop on success or failure. Compact landscape layout and reduced-motion loading bar supported.
+- Browser verification at 390x844, 1280x800 and 844x390: card stays onscreen, facts rotate, ready stops rotation, startup failure restores START/retry. Delayed boot module used to inspect loading reliably; no page errors on successful paths.
+- Original web-game Playwright client ran and title screenshot inspected; runtime package checks 3/3 pass. Runtime rebuilt, historical cached chunks restored.
