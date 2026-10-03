@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IEC 90L Pump Motor</title>
+<meta name="description" content="A 3D model of a 1.5 kW, 4-pole IEC 90L TEFC induction motor for a ship's pump, built to IEC 60072-1, with an engineer's, electrician's and manufacturer's audit of the specification.">
+<meta name="author" content="Nils Johansson">
+<link rel="canonical" href="https://nj22az.github.io/motor-90l/">
+<link rel="icon" href="/assets/images/apple-touch-icon.png">
+<meta name="theme-color" content="#e9ecec">
+<style>
+:root {
+  --bg: #e9ecec; --bg2: #f7f8f7; --ink: #1d2427; --muted: #59656b; --line: #cfd6d8;
+  --panel: rgba(255,255,255,0.92); --accent: #0b6e66; --accent-ink: #fff;
+  --crit: #b3261e; --major: #b25d00; --minor: #6b6f2a; --ok: #2f7d4a;
+  --radius: 12px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b2023; --bg2: #2a3135; --ink: #e8eced; --muted: #a3afb4; --line: #3a4449;
+    --panel: rgba(30,36,39,0.94); --accent: #3fb3a8; --accent-ink: #0e1a19;
+    --crit: #ff8a80; --major: #ffb15c; --minor: #d4d68a; --ok: #7fd49a;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); }
+#view { position: fixed; inset: 0; background: radial-gradient(120% 90% at 40% 35%, var(--bg2), var(--bg)); }
+#view canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+#dims { position: fixed; inset: 0; pointer-events: none; }
+.dim { position: absolute; left: 0; top: 0; font: 600 12px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: var(--accent);
+  background: var(--panel); padding: 3px 6px; border-radius: 6px; border: 1px solid var(--line); white-space: nowrap; }
+#tip { position: fixed; left: 0; top: 0; pointer-events: none; background: var(--ink); color: var(--bg2); font-size: 13px; padding: 4px 8px; border-radius: 6px; z-index: 5; }
+
+header.title { position: fixed; top: 16px; left: 16px; max-width: min(520px, calc(100vw - 32px)); pointer-events: none; }
+header.title a { pointer-events: auto; color: var(--muted); font-size: 13px; text-decoration: none; }
+header.title a:hover { color: var(--accent); }
+header.title h1 { margin: 4px 0 2px; font-size: clamp(20px, 3vw, 28px); letter-spacing: -0.01em; }
+header.title p { margin: 0; color: var(--muted); font-size: 14px; }
+
+#caption { position: fixed; left: 16px; top: 112px; max-width: min(440px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 10px 12px; font-size: 14px; line-height: 1.45; backdrop-filter: blur(8px); }
+
+#panel { position: fixed; top: 16px; right: 16px; bottom: 16px; width: 360px; display: flex; flex-direction: column; background: var(--panel);
+  border: 1px solid var(--line); border-radius: var(--radius); backdrop-filter: blur(10px); overflow: hidden; transition: transform .25s ease; }
+#panel.closed { transform: translateX(calc(100% + 24px)); }
+#panel-toggle { position: fixed; top: 16px; right: 16px; z-index: 3; display: none; }
+.tabs { display: flex; gap: 4px; padding: 8px 8px 0; border-bottom: 1px solid var(--line); }
+.tabs button { flex: 1; min-height: 40px; border: 0; background: none; color: var(--muted); font: inherit; font-weight: 600; border-bottom: 2px solid transparent; cursor: pointer; }
+.tabs button[aria-selected=true] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabpanel { overflow-y: auto; padding: 12px 14px 16px; flex: 1; font-size: 14px; line-height: 1.45; }
+#part-list { list-style: none; margin: 0; padding: 0; }
+#part-list button { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 4px 8px; border: 0; border-radius: 8px;
+  background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+#part-list button:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+#part-list button.on { background: color-mix(in srgb, var(--accent) 18%, transparent); font-weight: 600; }
+.step { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); font-size: 11px; color: var(--muted); flex: none; }
+.flag { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--major); }
+#card { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; background: var(--bg2); }
+.card-head { display: flex; align-items: start; justify-content: space-between; gap: 8px; }
+.card-head h3 { margin: 0 0 6px; font-size: 16px; }
+.x { border: 0; background: none; font-size: 22px; line-height: 1; color: var(--muted); cursor: pointer; min-width: 32px; min-height: 32px; }
+#card p { margin: 6px 0; }
+.spec { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; color: var(--muted); }
+.svc strong { color: var(--accent); margin-right: 4px; }
+.muted { color: var(--muted); }
+.chip { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; }
+.sev-critical .chip, .chip.sev-critical { color: var(--crit); }
+.sev-major .chip, .chip.sev-major { color: var(--major); }
+.sev-minor .chip, .chip.sev-minor { color: var(--minor); }
+.sev-ok .chip, .chip.sev-ok { color: var(--ok); }
+#audit-list { list-style: none; margin: 10px 0 0; padding: 0; }
+#audit-list li { padding: 10px 0; border-top: 1px solid var(--line); }
+#audit-list strong { display: block; margin: 6px 0 2px; }
+#audit-list p { margin: 0 0 4px; }
+.link { border: 0; background: none; color: var(--accent); font: inherit; font-weight: 600; padding: 0; cursor: pointer; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; vertical-align: top; padding: 6px 4px; border-top: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; width: 34%; }
+
+#bar { position: fixed; left: 16px; right: 392px; bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; backdrop-filter: blur(10px); }
+#bar label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+#bar output { font-size: 13px; color: var(--ink); min-width: 9.5em; }
+input[type=range] { accent-color: var(--accent); width: 130px; }
+.btn, .seg button { min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg2); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn[aria-pressed=true], .seg button[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn:disabled { opacity: .6; }
+.seg { display: inline-flex; }
+.seg button { border-radius: 0; margin-left: -1px; }
+.seg button:first-child { border-radius: 8px 0 0 8px; margin-left: 0; }
+.seg button:last-child { border-radius: 0 8px 8px 0; }
+.sep { width: 1px; align-self: stretch; background: var(--line); }
+
+@media (max-width: 900px) {
+  #panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; height: 46vh; border-radius: var(--radius) var(--radius) 0 0; }
+  #panel.closed { transform: translateY(calc(100% - 0px)); }
+  #panel-toggle { display: inline-block; top: auto; bottom: calc(46vh + 8px); right: 16px; }
+  #panel.closed ~ #panel-toggle { bottom: 8px; }
+  #bar { top: auto; bottom: calc(46vh + 56px); left: 16px; right: 16px; padding: 8px; gap: 6px; }
+  #bar .btn, #bar .seg button { min-height: 34px; padding: 0 9px; font-size: 12px; }
+  #bar label { font-size: 12px; gap: 6px; }
+  #step-out .long { display: none; }
+  #panel.closed ~ #bar { bottom: 56px; }
+  .sep { display: none; }
+  input[type=range] { width: 84px; }
+  #bar output { min-width: 0; }
+  #caption { top: 96px; }
+  header.title p { display: none; }
+}
+body:not(.ready) #bar, body:not(.ready) #panel { visibility: hidden; }
+</style>
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
+</head>
+<body>
+<div id="view" aria-label="3D view of the motor. Drag to turn, scroll or pinch to zoom, click a part for details."></div>
+<div id="dims"></div>
+<div id="tip" hidden></div>
+
+<header class="title">
+  <a href="/">← The Office of Nils Johansson</a>
+  <h1>IEC 90L-4 pump motor</h1>
+  <p>1.5 kW · 4-pole · 230 Δ / 400 Y V · TEFC IP66 — built to IEC 60072-1, then audited.</p>
+</header>
+<div id="caption" hidden></div>
+
+<aside id="panel" aria-label="Motor details">
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" data-tab="parts" aria-selected="true">Parts</button>
+    <button type="button" role="tab" data-tab="specs" aria-selected="false">Data</button>
+    <button type="button" role="tab" data-tab="audit" aria-selected="false">Audit</button>
+  </div>
+  <section class="tabpanel" role="tabpanel" id="tab-parts">
+    <div id="card" hidden></div>
+    <ul id="part-list"></ul>
+  </section>
+  <section class="tabpanel" role="tabpanel" id="tab-specs" hidden>
+    <table id="spec-table"></table>
+    <p class="muted">Dimensions in the model are millimetres from the IEC tables; the axis is the shaft centre line. Switch on “Dimensions” to check them on the model.</p>
+  </section>
+  <section class="tabpanel" role="tabpanel" id="tab-audit" hidden>
+    <p>The specification was checked from three seats: the design engineer, the marine electrician and the manufacturer. Every number below is calculated in <code>calc.mjs</code>.</p>
+    <div id="audit-sum"></div>
+    <ol id="audit-list"></ol>
+    <p><a href="AUDIT.md">Full audit report</a></p>
+  </section>
+</aside>
+<button type="button" id="panel-toggle" class="btn" aria-expanded="true" aria-controls="panel">Details</button>
+
+<div id="bar" role="toolbar" aria-label="Model controls">
+  <label><span class="lbl">Explode</span><input id="explode" type="range" min="0" max="100" value="0" aria-label="Explode"></label>
+  <label><span class="lbl">Build</span><input id="step" type="range" min="1" max="8" value="8" aria-label="Build step"><output id="step-out"></output></label>
+  <span class="sep"></span>
+  <button type="button" class="btn" id="cut" aria-pressed="false">Cutaway</button>
+  <button type="button" class="btn" id="run" aria-pressed="false">Run</button>
+  <button type="button" class="btn" id="phases" aria-pressed="false">Phase colours</button>
+  <button type="button" class="btn" id="dimsbtn" aria-pressed="false">Dimensions</button>
+  <span class="seg" role="group" aria-label="Connection"><button type="button" data-conn="Y" aria-pressed="true">Y 400</button><button type="button" data-conn="D" aria-pressed="false">Δ 230</button></span>
+  <span class="seg" role="group" aria-label="Mounting"><button type="button" data-mount="B3">B3</button><button type="button" data-mount="B5">B5</button><button type="button" data-mount="B35" aria-pressed="true">B35</button></span>
+  <span class="sep"></span>
+  <button type="button" class="btn" id="home">Reset view</button>
+  <button type="button" class="btn" id="glb">Download .glb</button>
+</div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
