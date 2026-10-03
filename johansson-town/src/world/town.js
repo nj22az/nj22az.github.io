@@ -246,7 +246,7 @@ export function createTown(options){
    // Kitano Road and Kitano Bridge to the airport island, and the traffic on them: the car
    // ferry's vehicles and the island's own cars. See kitano-link.js and town-traffic.js.
    world.kitanoLink=buildKitanoLink({parent:world.group,colliders:world.colliders,shadows:options.shadows});
-   world.traffic=createTownTraffic({parent:world.group,colliders:world.colliders,ferry:world.ferry,getPlayerPosition:options.getPlayerPosition,people:()=>world.people||[]});
+   world.traffic=createTownTraffic({parent:world.group,colliders:world.colliders,ferry:world.ferry,getPlayerPosition:options.getPlayerPosition,people:()=>world.people||[],register:options.register,onAction:options.onAction});
    world.eastLawn=buildEastLawn({parent:world.group,colliders:world.colliders,shadows:options.shadows,anisotropy:options.maxAnisotropy||4,
     heightAt:groundHeight,paved:pavedAt(),register:options.register,onAction:options.onAction});
    // Crabs on the wet sand below the wall and fish leaping offshore. See beach-life.js.

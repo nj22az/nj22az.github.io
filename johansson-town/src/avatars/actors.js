@@ -79,7 +79,7 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  const sleeping=Number(u.sleepBlend)>.28||(u.sleeping&&!u.roomTransition);
  actor.animator.update(dt,{
   speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,floorHeight:(Number(u.floorHeight)||0)+(u.socialPose==='CounterIdle'?COUNTER_STEP:0),
-  pose:u.socialPose,seat:u.socialPose,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
+  pose:u.socialPose,seat:u.socialPose,driving:!!u.inVehicle,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
   waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
   talking:!!(u.chat?.speaking||u.speakingUntil>now),
   expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
