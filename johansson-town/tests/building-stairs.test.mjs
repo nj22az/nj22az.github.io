@@ -30,3 +30,19 @@ test('raised barriers follow the lowered coastal district datum',()=>{
  assert.equal(colliders[0].minY,2.45);
  assert.equal(kit.rect(-1,1,-1,1,3).minY,undefined);
 });
+
+test('all town stair flights and landings are clear of furniture and lighting',async()=>{
+ const {installDOM}=await import('./fixtures.mjs');installDOM();globalThis.self=globalThis;
+ const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');configureTownMode(TOWN_MODES.PENINSULA);
+ const {createTown}=await import('../src/world/town.js');
+ const {createBusinesses}=await import('../src/world/businesses.js');
+ const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+ const levels=[];world.group.traverse(o=>levels.push(...(o.userData.walkLevels||[])));
+ const stairs=levels.filter(s=>/stair|landing|turn/.test(s.id));assert.ok(stairs.length>250);
+ for(const s of stairs){const x=(s.minX+s.maxX)/2,z=(s.minZ+s.maxZ)/2;
+  for(const c of world.colliders){
+   assert.equal(standingHitsRect(x,z,.32,s.y,c),false,`${s.id} at ${x},${z} obstructed by ${c.id}`);
+   if(/lamp|pole/i.test(c.id||''))assert.ok(c.x+c.w/2<s.minX-.04||c.x-c.w/2>s.maxX+.04||c.z+c.d/2<s.minZ-.04||c.z-c.d/2>s.maxZ+.04,`${c.id} intersects ${s.id}`);
+  }
+ }
+});
