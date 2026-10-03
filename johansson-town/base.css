@@ -1,6 +1,6 @@
 /* ==== Base: page, HUD, menus (originally styles.css) (styles.css) ==== */
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;min-height:100dvh;overflow:hidden;overscroll-behavior:none;background:#aebbb5;color:#f4ead3;font-family:"Avenir Next","Yu Gothic",system-ui,sans-serif;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}canvas{display:block;position:fixed;inset:0;width:100vw;height:100dvh;touch-action:none}button{font:900 10px inherit;letter-spacing:.12em}#ink{position:fixed;inset:0;z-index:4;pointer-events:none;background:radial-gradient(circle at 50% 42%,transparent 58%,rgba(28,31,27,.18)),repeating-linear-gradient(0deg,rgba(20,20,16,.025) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}#threshold{position:fixed;inset:0;z-index:8;pointer-events:none;background:#16190f;opacity:0;transition:opacity .15s ease-out}#threshold.on{opacity:1}#start{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#c6cec5,#8fa09b)}.jp{font-size:21px;letter-spacing:.16em;margin-top:18px}#enter{margin-top:22px;padding:13px 18px;border:2px solid #252821;background:#eadfbe;color:#172323;box-shadow:4px 4px 0 #252821}.hidden{display:none!important}#hud{position:fixed;inset:0;z-index:9;pointer-events:none;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.placard{background:#efe3c7;color:#1d2825;border:2px solid #252821;border-left:7px solid #9b4035;padding:8px 11px;box-shadow:4px 4px 0 #252821}.placard b{display:block;font-size:11px;letter-spacing:.12em}.placard small{font-size:8px;opacity:.65}#clock{background:#172323e8;border:2px solid #252821;padding:7px 10px;font:700 18px "Courier New",monospace;box-shadow:3px 3px 0 #252821}#directoryButton{pointer-events:auto;position:absolute;right:max(14px,env(safe-area-inset-right));top:72px;padding:8px 10px;border:2px solid #252821;background:#efe3c7;color:#1d2825;box-shadow:3px 3px 0 #252821}#fullscreenButton{pointer-events:auto;position:absolute;right:max(14px,env(safe-area-inset-right));top:110px;padding:8px 10px;border:2px solid #252821;background:#172323;color:#efe3c7;box-shadow:3px 3px 0 #252821}.timecard{position:absolute;left:max(14px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));background:#172323e8;border:2px solid #252821;padding:9px 11px;box-shadow:4px 4px 0 #252821}.timecard small{display:block;color:#d8b163;font-size:8px;font-weight:900;letter-spacing:.18em}.timecard div{margin-top:4px;font:12px Georgia,serif}#prompt{position:absolute;left:50%;bottom:26%;transform:translateX(-50%);padding:8px 11px;background:#14201fe8;border:2px solid #252821;border-bottom:4px solid #d0a95f;font-size:10px;letter-spacing:.08em;opacity:0;transition:opacity .1s;white-space:nowrap}#prompt.on{opacity:1}#subtitle{position:absolute;left:50%;bottom:74px;transform:translateX(-50%);width:min(720px,calc(100vw - 40px));padding:10px 14px;background:#131d1de8;border:2px solid #252821;border-top:4px solid #d0a95f;text-align:center;font:14px/1.45 Georgia,serif;opacity:0;transition:opacity .12s}#subtitle.on{opacity:1}#directory{position:fixed;inset:0;z-index:25;display:grid;place-items:center;padding:22px;background:#0b1313bd}.directory-card{width:min(740px,100%);max-height:82vh;overflow:auto;background:#efe3c7;color:#1d2825;border:3px solid #252821;box-shadow:9px 9px 0 #252821;padding:20px}.directory-head{display:flex;justify-content:space-between;gap:12px}.directory-head h2{font:700 28px Georgia,serif;margin:0}.directory-head p{margin:5px 0 16px;font-size:10px;color:#68736f}.directory-head button{height:max-content;padding:8px 10px;background:#9b4035;color:#fff;border:2px solid #252821}#directoryGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}.dir-item{padding:11px;text-align:left;background:#f8efd9;color:#1d2825;border:2px solid #3b423e}.dir-item b{display:block;font-size:11px}.dir-item span{display:block;margin-top:4px;font-size:9px;color:#68736f}.directory-foot{margin-top:13px;font-size:9px;color:#68736f}#enter:disabled{opacity:.58}.modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:24px;background:#081010d8}.modal-card{width:min(440px,100%);padding:22px;background:#efe3c7;color:#172323;border:3px solid #252821;box-shadow:8px 8px 0 #252821}.modal-card h2{margin:0 0 10px;font:800 24px Georgia,serif}.modal-card p{margin:0 0 16px;font:600 13px/1.5 system-ui}.modal-card button{padding:10px 12px;border:2px solid #252821;background:#9b4035;color:#fff}#mobile{display:none}@media(pointer:coarse){#mobile{display:block;position:fixed;inset:0;z-index:13;pointer-events:none}#stick{position:absolute;left:max(22px,env(safe-area-inset-left));bottom:max(74px,calc(env(safe-area-inset-bottom) + 54px));width:112px;height:112px;border:2px solid #25282166;border-radius:50%;background:#efe3c733}#knob{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;background:#efe3c78f;border:2px solid #25282166}#act{pointer-events:auto;position:absolute;right:max(22px,env(safe-area-inset-right));bottom:max(28px,env(safe-area-inset-bottom));width:88px;height:88px;border-radius:50%;border:2px solid #252821;background:#172323df;color:#efe3c7;box-shadow:3px 3px 0 #252821}#subtitle{bottom:142px;font-size:13px}.timecard{max-width:180px}#fullscreenButton{top:108px}.modal-card{padding-bottom:max(22px,env(safe-area-inset-bottom))}}
-/* 1988 harbour edition: a restrained game HUD over the actual 3D town. */
+/* 1997 harbour edition: a restrained game HUD over the actual 3D town. */
 :root{--ink:#142d37;--paper:#ece3c9;--gold:#e2b665;--rust:#b65940}
 button{font-family:inherit;font-size:14px;line-height:1.2;font-weight:700;cursor:pointer;min-height:40px;letter-spacing:.05em}button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}button:disabled{opacity:.5;cursor:default}
 #start{background:radial-gradient(ellipse at 75% 15%,#526f78,transparent 60%),linear-gradient(155deg,#263f4b,#111f2b)}.jp{font-size:24px;color:#d7d6bc}#enter{font-size:16px;padding:18px 28px;min-width:220px;background:var(--paper);box-shadow:none;border:none}
@@ -40,7 +40,7 @@ button{font-family:inherit;font-size:14px;line-height:1.2;font-weight:700;cursor
 .office-workbook-count{font-size:12px;color:#65705f;margin:9px 0!important}.office-workbook-formula{padding:10px 12px;background:#e5e8dc;font:12px/1.5 monospace;overflow-wrap:anywhere;margin:10px 0!important}.office-workbook-note{font-size:12px;color:#65705f;margin:12px 0 20px!important}
 
 /* ==== Polish pass over the base HUD (polish.css) ==== */
-/* Johansson Town visual polish — crisp, restrained 1988 game UI. */
+/* Johansson Town visual polish — crisp, restrained 1997 game UI. */
 #game{image-rendering:auto;backface-visibility:hidden}
 #ink{background:radial-gradient(circle at 50% 44%,transparent 64%,rgba(7,13,15,.16));mix-blend-mode:normal;opacity:.52}
 .placard,#clock,#wallet,#directoryButton,#fullscreenButton,.timecard,.map-frame,#townControls,#prompt,#subtitle{
@@ -292,55 +292,72 @@ body.conversation-open #subtitle{visibility:hidden}
  background:#9b4035;color:#fff;font:inherit;font-weight:700;cursor:pointer}
 .chat-input button:disabled{opacity:.6;cursor:progress}
 
-/* ---- Conversations as scenes (src/dialogue/dialogue-box.js) -----------------------
-   Shenmue's staging, Grim Fandango's words. The frame goes letterboxed and the HUD steps
-   out of the way. No box, no name tag: the line is a subtitle in the speaker's colour,
-   and your replies are plain lines underneath; the one under the cursor lights up. */
-body.conversation-open::before{content:"";position:fixed;left:0;right:0;top:0;height:9vh;background:#000;z-index:29;pointer-events:none;animation:scene-bar-top .35s ease-out}
+/* ---- Conversations (src/dialogue/dialogue-box.js) ----------------------------------
+   A life-sim speech panel: the camera cuts over the shoulder onto whoever is talking,
+   the HUD steps aside, and a cream panel rises from the bottom with the speaker's name
+   on a tab in their own colour. The line types itself out (a tap finishes it); your
+   replies are big rounded buttons, easy to hit with a thumb, the lit one marked ▶. */
 body.conversation-open #place,body.conversation-open #placeSub,body.conversation-open #clock,body.conversation-open #timeText,body.conversation-open #waypoint,
 body.conversation-open #cameraButton,body.conversation-open #viewButton,body.conversation-open #movesButton,body.conversation-open #directoryButton,
 body.conversation-open #prompt,body.conversation-open #exitRoomButton,body.conversation-open #bagButton,body.conversation-open #mobile,body.conversation-open .neighbour-chat{opacity:0!important;pointer-events:none!important;transition:opacity .25s}
-#activity.conversation.rpg{--line-colour:#fff;inset:auto 0 0;max-height:none;padding:6vh max(16px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
- background:linear-gradient(to top,#000 0,#000c 62%,#0000 100%);pointer-events:auto;z-index:30}
-#activity.conversation.rpg .activity-card{width:min(860px,100%);margin:0 auto;padding:0;border:0;border-radius:0;background:none;backdrop-filter:none;box-shadow:none;overflow:visible;animation:none;max-height:none;color:#fff;
- font-family:"Futura","Avenir Next","Century Gothic","Trebuchet MS",system-ui,sans-serif}
+#activity.conversation.rpg{--line-colour:#ffd56b;--panel:#fffaf0;--ink:#2e2a33;inset:auto 0 0;max-height:none;
+ padding:28px max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
+ background:linear-gradient(to top,#1b1a2a55 0,#1b1a2a22 60%,#0000 100%);pointer-events:auto;z-index:30}
+#activity.conversation.rpg .activity-card{position:relative;width:min(760px,100%);margin:0 auto;padding:30px 22px 16px;border:3px solid #2e2a33;border-radius:26px;
+ background:var(--panel);backdrop-filter:none;box-shadow:0 6px 0 #2e2a3333,0 18px 40px #0004;overflow:visible;max-height:none;color:var(--ink);
+ font-family:"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Nunito","Avenir Next","Trebuchet MS",system-ui,sans-serif;animation:speech-rise .28s cubic-bezier(.2,.9,.3,1.2)}
 #activity.conversation.rpg .activity-card::before{content:none}
-#activity.conversation.rpg #activityTitle{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;margin:0}
-#activity.conversation.rpg .activity-card header{position:absolute;top:calc(-6vh + 6px);right:0;z-index:1}
-#activity.conversation.rpg #closeActivity{min-height:28px;padding:2px 10px;border:1px solid #ffffff55;border-radius:4px;background:none;color:#ffffffb0;font-size:0;letter-spacing:.08em;box-shadow:none}
+/* The name tab, in the speaker's colour, sitting on the panel's top edge. */
+#activity.conversation.rpg #activityTitle{position:absolute;top:-19px;left:22px;width:auto;height:auto;overflow:visible;clip-path:none;white-space:nowrap;margin:0;
+ padding:6px 18px 7px;border:3px solid #2e2a33;border-radius:999px;background:var(--line-colour);color:#2e2a33;font-size:15px;font-weight:800;letter-spacing:.02em;line-height:1;
+ box-shadow:0 3px 0 #2e2a3333;max-width:calc(100% - 100px);text-overflow:ellipsis}
+#activity.conversation.rpg #activityTitle{font-size:0}
+#activity.conversation.rpg #activityTitle::before{content:attr(data-speaker);font-size:15px}
+#activity.conversation.rpg #activityTitle[data-hearts]::after{content:attr(data-hearts);margin-left:8px;font-size:13px;letter-spacing:1px;color:#e2563f}
+#activity.conversation.rpg.player-speaking #activityTitle::after{content:none}
+#activity.conversation.rpg.player-speaking #activityTitle{background:#9fd0f2}
+#activity.conversation.rpg.player-speaking #activityTitle::before{content:"Johansson"}
+/* The speaker's portrait, in a round frame on the panel's edge, with the name tab beside it. */
+#activity.conversation.rpg.has-portrait .activity-card::after{content:"";position:absolute;top:-40px;left:16px;width:62px;height:62px;border:3px solid #2e2a33;border-radius:50%;
+ background:var(--line-colour) var(--portrait) center 18%/135% no-repeat;box-shadow:0 3px 0 #2e2a3333}
+#activity.conversation.rpg.has-portrait #activityTitle{left:86px}
+#activity.conversation.rpg.has-portrait.player-speaking .activity-card::after{background-image:url("assets/images/residents/01.webp")}
+/* Leave: a round × on the panel's corner. */
+#activity.conversation.rpg .activity-card header{position:absolute;top:-17px;right:16px;z-index:1;margin:0}
+#activity.conversation.rpg #closeActivity{width:38px;height:38px;min-height:0;padding:0;border:3px solid #2e2a33;border-radius:50%;background:#fff;color:#2e2a33;font-size:0;box-shadow:0 3px 0 #2e2a3333;cursor:pointer}
 #activity.conversation.rpg #closeActivity span{display:none}
-#activity.conversation.rpg #closeActivity::before{content:"LEAVE";font-size:11px}
-@media(hover:hover){#activity.conversation.rpg #closeActivity::after{content:"ESC";margin-left:7px;font:700 10px ui-monospace,monospace;opacity:.6}}
-/* The line: a subtitle, whole, in the speaker's colour, outlined so it reads on anything. */
-#activity.conversation.rpg #activityBody{position:relative;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;margin:0 0 14px;text-align:center}
-#activity.conversation.rpg #activityBody p{margin:0 auto;padding:0;border:0;background:none;border-radius:0;max-width:62ch;white-space:pre-line;
- font-size:clamp(17px,2.1vw,23px);line-height:1.45;letter-spacing:.01em;color:var(--line-colour);text-shadow:0 2px 0 #000,0 0 3px #000,0 0 12px #000a;animation:scene-line .3s ease-out}
-/* Johansson's own line takes the same spot, in white. */
-#activity.conversation.rpg #activityBody .rpg-own{display:none;color:#fff}
+#activity.conversation.rpg #closeActivity::before{content:"×";font:800 22px/1 system-ui,sans-serif;position:relative;top:-1px}
+@media(hover:hover){#activity.conversation.rpg #closeActivity:hover{background:#ffe9e4}}
+/* The line. */
+#activity.conversation.rpg #activityBody{position:relative;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;margin:0 0 12px;text-align:left;min-height:2.9em}
+#activity.conversation.rpg #activityBody p{margin:0;padding:0;border:0;background:none;border-radius:0;max-width:none;white-space:pre-line;
+ font-size:clamp(17px,2.3vw,21px);line-height:1.5;letter-spacing:.01em;color:var(--ink);text-shadow:none;font-weight:600}
+#activity.conversation.rpg #activityBody .rpg-own{display:none}
 #activity.conversation.rpg.player-speaking #activityBody .rpg-line{display:none}
 #activity.conversation.rpg.player-speaking #activityBody .rpg-own{display:block}
-#activity.conversation.rpg #activityBody .chat-log,#activity.conversation.rpg #activityBody .chat-input{white-space:normal;text-align:left;max-width:62ch;margin-left:auto;margin-right:auto}
-/* Replies: plain lines, left-aligned under the subtitle. The lit one is gold. */
-#activity.conversation.rpg #activityActions{display:flex;flex-direction:column;align-items:stretch;gap:0;max-width:62ch;margin:0 auto;padding:0;transition:opacity .25s ease;
- max-height:min(32vh,320px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#ffffff40 transparent}
+/* While the line is still arriving, a small bobbing arrow says "tap to go on". */
+#activity.conversation.rpg.listening #activityBody::after,#activity.conversation.rpg.player-speaking #activityBody::after{content:"▼";position:absolute;right:2px;bottom:-6px;font-size:13px;color:#2e2a3388;animation:speech-next 1s ease-in-out infinite}
+#activity.conversation.rpg #activityBody .chat-log,#activity.conversation.rpg #activityBody .chat-input{white-space:normal;text-align:left;max-width:none}
+/* Replies. */
+#activity.conversation.rpg #activityActions{display:grid;grid-template-columns:1fr;gap:8px;max-width:none;margin:0;padding:2px 0 0;transition:opacity .2s ease;
+ max-height:min(34vh,330px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin}
+@media(min-width:620px){#activity.conversation.rpg #activityActions{grid-template-columns:1fr 1fr}}
 #activity.conversation.rpg.listening #activityActions,#activity.conversation.rpg.player-speaking #activityActions{opacity:0;pointer-events:none}
-#activity.conversation.rpg #activityActions button{display:block;width:100%;min-height:0;margin:0;padding:5px 4px;border:0;border-radius:0;background:none;box-shadow:none;transform:none;
- color:#ffffffa8;font:inherit;font-size:clamp(15px,1.7vw,19px);font-weight:500;line-height:1.35;letter-spacing:.01em;text-align:left;text-shadow:0 2px 0 #000;cursor:pointer;filter:none}
-#activity.conversation.rpg #activityActions button::before,#activity.conversation.rpg #activityActions button::after{content:none}
-#activity.conversation.rpg #activityActions button.selected,#activity.conversation.rpg #activityActions button:hover{color:#ffcf4d;background:none;transform:none;filter:none}
+#activity.conversation.rpg #activityActions button{position:relative;display:block;width:100%;min-height:46px;margin:0;padding:10px 14px 10px 30px;border:2px solid #e3d6bd;border-radius:16px;background:#fff;
+ box-shadow:0 3px 0 #e3d6bd;transform:none;color:var(--ink);font:inherit;font-size:clamp(15px,1.9vw,17px);font-weight:700;line-height:1.3;letter-spacing:.01em;text-align:left;text-shadow:none;cursor:pointer;filter:none;transition:transform .08s ease,background .12s ease}
+#activity.conversation.rpg #activityActions button::after{content:none}
+#activity.conversation.rpg #activityActions button::before{content:"";position:absolute;left:12px;top:50%;width:0;height:0;margin-top:-6px;border:6px solid transparent;border-left:9px solid transparent}
+#activity.conversation.rpg #activityActions button.selected,#activity.conversation.rpg #activityActions button:hover{background:#fff6d9;border-color:#2e2a33;box-shadow:0 3px 0 #2e2a33}
+#activity.conversation.rpg #activityActions button.selected::before{border-left-color:#e2563f}
 #activity.conversation.rpg #activityActions button:focus-visible{outline:none}
-#activity.conversation.rpg #activityActions button:active:not(:disabled){transform:none;box-shadow:none}
-@keyframes scene-line{from{opacity:0}to{opacity:1}}
-@keyframes scene-bar-top{from{transform:translateY(-100%)}to{transform:none}}
-@media(max-width:719px){
- body.conversation-open::before{height:6vh}
- #activity.conversation.rpg{padding-top:5vh}
- #activity.conversation.rpg #activityActions{max-height:34vh}
+#activity.conversation.rpg #activityActions button:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 #2e2a33}
+@keyframes speech-rise{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+@keyframes speech-next{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+@media(max-width:519px){
+ #activity.conversation.rpg .activity-card{padding:26px 16px 12px;border-radius:22px}
+ #activity.conversation.rpg #activityActions button{min-height:44px}
 }
-@media(prefers-reduced-motion:reduce){body.conversation-open::before,#activity.conversation.rpg #activityBody p{animation:none}}
-/* Leave sits in the top letterbox bar, out of the picture. */
-#activity.conversation.rpg .activity-card header{position:fixed;top:max(6px,calc(4.5vh - 14px));right:max(16px,env(safe-area-inset-right));z-index:31}
-@media(max-width:719px){#activity.conversation.rpg .activity-card header{top:max(4px,calc(3vh - 14px))}}
+@media(prefers-reduced-motion:reduce){#activity.conversation.rpg .activity-card,#activity.conversation.rpg #activityBody::after{animation:none}}
 
 /* ==== Form 3D workshop (workshop.css) ==== */
 #activity.workshop-tool .activity-card{width:min(1180px,100%)}
@@ -373,3 +390,28 @@ body.conversation-open #prompt,body.conversation-open #exitRoomButton,body.conve
 #activity .mag-nav{display:flex;align-items:center;justify-content:center;gap:16px}
 #activity .mag-count{min-width:64px;text-align:center;font-weight:800;color:#52615c}
 @media (prefers-reduced-motion:reduce){#activity .mag-page.turn-next,#activity .mag-page.turn-prev{animation:none}}
+
+/* Community Hall paperwork: plain office tables and A4-like document reading. */
+.town-archive nav,.archive-filters{display:flex;flex-wrap:wrap;gap:.6rem}.town-archive button{min-height:44px}.archive-filters label{display:grid;gap:.3rem;flex:1;min-width:130px}.archive-filters input,.archive-filters select,.town-archive textarea{font:inherit;padding:.6rem;max-width:100%;box-sizing:border-box}.archive-scroll{overflow:auto;max-height:45vh}.town-archive table{border-collapse:collapse;width:100%;font-size:.9rem}.town-archive th,.town-archive td{padding:.45rem;text-align:left;border-bottom:1px solid #c6c1b7}.town-archive dl{display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem}.town-archive dd{margin:0}.archive-paper{background:#fffdf5;color:#202720;padding:1rem;border:1px solid #b8b5a9}.town-archive pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}.archive-finding{padding:.8rem;border:1px solid #c6c1b7;margin:.6rem 0}.archive-finding label{display:grid}.archive-policy{font-size:.85rem}.town-archive textarea{width:100%;min-height:6rem}
+#activity.office-records{z-index:200}
+#activity.office-records .activity-card:has(.town-archive){width:min(1060px,100%)}
+#activity .town-archive .archive-filters{display:grid;grid-template-columns:2fr repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+#activity .town-archive .archive-filters label{min-width:0;display:grid;gap:6px}
+#activity .town-archive .archive-filters input,#activity .town-archive .archive-filters select,#activity .town-archive textarea{width:100%;min-width:0;background:#fffdf8;color:#293e48;border:1px solid #b8b5a9;border-radius:6px}
+#activity .town-archive table{min-width:680px;table-layout:auto}
+#activity .town-archive td:first-child button{white-space:nowrap}
+#activity .town-archive .archive-finding button{margin:4px 8px 4px 0}
+@media(max-width:620px){#activity .town-archive .archive-filters{grid-template-columns:repeat(2,minmax(0,1fr))}#activity .town-archive .archive-filters label:first-child{grid-column:1/-1}}
+
+/* Paper reader keeps the collection/close buttons visible while a tall flyer scrolls. */
+#activity.flyer-view .activity-card{display:flex;flex-direction:column;width:min(720px,100%);max-height:90dvh}
+#activity.flyer-view #activityBody{overflow:auto;min-height:0;white-space:normal;margin-bottom:12px}
+#activity.flyer-view #activityActions{flex-shrink:0}
+#activity.flyer-view .activity-card h2{font-size:23px;margin:12px 0}
+
+/* Shared action icons retain clear labels and normal keyboard/screen-reader names. */
+.icon-control{display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:44px}
+.icon-control>.ui-icon{width:22px;height:22px;flex:0 0 22px}
+.icon-control>span{min-width:0}
+
+.icon-control.hidden,.icon-control[hidden]{display:none!important}

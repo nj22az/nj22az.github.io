@@ -140,7 +140,7 @@ function basinFittings(k){
  k.mesh(new THREE.CylinderGeometry(.03,.034,.1,14),std(0xf06b8a,{roughness:.35}),M.x-.15,y+.055,R.minZ+.06,'Soap pump');
  k.mesh(new THREE.CylinderGeometry(.008,.008,.03,8),std(0xf2ede0),M.x-.15,y+.12,R.minZ+.06);
  k.box(.04,.012,.02,M.x-.135,y+.137,R.minZ+.06,std(0xf2ede0),'Soap pump head');
- const label=canvasTex(64,64,(ctx,w,h)=>{ctx.fillStyle='#f06b8a';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ffffff';ctx.fillRect(6,18,w-12,28);say(ctx,'ハンド',w/2,32,14,'#c4566e');});
+ const label=canvasTex(64,64,(ctx,w,h)=>{ctx.fillStyle='#f06b8a';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ffffff';ctx.fillRect(6,18,w-12,28);say(ctx,"Hand",w/2,32,14,'#c4566e');});
  k.plane(new THREE.MeshStandardMaterial({map:label,roughness:.4}),.04,.04,M.x-.15,y+.055,R.minZ+.0945,0,'Soap pump label');
  k.mesh(new THREE.CylinderGeometry(.03,.026,.08,14),new THREE.MeshStandardMaterial({color:0xa9d8e6,roughness:.2,transparent:true,opacity:.75}),M.x+.12,y+.045,R.minZ+.06,'Tumbler');
  // The green soap globe on its wall bracket, right of the mirror.
@@ -162,24 +162,24 @@ function notices(k){
   const tape=(x,y)=>{ctx.fillStyle='rgba(245,214,120,.75)';ctx.fillRect(x-16,y-7,32,14);};
   // お願い, the one every konbini has.
   ctx.fillStyle='#fffdf6';ctx.fillRect(16,16,300,250);ctx.strokeStyle='#2f5fb8';ctx.lineWidth=6;ctx.strokeRect(24,24,284,234);
-  say(ctx,'お客様へのお願い',166,64,30,'#1e3a8a');say(ctx,'紙以外は',166,118,34,'#c23a32');say(ctx,'流さないで下さい',166,160,34,'#c23a32');
-  say(ctx,'いつもきれいにご利用',166,206,20,'#333','center','normal');say(ctx,'ありがとうございます',166,232,20,'#333','center','normal');
+  say(ctx,"Request to customers",166,64,30,'#1e3a8a');say(ctx,"Anything other than paper",166,118,34,'#c23a32');say(ctx,"Please do not flush",166,160,34,'#c23a32');
+  say(ctx,"Always use cleanly",166,206,20,'#333','center','normal');say(ctx,"Thank you",166,232,20,'#333','center','normal');
   tape(30,18);tape(302,18);
   // Cleaning rounds, with Thuan's hanko on every one.
-  ctx.fillStyle='#ffffff';ctx.fillRect(340,24,280,300);say(ctx,'清掃点検表',480,56,28,'#2b2b2b');
+  ctx.fillStyle='#ffffff';ctx.fillRect(340,24,280,300);say(ctx,"Cleaning checklist",480,56,28,'#2b2b2b');
   ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;
   ['7:00','11:00','14:00','18:00','21:30'].forEach((t,i)=>{const y=100+i*44;ctx.beginPath();ctx.moveTo(352,y+22);ctx.lineTo(608,y+22);ctx.stroke();
-   say(ctx,t,360,y,20,'#333','left','normal');say(ctx,'済',470,y,20,'#333');
-   ctx.strokeStyle='#d0312d';ctx.lineWidth=3;ctx.beginPath();ctx.arc(560,y,17,0,Math.PI*2);ctx.stroke();say(ctx,'トゥ',560,y-1,13,'#d0312d');ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;});
+   say(ctx,t,360,y,20,'#333','left','normal');say(ctx,"Done",470,y,20,'#333');
+   ctx.strokeStyle='#d0312d';ctx.lineWidth=3;ctx.beginPath();ctx.arc(560,y,17,0,Math.PI*2);ctx.stroke();say(ctx,"Thuan",560,y-1,13,'#d0312d');ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;});
   tape(480,26);
   // The hand-washing card.
   ctx.fillStyle='#ecfaf2';ctx.fillRect(40,300,270,190);ctx.strokeStyle='#2f9a62';ctx.lineWidth=4;ctx.strokeRect(46,306,258,178);
-  say(ctx,'手洗い励行',175,340,28,'#1f7a4a');
-  ['① 石けんで泡立てる','② 指先・指の間も','③ 流水で15秒すすぐ','④ タオルでふく'].forEach((s,i)=>say(ctx,s,66,382+i*26,18,'#245a3e','left','normal'));
+  say(ctx,"Enforce hand washing",175,340,28,'#1f7a4a');
+  ["① Lather with soap","② Fingertips and between fingers","③ With running water15Rinse for seconds","④ Wipe with a towel"].forEach((s,i)=>say(ctx,s,66,382+i*26,18,'#245a3e','left','normal'));
   tape(175,300);
   // さんぴん茶, on special at the till.
   ctx.save();ctx.translate(480,420);ctx.rotate(-.05);ctx.fillStyle='#fde68a';ctx.fillRect(-120,-70,240,140);ctx.strokeStyle='#b7791f';ctx.lineWidth=4;ctx.strokeRect(-114,-64,228,128);
-  say(ctx,'冷えてます',0,-34,22,'#8a5a12');say(ctx,'さんぴん茶',0,6,36,'#7a4a0c');say(ctx,'¥110',0,46,24,'#c23a32');ctx.restore();
+  say(ctx,"It's cold",0,-34,22,'#8a5a12');say(ctx,"Jasmine Tea",0,6,36,'#7a4a0c');say(ctx,'¥110',0,46,24,'#c23a32');ctx.restore();
  });
  k.plane(new THREE.MeshStandardMaterial({map:tex,transparent:true,alphaTest:.05,roughness:.9}),.78,.62,-5.0,1.68,R.maxZ-.008,Math.PI,'Restroom notices');
  // A terracotta シーサー on a corner shelf, keeping an eye on the place.
@@ -202,14 +202,14 @@ export function buildSakuraRestroom(room,{anchor,action}={}){
  let now=0,flushedAt=-9;
  if(anchor&&action){
   const D=RESTROOM.doorway;
-  anchor([D.x-.25,1.35,D.z],'Look into the restroom',()=>action('inspect','便所 · The restroom',
-   'Mint tiles, a mosaic floor still damp from the last mop, and the breeze-block vent letting the afternoon in over the cistern. The fan rattles on its cord.\n\nSlip on the blue slippers and go in. The little シーサー on the corner shelf has seen it all.'));
-  anchor([-6.4,1.0,-3.0],'Flush the toilet',()=>{flushedAt=now;action('inspect','便所 · Flush',
+  anchor([D.x-.25,1.35,D.z],'Look into the restroom',()=>action('inspect',"Toilet · The restroom",
+   "Mint tiles, a mosaic floor still damp from the last mop, and the breeze-block vent letting the afternoon in over the cistern. The fan rattles on its cord.\n\nSlip on the blue slippers and go in. The little Shisa on the corner shelf has seen it all."));
+  anchor([-6.4,1.0,-3.0],'Flush the toilet',()=>{flushedAt=now;action('inspect',"Toilet · Flush",
    'You press the lever. The cistern roars, then the little spout on its lid runs clean water into the basin on top while the tank fills again: wash your hands on the way out, the way the old cisterns ask you to.');});
-  anchor([-5.18,1.15,-3.55],'Wash your hands',()=>action('inspect','便所 · Wash your hands',
+  anchor([-5.18,1.15,-3.55],'Wash your hands',()=>action('inspect',"Toilet · Wash your hands",
    'One push of the green soap globe, cold water from the tap, and the blue towel on its ring. The card on the wall says fifteen seconds under running water. You count them.'));
-  anchor([-5.0,1.6,-2.75],'Read the cleaning sheet',()=>action('inspect','清掃点検表 · Cleaning rounds',
-   '7:00, 11:00, 14:00, 18:00, 21:30 — 済, every one, each with the same small red hanko: トゥ.\nAbove it, in blue: お客様へのお願い — 紙以外は流さないで下さい.\nBeside it, a card for さんぴん茶, ¥110, 冷えてます.'));
+  anchor([-5.0,1.6,-2.75],'Read the cleaning sheet',()=>action('inspect',"Cleaning checklist · Cleaning rounds",
+   "7:00, 11:00, 14:00, 18:00, 21:30 — Done, every one, each with the same small red hanko: Thuan.\nAbove it, in blue: Request to customers — Please do not throw away anything other than paper..\nBeside it, a card for Jasmine Tea, ¥110, It's cold."));
  }
  const reduce=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
  return {tick(time){now=time;blades.rotation.z=reduce?0:time*9;arm.rotation.x=.25+(time-flushedAt<.7?.7:0);}};

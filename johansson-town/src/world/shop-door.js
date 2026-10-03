@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
+import {glazeWithRoom} from '../render/window-interior.js';
 
 // Metre-scale joinery. The handle, threshold and interaction share this doorway.
 export function buildShopDoor(parent,{name='shop-door',width=1.45,glass=true,shadows=false}={}){
@@ -14,7 +15,7 @@ export function buildShopDoor(parent,{name='shop-door',width=1.45,glass=true,sha
  const leaf=part([width,2.4,.10],[0,1.28,.23],wood,'door-leaf');
  let glazing=leaf;
  if(glass){
-  glazing=part([width-.24,1.28,.035],[0,1.75,.30],pane,'door-glazing');
+  glazing=glazeWithRoom(part([width-.24,1.28,.035],[0,1.75,.30],pane,'door-glazing'));
   for(const y of [1.08,1.75,2.42])part([width-.16,.055,.07],[0,y,.335],wood);
   part([.055,1.35,.07],[0,1.75,.335],wood);
  }
@@ -22,32 +23,4 @@ export function buildShopDoor(parent,{name='shop-door',width=1.45,glass=true,sha
  part([.04,.30,.06],[width*.33,1.12,.37],metal,'door-handle');
  part([width+.32,.10,.50],[0,.05,.29],new THREE.MeshStandardMaterial({color:0x96958a,roughness:.96}),'door-threshold');
  return {group,leaf,pane:glazing,update(open,day){pane.emissiveIntensity=open?(1-day)*.16:0;}};
-}
-
-export function buildBookWindow(parent,{shadows=false}={}){
- const group=new THREE.Group();group.name='Front-Row book display';group.position.set(-2.35,0,.30);parent.add(group);
- const wood=new THREE.MeshStandardMaterial({color:0x6a4e35,roughness:.8}),back=new THREE.MeshStandardMaterial({color:0x263637,roughness:.7});
- const paper=new THREE.MeshStandardMaterial({color:0xd7d0b6,roughness:.95});
- const colours=[0x72423c,0x314f5a,0x968054,0x526449].map(color=>new THREE.MeshStandardMaterial({color,roughness:.88}));
- function box(size,position,material){const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material);m.position.set(...position);m.castShadow=shadows;m.receiveShadow=true;m.userData.staticProp=true;group.add(m);}
- box([2.30,1.80,.06],[0,1.52,0],back);
- for(const x of [-1.2,1.2])box([.10,1.96,.24],[x,1.52,.08],wood);
- for(const y of [.56,1.43,2.48])box([2.50,.10,.28],[0,y,.09],wood);
- for(let row=0;row<2;row++)for(let i=0;i<7;i++){
-  const x=-.98+i*.30,y=.62+row*.87,h=.40+(i%3)*.07;
-  box([.21,h,.11],[x,y+h/2,.15],colours[(i+row)%4]);
-  box([.14,.024,.008],[x,y+h*.75,.210],paper);
- }
- return group;
-}
-
-export function buildBookshopFrontage(parent,options={}){
- const plaster=createMaterials().material('plaster');
- const wall=new THREE.Mesh(new THREE.BoxGeometry(2.82,2.66,.24),new THREE.MeshStandardMaterial({color:0xc9c4b5,normalMap:plaster.normalMap,normalScale:new THREE.Vector2(.12,.12),roughness:.96}));
- wall.name='frontrow-facade-infill';wall.position.set(2.27,1.33,.26);wall.receiveShadow=true;wall.userData.staticProp=true;parent.add(wall);
- // The source kit includes a second sliding panel. Close that entire opening,
- // including its frame, so the timber entrance is the only visible doorway.
- const trim=new THREE.Mesh(new THREE.BoxGeometry(2.84,.15,.28),createMaterials().material('timber',0x74563b));
- trim.name='frontrow-wall-plinth';trim.position.set(2.27,.075,.29);trim.userData.staticProp=true;parent.add(trim);
- return buildBookWindow(parent,options);
 }

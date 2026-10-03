@@ -30,6 +30,13 @@ export function speakerColour(name=''){
  return PALETTE[h%PALETTE.length];
 }
 
+/** The guide's portrait for a speaker, if they have one. */
+export function portraitFor(name,win=globalThis.window){
+ const guide=win?.JOHANSSON_RESIDENT_GUIDE;
+ if(!name||!Array.isArray(guide))return null;
+ return guide.find(r=>r.name===name)?.portrait||null;
+}
+
 /** Which conversation line a title belongs to: "Thuan · Heart of Sakura" is Thuan's. */
 export function splitTitle(title=''){
  const [speaker,...rest]=String(title).split('·').map(s=>s.trim());
@@ -84,13 +91,27 @@ export const playerLineTime=text=>Math.min(3200,Math.max(1200,700+String(text||'
  * @param {(phase:{phase:'speaker'|'player'|'none',speaker?:string,text?:string,seconds?:number})=>void} [options.onPhase]
  * @param {Window} [options.win]
  */
-export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPhase=()=>{},win=globalThis.window}){
+/** Ryukyu scale (do mi fa sol ti), two octaves: every speaker's voice sits on one of these. */
+const RYUKYU=[261.6,329.6,349.2,392,493.9,523.3,659.3,698.5,784,987.8];
+/** A speaker's voice: a note and a timbre picked from their name, so it never changes. */
+export function voiceFor(name=''){
+ let h=0;for(const c of String(name))h=(h*33+c.codePointAt(0))>>>0;
+ return {freq:RYUKYU[2+h%7],type:h&8?'triangle':'sine'};
+}
+
+export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPhase=()=>{},voice=()=>{},win=globalThis.window}){
  const doc=modal.ownerDocument||globalThis.document;
  // Outside a real browser (the tests' stand-in DOM) everything happens at once.
  const animated=typeof win?.matchMedia==='function'&&typeof win?.setTimeout==='function';
- let active=false,listening=false,speakingOwn=false,beat=null,lineTimer=null,selected=-1,speaker='',passThrough=false,afterLine=null,own=null;
+ let active=false,listening=false,speakingOwn=false,beat=null,lineTimer=null,selected=-1,speaker='',passThrough=false,afterLine=null,own=null,typing=null,fullLine='',lineEl=null;
+ const reduced=()=>!!win?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+ // Voices: a soft blip every few letters as a line types out, pitched by speaker. The
+ // sound itself is the town's (audio/town-audio.js), so it follows the Sound setting.
+ const blip=(name,index)=>{const {freq,type}=voiceFor(name);voice(index%2?freq:freq*1.0595,type);};
+ /** Stops the typewriter and shows the whole line. */
+ const finishTyping=()=>{if(typing){win.clearInterval(typing);typing=null;}if(lineEl)lineEl.textContent=fullLine;};
  const choices=()=>[...actions.querySelectorAll('button')].filter(b=>!b.disabled);
- const clear=()=>{if(beat){win.clearTimeout(beat);beat=null;}if(lineTimer){win.clearTimeout(lineTimer);lineTimer=null;}};
+ const clear=()=>{if(beat){win.clearTimeout(beat);beat=null;}if(lineTimer){win.clearTimeout(lineTimer);lineTimer=null;}if(typing){win.clearInterval(typing);typing=null;}};
 
  function select(index,focus=true){
   const list=choices();
@@ -101,6 +122,7 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
  }
  function endBeat(){
   if(!listening)return false;
+  finishTyping();
   if(beat){win.clearTimeout(beat);beat=null;}
   listening=false;modal.classList.remove('listening');select(selected<0?0:selected);
   return true;
@@ -126,20 +148,37 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
   if(!active){onPhase({phase:'none'});return;}
   ({speaker}=splitTitle(title));
   heading.dataset.speaker=speaker;
+  // The name tab shows the speaker only (CSS reads data-speaker); the full title stays
+  // in the heading for screen readers.
   modal.style?.setProperty?.('--line-colour',speakerColour(speaker));
+  // Their portrait beside the name tab, from the Visitor's Guide (resident-guide.js),
+  // so you see who is talking even while the camera is on Johansson.
+  const portrait=portraitFor(speaker,win);
+  modal.classList.toggle('has-portrait',!!portrait);
+  if(portrait)modal.style?.setProperty?.('--portrait',`url("${portrait}")`);
   const line=body.querySelector('p')||doc.createElement('p');
   if(!line.parentNode)body.append(line);
   line.classList.add('rpg-line');
-  line.textContent=String(text??'');
+  fullLine=String(text??'');lineEl=line;
+  line.textContent=fullLine;
   // Johansson's side of the exchange, said over the same spot when he speaks.
   own=doc.createElement('p');own.className='rpg-own';body.append(own);
   choices().forEach((b,i)=>{b.dataset.key=i<9?String(i+1):'';});
   selected=0;select(0);
   onPhase({phase:'speaker',speaker,text:String(text??'')});
   if(!animated)return;
-  // A beat to take the line in before the replies come up.
+  // The line types itself out, then a beat to take it in before the replies come up.
+  // A tap, E or Space finishes it at once.
   listening=true;modal.classList.add('listening');
-  beat=win.setTimeout(endBeat,readingBeat(text));
+  let typed=0;
+  if(!reduced()&&fullLine.length>1){
+   line.textContent='';
+   const chars=[...fullLine],step=Math.max(1,Math.round(chars.length/90));
+   let ticks=0;
+   typing=win.setInterval(()=>{typed=Math.min(chars.length,typed+step);line.textContent=chars.slice(0,typed).join('');if(++ticks%3===1&&/\S/.test(chars[typed-1]||''))blip(speaker,ticks);if(typed>=chars.length){win.clearInterval(typing);typing=null;}},22);
+  }
+  const typeTime=typing?Math.ceil([...fullLine].length/Math.max(1,Math.round([...fullLine].length/90)))*22:0;
+  beat=win.setTimeout(endBeat,typing?typeTime+Math.min(650,readingBeat(text)):readingBeat(text));
  }
 
  /** Say the reply at `index` (Johansson speaks it first, unless it is an action). */

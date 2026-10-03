@@ -1,4 +1,4 @@
-import {HOUSEHOLDS,householdFor} from '../src/people/households.js';
+import {householdFor} from '../src/people/households.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
@@ -6,7 +6,7 @@ import {RESIDENTS,HOME_OWNERS} from '../src/people/residents.js';
 import {createCastAI,DIALOGUE} from '../src/people/schedules.js';
 import {residentPlan,IZAKAYA_DOOR,RAMEN_DOOR,RAMEN_VISITS,GOSSIP} from '../src/people/social.js';
 import {WORK_SITES} from '../src/people/workplaces.js';
-import {sleepHours,homeRoutine,homeSiteId,HOME_LAYOUT,homeLayoutFor} from '../src/people/home-life.js';
+import {sleepHours,homeRoutine,homeSiteId,homeLayoutFor} from '../src/people/home-life.js';
 import {createHomeResidents} from '../src/people/home-residents.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {buildResidentHome} from '../src/world/interiors/resident-home.js';
@@ -107,7 +107,7 @@ test('every resident sleeps, wakes, eats breakfast and leaves their actual furni
   assert.equal(p.g.parent,parent,profile.name);assert.equal(p.g.userData.sleeping,true,profile.name);
   const cover=parent.getObjectByName('animated sleep cover');assert.ok(cover?.visible,profile.name+' has a blanket');assert.equal(cover.userData.animatedCover,true);
   const coverBefore=cover.geometry.attributes.position.array.slice();residents.update(1/30,beforeWake-2);
-  assert.notDeepEqual(cover.geometry.attributes.position.array,coverBefore,profile.name+' blanket breathes');assert.ok(p.g.position.y>=(profile.name==='Thuan'?.47:.57),profile.name+' rests on the sleeping surface');
+  assert.notDeepEqual(cover.geometry.attributes.position.array,coverBefore,profile.name+' blanket breathes');assert.ok(p.g.position.y>=homeLayoutFor(profile.name).bed[1]-.01,profile.name+' rests on the sleeping surface');
   tick((dt,m)=>residents.update(dt,m),beforeWake-2,4);
   assert.equal(p.g.parent,parent);assert.equal(p.g.userData.waking,true,profile.name);assert.equal(p.g.userData.sleeping,false);
   tick((dt,m)=>residents.update(dt,m),beforeWake+16,12);

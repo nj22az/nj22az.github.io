@@ -6,10 +6,9 @@ import {installDOM} from './fixtures.mjs';
 import {RESIDENTS} from '../src/people/residents.js';
 import {HOUSEHOLDS} from '../src/people/households.js';
 import {createHomeResidents} from '../src/people/home-residents.js';
-import {SUPPLIED_ROOM_LAYOUTS,suppliedRoomBoundsBlocked,buildSuppliedRoom,preloadSuppliedRooms} from '../src/world/supplied-rooms.js';
+import {suppliedRoomBoundsBlocked,buildSuppliedRoom,preloadSuppliedRooms} from '../src/world/supplied-rooms.js';
 import {circleHitsRect} from '../physics.js';
 import {readSave,SAVE_KEY} from '../src/save.js';
-import {OFFICE_DESK_SEAT} from '../src/world/interiors/office-workplace.js';
 const native=globalThis.fetch;
 function localAssets(){installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});globalThis.fetch=async u=>String(u).startsWith('blob:')?native(u):new Response(await readFile(new URL('../assets/'+new URL(u).pathname.split('/assets/')[1],import.meta.url)));}
 test('Thuan and Nao occupy separate beds in the same furnished flat, then leave independently',async()=>{

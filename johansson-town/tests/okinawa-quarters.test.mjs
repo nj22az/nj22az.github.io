@@ -4,6 +4,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect} from '../physics.js';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
+import {GATEBALL_ACTIVE} from '../src/world/okinawa/layout.js';
 
 async function town(){
  installDOM();globalThis.self=globalThis;
@@ -49,7 +50,7 @@ test('Main Street has buildings on both kerbs, and the shops do things',async()=
  assert.deepEqual(actions.at(-1).slice(0,1),['buy']);
  assert.equal(actions.at(-1)[2].item,'Zenzai');
  for(const label of ['Pray at the utaki','Inspect the auction shed','Inspect the ice plant','Fish from the seawall','Read the Higa nameplate',
-  'Look at the ice-cream mural','Browse the ¥100 cart','Read the tide board','Look at the goya trellis','Watch the gateball','Read the Kamiya nameplate'])
+  'Look at the ice-cream mural','Browse the ¥100 cart','Read the tide board','Look at the goya trellis',...(GATEBALL_ACTIVE?['Watch the gateball']:[]),'Read the Kamiya nameplate'])
   assert.ok(labels.some(l=>l.label===label),'Nothing to '+label);
 });
 
@@ -57,9 +58,13 @@ test('the new streets are batched into a handful of meshes and light up at night
  const {world}=await town();
  const q=world.quarters;
  const merged=q.meshes.filter(m=>!/sign|nameplate|fascia|upright|flag|poster|prices/.test(m.name));
- assert.ok(merged.length<80,'The quarters are '+merged.length+' draw calls');
+ // 80 before Kitahama; the new lane, its five houses and the cane field add their own cells,
+ // and the residential quarter west of it (seven houses, the flats, the park) about twenty more.
+ assert.ok(merged.length<140,'The quarters are '+merged.length+' draw calls');
  let triangles=0;for(const m of q.meshes)triangles+=m.geometry.attributes.position.count/3;
- assert.ok(triangles<120000,'The quarters are '+Math.round(triangles)+' triangles');
+ // 120k before Kitahama and the detailed distribution poles; the residential quarter's
+ // seven walled houses, flats and park add about 45k.
+ assert.ok(triangles<210000,'The quarters are '+Math.round(triangles)+' triangles');
  world.updateHours(13*60);
  const day=q.materials.glow.emissiveIntensity;
  world.updateHours(21*60);

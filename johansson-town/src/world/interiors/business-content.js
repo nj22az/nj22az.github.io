@@ -10,6 +10,7 @@ const positions={
  form3d:{keychain:{pos:[-1.97,.96,-.87]},model:{pos:[-.54,.99,-.87],scale:.30,upright:true},stepwise:{pos:[.93,.96,-.99]},github:{pos:[1.23,.96,-1.10],scale:.18},etsy:{pos:[1.97,.96,-.91],scale:.18}},
  office:{cv:{pos:[1.95,1.145,-2.64],scale:.32},linkedin:{pos:[-.12,.97,-2.70],scale:.28}},
 };
+const dockContent=Object.fromEntries(Object.entries(positions.form3d).map(([id,p],i)=>[id,{...p,pos:[3.2,p.pos[1],-.8+i*.525]}]));
 export const BUSINESS_CONTENT=Object.freeze(positions);
 export const COMBINED_CONTENT=Object.freeze({
  ...Object.fromEntries(['book','book2','book3','book4','book5','book6'].map((id,i)=>[id,{pos:[-3.84,1.60,-1.4+i*.18],upright:true}])),
@@ -18,10 +19,10 @@ export const COMBINED_CONTENT=Object.freeze({
 });
 export const BUSINESS_CONTENT_CATALOGUE=ITEMS.map(item=>{
  const originalSite=Object.keys(positions).find(id=>positions[id][item.id]);
- return {...item,get siteId(){return peninsulaActive()&&originalSite==='form3d'?'frontrow':originalSite;},get place(){return peninsulaActive()&&this.siteId==='frontrow'?'Front-Row Books & Workshop · Main Street':{frontrow:'Front-Row Books & Press · shopping alley',form3d:'Kenji & Tetsuo Repairs · shopping alley',office:'Johansson Harbour Office · quay'}[originalSite];}};
+ return {...item,get siteId(){return originalSite;},get place(){return peninsulaActive()?this.siteId==='frontrow'?'Front-Row Books · Main Street':this.siteId==='form3d'?'Dock Electrical & Repair Workshop · western quay':'Johansson Harbour Office · quay':{frontrow:'Front-Row Books & Press · shopping alley',form3d:'Kenji & Tetsuo Repairs · shopping alley',office:'Johansson Harbour Office · quay'}[originalSite];}};
 });
 export function buildBusinessContent({site,room,register,onInspect,onAction}){
- const entries=site.combinedWorkshop?COMBINED_CONTENT:positions[site.id]||{},objects=new Map();
+ const entries=site.bookshop?Object.fromEntries(Object.entries(COMBINED_CONTENT).filter(([id])=>Object.hasOwn(positions.frontrow,id))):site.industrialWorkshop?dockContent:positions[site.id]||{},objects=new Map();
  for(const [id,placement] of Object.entries(entries)){
   const original=ITEMS.find(item=>item.id===id);if(!original)continue;
   const item={...original,place:site.title,pos:placement.pos},object=makeContentObject(item,{pageScale:.5});

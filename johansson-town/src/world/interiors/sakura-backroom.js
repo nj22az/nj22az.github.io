@@ -1,4 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {stockroomBeerBatch,deliveryOnigiri} from './stockroom-products.js';
+import {paintStaffBoard,boardText} from './staff-board.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
 
 /**
@@ -34,9 +36,8 @@ export const BACKROOM=Object.freeze({
  extinguisher:Object.freeze({x:4.66,z:-6.58,r:.15}),
 });
 
-const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
 const canvasTex=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;};
-const say=(ctx,s,x,y,size,colour,align='center',weight='bold')=>{ctx.fillStyle=colour;ctx.font=`${weight} ${size}px ${MARU}`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(s,x,y);};
+const say=(ctx,s,x,y,size,colour,align='center',weight='bold')=>boardText(ctx,s,x,y,size,colour,align==='left'?ctx.canvas.width-x-12:align==='right'?x-12:Math.min(x,ctx.canvas.width-x)*2-16,align,weight);
 const std=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.75,...extra});
 const hash=(i,s=0)=>{const n=Math.sin(i*127.1+s*311.7)*43758.5453;return n-Math.floor(n);};
 const KRAFT='#c39a66';
@@ -57,7 +58,7 @@ function caseLabel({brand,jp,line,count,ink,accent,seed}){
   say(ctx,count,174,232,40,ink);
   // Carrier slip, the barcode and 天地無用.
   ctx.fillStyle='#fbfaf4';ctx.fillRect(344,48,148,150);ctx.fillStyle='#3f7d4e';ctx.fillRect(344,48,148,26);
-  say(ctx,'南風便',418,62,18,'#ffffff');say(ctx,'サクラ商店 様',418,96,18,'#2b2b2b');
+  say(ctx,'南風運送',418,62,18,'#ffffff');say(ctx,'さくら商店 宛',418,96,18,'#2b2b2b');
   ctx.fillStyle='#222';let x=356;for(let i=0;i<26&&x<480;i++){const b=hash(i,seed+9)>.5?3:5;ctx.fillRect(x,116,b,44);x+=b+(hash(i,seed+7)>.5?3:2);}
   say(ctx,'49'+String(1000+seed*37).slice(0,4)+'-'+String(seed*911%9000+1000),418,180,15,'#333','center','normal');
   say(ctx,'天地無用',418,236,30,'#c23a32');
@@ -65,10 +66,10 @@ function caseLabel({brand,jp,line,count,ink,accent,seed}){
  });
 }
 const CASES={
- tea:{brand:'NAGI',jp:'なぎ',line:'緑茶',count:'500ml × 24本',ink:'#224b35',accent:'#738c43',seed:3,size:[.40,.25,.28],stack:2},
- coffee:{brand:'PORT 88',jp:'ポート88',line:'缶コーヒー',count:'185g × 30缶',ink:'#5a2a1c',accent:'#bd4826',seed:5,size:[.38,.14,.26],stack:3},
- noodles:{brand:'YUNAGI',jp:'ゆうなぎ',line:'ラーメン',count:'12食入',ink:'#8d3028',accent:'#394e41',seed:7,size:[.46,.31,.33],stack:1},
- water:{brand:'MIZUNOWA',jp:'みずのわ',line:'天然水',count:'2L × 6本',ink:'#2e6572',accent:'#6dabae',seed:11,size:[.33,.33,.22],stack:1},
+ tea:{brand:'NAGI',jp:"Nagi",line:"Green tea",count:"500ml × 24items",ink:'#224b35',accent:'#738c43',seed:3,size:[.40,.25,.28],stack:2},
+ coffee:{brand:'PORT 88',jp:"Port88",line:"Canned coffee",count:"185g × 30Can",ink:'#5a2a1c',accent:'#bd4826',seed:5,size:[.38,.14,.26],stack:3},
+ noodles:{brand:'YUNAGI',jp:"Yuunagi",line:"Ramen",count:"12Meal included",ink:'#8d3028',accent:'#394e41',seed:7,size:[.46,.31,.33],stack:1},
+ water:{brand:'MIZUNOWA',jp:"Mizunowa",line:"Natural water",count:"2L × 6items",ink:'#2e6572',accent:'#6dabae',seed:11,size:[.33,.33,.22],stack:1},
 };
 
 function kit(parent,name){
@@ -103,8 +104,8 @@ function stockRack(k){
  const tray=std(0xb88f5c,{roughness:.9});
  const roll=std(0xf6f3ec,{roughness:.95}),rollPrint=new THREE.MeshStandardMaterial({roughness:.9,map:canvasTex(256,256,(ctx,w,h)=>{
   ctx.fillStyle='#f6f3ec';ctx.fillRect(0,0,w,h);ctx.fillStyle='#f0a6b8';for(let i=0;i<14;i++){ctx.beginPath();ctx.arc(hash(i,4)*w,hash(i,5)*h,10,0,Math.PI*2);ctx.fill();}
-  ctx.fillStyle='#ffffff';ctx.fillRect(28,92,200,72);say(ctx,'さくら',128,116,30,'#c4566e');say(ctx,'12ロール',128,146,22,'#6b4a52');})});
- const tissue=new THREE.MeshStandardMaterial({roughness:.8,map:canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#dce5d2';ctx.fillRect(0,0,w,h);ctx.fillStyle='#99b6a0';ctx.fillRect(0,h-28,w,28);say(ctx,'KOMACHI',w/2,44,34,'#c25a58');say(ctx,'5箱パック',w/2,h-14,18,'#ffffff');})});
+  ctx.fillStyle='#ffffff';ctx.fillRect(28,92,200,72);say(ctx,"Sakura",128,116,30,'#c4566e');say(ctx,"12Roll",128,146,22,'#6b4a52');})});
+ const tissue=new THREE.MeshStandardMaterial({roughness:.8,map:canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#dce5d2';ctx.fillRect(0,0,w,h);ctx.fillStyle='#99b6a0';ctx.fillRect(0,h-28,w,28);say(ctx,'KOMACHI',w/2,44,34,'#c25a58');say(ctx,"5Box pack",w/2,h-14,18,'#ffffff');})});
  const banjyu=std(0x3d8fcf,{roughness:.4});
  // Shrink-wrapped trays of the shop's own cans and bottles, from the shelf templates.
  const products={},[productBody,productArt]=shopProductMaterials();
@@ -179,8 +180,8 @@ function stockRack(k){
  const body=new THREE.Mesh(new THREE.BoxGeometry(.07,.2,.045),std(0x2a2e33,{roughness:.5}));body.position.y=.1;handy.add(body);
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(.05,.045),new THREE.MeshBasicMaterial({color:0x8fbf8a,toneMapped:false}));screen.position.set(0,.15,-.0235);screen.rotation.y=Math.PI;handy.add(screen);
  const led=new THREE.Mesh(new THREE.BoxGeometry(.012,.006,.006),new THREE.MeshBasicMaterial({color:0x6cff6c,toneMapped:false}));led.position.set(.045,.04,-.072);handy.add(led);
- const clip=canvasTex(256,320,(ctx,w,h)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,w,h);say(ctx,'棚卸し表',w/2,30,26,'#2b2b2b');ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;for(let y=60;y<h-10;y+=24){ctx.beginPath();ctx.moveTo(14,y);ctx.lineTo(w-14,y);ctx.stroke();}
-  ['緑茶 24','缶コーヒー 30','ラーメン 12','天然水 6','麦酒 20'].forEach((s,i)=>{say(ctx,s,20,72+i*24,15,'#2f4a8a','left','normal');say(ctx,'✓',w-30,72+i*24,18,'#c23a32');});});
+ const clip=canvasTex(256,320,(ctx,w,h)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,w,h);say(ctx,"Stock Count",w/2,30,26,'#2b2b2b');ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;for(let y=60;y<h-10;y+=24){ctx.beginPath();ctx.moveTo(14,y);ctx.lineTo(w-14,y);ctx.stroke();}
+  ["Green tea 24","Canned coffee 30","Ramen 12","Natural water 6","Beer 20"].forEach((s,i)=>{say(ctx,s,20,72+i*24,15,'#2f4a8a','left','normal');say(ctx,'✓',w-30,72+i*24,18,'#c23a32');});});
  const board=new THREE.Mesh(new THREE.BoxGeometry(.2,.006,.27),std(0x8a6a4a));board.position.set(ex-.22,top+.003,R.front+.17);board.rotation.y=.08;board.name='Stocktake clipboard';k.group.add(board);
  const sheet=new THREE.Mesh(new THREE.PlaneGeometry(.18,.23),new THREE.MeshStandardMaterial({map:clip,roughness:.95}));sheet.rotation.set(-Math.PI/2,0,Math.PI+.08);sheet.position.set(ex-.22,top+.007,R.front+.18);k.group.add(sheet);
  return {led};
@@ -188,29 +189,8 @@ function stockRack(k){
 
 // ================================================================ the noticeboard
 function noticeboard(k){
- const N=BACKROOM.noticeboard;
- const tex=canvasTex(768,512,(ctx,w,h)=>{
-  ctx.fillStyle='#b98a55';ctx.fillRect(0,0,w,h);for(let i=0;i<2400;i++){ctx.fillStyle=`rgba(${hash(i,3)>.5?90:230},${hash(i,3)>.5?60:200},40,.18)`;ctx.fillRect(hash(i,4)*w,hash(i,5)*h,2,2);}
-  ctx.strokeStyle='#7a5530';ctx.lineWidth=18;ctx.strokeRect(0,0,w,h);
-  const pin=(x,y,c='#d7263d')=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fill();};
-  // Shift roster.
-  ctx.save();ctx.translate(40,36);ctx.rotate(-.015);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,330,430);
-  say(ctx,'シフト表 9月',165,30,28,'#2b2b2b');ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;
-  const days=['月','火','水','木','金','土','日'],who=['トゥアン 早','トゥアン 通し','店長 早 / トゥアン 遅','トゥアン 早','トゥアン 遅','トゥアン 通し','店長'];
-  days.forEach((d,i)=>{const y=74+i*44;ctx.beginPath();ctx.moveTo(14,y+22);ctx.lineTo(316,y+22);ctx.stroke();say(ctx,d,34,y,22,'#c23a32');say(ctx,who[i],70,y,20,'#2b2b2b','left','normal');});
-  say(ctx,'副店長(鉢植え): 毎日 窓ぎわ',165,400,17,'#3f8f46');ctx.restore();pin(205,40);
-  // Delivery times.
-  ctx.save();ctx.translate(400,40);ctx.rotate(.02);ctx.fillStyle='#ffe28a';ctx.fillRect(0,0,320,200);
-  say(ctx,'納品時間',160,30,28,'#7a3a12');
-  [['米飯','6:00 / 11:00 / 16:00'],['飲料','5:00'],['雑誌・新聞','4:30'],['常温 (南風便)','火・金 14:00']].forEach(([a,b],i)=>{say(ctx,a,18,76+i*34,19,'#2b2b2b','left');say(ctx,b,302,76+i*34,19,'#2b2b2b','right','normal');});
-  ctx.restore();pin(560,44,'#2a8fcc');
-  // 5S.
-  ctx.save();ctx.translate(410,262);ctx.rotate(-.025);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,310,210);
-  ctx.fillStyle='#c23a32';ctx.fillRect(0,0,310,40);say(ctx,'バックヤード 5S',155,21,24,'#ffffff');
-  ['整理: 通路に台車を置かない','整頓: 先入れ先出し','清掃: 冷蔵庫の霜取り 水曜','清潔: 手洗い・消毒','しつけ: P箱は返却まで黄色の場所'].forEach((s,i)=>say(ctx,s,16,66+i*30,17,'#2b2b2b','left','normal'));
-  ctx.restore();pin(565,266);
- });
- const frame=k.mesh(new THREE.BoxGeometry(.04,.84,1.24),std(0x7a5530),N.x+.02,N.y,N.z,'Staff noticeboard');void frame;
+ const N=BACKROOM.noticeboard,tex=canvasTex(768,512,paintStaffBoard);
+ k.mesh(new THREE.BoxGeometry(.04,.84,1.24),std(0x7a5530),N.x+.02,N.y,N.z,'Staff noticeboard');
  k.plane(tex,1.2,.8,N.x+.045,N.y,N.z,Math.PI/2,'Staff noticeboard print');
 }
 
@@ -232,17 +212,15 @@ function exitSign(k){
 }
 
 function beerCrates(k){
- const C=BACKROOM.crates;
- const side=canvasTex(256,160,(ctx,w,h)=>{ctx.fillStyle='#e8b923';ctx.fillRect(0,0,w,h);ctx.fillStyle='#d4a516';for(let x=18;x<w-18;x+=30)ctx.fillRect(x,108,18,34);
-  say(ctx,'UMINEKO',w/2,40,40,'#9f2f24');say(ctx,'うみねこ麦酒 大びん20本',w/2,82,18,'#9f2f24');});
- const yellow=std(0xe8b923,{roughness:.4}),print=new THREE.MeshStandardMaterial({map:side,roughness:.4});
- const mats=[print,print,yellow,yellow,print,print],bottle=std(0x5a3418,{roughness:.2,metalness:.1});
- // Two stacks against the back wall, side by side, the east one a crate shorter.
- [[C.x-.21,3],[C.x+.21,2]].forEach(([x,count],s)=>{
-  for(let i=0;i<count;i++)k.put('beer crate',mats,x+(hash(s,i)-.5)*.02,i*.3,C.z,.42,.3,.34,(hash(i,s)-.5)*.05);
-  // The empties' necks show in the open top crate.
-  for(let a=0;a<5;a++)for(let b=0;b<4;b++)k.put('beer bottle neck',bottle,x-.14+a*.07,count*.3-.12,C.z-.105+b*.07,.03,.14,.03);
- });
+ const positions=[],C=BACKROOM.crates,yellow=std(0xdcb22c,{roughness:.55});
+ const label=canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#dcb22c';ctx.fillRect(0,0,w,h);say(ctx,'海猫ビール',w/2,42,30,'#913a2b');say(ctx,'UMINEKO · 20本',w/2,88,20,'#913a2b');});
+ [[C.x-.21,3],[C.x+.21,2]].forEach(([x,count])=>{for(let i=0;i<count;i++){
+  const y=i*.3;k.put('beer crate floor',yellow,x,y,C.z,.42,.018,.34);
+  for(const dz of [-.163,.163]){k.put('beer crate long wall',yellow,x,y+.018,C.z+dz,.42,.245,.014);k.put('beer crate rim',yellow,x,y+.263,C.z+dz,.43,.018,.022);}
+  for(const dx of [-.203,.203])k.put('beer crate end wall',yellow,x+dx,y+.018,C.z,.014,.263,.34);
+  for(let a=0;a<5;a++)for(let b=0;b<4;b++)positions.push([x-.16+a*.08,y+.02,C.z-.12+b*.08]);
+  k.plane(label,.34,.16,x,y+.145,C.z+.172,0,'Beer crate label');
+ }});k.group.add(stockroomBeerBatch(positions));
 }
 
 function cardboardBundle(k){
@@ -273,11 +251,9 @@ function daisha(k){
  for(const z of [-.213,.213])add(new THREE.BoxGeometry(.64,.12,.014),crate,-.05,ty,z);
  for(const x of [-.363,.263])add(new THREE.BoxGeometry(.014,.12,.44),crate,x,ty,0);
  for(const z of [-.22,.22])add(new THREE.BoxGeometry(.66,.015,.02),rim,-.05,ty+.067,z);
- const film=new THREE.MeshStandardMaterial({roughness:.3,map:canvasTex(128,128,(ctx,w,h)=>{ctx.fillStyle='#f7f4ec';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2f3b2a';ctx.fillRect(0,h*.55,w,h*.45);ctx.fillStyle='#d7263d';ctx.fillRect(w*.44,0,w*.12,h);})});
- const onigiri=new THREE.CylinderGeometry(.06,.06,.04,3);
- for(let a=0;a<4;a++)for(let b=0;b<2;b++){const o=add(onigiri,film,-.05-.21+a*.14,ty-.024,-.1+b*.2);o.rotation.y=b?Math.PI:0;}
+ for(let a=0;a<4;a++)for(let b=0;b<2;b++){const o=deliveryOnigiri();o.position.set(-.05-.21+a*.14,ty-.04,-.1+b*.2);o.rotation.y=b?Math.PI:0;g.add(o);}
  // Delivery slip tucked under the top crate's rim.
- const slip=canvasTex(128,96,(ctx,w,h)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,w,h);say(ctx,'米飯 11:00',w/2,28,20,'#2b2b2b');say(ctx,'おにぎり 32',w/2,62,18,'#c23a32');});
+ const slip=canvasTex(128,96,(ctx,w,h)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,w,h);say(ctx,'米飯 11:00',w/2,28,20,'#2b2b2b');say(ctx,'おにぎり 32個',w/2,62,18,'#c23a32');});
  const s=new THREE.Mesh(new THREE.PlaneGeometry(.12,.09),new THREE.MeshStandardMaterial({map:slip,roughness:.9}));s.position.set(-.05,ty-.01,-.221);s.rotation.y=Math.PI;g.add(s);
 }
 
@@ -298,10 +274,10 @@ export function buildSakuraBackroom(room,{anchor,action}={}){
  k.finish();
  if(anchor&&action){
   const N=BACKROOM.noticeboard;
-  anchor([N.x+.5,1.5,N.z],'Read the staff noticeboard',()=>action('inspect','バックヤード · Staff noticeboard',
-   'Thuan’s September roster, with her name on nearly every line; the delivery times for rice, drinks and the papers; and the back-room 5S rules in red.\n\nAt the bottom of the roster, in her handwriting: 副店長(鉢植え) — the assistant manager — "every day, by the window".'));
+  anchor([N.x+.5,1.5,N.z],'Read the staff noticeboard',()=>action('inspect',"Backyard · Staff noticeboard",
+   "Thuan’s September roster, with her name on nearly every line; the delivery times for rice, drinks and the papers; and the back-room 5S rules in red.\n\nAt the bottom of the roster, in her handwriting: Assistant Manager(Potted plants) — the assistant manager — \"every day, by the window\"."));
   const D=BACKROOM.daisha;
-  anchor([D.x,.9,D.z],'Look at the rice delivery',()=>action('inspect','番重 · The 11:00 rice delivery',
+  anchor([D.x,.9,D.z],'Look at the rice delivery',()=>action('inspect',"Banju · The 11:00 rice delivery",
    'Four blue trays of onigiri and bento off the morning van, parked on the daisha at the end of the room. They go out on the shelves before the lunch crowd; the empty trays go back on the 16:00 run.'));
  }
  return {tick(time){rack.led.visible=Math.sin(time*2.4)>-.6;}};

@@ -13,7 +13,7 @@ export function frontageMaterial(page){
   material.name='Main Street shared atlas '+page;material.onBeforeCompile=frontageShader;
   // The custom UV1/UV2 atlas sampler must survive the global cel pass. Converting
   // this material to toon drops its compile hook and repeats the entire atlas.
-  material.userData.keepPhysical=true;
+  material.userData.keepPhysical=true;material.userData.keepPhysicalStrict=true;
   material.customProgramCacheKey=()=> 'main-street-repeating-atlas-v1';
   cached.set(page,material);return material;
  })();pending.set(page,task);task.then(()=>pending.delete(page),()=>pending.delete(page));return task;

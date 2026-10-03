@@ -1,0 +1,237 @@
+import * as THREE from '../../vendor/three.module.js';
+import {hemSpec} from './springs.js';
+
+/**
+ * The shirt, painted.
+ *
+ * Collars, plackets, buttons, pockets and prints used to be little pieces of geometry
+ * stuck on the torso -- white triangles, grey balls, flowers half sunk into the cloth --
+ * each with its own ink outline. Close up it read as clutter. A Tomodachi Life Mii wears
+ * one smooth garment with its details drawn on: a collar is a shape with a line round
+ * it, a button is a dot. So the torso keeps its vertex colour (the cloth, which the ink
+ * outline follows) and a texture laid round it by angle and height draws the details
+ * over it. Transparent texels leave the cloth as it is.
+ *
+ * The texture: u runs once round the body, 0.5 at the front (+z) and the seam at the
+ * back; v carries the torso from just below the hips (t=T0) to the top of the neck
+ * (t=T1). Below it, a band carries the sleeves (both share it: u runs round the arm,
+ * 0.5 at its front, v down from the shoulder to the hem or cuff). The strip at the very
+ * bottom is left empty for every other part of the body to sample.
+ */
+export const GARMENT=Object.freeze({width:512,height:352,V0:.3,T0:-.1,T1:1.05,SLEEVE:Object.freeze({v0:.06,v1:.28})});
+/** Where every part that is not the torso samples: the empty strip. */
+export const PLAIN_UV=Object.freeze([.5,.02]);
+
+/** The torso's UV at a model-space point, from the lathe's angle and the torso height. */
+export function torsoUV(p,m){
+ const u=.5+Math.atan2(p.x/(m.width/2),p.z/(m.depth/2))/(Math.PI*2);
+ const t=(p.y-m.hipY)/m.torso;
+ return [u,GARMENT.V0+(1-GARMENT.V0)*THREE.MathUtils.clamp((t-GARMENT.T0)/(GARMENT.T1-GARMENT.T0),0,1)];
+}
+
+/** A sleeve's UV at a model-space point: round the arm from a (shoulder) to b (hem). */
+export function sleeveUV(p,a,b,side){
+ const ax=b[0]-a[0],ay=b[1]-a[1],az=b[2]-a[2],len=Math.hypot(ax,ay,az)||1;
+ const rx=p.x-a[0],ry=p.y-a[1],rz=p.z-a[2],t=THREE.MathUtils.clamp((rx*ax+ry*ay+rz*az)/(len*len),0,1);
+ // The arm hangs down, so round it is the x-z plane; the front (+z) is u = 0.5 either side.
+ const u=.5+Math.atan2(rx*side,rz)/(Math.PI*2),S=GARMENT.SLEEVE;
+ return [u,S.v1-(S.v1-S.v0)*t];
+}
+
+const shade=(hex,f)=>'#'+new THREE.Color(hex).multiplyScalar(f).getHexString();
+const lighten=(hex,f)=>'#'+new THREE.Color(hex).lerp(new THREE.Color('#ffffff'),f).getHexString();
+/**
+ * Johansson's camp collar, one side (mirrored for the other), as [fraction of the cloth's
+ * half-width, height t up the torso]: by the neck, the leaf's point, the notch, the lapel's
+ * corner, its foot by the first button, the centre; it closes back up along the open V.
+ */
+export const CAMP_COLLAR=Object.freeze([[.6,1.0],[.9,.83],[.7,.84],[.85,.79],[.16,.725],[.035,.73]].map(Object.freeze));
+const COLLARED=['polo','blouse','kariyushi','jacket','smock','cardigan'];
+
+/**
+ * Paints a top's details onto ctx. Pure drawing from the recipe and the body's
+ * measurements; returns the list of what was drawn, for tests and the studio.
+ */
+export function paintGarment(ctx,recipe,m,radiusAt){
+ const {width:TW,height:TH,V0,T0,T1}=GARMENT,o=recipe.outfit,top=o.topColour,marks=[];
+ ctx.clearRect(0,0,TW,TH);
+ const W=m.width,D=m.depth;
+ const Y=t=>(1-(V0+(1-V0)*(t-T0)/(T1-T0)))*TH;
+ // The angle round the lathe at which the cloth is x metres across from the centre line.
+ const theta=(x,t)=>Math.asin(THREE.MathUtils.clamp(x/(W/2*Math.max(.05,radiusAt(t))),-1,1));
+ const X=(x,t,back=false)=>{const a=theta(x,t);return (.5+(back?Math.PI-a:a)/(Math.PI*2))*TW;};
+ const pxPerY=(1-V0)*TH/((T1-T0)*m.torso);
+ const pxPerX=(a,t)=>TW/(Math.PI*2)/(Math.max(.05,radiusAt(t))*Math.hypot(W/2*Math.cos(a),D/2*Math.sin(a)));
+ const ink=shade(top,.5),line=Math.max(1.5,TW/300);
+ // The back straddles the seam at u=1: draw it once each side.
+ const wrapped=(back,fn)=>{fn();if(back){ctx.save();ctx.translate(-TW,0);fn();ctx.restore();}};
+ const poly=(pts,fill,{stroke=ink,back=false,width=line}={})=>wrapped(back,()=>{
+  ctx.beginPath();pts.forEach(([x,t],i)=>{const px=X(x,t,back),py=Y(t);i?ctx.lineTo(px,py):ctx.moveTo(px,py);});ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.lineJoin='round';ctx.stroke();}
+ });
+ const path=(pts,stroke,width=line,back=false)=>{ctx.beginPath();pts.forEach(([x,t],i)=>{const px=X(x,t,back),py=Y(t);i?ctx.lineTo(px,py):ctx.moveTo(px,py);});ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();};
+ // A round thing of radius r metres at x,t on the front, kept round on the curved cloth.
+ const dotAt=(x,t,r,fill,stroke=null)=>{
+  const a=theta(x,t);ctx.beginPath();ctx.ellipse(X(x,t),Y(t),r*pxPerX(a,t),r*pxPerY,0,0,Math.PI*2);
+  if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=line*.8;ctx.stroke();}
+ };
+ const buttons=(ts,r,fill)=>{for(const t of ts)dotAt(0,t,r*m.k,fill,shade(fill,.6));marks.push('buttons:'+ts.length);};
+ // An island shirt is worn out over the shorts, so its cloth (and print) runs down to its own hem (springs.js).
+ const out=o.top==='kariyushi'?hemSpec(recipe,m):null;
+ const k=m.k,neck=.92,hem=out?Math.max(GARMENT.T0+.02,(out.waist-out.length-m.hipY)/m.torso+.01):.15;
+
+ // Stripes and prints first, so collars and pockets sit over them.
+ if(o.pattern==='stripes'&&!['tank','overalls','sundress'].includes(o.top)){
+  const band=m.torso*.12*pxPerY,from=Y(1.0),to=Y(hem);
+  ctx.fillStyle='#f4f1ea';for(let y=to-band;y>from;y-=band*2)ctx.fillRect(0,Math.max(from,y-band),TW,Math.min(band,y-from));
+  marks.push('stripes');
+ }
+ if(o.pattern==='flowers'||o.pattern==='dots'){
+  const flowers=o.pattern==='flowers',big=o.top==='kariyushi';
+  const r=k*(flowers?(big?.05:.036):.016),petal=flowers?'#f8f6ef':o.accent,centre='#f4c83c';
+  // A half-drop repeat, as printed cloth is, with a little play so it is not a grid.
+  const cols=flowers?(big?7:8):14,rows=flowers?(big?4:5):9,spots=[];
+  for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){
+   const j=Math.abs(Math.sin(row*12.9898+col*78.233)*43758.5453)%1;
+   spots.push([((col+(row%2)*.5+j*.18)/cols)*Math.PI*2-Math.PI,hem+.07+(row+.5+j*.15)/rows*(neck-hem-.1),row*cols+col]);
+  }
+  for(const [a,t,i] of spots){
+   // Leave the button line clear on a shirt that opens down the front.
+   if(COLLARED.includes(o.top)&&Math.abs(a)<.2)continue;
+   const cx=(.5+a/(Math.PI*2))*TW,cy=Y(t),sx=r*pxPerX(a,t),sy=r*pxPerY;
+   for(const off of [0,-TW,TW]){
+    ctx.save();ctx.translate(cx+off,cy);ctx.scale(sx,sy);ctx.rotate(i*.7);
+    if(flowers){
+     ctx.fillStyle=petal;for(let p=0;p<5;p++){ctx.beginPath();ctx.ellipse(Math.cos(p*1.2566)*.5,Math.sin(p*1.2566)*.5,.42,.42,0,0,Math.PI*2);ctx.fill();}
+     ctx.fillStyle=centre;ctx.beginPath();ctx.arc(0,0,.28,0,Math.PI*2);ctx.fill();
+    }else{ctx.fillStyle=petal;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();}
+    ctx.restore();
+   }
+  }
+  marks.push(o.pattern);
+ }
+
+ // The neckline: a rib round a crew neck, the opening of a shirt.
+ const rib=(colour=shade(top,.86))=>{ctx.fillStyle=colour;ctx.fillRect(0,Y(1.03),TW,Y(.985)-Y(1.03));ctx.strokeStyle=ink;ctx.lineWidth=line*.8;ctx.beginPath();ctx.moveTo(0,Y(.985));ctx.lineTo(TW,Y(.985));ctx.stroke();marks.push('neckline');};
+ // A pair of folded collar points either side of the front, out from the neck.
+ const collar=(fill,{drop=.84,spread=.115,round=false}={})=>{
+  for(const s of [-1,1]){
+   if(round){
+    const pts=[];for(let i=0;i<=10;i++){const a=i/10*Math.PI;pts.push([s*(.012+Math.sin(a)*spread*.62)*k,1.0-(1-Math.cos(a))*.5*(1-drop)*1.2]);}
+    pts.push([s*.012*k,1.0]);poly(pts,fill);
+   }else poly([[s*.008*k,.99],[s*spread*k,1.0],[s*spread*.9*k,.95],[s*.03*k,drop]],fill);
+  }
+  // Round the back of the neck the collar is a band.
+  ctx.fillStyle=fill;ctx.fillRect(0,Y(1.035),TW,Y(.975)-Y(1.035));
+  ctx.fillRect(X(-.012*k,.99),Y(1.035),X(.012*k,.99)-X(-.012*k,.99),Y(.985)-Y(1.035));
+  ctx.strokeStyle=ink;ctx.lineWidth=line*.8;ctx.beginPath();ctx.moveTo(0,Y(.975));ctx.lineTo(X(-spread*k,1.0),Y(.975));ctx.moveTo(X(spread*k,1.0),Y(.975));ctx.lineTo(TW,Y(.975));ctx.stroke();
+  marks.push('collar');
+ };
+ const placket=(from,to,w=.022)=>{poly([[-w*k,from],[w*k,from],[w*k,to],[-w*k,to]],null,{width:line*.8});marks.push('placket');};
+ const pocket=(x,t,w,h,fill=null)=>{poly([[x-w/2,t+h/2],[x+w/2,t+h/2],[x+w/2,t-h/2],[x-w/2,t-h/2]],fill,{width:line*.8});path([[x-w/2,t+h/2-.035],[x+w/2,t+h/2-.035]],ink,line*.6);marks.push('pocket');};
+ const hemRound=()=>{ctx.strokeStyle=shade(top,.72);ctx.lineWidth=line*.7;ctx.beginPath();ctx.moveTo(0,Y(hem+.035));ctx.lineTo(TW,Y(hem+.035));ctx.stroke();};
+
+ switch(o.top){
+  case 'tee':rib();hemRound();break;
+  case 'hoodie':{
+   rib(shade(top,.9));
+   // The kangaroo pocket and the drawstrings.
+   const pw=W*.36,pt=.36;poly([[-pw,pt+.13],[pw,pt+.13],[pw*1.12,pt-.12],[-pw*1.12,pt-.12]],shade(top,.93));
+   for(const s of [-1,1]){path([[s*.024*k,.97],[s*.03*k,.74]],o.accent,line*1.6);dotAt(s*.03*k,.73,.007*k,o.accent);}
+   marks.push('pocket','drawstrings');hemRound();break;
+  }
+  case 'polo':collar(lighten(top,.12));placket(.97,.78);buttons([.9,.82],.0075,lighten(top,.5));hemRound();break;
+  case 'blouse':collar('#f8f6ef',{drop:.88,spread:.1,round:true});placket(.97,hem+.04,.018);buttons([.85,.69,.53,.37],.007,'#f8f6ef');break;
+  case 'smock':collar('#f8f6ef',{drop:.88,spread:.1,round:true});pocket(0,.42,W*.5,.16,shade(top,.94));hemRound();break;
+  case 'kariyushi':{
+   // The camp collar itself is cloth, modelled on the chest (build.js campCollar). Here: the
+   // V of skin it opens over, and its toon shadow, a hard-edged darker shape just below
+   // and outside its edge, so it lifts off the shirt instead of lying on it like a sticker.
+   const skin=recipe.body.skin,fx=(f,t)=>f*W/2*radiusAt(t),pt=(f,t,s)=>[s*fx(f,t),t];
+   // The shadow skips the notch (index 2): in the notch it would read as a dark spike.
+   for(const s of [-1,1])poly(CAMP_COLLAR.filter((_,i)=>i!==2).map(([f,t])=>pt(Math.min(.99,f*1.04),t-.016,s)),shade(top,.8),{stroke:null});
+   poly([pt(.62,1.01,-1),pt(.62,1.01,1),[0,.73]],skin,{stroke:null});marks.push('open neck','collar shadow');
+   // The top button, under the V, is a wooden one; the rest are shell.
+   placket(.73,hem+.03,.02);buttons([.695],.011,'#9a6a42');buttons([.57,.45,.33],.0085,'#f8f6ef');
+   pocket(W*.25,.62,W*.22,.17,top);hemRound();break;
+  }
+  case 'jacket':{
+   // Notched lapels over a white shirt, two buttons, flap pockets.
+   poly([[-.06*k,1.0],[.06*k,1.0],[0,.66]],'#f4f1ea',{stroke:null});
+   for(const s of [-1,1])poly([[s*.01*k,1.0],[s*.12*k,.99],[s*.13*k,.86],[s*.09*k,.84],[s*.1*k,.78],[s*.012*k,.62]],shade(top,.88));
+   path([[0,.62],[0,hem]],ink,line*.8);buttons([.52,.4],.009,shade(top,.7));
+   for(const s of [-1,1])path([[s*W*.16,.32],[s*W*.36,.32]],ink,line);marks.push('lapels','pocket');break;
+  }
+  case 'cardigan':{
+   // Open down the front over a pale top, with ribbed bands and buttons.
+   poly([[-.05*k,1.0],[.05*k,1.0],[.02*k,.7],[-.02*k,.7]],lighten(top,.7),{stroke:null});
+   for(const s of [-1,1])poly([[s*.012*k,1.0],[s*.06*k,1.0],[s*.035*k,.7],[s*.035*k,hem],[s*.008*k,hem],[s*.008*k,.7]],o.accent,{width:line*.8});
+   buttons([.62,.5,.38,.26],.008,shade(o.accent,.8));ctx.fillStyle=o.accent;ctx.fillRect(0,Y(hem+.05),TW,Y(hem)-Y(hem+.05));marks.push('bands');break;
+  }
+  case 'festival':{
+   // A happi coat: wide collar bands crossing, a sash.
+   for(const s of [-1,1])poly([[s*.13*k,1.0],[s*.07*k,1.0],[-s*.06*k,.45],[-s*.13*k,.45]],o.accent);
+   ctx.fillStyle=shade(o.accent,.85);ctx.fillRect(0,Y(.4),TW,Y(.3)-Y(.4));marks.push('bands','sash');break;
+  }
+  case 'sailorlong':
+  case 'sailor':{
+   // A square collar at the back, its points tied in a V at the front with a scarf.
+   const c=o.accent,w=lighten(c,.85);
+   wrapped(true,()=>{
+    ctx.fillStyle=c;ctx.fillRect(X(-W*.3,.75,true),Y(1.03),X(W*.3,.75,true)-X(-W*.3,.75,true),Y(.72)-Y(1.03));
+    ctx.strokeStyle=w;ctx.lineWidth=line*1.4;ctx.strokeRect(X(-W*.26,.75,true),Y(1.0),X(W*.26,.75,true)-X(-W*.26,.75,true),Y(.76)-Y(1.0));
+   });
+   for(const s of [-1,1]){poly([[s*.012*k,1.0],[s*.16*k,1.0],[s*.03*k,.66],[s*.0*k,.66]],c);path([[s*.13*k,.985],[s*.02*k,.69]],w,line*1.2);}
+   poly([[-.045*k,.7],[.045*k,.7],[0,.56]],'#d8342c');marks.push('collar','scarf');break;
+  }
+  case 'police':{
+   collar('#f4f1ea',{drop:.87,spread:.09});
+   poly([[-.016*k,.93],[.016*k,.93],[.027*k,.75],[0,.7],[-.027*k,.75]],'#18243d');
+   for(const side of [-1,1])for(const t of [.64,.49,.34])dotAt(side*W*.15,t,.009*k,'#d7b561');
+   pocket(-W*.25,.73,W*.19,.10,shade(top,.92));dotAt(W*.25,.76,.022*k,'#d7b561');marks.push('tie','badge','buttons');hemRound();break;
+  }
+  case 'overalls':{
+   // The bib, its straps and their buttons, in the trousers' cloth.
+   const b=o.bottomColour,bw=W*.3,bt=.74;
+   poly([[-bw,bt],[bw,bt],[bw*1.05,hem],[-bw*1.05,hem]],b);
+   pocket(0,.58,bw*.9,.14,shade(b,.94));
+   for(const s of [-1,1]){
+    poly([[s*bw*.95,bt],[s*bw*.55,bt],[s*W*.18,1.0],[s*W*.32,1.0]],b,{width:line*.8});
+    poly([[s*W*.32,1.0],[s*W*.18,1.0],[-s*W*.1,.5],[-s*W*.25,.5]],b,{back:true,width:line*.8});
+    dotAt(s*bw*.75,bt-.03,.012*k,'#e2b84a',shade('#e2b84a',.6));
+   }
+   marks.push('bib','straps');break;
+  }
+  case 'sundress':for(const s of [-1,1]){poly([[s*W*.3,.8],[s*W*.18,.8],[s*W*.16,1.02],[s*W*.28,1.02]],top,{width:line*.8});poly([[s*W*.3,.8],[s*W*.18,.8],[s*W*.16,1.02],[s*W*.28,1.02]],top,{back:true,width:line*.8});}ctx.fillStyle=shade(top,.7);ctx.fillRect(0,Y(.795),TW,line*.8);marks.push('straps');break;
+  case 'apron':collar('#f8f6ef',{drop:.88,spread:.1,round:true});break;
+ }
+
+ // The sleeves' band: the print carried on round the arm, and a hem or a cuff.
+ {const S=GARMENT.SLEEVE,yTop=(1-S.v1)*TH,yBot=(1-S.v0)*TH,h=yBot-yTop,col=o.top,long=SLEEVED_LONG.includes(col);
+  const sleeveCirc=Math.PI*2*m.armR*(long?1.04:1.2),sleeveLen=long?m.upper+m.fore:m.upper*.6;
+  const pxU=TW/sleeveCirc,pxV=h/sleeveLen;
+  if(o.pattern==='stripes'){ctx.fillStyle='#f4f1ea';const band=m.torso*.12*pxV;for(let y=yTop+band;y<yBot;y+=band*2)ctx.fillRect(0,y,TW,Math.min(band,yBot-y));}
+  if(o.pattern==='flowers'||o.pattern==='dots'){
+   const flowers=o.pattern==='flowers',r=m.k*(flowers?(col==='kariyushi'?.05:.036):.016),petal=flowers?'#f8f6ef':o.accent;
+   const cols=flowers?4:8,rows=Math.max(1,Math.round(sleeveLen/(r*4)));
+   for(let row=0;row<rows;row++)for(let c=0;c<cols;c++){
+    const cx=((c+(row%2)*.5+.25)/cols)*TW,cy=yTop+(row+.5)/rows*h*.82;
+    for(const off of [0,-TW,TW]){ctx.save();ctx.translate(cx+off,cy);ctx.scale(r*pxU,r*pxV);ctx.rotate(row*1.3+c);
+     if(flowers){ctx.fillStyle=petal;for(let k=0;k<5;k++){ctx.beginPath();ctx.ellipse(Math.cos(k*1.2566)*.5,Math.sin(k*1.2566)*.5,.42,.42,0,0,Math.PI*2);ctx.fill();}ctx.fillStyle='#f4c83c';ctx.beginPath();ctx.arc(0,0,.28,0,Math.PI*2);ctx.fill();}
+     else{ctx.fillStyle=petal;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();}
+     ctx.restore();}
+   }
+  }
+  // The hem of a short sleeve, or the cuff of a long one: a band and a line above it.
+  if(!['tank','sundress'].includes(col)){
+   const bandH=Math.max(3,(long?.03:.018)*m.k*pxV),ink=shade(o.topColour,.5);
+   ctx.fillStyle=col==='kariyushi'?lighten(o.topColour,.22):shade(o.topColour,.86);ctx.fillRect(0,yBot-bandH,TW,bandH);
+   ctx.fillStyle=ink;ctx.fillRect(0,yBot-bandH-1.2,TW,1.2);
+   marks.push(long?'cuffs':'sleeve-hems');
+  }
+ }
+ return marks;
+}
+/** Tops whose sleeves run to the wrist (build.js longSleeve). */
+export const SLEEVED_LONG=Object.freeze(['jacket','smock','sailorlong','police','hoodie','cardigan','festival','lighthouse','lantern','reef']);

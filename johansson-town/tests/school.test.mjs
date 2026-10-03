@@ -1,24 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
-import {GLTFLoader} from '../vendor/GLTFLoader.js';
+import {buildSchool} from '../src/world/school.js';
 import {installDOM} from './fixtures.mjs';
 import {SCHOOL,schoolAt,schoolColliders,FUKUGI} from '../src/world/school-layout.js';
-import {schoolPhase,menuForWeekday,KYUSHOKU_MENUS,buildClassroom,CLASSROOM} from '../src/world/interiors/classroom.js';
+import {schoolPhase,menuForWeekday,KYUSHOKU_MENUS,buildClassroom,CLASSROOM,CLASS_SIZE} from '../src/world/interiors/classroom.js';
 import {CHIME_TIMES,CHIME_NOTES} from '../src/audio/school-chime.js';
 import {createActivities} from '../activities.js?snappy=1';
 
-test('the school model is one small campus: a handful of draws, and stains drawn as decals',async()=>{
+test('the town hall is one storey, built from the kit, on the old school block',()=>{
  installDOM();
- const bytes=await readFile(new URL('../assets/models/school/minato-school.glb',import.meta.url));
- assert.ok(bytes.length<3_200_000,'School model budget');
- const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
- let draws=0,triangles=0,stains=0;
- gltf.scene.traverse(o=>{if(!o.isMesh)return;draws++;triangles+=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;if(/stain/i.test(o.material.name))stains++;assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));});
- assert.ok(draws<=6,'School draws');assert.ok(triangles<45000,'School triangles');assert.equal(stains,1,'Stains are their own decal surface');
- const box=new THREE.Box3().setFromObject(gltf.scene);
- assert.ok(box.min.x>SCHOOL.minX-2&&box.max.x<SCHOOL.maxX+8,'The campus stays on its ground');
+ const world={group:new THREE.Group(),colliders:[]},sites=[];
+ buildSchool(world,{sites,register(){},enter(){},onAction(){}});
+ const hall=world.group.getObjectByName('Minato school');let triangles=0,building=0;
+ hall.traverse(o=>{if(!o.isMesh)return;const t=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;triangles+=t;if(/Town hall building/.test(o.name))building+=t;});
+ assert.ok(building>0,'The hall is built in code');assert.ok(triangles<60000,'Town hall triangles');
+ world.group.updateMatrixWorld(true);
+ const box=new THREE.Box3();hall.traverse(o=>{if(o.isMesh&&/Town hall building/.test(o.name))box.expandByObject(o);});
+ assert.ok(box.min.x>SCHOOL.minX-2&&box.max.x<SCHOOL.maxX+2,'The hall stays on its ground');
+ assert.ok(SCHOOL.building.parapet<4.5,'One storey');
+ assert.deepEqual(sites.map(s=>s.id).sort(),['clinic','community-kitchen','mayor-home','mayor-office','school']);
 });
 
 test('the grounds are walkable through the gate, and the block, the columns and the trees are solid',()=>{
@@ -40,7 +41,7 @@ test('the school day runs by the clock: rows, lunch in han, sōji, club, and not
  assert.equal(at(14,0),'lesson-pm');assert.equal(at(15,45),'club');assert.equal(at(17,0),'after');assert.equal(at(19,0),'closed');
  assert.equal(at(12,35,0),'weekend');assert.equal(at(12,35,6),'weekend');
  assert.equal(KYUSHOKU_MENUS.length,5);
- for(let wd=1;wd<=5;wd++){const m=menuForWeekday(wd);assert.ok(m.jp.includes('牛乳'),'No milk on day '+wd);}
+ for(let wd=1;wd<=5;wd++){const m=menuForWeekday(wd);assert.ok(m.jp.includes('Milk'),'No milk on day '+wd);}
  assert.equal(menuForWeekday(5).staple,'soba','Friday is Okinawa soba');
  assert.deepEqual(CHIME_TIMES,[505,720,740,930,1020]);assert.equal(CHIME_NOTES.length,16);
 });
@@ -52,12 +53,13 @@ test('the classroom rearranges its desks for lunch and puts a tray on every one'
  const layout=buildClassroom({room,reg,action(){},exit(){},calendar:cal});
  const settle=m=>{for(let i=0;i<120;i++)layout.tick(.25,m,i*.25);};
  settle(600);assert.equal(layout.phase,'lesson');
- const rows=layout.units.slice(0,12).map(u=>u.unit.position.clone());
- assert.ok(layout.units.slice(0,12).every(u=>Math.abs(u.unit.rotation.y)<.05),'In lessons every desk faces the board');
+ assert.equal(CLASS_SIZE,8,'A small island class: eight pupils');
+ const rows=layout.units.slice(0,CLASS_SIZE).map(u=>u.unit.position.clone());
+ assert.ok(layout.units.slice(0,CLASS_SIZE).every(u=>Math.abs(u.unit.rotation.y)<.05),'In lessons every desk faces the board');
  settle(760);assert.equal(layout.phase,'lunch');
- assert.ok(layout.units.slice(0,12).some(u=>Math.abs(Math.abs(u.unit.rotation.y)-Math.PI)<.05),'At lunch the desks are turned to face each other');
- assert.ok(layout.units.slice(0,12).every(u=>u.tray.visible&&u.tray.children.length>5),'Somebody has no lunch');
- assert.ok(layout.units.slice(0,12).some((u,i)=>u.unit.position.distanceTo(rows[i])>.3),'The desks never moved');
+ assert.ok(layout.units.slice(0,CLASS_SIZE).some(u=>Math.abs(Math.abs(u.unit.rotation.y)-Math.PI)<.05),'At lunch the desks are turned to face each other');
+ assert.ok(layout.units.slice(0,CLASS_SIZE).every(u=>u.tray.visible&&u.tray.children.length>5),'Somebody has no lunch');
+ assert.ok(layout.units.slice(0,CLASS_SIZE).some((u,i)=>u.unit.position.distanceTo(rows[i])>.3),'The desks never moved');
  // Every pupil at lunch is sitting at their own desk.
  const seated=layout.kids.map(k=>k.duty?k.smockSeated:k.seated);
  assert.ok(seated.every(f=>f.visible),'A pupil is missing from lunch');
@@ -70,8 +72,8 @@ test('a visitor eats kyūshoku at lunch only, and pays into the pantry jar to co
  const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({})});
  acts.action('kyushoku','lesson',menuForWeekday(1));
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/12:20/);
- const yen=acts.state.yen;acts.action('kyushoku','lunch',menuForWeekday(1));dom.button('Take a tray · いただきます');
- assert.equal(acts.state.yen,yen,'Kyūshoku charged the guest');assert.ok(acts.state.notes.some(n=>n.includes('ゴーヤーチャンプルー')));
+ const yen=acts.state.yen;acts.action('kyushoku','lunch',menuForWeekday(1));dom.button('Take a tray · Enjoy your meal');
+ assert.equal(acts.state.yen,yen,'Kyūshoku charged the guest');assert.ok(acts.state.notes.some(n=>n.includes('Goya Champuru')));
  acts.action('school-pantry','club');dom.button('Make sata andagi · ¥100 in the jar');
  assert.equal(acts.state.yen,yen-100);assert.ok(acts.state.inventory.includes('Sata andagi'));
  acts.action('school-pantry','lesson');assert.equal(dom.actions?.().length??1,1);

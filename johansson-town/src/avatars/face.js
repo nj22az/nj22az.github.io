@@ -20,12 +20,12 @@ function shade(hex,k){
 /** Where the parts sit, in canvas units, from the recipe's sliders. */
 export function faceLayout(recipe){
  const e=recipe.eyes,b=recipe.brows,n=recipe.nose,m=recipe.mouth;
- const eyeY=104+(e.height-.5)*-56,spread=38+(e.spacing-.5)*36,eyeS=1.05+e.size*.8;
+ const eyeY=104+(e.height-.5)*-56,spread=38+(e.spacing-.5)*36,eyeS=1.16+e.size*.8;
  return {
   eyeY,spread,eyeS,eyeW:.85+(e.width??.5)*.7,eyeTilt:(e.tilt-.5)*.85,
   browY:70+(b.height-.5)*-48,browSpread:spread+((b.spacing??.5)-.5)*32,browS:.75+b.size*.6,browTilt:(b.tilt-.5)*.85,
   noseY:134+(n.height-.5)*-48,noseX:128+((n.x??.5)-.5)*48,noseS:.7+n.size*.7,
-  mouthY:160+(m.height-.5)*-54,mouthX:128+((m.x??.5)-.5)*56,mouthS:.7+m.size*.7,mouthW:.65+(m.width??.5)*.7,
+  mouthY:160+(m.height-.5)*-54,mouthX:128+((m.x??.5)-.5)*56,mouthS:1+m.size*.8,mouthW:.65+(m.width??.5)*.7,
  };
 }
 
@@ -33,14 +33,14 @@ const MOOD=Object.freeze({
  neutral:{eyes:'open',brow:0,browLift:0,mouth:null,blush:0},
  smile:{eyes:'smiling',brow:0,browLift:3,mouth:'smile',blush:.15},
  content:{eyes:'content',brow:0,browLift:1,mouth:'smile',blush:.1},
- happy:{eyes:'happy',brow:0,browLift:5,mouth:'grin',blush:.25},
- laugh:{eyes:'happy',brow:0,browLift:8,mouth:'laugh',blush:.35},
+ happy:{eyes:'happy',brow:0,browLift:10,mouth:'grin',blush:.4},
+ laugh:{eyes:'happy',brow:0,browLift:14,mouth:'laugh',blush:.55},
  sad:{eyes:'sad',brow:-1,browLift:3,mouth:'frown',blush:0},
- worried:{eyes:'sad',brow:-1,browLift:5,mouth:'wobble',blush:0},
- angry:{eyes:'angry',brow:1,browLift:-3,mouth:'snarl',blush:.15},
+ worried:{eyes:'worry',brow:-1.35,browLift:10,mouth:'wobble',blush:0},
+ angry:{eyes:'angry',brow:1.4,browLift:-5,mouth:'snarl',blush:.15},
  grumpy:{eyes:'angry',brow:.6,browLift:-2,mouth:'frown',blush:0},
  shy:{eyes:'shy',brow:-.4,browLift:3,mouth:'small',blush:1},
- surprised:{eyes:'wide',brow:0,browLift:14,mouth:'o',blush:0},
+ surprised:{eyes:'wide',brow:0,browLift:20,mouth:'o',blush:0},
  thinking:{eyes:'side',brow:.3,browLift:0,mouth:'hmm',blush:0},
  sleep:{eyes:'closed',brow:0,browLift:-1,mouth:'small',blush:0},
 });
@@ -90,13 +90,23 @@ export function drawFace(ctx,recipe,state={}){
 function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
  const style=eyes.style,line='#2b2623';
  ctx.save();ctx.translate(x,y);ctx.rotate(side*tilt*-1);ctx.scale(s*width,s);
- ctx.strokeStyle=line;ctx.fillStyle=line;ctx.lineWidth=2.6;
+ ctx.strokeStyle=line;ctx.fillStyle=line;ctx.lineWidth=3.2;
+ // Big outlined reaction eyes stay readable across every authored eye style.
+ if(state==='wide'||state==='worry'){
+  const rx=state==='wide'?15:13,ry=state==='wide'?19:16;
+  ctx.fillStyle='#fbfaf6';ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,TAU);ctx.fill();ctx.stroke();
+  ctx.fillStyle=eyes.colour;ctx.beginPath();ctx.ellipse(look[0]*3,look[1]*3,rx*.58,ry*.62,0,0,TAU);ctx.fill();
+  ctx.fillStyle=line;ctx.beginPath();ctx.ellipse(look[0]*3,look[1]*3,rx*.36,ry*.42,0,0,TAU);ctx.fill();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(3,-5,3,0,TAU);ctx.fill();
+  if(style==='lashes')for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(side*rx*.8,-9+i*5);ctx.lineTo(side*(rx+6),-12+i*6);ctx.stroke();}
+  ctx.restore();return;
+ }
  if(state==='closed'||state==='content'){
   ctx.beginPath();ctx.arc(0,state==='content'?-3:-6,11,Math.PI*.18,Math.PI*.82);ctx.stroke();
   if(style==='lashes'){ctx.beginPath();ctx.moveTo(side*9,2);ctx.lineTo(side*14,5);ctx.stroke();}
   ctx.restore();return;
  }
- if(state==='happy'){ctx.lineWidth=4.2;ctx.beginPath();ctx.moveTo(-12,3);ctx.quadraticCurveTo(0,-17,12,3);ctx.stroke();ctx.restore();return;}
+ if(state==='happy'){ctx.lineWidth=5.2;ctx.beginPath();ctx.moveTo(-13,4);ctx.quadraticCurveTo(0,-21,13,4);ctx.stroke();ctx.restore();return;}
  const wide=state==='wide'?1.3:1;
  const rx=(style==='narrow'?12:style==='dot'?6:style==='sparkle'?13:11.5)*wide,ry=(style==='narrow'?4.2:style==='dot'?9:style==='almond'?9.5:style==='sparkle'?15:13.5)*wide;
  // Simple dark ovals and drawn lids keep emotions readable at street scale.
@@ -152,7 +162,7 @@ function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
 function drawBrow(ctx,x,y,s,side,brows,tilt,mood){
  ctx.save();ctx.translate(x,y);ctx.scale(s,s);
  // Positive mood tilts the inner end down (cross), negative lifts it (worried, sad).
- ctx.rotate(side*(tilt*-1+mood*.38));
+ ctx.rotate(side*(tilt*-1+mood*.48));
  const ink=shade(brows.colour,.68);ctx.strokeStyle=ink;ctx.fillStyle=ink;ctx.lineCap='round';
  const style=brows.style;
  const w=style==='thick'||style==='bushy'?7:style==='thin'?2.4:4.2;
@@ -187,13 +197,13 @@ function drawMouth(ctx,x,y,s,mouth,moodMouth,talk,line,width=1){
  const shape=talk>.5?'talk':moodMouth||mouth.style;
  ctx.beginPath();
  switch(shape){
-  case 'talk':open(10,6+talk*3,2);break;
-  case 'grin':open(17,10,4);break;
-  case 'laugh':open(19,15,6);break;
-  case 'o':ctx.fillStyle=inside;ctx.ellipse(0,3,8,12,0,0,TAU);ctx.fill();ctx.stroke();break;
+  case 'talk':{const big=['grin','laugh','o'].includes(moodMouth);open(big?19:12,(big?13:7)+talk*3,big?6:2);break;}
+  case 'grin':open(24,15,5);break;
+  case 'laugh':open(28,23,7);break;
+  case 'o':ctx.fillStyle=inside;ctx.ellipse(0,3,13,20,0,0,TAU);ctx.fill();ctx.stroke();break;
   case 'frown':ctx.arc(0,12,13,Math.PI*1.2,Math.PI*1.8);ctx.stroke();break;
   case 'snarl':ctx.moveTo(-12,4);ctx.lineTo(-4,0);ctx.lineTo(4,0);ctx.lineTo(12,4);ctx.stroke();break;
-  case 'wobble':ctx.moveTo(-10,1);ctx.quadraticCurveTo(-5,-3,0,1);ctx.quadraticCurveTo(5,5,10,1);ctx.stroke();break;
+  case 'wobble':ctx.moveTo(-14,1);ctx.quadraticCurveTo(0,5,14,1);ctx.moveTo(-14,-4);ctx.quadraticCurveTo(-10,1,-14,7);ctx.moveTo(14,-4);ctx.quadraticCurveTo(10,1,14,7);ctx.stroke();break;
   case 'hmm':ctx.moveTo(-8,2);ctx.lineTo(8,-1);ctx.stroke();break;
   case 'smile':ctx.moveTo(-16,-1);ctx.quadraticCurveTo(0,15,16,-1);ctx.stroke();break;
   case 'flat':ctx.moveTo(-11,1);ctx.lineTo(11,1);ctx.stroke();break;
@@ -235,4 +245,37 @@ function drawGlasses(ctx,L,glasses){
  }
  ctx.beginPath();ctx.moveTo(128-L.spread+rx*(glasses.style==='round'||glasses.style==='half'?1:1.1),y-2);ctx.quadraticCurveTo(128,y-8,128+L.spread-rx*(glasses.style==='round'||glasses.style==='half'?1:1.1),y-2);ctx.stroke();
  ctx.restore();
+}
+
+/**
+ * One feature on its own, centred and enlarged on a skin-coloured tile: the pictures in
+ * the maker's part grids. Drawn with the same painters as the face, so a part looks in
+ * the grid exactly as it will on the head.
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {object} recipe normalized
+ * @param {'eyes'|'brows'|'nose'|'mouth'|'glasses'|'facial'} part
+ * @param {number} [size] canvas size in pixels
+ */
+export function drawPart(ctx,recipe,part,size=ctx.canvas.width){
+ const skin=recipe.body.skin,line='#2b2623';
+ // A neutral layout, so every tile in a grid is framed alike whatever the sliders say.
+ const flat={...recipe,eyes:{...recipe.eyes,height:.5,spacing:.5,size:.5,tilt:.5},brows:{...recipe.brows,height:.5,spacing:.5,size:.5,tilt:.5},
+  nose:{...recipe.nose,height:.5,x:.5,size:.5},mouth:{...recipe.mouth,height:.5,x:.5,size:.5,width:.5}};
+ const L=faceLayout(flat);
+ const focus={eyes:[128,L.eyeY,1.75],glasses:[128,L.eyeY,1.6],brows:[128,L.browY,2],nose:[128,L.noseY,3.4],mouth:[128,L.mouthY+2,2.7],facial:[128,(L.noseY+L.mouthY)/2+(recipe.facial.style==='beard'?18:recipe.facial.style==='goatee'?14:2),recipe.facial.style==='beard'?1.5:2.2]}[part]||[128,128,1];
+ const k=size/256;
+ ctx.save();ctx.setTransform(k,0,0,k,0,0);
+ ctx.canvas.__skin=skin;ctx.fillStyle=skin;ctx.fillRect(0,0,256,256);
+ ctx.translate(128,128);ctx.scale(focus[2],focus[2]);ctx.translate(-focus[0],-focus[1]);
+ ctx.lineCap='round';ctx.lineJoin='round';
+ if(part==='eyes'||part==='glasses')for(const s of [-1,1])drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,flat.eyes,'open',[0,0],L.eyeTilt,L.eyeW);
+ if(part==='brows'&&recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY,L.browS,s,flat.brows,L.browTilt,0);
+ if(part==='nose')drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);
+ if(part==='mouth')drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,flat.mouth,null,0,line,L.mouthW);
+ if(part==='facial'){drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,{...flat.mouth,style:'flat'},null,0,'rgba(43,38,35,.35)',L.mouthW);drawFacialHair(ctx,L,recipe.facial);}
+ if(part==='glasses')drawGlasses(ctx,L,recipe.glasses);
+ ctx.restore();
+ // "None" reads as an empty tile with a soft slash, the way a blank slot should.
+ const empty=(part==='brows'&&recipe.brows.style==='none')||(part==='nose'&&recipe.nose.style==='none')||(part==='glasses'&&recipe.glasses.style==='none')||(part==='facial'&&recipe.facial.style==='none');
+ if(empty){ctx.save();ctx.strokeStyle='rgba(43,38,35,.25)';ctx.lineWidth=size*.04;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(size*.3,size*.7);ctx.lineTo(size*.7,size*.3);ctx.stroke();ctx.restore();}
 }

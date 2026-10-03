@@ -1,25 +1,33 @@
-import {normalizeRecipe,seeded,PARTS} from './recipe.js';
+import {residentRecipe} from './wardrobe.js';
+import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
+import {PROFILES} from '../people/profiles.js';
 import {residentPersonality} from '../people/resident-personalities.js';
+import {withTownDials} from './personality.js';
 
 /**
  * Who everybody is, as recipes. Johansson and Thuan are drawn from the photographs the
  * town was built for: he is sixty-odd, bald and sunburnt in his kariyushi shirt; she has
  * her braids with the yellow ties, the side part, round rose glasses and lipstick.
  */
-const R=(o)=>normalizeRecipe(o);
+const R=(o)=>normalizeRecipe(withTownDials(o));
+const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō']);
+const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).map(([name,r])=>{
+ const female=PROFILES.find(p=>p.name===name)?.female??FEMALE_NEIGHBOURS.has(name);
+ return [name,normalizeRecipe({...r,body:{...r.body,silhouette:r.body.silhouette==='neutral'?(female?'feminine':'masculine'):r.body.silhouette}})];
+})));
 
-export const CAST_RECIPES=Object.freeze({
+export const CAST_RECIPES=castSet({
  Johansson:R({name:'Johansson',
-  body:{height:.72,build:.72,skin:'#dc9d7a'},head:{size:.48,shape:.45,form:'square',jaw:.75,cheeks:.55},
+  body:{height:.72,build:.72,silhouette:'masculine',skin:'#dc9d7a'},head:{size:.48,shape:.45,form:'square',jaw:.75,cheeks:.55},
   hair:{style:'horseshoe',colour:'#b8b4aa'},
   eyes:{style:'gentle',colour:'#3d6a8a',size:.45,spacing:.52,height:.5,tilt:.45},
   brows:{style:'bushy',colour:'#a8a49a',size:.6,height:.55,tilt:.45},
   nose:{style:'wide',size:.6,height:.48},mouth:{style:'smile',colour:'#a8433e',size:.55,height:.5},
   facial:{style:'stubble',colour:'#b8b4aa'},wrinkles:.7,blush:.35,
-  outfit:{top:'kariyushi',topColour:'#7fb0d8',pattern:'flowers',bottom:'shorts',bottomColour:'#c8b48a',shoes:'#6d4a32',accent:'#f4f1ea'},
+  outfit:{top:'kariyushi',topColour:'#7fb0d8',pattern:'flowers',bottom:'shorts',bottomColour:'#c8b48a',footwear:'sandals',shoes:'#6d4a32',accent:'#f4f1ea'},
   swim:{colour:'#2f5f9e'}}),
  Thuan:R({name:'Thuan',accessories:{earrings:'studs',neckwear:'pendant',colour:'#e0b93a'},
-  body:{height:.36,build:.35,skin:'#f1cfae'},head:{size:.48,shape:.48,form:'heart',jaw:.3,cheeks:.62},
+  body:{height:.36,build:.35,silhouette:'feminine',skin:'#f1cfae'},head:{size:.48,shape:.48,form:'heart',jaw:.3,cheeks:.62},
   hair:{style:'braids',colour:'#1c1714',flip:false},
   eyes:{style:'lashes',colour:'#2a1d16',size:.78,spacing:.5,height:.48,tilt:.55},
   brows:{style:'arched',colour:'#2a1d16',size:.42,height:.55,tilt:.5},
@@ -73,11 +81,17 @@ export const CAST_RECIPES=Object.freeze({
   hair:{style:'crop',colour:'#4a4845'},eyes:{style:'round',colour:'#2a1d16',size:.62},
   brows:{style:'worried',colour:'#3a3835',size:.55},nose:{style:'button',size:.45},mouth:{style:'smile',size:.45},
   blush:.2,wrinkles:.2,
-  outfit:{top:'polo',topColour:'#9dbfe0',bottom:'trousers',bottomColour:'#27304d',shoes:'#1c1c24',hat:'police',hatColour:'#27304d',accent:'#e0b93a'}}),
+  outfit:{top:'police',topColour:'#273858',bottom:'trousers',bottomColour:'#27304d',shoes:'#1c1c24',hat:'police',hatColour:'#27304d',accent:'#e0b93a'}}),
 });
 
 /** The people of the new streets, drawn to their lines in neighbours.js. */
-export const NEIGHBOUR_RECIPES=Object.freeze({
+export const NEIGHBOUR_RECIPES=castSet({
+ Riku:R({body:{silhouette:'masculine',height:.56,build:.55,skin:'#c89a74'},hair:{style:'crop',colour:'#33271f'},eyes:{style:'round'},brows:{style:'thick'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#587d83',bottom:'trousers',bottomColour:'#505f65',hat:'helmet',hatColour:'#dabb55'}}),
+ 'Emi Kado':R({body:{silhouette:'feminine',height:.43,build:.42,skin:'#d1a079'},hair:{style:'ponytail',colour:'#3c2c24'},eyes:{style:'almond'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#a77e67',bottom:'trousers',bottomColour:'#465d69',hat:'cap',hatColour:'#465d69'}}),
+ Haru:R({head:{form:'square',jaw:.72,cheeks:.4},body:{height:.63,build:.58,skin:'#bf875f'},hair:{style:'crop',colour:'#302419'},eyes:{style:'narrow'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'smile'},facial:{style:'stubble',colour:'#302419'},outfit:{top:'polo',topColour:'#607c84',bottom:'shorts',bottomColour:'#7b7155',hat:'cap',hatColour:'#c4b486'}}),
+ Mina:R({head:{form:'oval',jaw:.35,cheeks:.6},body:{height:.4,build:.45,skin:'#d8ac87'},hair:{style:'bun',colour:'#3b2920'},eyes:{style:'gentle',size:.48},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'smile'},outfit:{top:'apron',topColour:'#849267',bottom:'longskirt',bottomColour:'#5c6e75'}}),
+ Jun:R({head:{form:'narrow',jaw:.4,cheeks:.3},body:{height:.53,build:.4,skin:'#dbb393'},hair:{style:'sidepart',colour:'#29241e'},eyes:{style:'almond'},brows:{style:'straight'},nose:{style:'line'},mouth:{style:'small'},glasses:{style:'half',colour:'#5b5c52'},outfit:{top:'polo',topColour:'#e0dac7',bottom:'trousers',bottomColour:'#3e596d'}}),
+
  'Grandmother Higa':R({head:{size:.48,shape:.5,form:'round',jaw:0.7,cheeks:0.85},body:{height:.2,build:.6,skin:'#dca97e'},hair:{style:'perm',colour:'#d8d6d0'},eyes:{style:'gentle',size:.4},brows:{style:'thin',colour:'#9a9a96'},nose:{style:'button',size:.55},mouth:{style:'smile',size:.45},glasses:{style:'half',colour:'#8a4a3a'},wrinkles:1,blush:.4,outfit:{top:'blouse',topColour:'#8a4ab8',pattern:'flowers',bottom:'longskirt',bottomColour:'#6d7478',shoes:'#2b2b2b'}}),
  'Mr Ōshiro':R({head:{size:.48,shape:.5,form:'narrow',jaw:0.45,cheeks:0.3},body:{height:.4,build:.4,skin:'#b27449'},hair:{style:'buzz',colour:'#d8d6d0'},eyes:{style:'narrow'},brows:{style:'bushy',colour:'#d8d6d0'},nose:{style:'hook',size:.6},mouth:{style:'flat'},facial:{style:'stubble',colour:'#d8d6d0'},wrinkles:.9,outfit:{top:'tee',topColour:'#f4f1ea',bottom:'trousers',bottomColour:'#6d7478',shoes:'#2b2b2b',hat:'straw',hatColour:'#e0c078'}}),
  'Uncle Kinjō':R({head:{size:.48,shape:.5,form:'square',jaw:0.8,cheeks:0.65},body:{height:.55,build:.75,skin:'#c98d62'},hair:{style:'crop',colour:'#5a3a22'},eyes:{style:'dot'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'wide'},facial:{style:'moustache',colour:'#3a2618'},wrinkles:.5,outfit:{top:'polo',topColour:'#2a8a5a',bottom:'shorts',bottomColour:'#c8b48a',shoes:'#6d4a32',hat:'cap',hatColour:'#d8342c'}}),
@@ -102,15 +116,19 @@ const ACCESSORY_HAT={captain:['captain','#f4f1ea'],police:['police','#27304d'],d
  * the colours the resident personalities already give them, with a face made from their
  * name so it is the same face every time they are met.
  */
+const AGE_OF=new Map(PROFILES.map(p=>[p.name,p.age]));
+/** A drawn recipe at the life stage the resident's profile gives them. */
+const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name));return AGE_OF.has(name)&&recipe.age!==age?normalizeRecipe({...recipe,age}):recipe;};
 export function recipeFor(name=''){
- if(CAST_RECIPES[name])return CAST_RECIPES[name];
- if(NEIGHBOUR_RECIPES[name])return NEIGHBOUR_RECIPES[name];
+ const saved=residentRecipe(name);if(saved)return saved;
+ if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
+ if(NEIGHBOUR_RECIPES[name])return aged(normalizeRecipe(withTownDials(NEIGHBOUR_RECIPES[name],name)),name);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];
- const feminine=/female/.test(style.source||'')||/^(Mrs |Aya|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name);
+ const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Aya|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name));
  const grey=/^#[a-f0-9]{6}$/i.test(style.hair||'')&&parseInt(style.hair.slice(1,3),16)>150;
  const hat=ACCESSORY_HAT[style.accessory]||(style.helmet?['helmet',style.helmet]:['none','#f4f1ea']);
- return normalizeRecipe({name,
-  body:{height:.3+r()*.45,build:.3+(Math.min(1.2,style.width||1)-.85)*1.6,skin:style.skin||'#e8bf98'},
+ const generated=normalizeRecipe(withTownDials({name,age:ageClass(AGE_OF.get(name)),
+  body:{silhouette:feminine?'feminine':'masculine',height:.3+r()*.45,build:.3+(Math.min(1.2,style.width||1)-.85)*1.6,skin:style.skin||'#e8bf98'},
   head:{size:.38+r()*.22,shape:r(),form:any(PARTS.head),jaw:.25+r()*.5,cheeks:.25+r()*.5},
   hair:{style:grey&&!feminine?any(['horseshoe','buzz','crop']):feminine?any(['bob','long','ponytail','bun','sidepart']):any(['crop','sidepart','spiky','buzz']),colour:style.hair||'#1c1714',flip:r()<.5},
   eyes:{style:any(PARTS.eyes),size:.35+r()*.35,spacing:.4+r()*.2,tilt:.4+r()*.2},
@@ -122,5 +140,7 @@ export function recipeFor(name=''){
   blush:feminine?.4:.15,wrinkles:grey?.7:0,
   outfit:{top:style.accessory==='apron'?'apron':style.accessory==='hawaiian'?'kariyushi':feminine?'blouse':'polo',topColour:style.top||'#3fa0c8',pattern:style.accessory==='hawaiian'?'flowers':'none',
    bottom:feminine&&style.top===style.trousers?'longskirt':'trousers',bottomColour:style.trousers||'#27304d',shoes:'#2b2b2b',hat:hat[0],hatColour:hat[1],accent:style.accent||'#f4d23c'},
- });
+ }));
+ if(name==='Hana')return normalizeRecipe({...generated,outfit:{...generated.outfit,top:'sailor',topColour:'#f3ecd9',bottom:'pleatedskirt',bottomColour:'#343959',footwear:'shoes',shoes:'#483b36',hat:'none',accent:'#428b88',pattern:'none'}});
+ return generated;
 }

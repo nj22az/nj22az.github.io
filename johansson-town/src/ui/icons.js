@@ -4,6 +4,17 @@
  * stay sharp on any screen and cannot fail to load.
  */
 const P=Object.freeze({
+ close:'<path d="M6 6l12 12M18 6L6 18"/>',
+ home:'<path d="M3 11l9-8 9 8M5 10v11h14V10M10 21v-7h4v7"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3M4 4l2 2M18 18l2 2M4 20l2-2M18 6l2-2"/>',
+ screen:'<path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/>',
+ heart:'<path d="M12 21L3 12C-2 4 7-1 12 6c5-7 14-2 9 6z"/>',
+ star:'<path d="M12 2l3 6 7 1-5 5 1 8-6-4-6 4 1-8-5-5 7-1z"/>',
+ shirt:'<path d="M8 3l4 3 4-3 6 5-4 4-2-2v11H8V10l-2 2-4-4z"/>',
+ plus:'<path d="M12 4v16M4 12h16"/>',
+ gear:'<path d="M8 3h8l1 4 4 1v8l-4 1-1 4H8l-1-4-4-1V8l4-1z"/><circle cx="12" cy="12" r="3"/>',
+ trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 10v7M14 10v7"/>',
  talk:'<path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
  door:'<path d="M6 3h11v18H6z"/><path d="M14 12h.01"/><path d="M3 21h18"/>',
  exit:'<path d="M13 4H6v16h7"/><path d="M16 8l4 4-4 4M20 12H10"/>',

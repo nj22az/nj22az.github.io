@@ -10,49 +10,77 @@ import {rng} from './kit.js';
  * harbour street is cluttered with.
  */
 
-/**
- * A concrete utility pole (Sakura Crossing's makePole). `face` is the direction its
- * transformer hangs toward, in radians about y. Returns where its cables attach.
- */
-export function utilityPole(kit,x,z,{h=8.6,face=0,transformer=true,lamp=false,seed=1}={}){
- const r=rng(seed),arms=[h-.5,h-1.4],anchors=[];
+export function utilityPole(kit,x,z,{h=9.8,face=0,transformer=true,lamp=false,guy=false,seed=1}={}){
+ h=Math.max(9.8,h);
+ const r=rng(seed),anchors=[];
+ const concrete=0xc9c5bc,steel=0x8e979a,porcelain=0xf2f0ea,black=0x2b2a30;
  kit.at(x,z,face,()=>{
-  kit.cyl(.1,.17,h,0,h/2,0,0xcfcbc4,{segments:8});
-  kit.cyl(.22,.25,.2,0,.1,0,0xb7b2a8,{segments:8});
-  arms.forEach((y,ai)=>{
-   const len=ai?1.6:2;
-   kit.box(len,.09,.1,0,y,0,0x2d2b30);
-   kit.box(.06,.46,.06,0,y-.28,0,0x8e979a,{rx:0,rz:0});
-   for(const i of [-1,0,1]){
-    if(ai&&i===0)continue;
-    kit.cyl(.055,.07,.15,i*len/2.4,y+.12,0,0xf2f0ea,{segments:7});
-    anchors.push(kit.point(i*len/2.4,y+.1,0));
-   }
-  });
-  if(transformer){
-   const ty=h-2.8;
-   kit.box(.14,.5,1.4,0,ty+.6,.34,0x8e979a);
-   for(const dx of [-.4,.4]){kit.cyl(.23,.23,.7,dx,ty+.22,.36,0x9aa3a6,{segments:10,finish:'metal'});kit.cyl(.25,.25,.05,dx,ty+.59,.36,0x7d8588,{segments:10});}
+  // Tapered shaft in three courses (a pole is spun concrete, not a cylinder), base, cap.
+  kit.cyl(.12,.15,h*.5,0,h*.75,0,concrete,{segments:7});
+  kit.cyl(.15,.18,h*.5,0,h*.25,0,concrete,{segments:7});
+  kit.cyl(.13,.13,.08,0,h+.04,0,0xb7b2a8,{segments:7});
+  kit.cyl(.24,.26,.22,0,.11,0,0xb7b2a8,{segments:7});
+  // High voltage: the crossarm, its two braces, three pin insulators.
+  const hv=h-.45;
+  kit.box(2.1,.1,.1,0,hv,0,0x6f7579);
+  for(const s of [-1,1])kit.rod([0,hv-.55,0],[s*.7,hv-.03,0],.025,steel);
+  for(const i of [-1,0,1]){
+   kit.cyl(.06,.085,.18,i*.9,hv+.14,0,porcelain,{segments:6});
+   kit.cyl(.09,.09,.04,i*.9,hv+.1,0,porcelain,{segments:8});
+   anchors.push(kit.point(i*.9,hv+.22,0));
   }
-  // The cable bundle up the street side, and the yellow-and-black guard at the foot.
-  kit.cyl(.04,.04,h-1.4,.12,(h-1.4)/2,.05,0x2d2b30,{segments:5});
-  kit.cyl(.18,.18,1.6,0,.8,0,0xe0b93a,{segments:8});
-  for(let y=.2;y<1.6;y+=.4)kit.cyl(.185,.185,.18,0,y,0,0x2b2b2b,{segments:8});
-  // A numbered plate, as every pole has.
-  kit.box(.2,.32,.03,0,2.4,.13,0xe8e3d4);
+  // Transformer: two cans on a bracket, each with a cutout fuse on the arm above.
+  if(transformer){
+   const ty=h-2.6;
+   kit.box(.12,.12,1.3,0,ty+.95,.25,steel);
+   for(const dx of [-.42,.42]){
+    kit.cyl(.24,.24,.78,dx,ty+.25,.42,0x9aa3a6,{segments:8});
+    kit.cyl(.26,.26,.05,dx,ty+.66,.42,0x7d8588,{segments:8});
+    for(const b of [-.09,.09])kit.cyl(.03,.03,.16,dx+b,ty+.76,.42,porcelain,{segments:6});
+    kit.box(.07,.34,.07,dx,hv-.5,.18,0x5b6164);
+    kit.rod([dx,hv-.32,.18],[dx*.5,hv+.18,0],.008,black);
+    kit.rod([dx+.09,ty+.82,.42],[dx,hv-.66,.18],.008,black);
+   }
+  }
+  // Low voltage: three spool insulators racked up the side facing the street.
+  const lv=h-3.55;
+  kit.box(.06,.95,.08,0,lv,.16,steel);
+  for(const k of [0,1,2]){const y=lv+.35-k*.35;kit.cyl(.065,.065,.12,0,y,.27,porcelain,{segments:8,rx:Math.PI/2});}
+  // Telephone: one thick black cable lower down, with its closure box.
+  const tel=h-4.7;
+  kit.box(.05,.05,.35,0,tel,.18,steel);
+  kit.box(.3,.22,.18,.22,tel-.35,.2,0x9ba1a3);
+  anchors.push(kit.point(0,tel,.36));
+  for(const k of [0,1,2])anchors.push(kit.point(0,lv+.35-k*.35,.34));
+  // The riser cable, step bolts, plate and foot guard.
+  kit.cyl(.035,.035,h-1.8,-.16,(h-1.8)/2,.05,black,{segments:5});
+  for(let y=2.4,i=0;y<h-.8;y+=.9,i++)kit.box(.22,.025,.025,i%2?.18:-.18,y,0,0x9aa2a6,{ry:i%2?0:Math.PI});
+  kit.box(.2,.34,.03,0,2.1,.16,0xe8e3d4);
+  kit.box(.16,.06,.031,0,2.2,.162,0x2b4a7a);
+  kit.cyl(.19,.19,1.6,0,.8,0,0xe0b93a,{segments:7});
+  for(let y=.2;y<1.6;y+=.4)kit.cyl(.195,.195,.18,0,y,0,0x2b2b2b,{segments:7});
+  if(guy){
+   const foot=[0,0,-3.2];
+   kit.rod([0,h-1.2,0],foot,.012,0x6f7579);
+   kit.rod([0,.1,-2.85],[0,2.2,-2.85+.62],.05,0xe0b93a);
+   kit.box(.3,.12,.3,...foot,0x8e8a80);
+  }
   if(lamp){
-   kit.rod([0,h-3.6,0],[0,h-3.9,1.3],.04,0x8e979a);
-   kit.box(.36,.12,.5,0,h-3.95,1.35,0x8e979a);
-   kit.box(.3,.03,.42,0,h-4.02,1.35,0xfff0c8,{finish:'lamp'});
+   kit.rod([0,h-5.3,0],[0,h-5.6,1.3],.04,steel);
+   kit.box(.36,.12,.5,0,h-5.65,1.35,steel);
+   kit.box(.3,.03,.42,0,h-5.72,1.35,0xfff0c8,{finish:'lamp'});
   }
  });
- return {anchors,top:h,collider:{id:'utility-pole',x,z,w:.4,d:.4,height:h},seed:r.next()};
+ const foot=kit.point(x,0,z),pole={id:`pole:${foot.x.toFixed(2)}:${foot.z.toFixed(2)}`,x:foot.x,z:foot.z,y:foot.y,anchors,top:h,collider:kit.rect(x-.2,x+.2,z-.2,z+.2,h,'utility-pole'),seed:r.next()};
+ kit.powerNode(pole);return pole;
 }
 
 /** Cables from each anchor of one pole to the matching anchor of the next. */
 export function wiresBetween(kit,a,b,{sag=.45}={}){
+ kit.powerSpan(a,b);
  const n=Math.min(a.anchors.length,b.anchors.length);
- for(let i=0;i<n;i++)kit.wire(a.anchors[i].toArray(),b.anchors[i].toArray(),sag,.018,0x2b2a30);
+ // High voltage is strung tight and thin; the telephone cable is thick and sags most.
+ for(let i=0;i<n;i++)kit.wire(a.anchors[i].toArray(),b.anchors[i].toArray(),i<3?sag*.7:i===3?sag*1.5:sag,i===3?.032:i<3?.012:.018,0x2b2a30);
 }
 
 /** A cable from a pole down to the eave of a house: the service drop. */
@@ -201,12 +229,18 @@ export function planterBoxes(kit,x,z,{ry=0,count=3,seed=13}={}){
 export function fishingBoat(kit,x,z,{ry=0,y=-.55,colour=0x2f6fb8,length=8,name=''}={}){
  const L=length,B=2.3;
  kit.at(x,z,ry,()=>{
-  const half=L/2,shape=[[-half,-.6],[half-1.2,-.6],[half+.3,.9],[half+.1,1.1],[-half,1.0]];
-  for(const s of [-1,1])kit.extrude(shape,.08,new THREE.Matrix4().makeTranslation(0,y,s*B/2-(s>0?.08:0)),0xf1efe8);
-  for(const s of [-1,1])kit.box(L-.9,.16,.1,-.35,y+.85,s*(B/2+.02),colour);
-  kit.box(L-1.2,.1,B-.1,-.5,y+.6,0,0x8e8b82);
-  kit.box(.12,1.6,B,-half+.06,y+.2,0,0xf1efe8);
-  kit.box(.2,.3,B-.3,half-.9,y+.35,0,0xf1efe8,{rz:.9});
+  const half=L/2,stations=[[-half,.78],[-half+.65,1.02],[0,1.15],[half-1.1,.8],[half+.3,.025]],vertices=[],indices=[];
+  // A closed hull with a pointed bow and a submerged keel, rather than two flat side plates.
+  for(const [sx,beam] of stations)for(const [by,bz] of [[1,1],[.25,1],[-.45,.55],[-.65,0],[-.45,-.55],[.25,-1],[1,-1]])vertices.push(sx,y+by,beam*bz);
+  for(let i=0;i<stations.length-1;i++)for(let k=0;k<7;k++){const a=i*7+k,b=i*7+(k+1)%7;indices.push(a,b,a+7,b,b+7,a+7);}
+  for(const i of [0,stations.length-1])for(let k=1;k<6;k++)indices.push(i*7,i*7+k,i*7+k+1);
+  const hull=new THREE.BufferGeometry();hull.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));hull.setIndex(indices);hull.computeVertexNormals();kit.add(hull,new THREE.Matrix4(),0xe0dfd3,'thin');hull.dispose();
+  kit.box(L-1.3,.1,B-.25,-.5,y+.62,0,0x9a9686);
+  for(const s of [-1,1]){
+   for(let i=1;i<stations.length;i++){const a=stations[i-1],b=stations[i];kit.rod([a[0],y+.99,s*a[1]],[b[0],y+.99,s*b[1]],.075,colour);}
+   for(let i=0;i<4;i++){const bx=-half+1.2+i*(L-2.5)/4;kit.rod([bx,y+1,s*1.05],[bx,y+1.5,s*1.05],.018,0x7b888b);}
+   kit.rod([-half+1.2,y+1.5,s*1.05],[half-1.2,y+1.5,s*.8],.018,0x7b888b);
+  }
   // Wheelhouse, its windows, the mast and the lamps.
   kit.box(1.8,1.5,1.7,-half+1.8,y+1.35,0,0xf1efe8);
   kit.box(1.95,.1,1.85,-half+1.8,y+2.12,0,colour);
@@ -216,6 +250,8 @@ export function fishingBoat(kit,x,z,{ry=0,y=-.55,colour=0x2f6fb8,length=8,name='
   kit.rod([-half+2,y+4.6,0],[half-.4,y+.95,0],.012,0x3a3a3a);
   kit.rod([-half+2,y+4.6,0],[-half+.2,y+1,0],.012,0x3a3a3a);
   kit.box(.12,.12,.12,-half+2,y+5.1,0,0xfff0c8,{finish:'lamp'});
+  kit.box(.04,.52,1.3,-half+2.76,y+1.55,0,0xc5ccca);
+  for(const z of [-.43,.43])kit.box(.08,.52,.035,-half+2.77,y+1.55,z,0x2e3c44);
   // Fenders along the side it lies to, and a heap of gear on the deck.
   for(let i=0;i<4;i++)kit.cyl(.22,.22,.45,-half+1.5+i*1.6,y+.55,B/2+.18,0x222326,{segments:8});
   kit.box(1.2,.5,.9,.8,y+.9,0,0x2f6fb8);

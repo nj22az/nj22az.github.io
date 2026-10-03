@@ -1,4 +1,4 @@
-import {buildOfficeWorkplace,OFFICE_STAFF} from './interiors/office-workplace.js';
+import {buildOfficeWorkplace,buildOfficeShell,OFFICE_STAFF} from './interiors/office-workplace.js';
 import {YURI_APARTMENT_LAYOUT} from './interiors/yuri-apartment-layout.js';
 import {DINING,restaurantPoint,restaurantCollider} from './dining-layout.js';
 import {registerDetail} from './detail-stream.js';
@@ -11,20 +11,11 @@ import {shoppingDistrictActive} from './town-mode.js';
 
 const assets=new Map();
 const pending=new Map();
-const files={'crystal-room':'crystal/crystal-room.glb',office:'office/office-interior.glb',ramen:'ramen/inakaya-exterior.glb','ramen-exterior':'ramen/inakaya-exterior.glb','yuri-home':'yuri-home/seinfeld-apartment.glb'};
+const files={ramen:'ramen/inakaya-exterior.glb','ramen-exterior':'ramen/inakaya-exterior.glb','yuri-home':'yuri-home/seinfeld-apartment.glb'};
 
 // Geometry is in metres. Layouts specify each actual doorway and floor at Y=0.
 // Bounds follow each supplied floor; the old 13 m shell remains the load-failure fallback.
 export const SUPPLIED_ROOM_LAYOUTS={
-  'crystal-room':{bounds:{minX:-3.32,maxX:3.32,minZ:-3.32,maxZ:3.32},spawn:[0,0,2.45],exit:[0,1.1,3.28],
-    colliders:[
-      {x:2.75,z:2,w:1.35,d:2.8,height:1.9},
-      {x:2.6,z:-.48,w:1.6,d:1.8,height:.9},
-      {x:2.25,z:-2.5,w:2.3,d:1.8,height:1.95},
-      {x:-.5,z:-2.8,w:2.75,d:1.2,height:2.45},
-      {x:-2.5,z:-2.2,w:1.8,d:2.2,height:1.7},
-      {x:-2.85,z:2.1,w:1.05,d:2.15,height:1.6},
-    ]},
   office:{bounds:{minX:-3.37,maxX:3.37,minZ:-3.37,maxZ:3.37},spawn:[0,0,2.4],exit:[0,1.1,3.34],staff:OFFICE_STAFF,
     colliders:[
       {x:0,z:-2.78,w:6.27,d:1.23,height:1.72},
@@ -36,7 +27,7 @@ export const SUPPLIED_ROOM_LAYOUTS={
       {x:2.91,z:-1.39,w:.43,d:.46,height:.46},
       {x:3.1,z:1.58,w:.6,d:2.72,height:1.87},
       {x:-2.98,z:.17,w:.7,d:2.28,height:2.05},
-      {x:-2.54,z:2.51,w:.61,d:.62,height:1.62},
+      {x:-1.85,z:3.05,w:.61,d:.62,height:1.62},
     ]},
   ramen:RAMEN_LAYOUT,
   'yuri-home':YURI_APARTMENT_LAYOUT,
@@ -58,6 +49,7 @@ export function suppliedRoomBoundsBlocked(layout,x,z,r=0){
 
 const assetKey=id=>id==='ramen'?'ramen-exterior':id;
 export function suppliedRoomReady(id){return assets.has(assetKey(id));}
+// The harbour office is built in code (buildOfficeShell); it has a layout here but no file.
 export function isSuppliedRoom(id){return Object.hasOwn(files,id);}
 export function preloadSuppliedRooms(ids=Object.keys(files)){
   return Promise.all(ids.map(requestedId=>{
@@ -141,11 +133,8 @@ function buildInakayaPair(world,options){
     }});
   }
   const sites=[
-    {id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:3.2,z:DINING.ramenDoor[1],
+    {id:'ramen',title:'Sato Ramen',jp:"Ramen Sato",sub:'COUNTER & KITCHEN',x:3.2,z:DINING.ramenDoor[1],
       color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00',door:[DINING.ramenDoor[0],0,DINING.ramenDoor[1]]},
-    ...(!shoppingDistrictActive()?[{id:'crystal-room',title:'The Timber House',jp:'木の家',sub:'BESIDE SATO RAMEN',x:3.2,z:DINING.crystalDoor[1],
-      color:0x89745b,accent:'#68513c',line:'The timber-fronted building beside Sato Ramen.',opens:'09:00',door:[DINING.crystalDoor[0],0,DINING.crystalDoor[1]]},
-    ]:[]),
   ];
   for(const site of sites){
     site.entryFacing=DINING.ramenYaw;site.exitPosition=[...site.door];site.approachPosition=[site.door[0]-.7,0,site.door[2]];
@@ -168,7 +157,7 @@ export function buildRamenRestaurant(world,options,placement){
   if(!assets.has('ramen-exterior'))return false;
   const place=placement||{x:24,z:10,yaw:0,scale:1};
   const scale=place.scale??1,sx=scale.x??scale,sy=scale.y??scale,sz=scale.z??scale;
-  const site=place.site||{id:'ramen',title:'Sato Ramen',jp:'中華そば 佐藤',sub:'COUNTER & KITCHEN',x:place.x,z:place.z,
+  const site=place.site||{id:'ramen',title:'Sato Ramen',jp:"Ramen Sato",sub:'COUNTER & KITCHEN',x:place.x,z:place.z,
     color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00'};
   const [dx,dz]=localToWorld(place.x,place.z,place.yaw||0,scale,.65,4.7);
   site.door=[dx,0,dz];site.x=place.x;site.z=place.z;
@@ -198,7 +187,7 @@ function hangRamenNoren(building){
   ctx.fillStyle='#8b1e1e';ctx.fillRect(0,0,256,320);
   ctx.fillStyle='#f3e0c4';ctx.fillRect(6,0,116,300);ctx.fillRect(134,0,116,300);
   ctx.fillStyle='#8b1e1e';ctx.textAlign='center';ctx.font='700 52px sans-serif';
-  ctx.fillText('ら',64,110);ctx.fillText('ー',64,190);ctx.fillText('め',192,110);ctx.fillText('ん',192,190);
+  ctx.fillText("et al.",64,110);ctx.fillText('ー',64,190);ctx.fillText("Me",192,110);ctx.fillText("Hmm",192,190);
   const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
   const noren=new THREE.Mesh(new THREE.PlaneGeometry(1.8,1.5),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,transparent:true}));
   noren.name='Sato Ramen noren';noren.position.set(.65,1.65,4.42);building.add(noren);
@@ -207,7 +196,7 @@ function hangRamenNoren(building){
 export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
   const layout=SUPPLIED_ROOM_LAYOUTS[site.id];
   if(!layout)return null;
-  const model=addAsset(site.id,room);if(!model)return null;
+  const model=site.id==='office'?buildOfficeShell(room):addAsset(site.id,room);if(!model)return null;
   if(site.id==='ramen'){
     model.scale.set(...INAKAYA_FIT.scale);model.position.y=-INAKAYA_FIT.floor;
     // Shared exterior materials and buffers stay untouched, including on exit.
@@ -221,14 +210,10 @@ export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
     reg(object,label,kind==='exit'?exit:()=>action(kind,title,text),true);return object;
   };
   anchor(layout.exit,'Exit to street','exit');
-  if(site.id==='crystal-room'){
-    anchor([0,1.1,.6],'Listen to the room','inspect','A room that should not be here','The street sounds have faded. A clear, sustained note seems to come from the walls. There are no speakers.');
-    anchor([1.55,1.2,1.8],'Examine the crystal formation','inspect','The crystal formation','Light gathers inside the stone, though the room has no windows. A tiny ruler rests against it. Every mark reads zero.');
-    anchor([0,1.1,-1.65],'Read the pencilled note','read','An unfinished measurement','14 September 1997.\nThe instruments agree until the door closes. Do not move the large crystal. — K.');
-    anchor([-1.5,.8,.5],'Inspect the compass','inspect','The compass','The needle points towards the door. Turn it, and it patiently finds the door again.');
-  }else if(site.id==='office'){
+  if(site.id==='office'){
     buildOfficeWorkplace({room,reg,action,collider});
   }else if(site.id==='yuri-home'){
+    const wardrobe=new THREE.Object3D();wardrobe.position.set(-2.8,1.1,-2);room.add(wardrobe);reg(wardrobe,'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'),true);
     room.add(new THREE.HemisphereLight(0xffebd0,0x74604d,1.5));
     const furnishings=new THREE.Group();furnishings.name='Shared apartment furnishings';room.add(furnishings);
     for(const [name,x,colour] of [['Thuan',-4.15,0xd49bb3],['Nao',-1.6,0xbd7557]]){

@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {createPlanKit} from './house-plan.js';
 import {sleepHours} from '../../people/home-life.js';
 
 /**
@@ -15,7 +16,7 @@ export const KOBAN_ROOM=Object.freeze({
 });
 /** Where Officer Mori walks, eats and sleeps when he is at home (home-residents.js). */
 export const KOBAN_HOME_LAYOUT=Object.freeze({...KOBAN_ROOM,hatHook:{position:[.45,1.6,3.04],yaw:Math.PI},
- door:[.9,0,-2.3],table:[1.2,0,2.42],bedside:[-1.15,0,1.95],bed:[-2.3,.31,2.88],
+ door:[.9,0,-2.3],table:[1.35,0,2.42],bedside:[-1.15,0,1.95],bed:[-2.3,.31,2.88],
  cover:{position:[-2.3,.37,2.28],width:1.1,length:1.3,axis:'z'}});
 
 const time=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
@@ -49,7 +50,7 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
  box('Partition',[5.0,2.9,.1],[-.9,1.45,.8],wall,true);
  box('Partition',[.5,2.9,.1],[3.15,1.45,.8],wall,true);
  box('Partition lintel',[1.3,.7,.1],[2.25,2.55,.8],wall);
- panel('Noren',1.2,.62,[2.25,1.88,.74],Math.PI,(x,w,h)=>{x.fillStyle='#27304d';x.fillRect(0,0,w,h);x.fillStyle='#f4f1ea';x.fillRect(w/2-3,h*.35,6,h*.65);x.font=`bold ${h*.36}px ${MARU}`;x.textAlign='center';x.textBaseline='middle';x.fillText('森',w*.25,h*.42);x.fillText('家',w*.75,h*.42);},256);
+ panel('Noren',1.2,.62,[2.25,1.88,.74],Math.PI,(x,w,h)=>{x.fillStyle='#27304d';x.fillRect(0,0,w,h);x.fillStyle='#f4f1ea';x.fillRect(w/2-3,h*.35,6,h*.65);x.font=`bold ${h*.36}px ${MARU}`;x.textAlign='center';x.textBaseline='middle';x.fillText("Forest",w*.25,h*.42);x.fillText("House",w*.75,h*.42);},256);
 
  // The front office: desk facing the door, the visitor's stool, the town map.
  box('Officer desk top',[1.5,.06,.75],[-1.4,.75,-.6],0x8a6a4a);
@@ -74,13 +75,13 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
   x.fillStyle='#e9e2c8';x.fillRect(0,0,w,h);x.fillStyle='#8cc6e0';x.fillRect(0,0,w,h*.12);x.fillRect(0,0,w*.06,h);
   x.fillStyle='#cfc6a6';x.fillRect(w*.4,h*.1,w*.1,h*.9);x.fillStyle='#9fcf7c';x.fillRect(w*.56,h*.2,w*.34,h*.55);
   x.fillStyle='#3b3f55';x.font=`bold ${h*.06}px ${MARU}`;x.textAlign='left';
-  x.fillText('港 HARBOUR',w*.54,h*.09);x.fillText('さくら',w*.22,h*.42);x.fillText('公園 PARK',w*.62,h*.45);x.fillText('バス BUS',w*.3,h*.95);
-  x.fillStyle='#d7263d';x.beginPath();x.arc(w*.55,h*.84,h*.035,0,Math.PI*2);x.fill();x.fillStyle='#3b3f55';x.fillText('← 駐在所',w*.58,h*.86);
+  x.fillText("Minato HARBOUR",w*.54,h*.09);x.fillText("Sakura",w*.22,h*.42);x.fillText("Park PARK",w*.62,h*.45);x.fillText("Bus BUS",w*.3,h*.95);
+  x.fillStyle='#d7263d';x.beginPath();x.arc(w*.55,h*.84,h*.035,0,Math.PI*2);x.fill();x.fillStyle='#3b3f55';x.fillText("← Police station",w*.58,h*.86);
   x.strokeStyle='#6b4a1c';x.lineWidth=8;x.strokeRect(4,4,w-8,h-8);});
  spot([-3.1,1.4,-1.3],'Read the town map','read','Town map','Minato on one sheet: the harbour at the top, Sakura and the shops down the west side, the park and the school on the green side, and a red dot here at the top of Main Street, below the old sea cave. Pins mark the night patrol: up Main Street to the quay and back.');
  // Notices by the door, a lost-property shelf on the east wall.
  box('Notice board',[1.6,1.0,.03],[-1.9,1.55,-3.03],0xb98a55);
- const posters=[['指名手配','WANTED','Tama (cat)\nfor sleeping in fish crates','#f4e4c8'],['落とし物','LOST','One glove, left hand\nAsk at the desk','#e8f0f4'],['交通安全','SAFETY WEEK','Bicycles: lights on\nafter dark','#fff1c1']];
+ const posters=[["Wanted",'WANTED','Tama (cat)\nfor sleeping in fish crates','#f4e4c8'],["Lost item",'LOST','One glove, left hand\nAsk at the desk','#e8f0f4'],["Traffic safety",'SAFETY WEEK','Bicycles: lights on\nafter dark','#fff1c1']];
  posters.forEach(([jp,en,body,bg],i)=>panel('Poster '+en,.44,.6,[-2.4+i*.5,1.55,-3.01],0,(x,w,h)=>{x.fillStyle=bg;x.fillRect(0,0,w,h);x.fillStyle=i?'#27304d':'#d7263d';x.font=`bold ${w*.16}px ${MARU}`;x.textAlign='center';x.fillText(jp,w/2,h*.18);x.font=`bold ${w*.1}px ${MARU}`;x.fillText(en,w/2,h*.3);x.fillStyle='#3b3f55';x.font=`${w*.075}px ${MARU}`;body.split('\n').forEach((l,j)=>x.fillText(l,w/2,h*.72+j*w*.1));if(!i){x.fillStyle='#e8a050';x.beginPath();x.ellipse(w/2,h*.47,w*.2,h*.1,0,0,Math.PI*2);x.fill();}},256));
  spot([-1.9,1.3,-2.8],'Read the notices','read','Police box notices','WANTED: Tama, a ginger cat, for repeatedly sleeping in the fish crates at the quay. Approach with a sardine.\nLOST: One glove, left hand. The right one is also lost, but separately.\nTraffic Safety Week: bicycle lamps on after dark.');
  box('Lost property shelf',[.4,1.5,1.6],[3.15,.75,-1.5],0x8a6a4a,true);
@@ -98,7 +99,7 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
   x.fillStyle='#27304d';for(let i=0;i<12;i++){const a=i/12*Math.PI*2;x.fillRect(w/2+Math.sin(a)*w*.38-3,h/2-Math.cos(a)*h*.38-3,6,6);}
   x.strokeStyle='#27304d';x.lineCap='round';x.lineWidth=8;x.beginPath();x.moveTo(w/2,h/2);x.lineTo(w/2+w*.2,h/2);x.stroke();x.lineWidth=5;x.beginPath();x.moveTo(w/2,h/2);x.lineTo(w/2,h/2-h*.32);x.stroke();},128).material.transparent=true;
  panel('Emergency poster',.5,.36,[.3,1.75,.745],Math.PI,(x,w,h)=>{x.fillStyle='#d7263d';x.fillRect(0,0,w,h);x.fillStyle='#fff';x.textAlign='center';x.font=`bold ${h*.42}px ${MARU}`;x.fillText('110',w/2,h*.52);x.font=`bold ${h*.13}px ${MARU}`;x.fillText('EMERGENCY',w/2,h*.8);},256);
- panel('Calendar',.34,.48,[-2.6,1.7,.745],Math.PI,(x,w,h)=>{x.fillStyle='#fffaf0';x.fillRect(0,0,w,h);x.fillStyle='#2a8fcc';x.fillRect(0,0,w,h*.38);x.fillStyle='#fff';x.textAlign='center';x.font=`bold ${h*.14}px ${MARU}`;x.fillText('9月 1997',w/2,h*.24);
+ panel('Calendar',.34,.48,[-2.6,1.7,.745],Math.PI,(x,w,h)=>{x.fillStyle='#fffaf0';x.fillRect(0,0,w,h);x.fillStyle='#2a8fcc';x.fillRect(0,0,w,h*.38);x.fillStyle='#fff';x.textAlign='center';x.font=`bold ${h*.14}px ${MARU}`;x.fillText("9Month 1997",w/2,h*.24);
   x.fillStyle='#3b3f55';x.font=`${h*.05}px ${MARU}`;for(let d=1;d<=30;d++){const c=(d+0)%7,r=Math.floor((d+0)/7);x.fillStyle=c===0?'#d7263d':'#3b3f55';x.fillText(String(d),w*(.1+c*.13),h*(.48+r*.1));}},256);
  box('Potted plant',[.32,.32,.32],[-3.0,.16,-2.7],0xb95c3c);
  const leaves=new THREE.Mesh(new THREE.SphereGeometry(.3,10,8),mat(0x3f8f46));leaves.position.set(-3.0,.6,-2.7);leaves.scale.set(1,1.3,1);group.add(leaves);
@@ -107,21 +108,25 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
  const futon=box('Officer Mori futon',[1.1,.14,2.15],[-2.3,.1,1.93],0xe9dfc8,true);futon.userData.bed=true;
  box('Futon quilt',[1.05,.05,1.5],[-2.3,.195,2.22],0x7f9fc4);box('Pillow',[.8,.12,.4],[-2.3,.23,1.4],0xf3e8d2);
  box('Alarm clock',[.14,.12,.08],[-1.6,.06,1.05],0xd7263d);
- box('Tea table',[.7,.05,.5],[1.2,.6,1.75],0x8a6a4a);for(const [dx,dz] of [[-.3,-.2],[.3,-.2],[-.3,.2],[.3,.2]])box('Table leg',[.04,.58,.04],[1.2+dx,.29,1.75+dz],0x6d5238);
- collider(1.2,1.75,.7,.5,.62);
- box('Kitchen stool',[.36,.42,.36],[1.2,.21,2.42],0x6d5238);
- box('Rice bowl',[.12,.06,.12],[1.1,.66,1.7],0xf4f1ea);box('Tea cup',[.07,.07,.07],[1.35,.66,1.8],0x3f7a55);
- box('TV cabinet',[.8,.5,.45],[2.85,.25,2.75],0x6d5238,true);box('Portable television',[.5,.4,.4],[2.85,.7,2.75],0x3b3f45);
- box('TV screen',[.36,.28,.01],[2.85,.72,2.545],0x21302c);
- box('Clothes rail',[1.2,.04,.04],[-.3,1.75,2.95],0x9aa3a0);
- box('Spare uniform shirt',[.5,.7,.08],[-.55,1.35,2.95],0x9dbfe0);box('Spare uniform trousers',[.35,.9,.06],[0,1.25,2.97],0x27304d);
+ box('Tea table',[.7,.05,.5],[1.35,.6,1.75],0x8a6a4a);for(const [dx,dz] of [[-.3,-.2],[.3,-.2],[-.3,.2],[.3,.2]])box('Table leg',[.04,.58,.04],[1.35+dx,.29,1.75+dz],0x6d5238);
+ collider(1.35,1.75,.7,.5,.62);
+ box('Kitchen stool',[.36,.42,.36],[1.35,.21,2.42],0x6d5238);
+ box('Rice bowl',[.12,.06,.12],[1.25,.66,1.7],0xf4f1ea);box('Tea cup',[.07,.07,.07],[1.5,.66,1.8],0x3f7a55);
+ box('TV cabinet',[.7,.5,.45],[3.0,.25,2.75],0x6d5238,true);box('Portable television',[.5,.4,.4],[3.0,.7,2.75],0x3b3f45);
+ box('TV screen',[.36,.28,.01],[3.0,.72,2.545],0x21302c);
+ box('Clothes rail',[1.0,.04,.04],[1.8,1.75,2.95],0x9aa3a0);
+ box('Spare uniform shirt',[.5,.7,.08],[1.55,1.35,2.95],0x9dbfe0);box('Spare uniform trousers',[.35,.9,.06],[2.05,1.25,2.97],0x27304d);
+ // The officer's WC at the back of his room, as every kōban has (docs/BUILDING-AUDIT.md).
+ {const kit=createPlanKit({box:(size,pos,c,name)=>box(name||'WC wall',size,pos,c),collider,height:2.9,wall});
+  kit.partition(-.7,2.0,-.7,3.05);kit.partition(.1,2.0,.1,3.05);kit.partition(-.7,2.0,.1,2.0,[[-.6,0]]);
+  kit.wetRoom(-.66,.06,2.04,3.01,'Toilet',true,'z0');}
  // His cap hangs on this peg when he is home (home-residents.js); on patrol it is on his head.
  box('Hat peg plate',[.1,.1,.03],[.45,1.72,3.04],0x6d5238);box('Hat peg',[.035,.035,.14],[.45,1.7,2.98],0x6d5238);
  box('Tatami room window',[1.2,.9,.03],[-3.36,1.6,2.0],new THREE.MeshStandardMaterial({color:0x9fc4d6,emissive:0xbfd8e6,emissiveIntensity:.35,roughness:.2}));
  for(const dz of [-.45,.45])box('Curtain',[.03,1.0,.3],[-3.32,1.6,2.0+dz],0xe8cf85);
- spot([-.3,1.4,2.7],'Inspect the spare uniform','inspect','Spare uniform','A pressed summer shirt, the trousers on a hanger and a peg for his cap, ready for the night patrol. A small label inside the cap says MORI in marker pen.');
- spot([1.2,1.0,1.75],'Read Officer Mori’s notebook','read','Officer Mori’s notebook','Patrol from '+time(1320)+' to '+time(360)+'. Sleep '+time(hours.sleep)+'–'+time(hours.wake)+'. Front desk from 16:00. Supper at Sakura (Thuan recommends the curry bun).\n\nReiko wants a quote for the paper. Think of something that sounds more exciting than “quiet night”.');
- spot([2.85,1.1,2.5],'Inspect the television','inspect','Portable television','A small portable set with a bent aerial. The channel knob is stuck between the late news and the baseball.');
+ spot([1.8,1.4,2.6],'Inspect the spare uniform','inspect','Spare uniform','A pressed summer shirt, the trousers on a hanger and a peg for his cap, ready for the night patrol. A small label inside the cap says MORI in marker pen.');
+ spot([1.35,1.0,1.75],'Read Officer Mori’s notebook','read','Officer Mori’s notebook','Patrol from '+time(1320)+' to '+time(360)+'. Sleep '+time(hours.sleep)+'–'+time(hours.wake)+'. Front desk from 16:00. Supper at Sakura (Thuan recommends the curry bun).\n\nReiko wants a quote for the paper. Think of something that sounds more exciting than “quiet night”.');
+ spot([3.0,1.1,2.5],'Inspect the television','inspect','Portable television','A small portable set with a bent aerial. The channel knob is stuck between the late news and the baseball.');
  spot([-2.3,.7,1.9],'Inspect Officer Mori’s futon','inspect','Officer Mori’s futon','Folded away in the afternoon and laid out again at seven in the morning, after the night patrol. If he is asleep, let him be.');
 
  const door=new THREE.Object3D();door.position.set(...KOBAN_ROOM.exit);group.add(door);reg(door,'Exit to Main Street',exit,true);

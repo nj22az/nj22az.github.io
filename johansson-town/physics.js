@@ -2,7 +2,8 @@ import {routeAt} from './src/world/layout.js?snappy=1';
 // Deterministic 2D collision helpers used by Johansson Town.
 // Kept independent of Three.js so the core movement rules can be regression-tested.
 export function circleHitsRect(x,z,r,c){
-  return Math.abs(x-c.x)<c.w/2+r&&Math.abs(z-c.z)<c.d/2+r;
+  let dx=x-c.x,dz=z-c.z;if(c.yaw){const co=Math.cos(c.yaw),si=Math.sin(c.yaw),u=co*dx-si*dz;dz=si*dx+co*dz;dx=u;}
+  return Math.abs(dx)<c.w/2+r&&Math.abs(dz)<c.d/2+r;
 }
 
 export function circleHitsCircle(ax,az,ar,bx,bz,br){
@@ -35,3 +36,10 @@ export function sweepFraction(start,end,isBlocked,step=.14){
   }
   return safe;
 }
+
+/** Vertical overlap for a standing person; raised floors do not erase walls above them. */
+export function standingHitsRect(x,z,r,y,c,height=1.82){
+ const bottom=c.minY||0,top=Number.isFinite(c.height)?bottom+c.height:Infinity;
+ return bottom<y+height&&top>y+.03&&circleHitsRect(x,z,r,c);
+}
+export function canStepBetween(from,to){return Math.abs(to-from)<=.24;}

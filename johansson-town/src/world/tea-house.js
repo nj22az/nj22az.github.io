@@ -10,7 +10,7 @@ export async function preloadTeaHouse(){
  catch(error){console.warn('Tea house asset unavailable',error);return false;}finally{clearTimeout(timeout);}
 }
 export function buildTeaHouse(world,options){
- const site={id:'tea-house',title:'Corner Tea House',jp:'角の茶屋',sub:'TEA & SMALL PLEASURES',x:TEA_HOUSE.x,z:TEA_HOUSE.z,color:0xe7d2ae,accent:'#668878',line:'A little tea, a sunny table and time to linger · 09:00–19:00',door:[...TEA_HOUSE.door]};
+ const site={id:'tea-house',title:'Corner Tea House',jp:"Corner teahouse",sub:'TEA & SMALL PLEASURES',x:TEA_HOUSE.x,z:TEA_HOUSE.z,color:0xe7d2ae,accent:'#668878',line:'A little tea, a sunny table and time to linger · 09:00–19:00',door:[...TEA_HOUSE.door]};
  options.sites.push(site);
  let building=exterior?exterior.clone(true):new THREE.Mesh(new THREE.BoxGeometry(7,4,6),new THREE.MeshStandardMaterial({color:0xd6b88e}));
  building.name='Corner Tea House exterior';building.userData.sharedAsset=true;building.position.set(TEA_HOUSE.x,exterior?0:2,TEA_HOUSE.z);building.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});world.group.add(building);

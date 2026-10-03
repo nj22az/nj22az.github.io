@@ -18,6 +18,7 @@ try{
   async function select(feature){
    if(touch)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption(feature);
    else await page.getByRole('tab',{name:feature[0].toUpperCase()+feature.slice(1),exact:true}).click();
+   await page.getByRole('tab',{name:'Adjust',exact:true}).click();
   }
   async function featurePoint(feature,side){
    // Project the rendered head geometry/UVs, independently of creator hit testing.
@@ -42,6 +43,7 @@ try{
    for(const side of feature==='eyes'||feature==='brows'?[-1,1]:[1]){
     const before=await page.evaluate(()=>window.maker.recipe);
     const geometry=await page.evaluate(()=>window.creatorPreview.scene.getObjectByName('Shimanchu head').geometry.uuid);
+    const drawCalls=await page.evaluate(()=>window.creatorPreview.renderer.info.render.calls);
     const p=await featurePoint(feature,side),dx=side*12,dy=-9;
     if(touch)await sendTouch('touchStart',p.x,p.y);else {await page.mouse.move(p.x,p.y);await page.mouse.down();}
     for(let i=1;i<=6;i++){
@@ -49,17 +51,16 @@ try{
      await page.waitForTimeout(25);
     }
     assert.equal(await page.evaluate(()=>window.creatorPreview.scene.getObjectByName('Shimanchu head').geometry.uuid),geometry,'drag repaints the face without rebuilding geometry');
-    assert.ok(await page.evaluate(()=>window.creatorPreview.renderer.info.render.calls<=3),'preview retains the three-draw budget');
+    assert.equal(await page.evaluate(()=>window.creatorPreview.renderer.info.render.calls),drawCalls,'drag does not add preview draw calls');
     if(touch)await sendTouch('touchEnd');else await page.mouse.up();
     const after=await page.evaluate(()=>window.maker.recipe),horizontal=['eyes','brows'].includes(feature)?'spacing':'x';
     assert.ok(after[feature][horizontal]>before[feature][horizontal],`${width} ${feature} horizontal drag`);
     assert.ok(after[feature].height>before[feature].height,`${width} ${feature} vertical drag`);
     const expected=structuredClone(before);expected[feature][horizontal]=after[feature][horizontal];expected[feature].height=after[feature].height;
     assert.deepEqual(after,expected,'only the two placement fields change');
-    for(const field of [horizontal,'height']){
-     const input=page.locator(`input[data-at="${feature}.${field}"]`);
-     const value=+await input.inputValue(),invert=await input.getAttribute('data-invert')==='true';
-     assert.ok(Math.abs(value-(invert?1-after[feature][field]:after[feature][field]))<=.011,'sliders follow drag');
+    for(const meter of await page.locator('.shm-meter[data-at]').all()){
+     const at=await meter.getAttribute('data-at'),[section,field]=at.split('.');
+     assert.equal(await meter.locator('.on').count(),Math.round(after[section][field]*16),'adjustment indicator follows drag');
     }
     await page.getByRole('button',{name:'Undo',exact:true}).click();
     assert.deepEqual(await page.evaluate(()=>window.maker.recipe),before,'one undo restores the whole gesture');
@@ -81,8 +82,8 @@ try{
    await page.mouse.click(p.x,p.y);
   }
   assert.equal(await page.getByRole('button',{name:'Undo',exact:true}).isDisabled(),true);
-  const range=page.locator('input[data-at="mouth.x"]');await range.focus();await page.keyboard.press('ArrowRight');
-  assert.ok((await page.evaluate(()=>window.maker.recipe.mouth.x))>before.mouth.x,'keyboard slider remains usable');
+  await page.getByRole('button',{name:'Move right',exact:true}).focus();await page.keyboard.press('Enter');
+  assert.ok((await page.evaluate(()=>window.maker.recipe.mouth.x))>before.mouth.x,'keyboard adjustment remains usable');
   await page.getByRole('button',{name:'Undo',exact:true}).click();
   assert.deepEqual(await page.evaluate(()=>window.maker.recipe),before);
   assert.equal(await page.evaluate(()=>document.querySelector('.shm').scrollWidth>innerWidth),false);

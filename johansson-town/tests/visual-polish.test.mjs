@@ -24,7 +24,7 @@ test('existing v1 saves retain their features and gain safe silhouette defaults'
  assert.equal(safe.head.form,'oval');assert.equal(safe.head.jaw,1);assert.equal(safe.head.cheeks,0);
 });
 
-test('all five head forms have distinct geometry and stay in proportion at slider limits',()=>{
+test('all face forms have distinct geometry and stay in proportion at slider limits',()=>{
  const shapes=new Set();
  for(const form of PARTS.head){
   const av=buildAvatar({...recipeFor('Thuan'),head:{form,size:.5,shape:.5,jaw:.5,cheeks:.5}});
@@ -32,10 +32,10 @@ test('all five head forms have distinct geometry and stay in proportion at slide
   assert.ok([...av.face.head.geometry.attributes.position.array].every(Number.isFinite));av.dispose();
   for(const size of [0,1])for(const shape of [0,1]){
    const m=measure({head:{form,size,shape}}),ratio=2*m.Rh*m.headSY/m.H;
-   assert.ok(ratio>.21&&ratio<.38,`${form}: head occupies ${ratio} of height`);
+   assert.ok(ratio>.23&&ratio<.42,`${form}: head occupies ${ratio} of height`);
   }
  }
- assert.equal(shapes.size,5);
+ assert.equal(shapes.size,PARTS.head.length);
  const names=['Johansson','Thuan','Nao','Mr Ōshiro','Uncle Kinjō','Mrs Nakamura'];
  assert.ok(new Set(names.map(n=>recipeFor(n).head.form)).size>=4);
 });
@@ -64,14 +64,17 @@ test('architectural fittings stay batched and leave the Sakura entrance clear',(
  root.updateMatrixWorld(true);assert.equal(ray.intersectObject(shop,true).length,0,'No fittings across the doorway at walking height');
 });
 
-test('district plaster keeps its physical maps and metre-sized UVs',()=>{
+test('district plaster joins the toon ramp with its painted map and metre-sized UVs',()=>{
+ // October 2026 look pass (docs/AMPLIFY-AUDIT.md, A1): architecture is no longer kept
+ // physical. The map survives as faint grain; normal, roughness and AO have no meaning
+ // under a ramp and are dropped.
  const kit=createKit(),map=new THREE.Texture(),normalMap=new THREE.Texture(),arm=new THREE.Texture();
  kit.surface('plaster',{map,normalMap,roughnessMap:arm,aoMap:arm,metres:2});
  kit.box(4,3,.2,0,1.5,0,0xe7dcc2,{finish:'plaster'});
  const root=new THREE.Group(),{meshes}=kit.finish(root);applyCelShading(root);
- assert.equal(meshes.length,1);assert.equal(meshes[0].material.map,map);assert.equal(meshes[0].material.normalMap,normalMap);
- assert.equal(meshes[0].material.roughnessMap,arm);assert.equal(meshes[0].material.aoMap,arm);
- assert.equal(meshes[0].material.isMeshStandardMaterial,true);assert.ok(meshes[0].geometry.attributes.uv.count>0);
+ assert.equal(meshes.length,1);assert.equal(meshes[0].material.isMeshToonMaterial,true);
+ assert.equal(meshes[0].material.map,map);assert.ok(meshes[0].material.userData.flatten.value<.5,'Photograph reduced to grain');
+ assert.ok(meshes[0].geometry.attributes.uv.count>0);
 });
 
 

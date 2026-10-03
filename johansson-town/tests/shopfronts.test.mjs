@@ -1,8 +1,10 @@
+import {circleHitsRect} from '../physics.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
+import {DOCK_WORKSHOP_PLOT} from '../src/world/dock-workshop-layout.js';
 import {WEST_SHOPS,westShopDoor,WEST_FRONT} from '../src/world/west-shops.js';
 
 async function peninsula(){
@@ -20,7 +22,8 @@ async function peninsula(){
 }
 
 test('every door opens onto a building',async()=>{
- const {scene,entrances}=await peninsula();
+ const {scene,world,entrances}=await peninsula();
+ const [wx,,wz]=DOCK_WORKSHOP_PLOT.door;for(const z of [wz,wz+.6])assert.equal(world.colliders.some(c=>circleHitsRect(wx,z,.32,c)),false,'Workshop entrance and exit clear the yard wall');
  // What counts as a building: something with walls, standing on the ground.
  const walls=[];
  scene.traverse(o=>{
@@ -32,9 +35,9 @@ test('every door opens onto a building',async()=>{
  });
  assert.ok(walls.length>6,'Found no buildings to check the doors against');
  assert.deepEqual(entrances.map(e=>e.label).sort(),[
-  'Enter Front-Row Books & Workshop','Enter Harbour Warehouse',
+  'Enter Front-Row Books','Enter Dock Electrical & Repair Workshop','Enter Harbour Warehouse',
   'Enter Johansson Harbour Office','Enter Sakura Shōten','Enter Minato Police Box',
- ].sort(),'One shared bookshop/workshop entrance, with the other businesses and the police box retained');
+ ].sort(),'Separate bookshop and dock workshop entrances, with other businesses retained');
  // Kenji & Tetsuo Repairs offered a way in at 0.4,-6.7 -- out on the boardwalk beside a
  // lamp post, because that is where the night-market alley put its door and the
  // peninsula does not build that alley. A door has to be in a wall.
@@ -48,7 +51,7 @@ test('the shop staff stand at their own shop',async()=>{
  configureTownMode(TOWN_MODES.PENINSULA);
  const {RESIDENTS}=await import('../src/people/residents.js?shopfronts');
  for(const [name,id] of [['Aya','frontrow'],['Reiko','frontrow'],['Kenji','form3d'],['Tetsuo','form3d']]){
-  const work=RESIDENTS.find(p=>p.name===name)?.work,door=westShopDoor(id);
+  const work=RESIDENTS.find(p=>p.name===name)?.work,door=id==='form3d'?DOCK_WORKSHOP_PLOT.door.filter((_,i)=>i!==1):westShopDoor(id);
   assert.ok(work,name+' has nowhere to work');
   assert.ok(Math.hypot(work[0]-door[0],work[1]-door[1])<.6,name+' works at '+JSON.stringify(work)+', not at '+JSON.stringify(door));
  }
@@ -66,6 +69,6 @@ test('the west shops leave the pavement and the crossing alone',async()=>{
   // And the building is behind the frontage line, not out in the street.
   assert.ok(WEST_FRONT<=-7.6,'The shop frontage has moved onto the carriageway');
  }
- // The crossing at z 5.1 still reaches the west kerb beside the combined shop.
+ // The crossing at z 5.1 still reaches the west kerb beside the bookshop.
  assert.ok(routeAt(-7.4,5.1,.32),'The shop crossing no longer reaches the west pavement');
 });

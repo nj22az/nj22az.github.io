@@ -1,0 +1,40 @@
+/* Exploration keeps the town in view. Expanded tools retain their working space. */
+#directory{place-items:start end;background:transparent;backdrop-filter:none;padding:max(64px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 12px}
+#directory .directory-card{width:min(360px,calc(100vw - 24px));max-height:65dvh;gap:10px;padding:14px;border:1px solid #ffffffa8;border-radius:18px;background:#fff8eaf2;box-shadow:0 8px 30px #172b3826}
+#directory .directory-head h2{font-size:18px}
+#directory #wallet{font-size:12px;margin-top:4px;box-shadow:none;padding:3px 8px}
+#directory #closeDirectory{border:0;box-shadow:none;background:transparent}
+#directory #townControls.menu-apps{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#directory #townControls .app-tile,#directory #townControls #bagButton{min-height:64px;padding:7px 3px;border:0;border-radius:12px;font-size:11px;box-shadow:none;background:#e9ece4}
+#directory #townControls .app-tile::before,#directory #townControls #bagButton svg{width:24px;height:24px}
+#directory .menu-settings{padding:0;background:transparent;box-shadow:none;border-radius:0}
+#directory details{border-top:1px solid #c9c6b755}
+#directory details>summary{min-height:44px;padding:12px 4px;font-size:13px;font-weight:700;cursor:pointer}
+#directory .menu-settings .setting-row{min-height:44px}
+#directory .menu-settings .setting-row>span,#directory .menu-settings .setting-row button[id]{font-size:12px}
+#directory #directoryGrid{grid-template-columns:1fr;gap:6px}
+#directory #directoryGrid .dir-item{min-height:52px;padding:8px 10px}
+#directory #directoryGrid .dir-item b{font-size:13px}
+#directory .directory-foot{font-size:9px;gap:6px}
+#directoryButton{width:44px!important;height:44px!important;min-height:44px!important;background:#fff8eabb!important;border:1px solid #ffffff80!important;border-radius:12px!important;box-shadow:none!important}
+#activity:not(.conversation){place-items:end center;background:transparent;backdrop-filter:none;padding:12px max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+#activity:not(.conversation) .activity-card{position:relative;width:min(440px,100%);max-height:45dvh;display:flex;flex-direction:column;overflow:hidden;gap:8px;padding:16px;border:1px solid #fffdf2b8;border-radius:18px;background:#fff8eaf5;box-shadow:0 8px 30px #172b3826}
+#activity:not(.conversation) .activity-card header{position:absolute;top:5px;right:5px}
+#activity:not(.conversation) .activity-card header>span{display:none}
+#activity #closeActivity{width:44px;min-height:44px;padding:0;border:0;background:transparent;box-shadow:none}
+#activity #closeActivity span{margin:0}
+#activity:not(.conversation) #activityTitle{font-size:19px;line-height:1.25;margin:0;padding-right:36px}
+#activity:not(.conversation) #activityBody{font-size:14px;line-height:1.5;overflow:auto;min-height:0;overscroll-behavior:contain}
+#activity:not(.conversation) #activityBody p{padding:0;background:none;border:0;border-radius:0;margin:0 0 8px}
+#activity:not(.conversation) #activityActions{display:flex;flex-wrap:wrap;gap:6px;padding:0;overflow:auto;flex-shrink:0;max-height:18dvh}
+#activity:not(.conversation) #activityActions button{flex:1 1 130px;min-height:44px;padding:8px 12px;border:1px solid #bdcdbd;border-radius:10px;background:#e4eedf;color:#294539;box-shadow:none;font-size:13px}
+/* Documents and creation tools need legible pages, not a cramped quick-action tray. */
+#activity:is(.office-records,.workshop-tool,.magazine-view,.flyer-view){place-items:center}
+#activity:is(.office-records,.workshop-tool,.magazine-view,.flyer-view) .activity-card{width:min(900px,100%);max-height:82dvh}
+#activity.conversation{background:transparent;backdrop-filter:none}
+@media(max-height:520px){#directory .directory-card{max-height:calc(100dvh - 80px)}#activity:not(.conversation) .activity-card{max-height:65dvh}#activity:not(.conversation) #activityActions{max-height:25dvh}}
+#hud #directoryButton{color:#33434c!important;filter:none}
+#cameraPanel{place-items:start end;background:transparent;padding:64px 12px 12px}
+#cameraPanel .camera-card{width:min(360px,100%);max-height:65dvh;padding:16px;background:#fff8eaf5;box-shadow:0 8px 30px #172b3826}
+#cameraPanel h2{font:700 18px system-ui}
+#cameraPanel p,#cameraPanel dl{font-size:12px}

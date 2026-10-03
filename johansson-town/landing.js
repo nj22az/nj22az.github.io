@@ -26,14 +26,20 @@
     } catch { return null; }
   };
   const PLACES = [
-    { id: "market", code: "01", title: "Sakura Shōten", jp: "桜商店", sub: "Daily goods", district: "Shopping street", open: 540, close: 1200, line: "Thuan’s convenience store. Tea, snacks, everyday things. Thuan at the till 09:00–20:00." },
-    { id: "frontrow", code: "02", title: "Front-Row Books & Workshop", jp: "前列書房・工房", sub: "Books · press · repairs", district: "Main Street west", open: 540, close: 1470, line: "Aya’s books, Reiko’s evening press, and Kenji and Tetsuo’s workshop. North of Minato, with a passage to the yard." },
-    { id: "office", code: "03", title: "Johansson Harbour Office", jp: "港務・技術事務所", sub: "Marine service · records", district: "Quay", open: null, close: null, line: "Shipping records, tide tables, and Johansson’s marine files. Staffed around the clock." },
-    { id: "izakaya", code: "04", title: "Minato Izakaya", jp: "港居酒屋", sub: "Lanterns · yakitori", district: "Main Street west", open: 960, close: 1620, line: "Opens at sixteen hundred. Last pour around three in the morning." },
-    { id: "bus-station", code: "05", title: "Harbour Line Bus Station", jp: "バス乗場", sub: "Arrivals · departures", district: "Town terminus", open: null, close: null, line: "The northern terminus. Day staff arrive here and leave by the last bus." },
-    { id: "warehouse", code: "06", title: "Quay Warehouse", jp: "倉庫", sub: "Fishing gear", district: "Quay", open: null, close: null, line: "Quay stores and fishing gear. Mrs Sato checks the ledger and shelves during her day shift. Open at all hours." },
-    { id: "park", code: "07", title: "Harbour Park", jp: "公園", sub: "Benches · trees", district: "East lawn", open: null, close: null, line: "Raised walk and benches looking back at the shotengai." },
-    { id: "pier", code: "08", title: "Outer Pier", jp: "沖桟橋", sub: "Boards · night warning", district: "Harbour", open: null, close: null, line: "Connected western and eastern lanes, second jetty. Caution after dark." },
+    { id: "market", code: "01", title: "Sakura Shōten", jp: "Sakura Shop", sub: "Daily goods", district: "Shopping street", open: 540, close: 1200, line: "Thuan’s convenience store. Tea, snacks, everyday things. Thuan at the till 09:00–20:00." },
+    { id: "frontrow", code: "02", title: "Front-Row Books", jp: "Front-Row Books", sub: "Books · newspapers · reading", district: "Main Street west", open: 540, close: 1470, line: "Aya’s books, a quiet reading corner, and Reiko’s evening newspaper. North of Minato, with a passage to the yard." },
+    { id: "form3d", code: "03A", title: "Dock Electrical & Repair Workshop", jp: "Dock Electrical Workshop", sub: "INSTRUMENTS · ELECTRICAL · REPAIRS", district: "Western quay", open: 540, close: 1140, line: "Kenji and Tetsuo repair radios and instruments beside the harbour warehouse." },
+    { id: "office", code: "03", title: "Johansson Harbour Office", jp: "Port Affairs and Technology Office", sub: "Marine service · records", district: "Quay", open: null, close: null, line: "Shipping records, tide tables, and Johansson’s marine files. Staffed around the clock." },
+    { id: "izakaya", code: "04", title: "Minato Izakaya", jp: "Minato Izakaya", sub: "Lanterns · yakitori", district: "Main Street west", open: 960, close: 1620, line: "Opens at sixteen hundred. Last pour around three in the morning." },
+    { id: "bus-station", code: "05", title: "Harbour Line Bus Station", jp: "Bus stop", sub: "Arrivals · departures", district: "Town terminus", open: null, close: null, line: "The northern terminus. Day staff arrive here and leave by the last bus." },
+    { id: "warehouse", code: "06", title: "Quay Warehouse", jp: "Warehouse", sub: "Fishing gear", district: "Quay", open: null, close: null, line: "Quay stores and fishing gear. Mrs Sato balances warehouse duties with the lunch kitchen at Sato Ramen. Open at all hours." },
+    {id:"sato-ramen",code:"06A",title:"Sato Ramen",jp:"Sato Ramen",sub:"Lunch at the counter",district:"Minato corner",open:660,close:840,line:"Mrs Sato’s steaming stock pots and red stools. The kitchen is shared with Minato, with a clear passage around the counter."},
+    {id:"japanese-garden",code:"07A",title:"Aoba Japanese Garden",jp:"Japanese Garden",sub:"Pond · paths · onsen",district:"Garden district",open:null,close:null,line:"Take a slow walk past the pond, stone lanterns and garden planting, then visit the relocated onsen."},
+    {id:"airport",code:"09",title:"Kitano-jima Airport",jp:"Island Airport",sub:"Terminals · shops · growing island",district:"Airport district",open:null,close:null,line:"Explore the passenger district and its shops. Construction notices mark the next stage of the airport’s growth."},
+    {id:"rainflower-florist",code:"10A",title:"Rainflower Florist",jp:"Rainflower Florist",sub:"Flowers · pots · hand-made wreaths",district:"Rainflower Lane",open:540,close:1080,line:"Mrs Kinjō arranges fresh stems at the open shop front. Walk inside and choose a hand-wrapped bouquet for ¥250."},
+    {id:"blue-coral",code:"10",title:"Blue Coral Ice Cream",jp:"Blue Coral",sub:"Ice cream · island tea",district:"Rainflower Lane",open:null,close:null,line:"A teal wooden counter, a glass scoop case and a little cloud mural. Choose an ube and vanilla cone or a cold island tea."},
+    { id: "park", code: "07", title: "Harbour Park", jp: "Park", sub: "Benches · trees", district: "East lawn", open: null, close: null, line: "Raised walk and benches looking back at the shotengai." },
+    { id: "pier", code: "08", title: "Outer Pier", jp: "Oki Pier", sub: "Boards · night warning", district: "Harbour", open: null, close: null, line: "Connected western and eastern lanes, second jetty. Caution after dark." },
   ];
   const DUTIES = {
     Thuan: [540,1200], Aya: [540,1110], Kenji: [540,1140],
@@ -121,7 +127,7 @@
       short: `${day} ${monthShort} ${TOWN_YEAR}`,
       eraLine: `HEISEI ${HEISEI_YEAR} · ${long}`,
       weekdayLine: `HEISEI ${HEISEI_YEAR} · ${weekday.toUpperCase()}`,
-      japanese: `平成${HEISEI_YEAR}年${month}月${day}日`,
+      japanese: long,
       documentNo: `JT-HB-H${HEISEI_YEAR}-${mm}${dd}`,
     };
   };
@@ -192,18 +198,24 @@
     const escape = value => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     rollGrid.innerHTML = RESIDENTS.map(r => `
       <article class="roll-card" data-resident="${escape(r.name)}">
-        <img class="resident-portrait" src="./${escape(r.portrait)}" width="480" height="480" loading="lazy" decoding="async" alt="${escape(r.name)}, as seen around Johansson Town">
+        <img class="resident-portrait" src="./${escape(r.portrait)}?v=${encodeURIComponent(window.JOHANSSON_PORTRAIT_MODULE || 'live')}" width="480" height="480" loading="lazy" decoding="async" alt="${escape(r.name)}, as seen around Johansson Town">
         <div class="resident-copy">
           <p class="resident-role">${escape(r.role)}</p>
           <h3>${escape(r.name)}</h3>
           <p class="resident-place">${escape(r.place)}</p>
           <p class="resident-bio">${escape(r.bio)}</p>
-          <details class="resident-story"><summary>Backstory</summary><p>${escape(r.backstory)}</p></details>
+          <details class="resident-story"><summary>Open character profile</summary>
+          <div class="resident-model-sheet" aria-label="Game character views">${['front','three-quarter','side'].map(view=>`<figure><img class="resident-portrait" data-portrait-view="${view}" src="./${escape(r.portrait)}" width="480" height="480" loading="lazy" alt="${escape(r.name)} · ${view} face view"><figcaption>${view==='front'?'Face':view==='side'?'Side':'Three-quarter'}</figcaption></figure>`).join('')}</div>
+          <dl class="resident-facts"><dt>Occupation</dt><dd>${escape(r.role)}</dd><dt>Usually found</dt><dd>${escape(r.place)}</dd>${r.age?'<dt>Age</dt><dd>'+escape(r.age)+'</dd>':''}${r.friend?'<dt>Close friend</dt><dd>'+escape(r.friend)+'</dd>':''}</dl>
+          ${r.islandPersonality?`<section class="resident-personality" aria-label="Island personality"><p class="board-tiny">ISLAND PERSONALITY</p><h4>${escape(r.islandPersonality.title)}</h4><div class="resident-traits">${r.islandPersonality.traits.map(t=>`<span>${escape(t)}</span>`).join('')}</div>${r.dailyLife?`<blockquote>${escape(r.dailyLife)}</blockquote>`:''}<div class="resident-moments"><section><span aria-hidden="true">♡</span><h5>Favourite moment</h5><p>${escape(r.islandPersonality.favourite)}</p></section><section><span aria-hidden="true">☀</span><h5>A small habit</h5><p>${escape(r.islandPersonality.habit)}</p></section><section><span aria-hidden="true">☆</span><h5>Island ambition</h5><p>${escape(r.islandPersonality.ambition)}</p></section></div></section>`:''}
+          <h4>Life on the island</h4><p>${escape(r.backstory)}</p></details>
           ${r.start != null || r.always ? '<p class="duty"><span class="flag"></span></p>' : ''}
         </div>
       </article>`).join("");
   }
 
+  const catalogueSearch=document.getElementById('residentSearch');
+  catalogueSearch?.addEventListener('input',()=>{const q=catalogueSearch.value.trim().toLowerCase();let n=0;rollGrid.querySelectorAll('[data-resident]').forEach(card=>{const r=RESIDENTS.find(r=>r.name===card.dataset.resident);card.hidden=!`${r.name} ${r.role} ${r.place}`.toLowerCase().includes(q);if(!card.hidden)n++;});document.getElementById('catalogueCount').textContent=`${n} residents`;});
   function tick() {
     if (start.classList.contains("hidden")) return;
     const now = Date.now();
@@ -305,6 +317,7 @@
 
   document.querySelectorAll('a[href="#visit-planning"]').forEach(link=>link.addEventListener('click',()=>{document.getElementById('visit-planning').open=true;}));
   renderStatic();
+  import(window.JOHANSSON_PORTRAIT_MODULE || "./src/avatars/guide-portraits.js").then(m=>m.mountResidentPortraits()).catch(error=>console.warn("Resident portraits:",error.message));
   ticks();
   tick();
   setInterval(tick, 1000);

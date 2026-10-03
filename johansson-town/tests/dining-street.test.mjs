@@ -9,7 +9,7 @@ import {DINING,NIGHT_LANE,DINING_COLLIDERS} from '../src/world/dining-layout.js'
 import {RESIDENTS} from '../src/people/residents.js';
 import {RAMEN_DOOR,IZAKAYA_DOOR,residentPlan} from '../src/people/social.js';
 import {createNavigation} from '../src/people/navmesh.js?snappy=1';
-import {routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
+import {groundHeight} from '../src/world/layout.js?snappy=1';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js?snappy=1';
 import {lanePatches} from '../src/world/lane-surfaces.js?snappy=1';
 import {MAIN_ROAD,SHOP_CROSSING_Z} from '../src/world/main-road.js';
@@ -27,7 +27,7 @@ test('both alley halves and restaurants face Main Street, with shared streaming 
   assert.equal(JSON.stringify({colliders:world.colliders,doors:sites.map(s=>s.door)}),before);
   assert.ok(world.group.getObjectByName('Minato exterior'));assert.ok(world.group.getObjectByName('Supplied ramen-exterior'));
   const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked);
-  for(const [id,door] of [['izakaya',DINING.izakayaDoor],['ramen',DINING.ramenDoor],['crystal-room',DINING.crystalDoor]]){
+  for(const [id,door] of [['izakaya',DINING.izakayaDoor],['ramen',DINING.ramenDoor]]){
    const site=sites.find(s=>s.id===id);assert.deepEqual([site.door[0],site.door[2]],door);assert.equal(blocked(...door),false);
    assert.ok(nav.path({x:0,z:NIGHT_LANE.z},{x:door[0],z:door[1]}).length,'Walk from main street to '+id);
    assert.equal(site.entryFacing,id==='izakaya'?Math.PI/2:-Math.PI/2,'Entrance faces Main Street from its own side');
@@ -44,7 +44,7 @@ test('both alley halves and restaurants face Main Street, with shared streaming 
 test('six-metre roadway and continuous pavement support the frontages without the old alley floor or wires',()=>{
  const {world}=make(),group=world.diningStreet.group;assert.equal(world.diningStreet.ready,true);world.group.updateMatrixWorld(true);
  const ray=new THREE.Raycaster(),footways=world.group.children.filter(o=>o.name==='Main Street footway'),blocked=(x,z)=>townBoundsBlocked(x,z,.32)||world.colliders.some(c=>circleHitsRect(x,z,.32,c));
- const deckBounds=new THREE.Box3().setFromObject(world.boardwalk.deck);assert.equal(deckBounds.max.x-deckBounds.min.x,6);assert.equal((deckBounds.max.x+deckBounds.min.x)/2,MAIN_ROAD.x);
+ const deckBounds=new THREE.Box3().setFromObject(world.boardwalk.deck);assert.equal(deckBounds.max.x-deckBounds.min.x,MAIN_ROAD.width);assert.equal((deckBounds.max.x+deckBounds.min.x)/2,MAIN_ROAD.x);
  let floors=0,draws=0;group.traverse(o=>{if(o.isMesh){draws++;assert.ok(!['ground','pole'].includes(o.material.name),'No detached spanning wires or old alley floor');}});assert.ok(draws<=30,'Keep shared material batches after splitting');
  // Compacting the town ended Main Street, its footway and its pavement together at
  // z=20.5; the bus station forecourt beyond the seam is its own ground, covered by

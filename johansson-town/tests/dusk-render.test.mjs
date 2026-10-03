@@ -48,7 +48,7 @@ test('world updates keep garden animation and existing harbour lights on the sam
  let after=0;world.group.traverse(o=>{if(o.isPointLight)after++;});assert.equal(after,points);
 });
 
-test('Sakura tubes load at the current hour without making stock emissive or cel shaded',async()=>{
+test('Sakura tubes load at the current hour and glow, and the shelving does not',async()=>{
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
  const old=fetch;globalThis.fetch=async input=>String(input).startsWith('blob:')?old(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));
  try{
@@ -57,7 +57,9 @@ test('Sakura tubes load at the current hour without making stock emissive or cel
   const tube=room.getObjectByName('sakura-light'),shelf=room.getObjectByName('sakura-shelf');
   assert.ok(tube&&shelf);assert.notEqual(tube.material,shelf.material);
   assert.equal(tube.material.emissiveIntensity,.6);
-  assert.equal(tube.material.type,'MeshStandardMaterial');assert.equal(shelf.material.type,'MeshStandardMaterial');
+  assert.equal(tube.material.type,'MeshStandardMaterial','the tubes keep the physical material that lets them glow');
+  // The fittings join the town's toon shading like every other building.
+  assert.equal(shelf.material.type,'MeshToonMaterial');
   assert.equal(shelf.material.emissive.getHex(),0);
   for(const [minutes,level] of [[540,1],[1110,1],[1199,1],[1243,1],[1380,.6],[1440,.6]]){
    display.updateLighting(minutes);

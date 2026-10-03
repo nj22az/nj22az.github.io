@@ -1,7 +1,8 @@
 import {householdFor} from './households.js';
+import {ISLAND_RESIDENT_NAMES,kitahamaHomeFor} from '../world/kitahama-layout.js';
 import {HARBOUR_OFFICE} from '../world/business-layout.js';
 import {TOWN_DESTINATIONS} from '../world/town-grid.js';
-import {DINING,restaurantApproach,IZAKAYA_DOOR} from '../world/dining-layout.js';
+import {restaurantApproach,IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {residentialHome} from '../world/residential-layout.js';
 import {PROFILES} from './profiles.js';
 import {peninsulaActive} from '../world/town-mode.js';
@@ -40,8 +41,8 @@ export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
  if(shopFloor)Object.defineProperty(profile,'work',{get:()=>TOWN_DESTINATIONS[shopFloor],enumerable:true,configurable:true});
  // The same for home: on the peninsula the shop's staff live in the yard houses behind
  // Front-Row (yard-homes-layout.js); elsewhere, the Main Street flats they always had.
- if(YARD_RESIDENT_NAMES.includes(name)||WORKPLACE_HOMES[name]){
-  const yard=()=>peninsulaActive()?(WORKPLACE_HOMES[name]?.()||YARD_HOMES[householdFor(name)?.id]):null,street={home:profile.home,homeAddress:profile.homeAddress};
+ if(YARD_RESIDENT_NAMES.includes(name)||WORKPLACE_HOMES[name]||ISLAND_RESIDENT_NAMES.includes(name)){
+  const yard=()=>peninsulaActive()?(WORKPLACE_HOMES[name]?.()||kitahamaHomeFor(name)||YARD_HOMES[householdFor(name)?.id]):null,street={home:profile.home,homeAddress:profile.homeAddress};
   Object.defineProperty(profile,'home',{get:()=>yard()?[...yard().door]:street.home,enumerable:true,configurable:true});
   Object.defineProperty(profile,'homeAddress',{get:()=>yard()?.address||street.homeAddress,enumerable:true,configurable:true});
  }

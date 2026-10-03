@@ -1,10 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {RESIDENTS} from '../src/people/residents.js';
-import {PROFILES} from '../src/people/profiles.js';
 import {createResidentLedger,restoreResidentLife} from '../src/people/resident-personalities.js';
 import {SAVE_KEY,migrateThuan} from '../src/save.js';
 

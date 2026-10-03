@@ -4,7 +4,7 @@ import {createAvatarAnimator} from '../avatars/animate.js';
 import {normalizeRecipe} from '../avatars/recipe.js';
 
 /**
- * The children of the 5・6年 class and their teacher, as Shimanchu like everyone else in
+ * The children of the Years 5–6 class and their teacher, as Shimanchu like everyone else in
  * town -- built from recipes, animated by the same animator -- behind the interface the
  * classroom already used for its placeholder figures: buildFigure, setPose and
  * animateFigure. A figure faces +z in its own frame; the classroom turns it.
@@ -19,8 +19,8 @@ const pick=(r,list)=>list[Math.floor(r()*list.length)];
 /** A child's recipe from their line on the class list: small, round-headed, bright. */
 export function pupilRecipe({name='',girl=false,shirt=0x5f86b5,bottom=0x2d3a52,hair=0x1c1714,skin=0xd9a57c,toe=0x3f6fb0,smock=false}){
  const r=seeded(name);
- return normalizeRecipe({name,
-  body:{height:.02+r()*.1,build:.3+r()*.25,skin:hex(skin)},
+ return normalizeRecipe({name,age:'child',
+  body:{height:.3+r()*.5,build:.3+r()*.25,skin:hex(skin)},
   head:{size:.62+r()*.12,shape:.45+r()*.2,form:pick(r,['round','oval','heart']),jaw:.25+r()*.2,cheeks:.55+r()*.3},
   hair:{style:girl?pick(r,['bob','ponytail','braids','bun']):pick(r,['crop','spiky','sidepart','buzz']),colour:hex(hair),flip:r()<.5},
   eyes:{style:pick(r,['round','sparkle','gentle','dot']),colour:'#2a1d16',size:.55+r()*.25},

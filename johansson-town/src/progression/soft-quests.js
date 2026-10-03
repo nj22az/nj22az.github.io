@@ -99,5 +99,5 @@ export function recordFormSale(state,minutes){
 
 export const NOTICE_NUDGE='Minato Ferry · last sailing 22:00 from the outer pier. Tickets at the booth on the quay, not the till.';
 export const RADIO_821='Eighty-two-one: clear evening, light chop on the quay. Evening press as posted.';
-export const FORM3_NUDGE='Sakura — Thuan buys Form 3D prints.';
-export const QUAY_NUDGE='Quay before evening press.';
+export const FORM3_NUDGE='Thuan buys Form 3D prints at Sakura, if you have one to sell.';
+export const QUAY_NUDGE='The evening paper comes in on the ferry at half past six. Worth a walk down to the quay.';

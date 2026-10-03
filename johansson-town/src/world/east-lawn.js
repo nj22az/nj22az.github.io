@@ -1,13 +1,17 @@
 import * as THREE from '../../vendor/three.module.js';
+import {KITANO_SEAWALL_GAP} from './kitano-link-plan.js';
+import {applyTerrainNormals} from './terrain-surface.js';
+import {GROUND} from '../render/ground-palette.js';
 import {MAIN_ROAD} from './main-road.js';
-import {PARK,PARK_SKIRT,TURF_TINT} from './park-layout.js';
+import {PARK,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {buildEastGarden} from './east-garden.js';
 import {SCHOOL} from './school-layout.js';
 import {BEACH,beachHeight} from './beach-layout.js';
 import {inKobanPlot} from './koban-layout.js';
-import {GATEBALL} from './okinawa/layout.js';
+import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
+import {broadleafGeometry} from './okinawa/trees.js';
 
 /**
  * The east side of the town: one green from the boardwalk out to the water.
@@ -39,12 +43,11 @@ export const EAST_LAWN=Object.freeze({
 export const eastLawnAt=(x,z,r=0)=>
  x>=EAST_LAWN.minX+r&&x<=EAST_LAWN.maxX-r&&z>=EAST_LAWN.minZ+r&&z<=EAST_LAWN.maxZ-r;
 
-const TREE_LEAVES=[0x44664c,0x517a52,0x5d8254];
 /** How many metres of lawn one tile of the park's grass covers. */
 const TURF_METRES=2.4;
 
 /** The green the lawn shows without a page to paint the turf on. */
-const BARE_TURF=0x6fae4a;
+const BARE_TURF=GROUND.grass;
 
 /**
  * Ground drawn rather than fetched, for the surfaces the town supplies no photograph
@@ -73,7 +76,7 @@ export function groundTexture(base,marks,strokes){
 }
 
 /** Roughly how wide one cell of the lawn's grid is. */
-const CELL=1.2;
+const CELL=.6;
 
 /**
  * @param {object} options
@@ -100,11 +103,14 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   for(let v=from;v<to;v+=CELL)set.add(v);
   return [...set].sort((a,b)=>a-b);
  };
+ // Carry the mound's edge samples into the lawn: matching heights alone leaves
+ // hairline gaps when a coarse triangle bridges a bend in a finer border.
  // The gateball court's edges too: the court is level ground cut into the hill's foot,
  // and the lawn stops at its retaining wall rather than sloping in under the sand.
- const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,PARK.x-PARK.half,PARK.x+PARK.half,GATEBALL.minX,GATEBALL.maxX);
- const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,PARK.z-PARK.half,PARK.z+PARK.half,GATEBALL.minZ,GATEBALL.maxZ);
- const onCourt=(x,z)=>x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
+ const boundary=axis=>Array.from({length:PARK_TERRAIN_SEGMENTS+1},(_,i)=>PARK[axis]-PARK.half+i/PARK_TERRAIN_SEGMENTS*PARK.half*2);
+ const xs=lines(EAST_LAWN.minX,EAST_LAWN.maxX,...boundary('x'),GATEBALL.minX,GATEBALL.maxX);
+ const zs=lines(EAST_LAWN.minZ,EAST_LAWN.maxZ,...boundary('z'),GATEBALL.minZ,GATEBALL.maxZ);
+ const onCourt=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
  const height=(x,z)=>heightAt?heightAt(x,z):0;
  const onMound=(x,z)=>Math.abs(x-PARK.x)<=PARK.half+.01&&Math.abs(z-PARK.z)<=PARK.half+.01;
  const vertices=[],turfUV=[],faces=[];
@@ -123,7 +129,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  const turf=new THREE.BufferGeometry();
  turf.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
  turf.setAttribute('uv',new THREE.Float32BufferAttribute(turfUV,2));
- turf.setIndex(faces);turf.computeVertexNormals();
+ turf.setIndex(faces);applyTerrainNormals(turf,height);
  const lawn=new THREE.Mesh(turf,new THREE.MeshStandardMaterial({color:BARE_TURF,roughness:1}));
  lawn.name='east-lawn-grass';lawn.receiveShadow=!!shadows;group.add(lawn);
 
@@ -139,7 +145,7 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  };
  // Real openings in the mesh and collision wall lead down to the sand.
  let wallFrom=EAST_LAWN.minZ-wall.depth/2;
- for(const access of [...BEACH.accesses,{z:EAST_LAWN.maxZ+wall.depth/2,half:0}]){
+ for(const access of [...BEACH.accesses,KITANO_SEAWALL_GAP,{z:EAST_LAWN.maxZ+wall.depth/2,half:0}].sort((a,b)=>a.z-b.z)){
   const wallTo=access.z-access.half;
   if(wallTo>wallFrom)parapet(wall.depth,wallTo-wallFrom,wall.x,(wallFrom+wallTo)/2);
   wallFrom=access.z+access.half;
@@ -156,8 +162,8 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  }
  sand.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
  sand.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));sand.setIndex(indices);sand.computeVertexNormals();
- const grit=groundTexture('#d8caa4',[['#ded0aa',320,6],['#d0c199',260,7],['#e6dbbb',160,4]],'#cabb95');
- const shore=new THREE.Mesh(sand,new THREE.MeshStandardMaterial({color:grit?0xffffff:0xd8caa4,map:grit,roughness:1,side:THREE.DoubleSide}));
+ const grit=groundTexture('#e3d2a4',[['#e9d9b0',320,6],['#d8c595',260,7],['#efe4c4',160,4]],'#d4c191');
+ const shore=new THREE.Mesh(sand,new THREE.MeshStandardMaterial({color:grit?0xffffff:GROUND.sand,map:grit,roughness:1,side:THREE.DoubleSide}));
  shore.name='east-beach-sand';shore.receiveShadow=!!shadows;group.add(shore);
  for(const access of BEACH.accesses){
   const {fromX,toX,z,half}=access,y=beachHeight(toX,z);
@@ -173,18 +179,16 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
 
 
  // A treeline closes the north end, where the land carries on past anything built.
- const trunkMat=new THREE.MeshStandardMaterial({color:0x4f4031,roughness:1});
- const leaves=TREE_LEAVES.map(color=>new THREE.MeshStandardMaterial({color,roughness:1}));
+ const treeMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9});
+ const shapes=[0,1,2].map(variant=>broadleafGeometry({variant}));
  const treeZ=EAST_LAWN.maxZ-.6,first=EAST_LAWN.minX+1.4,last=wall.x-1.6,count=13;
  // With a gap for the school gate, which the lawn's path runs through.
  const gate=SCHOOL.gate,clear=x=>Math.abs(x-gate.x)<gate.half+.9||inKobanPlot(x,treeZ,1.1);// and the police box
  for(let i=0;i<count;i++){
-  const x=first+i*(last-first)/(count-1),z=treeZ+(i%3-1)*.45,height=2.7+(i%4)*.4,radius=.78+(i%3)*.14;
+  const x=first+i*(last-first)/(count-1),z=treeZ+(i%3-1)*.45,height=3.6+(i%4)*.45;
   if(clear(x))continue;
-  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.13,.21,height*.72,7),trunkMat);
-  trunk.position.set(x,height*.36,z);trunk.castShadow=!!shadows;group.add(trunk);
-  const crown=new THREE.Mesh(new THREE.ConeGeometry(radius,height*.85,7),leaves[i%leaves.length]);
-  crown.position.set(x,height*.75,z);crown.scale.y=1.2;crown.castShadow=!!shadows;group.add(crown);
+  const tree=new THREE.Mesh(shapes[i%3],treeMat);tree.name='East lawn tree';
+  tree.position.set(x,0,z);tree.scale.setScalar(height);tree.rotation.y=i*1.7;tree.castShadow=!!shadows;tree.receiveShadow=true;group.add(tree);
  }
  const west=first-1.1,eastEnd=last+1.1,g0=gate.x-gate.half-.35,g1=gate.x+gate.half+.35;
  colliders.push({id:'east-lawn-trees',x:(west+g0)/2,z:treeZ+.35,w:g0-west,d:1.5,height:5.4},

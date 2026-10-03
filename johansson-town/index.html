@@ -10,32 +10,31 @@
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
 <meta name="description" content="A small harbour town, 1997. Walk its streets, meet the residents, browse the shops and settle into daily life.">
 <style>:root,html,body{margin:0;background:#f7f5f2!important}</style>
+<link rel="icon" type="image/png" href="./assets/icons/town-192.png">
+<link rel="apple-touch-icon" href="./assets/icons/town-192.png">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./base.css?h=11614073">
-<link rel="stylesheet" href="./context-controls.css?h=f442bdb6">
+<link rel="stylesheet" href="./base.css?h=55c46465">
+<link rel="stylesheet" href="./context-controls.css?h=7dfa7c15">
 <title>Johansson Town</title>
-<link rel="stylesheet" href="./landing.css?h=68bd7749">
+<link rel="stylesheet" href="./landing.css?h=2db6f686">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
-<link rel="stylesheet" href="./tomodachi-ui.css?h=f083fafa">
-<link rel="stylesheet" href="./photo-mode.css?h=0f8cb630">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-DfnjCT7O.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-B-hU6XZF.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/icons-D2wbYvxv.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-BGWFqsu4.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-xOebpuup.js">
+<link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
+<link rel="stylesheet" href="./photo-mode.css?h=17316f51">
+<link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-DEol4XE5.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/icons-MrOxZM18.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CCG0tNLG.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-DwOd6q5e.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-d09saVn0.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-7PjwmOKd.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
 <div id="ink"></div>
 <div id="threshold"></div>
-<button id="exitRoomButton" class="hidden" aria-label="Exit building to street">↶ Exit to street</button>
-<section id="start" class="guide-open">
-  <div id="splash" class="splash" aria-hidden="true">
-    <div class="splash-mark">
-      <span class="splash-seal">港</span>
-      <span class="splash-word">Johansson<em>Co.</em></span>
-    </div>
-  </div>
+<button id="exitRoomButton" class="hidden" aria-label="Exit building to street">Exit to street</button>
+<section id="start">
+  <div id="splash" class="splash done" aria-hidden="true"></div>
   <section id="title" class="title-screen" aria-labelledby="titleLogo">
     <div class="title-sky" aria-hidden="true">
       <span class="title-sun"></span>
@@ -44,26 +43,25 @@
     </div>
     <div class="title-town" aria-hidden="true"><img src="./assets/images/town-street.webp" width="1200" height="760" alt="" fetchpriority="high" decoding="async"></div>
     <div class="title-center">
-      <p class="title-presents">JOHANSSON CO. PRESENTS</p>
       <h1 id="titleLogo" class="title-logo">
         <span class="sr-only">Johansson Town</span>
-        <span class="logo-jp" aria-hidden="true">ヨハンソン町</span>
         <span class="logo-main" aria-hidden="true"><span style="--i:0">J</span><span style="--i:1">O</span><span style="--i:2">H</span><span style="--i:3">A</span><span style="--i:4">N</span><span style="--i:5">S</span><span style="--i:6">S</span><span style="--i:7">O</span><span style="--i:8">N</span></span>
         <span class="logo-town" aria-hidden="true"><span style="--i:9">T</span><span style="--i:10">O</span><span style="--i:11">W</span><span style="--i:12">N</span></span>
       </h1>
       <p class="title-tag">A little harbour life · 1997</p>
       <div class="title-menu">
-        <button id="enter" type="button"><span class="title-cursor" aria-hidden="true">▶</span><b>PRESS START</b></button>
-        <a class="title-guide" href="#board" data-guide-open><span class="title-cursor" aria-hidden="true">▶</span>TOWN GUIDE</a>
+        <button id="enter" type="button"><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4l12 8-12 8z" fill="currentColor"/></svg><b>START</b></button>
+        <a class="title-guide" href="#board" data-guide-open><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 19V5M8 7h7"/></svg>TOWN GUIDE</a>
       </div>
       <div class="title-loading">
+        <aside class="island-fact" aria-label="Island fact"><span class="island-fact-icon" aria-hidden="true">✿</span><p class="island-fact-label">A LITTLE ISLAND LIFE</p><p id="loadingFact" aria-live="polite" aria-atomic="true"></p></aside>
         <div class="title-bar" aria-hidden="true"><span></span></div>
         <div id="bootStatus" role="status">READY</div>
       </div>
     </div>
     <footer class="title-foot">
       <span>© 1997 JOHANSSON CO.</span>
-      <span class="title-hint">TOUCH · KEYBOARD · CONTROLLER</span>
+      <button id="installTown" type="button" aria-label="Install on iPhone or iPad"><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 10v11h14V10M12 16V2M7 7l5-5 5 5"/></svg>Install app</button><span class="title-hint">TOUCH · KEYBOARD · CONTROLLER</span>
     </footer>
   </section>
   <div class="board-wrap">
@@ -71,14 +69,14 @@
       <div class="crop-marks" aria-hidden="true"></div>
 
       <header>
-        <nav class="guide-nav" aria-label="Visitor guide"><a href="#roll-heading">Residents</a><a href="#dir-heading">Places</a><a href="#visit-planning">Hours &amp; visiting</a><button type="button" data-town-enter>Enter town</button><a href="#title" data-guide-close>Title screen</a></nav>
+        <nav class="guide-nav" aria-label="Visitor guide"><a href="#roll-heading" aria-label="Residents" title="Residents" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 12a4 4 0 118 0a4 4 0 01-8 0M4 22v-2a8 8 0 0116 0v2"/></svg></a><a href="#dir-heading" aria-label="Places" title="Places" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5l6-2 6 2 6-2v16l-6 2-6-2-6 2zM9 3v16M15 5v16"/></svg></a><a href="#visit-planning" aria-label="Hours and visiting" title="Hours and visiting" ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a9 9 0 100 18a9 9 0 000-18M12 7v5l4 2"/></svg></a><a href="#title" aria-label="Title screen" title="Title screen" data-guide-close ><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8M5 9v12h14V9M9 21v-7h6v7"/></svg></a><button type="button" data-town-enter aria-label="Play Johansson Town" title="Play Johansson Town"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4l12 8-12 8z" fill="currentColor"/></svg></button></nav>
         <div class="board-kicker">
           <span>JOHANSSON TOWN · VISITOR’S GUIDE</span>
           <span class="sr-only" id="boardDoc">Document JT-HB-63-0913</span>
           <span>HARBOUR DISTRICT · 1997</span>
         </div>
 
-        <div class="guide-heading"><p class="board-jp">ヨハンソン町</p><h1>Johansson Town</h1><p>A harbour neighbourhood of working quays, small shops and familiar faces.</p></div>
+        <div class="guide-heading"><h1>Johansson Town</h1><p>Your guide to a 1990s island: working quays, quiet gardens, small shops and familiar faces.</p></div>
       </header>
 
 
@@ -95,16 +93,7 @@
 
 
 
-      <section aria-labelledby="roll-heading">
-        <div class="section-bar paper">
-          <div>
-            <p class="board-tiny">THE PEOPLE WHO MAKE THE PLACE</p>
-            <h2 id="roll-heading">Meet the residents</h2>
-          </div>
-        </div>
-        <p class="brochure-intro">Thuan opens Sakura. Nao keeps the evening going at Minato. Around them, the neighbourhood goes about its day — working, walking, talking and coming home.</p>
-        <div class="roll-grid" id="rollGrid"></div>
-      </section>
+      <section class="island-brochure-hero" aria-label="Welcome to the island"><img src="./assets/images/town-street.webp" width="1200" height="760" alt="Johansson Town’s island shopping street"><div><p class="board-tiny">KITANO-JIMA VISITOR BUREAU · 1997 EDITION</p><h2>Take the long way home.</h2><p>Step off the boat into a town with time for you. Meet Thuan at Sakura, follow the harbour deliveries, browse a book, or spend the afternoon walking through the garden.</p><a href="#roll-heading">Meet your neighbours</a></div></section>
       <section aria-labelledby="dir-heading">
         <div class="section-bar paper">
           <div>
@@ -117,12 +106,23 @@
       <section class="brochure-day" aria-labelledby="day-heading">
         <div class="section-bar paper"><div><p class="board-tiny">AROUND THE NEIGHBOURHOOD</p><h2 id="day-heading">A day in Johansson Town</h2></div></div>
         <div class="brochure-itinerary">
-          <article><span class="brochure-number">01</span><h3>Morning at Sakura</h3><p>A shop door opens, shelves fill, and the street wakes up. Drop in for something small and a familiar hello.</p><span class="brochure-stop">桜商店 · GROCERIES & DAILY GOODS</span></article>
-          <article><span class="brochure-number">02</span><h3>The long way round</h3><p>Browse the bookshop and workshop, follow the street towards the quay, or sit for a while and watch the town go by.</p><span class="brochure-stop">港町 · STREETS & HARBOUR</span></article>
-          <article><span class="brochure-number">03</span><h3>Stay for the evening</h3><p>When the lanterns come on, stop by Minato. Nao is there, and there’s always time for one more conversation.</p><span class="brochure-stop">みなと · THE NEIGHBOURHOOD IZAKAYA</span></article>
+          <article><span class="brochure-number">01</span><h3>Morning at Sakura</h3><p>A shop door opens, shelves fill, and the street wakes up. Drop in for something small and a familiar hello.</p><span class="brochure-stop">Sakura Shop · GROCERIES & DAILY GOODS</span></article>
+          <article><span class="brochure-number">02</span><h3>The long way round</h3><p>Browse Front-Row Books, visit the dock workshop, or follow the paths through Aoba Garden. The pond and onsen make a peaceful afternoon stop.</p><span class="brochure-stop">Minato Town · STREETS & HARBOUR</span></article>
+          <article><span class="brochure-number">03</span><h3>Stay for the evening</h3><p>When the lanterns come on, stop by Minato. Nao is there, and there’s always time for one more conversation.</p><span class="brochure-stop">Minato · THE NEIGHBOURHOOD IZAKAYA</span></article>
         </div>
       </section>
 
+      <section aria-labelledby="roll-heading">
+        <div class="section-bar paper">
+          <div>
+            <p class="board-tiny">THE PEOPLE WHO MAKE THE PLACE</p>
+            <h2 id="roll-heading">Island resident catalogue</h2>
+          </div>
+        </div>
+        <p class="brochure-intro">Thuan opens Sakura. Nao keeps the evening going at Minato. Around them, the neighbourhood goes about its day — working, walking, talking and coming home.</p>
+        <label class="catalogue-search">Find a resident <input id="residentSearch" type="search" placeholder="Name, occupation or place" autocomplete="off"></label><p id="catalogueCount" role="status">Meet the people of the island</p>
+        <div class="roll-grid" id="rollGrid"></div>
+      </section>
       <section aria-labelledby="stockroom-heading">
         <div class="section-bar paper">
           <div>
@@ -132,7 +132,7 @@
           <p class="board-tiny">SAKURA SHŌTEN</p>
         </div>
         <a class="stockroom-card" href="/thuans-storage/">
-          <img src="/thuans-storage/cover.jpg" width="1200" height="630" alt="Thuan's Storage – the stockroom behind Sakura Shōten">
+          <img src="./assets/images/storage-cover.svg" width="1200" height="630" alt="Thuan’s Storage – the stockroom behind Sakura Shop">
           <span class="stockroom-text">
             <span class="notice-no">BEHIND THE SHOP</span>
             <b>Restock the konbini with Thuan</b>
@@ -150,27 +150,27 @@
         </div>
         <div class="poster-wall">
           <figure class="poster-card">
-            <img src="./assets/graphics/izakaya/minato-tori.webp" width="512" height="768" alt="MINATO TORI · 港鳥, print for Minato Izakaya">
+            <img src="./assets/graphics/izakaya/minato-tori.webp" width="512" height="768" alt="MINATO TORI · Harbour Birds, print for Minato Izakaya">
             <figcaption>
-              <p class="notice-no">港鳥</p>
+              <p class="notice-no">Harbour Birds</p>
               <h3>MINATO TORI</h3>
               <p>Charcoal yakitori until last pour. Hiroshi turns the skewers; Nao keeps the sauce.</p>
             </figcaption>
           </figure>
           <figure class="poster-card">
-            <img src="./assets/graphics/izakaya/shiomachi-sake.webp" width="512" height="768" alt="SHIOMACHI · 潮待ち, print for Minato Izakaya">
+            <img src="./assets/graphics/izakaya/shiomachi-sake.webp" width="512" height="768" alt="SHIOMACHI · Waiting for the tide, print for Minato Izakaya">
             <figcaption>
-              <p class="notice-no">潮待ち</p>
+              <p class="notice-no">Waiting for the tide</p>
               <h3>SHIOMACHI</h3>
               <p>Junmai from the harbour brewery. Waiting for the tide, one cup at a time.</p>
             </figcaption>
           </figure>
           <figure class="poster-card">
-            <img src="./assets/graphics/izakaya/minato-lanterns.webp" width="512" height="768" alt="MINATO · みなと, print for Minato Izakaya">
+            <img src="./assets/graphics/izakaya/minato-lanterns.webp" width="512" height="768" alt="MINATO · Minato, print for Minato Izakaya">
             <figcaption>
-              <p class="notice-no">みなと</p>
+              <p class="notice-no">Minato</p>
               <h3>MINATO</h3>
-              <p>The house poster. Red lanterns, the noren, and おかえりなさい — welcome back.</p>
+              <p>The house poster. Red lanterns, the noren, and Welcome back — welcome back.</p>
             </figcaption>
           </figure>
         </div>
@@ -190,7 +190,7 @@
           <div class="clock-head">
             <div>
               <p class="board-tiny">04 · TOWN CLOCK</p>
-              <h2 id="town-clock-heading">町時計</h2>
+              <h2 id="town-clock-heading">Town clock</h2>
             </div>
             <p>
               <small id="boardLive">LIVE · VISITOR CLOCK</small>
@@ -208,7 +208,7 @@
                 <text x="162" y="106" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">3</text>
                 <text x="100" y="168" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">6</text>
                 <text x="38" y="106" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="900">9</text>
-                <text x="100" y="72" text-anchor="middle" fill="var(--vermillion)" font-family="Shippori Mincho, serif" font-size="14">港</text>
+                <text x="100" y="72" text-anchor="middle" fill="var(--vermillion)" font-family="Shippori Mincho, serif" font-size="14">Minato</text>
                 <text x="100" y="136" text-anchor="middle" fill="currentColor" font-family="Noto Sans JP, sans-serif" font-size="6.5" font-weight="700" letter-spacing="0.32em">JOHANSSON</text>
                 <g id="handHour">
                   <line x1="100" y1="118" x2="100" y2="56" stroke="currentColor" stroke-width="7" stroke-linecap="square"/>
@@ -306,7 +306,7 @@
           <article class="notice-card">
             <p class="notice-no">NOTICE B-07</p>
             <h3>Evening paper</h3>
-            <p>Reiko works the evening press inside Front-Row Books & Workshop until 00:30. Newspapers are available at Aya’s counter.</p>
+            <p>Reiko works the evening press inside Front-Row Books until 00:30. Newspapers are available at Aya’s counter.</p>
           </article>
           <article class="notice-card">
             <p class="notice-no">NOTICE C-02</p>
@@ -325,13 +325,13 @@
 
       <footer class="board-foot">
         <p>Johansson Town · Harbour District · 1997.<br>Explore with touch, keyboard or controller. First- and third-person views. Your town remembers you on this device.</p>
-        <p class="jp"><span id="boardJpDate">平成9年9月13日</span><span class="board-foot-line">HARBOUR DISTRICT · 1997</span></p>
+        <p class="jp"><span id="boardJpDate">Heisei9Year9Month13Day</span><span class="board-foot-line">HARBOUR DISTRICT · 1997</span></p>
       </footer>
     </article>
   </div>
 </section>
 <div id="hud" class="hidden">
-  <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">ヨハンソン町 · HARBOUR DISTRICT</small></div><div class="status-stack"><div id="clock">16:42</div></div></div>
+  <div class="topbar"><div class="placard"><b id="place">JOHANSSON TOWN</b><small id="placeSub">Johansson Town · HARBOUR DISTRICT</small></div><div class="status-stack"><div id="clock">16:42</div></div></div>
   <button id="waypoint" class="hidden" aria-label="Clear walking directions"></button>
   <button id="directoryButton" aria-label="Open town menu" aria-controls="directory" aria-expanded="false">Menu</button>
 
@@ -341,14 +341,15 @@
   <div id="subtitle" role="status" aria-live="polite"></div>
   <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
 </div>
-<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town menu</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory">CLOSE</button></div><div class="menu-tools"><button id="fullscreenButton">FULL SCREEN</button><nav id="townControls" aria-label="Town controls"><button id="cameraButton" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Camera</button><button id="viewButton" aria-pressed="false" aria-label="Switch between first- and third-person view (V)">3rd person</button><button id="photoButton" aria-label="Open photo studio (P)">Photo studio</button><button id="movesButton" aria-label="Choose something for Johansson to do (G)">Moves</button><button id="notebookButton">NOTEBOOK</button><button id="playerButton">PLAYER</button><button id="timeButton">TIME</button><button id="weatherButton">CLEAR</button><button id="soundButton">SOUND ON</button></nav></div><details class="menu-map"><summary>Show map</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><h3>Places</h3><div id="directoryGrid"></div><div class="directory-foot">HARBOUR DISTRICT · 1997 · <span id="saveState">PROGRESS SAVED</span> <button id="creditsButton">CREDITS</button></div></div></div>
-<div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1997</span><button id="closeActivity" aria-label="Close activity">Done <span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
+<div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town book</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory" aria-label="Close the town book">×</button></div><nav id="townControls" class="menu-apps" aria-label="Things to do"><button id="notebookButton" class="app-tile" data-icon="page">Field book</button><button id="photoButton" class="app-tile" data-icon="camera" aria-label="Open photo studio (P)">Photo studio</button><button id="movesButton" class="app-tile" data-icon="moves" aria-label="Choose something for Johansson to do (G)">Moves</button><button id="playerButton" class="app-tile" data-icon="person">Player &amp; save</button><button id="cameraButton" class="app-tile" data-icon="game" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Controls</button></nav><details class="menu-settings" aria-label="Settings"><summary>Settings</summary><div class="setting-row"><span>View</span><button id="viewButton" aria-pressed="false" aria-label="Switch between first- and third-person view (V)">Behind him</button></div><div class="setting-row"><span>Clock</span><button id="timeButton">Set the time</button></div><div class="setting-row"><span>Weather</span><button id="weatherButton">Clear</button></div><div class="setting-row"><span>Sound</span><button id="soundButton">On</button></div><div class="setting-row"><span>Screen</span><button id="fullscreenButton">Full screen</button></div></details><details class="menu-map"><summary>Map of the town</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><details class="menu-places"><summary>Places</summary><div id="directoryGrid"></div></details><div class="directory-foot">HARBOUR DISTRICT · 1997 · <span id="saveState">Progress saved</span> <button id="creditsButton">Credits</button></div></div></div>
+<div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1997</span><button id="closeActivity" aria-label="Close activity"><span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
 <div id="mobile" class="hidden"><button id="drink" class="control-off" aria-label="Drink held can">DRINK</button><div id="stick" class="touch-stick" aria-label="Movement area"><div id="stickBase" class="stick-base" aria-hidden="true"><div id="knob" class="stick-knob"></div></div></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="control-off" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="control-off" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="control-off" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
-<div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>FULL SCREEN ON IPHONE</h2><p>Use Share → Add to Home Screen, then open Johansson Town from the Home Screen.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
-<script src="./resident-guide.js?v=resident-guide-1"></script>
-<script src="./landing.js?v=resident-guide-1"></script>
+<div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON TOWN</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
+<script src="./resident-guide.js?h=e2014866"></script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-BoEbnuQX.js";</script>
+<script src="./landing.js?h=a9321e19"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
 // behind it. Launching the game stays in index.html; this only presses its button.
@@ -361,7 +362,7 @@
   const SPLASH_KEY = "johansson-town-splash";
 
   // The company mark plays once per visit; a tap or key skips it.
-  let splashSeen = start.classList.contains("guide-open");
+  let splashSeen = true;
   try { splashSeen = splashSeen || sessionStorage.getItem(SPLASH_KEY) === "1"; } catch {}
   const endSplash = () => {
     if (splash.classList.contains("done")) return;
@@ -381,11 +382,13 @@
     event?.preventDefault();
     start.classList.add("guide-open");
     start.scrollTop = 0;
+    history.replaceState(null,"",location.pathname+location.search);
     document.getElementById("board").focus?.({ preventScroll: true });
   }
   function closeGuide(event) {
     event?.preventDefault();
     start.classList.remove("guide-open");
+    history.replaceState(null,"",location.pathname+location.search);
     enter.focus({ preventScroll: true });
   }
   document.querySelectorAll("[data-town-enter]").forEach(button => button.addEventListener("click", () => enter.click()));
@@ -393,25 +396,35 @@
   document.querySelectorAll("[data-guide-close]").forEach((link) => link.addEventListener("click", closeGuide));
   document.getElementById("board").tabIndex = -1;
 
-  // A short two-note chime when START is pressed. The press is the user gesture
-  // browsers ask for, so this never autoplays.
+  // The Johansson Co. jingle when START is pressed: our own, not a borrowed blip. Four
+  // plucked notes climbing the Ryukyu scale (sol, ti, do, mi), the way a sanshin opens a
+  // song, then a soft open fifth that rings out like the harbour bell. The press is the
+  // user gesture browsers ask for, so this never autoplays.
   function chime() {
     try {
       const Ctx = window.AudioContext || window.webkitAudioContext;
       if (!Ctx) return;
-      const ctx = new Ctx();
-      [[988, 0], [1319, .09]].forEach(([freq, at]) => {
-        const osc = ctx.createOscillator(), gain = ctx.createGain();
-        osc.type = "square";
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(.0001, ctx.currentTime + at);
-        gain.gain.exponentialRampToValueAtTime(.06, ctx.currentTime + at + .01);
-        gain.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + at + (at ? .45 : .12));
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(ctx.currentTime + at);
-        osc.stop(ctx.currentTime + at + .5);
-      });
-      setTimeout(() => ctx.close(), 900);
+      const ctx = new Ctx(), t0 = ctx.currentTime + .02;
+      const out = ctx.createGain(); out.gain.value = .9;
+      const tone = ctx.createBiquadFilter(); tone.type = "lowpass"; tone.frequency.value = 3200; tone.Q.value = .4;
+      out.connect(tone).connect(ctx.destination);
+      // A pluck: a triangle for the body, a quieter octave sine for the bite, quick decay.
+      const pluck = (freq, at, level, decay) => {
+        for (const [type, mult, share] of [["triangle", 1, 1], ["sine", 2, .35], ["sine", 3, .08]]) {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.type = type; osc.frequency.value = freq * mult;
+          osc.detune.setValueAtTime(-8, t0 + at); osc.detune.linearRampToValueAtTime(0, t0 + at + .04);
+          gain.gain.setValueAtTime(.0001, t0 + at);
+          gain.gain.exponentialRampToValueAtTime(level * share, t0 + at + .008);
+          gain.gain.exponentialRampToValueAtTime(.0001, t0 + at + decay);
+          osc.connect(gain).connect(out);
+          osc.start(t0 + at); osc.stop(t0 + at + decay + .05);
+        }
+      };
+      // G4 B4 C5 E5, then C5 and G5 together, held.
+      [[392, 0], [493.9, .11], [523.3, .22], [659.3, .33]].forEach(([f, at]) => pluck(f, at, .05, .42));
+      pluck(523.3, .5, .04, 1.3); pluck(784, .5, .028, 1.4);
+      setTimeout(() => ctx.close(), 2200);
     } catch {}
   }
   enter.addEventListener("click", () => { if (!window.__JOHANSSON_BOOTING__) chime(); }, { capture: true });
@@ -454,10 +467,12 @@
 })();
 </script>
 <script type="module">
-import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
+import {createLoadingFacts} from './loading-facts.js';
+import {unlockTownAudio} from './runtime/audio-CBa7Ywpb.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
+  const loadingFacts=createLoadingFacts(document.getElementById('loadingFact'));
   const fatal=document.getElementById('fatal');
   const retry=document.getElementById('retry');
   const fsButton=document.getElementById('fullscreenButton');
@@ -484,7 +499,8 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
     enter.disabled=true;
     document.getElementById('start').classList.remove('guide-open');
     document.getElementById('start').classList.add('booting');
-    status.textContent='LOADING GAME CODE…';
+    loadingFacts.start();
+    status.textContent='PACKING FOR THE ISLAND…';
     window.__JOHANSSON_STARTUP__={startedAt:performance.now(),stage:'code'};
     try{unlockTownAudio();}catch(error){console.warn('Town audio unavailable:',error);}
     if(!isIPhone||standalone())fullscreen();
@@ -494,12 +510,23 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
       }
     },25000);
     try{
-      await import('./runtime/boot-DfnjCT7O.js');
+      // Let the browser paint the first fact before constructing the town.
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      try { await import('./runtime/boot-DEol4XE5.js'); } catch (error) {
+        if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
+        const response=await fetch('./index.html',{cache:'no-store'});
+        if(!response.ok)throw error;
+        const fresh=await response.text(),match=fresh.match(/import\(['"]\.\/runtime\/(boot-[A-Za-z0-9_-]+\.js)['"]\)/);
+        if(!match)throw error;
+        await import('./runtime/'+match[1]);
+      }
       clearTimeout(watchdog);
+      loadingFacts.stop();
       window.__JOHANSSON_RUNNING__=true;
       fatal.classList.add('hidden');
     }catch(err){
       clearTimeout(watchdog);
+      loadingFacts.stop();
       console.error(err);
       status.textContent='START FAILED';
       fatal.querySelector('p').textContent=/WebGL|graphics context/i.test(err.message||'')
@@ -516,9 +543,11 @@ import {unlockTownAudio} from './runtime/audio-8OQDptIM.js';
   retry.addEventListener('click',()=>location.reload());
   fsButton.addEventListener('click',fullscreen);
   fsClose.addEventListener('click',()=>fsHelp.classList.add('hidden'));
-  document.addEventListener('fullscreenchange',()=>{fsButton.textContent=document.fullscreenElement?'EXIT FULL SCREEN':'FULL SCREEN'});
-  document.addEventListener('webkitfullscreenchange',()=>{fsButton.textContent=document.webkitFullscreenElement?'EXIT FULL SCREEN':'FULL SCREEN'});
+  document.addEventListener('fullscreenchange',()=>{fsButton.textContent=document.fullscreenElement?'Leave full screen':'Full screen'});
+  document.addEventListener('webkitfullscreenchange',()=>{fsButton.textContent=document.webkitFullscreenElement?'Leave full screen':'Full screen'});
 })();
 </script>
+<script type="module" src="./title-sky.js"></script>
+<script type="module" src="./pwa.js"></script>
 </body>
 </html>

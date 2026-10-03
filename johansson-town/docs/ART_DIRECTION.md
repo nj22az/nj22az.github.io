@@ -1,5 +1,7 @@
 # Johansson Town: the street must earn the comparison
 
+> **Superseded in part (October 2026).** The town is set in **1997**, not 1988, and the look, building kit and avatar rules are now set by `AMPLIFY-AUDIT.md`. Where this note disagrees, the audit wins.
+
 The player's target is the grounded human scale, ordinary shop life and material richness of Shenmue, with Yakuza 0's late-1980s streets as a reference. The deliverable is a small original neighbourhood with that care. The current generic low-poly cast and repeated interiors are interim assets; extra geometry or post-processing does not certify this target.
 
 ## Changes in this pass

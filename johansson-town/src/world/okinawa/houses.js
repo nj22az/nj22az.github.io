@@ -1,4 +1,7 @@
+import {stairFlight,stairLanding} from './stairs.js';
 import {rng} from './kit.js';
+import {wallAd,WALL_ADS} from './signs.js';
+import {broadleaf} from './trees.js';
 
 /**
  * The buildings and gardens of an Okinawan harbour town, made with the kit.
@@ -55,13 +58,14 @@ export function redTileHouse(kit,{w=8.4,d=6.8,seed=1,wall=C.plaster}={}){
  kit.box(w,.18,.16,0,eaves-.09,D-.12,C.timber);                        // the beam over them
  // The front: sliding doors, a timber rail at knee height and paper-and-glass above it.
  kit.block(-W+.05,W-.05,floor,floor+.55,front,front+.04,C.timberLight);
- kit.block(-W+.05,W-.05,floor+.55,eaves-.25,front+.005,front+.03,0xefe8d6);
+ // Glass sliding doors (garasu-do) above the rail, with the room behind them.
+ kit.block(-W+.05,W-.05,floor+.55,eaves-.25,front+.005,front+.03,C.glass,'window');
  for(let i=0;i<=6;i++){const x=-W+.1+i*(w-.2)/6;kit.box(.07,eaves-floor-.25,.05,x,(floor+eaves-.25)/2,front+.04,C.timber);}
  kit.box(w-.1,.06,.05,0,floor+1.5,front+.04,C.timber);
  kit.box(w-.1,.22,.06,0,eaves-.14,front+.04,C.timber);
  // A small window high on each side, and the back.
- for(const side of [-1,1])kit.box(.05,.7,1.1,side*(W-.03),1.95,-D*.3,C.glass,{finish:'glow'});
- kit.box(1.4,.7,.05,W*.3,1.95,-D+.03,C.glass,{finish:'glow'});
+ for(const side of [-1,1])kit.box(.05,.7,1.1,side*(W-.03),1.95,-D*.3,C.glass,{finish:'window'});
+ kit.box(1.4,.7,.05,W*.3,1.95,-D+.03,C.glass,{finish:'window'});
  // The roof, and the white lime along its ridge and down its four hips.
  const roofH=1.55,over=.55,Wr=W+over,Dr=D+over,ridge=Math.max(Wr,Dr)*.35,long=Wr>=Dr;
  kit.hipRoof(w,d,roofH,0,eaves,0,C.roof,{overhang:over,ridgeFrac:.35,finish:'tile'});
@@ -89,28 +93,45 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  kit.block(-W,W,0,H,-D,D,colour,'plaster');
  kit.block(-W-.02,W+.02,0,.35,-D-.02,D+.02,0xb9b3a6);                // a darker plinth
  kit.block(-W-.12,W+.12,H,H+.1,-D-.12,D+.12,0xc8c2b5);               // roof slab lip
- for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D]])kit.block(x0,x1,H+.1,H+.55,z0,z1,colour,'plaster');
- // Ground floor: aluminium sliding windows and a door under a thin concrete canopy.
- const window=(x,y,wd,ht)=>{
+ for(const [x0,x1,z0,z1] of [[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,D-1.0]])kit.block(x0,x1,H+.1,H+.55,z0,z1,colour,'plaster');
+ // Ground floor: aluminium sliding windows either side of a door under a thin concrete
+ // canopy. The openings are laid out from the house's own width, left to right with a
+ // pier of wall between each, so a narrow plot's house cannot put a window over its door.
+ const window=(x0,x1,y,ht)=>{
+  const wd=x1-x0,x=(x0+x1)/2;if(wd<.5)return;
   kit.box(wd+.12,ht+.12,.06,x,y,D+.03,0xb8bec0,{finish:'metal'});
-  kit.box(wd,ht,.05,x,y,D+.05,C.glass,{finish:'glow'});
-  kit.box(.04,ht,.06,x,y,D+.07,0xb8bec0,{finish:'metal'});
+  kit.box(wd,ht,.05,x,y,D+.05,C.glass,{finish:'window'});
+  if(wd>.8)kit.box(.04,ht,.06,x,y,D+.08,0xb8bec0,{finish:'metal'});
  };
- window(-W*.45,1.45,2.2,1.2);window(W*.55,1.2,.9,1.5);
- kit.box(.95,2.05,.06,W*.08,1.03,D+.03,0x7b8a8e);
- kit.box(1.5,.1,.9,W*.08,2.3,D+.45,0xc8c2b5);
+ // A run between two x's, at most `most` wide, kept centred in its bay.
+ const bay=(x0,x1,most)=>{const extra=Math.max(0,x1-x0-most)/2;return [x0+extra,x1-extra];};
+ const [doorW,doorH]=[.91,2.0],doorX=W*.2,pier=.35,edge=.45;
+ window(...bay(-W+edge,doorX-doorW/2-pier,2.4),1.45,1.2);
+ window(...bay(doorX+doorW/2+pier,W-edge,1.1),1.45,1.2);
+ // The door: an aluminium frame, a panel with a strip of frosted glass, a handle.
+ kit.box(doorW+.12,doorH+.06,.06,doorX,doorH/2+.03,D+.03,0xb8bec0,{finish:'metal'});
+ kit.box(doorW,doorH,.05,doorX,doorH/2,D+.05,0x7b8a8e);
+ kit.box(.22,1.1,.02,doorX-.2,1.25,D+.085,0xc9d6d8);
+ kit.box(.04,.22,.05,doorX+.33,1.0,D+.1,0xd8dcdc,{finish:'metal'});
+ kit.box(doorW+.55,.1,.9,doorX,doorH+.25,D+.45,0xc8c2b5);
  // Upper floor: a balcony with a flower-block screen, the Okinawan answer to sun and typhoons.
- kit.block(-W,W*.2,storey,storey+.12,D,D+1.1,0xc8c2b5);
- kit.block(-W,W*.2,storey+.12,storey+1.05,D+.95,D+1.1,colour,'hana');
+ kit.block(-W,doorX,storey,storey+.12,D,D+1.1,0xc8c2b5);
+ kit.block(-W,doorX,storey+.12,storey+1.05,D+.95,D+1.1,colour,'hana');
  kit.block(-W,-W+.12,storey+.12,storey+1.05,D,D+1.1,colour,'hana');
- window(-W*.4,storey+1.35,2.4,1.3);window(W*.62,storey+1.4,1.1,1.1);
- // The outside stair up the east side to the roof, with its railing.
- kit.at(W+.55,0,0,()=>{
-  const steps=16,rise=(H+.1)/steps,run=(d-.6)/steps;
-  for(let i=0;i<steps;i++)kit.box(1,rise*.9+.12,run+.02,0,rise*(i+.5),D-.3-run*(i+.5),0xcdc7ba);
-  kit.rod([.48,1.05,D-.3],[.48,H+1.05,-D+.3],.03,C.steel);
-  for(let i=0;i<=4;i++){const t=i/4;kit.rod([.48,t*H,D-.3-t*(d-.6)],[.48,t*H+1.05,D-.3-t*(d-.6)],.02,C.steel);}
- });
+ // A glass door out to the balcony, and a window beside it over the front door.
+ window(...bay(-W+edge,doorX-pier,2.4),storey+1.1,2.0);
+ window(...bay(doorX+pier,W-edge,1.1),storey+1.4,1.1);
+ // Two ordinary flights share a turn landing, fitting inside the side-yard strip.
+ const rails=[],solid=c=>rails.push(c),length=4.16,bottom=D-1.0,turn=bottom-length,mid=(H+.1)/2;
+ stairFlight(kit,solid,{id:'house-stair-lower',x:W+2.15,z:bottom,width:1.3,length,height:mid,direction:-1});
+ stairLanding(kit,{id:'house-turn',x0:W+.2,x1:W+2.8,z0:turn-1.0,z1:turn,y:mid},solid);
+ stairFlight(kit,solid,{id:'house-stair-upper',x:W+.85,z:turn,width:1.3,length,height:mid,base:mid});
+ stairLanding(kit,{id:'house-roof-landing',x0:W-.3,x1:W+1.5,z0:bottom,z1:bottom+1.0,y:H+.1},solid);
+ kit.level(-W+.15,W-.15,-D+.15,D-.15,H+.1,'house-roof');
+ // Guard the outer edge of both landings, leaving the flight ends open.
+ for(const [x0,x1,z0,z1,y] of [[W+.2,W+2.8,turn-1.0,turn-.95,mid],[W+2.75,W+2.8,turn-1.0,turn,mid],[W+1.45,W+1.5,bottom,bottom+1.0,H+.1]]){
+  kit.block(x0,x1,y,y+1,z0,z1,0x788386);solid({...kit.rect(x0,x1,z0,z1,1,'house-landing-rail'),minY:kit.point(0,y,0).y});
+ }
  // On the roof: the tank on its frame, a TV aerial, washing.
  kit.at(-W*.35,-D*.3,0,()=>{
   for(const [x,z] of [[-.45,-.45],[.45,-.45],[.45,.45],[-.45,.45]])kit.box(.07,.9,.07,x,H+.55,z,C.steel,{finish:'metal'});
@@ -124,7 +145,9 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  kit.box(.8,.55,.3,-W-.18,1.8,-D*.2,0xe2e0d8,{ry:Math.PI/2});
  kit.box(.04,1.2,.2,-W-.01,1.0,-D*.2,0xa9a397);
  if(r.next()>.5)kit.box(.03,1.6,.18,W-.6,H-1,D+.01,0xaaa496);
- return [kit.rect(-W-.1,W+1.1,-D-.1,D+.1,H+.6,'okinawa-house')];
+ return [kit.rect(-W-.02,W+.02,-D-.02,D+.02,H+.1,'okinawa-house'),...rails,
+ ...[[-W,W,-D,-D+.14],[-W,W,D-.14,D],[-W,-W+.14,-D,D],[W-.14,W,-D,bottom],[W-.14,W,bottom+1.0,D]].filter(([a,b,c,d])=>d>c).map(([a,b,c,d])=>({...kit.rect(a,b,c,d,.5,'house-parapet'),minY:kit.point(0,H+.1,0).y})),
+ {...kit.rect(-W*.35-.65,-W*.35+.65,-D*.3-.65,-D*.3+.65,2.5,'house-tank'),minY:kit.point(0,H+.1,0).y}];
 }
 
 /**
@@ -155,7 +178,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  // Upstairs: two windows with their frames, a sill each, and a wall-hung air conditioner.
  for(const x of [-W*.48,W*.48]){
   kit.box(1.7,1.25,.06,x,ground+1.55,D+.03,0xb8bec0,{finish:'metal'});
-  kit.box(1.56,1.12,.05,x,ground+1.55,D+.05,C.glass,{finish:'glow'});
+  kit.box(1.56,1.12,.05,x,ground+1.55,D+.05,C.glass,{finish:'window'});
   kit.box(.04,1.12,.06,x,ground+1.55,D+.07,0xb8bec0,{finish:'metal'});
   kit.box(1.8,.07,.18,x,ground+.9,D+.08,0xc9c2b4);
  }
@@ -174,6 +197,23 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  kit.rod([W*.5,H,-D*.5],[W*.5,H+2.3,-D*.5],.022,C.steel);
  kit.rod([W*.5-.5,H+2.0,-D*.5],[W*.5+.5,H+2.0,-D*.5],.014,C.steel);
  for(const x of [-W+.5,W-.9])if(r.next()>.3)kit.box(.05,1.2+r.next(),.02,x,H-.8,D+.01,0x9d8f78);
+ // The side walls. A blank flank was the largest empty shape in any street view; a real
+ // one has a drainpipe at the back corner, a small frosted window to the stairs, a dark
+ // band of mould under the parapet and, often, an old painted advertisement.
+ for(const side of [-1,1]){
+  const x=side*(W+.03);
+  kit.rod([side*(W+.08),0,-D+.25],[side*(W+.08),H+.45,-D+.25],.05,0x9aa3a0);
+  kit.box(.05,.66,.56,x,ground+1.7,-D*.55,0xb8bec0,{finish:'metal'});
+  kit.box(.05,.56,.46,x+side*.01,ground+1.7,-D*.55,0xc9d6d8,{finish:'glow'});
+  kit.box(.02,.28,d-.3,side*(W+.004),H-.12,0,0xbdb4a2);
+ }
+ const adSide=r.next()>.5?1:-1,ad=WALL_ADS[Math.floor(r.next()*WALL_ADS.length)%WALL_ADS.length];
+ // About every other shop-house. Each advert is its own board, named as a sign so the
+ // quarter's batch budget (tests/okinawa-quarters.test.mjs) counts it with the signs.
+ const wantsAd=r.next()<.5;
+ if(wantsAd&&typeof document!=='undefined'&&document.createElement)try{
+  kit.sign(wallAd(ad,seed),Math.min(2.6,d*.38),Math.min(3.4,(H-ground)*1.1),adSide*(W+.035),ground+1.55,D*.18,{ry:adSide*Math.PI/2,depth:.02,edge:colour,name:'painted wall advert sign'});
+ }catch{}
  return [kit.rect(-W-.05,W+.05,-D-.05,back+.02,H+.6,'shop-house'),kit.rect(-W-.05,-open,back,D,ground,'shop-house'),kit.rect(open,W+.05,back,D,ground,'shop-house')];
 }
 
@@ -212,6 +252,31 @@ export function coralWall(kit,x0,z0,x1,z1,{height=1.35,thickness=.45,gaps=[],see
  return out;
 }
 
+/**
+ * The wall a house built in the eighties or nineties got instead of coral: concrete
+ * block, rendered and painted, with a band of hana-burokku flower blocks along the top
+ * so the breeze gets through, and a coping. Same signature and colliders as coralWall,
+ * and a handful of boxes per run rather than a stone at a time.
+ */
+export function blockWall(kit,x0,z0,x1,z1,{height=1.35,thickness=.2,gaps=[],colour=0xe4ddcc}={}){
+ const alongX=Math.abs(x1-x0)>=Math.abs(z1-z0);
+ const a=alongX?Math.min(x0,x1):Math.min(z0,z1),b=alongX?Math.max(x0,x1):Math.max(z0,z1),fixed=alongX?z0:x0;
+ const runs=[];let start=a;
+ for(const [g0,g1] of [...gaps].sort((p,q)=>p[0]-q[0])){if(g0>start)runs.push([start,Math.min(g0,b)]);start=Math.max(start,g1);}
+ if(start<b)runs.push([start,b]);
+ const out=[],band=.42,base=height-band-.06;
+ for(const [s0,s1] of runs){
+  const len=s1-s0,mid=(s0+s1)/2,[x,z]=alongX?[mid,fixed]:[fixed,mid],[w,d]=alongX?[len,thickness]:[thickness,len];
+  kit.box(w,base,d,x,base/2,z,colour);
+  kit.box(w,band,d*.9,x,base+band/2,z,colour,{finish:'hana'});
+  kit.box(alongX?w+.04:thickness+.08,.06,alongX?thickness+.08:d+.04,x,base+band+.03,z,0xcfc8b6);
+  for(const u of [s0,s1]){const [px,pz]=alongX?[u,fixed]:[fixed,u];kit.box(thickness+.12,height+.12,thickness+.12,px,(height+.12)/2,pz,0xd8d1bf);}
+  const [cw,cd]=alongX?[len+.1,thickness+.1]:[thickness+.1,len+.1];
+  out.push(kit.rect(x-cw/2,x+cw/2,z-cd/2,z+cd/2,height+.2,'block-wall'));
+ }
+ return out;
+}
+
 /** The hinpun: a free-standing screen of stone inside the gate. */
 export function hinpun(kit,x,z,w=2.4,{alongX=true}={}){
  const [bw,bd]=alongX?[w,.42]:[.42,w];
@@ -221,15 +286,9 @@ export function hinpun(kit,x,z,w=2.4,{alongX=true}={}){
  return [kit.rect(x-bw/2-.05,x+bw/2+.05,z-bd/2-.05,z+bd/2+.05,1.7,'hinpun')];
 }
 
-/** A fukugi: tall, narrow, dense and glossy, planted in rows as a windbreak. */
+/** A fukugi: tall, narrow and dense, planted in rows as a windbreak. */
 export function fukugi(kit,x,z,{h=5.5,seed=5}={}){
- const r=rng(seed);
- kit.cyl(.11,.17,h*.55,x,h*.275,z,0x4a3a2c,{segments:7});
- const greens=[C.leaf,0x2a5330,0x376a3d];
- for(let i=0;i<4;i++){
-  const y=h*(.42+i*.17),rad=(1.05-i*.14)*(.9+r.next()*.2);
-  kit.sphere(rad,x+(r.next()-.5)*.25,y,z+(r.next()-.5)*.25,r.pick(greens),{sy:1.25,finish:'gloss'});
- }
+ broadleaf(kit,x,z,{h,form:'column',seed});
  return kit.rect(x-.22,x+.22,z-.22,z+.22,h,'fukugi');
 }
 
@@ -244,11 +303,7 @@ export function gajumaru(kit,x,z,{seed=6,size=1}={}){
   const a=r.next()*Math.PI*2,rad=(1+r.next()*1.6)*s;
   kit.rod([x+Math.cos(a)*rad,3.4*s,z+Math.sin(a)*rad],[x+Math.cos(a)*rad*1.05,0,z+Math.sin(a)*rad*1.05],.035,0x7a6a56,{segments:4});
  }
- for(let i=0;i<5;i++){
-  const a=i/5*Math.PI*2,rad=(1.4+r.next()*.6)*s;
-  kit.sphere((1.7+r.next()*.7)*s,x+Math.cos(a)*rad,(4+r.next()*.8)*s,z+Math.sin(a)*rad,r.pick([0x3f6b3a,0x4d7a43,0x355f33]),{sy:.62});
- }
- kit.sphere(2.2*s,x,5*s,z,0x45733e,{sy:.6});
+ broadleaf(kit,x,z,{h:6.4*s,form:'spread',seed});
  return kit.rect(x-.8*s,x+.8*s,z-.8*s,z+.8*s,5,'gajumaru');
 }
 
@@ -269,7 +324,7 @@ export function banana(kit,x,z,{seed=8}={}){
  kit.cyl(.09,.13,2.1,x,1.05,z,0x6f7d3e,{segments:7});
  for(let i=0;i<6;i++){
   const a=i/6*Math.PI*2+r.next()*.4;
-  kit.box(.42,.02,1.7,x+Math.cos(a)*.75,2.15+r.next()*.25,z+Math.sin(a)*.75,i%2?0x5f9a3c:0x6ea846,{ry:-a+Math.PI/2,rx:.45,finish:'thin'});
+  kit.box(.42,.02,1.7,x+Math.cos(a)*.75,2.15+r.next()*.25,z+Math.sin(a)*.75,i%2?0x4c7d34:0x588c3c,{ry:-a+Math.PI/2,rx:.45,finish:"thin"});
  }
 }
 
@@ -306,18 +361,16 @@ function shopInterior(kit,kind,{open,back,D,r,stock}){
   for(const x of [-open*.7,0])kit.cyl(.09,.06,.1,x,1.05,back+1.35,0xdfeef2,{segments:8,finish:'gloss'});
   for(const x of [open*.45]){kit.cyl(.35,.35,.05,x,.75,D-1.4,0xe8e2d0,{segments:14});kit.cyl(.05,.05,.72,x,.37,D-1.4,0x6d7478,{segments:6});
    for(const dz of [-.55,.55])kit.cyl(.16,.16,.45,x,.23,D-1.4+dz,0xc0392b,{segments:10});}
- }else if(kind==='barber'){
-  // Two chairs facing a long mirror, and the striped pole outside the door.
-  kit.box(open*2-.4,1.1,.05,0,1.5,back+.1,0x9fb8be,{finish:'gloss'});
-  kit.box(open*2-.4,.08,.35,0,.92,back+.25,0xd8d2c4);
-  for(const x of [-open*.45,open*.45]){
-   kit.box(.62,.12,.6,x,.62,back+1.2,0x2f5a4a);kit.box(.62,.7,.12,x,1.02,back+1.5,0x2f5a4a);
-   kit.cyl(.12,.2,.55,x,.28,back+1.2,0xd0d4d6,{segments:10,finish:'metal'});
-   kit.box(.14,.08,.5,x-.34,.78,back+1.2,0x2f5a4a);kit.box(.14,.08,.5,x+.34,.78,back+1.2,0x2f5a4a);
-  }
-  kit.cyl(.11,.11,1.3,open+.12,2.1,D+.12,0xf4f1ea,{segments:12,finish:'gloss'});
-  for(let k=0;k<5;k++)kit.cyl(.115,.115,.1,open+.12,1.6+k*.25,D+.12,k%2?0x2f5f8e:0xc0392b,{segments:12,finish:'gloss'});
-  kit.sphere(.12,open+.12,2.8,D+.12,0xf4f1ea,{finish:'gloss'});
+ }else if(kind==='post'){
+  // The counter with its glass screen and brass scale, the wall of pigeonholes behind,
+  // the form rack, and the round red post box out on the pavement.
+  counter(0,open*1.6,0x6d5a48);
+  kit.box(open*1.6,.5,.03,0,1.25,back+.95,0xcfe6ea,{finish:'gloss'});
+  kit.box(.3,.1,.25,-open*.4,1.06,back+1.2,0xc9a64a);
+  for(let row=0;row<5;row++)for(let col=0;col<Math.floor(open*2/.3);col++)kit.box(.26,.22,.05,-open+.3+col*.3,1.1+row*.26,back+.12,row%2?0xd8cfb8:0xe6dcc4);
+  kit.box(.5,1.2,.25,-open+.4,.6,D-1.2,0x8a6a4a);
+  kit.cyl(.22,.22,1.1,open+.25,.55,D+.35,0xc8102e,{segments:14});kit.sphere(.22,open+.25,1.1,D+.35,0xc8102e,{sy:.5});
+  kit.box(.32,.04,.06,open+.25,.9,D+.58,0x2b2b2b);
  }else if(kind==='fish'){
   // A sloped counter of crushed ice with the day's fish laid on it, out to the street.
   kit.box(open*2-.2,.85,1.1,0,.43,D-.9,0xb8bec0,{finish:'metal'});

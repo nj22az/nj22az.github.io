@@ -177,8 +177,21 @@ export function bandsFor(material){
  */
 export function keepsPhysical(material,{skinned=false}={}){
  if(skinned)return true;
- return material.userData?.keepPhysical===true;
+ if(material.userData?.keepPhysical!==true)return false;
+ // Architecture used to be tagged keepPhysical wholesale, which left every wall, roof
+ // and frontage physically lit beside toon props: two renderers in one picture
+ // (docs/AMPLIFY-AUDIT.md, A1). Now the tag only holds for see-through glass, and for
+ // anything that insists with keepPhysicalStrict. Everything else joins the ramp.
+ if(material.userData.keepPhysicalStrict===true)return true;
+ return !!material.transparent&&(material.opacity??1)<.95;
 }
+
+/**
+ * How much of a photographed architectural map survives under the ramp. Walls and
+ * roofs are big, flat masses: at FLATTEN the photograph still reads as a photograph
+ * across a whole facade, so architecture keeps only a ghost of it as grain.
+ */
+export const ARCH_FLATTEN=0.3;
 
 const converted=new WeakMap();
 
@@ -228,9 +241,30 @@ export function celFrom(material,{tint=DEFAULT_TINT,bands=null}={}){
  if(Number.isFinite(metres))applyWorldUV(toon,metres);
  const base=typeof toon.onBeforeCompile==='function'?toon.onBeforeCompile:null;
  const baseKey=Number.isFinite(metres)?'worlduv'+metres:'';
- applyShadowTint(toon,tint,photographic(material)?FLATTEN:1,{base,baseKey});
+ const architectural=material.userData?.keepPhysical===true;
+ applyShadowTint(toon,tint,photographic(material)?(architectural?ARCH_FLATTEN:FLATTEN):1,{base,baseKey});
  converted.set(material,toon);
+ linkLive(material,toon);
  return toon;
+}
+
+/**
+ * Keeps the original material steering what is drawn. Lots of the town holds on to the
+ * material it built and turns its glow up at dusk (window panes, lamps, nameplates), but
+ * the mesh now draws the toon copy, so those updates went nowhere and the town's windows
+ * stayed dark all night. The two now share one emissive colour, and the original's
+ * emissiveIntensity, opacity and visibility are forwarded to the copy.
+ */
+function linkLive(material,toon){
+ if(material.emissive&&material.emissive.isColor)toon.emissive=material.emissive;
+ for(const key of ['emissiveIntensity','opacity','visible']){
+  let own=material[key];
+  try{
+   Object.defineProperty(material,key,{configurable:true,enumerable:true,
+    get(){return own;},
+    set(value){own=value;toon[key]=value;if(key==='opacity')toon.needsUpdate=toon.needsUpdate;}});
+  }catch{}
+ }
 }
 
 /** Materials this pass should leave exactly as they are. */

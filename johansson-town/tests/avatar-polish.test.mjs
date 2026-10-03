@@ -25,15 +25,29 @@ test('face UVs never interpolate a second face across the rear seam',()=>{
  }
 });
 
-test('shirt collar panels and buttons are on the same +z front as the face',()=>{
- for(const top of ['kariyushi','polo','blouse','jacket','smock']){
-  const a=buildAvatar({...CAST_RECIPES.Thuan,outfit:{...CAST_RECIPES.Thuan.outfit,top,pattern:'none'}});
-  const {position:P,normal:N}=a.body.geometry.attributes,m=a.measure;let panels=0;
-  for(let i=0;i<P.count;i+=3){
-   const y=(P.getY(i)+P.getY(i+1)+P.getY(i+2))/3;
-   if(y>m.neckY-.12*m.k&&y<m.neckY-.02*m.k&&[0,1,2].every(j=>Math.abs(P.getX(i+j))<.09*m.k&&P.getZ(i+j)>m.depth*.25&&N.getZ(i+j)>.8))panels++;
+test('the kariyushi collar is cloth: a stand round the neck, notched leaves and lapels over an open V, with a shadow under them',()=>{
+ for(const name of ['Johansson','Thuan']){
+  const a=buildAvatar({...CAST_RECIPES[name],outfit:{...CAST_RECIPES[name].outfit,top:'kariyushi'}}),m=a.measure,P=a.body.geometry.attributes.position;
+  let stand=0;
+  for(let i=0;i<P.count;i++)if(P.getY(i)>m.neckY+m.torso*.045&&Math.abs(P.getX(i))<.03*m.k&&P.getZ(i)<-m.armR*1.2)stand++;
+  assert.ok(stand>0,name+'\'s collar rises behind the neck, clear of it');
+  assert.ok(a.garment.marks.includes('open neck'),'the V of skin is open');
+  assert.ok(a.garment.marks.includes('collar shadow'),'the collar casts its toon shadow on the shirt');a.dispose();
+ }
+});
+
+test('shirt collars and buttons are painted on the +z front, with nothing stuck on',()=>{
+ for(const top of ['polo','blouse','jacket','smock']){
+  const a=buildAvatar({...CAST_RECIPES.Thuan,outfit:{...CAST_RECIPES.Thuan.outfit,top,pattern:'flowers'}});
+  assert.ok(a.garment.marks.some(m=>m==='collar'||m==='lapels'),top+' has a collar drawn');
+  // The torso carries the garment's UVs, centred on the front; every other part samples the empty strip.
+  const {position:P,uv:U}=a.body.geometry.attributes,m=a.measure;let front=0;
+  for(let i=0;i<P.count;i++){
+   const v=U.getY(i);
+   if(v>.05){if(P.getZ(i)>m.depth*.4&&Math.abs(P.getX(i))<.02*m.k&&P.getY(i)>m.hipY)assert.ok(Math.abs(U.getX(i)-.5)<.05),front++;}
+   else assert.ok(Math.abs(U.getX(i)-.5)<1e-6&&Math.abs(v-.02)<1e-6);
   }
-  assert.ok(panels>=2,top+' has outward-facing front collar panels');a.dispose();
+  assert.ok(front>0,'the front of the torso is mapped');a.dispose();
  }
 });
 

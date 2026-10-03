@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {MAIN_ROAD} from './main-road.js';
-import {groundTexture} from './east-lawn.js';
+import {paintedTurf} from '../render/toy-surfaces.js';
+import {GROUND} from '../render/ground-palette.js';
 import {GROUND_LAYER} from './ground-layers.js';
 
 /**
@@ -9,8 +10,8 @@ import {GROUND_LAYER} from './ground-layers.js';
  * The konbini stood in an invisible box: only its frontage met walkable ground, and
  * its ends and back were nothing you could stand on, so the one building the town is
  * really about could not be walked round. The east of the town is a green; this is
- * what the west is — the working side, gravel rather than grass, with the shop and the
- * warehouse standing on it and room to get behind them.
+ * what the west is -- a lawn behind the shops, like the green across the street, with
+ * the shop and the warehouse standing on it and room to get behind them.
  *
  * It reaches the quay at its south end and the pavement along its whole east edge, so
  * it joins the town rather than being a second island. The other two edges are closed
@@ -18,7 +19,7 @@ import {GROUND_LAYER} from './ground-layers.js';
  * this was built to remove.
  */
 export const WEST_YARD=Object.freeze({
- id:'west-yard',surface:'gravel',
+ id:'west-yard',surface:'grass',
  minX:-24.6,maxX:MAIN_ROAD.pavementWest,minZ:-38,maxZ:MAIN_ROAD.maxZ,
  /** Where the quay takes over along the south edge, and the bus station along the north. */
  quayFrom:-19,stationFrom:-10.6,
@@ -43,14 +44,14 @@ export const westYardAt=(x,z,r=0)=>
 export function buildWestYard({parent,colliders=[],shadows=false}={}){
  const group=new THREE.Group();group.name='West yard and its boundary';parent.add(group);
  const width=WEST_YARD.maxX-WEST_YARD.minX,depth=WEST_YARD.maxZ-WEST_YARD.minZ;
- const grit=groundTexture('#b2ab98',[['#bbb4a1',300,7],['#a7a08e',260,8],['#c3bca9',150,5]],'#9b947f');
- if(grit)grit.repeat.set(width/2.6,depth/2.6);
+ // A lawn, the same painted turf as the green across the street. It was speckled
+ // gravel: from above, a grey patchwork behind the shops; at street level, dust. The
+ // town reads as one place when both sides of Main Street stand on the same clean green.
+ let turf=null;if(typeof document!=='undefined'&&document.createElement){try{turf=paintedTurf();}catch{}}
+ if(turf){turf=turf.clone();turf.needsUpdate=true;turf.wrapS=turf.wrapT=THREE.RepeatWrapping;turf.repeat.set(width/2.4,depth/2.4);}
  const ground=new THREE.Mesh(new THREE.BoxGeometry(width,.06,depth),
-  // Brought down the way the park's grass is: this town's sun, its 1.75 fill and the
-  // grade's exposure together push a mid grey past white, and a yard this size came out
-  // as a sheet of paper.
-  new THREE.MeshStandardMaterial({color:grit?0x8a8576:0x6f6a5d,roughness:1,map:grit}));
- ground.name='west-yard-gravel';
+  new THREE.MeshStandardMaterial({color:GROUND.grass,roughness:1,map:turf}));
+ ground.name='west-yard-lawn';
  // Two centimetres under the paved routes, the same clearance the east lawn keeps.
  // The yard used to sit at exactly the height the lane surfacing draws at, so gravel
  // and pavement shared a plane the whole length of the shop frontage and the two

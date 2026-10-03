@@ -1,6 +1,8 @@
+import {gardenPoint} from '../world/garden-layout.js';
+import {bookshopVisitPlan} from './bookshop-visits.js';
 import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visits.js';
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
-import {DINING,IZAKAYA_DOOR} from '../world/dining-layout.js';
+import {IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
@@ -11,7 +13,7 @@ import {closingStockPending,closingPreparationPending} from '../commerce/shop-st
 import {transitStop,awayPlace} from '../world/transit.js';
 import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
 import {PARK_BENCH} from '../world/park-layout.js';
-import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork,SATO_SHIFT} from './commuter-schedule.js';
+import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork,livesInKitahama,SATO_SHIFT} from './commuter-schedule.js';
 import {SATO_LUNCH,satoRamenOpen} from '../world/sato-ramen-layout.js';
 import {shoppingDistrictActive,peninsulaActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
@@ -219,9 +221,6 @@ export function supperGuests(minutes){
  if(!izakayaOpen(minutes))return [];
  return PROFILES.filter(p=>ACTIVE_RESIDENT_NAMES.includes(p.name)&&p.name!=='Nao'&&inTimeRange(minute,p.supperStart,p.supperEnd)).slice(0,IZAKAYA_SEATS.length);
 }
-// Overlapping, repeatable visits by the active cast. At most two seated diners;
-// Thuan retains her separate after-work stop and her standing/greeting animation.
-export const MARKET_VISITS=marketVisitsForDay(0);
 export function visitsMarket(profile,minutes,state=null){
  const visit=marketVisitsForDay(minutes)[profile.name],account=state?.residentLife?.[profile.name],meal=account?.day===Math.floor(minutes/1440)?(marketVisitPurpose(profile.name,minutes,state||{})==='goods'?(account.shopping||account.meals?.market):account.meals?.market):null;
  if(meal?.finished)return false;
@@ -319,9 +318,18 @@ export const ferryWords=text=>typeof text!=='string'?text:text
  .replace(/(on|for|to) the Harbour Line/g,'$1 the ferry').replace(/next Harbour Line departure/g,'next ferry')
  .replace(/running the Harbour Line/g,'working the ferry').replace(/left by bus/g,'left on the ferry');
 function commuterPlan(...args){
- const plan=commuterPlanOn(...args);
+ const scheduled=kitahamaPlan(args[0],commuterPlanOn(...args));
+ const plan=peninsulaActive()?bookshopVisitPlan(args[0],args[1],scheduled,args[3]):scheduled;
  if(plan&&peninsulaActive()&&plan.activity)return {...plan,activity:ferryWords(plan.activity)};
  return plan;
+}
+/** Where the timetable said 'ferry', somebody who lives in Kitahama goes home instead. */
+function kitahamaPlan(profile,plan){
+ if(!plan||!livesInKitahama(profile))return plan;
+ const home={place:'home',target:profile.home};
+ if(plan.place==='away')return {...home,activity:'at home in Kitahama'};
+ if(plan.place==='bus')return {...home,activity:'walking home to Kitahama'};
+ return plan.activity?{...plan,activity:plan.activity.replace(/ before the last (bus|ferry)/,' before walking home').replace(/the Harbour Line/g,'home')}:plan;
 }
 function commuterPlanOn(profile,minutes,rain=false,state=null){
  if(livesAtWork(profile))return workplaceResidentPlan(profile,minutes,rain,state);
@@ -400,7 +408,15 @@ export function residentPlan(profile,minutes,rain=false,state=null,mode=null){
  const commuter=mode===false?false
   :mode!=null&&mode!==''?true
   :state?.townMode==='shopping-district'||state?.townMode==='peninsula'||shoppingDistrictActive();
- return commuter?commuterPlan(profile,minutes,rain,state):legacyResidentPlan(profile,minutes,rain,state);
+ const plan=commuter?commuterPlan(profile,minutes,rain,state):legacyResidentPlan(profile,minutes,rain,state);
+ // The two gardens have regular visitors; work and bad-weather routines stay intact.
+ // Thuan is not among them: her afternoon break is its own walk (THUAN_WALK), Minato
+ // Park's bench and the sea wall, ten minutes from the counter. Aoba Garden is 170 m
+ // away, and redirecting her there left the plan and the walk in two places at once.
+ if(peninsulaActive()&&!rain&&['Reiko','Tetsuo'].includes(profile.name)&&['park','stroll'].includes(plan.place)&&Math.hypot(plan.target[0]-PARK_STAND[0],plan.target[1]-PARK_STAND[1])<3){
+  return {...plan,place:'park',target:gardenPoint(profile.name==='Reiko'?-42:-26,profile.name==='Reiko'?144.9:143.9),activity:plan.activity+' at Aoba Garden'};
+ }
+ return plan;
 }
 export const GOSSIP=[
  {id:'yuri-evening',a:'Thuan',b:'Nao',line:'Thuan: I told the assistant manager I would be on the last ferry.\nNao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Check the terminal timetable for her evening service.'},

@@ -15,11 +15,12 @@ test('interiors load only on request, share in-flight work, cache success and re
  globalThis.fetch=async(url,options)=>{
   if(String(url.url||url).startsWith('data:'))return originalFetch(url,options);
   calls.push(String(url));
-  if(String(url).includes('crystal')&&fail)return new Response('',{status:503});
+  if(String(url).includes('seinfeld')&&fail)return new Response('',{status:503});
   return new Response(JSON.stringify(gltf));
  };
  try{
   assert.equal(suppliedRoomReady('yuri-home'),false);
+  assert.deepEqual(await preloadSuppliedRooms(['yuri-home']),[false]);fail=false;calls.length=0;
   const results=await Promise.all([preloadSuppliedRooms(['yuri-home']),preloadSuppliedRooms(['yuri-home'])]);
   assert.deepEqual(results,[[true],[true]]);assert.equal(calls.length,1);assert.match(calls[0],/seinfeld-apartment/);
   await preloadSuppliedRooms(['yuri-home']);assert.equal(calls.length,1);
@@ -28,9 +29,7 @@ test('interiors load only on request, share in-flight work, cache success and re
   assert.equal(calls.length,beforeRamen+1,'Interior and street share one request and parse');
   assert.ok(suppliedRoomReady('ramen')&&suppliedRoomReady('ramen-exterior'));
   await preloadSuppliedRooms(['ramen']);assert.equal(calls.length,beforeRamen+1);
-  assert.equal(suppliedRoomReady('office'),false);
-  assert.deepEqual(await preloadSuppliedRooms(['crystal-room']),[false]);fail=false;
-  assert.deepEqual(await preloadSuppliedRooms(['crystal-room']),[true]);assert.equal(calls.length,4);
+  assert.equal(suppliedRoomReady('office'),false,'The office is built in code, never fetched');
  }finally{globalThis.fetch=originalFetch;}
 });
 

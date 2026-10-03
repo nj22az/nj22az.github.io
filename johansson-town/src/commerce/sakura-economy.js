@@ -1,4 +1,5 @@
-import {SHOP_STOCK,restoreShopStock,takeShopStock,closingStockPending,SOLD_OUT} from './shop-stock.js';
+import {fileShopEntry} from '../office/archive.js';
+import {SHOP_STOCK,restoreShopStock,closingStockPending} from './shop-stock.js';
 import {GROCERY_ITEMS} from './catalogue.js';
 import {WORKSHOP_MODELS} from '../workshop/catalogue.js';
 
@@ -13,8 +14,8 @@ export function restoreSakura(saved){
  return {restockedDay:Number.isSafeInteger(saved?.restockedDay)?saved.restockedDay:-1,settledDay:Number.isSafeInteger(saved?.settledDay)?saved.settledDay:-1,overheads:money(saved?.overheads),drawings:money(saved?.drawings),playerClaim:saved?.playerClaim&&['bun','rice','tea'].includes(saved.playerClaim.item)?{item:saved.playerClaim.item}:null,cash:money(saved?.cash),sales:money(saved?.sales),bought:money(saved?.bought),profit:Number.isSafeInteger(saved?.profit)?saved.profit:0,stockSpent:money(saved?.stockSpent),openingSales:money(saved?.openingSales??(saved?.journal?saved?.openingSales:saved?.sales)),receipts:Array.isArray(saved?.receipts)?saved.receipts.filter(s=>typeof s==='string').slice(-128):[],stock:restoreShopStock(saved?.stock),journal:rows,deliveries:Array.isArray(saved?.deliveries)?saved.deliveries.filter(d=>SHOP_STOCK.some(i=>i.id===d.item)&&Number.isFinite(d.due)&&Number.isSafeInteger(d.quantity)&&d.quantity>0&&d.quantity<=12).map(d=>({...d})):[],nextDelivery:Number.isFinite(saved?.nextDelivery)?saved.nextDelivery:0};
 }
 const till=state=>state.sakura??=restoreSakura();
-export function shopEntry(state,{minute=state.minutes||0,kind,item,buyer='',quantity=1,revenue=0,cost=0,profit=0}){
- const shop=till(state);shop.journal.push({minute,kind,item,buyer,quantity,revenue,cost,profit,cash:shop.cash});shop.journal=shop.journal.slice(-400);
+export function shopEntry(state,{minute=state.minutes||0,kind,item,buyer='',quantity=1,revenue=0,cost=0,profit=0,archiveOrder=null}){
+ const shop=till(state),entry={minute,kind,item,buyer,quantity,revenue,cost,profit,cash:shop.cash,archiveOrder};shop.journal.push(entry);shop.journal=shop.journal.slice(-400);return fileShopEntry(state,entry);
 }
 export function recordSakuraSale(state,cost,receipt=null,details={}){
  if(!Number.isSafeInteger(cost)||cost<=0)return false;
@@ -24,29 +25,6 @@ export function recordSakuraSale(state,cost,receipt=null,details={}){
  if(receipt){shop.receipts.push(receipt);shop.receipts=shop.receipts.slice(-128);}
  shopEntry(state,{minute:details.minute??state.minutes??0,kind:'Sale',item:details.item||'Counter sale',buyer:details.buyer||'Customer',quantity:1,revenue:cost,cost:goodsCost,profit});return true;
 }
-export function buySakuraItem(state,item,minutes,thuanAvailable=true){
- const m=((minutes%1440)+1440)%1440;
- if(m<540||m>=1200)return {ok:false,message:'The till is closed. Thuan returns at 09:00.'};
- if(thuanAvailable===false)return {ok:false,message:'Thuan is away from the counter for a bit. Try again when she is back.'};
- if(state.inventory.length>=100)return {ok:false,message:'Your bag is full.'};
- if(state.yen<item.cost)return {ok:false,message:'You do not have enough yen.'};
- const claim=takeShopStock(state,item.id);if(!claim)return {ok:false,message:'Thuan: '+SOLD_OUT};
- state.yen-=item.cost;state.inventory.push(item.name);recordSakuraSale(state,item.cost,null,{minute:minutes,item:item.name,buyer:'Johansson',unitCost:claim.unitCost});return {ok:true};
-}
-/**
- * What the shop costs to keep open for a day, and what Thuan takes out of it.
- *
- * Until now the ledger only ever went up: every entry was a sale, a delivery or a
- * restock, so "gross profit" was a scoreboard rather than a question. A shop has a
- * meter running whether anybody comes in or not.
- *
- * The figures are the shop's own scale, not 1997 Tokyo's. Sakura serves five
- * neighbours a day, which is about ¥694 of trade and ¥312 of gross profit, and the
- * day's costs are set just under that on purpose. On the neighbours alone the shop
- * only washes its face; every line the player buys is about ¥62 of margin on top, so
- * your custom is the difference between a thin week and a good one. That is the
- * question the Sales sheet is supposed to ask.
- */
 export const SHOP_OVERHEADS=300;
 /** The most Thuan takes for herself in a day, once the till can spare it. */
 export const SHOP_DRAWING=400;
@@ -105,14 +83,14 @@ export function advanceDeliveries(state,minutes){
  settleTradingDay(state,minutes);
  for(const delivery of [...shop.deliveries])if(minutes>=delivery.due){
   shop.stock[delivery.item].reserve+=delivery.quantity;shop.deliveries.splice(shop.deliveries.indexOf(delivery),1);
-  shopEntry(state,{minute:minutes,kind:'Delivery',item:SHOP_STOCK.find(i=>i.id===delivery.item).name,buyer:'Wholesaler',quantity:delivery.quantity});
+  shopEntry(state,{minute:minutes,kind:'Delivery',item:SHOP_STOCK.find(i=>i.id===delivery.item).name,buyer:'Wholesaler',quantity:delivery.quantity,archiveOrder:delivery.archiveOrder});
  }
  const m=((minutes%1440)+1440)%1440;if((m<510||m>=1200)&&!closingStockPending(state,minutes)||minutes<shop.nextDelivery)return;
  const item=SHOP_STOCK.find(i=>shop.stock[i.id].shelf+shop.stock[i.id].reserve<i.capacity&&!shop.deliveries.some(d=>d.item===i.id)&&shop.cash>=i.unitCost);
  if(!item)return;
  const quantity=Math.min(item.capacity*2,Math.floor(shop.cash/item.unitCost)),cost=quantity*item.unitCost;
  shop.cash-=cost;shop.stockSpent+=cost;shop.deliveries.push({item:item.id,quantity,due:minutes+30});shop.nextDelivery=minutes+8;
- shopEntry(state,{minute:minutes,kind:'Stock purchase',item:item.name,buyer:'Wholesaler',quantity,cost});
+ const order=shopEntry(state,{minute:minutes,kind:'Stock purchase',item:item.name,buyer:'Wholesaler',quantity,cost});shop.deliveries.at(-1).archiveOrder=order?.id;
 }
 export function sakuraOffer(name){
  const model=WORKSHOP_MODELS.find(m=>m.name===name);if(model)return {name,price:model.price,model};

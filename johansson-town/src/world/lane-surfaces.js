@@ -1,7 +1,8 @@
 import {NIGHT_LANE,inDiningLane} from './dining-layout.js';
+import {GROUND} from '../render/ground-palette.js';
 import {RESIDENTIAL,inResidential} from './residential-layout.js';
 import * as THREE from '../../vendor/three.module.js';
-import {ROUTES,activeRoutes,routeAt,groundHeight} from './layout.js?snappy=1';
+import {activeRoutes,routeAt,groundHeight} from './layout.js?snappy=1';
 import {MAIN_ROAD} from './main-road.js';
 import {shoppingDistrictActive} from './town-mode.js';
 import {GROUND_LAYER} from './ground-layers.js';
@@ -27,7 +28,7 @@ export function laneEdges(){
 // route: crossing lanes never produce coplanar, overlapping road meshes.
 export function lanePatches(routes=activeRoutes().slice(3)) {
   const rects=[];
-  for(const route of routes) {
+  for(const route of routes.filter(r=>!r.terrain)) {
     const half=route.width/2;
     for(let i=1;i<route.points.length;i++) {
       const a=route.points[i-1],b=route.points[i];
@@ -89,7 +90,7 @@ export function buildLaneSurfaces(parent,library) {
   }
   for(const [surface,b] of batches){
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(b.positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));geometry.setIndex(b.indices);geometry.computeVertexNormals();
-    const material=surface==='residential'?new THREE.MeshStandardMaterial({color:0xb9b5a5,roughness:.94}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',0xc8c1af).clone();material.side=THREE.DoubleSide;
+    const material=surface==='residential'?new THREE.MeshStandardMaterial({color:GROUND.concrete,roughness:.94}):library.worldMaterial(surface==='wood'?'timber':surface==='asphalt'?'asphalt':'paving',surface==='wood'?0xc8c1af:surface==='asphalt'?GROUND.asphalt:GROUND.pavers).clone();material.side=THREE.DoubleSide;
     const mesh=new THREE.Mesh(geometry,material);mesh.name='grid-lanes:'+surface;mesh.receiveShadow=true;parent.add(mesh);
   }
 }

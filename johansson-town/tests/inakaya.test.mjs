@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {preloadSuppliedRooms,buildSuppliedRoom,buildRamenRestaurant,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js?snappy=1';
-import {RAMEN_LAYOUT,RAMEN_GUEST_SEATS,RAMEN_PLAYER_SEATS,RAMEN_THUAN_SPOT,ramenPoint} from '../src/world/interiors/ramen-layout.js';
+import {RAMEN_LAYOUT,RAMEN_GUEST_SEATS,RAMEN_PLAYER_SEATS,RAMEN_THUAN_SPOT} from '../src/world/interiors/ramen-layout.js';
 import {circleHitsRect,circleHitsCircle,sweepFraction} from '../physics.js?snappy=1';
 import {RESIDENTS,ACTIVE_RESIDENT_NAMES} from '../src/people/residents.js';
 import {residentPlan,ramenOpen,RAMEN_VISITS,RAMEN_DOOR} from '../src/people/social.js';

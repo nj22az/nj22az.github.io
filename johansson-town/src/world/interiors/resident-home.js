@@ -1,10 +1,22 @@
+import {addIkeaFurniture} from './ikea-furniture.js';
+import {buildTatamiHome} from './tatami-home.js';
+import {TATAMI_HOME_OWNER} from './tatami-home-layout.js';
 import {householdFor} from '../../people/households.js';
 import {RESIDENTS} from '../../people/residents.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {HOME_LAYOUT,SHARED_HOME_LAYOUT,homeLayoutFor,sleepHours} from '../../people/home-life.js';
 import {residentPersonality} from '../../people/resident-personalities.js';
+import {YARD_HOMES} from '../yard-homes-layout.js';
+import {buildYardHomeInterior} from './yard-home.js';
+import {buildFamilyHome} from './family-home.js';
 const time=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
-export function buildResidentHome({profile,room,box,reg,collider,action,exit}){
+export function buildResidentHome({site,profile,room,box,reg,collider,action,exit}){
+ if(profile.name===TATAMI_HOME_OWNER)return buildTatamiHome({profile,room,box,reg,collider,action,exit});
+ // Shared houses are drawn to the house you walked into (docs/BUILDING-AUDIT.md): the
+ // Front-Row yard staff houses, and Thuan and Nao's house in Kitahama, which is built
+ // like its neighbours.
+ if(site&&YARD_HOMES[site.id])return buildYardHomeInterior({site,room,reg,action,collider});
+ if(site?.plot&&site.homeOwners?.length>1)return buildFamilyHome({room,reg,action,collider,title:site.title,kind:site.houseKind||'concrete',residents:site.homeOwners});
  if(householdFor(profile.name)?.residents.length>1)return buildSharedHome({profile,room,box,reg,collider,action,exit});
  const style=residentPersonality(profile.name),colour=new THREE.Color(style.top),hours=sleepHours(profile);
  const part=(size,pos,c,solid=false)=>{const m=box(size,pos,c,room,false);if(solid)collider(pos[0],pos[2],size[0],size[2],pos[1]+size[1]/2);return m;};
@@ -19,6 +31,8 @@ export function buildResidentHome({profile,room,box,reg,collider,action,exit}){
  for(let i=0;i<5;i++)part([.1,.3,.24],[2.1+i*.13,1.3,-2.15],i%2?colour:0xc7b77a);
  const radio=part([.45,.25,.23],[1.1,.86,-1.9],0x485c58);reg(radio,'Inspect '+profile.name+'’s belongings',()=>action('inspect',profile.name+' at home',profile.role+'. '+(profile.personality||'A familiar room with a place for everything.')+' A radio, favourite books and tomorrow’s notes sit beside the table.'),true);
  const note=new THREE.Object3D();note.position.set(2,1,1.9);room.add(note);reg(note,'Read daily routine',()=>action('read',profile.name+'’s routine','Usually sleeps at '+time(hours.sleep)+' and wakes at '+time(hours.wake)+'. Work, meals and walks continue outside. You may stay here while the day passes.'),true);
+ addIkeaFurniture({room,box,collider,reg,action,kind:'lack',x:2.35,z:.65});
+ addIkeaFurniture({room,box,collider,reg,action,kind:'ivar',x:-1.7,z:-2.55});
  hatPeg(part,HOME_LAYOUT.hatHook);
  const door=new THREE.Object3D();door.position.set(...HOME_LAYOUT.exit);room.add(door);reg(door,'Exit to Main Street',exit,true);
  room.add(new THREE.HemisphereLight(0xffe4b4,0x887867,1.6));
@@ -33,16 +47,23 @@ function buildSharedHome({profile,room,box,reg,collider,action,exit}){
  part([7,2.8,.12],[0,1.4,-3.4],0xe3d8bd);
  part([1.9,.12,.7],[0,.68,1.35],0x98724e,true);
  household.residents.forEach((name,i)=>{
-  const side=i?-1:1,style=residentPersonality(name),p=RESIDENTS.find(p=>p.name===name),routine=homeLayoutFor(name),x=routine.bed[0],hours=sleepHours(p);
+  // The routine may be measured for another room (Thuan's is the Yuri apartment, where
+  // her futon is at x -4.15). In this 7 m room that put the futon outside the wall, so a
+  // bed that would not fit keeps to its own side of this room instead.
+  const side=i?-1:1,style=residentPersonality(name),p=RESIDENTS.find(p=>p.name===name),routine=homeLayoutFor(name),hours=sleepHours(p);
+  const half=(layout.bounds.maxX-layout.bounds.minX)/2,x=Math.abs(routine.bed[0])<=half-.7?routine.bed[0]:-side*2.1;
   const bed=part([1.2,.18,2.15],[x,.36,-1.05],0xe9dfc8,true);bed.name=name+' futon';
   part([1.1,.055,1.62],[x,.48,-.77],style.top);part([.92,.16,.48],[x,.57,-1.57],0xf3e8d2);
   part([.6,.1,.6],[routine.table[0],.36,routine.table[2]],style.top);
   part([.9,1.7,.5],[-side*2.85,.85,-2.95],0x876b50,true);
+  if(name==='Thuan'){const wardrobe=new THREE.Object3D();wardrobe.position.set(-side*2.85,1,-2.3);room.add(wardrobe);reg(wardrobe,'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'),true);}
   for(let b=0;b<4;b++)part([.11,.26,.22],[-side*2.85-.2+b*.13,1.14,-2.64],b%2?style.top:0xc6b78d);
   const notes=part([.28,.018,.2],[routine.table[0],.754,1.35],0xe8ddbb);notes.name=name+' personal notes';
   hatPeg(part,routine.hatHook);
   reg(notes,'Inspect '+name+'’s belongings',()=>action('inspect',name+' at home',p.role+'. '+name+' keeps a separate futon, wardrobe and place at the table. Usually sleeps at '+time(hours.sleep)+' and wakes at '+time(hours.wake)+'.'),true);
  });
+ addIkeaFurniture({room,box,collider,reg,action,kind:'lack',x:2.95,z:.55});
+ addIkeaFurniture({room,box,collider,reg,action,kind:'ivar',x:0,z:-3.0});
  const door=new THREE.Object3D();door.position.set(...layout.exit);room.add(door);reg(door,'Exit to Main Street',exit,true);
  room.add(new THREE.HemisphereLight(0xffe4b4,0x887867,1.6));return {...layout,home:true};
 }

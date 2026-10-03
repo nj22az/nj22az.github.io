@@ -30,7 +30,7 @@ export const BUS_STATION=Object.freeze({
  exit:Object.freeze([MAIN_ROAD.x-2.3,23.05]),
 });
 export const BUS_STATION_ROUTES=Object.freeze([
- {id:'bus-approach',width:6,surface:'asphalt',points:[[BUS_STATION.x,MAIN_ROAD.maxZ],[BUS_STATION.x,BUS_STATION.maxZ]]},
+ {id:'bus-approach',width:MAIN_ROAD.width,surface:'asphalt',points:[[BUS_STATION.x,MAIN_ROAD.maxZ],[BUS_STATION.x,BUS_STATION.maxZ]]},
  {id:'bus-platform',width:3.8,surface:'stone',points:[[-8.7,BUS_STATION.queue[1]],[2.2,BUS_STATION.queue[1]]]},
 ]);
 
@@ -74,7 +74,7 @@ export function buildBusStation({parent,colliders,register=()=>{},onAction=()=>{
  colliders.push({id:'bus-station-shelter',x:1.35,z:rearZ,w:5.55,d:.24,height:2.45});
  colliders.push({id:'bus-station-bench',x:1.35,z:centreZ+.02,w:3.25,d:.7,height:.9});
  const pole=cyl(.07,2.75,[-7.9,1.38,centreZ-.35],steel);box([.95,.12,.12],[-7.9,2.75,centreZ-.35],steel);
- label('バス乗場','HARBOUR LINE TERMINAL · DEPARTURES',[-7.9,3.18,centreZ-.24],3.8,.62,0,'#e5dcc0','#3d514e',true);
+ label("Bus stop",'HARBOUR LINE TERMINAL · DEPARTURES',[-7.9,3.18,centreZ-.24],3.8,.62,0,'#e5dcc0','#3d514e',true);
  for(const x of [-7.4,4.2]){const bulb=cyl(.11,.18,[x,2.63,centreZ+.99],lampMat);lamps.push(bulb);}
  box([.08,.05,4.2],[MAIN_ROAD.x,GROUND_LAYER.apron+.025,BUS_STATION.queue[1]],steel,false);
  // No board across the bus road. It hung in the air over the carriageway with nothing
@@ -83,7 +83,7 @@ export function buildBusStation({parent,colliders,register=()=>{},onAction=()=>{
  anchor([-7.2,1,BUS_STATION.queue[1]-.05],'Read Harbour Line timetable',()=>onAction('bus'));
  anchor([-2.7,1,BUS_STATION.queue[1]-.2],'Wait for the Harbour Line',()=>onAction('bus'));
  anchor([4.2,1,centreZ+.7],'Inspect bus station shelter',()=>onAction('inspect','Harbour Line bus station','The shelter timetable lists the shopping district, quay, and the last northern departure. The glass is marked by salt and rain.'));
- const place={id:BUS_STATION.id,title:'Harbour Line Bus Station',jp:'バス乗場',sub:'ARRIVALS · DEPARTURES',x:BUS_STATION.x,z:BUS_STATION.z,line:'The northern terminus for the shopping district and harbour service.',door:[BUS_STATION.platform[0],0,BUS_STATION.platform[1]],exitPosition:[BUS_STATION.platform[0],0,BUS_STATION.platform[1]],entryFacing:Math.PI};
+ const place={id:BUS_STATION.id,title:'Harbour Line Bus Station',jp:"Bus stop",sub:'ARRIVALS · DEPARTURES',x:BUS_STATION.x,z:BUS_STATION.z,line:'The northern terminus for the shopping district and harbour service.',door:[BUS_STATION.platform[0],0,BUS_STATION.platform[1]],exitPosition:[BUS_STATION.platform[0],0,BUS_STATION.platform[1]],entryFacing:Math.PI};
  const departures=[];
  return {group,place,queue:[...BUS_STATION.queue],arrival:[...BUS_STATION.arrival],driver:[...BUS_STATION.driver],exit:[...BUS_STATION.exit],departures,
   board(name,minutes){departures.push({name,minutes});if(departures.length>24)departures.shift();},

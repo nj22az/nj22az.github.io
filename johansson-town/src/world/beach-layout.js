@@ -27,3 +27,6 @@ export const BEACH_DRY_EDGE_X=(()=>{
  }
  return BEACH.profile.at(-1)[0];
 })();
+
+/** The quiet corner at the north end with chairs facing the sea (beach-corner.js); town-audio.js plays the shore around it. */
+export const BEACH_CORNER=Object.freeze({x:38.4,z:16,radius:32});

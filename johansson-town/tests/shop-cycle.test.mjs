@@ -22,6 +22,20 @@ function fixture({visible=true,saved=null}={}){
 }
 function visibleInstances(group){let count=0;const matrix=new T.Matrix4();group.traverse(mesh=>{if(mesh.isInstancedMesh)for(let i=0;i<mesh.count;i++){mesh.getMatrixAt(i,matrix);if(Math.abs(matrix.determinant())>1e-8)count++;}});return count;}
 
+test('the street uses the same stocked room with its real walls; entering restores only the facade frame',async()=>{
+ const f=fixture();await f.shop.ready();
+ const group=f.shop.group,walls=group.getObjectByName('sakura-building'),frame=group.getObjectByName('sakura-front-frame');
+ const shelf=group.getObjectByName('sakura-shelf east'),goods=group.getObjectByName('Sakura notebook packaging');
+ const stockBefore=visibleInstances(group),town=new T.Group(),frontage={position:[-7,.18,-26],yaw:Math.PI/2};
+ f.shop.street(town,frontage);assert.equal(walls.visible,true);assert.equal(frame.visible,false);
+ const pane=group.localToWorld(new T.Vector3(0,0,f.shop.layout.frontZ));
+ assert.ok(pane.distanceTo(new T.Vector3(...frontage.position))<1e-7);
+ assert.equal(shelf.visible,true);assert.equal(visibleInstances(group),stockBefore);
+ f.shop.enter(new T.Group());assert.equal(frame.visible,true);assert.equal(walls.visible,true);
+ assert.equal(group.getObjectByName('sakura-shelf east'),shelf);assert.equal(group.getObjectByName('Sakura notebook packaging'),goods);
+ assert.equal(visibleInstances(group),stockBefore);
+});
+
 test('the town clock dims existing Sakura strip lights late at night without advancing staff jobs',()=>{
  const f=fixture();f.shop.street(f.shop.group.parent,{position:[0,0,0],yaw:0});
  const strip=f.shop.group.getObjectByName('Sakura shopfront strip lights');assert.equal(strip.children.length,2);
@@ -91,7 +105,7 @@ test('the readable spreadsheet shows actual sales and stock and updates while op
  const text=node=>[node.textContent||'',...node.children.map(text)].join(' ');const body=document.querySelector('#activityBody');
  assert.match(text(body),/Gross profit/);assert.match(text(body),/Reiko/);assert.match(text(body),/Pocket notebook/);
  const root=body.firstChild;root.children[1].children[1].onclick();assert.match(text(body),/On shelf/);assert.match(text(body),/Radio batteries/);
- acts.state.sakura.stock.battery.shelf=0;acts.tick(1/30);assert.match(text(body),/0 \/ 12/);dom.button('Close ledger');assert.equal(acts.paused,false);
+ acts.state.sakura.stock.battery.shelf=0;acts.tick(1/30);assert.match(text(body),new RegExp('0 / '+stockSpec('battery').capacity));dom.button('Close ledger');assert.equal(acts.paused,false);
 });
 
 test('sold-out goods get Thuan’s apology, no charge and no daytime refill, even with reserve stock',()=>{

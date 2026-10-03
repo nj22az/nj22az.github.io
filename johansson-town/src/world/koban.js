@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {windowGlow} from '../render/dusk.js';
 import {KOBAN} from './koban-layout.js';
 import {KOBAN_HOME_LAYOUT} from './interiors/koban.js';
+import {glazeWithRoom} from '../render/window-interior.js';
 
 /**
  * The police box on the bus plaza corner (koban-layout.js): white walls, the red lamp
@@ -30,23 +31,23 @@ export function buildKoban(world,options){
  mesh(new THREE.BoxGeometry(w+.35,.18,d+.35),std(0xd9d3c4),x,h+.25,z,'Police box roof');
  mesh(new THREE.BoxGeometry(w+.1,.3,.14),std(0x27304d),x,h-.05,z-d/2-.02,'Police box fascia');
  // The street face: a glass door and a window, a canopy, the sign and the red lamp.
- mesh(new THREE.BoxGeometry(.06,2.15,1.1),std(0x9fc4d6,{roughness:.15,metalness:.1}),west,1.24,doorZ,'Police box glass door');
+ glazeWithRoom(mesh(new THREE.BoxGeometry(.06,2.15,1.1),std(0x9fc4d6,{roughness:.15,metalness:.1}),west,1.24,doorZ,'Police box glass door'));
  mesh(new THREE.BoxGeometry(.08,2.25,.08),std(0x9aa3a0),west,1.28,doorZ-.58,'Door frame');mesh(new THREE.BoxGeometry(.08,2.25,.08),std(0x9aa3a0),west,1.28,doorZ+.58,'Door frame');
  mesh(new THREE.BoxGeometry(.8,.08,1.6),std(0x27304d),face-.4,2.55,doorZ,'Police box canopy');
  const glass=[],pane=()=>{const m=new THREE.MeshStandardMaterial({color:0x9fc4d6,emissive:0xffe2a8,emissiveIntensity:0,roughness:.2});glass.push(m);return m;};
  mesh(new THREE.BoxGeometry(.06,1.0,1.4),std(0x9aa3a0),west,1.65,z-1.1,'Police box window frame');
- mesh(new THREE.PlaneGeometry(1.3,.9),pane(),west-.02,1.65,z-1.1,'Police box window').rotation.y=-Math.PI/2;
+ glazeWithRoom(mesh(new THREE.PlaneGeometry(1.3,.9),pane(),west-.02,1.65,z-1.1,'Police box window')).rotation.y=-Math.PI/2;
  for(let i=0;i<5;i++)mesh(new THREE.BoxGeometry(.02,.03,1.28),std(0xe8e4d8),west-.04,1.3+i*.17,z-1.1,'Window blind slat');
- const sign=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([['駐在所',70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),west-.02,2.95,z,'Police box sign');sign.rotation.y=-Math.PI/2;
+ const sign=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([["Police station",70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),west-.02,2.95,z,'Police box sign');sign.rotation.y=-Math.PI/2;
  // The plaza side is what you see stepping off the bus: the sign again, and the red
  // lamp on the corner, where it shows up Main Street and across the plaza both.
  const south=z+d/2+.01;
- const plaza=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([['駐在所',70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),x-.9,2.95,south,'Police box plaza sign');void plaza;
+ const plaza=mesh(new THREE.PlaneGeometry(2.6,.46),new THREE.MeshStandardMaterial({map:signTexture([["Police station",70,62],['MINATO POLICE BOX',30,128]]),roughness:.8}),x-.9,2.95,south,'Police box plaza sign');void plaza;
  mesh(new THREE.SphereGeometry(.22,16,12),new THREE.MeshStandardMaterial({color:0xff3b30,emissive:0xff2a1a,emissiveIntensity:1.2,roughness:.3}),face-.2,3.25,south+.2,'Red police lamp');
  mesh(new THREE.BoxGeometry(.3,.06,.3),std(0x9aa3a0),face-.1,3.0,south+.1,'Lamp bracket');
  // The notice board and the police bicycle on the forecourt.
  mesh(new THREE.BoxGeometry(.06,.9,1.2),std(0xb98a55),west-.03,1.45,z+.25,'Police notice board');
- const notice=mesh(new THREE.PlaneGeometry(1.1,.8),new THREE.MeshStandardMaterial({map:signTexture([['お知らせ',52,40],['WANTED: TAMA (CAT)',26,92],['LOST: ONE GLOVE',26,130]],{w:420,h:300,bg:'#fff8e6',ink:'#3b3f55'}),roughness:.9}),west-.07,1.45,z+.25,'Police notices');notice.rotation.y=-Math.PI/2;
+ const notice=mesh(new THREE.PlaneGeometry(1.1,.8),new THREE.MeshStandardMaterial({map:signTexture([["Notice",52,40],['WANTED: TAMA (CAT)',26,92],['LOST: ONE GLOVE',26,130]],{w:420,h:300,bg:'#fff8e6',ink:'#3b3f55'}),roughness:.9}),west-.07,1.45,z+.25,'Police notices');notice.rotation.y=-Math.PI/2;
  const bike=new THREE.Group();bike.name='Police bicycle';bike.position.set(face-.55,0,z-1.9);bike.rotation.y=Math.PI/2;group.add(bike);
  const frame=std(0xf4f1ea),tyre=std(0x1c1c20);
  for(const bx of [-.52,.52]){const wheel=new THREE.Mesh(new THREE.TorusGeometry(.32,.035,6,20),tyre);wheel.position.set(bx,.34,0);bike.add(wheel);}
@@ -55,7 +56,7 @@ export function buildKoban(world,options){
  const basket=new THREE.Mesh(new THREE.BoxGeometry(.3,.2,.3),std(0x9aa3a0));basket.position.set(.62,.95,0);bike.add(basket);
  const box=new THREE.Mesh(new THREE.BoxGeometry(.32,.26,.26),std(0xf4f1ea));box.position.set(-.5,.82,0);bike.add(box);
  // The back of the house: Officer Mori's window, an air conditioner, a potted plant.
- mesh(new THREE.PlaneGeometry(1.2,.9),pane(),x+1.2,1.7,z+d/2+.01,'Officer Mori window');
+ glazeWithRoom(mesh(new THREE.PlaneGeometry(1.2,.9),pane(),x+1.2,1.7,z+d/2+.01,'Officer Mori window'));
  mesh(new THREE.BoxGeometry(.7,.45,.28),std(0xe8e4d8),x+w/2+.16,.5,z+.9,'Air conditioner');
  mesh(new THREE.CylinderGeometry(.2,.16,.32,10),std(0xb95c3c),face-.35,.16,z+1.55,'Plant pot');
  mesh(new THREE.SphereGeometry(.3,8,6),std(0x3f8f46),face-.35,.55,z+1.55,'Plant');

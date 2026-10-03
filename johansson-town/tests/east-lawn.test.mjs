@@ -1,4 +1,5 @@
 import {test} from 'node:test';
+import {kitanoRoadAt} from '../src/world/kitano-link-plan.js';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {readFile} from 'node:fs/promises';
@@ -11,6 +12,7 @@ const nearTerraceWall=(x,z)=>z<COURT_TERRACE.minZ+.1&&x>COURT_TERRACE.minX-.6&&x
 import {paintedTurf} from '../src/render/toy-surfaces.js';
 import {MAIN_ROAD} from '../src/world/main-road.js';
 import {circleHitsRect} from '../physics.js';
+import {GATEBALL_ACTIVE} from '../src/world/okinawa/layout.js';
 
 /** The peninsula land sits at this height, and the surrounding sea at this one. */
 const LAND=-.4,WATER=-.56;
@@ -27,13 +29,14 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
   // vertical face, and excluding its square from the lawn left a dead band one body
   // wide at its foot: you walked into an invisible wall on open grass.
   // The gateball terrace ends in a retaining wall on its seaward side.
-  else if(!nearTerraceWall(x,z)&&!nearTerraceWall(x+.4,z)&&routeAt(x,z,.4).id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
+  // Kitano Road's embankment has retaining walls of its own; the lawn meets them, not the road.
+  else if(!nearTerraceWall(x,z)&&!nearTerraceWall(x+.4,z)&&!kitanoRoadAt(x,z,-.5)&&!kitanoRoadAt(x+.4,z,-.5)&&routeAt(x,z,.4).id===EAST_LAWN.id&&routeAt(x+.4,z,.4)?.id===EAST_LAWN.id
    &&Math.abs(groundHeight(x+.4,z)-groundHeight(x,z))>.2)
    steps.push(x.toFixed(1)+','+z.toFixed(1)+' '+(groundHeight(x+.4,z)-groundHeight(x,z)).toFixed(2));
  }
  assert.deepEqual(off.slice(0,6),[],'Ground east of the road you still cannot stand on');
  assert.deepEqual(steps.slice(0,6),[],'The east side steps rather than slopes');
- assert.equal(routeAt(28,4).surface,'grass');
+ assert.equal(routeAt(28,12).surface,'grass');
  // And the kerb itself. The pavement gives up a body's radius short of its east edge
  // and the lawn only began a radius past it, so the two together left a band 0.7m wide
  // that both would have covered and neither would accept: twenty metres of invisible
@@ -47,7 +50,7 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
  assert.equal(routeAt(PARK.x,PARK.z).id,PARK.id);
  assert.ok(groundHeight(PARK.x,PARK.z)>1,'The park keeps its mound');
  // and the lawn stops where the town does.
- assert.equal(routeAt(EAST_LAWN.maxX+1.5,0)?.surface,'sand','The beach beyond the seawall is walkable');
+ assert.equal(routeAt(EAST_LAWN.maxX+1.5,10)?.surface,'sand','The beach beyond the seawall is walkable');
  configureTownMode(TOWN_MODES.LEGACY);
  assert.ok(!routeAt(28,4),'Only the peninsula has an east side to stand on');
  configureTownMode(TOWN_MODES.PENINSULA);
@@ -58,7 +61,7 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  const parent=new THREE.Group(),colliders=[];
  const {shore}=buildEastLawn({parent,colliders});
  const wall=colliders.filter(c=>c.id==='east-seawall');
- assert.equal(wall.length,4,'The wall retains its south return and two beach openings');
+ assert.equal(wall.length,5,'The wall retains its south return, two beach openings and the opening for Kitano Road');
  for(const z of [-30,-15,10,19])assert.ok(wall.some(c=>circleHitsRect(EAST_LAWN.wall.x,z,.36,c)),'You can walk through the seawall at z='+z);
  // The north end is closed by something you can see rather than by ground that simply
  // stops, so the treeline is solid and stands where the trees are drawn.
@@ -82,21 +85,20 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  assert.equal(ray.intersectObject(shore).length,1,'No sand above the beach');
 });
 
-test('the lawn wears the supplied park\u2019s own grass rather than a green of its own',async()=>{
+test('the lawn wears the park\u2019s own grass rather than a green of its own',async()=>{
  installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:256,height:256,close(){}});
  const original=fetch;
  globalThis.fetch=async url=>String(url).startsWith('blob:')?original(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
  try{
   const bare=buildEastLawn({parent:new THREE.Group(),colliders:[]});
-  // Before the model arrives the lawn already wears the painted turf the park's ground
-  // uses, so the two greens match from the first frame; with nothing fetched there is
-  // nothing more to hand over, and it says so.
-  assert.equal(bare.useParkGreenery(parkFoliage()),false);
+  // The lawn wears the painted turf from the first frame, and the park hands over the
+  // same turf: the two greens are one field.
   assert.ok(bare.lawn.material.map?.image===paintedTurf().image,'The bare lawn is a green of its own');
+  assert.equal(parkFoliage().grass?.image,paintedTurf().image,'The park is not on the town\u2019s turf');
 
   assert.equal(await preloadPark(),true);
   const {grass}=parkFoliage();
-  assert.ok(grass?.image,'The park model carries no lawn texture');
+  assert.ok(grass?.image,'The park has no lawn texture');
   const lawn=buildEastLawn({parent:new THREE.Group(),colliders:[]});
   assert.equal(lawn.useParkGreenery({grass}),true);
   assert.equal(lawn.lawn.material.map.image,grass.image,'The lawn is not the park\u2019s grass');
@@ -196,7 +198,7 @@ test('the paths across the green lie on the ground rather than through it',async
  assert.deepEqual(sunk.slice(0,6),[],'Paving sunk under the grass it is laid on');
 });
 
-test('the gateball court stands level on the hill\u2019s ground, graded into it, walled toward the sea',async()=>{
+test('the gateball court stands level on the hill\u2019s ground, graded into it, walled toward the sea',{skip:!GATEBALL_ACTIVE&&'the court is switched off (okinawa/layout.js GATEBALL_ACTIVE)'},async()=>{
  configureTownMode(TOWN_MODES.PENINSULA);
  const {groundHeight}=await import('../src/world/layout.js?terrace');
  const T=COURT_TERRACE;

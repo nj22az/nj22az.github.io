@@ -1,4 +1,5 @@
 import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
+import {shelfCapacity} from '../../commerce/shop-stock.js';
 // Measured from the supplied convenience-store model, in metres at floor Y=0.
 const rect=(x,z,w,d,height=2.9)=>({x,z,w,d,height});
 
@@ -76,7 +77,18 @@ export const REMOVED_SHELVING=[
 ];
 /** The run's own colliders, moved with it. A quarter turn swaps width for depth. */
 const turned=(id,r)=>{const [x,z]=SHELF_ISLANDS[id].place(r.x,r.z);return {x,z,w:r.d,d:r.w,height:r.height};};
-const GONDOLA=[['east',rect(-2.494,1.3315,4.046,1.223,1.5)],['middle',rect(.5455,1.3315,2.021,1.223,1.5)],['middle',rect(1.85,1.35,.57,1.2,1.55)],['west',rect(-1.50,-1.16,2.02,1.22,1.5)]];
+const GONDOLA=[['east',rect(-2.494,1.3315,3.3,1.223,1.5)],['middle',rect(.832,1.3315,1.95,1.223,1.5)],['middle',rect(2.092,1.35,.57,1.2,1.55)],['west',rect(-1.50,-1.16,1.95,1.22,1.5)]];
+/**
+ * End caps on the front of the west and middle gondolas, facing the window: the first
+ * thing you see down each aisle from the door. The east gondola has none -- its end is
+ * the walk from the door to the till. The middle gondola's back end keeps its own.
+ */
+export const FRONT_ENDCAPS=Object.freeze([
+ Object.freeze({id:'west-front',x:-4.05,z:1.7815,w:1.0,d:.42,levels:Object.freeze([.35,.82])}),
+ Object.freeze({id:'middle-front',x:-1.55,z:1.515,w:1.0,d:.42,levels:Object.freeze([.35,.82])}),
+]);
+/** The copy machine by the east window, its fax on a table beside it. */
+export const COPY_MACHINE=Object.freeze({x:2.1,z:3.5,w:.62,d:.56});
 export const SAKURA_LAYOUT={
  bounds:{minX:-6.8,maxX:6.8,minZ:-6.78,maxZ:3.88},
  floorPolygon:[[-6.8,3.88],[6.8,3.88],[6.8,-3.95],[5.7,-3.95],[5.7,-6.78],[-5.7,-6.78],[-5.7,-3.95],[-6.8,-3.95]],
@@ -100,7 +112,9 @@ export const SAKURA_LAYOUT={
   rect(6.4,-2.7,.7,1.2,.8),
   // Lived-in pieces (sakura-life.js): Jaga-bō on his plinth, the assistant manager, the
   // umbrella stand, the office fridge, the hand truck, crates and ladder in the back room.
-  rect(2.25,3.05,.72,.72,1.3),rect(-1.35,3.45,.42,.42,1.2),rect(1.2,3.55,.3,.3,1.0),
+  ...FRONT_ENDCAPS.map(E=>rect(E.x,E.z,E.w+.04,E.d+.04,1.5)),
+  rect(COPY_MACHINE.x,COPY_MACHINE.z,COPY_MACHINE.w+.08,COPY_MACHINE.d+.08,1.1),rect(COPY_MACHINE.x+.56,COPY_MACHINE.z+.02,.44,.5,.9),
+  rect(-2.45,3.42,.72,.72,1.3),rect(-1.35,3.45,.42,.42,1.2),rect(1.2,3.55,.3,.3,1.0),
   rect(4.98,-3.62,.48,.5,1.2),rect(5.35,-5.0,.4,.6,1.1),rect(-.95,-6.35,.5,.4,.9),rect(3.6,-5.7,.45,.6,1.2),
   // The stocked back room (sakura-backroom.js BACKROOM): bottle crates and the daisha at the
   // west end, the cardboard bundle on the east wall, the extinguisher by the delivery door.
@@ -135,60 +149,74 @@ function standBack(x,z,stand){
  * take one shelf each and the four heaviest lines spread over the bottom two — which
  * is where a konbini puts rice and washing powder anyway.
  */
+/**
+ * How many facings across a board: the widest even split of what the board holds that
+ * fits the bay, so the units stand in full rows and never in a ragged part-row.
+ */
+export function facingsFor(perLevel,most){for(let n=Math.min(most,perLevel);n>1;n--)if(perLevel%n===0)return n;return 1;}
+
 function bay(ids,site,x,z,yaw,stand){
  const on=SHELF_ISLANDS[site],[px,pz]=on.place(x,z),back=standBack(x,z,stand),[sx,sz]=on.place(back[0],back[2]);
- const spare=AISLE_LEVELS.length-ids.length,facing=yaw+on.yaw;
+ const facing=yaw+on.yaw,share=Math.floor(AISLE_LEVELS.length/ids.length),extra=AISLE_LEVELS.length%ids.length;
  let level=0;
+ // Every board of the bay carries something: the boards are shared out, the first lines
+ // (the heavier ones, low down) taking any left over.
  for(const [i,id] of ids.entries()){
-  const take=1+(i<spare?1:0);
-  SAKURA_SHELVES[id]={x:px,z:pz,levels:AISLE_LEVELS.slice(level,level+take),yaw:facing,stand:[sx,0,sz],spacing:.24,depth:.12};
+  const take=share+(i<extra?1:0);
+  SAKURA_SHELVES[id]={x:px+Math.sin(facing)*.14,z:pz+Math.cos(facing)*.14,levels:AISLE_LEVELS.slice(level,level+take),yaw:facing,stand:[sx,0,sz],spacing:.23,depth:.12,columns:facingsFor(shelfCapacity(id)/take,8)};
   level+=take;
  }
 }
-bay(['rice','curry'],'east',-3.6,1.56,0,[-3.6,0,2.38]);
-bay(['biscuit','chips'],'east',-1.48,1.56,0,[-1.48,0,2.38]);
-bay(['chocolate','candy','peaches'],'middle',.55,1.56,0,[.55,0,2.38]);
-bay(['soap','detergent'],'east',-3.6,1.10,Math.PI,[-3.6,0,.28]);
-bay(['notebook','postcard'],'east',-1.48,1.10,Math.PI,[-1.48,0,.28]);
-bay(['soy','tuna','soup'],'middle',.55,1.10,Math.PI,[.55,0,.28]);
-bay(['noodles','crackers','bread'],'west',-1.48,-.93,0,[-1.48,0,-.11]);
-bay(['toothpaste','tissues','battery'],'west',-1.48,-1.39,Math.PI,[-1.48,0,-2.21]);
 /**
- * The cold cabinet: four columns, five levels apiece.
- *
- * The drinks only ever reached the fourth level, so the top of three of the four
- * columns held nothing — from the door, a metre-wide band of empty glass across the
- * back of the shop. It is filled with what a konbini actually sells off the morning
- * van, and each line is put at the height you can see it from: you look down on a
- * bento tray and a pudding cup, so they go on the bottom shelf, and the drinks above
- * them shift up one; you look up at a bottle, a carton or a sandwich wedge, so those
- * take the top. Ramune already had one top shelf and keeps it.
+ * One category to a gondola, as a konbini lays its floor (docs/SAKURA-SHOP-PLAN.md):
+ * the pantry on the west island beside the chiller, sweets on the middle one on the
+ * door's own line, and daily goods on the long east island, nearest the till.
+ */
+// Pantry: the noodles, soups and curry on one face, the bottles and tins on the other.
+bay(['noodles','soup','curry'],'west',-1.50,-.93,0,[-1.50,0,-.11]);
+bay(['soy','tuna','peaches'],'west',-1.50,-1.39,Math.PI,[-1.50,0,-2.21]);
+// Sweets: crisps and crackers at a grown-up's eye, chocolate and sweets low for children.
+bay(['chips','crackers','biscuit'],'middle',.832,1.56,0,[.832,0,2.38]);
+bay(['candy','chocolate'],'middle',.832,1.10,Math.PI,[.832,0,.28]);
+// Daily goods: washing, paper, the bathroom; then batteries and stationery.
+bay(['detergent','soap'],'east',-3.319,1.56,0,[-3.319,0,2.38]);
+bay(['tissues','toothpaste'],'east',-1.669,1.56,0,[-1.669,0,2.38]);
+bay(['battery','notebook'],'east',-3.319,1.10,Math.PI,[-3.319,0,.28]);
+bay(['postcard'],'east',-1.669,1.10,Math.PI,[-1.669,0,.28]);
+/**
+ * The cold cabinet at the back is the shop's magnet: drinks only, four columns of five
+ * shelves, every shelf full. Fresh food has gone to the open chiller on the west wall,
+ * where you reach it without opening a door. Beer is in the column nearest the till.
  */
 const COLD_CABINET=[
- {column:0,floor:'bento',drinks:['coffee','tea']},
- {column:1,drinks:['water','orange'],top:'soda'},
- {column:2,drinks:['beer','cola'],top:'sandwich'},
- {column:3,floor:'pudding',drinks:['yogurt','milk']},
+ {column:0,lines:[['tea',[0,1,2]],['coffee',[3,4]]]},
+ {column:1,lines:[['water',[0,1,2]],['orange',[3,4]]]},
+ {column:2,lines:[['cola',[0,1,2]],['soda',[3,4]]]},
+ {column:3,lines:[['milk',[0,1]],['beer',[2,3,4]]]},
 ];
-/** The bottom and top shelves hold one line each; the drinks take two levels apiece. */
-const CHILLED={
- bento:{spacing:.22,depth:.155,columns:4},
- pudding:{spacing:.13,depth:.13,columns:6},
- sandwich:{spacing:.22,depth:.13,columns:4},
- soda:{spacing:.19,depth:.105},
-};
-for(const {column,floor,drinks,top} of COLD_CABINET){
+for(const {column,lines} of COLD_CABINET){
  const x=-1.60+column*1.33,stand=standBack(x,-3.48,[x,0,-2.78]);
- const place=(id,levels)=>{SAKURA_SHELVES[id]={x,z:-3.48,levels,yaw:0,stand,spacing:.19,depth:.13,...CHILLED[id],fridge:column};};
- // A floored column pushes its drinks up a shelf, which is the whole point of it.
- const first=floor?1:0;
- if(floor)place(floor,[FRIDGE_LEVELS[0]]);
- drinks.forEach((id,row)=>place(id,FRIDGE_LEVELS.slice(first+row*2,first+row*2+2)));
- if(top)place(top,[FRIDGE_LEVELS[4]]);
+ for(const [id,levels] of lines){
+  const perLevel=shelfCapacity(id)/levels.length;
+  SAKURA_SHELVES[id]={x,z:-3.48,levels:levels.map(l=>FRIDGE_LEVELS[l]),yaw:0,stand,spacing:.19,depth:.12,columns:facingsFor(perLevel,6),fridge:column};
+ }
 }
-SAKURA_SHELVES.bun={x:-6.50,z:1.515,levels:[.9573,1.3203,1.6833],columns:4,yaw:Math.PI/2,stand:standBack(-6.50,1.515,[-5.58,0,1.515]),spacing:.33,depth:.12};
+/**
+ * The open chiller on the west wall (オープンケース), where the bun cabinet stood: four
+ * stepped decks under a lit canopy, in three bays. Rice balls at eye level, the bento
+ * under them; sandwiches over bread; pudding over yoghurt.
+ */
+export const CHILLER=Object.freeze({x0:-6.82,x1:-6.0,z0:-1.6,z1:2.45,levels:Object.freeze([.42,.76,1.1,1.44]),canopy:1.9});
+const CHILLED_BAYS=[['rice','bento',-.93],['sandwich','bread',.43],['pudding','yogurt',1.79]];
+for(const [upper,lower,z] of CHILLED_BAYS){
+ const stand=standBack(-6.4,z,[-5.5,0,z]),L=CHILLER.levels;
+ for(const [id,levels,x] of [[upper,[L[2],L[3]],-6.48],[lower,[L[0],L[1]],-6.4]])
+  SAKURA_SHELVES[id]={x,z,levels,yaw:Math.PI/2,stand,spacing:.2,depth:.13,columns:facingsFor(shelfCapacity(id)/levels.length,6)};
+}
+/** The bun steamer on the counter, beside the hot case: two racks behind glass. */
+export const BUN_STEAMER=Object.freeze({x:4.8,z:2.45,w:.38,d:.52,top:1.0,h:.44});
+SAKURA_SHELVES.bun={x:BUN_STEAMER.x,z:BUN_STEAMER.z,levels:[1.03,1.23],columns:3,yaw:-Math.PI/2,stand:[4.05,0,BUN_STEAMER.z],spacing:.15,depth:.11};
 
-SAKURA_SHELVES.noodles.depth=.15;
 
 /**
  * Fittings the model came with that nothing ever stood on: the wall shelf by the back
@@ -209,9 +237,16 @@ export const SAKURA_DRESSING=[
  {id:'delivery',template:'stock',levels:[.088,.357,.670,.983,1.296],x:-5.165,z:-2.28,yaw:0,columns:5,rows:1,spacing:.365,depth:.25,
   look:[-5.165,1.44,-2.09],title:'Look over the delivery shelf',
   text:'Cartons off the morning van, waiting to be priced up and put out. Thuan works down them after closing.'},
- {id:'promotion',template:'curry',island:'middle',levels:[.202,.334,.805,.937],x:1.87,z:1.355,yaw:Math.PI/2,columns:5,rows:1,spacing:.18,depth:.05,
-  look:[2.06,1.08,1.355],title:'Read the end-cap promotion',
-  text:'日の出カレールウ — the month\u2019s offer, stacked at the end of the aisle with a hand-lettered card.'},
+ {id:'promotion',template:'curry',island:'middle',levels:[.202,.334,.805,.937],x:2.112,z:1.355,yaw:Math.PI/2,columns:5,rows:1,spacing:.18,depth:.05,
+  look:[2.302,1.08,1.355],title:'Read the end-cap promotion',
+  text:"Hinode Curry Roux — the month’s offer, stacked at the end of the aisle with a hand-lettered card."},
+ // The front end caps (FRONT_ENDCAPS): this week's ramen offer, and the new crisps.
+ {id:'ramen-week',template:'noodles',levels:[.35,.82],x:-4.05,z:1.80,yaw:0,columns:5,rows:2,spacing:.18,depth:.15,
+  look:[-4.05,1.3,2.3],title:'Read the ramen-week card',
+  text:'Ramen week: any two YUNAGI cups for ¥280. Thuan has written underneath, in smaller letters, that the kettle by the till is for customers.'},
+ {id:'new-crisps',template:'chips',levels:[.35,.82],x:-1.55,z:1.54,yaw:0,columns:5,rows:2,spacing:.18,depth:.12,
+  look:[-1.55,1.3,2.0],title:'Read the new-release card',
+  text:'New: KOGANE lightly salted. Jaga-bō on the bag, Jaga-bō on the card, Jaga-bō by the window. The rep is very proud of him.'},
 ].map(dressed);
 
 /**
@@ -229,7 +264,7 @@ export const SAKURA_BACKBAR=Object.freeze([
   {id:'stamps',band:'eye',x:6.42,y:.961,z:1.1,note:'Sakura postage stamps'},
   {id:'gum',band:'eye',x:6.42,y:.98,z:.84,note:'Chewing gum'},
   {id:'matches',band:'eye',x:6.42,y:.967,z:.5,note:'Matches and lighter'},
-  {id:'osusume',band:'mid',x:6.52,y:1.015,z:1.28,note:'本日のおすすめ'},
+  {id:'osusume',band:'mid',x:6.52,y:1.015,z:1.28,note:"Today's Recommendations"},
   {id:'postcard-stand',band:'mid',x:6.40,y:.77,z:.90,note:'Harbour postcard stand'},
   {id:'radio',band:'low',x:6.40,y:.42,z:.55,note:'Shop radio'},
   {id:'batteries',band:'low',x:6.40,y:.40,z:.84,note:'Spare batteries face-out'},

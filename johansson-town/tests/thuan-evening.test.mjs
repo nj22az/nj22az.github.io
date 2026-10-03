@@ -10,7 +10,6 @@ import {PARK_BENCH} from '../src/world/park-layout.js';
 import {EAST_LAWN} from '../src/world/east-lawn.js';
 import {COMMUTER_SHIFTS} from '../src/people/commuter-schedule.js';
 import {RESIDENTS} from '../src/people/residents.js';
-import {FERRY_TERMINAL} from '../src/world/ferry.js';
 import {MARKET_THRESHOLD} from '../src/world/town-grid.js';
 
 const THUAN=RESIDENTS.find(p=>p.name==='Thuan');
@@ -18,7 +17,7 @@ const shift=COMMUTER_SHIFTS.Thuan;
 /** The commuter plan, which is the one the peninsula runs. */
 const plan=minutes=>residentPlan(THUAN,minutes,false,{},true);
 
-test('Thuan has a beer at Minato between closing the shop and the last bus',()=>{
+test('Thuan has a beer at Minato between closing the shop and walking home',()=>{
  configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
  try{
   // On shift she is behind her own counter.
@@ -37,15 +36,15 @@ test('Thuan has a beer at Minato between closing the shop and the last bus',()=>
   assert.equal(plan(1260).place,'izakaya','There is no extra nine o’clock bus');
   assert.equal(plan(last-THUAN_BUS_MARGIN-1).place,'izakaya');
   const leaving=plan(last-THUAN_BUS_MARGIN);
-  assert.equal(leaving.place,'bus');
-  // The island's commuters leave by the ferry from the outer pier.
-  assert.deepEqual(leaving.target,FERRY_TERMINAL.queue);
-  assert.equal(plan(last-1).place,'bus','She is still drinking when her bus goes');
+  // She lives in Kitahama now: where the last ferry used to take her, she walks home.
+  assert.equal(leaving.place,'home');
+  assert.deepEqual(leaving.target,THUAN.home);
+  assert.equal(plan(last-1).place,'home','She is still drinking when she should be on her way home');
   // Rain changes her evening activity, not the bus schedule.
   assert.equal(departureFor(THUAN,true),shift.departure);
 
-  // Rain sends her straight to the stop.
-  assert.equal(residentPlan(THUAN,shift.finish+5,true,{},true).place,'bus');
+  // Rain sends her straight home.
+  assert.equal(residentPlan(THUAN,shift.finish+5,true,{},true).place,'home');
   assert.equal(thuanAtMinato(THUAN,shift.finish+5,true),false);
  }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
 });
@@ -129,7 +128,8 @@ test('the whole day runs shop, walk, shop, beer, bus without a gap',()=>{
   for(let m=510;m<1350;m+=5){const p=plan(m);if(seen.at(-1)?.place!==p.place)seen.push({m,place:p.place});}
   const order=seen.map(s=>s.place);
   // Arrives on the bus, opens up, takes her walk, comes back, has a beer, catches it.
-  assert.deepEqual(order,['bus','market','nap','park','stroll','market','izakaya','bus','away']);
+  // Comes in from Kitahama, opens up, takes her walk, comes back, has a beer, walks home.
+  assert.deepEqual(order,['home','market','nap','park','stroll','market','izakaya','home']);
   // and every one of those is somewhere she can actually stand.
   for(const {m} of seen){const p=plan(m);assert.ok(Array.isArray(p.target)&&p.target.length===2,'No target at '+m);}
  }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}

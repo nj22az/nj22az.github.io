@@ -18,7 +18,6 @@ import {buildBusinessContent,BUSINESS_CONTENT_CATALOGUE} from '../src/world/inte
 import {buildWarehouseInterior} from '../src/world/interiors/warehouse.js';
 import {preloadSuppliedRooms,buildSuppliedRoom,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
 import {TOWN_DESTINATIONS} from '../src/world/town-grid.js';
-import {BOOKSHOP_WORKSHOP_ROOM} from '../src/world/bookshop-workshop-layout.js';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
 import {ITEMS} from '../content-data.js';
 import {createActivities} from '../activities.js';
@@ -48,19 +47,19 @@ function startClock(c,minutes){const player=new THREE.Group();player.position.se
 test('published businesses have reachable real doors and a clear passage beside Minato',()=>{
  try{
   const c=setup(),{sites,world,blocked}=c,nav=createNavigation(blocked);
-  assert.equal(sites.some(s=>s.id==='form3d'),false);
+  assert.equal(sites.some(s=>s.id==='form3d'),true);
   assert.ok(world.group.getObjectByName('Consolidated harbour office'));
-  assert.equal(sites.find(s=>s.id==='frontrow').combinedWorkshop,true);
+  assert.equal(sites.find(s=>s.id==='frontrow').bookshop,true);assert.equal(sites.find(s=>s.id==='form3d').industrialWorkshop,true);
   assert.equal(world.people.length,STREET_CAST.length);assert.equal(new Set(world.people.map(p=>p.profile.name)).size,STREET_CAST.length);
   for(const site of [...sites,world.warehouse.place]){
    const [x,,z]=site.door;assert.equal(blocked(x,z),false,site.id+' door');
    const path=nav.path({x:-3,z:-20},{x,z});assert.deepEqual(path.at(-1),[x,z],site.id+' reachable door');
   }
   for(const z of [-5.1,-4.6,-4.1])assert.equal(sweepFraction({x:-6.5,z},{x:-17,z},blocked),1,'Continuous passage to rear yard at '+z);
-  assert.deepEqual(TOWN_DESTINATIONS.workshop,TOWN_DESTINATIONS.books);
+  assert.notDeepEqual(TOWN_DESTINATIONS.workshop,TOWN_DESTINATIONS.books);assert.deepEqual(TOWN_DESTINATIONS.workshop,[sites.find(s=>s.id==='form3d').door[0],sites.find(s=>s.id==='form3d').door[2]]);
   assert.deepEqual(TOWN_DESTINATIONS.books,[sites.find(s=>s.id==='frontrow').door[0],1.6]);
   const roles=Object.fromEntries(world.people.map(p=>[p.profile.name,p.profile.workSite]));
-  for(const name of ['Aya','Kenji','Reiko','Tetsuo'].filter(inCast))assert.equal(roles[name],'frontrow');
+  for(const name of ['Aya','Reiko'].filter(inCast))assert.equal(roles[name],'frontrow');for(const name of ['Kenji','Tetsuo'].filter(inCast))assert.equal(roles[name],'form3d');
   if(inCast('Harbour master'))assert.equal(roles['Harbour master'],'office');if(inCast('Mrs Sato'))assert.equal(roles['Mrs Sato'],'ramen');
   for(let minute=0;minute<1440;minute+=10)for(const p of world.people){
    // Sato Ramen is on the peninsula now, beside Minato: open at lunch, with Mrs Sato in from 10:30.
@@ -70,37 +69,28 @@ test('published businesses have reachable real doors and a clear passage beside 
  }finally{configureTownMode('legacy');}
 });
 
-test('combined room preserves every content item, accessible workstations and four existing workers',()=>{
+test('bookshop and dock workshop keep distinct content, accessible rooms and their own workers',()=>{
  try{
-  const c=setup(),site=c.sites.find(s=>s.id==='frontrow'),r=roomFor(c,site),nav=createNavigation(r.blocked,{step:.16,heightAt:()=>0,bounds:r.layout.bounds});
-  assert.deepEqual(r.layout.bounds,BOOKSHOP_WORKSHOP_ROOM.bounds);assert.ok(r.layout.workshop);
-  const content=buildBusinessContent({site,room:r.room,register:c.register,onInspect(){},onAction(){}});
-  const ids=[...content.objects.keys(),...BUSINESS_CONTENT_CATALOGUE.filter(i=>i.siteId==='office').map(i=>i.id)];assert.deepEqual(ids.sort(),ITEMS.map(i=>i.id).sort());
-  assert.ok(BUSINESS_CONTENT_CATALOGUE.filter(i=>i.siteId==='frontrow').every(i=>i.place.includes('Workshop')));
-  for(const target of [...Object.values(r.layout.staff),...r.room.children.filter(o=>o.userData.seat).map(o=>o.userData.seat.stand)]){
-   const [x,,z]=target;assert.equal(r.blocked(x,z),false,'Clear interior station '+target);
-   const path=nav.path({x:r.layout.spawn[0],z:r.layout.spawn[2]},{x,z});assert.deepEqual(path.at(-1),[x,z],'Reachable station '+target);
+  const c=setup(),ids=[];
+  for(const id of ['frontrow','form3d']){
+   const site=c.sites.find(s=>s.id===id),r=roomFor(c,site),nav=createNavigation(r.blocked,{step:.16,heightAt:()=>0,bounds:r.layout.bounds});
+   assert.equal(!!r.layout.workshop,id==='form3d');
+   const content=buildBusinessContent({site,room:r.room,register:c.register,onInspect(){},onAction(){}});ids.push(...content.objects.keys());
+   if(id==='frontrow'){assert.ok(!r.room.getObjectByName('Oscilloscope'));assert.ok(!r.room.getObjectByName('Star Port cabinet'));assert.ok(r.room.getObjectByName('Reading table'));}
+   for(const target of [...Object.values(r.layout.staff),...r.room.children.filter(o=>o.userData.seat).map(o=>o.userData.seat.stand)]){
+    const [x,,z]=target;assert.equal(r.blocked(x,z),false,'Clear station '+target);assert.deepEqual(nav.path({x:r.layout.spawn[0],z:r.layout.spawn[2]},{x,z}).at(-1),[x,z]);
+   }
+   const staff=c.world.people.filter(p=>p.profile.workSite===id),ledger=createResidentLedger(()=>c.state);
+   for(const p of staff)ledger.account(p.profile.name,1050).shopping={finished:true};startClock(c,1050);
+   const service=staffService(c,r);service.enter(site,1050);
+   for(const p of staff)assert.equal(p.g.userData.inWorkplace,id);
+   for(let i=0;i<500;i++){service.update(.1,1050+i*.025,false);for(const p of staff)assert.equal(r.blocked(p.g.position.x,p.g.position.z,.28),false,p.profile.name+' clear of furniture');}
+   for(let i=0;i<1000;i++)service.update(.1,1500,false);
+   for(const p of staff)assert.equal(p.g.userData.inWorkplace,undefined,p.profile.name+' leaves by the door');
+   service.restore();r.layout.workshop?.dispose();
   }
-  const staff=c.world.people.filter(p=>p.profile.workSite==='frontrow');
-  // The shared shift below needs all four workers back in the street cast.
-  if(!['Aya','Kenji','Reiko','Tetsuo'].every(inCast)){r.layout.workshop.dispose();return;}
-  // All four have finished their Sakura errand; exercise the shared work shift.
-  const ledger=createResidentLedger(()=>c.state);
-  for(const p of staff)ledger.account(p.profile.name,1050).shopping={finished:true};
-  const minute=1050;startClock(c,minute);
-  const service=staffService(c,r);service.enter(site,minute);
-  for(const p of staff){assert.equal(p.g.userData.inWorkplace,'frontrow');assert.equal(p.g.visible,true);}
-  const used=new Set();
-  for(let i=0;i<600;i++){
-   service.update(.1,minute+i*.025,false);
-   for(const a of c.targets)if(a.userData.workers&&a.userData.reservedBy)used.add(a.userData.reservedBy);
-   for(const p of staff)assert.equal(r.blocked(p.g.position.x,p.g.position.z,.28),false,p.profile.name+' clear of furniture '+JSON.stringify({minute:minute+i*.025,position:p.g.position.toArray(),place:p.g.userData.place,activity:p.g.userData.activity,inWorkplace:p.g.userData.inWorkplace}));
-   for(let a=0;a<staff.length;a++)for(let b=a+1;b<staff.length;b++)assert.ok(staff[a].g.position.distanceTo(staff[b].g.position)>.65,'Workers keep separate space');
-  }
-  assert.deepEqual([...used].sort(),['Aya','Kenji','Reiko','Tetsuo']);
-  for(let i=0;i<1000;i++)service.update(.1,1500,false);
-  for(const p of staff){assert.equal(p.g.userData.inWorkplace,undefined,p.profile.name+' leaves through door '+JSON.stringify(staff.map(w=>({name:w.profile.name,pos:w.g.position.toArray(),inside:w.g.userData.inWorkplace,transition:w.g.userData.roomTransition}))));assert.equal(p.g.parent,c.world.group);assert.deepEqual([p.g.position.x,p.g.position.z],p.profile.work);}
-  service.restore();r.layout.workshop.dispose();
+  ids.push(...BUSINESS_CONTENT_CATALOGUE.filter(i=>i.siteId==='office').map(i=>i.id));assert.deepEqual(ids.sort(),ITEMS.map(i=>i.id).sort());
+  assert.ok(BUSINESS_CONTENT_CATALOGUE.filter(i=>i.siteId==='form3d').every(i=>i.place.includes('western quay')));
  }finally{configureTownMode('legacy');}
 });
 
@@ -108,12 +98,12 @@ test('restored supplied office and warehouse use their existing staff and workin
  try{
   const c=setup();globalThis.createImageBitmap=async()=>({width:256,height:256,close(){}});
   const native=fetch;globalThis.fetch=async url=>String(url).startsWith('blob:')?native(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
-  try{assert.deepEqual(await preloadSuppliedRooms(['office']),[true]);}finally{globalThis.fetch=native;}
+  try{assert.deepEqual(await preloadSuppliedRooms(['office']),[false],'The office is built in code');}finally{globalThis.fetch=native;}
   // The harbour master sleeps in the office at night now, so meet him on duty in the morning.
   // Mrs Sato cooks at Sato Ramen now; the warehouse keeps its interior with nobody assigned.
   for(const [id,name,builder,minute] of [['office','Harbour master',buildSuppliedRoom,480],['warehouse','Nobody',buildWarehouseInterior,1000]]){
    const site=[...c.sites,...c.world.landmarks].find(s=>s.id===id),r=roomFor(c,site,builder);
-   if(id==='office'){assert.ok(r.room.getObjectByName('Supplied office'));assert.ok(r.room.getObjectByName('Clerk CRT monitor'));assert.ok(c.targets.some(o=>o.userData.hit.label==='Open harbour spreadsheets'));}
+   if(id==='office'){assert.ok(r.room.getObjectByName('Harbour office shell'));assert.ok(r.room.getObjectByName('Clerk CRT monitor'));assert.ok(c.targets.some(o=>o.userData.hit.label==='Open harbour spreadsheets'));}
    if(!inCast(name))continue;
    startClock(c,minute);const service=staffService(c,r);service.enter(site,minute);
    const person=c.world.people.find(p=>p.profile.name===name);assert.equal(person.g.userData.inWorkplace,id);assert.equal(person.g.visible,true);
@@ -123,12 +113,12 @@ test('restored supplied office and warehouse use their existing staff and workin
  }finally{configureTownMode('legacy');}
 });
 
-test('the merged address keeps saved visits and the actual printing buttons working',()=>{
+test('the relocated workshop keeps saved visits and the actual printing buttons working',()=>{
  try{
   const dom=installDOM();configureTownMode('peninsula');
-  assert.equal(businessId('form3d'),'frontrow');assert.equal(businessId('stepwise'),'frontrow');
-  assert.deepEqual(migratedVisits(['form3d','journal','frontrow','electronics','career']),['frontrow','office']);
-  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1030,getSocialContext:()=>({inside:'frontrow'})});
+  assert.equal(businessId('form3d'),'form3d');assert.equal(businessId('stepwise'),'form3d');
+  assert.deepEqual(migratedVisits(['form3d','journal','frontrow','electronics','career']),['form3d','frontrow','office']);
+  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1030,getSocialContext:()=>({inside:'form3d'})});
   acts.action('workshop');dom.button('Check with StepWise');dom.button('Use this pattern in Form 3D');dom.button('Print model · ¥40');
   acts.tick(8);acts.action('workshop');dom.button('Collect model');assert.equal(acts.state.inventory.length,1);acts.close();
  }finally{configureTownMode('legacy');}

@@ -1,4 +1,5 @@
 import {peninsulaActive} from '../world/town-mode.js';
+import {ISLAND_RESIDENT_NAMES} from '../world/kitahama-layout.js';
 import {YARD_RESIDENT_NAMES} from '../world/yard-homes-layout.js';
 const shifts={
  // Day staff share the evening service; night staff return on the morning bus.
@@ -25,7 +26,8 @@ const minuteOfDay=m=>((m%1440)+1440)%1440;
  * which also keeps her out of the street behind Sakura when Thuan goes out for her break.
  */
 export const SATO_SHIFT=Object.freeze({arrival:510,start:630,finish:840,departure:870});
-export const shiftFor=profile=>{const name=typeof profile==='string'?profile:profile?.name;return name==='Mrs Sato'&&peninsulaActive()?SATO_SHIFT:COMMUTER_SHIFTS[name]||null;};
+// A profile may carry its own shift (a visitor off the ferry has no name in the roster).
+export const shiftFor=profile=>{if(profile&&typeof profile==='object'&&profile.shift)return profile.shift;const name=typeof profile==='string'?profile:profile?.name;return name==='Mrs Sato'&&peninsulaActive()?SATO_SHIFT:COMMUTER_SHIFTS[name]||null;};
 function elapsed(profile,minutes){const shift=shiftFor(profile);return shift&&!shift.permanent?minuteOfDay(minutes-shift.arrival):null;}
 
 /**
@@ -96,6 +98,17 @@ export function shiftActive(profile,minutes){
 }
 /** On the peninsula the Front-Row staff live in the yard behind the shop and never take the bus. */
 export const livesInYard=profile=>peninsulaActive()&&YARD_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);
+/**
+ * Since the island grew, Thuan, Nao and Mrs Sato live in Kitahama (kitahama-layout.js).
+ * They keep their own days -- the shop, the bench break, the beer at Minato, the lunch
+ * counter -- but where the timetable used to put them on the ferry, they walk home.
+ */
+export const livesInKitahama=profile=>peninsulaActive()&&ISLAND_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);
+/** commuterPhase as the town sees it: somebody who lives on the island is never 'away'. */
+export function townPhase(profile,minutes,rain=false){
+ const phase=commuterPhase(profile,minutes,rain);
+ return livesInKitahama(profile)&&['away','arriving'].includes(phase)?'town':phase;
+}
 /** And two people live where they work: the harbour master in his office, Officer Mori at the police box. */
 export const LIVES_AT_WORK=Object.freeze(['Harbour master','Officer Mori']);
 export const livesAtWork=profile=>peninsulaActive()&&LIVES_AT_WORK.includes(typeof profile==='string'?profile:profile?.name);

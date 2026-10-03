@@ -6,9 +6,10 @@
     "src/avatars/recipe.js",
     "src/avatars/face.js",
     "src/avatars/head-profile.js",
+    "src/avatars/garment.js",
     "src/people/resident-personalities.js",
     "src/render/cel.js"
   ],
-  "sha256": "19e57989b693d67ddb2810ca2e1c3a2744a65ab47c31d0281e388e66553fc71d",
-  "count": 38
+  "sha256": "ea3e813f0757e778c03e55f44e76ba9b29c64781a0eda9f5be7a0ab26e8ace00",
+  "count": 40
 }

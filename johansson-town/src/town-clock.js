@@ -59,8 +59,6 @@ export function townClockLineAt(minutes){
  * player left off; or a start time ('06:00' ...). The last two can run fast.
  */
 export const CLOCK_KEY='johansson-town-clock';
-export const CLOCK_STARTS=Object.freeze(['real','saved','06:00','12:00','18:00','22:00']);
-// Gentle speeds: at 4× an hour in town is fifteen minutes, and a day takes six hours.
 export const CLOCK_SPEEDS=Object.freeze([1,2,4]);
 const validStart=start=>start==='real'||start==='saved'||(/^([01]\d|2[0-3]):[0-5]\d$/.test(start??''));
 export function readClockSetting(storage){

@@ -1,4 +1,4 @@
-import {DINING} from './dining-layout.js';
+import {buildIslandHomes} from './island-homes.js';
 import {buildLaneSurfaces} from './lane-surfaces.js?snappy=1';
 import {buildHomes} from './homes.js';
 import {buildYardHomes} from './yard-homes.js';
@@ -6,7 +6,7 @@ import {buildKoban} from './koban.js';
 import {buildRamenRestaurant} from './supplied-rooms.js?snappy=1';
 import {buildTeaHouse} from './tea-house.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
-import {ROUTES,groundHeight,nearestOnSegment} from './layout.js?snappy=1';
+import {ROUTES} from './layout.js?snappy=1';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 
@@ -36,15 +36,15 @@ export function buildDistricts(world,options){
     for(const side of [-1,1])box([.06,2.6,.12],[x+side*1.05,1.3,frontZ+.2],'concrete',0xb5b6aa);
     const door=new THREE.Mesh(new THREE.BoxGeometry(2.1,2.6,.13),library.worldMaterial('bamboo',0x938c72,1.5));door.position.set(x,4,frontZ+.15);group.add(door);shutters.push({mesh:door,id});
     sign(jp,title.toUpperCase(),[x,3.13,frontZ+.22],w*.83,.65);
-    const plate=sign('営業中','09:00 – 21:00',[x+.62,1.6,frontZ+.25],.7,.36);plate.userData.site=id;
+    const plate=sign("Open for business",'09:00 – 21:00',[x+.62,1.6,frontZ+.25],.7,.36);plate.userData.site=id;
     box([1.1,.65,.65],[x-w*.37,3.68,frontZ+.42],'concrete',0xb8b4a1);for(let n=0;n<4;n++)box([.85,.04,.04],[x-w*.37,3.49+n*.11,frontZ+.77],'roof',0x605f53);
     box([.35,.55,.22],[x+w*.43,1.8,frontZ+.22],'concrete',0x7e8176);
     world.plantSites.push({x:x-w*.42,z:frontZ+.65,height:1.1});
     verb([x-w*.42,1,frontZ+1],'Inspect potted camellia','inspect','Camellia','The owner turns the pot a little every morning. A saucer catches the excess water.');
     verb([x+w*.42,1.4,frontZ+.8],'Read meter','read','Electricity meter','A mechanical disc turns behind the glass. The last reading was entered in pencil.');
     colliders.push({x,z:z-d/2,w,d:.35,height:h},{x:x-w/2,z,w:.35,d,height:h},{x:x+w/2,z,w:.35,d,height:h});
-    const s={id,x,z,title,jp,sub:'JOHANSSON町',color:colour,accent:'#4c655a',line:title+' · 14 September 1997',door:[x,0,frontZ+1],opens:'09:00'};
-    if(id==='ramen'||id==='crystal-room'){options.sites.push(s);const a=new THREE.Object3D();a.position.set(x,1.3,frontZ+.65);group.add(a);options.register(a,'Enter '+title,()=>options.enter(s));}else{verb([x,1,frontZ+.8],'Read '+title+' notice','read',title,'The curtains are drawn. A paper sign gives the evening opening hours.');}
+    const s={id,x,z,title,jp,sub:"JOHANSSONTown",color:colour,accent:'#4c655a',line:title+' · 14 September 1997',door:[x,0,frontZ+1],opens:'09:00'};
+    if(id==='ramen'){options.sites.push(s);const a=new THREE.Object3D();a.position.set(x,1.3,frontZ+.65);group.add(a);options.register(a,'Enter '+title,()=>options.enter(s));}else{verb([x,1,frontZ+.8],'Read '+title+' notice','read',title,'The curtains are drawn. A paper sign gives the evening opening hours.');}
     return s;
   }
   // The peninsula keeps the ground and the seafront and nothing that is a shop. The
@@ -53,11 +53,11 @@ export function buildDistricts(world,options){
   const shops=!peninsulaActive();
   if(shops)buildTeaHouse(world,options);
   if(shops&&!buildRamenRestaurant(world,options)){
-    building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:'中華そば 佐藤',title:'Sato Ramen',roof:1,colour:0xb6a98a});
-    if(!shoppingDistrictActive())building({id:'crystal-room',x:20.5,z:12,w:2.4,d:3,h:4,jp:'木の家',title:'The Timber House',colour:0x89745b});
+    building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:"Ramen Sato",title:'Sato Ramen',roof:1,colour:0xb6a98a});
   }
-  // The western lane is the seafront service edge behind the shopping street.
-  box([.45,1.0,78],[-38.4,-.05,-6],'concrete',0x808f83);
+  // The western lane is the seafront service edge behind the shopping street. The island
+  // has its own seawall (okinawa/quarters.js), and this one ran down the middle of its walk.
+  if(!peninsulaActive())box([.45,1.0,78],[-38.4,-.05,-6],'concrete',0x808f83);
   // The heron fishes the seawall, which the peninsula keeps out of reach behind the yard.
   if(!peninsulaActive()){
   for(const [x,z] of [[-41,-22],[-43,-8]]){const bird=new THREE.Group();bird.position.set(x,.18,z);const body=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshStandardMaterial({color:0xb8bcb0,roughness:1}));body.scale.set(1,1.6,1);bird.add(body);group.add(bird);}
@@ -66,17 +66,19 @@ export function buildDistricts(world,options){
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
   // Each faces the people it is directing: the port sign is read walking up from the
   // shops, the bus-stop sign walking down to the terminus.
-  const signs=peninsulaActive()?[[3.2,-34,'港通り','PORT AHEAD'],[4.8,18.9,'北通り','BUS STOP AHEAD',Math.PI]]:[[.8,6.1,'商店街','BOOKS ↑ · RAMEN ↓'],[3.2,-34,'港通り','PORT · WAREHOUSE AHEAD'],[4.8,18.9,'北通り','TEA HOUSE → · BUS TERMINAL ↑']];
-  if(!shoppingDistrictActive())signs.splice(1,0,[-7.4,6.5,'住まい','MAIN STREET HOMES ←']);
+  const signs=peninsulaActive()?[[3.2,-34,"港へ →",'HARBOUR'],[4.8,18.9,"バス乗り場",'BUS TERMINAL',Math.PI]]:[[.8,6.1,"Shopping Street",'BOOKS ↑ · RAMEN ↓'],[3.2,-34,"Harbour Street",'PORT · WAREHOUSE AHEAD'],[4.8,18.9,"North Street",'TEA HOUSE → · BUS TERMINAL ↑']];
+  if(!shoppingDistrictActive())signs.splice(1,0,[-7.4,6.5,"Home",'MAIN STREET HOMES ←']);
   for(const [x,z,jp,en,angle=0] of signs){
-    const marker=sign(jp,en,[x,2.7,z],3.1,.6,angle);marker.name='District direction';
-    box([.09,2.35,.09],[x,1.175,z],'timber',0x655444);
+    const marker=sign(jp,en,[x,2.1,z],1.55,.42,angle);marker.name='District direction';
+    box([.09,2.15,.09],[x,1.075,z],'timber',0x655444);
   }
   if(!shoppingDistrictActive())buildHomes(world,options,box);
   // The bookshop and workshop staff live in the yard behind Front-Row (yard-homes.js).
   if(peninsulaActive())buildYardHomes(world,options);
   // Officer Mori's police box, on the lawn corner at the bus plaza. See koban.js.
   if(peninsulaActive())buildKoban(world,options);
+  // Kitahama's houses on the north-east land (island-homes.js).
+  if(peninsulaActive())buildIslandHomes(world,options);
   for(const batch of batches.values()){const m=new THREE.InstancedMesh(unit,batch.mat,batch.items.length);batch.items.forEach((v,i)=>m.setMatrixAt(i,v));m.castShadow=options.shadows;m.receiveShadow=true;group.add(m);}
   return {shutters,windows,animators,sign,library};
 }

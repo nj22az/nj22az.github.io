@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {createMaterials} from '../render/materials.js?snappy=1';
+import {createKit,GRID} from './okinawa/kit.js';
 import {MAIN_ROAD} from './main-road.js';
 import {buildShopDoor} from './shop-door.js';
 import {BOOKSHOP_WORKSHOP_PLOT} from './bookshop-workshop-layout.js';
@@ -40,80 +40,89 @@ export function westShopDoor(id){
 export function buildWestShop({parent,site,register,enter,label,colliders,shadows=false}){
  const plot=WEST_SHOPS[site.id];if(!plot)return null;
  const {z,width,depth}=plot,half=width/2,back=WEST_FRONT-depth;
- const surfaces=createMaterials();
  const group=new THREE.Group();group.name='west-shop:'+site.id;parent.add(group);
- const shade=new Map();
- const solid=(size,pos,kind,colour)=>{
-  const key=kind+':'+colour;
-  if(!shade.has(key))shade.set(key,surfaces.worldMaterial(kind,colour));
-  const m=new THREE.Mesh(new THREE.BoxGeometry(...size),shade.get(key));
+ // Small front fittings are separate meshes in flat painted colours; the shell is kit.
+ const paints=new Map(),paint=c=>{if(!paints.has(c))paints.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.85}));return paints.get(c);};
+ const solid=(size,pos,colour)=>{
+  const m=new THREE.Mesh(new THREE.BoxGeometry(...size),paint(colour));
   m.position.set(...pos);m.castShadow=!!shadows;m.receiveShadow=true;m.userData.staticProp=true;group.add(m);return m;
  };
- const HEIGHT=3.45,RISE=1.25,DOOR=1.6;
- const cedar=0x986b47,frame=0x513b2a,trim=0x6e4c32;
- group.userData.buildingStyle='cedar-timber';
- // The single-storey shell fits the open bookshop/workshop interior. Its long side
- // walls use horizontal cedar courses, with exposed posts supporting one tiled roof.
- const passage=solid([depth+2,.06,2.4],[(WEST_FRONT+back)/2,GROUND_LAYER.apron-.03,-4.6],'concrete',0x8e8a7c);
+ // A 1990s Okinawan concrete shop-house pair on the town grid (okinawa/kit.js GRID):
+ // a 3.0 m shop storey with the books on the left and the workshop on the right of
+ // one central door, a 2.7 m storey of aluminium windows above, and a flat roof with
+ // its parapet, black water tank, aerial and the rebar left for a third floor. It
+ // replaces a cedar-plank gable that read as a mountain lodge (docs/AMPLIFY-AUDIT.md,
+ // B3). The footprint, door, displays and colliders are where they were.
+ const G=GRID.storey.shop,U=GRID.storey.home,H=G+U,HEIGHT=H,DOOR=1.6,SHOPFRONT=2.63;
+ const wall=0xe6dcc4,plinth=0xb3ad9f,trim=0x3f7f86,alu=0xb8bec0,frame=0x8e9699,slab=0xc8c2b5,tank=0x2b2d2f,steel=0x8e979a;
+ group.userData.buildingStyle='okinawa-shop-house';
+ const kit=createKit({shadows});
+ const passage=solid([depth+2,.06,2.4],[(WEST_FRONT+back)/2,GROUND_LAYER.apron-.03,-4.6],0x8e8a7c);
  passage.name='Bookshop–Minato passage';
- solid([depth,.18,width],[(WEST_FRONT+back)/2,.09,z],'concrete',0x777364).name='Stone foundation';
- solid([.22,HEIGHT,width],[back-.11,HEIGHT/2,z],'timber',cedar).name='Cedar rear wall';
+ kit.block(back-.24,WEST_FRONT+.02,0,.3,z-half-.24,z+half+.24,plinth);
+ kit.block(back-.22,back,0,H,z-half-.22,z+half+.22,wall);
  for(const side of [-1,1]){
-  solid([depth,HEIGHT,.22],[(WEST_FRONT+back)/2,HEIGHT/2,z+side*(half+.11)],'timber',cedar).name='Cedar side wall';
-  for(let y=.38;y<HEIGHT;y+=.32){
-   solid([depth,.035,.035],[(WEST_FRONT+back)/2,y,z+side*(half+.235)],'timber',trim).name='Cedar plank joint';
-  }
-  for(const x of [back,back+depth/2,WEST_FRONT-.12]){
-   solid([.20,HEIGHT,.28],[x,HEIGHT/2,z+side*(half+.10)],'timber',frame).name='Exposed timber post';
-  }
-  solid([depth+.36,.18,.32],[(WEST_FRONT+back)/2,HEIGHT-.03,z+side*(half+.10)],'timber',frame).name='Timber wall plate';
+  const [z0,z1]=side<0?[z-half-.22,z-half]:[z+half,z+half+.22];
+  kit.block(back-.22,WEST_FRONT,0,H,z0,z1,wall);
+  // The corner pier, flush with the shopfront, closes the frontage to the side wall.
+  kit.block(WEST_FRONT-.3,WEST_FRONT,0,H,side<0?z-half:z+half-.3,side<0?z-half+.3:z+half,wall);
  }
- for(let y=.38;y<HEIGHT;y+=.32)solid([.035,.035,width],[back-.235,y,z],'timber',trim).name='Rear plank joint';
- // Timber closes both gables; the roof is a single continuous pitch over both uses.
- const gable=new THREE.Shape();gable.moveTo(-half,0);gable.lineTo(half,0);gable.lineTo(0,RISE);gable.closePath();
- const gableGeometry=new THREE.ShapeGeometry(gable);
- for(const [x,angle] of [[WEST_FRONT-.10,Math.PI/2],[back-.13,-Math.PI/2]]){
-  const face=new THREE.Mesh(gableGeometry,surfaces.worldMaterial('timber',cedar));
-  face.name='Cedar gable';face.position.set(x,HEIGHT,z);face.rotation.y=angle;face.castShadow=!!shadows;face.receiveShadow=true;face.userData.staticProp=true;group.add(face);
-  solid([.20,RISE,.18],[x,HEIGHT+RISE/2,z],'timber',frame).name='Gable king post';
+ // Upper storey front, the fascia band over the shop, and a concrete hood above it.
+ kit.block(WEST_FRONT-.22,WEST_FRONT,SHOPFRONT+.12,H,z-half,z+half,wall);
+ kit.block(WEST_FRONT,WEST_FRONT+.06,SHOPFRONT+.1,G+.5,z-half+.3,z+half-.3,trim);
+ kit.block(WEST_FRONT,WEST_FRONT+GRID.eave.canopy,G+.5,G+.62,z-half,z+half,slab);
+ kit.block(WEST_FRONT-.05,WEST_FRONT+.05,SHOPFRONT,SHOPFRONT+.12,z-half+.3,z+half-.3,frame,'metal');
+ // Upstairs: four aluminium sliders, a sill under each, an air conditioner and its stain.
+ for(const wz of [z-half*.62,z-half*.2,z+half*.2,z+half*.62]){
+  kit.box(.06,1.12,GRID.window.small+.4,WEST_FRONT+.03,G+1.55,wz,alu,{finish:'metal'});
+  kit.box(.05,1.0,GRID.window.small+.26,WEST_FRONT+.05,G+1.55,wz,0x5d7a84,{finish:'window'});
+  kit.box(.06,1.0,.04,WEST_FRONT+.07,G+1.55,wz,alu,{finish:'metal'});
+  kit.box(.18,.07,GRID.window.small+.5,WEST_FRONT+.08,G+.95,wz,slab);
  }
- const shape=new THREE.Shape();
- shape.moveTo(-half-.42,0);shape.lineTo(0,RISE);shape.lineTo(half+.42,0);
- shape.lineTo(half+.42,-.18);shape.lineTo(0,RISE-.18);shape.lineTo(-half-.42,-.18);shape.closePath();
- const roof=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:depth+.65,bevelEnabled:false}),surfaces.worldMaterial('roof',0x424d4b));
- roof.name='Shared tiled roof';roof.rotation.y=-Math.PI/2;roof.position.set(WEST_FRONT+.35,HEIGHT+.1,z);
- roof.castShadow=!!shadows;roof.receiveShadow=true;group.add(roof);
- solid([depth+.72,.16,.20],[(WEST_FRONT+back)/2+.02,HEIGHT+RISE+.16,z],'roof',0x3d4542).name='Roof ridge';
- // The frontage has one sign and one central doorway, framed by display windows.
- solid([.24,.70,width],[WEST_FRONT-.12,3.05,z],'timber',trim).name='Shared timber fascia';
- solid([.30,.16,width+.25],[WEST_FRONT-.03,HEIGHT-.02,z],'timber',frame).name='Front crossbeam';
+ kit.box(.26,.5,.72,WEST_FRONT+.14,G+1.0,z+half-.75,0xe2e0d8);
+ kit.box(.02,1.4,.16,WEST_FRONT+.01,G+.2,z+half-.75,0xa9a397);
+ // Roof: parapet ring and coping, the tank on its frame, an aerial, rebar stubs.
+ for(const [x0,x1,z0,z1] of [[back-.22,WEST_FRONT,z-half-.22,z-half-.08],[back-.22,WEST_FRONT,z+half+.08,z+half+.22],[back-.22,back-.08,z-half-.22,z+half+.22],[WEST_FRONT-.14,WEST_FRONT,z-half-.22,z+half+.22]])
+  kit.block(x0,x1,H,H+GRID.parapet,z0,z1,wall);
+ kit.block(WEST_FRONT-.18,WEST_FRONT+.04,H+GRID.parapet,H+GRID.parapet+.08,z-half-.22,z+half+.22,trim);
+ kit.block(back,WEST_FRONT,H-.05,H+.02,z-half,z+half,slab);
+ const tx=back+depth*.32,tz=z-half*.45;
+ for(const [dx,dz] of [[-.45,-.45],[.45,-.45],[.45,.45],[-.45,.45]])kit.box(.07,.9,.07,tx+dx,H+.45,tz+dz,steel,{finish:'metal'});
+ kit.box(1.1,.08,1.1,tx,H+.94,tz,steel,{finish:'metal'});
+ kit.cyl(.6,.6,1.25,tx,H+1.6,tz,tank,{segments:14,finish:'gloss'});
+ kit.rod([back+depth*.7,H,z+half*.5],[back+depth*.7,H+2.4,z+half*.5],.025,steel);
+ for(const y of [H+1.9,H+2.25])kit.rod([back+depth*.7,y,z+half*.5-.55],[back+depth*.7,y,z+half*.5+.55],.015,steel);
+ for(const [dx,dz] of [[.3,.3],[.3,1.2],[1.2,.3],[1.2,1.2]])kit.rod([back+dx,H,z+half-dz],[back+dx,H+.55,z+half-dz],.018,0x7a4a32);
+ // Rust from the parapet fixings and mould under the coping: the island's two tells.
+ for(const wz of [z-half+.7,z+half-1.4])kit.box(.02,1.1,.05,WEST_FRONT+.005,H-.4,wz,0x9d8f78);
+ kit.box(.02,.25,width-.6,WEST_FRONT+.004,H-.12,z,0xbdb4a2);
+ kit.finish(group,'west-shop shell:'+site.id);
+ // The shopfront: two display windows either side of one door, in aluminium.
  for(const side of [-1,1]){
-  const outer=z+side*(half-.24),inner=z+side*(DOOR/2+.14),run=Math.abs(outer-inner),bay=(outer+inner)/2;
-  // Join the outer window stile to the corner post with solid cedar. Without this
-  // infill their different offsets leave a vertical slit through the frontage.
-  solid([.22,2.70,.30],[WEST_FRONT-.11,1.35,z+side*(half-.10)],'timber',cedar).name='Cedar corner infill';
-  solid([.16,.66,run],[WEST_FRONT-.08,.35,bay],'timber',cedar).name='Timber window apron';
-  const recess=solid([.08,1.94,run],[WEST_FRONT-.12,1.65,bay],'timber',0x302c24);recess.name='Display window recess';
-  for(const y of [.68,2.63])solid([.24,.12,run+.12],[WEST_FRONT+.01,y,bay],'timber',frame).name='Display window rail';
-  for(const zz of [inner,outer])solid([.24,2.10,.12],[WEST_FRONT+.01,1.65,zz],'timber',frame).name='Display window stile';
-  if(side<0){
+  const outer=z+side*(half-.3),inner=z+side*(DOOR/2+.14),run=Math.abs(outer-inner),bay=(outer+inner)/2;
+  solid([.22,SHOPFRONT,.30],[WEST_FRONT-.11,SHOPFRONT/2,z+side*(half-.15)],wall).name='Corner pier infill';
+  solid([.16,.66,run],[WEST_FRONT-.08,.35,bay],wall).name='Display window apron';
+  const recess=solid([.08,1.94,run],[WEST_FRONT-.12,1.65,bay],0x302c24);recess.name='Display window recess';
+  for(const y of [.68,SHOPFRONT])solid([.24,.10,run+.12],[WEST_FRONT+.01,y,bay],alu).name='Display window rail';
+  for(const zz of [inner,outer])solid([.24,2.0,.10],[WEST_FRONT+.01,1.65,zz],alu).name='Display window stile';
+  if(side<0||site.bookshop){
    for(const y of [.92,1.70]){
-    solid([.18,.06,run-.18],[WEST_FRONT+.01,y,bay],'timber',trim).name='Book display shelf';
-    for(let i=0;i<9;i++)solid([.10,.36+(i%3)*.04,.17],[WEST_FRONT+.035,y+.23,bay-run/2+.25+i*(run-.5)/9],'timber',[0x884934,0x52655e,0xa18b57][i%3]).name='Book in street display';
+    solid([.18,.06,run-.18],[WEST_FRONT+.01,y,bay],trim).name='Book display shelf';
+    for(let i=0;i<9;i++)solid([.10,.36+(i%3)*.04,.17],[WEST_FRONT+.035,y+.23,bay-run/2+.25+i*(run-.5)/9],[0x884934,0x52655e,0xa18b57][i%3]).name='Book in street display';
    }
   }else{
-   solid([.18,.08,run-.18],[WEST_FRONT+.01,1.06,bay],'timber',trim).name='Workshop display shelf';
-   solid([.10,.46,.78],[WEST_FRONT+.035,1.33,bay-.55],'timber',0x654635).name='Restored radio display';
-   for(let i=0;i<5;i++)solid([.025,.26,.04],[WEST_FRONT+.10,1.34,bay-.83+i*.10],'timber',0xc1a576).name='Radio display grille';
-   solid([.10,.24,.38],[WEST_FRONT+.035,1.22,bay+.50],'timber',0xa99260).name='Workshop pattern display';
+   solid([.18,.08,run-.18],[WEST_FRONT+.01,1.06,bay],trim).name='Workshop display shelf';
+   solid([.10,.46,.78],[WEST_FRONT+.035,1.33,bay-.55],0x654635).name='Restored radio display';
+   for(let i=0;i<5;i++)solid([.025,.26,.04],[WEST_FRONT+.10,1.34,bay-.83+i*.10],0xc1a576).name='Radio display grille';
+   solid([.10,.24,.38],[WEST_FRONT+.035,1.22,bay+.50],0xa99260).name='Workshop pattern display';
   }
   const pane=new THREE.Mesh(new THREE.PlaneGeometry(run-.13,1.82),new THREE.MeshStandardMaterial({color:0x91a79d,roughness:.3,transparent:true,opacity:.24,depthWrite:false}));
   pane.name=side<0?'Bookshop display glass':'Workshop display glass';pane.rotation.y=Math.PI/2;pane.position.set(WEST_FRONT+.12,1.65,bay);pane.userData.clearWindow=true;group.add(pane);
-  solid([.08,1.90,.055],[WEST_FRONT+.15,1.65,bay],'timber',trim).name='Window mullion';
+  solid([.08,1.90,.05],[WEST_FRONT+.15,1.65,bay],alu).name='Window mullion';
  }
  const doorway=new THREE.Group();doorway.position.set(WEST_FRONT-.16,0,z);doorway.rotation.y=Math.PI/2;group.add(doorway);
  const door=buildShopDoor(doorway,{name:site.id+'-west-door',width:DOOR,shadows});
- label(site.jp,site.title.toUpperCase(),[WEST_FRONT+.045,3.05,z],Math.min(width*.8,6.4),.52,Math.PI/2,'#efdfb9','#4c3525');
+ label(site.jp,site.title.toUpperCase(),[WEST_FRONT+.08,G+.12,z],Math.min(width*.8,6.4),.52,Math.PI/2,'#f4ecd6','#2f4f52');
 
  // Walls stop you; the doorway does not.
  const cheek=(width-DOOR)/2-.1;

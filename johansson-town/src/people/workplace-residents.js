@@ -50,6 +50,7 @@ export function createWorkplaceResidents({world,parent,getTargets,collides,getPl
    if(!working(person))continue;
    const g=person.g;
    if(saved.arriving){g.userData.roomTransition=true;g.userData.activity='walking to work';if(!walk(person,saved.stand,dt))continue;saved.arriving=false;delete g.userData.roomTransition;}
+   if(site.bookshop&&g.userData.bookshopServing){interactions.release(person,minutes);walk(person,saved.stand,dt);continue;}
    const base={place:'work',target:[saved.stand[0],saved.stand[2]],activity:'working at '+site.title},plan=interactions.plan(person,base,minutes,rain,dt);
    g.userData.place=site.id;g.userData.activity=plan.activity;
    if(g.userData.usingTownObject||g.userData.chatHold||g.userData.facePlayerUntil>performance.now())continue;

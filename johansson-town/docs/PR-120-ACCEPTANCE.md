@@ -1,19 +1,19 @@
 # Avatar face dragging acceptance
 
-Validated on 1 October 2026 against main `302d97b36af05d8333ccc250334a159b5d4ae821`.
+Validated on 3 October 2026 against main `fa79cfdb6640ee634b6b625ae9bd4baaa53c383d`.
 
-The direct-drag implementation is reapplied to current creator source. The overlapping render-loop change retains `previewFacing`, preserving the later front/back selector. No dining, combat, Photo Studio, warehouse, shop or schedule source was replaced.
+The substantive changes from PR head `1232d995ab66bcb76afb5ae02fa04394e0e03d9a` were reapplied to current main. The creator source also differed substantially from the PR base: main's four-step editor, face silhouettes, wardrobe rules, personality/voice flow, measured camera framing and adjustment buttons were retained. Dragging updates the current adjustment indicators; keyboard buttons remain available. No obsolete creator layout or sliders were restored.
 
-The browser runner now selects the mobile category by its combobox role. It projects UV positions through the rendered head and camera, including the existing idle animation, rather than projecting a separate unanimated avatar. This resolves the demonstrated selector failure and intermittent missed test gestures. Camera settling waits for rendered frames.
+Eyes and brows move symmetrically; nose and mouth move independently. One gesture adds one undo entry. Cancellation restores the recipe and indicators. Only the selected placement fields change. Active dragging repaints the face texture without replacing head geometry, freezes preview movement for stable picking, and adds no preview draw calls. Normal animation resumes on release.
 
 Validation:
 
-- 27 avatar, placement, dining/combat and runtime-package Node checks pass.
-- 27 Photo Studio, drinking, dungeon, ramen, warehouse and stock-restock checks pass.
-- `creator-drag.browser.mjs` passes real Chromium/WebGL at 1280×800, 390×844, 320×568 and 844×390. Phone and landscape inputs use CDP touch events.
-- Each selected eye/brow side, nose and mouth changes only its two placement fields; sliders follow; one undo restores the whole gesture without extra history. Mouse and touch cancellation restore the snapshot. Stationary taps leave no undo entry. Keyboard sliders remain usable; no overflow or page errors occur.
-- During every active gesture the head geometry identity remains unchanged and the preview retains at most three draw calls. Physical-device frame rates are not measured by this software-rendered Chromium check.
-- Existing `creator.browser.mjs` passes at 320×568, 390×844, 844×390, 1280×800 and 320×360, covering front/back preview, categories, controls, undo, sharing, save, focus and layout.
-- Runtime rebuilt from current source; source fingerprint, compiled graph and stylesheet hashes pass. Only freshly generated runtime entries are added; the immediately preceding main runtime is retained for cached pages.
+- 43 focused Node checks pass: face placement, recipe/share codes, avatar geometry/personality/springs and runtime packaging/fingerprint.
+- 31 town subsystem and full-game CPU smoke checks pass: Photo Studio, dungeon, ramen kitchen/player/service, warehouse/port, storage restocking, full-game boot and interior walkthrough.
+- Real Chromium/WebGL `creator-drag.browser.mjs` passes at 1280×800, 390×844, 320×568 and 844×390. Phone and landscape gestures use CDP touch input. Coverage includes both paired sides, selected-field isolation, single undo, stationary taps, mouse/touch cancellation, adjustment-indicator synchronisation, keyboard access, geometry identity, unchanged draw calls, overflow and page errors.
+- Current main's `creator.browser.mjs` passes at 320×568, 390×844, 844×390, 1280×800 and 320×360: front/back preview, categories, face silhouettes, wardrobe, profile, voice steps, undo, sharing/save/focus and layout.
+- Runtime rebuilt with current main's build script. Source fingerprint, local compiled dependencies and stylesheet hashes pass. The current main runtime is retained for cached pages; older runtime chunks are pruned by the existing packaging policy. `index.html` changes contain only generated runtime references. The existing service-worker version is regenerated.
 
-Run both browser runners with a local server in the same network namespace, `CODEX_PRIMARY_RUNTIME_NODE_MODULES` set to the runtime modules and `CREATOR_CHROME` set to the Chromium executable.
+The drag runner now targets main's Adjust tab and keyboard adjustment buttons, rather than the retired slider interface. It compares draw calls with the actual current preview before each gesture, rather than assuming the old three-draw avatar. Tests use software-rendered Chromium; physical-device frame rates were not measured.
+
+Serve `johansson-town` on port 5173 in the browser runner's network namespace, set `CODEX_PRIMARY_RUNTIME_NODE_MODULES` to the runtime modules and `CREATOR_CHROME` to the Chromium executable, and run both browser runners.

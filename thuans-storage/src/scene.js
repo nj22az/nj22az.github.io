@@ -77,6 +77,8 @@ function createBizarroBoss(look) {
       ball(.13, fur, 0, .27, -.05).scale.set(.85, .7, 1.1);
       break;
   }
+  // Everything so far is the stand-in mascot, hidden once the townsperson's own avatar arrives (game.js).
+  suit.traverse(node => { if (node instanceof q) node.userData.mascot = true; });
   // Worn out: stars round the head, the moment to shoo.
   const stars = new ur(); stars.position.y = 1.95; stars.visible = false; suit.add(stars);
   const gold = new Oi({color:0xffd75a});

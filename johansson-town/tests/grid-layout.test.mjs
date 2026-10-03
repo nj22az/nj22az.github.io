@@ -6,7 +6,7 @@ import {createTown} from '../src/world/town.js?snappy=1';
 import {activeRoutes,routeAt} from '../src/world/layout.js?snappy=1';
 import {lanePatches} from '../src/world/lane-surfaces.js?snappy=1';
 import {circleHitsRect} from '../physics.js?snappy=1';
-import {RESIDENTS,HOME_OWNERS} from '../src/people/residents.js';
+import {HOME_OWNERS} from '../src/people/residents.js';
 import {FULL_TOWN} from '../src/world/full-town-state.js';
 import {buildPark} from '../src/world/park.js?snappy=1';
 

@@ -1,6 +1,8 @@
 import test from 'node:test';
+import {KITANO_SEAWALL_GAP} from '../src/world/kitano-link-plan.js';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
+import {CAVE_ACTIVE} from '../src/world/coyote-tunnel.js';
 import {installDOM} from './fixtures.mjs';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {routeAt,groundHeight,MAP_BOUNDS} from '../src/world/layout.js?snappy=1';
@@ -21,22 +23,23 @@ test('both beach openings allow approach, descent, a shoreline walk and return w
   }
   for(let x=44;x>=31.8;x-=.1)assert.equal(blocked(x,access.z),false,'Return from beach');
  }
- for(let z=BEACH.minZ+.5;z<=BEACH.maxZ-.5;z+=.2){assert.equal(blocked(42,z),false,'Walk the length of the dry shore');assert.equal(routeAt(42,z).surface,'sand');}
- assert.ok(colliders.some(c=>circleHitsRect(EAST_LAWN.wall.x,0,.32,c)),'Wall remains solid between openings');
+ // Kitano Road crosses the beach on a causeway: the shore is two walks, one from each opening.
+ for(let z=BEACH.minZ+.5;z<=BEACH.maxZ-.5;z+=.2){if(Math.abs(z-KITANO_SEAWALL_GAP.z)<KITANO_SEAWALL_GAP.half+2.5)continue;assert.equal(blocked(42,z),false,'Walk the length of the dry shore');assert.equal(routeAt(42,z).surface,'sand');}
+ assert.ok(colliders.some(c=>circleHitsRect(EAST_LAWN.wall.x,10,.32,c)),'Wall remains solid between openings');
  parent.updateMatrixWorld(true);const ray=new THREE.Raycaster();
- for(const x of [34.1,39.3,44.2]){ray.set(new THREE.Vector3(x,5,0),new THREE.Vector3(0,-1,0));assert.ok(Math.abs(ray.intersectObject(shore)[0].point.y-groundHeight(x,0))<1e-5,'Feet follow the sand mesh');}
+ for(const x of [34.1,39.3,44.2]){ray.set(new THREE.Vector3(x,5,10),new THREE.Vector3(0,-1,0));assert.ok(Math.abs(ray.intersectObject(shore)[0].point.y-groundHeight(x,10))<1e-5,'Feet follow the sand mesh');}
 });
 
 test('dry ground around the peninsula is admitted and the sea remains blocked',()=>{
  configureTownMode(TOWN_MODES.PENINSULA);
  for(const p of [[-20,32],[-31,32],[43,33],[44,55],[8,54]])assert.equal(townBoundsBlocked(...p,.32),false,'Unbuilt dry land '+p);
- for(const p of [[-41,0],[48,0],[45.9,0],[48,40],[12,-51],[0,110]])assert.equal(townBoundsBlocked(...p,.32),true,'Sea '+p);
- assert.equal(townBoundsBlocked(45.5,0,.32),true,'The whole body must stay on dry sand');
- assert.equal(groundHeight(44,55),-.4,'Feet rest on the visible coastal slab');
+ for(const p of [[-41,0],[48,10],[45.9,10],[48,40],[12,-51],[0,315]])assert.equal(townBoundsBlocked(...p,.32),true,'Sea '+p);
+ assert.equal(townBoundsBlocked(45.5,10,.32),true,'The whole body must stay on dry sand');
+ assert.equal(groundHeight(47,50),-.4,'Feet rest on the visible coastal slab');assert.ok(Math.abs(groundHeight(44,55)-(-.4+.04))<1e-9,'Feet rest on the Kitahama lane, laid on the island ground');
  assert.ok(beachHeight(47,0)<BEACH.waterY,'Underwater sand stays outside walking limits');
 });
 
-test('headland feet follow rendered triangles, including the crown and slopes',()=>{
+test('headland feet follow rendered triangles, including the crown and slopes',{skip:!CAVE_ACTIVE&&'the headland is gone (coyote-tunnel.js CAVE_ACTIVE)'},()=>{
  configureTownMode(TOWN_MODES.PENINSULA);installDOM();
  const parent=new THREE.Group(),colliders=[];const {hill}=buildCoyoteTunnel({parent,colliders});parent.updateMatrixWorld(true);
  const ray=new THREE.Raycaster();

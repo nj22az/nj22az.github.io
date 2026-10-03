@@ -1,4 +1,11 @@
+import {DOCK_CREW_ROUTE} from '../world/docklands-layout.js';
+import {groundHeight} from '../world/layout.js';
+import {createNavigation} from './navmesh.js';
+import {airportWorld} from '../world/airport-ground.js';
 import * as THREE from '../../vendor/three.module.js';
+import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
+import {GATEBALL_ACTIVE} from '../world/okinawa/layout.js';
+import {GROUND_LAYER} from '../world/ground-layers.js';
 
 /**
  * The people who live and work in the new streets.
@@ -14,10 +21,16 @@ import * as THREE from '../../vendor/three.module.js';
  */
 const H=(h,m=0)=>h*60+m;
 
-export const NEIGHBOURS=Object.freeze([
+const ALL_NEIGHBOURS=Object.freeze([
+ {name:'Riku',look:'Kenji',height:1.7,role:'checking the cargo yard',walk:true,route:DOCK_CREW_ROUTE,speed:.65,at:[-35.8,-38.3],face:[0,-1],hours:[[420,1320]],lines:['Rice for Sakura, fuses for the workshop, ice for the fishing boats. This quay keeps the whole island going.','The early boat brings supplies; the evening boat takes fish and outgoing post. Keep the workshop doorway clear, please.']},
+ {name:'Emi Kado',look:'Reiko',height:1.61,role:'checking island freight manifests',at:[-23.1,-35.1],face:[1,0],pose:'Think',hours:[[360,1440]],lines:['Every parcel gets a line in the freight book. The Community Hall keeps our filed records for one year.','Kenji and Tetsuo are in the blue electrical workshop. The last cargo check is at ten; I stay for the late passenger boat.']},
+ {name:'Haru',look:'Shin',height:1.76,role:'sorting the village catch',at:[151,188],face:[-1,0],hours:[[0,1440]],home:[127,182],routine:[{from:0,at:[127,182],role:'at home',home:true},{from:360,at:[151,188],role:'landing and sorting the catch'},{from:720,at:[126,206],role:'collecting lunch at the general store'},{from:780,at:[149,183],role:'mending fishing nets'},{from:1080,at:[127,182],role:'at home',home:true}],lines:['The airport takes our parcels, but the boats still set the pace of the village.','I land the catch at dawn, collect lunch from Mina and mend the nets before going home.']},
+ {name:'Mina',look:'Yui',height:1.6,role:'keeping the village store',at:[126,206],face:[0,1],hours:[[0,1440]],home:[126,202.8],routine:[{from:0,at:[126,205.5],role:'at home',home:true},{from:480,at:[126,206],role:'opening the village general store'},{from:720,at:[130,208],role:'taking a lunch break'},{from:780,at:[126,206],role:'serving village customers'},{from:1080,at:[126,205.5],role:'at home',home:true}],lines:['Tea, rice crackers and postcards. Most customers are our neighbours.','The new guesthouse will bring a few visitors, but this will still be a quiet fishing village.']},
+ {name:'Jun',look:'Daichi',height:1.7,role:'checking commuter tickets',at:airportWorld(-16,18.5),face:[1,0],hours:[[0,1440]],home:airportWorld(-20,18.5),routine:[{from:0,at:airportWorld(-20,18.5),role:'off duty',home:true},{from:420,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:720,at:airportWorld(-26,18.5),role:'taking lunch beside the terminal'},{from:780,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:1200,at:airportWorld(-20,18.5),role:'off duty',home:true}],lines:['Check in ten minutes before your flight. Keep your cabin bag with you.','The ground-service radio goes to Kenji and Tetsuo at the docks. The test sheet comes back with it.']},
+
  {name:'Grandmother Higa',look:'Fumiko',height:1.46,role:'on her verandah',at:[-29.8,-20.7],y:.47,face:[0,-1],pose:'Interact',hours:[[H(7),H(18,30)]],
   lines:[
-   'あい、いらっしゃい。\nSit a moment. You are the one who talks to the girl at Sakura every day. She is a good girl. She counts my change twice so I do not have to.',
+   "Hey, welcome.\nSit a moment. You are the one who talks to the girl at Sakura every day. She is a good girl. She counts my change twice so I do not have to.",
    'These are shima-rakkyō beans — no, you are right, rakkyō is an onion. I have been saying it wrong for seventy years and nobody corrects a grandmother.',
    'The bus? Eight minutes to, eight minutes past. I can hear it in the tunnel before it comes out. My husband drove that bus for thirty years.',
    'When the typhoon comes you close the amado, fill the bath with water and wait. The house has been here since before the war. It knows what to do.']},
@@ -33,14 +46,14 @@ export const NEIGHBOURS=Object.freeze([
    'My son runs the ice plant now. I told him: ice is a good business, it never goes off. He did not laugh either.']},
  {name:'Mrs Nakamura',look:'Yoshiko',height:1.52,role:'at the zenzai counter',at:[7.35,-10.55],y:.08,face:[-1,0],pose:'Idle',hours:[[H(10),H(19)]],
   lines:[
-   'いらっしゃい！ Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.',
+   "Welcome! Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.",
    'Thuan-chan comes on Sundays and orders the small one and then eats half of mine. Tell her I said so.',
    'Since 1972 on this corner. The machine is older than the shop. It sounds like a tractor and it makes the best ice on the island.']},
- {name:'Mr Shimabukuro',look:'Mr Tanabe',height:1.66,role:'waiting for a head to cut',at:[6.55,-4.2],y:.08,face:[-1,0],pose:'Idle',hours:[[H(9),H(19)]],
+ {name:'Mr Shimabukuro',look:'Mr Tanabe',height:1.66,role:'minding the generators',at:[20.7,31.2],y:0,face:[1,0],pose:'Idle',hours:[[H(7),H(19)]],
   lines:[
-   'A cut? You have — ah. No, I see. A shave, then. Very smooth head. I can make it smoother.',
-   'Every man in this town has sat in that chair. The harbour master, the bus driver, the priest from Naha when his car broke down. They all tell me everything. I tell nobody. Mostly.',
-   'The pole turns when I am open. The motor broke in 1990, so now it does not turn, and I am always open.']},
+   'Hear that? Two diesels, one running, one resting. Every light on this island comes through that switchboard. Mind the yellow line.',
+   'I used to cut hair on Main Street. Then the town needed somebody who understood engines more than it needed another barber. The post office has my old shop now; I still live upstairs.',
+   'When the tanker is in at the oil jetty I take the town truck down and bring the diesel up. Six trips. On typhoon days I sleep on a camp bed by the switchboard.']},
  {name:'Mrs Yonamine',look:'Naoko',height:1.56,role:'behind the fish counter',at:[-9.95,10.25],y:.08,face:[1,0],pose:'Interact',hours:[[H(7),H(15)]],
   lines:[
    'Irabu-chā, fresh this morning — the blue one, parrotfish. Sashimi with vinegar miso. Don’t make that face, try it first.',
@@ -59,7 +72,8 @@ export const NEIGHBOURS=Object.freeze([
   lines:[
    'Auction is done, bro. What is left goes to Yonamine-san or to the freezer. You want a tuna head? Free. Great for soup. Nobody ever takes the tuna head.',
    'The Minato Maru came in at four with a full hold and the skipper is asleep on the wheel. That is the life.']},
- // The gateball players, on the court morning and late afternoon.
+ // The gateball players, on the court morning and late afternoon (only while there is a
+ // court: okinawa/layout.js GATEBALL_ACTIVE; NEIGHBOURS leaves them out otherwise).
  {name:'Mr Nakasone',look:'Hiroshi',height:1.64,role:'playing gateball',at:[22.6,-34.6],face:[1,.2],pose:'Interact',hours:[[H(7),H(10,30)],[H(16),H(18,30)]],
   lines:[
    'Red team, number three. Do not stand there, that is where my ball is going. Probably.',
@@ -72,18 +86,17 @@ export const NEIGHBOURS=Object.freeze([
   lines:[
    'Thirty minutes, not a second more! — Oh, a visitor. My wife makes the andagi at the shop on Main Street. I referee, which is how I keep out of her kitchen.']},
  // Two who walk: one doing her shopping, one on his round.
- {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'doing her shopping',walk:true,speed:1.05,hours:[[H(8),H(12)],[H(15),H(19)]],
-  // Up the paved side of the alley: Sato Ramen stands on the other side, against Minato.
-  route:[[-37.6,-13],[-30,-13],[-24.6,-13.4],[-20,-13.6],[-19,-18.3],[-6.6,-18.3],[-6.6,-19.4],[-6.6,-18.3],[-19,-18.3],[-20,-13.6],[-24.6,-13.4],[-30,-13],[-37.6,-13],[-37.6,1.5],[-30,1.5],[-37.6,1.5]],
-  lines:[
-   'Sakura first, then Yonamine-san for fish, then home before the rice is ready. If I stop to talk the rice is ruined. So — quickly!',
-   'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. It is always ready. He is always late.']},
+ {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'arranging flowers at Rainflower Florist',at:[100.2,101],face:[-1,0],pose:'Interact',hours:[[H(9),H(18)]],
+  lines:['Welcome to Rainflower. Fresh stems, a small bouquet, or something green for your windowsill? I wrap everything by hand.',
+   'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. The flowers finish work on time; he never does.']},
  {name:'Postman Tōma',look:'Kenta',height:1.7,role:'on his round',walk:true,speed:1.25,hours:[[H(9),H(13)],[H(14),H(17)]],
   route:[[2.6,15.2],[2.6,-14.6],[4.3,-15.2],[4.3,-1.6],[5.4,2.4],[14,2.4],[14,9.2],[14,2.4],[5.4,2.4],[4.3,-1.6],[2.6,-1.2]],
   lines:[
    'Two collections a day, 10:30 and 16:30, same as the post box says. The post box is never wrong. I am sometimes wrong.',
-   'Letters for the Nakasones, a parcel for the barber, and a postcard for Sakura from somebody in Hanoi. I do not read postcards. The picture was very nice.']},
+   'Letters for the Nakasones, a parcel for Mr Shimabukuro at the power house, and a postcard for Sakura from somebody in Hanoi. I do not read postcards. The picture was very nice.']},
 ]);
+/** Who is about today: the gateball players only while there is a court. */
+export const NEIGHBOURS=Object.freeze(ALL_NEIGHBOURS.filter(n=>GATEBALL_ACTIVE||!/gateball|refereeing/.test(n.role)));
 
 /** Everything they can say, by name, for the conversation box. */
 export const NEIGHBOUR_TALK=Object.freeze(Object.fromEntries(NEIGHBOURS.map(n=>[n.name,n])));
@@ -102,6 +115,8 @@ export function routePoint(route,distance){
  const [a]=legs[0];return {x:a[0],z:a[1],dx:0,dz:1,total};
 }
 
+/** The ground under a neighbour: the gateball court stands on its terrace, everywhere else is level. */
+const groundAt=(x,z)=>inGateball(x,z)?COURT_TERRACE.height+GROUND_LAYER.apron:groundHeight(x,z);
 const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
 
 /**
@@ -111,18 +126,18 @@ const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
  * @param {(kind:string,name:string)=>void} options.onAction
  * @param {{attach:Function}} [options.characters]
  */
-export function createNeighbours({parent,register,onAction,characters}={}){
+export function createNeighbours({parent,register,onAction,characters,blocked=()=>false}={}){
  const people=NEIGHBOURS.map((spec,i)=>{
   const g=new THREE.Group();g.name=spec.name;g.userData.name=spec.name;g.userData.neighbour=true;
   g.userData.activity=spec.role;g.userData.socialPose=spec.pose||null;
   const start=spec.walk?routePoint(spec.route,i*7):{x:spec.at[0],z:spec.at[1],dx:spec.face[0],dz:spec.face[1]};
-  g.position.set(start.x,spec.y||0,start.z);faceAlong(g,start.dx,start.dz);
+  g.position.set(start.x,spec.y??groundAt(start.x,start.z),start.z);faceAlong(g,start.dx,start.dz);
   parent.add(g);
   characters?.attach(g,spec.look,spec.height);
   register?.(g,'Talk to '+spec.name,()=>onAction?.('neighbour',spec.name));
   return {g,spec,travelled:i*7};
  });
- let talking=null,talkUntil=0;
+ const navigation=createNavigation(blocked);let talking=null,talkUntil=0;
  return {
   people,
   entities:people.map(p=>p.g),
@@ -142,6 +157,7 @@ export function createNeighbours({parent,register,onAction,characters}={}){
    const now=performance.now();
    for(const p of people){
     const {g,spec}=p;
+    if(spec.routine){const m=((minutes%1440)+1440)%1440,phase=[...spec.routine].reverse().find(p=>m>=p.from);if(!p.routine){g.position.set(phase.at[0],groundAt(...phase.at),phase.at[1]);p.routine=phase;}if(p.routine!==phase){p.routine=phase;p.path=navigation.path(g.position,{x:phase.at[0],z:phase.at[1]});}g.userData.activity=phase.role;if(!g.userData.playerConversation&&p.path?.length){const to=p.path[0],dx=to[0]-g.position.x,dz=to[1]-g.position.z,len=Math.hypot(dx,dz),step=Math.min(len,dt*.75);if(len<.07)p.path.shift();else {const x=g.position.x+dx/len*step,z=g.position.z+dz/len*step;if(!blocked(x,z,.32)){g.position.set(x,groundAt(x,z),z);faceAlong(g,dx,dz);}}}if(phase.home&&!p.path?.length){g.visible=false;continue;}}
     const awake=neighbourAwake(spec,minutes);
     const near=!viewer||Math.hypot(g.position.x-viewer.x,g.position.z-viewer.z)<45;
     g.visible=awake&&near;
@@ -150,7 +166,7 @@ export function createNeighbours({parent,register,onAction,characters}={}){
     if(spec.walk&&!held){
      p.travelled+=spec.speed*dt;
      const at=routePoint(spec.route,p.travelled);
-     g.position.x=at.x;g.position.z=at.z;faceAlong(g,at.dx,at.dz);
+     g.position.x=at.x;g.position.z=at.z;if(spec.y==null)g.position.y=groundAt(at.x,at.z);faceAlong(g,at.dx,at.dz);
     }else if(!spec.walk&&!held&&spec.face){
      // Back to their work once you have gone.
      const want=Math.atan2(spec.face[0],spec.face[1])+Math.PI,diff=Math.atan2(Math.sin(want-g.rotation.y),Math.cos(want-g.rotation.y));

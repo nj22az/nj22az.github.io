@@ -1,5 +1,8 @@
 // A six-metre street between the shop frontages, quay, and northern terminal.
 // The live shopping district ends at the bus station instead of carrying an
 // empty road through the old northern housing frontage.
-export const MAIN_ROAD=Object.freeze({x:-3.5,width:6,west:-6.5,east:-.5,minZ:-38,maxZ:20.5,pavementWest:-7.55,pavementEast:5.2});
+// One lane each way, 4.5 m, as on an island shōtengai. The carriageway used to be 6 m
+// and ran right up to Sakura's front step, leaving the west side a 1 m strip that the
+// shops covered: no pavement at all. Now both sides have a footway behind a kerb.
+export const MAIN_ROAD=Object.freeze({x:-2.75,width:4.5,west:-5,east:-.5,minZ:-38,maxZ:20.5,pavementWest:-7.55,pavementEast:5.2});
 export const SHOP_CROSSING_Z=5.1;

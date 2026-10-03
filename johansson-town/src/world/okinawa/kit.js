@@ -1,5 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
+import {markPane,sharedWindowMaterial} from '../../render/window-interior.js';
 
 /**
  * The building kit the Okinawan quarters are made with.
@@ -19,12 +20,28 @@ const FINISHES=Object.freeze({
  metal:{roughness:.5,metalness:.35},
  glow:{roughness:.7,metalness:0,emissive:0xffd9a0,emissiveIntensity:0},
  lamp:{roughness:.6,metalness:0,emissive:0xffc070,emissiveIntensity:0},
+ /** Window glass with a room behind it (render/window-interior.js). */
+ window:{},
  thin:{roughness:.8,metalness:0,side:THREE.DoubleSide},
  roof:{roughness:.88,metalness:0,side:THREE.DoubleSide},
 });
 
+/**
+ * The one module every building is measured in (docs/AMPLIFY-AUDIT.md, §5.1).
+ *
+ * Japanese building runs on the ken and its half, so a door, a window and a shutter
+ * bay are all the same few sizes wherever they turn up. The town used nine storey
+ * heights and six door widths; new and rebuilt buildings take theirs from here.
+ */
+export const GRID=Object.freeze({
+ unit:.91,bay:1.82,block:.30,
+ storey:Object.freeze({shop:3.0,home:2.7}),slab:.15,parapet:.6,
+ door:Object.freeze({home:[.91,2.0],shop:[1.82,2.1]}),shutterBay:2.73,
+ window:Object.freeze({small:.91,wide:1.82,sill:.9,head:2.1}),
+ eave:Object.freeze({hip:.6,canopy:.9,hood:.3}),
+});
 const colour=new THREE.Color();
-const tmp=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler(),s=new THREE.Vector3(),p=new THREE.Vector3();
+const q=new THREE.Quaternion(),e=new THREE.Euler(),s=new THREE.Vector3(),p=new THREE.Vector3();
 
 /** A transform from position, rotation (Euler XYZ, radians) and scale. */
 export function trs(x=0,y=0,z=0,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1){
@@ -47,6 +64,7 @@ export function sagCurve(a,b,sag,segments=12){
 
 export function createKit({shadows=false}={}){
  const buckets=new Map();
+ const walkLevels=[],powerNodes=[],powerSpans=[];
  const geometryCache=new Map();
  /** Finishes with a picture on them, and how many metres one repeat of it covers. */
  const surfaces=new Map();
@@ -88,6 +106,7 @@ export function createKit({shadows=false}={}){
    }
    g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
   }
+  if(finish==='window'){g.computeBoundingBox();markPane(g,g.boundingBox);}
   colour.set(hex);
   const n=g.attributes.position.count,c=new Float32Array(n*3);
   for(let i=0;i<n;i++){c[i*3]=colour.r;c[i*3+1]=colour.g;c[i*3+2]=colour.b;}
@@ -157,11 +176,14 @@ export function createKit({shadows=false}={}){
   const g=new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:false,curveSegments:1});
   add(g,matrix,hex,finish);g.dispose();
  }
- /** A sagging wire between two points. */
+ /**
+  * A sagging wire between two points. The points are in the world, not the current
+  * frame: they are pole anchors, which kit.point() has already carried across.
+  */
  function wire(a,b,sag=.4,r=.02,hex=0x2b2a30){
   const av=new THREE.Vector3(...a),bv=new THREE.Vector3(...b),dist=av.distanceTo(bv);
   const g=new THREE.TubeGeometry(sagCurve(av,bv,sag*Math.min(1.6,dist/14)),10,r,3,false);
-  add(g,new THREE.Matrix4(),hex,'thin');g.dispose();
+  add(g,frame?frame.clone().invert():new THREE.Matrix4(),hex,'thin');g.dispose();
  }
 
  /** Where a local point lands in the world, under the current frame. */
@@ -172,7 +194,7 @@ export function createKit({shadows=false}={}){
   */
  function rect(x0,x1,z0,z1,height=3,id=''){
   const a=point(x0,0,z0),b=point(x1,0,z1);
-  return {id,x:(a.x+b.x)/2,z:(a.z+b.z)/2,w:Math.abs(b.x-a.x),d:Math.abs(b.z-a.z),height};
+  return {id,x:(a.x+b.x)/2,z:(a.z+b.z)/2,w:Math.abs(b.x-a.x),d:Math.abs(b.z-a.z),height,...(a.y?{minY:a.y}:{})};
  }
  const signs=[];
  /** A painted board, w×h, facing local +z (after `ry`), made at finish time. */
@@ -180,7 +202,15 @@ export function createKit({shadows=false}={}){
   signs.push({texture,w,h,depth,edge,name,both,matrix:(frame?frame.clone():new THREE.Matrix4()).multiply(trs(x,y,z,0,ry))});
  }
  /** Every bucket becomes one mesh under `parent`. Returns the meshes, keyed by finish. */
+ function level(x0,x1,z0,z1,y,id){
+  const a=point(x0,y,z0),b=point(x1,y,z1);
+  walkLevels.push({id,minX:Math.min(a.x,b.x),maxX:Math.max(a.x,b.x),minZ:Math.min(a.z,b.z),maxZ:Math.max(a.z,b.z),y:a.y});
+ }
+ const powerNode=p=>powerNodes.push(p);
+ const powerSpan=(a,b)=>powerSpans.push({from:a.id,to:b.id});
  function finish(parent,name='Okinawan quarter'){
+  (parent.userData.walkLevels??=[]).push(...walkLevels);
+  parent.userData.powerNetwork={nodes:powerNodes,spans:powerSpans};
   const meshes=[],materials={};
   for(const [key,{finish:kind,list}] of buckets){
    const geometry=mergeGeometries(list,false);list.forEach(g=>g.dispose());
@@ -188,11 +218,13 @@ export function createKit({shadows=false}={}){
    geometry.computeBoundingSphere();
    const tex=surfaces.get(kind);
    const spec=tex?Object.fromEntries(Object.entries({map:tex.map,normalMap:tex.normalMap,normalScale:tex.normalScale,roughnessMap:tex.roughnessMap,aoMap:tex.aoMap,aoMapIntensity:.35,roughness:tex.roughness,side:tex.side}).filter(([,v])=>v!==undefined)):FINISHES[kind]||FINISHES.matte;
-   const material=materials[kind]??=new THREE.MeshStandardMaterial({vertexColors:true,...spec});
+   const material=materials[kind]??=kind==='window'?sharedWindowMaterial():new THREE.MeshStandardMaterial({vertexColors:true,...spec});
    if(tex||['metal','gloss','roof'].includes(kind))material.userData.keepPhysical=true;
+   // Window glass and lamps light up at dusk wherever they are built (town.js lightWindows).
+   if(kind==='glow'||kind==='lamp')material.userData.kitFinish=kind;
    const mesh=new THREE.Mesh(geometry,material);
    mesh.name=`${name}:${key}`;
-   mesh.castShadow=shadows&&kind!=='thin'&&kind!=='glow';mesh.receiveShadow=true;
+   mesh.castShadow=shadows&&kind!=='thin'&&kind!=='glow'&&kind!=='window';mesh.receiveShadow=kind!=='window';
    parent.add(mesh);meshes.push(mesh);
   }
   buckets.clear();
@@ -208,7 +240,7 @@ export function createKit({shadows=false}={}){
   signs.length=0;
   return {meshes,materials,parts};
  }
- return {at,point,rect,sign,surface,add,box,block,cyl,rod,sphere,hipRoof,gableRoof,extrude,wire,finish,get parts(){return parts;}};
+ return {at,point,rect,level,powerNode,powerSpan,sign,surface,add,box,block,cyl,rod,sphere,hipRoof,gableRoof,extrude,wire,finish,get parts(){return parts;}};
 }
 
 /** A canvas painted by `draw`, as a texture. */

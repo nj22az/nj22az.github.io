@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {FOREST_EDGE} from './forest-edge.js';
+import {broadleafGeometry,TREE_GREENS} from './okinawa/trees.js';
 
 /**
  * The old sea cave in the headland at the top of Main Street.
@@ -14,6 +15,13 @@ import {FOREST_EDGE} from './forest-edge.js';
  * The file keeps the name it had when the tunnel was a cartoon gag, and TUNNEL keeps its
  * name too: the map, the shore and the old bus code all place themselves by it.
  */
+/**
+ * October 2026: the island has no sea cave. The headland, its tunnel and the cave mouth
+ * are gone, and the land they stood on is plain island ground waiting for the new
+ * residential quarter (docs/RESIDENTIAL-PLAN.md). The dungeon under the cave is paused,
+ * not deleted: set this back to true and the hill, the cave and the way down return.
+ */
+export const CAVE_ACTIVE=false;
 export const TUNNEL=Object.freeze({
  x:FOREST_EDGE.roadX,
  // Beyond the end of the path, so there is a run of it between the old terminus and here.
@@ -53,7 +61,9 @@ export function hillHeight(x,z){
  const waves=.35*Math.sin(x*.37+z*.21)+.28*Math.sin(x*.19-z*.43)+.2*Math.sin(x*.71+z*.53);
  // Out to the edges of the patch it comes down under the water, so it never ends in mid-air.
  const edge=smooth((34-Math.abs(dx+2))/9)*smooth((TUNNEL.z+58-z)/12);
- let h=(along*across+waves*smooth(dz/3+1))*edge-1.6*(1-edge);
+ // Deep enough at the rim to vanish into the water: at -1.6 the skirt showed through the
+ // shallows as a square of green from the air (docs/QA-REPORT.md, O1).
+ let h=(along*across+waves*smooth(dz/3+1))*edge-5.5*(1-edge);
  // To the east it comes down behind the school's boundary wall and goes under the yard.
  const east=smooth((dx-8.5)/6.5);h=h*(1-east)-1.2*east;
  // Just behind the portal the ground comes down onto the headwall's coping, so there is
@@ -84,6 +94,7 @@ function cellAt(lines,value){
  return lo;
 }
 export function headlandHeight(x,z){
+ if(!CAVE_ACTIVE)return null;
  const i=cellAt(hillXs,x),j=cellAt(hillZs,z);if(i<0||j<0)return null;
  const x0=hillXs[i],x1=hillXs[i+1],z0=hillZs[j],z1=hillZs[j+1];
  if(inCut((x0+x1)/2-TUNNEL.x,(z0+z1)/2-TUNNEL.z)||inCave(x-TUNNEL.x,z-TUNNEL.z))return null;
@@ -118,13 +129,17 @@ function buildHill(parent,shadows,colliders){
  const {minX:X0,maxX:X1}=HEADLAND;
  const xs=hillXs,zs=hillZs;
  const positions=[],colours=[],index=[];
- const grass=new THREE.Color(0x4f6a3c),forest=new THREE.Color(0x3a5433),rock=new THREE.Color(0x6e6a5f),c=new THREE.Color();
+ const grass=new THREE.Color(0x4f6a3c),forest=new THREE.Color(0x3a5433),rock=new THREE.Color(0x6e6a5f),sandShore=new THREE.Color(0xd9c79a),reef=new THREE.Color(0x3f8a8c),c=new THREE.Color();
  for(let j=0;j<zs.length;j++)for(let i=0;i<xs.length;i++){
   const x=xs[i],z=zs[j],h=hillYs[j][i];positions.push(x,h,z);
   // Steep ground is bare rock; the rest is grass going over to woodland near the top.
   const e=.8,slope=Math.hypot(hillHeight(x+e,z)-hillHeight(x-e,z),hillHeight(x,z+e)-hillHeight(x,z-e))/(2*e);
   const tree=smooth((h-2.5)/5),bare=smooth((slope-.75)/.6);
   c.copy(grass).lerp(forest,tree).lerp(rock,bare);
+  // Below the tide line it is sand and then reef, the colours the sea shader expects to
+  // see through, not lawn.
+  const wet=smooth((-.2-h)/.6),deep=smooth((-1.4-h)/2);
+  c.lerp(sandShore,wet).lerp(reef,deep);
   const n=.93+.07*Math.sin(x*1.7+z*2.3);colours.push(c.r*n,c.g*n,c.b*n);
  }
  for(let j=0;j<zs.length-1;j++)for(let i=0;i<xs.length-1;i++){
@@ -148,19 +163,21 @@ function buildHill(parent,shadows,colliders){
   const h=hillHeight(x,z);if(h<1.6)continue;
   spots.push([x,h,z,.75+rnd()*.7,rnd()]);
  }
- const cone=new THREE.ConeGeometry(1,1,7);cone.translate(0,.5,0);
- const trees=new THREE.InstancedMesh(cone,new THREE.MeshStandardMaterial({color:0xffffff,roughness:.95,flatShading:true}),spots.length);
- const trunks=new THREE.InstancedMesh(new THREE.CylinderGeometry(.09,.16,1,6),new THREE.MeshStandardMaterial({color:0x534535,roughness:1}),spots.length);
- const dummy=new THREE.Object3D(),tint=new THREE.Color();
- spots.forEach(([x,y,z,s,r],i)=>{
-  // Walking-height trunks with crowns above them leave room under the canopy.
-  dummy.position.set(x,y+1.25*s,z);dummy.scale.set(s,2.5*s,s);dummy.rotation.set(0,0,0);dummy.updateMatrix();trunks.setMatrixAt(i,dummy.matrix);
-  colliders.push({id:'headland-tree',x,z,w:.32*s,d:.32*s,height:y+6*s});
-  dummy.position.set(x,y+2.2*s,z);dummy.scale.set(1.3*s,3.8*s,1.3*s);dummy.rotation.set(0,r*6,0);dummy.updateMatrix();
-  trees.setMatrixAt(i,dummy.matrix);trees.setColorAt(i,tint.setHex(0x2f4a2e).multiplyScalar(.85+r*.3));
+ // The island's broadleaf (okinawa/trees.js), in its lighter far-off build: the
+ // headland is seen from the town, not walked under.
+ const treeMat=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.95});
+ const dummy=new THREE.Object3D(),tint=new THREE.Color(),groups=[0,1,2].map(()=>[]);
+ spots.forEach((spot,i)=>groups[i%3].push(spot));
+ const meshes=groups.map((list,variant)=>{
+  const mesh=new THREE.InstancedMesh(broadleafGeometry({variant,lite:true,greens:TREE_GREENS.hill}),treeMat,list.length);
+  list.forEach(([x,y,z,s,r],i)=>{
+   colliders.push({id:'headland-tree',x,z,w:.32*s,d:.32*s,height:y+6*s});
+   dummy.position.set(x,y-.1,z);dummy.scale.setScalar(5.4*s);dummy.rotation.set(0,r*6,0);dummy.updateMatrix();
+   mesh.setMatrixAt(i,dummy.matrix);mesh.setColorAt(i,tint.setScalar(.85+r*.3));
+  });
+  mesh.name='Minato headland trees';mesh.castShadow=shadows;parent.add(mesh);return mesh;
  });
- trunks.name='Minato headland trunks';trunks.castShadow=shadows;parent.add(trunks);
- trees.name='Minato headland trees';trees.castShadow=shadows;parent.add(trees);
+ const trees=meshes[0];
  return {hill,trees};
 }
 
@@ -239,7 +256,9 @@ function buildCaveMouth(group,shadows){
  // A stone lantern beside the path, lit in the evening.
  const stone=new THREE.MeshStandardMaterial({color:0x9a958a,roughness:.95});
  const glow=new THREE.MeshStandardMaterial({color:0xf2d59a,roughness:.6,emissive:0xf2b25a,emissiveIntensity:0});
- const lantern=new THREE.Group();lantern.position.set(-W-.9,0,face-2.2);lantern.name='Stone lantern';group.add(lantern);
+ // It stands on the headland's own surface there, which rises above the path's level;
+ // at y 0 it sank half a metre into the hill with only its roof showing.
+ const lantern=new THREE.Group();{const lx=-W-.9,lz=face-2.2,h=headlandHeight(TUNNEL.x+lx,TUNNEL.z+lz);lantern.position.set(lx,Number.isFinite(h)?Math.max(0,h-.04):0,lz);}lantern.name='Stone lantern';group.add(lantern);
  for(const [geo,y,mat] of [[new THREE.CylinderGeometry(.28,.34,.18,6),.09,stone],[new THREE.CylinderGeometry(.1,.12,.7,8),.53,stone],[new THREE.BoxGeometry(.42,.12,.42),.94,stone],
   [new THREE.BoxGeometry(.3,.3,.3),1.15,glow],[new THREE.ConeGeometry(.42,.32,4),1.46,stone],[new THREE.SphereGeometry(.07,6,4),1.66,stone]]){
   const m=new THREE.Mesh(geo,mat);m.position.y=y;if(geo.type==='ConeGeometry')m.rotation.y=Math.PI/4;m.castShadow=shadows;lantern.add(m);
@@ -249,7 +268,7 @@ function buildCaveMouth(group,shadows){
   ctx.fillStyle='#8a6f4e';ctx.fillRect(0,0,w,h);
   for(let i=0;i<14;i++){ctx.strokeStyle='rgba(60,40,24,.25)';ctx.beginPath();ctx.moveTo(0,i*19+5);ctx.lineTo(w,i*19+9);ctx.stroke();}
   ctx.fillStyle='#f1e9d6';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font='bold 76px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText('古 洞',w/2,h*.36);
+  ctx.font='bold 76px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText("Old Cave",w/2,h*.36);
   ctx.font='bold 26px sans-serif';ctx.fillText('THE OLD SEA CAVE',w/2,h*.7);
   ctx.font='18px sans-serif';ctx.fillText('Enter at your own risk',w/2,h*.87);
  });
@@ -291,7 +310,7 @@ export function buildCoyoteTunnel({parent,colliders,register,onAction,shadows=fa
   register(anchor,'Go into the old sea cave',()=>onAction?.('dungeon'));
   const read=new THREE.Object3D();read.position.set(TUNNEL.x+W+.9,1.3,front-2);parent.add(read);
   register(read,'Read the cave sign',()=>onAction?.('inspect','The old sea cave',
-   'Painted on the board: 古洞, the old cave. The rope across the mouth is new straw each New Year. The fishermen say it goes down a long way under the headland, further than anyone has walked, and that things wash up in it that never came from the sea.'));
+   "Painted on the board: Old Cave, the old cave. The rope across the mouth is new straw each New Year. The fishermen say it goes down a long way under the headland, further than anyone has walked, and that things wash up in it that never came from the sea."));
  }
  /** True in the mouth of the cave, with a hand's margin: the way in. */
  const splat=(x,z)=>Math.abs(x-TUNNEL.x)<=R+.5&&z>=front-.9&&z<=CAVE_MOUTH.inside+.3;

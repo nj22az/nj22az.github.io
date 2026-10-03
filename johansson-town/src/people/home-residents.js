@@ -52,6 +52,7 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
   if(!bedtime&&rest>0){
    sleepBlend=Math.max(0,sleepBlend-dt*1.5);rest=Math.max(0,rest-dt*1.5);setRest(g,rest,false);cover?.update(dt,sleepBlend*rest);g.userData.roomTransition=true;return;
   }
+  if(plan.place==='home'&&layout.prepareBedding?.(person,walker,dt)){g.userData.roomTransition=true;return;}
   const target=plan.place!=='home'?layout.door:bedtime?layout.bedside:layout.table;
   if(rest===0&&!walker.move(person,target,dt)){g.userData.roomTransition=true;return;}
   delete g.userData.roomTransition;

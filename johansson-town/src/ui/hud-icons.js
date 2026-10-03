@@ -7,13 +7,15 @@
  */
 import {svg,iconUrl} from './icons.js';
 
-const RAIL=Object.freeze({directoryButton:'book',cameraButton:'camera',viewButton:'eye',movesButton:'moves',exitRoomButton:'exit'});
+const RAIL=Object.freeze({directoryButton:'book',exitRoomButton:'exit'});
+/** The town book's tiles carry their icon in data-icon. */
 
 export function dressHud({doc=globalThis.document,onBag=()=>{}}={}){
  for(const [id,icon] of Object.entries(RAIL)){
   const el=doc.querySelector('#'+id);if(!el)continue;
   el.classList.add('icon-btn');el.style?.setProperty?.('--icon',iconUrl(icon));
  }
+ for(const tile of doc.querySelectorAll?.('.app-tile[data-icon]')||[])tile.style?.setProperty?.('--icon',iconUrl(tile.dataset.icon));
  const drink=doc.querySelector('#drink');
  if(drink)drink.innerHTML=`${svg('cup')}<b>DRINK</b>`;
  const jump=doc.querySelector('#jump');
@@ -21,7 +23,7 @@ export function dressHud({doc=globalThis.document,onBag=()=>{}}={}){
  let bag=doc.querySelector('#bagButton');
  if(!bag){
   bag=doc.createElement('button');bag.id='bagButton';bag.type='button';
-  bag.className='icon-btn bag-button control-off';bag.setAttribute('aria-label','Bag');
+  bag.className='icon-btn bag-button app-tile control-off';bag.setAttribute('aria-label','Bag');
   bag.innerHTML=`${svg('bag')}<b class="bag-label">Bag</b><span class="bag-count" aria-hidden="true"></span>`;
   bag.addEventListener('click',()=>onBag());
   (doc.querySelector('#townControls')||doc.body).append(bag);

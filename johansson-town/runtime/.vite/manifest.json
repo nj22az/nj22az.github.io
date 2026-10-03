@@ -1,26 +1,42 @@
 {
-  "_icons-D2wbYvxv.js": {
-    "file": "icons-D2wbYvxv.js",
+  "_actors-d09saVn0.js": {
+    "file": "actors-d09saVn0.js",
+    "name": "actors"
+  },
+  "_icons-MrOxZM18.js": {
+    "file": "icons-MrOxZM18.js",
     "name": "icons"
   },
-  "_town-audio-xOebpuup.js": {
-    "file": "town-audio-xOebpuup.js",
+  "_town-audio-7PjwmOKd.js": {
+    "file": "town-audio-7PjwmOKd.js",
     "name": "town-audio"
   },
   "src/audio/town-audio.js?snappy=1": {
-    "file": "audio-8OQDptIM.js",
+    "file": "audio-CBa7Ywpb.js",
     "name": "audio",
     "src": "src/audio/town-audio.js?snappy=1",
     "isEntry": true,
     "imports": [
-      "_town-audio-xOebpuup.js"
+      "_town-audio-7PjwmOKd.js"
+    ]
+  },
+  "src/avatars/guide-portraits.js": {
+    "file": "portraits-BoEbnuQX.js",
+    "name": "portraits",
+    "src": "src/avatars/guide-portraits.js",
+    "isEntry": true,
+    "imports": [
+      "_actors-d09saVn0.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-DfnjCT7O.js",
+    "file": "boot-DEol4XE5.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
+    "imports": [
+      "_icons-MrOxZM18.js"
+    ],
     "dynamicImports": [
       "touch-ui.js?ui=controls-3",
       "src/game.js?snappy=1",
@@ -29,22 +45,23 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-BGWFqsu4.js",
+    "file": "game-DwOd6q5e.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_town-audio-xOebpuup.js",
-      "_icons-D2wbYvxv.js"
+      "_actors-d09saVn0.js",
+      "_town-audio-7PjwmOKd.js",
+      "_icons-MrOxZM18.js"
     ]
   },
   "touch-ui.js?ui=controls-3": {
-    "file": "touch-ui-B-hU6XZF.js",
+    "file": "touch-ui-CCG0tNLG.js",
     "name": "touch-ui",
     "src": "touch-ui.js?ui=controls-3",
     "isDynamicEntry": true,
     "imports": [
-      "_icons-D2wbYvxv.js"
+      "_icons-MrOxZM18.js"
     ]
   },
   "webmcp-characters.js": {

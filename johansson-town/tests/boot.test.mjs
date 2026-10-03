@@ -96,7 +96,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
     globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(resolve(root,'assets',new URL(url).pathname.split('/assets/')[1])));
     const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js?snappy=1');
-    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true,true,true],'All supplied rooms preloaded');
+    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true],'All supplied rooms preloaded');
     const {preloadPark}=await import('../src/world/park.js?snappy=1');assert.equal(await preloadPark(),true);
     const {preloadIzakaya}=await import('../src/world/izakaya.js?snappy=1');
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
@@ -107,9 +107,9 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     const {BOOKSHOP_WORKSHOP_ROOM}=await import('../src/world/bookshop-workshop-layout.js');
     const {SAKURA_SHOP}=await import('../src/world/sakura-bench.js');
     const {circleHitsRect}=await import('../physics.js?snappy=1');
-    assert.deepEqual(api.SITES.map(s=>s.id).sort(),['frontrow','izakaya','koban','market','office','onsen','ramen','resident-home-aya','resident-home-kenji','school']);
-    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['ferry-terminal','warehouse']);
-    assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['frontrow','office']);
+    assert.deepEqual(api.SITES.map(s=>s.id).sort(),['clinic','community-kitchen','form3d','frontrow','home-kitahama-10','home-kitahama-11','home-kitahama-12','home-kitahama-3','home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kitahama-7','home-kitahama-8','home-kitahama-9','izakaya','koban','market','mayor-home','mayor-office','office','onsen','ramen','resident-home-aya','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school']);
+    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','aoba-garden','aoba-viewpoint','ferry-terminal','hoshizaki','rainflower-lane','warehouse','west-lighthouse']);
+    assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
     assert.equal(api.world.group.getObjectByName('west-shop:form3d'),undefined,'Only one bookshop/workshop exterior');
     assert.equal(api.world.group.getObjectByName('Sato Ramen restaurant'),undefined,'The peninsula has no ramen premises');
@@ -117,7 +117,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     assert.equal(window.__JOHANSSON_STABILITY__?.ok,true,'Startup stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__?.failures));
     // Check the actual actions as well as the mode-aware diagnostic count.
     const streetLabels=new Set();api.world.group.traverse(o=>{if(o.userData.hit)streetLabels.add(o.userData.hit.label);});
-    for(const label of ['Sit on neighbourhood bench','Inspect post box','Read harbour notices','Inspect utility cabinet','Inspect traffic mirror','Inspect recycling bins','Test hand pump'])assert.ok(streetLabels.has(label),label);
+    for(const label of ['Sit on neighbourhood bench','Inspect post box','Inspect utility cabinet','Inspect traffic mirror','Inspect recycling bins','Work the hand pump'])assert.ok(streetLabels.has(label),label);
     const waiting=api.world.people.find(p=>p.profile.name==='Nao').g;
     const savedPosition=waiting.position.clone(),savedVisibility=waiting.visible;
     waiting.position.set(0,0,10);waiting.visible=true;waiting.userData.visualReady=false;
@@ -158,13 +158,13 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
 
     const directory=()=>document.querySelector('#directoryButton').onclick();
     const find=id=>document.querySelector('#directoryGrid').children.find(b=>b.dataset.id===id);
-    directory();assert.equal(find('form3d'),undefined,'No duplicate workshop destination');
+    directory();{const dock=find('form3d');assert.ok(!dock||/Dock/.test(dock.children[0]?.textContent||''),'The only workshop destination besides the bookshop is the dock workshop');}
     const walkingStart=api.player.position.clone();
     for(const site of destinations){directory();assert.equal(find(site.id).dataset.travel,'locked');find(site.id).onclick();assert.deepEqual(api.player.position.toArray(),walkingStart.toArray(),'Locked shortcut: '+site.id);}
     api.activities.state.quest=3;api.activities.state.kenjiEscort='done';
     directory();assert.equal(find('frontrow').dataset.travel,'ready');find('frontrow').onclick();
     assert.ok(Math.hypot(api.player.position.x-books.door[0],api.player.position.z-books.door[2])<1.2);
-    api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Enter Front-Row Books & Workshop/);
+    api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Enter Front-Row Books/);
     // The street action includes the real asynchronous threshold animation.
     const entrance=api.world.group.getObjectByName('frontrow-west-entrance');
     await entrance.userData.hit.fn();assert.equal(api.reviewCurrentRoom()?.id,'frontrow');
@@ -180,13 +180,14 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
       assert.ok(api.reviewRoomState().colliders>0,'Interior colliders: '+site.id);
       if(site.id==='frontrow'){
         assert.deepEqual(api.player.position.toArray(),BOOKSHOP_WORKSHOP_ROOM.spawn);
-        for(const name of ['Bookselling counter','Editor and printing bench','Shared repair bench','Form 3D printing machine','Star Port cabinet'])assert.ok(api.reviewRoom().getObjectByName(name),name+' shares the room');
+        // Repairs moved to the dock workshop; the bookshop keeps its counter, desks and reading table.
+        for(const name of ['Bookselling counter','Newspaper and book wrapping desk','New arrivals display','Reading table'])assert.ok(api.reviewRoom().getObjectByName(name),name+' is in the bookshop');
         const exits=[];api.reviewRoom().traverse(o=>{if(o.userData.hit?.label.startsWith('Exit to '))exits.push(o);});
         assert.equal(exits.length,1,'One shared interior exit');
       }
       if(site.id==='office'){
         assert.deepEqual(api.player.position.toArray(),SUPPLIED_ROOM_LAYOUTS.office.spawn);
-        assert.ok(api.reviewRoom().getObjectByName('Supplied office'));
+        assert.ok(api.reviewRoom().getObjectByName('Harbour office shell'));
         assert.ok(api.reviewRoom().getObjectByName('Clerk CRT monitor'));
       }
       if(site.id==='warehouse')assert.ok(api.reviewRoom().getObjectByName('warehouse-ledger-bench'));
@@ -215,23 +216,29 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
       assert.equal(api.reviewRoomState().townVisible,true);assert.equal(api.reviewRoom().getObjectByName('Minato CRT television'),undefined);
       assertFiniteTransforms(api,'outside '+site.id);visited.add(site.id);
     }
-    assert.deepEqual([...visited].sort(),['frontrow','izakaya','koban','market','office','onsen','ramen','resident-home-aya','resident-home-kenji','school','warehouse']);
+    assert.deepEqual([...visited].sort(),['clinic','community-kitchen','form3d','frontrow','home-kitahama-10','home-kitahama-11','home-kitahama-12','home-kitahama-3','home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kitahama-7','home-kitahama-8','home-kitahama-9','izakaya','koban','market','mayor-home','mayor-office','office','onsen','ramen','resident-home-aya','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school','warehouse']);
 
-    // All four existing workers share this room after their afternoon shopping.
+    // After their afternoon shopping the staff are back at work: Aya and Reiko in the
+    // bookshop, Kenji and Tetsuo at the dock workshop, where repairs moved.
     const {createResidentLedger}=await import('../src/people/resident-personalities.js');
     const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Aya','Kenji','Reiko','Tetsuo'].filter(name=>STREET_CAST_NAMES.includes(name));
+    const placeOf={Aya:'frontrow',Reiko:'frontrow',Kenji:'form3d',Tetsuo:'form3d'};
     for(const name of staffNames)ledger.account(name,1050).shopping={finished:true};
     api.reviewSetMinutes(1050);api.player.position.set(0,0,14);
     const staff=api.world.people.filter(p=>staffNames.includes(p.profile.name));
     for(let i=0;i<600&&!staff.every(p=>p.g.userData.indoors==='work');i++)api.simulate(.1);
-    await api.enterRoom(books);
-    for(const name of staffNames){const p=api.world.people.find(p=>p.profile.name===name);assert.equal(p.profile.workSite,'frontrow');assert.equal(p.g.userData.inWorkplace,'frontrow',name+' works in the shared room');assert.equal(p.g.visible,true);}
+    const workshop=api.SITES.find(s=>s.id==='form3d');
+    for(const site of [books,workshop]){
+     await api.enterRoom(site);
+     for(const name of staffNames.filter(n=>placeOf[n]===site.id)){const p=api.world.people.find(p=>p.profile.name===name);assert.equal(p.profile.workSite,site.id);assert.equal(p.g.userData.inWorkplace,site.id,name+' works at '+site.id);assert.equal(p.g.visible,true);}
+     if(site===books)api.leaveRoom();
+    }
     const choose=label=>{const button=document.querySelector('#activityActions').children.find(b=>b.textContent===label);assert.ok(button,'Action: '+label);assert.equal(button.disabled,false);button.onclick();};
     api.reviewRoom().getObjectByName('content-stepwise').userData.hit.fn();assert.match(document.querySelector('#activityTitle').textContent,/StepWise/);choose('Use this pattern in Form 3D');
     const workshopBalance=api.activities.state.yen;choose('Print model · ¥40');
     api.leaveRoom();for(let i=0;i<90;i++)api.simulate(.1);assert.equal(api.activities.state.workshop.job.remaining,0,'Printing progresses outside');
-    // Old saved workshop addresses must resolve to this same room too.
-    await api.enterRoom({id:'form3d'});assert.equal(api.reviewCurrentRoom().id,'frontrow');
+    // Old saved addresses (the electronics shop, StepWise) resolve to the dock workshop.
+    await api.enterRoom({id:'stepwise'});assert.equal(api.reviewCurrentRoom().id,'form3d');
     api.reviewRoom().getObjectByName('Use Form 3D printer').userData.hit.fn();choose('Collect model');
     assert.ok(api.activities.state.inventory.includes('Johansson cable ring'));assert.equal(api.activities.state.yen,workshopBalance-40);api.leaveRoom();
 

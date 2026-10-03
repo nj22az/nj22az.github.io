@@ -1,9 +1,10 @@
 import {PARK_HEIGHTS} from './park-height.js';
+import {GROUND} from '../render/ground-palette.js';
 import {FULL_TOWN} from './full-town-state.js';
-import {GATEBALL} from './okinawa/layout.js';
+import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
 import {peninsulaActive} from './town-mode.js';
 /** Inside the gateball court the ground stays level; a low wall holds the hill back (quarters.js). */
-export const inGateball=(x,z)=>x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
+export const inGateball=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
 /**
  * The gateball court stands on a level terrace up at the hill's own ground, not in a pit
  * cut into its foot. Toward the hill (west and south) the terrace is graded into it with
@@ -17,6 +18,7 @@ export const onCourtTerrace=(x,z)=>{const T=COURT_TERRACE;return x>=T.minX&&x<=T
  * the terrace does not reach. North of the terrace is the retaining wall, so no bank.
  */
 export function courtTerraceHeight(x,z,natural=0){
+ if(!GATEBALL_ACTIVE)return null;
  const T=COURT_TERRACE,p=activePark();
  if(onCourtTerrace(x,z))return T.height;
  if(x>T.maxX||(z<T.minZ&&x>=T.minX))return null;
@@ -40,7 +42,8 @@ export function courtTerraceHeight(x,z,natural=0){
  * the textures back inside the range the ramp can band. The lawn outside the park uses
  * the same green, so the two are one field.
  */
-export const TURF_TINT=0x7fbf55,PARK_PATH_TINT=0xcfc2a0;
+export const TURF_TINT=GROUND.grass,PARK_PATH_TINT=0xcfc2a0;
+export const PARK_TERRAIN_SEGMENTS=96;
 export const PARK={id:'harbour-park',x:15.8,z:-23.8,half:7.84,lift:1,scale:.56,surface:'stone'};
 export const COMPACT_PARK={id:'harbour-park',x:14.2,z:-16.4,half:4.2,halfX:5.2,halfZ:4,lift:0,plaza:true,surface:'stone'};
 export function activePark(){return FULL_TOWN.active?COMPACT_PARK:PARK;}

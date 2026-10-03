@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Erik's Motor Routine</title>
+<meta name="description" content="Erik, an old Swedish sailor settled on the island, works through a bilge pump motor in 3D: lock-off, prove dead, star or delta, winding tests, bearings, cleaning and a test run, with the electrotechnology behind each step.">
+<meta name="author" content="Nils Johansson">
+<link rel="canonical" href="https://nj22az.github.io/motor-90l/workshop/">
+<link rel="icon" href="/assets/images/apple-touch-icon.png">
+<meta name="theme-color" content="#dfe8ec">
+<style>
+:root {
+  --bg: #dfe8ec; --ink: #1d2427; --muted: #59656b; --line: #c9d3d7; --panel: rgba(255,255,255,0.93); --soft: #f4f7f8;
+  --accent: #1f4f8a; --accent-ink: #fff; --aug: #0b6e66; --radius: 12px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --ink: #e8eced; --muted: #a3afb4; --line: #3a4449; --panel: rgba(30,36,39,0.94); --soft: #263035; --accent: #7fb0ea; --accent-ink: #0d1b2a; --aug: #4fc2b6; }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); }
+#view { position: fixed; inset: 0; }
+#view canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+header { position: fixed; top: 14px; left: 16px; max-width: min(560px, calc(100vw - 32px)); pointer-events: none; color: #1d2427; }
+header a { pointer-events: auto; color: #3d4a50; font-size: 13px; text-decoration: none; }
+header h1 { margin: 4px 0 0; font-size: clamp(19px, 2.6vw, 26px); }
+header p { margin: 2px 0 0; font-size: 14px; color: #3d4a50; }
+#bubble { position: fixed; left: 50%; transform: translateX(-50%); bottom: 92px; width: min(640px, calc(100vw - 420px)); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 16px; padding: 10px 14px; font-size: 16px; line-height: 1.4; box-shadow: 0 6px 24px rgba(0,0,0,.12); }
+#bubble b { color: var(--accent); margin-right: 6px; }
+#panel { position: fixed; top: 16px; right: 16px; bottom: 16px; width: 360px; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); overflow: hidden; backdrop-filter: blur(10px); }
+#chapters { list-style: none; margin: 0; padding: 8px; border-bottom: 1px solid var(--line); }
+#chapters button { width: 100%; display: grid; grid-template-columns: 22px 1fr; grid-template-rows: auto 3px; column-gap: 8px; align-items: center; padding: 5px 6px; border: 0;
+  background: none; color: var(--ink); font: inherit; font-size: 14px; text-align: left; border-radius: 8px; cursor: pointer; }
+#chapters button:hover { background: var(--soft); }
+#chapters button.on { background: var(--soft); font-weight: 650; }
+#chapters .n { grid-row: 1 / 3; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+#chapters .on .n { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+#chapters .bar { height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
+#chapters .bar i { display: block; height: 100%; width: 0; background: var(--accent); }
+.learn-wrap { overflow-y: auto; padding: 12px 16px 18px; font-size: 14.5px; line-height: 1.5; }
+.learn-wrap h2 { margin: 0 0 2px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.learn-wrap h3 { margin: 0 0 8px; font-size: 17px; }
+#learn p { margin: 8px 0; }
+#learn .aug { border-left: 3px solid var(--aug); padding-left: 10px; color: var(--aug); }
+#bar { position: fixed; left: 16px; right: 392px; bottom: 16px; display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 8px 10px; backdrop-filter: blur(10px); }
+.btn { min-height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--soft); color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+#play { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); min-width: 76px; }
+#scrub { flex: 1; min-width: 60px; accent-color: var(--accent); }
+#clock { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--muted); white-space: nowrap; }
+#tags { position: fixed; inset: 0; pointer-events: none; }
+.tag { position: absolute; left: 0; top: 0; padding: 2px 8px; border-radius: 999px; background: #7a1f12; color: #fff; font: 700 13px/1.4 ui-monospace, Menlo, monospace;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.tag::after { content: ''; position: absolute; left: 50%; bottom: -6px; width: 2px; height: 6px; background: #7a1f12; }
+#readout { position: fixed; top: 96px; left: 16px; display: flex; flex-direction: column; gap: 2px; padding: 8px 14px; border-radius: 10px;
+  background: #b9c7a8; color: #16210f; border: 2px solid #2b3326; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+#readout span { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+#readout strong { font: 700 30px/1.1 "Courier New", monospace; }
+#follow { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); }
+@media (max-width: 900px) {
+  #view { bottom: calc(38vh + 54px); }
+  #panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; height: 38vh; border-radius: var(--radius) var(--radius) 0 0; }
+  #chapters { display: flex; overflow-x: auto; gap: 4px; }
+  #chapters li { flex: none; }
+  #chapters button { width: auto; grid-template-columns: 22px auto; }
+  #bar { left: 8px; right: 8px; bottom: calc(38vh + 8px); padding: 6px; gap: 6px; }
+  #bar .btn { min-height: 34px; padding: 0 9px; font-size: 13px; }
+  #clock { display: none; }
+  #bubble { width: calc(100vw - 24px); bottom: calc(38vh + 64px); font-size: 14px; padding: 8px 12px; }
+  header p { display: none; }
+  #readout { top: 74px; padding: 4px 10px; }
+  #readout strong { font-size: 22px; }
+}
+body:not(.ready) #bar, body:not(.ready) #panel { visibility: hidden; }
+</style>
+<script type="importmap">{ "imports": { "three": "/johansson-town/vendor/three.module.js" } }</script>
+</head>
+<body>
+<div id="view" aria-label="3D workshop: Erik at the bench with the bilge pump motor. Drag to look around."></div>
+<header>
+  <a href="../">← The motor</a>
+  <h1>Erik's motor routine</h1>
+  <p>Erik, old Swedish sailor, at the Dock Electrical Workshop · IEC 90L, 1.5 kW bilge pump motor</p>
+</header>
+<div id="tags"></div>
+<div id="bubble" hidden><b>Erik</b><span id="say"></span></div>
+<button type="button" class="btn" id="follow" hidden>Follow Erik</button>
+<div id="readout" hidden aria-live="polite"><span id="ro-name"></span><strong id="ro-val"></strong></div>
+
+<aside id="panel" aria-label="Lesson">
+  <ol id="chapters"></ol>
+  <div class="learn-wrap">
+    <h2>Learn</h2>
+    <h3 id="learn-title"></h3>
+    <div id="learn"></div>
+  </div>
+</aside>
+
+<div id="bar" role="toolbar" aria-label="Playback">
+  <button type="button" class="btn" id="play" aria-pressed="false">Play</button>
+  <button type="button" class="btn" id="prev" aria-label="Previous chapter">⏮</button>
+  <button type="button" class="btn" id="next" aria-label="Next chapter">⏭</button>
+  <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Position in the routine">
+  <span id="clock"></span>
+  <button type="button" class="btn" id="speed" aria-label="Playback speed">1×</button>
+  <button type="button" class="btn" id="restart">Restart</button>
+</div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

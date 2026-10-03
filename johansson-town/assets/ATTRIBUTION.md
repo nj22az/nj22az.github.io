@@ -88,14 +88,14 @@ The following surfaces were discovered through the owner's [GameDev Free Resourc
 
 `models/street/potted-plant.glb`: [Banana Plant — Polygonal Mind](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/projects/avatar-show/Banana_Plant.glb), discovered through the owner's [ToxSam OS3A Gallery](https://github.com/ToxSam/os3a-gallery). CC0 under the collection's [creator licence](https://github.com/ToxSam/cc0-models-Polygonal-Mind/blob/main/License.md), included as `models/street/LICENSE-CC0.md`. Original geometry retained, embedded textures reduced to 512px, leaf blending changed to alpha testing, and repeated plants instanced in spatial cells. Original and shipped hashes are in `models/street/manifest.json`.
 
-## User-supplied office and ramen restaurant (2026-09-09)
+## User-supplied office and ramen restaurant (2026-09-09) — retired
+
+**Removed 1 October 2026.** Both files were game rips (Nintendo's *Tomodachi Life*, Sega's *Shenmue*); a Sketchfab upload cannot license them. The harbour office is now an original room built in `src/world/interiors/office-workplace.js` (`buildOfficeShell`), and the ramen restaurant model was not loaded by anything. The supplied *Tomodachi Life* crystal room was retired with them. Recover from git history only for reference, not for shipping.
 
 These two models were supplied by the owner and included at their express request. They are separate from the CC0 catalogue assets above. The following author, source and licence fields are preserved from the supplied GLBs; they are uploader metadata, not an independent rights verification for the original games.
 
 | Runtime model | Supplied source and attribution | Adaptation |
 | --- | --- | --- |
-| `models/office/office-interior.glb` | **3DS — Tomodachi Life — Interiors — 065 Office**; original game by Nintendo. Source upload: [Unknown Person / jkimmel694](https://sketchfab.com/jkimmel694), [model page](https://sketchfab.com/3d-models/3ds-tomodachi-life-interiors-065-office-e6d0799ea5f34c8a8ab57237a0208ff5). Embedded licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). | Removed 40 identical duplicate primitives, restored vertex-alpha shadow transparency, retained all 25 embedded images and tiled floor UVs, rotated the entrance, merged matching materials. 2,991 triangles; 28 draws. |
-| `models/ramen/ramen-restaurant.glb` | **Shenmue — Ramen Restaurant**; original game by Sega / AM2. Refurbished source upload: [Kiklox](https://sketchfab.com/kiklox), [model page](https://sketchfab.com/3d-models/shenmue-ramen-restaurant-a005cf77086246a6a192658c5574519a). Embedded licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). | Converted legacy specular/glossiness diffuse textures to core glTF base colour, retained all 56 embedded textures, fitted human scale and street-facing orientation, merged matching materials. 7,765 triangles; 56 draws. Shared between the exterior and interior. |
 
 Both models use unlit materials to preserve their baked texture/vertex lighting. Original source metadata, input/output SHA-256 hashes, transforms and counts are recorded in each model directory's `manifest.json`. The original uploads are not modified. Reproduction: `python tools/pack-supplied-rooms.py --office /path/to/office.glb --ramen /path/to/ramen.glb` (Python with NumPy). Collision shapes, interaction anchors and the original Sato Ramen fascia/roof trim are project additions. No CC0 licence is asserted for either supplied model.
 
@@ -147,7 +147,7 @@ Adapted for the east lane: fitted width/depth, grounded geometry, removed source
 foreground paving/poles, compacted unused vertices, reduced embedded texture sizes.
 Both buildings, their material assignments and transparent details are retained.
 The right doorway leads to the existing Sato Ramen interior; the timber doorway
-leads to the supplied crystal room, moved from StepWise Instruments.
+is closed (its crystal room was a game rip and was retired in October 2026).
 Rebuild with `python tools/pack-inakaya.py /path/to/japanese_restaurant_inakaya.glb`.
 Hashes, dimensions and texture sizes are recorded in `models/ramen/inakaya-manifest.json`.
 
@@ -165,7 +165,9 @@ The playable ramen interior reuses this Inakaya asset. A cached geometry variant
 - Changes: baked transforms, texture-aware simplification, two 2048px JPEG textures, lit rough rock materials, uniform placement beyond the northern street boundary. No portion of the scan was cropped out.
 - Runtime file: `models/sea-cave/umanose.glb`. Rebuild with `node tools/pack-sea-cave.mjs /path/to/umanosehorseback_sea_cave.glb`. Source hash and geometry measurements are in `models/sea-cave/manifest.json`.
 
-## Old Warehouse (2026-09-11)
+## Old Warehouse (2026-09-11) — retired
+
+**Removed 1 October 2026.** The harbour warehouse is now built in code from the Okinawan kit (`src/world/warehouse.js`, `buildWarehouseShell`); the photographed model is no longer shipped.
 
 `models/warehouse/old-warehouse.glb` replaces the western harbour shed with the user-supplied **Old Warehouse** by [aswin.baskaran](https://sketchfab.com/aswin4550). [Source model](https://sketchfab.com/3d-models/old-warehouse-5ca553c34c524a85b3d72ce64da95e41); licence recorded in the supplied file: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
@@ -204,9 +206,9 @@ The user supplied `street_2.glb`, **Street 2** by **Pasha**. Its embedded metada
 The office and Seinfeld apartment retain their existing source attribution. Redundant furniture was removed and replaced with original procedural furnishings for the office workstation and two sleeping corners. Both manifests record the refit and original source hashes.
 
 
-## Sakura convenience-store interior
+## Sakura Shōten interior
 
-User-supplied `the-convenience-store.zip`, containing `source/8 16 20 conveniance_store.glb`. The archive supplies no author or licence document; no licence is inferred. The prepared interior retains the supplied architecture, aisle fixtures, refrigerators, checkout booth and back room. Static fittings are batched and recoloured; source merchandise, original advertising and opaque glass are replaced with interactive fictional stock and shop artwork. Source digest and preparation details: `models/sakura-interior/source.json`; reproducible preparation: `scripts/prepare-sakura-interior.py`.
+Original procedural geometry (`src/world/interiors/sakura-shell.js`), built for Johansson Town from the shop's own measurements. It replaced a user-supplied convenience-store model that had no licence on record, which is no longer shipped.
 
 The fictional packaging atlas at `graphics/konbini/packaging-atlas.webp` was generated for Johansson Town on 13 September 2026 with the built-in image-generation tool. It contains original NAGI, PORT 88, SAKURA, KOMOREBI, HANAMORI, SHIOFUMI, HOSHIMARU, SHIOSAI, MIZUNOWA, UMINEKO, YUNAGI and ASAMORI labels. It is used on both shelf goods and customers’ held goods. Existing generated shop posters are reused.
 
@@ -218,3 +220,7 @@ Manga pages, the サクラ商店 4-koma and the セルアニメ posters are orig
 by `tools/magazines/draw_pages.py` (Pillow). Lettering was rendered with WenQuanYi Zen
 Hei (GPL-2.0 with font exception); the images contain rendered glyphs only, no font
 data. All titles, characters and brands are fictional.
+
+### IKEA home furniture
+
+LACK side table (30449908) and IVAR pine cabinet (70033766): IKEA / Inter IKEA Systems. Downloaded from IKEA's published product-viewer GLBs using the discovery approach in [IKEA 3D Model Download Button](https://github.com/apinanaivot/IKEA-3D-Model-Download-Button). Exact model URLs and original files are retained in `models/furniture/SOURCES.json`. Blender variants remove photographic textures, simplify dense meshes and use the town's cel materials. The downloader's code license does not grant a license to IKEA's designs or models; no open asset license is asserted.

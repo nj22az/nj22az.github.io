@@ -3,6 +3,7 @@ import {poseAvatarOnBicycle} from './bicycle-pose.js';
 import {bicycleRiderFit} from '../world/bicycle-fit.js';
 import {seeded} from './recipe.js';
 import {consumptionPhase,poseAvatarConsumption,drinkHeadTilt} from './consume.js';
+import {bodyLanguage} from './body-language.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -22,14 +23,26 @@ const ease=(t,d,edge=.25)=>Math.min(1,t/edge,(d-t)/edge);
 /** How long each move lasts (loops run until something else happens). */
 export const GESTURES=Object.freeze({
  Wave:1.6,Bow:1.5,Nod:1.1,HeadShake:1.2,Point:1.6,Shrug:1.3,Clap:1.8,Laugh:2,Think:2.4,LookAround:2.6,Stretch:2.2,
- PickUp:1.6,Fist:1.4,Jab:.42,JabL:.42,Swipe:.7,Hurt:.5,Jump:.9,Cheer:1.6,Hop:1.2,Stomp:1.4,Slump:2.2,Fidget:2.4,SitToast:2.4,SitDrink:2.4,SitEat:2.4,Drink:2.4,Eat:2.4,
+ PickUp:1.6,Fist:1.4,Jab:.42,JabL:.42,Swipe:.7,Hurt:.5,Jump:.9,Cheer:1.6,Hop:1.2,Gasp:1.6,Stomp:1.4,Slump:2.2,Fidget:2.4,SitEnjoyFood:3.8,SitPresentFood:4.2,SitToast:2.4,SitDrink:2.4,SitEat:2.4,Drink:2.4,Eat:2.4,
+ Heart:2.8,Peace:2.8,Coy:3,Tada:2.4,HandsOnHips:2.6,HeelKick:2.6,
  Talk:Infinity,Kachashi:Infinity,Crouch:Infinity,Phone:Infinity,FishIdle:Infinity,Reel:Infinity,
 });
 /** The body that goes with a feeling, played once when the feeling arrives. */
-export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump',angry:'Stomp',shy:'Fidget',surprised:'Cheer'});
+export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump',angry:'Stomp',shy:'Fidget',surprised:'Gasp',worried:'Think'});
 
-export function createAvatarAnimator(avatar){
+/**
+ * @param {object} avatar from build.js
+ * @param {{lively?:boolean,random?:()=>number}} [options] lively: a resident living their
+ *   own life, who strikes their personality's poses standing about and as they start to
+ *   talk (body-language.js). Off for the player's body, the photo studio and the maker,
+ *   where somebody else says what the body does.
+ */
+export function createAvatarAnimator(avatar,{lively=false,random=Math.random}={}){
  const {bones,measure:m}=avatar;
+ const style=bodyLanguage(avatar.recipe?.profile||{});
+ const pick=list=>list[Math.floor(random()*list.length)];
+ const idleWait=()=>style.idleEvery[0]+random()*(style.idleEvery[1]-style.idleEvery[0]);
+ let idleIn=4+idleWait()*.6,wasTalking=false,quietFor=10;
  const individual=seeded(avatar.recipe.name||JSON.stringify(avatar.recipe));
  const strideStyle=.92+individual()*.16,armStyle=.8+individual()*.25;
  const posture=(individual()-.5)*.055,idleRate=.85+individual()*.3;
@@ -42,10 +55,13 @@ export function createAvatarAnimator(avatar){
  const set=(j,x=0,y=0,z=0)=>target[j].set(x,y,z);
  const add=(j,x=0,y=0,z=0)=>target[j].add(new THREE.Vector3(x,y,z));
 
- function play(name){
+ /** @param {number} [seconds] how long to hold a move that would otherwise loop. */
+ function play(name,seconds){
   if(!(name in GESTURES))return false;
-  gesture={name,t:0,d:GESTURES[name]};return true;
+  gesture={name,t:0,d:GESTURES[name]===Infinity&&seconds?seconds:GESTURES[name]};return true;
  }
+ /** A move of one's own choosing: loops are held for a few seconds, not for ever. */
+ const flourish=name=>play(name,2.6+random()*1.4);
  const stop=()=>{gesture=null;};
 
  /**
@@ -57,7 +73,7 @@ export function createAvatarAnimator(avatar){
   */
  function update(dt,s={}){
   time+=dt;
-  const action=gesture?.name||s.pose||s.seat;
+  const action=gesture?.name||s.pose||s.seat;avatar.setOpenHands?.(['SitEnjoyFood','SitPresentFood'].includes(action));
   const eating=['Eat','EatStanding','SitEat'].includes(action),drinking=['Drink','DrinkStanding','SitDrink','SitToast'].includes(action);
   if(eating||drinking){
    if(action!==lastConsume)consumeTime=0;
@@ -87,7 +103,8 @@ export function createAvatarAnimator(avatar){
    set('shoulderL',-.45,0,.15);set('shoulderR',-.45,0,-.15);set('elbowL',-.55);set('elbowR',-.55);
    add('chest',Math.sin(time*1.5)*.02);
    const pose=s.pose;
-   if(pose==='Type'){set('shoulderL',-.9,0,.1);set('shoulderR',-.9,0,-.1);set('elbowL',-.7+Math.sin(time*14)*.08);set('elbowR',-.7+Math.sin(time*13+1)*.08);set('head',.15);}
+   if(s.driving){set('shoulderL',-.95,0,.12);set('shoulderR',-.95,0,-.12);set('elbowL',-.65);set('elbowR',-.65);set('head',-.06);}
+   else if(pose==='Type'){set('shoulderL',-.9,0,.1);set('shoulderR',-.9,0,-.1);set('elbowL',-.7+Math.sin(time*14)*.08);set('elbowR',-.7+Math.sin(time*13+1)*.08);set('head',.15);}
    else if(pose==='Eat'||pose==='Drink'||s.seat==='SitEat'){const lift=Math.max(0,Math.sin(time*1.4))**4;set('shoulderR',-.6-lift*.9,0,-.25);set('elbowR',-.8-lift*1.3);set('head',.08-lift*.1);}
    else if(pose==='Sleep'||s.sleeping){set('head',.45,0,.15);set('chest',.15);}
    else if(soak){set('thighL',-1.3,0,.25);set('thighR',-1.3,0,-.25);set('kneeL',.9);set('kneeR',.9);set('shoulderL',0,0,.9);set('shoulderR',0,0,-.9);set('head',-.1);}
@@ -144,7 +161,19 @@ export function createAvatarAnimator(avatar){
   if(s.airborne&&!s.seated){set('thighL',-.6);set('thighR',-.2);set('kneeL',1);set('kneeR',.6);set('shoulderL',-.3,0,1.6);set('shoulderR',-.3,0,-1.6);}
   // A feeling arriving brings its body with it, once.
   const expression=s.expression||'neutral';
-  if(expression!==lastExpression){lastExpression=expression;const g=EMOTION_GESTURE[expression];if(g&&!s.seated&&!moving&&!gesture)play(g);}
+  // Which move depends on who they are: a happy Typhoon throws a ta-da, a happy
+  // Lighthouse keeper nods.
+  if(expression!==lastExpression){lastExpression=expression;const g=style.feel[expression]||EMOTION_GESTURE[expression];if(g&&!s.seated&&!moving&&!gesture)flourish(g);}
+  const talking=!!s.talking;
+  if(lively){
+   const free=!moving&&!s.seated&&!s.riding&&!s.airborne&&!s.sleeping&&!s.carrying&&!consumption&&(!s.pose||s.pose==='Idle')&&!s.heldProp;
+   // Starting to say something, after a pause: the hands go with the words.
+   if(talking&&!wasTalking&&quietFor>.8&&free&&!gesture&&random()<style.talkChance)flourish(pick(style.talk));
+   // Standing about with nothing to do: now and then, something of their own.
+   if(free&&!talking&&!gesture){idleIn-=dt;if(idleIn<=0){flourish(pick(style.idle));idleIn=idleWait();}}
+   else idleIn=Math.max(idleIn,2);
+  }
+  quietFor=talking?0:quietFor+dt;wasTalking=talking;
   if(s.waving&&!gesture)play('Wave');
   if(gesture){gesture.t+=dt;if(gesture.t>=gesture.d)gesture=null;else{const r=applyGesture(gesture,s);if(r?.root!==undefined)targetRoot+=r.root;}}
   // Looking at someone: the head turns, the chest helps with a big turn, and the eyes
@@ -192,7 +221,8 @@ export function createAvatarAnimator(avatar){
    case 'Point':set('shoulderR',-1.5*q,.2,-.1);set('elbowR',-.05);add('head',0,-.15*q);break;
    case 'Shrug':set('shoulderL',-.3*e,0,.55*e+.13);set('shoulderR',-.3*e,0,-.55*e-.13);set('elbowL',-1.3*e);set('elbowR',-1.3*e);add('head',0,0,.2*e);break;
    case 'Clap':{const c=Math.abs(Math.sin(t*9));set('shoulderL',-1.2*q,0,.1+c*.35);set('shoulderR',-1.2*q,0,-.1-c*.35);set('elbowL',-.9*q);set('elbowR',-.9*q);break;}
-   case 'Laugh':add('chest',-.18*e+Math.sin(t*16)*.04*e);add('head',-.25*e);set('shoulderL',-.5*e,0,.3);set('shoulderR',-.5*e,0,-.3);set('elbowL',-1.3*e);set('elbowR',-1.3*e);break;
+   case 'Laugh':add('chest',-.24*e+Math.sin(t*16)*.07*e);add('head',-.32*e);set('shoulderL',-.85*e,0,.4);set('shoulderR',-.85*e,0,-.4);set('elbowL',-1.65*e);set('elbowR',-1.65*e);break;
+   case 'Gasp':add('chest',-.18*e);add('head',-.12*e);set('shoulderL',-.7*e,0,.28);set('shoulderR',-.7*e,0,-.28);set('elbowL',-1.9*e);set('elbowR',-1.9*e);return {root:Math.sin(Math.PI*t/d)*.045};
    case 'Think':set('shoulderR',-1.25*q,0,-.35);set('elbowR',-1.95*q);set('shoulderL',-.4*q,0,.3);set('elbowL',-1.4*q);add('head',.12*q,0,.18*q);break;
    case 'LookAround':add('head',0,Math.sin(t*2.4)*.75*e);add('chest',0,Math.sin(t*2.4)*.2*e);break;
    case 'Stretch':set('shoulderL',-.2,0,2.8*e);set('shoulderR',-.2,0,-2.8*e);add('chest',-.25*e);add('head',-.3*e);break;
@@ -221,8 +251,53 @@ export function createAvatarAnimator(avatar){
    case 'Stomp':set('shoulderL',-.2,0,.35);set('shoulderR',-.2,0,-.35);set('elbowL',-1.6*q);set('elbowR',-1.6*q);set('thighL',-.5*Math.max(0,Math.sin(t*9))*e);set('kneeL',.6*Math.max(0,Math.sin(t*9))*e);add('head',.18*e,Math.sin(t*14)*.1*e);add('chest',.12*e);break;
    case 'Slump':add('chest',.3*e);add('head',.4*e);set('shoulderL',.05,0,.03);set('shoulderR',.05,0,-.03);return {root:-.03*e};
    case 'Fidget':set('shoulderL',-.55*q,0,-.2*q);set('shoulderR',-.55*q,0,.2*q);set('elbowL',-.6*q);set('elbowR',-.6*q);add('head',.18*e,0,.25*e);add('hips',0,Math.sin(t*3)*.12*e);break;
+   case 'SitEnjoyFood':{
+    // Two open palms beside the dish, with a friendly lean and head tilt.
+    set('shoulderL',-.70*q,.18*q,.62*q);set('shoulderR',-.70*q,-.18*q,-.62*q);
+    set('elbowL',-1.35*q);set('elbowR',-1.35*q);
+    set('handL',-1.25*q,.55*q,.25*q);set('handR',-1.25*q,-.55*q,-.25*q);
+    add('chest',.05*e);add('head',-.06*e,0,.16*e);break;
+   }
+   case 'SitPresentFood':{
+    // Support a plate with both hands, keeping the seated legs planted.
+    set('shoulderL',-1.10*q,0,.22*q);set('shoulderR',-1.10*q,0,-.22*q);
+    set('elbowL',-1.18*q);set('elbowR',-1.18*q);
+    set('handL',-1.45*q,0,.18*q);set('handR',-1.45*q,0,-.18*q);
+    add('head',-.08*e,0,-.10*e);break;
+   }
    case 'SitToast':set('shoulderR',-1.9*q,0,-.2);set('elbowR',-.6*q);add('head',-.15*q);break;
    case 'SitDrink':{const lift=Math.max(0,Math.sin(t*2.6))**2;set('shoulderR',-.6-lift*1,0,-.25);set('elbowR',-.9-lift*1.2);break;}
+   // Playful poses for photos: struck, held while the move lasts, and kept alive with a
+   // little bounce. The head is big and the arms short, so every hand stays at or
+   // below the cheek.
+   case 'Heart':{
+    // Hands together in front of the chest, elbows out: a heart, the idol way.
+    set('shoulderL',-.8*q,0,.5*q);set('elbowL',-.45*q,0,-1.7*q);set('shoulderR',-.8*q,0,-.5*q);set('elbowR',-.45*q,0,1.7*q);
+    add('head',.06*q,0,.22*q+Math.sin(t*3.2)*.04*q);set('hips',0,0,-.05*q);set('thighR',-.12*q);set('kneeR',.3*q);
+    return {root:Math.abs(Math.sin(t*3.2))*.012*q};}
+   case 'Peace':{
+    // A hand up by the cheek, the other on the hip, and the hip out.
+    set('shoulderR',-.55*q,0,-1.25*q);set('elbowR',-1.9*q,0,-.2*q);
+    set('shoulderL',.15*q,0,.75*q);set('elbowL',-.3*q,0,-1.5*q);
+    add('head',.06*q,-.1*q,-.24*q);set('hips',0,.15*q,-.07*q);set('thighL',-.15*q);set('kneeL',.4*q);break;}
+   case 'Coy':{
+    // A fingertip at the chin, a hand on the hip, a sideways look.
+    set('shoulderR',-1.15*q,0,-.12*q);set('elbowR',-2.1*q);
+    set('shoulderL',.15*q,0,.75*q);set('elbowL',-.3*q,0,-1.5*q);
+    add('head',.12*q,.2*q,.2*q);add('chest',0,.12*q,-.05*q);set('hips',0,-.2*q,.08*q);set('thighR',-.1*q,0,-.06*q);set('kneeR',.3*q);break;}
+   case 'Tada':{
+    // Arms flung wide and a heel kicked up behind.
+    const pop=Math.min(1,t/.3);
+    set('shoulderL',-.15*q,0,1.9*q);set('shoulderR',-.15*q,0,-1.9*q);set('elbowL',0,0,.2*q);set('elbowR',0,0,-.2*q);
+    set('thighL',.35*q*pop);set('kneeL',1.3*q*pop);add('chest',-.12*q);add('head',-.15*q,0,.12*q);return {root:.03*q*pop};}
+   case 'HandsOnHips':
+    set('shoulderL',.15*q,0,.75*q);set('elbowL',-.3*q,0,-1.5*q);set('shoulderR',.15*q,0,-.75*q);set('elbowR',-.3*q,0,1.5*q);
+    add('chest',-.12*q);add('head',-.12*q,0,Math.sin(t*2.2)*.08*q);set('thighL',0,0,.12*q);set('thighR',0,0,-.12*q);break;
+   case 'HeelKick':
+    // Fists under the chin and one foot kicked up behind.
+    set('thighR',.45*q);set('kneeR',1.7*q+Math.sin(t*3)*.08*q);
+    set('shoulderL',-1.2*q,0,-.2*q);set('shoulderR',-1.2*q,0,.2*q);set('elbowL',-1.6*q);set('elbowR',-1.6*q);
+    add('head',.08*q,0,-.25*q);add('chest',.1*q,0,-.06*q);break;
    case 'Talk':set('shoulderR',-.55+Math.sin(t*3.1)*.25,0,-.2);set('elbowR',-1.1+Math.sin(t*4.3)*.3);set('shoulderL',-.35+Math.sin(t*2.3+1)*.2,0,.2);set('elbowL',-1+Math.sin(t*3.7)*.3);add('head',Math.sin(t*2.6)*.06);break;
    case 'Kachashi':{
     // The kachāshī: hands up at head height, wrists turning, stepping from foot to foot.
@@ -239,5 +314,5 @@ export function createAvatarAnimator(avatar){
   }
   return null;
  }
- return {update,play,stop,get gesture(){return gesture?.name||null;},get consumption(){return consumption;}};
+ return {update,play,stop,style,get gesture(){return gesture?.name||null;},get consumption(){return consumption;}};
 }

@@ -1,6 +1,6 @@
 # Johansson Town
 
-A small harbour town in Okinawa, 13 September 1997 (Heisei 9). Walk the streets, shop at
+A small harbour town in Okinawa in 1997 (Heisei 9), on today's date: the town clock is your clock. Walk the streets, shop at
 Sakura Shōten, meet Thuan, Nao and the neighbours, and settle into daily life. It runs in
 the browser with Three.js and no framework: <https://nj22az.github.io/johansson-town/>.
 
@@ -41,7 +41,7 @@ than expecting a clean run.
 | `assets/` | Models, textures, audio (see `assets/ATTRIBUTION.md`) |
 | `art/`, `tools/` | Source art and the Blender / packing pipelines that regenerate assets |
 | `creator/` | Standalone islander maker, used by share links |
-| `docs/` | Design notes; start with `ART_DIRECTION.md`, `SAKURA_STORE.md`, `EXPANSION-NOTES.md` |
+| `docs/` | Design notes; start with `AMPLIFY-AUDIT.md` (current audit, look and building-kit standards, roadmap), then `ART_DIRECTION.md`, `SAKURA_STORE.md`, `EXPANSION-NOTES.md` |
 
 ## Playing
 
@@ -64,6 +64,22 @@ Everyone is a Shimanchu (島人, islander): a round-headed, cel-shaded figure bu
 time from a recipe in `src/avatars/`. **Town book → Make your islander** changes how you
 look; **Share** gives a `creator/?r=<code>` link, and `?avatar=<code>` imports one into
 the game.
+
+Each islander has a personality: four dials (pace, talk, feelings, outlook) in their recipe,
+one of sixteen island types (`src/avatars/personality.js`; the town's own people have
+authored dials in `TOWN_DIALS`). `src/avatars/body-language.js` turns the type into
+body language: the move a feeling brings (a happy Festival friend kicks up a heel, a
+Lighthouse keeper nods), what they do standing about, and what their hands do as they start
+a line. Dialogue lines carry a feeling read from the words. The playful poses (heart,
+hand by the cheek, coy look, ta-da, hands on hips, heel kick) are on the Moves menu, in the
+photo studio and in the maker's preview.
+
+Neighbours stop for a chat when they pass within a few metres of each other, near enough
+for you to overhear (`src/people/neighbour-chats.js`). What they say follows their
+temperament: written small talk about the cat, the ferry, typhoons, Tamagotchis and
+gossip (`chat-lines.js`), or, once you have started the local language model at Thuan's
+counter ("Ask her something"), conversations it writes for each pair from who they are
+(`town-mind.js`).
 
 ## More
 

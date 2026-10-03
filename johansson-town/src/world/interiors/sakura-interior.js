@@ -1,69 +1,31 @@
 import * as THREE from '../../../vendor/three.module.js';
-import {GLTFLoader} from '../../../vendor/GLTFLoader.js';
-import {assetURL} from '../../assets.js';
+import {buildSpecialsBoard} from './sakura-specials-board.js';
 import {SHOP_STOCK} from '../../commerce/shop-stock.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
-import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-advertising.js';
+import {createStoreAdvertising} from './store-advertising.js';
 import {createShopRefrigerator} from './shop-refrigerator.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './sakura-dressing.js';
-import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SHELF_ISLANDS,REMOVED_SHELVING,SAKURA_TILL_CABINET} from './sakura-layout.js';
+import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_DRESSING,SAKURA_BACKBAR,SAKURA_TILL_CABINET,BUN_STEAMER,COPY_MACHINE} from './sakura-layout.js';
+import {buildSakuraShell} from './sakura-shell.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
-import {buildSakuraCheer,paintSakuraShell,buildSakuraBand} from './sakura-cheer.js';
+import {buildSakuraCheer,buildSakuraBand} from './sakura-cheer.js';
 import {buildSakuraLife} from './sakura-life.js';
 import {buildMagazineRack} from './sakura-magazine-rack.js';
-let model=null,pending=null;
-// The gondolas were cut into three islands and each one turned a quarter turn
-// (SHELF_ISLANDS in sakura-layout.js says where each one comes from and goes). The shop
-// model batches every aisle into two merged meshes, so there is no object to move or
-// hide: each half is lifted out as its own mesh over the same vertex buffer, and the
-// shelving that was not kept is dropped the way the park drops its bushes, by
-// leaving its triangles out of the index. Measured against the model, every box below
-// holds whole triangles and cuts none of them, so nothing is left ragged.
-const SHELF_MESHES=['sakura-shelf','sakura-shelf-ends'];
-const within=(box,x,y,z)=>x>=box.minX&&x<=box.maxX&&y>=box.minY&&y<=box.maxY&&z>=box.minZ&&z<=box.maxZ;
-export function rearrangeShelving(root){
- const counts={dropped:0};
- for(const name of SHELF_MESHES){
-  const mesh=root.getObjectByName(name);if(!mesh)continue;
-  const geometry=mesh.geometry,position=geometry.attributes.position;
-  const indices=geometry.index?geometry.index.array:Array.from({length:position.count},(_,i)=>i);
-  const kept=[],halves=Object.fromEntries(Object.keys(SHELF_ISLANDS).map(id=>[id,[]]));
-  const at=i=>[position.getX(i),position.getY(i),position.getZ(i)];
-  for(let i=0;i<indices.length;i+=3){
-   const triangle=[indices[i],indices[i+1],indices[i+2]],corners=triangle.map(at);
-   const holds=box=>corners.every(([x,y,z])=>within(box,x,y,z));
-   const half=Object.keys(SHELF_ISLANDS).find(id=>holds(SHELF_ISLANDS[id].from));
-   if(half)halves[half].push(...triangle);
-   else if(REMOVED_SHELVING.some(holds))counts.dropped++;
-   else kept.push(...triangle);
-  }
-  for(const [id,triangles] of Object.entries(halves)){
-   if(!triangles.length)continue;
-   const site=SHELF_ISLANDS[id],moved=mesh.clone();
-   moved.name=name+' '+id;moved.geometry=geometry.clone();moved.geometry.setIndex(triangles);
-   moved.geometry.computeBoundingBox();moved.geometry.computeBoundingSphere();
-   moved.position.set(site.offset[0],0,site.offset[1]);moved.rotation.y=site.yaw;
-   root.add(moved);counts[id]=(counts[id]||0)+triangles.length/3;
-  }
-  geometry.setIndex(kept);geometry.computeBoundingBox();geometry.computeBoundingSphere();
- }
- return counts;
-}
+let model=null;
+/**
+ * The shop's building and fittings (sakura-shell.js), made once and cloned into the room.
+ * They used to come from a supplied convenience-store model with no licence on record;
+ * the shell is now drawn from the shop's own measurements, so nothing is fetched and the
+ * promise resolves at once. It goes through the cel pass like the rest of the town; only
+ * the tubes keep their physical material, because they glow.
+ */
 export function preloadSakuraInterior(){
- if(model)return Promise.resolve(true);if(pending)return pending;
- pending=(async()=>{const abort=new AbortController(),timeout=setTimeout(()=>abort.abort(),15000);try{
-  const response=await fetch(assetURL('models/sakura-interior/sakura-interior.glb?fittings=2'),{signal:abort.signal});if(!response.ok)throw Error('HTTP '+response.status);
-  model=(await new GLTFLoader().parseAsync(await response.arrayBuffer(),'')).scene;model.name='Supplied convenience-store interior';model.userData.sharedAsset=true;
-  rearrangeShelving(model);
-  paintSakuraShell(model);
-  // Kept out of the cel pass. These meshes carry vertex colours, and converting them
-  // to MeshToonMaterial renders the whole shop black — verified by putting the
-  // materials back one by one, and it happens with stock toon too, not just with the
-  // shadow-tint patch. The shop still goes through the ink and the grade, so it sits
-  // in the same picture; only its shading stays as the model authored it.
-  model.traverse(o=>{if(o.isMesh){o.receiveShadow=true;o.castShadow=false;const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.roughness=.86;m.dithering=true;m.userData.keepPhysical=true;}}});return true;
- }catch(error){console.warn('Sakura interior unavailable:',error.message);return false;}finally{clearTimeout(timeout);pending=null;}})();return pending;
+ if(!model){
+  model=buildSakuraShell();model.userData.sharedAsset=true;
+  model.traverse(o=>{if(o.isMesh){o.castShadow=false;const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.dithering=true;if(o.name==='sakura-light'){m.userData.keepPhysical=true;m.userData.keepPhysicalStrict=true;}}}});
+ }
+ return Promise.resolve(true);
 }
 
 /** Thin impulse wall behind Thuan at the till — props only, readable on approach. */
@@ -110,8 +72,10 @@ export function buildSakuraInterior({room,reg,action,exit}){
  for(const spec of SHOP_STOCK){const shelf=SAKURA_SHELVES[spec.id];if(!shelf)continue;
   const template=shopProductTemplate(spec.id),pair=[template.body,template.art].map((geometry,i)=>{const mesh=new THREE.InstancedMesh(geometry,materials[i],spec.capacity);mesh.name='Sakura '+spec.id+(i?' packaging':' goods');room.add(mesh);return mesh;});
   const matrices=[],perLevel=spec.capacity/shelf.levels.length,columns=shelf.columns||6,rows=perLevel/columns;
+  // Faced by the pack's own size: never closer than its width across or its depth back.
+  const size=template.bounds.getSize(new THREE.Vector3()),gap={spacing:Math.max(shelf.spacing,size.x+.012),depth:Math.max(shelf.depth,size.z+.01)};
   for(let slot=0;slot<spec.capacity;slot++){
-   const local=slot%perLevel,along=(local%columns-(columns-1)/2)*shelf.spacing,depth=(Math.floor(local/columns)-(rows-1)/2)*shelf.depth;
+   const local=slot%perLevel,along=(local%columns-(columns-1)/2)*gap.spacing,depth=(Math.floor(local/columns)-(rows-1)/2)*gap.depth;
    const x=shelf.x+Math.cos(shelf.yaw)*along+Math.sin(shelf.yaw)*depth,z=shelf.z-Math.sin(shelf.yaw)*along+Math.cos(shelf.yaw)*depth;
    const y=shelf.levels[Math.floor(slot/perLevel)]+.002-template.bounds.min.y;
    dummy.position.set(x,y,z);dummy.rotation.set(0,shelf.yaw,0);dummy.updateMatrix();matrices.push(dummy.matrix.clone());pair.forEach(m=>m.setMatrixAt(slot,dummy.matrix));
@@ -120,7 +84,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   pair.forEach(m=>m.computeBoundingSphere());batches.push({spec,pair,matrices});
   const front=new THREE.Vector3(Math.sin(shelf.yaw),0,Math.cos(shelf.yaw));
   for(const level of shelf.levels)advertising.label(spec.id==='bun'?'buns':spec.id,[shelf.x+front.x*(shelf.fridge!=null?.34:.12),level-.025,shelf.z+front.z*(shelf.fridge!=null?.34:.12)],.23,.075,{price:spec.id!=='bun',yaw:shelf.yaw});
-  const o=anchor([shelf.x+front.x*.17,shelf.levels.at(-1)+.14,shelf.z+front.z*.17],'Examine '+(spec.brand||'SAKURA')+' · '+spec.name,()=>action('store-item',spec.name,{...spec,jp:spec.jp||'肉まん',text:spec.text||'A wrapped steamed bun to take away.'}));o.userData.storeItem=spec.id;
+  const o=anchor([shelf.x+front.x*.17,shelf.levels.at(-1)+.14,shelf.z+front.z*.17],'Examine '+(spec.brand||'SAKURA')+' · '+spec.name,()=>action('store-item',spec.name,{...spec,jp:spec.jp||"Meat bun",text:spec.text||'A wrapped steamed bun to take away.'}));o.userData.storeItem=spec.id;
  }
  // Fittings the model came with that nothing stood on (SAKURA_DRESSING). Instanced the
  // same way as the goods, but never restocked: none of it is for sale.
@@ -136,6 +100,14 @@ export function buildSakuraInterior({room,reg,action,exit}){
   pair.forEach(m=>m.computeBoundingSphere());
   if(piece.look)anchor(piece.look,piece.title,()=>action('inspect',piece.title.replace(/^(Read|Look over) (the )?/,'Sakura · '),piece.text));
  }
+ // The bun steamer's glass, and the copy machine (their frames are in sakura-shell.js).
+ {const B=BUN_STEAMER,glass=new THREE.MeshStandardMaterial({color:0xf4fbfb,transparent:true,opacity:.22,roughness:.05,depthWrite:false});
+  const pane=(w,h,d,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),glass);m.position.set(x,y,z);m.name='Sakura bun steamer glass';room.add(m);};
+  const y=B.top+.06+(B.h-.1)/2,h=B.h-.1;
+  pane(.008,h,B.d,B.x-B.w/2,y,B.z);for(const s of [-1,1])pane(B.w,h,.008,B.x,y,B.z+s*B.d/2);
+  anchor([B.x-.35,1.25,B.z],'Ask for a steamed bun',()=>action('sakura-hot-snacks'));}
+ anchor([COPY_MACHINE.x,1.1,COPY_MACHINE.z-.45],'Use the copy machine',()=>action('inspect','Copy machine · fax',
+  'Ten yen a copy, fifty a page to fax. The fishermen\u2019s co-op sends its catch sheets to Naha from here every morning, and the lid is warm by nine.'));
  const magazineRack=buildMagazineRack(room,{anchor,action});
  const ads=advertising.finish();
  // The posters hang on the shop's own walls, not across its windows (sakura-dressing.js):
@@ -147,6 +119,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
  // The ledger lives on Thuan's desk in the back office now; the counter carries the hot
  // case, the oden and the bell (sakura-cheer.js).
  buildSakuraCheer(room,{anchor,action});
+ // The specials board on the wall behind the counter (sakura-specials-board.js).
+ buildSpecialsBoard(room,{anchor,action});
  buildSakuraBand(room);
  const life=buildSakuraLife(room,{anchor,action});
  anchor([4.50,1.2,.6],'Ring service bell',()=>action('resident','Thuan'));
@@ -170,11 +144,10 @@ export function buildSakuraInterior({room,reg,action,exit}){
   }
  };
  let mounted=false,last='';
- return {layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
+ return {dispose:()=>life.dispose(),layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};
-    // The supplied model shares its material with stock and walls. Only the tubes glow.
     o.material=Array.isArray(o.material)?o.material.map(prepare):prepare(o.material);tubes.push(o);
    }});
    room.add(interior);mounted=true;

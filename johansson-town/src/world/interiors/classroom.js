@@ -1,13 +1,13 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {batchStaticProps} from '../../render/static-props.js';
 import {daylight} from '../../render/dusk.js';
-import {hanaBlockMaterial,hanaScreen} from '../school.js';
 import {buildFigure,setPose,animateFigure} from '../../people/school-avatars.js';
 import {CHIME_TIMES,playSchoolChime} from '../../audio/school-chime.js';
 import {townCalendarAt} from '../../town-clock.js';
 
 /**
- * The 5・6年 classroom at Minato school, upstairs on the sea side.
+ * The Years 5–6 classroom in the town hall (港町役場), on the ground floor, the sea side at
+ * the back and the veranda and forecourt at the front.
  *
  * Twelve pupils in a combined fifth-and-sixth-grade class, which is what a school of
  * thirty-one children has. The room follows the school day: lessons in rows facing the
@@ -29,7 +29,7 @@ export const CLASSROOM=Object.freeze({
  walls:{minX:-4.5,maxX:4.5,minZ:-3.6,maxZ:3.6,height:3},
 });
 const W=CLASSROOM.walls;
-const TEACHER='与那嶺先生',TEACHER_EN='Yonamine-sensei';
+const TEACHER="Ms Yonamine",TEACHER_EN='Yonamine-sensei';
 
 /** Where the day is, by the clock and the day of the week. */
 export function schoolPhase(minutes,weekday=1){
@@ -52,11 +52,11 @@ export function schoolPhase(minutes,weekday=1){
  * boats, Okinawa soba on Fridays, and a bottle of milk every day.
  */
 export const KYUSHOKU_MENUS=Object.freeze([
- {day:'月',staple:'rice',main:'goya',soup:'soki',jp:['ごはん','ゴーヤーチャンプルー','ソーキ汁','牛乳'],en:'rice, goya champuru, sōki-jiru pork-rib soup and milk'},
- {day:'火',staple:'bread',main:'aji',soup:'veg',jp:['コッペパン','あじフライ','野菜スープ','牛乳'],en:'a koppepan roll, fried horse mackerel from the co-op, vegetable soup and milk'},
- {day:'水',staple:'juushii',main:'imo',soup:'miso',jp:['ジューシー','紅いもてんぷら','イナムドゥチ','牛乳'],en:'jūshī rice, purple sweet-potato tempura, inamuduchi miso soup and milk'},
- {day:'木',staple:'rice',main:'fish',soup:'mozuku',jp:['ごはん','魚の煮付け','もずくスープ','牛乳'],en:'rice, simmered reef fish, mozuku seaweed soup and milk'},
- {day:'金',staple:'soba',main:'salad',soup:null,jp:['沖縄そば','紅いもサラダ','牛乳'],en:'Okinawa soba, purple sweet-potato salad and milk'},
+ {day:"Monday",staple:'rice',main:'goya',soup:'soki',jp:["Rice","Goya Champuru","Soki soup","Milk"],en:'rice, goya champuru, sōki-jiru pork-rib soup and milk'},
+ {day:"Tuesday",staple:'bread',main:'aji',soup:'veg',jp:["Coppepan","Fried horse mackerel","Vegetable soup","Milk"],en:'a koppepan roll, fried horse mackerel from the co-op, vegetable soup and milk'},
+ {day:"Wednesday",staple:'juushii',main:'imo',soup:'miso',jp:["Seasoned rice","Beniimo tempura","Inamduchi","Milk"],en:'jūshī rice, purple sweet-potato tempura, inamuduchi miso soup and milk'},
+ {day:"Thursday",staple:'rice',main:'fish',soup:'mozuku',jp:["Rice","Boiled fish","Mozuku soup","Milk"],en:'rice, simmered reef fish, mozuku seaweed soup and milk'},
+ {day:"Friday",staple:'soba',main:'salad',soup:null,jp:["Okinawa soba","Red sweet potato salad","Milk"],en:'Okinawa soba, purple sweet-potato salad and milk'},
 ]);
 export const menuForWeekday=weekday=>KYUSHOKU_MENUS[Math.min(4,Math.max(0,weekday-1))];
 
@@ -70,25 +70,30 @@ const GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-se
 const SERIF='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 const HAND='"Klee","Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
 
+/**
+ * Eight pupils, the Years 5–6 of a small island school, each from a household that lives
+ * on the island (Nishi-machi, the east row and the east-back houses), so every child in
+ * the room goes home to a door you can find.
+ */
 const PUPILS=[
- ['金城 ゆい',true,0xe98c9a,0x2d3a52,0x3f6fb0],['比嘉 けんた',false,0x3f7fc0,0x2c2f36,0x3f6fb0],['大城 さくら',true,0xf2d57e,0x4a5f8a,0xc2453b],
- ['宮城 だいき',false,0x4f9a6a,0x2d3a52,0xc2453b],['玉城 みゆ',true,0xb99ad8,0x2c2f36,0x3f6fb0],['新垣 りょう',false,0xe0e0dc,0x3b4a62,0xc2453b],
- ['島袋 あや',true,0x7fc6c9,0x2d3a52,0x3f6fb0],['仲宗根 たく',false,0xd9723c,0x2c2f36,0xc2453b],['上原 ななみ',true,0xf4f1ea,0x8a3a45,0x3f6fb0],
- ['知念 しょう',false,0x2f4f8a,0x55504a,0xc2453b],['平良 まい',true,0xf3a65a,0x2d3a52,0x3f6fb0],['当山 ゆうと',false,0x8a2f3a,0x2c2f36,0xc2453b],
+ ["Kinjo Yui",true,0xe98c9a,0x2d3a52,0x3f6fb0],["Higa Kenta",false,0x3f7fc0,0x2c2f36,0x3f6fb0],["Oshiro Sakura",true,0xf2d57e,0x4a5f8a,0xc2453b],
+ ["Miyagi Daiki",false,0x4f9a6a,0x2d3a52,0xc2453b],["Tamaki Miyu",true,0xb99ad8,0x2c2f36,0x3f6fb0],["Arakaki Ryo",false,0xe0e0dc,0x3b4a62,0xc2453b],
+ ["Nakasone Taku",false,0xd9723c,0x2c2f36,0xc2453b],["Nakamura Mai",true,0xf3a65a,0x2d3a52,0x3f6fb0],
 ];
+export const CLASS_SIZE=PUPILS.length;
 const HAIRS=[0x1b1512,0x231a14,0x16110e,0x2a1e16];
 const SKINS=[0xd9a57c,0xcf9870,0xe0b089,0xc98f66];
 /** The lunch squad this week. */
-const DUTY=[0,5,10];
+const DUTY=[0,3,6];
 
 /** Desk positions: [x, z, facing(+1 = toward the board, -1 = away, 'n'/'s' sideways)]. */
-const ROWS=[];for(const x of [2.0,.85,-.3])for(const z of [-2.4,-.8,.8,2.4])ROWS.push([x,z,1]);
-const HAN_CENTRES=[[1.55,-1.95],[1.55,1.75],[-1.15,-.1]];
+const ROWS=[];for(const x of [1.7,.35])for(const z of [-2.4,-.8,.8,2.4])ROWS.push([x,z,1]);
+const HAN_CENTRES=[[1.2,-1.6],[1.2,1.5]];
 const HAN=[];for(const [hx,hz] of HAN_CENTRES)for(const [dx,dz,f] of [[.225,-.33,-1],[.225,.33,-1],[-.225,-.33,1],[-.225,.33,1]])HAN.push([hx+dx,hz+dz,f]);
-const STACK=[];for(const x of [-1.2,-1.72,-2.24])for(const z of [-2.1,-1.35,-.6,.15])STACK.push([x,z,1]);
+const STACK=[];for(const x of [-1.2,-1.72])for(const z of [-2.1,-1.35,-.6,.15])STACK.push([x,z,1]);
 
 export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalendarAt(minutes)}){
- room.name='Minato school 5・6年 classroom';
+ room.name="Minato school Years 5–6 classroom";
  const colliders=[];
  const rect=(x,z,w,d,height=1)=>{const c={x,z,w,d,height,minY:0};colliders.push(c);return c;};
  const box=(size,pos,m,parent=room,name='',still=true)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(...size),m);b.position.set(...pos);b.receiveShadow=true;b.castShadow=true;if(still)b.userData.staticProp=true;if(name)b.name=name;parent.add(b);return b;};
@@ -163,35 +168,41 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   if(!open)rect(dx,corridorZ-.02,1.2,.12,2.1);
  }
  // Room plate over the back door, inside as well as out.
- const plateTex=canvasTexture(256,80,(ctx,w,h)=>{ctx.fillStyle='#f3f0e4';ctx.fillRect(0,0,w,h);ctx.fillStyle='#23302a';ctx.font=`bold 44px ${GOTHIC}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('5・6年',w/2,h/2+2);});
+ const plateTex=canvasTexture(256,80,(ctx,w,h)=>{ctx.fillStyle='#f3f0e4';ctx.fillRect(0,0,w,h);ctx.fillStyle='#23302a';ctx.font=`bold 44px ${GOTHIC}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("Years 5–6",w/2,h/2+2);});
  const plate=new THREE.Mesh(new THREE.PlaneGeometry(.6,.19),new THREE.MeshStandardMaterial({map:plateTex}));plate.position.set(-3.35,2.4,corridorZ-.01);plate.rotation.y=Math.PI;room.add(plate);
 
  // ------------------------------------------------------------------ outside
- // The corridor beyond the doors, the hana-block balustrade, the field and the town.
+ // The veranda beyond the doors, the forecourt and the town, at eye level: the town hall
+ // is one storey (school.js buildTownHall), so there is no balustrade and no looking down.
  const corridor=new THREE.Group();corridor.name='Classroom corridor';room.add(corridor);
  box([12,.02,2.4],[0,-.01,corridorZ+1.4],mat(0xa8a69a,.9),corridor);
  box([12,.1,2.6],[0,W.height+.05,corridorZ+1.3],mat(0xcac7b9,.95),corridor);
- box([12,.35,.2],[0,.175,corridorZ+2.5],mat(0xefece2,.9),corridor);
- const hana=hanaBlockMaterial();
- for(const [a,b] of [[-6,-2.9],[-2.5,.7],[1.1,4.3],[4.7,6]])hanaScreen(corridor,hana,a,b,.35,1.15,corridorZ+2.5);
+ box([12,.15,.3],[0,.075,corridorZ+2.55],mat(0xc9c3b4,.9),corridor);
+ box([30,.02,14],[0,-.03,corridorZ+9.7],mat(0xc9c3b4,.95),corridor);
  for(const x of [-2.7,.9,4.5])box([.4,W.height,.4],[x,W.height/2,corridorZ+2.5],mat(0xe4e1d3,.92),corridor);
  box([12,.45,.22],[0,W.height-.2,corridorZ+2.5],mat(0xe4e1d3,.92),corridor);
  const fieldView=canvasTexture(1400,600,(ctx,w,h)=>{
-  const sky=ctx.createLinearGradient(0,0,0,h*.55);sky.addColorStop(0,'#8fc4e6');sky.addColorStop(1,'#d8ecf2');ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
-  for(let i=0;i<7;i++){ctx.fillStyle='rgba(255,255,255,.85)';const x=i*230+40,y=70+(i%3)*30;for(let k=0;k<5;k++){ctx.beginPath();ctx.arc(x+k*28,y-(k%2)*16,34-(k%3)*6,0,Math.PI*2);ctx.fill();}}
-  // Headland, town roofs, the park mound, fukugi, the field.
-  ctx.fillStyle='#5f7a4c';ctx.beginPath();ctx.moveTo(0,h*.52);ctx.quadraticCurveTo(w*.2,h*.26,w*.38,h*.5);ctx.lineTo(0,h*.6);ctx.fill();
-  for(let i=0;i<22;i++){ctx.fillStyle=['#9c8e7a','#b3a48a','#7b6f62','#c9b79a'][i%4];const x=w*.35+i*38,y=h*.5-((i*17)%25);ctx.fillRect(x,y,34,h*.58-y);}
-  ctx.fillStyle='#6f9a5a';ctx.beginPath();ctx.ellipse(w*.72,h*.56,w*.14,h*.1,0,Math.PI,0);ctx.fill();
-  for(let i=0;i<30;i++){ctx.fillStyle=i%2?'#2f5a31':'#3b6a3a';ctx.beginPath();ctx.ellipse(i*50+10,h*.62,26,50+(i%3)*10,0,0,Math.PI*2);ctx.fill();}
-  ctx.fillStyle='#b98a63';ctx.fillRect(0,h*.68,w,h*.32);ctx.fillStyle='#d6ccae';ctx.fillRect(0,h*.88,w,h*.12);
-  ctx.strokeStyle='rgba(247,244,232,.8)';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(w*.5,h*.8,w*.4,h*.06,0,0,Math.PI*2);ctx.stroke();
+  // Horizon at eye level: sky, the headland and the town's roofs, the fukugi along the
+  // grounds, the lawn with its flower beds, the flagpole, and the paved forecourt.
+  const hz=h*.52;
+  const sky=ctx.createLinearGradient(0,0,0,hz);sky.addColorStop(0,'#8fc4e6');sky.addColorStop(1,'#d8ecf2');ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
+  for(let i=0;i<7;i++){ctx.fillStyle='rgba(255,255,255,.85)';const x=i*230+40,y=60+(i%3)*28;for(let k=0;k<5;k++){ctx.beginPath();ctx.arc(x+k*28,y-(k%2)*16,34-(k%3)*6,0,Math.PI*2);ctx.fill();}}
+  ctx.fillStyle='#5f7a4c';ctx.beginPath();ctx.moveTo(0,hz);ctx.quadraticCurveTo(w*.18,hz-140,w*.36,hz);ctx.fill();
+  for(let i=0;i<20;i++){ctx.fillStyle=['#e4ddcc','#d8cfb8','#c4553a','#ece5d2'][i%4];const x=w*.36+i*42,y=hz-30-((i*17)%30);ctx.fillRect(x,y,38,hz-y+4);}
+  for(let i=0;i<30;i++){ctx.fillStyle=i%2?'#2f5a31':'#3b6a3a';ctx.beginPath();ctx.ellipse(i*50+10,hz+4,24,44+(i%3)*8,0,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle='#6f9f55';ctx.fillRect(0,hz+30,w,h*.2);
+  for(const x of [w*.2,w*.62]){ctx.fillStyle='#8a5a3a';ctx.fillRect(x,hz+60,w*.18,22);for(let i=0;i<40;i++){ctx.fillStyle=['#d8342c','#f4d23c','#e98aa6','#f4f1ea'][i%4];ctx.beginPath();ctx.arc(x+6+((i*37)%100)/100*(w*.18-12),hz+64+((i*53)%14),5,0,Math.PI*2);ctx.fill();}}
+  ctx.fillStyle='#8e979a';ctx.fillRect(w*.48,hz-210,6,270);ctx.fillStyle='#f4f1ea';ctx.fillRect(w*.485,hz-205,56,38);ctx.fillStyle='#c8102e';ctx.beginPath();ctx.arc(w*.485+28,hz-186,11,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#c9c3b4';ctx.fillRect(0,hz+30+h*.2,w,h);
  });
  const fieldPlane=new THREE.Mesh(new THREE.PlaneGeometry(40,17),new THREE.MeshBasicMaterial({map:fieldView}));
- fieldPlane.position.set(0,-2.6,corridorZ+16);fieldPlane.rotation.y=Math.PI;corridor.add(fieldPlane);
+ fieldPlane.position.set(0,2.25,corridorZ+16);fieldPlane.rotation.y=Math.PI;corridor.add(fieldPlane);
 
- // The sea side: the sunshade just outside, then the reef, the tetrapods and the sky.
+ // The sea side, at ground level: the window hood, a strip of weedy sand, the seawall a
+ // few metres off, and over it the reef and the sky.
  box([W.maxX-W.minX+2,.13,.75],[0,2.86,W.minZ-.58],mat(0xcac7b9,.95));
+ box([30,.02,4],[0,-.03,W.minZ-2.2],mat(0xb9b29b,.95));
+ box([30,1.05,.5],[0,.52,W.minZ-4.2],mat(0xbdb8aa,.92));box([30,.08,.6],[0,1.08,W.minZ-4.2],mat(0x8b877c,.9));
  const seaView=canvasTexture(1600,900,(ctx,w,h)=>{
   const horizon=h*.46;
   const sky=ctx.createLinearGradient(0,0,0,horizon);sky.addColorStop(0,'#6fb2e0');sky.addColorStop(1,'#cfe7f1');ctx.fillStyle=sky;ctx.fillRect(0,0,w,horizon);
@@ -208,7 +219,8 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   ctx.fillStyle='#bdb8aa';ctx.fillRect(0,h*.86,w,h*.14);ctx.fillStyle='#8b877c';ctx.fillRect(0,h*.86,w,6);
  });
  const seaPlane=new THREE.Mesh(new THREE.PlaneGeometry(34,19),new THREE.MeshBasicMaterial({map:seaView}));
- seaPlane.position.set(0,-.2,W.minZ-11);room.add(seaPlane);
+ // Its horizon sits at eye height, just over the seawall's top.
+ seaPlane.position.set(0,.85,W.minZ-11);room.add(seaPlane);
 
  // ------------------------------------------------------------------ front of the room
  const boardTex=canvasTexture(1400,380,()=>{});
@@ -219,7 +231,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
  for(let i=0;i<5;i++)box([.012,.012,.08],[W.maxX-.1,.885,-1.8+i*.12],mat([0xf6f4ec,0xf6f4ec,0xf0d65a,0xe79aa5,0xf6f4ec][i],.9));
  box([.06,.05,.14],[W.maxX-.1,.9,1.2],mat(0x3c5a86,.8),room,'Board eraser');
  // The motto, the clock, and the class goal over the board.
- const motto=canvasTexture(900,160,(ctx,w,h)=>{ctx.fillStyle='#f4efe0';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#6d5335';ctx.lineWidth=10;ctx.strokeRect(5,5,w-10,h-10);ctx.fillStyle='#1b1b1b';ctx.font=`bold 76px ${SERIF}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('明るく　正しく　たくましく',w/2,h/2+4,w-60);});
+ const motto=canvasTexture(900,160,(ctx,w,h)=>{ctx.fillStyle='#f4efe0';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#6d5335';ctx.lineWidth=10;ctx.strokeRect(5,5,w-10,h-10);ctx.fillStyle='#1b1b1b';ctx.font=`bold 76px ${SERIF}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("Bright　Correctly　Strongly",w/2,h/2+4,w-60);});
  const mottoMesh=new THREE.Mesh(new THREE.PlaneGeometry(1.9,.34),new THREE.MeshStandardMaterial({map:motto}));mottoMesh.position.set(W.maxX-.02,2.62,-1.25);mottoMesh.rotation.y=-Math.PI/2;room.add(mottoMesh);
  const clockTex=canvasTexture(256,256,(ctx,w,h)=>{ctx.fillStyle='#f7f5ee';ctx.beginPath();ctx.arc(128,128,122,0,Math.PI*2);ctx.fill();ctx.fillStyle='#222';ctx.font=`bold 30px ${GOTHIC}`;ctx.textAlign='center';ctx.textBaseline='middle';for(let i=1;i<=12;i++){const a=i/12*Math.PI*2;ctx.fillText(String(i),128+Math.sin(a)*96,128-Math.cos(a)*96);}});
  const clockFace=new THREE.Mesh(new THREE.CircleGeometry(.2,32),new THREE.MeshStandardMaterial({map:clockTex}));clockFace.position.set(W.maxX-.03,2.62,1.05);clockFace.rotation.y=-Math.PI/2;room.add(clockFace);
@@ -276,16 +288,16 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
  rect(cubbyX,1.45,.45,3.95,1.1);
  const classBoard=canvasTexture(1400,520,(ctx,w,h)=>{
   ctx.fillStyle='#b99b72';ctx.fillRect(0,0,w,h);ctx.fillStyle='#caa97c';ctx.fillRect(10,10,w-20,h-20);
-  ctx.fillStyle='#fff7e6';ctx.fillRect(40,24,w-80,70);ctx.fillStyle='#b3382c';ctx.font=`bold 50px ${HAND}`;ctx.textAlign='center';ctx.fillText('みんな なかよく　げんきに あいさつ',w/2,76);
-  const shuji=['海','夢','友','空','風','心','光','波'];
+  ctx.fillStyle='#fff7e6';ctx.fillRect(40,24,w-80,70);ctx.fillStyle='#b3382c';ctx.font=`bold 50px ${HAND}`;ctx.textAlign='center';ctx.fillText("Everyone Good friends　Stay healthy Greetings",w/2,76);
+  const shuji=["Sea","Dream","Friend","Sky","Wind","Heart","Light","Wave"];
   shuji.forEach((k,i)=>{const x=40+i*108,y=120;ctx.fillStyle='#f6f3ea';ctx.fillRect(x,y,96,170);ctx.fillStyle='#111';ctx.font=`bold 84px ${SERIF}`;ctx.fillText(k,x+48,y+100);ctx.font=`16px ${GOTHIC}`;ctx.fillText(PUPILS[i][0].split(' ')[1],x+48,y+158);ctx.strokeStyle='#d33';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x+72,y+26,14,0,Math.PI*2);ctx.stroke();});
-  ctx.fillStyle='#f4efdf';ctx.fillRect(920,120,420,170);ctx.fillStyle='#2a2520';ctx.font=`bold 28px ${HAND}`;ctx.fillText('ハーリーのおもいで',1130,160);ctx.font=`18px ${HAND}`;['ぼくは　おじいと　ふねに　のった。','うみが　きらきら　ひかって','みんなで　こいで　かった。　比嘉けんた'].forEach((l,i)=>ctx.fillText(l,1130,200+i*28));
+  ctx.fillStyle='#f4efdf';ctx.fillRect(920,120,420,170);ctx.fillStyle='#2a2520';ctx.font=`bold 28px ${HAND}`;ctx.fillText("Harley's memories",1130,160);ctx.font=`18px ${HAND}`;["I am　Grandfather　Funeni　Got on.","Sea　Twinkle　Hikate","Everyone　Row　It was.　Kenta Higa"].forEach((l,i)=>ctx.fillText(l,1130,200+i*28));
   // The cleaning rota: a paper wheel with the groups round it.
   ctx.save();ctx.translate(200,410);ctx.fillStyle='#fdfbf4';ctx.beginPath();ctx.arc(0,0,92,0,Math.PI*2);ctx.fill();
-  ['きょうしつ','ろうか','まど','トイレ','こくばん','くつばこ'].forEach((t,i)=>{ctx.save();ctx.rotate(i/6*Math.PI*2);ctx.strokeStyle='#999';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-92);ctx.stroke();ctx.rotate(Math.PI/6);ctx.fillStyle='#223';ctx.font=`14px ${GOTHIC}`;ctx.fillText(t,0,-62);ctx.restore();});
-  ctx.restore();ctx.fillStyle='#2a2520';ctx.font=`bold 22px ${HAND}`;ctx.fillText('そうじ当番',200,300);
-  ctx.fillStyle='#e8f3ff';ctx.fillRect(360,320,520,170);ctx.fillStyle='#223';ctx.font=`bold 26px ${HAND}`;ctx.fillText('夏休み　自由研究',620,356);ctx.font=`18px ${HAND}`;['・リーフの　生きもの しらべ（宮城）','・サーターアンダギーの つくりかた（大城）','・台風の　記録（仲宗根）'].forEach((l,i)=>ctx.fillText(l,620,392+i*30));
-  ctx.fillStyle='#fff3c8';ctx.fillRect(920,320,420,170);ctx.fillStyle='#223';ctx.font=`bold 26px ${HAND}`;ctx.fillText('きゅうしょく当番',1130,356);ctx.font=`18px ${HAND}`;ctx.fillText('金城・新垣・平良',1130,398);ctx.fillText('白衣・ぼうし・マスク　わすれずに',1130,432);
+  ["Modern day","Deaf?","Window","Toilet","Kokuban","Kutsubako"].forEach((t,i)=>{ctx.save();ctx.rotate(i/6*Math.PI*2);ctx.strokeStyle='#999';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-92);ctx.stroke();ctx.rotate(Math.PI/6);ctx.fillStyle='#223';ctx.font=`14px ${GOTHIC}`;ctx.fillText(t,0,-62);ctx.restore();});
+  ctx.restore();ctx.fillStyle='#2a2520';ctx.font=`bold 22px ${HAND}`;ctx.fillText("Cleaning duty",200,300);
+  ctx.fillStyle='#e8f3ff';ctx.fillRect(360,320,520,170);ctx.fillStyle='#223';ctx.font=`bold 26px ${HAND}`;ctx.fillText("Summer vacation　Independent research",620,356);ctx.font=`18px ${HAND}`;["・Leaf's　Creatures Shirabe（Miyagi）","・Sata Andagi's How to make（Oshiro）","・Typhoon　Record（Nakasone）"].forEach((l,i)=>ctx.fillText(l,620,392+i*30));
+  ctx.fillStyle='#fff3c8';ctx.fillRect(920,320,420,170);ctx.fillStyle='#223';ctx.font=`bold 26px ${HAND}`;ctx.fillText("On duty",1130,356);ctx.font=`18px ${HAND}`;ctx.fillText("Kinjo, Aragaki, Taira",1130,398);ctx.fillText("White coat/hat/mask　Don't forget",1130,432);
  });
  const classBoardMesh=new THREE.Mesh(new THREE.PlaneGeometry(4.2,1.56),new THREE.MeshStandardMaterial({map:classBoard,roughness:.9}));
  classBoardMesh.position.set(W.minX+.06,1.95,.6);classBoardMesh.rotation.y=Math.PI/2;classBoardMesh.name='Class board';room.add(classBoardMesh);
@@ -320,7 +332,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
  for(let i=0;i<10;i++)cyl(.06,.07,[W.minX+.18,1.51+(i%2)*.07,-2.6+Math.floor(i/2)*.16],mat(0xf3e6b8,.4),room,12);
  for(let i=0;i<8;i++)cyl(.04,.09,[W.minX+.18,1.91,-3.2+i*.13],mat([0xe25d5d,0x4f8fd0,0xf0c64a,0x5cb86b][i%4],.45),room,10);
  for(let i=0;i<4;i++)cyl(.1,.09,[W.minX+.18,2.31,-3.1+i*.28],mat(0xcfd2cf,.3,{metalness:.6}),room,14);
- const recipe=canvasTexture(300,420,(ctx,w,h)=>{ctx.fillStyle='#fffaf0';ctx.fillRect(0,0,w,h);ctx.fillStyle='#b3382c';ctx.font=`bold 30px ${HAND}`;ctx.textAlign='center';ctx.fillText('サーターアンダギー',w/2,50);ctx.fillStyle='#222';ctx.font=`20px ${HAND}`;ctx.textAlign='left';['たまご 3こ','さとう 150g','こむぎこ 300g','ベーキングパウダー 小さじ1','','170度の油で','ころころ　10分'].forEach((l,i)=>ctx.fillText(l,24,110+i*40));});
+ const recipe=canvasTexture(300,420,(ctx,w,h)=>{ctx.fillStyle='#fffaf0';ctx.fillRect(0,0,w,h);ctx.fillStyle='#b3382c';ctx.font=`bold 30px ${HAND}`;ctx.textAlign='center';ctx.fillText("Sata Andagi",w/2,50);ctx.fillStyle='#222';ctx.font=`20px ${HAND}`;ctx.textAlign='left';["Egg 3pieces","Sato 150g","Komugiko 300g","Baking powder teaspoon1",'',"170With degree of oil","Rolling around　10min"].forEach((l,i)=>ctx.fillText(l,24,110+i*40));});
  const recipeMesh=new THREE.Mesh(new THREE.PlaneGeometry(.3,.42),new THREE.MeshStandardMaterial({map:recipe}));recipeMesh.position.set(W.minX+.02,1.2,-2.7);recipeMesh.rotation.y=Math.PI/2;room.add(recipeMesh);
  rect(P.x,pz,.66,pl+.05,1);
 
@@ -363,7 +375,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   const unitData={unit,chair,tray,pos:new THREE.Vector3(),rot:0,target:null,solid:rect(0,0,.9,.66,.8)};
   units.push(unitData);return unitData;
  }
- for(let i=0;i<12;i++)buildUnit(i);
+ for(let i=0;i<CLASS_SIZE;i++)buildUnit(i);
  function setTray(u,menu,i){
   u.tray.clear();
   const add=(m,geo,pos)=>{const mesh=new THREE.Mesh(geo,m);mesh.position.set(...pos);u.tray.add(mesh);return mesh;};
@@ -405,7 +417,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
  broom.visible=false;
 
  // A spare desk by the window, for a visitor: Kinjō's brother moved to Naha in July.
- const spare=buildUnit(12);spare.target={x:-1.9,z:-2.85,rot:0,up:false};spare.pos.set(-1.9,0,-2.85);
+ const spare=buildUnit(CLASS_SIZE);spare.target={x:-1.9,z:-2.85,rot:0,up:false};spare.pos.set(-1.9,0,-2.85);
  const spareSeat=anchor([-2.3,.9,-2.85],'Sit at the spare desk',()=>action('seat','Spare desk','The empty desk by the window. Somebody has left a pencil in the groove and a folded paper crane in the drawer.'));
  spareSeat.userData.seat={position:[-2.35,0,-2.85],stand:[-2.9,0,-2.3],eyeY:1.05,yaw:-Math.PI/2,pitch:-.1};
 
@@ -423,33 +435,33 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   const c=boardTex.userData.canvas,ctx=c.getContext('2d'),w=c.width,h=c.height;
   ctx.fillStyle='#2f4a3c';ctx.fillRect(0,0,w,h);
   for(let i=0;i<260;i++){ctx.fillStyle=`rgba(240,240,230,${Math.random()*.05})`;ctx.fillRect(Math.random()*w,Math.random()*h,40+Math.random()*120,6+Math.random()*14);}
-  const chalk=(t,x,y,size,col='rgba(244,242,232,.92)',align='left')=>{ctx.fillStyle=col;ctx.font=`bold ${size}px ${HAND}`;ctx.textAlign=align;ctx.fillText(t,x,y);};
-  const d=cal.date,wd='日月火水木金土'[d.getDay()];
-  chalk(`${d.getMonth()+1}月${d.getDate()}日（${wd}）`,w-40,60,40,undefined,'right');
-  chalk('日直',w-120,130,32,'rgba(240,214,90,.95)','right');chalk('知念・玉城',w-40,172,32,undefined,'right');
+  const chalk=(t,x,y,size,col='rgba(244,242,232,.92)',align='left')=>{ctx.fillStyle=col;ctx.font=`bold ${size}px ${HAND}`;ctx.textAlign=align;ctx.fillText(t,x,y,align==='right'?x-30:w-x-30);};
+  const d=cal.date,wd=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+  chalk(`${d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} (${wd})`,w-40,60,40,undefined,'right');
+  chalk("Day shift",w-120,130,32,'rgba(240,214,90,.95)','right');chalk("Tamaki/Nakamura",w-40,172,32,undefined,'right');
   const menu=menuForWeekday(d.getDay());
   if(phase==='lesson'||phase==='morning'){
-   chalk('算数　分数のわり算',60,70,48,'rgba(240,214,90,.95)');
-   chalk('3/4 ÷ 2/5 = 3/4 × 5/2 = 15/8',80,160,56);chalk('わる数を ひっくり返して かける',80,236,40,'rgba(231,154,165,.95)');
+   chalk("Arithmetic　Division of fractions",60,70,48,'rgba(240,214,90,.95)');
+   chalk('3/4 ÷ 2/5 = 3/4 × 5/2 = 15/8',80,160,56);chalk("Invert the divisor, then multiply",80,236,40,'rgba(231,154,165,.95)');
    ctx.strokeStyle='rgba(244,242,232,.9)';ctx.lineWidth=4;ctx.beginPath();ctx.arc(900,210,70,0,Math.PI*2);ctx.stroke();
    for(let k=0;k<4;k++){ctx.beginPath();ctx.moveTo(900,210);ctx.lineTo(900+Math.cos(k*Math.PI/2)*70,210+Math.sin(k*Math.PI/2)*70);ctx.stroke();}
    ctx.fillStyle='rgba(240,214,90,.35)';ctx.beginPath();ctx.moveTo(900,210);ctx.arc(900,210,70,0,Math.PI*1.5);ctx.fill();
   }else if(phase==='serving'||phase==='lunch'){
-   chalk('きょうの きゅうしょく',60,70,48,'rgba(240,214,90,.95)');
+   chalk("Today's Kyushoku",60,70,48,'rgba(240,214,90,.95)');
    (menu?.jp||[]).forEach((t,i)=>chalk('・'+t,90,140+i*52,44));
-   chalk('のこさず たべよう！',700,300,44,'rgba(231,154,165,.95)');
+   chalk("Nokosazzu Let's eat!",700,300,44,'rgba(231,154,165,.95)');
   }else if(phase==='cleaning'){
-   chalk('そうじの時間',60,70,48,'rgba(240,214,90,.95)');chalk('つくえを うしろへ　ほうき・ぞうきん',80,160,44);
+   chalk("Cleaning time",60,70,48,'rgba(240,214,90,.95)');chalk("Make something Behind　Broom/dishcloth",80,160,44);
   }else if(phase==='lesson-pm'){
-   chalk('社会　沖縄の漁業',60,70,48,'rgba(240,214,90,.95)');
-   ['・もずく　（養殖）','・マグロ　はえなわ','・セーイカ（ソデイカ）','・漁協 ＝ みんなで売る'].forEach((t,i)=>chalk(t,80,140+i*52,42));
+   chalk("Society　Fishing industry in Okinawa",60,70,48,'rgba(240,214,90,.95)');
+   ["・Mozuku　（Aquaculture）","・Tuna　Longline","・Seika（Sodeika）","・Fisheries cooperative ＝ Sell together"].forEach((t,i)=>chalk(t,80,140+i*52,42));
    ctx.strokeStyle='rgba(244,242,232,.9)';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(880,240,90,34,0,0,Math.PI*2);ctx.moveTo(970,240);ctx.lineTo(1010,212);ctx.lineTo(1010,268);ctx.closePath();ctx.stroke();
   }else if(phase==='club'||phase==='after'){
-   chalk('あしたの もちもの',60,70,44,'rgba(240,214,90,.95)');chalk('・水着（プール）　・絵の具',80,140,40);
-   chalk('家庭科クラブ 3:40〜　サーターアンダギー',80,230,40,'rgba(231,154,165,.95)');
+   chalk("Tomorrow Mochi",60,70,44,'rgba(240,214,90,.95)');chalk("・Swimsuit（Pool）　・Paint",80,140,40);
+   chalk("Home economics club 3:40〜　Sata Andagi",80,230,40,'rgba(231,154,165,.95)');
   }else if(phase==='weekend'){
-   chalk('月曜日　朝の会 8:25',60,90,46);chalk('台風の日は　連絡網で',80,180,40,'rgba(231,154,165,.95)');
-  }else{chalk('さようなら',60,120,56,'rgba(244,242,232,.6)');}
+   chalk("Monday　Morning meeting 8:25",60,90,46);chalk("On a typhoon day　By contact network",80,180,40,'rgba(231,154,165,.95)');
+  }else{chalk("Goodbye",60,120,56,'rgba(244,242,232,.6)');}
   boardTex.needsUpdate=true;
  }
 
@@ -462,7 +474,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   const lunch=p==='serving'||p==='lunch',clean=p==='cleaning';
   const spots=lunch?HAN:clean?STACK:ROWS;
   const chairsUp=clean||p==='after'||p==='closed'||p==='weekend';
-  units.slice(0,12).forEach((u,i)=>placeUnit(u,spots[i],chairsUp));
+  units.slice(0,CLASS_SIZE).forEach((u,i)=>placeUnit(u,spots[i],chairsUp));
  }
  function showPupils(p,cal){
   for(const k of kids)for(const f of [k.seated,k.standing,k.smockSeated,k.smockStanding])if(f){f.visible=false;delete f.userData.unit;}
@@ -502,8 +514,8 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   serving.visible=lunch;servingSolid.x=lunch?2.85:1e6;
   const [tx,tz]=lunch?TROLLEY_LUNCH:TROLLEY_HOME;trolley.position.set(tx,0,tz);trolley.rotation.y=lunch?0:Math.PI/2;
   trolleySolid.x=tx;trolleySolid.z=tz;trolleySolid.w=lunch?.95:.55;trolleySolid.d=lunch?.55:.95;
-  units.slice(0,12).forEach((u,i)=>{u.tray.visible=false;if(lunch&&menu){setTray(u,menu,i);u.tray.visible=p==='lunch'||i%3!==0;}});
-  if(instant)units.slice(0,12).forEach(u=>{const t=u.target;u.pos.set(t.x,0,t.z);u.rot=t.rot;apply(u,1);});
+  units.slice(0,CLASS_SIZE).forEach((u,i)=>{u.tray.visible=false;if(lunch&&menu){setTray(u,menu,i);u.tray.visible=p==='lunch'||i%3!==0;}});
+  if(instant)units.slice(0,CLASS_SIZE).forEach(u=>{const t=u.target;u.pos.set(t.x,0,t.z);u.rot=t.rot;apply(u,1);});
   drawBoard(p,cal);
  }
  function apply(u,chairUpAmount){
@@ -518,21 +530,21 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
  const kyushokuAnchor=anchor([2.4,1.1,-.3],'Kyūshoku',()=>action('kyushoku',phase,menu));
  anchor([3.9,1.3,-.2],'Read the blackboard',()=>action('read','Blackboard',boardText()));
  anchor([W.minX+.4,1.6,.6],'Read the class board',()=>action('read','Class board',
-  'Over the cubbies: the class goal, "Everyone friendly, cheerful, and say hello," eight sheets of calligraphy -- 海 sea, 夢 dream, 友 friend, 空 sky -- each with a red circle from the teacher. Kenta\'s essay about rowing in the Hāri boat race with his grandfather. The paper wheel of cleaning duties. Summer projects: reef creatures, how to make sata andagi, a typhoon diary. This week\'s lunch squad: Kinjō, Arakaki, Taira -- "don\'t forget your smock, cap and mask."'));
+  "Over the cubbies: the class goal, \"Everyone friendly, cheerful, and say hello,\" eight sheets of calligraphy -- Sea sea, Dream dream, Friend friend, Sky sky -- each with a red circle from the teacher. Kenta's essay about rowing in the Hāri boat race with his grandfather. The paper wheel of cleaning duties. Summer projects: reef creatures, how to make sata andagi, a typhoon diary. This week's lunch squad: Kinjō, Arakaki, Taira -- \"don't forget your smock, cap and mask.\""));
  anchor([W.minX+.9,1.1,-2.3],'Cook in the class pantry',()=>action('school-pantry',phase));
  anchor([3.3,1.1,-2.4],'Talk to '+TEACHER_EN,()=>action('school-teacher',phase));
- anchor([3.3,1.9,-2.6],'Watch the class TV',()=>{tvUntil=performance.now()+45000;drawTV(true);action('inspect','Classroom TV','教育テレビ at ten past two: "ふしぎの海", a programme about the coral reef, taped on the VHS deck last week. Everybody knows the part with the octopus.');});
+ anchor([3.3,1.9,-2.6],'Watch the class TV',()=>{tvUntil=performance.now()+45000;drawTV(true);action('inspect','Classroom TV',"Educational TV at ten past two: \"Mysterious Sea\", a programme about the coral reef, taped on the VHS deck last week. Everybody knows the part with the octopus.");});
  anchor([0,1.3,-3.1],'Look out to sea',()=>action('inspect','Classroom window','Over the sill, the sunshade, then the seawall and the tetrapods and the reef going from green to deep blue. The breeze comes in off it and moves the curtains. In June the whole class watched a waterspout from here.'));
- anchor([-3.35,1.1,3.3],'Go back down to the yard',exit);
+ anchor([-3.35,1.1,3.3],'Go out to the forecourt',exit);
 
  function boardText(){
   const m=menu;
-  if(phase==='serving'||phase==='lunch')return 'In chalk: today\'s kyūshoku -- '+(m?.jp.join('、')||'')+'. Underneath, in pink: のこさず たべよう! -- eat every bit.';
+  if(phase==='serving'||phase==='lunch')return 'In chalk: today\'s kyūshoku -- '+(m?.jp.join('、')||'')+". Underneath, in pink: Nokosazzu Let's eat! -- eat every bit.";
   if(phase==='lesson'||phase==='morning')return 'Maths: dividing fractions. 3/4 ÷ 2/5 = 3/4 × 5/2 = 15/8, "turn the divisor over and multiply", and a pie with three quarters shaded in yellow. Duty monitors: Chinen and Tamaki.';
   if(phase==='lesson-pm')return 'Social studies: fishing in Okinawa. Mozuku farming, tuna long-lines, diamond squid, and "the co-op sells together". A chalk fish with a fierce eye.';
   if(phase==='cleaning')return 'Cleaning time: desks to the back, brooms and rags.';
   if(phase==='club'||phase==='after')return 'For tomorrow: swimsuit for the pool, paints. Home-ec club from 3:40 -- sata andagi.';
-  return 'さようなら, in the corner, half rubbed out.';
+  return "Goodbye, in the corner, half rubbed out.";
  }
  function drawTV(on){
   const c=screenTex.userData.canvas,ctx=c.getContext('2d');
@@ -540,7 +552,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   const g=ctx.createLinearGradient(0,0,0,c.height);g.addColorStop(0,'#1b7fa8');g.addColorStop(1,'#0c3b5a');ctx.fillStyle=g;ctx.fillRect(0,0,c.width,c.height);
   for(let i=0;i<14;i++){ctx.fillStyle=['#f2c14e','#f07b3f','#5bd0c3','#f7f3e8'][i%4];ctx.beginPath();ctx.ellipse(30+i*22,70+(i*37)%130,12,6,0,0,Math.PI*2);ctx.fill();}
   ctx.fillStyle='#e07aa0';for(let i=0;i<8;i++){ctx.beginPath();ctx.arc(20+i*40,c.height-10,24,Math.PI,0);ctx.fill();}
-  ctx.fillStyle='rgba(255,255,255,.92)';ctx.font=`bold 26px ${GOTHIC}`;ctx.fillText('ふしぎの海',14,32);
+  ctx.fillStyle='rgba(255,255,255,.92)';ctx.font=`bold 26px ${GOTHIC}`;ctx.fillText("Mysterious Sea",14,32);
   screenTex.needsUpdate=true;
  }
  drawTV(false);
@@ -551,7 +563,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   if(p!==phase)setPhase(p,cal,phase===null);
   if(kyushokuAnchor.userData.hit)kyushokuAnchor.userData.hit.label=p==='serving'?'Line up for kyūshoku':p==='lunch'?'Join the class for kyūshoku':'Kyūshoku trolley';
   // Desks slide to where the phase wants them.
-  for(const u of units.slice(0,12)){
+  for(const u of units.slice(0,CLASS_SIZE)){
    const t=u.target;if(!t)continue;
    const k=1-Math.exp(-dt*2.2);u.pos.x+=(t.x-u.pos.x)*k;u.pos.z+=(t.z-u.pos.z)*k;
    let dr=Math.atan2(Math.sin(t.rot-u.rot),Math.cos(t.rot-u.rot));u.rot+=dr*k;apply(u);

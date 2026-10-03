@@ -1,5 +1,7 @@
 # Session purpose — Johansson Town v1
 
+> **Superseded in part (October 2026).** The town is set in **1997**, not 1988, and the look, building kit and avatar rules are now set by `AMPLIFY-AUDIT.md`. Where this note disagrees, the audit wins.
+
 Approved design lock for code bots. Branch/PR only — never push main.
 
 ## Why a visitor stays
