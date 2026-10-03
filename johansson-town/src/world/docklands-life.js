@@ -8,7 +8,7 @@ export function buildDocklandsLife(world,{register,onAction}={}){
  const mats=new Map(),mat=c=>{if(!mats.has(c))mats.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.88}));return mats.get(c);};
  const box=(name,size,pos,c,parent=group,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.name=name;m.position.set(...pos);parent.add(m);if(solid)world.colliders.push({id:name,x:pos[0],z:pos[2],w:size[0],d:size[2],height:pos[1]+size[1]/2});return m;};
  box('Western cargo quay paving',[D.maxX-D.minX,.16,D.maxZ-D.minZ],[(D.minX+D.maxX)/2,-.08,(D.minZ+D.maxZ)/2],0x909386);
- for(const [x,z,c] of [[-34.4,-47.9,0x487377]]){
+ for(const [x,z,c] of [[-33.5,-47.9,0x487377]]){
   box('Weathered cargo container',[4.6,2.15,2.4],[x,1.08,z],c,group,true);
   for(let i=0;i<14;i++)box('Container corrugation',[.065,1.94,.05],[x-2.15+i*.33,1.08,z+1.23],0x596b64);
   for(const s of [-1,1])box('Container locking bar',[.045,1.9,.06],[x+s*.9,1.05,z+1.27],0xb0ac91);

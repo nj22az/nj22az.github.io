@@ -7,12 +7,13 @@ export function addDocklandsDetail(world,group,{register,onAction}={}){
  const cylinder=(r,h,p,c)=>{const g=new THREE.CylinderGeometry(r,r,h,12);g.translate(...p);put(g,c);};
  const solid=(id,x,z,w,d,height)=>world.colliders.push({id,x,z,w,d,height});
  // Stacked cargo uses the existing container footprint, preserving the walking lane.
- box([4.6,2.15,2.4],[-34.4,3.24,-47.9],0x405c69);
+ box([4.6,2.15,2.4],[-33.5,3.24,-47.9],0x405c69);
  for(const y of [1.08,3.24])for(let i=0;i<20;i++){
-  box([.045,1.98,.045],[-36.58+i*.228,y,-46.67],y<2?0x536b69:0x526f7a);
-  const ry=.18+(i%5)*.29;box([.07,.20+(i%3)*.09,.008],[-36.53+i*.226,y-.65+ry,-46.64],0x8d6041);
+  box([.045,1.98,.045],[-35.68+i*.228,y,-46.67],y<2?0x536b69:0x526f7a);
+  const ry=.18+(i%5)*.29;box([.07,.20+(i%3)*.09,.008],[-35.63+i*.226,y-.65+ry,-46.64],0x8d6041);
  }
- solid('stacked-island-container',-34.4,-47.9,4.6,2.4,4.32);
+ // Moved east off the root of the timber pier, so the way onto it (and to Mr Fujita's shed) is open.
+ solid('stacked-island-container',-33.5,-47.9,4.6,2.4,4.32);
  for(const [x,z] of [[-37.7,-45.3],[-37.1,-44.8],[-36.6,-45.3]]){
   cylinder(.26,.82,[x,.41,z],0x657779);for(const y of [.1,.72])cylinder(.275,.025,[x,y,z],0x424f50);
   for(let k=0;k<4;k++)box([.12,.15,.016],[x-.15+k*.09,.19+k%2*.33,z+.26],0x986341);
@@ -32,6 +33,6 @@ export function addDocklandsDetail(world,group,{register,onAction}={}){
  box([.3,.18,.16],[-21.45,1.00,-34.5],0x3d4a44);cylinder(.045,.09,[-21.12,.98,-34.3],0xe8e4ce);
  for(const [c,list] of geos){const m=new THREE.Mesh(mergeGeometries(list,false),new THREE.MeshStandardMaterial({color:c,roughness:.94}));m.name='Weathered dock finish';m.receiveShadow=true;group.add(m);list.forEach(g=>g.dispose());}
  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle='#cbbd92';ctx.fillRect(0,0,512,256);ctx.fillStyle='#354e54';ctx.font='bold 48px monospace';ctx.fillText('KITANO CARGO',30,70);ctx.font='25px monospace';ctx.fillText('JT-047 · ISLAND SUPPLIES',30,120);ctx.fillText('RICE / MAIL / REPAIR PARTS',30,160);ctx.fillText('RETURN EMPTY TO WEST QUAY',30,210);
- const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;const label=new THREE.Mesh(new THREE.PlaneGeometry(1.6,.8),new THREE.MeshStandardMaterial({map:t,roughness:1}));label.position.set(-34.4,2.65,-46.65);group.add(label);
+ const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;const label=new THREE.Mesh(new THREE.PlaneGeometry(1.6,.8),new THREE.MeshStandardMaterial({map:t,roughness:1}));label.position.set(-33.5,2.65,-46.65);group.add(label);
  const a=new THREE.Object3D();a.position.set(-36.7,1,-44.7);group.add(a);register?.(a,'Inspect the cargo staging bay',()=>onAction?.('inspect','West quay cargo staging','The containers carry rice, shop stock, letters and electrical spares. Empty drums and pallets wait beside the marked pedestrian route. Riku checks the load; Emi Kado keeps the manifest and the evening dispatch copies.'));
 }

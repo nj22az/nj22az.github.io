@@ -98,9 +98,14 @@ function buildNishiGround(kit,solid){
  kit.block(S.x-S.thickness/2,S.x+S.thickness/2,-.7,S.height,NISHI.minZ,NISHI.maxZ+.4,0xb9b4a6);
  kit.block(S.x-S.thickness/2-.04,S.x+S.thickness/2+.04,S.height,S.height+.08,NISHI.minZ,NISHI.maxZ+.4,0xa9a497);
  solid({id:'seawall',x:S.x,z:(NISHI.minZ+NISHI.maxZ)/2,w:S.thickness+.1,d:NISHI.maxZ-NISHI.minZ+.4,height:S.height});
- kit.block(Q.minX-.6,Q.maxX,-.7,GROUND_LAYER.apron,Q.minZ-.45,Q.minZ,0xa9a497);
- kit.block(Q.minX-.6,Q.maxX,GROUND_LAYER.apron,GROUND_LAYER.apron+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);
- solid({id:'west-quay-edge',x:(Q.minX+Q.maxX)/2,z:Q.minZ-.25,w:Q.maxX-Q.minX+.6,d:.3,height:.4});
+ // The quay edge, its yellow kerb and its solid edge, with a gap where the timber pier
+ // (port-shed.js SHED_PIER) runs out from it, so you can walk onto the pier.
+ const PIER_GAP=[-38.4,-33.6];
+ for(const [x0,x1] of [[Q.minX-.6,PIER_GAP[0]],[PIER_GAP[1],Q.maxX]]){
+  kit.block(x0,x1,-.7,GROUND_LAYER.apron,Q.minZ-.45,Q.minZ,0xa9a497);
+  kit.block(x0,x1,GROUND_LAYER.apron,GROUND_LAYER.apron+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);
+  solid({id:'west-quay-edge',x:(x0+x1)/2,z:Q.minZ-.25,w:x1-x0,d:.3,height:.4});
+ }
  for(let x=Q.minX+3;x<Q.maxX-1;x+=6){kit.cyl(.16,.2,.42,x,.24,Q.minZ+.35,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,Q.minZ+.35,0x3a3f42,{segments:10});solid({id:'bollard',x,z:Q.minZ+.35,w:.45,d:.45,height:.5});}
  // At the north end the quarter meets the headland: a stone bank with pandanus on it.
  kit.block(NISHI.minX,NISHI.maxX,0,.9,NISHI.maxZ,NISHI.maxZ+.6,0xd3cab0,'coral');
