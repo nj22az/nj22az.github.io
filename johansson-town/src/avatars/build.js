@@ -43,15 +43,16 @@ export function measure(recipe){
  const r=normalizeRecipe(recipe);
  const stage=STAGES[r.age]||STAGES.adult;
  const H=stage.base+r.body.height*stage.span,k=H/1.6,build=r.body.build;
- const profile=headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head,headSX=profile.width,headSY=profile.height;
+ const profile=headProfile(r.head),Rh=(.19+r.head.size*.055)*k*stage.head*(r.body.proportion==='rounded'?1.30:1),headSX=profile.width,headSY=profile.height;
+ const rounded=r.body.proportion==='rounded';
  const neck=.055*k,body=H-Rh*2*headSY-neck;
- const leg=body*.47,torso=body-leg;
+ const leg=body*(rounded?.37:.47),torso=body-leg;
  const foot=.07*k,thigh=(leg-foot)*.5,shin=thigh;
  const legR=(.058+build*.024)*k,armR=(.045+build*.016)*k;
  const feminine=r.body.silhouette==='feminine',masculine=r.body.silhouette==='masculine';
- const width=(.3+build*.15)*k*(feminine?.94:masculine?1.08:1),depth=(.2+build*.09)*k;
+ const width=(.3+build*.15)*k*(rounded?1.20:1)*(feminine?.94:masculine?1.08:1),depth=(.2+build*.09)*k*(rounded?1.15:1);
  const hips=width*(feminine?1.13:masculine?.9:1),waistRatio=feminine?.79:masculine?.98:.96;
- const upper=.22*k,fore=.2*k,hand=.056*k;
+ const upper=(rounded?.18:.22)*k,fore=(rounded?.16:.2)*k,hand=.056*k;
  const hipY=leg,chestY=hipY+torso*.5,neckY=hipY+torso,headY=neckY+neck;
  return {H,k,Rh,headSX,headSY,profile,neck,torso,leg,foot,thigh,shin,legR,armR,width,hips,waistRatio,depth,upper,fore,hand,hipY,chestY,neckY,headY,
   // The arm hangs from just inside the torso's edge, below its top, so the shoulder
@@ -75,6 +76,7 @@ const PARENT={...SPRING_PARENT,hips:'root',spine:'hips',chest:'spine',neck:'ches
 
 const tmpColour=new THREE.Color();
 /** The torso lathe's radius at a fraction of its height. */
+/** The camp collar from Blender (tools/blender/kariyushi_collar.py), body-relative. */
 function latheRadius(prof,t){for(let i=1;i<prof.length;i++){const [r0,y0]=prof[i-1],[r1,y1]=prof[i];if(t<=y1)return r0+(r1-r0)*((t-y0)/((y1-y0)||1));}return prof.at(-1)[0];}
 /**
  * A part: geometry in model space, painted, bound to one bone -- or, for a limb, shared
@@ -111,6 +113,8 @@ function part(list,geometry,bone,hex,matrix,uvAt=null){
  g.setAttribute('color',new THREE.BufferAttribute(colours,3));
  g.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(index,4));
  g.setAttribute('skinWeight',new THREE.BufferAttribute(weight,4));
+ // How much ink outline this part carries (1 everywhere unless a part says otherwise).
+ g.setAttribute('ink',new THREE.BufferAttribute(new Float32Array(n).fill(1),1));
  list.push(g);
  if(geometry!==g&&!geometry.userData?.keep)geometry.dispose?.();
  return g;
@@ -464,7 +468,8 @@ function addBody(list,recipe,m,swim=false){
  };
  // The shirt's details are painted, not modelled (garment.js): the torso carries the
  // garment texture's UVs, the cloth stays its vertex colour underneath.
- part(list,lathe,'chest',torsoColour,M(0,hipY,0,0,0,0,W/2,m.torso,D/2),swim?null:p=>torsoUV(p,m));
+ const torsoSkin=p=>{const chest=THREE.MathUtils.smoothstep(p.y,hipY+m.torso*.15,hipY+m.torso*.55);return [['hips',1-chest],['chest',chest]];};
+ part(list,lathe,torsoSkin,torsoColour,M(0,hipY,0,0,0,0,W/2,m.torso,D/2),swim?null:p=>torsoUV(p,m));
  if(tank){
   // The vest: a thin shell over the body from the waist to straight across the chest,
   // so its edge is a clean line, and two straps that follow the shoulders over the top.
@@ -483,7 +488,20 @@ function addBody(list,recipe,m,swim=false){
  if(swim&&wearsSwimTop(recipe))
   part(list,new THREE.CylinderGeometry(W*.52,W*.52,m.torso*.2,16,1,true),'chest',recipe.swim.colour,M(0,hipY+m.torso*.66,0,0,0,0,1,1,D/W));
  // Neck.
- tube(list,[0,m.neckY-.02,0],[0,m.headY+.01,0],m.armR*1.2,'neck',skin,8);
+ tube(list,[0,m.neckY-.02,0],[0,m.headY+.01,0],m.armR*1.08,'neck',skin,8);
+ // A kariyushi's open camp collar is modelled, not painted: a stand behind the neck that
+ // rolls into the fall over the shoulders and folds back down the front to the V. It is
+ // a real edge in silhouette and catches the light, so it reads as a collar, not a bib.
+ // The collar's stand is modelled: a band of the shirt round the back and sides of the
+ // neck, open at the front, rolling a little outward at the top, so the collar wraps the
+ // neck from every side. Its leaves and lapels on the front are drawn (garment.js).
+ if(!swim&&o.top==='kariyushi'){
+  const ri=m.armR*1.08+.004*m.k,t=.007*m.k,h=.045*m.k,roll=.012*m.k,open=.95;
+  const band=new THREE.LatheGeometry([[ri,0],[ri+t,0],[ri+t+roll,h],[ri+roll*.6,h]].map(([r,y])=>new THREE.Vector2(r,y)).concat([new THREE.Vector2(ri,0)]),24,open,Math.PI*2-open*2);
+  // It runs down to nothing at the front, where it turns into the drawn leaves.
+  const P=band.attributes.position;for(let i=0;i<P.count;i++){const a=Math.abs(Math.atan2(P.getX(i),P.getZ(i)));P.setY(i,P.getY(i)*THREE.MathUtils.smoothstep(a,open,open+.9));}band.computeVertexNormals();
+  part(list,band,'chest',top,M(0,m.neckY-.012*m.k,0));
+ }
  // A hood lies on the back; everything else on the front of a top is painted.
  if(!swim&&o.top==='hoodie')part(list,new THREE.SphereGeometry(m.width*.35,16,12,0,Math.PI*2,0,Math.PI*.75),'chest',top,M(0,m.neckY-.045,-D*.32,.9,0,0,1,.7,.55));
  // Original festival costumes are attached to the chest; limbs keep their normal rig.
@@ -531,14 +549,14 @@ function addBody(list,recipe,m,swim=false){
   // it stretches over a raised arm rather than coming apart from the body.
   const capShare=p=>{const w=THREE.MathUtils.smoothstep(Math.abs(p.x),m.shoulderX-m.armR*1.1,m.shoulderX+m.armR*.3);return [['chest',1-w],['shoulder'+s,w]];};
   // Flattened on top so the shoulder slopes from the neck rather than standing up in a pad.
-  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||o.top==='sundress'?skin:top,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.78,Math.min(1.1,D/W*1.6)));
+  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||o.top==='sundress'?skin:top,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.62,Math.min(1.1,D/W*1.6)));
   // A short sleeve: one closed, rounded sleeve over the top of the arm, starting inside the
   // shoulder cap and lent to the chest at its top, so the shirt runs from the neck to the
   // hem without a seam. A kariyushi's is a little roomier and boxier, as real ones are.
   // Its print and its hem band are painted (garment.js), not separate pieces.
   if(!swim&&!longSleeve&&!tank&&o.top!=='sundress'){
    const roomy=o.top==='kariyushi',a0=[sh[0]-sx*m.armR*.05,sh[1]+m.armR*.08,0],a1=[sh[0]+sx*.008,sh[1]-m.upper*(roomy?.52:.56),0];
-   limb(list,a0,a1,m.armR*(roomy?1.24:1.16),m.armR*(roomy?1.3:1.2),top,{...arm,joints:[],root:['chest',.55,.3],uvAt:p=>sleeveUV(p,a0,a1,sx)});
+   limb(list,a0,a1,m.armR*(roomy?1.20:1.16),m.armR*(roomy?1.16:1.12),top,{...arm,joints:[],root:['chest',.55,.3],uvAt:p=>sleeveUV(p,a0,a1,sx)});
   }
   // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
   // so a wave or a point reads as a hand rather than a ball on a stick.
@@ -615,8 +633,9 @@ export function outlineMaterial({skinned=true,colour=null,width=OUTLINE_WIDTH}={
  material.onBeforeCompile=shader=>{
   shader.uniforms.uOutline=uniform;
   shader.vertexShader='uniform float uOutline;\n'+shader.vertexShader.replace('#include <project_vertex>',
-   (skinned?'vec3 outlineN = normalize( objectNormal );\n':'vec3 outlineN = normalize( position );\n')+
+   (skinned?'vec3 outlineN = normalize( objectNormal ) * ink;\n':'vec3 outlineN = normalize( position );\n')+
    'transformed += outlineN * uOutline;\n#include <project_vertex>');
+  if(skinned)shader.vertexShader='attribute float ink;\n'+shader.vertexShader;
   if(colour==null)shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb *= vec3( 0.32, 0.27, 0.27 );');
  };
  material.customProgramCacheKey=()=>'shimanchu-outline-'+key;

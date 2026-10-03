@@ -115,6 +115,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "On the fridge",
+    "organisation": "Town Services",
+    "text": "No bath in this house: Umi-no-yu after the shop shuts, ¥300 with a towel. Rubbish: burnables Tuesday and Friday, cans on Wednesday to the box at Sakura. Rent is paid to Front-Row, ¥18,000 a month.",
+    "source": "notice:On the fridge"
+  },
+  {
+    "type": "Notice",
     "title": "Minato fuel depot · Port Town Fuel Base",
     "organisation": "Town Services",
     "text": "Hazardous materials · No open flames allowed. Diesel oil (Light oil), 120 kilolitres. Filled from the tanker at the oil jetty every third day; drawn by the town truck for the power house at the town hall. In a typhoon the valves are closed and the jetty is out of bounds.",

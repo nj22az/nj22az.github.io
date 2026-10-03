@@ -4,7 +4,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,DEFAULT_RECIPE,PARTS} from '../src/avatars/recipe.js';
 import {CAST_RECIPES,NEIGHBOUR_RECIPES,recipeFor} from '../src/avatars/cast.js';
-import {buildAvatar,BONES} from '../src/avatars/build.js';
+import {buildAvatar,BONES,measure} from '../src/avatars/build.js';
 import {createAvatarAnimator} from '../src/avatars/animate.js';
 import {createAvatarActor,updateAvatarActor,createAvatarJohansson,playerRecipe,savePlayerRecipe,COUNTER_STEP,PLAYER_RECIPE_KEY} from '../src/avatars/actors.js';
 import {createLocalCharacters} from '../src/people/models.js?snappy=1';
@@ -98,4 +98,16 @@ test('the player body offers everything the game asks of Johansson, and takes a 
  const storage=new Map(),store={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)};
  assert.equal(playerRecipe(store).hair.style,'horseshoe','Johansson until the creator saves someone else');
  savePlayerRecipe(CAST_RECIPES.Thuan,store);assert.ok(storage.get(PLAYER_RECIPE_KEY));assert.equal(playerRecipe(store).hair.style,'braids');
+});
+
+
+test('the front waistband stays anchored to the hips when the chest leans for a pose',()=>{
+ installDOM();const avatar=buildAvatar(CAST_RECIPES.Johansson),m=measure(CAST_RECIPES.Johansson);
+ const p=avatar.body.geometry.attributes.position,front=[];
+ for(let i=0;i<p.count;i++)if(Math.abs(p.getX(i))<.025&&p.getZ(i)>.04&&p.getY(i)>m.hipY&&p.getY(i)<m.hipY+m.torso*.14)front.push(i);
+ assert.ok(front.length>10,'There must be a visible front waistband to check');
+ avatar.root.updateMatrixWorld(true);const before=front.map(i=>avatar.body.getVertexPosition(i,new THREE.Vector3()));
+ avatar.bones.chest.rotation.x=.35;avatar.root.updateMatrixWorld(true);
+ for(let j=0;j<front.length;j++)assert.ok(avatar.body.getVertexPosition(front[j],new THREE.Vector3()).distanceTo(before[j])<1e-5,'Clapping or leaning must not push the trousers out in front');
+ avatar.dispose();
 });

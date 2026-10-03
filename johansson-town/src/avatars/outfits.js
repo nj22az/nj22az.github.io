@@ -25,4 +25,4 @@ export const ISLAND_COSTUMES=Object.freeze([
 
 export const DRESS_BOTTOMS=Object.freeze(['skirt','longskirt','pleatedskirt']);
 export function outfitAllowedFor(name,outfit){return name!=='Johansson'||(outfit.top!=='sundress'&&!DRESS_BOTTOMS.includes(outfit.bottom));}
-export function appropriateOutfit(name,outfit){return name==='Johansson'?{...outfit,top:outfit.top==='sundress'?'kariyushi':outfit.top,bottom:DRESS_BOTTOMS.includes(outfit.bottom)?'pants':outfit.bottom}:{...outfit};}
+export function appropriateOutfit(name,outfit){return name==='Johansson'?{...outfit,top:outfit.top==='sundress'?'kariyushi':outfit.top,bottom:DRESS_BOTTOMS.includes(outfit.bottom)?'trousers':outfit.bottom}:{...outfit};}

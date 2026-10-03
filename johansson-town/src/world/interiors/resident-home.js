@@ -6,9 +6,17 @@ import {RESIDENTS} from '../../people/residents.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {HOME_LAYOUT,SHARED_HOME_LAYOUT,homeLayoutFor,sleepHours} from '../../people/home-life.js';
 import {residentPersonality} from '../../people/resident-personalities.js';
+import {YARD_HOMES} from '../yard-homes-layout.js';
+import {buildYardHomeInterior} from './yard-home.js';
+import {buildFamilyHome} from './family-home.js';
 const time=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
-export function buildResidentHome({profile,room,box,reg,collider,action,exit}){
+export function buildResidentHome({site,profile,room,box,reg,collider,action,exit}){
  if(profile.name===TATAMI_HOME_OWNER)return buildTatamiHome({profile,room,box,reg,collider,action,exit});
+ // Shared houses are drawn to the house you walked into (docs/BUILDING-AUDIT.md): the
+ // Front-Row yard staff houses, and Thuan and Nao's house in Kitahama, which is built
+ // like its neighbours.
+ if(site&&YARD_HOMES[site.id])return buildYardHomeInterior({site,room,reg,action,collider});
+ if(site?.plot&&site.homeOwners?.length>1)return buildFamilyHome({room,reg,action,collider,title:site.title,kind:site.houseKind||'concrete',residents:site.homeOwners});
  if(householdFor(profile.name)?.residents.length>1)return buildSharedHome({profile,room,box,reg,collider,action,exit});
  const style=residentPersonality(profile.name),colour=new THREE.Color(style.top),hours=sleepHours(profile);
  const part=(size,pos,c,solid=false)=>{const m=box(size,pos,c,room,false);if(solid)collider(pos[0],pos[2],size[0],size[2],pos[1]+size[1]/2);return m;};
@@ -39,7 +47,11 @@ function buildSharedHome({profile,room,box,reg,collider,action,exit}){
  part([7,2.8,.12],[0,1.4,-3.4],0xe3d8bd);
  part([1.9,.12,.7],[0,.68,1.35],0x98724e,true);
  household.residents.forEach((name,i)=>{
-  const side=i?-1:1,style=residentPersonality(name),p=RESIDENTS.find(p=>p.name===name),routine=homeLayoutFor(name),x=routine.bed[0],hours=sleepHours(p);
+  // The routine may be measured for another room (Thuan's is the Yuri apartment, where
+  // her futon is at x -4.15). In this 7 m room that put the futon outside the wall, so a
+  // bed that would not fit keeps to its own side of this room instead.
+  const side=i?-1:1,style=residentPersonality(name),p=RESIDENTS.find(p=>p.name===name),routine=homeLayoutFor(name),hours=sleepHours(p);
+  const half=(layout.bounds.maxX-layout.bounds.minX)/2,x=Math.abs(routine.bed[0])<=half-.7?routine.bed[0]:-side*2.1;
   const bed=part([1.2,.18,2.15],[x,.36,-1.05],0xe9dfc8,true);bed.name=name+' futon';
   part([1.1,.055,1.62],[x,.48,-.77],style.top);part([.92,.16,.48],[x,.57,-1.57],0xf3e8d2);
   part([.6,.1,.6],[routine.table[0],.36,routine.table[2]],style.top);

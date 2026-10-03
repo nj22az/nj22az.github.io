@@ -17,7 +17,7 @@ import {drawCover,drawBackAd} from './magazine-art.js';
  * are the issues on sale on the town date (magazine-issues.js) and are redrawn when the
  * calendar turns one over. The back of the rack faces the street, so it carries a print.
  */
-export const MAGAZINE_RACK=Object.freeze({x:-4.3,z:3.52,width:1.96,depth:.56,height:1.6});
+export const MAGAZINE_RACK=Object.freeze({x:-4.3,z:3.22,width:1.96,depth:.56,height:1.6});
 
 const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
 const COLS=4,ROWS=4,CW=320,CH=440;

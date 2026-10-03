@@ -27,7 +27,7 @@ export const SUPPLIED_ROOM_LAYOUTS={
       {x:2.91,z:-1.39,w:.43,d:.46,height:.46},
       {x:3.1,z:1.58,w:.6,d:2.72,height:1.87},
       {x:-2.98,z:.17,w:.7,d:2.28,height:2.05},
-      {x:-2.54,z:2.51,w:.61,d:.62,height:1.62},
+      {x:-1.85,z:3.05,w:.61,d:.62,height:1.62},
     ]},
   ramen:RAMEN_LAYOUT,
   'yuri-home':YURI_APARTMENT_LAYOUT,

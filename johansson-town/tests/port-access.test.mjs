@@ -2,7 +2,8 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {circleHitsRect} from '../physics.js';
+import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
+import {createNavigation} from '../src/people/navmesh.js';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 
 test('you can walk from the quay yard onto the pier and into Mr Fujita’s shed',async()=>{
@@ -11,7 +12,15 @@ test('you can walk from the quay yard onto the pier and into Mr Fujita’s shed'
  const {createBusinesses}=await import('../src/world/businesses.js');
  const {PORT_SHED,SHED_PIER}=await import('../src/world/port-shed.js');
  const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
- const blocked=(x,z)=>world.colliders.some(c=>circleHitsRect(x,z,.3,c));
+ const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
+ const nav=createNavigation(blocked);
+ const door=world.warehouse.place.door;
+ const goal={x:PORT_SHED.x-.55,z:PORT_SHED.z+.4};
+ const path=nav.path({x:door[0],z:door[2]},goal);
+ assert.deepEqual(path.at(-1),[goal.x,goal.z],'The shed must be reachable from the warehouse, not just from an isolated pier');
+ for(let i=1;i<path.length;i++)assert.equal(sweepFraction({x:path[i-1][0],z:path[i-1][1]},{x:path[i][0],z:path[i][1]},blocked),1,'Every walking segment is clear');
+ // The full loading frontage, including the old rack position, stays clear.
+ for(let z=-46.7;z<=-38.4;z+=.2)assert.ok(!blocked(-9.5,z),'Clear warehouse frontage at '+z);
  // Onto the pier along its west side, past the cargo on the quay, to the shed's open end.
  const x=SHED_PIER.minX+.9;
  // From the yard, between the oil drums and the container, then out along the pier.

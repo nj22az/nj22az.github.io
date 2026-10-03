@@ -154,10 +154,8 @@ export function createTraffic({obstacles=()=>[]}={}){
    if(allowed<target){target=allowed;blocker=what;}
   };
   for(const o of vehicles){if(o===v||!o.g.visible)continue;consider(o.g.position.x,o.g.position.z,o.width/2,o.length/2,o);}
-  // People: the driver waits for you as long as it takes. A resident who stands in the
-  // road is given a few seconds and then driven round at a crawl, as they would step aside.
-  const patient=(v.personWait||0)<4;
-  for(const o of obstacles())if(o)consider(o.x,o.z,o.r??.35,o.r??.35,o.player?'player':'person',!o.player&&!patient);
+  // Wait for every person to clear the lane; never creep through their body.
+  for(const o of obstacles())if(o)consider(o.x,o.z,o.r??.35,o.r??.35,o.player?'player':'person',false);
   if(blocker==='person')v.personWait=(v.personWait||0)+dt;else if(!blocker)v.personWait=Math.max(0,(v.personWait||0)-dt*.5);
   // Pulling out of a bay: wait for whatever set off nearby to get clear first.
   // Whoever set off first goes first, so two leaving side by side never both wait.
@@ -186,7 +184,7 @@ export function createTraffic({obstacles=()=>[]}={}){
   update(dt){
    dt=Math.min(dt,.1);
    for(const v of vehicles){
-    if(!v.trip)continue;
+    if(!v.trip)continue;if(v.hold){v.speed=0;continue;}
     const target=speedFor(v,dt);
     if(target>v.speed)v.speed=Math.min(target,v.speed+DRIVING.accel*dt);
     else v.speed=Math.max(target,v.speed-(target<v.speed-1?DRIVING.hardBrake:DRIVING.brake)*dt);

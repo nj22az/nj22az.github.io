@@ -1,3 +1,4 @@
+import {buildVehicle} from './road-vehicles.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {SCHOOL,SCHOOL_COLUMNS,FUKUGI,schoolColliders} from './school-layout.js';
@@ -225,13 +226,9 @@ function buildTownHallDressing(group,options){
  kit.block(c.minX,c.maxX,c.height+.2,c.height+.32,c.minZ,c.minZ+.12,trim);
  for(const x of [c.minX+.2,c.maxX-.2])kit.cyl(.14,.14,c.height,x,c.height/2,c.minZ+.2,0xe4e1d3,{segments:12});
  // The town's vehicles in their bays: the works kei truck and the white town car.
- const truck=(x,z,col)=>{kit.box(1.4,1.1,1.1,x,.75,z-.9,col);kit.box(1.4,.5,1.9,x,.55,z+.6,col);kit.box(1.3,.04,1.8,x,.82,z+.6,0x5d6265);
-  for(const [dx,dz] of [[-.65,-.9],[.65,-.9],[-.65,1.1],[.65,1.1]])kit.cyl(.26,.26,.18,x+dx,.26,z+dz,0x1f2124,{rz:Math.PI/2,segments:10});
-  kit.box(1.32,.45,.04,x,1.0,z-1.46,0x5d7a84);};
- truck(32.4,30.7,0xf2f0ea);
- kit.box(1.6,.75,3.4,35.4,.6,30.7,0xf4f1ea);kit.box(1.4,.55,1.8,35.4,1.25,30.9,0xf4f1ea);kit.box(1.36,.42,.04,35.4,1.25,29.99,0x5d7a84);
- for(const [dx,dz] of [[-.75,-1.1],[.75,-1.1],[-.75,1.1],[.75,1.1]])kit.cyl(.3,.3,.2,35.4+dx,.3,30.7+dz,0x1f2124,{rz:Math.PI/2,segments:10});
- kit.box(.02,.3,.6,36.21,.8,30.7,0x2f6f9f);
+ for(const [kind,x,owner,purpose] of [['kei truck',32.4,'Harbour master','Town utility maintenance'],['car',35.4,'Officer Mori','Community hall visits']]){
+  const car=buildVehicle(kind,0xf4f1ea);car.position.set(x,0,30.7);car.rotation.y=Math.PI;car.visible=true;Object.assign(car.userData,{owner,driver:owner,purpose});car.name=owner+' · parked '+kind;group.add(car);
+ }
  // A monument sign of polished stone at the gate, the way every town hall has one.
  const g=SCHOOL.gate;kit.box(2.4,1.3,.4,g.x+3.4,.65,g.z+.6,0x4a4f52,{finish:'gloss'});kit.box(2.6,.15,.55,g.x+3.4,.07,g.z+.6,0x9a958a);
  kit.finish(group,'Town hall dressing');

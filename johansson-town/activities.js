@@ -25,7 +25,8 @@ import {PROFILES} from './src/people/profiles.js';
 import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
 import {gossipAt,izakayaOpen,onsenInvitationDay} from './src/people/social.js';
 import {DRINKS,DISHES,menuItem} from './src/people/izakaya-beer.js';
-import {VENDING_PRODUCTS} from './src/commerce/vending-catalogue.js';
+import {VENDING_PRODUCTS,DRINKABLE,EMPTY_CAN,CAN_REFUND} from './src/commerce/vending-catalogue.js';
+import {SAKURA_SPECIALS,SPECIAL_BY_NAME,specialsOpen} from './src/commerce/sakura-specials.js';
 import {MEDICINES,STAMINA_DRINK} from './src/world/interiors/sakura-dressing.js';
 import {STORE_ITEMS} from './src/commerce/catalogue.js';
 import {SHOPIFY_CONFIG} from './src/commerce/shopify-config.js';
@@ -51,7 +52,7 @@ import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorag
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
+export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -149,17 +150,42 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function bagItem(item){
     if(item===FLYER_ITEM){sakuraFlyer();return;}
     const model=printedModels(state.inventory).find(m=>m.name===item);
-    const drinkable=['Canned coffee','Green tea'].includes(item)&&state.inventory.includes(item);
+    const special=SPECIAL_BY_NAME[item];
+    const drinkable=(DRINKABLE.has(item)||special?.kind==='drink')&&state.inventory.includes(item);
+    const edible=special?.kind==='food'&&state.inventory.includes(item);
     const spec=GROCERY_ITEMS.find(g=>g.name===item),find=TOWN_FINDS.find(f=>f.name===item);
     const text=model?'A model you printed on the Form 3. Thuan would put it by the till.'
+      :item===EMPTY_CAN?`Empty. The recycling box by Sakura’s door takes cans: Thuan gives ¥${CAN_REFUND} a can.`
+      :special?`${special.note}. From the board at Sakura.`
       :spec?spec.text:find?`Worth ¥${find.price} back at Sakura’s till.`
       :item==='Sea bream'?'Fresh from the pier. Nao — or Thuan — would know what to do with it.'
       :'Something you picked up in town.';
-    show(item,text,[...(drinkable?[['Drink it',()=>{close();onDrink(item);}]]:[]),...(model?[['Look at it',()=>previewPrint(model)]]:[]),['Back to the bag',bag],['Close',close]]);
+    show(item,text,[...(drinkable?[['Drink it',()=>{close();onDrink(item);}]]:[]),...(edible?[['Eat it',()=>{close();onSnack(item);}]]:[]),...(model?[['Look at it',()=>previewPrint(model)]]:[]),['Back to the bag',bag],['Close',close]]);
     modal.classList.add('bag-view');
     const hero=document.createElement('div');hero.className='bag-hero';hero.innerHTML=svg(itemIcon(item,{printed:!!model}),{size:56});if(foodArtForItem(item)){hero.innerHTML='';const image=document.createElement('img');image.src=foodArtForItem(item);image.alt=item;image.width=160;image.height=160;image.style.objectFit='contain';hero.append(image);}body.prepend(hero);
   }
-  function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||['Green tea','Canned coffee','Sea bream','Ice'].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
+  function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||DRINKABLE.has(item)||SPECIAL_BY_NAME[item]||['Sea bream','Ice',EMPTY_CAN].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
+  /**
+   * The recycling box by Sakura's door. Every empty can in your pockets goes in, and
+   * Thuan pays a small refund out of the shop's own till (she sells the aluminium on).
+   */
+  function recycleCans(){
+    const n=state.inventory.filter(i=>i===EMPTY_CAN).length;
+    if(!n){receipt('Recycling box','A blue box with a round hole in the lid, for empty cans. Thuan gives ¥'+CAN_REFUND+' a can, from the till.');return;}
+    state.inventory=state.inventory.filter(i=>i!==EMPTY_CAN);
+    // From the till when it has it; a few coins from her own purse when it does not.
+    const shop=state.sakura,pay=n*CAN_REFUND;if(shop)shop.cash=Math.max(0,shop.cash-pay);state.yen+=pay;
+    onTime(1);onMove('Give');townAudio.play('clunk',.5);save();
+    receipt('Recycling box',`${n} empty can${n>1?'s':''} rattle${n>1?'':'s'} into the box.`+` Thuan counts ¥${pay} into your hand.`);
+  }
+  /** The specials board behind the counter: order from Thuan while the hot case is on. */
+  function specialsMenu(){
+    if(!specialsOpen(getMinutes())){receipt('Specials board','The hot case is off. Thuan serves the specials from 09:00 to 20:00.');return;}
+    show('Today’s specials','Chalked up behind the counter. Thuan wraps it or pours it while you wait.',[
+      ...SAKURA_SPECIALS.map(sp=>[`${sp.name} · ¥${sp.price}`,()=>{if(!spend(sp.price))return;addItem(sp.name);recordSakuraSale(state,sp.price,null,{minute:getMinutes(),item:sp.name,buyer:'Johansson'});onTime(2);save();townAudio.play('click',.35);
+        receipt('Thuan',sp.kind==='food'?`One ${sp.name.toLowerCase()}, wrapped in paper. It is in your bag. Eat it while it is warm.`:`One ${sp.name.toLowerCase()}, with a straw. It is in your bag.`);}]),
+      ['Maybe later',close]]);
+  }
   function spend(n){if(state.yen<n){say('You do not have enough yen.');return false;}state.yen-=n;const now=getMinutes(),place=getSocialContext().inside||'Town Services',transaction='PLAYER-'+state.documentArchive.sequence+'-'+now;const receipt=fileDocument(state,{type:'Receipt',title:heading.textContent||'Town service payment',organisation:({'market':'Sakura Shop','frontrow':'Front-Row Books','ramen':'Sato Ramen','izakaya':'Minato Izakaya','onsen':'Minato Onsen'})[place]||place,transaction,amount:n,text:'CASH RECEIPT\nService: '+(heading.textContent||'Town service')+'\nPaid: ¥'+n+'\nPayer: visitor\nWallet balance: ¥'+state.yen},now);if(receipt)fileDocument(state,{type:'Ledger entry',title:'Visitor payment posting',organisation:receipt.organisation,transaction,amount:n,links:[receipt.id],text:receipt.text},now);save();return true;}
   /**
    * Dinner with Thuan in Naha (interiors/city-restaurant.js): the scene is fixed and this
@@ -691,7 +717,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const social=getSocialContext(),gossip=gossipAt(getMinutes(),social.names||[]);note(gossip.clue);
     show('Overheard at Minato',gossip.line+'\n\n'+gossip.clue,[['Stay a little longer',()=>{onTime(7);izakayaGossip();}],['Back to the evening',close]]);
   }
-  function vending(){show("MINATO DRINKS · Vending machine",'A harbour break. Choose a chilled drink · ¥120.',[...VENDING_PRODUCTS.map(product=>[product.label,()=>buyDrink(product)]),['Leave',close]]);}
+  function vending(){show("MINATO DRINKS · Vending machine",'Cold drinks behind the blue buttons, hot behind the red. ¥120 each. Drink it now or keep it in your bag; the empty can goes to the recycling box by Sakura’s door.',[...VENDING_PRODUCTS.map(product=>[product.label,()=>buyDrink(product)]),['Leave',close]]);}
   function buyDrink(product){if(!spend(product.price))return;onTime(1);onMove('Give');const name=product.inventoryName;addItem(name);townAudio.play('clunk',.7);close();if(!onPurchase(name))receipt('Thank you',`${product.brand} — ${name} is in your bag.`);}
 
   function legacyResident(name){
@@ -960,6 +986,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
       case 'vending':vending();break;
+      case 'recycle-cans':recycleCans();break;
+      case 'sakura-specials':specialsMenu();break;
       case 'resident':resident(name);break;
       case 'neighbour':neighbour(name);break;
       case 'visit-home':show(name,'Choose an apartment to visit.',[...detail.map(home=>[home.name,()=>{close();home.enter();}]),['Back',close]]);break;

@@ -16,6 +16,8 @@ export class Element {
   }
 }
 export function installDOM(saved={}){
+ // Three.js file loading uses the browser progress event, which Node does not provide.
+ globalThis.ProgressEvent??=class ProgressEvent extends Event{constructor(type,init={}){super(type);Object.assign(this,{lengthComputable:false,loaded:0,total:0},init);}};
  const elements=new Map(),storage=new Map(Object.entries(saved));
  globalThis.document={createElement:()=>new Element(),createElementNS:()=>new Element(),querySelector:s=>{if(!elements.has(s))elements.set(s,new Element());return elements.get(s);},addEventListener(){},exitPointerLock(){},activeElement:new Element(),documentElement:new Element(),body:new Element()};
  globalThis.window={};globalThis.location={href:'https://nj22az.github.io/johansson-town/'};

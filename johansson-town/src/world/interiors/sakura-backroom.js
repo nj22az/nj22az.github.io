@@ -1,4 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {stockroomBeerBatch,deliveryOnigiri} from './stockroom-products.js';
+import {paintStaffBoard,boardText} from './staff-board.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
 
 /**
@@ -36,7 +38,7 @@ export const BACKROOM=Object.freeze({
 
 const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
 const canvasTex=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;};
-const say=(ctx,s,x,y,size,colour,align='center',weight='bold')=>{ctx.fillStyle=colour;ctx.font=`${weight} ${size}px ${MARU}`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(s,x,y);};
+const say=(ctx,s,x,y,size,colour,align='center',weight='bold')=>boardText(ctx,s,x,y,size,colour,align==='left'?ctx.canvas.width-x-12:align==='right'?x-12:Math.min(x,ctx.canvas.width-x)*2-16,align,weight);
 const std=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.75,...extra});
 const hash=(i,s=0)=>{const n=Math.sin(i*127.1+s*311.7)*43758.5453;return n-Math.floor(n);};
 const KRAFT='#c39a66';
@@ -57,10 +59,10 @@ function caseLabel({brand,jp,line,count,ink,accent,seed}){
   say(ctx,count,174,232,40,ink);
   // Carrier slip, the barcode and 天地無用.
   ctx.fillStyle='#fbfaf4';ctx.fillRect(344,48,148,150);ctx.fillStyle='#3f7d4e';ctx.fillRect(344,48,148,26);
-  say(ctx,"South wind flight",418,62,18,'#ffffff');say(ctx,"Sakura Shop Dear",418,96,18,'#2b2b2b');
+  say(ctx,'南風運送',418,62,18,'#ffffff');say(ctx,'さくら商店 宛',418,96,18,'#2b2b2b');
   ctx.fillStyle='#222';let x=356;for(let i=0;i<26&&x<480;i++){const b=hash(i,seed+9)>.5?3:5;ctx.fillRect(x,116,b,44);x+=b+(hash(i,seed+7)>.5?3:2);}
   say(ctx,'49'+String(1000+seed*37).slice(0,4)+'-'+String(seed*911%9000+1000),418,180,15,'#333','center','normal');
-  say(ctx,"Tenchi Muyo",418,236,30,'#c23a32');
+  say(ctx,'天地無用',418,236,30,'#c23a32');
   ctx.strokeStyle='#c23a32';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(400,288);ctx.lineTo(400,262);ctx.moveTo(390,272);ctx.lineTo(400,260);ctx.lineTo(410,272);ctx.moveTo(436,288);ctx.lineTo(436,262);ctx.moveTo(426,272);ctx.lineTo(436,260);ctx.lineTo(446,272);ctx.stroke();
  });
 }
@@ -188,29 +190,8 @@ function stockRack(k){
 
 // ================================================================ the noticeboard
 function noticeboard(k){
- const N=BACKROOM.noticeboard;
- const tex=canvasTex(768,512,(ctx,w,h)=>{
-  ctx.fillStyle='#b98a55';ctx.fillRect(0,0,w,h);for(let i=0;i<2400;i++){ctx.fillStyle=`rgba(${hash(i,3)>.5?90:230},${hash(i,3)>.5?60:200},40,.18)`;ctx.fillRect(hash(i,4)*w,hash(i,5)*h,2,2);}
-  ctx.strokeStyle='#7a5530';ctx.lineWidth=18;ctx.strokeRect(0,0,w,h);
-  const pin=(x,y,c='#d7263d')=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fill();};
-  // Shift roster.
-  ctx.save();ctx.translate(40,36);ctx.rotate(-.015);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,330,430);
-  say(ctx,"Staff Schedule 9Month",165,30,28,'#2b2b2b');ctx.strokeStyle='#c9c4b6';ctx.lineWidth=2;
-  const days=["Month","Fire","Water","Tree","Gold","Earth","Day"],who=["Thuan Early","Thuan Full shift","Manager Early / Thuan Late","Thuan Early","Thuan Late","Thuan Full shift","Manager"];
-  days.forEach((d,i)=>{const y=74+i*44;ctx.beginPath();ctx.moveTo(14,y+22);ctx.lineTo(316,y+22);ctx.stroke();say(ctx,d,34,y,22,'#c23a32');say(ctx,who[i],70,y,20,'#2b2b2b','left','normal');});
-  say(ctx,"Assistant Manager(Potted plants): Every day By the window",165,400,17,'#3f8f46');ctx.restore();pin(205,40);
-  // Delivery times.
-  ctx.save();ctx.translate(400,40);ctx.rotate(.02);ctx.fillStyle='#ffe28a';ctx.fillRect(0,0,320,200);
-  say(ctx,"Delivery time",160,30,28,'#7a3a12');
-  [["Rice",'6:00 / 11:00 / 16:00'],["Beverage",'5:00'],["Magazines/Newspapers",'4:30'],["Normal temperature (South wind flight)","Tuesday/Friday 14:00"]].forEach(([a,b],i)=>{say(ctx,a,18,76+i*34,19,'#2b2b2b','left');say(ctx,b,302,76+i*34,19,'#2b2b2b','right','normal');});
-  ctx.restore();pin(560,44,'#2a8fcc');
-  // 5S.
-  ctx.save();ctx.translate(410,262);ctx.rotate(-.025);ctx.fillStyle='#ffffff';ctx.fillRect(0,0,310,210);
-  ctx.fillStyle='#c23a32';ctx.fillRect(0,0,310,40);say(ctx,"Backyard 5S",155,21,24,'#ffffff');
-  ["Organize: Do not place trolleys on the aisle","Tidying up: First in, first out","Cleaning: Defrosting the refrigerator Wednesday","Cleanliness: Hand washing/disinfection","Discipline: PThe box will remain in the yellow area until it is returned."].forEach((s,i)=>say(ctx,s,16,66+i*30,17,'#2b2b2b','left','normal'));
-  ctx.restore();pin(565,266);
- });
- const frame=k.mesh(new THREE.BoxGeometry(.04,.84,1.24),std(0x7a5530),N.x+.02,N.y,N.z,'Staff noticeboard');void frame;
+ const N=BACKROOM.noticeboard,tex=canvasTex(768,512,paintStaffBoard);
+ k.mesh(new THREE.BoxGeometry(.04,.84,1.24),std(0x7a5530),N.x+.02,N.y,N.z,'Staff noticeboard');
  k.plane(tex,1.2,.8,N.x+.045,N.y,N.z,Math.PI/2,'Staff noticeboard print');
 }
 
@@ -225,24 +206,22 @@ function exitSign(k){
   ctx.moveTo(92,72);ctx.lineTo(80,118);ctx.moveTo(80,118);ctx.lineTo(108,140);ctx.lineTo(102,168);ctx.moveTo(80,118);ctx.lineTo(56,150);
   ctx.moveTo(90,80);ctx.lineTo(118,96);ctx.lineTo(136,84);ctx.moveTo(88,82);ctx.lineTo(62,96);ctx.stroke();
   ctx.fillStyle='#f4fff6';ctx.fillRect(140,30,10,h-60);
-  say(ctx,"Emergency exit",330,76,64,'#f4fff6','center','900');say(ctx,'EXIT',330,142,40,'#f4fff6');
+  say(ctx,'非常口',330,76,64,'#f4fff6','center','900');say(ctx,'EXIT',330,142,40,'#f4fff6');
  });
  k.mesh(new THREE.BoxGeometry(.64,.26,.06),std(0xeef1ee),S.x,S.y,S.z+.03,'Exit sign housing');
  k.plane(tex,.6,.225,S.x,S.y,S.z+.062,0,'Exit sign',true);
 }
 
 function beerCrates(k){
- const C=BACKROOM.crates;
- const side=canvasTex(256,160,(ctx,w,h)=>{ctx.fillStyle='#e8b923';ctx.fillRect(0,0,w,h);ctx.fillStyle='#d4a516';for(let x=18;x<w-18;x+=30)ctx.fillRect(x,108,18,34);
-  say(ctx,'UMINEKO',w/2,40,40,'#9f2f24');say(ctx,"Umineko Beer Large bottle20items",w/2,82,18,'#9f2f24');});
- const yellow=std(0xe8b923,{roughness:.4}),print=new THREE.MeshStandardMaterial({map:side,roughness:.4});
- const mats=[print,print,yellow,yellow,print,print],bottle=std(0x5a3418,{roughness:.2,metalness:.1});
- // Two stacks against the back wall, side by side, the east one a crate shorter.
- [[C.x-.21,3],[C.x+.21,2]].forEach(([x,count],s)=>{
-  for(let i=0;i<count;i++)k.put('beer crate',mats,x+(hash(s,i)-.5)*.02,i*.3,C.z,.42,.3,.34,(hash(i,s)-.5)*.05);
-  // The empties' necks show in the open top crate.
-  for(let a=0;a<5;a++)for(let b=0;b<4;b++)k.put('beer bottle neck',bottle,x-.14+a*.07,count*.3-.12,C.z-.105+b*.07,.03,.14,.03);
- });
+ const positions=[],C=BACKROOM.crates,yellow=std(0xdcb22c,{roughness:.55});
+ const label=canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#dcb22c';ctx.fillRect(0,0,w,h);say(ctx,'海猫ビール',w/2,42,30,'#913a2b');say(ctx,'UMINEKO · 20本',w/2,88,20,'#913a2b');});
+ [[C.x-.21,3],[C.x+.21,2]].forEach(([x,count])=>{for(let i=0;i<count;i++){
+  const y=i*.3;k.put('beer crate floor',yellow,x,y,C.z,.42,.018,.34);
+  for(const dz of [-.163,.163]){k.put('beer crate long wall',yellow,x,y+.018,C.z+dz,.42,.245,.014);k.put('beer crate rim',yellow,x,y+.263,C.z+dz,.43,.018,.022);}
+  for(const dx of [-.203,.203])k.put('beer crate end wall',yellow,x+dx,y+.018,C.z,.014,.263,.34);
+  for(let a=0;a<5;a++)for(let b=0;b<4;b++)positions.push([x-.16+a*.08,y+.02,C.z-.12+b*.08]);
+  k.plane(label,.34,.16,x,y+.145,C.z+.172,0,'Beer crate label');
+ }});k.group.add(stockroomBeerBatch(positions));
 }
 
 function cardboardBundle(k){
@@ -273,11 +252,9 @@ function daisha(k){
  for(const z of [-.213,.213])add(new THREE.BoxGeometry(.64,.12,.014),crate,-.05,ty,z);
  for(const x of [-.363,.263])add(new THREE.BoxGeometry(.014,.12,.44),crate,x,ty,0);
  for(const z of [-.22,.22])add(new THREE.BoxGeometry(.66,.015,.02),rim,-.05,ty+.067,z);
- const film=new THREE.MeshStandardMaterial({roughness:.3,map:canvasTex(128,128,(ctx,w,h)=>{ctx.fillStyle='#f7f4ec';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2f3b2a';ctx.fillRect(0,h*.55,w,h*.45);ctx.fillStyle='#d7263d';ctx.fillRect(w*.44,0,w*.12,h);})});
- const onigiri=new THREE.CylinderGeometry(.06,.06,.04,3);
- for(let a=0;a<4;a++)for(let b=0;b<2;b++){const o=add(onigiri,film,-.05-.21+a*.14,ty-.024,-.1+b*.2);o.rotation.y=b?Math.PI:0;}
+ for(let a=0;a<4;a++)for(let b=0;b<2;b++){const o=deliveryOnigiri();o.position.set(-.05-.21+a*.14,ty-.04,-.1+b*.2);o.rotation.y=b?Math.PI:0;g.add(o);}
  // Delivery slip tucked under the top crate's rim.
- const slip=canvasTex(128,96,(ctx,w,h)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,w,h);say(ctx,"Rice 11:00",w/2,28,20,'#2b2b2b');say(ctx,"Onigiri 32",w/2,62,18,'#c23a32');});
+ const slip=canvasTex(128,96,(ctx,w,h)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,w,h);say(ctx,'米飯 11:00',w/2,28,20,'#2b2b2b');say(ctx,'おにぎり 32個',w/2,62,18,'#c23a32');});
  const s=new THREE.Mesh(new THREE.PlaneGeometry(.12,.09),new THREE.MeshStandardMaterial({map:slip,roughness:.9}));s.position.set(-.05,ty-.01,-.221);s.rotation.y=Math.PI;g.add(s);
 }
 
@@ -287,7 +264,7 @@ function extinguisher(k){
  k.mesh(new THREE.CylinderGeometry(.085,.085,.46,18),red,E.x,.27,E.z,'Fire extinguisher');
  k.mesh(new THREE.CylinderGeometry(.03,.04,.06,10),std(0x2a2a2a),E.x,.53,E.z,'Extinguisher valve');
  const hose=k.mesh(new THREE.CylinderGeometry(.012,.012,.32,8),std(0x1a1a1a),E.x+.09,.36,E.z+.03,'Extinguisher hose');hose.rotation.z=.2;
- const sign=canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#d8302b';ctx.fillRect(0,0,w,h);say(ctx,"Fire extinguisher",w/2,h/2,64,'#ffffff','center','900');});
+ const sign=canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#d8302b';ctx.fillRect(0,0,w,h);say(ctx,'消火器',w/2,h/2,64,'#ffffff','center','900');});
  k.plane(sign,.3,.15,E.x,1.25,-6.745,0,'Extinguisher sign');
 }
 

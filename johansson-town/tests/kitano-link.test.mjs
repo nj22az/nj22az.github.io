@@ -58,7 +58,7 @@ test('every lane is on drivable ground and clear of anything solid',async()=>{
  }
 });
 
-test('a day of traffic in fast time: nobody stuck, nobody overlapping, the ferry fleet cycles',()=>{
+test('a day of owned traffic keeps drivers aboard, parking clear and trips purposeful',()=>{
  const all=[...traffic.fleet,...traffic.islanders];
  const corners=v=>{const {x,z}=v.g.position,y=v.g.rotation.y,c=Math.cos(y),s=Math.sin(y),hw=v.width/2,hl=v.length/2;return [[-hw,-hl],[hw,-hl],[hw,hl],[-hw,hl]].map(([a,b])=>[x+a*c+b*s,z-a*s+b*c]);};
  const overlap=(A,B)=>{for(const P of [A,B])for(let i=0;i<4;i++){const [ax,az]=P[i],[bx,bz]=P[(i+1)%4],nx=bz-az,nz=ax-bx;const pa=A.map(([x,z])=>x*nx+z*nz),pb=B.map(([x,z])=>x*nx+z*nz);if(Math.max(...pa)<Math.min(...pb)+.05||Math.max(...pb)<Math.min(...pa)+.05)return false;}return true;};
@@ -66,21 +66,24 @@ test('a day of traffic in fast time: nobody stuck, nobody overlapping, the ferry
  const dt=.1;
  for(let i=0;i<24*60*10;i++){
   minutes+=dt;// 60x: a town minute a second
+  for(const p of world.people)if(!p.g.userData.inVehicle){p.g.position.set(-30,0,30);for(const key of ['indoors','inHome','inWorkplace','inBookshop','inMarket','inIzakaya','inRamen'])delete p.g.userData[key];}
   world.ferry.update(dt,minutes,i*dt);traffic.update(dt,minutes);
   for(const v of all){
    if(v.where!==was.get(v)){if(v.where==='airport'){airportVisits.add(v);trips++;}was.set(v,v.where);}
-   if(v.trip&&v.speed<.05&&v.blocker!=='player'){stuck.set(v,(stuck.get(v)||0)+dt);assert.ok(stuck.get(v)<40,`${v.kind} stuck at ${v.g.position.x.toFixed(1)},${v.g.position.z.toFixed(1)} (blocked by ${v.blocker?.kind||v.blocker})`);}
+   if(v.trip)assert.ok(traffic.drivers.has(v),'Every trip has its real resident at the wheel');
+   if(v.trip&&v.speed<.05&&!v.blocker&&!v.hold){stuck.set(v,(stuck.get(v)||0)+dt);assert.ok(stuck.get(v)<40,`${v.kind} stuck at ${v.g.position.x.toFixed(1)},${v.g.position.z.toFixed(1)} (blocked by ${v.blocker?.kind||v.blocker})`);}
    else stuck.set(v,0);
   }
   const shown=all.filter(v=>v.g.visible&&v.where!=='aboard');
   for(let a=0;a<shown.length;a++)for(let b=a+1;b<shown.length;b++)assert.ok(!overlap(corners(shown[a]),corners(shown[b])),`${shown[a].kind} (${shown[a].where} ${shown[a].slot} ${shown[a].trip?.path.length.toFixed(0)}) and ${shown[b].kind} (${shown[b].where} ${shown[b].slot}) overlap at minute ${minutes.toFixed(1)} ${world.ferry.phase} ${world.ferry.alongsideFor} at ${shown[a].g.position.x.toFixed(1)},${shown[a].g.position.z.toFixed(1)}`);
  }
- assert.ok(trips>=20,'only '+trips+' trips to the airport in a day');
- for(const v of traffic.fleet)assert.ok(airportVisits.has(v)||v.where==='airport',`the ferry's ${v.kind} never reached the airport`);
+ assert.ok(trips>=1&&trips<=8,'Purposeful daily appointments, rather than repeating laps: '+trips);
+ for(const v of all)assert.ok(v.owner&&v.driver&&v.purpose);
 });
 
 test('a car waits for you standing in the road, then drives on',()=>{
  const v=traffic.islanders[1];
+ for(const other of traffic.traffic.vehicles)if(other!==v){other.g.visible=false;other.trip=null;}v.hold=false;
  const path=traffic.network.path(['main-north','kitano-east-town']);
  v.where='driving';traffic.traffic.drive(v,path,{onArrive(){}});
  const ahead=pathPose(path,30);player=new THREE.Vector3(ahead.x,0,ahead.z);

@@ -117,7 +117,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     assert.equal(window.__JOHANSSON_STABILITY__?.ok,true,'Startup stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__?.failures));
     // Check the actual actions as well as the mode-aware diagnostic count.
     const streetLabels=new Set();api.world.group.traverse(o=>{if(o.userData.hit)streetLabels.add(o.userData.hit.label);});
-    for(const label of ['Sit on neighbourhood bench','Inspect post box','Inspect utility cabinet','Inspect traffic mirror','Inspect recycling bins','Test hand pump'])assert.ok(streetLabels.has(label),label);
+    for(const label of ['Sit on neighbourhood bench','Inspect post box','Inspect utility cabinet','Inspect traffic mirror','Inspect recycling bins','Work the hand pump'])assert.ok(streetLabels.has(label),label);
     const waiting=api.world.people.find(p=>p.profile.name==='Nao').g;
     const savedPosition=waiting.position.clone(),savedVisibility=waiting.visible;
     waiting.position.set(0,0,10);waiting.visible=true;waiting.userData.visualReady=false;

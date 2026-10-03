@@ -23,9 +23,9 @@ export function buildIslandHomes(world,options){
   const site={id:residents?'resident-home-'+residents[0].toLowerCase().replace(/[^a-z]+/g,'-'):'home-'+p.id,title,jp:p.family,sub:'KITAHAMA',color:0xd4c6ad,accent:'#776953',
    line:household?.address||p.id,door:[door[0],KITAHAMA.y+.02,door[1]],exitPosition:[door[0],KITAHAMA.y+.02,door[1]],entryFacing:inward,x:door[0],z:door[1],opens:'00:00',plot:p.id};
   if(residents){
-   Object.assign(site,{homeOwner:residents[0],homeOwners:[...residents],homeEntry:p.id});
+   Object.assign(site,{homeOwner:residents[0],homeOwners:[...residents],homeEntry:p.id,houseKind:p.kind||'concrete'});
    for(const name of residents)homes.set(name,{owner:name,household:householdFor(name)?.id,address:site.line,door:[...door],building:'kitahama',occupied:false});
-  }else Object.assign(site,{familyHome:household||{members:[],toLet:true},ownRoom:true});
+  }else Object.assign(site,{familyHome:household||{members:[],toLet:true},houseKind:p.kind||'concrete',ownRoom:true});
   options.sites.push(site);
   const anchor=new THREE.Object3D();anchor.name='kitahama entrance:'+p.id;anchor.position.set(door[0],1.3,door[1]);world.group.add(anchor);
   options.register?.(anchor,(household?.toLet?'Look round ':'Visit ')+title,()=>options.enter(site));

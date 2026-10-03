@@ -1,3 +1,4 @@
+import {addOwnedCharacter} from '../../people/owned-characters.js';
 import {addBookshopDetail} from './bookshop-detail.js';
 import {DOCK_WORKSHOP_ROOM} from '../dock-workshop-layout.js';
 import {buildWorkshopMachine} from '../../workshop/machine.js';
@@ -14,7 +15,7 @@ export function compactRoomLayout(id){return id==='tea-house'?TEA_ROOM:alleyBusi
 // Each business owns its room layout and furniture.
 // Furniture and approaches are authored together; there is no generic room shell.
 export function buildCompactShop({site,room,reg,collider,action,exit}){
- let workshop=null;
+ let workshop=null;const owned=[];
  const layout=site.bookshop?BOOKSHOP_WORKSHOP_ROOM:site.industrialWorkshop?DOCK_WORKSHOP_ROOM:compactRoomLayout(site.id);if(!layout)return null;
  const {width:w,depth:d,doorX}=layout,hw=w/2,hd=d/2;
  room.name=site.title+' interior';
@@ -89,6 +90,11 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   box('Tool board',[1.8,.38,.06],[-1.02,2.05,-hd+.08],dark);
   for(let i=0;i<5;i++){box('Hanging hand tool',[.04,.31,.07],[-1.65+i*.29,2.02,-hd+.13],0x8b9994);box('Tool grip',[.07,.11,.07],[-1.65+i*.29,2.14,-hd+.13],0x7b4e38);}
   workshop=buildWorkshopMachine({room,x:-1.24,z:-hd+.32});
+  if(site.industrialWorkshop){
+   const jonsson=addOwnedCharacter({parent:room,kind:'Jonsson',position:[-2.7,0,.25],yaw:.35});owned.push(jonsson);
+   collider(-2.7,.25,1.45,1.35,1.35);
+   anchor([-2.7,1,.95],'Talk to Jonsson','read','Jonsson · engine repairs','Jonsson can recognise a harbour engine by its idle. He rebuilds small boat motors here, keeps every useful washer, and tests a repair twice before calling the owner. “A patient hand and a clean bench. That is most of the job.”');
+  }
   box('Oscilloscope',[.58,.36,.35],[.45,1.08,-hd+.24],0x596c63);box('Oscilloscope screen',[.32,.22,.025],[.34,1.10,-hd+.045],0x324f45);box('Signal trace',[.25,.012,.018],[.34,1.10,-hd+.025],0xb3c491);
   for(const x of [.66,.77])box('Instrument control',[.035,.035,.03],[x,1.13,-hd+.04],0xd2c9ab);
   box('Repair radio',[.36,.25,.26],[1.50,1,-hd+.25],0x6f503d);
@@ -106,5 +112,5 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   for(const [x,z] of [[-1.75,.1],[1.55,-.5]]){bench('Tea table',x,z,1.05,.9);for(const dx of [-.84,.84]){const s=chair(x+dx,z,dx<0?-Math.PI/2:Math.PI/2);s.userData.seat={position:[x+dx,0,z],stand:[x+dx,0,z+.8],eyeY:1.12,yaw:dx<0?-Math.PI/2:Math.PI/2,pitch:0};reg(s,'Sit for tea',()=>action('seat','Tea house chair','A warm cup and a little time to linger.'),true);}for(const dx of [-.3,.3]){const cup=new THREE.Mesh(new THREE.CylinderGeometry(.085,.065,.13,12),colour(0xd7dfc4));cup.position.set(x+dx,.965,z);room.add(cup);}}
   board("Have a drink, please.",'CORNER TEA HOUSE',[.2,2.25,-2.81],2.6);
  }
- return {...layout,compact:true,workshop};
+ return {...layout,compact:true,workshop,owned,ownedUpdate:dt=>owned.forEach(actor=>actor.update(dt)),dispose:()=>owned.forEach(actor=>actor.dispose())};
 }
