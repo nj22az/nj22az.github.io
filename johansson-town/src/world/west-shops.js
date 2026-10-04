@@ -3,7 +3,6 @@ import {createKit,GRID} from './okinawa/kit.js';
 import {MAIN_ROAD} from './main-road.js';
 import {buildShopDoor} from './shop-door.js';
 import {BOOKSHOP_WORKSHOP_PLOT} from './bookshop-workshop-layout.js';
-import {peninsulaActive} from './town-mode.js';
 import {businessId} from './businesses.js';
 import {GROUND_LAYER} from './ground-layers.js';
 

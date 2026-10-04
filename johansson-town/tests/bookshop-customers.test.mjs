@@ -3,7 +3,6 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createPeninsulaBusinesses} from '../src/world/businesses.js';
 import {createTown} from '../src/world/town.js';
-import {configureTownMode} from '../src/world/town-mode.js';
 import {assignWorkplaces} from '../src/people/workplaces.js';
 import {buildCompactShop} from '../src/world/interiors/compact-shops.js';
 import {createBookshopCustomers} from '../src/people/bookshop-customers.js';
@@ -32,5 +31,5 @@ test('a real resident browses, speaks to Aya, buys once, and walks back out with
   assert.ok(phases.has('browse'));assert.ok(phases.has('counter'));assert.ok(phases.has('leave'));assert.ok(speech.size>=3,'customer and bookseller exchange lines');assert.equal(world.people.length,count);assert.equal(state.bookshop.sales.length,1);assert.ok(saved>0);assert.equal(state.documentArchive.records.filter(r=>r.type==='Receipt').length,1);assert.equal(ledger.account('Kenji',minutes).purchases.filter(p=>p.id==='bookshop-paperback').length,1);
   for(let i=1;i<positions.length;i++)assert.ok(positions[i].distanceTo(positions[i-1])<=.11,'walks between stops');
   service.restore();assert.equal(customer.g.parent,originalParent);assert.equal(customer.g.userData.inBookshop,undefined);assert.equal(aya.g.userData.bookshopServing,undefined);
- }finally{configureTownMode('legacy');}
+ }finally{}
 });

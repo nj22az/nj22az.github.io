@@ -1,5 +1,4 @@
 import {DOCK_WORKSHOP_PLOT} from './dock-workshop-layout.js';
-import {peninsulaActive} from './town-mode.js';
 import {ALLEY_BOOKS,ALLEY_WORKSHOP} from './business-layout.js';
 import {westShopDoor} from './west-shops.js';
 import {consolidateBusinesses} from './businesses.js';

@@ -2,7 +2,6 @@ import * as THREE from '../../vendor/three.module.js';
 import {buildPortBuilding,portBuildingColliders,PORT_BUILDING} from './port-building.js';
 import {buildShopDoor} from './shop-door.js';
 import {HARBOUR_OFFICE as O} from './business-layout.js';
-import {peninsulaActive} from './town-mode.js';
 import {OFFICE_HOME_LAYOUT} from './interiors/office-workplace.js';
 // A single quay office replaces the old cold-store box and both office addresses.
 export function buildHarbourOffice({parent,site,register,enter,label,shadows}){

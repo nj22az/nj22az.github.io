@@ -7,7 +7,6 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {INAKAYA_FIT,RAMEN_LAYOUT,RAMEN_PLAYER_SEATS,ramenPoint,ramenX} from './interiors/ramen-layout.js';
 import {localToWorld} from './landmark-lots.js';
-import {shoppingDistrictActive} from './town-mode.js';
 
 const assets=new Map();
 const pending=new Map();

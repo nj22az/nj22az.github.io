@@ -5,7 +5,6 @@ import {STAFF_BENCH,buildStaffBench} from '../src/world/staff-bench.js';
 import {createStaffBenchRoutine} from '../src/people/staff-bench-routine.js';
 import {createCastAI} from '../src/people/schedules.js';
 import {RESIDENTS} from '../src/people/residents.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {installDOM} from './fixtures.mjs';
 import {createTown} from '../src/world/town.js';
 import {createBusinesses} from '../src/world/businesses.js';
@@ -76,7 +75,7 @@ test('the rendered backrest faces the shop and leaves a clear standing point in 
  assert.equal(colliders.some(c=>circleHitsRect(...STAFF_BENCH.stand,.32,c)),false);
 });
 test('the real schedule wakes and clears Thuan before morning navigation resumes',()=>{
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  try{
   const {entity,seat}=fixture(),person={g:entity,profile:RESIDENTS.find(p=>p.name==='Thuan')};
   const world={people:[person],staffBench:{seat},townMode:'peninsula'};
@@ -86,11 +85,11 @@ test('the real schedule wakes and clears Thuan before morning navigation resumes
   ai.update(1/60,594,false);assert.equal(entity.userData.staffBenchPhase,'wake');assert.ok(entity.userData.seatHeight);
   for(let i=0;i<500;i++)ai.update(1/60,594,false);
   assert.equal(entity.userData.staffBenchPhase,undefined);assert.equal(entity.userData.seatHeight,undefined);assert.equal(seat.userData.reservedBy,undefined);assert.equal(entity.userData.place,'market');
- }finally{configureTownMode(TOWN_MODES.LEGACY);}
+ }finally{}
 });
 
 test('the complete shop controller receives Thuan back at the till after her bench break',()=>{
- installDOM();configureTownMode(TOWN_MODES.PENINSULA);
+ installDOM();
  try{
   const scene=new T.Scene(),player=new T.Group(),targets=[],state={inventory:[],sakura:restoreSakura(),townMode:'peninsula'};
   const register=(o,label,fn,inside=false)=>{o.userData.hit={label,fn,inside};targets.push(o);};
@@ -127,11 +126,11 @@ test('the complete shop controller receives Thuan back at the till after her ben
   assert.equal(thuan.g.userData.staffBenchPhase,undefined);
   assert.equal(thuan.g.userData.usingTownObject,undefined);
   assert.equal(world.staffBench.seat.userData.reservedBy,undefined);
- }finally{configureTownMode(TOWN_MODES.LEGACY);}
+ }finally{}
 });
 
 test('she walks the actual yard route, takes her break, and returns through the shop door',()=>{
- installDOM();configureTownMode(TOWN_MODES.PENINSULA);
+ installDOM();
  try{
   const world=createTown({scene:new T.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new T.Vector3()});
   const thuan=world.people.find(p=>p.profile.name==='Thuan');world.people=[thuan];world.cat=null;
@@ -144,5 +143,5 @@ test('she walks the actual yard route, takes her break, and returns through the 
   }
   for(const phase of ['sit','sleep','wake','stand','leave'])assert.ok(phases.has(phase),phase);
   assert.equal(thuan.g.userData.indoors,'market');assert.equal(world.staffBench.seat.userData.reservedBy,undefined);
- }finally{configureTownMode(TOWN_MODES.LEGACY);}
+ }finally{}
 });

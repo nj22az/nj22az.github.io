@@ -2,12 +2,11 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {STAFF_BENCH,STAFF_YARD_ROUTE} from '../src/world/staff-bench.js';
 
 async function peninsula(){
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {createTown}=await import('../src/world/town.js?signage');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const scene=new THREE.Scene();
@@ -60,7 +59,7 @@ test('no sign hangs in the air',async()=>{
 
 test('the path round the back goes to the bench and nowhere else',async()=>{
  const {routeAt}=await import('../src/world/layout.js?signage-path');
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  // Every metre of it is ground you can stand on, from the pavement to the bench.
  for(let i=1;i<STAFF_YARD_ROUTE.points.length;i++){
   const [ax,az]=STAFF_YARD_ROUTE.points[i-1],[bx,bz]=STAFF_YARD_ROUTE.points[i];

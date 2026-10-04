@@ -30,17 +30,13 @@ test('residents travelling home cannot be teleported into a visited apartment',(
  assert.equal(p.g.parent,street);assert.equal(p.g.visible,true);
  p.g.position.set(p.profile.home[0],0,p.profile.home[1]);homes.update(1/30,1301);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
 });
-test('camera rank cannot remove a visible street resident, and saves preserve a walk in progress',()=>{
+test('camera rank cannot remove a visible street resident',()=>{
  const street=new THREE.Group(),player=new THREE.Group(),world={people:RESIDENTS.map(p=>person(p.name,street))},saved={inventory:[]};
  for(const p of world.people){p.profile={...p.profile,name:p.profile.name==='Thuan'?'Extra':p.profile.name,start:540,close:1080};}
  const ai=createCastAI({world,player,state:()=>saved,paused:()=>false,collides:()=>false});ai.update(0,1002,false);
  // Use ten ordinary outdoor workers, regardless of their observer distance.
  for(const p of world.people){p.profile={...p.profile,name:'Worker '+p.profile.name};delete p.g.userData.indoors;}
  ai.update(0,1002,false);assert.equal(world.people.filter(p=>p.g.visible).length,world.people.length);
- const kenji=world.people[1];kenji.g.position.set(2,0,20);saved.residentLocations=ai.snapshot();
- const other={people:world.people.map(p=>({profile:p.profile,g:p.g.clone()}))};other.people.forEach(p=>street.add(p.g));
- createCastAI({world:other,player,state:()=>saved,paused:()=>false,collides:()=>false}).update(0,1002,false);
- assert.equal(other.people[1].g.position.x,2);assert.equal(other.people[1].g.position.z,20);
 });
 test('Kenji retains quest dialogue with his own 1980s American slang',()=>{
  assert.match(DIALOGUE.Kenji.find(r=>r[0]==='hello')[1],/Yo, bro/);assert.ok(DIALOGUE.Kenji.some(r=>r[2]==='book'));assert.ok(DIALOGUE.Kenji.some(r=>r[2]==='keychain'));

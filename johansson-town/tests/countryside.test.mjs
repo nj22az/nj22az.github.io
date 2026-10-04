@@ -9,7 +9,6 @@ import {routeAt} from '../src/world/layout.js';
 // tombs), and none of it lands on a road, a path, a garden or another building.
 test('the countryside fills the open grass and keeps off roads, paths and buildings',async()=>{
  installDOM();
- const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');configureTownMode(TOWN_MODES.PENINSULA);
  const world={group:new THREE.Group(),colliders:[{id:'house',x:-20,z:90,w:4,d:4,height:3}],islandTrees:[[10,0,240]]};
  const {placed,group}=buildCountryside({world});
  assert.ok(placed.cane>1500,'there is sugar cane: '+placed.cane);

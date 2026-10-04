@@ -1,7 +1,6 @@
 import {PARK_HEIGHTS} from './park-height.js';
 import {GROUND} from '../render/ground-palette.js';
 import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
-import {peninsulaActive} from './town-mode.js';
 /** Inside the gateball court the ground stays level; a low wall holds the hill back (quarters.js). */
 export const inGateball=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
 /**

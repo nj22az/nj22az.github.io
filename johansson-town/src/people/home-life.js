@@ -1,6 +1,5 @@
 import {TATAMI_HOME_LAYOUT,TATAMI_HOME_OWNER} from '../world/interiors/tatami-home-layout.js';
 import {householdFor,householdNames} from './households.js';
-import {peninsulaActive} from '../world/town-mode.js';
 import {THUAN_APARTMENT_ROUTINES} from '../world/interiors/yuri-apartment-layout.js';
 // Repeatable household routines use the saved town clock, including night workers.
 const minute=m=>((m%1440)+1440)%1440;

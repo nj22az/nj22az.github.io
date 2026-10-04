@@ -1,5 +1,4 @@
 import {DINING_FOOTPRINTS} from './dining-footprints.js';
-import {peninsulaActive} from './town-mode.js';
 // Unfold the two sides of the supplied alley into two Main Street shop rows.
 // A–D form the west block facing east; E–H form the east block facing west.
 export const DINING_ROWS=Object.freeze([

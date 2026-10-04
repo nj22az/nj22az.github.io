@@ -3,11 +3,10 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect} from '../physics.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {createColliderGrid} from '../src/world/collider-grid.js';
 
 test('the collider grid answers exactly as checking every collider does, however the list changes',async()=>{
- installDOM();globalThis.self=globalThis;configureTownMode(TOWN_MODES.PENINSULA);
+ installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js?collider-grid');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});

@@ -14,7 +14,6 @@ import {BEACH,BEACH_DRY_EDGE_X} from './beach-layout.js';
 const headlandPatches=[];
 for(let z=HEADLAND.minZ;z<HEADLAND.maxZ;z+=4)for(let x=HEADLAND.minX;x<HEADLAND.maxX;x+=4)
  if((headlandHeight(x+2,z+2)??-2)>BEACH.waterY+.025)headlandPatches.push([x,z]);
-import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 import {mapPlan} from './okinawa/layout.js';
 
 export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0,z:0},yaw=0,visited=[],target=null}={}) {

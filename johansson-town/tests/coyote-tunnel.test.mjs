@@ -4,7 +4,6 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildCoyoteTunnel,TUNNEL,CAVE_MOUTH,hillHeight} from '../src/world/coyote-tunnel.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {circleHitsRect} from '../physics.js';
 
 test('the tunnel is gone: a low sea cave in a smaller wooded headland',{skip:!CAVE_ACTIVE&&'the cave is paused (CAVE_ACTIVE)'},()=>{
@@ -43,10 +42,10 @@ test('the mouth knows when it has been walked into',{skip:!CAVE_ACTIVE&&'the cav
 });
 
 test('the path up to the cave is walkable gravel, into the mouth',{skip:!CAVE_ACTIVE&&'the cave is paused (CAVE_ACTIVE)'},async()=>{
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  try{
   const {routeAt,groundHeight}=await import('../src/world/layout.js');
   for(const z of [30,34,38,CAVE_MOUTH.inside])assert.equal(routeAt(TUNNEL.x,z,.3)?.id,'cave-path','No path at z='+z);
   assert.equal(groundHeight(TUNNEL.x,CAVE_MOUTH.inside),0,'The cave floor is not at the path');
- }finally{configureTownMode(TOWN_MODES.LEGACY);}
+ }finally{}
 });

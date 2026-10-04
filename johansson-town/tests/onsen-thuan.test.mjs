@@ -25,8 +25,6 @@ test('asked along, Thuan goes from locking up to Umi-no-yu, and still makes her 
  // Asking after her window has gone means tomorrow.
  assert.equal(onsenInvitationDay(thuan,3*1440+700,false,commuter),3);
  assert.equal(onsenInvitationDay(thuan,3*1440+1300,false,commuter),4);
- // The older, residential town has her soak straight after closing too.
- assert.equal(residentPlan(thuan,3*1440+thuan.close+20,false,{onsenDate:3},false).place,'onsen');
 });
 
 test('the bath borrows Thuan into the rock pool in swimwear and gives her back dressed',()=>{

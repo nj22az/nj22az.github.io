@@ -14,7 +14,6 @@ import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
 import {PARK_BENCH} from '../world/park-layout.js';
 import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork,livesInKitahama,SATO_SHIFT} from './commuter-schedule.js';
 import {SATO_LUNCH,satoRamenOpen} from '../world/sato-ramen-layout.js';
-import {shoppingDistrictActive,peninsulaActive} from '../world/town-mode.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
 export {IZAKAYA_DOOR};
@@ -151,7 +150,7 @@ export function thuanAtOnsen(profile,minutes,rain=false,state=null,commuter=true
 }
 /** The evening she would be at the bath if asked now: tonight, or tomorrow once tonight has gone. */
 export function onsenInvitationDay(profile,minutes,rain=false,state=null){
- const commuter=state?.townMode==='shopping-district'||state?.townMode==='peninsula'||true;
+ const commuter=true;
  const day=Math.floor(minutes/1440),m=minuteOfDay(minutes),shift=shiftFor(profile);
  const end=commuter&&shift&&!shift.permanent?departureFor(profile,rain)-THUAN_BUS_MARGIN:Math.min((profile?.close??1200)+80,ONSEN.closes);
  return m<end?day:day+1;
@@ -231,31 +230,6 @@ export function visitsRamen(profile,minutes){
  return false; // This layout has no ramen building to enter.
  const visit=RAMEN_VISITS[profile.name];
  return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&ramenOpen(minutes)&&!!visit&&inTimeRange(minutes,...visit);
-}
-function legacyResidentPlan(profile,minutes,rain=false,state=null){
- const m=minuteOfDay(minutes);
- if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a snack at Sakura'};
- if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
- if(profile.name==='Officer Mori')return inTimeRange(m,1320,1800)?{place:'patrol',target:(NIGHT_PATROL)[0],activity:'night patrol'}:{place:'home',target:profile.home,activity:'resting after the night patrol'};
- if(profile.name==='Nao')return izakayaOpen(m)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'welcoming guests'}:{place:'home',target:profile.home,activity:'going home after closing'};
- if(profile.name==='Thuan'){
-  if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
-  if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
-  if(inTimeRange(m,profile.start-30,profile.close))return {place:'market',target:MARKET_THRESHOLD,activity:profile.role};
-  if(thuanAtOnsen(profile,minutes,rain,state,false))return {place:'onsen',target:ONSEN_DOOR,activity:'a soak at Umi-no-yu after work'};
-  if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
-  if(thuanVisitsIzakaya(minutes))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with Nao'};
-  const slot=thuanEveningPlace(minutes);
-  if(slot==='home')return {place:'home',target:profile.home,activity:'settling in at home'};
-  if(slot==='izakaya')return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a drink after work'};
-  if(slot==='ramen')return {place:'ramen',target:RAMEN_DOOR,activity:'a late bowl of ramen'};
-  if(slot==='stroll')return {place:'stroll',target:profile.home,activity:'lingering near home'};
-  return {place:'evening',target:profile.evening,activity:'walking Main Street'};
- }
- if(supperGuests(minutes).some(p=>p.name===profile.name))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'supper with the neighbours'};
- if(inTimeRange(m,profile.start-30,profile.close))return {place:'work',target:profile.work,activity:profile.role};
- if(rain||!inTimeRange(m,profile.close,profile.retire))return {place:'home',target:profile.home,activity:rain?'sheltering at home':'going home'};
- return {place:'evening',target:profile.evening,activity:'taking an evening stroll'};
 }
 /**
  * The Front-Row staff at home in the yard: to work for their shift, a Sakura errand or
@@ -397,17 +371,14 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
  * forces the archived routine. The peninsula counts as a commuter layout for the same
  * reason the shopping district does — the bus is how people arrive and leave.
  */
-export function residentPlan(profile,minutes,rain=false,state=null,mode=null){
+export function residentPlan(profile,minutes,rain=false,state=null){
  // Minato's regular never joins the Harbour Line or leaves the room. He sleeps on
  // his usual stool from 03:00 until 10:00 and drinks at the counter the rest of day.
  if(profile?.name==='Barfly'){
   const minute=minuteOfDay(minutes),sleeping=minute>=180&&minute<600;
   return {place:'izakaya',target:IZAKAYA_DOOR,activity:sleeping?'asleep on his Minato stool':'having another beer at Minato',barflySleeping:sleeping};
  }
- const commuter=mode===false?false
-  :mode!=null&&mode!==''?true
-  :state?.townMode==='shopping-district'||state?.townMode==='peninsula'||true;
- const plan=commuter?commuterPlan(profile,minutes,rain,state):legacyResidentPlan(profile,minutes,rain,state);
+ const plan=commuterPlan(profile,minutes,rain,state);
  // The two gardens have regular visitors; work and bad-weather routines stay intact.
  // Thuan is not among them: her afternoon break is its own walk (THUAN_WALK), Minato
  // Park's bench and the sea wall, ten minutes from the counter. Aoba Garden is 170 m

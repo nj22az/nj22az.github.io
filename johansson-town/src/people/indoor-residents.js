@@ -5,7 +5,6 @@ import {residentPlan,RAMEN_DOOR,IZAKAYA_DOOR,IZAKAYA_SEATS} from './social.js';
 import {createRoomWalk,atDestination} from './room-walk.js';
 import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {ONSEN_SEATS} from '../world/interiors/onsen.js';
-import {peninsulaActive} from '../world/town-mode.js';
 import {SATO_GUEST_SEATS,SATO_COOK,SATO_ROOM} from '../world/sato-ramen-layout.js';
 
 // One actor belongs to one location. New visitors cross the door and walk to a

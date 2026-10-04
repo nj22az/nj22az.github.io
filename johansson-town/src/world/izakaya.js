@@ -7,7 +7,6 @@ import {restaurantCollider,restaurantApproach,izakayaPlot,SATO_RAMEN_DOOR} from 
 import {SATO_RAMEN,satoRamenOpen} from './sato-ramen-layout.js';
 import {prepareIzakayaGlass} from './shop-glass.js';
 import {buildMinatoFacade} from './minato-facade.js';
-import {peninsulaActive} from './town-mode.js';
 import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';

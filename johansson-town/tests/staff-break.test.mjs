@@ -2,14 +2,13 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {STAFF_BENCH} from '../src/world/staff-bench.js';
 import {circleHitsRect} from '../physics.js?snappy=1';
 
 /** Thuan, her town, and a clock that can be wound. */
 async function afternoon(){
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {createTown}=await import('../src/world/town.js?staff-break');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const {createCastAI}=await import('../src/people/schedules.js');

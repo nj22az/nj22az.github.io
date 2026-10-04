@@ -33,7 +33,6 @@ test('raised barriers follow the lowered coastal district datum',()=>{
 
 test('all town stair flights and landings are clear of furniture and lighting',async()=>{
  const {installDOM}=await import('./fixtures.mjs');installDOM();globalThis.self=globalThis;
- const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');configureTownMode(TOWN_MODES.PENINSULA);
  const {createTown}=await import('../src/world/town.js');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});

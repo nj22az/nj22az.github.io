@@ -39,7 +39,6 @@ import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {buildSakuraBench} from './sakura-bench.js';
 import {applyShopAddresses} from './town-grid.js';
-import {configureTownMode,peninsulaActive} from './town-mode.js';
 import {izakayaPlot} from './dining-layout.js';
 import {buildBeachLife} from './beach-life.js';
 import {buildBeachCorner} from './beach-corner.js';
@@ -229,11 +228,11 @@ function pavedAt(){
 }
 
 export function createTown(options){
-  const mode=configureTownMode(options.townMode);izakayaPlot();
+  izakayaPlot();
   beginPowerPlan();
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
-  world.townMode=mode;
+  world.townMode='peninsula';
   // Only the street cast lives in the playable town; nothing else may arrive as a person.
   for(const person of world.people)person.g?.removeFromParent();
   world.people.length=0;
@@ -387,8 +386,6 @@ export function createTown(options){
     staticProps,
     streetPlants:plants,
     walkableOuterPier:true,
-    shoppingDistrict:mode==='shopping-district',
-    residentialArea:mode!=='shopping-district',
     seaCave:false,
     port24Hours:true,
     harbourOffice24Hours:true,

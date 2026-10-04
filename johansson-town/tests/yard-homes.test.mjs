@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {STREET_CAST} from '../src/people/residents.js';
 import {residentPlan} from '../src/people/social.js';
 import {commuterPhase} from '../src/people/commuter-schedule.js';
@@ -11,7 +10,7 @@ import {CAST_RECIPES} from '../src/avatars/cast.js';
 import {circleHitsRect,townBoundsBlocked} from '../physics.js?snappy=1';
 
 test('the Front-Row staff live in the yard behind the shop and sleep at home, not on the bus',()=>{
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  try{
   for(const name of YARD_RESIDENT_NAMES){
    const p=STREET_CAST.find(r=>r.name===name);assert.ok(p,name+' is in the street cast');
@@ -25,11 +24,11 @@ test('the Front-Row staff live in the yard behind the shop and sleep at home, no
   }
   const aya=STREET_CAST.find(r=>r.name==='Aya');
   assert.equal(residentPlan(aya,12*60,false,{townMode:'peninsula'}).place,'work','Aya works her shift');
- }finally{configureTownMode(TOWN_MODES.LEGACY);}
+ }finally{}
 });
 
 test('the yard houses are home sites you can walk up to and into, clear of the passage',async()=>{
- configureTownMode(TOWN_MODES.PENINSULA);installDOM();
+ installDOM();
  try{
   const {buildYardHomes}=await import('../src/world/yard-homes.js');
   const world={group:new THREE.Group(),colliders:[]},sites=[],doors=[];
@@ -45,5 +44,5 @@ test('the yard houses are home sites you can walk up to and into, clear of the p
    assert.ok(!world.colliders.some(c=>circleHitsRect(x,z,.32,c)),'clear at '+[x,z]);
   assert.equal(world.homes.get('Reiko').household,'resident-home-aya');
   doors.find(d=>/Kenji/.test(d.label)).fn();assert.equal(doors.entered,'resident-home-kenji');
- }finally{configureTownMode(TOWN_MODES.LEGACY);}
+ }finally{}
 });

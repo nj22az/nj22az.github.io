@@ -2,7 +2,6 @@ import * as THREE from '../../vendor/three.module.js';
 import {circleHitsRect} from '../../physics.js?snappy=1';
 import {buildSakuraInterior} from '../world/interiors/sakura-interior.js';
 import {SAKURA_LAYOUT} from '../world/interiors/sakura-layout.js';
-import {peninsulaActive} from '../world/town-mode.js';
 import {suppliedRoomBoundsBlocked} from '../world/supplied-rooms.js?snappy=1';
 import {createIndoorResidents} from './indoor-residents.js';
 import {createRetailClerk} from './retail-clerk.js';

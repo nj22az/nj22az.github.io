@@ -11,8 +11,7 @@ import {buildCompactShop} from '../src/world/interiors/compact-shops.js';
 import {CLASSROOM} from '../src/world/interiors/classroom.js';
 import {SATO_ROOM} from '../src/world/sato-ramen-layout.js';
 import {SHARED_DINING_COLLIDERS} from '../src/world/interiors/shared-dining-layout.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
-installDOM();configureTownMode(TOWN_MODES.PENINSULA);
+installDOM();
 const folder=fileURLToPath(new URL('../docs/building-plans/',import.meta.url));
 // An explicit revision lets refreshed evidence cite main even when the survey
 // tooling lives on a PR branch. Refuse provenance that differs from local inputs.

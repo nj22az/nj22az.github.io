@@ -6,7 +6,6 @@ import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {installDOM} from './fixtures.mjs';
 import {createShopGlass,prepareIzakayaGlass} from '../src/world/shop-glass.js';
 import {DINING,restaurantPoint,restaurantApproach,izakayaPlot,IZAKAYA_DOOR} from '../src/world/dining-layout.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {SAKURA_FRONT} from '../src/world/interiors/sakura-layout.js';
 import {buildStorefront} from '../src/world/storefront.js';
 import {RESIDENTS} from '../src/people/residents.js';
@@ -78,7 +77,7 @@ test('on the peninsula Minato leaves a passage beside the bookshop and clears th
  const corners=key=>[manifest.bounds.min[0],manifest.bounds.max[0]]
   .flatMap(x=>[manifest.bounds.min[2],manifest.bounds.max[2]].map(z=>restaurantPoint('izakaya',x,z)[key]));
  try{
-  configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+  izakayaPlot();
   const northGable=Math.max(...corners(1)),southGable=Math.min(...corners(1)),eastFace=Math.max(...corners(0));
   // Include the outer corner posts (.24 m beyond the nominal footprint).
   const books=WEST_SHOPS.frontrow,booksSouthWall=books.z-books.width/2-.24;

@@ -3,12 +3,11 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect} from '../physics.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {GATEBALL_ACTIVE} from '../src/world/okinawa/layout.js';
 
 async function town(){
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {createTown}=await import('../src/world/town.js?okinawa');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const labels=[],actions=[];

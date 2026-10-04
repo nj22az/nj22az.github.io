@@ -1,6 +1,5 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {izakayaPlot,IZAKAYA_DOOR} from '../src/world/dining-layout.js';
 import {residentPlan,thuanAtMinato,izakayaOpen,THUAN_BUS_MARGIN,thuanAfternoon,THUAN_WALK_START,THUAN_WALK_END} from '../src/people/social.js';
 import {departureFor} from '../src/people/commuter-schedule.js';
@@ -18,7 +17,7 @@ const shift=COMMUTER_SHIFTS.Thuan;
 const plan=minutes=>residentPlan(THUAN,minutes,false,{},true);
 
 test('Thuan has a beer at Minato between closing the shop and walking home',()=>{
- configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+ izakayaPlot();
  try{
   // On shift she is behind her own counter.
   assert.equal(plan(shift.finish-60).place,'market');
@@ -46,22 +45,17 @@ test('Thuan has a beer at Minato between closing the shop and walking home',()=>
   // Rain sends her straight home.
   assert.equal(residentPlan(THUAN,shift.finish+5,true,{},true).place,'home');
   assert.equal(thuanAtMinato(THUAN,shift.finish+5,true),false);
- }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
+ }finally{izakayaPlot();}
 });
 
 test('the beer is a commuter habit, not something bolted onto every layout',()=>{
- configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();
- // The archived street has its own evening for her (alternate-day supper with Nao),
- // and it is reached through the legacy plan rather than this one.
- const legacy=residentPlan(THUAN,shift.finish+5,false,{},false);
- assert.notEqual(legacy.place,'bus','The legacy street has no commuter bus to catch');
  // Somebody without a shift is not given one.
  assert.equal(thuanAtMinato({name:'Harbour master'},shift.finish+5,false),false);
 });
 
 
 test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop',()=>{
- configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+ izakayaPlot();
  try{
   // On shift either side of it she is behind her own counter.
   assert.equal(plan(THUAN_WALK_START-5).place,'market');
@@ -117,11 +111,11 @@ test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop
   assert.equal(thuanAfternoon(THUAN,THUAN_WALK_START+10,true),null);
   assert.equal(residentPlan(THUAN,THUAN_WALK_START+10,true,{},true).place,'market');
   assert.equal(thuanAfternoon({name:'Aya'},THUAN_WALK_START+10,false),null);
- }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
+ }finally{izakayaPlot();}
 });
 
 test('the whole day runs shop, walk, shop, beer, bus without a gap',()=>{
- configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+ izakayaPlot();
  try{
   const seen=[];
   // Out to the shared ten o'clock service.
@@ -132,7 +126,7 @@ test('the whole day runs shop, walk, shop, beer, bus without a gap',()=>{
   assert.deepEqual(order,['home','market','nap','park','stroll','market','izakaya','home']);
   // and every one of those is somewhere she can actually stand.
   for(const {m} of seen){const p=plan(m);assert.ok(Array.isArray(p.target)&&p.target.length===2,'No target at '+m);}
- }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
+ }finally{izakayaPlot();}
 });
 
 
@@ -141,7 +135,7 @@ test('every caller gets the same routine, however it asks',()=>{
  // residentPlan without naming a mode. It used to be handed the archived street's
  // routine while the schedule was handed the commuter one, so the two disagreed all
  // afternoon and the shop won — she stood at her counter through her own walk.
- configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+ izakayaPlot();
  try{
   const asked=residentPlan(THUAN,THUAN_WALK_START+20,false,{},true);
   const unasked=residentPlan(THUAN,THUAN_WALK_START+20,false,{});
@@ -149,14 +143,14 @@ test('every caller gets the same routine, however it asks',()=>{
   assert.notEqual(unasked.place,'market','The shop would keep her through her own walk');
   // The same holds for the evening, which is the other thing the shop could swallow.
   assert.equal(residentPlan(THUAN,shift.finish+10,false,{}).place,'izakaya');
- }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
+ }finally{izakayaPlot();}
  // and the archived street still gets the archived routine when nobody names a mode.
  assert.notEqual(residentPlan(THUAN,THUAN_WALK_START+20,false,{}).place,'park');
 });
 
 test('her break allows enough time to walk to the places it sends her',async()=>{
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+ izakayaPlot();
  try{
   const THREE=await import('../vendor/three.module.js');
   const {createTown}=await import('../src/world/town.js');
@@ -192,5 +186,5 @@ test('her break allows enough time to walk to the places it sends her',async()=>
    from=to;clock=leg.until;
   }
   assert.deepEqual(short,[],'A leg of her break is shorter than the walk it asks for');
- }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
+ }finally{izakayaPlot();}
 });

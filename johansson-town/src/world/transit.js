@@ -1,4 +1,3 @@
-import {peninsulaActive} from './town-mode.js';
 import {BUS_STATION} from './bus-station.js';
 import {FERRY_TERMINAL} from './ferry.js';
 

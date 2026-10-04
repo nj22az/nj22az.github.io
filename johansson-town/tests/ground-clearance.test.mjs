@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {GROUND_LAYER} from '../src/world/ground-layers.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 
 /**
  * Two flat surfaces drawn in the same plane flicker against each other wherever they
@@ -77,7 +76,7 @@ test('the ground layers are named rather than guessed',()=>{
 
 test('no two outdoor surfaces share a plane',async()=>{
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {createTown}=await import('../src/world/town.js?ground-clearance');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const scene=new THREE.Scene();

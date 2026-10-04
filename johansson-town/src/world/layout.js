@@ -14,7 +14,6 @@ import {FOREST_EDGE} from './forest-edge.js';
 import {TUNNEL,CAVE_MOUTH,CAVE_ACTIVE} from './coyote-tunnel.js';
 import {coastalSurface} from './coastal-ground.js';
 import {beachAccessHeight} from './beach-layout.js';
-import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 import {EAST_LAWN,eastLawnAt} from './east-lawn.js';
 import {WEST_YARD,westYardAt} from './west-yard.js';
 import {STAFF_YARD_ROUTE} from './staff-bench.js';

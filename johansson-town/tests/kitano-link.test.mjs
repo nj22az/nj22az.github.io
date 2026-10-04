@@ -3,12 +3,11 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect} from '../physics.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {KITANO_ROAD,KITANO_ROAD_LENGTH,KITANO_ROAD_LANDS,KITANO_SHORE,NAVIGATION_CLEARANCE,roadPoint,roadHeight,leftOf} from '../src/world/kitano-link-plan.js';
 import {pathPose} from '../src/world/road-network.js';
 import {FERRY,FERRY_BERTH} from '../src/world/ferry.js';
 
-installDOM();globalThis.self=globalThis;configureTownMode(TOWN_MODES.PENINSULA);
+installDOM();globalThis.self=globalThis;
 const {createTown}=await import('../src/world/town.js?kitano-link');
 const {createBusinesses}=await import('../src/world/businesses.js');
 const {routeAt,groundHeight}=await import('../src/world/layout.js');

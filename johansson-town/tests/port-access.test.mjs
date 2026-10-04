@@ -4,10 +4,9 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
 import {createNavigation} from '../src/people/navmesh.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 
 test('you can walk from the quay yard onto the pier and into Mr Fujita’s shed',async()=>{
- installDOM();globalThis.self=globalThis;configureTownMode(TOWN_MODES.PENINSULA);
+ installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js?port-access');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const {PORT_SHED,SHED_PIER}=await import('../src/world/port-shed.js');

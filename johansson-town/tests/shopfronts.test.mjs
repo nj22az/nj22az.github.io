@@ -3,13 +3,12 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {DOCK_WORKSHOP_PLOT} from '../src/world/dock-workshop-layout.js';
 import {WEST_SHOPS,westShopDoor,WEST_FRONT} from '../src/world/west-shops.js';
 
 async function peninsula(){
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {createTown}=await import('../src/world/town.js?shopfronts');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const scene=new THREE.Scene(),entrances=[];
@@ -48,7 +47,7 @@ test('every door opens onto a building',async()=>{
 });
 
 test('the shop staff stand at their own shop',async()=>{
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {RESIDENTS}=await import('../src/people/residents.js?shopfronts');
  for(const [name,id] of [['Aya','frontrow'],['Reiko','frontrow'],['Kenji','form3d'],['Tetsuo','form3d']]){
   const work=RESIDENTS.find(p=>p.name===name)?.work,door=id==='form3d'?DOCK_WORKSHOP_PLOT.door.filter((_,i)=>i!==1):westShopDoor(id);
@@ -59,7 +58,7 @@ test('the shop staff stand at their own shop',async()=>{
 
 test('the west shops leave the pavement and the crossing alone',async()=>{
  const {routeAt}=await import('../src/world/layout.js?shopfronts');
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  for(const [id,plot] of Object.entries(WEST_SHOPS)){
   // The doorstep is standable, and so is the pavement past the shop either way.
   const door=westShopDoor(id);

@@ -3,7 +3,6 @@ import {createSectionInstances} from './section-instances.js';
 import {createWindowBatch} from './shop-street-batches.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {FOREST_EDGE} from '../world/forest-edge.js';
-import {shoppingDistrictActive} from '../world/town-mode.js';
 
 export function districtAt(x,z){
   if((z>=FOREST_EDGE.wallZ))return 'Forest Edge';

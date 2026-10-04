@@ -1,5 +1,4 @@
 import {businessId} from '../world/businesses.js';
-import {peninsulaActive} from '../world/town-mode.js';
 export const WORK_SITES=Object.freeze({Aya:'frontrow',Kenji:'form3d',Tetsuo:'form3d',Reiko:'frontrow','Harbour master':'office'});
 /** Workplaces only the peninsula builds: Sato Ramen for Mrs Sato, the police box for Officer Mori. */
 const PENINSULA_WORK_SITES=Object.freeze({'Mrs Sato':'ramen','Officer Mori':'koban'});

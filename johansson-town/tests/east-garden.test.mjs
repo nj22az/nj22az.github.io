@@ -6,7 +6,6 @@ import {buildEastGarden,EAST_GARDEN} from '../src/world/east-garden.js';
 import {buildEastLawn,EAST_LAWN} from '../src/world/east-lawn.js';
 import {createTown} from '../src/world/town.js';
 import {createBusinesses} from '../src/world/businesses.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {groundHeight,routeAt} from '../src/world/layout.js?snappy=1';
 import {PARK,PARK_SKIRT} from '../src/world/park-layout.js';
 import {GROUND_LAYER} from '../src/world/ground-layers.js';
@@ -14,7 +13,7 @@ import {applyCelShading} from '../src/render/cel.js';
 import {createTownSections} from '../src/render/town-sections.js';
 import {circleHitsRect} from '../physics.js';
 
-function town(mode=TOWN_MODES.PENINSULA){
+function town(mode='peninsula'){
  installDOM();
  return createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),
   townMode:mode,mobile:false,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
@@ -61,7 +60,7 @@ test('the real world update drives both shaders through dusk, dawn and midnight 
 
 
 test('the garden stays on the lawn, off the park slope, with solid props and a reachable inspection point',()=>{
- installDOM();configureTownMode(TOWN_MODES.PENINSULA);
+ installDOM();
  const world=town(),garden=world.eastLawn.garden,{x,z,radius}=EAST_GARDEN;
  const colliders=world.colliders.filter(c=>c.id?.startsWith('east-garden'));
  assert.equal(colliders.length,4);

@@ -5,7 +5,6 @@ import {TOWN_DESTINATIONS} from '../world/town-grid.js';
 import {restaurantApproach,IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {residentialHome} from '../world/residential-layout.js';
 import {PROFILES} from './profiles.js';
-import {peninsulaActive} from '../world/town-mode.js';
 import {YARD_RESIDENT_NAMES,YARD_HOMES} from '../world/yard-homes-layout.js';
 import {KOBAN} from '../world/koban-layout.js';
 /**

@@ -19,7 +19,6 @@ import {createHarbourBasin,tickOcean,setOceanWeather} from './ocean.js';
 import {buildStorefront} from './storefront.js?snappy=1';
 import {buildThuanFlat} from './thuan-flat.js';
 import {SAKURA_FRONT} from './interiors/sakura-layout.js';
-import {peninsulaActive} from './town-mode.js';
 
 import {buildFerryTerminal} from './ferry.js';
 import {buildBusStation} from './bus-station.js';

@@ -1,8 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 
-configureTownMode(TOWN_MODES.SHOPPING);
+
 const {routeAt,groundHeight,ROUTES}=await import('../src/world/layout.js');
 const {PARK,parkApproachHeight}=await import('../src/world/park-layout.js');
 

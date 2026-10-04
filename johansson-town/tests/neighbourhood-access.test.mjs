@@ -2,14 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {townBoundsBlocked,standingHitsRect,circleHitsRect} from '../physics.js';
 import {groundHeight} from '../src/world/layout.js';
 import {createNavigation} from '../src/people/navmesh.js';
 import {KITAHAMA,plotGate} from '../src/world/kitahama-layout.js';
 import {gardenPoint,PARK_ACCESS} from '../src/world/garden-layout.js';
 import {PARK_BENCH} from '../src/world/park-layout.js';
-installDOM();globalThis.self=globalThis;configureTownMode(TOWN_MODES.PENINSULA);
+installDOM();globalThis.self=globalThis;
 const {createTown}=await import('../src/world/town.js');const {createBusinesses}=await import('../src/world/businesses.js');
 const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
 // Broad phase keeps this whole-town route audit practical without weakening collisions.

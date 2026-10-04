@@ -8,7 +8,6 @@ import {buildTeaHouse} from './tea-house.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import {ROUTES} from './layout.js?snappy=1';
 import {createMaterials} from '../render/materials.js?snappy=1';
-import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 
 // Modular timber, tiled roofs and open thresholds. Ground and collision share ROUTES.
 export function buildDistricts(world,options){

@@ -12,7 +12,6 @@ import {RESIDENTS,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {transitStop,awayPlace} from '../world/transit.js';
 import {ferryWords} from './social.js';
-import {peninsulaActive} from '../world/town-mode.js';
 import {thuanHasCommutePriority,yieldAsideTarget,commuteCrowdRadii,residentCommitted} from './thuan-commute-yield.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
@@ -71,8 +70,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();let clockMinutes=1002;
  // Both published layouts run on the Harbour Line, so both are commuter layouts. Only
  // the archived residential street is not.
- const COMMUTER_LAYOUTS=['shopping-district','peninsula'];
- const commuterMode=()=>COMMUTER_LAYOUTS.includes(world.townMode)||COMMUTER_LAYOUTS.includes(state()?.townMode);
+ const commuterMode=()=>true;
  for(const person of world.people)person.g.userData.scheduled=true;
  const thuan=world.people.find(p=>p.profile?.name==='Thuan');
  const staffBreak=thuan&&world.staffBench?createStaffBenchRoutine({entity:thuan.g,seat:world.staffBench.seat,isOccupied:()=>{

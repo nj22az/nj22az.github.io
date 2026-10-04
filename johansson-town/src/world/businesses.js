@@ -1,6 +1,5 @@
 import {DOCK_WORKSHOP} from './dock-workshop-layout.js';
 import {canonicalHomeId} from '../people/households.js';
-import {peninsulaActive} from './town-mode.js';
 import {BOOKSHOP_WORKSHOP} from './bookshop-workshop-layout.js';
 // Stable destinations: old save references resolve to the surviving business.
 export const BUSINESS_ALIASES=Object.freeze({journal:'frontrow',electronics:'form3d',stepwise:'form3d',career:'office'});

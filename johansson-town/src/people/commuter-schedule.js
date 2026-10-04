@@ -1,4 +1,3 @@
-import {peninsulaActive} from '../world/town-mode.js';
 import {ISLAND_RESIDENT_NAMES} from '../world/kitahama-layout.js';
 import {YARD_RESIDENT_NAMES} from '../world/yard-homes-layout.js';
 const shifts={

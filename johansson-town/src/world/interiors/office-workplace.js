@@ -1,6 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {createPlanKit} from './house-plan.js';
-import {peninsulaActive} from '../town-mode.js';
 
 export const OFFICE_STAFF={'Harbour master':[-1.85,0,-1.20]};
 export const OFFICE_DESK_SEAT={position:[-2.52,0,-2.02],stand:[-1.85,0,-1.20],eyeY:1.18,yaw:0,pitch:0};

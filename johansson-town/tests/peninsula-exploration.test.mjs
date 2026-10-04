@@ -4,7 +4,6 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {CAVE_ACTIVE} from '../src/world/coyote-tunnel.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {routeAt,groundHeight,MAP_BOUNDS} from '../src/world/layout.js?snappy=1';
 import {BEACH,beachHeight} from '../src/world/beach-layout.js';
 import {buildEastLawn,EAST_LAWN} from '../src/world/east-lawn.js';
@@ -12,7 +11,7 @@ import {buildCoyoteTunnel,TUNNEL,headlandHeight,CAVE_MOUTH} from '../src/world/c
 import {circleHitsRect,townBoundsBlocked} from '../physics.js';
 
 test('both beach openings allow approach, descent, a shoreline walk and return without crossing walls',()=>{
- configureTownMode(TOWN_MODES.PENINSULA);installDOM();
+ installDOM();
  const parent=new THREE.Group(),colliders=[];const {shore}=buildEastLawn({parent,colliders,heightAt:groundHeight});
  const blocked=(x,z)=>townBoundsBlocked(x,z,.32)||colliders.some(c=>circleHitsRect(x,z,.32,c));
  for(const access of BEACH.accesses){
@@ -31,7 +30,7 @@ test('both beach openings allow approach, descent, a shoreline walk and return w
 });
 
 test('dry ground around the peninsula is admitted and the sea remains blocked',()=>{
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  for(const p of [[-20,32],[-31,32],[43,33],[44,55],[8,54]])assert.equal(townBoundsBlocked(...p,.32),false,'Unbuilt dry land '+p);
  for(const p of [[-41,0],[48,10],[45.9,10],[48,40],[12,-51],[0,315]])assert.equal(townBoundsBlocked(...p,.32),true,'Sea '+p);
  assert.equal(townBoundsBlocked(45.5,10,.32),true,'The whole body must stay on dry sand');
@@ -40,7 +39,7 @@ test('dry ground around the peninsula is admitted and the sea remains blocked',(
 });
 
 test('headland feet follow rendered triangles, including the crown and slopes',{skip:!CAVE_ACTIVE&&'the headland is gone (coyote-tunnel.js CAVE_ACTIVE)'},()=>{
- configureTownMode(TOWN_MODES.PENINSULA);installDOM();
+ installDOM();
  const parent=new THREE.Group(),colliders=[];const {hill}=buildCoyoteTunnel({parent,colliders});parent.updateMatrixWorld(true);
  const ray=new THREE.Raycaster();
  for(const [x,z] of [[-20,36],[-18.3,48.7],[-10.2,60.1],[0.3,65.7],[6.4,75.9],[-3.5,70]]){

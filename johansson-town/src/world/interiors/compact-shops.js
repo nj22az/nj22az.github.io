@@ -6,7 +6,6 @@ import * as THREE from '../../../vendor/three.module.js';
 import {createMaterials} from '../../render/materials.js';
 import {alleyBusinessLayout} from '../business-layout.js';
 import {buildShopDoor} from '../shop-door.js';
-import {peninsulaActive} from '../town-mode.js';
 import {BOOKSHOP_WORKSHOP_ROOM} from '../bookshop-workshop-layout.js';
 
 export const TEA_ROOM={width:6.6,depth:5.8,bounds:{minX:-3.3,maxX:3.3,minZ:-2.9,maxZ:2.9},doorX:0,spawn:[0,0,2.25],exit:[0,1.1,2.78],yaw:0};

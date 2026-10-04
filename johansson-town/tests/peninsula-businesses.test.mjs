@@ -4,7 +4,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode} from '../src/world/town-mode.js';
 import {createPeninsulaBusinesses,businessId,migratedVisits} from '../src/world/businesses.js';
 import {createTown} from '../src/world/town.js';
 import {assignWorkplaces} from '../src/people/workplaces.js';
@@ -66,7 +65,7 @@ test('published businesses have reachable real doors and a clear passage beside 
    const plan=residentPlan(p.profile,minute,false,c.state);
    if(plan.place==='ramen')assert.ok(p.profile.name==='Mrs Sato'?minute>=630&&minute<840:satoRamenOpen(minute),p.profile.name+' at Sato Ramen outside its hours at '+minute);
   }
- }finally{configureTownMode('legacy');}
+ }finally{}
 });
 
 test('bookshop and dock workshop keep distinct content, accessible rooms and their own workers',()=>{
@@ -91,7 +90,7 @@ test('bookshop and dock workshop keep distinct content, accessible rooms and the
   }
   ids.push(...BUSINESS_CONTENT_CATALOGUE.filter(i=>i.siteId==='office').map(i=>i.id));assert.deepEqual(ids.sort(),ITEMS.map(i=>i.id).sort());
   assert.ok(BUSINESS_CONTENT_CATALOGUE.filter(i=>i.siteId==='form3d').every(i=>i.place.includes('western quay')));
- }finally{configureTownMode('legacy');}
+ }finally{}
 });
 
 test('restored supplied office and warehouse use their existing staff and working interiors',async()=>{
@@ -110,16 +109,16 @@ test('restored supplied office and warehouse use their existing staff and workin
    const used=new Set();for(let i=0;i<900;i++){service.update(.1,minute+i*.05,false);if(person.g.userData.socialPose)used.add(person.g.userData.socialPose);}
    assert.ok(used.size,name+' performs tasks inside '+id);service.restore();
   }
- }finally{configureTownMode('legacy');}
+ }finally{}
 });
 
 test('the relocated workshop keeps saved visits and the actual printing buttons working',()=>{
  try{
-  const dom=installDOM();configureTownMode('peninsula');
+  const dom=installDOM();
   assert.equal(businessId('form3d'),'form3d');assert.equal(businessId('stepwise'),'form3d');
   assert.deepEqual(migratedVisits(['form3d','journal','frontrow','electronics','career']),['form3d','frontrow','office']);
   const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1030,getSocialContext:()=>({inside:'form3d'})});
   acts.action('workshop');dom.button('Check with StepWise');dom.button('Use this pattern in Form 3D');dom.button('Print model · ¥40');
   acts.tick(8);acts.action('workshop');dom.button('Collect model');assert.equal(acts.state.inventory.length,1);acts.close();
- }finally{configureTownMode('legacy');}
+ }finally{}
 });

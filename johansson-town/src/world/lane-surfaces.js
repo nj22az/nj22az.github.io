@@ -4,7 +4,6 @@ import {RESIDENTIAL,inResidential} from './residential-layout.js';
 import * as THREE from '../../vendor/three.module.js';
 import {activeRoutes,routeAt,groundHeight} from './layout.js?snappy=1';
 import {MAIN_ROAD} from './main-road.js';
-import {shoppingDistrictActive} from './town-mode.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {pavedByTerminus} from './bus-station.js';
 

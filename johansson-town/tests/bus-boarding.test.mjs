@@ -77,11 +77,10 @@ test('with no bus modelled at all, people come and go as they always did',()=>{
 });
 
 test('nobody who was already away is left standing at the terminus',async()=>{
- const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');
  const {createCastAI}=await import('../src/people/schedules.js');
  const {RESIDENTS,STREET_CAST_NAMES}=await import('../src/people/residents.js');
 
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  try{
   // Three in the morning. Day staff left on the evening service. Reiko and Tetsuo
   // have finished work and wait for the morning service alongside the night staff.
@@ -123,14 +122,13 @@ test('nobody who was already away is left standing at the terminus',async()=>{
    assert.ok(a.g.position.distanceTo(b.g.position)>.6,
     a.profile.name+' and '+b.profile.name+' are standing in the same place');
   }
- }finally{configureTownMode(TOWN_MODES.LEGACY);}
+ }finally{}
 });
 
 test('they walk out to the pier and go aboard the ferry, rather than ending at a kerb',async()=>{
  const {installDOM}=await import('./fixtures.mjs');
- const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {createTown}=await import('../src/world/town.js?boarding-walk');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const {createCastAI}=await import('../src/people/schedules.js?boarding-walk');

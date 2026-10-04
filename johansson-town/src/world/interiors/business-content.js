@@ -1,6 +1,5 @@
 import {ITEMS} from '../../../content-data.js';
 import {makeContentObject} from '../../../content-items.js';
-import {peninsulaActive} from '../town-mode.js';
 
 const positions={
  frontrow:{
