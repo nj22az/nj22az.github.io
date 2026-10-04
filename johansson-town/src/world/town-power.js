@@ -1,31 +1,46 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createKit} from './okinawa/kit.js';
-import {utilityPole,wiresBetween,serviceDrop} from './okinawa/props.js';
+import {utilityPole,wiresBetween,serviceDrop,takePowerPlan,drawPlannedPole,SPAN_WIRES,spanWire} from './okinawa/props.js';
+import {sagCurve} from './okinawa/kit.js';
 import {poster} from './okinawa/signs.js';
 import {groundHeight} from './layout.js';
 import {SCHOOL} from './school-layout.js';
+/** A tree's collider is its trunk; its crown spreads well past it. */
+const TREE=/fukugi|tree|gajumaru|banyan|palm|pine|crown/i;
 /** One 6.6 kV radial network, with the diesel station as its source. */
 export function buildTownPower(world,{register,onAction,shadows=false}={}){
  const nodes=[],spans=[];world.group.traverse(o=>{const n=o.userData.powerNetwork;if(n){nodes.push(...n.nodes);spans.push(...n.spans);}});
  const group=new THREE.Group();group.name='Minato power station outgoing feeders';world.group.add(group);const kit=createKit({shadows});
  const solid=c=>world.colliders.push(c);
+ // Poles the quarters planned (props.js) join the network here, and are drawn below.
+ const planned=takePowerPlan();if(planned)nodes.push(...planned.poles);
  const pole=(x,z,o={})=>{let p;kit.at(0,0,0,()=>{p=utilityPole(kit,x,z,{...o,h:10});solid(p.collider);},groundHeight(x,z));nodes.push(p);return p;};
- const link=(a,b)=>{wiresBetween(kit,a,b,{sag:.38});spans.push({from:a.id,to:b.id});};
+ const strung=[];
+ const link=(a,b,sag=.38)=>{strung.push({a,b,sag});spans.push({from:a.id,to:b.id});};
+ for(const s of planned?.spans||[])link(s.a,s.b,s.sag);
  const root=pole(23.5,32.1,{transformer:false});root.source=true;
  const nearest=(x,z)=>nodes.reduce((a,b)=>Math.hypot(b.x-x,b.z-z)<Math.hypot(a.x-x,a.z-z)?b:a);
  // Follow the terminal's northern verge; never put a feeder pole through a house.
- const west=nearest(-36.7,20),main=nearest(6.9,19.6);
- const connector=[west,...[[-36.7,28],[-22,28],[-7.2,28],[6.9,28]].map(p=>pole(...p)),main];
+ const west=nearest(-36.7,20),main=nearest(5,19.6);
+ const connector=[west,...[[-36.7,28],[-15.5,28],[5.2,28]].map(p=>pole(...p,{tel:false})),main];
  for(let i=1;i<connector.length;i++)link(connector[i-1],connector[i]);link(root,connector.at(-2));
- // Upland radio spur and the coastal shopping street feeder use normal pole spans.
- const radio=nearest(22.25,93),radioLine=[radio,...[[22.25,113],[22.25,133],[25.5,153],[38,158]].map(p=>pole(...p,{transformer:p[1]===158}))];
- for(let i=1;i<radioLine.length;i++)link(radioLine[i-1],radioLine[i]);serviceDrop(kit,radioLine.at(-1),[38.5,2.6,161]);
- const coastal=[nearest(42.25,50),pole(61.8,48),pole(68,60),pole(73.8,74),nearest(84.25,95)];for(let i=1;i<coastal.length;i++)link(coastal[i-1],coastal[i]);
+ // Aoba Radio, up the hill, is fed by buried cable: a line of poles up an empty slope
+ // only cluttered the skyline. The coastal shopping street feeder uses normal spans.
+ const coastal=[nearest(42.25,50),pole(64,54,{tel:false}),pole(73.8,74,{tel:false}),nearest(84.25,95)];for(let i=1;i<coastal.length;i++)link(coastal[i-1],coastal[i]);
  // Join the remaining existing street circuits at their nearest poles, subdividing long spans.
  const connected=()=>{const set=new Set([root.id]);let changed=true;while(changed){changed=false;for(const s of spans)if(set.has(s.from)!==set.has(s.to)){set.add(s.from);set.add(s.to);changed=true;}}return set;};
  while(connected().size<nodes.length){const reached=connected();let pair=null,d=Infinity;for(const a of nodes.filter(n=>reached.has(n.id)))for(const b of nodes.filter(n=>!reached.has(n.id))){const m=Math.hypot(a.x-b.x,a.z-b.z);if(m<d){d=m;pair=[a,b];}}
-  const [a,b]=pair,count=Math.ceil(d/24);let prior=a;for(let i=1;i<count;i++){const p=pole(a.x+(b.x-a.x)*i/count,a.z+(b.z-a.z)*i/count);link(prior,p);prior=p;}link(prior,b);
+  const [a,b]=pair,count=Math.ceil(d/30);let prior=a;for(let i=1;i<count;i++){const p=pole(a.x+(b.x-a.x)*i/count,a.z+(b.z-a.z)*i/count);link(prior,p);prior=p;}link(prior,b);
  }
+ // Draw it: every pole, and every wire that keeps clear of buildings and trees. A wire
+ // that would pass through a roof or a crown is left off rather than drawn through it.
+ for(const p of planned?.poles||[])drawPlannedPole(kit,p);
+ const blockers=world.colliders.filter(c=>c.id!=='utility-pole'),clipped=[],wires=[];
+ const clear=(from,to,sag)=>{const curve=sagCurve(new THREE.Vector3(...from),new THREE.Vector3(...to),sag*Math.min(1.6,Math.hypot(to[0]-from[0],to[1]-from[1],to[2]-from[2])/14)),v=new THREE.Vector3();
+  for(let t=.06;t<.95;t+=.04){curve.getPoint(t,v);for(const c of blockers){const pad=TREE.test(c.id||'')?1.4:.15;if(v.x>c.minX-pad&&v.x<c.maxX+pad&&v.z>c.minZ-pad&&v.z<c.maxZ+pad&&v.y<(c.minY||0)+(c.height??3)+.4&&v.y>(c.minY||0)-.2)return false;}}
+  return true;};
+ for(const {a,b,sag} of strung)for(const i of SPAN_WIRES){if(!a.anchors[i]||!b.anchors[i])continue;const w=spanWire(a,b,i,sag);if(clear(w[0],w[1],w[2])){kit.wire(...w);wires.push(w);}else clipped.push(a.id+'>'+b.id+'#'+i);}
+ for(const {pole:p,to} of planned?.drops||[])if(p.anchors.at(-1).distanceTo(new THREE.Vector3(...to))<14&&clear(p.anchors.at(-1).toArray(),to,.25))kit.wire(p.anchors.at(-1).toArray(),to,.25,.014,0x2b2a30);
  // Protected outgoing cable and switching gear at the plant, rather than wires with loose ends.
  const ph=SCHOOL.powerHouse;
  kit.box(.13,.85,.65,ph.maxX+.09,2.15,33.9,0x71807d);
@@ -35,6 +50,6 @@ export function buildTownPower(world,{register,onAction,shadows=false}={}){
  kit.wire(new THREE.Vector3(23.34,8.9,32.1).toArray(),root.anchors[0].toArray(),.02,.025,0x2b2a30);
  kit.sign(poster({title:'港町発電所',lines:['MINATO POWER STATION','6.6 kV · 島内配電','Island distribution · 1997'],band:'#315c60',bg:'#e9e7d5'}),1.4,.85,ph.maxX+.08,2.35,31,{ry:Math.PI/2,name:'Power distribution board'});
  kit.finish(group,'Island distribution equipment');
- const a=new THREE.Object3D();a.position.set(21,1.3,31);group.add(a);register?.(a,'Read the island power network',()=>onAction?.('read','Minato power station','The two diesel generators feed the island at 6,600 volts through a buried cable to the outgoing pole. The northern feeder serves the terminal and homes; the eastern feeder serves Kitahama, Rainflower Lane and Aoba Radio. Pole transformers reduce the voltage for shops and houses. The station keeps a standby generator for storms.'));
- return {group,source:root.id,nodes,spans,connected:connected().size};
+ const a=new THREE.Object3D();a.position.set(21,1.3,31);group.add(a);register?.(a,'Read the island power network',()=>onAction?.('read','Minato power station','The two diesel generators feed the island at 6,600 volts through a buried cable to the outgoing pole. The northern feeder serves the terminal and homes; the eastern feeder serves Kitahama and Rainflower Lane, and a buried cable runs up the hill to Aoba Radio. Pole transformers reduce the voltage for shops and houses. The station keeps a standby generator for storms.'));
+ return {group,source:root.id,nodes,spans,wires,clipped,connected:connected().size};
 }

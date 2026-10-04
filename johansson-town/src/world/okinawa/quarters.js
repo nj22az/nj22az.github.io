@@ -474,15 +474,10 @@ function buildWires(kit,solid){
  const east=[-15,-1.5,12.3,19.6].map((z,i)=>pole(MAIN_ROAD.pavementEast-.25,z,{face:-Math.PI/2,transformer:i%2===0,lamp:true,seed:i}));
  for(let i=0;i<east.length-1;i++)wiresBetween(kit,east[i],east[i+1]);
  for(const [p,z] of [[east[0],-11],[east[1],-4],[east[2],9],[east[3],15.8]])serviceDrop(kit,p,[EAST_ROW.minX+.3,6,z]);
- // Along the seawall walk, with a pole at the head of each lane feeding its houses.
- const walk=[-38,-23,-9.5,5,20].map((z,i)=>pole(-36.7,z,{face:Math.PI/2,transformer:i===2,lamp:i%2===1,seed:10+i}));
+ // Along the seawall walk: three poles, one span to each block. The lanes off it have no
+ // poles of their own; a small island lane is fed from the walk, not lined with concrete.
+ const walk=[-38,-9.5,20].map((z,i)=>pole(-36.7,z,{face:Math.PI/2,tel:false,transformer:i===1,lamp:i!==1,seed:10+i*2}));
  for(let i=0;i<walk.length-1;i++)wiresBetween(kit,walk[i],walk[i+1]);
- for(const l of NISHI.lanes){
-  const p=pole(-26.3,l.z+l.half-.3,{h:7.8,face:Math.PI,transformer:false,seed:20+l.z});
-  const nearest=walk.reduce((a,b)=>Math.abs(b.anchors[0].z-l.z)<Math.abs(a.anchors[0].z-l.z)?b:a);
-  wiresBetween(kit,nearest,p,{sag:.5});
-  serviceDrop(kit,p,[-27,2.6,l.z+l.half+1.2]);serviceDrop(kit,p,[-27,2.6,l.z-l.half-1.2]);
- }
 }
 
 /* -------------------------------- Kitahama -------------------------------- */
@@ -521,10 +516,10 @@ function buildKitahama(kit,solid,ctx){
  // edge: set outside the edge, they stood inside the garden walls.
  const poles=[];
  const pole=(x,z,o={})=>{const p=utilityPole(kit,x,z,o);solid(p.collider);poles.push(p);return p;};
- const up=[30,40,50,60].map((z,i)=>pole(K.approach.minX+.25,z,{face:Math.PI/2,transformer:i===3,lamp:i%2===0,seed:200+i}));
- for(let i=0;i<up.length-1;i++)wiresBetween(kit,up[i],up[i+1]);
- const across=[34.5,42,52.5].map((x,i)=>pole(x,K.lane.maxZ-.25,{face:Math.PI,transformer:false,lamp:true,seed:210+i}));
- wiresBetween(kit,up[3],across[1],{sag:.5});wiresBetween(kit,across[0],across[1]);wiresBetween(kit,across[1],across[2]);
+ const up=[30,60].map((z,i)=>pole(K.approach.minX+.25,z,{face:Math.PI/2,transformer:i===1,lamp:true,seed:200+i*3}));
+ wiresBetween(kit,up[0],up[1]);
+ const across=[pole(42,K.lane.maxZ-.25,{face:Math.PI,transformer:false,lamp:true,seed:211})];
+ wiresBetween(kit,up[1],across[0],{sag:.5});
  for(const p of K.plots.filter(q=>Number(q.id.split('-')[1])<6)){const {door}=plotGate(p,0);const near=across.reduce((a,b)=>Math.abs(b.anchors[0].x-door[0])<Math.abs(a.anchors[0].x-door[0])?b:a);
   serviceDrop(kit,near,kit.point(door[0]+1.5,2.6,p.gate==='north'?p.minZ+3.2:p.maxZ-3.2).toArray());}
  // The residential quarter to the west: flats, park, rubbish point, poles (kitahama-quarter.js).

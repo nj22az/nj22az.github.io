@@ -10,11 +10,24 @@ import {rng} from './kit.js';
  * harbour street is cluttered with.
  */
 
-export function utilityPole(kit,x,z,{h=9.8,face=0,transformer=true,lamp=false,guy=false,seed=1}={}){
+/**
+ * The town's poles and wires are planned before they are drawn. While a plan is open,
+ * utilityPole only measures (its anchors and collider are real, its geometry is not) and
+ * wiresBetween only records the span; town-power.js then thins the network, leaves out
+ * any wire that would pass through a building or a tree, and draws the lot as one mesh.
+ */
+let plan=null;
+export const beginPowerPlan=()=>{plan={poles:[],spans:[],drops:[]};};
+export const takePowerPlan=()=>{const p=plan;plan=null;return p;};
+const measuring=kit=>({...kit,box(){},cyl(){},rod(){}});
+
+export function utilityPole(kit,x,z,{h=9.8,face=0,transformer=true,lamp=false,guy=false,tel=true,seed=1}={}){
+ const planning=!!plan,real=kit;kit=planning?measuring(kit):kit;
  h=Math.max(9.8,h);
- const r=rng(seed),anchors=[];
+ const r=rng(seed),anchors=[];let origin,east;
  const concrete=0xc9c5bc,steel=0x8e979a,porcelain=0xf2f0ea,black=0x2b2a30;
  kit.at(x,z,face,()=>{
+  origin=kit.point(0,0,0);east=kit.point(1,0,0);
   // Tapered shaft in three courses (a pole is spun concrete, not a cylinder), base, cap.
   kit.cyl(.12,.15,h*.5,0,h*.75,0,concrete,{segments:7});
   kit.cyl(.15,.18,h*.5,0,h*.25,0,concrete,{segments:7});
@@ -47,10 +60,13 @@ export function utilityPole(kit,x,z,{h=9.8,face=0,transformer=true,lamp=false,gu
   kit.box(.06,.95,.08,0,lv,.16,steel);
   for(const k of [0,1,2]){const y=lv+.35-k*.35;kit.cyl(.065,.065,.12,0,y,.27,porcelain,{segments:8,rx:Math.PI/2});}
   // Telephone: one thick black cable lower down, with its closure box.
-  const tel=h-4.7;
-  kit.box(.05,.05,.35,0,tel,.18,steel);
-  kit.box(.3,.22,.18,.22,tel-.35,.2,0x9ba1a3);
-  anchors.push(kit.point(0,tel,.36));
+  // (Left off where the street side is lined with trees: anchors[3] stays empty.)
+  if(tel){
+   const y=h-4.15;
+   kit.box(.05,.05,.35,0,y,.18,steel);
+   kit.box(.3,.22,.18,.22,y-.35,.2,0x9ba1a3);
+   anchors.push(kit.point(0,y,.36));
+  }else anchors.push(null);
   for(const k of [0,1,2])anchors.push(kit.point(0,lv+.35-k*.35,.34));
   // The riser cable, step bolts, plate and foot guard.
   kit.cyl(.035,.035,h-1.8,-.16,(h-1.8)/2,.05,black,{segments:5});
@@ -72,19 +88,31 @@ export function utilityPole(kit,x,z,{h=9.8,face=0,transformer=true,lamp=false,gu
   }
  });
  const foot=kit.point(x,0,z),pole={id:`pole:${foot.x.toFixed(2)}:${foot.z.toFixed(2)}`,x:foot.x,z:foot.z,y:foot.y,anchors,top:h,collider:kit.rect(x-.2,x+.2,z-.2,z+.2,h,'utility-pole'),seed:r.next()};
- kit.powerNode(pole);return pole;
+ if(planning){pole.place={x:origin.x,y:origin.y,z:origin.z,face:Math.atan2(-(east.z-origin.z),east.x-origin.x),h,transformer,lamp,guy,tel,seed};plan.poles.push(pole);}
+ else real.powerNode(pole);
+ return pole;
+}
+
+/** Draws a planned pole into another kit, where it stood in the world. */
+export function drawPlannedPole(kit,{place:{x,y,z,face,h,transformer,lamp,guy,tel,seed}}){
+ let pole;kit.at(0,0,0,()=>{pole=utilityPole(kit,x,z,{h,face,transformer,lamp,guy,tel,seed});},y);return pole;
 }
 
 /** Cables from each anchor of one pole to the matching anchor of the next. */
 export function wiresBetween(kit,a,b,{sag=.45}={}){
+ if(plan){plan.spans.push({a,b,sag});return;}
  kit.powerSpan(a,b);
- const n=Math.min(a.anchors.length,b.anchors.length);
- // High voltage is strung tight and thin; the telephone cable is thick and sags most.
- for(let i=0;i<n;i++)kit.wire(a.anchors[i].toArray(),b.anchors[i].toArray(),i<3?sag*.7:i===3?sag*1.5:sag,i===3?.032:i<3?.012:.018,0x2b2a30);
+ for(const i of SPAN_WIRES)if(a.anchors[i]&&b.anchors[i])kit.wire(...spanWire(a,b,i,sag));
 }
+/**
+ * Three high-voltage lines and one telephone cable per span: the low-voltage spools stay
+ * on the pole but are not strung, because seven wires a span read as a tangle.
+ */
+export const SPAN_WIRES=[0,1,2,3];
+export const spanWire=(a,b,i,sag)=>[a.anchors[i].toArray(),b.anchors[i].toArray(),i<3?sag*.7:sag*1.5,i===3?.034:.016,0x2b2a30];
 
 /** A cable from a pole down to the eave of a house: the service drop. */
-export function serviceDrop(kit,pole,to){kit.wire(pole.anchors[pole.anchors.length-1].toArray(),to,.25,.014,0x2b2a30);}
+export function serviceDrop(kit,pole,to){if(plan){plan.drops.push({pole,to});return;}kit.wire(pole.anchors[pole.anchors.length-1].toArray(),to,.25,.014,0x2b2a30);}
 
 /**
  * A kei truck (Sakura Crossing's makeKeiTruck): cab-over, drop-sided bed, the sort

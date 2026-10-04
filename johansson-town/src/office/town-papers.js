@@ -180,7 +180,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Minato power station",
     "organisation": "Town Services",
-    "text": "The two diesel generators feed the island at 6,600 volts through a buried cable to the outgoing pole. The northern feeder serves the terminal and homes; the eastern feeder serves Kitahama, Rainflower Lane and Aoba Radio. Pole transformers reduce the voltage for shops and houses. The station keeps a standby generator for storms.",
+    "text": "The two diesel generators feed the island at 6,600 volts through a buried cable to the outgoing pole. The northern feeder serves the terminal and homes; the eastern feeder serves Kitahama and Rainflower Lane, and a buried cable runs up the hill to Aoba Radio. Pole transformers reduce the voltage for shops and houses. The station keeps a standby generator for storms.",
     "source": "notice:Minato power station"
   },
   {

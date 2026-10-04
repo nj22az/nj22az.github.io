@@ -1,6 +1,7 @@
 import {buildCountryside} from './countryside.js';
 import {buildQuietLife} from './quiet-life.js';
 import {buildTownPower} from './town-power.js';
+import {beginPowerPlan} from './okinawa/props.js';
 import {buildParkAccess} from './park-access.js';
 import {buildDocklandsLife} from './docklands-life.js';
 import {addSakuraFlyer} from './sakura-flyers.js';
@@ -235,6 +236,7 @@ function pavedAt(){
 
 export function createTown(options){
   const mode=configureTownMode(options.townMode);izakayaPlot();
+  if(peninsulaActive())beginPowerPlan();
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
   world.townMode=mode;

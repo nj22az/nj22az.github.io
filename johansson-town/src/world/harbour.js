@@ -1,5 +1,3 @@
-import {createKit} from './okinawa/kit.js';
-import {utilityPole,wiresBetween} from './okinawa/props.js';
 import {japaneseSign,signText} from './okinawa/signs.js';
 import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
@@ -214,14 +212,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
    cyl(.10,.85,[px,.425,-32],0x3b4848);box([.22,.10,.22],[px,.9,-32],0xe7c080);obstacle(px,-32,.25,.25);
    const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(px,1,-32);group.add(light);lampLights.push(light);
   }
-  // The old shopping-street feeder uses the same concrete poles and insulators as town.
-  {const kit=createKit({shadows});
-   for(const side of [-1,1]){const poles=[];for(const z of (side<0?[7.5,18.5]:[11,17])){
-    const p=utilityPole(kit,side<0?-7.2:.8,z,{face:side<0?Math.PI/2:-Math.PI/2,transformer:z===11,lamp:true});
-    colliders.push(p.collider);poles.push(p);
-   }wiresBetween(kit,poles[0],poles[1]);}
-   kit.finish(group,'Shopping street electrical feeder');
-  }
+  // The shopping street is fed from the Main Street line (okinawa/quarters.js): a second
+  // and third row of poles a few metres from it was clutter.
   for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label("Johansson Shopping Street",'JOHANSSON SHOPPING STREET',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d',false,true);
 
   // Late-Shōwa street lamps: shopping street + quay approach. Emissive heads only
