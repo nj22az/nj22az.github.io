@@ -4,8 +4,8 @@
 
 ## Progress
 - [x] Phase 0: plan saved in the repo
-- [ ] Phase 1: layout constants (`port-building-layout.js`), terminal points moved to the forecourt
-- [ ] Phase 2: exterior (`port-building.js`), old terminal box and office exterior removed
+- [x] Phase 1: layout constants (`port-building-layout.js`), terminal points moved to the forecourt
+- [x] Phase 2: exterior (`port-building.js`), old terminal box and office exterior removed
 - [ ] Phase 3: waiting hall interior (`interiors/port-hall.js`)
 - [ ] Phase 4: one ticket counter for all departures; bus-station leftovers renamed
 - [ ] Phase 5: polish, screenshots, draw calls, tests

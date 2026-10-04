@@ -1,9 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
-import {GROUND_LAYER} from './ground-layers.js';
 import {waveHeight,SEA_LEVEL} from './ocean.js';
 import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js';
-import {glazeWithRoom} from '../render/window-interior.js';
-import {poster} from './okinawa/signs.js';
+import {PORT_BUILDING} from './port-building.js';
 
 /**
  * The Minato ferry, and the terminal it calls at.
@@ -36,18 +34,18 @@ export const FERRY_BERTH=Object.freeze({
  * schedules that walked people to the bus walk them here.
  */
 export const FERRY_TERMINAL=Object.freeze({
- // East of the pier's root, between it and the harbour office: it used to be a booth
- // in front of the warehouse door.
- id:'ferry-terminal',x:7.1,z:-47.3,
- minX:4.7,maxX:9.5,minZ:-49.3,maxZ:-43.6,
+ // The waiting hall of the Minato Port Building (port-building.js), on the quay at the
+ // pier's root. It used to be a booth of its own beside the harbour office.
+ id:'ferry-terminal',x:(PORT_BUILDING.hall.minX+PORT_BUILDING.hall.maxX)/2,z:(PORT_BUILDING.hall.minZ+PORT_BUILDING.hall.maxZ)/2,
+ minX:PORT_BUILDING.hall.minX,maxX:PORT_BUILDING.hall.maxX,minZ:PORT_BUILDING.hall.minZ,maxZ:PORT_BUILDING.hall.maxZ,
  /** The gangway's foot on the pier, which is where the queue starts. */
  queue:Object.freeze([PIER_WEST+.6,FERRY_BERTH.gangwayZ]),
- /** Where somebody waiting stands: under the terminal's canopy, off the pier. */
- platform:Object.freeze([6.4,-42.9]),
+ /** Where somebody waiting stands: under the hall's canopy, off the pier. */
+ platform:PORT_BUILDING.platform,
  /** Where the people it brought step onto the pier. */
  arrival:Object.freeze([PIER_WEST+.9,FERRY_BERTH.gangwayZ+.9]),
- driver:Object.freeze([5,-43.2]),
- exit:Object.freeze([6.4,-42.9]),
+ driver:PORT_BUILDING.driver,
+ exit:PORT_BUILDING.platform,
 });
 
 /** The way in: from the open sea round the breakwater's west end to the berth, bow first. */
@@ -241,61 +239,23 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
 }
 
 /**
- * The ferry terminal on the quay: a ticket booth, a sign and the timetable, with the quay
- * bench to wait on. It answers to the same calls the bus station did.
+ * The ferry's stop: the prompts at the Port Building's waiting hall (port-building.js)
+ * and the place the map and the schedules use. It answers the calls the bus station did.
  */
 export function buildFerryTerminal({parent,colliders,register=()=>{},onAction=()=>{},label=()=>{},shadows=false}={}){
  const group=new THREE.Group();group.name='Minato ferry terminal';parent.add(group);
  const T=FERRY_TERMINAL;
- const timber=new THREE.MeshStandardMaterial({color:0x625a4d,roughness:.88});
- const steel=new THREE.MeshStandardMaterial({color:0x405457,roughness:.7,metalness:.12});
- const cream=new THREE.MeshStandardMaterial({color:0xe6dfcc,roughness:.8});
- const teal=new THREE.MeshStandardMaterial({color:0x3f7f7c,roughness:.6});
- const glass=new THREE.MeshStandardMaterial({color:0x4c7074,roughness:.24,transparent:true,opacity:.72,emissive:0x1a3031,emissiveIntensity:.16});
- const lampMat=new THREE.MeshStandardMaterial({color:0xe6b46b,roughness:.55,emissive:0xe6b46b,emissiveIntensity:.08});
- const lamps=[];
- const box=(size,pos,material)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material);m.position.set(...pos);m.castShadow=!!shadows;m.receiveShadow=!!shadows;group.add(m);return m;};
- const cyl=(r,hgt,pos,material)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,hgt,10),material);m.position.set(...pos);m.castShadow=!!shadows;group.add(m);return m;};
  const anchor=(pos,text,fn)=>{const a=new THREE.Object3D();a.position.set(...pos);group.add(a);register(a,text,fn);return a;};
- const y=GROUND_LAYER.apron;
- // The terminal: a small concrete building on the quay east of the pier's root, the
- // ticket office at its west end with the window on the pier, the waiting room behind
- // glass, and a canopy on posts along the front where people stand for the boarding
- // call. The name goes along the roof so it reads from the ferry coming in.
- const W=T.maxX-T.minX,D=-45.3-T.minZ,cx=(T.minX+T.maxX)/2,cz=(T.minZ+(-45.3))/2,H=3;
- box([W,H,D],[cx,y+H/2,cz],cream);
- box([W+.1,.35,D+.1],[cx,y+H-.2,cz],teal);
- box([W+.5,.14,D+2.2],[cx,y+H+.07,cz+.85],timber);                  // roof slab and canopy
- for(const x of [T.minX+.3,T.maxX-.3])box([.14,H,.14],[x,y+H/2,-43.75],steel);
- glazeWithRoom(box([W-1.6,1.5,.06],[cx+.6,y+1.45,-45.27],glass));                    // the waiting room's glass front
- box([.06,1.6,.06],[cx-.3,y+1.45,-45.24],steel);
- box([.9,2.1,.06],[T.minX+1,y+1.05,-45.27],teal);                      // the door
- glazeWithRoom(box([.05,.7,1.4],[T.minX-.02,y+1.35,cz],glass));                       // the ticket window, on the pier
- box([.35,.06,1.4],[T.minX-.2,y+.98,cz],timber);
- // The ticket window's steel frame, its sign, and the timetable on the wall beside it:
- // without them the glass read as a loose grey sheet stuck to the building.
- for(const dy of [-.38,.38])box([.07,.06,1.54],[T.minX-.04,y+1.35+dy,cz],steel);
- for(const dz of [-.74,.74])box([.07,.82,.06],[T.minX-.04,y+1.35,cz+dz],steel);
- label('Tickets','TICKETS',[T.minX-.06,y+1.98,cz],1.1,.34,-Math.PI/2,'#2b5a78','#f3ecd8');
- {const board=new THREE.Mesh(new THREE.PlaneGeometry(.62,.86),new THREE.MeshBasicMaterial({map:poster({title:'Timetable',lines:['FERRY TIMETABLE','MINATO ⇄ MAINLAND',...HARBOUR_LINE.map(m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}  dep.`),'Tickets ¥600'],band:'#2b5a78',bg:'#f3ecd8'}),toneMapped:false}));
-  board.rotation.y=-Math.PI/2;board.position.set(T.minX-.05,y+1.45,cz-1.45);board.name='Ferry timetable';group.add(board);
-  box([.05,.92,.68],[T.minX-.012,y+1.45,cz-1.45],timber);}
- colliders.push({id:'ferry-terminal',x:cx,z:cz,w:W,d:D,height:3.2});
- for(const x of [T.minX+.3,T.maxX-.3])colliders.push({id:'ferry-canopy-post',x,z:-43.75,w:.2,d:.2,height:3});
- // A bench under the canopy, and the lamps.
- box([1.8,.08,.45],[cx+1,y+.45,-44.2],timber);for(const dx of [-.7,.7])box([.08,.42,.4],[cx+1+dx,y+.22,-44.2],steel);
- colliders.push({id:'ferry-bench',x:cx+1,z:-44.2,w:1.9,d:.5,height:.5});
- for(const x of [T.minX+1.2,T.maxX-1.2]){const bulb=cyl(.1,.14,[x,y+H-.15,-44.1],lampMat);lamps.push(bulb);}
- label("Ferry Terminal",'MINATO FERRY TERMINAL',[cx,y+H+.55,-45.2],4.2,.7,0,'#e5dcc0','#2b5a78',true);
- // The terminal fascia is the wayfinding sign. A second broad panel here
- // showed its blank back across the warehouse entrance when viewed from the quay.
- anchor([T.minX-.6,1.1,cz],'Read the ferry timetable',()=>onAction('bus'));
- anchor([cx+1,1,-43.6],'Wait for the ferry',()=>onAction('bus'));
+ // The building itself is the Port Building's waiting hall (port-building.js); these are
+ // the prompts that belong to it.
+ const [px,pz]=T.platform;
+ anchor([T.minX-.5,1.3,-44.95],'Read the ferry timetable',()=>onAction('bus'));
+ anchor([px,1,pz+1.1],'Wait for the ferry',()=>onAction('bus'));
  anchor([-4.5,1,-47.1],'Look out for the ferry',()=>onAction('inspect','Minato ferry','The ferry is the way to the mainland: three sailings a day, round the breakwater to the mainland and back, cars and trucks on the deck. Tickets at the terminal; the punch cards are sold at Sakura.'));
  const place={id:T.id,title:'Minato Ferry Terminal',jp:"Ferry Terminal",sub:'ARRIVALS · DEPARTURES',x:T.x,z:T.z,line:'Three sailings a day to the mainland from the outer pier.',
   door:[T.platform[0],0,T.platform[1]],exitPosition:[T.platform[0],0,T.platform[1]]};
  const departures=[];
  return {group,place,queue:[...T.queue],arrival:[...T.arrival],driver:[...T.driver],exit:[...T.exit],departures,
   board(name,minutes){departures.push({name,minutes});if(departures.length>24)departures.shift();},
-  update(minutes=0,day=1){const night=day<.35;lamps.forEach(m=>{m.material.emissiveIntensity=night?.75:.08;});glass.emissiveIntensity=night?.3:.16;}};
+  update(){}};
 }

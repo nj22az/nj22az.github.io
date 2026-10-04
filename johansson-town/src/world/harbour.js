@@ -171,7 +171,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
     if(s.industrialWorkshop){harbourShops.push(buildDockWorkshop({parent:group,site:s,register,enter,label,colliders}));return;}
-    if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider);return;}
+    if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider,...office.colliders);return;}
     // The alley units are a recessed door in the side of the supplied night-market
     // kit. The peninsula does not build that kit, so on this layout a shop that has a
     // west-pavement plot gets a building of its own instead of a door standing in the
@@ -270,7 +270,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function ropeCoil(x,z,scale=1){
     const rm=material(0xa38a62);for(let i=0;i<3;i++){const t=directMesh(new THREE.TorusGeometry(.35*scale+i*.07,.045*scale,6,20),rm,group,[x,.18+i*.035,z],[Math.PI/2,0,(i%2)*.25],[1,1,1],false);t.castShadow=false;}
   }
-  ropeCoil(-8.3,-47.1,.9);ropeCoil(8.9,-47.2,.75);
+  ropeCoil(-8.3,-47.1,.9);
 
   function crateStack(x,z,cols=2,rows=2){
     const colors=[0x4f6f76,0xa9854e,0x6f805e];
@@ -299,7 +299,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
   directBox([1.15,1.55,.85],[8.7,.88,-36.8],0xd8d8cc,group,[0,0,0],true);label("Ice",'ICE',[8.7,1.85,-36.35],.78,.5,0,'#dde1d7','#37636a');obstacle(8.7,-36.8,1.2,.9);
 
-  for(const [x,z] of [[-17.1,-48],[16.3,-47.2]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
+  for(const [x,z] of [[-17.1,-48],[17.6,-47.6]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
 
   // Tyre fenders on the quay wall — broad black shapes, not thin white lines.
   for(const x of [-14,-7,0,7,14]){const tire=directMesh(new THREE.TorusGeometry(.42,.1,8,20),material(0x262d2e),group,[x,-.05,-49.76],[0,0,0]);tire.scale.set(1,.78,1);}
@@ -311,7 +311,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
 
   // A couple of benches moved away from warehouse geometry.
-  for(const x of [-4.7,4.7]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);}
+  for(const x of [-4.7]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);}
 
   // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights.
   const boat=new THREE.Group();boat.position.set(9,-.18,-56);boat.rotation.y=-.07;group.add(boat);
