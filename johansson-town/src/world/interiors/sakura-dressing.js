@@ -149,7 +149,8 @@ export const WALL_POSTERS=Object.freeze([
  {id:'tea',position:[-5.72,2.3,-2.433],yaw:0,size:[.74,1.1]},
  {id:'coffee',position:[-4.62,2.3,-2.433],yaw:0,size:[.74,1.1]},
  {id:'biscuit',position:[4.57,1.82,-2.35],yaw:-Math.PI/2,size:[.94,1.41]},
- {id:'eisa',position:[-3.2,1.85,-3.94],yaw:0,size:[.74,1.04]},
+ // Up and along, clear of the cash corner under it (sakura-corners.js).
+ {id:'eisa',position:[-3.45,2.0,-3.94],yaw:0,size:[.74,1.04]},
 ]);
 function eisaPoster(){
  return canvasTexture(512,720,(ctx,w,h)=>{

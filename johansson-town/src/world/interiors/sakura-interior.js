@@ -13,6 +13,7 @@ import {buildSakuraCheer,buildSakuraBand} from './sakura-cheer.js';
 import {buildSakuraLife} from './sakura-life.js';
 import {buildMagazineRack} from './sakura-magazine-rack.js';
 import {buildShelfEdges} from './sakura-shelf-edge.js';
+import {buildSakuraCorners} from './sakura-corners.js';
 import {shelfArtMaterial,flavouredArt,flavourForColumn,setFlavour,flavourTint} from './shelf-flavours.js';
 let model=null;
 /**
@@ -108,6 +109,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   const o=anchor([shelf.x+front.x*.17,shelf.levels.at(-1)+.14,shelf.z+front.z*.17],'Examine '+(spec.brand||'SAKURA')+' · '+spec.name,()=>action('store-item',spec.name,{...spec,jp:spec.jp||"Meat bun",text:spec.text||'A wrapped steamed bun to take away.'}));o.userData.storeItem=spec.id;
  }
  buildShelfEdges(room);
+ buildSakuraCorners(room,{anchor,action});
  // Fittings the model came with that nothing stood on (SAKURA_DRESSING). Instanced the
  // same way as the goods, but never restocked: none of it is for sale.
  for(const piece of SAKURA_DRESSING){

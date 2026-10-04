@@ -87,6 +87,8 @@ export const FRONT_ENDCAPS=Object.freeze([
  Object.freeze({id:'west-front',x:-4.05,z:1.7815,w:1.0,d:.42,levels:Object.freeze([.35,.82])}),
  Object.freeze({id:'middle-front',x:-1.55,z:1.515,w:1.0,d:.42,levels:Object.freeze([.35,.82])}),
 ]);
+/** The cash corner on the back wall between the restroom and the drinks (sakura-corners.js). */
+export const CASH_CORNER=Object.freeze({atm:Object.freeze({x:-2.66,z:-3.66,w:.58,d:.5,h:1.42}),film:Object.freeze({x:-3.42,z:-3.72,w:.44,d:.38,h:1.12})});
 /** The copy machine by the east window, its fax on a table beside it. */
 export const COPY_MACHINE=Object.freeze({x:2.1,z:3.5,w:.62,d:.56});
 export const SAKURA_LAYOUT={
@@ -100,6 +102,7 @@ export const SAKURA_LAYOUT={
  staff:[5.5,0,.85],staffYaw:Math.PI/2,checkout:[3.9,0,.85],stockroom:[.7,0,-5.5],register:[4.78,1.1,.85],
  colliders:[
   ...GONDOLA.map(([id,r])=>turned(id,r)),
+  rect(CASH_CORNER.atm.x,CASH_CORNER.atm.z,CASH_CORNER.atm.w,CASH_CORNER.atm.d,1.6),rect(CASH_CORNER.film.x,CASH_CORNER.film.z,CASH_CORNER.film.w,CASH_CORNER.film.d,1.2),
   rect(MAGAZINE_RACK.x,MAGAZINE_RACK.z,MAGAZINE_RACK.width,MAGAZINE_RACK.depth,MAGAZINE_RACK.height),rect(-5.17,-2.16,2.04,.61,1.5),
   rect(-6.4,.43,.9,4.03,2.25),rect(.4,-3.55,5.35,.8,2.3),
   rect(4.8,1.97,.52,3.78,1.0),rect(6.74,2.08,.18,3.48,2.0),rect(3.64,3.6,1.35,.57,1.06),
