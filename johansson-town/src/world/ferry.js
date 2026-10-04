@@ -3,6 +3,7 @@ import {GROUND_LAYER} from './ground-layers.js';
 import {waveHeight,SEA_LEVEL} from './ocean.js';
 import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js';
 import {glazeWithRoom} from '../render/window-interior.js';
+import {poster} from './okinawa/signs.js';
 
 /**
  * The Minato ferry, and the terminal it calls at.
@@ -271,6 +272,14 @@ export function buildFerryTerminal({parent,colliders,register=()=>{},onAction=()
  box([.9,2.1,.06],[T.minX+1,y+1.05,-45.27],teal);                      // the door
  glazeWithRoom(box([.05,.7,1.4],[T.minX-.02,y+1.35,cz],glass));                       // the ticket window, on the pier
  box([.35,.06,1.4],[T.minX-.2,y+.98,cz],timber);
+ // The ticket window's steel frame, its sign, and the timetable on the wall beside it:
+ // without them the glass read as a loose grey sheet stuck to the building.
+ for(const dy of [-.38,.38])box([.07,.06,1.54],[T.minX-.04,y+1.35+dy,cz],steel);
+ for(const dz of [-.74,.74])box([.07,.82,.06],[T.minX-.04,y+1.35,cz+dz],steel);
+ label('Tickets','TICKETS',[T.minX-.06,y+1.98,cz],1.1,.34,-Math.PI/2,'#2b5a78','#f3ecd8');
+ {const board=new THREE.Mesh(new THREE.PlaneGeometry(.62,.86),new THREE.MeshBasicMaterial({map:poster({title:'Timetable',lines:['FERRY TIMETABLE','MINATO ⇄ MAINLAND',...HARBOUR_LINE.map(m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}  dep.`),'Tickets ¥600'],band:'#2b5a78',bg:'#f3ecd8'}),toneMapped:false}));
+  board.rotation.y=-Math.PI/2;board.position.set(T.minX-.05,y+1.45,cz-1.45);board.name='Ferry timetable';group.add(board);
+  box([.05,.92,.68],[T.minX-.012,y+1.45,cz-1.45],timber);}
  colliders.push({id:'ferry-terminal',x:cx,z:cz,w:W,d:D,height:3.2});
  for(const x of [T.minX+.3,T.maxX-.3])colliders.push({id:'ferry-canopy-post',x,z:-43.75,w:.2,d:.2,height:3});
  // A bench under the canopy, and the lamps.

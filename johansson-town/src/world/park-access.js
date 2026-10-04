@@ -23,7 +23,7 @@ export function buildParkAccess(world,{register,onAction}={}){
  // A readable timber entrance faces the approaching visitor, with a clear walk under it.
  kit.at(-4,30.8,Math.atan2(-8,7.6),()=>{
   for(const x of [-1.85,1.85]){kit.box(.12,2.25,.12,x,1.125,0,0x74583d);world.colliders.push(kit.rect(x-.06,x+.06,-.06,.06,2.25,'garden-entrance-post'));}
-  kit.box(3.9,.12,.15,0,2.25,0,0x74583d);kit.sign(poster({title:'青葉公園',lines:['AOBA GARDEN'],band:'#355d46',bg:'#eee5cc'}),1.9,.48,0,2.5,-.08,{ry:Math.PI,name:'Aoba Garden entrance'});
+  kit.box(3.9,.12,.15,0,2.25,0,0x74583d);kit.sign(poster({title:'青葉公園',lines:['AOBA GARDEN'],band:'#355d46',bg:'#eee5cc'}),1.9,.48,0,2.5,-.08,{ry:Math.PI,name:'Aoba Garden entrance',both:true});
  });
  for(const [x,z,ry] of [[.9,15.5,Math.PI],[-35.9,24,Math.PI],[-21.8,33,Math.PI]]){
   kit.box(.09,1.9,.09,x,.95,z,0x768375);kit.sign(poster({title:'青葉公園',lines:['AOBA GARDEN','公園入口 ↑','POND & BATHHOUSE'],band:'#3c6653',bg:'#efe9d4'}),.85,.7,x,1.55,z,{ry,name:'Neighbourhood park direction'});world.colliders.push(kit.rect(x-.06,x+.06,z-.06,z+.06,2,'park-direction-post'));
