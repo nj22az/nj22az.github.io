@@ -29,6 +29,8 @@ import {WAREHOUSE} from './world/warehouse.js';
 import {assignWorkplaces} from './people/workplaces.js';
 import {createHomeResidents} from './people/home-residents.js';
 import {buildKobanInterior} from './world/interiors/koban.js';
+import {buildPortHall} from './world/interiors/port-hall.js';
+import {PORT_BUILDING} from './world/port-building.js';
 import {chooseOpening} from './world/openings.js';
 import {createMotion,createAutoRun,swipeLook,steerYaw} from './input/touch-feel.js';
 import {buildSatoRamenRoom} from './world/interiors/sato-ramen.js';
@@ -383,15 +385,13 @@ assignWorkplaces(world,SITES);
 // The evening boat to Naha leaves from the ferry terminal: dinner with Thuan in the city
 // (interiors/city-restaurant.js). It is an outing, not a door in town, so it is not one of
 // the SITES: no map pin, no directory entry.
-const NAHA_TRIP=Object.freeze({...CITY_RESTAURANT,arrival:true,x:6.4,z:-42.6,door:[6.4,0,-42.6],exitPosition:[6.4,0,-42.6],entryFacing:0,color:0x2b2d5a,accent:'#2b2d5a',
+const NAHA_TRIP=Object.freeze({...CITY_RESTAURANT,arrival:true,x:PORT_BUILDING.platform[0],z:PORT_BUILDING.platform[1],door:[PORT_BUILDING.platform[0],0,PORT_BUILDING.platform[1]],exitPosition:[PORT_BUILDING.platform[0],0,PORT_BUILDING.platform[1]],entryFacing:0,color:0x2b2d5a,accent:'#2b2d5a',
  line:'Evening boat to Naha · back on the last sailing'});
-if(world.townMode==='peninsula'){
- const naha=new THREE.Object3D();naha.position.set(6.4,1.2,-43.3);town.add(naha);
- reg(naha,'Take the evening boat to Naha with Thuan',()=>{
-  const m=((minutes%1440)+1440)%1440;
-  if(m<CITY_RESTAURANT.sailFrom||m>CITY_RESTAURANT.sailUntil){say('The evening boat to Naha sails from 17:00 until half past nine. Thuan said she would meet you here.',5);return;}
-  activities.action('city-trip',null,{go:()=>crossThreshold(()=>enterRoom(NAHA_TRIP))});
- });
+// The evening boat is sold at the Port Terminal's third window (interiors/port-hall.js).
+function takeNahaBoat(){
+ const m=((minutes%1440)+1440)%1440;
+ if(m<CITY_RESTAURANT.sailFrom||m>CITY_RESTAURANT.sailUntil){say('The evening boat to Naha sails from 17:00 until half past nine. Thuan said she would meet you here.',5);return;}
+ activities.action('city-trip',null,{go:()=>crossThreshold(async()=>{if(current)leaveRoom();await enterRoom(NAHA_TRIP);})});
 }
 SITES.forEach(s=>doors.set(s.id,new THREE.Vector3(...(s.door||[s.side*4,0,s.z+2.5]))));
 for(const place of world.landmarks||[])doors.set(place.id,new THREE.Vector3(...place.exitPosition));
@@ -766,6 +766,7 @@ function roomShell(s){
  if(s.id==='mayor-office'){activeRoomLayout=buildMayorOffice(shared);return;}
  if(s.id==='community-kitchen'){activeRoomLayout=buildCommunityKitchen(shared);return;}
  if(s.id==='clinic'){activeRoomLayout=buildClinic(shared);return;}
+ if(s.id==='ferry-terminal'){activeRoomLayout=buildPortHall({...shared,naha:takeNahaBoat,upstairs:()=>crossThreshold(async()=>{leaveRoom();const office=SITES.find(site=>site.id==='office');if(office)await enterRoom(office);})});return;}
  if(s.id===CITY_RESTAURANT.id){
   // A fixed scene: no hands in front of the camera, and the dinner menu opens as you sit down.
   activeRoomLayout=buildCityRestaurant({...shared,johansson:playerRecipe()});hands.firstPersonVisible=false;
@@ -800,7 +801,8 @@ const DOOR_REACH=2.4;
 function doorNearby(){
  if(current)return null;
  const p=player.position;let best=null,bestD=DOOR_REACH;
- for(const s of SITES){
+ // Sites, and the landmarks you can walk into (the warehouse, the port terminal).
+ for(const s of [...SITES,...(world.landmarks||[]).filter(l=>Number.isFinite(l.entryFacing))]){
   const d=s.approachPosition||s.door;if(!d)continue;
   const dist=Math.hypot(p.x-d[0],p.z-(d[2]??d[1]));
   if(dist<bestD){best=s;bestD=dist;}

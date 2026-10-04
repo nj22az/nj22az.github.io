@@ -66,7 +66,7 @@ export function buildDistricts(world,options){
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
   // Each faces the people it is directing: the port sign is read walking up from the
   // shops, the bus-stop sign walking down to the terminus.
-  const signs=peninsulaActive()?[[3.2,-34,"港へ →",'HARBOUR'],[4.8,18.9,"バス乗り場",'BUS TERMINAL',Math.PI]]:[[.8,6.1,"Shopping Street",'BOOKS ↑ · RAMEN ↓'],[3.2,-34,"Harbour Street",'PORT · WAREHOUSE AHEAD'],[4.8,18.9,"North Street",'TEA HOUSE → · BUS TERMINAL ↑']];
+  const signs=peninsulaActive()?[[3.2,-34,"港へ →",'HARBOUR'],[4.8,18.9,"港湾ターミナル ↓",'PORT TERMINAL · FERRIES',Math.PI]]:[[.8,6.1,"Shopping Street",'BOOKS ↑ · RAMEN ↓'],[3.2,-34,"Harbour Street",'PORT · WAREHOUSE AHEAD'],[4.8,18.9,"North Street",'TEA HOUSE → · BUS TERMINAL ↑']];
   if(!shoppingDistrictActive())signs.splice(1,0,[-7.4,6.5,"Home",'MAIN STREET HOMES ←']);
   for(const [x,z,jp,en,angle=0] of signs){
     const marker=sign(jp,en,[x,2.1,z],1.55,.42,angle);marker.name='District direction';

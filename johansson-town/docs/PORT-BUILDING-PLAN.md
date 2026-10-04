@@ -6,9 +6,16 @@
 - [x] Phase 0: plan saved in the repo
 - [x] Phase 1: layout constants (`port-building-layout.js`), terminal points moved to the forecourt
 - [x] Phase 2: exterior (`port-building.js`), old terminal box and office exterior removed
-- [ ] Phase 3: waiting hall interior (`interiors/port-hall.js`)
-- [ ] Phase 4: one ticket counter for all departures; bus-station leftovers renamed
-- [ ] Phase 5: polish, screenshots, draw calls, tests
+- [x] Phase 3: waiting hall interior (`interiors/port-hall.js`)
+- [x] Phase 4: one ticket counter for all departures; bus-station leftovers renamed
+- [x] Phase 5: polish, screenshots, draw calls, tests
+
+**Built (4 October 2026):** the Port Building stands at x 5.6–17.2, z -48…-38.4 (`src/world/port-building.js`).
+The waiting hall (`src/world/interiors/port-hall.js`) has three ticket windows (mainland ferry, airport ferry,
+evening boat to Naha), a departures board, benches facing the pier, a strait map, a vending machine and stairs to the
+Harbour Office. The quay's loose airport-ticket and Naha prompts are gone, the island projects review moved to the
+harbour master's desk, and the old "BUS TERMINAL" sign now points to the port. Harbour view: about 107 draw calls on a
+phone (was about 143). Tests: `tests/port-building.test.mjs`.
 
 **Decisions (agreed):** one Port Building replaces the Harbour Office and the ferry terminal on the same site;
 you can walk into its waiting hall; no new characters (the Harbour master runs it).

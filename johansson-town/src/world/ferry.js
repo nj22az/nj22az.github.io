@@ -242,7 +242,7 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
  * The ferry's stop: the prompts at the Port Building's waiting hall (port-building.js)
  * and the place the map and the schedules use. It answers the calls the bus station did.
  */
-export function buildFerryTerminal({parent,colliders,register=()=>{},onAction=()=>{},label=()=>{},shadows=false}={}){
+export function buildFerryTerminal({parent,colliders,register=()=>{},onAction=()=>{},enter=()=>{},label=()=>{},shadows=false}={}){
  const group=new THREE.Group();group.name='Minato ferry terminal';parent.add(group);
  const T=FERRY_TERMINAL;
  const anchor=(pos,text,fn)=>{const a=new THREE.Object3D();a.position.set(...pos);group.add(a);register(a,text,fn);return a;};
@@ -252,8 +252,11 @@ export function buildFerryTerminal({parent,colliders,register=()=>{},onAction=()
  anchor([T.minX-.5,1.3,-44.95],'Read the ferry timetable',()=>onAction('bus'));
  anchor([px,1,pz+1.1],'Wait for the ferry',()=>onAction('bus'));
  anchor([-4.5,1,-47.1],'Look out for the ferry',()=>onAction('inspect','Minato ferry','The ferry is the way to the mainland: three sailings a day, round the breakwater to the mainland and back, cars and trucks on the deck. Tickets at the terminal; the punch cards are sold at Sakura.'));
- const place={id:T.id,title:'Minato Ferry Terminal',jp:"Ferry Terminal",sub:'ARRIVALS · DEPARTURES',x:T.x,z:T.z,line:'Three sailings a day to the mainland from the outer pier.',
-  door:[T.platform[0],0,T.platform[1]],exitPosition:[T.platform[0],0,T.platform[1]]};
+ // You walk into the waiting hall through its glass doors on the pier side.
+ const [hx,,hz]=PORT_BUILDING.hallDoor,outside=[hx-.7,0,hz];
+ const place={id:T.id,title:'Minato Port Terminal',jp:'Minato Port Terminal',sub:'TICKETS · WAITING HALL',x:T.x,z:T.z,line:'Ferries to the mainland and the airport, and the evening boat to Naha.',
+  door:outside,exitPosition:outside,entryFacing:-Math.PI/2};
+ anchor([hx-.45,1.3,hz],'Enter '+place.title,()=>enter(place));
  const departures=[];
  return {group,place,queue:[...T.queue],arrival:[...T.arrival],driver:[...T.driver],exit:[...T.exit],departures,
   board(name,minutes){departures.push({name,minutes});if(departures.length>24)departures.shift();},

@@ -80,6 +80,20 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Map of the strait",
+    "organisation": "Town Services",
+    "text": "Three ways off the island, all from the outer pier: the car ferry to the mainland (three sailings a day), the airport ferry across to Kitano-jima, and in the evening the boat to Naha. When the bridge is open you can drive to the airport instead.",
+    "source": "notice:Map of the strait"
+  },
+  {
+    "type": "Notice",
+    "title": "Ferry punch cards",
+    "organisation": "Town Services",
+    "text": "Ten crossings to the mainland on one card. Thuan keeps this shelf stocked with leaflets; the cards themselves are sold at Sakura, over the counter.",
+    "source": "notice:Ferry punch cards"
+  },
+  {
+    "type": "Notice",
     "title": "Town office telephone",
     "organisation": "Community Hall",
     "text": "The harbour master confirms Thursday’s supply ferry. Mori reports the crossing outside the school is clear. Thuan asks whether the bus-stop bench has reached the carpenter yet.",

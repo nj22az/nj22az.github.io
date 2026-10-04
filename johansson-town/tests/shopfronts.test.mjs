@@ -36,7 +36,7 @@ test('every door opens onto a building',async()=>{
  assert.ok(walls.length>6,'Found no buildings to check the doors against');
  assert.deepEqual(entrances.map(e=>e.label).sort(),[
   'Enter Front-Row Books','Enter Dock Electrical & Repair Workshop','Enter Harbour Warehouse',
-  'Enter Johansson Harbour Office','Enter Sakura Shōten','Enter Minato Police Box',
+  'Enter Johansson Harbour Office','Enter Minato Port Terminal','Enter Sakura Shōten','Enter Minato Police Box',
  ].sort(),'Separate bookshop and dock workshop entrances, with other businesses retained');
  // Kenji & Tetsuo Repairs offered a way in at 0.4,-6.7 -- out on the boardwalk beside a
  // lamp post, because that is where the night-market alley put its door and the

@@ -86,6 +86,8 @@ function buildBedNook({room,box,reg,action,collider,mat}){
  box('Tea side table',[.55,.05,.4],[-.9,.6,.8],0x8a6a4a);box('Tea side table leg',[.06,.58,.06],[-.9,.29,.8],0x6d5238);
  box('Kettle',[.18,.16,.18],[-1.0,.7,.8],0x9aa3a0);box('Tea cup',[.07,.07,.07],[-.75,.66,.82],0x3f7a55);
  collider(-.9,.8,.55,.4,.62);
+ // The island's development projects are reviewed at the harbour master's desk, not on the doorstep.
+ {const o=new THREE.Object3D();o.name='Island development projects';o.position.set(.6,1.1,-2.3);room.add(o);o.userData.npcInteraction=false;reg(o,'Review island development projects',()=>action('island-projects'),true);}
  const inspect=(pos,label,title,text)=>{const o=new THREE.Object3D();o.name=label;o.position.set(...pos);room.add(o);o.userData.npcInteraction=false;reg(o,label,()=>action('inspect',title,text),true);};
  inspect([2.1,.7,.9],'Inspect the bed behind the screen','The harbour master’s bed','A tatami mat and a futon behind the folding screen, the quilt folded square every morning at half past five. He says the harbour needs someone within earshot of the radio, and the stairs to a flat would only slow him down.');
  inspect([-.9,1.0,.8],'Inspect the tea corner','Tea corner','A kettle, one cup and a tin of jasmine tea. The stool is where he reads the evening paper before turning in at nine.');

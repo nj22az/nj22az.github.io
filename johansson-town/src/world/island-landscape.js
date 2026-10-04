@@ -33,7 +33,7 @@ export function buildIslandLandscape({world,register,onAction,mobile=false}){
  const guestAwning=box('Guesthouse open canopy',[7.5,.2,2],[149,2.7,204],0xb78755);guestAwning.visible=false;
  const tower=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.6,9,12),mat(0xe1d8c2));tower.position.set(-54,4.1,204);group.add(tower);box('Lighthouse lantern',[2.5,1.5,2.5],[-54,9.4,204],0x466b75);sign('WEST CAPE LIGHTHOUSE',-51,207,4,1.8);anchor([-51,.8,207],'Read the lighthouse log','read','West Cape Lighthouse','The keeper checks the lamp at dusk, cleans the salt from the glass and records visibility. The coastal road returns to Minato through the western quarter.');
  for(const [label,x,z] of [['COASTAL LOOP → HOSHIZAKI',65,69],['← MINATO · AOBA RADIO →',23.5,104],['HOSHIZAKI · COASTAL BUS',138,188]]){sign(label,x,z,5,1.8);box('Direction sign post',[.12,2,.12],[x,.6,z],0x6b775c);}
- anchor([138,.7,188],'Take the coastal village bus','island-bus');anchor([4,1.2,-43],'Airport ferry tickets and boarding','airport-ferry');anchor([13.3,1,-37.55],'Review island development projects','island-projects');anchor([-25,1,-39.65],'Complete the airport radio service','island-repair');
+ anchor([138,.7,188],'Take the coastal village bus','island-bus');anchor([-25,1,-39.65],'Complete the airport radio service','island-repair');
  // Airport passenger walkway, check-in counter, fence and a usable local landing.
  world.shoppingLane=buildShoppingLane({world,register,onAction});
  buildAirportDistrict({world,register,onAction});
