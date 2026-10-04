@@ -1,5 +1,5 @@
 import {TATAMI_HOME_LAYOUT,TATAMI_HOME_OWNER} from '../world/interiors/tatami-home-layout.js';
-import {householdFor,householdAt,householdNames} from './households.js';
+import {householdFor,householdNames} from './households.js';
 import {peninsulaActive} from '../world/town-mode.js';
 import {THUAN_APARTMENT_ROUTINES} from '../world/interiors/yuri-apartment-layout.js';
 // Repeatable household routines use the saved town clock, including night workers.
@@ -38,4 +38,3 @@ export function homeLayoutFor(name){
  return {...SHARED_HOME_LAYOUT,bed:[x,.58,-.3],bedside:[side*.95,0,-.4],table:[side*.72,0,2.15],
   cover:{position:[x,.64,-.9],width:1.1,length:1.3,axis:'z'},hatHook:{position:[side*1.4,1.6,3.33],yaw:Math.PI}};
 }
-export const THUAN_HOME_LAYOUT=THUAN_APARTMENT_ROUTINES.Thuan;

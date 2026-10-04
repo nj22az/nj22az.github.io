@@ -8,7 +8,4 @@ import {FERRY_TERMINAL} from './ferry.js';
  * walks people to "the stop" asks here which stop that is.
  */
 export const transitStop=()=>peninsulaActive()?FERRY_TERMINAL:BUS_STATION;
-/** The service's name, for what people are doing: "waiting for the ferry". */
-export const transitName=()=>peninsulaActive()?'the ferry':'the Harbour Line';
-/** Where they are when they are not in town. */
 export const awayPlace=()=>peninsulaActive()?'on the mainland':'away from the shopping district';

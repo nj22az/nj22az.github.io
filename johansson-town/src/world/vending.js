@@ -91,7 +91,7 @@ export function createVendingMachine({shadows=false}={}){
     const band=new THREE.Mesh(new THREE.CylinderGeometry(.0335,.0335,.03,14),white);band.position.set(x,y-.01,cz);group.add(band);
     // Price tag and button on the shelf lip under each can.
     const tag=canvasPanel(.09,.03,128,44,(ctx,w,h)=>{ctx.fillStyle='#111';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ffd23f';ctx.font='bold 30px monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('¥'+product.price,w/2,h/2+1);},{lit:true});
-    tag.position.set(x,y-.083,cz+.04);group.add(tag);
+    tag.position.set(x,y-.083,cz+.04);tag.userData.tag={width:128,height:44};group.add(tag);
     const button=new THREE.Mesh(new THREE.BoxGeometry(.05,.022,.012),new THREE.MeshStandardMaterial({color:product.hot?0xd8342c:0x2f6fd0,emissive:product.hot?0xd8342c:0x2f6fd0,emissiveIntensity:.45,roughness:.4}));
     button.position.set(x,y-.108,cz+.042);group.add(button);
   }
@@ -119,5 +119,53 @@ export function createVendingMachine({shadows=false}={}){
   for(const s of [-1,1]){const side=canvasPanel(D-.08,1.0,320,460,(ctx,w,h)=>{ctx.fillStyle='#c8202a';ctx.fillRect(0,0,w,h);ctx.fillStyle='#fff8e8';ctx.textAlign='center';ctx.font='bold 70px sans-serif';ctx.fillText('MINATO',w/2,h*.4);ctx.fillText('DRINKS',w/2,h*.57);ctx.font='30px sans-serif';ctx.fillText('つめた〜い · あったか〜い',w/2,h*.75);});
     side.position.set(s*(W/2+.004),1.15,0);side.rotation.y=s*Math.PI/2;group.add(side);}
   group.userData.lever=lever;
+  return drawAsFew(group,lever);
+}
+
+/**
+ * Built piece by piece above (about a hundred meshes: every can, cap, band, button and
+ * tag), drawn as about ten. Every plain painted part becomes one vertex-coloured mesh
+ * (a can's glow is folded into its colour) and the price tags share one texture. The
+ * coin-return lever stays its own piece. What the machine is made of is kept in
+ * userData.parts, by name.
+ */
+function drawAsFew(group,keep){
+  group.updateMatrix();
+  const plain=[],tags=[],parts=[];
+  for(const m of group.children){
+    if(m.name)parts.push(m.name);
+    if(m.geometry?.type==='CylinderGeometry'&&m.geometry.parameters.height===.12)parts.push('can');
+    if(m===keep||!m.isMesh)continue;
+    const mat=m.material;
+    if(mat.isMeshStandardMaterial&&!mat.map&&!mat.transparent)plain.push(m);
+    else if(mat.isMeshBasicMaterial&&mat.map&&m.userData.tag)tags.push(m);
+  }
+  if(plain.length>1){
+    const pieces=plain.map(m=>{
+      m.updateMatrix();const g=(m.geometry.index?m.geometry.toNonIndexed():m.geometry.clone()).applyMatrix4(m.matrix);
+      for(const k of Object.keys(g.attributes))if(!['position','normal'].includes(k))g.deleteAttribute(k);
+      const c=m.material.color.clone().add(m.material.emissive.clone().multiplyScalar(m.material.emissiveIntensity)),col=new Float32Array(g.attributes.position.count*3);
+      for(let i=0;i<col.length;i+=3)c.toArray(col,i);g.setAttribute('color',new THREE.BufferAttribute(col,3));return g;
+    });
+    const body=new THREE.Mesh(mergeGeometries(pieces,false),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,metalness:.2}));
+    pieces.forEach(g=>g.dispose());body.name='Vending machine body';body.castShadow=plain[0].castShadow;body.receiveShadow=true;
+    for(const m of plain){m.removeFromParent();m.geometry.dispose();}
+    group.add(body);
+  }
+  if(tags.length>1&&typeof document!=='undefined'&&document.createElement){
+    // One strip of every tag's canvas, top to bottom, and the tags' planes mapped onto it.
+    const w=tags[0].userData.tag.width,h=tags[0].userData.tag.height,canvas=document.createElement('canvas');canvas.width=w;canvas.height=h*tags.length;
+    const ctx=canvas.getContext('2d');
+    if(ctx){
+      const pieces=tags.map((m,i)=>{ctx.drawImage(m.material.map.image,0,i*h);m.updateMatrix();const g=m.geometry.clone().applyMatrix4(m.matrix),uv=g.attributes.uv;
+        for(let k=0;k<uv.count;k++)uv.setY(k,1-(i+1-uv.getY(k))/tags.length);return g;});
+      const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;
+      const strip=new THREE.Mesh(mergeGeometries(pieces,false),new THREE.MeshBasicMaterial({map:texture,toneMapped:false}));strip.name='Vending price tags';
+      pieces.forEach(g=>g.dispose());
+      for(const m of tags){m.removeFromParent();m.geometry.dispose();m.material.map.dispose();m.material.dispose();}
+      group.add(strip);
+    }
+  }
+  group.userData.parts=parts;
   return group;
 }

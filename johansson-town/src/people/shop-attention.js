@@ -37,26 +37,3 @@ export function createShopAttention({clerk,world,retail,colliders,isInside,getPl
   else{selected=null;if(data.lookSource!=='facing')delete data.lookTarget;delete data.lookCustomer;}
  }};
 }
-
-// The supplied face is one textured mesh with no separate eyeball joints. Turn
-// its existing head and neck together; do not add artificial eyes over the face.
-export function createCustomerGaze(model,entity){
- const head=model.getObjectByName('Head')||model.getObjectByName('head'),neck=model.getObjectByName('neck')||model.getObjectByName('Neck')||model.getObjectByName('neck03');if(!head)return null;
- const saved=new Map();let yaw=0,pitch=0;
- const restore=()=>{for(const [bone,q] of saved)bone.quaternion.copy(q);saved.clear();};
- const rotate=(bone,angle,axis)=>{if(!bone)return;const parent=bone.parent.getWorldQuaternion(new THREE.Quaternion());bone.quaternion.premultiply(parent.clone().invert().multiply(new THREE.Quaternion().setFromAxisAngle(axis,angle)).multiply(parent));bone.updateWorldMatrix(false,true);};
- return {restore,get yaw(){return yaw;},get pitch(){return pitch;},update(dt,data,moving=false){
-  entity.updateWorldMatrix(true,true);let targetYaw=0,targetPitch=0;
-  // Being spoken to turns a head anywhere, not only behind the counter.
-  if(data.lookTarget&&(data.inMarket||data.lookSource==='facing')&&!data.carrying&&!data.shopReach&&!data.restocking&&!data.sleeping&&!data.roomTransition&&!moving){
-   const eye=head.getWorldPosition(new THREE.Vector3());eye.y+=.09;const offset=new THREE.Vector3(...data.lookTarget).sub(eye).applyQuaternion(entity.getWorldQuaternion(new THREE.Quaternion()).invert());
-   const angle=Math.atan2(-offset.x,-offset.z);
-   if(Math.abs(angle)<Math.PI*.49){targetYaw=THREE.MathUtils.clamp(angle,-.65,.65);targetPitch=THREE.MathUtils.clamp(Math.atan2(offset.y,Math.hypot(offset.x,offset.z)),-.22,.20);}
-  }
-  const ease=(a,b)=>a+THREE.MathUtils.clamp((b-a)*(1-Math.exp(-5*dt)),-dt*1.2,dt*1.2);
-  yaw=ease(yaw,targetYaw);pitch=ease(pitch,targetPitch);
-  for(const bone of [neck,head].filter(Boolean))saved.set(bone,bone.quaternion.clone());
-  const up=new THREE.Vector3(0,1,0).transformDirection(entity.matrixWorld),right=new THREE.Vector3(1,0,0).transformDirection(entity.matrixWorld);
-  if(neck){rotate(neck,yaw*.28,up);rotate(neck,pitch*.25,right);}rotate(head,yaw*(neck?.72:1),up);rotate(head,pitch*(neck?.75:1),right);
- }};
-}

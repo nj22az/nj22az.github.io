@@ -17,7 +17,7 @@ The repeatable correction uses `scripts/building-survey.mjs` and `scripts/build-
 - **Scope:** eleven interiors cover the remaining open findings and the compound kōban. Other analysis rows and the town site plan remain historical; they were not re-surveyed by this correction. The generated rows carry the exact source revision and method.
 
 <!-- full-domain-survey:start -->
-Survey source: `1f88e2d237694f7bbd81bdf4d68430200bfd382b`. Regenerate with `node scripts/build-building-audit.mjs`, then `python3 scripts/render-building-plans.py onsen koban clinic community-kitchen mayor-office mayor-home frontrow form3d ramen izakaya school` from `johansson-town/`.
+Survey source: `80dc175fb588a91381a5e44fd479f464f23cc23a`. Regenerate with `node scripts/build-building-audit.mjs`, then `python3 scripts/render-building-plans.py onsen koban clinic community-kitchen mayor-office mayor-home frontrow form3d ramen izakaya school` from `johansson-town/`.
 
 | Interior | Movement extent (m) | Domain (m²) | Sampled floor (m²) | Evidence |
 |---|---|---|---|---|

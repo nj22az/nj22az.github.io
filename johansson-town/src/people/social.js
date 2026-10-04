@@ -2,7 +2,7 @@ import {gardenPoint} from '../world/garden-layout.js';
 import {bookshopVisitPlan} from './bookshop-visits.js';
 import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visits.js';
 export {marketVisitsForDay,RAMEN_VISITS} from './market-visits.js';
-import {DINING,IZAKAYA_DOOR} from '../world/dining-layout.js';
+import {IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
@@ -221,9 +221,6 @@ export function supperGuests(minutes){
  if(!izakayaOpen(minutes))return [];
  return PROFILES.filter(p=>ACTIVE_RESIDENT_NAMES.includes(p.name)&&p.name!=='Nao'&&inTimeRange(minute,p.supperStart,p.supperEnd)).slice(0,IZAKAYA_SEATS.length);
 }
-// Overlapping, repeatable visits by the active cast. At most two seated diners;
-// Thuan retains her separate after-work stop and her standing/greeting animation.
-export const MARKET_VISITS=marketVisitsForDay(0);
 export function visitsMarket(profile,minutes,state=null){
  const visit=marketVisitsForDay(minutes)[profile.name],account=state?.residentLife?.[profile.name],meal=account?.day===Math.floor(minutes/1440)?(marketVisitPurpose(profile.name,minutes,state||{})==='goods'?(account.shopping||account.meals?.market):account.meals?.market):null;
  if(meal?.finished)return false;

@@ -33,4 +33,3 @@ export const THUAN_APARTMENT_ROUTINES={
  Nao:{bed:[-1.6,.58,3.95],bedside:[-2.65,0,3.3],table:[-3.98,0,.5],door:[-.45,0,.4],
   cover:{position:[-1.6,.64,3.35],width:1.08,length:1.3,axis:'z'}},
 };
-export const YURI_APARTMENT_ROUTINE=THUAN_APARTMENT_ROUTINES.Thuan;

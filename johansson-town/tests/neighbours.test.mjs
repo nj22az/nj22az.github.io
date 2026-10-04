@@ -1,9 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {createHash} from 'node:crypto';
 import * as THREE from '../vendor/three.module.js';
-import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {installDOM} from './fixtures.mjs';
 import {preloadStreetPlants,buildStreetPlants} from '../src/world/street-plants.js';
 import {createMaterials} from '../src/render/materials.js?snappy=1';

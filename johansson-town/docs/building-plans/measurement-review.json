@@ -1,10 +1,10 @@
 {
- "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+ "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
  "method": "Full runtime movement bounds/polygon; all datum floor meshes; no first-hit or whole-scene extent",
  "entries": [
   {
    "id": "onsen",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 10,
     "h": 1.4,
@@ -12,7 +12,7 @@
    },
    "measurement": {
     "method": "runtime-builder-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -4.85,
      "maxX": 4.85,
@@ -166,11 +166,17 @@
     "Yellow bucket",
     "Yunomi",
     "Zabuton",
+    "braidL1",
+    "braidL2",
+    "braidR1",
+    "braidR2",
     "chest",
     "elbowL",
     "elbowR",
     "footL",
     "footR",
+    "hairA",
+    "hairB",
     "handL",
     "handR",
     "head",
@@ -181,6 +187,10 @@
     "root",
     "shoulderL",
     "shoulderR",
+    "skirtB",
+    "skirtF",
+    "skirtL",
+    "skirtR",
     "spine",
     "thighL",
     "thighR"
@@ -189,7 +199,7 @@
   },
   {
    "id": "koban",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 6.8,
     "h": 3.9,
@@ -197,7 +207,7 @@
    },
    "measurement": {
     "method": "runtime-builder-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -3.3,
      "maxX": 3.3,
@@ -319,7 +329,7 @@
   },
   {
    "id": "clinic",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 6.6,
     "h": 5.6,
@@ -327,7 +337,7 @@
    },
    "measurement": {
     "method": "runtime-builder-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -3.25,
      "maxX": 3.25,
@@ -417,11 +427,17 @@
     "Waiting bench",
     "Waiting room partition",
     "X-ray film",
+    "braidL1",
+    "braidL2",
+    "braidR1",
+    "braidR2",
     "chest",
     "elbowL",
     "elbowR",
     "footL",
     "footR",
+    "hairA",
+    "hairB",
     "handL",
     "handR",
     "head",
@@ -432,6 +448,10 @@
     "root",
     "shoulderL",
     "shoulderR",
+    "skirtB",
+    "skirtF",
+    "skirtL",
+    "skirtR",
     "spine",
     "thighL",
     "thighR"
@@ -440,7 +460,7 @@
   },
   {
    "id": "community-kitchen",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 6.6,
     "h": 5.6,
@@ -448,7 +468,7 @@
    },
    "measurement": {
     "method": "runtime-builder-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -3.25,
      "maxX": 3.25,
@@ -506,7 +526,7 @@
   },
   {
    "id": "mayor-office",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 6.6,
     "h": 5.6,
@@ -514,7 +534,7 @@
    },
    "measurement": {
     "method": "runtime-builder-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -3.25,
      "maxX": 3.25,
@@ -621,7 +641,7 @@
   },
   {
    "id": "mayor-home",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 6.6,
     "h": 5.6,
@@ -629,7 +649,7 @@
    },
    "measurement": {
     "method": "runtime-builder-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -3.25,
      "maxX": 3.25,
@@ -699,7 +719,7 @@
   },
   {
    "id": "frontrow",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 8.56,
     "h": 7.16,
@@ -707,7 +727,7 @@
    },
    "measurement": {
     "method": "runtime-builder-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -4.2,
      "maxX": 4.2,
@@ -812,7 +832,7 @@
   },
   {
    "id": "form3d",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 8.56,
     "h": 7.16,
@@ -820,7 +840,7 @@
    },
    "measurement": {
     "method": "runtime-builder-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -4.2,
      "maxX": 4.2,
@@ -912,7 +932,7 @@
   },
   {
    "id": "ramen",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 18.1,
     "h": 13,
@@ -920,7 +940,7 @@
    },
    "measurement": {
     "method": "runtime-layout-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -6.2,
      "maxX": 11.2,
@@ -964,7 +984,7 @@
   },
   {
    "id": "izakaya",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 18.1,
     "h": 13,
@@ -972,7 +992,7 @@
    },
    "measurement": {
     "method": "runtime-layout-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -6.2,
      "maxX": 11.2,
@@ -1016,7 +1036,7 @@
   },
   {
    "id": "school",
-   "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+   "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
    "previous": {
     "w": 9,
     "h": 7.2,
@@ -1024,7 +1044,7 @@
    },
    "measurement": {
     "method": "runtime-layout-full-domain",
-    "source": "1f88e2d237694f7bbd81bdf4d68430200bfd382b",
+    "source": "80dc175fb588a91381a5e44fd479f464f23cc23a",
     "bounds": {
      "minX": -4.28,
      "maxX": 4.3,

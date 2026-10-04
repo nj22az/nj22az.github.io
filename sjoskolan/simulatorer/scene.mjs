@@ -1,10 +1,18 @@
 import * as THREE from '../../johansson-town/vendor/three.module.js';
 import {buildAvatar} from './character/build.js';
 import {ENGINEER} from './character/johansson.js';
+import {ERIK} from './character/erik.js';
+import {buildRoom} from './rum.mjs?v=20261003-erik';
 
 // Scene presentation never calculates an electrical reading. Contacts belong to session.mjs.
 export const CONTACTS={P:[-.22,1.15,-.94],A:[-.08,1.15,-.94],B:[.08,1.15,-.94],N:[.22,1.15,-.94],'Ref+':[-.08,1.15,-.72],'Ref−':[.08,1.15,-.72]};
 const V=p=>new THREE.Vector3(...p);
+// Det Erik kan peka på utöver mätpunkterna (mätaren, matningen och länken P–A på bänken).
+export const ERIK_TARGETS={matare:[-.48,1.24,-1.0],matning:[.48,1.16,-1.1],lank:[-.15,1.19,-.94]};
+// Erik står vid bänkens högra kortsida, bredvid matningen, långt från standardkameran så att han inte skymmer bänken.
+export const ERIK_HOME={at:[1.0,-.95],face:Math.atan2(-1,-.05)};
+const ease=t=>t<.5?2*t*t:1-(-2*t+2)**2/2;
+const lerpAngle=(a,b,w)=>a+(((b-a+Math.PI*3)%(Math.PI*2))-Math.PI)*w;
 // CCD operates the original shoulder/elbow/hand skeleton; no replacement character or stretched limbs.
 export function reach(avatar,side,target){
   const b=avatar.bones,hand=b['hand'+side],elbow=b['elbow'+side],shoulder=b['shoulder'+side];
@@ -42,29 +50,7 @@ export function mountRoom(container,{onPick=()=>{},onFailure=()=>{}}={}){
     const texture=new THREE.CanvasTexture(c);textures.add(texture);const material=new THREE.SpriteMaterial({map:texture});materials.set('label-'+materials.size,material);
     const s=new THREE.Sprite(material);s.position.copy(V(pos));s.scale.set(width,width/4,1);scene.add(s);return s;
   }
-  box(9,.12,8,'#94a6ab',0,-.06,0);box(9,3.8,.12,'#b9cbce',0,1.9,-4);box(.12,3.8,8,'#a9bec3',-4.5,1.9,0);
-  for(let i=-4;i<=4;i++)box(.035,.012,8,'#7f959b',i,.008,0);
-  for(let z=-3;z<=3;z+=1.5)box(9,.012,.025,'#7f959b',0,.009,z);
-  // Green gangway and guarded machinery: walking collisions match the equipment footprints.
-  box(1.4,.014,6.8,'#779b94',0,.015,0);for(const x of [-.77,.77])box(.04,.018,6.8,'#edd47b',x,.017,0);
-  for(let z=-3.5;z<=3.5;z+=1.75)box(.12,.16,8,'#7c949d',z,3.5,0);
-  for(const x of [-3.3,3.3]){const pipe=cyl(.09,7.5,'#b76355',x,2.95,0);pipe.rotation.x=Math.PI/2;}
-  for(const z of [-2.7,0,2.7]){box(2.3,.04,.25,'#e9efdd',0,3.25,z);box(2.4,.08,.3,'#677a81',0,3.31,z);}
-  const colliders=[[-3.9,-1.5,-2.7,1.4],[1.5,3.9,-3.45,-2.1],[1.9,3.8,.1,2.0],[-.72,.72,-1.38,-.63]];
-  // Port generator set.
-  box(2.1,.28,3.4,'#51636a',-2.7,.18,-.65);box(1.55,1.15,2.45,'#477d78',-2.7,.9,-.5);
-  for(let z=-1.4;z<=.6;z+=.4){box(1.62,.07,.07,'#305855',-2.7,1.35,z);cyl(.13,.16,'#aab7b4',-2.7,1.57,z);}
-  const alternator=cyl(.6,1.05,'#477d78',-2.7,.86,1);alternator.rotation.x=Math.PI/2;
-  for(let x=-3.4;x<-2;x+=.18)box(.04,.5,.02,'#273f46',x,.9,1.55);
-  box(.12,.8,.08,'#c7ab53',-1.5,.45,.6);box(2.6,.07,.07,'#c7ab53',-2.7,.85,.6);label('GENERATOR',[ -2.7,2,-.1],1.8);
-  // Starboard distribution board and motor/pump.
-  for(let x=1.7;x<=3.8;x+=.7){box(.65,2.2,.7,'#bdc7c8',x,1.12,-2.8);box(.54,1.8,.035,'#d7e1dd',x,1.19,-2.43);box(.14,.14,.025,'#253e49',x,1.75,-2.4);cyl(.045,.03,'#b64c40',x,1.38,-2.4).rotation.x=Math.PI/2;box(.025,.32,.03,'#677c83',x+.2,1.2,-2.38);}
-  label('DISTRIBUTION',[2.7,2.55,-2.45],2);
-  box(1.6,.16,1.55,'#5d6e72',2.8,.12,1);const pump=cyl(.4,.85,'#577b98',2.8,.65,1);pump.rotation.z=Math.PI/2;
-  box(.6,.25,.5,'#829ea9',2.8,1.05,1);const out=cyl(.12,1.4,'#6c998c',3.4,1.1,1);box(.7,.15,.15,'#6c998c',3.1,1.8,1);label('PUMP & MOTOR',[2.8,2.1,1],1.8);
-  label('ELVERKSTAD · SELV',[0,2,-1.4],2);label('MASKINRUM',[0,2.8,-3.9],2.6);
-  // Bench surface, safe DC components and marked physical sockets.
-  box(1.4,.09,.75,'#d4c5a7',0,1.02,-1);for(const x of [-.56,.56])box(.08,1,.08,'#5e7780',x,.5,-1);
+  const colliders=buildRoom({box,cyl,label});
   box(.64,.055,.43,'#edf2e8',0,1.095,-.87);
   box(.11,.045,.045,'#b79766',0,1.12,-.94);box(.10,.045,.045,'#b79766',.15,1.12,-.94);
   const contactMeshes=[];
@@ -84,6 +70,42 @@ export function mountRoom(container,{onPick=()=>{},onFailure=()=>{}}={}){
   for(const x of [-1,1]){const muff=add(new THREE.SphereGeometry(.07,12,8),'#263c45',[x*m.Rh*m.headSX*.98,m.Rh*.87,0],head);muff.scale.set(.45,1,.8);}
   const headband=add(new THREE.TorusGeometry(m.Rh*1.02,.015,5,16,Math.PI),'#263c45',[0,m.Rh*.82,0],head);
   headband.rotation.z=0;
+  // Erik: maskinrummets elektriker. Han pekar med sina egna armar (samma CCD som Johansson) och flyttar sig inte.
+  const erik=buildAvatar(ERIK,{faceSize:256});scene.add(erik.root);
+  const erikRing=add(new THREE.TorusGeometry(1,.09,6,28),'#0f7d73',[0,0,0]);erikRing.material=new THREE.MeshBasicMaterial({color:'#0f7d73'});materials.set('erik-ring',erikRing.material);erikRing.rotation.x=Math.PI/2;erikRing.visible=false;
+  const erikRing2=erikRing.clone();erikRing2.visible=false;scene.add(erikRing2);
+  let erikBeats=[],erikIndex=-1,erikT=0,erikPlaying=false,erikDone=null,erikOnBeat=null;
+  let erikFrom={face:ERIK_HOME.face,R:null,L:null},erikWant={...erikFrom},erikCur={...erikFrom};const erikErrors={R:0,L:0};
+  const targetOf=name=>name?V(CONTACTS[name]||ERIK_TARGETS[name]):null;
+  function erikPlace(face){erik.root.position.set(ERIK_HOME.at[0],0,ERIK_HOME.at[1]);erik.root.rotation.y=face;erik.root.updateMatrixWorld(true);}
+  // En pekande hand: armen sträckt mot målet från axeln, inte en hand som når fram genom bänken.
+  function erikHand(side,name,face){
+    const B=erik.bones,m=erik.measure;erikPlace(face);
+    const s=B['shoulder'+side].getWorldPosition(new THREE.Vector3()),len=(m.upper+m.fore)*.93,t=targetOf(name);
+    return t?s.clone().add(t.sub(s).normalize().multiplyScalar(len)):s.add(new THREE.Vector3(0,-len,0));
+  }
+  function erikFace(beat){
+    const t=targetOf(beat.R||beat.L);if(!t)return ERIK_HOME.face;
+    if(beat.R&&beat.L)t.lerp(targetOf(beat.L),.5);
+    return Math.atan2(t.x-ERIK_HOME.at[0],t.z-ERIK_HOME.at[1]);
+  }
+  function erikBegin(k){
+    erikIndex=k;erikT=0;erikFrom={face:erikCur.face,R:erikCur.R?.clone()||null,L:erikCur.L?.clone()||null};
+    const b=erikBeats[k],face=erikFace(b);erikWant={face,R:erikHand('R',b.R,face),L:erikHand('L',b.L,face)};
+    for(const [ring,name] of [[erikRing,b.R],[erikRing2,b.L]]){const t=targetOf(name);ring.visible=Boolean(t);if(t){const r=CONTACTS[name]?.052:.15;ring.scale.set(r,r,.067);ring.position.set(t.x,CONTACTS[name]?t.y-.03:1.075,t.z);}}
+    erikOnBeat?.(b,k);
+  }
+  function erikPose(){
+    const w=ease(Math.min(1,erikT/.9)),face=lerpAngle(erikFrom.face,erikWant.face,w);
+    for(const side of ['R','L']){
+      const a=erikFrom[side]||erikHand(side,null,erikFrom.face),z=erikWant[side]||erikHand(side,null,erikWant.face);
+      erikPlace(face);const target=a.clone().lerp(z,w);erikErrors[side]=reach(erik,side,target);erikCur[side]=target;
+    }
+    erikCur.face=face;
+  }
+  function erikRest(){erikBeats=[];erikIndex=-1;erikPlaying=false;erikRing.visible=erikRing2.visible=false;erikFrom={face:erikCur.face,R:erikCur.R,L:erikCur.L};erikWant={face:ERIK_HOME.face,R:erikHand('R',null,ERIK_HOME.face),L:erikHand('L',null,ERIK_HOME.face)};erikT=0;}
+  erikCur={face:ERIK_HOME.face,R:erikHand('R',null,ERIK_HOME.face),L:erikHand('L',null,ERIK_HOME.face)};erikWant={...erikCur};erikFrom={...erikCur};erikPose();
+  colliders.push([ERIK_HOME.at[0]-.2,ERIK_HOME.at[0]+.2,ERIK_HOME.at[1]-.2,ERIK_HOME.at[1]+.2]);
   const probeObjects={},leads={};
   for(const [side,c] of [['L','#242c32'],['R','#c54338']]){
     const group=new THREE.Group();scene.add(group);const handle=cyl(.018,.14,c,0,0,0,group);handle.rotation.x=Math.PI/2;handle.position.z=.07;const tip=cyl(.006,.06,'#c6d1cd',0,0,.17,group);tip.rotation.x=Math.PI/2;probeObjects[side]=group;
@@ -127,7 +149,13 @@ export function mountRoom(container,{onPick=()=>{},onFailure=()=>{}}={}){
     for(const child of scene.children)if(child.isSprite&&child.scale.x>1.4)child.visible=view==='overview';
     renderer.render(scene,camera);
   }
-  function animate(time){if(disposed)return;const dt=Math.min((time-lastTime)/1000||0,.04);lastTime=time;if(view==='overview'&&visible&&(pressed.size||moving)){move(dt);render();}frame=requestAnimationFrame(animate);}
+  function erikUpdate(dt){
+    if(erikT>1.2&&!erikPlaying)return false;
+    erikT+=dt;erikPose();
+    if(erikPlaying&&erikT>=erikBeats[erikIndex].d){if(erikIndex<erikBeats.length-1)erikBegin(erikIndex+1);else{erikPlaying=false;const done=erikDone;erikDone=null;done?.();}}
+    return true;
+  }
+  function animate(time){if(disposed)return;const dt=Math.min((time-lastTime)/1000||0,.04);lastTime=time;let draw=false;if(view==='overview'&&visible&&(pressed.size||moving)){move(dt);draw=true;}if(erikUpdate(dt))draw=true;if(draw)render();frame=requestAnimationFrame(animate);}
   const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let down=null;
   const pointerDown=e=>{down=[e.clientX,e.clientY];canvas.focus();};
   const pointerUp=e=>{if(view!=='bench'||!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>12)return;const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(pointer,camera);const hit=ray.intersectObjects(contactMeshes)[0];if(hit)onPick(active,hit.object.userData.contact);down=null;};
@@ -140,8 +168,13 @@ export function mountRoom(container,{onPick=()=>{},onFailure=()=>{}}={}){
   return {
     setState,setView,setActive(value){active=value;},setAlternate(value){alternate=value;render();},setVisible(value){visible=value;pressed.clear();render();},
     move(direction,on){if(view!=='overview')return;on?pressed.add(direction):pressed.delete(direction);},
-    inspect(){return {view,character:avatar.recipe.name,position:avatar.root.position.toArray(),handError:{...contactsErrors},drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,contacts:Object.keys(CONTACTS)};},
+    /** Erik pekar ut en följd av takter: {R, L, say, d}. onBeat(takt, nr) vid varje takt, onDone() efter sista. */
+    erikShow(beats,{onBeat=null,onDone=null}={}){erikBeats=beats.map(b=>({...b,d:b.d||Math.max(3.4,b.say.length/15)}));erikOnBeat=onBeat;erikDone=onDone;erikPlaying=erikBeats.length>0;if(erikPlaying)erikBegin(0);},
+    erikStop(){erikDone=null;erikRest();},
+    /** Hoppa till sista takten (för den som vill läsa i stället för att titta). */
+    erikFinish(){if(!erikPlaying)return;for(let k=erikIndex+1;k<erikBeats.length;k++)erikBegin(k);erikT=9;erikPose();erikPlaying=false;const done=erikDone;erikDone=null;done?.();render();},
+    inspect(){return {view,character:avatar.recipe.name,erik:{character:erik.recipe.name,playing:erikPlaying,beat:erikIndex,position:erik.root.position.toArray(),handError:{...erikErrors}},position:avatar.root.position.toArray(),handError:{...contactsErrors},drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,contacts:Object.keys(CONTACTS)};},
     contactScreen(name){render();const p=V(CONTACTS[name]).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
-    dispose(){disposed=true;cancelAnimationFrame(frame);observer.disconnect();document.removeEventListener('visibilitychange',visibility);avatar.dispose();for(const g of geometries)g.dispose();for(const m of materials.values())m.dispose();for(const t of textures)t.dispose();renderer.dispose();canvas.remove();},
+    dispose(){disposed=true;cancelAnimationFrame(frame);observer.disconnect();document.removeEventListener('visibilitychange',visibility);avatar.dispose();erik.dispose();for(const g of geometries)g.dispose();for(const m of materials.values())m.dispose();for(const t of textures)t.dispose();renderer.dispose();canvas.remove();},
   };
 }

@@ -22,8 +22,6 @@ export const SATO_CORNER=Object.freeze([.35,1.95].map(z=>Object.freeze({position
  * one more stool, and the ledge last -- Mrs Sato serves the counter across it.
  */
 export const SATO_GUEST_SEATS=Object.freeze([SATO_COUNTER[0],SATO_COUNTER[2],SATO_COUNTER[4],SATO_COUNTER[1],...SATO_LEDGE]);
-export const SATO_PLAYER_SEATS=Object.freeze([...SATO_COUNTER,...SATO_LEDGE,...SATO_CORNER]);
-/** Mrs Sato at the stock pots, between the counter and the line. */
 export const SATO_COOK=Object.freeze({position:Object.freeze([8.6,0,-4.35]),yaw:0});
 /**
  * Where she works, on the floor of the kitchen aisle (z -5.2 to -3.6): the prep board,

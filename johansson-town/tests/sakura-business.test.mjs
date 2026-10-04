@@ -5,8 +5,6 @@ import {recordSakuraSale,restoreSakura,sellToSakura,TOWN_FINDS} from '../src/com
 import {collectTownFind,restoreTownCleanup,CLEANUP_SPOTS} from '../src/commerce/town-cleanup.js';
 import {marketVisitsForDay,residentPlan} from '../src/people/social.js';
 import {RESIDENTS} from '../src/people/residents.js';
-import {createResidentLedger} from '../src/people/resident-personalities.js';
-import {STORE_SEATS,STORE_CLERK_POSITION} from '../src/world/interiors/store-layout.js';
 import {readSave,SAVE_KEY} from '../src/save.js';
 import {installDOM} from './fixtures.mjs';
 import {createActivities} from '../activities.js';

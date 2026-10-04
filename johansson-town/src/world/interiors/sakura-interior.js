@@ -2,7 +2,7 @@ import * as THREE from '../../../vendor/three.module.js';
 import {buildSpecialsBoard} from './sakura-specials-board.js';
 import {SHOP_STOCK} from '../../commerce/shop-stock.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
-import {createStoreAdvertising,getPosterMaterial,POSTER_SPECS} from './store-advertising.js';
+import {createStoreAdvertising} from './store-advertising.js';
 import {createShopRefrigerator} from './shop-refrigerator.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildMedicineShelf,hangWallPosters,createWindowDecorations} from './sakura-dressing.js';

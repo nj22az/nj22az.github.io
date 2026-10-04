@@ -3,7 +3,7 @@ import {japaneseSign,signText} from './okinawa/signs.js';
 import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './interiors/shared-dining-layout.js';
 import {createIzakayaTV} from './advertising-billboard.js';
 import {hangIzakayaPosters} from './interiors/izakaya-posters.js';
-import {DINING,restaurantCollider,restaurantApproach,izakayaPlot,SATO_RAMEN_DOOR} from './dining-layout.js';
+import {restaurantCollider,restaurantApproach,izakayaPlot,SATO_RAMEN_DOOR} from './dining-layout.js';
 import {SATO_RAMEN,satoRamenOpen} from './sato-ramen-layout.js';
 import {prepareIzakayaGlass} from './shop-glass.js';
 import {buildMinatoFacade} from './minato-facade.js';

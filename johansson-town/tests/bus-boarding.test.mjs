@@ -5,7 +5,6 @@ import {createFerryRun as createBusRun,FERRY} from '../src/world/ferry.js';
 import {OUTER_PIER} from '../src/world/layout.js';
 import {HARBOUR_LINE} from '../src/people/commuter-schedule.js';
 import {BUS_STATION} from '../src/world/bus-station.js';
-import {MAIN_ROAD} from '../src/world/main-road.js';
 
 /**
  * The boarding rule on its own, as schedules.js applies it: you go when a bus you

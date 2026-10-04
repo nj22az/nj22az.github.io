@@ -2,7 +2,7 @@ import {householdFor} from './households.js';
 import {ISLAND_RESIDENT_NAMES,kitahamaHomeFor} from '../world/kitahama-layout.js';
 import {HARBOUR_OFFICE} from '../world/business-layout.js';
 import {TOWN_DESTINATIONS} from '../world/town-grid.js';
-import {DINING,restaurantApproach,IZAKAYA_DOOR} from '../world/dining-layout.js';
+import {restaurantApproach,IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {residentialHome} from '../world/residential-layout.js';
 import {PROFILES} from './profiles.js';
 import {peninsulaActive} from '../world/town-mode.js';

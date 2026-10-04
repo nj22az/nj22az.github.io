@@ -6,7 +6,7 @@ const candidateBase=pathToFileURL(resolve(process.argv[2]||'.')+'/');
 import {readFile, writeFile} from 'node:fs/promises';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {mergeGeometries,mergeVertices} from '../vendor/BufferGeometryUtils.js';
-import {SkinnedMesh,MeshStandardMaterial,Float32BufferAttribute,Matrix4,DoubleSide,AnimationMixer,Vector3,Box3} from '../vendor/three.module.js';
+import {SkinnedMesh,MeshStandardMaterial,Float32BufferAttribute,Matrix4,DoubleSide,AnimationMixer,Vector3} from '../vendor/three.module.js';
 import {GLTFExporter} from './vendor/GLTFExporter.js';
 globalThis.FileReader=class {readAsArrayBuffer(blob){blob.arrayBuffer().then(b=>{this.result=b;this.onloadend?.({target:this});});} readAsDataURL(blob){blob.arrayBuffer().then(b=>{this.result='data:'+blob.type+';base64,'+Buffer.from(b).toString('base64');this.onloadend?.({target:this});});}};
 const names=['worker','suit','casual_2','female_casual','female_formal'];

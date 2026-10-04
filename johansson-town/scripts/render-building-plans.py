@@ -12,7 +12,11 @@ for name in sys.argv[1:]:
     coords=[(p['x'],p['y']) for o in plan['objects'] for p in o.get('points',[])]
     w=max(x for x,y in coords); h=max(y for x,y in coords)
     scale=min(55,1000/max(w,h)); left,top=65,100
-    image=Image.new('RGB',(int(w*scale)+130,int(h*scale)+200),'#faf8f2'); d=ImageDraw.Draw(image)
+    legend=['Green: sampled floor surfaces. Brown: walls and solid fittings.',
+            'Domain extent is not net walkable area. Grid: 0.91 m.']
+    titles=[o['text'] for o in plan['objects'] if o['type']=='text']
+    text_width=max(font.getbbox(text)[2] for text in legend+titles)
+    image=Image.new('RGB',(max(int(w*scale)+130,text_width+130),int(h*scale)+200),'#faf8f2'); d=ImageDraw.Draw(image)
     xy=lambda x,y:(left+x*scale,top+y*scale)
     for o in plan['objects']:
         if o['type']=='polygon':

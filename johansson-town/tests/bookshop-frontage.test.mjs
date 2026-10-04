@@ -1,10 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {buildBicycle,BOOKSHOP_BICYCLE} from '../src/world/bicycle.js';
-import {circleHitsRect} from '../physics.js?snappy=1';
 import {buildWestShop,WEST_SHOPS,WEST_FRONT} from '../src/world/west-shops.js';
 
 test('the wooden frontage is closed between each display window and corner post',()=>{

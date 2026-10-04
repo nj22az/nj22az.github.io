@@ -5,6 +5,8 @@ import {createAvatarAnimator,GESTURES} from './animate.js';
 import {recipeFor,CAST_RECIPES} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
 import {fitAvatarHeldProp} from './consume.js';
+import {swingsAt} from './springs.js';
+const swingAt=new THREE.Vector3();
 import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropPortion,disposeServing} from '../people/izakaya-beer.js';
 
 /**
@@ -85,6 +87,9 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
   sleeping,gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,tipsy:u.tipsy||0,
  });
+ // Hair, skirts and hems swing (springs.js): always for Thuan, near the camera for everyone else.
+ if(swingsAt(entity.getWorldPosition(swingAt),actor.isThuan)){avatar.springs?.update(dt);actor.swingResting=false;}
+ else if(!actor.swingResting){avatar.springs?.reset();actor.swingResting=true;}
  // Every resident uses the same hand fit and portion animation as the player.
  const heldKind=u.heldItem||(['Drink','DrinkStanding'].includes(u.socialPose)?'beer':u.socialPose==='Eat'?'rice':null);
  if(actor.heldKind!==heldKind){
@@ -171,6 +176,8 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
     seatHeight:state.seated?avatar.measure.hipY-avatar.measure.seatDrop:undefined,seat:seatMove,airborne:!!state.airborne,
     talking:time<speakUntil,expression,gaze:lookPoint,heldProp:held,tipsy:state.tipsy||0});
    if(state.seated)avatar.root.position.y=0;
+   // Johansson's shirt hem swings wherever he is.
+   if(root.visible)avatar.springs?.update(dt);
    if(held?.userData.consumable){
     const c=animator.consumption;
     if(c&&held.userData.finishPortion!==undefined)setPropPortion(held,THREE.MathUtils.lerp(held.userData.startPortion,held.userData.finishPortion,c.swallow));

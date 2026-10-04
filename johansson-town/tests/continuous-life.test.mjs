@@ -1,4 +1,4 @@
-import {HOUSEHOLDS,householdFor} from '../src/people/households.js';
+import {householdFor} from '../src/people/households.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
@@ -6,7 +6,7 @@ import {RESIDENTS,HOME_OWNERS} from '../src/people/residents.js';
 import {createCastAI,DIALOGUE} from '../src/people/schedules.js';
 import {residentPlan,IZAKAYA_DOOR,RAMEN_DOOR,RAMEN_VISITS,GOSSIP} from '../src/people/social.js';
 import {WORK_SITES} from '../src/people/workplaces.js';
-import {sleepHours,homeRoutine,homeSiteId,HOME_LAYOUT,homeLayoutFor} from '../src/people/home-life.js';
+import {sleepHours,homeRoutine,homeSiteId,homeLayoutFor} from '../src/people/home-life.js';
 import {createHomeResidents} from '../src/people/home-residents.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {buildResidentHome} from '../src/world/interiors/resident-home.js';

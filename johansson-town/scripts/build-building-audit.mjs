@@ -14,7 +14,11 @@ import {SHARED_DINING_COLLIDERS} from '../src/world/interiors/shared-dining-layo
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 installDOM();configureTownMode(TOWN_MODES.PENINSULA);
 const folder=fileURLToPath(new URL('../docs/building-plans/',import.meta.url));
-const source=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+// An explicit revision lets refreshed evidence cite main even when the survey
+// tooling lives on a PR branch. Refuse provenance that differs from local inputs.
+const source=execFileSync('git',['rev-parse',process.argv[2]||'HEAD'],{encoding:'utf8'}).trim();
+const inputDiff=execFileSync('git',['diff',source,'--','src','vendor','tests/fixtures.mjs'],{encoding:'utf8',cwd:fileURLToPath(new URL('../',import.meta.url))});
+if(inputDiff.trim())throw Error('Survey inputs differ from the requested source revision');
 const analysis=JSON.parse(readFileSync(folder+'analysis.json'));
 const entries=[
  ['onsen',buildOnsenInterior,{},[['Lobby / genkan',-1,4.1],['Changing / lockers',-2,.4],['Washing area',-4,-2.1],['Indoor bath',1.4,-3.1],['Rock bath',-1,-6.7]]],

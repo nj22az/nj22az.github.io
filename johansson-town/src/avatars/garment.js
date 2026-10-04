@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {hemSpec} from './springs.js';
 
 /**
  * The shirt, painted.
@@ -39,6 +40,12 @@ export function sleeveUV(p,a,b,side){
 
 const shade=(hex,f)=>'#'+new THREE.Color(hex).multiplyScalar(f).getHexString();
 const lighten=(hex,f)=>'#'+new THREE.Color(hex).lerp(new THREE.Color('#ffffff'),f).getHexString();
+/**
+ * Johansson's camp collar, one side (mirrored for the other), as [fraction of the cloth's
+ * half-width, height t up the torso]: by the neck, the leaf's point, the notch, the lapel's
+ * corner, its foot by the first button, the centre; it closes back up along the open V.
+ */
+export const CAMP_COLLAR=Object.freeze([[.6,1.0],[.9,.83],[.7,.84],[.85,.79],[.16,.725],[.035,.73]].map(Object.freeze));
 const COLLARED=['polo','blouse','kariyushi','jacket','smock','cardigan'];
 
 /**
@@ -70,7 +77,9 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=line*.8;ctx.stroke();}
  };
  const buttons=(ts,r,fill)=>{for(const t of ts)dotAt(0,t,r*m.k,fill,shade(fill,.6));marks.push('buttons:'+ts.length);};
- const k=m.k,neck=.92,hem=.15;
+ // An island shirt is worn out over the shorts, so its cloth (and print) runs down to its own hem (springs.js).
+ const out=o.top==='kariyushi'?hemSpec(recipe,m):null;
+ const k=m.k,neck=.92,hem=out?Math.max(GARMENT.T0+.02,(out.waist-out.length-m.hipY)/m.torso+.01):.15;
 
  // Stripes and prints first, so collars and pockets sit over them.
  if(o.pattern==='stripes'&&!['tank','overalls','sundress'].includes(o.top)){
@@ -136,11 +145,15 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   case 'blouse':collar('#f8f6ef',{drop:.88,spread:.1,round:true});placket(.97,hem+.04,.018);buttons([.85,.69,.53,.37],.007,'#f8f6ef');break;
   case 'smock':collar('#f8f6ef',{drop:.88,spread:.1,round:true});pocket(0,.42,W*.5,.16,shade(top,.94));hemRound();break;
   case 'kariyushi':{
-   // An open neck: a V of skin down to the first button. The collar itself is modelled
-   // (collar-mesh.js, from Blender) and lies over the edges of this V.
-   const skin=recipe.body.skin;
-   poly([[-.04*k,1.0],[.04*k,1.0],[0,.80]],skin,{stroke:null});marks.push('open neck');
-   placket(.8,hem+.03,.02);buttons([.72,.58,.44,.3],.0085,'#f8f6ef');
+   // The camp collar itself is cloth, modelled on the chest (build.js campCollar). Here: the
+   // V of skin it opens over, and its toon shadow, a hard-edged darker shape just below
+   // and outside its edge, so it lifts off the shirt instead of lying on it like a sticker.
+   const skin=recipe.body.skin,fx=(f,t)=>f*W/2*radiusAt(t),pt=(f,t,s)=>[s*fx(f,t),t];
+   // The shadow skips the notch (index 2): in the notch it would read as a dark spike.
+   for(const s of [-1,1])poly(CAMP_COLLAR.filter((_,i)=>i!==2).map(([f,t])=>pt(Math.min(.99,f*1.04),t-.016,s)),shade(top,.8),{stroke:null});
+   poly([pt(.62,1.01,-1),pt(.62,1.01,1),[0,.73]],skin,{stroke:null});marks.push('open neck','collar shadow');
+   // The top button, under the V, is a wooden one; the rest are shell.
+   placket(.73,hem+.03,.02);buttons([.695],.011,'#9a6a42');buttons([.57,.45,.33],.0085,'#f8f6ef');
    pocket(W*.25,.62,W*.22,.17,top);hemRound();break;
   }
   case 'jacket':{

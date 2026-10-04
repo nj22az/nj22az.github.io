@@ -7,7 +7,7 @@ import {createKit,rng} from './kit.js';
 import {createMaterials} from '../../render/materials.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
-import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
+import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant} from './houses.js';
 import {utilityPole,wiresBetween,serviceDrop,keiTruck,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
 import {GROUND_LAYER} from '../ground-layers.js';
 import {KITAHAMA_LANES} from '../kitahama-layout.js';
@@ -17,7 +17,6 @@ import {residentsLine} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
 import {MAIN_ROAD} from '../main-road.js';
 import {WEST_YARD} from '../west-yard.js';
-import {ONSEN_DOOR} from '../onsen-layout.js';
 import {createVendingMachine,vendingReady,hydrateVending} from '../vending.js';
 import {windowGlow} from '../../render/dusk.js';
 

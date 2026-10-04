@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';import {createTown} from '../src/world/town.js';import {configureTownMode} from '../src/world/town-mode.js';
 import {islandTerrainHeight,MOUNTAIN_VERTICES,TERRAIN_GRID,COAST_ROAD} from '../src/world/island-plan.js';import {GARDEN,gardenPoint,gardenPondAt} from '../src/world/garden-layout.js';import {routeAt,groundHeight} from '../src/world/layout.js';import {circleHitsRect} from '../physics.js';
-import {AIRPORT_LANDING,AIRPORT_COUNTER,airportWorld,AIRPORT_HEIGHT} from '../src/world/airport-ground.js';
+import {AIRPORT_COUNTER,airportWorld,AIRPORT_HEIGHT} from '../src/world/airport-ground.js';
 import {restoreIsland,islandState,buyFerry,ferryArrival,buyFlight,checkIn,boardFlight,flightArrival,finishRepair,completeProject,flightTimes} from '../src/island/services.js';
 import {auditArchive,YEAR_MINUTES,retainArchive} from '../src/office/archive.js';
 

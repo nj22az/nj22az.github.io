@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {KITANO_ROAD,KITANO_BRIDGE,KITANO_ROAD_LENGTH,KITANO_ROAD_LANDS,KITANO_SHORE,KITANO_SURFACE_LIFT,roadPoint,roadHeight,leftOf} from './kitano-link-plan.js';
+import {KITANO_ROAD,KITANO_ROAD_LENGTH,KITANO_ROAD_LANDS,KITANO_SHORE,KITANO_SURFACE_LIFT,roadPoint,roadHeight,leftOf} from './kitano-link-plan.js';
 import {paintPatch,roadSign,stopMarking,ROAD_STANDARD} from './road-standards.js';
 import {KITANO_STOP_S,CAR_PARK,carParkPoint,CAR_PARK_YAW} from './town-traffic.js';
 import {AIRPORT_HEIGHT} from './airport-ground.js';

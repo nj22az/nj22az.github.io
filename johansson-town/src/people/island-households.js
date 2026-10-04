@@ -53,11 +53,6 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'yonamine',address:"Above Yonamine Fresh Fish Store",members:[['Mrs Yonamine','sells fish from the morning boats'],['Yonamine-sensei',"teaches the Years 5–6 at the town hall"]]},
 ].map(h=>Object.freeze({...h,members:Object.freeze(h.members.map(([name,purpose])=>Object.freeze({name,purpose})))})));
 
-/** Where somebody lives, or null. */
-export const homeOf=name=>ISLAND_HOUSEHOLDS.find(h=>h.members.some(m=>m.name===name))||null;
-/** What somebody does. */
-export const purposeOf=name=>homeOf(name)?.members.find(m=>m.name===name)?.purpose||null;
-/** The household at a home id. */
 export const householdAtHome=id=>ISLAND_HOUSEHOLDS.find(h=>h.home===id)||null;
 /** A nameplate's "who lives here" line. */
 export function residentsLine(id){

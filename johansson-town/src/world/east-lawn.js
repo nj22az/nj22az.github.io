@@ -3,7 +3,7 @@ import {KITANO_SEAWALL_GAP} from './kitano-link-plan.js';
 import {applyTerrainNormals} from './terrain-surface.js';
 import {GROUND} from '../render/ground-palette.js';
 import {MAIN_ROAD} from './main-road.js';
-import {PARK,PARK_SKIRT,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
+import {PARK,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {buildEastGarden} from './east-garden.js';
 import {SCHOOL} from './school-layout.js';
