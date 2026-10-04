@@ -12,7 +12,7 @@ export function createColliderGrid(list,{cell=4}={}){
  let cells=new Map(),print=NaN,stamp=0,count=-1,last=null;
  const seen=new WeakMap(),found=[];
  const key=(i,j)=>i*131071+j;
- const fingerprint=()=>{let s=list.length;for(let i=0;i<list.length;i++){const c=list[i];s+=(c.x*7.1+c.z*3.7+(c.w||0)*1.3+(c.d||0)*1.9+(c.yaw||0))*((i%7)+1);}return s;};
+ const fingerprint=()=>{let s=list.length;for(let i=0;i<list.length;i++){const c=list[i];s+=((c.x||0)*7.1+(c.z||0)*3.7+(c.w||0)*1.3+(c.d||0)*1.9+(c.yaw||0))*((i%7)+1);}return s;};
  function rebuild(){
   cells=new Map();count=list.length;last=list[list.length-1];
   for(const c of list){

@@ -23,3 +23,11 @@ test('the collider grid answers exactly as checking every collider does, however
  // Taken away in the middle of a frame (mounting the bicycle): seen at once, no refresh needed.
  const gone=list.splice(5,1)[0],x=gone.x,z=gone.z;assert.equal(grid.some(x,z,.1,c=>c===gone),false,'a removed collider is not found');list.splice(5,0,gone);
 });
+
+test('a collider without a centre is ignored rather than making every query rebuild the grid',()=>{
+ const list=[{x:0,z:0,w:1,d:1},{minX:2,maxX:3,minZ:0,maxZ:1}],grid=createColliderGrid(list);
+ grid.refresh();const before=grid.near(0,0,.5).length;
+ let rebuilt=0;const original=Map;globalThis.Map=class extends original{constructor(...a){super(...a);rebuilt++;}};
+ try{for(let i=0;i<50;i++)grid.near(0,0,.5);}finally{globalThis.Map=original;}
+ assert.equal(before,1);assert.equal(rebuilt,0,'the grid rebuilt on a plain query');
+});

@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {createKit} from './okinawa/kit.js';
 import {utilityPole,wiresBetween,serviceDrop,takePowerPlan,drawPlannedPole,SPAN_WIRES,spanWire} from './okinawa/props.js';
 import {sagCurve} from './okinawa/kit.js';
+import {circleHitsRect} from '../../physics.js';
 import {poster} from './okinawa/signs.js';
 import {groundHeight} from './layout.js';
 import {SCHOOL} from './school-layout.js';
@@ -37,7 +38,7 @@ export function buildTownPower(world,{register,onAction,shadows=false}={}){
  for(const p of planned?.poles||[])drawPlannedPole(kit,p);
  const blockers=world.colliders.filter(c=>c.id!=='utility-pole'),clipped=[],wires=[];
  const clear=(from,to,sag)=>{const curve=sagCurve(new THREE.Vector3(...from),new THREE.Vector3(...to),sag*Math.min(1.6,Math.hypot(to[0]-from[0],to[1]-from[1],to[2]-from[2])/14)),v=new THREE.Vector3();
-  for(let t=.06;t<.95;t+=.04){curve.getPoint(t,v);for(const c of blockers){const pad=TREE.test(c.id||'')?1.4:.15;if(v.x>c.minX-pad&&v.x<c.maxX+pad&&v.z>c.minZ-pad&&v.z<c.maxZ+pad&&v.y<(c.minY||0)+(c.height??3)+.4&&v.y>(c.minY||0)-.2)return false;}}
+  for(let t=.06;t<.95;t+=.04){curve.getPoint(t,v);for(const c of blockers){const pad=TREE.test(c.id||'')?1.4:.15;if(circleHitsRect(v.x,v.z,pad,c)&&v.y<(c.minY||0)+(c.height??3)+.4&&v.y>(c.minY||0)-.2)return false;}}
   return true;};
  for(const {a,b,sag} of strung)for(const i of SPAN_WIRES){if(!a.anchors[i]||!b.anchors[i])continue;const w=spanWire(a,b,i,sag);if(clear(w[0],w[1],w[2])){kit.wire(...w);wires.push(w);}else clipped.push(a.id+'>'+b.id+'#'+i);}
  for(const {pole:p,to} of planned?.drops||[])if(p.anchors.at(-1).distanceTo(new THREE.Vector3(...to))<14&&clear(p.anchors.at(-1).toArray(),to,.25))kit.wire(p.anchors.at(-1).toArray(),to,.25,.014,0x2b2a30);
