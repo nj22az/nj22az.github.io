@@ -1416,6 +1416,8 @@ const detailStream=createDetailStream({onChange:()=>{invalidateDetails();walkSur
 // With ?audit in the address, a harness can put the player anywhere and look down on
 // the town from a fixed camera. Nothing reads it otherwise.
 if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__={
+ /** Stops following the real clock and sets the time of day, for daylight screenshots. */
+ time(m){followRealClock=false;minutes=Math.floor(minutes/1440)*1440+m;townClock.set(minutes,0);},
  teleport(x,z,facing){if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;},
  get mouse(){return {walking:pointWalk.active,destination:pointWalk.destination,yaw,pitch};},
  camera:null,
