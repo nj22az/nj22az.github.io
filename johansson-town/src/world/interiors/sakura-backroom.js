@@ -1,3 +1,4 @@
+import {addOwnedCharacter} from '../../people/owned-characters.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {stockroomBeerBatch,deliveryOnigiri} from './stockroom-products.js';
 import {paintStaffBoard,boardText} from './staff-board.js';
@@ -34,6 +35,8 @@ export const BACKROOM=Object.freeze({
  // from the passage to the stockroom and she could not get round it on restock runs.
  daisha:Object.freeze({x:-5.27,z:-5.4,w:.66,d:.96}),
  extinguisher:Object.freeze({x:4.66,z:-6.58,r:.15}),
+ // The Thuan figurine, on a plinth in the east corner by the delivery door, facing the room.
+ figurine:Object.freeze({x:5.42,z:-6.42,plinth:.4,height:.6,yaw:2.04}),
 });
 
 const canvasTex=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;};
@@ -272,7 +275,11 @@ export function buildSakuraBackroom(room,{anchor,action}={}){
  const rack=stockRack(k);
  noticeboard(k);exitSign(k);beerCrates(k);cardboardBundle(k);daisha(k);extinguisher(k);
  k.finish();
+ const F=BACKROOM.figurine;
+ const plinth=new THREE.Mesh(new THREE.BoxGeometry(.34,F.plinth,.34),std(0x8a6a4a));plinth.position.set(F.x,F.plinth/2,F.z);plinth.name='Thuan figurine plinth';room.add(plinth);
+ const figurine=addOwnedCharacter({parent:room,kind:'thuanFigurine',height:F.height,position:[F.x,F.plinth,F.z],yaw:F.yaw});
  if(anchor&&action){
+  anchor([F.x-.5,1.0,F.z+.3],'Look at the Thuan figurine',()=>action('inspect','A figurine of Thuan','A carefully painted figurine of Thuan, a present from the mayor’s office. She says it is too much and keeps it in the back room, where she dusts it every morning before the rice delivery.'));
   const N=BACKROOM.noticeboard;
   anchor([N.x+.5,1.5,N.z],'Read the staff noticeboard',()=>action('inspect',"Backyard · Staff noticeboard",
    "Thuan’s September roster, with her name on nearly every line; the delivery times for rice, drinks and the papers; and the back-room 5S rules in red.\n\nAt the bottom of the roster, in her handwriting: Assistant Manager(Potted plants) — the assistant manager — \"every day, by the window\"."));
@@ -280,5 +287,5 @@ export function buildSakuraBackroom(room,{anchor,action}={}){
   anchor([D.x,.9,D.z],'Look at the rice delivery',()=>action('inspect',"Banju · The 11:00 rice delivery",
    'Four blue trays of onigiri and bento off the morning van, parked on the daisha at the end of the room. They go out on the shelves before the lunch crowd; the empty trays go back on the 16:00 run.'));
  }
- return {tick(time){rack.led.visible=Math.sin(time*2.4)>-.6;}};
+ return {tick(time){rack.led.visible=Math.sin(time*2.4)>-.6;},dispose(){figurine.dispose();}};
 }

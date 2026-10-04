@@ -124,6 +124,8 @@ export const SAKURA_LAYOUT={
   // In the restroom (sakura-restroom.js): the pedestal basin on the south wall.
   rect(-5.18,-3.72,.66,.46,1.0),
   rect(-5.19,-6.52,.86,.36,.9),rect(-5.27,-5.4,.66,.96,1.1),rect(5.51,-5.67,.26,.74,.6),rect(4.66,-6.58,.28,.28,.6),
+  // The Thuan figurine on her plinth in the east corner.
+  rect(5.42,-6.42,.36,.36,1.2),
  ]
 };
 // Each stocked unit has a real position. Opposite sides of an aisle use opposite

@@ -156,14 +156,12 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  anchor([hw-.8,1.0,1.3],'Open the document register',()=>action('document-archive','Community Hall Document Register'));
  for(let month=0;month<12;month++){const folder=box([.045,.28,.22],[hw-.45,.5+(month>5?.36:0),.72+(month%6)*.2],0xb5a16c,'Archive folder '+(month+1));}
  anchor([hw-.6,1.2,1.3],'Look through the minutes',()=>action('read','Town assembly minutes, 1997','Item 3: the power house\'s second diesel set to be overhauled before typhoon season; the old barber\'s shop to be let to the post office. Item 5: the ferry company asks for a longer ramp so the new cargo trucks can board. Item 7: Mrs Sato\'s complaint about the gulls, again. Item 9: the sewage works on Kitano-jima to be inspected by the prefecture in November.'));
- // The Merry Moose on its own plinth against the east wall, where you see it coming in;
- // the little Thuan figurine keeps the filing cabinet.
+ // The Merry Moose on its own plinth against the east wall, where you see it coming in.
  box([.42,.5,.42],[2.85,.25,-.9],0x8a6a4a,'Merry Moose plinth');collider(2.85,-.9,.42,.42,1.1);
  const moose=addOwnedCharacter({parent:group,kind:'merry_Moose',height:.6,position:[2.85,.5,-.9],yaw:-Math.PI/2});
  anchor([2.4,1.0,-.9],'Look at the Merry Moose',()=>action('inspect','The Merry Moose','The island’s good-luck moose, given to the town and kept by the mayor’s desk. Visitors pat its nose on the way out; the paint there is wearing thin.'));
- const thuan=addOwnedCharacter({parent:group,kind:'thuanFigurine',height:.34,position:[2.7,.8,-2.4],yaw:2.31});
- anchor([2.65,1,-2.05],'Look at the office figurine',()=>action('inspect','Island keepsake','A carefully detailed little Thuan watches over the annual accounts. The mayor dusts her before every town assembly.'));
- const owned=[moose,thuan];
+ // The Thuan figurine has moved to her own back room at Sakura (sakura-backroom.js).
+ const owned=[moose];
  return {...layoutFor(),office:true,owned,dispose:()=>owned.forEach(prop=>prop.dispose())};
 }
 
