@@ -24,7 +24,8 @@ const minuteOfDay=m=>((m%1440)+1440)%1440;
  * the counter at two and goes straight down to the pier to wait for it on the quay bench,
  * which also keeps her out of the street behind Sakura when Thuan goes out for her break.
  */
-export const SATO_SHIFT=Object.freeze({arrival:510,start:630,finish:840,departure:870});
+// Lunch is 11:00–14:00 (sato-ramen-layout.js); until 15:00 she washes up and wipes down (people/ramen-kitchen.js).
+export const SATO_SHIFT=Object.freeze({arrival:510,start:630,finish:900,departure:930});
 // A profile may carry its own shift (a visitor off the ferry has no name in the roster).
 export const shiftFor=profile=>{if(profile&&typeof profile==='object'&&profile.shift)return profile.shift;const name=typeof profile==='string'?profile:profile?.name;return (name==='Mrs Sato')?SATO_SHIFT:COMMUTER_SHIFTS[name]||null;};
 function elapsed(profile,minutes){const shift=shiftFor(profile);return shift&&!shift.permanent?minuteOfDay(minutes-shift.arrival):null;}

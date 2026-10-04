@@ -20,6 +20,7 @@ import {buildClassroom} from './world/interiors/classroom.js';
 import {buildOnsenInterior,ONSEN_ROOM} from './world/interiors/onsen.js';
 import {realTownMinutes,clockCatchUp,townClockLineAt,readClockSetting,writeClockSetting,startingMinutes,createClock} from './town-clock.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
+import {hasRamenTicket,useRamenTicket} from './people/ramen-ticket.js';
 import {createRamenKitchen} from './people/ramen-kitchen.js';
 import {SAKURA_LAYOUT} from './world/interiors/sakura-layout.js';
 import {createSakuraShop} from './people/sakura-shop.js';
@@ -717,7 +718,7 @@ const ramenBlocked=(x,z,r=.3)=>(suppliedRoomBoundsBlocked(SATO_ROOM,x,z,r)||SATO
 function hideRamen(){scene.add(ramenLife);ramenLife.visible=false;}
 const ramenGuests=createIndoorResidents({world,parent:ramenLife,collides:ramenBlocked,getRain:()=>weather,place:'ramen',onBorrow:npcActivities.release,getState:()=>activities.state}),homeGuests=createHomeResidents({world,parent:scene,getState:()=>activities.state,collides:environmentBlocked,onBorrow:npcActivities.release,getRain:()=>weather});
 // Mrs Sato's kitchen: she cooks and carries every bowl, the regulars' and yours (people/ramen-kitchen.js).
-const satoKitchen=createRamenKitchen({getCook:()=>{const g=world.people.find(p=>p.profile.name==='Mrs Sato')?.g;return g&&g.visible&&g.userData.inRamen&&!g.userData.roomTransition?g:null;}});
+const satoKitchen=createRamenKitchen({isAfterLunch:()=>{const m=((minutes%1440)+1440)%1440;return m>=SATO_RAMEN.close&&m<SATO_RAMEN.close+60;},getCook:()=>{const g=world.people.find(p=>p.profile.name==='Mrs Sato')?.g;return g&&g.visible&&g.userData.inRamen&&!g.userData.roomTransition?g:null;}});
 const ramenMeals=createVenueService({room:ramenLife,place:'ramen',getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>p.g.userData.inRamen),
  ...(({staffName:'Mrs Sato',venueName:'Sato Ramen',getStaff:()=>world.people.find(p=>p.profile.name==='Mrs Sato')?.g||null,
   kitchen:satoKitchen,meal:MEALS.lunch,drinkFor:name=>SATO_LUNCH_DRINK[name]||'mugicha',tableFor:p=>SATO_GUEST_SEATS[p.g.userData.ramenSeat]?.table}))});
@@ -744,7 +745,7 @@ function addRoomProps(s){
   if(s.id==='school'){roomColliders.push(...activeRoomLayout.colliders);activeRoomLayout.tick(0,minutes,elapsed);return;}
   if(s.id==='onsen'){roomColliders.push(...activeRoomLayout.colliders);activeRoomLayout.tick(0,minutes);onsenGuests.sync(minutes);return;}
   if(activeRoomLayout){
-    if(s.id==='ramen'){room.add(ramenLife);ramenLife.visible=true;ramenGuests.sync(minutes);ramenPlayerService=createRamenPlayerService({room,getSeat:()=>Number.isInteger(parkSeat?.ramenSeatId)?parkSeat:null,getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,say,
+    if(s.id==='ramen'){room.add(ramenLife);ramenLife.visible=true;ramenGuests.sync(minutes);ramenPlayerService=createRamenPlayerService({room,getSeat:()=>Number.isInteger(parkSeat?.ramenSeatId)?parkSeat:null,getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,say,ticket:{has:item=>hasRamenTicket(activities.state,item),use:item=>{const used=useRamenTicket(activities.state,item);if(used)activities.save?.();return used;}},
       onMouthful:ramenMouthful,canOrder:item=>item.prop==='beer'&&!wantsAnother(tipsy,DRINKS.bottle.alcohol)?"Mrs Sato shakes her head: You’ve had enough. Have a cold barley tea instead.":true,
       ...({menu:SATO_MENU,isOpen:satoRamenOpen,title:SATO_RAMEN.title,server:'Mrs Sato',kitchen:satoKitchen,closedLine:'Sato Ramen serves lunch, 11:00 to 14:00. Mrs Sato has put the stools up.'})});}
     if(homeOwner(s)){activeRoomLayout.tick?.(0,minutes,elapsed);homeGuests.enter(activeRoomLayout.prepareBedding?{...s,homeLayouts:{[homeOwner(s)]:activeRoomLayout}}:activeRoomLayout.homeLayouts?{...s,homeLayouts:{...s.homeLayouts,...activeRoomLayout.homeLayouts}}:s,minutes);}
@@ -778,7 +779,7 @@ function roomShell(s){
  if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,openMaker:()=>{leaveRoomIfModal();openAvatarMaker();},sleep:sleepUntilMorning});return;}
  if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior(shared);return;}
  if(s.id==='koban'){activeRoomLayout=buildKobanInterior(shared);return;}
- if((s.id==='ramen')){activeRoomLayout=buildSatoRamenRoom(shared);return;}
+ if((s.id==='ramen')){activeRoomLayout=buildSatoRamenRoom({...shared,getMinutes:()=>minutes});return;}
  // A home with a room of its own (the office, the police box) keeps it; everyone else gets a flat.
  activeRoomLayout=homeOwner(s)&&!s.ownRoom?buildResidentHome({...shared,profile:world.people.find(p=>p.profile.name===homeOwner(s)).profile,box}):s.id==='warehouse'?buildWarehouseInterior(shared):buildCompactShop(shared)||buildSuppliedRoom(shared);
  if(activeRoomLayout||s.id==='izakaya')return;

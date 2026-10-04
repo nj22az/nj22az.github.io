@@ -6,7 +6,7 @@ Progress (tick as each part ships):
 - [x] 1b Interactive items (pink phone, bottle keep, karaoke, inspects)
 - [x] 1c People at every hour, cleaning when closed
 - [x] 1d Light (open lantern glow, closed work light)
-- [ ] 2 Sato Ramen detail pass
+- [x] 2 Sato Ramen detail pass
 
 
 ## Context

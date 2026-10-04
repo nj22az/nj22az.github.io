@@ -47,7 +47,9 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
  }
  function moveAcrossSeat(g,from,to,amount){g.position.set(from[0]+(to[0]-from[0])*amount,0,from[2]+(to[2]-from[2])*amount);}
  function sync(minutes,dt=0){
-  clock=minutes;walker??=createRoomWalk(collides);
+  clock=minutes;
+  // The shared Minato building runs on to x 11.4 (Sato Ramen): past the default bounds, a walker there had no route and stood at the door.
+  walker??=createRoomWalk(collides,{bounds:{minX:-8,maxX:12,minZ:-8,maxZ:8}});
   for(const p of world.people){
    const g=p.g;let saved=borrowed.get(p);
    if(!saved){
@@ -110,7 +112,8 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    if(place==='market'&&!seat.staff&&!seat.managed)g.userData.storeSeatId=seat.id;
    if(place==='ramen')g.userData.ramenSeat=seat.index;
    if(seat.job){g.userData.socialPose=seat.job.pose;if(seat.job.tool)g.userData.tool=seat.job.tool;else delete g.userData.tool;g.userData.activity=seat.job.activity;continue;}
-   delete g.userData.tool;
+   // Mrs Sato's kitchen (people/ramen-kitchen.js) hands her a cloth or a glass itself.
+   if(!g.userData.kitchen)delete g.userData.tool;
    if(!seat.managed&&!g.userData.mealState&&!(seat.staff&&g.userData.serving))g.userData.activity=seat.staff?p.profile.role:seat.soak?'soaking in the rock bath':'relaxing at '+place;
    const home=world.homes?.get(p.profile.name);if(home)home.occupied=false;
   }

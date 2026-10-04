@@ -63,7 +63,7 @@ test('published businesses have reachable real doors and a clear passage beside 
   for(let minute=0;minute<1440;minute+=10)for(const p of world.people){
    // Sato Ramen is on the island now, beside Minato: open at lunch, with Mrs Sato in from 10:30.
    const plan=residentPlan(p.profile,minute,false,c.state);
-   if(plan.place==='ramen')assert.ok(p.profile.name==='Mrs Sato'?minute>=630&&minute<840:satoRamenOpen(minute),p.profile.name+' at Sato Ramen outside its hours at '+minute);
+   if(plan.place==='ramen')assert.ok(p.profile.name==='Mrs Sato'?minute>=630&&minute<900:satoRamenOpen(minute),p.profile.name+' at Sato Ramen outside its hours at '+minute);
   }
  }finally{}
 });

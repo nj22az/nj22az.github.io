@@ -6,7 +6,7 @@ export const RAMEN_MENU=Object.freeze([{id:'ramen',name:'Shoyu ramen',cost:300},
 const DRINK_PROPS={tea:'oolong',beer:'bottle',mugicha:'mugicha',coffee:'coffee'};
 /** How many mouthfuls a thing lasts you. */
 const MOUTHFULS={ramen:6,gyoza:6,rice:4,bun:3,tea:4,mugicha:4,coffee:4,beer:6};
-export function createRamenPlayerService({room,getSeat,getMinutes,getBalance,pay,say,menu=RAMEN_MENU,isOpen=null,title='Sato Ramen',server='The cook',closedLine='The ramen kitchen is closed. Please return after 09:00.',kitchen=null,onMouthful=()=>{},canOrder=()=>true}){
+export function createRamenPlayerService({room,getSeat,getMinutes,getBalance,pay,say,menu=RAMEN_MENU,isOpen=null,title='Sato Ramen',server='The cook',closedLine='The ramen kitchen is closed. Please return after 09:00.',kitchen=null,onMouthful=()=>{},canOrder=()=>true,ticket=null}){
  let order=null,elapsed=0;const props=new Map();
  const open=()=>isOpen?isOpen(getMinutes()):getMinutes()%1440>=540&&getMinutes()%1440<1260;
  const kindOf=item=>item.prop||item.id;
@@ -20,19 +20,21 @@ export function createRamenPlayerService({room,getSeat,getMinutes,getBalance,pay
  }
  function deliver(){
   if(!order||order.delivered)return;
-  if(!pay(order.item.cost)){say('There is not enough yen for this order.',4);clear();return;}
+  // A ticket from the machine pays for the dish it names (people/ramen-ticket.js).
+  if(ticket?.use(order.item))order.ticket=true;
+  else if(!pay(order.item.cost)){say('There is not enough yen for this order.',4);clear();return;}
   order.delivered=true;order.prop=place(order.seat,kindOf(order.item));
   say(kitchen?server+": Here you are. Your "+order.item.name.toLowerCase()+'.':'Your '+order.item.name.toLowerCase()+' is served. Enjoy your meal.',4);
  }
  return {menu,title,server,get order(){return order;},
   request(id){const item=menu.find(i=>i.id===id),seat=getSeat();if(!item||!seat||order)return false;
    if(!open()){say(closedLine,4);return false;}
-   if(getBalance()<item.cost){say('You do not have enough yen.',3);return false;}
+   if(!ticket?.has(item)&&getBalance()<item.cost){say('You do not have enough yen.',3);return false;}
    const refusal=canOrder(item);if(refusal!==true){say(refusal,4);return false;}
    const kind=kindOf(item),total=MOUTHFULS[kind]||4;
    order={item,seat,delivered:false,left:total,total,cooking:false};elapsed=0;
    order.cooking=!!kitchen?.request({items:[kind],x:(seat.table||seat.position)[0],label:'your',tag:'player',onServed:deliver});
-   say(server+' takes your order and begins preparing it.',4);return true;
+   say(ticket?.has(item)?server+' takes your ticket and begins preparing it.':server+' takes your order and begins preparing it.',4);return true;
   },
   /** A bowl already in front of you: the lunch you sit down to, not one you ordered (world/openings.js). */
   serveNow(id){

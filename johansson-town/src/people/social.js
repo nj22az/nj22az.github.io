@@ -14,7 +14,7 @@ import {transitStop,awayPlace} from '../world/transit.js';
 import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
 import {PARK_BENCH} from '../world/park-layout.js';
 import {commuterPhase,shiftActive,shiftFor,departureFor,livesInYard,livesAtWork,livesInKitahama,SATO_SHIFT} from './commuter-schedule.js';
-import {SATO_LUNCH,satoRamenOpen} from '../world/sato-ramen-layout.js';
+import {SATO_LUNCH,SATO_RAMEN,satoRamenOpen} from '../world/sato-ramen-layout.js';
 // The live array, not a copy: the izakaya does not stand in the same place in every
 // layout, and a copy taken at import time would point at the old plot forever.
 export {IZAKAYA_DOOR};
@@ -330,7 +330,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
  }
  // Mrs Sato on the island: fish at the harbour first, then her own kitchen.
  if((profile.name==='Mrs Sato')&&phase==='town'){
-  if(shiftActive(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'cooking the lunch ramen at Sato Ramen'};
+  if(shiftActive(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:minuteOfDay(minutes)>=SATO_RAMEN.close?'washing up after the lunch shift':'cooking the lunch ramen at Sato Ramen'};
   if(minuteOfDay(minutes-SATO_SHIFT.arrival)<SATO_SHIFT.start-SATO_SHIFT.arrival)return {place:'stroll',target:[3.2,-44],activity:'buying fish for the stock at the harbour'};
  }
  if(profile.name==='Bus driver')return {place:'station',target:transitStop().driver,activity:'running the Harbour Line'};
