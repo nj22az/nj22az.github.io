@@ -11,6 +11,8 @@ export const SAKURA_BENCH_PLACE=Object.freeze({
   yaw:Math.atan2(4.42-SAKURA_SHOP.x,-19.8-SAKURA_SHOP.z),
   pitch:-.08,
   eyeY:1.16,
+  // Top of the slightly tilted slat at sitLocal, measured from the exported mesh.
+  surfaceY:.46856,
   sitLocal:[0,0,-.08],
   standLocal:[0,0,-1.45]
 });
@@ -43,6 +45,7 @@ export function sakuraBenchSeat(){
   const stand=rotateLocal(SAKURA_BENCH_PLACE.standLocal);
   return {
     position,
+    surfaceY:SAKURA_BENCH_PLACE.surfaceY,
     stand,
     eyeY:SAKURA_BENCH_PLACE.eyeY,
     yaw:SAKURA_BENCH_PLACE.yaw,
@@ -53,6 +56,7 @@ export function sakuraBenchSeat(){
 function fallbackBench(factory){
   const {x,z,yaw}=SAKURA_BENCH_PLACE;
   const built=factory.bench(x,z,yaw);
+  built.object.scale.y=SAKURA_BENCH_PLACE.surfaceY/.62;
   built.object.name='sakura-viewing-bench';
   return built;
 }

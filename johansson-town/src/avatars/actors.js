@@ -156,8 +156,8 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   get outfit(){return outfit;},
   /** Where the third-person lens pivots: above the big head and clear of it to the right. */
   get lens(){const m=avatar.measure;return {eye:m.H+.14,side:m.Rh*m.headSX+.26,head:m.headCentre};},
-  /** Hip height above the feet when seated, for game.js's seat fit. */
-  get sitHip(){const m=avatar.measure;return m.hipY+.09-m.seatDrop;},
+  /** Seat contact height in the avatar's local coordinates, for game.js's seat fit. */
+  get sitHip(){const m=avatar.measure;return m.hipY-m.seatDrop;},
   hold(prop){if(held){if(held.userData.consumable)disposeServing(held);else held.removeFromParent();}held=prop||null;if(held){held.position.set(0,-avatar.measure.hand*.4,avatar.measure.hand*.6);hand().add(held);if(held.userData.consumable)fitAvatarHeldProp(avatar,held);}},
   jump(){animator.play('Jump');},
   stop(){animator.stop();move=null;},

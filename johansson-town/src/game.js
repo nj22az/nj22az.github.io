@@ -103,7 +103,7 @@ import { createInkRecovery } from './render/ink-recovery.js';
 import {dressHud,runButtonFace} from './ui/hud-icons.js';
 
 // Change the emitted game chunk URL when repairing a cached live runtime.
-window.__JOHANSSON_RUNTIME_VERSION__='town-bicycle-ride-2';
+window.__JOHANSSON_RUNTIME_VERSION__='bench-seat-contact-1';
 
 const $=s=>document.querySelector(s);
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -400,7 +400,7 @@ const benchSeat=((world.sakuraBench?.seat))||null;
 if(benchSeat){
   player.position.set(...benchSeat.position);
   yaw=benchSeat.yaw;pitch=benchSeat.pitch;
-  parkSeat={position:benchSeat.position,stand:benchSeat.stand,eyeY:benchSeat.eyeY,yaw:benchSeat.yaw,pitch:benchSeat.pitch};
+  parkSeat={position:benchSeat.position,stand:benchSeat.stand,surfaceY:benchSeat.surfaceY,eyeY:benchSeat.eyeY,yaw:benchSeat.yaw,pitch:benchSeat.pitch};
   seated=true;world.spawn=benchSeat.stand;
 }else if(konbiniDoor){player.position.copy(konbiniDoor);yaw=konbini.streetFrontage?.yaw??Math.PI/2;world.spawn=player.position.toArray();}
 else if(world.spawn)player.position.set(...world.spawn);
@@ -583,7 +583,7 @@ function updateJohansson(dt){
  if(seated&&parkSeat){
   // Hips on the seat, facing the way the seat faces.
   if(Number.isFinite(parkSeat.yaw))r.rotation.set(0,parkSeat.yaw,0);
-  if(johansson.ready){const fit=seatFit(parkSeat);r.position.set(fit.x,fit.top+.09-johansson.sitHip,fit.z);}
+  if(johansson.ready){const fit=seatFit(parkSeat);r.position.set(fit.x,fit.top-johansson.sitHip,fit.z);}
  }else r.quaternion.copy(player.quaternion);
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(null);

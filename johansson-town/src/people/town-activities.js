@@ -96,8 +96,10 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
    if(use.kind==='seat'||use.kind==='office'&&use.object.userData.seat){
     const seat=use.object.userData.seat;
     if(seat?.position)g.position.set(...seat.position);
-    // eyeY is measured from the ground under the seat, which is raised on the park's mound.
-    g.userData.seatHeight=seat?Math.max(.35,(seat.eyeY||1.15)-(inside?0:seat.position?.[1]||0)-.64):.51;
+    // seatHeight is relative to the entity's origin; surfaceY is the actual world surface.
+    g.userData.seatHeight=Number.isFinite(seat?.surfaceY)
+     ?seat.surfaceY-g.position.y
+     :seat?Math.max(.35,(seat.eyeY||1.15)-(inside?0:seat.position?.[1]||0)-.64):.51;
     if(Number.isFinite(seat?.yaw))g.rotation.y=seat.yaw;
    }
   }
