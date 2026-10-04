@@ -18,7 +18,8 @@ function sign(width,height,draw){
  const c=document.createElement('canvas');c.width=width;c.height=height;draw(c.getContext('2d'),width,height);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;
 }
-const signText=(ctx,text,x,y,size,colour,weight='bold')=>{ctx.fillStyle=colour;ctx.font=`${weight} ${size}px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y);};
+// Centred lettering that never runs off its card: fillText narrows anything wider than the room either side of x.
+const signText=(ctx,text,x,y,size,colour,weight='bold')=>{ctx.fillStyle=colour;ctx.font=`${weight} ${size}px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';const w=ctx.canvas?.width;ctx.fillText(text,x,y,...(w?[Math.max(8,2*Math.min(x,w-x)-16)]:[]));};
 const mat=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.7,...extra});
 function add(room,geometry,material,x,y,z,name){const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.name=name;room.add(m);return m;}
 function card(room,texture,w,h,x,y,z,yaw=0,name='Sakura POP',side=THREE.DoubleSide){
@@ -96,7 +97,10 @@ function buildCheer(room){
  const pawMat=new THREE.MeshStandardMaterial({map:paw,transparent:true,roughness:1,polygonOffset:true,polygonOffsetFactor:-2,depthWrite:false});
  const steps=[[1.1,2.7],[1.6,2.3],[2.1,1.95],[2.6,1.6],[3.1,1.3],[3.6,1.05]];
  steps.forEach(([x,z],i)=>{const m=add(room,new THREE.PlaneGeometry(.2,.2),pawMat,x+(i%2?.08:-.08),.007,z,'Sakura floor sticker');m.rotation.set(-Math.PI/2,0,Math.atan2(3.6-1.1,1.05-2.7)+Math.PI);});
- const tillTex=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#ffc93c';ctx.fillRect(0,0,w,h);signText(ctx,"Cash register ▶",w/2,h/2,54,'#3b3f55');});
+ const tillTex=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#ffc93c';ctx.fillRect(0,0,w,h);
+  // Sized to the sticker: at a fixed 54 px the words ran off both ends.
+  const label="Cash register ▶";let size=54;ctx.font=`bold ${size}px ${MARU}`;while(size>18&&ctx.measureText(label).width>w-24){size-=2;ctx.font=`bold ${size}px ${MARU}`;}
+  signText(ctx,label,w/2,h/2,size,'#3b3f55');});
  const till=add(room,new THREE.PlaneGeometry(.5,.19),new THREE.MeshStandardMaterial({map:tillTex,roughness:1,polygonOffset:true,polygonOffsetFactor:-2}),3.95,.007,.85,'Sakura till sticker');till.rotation.set(-Math.PI/2,0,-Math.PI/2);
 }
 
