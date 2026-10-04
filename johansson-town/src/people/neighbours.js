@@ -6,6 +6,8 @@ import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
 import {GATEBALL_ACTIVE} from '../world/okinawa/layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
+import {FLOWER_SHOP} from '../world/flower-shop.js';
+import {HOSHIZAKI_STORE} from '../world/island-plan.js';
 
 /**
  * The people who live and work in the new streets.
@@ -24,8 +26,8 @@ const H=(h,m=0)=>h*60+m;
 const ALL_NEIGHBOURS=Object.freeze([
  {name:'Riku',look:'Kenji',height:1.7,role:'checking the cargo yard',walk:true,route:DOCK_CREW_ROUTE,speed:.65,at:[-35.8,-38.3],face:[0,-1],hours:[[420,1320]],lines:['Rice for Sakura, fuses for the workshop, ice for the fishing boats. This quay keeps the whole island going.','The early boat brings supplies; the evening boat takes fish and outgoing post. Keep the workshop doorway clear, please.']},
  {name:'Emi Kado',look:'Reiko',height:1.61,role:'checking island freight manifests',at:[-23.1,-35.1],face:[1,0],pose:'Think',hours:[[360,1440]],lines:['Every parcel gets a line in the freight book. The Community Hall keeps our filed records for one year.','Kenji and Tetsuo are in the blue electrical workshop. The last cargo check is at ten; I stay for the late passenger boat.']},
- {name:'Haru',look:'Shin',height:1.76,role:'sorting the village catch',at:[151,188],face:[-1,0],hours:[[0,1440]],home:[127,182],routine:[{from:0,at:[127,182],role:'at home',home:true},{from:360,at:[151,188],role:'landing and sorting the catch'},{from:720,at:[126,206],role:'collecting lunch at the general store'},{from:780,at:[149,183],role:'mending fishing nets'},{from:1080,at:[127,182],role:'at home',home:true}],lines:['The airport takes our parcels, but the boats still set the pace of the village.','I land the catch at dawn, collect lunch from Mina and mend the nets before going home.']},
- {name:'Mina',look:'Yui',height:1.6,role:'keeping the village store',at:[126,206],face:[0,1],hours:[[0,1440]],home:[126,202.8],routine:[{from:0,at:[126,205.5],role:'at home',home:true},{from:480,at:[126,206],role:'opening the village general store'},{from:720,at:[130,208],role:'taking a lunch break'},{from:780,at:[126,206],role:'serving village customers'},{from:1080,at:[126,205.5],role:'at home',home:true}],lines:['Tea, rice crackers and postcards. Most customers are our neighbours.','The new guesthouse will bring a few visitors, but this will still be a quiet fishing village.']},
+ {name:'Haru',look:'Shin',height:1.76,role:'sorting the village catch',at:[151,188],face:[-1,0],hours:[[0,1440]],home:[127,182],routine:[{from:0,at:[127,182],role:'at home',home:true},{from:360,at:[151,188],role:'landing and sorting the catch'},{from:720,at:HOSHIZAKI_STORE.waiting,face:HOSHIZAKI_STORE.waitingFace,role:'collecting lunch at the general store'},{from:780,at:[149,183],role:'mending fishing nets'},{from:1080,at:[127,182],role:'at home',home:true}],lines:['The airport takes our parcels, but the boats still set the pace of the village.','I land the catch at dawn, collect lunch from Mina and mend the nets before going home.']},
+ {name:'Mina',look:'Yui',height:1.6,role:'keeping the village store',at:HOSHIZAKI_STORE.clerk,face:HOSHIZAKI_STORE.clerkFace,hours:[[0,1440]],home:[126,202.8],routine:[{from:0,at:[126,205.5],role:'at home',home:true},{from:480,at:HOSHIZAKI_STORE.clerk,role:'opening the village general store'},{from:720,at:[130,208],role:'taking a lunch break'},{from:780,at:HOSHIZAKI_STORE.clerk,role:'serving village customers'},{from:1080,at:[126,205.5],role:'at home',home:true}],lines:['Tea, rice crackers and postcards. Most customers are our neighbours.','The new guesthouse will bring a few visitors, but this will still be a quiet fishing village.']},
  {name:'Jun',look:'Daichi',height:1.7,role:'checking commuter tickets',at:airportWorld(-16,18.5),face:[1,0],hours:[[0,1440]],home:airportWorld(-20,18.5),routine:[{from:0,at:airportWorld(-20,18.5),role:'off duty',home:true},{from:420,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:720,at:airportWorld(-26,18.5),role:'taking lunch beside the terminal'},{from:780,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:1200,at:airportWorld(-20,18.5),role:'off duty',home:true}],lines:['Check in ten minutes before your flight. Keep your cabin bag with you.','The ground-service radio goes to Kenji and Tetsuo at the docks. The test sheet comes back with it.']},
 
  {name:'Grandmother Higa',look:'Fumiko',height:1.46,role:'on her verandah',at:[-29.8,-20.7],y:.47,face:[0,-1],pose:'Interact',hours:[[H(7),H(18,30)]],
@@ -86,7 +88,7 @@ const ALL_NEIGHBOURS=Object.freeze([
   lines:[
    'Thirty minutes, not a second more! — Oh, a visitor. My wife makes the andagi at the shop on Main Street. I referee, which is how I keep out of her kitchen.']},
  // Two who walk: one doing her shopping, one on his round.
- {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'arranging flowers at Rainflower Florist',at:[100.2,101],face:[-1,0],pose:'Interact',hours:[[H(9),H(18)]],
+ {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'arranging flowers at Rainflower Florist',at:FLOWER_SHOP.staffAt,face:[-1,0],pose:'Interact',hours:[[H(9),H(18)]],
   lines:['Welcome to Rainflower. Fresh stems, a small bouquet, or something green for your windowsill? I wrap everything by hand.',
    'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. The flowers finish work on time; he never does.']},
  {name:'Postman Tōma',look:'Kenta',height:1.7,role:'on his round',walk:true,speed:1.25,hours:[[H(9),H(13)],[H(14),H(17)]],
@@ -167,9 +169,9 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
      p.travelled+=spec.speed*dt;
      const at=routePoint(spec.route,p.travelled);
      g.position.x=at.x;g.position.z=at.z;if(spec.y==null)g.position.y=groundAt(at.x,at.z);faceAlong(g,at.dx,at.dz);
-    }else if(!spec.walk&&!held&&spec.face){
+    }else if(!spec.walk&&!held&&spec.face&&!p.path?.length){
      // Back to their work once you have gone.
-     const want=Math.atan2(spec.face[0],spec.face[1])+Math.PI,diff=Math.atan2(Math.sin(want-g.rotation.y),Math.cos(want-g.rotation.y));
+     const face=p.routine?.face||spec.face,want=Math.atan2(face[0],face[1])+Math.PI,diff=Math.atan2(Math.sin(want-g.rotation.y),Math.cos(want-g.rotation.y));
      g.rotation.y+=diff*Math.min(1,dt*2.5);
     }
    }

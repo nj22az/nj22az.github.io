@@ -45,6 +45,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Minato–Kitano-jima ferry",
+    "organisation": "Town Services",
+    "text": "The combined passenger and vehicle ferry connects Minato and Kitano-jima. Buy passenger tickets inside the waiting hall, then board at the outer pier. Cars join crossings when their drivers have an island errand.",
+    "source": "notice:Minato–Kitano-jima ferry"
+  },
+  {
+    "type": "Notice",
     "title": "Rainflower is closed",
     "organisation": "Town Services",
     "text": "Mrs Kinjō serves flowers from 09:00 to 18:00. You may still look around the open shop.",
@@ -80,16 +87,30 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Cargo crossing",
+    "organisation": "Town Services",
+    "text": "The same ferry carries passengers and occasional island deliveries. Drivers reverse their cars up its lowered ramp, stay aboard for the crossing, and drive off onto the cargo court. Some sailings carry no cars.",
+    "source": "notice:Cargo crossing"
+  },
+  {
+    "type": "Notice",
+    "title": "Ferry departures",
+    "organisation": "Town Services",
+    "text": "The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry counter and board from the outer pier. The evening boat to Naha opens at 17:00.",
+    "source": "notice:Ferry departures"
+  },
+  {
+    "type": "Notice",
     "title": "Map of the strait",
     "organisation": "Town Services",
-    "text": "Three ways off the island, all from the outer pier: the car ferry to the mainland (three sailings a day), the airport ferry across to Kitano-jima, and in the evening the boat to Naha. When the bridge is open you can drive to the airport instead.",
+    "text": "The outer pier connects Minato with Kitano-jima on one shared passenger and car ferry. Walk aboard with a return passenger ticket; working vehicles use the lowered bow ramp with their drivers. In the evening a separate boat goes to Naha. There is no road bridge to the airport.",
     "source": "notice:Map of the strait"
   },
   {
     "type": "Notice",
     "title": "Ferry punch cards",
     "organisation": "Town Services",
-    "text": "Ten crossings to the mainland on one card. Thuan keeps this shelf stocked with leaflets; the cards themselves are sold at Sakura, over the counter.",
+    "text": "Ferry punch cards are sold at Sakura. Thuan keeps this shelf stocked with leaflets; the cards themselves are sold at Sakura, over the counter.",
     "source": "notice:Ferry punch cards"
   },
   {

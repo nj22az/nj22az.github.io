@@ -1,4 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {RESIDENTS} from '../../people/residents.js';
+import {householdDetails,addPersonalObject,addFamilyPhoto,addTeaSetting} from './home-details.js';
 import {createPlanKit,addHatPeg,materialCache} from './house-plan.js';
 
 /**
@@ -36,8 +38,9 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  for(const x of [-hw/2,0,hw/2])box([.04,.012,D],[x,.006,0],0x3f4a3a);box([W,.012,.04],[0,.006,0],0x3f4a3a);
  for(const [len,pos,ry] of [[W,[0,0,-hd],0],[D,[-hw,0,0],Math.PI/2],[D,[hw,0,0],-Math.PI/2],[hw-.55,[-(hw+.55)/2,0,hd],Math.PI],[hw-.55,[(hw+.55)/2,0,hd],Math.PI]]){
   const g=new THREE.Group();g.position.set(...pos);g.rotation.y=ry;group.add(g);
-  const p=(size,at,c)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);g.add(m);};
-  p([len,H,.06],[0,H/2,0],0xeee3cc);p([len,.05,.08],[0,.95,.02],0x6d5238);p([len,.08,.08],[0,.04,.02],0x5a4430);
+  const p=(size,at,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);if(name)m.name=name;g.add(m);};
+  // Insets meet at their inner corner instead of sharing 6 cm of top face.
+  p([len,H,.06],[0,H/2,0],0xeee3cc);p([len-.12,.05,.08],[0,.95,.02],0x6d5238,'Outer wall dado');p([len,.08,.08],[0,.04,.02],0x5a4430);
  }
  box([1.1,H-2.05,.06],[0,2.05+(H-2.05)/2,hd],0xeee3cc);box([W,.04,D],[0,H+.02,0],0xf3ece0,'Ceiling');
  group.add(new THREE.HemisphereLight(0xfff0d8,0x8a7a64,1.15));
@@ -50,7 +53,7 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  if(!empty){box([.55,1.3,.55],[K.fx,.65,K.fz],0xe8ebe6,'Fridge');collider(K.fx,K.fz,.6,.6,1.3);}
  // ---- The plan: partitions with door gaps, and the rooms' own fittings. ----
  const wallMat=redTile?0xf1e6cc:0xeee3cc,frame=0x5a4430;
- const {partition,floorPatch,wetRoom,futon}=createPlanKit({box,collider,height:H,wall:wallMat,frame});
+ const {partition,floorPatch,wetRoom,futon,finishPartitions}=createPlanKit({box,collider,height:H,wall:wallMat,frame});
  let altar,table,futons,tv,board;
  if(!redTile){
   // Concrete 2DK.
@@ -81,6 +84,9 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
   altar={x:-2.4,z:-.4+.3};table={x:1.6,z:1.0};tv={x:-hw+.55,z:1.1,ry:Math.PI/2};board={x:1.6,z:hd-.05,ry:0};
   futons={x0:1.0,z:-hd+.5,step:.62,along:'x'};
  }
+ // Partitions meet as one solid shell. Remove buried faces and give each
+ // coplanar patch one owner, including where doorway beams cross a T-junction.
+ finishPartitions();
  if(empty){
   box([.3,.01,.42],[0,.01,.6],0xf4ecd6,'Rental note');
   anchor([0,.5,.6],'Read the rental note',()=>action('read',"For rent · Rental house","2DK, tatami, kitchen and bath, water tank on the roof. ¥28,000 a month. Enquiries to the town hall, Residents Division. Somebody new could live here."));
@@ -95,11 +101,28 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  collider(a.x,a.z,1.2,.5,1.3);}
  // Low table and cushions in the tatami room; the television.
  box([1.1,.05,.75],[table.x,.36,table.z],0x6b4a32,'Low table');collider(table.x,table.z,1.1,.75,.4);
- for(const [dx,dz] of [[0,.62],[0,-.62],[-.75,0],[.75,0]])box([.48,.07,.48],[table.x+dx,.04,table.z+dz],0x3f6f8a,'Zabuton');
+ // Keep cushions inside the west wall and out from under the altar cabinet.
+ for(const [dx,dz] of (redTile?[[0,.62],[0,-.62],[-.75,0],[.75,0]]:[[0,.62],[-.6,0],[.75,0]]))box([.48,.07,.48],[table.x+dx,.04,table.z+dz],0x3f6f8a,'Zabuton');
  {const g=new THREE.Group();g.position.set(tv.x,0,tv.z);g.rotation.y=tv.ry;group.add(g);
   const add=(size,at,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);if(name)m.name=name;g.add(m);};
   add([.8,.42,.4],[0,.21,0],0x6b4a32,'TV stand');add([.58,.44,.42],[0,.64,.02],0x2b2b2b,'Television');
   collider(tv.x,tv.z,Math.abs(Math.sin(tv.ry))>.5?.4:.8,Math.abs(Math.sin(tv.ry))>.5?.8:.4,.9);}
+ const members=residents?residents.map(name=>RESIDENTS.find(p=>p.name===name)||{name}):household.members;
+ // Each occupied house keeps evidence of its residents' work and time together.
+ // These objects use existing tops and walls; none adds a walking obstruction.
+ const details=householdDetails(members);
+ for(const [i,detail] of details.slice(0,2).entries())addPersonalObject(box,{x:table.x-.2+i*.38,y:.388,z:table.z-.12,detail,scale:.75});
+ addTeaSetting(box,{x:table.x-.2,y:.388,z:table.z+.21,people:members.length});
+ addFamilyPhoto(box,{x:-3.14,z:redTile?.85:-.9,members:members,westWall:true});
+ // Washed bowls, a pot and a folded tea towel make the fitted kitchen usable.
+ const counterY=.94;
+ box([.22,.14,.22],[K.x,counterY+.07,K.z],0xb57655,'Cooking pot');
+ box([.13,.035,.13],[K.x,counterY+.16,K.z],0xb57655,'Pot lid');
+ box([.18,.015,.18],[K.x+(redTile?.45:0),counterY+.009,K.z+(redTile?0:.48)],0xdfd5b6,'Folded kitchen towel');
+ for(let i=0;i<2;i++)box([.09,.06,.09],[K.x+(redTile?-.4:0),counterY+.031,K.z+(redTile?i*.14:-.4+i*.14)],0xd9e5df,'Washed rice bowl');
+ // Shoes stay along the wall, with a full passage through the entrance.
+ for(const dx of [-.08,.08])box([.12,.065,.24],[-.35+dx,.033,2.53],0x556c61,'Household shoes');
+ anchor([table.x,.8,table.z+.45],'Inspect the household’s everyday things',()=>action('inspect',title,details.map(d=>d.owner+' · '+d.text).join('\n')+'\nThe cups have been used, the bedding has a place, and the photograph by the wall belongs to this family.'));
  // Walking residents (Thuan and Nao): futons laid out in the sleeping room, and where each
  // of them sleeps, sits and hangs a hat (home-residents.js). Low futons are walked onto.
  if(residents){
@@ -128,4 +151,3 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  if(household?.members?.some(m=>m.name==='Thuan')){box([.85,1.8,.5],[-hw+.45,.9,-hd+.65],0x765343,'Thuan’s wardrobe');collider(-hw+.45,-hd+.65,.85,.5,1.8);anchor([-hw+.7,1.1,-hd+1.15],'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'));}
  return {...FAMILY_HOME_LAYOUT,home:true};
 }
-

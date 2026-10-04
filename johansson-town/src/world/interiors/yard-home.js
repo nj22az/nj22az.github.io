@@ -4,6 +4,7 @@ import {YARD_HOMES} from '../yard-homes-layout.js';
 import {householdFor} from '../../people/households.js';
 import {RESIDENTS} from '../../people/residents.js';
 import {residentPersonality} from '../../people/resident-personalities.js';
+import {householdDetails,addPersonalObject,addFamilyPhoto,addTeaSetting} from './home-details.js';
 
 /**
  * Inside the two staff houses in Front-Row yard (yard-homes-layout.js), drawn to the size
@@ -51,19 +52,20 @@ export function buildYardHomeInterior({site,room,reg,action,collider=()=>{}}){
  kit.floorPatch(Math.min(X(genkan[0]),X(genkan[1])),Math.max(X(genkan[0]),X(genkan[1])),hd-.8,hd,0x9a9c96,'Genkan tiles');
  at([genkan[1]-genkan[0],.06,.1],[doorX,.03,hd-.8],0x8a6a46,'Genkan step (agarikamachi)');
  const shell=(len,pos,ry)=>{const g=new THREE.Group();g.position.set(...pos);g.rotation.y=ry;group.add(g);
-  const p=(size,o,c)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...o);g.add(m);};
-  p([len,H,.08],[0,H/2,0],wall);p([len,.05,.08],[0,.9,.03],trim);p([len,.08,.08],[0,.04,.03],0x5a4430);};
+  const p=(size,o,c)=>{const own=mat(c).clone();own.shadowSide=THREE.FrontSide;const m=new THREE.Mesh(new THREE.BoxGeometry(...size),own);m.position.set(...o);g.add(m);};
+  p([len,H,.08],[0,H/2,0],wall);p([Math.max(.01,len-.12),.05,.08],[0,.9,.03],trim);p([len,.08,.08],[0,.04,.03],0x5a4430);};
  shell(W,[0,0,-hd],0);shell(D,[-hw,0,0],Math.PI/2);shell(D,[hw,0,0],-Math.PI/2);
  const left=genkan[0]+hw,right=hw-genkan[1];
  shell(left,[X((-hw+genkan[0])/2),0,hd],Math.PI);shell(right,[X((genkan[1]+hw)/2),0,hd],Math.PI);
  at([genkan[1]-genkan[0],H-2.05,.08],[doorX,2.05+(H-2.05)/2,hd],wall);
- box([W,.04,D],[0,H+.02,0],0xf3ece0,'Ceiling');
+ const ceiling=box([W,.04,D],[0,H+.02,0],0xf3ece0,'Ceiling');ceiling.material=ceiling.material.clone();ceiling.material.shadowSide=THREE.FrontSide;ceiling.receiveShadow=false;
  group.add(new THREE.HemisphereLight(0xfff0d8,0x8a7a64,1.15));
  const lamp=new THREE.PointLight(0xffe8c8,.75,7,2);lamp.position.set(0,H-.3,0);group.add(lamp);
 
  // The tatami room, behind fusuma; the kitchen; the WC off the genkan.
  partition(.2,-hd,.2,hd-.85,[[-.55,.35]],{fusuma:true,name:'Fusuma'});
  partition(1.6,hd-1.15,1.6,hd,[[hd-1.0,hd-.2]]);partition(1.6,hd-1.15,hw,hd-1.15);
+ kit.finishPartitions();
  const t0=Math.min(X(1.64),X(hw-.04)),t1=Math.max(X(1.64),X(hw-.04));
  kit.wetRoom(t0,t1,hd-1.11,hd-.04,'Toilet',true,s>0?'x0':'x1');
  at([1.5,.88,.6],[1.2,.44,-hd+.3],0xd8d2c4,'Kitchen counter');at([1.52,.04,.62],[1.2,.9,-hd+.3],0x9aa3a6);
@@ -82,6 +84,16 @@ export function buildYardHomeInterior({site,room,reg,action,collider=()=>{}}){
 
  // The two futons, laid out for the night; each person's place and hat peg.
  const names=household?.residents||[site.homeOwner],homeLayouts={};
+ // Personal work stays on the shelf/bench; cups and yesterday's kitchen washing
+ // use existing tops, without adding an obstacle to this compact floor plan.
+ const members=names.map(name=>RESIDENTS.find(p=>p.name===name)||{name});
+ const details=householdDetails(members),detailBox=(size,[x,y,z],colour,name)=>at(size,[x,y,z],colour,name);
+ for(const [i,detail] of details.slice(0,aya?2:1).entries())addPersonalObject(detailBox,{x:hw-.2,y:aya?1.602:.752,z:aya?-.52+i*.34:-.575,detail,scale:.45});
+ addTeaSetting(detailBox,{x:1.06,y:.728,z:-.18,people:names.length});
+ addFamilyPhoto(box,{x:X(-1.35),z:-hd+.065,members});
+ at([.20,.14,.20],[1.55,1.074,-hd+.3],0xb57655,'Cooking pot');
+ for(let i=0;i<2;i++)at([.075,.04,.075],[.82+i*.12,.976,-hd+.3],0xd9e5df,'Washed rice bowl');
+ anchor([hw-.6,1,-.25],'Inspect the household’s everyday things',()=>action('inspect',site.title,details.map(d=>d.owner+' · '+d.text).join('\n')));
  names.forEach((name,i)=>{
   const style=residentPersonality(name),p=RESIDENTS.find(r=>r.name===name),fx=i?-.8:-2.1,zc=-hd+1.1;
   const bed=kit.futon(X(fx),zc,style.top,name+' futon');

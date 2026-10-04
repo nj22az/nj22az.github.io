@@ -1,4 +1,12 @@
-# Johansson Town: a road to the airport, and a working port beside it
+# Johansson Town: the combined airport ferry and working port
+
+4 October 2026 — Current build: the airport bridge and causeway are removed. Kitano Road ends on the town mainland. One Minato–Kitano-jima ferry carries passengers and occasional owned vehicles between town and the airport island; the ship waits while a car boards or leaves its bow ramp. There is no separate passenger launch.
+
+The airport has a west-side pier, a passenger waiting point clear of the vehicle lane, a continuous paved route to check-in and a connected cargo court. Cars have visible resident drivers, reverse onto the small foredeck and drive forward off. Delivery appointments determine which trips carry a car. Static legacy trucks and unused decorative cars are removed.
+
+The bridge construction and separate-ferry proposals below are archived history. They no longer describe the live topology or accepted transport plan.
+
+## Archived plan from 3 October 2026
 
 3 October 2026. Phases 1 and 2 are built (see *Progress* below); the rest is the plan. It joins Kitano-jima, the airport island, to the main island with a bridge.
 It gives the island one road network that cars, the bus and lorries drive realistically, and it moves the heavy

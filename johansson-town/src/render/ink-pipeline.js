@@ -196,7 +196,10 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
  const capabilities=renderer.capabilities||{};
  // Half-float keeps the grade from banding. Where it is not available the chain
  // still runs, just on eight bits.
- const halfFloat=capabilities.isWebGL2!==false;
+ // WebGL2 supports half-float textures, but rendering into them still requires a
+ // colour-buffer extension. Unsupported attachments can produce a black frame
+ // without throwing, so choose the safe target format before allocating anything.
+ const halfFloat=capabilities.isWebGL2!==false&&!!(renderer.extensions?.has('EXT_color_buffer_float')||renderer.extensions?.has('EXT_color_buffer_half_float'));
  const targetOptions={
   type:halfFloat?THREE.HalfFloatType:THREE.UnsignedByteType,
   minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,
@@ -207,7 +210,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
  // the ink and the grade ever see them, which supersampling alone only approximated
  // (and the pixel budget turned off on large tablets). Tile-based mobile GPUs resolve
  // MSAA on chip, so on an iPad it costs next to nothing.
- const msaa=halfFloat&&samples>0?Math.min(samples,capabilities.maxSamples||4):0;
+ const msaa=capabilities.isWebGL2!==false&&samples>0?Math.min(samples,capabilities.maxSamples??4):0;
  const rtScene=new THREE.WebGLRenderTarget(2,2,{...targetOptions,depthBuffer:true,samples:msaa});
  rtScene.depthTexture=new THREE.DepthTexture(2,2);
  rtScene.depthTexture.format=THREE.DepthFormat;
@@ -255,7 +258,9 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());
   const w=Math.max(2,Math.floor(buffer.x)),h=Math.max(2,Math.floor(buffer.y));
   let scale=state.scale;
-  if(w*h*scale*scale>pixelBudget)scale=Math.max(1,Math.sqrt(pixelBudget/(w*h)));
+  // A large Retina window can already exceed the budget before supersampling.
+  // Allow downsampling there; a minimum scale of one silently defeated the cap.
+  if(w*h*scale*scale>pixelBudget)scale=Math.sqrt(pixelBudget/(w*h));
   const rw=Math.max(2,Math.floor(w*scale)),rh=Math.max(2,Math.floor(h*scale));
   if(rw===width&&rh===height)return false;
   width=rw;height=rh;size.set(rw,rh);
@@ -264,7 +269,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   inkPass.material.uniforms.uTexel.value.copy(texel);
   fxaaPass.material.uniforms.uTexel.value.copy(texel);
   // Keep the line roughly two device pixels wide whatever we are rendering at.
-  inkPass.material.uniforms.uThickness.value=(settings.thickness/1.35)*(1.05+0.55*scale);
+  inkPass.material.uniforms.uThickness.value=(settings.thickness/1.35)*(1.05+0.55*Math.max(1,scale))*Math.min(1,scale);
   return true;
  }
 
@@ -302,33 +307,37 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   render(draw){
    resize();
    const previousTarget=renderer.getRenderTarget();
-   renderer.setRenderTarget(rtScene);
-   renderer.clear();
-   try{draw(renderer);}
-   finally{renderer.setRenderTarget(previousTarget);}
+   try{
+    renderer.setRenderTarget(rtScene);
+    renderer.clear();
+    draw(renderer);
 
-   let source=rtScene.texture;
-   if(state.ink){
-    inkPass.material.uniforms.tDiffuse.value=source;
-    renderer.setRenderTarget(rtA);
-    inkPass.render(renderer);
-    source=rtA.texture;
+    let source=rtScene.texture;
+    if(state.ink){
+     inkPass.material.uniforms.tDiffuse.value=source;
+     renderer.setRenderTarget(rtA);
+     inkPass.render(renderer);
+     source=rtA.texture;
+    }
+
+    // The grade is not optional as a *pass*: everything upstream is linear and it is
+    // what converts to sRGB, so skipping it would put a washed-out image on screen.
+    // Turning the grade "off" zeroes its look and leaves the conversion.
+    gradePass.material.uniforms.uAmount.value=state.grade?1:0;
+    gradePass.material.uniforms.tDiffuse.value=source;
+    renderer.setRenderTarget(state.fxaa?rtB:null);
+    gradePass.render(renderer);
+
+    if(state.fxaa){
+     fxaaPass.material.uniforms.tDiffuse.value=rtB.texture;
+     renderer.setRenderTarget(null);
+     fxaaPass.render(renderer);
+    }
+   }finally{
+    // A post-process shader or target can fail after the town was drawn. Plain
+    // fallback must reach the screen, not the failed pipeline's abandoned target.
+    renderer.setRenderTarget(previousTarget);
    }
-
-   // The grade is not optional as a *pass*: everything upstream is linear and it is
-   // what converts to sRGB, so skipping it would put a washed-out image on screen.
-   // Turning the grade "off" zeroes its look and leaves the conversion.
-   gradePass.material.uniforms.uAmount.value=state.grade?1:0;
-   gradePass.material.uniforms.tDiffuse.value=source;
-   renderer.setRenderTarget(state.fxaa?rtB:null);
-   gradePass.render(renderer);
-
-   if(state.fxaa){
-    fxaaPass.material.uniforms.tDiffuse.value=rtB.texture;
-    renderer.setRenderTarget(null);
-    fxaaPass.render(renderer);
-   }
-   renderer.setRenderTarget(null);
   },
   dispose(){
    [rtScene,rtA,rtB].forEach(rt=>rt.dispose());

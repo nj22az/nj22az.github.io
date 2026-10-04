@@ -1,19 +1,17 @@
 import * as THREE from '../../../vendor/three.module.js';
-import {HARBOUR_LINE} from '../../people/commuter-schedule.js';
 import {createVendingMachine} from '../vending.js';
 import {japaneseSign} from '../okinawa/signs.js';
 
 /**
  * The waiting hall of the Minato Port Building (port-building.js, docs/PORT-BUILDING-PLAN.md).
  *
- * One counter sells every way off the island: the mainland ferry, the airport ferry to
+ * One counter sells every way off the island: the shared passenger and car ferry to
  * Kitano-jima and the evening boat to Naha. Benches face the big windows onto the pier,
  * a departures board hangs over the counter, and the stairs go up to the Harbour
  * Office. Room contract: the door is on the +z wall, you enter facing -z (yaw 0).
  */
 export const PORT_HALL=Object.freeze({w:9,d:7,h:3.2});
 const GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",system-ui,sans-serif';
-const hhmm=m=>String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
 
 function canvasTexture(w,h,draw){
  const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');if(ctx)draw(ctx,w,h);
@@ -68,23 +66,23 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  box('Back office wall',[6.6,.4,.06],[-.4,2.45,cz-.05],dado);
  collider(-.4,cz,6.8,.85,1.1);
  const windows=[
-  {x:-2.6,title:'Mainland ferry',sub:'MINATO ⇄ MAINLAND · CARS & FOOT',go:()=>action('bus')},
+  {x:-2.6,title:'Cargo crossing',sub:'CARS WITH DRIVERS · ISLAND ERRANDS',go:()=>action('read','Cargo crossing','The same ferry carries passengers and occasional island deliveries. Drivers reverse their cars up its lowered ramp, stay aboard for the crossing, and drive off onto the cargo court. Some sailings carry no cars.')},
   {x:-.4,title:'Airport ferry',sub:'KITANO-JIMA AIRPORT · ¥400',go:()=>action('airport-ferry')},
   {x:1.8,title:'Evening boat to Naha',sub:'17:00–21:30 · WITH THUAN',go:()=>naha()},
  ];
  for(const win of windows){
   panel('Counter window sign',1.9,.36,[win.x,2.86,cz-.02],0,(x,cw,ch)=>{x.fillStyle='#2b5a78';x.fillRect(0,0,cw,ch);x.fillStyle='#f3ecd8';x.textAlign='center';x.textBaseline='middle';x.font=`700 ${ch*.42}px ${GOTHIC}`;x.fillText(japaneseSign(win.title)===win.title?win.title.toUpperCase():japaneseSign(win.title),cw/2,ch*.36);x.font=`600 ${ch*.2}px system-ui`;x.fillText(win.sub,cw/2,ch*.78);},512);
   box('Ticket tray',[.5,.04,.3],[win.x,1.11,cz+.25],0x8e979a);
-  spot([win.x,1.25,cz+.6],win.title==='Evening boat to Naha'?'Take the evening boat to Naha with Thuan':'Buy a ticket: '+win.title,win.go);
+  spot([win.x,1.25,cz+.6],win.title==='Evening boat to Naha'?'Take the evening boat to Naha with Thuan':win.title==='Cargo crossing'?'Read about cargo crossings':'Buy a ticket: '+win.title,win.go);
  }
  // Departures board over the counter: amber on black, the sailings of the day.
  panel('Departures board',3.6,.95,[-.4,3.02-.95/2+.53,-hd+.03],0,(x,cw,ch)=>{
   x.fillStyle='#16191a';x.fillRect(0,0,cw,ch);x.fillStyle='#f2b33d';x.textBaseline='middle';
   x.font=`700 ${ch*.15}px ${GOTHIC}`;x.textAlign='left';x.fillText(japaneseSign('Departures'),cw*.04,ch*.15);x.font=`600 ${ch*.1}px system-ui`;x.fillText('DEPARTURES',cw*.26,ch*.15);
-  const rows=[...HARBOUR_LINE.map(m=>[hhmm(m),'MAINLAND','Outer pier']),['17:00','NAHA (evening)','Outer pier'],['—','AIRPORT FERRY','Ask at window 2']];
+  const rows=[['—','KITANO-JIMA','On request'],['—','CARS & FOOT','Shared ferry'],['17:00','NAHA (evening)','Outer pier']];
   x.font=`600 ${ch*.1}px ui-monospace,monospace`;rows.forEach(([t,dest,where],i)=>{const y=ch*(.36+i*.13);x.fillText(t,cw*.04,y);x.fillText(dest,cw*.22,y);x.fillText(where,cw*.68,y);});
  },1024,true);
- spot([-.4,1.4,cz+.9],'Read the departures board',()=>action('bus'));
+ spot([-.4,1.4,cz+.9],'Read the departures board',()=>action('read','Ferry departures','The shared car and passenger ferry crosses to Kitano-jima on request. Buy a return passenger ticket at the airport-ferry counter and board from the outer pier. The evening boat to Naha opens at 17:00.'));
 
  // Benches: two rows of moulded seats facing the pier windows.
  const seatColours=[0x2f6a70,0xd27a3a];
@@ -104,7 +102,7 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
   x.strokeStyle='#2b5a78';x.beginPath();x.moveTo(cw*.38,ch*.62);x.lineTo(cw*.56,ch*.62);x.stroke();x.setLineDash([]);
   x.fillStyle='#2b3436';x.font=`700 ${ch*.07}px system-ui`;x.textAlign='center';x.fillText('MINATO',cw*.3,ch*.56);x.fillText('KITANO-JIMA',cw*.62,ch*.78);x.fillText('MAINLAND',cw*.92,ch*.1);x.fillText('THE STRAIT',cw*.5,ch*.12);
  },768);
- spot([hw-.8,1.4,-1.3],'Read the map of the strait',()=>action('read','Map of the strait','Three ways off the island, all from the outer pier: the car ferry to the mainland (three sailings a day), the airport ferry across to Kitano-jima, and in the evening the boat to Naha. When the bridge is open you can drive to the airport instead.'));
+ spot([hw-.8,1.4,-1.3],'Read the map of the strait',()=>action('read','Map of the strait','The outer pier connects Minato with Kitano-jima on one shared passenger and car ferry. Walk aboard with a return passenger ticket; working vehicles use the lowered bow ramp with their drivers. In the evening a separate boat goes to Naha. There is no road bridge to the airport.'));
  // Stairs up the east wall to the Harbour Office door.
  for(let i=0;i<8;i++)box('Stair tread',[.95,.06,.3],[hw-.55,.18+i*.19,2.9-i*.3],0x8a6a4a);
  box('Stair string',[.06,1.6,2.5],[hw-1.05,.95,1.85],0x7a5b40);
@@ -118,7 +116,7 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  // Sakura's ferry punch cards, on an honour shelf by the door: Thuan restocks it.
  box('Punch card shelf',[.6,.9,.3],[-hw+.5,.45,hd-.4],0x8a6a4a);
  panel('Punch card notice',.55,.4,[-hw+.5,1.15,hd-.56],0,(x,cw,ch)=>{x.fillStyle='#f6e7c4';x.fillRect(0,0,cw,ch);x.fillStyle='#c8392e';x.fillRect(0,0,cw,ch*.28);x.fillStyle='#fff';x.font=`700 ${ch*.18}px system-ui`;x.textAlign='center';x.fillText('SAKURA',cw/2,ch*.18);x.fillStyle='#2b2b2b';x.font=`600 ${ch*.12}px system-ui`;x.fillText('FERRY PUNCH CARDS',cw/2,ch*.48);x.fillText('sold at Sakura',cw/2,ch*.68);x.fillText('honour box',cw/2,ch*.86);},256);
- spot([-hw+.9,1,hd-.7],'Look at the punch card shelf',()=>action('read','Ferry punch cards','Ten crossings to the mainland on one card. Thuan keeps this shelf stocked with leaflets; the cards themselves are sold at Sakura, over the counter.'));
+ spot([-hw+.9,1,hd-.7],'Look at the punch card shelf',()=>action('read','Ferry punch cards','Ferry punch cards are sold at Sakura. Thuan keeps this shelf stocked with leaflets; the cards themselves are sold at Sakura, over the counter.'));
  // A wall clock over the doors.
  panel('Wall clock',.5,.5,[0,2.85,hd-.01],Math.PI,(x,cw,ch)=>{x.fillStyle='#f6f1e2';x.beginPath();x.arc(cw/2,ch/2,cw*.46,0,7);x.fill();x.strokeStyle='#2b3436';x.lineWidth=cw*.05;x.stroke();for(let i=0;i<12;i++){const a=i/12*Math.PI*2;x.fillStyle='#2b3436';x.fillRect(cw/2+Math.sin(a)*cw*.36-2,ch/2-Math.cos(a)*ch*.36-2,4,4);}x.lineWidth=cw*.035;x.beginPath();x.moveTo(cw/2,ch/2);x.lineTo(cw*.62,ch*.3);x.moveTo(cw/2,ch/2);x.lineTo(cw*.32,ch*.44);x.stroke();},256);
 

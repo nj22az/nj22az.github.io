@@ -3,18 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#cfe9ea">
+<meta name="theme-color" content="#06c755">
 <title>Shimanchu Maker · Johansson Town</title>
 <meta name="description" content="Make an islander for Johansson Town, a 1997 Okinawan harbour town. Share them with a link.">
-<style>html,body{margin:0;height:100%;background:#fff4dc}noscript{display:block;padding:24px;font-family:system-ui,sans-serif}</style>
+<link rel="stylesheet" href="./creator.css?h=8c337527">
+<link rel="stylesheet" href="../line-ui.css?h=019d0251">
 </head>
-<body>
+<body class="creator-page">
 <noscript>The islander maker needs JavaScript.</noscript>
 <script type="module">
 // A shared islander (?r=code) opens here; saving it walks you into the town as them.
 import {openCreator} from '../src/avatars/creator.js';
 import {playerRecipe,savePlayerRecipe} from '../src/avatars/actors.js';
 import {decodeRecipe} from '../src/avatars/recipe.js';
+import {installIconControls} from '../src/ui/icon-controls.js';
+// This shared page uses the same semantic controls as the in-town maker.
+const disposeIcons=installIconControls(document.body);
+window.addEventListener('pagehide',disposeIcons,{once:true});
 const code=new URLSearchParams(location.search).get('r'),shared=code?decodeRecipe(code):null;
 // Voice blips for the maker's own page; in the town they go through the town's audio.
 let audio=null;

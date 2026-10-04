@@ -89,7 +89,10 @@ export function buildPark(world,options){
  const dress=minutes=>{const month=townCalendarAt(minutes).date.getMonth(),bloom=month<=1;trees.blossom.visible=bloom;trees.leaf.visible=!bloom;};
  dress(0);
 
- world.colliders.push({x:bx,z:bz,w:bw,d:bl,minY:p.lift+f.y*s,height:p.lift+benchPoint(0,f.top,0)[1]*s,park:true});
+ // The last backrest slat ends 53 cm above the seat. Collider height is a span
+ // from its foot, not an absolute world elevation; otherwise the hill gets added
+ // twice and an invisible wall blocks the seated avatar's camera above the bench.
+ world.colliders.push({x:bx,z:bz,w:bw,d:bl,minY:g0,height:seatY+.53-g0,park:true});
  world.colliders.push({x:tx,z:tz,w:.85*s,d:.85*s,height:10,park:true});
  for(const [lx,lz] of PARK_LAMPS){const [x,z]=at(lx,lz);world.colliders.push({x,z,w:.25*s,d:.25*s,height:8,park:true});}
  const bench=new THREE.Object3D();bench.position.set(PARK_BENCH.stand[0],PARK_BENCH.position[1]+1,PARK_BENCH.stand[2]);bench.userData.seat=PARK_BENCH;world.group.add(bench);

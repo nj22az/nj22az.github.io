@@ -133,13 +133,10 @@ export function buildSakuraCorners(room,{anchor,action}={}){
  for(const sx of [-1,1])for(const sz of [-1,1])box(.03,.3,.03,F.x+sx*(F.w/2-.04),.15,F.z+sz*(F.d/2-.04),0x5b6268);
  prints.push(place(printed('film',F.w-.04,F.h-.36),F.x,.3+(F.h-.3)/2,ff+.002,0));
  // At the till (counter top y 1.0, customer side x < 4.54; register z .55-.93).
- // The blue cash tray (karuton) in the gap before the register, where change is counted out.
- box(.15,.012,.12,4.62,1.006,.39,0x2a6fb5);box(.15,.012,.012,4.62,1.018,.33,0x2a6fb5);box(.15,.012,.012,4.62,1.018,.45,0x2a6fb5);
+ // The scanner, change tray and receipt feed belong to sakura-counter-detail.js.
  // Gum and mints on the customer's lip in front of the register: a low tray of small packs.
  box(.06,.025,.4,4.565,1.012,.74,0xe9e4d8);
  [0x2aa36b,0xf0c419,0xe8553e,0x3b7dd8,0xf2f2f2,0x8e44ad,0x2aa36b,0xe8553e].forEach((hex,i)=>box(.045,.03,.042,4.565,1.035,.57+i*.048,hex));
- // The receipt printer on Thuan's side of the register.
- box(.1,.08,.14,5.0,1.04,.7,0x3a3e40);box(.06,.004,.03,5.0,1.082,.64,0xf4f1ea);
  const group=new THREE.Group();group.name='Sakura corners';room.add(group);
  const signs=new THREE.Mesh(mergeGeometries(prints),new THREE.MeshBasicMaterial({map:sheet(),toneMapped:false}));signs.name='Sakura aisle cards, window posters and cash corner prints';group.add(signs);
  const body=new THREE.Mesh(mergeGeometries(solids),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,metalness:.1}));body.name='Sakura cash corner';group.add(body);

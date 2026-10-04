@@ -4,6 +4,7 @@ import {applyTerrainNormals} from './terrain-surface.js';
 import * as THREE from '../../vendor/three.module.js';
 import {gardenGroundHeight,inGarden,gardenPondAt,GARDEN_GROUND_BOUNDS,GARDEN_PATHS} from './garden-layout.js';
 import {onIslandLand} from './coastal-ground.js';
+import {shoppingLaneGroundHeight} from './shopping-lane-plan.js';
 import {createKit} from './okinawa/kit.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {nearestSegment} from './island-plan.js';
@@ -12,7 +13,7 @@ import {poster} from './okinawa/signs.js';
 /** Graded verges and two direct walks turn a distant attraction into the local park. */
 export function buildParkAccess(world,{register,onAction}={}){
  const group=new THREE.Group();group.name='Neighbourhood walks to Aoba Garden';world.group.add(group);
- const ground=(x,z)=>inGarden(x,z)?0:gardenGroundHeight(x,z)??-.4;
+ const ground=(x,z)=>{if(inGarden(x,z))return 0;return Math.max(gardenGroundHeight(x,z)??-.4,shoppingLaneGroundHeight(x,z)??-.4);};
  // A single fine mesh replaces the old flat lawn, separate banks and raised strips.
  const bounds=GARDEN_GROUND_BOUNDS,step=.25,nx=Math.round((bounds.maxX-bounds.minX)/step),nz=Math.round((bounds.maxZ-bounds.minZ)/step),positions=[],uv=[],grass=[],paving=[];
  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=bounds.minX+i*step,z=bounds.minZ+j*step;positions.push(x,ground(x,z)+.006,z);uv.push(x/6,-z/6);}
@@ -21,7 +22,7 @@ export function buildParkAccess(world,{register,onAction}={}){
  const pathMap=paintedPaving().clone();pathMap.repeat.set(2.5,-2.5);pathMap.needsUpdate=true;const terrain=new THREE.Mesh(geometry,[new THREE.MeshStandardMaterial({color:GROUND.grass,map:paintedTurf(),roughness:1}),new THREE.MeshStandardMaterial({color:GROUND.pavers,map:pathMap,roughness:1})]);terrain.name='Continuous neighbourhood garden ground';terrain.receiveShadow=true;group.add(terrain);
  const kit=createKit();
  // A readable timber entrance faces the approaching visitor, with a clear walk under it.
- kit.at(-4,30.8,Math.atan2(-8,7.6),()=>{
+ kit.at(-7.04,31.8,Math.atan2(-2.6,7.6),()=>{
   for(const x of [-1.85,1.85]){kit.box(.12,2.25,.12,x,1.125,0,0x74583d);world.colliders.push(kit.rect(x-.06,x+.06,-.06,.06,2.25,'garden-entrance-post'));}
   kit.box(3.9,.12,.15,0,2.25,0,0x74583d);kit.sign(poster({title:'青葉公園',lines:['AOBA GARDEN'],band:'#355d46',bg:'#eee5cc'}),1.9,.48,0,2.5,-.08,{ry:Math.PI,name:'Aoba Garden entrance',both:true});
  });

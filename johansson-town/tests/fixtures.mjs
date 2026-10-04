@@ -11,6 +11,7 @@ export class Element {
     // returns undefined, and drawing code chains straight off the result.
     const gradient=()=>({addColorStop(){}});
     return new Proxy({fillRect(){},strokeRect(){},fillText(){},measureText:s=>({width:s.length*17}),
+      createImageData:(width,height)=>({width,height,data:new Uint8ClampedArray(width*height*4)}),
       createLinearGradient:gradient,createRadialGradient:gradient,createConicGradient:gradient,
       createPattern:()=>({setTransform(){}})},{get:(o,k)=>o[k]||(()=>{})});
   }

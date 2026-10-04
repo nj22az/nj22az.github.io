@@ -6,6 +6,7 @@ import {createAvatarAnimator,GESTURES} from './animate.js';
 import {recipeFor,CAST_RECIPES} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
 import {fitAvatarHeldProp} from './consume.js';
+import {DEFAULT_PLAYER,readPlayers,readSave} from '../save.js';
 import {swingsAt} from './springs.js';
 const swingAt=new THREE.Vector3();
 import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropPortion,disposeServing} from '../people/izakaya-beer.js';
@@ -21,19 +22,22 @@ import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropP
 
 /** The player's own recipe, as the creator saved it; Johansson's until then. */
 export const PLAYER_RECIPE_KEY='johansson-town-avatar';
+export function playerRecipeKey(storage=globalThis.localStorage){
+ const id=readPlayers(storage).active;
+ return id===DEFAULT_PLAYER.id?PLAYER_RECIPE_KEY:PLAYER_RECIPE_KEY+'@'+id;
+}
 export function playerRecipe(storage=globalThis.localStorage){
- try{const saved=storage?.getItem(PLAYER_RECIPE_KEY);if(saved){const r=decodeRecipe(saved);if(r)return {...r,outfit:appropriateOutfit('Johansson',r.outfit)};}}catch{}
+ // The first player's old key remains theirs. Other slots never inherit that look.
+ // A save-file snapshot restores imported appearances; a later creator edit wins.
+ try{
+  const r=decodeRecipe(storage?.getItem(playerRecipeKey(storage)))||decodeRecipe(readSave(storage)?.avatarRecipe);
+  if(r)return {...r,outfit:appropriateOutfit('Johansson',r.outfit)};
+ }catch{}
  return CAST_RECIPES.Johansson;
 }
 export function savePlayerRecipe(recipe,storage=globalThis.localStorage){
- const code=encodeRecipe({...recipe,outfit:appropriateOutfit('Johansson',recipe.outfit)});try{storage?.setItem(PLAYER_RECIPE_KEY,code);}catch{}return code;
+ const code=encodeRecipe({...recipe,outfit:appropriateOutfit('Johansson',recipe.outfit)});try{storage?.setItem(playerRecipeKey(storage),code);}catch{}return code;
 }
-
-/**
- * Behind a counter everyone stands on a step: a counter is built for grown-up bodies,
- * and a Shimanchu's shoulders would otherwise be under it with only the head showing.
- */
-export const COUNTER_STEP=.2;
 
 const SEATED=['Wake','Sit','Type','Eat','Drink','Sleep','Soak'];
 
@@ -81,7 +85,7 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  const engaged=!!(u.playerConversation||u.chat||actor.gestureTime);
  const sleeping=Number(u.sleepBlend)>.28||(u.sleeping&&!u.roomTransition);
  actor.animator.update(dt,{
-  speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,floorHeight:(Number(u.floorHeight)||0)+(u.socialPose==='CounterIdle'?COUNTER_STEP:0),
+  speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,floorHeight:Number(u.floorHeight)||0,
   pose:u.socialPose,seat:u.socialPose,driving:!!u.inVehicle,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
   waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
   talking:!!(u.chat?.speaking||u.speakingUntil>now),
@@ -138,7 +142,7 @@ export function avatarConversationTarget(actor,target=new THREE.Vector3()){
  */
 export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
  const root=new THREE.Group();root.name='Johansson (third person)';root.visible=false;scene.add(root);
- let avatar=buildAvatar(recipe,{shadows:true,faceSize:512}),animator=createAvatarAnimator(avatar);
+ let avatar=buildAvatar(recipe,{shadows:true,faceSize:512}),animator=createAvatarAnimator(avatar,{bowDepth:.18});
  root.add(avatar.root);
  let expression='neutral',expressionUntil=0,speakUntil=0,time=0,seatMove='Sit',outfit='clothes',held=null,lookPoint=null,move=null;
  const hand=()=>avatar.bones.handR;
@@ -169,7 +173,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   /** Swap to a new recipe (the creator's save), keeping everything else. */
   setRecipe(next){
    const r=normalizeRecipe(next);avatar.root.removeFromParent();avatar.dispose();
-   avatar=buildAvatar(r,{shadows:true,faceSize:512});animator=createAvatarAnimator(avatar);root.add(avatar.root);
+   avatar=buildAvatar(r,{shadows:true,faceSize:512});animator=createAvatarAnimator(avatar,{bowDepth:.18});root.add(avatar.root);
    avatar.wear(outfit);if(held)hand().add(held);
   },
   update(dt,state={}){

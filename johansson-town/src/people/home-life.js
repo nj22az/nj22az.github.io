@@ -7,6 +7,10 @@ export function sleepHours(profile){
  // On the island he lives in the office and keeps early hours (social.js HARBOUR_MASTER_DAY).
  if((profile.name==='Harbour master'))return {sleep:1260,wake:330};
  if(profile.name==='Nao')return {sleep:240,wake:720};
+ // The press and radio shifts run past midnight. Keep the two hours of
+ // after-work errands, then eight hours at home instead of the old day shift bedtimes.
+ if(profile.name==='Reiko')return {sleep:170,wake:650};
+ if(profile.name==='Tetsuo')return {sleep:140,wake:620};
  return {sleep:minute(profile.retire+20),wake:minute(profile.start-90)};
 }
 export function homeRoutine(profile,minutes){

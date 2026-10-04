@@ -4,6 +4,7 @@ import {bicycleRiderFit} from '../world/bicycle-fit.js';
 import {seeded} from './recipe.js';
 import {consumptionPhase,poseAvatarConsumption,drinkHeadTilt} from './consume.js';
 import {bodyLanguage} from './body-language.js';
+import {createFootGrounder} from './foot-ground.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -37,8 +38,9 @@ export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump
  *   talk (body-language.js). Off for the player's body, the photo studio and the maker,
  *   where somebody else says what the body does.
  */
-export function createAvatarAnimator(avatar,{lively=false,random=Math.random}={}){
+export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bowDepth=1}={}){
  const {bones,measure:m}=avatar;
+ const groundFeet=createFootGrounder(avatar);
  const style=bodyLanguage(avatar.recipe?.profile||{});
  const pick=list=>list[Math.floor(random()*list.length)];
  const idleWait=()=>style.idleEvery[0]+random()*(style.idleEvery[1]-style.idleEvery[0]);
@@ -207,6 +209,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random}={}
    bones.head.rotation.x+=drinkHeadTilt(s.heldProp,consumption.lift,consumption.food);
    poseAvatarConsumption(avatar,consumption.lift,consumption.food,s.heldProp);
   }
+  if(!s.seated&&!s.riding&&!s.sleeping)groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Cheer','Hop','Gasp'].includes(gesture?.name)});
   // The face: blinks, words, glances, and whatever it is feeling.
   blinkIn-=dt;if(blinkIn<=0&&blinkT<0){blinkT=0;blinkIn=1.8+Math.random()*3.8;}
   let blink=0;if(blinkT>=0){blinkT+=dt;blink=blinkT<.13?1:0;if(blinkT>=.13)blinkT=-1;}
@@ -220,7 +223,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random}={}
   const t=g.t,d=g.d,e=d===Infinity?1:env(t,d),q=d===Infinity?Math.min(1,t/.3):ease(t,d);
   switch(g.name){
    case 'Wave':set('shoulderR',-.2,0,-2.55*q);set('elbowR',0,0,-.45+Math.sin(t*10)*.45*q);add('head',0,0,.08*q);break;
-   case 'Bow':add('chest',.95*e);add('spine',.25*e);add('head',.2*e);set('shoulderL',.1,0,.05);set('shoulderR',.1,0,-.05);break;
+   case 'Bow':add('chest',.95*e*bowDepth);add('spine',.25*e*bowDepth);add('head',.2*e*bowDepth);set('shoulderL',.1,0,.05);set('shoulderR',.1,0,-.05);break;
    case 'Nod':add('head',Math.sin(t*9)*.28*e);break;
    case 'HeadShake':add('head',0,Math.sin(t*11)*.45*e);break;
    case 'Point':set('shoulderR',-1.5*q,.2,-.1);set('elbowR',-.05);add('head',0,-.15*q);break;

@@ -35,10 +35,11 @@ function dispatchKey(code,type='keydown'){
 }
 
 function actionButtons(){
-  return [...document.querySelectorAll('#activityActions button:not(:disabled)')].filter(visible);
+  return [...document.querySelectorAll('#activityActions button:not(:disabled), #activity .bag-tile:not(:disabled)')].filter(visible);
 }
 
 function getState(){
+  const context=window.__JOHANSSON_AGENT_CONTEXT__?.(),allowed=context?.controlsAllowed??true,prompt=document.querySelector('#prompt');
   const modal=activityOpen();
   const directory=directoryOpen();
   const buttons=modal?actionButtons().map((b,index)=>({index,label:(b.textContent||'').trim()})):[];
@@ -49,7 +50,7 @@ function getState(){
     placeDetail:text('#placeSub'),
     time:text('#clock'),
     wallet:text('#wallet'),
-    nearbyAction:text('#prompt'),
+    nearbyAction:prompt?.classList.contains('on')?text('#prompt'):'',
     subtitle:text('#subtitle'),
     activity:modal?{
       title:text('#activityTitle'),
@@ -58,14 +59,15 @@ function getState(){
     }:null,
     directoryOpen:directory,
     directoryDestinations:destinations,
-    knownDestinations:DESTINATIONS,
-    controls:{jump:true,interact:true,move:true,look:true,directoryTravel:true,activityChoice:true},
+    knownDestinations:context?.destinations||DESTINATIONS,
+    controls:{jump:allowed,interact:allowed,move:allowed,look:allowed,directoryTravel:true,activityChoice:true},
     webmcp:window.__JOHANSSON_WEBMCP__||{status:'initialising'}
   };
 }
 
 async function move({direction,durationMs=700,run=false}={}){
   if(!gameReady())return result(false,{error:'Johansson Town is not running. Enter the town first.'});
+  if(!getState().controls.move)return result(false,{error:'Movement is blocked by the current game state.',state:getState()});
   if(activityOpen()||directoryOpen())return result(false,{error:'Movement is blocked while a modal or directory is open.',state:getState()});
   const codes={forward:'KeyW',backward:'KeyS',left:'KeyA',right:'KeyD'};
   const code=codes[direction];
@@ -82,6 +84,7 @@ async function move({direction,durationMs=700,run=false}={}){
 
 async function look({direction,degrees=45}={}){
   if(!gameReady())return result(false,{error:'Johansson Town is not running.'});
+  if(!getState().controls.look)return result(false,{error:'Camera control is blocked by the current game state.',state:getState()});
   if(activityOpen()||directoryOpen())return result(false,{error:'Camera control is blocked while a modal or directory is open.',state:getState()});
   if(direction!=='left'&&direction!=='right')return result(false,{error:'direction must be left or right'});
   const deg=Math.max(5,Math.min(180,Number(degrees)||45));
@@ -104,6 +107,7 @@ async function look({direction,degrees=45}={}){
 
 async function jump(){
   if(!gameReady())return result(false,{error:'Johansson Town is not running.'});
+  if(!getState().controls.jump)return result(false,{error:'Jump is blocked by the current game state.',state:getState()});
   if(activityOpen()||directoryOpen())return result(false,{error:'Jump is blocked while a modal or directory is open.'});
   let accepted=false;
   if(typeof window.__JOHANSSON_JUMP__==='function')accepted=window.__JOHANSSON_JUMP__()===true;
@@ -113,6 +117,7 @@ async function jump(){
 
 async function interact(){
   if(!gameReady())return result(false,{error:'Johansson Town is not running.'});
+  if(!getState().controls.interact)return result(false,{error:'Interaction is blocked by the current game state.',state:getState()});
   if(activityOpen())return result(false,{error:'An activity is already open. Use johansson_choose_action instead.',state:getState()});
   if(directoryOpen())return result(false,{error:'The directory is open. Travel or close it first.',state:getState()});
   const before=text('#prompt');
@@ -124,9 +129,9 @@ async function interact(){
 async function travel({destination}={}){
   if(!gameReady())return result(false,{error:'Johansson Town is not running.'});
   if(activityOpen())return result(false,{error:'Close the current activity before using the directory.',state:getState()});
-  const wanted=normal(destination);
-  const id=Object.keys(DESTINATIONS).find(key=>normal(key)===wanted||normal(DESTINATIONS[key])===wanted||normal(DESTINATIONS[key]).includes(wanted));
-  if(!id)return result(false,{error:'Unknown destination.',destinations:DESTINATIONS});
+  const wanted=normal(destination),destinations=window.__JOHANSSON_AGENT_CONTEXT__?.().destinations||DESTINATIONS;
+  const id=Object.keys(destinations).find(key=>normal(key)===wanted||normal(destinations[key])===wanted||normal(destinations[key]).includes(wanted));
+  if(!id)return result(false,{error:'Unknown destination.',destinations});
   if(!directoryOpen())document.querySelector('#directoryButton')?.click();
   await sleep(20);
   const button=document.querySelector(`#directoryGrid .dir-item[data-id="${CSS.escape(id)}"]`);
@@ -134,7 +139,7 @@ async function travel({destination}={}){
   if(button.dataset.travel!=='ready'){button.click();return result(false,{error:'Quick travel is locked. Bring Tama home and finish Kenji’s workshop escort. Walking directions are marked.',destination:id,state:getState()});}
   button.click();
   await sleep(80);
-  return result(true,{action:'directory_travel',destination:id,label:DESTINATIONS[id],state:getState()});
+  return result(true,{action:'directory_travel',destination:id,label:destinations[id],state:getState()});
 }
 
 async function chooseAction({label,index}={}){

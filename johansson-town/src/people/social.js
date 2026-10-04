@@ -8,7 +8,9 @@ import {SHOP_CROSSING_Z} from '../world/main-road.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {PROFILES} from './profiles.js';
-import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
+import {ACTIVE_RESIDENT_NAMES,RESIDENTS,HOME_OWNERS} from './residents.js';
+import {homeRoutine} from './home-life.js';
+const HOME_RESIDENT_NAMES=new Set(HOME_OWNERS.map(p=>p.name));
 import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
 import {transitStop,awayPlace} from '../world/transit.js';
 import {ONSEN,ONSEN_DOOR} from '../world/onsen-layout.js';
@@ -96,10 +98,10 @@ export function thuanAfternoon(profile,minutes,rain=false){
 // spends turning at corners. Two park targets make this a walk around the grounds,
 // rather than every resident being sent to the same bench coordinate.
 export const NAO_DAY=Object.freeze([
- {until:650,place:'market',target:MARKET_THRESHOLD,activity:'buying Ramune soda at Sakura'},
- {until:735,place:'park',target:[PARK_STAND[0]-1.4,PARK_STAND[1]+1.2],activity:'walking around the west side of the park',pace:.78},
- {until:825,place:'stroll',target:[31.6,1.5],activity:'walking around the park to the sea wall',pace:.78},
- {until:900,place:'park',target:[PARK_STAND[0]+1.1,PARK_STAND[1]-.8],activity:'finishing her park circuit',pace:.78},
+ {until:815,place:'market',target:MARKET_THRESHOLD,activity:'buying Ramune soda at Sakura'},
+ {until:850,place:'park',target:[PARK_STAND[0]-1.4,PARK_STAND[1]+1.2],activity:'walking around the west side of the park',pace:.78},
+ {until:905,place:'stroll',target:[31.6,1.5],activity:'walking around the park to the sea wall',pace:.78},
+ {until:935,place:'park',target:[PARK_STAND[0]+1.1,PARK_STAND[1]-.8],activity:'finishing her park circuit',pace:.78},
  {until:960,place:'izakaya',target:IZAKAYA_DOOR,activity:'tidying Minato before opening'},
 ].map(Object.freeze));
 export function naoBeforeShift(profile,minutes,rain=false){
@@ -360,7 +362,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
  if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
  return bus('waiting for the next Harbour Line departure');
 }
-/** Where somebody should be. Every caller gets the same commuter plan: people arrive and leave by the ferry. */
+/** Every caller shares one daily plan, including sleep in the residents' actual homes. */
 export function residentPlan(profile,minutes,rain=false,state=null){
  // Minato's regular never joins the Harbour Line or leaves the room. He sleeps on
  // his usual stool from 03:00 until 10:00 and drinks at the counter the rest of day.
@@ -368,6 +370,13 @@ export function residentPlan(profile,minutes,rain=false,state=null){
   // Closed hours he cleans to pay off his tab (izakaya-hours.js), and sleeps 04:00-10:00.
   const minute=minuteOfDay(minutes),sleeping=minute>=240&&minute<600,job=izakayaJob('Barfly',minutes);
   return {place:'izakaya',target:IZAKAYA_DOOR,activity:job?job.activity:sleeping?'asleep on his Minato stool':'having another beer at Minato',barflySleeping:sleeping};
+ }
+ // These homes remain playable after the island expansion. A night worker must
+ // finish sleeping and breakfast before a generic shopping or ferry rule sends
+ // them outside. The Minato closing shift finishes exactly at Nao's 04:00 bedtime.
+ if(HOME_RESIDENT_NAMES.has(profile?.name)){
+  const routine=homeRoutine(profile,minutes);
+  if(['sleep','wake','breakfast','prepare'].includes(routine.id))return {place:'home',target:profile.home,activity:routine.activity+' at home'};
  }
  const plan=commuterPlan(profile,minutes,rain,state);
  // The two gardens have regular visitors; work and bad-weather routines stay intact.

@@ -1,13 +1,24 @@
-import {SHOPPING_LANE,SHOPPING_LANE_ROUTE} from './shopping-lane-plan.js';
+import {SHOPPING_LANE,SHOPPING_LANE_ROUTES} from './shopping-lane-plan.js';
 import {GARDEN,GARDEN_PATHS,gardenHeight} from './garden-layout.js';
 /** Shared fictional island masterplan. Existing harbour addresses stay fixed. */
 export const ISLAND=Object.freeze({name:'Johansson Island',mountain:{name:'Mount Aoba',x:40,z:175,height:0,radiusX:30,radiusZ:30},pond:{...GARDEN.pond,radius:GARDEN.pond.rx},village:{name:'Hoshizaki Fishing Village',x:132,z:190},lighthouse:{x:-54,z:204},viewpoint:{x:40,z:158}});
+/** Separate customer, shopkeeper and lunch queue positions outside the south wall. */
+export const HOSHIZAKI_STORE=Object.freeze({
+ customer:Object.freeze([126,207.3]),
+ clerk:Object.freeze([126,205.65]),
+ waiting:Object.freeze([127.25,207.3]),
+ clerkFace:Object.freeze([0,1]),
+ waitingFace:Object.freeze([-1.25,-1.65]),
+});
 export const ISLAND_COAST=[[-52,85],[-63,120],[-73,160],[-68,210],[-42,250],[0,280],[55,295],[110,280],[150,240],[162,190],[156,140],[135,98],[100,70],[70,60]];
-export const COAST_ROAD=[[43,40],[60,49],[72,73],[111,105],[139,150],[142,190],[130,230],[100,264],[55,280],[5,265],[-34,240],[-55,200],[-57,150],[-47,110],[-38,82],[-37,48],[-37,30]];
+// The coastal road leaves the existing Kitahama cross lane on solid land. Its old
+// southern bend at [60,49] was outside the coastline and could never be walked.
+export const COAST_ROAD=[[59,66],[63,68],[72,73],[111,105],[139,150],[142,190],[130,230],[100,264],[55,280],[5,265],[-34,240],[-55,200],[-57,150],[-47,110],[-38,82],[-37,48],[-37,30]];
+export const COAST_CONNECTOR=[[-37,30],[-37,-42],[-18,-42],[0,-36],[17,-36],[31,-25],[43,1],[43,40]];
 export const MOUNTAIN_TRAIL=[[23.5,94],[23.5,112],[24,134],[28,151],[40,158],[40,167]];
-export const ISLAND_ROUTES=[...GARDEN_PATHS,SHOPPING_LANE_ROUTE,{id:'island-coastal-road',width:5,surface:'asphalt',points:COAST_ROAD},{id:'island-mountain-trail',width:2.3,surface:'gravel',points:MOUNTAIN_TRAIL}].map(r=>({...r,terrain:true}));
+export const ISLAND_ROUTES=[...GARDEN_PATHS,...SHOPPING_LANE_ROUTES,{id:'island-coastal-road',peninsula:true,width:5,segmentWidths:[2.6],surface:'asphalt',points:COAST_ROAD},{id:'island-mountain-trail',peninsula:true,width:2.3,surface:'gravel',points:MOUNTAIN_TRAIL}].map(r=>({...r,terrain:true}));
 export function nearestSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
-export function islandRouteAt(x,z){return ISLAND_ROUTES.find(r=>r.points.slice(1).some((b,i)=>nearestSegment(x,z,r.points[i],b)<=r.width/2))||null;}
+export function islandRouteAt(x,z){return ISLAND_ROUTES.find(r=>r.points.slice(1).some((b,i)=>nearestSegment(x,z,r.points[i],b)<=(r.segmentWidths?.[i]??r.width)/2))||null;}
 const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 export const TERRAIN_GRID=Object.freeze({minX:-53,maxX:118,minZ:97,maxZ:268,step:3});
 function authoredHeight(x,z){const m=ISLAND.mountain,r=Math.hypot((x-m.x)/m.radiusX,(z-m.z)/m.radiusZ);let h=-.4+m.height*(1-smooth(r));
@@ -23,6 +34,6 @@ export const ISLAND_LANDMARKS=[
  {id:'aoba-viewpoint',title:'Aoba Radio Station & Lookout',x:40,z:158,line:'Island radio, a roof lookout and the coastal weather broadcast.'},
  {id:'hoshizaki',title:'Hoshizaki Fishing Village',x:132,z:190,line:'Fishing families, a small general store and the far-coast pier.'},
  {id:'west-lighthouse',title:'West Cape Lighthouse',x:-54,z:204,line:'A quiet headland above the coastal road.'},
- {id:'rainflower-lane',title:'Rainflower Shopping Lane',x:90,z:96,line:'Weathered shop-houses, flowers, cold drinks and overhead wires.'},
+ {id:'rainflower-lane',title:'Rainflower Shopping Lane',x:SHOPPING_LANE.entry[0],z:SHOPPING_LANE.entry[1],line:'Weathered shop-houses on the walking grid between town, Aoba Garden and Kitahama.'},
  {id:'aoba-garden',title:'Aoba Traditional Garden',x:GARDEN.entry[0],z:GARDEN.entry[1],line:'The neighbourhood pond garden: stone gate, shrine and Umi-no-yu, a short stroll from town.'},
 ].map(s=>({...s,sub:'ISLAND COAST & NEIGHBOURHOODS',exitPosition:[s.x,islandTerrainHeight(s.x,s.z)??-.4,s.z],entryFacing:0}));

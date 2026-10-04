@@ -4,7 +4,8 @@ import * as THREE from '../vendor/three.module.js';
 import {preloadPark,buildPark,PARK_TREE} from '../src/world/park.js?snappy=1';
 import {PARK,PARK_BENCH,parkHeight} from '../src/world/park-layout.js';
 import {installDOM} from './fixtures.mjs';
-import {circleHitsRect} from '../physics.js';
+import {circleHitsRect,standingHitsRect} from '../physics.js';
+import {clearArrivalLens} from '../src/render/spawn-scene.js';
 
 test('the drawn park sits on its own ground, with its bench where the seat is and the view to the port open',async()=>{
  installDOM();
@@ -32,4 +33,30 @@ test('the western approach is clear',()=>{
  installDOM();
  const world={group:new THREE.Group(),colliders:[]};buildPark(world,{register(){},onAction(){},shadows:false});
  const x=PARK.x-10.374*PARK.scale,z=PARK.z+.4*PARK.scale;assert.equal(world.colliders.some(c=>circleHitsRect(x,z,.32,c)),false,'The western approach has a ghost collider');
+});
+
+test('bench collision matches its visible frame and leaves the camera clear above the backrest',()=>{
+ installDOM();
+ const world={group:new THREE.Group(),colliders:[]};buildPark(world,{register(){},onAction(){},shadows:false});world.group.updateMatrixWorld(true);
+ const bench=world.colliders.find(c=>Number.isFinite(c.minY)&&circleHitsRect(PARK_BENCH.position[0],PARK_BENCH.position[2],.1,c));
+ assert.ok(bench,'the seat has a bounded collider');
+ // The merged kit also contains lamps and flowers. Measure only frame vertices
+ // inside this bench's footprint, so this verifies the drawn object itself.
+ let bottom=Infinity,top=-Infinity;const point=new THREE.Vector3();
+ world.park.group.traverse(o=>{
+  if(!o.isMesh||!/^Harbour Park:/.test(o.name))return;
+  const positions=o.geometry.attributes.position;
+  for(let i=0;i<positions.count;i++){
+   point.fromBufferAttribute(positions,i).applyMatrix4(o.matrixWorld);
+   if(Math.abs(point.x-bench.x)>bench.w/2+.001||Math.abs(point.z-bench.z)>bench.d/2+.001)continue;
+   bottom=Math.min(bottom,point.y);top=Math.max(top,point.y);
+  }
+ });
+ assert.ok(Number.isFinite(top),'the frame is drawn');
+ assert.ok(Math.abs(bench.minY-bottom)<.01,'collider begins at the legs');
+ assert.ok(Math.abs(bench.minY+bench.height-top)<.01,'collider ends at the visible backrest');
+ assert.ok(standingHitsRect(bench.x,bench.z,.32,parkHeight(bench.x,bench.z),bench),'a walking person cannot pass through the frame');
+ const blocked=(x,z,y,r)=>(bench.minY<y+.12&&bench.minY+bench.height>y-.12&&circleHitsRect(x,z,r,bench));
+ const target=new THREE.Vector3(bench.x,top+.15,bench.z),lens=target.clone().add(new THREE.Vector3(-2,.05,0));
+ assert.equal(clearArrivalLens(target,lens,{blocked,ground:parkHeight}),true,'the arrival lens clears the real backrest');
 });

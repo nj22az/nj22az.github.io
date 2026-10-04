@@ -1,6 +1,11 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createWindowBatch} from './shop-street-batches.js';
 
+// The room owns the visible indoor frame. Clip beyond the exterior pane and its
+// shallow wooden sashes, rather than exactly on the pane: a coplanar clipping
+// plane produces fragment speckles on the glazing and reveals duplicate frames.
+export const SHOP_STREET_PORTAL_CLEARANCE=.13;
+
 // The room uses its own coordinates. Map its front glazing onto the real shop
 // frontage and render the street first; opaque room surfaces mask that view.
 export function mapShopCamera(source,target,frontage){
@@ -38,7 +43,7 @@ export function createShopStreetView(){
    if(o.isInstancedMesh){if(!o.boundingBox)o.computeBoundingBox();}
    else if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();
    const bounds=(o.isInstancedMesh?o.boundingBox:o.geometry.boundingBox).clone().applyMatrix4(o.matrixWorld);
-   let dynamic=o.isSkinnedMesh;for(let p=o.parent;p&&p!==town;p=p.parent)if(p.userData.name||p.userData.character)dynamic=true;
+   let dynamic=o.isSkinnedMesh;for(let p=o;p&&p!==town;p=p.parent)if(p.userData.name||p.userData.character||p.userData.dynamicProp)dynamic=true;
    if(!dynamic&&!batches.has(o))batches.set(o,createWindowBatch(o));
    entries.push({object:o,bounds,dynamic,batch:batches.get(o)});
   });cachedTown=town;stats.total=entries.length;
@@ -48,6 +53,7 @@ export function createShopStreetView(){
   camera.updateMatrixWorld(true);frustum.setFromProjectionMatrix(matrix.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
   if(!frontage||!frustum.intersectsBox(glazing)){stats.visible=0;stats.culled=stats.total;stats.passes=0;renderer.render(scene,camera);return;}
   const plane=mapShopCamera(camera,exteriorCamera,frontage);
+  plane.constant-=SHOP_STREET_PORTAL_CLEARANCE;
   if(cachedTown!==town)cache(town);
   frustum.setFromProjectionMatrix(matrix.multiplyMatrices(exteriorCamera.projectionMatrix,exteriorCamera.matrixWorldInverse));
   const planes=[plane,...shopWindowPlanes(exteriorCamera,frontage)],hidden=[],swapped=[];

@@ -24,3 +24,19 @@ test('a stand-in draws a room as a few meshes, and the real room comes back unto
  assert.ok(room.children.slice(0,41).every(o=>o.layers.isEnabled(0)));
  assert.equal(standIn.group.visible,false);
 });
+
+test('street copies preserve each stocked flavour without requiring an instance shader',()=>{
+ const room=new THREE.Group(),geometry=new THREE.PlaneGeometry(.4,.6),texture=new THREE.Texture();
+ geometry.setAttribute('atlasShift',new THREE.InstancedBufferAttribute(new Float32Array([0,0,.125,.25]),2));
+ const shelf=new THREE.InstancedMesh(geometry,new THREE.MeshBasicMaterial({map:texture}),2);
+ shelf.setMatrixAt(0,new THREE.Matrix4());shelf.setMatrixAt(1,new THREE.Matrix4().makeTranslation(1,0,0));room.add(shelf);
+ const copy=createStandIn(room),uv=copy.group.children[0].geometry.attributes.uv;
+ assert.equal(uv.count,12);
+ for(let i=0;i<6;i++){
+  assert.equal(uv.getX(i+6)-uv.getX(i),.125);
+  assert.equal(uv.getY(i+6)-uv.getY(i),.25);
+ }
+ assert.equal(copy.group.children[0].geometry.attributes.atlasShift,undefined);
+ assert.deepEqual(Array.from(geometry.attributes.atlasShift.array),[0,0,.125,.25],'The live stock shader keeps its own instance choices');
+ copy.dispose();
+});

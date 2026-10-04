@@ -4,7 +4,7 @@ import {rng} from './kit.js';
 /**
  * Street furniture, after Sakura Crossing's props.js (Kenton-GMI, MIT; see
  * LICENSE-SAKURA-CROSSING.txt): the utility pole with its crossarms, insulators and
- * transformer cans, the sagging cables strung between them, and the kei truck, rebuilt
+ * transformer cans, the sagging cables strung between them, and household tools, rebuilt
  * for the kit so that a whole street of them is a few draw calls. The rest -- bicycles,
  * laundry, gas bottles, fish crates, buoys, a sabani -- are the things an Okinawan
  * harbour street is cluttered with.
@@ -113,38 +113,6 @@ export const spanWire=(a,b,i,sag)=>[a.anchors[i].toArray(),b.anchors[i].toArray(
 
 /** A cable from a pole down to the eave of a house: the service drop. */
 export function serviceDrop(kit,pole,to){if(plan){plan.drops.push({pole,to});return;}kit.wire(pole.anchors[pole.anchors.length-1].toArray(),to,.25,.014,0x2b2a30);}
-
-/**
- * A kei truck (Sakura Crossing's makeKeiTruck): cab-over, drop-sided bed, the sort
- * every farm and fish shop on the island runs. Front along local +x.
- */
-export function keiTruck(kit,x,z,{ry=0,colour=0xeae8e0,load='crates'}={}){
- const L=3.3,W=1.46,deep=new THREE.Color(colour).multiplyScalar(.8).getHex();
- kit.at(x,z,ry,()=>{
-  kit.box(L,.32,W,0,.66,0,deep);
-  kit.box(1.26,1.06,W,L/2-.68,1.36,0,colour);
-  kit.box(.06,.6,W-.16,L/2-.06,1.6,0,0x2e3c44,{finish:'gloss'});
-  for(const s of [-1,1])kit.box(1,.54,.06,L/2-.7,1.58,s*(W/2-.02),0x2e3c44,{finish:'gloss'});
-  kit.box(1.3,.1,W+.06,L/2-.68,1.9,0,deep);
-  kit.box(1.86,.06,W,-.62,.86,0,0xbba98c);
-  for(const s of [-1,1])kit.box(1.86,.4,.06,-.62,1.05,s*(W/2-.03),colour);
-  kit.box(.06,.4,W,-1.55,1.05,0,colour);
-  if(load==='crates')for(let i=0;i<4;i++)kit.box(.5,.28,.38,-.3-(i%2)*.6,1.03+Math.floor(i/2)*.28,i%2?.25:-.25,i%3?0x2f6fb8:0x3f86c8);
-  else if(load==='sheet'){kit.box(1.5,.4,W-.18,-.62,1.1,0,0x8fa2b4);kit.box(1.62,.07,W-.06,-.62,.93,0,0x7e8fa0);}
-  for(const wx of [L/2-.72,-L/2+.6])for(const s of [-1,1]){
-   kit.cyl(.29,.29,.2,wx,.29,s*(W/2-.06),0x1f2124,{rx:Math.PI/2,segments:12});
-   kit.cyl(.13,.13,.22,wx,.29,s*(W/2-.02),0xe6e4e0,{rx:Math.PI/2,segments:8});
-  }
-  for(const s of [-1,1]){
-   kit.box(.06,.16,.26,L/2+.01,.98,s*.48,0xfff4d8,{finish:'lamp'});
-   kit.box(.06,.13,.2,-L/2-.01,.98,s*.48,0xe05a4a);
-   kit.box(.05,.16,.1,L/2-.5,1.9,s*(W/2+.15),0x2d2b30);
-  }
-  kit.box(.06,.18,.34,L/2+.02,.7,0,0xf4f1e6);
- });
- let solid;kit.at(x,z,ry,()=>{solid=kit.rect(-L/2-.05,L/2+.05,-W/2-.05,W/2+.05,2,'kei-truck');});
- return solid;
-}
 
 /** A parked bicycle, leant on its stand. Front along local +x. */
 export function bicycle(kit,x,z,{ry=0,colour=0x3d6f8f}={}){

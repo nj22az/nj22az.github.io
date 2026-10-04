@@ -1,27 +1,10 @@
 import * as THREE from '../../vendor/three.module.js';
-import {KITANO_ROAD,KITANO_ROAD_LENGTH,KITANO_ROAD_LANDS,KITANO_SHORE,KITANO_SURFACE_LIFT,roadPoint,roadHeight,leftOf} from './kitano-link-plan.js';
-import {paintPatch,roadSign,stopMarking,ROAD_STANDARD} from './road-standards.js';
-import {KITANO_STOP_S,CAR_PARK,carParkPoint,CAR_PARK_YAW} from './town-traffic.js';
-import {AIRPORT_HEIGHT} from './airport-ground.js';
-import {SEA_LEVEL} from './ocean.js';
-import {beachHeight} from './beach-layout.js';
+import {KITANO_ROAD,KITANO_ROAD_LENGTH,KITANO_SURFACE_LIFT,roadPoint,roadHeight,leftOf} from './kitano-link-plan.js';
 
-/**
- * Kitano Road and Kitano Bridge, built (the numbers are in kitano-link-plan.js).
- *
- *  - The road: asphalt carriageway with a white dashed centre line in town and a solid
- *    yellow one on the bridge (no overtaking), white edge line, a raised concrete footway
- *    with its kerb on the harbour side, the stop line and 止まれ where it meets Main Street,
- *    and zebra crossings across its mouth and on the lawn.
- *  - Past the walled garden it rises on an embankment between coral-stone retaining walls,
- *    then crosses the beach on a causeway faced in concrete with rock at its foot.
- *  - The bridge: a deck on twin girders, solid parapets with lamp posts, twin-column piers
- *    standing in the water on scour rock, and a longer navigation span at the crest.
- *  - On Kitano-jima it comes down a short ramp onto the district and ends in a car park.
- *
- * Top surfaces are ribbons laid along the centreline, so they follow its bends and its
- * long section; walls, girders and parapets are instanced box segments, one mesh each.
- */
+import {paintPatch,roadSign,stopMarking,ROAD_STANDARD} from './road-standards.js';
+import {KITANO_STOP_S} from './town-traffic.js';
+
+/** Mainland lane and footway. The former airport bridge and all its supports are removed. */
 const STEP=.5;
 /** The road is laid as an apron over whatever it crosses, so the lawn's grass never shows through. */
 const LIFT=KITANO_SURFACE_LIFT;
@@ -30,9 +13,9 @@ const C={asphalt:0x5f6366,footway:0xbab4a6,kerb:0xd3cec2,coral:0xd9cfb3,concrete
 function frameAt(s){const [x,z,hx,hz]=roadPoint(s),[lx,lz]=leftOf(hx,hz);return {x,z,hx,hz,lx,lz,y:roadHeight(s)};}
 
 export function buildKitanoLink({parent,colliders=null,shadows=false}){
- const group=new THREE.Group();group.name='Kitano Road and Kitano Bridge';parent.add(group);
+ const group=new THREE.Group();group.name='Kitano mainland access lane';parent.add(group);
  const mat=new Map(),material=(c,o={})=>{const k=c+JSON.stringify(o);if(!mat.has(k))mat.set(k,new THREE.MeshStandardMaterial({color:c,roughness:.92,...o}));return mat.get(k);};
- const S=KITANO_ROAD.section,end=KITANO_ROAD_LENGTH,bridgeFrom=KITANO_SHORE.beachFoot,bridgeTo=KITANO_SHORE.district;
+ const S=KITANO_ROAD.section,end=KITANO_ROAD_LENGTH;
 
  // ---- Running surfaces: ribbons across o0..o1 from s0 to s1, at the road's height plus lift. ----
  const ribbons=new Map();
@@ -63,55 +46,9 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
   const dx=b.x-a.x,dz=b.z-a.z,l=Math.hypot(dx,dz)||len;
   (boxes.get(colour)??boxes.set(colour,[]).get(colour)).push({x:mid.x+mid.lx*o,z:mid.z+mid.lz*o,y:(y0+y1)/2,len:l*1.03,t,h:y1-y0,yaw:Math.atan2(dx,dz),pitch:Math.atan2(b.y-a.y,l)});
  }
- const ground=(x,z)=>{const b=beachHeight(x,z);return b??0;};
- const seabed=SEA_LEVEL-2.2;
  // Kerb face along the footway.
  for(let s=footFrom;s<end;s+=STEP){const f=frameAt(s+STEP/2);seg(C.kerb,s,STEP,S.carriageway+.06,.12,f.y,f.y+LIFT+S.kerb+.01);}
- // Embankment, causeway and district ramp: retaining walls from the ground up to a parapet.
- const riseFrom=KITANO_ROAD.profile.riseFrom;
- for(let s=riseFrom;s<KITANO_ROAD_LANDS;s+=1){
-  if(s>=bridgeFrom-.5&&s<bridgeTo)continue;
-  const f=frameAt(s+.5),over=f.y-(s>=bridgeTo?AIRPORT_HEIGHT:0);if(over<.04)continue;
-  const coral=f.x<33.4,colour=coral?C.coral:C.concrete,rail=over<.25?.12+over*2.92:.85;
-  for(const [o,top] of [[S.north-S.parapet/2,f.y+rail],[S.footway+S.parapet/2,f.y+S.kerb+rail]]){
-   const x=f.x+f.lx*o,z=f.z+f.lz*o,base=(s>=bridgeTo?AIRPORT_HEIGHT:ground(x,z))-.35;
-   seg(colour,s,1,o,S.parapet,base,top);
-  }
-  // Between the walls the fill shows only at the ends; the deck covers it.
-  if(!coral&&s<bridgeTo){for(const o of [S.north-S.parapet-.4,S.footway+S.parapet+.4]){
-   const x=f.x+f.lx*o,z=f.z+f.lz*o,g=ground(x,z);seg(C.rock,s,1,o,.8,g-.4,g+.3);
-   colliders?.push({id:'kitano-causeway-rock',x,z,w:.8,d:1.05,yaw:Math.atan2(f.hx,f.hz),height:g+.6});
-  }}
- }
- // The bridge itself, from the beach's foot to the district's edge.
- const piers=[bridgeFrom,53.5,58.5,68,73,78,82.4,bridgeTo];
- for(let s=bridgeFrom;s<bridgeTo;s+=1){
-  const f=frameAt(s+.5),len=Math.min(1,bridgeTo-s);
-  seg(C.concrete,s,len,(S.north+S.footway)/2,S.footway-S.north+2*S.parapet,f.y-.38,f.y-.01);// deck slab
-  for(const o of [-1.2,2.4])seg(C.girder,s,len,o,.55,f.y-KITANO_ROAD.deckDepth,f.y-.37);// twin girders
-  seg(C.concrete,s,len,S.north-S.parapet/2,S.parapet,f.y-.38,f.y+.95);// parapets
-  seg(C.concrete,s,len,S.footway+S.parapet/2,S.parapet,f.y-.38,f.y+S.kerb+.95);
- }
- const pierMeshes=[];
- for(const s of piers){
-  const f=frameAt(s),soffit=f.y-KITANO_ROAD.deckDepth;
-  seg(C.pier,s-.45,.9,(S.north+S.footway)/2,S.footway-S.north+.6,soffit-.45,soffit);// pier cap
-  for(const o of [-1.2,2.4]){
-   const x=f.x+f.lx*o,z=f.z+f.lz*o;
-   pierMeshes.push({x,z,y0:seabed,y1:soffit-.4});
-  }
- }
- const pierGeo=new THREE.CylinderGeometry(.42,.48,1,14);
- const pierMesh=new THREE.InstancedMesh(pierGeo,material(C.pier),pierMeshes.length);pierMesh.name='Kitano Bridge piers';
  const d=new THREE.Object3D();
- pierMeshes.forEach((p,i)=>{d.position.set(p.x,(p.y0+p.y1)/2,p.z);d.rotation.set(0,0,0);d.scale.set(1,p.y1-p.y0,1);d.updateMatrix();pierMesh.setMatrixAt(i,d.matrix);});
- pierMesh.castShadow=shadows;group.add(pierMesh);
- // Scour rock round each pier's foot, breaking the surface.
- const rocks=[];let seed=11;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
- for(const p of pierMeshes)for(let k=0;k<7;k++){const a=k/7*Math.PI*2+rnd(),r=.75+rnd()*.35;rocks.push([p.x+Math.cos(a)*r,SEA_LEVEL-.05+rnd()*.15,p.z+Math.sin(a)*r,.32+rnd()*.18,rnd()*6]);}
- const rockMesh=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),material(C.rock),rocks.length);rockMesh.name='Kitano Bridge scour rock';
- rocks.forEach(([x,y,z,k,r],i)=>{d.position.set(x,y,z);d.rotation.set(r,r*1.7,0);d.scale.set(k,k*.6,k);d.updateMatrix();rockMesh.setMatrixAt(i,d.matrix);});
- group.add(rockMesh);
  for(const [colour,list] of boxes){
   const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),material(colour),list.length);
   // Each segment leans with the road's gradient, so tops run smooth rather than in steps.
@@ -120,22 +57,13 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
   mesh.castShadow=shadows&&colour!==C.kerb;mesh.receiveShadow=true;mesh.name='Kitano '+({[C.coral]:'retaining wall',[C.concrete]:'concrete',[C.girder]:'girders',[C.rock]:'causeway rock',[C.kerb]:'kerb',[C.pier]:'pier caps'}[colour]||'structure');
   mesh.userData.walkSurface=false;mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere();group.add(mesh);
  }
- // Lamp posts on the north parapet across the water, heads glowing a little at dusk.
- const lampPosts=[],lampHeads=[];
- for(let s=bridgeFrom+3;s<bridgeTo;s+=11){const f=frameAt(s),o=S.north-S.parapet/2;lampPosts.push([f.x+f.lx*o,f.y+.95,f.z+f.lz*o]);lampHeads.push([f.x+f.lx*(o+.7),f.y+5.1,f.z+f.lz*(o+.7),Math.atan2(f.hx,f.hz)]);}
- const postMesh=new THREE.InstancedMesh(new THREE.CylinderGeometry(.07,.09,4.3,8),material(C.lampPost,{metalness:.3,roughness:.5}),lampPosts.length);postMesh.name='Kitano Bridge lamp posts';
- lampPosts.forEach(([x,y,z],i)=>{d.position.set(x,y+2.15,z);d.rotation.set(0,0,0);d.scale.set(1,1,1);d.updateMatrix();postMesh.setMatrixAt(i,d.matrix);});group.add(postMesh);
- const headMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(.32,.12,1.5),new THREE.MeshStandardMaterial({color:C.lampPost,emissive:C.lamp,emissiveIntensity:.25,roughness:.4}),lampHeads.length);headMesh.name='Kitano Bridge lamps';
- lampHeads.forEach(([x,y,z,ry],i)=>{d.position.set(x,y,z);d.rotation.set(0,ry+Math.PI/2,0);d.updateMatrix();headMesh.setMatrixAt(i,d.matrix);});group.add(headMesh);
- for(const m of [pierMesh,rockMesh,postMesh,headMesh]){m.userData.walkSurface=false;m.instanceMatrix.needsUpdate=true;m.computeBoundingSphere();}
-
  // ---- Markings. ----
  const marks=new THREE.Group();marks.name='Kitano Road markings';group.add(marks);
  const paint=new THREE.MeshBasicMaterial({color:ROAD_STANDARD.paint,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
  const yellow=new THREE.MeshBasicMaterial({color:C.yellow,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
  const dashes=[],solidY=[],edge=[];
  for(let s=KITANO_STOP_S+1;s<end-.5;s+=.5){
-  const onBridge=s>bridgeFrom-6&&s<bridgeTo+4;
+  const onBridge=false;
   if(onBridge)solidY.push(s);else if(Math.floor(s/2)%3!==2&&s>KITANO_STOP_S+3)dashes.push(s);
   if(s>13)edge.push(s);
  }
@@ -171,24 +99,6 @@ export function buildKitanoLink({parent,colliders=null,shadows=false}){
  // A guide sign at the junction, facing Main Street, and the bridge's name plates.
  {const x=5.15,z=6.45;
   const post=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,3.1,8),material(C.lampPost,{metalness:.3,roughness:.5}));post.position.set(x,1.55,z);group.add(post);
-  plate('Kitano Road','Airport · Kitano-jima →',x-.05,2.75,z,-Math.PI/2,1.5);colliders?.push({id:'road-sign',x,z,w:.12,d:.12,height:3.1});}
- // Name plates on the parapet ends, each facing the traffic coming onto the bridge.
- for(const [s,toward] of [[bridgeFrom-.6,-1],[bridgeTo+.6,1]]){const f=frameAt(s),o=S.north-S.parapet/2,x=f.x+f.lx*o,z=f.z+f.lz*o;plate('Kitano Bridge','Opened 1997 · 38 m',x,f.y+1.35,z,Math.atan2(toward*f.hx,toward*f.hz),.9,'#5d6468');}
-
- // ---- The airport car park at the road's end. ----
- {
-  const P=CAR_PARK,y=AIRPORT_HEIGHT+.015,[cx,cz]=carParkPoint((P.minA+P.maxA)/2,0);
-  const slab=new THREE.Mesh(new THREE.PlaneGeometry(2*P.halfB,P.maxA-P.minA).rotateX(-Math.PI/2),material(C.carPark));
-  slab.position.set(cx,y,cz);slab.rotation.y=CAR_PARK_YAW;slab.receiveShadow=true;slab.name='Airport car park';group.add(slab);
-  // Parallel bays along both long sides: a kerb-side line with a short tick at each bay's ends.
-  for(const side of [-1,1]){const [x,z]=carParkPoint(11.5,side*(P.halfB-2.6));paintPatch(marks,.12,19,x,y,z,CAR_PARK_YAW,'Bay edge line');}
-  for(const [a,b] of P.bays){
-   for(const da of [-2.2,2.2]){const [x,z]=carParkPoint(a+da,b);paintPatch(marks,1.9,.12,x,y,z,CAR_PARK_YAW,'Bay line');}
-  }
-  const [sx,sz]=carParkPoint(P.minA+.4,-P.halfB-.4);
-  const post=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,2.6,8),material(C.lampPost,{metalness:.3,roughness:.5}));post.position.set(sx,AIRPORT_HEIGHT+1.3,sz);group.add(post);
-  plate('P','Car park · Terminal A',sx,AIRPORT_HEIGHT+2.35,sz,CAR_PARK_YAW+Math.PI,.9);
-  colliders?.push({id:'road-sign',x:sx,z:sz,w:.12,d:.12,height:AIRPORT_HEIGHT+2.8});
- }
- return {group,piers,bridge:{from:bridgeFrom,to:bridgeTo}};
+  plate('East lawn','Airport ferry · Harbour ↓',x-.05,2.75,z,-Math.PI/2,1.5);colliders?.push({id:'road-sign',x,z,w:.12,d:.12,height:3.1});}
+ return {group,piers:[],bridge:null};
 }

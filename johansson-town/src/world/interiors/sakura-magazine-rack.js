@@ -94,7 +94,7 @@ export function buildMagazineRack(room,{anchor,action,date=new Date(1997,8,13)}=
  }
  // The header sign, in the shop's pink.
  const signTex=new THREE.CanvasTexture((()=>{const c=document.createElement('canvas');c.width=1024;c.height=128;const x=c.getContext('2d');x.fillStyle='#f06b9a';x.fillRect(0,0,1024,128);x.fillStyle='#d7263d';x.fillRect(0,108,1024,20);
-  x.fillStyle='#fff';x.font=`900 58px ${MARU}`;x.textAlign='center';x.textBaseline='middle';x.fillText("Magazines/Newspapers",330,56);x.fillStyle='#fff6c8';x.font=`800 32px ${MARU}`;x.fillText("★ Arrived every morning · Welcome to browse ★",740,56);return c;})());
+  x.fillStyle='#fff';x.font=`900 52px ${MARU}`;x.textAlign='center';x.textBaseline='middle';x.fillText("Magazines/Newspapers",512,42,960);x.fillStyle='#fff6c8';x.font=`800 24px ${MARU}`;x.fillText("★ Arrived every morning · Welcome to browse ★",512,88,960);return c;})());
  signTex.colorSpace=THREE.SRGBColorSpace;const signMat=new THREE.MeshStandardMaterial({map:signTex,roughness:.5,emissive:0xffffff,emissiveMap:signTex,emissiveIntensity:.25});
  add(new THREE.BoxGeometry(1.7,.2,.025),[enamel,enamel,enamel,enamel,signMat,signMat],0,1.57,-D/2+.04,'Magazine rack sign');
  for(const sx of [-.7,.7])add(tube(.12),enamel,sx,1.43+.06,-D/2+.04);
@@ -125,7 +125,7 @@ export function buildMagazineRack(room,{anchor,action,date=new Date(1997,8,13)}=
   list.forEach(([x,y,z,lean,tilt],i)=>{dummy.position.set(x,y,z);dummy.rotation.set(-lean,0,tilt);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});
   mesh.computeBoundingSphere();group.add(mesh);
  });
- if(anchor&&action)anchor([R.x,1.35,R.z-.5],'Read the magazines',()=>action('magazine-rack'));
+ if(anchor&&action)anchor([R.x,1.35,R.z-R.depth/2-.45],'Read the magazines',()=>action('magazine-rack'));
  return {group,
   /** Puts the issues on sale on `date` on the rack; a no-op until one changes. */
   // Called every frame; covers only change with the date, so only a new day is looked at.

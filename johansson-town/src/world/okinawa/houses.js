@@ -126,7 +126,7 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  stairFlight(kit,solid,{id:'house-stair-lower',x:W+2.15,z:bottom,width:1.3,length,height:mid,direction:-1});
  stairLanding(kit,{id:'house-turn',x0:W+.2,x1:W+2.8,z0:turn-1.0,z1:turn,y:mid},solid);
  stairFlight(kit,solid,{id:'house-stair-upper',x:W+.85,z:turn,width:1.3,length,height:mid,base:mid});
- stairLanding(kit,{id:'house-roof-landing',x0:W-.3,x1:W+1.5,z0:bottom,z1:bottom+1.0,y:H+.1},solid);
+ stairLanding(kit,{id:'house-roof-landing',x0:W-.3,x1:W+1.5,z0:bottom,z1:bottom+1.0,y:H+.12},solid);
  kit.level(-W+.15,W-.15,-D+.15,D-.15,H+.1,'house-roof');
  // Guard the outer edge of both landings, leaving the flight ends open.
  for(const [x0,x1,z0,z1,y] of [[W+.2,W+2.8,turn-1.0,turn-.95,mid],[W+2.75,W+2.8,turn-1.0,turn,mid],[W+1.45,W+1.5,bottom,bottom+1.0,H+.1]]){

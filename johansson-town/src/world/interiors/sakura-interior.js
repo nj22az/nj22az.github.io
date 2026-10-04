@@ -2,6 +2,8 @@ import * as THREE from '../../../vendor/three.module.js';
 import {buildSpecialsBoard} from './sakura-specials-board.js';
 import {SHOP_STOCK} from '../../commerce/shop-stock.js';
 import {shopProductTemplate,shopProductMaterials} from '../../commerce/shop-product.js';
+import {sakuraProductTemplate} from './sakura-food-products.js';
+import {buildSakuraCounterDetail} from './sakura-counter-detail.js';
 import {createStoreAdvertising} from './store-advertising.js';
 import {createShopRefrigerator} from './shop-refrigerator.js';
 import {townCalendarAt} from '../../town-clock.js';
@@ -17,6 +19,8 @@ import {buildSakuraCorners} from './sakura-corners.js';
 import {buildSakuraSurfaces} from './sakura-surfaces.js';
 import {shelfArtMaterial,flavouredArt,flavourForColumn,setFlavour,flavourTint} from './shelf-flavours.js';
 let model=null;
+const sakuraFoodGlass=new THREE.MeshStandardMaterial({color:0xf1f7ef,transparent:true,opacity:.09,roughness:.12,depthWrite:false,side:THREE.DoubleSide});
+sakuraFoodGlass.name='Sakura clear food wrappers';
 /**
  * The shop's building and fittings (sakura-shell.js), made once and cloned into the room.
  * They used to come from a supplied convenience-store model with no licence on record;
@@ -74,7 +78,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
  const advertising=createStoreAdvertising({room,reg,action,posterSpecs:[]});
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);return o;};
  for(const spec of SHOP_STOCK){const shelf=SAKURA_SHELVES[spec.id];if(!shelf)continue;
-  const template=shopProductTemplate(spec.id),perLevel=spec.capacity/shelf.levels.length,columns=shelf.columns||6,rows=perLevel/columns;
+  const template=sakuraProductTemplate(spec.id),perLevel=spec.capacity/shelf.levels.length,columns=shelf.columns||6,rows=perLevel/columns;
   // Faced by the pack's own size: never closer than its width across or its depth back.
   const size=template.bounds.getSize(new THREE.Vector3()),gap={spacing:Math.max(shelf.spacing,size.x+.012),depth:Math.max(shelf.depth,size.z+.01)};
   // A konbini board is full from upright to upright. Where the shelf says how wide it is,
@@ -85,6 +89,9 @@ export function buildSakuraInterior({room,reg,action,exit}){
   const first=Math.floor((across-columns)/2),extra=(across-columns)*rows*shelf.levels.length;
   const art=flavouredArt(template.art,spec.capacity+extra);
   const pair=[template.body,art].map((geometry,i)=>{const mesh=new THREE.InstancedMesh(geometry,i?shelfArtMaterial():materials[0],spec.capacity+extra);mesh.name='Sakura '+spec.id+(i?' packaging':' goods');room.add(mesh);return mesh;});
+  if(template.glass){
+   const mesh=new THREE.InstancedMesh(template.glass,sakuraFoodGlass,spec.capacity+extra);mesh.name='Sakura '+spec.id+' clear wrapper';mesh.userData.preserveMaterial=true;mesh.renderOrder=2;room.add(mesh);pair.push(mesh);
+  }
   const matrices=[];
   const place=(slot,level,column,row)=>{
    const along=(column-(across-1)/2)*gap.spacing,depth=(row-(rows-1)/2)*gap.depth;
@@ -145,6 +152,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
  // The ledger lives on Thuan's desk in the back office now; the counter carries the hot
  // case, the oden and the bell (sakura-cheer.js).
  buildSakuraCheer(room,{anchor,action});
+ buildSakuraCounterDetail(room);
  // The specials board on the wall behind the counter (sakura-specials-board.js).
  buildSpecialsBoard(room,{anchor,action});
  buildSakuraBand(room);
@@ -169,8 +177,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
    mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;
   }
  };
- let mounted=false,last='';
- return {dispose:()=>life.dispose(),officeDoor:life.officeDoor,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
+ let mounted=false,disposed=false,last='';
+ return {dispose:()=>{disposed=true;life.dispose();},officeDoor:life.officeDoor,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready]);if(disposed)return false;if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};

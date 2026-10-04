@@ -168,15 +168,15 @@ export function createTraffic({obstacles=()=>[]}={}){
  }
  function place(v){
   pathPose(v.trip.path,v.s,pose);
-  v.g.position.set(pose.x,pose.y,pose.z);v.g.rotation.order='YXZ';v.g.rotation.set(-pose.pitch,pose.yaw,0);
+  v.g.position.set(pose.x,pose.y,pose.z);v.g.rotation.order='YXZ';v.g.rotation.set(v.trip.reverse?pose.pitch:-pose.pitch,pose.yaw+(v.trip.reverse?Math.PI:0),0);
  }
  return {
   vehicles,
   add(v){v.speed=0;v.trip=null;vehicles.push(v);return v;},
   /** Sets off along a path. onArrive runs once, at the end. */
-  drive(v,path,{onArrive=null,from=0}={}){
+  drive(v,path,{onArrive=null,from=0,reverse=false}={}){
    for(const s of path.stops)s.cleared=false;
-   v.trip={path,onArrive};v.started=++trips;v.s=from;v.speed=0;v.waited=0;v.g.visible=true;place(v);
+   v.trip={path,onArrive,reverse};v.started=++trips;v.s=from;v.speed=0;v.waited=0;v.g.visible=true;place(v);
   },
   /** Stops wherever it is and puts it at the end of its trip (the clock jumped). */
   finish(v){if(!v.trip)return;v.s=v.trip.path.length;place(v);const done=v.trip.onArrive;v.trip=null;v.speed=0;done?.(v);},
@@ -189,7 +189,9 @@ export function createTraffic({obstacles=()=>[]}={}){
     if(target>v.speed)v.speed=Math.min(target,v.speed+DRIVING.accel*dt);
     else v.speed=Math.max(target,v.speed-(target<v.speed-1?DRIVING.hardBrake:DRIVING.brake)*dt);
     v.s=Math.min(v.trip.path.length,v.s+v.speed*dt);place(v);
-    if(v.s>=v.trip.path.length-.02&&v.speed<.05){const done=v.trip.onArrive;v.trip=null;v.speed=0;done?.(v);}
+    // Braking stops 5 cm before the endpoint; the arrival tolerance must include
+    // that gap even at 60 Hz, where a small step does not overshoot it.
+    if(v.s>=v.trip.path.length-.06&&v.speed<.05){const done=v.trip.onArrive;v.trip=null;v.speed=0;done?.(v);}
    }
   },
  };

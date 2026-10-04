@@ -4,10 +4,10 @@ import {SEA_LEVEL} from './ocean.js';
 /**
  * Kitano-jima: the airport island, out to the east-south-east.
  *
- * Reached by the local Minato ferry. It is on the horizon from the quay and the east beach: a
+ * Reached by the local Minato passenger ferry. It is on the horizon from the quay and the east beach: a
  * low green island with a runway along it, a control tower, a small terminal and a hangar,
- * and now and then a plane taking off over the water. AIRPORT_ISLAND records where a ferry
- * would tie up, for when the island becomes a place the ferry and the player can reach.
+ * and now and then a plane taking off over the water. Its passenger pier joins the west
+ * edge of the reclaimed airport district, clear of the runway and sewage works.
  *
  * It stands inside the camera's far plane (220 m) from the harbour, so it is modelled
  * large and simple: nothing on it is smaller than a car.
@@ -17,11 +17,14 @@ export const AIRPORT_ISLAND=Object.freeze({
  x:165,z:-118,yaw:-.22,
  /** The island's half-extents along and across the runway. */
  halfLength:62,halfWidth:20,
- /** Where a ferry will lie alongside, on the island's town-facing shore (world metres). */
- dock:Object.freeze([114,-92.5]),
+ /** Passenger pier's shoreward landing, in world metres. */
+ dock:Object.freeze([165+Math.cos(-.22)*-51+Math.sin(-.22)*33,-118-Math.sin(-.22)*-51+Math.cos(-.22)*33]),
  /** The runway's ends in the island's own frame: planes take off toward +x. */
  runway:Object.freeze({from:-50,to:50,width:8}),
 });
+
+/** Local-frame pier bounds; the same rectangle is drawn and used for walking. */
+export const AIRPORT_JETTY=Object.freeze({minX:-55.2,maxX:-48,minZ:28,maxZ:34,top:1.15,thickness:.5,landing:Object.freeze([-51,33])});
 
 /** Minutes past midnight of the day's departures. */
 export const AIRPORT_DEPARTURES=Object.freeze([555,760,975,1140]);
@@ -73,13 +76,21 @@ export function buildAirportIsland({parent,shadows=false}={}){
  add(new THREE.CylinderGeometry(.15,.15,6,6),mat(0xd8d8d0),R.to-6,4,4);
  const sock=add(new THREE.ConeGeometry(.7,3.2,8,1,true),new THREE.MeshStandardMaterial({color:0xe46a2a,roughness:.7,side:THREE.DoubleSide}),R.to-4.4,6.6,4);
  sock.rotation.z=Math.PI/2;
- // A few palms and a jetty toward the town, where a ferry will come in one day.
+ // A few palms and a pier on the reclaimed district's town-facing west edge.
  const trunk=mat(0x6e5a44),frond=mat(0x3f6e3a);
  for(const [x,z] of [[-46,-10],[-40,-14],[26,-14],[33,-15],[-22,-15],[40,13]]){
   add(new THREE.CylinderGeometry(.35,.5,7,6),trunk,x,4.4,z);
   const crown=add(new THREE.ConeGeometry(3,2.2,7),frond,x,8.4,z);crown.scale.y=.6;
  }
- const jetty=add(new THREE.BoxGeometry(4,.5,16),mat(0x9a958a),-44,.9,A.halfWidth+8);
+ const J=AIRPORT_JETTY;
+ const jetty=add(new THREE.BoxGeometry(J.maxX-J.minX,J.thickness,J.maxZ-J.minZ),mat(0x9a958a),(J.minX+J.maxX)/2,J.top-J.thickness/2,(J.minZ+J.maxZ)/2);
+ jetty.name='Airport shared ferry pier';
+ const approach=add(new THREE.BoxGeometry(88,.08,1.4),mat(0xc4c0aa),0,1.1,20.1);approach.name='Airport terminal approach';
+ // Rails along the sides leave a broad, unobstructed route into the arrival plaza.
+ for(const z of [J.minZ+.12,J.maxZ-.12]){
+  add(new THREE.BoxGeometry(6.8,.06,.06),mat(0x536e75),-51.6,J.top+.85,z);
+  for(const x of [-54.7,-52,-49])add(new THREE.BoxGeometry(.08,.9,.08),mat(0x536e75),x,J.top+.45,z);
+ }
  const sewage=buildSewagePlant(add,mat);
 
  const plane=buildPlane();plane.visible=false;group.add(plane);

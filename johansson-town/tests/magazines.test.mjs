@@ -38,3 +38,36 @@ test('every chapter of the serial comes round, and each issue has pages to flip'
  }
  assert.ok(pagesFor(title('hayabusa'),issueFor(title('hayabusa'),day(9,13))).some(p=>/gag/.test(p.image||'')),'the 4-koma are in the shōnen weekly');
 });
+
+// Record the actual Canvas drawing commands with proportional glyph advances.
+// This checks printed bounds rather than a second copy of the page layout.
+function recordingPen(){
+ const text=[],rects=[],stack=[];
+ const c={font:'10px sans-serif',textAlign:'left',textBaseline:'alphabetic',fillStyle:'#000',
+  save(){stack.push({font:this.font,textAlign:this.textAlign,textBaseline:this.textBaseline,fillStyle:this.fillStyle});},restore(){Object.assign(this,stack.pop());},scale(){},
+  measureText(value){const size=Number(this.font.match(/([\d.]+)px/)[1]);return {width:[...String(value)].reduce((n,ch)=>n+(/\s/.test(ch)?.28:/[ilI.,'!]/.test(ch)?.25:/[MW]/.test(ch)?.85:/[A-Z]/.test(ch)?.64:.54)*size,0)};},
+  fillText(value,x,y){const size=Number(this.font.match(/([\d.]+)px/)[1]),width=this.measureText(value).width,left=x-(this.textAlign==='right'?width:this.textAlign==='center'?width/2:0);text.push({value:String(value),left,right:left+width,top:y-size/2,bottom:y+size/2,size,colour:this.fillStyle});},
+  fillRect(x,y,w,h){rects.push({x,y,w,h,colour:this.fillStyle});},
+ };
+ return {c,text,rects};
+}
+
+test('every current contents label is readable inside its column, clear of markers and page numbers',()=>{
+ for(const title of MAGAZINE_TITLES.filter(t=>!t.paper))for(const date of [day(9,1),day(9,8),day(9,15),day(9,22)]){
+  const issue=issueFor(title,date),{c,text,rects}=recordingPen();pagesFor(title,issue)[1].draw(c,320,440);
+  const marks=rects.filter(r=>r.w===6&&r.h===30),labels=text.filter(t=>t.colour==='#2b2b2b');
+  assert.equal(marks.length,7);
+  const expected=[issue.head,issue.sub,...title.subs.filter(s=>s!==issue.sub).slice(0,3),"Reader's page","Next issue preview"];
+  marks.forEach((mark,i)=>{
+   const row=labels.filter(t=>t.top>=mark.y-3&&t.bottom<=mark.y+mark.h+3);
+   assert.ok(row.length>=1&&row.length<=2,title.id+' row '+i+' stays on one or two lines');
+   assert.equal(row.map(t=>t.value).join('').replace(/\s/g,''),expected[i].replace(/\s/g,''),'The complete authored headline survives wrapping');
+   for(const t of row){assert.ok(t.left>=mark.x+mark.w+16&&t.right<=264.001,title.id+' label stays inside the printed column: '+JSON.stringify(t));assert.ok(t.size>=12,'Body text remains readable');}
+   const number=text.find(t=>t.value===String(4+i*6)&&t.colour===mark.colour);
+   assert.ok(number.left>=276&&number.right<=300.001,'Page numbers retain a separate right column');
+  });
+  const header=text.filter(t=>t.colour==='#fff');assert.equal(header.length,2);
+  assert.ok(header[0].left>=14&&header[0].right<=306.001&&header[1].left>=14&&header[1].right<=306.001,'Header text remains on the page');
+  assert.ok(header[0].bottom<header[1].top,'Section and magazine title occupy separate printed lines');
+ }
+});
