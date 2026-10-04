@@ -129,13 +129,16 @@ function buildCeilingAndFloor(page){
   span(S.backWestX,S.backEastX,S.ceiling,S.ceiling+.04,S.backZ,S.partitionZ,0xe6e2d8);
   out.push(mesh(material()));}
  // Terrazzo on the shop floor, grey concrete in the back room.
- const floorMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.6});
+ // A shade under white, so the tubes' sheen (sakura-surfaces.js) shows on it.
+ const floorMat=new THREE.MeshStandardMaterial({color:0xd9d6cf,roughness:.6});
  if(page){
-  const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d');
-  ctx.fillStyle='#e9e1cf';ctx.fillRect(0,0,256,256);
+  // One 60 cm tile: a pale, slightly cool terrazzo with a fine joint round it, as a
+  // konbini floor is laid. Brighter than it was, so the tubes' sheen reads on it.
+  const c=document.createElement('canvas');c.width=c.height=512;const ctx=c.getContext('2d');
+  ctx.fillStyle='#efebe2';ctx.fillRect(0,0,512,512);
   let seed=3;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
-  for(let i=0;i<900;i++){ctx.fillStyle=['#c9bda6','#b8ab92','#f6f1e6','#a99a80','#d7c7aa'][i%5];const s=1+rnd()*3;ctx.fillRect(rnd()*256,rnd()*256,s,s);}
-  ctx.strokeStyle='#cfc3aa';ctx.lineWidth=3;ctx.strokeRect(0,0,256,256);
+  for(let i=0;i<2600;i++){ctx.fillStyle=['#cfc6b4','#bdb3a0','#faf8f2','#aea493','#d9d0bf','#c3cbc9'][i%6];const s=1+rnd()*4;ctx.fillRect(rnd()*512,rnd()*512,s,s);}
+  ctx.strokeStyle='#d2c9b6';ctx.lineWidth=4;ctx.strokeRect(0,0,512,512);
   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set((S.eastX-S.westX)/.6,(S.floorFront-S.partitionZ)/.6);t.anisotropy=8;
   floorMat.map=t;
  }else floorMat.color.setHex(0xe9e1cf);

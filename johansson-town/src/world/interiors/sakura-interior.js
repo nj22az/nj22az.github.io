@@ -14,6 +14,7 @@ import {buildSakuraLife} from './sakura-life.js';
 import {buildMagazineRack} from './sakura-magazine-rack.js';
 import {buildShelfEdges} from './sakura-shelf-edge.js';
 import {buildSakuraCorners} from './sakura-corners.js';
+import {buildSakuraSurfaces} from './sakura-surfaces.js';
 import {shelfArtMaterial,flavouredArt,flavourForColumn,setFlavour,flavourTint} from './shelf-flavours.js';
 let model=null;
 /**
@@ -110,6 +111,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
  }
  buildShelfEdges(room);
  buildSakuraCorners(room,{anchor,action});
+ buildSakuraSurfaces(room);
  // Fittings the model came with that nothing stood on (SAKURA_DRESSING). Instanced the
  // same way as the goods, but never restocked: none of it is for sale.
  for(const piece of SAKURA_DRESSING){
