@@ -1,7 +1,6 @@
 import {ISLAND} from './island-plan.js';
 import {GARDEN} from './garden-layout.js';
 import {airportWorld} from './airport-ground.js';
-import {DINING_COLLIDERS} from './dining-layout.js';
 import {COASTLINE} from './peninsula.js';
 import {PARK} from './park-layout.js';
 import {activeRoutes,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
@@ -52,7 +51,6 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
    ctx.fillStyle='#a8997a';plan.buildings.forEach(rect);
    if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 10px sans-serif';for(const [text,x,z] of plan.labels)ctx.fillText(text,px(x),pz(z));}
    ctx.fillStyle='#6d6a60';ctx.fillRect(px(TUNNEL.x-TUNNEL.width/2),pz(TUNNEL.z+TUNNEL.depth),Math.max(1,TUNNEL.width*scale),Math.max(2,TUNNEL.depth*scale));ctx.strokeStyle='#766c50';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(TUNNEL.x),pz(MAIN_ROAD.maxZ));ctx.lineTo(px(TUNNEL.x),pz(FOREST_EDGE.roadEndZ));ctx.stroke();if(w>=300){ctx.fillStyle='#304d40';ctx.font='bold 10px sans-serif';ctx.fillText('TUNNEL',px(TUNNEL.x-TUNNEL.width/2+.5),pz(TUNNEL.z+TUNNEL.depth*.6));}}
-  ctx.fillStyle='#a8997a';for(const house of [...([]),...DINING_COLLIDERS.filter(c=>/^dining-street:[A-H]$/.test(c.id))])ctx.fillRect(px(house.x-house.w/2),pz(house.z+house.d/2),house.w*scale,house.d*scale);
   for(const [index,site] of sites.entries()){ctx.fillStyle=(site.homeIds||[site.id]).some(id=>visited.includes(id))?'#a65739':'#4d6156';const x=site.x??site.side*11.8;ctx.fillRect(px(x)-2.3,pz(site.z)-3,4.6,6);
     if(legend){ctx.fillStyle='#fff5d8';ctx.beginPath();ctx.arc(px(x),pz(site.z),9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#433e32';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(String(index+1),px(x),pz(site.z)+4);ctx.textAlign='start';continue;}
     if(site.id==='izakaya'){ctx.fillStyle='#a94435';ctx.beginPath();ctx.arc(px(x),pz(site.z),4,0,Math.PI*2);ctx.fill();if(w>=300){ctx.font='bold 12px sans-serif';ctx.fillText('MINATO IZAKAYA',px(x)+7,pz(site.z)+4);}}

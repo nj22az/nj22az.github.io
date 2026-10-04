@@ -1,7 +1,7 @@
 import {householdFor} from '../people/households.js';
 // The supplied frontage faces Main Street; all thresholds share the flat pavement.
 export const RESIDENTIAL=Object.freeze({x:-19,z:5.574,yaw:0,minX:-29,maxX:-7,minZ:-19.352,maxZ:30.5,laneZ:31});
-export const RESIDENTIAL_BUILDINGS=Object.freeze([{id:'main-street-row',x:-21.1,z:5.574,w:15.8,d:49.852,height:18.42}]);
+const RESIDENTIAL_BUILDINGS=Object.freeze([{id:'main-street-row',x:-21.1,z:5.574,w:15.8,d:49.852,height:18.42}]);
 const entry=(sourceZ,sourceX)=>{
  const z=6.1592-sourceZ*.022,x=-14.16-sourceX*.022;
  return Object.freeze({buildingId:'main-street-row',door:Object.freeze([x+.65,z]),facade:Object.freeze([x,z]),plate:Object.freeze([x+.04,z+.38]),angle:Math.PI/2});
@@ -14,6 +14,3 @@ export function residentialHome(name){
  if(!entrance)return {};
  return {home:[...entrance.door],house:{...RESIDENTIAL_BUILDINGS[0],angle:entrance.angle},homeEntry:household.entry,homeAddress:household.address,household:household.id};
 }
-export function inResidential(x,z){return x>=RESIDENTIAL.minX&&x<=RESIDENTIAL.maxX&&z>=RESIDENTIAL.minZ&&z<=RESIDENTIAL.maxZ;}
-export function residentialContains(x,z,r=0){return x>=-13.35+r&&x<=-7&&z>=-20+r&&z<=31-r;}
-export function residentialHeight(x,z){return inResidential(x,z)?.02:null;}

@@ -1,6 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
-import {RESIDENTIAL_ENTRIES} from './residential-layout.js';
 
 /** Small architectural fittings, batched by material instead of one draw per fitting. */
 function detailKit(parent,name,{shadows=false}={}){
@@ -21,23 +20,6 @@ function detailKit(parent,name,{shadows=false}={}){
   return group;
  };
  return {add,finish};
-}
-
-/** Measured entrance positions, leaving the authored door panels and approaches clear. */
-export function buildResidentialDetails(parent,options={}){
- const {add,finish}=detailKit(parent,'Main Street entrance details',options);
- for(const entry of Object.values(RESIDENTIAL_ENTRIES)){
-  const [x,z]=entry.facade;
-  // A shallow reveal and sill bring the existing panel into a constructed opening.
-  for(const side of [-1,1])add([.12,2.32,.065],[x+.06,1.18,z+side*.55],0x65675f);
-  add([.14,.075,1.17],[x+.07,2.37,z],0x65675f);
-  add([.30,.055,1.17],[x+.15,.048,z],0x8b887a);
-  // Mailbox and service conduit sit beside the opening, rather than across it.
-  add([.16,.32,.27],[x+.08,1.35,z+.81],0x65675f);
-  add([.18,.035,.23],[x+.09,1.4,z+.81],0x333e3c);
-  add([.07,2.85,.07],[x+.035,1.45,z-.83],0x65675f);
- }
- return finish();
 }
 
 export function buildSakuraDetails(parent,{width,depth,doorX,shadows=true}){

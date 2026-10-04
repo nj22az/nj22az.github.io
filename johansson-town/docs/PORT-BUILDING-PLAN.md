@@ -21,7 +21,7 @@ phone (was about 143). Tests: `tests/port-building.test.mjs`.
 - [x] Part A: airport radio repair moved inside the workshop; one family per surname (Higa, Kinjō, Tōma);
   sata andagi moved to Nakamura (the Arakaki shop is closed, the family lives there); Rainflower Lane's
   travel agent and grocer are lane houses now; the airport keeps three shops (coffee, noodles, crafts)
-- [ ] Part B: delete the legacy town modes (tests first, FULL_TOWN, mode branches, leaf modules, shared files, town-mode.js)
+- [x] Part B: legacy town modes deleted. The town is always the peninsula: `town-mode.js`, `full-town-state.js`, FULL_TOWN, every mode branch, the Main Street frontage, dining lane, Willow Alley homes, tea house, alley shops, Inakaya and Thuan's supplied apartment are gone with their models, pack tools and tests. Supplied rooms are office-only; shared layout files keep only what the peninsula reads.
 
 **Decisions (agreed):** one Port Building replaces the Harbour Office and the ferry terminal on the same site;
 you can walk into its waiting hall; no new characters (the Harbour master runs it).

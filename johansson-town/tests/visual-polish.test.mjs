@@ -6,7 +6,7 @@ import {normalizeRecipe,encodeRecipe,decodeRecipe,PARTS} from '../src/avatars/re
 import {recipeFor} from '../src/avatars/cast.js';
 import {buildAvatar,measure} from '../src/avatars/build.js';
 import {applyCelShading} from '../src/render/cel.js';
-import {buildResidentialDetails,buildSakuraDetails} from '../src/world/exterior-details.js';
+import {buildSakuraDetails} from '../src/world/exterior-details.js';
 import {createKit} from '../src/world/okinawa/kit.js';
 import {createMaterials} from '../src/render/materials.js';
 
@@ -41,9 +41,9 @@ test('all face forms have distinct geometry and stay in proportion at slider lim
 
 
 test('architectural fittings stay batched and leave the Sakura entrance clear',()=>{
- const root=new THREE.Group(),residential=buildResidentialDetails(root),shop=buildSakuraDetails(root,{width:14,depth:11,doorX:0});
- assert.equal(residential.children.length,3);assert.equal(shop.children.length,2);
- for(const group of [residential,shop])for(const mesh of group.children){
+ const root=new THREE.Group(),shop=buildSakuraDetails(root,{width:14,depth:11,doorX:0});
+ assert.equal(shop.children.length,2);
+ for(const group of [shop])for(const mesh of group.children){
   assert.equal(mesh.material.userData.keepPhysical,true);assert.ok([...mesh.geometry.attributes.position.array].every(Number.isFinite));
  }
  const ray=new THREE.Raycaster(new THREE.Vector3(0,1,1),new THREE.Vector3(0,0,-1),0,1.5);
