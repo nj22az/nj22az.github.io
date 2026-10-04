@@ -304,8 +304,12 @@ function buildDoors(){
  const P=SAKURA_SHELL.partitionZ;
  for(const x of [3.25,4.39])span(x-.05,x+.05,0,2.22,P-.06,P+.06,C.woodDark);span(3.2,4.44,2.18,2.26,P-.06,P+.06,C.woodDark);
  span(4.4,4.44,0,2.12,P+.06,P+1.0,0xe9e1cf);
- // The office door, open, and the restroom door, open into the restroom.
- span(5.14,5.18,0,2.15,-1.13,-.25,0xd8cdb4);
+ // The office doorway: jambs, head and a casing on the shop side. Its door swings
+ // (sakura-life.js buildOfficeDoor). The restroom door stands open into the restroom.
+ for(const x of [5.12,6.30])span(x-.04,x+.04,0,2.2,-1.25,-1.09,C.woodDark);
+ span(5.08,6.34,2.16,2.24,-1.25,-1.09,C.woodDark);
+ for(const [x0,x1] of [[5.0,5.08],[6.34,6.42]])span(x0,x1,0,2.32,-1.13,-1.1,C.woodDark);
+ span(5.0,6.42,2.24,2.32,-1.13,-1.1,C.woodDark);
  span(-4.9,-4.08,0,2.15,-2.82,-2.78,0xd8cdb4);
  return mesh(material());
 }

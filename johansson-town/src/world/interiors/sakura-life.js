@@ -171,12 +171,45 @@ function buildShopFloor(parent,anchor,action){
   umbrella(0xd7263d,0,.05);umbrella(0x27304d,1,-.04);umbrella(0xffffff,3,.06,true);
  }
  // On the counter, Thuan's side: a beckoning cat and a charity box.
- const cat=addOwnedCharacter({parent:group,kind:'Maneki_neko_Colorful',height:.23,position:[4.82,1.0,1.45],yaw:-Math.PI/2});
- anchor([4.4,1.2,1.45],'Look at Thuan’s lucky cat',()=>action('inspect','Maneki-neko · Lucky cat','Thuan keeps her colourful lucky cat beside the till. It welcomes every customer, from the first newspaper buyer to the last harbour worker of the evening.'));
+ // Between the register (z .55..93) and the hot case (z 1.44..1.96), touching neither.
+ const cat=addOwnedCharacter({parent:group,kind:'Maneki_neko_Colorful',height:.23,position:[4.84,1.0,1.18],yaw:-Math.PI/2});
+ anchor([4.4,1.2,1.18],'Look at Thuan’s lucky cat',()=>action('inspect','Maneki-neko · Lucky cat','Thuan keeps her colourful lucky cat beside the till. It welcomes every customer, from the first newspaper buyer to the last harbour worker of the evening.'));
  box(.1,.14,.08,4.9,1.07,.2,0xffffff,'Charity box');
  const charity=canvasTex(256,256,(ctx,w,h)=>{ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#7ccc4a';ctx.fillRect(0,0,w,70);text(ctx,"Donation box",w/2,36,44,'#ffffff');text(ctx,"Thank you",w/2,130,30,'#3b3f55');ctx.fillStyle='#3b3f55';ctx.fillRect(80,190,96,10);});
  print(charity,.075,.075,4.849,1.08,.2,-Math.PI/2,'Charity box label');
  return {tick(){},dispose:()=>cat.dispose()};
+}
+
+
+// ================================================================ the office door
+/**
+ * A panelled door in the office doorway (x 5.16..6.26, z -1.17). It is hinged on the
+ * west jamb and swings into the office, flat against nothing, when Thuan or anyone
+ * else comes within reach, and closes behind them. It has no collider: it is always
+ * open by the time you get to it, so nobody is ever shut in or out.
+ */
+export const OFFICE_DOOR=Object.freeze({hingeX:5.16,z:-1.17,width:1.1,height:2.14,reach:1.35,openAngle:1.45});
+function buildOfficeDoor(parent){
+ const D=OFFICE_DOOR,pivot=new THREE.Group();pivot.name='Sakura office door';pivot.position.set(D.hingeX,0,D.z);parent.add(pivot);
+ const leafMat=std(0xd8c7a2,{roughness:.62}),panelMat=std(0xcbb88f,{roughness:.66}),metal=std(0xb8b2a4,{metalness:.6,roughness:.3});
+ const part=(w,h,d,x,y,z,m,label)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.name=label;pivot.add(o);return o;};
+ const W=D.width,H=D.height;
+ part(W,H,.04,W/2,H/2,0,leafMat,'Sakura office door leaf');
+ // Two raised panels and a kick plate on each face, a lever handle on both sides.
+ for(const s of [-1,1]){
+  for(const [y,h] of [[1.52,.9],[.62,.72]])part(W-.26,h,.012,W/2,y,s*.024,panelMat,'Sakura office door panel');
+  part(W-.08,.16,.006,W/2,.1,s*.023,metal,'Sakura office door kick plate');
+  part(.04,.04,.05,W-.1,1.0,s*.04,metal,'Sakura office door handle');part(.14,.025,.025,W-.16,1.0,s*.065,metal,'Sakura office door handle');
+ }
+ let angle=0;
+ return {pivot,get angle(){return angle;},
+  /** points: [x,z] pairs in the shop's frame; dt in seconds. */
+  update(dt,points=[]){
+   const cx=D.hingeX+W/2,near=points.some(p=>p&&Math.hypot(p[0]-cx,p[1]-D.z)<D.reach);
+   const target=near?D.openAngle:0,step=Math.min(1,dt*(near?6:3.5));
+   angle+=(target-angle)*step;if(Math.abs(target-angle)<.002)angle=target;
+   pivot.rotation.y=angle;
+  }};
 }
 
 // ================================================================== the office
@@ -266,14 +299,16 @@ function buildStorage(parent){
 }
 
 export function buildSakuraLife(room,{anchor,action}){
- addSakuraFlyer(room,{position:[4.88,1.015,2.10],width:.25,rotation:[-Math.PI/2,0,.16],stack:true});
- anchor([4.5,1.2,2.10],'Pick up Thuan’s shop flyer',()=>action('sakura-flyer','Sakura counter'));
+ // In the gap between the bun steamer and the oden pot, long side across the counter.
+ addSakuraFlyer(room,{position:[4.76,1.015,2.875],width:.25,rotation:[-Math.PI/2,0,-Math.PI/2+.06],stack:true});
+ anchor([4.4,1.2,2.875],'Pick up Thuan’s shop flyer',()=>action('sakura-flyer','Sakura counter'));
  const mascot=buildMascot(room,anchor,action);
  const floor=buildShopFloor(room,anchor,action);
  const office=buildOfficeFun(room);
  buildStorage(room);
  const backroom=buildSakuraBackroom(room,{anchor,action});
  const restroom=buildSakuraRestroom(room,{anchor,action});
+ const officeDoor=buildOfficeDoor(room);
  let last=0;
- return {tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot,dispose:()=>floor.dispose()};
+ return {officeDoor,tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot,dispose:()=>floor.dispose()};
 }

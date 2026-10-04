@@ -153,6 +153,8 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
    // roof and the road. Outside, the shop shows through the window by its own glow.
    {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0){lightsInside=inside;lightCheck=.5;group.traverse(o=>{if(o.isLight)o.visible=inside;});}}
-   display.tick?.(performance.now()/1000);if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);},
+   display.tick?.(performance.now()/1000);if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
+   // The office door opens for whoever is in the shop and near it: the player, Thuan, anyone borrowed in.
+   if(display.officeDoor){const points=[];if(isInside()){const p=getPlayerPosition();points.push([p.x,p.z]);}for(const other of world.people)if(other.g.parent===group)points.push([other.g.position.x,other.g.position.z]);display.officeDoor.update(dt,points);}},
  };
 }
