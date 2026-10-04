@@ -1,12 +1,8 @@
 import {buildIslandHomes} from './island-homes.js';
 import {buildLaneSurfaces} from './lane-surfaces.js?snappy=1';
-import {buildHomes} from './homes.js';
 import {buildYardHomes} from './yard-homes.js';
 import {buildKoban} from './koban.js';
-import {buildRamenRestaurant} from './supplied-rooms.js?snappy=1';
-import {buildTeaHouse} from './tea-house.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
-import {ROUTES} from './layout.js?snappy=1';
 import {createMaterials} from '../render/materials.js?snappy=1';
 
 // Modular timber, tiled roofs and open thresholds. Ground and collision share ROUTES.
@@ -20,40 +16,6 @@ export function buildDistricts(world,options){
    const back=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({color:0xb3ac94,roughness:.9}));back.position.set(pos[0]-Math.sin(angle)*.012,pos[1],pos[2]-Math.cos(angle)*.012);back.rotation.y=angle+Math.PI;group.add(back);
    return m;}
   buildLaneSurfaces(group,library);
-  // Open-air shopping street. The former rotated transparent cylinder canopy
-  // intersected the walking corridor and looked like vertical sheets of fog.
-  function building({id,x,z,w=8,d=7,h=6,colour=0xbeb394,roof=0,angle=0,jp,title,frontZ=z+d/2}){
-    box([w,h,.25],[x,h/2,z-d/2],'concrete',colour);for(const side of [-1,1])box([.25,h,d],[x+side*w/2,h/2,z],'concrete',colour);
-    box([w,2.65,.3],[x,h-1.32,frontZ],'concrete',colour);for(const side of [-1,1])box([w/2-1.2,2.65,.3],[x+side*(w/4+.6),1.32,frontZ],'timber',0x8f866c);
-    box([w,.18,d],[x,2.8,z],'timber',0x6d6453);
-    if(roof===2){box([w+.65,.22,d+.65],[x,h+.15,z],'concrete',0x8e9487);box([1.7,1.5,1.8],[x+1.6,h+1,z],'concrete',0xa9a291);}
-    else {const shape=new THREE.Shape();shape.moveTo(-w/2-.55,0);shape.lineTo(0,roof===1?.55:1.4);shape.lineTo(w/2+.55,0);shape.lineTo(w/2+.55,-.18);shape.lineTo(0,(roof===1?.55:1.4)-.18);shape.lineTo(-w/2-.55,-.18);shape.closePath();const geo=new THREE.ExtrudeGeometry(shape,{depth:d+1,bevelEnabled:false});const mesh=new THREE.Mesh(geo,library.worldMaterial('roof',roof===1?0x8c7c69:0x656f6a));mesh.position.set(x,h,z-d/2-.5);mesh.castShadow=options.shadows;group.add(mesh);}
-    for(const side of [-1,1]){
-      const sx=x+side*w*.29;box([1.7,1.45,.1],[sx,h-1.3,frontZ+.17],'timber',0x45594f);box([.06,1.52,.13],[sx,h-1.3,frontZ+.22],'concrete',0xb1b4a7);
-      const m=new THREE.Mesh(new THREE.PlaneGeometry(1.55,1.3),new THREE.MeshStandardMaterial({color:0x31443f,emissive:0xe4b573,emissiveIntensity:0,roughness:.4}));m.position.set(sx,h-1.3,frontZ+.24);windows.push(m);group.add(m);
-    }
-    for(const side of [-1,1])box([.06,2.6,.12],[x+side*1.05,1.3,frontZ+.2],'concrete',0xb5b6aa);
-    const door=new THREE.Mesh(new THREE.BoxGeometry(2.1,2.6,.13),library.worldMaterial('bamboo',0x938c72,1.5));door.position.set(x,4,frontZ+.15);group.add(door);shutters.push({mesh:door,id});
-    sign(jp,title.toUpperCase(),[x,3.13,frontZ+.22],w*.83,.65);
-    const plate=sign("Open for business",'09:00 – 21:00',[x+.62,1.6,frontZ+.25],.7,.36);plate.userData.site=id;
-    box([1.1,.65,.65],[x-w*.37,3.68,frontZ+.42],'concrete',0xb8b4a1);for(let n=0;n<4;n++)box([.85,.04,.04],[x-w*.37,3.49+n*.11,frontZ+.77],'roof',0x605f53);
-    box([.35,.55,.22],[x+w*.43,1.8,frontZ+.22],'concrete',0x7e8176);
-    world.plantSites.push({x:x-w*.42,z:frontZ+.65,height:1.1});
-    verb([x-w*.42,1,frontZ+1],'Inspect potted camellia','inspect','Camellia','The owner turns the pot a little every morning. A saucer catches the excess water.');
-    verb([x+w*.42,1.4,frontZ+.8],'Read meter','read','Electricity meter','A mechanical disc turns behind the glass. The last reading was entered in pencil.');
-    colliders.push({x,z:z-d/2,w,d:.35,height:h},{x:x-w/2,z,w:.35,d,height:h},{x:x+w/2,z,w:.35,d,height:h});
-    const s={id,x,z,title,jp,sub:"JOHANSSONTown",color:colour,accent:'#4c655a',line:title+' · 14 September 1997',door:[x,0,frontZ+1],opens:'09:00'};
-    if(id==='ramen'){options.sites.push(s);const a=new THREE.Object3D();a.position.set(x,1.3,frontZ+.65);group.add(a);options.register(a,'Enter '+title,()=>options.enter(s));}else{verb([x,1,frontZ+.8],'Read '+title+' notice','read',title,'The curtains are drawn. A paper sign gives the evening opening hours.');}
-    return s;
-  }
-  // The peninsula keeps the ground and the seafront and nothing that is a shop. The
-  // buildings are switched off here rather than deleted, so they come back one at a
-  // time once the core is right.
-  const shops=!true;
-  if(shops)buildTeaHouse(world,options);
-  if(shops&&!buildRamenRestaurant(world,options)){
-    building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:"Ramen Sato",title:'Sato Ramen',roof:1,colour:0xb6a98a});
-  }
   // The western lane is the seafront service edge behind the shopping street. The island
   // has its own seawall (okinawa/quarters.js), and this one ran down the middle of its walk.
   

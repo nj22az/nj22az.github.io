@@ -20,9 +20,6 @@ export const WEST_SHOPS=Object.freeze({
 /**
  * Where a west-pavement shop's door lands, for anything that needs to know before the
  * building is built -- its staff's working day, the escort that walks you to it.
- *
- * Only the peninsula builds these, so elsewhere this says nothing and the alley kit's
- * own door stands.
  */
 export function westShopDoor(id){
  const plot=WEST_SHOPS[businessId(id)];

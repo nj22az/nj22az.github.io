@@ -1,4 +1,3 @@
-import {BUS_STATION} from './bus-station.js';
 import {FERRY_TERMINAL} from './ferry.js';
 
 /**

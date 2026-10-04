@@ -6,7 +6,7 @@ import {installDOM} from './fixtures.mjs';
 import {RESIDENTS} from '../src/people/residents.js';
 import {HOUSEHOLDS} from '../src/people/households.js';
 import {createHomeResidents} from '../src/people/home-residents.js';
-import {suppliedRoomBoundsBlocked,buildSuppliedRoom,preloadSuppliedRooms} from '../src/world/supplied-rooms.js';
+import {suppliedRoomBoundsBlocked,buildSuppliedRoom} from '../src/world/supplied-rooms.js';
 import {circleHitsRect} from '../physics.js';
 import {readSave,SAVE_KEY} from '../src/save.js';
 const native=globalThis.fetch;

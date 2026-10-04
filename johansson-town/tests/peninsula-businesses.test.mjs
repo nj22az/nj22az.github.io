@@ -15,7 +15,7 @@ import {createNavigation} from '../src/people/navmesh.js';
 import {buildCompactShop} from '../src/world/interiors/compact-shops.js';
 import {buildBusinessContent,BUSINESS_CONTENT_CATALOGUE} from '../src/world/interiors/business-content.js';
 import {buildWarehouseInterior} from '../src/world/interiors/warehouse.js';
-import {preloadSuppliedRooms,buildSuppliedRoom,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
+import {buildSuppliedRoom,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js';
 import {TOWN_DESTINATIONS} from '../src/world/town-grid.js';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
 import {ITEMS} from '../content-data.js';
@@ -97,7 +97,6 @@ test('restored supplied office and warehouse use their existing staff and workin
  try{
   const c=setup();globalThis.createImageBitmap=async()=>({width:256,height:256,close(){}});
   const native=fetch;globalThis.fetch=async url=>String(url).startsWith('blob:')?native(url):new Response(await readFile(new URL('../assets/'+new URL(url).pathname.split('/assets/')[1],import.meta.url)));
-  try{assert.deepEqual(await preloadSuppliedRooms(['office']),[false],'The office is built in code');}finally{globalThis.fetch=native;}
   // The harbour master sleeps in the office at night now, so meet him on duty in the morning.
   // Mrs Sato cooks at Sato Ramen now; the warehouse keeps its interior with nobody assigned.
   for(const [id,name,builder,minute] of [['office','Harbour master',buildSuppliedRoom,480],['warehouse','Nobody',buildWarehouseInterior,1000]]){

@@ -19,7 +19,6 @@ import {buildOnsenInterior,ONSEN_ROOM} from './world/interiors/onsen.js';
 import {realTownMinutes,clockCatchUp,townClockLineAt,readClockSetting,writeClockSetting,startingMinutes,createClock} from './town-clock.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
 import {createRamenKitchen} from './people/ramen-kitchen.js';
-import {RAMEN_LAYOUT} from './world/interiors/ramen-layout.js';
 import {SAKURA_LAYOUT} from './world/interiors/sakura-layout.js';
 import {createSakuraShop} from './people/sakura-shop.js';
 import {createPeninsulaBusinesses,businessId} from './world/businesses.js';
@@ -52,7 +51,7 @@ import {createShopStreetView} from './render/shop-street-view.js?konbini-1';
 import {createNeighbourChats,createChatBubble,clearChatLine} from './people/neighbour-chats.js?konbini-1';
 import {createFacing} from './people/facing.js';
 import {createIndoorResidents} from './people/indoor-residents.js?konbini-1';
-import {buildSuppliedRoom,suppliedRoomBoundsBlocked,preloadSuppliedRooms,suppliedRoomReady,isSuppliedRoom} from './world/supplied-rooms.js?snappy=1';
+import {buildSuppliedRoom,suppliedRoomBoundsBlocked} from './world/supplied-rooms.js?snappy=1';
 import {travelProgress} from './progression/travel.js';
 import {openWant,wantPool,heartLine,withArticle} from './people/friendship.js';
 import {ensureDailyQuests,form3NudgeAllowed,hasDailyQuest,isDailyDone,markDailyDone,FORM3_NUDGE,QUAY_NUDGE,RADIO_821} from './progression/soft-quests.js';
@@ -712,15 +711,14 @@ const onsenGuests=createIndoorResidents({world,parent:scene,collides:environment
 const izakayaGuests=createIzakayaGuests({world,parent:scene,collides:environmentBlocked,getPlayerSeat:()=>parkSeat?.izakaya?.position||null,getRain:()=>weather,getState:()=>activities.state,onBorrow:npcActivities.release,getThuan:()=>{const g=ensureThuan();if(!interactables.includes(g))reg(g,'Catch up with Thuan',()=>activities.action('resident','Thuan'),true);return g;}});
 const ramenLife=new THREE.Group();ramenLife.name='Inakaya continuous dining';ramenLife.userData.sharedAsset=true;ramenLife.visible=false;scene.add(ramenLife);
 // On the peninsula the ramen counter is Sato Ramen, inside Minato's building (world/sato-ramen-layout.js).
-const satoRamen=()=>true;
-const ramenBlocked=(x,z,r=.3)=>satoRamen()?suppliedRoomBoundsBlocked(SATO_ROOM,x,z,r)||SATO_COLLIDERS.some(c=>circleHitsRect(x,z,r,c)):suppliedRoomBoundsBlocked(RAMEN_LAYOUT,x,z,r)||RAMEN_LAYOUT.colliders.some(c=>circleHitsRect(x,z,r,c));
+const ramenBlocked=(x,z,r=.3)=>(suppliedRoomBoundsBlocked(SATO_ROOM,x,z,r)||SATO_COLLIDERS.some(c=>circleHitsRect(x,z,r,c)));
 function hideRamen(){scene.add(ramenLife);ramenLife.visible=false;}
 const ramenGuests=createIndoorResidents({world,parent:ramenLife,collides:ramenBlocked,getRain:()=>weather,place:'ramen',onBorrow:npcActivities.release,getState:()=>activities.state}),homeGuests=createHomeResidents({world,parent:scene,getState:()=>activities.state,collides:environmentBlocked,onBorrow:npcActivities.release,getRain:()=>weather});
 // Mrs Sato's kitchen: she cooks and carries every bowl, the regulars' and yours (people/ramen-kitchen.js).
-const satoKitchen=satoRamen()?createRamenKitchen({getCook:()=>{const g=world.people.find(p=>p.profile.name==='Mrs Sato')?.g;return g&&g.visible&&g.userData.inRamen&&!g.userData.roomTransition?g:null;}}):null;
+const satoKitchen=createRamenKitchen({getCook:()=>{const g=world.people.find(p=>p.profile.name==='Mrs Sato')?.g;return g&&g.visible&&g.userData.inRamen&&!g.userData.roomTransition?g:null;}});
 const ramenMeals=createVenueService({room:ramenLife,place:'ramen',getMinutes:()=>minutes,ledger:residentLedger,getCustomers:()=>world.people.filter(p=>p.g.userData.inRamen),
- ...(satoRamen()?{staffName:'Mrs Sato',venueName:'Sato Ramen',getStaff:()=>world.people.find(p=>p.profile.name==='Mrs Sato')?.g||null,
-  kitchen:satoKitchen,meal:MEALS.lunch,drinkFor:name=>SATO_LUNCH_DRINK[name]||'mugicha',tableFor:p=>SATO_GUEST_SEATS[p.g.userData.ramenSeat]?.table}:{})});
+ ...(({staffName:'Mrs Sato',venueName:'Sato Ramen',getStaff:()=>world.people.find(p=>p.profile.name==='Mrs Sato')?.g||null,
+  kitchen:satoKitchen,meal:MEALS.lunch,drinkFor:name=>SATO_LUNCH_DRINK[name]||'mugicha',tableFor:p=>SATO_GUEST_SEATS[p.g.userData.ramenSeat]?.table}))});
 let storeClerk=world.people.find(p=>p.profile.name==='Thuan').g,storeWelcomed=false;
 const sakuraShop=createSakuraShop({world,scene,state:activities.state,ledger:residentLedger,register:reg,action:activities.action,exit:leaveRoom,getMinutes:()=>minutes,getPlayerSeat:()=>parkSeat?.storeSeatId,getPlayerPosition:()=>player.position,isInside:()=>current?.id==='market',pay:activities.spend,say,onBorrow:npcActivities.release,getRain:()=>weather,save:()=>{if(!catchingUp)activities.save();}});
 storeService=sakuraShop.service;
@@ -746,7 +744,7 @@ function addRoomProps(s){
   if(activeRoomLayout){
     if(s.id==='ramen'){room.add(ramenLife);ramenLife.visible=true;ramenGuests.sync(minutes);ramenPlayerService=createRamenPlayerService({room,getSeat:()=>Number.isInteger(parkSeat?.ramenSeatId)?parkSeat:null,getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,say,
       onMouthful:ramenMouthful,canOrder:item=>item.prop==='beer'&&!wantsAnother(tipsy,DRINKS.bottle.alcohol)?"Mrs Sato shakes her head: You’ve had enough. Have a cold barley tea instead.":true,
-      ...(satoRamen()?{menu:SATO_MENU,isOpen:satoRamenOpen,title:SATO_RAMEN.title,server:'Mrs Sato',kitchen:satoKitchen,closedLine:'Sato Ramen serves lunch, 11:00 to 14:00. Mrs Sato has put the stools up.'}:{})});}
+      ...({menu:SATO_MENU,isOpen:satoRamenOpen,title:SATO_RAMEN.title,server:'Mrs Sato',kitchen:satoKitchen,closedLine:'Sato Ramen serves lunch, 11:00 to 14:00. Mrs Sato has put the stools up.'})});}
     if(homeOwner(s)){activeRoomLayout.tick?.(0,minutes,elapsed);homeGuests.enter(activeRoomLayout.prepareBedding?{...s,homeLayouts:{[homeOwner(s)]:activeRoomLayout}}:activeRoomLayout.homeLayouts?{...s,homeLayouts:{...s.homeLayouts,...activeRoomLayout.homeLayouts}}:s,minutes);}
     return;
   }
@@ -778,9 +776,9 @@ function roomShell(s){
  if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,openMaker:()=>{leaveRoomIfModal();openAvatarMaker();},sleep:sleepUntilMorning});return;}
  if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior(shared);return;}
  if(s.id==='koban'){activeRoomLayout=buildKobanInterior(shared);return;}
- if(s.id==='ramen'&&satoRamen()){activeRoomLayout=buildSatoRamenRoom(shared);return;}
+ if((s.id==='ramen')){activeRoomLayout=buildSatoRamenRoom(shared);return;}
  // A home with a room of its own (the office, the police box) keeps it; everyone else gets a flat.
- activeRoomLayout=homeOwner(s)&&s.id!=='yuri-home'&&!s.ownRoom?buildResidentHome({...shared,profile:world.people.find(p=>p.profile.name===homeOwner(s)).profile,box}):s.id==='warehouse'?buildWarehouseInterior(shared):buildCompactShop(shared)||buildSuppliedRoom(shared);
+ activeRoomLayout=homeOwner(s)&&!s.ownRoom?buildResidentHome({...shared,profile:world.people.find(p=>p.profile.name===homeOwner(s)).profile,box}):s.id==='warehouse'?buildWarehouseInterior(shared):buildCompactShop(shared)||buildSuppliedRoom(shared);
  if(activeRoomLayout||s.id==='izakaya')return;
  if(s.id==='market')return;
  throw Error('No interior defined for '+s.id);
@@ -831,16 +829,10 @@ async function enterRoom(s){
  s=SITES.find(site=>site.id===businessId(s.id))||s;
  if(s.id==='market'){roomLoading=true;resetInput();let ready=false;try{ready=await sakuraShop.ready();}finally{roomLoading=false;}if(!ready){say('Could not open Sakura. Please try the door again.',5);return;}}
  // Buildings remain accessible; business hours govern staff and service only.
- if((s.id==='izakaya'||s.id==='ramen'&&satoRamen())&&!izakayaReady('interior')){
+ if((s.id==='izakaya'||(s.id==='ramen'))&&!izakayaReady('interior')){
   roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
   try{await preloadIzakaya(['interior']);}finally{roomLoading=false;}
   if(!izakayaReady('interior')){say('Could not open '+s.title+'. Please try the door again.',5);return;}
- }
- if(isSuppliedRoom(s.id)&&!(s.id==='ramen'&&satoRamen())&&!suppliedRoomReady(s.id)){
-  roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
-  let ready=false;
-  try{[ready]=await preloadSuppliedRooms([s.id]);}finally{roomLoading=false;}
-  if(!ready){say('Could not open '+s.title+'. Please try the door again.',5);return;}
  }
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
@@ -1079,7 +1071,7 @@ function syncView(){
  room.traverse(o=>{if(o.userData.cutaway)o.layers.set(0);});
  player.visible=false;window.__JOHANSSON_CAMERA_MODE__='first';
 }
- const placeDirections=s=>s.directions||((s.id==='izakaya'?'Take the eastern lane from the main street and follow the dining-lane sign.':s.id==='tea-house'?'Follow the shopping street north, then look for the blue-and-white curtains.':s.id==='bus-station'?'Follow the shopping street to the Harbour Line terminal.':'Follow the main street to '+s.title+'.'));
+ const placeDirections=s=>s.directions||((s.id==='izakaya'?'Take the eastern lane from the main street and follow the dining-lane sign.':'Follow the main street to '+s.title+'.'));
 function markPlace(s){navigationTarget=s;toggleDir(false);drawMap();say(placeDirections(s)+(current?' Use Exit to street to start walking.':''),7);return false;}
 function visitPlace(s){
  if(islandPlay?.active)return false;
@@ -1100,11 +1092,9 @@ function updateDirectory(){
  row('Resident wardrobes','Choose a resident, then change their hair, hat and clothes.',()=>{const grid=$('#directoryGrid');grid.replaceChildren();row('Back to Town book','Return to the town menu',updateDirectory);for(const {name,player:isPlayer} of characters.listCharacters())if(!isPlayer)row(name,'Hair, hats, clothes and appearance',()=>openAvatarMaker(name));},'resident-wardrobes');
  row(progress.unlocked?'Town shortcuts unlocked':'Town shortcuts · '+progress.completed+'/'+progress.total+' favours',progress.unlocked?'Quick travel is ready. Choose a place below.':'Bring Tama home and finish Kenji’s workshop escort.',()=>{toggleDir(false);activities.action('travel-progress');},'travel-progress');
  const destination=(site,title)=>{row(title||site.title,progress.unlocked?site.sub:placeDirections(site),()=>visitPlace(site),site.id);grid.lastChild.dataset.travel=progress.unlocked?'ready':'locked';};
- const teaHouse=SITES.find(s=>s.id==='tea-house');
- if(teaHouse)destination(teaHouse,'Corner Tea House');
  const izakaya=SITES.find(s=>s.id==='izakaya');
  if(izakaya){destination(izakaya,'Minato Izakaya');grid.lastChild.className+=' izakaya-shortcut';}
- section('Street');SITES.filter(s=>!['izakaya','tea-house'].includes(s.id)).forEach(s=>destination(s));
+ section('Street');SITES.filter(s=>s.id!=='izakaya').forEach(s=>destination(s));
  (world.landmarks||[]).forEach(s=>destination(s));
  section('Residents');const wantNames=wantPool();world.people.forEach(p=>{const name=p.g.userData.name,want=openWant(activities.state,minutes,wantNames,name),hearts=heartLine(activities.state.friendship?.[name]?.points||0);row(name,hearts+' · '+(want?'Would like '+withArticle(want.item.toLowerCase()):p.g.userData.activity||'On the street'),()=>{activities.note(p.g.userData.name+' · '+(p.g.userData.activity||'on the street'));toggleDir(false);});});
  section('Reading and records');content.items.forEach(i=>row(i.title,i.place,()=>{const site=SITES.find(s=>s.id===i.siteId);if(site)markPlace(site);else toggleDir(false);}));

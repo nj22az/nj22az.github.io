@@ -7,7 +7,7 @@ import {drawTownMap} from '../src/world/map.js?snappy=1';
 import {routeAt} from '../src/world/layout.js?snappy=1';
 import {circleHitsRect,sweepFraction} from '../physics.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
-import {createBusinesses} from '../src/world/businesses.js';
+import {createPeninsulaBusinesses as createBusinesses} from '../src/world/businesses.js';
 import {HARBOUR_OFFICE} from '../src/world/business-layout.js';
 test('the kit warehouse is a grounded tin shed that fits the quay plot and faces the street',()=>{
  installDOM();

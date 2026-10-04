@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {preloadSuppliedRooms,buildSuppliedRoom,buildRamenRestaurant,SUPPLIED_ROOM_LAYOUTS,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js?snappy=1';
+import {buildSuppliedRoom,SUPPLIED_ROOM_LAYOUTS,suppliedRoomBoundsBlocked} from '../src/world/supplied-rooms.js?snappy=1';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js?snappy=1';
 
 function reachableFloor(layout){
@@ -22,15 +22,6 @@ function reachableFloor(layout){
 }
 
 
-test('missing supplied models preserve the existing procedural buildings and rooms',async()=>{
-  const mod=await import('../src/world/supplied-rooms.js?load-failure=1');
-  const originalFetch=globalThis.fetch,originalWarn=console.warn;globalThis.fetch=async()=>new Response('',{status:404});console.warn=()=>{};
-  try{
-    assert.deepEqual(await mod.preloadSuppliedRooms(),[false,false,false]);
-    assert.equal(mod.buildRamenRestaurant({},{},{x:0,z:0}),false);
-    assert.equal(mod.buildSuppliedRoom({site:{id:'ramen'},room:new THREE.Group()}),null);
-  }finally{globalThis.fetch=originalFetch;console.warn=originalWarn;}
-});
 
 test('the harbour office is an original room built in code, with its furniture on its colliders',()=>{
  installDOM();

@@ -1,6 +1,6 @@
 import {NIGHT_LANE,inDiningLane} from './dining-layout.js';
 import {GROUND} from '../render/ground-palette.js';
-import {RESIDENTIAL,inResidential} from './residential-layout.js';
+import {RESIDENTIAL} from './residential-layout.js';
 import * as THREE from '../../vendor/three.module.js';
 import {activeRoutes,routeAt,groundHeight} from './layout.js?snappy=1';
 import {MAIN_ROAD} from './main-road.js';

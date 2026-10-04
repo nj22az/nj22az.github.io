@@ -1,6 +1,5 @@
 import {TATAMI_HOME_LAYOUT,TATAMI_HOME_OWNER} from '../world/interiors/tatami-home-layout.js';
 import {householdFor,householdNames} from './households.js';
-import {THUAN_APARTMENT_ROUTINES} from '../world/interiors/yuri-apartment-layout.js';
 // Repeatable household routines use the saved town clock, including night workers.
 const minute=m=>((m%1440)+1440)%1440;
 export function sleepHours(profile){
@@ -29,6 +28,13 @@ export const HOME_LAYOUT={bounds:{minX:-3,maxX:3,minZ:-3,maxZ:3},spawn:[1.5,0,2]
  /** A peg by the door for the hat (home-residents.js). */
  hatHook:{position:[2.93,1.6,1.2],yaw:-Math.PI/2}};
 export const SHARED_HOME_LAYOUT={bounds:{minX:-3.5,maxX:3.5,minZ:-3.4,maxZ:3.4},spawn:[0,0,2.6],exit:[0,1.1,3.3],door:[0,0,2.8]};
+/** Where Thuan and Nao sleep, eat and leave from in their shared flat. */
+const THUAN_APARTMENT_ROUTINES={
+ Thuan:{bed:[-4.15,.58,3.95],bedside:[-3.08,0,2.25],table:[-1.6,0,.5],door:[-.45,0,.4],
+  cover:{position:[-4.15,.64,3.35],width:1.08,length:1.3,axis:'z'}},
+ Nao:{bed:[-1.6,.58,3.95],bedside:[-2.65,0,3.3],table:[-3.98,0,.5],door:[-.45,0,.4],
+  cover:{position:[-1.6,.64,3.35],width:1.08,length:1.3,axis:'z'}},
+};
 export function homeLayoutFor(name){
  if(name===TATAMI_HOME_OWNER)return TATAMI_HOME_LAYOUT;
  if(THUAN_APARTMENT_ROUTINES[name])return THUAN_APARTMENT_ROUTINES[name];

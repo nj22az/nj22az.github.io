@@ -2,11 +2,9 @@ import {japaneseSign,signText} from './okinawa/signs.js';
 import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
 import {GROUND} from '../render/ground-palette.js';
-import {ALLEY_SHOPS,buildAlleyShop} from './alley-shops.js';
 import {WEST_SHOPS,buildWestShop} from './west-shops.js';
 import {buildPeninsula} from './peninsula.js';
 import {buildBicycle} from './bicycle.js';
-import {createVendingMachine,vendingReady,hydrateVending} from './vending.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
@@ -21,7 +19,6 @@ import {buildThuanFlat} from './thuan-flat.js';
 import {SAKURA_FRONT} from './interiors/sakura-layout.js';
 
 import {buildFerryTerminal} from './ferry.js';
-import {buildBusStation} from './bus-station.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {lanternGlow, windowGlow} from '../render/dusk.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -178,9 +175,6 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     if(WEST_SHOPS[s.id]){
       const shop=buildWestShop({parent:group,site:s,register,enter,label,colliders,shadows});
       if(shop){harbourShops.push(shop);return;}
-    }
-    if(ALLEY_SHOPS[s.id]){
-      harbourShops.push(buildAlleyShop({parent:group,site:s,register,enter,label,shadows}));return;
     }
     if(s.id==='market'){
       const front=-7.45;

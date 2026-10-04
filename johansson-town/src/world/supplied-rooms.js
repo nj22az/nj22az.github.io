@@ -1,19 +1,12 @@
 import {buildOfficeWorkplace,buildOfficeShell,OFFICE_STAFF} from './interiors/office-workplace.js';
-import {YURI_APARTMENT_LAYOUT} from './interiors/yuri-apartment-layout.js';
-import {DINING,restaurantPoint,restaurantCollider} from './dining-layout.js';
-import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
-import {GLTFLoader} from '../../vendor/GLTFLoader.js';
-import {assetURL} from '../assets.js';
-import {INAKAYA_FIT,RAMEN_LAYOUT,RAMEN_PLAYER_SEATS,ramenPoint,ramenX} from './interiors/ramen-layout.js';
-import {localToWorld} from './landmark-lots.js';
 
-const assets=new Map();
-const pending=new Map();
-const files={ramen:'ramen/inakaya-exterior.glb','ramen-exterior':'ramen/inakaya-exterior.glb','yuri-home':'yuri-home/seinfeld-apartment.glb'};
-
-// Geometry is in metres. Layouts specify each actual doorway and floor at Y=0.
-// Bounds follow each supplied floor; the old 13 m shell remains the load-failure fallback.
+/**
+ * The one room still described by a layout table: the harbour office, built in code
+ * (office-workplace.js). Geometry is in metres; the doorway and floor are at Y=0.
+ * The other supplied rooms (the old ramen shop, Thuan and Nao's flat) belonged to the
+ * retired town layouts.
+ */
 export const SUPPLIED_ROOM_LAYOUTS={
   office:{bounds:{minX:-3.37,maxX:3.37,minZ:-3.37,maxZ:3.37},spawn:[0,0,2.4],exit:[0,1.1,3.34],staff:OFFICE_STAFF,
     colliders:[
@@ -28,8 +21,6 @@ export const SUPPLIED_ROOM_LAYOUTS={
       {x:-2.98,z:.17,w:.7,d:2.28,height:2.05},
       {x:-1.85,z:3.05,w:.61,d:.62,height:1.62},
     ]},
-  ramen:RAMEN_LAYOUT,
-  'yuri-home':YURI_APARTMENT_LAYOUT,
 };
 
 export function suppliedRoomBoundsBlocked(layout,x,z,r=0){
@@ -46,197 +37,13 @@ export function suppliedRoomBoundsBlocked(layout,x,z,r=0){
   return x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r;
 }
 
-const assetKey=id=>id==='ramen'?'ramen-exterior':id;
-export function suppliedRoomReady(id){return assets.has(assetKey(id));}
-// The harbour office is built in code (buildOfficeShell); it has a layout here but no file.
-export function isSuppliedRoom(id){return Object.hasOwn(files,id);}
-export function preloadSuppliedRooms(ids=Object.keys(files)){
-  return Promise.all(ids.map(requestedId=>{
-    const id=assetKey(requestedId);
-    if(assets.has(id))return true;
-    if(pending.has(id))return pending.get(id);
-    const file=files[id];if(!file)return false;
-    const task=(async()=>{
-    const controller=new AbortController();let timer;
-    try{
-      const load=fetch(assetURL('models/'+file),{signal:controller.signal}).then(response=>{
-        if(!response.ok)throw Error('HTTP '+response.status);
-        return response.arrayBuffer();
-      }).then(bytes=>new GLTFLoader().parseAsync(bytes,''));
-      const gltf=await Promise.race([load,new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('load timed out'));},15000);})]);
-      let meshes=0;
-      gltf.scene.traverse(o=>{if(!o.isMesh)return;meshes++;
-        for(const material of Array.isArray(o.material)?o.material:[o.material]){
-          if(id==='ramen-exterior')material.userData.keepPhysical=true;
-          // Vertex-alpha shadow decals must not occlude the floor behind them.
-          if(material.transparent){material.depthWrite=false;material.forceSinglePass=true;}
-          if(material.map){material.map.magFilter=THREE.LinearFilter;material.map.anisotropy=2;}
-        }
-      });
-      if(!meshes)throw Error('empty scene');
-      assets.set(id,gltf.scene);return true;
-    }catch(error){console.warn('Supplied '+id+' unavailable:',error.message);return false;}
-    finally{clearTimeout(timer);}
-    })();
-    pending.set(id,task);
-    task.finally(()=>pending.delete(id));
-    return task;
-  }));
-}
-
-let inakayaInterior=null;
-function interiorSource(source){
-  if(inakayaInterior)return inakayaInterior;
-  const model=source.clone(true);
-  model.traverse(mesh=>{
-    if(!mesh.isMesh)return;
-    // One cached geometry variant; never mutate the street instance or textures.
-    mesh.geometry=mesh.geometry.clone();
-    const positions=mesh.geometry.attributes.position,normals=mesh.geometry.attributes.normal;
-    const normal=new THREE.Vector3();
-    for(let i=0;i<positions.count;i++){
-      const x=positions.getX(i);positions.setX(i,ramenX(x));
-      if(normals){normal.fromBufferAttribute(normals,i);normal.x/=1/.75+(x>.43&&x<.73?2:0);normal.normalize();normals.setXYZ(i,...normal.toArray());}
-    }
-    positions.needsUpdate=true;if(normals)normals.needsUpdate=true;
-    mesh.geometry.computeBoundingBox();mesh.geometry.computeBoundingSphere();
-  });
-  inakayaInterior=model;return model;
-}
-function addAsset(id,parent){
-  const source=assets.get(assetKey(id));if(!source)return false;
-  const model=(id==='ramen'?interiorSource(source):source).clone(true);model.name='Supplied '+id;model.userData.sharedAsset=true;
-  model.userData.suppliedRoom=id;parent.add(model);return model;
-}
-
-// The source contains two real doorways: the restaurant on the right and the
-// timber neighbour on the left. The live shopping district keeps the restaurant
-// frontage only; the legacy town mode retains both supplied doorways.
-function buildInakayaPair(world,options){
-  const shopping=true;
-  const building=new THREE.Group();building.name=shopping?'Sato Ramen restaurant':'Inakaya restaurant and neighbour';
-  building.position.set(DINING.ramenX,0,DINING.ramenZ);building.rotation.y=DINING.ramenYaw;world.group.add(building);
-  const model=shopping?false:addAsset('ramen-exterior',building);
-  const prepare=model=>model.traverse(o=>{if(o.isMesh){o.castShadow=!!options.shadows;o.receiveShadow=true;}});
-  if(model)prepare(model);
-  else{
-    const fallback=new THREE.Group();building.add(fallback);
-    const boxes=shopping?[[.05,-.6,3.7,7.1,6.3]]:[[.05,-.6,3.7,7.1,6.3],[-2.84,2.19,2.35,2.9,4]];
-    for(const [x,z,w,d,h] of boxes){
-      const box=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color:0xb6a98a,roughness:.9}));box.position.set(x,h/2,z);fallback.add(box);
-    }
-    hangRamenNoren(fallback);
-    if(!shopping)registerDetail(world,{id:'ramen-exterior',priority:1,x:DINING.ramenX,z:DINING.ramenZ,radius:48,load:async()=>{
-      const [ready]=await preloadSuppliedRooms(['ramen-exterior']);if(!ready)return false;
-      const detailed=addAsset('ramen-exterior',building);prepare(detailed);fallback.removeFromParent();return true;
-    }});
-  }
-  const sites=[
-    {id:'ramen',title:'Sato Ramen',jp:"Ramen Sato",sub:'COUNTER & KITCHEN',x:3.2,z:DINING.ramenDoor[1],
-      color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00',door:[DINING.ramenDoor[0],0,DINING.ramenDoor[1]]},
-  ];
-  for(const site of sites){
-    site.entryFacing=DINING.ramenYaw;site.exitPosition=[...site.door];site.approachPosition=[site.door[0]-.7,0,site.door[2]];
-    options.sites.push(site);
-    const entrance=new THREE.Object3D();entrance.name=site.title+' entrance';
-    const [ex,ez]=restaurantPoint('ramen',site.id==='ramen'?.65:-2.8,site.id==='ramen'?3.9:4.1);
-    entrance.position.set(ex,1.2,ez);world.group.add(entrance);
-    options.register(entrance,'Enter '+site.title,()=>options.enter(site));
-  }
-  // Facade-aligned solids keep the source's doors and paving behind the
-  // interaction line; both exit points remain outside the walls and props.
-  world.colliders.push(
-    ...[{x:.05,z:-.6,w:3.7,d:7.1,height:6.3},{x:-2.84,z:2.19,w:2.35,d:2.9,height:4},{x:-1.28,z:3.7,w:6.28,d:.3,height:1}].map(c=>restaurantCollider('ramen',c)),
-  );
-  return sites[0];
-}
-
-export function buildRamenRestaurant(world,options,placement){
-  if(!placement)return buildInakayaPair(world,options);
-  if(!assets.has('ramen-exterior'))return false;
-  const place=placement||{x:24,z:10,yaw:0,scale:1};
-  const scale=place.scale??1,sx=scale.x??scale,sy=scale.y??scale,sz=scale.z??scale;
-  const site=place.site||{id:'ramen',title:'Sato Ramen',jp:"Ramen Sato",sub:'COUNTER & KITCHEN',x:place.x,z:place.z,
-    color:0xb6a98a,accent:'#a34e3d',line:'Shoyu ramen · ¥300 · 09:00–21:00',opens:'09:00'};
-  const [dx,dz]=localToWorld(place.x,place.z,place.yaw||0,scale,.65,4.7);
-  site.door=[dx,0,dz];site.x=place.x;site.z=place.z;
-  if(!place.skipSite)options.sites.push(site);
-  const building=new THREE.Group();building.name=place.name||'Sato Ramen restaurant';building.position.set(place.x,0,place.z);building.rotation.y=place.yaw||0;building.scale.set(sx,sy,sz);world.group.add(building);
-  addAsset('ramen-exterior',building);
-  const [ex,ez]=localToWorld(place.x,place.z,place.yaw||0,scale,.65,4.15);
-  const entrance=new THREE.Object3D();entrance.name='Sato Ramen entrance';entrance.position.set(ex,1.2,ez);world.group.add(entrance);
-  options.register(entrance,'Enter Sato Ramen',()=>options.enter(site));
-  if(placement)hangRamenNoren(building);
-  const boxes=[{x:24.05,z:9.4,w:3.7,d:7.1,height:6.3},{x:21.16,z:12.19,w:2.35,d:2.9,height:4}];
-  for(const c of boxes)world.colliders.push(transformCollider(c,place.x,place.z,place.yaw||0,scale));
-  return site;
-}
-
-function transformCollider(c,x,z,yaw,scale){
-  const corners=[[c.x-24-c.w/2,c.z-10-c.d/2],[c.x-24+c.w/2,c.z-10-c.d/2],[c.x-24-c.w/2,c.z-10+c.d/2],[c.x-24+c.w/2,c.z-10+c.d/2]]
-    .map(([lx,lz])=>localToWorld(x,z,yaw,scale,lx,lz));
-  const xs=corners.map(p=>p[0]),zs=corners.map(p=>p[1]);
-  const minX=Math.min(...xs),maxX=Math.max(...xs),minZ=Math.min(...zs),maxZ=Math.max(...zs);
-  return {x:(minX+maxX)/2,z:(minZ+maxZ)/2,w:maxX-minX,d:maxZ-minZ,height:c.height*(scale.y??scale)};
-}
-
-function hangRamenNoren(building){
-  const canvas=document.createElement('canvas');canvas.width=256;canvas.height=320;
-  const ctx=canvas.getContext('2d');
-  ctx.fillStyle='#8b1e1e';ctx.fillRect(0,0,256,320);
-  ctx.fillStyle='#f3e0c4';ctx.fillRect(6,0,116,300);ctx.fillRect(134,0,116,300);
-  ctx.fillStyle='#8b1e1e';ctx.textAlign='center';ctx.font='700 52px sans-serif';
-  ctx.fillText("et al.",64,110);ctx.fillText('ー',64,190);ctx.fillText("Me",192,110);ctx.fillText("Hmm",192,190);
-  const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
-  const noren=new THREE.Mesh(new THREE.PlaneGeometry(1.8,1.5),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,transparent:true}));
-  noren.name='Sato Ramen noren';noren.position.set(.65,1.65,4.42);building.add(noren);
-}
-
 export function buildSuppliedRoom({site,room,reg,collider,action,exit}){
   const layout=SUPPLIED_ROOM_LAYOUTS[site.id];
   if(!layout)return null;
-  const model=site.id==='office'?buildOfficeShell(room):addAsset(site.id,room);if(!model)return null;
-  if(site.id==='ramen'){
-    model.scale.set(...INAKAYA_FIT.scale);model.position.y=-INAKAYA_FIT.floor;
-    // Shared exterior materials and buffers stay untouched, including on exit.
-    room.add(new THREE.HemisphereLight(0xffebd0,0x74604d,1.65));
-    const light=new THREE.PointLight(0xffd4a0,2.2,9,2);light.position.set(.2,1.95,.6);room.add(light);
-  }
+  buildOfficeShell(room);
   for(const c of layout.colliders)collider(c.x,c.z,c.w,c.d,c.height);
-  const anchor=(position,label,kind,title,text)=>{
-    const object=new THREE.Object3D();object.name=label;object.position.set(...position);room.add(object);
-    if(kind==='seat'){const [x,,z]=position;object.userData.seat={position:[x,0,z],stand:[x,0,z+1.05],eyeY:1.2,yaw:0,pitch:0};}
-    reg(object,label,kind==='exit'?exit:()=>action(kind,title,text),true);return object;
-  };
-  anchor(layout.exit,'Exit to street','exit');
-  if(site.id==='office'){
-    buildOfficeWorkplace({room,reg,action,collider});
-  }else if(site.id==='yuri-home'){
-    const wardrobe=new THREE.Object3D();wardrobe.position.set(-2.8,1.1,-2);room.add(wardrobe);reg(wardrobe,'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'),true);
-    room.add(new THREE.HemisphereLight(0xffebd0,0x74604d,1.5));
-    const furnishings=new THREE.Group();furnishings.name='Shared apartment furnishings';room.add(furnishings);
-    for(const [name,x,colour] of [['Thuan',-4.15,0xd49bb3],['Nao',-1.6,0xbd7557]]){
-      const part=(size,pos,color)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color,roughness:.92}));m.position.set(...pos);furnishings.add(m);return m;};
-      part([1.15,.22,1.85],[x,.34,3.27],0xd1b99a).name=name+' bed';
-      part([1.08,.06,1.48],[x,.48,3.42],colour);part([.9,.16,.45],[x,.57,2.6],0xede3cb);
-      part([.32,.03,.24],[x,.5,4.1],name==='Thuan'?0x668074:0x586577).name=name+' bedside book';
-      anchor([x,1,3.27],'Inspect '+name+'’s corner','inspect',name+'’s corner',name==='Thuan'?'Thuan’s pink bedspread, a little book of plants and tomorrow’s Sakura list. Nao has the other bed; they share the kitchen and breakfast table.':'Nao’s terracotta bedspread and a notebook of supper recipes. She comes home after the late shift and sleeps until noon.');
-    }
-    anchor([-4.96,1,-.55],'Inspect the writing desk','inspect','Writing desk','A computer, papers and a quiet corner for the household accounts.');
-    anchor([2.2,1.1,.92],'Check the refrigerator','inspect','Thuan & Nao’s kitchen','Cold drinks and tomorrow’s breakfast are ready.');
-    anchor([-2.75,.6,.84],'Inspect the breakfast table','inspect','Breakfast table','A small round table beside the living area.');
-    anchor([-4.96,.7,-.55],'Read the household notebook','read','Thuan & Nao’s notebook','Thuan: Water the plants before the morning shift.\nNao: Breakfast is in the refrigerator. Leave the porch light on after supper.');
-    const chair=anchor([-2.75,.56,1.5],'Sit at the breakfast table','seat','Breakfast table','A quiet place to sit between the morning and evening shifts.');
-    chair.userData.seat={position:[-2.75,0,1.5],stand:[-2.75,0,2.1],eyeY:1.2,yaw:0,pitch:0};chair.userData.npcInteraction=false;
-  }else{
-    anchor(ramenPoint(.31,1.18,1.7),'Order ramen · ¥300','ramen','Sato Ramen');
-    RAMEN_PLAYER_SEATS.forEach((seat,i)=>{
-      const object=anchor([seat.position[0],seat.height,seat.position[2]],i?'Take a counter seat':'Sit at the ramen counter','seat','Counter stool','A patterned stool beside the wooden counter.');
-      object.userData.seat={ramenSeatId:i,position:[...seat.position],stand:[1.14,0,seat.position[2]],eyeY:seat.height+.85,yaw:seat.yaw,pitch:0};
-    });
-    anchor(ramenPoint(-.6,1.18,.5),'Inspect broth kettle','inspect','Broth kettle','The simmering broth has been tended since morning.');
-    anchor(ramenPoint(.27,1.18,.2),'Read the counter newspaper','read','Counter newspaper','The paper is folded open at the harbour notices. A delivery for the morning ferry is circled in pencil.');
-    anchor(ramenPoint(1,1.65,-.25),'Read the menu','read','Sato Ramen menu','Shoyu ramen · ¥300. Onigiri · ¥120. Steamed pork bun · ¥150. Green tea · ¥120. Take a counter seat to order and eat.');
-  }
+  const exitPoint=new THREE.Object3D();exitPoint.name='Exit to street';exitPoint.position.set(...layout.exit);room.add(exitPoint);
+  reg(exitPoint,'Exit to street',exit,true);
+  buildOfficeWorkplace({room,reg,action,collider});
   return layout;
 }

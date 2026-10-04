@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createBusinesses,BUSINESS_ALIASES} from '../src/world/businesses.js';
-import {ALLEY_UNITS,alleyBusinessLayout,HARBOUR_OFFICE} from '../src/world/business-layout.js';
 import {buildCompactShop} from '../src/world/interiors/compact-shops.js';
 import {buildBusinessContent,BUSINESS_CONTENT} from '../src/world/interiors/business-content.js';
 import {createTown} from '../src/world/town.js';

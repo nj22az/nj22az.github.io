@@ -6,22 +6,19 @@ import {RESIDENTS,HOME_OWNERS} from '../src/people/residents.js';
 import {createCastAI,DIALOGUE} from '../src/people/schedules.js';
 import {residentPlan,IZAKAYA_DOOR,RAMEN_DOOR,RAMEN_VISITS,GOSSIP} from '../src/people/social.js';
 import {WORK_SITES} from '../src/people/workplaces.js';
-import {sleepHours,homeRoutine,homeSiteId,homeLayoutFor} from '../src/people/home-life.js';
+import {sleepHours,homeRoutine,homeLayoutFor} from '../src/people/home-life.js';
 import {createHomeResidents} from '../src/people/home-residents.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {buildResidentHome} from '../src/world/interiors/resident-home.js';
-import {SUPPLIED_ROOM_LAYOUTS} from '../src/world/supplied-rooms.js';
 import {circleHitsRect} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
 import {MARKET_THRESHOLD} from '../src/world/town-grid.js';
-import {buildHomes} from '../src/world/homes.js';
 function person(name,parent){const profile=RESIDENTS.find(p=>p.name===name),g=new THREE.Group();g.userData={name,hit:{inside:false}};g.position.set(...[profile.home[0],0,profile.home[1]]);parent.add(g);return {profile,g};}
 const tick=(fn,from,seconds)=>{for(let i=0;i<seconds*30;i++)fn(1/30,from+i/30);};
 function roomFor(p){
  const room=new THREE.Group(),colliders=[];
- if(homeSiteId(p.profile.name)==='yuri-home')colliders.push(...SUPPLIED_ROOM_LAYOUTS['yuri-home'].colliders);
- else buildResidentHome({profile:p.profile,room,box:(size,pos,c,parent)=>{const g=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshBasicMaterial({color:c}));g.position.set(...pos);parent.add(g);return g;},reg(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),action(){},exit(){}});
- const b=homeSiteId(p.profile.name)==='yuri-home'?SUPPLIED_ROOM_LAYOUTS['yuri-home'].bounds:homeLayoutFor(p.profile.name).bounds;
+ buildResidentHome({profile:p.profile,room,box:(size,pos,c,parent)=>{const g=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshBasicMaterial({color:c}));g.position.set(...pos);parent.add(g);return g;},reg(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),action(){},exit(){}});
+ const b=homeLayoutFor(p.profile.name).bounds;
  return {room,collides:(x,z,r=.32)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||colliders.some(c=>circleHitsRect(x,z,r,c))};
 }
 test('residents travelling home cannot be teleported into a visited apartment',()=>{

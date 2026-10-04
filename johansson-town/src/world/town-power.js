@@ -1,6 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createKit} from './okinawa/kit.js';
-import {utilityPole,wiresBetween,serviceDrop,takePowerPlan,drawPlannedPole,SPAN_WIRES,spanWire} from './okinawa/props.js';
+import {utilityPole,takePowerPlan,drawPlannedPole,SPAN_WIRES,spanWire} from './okinawa/props.js';
 import {sagCurve} from './okinawa/kit.js';
 import {circleHitsRect} from '../../physics.js';
 import {poster} from './okinawa/signs.js';

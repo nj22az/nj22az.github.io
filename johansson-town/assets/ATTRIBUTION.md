@@ -1,6 +1,8 @@
 > **September 2026:** the character models (MakeHuman Thuan and Johansson, Nao's VRoid, the Meshy Thuan, the low-poly residents) and the retired districts were removed; everyone in town is now a code-built Shimanchu (`src/avatars/`). Their entries below are kept as history. Files can be recovered from git (see `docs/EXPANSION-NOTES.md`).
 
-> Current asset inventory: see [Main Street homes](../docs/MAIN-STREET-HOMES.md) and [resident provenance](characters/residents/PROVENANCE.md). Older cast descriptions below are historical; unused prototype binaries have been retired.
+> **October 2026:** the legacy town layouts (Main Street frontage, dining lane, Willow Alley, Inakaya, tea house, Thuan's supplied apartment) were deleted with the old town modes; their entries are marked retired.
+
+> Current asset inventory: `assets/models/` and [resident provenance](characters/residents/PROVENANCE.md). Older cast descriptions below are historical; unused prototype binaries have been retired.
 
 # Asset licence ledger
 
@@ -99,13 +101,13 @@ These two models were supplied by the owner and included at their express reques
 
 Both models use unlit materials to preserve their baked texture/vertex lighting. Original source metadata, input/output SHA-256 hashes, transforms and counts are recorded in each model directory's `manifest.json`. The original uploads are not modified. Reproduction: `python tools/pack-supplied-rooms.py --office /path/to/office.glb --ramen /path/to/ramen.glb` (Python with NumPy). Collision shapes, interaction anchors and the original Sato Ramen fascia/roof trim are project additions. No CC0 licence is asserted for either supplied model.
 
-## Thuan’s bedroom — Bedroom Interior (2026-09-09)
+## Thuan’s bedroom — Bedroom Interior (2026-09-09) — retired
 
 `models/yuri-home/yuri-bedroom.glb` is the owner-supplied **Bedroom Interior** by [ankitk2618](https://sketchfab.com/ankitk2618), [model page](https://sketchfab.com/3d-models/bedroom-interior-082a0fa7766448b8ad68202367cb27c1). Embedded licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Included at the owner’s request from their Drive file.
 
 Adaptations: bake the source hierarchy into vertices; scale the 1.33 m dollhouse interior to a 2.72 m ceiling; rotate the south doorway to +Z; downsample embedded JPEGs to 1024px; merge primitives that share a material; unlit materials keep the baked lighting. 74,874 triangles; 24 draws. Source/output hashes, furniture bounds and transforms: `models/yuri-home/manifest.json`. Reproduction: `python tools/pack-yuri-bedroom.py /path/to/bedroom.glb` (NumPy and Pillow). No CC0 licence is asserted for this supplied interior.
 
-## Thuan’s house — Japanese Residential Home 02 (2026-09-09)
+## Thuan’s house — Japanese Residential Home 02 (2026-09-09) — retired
 
 `models/yuri-home/yuri-home-exterior.glb` is the owner-supplied **Japanese Residential Home 02** by [Morrissey Alexander](https://sketchfab.com/reckzilla), [model page](https://sketchfab.com/3d-models/japanese-residential-home-02-c31697f09152453cb3ed215482e7a810). Embedded licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Included at the owner’s request from their Drive file.
 
@@ -133,11 +135,11 @@ The active 21 town residents now use `characters/vroid/`. Five CC0 sample models
 
 The original VRMs were obtained from the public [madjin/vrm-samples mirror](https://github.com/madjin/vrm-samples/tree/e16eb187100149a315ad92c3c9968f1d5baa6c7d/vroid/beta). `characters/vroid/manifest.json` records the exact input and output hashes. Changes: 512–1024px local texture atlases, four or five skinned draws per base, shared geometry, individual hair/clothes colours, head-bound glasses, retained eyelid/smile/mouth morphs, seven original humanoid animations, seated skirt fitting, fitted dark shorts beneath skirts, sole grounding and orientation conversion. The runtime uses portable GLB and illustrated unlit materials, without a VRoid Hub account or remote asset service. See `../docs/VROID-CAST.md` for reproduction.
 
-## Complete canal overworld
+## Complete canal overworld — retired
 
 Japanese Town by Nazareno_rojas, CC BY 4.0. All original buildings, streets, bridge and canal retained. Texture compression, static batching and gameplay adaptation: Johansson Town. See [source, licence and changes](models/full-town/CREDITS.md).
 
-### Inakaya restaurant exterior, interior and adjoining timber house
+### Inakaya restaurant exterior, interior and adjoining timber house — retired
 
 `models/ramen/inakaya-exterior.glb`: **Japanese Restaurant “Inakaya”**, by
 [Jellepostma](https://sketchfab.com/Jellepostma),
@@ -179,19 +181,19 @@ Changes: removed the detached presentation ground plane; merged static geometry 
 
 Changes: 57 skinned pieces combined into four material draws; unused second skeleton removed; legacy specular/glossiness textures converted to supported PBR materials; original geometry, skin weights, UVs and four embedded PNGs preserved. Seven original idle, walking, running, greeting, sitting, eating and drinking clips are baked onto the supplied skeleton. Reiko retains her existing name, role, conversations and schedule. Source hash and preparation details are embedded in the GLB. Reproduce with `tools/pack-nozomi.py` followed by `tools/animate-nozomi.mjs`.
 
-## Willow Alley residential street (2026-09-11)
+## Willow Alley residential street (2026-09-11) — retired
 
 `models/residential-street/willow-street.glb` is the user-supplied **Stylized Little Japanese Town Street** by [Michał Solarek](https://sketchfab.com/misiek13). [Source model](https://sketchfab.com/3d-models/stylized-little-japanese-town-street-200fc33b8a2b4da98e71590feeb255a8); licence recorded in the supplied GLB: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 The complete seven-building street, canal and bridge are retained. Changes include uniform scaling, ground alignment, UV-aware geometry simplification, quantised positions and normals, and smaller embedded JPEG textures. Source metadata, hashes and measurements are in `models/residential-street/manifest.json`; reproduction and attribution details are in that directory's `CREDITS.md`.
 
-## Dining approach — Japanese street at night (2026-09-11)
+## Dining approach — Japanese street at night (2026-09-11) — retired
 
 `models/dining-street/night-lane.glb` adapts the user-supplied **Japanese street at night** by [AFX/CGMotion 3DModel Maker](https://sketchfab.com/afx_cgmotion). [Source model](https://sketchfab.com/3d-models/japanese-street-at-night-fb1bdcd71a5544d699379d2d13dd1171); licence recorded in its GLB: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 Eight approach buildings, signs, lights, vending machines and paving lead into the existing restaurant façades. The studio backdrop, two closing buildings and central pole/cables were removed to make the connection. Other changes: baked transforms, static material batches, compacted vertices and smaller embedded JPEG textures. Original retained geometry, UVs and authorship are preserved. See `models/dining-street/CREDITS.md`, `manifest.json` and `tools/pack-dining-street.mjs`.
 
-## Thuan’s apartment replacement
+## Thuan’s apartment replacement — retired
 
 **Seinfeld Apartment** by **kagley**, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). [Source model](https://sketchfab.com/3d-models/seinfeld-apartment-fd8abc336560446f9714dfe7076295b9). Supplied by the project owner as `seinfeld_apartment.glb`. Converted legacy diffuse materials, resized embedded textures, merged compatible primitives, scaled uniformly to metres, and moved the breakfast table 25 cm to clear the study passage. Runtime file: `models/yuri-home/seinfeld-apartment.glb`. Original metadata and SHA-256 recorded in the adjacent `manifest.json`.
 
@@ -199,7 +201,7 @@ Eight approach buildings, signs, lights, vending machines and paving lead into t
 
 Owner-supplied `Image-to-Image-5b45ad04.mp4`, encoded as `video/izakaya-ad.mp4`; poster extracted from its first frame. No third-party source or licence was supplied.
 
-## Main Street frontage — September 2026
+## Main Street frontage — September 2026 — retired
 
 The user supplied `street_2.glb`, **Street 2** by **Pasha**. Its embedded metadata records the [original model](https://sketchfab.com/3d-models/street-2-3c11ac40e38442489df9a0a7193ee62c) and [Sketchfab Standard licence](https://sketchfab.com/licenses). The central contiguous frontage is cropped, uniformly scaled, simplified and divided into three sections in `models/main-street/`. Two padded texture atlases preserve the original repeated tile UVs. Exact source hash, dimensions and processing budget are in the adjacent manifest.
 

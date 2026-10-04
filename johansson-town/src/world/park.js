@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {PARK,PARK_BENCH,PARK_BENCH_FIT,benchPoint,parkHeight,parkSkirtHeight,parkApproachHeight,activePark,parkBench,TURF_TINT,PARK_PATH_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
+import {PARK_BENCH,PARK_BENCH_FIT,benchPoint,parkHeight,parkSkirtHeight,parkApproachHeight,activePark,parkBench,TURF_TINT,PARK_PATH_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {createLightPools} from './light-pools.js';
 import {lanternGlow} from '../render/dusk.js';
 import {paintedTurf} from '../render/toy-surfaces.js';

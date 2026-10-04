@@ -6,7 +6,6 @@ import {normalizeRecipe,encodeRecipe,decodeRecipe,PARTS} from '../src/avatars/re
 import {recipeFor} from '../src/avatars/cast.js';
 import {buildAvatar,measure} from '../src/avatars/build.js';
 import {applyCelShading} from '../src/render/cel.js';
-import {frontageMaterial} from '../src/render/frontage-material.js';
 import {buildResidentialDetails,buildSakuraDetails} from '../src/world/exterior-details.js';
 import {createKit} from '../src/world/okinawa/kit.js';
 import {createMaterials} from '../src/render/materials.js';
@@ -40,19 +39,6 @@ test('all face forms have distinct geometry and stay in proportion at slider lim
  assert.ok(new Set(names.map(n=>recipeFor(n).head.form)).size>=4);
 });
 
-test('the shared frontage atlas keeps its repeating UV shader through the cel sweep',async()=>{
- const oldFetch=globalThis.fetch,oldBitmap=globalThis.createImageBitmap;
- try{
-  globalThis.fetch=async()=>({ok:true,blob:async()=>({})});globalThis.createImageBitmap=async()=>({width:16,height:16});
-  const material=await frontageMaterial(998),root=new THREE.Group();
-  const mesh=new THREE.Mesh(new THREE.BoxGeometry(),material);root.add(mesh);
-  applyCelShading(root);assert.equal(mesh.material,material);
-  const shader={vertexShader:'#include <uv_vertex>',fragmentShader:'#include <map_fragment>'};
-  mesh.material.onBeforeCompile(shader);
-  assert.match(shader.vertexShader,/vFrontageAtlas=vec4\(uv1,uv2\)/);
-  assert.match(shader.fragmentShader,/fract\(vMapUv\)/);assert.match(shader.fragmentShader,/textureGrad/);
- }finally{globalThis.fetch=oldFetch;globalThis.createImageBitmap=oldBitmap;}
-});
 
 test('architectural fittings stay batched and leave the Sakura entrance clear',()=>{
  const root=new THREE.Group(),residential=buildResidentialDetails(root),shop=buildSakuraDetails(root,{width:14,depth:11,doorX:0});

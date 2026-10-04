@@ -104,7 +104,6 @@ test('atmosphere(day) keeps the old three-stop sky for existing callers',()=>{
 test('town wiring drives windows, lanterns and nameplates from the clock',async()=>{
  const files={
   town:await readFile(new URL('../src/world/town.js',import.meta.url),'utf8'),
-  homes:await readFile(new URL('../src/world/homes.js',import.meta.url),'utf8'),
   izakaya:await readFile(new URL('../src/world/izakaya.js',import.meta.url),'utf8'),
   facade:await readFile(new URL('../src/world/minato-facade.js',import.meta.url),'utf8'),
   harbour:await readFile(new URL('../src/world/harbour.js',import.meta.url),'utf8'),
@@ -112,8 +111,6 @@ test('town wiring drives windows, lanterns and nameplates from the clock',async(
  };
  assert.match(files.town,/windowGlow/);
  assert.doesNotMatch(files.town,/>=1080/);
- assert.match(files.homes,/windowGlow/);
- assert.doesNotMatch(files.homes,/>=1080/);
  assert.match(files.izakaya,/lanternGlow/);
  assert.match(files.facade,/lanternI/);
  assert.match(files.harbour,/lanternGlow/);

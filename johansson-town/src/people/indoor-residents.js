@@ -1,5 +1,4 @@
 import {groundHeight} from '../world/layout.js?snappy=1';
-import {RAMEN_GUEST_SEATS,RAMEN_THUAN_SPOT,RAMEN_LAYOUT} from '../world/interiors/ramen-layout.js';
 import {STORE_CLERK_POSITION,STORE_SEATS} from '../world/interiors/store-layout.js';
 import {residentPlan,RAMEN_DOOR,IZAKAYA_DOOR,IZAKAYA_SEATS} from './social.js';
 import {createRoomWalk,atDestination} from './room-walk.js';
@@ -13,7 +12,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
  const borrowed=new Map();let clock=0,walker=null;
  // On the peninsula the ramen counter is Sato Ramen, beside Minato (world/sato-ramen-layout.js).
  const sato=(place==='ramen');
- const entrance=layout?.entrance|| (sato?[SATO_ROOM.spawn[0],0,SATO_ROOM.spawn[2]]:place==='ramen'?[RAMEN_LAYOUT.spawn[0],0,3.2]:place==='izakaya'?[0,0,5.2]:[0,0,5.2]);
+ const entrance=layout?.entrance|| (sato?[SATO_ROOM.spawn[0],0,SATO_ROOM.spawn[2]]:[0,0,5.2]);
  const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:world.people.find(p=>p.profile.name==='Thuan').profile.work;
  const wanted=p=>residentPlan(p.profile,clock,getRain(),getState()).place===place&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');
  function restore(p){
@@ -27,14 +26,13 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   const standing=getStandingVisit(p,clock);if(standing)return {position:standing,stand:standing,yaw:0,managed:true};
   if(place==='market'&&name==='Thuan')return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true};
   if(sato&&name==='Mrs Sato')return {position:[...SATO_COOK.position],stand:[...SATO_COOK.position],yaw:SATO_COOK.yaw,staff:true};
-  if(place==='ramen'&&name==='Thuan'&&!sato)return {...RAMEN_THUAN_SPOT,stand:[RAMEN_LAYOUT.spawn[0],0,2.9]};
   if(place==='izakaya'&&name==='Nao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
   // Umi-no-yu: into the rock bath by the sea wall, leaving the other side for the player.
   if(place==='onsen'){
    const seat=ONSEN_SEATS[getPlayerSeat()==='rockBeside'?'rock':'rockBeside'];
    return {id:seat.id,position:seat.position,stand:seat.stand,yaw:seat.yaw,height:seat.surfaceY,soak:true};
   }
-  const seats=sato?SATO_GUEST_SEATS:place==='ramen'?RAMEN_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_SEATS.map(([x,z],i)=>({position:[x,0,z],height:i<5?.71:.565,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]}));
+  const seats=sato?SATO_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_SEATS.map(([x,z],i)=>({position:[x,0,z],height:i<5?.71:.565,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]}));
   if(place==='izakaya'&&name==='Barfly'){
    const index=7;if([...borrowed.values()].some(v=>v.index===index&&!v.seat.staff))return null;
    return {...seats[index],index};
