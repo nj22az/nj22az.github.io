@@ -36,7 +36,7 @@ export const BACKROOM=Object.freeze({
  daisha:Object.freeze({x:-5.27,z:-5.4,w:.66,d:.96}),
  extinguisher:Object.freeze({x:4.66,z:-6.58,r:.15}),
  // The Thuan figurine, on a plinth in the east corner by the delivery door, facing the room.
- figurine:Object.freeze({x:5.42,z:-6.42,plinth:.4,height:.6,yaw:2.04}),
+ figurine:Object.freeze({x:5.42,z:-6.42,plinth:.4,height:.85,yaw:-1.1}),
 });
 
 const canvasTex=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;};

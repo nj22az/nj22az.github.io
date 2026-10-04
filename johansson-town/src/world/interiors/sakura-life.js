@@ -279,7 +279,7 @@ function buildStorage(parent){
    ctx.fillStyle='#ffffff';ctx.fillRect(40,720,w-80,60);text(ctx,"Sea Breeze Cola",w/2,750,40,'#b63231');})],
   // Tanabata star and a summer palm from past campaigns.
   [.75,.75,.9,-6.62,.15,standee(400,400,(ctx,w,h)=>{ctx.fillStyle='#ffc93c';ctx.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?80:190;ctx.lineTo(w/2+Math.cos(a)*r,h/2+Math.sin(a)*r);}ctx.fill();text(ctx,"Tanabata",w/2,h/2,64,'#d7263d');})],
-  [.8,1.4,4.95,-6.45,-.2,standee(400,700,(ctx,w,h)=>{ctx.fillStyle='#8a5a30';ctx.fillRect(180,260,40,420);ctx.fillStyle='#57a52f';for(let i=0;i<7;i++){ctx.save();ctx.translate(200,260);ctx.rotate(-Math.PI/2+(i-3)*.45);ctx.beginPath();ctx.ellipse(0,-120,40,130,0,0,Math.PI*2);ctx.fill();ctx.restore();}ctx.fillStyle='#ffffff';ctx.fillRect(30,590,340,90);text(ctx,"It's summer! Cooling",w/2,635,40,'#2a8fcc');})],
+  [.8,1.4,4.95,-6.45,-.2,standee(400,700,(ctx,w,h)=>{ctx.fillStyle='#8a5a30';ctx.fillRect(180,260,40,420);ctx.fillStyle='#57a52f';for(let i=0;i<7;i++){ctx.save();ctx.translate(200,260);ctx.rotate(-Math.PI/2+(i-3)*.45);ctx.beginPath();ctx.ellipse(0,-120,40,130,0,0,Math.PI*2);ctx.fill();ctx.restore();}ctx.fillStyle='#ffffff';ctx.fillRect(30,590,340,90);ctx.fillStyle='#2a8fcc';ctx.font=`bold 40px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("夏だ！冷たいものどうぞ",w/2,635,320);})],
  ];
  for(const [w,h,x,z,tilt,tex] of cutouts){
   const front=print(tex,w,h,x,h/2+.02,z,0,'Cardboard stand-up');front.rotation.x=-.08;front.rotation.y=tilt;
