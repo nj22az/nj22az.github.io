@@ -17,6 +17,12 @@ Harbour Office. The quay's loose airport-ticket and Naha prompts are gone, the i
 harbour master's desk, and the old "BUS TERMINAL" sign now points to the port. Harbour view: about 107 draw calls on a
 phone (was about 143). Tests: `tests/port-building.test.mjs`.
 
+## Consolidation round
+- [x] Part A: airport radio repair moved inside the workshop; one family per surname (Higa, Kinjō, Tōma);
+  sata andagi moved to Nakamura (the Arakaki shop is closed, the family lives there); Rainflower Lane's
+  travel agent and grocer are lane houses now; the airport keeps three shops (coffee, noodles, crafts)
+- [ ] Part B: delete the legacy town modes (tests first, FULL_TOWN, mode branches, leaf modules, shared files, town-mode.js)
+
 **Decisions (agreed):** one Port Building replaces the Harbour Office and the ferry terminal on the same site;
 you can walk into its waiting hall; no new characters (the Harbour master runs it).
 

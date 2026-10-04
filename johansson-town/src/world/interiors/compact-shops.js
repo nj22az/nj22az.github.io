@@ -86,6 +86,8 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   board('FRONT-ROW BOOKS & PRESS','READING COPIES · LOCAL NEWS',[0,2.38,-hd+.08],3.7);
  }else if(site.id==='form3d'){
   bench('Shared repair bench',0,-hd+.32,w-.3,.54);
+  // The airport radio is mended at this bench (island/services.js), not on the doorstep.
+  if(site.industrialWorkshop)anchor([.9,1.15,-hd+.6],'Complete the airport radio service','island-repair');
   if(site.industrialWorkshop){bench('Pattern and calculation table',3.2,.3,.7,2.6);box('Electrical distribution board',[.55,.85,.13],[-hw+.09,1.8,-1],0x78847e);anchor([-hw+.3,1.3,-1],'Read the electrical safety checklist','read','Workshop safety checklist','Isolate the supply, check the meter and record the test before returning equipment to service.');}
   box('Tool board',[1.8,.38,.06],[-1.02,2.05,-hd+.08],dark);
   for(let i=0;i<5;i++){box('Hanging hand tool',[.04,.31,.07],[-1.65+i*.29,2.02,-hd+.13],0x8b9994);box('Tool grip',[.07,.11,.07],[-1.65+i*.29,2.14,-hd+.13],0x7b4e38);}

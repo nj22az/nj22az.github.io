@@ -15,14 +15,26 @@ export function buildShoppingLane({world,register,onAction}){
  const pavement=box('Rainflower worn stone roadway',[12,.08,40],[90,-.01,114],0x777d79);pavement.material=mat(0x777d79,.87);const asphalt=paintedAsphalt().clone();asphalt.repeat.set(3,10);asphalt.needsUpdate=true;pavement.material.map=asphalt;
  for(const x of [84.6,95.4]){const walk=box('Lane stone pavement',[1.2,.08,39],[x,-.005,113.5],0xc1bdad);walk.material=mat(0xc1bdad);const paving=paintedPaving().clone();paving.repeat.set(1,13);paving.needsUpdate=true;walk.material.map=paving;}
  for(const x of [84.7,95.3]){if(x<90)box('Shopping lane curb',[.3,.12,39],[x,.06,113.5],0xaaa89a,true);else {box('Shopping lane curb',[.3,.12,3],[x,.06,95.5],0xaaa89a,true);box('Shopping lane curb',[.3,.12,12],[x,.06,113],0xaaa89a,true);box('Shopping lane curb',[.3,.12,10],[x,.06,128.5],0xaaa89a,true);}for(let z=95;z<132;z+=1.3)box('Individual stone curb joints',[.32,.015,.04],[x,.128,z],0x686e68);}
- const names=['Harbour Travel','Rainflower Florist','Pocket Grocer','Town Tailor','Secondhand Records','Blue Coral Ice Cream'];
- for(let i=0;i<6;i++){const left=i%2===0,x=left?80.7:99.3,z=101+Math.floor(i/2)*10,h=6.2+(i%3)*.7;
-  if(i!==5&&i!==1)box(names[i]+' weathered shop-house',[7,h,8.5],[x,h/2,z],[0x9b9481,0xb4b19e,0x8d9996][i%3],true).material.map=paintedConcrete();
-  box('Shop-house flat roof',[7.6,.3,9],[x,(i===5||i===1?3.15:h+.15),z],0x56665e);
-  if(i!==5&&i!==1)for(const dz of [-2.2,2.2]){const side=left?1:-1;box('Upper floor window',[.08,1.4,1.7],[x+side*3.54,h-1.7,z+dz],0x536c71);box('Weathered window railing',[.35,.6,1.9],[x+side*3.7,h-2,z+dz],0x64685f);}
-  const edge=left?84.25:95.75;box('Shop canopy',[2,.18,7.5],[left?84.8:95.2,2.75,z],i===1?0x3d8463:0x636f6c);if(i!==5&&i!==1)box('Shopfront shutter',[.08,2,5.8],[edge,1.05,z],0x687b72);if(i!==1)sign(names[i],edge+(left?.05:-.05),3.5,z,6);
-  anchor(left?87:92.8,z,'Visit '+names[i],i===1?'rainflower-shop':'read',names[i],i===1?{item:'Rainflower bouquet',price:250}:names[i]+' is a family shop on Rainflower Lane. The local noticeboard keeps opening times and neighbourhood news.');
- }
+ // Four shops and two houses. The lane had a travel agent and a grocer too, but the Port
+ // Terminal sells the tickets and Sakura the groceries; their buildings are homes now.
+ const lots=[{title:'Lane house',home:true},{title:'Rainflower Florist',own:true},{title:'Lane house',home:true},{title:'Town Tailor'},{title:'Secondhand Records'},{title:'Blue Coral Ice Cream',own:true}];
+ lots.forEach((lot,i)=>{const left=i%2===0,x=left?80.7:99.3,z=101+Math.floor(i/2)*10,h=6.2+(i%3)*.7,edge=left?84.25:95.75,side=left?1:-1;
+  if(!lot.own){box(lot.title+' weathered shop-house',[7,h,8.5],[x,h/2,z],[0x9b9481,0xb4b19e,0x8d9996][i%3],true).material.map=paintedConcrete();
+   for(const dz of [-2.2,2.2]){box('Upper floor window',[.08,1.4,1.7],[x+side*3.54,h-1.7,z+dz],0x536c71);box('Weathered window railing',[.35,.6,1.9],[x+side*3.7,h-2,z+dz],0x64685f);}}
+  box('Shop-house flat roof',[7.6,.3,9],[x,lot.own?3.15:h+.15,z],0x56665e);
+  if(lot.home){
+   // A house front: a timber door, a window with its grille, a potted plant and a post box.
+   box('Lane house door',[.08,2.05,1],[edge,1.03,z-1.6],0x6b4f37);box('Lane house window',[.06,1.2,2],[edge,1.6,z+1.2],0x536c71);
+   for(let k=0;k<5;k++)box('Window grille',[.05,1.2,.04],[edge-side*.03,1.6,z+.3+k*.45],0x8e979a);
+   box('Post box',[.12,.3,.36],[edge-side*.08,1.2,z-.6],0xc8392e);box('Plant pot',[.4,.4,.4],[edge-side*.4,.2,z-2.6],0xb95c3c);
+   anchor(left?86:93.8,z,'Read the house nameplate','read','A Rainflower Lane house','The front room was a shop once; the family took the counter out and put the sofa where it stood. The name on the post box has rubbed off in the rain.');
+   return;
+  }
+  box('Shop canopy',[2,.18,7.5],[left?84.8:95.2,2.75,z],i===1?0x3d8463:0x636f6c);
+  if(!lot.own)box('Shopfront shutter',[.08,2,5.8],[edge,1.05,z],0x687b72);
+  if(i!==1)sign(lot.title,edge+(left?.05:-.05),3.5,z,6);
+  anchor(left?87:92.8,z,'Visit '+lot.title,i===1?'rainflower-shop':'read',lot.title,i===1?{item:'Rainflower bouquet',price:250}:lot.title+' is a family shop on Rainflower Lane. The local noticeboard keeps opening times and neighbourhood news.');
+ });
  for(const [x,z] of [[94.2,98.5],[94.2,103.5],[94.2,104.5]]){box('Flower display bucket',[.6,.6,.6],[x,.3,z],0x726c52,true);for(let i=0;i<5;i++){const stem=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,.65,5),mat(0x477052));stem.position.set(x+(i%3-1)*.12,.8,z+(Math.floor(i/3)-.5)*.18);group.add(stem);const f=new THREE.Mesh(new THREE.IcosahedronGeometry(.14,0),mat([0xe8c55a,0xd98fa3,0xf2e5c1][i%3]));f.position.copy(stem.position);f.position.y=1.12;group.add(f);}}
  box('Red drinks vending machine',[.8,1.9,1.1],[85.8,.95,112.8],0x963c39,true);box('Vending machine selection panel',[.04,1,.85],[86.23,1.25,112.8],0xd4d6c7);anchor(87,112.8,'Buy a cold drink on Rainflower Lane','rainflower-shop','Lane drinks machine',{item:'Cold island soda',price:100});
  // Real pin insulators and sagging conductors, connected to the island feeder.

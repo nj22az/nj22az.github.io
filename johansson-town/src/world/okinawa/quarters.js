@@ -265,16 +265,20 @@ function buildPromenade(kit,solid,{anchor,onAction}){
 
 const SHOPS=Object.freeze({
  nakamura:{interior:'zenzai',jp:"Nakamura Zenzai",en:'Nakamura · shaved ice & zenzai',bg:'#f6efd9',accent:'#2f7fa8',mark:"Ice",upright:"Zenzai",uprightBg:'#2f7fa8',
-  buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'}},
+  buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
+  // The island's one sweet counter: when the Arakakis shut theirs, Mrs Nakamura took on the sata andagi.
+  more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to old Mr Arakaki’s recipe. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
  // The post office, in the shop-house that was the barber's and then, briefly, the
  // power station before that moved to the town hall grounds. Postman Tōma's round starts
  // and ends here; Mr Shimabukuro still rents the flat upstairs.
  shimabukuro:{interior:'post',jp:"Minato Town Post Office",en:'Minato post office',bg:'#f4f1ea',accent:'#c8102e',mark:'〒',upright:"Postal",uprightBg:'#c8102e',
   inspect:{label:'Look into the post office',title:"Minato Post Office · Minato Town Post Office",text:'A counter with a brass scale, a rack of forms, the savings-book window and a wall of pigeonholes, one for every household on the island. Collections at 10:30 and 16:30. The mail goes over on the morning ferry and comes back on the afternoon one; a parcel from Naha takes two days, from Tokyo four.'}},
  'higa-saketen':{interior:'liquor',jp:"Higa Liquor Store",en:'Higa liquor · awamori',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
-  buy:{label:'Buy a bottle of awamori',title:"Higa Liquor · Higa Liquor Store",cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Mr Higa will not sell you however you ask. He wraps a miniature in newspaper and tells you to keep it for a guest.'}},
- arakaki:{interior:'sweets',jp:"Aragaki Confectionery Store",en:'Arakaki sweets · sata andagi',bg:'#fbf1d8',accent:'#2d6f63',upright:"Sweets",uprightBg:'#2d6f63',
-  buy:{label:'Buy sata andagi',title:"Arakaki Sweets · Aragaki Confectionery Store",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile. Three to a paper bag, still warm, sugar on your fingers.'}},
+  buy:{label:'Buy a bottle of awamori',title:"Higa Liquor · Higa Liquor Store",cost:600,item:'Awamori miniature',text:'Awamori in every size, from the little 180 ml bottles by the till to the old clay pots at the back that Grandmother Higa will not sell you however you ask: the shop is the Higas’ from Nishi-machi, and she minds the till in the afternoons. He wraps a miniature in newspaper and tells you to keep it for a guest.'}},
+ // The Arakakis' sweet shop, shut since Mr Arakaki retired to the gateball court. The faded
+ // sign stays up; the family still lives behind the shutter.
+ arakaki:{interior:'sweets',awning:false,jp:"Aragaki Confectionery Store",en:'Arakaki sweets · closed',bg:'#efe6cf',accent:'#5f7d76',upright:"Sweets",uprightBg:'#8a9a94',
+  inspect:{label:'Look at the old sweet shop',title:"Arakaki house · the old sweet shop",text:'The shutter has been down since Mr Arakaki retired; he plays gateball on the lawn now and the family lives behind the shop. His sata andagi recipe went next door: Mrs Nakamura fries it every morning.'}},
  yonamine:{interior:'fish',anchorDz:2.3,jp:"Yonamine Fresh Fish Store",en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:"Fish",upright:"Fresh fish",uprightBg:'#9a4a2a',
   inspect:{label:'Look at the fish',title:"Yonamine Fish · Yonamine Fresh Fish Store",text:'Blue parrotfish, a red snapper, mackerel on ice and a tray of mozuku seaweed. Mrs Yonamine buys from the morning boats and sells out by three. Irabu-chā — the blue parrotfish — is best as sashimi, she says, with vinegared miso.'}},
  'coin-laundry':{interior:'laundry',jp:"Coin laundry",en:'Coin laundry · open 24 hours',bg:'#e9f0f6',accent:'#3a6a9a',upright:"Laundry",uprightBg:'#3a6a9a',
@@ -290,6 +294,7 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction}){
  const act=spec.buy?()=>onAction?.('buy',spec.buy.title,{cost:spec.buy.cost,item:spec.buy.item,text:spec.buy.text}):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
  // Off to one side where somebody works the counter, so talking to them wins over the shop.
  anchor(front+out*.9,1.1,z+(spec.anchorDz||0),(spec.buy||spec.inspect).label,act);
+ for(const m of spec.more||[])anchor(front+out*.9,1.1,z+m.dz,m.label,()=>onAction?.('buy',m.title,{cost:m.cost,item:m.item,text:m.text}));
 }
 
 function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
@@ -510,7 +515,7 @@ function buildKitahama(kit,solid,ctx){
  }
  solid({id:'cane-field',x:(F.minX+F.maxX)/2,z:(F.minZ+F.maxZ)/2,w:F.maxX-F.minX,d:F.maxZ-F.minZ,height:2});
  ctx.inspect((F.minX+F.maxX)/2,1.2,F.minZ-.8,'Look at the cane field',"Sugar cane · Sugar cane",
-  'Head-high cane in rows, rattling in the wind off the point. The Tōmas and the Ueharas share it; in January everybody on the lane cuts for a fortnight and the lorry comes over on the ferry to take it to the mill on the main island.');
+  'Head-high cane in rows, rattling in the wind off the point. Postman Tōma and the Ueharas share it; in January everybody on the lane cuts for a fortnight and the lorry comes over on the ferry to take it to the mill on the main island.');
  // The pole line: up the approach lane from the beach, then along the cross lane, with
  // a drop to every house. Poles stand on the lane's own verge, a quarter-metre in from its
  // edge: set outside the edge, they stood inside the garden walls.
@@ -536,7 +541,7 @@ const NAMEPLATES=Object.freeze({
  'kitahama-1':'Thuan and Nao\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. Nao comes home after three in the morning and the gate latch is oiled so it does not wake anybody.',
  'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at nine and to the ramen counter at half past ten.',
  'kitahama-3':'Kōji Uehara\'s house. A wetsuit on the line, fish boxes stacked by the gate and a radio that plays the weather on the hour.',
- 'kitahama-4':'The Tōmas. The postman\'s red Super Cub stands in the yard at night with its box padlocked. Mrs Tōma grows goya over the gate.',
+ 'kitahama-4':'Tōma. The postman lives here: his red Super Cub stands in the yard at night with its box padlocked, and he grows goya over the gate.',
  'kitahama-5':'An empty concrete house, swept and waiting, with the water off at the main.',
  'kitahama-6':'The Tairas\' house, the oldest on the lane: red tile, a hinpun with a crack the grandfather says the 1959 typhoon put there, and a loom on the verandah under a sheet. The cane knives hang inside the gate, oiled, from January to January.',
  'kitahama-7':'The Chinens. The water lorry is parked at the end of Fukugi Lane because it will not fit through the gate. A nurse\'s bicycle with a basket, and a rota for the clinic\'s night calls taped inside the kitchen window.',

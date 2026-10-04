@@ -36,10 +36,10 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'kitahama-10',address:'10 Kitahama',members:[['Mr Tamashiro','retired; grows goya and papaya over the wall'],['Mrs Tamashiro','retired; runs the lane’s rubbish rota and the notice board']]},
  {home:'kitahama-11',address:'11 Kitahama',members:[['Mr Iha','electrician at the power station; mends the lane lights']]},
  {home:'kitahama-12',address:'12 Kitahama',members:[['Mrs Kohagura','cuts hair in her front room, Tuesday to Saturday']]},
- {home:'kitahama-flats',address:'Kitahama Heights, Fukugi Lane',members:[['Ms Ganaha','sells tickets at the ferry office (flat 1)'],['Mr Higa Jr','apprentice at the boatyard (flat 2)'],['Mr Fujita','retired fisherman (flat 3); found most days in his shed on the pier']]},
+ {home:'kitahama-flats',address:'Kitahama Heights, Fukugi Lane',members:[['Ms Ganaha','sells tickets at the Port Terminal window (flat 1)'],['Mr Higa Jr','the Nishi-machi Higas’ eldest; apprentice at the boatyard (flat 2)'],['Mr Fujita','retired fisherman (flat 3); found most days in his shed on the pier']]},
  // Nishi-machi, inside the seawall.
  {home:'higa',address:'Higa house, Nishi-machi',members:[['Grandmother Higa','retired; keeps the verandah and knows every ferry by its horn'],['Mrs Higa','the bandai at Umi-no-yu'],["Higa Kenta","pupil, Years 5–6"]]},
- {home:'kinjo',address:'Kinjō house, Nishi-machi',members:[['Uncle Kinjō','retired fisherman; fishes off the seawall'],['Mrs Kinjō','keeps house and the family accounts'],["Kinjo Yui","pupil, Years 5–6"]]},
+ {home:'kinjo',address:'Kinjō house, Nishi-machi',members:[['Uncle Kinjō','retired fisherman; fishes off the seawall'],['Mrs Kinjō','runs the florist on Rainflower Lane and keeps the family accounts'],["Kinjo Yui","pupil, Years 5–6"]]},
  {home:'oshiro',address:'Ōshiro house, Nishi-machi',members:[['Mr Ōshiro','fisherman; builds and mends sabani'],["Oshiro Sakura","pupil, Years 5–6"]]},
  // Behind the east row.
  {home:'nakasone',address:'Nakasone house, east back',members:[['Mr Nakasone','retired; gateball and the sanshin'],["Nakasone Taku","pupil, Years 5–6"]]},
