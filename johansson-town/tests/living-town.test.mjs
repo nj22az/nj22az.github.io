@@ -15,8 +15,9 @@ import {installDOM} from './fixtures.mjs';
 
 test('the Barfly stays in Minato, drinks without a purchase and sleeps overnight',()=>{
  const person=PROFILES.find(p=>p.name==='Barfly');assert.ok(person);
- for(const minute of [0,179,600,1439]){const plan=residentPlan(person,minute);assert.equal(plan.place,'izakaya');assert.equal(plan.barflySleeping,false);}
- for(const minute of [180,300,599]){const plan=residentPlan(person,minute);assert.equal(plan.place,'izakaya');assert.equal(plan.barflySleeping,true);}
+ // After closing he helps clean up (03:00-04:00, izakaya-hours.js), then sleeps until ten.
+ for(const minute of [0,180,239,600,1439]){const plan=residentPlan(person,minute);assert.equal(plan.place,'izakaya');assert.equal(plan.barflySleeping,false);}
+ for(const minute of [240,300,599]){const plan=residentPlan(person,minute);assert.equal(plan.place,'izakaya');assert.equal(plan.barflySleeping,true);}
 });
 
 test('the Barfly drinks indefinitely without a bill and sleeps through the night',()=>{

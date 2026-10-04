@@ -17,7 +17,8 @@ import {buildPark,parkFoliage,preloadPark} from './park.js?snappy=1';
 import {buildIzakaya} from './izakaya.js?snappy=1';
 import {buildStaffBench} from './staff-bench.js';
 import {batchStaticProps} from '../render/static-props.js';
-import {STREET_CAST} from '../people/residents.js';
+import {WORLD_CAST} from '../people/residents.js';
+import {IZAKAYA_DOOR} from './dining-layout.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
 import {buildStreetFurniture} from './street-furniture.js';
@@ -309,8 +310,10 @@ export function createTown(options){
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
-  for(const profile of STREET_CAST){
-   const spawn=profile.work;
+  // Minato's regular comes back with them: he lives in the izakaya and keeps it
+  // company when it is shut (people/izakaya-hours.js), so it is never empty.
+  for(const profile of WORLD_CAST){
+   const spawn=profile.name==='Barfly'?[IZAKAYA_DOOR[0],IZAKAYA_DOOR[1]]:profile.work;
    let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
   }
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id)||!Number.isFinite(s.side))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}

@@ -1,3 +1,4 @@
+import {izakayaJob} from './izakaya-hours.js';
 import {gardenPoint} from '../world/garden-layout.js';
 import {bookshopVisitPlan} from './bookshop-visits.js';
 import {marketVisitsForDay,RAMEN_VISITS,marketVisitPurpose} from './market-visits.js';
@@ -305,6 +306,8 @@ function kitahamaPlan(profile,plan){
  return plan.activity?{...plan,activity:plan.activity.replace(/ before the last (bus|ferry)/,' before walking home').replace(/the Harbour Line/g,'home')}:plan;
 }
 function commuterPlanOn(profile,minutes,rain=false,state=null){
+ // After last orders Nao stays an hour to wipe down and lock up (izakaya-hours.js).
+ if(profile.name==='Nao'){const job=izakayaJob('Nao',minutes);if(job)return {place:'izakaya',target:IZAKAYA_DOOR,activity:job.activity};}
  if(livesAtWork(profile))return workplaceResidentPlan(profile,minutes,rain,state);
  if(livesInYard(profile))return yardResidentPlan(profile,minutes,rain,state);
  const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:transitStop().queue,activity});
@@ -362,8 +365,9 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  // Minato's regular never joins the Harbour Line or leaves the room. He sleeps on
  // his usual stool from 03:00 until 10:00 and drinks at the counter the rest of day.
  if(profile?.name==='Barfly'){
-  const minute=minuteOfDay(minutes),sleeping=minute>=180&&minute<600;
-  return {place:'izakaya',target:IZAKAYA_DOOR,activity:sleeping?'asleep on his Minato stool':'having another beer at Minato',barflySleeping:sleeping};
+  // Closed hours he cleans to pay off his tab (izakaya-hours.js), and sleeps 04:00-10:00.
+  const minute=minuteOfDay(minutes),sleeping=minute>=240&&minute<600,job=izakayaJob('Barfly',minutes);
+  return {place:'izakaya',target:IZAKAYA_DOOR,activity:job?job.activity:sleeping?'asleep on his Minato stool':'having another beer at Minato',barflySleeping:sleeping};
  }
  const plan=commuterPlan(profile,minutes,rain,state);
  // The two gardens have regular visitors; work and bad-weather routines stay intact.

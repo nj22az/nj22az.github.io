@@ -65,3 +65,5 @@ export const HOME_OWNERS=RESIDENTS.filter(p=>p.homeEntry);
 // Mrs Sato, who comes in on the morning bus to cook the lunch ramen.
 export const STREET_CAST_NAMES=Object.freeze(['Thuan','Nao','Aya','Reiko','Kenji','Tetsuo','Harbour master','Officer Mori','Mrs Sato']);
 export const STREET_CAST=RESIDENTS.filter(p=>STREET_CAST_NAMES.includes(p.name));
+/** Everybody the town builds: the street cast, and Minato's regular, who lives in the izakaya and has no street of his own. */
+export const WORLD_CAST=[...STREET_CAST,...RESIDENTS.filter(p=>p.name==='Barfly')];

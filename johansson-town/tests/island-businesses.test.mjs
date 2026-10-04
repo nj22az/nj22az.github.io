@@ -20,7 +20,7 @@ import {TOWN_DESTINATIONS} from '../src/world/town-grid.js';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
 import {ITEMS} from '../content-data.js';
 import {createActivities} from '../activities.js';
-import {STREET_CAST,STREET_CAST_NAMES} from '../src/people/residents.js';
+import {STREET_CAST,WORLD_CAST,STREET_CAST_NAMES} from '../src/people/residents.js';
 // Residents return to the street one at a time; checks on someone still away wait for them.
 const inCast=name=>STREET_CAST_NAMES.includes(name);
 
@@ -49,7 +49,7 @@ test('published businesses have reachable real doors and a clear passage beside 
   assert.equal(sites.some(s=>s.id==='form3d'),true);
   assert.ok(world.group.getObjectByName('Consolidated harbour office'));
   assert.equal(sites.find(s=>s.id==='frontrow').bookshop,true);assert.equal(sites.find(s=>s.id==='form3d').industrialWorkshop,true);
-  assert.equal(world.people.length,STREET_CAST.length);assert.equal(new Set(world.people.map(p=>p.profile.name)).size,STREET_CAST.length);
+  assert.equal(world.people.length,WORLD_CAST.length);assert.equal(new Set(world.people.map(p=>p.profile.name)).size,WORLD_CAST.length);
   for(const site of [...sites,world.warehouse.place]){
    const [x,,z]=site.door;assert.equal(blocked(x,z),false,site.id+' door');
    const path=nav.path({x:-3,z:-20},{x,z});assert.deepEqual(path.at(-1),[x,z],site.id+' reachable door');

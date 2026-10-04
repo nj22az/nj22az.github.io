@@ -1,3 +1,4 @@
+import {izakayaJob} from './izakaya-hours.js';
 import * as THREE from '../../vendor/three.module.js';
 import {DRINKS,createDrinkProp,createDishProp,setPropPortion,updatePropPortion,disposeServing} from './izakaya-beer.js';
 import {consumptionPhase} from '../avatars/consume.js';
@@ -84,9 +85,11 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
   for(const person of present){
    const name=person.profile.name;
    if(name==='Barfly'){
+    // While he is cleaning, the closed-hours job has him (izakaya-hours.js, indoor-residents.js).
+    if(izakayaJob('Barfly',minutes)){delete person.g.userData.sleeping;continue;}
     // No order ledger, payment or finite meal cycle: his drink animation repeats
-    // indefinitely, with the overnight sleep pose taking over from 03:00 to 10:00.
-    const sleeping=((minutes%1440)+1440)%1440>=180&&((minutes%1440)+1440)%1440<600,u=person.g.userData;
+    // indefinitely, with the overnight sleep pose taking over from 04:00 to 10:00.
+    const sleeping=((minutes%1440)+1440)%1440>=240&&((minutes%1440)+1440)%1440<600,u=person.g.userData;
     // Drunk, but he stops before the floor: at the limit he rests, and starts again a drink below it.
     u.barflyResting=!wantsAnother(u.tipsy,BEER)||(u.barflyResting&&(u.tipsy||0)>LIMIT-1);
     const drinking=!sleeping&&!u.barflyResting;
@@ -132,7 +135,8 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
    }
   }
   // While Nao is bringing the player a drink, izakaya-beer.js has her.
-  const candidate=kitchen?null:getStaff(),staff=candidate&&candidate.visible&&candidate.userData[inside]&&!candidate.userData.roomTransition&&!candidate.userData.playerService?candidate:null;if(staff){
+  // After last orders she is cleaning down (izakaya-hours.js); the job has her then.
+  const candidate=kitchen?null:getStaff(),staff=candidate&&candidate.visible&&candidate.userData[inside]&&!candidate.userData.roomTransition&&!candidate.userData.playerService&&!(place==='izakaya'&&izakayaJob('Nao',minutes))?candidate:null;if(staff){
    const tidying=!serving&&Math.floor(minutes/6)%3!==2;
    staff.userData.serving=!!serving;staff.userData.socialPose=serving||tidying?'Use':'Idle_Neutral';
    staff.userData.activity=place==='ramen'?serving?'ladling a bowl of ramen for '+serving.profile.name:tidying?'minding the stock pots':'wiping down the ramen counter'

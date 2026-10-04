@@ -1,3 +1,4 @@
+import {izakayaOpen} from '../people/social.js';
 import {addOwnedCharacter} from '../people/owned-characters.js';
 import {japaneseSign,signText} from './okinawa/signs.js';
 import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './interiors/shared-dining-layout.js';
@@ -104,7 +105,7 @@ export function buildIzakaya(world,options){
  }});
  return site;
 }
-export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}){
+export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,getMinutes=()=>1200}){
  if(!asset('interior',room)){
   box([13,.2,13],[0,-.1,0],0x965332,room,false);box([13,3.8,.2],[0,1.9,-6.4],0xe8c894,room,false);box([8,1,1],[-.8,.5,-2.6],0x965332,room,false);
  }
@@ -118,7 +119,7 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  const anchor=(position,label,fn)=>{const o=new THREE.Object3D();o.position.set(...position);room.add(o);reg(o,label,fn,true);return o;};
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.1,.68),new THREE.MeshStandardMaterial({map:signTexture("Welcome back",'WELCOME BACK · MINATO','#b55049')}));sign.position.set(.5,3.1,-6.05);room.add(sign);
  for(const c of SHARED_DINING_COLLIDERS)collider(c.x,c.z,c.w,c.d,c.height);
- hangMenuStrips(room);lightTheRoom(room);
+ hangMenuStrips(room);const lamps=lightTheRoom(room);
  anchor([0,1,5.5],'Step outside',exit);
  anchor([3.55,1.15,-2.05],'Order something delicious',()=>action('izakaya-menu'));
  anchor([0,1,0],'Listen to the table',()=>action('izakaya-gossip'));
@@ -140,8 +141,8 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  const beerSign=new THREE.Mesh(new THREE.PlaneGeometry(1.05,.55),new THREE.MeshStandardMaterial({map:signTexture('Hawaii Lager','ハワイラガー · アメリカのビール','#244b46'),roughness:.85}));
  beerSign.name='Hawaii Lager advertising';beerSign.position.set(-4.4,2.2,-2.95);room.add(beerSign);
  anchor([-4.4,1.6,-2.2],'Look at Hawaii Lager',()=>action('inspect','Hawaii Lager','An American lager advertisement sent by the harbour importer. The little Barfly mascot wears his favourite island shirt. Nao keeps the display at the quiet end of the counter.'));
- const owned=[barfly];
- return {keep:play,owned,ownedUpdate:dt=>owned.forEach(actor=>actor.update(dt)),dispose:()=>owned.forEach(actor=>actor.dispose()),name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
+ const owned=[barfly],closed=buildClosedMinato(room,lamps);closed.update(getMinutes());
+ return {keep:play,owned,ownedUpdate:dt=>{owned.forEach(actor=>actor.update(dt));closed.update(getMinutes());},dispose:()=>owned.forEach(actor=>actor.dispose()),name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
 }
 
 /**
@@ -179,10 +180,42 @@ function hangMenuStrips(room){
  room.add(group);
 }
 /** Warm light from the lanterns over the counter and the lamps over the tables. */
+/**
+ * Minato between last orders and opening (people/izakaya-hours.js has who is cleaning):
+ * the noren taken in and leaning by the door, the 準備中 card hung in the doorway, a mop
+ * bucket out, and the lamps down to working light over the counter.
+ */
+function buildClosedMinato(room,lamps){
+ const group=new THREE.Group();group.name='Minato closed';room.add(group);
+ const mat=hex=>new THREE.MeshStandardMaterial({color:hex,roughness:.8});
+ // The noren, folded over its pole, leaning in the corner by the door.
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,1.9,6),mat(0x6e4c30));pole.position.set(-2.05,.95,6.0);pole.rotation.z=.08;group.add(pole);
+ const cloth=new THREE.Mesh(new THREE.BoxGeometry(.5,1.1,.04),mat(0x1f3a5a));cloth.position.set(-2.0,1.25,5.98);cloth.rotation.z=.08;group.add(cloth);
+ // The card in the doorway: 準備中, "getting ready".
+ const c=document.createElement('canvas');c.width=256;c.height=128;const x=c.getContext('2d');
+ x.fillStyle='#f6efdc';x.fillRect(0,0,256,128);x.strokeStyle='#5a3b22';x.lineWidth=6;x.strokeRect(4,4,248,120);
+ x.fillStyle='#2a2018';x.font='bold 54px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';x.textAlign='center';x.textBaseline='middle';x.fillText("準備中",128,52);
+ x.font='bold 22px sans-serif';x.fillText('CLOSED · OPEN AT 16:00',128,100);
+ const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
+ for(const yaw of [0,Math.PI]){const card=new THREE.Mesh(new THREE.PlaneGeometry(.5,.25),new THREE.MeshStandardMaterial({map:t,roughness:.9}));card.position.set(0,2.3,6.2+(yaw?.004:-.004));card.rotation.y=yaw;card.name='Minato closed card';group.add(card);}
+ const string=new THREE.Mesh(new THREE.CylinderGeometry(.003,.003,.4,4),mat(0x2a2a2a));string.position.set(0,2.6,6.2);group.add(string);
+ // The mop bucket in the corner by the barrels.
+ const bucket=new THREE.Mesh(new THREE.CylinderGeometry(.17,.14,.3,12),mat(0x2a7ac0));bucket.position.set(-5.6,.15,1.25);group.add(bucket);
+ const water=new THREE.Mesh(new THREE.CylinderGeometry(.15,.15,.01,12),mat(0x9fb8c4));water.position.set(-5.6,.27,1.25);group.add(water);
+ const base=lamps.map(l=>l.intensity);let last=null;
+ return {update(minutes){
+  const open=izakayaOpen(minutes);if(open===last)return;last=open;
+  group.visible=!open;
+  // Working light: the two pendants over the middle of the counter, the rest down low.
+  lamps.forEach((l,i)=>{l.intensity=open?base[i]:base[i]*(i===1||i===2?.8:.3);});
+ }};
+}
 function lightTheRoom(room){
+ const lights=[];
  // Under each bell pendant over the counter and the tables, the back bar's shelf lights, and
  // the koagari (tools/blender/build-minato-interior.py).
  for(const [x,y,z,power] of [[-3.8,2.25,-2.25,3.6],[-2.3,2.25,-2.25,3.6],[-.8,2.25,-2.25,3.6],[.7,2.25,-2.25,3.6],[2.2,2.25,-2.25,3.6],[-2.9,1.9,-5.5,3],[-3.5,2.15,2.2,4],[2.6,2.15,2,4],[5.3,1.95,1.8,4]]){
-  const light=new THREE.PointLight(0xffb36b,power,7,2);light.position.set(x,y,z);light.name='Minato lamp';room.add(light);
+  const light=new THREE.PointLight(0xffb36b,power,7,2);light.position.set(x,y,z);light.name='Minato lamp';room.add(light);lights.push(light);
  }
+ return lights;
 }

@@ -1,3 +1,4 @@
+import {createToolProp,fitToolProp} from './tools.js';
 import {appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,measure} from './build.js';
@@ -107,6 +108,10 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   if(actor.heldProp&&Number.isFinite(u.heldPortion))setPropPortion(actor.heldProp,u.heldPortion,{immediate:true});
   if(actor.dishProp&&Number.isFinite(u.foodPortion))setPropPortion(actor.dishProp,u.foodPortion,{immediate:true});
  }
+ // Cleaning tools (izakaya-hours.js): one in the right hand while the pose works it.
+ const toolKind=u.tool||null;
+ if(actor.toolKind!==toolKind){actor.toolProp?.removeFromParent();actor.toolProp=toolKind?createToolProp(toolKind):null;actor.toolKind=toolKind;if(actor.toolProp)avatar.bones.handR.add(actor.toolProp);}
+ if(actor.toolProp)fitToolProp(avatar,actor.toolProp);
  if(actor.heldProp){
   const c=actor.animator.consumption;
   if(c&&!Number.isFinite(u.heldPortion)&&c.swallow>.5&&actor.consumedCycle!==c.cycle){
