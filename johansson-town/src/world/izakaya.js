@@ -3,6 +3,7 @@ import {japaneseSign,signText} from './okinawa/signs.js';
 import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './interiors/shared-dining-layout.js';
 import {createIzakayaTV} from './advertising-billboard.js';
 import {hangIzakayaPosters} from './interiors/izakaya-posters.js';
+import {buildIzakayaDressing} from './interiors/izakaya-dressing.js';
 import {restaurantCollider,restaurantApproach,izakayaPlot,SATO_RAMEN_DOOR} from './dining-layout.js';
 import {SATO_RAMEN,satoRamenOpen} from './sato-ramen-layout.js';
 import {prepareIzakayaGlass} from './shop-glass.js';
@@ -130,6 +131,7 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  anchor([4.1,1,-3.8],'Inspect the shared kitchen',()=>action('inspect','Minato and Sato shared kitchen','The ramen stock pots, sink, prep board and range share a working aisle. Walk around the counter through the open passage. Please keep clear while Nao and Mrs Sato are carrying hot bowls.'));
  anchor([-.4,2.5,-5.6],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
+ buildIzakayaDressing(room,{collider});
  // Imported American beer advertising: Barfly is a countertop mascot, not another resident.
  box([.58,.08,.45],[-4.4,1.34,-2.6],0x244b46,room,false);
  const barfly=addOwnedCharacter({parent:room,kind:'barfly',position:[-4.4,1.38,-2.6],height:.48,staticDisplay:true,yaw:.15});
