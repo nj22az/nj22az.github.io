@@ -3,17 +3,16 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect} from '../physics.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
-import {COAST_BOUNDS} from '../src/world/peninsula.js';
+import {COAST_BOUNDS} from '../src/world/island-coast.js';
 
 async function town(){
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+
  const {createTown}=await import('../src/world/town.js?quarter');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const labels=[];
- const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',
+ const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),
   mobile:false,shadows:false,register:(o,label,fn)=>labels.push({label,fn,o}),enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  return {world,labels};
 }
@@ -66,7 +65,7 @@ test('the residential quarter: lanes you can walk, every gate on a lane, a park,
 });
 
 test('the anchored cast: everybody who walks has a home, a job, an evening, a day off and somewhere to go',async()=>{
- configureTownMode(TOWN_MODES.PENINSULA);
+
  const {anchoredCast,CAST_TIERS}=await import('../src/people/anchored-cast.js');
  const cast=anchoredCast();
  assert.ok(cast.some(c=>c.name==='Thuan'&&c.tier==='core'));

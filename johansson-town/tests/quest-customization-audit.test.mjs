@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {installDOM} from './fixtures.mjs';
 import {createActivities} from '../activities.js';
-import {configureTownMode} from '../src/world/town-mode.js';
 import {STREET_CAST_NAMES} from '../src/people/residents.js';
 import {wantPool,wantsFor,gave,openWant,wantLine,TASTE_ITEMS} from '../src/people/friendship.js';
 import {playerRecipe,savePlayerRecipe,PLAYER_RECIPE_KEY} from '../src/avatars/actors.js';
@@ -12,8 +11,7 @@ import {SAVE_KEY,DEFAULT_PLAYER,addPlayer,switchPlayer,readSave,slotKey} from '.
 
 test('restoring a retired layout cannot change dialogue about the live peninsula homes',()=>{
  const dom=installDOM({[SAVE_KEY]:JSON.stringify({townMode:'shopping-district'})});
- configureTownMode('peninsula');
- try{
+ {
   const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>600});
   assert.equal(acts.state.townMode,'peninsula');
   acts.action('resident','Aya');
@@ -21,7 +19,7 @@ test('restoring a retired layout cannot change dialogue about the live peninsula
   dom.button('Where do you live?');
   assert.match(document.querySelector('#activityBody').firstChild.textContent,/Front-Row Yard/);
   assert.doesNotMatch(document.querySelector('#activityBody').firstChild.textContent,/commute|leave by bus/i);
- }finally{configureTownMode('legacy');}
+ }
 });
 
 test('daily favours belong to the playable cast on every day, including the former empty day eight',()=>{
@@ -98,8 +96,8 @@ test('gift pages expose a late-picked daily request and every present for Thuan'
 });
 
 test('exported progress includes appearance and an imported slot restores it without changing other players',()=>{
- installDOM();configureTownMode('peninsula');
- try{
+ installDOM();
+ {
   savePlayerRecipe({...CAST_RECIPES.Johansson,name:'Custom islander'});
   const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>600});
   acts.state.yen=777;acts.save();
@@ -113,5 +111,5 @@ test('exported progress includes appearance and an imported slot restores it wit
   assert.equal(playerRecipe().name,'Imported edit','Later local customization wins over the imported snapshot');
   switchPlayer(localStorage,DEFAULT_PLAYER.id);
   assert.equal(playerRecipe().name,'Custom islander');
- }finally{configureTownMode('legacy');}
+ }
 });

@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createTown} from '../src/world/town.js';
-import {configureTownMode} from '../src/world/town-mode.js';
 import {GARDEN} from '../src/world/garden-layout.js';
 import {ONSEN_DOOR,onsenPoint} from '../src/world/onsen-layout.js';
 import {createNavigation} from '../src/people/navmesh.js';
@@ -14,10 +13,10 @@ import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
 
 function setup(){
  installDOM();
- const sites=[],world=createTown({scene:new THREE.Scene(),sites,townMode:'peninsula',mobile:true,shadows:false,register(o){o.userData.hit={inside:false};},onAction(){},enter(){}});
+ const sites=[],world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(o){o.userData.hit={inside:false};},onAction(){},enter(){}});
  world.people=world.people.filter(p=>p.profile.name==='Thuan');
  const person=world.people[0],g=person.g;
- const state={townMode:'peninsula',inventory:[],onsenDate:0};
+ const state={inventory:[],onsenDate:0};
  const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
  const ai=createCastAI({world,player:new THREE.Group(),state:()=>state,paused:()=>false,collides:blocked});
  return {world,sites,person,g,state,blocked,ai};
@@ -36,7 +35,7 @@ test('the onsen portal and exit are reachable through a narrow opening, with sol
   assert.equal(sweepFraction(from,{x:site.exitPosition[0],z:site.exitPosition[2]},blocked),1,'Exit corridor is clear');
   for(const localX of [-2.9,.2])assert.equal(blocked(...onsenPoint(localX,4)),true,'Front walls remain solid');
   assert.equal(blocked(...onsenPoint(-1.4,3)),true,'Room body remains sealed beyond the portal');
- }finally{configureTownMode('legacy');}
+ }finally{}
 });
 
 for(const dt of [1/60,1/30])test(`Thuan approaches, crosses the onsen threshold and walks out at ${1/dt} Hz`,()=>{
@@ -66,7 +65,7 @@ for(const dt of [1/60,1/30])test(`Thuan approaches, crosses the onsen threshold 
   assert.ok(Math.hypot(g.position.x-ONSEN_DOOR[0],g.position.z-ONSEN_DOOR[1])>.3,'She leaves the threshold and continues home');
   // Since the island grew she lives in Kitahama: after the bath she walks home, not to the ferry.
   assert.equal(g.userData.place,'home');assert.equal(ai.snapshot().Thuan.indoors,null);
- }finally{configureTownMode('legacy');}
+ }finally{}
 });
 
 test('an old indoor onsen save resolves the current threshold and can still leave',()=>{
@@ -78,5 +77,5 @@ test('an old indoor onsen save resolves the current threshold and can still leav
   assert.equal(blocked(g.position.x,g.position.z),false);
   for(let t=0;t<30;t+=1/30)ai.update(1/30,1300,false);
   assert.ok(Math.hypot(g.position.x-ONSEN_DOOR[0],g.position.z-ONSEN_DOOR[1])>.3);assert.equal(g.visible,true);assert.equal(g.userData.indoors,undefined);
- }finally{configureTownMode('legacy');}
+ }finally{}
 });

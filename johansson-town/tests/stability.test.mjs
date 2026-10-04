@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFile,access} from 'node:fs/promises';
+import {readFile} from 'node:fs/promises';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -14,7 +14,6 @@ assert.equal(circleHitsCircle(0,0,.28,.5,0,.35),true,'resident overlap must be b
 assert.equal(roomBoundsBlocked(0,0,.28),false);
 assert.equal(roomBoundsBlocked(5.5,0,.28),true,'room wall radius must be respected');
 assert.equal(townBoundsBlocked(0,0,.28),false);
-assert.equal(townBoundsBlocked(6.9,0,.28),true,'shopping-street edge must be solid');
 assert.equal(townBoundsBlocked(10,-42,.28),false,'harbour apron must remain accessible');
 assert.equal(townBoundsBlocked(0,-61,.28),false,'outer harbour pier must be walkable');
 assert.equal(townBoundsBlocked(3.7,-61,.28),false,'pier usable width must remain accessible');

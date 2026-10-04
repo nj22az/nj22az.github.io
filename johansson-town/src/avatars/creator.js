@@ -2,8 +2,9 @@ import {ISLAND_OUTFITS,ISLAND_COSTUMES,outfitAllowedFor,appropriateOutfit} from 
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from './build.js';
 import {createAvatarAnimator} from './animate.js';
-import {drawPart} from './face.js';
+import {drawPart,drawFace} from './face.js';
 import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
+import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
 import {CAST_RECIPES} from './cast.js';
 import {DIALS,DIAL_STEPS,dialStep,stepValue,personalityOf,voiceOf,MONTHS,daysIn,hello} from './personality.js';
 import {svg} from '../ui/icons.js';
@@ -281,8 +282,10 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  // The figure lives in a small frame in the corner, with its buttons underneath, so
  // the menus have the room. The canvas is pinned inside the frame: left to size
  // itself, Safari grows a canvas each time it is resized, over everything else.
+ const dragHint=el('p',{className:'shm-note',id:'shm-drag-hint',hidden:true});
+ canvas.setAttribute('aria-describedby','shm-drag-hint');
  const stage=el('div',{className:'shm-stage'},canvas,bubble);
- const side=el('div',{className:'shm-side'},stage,el('div',{className:'shm-dice'},dice,undo,reset),poses);
+ const side=el('div',{className:'shm-side'},stage,dragHint,el('div',{className:'shm-dice'},dice,undo,reset),poses);
  const category=el('select',{className:'shm-select',ariaLabel:'Appearance category'},...TABS.map(t=>el('option',{value:t.id,textContent:t.name})));
  const categoryRow=el('label',{className:'shm-category'},'Edit',category);
  const tabs=el('div',{className:'shm-tabs',role:'tablist',ariaLabel:'Appearance category'});
@@ -319,7 +322,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const floor=new THREE.Mesh(new THREE.CircleGeometry(.62,40),new THREE.MeshBasicMaterial({color:0xf6d79c}));floor.rotation.x=-Math.PI/2;scene.add(floor);
  const holder=new THREE.Group();scene.add(holder);
  const camera=new THREE.PerspectiveCamera(28,1,.05,50);
- let avatar=null,animator=null,spin=0,spinVelocity=0,dragging=null,frame=0,dirty=true,clock=performance.now(),focus=0;
+ let avatar=null,animator=null,spin=0,spinVelocity=0,dragging=null,frame=0,dirty=true,clock=performance.now(),focus=0,featureDrag=null;
  const frames={face:null,full:null};
  function rebuild(){
   if(avatar){avatar.root.removeFromParent();avatar.dispose();}
@@ -351,18 +354,71 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function loop(){
   frame=requestAnimationFrame(loop);
   const now=performance.now(),dt=Math.min(.05,(now-clock)/1000);clock=now;
-  if(dirty){rebuild();dirty=false;}
+  if(dirty){
+   if(featureDrag){drawFace(avatar.face.ctx,recipe,{expression:'neutral',size:avatar.face.canvas.width});avatar.face.texture.needsUpdate=true;}
+   else rebuild();
+   dirty=false;
+  }
   if(!dragging){spin+=spinVelocity*dt;spinVelocity*=Math.exp(-dt*3);if(Math.abs(spinVelocity)<.05)spin+=(previewFacing-spin)*Math.min(1,dt*1.5)*(pose==='walk'?0:1);}
   // A body faces -z in the town; here it turns round to face you.
-  holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
+  if(!featureDrag)holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
   const talking=speech&&speech.typing;
-  animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,talk:talking?.5+.5*Math.sin(now/70):0,
+  if(!featureDrag)animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,talk:talking?.5+.5*Math.sin(now/70):0,
    expression:step==='hello'?'happy':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
-  aim(dt);renderer.render(scene,camera);
+  if(!featureDrag)aim(dt);renderer.render(scene,camera);
  }
- canvas.addEventListener('pointerdown',e=>{dragging={x:e.clientX,spin,t:performance.now()};canvas.setPointerCapture(e.pointerId);});
- canvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=(e.clientX-dragging.x)/Math.max(120,canvas.clientWidth)*Math.PI*1.6;spinVelocity=(spin-(dragging.spin+dx))/-.016;spin=dragging.spin+dx;spinVelocity=THREE.MathUtils.clamp(spinVelocity,-8,8);});
- const endDrag=()=>{dragging=null;};canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);
+ const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+ function facePoint(e){
+  const rect=canvas.getBoundingClientRect();
+  pointer.set((e.clientX-rect.left)/rect.width*2-1,1-(e.clientY-rect.top)/rect.height*2);
+  scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);
+  raycaster.setFromCamera(pointer,camera);
+  const hit=raycaster.intersectObject(avatar.face.head,false)[0];
+  return hit?.uv?{x:hit.uv.x*256,y:(1-hit.uv.y)*256}:null;
+ }
+ function syncPositionInputs(){
+  for(const meter of body.querySelectorAll('.shm-meter[data-at]')){
+   const v=get(recipe,meter.dataset.at);[...meter.children].forEach((notch,i)=>notch.classList.toggle('on',i<Math.round(v*16)));
+  }
+  for(const range of body.querySelectorAll('input[type=range]')){
+   const value=get(recipe,range.dataset.at);
+   range.value=range.dataset.invert==='true'?1-value:value;
+  }
+ }
+ canvas.addEventListener('pointerdown',e=>{
+  if(dragging||e.button!==0||!e.isPrimary)return;
+  const point=step==='look'&&POSITION_FEATURES.has(tab)?facePoint(e):null;
+  const hit=point&&hitFaceFeature(recipe,tab,point);
+  if(hit){
+   featureDrag={...hit,point,start:structuredClone(recipe),remembered:false};spinVelocity=0;
+  }
+  dragging={id:e.pointerId,x:e.clientX,spin,t:performance.now()};canvas.setPointerCapture(e.pointerId);
+ });
+ canvas.addEventListener('pointermove',e=>{
+  if(!dragging||e.pointerId!==dragging.id)return;
+  if(featureDrag){
+   const point=facePoint(e);if(!point)return;
+   const fields=draggedFaceFields(featureDrag.start,featureDrag,point.x-featureDrag.point.x,point.y-featureDrag.point.y);
+   if(Object.entries(fields).every(([at,value])=>get(recipe,at)===value))return;
+   if(!featureDrag.remembered){history.push(structuredClone(featureDrag.start));if(history.length>60)history.shift();featureDrag.remembered=true;}
+   for(const [at,value] of Object.entries(fields))set(recipe,at,value);
+   recipe=normalizeRecipe(recipe);dirty=true;undo.disabled=false;syncPositionInputs();
+   return;
+  }
+  const dx=(e.clientX-dragging.x)/Math.max(120,canvas.clientWidth)*Math.PI*1.6;
+  spinVelocity=(spin-(dragging.spin+dx))/-.016;spin=dragging.spin+dx;spinVelocity=THREE.MathUtils.clamp(spinVelocity,-8,8);
+ });
+ function endDrag(e){
+  if(!dragging||(e&&e.pointerId!==dragging.id))return;
+  const id=dragging.id;
+  if(featureDrag){
+   if(e?.type==='pointercancel'&&featureDrag.remembered){recipe=featureDrag.start;history.pop();undo.disabled=!history.length;syncPositionInputs();}
+   else if(featureDrag.remembered&&JSON.stringify(recipe)===JSON.stringify(featureDrag.start)){history.pop();undo.disabled=!history.length;}
+   dirty=true;featureDrag=null;renderPictures();
+  }
+  dragging=null;if(canvas.hasPointerCapture(id))canvas.releasePointerCapture(id);
+ }
+ canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);
  const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;observer?.observe(canvas);resize();
 
  // ----- Part pictures -----
@@ -407,17 +463,23 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function remember(){history.push(structuredClone(recipe));if(history.length>60)history.shift();undo.disabled=false;}
  function change(at,value,keep=true){
   if(at.startsWith('outfit')&&!outfitAllowedFor(wardrobeOwner,at==='outfit'?value:{...recipe.outfit,[at.split('.')[1]]:value}))return;
+  endDrag();
   if(get(recipe,at)===value)return;
   if(keep)remember();
   set(recipe,at,value);recipe=normalizeRecipe(recipe);dirty=true;
  }
- function chooseTab(id){tab=id;category.value=id;const t=TABS.find(x=>x.id===id);if(!t.controls.some(c=>c.page===page))page='style';renderTabs();renderBody();body.scrollTop=0;syncFocus();}
+ function chooseTab(id){endDrag();tab=id;category.value=id;const t=TABS.find(x=>x.id===id);if(!t.controls.some(c=>c.page===page))page='style';renderTabs();renderBody();body.scrollTop=0;syncFocus();}
  category.onchange=()=>chooseTab(category.value);
  function renderTabs(){
   if(!tabs.children.length)tabs.append(...TABS.map(t=>{const b=el('button',{role:'tab',id:'shm-tab-'+t.id,textContent:t.name});b.setAttribute('aria-controls','shm-body');b.onclick=()=>chooseTab(t.id);return b;}));
   [...tabs.children].forEach((b,i)=>{const active=TABS[i].id===tab;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
   const t=TABS.find(x=>x.id===tab);
   pages.replaceChildren(...PAGES.filter(([id])=>t.controls.some(c=>c.page===id)).map(([id,label])=>{const b=el('button',{role:'tab',textContent:label});b.setAttribute('aria-selected',String(id===page));b.onclick=()=>{page=id;renderTabs();renderBody();};return b;}));
+  body.setAttribute('aria-label',TABS.find(t=>t.id===tab).name);
+  const positioning=step==='look'&&POSITION_FEATURES.has(tab);
+  dragHint.textContent=positioning?'Drag the '+tab+' on the face to position them. Adjustment buttons also work.':'';
+  dragHint.hidden=!positioning;
+  canvas.ariaLabel=positioning?'Your islander. Drag '+tab+' to position; drag elsewhere to turn.':'Your islander. Drag to turn.';
  }
  tabs.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const i=TABS.findIndex(t=>t.id===tab),n=e.key==='Home'?0:e.key==='End'?TABS.length-1:(i+(e.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;chooseTab(TABS[n].id);tabs.children[n].focus();tabs.children[n].scrollIntoView({block:'nearest',inline:'nearest'});};
  let pictureQueue=[],pictureJobs=[],pictureFrame=0,picturesDue=0;
@@ -427,7 +489,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const pressed=(row,b)=>{for(const x of row.children)x.setAttribute('aria-pressed',String(x===b));};
  /** A meter of sixteen notches and the two buttons either side of it. */
  function stepper(label,at,less,more,after=()=>{}){
-  const meter=el('div',{className:'shm-meter',ariaHidden:'true'});
+  const meter=el('div',{className:'shm-meter',ariaHidden:'true'});meter.dataset.at=at;
   const paint=()=>{const v=get(recipe,at);meter.replaceChildren(...Array.from({length:16},(_,i)=>el('i',{className:i<Math.round(v*16)?'on':''})));};
   const bump=d=>{change(at,Math.round(Math.max(0,Math.min(1,get(recipe,at)+d))*16)/16);paint();after();};
   const minus=el('button',{type:'button',textContent:'−',ariaLabel:less,title:less}),plus=el('button',{type:'button',textContent:'+',ariaLabel:more,title:more});
@@ -562,6 +624,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  // ----- Steps -----
  function syncFocus(){root.dataset.focus=faceFocus()?'face':'body';}
  function goTo(id){
+  endDrag();
   stopSpeech();bubble.hidden=true;step=id;root.dataset.step=id;
   const index=STEPS.findIndex(s=>s[0]===id);
   title.replaceChildren(document.createTextNode(STEPS[index][1]),el('small',{textContent:`Step ${index+1} of ${STEPS.length}`}));
@@ -577,19 +640,20 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  next.onclick=()=>{const i=STEPS.findIndex(s=>s[0]===step);if(i<STEPS.length-1)goTo(STEPS[i+1][0]);else finish(true);};
  function renderPoses(){
   const angle=el('select',{className:'shm-select shm-angle',ariaLabel:'Preview angle'},el('option',{value:'front',textContent:'Front'}),el('option',{value:'back',textContent:'Back'}));
-  angle.onchange=()=>{previewFacing=angle.value==='back'?Math.PI:0;spin=previewFacing;spinVelocity=0;};
+  angle.onchange=()=>{endDrag();previewFacing=angle.value==='back'?Math.PI:0;spin=previewFacing;spinVelocity=0;};
   const select=el('select',{className:'shm-select',ariaLabel:'Preview pose'},...POSES.map(([id,label])=>el('option',{value:id,textContent:label})));select.value=pose;
-  select.onchange=()=>{pose=select.value;if(!['idle','walk','sit'].includes(pose))animator.play(pose);else animator.stop();};
+  select.onchange=()=>{endDrag();pose=select.value;if(!['idle','walk','sit'].includes(pose))animator.play(pose);else animator.stop();};
   poses.append(angle,select);
  }
 
  // ----- Buttons -----
- name.oninput=()=>{recipe.name=name.value.slice(0,24);};
+ name.oninput=()=>{endDrag();recipe.name=name.value.slice(0,24);};
  // The dice change how someone looks, never who they are.
- dice.onclick=()=>{remember();recipe=keepSelf(randomRecipe(),{...recipe,name:name.value});dirty=true;if(step==='start')faces[0]=recipe;renderBody();};
- undo.onclick=()=>{const r=history.pop();if(!r)return;recipe=r;name.value=recipe.name||'';dirty=true;undo.disabled=!history.length;renderBody();};
- reset.onclick=()=>{remember();recipe=keepSelf(CAST_RECIPES.Johansson,{...recipe,name:name.value});dirty=true;renderBody();};
+ dice.onclick=()=>{endDrag();remember();recipe=keepSelf(randomRecipe(),{...recipe,name:name.value});dirty=true;if(step==='start')faces[0]=recipe;renderBody();};
+ undo.onclick=()=>{endDrag();const r=history.pop();if(!r)return;recipe=r;name.value=recipe.name||'';dirty=true;undo.disabled=!history.length;renderBody();};
+ reset.onclick=()=>{endDrag();remember();recipe=keepSelf(CAST_RECIPES.Johansson,{...recipe,name:name.value});dirty=true;renderBody();};
  share.onclick=()=>{
+  endDrag();
   const code=encodeRecipe({...recipe,name:name.value});const link=shareLink?.(code);
   const text=el('textarea',{value:link||code,readOnly:true,ariaLabel:'Share link or code'});
   const paste=el('textarea',{placeholder:'Paste a code or link here to try it on',ariaLabel:'Import an islander'});
@@ -602,6 +666,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  };
  function finish(saving){
   if(!root.isConnected)return;
+  endDrag();
   stopSpeech();cancelAnimationFrame(frame);cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);observer?.disconnect();viewport?.removeEventListener('resize',fitViewport);viewport?.removeEventListener('scroll',fitViewport);
   root.removeEventListener('keydown',swallow);root.removeEventListener('keyup',swallow);
   const out=normalizeRecipe({...recipe,name:name.value});

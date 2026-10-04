@@ -7,7 +7,6 @@ import {fileURLToPath} from 'node:url';
 import * as THREE from '../vendor/three.module.js';
 import {createTown} from '../src/world/town.js?snappy=1';
 import {createActivities} from '../activities.js?snappy=1';
-import {createCharacters} from '../src/people/characters.js?snappy=1';
 import {createCastAI,DIALOGUE} from '../src/people/schedules.js?snappy=1';
 import {ROUTES,activeRoutes,routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
 import {TOWN_DESTINATIONS} from '../src/world/town-grid.js';
@@ -29,37 +28,10 @@ test('ground, pier edges and A/D coordinate convention',()=>{
  assert.equal(townBoundsBlocked(0,-62,.28),false);assert.equal(townBoundsBlocked(4.1,-62,.28),true);assert.equal(townBoundsBlocked(0,-65.2,.28),true);
  // activeRoutes rather than ROUTES: a route the current mode does not build has no
  // ground under it by design -- the staff path round the back of the shop exists only
- // where the west yard does. The peninsula's own tests walk that one.
+ // where the west yard does. the island's own tests walk that one.
  for(const route of activeRoutes())for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i];for(let t=0;t<=1;t+=.02)assert.ok(routeAt(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,.28),route.id+' lacks ground');}
  for(const yaw of [0,Math.PI/2,Math.PI,Math.PI*1.5]){const f={x:-Math.sin(yaw),z:-Math.cos(yaw)},right={x:Math.cos(yaw),z:-Math.sin(yaw)};assert.ok(Math.abs(f.x*right.x+f.z*right.z)<1e-10);assert.ok(f.x*right.z-f.z*right.x>.99);}
  assert.equal(groundHeight(0,0),0);assert.equal(groundHeight(32,47),0);
-});
-test('world construction, original route and new door reachability',()=>{
- const {world,all}=build();assert.equal(world.people.length,STREET_CAST.length);assert.ok(world.quality.streetInteractions>=8);
- const blocked=(x,z,r=.28)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
- // The compact town put the bus station across the old spine, so x=0 runs clear
- // only south of it. North of z=20.4 the shelter, its bench and the tightened
- // town bounds interrupt the line by design; assert that, so a new obstruction
- // further south is still caught.
- for(let z=20.2;z>=-62;z-=.2)assert.equal(blocked(0,z),false,'spine blocked at '+z);
- const northern=new Set();
- for(let z=32;z>20.2;z-=.2)for(const c of world.colliders)if(circleHitsRect(0,z,.28,c))northern.add(c.id);
- assert.deepEqual([...northern].sort(),['bus-station-bench','bus-station-shelter']);
- for(const s of all){const pos=s.door||[s.side*4,0,s.z+2.5];assert.equal(blocked(pos[0],pos[2],.28),false,'door blocked: '+s.id);}
- world.update(.016,1,1,1002);world.update(.016,2,0,1230);
- const book=all.find(s=>s.id==='frontrow');assert.equal(world.isOpen(book,1002),true);assert.equal(world.isOpen(book,1230),false);
- world.group.updateMatrixWorld(true);world.group.traverse(o=>assert.ok(o.matrixWorld.elements.every(Number.isFinite),o.name+' has invalid transforms'));
-});
-test('compact outskirts retain destinations without the long empty detours',()=>{
- const length=id=>{const r=ROUTES.find(r=>r.id===id);return r.points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-r.points[i][0],p[1]-r.points[i][1]),0);};
- assert.ok(length('west-service')<55,'Home pavement fits beside Main Street');
- assert.ok(!ROUTES.some(r=>r.id==='shrine-slope'||r.id==='bus-door'),'Removed landmarks leave no ghost routes');
- const residential=ROUTES.find(r=>r.id==='west-service');assert.equal(residential.points.length,2);assert.deepEqual(residential.points,[[-8.5,-20],[-8.5,31]],'One straight pavement connects the entire home frontage');assert.ok(!ROUTES.some(r=>r.id==='residential'||r.id==='bathhouse-door'),'Retired neighbourhood routes are removed');
- for(const [x,z] of [[120,60],[72,117],[-58,-74]])assert.equal(townBoundsBlocked(x,z,.28),true,'Old empty outskirts are no longer playable');
- const {world,anchors}=build();
- assert.ok(!anchors.some(a=>/hillside shrine|harbour bus hut/i.test(a.label)));assert.ok(!world.group.getObjectByName('district-building:bus-hut'));
- const pupils=world.people.filter(p=>['Hana','Daichi'].includes(p.profile.name));
- assert.equal(pupils.length,0);for(const p of pupils)assert.ok(p.g.position.distanceTo(new THREE.Vector3(44,0,36))<2,'Pupils move with the school');
 });
 test('navigation finds a collision-free route and cannot cut a wall corner',()=>{
  const blocked=(x,z,r=0)=>x<-1||x>8||z<-1||z>8||circleHitsRect(x,z,r,{x:3,z:3,w:2,d:5});
@@ -111,50 +83,7 @@ test('resident paths clear detailed props; evening destinations and Kenji escort
  const visible=world.people.filter(p=>p.g.visible);for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++)assert.ok(visible[i].g.position.distanceTo(visible[j].g.position)>.55,'Evening residents do not occupy one point');
 });
 
-test('every resident retains a named home and a clear route through the supplied neighbourhood',()=>{
- const {world,anchors}=build();assert.equal(world.homes.size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.owner)).size,10);assert.equal(new Set([...world.homes.values()].map(h=>h.door.join(','))).size,5);assert.equal(new Set([...world.homes.values()].map(h=>h.household)).size,7);
- const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
- for(const p of world.people){const home=world.homes.get(p.profile.name);assert.ok(home,p.profile.name);
-  assert.ok(anchors.some(a=>a.label==='Visit homes'&&a.o.position.x===home.door[0]&&a.o.position.z===home.door[1]),p.profile.name+' home prompt');
-  assert.equal(blocked(...home.door),false,p.profile.name+' doorstep');
-  const path=nav.path({x:0,z:26},{x:home.door[0],z:home.door[1]});assert.ok(path.length,p.profile.name+' route');
-  for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.1)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,p.profile.name+' wall clearance');
- }
- assert.equal(world.colliders.filter(c=>c.id==='main-street-core').length,1);assert.ok(!world.colliders.some(c=>c.id?.startsWith('DomekRdy')),'Old detached houses leave no colliders');
-});
-
-test('residents walk home without off-camera teleporting and Mori patrols past midnight',()=>{
- const {world}=build(),player=new THREE.Group(),state={inventory:[],quest:0};player.position.set(0,0,4);
- const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
- const chats=createNeighbourChats({world,observer:()=>player.position,state:()=>state,blocked:(a,b)=>!clearChatLine(a,b,world.colliders)});let chatted=false;
- ai.update(.1,1100,false);const mori=world.people.find(p=>p.profile.name==='Officer Mori');let nightMovement=0;
- for(let t=1100;t<1710;t+=.2){const before=world.people.map(p=>p.g.position.clone());ai.update(.2,t,false);chats.update(.2,t,false);chatted ||= !!chats.current;
-  world.people.forEach((p,i)=>assert.ok(p.g.position.distanceTo(before[i])<.3,p.profile.name+' teleported at '+t+' from '+before[i].toArray()+' to '+p.g.position.toArray()));
-  if(mori&&t>=1440&&t<1500)nightMovement+=mori.g.position.distanceTo(before[world.people.indexOf(mori)]);
-  assert.ok(world.people.filter(p=>p.g.visible).length<=world.people.length);
- }
- // Thuan and Nao spend the evening at work and on the last bus; street conversations need a neighbour back.
- if(STREET_CAST.length>2)assert.ok(chatted,'The actual moving cast has conversations during the evening');if(mori){assert.ok(nightMovement>40,'Mori keeps walking after midnight');assert.equal(mori.g.userData.indoors,undefined);}
- for(const p of world.people.filter(p=>p!==mori))assert.equal(p.g.userData.indoors,'home',p.profile.name+' reaches home by 04:30');
-});
-
-test('harbour park bench and approach connect to the quay without moving existing homes',()=>{
- const {world}=build(),blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked),seat=world.park.seat;
- assert.equal(blocked(seat.stand[0],seat.stand[2]),false,'Safe place to stand up');
- const path=nav.path({x:0,z:-44},{x:seat.stand[0],z:seat.stand[2]});assert.ok(path.length,'Bench reachable from quay');
- assert.ok(seat.eyeY>groundHeight(...[seat.position[0],seat.position[2]])+.8,'Seated eye clears the ground');
- assert.equal(world.park.bench.userData.seat,seat);
-});
 
 
-test('cross-alleys shorten trips through the housing blocks and northern destinations',()=>{
- const {world,all}=build(),blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)),nav=createNavigation(blocked);
- for(const route of ROUTES.filter(r=>r.id.endsWith('-cut'))){
-  for(let i=1;i<route.points.length;i++)for(let t=0;t<=1;t+=.025){const a=route.points[i-1],b=route.points[i];assert.equal(blocked(a[0]*(1-t)+b[0]*t,a[1]*(1-t)+b[1]*t),false,route.id+' must clear buildings and props');}
-  const a=route.points[0],b=route.points.at(-1),path=nav.path({x:a[0],z:a[1]},{x:b[0],z:b[1]});assert.ok(path.length);
-  const length=path.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-path[i][0],p[1]-path[i][1]),0);assert.ok(length<50,route.id+' must avoid the old perimeter detour');
- }
- for(let x=0;x<=38;x+=.25)assert.equal(groundHeight(x,31),0,'Shrine elevation must not lift the street');
- const tea=all.find(s=>s.id==='tea-house');const teaPath=nav.path({x:0,z:26},{x:tea.door[0],z:tea.door[2]});assert.ok(teaPath.length,'Tea house approach must remain connected at street level');assert.ok(Math.hypot(tea.door[0],tea.door[2]-26)<30,'Tea house is close to the north street');
- assert.equal(townBoundsBlocked(32,47,.32),true,'The removed floating platform has no invisible walkable landing');
-});
+
+

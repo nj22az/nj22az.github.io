@@ -23,8 +23,10 @@ function stepsFor(kind){
  return [['drinks',1.8,kind==='coffee'?'pouring a hot coffee':kind==='mugicha'?'pouring a cold barley tea':'pouring an oolong tea']];
 }
 const IDLE=[['pots',7,'stirring the stock pots'],['prep',6,'chopping spring onion'],['toppings',5,'laying out the toppings'],['pass',4,'wiping down the counter'],['boiler',5,'checking the noodle boiler']];
+/** After lunch (14:00–15:00, commuter-schedule.js SATO_SHIFT): washing up and wiping down, cloth or glass in hand. */
+const WASHUP=[['pass',9,'wiping the counter down after lunch','Wipe','cloth'],['prep',10,'washing up the lunch bowls','Wipe','cloth'],['drinks',8,'drying and polishing the glasses','Polish','glass'],['pots',9,'scrubbing out the stock pots','Wipe','cloth'],['toppings',7,'wiping down the topping tray','Wipe','cloth']];
 
-export function createRamenKitchen({getCook}){
+export function createRamenKitchen({getCook,isAfterLunch=()=>false}){
  const queue=[];let task=null,idle=null,idleIndex=0,cook=null;
  const passX=x=>THREE.MathUtils.clamp(x,K.minX,K.maxX);
  const spot=(name,x)=>name==='pass'?[passX(x),K.passZ]:K[name];
@@ -43,8 +45,8 @@ export function createRamenKitchen({getCook}){
   return true;
  }
  function turnTo(g,yaw,dt){const turn=Math.atan2(Math.sin(yaw-g.rotation.y),Math.cos(yaw-g.rotation.y));g.rotation.y+=Math.max(-dt*6,Math.min(dt*6,turn));return Math.abs(turn)<.05;}
- function pose(g,{socialPose=null,carrying=false,activity}={}){
-  const u=g.userData;if(socialPose)u.socialPose=socialPose;else delete u.socialPose;
+ function pose(g,{socialPose=null,carrying=false,activity,tool=null}={}){
+  const u=g.userData;if(socialPose)u.socialPose=socialPose;else delete u.socialPose;if(tool)u.tool=tool;else delete u.tool;
   if(carrying)u.carrying=true;else delete u.carrying;if(activity)u.activity=activity;
  }
  // What she carries to the pass: the real bowl and cup, held in front of her.
@@ -86,7 +88,7 @@ export function createRamenKitchen({getCook}){
   },
   update(dt){
    const g=getCook();
-   if(g!==cook){if(task){if(cook)drop(task);if(!g){finish(task);task=null;}}cook=g;idle=null;}
+   if(g!==cook){if(cook)delete cook.userData.tool;if(task){if(cook)drop(task);if(!g){finish(task);task=null;}}cook=g;idle=null;}
    if(!g){
     // She has gone (end of lunch, or the room was rebuilt): nobody waits for a bowl that will never come.
     while(queue.length)queue.shift().onServed?.();return;
@@ -110,11 +112,11 @@ export function createRamenKitchen({getCook}){
     return;
    }
    // Between orders: a round of small jobs, never standing about.
-   if(!idle){const [name,seconds,activity]=IDLE[idleIndex++%IDLE.length];idle={name,seconds,activity,x:K.minX+.4+Math.random()*(K.maxX-K.minX-.8),path:null,phase:'walking'};idle.path=route(g,spot(name,idle.x));pose(g,{activity:'on the way to the '+name});}
+   if(!idle){const list=isAfterLunch()?WASHUP:IDLE,[name,seconds,activity,workPose='Use',tool=null]=list[idleIndex++%list.length];idle={name,seconds,activity,workPose,tool,x:K.minX+.4+Math.random()*(K.maxX-K.minX-.8),path:null,phase:'walking'};idle.path=route(g,spot(name,idle.x));pose(g,{activity:'on the way to the '+name});}
    if(idle.phase==='walking'){if(walk(g,idle.path,dt))idle.phase='turning';}
-   else if(idle.phase==='turning'){if(turnTo(g,facing(idle.name),dt)){idle.phase='working';pose(g,{socialPose:'Use',activity:idle.activity});}}
+   else if(idle.phase==='turning'){if(turnTo(g,facing(idle.name),dt)){idle.phase='working';pose(g,{socialPose:idle.workPose,tool:idle.tool,activity:idle.activity});}}
    else if((idle.seconds-=dt)<=0)idle=null;
   },
-  dispose(){if(task)drop(task);task=null;queue.length=0;idle=null;if(cook)for(const k of ['kitchen','serving','socialPose','carrying'])delete cook.userData[k];cook=null;}
+  dispose(){if(task)drop(task);task=null;queue.length=0;idle=null;if(cook)for(const k of ['kitchen','serving','socialPose','carrying','tool'])delete cook.userData[k];cook=null;}
  };
 }

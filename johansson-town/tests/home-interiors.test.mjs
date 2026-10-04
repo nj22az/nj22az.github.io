@@ -9,11 +9,14 @@ import {HOUSEHOLDS} from '../src/people/households.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {createHomeResidents} from '../src/people/home-residents.js';
 import {sleepHours} from '../src/people/home-life.js';
+import {residentPlan} from '../src/people/social.js';
+import {installDOM} from './fixtures.mjs';
 import {circleHitsRect} from '../physics.js';
 
-function residentRoom(name,{material=null,castShadow=true,receiveShadow=true}={}){
+function residentRoom(name,{material=null,castShadow=true,receiveShadow=true,site=null}={}){
+ installDOM();
  const room=new THREE.Group(),colliders=[],box=(size,pos,color,parent)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material||new THREE.MeshBasicMaterial({color}));m.position.set(...pos);m.castShadow=castShadow;m.receiveShadow=receiveShadow;parent.add(m);return m;};
- const layout=buildResidentHome({profile:RESIDENTS.find(p=>p.name===name),room,box,reg(){},action(){},exit(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height})});
+ const layout=buildResidentHome({site,profile:RESIDENTS.find(p=>p.name===name),room,box,reg(){},action(){},exit(){},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height})});
  const b=layout.bounds,collides=(x,z,r=.32)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||colliders.some(c=>circleHitsRect(x,z,r,c));
  return {room,layout,collides};
 }
@@ -29,20 +32,24 @@ for(const household of HOUSEHOLDS.filter(h=>h.residents.length>1)){
    assert.equal(collides(own.door[0],own.door[2]),false,name+' can leave');
   }
  });
- test(household.residents.join(' / ')+' sleep, walk to breakfast and leave the Kitahama room',()=>{
-  const {layout,collides}=residentRoom(household.residents[0]);
+ test(household.residents.join(' / ')+' sleep, walk to breakfast and leave their actual house at 60 Hz',()=>{
+  const site={id:household.residents[0]==='Thuan'?'resident-home-thuan':household.id,title:household.title,homeOwner:household.residents[0],homeOwners:household.residents,
+   ...(household.residents[0]==='Thuan'?{plot:'kitahama-1',houseKind:'red-tile'}:{})};
+  const {layout,collides}=residentRoom(household.residents[0],{site});
   for(const name of household.residents){
    const street=new THREE.Group(),parent=new THREE.Group(),profile=RESIDENTS.find(p=>p.name===name),g=new THREE.Group();
    g.userData={name,hit:{inside:false},indoors:'home'};g.position.set(profile.home[0],0,profile.home[1]);street.add(g);
    const world={people:[{profile,g}],homes:new Map()},guests=createHomeResidents({world,parent,collides}),{wake}=sleepHours(profile);
-   guests.enter({id:'resident-home-'+household.residents[0].toLowerCase(),homeOwners:household.residents,homeLayouts:layout.homeLayouts},wake-2);
+   guests.enter({...site,...layout},wake-2);
    assert.equal(g.userData.sleeping,true);
-   for(let i=0;i<30*20;i++)guests.update(1/30,wake+16);
+   for(let i=0;i<60*20;i++)guests.update(1/60,wake+16);
    assert.equal(g.userData.activity,'having breakfast');assert.equal(g.userData.roomTransition,undefined,'breakfast seat is reachable');
    assert.ok(g.position.distanceTo(new THREE.Vector3(...layout.homeLayouts[name].table))<.15);
-   const departure=name==='Nao'?960:profile.start-30;
-   for(let i=0;i<30*25;i++)guests.update(1/30,departure);
-   assert.equal(g.parent,street,name+' walks through the home doorway');guests.restore();
+   let departure=null;for(let offset=60;offset<1440;offset++)if(residentPlan(profile,wake+offset).place!=='home'){departure=wake+offset;break;}
+   assert.ok(departure!==null,name+' has a daily reason to leave');
+   guests.update(1/60,departure);assert.ok(g.parent===parent,name+' starts walking rather than vanishing');
+   for(let i=0;i<60*25;i++)guests.update(1/60,departure);
+   assert.ok(g.parent===street,name+' walks through the home doorway');guests.restore();
   }
  });
 }

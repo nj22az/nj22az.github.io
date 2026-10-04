@@ -61,6 +61,26 @@ test('every airport bay has clear entry and departure paths when the other five 
   drive('airport-stage-'+bay);drive('airport-in-'+bay);
  }
 });
+test('both quay bays and their exits clear the other parked car and the port canopy',async()=>{
+ const {portBuildingColliders}=await import('../src/world/port-building.js');
+ const {circleHitsRect}=await import('../physics.js');
+ const solids=portBuildingColliders();
+ for(let bay=0;bay<2;bay++){
+  const {cars,people}=fixture(),v=cars.islanders[bay];for(const p of people)p.g.position.set(-30,0,30);
+  assert.ok(cars.drivers.board(v));
+  for(const lane of ['quay-out-'+bay,'main-south','quay-in-'+bay]){
+   const path=cars.network.path([lane]);cars.traffic.drive(v,path);
+   for(let i=0;i<9000&&v.trip;i++){
+    cars.traffic.update(1/60);
+    for(let along=-v.length/2;along<=v.length/2+.01;along+=.3){
+     const x=v.g.position.x+Math.sin(v.g.rotation.y)*along,z=v.g.position.z+Math.cos(v.g.rotation.y)*along;
+     assert.ok(!solids.some(c=>circleHitsRect(x,z,v.width/2,c)),lane+' car body intersects the Port Building');
+    }
+   }
+   assert.equal(v.trip,null,lane+' cannot clear '+(v.blocker?.owner||v.blocker));
+  }
+ }
+});
 test('one car can sail while a second matching car waits for the next deck space',()=>{
  const {cars,ferry}=fixture();for(const [i,v] of cars.islanders.entries()){assert.ok(cars.drivers.board(v));v.where='waiting-ferry';v.stageOrigin='town';v.shipDestination='airport';v.g.position.set(-6.45,0,-45.3+i*5);}
  assert.equal(cars.prepareCrossing('airport'),false);cars.traffic.finish(cars.islanders[0]);

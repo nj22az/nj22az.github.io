@@ -7,7 +7,7 @@
  * the one list that says, for each of them, which door is theirs and why they are here,
  * so that nobody in the town is just standing about (docs/AMPLIFY-AUDIT.md, §12).
  *
- * `home` is a building that exists on the peninsula: a plot id in okinawa/layout.js
+ * `home` is a building that exists on the island: a plot id in okinawa/layout.js
  * (Nishi-machi, the east-back houses, the shop-houses, Kitahama), a site id (the yard
  * houses, the koban, the harbour office), or 'town-hall'. Shop-house families live above
  * the shop. Nobody lives off the island; the ferry brings visitors and freight.
@@ -36,10 +36,10 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'kitahama-10',address:'10 Kitahama',members:[['Mr Tamashiro','retired; grows goya and papaya over the wall'],['Mrs Tamashiro','retired; runs the lane’s rubbish rota and the notice board']]},
  {home:'kitahama-11',address:'11 Kitahama',members:[['Mr Iha','electrician at the power station; mends the lane lights']]},
  {home:'kitahama-12',address:'12 Kitahama',members:[['Mrs Kohagura','cuts hair in her front room, Tuesday to Saturday']]},
- {home:'kitahama-flats',address:'Kitahama Heights, Fukugi Lane',members:[['Ms Ganaha','sells tickets at the ferry office (flat 1)'],['Mr Higa Jr','apprentice at the boatyard (flat 2)'],['Mr Fujita','retired fisherman (flat 3); found most days in his shed on the pier']]},
+ {home:'kitahama-flats',address:'Kitahama Heights, Fukugi Lane',members:[['Ms Ganaha','sells tickets at the Port Terminal window (flat 1)'],['Mr Higa Jr','the Nishi-machi Higas’ eldest; apprentice at the boatyard (flat 2)'],['Mr Fujita','retired fisherman (flat 3); found most days in his shed on the pier']]},
  // Nishi-machi, inside the seawall.
  {home:'higa',address:'Higa house, Nishi-machi',members:[['Grandmother Higa','retired; keeps the verandah and knows every ferry by its horn'],['Mrs Higa','the bandai at Umi-no-yu'],["Higa Kenta","pupil, Years 5–6"]]},
- {home:'kinjo',address:'Kinjō house, Nishi-machi',members:[['Uncle Kinjō','retired fisherman; fishes off the seawall'],['Mrs Kinjō','keeps house and the family accounts'],["Kinjo Yui","pupil, Years 5–6"]]},
+ {home:'kinjo',address:'Kinjō house, Nishi-machi',members:[['Uncle Kinjō','retired fisherman; fishes off the seawall'],['Mrs Kinjō','runs the florist on Rainflower Lane and keeps the family accounts'],["Kinjo Yui","pupil, Years 5–6"]]},
  {home:'oshiro',address:'Ōshiro house, Nishi-machi',members:[['Mr Ōshiro','fisherman; builds and mends sabani'],["Oshiro Sakura","pupil, Years 5–6"]]},
  // Behind the east row.
  {home:'nakasone',address:'Nakasone house, east back',members:[['Mr Nakasone','retired; gateball and the sanshin'],["Nakasone Taku","pupil, Years 5–6"]]},
@@ -53,11 +53,6 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'yonamine',address:"Above Yonamine Fresh Fish Store",members:[['Mrs Yonamine','sells fish from the morning boats'],['Yonamine-sensei',"teaches the Years 5–6 at the town hall"]]},
 ].map(h=>Object.freeze({...h,members:Object.freeze(h.members.map(([name,purpose])=>Object.freeze({name,purpose})))})));
 
-/** Where somebody lives, or null. */
-export const homeOf=name=>ISLAND_HOUSEHOLDS.find(h=>h.members.some(m=>m.name===name))||null;
-/** What somebody does. */
-export const purposeOf=name=>homeOf(name)?.members.find(m=>m.name===name)?.purpose||null;
-/** The household at a home id. */
 export const householdAtHome=id=>ISLAND_HOUSEHOLDS.find(h=>h.home===id)||null;
 /** A nameplate's "who lives here" line. */
 export function residentsLine(id){

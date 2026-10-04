@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {addHorizon} from '../src/world/horizon.js';
 import {createHarbourBasin,createSurroundingOcean,isOceanMaterial,tickOcean} from '../src/world/ocean.js';
-import {buildPeninsula} from '../src/world/peninsula.js';
+import {buildIslandCoast} from '../src/world/island-coast.js';
 
-test('surrounding sea is cel-shaded Gerstner water around the peninsula',()=>{
+test('surrounding sea is cel-shaded Gerstner water around the island',()=>{
   const group=new THREE.Group();
   addHorizon(group);
-  buildPeninsula(group);
+  buildIslandCoast(group);
   let sea=null;
-  group.traverse(o=>{if(o.name==='Peninsula surrounding sea')sea=o;});
+  group.traverse(o=>{if(o.name==='Island surrounding sea')sea=o;});
   assert.ok(sea);
   assert.ok(isOceanMaterial(sea.material));
   assert.equal(sea.position.y,-.56);

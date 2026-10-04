@@ -19,11 +19,12 @@ function sign(width,height,draw){
  const c=document.createElement('canvas');c.width=width;c.height=height;draw(c.getContext('2d'),width,height);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t;
 }
-const signText=(ctx,text,x,y,size,colour,weight='bold')=>{ctx.fillStyle=colour;ctx.font=`${weight} ${size}px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y);};
+// Centred lettering that never runs off its card: fillText narrows anything wider than the room either side of x.
+const signText=(ctx,text,x,y,size,colour,weight='bold')=>{ctx.fillStyle=colour;ctx.font=`${weight} ${size}px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';const w=ctx.canvas?.width;ctx.fillText(text,x,y,...(w?[Math.max(8,2*Math.min(x,w-x)-16)]:[]));};
 const mat=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.7,...extra});
 function add(room,geometry,material,x,y,z,name){const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.name=name;room.add(m);return m;}
-function card(room,texture,w,h,x,y,z,yaw=0,name='Sakura POP'){
- const m=add(room,new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide,toneMapped:false}),x,y,z,name);m.rotation.y=yaw;return m;
+function card(room,texture,w,h,x,y,z,yaw=0,name='Sakura POP',side=THREE.DoubleSide){
+ const m=add(room,new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:texture,side,toneMapped:false}),x,y,z,name);m.rotation.y=yaw;return m;
 }
 
 /** The glass hot case and the oden pot on the counter. The customer stands at x < 4.54. */
@@ -71,9 +72,14 @@ function buildCheer(room){
  const pops=[["New release!",'NEW',0xf06ba8,-1.55,1.9]];
  for(const [jp,en,colour,x,z] of pops){
   const hex='#'+colour.toString(16).padStart(6,'0');
-  const tex=sign(256,256,(ctx,w,h)=>{ctx.fillStyle=hex;ctx.beginPath();ctx.arc(w/2,h/2,w/2-4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(w/2,h/2,w/2-22,0,Math.PI*2);ctx.fill();signText(ctx,jp,w/2,h*.45,jp.length>4?42:54,hex);signText(ctx,en,w/2,h*.68,en.length>4?22:30,'#3b3f55');});
+  // Lettered to fit inside the white disc, with the corners left clear.
+  const tex=sign(256,256,(ctx,w,h)=>{ctx.clearRect(0,0,w,h);ctx.fillStyle=hex;ctx.beginPath();ctx.arc(w/2,h/2,w/2-4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(w/2,h/2,w/2-22,0,Math.PI*2);ctx.fill();
+   const fit=(s,size,room)=>{ctx.font=`bold ${size}px ${MARU}`;while(size>14&&ctx.measureText(s).width>room){size-=1;ctx.font=`bold ${size}px ${MARU}`;}return size;};
+   signText(ctx,jp,w/2,h*.45,fit(jp,54,w-80),hex);signText(ctx,en,w/2,h*.68,fit(en,30,w-110),'#3b3f55');});
   // Hung high enough to clear a grown-up's eye line: at 2.05 m they sat in your face.
-  for(const yaw of [0,Math.PI/2])card(room,tex,.36,.36,x,2.27,z,yaw,'Sakura hanging POP');
+  // Back to back, facing up and down the aisle: crossed cards cut through each other's
+  // lettering, and a double-sided one reads backwards from behind.
+  for(const [yaw,dz] of [[0,.004],[Math.PI,-.004]])card(room,tex,.36,.36,x,2.27,z+dz,yaw,'Sakura hanging POP',THREE.FrontSide).material.alphaTest=.5;
   add(room,new THREE.CylinderGeometry(.003,.003,.5,4),string,x,2.7,z,'Sakura POP thread');
  }
  // Welcome mat inside the door, and paw-print stickers from the door to the till.
@@ -83,7 +89,10 @@ function buildCheer(room){
  const pawMat=new THREE.MeshStandardMaterial({map:paw,transparent:true,roughness:1,polygonOffset:true,polygonOffsetFactor:-2,depthWrite:false});
  const steps=[[1.1,2.7],[1.6,2.3],[2.1,1.95],[2.6,1.6],[3.1,1.3],[3.6,1.05]];
  steps.forEach(([x,z],i)=>{const m=add(room,new THREE.PlaneGeometry(.2,.2),pawMat,x+(i%2?.08:-.08),.007,z,'Sakura floor sticker');m.rotation.set(-Math.PI/2,0,Math.atan2(3.6-1.1,1.05-2.7)+Math.PI);});
- const tillTex=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#ffc93c';ctx.fillRect(0,0,w,h);signText(ctx,"Cash register ▶",w/2,h/2,54,'#3b3f55');});
+ const tillTex=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#ffc93c';ctx.fillRect(0,0,w,h);
+  // Sized to the sticker: at a fixed 54 px the words ran off both ends.
+  const label="Cash register ▶";let size=54;ctx.font=`bold ${size}px ${MARU}`;while(size>18&&ctx.measureText(label).width>w-24){size-=2;ctx.font=`bold ${size}px ${MARU}`;}
+  signText(ctx,label,w/2,h/2,size,'#3b3f55');});
  const till=add(room,new THREE.PlaneGeometry(.5,.19),new THREE.MeshStandardMaterial({map:tillTex,roughness:1,polygonOffset:true,polygonOffsetFactor:-2}),3.95,.007,.85,'Sakura till sticker');till.rotation.set(-Math.PI/2,0,-Math.PI/2);
 }
 
@@ -115,7 +124,8 @@ function buildBackOffice(room,anchor,action){
  card(room,rota,.3,.3,6.78,1.5,desk.z+.3,-Math.PI/2,'Sakura shift rota');
  // "Staff only", on the corridor side of the door.
  const plate=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#3b3f55';ctx.fillRect(0,0,w,h);signText(ctx,"Office",w/2,h*.4,40,'#ffffff');signText(ctx,'STAFF ONLY',w/2,h*.78,20,'#ffc93c');});
- card(room,plate,.36,.135,door.x,2.2,door.z+.08,0,'Sakura office plate');
+ // Over the door casing, where the head trim cannot cover it.
+ card(room,plate,.36,.135,door.x,2.44,door.z+.07,0,'Sakura office plate',THREE.FrontSide);
  anchor([desk.x-.4,top+.35,desk.z+.05],'Read Sakura sales ledger',()=>action('shop-ledger'));
 }
 
@@ -144,9 +154,14 @@ export function buildSakuraBand(room){
   ctx.fillStyle='#d9b27a';ctx.fillRect(0,0,w,H);
   for(let i=0;i<14;i++){ctx.strokeStyle=i%2?'rgba(120,80,40,.18)':'rgba(255,240,210,.18)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,8+i*8.5);ctx.bezierCurveTo(w*.3,4+i*8.5,w*.6,14+i*8.5,w,8+i*8.5);ctx.stroke();}
   ctx.fillStyle='#7c5230';ctx.fillRect(0,0,w,6);ctx.fillRect(0,H-6,w,6);
-  ctx.fillStyle='#3a2414';ctx.font=`bold 44px ${MARU}`;ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText("Sakura Shop",28,42,w-140);
-  ctx.font=`bold 24px ${MARU}`;ctx.fillText("Groceries · Daily miscellaneous goods · Stamp · Ship ticket",28,90,w-140);
-  ctx.fillStyle='#b8332c';ctx.beginPath();ctx.arc(w-52,H*.5,30,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6e6';ctx.font=`bold 18px ${MARU}`;ctx.textAlign='center';ctx.fillText("Sakura",w-52,H*.5,52);
+  ctx.fillStyle='#3a2414';ctx.font=`bold 50px ${MARU}`;ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText("Sakura Shop",28,H*.5);
+  // The list starts where the name ends and stops short of the crest, at whatever size fits.
+  // Two lines, so the letters stay big enough to read from the aisle.
+  const from=28+ctx.measureText("Sakura Shop").width+34,room=w-52-30-24-from,lines=["Groceries · Daily miscellaneous goods","Stamp · Ship ticket"];
+  let size=28;const widest=()=>Math.max(...lines.map(l=>ctx.measureText(l).width));ctx.font=`bold ${size}px ${MARU}`;
+  while(size>14&&widest()>room){size-=1;ctx.font=`bold ${size}px ${MARU}`;}
+  lines.forEach((l,i)=>ctx.fillText(l,from,H*.5+(i-.5)*size*1.15));
+  ctx.fillStyle='#b8332c';ctx.beginPath();ctx.arc(w-52,H*.5,30,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6e6';ctx.font=`bold 18px ${MARU}`;ctx.textAlign='center';ctx.fillText("Sakura",w-52,H*.52,52);
  });
  tex.wrapS=THREE.RepeatWrapping;
  const make=(length,x,z,yaw)=>{

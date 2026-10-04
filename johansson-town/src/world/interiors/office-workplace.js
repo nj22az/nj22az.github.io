@@ -1,10 +1,10 @@
 import * as THREE from '../../../vendor/three.module.js';
-import {peninsulaActive} from '../town-mode.js';
+import {createPlanKit} from './house-plan.js';
 
 export const OFFICE_STAFF={'Harbour master':[-1.85,0,-1.20]};
 export const OFFICE_DESK_SEAT={position:[-2.52,0,-2.02],stand:[-1.85,0,-1.20],eyeY:1.18,yaw:0,pitch:0};
 /**
- * On the peninsula the harbour master lives here: a tatami mat and futon behind a
+ * On the island the harbour master lives here: a tatami mat and futon behind a
  * folding screen on the east side, a tea stool, his coat on a stand. home-residents.js
  * walks him to bed from these points.
  */
@@ -50,7 +50,12 @@ export function buildOfficeWorkplace({room:parent,reg,action,collider=()=>{}}){
  records([1.15,1.05,-2.40],'Open warehouse stock ledger','warehouse-stock');
  records([2.45,1.23,1.30],'Open berth record binders','berth-register');
  label('JOHANSSON HARBOUR',[0,2.48,-3.27],2.5,.28);
- if(peninsulaActive())buildBedNook({room,box,label,reg,action,collider,mat});
+ buildBedNook({room,box,label,reg,action,collider,mat});
+ // A staffed office -- and the harbour master's home -- has its WC: the front-west corner,
+ // its door facing into the room (docs/BUILDING-AUDIT.md).
+ {const kit=createPlanKit({box:(size,pos,c,name)=>box(name||'WC wall',size,pos,c),collider,height:2.9,wall:0xeee6cf,frame:0x6f8a76});
+  kit.partition(-3.37,1.4,-2.2,1.4);kit.partition(-2.2,1.4,-2.2,3.37,[[1.6,2.4]]);
+  kit.wetRoom(-3.33,-2.24,1.44,3.33,'Toilet',true,'x1');}
  const visitorSeat=new THREE.Object3D();visitorSeat.position.set(1.14,.7,-2.05);visitorSeat.userData.npcInteraction=false;visitorSeat.userData.seat={position:[1.14,0,-2.05],stand:[1.14,0,-1.1],eyeY:1.2,yaw:0,pitch:0};room.add(visitorSeat);reg(visitorSeat,'Sit at the visitor desk',()=>action('seat','Visitor desk','A clean writing pad and the harbour ledgers are ready.'),true);
  return {computer,staff:OFFICE_STAFF};
 }
@@ -80,6 +85,8 @@ function buildBedNook({room,box,reg,action,collider,mat}){
  box('Tea side table',[.55,.05,.4],[-.9,.6,.8],0x8a6a4a);box('Tea side table leg',[.06,.58,.06],[-.9,.29,.8],0x6d5238);
  box('Kettle',[.18,.16,.18],[-1.0,.7,.8],0x9aa3a0);box('Tea cup',[.07,.07,.07],[-.75,.66,.82],0x3f7a55);
  collider(-.9,.8,.55,.4,.62);
+ // The island's development projects are reviewed at the harbour master's desk, not on the doorstep.
+ {const o=new THREE.Object3D();o.name='Island development projects';o.position.set(.6,1.1,-2.3);room.add(o);o.userData.npcInteraction=false;reg(o,'Review island development projects',()=>action('island-projects'),true);}
  const inspect=(pos,label,title,text)=>{const o=new THREE.Object3D();o.name=label;o.position.set(...pos);room.add(o);o.userData.npcInteraction=false;reg(o,label,()=>action('inspect',title,text),true);};
  inspect([2.1,.7,.9],'Inspect the bed behind the screen','The harbour master’s bed','A tatami mat and a futon behind the folding screen, the quilt folded square every morning at half past five. He says the harbour needs someone within earshot of the radio, and the stairs to a flat would only slow him down.');
  inspect([-.9,1.0,.8],'Inspect the tea corner','Tea corner','A kettle, one cup and a tin of jasmine tea. The stool is where he reads the evening paper before turning in at nine.');
@@ -153,9 +160,9 @@ export function buildOfficeShell(parent){
  chair('Clerk chair',-2.52,-2.02,0x3e5a74);chair('Visitor chair',1.14,-2.0,0x7d4b3a);chair('Stool',2.91,-1.39,0x5f6d63,false);
  // Steel lockers along the east wall (collider 3.1,1.58; 0.6 x 2.72 x 1.87).
  for(let i=0;i<4;i++){const z=.35+i*.67;box('Steel locker',[.55,1.85,.64],[3.1,.925,z],0x8fa59b);box('Locker vent',[.01,.12,.3],[2.82,1.6,z],0x5c6d66);box('Locker handle',[.02,.12,.03],[2.82,1.05,z+.22],0x3b4542);}
- // Water cooler by the door (collider -2.54,2.51).
- box('Water cooler body',[.36,1.0,.36],[-2.54,.5,2.51],0xe6e3d8);
- const bottle=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.42,16),new THREE.MeshStandardMaterial({color:0x8ecfe6,roughness:.3,transparent:true,opacity:.75}));bottle.name='Water cooler bottle';bottle.position.set(-2.54,1.22,2.51);shell.add(bottle);
+ // Water cooler by the door (collider -1.85,3.05).
+ box('Water cooler body',[.36,1.0,.36],[-1.85,.5,3.05],0xe6e3d8);
+ const bottle=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.42,16),new THREE.MeshStandardMaterial({color:0x8ecfe6,roughness:.3,transparent:true,opacity:.75}));bottle.name='Water cooler bottle';bottle.position.set(-1.85,1.22,3.05);shell.add(bottle);
  parent.add(new THREE.HemisphereLight(0xf4f8ee,0x8a8a7a,1.05));
  const lamp=new THREE.PointLight(0xf2f6ee,.9,9,2);lamp.position.set(0,2.6,0);parent.add(lamp);
  return shell;

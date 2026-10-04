@@ -1,5 +1,5 @@
 import {fileShopEntry} from '../office/archive.js';
-import {SHOP_STOCK,restoreShopStock,takeShopStock,closingStockPending,SOLD_OUT} from './shop-stock.js';
+import {SHOP_STOCK,restoreShopStock,closingStockPending} from './shop-stock.js';
 import {GROCERY_ITEMS} from './catalogue.js';
 import {WORKSHOP_MODELS} from '../workshop/catalogue.js';
 
@@ -25,29 +25,6 @@ export function recordSakuraSale(state,cost,receipt=null,details={}){
  if(receipt){shop.receipts.push(receipt);shop.receipts=shop.receipts.slice(-128);}
  shopEntry(state,{minute:details.minute??state.minutes??0,kind:'Sale',item:details.item||'Counter sale',buyer:details.buyer||'Customer',quantity:1,revenue:cost,cost:goodsCost,profit});return true;
 }
-export function buySakuraItem(state,item,minutes,thuanAvailable=true){
- const m=((minutes%1440)+1440)%1440;
- if(m<540||m>=1200)return {ok:false,message:'The till is closed. Thuan returns at 09:00.'};
- if(thuanAvailable===false)return {ok:false,message:'Thuan is away from the counter for a bit. Try again when she is back.'};
- if(state.inventory.length>=100)return {ok:false,message:'Your bag is full.'};
- if(state.yen<item.cost)return {ok:false,message:'You do not have enough yen.'};
- const claim=takeShopStock(state,item.id);if(!claim)return {ok:false,message:'Thuan: '+SOLD_OUT};
- state.yen-=item.cost;state.inventory.push(item.name);recordSakuraSale(state,item.cost,null,{minute:minutes,item:item.name,buyer:'Johansson',unitCost:claim.unitCost});return {ok:true};
-}
-/**
- * What the shop costs to keep open for a day, and what Thuan takes out of it.
- *
- * Until now the ledger only ever went up: every entry was a sale, a delivery or a
- * restock, so "gross profit" was a scoreboard rather than a question. A shop has a
- * meter running whether anybody comes in or not.
- *
- * The figures are the shop's own scale, not 1997 Tokyo's. Sakura serves five
- * neighbours a day, which is about ¥694 of trade and ¥312 of gross profit, and the
- * day's costs are set just under that on purpose. On the neighbours alone the shop
- * only washes its face; every line the player buys is about ¥62 of margin on top, so
- * your custom is the difference between a thin week and a good one. That is the
- * question the Sales sheet is supposed to ask.
- */
 export const SHOP_OVERHEADS=300;
 /** The most Thuan takes for herself in a day, once the till can spare it. */
 export const SHOP_DRAWING=400;

@@ -1,10 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
 import * as T from '../vendor/three.module.js';
 import {createSteamedBunGeometry} from '../src/world/interiors/steamed-bun.js';
 import {createResidentProp} from '../src/people/resident-props.js';
-import {installDOM} from './fixtures.mjs';
 
 test('the same palm-sized pleated bao is used on shelves, trays and in hands',()=>{
  const bun=createSteamedBunGeometry(),held=createResidentProp('bun');bun.computeBoundingBox();held.geometry.computeBoundingBox();

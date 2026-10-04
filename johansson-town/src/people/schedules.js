@@ -3,17 +3,15 @@ import {soberUp} from './drunk.js';
 import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {RAMEN_DOOR,IZAKAYA_DOOR} from './social.js';
 import {homeRoutine} from './home-life.js';
-import {FULL_TOWN} from '../world/full-town-state.js';
 import {residentPlan,NIGHT_PATROL} from './social.js';
 import {VOICE_LINES} from './voice-lines.js';
 import {createNavigation} from './navmesh.js?snappy=1';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
-import {RESIDENTS,THUAN_PROFILE,residentHomeDescription} from './residents.js';
+import {RESIDENTS,HOME_OWNERS,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {transitStop,awayPlace} from '../world/transit.js';
 import {ferryWords} from './social.js';
-import {peninsulaActive} from '../world/town-mode.js';
 import {thuanHasCommutePriority,yieldAsideTarget,commuteCrowdRadii,residentCommitted} from './thuan-commute-yield.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
@@ -21,6 +19,7 @@ import {createStaffBenchRoutine} from './staff-bench-routine.js';
 import {commuterPhase,townPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
+const HOME_RESIDENT_NAMES=new Set(HOME_OWNERS.map(p=>p.name));
 export const DIALOGUE={
  Thuan:[['hello',"Welcome.\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled."],['pink',"This shirt is my favorite.\nThis yellow flower set is my favourite. My aunt says the shop is easier to find when I stand outside."],['work',"Afternoon stocking has finished.\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits."],['harbour',"Would you like to take a walk to the port?\nWalking to the harbour? The light turns the water pink just before supper."],['catalogue',"Click here for the order form.\nThe mail-order book is on the counter. I keep those orders separate from the daily till."]],
  Aya:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
@@ -65,15 +64,13 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  const clearOfTunnelMouth=target=>{
   if(!target||!Number.isFinite(target[0])||!Number.isFinite(target[1]))return target;
   // The island has no bus road or tunnel mouth to keep people off.
-  if(peninsulaActive()||target[1]<=BUS_STATION.maxZ-0.35)return target;
+  return target;
   return [...BUS_STATION.platform];
  };
- const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
+ const patrol=NIGHT_PATROL;
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();let clockMinutes=1002;
- // Both published layouts run on the Harbour Line, so both are commuter layouts. Only
- // the archived residential street is not.
- const COMMUTER_LAYOUTS=['shopping-district','peninsula'];
- const commuterMode=()=>COMMUTER_LAYOUTS.includes(world.townMode)||COMMUTER_LAYOUTS.includes(state()?.townMode);
+ // Visiting workers use the ferry; residents with playable homes sleep here.
+ const commuterMode=profile=>!profile||!HOME_RESIDENT_NAMES.has(profile.name);
  for(const person of world.people)person.g.userData.scheduled=true;
  const thuan=world.people.find(p=>p.profile?.name==='Thuan');
  const staffBreak=thuan&&world.staffBench?createStaffBenchRoutine({entity:thuan.g,seat:world.staffBench.seat,isOccupied:()=>{
@@ -262,7 +259,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     routes.delete(g);outside.push(p);continue;
    }
    if(g.userData.inVehicle||g.userData.inBookshop||g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
-   const phase=transit?townPhase(v,minutes,rain):'legacy';
+   const phase=commuterMode(v)?townPhase(v,minutes,rain):'town';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has
    // been a bus standing there for them to go in.
@@ -288,7 +285,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
    // Still on the platform: the plan has written them off as away, so put them back in
    // the queue rather than sending them walking up the bus road on foot.
-   if(holdForBus){g.visible=true;target=transitStop().queue;tag='bus';g.userData.place='bus';g.userData.activity=peninsulaActive()?'waiting for the ferry':'waiting for the Harbour Line';}
+   if(holdForBus){g.visible=true;target=transitStop().queue;tag='bus';g.userData.place='bus';g.userData.activity='waiting for the ferry';}
    // The bus stands at the arch, not at the shelter, so that is where it is boarded --
    // and they set off for it as soon as they are going, rather than waiting on the
    // platform for it to show and then having twelve metres of road to cover in the
@@ -306,7 +303,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     patrols.set(g,index);target=patrol[index];tag='patrol-'+index;
    }
    if(v.name==='Kenji'&&state().kenjiEscort==='walking'){
-    target=FULL_TOWN.active?FULL_TOWN.escort:TOWN_DESTINATIONS.workshop;tag='escort';g.userData.activity='showing the workshop';
+    target=TOWN_DESTINATIONS.workshop;tag='escort';g.userData.activity='showing the workshop';
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Venue thresholds must not be displaced by generic crowd spacing.
@@ -316,7 +313,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     const remembered=state().residentLocations?.[v.name],valid=remembered&&Array.isArray(remembered.position)&&remembered.position.length===2&&remembered.position.every(Number.isFinite)&&Math.abs(remembered.position[0])<300&&Math.abs(remembered.position[1])<300;
     // Indoor saves name a place, whose threshold may have moved since saving.
     // If its schedule has changed, the resident leaves that door and walks onward.
-    const rememberedDoor=transit&&remembered?.indoors==='home'?null:indoorDoor(v,remembered?.indoors),savedWalk=valid&&!transit&&!collides(...remembered.position,.32);
+    const rememberedDoor=remembered?.indoors==='home'&&!HOME_RESIDENT_NAMES.has(v.name)?null:indoorDoor(v,remembered?.indoors),savedWalk=valid&&!commuterMode(v)&&!collides(...remembered.position,.32);
     const spawn=rememberedDoor||(savedWalk?clearOfTunnelMouth(remembered.position):transit&&phase==='arriving'?transitStop().arrival:clearOfTunnelMouth(target));
     delete g.userData.indoors;
     if(rememberedDoor)g.userData.indoors=remembered.indoors;
@@ -356,7 +353,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(transit&&tag==='bus'&&(phase==='departing'||holdForBus)&&(world.ferry||world.bus)?.boarding&&(g.userData.boarding||arrived())){
     const [insideX,insideZ]=(world.ferry||world.bus).doorway;
     g.userData.boarding=true;g.userData.usingTownObject=true;
-    g.userData.activity=peninsulaActive()?'going aboard the ferry':'getting on the Harbour Line';
+    g.userData.activity='going aboard the ferry';
     const dx=insideX-g.position.x,dz=insideZ-g.position.z,reach=Math.hypot(dx,dz);
     if(reach>.3){
      const step=Math.min(reach,dt*1.1);
@@ -367,7 +364,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     world.busStation?.board(v.name,minutes);aboard.add(g);
     queued.delete(g);delete g.userData.busQueue;
     delete g.userData.boarding;delete g.userData.usingTownObject;
-    g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity=peninsulaActive()?ferryWords('left by bus'):'left by bus';
+    g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity=ferryWords('left by bus');
     g.visible=false;routes.delete(g);continue;
    }
    if(indoor&&(g.userData.indoors===tag||arrived())){
@@ -379,6 +376,6 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   }
   // Ten distinct low-poly residents remain present; camera rank cannot hide a neighbour.
   outside.forEach(p=>{if(!(transit&&p.g.userData.commuterAwayDay===day))p.g.visible=true;});world.updateHomes?.(minutes);
-  if(world.cat){const s=state();const spots=FULL_TOWN.active?FULL_TOWN.catTargets:[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
- },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,phase=commuterMode()?commuterPhase(p.profile,clockMinutes):'legacy',target=phase==='away'?transitStop().exit:indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target&&phase!=='away'?inside:null,place:phase==='away'?'away':g.userData.place}];}));},pose(){}};
+  if(world.cat){const s=state();const spots=[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
+ },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,phase=commuterMode(p.profile)?commuterPhase(p.profile,clockMinutes):'town',target=phase==='away'?transitStop().exit:indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target&&phase!=='away'?inside:null,place:phase==='away'?'away':g.userData.place}];}));},pose(){}};
 }

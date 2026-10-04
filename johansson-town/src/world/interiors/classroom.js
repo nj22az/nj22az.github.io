@@ -1,7 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {batchStaticProps} from '../../render/static-props.js';
 import {daylight} from '../../render/dusk.js';
-import {hanaBlockMaterial,hanaScreen} from '../school.js';
 import {buildFigure,setPose,animateFigure} from '../../people/school-avatars.js';
 import {CHIME_TIMES,playSchoolChime} from '../../audio/school-chime.js';
 import {townCalendarAt} from '../../town-clock.js';
@@ -81,7 +80,6 @@ const PUPILS=[
  ["Miyagi Daiki",false,0x4f9a6a,0x2d3a52,0xc2453b],["Tamaki Miyu",true,0xb99ad8,0x2c2f36,0x3f6fb0],["Arakaki Ryo",false,0xe0e0dc,0x3b4a62,0xc2453b],
  ["Nakasone Taku",false,0xd9723c,0x2c2f36,0xc2453b],["Nakamura Mai",true,0xf3a65a,0x2d3a52,0x3f6fb0],
 ];
-export const PUPIL_HOMES=Object.freeze({"Kinjo":'kinjo',"Higa":'higa',"Oshiro":'oshiro',"Miyagi":'miyagi',"Tamaki":'tamaki',"Arakaki":'arakaki',"Nakasone":'nakasone',"Nakamura":'nakamura'});
 export const CLASS_SIZE=PUPILS.length;
 const HAIRS=[0x1b1512,0x231a14,0x16110e,0x2a1e16];
 const SKINS=[0xd9a57c,0xcf9870,0xe0b089,0xc98f66];

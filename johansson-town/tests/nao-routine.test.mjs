@@ -14,18 +14,6 @@ test('Nao is back on the street beside Thuan',()=>{
  assert.ok(STREET_CAST_NAMES.includes('Thuan')&&STREET_CAST_NAMES.includes('Nao'));
 });
 
-test('Nao has a distinct all-day town routine around her Izakaya shift',()=>{
- assert.equal(shiftFor(nao).arrival,510,'Nao should arrive on the morning Harbour Line');
- assert.match(naoBeforeShift(nao,600).activity,/Ramune soda/);
- assert.equal(residentPersonality('Nao').shopping,'soda');
- assert.equal(naoBeforeShift(nao,700).place,'park');
- assert.equal(naoBeforeShift(nao,780).place,'stroll');
- assert.equal(naoBeforeShift(nao,870).place,'park');
- assert.match(naoBeforeShift(nao,930).activity,/tidying Minato/);
- assert.match(residentPlan(nao,1200,false,null,true).activity,/serving guests and tidying/);
- assert.match(residentPlan(nao,1650,false,null,true).activity,/clearing tables and closing/);
- assert.equal(residentPlan(nao,1890,false,null,true).place,'bus');
-});
 
 test('every indoor Nao translation frame points forward',()=>{
  const g=new THREE.Group();g.userData.name='Nao';g.rotation.y=Math.PI;

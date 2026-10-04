@@ -1,4 +1,5 @@
 import {PROFILES} from './profiles.js';
+import {homeRoutine} from './home-life.js';
 export const RAMEN_VISITS=Object.freeze({
  Kenji:[555,660], 'Harbour master':[615,720], 'Mrs Sato':[675,780],
  Nao:[780,840], Tetsuo:[795,900], Aya:[855,960],
@@ -18,6 +19,9 @@ export function marketVisitsForDay(minutes){
  function choose(index,remaining,visits){
   if(index===windows.length)return visits;
   for(const name of remaining){const profile=PROFILES.find(p=>p.name===name),ramen=RAMEN_VISITS[name];
+   // Night workers keep their sleep and breakfast. Assign another shopper to
+   // these early windows so the daily shuffle retains five usable errands.
+   if(profile&&[windows[index][0],windows[index][1]-1].some(m=>['sleep','wake','breakfast','prepare'].includes(homeRoutine(profile,m).id)))continue;
    if(ramen&&overlap(windows[index],ramen)||profile&&overlap(windows[index],[profile.supperStart,profile.supperEnd]))continue;
    const found=choose(index+1,remaining.filter(n=>n!==name),{...visits,[name]:Object.freeze(windows[index])});if(found)return found;
   }return null;

@@ -1,7 +1,7 @@
 import {DOCK_CREW_ROUTE} from '../world/docklands-layout.js';
 import {groundHeight} from '../world/layout.js';
 import {createNavigation} from './navmesh.js';
-import {AIRPORT_COUNTER,airportWorld} from '../world/airport-ground.js';
+import {airportWorld} from '../world/airport-ground.js';
 import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
 import {GATEBALL_ACTIVE} from '../world/okinawa/layout.js';

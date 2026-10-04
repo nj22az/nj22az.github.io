@@ -87,12 +87,17 @@ export const FRONT_ENDCAPS=Object.freeze([
  Object.freeze({id:'west-front',x:-4.05,z:1.7815,w:1.0,d:.42,levels:Object.freeze([.35,.82])}),
  Object.freeze({id:'middle-front',x:-1.55,z:1.515,w:1.0,d:.42,levels:Object.freeze([.35,.82])}),
 ]);
+/** The cash corner on the back wall between the restroom and the drinks (sakura-corners.js). */
+export const CASH_CORNER=Object.freeze({atm:Object.freeze({x:-2.66,z:-3.66,w:.58,d:.5,h:1.42}),film:Object.freeze({x:-3.42,z:-3.72,w:.44,d:.38,h:1.12})});
 /** The copy machine by the east window, its fax on a table beside it. */
 export const COPY_MACHINE=Object.freeze({x:2.1,z:3.5,w:.62,d:.56});
 export const SAKURA_LAYOUT={
  bounds:{minX:-6.8,maxX:6.8,minZ:-6.78,maxZ:3.88},
  floorPolygon:[[-6.8,3.88],[6.8,3.88],[6.8,-3.95],[5.7,-3.95],[5.7,-6.78],[-5.7,-6.78],[-5.7,-3.95],[-6.8,-3.95]],
  spawn:[0,0,3.2],entrance:[0,0,3.45],exit:[0,1.35,3.88],yaw:0,
+ // Returning visitors browse on the floor in front of the rack. The old shop's
+ // guest chairs were inside this fitting; Sakura has standing readers instead.
+ guestStands:[-.75,0,.75].map(dx=>[MAGAZINE_RACK.x+dx,0,MAGAZINE_RACK.z-MAGAZINE_RACK.depth/2-.45]),
  // The glazing plane, in room coordinates. Both directions of the shop window use
  // it: the street seen from inside, and the real interior seen from the street.
  frontZ:3.91,
@@ -100,6 +105,7 @@ export const SAKURA_LAYOUT={
  staff:[5.5,0,.85],staffYaw:Math.PI/2,checkout:[3.9,0,.85],stockroom:[.7,0,-5.5],register:[4.78,1.1,.85],
  colliders:[
   ...GONDOLA.map(([id,r])=>turned(id,r)),
+  rect(CASH_CORNER.atm.x,CASH_CORNER.atm.z,CASH_CORNER.atm.w,CASH_CORNER.atm.d,1.6),rect(CASH_CORNER.film.x,CASH_CORNER.film.z,CASH_CORNER.film.w,CASH_CORNER.film.d,1.2),
   rect(MAGAZINE_RACK.x,MAGAZINE_RACK.z,MAGAZINE_RACK.width,MAGAZINE_RACK.depth,MAGAZINE_RACK.height),rect(-5.17,-2.16,2.04,.61,1.5),
   rect(-6.4,.43,.9,4.03,2.25),rect(.4,-3.55,5.35,.8,2.3),
   rect(4.8,1.97,.52,3.78,1.0),rect(6.74,2.08,.18,3.48,2.0),rect(3.64,3.6,1.35,.57,1.06),
@@ -155,6 +161,8 @@ function standBack(x,z,stand){
  */
 export function facingsFor(perLevel,most){for(let n=Math.min(most,perLevel);n>1;n--)if(perLevel%n===0)return n;return 1;}
 
+/** What a board of each island holds across, inside its uprights: three bays of 1.65 m on the east run, one of 1.95 on the others. */
+const BAY_WIDTH={east:1.55,middle:1.85,west:1.85};
 function bay(ids,site,x,z,yaw,stand){
  const on=SHELF_ISLANDS[site],[px,pz]=on.place(x,z),back=standBack(x,z,stand),[sx,sz]=on.place(back[0],back[2]);
  const facing=yaw+on.yaw,share=Math.floor(AISLE_LEVELS.length/ids.length),extra=AISLE_LEVELS.length%ids.length;
@@ -163,7 +171,7 @@ function bay(ids,site,x,z,yaw,stand){
  // (the heavier ones, low down) taking any left over.
  for(const [i,id] of ids.entries()){
   const take=share+(i<extra?1:0);
-  SAKURA_SHELVES[id]={x:px+Math.sin(facing)*.14,z:pz+Math.cos(facing)*.14,levels:AISLE_LEVELS.slice(level,level+take),yaw:facing,stand:[sx,0,sz],spacing:.23,depth:.12,columns:facingsFor(shelfCapacity(id)/take,8)};
+  SAKURA_SHELVES[id]={x:px+Math.sin(facing)*.14,z:pz+Math.cos(facing)*.14,levels:AISLE_LEVELS.slice(level,level+take),yaw:facing,stand:[sx,0,sz],spacing:.23,depth:.12,columns:facingsFor(shelfCapacity(id)/take,8),width:BAY_WIDTH[site]};
   level+=take;
  }
 }
@@ -198,7 +206,7 @@ for(const {column,lines} of COLD_CABINET){
  const x=-1.60+column*1.33,stand=standBack(x,-3.48,[x,0,-2.78]);
  for(const [id,levels] of lines){
   const perLevel=shelfCapacity(id)/levels.length;
-  SAKURA_SHELVES[id]={x,z:-3.48,levels:levels.map(l=>FRIDGE_LEVELS[l]),yaw:0,stand,spacing:.19,depth:.12,columns:facingsFor(perLevel,6),fridge:column};
+  SAKURA_SHELVES[id]={x,z:-3.48,levels:levels.map(l=>FRIDGE_LEVELS[l]),yaw:0,stand,spacing:.19,depth:.12,columns:facingsFor(perLevel,6),fridge:column,width:1.2};
  }
 }
 /**
@@ -211,7 +219,7 @@ const CHILLED_BAYS=[['rice','bento',-.93],['sandwich','bread',.43],['pudding','y
 for(const [upper,lower,z] of CHILLED_BAYS){
  const stand=standBack(-6.4,z,[-5.5,0,z]),L=CHILLER.levels;
  for(const [id,levels,x] of [[upper,[L[2],L[3]],-6.48],[lower,[L[0],L[1]],-6.4]])
-  SAKURA_SHELVES[id]={x,z,levels,yaw:Math.PI/2,stand,spacing:.2,depth:.13,columns:facingsFor(shelfCapacity(id)/levels.length,6)};
+  SAKURA_SHELVES[id]={x,z,levels,yaw:Math.PI/2,stand,spacing:.2,depth:.13,columns:facingsFor(shelfCapacity(id)/levels.length,6),width:1.25};
 }
 /** The bun steamer on the counter, beside the hot case: two racks behind glass. */
 export const BUN_STEAMER=Object.freeze({x:4.8,z:2.45,w:.38,d:.52,top:1.0,h:.44});

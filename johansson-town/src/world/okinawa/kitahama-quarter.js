@@ -34,19 +34,18 @@ export function buildKitahamaQuarter(kit,solid,{anchor,onAction,vending},{across
  // ---- The pole line: along the spine from the cross lane, then up Fukugi Lane.
  const poles=[];
  const pole=(x,z,o={})=>{const p=utilityPole(kit,x,z,o);solid(p.collider);poles.push(p);return p;};
- const spine=[27.5,16,6].map((x,i)=>pole(x,K.spine.maxZ-.25,{face:Math.PI,transformer:i===1,lamp:true,seed:240+i}));
+ const spine=[27.5,6].map((x,i)=>pole(x,K.spine.maxZ-.25,{face:Math.PI,transformer:i===1,lamp:true,seed:240+i*2}));
  if(across[0])wiresBetween(kit,across[0],spine[0]);
  for(let i=0;i<spine.length-1;i++)wiresBetween(kit,spine[i],spine[i+1]);
- const north=[76,86,89].map((z,i)=>pole(K.fukugiLane.minX+.25,z,{face:Math.PI/2,transformer:false,lamp:i!==1,seed:250+i}));
- wiresBetween(kit,spine[0],north[0],{sag:.5});wiresBetween(kit,north[0],north[1]);wiresBetween(kit,north[1],north[2]);
- const well=pole(K.wellLane.maxX-.25,57,{face:-Math.PI/2,transformer:false,lamp:true,seed:260});wiresBetween(kit,spine[1],well,{sag:.5});
+ const north=pole(K.fukugiLane.minX+.25,89,{face:Math.PI/2,transformer:false,lamp:true,seed:252});
+ wiresBetween(kit,spine[0],north,{sag:.5});
  const nearest=(x,z)=>poles.reduce((a,b)=>Math.hypot(b.anchors[0].x-x,b.anchors[0].z-z)<Math.hypot(a.anchors[0].x-x,a.anchors[0].z-z)?b:a);
  for(const p of K.plots.filter(q=>Number(q.id.split('-')[1])>=6)){
   const {door}=plotGate(p,0),inX=p.gate==='west'?3.2:p.gate==='east'?-3.2:0,inZ=p.gate==='north'?-3.2:p.gate==='south'?3.2:0;
   const target=kit.point(door[0]+inX+(inX?0:1.5),2.6,door[1]+inZ);
   serviceDrop(kit,nearest(door[0],door[1]),target.toArray());
  }
- {const A=K.apartment;serviceDrop(kit,north[1],kit.point(A.maxX-1.9,5.3,(A.minZ+A.maxZ)/2).toArray());}
+ {const A=K.apartment;serviceDrop(kit,north,kit.point(A.maxX-1.9,5.3,(A.minZ+A.maxZ)/2).toArray());}
  // ---- Somebody's life: a dog house inside the yard.
  {const p=K.plots.find(q=>q.id==='kitahama-10'),x=p.maxX-1.3,z=p.maxZ-1.4;
   kit.box(.7,.5,.8,x,.25,z,0x9a6a3e);kit.box(.82,.06,.95,x,.56,z,0x7a4b2e,{rz:.18});kit.box(.82,.06,.95,x,.56,z,0x7a4b2e,{rz:-.18});kit.box(.32,.32,.02,x,.22,z+.41,0x2a2420);

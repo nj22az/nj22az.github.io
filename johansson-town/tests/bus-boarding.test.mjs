@@ -5,7 +5,6 @@ import {createFerryRun as createBusRun,FERRY} from '../src/world/ferry.js';
 import {OUTER_PIER} from '../src/world/layout.js';
 import {HARBOUR_LINE} from '../src/people/commuter-schedule.js';
 import {BUS_STATION} from '../src/world/bus-station.js';
-import {MAIN_ROAD} from '../src/world/main-road.js';
 
 /**
  * The boarding rule on its own, as schedules.js applies it: you go when a bus you
@@ -78,11 +77,10 @@ test('with no bus modelled at all, people come and go as they always did',()=>{
 });
 
 test('nobody who was already away is left standing at the terminus',async()=>{
- const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');
  const {createCastAI}=await import('../src/people/schedules.js');
  const {RESIDENTS,STREET_CAST_NAMES}=await import('../src/people/residents.js');
 
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  try{
   // Three in the morning. Day staff left on the evening service. Reiko and Tetsuo
   // have finished work and wait for the morning service alongside the night staff.
@@ -101,7 +99,7 @@ test('nobody who was already away is left standing at the terminus',async()=>{
   // reappear in a heap at the coyote arch or on the forest bus road.
   const residentLocations=Object.fromEntries(people.map(p=>
    [p.profile.name,{position:[...BUS_STATION.exit],indoors:null,place:'away'}]));
-  const ai=createCastAI({world,player,state:()=>({townMode:'peninsula',inventory:[],residentLocations}),
+  const ai=createCastAI({world,player,state:()=>({inventory:[],residentLocations}),
    paused:()=>false,collides:()=>false});
   for(let i=0;i<180;i++){bus.update(1/60,NIGHT+i/60,false);ai.update(1/60,NIGHT+i/60,false);}
 
@@ -124,14 +122,13 @@ test('nobody who was already away is left standing at the terminus',async()=>{
    assert.ok(a.g.position.distanceTo(b.g.position)>.6,
     a.profile.name+' and '+b.profile.name+' are standing in the same place');
   }
- }finally{configureTownMode(TOWN_MODES.LEGACY);}
+ }finally{}
 });
 
 test('they walk out to the pier and go aboard the ferry, rather than ending at a kerb',async()=>{
  const {installDOM}=await import('./fixtures.mjs');
- const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {createTown}=await import('../src/world/town.js?boarding-walk');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const {createCastAI}=await import('../src/people/schedules.js?boarding-walk');
@@ -139,7 +136,7 @@ test('they walk out to the pier and go aboard the ferry, rather than ending at a
  const {circleHitsRect}=await import('../physics.js?snappy=1');
 
  const scene=new THREE.Scene();
- const built=createTown({scene,sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,
+ const built=createTown({scene,sites:createBusinesses(),mobile:false,shadows:false,
   register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const collides=(x,z,r=.32)=>built.colliders.some(c=>circleHitsRect(x,z,r,c));
  // Everybody who lives on the island goes home on foot now; the ferry carries visitors.
@@ -149,8 +146,8 @@ test('they walk out to the pier and go aboard the ferry, rather than ending at a
  g.userData={name:'Day visitor',visualReady:true};g.position.set(profile.work[0],0,profile.work[1]);scene.add(g);
  const player=new THREE.Group();player.position.set(0,0,-30);
  const world={people:[{g,profile}],homes:new Map(),ferry:built.ferry,busStation:built.busStation,
-  staffBench:built.staffBench,townMode:'peninsula'};
- const ai=createCastAI({world,player,state:()=>({townMode:'peninsula',inventory:[],residentLocations:{}}),
+  staffBench:built.staffBench};
+ const ai=createCastAI({world,player,state:()=>({inventory:[],residentLocations:{}}),
   paused:()=>false,collides,getObserverPosition:()=>player.position});
 
  // On the island the service is the ferry at the outer pier, boarded by its gangway.

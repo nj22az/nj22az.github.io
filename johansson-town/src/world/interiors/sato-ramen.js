@@ -1,5 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {addMinatoInterior} from '../izakaya.js?snappy=1';
+import {buildSatoRamenDressing} from './sato-ramen-dressing.js';
 import {SATO_ROOM,SATO_COUNTER,SATO_LEDGE,SATO_CORNER,SATO_COLLIDERS,SATO_MENU,SATO_RAMEN} from '../sato-ramen-layout.js';
 
 /**
@@ -25,7 +26,7 @@ function plaqueTexture(item){
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
 }
 
-export function buildSatoRamenRoom({room,reg,collider,action,exit}){
+export function buildSatoRamenRoom({room,reg,collider,action,exit,getMinutes=()=>720}){
  const group=new THREE.Group();group.name='Sato Ramen';room.add(group);
  if(!addMinatoInterior(room)){
   const floor=new THREE.Mesh(new THREE.BoxGeometry(5,.1,6),new THREE.MeshStandardMaterial({color:0x9c5436}));floor.position.set(8.95,-.05,.8);group.add(floor);
@@ -64,13 +65,14 @@ export function buildSatoRamenRoom({room,reg,collider,action,exit}){
   const o=anchor([seat.position[0],1,seat.position[2]],label,()=>action('seat',corner?'Sato Ramen window table':ledge?'Sato Ramen ledge':'Sato Ramen counter','A red stool and a glass of cold water. Mrs Sato nods at you over the steam.'));
   o.userData.seat={ramenSeatId:i,position:[...seat.position],stand:[...seat.stand],eyeY:seat.height+.6,yaw:seat.yaw,pitch:0,table:[...seat.table],surfaceY:seat.height};
  });
- anchor([6.95,1.3,3.0],'Read the ticket machine',()=>action('read',SATO_RAMEN.title+' · ticket machine',SATO_MENU.map(item=>item.jp+' · '+item.name+' · ¥'+item.cost).join('\n')+'\n\nTake a seat and order: when the machine is being temperamental, which is usually, Mrs Sato takes the money over the counter.'));
+ anchor([6.95,1.3,3.0],'Use the ticket machine',()=>action('ramen-ticket'));
  anchor([10.9,2.9,3.1],'Watch the lunchtime news',()=>action('inspect','Lunchtime news','NHK Okinawa: a typhoon well to the south, turning away; the ferry timetable as usual; a man in Nago has grown a very large goya.'));
  anchor([9.0,2.9,-5.9],'Read the menu plaques',()=>action('read',SATO_RAMEN.jp+' · menu',SATO_MENU.map(item=>item.jp+' ¥'+item.cost).join(' · ')));
  anchor([...SATO_ROOM.exit],'Exit to the street',exit);
+ const dressing=buildSatoRamenDressing(group,{anchor,action,collider});
  let clock=0;
  function tick(dt){
-  clock+=dt;
+  clock+=dt;dressing.update(getMinutes());
   for(const s of puffs){
    const t=(s.userData.t+clock*.18)%1,[x,y,z]=s.userData.source;
    s.position.set(x+Math.sin(t*6+z)*.05,y+t*1.2,z+Math.cos(t*5)*.04);s.scale.setScalar(.18+t*.45);s.material.opacity=.45*(1-t)*Math.min(1,t*6);

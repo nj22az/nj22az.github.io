@@ -2,8 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
-import {COAST_BOUNDS} from '../src/world/peninsula.js';
+import {COAST_BOUNDS} from '../src/world/island-coast.js';
 import {AIRPORT_LANDING,AIRPORT_COUNTER,airportWorld} from '../src/world/airport-ground.js';
 import {FERRY_TERMINAL} from '../src/world/ferry.js';
 import {AIRPORT_FERRY_PORTS} from '../src/world/airport-ferry.js';
@@ -13,7 +12,7 @@ import {createNavigation} from '../src/people/navmesh.js';
 import {townBoundsBlocked,standingHitsRect,canStepBetween} from '../physics.js';
 
 test('both ferry landings have real, unobstructed walking routes to their passenger facilities',async()=>{
- installDOM();globalThis.self=globalThis;configureTownMode(TOWN_MODES.PENINSULA);
+ installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js');const {createBusinesses}=await import('../src/world/businesses.js');
  const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  world.ferry.parkAt?.('town');
@@ -68,5 +67,5 @@ test('both ferry landings have real, unobstructed walking routes to their passen
    const top=ray.intersectObjects(candidates,false).find(hit=>hit.point.y>=y-.06&&hit.point.y<=y+.2);
    assert.ok(top,'Missing public floor at local '+[u,v]);assert.ok(Math.abs(top.point.y-y)<.002,'Public floor mismatch at local '+[u,v]+' on '+top.object.name);
   }
- }finally{setWalkSurface(null);configureTownMode(TOWN_MODES.LEGACY);}
+ }finally{setWalkSurface(null);}
 });

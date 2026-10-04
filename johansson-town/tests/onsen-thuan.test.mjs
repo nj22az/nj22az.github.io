@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import {residentPlan,thuanAtOnsen,onsenInvitationDay} from '../src/people/social.js';
@@ -10,7 +9,7 @@ import {ONSEN_ROOM,ONSEN_SEATS} from '../src/world/interiors/onsen.js';
 import {installDOM} from './fixtures.mjs';
 
 const thuan=RESIDENTS.find(p=>p.name==='Thuan');
-const commuter={townMode:'shopping-district'};
+const commuter={};
 
 test('asked along, Thuan goes from locking up to Umi-no-yu, and still makes her bus',()=>{
  // 20:15 on day 3, the evening she said yes to.
@@ -26,8 +25,6 @@ test('asked along, Thuan goes from locking up to Umi-no-yu, and still makes her 
  // Asking after her window has gone means tomorrow.
  assert.equal(onsenInvitationDay(thuan,3*1440+700,false,commuter),3);
  assert.equal(onsenInvitationDay(thuan,3*1440+1300,false,commuter),4);
- // The older, residential town has her soak straight after closing too.
- assert.equal(residentPlan(thuan,3*1440+thuan.close+20,false,{onsenDate:3},false).place,'onsen');
 });
 
 test('the bath borrows Thuan into the rock pool in swimwear and gives her back dressed',()=>{

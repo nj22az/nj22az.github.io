@@ -3,18 +3,17 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {DOCK_WORKSHOP_PLOT} from '../src/world/dock-workshop-layout.js';
 import {WEST_SHOPS,westShopDoor,WEST_FRONT} from '../src/world/west-shops.js';
 
-async function peninsula(){
+async function island(){
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {createTown}=await import('../src/world/town.js?shopfronts');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const scene=new THREE.Scene(),entrances=[];
  const sites=createBusinesses();
- const world=createTown({scene,sites,townMode:'peninsula',mobile:false,shadows:false,
+ const world=createTown({scene,sites,mobile:false,shadows:false,
   register(object,label){if(/^Enter /.test(label)){const p=object.getWorldPosition(new THREE.Vector3());entrances.push({label,x:p.x,z:p.z});}},
   enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  scene.updateMatrixWorld(true);
@@ -22,7 +21,7 @@ async function peninsula(){
 }
 
 test('every door opens onto a building',async()=>{
- const {scene,world,entrances}=await peninsula();
+ const {scene,world,entrances}=await island();
  const [wx,,wz]=DOCK_WORKSHOP_PLOT.door;for(const z of [wz,wz+.6])assert.equal(world.colliders.some(c=>circleHitsRect(wx,z,.32,c)),false,'Workshop entrance and exit clear the yard wall');
  // What counts as a building: something with walls, standing on the ground.
  const walls=[];
@@ -36,11 +35,10 @@ test('every door opens onto a building',async()=>{
  assert.ok(walls.length>6,'Found no buildings to check the doors against');
  assert.deepEqual(entrances.map(e=>e.label).sort(),[
   'Enter Front-Row Books','Enter Dock Electrical & Repair Workshop','Enter Harbour Warehouse',
-  'Enter Johansson Harbour Office','Enter Sakura Shōten','Enter Minato Police Box',
+  'Enter Johansson Harbour Office','Enter Minato Port Terminal','Enter Sakura Shōten','Enter Minato Police Box',
  ].sort(),'Separate bookshop and dock workshop entrances, with other businesses retained');
  // Kenji & Tetsuo Repairs offered a way in at 0.4,-6.7 -- out on the boardwalk beside a
- // lamp post, because that is where the night-market alley put its door and the
- // peninsula does not build that alley. A door has to be in a wall.
+ // lamp post, because that is where the old night-market alley put its door. A door has to be in a wall.
  const adrift=entrances.filter(e=>!walls.some(w=>
   e.x>w.min.x-3&&e.x<w.max.x+3&&e.z>w.min.z-3&&e.z<w.max.z+3))
   .map(e=>e.label+' at '+e.x.toFixed(1)+','+e.z.toFixed(1));
@@ -48,7 +46,7 @@ test('every door opens onto a building',async()=>{
 });
 
 test('the shop staff stand at their own shop',async()=>{
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {RESIDENTS}=await import('../src/people/residents.js?shopfronts');
  for(const [name,id] of [['Aya','frontrow'],['Reiko','frontrow'],['Kenji','form3d'],['Tetsuo','form3d']]){
   const work=RESIDENTS.find(p=>p.name===name)?.work,door=id==='form3d'?DOCK_WORKSHOP_PLOT.door.filter((_,i)=>i!==1):westShopDoor(id);
@@ -59,7 +57,7 @@ test('the shop staff stand at their own shop',async()=>{
 
 test('the west shops leave the pavement and the crossing alone',async()=>{
  const {routeAt}=await import('../src/world/layout.js?shopfronts');
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  for(const [id,plot] of Object.entries(WEST_SHOPS)){
   // The doorstep is standable, and so is the pavement past the shop either way.
   const door=westShopDoor(id);

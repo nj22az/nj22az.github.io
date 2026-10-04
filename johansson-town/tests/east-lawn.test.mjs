@@ -5,7 +5,6 @@ import * as THREE from '../vendor/three.module.js';
 import {readFile} from 'node:fs/promises';
 import {installDOM} from './fixtures.mjs';
 import {preloadPark,parkFoliage} from '../src/world/park.js?snappy=1';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {EAST_LAWN,buildEastLawn} from '../src/world/east-lawn.js';
 import {PARK,COURT_TERRACE,courtTerraceHeight} from '../src/world/park-layout.js';
 const nearTerraceWall=(x,z)=>z<COURT_TERRACE.minZ+.1&&x>COURT_TERRACE.minX-.6&&x<COURT_TERRACE.maxX;
@@ -14,11 +13,11 @@ import {MAIN_ROAD} from '../src/world/main-road.js';
 import {circleHitsRect} from '../physics.js';
 import {GATEBALL_ACTIVE} from '../src/world/okinawa/layout.js';
 
-/** The peninsula land sits at this height, and the surrounding sea at this one. */
+/** The island land sits at this height, and the surrounding sea at this one. */
 const LAND=-.4,WATER=-.56;
 
 test('the east of the town is one green from the kerb to the seawall',async()=>{
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {routeAt,groundHeight}=await import('../src/world/layout.js?east-lawn');
  // Everything between the pavement and the wall is walkable at pavement level, which
  // is what it was not: the park was an island and the rest was scenery below the kerb.
@@ -51,9 +50,6 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
  assert.ok(groundHeight(PARK.x,PARK.z)>1,'The park keeps its mound');
  // and the lawn stops where the town does.
  assert.equal(routeAt(EAST_LAWN.maxX+1.5,10)?.surface,'sand','The beach beyond the seawall is walkable');
- configureTownMode(TOWN_MODES.LEGACY);
- assert.ok(!routeAt(28,4),'Only the peninsula has an east side to stand on');
- configureTownMode(TOWN_MODES.PENINSULA);
 });
 
 test('the seawall stops you, and the sand below it stays above the ground it lies on',()=>{
@@ -69,7 +65,7 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  assert.ok(trees,'The north end is left open onto unbuilt land');
  assert.ok(trees.z-trees.d/2>EAST_LAWN.maxZ-2.2,'The treeline eats the green it is meant to close');
 
- // Dry sand has to draw above the peninsula's own ground or the land shows through it,
+ // Dry sand has to draw above the island's own ground or the land shows through it,
  // and it has to reach below the water or the beach ends in a step.
  const [first]=EAST_LAWN.beach.profile,last=EAST_LAWN.beach.profile.at(-1);
  assert.ok(first[1]>LAND,'The beach starts below the ground it lies on');
@@ -121,12 +117,12 @@ test('the lawn wears the park\u2019s own grass rather than a green of its own',a
 
 test('every open patch of the east side can be walked to from the road',async()=>{
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {routeAt,groundHeight}=await import('../src/world/layout.js?east-reach');
  const {createTown}=await import('../src/world/town.js');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const sites=createBusinesses().filter(s=>['market','frontrow'].includes(s.id));
- const {colliders}=createTown({scene:new THREE.Scene(),sites,townMode:'peninsula',mobile:false,
+ const {colliders}=createTown({scene:new THREE.Scene(),sites,mobile:false,
   shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
 
  // Ground you can stand on but cannot get to is the same invisible wall seen from the
@@ -167,7 +163,7 @@ test('every open patch of the east side can be walked to from the road',async()=
 
 test('the paths across the green lie on the ground rather than through it',async()=>{
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {groundHeight}=await import('../src/world/layout.js?lane-clearance');
  const {buildLaneSurfaces}=await import('../src/world/lane-surfaces.js?lane-clearance');
  const {createMaterials}=await import('../src/render/materials.js?lane-clearance');
@@ -199,7 +195,7 @@ test('the paths across the green lie on the ground rather than through it',async
 });
 
 test('the gateball court stands level on the hill\u2019s ground, graded into it, walled toward the sea',{skip:!GATEBALL_ACTIVE&&'the court is switched off (okinawa/layout.js GATEBALL_ACTIVE)'},async()=>{
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {groundHeight}=await import('../src/world/layout.js?terrace');
  const T=COURT_TERRACE;
  for(let x=T.minX+.2;x<T.maxX;x+=.8)for(let z=T.minZ+.2;z<T.maxZ;z+=.8)assert.equal(groundHeight(x,z),T.height,'The court is not level at '+[x,z]);

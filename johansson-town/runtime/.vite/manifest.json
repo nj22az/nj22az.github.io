@@ -1,50 +1,40 @@
 {
-  "_actors-CQPppB1I.js": {
-    "file": "actors-CQPppB1I.js",
+  "_actors-DEl0bnBZ.js": {
+    "file": "actors-DEl0bnBZ.js",
     "name": "actors"
   },
   "_icons-MrOxZM18.js": {
     "file": "icons-MrOxZM18.js",
     "name": "icons"
   },
-  "_preload-helper-PPVm8Dsz.js": {
-    "file": "preload-helper-PPVm8Dsz.js",
-    "name": "preload-helper"
-  },
-  "_spector.bundle-_JPoFEkN.js": {
-    "file": "spector.bundle-_JPoFEkN.js",
-    "name": "spector.bundle",
-    "isDynamicEntry": true
-  },
-  "_town-audio-7PjwmOKd.js": {
-    "file": "town-audio-7PjwmOKd.js",
+  "_town-audio-DyNkE1Ey.js": {
+    "file": "town-audio-DyNkE1Ey.js",
     "name": "town-audio"
   },
   "src/audio/town-audio.js?snappy=1": {
-    "file": "audio-CBa7Ywpb.js",
+    "file": "audio-C8P9scra.js",
     "name": "audio",
     "src": "src/audio/town-audio.js?snappy=1",
     "isEntry": true,
     "imports": [
-      "_town-audio-7PjwmOKd.js"
+      "_town-audio-DyNkE1Ey.js"
     ]
   },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-ztqXw1Hm.js",
+    "file": "portraits-DJXGqqhw.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
     "imports": [
-      "_actors-CQPppB1I.js"
+      "_actors-DEl0bnBZ.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-BlsIFLP3.js",
+    "file": "boot-DqJqMDyc.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
     "imports": [
-      "_preload-helper-PPVm8Dsz.js",
       "_icons-MrOxZM18.js"
     ],
     "dynamicImports": [
@@ -55,22 +45,18 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-9D3NvwXC.js",
+    "file": "game-Df52_zoE.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_actors-CQPppB1I.js",
-      "_town-audio-7PjwmOKd.js",
-      "_icons-MrOxZM18.js",
-      "_preload-helper-PPVm8Dsz.js"
-    ],
-    "dynamicImports": [
-      "_spector.bundle-_JPoFEkN.js"
+      "_actors-DEl0bnBZ.js",
+      "_town-audio-DyNkE1Ey.js",
+      "_icons-MrOxZM18.js"
     ]
   },
   "touch-ui.js?ui=controls-3": {
-    "file": "touch-ui-CWODQqT0.js",
+    "file": "touch-ui-CCG0tNLG.js",
     "name": "touch-ui",
     "src": "touch-ui.js?ui=controls-3",
     "isDynamicEntry": true,
@@ -85,7 +71,7 @@
     "isDynamicEntry": true
   },
   "webmcp.js": {
-    "file": "webmcp-DXS_cxa8.js",
+    "file": "webmcp-Caj8m7xi.js",
     "name": "webmcp",
     "src": "webmcp.js",
     "isDynamicEntry": true

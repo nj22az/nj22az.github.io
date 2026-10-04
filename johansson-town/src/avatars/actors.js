@@ -1,3 +1,4 @@
+import {createToolProp,fitToolProp} from './tools.js';
 import {appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,measure} from './build.js';
@@ -6,6 +7,8 @@ import {recipeFor,CAST_RECIPES} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
 import {fitAvatarHeldProp} from './consume.js';
 import {DEFAULT_PLAYER,readPlayers,readSave} from '../save.js';
+import {swingsAt} from './springs.js';
+const swingAt=new THREE.Vector3();
 import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropPortion,disposeServing} from '../people/izakaya-beer.js';
 
 /**
@@ -95,6 +98,9 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
   sleeping,gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,tipsy:u.tipsy||0,
  });
+ // Hair, skirts and hems swing (springs.js): always for Thuan, near the camera for everyone else.
+ if(swingsAt(entity.getWorldPosition(swingAt),actor.isThuan)){avatar.springs?.update(dt);actor.swingResting=false;}
+ else if(!actor.swingResting){avatar.springs?.reset();actor.swingResting=true;}
  // Every resident uses the same hand fit and portion animation as the player.
  const heldKind=u.heldItem||(['Drink','DrinkStanding'].includes(u.socialPose)?'beer':u.socialPose==='Eat'?'rice':null);
  if(actor.heldKind!==heldKind){
@@ -112,6 +118,10 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   if(actor.heldProp&&Number.isFinite(u.heldPortion))setPropPortion(actor.heldProp,u.heldPortion,{immediate:true});
   if(actor.dishProp&&Number.isFinite(u.foodPortion))setPropPortion(actor.dishProp,u.foodPortion,{immediate:true});
  }
+ // Cleaning tools (izakaya-hours.js): one in the right hand while the pose works it.
+ const toolKind=u.tool||null;
+ if(actor.toolKind!==toolKind){actor.toolProp?.removeFromParent();actor.toolProp=toolKind?createToolProp(toolKind):null;actor.toolKind=toolKind;if(actor.toolProp)avatar.bones.handR.add(actor.toolProp);}
+ if(actor.toolProp)fitToolProp(avatar,actor.toolProp);
  if(actor.heldProp){
   const c=actor.animator.consumption;
   if(c&&!Number.isFinite(u.heldPortion)&&c.swallow>.5&&actor.consumedCycle!==c.cycle){
@@ -138,7 +148,7 @@ export function avatarConversationTarget(actor,target=new THREE.Vector3()){
  */
 export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
  const root=new THREE.Group();root.name='Johansson (third person)';root.visible=false;scene.add(root);
- let avatar=buildAvatar(recipe,{shadows:true,faceSize:512}),animator=createAvatarAnimator(avatar);
+ let avatar=buildAvatar(recipe,{shadows:true,faceSize:512}),animator=createAvatarAnimator(avatar,{bowDepth:.18});
  root.add(avatar.root);
  let expression='neutral',expressionUntil=0,speakUntil=0,time=0,seatMove='Sit',outfit='clothes',held=null,lookPoint=null,move=null;
  const hand=()=>avatar.bones.handR;
@@ -169,7 +179,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   /** Swap to a new recipe (the creator's save), keeping everything else. */
   setRecipe(next){
    const r=normalizeRecipe(next);avatar.root.removeFromParent();avatar.dispose();
-   avatar=buildAvatar(r,{shadows:true,faceSize:512});animator=createAvatarAnimator(avatar);root.add(avatar.root);
+   avatar=buildAvatar(r,{shadows:true,faceSize:512});animator=createAvatarAnimator(avatar,{bowDepth:.18});root.add(avatar.root);
    avatar.wear(outfit);if(held)hand().add(held);
   },
   update(dt,state={}){
@@ -181,6 +191,8 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
     seatHeight:state.seated?avatar.measure.hipY-avatar.measure.seatDrop:undefined,seat:seatMove,airborne:!!state.airborne,
     talking:time<speakUntil,expression,gaze:lookPoint,heldProp:held,tipsy:state.tipsy||0});
    if(state.seated)avatar.root.position.y=0;
+   // Johansson's shirt hem swings wherever he is.
+   if(root.visible)avatar.springs?.update(dt);
    if(held?.userData.consumable){
     const c=animator.consumption;
     if(c&&held.userData.finishPortion!==undefined)setPropPortion(held,THREE.MathUtils.lerp(held.userData.startPortion,held.userData.finishPortion,c.swallow));

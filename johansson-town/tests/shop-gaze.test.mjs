@@ -1,8 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
 import * as T from '../vendor/three.module.js';
-import {installDOM} from './fixtures.mjs';
 import {createShopAttention} from '../src/people/shop-attention.js';
 
 test('Thuan notices nearby customers, gives the till priority, and does not watch through furniture',()=>{

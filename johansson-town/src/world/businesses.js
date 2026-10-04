@@ -1,6 +1,5 @@
 import {DOCK_WORKSHOP} from './dock-workshop-layout.js';
 import {canonicalHomeId} from '../people/households.js';
-import {peninsulaActive} from './town-mode.js';
 import {BOOKSHOP_WORKSHOP} from './bookshop-workshop-layout.js';
 // Stable destinations: old save references resolve to the surviving business.
 export const BUSINESS_ALIASES=Object.freeze({journal:'frontrow',electronics:'form3d',stepwise:'form3d',career:'office'});
@@ -13,13 +12,13 @@ export const CORE_BUSINESSES=Object.freeze([
  {id:'market',title:'Sakura Shōten',jp:"Sakura Shop",sub:'DAILY GOODS',side:-1,z:-28,color:0x9d7c7e,accent:'#a76680',line:'Thuan’s convenience store · tea, snacks and everyday things.'},
 ].map(Object.freeze));
 export const createBusinesses=()=>CORE_BUSINESSES.map(site=>({...site}));
-export const createPeninsulaBusinesses=()=>createBusinesses().filter(site=>['market','frontrow','form3d','office'].includes(site.id)).map(site=>site.id==='frontrow'?{...site,...BOOKSHOP_WORKSHOP}:site.id==='form3d'?{...site,...DOCK_WORKSHOP}:site);
+export const createIslandBusinesses=()=>createBusinesses().filter(site=>['market','frontrow','form3d','office'].includes(site.id)).map(site=>site.id==='frontrow'?{...site,...BOOKSHOP_WORKSHOP}:site.id==='form3d'?{...site,...DOCK_WORKSHOP}:site);
 export function consolidateBusinesses(sites){
  const retired=new Set(Object.keys(BUSINESS_ALIASES));
  // Also accept callers carrying the older eight-shop catalogue.
  for(let i=sites.length-1;i>=0;i--)if(retired.has(sites[i].id))sites.splice(i,1);
  for(const definition of CORE_BUSINESSES){const site=sites.find(s=>s.id===definition.id);if(site)Object.assign(site,definition);}
- if(peninsulaActive()){
+ {
   let workshop=sites.find(s=>s.id==='form3d');if(!workshop){workshop={...CORE_BUSINESSES.find(s=>s.id==='form3d')};sites.push(workshop);}Object.assign(workshop,DOCK_WORKSHOP);
   const books=sites.find(s=>s.id==='frontrow');if(books)Object.assign(books,BOOKSHOP_WORKSHOP);
  }

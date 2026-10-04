@@ -1,0 +1,76 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import * as THREE from '../vendor/three.module.js';
+import {installDOM} from './fixtures.mjs';
+import {buildSakuraInterior} from '../src/world/interiors/sakura-interior.js';
+import {OFFICE_DOOR} from '../src/world/interiors/sakura-life.js';
+import {SAKURA_LAYOUT} from '../src/world/interiors/sakura-layout.js';
+import {buildSakuraBand} from '../src/world/interiors/sakura-cheer.js';
+
+function shop(){
+ installDOM();
+ const room=new THREE.Group(),display=buildSakuraInterior({room,reg(){},action(){},exit(){}});
+ room.updateMatrixWorld(true);
+ return {room,display};
+}
+const footprint=(room,pattern)=>{
+ const box=new THREE.Box3();
+ room.traverse(o=>{if(o.isMesh&&pattern.test(o.name))box.union(new THREE.Box3().setFromObject(o));});
+ return box;
+};
+const overlapXZ=(a,b)=>a.min.x<b.max.x&&a.max.x>b.min.x&&a.min.z<b.max.z&&a.max.z>b.min.z;
+
+test('the counter pieces stand apart: lucky cat, register, hot case, steamer, flyers, oden and charity box',()=>{
+ const {room}=shop();
+ const [rx,,rz]=SAKURA_LAYOUT.register;
+ const pieces={
+  register:new THREE.Box3(new THREE.Vector3(rx-.16,1,rz-.3),new THREE.Vector3(rx+.16,1.38,rz+.08)),
+  'hot case':footprint(room,/^Sakura hot case/),
+  steamer:footprint(room,/^Sakura bun steamer|^Sakura bun /),
+  flyers:footprint(room,/shop flyer/),
+  oden:footprint(room,/^Sakura oden (pot|broth|card)/),
+  charity:footprint(room,/^Charity box/),
+ };
+ // The cat is a loaded model; its holder stands where it was placed, about 0.14 m across.
+ const cat=room.getObjectByName('Maneki_neko_Colorful');assert.ok(cat,'The lucky cat is on the counter');
+ const p=cat.getWorldPosition(new THREE.Vector3());
+ pieces.cat=new THREE.Box3(new THREE.Vector3(p.x-.07,1,p.z-.07),new THREE.Vector3(p.x+.07,1.23,p.z+.07));
+ const names=Object.keys(pieces);
+ for(const n of names)assert.ok(!pieces[n].isEmpty(),n+' was found');
+ for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++)
+  assert.equal(overlapXZ(pieces[names[i]],pieces[names[j]]),false,`${names[i]} and ${names[j]} clip into each other`);
+});
+
+test('the office has a framed, panelled door that swings into the office for whoever comes near and closes after',()=>{
+ const {room,display}=shop();
+ const door=display.officeDoor;assert.ok(door,'The office door is built');
+ assert.ok(room.getObjectByName('Sakura office door'));
+ const handles=[];door.pivot.traverse(o=>{if(/handle/.test(o.name))handles.push(o);});assert.ok(handles.length>=2,'A handle on each side');
+ assert.equal(door.angle,0,'Shut while nobody is near');
+ const outside=[OFFICE_DOOR.hingeX+.55,OFFICE_DOOR.z+.9];
+ for(let i=0;i<60;i++)door.update(1/30,[outside]);
+ assert.ok(door.angle>1.3,'Open as someone walks up');
+ // It swings into the office (towards -z), never out over the shop floor.
+ door.pivot.updateMatrixWorld(true);
+ const leaf=new THREE.Box3().setFromObject(room.getObjectByName('Sakura office door leaf'));
+ assert.ok(leaf.max.z<=OFFICE_DOOR.z+.05,'The open leaf stays on the office side');
+ assert.ok(leaf.min.x>4.66,'and clear of the office west wall');
+ for(let i=0;i<120;i++)door.update(1/30,[[0,2]]);
+ assert.equal(door.angle,0,'Shut again once they have gone');
+});
+
+test('the wall frieze lists its goods after the shop name, never over it',()=>{
+ // The canvas fixture measures text; the list must start beyond the name and end before the crest.
+ installDOM();const calls=[];const real=globalThis.document.createElement.bind(globalThis.document);
+ globalThis.document.createElement=tag=>{const el=real(tag);if(tag==='canvas'){const inner=el.getContext('2d');let font='';
+  const ctx=new Proxy(inner,{get:(t,k)=>k==='fillText'?(s,x,y)=>{calls.push({s,x,width:t.measureText(s).width*.55*parseFloat(font.match(/(\d+)px/)?.[1]||17)/17});}:k==='measureText'?s=>({width:t.measureText(s).width*.55*parseFloat(font.match(/(\d+)px/)?.[1]||17)/17}):k==='font'?font:t[k],set:(t,k,v)=>{if(k==='font')font=v;else t[k]=v;return true;}});
+  el.getContext=()=>ctx;}return el;};
+ try{buildSakuraBand(new THREE.Group());}finally{globalThis.document.createElement=real;}
+ // The stub measures about 0.55 em a character, close to the rounded gothic the band uses.
+ const name=calls.find(c=>c.s==='Sakura Shop'&&c.x===28),lines=calls.filter(c=>/^Groceries|^Stamp/.test(c.s));
+ assert.ok(name&&lines.length===2,'The name and both lines of goods are lettered');
+ for(const l of lines){
+  assert.ok(l.x>=name.x+name.width,'The goods start after the shop name');
+  assert.ok(l.x+l.width<=1024-52-30,'and end before the crest');
+ }
+});

@@ -280,8 +280,7 @@ test('the shopfront is cut for the shop that is actually inside it',async()=>{
 });
 
 test('the shop stands in a yard you can walk round, with a back to look at',async()=>{
- const {configureTownMode,TOWN_MODES}=await import('../src/world/town-mode.js');
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {routeAt}=await import('../src/world/layout.js?west-yard');
  const {SAKURA_FRONT}=await import('../src/world/interiors/sakura-layout.js');
  const front=-7.45,centre=-28+1.2,half=SAKURA_FRONT.width/2;
@@ -296,9 +295,7 @@ test('the shop stands in a yard you can walk round, with a back to look at',asyn
  // and the yard is closed by a wall rather than simply stopping: beyond it is the next
  // quarter, reached by the lanes through the wall, not more of the yard.
  assert.equal(routeAt(front-SAKURA_FRONT.depth-9,centre,.32)?.id,'nishi-machi','Behind the yard wall is not Nishi-machi');
- configureTownMode(TOWN_MODES.LEGACY);
- assert.ok(!routeAt(front-SAKURA_FRONT.depth-1.6,centre,.32),'Only the peninsula has the room for a yard');
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
 });
 
 test('Examine opens the 3D inspector with Buy · Talk · Put back and baskets on Buy',async()=>{

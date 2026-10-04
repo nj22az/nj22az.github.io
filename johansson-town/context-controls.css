@@ -132,8 +132,8 @@
 #movementActions #jump{background:#487c76;color:#fff3d8;border:2px solid #aad0b0;box-shadow:0 4px 0 #273e4055}
 #act{background:#bd6261;border:2px solid #ffdaad;color:#fff7df;box-shadow:0 4px 0 #633d4155}
 #hud #subtitle{background:#fff2dbeb;color:#4c4141;border:1px solid #dbbe91;border-radius:18px;padding:12px 18px;text-shadow:none;max-width:min(560px,86vw)}
-#exitRoomButton{position:fixed;left:max(16px,env(safe-area-inset-left));top:max(86px,calc(env(safe-area-inset-top) + 76px));z-index:90;min-height:48px;padding:12px 18px;border:2px solid #fff6de;border-radius:18px;background:#a94435;color:#fff8e9;font:800 15px system-ui;letter-spacing:0;box-shadow:0 4px 0 #65382c;cursor:pointer}
-#exitRoomButton:focus-visible{outline:3px solid #f7cd6c;outline-offset:4px}
+:is(#exitRoomButton,#enterBuildingButton){position:fixed;left:max(16px,env(safe-area-inset-left));top:max(86px,calc(env(safe-area-inset-top) + 76px));z-index:90;min-height:48px;padding:12px 18px;border:2px solid #fff6de;border-radius:18px;background:#a94435;color:#fff8e9;font:800 15px system-ui;letter-spacing:0;box-shadow:0 4px 0 #65382c;cursor:pointer}
+:is(#exitRoomButton,#enterBuildingButton):focus-visible{outline:3px solid #f7cd6c;outline-offset:4px}
 #directoryGrid .izakaya-shortcut{grid-column:1/-1;background:#a94435;color:#fff8e9;border-color:#efc891;border-radius:16px;padding:16px;min-height:64px}
 #directoryGrid .izakaya-shortcut span{color:#fff0d4}
 @media(prefers-reduced-motion:reduce){#activity #activityActions button{transition:none}}
@@ -151,7 +151,7 @@
 .neighbour-chat:after{content:'';position:absolute;left:50%;bottom:-7px;width:10px;height:10px;background:#fff3d9;border-right:2px solid #b59670;border-bottom:2px solid #b59670;transform:rotate(45deg)}
 
 /* Door action occupies the free left rail, below location and navigation. */
-#exitRoomButton{top:auto;bottom:max(24px,env(safe-area-inset-bottom));left:max(16px,env(safe-area-inset-left));border:1px solid #d4c49b;border-radius:14px;background:#173238ed;color:#fff4dd;box-shadow:none;font-size:13px;min-height:48px}
-#exitRoomButton.hidden{display:none!important}
-@media(pointer:coarse){#exitRoomButton{top:max(158px,calc(env(safe-area-inset-top) + 148px));bottom:auto;max-width:calc(100vw - 88px)}}
-body.inspecting #exitRoomButton,body.conversation-open #exitRoomButton{visibility:hidden}
+:is(#exitRoomButton,#enterBuildingButton){top:auto;bottom:max(24px,env(safe-area-inset-bottom));left:max(16px,env(safe-area-inset-left));border:1px solid #d4c49b;border-radius:14px;background:#173238ed;color:#fff4dd;box-shadow:none;font-size:13px;min-height:48px}
+:is(#exitRoomButton,#enterBuildingButton).hidden{display:none!important}
+@media(pointer:coarse){:is(#exitRoomButton,#enterBuildingButton){top:max(158px,calc(env(safe-area-inset-top) + 148px));bottom:auto;max-width:calc(100vw - 88px)}}
+body.inspecting :is(#exitRoomButton,#enterBuildingButton),body.conversation-open :is(#exitRoomButton,#enterBuildingButton){visibility:hidden}

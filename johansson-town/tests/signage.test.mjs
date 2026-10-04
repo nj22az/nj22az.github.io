@@ -2,17 +2,16 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {STAFF_BENCH,STAFF_YARD_ROUTE} from '../src/world/staff-bench.js';
 
-async function peninsula(){
+async function island(){
  installDOM();globalThis.self=globalThis;
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  const {createTown}=await import('../src/world/town.js?signage');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const scene=new THREE.Scene();
  const world=createTown({scene,sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),
-  townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+  mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  scene.updateMatrixWorld(true);
  return {scene,world};
 }
@@ -41,7 +40,7 @@ function signage(scene){
 }
 
 test('no sign hangs in the air',async()=>{
- const {scene}=await peninsula();
+ const {scene}=await island();
  const {panels,solids}=signage(scene);
  assert.ok(panels.length>10,'Found the town signage at all');
  // A sign is held up by something: the post under it, the gantry it hangs from, or the
@@ -60,7 +59,7 @@ test('no sign hangs in the air',async()=>{
 
 test('the path round the back goes to the bench and nowhere else',async()=>{
  const {routeAt}=await import('../src/world/layout.js?signage-path');
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  // Every metre of it is ground you can stand on, from the pavement to the bench.
  for(let i=1;i<STAFF_YARD_ROUTE.points.length;i++){
   const [ax,az]=STAFF_YARD_ROUTE.points[i-1],[bx,bz]=STAFF_YARD_ROUTE.points[i];

@@ -9,6 +9,9 @@ import {createSakuraShop} from '../src/people/sakura-shop.js';
 import {restoreSakura} from '../src/commerce/sakura-economy.js';
 import {stockSpec} from '../src/commerce/shop-stock.js';
 import {SAKURA_LAYOUT} from '../src/world/interiors/sakura-layout.js';
+import {MAGAZINE_RACK} from '../src/world/interiors/sakura-magazine-rack.js';
+const RACK_POSITION=[MAGAZINE_RACK.x,0,MAGAZINE_RACK.z];
+const READER_POSITION=[MAGAZINE_RACK.x,0,MAGAZINE_RACK.z-MAGAZINE_RACK.depth/2-.44];
 
 const DT=1/60;
 const START=(marketVisitsForDay(0).Reiko?.[0]??595)+5;
@@ -62,7 +65,7 @@ function finishVisit(f,{beforeStep=()=>{},afterStep=()=>{}}={}){
 }
 
 test('a saved shopper embedded in the magazine rack resumes from clear floor and finishes her real visit',()=>{
- const state=savedVisit('notebook',{position:[-4.3,0,3.22]});state.residentLife=restoreResidentLife(JSON.parse(JSON.stringify(state.residentLife)));
+ const state=savedVisit('notebook',{position:RACK_POSITION});state.residentLife=restoreResidentLife(JSON.parse(JSON.stringify(state.residentLife)));
  const f=fixture({state});f.step(0);
  assert.equal(f.customer.g.userData.inMarket,true);assertClear(f,f.customer,.35);
  const {phases}=finishVisit(f);assert.ok(phases.has('browse'));assert.ok(phases.has('pickup'));
@@ -87,9 +90,9 @@ test('an unpicked saved pickup returns to its shelf before taking stock when Joh
 });
 
 for(const item of ['pudding','yogurt'])test('the '+item+' shopper detours around Johansson at the magazine rack and returns to the till',()=>{
- const f=fixture({state:savedVisit(item),playerPosition:[-4.3,0,2.5]});f.step(0);
+ const f=fixture({state:savedVisit(item),playerPosition:READER_POSITION});f.step(0);
  const {phases}=finishVisit(f);assert.ok(phases.has('browse'));assert.ok(phases.has('pickup'));
- assert.deepEqual(f.player.toArray(),[-4.3,0,2.5],'Johansson stays at the rack throughout the complete shopping route');
+ assert.deepEqual(f.player.toArray(),READER_POSITION,'Johansson stays at the rack throughout the complete shopping route');
 });
 
 test('a shopper replans when Johansson enters her existing route in front of the magazine rack',()=>{
@@ -97,10 +100,10 @@ test('a shopper replans when Johansson enters her existing route in front of the
  const {phases}=finishVisit(f,{beforeStep(elapsed){if(elapsed>=1&&!appeared){
   assert.equal(f.customer.g.userData.inMarket,true);assert.equal(f.state.residentLife.Reiko.shopping.phase,'browse');
   assert.ok(f.customer.g.position.distanceTo(initial)>.05,'The shopper has started walking her unobstructed route');
-  f.setPlayer([-4.3,0,2.5]);assert.equal(f.shop.blocked(f.player.x,f.player.z,.28),false,'Johansson steps onto clear floor beside the rack');
+  f.setPlayer(READER_POSITION);assert.equal(f.shop.blocked(f.player.x,f.player.z,.28),false,'Johansson steps onto clear floor beside the rack');
   assert.ok(f.customer.g.position.distanceTo(f.player)>=.63,'The new obstruction starts clear of the walking customer');appeared=true;
  }}});
- assert.ok(appeared);assert.ok(phases.has('pickup'));assert.deepEqual(f.player.toArray(),[-4.3,0,2.5],'The shopper yields and detours while Johansson remains still');
+ assert.ok(appeared);assert.ok(phases.has('pickup'));assert.deepEqual(f.player.toArray(),READER_POSITION,'The shopper yields and detours while Johansson remains still');
 });
 
 test('a customer defers an occupied Sakura entrance, then walks through the complete visit after it clears',()=>{
@@ -137,7 +140,7 @@ test('Thuan completes a closing chiller restock and exits at her actual body cle
 
 test('Thuan detours around Johansson at the magazine rack while returning from a closing chiller restock',()=>{
  const state={yen:1200,inventory:[],sakura:restoreSakura()};state.sakura.stock.pudding.shelf=0;state.sakura.stock.pudding.reserve=2;
- const f=fixture({state,customer:false,minutes:1200,playerPosition:[-4.3,0,2.5]}),phases=new Set();f.step(0);let completed=false;
+ const f=fixture({state,customer:false,minutes:1200,playerPosition:READER_POSITION}),phases=new Set();f.step(0);let completed=false;
  for(let frame=0;frame<300/DT;frame++){
   const inside=!!f.clerk.g.userData.inMarket,before=f.clerk.g.position.clone();f.step();phases.add(f.shop.service.phase);assertClear(f,f.clerk,.36);
   if(inside&&f.clerk.g.userData.inMarket)assert.ok(before.distanceTo(f.clerk.g.position)<=DT+1e-6,'The clerk walks around the reader instead of skipping past him');
@@ -145,5 +148,5 @@ test('Thuan detours around Johansson at the magazine rack while returning from a
  }
  assert.ok(completed,'Thuan places the stock, returns to the till and exits despite the occupied rack approach');
  assert.ok(phases.has('stock-place'));assert.ok(phases.has('return'));assert.equal(f.state.sakura.stock.pudding.shelf,2);assert.equal(f.state.sakura.stock.pudding.reserve,0);
- assert.equal(f.state.sakura.journal.filter(r=>r.kind==='Restocked').length,1);assert.deepEqual(f.player.toArray(),[-4.3,0,2.5]);
+ assert.equal(f.state.sakura.journal.filter(r=>r.kind==='Restocked').length,1);assert.deepEqual(f.player.toArray(),READER_POSITION);
 });

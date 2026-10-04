@@ -2,7 +2,7 @@ import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {shopProductTemplate} from '../../commerce/shop-product.js';
 import {STORE_BRANDS} from '../../commerce/brands.js';
-import {packagingSlot,ATLAS_COLS,ATLAS_ROWS} from './store-advertising.js';
+import {packagingSlot,ATLAS_COLS,ATLAS_ROWS,ATLAS_SPAN} from './store-advertising.js';
 
 const cache=new Map();
 const FOODS=new Set(['rice','bento','sandwich','bun','pudding','yogurt','noodles']);
@@ -25,20 +25,23 @@ export function sakuraProductTemplate(id){
  }
  const part=(g,color,pos,name)=>append(parts,g,name,color,pos);
  const box=(w,h,d,pos,color,name)=>part(new THREE.BoxGeometry(w,h,d),color,pos,name);
- const cylinder=(rt,rb,h,pos,color,name)=>part(new THREE.CylinderGeometry(rt,rb,h,16),color,pos,name);
- const ellipsoid=(scale,pos,color,name,segments=10,rings=6)=>part(new THREE.SphereGeometry(1,segments,rings).scale(...scale),color,pos,name);
+ // The small packs repeat across hundreds of facings. Eight-sided cups and
+ // lens-shaped grains keep their silhouettes without spending hidden triangles.
+ const cylinder=(rt,rb,h,pos,color,name)=>part(new THREE.CylinderGeometry(rt,rb,h,8),color,pos,name);
+ const ellipsoid=(scale,pos,color,name,segments=8,rings=4)=>part(new THREE.SphereGeometry(1,segments,rings).scale(...scale),color,pos,name);
+ const grain=(scale,pos,color,name)=>part(new THREE.OctahedronGeometry(1).scale(...scale),color,pos,name);
  function triangle(points,depth){const shape=new THREE.Shape();shape.moveTo(...points[0]);for(const p of points.slice(1))shape.lineTo(...p);shape.closePath();return new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:false,steps:1}).translate(0,0,-depth/2);}
  function label(geometry,pos,name){
   const g=append(prints,geometry,name,null,pos),uv=g.attributes.uv,slot=packagingSlot(id);
-  for(let i=0;i<uv.count;i++)uv.setXY(i,(slot%ATLAS_COLS+.025+uv.getX(i)*.95)/ATLAS_COLS,1-(Math.floor(slot/ATLAS_COLS)+.025+(1-uv.getY(i))*.95)/ATLAS_ROWS);
+  for(let i=0;i<uv.count;i++)uv.setXY(i,(slot%ATLAS_COLS+.025+uv.getX(i)*.95)/ATLAS_SPAN,1-(Math.floor(slot/ATLAS_COLS)+.025+(1-uv.getY(i))*.95)/ATLAS_ROWS);
   labelSurfaces.push({name,start:prints.slice(0,-1).reduce((n,p)=>n+p.attributes.position.count,0),count:g.attributes.position.count});
  }
- const topLabel=(r,y,name)=>label(new THREE.CircleGeometry(r,16).rotateX(-Math.PI/2),[0,y,0],name);
+ const topLabel=(r,y,name)=>label(new THREE.CircleGeometry(r,8).rotateX(-Math.PI/2),[0,y,0],name);
  const frontLabel=(w,h,pos,name)=>label(new THREE.PlaneGeometry(w,h),pos,name);
  const wrap=(g,pos=[0,0,0])=>append(wrappers,g,'clear wrapping',null,pos);
  function band(topRadius,bottomRadius,height,centre,fullHeight,start=-Math.PI*.48,length=Math.PI*.96){
   const radiusAt=y=>bottomRadius+(topRadius-bottomRadius)*y/fullHeight;
-  label(new THREE.CylinderGeometry(radiusAt(centre+height/2)+.0008,radiusAt(centre-height/2)+.0008,height,16,1,true,start,length),[0,centre,0],'brand cup band');
+  label(new THREE.CylinderGeometry(radiusAt(centre+height/2)+.0008,radiusAt(centre-height/2)+.0008,height,8,1,true,start,length),[0,centre,0],'brand cup band');
  }
 
  if(id==='rice'){
@@ -47,7 +50,7 @@ export function sakuraProductTemplate(id){
   // Individual grains break up the rice face while staying inside the wrapper.
   for(let row=0;row<4;row++)for(let col=0;col<5-row;col++){
    const y=.067+row*.011,x=(col-(4-row)/2)*.012;
-   ellipsoid([.0034,.0017,.0011],[x,y,.0286],col%2?0xe5dfca:0xfffae9,'rice grain',6,4);
+   grain([.0034,.0017,.0011],[x,y,.0286],col%2?0xe5dfca:0xfffae9,'rice grain');
   }
   box(.063,.057,.004,[0,.031,.031],0x293d2e,'nori front');
   box(.063,.057,.004,[0,.031,-.031],0x293d2e,'nori back');
@@ -63,14 +66,14 @@ export function sakuraProductTemplate(id){
   box(.004,.023,.122,[0,.020,0],0x32372c,'compartment divider');
   box(.086,.023,.004,[.047,.020,.010],0x32372c,'compartment divider');
   box(.080,.014,.112,[-.047,.016,0],0xf2edd8,'rice bed');
-  for(let row=0;row<5;row++)for(let col=0;col<4;col++)ellipsoid([.0045,.002,.0025],[-.077+col*.019,.024,-.045+row*.022],col%2?0xe6dfca:0xfff8e9,'bento rice grain',6,4);
+  for(let row=0;row<5;row++)for(let col=0;col<4;col++)grain([.0045,.002,.0025],[-.077+col*.019,.024,-.045+row*.022],col%2?0xe6dfca:0xfff8e9,'bento rice grain');
   ellipsoid([.010,.005,.010],[-.046,.029,.001],0xb84440,'plum pickle');
   for(const z of [-.040,-.014]){
    box(.059,.014,.021,[.047,.020,z],0x9d6236,'grilled protein');
    for(const x of [.028,.047,.066])box(.003,.002,.019,[x,.028,z],0x5d3a28,'grill mark');
   }
   for(const z of [.024,.043])box(.029,.018,.015,[.065,.022,z],0xe6c359,'rolled egg');
-  for(const x of [.018,.031])ellipsoid([.007,.006,.014],[x,.021,.036],0x668643,'greens',8,4);
+  for(const x of [.018,.031])ellipsoid([.007,.006,.014],[x,.021,.036],0x668643,'greens',6,3);
   for(const z of [.025,.044])box(.011,.012,.014,[.045,.020,z],0xe4953d,'pickled vegetable');
   // A narrow sleeve identifies the meal without hiding the compartments.
   box(.042,.003,.128,[.005,.052,0],brand.paper,'bento paper sleeve');
@@ -90,11 +93,11 @@ export function sakuraProductTemplate(id){
   wrap(triangle([[-.069,.0105],[.069,.0105],[0,.130]],.052));
  }else if(id==='bun'){
   box(.105,.002,.086,[0,.001,0],0xf1ead7,'steamer paper square');
-  part(new THREE.CylinderGeometry(.053,.049,.019,16).scale(1,1,.79),0xeee0bd,[0,.0115,0],'bun base');
-  part(new THREE.SphereGeometry(1,16,8,0,Math.PI*2,0,Math.PI/2).scale(.055,.063,.041),0xf5e9c8,[0,.021,0],'round steamed bun');
-  for(let i=0;i<8;i++){
-   const angle=i*Math.PI/4,start=new THREE.Vector3(0,.084,0),end=new THREE.Vector3(Math.cos(angle)*.039,.059,Math.sin(angle)*.030),delta=end.clone().sub(start);
-   const ridge=new THREE.CylinderGeometry(.0011,.0018,delta.length(),5);ridge.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),delta.clone().normalize()));
+  part(new THREE.CylinderGeometry(.053,.049,.019,10).scale(1,1,.79),0xeee0bd,[0,.0115,0],'bun base');
+  part(new THREE.SphereGeometry(1,10,5,0,Math.PI*2,0,Math.PI/2).scale(.055,.063,.041),0xf5e9c8,[0,.021,0],'round steamed bun');
+  for(let i=0;i<6;i++){
+   const angle=i*Math.PI/3,start=new THREE.Vector3(0,.084,0),end=new THREE.Vector3(Math.cos(angle)*.039,.059,Math.sin(angle)*.030),delta=end.clone().sub(start);
+   const ridge=new THREE.CylinderGeometry(.0011,.0018,delta.length(),3);ridge.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),delta.clone().normalize()));
    part(ridge,0xdfcfaa,start.clone().add(end).multiplyScalar(.5).toArray(),'bun pleat');
   }
   box(.062,.018,.001,[0,.010,.043],brand.paper,'bun paper label');
@@ -110,10 +113,10 @@ export function sakuraProductTemplate(id){
   }
   const lidRadius=r+.0025;
   cylinder(lidRadius,lidRadius,.002,[0,h+.001,0],0xddd9c8,'foil lid');
-  part(new THREE.TorusGeometry(r+.001,.001,4,16).rotateX(Math.PI/2),0xb8bdb4,[0,h+.0015,0],'rolled foil rim');
+  part(new THREE.TorusGeometry(r+.001,.001,3,8).rotateX(Math.PI/2),0xb8bdb4,[0,h+.0015,0],'rolled foil rim');
   topLabel(r-.003,h+.0025,'printed foil lid');
   band(r,rb,yogurt?.032:.020,yogurt?.039:.034,h);
-  wrap(new THREE.CylinderGeometry(r+.0002,rb+.0002,h,16,1,true),[0,h/2,0]);
+  wrap(new THREE.CylinderGeometry(r+.0002,rb+.0002,h,8,1,true),[0,h/2,0]);
  }else if(id==='noodles'){
   cylinder(.067,.052,.128,[0,.064,0],brand.paper,'tapered ramen cup');
   cylinder(.053,.053,.004,[0,.002,0],0xbbb8a3,'cup foot');
@@ -128,7 +131,7 @@ export function sakuraProductTemplate(id){
   const h=.135;
   append(parts,original.body.clone(),'original can body',null);
   cylinder(.007,.007,.0005,[0,h+.00225,-.010],0x505850,'can opening');
-  const ring=new THREE.TorusGeometry(.006,.00085,4,12).rotateX(Math.PI/2);
+  const ring=new THREE.TorusGeometry(.006,.00085,3,8).rotateX(Math.PI/2);
   part(ring,0xd6d9cd,[0,h+.00235,.006],'can pull ring');
   box(.005,.0006,.005,[0,h+.0024,0],0xb6bdb3,'pull tab rivet');
   const print=original.art.clone();prints.push(print.toNonIndexed());print.dispose();

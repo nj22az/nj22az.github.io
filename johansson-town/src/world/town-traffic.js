@@ -14,7 +14,7 @@ import {AIRPORT_VEHICLE_YARD as Y,airportVehiclePoint,airportVehicleBay} from '.
 const MAIN_NORTH_X=MAIN_ROAD.x+1.1,MAIN_SOUTH_X=MAIN_ROAD.x-1.1;
 export const KITANO_STOP_S=5.2;
 export const FERRY_VEHICLE_DECK_Z=3.3;
-export const QUAY_BAYS=Object.freeze([[1.2,-41.5],[3.6,-40.3]].map(Object.freeze));
+export const QUAY_BAYS=Object.freeze([[.3,-40.9],[2.25,-40.3]].map(Object.freeze));
 export const SERVICE_BAYS=Object.freeze([[-5.8,10],[-5.8,4.5]].map(Object.freeze));
 export const TOWN_FERRY_STAGE=Object.freeze([FERRY_BERTH.x,0,-45.3]);
 function smooth(points,rounds=3){let p=points;for(let r=0;r<rounds;r++){const out=[p[0]];for(let i=0;i<p.length-1;i++){const a=p[i],b=p[i+1];if(i>0)out.push(a.map((v,k)=>v*.75+b[k]*.25));if(i<p.length-2)out.push(a.map((v,k)=>v*.25+b[k]*.75));}out.push(p.at(-1));p=out;}return p;}
@@ -22,12 +22,12 @@ const flat=(pts,y=0)=>pts.map(([x,z])=>[x,y,z]);
 const airportPts=pts=>pts.map(([u,v])=>airportVehiclePoint(u,v));
 export function buildTownNetwork(){
  const net=createRoadNetwork();
- net.add(makeLane('main-north',flat([[MAIN_NORTH_X,-38.6],[MAIN_NORTH_X,13.3]]),{speed:3.8}));
- net.add(makeLane('main-south',flat([[MAIN_SOUTH_X,1.5],[MAIN_SOUTH_X,-38.6]]),{speed:3.8}));
+ net.add(makeLane('main-north',flat([[MAIN_NORTH_X,-33.5],[MAIN_NORTH_X,13.3]]),{speed:3.8}));
+ net.add(makeLane('main-south',flat([[MAIN_SOUTH_X,-2],[MAIN_SOUTH_X,-38.6]]),{speed:3.8}));
  const turn=[];for(let i=0;i<=32;i++){const a=i*Math.PI/32;turn.push([MAIN_ROAD.x+Math.cos(a)*1.1,.04,16.5+Math.sin(a)*1.1]);}
- SERVICE_BAYS.forEach(([x,z],i)=>{const entry=smooth([[MAIN_SOUTH_X,16.5],[MAIN_SOUTH_X,z+(i?3.3:5.5)],[x,z+(i?2:4.7)],[x,z]]);net.add(makeLane('service-in-'+i,[[MAIN_NORTH_X,0,13.3],...turn,...flat(entry)],{speed:1.5}));net.add(makeLane('service-out-'+i,flat(smooth([[x,z],[x,z-1],[MAIN_SOUTH_X,z-2.3],[MAIN_SOUTH_X,1.5]])),{speed:2.2}));});
+ SERVICE_BAYS.forEach(([x,z],i)=>{const entry=smooth([[MAIN_SOUTH_X,16.5],[MAIN_SOUTH_X,z+(i?5.6:5.5)],[x,z+(i?4.8:4.7)],[x,z]]);net.add(makeLane('service-in-'+i,[[MAIN_NORTH_X,0,13.3],...turn,...flat(entry)],{speed:1.5}));net.add(makeLane('service-out-'+i,flat(smooth([[x,z],[x,z-(i?3.3:1)],[MAIN_SOUTH_X,z-(i?4.5:2.3)],[MAIN_SOUTH_X,-2]])),{speed:2.2}));});
  QUAY_BAYS.forEach(([x,z],i)=>{
-  net.add(makeLane('quay-out-'+i,flat(smooth([[x,z],[x,z+.3],[MAIN_NORTH_X+.3,z+.3],[MAIN_NORTH_X,-38.6]])),{speed:2}));
+  net.add(makeLane('quay-out-'+i,flat(smooth([[x,z],[x,-34.8],[MAIN_NORTH_X+.3,-34.8],[MAIN_NORTH_X,-33.5]])),{speed:2}));
   net.add(makeLane('quay-in-'+i,flat(smooth([[MAIN_SOUTH_X,-39.4],[-2.7,-42.6],[-2.2,-45.6],[-.9,-46.7],[x,-45.7],[x,z]])),{speed:1.8}));
  });
  const townStage=[...flat(smooth([[MAIN_SOUTH_X,-39.4],[-4.25,-42],[-4.25,-45.3]]))];

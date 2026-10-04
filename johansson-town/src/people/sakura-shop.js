@@ -2,7 +2,6 @@ import * as THREE from '../../vendor/three.module.js';
 import {circleHitsRect} from '../../physics.js?snappy=1';
 import {buildSakuraInterior} from '../world/interiors/sakura-interior.js';
 import {SAKURA_LAYOUT} from '../world/interiors/sakura-layout.js';
-import {peninsulaActive} from '../world/town-mode.js';
 import {suppliedRoomBoundsBlocked} from '../world/supplied-rooms.js?snappy=1';
 import {createIndoorResidents} from './indoor-residents.js';
 import {createRetailClerk} from './retail-clerk.js';
@@ -10,6 +9,7 @@ import {createShopAttention} from './shop-attention.js';
 import {createShopRetail} from './shop-retail.js';
 import {returnShopStock} from '../commerce/shop-stock.js';
 import {PALETTE,fluorescent} from '../render/dusk.js';
+import {createStandIn} from '../render/static-props.js';
 import {townAudio} from '../audio/town-audio.js?snappy=1';
 
 // A single persistent shop owns stock, staff and customer jobs everywhere in town.
@@ -72,7 +72,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   * fitted to its own window: without that its ends stand outside the side walls, in
   * daylight, as two black slabs either side of the fascia.
   */
- const WINDOW_FIT=peninsulaActive()?1:.7;
+ const WINDOW_FIT=1;
  /**
   * Strip lights, so the aisles are legible from the pavement. A shop lit only by what
   * gets past its own ceiling is a dark hole, which is not what a konbini looks like
@@ -100,11 +100,28 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   updateLighting(getMinutes());
  };
 
+ // Rooms behind the shop floor: nobody sees them through the front windows, so from the
+ // street they are not drawn (about 200 draw calls on a phone). Inside, they are.
+ const BEHIND=new Set(['Sakura back room stock','Sakura restroom','Sakura office life']);
+ const backRooms=on=>group.traverse(o=>{if(BEHIND.has(o.name))o.visible=on;});
+ /**
+  * From the street the shop floor is a stand-in: the same shelves merged into a few
+  * dozen meshes instead of about five hundred. It is rebuilt when the stock changes or
+  * a new day restocks the racks, and the real room comes back the moment you go in.
+  */
+ let standIn=null,standKey='';
+ const windowView=on=>{
+  if(on){
+   const key=JSON.stringify(state.sakura.stock)+'/'+Math.floor(getMinutes()/1440);
+   if(key!==standKey||!standIn){standIn?.dispose();standIn=createStandIn(group,{name:'Sakura window stand-in'});group.add(standIn.group);standKey=key;}
+   standIn.show(true);
+  }else standIn?.show(false);
+ };
  return {group,colliders,service,retail,display,blocked,layout,ready:display.ready,
   enter(parent){
    parent.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);
    const frame=frontFrame();if(frame)frame.visible=true;
-   lit(false);
+   windowView(false);lit(false);backRooms(true);
    group.visible=true;showPeople(true);display.updateStock(state.sakura.stock);
    // The door chime: a bright little arpeggio of our own as the automatic door opens.
    townAudio.bells([[1319,0],[1568,.13],[2093,.26],[1760,.44],[2093,.57],[2637,.72]],.32);
@@ -128,18 +145,21 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    group.position.set(...frontage.position)
     .add(new THREE.Vector3(0,0,-fit*(layout.frontZ??3.91)).applyAxisAngle(UP,frontage.yaw));
    const frame=frontFrame();if(frame)frame.visible=false;
-   lit(true);
+   lit(true);backRooms(false);
    group.visible=true;showPeople(false);
    display.updateStock(state.sakura.stock);
+   windowView(true);
    return true;
   },
-  hide(){scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);},
+  hide(){windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);},
   update(dt){
    // The shop's lights are for the inside of the shop. The interior stays in the street
    // scene so you can see it through the glass, but a light has no walls: left on, its
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
    // roof and the road. Outside, the shop shows through the window by its own glow.
    {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0){lightsInside=inside;lightCheck=.5;group.traverse(o=>{if(o.isLight)o.visible=inside;});}}
-   display.tick?.(performance.now()/1000);if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);},
+   display.tick?.(performance.now()/1000);if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
+   // The office door opens for whoever is in the shop and near it: the player, Thuan, anyone borrowed in.
+   if(display.officeDoor){const points=[];if(isInside()){const p=getPlayerPosition();points.push([p.x,p.z]);}for(const other of world.people)if(other.g.parent===group)points.push([other.g.position.x,other.g.position.z]);display.officeDoor.update(dt,points);}},
  };
 }

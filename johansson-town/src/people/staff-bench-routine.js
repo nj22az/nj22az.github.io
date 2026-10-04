@@ -1,7 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
-import {THUAN_CHAIR_STEP} from './thuan-chair-motion.js';
+/** How far in front of the seat Thuan stands before she sits down. */
+const THUAN_CHAIR_STEP=.48;
 import {travelYaw} from './facing.js';
 
 // Own the short movement through the bench's collision footprint until she is

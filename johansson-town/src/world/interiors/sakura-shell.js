@@ -1,6 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
-import {SAKURA_LAYOUT,AISLE_LEVELS,SAKURA_SHELVES,CHILLER,BUN_STEAMER,FRONT_ENDCAPS,COPY_MACHINE} from './sakura-layout.js';
+import {SAKURA_LAYOUT,AISLE_LEVELS,CHILLER,BUN_STEAMER,FRONT_ENDCAPS,COPY_MACHINE} from './sakura-layout.js';
 import {MEDICINE_SHELF} from './sakura-dressing.js';
 import {BACKROOM} from './sakura-backroom.js';
 import {RESTROOM} from './sakura-restroom.js';
@@ -129,13 +129,16 @@ function buildCeilingAndFloor(page){
   span(S.backWestX,S.backEastX,S.ceiling,S.ceiling+.04,S.backZ,S.partitionZ,0xe6e2d8);
   out.push(mesh(material()));}
  // Terrazzo on the shop floor, grey concrete in the back room.
- const floorMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.6});
+ // A shade under white, so the tubes' sheen (sakura-surfaces.js) shows on it.
+ const floorMat=new THREE.MeshStandardMaterial({color:0xd9d6cf,roughness:.6});
  if(page){
-  const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d');
-  ctx.fillStyle='#e9e1cf';ctx.fillRect(0,0,256,256);
+  // One 60 cm tile: a pale, slightly cool terrazzo with a fine joint round it, as a
+  // konbini floor is laid. Brighter than it was, so the tubes' sheen reads on it.
+  const c=document.createElement('canvas');c.width=c.height=512;const ctx=c.getContext('2d');
+  ctx.fillStyle='#efebe2';ctx.fillRect(0,0,512,512);
   let seed=3;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
-  for(let i=0;i<900;i++){ctx.fillStyle=['#c9bda6','#b8ab92','#f6f1e6','#a99a80','#d7c7aa'][i%5];const s=1+rnd()*3;ctx.fillRect(rnd()*256,rnd()*256,s,s);}
-  ctx.strokeStyle='#cfc3aa';ctx.lineWidth=3;ctx.strokeRect(0,0,256,256);
+  for(let i=0;i<2600;i++){ctx.fillStyle=['#cfc6b4','#bdb3a0','#faf8f2','#aea493','#d9d0bf','#c3cbc9'][i%6];const s=1+rnd()*4;ctx.fillRect(rnd()*512,rnd()*512,s,s);}
+  ctx.strokeStyle='#d2c9b6';ctx.lineWidth=4;ctx.strokeRect(0,0,512,512);
   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set((S.eastX-S.westX)/.6,(S.floorFront-S.partitionZ)/.6);t.anisotropy=8;
   floorMat.map=t;
  }else floorMat.color.setHex(0xe9e1cf);
@@ -304,8 +307,12 @@ function buildDoors(){
  const P=SAKURA_SHELL.partitionZ;
  for(const x of [3.25,4.39])span(x-.05,x+.05,0,2.22,P-.06,P+.06,C.woodDark);span(3.2,4.44,2.18,2.26,P-.06,P+.06,C.woodDark);
  span(4.4,4.44,0,2.12,P+.06,P+1.0,0xe9e1cf);
- // The office door, open, and the restroom door, open into the restroom.
- span(5.14,5.18,0,2.15,-1.13,-.25,0xd8cdb4);
+ // The office doorway: jambs, head and a casing on the shop side. Its door swings
+ // (sakura-life.js buildOfficeDoor). The restroom door stands open into the restroom.
+ for(const x of [5.12,6.30])span(x-.04,x+.04,0,2.2,-1.25,-1.09,C.woodDark);
+ span(5.08,6.34,2.16,2.24,-1.25,-1.09,C.woodDark);
+ for(const [x0,x1] of [[5.0,5.08],[6.34,6.42]])span(x0,x1,0,2.32,-1.13,-1.1,C.woodDark);
+ span(5.0,6.42,2.24,2.32,-1.13,-1.1,C.woodDark);
  span(-4.9,-4.08,0,2.15,-2.82,-2.78,0xd8cdb4);
  return mesh(material());
 }

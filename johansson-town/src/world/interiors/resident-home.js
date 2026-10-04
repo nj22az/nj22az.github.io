@@ -26,8 +26,16 @@ export function sharedHomeLayouts(names){
    cover:{position:[x,.64,-.9],width:1.1,length:1.3,axis:'z'},hatHook:{position:[side*1.4,1.6,3.33],yaw:Math.PI}}];
  }));
 }
-export function buildResidentHome({profile,room,box,reg,collider,action,exit}){
+import {YARD_HOMES} from '../yard-homes-layout.js';
+import {buildYardHomeInterior} from './yard-home.js';
+import {buildFamilyHome} from './family-home.js';
+export function buildResidentHome({site,profile,room,box,reg,collider,action,exit}){
  if(profile.name===TATAMI_HOME_OWNER)return buildTatamiHome({profile,room,box,reg,collider,action,exit});
+ // Shared houses are drawn to the house you walked into (docs/BUILDING-AUDIT.md): the
+ // Front-Row yard staff houses, and Thuan and Nao's house in Kitahama, which is built
+ // like its neighbours.
+ if(site&&YARD_HOMES[site.id])return buildYardHomeInterior({site,room,reg,action,collider});
+ if(site?.plot&&site.homeOwners?.length>1)return buildFamilyHome({room,reg,action,collider,title:site.title,kind:site.houseKind||'concrete',residents:site.homeOwners});
  if(householdFor(profile.name)?.residents.length>1)return buildSharedHome({profile,room,box,reg,collider,action,exit});
  const style=residentPersonality(profile.name),colour=new THREE.Color(style.top),hours=sleepHours(profile),details=householdDetails([{name:profile.name,role:profile.role}]);
  const part=(size,pos,c,solid=false)=>{const m=box(size,pos,c,room,false);if(solid)collider(pos[0],pos[2],size[0],size[2],pos[1]+size[1]/2);return m;};

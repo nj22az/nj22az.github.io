@@ -50,7 +50,7 @@ try{
    for(let turn=0;turn<24;turn++){const current=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.mouse.yaw);let delta=target-current;while(delta>Math.PI)delta-=Math.PI*2;while(delta< -Math.PI)delta+=Math.PI*2;if(Math.abs(delta)<.003)break;const pixels=Math.max(-120,Math.min(120,-delta/.0023));await page.mouse.move(cx,cy);await page.mouse.down({button:'right'});await page.mouse.move(cx+pixels,cy);await page.mouse.up({button:'right'});}
    await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(100));
   }
-  const ports=await page.evaluate(async()=>{const {AIRPORT_FERRY_PORTS}=await import('/johansson-town/src/world/airport-ferry.js');const {airportWorld,AIRPORT_COUNTER}=await import('/johansson-town/src/world/airport-ground.js');return {ports:AIRPORT_FERRY_PORTS,walk:[airportWorld(-40,31),airportWorld(-40,18.7),AIRPORT_COUNTER],signWalk:[[21,31],[21,38.5],[30,64],[30,68.4]].map(p=>airportWorld(...p)),signFacing:airportWorld(30,75)};});
+  const ports=await page.evaluate(async()=>{const {AIRPORT_FERRY_PORTS}=await import('/johansson-town/src/world/airport-ferry.js');const {airportWorld,AIRPORT_COUNTER}=await import('/johansson-town/src/world/airport-ground.js');const {AIRPORT_SHOPS}=await import('/johansson-town/src/world/airport-district-plan.js');const shop=AIRPORT_SHOPS[0];return {ports:AIRPORT_FERRY_PORTS,walk:[airportWorld(-40,31),airportWorld(-40,18.7),AIRPORT_COUNTER],signWalk:[[21,31],[21,38.5],[21,64],[shop.x,64],[shop.x,shop.z-6.6]].map(p=>airportWorld(...p)),signFacing:airportWorld(shop.x,shop.z),shopTitle:shop.title};});
   await page.evaluate(p=>{const a=window.__JOHANSSON_AUDIT__;a.setTime(540);a.teleport(...p,0);},ports.ports.town.landing);
   if((await viewStatus(page)).thirdPerson)await page.keyboard.press('KeyV');
   assert.equal((await viewStatus(page)).saved,'first','Use a real first-person view preference for the ferry');
@@ -65,10 +65,10 @@ try{
   if(process.argv[4]!=='cargo-only'){
    for(const [x,z] of ports.walk)await walkTo(page,x,z);await capture(page,'airport-counter-walk');
    for(const [x,z] of ports.signWalk)await walkTo(page,x,z);
-   const shopTarget=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.targets.find(t=>t.label==='Visit Seaside Postcards'));
+   const shopTarget=await page.evaluate(title=>window.__JOHANSSON_AUDIT__.targets.find(t=>t.label==='Visit '+title),ports.shopTitle);
    assert.ok(shopTarget&&shopTarget.distance<2,'Walk to the actual customer-facing shop interaction');
    await page.keyboard.press('KeyV');await faceTo(page,...ports.signFacing);await page.waitForTimeout(700);
-   const signFront=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,m=a.world.airportIsland.group.getObjectByName('Seaside Postcards sign'),centre=m.getWorldPosition(a.scene.position.clone()),customer=a.johansson.root.position.clone();customer.y=centre.y;return m.getWorldDirection(centre.clone()).dot(customer.sub(centre).normalize());});
+   const signFront=await page.evaluate(title=>{const a=window.__JOHANSSON_AUDIT__,m=a.world.airportIsland.group.getObjectByName(title+' sign'),centre=m.getWorldPosition(a.scene.position.clone()),customer=a.johansson.root.position.clone();customer.y=centre.y;return m.getWorldDirection(centre.clone()).dot(customer.sub(centre).normalize());},ports.shopTitle);
    assert.ok(signFront>.75,'The real customer sees the readable texture front, not its mirrored back');
    await capture(page,'airport-shop-sign-front');report.checks.push({name:'airport-customer-sign-normal',frontDot:signFront,target:shopTarget});
    for(const [x,z] of [...ports.signWalk.slice(0,-1)].reverse())await walkTo(page,x,z);await walkTo(page,...ports.walk.at(-1));

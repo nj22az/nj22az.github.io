@@ -4,7 +4,6 @@ import * as THREE from '../vendor/three.module.js';
 import {createFerryRun,FERRY,FERRY_BERTH,FERRY_TERMINAL,FERRY_TIMES} from '../src/world/ferry.js';
 import {HARBOUR_LINE,BUS_DWELL} from '../src/people/commuter-schedule.js';
 import {OUTER_PIER,routeAt} from '../src/world/layout.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {transitStop} from '../src/world/transit.js';
 import {BUS_STATION} from '../src/world/bus-station.js';
 import {chooseOpening} from '../src/world/openings.js';
@@ -55,11 +54,10 @@ test('the ferry has a solid hull only while it is alongside',()=>{
 });
 
 test('on the island the stop is the ferry terminal and the game can start off the ferry',()=>{
- configureTownMode(TOWN_MODES.PENINSULA);
+ 
  try{
   assert.equal(transitStop(),FERRY_TERMINAL);
   assert.equal(chooseOpening({minutes:600,force:'ferry',storage:null}).id,'ferry');
   assert.equal(chooseOpening({minutes:600,force:'bus-stop',storage:null}).id,'ferry','Old links to the bus stop go nowhere');
- }finally{configureTownMode(TOWN_MODES.LEGACY);}
- assert.equal(transitStop(),BUS_STATION,'The older layouts keep their bus');
+ }finally{}
 });

@@ -3,7 +3,7 @@ import {KITANO_SEAWALL_GAP} from './kitano-link-plan.js';
 import {applyTerrainNormals} from './terrain-surface.js';
 import {GROUND} from '../render/ground-palette.js';
 import {MAIN_ROAD} from './main-road.js';
-import {PARK,PARK_SKIRT,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
+import {PARK,TURF_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {buildEastGarden} from './east-garden.js';
 import {SCHOOL} from './school-layout.js';
@@ -32,7 +32,7 @@ export const EAST_LAWN=Object.freeze({
  wall:Object.freeze({x:33.55,z:-38.35,depth:.7,height:.58,southFrom:18.6}),
  /**
   * Sand from the foot of the wall out past the headland's edge. It has to stay above
-  * the peninsula's own ground (y -0.4) the whole way it is dry, or the land draws
+  * the island's own ground (y -0.4) the whole way it is dry, or the land draws
   * through it; it crosses the water plane at y -0.56 a little beyond the old shore,
   * which is where the tide line ends up.
   */

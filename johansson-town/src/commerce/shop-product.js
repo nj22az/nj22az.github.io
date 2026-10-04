@@ -1,30 +1,33 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
-import {getLabelMaterial,packagingSlot,ATLAS_COLS,ATLAS_ROWS} from '../world/interiors/store-advertising.js';
+import {getLabelMaterial,packagingSlot,ATLAS_COLS,ATLAS_ROWS,ATLAS_SPAN} from '../world/interiors/store-advertising.js';
 import {STORE_BRANDS} from './brands.js';
+// Twelve sides: a shelf of round packs at arm's length reads as round under the cel ramp, at
+// under two thirds of the triangles twenty cost.
+const SIDES=12;
 const templates=new Map(),bodyMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.62});
 export function shopProductTemplate(id){
  if(templates.has(id))return templates.get(id);
  const parts=[],labels=[],brand=STORE_BRANDS[id==='bun'?'buns':id]||STORE_BRANDS.stock;
  const part=(g,color,pos=[0,0,0])=>{g.translate(...pos);const c=new THREE.Color(color),a=new Float32Array(g.attributes.position.count*3);for(let i=0;i<a.length;i+=3)a.set(c.toArray(),i);g.setAttribute('color',new THREE.BufferAttribute(a,3));parts.push(g);};
  const box=(w,h,d,y,color)=>part(new THREE.BoxGeometry(w,h,d),color,[0,y,0]);
- const cyl=(r,h,y,color,rb=r)=>part(new THREE.CylinderGeometry(r,rb,h,20),color,[0,y,0]);
- const label=(g,y,z=0)=>{g.translate(0,y,z);const slot=packagingSlot(id),uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(slot%ATLAS_COLS+.025+uv.getX(i)*.95)/ATLAS_COLS,1-(Math.floor(slot/ATLAS_COLS)+.025+(1-uv.getY(i))*.95)/ATLAS_ROWS);labels.push(g);};
+ const cyl=(r,h,y,color,rb=r)=>part(new THREE.CylinderGeometry(r,rb,h,SIDES),color,[0,y,0]);
+ const label=(g,y,z=0)=>{g.translate(0,y,z);const slot=packagingSlot(id),uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(slot%ATLAS_COLS+.025+uv.getX(i)*.95)/ATLAS_SPAN,1-(Math.floor(slot/ATLAS_COLS)+.025+(1-uv.getY(i))*.95)/ATLAS_ROWS);labels.push(g);};
  const fronts=(w,h,d,y)=>{label(new THREE.PlaneGeometry(w,h),y,d/2+.001);label(new THREE.PlaneGeometry(w,h).rotateY(Math.PI),y,-d/2-.001);};
  if(['tea','water','cola','orange','soy','soda'].includes(id)){
   const color=({tea:0x657d3c,water:0xafd5d4,cola:0x443126,orange:0xe6a038,soy:0x392d23,soda:0xafd6da})[id],r=id==='soda'?.037:.046;
   cyl(r,.16,.08,color);cyl(.023,.035,.1775,color,r);cyl(.023,.05,.22,color);cyl(.025,.018,.254,brand.ink);
   if(id==='soda'){cyl(.031,.026,.185,0xc4e1dc,.034);cyl(.025,.012,.245,0xe9e8d8);}
-  label(new THREE.CylinderGeometry(r+.001,r+.001,.123,20,1,true,-Math.PI*.76,Math.PI*1.52),.085);
+  label(new THREE.CylinderGeometry(r+.001,r+.001,.123,SIDES,1,true,-Math.PI*.76,Math.PI*1.52),.085);
  }else if(['coffee','beer','tuna','peaches'].includes(id)){
   const r=id==='tuna'?.051:id==='peaches'?.053:.047,h=id==='tuna'?.046:id==='peaches'?.095:.135;
   cyl(r,h,h/2,brand.paper);cyl(r+.0015,.004,.004,0xa8b3ad);cyl(r+.0015,.004,h,0xcad0c8);
-  part(new THREE.TorusGeometry(r*.79,.0014,4,20).rotateX(Math.PI/2),0x88958c,[0,h+.002,0]);
-  label(new THREE.CylinderGeometry(r+.001,r+.001,h*.87,20,1,true,-Math.PI*.8,Math.PI*1.6),h/2);
+  part(new THREE.TorusGeometry(r*.79,.0014,3,SIDES).rotateX(Math.PI/2),0x88958c,[0,h+.002,0]);
+  label(new THREE.CylinderGeometry(r+.001,r+.001,h*.87,SIDES,1,true,-Math.PI*.8,Math.PI*1.6),h/2);
  }else if(['noodles','yogurt'].includes(id)){
   const yogurt=id==='yogurt',r=yogurt?.048:.068,h=yogurt?.078:.13;
   cyl(r,h,h/2,brand.paper,r*.76);cyl(r+.003,.005,h+.002,brand.ink);
-  label(new THREE.CylinderGeometry(r+.001,r*.76+.001,h*.9,20,1,true,-Math.PI*.7,Math.PI*1.4),h/2);
+  label(new THREE.CylinderGeometry(r+.001,r*.76+.001,h*.9,SIDES,1,true,-Math.PI*.7,Math.PI*1.4),h/2);
  }else if(id.startsWith('magazine')){
   const w=.21,h=.245,d=.013;box(w,h,d,h/2,brand.paper);fronts(w*.97,h*.95,d,h/2);
  }else if(id==='newspaper'){
@@ -53,7 +56,7 @@ export function shopProductTemplate(id){
   const r=.038,h=.062;
   cyl(r,h,h/2,brand.paper,r*.72);
   cyl(r+.003,.004,h+.001,0xd8cfae);                      // the foil rim
-  label(new THREE.CylinderGeometry(r+.001,r*.72+.001,h*.82,20,1,true,-Math.PI*.7,Math.PI*1.4),h/2);
+  label(new THREE.CylinderGeometry(r+.001,r*.72+.001,h*.82,SIDES,1,true,-Math.PI*.7,Math.PI*1.4),h/2);
  }else if(['chips','crackers','candy','bread','bun','rice'].includes(id)){
   const bread=id==='bread',small=id==='rice'||id==='bun',w=small?.15:bread?.19:.16,h=small?.12:bread?.235:.22,d=small?.09:bread?.12:.07;
   const g=new THREE.BoxGeometry(w,h,d,1,4,1),p=g.attributes.position;

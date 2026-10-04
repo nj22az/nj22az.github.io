@@ -10,7 +10,6 @@ export const SHOP_STOCK=Object.freeze([...GROCERY_ITEMS.map(item=>({...item,capa
 export const stockSpec=id=>SHOP_STOCK.find(item=>item.id===id);
 const count=(n,max,fallback=0)=>Number.isSafeInteger(n)&&n>=0?Math.min(n,max):fallback;
 export function restoreShopStock(saved){return Object.fromEntries(SHOP_STOCK.map(item=>[item.id,{shelf:count(saved?.[item.id]?.shelf,item.capacity,saved?.[item.id]?0:item.capacity),reserve:count(saved?.[item.id]?.reserve,60,saved?.[item.id]?0:item.capacity*2)}]));}
-export function shelfCount(state,id){return state.sakura.stock[id]?.shelf||0;}
 export function takeShopStock(state,id){
  const stock=state.sakura.stock[id],spec=stockSpec(id);if(!stock?.shelf||!spec)return null;
  const slot=--stock.shelf;return {item:id,slot,unitCost:spec.unitCost};

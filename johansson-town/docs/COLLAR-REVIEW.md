@@ -74,3 +74,19 @@ The other shirts (polo, blouse, jacket, smock) keep painted collars; their colla
 
 - **Polo and police shirt.** These would benefit from the same treatment: a small modelled collar with points.
 - **Print.** Real kariyushi carry the print onto the collar. A Mii keeps the collar plain; that choice is deliberate.
+
+## Update, 3 October: the collar from the owner's reference
+
+The owner's reference picture shows a notched camp collar, drawn flat with ink edges: a pointed leaf on each side
+reaching toward the shoulder, a lapel below it with a notch between, an open V down to a wooden first button, and
+plain cloth with no print on the collar.
+
+The Blender collar lay mostly on the top of the shoulders, so from the front it read too small against the neck.
+Its front reverses also crossed at the first button and drew a dark X in the outline. Now:
+- **Leaves and lapels are drawn** on the chest (garment.js) at fractions of the cloth's width at each height, so the
+  narrow neck end doesn't stretch them. They are the shirt colour with a heavier ink edge, and the print stops under them.
+- **The stand is modelled** (build.js): a band of shirt round the back and sides of the neck that rolls a little
+  outward. It tapers to nothing at the front, where it turns into the drawn leaves. It is what gives the collar its
+  silhouette from the side and back.
+- **The neck is slimmer** (radius 1.08 × arm instead of 1.2), so the collar wraps it.
+- `collar-mesh.js` and its Blender script are gone: nothing used them any more.

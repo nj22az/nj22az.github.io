@@ -17,7 +17,8 @@ import {drawCover,drawBackAd} from './magazine-art.js';
  * are the issues on sale on the town date (magazine-issues.js) and are redrawn when the
  * calendar turns one over. The back of the rack faces the street, so it carries a print.
  */
-export const MAGAZINE_RACK=Object.freeze({x:-4.3,z:3.22,width:1.96,depth:.56,height:1.6});
+// Widened to run most of the window, as a konbini's magazine wall does.
+export const MAGAZINE_RACK=Object.freeze({x:-4.0,z:3.22,width:2.6,depth:.56,height:1.6});
 
 const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
 const COLS=4,ROWS=4,CW=320,CH=440;
@@ -89,7 +90,7 @@ export function buildMagazineRack(room,{anchor,action,date=new Date(1997,8,13)}=
   const tray=add(new THREE.BoxGeometry(W-.06,.012,.3),wire,0,tier.y,tier.z-.12);tray.rotation.x=.12;
   add(new THREE.BoxGeometry(W-.06,.03,.012),stripMat,0,tier.y-.012,tier.z+.03,'Magazine rack price strip');
   add(tube(W-.06).clone().scale(.35,1,.35),wire,0,tier.y+.075,tier.z-.065).rotation.z=Math.PI/2;
-  for(let i=-3;i<=3;i++)add(new THREE.CylinderGeometry(.004,.004,.1,6),wire,i*.27,tier.y+.04,tier.z-.06);
+  for(let i=-4;i<=4;i++)add(new THREE.CylinderGeometry(.004,.004,.1,6),wire,i*.27,tier.y+.04,tier.z-.06);
  }
  // The header sign, in the shop's pink.
  const signTex=new THREE.CanvasTexture((()=>{const c=document.createElement('canvas');c.width=1024;c.height=128;const x=c.getContext('2d');x.fillStyle='#f06b9a';x.fillRect(0,0,1024,128);x.fillStyle='#d7263d';x.fillRect(0,108,1024,20);
@@ -99,7 +100,7 @@ export function buildMagazineRack(room,{anchor,action,date=new Date(1997,8,13)}=
  for(const sx of [-.7,.7])add(tube(.12),enamel,sx,1.43+.06,-D/2+.04);
  // The stock. Each title is one instanced draw over the shared atlas.
  const canvas=document.createElement('canvas');canvas.width=COLS*CW;canvas.height=ROWS*CH;
- let issueKey=paintAtlas(canvas,date);
+ let lastDay=null;let issueKey=paintAtlas(canvas,date);
  const atlas=new THREE.CanvasTexture(canvas);atlas.colorSpace=THREE.SRGBColorSpace;atlas.anisotropy=8;
  const material=new THREE.MeshStandardMaterial({map:atlas,roughness:.5});
  const placed=RACK_TITLES.map(()=>[]),dummy=new THREE.Object3D();
@@ -115,18 +116,19 @@ export function buildMagazineRack(room,{anchor,action,date=new Date(1997,8,13)}=
   }
  };
  // Papers across the top, magazines on the two tiers below, no title twice side by side.
- row(TIERS[2],papers,6,.27,3);
- row(TIERS[1],magazines.slice(0,8),8,.2,3);
- row(TIERS[0],[...magazines.slice(5),...magazines.slice(0,5)],8,.2,3);
+ row(TIERS[2],papers,8,.27,3);
+ row(TIERS[1],magazines,11,.2,3);
+ row(TIERS[0],[...magazines.slice(5),...magazines.slice(0,5)],11,.2,3);
  placed.forEach((list,index)=>{
   if(!list.length)return;
   const mesh=new THREE.InstancedMesh(titleGeometry(RACK_TITLES[index],index),material,list.length);mesh.name='Sakura rack '+RACK_TITLES[index].id;
   list.forEach(([x,y,z,lean,tilt],i)=>{dummy.position.set(x,y,z);dummy.rotation.set(-lean,0,tilt);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});
   mesh.computeBoundingSphere();group.add(mesh);
  });
- if(anchor&&action)anchor([R.x,1.35,R.z-.5],'Read the magazines',()=>action('magazine-rack'));
+ if(anchor&&action)anchor([R.x,1.35,R.z-R.depth/2-.45],'Read the magazines',()=>action('magazine-rack'));
  return {group,
   /** Puts the issues on sale on `date` on the rack; a no-op until one changes. */
-  refresh(date){const {key}=rackIssues(date);if(key===issueKey)return false;issueKey=paintAtlas(canvas,date);atlas.needsUpdate=true;return true;},
+  // Called every frame; covers only change with the date, so only a new day is looked at.
+  refresh(date){const day=date.getFullYear()*400+date.getMonth()*32+date.getDate();if(day===lastDay)return false;lastDay=day;const {key}=rackIssues(date);if(key===issueKey)return false;issueKey=paintAtlas(canvas,date);atlas.needsUpdate=true;return true;},
   get issueKey(){return issueKey;}};
 }

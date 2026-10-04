@@ -1,14 +1,12 @@
-import {createKit} from './okinawa/kit.js';
-import {utilityPole,wiresBetween} from './okinawa/props.js';
 import {japaneseSign,signText} from './okinawa/signs.js';
+import {QUAY_BAYS} from './town-traffic.js';
+import {GROUND_LAYER} from './ground-layers.js';
 import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
 import {GROUND} from '../render/ground-palette.js';
-import {ALLEY_SHOPS,buildAlleyShop} from './alley-shops.js';
 import {WEST_SHOPS,buildWestShop} from './west-shops.js';
-import {buildPeninsula} from './peninsula.js';
+import {buildIslandCoast} from './island-coast.js';
 import {buildBicycle} from './bicycle.js';
-import {createVendingMachine,vendingReady,hydrateVending} from './vending.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
@@ -21,10 +19,8 @@ import {createHarbourBasin,tickOcean,setOceanWeather} from './ocean.js';
 import {buildStorefront} from './storefront.js?snappy=1';
 import {buildThuanFlat} from './thuan-flat.js';
 import {SAKURA_FRONT} from './interiors/sakura-layout.js';
-import {peninsulaActive} from './town-mode.js';
 
 import {buildFerryTerminal} from './ferry.js';
-import {buildBusStation} from './bus-station.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import {lanternGlow, windowGlow} from '../render/dusk.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -91,7 +87,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     return directMesh(new THREE.CylinderGeometry(r,r,d.length(),8),material(c),parent,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],[e.x,e.y,e.z]);
   }
   function label(text,sub,p,width,height,angle=0,bg='#e9dcc1',fg='#283d3e',glow=false,twoFaced=false){
-    const canvas=document.createElement('canvas');canvas.width=768;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,768,256);ctx.strokeStyle=fg;ctx.lineWidth=8;ctx.strokeRect(12,12,744,232);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=fg;ctx.font='700 96px "Yu Gothic",system-ui';signText(ctx,japaneseSign(text),384,106,700,96);ctx.font='600 30px system-ui';signText(ctx,sub,384,201,700,30);
+    // The canvas takes the board's own proportions, so lettering is never stretched.
+    const W=Math.max(256,Math.min(2048,Math.round(256*width/height)));
+    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,W,256);ctx.strokeStyle=fg;ctx.lineWidth=8;ctx.strokeRect(12,12,W-24,232);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=fg;ctx.font='800 136px "Yu Gothic",system-ui';signText(ctx,japaneseSign(text),W/2,104,W-68,136);ctx.font='700 32px system-ui';signText(ctx,sub,W/2,206,W-68,32);
     const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=Math.min(maxAnisotropy,8);
     const mat=new THREE.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:glow?.55:.05});
     const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height),mat);mesh.position.set(...p);mesh.rotation.y=angle;mesh.castShadow=false;mesh.receiveShadow=false;group.add(mesh);
@@ -128,7 +126,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   addHorizon(group);
   // Base town and road. Markings are non-coplanar decal planes to eliminate white-line z fighting.
-  buildPeninsula(group);
+  buildIslandCoast(group);
   const upperRoadLength=MAIN_ROAD.maxZ-BOARDWALK.maxZ;
   box([MAIN_ROAD.width,.2,upperRoadLength],[MAIN_ROAD.x,-.10,(MAIN_ROAD.maxZ+BOARDWALK.maxZ)/2],GROUND.asphalt,[0,0,0],'road');
   box([MAIN_ROAD.width,.2,4],[MAIN_ROAD.x,-.10,-40],GROUND.asphalt,[0,0,0],'road');
@@ -139,6 +137,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // The delivery turn stays on asphalt, with a flush entrance through the old kerb.
   const court=MAIN_SERVICE_COURT;const apron=directBox([court.maxX-court.minX,.04,court.maxZ-court.minZ],[(court.minX+court.maxX)/2,.02,(court.minZ+court.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');apron.name='Main Street service turnout';
   const loading=MAIN_LOADING_APRON,loadingPaving=directBox([loading.maxX-loading.minX,.04,loading.maxZ-loading.minZ],[(loading.minX+loading.maxX)/2,.02,(loading.minZ+loading.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');loadingPaving.name='Main Street freight pullout';
+  // The working quay bays connect to Main Street through a marked, flush driveway.
+  // Drivers straighten clear of the Port Building canopy before crossing the footway.
+  const cargoDrive=directBox([3.9,.04,14.8],[1.25,GROUND_LAYER.grass-.02,-40.2],GROUND.asphalt,group,[0,0,0],false,'road');cargoDrive.name='Quay cargo driveway';
+  for(const [x,z] of QUAY_BAYS)for(const dx of [-1.02,1.02]){const line=directBox([.09,.012,4.5],[x+dx,GROUND_LAYER.grass+.006,z],0xd6c8a7,group);line.name='Working quay bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
+
   // Kerbstones: a light concrete edge between footway and carriageway on both sides,
   // dropped flush where the two crossings meet the road so a pram (or a player) rolls
   // straight across. Low enough to step over without a hitch.
@@ -174,17 +177,14 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
     if(s.industrialWorkshop){harbourShops.push(buildDockWorkshop({parent:group,site:s,register,enter,label,colliders}));return;}
-    if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider);return;}
+    if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider,...office.colliders);return;}
     // The alley units are a recessed door in the side of the supplied night-market
-    // kit. The peninsula does not build that kit, so on this layout a shop that has a
+    // kit. The island does not build that kit, so on this layout a shop that has a
     // west-pavement plot gets a building of its own instead of a door standing in the
     // open air. See west-shops.js.
-    if(peninsulaActive()&&WEST_SHOPS[s.id]){
+    if(WEST_SHOPS[s.id]){
       const shop=buildWestShop({parent:group,site:s,register,enter,label,colliders,shadows});
       if(shop){harbourShops.push(shop);return;}
-    }
-    if(ALLEY_SHOPS[s.id]){
-      harbourShops.push(buildAlleyShop({parent:group,site:s,register,enter,label,shadows}));return;
     }
     if(s.id==='market'){
       const front=-7.45;
@@ -195,7 +195,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       // switched off: on the street proper the izakaya is against its shoulder, which
       // is why this was never simply made bigger. The door moves to the middle with it,
       // where the interior's own door is.
-      if(peninsulaActive()){
+      {
        const centre=s.z+1.2,span={width:SAKURA_FRONT.width,depth:SAKURA_FRONT.depth,doorX:0};
        const storefront=buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}});
        shopDoors.push(storefront.shopDoor);
@@ -217,36 +217,27 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
    cyl(.10,.85,[px,.425,-32],0x3b4848);box([.22,.10,.22],[px,.9,-32],0xe7c080);obstacle(px,-32,.25,.25);
    const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(px,1,-32);group.add(light);lampLights.push(light);
   }
-  // The old shopping-street feeder uses the same concrete poles and insulators as town.
-  {const kit=createKit({shadows});
-   for(const side of [-1,1]){const poles=[];for(const z of (side<0?[7.5,18.5]:[11,17])){
-    const p=utilityPole(kit,side<0?-7.2:.8,z,{face:side<0?Math.PI/2:-Math.PI/2,transformer:z===11,lamp:true});
-    colliders.push(p.collider);poles.push(p);
-   }wiresBetween(kit,poles[0],poles[1]);}
-   kit.finish(group,'Shopping street electrical feeder');
-  }
-  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label("Johansson Shopping Street",'JOHANSSON SHOPPING STREET',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#d8d5b9','#31565d',false,true);
+  // The shopping street is fed from the Main Street line (okinawa/quarters.js): a second
+  // and third row of poles a few metres from it was clutter.
+  for(const x of [-7.8,.8])cyl(.17,6.8,[x,3.4,18.7],0x416568);beam([-7.8,6.4,18.7],[.8,6.4,18.7],.11,0x416568);label("Johansson Shopping Street",'JOHANSSON SHOPPING STREET',[MAIN_ROAD.x,6.3,18.7],5.8,.9,0,'#2f5960','#f4ecd2',false,true);
 
   // Late-Shōwa street lamps: shopping street + quay approach. Emissive heads only
   // (no new PointLights); kept out of static batching so lanternGlow can update.
-  // The Front-Row gable pole is measured against the peninsula bookshop. The older
+  // The Front-Row gable pole is measured against the island bookshop. The older
   // layouts put Front-Row's alley door 0.2 m from it, so they go without that pole.
   const streetLamps=buildStreetLamps({parent:group,colliders,shadows,mobile,
-   placements:peninsulaActive()?STREET_LAMP_PLACEMENTS:STREET_LAMP_PLACEMENTS.filter(p=>p.z!==-3.05)});
+   placements:STREET_LAMP_PLACEMENTS});
 
   // Useful street furniture sits in the block recesses, clear of junctions.
   // The mid-street machine is gone: vending stays at Sakura, the onsen lane and the fish
   // quay, where a drink is a reason to stop (docs/AMPLIFY-AUDIT.md, decluttering).
-  if(!peninsulaActive()){const vending=createVendingMachine({shadows});vending.position.set(4.35,0,9.1);group.add(vending);
-  if(!vendingReady())details.push({id:'street-vending',x:4.35,z:9.1,radius:42,load:()=>hydrateVending(vending,{shadows})});
-  obstacle(4.35,9.1,1.3,1);anchor([4.35,1,10.1],'Buy a drink',()=>onAction('vending'));}
+
   // Payphone sits fully on the west footway: narrowing Main Street to six metres
   // left it overhanging the kerb into the carriageway.
   box([1.1,2.5,1],[-7.1,1.25,17.2],0x457e73);box([.91,1.6,.91],[-7.1,1.55,17.2],0x648c87);box([.35,.65,.28],[-7.1,1.4,17.73],0x3d9c6c);label("Telephone",'TELEPHONE',[-7.1,2.4,17.75],1,.28);anchor([-7.1,1,18.2],'Use payphone',()=>onAction('phone'));obstacle(-7.1,17.2,1.1,1);
   // The island has no road out: its people come and go by the ferry from the outer pier,
   // and the terminal on the quay takes the bus station's part. Elsewhere, the bus.
-  const busStation=peninsulaActive()?buildFerryTerminal({parent:group,colliders,register,onAction,label,shadows})
-   :buildBusStation({parent:group,colliders,register,onAction,label,shadows});
+  const busStation=buildFerryTerminal({parent:group,colliders,register,onAction,enter,label,shadows});
 
   // The one at [-7.4,-33] stood against the konbini's frontage, in front of the only
   // window the shop is read through from the street. The others are along the harbour.
@@ -266,8 +257,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const sea=createHarbourBasin();sea.receiveShadow=false;group.add(sea);water.push(sea);
 
   const warehouseWorld={group,colliders};
-  // The warehouse stands at the quay in every layout. It was switched off while the
-  // peninsula was stripped back to its ground, and it is the first building back.
+  // The warehouse stands at the quay.
   const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
   // The warehouse already has a fascia; a roadside panel hid its entrance from the quay.
 
@@ -279,7 +269,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function ropeCoil(x,z,scale=1){
     const rm=material(0xa38a62);for(let i=0;i<3;i++){const t=directMesh(new THREE.TorusGeometry(.35*scale+i*.07,.045*scale,6,20),rm,group,[x,.18+i*.035,z],[Math.PI/2,0,(i%2)*.25],[1,1,1],false);t.castShadow=false;}
   }
-  ropeCoil(-8.3,-47.1,.9);ropeCoil(8.9,-47.2,.75);
+  ropeCoil(-8.3,-47.1,.9);
 
   function crateStack(x,z,cols=2,rows=2){
     const colors=[0x4f6f76,0xa9854e,0x6f805e];
@@ -288,16 +278,17 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   }
   // On the island the ferry's ticket booth stands where the west stack was.
   // On the island the ferry terminal stands where the second stack was.
-  if(!peninsulaActive()){crateStack(-7.3,-44,2,3);crateStack(7.2,-46.2,3,2);}
+
 
   // Nets dry beside the north wall, clear of both the loading bay and pedestrian door.
   for(const x of [-14.75,-12.45])cyl(.06,2.4,[x,1.3,-35.7],0x655747);beam([-14.75,2.45,-35.7],[-12.45,2.45,-35.7],.055,0x655747);
   for(let x=-14.5;x<-12.65;x+=.22)beam([x,.5,-35.68],[x,2.32,-35.68],.012,0x65736f);obstacle(-13.6,-35.7,2.5,.5);
 
+
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
   directBox([1.15,1.55,.85],[8.7,.88,-36.8],0xd8d8cc,group,[0,0,0],true);label("Ice",'ICE',[8.7,1.85,-36.35],.78,.5,0,'#dde1d7','#37636a');obstacle(8.7,-36.8,1.2,.9);
 
-  for(const [x,z] of [[-17.1,-48],[16.3,-47.2]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
+  for(const [x,z] of [[-17.1,-48],[17.6,-47.6]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
 
   // Tyre fenders on the quay wall — broad black shapes, not thin white lines.
   for(const x of [-14,-7,0,7,14]){const tire=directMesh(new THREE.TorusGeometry(.42,.1,8,20),material(0x262d2e),group,[x,-.05,-49.76],[0,0,0]);tire.scale.set(1,.78,1);}
@@ -308,8 +299,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // all, in the middle of the one open view the town has of the water.
   anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
 
-  // Quay benches leave the roll-on lane and its turning space clear.
-  for(const x of [-15.8,10.6]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);}
+  // The waiting hall supplies the east-side seating; this west bench leaves the roll-on lane clear.
+  for(const x of [-15.8]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);}
+
 
   // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights.
   const boat=new THREE.Group();boat.position.set(9,-.18,-56);boat.rotation.y=-.07;group.add(boat);

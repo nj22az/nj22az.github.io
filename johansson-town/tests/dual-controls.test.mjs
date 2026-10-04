@@ -4,7 +4,6 @@ import {stickAxes,lookStep,createGamepadInput,createMenuRepeat} from '../src/inp
 import {cameraSettings,createCameraControls,navigateControls} from '../src/input/camera-controls.js';
 import {createTouchSticks} from '../src/input/touch-sticks.js';
 import {Element,installDOM} from './fixtures.mjs';
-import {readFile} from 'node:fs/promises';
 
 const pad=()=>({id:'Test standard controller',index:0,connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))});
 test('analogue walking has a radial dead zone, bounded diagonals and independent look axes',()=>{

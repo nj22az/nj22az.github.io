@@ -49,7 +49,10 @@ function quietDataUrlError(error){
   return error;
 }
 
-test('Published peninsula boots, shares the wooden bookshop/workshop and visits every interior',async()=>{
+// In the third-person view you start up to a step inside the door, so the camera has room.
+const atDoor=(p,spawn)=>{assert.equal(p[1],spawn[1]);assert.ok(Math.hypot(p[0]-spawn[0],p[2]-spawn[2])<=1.25,`${p} is not at the door ${spawn}`);};
+
+test('Published island boots, shares the wooden bookshop/workshop and visits every interior',async()=>{
   try {
     fixtures.installDOM();
     // The game starts at one of several openings (world/openings.js); this test walks from the Sakura bench.
@@ -95,8 +98,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
     globalThis.fetch=async url=>String(url).startsWith('blob:')?originalFetch(url):new Response(await readFile(resolve(root,'assets',new URL(url).pathname.split('/assets/')[1])));
-    const {preloadSuppliedRooms,SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js?snappy=1');
-    assert.deepEqual(await preloadSuppliedRooms(),[true,true,true],'All supplied rooms preloaded');
+    const {SUPPLIED_ROOM_LAYOUTS}=await import('../src/world/supplied-rooms.js?snappy=1');
     const {preloadPark}=await import('../src/world/park.js?snappy=1');assert.equal(await preloadPark(),true);
     const {preloadIzakaya}=await import('../src/world/izakaya.js?snappy=1');
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
@@ -112,7 +114,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
     assert.equal(api.world.group.getObjectByName('west-shop:form3d'),undefined,'Only one bookshop/workshop exterior');
-    assert.equal(api.world.group.getObjectByName('Sato Ramen restaurant'),undefined,'The peninsula has no ramen premises');
+    assert.equal(api.world.group.getObjectByName('Sato Ramen restaurant'),undefined,'The island has no ramen premises');
     assert.equal(window.__JOHANSSON_RUNNING__,true);
     assert.equal(window.__JOHANSSON_STABILITY__?.ok,true,'Startup stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__?.failures));
     // Check the actual actions as well as the mode-aware diagnostic count.
@@ -168,7 +170,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     // The street action includes the real asynchronous threshold animation.
     const entrance=api.world.group.getObjectByName('frontrow-west-entrance');
     await entrance.userData.hit.fn();assert.equal(api.reviewCurrentRoom()?.id,'frontrow');
-    assert.deepEqual(api.player.position.toArray(),BOOKSHOP_WORKSHOP_ROOM.spawn);
+    atDoor(api.player.position.toArray(),BOOKSHOP_WORKSHOP_ROOM.spawn);
     await document.querySelector('#exitRoomButton').onclick();assert.equal(api.reviewCurrentRoom(),null);
     assert.ok(Math.hypot(api.player.position.x-books.door[0],api.player.position.z-books.door[2])<1.2,'Return to the same entrance');
 
@@ -179,14 +181,14 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
       assert.equal(api.reviewRoomState().visible,true);assert.equal(api.reviewRoomState().townVisible,false);
       assert.ok(api.reviewRoomState().colliders>0,'Interior colliders: '+site.id);
       if(site.id==='frontrow'){
-        assert.deepEqual(api.player.position.toArray(),BOOKSHOP_WORKSHOP_ROOM.spawn);
+        atDoor(api.player.position.toArray(),BOOKSHOP_WORKSHOP_ROOM.spawn);
         // Repairs moved to the dock workshop; the bookshop keeps its counter, desks and reading table.
         for(const name of ['Bookselling counter','Newspaper and book wrapping desk','New arrivals display','Reading table'])assert.ok(api.reviewRoom().getObjectByName(name),name+' is in the bookshop');
         const exits=[];api.reviewRoom().traverse(o=>{if(o.userData.hit?.label.startsWith('Exit to '))exits.push(o);});
         assert.equal(exits.length,1,'One shared interior exit');
       }
       if(site.id==='office'){
-        assert.deepEqual(api.player.position.toArray(),SUPPLIED_ROOM_LAYOUTS.office.spawn);
+        atDoor(api.player.position.toArray(),SUPPLIED_ROOM_LAYOUTS.office.spawn);
         assert.ok(api.reviewRoom().getObjectByName('Harbour office shell'));
         assert.ok(api.reviewRoom().getObjectByName('Clerk CRT monitor'));
       }

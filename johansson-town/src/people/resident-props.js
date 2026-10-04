@@ -43,36 +43,3 @@ export function createResidentProp(kind){
  if(!parts.length)box([.05,.07,.04],[0,.035,0],0x9d8360);
  const geometry=mergeGeometries(parts);parts.forEach(g=>g.dispose());const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.72,flatShading:true}));mesh.name='resident-prop-'+kind;return mesh;
 }
-
-export function createResidentHands(model){
- let hand;model.traverse(o=>{if(o.isBone&&(/RightHand$/.test(o.name)||o.name==='WristR'||o.name==='wristR'))hand=o;});if(!hand)return null;
- const holder=new THREE.Group();holder.name='resident-held-item';holder.visible=false;holder.matrixAutoUpdate=false;hand.add(holder);
- const utensils=new THREE.Group();utensils.name='resident-chopsticks';utensils.visible=false;utensils.matrixAutoUpdate=false;hand.add(utensils);
- const props=new Map(),point=new THREE.Vector3(),world=new THREE.Matrix4(),rotation=new THREE.Quaternion(),one=new THREE.Vector3(1,1,1);
- let motion=null;
- function show(kind){
-  holder.visible=!!kind;utensils.visible=false;if(!kind)return;
-  if(!props.has(kind)){const prop=createResidentProp(kind);holder.add(prop);props.set(kind,prop);}
-  for(const [id,prop] of props)prop.visible=id===kind;
- }
- function place(group,arm,q){
-  arm.hand.updateWorldMatrix(true,false);point.copy(arm.grip).applyMatrix4(arm.hand.matrixWorld);
-  // Preserve metre-sized food even under non-uniform character proportions.
-  if(group===holder&&motion?.active)point.add(motion.propOffset);
-  world.compose(point,q,one);group.matrix.copy(group.parent.matrixWorld).invert().multiply(world);group.matrixWorldNeedsUpdate=true;
- }
- function align(){
-  if(!holder.visible)return;
-  const bowl=motion?.active&&motion.bowl,arm=motion?.arms[bowl?'L':'R'];
-  if(arm){
-   if(holder.parent!==arm.hand)arm.hand.add(holder);
-   rotation.identity();if(motion.active)rotation.copy(motion.orientation);
-   // Bowls stay level in the left palm; the right hand works the chopsticks.
-   place(holder,arm,rotation);utensils.visible=!!bowl;
-   if(bowl){if(!utensils.children.length)utensils.add(createResidentProp('chopsticks'));place(utensils,motion.arms.R,rotation);}
-  }else{
-   hand.updateWorldMatrix(true,false);point.set(0,.05,0).applyMatrix4(hand.matrixWorld);world.makeTranslation(point.x,point.y,point.z);holder.matrix.copy(hand.matrixWorld).invert().multiply(world);holder.matrixWorldNeedsUpdate=true;
-  }
- }
- return {holder,utensils,show,align,fit(value){motion=value;}};
-}

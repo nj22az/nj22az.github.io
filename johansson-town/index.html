@@ -13,27 +13,26 @@
 <link rel="icon" type="image/png" href="./assets/icons/town-192.png">
 <link rel="apple-touch-icon" href="./assets/icons/town-192.png">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./base.css?h=55c46465">
-<link rel="stylesheet" href="./context-controls.css?h=7dfa7c15">
+<link rel="stylesheet" href="./base.css?h=2cec600f">
+<link rel="stylesheet" href="./context-controls.css?h=323342df">
 <title>Johansson Town</title>
 <link rel="stylesheet" href="./landing.css?h=2db6f686">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
 <link rel="stylesheet" href="./photo-mode.css?h=17316f51">
 <link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-BlsIFLP3.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-DqJqMDyc.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-MrOxZM18.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CWODQqT0.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-9D3NvwXC.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-CQPppB1I.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-7PjwmOKd.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CCG0tNLG.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-Df52_zoE.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-DEl0bnBZ.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-DyNkE1Ey.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
 <div id="ink"></div>
 <div id="threshold"></div>
-<button id="exitRoomButton" class="hidden" aria-label="Exit building to street">Exit to street</button>
+<button id="exitRoomButton" class="hidden" aria-label="Exit building to street">Exit to street</button><button id="enterBuildingButton" class="hidden" aria-label="Enter building">Enter</button>
 <section id="start">
   <div id="splash" class="splash done" aria-hidden="true"></div>
   <section id="title" class="title-screen" aria-labelledby="titleLogo">
@@ -51,7 +50,7 @@
       </h1>
       <p class="title-tag">A little harbour life · 1997</p>
       <div class="title-menu">
-        <button id="enter" disabled type="button"><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4l12 8-12 8z" fill="currentColor"/></svg><b>START</b></button>
+        <button id="enter" type="button"><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4l12 8-12 8z" fill="currentColor"/></svg><b>START</b></button>
         <a class="title-guide" href="#board" data-guide-open><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 19V5M8 7h7"/></svg>TOWN GUIDE</a>
       </div>
       <div class="title-loading">
@@ -349,7 +348,7 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON TOWN</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=e2014866"></script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-ztqXw1Hm.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-DJXGqqhw.js";</script>
 <script src="./landing.js?h=a9321e19"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -469,7 +468,7 @@
 </script>
 <script type="module">
 import {createLoadingFacts} from './loading-facts.js';
-import {unlockTownAudio} from './runtime/audio-CBa7Ywpb.js';
+import {unlockTownAudio} from './runtime/audio-C8P9scra.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
@@ -513,7 +512,7 @@ import {unlockTownAudio} from './runtime/audio-CBa7Ywpb.js';
     try{
       // Let the browser paint the first fact before constructing the town.
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      try { await import('./runtime/boot-BlsIFLP3.js'); } catch (error) {
+      try { await import('./runtime/boot-DqJqMDyc.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;
@@ -541,9 +540,6 @@ import {unlockTownAudio} from './runtime/audio-CBa7Ywpb.js';
   }
 
   enter.addEventListener('click',launch);
-  // The title paints before this module's dependencies arrive. Keep START
-  // disabled until its launch handler exists so an early tap cannot disappear.
-  enter.disabled=false;
   retry.addEventListener('click',()=>location.reload());
   fsButton.addEventListener('click',fullscreen);
   fsClose.addEventListener('click',()=>fsHelp.classList.add('hidden'));

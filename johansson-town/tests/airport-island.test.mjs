@@ -2,15 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {buildAirportIsland,AIRPORT_ISLAND,AIRPORT_DEPARTURES} from '../src/world/airport-island.js';
-import {onPeninsulaLand} from '../src/world/coastal-ground.js';
-import {COASTLINE} from '../src/world/peninsula.js';
+import {onIslandLand} from '../src/world/coastal-ground.js';
 
 test('the airport island is on the horizon, inside the far plane, and not on the town',()=>{
  const parent=new THREE.Group(),island=buildAirportIsland({parent});
  const A=AIRPORT_ISLAND,fromQuay=Math.hypot(A.x,A.z+45),fromBeach=Math.hypot(A.x-40,A.z);
  assert.ok(fromQuay<200&&fromBeach<200,'It is beyond the camera’s 220 m far plane from the harbour and the beach');
- assert.equal(onPeninsulaLand(A.x,A.z),false,'The airport stays across the strait');
- for(const dx of [-A.halfLength,0,A.halfLength])assert.equal(onPeninsulaLand(A.x+dx,A.z),false,'The airport shore is separate');
+ assert.equal(onIslandLand(A.x,A.z),false,'The airport stays across the strait');
+ for(const dx of [-A.halfLength,0,A.halfLength])assert.equal(onIslandLand(A.x+dx,A.z),false,'The airport shore is separate');
  // The section renderer must not cull it for being far from every street.
  assert.equal(island.group.userData.horizon,true);
  // A plane takes off at each departure and is gone again once it has climbed away (a minute of real time).

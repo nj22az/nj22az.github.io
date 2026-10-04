@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {SATO_ROOM,SATO_COUNTER,SATO_LEDGE,SATO_GUEST_SEATS,SATO_COLLIDERS,SATO_MENU,SATO_COOK,SATO_LUNCH,satoRamenOpen} from '../src/world/sato-ramen-layout.js';
 import {izakayaPlot,RAMEN_DOOR,SATO_RAMEN_DOOR,DINING} from '../src/world/dining-layout.js';
 import {residentPlan} from '../src/people/social.js';
@@ -15,14 +14,13 @@ const profile=name=>RESIDENTS.find(p=>p.name===name);
 test('Sato Ramen serves lunch from eleven to two, and its door is on the alley corner',()=>{
  for(const m of [659,840,1000,1300])assert.equal(satoRamenOpen(m),false);
  for(const m of [660,720,839,1440+700])assert.equal(satoRamenOpen(m),true);
- try{configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();assert.deepEqual(RAMEN_DOOR,[...SATO_RAMEN_DOOR]);}
- finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
- assert.deepEqual(RAMEN_DOOR,[...DINING.ramenDoor],'the old street keeps Inakaya across the road');
+ try{izakayaPlot();assert.deepEqual(RAMEN_DOOR,[...SATO_RAMEN_DOOR]);}
+ finally{}
 });
 
 test('Mrs Sato buys fish, cooks the lunch and walks home to Kitahama; the regulars come for lunch',()=>{
  try{
-  configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+  izakayaPlot();
   const sato=profile('Mrs Sato');
   assert.equal(residentPlan(sato,520).place,'home','at home in Kitahama before the auction');
   assert.equal(residentPlan(sato,1000).place,'home','home again after the lunch service');
@@ -34,7 +32,7 @@ test('Mrs Sato buys fish, cooks the lunch and walks home to Kitahama; the regula
    assert.equal(plan.place,'ramen',name+' has lunch at Sato Ramen');assert.deepEqual(plan.target,[...SATO_RAMEN_DOOR]);
    assert.notEqual(residentPlan(profile(name),to+30).place,'ramen',name+' goes back after lunch');
   }
- }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
+ }finally{izakayaPlot();}
 });
 
 test('every stool can be reached and sat on, and the cook stands in the kitchen',()=>{

@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {townBoundsBlocked,standingHitsRect,circleHitsRect,canStepBetween} from '../physics.js';
 import {groundHeight,planHeight} from '../src/world/layout.js';
 import {createNavigation} from '../src/people/navmesh.js';
@@ -10,7 +9,7 @@ import {KITAHAMA,plotGate} from '../src/world/kitahama-layout.js';
 import {gardenPoint,PARK_ACCESS,GARDEN_BENCHES_AUTHOR} from '../src/world/garden-layout.js';
 import {SHOPPING_LANE,SHOPPING_LANE_ROWS,shoppingLanePoint} from '../src/world/shopping-lane-plan.js';
 import {PARK_BENCH} from '../src/world/park-layout.js';
-installDOM();globalThis.self=globalThis;configureTownMode(TOWN_MODES.PENINSULA);
+installDOM();globalThis.self=globalThis;
 const {createTown}=await import('../src/world/town.js');const {createBusinesses}=await import('../src/world/businesses.js');
 const prompts=[];
 const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,register:(object,label)=>prompts.push({object,label}),enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
@@ -92,13 +91,13 @@ test('Rainflower geometry, staff, map and collision share the compact central lo
 });
 test('dry-weather garden visits use the existing residents and respect rain routines',async()=>{
  const {residentPlan}=await import('../src/people/social.js');const {RESIDENTS}=await import('../src/people/residents.js');
- for(const [name,minute] of [['Reiko',690],['Tetsuo',780]]){const profile=RESIDENTS.find(p=>p.name===name),plan=residentPlan(profile,minute,false,{townMode:'peninsula'});assert.equal(plan.place,'park');assert.ok(plan.activity.includes('Aoba Garden'));assert.ok(plan.target[0]<0&&plan.target[1]>34);assert.notEqual(residentPlan(profile,minute,true,{townMode:'peninsula'}).place,'park');}
+ for(const [name,minute] of [['Reiko',690],['Tetsuo',780]]){const profile=RESIDENTS.find(p=>p.name===name),plan=residentPlan(profile,minute,false,{});assert.equal(plan.place,'park');assert.ok(plan.activity.includes('Aoba Garden'));assert.ok(plan.target[0]<0&&plan.target[1]>34);assert.notEqual(residentPlan(profile,minute,true,{}).place,'park');}
 });
 
 test('visible garden approaches match walking heights across the whole entrance, not only the path',()=>{
  // Nishi's slabs and the former terminus lawn cover the garden bank at the south
  // approach. Compare physics to those finished floors, including where they overlap.
- world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Continuous neighbourhood garden ground','Aoba lowland shared terrain','Peninsula land','Main Street end lawn'].includes(o.name)||/^Okinawan quarter:(matte|sand)\|/.test(o.name))surfaces.push(o);});
+ world.group.updateMatrixWorld(true);const surfaces=[];world.group.traverse(o=>{if(['Continuous neighbourhood garden ground','Aoba lowland shared terrain','Island land','Main Street end lawn'].includes(o.name)||/^Okinawan quarter:(matte|sand)\|/.test(o.name))surfaces.push(o);});
  const ray=new THREE.Raycaster();for(const x of [-34,-29,-24,-19,-14,-9])for(const z of [29,30.5,32,33.5,35]){ray.set(new THREE.Vector3(x,1,z),new THREE.Vector3(0,-1,0));const hit=ray.intersectObjects(surfaces,false)[0];assert.ok(hit,'drawn ground at '+[x,z]);assert.ok(Math.abs(hit.point.y-groundHeight(x,z))<.025,'visible height disagrees at '+[x,z]+': '+hit.point.y+' / '+groundHeight(x,z));}
  const {position,normal}=world.group.getObjectByName('Continuous neighbourhood garden ground').geometry.attributes;for(let i=0;i<position.count;i++)assert.ok(normal.getY(i)>0,'upward terrain normal');
 });

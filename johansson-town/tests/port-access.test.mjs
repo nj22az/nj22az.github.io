@@ -4,14 +4,13 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
 import {createNavigation} from '../src/people/navmesh.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 
 test('you can walk from the quay yard onto the pier and into Mr Fujita’s shed',async()=>{
- installDOM();globalThis.self=globalThis;configureTownMode(TOWN_MODES.PENINSULA);
+ installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js?port-access');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const {PORT_SHED,SHED_PIER}=await import('../src/world/port-shed.js');
- const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+ const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
  const nav=createNavigation(blocked);
  const door=world.warehouse.place.door;

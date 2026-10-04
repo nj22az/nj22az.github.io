@@ -6,7 +6,6 @@ import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {installDOM} from './fixtures.mjs';
 import {createShopGlass,prepareIzakayaGlass} from '../src/world/shop-glass.js';
 import {DINING,restaurantPoint,restaurantApproach,izakayaPlot,IZAKAYA_DOOR} from '../src/world/dining-layout.js';
-import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
 import {SAKURA_FRONT} from '../src/world/interiors/sakura-layout.js';
 import {buildStorefront} from '../src/world/storefront.js';
 import {RESIDENTS} from '../src/people/residents.js';
@@ -72,27 +71,13 @@ test('Sakura keeps its full-size frontage and clear street glazing',()=>{
  assert.equal(panes.length,3);panes.forEach(o=>assertGlass(o.material));
 });
 
-test('Minato stands beside Sakura with its door and NPC approach facing the road',async()=>{
- const manifest=JSON.parse(await readFile(new URL('../assets/models/izakaya/benmaher-manifest.json',import.meta.url)));
- const northWallOfSakura=-28+10.5/2;
- const southEdgeOfMinato=Math.min(...[manifest.bounds.min[0],manifest.bounds.max[0]].flatMap(x=>[manifest.bounds.min[2],manifest.bounds.max[2]].map(z=>restaurantPoint('izakaya',x,z)[1])));
- assert.ok(southEdgeOfMinato>northWallOfSakura,'Keep a gap between the buildings');
- assert.ok(southEdgeOfMinato-northWallOfSakura<1,'Put Minato directly beside Sakura');
- assert.equal(DINING.izakayaYaw,Math.PI/2);
- const approach=restaurantApproach('izakaya');
- assert.ok(approach[0]>DINING.izakayaDoor[0]);
- assert.equal(approach[1],DINING.izakayaDoor[1]);
- assert.deepEqual(RESIDENTS.find(p=>p.name==='Nao').work,IZAKAYA_DOOR);
- assert.deepEqual(RESIDENTS.find(p=>p.name==='Thuan').evening,approach);
- assert.deepEqual(restaurantPoint('ramen',2,3),[DINING.ramenX-3,DINING.ramenZ+2]);
-});
 
-test('on the peninsula Minato leaves a passage beside the bookshop and clears the konbini',async()=>{
+test('on the island Minato leaves a passage beside the bookshop and clears the konbini',async()=>{
  const manifest=JSON.parse(await readFile(new URL('../assets/models/izakaya/benmaher-manifest.json',import.meta.url)));
  const corners=key=>[manifest.bounds.min[0],manifest.bounds.max[0]]
   .flatMap(x=>[manifest.bounds.min[2],manifest.bounds.max[2]].map(z=>restaurantPoint('izakaya',x,z)[key]));
  try{
-  configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();
+  izakayaPlot();
   const northGable=Math.max(...corners(1)),southGable=Math.min(...corners(1)),eastFace=Math.max(...corners(0));
   // Include the outer corner posts (.24 m beyond the nominal footprint).
   const books=WEST_SHOPS.frontrow,booksSouthWall=books.z-books.width/2-.24;
@@ -108,8 +93,5 @@ test('on the peninsula Minato leaves a passage beside the bookshop and clears th
   assert.equal(IZAKAYA_DOOR[1],izakayaPlot().z);
   assert.deepEqual(RESIDENTS.find(p=>p.name==='Nao').work,IZAKAYA_DOOR);
   assert.deepEqual(RESIDENTS.find(p=>p.name==='Thuan').evening,restaurantApproach('izakaya'));
- }finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
- // and back on the old street it is where it always was.
- assert.equal(izakayaPlot().z,DINING.izakayaZ);
- assert.equal(IZAKAYA_DOOR[1],DINING.izakayaDoor[1]);
+ }finally{}
 });

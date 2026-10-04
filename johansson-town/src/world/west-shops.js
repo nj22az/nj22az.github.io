@@ -3,7 +3,6 @@ import {createKit,GRID} from './okinawa/kit.js';
 import {MAIN_ROAD} from './main-road.js';
 import {buildShopDoor} from './shop-door.js';
 import {BOOKSHOP_WORKSHOP_PLOT} from './bookshop-workshop-layout.js';
-import {peninsulaActive} from './town-mode.js';
 import {businessId} from './businesses.js';
 import {GROUND_LAYER} from './ground-layers.js';
 
@@ -21,12 +20,9 @@ export const WEST_SHOPS=Object.freeze({
 /**
  * Where a west-pavement shop's door lands, for anything that needs to know before the
  * building is built -- its staff's working day, the escort that walks you to it.
- *
- * Only the peninsula builds these, so elsewhere this says nothing and the alley kit's
- * own door stands.
  */
 export function westShopDoor(id){
- const plot=peninsulaActive()&&WEST_SHOPS[businessId(id)];
+ const plot=WEST_SHOPS[businessId(id)];
  return plot?[MAIN_ROAD.pavementWest+.65,plot.z]:null;
 }
 

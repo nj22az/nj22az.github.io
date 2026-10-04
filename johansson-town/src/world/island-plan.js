@@ -1,5 +1,5 @@
 import {SHOPPING_LANE,SHOPPING_LANE_ROUTES} from './shopping-lane-plan.js';
-import {GARDEN,GARDEN_PATHS,inGarden,gardenHeight} from './garden-layout.js';
+import {GARDEN,GARDEN_PATHS,gardenHeight} from './garden-layout.js';
 /** Shared fictional island masterplan. Existing harbour addresses stay fixed. */
 export const ISLAND=Object.freeze({name:'Johansson Island',mountain:{name:'Mount Aoba',x:40,z:175,height:0,radiusX:30,radiusZ:30},pond:{...GARDEN.pond,radius:GARDEN.pond.rx},village:{name:'Hoshizaki Fishing Village',x:132,z:190},lighthouse:{x:-54,z:204},viewpoint:{x:40,z:158}});
 export const ISLAND_COAST=[[-52,85],[-63,120],[-73,160],[-68,210],[-42,250],[0,280],[55,295],[110,280],[150,240],[162,190],[156,140],[135,98],[100,70],[70,60]];
@@ -22,7 +22,6 @@ const G=TERRAIN_GRID,nx=Math.round((G.maxX-G.minX)/G.step)+1,nz=Math.round((G.ma
 export const MOUNTAIN_VERTICES=Array.from({length:nx*nz},(_,i)=>authoredHeight(G.minX+i%nx*G.step,G.minZ+Math.floor(i/nx)*G.step));
 /** Match the rendered triangles exactly, including pond basin and trail grounding. */
 export function islandTerrainHeight(x,z){if(x<G.minX||x>G.maxX||z<G.minZ||z>G.maxZ)return null;const fx=(x-G.minX)/G.step,fz=(z-G.minZ)/G.step,ix=Math.min(nx-2,Math.floor(fx)),iz=Math.min(nz-2,Math.floor(fz)),u=fx-ix,v=fz-iz,a=MOUNTAIN_VERTICES[iz*nx+ix],b=MOUNTAIN_VERTICES[iz*nx+ix+1],c=MOUNTAIN_VERTICES[(iz+1)*nx+ix],d=MOUNTAIN_VERTICES[(iz+1)*nx+ix+1];return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v);}
-export function islandPondAt(x,z,r=0){return Math.hypot(x-ISLAND.pond.x,z-ISLAND.pond.z)<ISLAND.pond.radius+r;}
 export const ISLAND_LANDMARKS=[
  {id:'aoba-viewpoint',title:'Aoba Radio Station & Lookout',x:40,z:158,line:'Island radio, a roof lookout and the coastal weather broadcast.'},
  {id:'hoshizaki',title:'Hoshizaki Fishing Village',x:132,z:190,line:'Fishing families, a small general store and the far-coast pier.'},

@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {createPlanKit} from './house-plan.js';
 import {sleepHours} from '../../people/home-life.js';
 
 /**
@@ -15,7 +16,7 @@ export const KOBAN_ROOM=Object.freeze({
 });
 /** Where Officer Mori walks, eats and sleeps when he is at home (home-residents.js). */
 export const KOBAN_HOME_LAYOUT=Object.freeze({...KOBAN_ROOM,hatHook:{position:[.45,1.6,3.04],yaw:Math.PI},
- door:[.9,0,-2.3],table:[1.2,0,2.42],bedside:[-1.15,0,1.95],bed:[-2.3,.31,2.88],
+ door:[.9,0,-2.3],table:[1.35,0,2.42],bedside:[-1.15,0,1.95],bed:[-2.3,.31,2.88],
  cover:{position:[-2.3,.37,2.28],width:1.1,length:1.3,axis:'z'}});
 
 const time=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
@@ -107,21 +108,25 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
  const futon=box('Officer Mori futon',[1.1,.14,2.15],[-2.3,.1,1.93],0xe9dfc8,true);futon.userData.bed=true;
  box('Futon quilt',[1.05,.05,1.5],[-2.3,.195,2.22],0x7f9fc4);box('Pillow',[.8,.12,.4],[-2.3,.23,1.4],0xf3e8d2);
  box('Alarm clock',[.14,.12,.08],[-1.6,.06,1.05],0xd7263d);
- box('Tea table',[.7,.05,.5],[1.2,.6,1.75],0x8a6a4a);for(const [dx,dz] of [[-.3,-.2],[.3,-.2],[-.3,.2],[.3,.2]])box('Table leg',[.04,.58,.04],[1.2+dx,.29,1.75+dz],0x6d5238);
- collider(1.2,1.75,.7,.5,.62);
- box('Kitchen stool',[.36,.42,.36],[1.2,.21,2.42],0x6d5238);
- box('Rice bowl',[.12,.06,.12],[1.1,.66,1.7],0xf4f1ea);box('Tea cup',[.07,.07,.07],[1.35,.66,1.8],0x3f7a55);
- box('TV cabinet',[.8,.5,.45],[2.85,.25,2.75],0x6d5238,true);box('Portable television',[.5,.4,.4],[2.85,.7,2.75],0x3b3f45);
- box('TV screen',[.36,.28,.01],[2.85,.72,2.545],0x21302c);
- box('Clothes rail',[1.2,.04,.04],[-.3,1.75,2.95],0x9aa3a0);
- box('Spare uniform shirt',[.5,.7,.08],[-.55,1.35,2.95],0x9dbfe0);box('Spare uniform trousers',[.35,.9,.06],[0,1.25,2.97],0x27304d);
+ box('Tea table',[.7,.05,.5],[1.35,.6,1.75],0x8a6a4a);for(const [dx,dz] of [[-.3,-.2],[.3,-.2],[-.3,.2],[.3,.2]])box('Table leg',[.04,.58,.04],[1.35+dx,.29,1.75+dz],0x6d5238);
+ collider(1.35,1.75,.7,.5,.62);
+ box('Kitchen stool',[.36,.42,.36],[1.35,.21,2.42],0x6d5238);
+ box('Rice bowl',[.12,.06,.12],[1.25,.66,1.7],0xf4f1ea);box('Tea cup',[.07,.07,.07],[1.5,.66,1.8],0x3f7a55);
+ box('TV cabinet',[.7,.5,.45],[3.0,.25,2.75],0x6d5238,true);box('Portable television',[.5,.4,.4],[3.0,.7,2.75],0x3b3f45);
+ box('TV screen',[.36,.28,.01],[3.0,.72,2.545],0x21302c);
+ box('Clothes rail',[1.0,.04,.04],[1.8,1.75,2.95],0x9aa3a0);
+ box('Spare uniform shirt',[.5,.7,.08],[1.55,1.35,2.95],0x9dbfe0);box('Spare uniform trousers',[.35,.9,.06],[2.05,1.25,2.97],0x27304d);
+ // The officer's WC at the back of his room, as every kōban has (docs/BUILDING-AUDIT.md).
+ {const kit=createPlanKit({box:(size,pos,c,name)=>box(name||'WC wall',size,pos,c),collider,height:2.9,wall});
+  kit.partition(-.7,2.0,-.7,3.05);kit.partition(.1,2.0,.1,3.05);kit.partition(-.7,2.0,.1,2.0,[[-.6,0]]);
+  kit.wetRoom(-.66,.06,2.04,3.01,'Toilet',true,'z0');}
  // His cap hangs on this peg when he is home (home-residents.js); on patrol it is on his head.
  box('Hat peg plate',[.1,.1,.03],[.45,1.72,3.04],0x6d5238);box('Hat peg',[.035,.035,.14],[.45,1.7,2.98],0x6d5238);
  box('Tatami room window',[1.2,.9,.03],[-3.36,1.6,2.0],new THREE.MeshStandardMaterial({color:0x9fc4d6,emissive:0xbfd8e6,emissiveIntensity:.35,roughness:.2}));
  for(const dz of [-.45,.45])box('Curtain',[.03,1.0,.3],[-3.32,1.6,2.0+dz],0xe8cf85);
- spot([-.3,1.4,2.7],'Inspect the spare uniform','inspect','Spare uniform','A pressed summer shirt, the trousers on a hanger and a peg for his cap, ready for the night patrol. A small label inside the cap says MORI in marker pen.');
- spot([1.2,1.0,1.75],'Read Officer Mori’s notebook','read','Officer Mori’s notebook','Patrol from '+time(1320)+' to '+time(360)+'. Sleep '+time(hours.sleep)+'–'+time(hours.wake)+'. Front desk from 16:00. Supper at Sakura (Thuan recommends the curry bun).\n\nReiko wants a quote for the paper. Think of something that sounds more exciting than “quiet night”.');
- spot([2.85,1.1,2.5],'Inspect the television','inspect','Portable television','A small portable set with a bent aerial. The channel knob is stuck between the late news and the baseball.');
+ spot([1.8,1.4,2.6],'Inspect the spare uniform','inspect','Spare uniform','A pressed summer shirt, the trousers on a hanger and a peg for his cap, ready for the night patrol. A small label inside the cap says MORI in marker pen.');
+ spot([1.35,1.0,1.75],'Read Officer Mori’s notebook','read','Officer Mori’s notebook','Patrol from '+time(1320)+' to '+time(360)+'. Sleep '+time(hours.sleep)+'–'+time(hours.wake)+'. Front desk from 16:00. Supper at Sakura (Thuan recommends the curry bun).\n\nReiko wants a quote for the paper. Think of something that sounds more exciting than “quiet night”.');
+ spot([3.0,1.1,2.5],'Inspect the television','inspect','Portable television','A small portable set with a bent aerial. The channel knob is stuck between the late news and the baseball.');
  spot([-2.3,.7,1.9],'Inspect Officer Mori’s futon','inspect','Officer Mori’s futon','Folded away in the afternoon and laid out again at seven in the morning, after the night patrol. If he is asleep, let him be.');
 
  const door=new THREE.Object3D();door.position.set(...KOBAN_ROOM.exit);group.add(door);reg(door,'Exit to Main Street',exit,true);

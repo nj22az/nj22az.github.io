@@ -1,11 +1,8 @@
 import {ISLAND} from './island-plan.js';
 import {GARDEN} from './garden-layout.js';
 import {airportWorld} from './airport-ground.js';
-import {DINING_COLLIDERS} from './dining-layout.js';
-import {COASTLINE} from './peninsula.js';
-import {CITY_SECTIONS,FULL_TOWN,FULL_PATHS,peninsulaContains} from './full-town-state.js';
-import {RESIDENTIAL_BUILDINGS} from './residential-layout.js';
-import {PARK,activePark} from './park-layout.js';
+import {COASTLINE} from './island-coast.js';
+import {PARK} from './park-layout.js';
 import {activeRoutes,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
 import {FOREST_EDGE} from './forest-edge.js';
 import {MAIN_ROAD} from './main-road.js';
@@ -15,7 +12,6 @@ import {BEACH,BEACH_DRY_EDGE_X} from './beach-layout.js';
 const headlandPatches=[];
 for(let z=HEADLAND.minZ;z<HEADLAND.maxZ;z+=4)for(let x=HEADLAND.minX;x<HEADLAND.maxX;x+=4)
  if((headlandHeight(x+2,z+2)??-2)>BEACH.waterY+.025)headlandPatches.push([x,z]);
-import {shoppingDistrictActive,peninsulaActive} from './town-mode.js';
 import {mapPlan} from './okinawa/layout.js';
 
 export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0,z:0},yaw=0,visited=[],target=null}={}) {
@@ -27,11 +23,11 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
     entrances.set(site.homeEntry,site={...site,homeIds:[site.id]});return true;
   }).map(site=>site.homeEntry?entrances.get(site.homeEntry):site);
   const legend=w>=600?190:0,mapWidth=w-legend;
-  const b=FULL_TOWN.active?FULL_TOWN.bounds:MAP_BOUNDS,pad=10,scale=Math.min((mapWidth-pad*2)/(b.maxX-b.minX),(h-pad*2)/(b.maxZ-b.minZ));
+  const b=MAP_BOUNDS,pad=10,scale=Math.min((mapWidth-pad*2)/(b.maxX-b.minX),(h-pad*2)/(b.maxZ-b.minZ));
   const px=x=>pad+(x-b.minX)*scale,pz=z=>h-pad-(z-b.minZ)*scale;
-  ctx.fillStyle=FULL_TOWN.active?'#7ea3a8':'#eadfbe';ctx.fillRect(0,0,w,h);
-  if(!FULL_TOWN.active){ctx.fillStyle='#89b5b5';ctx.fillRect(0,0,mapWidth,h);ctx.fillStyle='#eadfbe';ctx.beginPath();COASTLINE.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();}
-  if(!FULL_TOWN.active&&peninsulaActive()){
+  ctx.fillStyle='#eadfbe';ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#89b5b5';ctx.fillRect(0,0,mapWidth,h);ctx.fillStyle='#eadfbe';ctx.beginPath();COASTLINE.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();
+  {
     ctx.fillStyle='#91a776';ctx.beginPath();ctx.ellipse(px(ISLAND.mountain.x),pz(ISLAND.mountain.z),12*scale,12*scale,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#415c40';ctx.font='bold 11px sans-serif';ctx.fillText('AOBA RADIO',px(31),pz(175));ctx.fillStyle='#6a9988';ctx.beginPath();ctx.ellipse(px(GARDEN.pond.x),pz(GARDEN.pond.z),GARDEN.pond.rx*scale,GARDEN.pond.rz*scale,0,0,Math.PI*2);ctx.fill();const corners=[[-65,-23],[65,-23],[65,20],[178,20],[178,132],[-54,132],[-54,23],[-65,23]].map(p=>airportWorld(...p));ctx.fillStyle='#b4bc97';ctx.beginPath();corners.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();ctx.fillStyle='#8d9e77';for(const [x,z] of headlandPatches)ctx.fillRect(px(x),pz(z+4),4*scale,4*scale);
     const tide=BEACH_DRY_EDGE_X;
     ctx.fillStyle='#dfcf9d';ctx.fillRect(px(BEACH.profile[0][0]),pz(BEACH.maxZ),(tide-BEACH.profile[0][0])*scale,(BEACH.maxZ-BEACH.minZ)*scale);
@@ -39,41 +35,29 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
     for(const access of BEACH.accesses){ctx.beginPath();ctx.moveTo(px(access.fromX),pz(access.z));ctx.lineTo(px(access.toX),pz(access.z));ctx.stroke();}
     if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 10px sans-serif';ctx.fillText('EAST BEACH',px(36),pz(-8));if(CAVE_ACTIVE)ctx.fillText('HEADLAND',px(-19),pz(65));}
   }
-  if(FULL_TOWN.active){
-    const g=FULL_TOWN.grid;
-    ctx.fillStyle='#c4b496';
-    for(let z=-30;z<18;z+=g.step)for(let x=-24;x<22;x+=g.step)if(peninsulaContains(x,z))ctx.fillRect(px(x),pz(z+g.step),Math.max(1,g.step*scale),Math.max(1,g.step*scale));
-    for(const section of CITY_SECTIONS){
-      ctx.fillStyle='#a8997a';
-      for(let iz=0;iz<g.nz;iz++)for(let ix=0;ix<g.nx;ix++)if(g.heights[iz*g.nx+ix]!==null)ctx.fillRect(px(section.x+g.minX+ix*g.step),pz(section.z+g.minZ+iz*g.step),Math.max(1,g.step*scale),Math.max(1,g.step*scale));
-    }
-    ctx.fillStyle='#6c6656';for(const c of FULL_TOWN.colliders)ctx.fillRect(px(c.x-c.w/2),pz(c.z+c.d/2),Math.max(1,c.w*scale),Math.max(1,c.d*scale));
-  }
-  const park=FULL_TOWN.active?activePark():PARK,pw=park.halfX||park.half,pd=park.halfZ||park.half;
+  
+  const park=PARK,pw=park.halfX||park.half,pd=park.halfZ||park.half;
   ctx.fillStyle='#91a776';ctx.fillRect(px(park.x-pw),pz(park.z+pd),pw*2*scale,pd*2*scale);if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 11px sans-serif';ctx.fillText('PARK',px(park.x-pw+0.4),pz(park.z));}
   ctx.lineJoin='round';ctx.lineCap='round';
-  for(const route of (FULL_TOWN.active?FULL_PATHS:activeRoutes())){
+  for(const route of (activeRoutes())){
     ctx.strokeStyle=route.surface==='wood'||/quay|port-walk|harbour-apron|coast-|pier/.test(route.id)?'#a28459':'#766c50';
-    ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();
+    if(route.segmentWidths){for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i];ctx.lineWidth=Math.max(2,(route.segmentWidths[i-1]??route.width)*scale);ctx.beginPath();ctx.moveTo(px(a[0]),pz(a[1]));ctx.lineTo(px(b[0]),pz(b[1]));ctx.stroke();}}
+    else{ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();}
   }
-  if(!FULL_TOWN.active){ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(BOARDWALK.x),pz(BOARDWALK.minZ));ctx.lineTo(px(BOARDWALK.x),pz(BOARDWALK.maxZ));ctx.stroke();
-  if(peninsulaActive()){
+  ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(BOARDWALK.x),pz(BOARDWALK.minZ));ctx.lineTo(px(BOARDWALK.x),pz(BOARDWALK.maxZ));ctx.stroke();
+  {
    const plan=mapPlan(),rect=([x0,x1,z0,z1])=>ctx.fillRect(px(x0),pz(z1),Math.max(1,(x1-x0)*scale),Math.max(1,(z1-z0)*scale));
    ctx.fillStyle='#d8cda9';plan.yards.forEach(rect);
    ctx.fillStyle='#b9ab88';plan.walks.forEach(rect);
    ctx.fillStyle='#a8997a';plan.buildings.forEach(rect);
    if(w>=300){ctx.fillStyle='#3b514c';ctx.font='bold 10px sans-serif';for(const [text,x,z] of plan.labels)ctx.fillText(text,px(x),pz(z));}
    ctx.fillStyle='#6d6a60';ctx.fillRect(px(TUNNEL.x-TUNNEL.width/2),pz(TUNNEL.z+TUNNEL.depth),Math.max(1,TUNNEL.width*scale),Math.max(2,TUNNEL.depth*scale));ctx.strokeStyle='#766c50';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(TUNNEL.x),pz(MAIN_ROAD.maxZ));ctx.lineTo(px(TUNNEL.x),pz(FOREST_EDGE.roadEndZ));ctx.stroke();if(w>=300){ctx.fillStyle='#304d40';ctx.font='bold 10px sans-serif';ctx.fillText('TUNNEL',px(TUNNEL.x-TUNNEL.width/2+.5),pz(TUNNEL.z+TUNNEL.depth*.6));}}
-  else if(shoppingDistrictActive()){ctx.fillStyle='#496347';ctx.fillRect(px(FOREST_EDGE.minX),pz(FOREST_EDGE.roadEndZ+.3),Math.max(1,(FOREST_EDGE.maxX-FOREST_EDGE.minX)*scale),Math.max(2,.8*scale));if(w>=300){ctx.fillStyle='#304d40';ctx.font='bold 10px sans-serif';ctx.fillText('FOREST · BUS ONLY',px(FOREST_EDGE.minX+.5),pz(FOREST_EDGE.roadEndZ+.65));}}
-  ctx.fillStyle='#a8997a';for(const house of [...(shoppingDistrictActive()?[]:RESIDENTIAL_BUILDINGS),...DINING_COLLIDERS.filter(c=>/^dining-street:[A-H]$/.test(c.id))])ctx.fillRect(px(house.x-house.w/2),pz(house.z+house.d/2),house.w*scale,house.d*scale);}
   for(const [index,site] of sites.entries()){ctx.fillStyle=(site.homeIds||[site.id]).some(id=>visited.includes(id))?'#a65739':'#4d6156';const x=site.x??site.side*11.8;ctx.fillRect(px(x)-2.3,pz(site.z)-3,4.6,6);
     if(legend){ctx.fillStyle='#fff5d8';ctx.beginPath();ctx.arc(px(x),pz(site.z),9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#433e32';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText(String(index+1),px(x),pz(site.z)+4);ctx.textAlign='start';continue;}
     if(site.id==='izakaya'){ctx.fillStyle='#a94435';ctx.beginPath();ctx.arc(px(x),pz(site.z),4,0,Math.PI*2);ctx.fill();if(w>=300){ctx.font='bold 12px sans-serif';ctx.fillText('MINATO IZAKAYA',px(x)+7,pz(site.z)+4);}}
     if(w>=300&&site.id==='market'){ctx.fillStyle='#a6333c';ctx.font='bold 12px sans-serif';ctx.fillText('SAKURA',px(x)+7,pz(site.z)+4);}
     if(w>=300&&site.id==='ramen'){ctx.fillStyle='#a34e3d';ctx.font='bold 12px sans-serif';ctx.fillText('SATO RAMEN',px(x)+7,pz(site.z)+4);}
-    if(w>=300&&site.id==='yuri-home'){ctx.fillStyle='#6b3a48';ctx.font='bold 12px sans-serif';ctx.fillText('THUAN & NAO',px(x)+7,pz(site.z)+4);}
     if(w>=300&&site.id==='warehouse'){ctx.fillStyle='#314d51';ctx.font='bold 12px sans-serif';ctx.fillText('WAREHOUSE',px(x)+7,pz(site.z)+4);}
-    if(w>=300&&site.id==='bus-station'){ctx.fillStyle='#3f5f63';ctx.font='bold 12px sans-serif';ctx.fillText('HARBOUR LINE BUS',px(x)+7,pz(site.z)+4);}
     if(w>=300&&site.id==='ferry-terminal'){ctx.fillStyle='#2b5a78';ctx.font='bold 12px sans-serif';ctx.fillText('FERRY',px(x)+7,pz(site.z)+4);}
   }
   if(target){const x=target.x??target.side*11.8;ctx.strokeStyle='#c45766';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px(x),pz(target.z),7,0,Math.PI*2);ctx.stroke();if(w>=300){ctx.fillStyle='#723b49';ctx.font='bold 12px sans-serif';ctx.fillText(target.title,px(x)+9,pz(target.z)-7);}}

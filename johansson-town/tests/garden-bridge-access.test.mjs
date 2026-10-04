@@ -2,18 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {configureTownMode} from '../src/world/town-mode.js';
-import {COAST_BOUNDS} from '../src/world/peninsula.js';
+import {COAST_BOUNDS} from '../src/world/island-coast.js';
 import {GARDEN_BRIDGE_AUTHOR_Z,GARDEN_BENCHES_AUTHOR,gardenPoint} from '../src/world/garden-layout.js';
 import {ONSEN_APPROACH,onsenPoint} from '../src/world/onsen-layout.js';
 import {MOUNTAIN_TRAIL,COAST_ROAD} from '../src/world/island-plan.js';
-import {onPeninsulaLand} from '../src/world/coastal-ground.js';
+import {onIslandLand} from '../src/world/coastal-ground.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
 import {groundHeight,planHeight,setWalkSurface} from '../src/world/layout.js';
 import {townBoundsBlocked,standingHitsRect,canStepBetween} from '../physics.js';
 
 test('garden bridge, bench and outer-island trails connect on real supported floors with ordinary collision',async()=>{
- installDOM();globalThis.self=globalThis;configureTownMode('peninsula');
+ installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js');
  const world=createTown({scene:new THREE.Scene(),sites:[],townMode:'peninsula',mobile:true,shadows:false,register(){},enter(){},onAction(){}});
  // Match the live game's terrain sampling origin and dimensions.
@@ -26,7 +25,7 @@ test('garden bridge, bench and outer-island trails connect on real supported flo
   for(const [tx,tz] of points.slice(1)){
    const sx=x,sz=z,n=Math.ceil(Math.hypot(tx-x,tz-z)/.04);
    for(let k=1;k<=n;k++)for(const [px,pz] of [[sx+(tx-sx)*k/n,z],[sx+(tx-sx)*k/n,sz+(tz-sz)*k/n]]){
-    if(land)for(let i=0;i<8;i++){const a=i*Math.PI/4;assert.ok(onPeninsulaLand(px+Math.cos(a)*.32,pz+Math.sin(a)*.32),label+' leaves actual land at '+[px,pz]);}
+    if(land)for(let i=0;i<8;i++){const a=i*Math.PI/4;assert.ok(onIslandLand(px+Math.cos(a)*.32,pz+Math.sin(a)*.32),label+' leaves actual land at '+[px,pz]);}
     const y=groundHeight(px,pz);assert.ok(canStepBetween(groundHeight(x,z),y),label+' height cliff at '+[px,pz]);
     assert.equal(townBoundsBlocked(px,pz,.32),false,label+' bounds at '+[px,pz]);
     assert.equal((bins.get(Math.floor(px/4)+','+Math.floor(pz/4))||[]).some(c=>standingHitsRect(px,pz,.32,y,c)),false,label+' solid at '+[px,pz]);
@@ -35,6 +34,14 @@ test('garden bridge, bench and outer-island trails connect on real supported flo
    }
   }
  }
+ const coast=world.group.getObjectByName('island-coastal-road');
+ const matrix=new THREE.Matrix4(),position=new THREE.Vector3();
+ world.group.traverse(mesh=>{if(mesh.name!=='Edge line (外側線)'||mesh.parent.name!=='Road standards')return;for(let i=0;i<mesh.count;i++){
+  mesh.getMatrixAt(i,matrix);position.setFromMatrixPosition(matrix).applyMatrix4(mesh.matrixWorld);
+  ray.set(position.clone().add(new THREE.Vector3(0,.05,0)),new THREE.Vector3(0,-1,0));
+  const hit=ray.intersectObject(coast,false)[0];assert.ok(hit,'edge paint missing asphalt beneath it at '+position.toArray());
+  assert.ok(position.y-hit.point.y>.004&&position.y-hit.point.y<.012,'edge paint must clear the actual asphalt cap at '+position.toArray());
+ }});
  try{
   const z=gardenPoint(-34,GARDEN_BRIDGE_AUTHOR_Z)[1];
   walk([[-23.4,40.6],[-20.4,44.8],[-18.85,44.8],[-18.85,z],[-20.4,z],[-33.6,z],[-33.6,49]],'southern approach and east-to-west crossing');
@@ -47,7 +54,7 @@ test('garden bridge, bench and outer-island trails connect on real supported flo
   const radio=[[40,158],[39.3,159.2],[39.3,160],[39.3,166.16],[39.1,166.8],[37.5,166.8],[36.2,164.8],[34.8,165.8]];
   walk(radio,'radio outside stair and public lookout');
   walk([...radio].reverse(),'radio lookout return down the real stair');
-  walk([[53,66],...COAST_ROAD.slice(0,4)],'Kitahama street to coastal road across the lower-island and upland ground join',{land:true});
+  walk([[53,66],...COAST_ROAD],'Kitahama street through the full coastal road and back to Nishi',{land:true});
   walk([...COAST_ROAD.slice(0,4)].reverse().concat([[53,66]]),'coastal road return to the Kitahama street',{land:true});
- }finally{setWalkSurface(null);configureTownMode('legacy');}
+ }finally{setWalkSurface(null);}
 });

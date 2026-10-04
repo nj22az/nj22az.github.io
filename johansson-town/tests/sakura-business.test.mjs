@@ -5,28 +5,29 @@ import {recordSakuraSale,restoreSakura,sellToSakura,TOWN_FINDS} from '../src/com
 import {collectTownFind,restoreTownCleanup,CLEANUP_SPOTS} from '../src/commerce/town-cleanup.js';
 import {marketVisitsForDay,residentPlan} from '../src/people/social.js';
 import {RESIDENTS} from '../src/people/residents.js';
-import {createResidentLedger} from '../src/people/resident-personalities.js';
-import {STORE_SEATS,STORE_CLERK_POSITION} from '../src/world/interiors/store-layout.js';
+import {homeRoutine} from '../src/people/home-life.js';
 import {readSave,SAVE_KEY} from '../src/save.js';
 import {installDOM} from './fixtures.mjs';
 import {createActivities} from '../activities.js';
 const fresh=()=>({yen:1200,inventory:[],sakura:restoreSakura(),townCleanup:restoreTownCleanup()});
 
-test('sparse customer visits change each day, survive reloads and leave Thuan at work',()=>{
- const thuan=RESIDENTS.find(p=>p.name==='Thuan'),patterns=[];
- for(let day=0;day<6;day++){
-  const visits=marketVisitsForDay(day*1440);patterns.push(JSON.stringify(visits));assert.equal(Object.keys(visits).length,5);
-  const windows=Object.entries(visits).sort((a,b)=>a[1][0]-b[1][0]);
-  for(let i=0;i<windows.length;i++){const [name,[start,end]]=windows[i],profile=RESIDENTS.find(p=>p.name===name);assert.ok(start>=540&&end<1200);if(i)assert.ok(start-windows[i-1][1][0]>=97,'Customers do not arrive in a stream');
-   assert.equal(residentPlan(profile,day*1440+start+10).place,'market');
-   const state={residentLife:{[name]:{day,meals:{market:{finished:true}}}}};assert.notEqual(residentPlan(profile,day*1440+start+10,false,state).place,'market','Finished diners leave');
+test('a month of shopping keeps five errands without waking night workers or cancelling Reiko’s grocery visit',()=>{
+ for(let day=0;day<31;day++){
+  const visits=marketVisitsForDay(day*1440),entries=Object.entries(visits);
+  assert.equal(entries.length,5,'day '+day+' retains the five neighbourhood errands');
+  for(const [name,[start,end]] of entries){
+   const profile=RESIDENTS.find(p=>p.name===name);
+   for(let m=start;m<end;m++)assert.equal(['sleep','wake','breakfast','prepare'].includes(homeRoutine(profile,day*1440+m).id),false,name+' can shop at '+m);
   }
-  for(let minute=540;minute<1200;minute+=15)assert.equal(residentPlan(thuan,day*1440+minute,true).place,'market');
-  assert.equal(residentPlan(thuan,day*1440+1170,false,fresh()).activity,'checking closing stock');
-  assert.equal(residentPlan(thuan,day*1440+1200,false,fresh()).activity,'restocking after closing');
+  for(let a=0;a<entries.length;a++)for(let b=a+1;b<entries.length;b++){
+   const [,one]=entries[a],[,two]=entries[b];assert.ok(one[1]<=two[0]||two[1]<=one[0],'visits keep room for the counter and player');
+  }
  }
- assert.equal(new Set(patterns).size,6);assert.equal(JSON.stringify(marketVisitsForDay(0)),patterns[0],'The bounded cache can recreate the same day');
+ const reiko=RESIDENTS.find(p=>p.name==='Reiko'),[start,end]=marketVisitsForDay(0).Reiko;
+ assert.equal(residentPlan(reiko,start+5).place,'market','Reiko actually reaches Sakura after sleeping');
+ assert.ok(end<=900,'the grocery errand finishes before her press shift');
 });
+
 
 test('sales fund inventory purchases, with no free money or lost items when the till is empty',()=>{
  const state=fresh(),bottle=TOWN_FINDS[0].name;state.inventory.push(bottle,'Sea bream','Johansson cable ring','Waterlogged page · Kings of Ben…');

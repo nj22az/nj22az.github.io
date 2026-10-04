@@ -3,13 +3,12 @@ import {createSectionInstances} from './section-instances.js';
 import {createWindowBatch} from './shop-street-batches.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {FOREST_EDGE} from '../world/forest-edge.js';
-import {shoppingDistrictActive} from '../world/town-mode.js';
 
 export function districtAt(x,z){
-  if(shoppingDistrictActive()&&z>=FOREST_EDGE.wallZ)return 'Forest Edge';
-  if(shoppingDistrictActive()&&z>=BUS_STATION.minZ)return 'Bus Station';
+  if((z>=FOREST_EDGE.wallZ))return 'Forest Edge';
+  if((z>=BUS_STATION.minZ))return 'Bus Station';
   if(z < -36)return 'Port';
-  if(!shoppingDistrictActive()&&(x < -18 || (x > 20 && z > 20)))return 'Residential';
+  
   if(x > 7 && z < -16)return 'Park';
   return 'Shopping';
 }

@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import * as T from '../vendor/three.module.js';
 import {sakuraProductTemplate} from '../src/world/interiors/sakura-food-products.js';
 import {shopProductTemplate} from '../src/commerce/shop-product.js';
-import {SHOP_STOCK} from '../src/commerce/shop-stock.js';
+import {SHOP_STOCK,restoreShopStock} from '../src/commerce/shop-stock.js';
 import {HOT_SNACKS} from '../src/commerce/konbini.js';
-import {packagingSlot,ATLAS_COLS,ATLAS_ROWS} from '../src/world/interiors/store-advertising.js';
-import {SAKURA_LAYOUT,SAKURA_SHELVES,SAKURA_TILL_CABINET,COPY_MACHINE} from '../src/world/interiors/sakura-layout.js';
-import {buildSakuraShell} from '../src/world/interiors/sakura-shell.js';
-import {createShopRefrigerator} from '../src/world/interiors/shop-refrigerator.js';
+import {packagingSlot,ATLAS_COLS,ATLAS_ROWS,ATLAS_SPAN} from '../src/world/interiors/store-advertising.js';
+import {SAKURA_LAYOUT,SAKURA_TILL_CABINET,COPY_MACHINE} from '../src/world/interiors/sakura-layout.js';
+import {buildSakuraInterior} from '../src/world/interiors/sakura-interior.js';
 import {installDOM} from './fixtures.mjs';
 import {buildSakuraCounterDetail,buildSakuraHotFood,drawSakuraDetailPrints,SAKURA_DETAIL_PRINTS} from '../src/world/interiors/sakura-counter-detail.js';
 import {HOT_CASE} from '../src/world/interiors/sakura-cheer.js';
@@ -86,7 +86,7 @@ test('printed food labels use the original brand cell and sit off the underlying
  for(const id of ['rice','bento','sandwich','bun','pudding','yogurt','noodles']){
   const {body,art}=sakuraProductTemplate(id),uv=art.attributes.uv,slot=packagingSlot(id),col=slot%ATLAS_COLS,row=Math.floor(slot/ATLAS_COLS);
   for(let i=0;i<uv.count;i++){
-   assert.ok(uv.getX(i)>col/ATLAS_COLS&&uv.getX(i)<(col+1)/ATLAS_COLS,id+' samples a different brand column');
+   assert.ok(uv.getX(i)>col/ATLAS_SPAN&&uv.getX(i)<(col+1)/ATLAS_SPAN,id+' samples a different brand column');
    assert.ok(uv.getY(i)>1-(row+1)/ATLAS_ROWS&&uv.getY(i)<1-row/ATLAS_ROWS,id+' samples a different brand row');
   }
   for(let i=0;i<art.attributes.position.count;i+=3){
@@ -109,27 +109,70 @@ test('printed food labels use the original brand cell and sit off the underlying
  assert.ok(width/height>1.6&&width/height<3.5,'the sleeve compresses the printed brand across the short axis');
 });
 
-test('the full stock still stands on the real shelving and every unchanged unit approach admits a 35 cm shopper',()=>{
- installDOM();const shell=buildSakuraShell(),fixtures=[];createShopRefrigerator(shell,()=>{});shell.updateMatrixWorld(true);shell.traverse(o=>{if(o.isMesh&&!o.material.transparent)fixtures.push(o);});
- const blocked=(x,z,r=.35)=>suppliedRoomBoundsBlocked(SAKURA_LAYOUT,x,z,r)||SAKURA_LAYOUT.colliders.some(c=>circleHitsRect(x,z,r,c));
- const nav=createNavigation(blocked,{step:.2,radius:.35,heightAt:()=>0,bounds:SAKURA_LAYOUT.bounds});
- const from={x:SAKURA_LAYOUT.entrance[0],z:SAKURA_LAYOUT.entrance[2]},targets=new Map(),down=new T.Vector3(0,-1,0);
- for(const spec of SHOP_STOCK){
-  const shelf=SAKURA_SHELVES[spec.id],old=shopProductTemplate(spec.id),next=sakuraProductTemplate(spec.id),size=next.bounds.getSize(new T.Vector3()),perLevel=spec.capacity/shelf.levels.length,columns=shelf.columns||6,rows=perLevel/columns;
-  for(let slot=0;slot<spec.capacity;slot++){
-   const local=slot%perLevel,along=(local%columns-(columns-1)/2)*Math.max(shelf.spacing,size.x+.012),depth=(Math.floor(local/columns)-(rows-1)/2)*Math.max(shelf.depth,size.z+.01);
-   const x=shelf.x+Math.cos(shelf.yaw)*along+Math.sin(shelf.yaw)*depth,z=shelf.z-Math.sin(shelf.yaw)*along+Math.cos(shelf.yaw)*depth,y=shelf.levels[Math.floor(slot/perLevel)]+.002-next.bounds.min.y;
-   const transform=new T.Matrix4().makeRotationY(shelf.yaw).setPosition(x,y,z),bounds=next.bounds.clone().applyMatrix4(transform),originalBounds=old.bounds.clone().applyMatrix4(transform),centre=bounds.getCenter(new T.Vector3());
-   assert.deepEqual(bounds,originalBounds,spec.id+' changes a faced shelf position');
-   ray.set(new T.Vector3(centre.x,bounds.min.y+.008,centre.z),down);ray.near=0;ray.far=.026;
-   assert.ok(ray.intersectObjects(fixtures,false).length,spec.id+':'+slot+' is no longer supported by a real board');
-   const approach={x:shelf.stand[0]+Math.cos(shelf.yaw)*along,z:shelf.stand[2]-Math.sin(shelf.yaw)*along};targets.set(approach.x+','+approach.z,{id:spec.id,approach});
+test('actual full-width food and flavour displays stand on real boards, share stock hiding, and retain clear customer approaches',async()=>{
+ installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});
+ const oldFetch=globalThis.fetch;
+ globalThis.fetch=async input=>String(input).startsWith('blob:')?oldFetch(input):new Response(await readFile(new URL('../assets/'+new URL(input).pathname.split('/assets/')[1],import.meta.url)));
+ let display;
+ try{
+  const room=new T.Group();display=buildSakuraInterior({room,reg(){},action(){},exit(){}});assert.ok(await display.ready());
+  const stock=restoreShopStock();display.updateStock(stock);room.updateMatrixWorld(true);
+  for(const name of ['Sakura shelf edges','Sakura corners','Sakura surfaces'])assert.ok(room.getObjectByName(name),name+' was lost during integration');
+  assert.ok(display.officeDoor?.pivot,'the moving office door was lost during integration');
+  const fixtures=[];
+  for(const root of [room.getObjectByName('Sakura shōten interior'),display.refrigerator.group])root.traverse(o=>{if(o.isMesh&&!o.material.transparent)fixtures.push(o);});
+  const blocked=(x,z,r=.35)=>suppliedRoomBoundsBlocked(SAKURA_LAYOUT,x,z,r)||SAKURA_LAYOUT.colliders.some(c=>circleHitsRect(x,z,r,c));
+  const nav=createNavigation(blocked,{step:.2,radius:.35,heightAt:()=>0,bounds:SAKURA_LAYOUT.bounds});
+  const from={x:SAKURA_LAYOUT.entrance[0],z:SAKURA_LAYOUT.entrance[2]},targets=new Map(),down=new T.Vector3(0,-1,0),matrix=new T.Matrix4(),paired=new T.Matrix4(),drawn=[],batches=[],glassMaterials=new Set();let extras=0;
+  for(const spec of SHOP_STOCK){
+   const goods=room.getObjectByName('Sakura '+spec.id+' goods'),packaging=room.getObjectByName('Sakura '+spec.id+' packaging'),wrapper=room.getObjectByName('Sakura '+spec.id+' clear wrapper'),template=sakuraProductTemplate(spec.id);
+   assert.ok(goods&&packaging,spec.id+' is missing its actual display');
+   const pair=[goods,packaging,...(wrapper?[wrapper]:[])],shift=packaging.geometry.attributes.atlasShift;
+   assert.equal(packaging.material.name,'Sakura shelf packaging (flavours)');
+   assert.ok(shift&&shift.isInstancedBufferAttribute&&shift.count===goods.count,spec.id+' lost its flavour attribute');
+   assert.ok(goods.instanceColor&&goods.instanceColor.count===goods.count,spec.id+' lost its flavour body tint');
+   assert.equal(!!wrapper,!!template.glass,spec.id+' lost its clear food wrapping');
+   if(wrapper){glassMaterials.add(wrapper.material);assert.equal(wrapper.material.depthWrite,false);assert.equal(wrapper.material.transparent,true);}
+   assert.ok(goods.count>=spec.capacity);extras+=goods.count-spec.capacity;
+   const matrices=[];
+   for(let slot=0;slot<goods.count;slot++){
+    goods.getMatrixAt(slot,matrix);matrices.push(matrix.clone());assert.ok(Math.abs(matrix.determinant())>.9,spec.id+':'+slot+' is absent on a full shelf');
+    for(const m of pair){assert.equal(m.count,goods.count);m.getMatrixAt(slot,paired);assert.deepEqual(paired.elements,matrix.elements,spec.id+':'+slot+' wrapper/art drifted from the food');}
+    const bounds=template.bounds.clone().applyMatrix4(matrix),centre=bounds.getCenter(new T.Vector3());drawn.push({id:spec.id+':'+slot,bounds});
+    for(const [x,z] of [[centre.x,centre.z],[bounds.min.x+.003,bounds.min.z+.003],[bounds.max.x-.003,bounds.max.z-.003],[bounds.min.x+.003,bounds.max.z-.003],[bounds.max.x-.003,bounds.min.z+.003]]){
+     ray.set(new T.Vector3(x,bounds.min.y+.008,z),down);ray.near=0;ray.far=.026;
+     assert.ok(ray.intersectObjects(fixtures,false).length,spec.id+':'+slot+' floats or overhangs a real board at '+[x,z]);
+    }
+    const u=packaging.geometry.attributes.uv,du=shift.getX(slot),dv=shift.getY(slot);
+    for(let i=0;i<u.count;i++)assert.ok(u.getX(i)+du>0&&u.getX(i)+du<1&&u.getY(i)+dv>0&&u.getY(i)+dv<1,spec.id+':'+slot+' flavour print leaves the atlas');
+    if(slot<spec.capacity){
+     const key=spec.id+':'+slot,position=display.unitPositions.get(key),approach=display.unitApproaches.get(key),placed=new T.Vector3().setFromMatrixPosition(matrix);
+     assert.ok(position&&approach,key+' loses its actual stock reach target');
+     assert.ok(Math.hypot(position[0]-placed.x,position[2]-placed.z)<1e-6,key+' reach target differs from its drawn slot');
+     targets.set(approach[0]+','+approach[2],{id:key,approach:{x:approach[0],z:approach[2]}});
+    }
+   }
+   batches.push({spec,pair,matrices});
   }
- }
- for(const {id,approach} of targets.values()){
-  assert.ok(!blocked(approach.x,approach.z,.35),id+' moves its customer into a fixture');
-  const path=nav.path(from,approach),end=path.at(-1);assert.ok(end&&Math.hypot(end[0]-approach.x,end[1]-approach.z)<.25,id+' loses its actual shelf approach');
- }
+  assert.ok(extras>0,'the upstream full-width decorative flavour facings were lost');assert.equal(glassMaterials.size,1,'food wrappers should share one material');
+  assert.equal(display.unitPositions.size,SHOP_STOCK.reduce((n,s)=>n+s.capacity,0),'decorative flavours must not become sellable stock');
+  const overlaps=[];
+  for(let i=0;i<drawn.length;i++)for(let j=i+1;j<drawn.length;j++){
+   const a=drawn[i].bounds,b=drawn[j].bounds;
+   if(['x','y','z'].every(axis=>Math.min(a.max[axis],b.max[axis])-Math.max(a.min[axis],b.min[axis])>.003))overlaps.push(drawn[i].id+' / '+drawn[j].id);
+  }
+  assert.deepEqual(overlaps,[],'full-width decorative goods overlap sellable packs');
+  for(const {id,approach} of targets.values()){
+   assert.ok(!blocked(approach.x,approach.z,.35),id+' moves its customer into a fixture');
+   const path=nav.path(from,approach),end=path.at(-1);assert.ok(end&&Math.hypot(end[0]-approach.x,end[1]-approach.z)<.25,id+' loses its actual shelf approach');
+  }
+  for(const s of Object.values(stock))s.shelf=0;display.updateStock(stock);
+  for(const {spec,pair,matrices} of batches)for(const m of pair)for(let slot=0;slot<m.count;slot++){
+   m.getMatrixAt(slot,matrix);
+   if(slot<spec.capacity)assert.ok(Math.abs(matrix.determinant())<1e-9,spec.id+':'+slot+' leaves a sold-out food/label/wrapper visible');
+   else assert.deepEqual(matrix.elements,matrices[slot].elements,spec.id+':'+slot+' decorative flavour disappeared with stock');
+  }
+ }finally{display?.dispose();globalThis.fetch=oldFetch;}
 });
 
 test('checkout equipment remains over existing furniture and both LCDs face the shopper without housing occlusion',()=>{

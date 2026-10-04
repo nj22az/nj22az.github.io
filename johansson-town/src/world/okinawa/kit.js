@@ -40,11 +40,8 @@ export const GRID=Object.freeze({
  window:Object.freeze({small:.91,wide:1.82,sill:.9,head:2.1}),
  eave:Object.freeze({hip:.6,canopy:.9,hood:.3}),
 });
-/** Snaps a length to whole grid units (never below one). */
-export const snapToGrid=(metres,unit=GRID.unit)=>Math.max(1,Math.round(metres/unit))*unit;
-
 const colour=new THREE.Color();
-const tmp=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler(),s=new THREE.Vector3(),p=new THREE.Vector3();
+const q=new THREE.Quaternion(),e=new THREE.Euler(),s=new THREE.Vector3(),p=new THREE.Vector3();
 
 /** A transform from position, rotation (Euler XYZ, radians) and scale. */
 export function trs(x=0,y=0,z=0,rx=0,ry=0,rz=0,sx=1,sy=1,sz=1){

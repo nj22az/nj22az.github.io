@@ -1,9 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {createPeninsulaBusinesses} from '../src/world/businesses.js';
+import {createIslandBusinesses} from '../src/world/businesses.js';
 import {createTown} from '../src/world/town.js';
-import {configureTownMode} from '../src/world/town-mode.js';
 import {assignWorkplaces} from '../src/people/workplaces.js';
 import {buildCompactShop} from '../src/world/interiors/compact-shops.js';
 import {createBookshopCustomers} from '../src/people/bookshop-customers.js';
@@ -21,8 +20,8 @@ test('bookshop visits leave meals and travelling residents in their existing pla
 
 test('a real resident browses, speaks to Aya, buys once, and walks back out without duplicated actors',()=>{
  try{
-  installDOM();const sites=createPeninsulaBusinesses(),scene=new THREE.Scene(),world=createTown({scene,sites,townMode:'peninsula',mobile:true,shadows:false,register(o,label,fn,inside){o.userData.hit={label,fn,inside};},enter(){},onAction(){}});assignWorkplaces(world,sites);
-  const customer=world.people.find(p=>p.profile.name==='Kenji'),index=world.people.indexOf(customer),day=(6-index%6)%6,minutes=day*1440+912,state={townMode:'peninsula'},ledger=createResidentLedger(()=>state);ledger.account('Kenji',minutes).shopping={finished:true};
+  installDOM();const sites=createIslandBusinesses(),scene=new THREE.Scene(),world=createTown({scene,sites,mobile:true,shadows:false,register(o,label,fn,inside){o.userData.hit={label,fn,inside};},enter(){},onAction(){}});assignWorkplaces(world,sites);
+  const customer=world.people.find(p=>p.profile.name==='Kenji'),index=world.people.indexOf(customer),day=(6-index%6)%6,minutes=day*1440+912,state={},ledger=createResidentLedger(()=>state);ledger.account('Kenji',minutes).shopping={finished:true};
   assert.equal(residentPlan(customer.profile,minutes,false,state).place,'bookshop');
   const room=new THREE.Group(),colliders=[];scene.add(room);const layout=buildCompactShop({site:sites.find(s=>s.id==='frontrow'),room,reg(){},collider:(x,z,w,d)=>colliders.push({x,z,w,d}),action(){},exit(){}}),blocked=(x,z,r=.3)=>colliders.some(c=>circleHitsRect(x,z,r,c));
   const aya=world.people.find(p=>p.profile.name==='Aya');scene.add(aya.g);aya.g.position.set(...layout.staff.Aya);aya.g.visible=true;aya.g.userData.inWorkplace='frontrow';aya.g.userData.hit.inside=true;
@@ -33,11 +32,11 @@ test('a real resident browses, speaks to Aya, buys once, and walks back out with
   assert.ok(phases.has('browse'));assert.ok(phases.has('counter'));assert.ok(phases.has('leave'));assert.ok(speech.size>=3,'customer and bookseller exchange lines');assert.equal(world.people.length,count);assert.equal(state.bookshop.sales.length,1);assert.ok(saved>0);assert.equal(state.documentArchive.records.filter(r=>r.type==='Receipt').length,1);assert.equal(ledger.account('Kenji',minutes).purchases.filter(p=>p.id==='bookshop-paperback').length,1);
   for(let i=1;i<positions.length;i++)assert.ok(positions[i].distanceTo(positions[i-1])<=.11,'walks between stops');
   service.restore();assert.equal(customer.g.parent,originalParent);assert.equal(customer.g.userData.inBookshop,undefined);assert.equal(aya.g.userData.bookshopServing,undefined);
- }finally{configureTownMode('legacy');}
+ }finally{}
 });
 
 function crowdedBookshop({staffPosition=null,playerPosition=null}={}){
- installDOM();const sites=createPeninsulaBusinesses(),scene=new THREE.Scene(),site=sites.find(s=>s.id==='frontrow');
+ installDOM();const sites=createIslandBusinesses(),scene=new THREE.Scene(),site=sites.find(s=>s.id==='frontrow');
  const world=createTown({scene,sites,townMode:'peninsula',mobile:true,shadows:false,register(o,label,fn,inside){o.userData.hit={label,fn,inside};},enter(){},onAction(){}});assignWorkplaces(world,sites);
  const customer=world.people.find(p=>p.profile.name==='Kenji'),index=world.people.indexOf(customer),day=(6-index%6)%6,minutes=day*1440+912,state={townMode:'peninsula'},ledger=createResidentLedger(()=>state);ledger.account('Kenji',minutes).shopping={finished:true};
  const room=new THREE.Group(),colliders=[];scene.add(room);
@@ -80,7 +79,7 @@ test('a browsing customer walks around the real editor instead of staying pinned
   finishCrowdedVisit(f,{afterStep(elapsed,snapshot,pos){if(snapshot.phase==='browse'&&pos.x>-.9)passedEditor=true;}});
   assert.ok(passedEditor,'Customer gets beyond the obstructed aisle to the second bookshelf');
   assert.deepEqual(f.staff[1].g.position.toArray(),[-1.8,0,-1.7],'The actual editor stays in place while the customer detours');
- }finally{f?.service.restore();configureTownMode('legacy');}
+ }finally{f?.service.restore();}
 });
 
 test('a customer retries a bookshelf when Johansson clears its approach',()=>{
@@ -88,7 +87,7 @@ test('a customer retries a bookshelf when Johansson clears its approach',()=>{
   f=crowdedBookshop({staffPosition:[-1.8,0,-1.7],playerPosition:[1.8,0,-2.1]});let waitedForShelf=false,cleared=false;
   const elapsed=finishCrowdedVisit(f,{beforeStep(time){if(time>=45&&!cleared){assert.equal(f.state.bookshop?.sales?.length||0,0,'An occupied shelf delays browsing without creating a sale');f.clearPlayer();cleared=true;}},afterStep(time,snapshot){if(time>30&&time<45){assert.equal(snapshot.phase,'browse','Customer waits for access to the occupied bookshelf');waitedForShelf=true;}}});
   assert.ok(waitedForShelf,'Customer waits for the occupied bookshelf before its temporary obstruction clears');assert.ok(cleared&&elapsed>45,'The existing route recovers after Johansson moves away');
- }finally{f?.service.restore();configureTownMode('legacy');}
+ }finally{f?.service.restore();}
 });
 
 test('a settled bookshop visitor enters clear of Johansson before walking to his occupied shelf',()=>{
@@ -101,5 +100,5 @@ test('a settled bookshop visitor enters clear of Johansson before walking to his
   let cleared=false;
   const elapsed=finishCrowdedVisit(f,{beforeStep(time){if(time>=5&&!cleared){f.clearPlayer();cleared=true;}}});
   assert.ok(cleared&&elapsed>5,'The real visitor walks through his complete visit after Johansson clears the shelf');
- }finally{f?.service.restore();configureTownMode('legacy');}
+ }finally{f?.service.restore();}
 });
