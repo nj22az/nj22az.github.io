@@ -4,7 +4,7 @@ import {createPlanKit} from './house-plan.js';
 export const OFFICE_STAFF={'Harbour master':[-1.85,0,-1.20]};
 export const OFFICE_DESK_SEAT={position:[-2.52,0,-2.02],stand:[-1.85,0,-1.20],eyeY:1.18,yaw:0,pitch:0};
 /**
- * On the peninsula the harbour master lives here: a tatami mat and futon behind a
+ * On the island the harbour master lives here: a tatami mat and futon behind a
  * folding screen on the east side, a tea stool, his coat on a stand. home-residents.js
  * walks him to bed from these points.
  */

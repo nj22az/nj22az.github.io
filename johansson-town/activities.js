@@ -22,7 +22,7 @@ import {restoreResidentLife} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,RADIO_821} from './src/progression/soft-quests.js';
 import {PROFILES} from './src/people/profiles.js';
-import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
+import {RESIDENTS} from './src/people/residents.js';
 import {gossipAt,izakayaOpen,onsenInvitationDay} from './src/people/social.js';
 import {DRINKS,DISHES,menuItem} from './src/people/izakaya-beer.js';
 import {VENDING_PRODUCTS,DRINKABLE,EMPTY_CAN,CAN_REFUND} from './src/commerce/vending-catalogue.js';
@@ -54,7 +54,7 @@ import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warm
 
 export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
   const $=s=>document.querySelector(s);
-  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'shopping-district'};
+  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
   let pendingAbsence=0,ledgerView=null,magazineView=null;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
@@ -76,7 +76,6 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   state.sakura=restoreSakura(state.sakura);
   state.townCleanup=restoreTownCleanup(state.townCleanup);
   state.workshop=restoreWorkshop(state.workshop,state.inventory);
-  state.townMode='shopping-district';
   seedArchive(state,getMinutes());
 
   const commuterDescription=name=>name==='Harbour master'?'The harbour office is staffed around the clock. I stay on the quay.':name==='Bus driver'?'I work the Harbour Line and stay at the northern terminal.':'I commute into the shopping district on the Harbour Line and leave by bus after my shift.';
@@ -293,7 +292,6 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function thuanConversation(topic=null){
     if(!modalOpen)window.__JOHANSSON_CHARACTER_CONTROL__?.gesture('Thuan');
     const ramenVisit=getSocialContext().inside==='ramen',offDuty=getSocialContext().inside==='izakaya',onsenBath=getSocialContext().inside==='onsen';
-    const commuterMode=state.townMode==='shopping-district';
     if(ramenVisit)note('Shared a ramen-shop break with Thuan after closing.');
     if(offDuty)note('Caught up with Thuan after closing at Minato Izakaya.');
     const met=state.notes.includes('Met Thuan, the heart of Sakura Konbini.');
@@ -301,8 +299,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const replies={
       snack:"Recommended? Leave it to me!\nMy recommendation? Tea and a biscuit. The tea makes it a sensible decision. The biscuit makes it a good one.",
       ribbon:"Hair? Thank you!\nMy hair? Thank you! I let it grow long and tie it back when I restock. On a hot day I braid it — my little sister says my plaits are crooked.",
-      town:commuterMode?"I like the harbour at dusk.\nSakura closes at eight. I walk to the Harbour Line terminal and take the last bus after my shift. Nao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.":"I like the harbour at dusk.\nSakura closes at eight. Some evenings I stop by Minato after twenty past, until half past nine; other evenings I walk home by the harbour. Nao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.",
-      home:state.townMode==='shopping-district'?commuterDescription('Thuan'):residentHomeDescription('Thuan'),
+      town:"I like the harbour at dusk.\nSakura closes at eight. I walk to the Harbour Line terminal and take the last bus after my shift. Nao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.",
+      home:commuterDescription('Thuan'),
       compliment:"You’re making me blush.\nOh, now you have made me shy. I was trying to look very professional behind this counter. Thank you. That was lovely.",
       challenge:"Let's compete!\nA challenge! Find the strangest postcard on the rack. I will defend the seagull one. He looks as though he owns the harbour.",
       radio:"It's a secret.\nIf the radio plays my favourite song, this becomes a very small concert hall. The assistant manager is a plant, so the reviews are generous.",
@@ -331,7 +329,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       ['What is your favourite snack?','snack'],
       ['I like your hair','ribbon'],
       ['Where do you go after work?','town'],
-      [commuterMode?'How do you travel?':'Where do you live?','home'],
+      ['How do you travel?','home'],
       ['You make this place lovely','compliment'],
       ['Give me a little challenge','challenge'],
       ['Do you sing along to the radio?','radio'],
@@ -452,17 +450,16 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
 
     const all=DIALOGUE[name];if(!all){legacyResident(name);return;}
     const history=histories.get(name)||[];
-    const commuterMode=state.townMode==='shopping-district';
     // The home topic keeps its place in the rotation while commuting. Dropping it
     // left the thinner residents three usable lines against a three-deep history,
     // so their opening line came round again every fourth time they were asked.
     const available=all.filter(([id,line,requires])=>(!requires||state.inspectedIds.includes(requires))&&!history.includes(id));
     // Newly discovered callbacks take precedence, then cycle through authored topics.
     const row=available.find(r=>r[2])||available[0]||all[0];history.push(row[0]);histories.set(name,history.slice(-3));
-    let text=commuterMode&&row[0]==='home'?commuterDescription(name):row[1];
+    let text=row[0]==='home'?commuterDescription(name):row[1];
     const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);
     const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
-    if(residentHomeDescription(name)||commuterMode)buttons.push([commuterMode?'How do you travel?':'Where do you live?',()=>show(name+' · '+(commuterMode?'Harbour Line':'Home'),commuterMode?commuterDescription(name):residentHomeDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
+    buttons.push(['How do you travel?',()=>show(name+' · Harbour Line',commuterDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
     if(name==='Nao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);
     // Mingling at Minato: stand somebody a drink. They remember it.
     if(getSocialContext().inside==='izakaya'&&name!=='Nao'&&name!=='Barfly'&&izakayaOpen(getMinutes()))buttons.push(['Buy '+name+' a drink · ¥'+DRINKS.draft.price,()=>treat(name)]);

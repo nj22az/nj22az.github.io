@@ -18,12 +18,12 @@ test('the Front-Row staff live in the yard behind the shop and sleep at home, no
    const home=Object.values(YARD_HOMES).find(h=>h.door[0]===p.home[0]&&h.door[1]===p.home[1]);
    assert.ok(home,name+' lives at a yard house door: '+p.home);assert.match(p.homeAddress,/Front-Row Yard/);
    assert.equal(commuterPhase(p,3*60),'town','never away on the Harbour Line');
-   const night=residentPlan(p,3*60,false,{townMode:'peninsula'});
+   const night=residentPlan(p,3*60,false,{});
    assert.equal(night.place,'home',name+' is at home at three in the morning');
    assert.deepEqual(night.target,p.home);
   }
   const aya=STREET_CAST.find(r=>r.name==='Aya');
-  assert.equal(residentPlan(aya,12*60,false,{townMode:'peninsula'}).place,'work','Aya works her shift');
+  assert.equal(residentPlan(aya,12*60,false,{}).place,'work','Aya works her shift');
  }finally{}
 });
 

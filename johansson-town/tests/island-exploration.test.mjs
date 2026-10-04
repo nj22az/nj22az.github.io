@@ -29,7 +29,7 @@ test('both beach openings allow approach, descent, a shoreline walk and return w
  for(const x of [34.1,39.3,44.2]){ray.set(new THREE.Vector3(x,5,10),new THREE.Vector3(0,-1,0));assert.ok(Math.abs(ray.intersectObject(shore)[0].point.y-groundHeight(x,10))<1e-5,'Feet follow the sand mesh');}
 });
 
-test('dry ground around the peninsula is admitted and the sea remains blocked',()=>{
+test('dry ground around the island is admitted and the sea remains blocked',()=>{
  
  for(const p of [[-20,32],[-31,32],[43,33],[44,55],[8,54]])assert.equal(townBoundsBlocked(...p,.32),false,'Unbuilt dry land '+p);
  for(const p of [[-41,0],[48,10],[45.9,10],[48,40],[12,-51],[0,315]])assert.equal(townBoundsBlocked(...p,.32),true,'Sea '+p);

@@ -13,7 +13,7 @@ test('commuters live in town after work instead of immediately clumping at the b
  const activities=[];
  const firstStops=names.map(name=>{
   const minutes=COMMUTER_SHIFTS[name].finish+10;
-  const plan=residentPlan(profile(name),minutes,false,{townMode:'peninsula'},true);
+  const plan=residentPlan(profile(name),minutes,false,{},true);
   assert.notEqual(plan.place,'bus',name+' went straight to the bus');
   assert.ok(plan.activity.length>12,name+' has no personal activity');
   activities.push(plan.activity);

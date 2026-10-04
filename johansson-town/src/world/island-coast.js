@@ -27,13 +27,13 @@ export const COAST_BOUNDS=Object.freeze({minX:Math.min(...COASTLINE.map(p=>p[0])
 // The shore runs under the headland the tunnel goes through, and a boulder there stands
 // in the tunnel's road. Along Nishi-machi the seawall is the shore, so no boulders there.
 const underTunnel=(x,z)=>Math.abs(x-TUNNEL.x)<TUNNEL.bore.half+1.5&&z>TUNNEL.z-1;
-export function buildPeninsula(parent){
+export function buildIslandCoast(parent){
  const shape=new THREE.Shape();COASTLINE.forEach(([x,z],i)=>i?shape.lineTo(x,-z):shape.moveTo(x,-z));shape.closePath();
  // Unbuilt land is rough island grass, painted like the lawns, not a grey-khaki slab:
  // from the harbour it was the largest flat colour in view (docs/AMPLIFY-AUDIT.md).
  const groundMaterial=new THREE.MeshStandardMaterial({color:GROUND.grass,roughness:1});
  if(typeof document!=='undefined'&&document.createElement){try{const turf=paintedTurf().clone();turf.needsUpdate=true;turf.repeat.set(1/6,1/6);groundMaterial.map=turf;}catch{}}
- const ground=new THREE.Mesh(new THREE.ShapeGeometry(shape),groundMaterial);ground.rotation.x=-Math.PI/2;ground.position.y=-.4;ground.name='Peninsula land';parent.add(ground);
+ const ground=new THREE.Mesh(new THREE.ShapeGeometry(shape),groundMaterial);ground.rotation.x=-Math.PI/2;ground.position.y=-.4;ground.name='Island land';parent.add(ground);
  const positions=[],indices=[];
  for(let i=0;i<COASTLINE.length;i++){
   const a=COASTLINE[i],b=COASTLINE[(i+1)%COASTLINE.length],n=positions.length/3;
@@ -47,6 +47,6 @@ export function buildPeninsula(parent){
   for(let j=0;j<count;j++){const t=(j+.5)/count,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;if(z< -40||underTunnel(x,z)||x< -39&&z<30||x>44&&z>-43&&z<40)continue;rocks.push({x,z,size:.65+.25*Math.sin(i*9+j*2.3)});}
  }
  const shore=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),new THREE.MeshStandardMaterial({color:0x859080,roughness:1}),rocks.length);
- rocks.forEach((r,i)=>{dummy.position.set(r.x,-.35,r.z);dummy.scale.set(r.size*1.6,r.size*.7,r.size);dummy.rotation.set(.2,i*1.7,.15);dummy.updateMatrix();shore.setMatrixAt(i,dummy.matrix);});shore.name='Rocky peninsula shore';parent.add(shore);
+ rocks.forEach((r,i)=>{dummy.position.set(r.x,-.35,r.z);dummy.scale.set(r.size*1.6,r.size*.7,r.size);dummy.rotation.set(.2,i*1.7,.15);dummy.updateMatrix();shore.setMatrixAt(i,dummy.matrix);});shore.name='Rocky island shore';parent.add(shore);
  return ground;
 }

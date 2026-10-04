@@ -7,7 +7,7 @@
  * the one list that says, for each of them, which door is theirs and why they are here,
  * so that nobody in the town is just standing about (docs/AMPLIFY-AUDIT.md, §12).
  *
- * `home` is a building that exists on the peninsula: a plot id in okinawa/layout.js
+ * `home` is a building that exists on the island: a plot id in okinawa/layout.js
  * (Nishi-machi, the east-back houses, the shop-houses, Kitahama), a site id (the yard
  * houses, the koban, the harbour office), or 'town-hall'. Shop-house families live above
  * the shop. Nobody lives off the island; the ferry brings visitors and freight.

@@ -13,7 +13,7 @@ import {MAIN_ROAD} from '../src/world/main-road.js';
 import {circleHitsRect} from '../physics.js';
 import {GATEBALL_ACTIVE} from '../src/world/okinawa/layout.js';
 
-/** The peninsula land sits at this height, and the surrounding sea at this one. */
+/** The island land sits at this height, and the surrounding sea at this one. */
 const LAND=-.4,WATER=-.56;
 
 test('the east of the town is one green from the kerb to the seawall',async()=>{
@@ -65,7 +65,7 @@ test('the seawall stops you, and the sand below it stays above the ground it lie
  assert.ok(trees,'The north end is left open onto unbuilt land');
  assert.ok(trees.z-trees.d/2>EAST_LAWN.maxZ-2.2,'The treeline eats the green it is meant to close');
 
- // Dry sand has to draw above the peninsula's own ground or the land shows through it,
+ // Dry sand has to draw above the island's own ground or the land shows through it,
  // and it has to reach below the water or the beach ends in a step.
  const [first]=EAST_LAWN.beach.profile,last=EAST_LAWN.beach.profile.at(-1);
  assert.ok(first[1]>LAND,'The beach starts below the ground it lies on');
@@ -122,7 +122,7 @@ test('every open patch of the east side can be walked to from the road',async()=
  const {createTown}=await import('../src/world/town.js');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const sites=createBusinesses().filter(s=>['market','frontrow'].includes(s.id));
- const {colliders}=createTown({scene:new THREE.Scene(),sites,townMode:'peninsula',mobile:false,
+ const {colliders}=createTown({scene:new THREE.Scene(),sites,mobile:false,
   shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
 
  // Ground you can stand on but cannot get to is the same invisible wall seen from the

@@ -33,7 +33,7 @@ export const STAFF_BENCH=Object.freeze({
 });
 
 /**
- * The path to it. Peninsula only, because the yard and the bench are.
+ * The path to it. Island only, because the yard and the bench are.
  *
  * It runs clear of the shop's north wall by a hand's width, turns down the back, and
  * ends a foot past the bench. Nothing beyond it: the point of a service path round the
@@ -43,7 +43,7 @@ export const STAFF_BENCH=Object.freeze({
  * not aim at the bench centre and send someone through the backrest on arrival.
  */
 export const STAFF_YARD_ROUTE=Object.freeze({
- id:'staff-yard',peninsula:true,width:2.6,surface:'stone',
+ id:'staff-yard',width:2.6,surface:'stone',
  points:Object.freeze([[-8.6,-18.7],[STAFF_BENCH.stand[0],-18.7],STAFF_BENCH.stand]),
 });
 

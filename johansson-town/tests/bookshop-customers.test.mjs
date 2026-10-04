@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {createPeninsulaBusinesses} from '../src/world/businesses.js';
+import {createIslandBusinesses} from '../src/world/businesses.js';
 import {createTown} from '../src/world/town.js';
 import {assignWorkplaces} from '../src/people/workplaces.js';
 import {buildCompactShop} from '../src/world/interiors/compact-shops.js';
@@ -19,8 +19,8 @@ test('bookshop visits leave meals and travelling residents in their existing pla
 
 test('a real resident browses, speaks to Aya, buys once, and walks back out without duplicated actors',()=>{
  try{
-  installDOM();const sites=createPeninsulaBusinesses(),scene=new THREE.Scene(),world=createTown({scene,sites,townMode:'peninsula',mobile:true,shadows:false,register(o,label,fn,inside){o.userData.hit={label,fn,inside};},enter(){},onAction(){}});assignWorkplaces(world,sites);
-  const customer=world.people.find(p=>p.profile.name==='Kenji'),index=world.people.indexOf(customer),day=(6-index%6)%6,minutes=day*1440+912,state={townMode:'peninsula'},ledger=createResidentLedger(()=>state);ledger.account('Kenji',minutes).shopping={finished:true};
+  installDOM();const sites=createIslandBusinesses(),scene=new THREE.Scene(),world=createTown({scene,sites,mobile:true,shadows:false,register(o,label,fn,inside){o.userData.hit={label,fn,inside};},enter(){},onAction(){}});assignWorkplaces(world,sites);
+  const customer=world.people.find(p=>p.profile.name==='Kenji'),index=world.people.indexOf(customer),day=(6-index%6)%6,minutes=day*1440+912,state={},ledger=createResidentLedger(()=>state);ledger.account('Kenji',minutes).shopping={finished:true};
   assert.equal(residentPlan(customer.profile,minutes,false,state).place,'bookshop');
   const room=new THREE.Group(),colliders=[];scene.add(room);const layout=buildCompactShop({site:sites.find(s=>s.id==='frontrow'),room,reg(){},collider:(x,z,w,d)=>colliders.push({x,z,w,d}),action(){},exit(){}}),blocked=(x,z,r=.3)=>colliders.some(c=>circleHitsRect(x,z,r,c));
   const aya=world.people.find(p=>p.profile.name==='Aya');scene.add(aya.g);aya.g.position.set(...layout.staff.Aya);aya.g.visible=true;aya.g.userData.inWorkplace='frontrow';aya.g.userData.hit.inside=true;

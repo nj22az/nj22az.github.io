@@ -11,7 +11,7 @@ import {pavedByTerminus} from './bus-station.js';
 // junction open, including routes supplied by the shopping and dining models.
 export function laneEdges(){
  const edges=[];
- const selected=new Set(['bus-approach','bus-platform','east-alley','west-alley','residential','west-service','east-service','river-walk','park-approach']);
+ const selected=new Set(['bus-approach','bus-platform','east-alley','residential','river-walk','park-approach']);
  for(const route of activeRoutes().filter(r=>selected.has(r.id)))for(let i=1;i<route.points.length;i++){
   const a=route.points[i-1],b=route.points[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]),dx=(b[0]-a[0])/length,dz=(b[1]-a[1])/length,count=Math.ceil(length);
   for(let j=0;j<count;j++)for(const side of [-1,1]){

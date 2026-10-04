@@ -21,7 +21,7 @@ import {createVendingMachine,vendingReady,hydrateVending} from '../vending.js';
 import {windowGlow} from '../../render/dusk.js';
 
 /**
- * Builds the streets that fill the peninsula in: Nishi-machi to the west, the shop-houses
+ * Builds the streets that fill the island in: Nishi-machi to the west, the shop-houses
  * on the east side of Main Street and the two on the west side by the terminus. See
  * layout.js for the plan and houses.js / props.js for what they are made of.
  *

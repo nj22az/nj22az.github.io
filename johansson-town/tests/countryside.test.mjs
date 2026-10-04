@@ -17,7 +17,7 @@ test('the countryside fills the open grass and keeps off roads, paths and buildi
  const p=new THREE.Vector3();let checked=0;
  group.traverse(o=>{
   if(o.name==='Field earth'){const m=new THREE.Matrix4();for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);p.setFromMatrixPosition(m);const r=routeAt(p.x,p.z);
-   assert.ok(r?.surface==='grass'&&['peninsula-ground','island-uplands'].includes(r.id),`a field lies on ${r?.id} at ${p.x.toFixed(1)},${p.z.toFixed(1)}`);
+   assert.ok(r?.surface==='grass'&&['island-ground','island-uplands'].includes(r.id),`a field lies on ${r?.id} at ${p.x.toFixed(1)},${p.z.toFixed(1)}`);
    assert.ok(!(Math.abs(p.x+20)<3&&Math.abs(p.z-90)<3),'a field lies on a building');
    assert.ok(Math.hypot(p.x-10,p.z-240)>2.4,'a field lies under a tree');checked++;}}
  });

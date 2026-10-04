@@ -1,8 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
-import {COASTLINE} from './peninsula.js';
+import {COASTLINE} from './island-coast.js';
 import {AIRPORT_ISLAND} from './airport-island.js';
 
-// Cel-shaded Gerstner water for the peninsula. Shared by the surrounding sea and
+// Cel-shaded Gerstner water for the island. Shared by the surrounding sea and
 // the harbour basin so the whole shore reads as one body of water.
 //
 // Looking out from the beach it should read like a holiday postcard: a lace of foam
@@ -206,7 +206,7 @@ void main() {
 
 /**
  * How far each patch of sea is from land, baked once into a small texture: the coast
- * of the island (peninsula.js) and the airport island offshore. Zero on land, rising
+ * of the island (island-coast.js) and the airport island offshore. Zero on land, rising
  * to `range` metres out, which counts as open water.
  */
 export const SHORE_FIELD=Object.freeze({minX:-150,maxX:390,minZ:-200,maxZ:410,size:384,range:80});
@@ -290,7 +290,7 @@ export function createSurroundingOcean() {
   const geo = new THREE.PlaneGeometry(1400, 1400, 96, 96);
   geo.rotateX(-Math.PI / 2);
   const sea = new THREE.Mesh(geo, oceanMaterial());
-  sea.name = 'Peninsula surrounding sea';
+  sea.name = 'Island surrounding sea';
   sea.position.set(0, SEA_LEVEL, -300);
   sea.frustumCulled = false;
   sea.receiveShadow = false;

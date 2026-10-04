@@ -12,7 +12,7 @@ export const CORE_BUSINESSES=Object.freeze([
  {id:'market',title:'Sakura Shōten',jp:"Sakura Shop",sub:'DAILY GOODS',side:-1,z:-28,color:0x9d7c7e,accent:'#a76680',line:'Thuan’s convenience store · tea, snacks and everyday things.'},
 ].map(Object.freeze));
 export const createBusinesses=()=>CORE_BUSINESSES.map(site=>({...site}));
-export const createPeninsulaBusinesses=()=>createBusinesses().filter(site=>['market','frontrow','form3d','office'].includes(site.id)).map(site=>site.id==='frontrow'?{...site,...BOOKSHOP_WORKSHOP}:site.id==='form3d'?{...site,...DOCK_WORKSHOP}:site);
+export const createIslandBusinesses=()=>createBusinesses().filter(site=>['market','frontrow','form3d','office'].includes(site.id)).map(site=>site.id==='frontrow'?{...site,...BOOKSHOP_WORKSHOP}:site.id==='form3d'?{...site,...DOCK_WORKSHOP}:site);
 export function consolidateBusinesses(sites){
  const retired=new Set(Object.keys(BUSINESS_ALIASES));
  // Also accept callers carrying the older eight-shop catalogue.

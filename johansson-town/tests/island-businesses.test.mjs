@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {createPeninsulaBusinesses,businessId,migratedVisits} from '../src/world/businesses.js';
+import {createIslandBusinesses,businessId,migratedVisits} from '../src/world/businesses.js';
 import {createTown} from '../src/world/town.js';
 import {assignWorkplaces} from '../src/people/workplaces.js';
 import {createCastAI} from '../src/people/schedules.js';
@@ -26,12 +26,12 @@ const inCast=name=>STREET_CAST_NAMES.includes(name);
 
 function setup(){
  installDOM();globalThis.self=globalThis;
- const sites=createPeninsulaBusinesses(),scene=new THREE.Scene(),targets=[];
+ const sites=createIslandBusinesses(),scene=new THREE.Scene(),targets=[];
  const register=(o,label,fn,inside=false)=>{o.userData.hit={label,fn,inside};targets.push(o);};
- const world=createTown({scene,sites,townMode:'peninsula',mobile:true,shadows:false,register,enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3(0,0,-30)});
+ const world=createTown({scene,sites,mobile:true,shadows:false,register,enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3(0,0,-30)});
  assignWorkplaces(world,sites);
  const blocked=(x,z,r=.35)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
- const state={townMode:'peninsula',inventory:[],residentLocations:{}};
+ const state={inventory:[],residentLocations:{}};
  return {sites,scene,targets,register,world,blocked,state};
 }
 function roomFor(context,site,builder=buildCompactShop){
@@ -61,7 +61,7 @@ test('published businesses have reachable real doors and a clear passage beside 
   for(const name of ['Aya','Reiko'].filter(inCast))assert.equal(roles[name],'frontrow');for(const name of ['Kenji','Tetsuo'].filter(inCast))assert.equal(roles[name],'form3d');
   if(inCast('Harbour master'))assert.equal(roles['Harbour master'],'office');if(inCast('Mrs Sato'))assert.equal(roles['Mrs Sato'],'ramen');
   for(let minute=0;minute<1440;minute+=10)for(const p of world.people){
-   // Sato Ramen is on the peninsula now, beside Minato: open at lunch, with Mrs Sato in from 10:30.
+   // Sato Ramen is on the island now, beside Minato: open at lunch, with Mrs Sato in from 10:30.
    const plan=residentPlan(p.profile,minute,false,c.state);
    if(plan.place==='ramen')assert.ok(p.profile.name==='Mrs Sato'?minute>=630&&minute<840:satoRamenOpen(minute),p.profile.name+' at Sato Ramen outside its hours at '+minute);
   }

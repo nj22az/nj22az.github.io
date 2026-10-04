@@ -19,7 +19,7 @@ export function buildDistricts(world,options){
   // The western lane is the seafront service edge behind the shopping street. The island
   // has its own seawall (okinawa/quarters.js), and this one ran down the middle of its walk.
   
-  // The heron fishes the seawall, which the peninsula keeps out of reach behind the yard.
+  // The heron fishes the seawall, which the island keeps out of reach behind the yard.
   
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
   // Each faces the people it is directing: the port sign is read walking up from the

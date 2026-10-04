@@ -172,9 +172,7 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,factory.utilityCabinet(-7,13.8,0));// On the footway, clear of the six-metre carriageway.
   inspect([-5.55,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
-  // Thuan's bicycle stands on the west footway, a short walk from Sakura. The
-  // peninsula keeps it as an interactive ride; archived layouts keep the bookshop
-  // inspection spot and its original placement.
+  // Thuan's bicycle stands on the west footway, a short walk from Sakura, as an interactive ride.
   // On the west footway, between Sakura's front and the kerb (the carriageway is narrower now).
   const bicycleSpot=({x:-5.8,z:-23.2});
   const bicycle=buildBicycle({...bicycleSpot,shadows:options.shadows,animated:true});
@@ -218,7 +216,7 @@ function addStreetLife(world,options,factory){
   return {interactions,lights,bicycle};
 }
 
-function findSea(group){let sea=null;group.traverse(o=>{if(o.isMesh&&(o.name==='Peninsula surrounding sea'||o.name==='Harbour basin')){if(!sea||o.name==='Harbour basin')sea=o;}});return sea;}
+function findSea(group){let sea=null;group.traverse(o=>{if(o.isMesh&&(o.name==='Island surrounding sea'||o.name==='Harbour basin')){if(!sea||o.name==='Harbour basin')sea=o;}});return sea;}
 
 /** Whether a point lies under the paving the lane builder lays. */
 function pavedAt(){
@@ -231,7 +229,6 @@ export function createTown(options){
   beginPowerPlan();
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
-  world.townMode='peninsula';
   // Only the street cast lives in the playable town; nothing else may arrive as a person.
   for(const person of world.people)person.g?.removeFromParent();
   world.people.length=0;
@@ -282,7 +279,7 @@ export function createTown(options){
    world.school=buildSchool(world,{register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
    // Umi-no-yu, on the flat of the lawn below the park. See park-onsen.js.
    world.onsen=buildParkOnsen(world,{register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
-   // The streets that fill the rest of the peninsula in: Nishi-machi behind the west
+   // The streets that fill the rest of the island in: Nishi-machi behind the west
    // yard, and shop-houses along both kerbs of Main Street. See okinawa/layout.js.
    world.quarters=buildOkinawaQuarters(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
    // The standard street furniture: chain bollards along the sea wall, brick planters at
@@ -306,7 +303,7 @@ export function createTown(options){
   world.bicycle=street.bicycle;
   world.docklandsLife=buildDocklandsLife(world,options);
   buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
-  // Thuan's break. Only the peninsula has a yard behind the shop to put it in.
+  // Thuan's break. Only the island has a yard behind the shop to put it in.
   world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
@@ -317,7 +314,7 @@ export function createTown(options){
    let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
   }
   for(const s of originalSites){if(world.harbourShops.some(shop=>shop.id===s.id)||!Number.isFinite(s.side))continue;const panel=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,1.4),factory.material(null,s.color,.9));panel.position.set(s.side*7.05,4.8,s.z+2.55);world.group.add(panel);districts.shutters.push({mesh:panel,id:s.id});}
-  // The peninsula keeps the park and the port; the dining lane and the izakaya are
+  // The island keeps the park and the port; the dining lane and the izakaya are
   // switched off with the rest of the buildings.
   // The dining lane belongs to the old street plan and would run through the west
   // yard, but the izakaya is a building on the west pavement and comes back with it:

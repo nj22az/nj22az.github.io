@@ -1,6 +1,6 @@
 /** The garden has a level bathhouse terrace and a shallow pond; slopes grade outside. */
 export const GARDEN_AUTHOR=Object.freeze({id:'aoba-garden',title:'Aoba Traditional Garden',minX:-49,maxX:-5,minZ:107,maxZ:154,y:0,entry:Object.freeze([-28,108]),pond:Object.freeze({x:-34,z:132,rx:7,rz:5,waterY:-.14}),onsen:Object.freeze({x:-14,z:131}),shrine:Object.freeze({x:-35,z:149})});
-export const GARDEN_PATHS_AUTHOR=[{id:'garden-entry',peninsula:true,width:2.5,surface:'stone',points:[[-47,110],[-28,108],[-28,118],[-23,125],[-20,129.6]]},{id:'garden-pond-loop',peninsula:true,width:2.2,surface:'gravel',points:[[-28,118],[-42,120],[-45,132],[-41,143],[-28,145],[-23,137],[-23,125],[-28,118]]},{id:'garden-bridge',peninsula:true,width:2.2,surface:'wood',points:[[-44,132],[-24,132]]},{id:'garden-shrine',peninsula:true,width:2.4,surface:'stone',points:[[-35,143],[-35,146]]}];
+export const GARDEN_PATHS_AUTHOR=[{id:'garden-entry',width:2.5,surface:'stone',points:[[-47,110],[-28,108],[-28,118],[-23,125],[-20,129.6]]},{id:'garden-pond-loop',width:2.2,surface:'gravel',points:[[-28,118],[-42,120],[-45,132],[-41,143],[-28,145],[-23,137],[-23,125],[-28,118]]},{id:'garden-bridge',width:2.2,surface:'wood',points:[[-44,132],[-24,132]]},{id:'garden-shrine',width:2.4,surface:'stone',points:[[-35,143],[-35,146]]}];
 // Keep the authored garden composition, brought into the neighbourhood at a compact scale.
 export const GARDEN_SCALE=.6;
 export function gardenPoint(x,z){return [-36+(x+49)*GARDEN_SCALE,34+(z-107)*GARDEN_SCALE];}
@@ -8,9 +8,9 @@ export const gardenLocal=(x,z)=>[(x+36)/GARDEN_SCALE-49,(z-34)/GARDEN_SCALE+107]
 const point=p=>{const [x,z]=gardenPoint(p.x,p.z);return {...p,x,z};};
 export const GARDEN=Object.freeze({...GARDEN_AUTHOR,minX:-36,maxX:-5.4,minZ:34,maxZ:62.2,entry:Object.freeze(gardenPoint(-28,108)),pond:Object.freeze({...point(GARDEN_AUTHOR.pond),rx:4.2,rz:3}),onsen:Object.freeze({x:-13.2,z:46.1}),shrine:Object.freeze(point(GARDEN_AUTHOR.shrine))});
 export const PARK_ACCESS=[
- {id:'garden-residential-walk',peninsula:true,width:1.8,surface:'stone',points:[[-23.4,40.6],[-5.4,40],[1.9,40],[1.9,46]],heights:[0,0,-.4,-.4]},
- {id:'garden-town-walk',peninsula:true,width:2.5,surface:'stone',points:[[3,10],[0,14],[0,27],[-8,34.6],[-23.4,34.6]]},
- {id:'garden-neighbourhood-walk',peninsula:true,width:2.5,surface:'stone',points:[[-37.6,20],[-37.6,32],[-23.4,32],[-23.4,34.6]]},
+ {id:'garden-residential-walk',width:1.8,surface:'stone',points:[[-23.4,40.6],[-5.4,40],[1.9,40],[1.9,46]],heights:[0,0,-.4,-.4]},
+ {id:'garden-town-walk',width:2.5,surface:'stone',points:[[3,10],[0,14],[0,27],[-8,34.6],[-23.4,34.6]]},
+ {id:'garden-neighbourhood-walk',width:2.5,surface:'stone',points:[[-37.6,20],[-37.6,32],[-23.4,32],[-23.4,34.6]]},
 ];
 export const GARDEN_PATHS=[...PARK_ACCESS,...GARDEN_PATHS_AUTHOR.map(r=>({...r,width:r.width*GARDEN_SCALE,points:r.points.map(p=>gardenPoint(...p))}))];
 export function inGarden(x,z,pad=0){return x>=GARDEN.minX-pad&&x<=GARDEN.maxX+pad&&z>=GARDEN.minZ-pad&&z<=GARDEN.maxZ+pad;}

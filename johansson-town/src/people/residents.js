@@ -8,7 +8,7 @@ import {PROFILES} from './profiles.js';
 import {YARD_RESIDENT_NAMES,YARD_HOMES} from '../world/yard-homes-layout.js';
 import {KOBAN} from '../world/koban-layout.js';
 /**
- * On the peninsula two people live where they work: the harbour master in a bed nook in
+ * On the island two people live where they work: the harbour master in a bed nook in
  * his office, Officer Mori in the tatami room behind the police box.
  */
 const WORKPLACE_HOMES={
@@ -38,7 +38,7 @@ export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
  // The shop staff stand at their own shop's door, and where that door is depends on
  // the layout, which is not known yet. Read it when somebody asks.
  if(shopFloor)Object.defineProperty(profile,'work',{get:()=>TOWN_DESTINATIONS[shopFloor],enumerable:true,configurable:true});
- // The same for home: on the peninsula the shop's staff live in the yard houses behind
+ // The same for home: on the island the shop's staff live in the yard houses behind
  // Front-Row (yard-homes-layout.js); elsewhere, the Main Street flats they always had.
  if(YARD_RESIDENT_NAMES.includes(name)||WORKPLACE_HOMES[name]||ISLAND_RESIDENT_NAMES.includes(name)){
   const yard=()=>(WORKPLACE_HOMES[name]?.()||kitahamaHomeFor(name)||YARD_HOMES[householdFor(name)?.id]),street={home:profile.home,homeAddress:profile.homeAddress};
@@ -51,7 +51,7 @@ export function residentHomeDescription(name){
  const profile=RESIDENTS.find(p=>p.name===name);
  if(!profile)return '';
  if(!householdFor(name))return profile.homeAddress?'I live at '+profile.homeAddress+'.':'Home? Minato, mostly. Nao says I pay rent in bottle caps.';
- // The shared Main Street entrances are not built on the peninsula.
+ // The shared Main Street entrances are not built on the island.
  const neighbour=null;
  const address=name==='Kenji'?'My place is at '+profile.homeAddress+', bro.':'I live at '+profile.homeAddress+'.';
  const roommates=householdFor(name).residents.filter(n=>n!==name);

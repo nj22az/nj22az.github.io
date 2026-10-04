@@ -325,7 +325,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   if(afterWork)return afterWork;
   return bus('walking to the Harbour Line for departure');
  }
- // Mrs Sato on the peninsula: fish at the harbour first, then her own kitchen.
+ // Mrs Sato on the island: fish at the harbour first, then her own kitchen.
  if((profile.name==='Mrs Sato')&&phase==='town'){
   if(shiftActive(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'cooking the lunch ramen at Sato Ramen'};
   if(minuteOfDay(minutes-SATO_SHIFT.arrival)<SATO_SHIFT.start-SATO_SHIFT.arrival)return {place:'stroll',target:[3.2,-44],activity:'buying fish for the stock at the harbour'};
@@ -357,20 +357,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
  if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
  return bus('waiting for the next Harbour Line departure');
 }
-/**
- * Where somebody should be, on whichever layout the town is running.
- *
- * Every caller has to get the same answer to this or the town argues with itself. The
- * shop's own "should she still be here?" check asked without a mode, so it was handed
- * the archived street's routine, while the schedule asked with one and was handed the
- * commuter routine. They disagreed for the whole of every afternoon, and it was
- * invisible because when they disagree about a room the room simply wins: Thuan stood
- * at her counter through a walk the schedule thought she was taking.
- *
- * So the layout answers when the caller does not name one, and only an explicit false
- * forces the archived routine. The peninsula counts as a commuter layout for the same
- * reason the shopping district does — the bus is how people arrive and leave.
- */
+/** Where somebody should be. Every caller gets the same commuter plan: people arrive and leave by the ferry. */
 export function residentPlan(profile,minutes,rain=false,state=null){
  // Minato's regular never joins the Harbour Line or leaves the room. He sleeps on
  // his usual stool from 03:00 until 10:00 and drinks at the counter the rest of day.

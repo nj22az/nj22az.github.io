@@ -10,7 +10,7 @@ async function town(){
  const {createTown}=await import('../src/world/town.js?quarter');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const labels=[];
- const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',
+ const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),
   mobile:false,shadows:false,register:(o,label,fn)=>labels.push({label,fn,o}),enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  return {world,labels};
 }

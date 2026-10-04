@@ -15,7 +15,7 @@ async function afternoon(){
  const {RESIDENTS}=await import('../src/people/residents.js');
  const scene=new THREE.Scene();
  const built=createTown({scene,sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),
-  townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+  mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const collides=(x,z,r=.32)=>built.colliders.some(c=>circleHitsRect(x,z,r,c));
  const profile=RESIDENTS.find(p=>p.name==='Thuan'),g=new THREE.Group();
  g.userData={name:'Thuan',visualReady:true};g.position.set(profile.work[0],0,profile.work[1]);scene.add(g);
@@ -23,8 +23,8 @@ async function afternoon(){
  // staffBench is what hands her break to the bench routine; without it she walks to
  // the yard and stands there, which is not a break.
  const world={people:[{g,profile}],homes:new Map(),bus:built.bus,busStation:built.busStation,
-  staffBench:built.staffBench,townMode:'peninsula'};
- const ai=createCastAI({world,player,state:()=>({townMode:'peninsula',inventory:[],residentLocations:{}}),
+  staffBench:built.staffBench};
+ const ai=createCastAI({world,player,state:()=>({inventory:[],residentLocations:{}}),
   paused:()=>false,collides,getObserverPosition:()=>player.position});
  const run=(from,to,observe=()=>{})=>{for(let m=from;m<to;m+=1/60){const before=g.position.clone(),yaw=g.rotation.y;ai.update(1/60,m,false);observe(before,yaw);}};
  return {g,collides,run};

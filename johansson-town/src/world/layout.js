@@ -2,7 +2,7 @@ import {DOCKLANDS,docklandsAt} from './docklands-layout.js';
 import {ISLAND_ROUTES} from './island-plan.js';
 import {airportSurface} from './airport-ground.js';
 import {kitanoRoadAt} from './kitano-link-plan.js';
-import {COAST_BOUNDS} from './peninsula.js';
+import {COAST_BOUNDS} from './island-coast.js';
 import {DINING,NIGHT_LANE,inDiningLane,IZAKAYA_LANE} from './dining-layout.js';
 import {oilJettyAt} from './oil-jetty-layout.js';
 const OIL_JETTY_ROUTE=Object.freeze({id:'oil-jetty',surface:'stone'});
@@ -36,11 +36,9 @@ export const ROUTES = [
  {id:'shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,SHOP_CROSSING_Z],[MAIN_ROAD.pavementEast,SHOP_CROSSING_Z]]},
  {id:'south-shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,-18],[MAIN_ROAD.pavementEast,-18]]},
  {id:'east-alley',width:3,surface:'stone',points:[[0,18.4],[8.4,18.4]]},
- {id:'west-alley',legacy:true,width:3.6,surface:'stone',points:[[0,31],[-36,31],[-36,-44],[-18,-44]]},
  {id:'second-pier',width:4.6,surface:'wood',points:[[-36,-44],[-36,-62],[-26,-62]]},
  {id:'izakaya-door',width:3,surface:'asphalt',points:IZAKAYA_LANE},
  {id:'ramen-door',width:2.8,surface:'stone',points:[[0,DINING.ramenDoor[1]],DINING.ramenDoor]},
- {id:'crystal-door',legacy:true,width:2.4,surface:'stone',points:[[0,DINING.crystalDoor[1]],DINING.crystalDoor]},
  {id:'office-door',width:2.6,surface:'stone',points:[[13.3,-36],[13.3,-37.55]]},
  {id:'office-crossing',width:3,surface:'stone',points:[[0,-36],[18,-36]]},
  {id:'park-walk',width:4,surface:'stone',points:[[0,-36],[4.6,-36],[4.6,PARK.z]]},
@@ -56,14 +54,10 @@ export const ROUTES = [
  {id:'park-edge',width:3.4,surface:'stone',points:[[PARK.x-PARK.half-1.65,PARK.z-PARK.half+.8],[PARK.x-PARK.half-1.65,PARK.z+PARK.half-.8]]},
  {id:'south-cut',width:3,surface:'stone',points:[[0,-36],[-12,-36]]},
  {id:'market-cut',width:3,surface:'stone',points:[[0,-26],[-5.5,-26]]},
- {id:'west-service',legacy:true,width:3,surface:'stone',points:[[-8.5,-20],[-8.5,31]]},
- {id:'east-service',legacy:true,width:3,surface:'stone',points:[[26,-44],[26,SHOP_CROSSING_Z]]},
- {id:'east-market-cut',legacy:true,width:3,surface:'stone',points:[[0,-33.5],[16,-33.5]]},
  STAFF_YARD_ROUTE,
  ...ISLAND_ROUTES,
 ];
-export function activeRoutes(){return ROUTES.filter(route=>
- ((!route.legacy))&&(!route.peninsula||true));}
+export function activeRoutes(){return ROUTES;}
 export function nearestOnSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],q=dx*dx+dz*dz;const t=q?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/q)):0;return {x:a[0]+dx*t,z:a[1]+dz*t,t,d:Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t)};}
 export const LANDINGS=[];
 /**
@@ -107,8 +101,7 @@ function regionAt(x,z,r=0){
  if(Math.abs(x-PARK.x)<=PARK.half-r&&Math.abs(z-PARK.z)<=PARK.half-r)return PARK;
  if(oilJettyAt(x,z,r))return OIL_JETTY_ROUTE;
  // The park is asked first, so the lawn is the ground around its mound rather than a
- // lid over it, and its ramp keeps its own paving where the two overlap. Only the
- // peninsula has an east side clear enough to stand on.
+ // lid over it, and its ramp keeps its own paving where the two overlap.
  // Match the ends of the actual decks, without round route caps over water.
  if(x>=MAIN_ROAD.pavementWest&&x<=MAIN_ROAD.pavementEast-r&&z>=MAIN_ROAD.minZ&&z<=MAIN_ROAD.maxZ-r){
   if(x>=MAIN_ROAD.west&&x<=MAIN_ROAD.east)return z<=BOARDWALK.maxZ?boardwalkRoute:ROUTES[0];
@@ -151,5 +144,5 @@ function regionAt(x,z,r=0){
 export function setWalkSurface(surface){globalThis.__JOHANSSON_WALK_SURFACE__=surface||null;}
 /** Where feet go: the plan's ground, lifted onto whatever slab is drawn over it. */
 export function groundHeight(x,z){const h=planHeight(x,z),walk=globalThis.__JOHANSSON_WALK_SURFACE__;return walk?(walk.level?.(x,z)??(h+walk.lift(x,z))):h;}
-export function planHeight(x,z){{if(x>MAIN_ROAD.pavementEast){const road=kitanoRoadAt(x,z);if(road)return road.y;}if(docklandsAt(x,z))return DOCKLANDS.y;const garden=coastalSurface(x,z);if(garden?.id==='aoba-garden')return garden.y;const airport=airportSurface(x,z);if(airport)return airport.y;const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='peninsula-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;if((regionAt(x,z,0)?.id==='peninsula-ground'))return -.4;return 0;}
+export function planHeight(x,z){{if(x>MAIN_ROAD.pavementEast){const road=kitanoRoadAt(x,z);if(road)return road.y;}if(docklandsAt(x,z))return DOCKLANDS.y;const garden=coastalSurface(x,z);if(garden?.id==='aoba-garden')return garden.y;const airport=airportSurface(x,z);if(airport)return airport.y;const ramp=beachAccessHeight(x,z);if(ramp!==null)return ramp;const coast=coastalSurface(x,z);if(coast&&coast.id!=='island-ground')return coast.y;}if(inDiningLane(x,z))return NIGHT_LANE.y;const rh=null;if(rh!==null)return rh;const ramp=parkApproachHeight(x,z);if(ramp!==null)return ramp;const ph=parkHeight(x,z);if(ph!==null)return ph;const skirt=parkSkirtHeight(x,z);if(skirt!==null)return skirt;if(Math.abs(x-OUTER_PIER.x)<=OUTER_PIER.width/2&&Math.abs(z-OUTER_PIER.z)<=OUTER_PIER.length/2)return OUTER_PIER.height;if(kitahamaLaneAt(x,z))return KITAHAMA.y+GROUND_LAYER.lane;if((regionAt(x,z,0)?.id==='island-ground'))return -.4;return 0;}
 export const MAP_BOUNDS={get minX(){return (COAST_BOUNDS.minX-3)},get maxX(){return 380},minZ:-185,get maxZ(){return (COAST_BOUNDS.maxZ+3)}};

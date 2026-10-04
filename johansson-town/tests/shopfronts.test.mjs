@@ -6,14 +6,14 @@ import {installDOM} from './fixtures.mjs';
 import {DOCK_WORKSHOP_PLOT} from '../src/world/dock-workshop-layout.js';
 import {WEST_SHOPS,westShopDoor,WEST_FRONT} from '../src/world/west-shops.js';
 
-async function peninsula(){
+async function island(){
  installDOM();globalThis.self=globalThis;
  
  const {createTown}=await import('../src/world/town.js?shopfronts');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const scene=new THREE.Scene(),entrances=[];
  const sites=createBusinesses();
- const world=createTown({scene,sites,townMode:'peninsula',mobile:false,shadows:false,
+ const world=createTown({scene,sites,mobile:false,shadows:false,
   register(object,label){if(/^Enter /.test(label)){const p=object.getWorldPosition(new THREE.Vector3());entrances.push({label,x:p.x,z:p.z});}},
   enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  scene.updateMatrixWorld(true);
@@ -21,7 +21,7 @@ async function peninsula(){
 }
 
 test('every door opens onto a building',async()=>{
- const {scene,world,entrances}=await peninsula();
+ const {scene,world,entrances}=await island();
  const [wx,,wz]=DOCK_WORKSHOP_PLOT.door;for(const z of [wz,wz+.6])assert.equal(world.colliders.some(c=>circleHitsRect(wx,z,.32,c)),false,'Workshop entrance and exit clear the yard wall');
  // What counts as a building: something with walls, standing on the ground.
  const walls=[];
@@ -38,8 +38,7 @@ test('every door opens onto a building',async()=>{
   'Enter Johansson Harbour Office','Enter Minato Port Terminal','Enter Sakura Shōten','Enter Minato Police Box',
  ].sort(),'Separate bookshop and dock workshop entrances, with other businesses retained');
  // Kenji & Tetsuo Repairs offered a way in at 0.4,-6.7 -- out on the boardwalk beside a
- // lamp post, because that is where the night-market alley put its door and the
- // peninsula does not build that alley. A door has to be in a wall.
+ // lamp post, because that is where the old night-market alley put its door. A door has to be in a wall.
  const adrift=entrances.filter(e=>!walls.some(w=>
   e.x>w.min.x-3&&e.x<w.max.x+3&&e.z>w.min.z-3&&e.z<w.max.z+3))
   .map(e=>e.label+' at '+e.x.toFixed(1)+','+e.z.toFixed(1));

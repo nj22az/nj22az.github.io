@@ -10,7 +10,7 @@ import {SATO_GUEST_SEATS,SATO_COOK,SATO_ROOM} from '../world/sato-ramen-layout.j
 // reserved place; changing the clock sends seated guests back to the exit.
 export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,getStandingVisit=()=>null,collides=()=>false,getRain=()=>false,layout=null}){
  const borrowed=new Map();let clock=0,walker=null;
- // On the peninsula the ramen counter is Sato Ramen, beside Minato (world/sato-ramen-layout.js).
+ // On the island the ramen counter is Sato Ramen, beside Minato (world/sato-ramen-layout.js).
  const sato=(place==='ramen');
  const entrance=layout?.entrance|| (sato?[SATO_ROOM.spawn[0],0,SATO_ROOM.spawn[2]]:[0,0,5.2]);
  const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:world.people.find(p=>p.profile.name==='Thuan').profile.work;

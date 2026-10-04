@@ -11,7 +11,7 @@ const {FERRY_TERMINAL}=await import('../src/world/ferry.js');
 const {QUAY_BAYS}=await import('../src/world/town-traffic.js');
 const {buildPortHall}=await import('../src/world/interiors/port-hall.js');
 const labels=[];
-const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,register(o,label){labels.push({label,p:o.getWorldPosition?.(new THREE.Vector3())});},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:false,shadows:false,register(o,label){labels.push({label,p:o.getWorldPosition?.(new THREE.Vector3())});},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
 const own=c=>/^port-|ferry-terminal|^$/.test(c.id||'')||c.w===7.2;
 
 test('one Port Building on the quay: the hall, the tower and the office, clear of the car bays and lanes',()=>{

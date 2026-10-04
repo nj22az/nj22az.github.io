@@ -72,7 +72,7 @@ test('Sakura keeps its full-size frontage and clear street glazing',()=>{
 });
 
 
-test('on the peninsula Minato leaves a passage beside the bookshop and clears the konbini',async()=>{
+test('on the island Minato leaves a passage beside the bookshop and clears the konbini',async()=>{
  const manifest=JSON.parse(await readFile(new URL('../assets/models/izakaya/benmaher-manifest.json',import.meta.url)));
  const corners=key=>[manifest.bounds.min[0],manifest.bounds.max[0]]
   .flatMap(x=>[manifest.bounds.min[2],manifest.bounds.max[2]].map(z=>restaurantPoint('izakaya',x,z)[key]));

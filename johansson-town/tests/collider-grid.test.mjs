@@ -9,7 +9,7 @@ test('the collider grid answers exactly as checking every collider does, however
  installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js?collider-grid');
  const {createBusinesses}=await import('../src/world/businesses.js');
- const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+ const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const list=world.colliders,grid=createColliderGrid(list);
  let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
  const check=label=>{grid.refresh();for(let k=0;k<4000;k++){const x=rnd()*120-60,z=rnd()*120-70,r=.1+rnd()*1.5,hit=c=>circleHitsRect(x,z,r,c);

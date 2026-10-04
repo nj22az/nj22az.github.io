@@ -13,10 +13,10 @@ import {applyCelShading} from '../src/render/cel.js';
 import {createTownSections} from '../src/render/town-sections.js';
 import {circleHitsRect} from '../physics.js';
 
-function town(mode='peninsula'){
+function town(){
  installDOM();
  return createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),
-  townMode:mode,mobile:false,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
+  mobile:false,shadows:false,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
 }
 
 test('the lawn builds one garden, keeps its greenery hook and forwards the pond interaction without fetching assets',()=>{

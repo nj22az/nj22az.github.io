@@ -11,7 +11,7 @@ async function town(){
  const {createTown}=await import('../src/world/town.js?okinawa');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const labels=[],actions=[];
- const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',
+ const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),
   mobile:false,shadows:false,register:(o,label,fn)=>labels.push({label,fn,o}),enter(){},onAction:(...a)=>actions.push(a),getPlayerPosition:()=>new THREE.Vector3()});
  return {world,labels,actions};
 }

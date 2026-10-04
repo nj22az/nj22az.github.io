@@ -3,7 +3,7 @@ import {buildDockWorkshop} from './dock-workshop.js';
 import {buildHarbourOffice} from './harbour-office.js';
 import {GROUND} from '../render/ground-palette.js';
 import {WEST_SHOPS,buildWestShop} from './west-shops.js';
-import {buildPeninsula} from './peninsula.js';
+import {buildIslandCoast} from './island-coast.js';
 import {buildBicycle} from './bicycle.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
@@ -124,7 +124,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   addHorizon(group);
   // Base town and road. Markings are non-coplanar decal planes to eliminate white-line z fighting.
-  buildPeninsula(group);
+  buildIslandCoast(group);
   const upperRoadLength=MAIN_ROAD.maxZ-BOARDWALK.maxZ;
   box([MAIN_ROAD.width,.2,upperRoadLength],[MAIN_ROAD.x,-.10,(MAIN_ROAD.maxZ+BOARDWALK.maxZ)/2],GROUND.asphalt,[0,0,0],'road');
   box([MAIN_ROAD.width,.2,4],[MAIN_ROAD.x,-.10,-40],GROUND.asphalt,[0,0,0],'road');
@@ -169,7 +169,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     if(s.industrialWorkshop){harbourShops.push(buildDockWorkshop({parent:group,site:s,register,enter,label,colliders}));return;}
     if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider,...office.colliders);return;}
     // The alley units are a recessed door in the side of the supplied night-market
-    // kit. The peninsula does not build that kit, so on this layout a shop that has a
+    // kit. The island does not build that kit, so on this layout a shop that has a
     // west-pavement plot gets a building of its own instead of a door standing in the
     // open air. See west-shops.js.
     if(WEST_SHOPS[s.id]){
@@ -213,7 +213,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Late-Shōwa street lamps: shopping street + quay approach. Emissive heads only
   // (no new PointLights); kept out of static batching so lanternGlow can update.
-  // The Front-Row gable pole is measured against the peninsula bookshop. The older
+  // The Front-Row gable pole is measured against the island bookshop. The older
   // layouts put Front-Row's alley door 0.2 m from it, so they go without that pole.
   const streetLamps=buildStreetLamps({parent:group,colliders,shadows,mobile,
    placements:STREET_LAMP_PLACEMENTS});
@@ -247,8 +247,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const sea=createHarbourBasin();sea.receiveShadow=false;group.add(sea);water.push(sea);
 
   const warehouseWorld={group,colliders};
-  // The warehouse stands at the quay in every layout. It was switched off while the
-  // peninsula was stripped back to its ground, and it is the first building back.
+  // The warehouse stands at the quay.
   const harbourWarehouse=buildWarehouse(warehouseWorld,{mobile,shadows,maxAnisotropy,register,onAction,enter,label});
   // The warehouse already has a fascia; a roadside panel hid its entrance from the quay.
 

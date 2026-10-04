@@ -6,18 +6,14 @@ export const DINING=Object.freeze({
  // Next to Sakura's north wall; retain the full-size konbini and clear footway.
  // Set back from the west pavement: at -11.97 the east face landed at -7.45,
  // 0.10 inside the pavement edge, which blocked the south shop crossing.
- // See IZAKAYA_PLOTS below: the peninsula stands it further up the same pavement.
+ // See IZAKAYA_PLOTS below: the island stands it further up the same pavement.
  izakayaX:-12.5,izakayaZ:-20.4,izakayaYaw:Math.PI/2,izakayaDoor:Object.freeze([-7.05,-20.4]),
  ramenX:5.45,ramenZ:-12.8,ramenYaw:-Math.PI/2,ramenDoor:Object.freeze([.75,-12.15]),crystalDoor:Object.freeze([.75,-15.6]),
 });
 /**
- * The izakaya's plot, which is not in the same place in every layout.
+ * The izakaya's plot.
  *
- * On the old street it stands against Sakura's north wall, where the konbini is ten
- * metres wide. The peninsula's konbini is fourteen and it grew northward — its north
- * wall is at z -19.67 — so -20.4 is now three metres inside the shop.
- *
- * On the peninsula it stands next to the bookshop instead, which is where it was asked
+ * It stands next to the bookshop, which is where it was asked
  * for: Minato's north gable is at z -6.10 and the relocated bookshop's
  * south wall is at -3.02, leaving a walkable passage between them. Thuan comes out of Sakura, up the west pavement past Aya's window, and
  * in.
@@ -30,12 +26,12 @@ export const DINING=Object.freeze({
 const IZAKAYA_PLOTS=Object.freeze({
  street:Object.freeze([-12.5,-20.4]),
  // North gable at -6.10; the bookshop is separated by a three-metre passage.
- peninsula:Object.freeze([-12.5,-10.43]),
+ island:Object.freeze([-12.5,-10.43]),
 });
 export const IZAKAYA_DOOR=[-7.05,-20.4];
 /**
  * The ramen counter's street door. On the old street that is Inakaya across the road; on
- * the peninsula it is Sato Ramen, the single-storey corner shop on Minato's alley flank
+ * the island it is Sato Ramen, the single-storey corner shop on Minato's alley flank
  * that shares its kitchen (minato-facade.js). izakayaPlot() sets it for the layout.
  */
 export const RAMEN_DOOR=[...DINING.ramenDoor];
@@ -43,7 +39,7 @@ export const SATO_RAMEN_DOOR=Object.freeze([-7.05,-13.9]);
 const IZAKAYA_APPROACH=[-6.35,-20.4];
 export const IZAKAYA_LANE=[[0,-20.4],IZAKAYA_DOOR];
 export function izakayaPlot(){
- const [x,z]=IZAKAYA_PLOTS['peninsula'];
+ const [x,z]=IZAKAYA_PLOTS.island;
  IZAKAYA_DOOR[1]=z;IZAKAYA_APPROACH[1]=z;IZAKAYA_LANE[0][1]=z;
  const ramen=SATO_RAMEN_DOOR;RAMEN_DOOR[0]=ramen[0];RAMEN_DOOR[1]=ramen[1];
  return {x,z,yaw:DINING.izakayaYaw,door:IZAKAYA_DOOR};

@@ -35,9 +35,6 @@ export function buildIzakaya(world,options){
  const facadeColliders=[];
  const approach=restaurantApproach('izakaya');site.exitPosition=[...site.door];site.approachPosition=[approach[0],0,approach[1]];site.entryFacing=plot.yaw;
  options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(plot.x,0,plot.z);exterior.rotation.y=plot.yaw;world.group.add(exterior);
- // The peninsula gets the built frontage; the archived street keeps the supplied model
- // it was measured against, along with the glazing pass and the tests that read it.
- //
  // The supplied exterior was a flat glazed box with no eave, no lantern and nothing to
  // say what was behind it — an office frontage with a bar's name on it. See
  // minato-facade.js for what stands there now.
@@ -48,7 +45,7 @@ export function buildIzakaya(world,options){
  //
  // prepareIzakayaGlass lifts the window triangles out of the wall and covers the holes
  // with near-invisible glazing so you can see in. On the old street there was always
- // another building behind Minato; on the peninsula there is the west yard and then
+ // another building behind Minato; on the island there is the west yard and then
  // the open sea, so from the pavement its windows read as holes you can watch the
  // horizon through. The interior is a separate room and cannot stand in for it, so
  // what goes behind the glazing is this: a dim warm box the size of the ground floor,

@@ -40,7 +40,7 @@ export const KITAHAMA=Object.freeze({
  park:Object.freeze({minX:3.5,maxX:9.5,minZ:55,maxZ:64}),
  /**
   * Kitahama stands on the island's own ground, which lies 0.4 m below the old town's
-  * datum (coastal-ground.js PENINSULA_GROUND_Y). It was built at the datum, so its lanes
+  * datum (coastal-ground.js ISLAND_GROUND_Y). It was built at the datum, so its lanes
   * and walls floated 0.4 m over the grass and anybody walking up the lane sank into it.
   */
  y:-.4,

@@ -5,7 +5,7 @@ export const ISLAND=Object.freeze({name:'Johansson Island',mountain:{name:'Mount
 export const ISLAND_COAST=[[-52,85],[-63,120],[-73,160],[-68,210],[-42,250],[0,280],[55,295],[110,280],[150,240],[162,190],[156,140],[135,98],[100,70],[70,60]];
 export const COAST_ROAD=[[43,40],[60,49],[72,73],[111,105],[139,150],[142,190],[130,230],[100,264],[55,280],[5,265],[-34,240],[-55,200],[-57,150],[-47,110],[-38,82],[-37,48],[-37,30]];
 export const MOUNTAIN_TRAIL=[[23.5,94],[23.5,112],[24,134],[28,151],[40,158],[40,167]];
-export const ISLAND_ROUTES=[...GARDEN_PATHS,SHOPPING_LANE_ROUTE,{id:'island-coastal-road',peninsula:true,width:5,surface:'asphalt',points:COAST_ROAD},{id:'island-mountain-trail',peninsula:true,width:2.3,surface:'gravel',points:MOUNTAIN_TRAIL}].map(r=>({...r,terrain:true}));
+export const ISLAND_ROUTES=[...GARDEN_PATHS,SHOPPING_LANE_ROUTE,{id:'island-coastal-road',width:5,surface:'asphalt',points:COAST_ROAD},{id:'island-mountain-trail',width:2.3,surface:'gravel',points:MOUNTAIN_TRAIL}].map(r=>({...r,terrain:true}));
 export function nearestSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
 export function islandRouteAt(x,z){return ISLAND_ROUTES.find(r=>r.points.slice(1).some((b,i)=>nearestSegment(x,z,r.points[i],b)<=r.width/2))||null;}
 const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};

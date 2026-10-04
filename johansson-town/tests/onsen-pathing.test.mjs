@@ -13,10 +13,10 @@ import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js';
 
 function setup(){
  installDOM();
- const sites=[],world=createTown({scene:new THREE.Scene(),sites,townMode:'peninsula',mobile:true,shadows:false,register(o){o.userData.hit={inside:false};},onAction(){},enter(){}});
+ const sites=[],world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(o){o.userData.hit={inside:false};},onAction(){},enter(){}});
  world.people=world.people.filter(p=>p.profile.name==='Thuan');
  const person=world.people[0],g=person.g;
- const state={townMode:'peninsula',inventory:[],onsenDate:0};
+ const state={inventory:[],onsenDate:0};
  const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));
  const ai=createCastAI({world,player:new THREE.Group(),state:()=>state,paused:()=>false,collides:blocked});
  return {world,sites,person,g,state,blocked,ai};

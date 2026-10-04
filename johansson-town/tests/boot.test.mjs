@@ -52,7 +52,7 @@ function quietDataUrlError(error){
 // In the third-person view you start up to a step inside the door, so the camera has room.
 const atDoor=(p,spawn)=>{assert.equal(p[1],spawn[1]);assert.ok(Math.hypot(p[0]-spawn[0],p[2]-spawn[2])<=1.25,`${p} is not at the door ${spawn}`);};
 
-test('Published peninsula boots, shares the wooden bookshop/workshop and visits every interior',async()=>{
+test('Published island boots, shares the wooden bookshop/workshop and visits every interior',async()=>{
   try {
     fixtures.installDOM();
     // The game starts at one of several openings (world/openings.js); this test walks from the Sakura bench.
@@ -114,7 +114,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
     assert.equal(api.world.group.getObjectByName('west-shop:form3d'),undefined,'Only one bookshop/workshop exterior');
-    assert.equal(api.world.group.getObjectByName('Sato Ramen restaurant'),undefined,'The peninsula has no ramen premises');
+    assert.equal(api.world.group.getObjectByName('Sato Ramen restaurant'),undefined,'The island has no ramen premises');
     assert.equal(window.__JOHANSSON_RUNNING__,true);
     assert.equal(window.__JOHANSSON_STABILITY__?.ok,true,'Startup stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__?.failures));
     // Check the actual actions as well as the mode-aware diagnostic count.

@@ -31,7 +31,7 @@ test('Minato lanterns and sign still change on the visible cel materials after b
 });
 
 test('world updates keep garden animation and existing harbour lights on the same dusk clock',()=>{
- installDOM();const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:true,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
+ installDOM();const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:false,shadows:true,register(){},onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});
  applyCelShading(world.group);
  const globes=[];let points=0;
  world.group.traverse(o=>{if(o.isMesh&&o.geometry.type==='SphereGeometry'&&o.geometry.parameters.radius===.25)globes.push(o);if(o.isPointLight)points++;});

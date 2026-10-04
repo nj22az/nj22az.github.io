@@ -95,7 +95,7 @@ export function shiftActive(profile,minutes){
  const shift=shiftFor(profile),e=elapsed(profile,minutes);
  return !!shift&&(shift.permanent||e>=shift.start-shift.arrival&&e<shift.finish-shift.arrival);
 }
-/** On the peninsula the Front-Row staff live in the yard behind the shop and never take the bus. */
+/** On the island the Front-Row staff live in the yard behind the shop and never take the bus. */
 export const livesInYard=profile=>YARD_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);
 /**
  * Since the island grew, Thuan, Nao and Mrs Sato live in Kitahama (kitahama-layout.js).

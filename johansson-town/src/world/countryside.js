@@ -40,7 +40,7 @@ export const STEADS=Object.freeze([
  [6,92,'trellis',0],[-20,108,'scarecrow',0],[34,256,'truck',.3],[108,180,'shed',Math.PI/2],
 ].map(Object.freeze));
 
-const OPEN=new Set(['peninsula-ground','island-uplands']);
+const OPEN=new Set(['island-ground','island-uplands']);
 
 export function buildCountryside({world,register=()=>{},onAction=()=>{},mobile=false}){
  const group=new THREE.Group();group.name='Island countryside';world.group.add(group);

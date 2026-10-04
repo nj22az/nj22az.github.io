@@ -6,7 +6,7 @@ import {sagCurve} from '../src/world/okinawa/kit.js';
 installDOM();globalThis.self=globalThis;
 const {createTown}=await import('../src/world/town.js?power-wires');
 const {createBusinesses}=await import('../src/world/businesses.js');
-const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
 const power=world.powerNetwork;
 
 test('a few poles, one row to a street, and four wires a span',()=>{

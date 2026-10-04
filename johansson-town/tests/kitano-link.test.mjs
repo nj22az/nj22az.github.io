@@ -12,7 +12,7 @@ const {createTown}=await import('../src/world/town.js?kitano-link');
 const {createBusinesses}=await import('../src/world/businesses.js');
 const {routeAt,groundHeight}=await import('../src/world/layout.js');
 let player=new THREE.Vector3(-30,0,30);
-const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>player});
+const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>player});
 const traffic=world.traffic;
 const fixed=world.colliders.filter(c=>c.id!=='parked-vehicle');
 

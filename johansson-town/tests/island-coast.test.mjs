@@ -1,13 +1,13 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {buildPeninsula} from '../src/world/peninsula.js';
+import {buildIslandCoast} from '../src/world/island-coast.js';
 import {routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
 import {laneEdges,buildLaneSurfaces} from '../src/world/lane-surfaces.js';
 import {buildPark} from '../src/world/park.js';
 
-test('peninsula ground leaves the surrounding sea uncovered and supports the Main Street homes',()=>{
- const group=new THREE.Group(),ground=buildPeninsula(group);group.updateMatrixWorld(true);
+test('island ground leaves the surrounding sea uncovered and supports the Main Street homes',()=>{
+ const group=new THREE.Group(),ground=buildIslandCoast(group);group.updateMatrixWorld(true);
  const ray=new THREE.Raycaster(),hit=(x,z)=>{ray.set(new THREE.Vector3(x,10,z),new THREE.Vector3(0,-1,0));return ray.intersectObject(ground).length>0;};
  assert.ok(hit(0,0));assert.equal(hit(0,315),false,'Sea separates the expanded northern coast from distant islands');
  for(const p of [[-55,0],[57,0],[0,-70],[30,320]])assert.equal(hit(...p),false,'Sea is exposed');

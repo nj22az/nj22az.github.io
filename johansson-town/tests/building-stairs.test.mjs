@@ -35,7 +35,7 @@ test('all town stair flights and landings are clear of furniture and lighting',a
  const {installDOM}=await import('./fixtures.mjs');installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js');
  const {createBusinesses}=await import('../src/world/businesses.js');
- const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
+ const world=createTown({scene:new THREE.Scene(),sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const levels=[];world.group.traverse(o=>levels.push(...(o.userData.walkLevels||[])));
  const stairs=levels.filter(s=>/stair|landing|turn/.test(s.id));assert.ok(stairs.length>250);
  for(const s of stairs){const x=(s.minX+s.maxX)/2,z=(s.minZ+s.maxZ)/2;

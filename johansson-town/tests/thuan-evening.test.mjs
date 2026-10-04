@@ -13,7 +13,7 @@ import {MARKET_THRESHOLD} from '../src/world/town-grid.js';
 
 const THUAN=RESIDENTS.find(p=>p.name==='Thuan');
 const shift=COMMUTER_SHIFTS.Thuan;
-/** The commuter plan, which is the one the peninsula runs. */
+/** The commuter plan, which is the one the island runs. */
 const plan=minutes=>residentPlan(THUAN,minutes,false,{},true);
 
 test('Thuan has a beer at Minato between closing the shop and walking home',()=>{
@@ -159,7 +159,7 @@ test('her break allows enough time to walk to the places it sends her',async()=>
   const {routeAt}=await import('../src/world/layout.js?break-pace');
   const {circleHitsRect}=await import('../physics.js');
   const sites=createBusinesses().filter(s=>['market','frontrow'].includes(s.id));
-  const world=createTown({scene:new THREE.Scene(),sites,townMode:'peninsula',mobile:false,
+  const world=createTown({scene:new THREE.Scene(),sites,mobile:false,
    shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
   const nav=createNavigation((x,z,r=.32)=>!routeAt(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c)));
 

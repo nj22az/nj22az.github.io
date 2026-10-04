@@ -80,7 +80,7 @@ test('no two outdoor surfaces share a plane',async()=>{
  const {createTown}=await import('../src/world/town.js?ground-clearance');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const scene=new THREE.Scene();
- createTown({scene,sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',
+ createTown({scene,sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),
   mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const contested=contestedSurfaces(scene);
  assert.deepEqual(contested,[],'Surfaces within 15mm of one another over more than a square metre:\n'+

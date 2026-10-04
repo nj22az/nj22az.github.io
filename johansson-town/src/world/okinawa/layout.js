@@ -5,7 +5,7 @@ import {WEST_YARD} from '../west-yard.js';
  * Where the new streets go, as plain numbers, so the walkable ground, the colliders, the
  * map and the buildings all read the same plan.
  *
- * The peninsula had one street, with buildings along one side of it, a walled gravel
+ * The island had one street, with buildings along one side of it, a walled gravel
  * yard behind them and a strip of bare ground between that wall and the sea that nobody
  * could reach. This fills it in the way an Okinawan harbour town is actually laid out:
  *

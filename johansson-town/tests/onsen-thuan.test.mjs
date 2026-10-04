@@ -9,7 +9,7 @@ import {ONSEN_ROOM,ONSEN_SEATS} from '../src/world/interiors/onsen.js';
 import {installDOM} from './fixtures.mjs';
 
 const thuan=RESIDENTS.find(p=>p.name==='Thuan');
-const commuter={townMode:'shopping-district'};
+const commuter={};
 
 test('asked along, Thuan goes from locking up to Umi-no-yu, and still makes her bus',()=>{
  // 20:15 on day 3, the evening she said yes to.
