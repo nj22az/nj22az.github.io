@@ -161,7 +161,7 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  box([.42,.5,.42],[2.85,.25,-.9],0x8a6a4a,'Merry Moose plinth');collider(2.85,-.9,.42,.42,1.1);
  const moose=addOwnedCharacter({parent:group,kind:'merry_Moose',height:.6,position:[2.85,.5,-.9],yaw:-Math.PI/2});
  anchor([2.4,1.0,-.9],'Look at the Merry Moose',()=>action('inspect','The Merry Moose','The island’s good-luck moose, given to the town and kept by the mayor’s desk. Visitors pat its nose on the way out; the paint there is wearing thin.'));
- const thuan=addOwnedCharacter({parent:group,kind:'thuanFigurine',height:.24,position:[2.7,.8,-2.44],yaw:Math.PI});
+ const thuan=addOwnedCharacter({parent:group,kind:'thuanFigurine',height:.34,position:[2.7,.8,-2.4],yaw:2.31});
  anchor([2.65,1,-2.05],'Look at the office figurine',()=>action('inspect','Island keepsake','A carefully detailed little Thuan watches over the annual accounts. The mayor dusts her before every town assembly.'));
  const owned=[moose,thuan];
  return {...layoutFor(),office:true,owned,dispose:()=>owned.forEach(prop=>prop.dispose())};
