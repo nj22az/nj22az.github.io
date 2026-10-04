@@ -10,6 +10,7 @@ import {createShopAttention} from './shop-attention.js';
 import {createShopRetail} from './shop-retail.js';
 import {returnShopStock} from '../commerce/shop-stock.js';
 import {PALETTE,fluorescent} from '../render/dusk.js';
+import {createStandIn} from '../render/static-props.js';
 import {townAudio} from '../audio/town-audio.js?snappy=1';
 
 // A single persistent shop owns stock, staff and customer jobs everywhere in town.
@@ -99,11 +100,24 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  // street they are not drawn (about 200 draw calls on a phone). Inside, they are.
  const BEHIND=new Set(['Sakura back room stock','Sakura restroom','Sakura office life']);
  const backRooms=on=>group.traverse(o=>{if(BEHIND.has(o.name))o.visible=on;});
+ /**
+  * From the street the shop floor is a stand-in: the same shelves merged into a few
+  * dozen meshes instead of about five hundred. It is rebuilt when the stock changes or
+  * a new day restocks the racks, and the real room comes back the moment you go in.
+  */
+ let standIn=null,standKey='';
+ const windowView=on=>{
+  if(on){
+   const key=JSON.stringify(state.sakura.stock)+'/'+Math.floor(getMinutes()/1440);
+   if(key!==standKey||!standIn){standIn?.dispose();standIn=createStandIn(group,{name:'Sakura window stand-in'});group.add(standIn.group);standKey=key;}
+   standIn.show(true);
+  }else standIn?.show(false);
+ };
  return {group,colliders,service,retail,display,blocked,layout,ready:display.ready,
   enter(parent){
    parent.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);
    const frame=frontFrame();if(frame)frame.visible=true;
-   lit(false);backRooms(true);
+   windowView(false);lit(false);backRooms(true);
    group.visible=true;showPeople(true);display.updateStock(state.sakura.stock);
    // The door chime: a bright little arpeggio of our own as the automatic door opens.
    townAudio.bells([[1319,0],[1568,.13],[2093,.26],[1760,.44],[2093,.57],[2637,.72]],.32);
@@ -130,9 +144,10 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    lit(true);backRooms(false);
    group.visible=true;showPeople(false);
    display.updateStock(state.sakura.stock);
+   windowView(true);
    return true;
   },
-  hide(){scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);},
+  hide(){windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);},
   update(dt){
    // The shop's lights are for the inside of the shop. The interior stays in the street
    // scene so you can see it through the glass, but a light has no walls: left on, its

@@ -49,6 +49,9 @@ function quietDataUrlError(error){
   return error;
 }
 
+// In the third-person view you start up to a step inside the door, so the camera has room.
+const atDoor=(p,spawn)=>{assert.equal(p[1],spawn[1]);assert.ok(Math.hypot(p[0]-spawn[0],p[2]-spawn[2])<=1.25,`${p} is not at the door ${spawn}`);};
+
 test('Published peninsula boots, shares the wooden bookshop/workshop and visits every interior',async()=>{
   try {
     fixtures.installDOM();
@@ -168,7 +171,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     // The street action includes the real asynchronous threshold animation.
     const entrance=api.world.group.getObjectByName('frontrow-west-entrance');
     await entrance.userData.hit.fn();assert.equal(api.reviewCurrentRoom()?.id,'frontrow');
-    assert.deepEqual(api.player.position.toArray(),BOOKSHOP_WORKSHOP_ROOM.spawn);
+    atDoor(api.player.position.toArray(),BOOKSHOP_WORKSHOP_ROOM.spawn);
     await document.querySelector('#exitRoomButton').onclick();assert.equal(api.reviewCurrentRoom(),null);
     assert.ok(Math.hypot(api.player.position.x-books.door[0],api.player.position.z-books.door[2])<1.2,'Return to the same entrance');
 
@@ -179,14 +182,14 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
       assert.equal(api.reviewRoomState().visible,true);assert.equal(api.reviewRoomState().townVisible,false);
       assert.ok(api.reviewRoomState().colliders>0,'Interior colliders: '+site.id);
       if(site.id==='frontrow'){
-        assert.deepEqual(api.player.position.toArray(),BOOKSHOP_WORKSHOP_ROOM.spawn);
+        atDoor(api.player.position.toArray(),BOOKSHOP_WORKSHOP_ROOM.spawn);
         // Repairs moved to the dock workshop; the bookshop keeps its counter, desks and reading table.
         for(const name of ['Bookselling counter','Newspaper and book wrapping desk','New arrivals display','Reading table'])assert.ok(api.reviewRoom().getObjectByName(name),name+' is in the bookshop');
         const exits=[];api.reviewRoom().traverse(o=>{if(o.userData.hit?.label.startsWith('Exit to '))exits.push(o);});
         assert.equal(exits.length,1,'One shared interior exit');
       }
       if(site.id==='office'){
-        assert.deepEqual(api.player.position.toArray(),SUPPLIED_ROOM_LAYOUTS.office.spawn);
+        atDoor(api.player.position.toArray(),SUPPLIED_ROOM_LAYOUTS.office.spawn);
         assert.ok(api.reviewRoom().getObjectByName('Harbour office shell'));
         assert.ok(api.reviewRoom().getObjectByName('Clerk CRT monitor'));
       }

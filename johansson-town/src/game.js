@@ -442,19 +442,8 @@ function openAvatarMaker(name=null){
 // A shared link (?avatar=code) is somebody to walk the town as.
 {const shared=importRecipeFromURL();if(shared)setTimeout(()=>say('Walking the town as '+(shared.name||'a new islander')+'.',4),4000);}
 function ensureJohansson(){if(!johansson){johansson=createAvatarJohansson({scene});window.__JOHANSSON_MODEL__=johansson;}return johansson;}
-/**
- * Indoors you see through your own eyes. A room is two or three metres across, and a
- * camera behind your islander in a classroom or a shop is mostly the back of their head
- * (docs/AMPLIFY-AUDIT.md, decision 5). The street view comes back at the door. The
- * onsen keeps whichever view you had: the bath is somewhere you look at yourself in.
- * Pressing V indoors is a real choice and is kept.
- */
-let streetThirdPerson=null;
-function roomView(entering,site){
- if(entering){if(thirdPerson&&site?.id!=='onsen'){streetThirdPerson=true;thirdPerson=false;hands.firstPersonVisible=true;}}
- else if(streetThirdPerson){streetThirdPerson=null;thirdPerson=true;ensureJohansson();hands.firstPersonVisible=false;}
-}
-function setThirdPerson(value,announce=true){if(bicycleRide&&value!==true){if(announce)say('Thuan stays in view while she rides.',2);return;}streetThirdPerson=null;thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'Behind him':'His own eyes';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
+/** The view you chose goes through the door with you, both ways: V or the Town book switches it anywhere. */
+function setThirdPerson(value,announce=true){if(bicycleRide&&value!==true){if(announce)say('Thuan stays in view while she rides.',2);return;}thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'Behind him':'His own eyes';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
 function startBicycleRide(entry){
  if(bicycleRide||current||seated)return;
  const bike=entry||world.bicycle,thuan=world.people.find(p=>p.profile?.name==='Thuan');
@@ -522,6 +511,10 @@ function placeThirdPerson(dt){
  for(let d=.3;d<=want+.001;d+=.1){const x=tpPivot.x-tpDir.x*d,z=tpPivot.z-tpDir.z*d;if(Math.hypot(x-player.position.x,z-player.position.z)<.85)continue;if(cameraBlocked(x,z,tpPivot.y-tpDir.y*d,.16)){reach=Math.max(.3,d-.22);break;}}
  thirdDistance=reach<thirdDistance?reach:THREE.MathUtils.damp(thirdDistance,reach,4,dt);
  camera.position.copy(tpPivot).addScaledVector(tpDir,-thirdDistance);
+ // Backed against a wall (a doorway, a small room), the lens climbs and looks down over
+ // him instead of ending up inside his head.
+ const cramped=Math.max(0,1.4-thirdDistance)/1.1;
+ if(cramped>0){camera.position.y+=cramped*.6;camera.rotation.x-=cramped*.3;}
  camera.position.y=Math.max(camera.position.y,player.position.y+.3);
 }
 /** R, the drink button, or Drink at the table: a can from the bag, or a sip of what Nao brought. */
@@ -797,58 +790,28 @@ function roomShell(s){
 /**
  * Doorways.
  *
- * A building used to be a room you teleported into: the screen cut, you were put on a
- * fixed spot, and your heading was thrown away and replaced with the room's. Walking
- * out did the same in reverse. That is what makes an interior read as somewhere else
- * rather than as the inside of the thing you were just looking at.
- *
- * Three things fix most of it without moving the rooms into world space. The heading
- * survives the door, the crossing is a step rather than a cut, and you walk through
- * instead of standing at a prompt.
+ * You go in and out with a button, never by walking: brushing past the workshop door
+ * used to put you inside it. Near a door the Enter button names the building; inside,
+ * Exit to street is always there. The heading still survives the door, and the
+ * crossing is a short veil rather than a cut.
  */
-const DOOR_REACH=1.35,THRESHOLD_HOLD=1.1;
-let doorwayArmed=true,doorwayCooldown=0;
-/**
- * The way back out, remembered on the way in.
- *
- * Not every interior has a layout to ask: the izakaya builds its room in addRoomProps
- * and leaves activeRoomLayout null, so reading the exit off the layout meant you could
- * walk into Minato and never walk out of it.
- */
-let roomDoorway=null;
-
-/**
- * The one rotation that maps between a building's street frame and its room frame.
- *
- * A door faces `entryFacing` in the world and `layout.yaw` in the room, so the two
- * frames differ by exactly that angle — inside and outside, both ways.
- */
-/** Everything the player could walk into, which is every site the town gave a door. */
-function doorwayUnderfoot(){
- const p=player.position,forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
- if(current){
-  if(!roomDoorway)return null;
-  const {x:ox,z:oz,inward}=roomDoorway;
-  if(Math.hypot(p.x-ox,p.z-oz)>DOOR_REACH)return null;
-  // Facing the door, not merely standing by it: you pass this spot walking in as well.
-  const outward=inward+Math.PI;
-  return forward.dot(new THREE.Vector3(-Math.sin(outward),0,-Math.cos(outward)))>.4?{leave:true}:null;
- }
+const DOOR_REACH=2.4;
+/** The nearest building whose door you are standing at, or null. */
+function doorNearby(){
+ if(current)return null;
+ const p=player.position;let best=null,bestD=DOOR_REACH;
  for(const s of SITES){
   const d=s.approachPosition||s.door;if(!d)continue;
-  const dx=d[0],dz=d[2]??d[1];
-  if(Math.hypot(p.x-dx,p.z-dz)>DOOR_REACH)continue;
-  const facing=s.entryFacing??0;
-  if(forward.dot(new THREE.Vector3(-Math.sin(facing),0,-Math.cos(facing)))<.4)continue;
-  return {site:s};
+  const dist=Math.hypot(p.x-d[0],p.z-(d[2]??d[1]));
+  if(dist<bestD){best=s;bestD=dist;}
  }
- return null;
+ return best;
 }
+let doorSite=null;
 
 /**
  * The crossing itself: chime, a short veil over the swap, and the heading carried
- * across. The veil also covers a room that has to stream its model in, which used to
- * be a frozen street and the word "Opening…".
+ * across. The veil also covers a room that has to stream its model in.
  */
 async function crossThreshold(run){
  const veil=$('#threshold');
@@ -858,22 +821,7 @@ async function crossThreshold(run){
  try{await run();}finally{
   await new Promise(r=>setTimeout(r,60));
   veil.classList.remove('on');
-  doorwayCooldown=THRESHOLD_HOLD;doorwayArmed=false;
  }
-}
-
-/** Called once a frame from the player update. */
-function updateDoorways(dt){
- if(doorwayCooldown>0)doorwayCooldown=Math.max(0,doorwayCooldown-dt);
- if(roomLoading||seated||activities.paused||inspector?.active)return;
- const at=doorwayUnderfoot();
- if(!at){doorwayArmed=true;return;}
- if(!doorwayArmed||doorwayCooldown>0)return;
- // Only when actually walking at it. Standing in a doorway is not going through one.
- if(moveVec.lengthSq()<.0004)return;
- doorwayArmed=false;
- if(at.leave)void crossThreshold(async()=>leaveRoom());
- else void crossThreshold(()=>enterRoom(at.site));
 }
 
 let roomLoading=false;
@@ -895,16 +843,19 @@ async function enterRoom(s){
  }
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
- current=s;roomView(true,s);roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});const spawn=activeRoomLayout?.spawn||[0,0,4.3];
- player.position.set(...spawn);unstuckPlayer();workplaceResidents.enter(s,minutes);bookshopCustomers.enter(s,minutes);
+ current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});const spawn=activeRoomLayout?.spawn||[0,0,4.3];
+ player.position.set(...spawn);
+ // With the camera behind him, start a step inside so it is not up against the door.
+ if(thirdPerson){const inward=activeRoomLayout?.yaw??0,dx=-Math.sin(inward),dz=-Math.cos(inward);for(let d=.1;d<=1.2;d+=.1){const x=spawn[0]+dx*d,z=(spawn[2]??0)+dz*d;if(cameraBlocked(x,z,player.position.y+.9,.35))break;player.position.x=x;player.position.z=z;}}
+ unstuckPlayer();workplaceResidents.enter(s,minutes);bookshopCustomers.enter(s,minutes);
  // The dungeon is left by its rope, not by walking back through where you came in.
- roomDoorway=activeRoomLayout?.noDoorway?null:{x:spawn[0],z:spawn[2]??spawn[1],inward:activeRoomLayout?.yaw??0};
+
  // The heading goes through the door with you. Snapping to the room's own yaw and a
  // level pitch is the single thing that most makes an interior read as a different
  // place: you walk in looking where you were looking, not where the room says.
  yaw=streetToRoom(streetYaw,s,activeRoomLayout);
  pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
-function leaveRoom(){if(!current)return;if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}const leavingDungeon=current.id==='dungeon';wearSwim(false);showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;beerService?.clear();beerService=null;workplaceResidents.restore();bookshopCustomers.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();onsenGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;roomDoorway=null;current=null;roomView(false);if(s?.id===CITY_RESTAURANT.id)hands.firstPersonVisible=!thirdPerson;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);
+function leaveRoom(){if(!current)return;if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}const leavingDungeon=current.id==='dungeon';wearSwim(false);showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;beerService?.clear();beerService=null;workplaceResidents.restore();bookshopCustomers.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();onsenGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;current=null;if(s?.id===CITY_RESTAURANT.id)hands.firstPersonVisible=!thirdPerson;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);
  // and back out again the same way, by the same rotation: you leave facing where you
  // were facing inside, which for somebody who walked at the door is the street.
  if(s){yaw=roomToStreet(roomYaw,s,roomLayout);pitch=THREE.MathUtils.clamp(roomPitch,-.55,.55);}
@@ -1080,7 +1031,7 @@ function updatePlayer(dt){
   turnQ.setFromAxisAngle(yAxis,Math.atan2(-moveVec.x,-moveVec.z));player.quaternion.slerp(turnQ,1-Math.pow(.001,dt));playerRunning=running;
  }
  playerSpeed=THREE.MathUtils.damp(playerSpeed,Math.hypot(player.position.x-fromX,player.position.z-fromZ)/Math.max(dt,1e-3),12,dt);
- updateDoorways(dt);
+
  player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):1.7+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';const sway=Math.min(1,tipsy/DRUNK);camera.rotation.set(pitch+Math.sin(elapsed*.9)*.012*sway,yaw+Math.sin(elapsed*.55)*.02*sway,Math.sin(elapsed*.7)*.025*sway);if(thirdPerson)placeThirdPerson(dt);
  const fov=cameraControls.settings.fov-controllerFrame.zoom*18;if(Math.abs(camera.fov-fov)>.01){camera.fov=THREE.MathUtils.damp(camera.fov,fov,12,dt);camera.updateProjectionMatrix();}
 }
@@ -1121,6 +1072,7 @@ function setTime(){
  return day;
 }
 $('#exitRoomButton').onclick=()=>crossThreshold(async()=>leaveRoom());
+$('#enterBuildingButton').onclick=()=>{const s=doorSite;if(s&&!current&&!roomLoading)void crossThreshold(()=>enterRoom(s));};
 function syncView(){
  document.body.classList.remove('diorama');camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
  room.traverse(o=>{if(o.userData.cutaway)o.layers.set(0);});
@@ -1268,7 +1220,7 @@ document.addEventListener('keydown',e=>{
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Home'].includes(e.code))e.preventDefault();keys[e.code]=true;
  if(!started)return;
  if(e.code==='Home'&&!e.repeat)centreCamera();
- if(e.code==='KeyE'&&!e.repeat)doInteract();if(e.code==='KeyR'&&!e.repeat)drinkNow();if(e.code==='KeyQ'&&!e.repeat)toggleDir(true);if(e.code==='KeyB'&&!e.repeat)activities.bag();if(e.code==='KeyN'&&!e.repeat)$('#timeButton').click();if(e.code==='KeyV'&&!e.repeat)setThirdPerson(!thirdPerson);if(e.code==='KeyG'&&!e.repeat)movesMenu();
+ if(e.code==='KeyE'&&!e.repeat)doInteract();if(e.code==='Enter'&&!e.repeat){const b=[$('#enterBuildingButton'),$('#exitRoomButton')].find(b=>!b.classList.contains('hidden'));b?.click();}if(e.code==='KeyR'&&!e.repeat)drinkNow();if(e.code==='KeyQ'&&!e.repeat)toggleDir(true);if(e.code==='KeyB'&&!e.repeat)activities.bag();if(e.code==='KeyN'&&!e.repeat)$('#timeButton').click();if(e.code==='KeyV'&&!e.repeat)setThirdPerson(!thirdPerson);if(e.code==='KeyG'&&!e.repeat)movesMenu();
 });document.addEventListener('keyup',e=>keys[e.code]=false);
 function setRunning(value){touchRunning=value;$('#run').setAttribute('aria-pressed',String(value));$('#run').innerHTML=runButtonFace(value);}
 // Icons on the buttons, and the bag, which only appears when there is something in it.
@@ -1421,8 +1373,9 @@ $('#jump').addEventListener?.('pointerdown',()=>pressedControls.add('jump'));
 function updateContextControls(){
  document.body.classList.toggle('hud-seated',!!seated);
  const blocked=cameraControls.active||roomLoading||activities.paused||inspector?.active||!$('#directory').classList.contains('hidden')||!$('#qte').classList.contains('hidden');
- const exit=activeRoomLayout?.exit||roomDoorway||[0,0,3.8];
- $('#exitRoomButton').classList.toggle('hidden',!roomExitVisible({playing:started,inside:!!current,paused:blocked,seated,position:player.position,exit}));
+ $('#exitRoomButton').classList.toggle('hidden',!roomExitVisible({playing:started,inside:!!current,paused:blocked,seated}));
+ const door=roomExitVisible({playing:started,inside:!current,paused:blocked||!!bicycleRide,seated})?doorNearby():null;
+ if(door!==doorSite){doorSite=door;const b=$('#enterBuildingButton');b.classList.toggle('hidden',!door);if(door){b.textContent='Enter '+door.title;b.setAttribute('aria-label','Enter '+door.title);}}
  const now=performance.now();
  if(!blocked&&(move2.lengthSq()>.02||Math.hypot(touchSticks.move.x,touchSticks.move.y)>.05)){controlsMovingUntil=now+1400;controlsTouchedAt=now;}
  // Hold the action button for a moment after its target is lost. Walking past scenery
