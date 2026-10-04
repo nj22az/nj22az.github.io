@@ -2,6 +2,7 @@ import * as THREE from '../../../vendor/three.module.js';
 import {assetURL} from '../../assets.js';
 import {STORE_BRANDS,BRAND_ATLAS_KEYS} from '../../commerce/brands.js';
 import {GROCERY_ITEMS as STORE_ITEMS} from '../../commerce/catalogue.js';
+import {FLAVOURS} from '../../commerce/flavours.js';
 
 export const POSTER_SPECS=Object.freeze([
  {id:'tea',file:'thuan-labels/golden-tea.webp',title:"GOLDEN MILK TEA · Golden milk tea",position:[-6.325,2.02,1.3],yaw:Math.PI/2,approach:[-5.15,1.55,1.3]},
@@ -9,12 +10,54 @@ export const POSTER_SPECS=Object.freeze([
  {id:'biscuit',file:'thuan-labels/stick-bites.webp',title:"STICK BITES · Stick Bites",position:[6.325,2.02,2.8],yaw:-Math.PI/2,approach:[5.1,1.55,2.8]},
 ]);
 export const ATLAS_COLS=4,ATLAS_ROWS=20;
+/**
+ * The atlas is two halves side by side. The left half is the original packaging and the
+ * shelf prices, cell for cell as they always were (the painted overlays cover its top
+ * rows). The right half holds the other flavours of each line (flavours.js), painted
+ * from the original pack. ATLAS_SPAN is the width in cells that UVs are divided by.
+ */
+export const ATLAS_SPAN=ATLAS_COLS*2;
 const COLS=ATLAS_COLS,ROWS=ATLAS_ROWS,TW=256,TH=128;
 const slots=new Map(BRAND_ATLAS_KEYS.map((id,i)=>[id,i]));
 export const packagingSlot=id=>slots.get(id==='bun'?'buns':id);
 // Packaging takes the first rows, shelf prices the rest. The two printed overlays
 // only cover the first eight rows, so anything added after them is drawn here.
 const priceSlot=id=>BRAND_ATLAS_KEYS.length+STORE_ITEMS.findIndex(item=>item.id===id);
+/** Flavour k (1 = the first flavour) of a line: its cell in the right half, in order. */
+const variantCells=new Map();
+for(const [id,list] of Object.entries(FLAVOURS))list.forEach(([name,hue],i)=>variantCells.set(id+':'+(i+1),{index:variantCells.size,id,name,hue}));
+if(variantCells.size>COLS*ROWS)throw Error('Too many Sakura flavours for the atlas');
+const cellOrigin=(slot,right=false)=>[(slot%COLS+(right?COLS:0))*TW,Math.floor(slot/COLS)*TH];
+/**
+ * How far a pack's printed UVs move to show flavour k instead of the original: added to
+ * the label's UVs per instance on the shelf (sakura-interior.js). [0,0] for the original.
+ */
+export function flavourShift(id,k){
+ const cell=k>0&&variantCells.get((id==='bun'?'buns':id)+':'+k);if(!cell)return [0,0];
+ const base=packagingSlot(id),[bx,by]=cellOrigin(base),[vx,vy]=cellOrigin(cell.index,true);
+ return [(vx-bx)/TW/ATLAS_SPAN,-(vy-by)/TH/ROWS];
+}
+/** Rotates the hue of an RGBA pixel block in place (the standard luminance-preserving matrix). */
+function hueRotate(data,degrees){
+ const a=degrees*Math.PI/180,c=Math.cos(a),s=Math.sin(a);
+ const m=[.213+c*.787-s*.213,.715-c*.715-s*.715,.072-c*.072+s*.928,.213-c*.213+s*.143,.715+c*.285+s*.140,.072-c*.072-s*.283,.213-c*.213-s*.787,.715-c*.715+s*.715,.072+c*.928+s*.072];
+ for(let i=0;i<data.length;i+=4){const r=data[i],g=data[i+1],b=data[i+2];data[i]=m[0]*r+m[1]*g+m[2]*b;data[i+1]=m[3]*r+m[4]*g+m[5]*b;data[i+2]=m[6]*r+m[7]*g+m[8]*b;}
+}
+/** Paints every flavour from its original pack: the same print, turned in hue, with its flavour named on a ribbon. */
+function paintFlavours(ctx){
+ if(typeof ctx.getImageData!=='function')return;
+ for(const cell of variantCells.values()){
+  const [bx,by]=cellOrigin(packagingSlot(cell.id)),[vx,vy]=cellOrigin(cell.index,true);
+  let block;try{block=ctx.getImageData(bx,by,TW,TH);}catch{return;}
+  if(!block?.data)return;
+  hueRotate(block.data,cell.hue);ctx.putImageData(block,vx,vy);
+  ctx.save();ctx.translate(vx,vy);
+  ctx.font='bold 19px sans-serif';const w=Math.min(TW-24,(ctx.measureText(cell.name).width||cell.name.length*10)+22);
+  ctx.fillStyle='rgba(255,250,236,.94)';ctx.fillRect(TW-12-w,TH-40,w,26);ctx.fillStyle='#b63831';ctx.fillRect(TW-12-w,TH-40,5,26);
+  ctx.fillStyle='#2f2a24';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(cell.name,TW-12-w/2+2,TH-27,w-10);
+  ctx.restore();
+ }
+}
 const posterGeometry=new THREE.PlaneGeometry(1.06,1.59);
 let labelMaterial=null;const posterMaterials=new Map();
 
@@ -39,7 +82,7 @@ function emblem(ctx,kind,x,y,r,color){
  ctx.restore();
 }
 export function createLabelAtlas(){
- const canvas=document.createElement('canvas');canvas.width=COLS*TW;canvas.height=ROWS*TH;
+ const canvas=document.createElement('canvas');canvas.width=ATLAS_SPAN*TW;canvas.height=ROWS*TH;
  const ctx=canvas.getContext('2d');ctx.fillStyle='#f0e5ca';ctx.fillRect(0,0,canvas.width,canvas.height);
  for(const [id,index] of slots){
   const b=STORE_BRANDS[id]||STORE_BRANDS.stock,x=index%COLS*TW,y=Math.floor(index/COLS)*TH;
@@ -59,12 +102,13 @@ export function createLabelAtlas(){
   ctx.textAlign='left';ctx.fillStyle='#41362a';ctx.font='bold 23px serif';ctx.fillText(b.name,10,37,236);
   ctx.font='17px sans-serif';ctx.fillText(item.jp,10,63,236);ctx.textAlign='right';ctx.fillStyle='#a62e28';ctx.font='bold 45px sans-serif';ctx.fillText('¥'+item.cost,244,112,230);ctx.restore();
  }
+ paintFlavours(ctx);
  return canvas;
 }
 export function getLabelMaterial(){
  if(!labelMaterial){const texture=new THREE.CanvasTexture(createLabelAtlas());texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=2;
   labelMaterial=new THREE.MeshBasicMaterial({map:texture,toneMapped:false});labelMaterial.name='Sakura fictional packaging atlas';
-  for(const [row,file] of [[0,'packaging-atlas.webp'],[1,'packaging-groceries.webp']])new THREE.ImageLoader().load(assetURL('graphics/konbini/'+file),image=>{const canvas=texture.image;canvas.getContext('2d').drawImage(image,0,row*512,canvas.width,512);texture.needsUpdate=true;},undefined,()=>{});}
+  for(const [row,file] of [[0,'packaging-atlas.webp'],[1,'packaging-groceries.webp']])new THREE.ImageLoader().load(assetURL('graphics/konbini/'+file),image=>{const canvas=texture.image,ctx=canvas.getContext('2d');ctx.drawImage(image,0,row*512,COLS*TW,512);paintFlavours(ctx);texture.needsUpdate=true;},undefined,()=>{});}
  return labelMaterial;
 }
 function fallbackPoster(id){
@@ -95,7 +139,7 @@ export function createStoreAdvertising({room,reg,action,posterSpecs=POSTER_SPECS
   for(let i=0;i<p.count;i++){
    positions.push(p.getX(i),p.getY(i),p.getZ(i));normals.push(n.getX(i),n.getY(i),n.getZ(i));
    // Pixel gutters avoid sampling neighbouring labels through the mip chain.
-   uvs.push((slot%COLS+(2+uv.getX(i)*(TW-4))/TW)/COLS,1-(Math.floor(slot/COLS)+(2+(1-uv.getY(i))*(TH-4))/TH)/ROWS);
+   uvs.push((slot%COLS+(2+uv.getX(i)*(TW-4))/TW)/ATLAS_SPAN,1-(Math.floor(slot/COLS)+(2+(1-uv.getY(i))*(TH-4))/TH)/ROWS);
   }
   for(const i of geometry.index.array)indices.push(offset+i);geometry.dispose();count++;
  }

@@ -12,6 +12,8 @@ import {PALETTE,fluorescent} from '../../render/dusk.js';
 import {buildSakuraCheer,buildSakuraBand} from './sakura-cheer.js';
 import {buildSakuraLife} from './sakura-life.js';
 import {buildMagazineRack} from './sakura-magazine-rack.js';
+import {buildShelfEdges} from './sakura-shelf-edge.js';
+import {shelfArtMaterial,flavouredArt,flavourForColumn,setFlavour,flavourTint} from './shelf-flavours.js';
 let model=null;
 /**
  * The shop's building and fittings (sakura-shell.js), made once and cloned into the room.
@@ -70,22 +72,42 @@ export function buildSakuraInterior({room,reg,action,exit}){
  const advertising=createStoreAdvertising({room,reg,action,posterSpecs:[]});
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);return o;};
  for(const spec of SHOP_STOCK){const shelf=SAKURA_SHELVES[spec.id];if(!shelf)continue;
-  const template=shopProductTemplate(spec.id),pair=[template.body,template.art].map((geometry,i)=>{const mesh=new THREE.InstancedMesh(geometry,materials[i],spec.capacity);mesh.name='Sakura '+spec.id+(i?' packaging':' goods');room.add(mesh);return mesh;});
-  const matrices=[],perLevel=spec.capacity/shelf.levels.length,columns=shelf.columns||6,rows=perLevel/columns;
+  const template=shopProductTemplate(spec.id),perLevel=spec.capacity/shelf.levels.length,columns=shelf.columns||6,rows=perLevel/columns;
   // Faced by the pack's own size: never closer than its width across or its depth back.
   const size=template.bounds.getSize(new THREE.Vector3()),gap={spacing:Math.max(shelf.spacing,size.x+.012),depth:Math.max(shelf.depth,size.z+.01)};
-  for(let slot=0;slot<spec.capacity;slot++){
-   const local=slot%perLevel,along=(local%columns-(columns-1)/2)*gap.spacing,depth=(Math.floor(local/columns)-(rows-1)/2)*gap.depth;
+  // A konbini board is full from upright to upright. Where the shelf says how wide it is,
+  // the packs stand shoulder to shoulder and the rest of the board is filled with the
+  // line's other flavours: on display, never counted as stock, never sold out.
+  const tight=size.x+.015,across=shelf.width?Math.max(columns,Math.floor(shelf.width/tight)):columns;
+  if(across>columns)gap.spacing=tight;
+  const first=Math.floor((across-columns)/2),extra=(across-columns)*rows*shelf.levels.length;
+  const art=flavouredArt(template.art,spec.capacity+extra);
+  const pair=[template.body,art].map((geometry,i)=>{const mesh=new THREE.InstancedMesh(geometry,i?shelfArtMaterial():materials[0],spec.capacity+extra);mesh.name='Sakura '+spec.id+(i?' packaging':' goods');room.add(mesh);return mesh;});
+  const matrices=[];
+  const place=(slot,level,column,row)=>{
+   const along=(column-(across-1)/2)*gap.spacing,depth=(row-(rows-1)/2)*gap.depth;
    const x=shelf.x+Math.cos(shelf.yaw)*along+Math.sin(shelf.yaw)*depth,z=shelf.z-Math.sin(shelf.yaw)*along+Math.cos(shelf.yaw)*depth;
-   const y=shelf.levels[Math.floor(slot/perLevel)]+.002-template.bounds.min.y;
-   dummy.position.set(x,y,z);dummy.rotation.set(0,shelf.yaw,0);dummy.updateMatrix();matrices.push(dummy.matrix.clone());pair.forEach(m=>m.setMatrixAt(slot,dummy.matrix));
+   const y=shelf.levels[level]+.002-template.bounds.min.y;
+   dummy.position.set(x,y,z);dummy.rotation.set(0,shelf.yaw,0);dummy.updateMatrix();pair.forEach(m=>m.setMatrixAt(slot,dummy.matrix));
+   const k=flavourForColumn(spec.id,column,across);setFlavour(art,slot,spec.id,k);pair[0].setColorAt(slot,flavourTint(spec.id,k));
+   return {x,y,z,along};
+  };
+  for(let slot=0;slot<spec.capacity;slot++){
+   const local=slot%perLevel,{x,y,z,along}=place(slot,Math.floor(slot/perLevel),first+local%columns,Math.floor(local/columns));
+   matrices.push(dummy.matrix.clone());
    unitPositions.set(spec.id+':'+slot,[x,y+Math.min(.15,template.bounds.max.y*.6),z]);unitApproaches.set(spec.id+':'+slot,[shelf.stand[0]+Math.cos(shelf.yaw)*along,0,shelf.stand[2]-Math.sin(shelf.yaw)*along]);
+  }
+  let slot=spec.capacity;
+  for(let level=0;level<shelf.levels.length;level++)for(let column=0;column<across;column++){
+   if(column>=first&&column<first+columns)continue;
+   for(let row=0;row<rows;row++)place(slot++,level,column,row);
   }
   pair.forEach(m=>m.computeBoundingSphere());batches.push({spec,pair,matrices});
   const front=new THREE.Vector3(Math.sin(shelf.yaw),0,Math.cos(shelf.yaw));
   for(const level of shelf.levels)advertising.label(spec.id==='bun'?'buns':spec.id,[shelf.x+front.x*(shelf.fridge!=null?.34:.12),level-.025,shelf.z+front.z*(shelf.fridge!=null?.34:.12)],.23,.075,{price:spec.id!=='bun',yaw:shelf.yaw});
   const o=anchor([shelf.x+front.x*.17,shelf.levels.at(-1)+.14,shelf.z+front.z*.17],'Examine '+(spec.brand||'SAKURA')+' · '+spec.name,()=>action('store-item',spec.name,{...spec,jp:spec.jp||"Meat bun",text:spec.text||'A wrapped steamed bun to take away.'}));o.userData.storeItem=spec.id;
  }
+ buildShelfEdges(room);
  // Fittings the model came with that nothing stood on (SAKURA_DRESSING). Instanced the
  // same way as the goods, but never restocked: none of it is for sale.
  for(const piece of SAKURA_DRESSING){

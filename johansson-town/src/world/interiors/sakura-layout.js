@@ -155,6 +155,8 @@ function standBack(x,z,stand){
  */
 export function facingsFor(perLevel,most){for(let n=Math.min(most,perLevel);n>1;n--)if(perLevel%n===0)return n;return 1;}
 
+/** What a board of each island holds across, inside its uprights: three bays of 1.65 m on the east run, one of 1.95 on the others. */
+const BAY_WIDTH={east:1.55,middle:1.85,west:1.85};
 function bay(ids,site,x,z,yaw,stand){
  const on=SHELF_ISLANDS[site],[px,pz]=on.place(x,z),back=standBack(x,z,stand),[sx,sz]=on.place(back[0],back[2]);
  const facing=yaw+on.yaw,share=Math.floor(AISLE_LEVELS.length/ids.length),extra=AISLE_LEVELS.length%ids.length;
@@ -163,7 +165,7 @@ function bay(ids,site,x,z,yaw,stand){
  // (the heavier ones, low down) taking any left over.
  for(const [i,id] of ids.entries()){
   const take=share+(i<extra?1:0);
-  SAKURA_SHELVES[id]={x:px+Math.sin(facing)*.14,z:pz+Math.cos(facing)*.14,levels:AISLE_LEVELS.slice(level,level+take),yaw:facing,stand:[sx,0,sz],spacing:.23,depth:.12,columns:facingsFor(shelfCapacity(id)/take,8)};
+  SAKURA_SHELVES[id]={x:px+Math.sin(facing)*.14,z:pz+Math.cos(facing)*.14,levels:AISLE_LEVELS.slice(level,level+take),yaw:facing,stand:[sx,0,sz],spacing:.23,depth:.12,columns:facingsFor(shelfCapacity(id)/take,8),width:BAY_WIDTH[site]};
   level+=take;
  }
 }
@@ -198,7 +200,7 @@ for(const {column,lines} of COLD_CABINET){
  const x=-1.60+column*1.33,stand=standBack(x,-3.48,[x,0,-2.78]);
  for(const [id,levels] of lines){
   const perLevel=shelfCapacity(id)/levels.length;
-  SAKURA_SHELVES[id]={x,z:-3.48,levels:levels.map(l=>FRIDGE_LEVELS[l]),yaw:0,stand,spacing:.19,depth:.12,columns:facingsFor(perLevel,6),fridge:column};
+  SAKURA_SHELVES[id]={x,z:-3.48,levels:levels.map(l=>FRIDGE_LEVELS[l]),yaw:0,stand,spacing:.19,depth:.12,columns:facingsFor(perLevel,6),fridge:column,width:1.2};
  }
 }
 /**
@@ -211,7 +213,7 @@ const CHILLED_BAYS=[['rice','bento',-.93],['sandwich','bread',.43],['pudding','y
 for(const [upper,lower,z] of CHILLED_BAYS){
  const stand=standBack(-6.4,z,[-5.5,0,z]),L=CHILLER.levels;
  for(const [id,levels,x] of [[upper,[L[2],L[3]],-6.48],[lower,[L[0],L[1]],-6.4]])
-  SAKURA_SHELVES[id]={x,z,levels,yaw:Math.PI/2,stand,spacing:.2,depth:.13,columns:facingsFor(shelfCapacity(id)/levels.length,6)};
+  SAKURA_SHELVES[id]={x,z,levels,yaw:Math.PI/2,stand,spacing:.2,depth:.13,columns:facingsFor(shelfCapacity(id)/levels.length,6),width:1.25};
 }
 /** The bun steamer on the counter, beside the hot case: two racks behind glass. */
 export const BUN_STEAMER=Object.freeze({x:4.8,z:2.45,w:.38,d:.52,top:1.0,h:.44});
