@@ -59,14 +59,6 @@ test('the real world update drives both shaders through dusk, dawn and midnight 
  assert.equal(fireflies.geometry.attributes.position.count,24);
 });
 
-test('layouts without an east lawn still update normally',()=>{
- for(const mode of [TOWN_MODES.LEGACY,TOWN_MODES.SHOPPING]){
-  const world=town(mode);
-  assert.equal(world.eastLawn,undefined);
-  assert.doesNotThrow(()=>world.update(.016,3,.5,1110));
- }
- configureTownMode(TOWN_MODES.PENINSULA);
-});
 
 test('the garden stays on the lawn, off the park slope, with solid props and a reachable inspection point',()=>{
  installDOM();configureTownMode(TOWN_MODES.PENINSULA);

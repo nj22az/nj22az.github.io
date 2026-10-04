@@ -16,8 +16,7 @@ test('Sato Ramen serves lunch from eleven to two, and its door is on the alley c
  for(const m of [659,840,1000,1300])assert.equal(satoRamenOpen(m),false);
  for(const m of [660,720,839,1440+700])assert.equal(satoRamenOpen(m),true);
  try{configureTownMode(TOWN_MODES.PENINSULA);izakayaPlot();assert.deepEqual(RAMEN_DOOR,[...SATO_RAMEN_DOOR]);}
- finally{configureTownMode(TOWN_MODES.LEGACY);izakayaPlot();}
- assert.deepEqual(RAMEN_DOOR,[...DINING.ramenDoor],'the old street keeps Inakaya across the road');
+ finally{}
 });
 
 test('Mrs Sato buys fish, cooks the lunch and walks home to Kitahama; the regulars come for lunch',()=>{

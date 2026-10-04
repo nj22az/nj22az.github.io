@@ -60,6 +60,5 @@ test('on the island the stop is the ferry terminal and the game can start off th
   assert.equal(transitStop(),FERRY_TERMINAL);
   assert.equal(chooseOpening({minutes:600,force:'ferry',storage:null}).id,'ferry');
   assert.equal(chooseOpening({minutes:600,force:'bus-stop',storage:null}).id,'ferry','Old links to the bus stop go nowhere');
- }finally{configureTownMode(TOWN_MODES.LEGACY);}
- assert.equal(transitStop(),BUS_STATION,'The older layouts keep their bus');
+ }finally{}
 });

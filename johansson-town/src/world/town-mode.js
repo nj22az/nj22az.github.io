@@ -9,13 +9,13 @@ export const TOWN_MODES=Object.freeze({
   */
  PENINSULA:'peninsula'
 });
-let activeMode=TOWN_MODES.LEGACY;
+let activeMode=TOWN_MODES.PENINSULA;
 
 // The compact shopping district and the peninsula are both published layouts. Legacy
 // callers keep the older residential fixtures available for archived interior and
 // layout tests.
-export function configureTownMode(mode=TOWN_MODES.LEGACY){
- activeMode=Object.values(TOWN_MODES).includes(mode)?mode:TOWN_MODES.LEGACY;
+export function configureTownMode(){
+ activeMode=TOWN_MODES.PENINSULA;
  return activeMode;
 }
 export const shoppingDistrictActive=()=>activeMode!==TOWN_MODES.LEGACY;

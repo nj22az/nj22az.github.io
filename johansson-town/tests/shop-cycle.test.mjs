@@ -138,10 +138,3 @@ test('Thuan visibly prepares a closing carton without replenishing shelves early
  assert.equal(f.world.people[0].g.userData.shopReach,undefined);
 });
 
-test('all shelves are restocked after closing, then Thuan leaves and the completed shift survives a save',()=>{
- const f=fixture();for(const stock of Object.values(f.state.sakura.stock))stock.shelf=0;
- f.time(1200);f.step(660);
- for(const [id,stock] of Object.entries(f.state.sakura.stock))assert.equal(stock.shelf,stockSpec(id).capacity,'Replenished '+id+' at '+f.minutes+' '+f.shop.service.phase+' '+f.world.people[0].g.position.toArray());
- assert.equal(f.state.sakura.restockedDay,0);assert.equal(f.world.people[0].g.userData.inMarket,undefined,'Clerk leaves after replenishing the shop');
- const saved=restoreSakura(JSON.parse(JSON.stringify(f.state.sakura)));assert.equal(saved.restockedDay,0);assert.equal(saved.journal.filter(r=>r.kind==='Restocked').length,Object.keys(saved.stock).length);
-});

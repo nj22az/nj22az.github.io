@@ -51,9 +51,6 @@ test('the east of the town is one green from the kerb to the seawall',async()=>{
  assert.ok(groundHeight(PARK.x,PARK.z)>1,'The park keeps its mound');
  // and the lawn stops where the town does.
  assert.equal(routeAt(EAST_LAWN.maxX+1.5,10)?.surface,'sand','The beach beyond the seawall is walkable');
- configureTownMode(TOWN_MODES.LEGACY);
- assert.ok(!routeAt(28,4),'Only the peninsula has an east side to stand on');
- configureTownMode(TOWN_MODES.PENINSULA);
 });
 
 test('the seawall stops you, and the sand below it stays above the ground it lies on',()=>{

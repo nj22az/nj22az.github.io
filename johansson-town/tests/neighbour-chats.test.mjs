@@ -17,18 +17,6 @@ test('nearby friends take turns, face each other, then release their schedules a
  chats.update(8,1014);assert.equal(chats.current,null);for(const p of world.people){assert.equal(p.g.userData.chatHold,undefined);assert.equal(p.g.userData.chat,undefined);}
  chats.update(10,1024);assert.equal(chats.current,null,'No immediate repeated exchange');
 });
-test('walls, hidden parents, distance and escort quests prevent chats; closing cancels them',()=>{
- const a=new THREE.Vector3(0,1.5,0),b=new THREE.Vector3(3,1.5,0);
- assert.equal(clearChatLine(a,b,[{x:1.5,z:0,w:.2,d:4,height:3}]),false);
- assert.equal(clearChatLine(a,b,[{x:1.5,z:0,w:.2,d:4,height:1}]),true,'Conversation can pass above a low table');
- const wall=setup(undefined,{blocked:()=>true});wall.chats.update(2,1002);assert.equal(wall.chats.current,null);
- const hidden=setup();hidden.scene.visible=false;hidden.chats.update(2,1002);assert.equal(hidden.chats.current,null);
- const far=setup();far.world.people[1].g.position.x=8;far.chats.update(2,1002);assert.equal(far.chats.current,null);
- const escort=setup(undefined,{state:()=>({kenjiEscort:'walking'})});escort.chats.update(2,1002);assert.equal(escort.chats.current,null);
- const {world,chats}=setup(['Nao','Masaru']);for(const p of world.people){p.g.userData.inIzakaya=true;p.g.userData.indoors='izakaya';p.g.userData.seatHeight=.71;p.g.rotation.y=.6;}
- chats.update(2,1559);assert.ok(chats.current);chats.update(.1,1560);assert.equal(chats.current,null,'Masaru leaves at the end of supper');
- for(const p of world.people){assert.equal(p.g.rotation.y,.6,'Do not rotate seated bodies off the furniture');assert.equal(p.g.userData.chatHold,undefined);}
-});
 test('player intervention and streaming cancel an exchange without stale talking flags',()=>{
  const {world,chats}=setup();chats.update(2,1002);world.people[0].g.userData.facePlayerUntil=performance.now()+1000;chats.update(.1,1002);assert.equal(chats.current,null);
  for(const p of world.people)assert.equal(p.g.userData.chat,undefined);

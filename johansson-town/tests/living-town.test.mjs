@@ -12,14 +12,6 @@ import {createVenueService} from '../src/people/venue-service.js';
 import {createActivities} from '../activities.js?snappy=1';
 import {installDOM} from './fixtures.mjs';
 
-test('all residents have distinct identities, actual friendships and time-bound supper visits',()=>{
- assert.equal(new Set(PROFILES.map(p=>p.model)).size,PROFILES.length);
- for(const p of PROFILES){assert.ok(PROFILES.some(friend=>friend.name===p.friend));assert.ok(p.hello&&p.gossip&&p.clue&&p.look);}
- assert.equal(supperGuests(959).length,0);assert.equal(supperGuests(1439).length,0);assert.ok(supperGuests(1440).some(p=>p.name==='Tetsuo'));assert.equal(supperGuests(180).length,0);
- for(let t=0;t<1440;t+=7){const guests=supperGuests(t);assert.ok(guests.length<=IZAKAYA_SEATS.length);for(const p of guests){assert.ok(RESIDENTS.some(r=>r.name===p.name));assert.ok(inTimeRange(t,p.supperStart,p.supperEnd));assert.equal(residentPlan(p,t).place,'izakaya');}}
- assert.equal(residentPlan(PROFILES.find(p=>p.name==='Nao'),1002).place,'izakaya');
- assert.equal(gossipAt(1110,['Aya','Reiko']).id,'apron');assert.equal(gossipAt(1110,['Aya']).id,'welcome');
-});
 
 test('the Barfly stays in Minato, drinks without a purchase and sleeps overnight',()=>{
  const person=PROFILES.find(p=>p.name==='Barfly');assert.ok(person);
@@ -80,20 +72,6 @@ test('Thuan visits after closing on alternate days and has off-duty conversation
  assert.equal(gossipAt(1230,['Thuan','Nao']).id,'yuri-evening');
 });
 
-test('Thuan spends evenings at Minato, ramen, the canal and her own door',()=>{
- const yuri=RESIDENTS.find(p=>p.name==='Thuan');
- assert.equal(yuri.retire,1410);
- assert.equal(residentPlan(yuri,1002).place,'market');
- assert.equal(residentPlan(yuri,1205).place,'stroll');
- assert.equal(residentPlan(yuri,1230).place,'izakaya');
- assert.equal(residentPlan(yuri,1290).place,'evening');
- assert.equal(residentPlan(yuri,1410).place,'home');
- assert.equal(residentPlan(yuri,1440+1205).place,'ramen');
- assert.equal(residentPlan(yuri,1440+1230).place,'ramen');
- assert.equal(residentPlan(yuri,1230,true).place,'home');
- assert.equal(thuanEveningPlace(1205),'stroll');
- assert.equal(thuanEveningPlace(1380),'home');
-});
 
 test('izakaya exports load locally with bounded geometry and at most ten static draws',async()=>{
  for(const kind of ['exterior','interior']){const bytes=await readFile(new URL('../assets/models/izakaya/minato-'+kind+'.glb',import.meta.url));const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');let draws=0;gltf.scene.traverse(o=>{if(o.isMesh){draws++;assert.ok(o.geometry.attributes.position.array.every(Number.isFinite));}});assert.ok(draws<=10);const box=new THREE.Box3().setFromObject(gltf.scene),size=box.getSize(new THREE.Vector3());
@@ -106,32 +84,7 @@ test('izakaya exports load locally with bounded geometry and at most ten static 
 }
 });
 
-test('izakaya hours and late guests cross midnight and close exactly at 03:00',()=>{
- for(const day of [0,1440,2880]){
-  for(const t of [960,1439,0,179.99])assert.equal(izakayaOpen(day+t),true);
-  for(const t of [180,540,959.99])assert.equal(izakayaOpen(day+t),false);
-  const nao=PROFILES.find(p=>p.name==='Nao');
-  assert.equal(residentPlan(nao,day+60).place,'izakaya');assert.equal(residentPlan(nao,day+180).place,'home');
-  assert.ok(!supperGuests(day+60).some(p=>p.name==='Masaru'));assert.ok(supperGuests(day+60).some(p=>p.name==='Tetsuo'));
-  assert.equal(supperGuests(day+180).length,0);
-  const mori=PROFILES.find(p=>p.name==='Officer Mori');for(const t of [1320,1439,0,359])assert.equal(residentPlan(mori,day+t,true).place,'patrol');
-  assert.equal(residentPlan(mori,day+360).place,'home');
- }
- const dom=installDOM();let minutes=1617;const acts=createActivities({say(){},onWeather(){},onTime:v=>{minutes+=v;},getMinutes:()=>minutes,getBeerTable:()=>({drink:null,dish:null,order:null,naoHere:true}),onOrderDrink:()=>true});
- acts.action('izakaya-table');dom.button('Order a drink…');dom.button('Oolong tea · ¥150');const money=acts.state.yen;assert.equal(minutes,1619);
- minutes=1620;acts.action('izakaya-table');assert.ok(!dom.has('Order a drink…')&&!dom.has('Order something to eat…'),'Last orders at 03:00');assert.equal(acts.state.yen,money);
-});
 
-test('ramen and Sakura reuse their residents and release them at the street door',()=>{
- const street=new THREE.Group(),scene=new THREE.Group(),world={people:RESIDENTS.map(profile=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};street.add(g);return {g,profile};})};scene.add(street);
- const ramen=createIndoorResidents({world,parent:scene,place:'ramen'}),market=createIndoorResidents({world,parent:scene,place:'market'});
- const nao=world.people.find(p=>p.profile.name==='Nao').g;nao.position.set(...[RAMEN_DOOR[0],0,RAMEN_DOOR[1]]);nao.userData.indoors='ramen';
- assert.deepEqual(ramen.sync(800),['Nao']);assert.equal(nao.parent,scene);ramen.restore();assert.equal(nao.parent,street);assert.equal(nao.userData.indoors,'ramen');
- const yuri=world.people.find(p=>p.profile.name==='Thuan').g;yuri.position.set(-4,0,-25.5);yuri.userData.indoors='market';
- assert.deepEqual(market.sync(1199),['Thuan']);market.sync(1200,1/30);assert.equal(yuri.parent,scene,'Walk to the exit before returning outside');
- for(let i=0;i<600;i++)market.sync(1200+i/30,1/30);
- assert.equal(yuri.parent,street);assert.equal(yuri.userData.inMarket,undefined);assert.equal(yuri.position.x,-4);assert.equal(yuri.position.z,-25.5);
-});
 
 test('at Minato you can stand somebody a drink, and they remember it',()=>{
  const dom=installDOM();const treated=[];

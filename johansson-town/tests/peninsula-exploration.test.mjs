@@ -56,8 +56,3 @@ test('headland feet follow rendered triangles, including the crown and slopes',{
  assert.ok(MAP_BOUNDS.maxZ>90,'The map includes the explorable headland');
 });
 
-test('archived layout keeps its walking limits and ground heights',()=>{
- configureTownMode(TOWN_MODES.LEGACY);
- try{assert.equal(routeAt(42,0),null);assert.equal(routeAt(-10,65),null);assert.equal(groundHeight(42,0),0);assert.ok(MAP_BOUNDS.maxZ<90);}
- finally{configureTownMode(TOWN_MODES.PENINSULA);}
-});

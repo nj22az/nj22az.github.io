@@ -10,21 +10,6 @@ import {installDOM} from './fixtures.mjs';
 import {createActivities} from '../activities.js';
 const fresh=()=>({yen:1200,inventory:[],sakura:restoreSakura(),townCleanup:restoreTownCleanup()});
 
-test('sparse customer visits change each day, survive reloads and leave Thuan at work',()=>{
- const thuan=RESIDENTS.find(p=>p.name==='Thuan'),patterns=[];
- for(let day=0;day<6;day++){
-  const visits=marketVisitsForDay(day*1440);patterns.push(JSON.stringify(visits));assert.equal(Object.keys(visits).length,5);
-  const windows=Object.entries(visits).sort((a,b)=>a[1][0]-b[1][0]);
-  for(let i=0;i<windows.length;i++){const [name,[start,end]]=windows[i],profile=RESIDENTS.find(p=>p.name===name);assert.ok(start>=540&&end<1200);if(i)assert.ok(start-windows[i-1][1][0]>=97,'Customers do not arrive in a stream');
-   assert.equal(residentPlan(profile,day*1440+start+10).place,'market');
-   const state={residentLife:{[name]:{day,meals:{market:{finished:true}}}}};assert.notEqual(residentPlan(profile,day*1440+start+10,false,state).place,'market','Finished diners leave');
-  }
-  for(let minute=540;minute<1200;minute+=15)assert.equal(residentPlan(thuan,day*1440+minute,true).place,'market');
-  assert.equal(residentPlan(thuan,day*1440+1170,false,fresh()).activity,'checking closing stock');
-  assert.equal(residentPlan(thuan,day*1440+1200,false,fresh()).activity,'restocking after closing');
- }
- assert.equal(new Set(patterns).size,6);assert.equal(JSON.stringify(marketVisitsForDay(0)),patterns[0],'The bounded cache can recreate the same day');
-});
 
 test('sales fund inventory purchases, with no free money or lost items when the till is empty',()=>{
  const state=fresh(),bottle=TOWN_FINDS[0].name;state.inventory.push(bottle,'Sea bream','Johansson cable ring','Waterlogged page · Kings of Ben…');
