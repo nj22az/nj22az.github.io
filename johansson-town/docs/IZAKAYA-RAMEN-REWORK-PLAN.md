@@ -3,7 +3,7 @@
 Progress (tick as each part ships):
 
 - [x] 1a Walls and posters of 1997
-- [ ] 1b Interactive items (pink phone, bottle keep, karaoke, inspects)
+- [x] 1b Interactive items (pink phone, bottle keep, karaoke, inspects)
 - [ ] 1c People at every hour, cleaning when closed
 - [ ] 1d Light (open lantern glow, closed work light)
 - [ ] 2 Sato Ramen detail pass

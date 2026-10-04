@@ -5,6 +5,7 @@ import {restoreArchive,seedArchive,fileDocument,retainArchive} from './src/offic
 import {createArchiveView} from './src/office/archive-ui.js';
 import {isWorkshopSite} from './src/world/businesses.js';
 import {harbourTimetable} from './src/people/commuter-schedule.js';
+import {createIzakayaPlay} from './src/people/izakaya-play.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {createMagazineReader} from './src/ui/magazine-reader.js';
@@ -237,6 +238,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
 
   function note(text){if(!state.notes.includes(text)){state.notes.push(text);state.notes=state.notes.slice(-100);save();}}
+  const izakayaPlay=createIzakayaPlay({state,show,close,spend,save,receipt,getMinutes,say,note});
   function inspectItem(item){if(!state.inspectedIds.includes(item.id)){state.inspectedIds.push(item.id);note(item.note);save();}}
   function openURL(){say('The ledger is kept here in town.');}
 
@@ -1001,6 +1003,9 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       case 'school-teacher':schoolTeacher(name);break;
       case 'school-taps':show('Wash station','Brass push taps over a concrete trough. You press one and it runs cold for exactly as long as you hold it. There is an orange net of soap hanging from the pipe, and somebody\'s blue sandal.',[['Rinse the sand off your feet',()=>{onTime(2);receipt('Wash station','Cold, clean, and the sand runs off down the trough. Your feet dry on the corridor concrete in a minute.');}],['Leave',close]]);break;
       case 'izakaya-gossip':izakayaGossip();break;
+      case 'izakaya-phone':izakayaPlay.phone();break;
+      case 'bottle-keep':izakayaPlay.bottleKeep();break;
+      case 'karaoke':izakayaPlay.karaoke();break;
       case 'city-dinner':cityDinner(name,detail);break;
       case 'city-trip':show('Evening boat to Naha','Thuan is at the terminal in a cardigan over the yellow blouse, with a cloth bag and the ferry tickets already bought. Fifty minutes across to Tomari, a taxi up to Kokusai-dōri, and a table by the window at Hoshizora, on the top floor of the Hotel Ryūsei. The last boat back leaves at half past eleven.',[['Board with Thuan',()=>{close();onTime(CITY_RESTAURANT.crossing);detail?.go?.();}],['Not tonight',close]]);break;
       case 'cat':cat();break;

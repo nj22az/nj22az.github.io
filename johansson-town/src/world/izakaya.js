@@ -4,6 +4,7 @@ import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from '
 import {createIzakayaTV} from './advertising-billboard.js';
 import {hangIzakayaPosters} from './interiors/izakaya-posters.js';
 import {buildIzakayaDressing} from './interiors/izakaya-dressing.js';
+import {buildIzakayaInteractive} from './interiors/izakaya-interactive.js';
 import {restaurantCollider,restaurantApproach,izakayaPlot,SATO_RAMEN_DOOR} from './dining-layout.js';
 import {SATO_RAMEN,satoRamenOpen} from './sato-ramen-layout.js';
 import {prepareIzakayaGlass} from './shop-glass.js';
@@ -132,6 +133,7 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  anchor([-.4,2.5,-5.6],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
  buildIzakayaDressing(room,{collider});
+ const play=buildIzakayaInteractive(room,{anchor,action,collider});
  // Imported American beer advertising: Barfly is a countertop mascot, not another resident.
  box([.58,.08,.45],[-4.4,1.34,-2.6],0x244b46,room,false);
  const barfly=addOwnedCharacter({parent:room,kind:'barfly',position:[-4.4,1.38,-2.6],height:.48,staticDisplay:true,yaw:.15});
@@ -139,7 +141,7 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture}
  beerSign.name='Hawaii Lager advertising';beerSign.position.set(-4.4,2.2,-2.95);room.add(beerSign);
  anchor([-4.4,1.6,-2.2],'Look at Hawaii Lager',()=>action('inspect','Hawaii Lager','An American lager advertisement sent by the harbour importer. The little Barfly mascot wears his favourite island shirt. Nao keeps the display at the quiet end of the counter.'));
  const owned=[barfly];
- return {owned,ownedUpdate:dt=>owned.forEach(actor=>actor.update(dt)),dispose:()=>owned.forEach(actor=>actor.dispose()),name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
+ return {keep:play,owned,ownedUpdate:dt=>owned.forEach(actor=>actor.update(dt)),dispose:()=>owned.forEach(actor=>actor.dispose()),name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
 }
 
 /**
