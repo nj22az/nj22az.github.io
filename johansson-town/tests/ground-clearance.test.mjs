@@ -11,10 +11,12 @@ import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
  * which is how the harbour came back from one. GROUND_LAYER sets the spacing -- this
  * measures whether the town actually keeps to it.
  */
-const CLEARANCE=.015,STEP=.25,TOLERATED=1;
+const CLEARANCE=.015,TOLERATED=1;
+const CENTRAL={minX:-45,maxX:45,minZ:-70,maxZ:45};
+const ISLAND={minX:-130,maxX:380,minZ:-190,maxZ:245};
 
 /** Every upward-facing, depth-writing facet the camera can see, sampled on a lattice. */
-function contestedSurfaces(scene){
+function contestedSurfaces(scene,{bounds=CENTRAL,step=.25}={}){
  scene.updateMatrixWorld(true);
  const columns=new Map(),v=new THREE.Vector3(),local=new THREE.Matrix4(),world=new THREE.Matrix4();
  const label=o=>{let name=o.name;for(let p=o.parent;!name&&p;p=p.parent)name=p.name;return name||o.geometry.type;};
@@ -40,19 +42,21 @@ function contestedSurfaces(scene){
    const y=(Math.max(...ys)+Math.min(...ys))/2;
    if(y<-2||y>14)continue;
    const [x1,x2,x3]=xs,[z1,z2,z3]=zs;
-   if(Math.min(...xs)<-45||Math.max(...xs)>45||Math.min(...zs)<-70||Math.max(...zs)>45)continue;
+   if(Math.max(...xs)<bounds.minX||Math.min(...xs)>bounds.maxX||Math.max(...zs)<bounds.minZ||Math.min(...zs)>bounds.maxZ)continue;
    // A downward face under a slab is back-face culled and never contends with it.
    if(material.side!==THREE.DoubleSide&&(x2-x1)*(z3-z1)-(z2-z1)*(x3-x1)>=0)continue;
    const denominator=(z2-z3)*(x1-x3)+(x3-x2)*(z1-z3);if(!denominator)continue;
    // Sampled off the lattice lines, so two patches that merely share an edge do not
    // read as one lying on the other.
-   for(let ix=Math.ceil(Math.min(...xs)/STEP);ix<=Math.floor(Math.max(...xs)/STEP);ix++)
-   for(let iz=Math.ceil(Math.min(...zs)/STEP);iz<=Math.floor(Math.max(...zs)/STEP);iz++){
-    const x=(ix+.37)*STEP,z=(iz+.37)*STEP;
+   // Clamp the lattice, not the whole triangle. Otherwise large terrain triangles
+   // crossing an audit boundary vanish from the check, hiding an island of overlap.
+   for(let ix=Math.max(Math.ceil(bounds.minX/step),Math.ceil(Math.min(...xs)/step));ix<=Math.min(Math.floor(bounds.maxX/step),Math.floor(Math.max(...xs)/step));ix++)
+   for(let iz=Math.max(Math.ceil(bounds.minZ/step),Math.ceil(Math.min(...zs)/step));iz<=Math.min(Math.floor(bounds.maxZ/step),Math.floor(Math.max(...zs)/step));iz++){
+    const x=(ix+.37)*step,z=(iz+.37)*step;
     const a=((z2-z3)*(x-x3)+(x3-x2)*(z-z3))/denominator,b=((z3-z1)*(x-x3)+(x1-x3)*(z-z3))/denominator;
     if(a<0||b<0||a+b>1)continue;
     const key=ix*100000+iz;let list=columns.get(key);if(!list)columns.set(key,list=[]);
-    list.push({name,y});
+    list.push({name,y,x,z});
    }
   }
  });
@@ -63,11 +67,11 @@ function contestedSurfaces(scene){
    const gap=list[j].y-list[i].y;if(gap>=CLEARANCE)break;
    if(list[i].name===list[j].name)continue;
    const id=[list[i].name,list[j].name].sort().join(' over ');
-   const entry=found.get(id)||{columns:0,gap:Infinity};
+   const entry=found.get(id)||{columns:0,gap:Infinity,sample:[list[i].x,list[i].y,list[i].z]};
    entry.columns++;entry.gap=Math.min(entry.gap,gap);found.set(id,entry);
   }
  }
- return [...found].map(([id,e])=>({id,area:e.columns*STEP*STEP,gap:e.gap})).filter(e=>e.area>=TOLERATED).sort((a,b)=>b.area-a.area);
+ return [...found].map(([id,e])=>({id,area:e.columns*step*step,gap:e.gap,sample:e.sample})).filter(e=>e.area>=TOLERATED).sort((a,b)=>b.area-a.area);
 }
 
 test('the ground layers are named rather than guessed',()=>{
@@ -81,9 +85,11 @@ test('no two outdoor surfaces share a plane',async()=>{
  const {createTown}=await import('../src/world/town.js?ground-clearance');
  const {createBusinesses}=await import('../src/world/businesses.js');
  const scene=new THREE.Scene();
- createTown({scene,sites:createBusinesses().filter(s=>['market','frontrow'].includes(s.id)),townMode:'peninsula',
+ createTown({scene,sites:createBusinesses(),townMode:'peninsula',
   mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
- const contested=contestedSurfaces(scene);
- assert.deepEqual(contested,[],'Surfaces within 15mm of one another over more than a square metre:\n'+
-  contested.map(e=>'  '+(e.gap*1000).toFixed(1)+'mm over '+e.area.toFixed(1)+' m²  '+e.id).join('\n'));
+ for(const options of [{bounds:CENTRAL,step:.25},{bounds:ISLAND,step:.5}]){
+  const contested=contestedSurfaces(scene,options);
+  assert.deepEqual(contested,[],'Surfaces within 15mm of one another over more than a square metre:\n'+
+   contested.map(e=>'  '+(e.gap*1000).toFixed(1)+'mm over '+e.area.toFixed(1)+' m²  '+e.id+' near '+e.sample.map(v=>v.toFixed(2)).join(', ')).join('\n'));
+ }
 });

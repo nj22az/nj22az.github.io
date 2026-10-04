@@ -6,3 +6,9 @@
 // shops covered: no pavement at all. Now both sides have a footway behind a kerb.
 export const MAIN_ROAD=Object.freeze({x:-2.75,width:4.5,west:-5,east:-.5,minZ:-38,maxZ:20.5,pavementWest:-7.55,pavementEast:5.2});
 export const SHOP_CROSSING_Z=5.1;
+
+/** The shopping street’s open service turnout: deliveries turn here without mounting a kerb. */
+export const MAIN_SERVICE_COURT=Object.freeze({id:'main-service-court',minX:-7.1,maxX:.35,minZ:13.3,maxZ:20.3});
+
+/** Freight stops in a west-side pullout, keeping the southbound lane open. */
+export const MAIN_LOADING_APRON=Object.freeze({minX:-7.1,maxX:-4.95,minZ:2,maxZ:13.3});

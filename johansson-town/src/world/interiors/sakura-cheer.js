@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {buildSakuraHotFood} from './sakura-counter-detail.js';
 
 /**
  * The cheerful half of a real konbini, and Thuan's back office.
@@ -30,7 +31,7 @@ export const HOT_CASE=Object.freeze({x:4.82,z:1.7,w:.4,d:.52,h:.36,top:1.0});
 export const ODEN_POT=Object.freeze({x:4.8,z:3.2});
 function buildHotCase(room,anchor,action){
  const C=HOT_CASE,y0=C.top,cx=C.x,cz=C.z;
- const frame=mat(0xd7263d),steel=mat(0xc9ced2,{metalness:.4,roughness:.35});
+ const frame=mat(0xe3e7dd),steel=mat(0xc9ced2,{metalness:.4,roughness:.35});
  // Base, back and roof in red; glass front and sides; a warm lit floor inside.
  add(room,new THREE.BoxGeometry(C.w,.05,C.d),frame,cx,y0+.025,cz,'Sakura hot case');
  add(room,new THREE.BoxGeometry(C.w+.02,.05,C.d+.02),frame,cx,y0+C.h,cz,'Sakura hot case');
@@ -41,17 +42,8 @@ function buildHotCase(room,anchor,action){
  const warm=new THREE.MeshStandardMaterial({color:0xffc46b,emissive:0xff9a3c,emissiveIntensity:.55});
  add(room,new THREE.BoxGeometry(C.w-.04,.01,C.d-.04),warm,cx,y0+.055,cz,'Sakura hot case tray');
  add(room,new THREE.BoxGeometry(C.w-.04,.008,C.d-.04),new THREE.MeshStandardMaterial({color:0xfff2c8,emissive:0xffd89a,emissiveIntensity:.9}),cx,y0+C.h-.03,cz,'Sakura hot case lamp');
- // The food: karaage cups, buns, American dogs on sticks.
- const fried=mat(0xd99a3a,{roughness:.9}),bun=mat(0xfbf6ea,{roughness:.95}),cup=mat(0xd7263d),batter=mat(0xe0a64a),stick=mat(0xe8d7b0);
- for(let i=0;i<3;i++){
-  const z=cz-.17+i*.1;add(room,new THREE.CylinderGeometry(.035,.03,.05,10),cup,cx-.08,y0+.085,z,'Sakura karaage cup');
-  for(let k=0;k<3;k++)add(room,new THREE.SphereGeometry(.018,8,6),fried,cx-.08+(k-1)*.017,y0+.12+(k%2)*.008,z+(k-1)*.006,'Sakura karaage');
- }
- for(let i=0;i<3;i++){const m=add(room,new THREE.SphereGeometry(.04,12,8),bun,cx+.08,y0+.085,cz-.15+i*.1,'Sakura nikuman');m.scale.y=.75;}
- for(let i=0;i<2;i++){
-  const m=add(room,new THREE.CapsuleGeometry(.018,.07,4,8),batter,cx,y0+.09,cz+.16+i*.05,'Sakura American dog');m.rotation.z=Math.PI/2;
-  const s=add(room,new THREE.CylinderGeometry(.004,.004,.06,6),stick,cx+.07,y0+.09,cz+.16+i*.05,'Sakura American dog stick');s.rotation.z=Math.PI/2;
- }
+ // Three occupied racks share one geometry/material batch instead of a draw per snack.
+ buildSakuraHotFood(room,C);
  // A header card facing the customer.
  const header=sign(512,128,(ctx,w,h)=>{ctx.fillStyle='#d7263d';ctx.fillRect(0,0,w,h);ctx.fillStyle='#ffe28a';ctx.fillRect(0,h-14,w,14);signText(ctx,"Hot snack",w/2,h*.42,58,'#ffffff');signText(ctx,"HOT SNACKS · Hot!",w/2,h*.8,24,'#ffe28a');});
  card(room,header,C.d,C.d/4,cx-C.w/2-.012,y0+C.h+.07,cz,-Math.PI/2,'Sakura hot case header');
@@ -152,9 +144,9 @@ export function buildSakuraBand(room){
   ctx.fillStyle='#d9b27a';ctx.fillRect(0,0,w,H);
   for(let i=0;i<14;i++){ctx.strokeStyle=i%2?'rgba(120,80,40,.18)':'rgba(255,240,210,.18)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,8+i*8.5);ctx.bezierCurveTo(w*.3,4+i*8.5,w*.6,14+i*8.5,w,8+i*8.5);ctx.stroke();}
   ctx.fillStyle='#7c5230';ctx.fillRect(0,0,w,6);ctx.fillRect(0,H-6,w,6);
-  ctx.fillStyle='#3a2414';ctx.font=`bold 50px ${MARU}`;ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText("Sakura Shop",28,H*.5);
-  ctx.font=`bold 30px ${MARU}`;ctx.fillText("Groceries · Daily miscellaneous goods · Stamp · Ship ticket",250,H*.5);
-  ctx.fillStyle='#b8332c';ctx.beginPath();ctx.arc(w-52,H*.5,30,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6e6';ctx.font=`bold 34px ${MARU}`;ctx.textAlign='center';ctx.fillText("Sakura",w-52,H*.52);
+  ctx.fillStyle='#3a2414';ctx.font=`bold 44px ${MARU}`;ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText("Sakura Shop",28,42,w-140);
+  ctx.font=`bold 24px ${MARU}`;ctx.fillText("Groceries · Daily miscellaneous goods · Stamp · Ship ticket",28,90,w-140);
+  ctx.fillStyle='#b8332c';ctx.beginPath();ctx.arc(w-52,H*.5,30,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6e6';ctx.font=`bold 18px ${MARU}`;ctx.textAlign='center';ctx.fillText("Sakura",w-52,H*.5,52);
  });
  tex.wrapS=THREE.RepeatWrapping;
  const make=(length,x,z,yaw)=>{

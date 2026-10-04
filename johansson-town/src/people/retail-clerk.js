@@ -1,11 +1,12 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createRoomWalk} from './room-walk.js';
 import {createShopProduct} from '../commerce/shop-product.js';
-export function createRetailClerk({person,room,layout,collides,getWork,completeWork,cancelWork,accessShelf=()=>{},isBlocked=()=>false}){
- const clerk=person.g,walker=createRoomWalk(collides,{bounds:layout.bounds,smoothTurn:true,radius:layout.clearance??.3}),box=createShopProduct('stock');box.visible=false;room.add(box);
- let phase='counter',job=null,timer=0,cartonStops=0;
+export function createRetailClerk({person,room,layout,collides,getWork,completeWork,cancelWork,accessShelf=()=>{},isBlocked=()=>false,isOccupied=(x,z)=>isBlocked(x,z)}){
+ const clerk=person.g,walker=createRoomWalk((x,z,r)=>collides(x,z,r)||isOccupied(x,z,r,person),{bounds:layout.bounds,smoothTurn:true,radius:layout.clearance??.3}),box=createShopProduct('stock');box.visible=false;room.add(box);
+ let phase='counter',job=null,timer=0,cartonStops=0,stalled=0;
  const turn=(yaw,dt)=>{const a=Math.atan2(Math.sin(yaw-clerk.rotation.y),Math.cos(yaw-clerk.rotation.y));clerk.rotation.y+=THREE.MathUtils.clamp(a,-dt*2.6,dt*2.6);return Math.abs(a)<.025;};
- const walk=(point,dt)=>isBlocked(point[0],point[2])?false:walker.move(person,point,dt);
+ // Rebuild after an obstruction, with enough time for a complete smooth turn.
+ const walk=(point,dt)=>{const before=clerk.position.clone(),arrived=walker.move(person,point,dt);if(!arrived&&clerk.position.distanceTo(before)<.0001){stalled+=dt;if(stalled>=2){walker.clear();stalled=0;}}else stalled=0;return arrived;};
  const isStockJob=value=>value?.type==='restock'||value?.type==='restock-prep';
  const clearHandling=()=>{delete clerk.userData.shopReach;delete clerk.userData.heldItem;delete clerk.userData.shopGoods;delete clerk.userData.restocking;};
  const clerkTarget=point=>{if(!point)return null;const target=new THREE.Vector3(...point);room.updateWorldMatrix(true,false);clerk.updateWorldMatrix(true,false);room.localToWorld(target);clerk.worldToLocal(target);return target.toArray();};

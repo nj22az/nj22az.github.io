@@ -136,7 +136,7 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
   set:setShutter,
   get open(){return open;},
   /** Follows the clock: rolls up at nine and down at eight, taking a few seconds. */
-  update(minutes,dt=1/60){const want=sakuraOpenAt(minutes)?1:0,step=dt/2.5;if(open!==want)setShutter(Math.abs(want-open)<=step?want:open+Math.sign(want-open)*step);},
+  update(minutes,dt=1/60,{snap=false}={}){const want=sakuraOpenAt(minutes)?1:0;if(snap){setShutter(want);return;}const step=dt/2.5;if(open!==want)setShutter(Math.abs(want-open)<=step?want:open+Math.sign(want-open)*step);},
  };
 }
 

@@ -223,6 +223,9 @@ export function celFrom(material,{tint=DEFAULT_TINT,bands=null}={}){
  
  toon.depthWrite=material.depthWrite;
  toon.depthTest=material.depthTest;
+ // Closed room slabs choose their exterior face for shadow casting. Losing that
+ // choice makes their interior faces self-shadow after conversion.
+ toon.shadowSide=material.shadowSide;
  // A flush decal -- a board seam, a painted line -- relies on a polygon offset to win
  // the depth test against the surface it is painted on. Dropping the offset here put
  // the decal back in the same plane as its host and left the two flickering against

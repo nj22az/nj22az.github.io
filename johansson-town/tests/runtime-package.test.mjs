@@ -21,13 +21,17 @@ test('published page uses one compiled audio/boot graph with local hashed depend
   for(const key of [...entry.imports||[],...entry.dynamicImports||[]])assert.ok(manifest[key],'Missing compiled dependency '+key);
   const code=await readFile(new URL(entry.file,base),'utf8');assert.doesNotMatch(code,/(?:from\s*|import\()['"][^'"]*\/src\//,'No raw source imports in published chunks');
  }
- // The optional guide renderer and shared avatar chunk add two entries.
- assert.ok(Object.keys(manifest).length<=10,'Bound the JavaScript request count including live portraits');
+ // Guide rendering and opt-in Spector are lazy; Vite shares a preload helper.
+ assert.ok(Object.keys(manifest).length<=12,'Bound the compiled graph including optional diagnostics');
  const portraits=manifest['src/avatars/guide-portraits.js'];assert.ok(portraits&&html.includes(portraits.file));assert.ok(!html.includes('data-town-runtime href="./runtime/'+portraits.file+'"'),'guide rendering stays lazy');
  const audioCode=await readFile(new URL(audio.file,base),'utf8');assert.match(audioCode,/unlockTownAudio/,'Title screen retains its audio unlock export');
  const game=Object.values(manifest).find(entry=>entry.src?.startsWith('src/game.js'));
  const dependencies=entry=>{const result=new Set([entry.file]);for(const key of entry.imports||[])for(const file of dependencies(manifest[key]))result.add(file);return result;};
  const gameFiles=dependencies(game),audioFiles=dependencies(audio),contexts=[];
+ const graphics=Object.values(manifest).find(entry=>entry.name==='spector.bundle');
+ assert.ok(graphics?.isDynamicEntry,'Graphics inspection stays in a separate lazy chunk');
+ assert.ok(!gameFiles.has(graphics.file),'Normal gameplay never imports Spector eagerly');
+ assert.ok(!html.includes('data-town-runtime href="./runtime/'+graphics.file+'"'),'The title screen never preloads Spector');
  for(const file of new Set([...gameFiles,...audioFiles]))if(/(?:window\.)?AudioContext/.test(await readFile(new URL(file,base),'utf8')))contexts.push(file);
  assert.equal(contexts.length,1,'One audio implementation in the entry graph');
  assert.ok(gameFiles.has(contexts[0])&&audioFiles.has(contexts[0]),'Game and title share one audio context');

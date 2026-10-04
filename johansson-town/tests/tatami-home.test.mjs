@@ -28,6 +28,29 @@ test('Blender room carries actual cupboard bedding and a movable fan, with no em
  for(const name of ['LaidFuton','StoredFuton','FanRotor','FutonCupboardDoor','Room_straw','Room_green'])assert.ok(gltf.scene.getObjectByName(name),name);
  const json=JSON.parse(data.subarray(20,20+data.readUInt32LE(12)).toString());assert.equal(json.images,undefined);assert.ok(json.meshes.length<40,'furnishings batched for mobile');
 });
+test('loaded tatami room closes the rear fusuma aperture behind its existing paper and rail',async t=>{
+ const data=readFileSync(new URL('../assets/models/tatami-home/tatami-home.glb',import.meta.url));
+ const gltf=await new GLTFLoader().parseAsync(data.buffer.slice(data.byteOffset,data.byteOffset+data.byteLength),'');
+ const probes=[-2.45,-1.75,-.8,.2,.9].map(x=>new THREE.Raycaster(new THREE.Vector3(x,2.36,-1.7),new THREE.Vector3(0,0,-1),0,5));
+ gltf.scene.updateMatrixWorld(true);
+ for(const ray of probes)assert.equal(ray.intersectObject(gltf.scene,true).length,0,'original paper and rail leave an exposed 20 mm sky aperture');
+ t.mock.method(GLTFLoader.prototype,'loadAsync',async()=>gltf);
+ const documentDescriptor=Object.getOwnPropertyDescriptor(globalThis,'document');
+ Object.defineProperty(globalThis,'document',{configurable:true,value:{baseURI:'http://localhost/johansson-town/'}});
+ t.after(()=>{if(documentDescriptor)Object.defineProperty(globalThis,'document',documentDescriptor);else delete globalThis.document;});
+ const room=new THREE.Group(),home=buildTatamiHome({profile,room,box:(s,p,c,parent)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...s),new THREE.MeshBasicMaterial({color:c}));m.position.fromArray(p);parent.add(m);return m;},collider(){},reg(){},action(){},exit(){}});
+ assert.equal(await home.ready,true);room.updateMatrixWorld(true);
+ const header=room.getObjectByName('Rear fusuma header backing'),bounds=new THREE.Box3().setFromObject(header);
+ assert.ok(bounds.min.y<2.35&&bounds.max.y>2.37,'header overlaps both edges of the aperture');
+ assert.ok(bounds.max.z<-3,'header is recessed behind the opaque paper and dark rail');
+ for(const ray of probes)assert.equal(ray.intersectObject(gltf.scene,true)[0]?.object,header,'backing occludes every rear aperture probe');
+ for(const y of [2.34,2.38]){
+  const hit=new THREE.Raycaster(new THREE.Vector3(.2,y,-1.7),new THREE.Vector3(0,0,-1)).intersectObject(gltf.scene,true)[0];
+  assert.ok(hit&&hit.object!==header,'existing panel and rail stay in front of the new backing');
+  assert.ok(bounds.max.z-hit.point.z<-.015,'visible front surfaces have at least 15 mm depth separation');
+ }
+ home.dispose();
+});
 test('entry, bedside and tea cushion remain accessible and inspection describes current bedding',()=>{
  const room=new THREE.Group(),colliders=[],actions=[],prompts=[];
  const home=buildTatamiHome({profile,room,box:(s,p,c,parent)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...s),new THREE.MeshBasicMaterial({color:c}));m.position.fromArray(p);parent.add(m);return m;},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),reg:(o,label,fn)=>prompts.push({label,fn}),action:(...a)=>actions.push(a),exit(){}});

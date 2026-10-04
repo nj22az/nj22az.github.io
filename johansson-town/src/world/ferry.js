@@ -3,20 +3,13 @@ import {GROUND_LAYER} from './ground-layers.js';
 import {waveHeight,SEA_LEVEL} from './ocean.js';
 import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js';
 import {glazeWithRoom} from '../render/window-interior.js';
+import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,airportFerryPose} from './airport-ferry.js';
 
 /**
- * The Minato ferry, and the terminal it calls at.
- *
- * Minato is an island: nobody drives in. Three times a day the ferry comes in round the
- * west end of the breakwater, runs up the harbour and lies alongside the west flank of
- * the outer pier, bow to the quay. The people catching it queue across the pier to the
- * gangway; the people it brought walk off it. After its fifteen minutes it backs off the
- * berth, turns in the basin and goes out the way it came, getting smaller until the sea
- * has it.
- *
- * The run keeps the interface the Harbour Line bus had -- door, queueSpot, doorway,
- * boarding, service, phase, update -- so the commuters' schedules board it exactly as
- * they boarded the bus. The timetable is the same three services.
+ * One Minato–Kitano-jima ferry carries pedestrians and occasional resident vehicles.
+ * It uses a side gangway at Minato and the bow ramp on the airport pier. The legacy
+ * commuter timetable interface remains available for residents and old saved games.
+ * A player-requested crossing holds a safe berth until vehicles finish boarding.
  */
 export const FERRY=Object.freeze({length:15,beam:4.4,freeboard:.95,draft:.7});
 /** The outer pier's west flank (layout.js OUTER_PIER: x 0, 8.2 m wide). */
@@ -65,7 +58,7 @@ export const FERRY_TIMES=Object.freeze({arrive:55,reverse:9,turn:9,depart:45});
 
 /** A small white island ferry of the 1990s, built from boxes and one extruded hull. */
 export function buildFerry({shadows=false}={}){
- const ferry=new THREE.Group();ferry.name='Minato ferry';
+ const ferry=new THREE.Group();ferry.name='Minato–Kitano-jima shared ferry';ferry.userData.dynamicProp=true;ferry.userData.walkSurface=false;
  const white=new THREE.MeshStandardMaterial({color:0xeeeae0,roughness:.55});
  const hullBlue=new THREE.MeshStandardMaterial({color:0x2b5a78,roughness:.6});
  const boot=new THREE.MeshStandardMaterial({color:0x8e3a30,roughness:.7});
@@ -121,7 +114,7 @@ export function buildFerry({shadows=false}={}){
   for(const side of [-1,1]){const chain=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,2.6,4),rail);chain.position.set(side*beam*.36,1.1,.6);chain.rotation.x=.9;ramp.add(chain);}}
  ferry.userData.ramp=ramp;
  /** 0 raised and closed, 1 down on the quay. */
- ferry.userData.setRamp=down=>{ramp.rotation.x=-1.45*(1-down)+.24*down;};
+ ferry.userData.setRamp=(down,slope=.24)=>{ramp.rotation.x=-1.45*(1-down)+slope*down;};
  ferry.userData.setRamp(0);
  ferry.userData.deckY=freeboard+.06;
  // The gangway, run out to the pier while it is boarding.
@@ -153,6 +146,7 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
  const point=new THREE.Vector3(),tangent=new THREE.Vector3();
  const departYaw=along(DEPARTURE,0,point,tangent);
  let phase='away',t=0,service=null,serviceAt=null,lastMinutes=null,clock=0,yaw=0,x=FERRY_BERTH.x,z=FERRY_BERTH.z;
+ let berth='town',localService=false,crossing=null;
  const DOOR=[FERRY_TERMINAL.queue[0],FERRY_TERMINAL.queue[1]];
  const set=(nx,nz,nyaw)=>{x=nx;z=nz;yaw=nyaw;};
  const park=()=>{set(FERRY_BERTH.x,FERRY_BERTH.z,0);ferry.visible=true;};
@@ -161,34 +155,61 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
   const moored=phase==='waiting',sea=waveHeight(x,z,clock)-SEA_LEVEL;
   ferry.position.set(x,SEA_LEVEL+.12+sea*(moored?.25:.8),z);
   ferry.rotation.set(Math.sin(clock*.7+x)*(moored?.004:.02),yaw,Math.sin(clock*.9)*(moored?.006:.03));
-  ferry.userData.gangway.visible=moored;
-  ferry.userData.setRamp?.(run.rampDown);
+  ferry.userData.gangway.visible=moored&&berth==='town';
+  ferry.userData.setRamp?.(run.rampDown,berth==='airport'?-.008:.24);
  };
  // Nobody walks on the harbour, but the gangway's foot is on the pier: a collider for the
  // hull alongside stops the player stepping off the pier's open flank onto the water.
  const solid=colliders?{id:'ferry',x:FERRY_BERTH.x,z:FERRY_BERTH.z,w:FERRY.beam,d:FERRY.length,height:3}:null;
  if(solid)colliders.push(solid);
- const trackSolid=()=>{if(!solid)return;const here=ferry.visible&&phase==='waiting';solid.x=here?FERRY_BERTH.x:1e6;solid.z=here?FERRY_BERTH.z:1e6;};
+ const trackSolid=()=>{if(!solid)return;const here=ferry.visible&&phase==='waiting';solid.x=here?x:1e6;solid.z=here?z:1e6;solid.yaw=yaw;};
  park();ferry.visible=false;trackSolid();
  const run={
   ferry,
   /** Kept under the old name too: the debug readout and a few callers ask for `.bus`. */
   get bus(){return ferry;},
   get phase(){return phase;},
+  get berth(){return berth;},
+  get destination(){return crossing?.destination||null;},
+  get crossingProgress(){return crossing?.progress??null;},
+  get automaticCrossing(){return crossing?.automatic===true;},
+  /** Both passengers and vehicles use this single ferry group and these ports. */
+  parkAt(location){
+   if(!AIRPORT_FERRY_PORTS[location])throw new RangeError('Unknown ferry berth');
+   const p=AIRPORT_FERRY_PORTS[location];berth=location;localService=true;crossing=null;phase='waiting';
+   serviceAt=lastMinutes??0;service=service??0;set(p.berth[0],p.berth[1],p.yaw);ferry.visible=true;place();trackSolid();
+  },
+  beginCrossing(destination,{automatic=false}={}){
+   if(phase==='crossing'||!AIRPORT_FERRY_PORTS[destination]||destination===berth)return false;
+   localService=true;phase='crossing';crossing={destination,progress:0,automatic:!!automatic,elapsed:0};ferry.userData.gangway.visible=false;run.setCrossingProgress(0);trackSolid();return true;
+  },
+  /** The island simulation advances unaccompanied cargo runs without taking the camera. */
+  advanceAutomaticCrossing(dt){
+   if(!crossing?.automatic)return null;
+   crossing.elapsed+=Number.isFinite(dt)?Math.max(0,dt):0;
+   run.setCrossingProgress(crossing.elapsed/AIRPORT_FERRY.duration);
+   if(crossing.progress<1)return null;
+   const destination=crossing.destination;run.parkAt(destination);return destination;
+  },
+  setCrossingProgress(progress){
+   if(!crossing)return false;crossing.progress=Math.max(0,Math.min(1,progress));
+   const p=airportFerryPose(crossing.destination,crossing.progress);set(p.x,p.z,p.yaw);ferry.position.set(p.x,p.y,p.z);ferry.rotation.set(0,p.yaw,0);ferry.userData.setRamp(0);return true;
+  },
   get door(){return [...DOOR];},
   /** A queue across the pier from the gangway, clear of the bollard and the crates. */
   queueSpot(place=0){return [DOOR[0]+place*.75,DOOR[1]+(place%2)*.35];},
   /** On board: the deck beyond the gangway. */
   get doorway(){return [FERRY_BERTH.x+FERRY.beam/2-.9,FERRY_BERTH.gangwayZ];},
-  get boarding(){return phase==='waiting';},
+  get boarding(){return phase==='waiting'&&berth==='town';},
   /** Town minutes since it came alongside, while it is alongside. */
   get alongsideFor(){return phase==='waiting'&&Number.isFinite(serviceAt)?Math.max(0,lastMinutes-serviceAt):null;},
   /** The bow ramp: down a minute after it berths, up again a minute before it leaves. */
-  get rampDown(){const e=run.alongsideFor;if(e===null)return 0;const s=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u);};return Math.min(s(e-.2),s(BUS_DWELL-.4-e));},
+  get rampDown(){if(localService)return phase==='waiting'?1:0;const e=run.alongsideFor;if(e===null)return 0;const s=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u);};return Math.min(s(e-.2),s(BUS_DWELL-.4-e));},
   get service(){return service;},
   update(dt,minutes=0,time){
    if(!(dt>0))return;
    clock=Number.isFinite(time)?time:clock+dt;
+   if(localService){lastMinutes=minutes;if(phase==='waiting')place();trackSolid();return;}
    try{
     if(lastMinutes===null||minutes<lastMinutes||minutes-lastMinutes>dt+1){
      phase='away';service=null;serviceAt=null;ferry.visible=false;
@@ -280,10 +301,10 @@ export function buildFerryTerminal({parent,colliders,register=()=>{},onAction=()
  label("Ferry Terminal",'MINATO FERRY TERMINAL',[cx,y+H+.55,-45.2],4.2,.7,0,'#e5dcc0','#2b5a78',true);
  // The terminal fascia is the wayfinding sign. A second broad panel here
  // showed its blank back across the warehouse entrance when viewed from the quay.
- anchor([T.minX-.6,1.1,cz],'Read the ferry timetable',()=>onAction('bus'));
- anchor([cx+1,1,-43.6],'Wait for the ferry',()=>onAction('bus'));
- anchor([-4.5,1,-47.1],'Look out for the ferry',()=>onAction('inspect','Minato ferry','The ferry is the way to the mainland: three sailings a day, round the breakwater to the mainland and back, cars and trucks on the deck. Tickets at the terminal; the punch cards are sold at Sakura.'));
- const place={id:T.id,title:'Minato Ferry Terminal',jp:"Ferry Terminal",sub:'ARRIVALS · DEPARTURES',x:T.x,z:T.z,line:'Three sailings a day to the mainland from the outer pier.',
+ anchor([T.minX-.6,1.1,cz],'Airport ferry tickets and boarding',()=>onAction('airport-ferry'));
+ anchor([cx+1,1,-43.6],'Board the Kitano-jima ferry',()=>onAction('airport-ferry'));
+ anchor([-4.5,1,-47.1],'Look out for the ferry',()=>onAction('inspect','Minato ferry','The shared ferry runs between Minato and Kitano-jima. Passengers use it every day; some crossings also carry island cars and service trucks. Return passenger tickets are sold at this terminal.'));
+ const place={id:T.id,title:'Minato Ferry Terminal',jp:"Ferry Terminal",sub:'ARRIVALS · DEPARTURES',x:T.x,z:T.z,line:'The shared passenger and vehicle ferry to Kitano-jima boards at the outer pier.',
   door:[T.platform[0],0,T.platform[1]],exitPosition:[T.platform[0],0,T.platform[1]]};
  const departures=[];
  return {group,place,queue:[...T.queue],arrival:[...T.arrival],driver:[...T.driver],exit:[...T.exit],departures,

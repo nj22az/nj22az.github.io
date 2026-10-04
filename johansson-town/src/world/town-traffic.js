@@ -2,194 +2,121 @@ import {createVehicleDrivers} from '../people/vehicle-driver.js';
 import * as THREE from '../../vendor/three.module.js';
 import {createRoadNetwork,createTraffic,makeLane} from './road-network.js';
 import {buildVehicle,VEHICLE_SIZE} from './road-vehicles.js';
-import {KITANO_ROAD,KITANO_ROAD_LENGTH,KITANO_SURFACE_LIFT,roadPoint,roadHeight,leftOf} from './kitano-link-plan.js';
-import {MAIN_ROAD} from './main-road.js';
+import {MAIN_ROAD,MAIN_SERVICE_COURT} from './main-road.js';
 import {FERRY,FERRY_BERTH} from './ferry.js';
-import {AIRPORT_HEIGHT} from './airport-ground.js';
+import {AIRPORT_ISLAND} from './airport-island.js';
+import {AIRPORT_HEIGHT,airportWorld} from './airport-ground.js';
+import {AIRPORT_VEHICLE_YARD as Y,airportVehiclePoint,airportVehicleBay} from './airport-vehicle-yard.js';
 
-/**
- * The island's traffic on one road network (road-network.js), keeping to the left.
- *
- * Lanes: Main Street's two lanes between the quay and the Kitano Road junction; Kitano
- * Road's two lanes out over the bridge to the airport car park; a loop round the car park
- * with its bays; the quay to the car ferry's bow ramp; two parking bays on the quay.
- *
- * Every vehicle belongs to an existing resident. The island cars make one daily
- * parts/manifest errand; ferry vehicles collect freight on the morning call and
- * return on the afternoon/evening call. Trips advance through the real road network.
+/** Owned vehicles travel on Main Street, the quay and the airport cargo court.
+ * A single car shares the ferry's open foredeck with its existing resident driver.
  */
 const MAIN_NORTH_X=MAIN_ROAD.x+1.1,MAIN_SOUTH_X=MAIN_ROAD.x-1.1;
-const JUNCTION=Object.freeze({x:MAIN_ROAD.x,z:KITANO_ROAD.corners[0][1],r:8});
-/** Where Kitano Road's westbound traffic stops: before the zebra across its mouth. */
 export const KITANO_STOP_S=5.2;
-/** Two vehicle places on the car deck, bow first: far enough apart for the truck and a car. */
-const DECK_Z=[4.2,-.6];
-/** Town parking on the quay, nose north, east of Main Street's foot: staggered, so neither blocks the other's way out. */
-export const QUAY_BAYS=Object.freeze([[.6,-43.6],[2.75,-41.2]].map(Object.freeze));
-/** The airport car park, in Kitano Road's own frame past its end: a along, b to the left. */
-export const CAR_PARK=Object.freeze({minA:-.5,maxA:23,halfB:7.7,loop:3,bays:Object.freeze([[3.5,6.3],[10,6.3],[16.5,6.3],[3.5,-6.3],[10,-6.3],[16.5,-6.3]].map(Object.freeze))});
-
-const ROAD_END=(()=>{const [x,z,hx,hz]=roadPoint(KITANO_ROAD_LENGTH),[lx,lz]=leftOf(hx,hz);return {x,z,hx,hz,lx,lz};})();
-/** A point in the car park frame, in the town's. */
-export function carParkPoint(a,b){const E=ROAD_END;return [E.x+E.hx*a+E.lx*b,E.z+E.hz*a+E.lz*b];}
-export const CAR_PARK_YAW=Math.atan2(ROAD_END.hx,ROAD_END.hz);
-
-/** Rounds a polyline's corners (Chaikin), keeping its ends. */
-function smooth(points,rounds=3){
- let p=points;
- for(let r=0;r<rounds;r++){const out=[p[0]];for(let i=0;i<p.length-1;i++){const a=p[i],b=p[i+1];if(i>0)out.push(a.map((v,k)=>v*.75+b[k]*.25));if(i<p.length-2)out.push(a.map((v,k)=>v*.25+b[k]*.75));}out.push(p.at(-1));p=out;}
- return p;
-}
+export const FERRY_VEHICLE_DECK_Z=3.3;
+export const QUAY_BAYS=Object.freeze([[1.2,-41.5],[3.6,-40.3]].map(Object.freeze));
+export const SERVICE_BAYS=Object.freeze([[-5.8,10],[-5.8,4.5]].map(Object.freeze));
+export const TOWN_FERRY_STAGE=Object.freeze([FERRY_BERTH.x,0,-45.3]);
+function smooth(points,rounds=3){let p=points;for(let r=0;r<rounds;r++){const out=[p[0]];for(let i=0;i<p.length-1;i++){const a=p[i],b=p[i+1];if(i>0)out.push(a.map((v,k)=>v*.75+b[k]*.25));if(i<p.length-2)out.push(a.map((v,k)=>v*.25+b[k]*.75));}out.push(p.at(-1));p=out;}return p;}
 const flat=(pts,y=0)=>pts.map(([x,z])=>[x,y,z]);
-
-/** A run of Kitano Road at a lane offset, between two stations (either way round). */
-function kitanoLane(from,to,offset){
- const pts=[],dir=Math.sign(to-from);
- for(let s=from;dir>0?s<=to:s>=to;s+=dir*.5){const [x,z,hx,hz]=roadPoint(s),[lx,lz]=leftOf(hx,hz);pts.push([x+lx*offset,roadHeight(s)+KITANO_SURFACE_LIFT,z+lz*offset]);}
- return pts;
-}
-
+const airportPts=pts=>pts.map(([u,v])=>airportVehiclePoint(u,v));
 export function buildTownNetwork(){
- const net=createRoadNetwork(),S=KITANO_ROAD.speed,half=KITANO_ROAD.lane/2,TOWN_END=32;
- net.add(makeLane('main-north',flat([[MAIN_NORTH_X,-38.6],[MAIN_NORTH_X,-1.4]]),{speed:S.town}));
- net.add(makeLane('main-south',flat([[MAIN_SOUTH_X,1.6],[MAIN_SOUTH_X,-38.6]]),{speed:S.town}));
- net.add(makeLane('kitano-east-town',kitanoLane(1.6,TOWN_END,half),{speed:S.town}));
- net.add(makeLane('kitano-east-bridge',kitanoLane(TOWN_END,KITANO_ROAD_LENGTH,half),{speed:S.bridge}));
- net.add(makeLane('kitano-west-bridge',kitanoLane(KITANO_ROAD_LENGTH,TOWN_END,-half),{speed:S.bridge}));
- net.add(makeLane('kitano-west-town',kitanoLane(TOWN_END,KITANO_STOP_S,-half),{speed:S.town,stopAtEnd:JUNCTION}));
- // The car park: in along the left, round the far end, back out along the other side.
- const y=AIRPORT_HEIGHT,L=CAR_PARK.loop,P=(a,b)=>carParkPoint(a,b);
- const far=[[2.5,L],[19.5,L],[22,0],[19.5,-L],[2.5,-L]];
- CAR_PARK.bays.forEach(([a,b],i)=>{
-  const side=Math.sign(b),run=side>0?[[0,half],...far.filter(p=>p[1]>0&&p[0]<a-2),[a-3,L],[a,b]]:[[0,half],...far.filter(p=>p[0]>a+2||p[1]>=0),[a+3,-L],[a,b]];
-  net.add(makeLane('park-in-'+i,flat(smooth(run.map(([u,v])=>P(u,v))),y),{speed:2.2}));
-  const out=side>0?[[a,b],[a+3,L],...far.filter(p=>p[0]>a+2||p[1]<=0),[0,-half]]:[[a,b],[a-3,-L],...far.filter(p=>p[1]<0&&p[0]<a-2),[0,-half]];
-  net.add(makeLane('park-out-'+i,flat(smooth(out.map(([u,v])=>P(u,v))),y),{speed:2.2}));
- });
- // Island cars' bays on the quay.
+ const net=createRoadNetwork();
+ net.add(makeLane('main-north',flat([[MAIN_NORTH_X,-38.6],[MAIN_NORTH_X,13.3]]),{speed:3.8}));
+ net.add(makeLane('main-south',flat([[MAIN_SOUTH_X,1.5],[MAIN_SOUTH_X,-38.6]]),{speed:3.8}));
+ const turn=[];for(let i=0;i<=32;i++){const a=i*Math.PI/32;turn.push([MAIN_ROAD.x+Math.cos(a)*1.1,.04,16.5+Math.sin(a)*1.1]);}
+ SERVICE_BAYS.forEach(([x,z],i)=>{const entry=smooth([[MAIN_SOUTH_X,16.5],[MAIN_SOUTH_X,z+(i?3.3:5.5)],[x,z+(i?2:4.7)],[x,z]]);net.add(makeLane('service-in-'+i,[[MAIN_NORTH_X,0,13.3],...turn,...flat(entry)],{speed:1.5}));net.add(makeLane('service-out-'+i,flat(smooth([[x,z],[x,z-1],[MAIN_SOUTH_X,z-2.3],[MAIN_SOUTH_X,1.5]])),{speed:2.2}));});
  QUAY_BAYS.forEach(([x,z],i)=>{
-  net.add(makeLane('quay-out-'+i,flat(smooth([[x,z],[x,Math.min(-39.9,z+1.6)],[MAIN_NORTH_X+.3,-39.9],[MAIN_NORTH_X,-39]])),{speed:2.4}));
-  net.add(makeLane('quay-in-'+i,flat(smooth([[MAIN_SOUTH_X,-39.4],[-2.7,-42.6],[-2.2,-45.6],[-.9,-47.2],[x,-46.2],[x,z]])),{speed:2.4}));
+  net.add(makeLane('quay-out-'+i,flat(smooth([[x,z],[x,z+.3],[MAIN_NORTH_X+.3,z+.3],[MAIN_NORTH_X,-38.6]])),{speed:2}));
+  net.add(makeLane('quay-in-'+i,flat(smooth([[MAIN_SOUTH_X,-39.4],[-2.7,-42.6],[-2.2,-45.6],[-.9,-46.7],[x,-45.7],[x,z]])),{speed:1.8}));
+ });
+ const townStage=[...flat(smooth([[MAIN_SOUTH_X,-39.4],[-4.25,-42],[-4.25,-45.3]]))];
+ for(let i=0;i<=32;i++){const a=-i*Math.PI/32;townStage.push([-5.35+Math.cos(a)*1.1,0,-45.3+Math.sin(a)*1.1]);}
+ net.add(makeLane('town-ferry-stage',townStage,{speed:1.3}));
+ const enter=[[-47,31],[-44,28.5],[-18,28.5]],far=[[-16,28.5],[-14.5,30],[-16,31.5]];
+ Y.bays.forEach(([u,v],i)=>{
+  const south=i<3;
+  const incoming=south?[[-47,31],[-44,28.5],[u-5,28.5],[u-3,25],[u,25]]:[...enter,...far,[u+4,31.5],[u+3,v],[u,v]];
+  const out=south?[[u,v],[u+2,25],[u+4,28.5],[-18,28.5],...far,[-43,31.5]]:[[u,v],[u-2.5,v],[u-4.5,31.5],[-43,31.5],[-44.5,32.5],[-46.5,32.5]];
+  const path=smooth(out);if(south)path.push([-46.5,32.5]);
+  // A half turn on the plaza leaves the nose towards shore; the car can reverse aboard.
+  for(let j=0;j<=32;j++){const a=Math.PI/2+j*Math.PI/32;path.push([-46.5+Math.cos(a)*1.5,31+Math.sin(a)*1.5]);}
+  net.add(makeLane('airport-in-'+i,airportPts(smooth(incoming)),{speed:1.7}));
+  net.add(makeLane('airport-stage-'+i,airportPts(path),{speed:1.2}));
  });
  return net;
 }
 
-/** The ferry's bow ramp and the quay, laid from where the ferry lies now. */
-export function ferryLanes(ferry,slot){
- ferry.updateMatrixWorld();
- const deck=new THREE.Vector3(0,ferry.userData.deckY,DECK_Z[slot]).applyMatrix4(ferry.matrixWorld);
- const bow=new THREE.Vector3(0,ferry.userData.deckY,FERRY.length/2).applyMatrix4(ferry.matrixWorld);
- const x=FERRY_BERTH.x,quayZ=bow.z+2.6;
- // Off: straight up from the ramp, east along the south side of the bench, north into Main Street.
- const off=[[deck.x,deck.y,deck.z],[bow.x,bow.y,bow.z],[x,0,quayZ],...flat(smooth([[x,quayZ+.5],[x,-45.6],[-5.2,-44.4],[-3,-44.3],[-2,-42.6],[MAIN_NORTH_X,-40.2]])),[MAIN_NORTH_X,0,-39]];
- // On: down Main Street's south lane, round the bench's east end and onto the ramp bow first.
- const on=[...flat(smooth([[MAIN_SOUTH_X,-39.4],[-2.75,-42.4],[-3.2,-44.9],[-5.6,-45.3],[x,-46.4],[x,quayZ+.5]])),[x,0,quayZ],[bow.x,bow.y,bow.z],[deck.x,deck.y,deck.z]];
- return {off:makeLane('ferry-off-'+slot,off,{speed:2.6}),on:makeLane('ferry-on-'+slot,on,{speed:2.6}),deck,yaw:ferry.rotation.y};
+/** Actual hull transform supplies the deck, hinge and lowered ramp at either shore. */
+export function ferryLanes(ferry,slot=0,berth='town'){
+ ferry.updateMatrixWorld();const world=p=>new THREE.Vector3(...p).applyMatrix4(ferry.matrixWorld);
+ const deck=world([0,ferry.userData.deckY,FERRY_VEHICLE_DECK_Z]),bow=world([0,ferry.userData.deckY,FERRY.length/2]);
+ const slope=berth==='airport'?-.008:.24,ramp=world([0,ferry.userData.deckY-2.4*Math.sin(slope),FERRY.length/2+2.4*Math.cos(slope)]);
+ const deckPts=[deck.toArray(),bow.toArray(),ramp.toArray()];
+ if(berth==='airport'){
+  const lead=airportPts(smooth([Y.stage,[-50,29.5],[-52.5,31],[-54.5,31]]));
+  return {on:makeLane('airport-ferry-on',[...lead,ramp.toArray(),bow.toArray(),deck.toArray()],{speed:1}),off:makeLane('airport-ferry-off',[...deckPts,...airportPts([[-51,31],[-47,31]])],{speed:1.4}),deck,ramp,yaw:ferry.rotation.y};
+ }
+ const x=FERRY_BERTH.x;
+ const off=[...deckPts,[x,0,-47.9],...flat(smooth([[x,-47.4],[x,-45.6],[-5.2,-44.4],[-3,-44.3],[-2,-42.6],[MAIN_NORTH_X,-40.2]])),[MAIN_NORTH_X,0,-39]];
+ return {on:makeLane('town-ferry-on',[TOWN_FERRY_STAGE,ramp.toArray(),bow.toArray(),deck.toArray()],{speed:1}),off:makeLane('town-ferry-off',off,{speed:1.5}),deck,ramp,yaw:ferry.rotation.y};
 }
 
 export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPosition=()=>null,people=()=>[],register=null,onAction=null}){
- const group=new THREE.Group();group.name='Road traffic';group.userData.dynamicProp=true;parent.add(group);
+ const group=new THREE.Group();group.name='Road traffic';parent.add(group);
  const net=buildTownNetwork(),drivers=createVehicleDrivers({people});
- const obstacles=()=>{
-  const out=[],p=getPlayerPosition?.();if(p)out.push({x:p.x,z:p.z,r:.4,player:true});
-  for(const q of people()){const g=q?.g;if(g?.visible&&!g.userData.playerControlled&&!g.userData.inVehicle&&!g.userData.indoors)out.push({x:g.position.x,z:g.position.z,r:.35});}
-  return out;
- };
- const traffic=createTraffic({obstacles});
- let serial=0;
- const make=(kind,colour,role,owner,purpose)=>{
-  const g=buildVehicle(kind,colour);group.add(g);
-  const v=traffic.add({g,kind,role,owner,driver:owner,purpose,id:'owned-car-'+(++serial),...VEHICLE_SIZE[kind]});Object.assign(g.userData,{owner,driver:owner,purpose,vehicleId:v.id});g.name=owner+' · '+kind;const anchor=new THREE.Object3D();anchor.position.y=1.2;g.add(anchor);register?.(anchor,'Inspect '+owner+'’s '+kind,()=>onAction?.('inspect',owner+'’s '+kind,'Owner and driver: '+owner+'. '+purpose+'.'));
-  // Solid where it stands parked; out of the way while it drives (people it meets wait or it waits).
-  v.solid={id:'parked-vehicle',x:1e6,z:1e6,w:v.width,d:v.length,yaw:0,height:2};colliders?.push(v.solid);
-  return v;
- };
- const bayTaken=new Set();
- const parkAt=(v,where)=>{
-  v.where=where.where;v.bay=where.bay;
-  traffic.park(v,where);
-  Object.assign(v.solid,{x:where.x,z:where.z,yaw:where.yaw,height:where.y+1.9});
- };
- const unpark=v=>{v.solid.x=v.solid.z=1e6;if(v.where==='airport')bayTaken.delete(v.bay);v.where='driving';};
- // Bays on the far side are reached round the loop, so a car stands in them facing back.
- const airportBay=i=>{const [a,b]=CAR_PARK.bays[i],[x,z]=carParkPoint(a,b);return {where:'airport',bay:i,x,y:AIRPORT_HEIGHT,z,yaw:CAR_PARK_YAW+(b<0?Math.PI:0)};};
- const freeBay=()=>{for(let i=0;i<CAR_PARK.bays.length;i++)if(!bayTaken.has(i)){bayTaken.add(i);return i;}return null;};
- const toAirport=(v,lanes)=>{
-  if(!drivers.board(v))return false;const bay=freeBay();if(bay===null){drivers.release(v,{restore:true});return false;}unpark(v);v.bay=bay;
-  traffic.drive(v,net.path([...lanes,'main-north','kitano-east-town','kitano-east-bridge','park-in-'+bay]),{onArrive:()=>parkAt(v,airportBay(bay))});
-  bayTaken.add(bay);return true;
- };
- const fromAirport=(v,lanes,onArrive)=>{
-  if(!drivers.board(v))return false;const bay=v.bay;unpark(v);
-  traffic.drive(v,net.path(['park-out-'+bay,'kitano-west-bridge','kitano-west-town','main-south',...lanes]),{onArrive});return true;
- };
-
- // ---- Island cars: quay ↔ airport by day. ----
- const islanders=[make('kei truck',0x5f8f5a,'islander','Tetsuo','Collect workshop parts at airport cargo'),make('car',0xe9e6dc,'islander','Harbour master','Inspect airport cargo manifests')];
+ const obstacles=()=>{const out=[],p=getPlayerPosition?.();if(p)out.push({x:p.x,z:p.z,r:.4,player:true});for(const q of people()){const g=q?.g;if(g?.visible&&!g.userData.playerControlled&&!g.userData.inVehicle&&!g.userData.indoors)out.push({x:g.position.x,z:g.position.z,r:.35});}return out;};
+ const traffic=createTraffic({obstacles});let serial=0,requestedCrossing=null;
+ const make=(kind,colour,role,owner,purpose)=>{const g=buildVehicle(kind,colour);group.add(g);const v=traffic.add({g,kind,role,owner,driver:owner,purpose,id:'owned-car-'+(++serial),...VEHICLE_SIZE[kind]});Object.assign(g.userData,{owner,driver:owner,purpose,vehicleId:v.id});g.name=owner+' · '+kind;const a=new THREE.Object3D();a.position.y=1.2;g.add(a);register?.(a,'Inspect '+owner+'’s '+kind,()=>onAction?.('inspect',owner+'’s '+kind,'Owner and driver: '+owner+'. '+purpose+'.'));v.solid={id:'parked-vehicle',x:1e6,z:1e6,w:v.width,d:v.length,yaw:0,height:2};colliders?.push(v.solid);return v;};
+ const airportTaken=new Set(),townTaken=new Set();
+ const parkAt=(v,p)=>{v.where=p.where;v.bay=p.bay;v.shore=p.where==='airport'?'airport':'town';delete v.stageOrigin;traffic.park(v,p);Object.assign(v.solid,{x:p.x,z:p.z,yaw:p.yaw,height:p.y+1.9});};
+ const unpark=v=>{v.solid.x=v.solid.z=1e6;if(v.where==='airport')airportTaken.delete(v.bay);if(v.where==='service')townTaken.delete(v.bay);v.where='driving';};
+ const reserve=(shore)=>{const set=shore==='airport'?airportTaken:townTaken,order=shore==='airport'?[0,1,2,3,4,5]:[1,0];for(const i of order)if(!set.has(i)){set.add(i);return i;}return null;};
  const quayBay=i=>{const [x,z]=QUAY_BAYS[i];return {where:'quay',bay:i,x,y:0,z,yaw:0};};
- islanders.forEach((v,i)=>parkAt(v,quayBay(i)));
- // Fixed daily errands; a resident sets off once and returns after the appointment.
- const appointments=[{leave:525,back:660},{leave:780,back:930}];
- const islanderWants=(i,minutes)=>{const m=((minutes%1440)+1440)%1440,a=appointments[i];return m>=a.leave&&m<a.back?'airport':'quay';};
-
- // ---- The car ferry's four. ----
- const fleet=[make('kei truck',0xf2f0ea,'ferry','Kenji','Collect repair freight'),make('car',0x3f7fc0,'ferry','Reiko','Collect the airport newspaper delivery'),make('delivery truck',0x2f6f9f,'ferry','Mrs Sato','Collect kitchen supplies'),make('car',0xc8432f,'ferry','Aya','Collect book orders')];
- const OFF=[1.4,2.1],ON=[.6,1.2];
- fleet.slice(0,2).forEach((v,i)=>{v.where='aboard';v.slot=i;v.g.visible=false;});
- fleet.slice(2).forEach(v=>{const bay=freeBay();parkAt(v,airportBay(bay));});
- let service=null,aboardOff=[],goingOn=[];
- function sitOnDeck(v){
-  const f=ferry.ferry;f.updateMatrixWorld();
-  const p=new THREE.Vector3(0,f.userData.deckY,DECK_Z[v.slot]).applyMatrix4(f.matrixWorld);
-  v.g.position.copy(p);v.g.rotation.set(0,f.rotation.y+(v.facingStern?Math.PI:0),0);v.g.visible=f.visible;
+ const serviceBay=i=>{const [x,z]=SERVICE_BAYS[i];return {where:'service',bay:i,x,y:0,z,yaw:Math.PI};};
+ const islanders=[make('kei truck',0x5f8f5a,'islander','Tetsuo','Collect airport cargo for the workshop'),make('car',0xe9e6dc,'islander','Harbour master','Inspect airport cargo manifests')];
+ const appointments=[{leave:690,back:750},{leave:960,back:1020}];islanders.forEach((v,i)=>{v.home='town';v.homeBay=i;v.appointment=appointments[i];parkAt(v,quayBay(i));});
+ const fleet=[make('kei truck',0xf2f0ea,'ferry','Kenji','Deliver airport repair freight to Main Street'),make('car',0x3f7fc0,'ferry','Reiko','Deliver airport newspapers to Main Street'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Aya','Deliver airport book orders to Main Street')];
+ fleet.forEach((v,i)=>{v.home='airport';v.appointment={leave:600+i*180,back:690+i*180};const bay=reserve('airport');v.homeBay=bay;parkAt(v,airportVehicleBay(bay));});
+ const all=[...islanders,...fleet];
+ const wantedShore=(v,minutes)=>{const m=((minutes%1440)+1440)%1440,a=v.appointment;return m>=a.leave&&m<a.back?(v.home==='town'?'airport':'town'):v.home;};
+ function stage(v,destination){
+  if(!drivers.board(v))return false;const shore=v.shore,bay=v.bay;unpark(v);v.shipDestination=destination;v.stageOrigin=shore;
+  const path=shore==='airport'?net.path(['airport-stage-'+bay]):net.path([...(v.role==='islander'?['quay-out-'+v.homeBay,'main-north','service-in-1','service-out-1']:['service-out-'+bay]),'main-south','town-ferry-stage']);
+  traffic.drive(v,path,{onArrive:()=>{v.where='waiting-ferry';v.stageOrigin=shore;}});return true;
+ }
+ function sitOnDeck(v){ferry.ferry.updateMatrixWorld();const p=new THREE.Vector3(0,ferry.ferry.userData.deckY,FERRY_VEHICLE_DECK_Z).applyMatrix4(ferry.ferry.matrixWorld);v.g.position.copy(p);v.g.quaternion.copy(ferry.ferry.quaternion);v.g.visible=ferry.ferry.visible&&drivers.has(v);}
+ function unload(v){
+  const shore=ferry.berth,directHome=shore==='town'&&v.role==='islander';const bay=directHome?v.homeBay:reserve(shore);if(bay===null)return false;
+  const lanes=ferryLanes(ferry.ferry,0,shore);v.where='driving';v.transfer='off';v.shore=shore;v.bay=bay;
+  const tail=shore==='airport'?['airport-in-'+bay]:directHome?['main-north','service-in-1','service-out-1','main-south','quay-in-'+bay]:['main-north','service-in-'+bay];
+  traffic.drive(v,net.path([lanes.off,...tail]),{onArrive:()=>{v.transfer=null;v.shipDestination=null;parkAt(v,shore==='airport'?airportVehicleBay(bay):directHome?quayBay(bay):serviceBay(bay));if(shore===v.home)drivers.release(v,{restore:v.home==='airport'});}});return true;
  }
  function updateFerry(){
   if(!ferry)return;
-  const phase=ferry.phase,e=ferry.alongsideFor;
-  if(phase!=='away'&&ferry.service!==service&&(phase==='arriving'||phase==='waiting')){
-   // A new call: whoever is aboard drives off; two from the car park drive on.
-   service=ferry.service;
-   // Off from the front of the deck first; on, the first one aboard goes deepest.
-   aboardOff=fleet.filter(v=>v.where==='aboard'&&ferry.service===510).sort((a,b)=>a.slot-b.slot);aboardOff.forEach(v=>{v.facingStern=false;v.started=false;});
-   goingOn=fleet.filter(v=>v.where==='airport'&&ferry.service>=870).slice(0,2);goingOn.forEach((v,i)=>{v.slot=1-i;v.started=false;});
-  }
-  for(const v of fleet)if(v.where==='aboard')sitOnDeck(v);
-  if(phase!=='waiting'){
-   // Returning cars wait on land for the next open ramp; they never jump aboard.
-   return;
-  }
-  aboardOff.forEach((v,i)=>{
-   if(v.started||e<OFF[i])return;v.started=true;
-   const lanes=ferryLanes(ferry.ferry,v.slot);
-   v.where='aboard-leaving';v.ferryTrip=true;
-   if(!toAirport(v,[lanes.off])){v.where='aboard';v.started=false;return;}
-   v.trip.onArrive=()=>{v.ferryTrip=false;parkAt(v,airportBay(v.bay));};
-
-  });
-  goingOn.forEach((v,i)=>{
-   if(v.started||e<ON[i]||v.where!=='airport')return;v.started=true;
-   const lanes=ferryLanes(ferry.ferry,v.slot);v.ferryTrip=true;
-   const departed=fromAirport(v,[lanes.on],()=>{v.ferryTrip=false;v.where='aboard';v.facingStern=true;v.solid.x=v.solid.z=1e6;sitOnDeck(v);});if(!departed){v.started=false;v.ferryTrip=false;}
-
-  });
+  for(const v of all)if(v.where==='aboard')sitOnDeck(v);
+  if(ferry.phase!=='waiting'){requestedCrossing=null;return;}
+  const aboard=all.find(v=>v.where==='aboard');if(aboard&&aboard.shipDestination===ferry.berth){unload(aboard);return;}
+  if(aboard||all.some(v=>v.transfer))return;
+  const next=all.find(v=>v.where==='waiting-ferry'&&v.stageOrigin===ferry.berth&&v.shipDestination===requestedCrossing);
+  if(!next||!drivers.has(next)||ferry.rampDown<.95)return;
+  const lanes=ferryLanes(ferry.ferry,0,ferry.berth);next.where='driving';next.transfer='on';
+  traffic.drive(next,net.path([lanes.on]),{reverse:true,onArrive:()=>{next.transfer=null;next.where='aboard';sitOnDeck(next);}});
  }
- function updateIslanders(minutes){
-  islanders.forEach((v,i)=>{
-   const want=islanderWants(i,minutes);
-   if(v.where==='driving'){return;}
-   if(v.where===want)return;
-   v.heading=want;
-   if(want==='airport'){if(!toAirport(v,['quay-out-'+v.bay]))v.heading=null;}
-   else{const home=i;fromAirport(v,['quay-in-'+home],()=>{parkAt(v,quayBay(home));drivers.release(v);});}
-  });
- }
- return {group,network:net,traffic,fleet,islanders,appointments,drivers,
-  snapshot:()=>traffic.vehicles.map(v=>({id:v.id,owner:v.owner,driver:v.driver,purpose:v.purpose,location:v.where,driving:!!v.trip,occupied:drivers.has(v),position:v.g.position.toArray()})),
-  update(dt,minutes){
-   if(Number.isFinite(minutes))updateIslanders(minutes);
-   updateFerry();
-   for(const v of fleet){v.hold=!!(v.ferryTrip&&v.trip&&v.trip.path.pts.at(-1).z<FERRY_BERTH.z+FERRY.length/2+1&&v.trip.path.length-v.s<22&&ferry?.phase!=='waiting');}
-   traffic.update(dt);
-   for(const v of traffic.vehicles)if(v.trip&&!drivers.has(v)){v.hold=true;v.speed=0;}
-  }};
+ const loadingCount=()=>all.filter(v=>v.transfer).length;
+ return {group,network:net,traffic,fleet,islanders,appointments,drivers,serviceCourt:MAIN_SERVICE_COURT,
+  prepareCrossing(destination){requestedCrossing=destination;updateFerry();if(all.some(v=>v.where==='aboard'&&v.shipDestination===destination)&&!loadingCount())return true;const active=all.some(v=>v.transfer||v.where==='driving'&&v.stageOrigin===ferry?.berth&&v.shipDestination===destination);const waiting=all.some(v=>v.where==='waiting-ferry'&&v.stageOrigin===ferry?.berth&&v.shipDestination===destination);return !active&&!waiting;},
+  pendingVehicleJourney(){const v=all.find(v=>v.where==='aboard'||v.transfer==='on')||all.find(v=>v.where==='waiting-ferry');return v?.shipDestination?{id:v.id,origin:v.stageOrigin||v.shore,destination:v.shipDestination}:null;},
+  /** Offline time settles the errands and returns each borrowed resident to town life. */
+  reconcileAbsent(){
+   requestedCrossing=null;airportTaken.clear();townTaken.clear();
+   for(const v of all){drivers.release(v,{restore:true});v.transfer=null;v.shipDestination=null;v.hold=false;v.blocker=null;v.waited=0;v.personWait=0;
+    if(v.home==='airport'){airportTaken.add(v.homeBay);parkAt(v,airportVehicleBay(v.homeBay));}else parkAt(v,quayBay(v.homeBay));
+   }
+   if(ferry)ferry.loadingVehicles=0;
+  },
+  get loadingVehicles(){return loadingCount();},
+  snapshot:()=>all.map(v=>({id:v.id,owner:v.owner,driver:v.driver,purpose:v.purpose,location:v.where,shore:v.shore,destination:v.shipDestination??null,driving:!!v.trip,occupied:drivers.has(v),transfer:v.transfer??null,position:v.g.position.toArray()})),
+  update(dt,minutes){if(Number.isFinite(minutes))for(const v of all){if(!['quay','service','airport'].includes(v.where))continue;const want=wantedShore(v,minutes);if(want!==v.shore)stage(v,want);}updateFerry();if(ferry)ferry.loadingVehicles=loadingCount();traffic.update(dt);for(const v of all)if(v.trip&&!drivers.has(v)){v.hold=true;v.speed=0;}}
+ };
 }

@@ -109,6 +109,15 @@ test('conversion carries a material across and drops only what a ramp cannot use
  assert.equal(celFrom(source),toon,'converting twice returns the same material');
 });
 
+test('cel conversion retains explicit shadow casting sides and the automatic default',()=>{
+ for(const shadowSide of [null,THREE.FrontSide,THREE.BackSide,THREE.DoubleSide]){
+  const source=standard({side:THREE.FrontSide,shadowSide}),toon=celFrom(source);
+  assert.equal(toon.shadowSide,shadowSide,'an explicit shell override must not revert to PCF back-face casting');
+  assert.equal(source.shadowSide,shadowSide,'conversion leaves the original casting side intact');
+  assert.equal(toon.side,THREE.FrontSide,'shadow casting does not change visible face culling');
+ }
+});
+
 test('pale surfaces get a high-key ramp so they do not go grey in shadow',()=>{
  assert.ok(luminance(new THREE.Color(0xf2ece0))>luminance(new THREE.Color(0x3a3330)));
  assert.equal(bandsFor(standard({color:0xf6f1e6})),'soft3','blossom and plaster');

@@ -46,7 +46,12 @@ export function buildTatamiHome({profile,room,box,reg,collider,action,exit}){
  // resurrect a room after exit. Clone materials so normal room cleanup owns them.
  const ready=(typeof document==='undefined'||!document.baseURI)?Promise.resolve(false):new GLTFLoader().loadAsync(assetURL('models/tatami-home/tatami-home.glb')).then(gltf=>{
   if(disposed){gltf.scene.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m?.dispose();});return false;}
-  model=gltf.scene;model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});shell.add(model);fallback.visible=false;apply();return true;
+  model=gltf.scene;model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+  // The supplied rear paper stops at 2.35 m and its rail starts at 2.37 m.
+  // Back the 20 mm aperture with an overlapping header behind both front faces.
+  const header=box([6,.1,.06],[0,2.375,-3.045],0x6d5238,model,false);
+  header.name='Rear fusuma header backing';header.castShadow=false;header.receiveShadow=false;
+  shell.add(model);fallback.visible=false;apply();return true;
  }).catch(e=>{console.warn('Tatami home uses its simple furnishings until the model is available',e);return false;});
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);shell.add(o);reg(o,label,fn,true);};
  anchor([2.1,1,-2.1],'Inspect the futon cupboard',()=>action('inspect','Futon cupboard',profile.name+' keeps the mattress, quilt and pillow here during the day. At bedtime the futon is laid on the tatami; after waking it is folded away. It is currently '+bedding.phase+'.'));

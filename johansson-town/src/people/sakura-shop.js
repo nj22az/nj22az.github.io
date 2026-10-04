@@ -25,15 +25,20 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  const layout=SAKURA_LAYOUT,colliders=layout.colliders,person=world.people.find(p=>p.profile.name==='Thuan');
  const reg=(object,label,fn,inside=true)=>{object.userData.persistentShop=true;register(object,label,fn,inside);};
  const blocked=(x,z,r=.3)=>suppliedRoomBoundsBlocked(layout,x,z,r)||colliders.some(c=>circleHitsRect(x,z,r,c));
+ const isOccupied=(x,z,r,excluded)=>{
+  const player=isInside()&&getPlayerPosition();if(player&&Math.hypot(player.x-x,player.z-z)<r+.28)return true;
+  return world.people.some(p=>p!==excluded&&p.g.userData.inMarket&&p.g.visible&&Math.hypot(p.g.position.x-x,p.g.position.z-z)<r+(p===person?layout.clearance:.35));
+ };
  const display=buildSakuraInterior({room:group,reg,action,exit});display.updateStock(state.sakura.stock);
- const retail=createShopRetail({world,state,ledger,display,collides:blocked,getMinutes});
+ const retail=createShopRetail({world,state,ledger,display,collides:blocked,getMinutes,isOccupied});
  const attention=createShopAttention({clerk:person.g,world,retail,colliders,isInside,getPlayerPosition});
  let service;
  const residents=createIndoorResidents({world,parent:group,layout,collides:blocked,place:'market',getState:()=>state,getRain,
   onBorrow:(p,time)=>{onBorrow(p,time);retail.arriving(p,time);},getStandingVisit:retail.standing,
+  isOccupied,radiusFor:p=>p===person?layout.clearance:.35,validateSpawn:true,
   canLeave:p=>p!==person||service?.prepareToLeave()!==false});
  service=createRetailClerk({person,room:group,layout,collides:blocked,getWork:retail.work,completeWork:job=>{retail.complete(job);save();},cancelWork:retail.cancelWork,accessShelf:display.accessShelf,
-  isBlocked:(x,z)=>isInside()&&Math.hypot(getPlayerPosition().x-x,getPlayerPosition().z-z)<.55});
+  isOccupied});
  /**
   * The staff and customers, as distinct from the fittings. They are hidden while the
   * shop is only being looked at through its window: nothing drives their animation

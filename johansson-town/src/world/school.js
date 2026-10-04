@@ -1,4 +1,3 @@
-import {buildVehicle} from './road-vehicles.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {SCHOOL,SCHOOL_COLUMNS,FUKUGI,schoolColliders} from './school-layout.js';
@@ -193,7 +192,7 @@ function clockHands(group){
  * The town hall's additions to the old school, all from the Okinawan kit: the power
  * house (two diesel sets behind louvred walls, two exhaust stacks, the fuel tank in its
  * bund, the cable going out to the poles), the concrete canopy over the entrance, the
- * town's kei truck and car in the car park, the flags on the pole, and a monument sign
+ * clear forecourt, the flags on the pole, and a monument sign
  * by the gate. Returns nothing; colliders are in schoolColliders().
  */
 function buildTownHallDressing(group,options){
@@ -225,10 +224,7 @@ function buildTownHallDressing(group,options){
  kit.block(c.minX,c.maxX,c.height,c.height+.2,c.minZ,c.maxZ+.1,0xe4e1d3);
  kit.block(c.minX,c.maxX,c.height+.2,c.height+.32,c.minZ,c.minZ+.12,trim);
  for(const x of [c.minX+.2,c.maxX-.2])kit.cyl(.14,.14,c.height,x,c.height/2,c.minZ+.2,0xe4e1d3,{segments:12});
- // The town's vehicles in their bays: the works kei truck and the white town car.
- for(const [kind,x,owner,purpose] of [['kei truck',32.4,'Harbour master','Town utility maintenance'],['car',35.4,'Officer Mori','Community hall visits']]){
-  const car=buildVehicle(kind,0xf4f1ea);car.position.set(x,0,30.7);car.rotation.y=Math.PI;car.visible=true;Object.assign(car.userData,{owner,driver:owner,purpose});car.name=owner+' · parked '+kind;group.add(car);
- }
+ // The forecourt remains clear for people; working vehicles use Main Street and the quay.
  // A monument sign of polished stone at the gate, the way every town hall has one.
  const g=SCHOOL.gate;kit.box(2.4,1.3,.4,g.x+3.4,.65,g.z+.6,0x4a4f52,{finish:'gloss'});kit.box(2.6,.15,.55,g.x+3.4,.07,g.z+.6,0x9a958a);
  kit.finish(group,'Town hall dressing');

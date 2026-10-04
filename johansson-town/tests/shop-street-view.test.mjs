@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {mapShopCamera,createShopStreetView} from '../src/render/shop-street-view.js';
+import {mapShopCamera,createShopStreetView,SHOP_STREET_PORTAL_CLEARANCE} from '../src/render/shop-street-view.js';
 import {createSteamedBunGeometry} from '../src/world/interiors/steamed-bun.js';
 import {createWindowBatch} from '../src/render/shop-street-batches.js';
 
@@ -34,6 +34,17 @@ test('steamed bun has a flat resting base, rounded belly and folded crown',()=>{
  assert.ok(Math.abs(g.boundingBox.min.y)<1e-6);assert.ok(g.boundingBox.max.y>.068&&g.boundingBox.max.y<.076);
  const crown=[];for(let i=0;i<p.count;i++){assert.ok(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)));if(p.getY(i)>.066)crown.push(Math.hypot(p.getX(i),p.getZ(i)));}
  assert.ok(crown.length>64);assert.ok(g.attributes.color.count===p.count);g.dispose();
+});
+
+test('the outgoing shop view excludes coplanar glass and duplicate sashes while retaining the exterior awning',()=>{
+ const scene=new THREE.Scene(),town=new THREE.Group(),room=new THREE.Group();scene.add(town,room);town.visible=false;
+ const camera=new THREE.PerspectiveCamera(65,1.6,.15,480);camera.position.set(-4.3,1.7,2.54);camera.lookAt(-4.3,2.01,6.34);
+ const frontage={position:[-7.43,.18,-27.3],yaw:Math.PI/2,interiorZ:3.91};let passes=0;
+ const renderer={autoClear:true,clippingPlanes:[],clearDepth(){},render(){if(!town.visible)return;passes++;const plane=this.clippingPlanes[0];
+  for(const offset of [0,.04,.08,.12])assert.ok(plane.distanceToPoint(new THREE.Vector3(frontage.position[0]+offset,1.5,-27.3))<0,'Glass and exterior sash must be behind the clipping plane');
+  assert.ok(plane.distanceToPoint(new THREE.Vector3(frontage.position[0]+.3,2.7,-27.3))>0,'Actual awning remains outside');
+ }};
+ createShopStreetView().render({renderer,scene,camera,town,room,frontage});assert.equal(passes,1);assert.ok(SHOP_STREET_PORTAL_CLEARANCE>.12);
 });
 
 test('window pass excludes geometry behind walls and restores shadows and hidden objects',()=>{

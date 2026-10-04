@@ -53,7 +53,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
   try {
     fixtures.installDOM();
     // The game starts at one of several openings (world/openings.js); this test walks from the Sakura bench.
-    globalThis.location.search='?spawn=sakura-bench';
+    globalThis.location.search='?spawn=sakura-bench&cinematic=off';
     globalThis.innerHeight=768;
     globalThis.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
     globalThis.addEventListener=()=>{};
@@ -90,7 +90,7 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,catchUpFrame,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,characters,interaction,resizeRenderer,doInteract,touchSticks,residentBlocked,occupiedByPerson};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>{followRealClock=false;minutes=value;};export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,catchUpFrame,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,groundHeight,characters,interaction,resizeRenderer,doInteract,touchSticks,residentBlocked,occupiedByPerson};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>{followRealClock=false;minutes=value;};export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     // Exercise the new geometry in the full game, including actual room exits.
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
@@ -136,9 +136,9 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     const toShop=new Vector3(SAKURA_SHOP.x-api.player.position.x,0,SAKURA_SHOP.z-api.player.position.z).normalize();
     assert.ok(look.dot(toShop)>.97,'Opening view faces the actual Sakura frontage');
     const openingSit=api.player.position.clone();api.keys.KeyW=true;api.simulate(.1);api.keys.KeyW=false;
-    assert.ok(api.player.position.distanceTo(openingSit)<.001,'Sitting prevents walking');
+    assert.ok(api.player.position.distanceTo(openingSit)>.2,'The first movement stands up and walks immediately');
     assert.ok(!api.world.colliders.some(c=>circleHitsRect(bench.seat.stand[0],bench.seat.stand[2],.28,c)),'Clear stand-up point');
-    api.doInteract();assert.ok(api.player.position.distanceTo(new Vector3(...bench.seat.stand))<.2);
+    assert.ok(api.player.position.distanceTo(new Vector3(...bench.seat.stand))<.5,'Movement begins at the clear bench stand point');
     api.player.position.set(0,0,14);api.reviewSetYaw(0);api.simulate(1/60);
     const runningStart=api.player.position.clone();
     for(let ahead=0;ahead<=.8;ahead+=.1)assert.ok(!api.world.colliders.some(c=>circleHitsRect(runningStart.x,runningStart.z-ahead,.34,c)),'Clear movement test route');
@@ -151,8 +151,8 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     api.keys.ShiftRight=false;api.touchSticks.reset();api.player.position.copy(runningStart);
     const startX=api.player.position.x;api.keys.KeyA=true;api.simulate(.1);api.keys.KeyA=false;assert.ok(api.player.position.x<startX);
     const leftX=api.player.position.x;api.keys.KeyD=true;api.simulate(.1);api.keys.KeyD=false;assert.ok(api.player.position.x>leftX);
-    assert.equal(window.__JOHANSSON_JUMP__(),true);api.simulate(.1);assert.ok(api.player.position.y>0);
-    for(let i=0;i<12;i++)api.simulate(.1);assert.equal(api.player.position.y,0);
+    assert.equal(window.__JOHANSSON_JUMP__(),true);api.simulate(.1);assert.ok(api.player.position.y>api.groundHeight(api.player.position.x,api.player.position.z)+.05);
+    for(let i=0;i<12;i++)api.simulate(.1);assert.equal(api.player.position.y,api.groundHeight(api.player.position.x,api.player.position.z),'Jump lands on the actual drawn paving');
     assert.equal(api.player.visible,false);assert.equal(api.player.children.length,0);assert.equal(api.camera.fov,65);
     assert.equal(api.scene.fog,null);assertFiniteTransforms(api,'outdoor startup');
 
@@ -218,19 +218,28 @@ test('Published peninsula boots, shares the wooden bookshop/workshop and visits 
     }
     assert.deepEqual([...visited].sort(),['clinic','community-kitchen','form3d','frontrow','home-kitahama-10','home-kitahama-11','home-kitahama-12','home-kitahama-3','home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kitahama-7','home-kitahama-8','home-kitahama-9','izakaya','koban','market','mayor-home','mayor-office','office','onsen','ramen','resident-home-aya','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school','warehouse']);
 
-    // After their afternoon shopping the staff are back at work: Aya and Reiko in the
-    // bookshop, Kenji and Tetsuo at the dock workshop, where repairs moved.
+    // After afternoon shopping staff resume work, or remain the actual driver of
+    // their scheduled delivery. Opening a workplace must not duplicate a driver.
     const {createResidentLedger}=await import('../src/people/resident-personalities.js');
     const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Aya','Kenji','Reiko','Tetsuo'].filter(name=>STREET_CAST_NAMES.includes(name));
     const placeOf={Aya:'frontrow',Reiko:'frontrow',Kenji:'form3d',Tetsuo:'form3d'};
     for(const name of staffNames)ledger.account(name,1050).shopping={finished:true};
     api.reviewSetMinutes(1050);api.player.position.set(0,0,14);
     const staff=api.world.people.filter(p=>staffNames.includes(p.profile.name));
-    for(let i=0;i<600&&!staff.every(p=>p.g.userData.indoors==='work');i++)api.simulate(.1);
+    for(let i=0;i<600&&!staff.every(p=>p.g.userData.indoors==='work'||p.g.userData.inVehicle);i++)api.simulate(.1);
     const workshop=api.SITES.find(s=>s.id==='form3d');
     for(const site of [books,workshop]){
      await api.enterRoom(site);
-     for(const name of staffNames.filter(n=>placeOf[n]===site.id)){const p=api.world.people.find(p=>p.profile.name===name);assert.equal(p.profile.workSite,site.id);assert.equal(p.g.userData.inWorkplace,site.id,name+' works at '+site.id);assert.equal(p.g.visible,true);}
+     for(const name of staffNames.filter(n=>placeOf[n]===site.id)){
+      const p=api.world.people.find(p=>p.profile.name===name);assert.equal(p.profile.workSite,site.id);
+      if(p.g.userData.inVehicle){
+       const car=api.world.traffic.traffic.vehicles.find(v=>v.id===p.g.userData.inVehicle);
+       assert.ok(car,name+' has an owned delivery car');assert.equal(car.driver,name);
+       assert.equal(p.g.parent,car.g,name+' remains the same seated driver');
+       assert.equal(api.world.traffic.drivers.has(car),true);assert.equal(p.g.userData.indoors,'vehicle');
+      }else assert.equal(p.g.userData.inWorkplace,site.id,name+' works at '+site.id);
+      assert.equal(p.g.visible,true);
+     }
      if(site===books)api.leaveRoom();
     }
     const choose=label=>{const button=document.querySelector('#activityActions').children.find(b=>b.textContent===label);assert.ok(button,'Action: '+label);assert.equal(button.disabled,false);button.onclick();};

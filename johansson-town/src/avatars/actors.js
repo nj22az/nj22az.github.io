@@ -5,6 +5,7 @@ import {createAvatarAnimator,GESTURES} from './animate.js';
 import {recipeFor,CAST_RECIPES} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
 import {fitAvatarHeldProp} from './consume.js';
+import {DEFAULT_PLAYER,readPlayers,readSave} from '../save.js';
 import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropPortion,disposeServing} from '../people/izakaya-beer.js';
 
 /**
@@ -18,12 +19,21 @@ import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropP
 
 /** The player's own recipe, as the creator saved it; Johansson's until then. */
 export const PLAYER_RECIPE_KEY='johansson-town-avatar';
+export function playerRecipeKey(storage=globalThis.localStorage){
+ const id=readPlayers(storage).active;
+ return id===DEFAULT_PLAYER.id?PLAYER_RECIPE_KEY:PLAYER_RECIPE_KEY+'@'+id;
+}
 export function playerRecipe(storage=globalThis.localStorage){
- try{const saved=storage?.getItem(PLAYER_RECIPE_KEY);if(saved){const r=decodeRecipe(saved);if(r)return {...r,outfit:appropriateOutfit('Johansson',r.outfit)};}}catch{}
+ // The first player's old key remains theirs. Other slots never inherit that look.
+ // A save-file snapshot restores imported appearances; a later creator edit wins.
+ try{
+  const r=decodeRecipe(storage?.getItem(playerRecipeKey(storage)))||decodeRecipe(readSave(storage)?.avatarRecipe);
+  if(r)return {...r,outfit:appropriateOutfit('Johansson',r.outfit)};
+ }catch{}
  return CAST_RECIPES.Johansson;
 }
 export function savePlayerRecipe(recipe,storage=globalThis.localStorage){
- const code=encodeRecipe({...recipe,outfit:appropriateOutfit('Johansson',recipe.outfit)});try{storage?.setItem(PLAYER_RECIPE_KEY,code);}catch{}return code;
+ const code=encodeRecipe({...recipe,outfit:appropriateOutfit('Johansson',recipe.outfit)});try{storage?.setItem(playerRecipeKey(storage),code);}catch{}return code;
 }
 
 /**

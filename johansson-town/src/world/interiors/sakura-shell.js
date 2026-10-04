@@ -22,7 +22,7 @@ import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
  * shell, hidden when the shop is seen from the street), `sakura-ceiling`, `sakura-floor`,
  * `sakura-counter`, `sakura-shelf` (wall shelving), `sakura-shelf <island>` and
  * `sakura-shelf-ends <island>` (the three gondolas), `sakura-light` (the tubes, which
- * glow), `sakura-door`, `sakura-toilet` and `sakura-register`. Each is one draw: every
+ * glow), `sakura-door` and `sakura-toilet`. POS detail lives in sakura-counter-detail.js. Each shell part is one draw: every
  * piece is a box with a vertex colour, merged by name. Shelf tops are taken from the
  * stock layout itself, so every product stands on a board.
  */
@@ -255,9 +255,9 @@ function buildWallShelving(){
 export const SAKURA_COUNTER=Object.freeze({x0:4.54,x1:5.06,z0:.08,z1:3.86,top:1.0,bay:.62});
 function buildCounter(){
  const {span,mesh}=parts('sakura-counter');
- const {x0,x1,z0,z1,top,bay}=SAKURA_COUNTER,rail=0x33200f,veneer=0x7e5634,laminate=0xe6dccb;
+ const {x0,x1,z0,z1,top,bay}=SAKURA_COUNTER,rail=0x87968e,veneer=0xdde2d7,laminate=0xf0eee4;
  span(x0+.06,x1,0,.12,z0,z1,0x2a2420);
- span(x0,x1,.12,top-.04,z0,z1,0x5e3e24);
+ span(x0,x1,.12,top-.04,z0,z1,0xd1d9ce);
  // The customer face: a rail along the foot and the head, a stile between every bay.
  span(x0-.02,x0,.12,.19,z0,z1,rail);span(x0-.02,x0,top-.13,top-.04,z0,z1,rail);
  const bays=Math.round((z1-z0)/bay),w=(z1-z0)/bays;
@@ -265,7 +265,7 @@ function buildCounter(){
  for(let i=0;i<=bays;i++){const a=z0+i*w;span(x0-.02,x0,.12,top-.04,a-.03,a+.03,rail);}
  // The laminate top, overhanging the customer side, with its dark edge band.
  span(x0-.06,x1+.03,top-.04,top,z0-.03,z1+.03,laminate);
- span(x0-.075,x0-.055,top-.055,top+.004,z0-.035,z1+.035,0x3a2818);
+ span(x0-.075,x0-.055,top-.055,top+.004,z0-.035,z1+.035,rail);
  // The flap at the north end, where Thuan comes through.
  span(x0,x1,top,top+.02,z0,z0+.06,C.woodDark);
  return mesh(material());
@@ -310,19 +310,11 @@ function buildDoors(){
  return mesh(material());
 }
 
-function buildRegister(){
- const {span,mesh}=parts('sakura-register');
- const [x,y,z]=SAKURA_LAYOUT.register;
- span(x-.16,x+.16,1.0,1.12,z-.3,z+.08,0x3a3e40);span(x-.12,x+.12,1.12,1.2,z-.26,z+.04,0x2b2e30);
- span(x-.14,x-.02,1.2,1.38,z-.28,z-.04,0x3a3e40);
- return mesh(material());
-}
-
 /** Builds the whole interior as one group, ready to be cloned into the room. */
 export function buildSakuraShell(){
  const page=typeof document!=='undefined'&&!!document.createElement;
  const root=new THREE.Group();root.name='Sakura shōten interior';
- root.add(buildShell(),buildFrontFrame(),...buildCeilingAndFloor(page),buildWallShelving(),buildCounter(),buildTubes(),buildBattens(),buildRestroomFittings(),buildDoors(),buildRegister(),buildEndcap(),buildFrontEndcaps());
+ root.add(buildShell(),buildFrontFrame(),...buildCeilingAndFloor(page),buildWallShelving(),buildCounter(),buildTubes(),buildBattens(),buildRestroomFittings(),buildDoors(),buildEndcap(),buildFrontEndcaps());
  for(const id of ['east','middle','west'])root.add(...buildIsland(id));
  root.traverse(o=>{if(o.isMesh)o.receiveShadow=true;});
  return root;

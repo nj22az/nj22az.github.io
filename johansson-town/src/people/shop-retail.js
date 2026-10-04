@@ -8,12 +8,31 @@ import {residentPersonality} from './resident-personalities.js';
 import {SAKURA_SHELVES} from '../world/interiors/sakura-layout.js';
 
 
-export function createShopRetail({world,state,ledger,display,collides,getMinutes}){
- const layout=display.layout,COUNTER=layout.checkout,STOCKROOM=layout.stockroom,walker=createRoomWalk(collides,{bounds:layout.bounds,smoothTurn:true}),customers=new Map();let activeJob=null;
+export function createShopRetail({world,state,ledger,display,collides,getMinutes,isOccupied=()=>false}){
+ const layout=display.layout,COUNTER=layout.checkout,STOCKROOM=layout.stockroom,walkers=new Map(),customers=new Map();let activeJob=null;
+ const radius=.35;
+ function walk(person,target,dt){
+  let path=walkers.get(person);if(!path){path={walker:createRoomWalk((x,z,r)=>collides(x,z,r)||isOccupied(x,z,r,person),{bounds:layout.bounds,smoothTurn:true,radius}),stalled:0};walkers.set(person,path);}
+  const before=person.g.position.clone(),arrived=path.walker.move(person,target,dt);
+  // A full smooth turn can take over a second. Let it finish before rebuilding
+  // the route, while still recovering when somebody moves into a cached aisle.
+  if(!arrived&&person.g.position.distanceTo(before)<.0001){path.stalled+=dt;if(path.stalled>=2){path.walker.clear();path.stalled=0;}}else path.stalled=0;
+  return arrived;
+ }
  function visit(person,minutes){
   if(person.profile.name==='Thuan'||marketVisitPurpose(person.profile.name,minutes,state)!=='goods')return null;
   const account=ledger.account(person.profile.name,minutes);
-  return account.shopping??={phase:'browse',started:minutes,finished:false,item:null,picked:false,paid:false,timer:0,position:[...layout.entrance]};
+  const record=account.shopping??={phase:'browse',started:minutes,finished:false,item:null,picked:false,paid:false,timer:0,position:[...layout.entrance]};
+  // Old saves can remember a spot occupied by a moved shelf or a person now in
+  // that aisle. Restart an unpicked visit before the real resident is placed at
+  // the entrance, so pickup still requires walking back to the physical shelf.
+  if(!record.finished&&(!Array.isArray(record.position)||record.position.length!==3||!record.position.every(Number.isFinite)||collides(record.position[0],record.position[2],radius)||isOccupied(record.position[0],record.position[2],radius,person))){
+   record.position=[...layout.entrance];
+   if(!record.picked&&record.phase!=='paid'){record.phase='browse';record.timer=0;}
+   delete record.atCounter;
+  }
+  if(Array.isArray(record.position))record.position[1]=0;
+  return record;
  }
  function arriving(person,minutes){return visit(person,minutes);}
  function point(item,slot){return display.unitPositions.get(item+':'+slot)||[0,1,0];}
@@ -22,7 +41,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
  function clear(person){for(const key of ['heldItem','shopGoods','shopReach','shopping'])delete person.g.userData[key];}
  function finish(person,record){
   if(record.picked&&!record.paid){returnShopStock(state,{item:record.item});record.picked=false;}
-  record.finished=true;record.phase='finished';clear(person);customers.delete(person);walker.forget(person);
+  record.finished=true;record.phase='finished';clear(person);customers.delete(person);walkers.get(person)?.walker.clear();walkers.delete(person);
  }
  function choices(person){
   const start=(Math.floor(getMinutes()/1440)+person.profile.name.length)%SHOP_STOCK.length;
@@ -42,7 +61,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
    if(record.phase==='browse'){
     if(!record.item){const item=choices(person)[0];if(!item){finish(person,record);continue;}record.item=item.id;}
     g.userData.activity='choosing '+stockSpec(record.item).name.toLowerCase();
-    if(walker.move(person,stand(record.item),dt)){record.phase='pickup';record.timer=1.2;}
+    if(walk(person,stand(record.item),dt)){record.phase='pickup';record.timer=1.2;}
    }else if(record.phase==='pickup'){
     const count=state.sakura.stock[record.item].shelf;if(!count){soldOut(person,record);continue;}
     if(!face(g,SAKURA_SHELVES[record.item].yaw,dt))continue;display.accessShelf(record.item);g.userData.shopReach=point(record.item,count-1);record.timer-=dt;
@@ -50,7 +69,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
    }else if(record.phase==='queue'){
     const line=[...customers].filter(([,r])=>r.phase==='queue'),index=line.findIndex(([p])=>p===person),target=[COUNTER[0],0,COUNTER[2]+Math.max(0,index)*.85];
     g.userData.activity='waiting to pay for '+stockSpec(record.item).name.toLowerCase();
-    record.atCounter=walker.move(person,target,dt)&&face(g,-Math.PI/2,dt);
+    record.atCounter=walk(person,target,dt)&&face(g,-Math.PI/2,dt);
    }else if(record.phase==='paid'){
     g.userData.activity='putting a purchase away';record.timer-=dt;if(record.timer<=0)finish(person,record);
    }

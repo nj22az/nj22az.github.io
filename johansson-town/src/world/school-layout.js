@@ -74,11 +74,9 @@ export function schoolColliders(){
  const s=SCHOOL.bikeShed;add('school-bike-shed',s.minX,s.maxX,s.minZ+.9,s.maxZ,2.3);
  const g=SCHOOL.gate;for(const side of [-1,1])add('school-gatepost',g.x+side*g.half-.35,g.x+side*g.half+.35,g.z-.35,g.z+.35,2.3);
  add('school-flagpole',SCHOOL.flagpole.x-.15,SCHOOL.flagpole.x+.15,SCHOOL.flagpole.z-.15,SCHOOL.flagpole.z+.15,9);
- // The iron bars went with the school; the power house, its fuel tank, the parked town
- // vehicles and the canopy's two columns stand there now.
+ // The iron bars went with the school; the power house, its fuel tank, the canopy's two columns stand there now.
  const ph=SCHOOL.powerHouse;add('town-hall-power-house',ph.minX,ph.maxX,ph.minZ,ph.maxZ,ph.height);
  add('town-hall-fuel-tank',ph.tank[0]-1.6,ph.tank[0]+1.6,ph.tank[1]-.7,ph.tank[1]+.7,1.6);
- for(const x of [32.4,35.4])add('town-hall-parked-vehicle',x-.8,x+.8,29.2,32.2,1.9);
  const c=SCHOOL.canopy;for(const x of [c.minX+.2,c.maxX-.2])add('town-hall-canopy-column',x-.15,x+.15,c.minZ+.05,c.minZ+.35,c.height);
  for(const [x,z] of FUKUGI)add('school-fukugi',x-.35,x+.35,z-.35,z+.35,6);
  return list;

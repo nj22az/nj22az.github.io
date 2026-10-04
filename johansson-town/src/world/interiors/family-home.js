@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {householdDetails,addPersonalObject,addFamilyPhoto,addTeaSetting} from './home-details.js';
 
 /**
  * Inside an island family's house, planned the way it would have been built (see
@@ -27,7 +28,7 @@ export const FAMILY_HOME_LAYOUT=Object.freeze({bounds:{minX:-W/2+.05,maxX:W/2-.0
 
 export function buildFamilyHome({room,reg,action,collider=()=>{},household,title='Home',kind='concrete'}){
  const redTile=kind==='red-tile';
- const group=new THREE.Group();group.name='Family home · '+title;room.add(group);
+ const group=new THREE.Group();group.name='Family home · '+title;room.add(group);const partitions=[];
  const box=(size,pos,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...pos);m.receiveShadow=true;if(name)m.name=name;group.add(m);return m;};
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);o.userData.npcInteraction=false;group.add(o);reg(o,label,fn,true);};
  const hw=W/2,hd=D/2,empty=!household||household.toLet||!household.members.length;
@@ -36,8 +37,9 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  for(const x of [-hw/2,0,hw/2])box([.04,.012,D],[x,.006,0],0x3f4a3a);box([W,.012,.04],[0,.006,0],0x3f4a3a);
  for(const [len,pos,ry] of [[W,[0,0,-hd],0],[D,[-hw,0,0],Math.PI/2],[D,[hw,0,0],-Math.PI/2],[hw-.55,[-(hw+.55)/2,0,hd],Math.PI],[hw-.55,[(hw+.55)/2,0,hd],Math.PI]]){
   const g=new THREE.Group();g.position.set(...pos);g.rotation.y=ry;group.add(g);
-  const p=(size,at,c)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);g.add(m);};
-  p([len,H,.06],[0,H/2,0],0xeee3cc);p([len,.05,.08],[0,.95,.02],0x6d5238);p([len,.08,.08],[0,.04,.02],0x5a4430);
+  const p=(size,at,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);if(name)m.name=name;g.add(m);};
+  // Insets meet at their inner corner instead of sharing 6 cm of top face.
+  p([len,H,.06],[0,H/2,0],0xeee3cc);p([len-.12,.05,.08],[0,.95,.02],0x6d5238,'Outer wall dado');p([len,.08,.08],[0,.04,.02],0x5a4430);
  }
  box([1.1,H-2.05,.06],[0,2.05+(H-2.05)/2,hd],0xeee3cc);box([W,.04,D],[0,H+.02,0],0xf3ece0,'Ceiling');
  group.add(new THREE.HemisphereLight(0xfff0d8,0x8a7a64,1.15));
@@ -56,14 +58,22 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
   let at=a0;const spans=[];for(const [g0,g1] of [...gaps].sort((p,q)=>p[0]-q[0])){if(g0>at)spans.push([at,g0]);at=Math.max(at,g1);}if(a1>at)spans.push([at,a1]);
   for(const [p0,p1] of spans){const len=p1-p0,mid=(p0+p1)/2;
    const size=alongX?[len,H,.08]:[.08,H,len],pos=alongX?[mid,H/2,fixed]:[fixed,H/2,mid];
-   box(size,pos,fusuma?0xf6efdc:wallMat,name);
+   partitions.push(box(size,pos,fusuma?0xf6efdc:wallMat,name));
    if(fusuma){// Paper panels in a dark frame, a panel to every 0.9 m.
-    const n=Math.max(1,Math.round(len/.9));for(let k=0;k<=n;k++){const t=p0+len*k/n;box(alongX?[.04,1.8,.1]:[.1,1.8,.04],alongX?[t,.9,fixed]:[fixed,.9,t],frame);}
-    box(alongX?[len,.05,.1]:[.1,.05,len],alongX?[mid,1.8,fixed]:[fixed,1.8,mid],frame);}
-   else box(alongX?[len,.05,.1]:[.1,.05,len],alongX?[mid,.95,fixed]:[fixed,.95,mid],frame);
+    const uprightHeight=alongX?1.8:1.815;
+    const n=Math.max(1,Math.round(len/.9));for(let k=0;k<=n;k++){const t=p0+len*k/n;box(alongX?[.04,uprightHeight,.1]:[.1,uprightHeight,.04],alongX?[t,uprightHeight/2,fixed]:[fixed,uprightHeight/2,t],frame,'Fusuma upright');}
+    // Rails rest on top of uprights rather than passing through their front
+    // faces. The former 2.5 cm face overlap shimmered at every rail joint.
+    const railY=uprightHeight+.025;
+    // The rail extends over the posts. Its end cap must not share the paper
+    // panel's end plane; those different-colour faces flickered in the doorway.
+    box(alongX?[len+.04,.05,.1]:[.1,.05,len+.04],alongX?[mid,railY,fixed]:[fixed,railY,mid],frame,'Fusuma head rail');}
+   // Step the partition trim down from the outer dado. At a T-junction their
+   // horizontal top faces used to occupy precisely the same plane.
+   else {const dadoY=alongX?.935:.92;box(alongX?[len+.04,.05,.1]:[.1,.05,len+.04],alongX?[mid,dadoY,fixed]:[fixed,dadoY,mid],frame,'Partition dado');}
    collider(pos[0],pos[2],size[0]+.04,size[2]+.04,H);}
   // A head beam over each opening.
-  for(const [g0,g1] of gaps){const len=g1-g0,mid=(g0+g1)/2;box(alongX?[len,H-2.0,.08]:[.08,H-2.0,len],alongX?[mid,2.0+(H-2.0)/2,fixed]:[fixed,2.0+(H-2.0)/2,mid],wallMat);}
+  for(const [g0,g1] of gaps){const len=g1-g0,mid=(g0+g1)/2;partitions.push(box(alongX?[len,H-2.0,.08]:[.08,H-2.0,len],alongX?[mid,2.0+(H-2.0)/2,fixed]:[fixed,2.0+(H-2.0)/2,mid],wallMat,'Doorway head beam'));}
  };
  const floorPatch=(x0,x1,z0,z1,c,name)=>box([x1-x0,.012,z1-z0],[(x0+x1)/2,.012,(z0+z1)/2],c,name);
  /** A toilet or bath room; the fitting stands at the end away from its door. */
@@ -104,6 +114,9 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
   altar={x:-2.4,z:-.4+.3};table={x:1.6,z:1.0};tv={x:-hw+.55,z:1.1,ry:Math.PI/2};board={x:1.6,z:hd-.05,ry:0};
   futons={x0:1.0,z:-hd+.5,step:.62,along:'x'};
  }
+ // Partitions meet as one solid shell. Remove buried faces and give each
+ // coplanar patch one owner, including where doorway beams cross a T-junction.
+ clipPartitionFaces(partitions);
  if(empty){
   box([.3,.01,.42],[0,.01,.6],0xf4ecd6,'Rental note');
   anchor([0,.5,.6],'Read the rental note',()=>action('read',"For rent · Rental house","2DK, tatami, kitchen and bath, water tank on the roof. ¥28,000 a month. Enquiries to the town hall, Residents Division. Somebody new could live here."));
@@ -118,7 +131,8 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  collider(a.x,a.z,1.2,.5,1.3);}
  // Low table and cushions in the tatami room; the television.
  box([1.1,.05,.75],[table.x,.36,table.z],0x6b4a32,'Low table');collider(table.x,table.z,1.1,.75,.4);
- for(const [dx,dz] of [[0,.62],[0,-.62],[-.75,0],[.75,0]])box([.48,.07,.48],[table.x+dx,.04,table.z+dz],0x3f6f8a,'Zabuton');
+ // Keep cushions inside the west wall and out from under the altar cabinet.
+ for(const [dx,dz] of (redTile?[[0,.62],[0,-.62],[-.75,0],[.75,0]]:[[0,.62],[-.6,0],[.75,0]]))box([.48,.07,.48],[table.x+dx,.04,table.z+dz],0x3f6f8a,'Zabuton');
  {const g=new THREE.Group();g.position.set(tv.x,0,tv.z);g.rotation.y=tv.ry;group.add(g);
   const add=(size,at,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);if(name)m.name=name;g.add(m);};
   add([.8,.42,.4],[0,.21,0],0x6b4a32,'TV stand');add([.58,.44,.42],[0,.64,.02],0x2b2b2b,'Television');
@@ -131,6 +145,56 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  {const g=new THREE.Group();g.position.set(board.x,1.5,board.z);g.rotation.y=board.ry;group.add(g);const m=new THREE.Mesh(new THREE.BoxGeometry(.5,.7,.03),mat(0xf4ecd6));m.name='Household board';g.add(m);}
  anchor([board.x+(board.ry?-.35:0),1.4,board.z-(board.ry?0:.35)],'Read the household board',()=>action('read',title,household.members.map(m=>m.name+' — '+m.purpose).join('\n')));
  anchor([altar.x,1.1,altar.z+.7],'Look at the family altar',()=>action('inspect','Tōtōmē · the family altar','The ancestors\' tablets in their lacquer case, a bowl of incense ash, an orange and a box of sweets. On the first and fifteenth of the month somebody lights three sticks and says the family\'s news out loud.'));
+ // Each occupied house keeps evidence of its residents' work and time together.
+ // These objects use existing tops and walls; none adds a walking obstruction.
+ const details=householdDetails(household.members);
+ for(const [i,detail] of details.slice(0,2).entries())addPersonalObject(box,{x:table.x-.2+i*.38,y:.388,z:table.z-.12,detail,scale:.75});
+ addTeaSetting(box,{x:table.x-.2,y:.388,z:table.z+.21,people:household.members.length});
+ addFamilyPhoto(box,{x:-3.14,z:redTile?.85:-.9,members:household.members,westWall:true});
+ // Washed bowls, a pot and a folded tea towel make the fitted kitchen usable.
+ const counterY=.94;
+ box([.22,.14,.22],[K.x,counterY+.07,K.z],0xb57655,'Cooking pot');
+ box([.13,.035,.13],[K.x,counterY+.16,K.z],0xb57655,'Pot lid');
+ box([.18,.015,.18],[K.x+(redTile?.45:0),counterY+.009,K.z+(redTile?0:.48)],0xdfd5b6,'Folded kitchen towel');
+ for(let i=0;i<2;i++)box([.09,.06,.09],[K.x+(redTile?-.4:0),counterY+.031,K.z+(redTile?i*.14:-.4+i*.14)],0xd9e5df,'Washed rice bowl');
+ // Shoes stay along the wall, with a full passage through the entrance.
+ for(const dx of [-.08,.08])box([.12,.065,.24],[-.35+dx,.033,2.53],0x556c61,'Household shoes');
+ anchor([table.x,.8,table.z+.45],'Inspect the household’s everyday things',()=>action('inspect',title,details.map(d=>d.owner+' · '+d.text).join('\n')+'\nThe cups have been used, the bedding has a place, and the photograph by the wall belongs to this family.'));
  if(household?.members?.some(m=>m.name==='Thuan')){box([.85,1.8,.5],[-hw+.45,.9,-hd+.65],0x765343,'Thuan’s wardrobe');collider(-hw+.45,-hd+.65,.85,.5,1.8);anchor([-hw+.7,1.1,-hd+1.15],'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'));}
  return {...FAMILY_HOME_LAYOUT,home:true};
+}
+
+/** Surface union of axis-aligned partition boxes, preserving their colours/names. */
+function clipPartitionFaces(meshes){
+ const boxes=meshes.map(m=>{const p=m.geometry.parameters,s=[p.width,p.height,p.depth],at=m.position.toArray();return {min:at.map((v,i)=>v-s[i]/2),max:at.map((v,i)=>v+s[i]/2)};});
+ const epsilon=1e-7;
+ for(let i=0;i<meshes.length;i++){
+  const owner=boxes[i],positions=[],normals=[],uvs=[];
+  for(let axis=0;axis<3;axis++)for(const sign of [-1,1]){
+   const plane=owner[sign<0?'min':'max'][axis],axes=[0,1,2].filter(a=>a!==axis),[u,v]=axes;
+   let patches=[[owner.min[u],owner.max[u],owner.min[v],owner.max[v]]];
+   for(let j=0;j<boxes.length;j++){
+    if(i===j)continue;const other=boxes[j],outside=plane+sign*epsilon;
+    const buried=outside>other.min[axis]&&outside<other.max[axis];
+    const shared=j<i&&Math.abs(plane-other[sign<0?'min':'max'][axis])<epsilon;
+    if(!buried&&!shared)continue;
+    const next=[];
+    for(const [a,b,c,d] of patches){
+     const l=Math.max(a,other.min[u]),r=Math.min(b,other.max[u]),lo=Math.max(c,other.min[v]),hi=Math.min(d,other.max[v]);
+     if(r-l<=epsilon||hi-lo<=epsilon){next.push([a,b,c,d]);continue;}
+     if(l-a>epsilon)next.push([a,l,c,d]);if(b-r>epsilon)next.push([r,b,c,d]);
+     if(lo-c>epsilon)next.push([l,r,c,lo]);if(d-hi>epsilon)next.push([l,r,hi,d]);
+    }
+    patches=next;
+   }
+   const front=(axis===1?-1:1)===sign,indices=front?[0,1,2,0,2,3]:[0,2,1,0,3,2];
+   for(const [a,b,c,d] of patches){
+    const corners=[[a,c],[b,c],[b,d],[a,d]];
+    for(const n of indices){const point=[0,0,0],normal=[0,0,0];point[axis]=plane;point[u]=corners[n][0];point[v]=corners[n][1];normal[axis]=sign;
+     positions.push(...point.map((p,k)=>p-meshes[i].position.toArray()[k]));normals.push(...normal);uvs.push((corners[n][0]-owner.min[u])/(owner.max[u]-owner.min[u]),(corners[n][1]-owner.min[v])/(owner.max[v]-owner.min[v]));}
+   }
+  }
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+  meshes[i].geometry.dispose();meshes[i].geometry=geometry;meshes[i].userData.partitionSurface=true;
+ }
 }

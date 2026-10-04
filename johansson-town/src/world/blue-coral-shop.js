@@ -2,13 +2,17 @@ import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from '../avatars/build.js';
 import {createAvatarAnimator} from '../avatars/animate.js';
 import {FOOD_ART} from '../commerce/food-art.js';
+import {GROUND_LAYER} from './ground-layers.js';
+import {SHOPPING_LANE_ROWS,SHOPPING_LANE_SCALE,placeShoppingLaneGroup,placeShoppingLaneColliders} from './shopping-lane-plan.js';
+const authorX=99.3,authorZ=SHOPPING_LANE_ROWS[2];
 /** An open-front island ice-cream shop on Rainflower Lane. All branding and geometry are original. */
-export function buildBlueCoralShop({world,group,register,onAction}){
- const root=new THREE.Group();root.name='Blue Coral ice-cream shop';root.position.set(99.3,0,121);group.add(root);
+export function buildBlueCoralShop({world,group,register,onAction,authored=false}){
+ const colliderStart=world.colliders.length,root=new THREE.Group();root.name='Blue Coral ice-cream shop';root.position.set(authorX,0,authorZ);group.add(root);
  const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.75});
- const box=(name,size,p,c,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material(c));m.name=name;m.position.set(...p);root.add(m);if(solid)world.colliders.push({id:name,x:99.3+p[0],z:121+p[2],w:size[0],d:size[2],height:p[1]+size[1]/2});return m;};
+ const box=(name,size,p,c,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material(c));m.name=name;m.position.set(...p);root.add(m);if(solid)world.colliders.push({id:name,x:authorX+p[0],z:authorZ+p[2],w:size[0],d:size[2],height:p[1]+size[1]/2});return m;};
  box('Blue Coral tiled shop floor',[7,.06,8.5],[0,.03,0],0xcfc6a7);
- for(let x=-3;x<3.4;x+=.6)for(let z=-4;z<4;z+=.6)if(Math.round((x+3)/.6+(z+4)/.6)%2===0)box('Cream and teal floor tiles',[.58,.008,.58],[x,.065,z],0x9baaa0);
+ const tileY=GROUND_LAYER.apron+GROUND_LAYER.grass;
+ for(let x=-3;x<3.4;x+=.6)for(let z=-4;z<4;z+=.6)if(Math.round((x+3)/.6+(z+4)/.6)%2===0)box('Cream and teal floor tiles',[.58,.008,.58],[x,tileY-.004,z],0x9baaa0);
  box('Cloud mural back wall',[.18,3.1,8.5],[3.45,1.55,0],0x699baf,true);for(const z of [-4.17,4.17])box('Blue Coral side wall',[7,3.1,.18],[0,1.55,z],0x85b5bf,true);
  for(const z of [-2.8,0,2.7])for(const [dz,y,r] of [[0,1.9,.65],[-.45,1.75,.4],[.45,1.75,.4]]){const cloud=new THREE.Mesh(new THREE.SphereGeometry(r,16,10),material(0xe7e3cc));cloud.scale.set(.025,.5,1);cloud.position.set(3.34,y,z+dz);root.add(cloud);}
  box('Blue Coral weathered timber counter',[.95,.86,6.4],[1.45,.43,0],0x315e76,true);
@@ -33,5 +37,8 @@ export function buildBlueCoralShop({world,group,register,onAction}){
  anchor(0,'Buy an island scoop at Blue Coral',()=>onAction('buy','Blue Coral island ice cream',{cost:150,item:'Blue Coral ice cream',text:'A freshly scooped cone: ube and island vanilla. ¥150, from the blue glass counter on Rainflower Lane.'}));
  anchor(2.5,'Buy Blue Coral island tea',()=>onAction('buy','Blue Coral island tea',{cost:120,item:'Green tea',text:'A chilled bottle of island tea. ¥120.'}));
  anchor(-2.5,'Talk to the Blue Coral attendant',()=>{seller.paintFace({expression:'happy'});onAction('read','Blue Coral attendant','Welcome! The ube scoop is our favourite. Take your time at the glass counter; the little benches outside catch the sea breeze.');});
- return {root,update(){motion.update(1/60,{expression:seller.faceState.expression,floorHeight:.065});}};
+ // The compact shop floor must not squeeze the attendant's body.
+ staff.scale.set(1/SHOPPING_LANE_SCALE,1,1/SHOPPING_LANE_SCALE);
+ if(!authored){placeShoppingLaneGroup(root);placeShoppingLaneColliders(world.colliders,colliderStart);}
+ return {root,update(){motion.update(1/60,{expression:seller.faceState.expression,floorHeight:tileY});}};
 }

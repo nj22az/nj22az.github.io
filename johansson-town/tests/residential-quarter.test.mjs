@@ -4,6 +4,8 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect} from '../physics.js';
 import {configureTownMode,TOWN_MODES} from '../src/world/town-mode.js';
+import {createWalkSurface} from '../src/world/walk-surface.js';
+import {COAST_BOUNDS} from '../src/world/peninsula.js';
 
 async function town(){
  installDOM();globalThis.self=globalThis;
@@ -19,8 +21,11 @@ async function town(){
 test('the residential quarter: lanes you can walk, every gate on a lane, a park, flats and a rubbish point',async()=>{
  const {world,labels}=await town();
  const {KITAHAMA,KITAHAMA_LANES,kitahamaLaneAt,plotGate}=await import('../src/world/kitahama-layout.js');
- const {groundHeight}=await import('../src/world/layout.js');
+ const {groundHeight,planHeight,setWalkSurface}=await import('../src/world/layout.js');
+ const surface=createWalkSurface({minX:COAST_BOUNDS.minX-2,maxX:COAST_BOUNDS.maxX+2,minZ:COAST_BOUNDS.minZ-2,maxZ:COAST_BOUNDS.maxZ+2,base:planHeight});surface.add(world.group);setWalkSurface(surface);
+ try{
  const blocked=(x,z,r=.3)=>world.colliders.some(c=>circleHitsRect(x,z,r,c));
+ world.group.updateMatrixWorld(true);const floorMeshes=[];world.group.traverse(o=>{if(o.isMesh&&!o.material?.transparent)floorMeshes.push(o);});const floorRay=new THREE.Raycaster();
  // Ten to twelve homes and more: the five old plots, seven new ones and the flats.
  assert.ok(KITAHAMA.plots.length>=12);
  // Down the middle of every lane, nothing in the way, and the ground is the lane's.
@@ -29,11 +34,17 @@ test('the residential quarter: lanes you can walk, every gate on a lane, a park,
   // Well Lane ends at the rubbish point, which closes off its last metre and a half.
   const start=(alongZ?L.minZ:L.minX)+(L===KITAHAMA.wellLane?1.6:.6);
   for(let t=start;t<(alongZ?L.maxZ:L.maxX)-.6;t+=.8){
-   // Somewhere across the lane there is room to walk past (a parked truck takes half).
+   // Somewhere across the lane there is room to walk past its street furniture.
    const across=[-.75,-.35,0,.35,.75].map(o=>alongZ?[mid+o,t]:[t,mid+o]);
    assert.ok(across.some(([x,z])=>!blocked(x,z,.25)),`lane blocked across at ${t.toFixed(1)}`);
    const [x,z]=alongZ?[mid,t]:[t,mid];
-   assert.ok(Math.abs(groundHeight(x,z)-(KITAHAMA.y+.04))<.2,`lane ground at ${x.toFixed(1)},${z.toFixed(1)} is ${groundHeight(x,z)}`);
+   const h=groundHeight(x,z);
+   if(L===KITAHAMA.footpath){
+    // This path now grades from Rainflower's town datum to the lower residential
+    // lane. Require its actual drawn floor instead of assuming a flat -.4 datum.
+    floorRay.set(new THREE.Vector3(x,2,z),new THREE.Vector3(0,-1,0));const floor=floorRay.intersectObjects(floorMeshes,false).find(hit=>Math.abs(hit.face?.normal.y??0)>.9);
+    assert.ok(floor&&Math.abs(floor.point.y-h)<.06,`footpath drawn ground at ${x.toFixed(1)},${z.toFixed(1)}: ${floor?.point.y} / ${h}`);
+   }else assert.ok(Math.abs(h-(KITAHAMA.y+.04))<.2,`lane ground at ${x.toFixed(1)},${z.toFixed(1)} is ${h}`);
   }
  }
  // Every house's gate opens onto a lane, and the step outside it is clear.
@@ -51,6 +62,7 @@ test('the residential quarter: lanes you can walk, every gate on a lane, a park,
   assert.ok(labels.some(l=>l.label===label),label);
  const bench=labels.find(l=>l.label==='Sit on the park bench').o.userData.seat;
  assert.ok(bench&&!blocked(bench.stand[0],bench.stand[2],.25),'the bench can be reached');
+ }finally{setWalkSurface(null);}
 });
 
 test('the anchored cast: everybody who walks has a home, a job, an evening, a day off and somewhere to go',async()=>{

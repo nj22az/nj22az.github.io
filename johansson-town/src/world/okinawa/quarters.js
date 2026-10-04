@@ -8,7 +8,7 @@ import {createMaterials} from '../../render/materials.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
 import {redTileHouse,concreteHouse,shopHouse,coralWall,blockWall,hinpun,shisa,fukugi,gajumaru,hibiscus,banana,potPlant,OKINAWA_COLOURS as C} from './houses.js';
-import {utilityPole,wiresBetween,serviceDrop,keiTruck,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
+import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles,fishCrates,buoys,netPile,sabani,planterBoxes,fishingBoat} from './props.js';
 import {GROUND_LAYER} from '../ground-layers.js';
 import {KITAHAMA_LANES} from '../kitahama-layout.js';
 import {buildKitahamaQuarter} from './kitahama-quarter.js';
@@ -229,7 +229,6 @@ function buildWestQuay(kit,solid,{inspect,anchor,onAction,vending}){
  solid(fishCrates(kit,-36.6,-41.6,{rows:2,cols:3,seed:3}));
  solid(fishCrates(kit,-21.6,-42.2,{rows:2,cols:2,seed:5}));
  netPile(kit,-27.5,-41.5);solid({id:'net-pile',x:-27.3,z:-41.6,w:2.4,d:1.4,height:.6});
- solid(keiTruck(kit,-33.5,-40.4,{ry:0,load:'crates'}));
  inspect(-31,1,-44,'Inspect the sabani','Sabani',
   'A narrow island fishing boat, cedar planked and painted, up on blocks for its bottom to be scraped. The sail is rolled along the thwarts. Old men still race these in the summer.');
  anchor(-29,1,Q.minZ+.9,'Fish from the west quay',()=>onAction?.('fishing'));
@@ -312,8 +311,7 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
  // its stepping stones, lanterns, pot plants and the vending machine made way for the carriageway.
  bicycle(kit,EAST_ROW.minX-.5,EAST_ROW.plots[2].minZ+1.6,{ry:Math.PI/2,colour:0xd9d2c0});
  solid({id:'bicycle',x:EAST_ROW.minX-.5,z:EAST_ROW.plots[2].minZ+1.6,w:.4,d:1.4,height:1.1});
- // Behind the row: the back yards, with washing and a kei truck.
- solid(keiTruck(kit,EAST_ROW.maxX+1.85,9.2,{ry:Math.PI/2,load:'sheet'}));
+ // Behind the row: washing and kitchen-garden supplies.
  solid(gasBottles(kit,EAST_ROW.maxX+.5,15.2,{ry:Math.PI/2}));
  solid(planterBoxes(kit,EAST_ROW.maxX+.6,-4.5,{ry:Math.PI/2,count:4}));
 }
@@ -321,8 +319,7 @@ function buildEastRow(kit,solid,{anchor,inspect,onAction,vending}){
 function buildYardRow(kit,solid,{anchor,inspect,onAction}){
  const depth=YARD_ROW.maxX-YARD_ROW.minX,x=(YARD_ROW.minX+YARD_ROW.maxX)/2;
  for(const plot of YARD_ROW.plots)shopFront(kit,solid,plot,{x,ry:Math.PI/2,depth,front:YARD_ROW.maxX,out:1},{anchor,inspect,onAction});
- // The yard behind them: a kei truck, fish crates, a garden of greens in fish boxes.
- solid(keiTruck(kit,-20.4,11.5,{ry:Math.PI/2,colour:0xdcd6c6,load:'crates'}));
+ // The yard behind them: fish crates and a garden of greens in fish boxes.
  solid(fishCrates(kit,-17.6,8,{rows:2,cols:2,seed:21}));
  solid(planterBoxes(kit,-23.4,9.5,{ry:Math.PI/2,count:5,seed:22}));
  // Moved west, beside the second yard house (yard-homes-layout.js), clear of the lane.

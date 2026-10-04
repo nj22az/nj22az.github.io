@@ -111,3 +111,15 @@ test('Sakura’s shutter is up while she is open and comes down at eight',async(
  for(let i=0;i<400;i++)shutter.update(10*60,1/30);
  assert.equal(shutter.open,1,'The shutter is down in shop hours');
 });
+
+test('visual fixtures can snap the shutter to opening hours without changing normal interpolation',async()=>{
+ const {world}=await town(),shutter=world.quarters.shutter;
+ shutter.update(21*60);
+ assert.ok(shutter.open>0&&shutter.open<1,'Ordinary hourly updates still animate rather than jump');
+ shutter.update(21*60,0,{snap:true});assert.equal(shutter.open,0);
+ const curtain=world.group.getObjectByName('Sakura roller shutter'),closed=curtain.position.clone();
+ for(let i=0;i<20;i++)shutter.update(21*60,0);
+ assert.deepEqual(curtain.position,closed);assert.equal(curtain.scale.y,1);
+ shutter.update(12*60,0,{snap:true});assert.equal(shutter.open,1);assert.equal(curtain.visible,false);
+ shutter.update(21*60,.5);assert.ok(Math.abs(shutter.open-.8)<1e-9,'Ordinary animation retains its elapsed-time rate');
+});

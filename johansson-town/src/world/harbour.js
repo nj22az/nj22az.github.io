@@ -12,7 +12,7 @@ import {createVendingMachine,vendingReady,hydrateVending} from './vending.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
-import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
+import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,SHOP_CROSSING_Z} from './main-road.js';
 import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts} from './road-standards.js';
 import {buildStreetLamps,STREET_LAMP_PLACEMENTS} from './street-lamps.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
@@ -136,13 +136,16 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const [left,right] of [[MAIN_ROAD.pavementWest,MAIN_ROAD.west],[MAIN_ROAD.east,MAIN_ROAD.pavementEast]]){
     const pavement=directBox([right-left,.10,MAIN_ROAD.maxZ-MAIN_ROAD.minZ],[(left+right)/2,-.062,(MAIN_ROAD.maxZ+MAIN_ROAD.minZ)/2],GROUND.pavers,group,[0,0,0],false,'paving');pavement.name='Main Street footway';
   }
+  // The delivery turn stays on asphalt, with a flush entrance through the old kerb.
+  const court=MAIN_SERVICE_COURT;const apron=directBox([court.maxX-court.minX,.04,court.maxZ-court.minZ],[(court.minX+court.maxX)/2,.02,(court.minZ+court.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');apron.name='Main Street service turnout';
+  const loading=MAIN_LOADING_APRON,loadingPaving=directBox([loading.maxX-loading.minX,.04,loading.maxZ-loading.minZ],[(loading.minX+loading.maxX)/2,.02,(loading.minZ+loading.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');loadingPaving.name='Main Street freight pullout';
   // Kerbstones: a light concrete edge between footway and carriageway on both sides,
   // dropped flush where the two crossings meet the road so a pram (or a player) rolls
   // straight across. Low enough to step over without a hitch.
   {
     const kerb=new THREE.MeshStandardMaterial({color:0xd9d6cc,roughness:.9});
-    const gaps=[SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6]).sort((a,b)=>a[0]-b[0]);
     for(const x of [MAIN_ROAD.west-.09,MAIN_ROAD.east+.09]){
+      const gaps=[...([SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6])),[court.minZ,court.maxZ],...(x<MAIN_ROAD.x?[[loading.minZ,loading.maxZ]]:[])].sort((a,b)=>a[0]-b[0]);
       let z0=MAIN_ROAD.minZ;
       for(const [a,b] of [...gaps,[MAIN_ROAD.maxZ,MAIN_ROAD.maxZ]]){
         if(b>z0&&a>z0){const len=a-z0;const k=new THREE.Mesh(new THREE.BoxGeometry(.18,.11,len),kerb);k.position.set(x,.025,z0+len/2);k.name='Main Street kerb';k.receiveShadow=true;k.castShadow=false;group.add(k);}
@@ -165,7 +168,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const z of [SHOP_CROSSING_Z,-18]){
     zebraCrossing(group,{x0:MAIN_ROAD.west+.15,x1:MAIN_ROAD.east-.15,z});
     tactileStrip(group,{x:MAIN_ROAD.west-.38,z,w:.3,d:3});tactileStrip(group,{x:MAIN_ROAD.east+.38,z,w:.3,d:3});
-    roadSign(group,'crossing',{x:MAIN_ROAD.west-.42,z:z+1.75,ry:0,colliders});roadSign(group,'crossing',{x:MAIN_ROAD.east+.12,z:z-1.75,ry:Math.PI,colliders});
+    roadSign(group,'crossing',{x:MAIN_ROAD.west-(z===SHOP_CROSSING_Z?2.65:.42),z:z+1.75,ry:0,colliders});roadSign(group,'crossing',{x:MAIN_ROAD.east+.12,z:z-1.75,ry:Math.PI,colliders});
   }
 
   // Shopfronts — masonry and timber with glass where useful.
@@ -247,7 +250,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // The one at [-7.4,-33] stood against the konbini's frontage, in front of the only
   // window the shop is read through from the street. The others are along the harbour.
-  for(const [x,z] of [[-7.4,10],[3.9,-22]]){
+  for(const [x,z] of [[3.9,-22]]){
     const bicycle=buildBicycle({x,z,shadows});group.add(bicycle.object);obstacle(x,z,bicycle.collider.w,bicycle.collider.d);
   }
 
@@ -291,17 +294,6 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const x of [-14.75,-12.45])cyl(.06,2.4,[x,1.3,-35.7],0x655747);beam([-14.75,2.45,-35.7],[-12.45,2.45,-35.7],.055,0x655747);
   for(let x=-14.5;x<-12.65;x+=.22)beam([x,.5,-35.68],[x,2.32,-35.68],.012,0x65736f);obstacle(-13.6,-35.7,2.5,.5);
 
-  // Period service kei-truck. On the island the ferry terminal stands here, and the town
-  // has its own trucks (the town hall's, and the ones the car ferry brings).
-  if(!peninsulaActive()){
-  // Period service kei-truck — original procedural model, not a branded vehicle.
-  const truck=new THREE.Group();truck.position.set(6.2,.12,-42.3);truck.rotation.y=.06;group.add(truck);
-  directBox([1.55,.52,2.8],[0,.47,.15],0xd7d4c6,truck,[0,0,0],true);directBox([1.5,1.25,1.18],[0,1.15,-.73],0xdedbcf,truck,[0,0,0],true);directBox([1.28,.52,.055],[0,1.35,-1.335],0x385965,truck);
-  directBox([1.42,.12,1.35],[0,.84,.92],0x8c918b,truck);directBox([1.36,.28,.06],[0,.52,1.57],0xd6d1b9,truck);
-  for(const x of [-.69,.69])for(const z of [-.88,1.03]){const wheel=directMesh(new THREE.TorusGeometry(.25,.09,7,16),material(0x252b2c),truck,[x,.38,z],[0,Math.PI/2,0]);wheel.castShadow=shadows;}
-  box([.3,.13,.08],[5.75,.62,-40.72],0xb36b4b);box([.3,.13,.08],[6.65,.62,-40.72],0xe5cf8c);obstacle(6.2,-42.3,1.8,3.2);
-
-  }
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
   directBox([1.15,1.55,.85],[8.7,.88,-36.8],0xd8d8cc,group,[0,0,0],true);label("Ice",'ICE',[8.7,1.85,-36.35],.78,.5,0,'#dde1d7','#37636a');obstacle(8.7,-36.8,1.2,.9);
 
@@ -316,8 +308,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // all, in the middle of the one open view the town has of the water.
   anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
 
-  // A couple of benches moved away from warehouse geometry.
-  for(const x of [-4.7,4.7]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);}
+  // Quay benches leave the roll-on lane and its turning space clear.
+  for(const x of [-15.8,10.6]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);}
 
   // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights.
   const boat=new THREE.Group();boat.position.set(9,-.18,-56);boat.rotation.y=-.07;group.add(boat);
@@ -327,10 +319,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const life=directMesh(new THREE.TorusGeometry(.32,.07,8,18),material(0xc55e44),boat,[1.17,1.05,.5],[0,Math.PI/2,0]);life.castShadow=false;
   directBox([.5,.14,.16],[-.65,2.05,-.88],0xd7b75f,boat);directBox([.5,.14,.16],[.65,2.05,-.88],0xd7b75f,boat);
 
-  // Distant breakwater, beacons and industrial silhouettes to give the harbour scale.
+  // The supported breakwater and beacons leave open water for the island ferry.
   box([68,2.1,4],[0,.18,-83],0x727f7e);for(const x of [-27,27]){cyl(1,7,[x,3.5,-83],0xc2c1b2);box([2.3,.7,2.3],[x,7,-83],x<0?0xa0493f:0xd1cdbb);}
-  for(const [x,z,h] of [[-31,-98,13],[32,-102,16],[-45,-111,10]]){cyl(.24,h,[x,h/2,z],0x455054);beam([x,h*.8,z],[x+7,h*.8,z],.17,0x455054);beam([x+6.8,h*.8,z],[x+9,h*.55,z-3],.09,0x455054);}
-  for(const [x,z,w,h] of [[-24,-105,15,7],[20,-107,18,8],[-3,-114,22,6]])box([w,h,10],[x,h/2-1,z],0x66706f);
 
   // The harbour used to stand four placeholder residents here. The town replaces its
   // people with the street cast, so they are no longer built at all: removed from the

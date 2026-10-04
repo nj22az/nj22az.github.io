@@ -57,6 +57,7 @@ import {buildIzakayaRoom,preloadIzakaya,izakayaReady} from './world/izakaya.js?s
 import {createIzakayaGuests} from './people/izakaya-guests.js';
 import {controlVisibility,roomExitVisible} from './interact/control-visibility.js';
 import {createTownSky} from './render/sky.js';
+import {createSpawnScene} from './render/spawn-scene.js';
 import {bicycleRiderFit,bicycleBlocked} from './world/bicycle-fit.js';
 import {createBicycleController} from './world/bicycle-controller.js';
 import {conversationViewport} from './conversation-layout.js';
@@ -65,6 +66,7 @@ import {atmosphere} from './render/atmosphere.js?dusk-1';
 import {clock as duskClock, daylight} from './render/dusk.js';
 import {setOceanLight} from './world/ocean.js';
 import {buildMayorOffice,buildMayorHome,buildCommunityKitchen,buildClinic} from './world/interiors/town-hall.js';
+import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
 import {buildFamilyHome} from './world/interiors/family-home.js';
 import {loadTownEnvironment} from './render/environment.js';
@@ -82,7 +84,9 @@ import {createShopCarry} from './interact/shop-carry.js';
 import {townAudio} from './audio/town-audio.js?snappy=1';
 import {emptyFor,canColour} from './commerce/vending-catalogue.js';
 import {SPECIAL_BY_NAME} from './commerce/sakura-specials.js';
+import {HOT_SNACKS} from './commerce/konbini.js';
 import {routeAt,groundHeight,planHeight,setWalkSurface} from './world/layout.js?snappy=1';
+import {shoppingLanePoint} from './world/shopping-lane-plan.js';
 import {createWalkSurface} from './world/walk-surface.js';
 import {COAST_BOUNDS} from './world/peninsula.js';
 import {createNeighbours} from './people/neighbours.js';
@@ -98,6 +102,8 @@ import { circleHitsRect,circleHitsCircle,standingHitsRect,canStepBetween,roomBou
 import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snappy=1';
 import { createInkRecovery } from './render/ink-recovery.js';
+import {createGraphicsLifecycle} from './render/graphics-lifecycle.js';
+import {createGraphicsInspector} from './render/graphics-inspector.js';
 import {dressHud,runButtonFace} from './ui/hud-icons.js';
 
 // Change the emitted game chunk URL when repairing a cached live runtime.
@@ -221,9 +227,8 @@ function buildInk(){
  catch(error){pipeline=null;console.warn('Ink pipeline unavailable, rendering plain:',error.message);renderPlain();return false;}
 }
 buildInk();
-// A restored context is the one case worth trying again at once: the old pipeline's
-// targets died with the context and the new one will be built against a live driver.
-renderer.domElement.addEventListener('webglcontextrestored',()=>inkRecovery.restored(),false);
+// One lifecycle below owns both context events and pauses every render path.
+let graphicsLifecycle=null;
 window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){return inkRecovery.failures;},get inkRetrying(){return !pipeline&&inkRecovery.retrying;},cel:celPass.stats,
  get scale(){return pipeline?pipeline.width/Math.max(1,renderer.getDrawingBufferSize(new THREE.Vector2()).x):1;},
  // What the east lawn's planting is actually wearing. The shrubs take the park's own
@@ -260,6 +265,7 @@ sweepCel(0);
  * beats being drawn.
  */
 function present(draw,view=camera){
+ if(graphicsLifecycle?.lost)return;
  if(!pipeline){
   if(inkRecovery.ready())buildInk();
   if(!pipeline){draw(renderer);return;}
@@ -323,7 +329,7 @@ const pressedControls=new Set();
 let neighbours=null,islandPlay=null;let photoOrigin=null,photoReturning=false;
 let conversationName=null,conversationCamera=null,navigationTarget=null,beerService=null,tipsy=0,tipsyClock=null;
 let activeRoomLayout=null;
-let photoStudio=null,photoLoading=false;
+let photoStudio=null,photoLoading=false,spawnScene=null;
 let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=realTownMinutes(),subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
 const keys={},clock=new THREE.Clock();
 const gamepadInput=createGamepadInput(),menuRepeat=createMenuRepeat();
@@ -331,20 +337,20 @@ let controllerFrame=gamepadInput.sample([]),controllerConnected=false;
 const cameraControls=createCameraControls({onChange:()=>syncView(),onCentre:centreCamera,onOpen:()=>resetInput(),onClose:()=>resetInput()});
 camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
 document.documentElement.classList.toggle('touch-controls',touch);
-function centreCamera(){pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
-function controlsAllowed(){return !islandPlay?.active&&!photoStudio?.active&&!photoLoading&&!photoReturning&&!creatorOpen&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
+function centreCamera(){spawnScene?.cancel();pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
+function controlsAllowed(){return !islandPlay?.active&&!photoStudio?.active&&!photoLoading&&!photoReturning&&!creatorOpen&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!itemViewer?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
 // Swipes scale to the screen and barely tip the view when they are mostly sideways (input/touch-feel.js).
-function dragLook(dx,dy){const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);yaw+=turn.yaw;pitch=THREE.MathUtils.clamp(pitch+turn.pitch,-1.25,1.15);}
+function dragLook(dx,dy){spawnScene?.cancel();const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);yaw+=turn.yaw;pitch=THREE.MathUtils.clamp(pitch+turn.pitch,-1.25,1.15);}
 const walkMotion=createMotion(),touchAutoRun=createAutoRun();
 const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),stickBase:$('#stickBase'),stickKnob:$('#knob'),enabled:controlsAllowed,onDrag:dragLook});
-async function openPhotoStudio(){
+async function openPhotoStudio(){spawnScene?.cancel('photo');
  if(photoLoading||photoStudio?.active||!started||creatorOpen||roomLoading||catchingUp||inspector?.active||activities?.paused)return;
  toggleDir(false);cameraControls.close();resetInput();photoLoading=true;photoOrigin={site:current,position:player.position.clone(),yaw,pitch,seated,parkSeat};
  try{
   if(!photoStudio){
    photoStudio=createPhotoStudio({scene,renderer,gameCamera:camera,cameraBlocked,
     getLocations:()=>[...new Map([...SITES.map(s=>({id:s.id,title:s.title,icon:s.homeOwner?'home':'door',site:s})),...(world.landmarks||[]).map(s=>s.id==='warehouse'?{id:s.id,title:s.title,icon:'door',site:s}:{id:s.id,title:s.title,icon:'map',x:s.exitPosition?.[0]??s.x,z:s.exitPosition?.[2]??s.z,y:s.exitPosition?.[1]}),{id:NAHA_ARRIVALS.id,title:NAHA_ARRIVALS.title,icon:'door',site:NAHA_ARRIVALS},{id:NAHA_TRIP.id,title:NAHA_TRIP.title,icon:'bowl',site:NAHA_TRIP},
-     ...[{id:'photo-harbour',title:'Working harbour',x:-22,z:-39},{id:'photo-main',title:'Main shopping street',x:-3,z:-20},{id:'photo-beach',title:'East beach',x:38,z:-12},{id:'photo-garden',title:'Aoba pond garden',x:-23.4,z:40.6},{id:'photo-rainflower',title:'Rainflower Lane',x:90,z:101},{id:'photo-village',title:'Hoshizaki fishing village',x:132,z:190},{id:'photo-lighthouse',title:'West Cape lighthouse',x:-54,z:204}].map(p=>({...p,icon:'map'}))].map(p=>[p.id,p])).values()],
+     ...[{id:'photo-harbour',title:'Working harbour',x:-22,z:-39},{id:'photo-main',title:'Main shopping street',x:-3,z:-20},{id:'photo-beach',title:'East beach',x:38,z:-12},{id:'photo-garden',title:'Aoba pond garden',x:-23.4,z:40.6},{id:'photo-rainflower',title:'Rainflower Lane',x:shoppingLanePoint(90,99)[0],z:shoppingLanePoint(90,99)[1]},{id:'photo-village',title:'Hoshizaki fishing village',x:132,z:190},{id:'photo-lighthouse',title:'West Cape lighthouse',x:-54,z:204}].map(p=>({...p,icon:'map'}))].map(p=>[p.id,p])).values()],
     onLocation:async place=>{if(current)leaveRoom();if(place.site){await enterRoom(place.site);if(!current)throw Error('Room unavailable');}
      else{let x=place.x,z=place.z;if(environmentBlocked(x,z,.32)){[x,z]=findClear(x,z);if(environmentBlocked(x,z,.32))throw Error('Choose a clear place');}player.position.set(x,place.y??groundHeight(x,z),z);yaw=0;pitch=0;}},
     getContext:()=>({position:player.position.clone(),yaw,
@@ -371,7 +377,7 @@ player.visible=false;
 const reg=(o,label,fn,inside=false)=>{o.userData.hit={label,fn,inside};if(!interactables.includes(o))interactables.push(o)};
 function say(t,sec=3){const e=$('#subtitle');e.textContent=t;e.classList.add('on');subtitleTimer=sec}
 
- const world=createTown({scene:town,sites:SITES,townMode:'peninsula',mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='bicycle'){startBicycleRide(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
+ const world=createTown({scene:town,sites:SITES,townMode:'peninsula',mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='bicycle'){startBicycleRide(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
 assignWorkplaces(world,SITES);
 // The evening boat to Naha leaves from the ferry terminal: dinner with Thuan in the city
 // (interiors/city-restaurant.js). It is an outing, not a door in town, so it is not one of
@@ -399,7 +405,7 @@ if(benchSeat){
   seated=true;world.spawn=benchSeat.stand;
 }else if(konbiniDoor){player.position.copy(konbiniDoor);yaw=konbini.streetFrontage?.yaw??Math.PI/2;world.spawn=player.position.toArray();}
 else if(world.spawn)player.position.set(...world.spawn);
-activities=createActivities({say,onOutfit:on=>wearSwim(on),getOutfit:()=>swimwear,onMove:name=>{johansson?.play(name);},getBeerTable:()=>beerService?{drink:beerService.drink,dish:beerService.dish,order:beerService.pending,naoHere:!!world.people.find(p=>p.profile.name==='Nao'&&p.g.userData.inIzakaya&&p.g.visible)}:null,onOrderDrink:kind=>!!beerService?.order(kind,parkSeat?.izakaya),getTipsy:()=>tipsy,onSip:()=>sipDrink(),onEat:()=>eatDish(),onSnack:item=>{const inv=activities.state.inventory,i=inv.indexOf(item);if(i<0)return false;inv.splice(i,1);activities.save();activities.close();hands.bite(SPECIAL_BY_NAME[item]?.bite||'rice');johansson?.play(seated?'SitEat':'Eat');say(item+'. Still warm.',3);return true;},onTreat:name=>{const g=world.people.find(p=>p.profile.name===name)?.g;if(g){g.userData.residentSpeech={text:"Cheers!",until:minutes+4};characters?.gesture?.(g);}},onInspectModel:item=>inspector.open(item),onInspectShopGood:item=>{resetInput();document.exitPointerLock?.();(itemViewer??=createItemViewer()).open(item);},getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='ramen'&&Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,onDialoguePhase,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,thuanAvailable:world.people.some(p=>p.profile.name==='Thuan'&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1997");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(FULL_TOWN.active||p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if((selected?.soak||selected?.wash)&&!activities.onsenPaid()){say('Pay ¥300 at the bandai by the door first.',4);return true;}if(selected?.soak||selected?.wash)wearSwim(true);{const inside=selected?.izakaya?'inIzakaya':Number.isInteger(selected?.ramenSeatId)?'inRamen':null;if(inside&&world.people.some(p=>p.g.userData[inside]&&p.g.visible&&Math.hypot(p.g.position.x-selected.position[0],p.g.position.z-selected.position[2])<.4)){say('Someone is already sitting there.',3);return true;}}if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={seatId:seat?.id,ramenSeatId:seat?.ramenSeatId,storeSeatId:seat?.storeSeatId,izakaya:seat?.izakaya||null,surfaceY:seat?.surfaceY,soak:!!seat?.soak,wash:!!seat?.wash,beachCorner:!!seat?.beachCorner,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;johansson?.seat(parkSeat.soak?'Soak':'Sit');resetInput();say(Number.isInteger(parkSeat.ramenSeatId)?'Ramen counter · E or tap to order, eat or stand':parkSeat.izakaya?name+' · E to order a beer, drink or stand':name+' · E to stand',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:value=>{weather=value;world.setRain(value);},onTime:value=>{
+activities=createActivities({say,onOutfit:on=>wearSwim(on),getOutfit:()=>swimwear,onMove:name=>{johansson?.play(name);},getBeerTable:()=>beerService?{drink:beerService.drink,dish:beerService.dish,order:beerService.pending,naoHere:!!world.people.find(p=>p.profile.name==='Nao'&&p.g.userData.inIzakaya&&p.g.visible)}:null,onOrderDrink:kind=>!!beerService?.order(kind,parkSeat?.izakaya),getTipsy:()=>tipsy,onSip:()=>sipDrink(),onEat:()=>eatDish(),onSnack:item=>{const inv=activities.state.inventory,i=inv.indexOf(item);if(i<0)return false;inv.splice(i,1);activities.save();activities.close();hands.bite(SPECIAL_BY_NAME[item]?.bite||(HOT_SNACKS.some(snack=>snack.id==='nikuman'&&snack.name===item)?'bun':'rice'));johansson?.play(seated?'SitEat':'Eat');say(item+'. Still warm.',3);return true;},onTreat:name=>{const g=world.people.find(p=>p.profile.name===name)?.g;if(g){g.userData.residentSpeech={text:"Cheers!",until:minutes+4};characters?.gesture?.(g);}},onInspectModel:item=>inspector.open(item),onInspectShopGood:item=>{resetInput();document.exitPointerLock?.();(itemViewer??=createItemViewer()).open(item);},getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='ramen'&&Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,onDialoguePhase,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,thuanAvailable:world.people.some(p=>p.profile.name==='Thuan'&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1997");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(FULL_TOWN.active||p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if((selected?.soak||selected?.wash)&&!activities.onsenPaid()){say('Pay ¥300 at the bandai by the door first.',4);return true;}if(selected?.soak||selected?.wash)wearSwim(true);{const inside=selected?.izakaya?'inIzakaya':Number.isInteger(selected?.ramenSeatId)?'inRamen':null;if(inside&&world.people.some(p=>p.g.userData[inside]&&p.g.visible&&Math.hypot(p.g.position.x-selected.position[0],p.g.position.z-selected.position[2])<.4)){say('Someone is already sitting there.',3);return true;}}if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={seatId:seat?.id,ramenSeatId:seat?.ramenSeatId,storeSeatId:seat?.storeSeatId,izakaya:seat?.izakaya||null,surfaceY:seat?.surfaceY,soak:!!seat?.soak,wash:!!seat?.wash,beachCorner:!!seat?.beachCorner,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;johansson?.seat(parkSeat.soak?'Soak':'Sit');resetInput();say(Number.isInteger(parkSeat.ramenSeatId)?'Ramen counter · E or tap to order, eat or stand':parkSeat.izakaya?name+' · E to order a beer, drink or stand':name+' · E to stand',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:value=>{weather=value;world.setRain(value);},onTime:value=>{
   // time passes in the telling. The TIME button says what time and day it is in town.
   if(value&&typeof value==='object'){if(!followRealClock)minutes=value.restore;return;}
   if(value==='cycle'){if(followRealClock){clockMenu();return;}timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}
@@ -408,7 +414,7 @@ activities=createActivities({say,onOutfit:on=>wearSwim(on),getOutfit:()=>swimwea
   else if(!followRealClock)minutes+=value;
   else if(Number.isFinite(value)&&value>0){minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;}
   evictIfClosed();}});
-islandPlay=createIslandPlay({world,player,camera,activities,onWardrobe:(entity,outfit)=>characters?.wear(entity,outfit),getMinutes:()=>minutes,getRain:()=>weather,passTime:value=>{minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;activities.save();},place:(x,z)=>{standUpAt(x,z,0);resetInput();},enterNaha:()=>crossThreshold(()=>enterRoom(NAHA_ARRIVALS)),leaveNaha:()=>leaveRoom()});
+islandPlay=createIslandPlay({world,player,camera,activities,register:reg,onWardrobe:(entity,outfit)=>characters?.wear(entity,outfit),getMinutes:()=>minutes,getRain:()=>weather,passTime:value=>{minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;activities.save();},place:(x,z)=>{standUpAt(x,z,0);resetInput();},enterNaha:()=>crossThreshold(()=>enterRoom(NAHA_ARRIVALS)),leaveNaha:()=>leaveRoom()});
 syncView();
 fists=createFists({camera,skin:playerRecipe()?.body?.skin||'#d9a57c',sleeve:playerRecipe()?.outfit?.topColour||'#3f6a8a'});
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;const lager=name==='Umineko lager';if(lager&&!wantsAnother(tipsy,LAGER_ALCOHOL)){say('Enough for tonight. The can goes back in your bag for tomorrow.',3);return false;}if(lager)tipsy=drinkUp(tipsy,LAGER_ALCOHOL);activities.state.inventory.splice(i,1);const left=SPECIAL_BY_NAME[name]?.cup?null:emptyFor(name);if(left)activities.state.inventory.push(left);activities.save();return true;},canColour,onDrink:()=>johansson?.play(seated?'SitDrink':'Drink')});
@@ -424,7 +430,7 @@ try{thirdPerson=globalThis.localStorage?.getItem(VIEW_KEY)!=='first';}catch{}
  * menu, not a pause in the telling) and whoever you make walks out of it.
  */
 let creatorOpen=false;
-function openAvatarMaker(name=null){
+function openAvatarMaker(name=null){spawnScene?.cancel('creator');
  if(typeof name!=='string')name=null;
  if(creatorOpen)return;
  toggleDir(false);resetInput();document.exitPointerLock?.();creatorOpen=true;
@@ -447,7 +453,7 @@ function roomView(entering,site){
  if(entering){if(thirdPerson&&site?.id!=='onsen'){streetThirdPerson=true;thirdPerson=false;hands.firstPersonVisible=true;}}
  else if(streetThirdPerson){streetThirdPerson=null;thirdPerson=true;ensureJohansson();hands.firstPersonVisible=false;}
 }
-function setThirdPerson(value,announce=true){if(bicycleRide&&value!==true){if(announce)say('Thuan stays in view while she rides.',2);return;}streetThirdPerson=null;thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'Behind him':'His own eyes';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
+function setThirdPerson(value,announce=true){spawnScene?.cancel('view');if(bicycleRide&&value!==true){if(announce)say('Thuan stays in view while she rides.',2);return;}streetThirdPerson=null;thirdPerson=!!value;try{localStorage.setItem(VIEW_KEY,thirdPerson?'third':'first');}catch{}if(thirdPerson)ensureJohansson();hands.firstPersonVisible=!thirdPerson;const b=$('#viewButton');if(b){b.textContent=thirdPerson?'Behind him':'His own eyes';b.setAttribute('aria-pressed',String(thirdPerson));}if(announce)say(thirdPerson?'Third-person view · V to look through his eyes again':'First-person view · V to step back',3);}
 function startBicycleRide(entry){
  if(bicycleRide||current||seated)return;
  const bike=entry||world.bicycle,thuan=world.people.find(p=>p.profile?.name==='Thuan');
@@ -499,6 +505,16 @@ const tpPivot=new THREE.Vector3(),tpDir=new THREE.Vector3(),tpRight=new THREE.Ve
 function cameraBlocked(x,z,y,r){
  const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;
  return (current?roomColliders:world.colliders).some(c=>(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c));
+}
+const arrivalPerson=new THREE.Vector3();
+function arrivalLensBlocked(x,z,y,r){
+ if(cameraBlocked(x,z,y,r))return true;
+ for(const g of [...world.people.map(p=>p.g),...(world.neighbours||[])]){
+  if(!g.visible||g.userData.visualReady===false)continue;
+  g.getWorldPosition(arrivalPerson);
+  if(y>arrivalPerson.y+.1&&y<arrivalPerson.y+2&&Math.hypot(x-arrivalPerson.x,z-arrivalPerson.z)<r+.4)return true;
+ }
+ return false;
 }
 function placeThirdPerson(dt){
  // Seated, the lens rises a little so his head does not fill the view of the table. In a
@@ -579,6 +595,9 @@ function seatFit(seat){
 let swimwear=false;
 function wearSwim(on){if(swimwear===!!on)return;swimwear=!!on;if(on&&!johansson)ensureJohansson();johansson?.wear(on?'swim':'clothes');if(on)say('You change into your swimming trunks at the lockers.',3);}
 function updateJohansson(dt){
+ const ferryView=islandPlay?.phase==='ferry';
+ hands.firstPersonVisible=!thirdPerson&&!spawnScene?.active&&!islandPlay?.active&&current?.id!==CITY_RESTAURANT.id;
+ if(ferryView&&!johansson)ensureJohansson();
  if(!johansson)return;
  const r=johansson.root;r.position.copy(player.position);
  if(seated&&parkSeat){
@@ -587,8 +606,8 @@ function updateJohansson(dt){
   if(johansson.ready){const fit=seatFit(parkSeat);r.position.set(fit.x,fit.top+.09-johansson.sitHip,fit.z);}
  }else r.quaternion.copy(player.quaternion);
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
- if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(null);
- johansson.update(dt,{speed:playerSpeed,running:playerRunning,seated,tipsy,airborne:!!characters?.jumping,visible:thirdPerson&&started&&!inspector?.active&&!bicycleRide});
+ if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
+ johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&(thirdPerson||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -747,7 +766,7 @@ function addRoomProps(s){
     if(s.id==='ramen'){room.add(ramenLife);ramenLife.visible=true;ramenGuests.sync(minutes);ramenPlayerService=createRamenPlayerService({room,getSeat:()=>Number.isInteger(parkSeat?.ramenSeatId)?parkSeat:null,getMinutes:()=>minutes,getBalance:()=>activities.state.yen,pay:activities.spend,say,
       onMouthful:ramenMouthful,canOrder:item=>item.prop==='beer'&&!wantsAnother(tipsy,DRINKS.bottle.alcohol)?"Mrs Sato shakes her head: You’ve had enough. Have a cold barley tea instead.":true,
       ...(satoRamen()?{menu:SATO_MENU,isOpen:satoRamenOpen,title:SATO_RAMEN.title,server:'Mrs Sato',kitchen:satoKitchen,closedLine:'Sato Ramen serves lunch, 11:00 to 14:00. Mrs Sato has put the stools up.'}:{})});}
-    if(homeOwner(s)){activeRoomLayout.tick?.(0,minutes,elapsed);homeGuests.enter(activeRoomLayout.prepareBedding?{...s,homeLayouts:{[homeOwner(s)]:activeRoomLayout}}:s,minutes);}
+    if(homeOwner(s)){activeRoomLayout.tick?.(0,minutes,elapsed);const homeLayouts=activeRoomLayout.homeLayouts||(activeRoomLayout.prepareBedding?{[homeOwner(s)]:activeRoomLayout}:null);homeGuests.enter(homeLayouts?{...s,homeLayouts}:s,minutes);}
     return;
   }
   if(s.id==='izakaya'){activeRoomLayout=buildIzakayaRoom({room,box,reg,collider:roomCollider,action:activities.action,exit:leaveRoom,signTexture:signTex});izakayaTV=activeRoomLayout.television;izakayaGuests.sync(minutes);startVenueService('izakaya');beerService=createBeerService({room,say,blocked:environmentBlocked,getNao:()=>{const n=world.people.find(p=>p.profile.name==='Nao')?.g;return n&&n.userData.inIzakaya&&n.visible&&!n.userData.roomTransition?n:null;}});const light=new THREE.HemisphereLight(0xffdfaa,0x886d5f,1.6);room.add(light);return;}
@@ -774,7 +793,7 @@ function roomShell(s){
   setTimeout(()=>{if(!photoStudio?.active&&current?.id===CITY_RESTAURANT.id&&activeRoomLayout?.dinner===dinner)activities.action('city-dinner',CITY_RESTAURANT.title,dinner);},1400);
   return;}
  if(s.familyHome){activeRoomLayout=buildFamilyHome({...shared,household:s.familyHome,title:s.title,kind:s.houseKind});return;}
- if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,openMaker:()=>{leaveRoomIfModal();openAvatarMaker();},sleep:sleepUntilMorning});return;}
+ if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,openMaker:()=>{leaveRoomIfModal();openAvatarMaker();},sleep:sleepUntilMorning});const decor=createHomeCustomization({room,state:activities.state,menu:activities.menu,save:activities.save,close:activities.close,reg});activeRoomLayout.snapshot=()=>({decor:decor.snapshot()});return;}
  if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior(shared);return;}
  if(s.id==='koban'){activeRoomLayout=buildKobanInterior(shared);return;}
  if(s.id==='ramen'&&satoRamen()){activeRoomLayout=buildSatoRamenRoom(shared);return;}
@@ -869,7 +888,7 @@ function updateDoorways(dt){
 }
 
 let roomLoading=false;
-async function enterRoom(s){
+async function enterRoom(s){spawnScene?.cancel('room');
  if(roomLoading)return;
  s=SITES.find(site=>site.id===businessId(s.id))||s;
  if(s.id==='market'){roomLoading=true;resetInput();let ready=false;try{ready=await sakuraShop.ready();}finally{roomLoading=false;}if(!ready){say('Could not open Sakura. Please try the door again.',5);return;}}
@@ -896,11 +915,22 @@ async function enterRoom(s){
  // place: you walk in looking where you were looking, not where the room says.
  yaw=streetToRoom(streetYaw,s,activeRoomLayout);
  pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
-function leaveRoom(){if(!current)return;if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}const leavingDungeon=current.id==='dungeon';wearSwim(false);showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;beerService?.clear();beerService=null;workplaceResidents.restore();bookshopCustomers.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();onsenGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;roomDoorway=null;current=null;roomView(false);if(s?.id===CITY_RESTAURANT.id)hands.firstPersonVisible=!thirdPerson;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);
+function leaveRoom(){if(!current)return;spawnScene?.cancel('room');if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}const leavingDungeon=current.id==='dungeon';wearSwim(false);showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;beerService?.clear();beerService=null;workplaceResidents.restore();bookshopCustomers.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();onsenGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;roomDoorway=null;current=null;roomView(false);if(s?.id===CITY_RESTAURANT.id)hands.firstPersonVisible=!thirdPerson;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);
  // and back out again the same way, by the same rotation: you leave facing where you
  // were facing inside, which for somebody who walked at the door is the street.
  if(s){yaw=roomToStreet(roomYaw,s,roomLayout);pitch=THREE.MathUtils.clamp(roomPitch,-.55,.55);}
- $('#place').textContent='JOHANSSON TOWN';$('#placeSub').textContent="Johansson Town · HARBOUR DISTRICT";$('#timeText').textContent='Shops are open.';say('Johansson Street',1.5);if(leavingDungeon)finishDungeon();}
+ say(syncExteriorPlace(),1.5);if(leavingDungeon)finishDungeon();}
+
+function syncExteriorPlace(){
+ const phase=islandPlay?.phase,airport=islandPlay?.snapshot().location==='airport';
+ const title=phase==='ferry'?'MINATO–KITANO-JIMA FERRY':phase==='flight'?'ISLAND COMMUTER FLIGHT':airport?'KITANO-JIMA AIRPORT':'JOHANSSON TOWN';
+ const detail=phase==='ferry'?'Minato–Kitano-jima · PASSENGER DECK':phase==='flight'?'Island commuter service · IN FLIGHT':airport?'Kitano-jima · PASSENGER TERMINAL':'Johansson Town · HARBOUR DISTRICT';
+ const line=airport?'The passenger counter and promenade are open.':'Shops are open.';
+ if($('#place').textContent!==title)$('#place').textContent=title;
+ if($('#placeSub').textContent!==detail)$('#placeSub').textContent=detail;
+ if($('#timeText').textContent!==line)$('#timeText').textContent=line;
+ return airport?'Kitano-jima Airport':'Johansson Street';
+}
 
 function welcomeAtCounter(forward){
   if(storeWelcomed||!storeClerk?.visible||storeClerk.userData.visualReady===false||current?.id!=='market')return;
@@ -916,14 +946,14 @@ function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touc
   const facingDot=v.lengthSq()?fw.dot(v.normalize()):1;if(facingDot<.3&&d>.9)continue;
   const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d*(1+(1-facingDot)*1.4)+(o.userData.promptPenalty||0)-(/^Talk to /.test(h.label)?.6:0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();say(FORM3_NUDGE,6);}else say('You stand up.',2);}
-function doInteract(){if(islandPlay?.active)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
+function doInteract(){spawnScene?.cancel();if(islandPlay?.active)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
 function environmentBlocked(x,z,r=PLAYER_RADIUS){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;const list=current?roomColliders:world.colliders;
  const y=current?0:groundHeight(x,z);
  return list.some(c=>standingHitsRect(x,z,r,y,c));}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
 function inEntrance(x,z,r=1.2){return entrancePoints().some(([dx,dz])=>Math.hypot(x-dx,z-dz)<r);}
 function indoorNpc(g){return g.userData.inBookshop||g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inRamen||g.userData.inHome||g.userData.inMarket;}
-function residentInView(g){if(g.userData.visualReady===false)return false;for(let node=g;node;node=node.parent)if(!node.visible)return false;return current?!!indoorNpc(g):!indoorNpc(g);}
+function residentInView(g){if(g.userData.visualReady===false||g.userData.inVehicle)return false;for(let node=g;node;node=node.parent)if(!node.visible)return false;return current?!!indoorNpc(g):!indoorNpc(g);}
 function overlapsResident(x,z){return world.people.some(p=>!p.g.userData.playerControlled&&residentInView(p.g)&&circleHitsCircle(x,z,PLAYER_RADIUS,p.g.position.x,p.g.position.z,NPC_RADIUS));}
 function residentBlocked(x,z){if(!current&&inEntrance(x,z))return false;return overlapsResident(x,z);}
 function collides(x,z){
@@ -1029,7 +1059,8 @@ function updatePlayer(dt){
  ({yaw,pitch}=lookStep(yaw,pitch,THREE.MathUtils.clamp(lookX,-1,1),THREE.MathUtils.clamp(lookY,-1,1),dt,cameraControls.settings));
  let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0)-touchSticks.move.y-controllerFrame.move.y;
  let s=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+touchSticks.move.x+controllerFrame.move.x;
- if(Math.hypot(f,s)>.05)pointWalk.cancel();
+ if(Math.hypot(f,s)>.05){spawnScene?.cancel();if(seated)standUp();pointWalk.cancel();}
+ if(Math.hypot(lookX,lookY)>.05)spawnScene?.cancel();
  const walking=pointWalk.direction(player.position,dt,current);
  walkMarker.visible=pointWalk.active;
  if(pointWalk.destination)walkMarker.position.set(pointWalk.destination.x,(current?0:groundHeight(pointWalk.destination.x,pointWalk.destination.z))+.05,pointWalk.destination.z);
@@ -1079,8 +1110,8 @@ function updatePlayer(dt){
 }
 
 const fmt=m=>`${String(Math.floor((m%1440)/60)).padStart(2,'0')}:${String(Math.floor(m%60)).padStart(2,'0')}`;
-function setTime(){
- world.updateHours?.(minutes);
+function setTime({updateHours=true}={}){
+ if(updateHours)world.updateHours?.(minutes);
  const c=duskClock(minutes,{rain:weather,inside:!!current});
  const day=c.day;
  sun.intensity=c.sunIntensity;
@@ -1148,7 +1179,7 @@ function updateDirectory(){
  (world.landmarks||[]).forEach(s=>destination(s));
  section('Residents');const wantNames=wantPool();world.people.forEach(p=>{const name=p.g.userData.name,want=openWant(activities.state,minutes,wantNames,name),hearts=heartLine(activities.state.friendship?.[name]?.points||0);row(name,hearts+' · '+(want?'Would like '+withArticle(want.item.toLowerCase()):p.g.userData.activity||'On the street'),()=>{activities.note(p.g.userData.name+' · '+(p.g.userData.activity||'on the street'));toggleDir(false);});});
  section('Reading and records');content.items.forEach(i=>row(i.title,i.place,()=>{const site=SITES.find(s=>s.id===i.siteId);if(site)markPlace(site);else toggleDir(false);}));
-  section('Signals');[['82.1 Harbour Service',RADIO_821],['89.4 JOJO','Journal requests'],['95.7 Sports','Prefectural baseball'],['Payphone','Near the bookshop'],['Minato Ferry','Outer pier · 3 sailings daily']].forEach(([a,b])=>row(a,b,()=>{toggleDir(false);say(a==='82.1 Harbour Service'?b:a+' · '+b,4);}));
+  section('Signals');[['82.1 Harbour Service',RADIO_821],['89.4 JOJO','Journal requests'],['95.7 Sports','Prefectural baseball'],['Payphone','Near the bookshop'],['Minato–Kitano Ferry','Outer pier · Passengers and occasional cars']].forEach(([a,b])=>row(a,b,()=>{toggleDir(false);say(a==='82.1 Harbour Service'?b:a+' · '+b,4);}));
 }
 /**
  * Where the game starts (world/openings.js): one of a few good moments in town, picked
@@ -1168,7 +1199,7 @@ function beginAtOpening(){
 }
 function standUpAt(x0,z0,facing=yaw){
  seated=false;parkSeat=null;
- const [x,z]=findClear(x0,z0);player.position.set(x,groundHeight(x,z),z);yaw=facing;pitch=-.05;world.spawn=player.position.toArray();
+ const [x,z]=findClear(x0,z0);player.position.set(x,groundHeight(x,z),z);yaw=facing;pitch=-.05;player.quaternion.setFromAxisAngle(yAxis,yaw);playerSpeed=0;playerRunning=false;world.spawn=player.position.toArray();
 }
 /** Sit on a seat by its label, through the same path as tapping it: the first one of them that is free. */
 function sitOnSeat(label){
@@ -1192,19 +1223,26 @@ async function openInside(opening){
   if(opening.meal)ramenPlayerService?.serveNow(opening.meal);
  }
  say(opening.caption+(opening.meal?' E to eat, or stand.':' E to drink, or stand.'),6);
+ startArrivalScene(opening);
 }
 // The peninsula omits the parked-bicycle interaction; its seven other street
 // activities remain required. Archived layouts retain the bicycle as the eighth.
 function runStabilityChecks(){const failures=[];if(!townBoundsBlocked(400,0,PLAYER_RADIUS))failures.push('town edge');if(!roomBoundsBlocked(5.5,0,PLAYER_RADIUS))failures.push('room edge');if(world.colliders.length<20)failures.push('world collider coverage');if((world.quality?.streetInteractions||0)<(world.townMode==='peninsula'?7:8))failures.push('street interaction coverage');for(const [id,p] of doors){const site=SITES.find(s=>s.id===id)||(world.landmarks||[]).find(s=>s.id===id);const facing=site?.exitPosition||id==='warehouse'||homeOwner(site)?site?.entryFacing:null,exitStep=site?.exitPosition ? .6 : .7;const ex=Number.isFinite(facing)?p.x+Math.sin(facing)*exitStep:p.x,ez=Number.isFinite(facing)?p.z+Math.cos(facing)*exitStep:p.z+(id==='izakaya'?-.7:.7);if(environmentBlocked(p.x,p.z,PLAYER_RADIUS)||(!FULL_TOWN.active&&environmentBlocked(ex,ez,PLAYER_RADIUS)))failures.push(`door spawn ${id}`);}window.__JOHANSSON_STABILITY__={ok:failures.length===0,failures,colliders:world.colliders.length,characterCount:world.people.length+1,streetInteractions:world.quality?.streetInteractions||0,renderDpr:renderer.getPixelRatio(),toneMapping:'AgX',shadows};if(failures.length)console.error('Johansson Town stability checks failed',failures);else console.info('Johansson Town stability checks passed',window.__JOHANSSON_STABILITY__)}
 
+spawnScene=createSpawnScene({scene,camera,getActor:ensureJohansson,blocked:arrivalLensBlocked,ground:(x,z)=>current?0:groundHeight(x,z),onActive:active=>{hands.firstPersonVisible=!active&&!thirdPerson;}});
+function startArrivalScene(opening){
+ const params=new URLSearchParams(location.search);
+ if(params.has('visual-audit')||params.has('audit')&&!params.has('spawn')||params.get('cinematic')==='off')return;
+ spawnScene.start({id:opening?.id||'sakura-bench',inside:!!current,yaw:parkSeat?.yaw??yaw});
+}
 const opening=beginAtOpening();
 started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
-if(opening?.room)openInside(opening);
+if(opening?.room)openInside(opening);else startArrivalScene(opening);
 let mouseLooking=false,mouseLast=null;
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 canvas.addEventListener('pointerdown',e=>{
  if(e.pointerType==='mouse'&&e.button===2&&controlsAllowed()){
-  e.preventDefault();mouseLooking=true;mouseLast=[e.clientX,e.clientY];pointWalk.cancel();canvas.setPointerCapture?.(e.pointerId);
+  e.preventDefault();spawnScene?.cancel();mouseLooking=true;mouseLast=[e.clientX,e.clientY];pointWalk.cancel();canvas.setPointerCapture?.(e.pointerId);
  }
 });
 canvas.addEventListener('pointermove',e=>{
@@ -1216,6 +1254,7 @@ const releaseMouse=()=>{mouseLooking=false;mouseLast=null;};
 canvas.addEventListener('pointerup',releaseMouse);canvas.addEventListener('pointercancel',releaseMouse);addEventListener('blur',releaseMouse);
 canvas.addEventListener('click',event=>{
  if(event.button!==0||!controlsAllowed()||touchSticks.suppressClick())return;
+ spawnScene?.cancel();
  if(seated){standUp();}
  if(bicycleRide)return;
  const rect=canvas.getBoundingClientRect(),ray=new THREE.Raycaster();
@@ -1247,9 +1286,10 @@ canvas.addEventListener('click',event=>{
  if(!normal||normal.y<.55)return;
  if(!pointWalk.walk(player.position,hit.point,{space:current}))say('There is no clear path from here.',2);
 });
-document.addEventListener('mousemove',e=>{if(document.pointerLockElement!==canvas||!controlsAllowed())return;const c=cameraControls.settings;yaw-=e.movementX*.0023*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0018*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);});
+document.addEventListener('mousemove',e=>{if(document.pointerLockElement!==canvas||!controlsAllowed())return;spawnScene?.cancel();const c=cameraControls.settings;yaw-=e.movementX*.0023*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0018*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);});
 document.addEventListener('keydown',e=>{
  if(photoLoading||photoStudio?.active||cameraControls.active||inspector?.active||itemViewer?.active||activities.paused)return;
+ spawnScene?.cancel();
  if(e.code==='Escape'){toggleDir(false);return;}
  if(e.code==='KeyC'&&!e.repeat){openCamera();return;}
  if(e.code==='KeyP'&&!e.repeat){openPhotoStudio();return;}
@@ -1268,7 +1308,17 @@ $('#run').onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;e.preve
 $('#run').onclick=e=>{if(e.detail===0)toggleRunning();};
 $('#drink').onpointerdown=e=>{e.preventDefault();pressedControls.add('drink');drinkNow();};$('#act').onpointerdown=e=>{e.preventDefault();pressedControls.add('act');doInteract()};
 
-canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();started=false;const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Reload Johansson Town to continue.'}});canvas.addEventListener('webglcontextrestored',()=>location.reload());function resizeRenderer(){const view=conversationViewport(innerWidth,innerHeight);renderer.setPixelRatio(renderDpr());renderer.setSize(view.width,view.height,false);canvas.style.width=view.width+'px';canvas.style.height=view.height+'px';camera.aspect=view.width/view.height;camera.updateProjectionMatrix()}
+graphicsLifecycle=createGraphicsLifecycle({canvas,getRunning:()=>started,
+ setRunning:value=>{started=value;window.__JOHANSSON_RUNNING__=value;},
+ save:()=>activities.save(),resetInput,suspendInput:()=>gamepadInput.suspend(),
+ dropPipeline:()=>{const old=pipeline;pipeline=null;try{old?.dispose();}finally{renderPlain();}},
+ restoreGraphics:()=>{renderer.setRenderTarget?.(null);resizeRenderer();inkRecovery.restored();if(!buildInk())inkRecovery.failed();setTime();},
+ resetClock:()=>clock.getDelta(),followClock,
+ onLost:()=>{const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Your town will resume when the display recovers.';d.querySelector('button').hidden=true;}},
+ onRestored:()=>{const d=$('#fatal');if(d){d.classList.add('hidden');d.querySelector('button').hidden=false;}},
+ onError:(error,phase)=>{console.warn('Graphics '+phase+':',error.message);if(phase==='restore'){const d=$('#fatal');if(d){d.querySelector('p').textContent='Graphics are still paused. Retry when the display is available.';d.querySelector('button').hidden=false;}}}
+});
+function resizeRenderer(){const view=conversationViewport(innerWidth,innerHeight);renderer.setPixelRatio(renderDpr());renderer.setSize(view.width,view.height,false);canvas.style.width=view.width+'px';canvas.style.height=view.height+'px';camera.aspect=view.width/view.height;camera.updateProjectionMatrix()}
 function setConversation(name,text=''){for(const g of [...world.people.map(p=>p.g),...(world.neighbours||[])])if(g.userData.playerConversation){delete g.userData.playerConversation;delete g.userData.chatHold;delete g.userData.speakingUntil;}if(name){neighbourChats.cancel();chatBubble.hide();}
  if(name&&!conversationName){conversationSide=0;shotCut=true;conversationShot='speaker';conversationCamera={rotation:camera.quaternion.clone(),playerVisible:player.visible};johansson?.play('Bow');}
  if(name)johansson?.speak(2.4);
@@ -1311,6 +1361,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     venueService?.update(dt);beerService?.update(dt);ramenPlayerService?.update(dt);
     workplaceResidents.update(dt,minutes,weather);bookshopCustomers.update(dt,minutes);
     castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);neighbourChats.update(dt,minutes,weather);
+    if(current&&!catchingUp){world.ferry?.update(dt,minutes,elapsed);world.traffic?.update(dt,minutes);}
     if(!current&&!catchingUp){world.update(dt,elapsed,daylight(minutes),minutes);neighbours?.update(dt,minutes,player.position);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
 }
 /** Keeps the town on the device clock; a gap of more than a minute is caught up, not jumped. */
@@ -1362,6 +1413,7 @@ function sleepUntilMorning(){
 const leaveRoomIfModal=()=>activities.close();
 function advanceAbsentTown(townMinutes){
  if(!(townMinutes>0))return;
+ world.traffic?.reconcileAbsent?.(minutes+townMinutes);
  if(townMinutes>MAX_ABSENCE_MINUTES){minutes+=townMinutes-MAX_ABSENCE_MINUTES;townMinutes=MAX_ABSENCE_MINUTES;}
  absence.add(townMinutes);activities.state.pendingTownMinutes=absence.pending;catchingUp=absence.pending>0;
 }
@@ -1383,6 +1435,7 @@ function updateController(dt){
   const root=$('#inspect-caption');navigateControls(root,direction);
   if(f.pressed[0]){const items=focusableControls(root);if(items.includes(document.activeElement))document.activeElement.click();else items[0]?.focus();}return;
  }
+ if(f.pressed.some(Boolean))spawnScene?.cancel();
  const root=cameraControls.active?cameraControls.panel:activities.paused?$('#activity'):!$('#directory').classList.contains('hidden')?$('#directory'):null;
  if(root){
   if(f.pressed[1]||f.pressed[9]){if(cameraControls.active)cameraControls.close();else if(activities.paused)activities.close();else toggleDir(false);return;}
@@ -1408,6 +1461,7 @@ addEventListener('pointerdown',()=>{controlsTouchedAt=performance.now();});
 // rule: a button being held stays on screen until the finger leaves it.
 $('#jump').addEventListener?.('pointerdown',()=>pressedControls.add('jump'));
 function updateContextControls(){
+ if(!current)syncExteriorPlace();
  document.body.classList.toggle('hud-seated',!!seated);
  const blocked=cameraControls.active||roomLoading||activities.paused||inspector?.active||!$('#directory').classList.contains('hidden')||!$('#qte').classList.contains('hidden');
  const exit=activeRoomLayout?.exit||roomDoorway||[0,0,3.8];
@@ -1452,16 +1506,60 @@ const detailStream=createDetailStream({onChange:()=>{invalidateDetails();walkSur
 // With ?audit in the address, a harness can put the player anywhere and look down on
 // the town from a fixed camera. Nothing reads it otherwise.
 if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__={
- teleport(x,z,facing){if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;},
- get mouse(){return {walking:pointWalk.active,destination:pointWalk.destination,yaw,pitch};},
+ frozen:new URLSearchParams(location.search).has('visual-audit'),
+ /** Paint the normal world path without advancing animation, input or the clock. */
+ render(){
+  if(graphicsLifecycle?.lost||creatorOpen)return false;
+  if(photoStudio?.active){photoStudio.render();return true;}
+  const view=this.camera||(!spawnScene?.active&&activeRoomLayout?.fixedCamera);
+  if(view){camera.position.set(...view.pos);camera.lookAt(...view.at);camera.updateMatrixWorld();}
+  // The hourly callbacks include shutter interpolation. Frozen draws only
+  // refresh view-dependent lighting; fixture time synchronises hours once.
+  setTime({updateHours:false});celPass.apply(scene);
+  if(!current)renderOutdoor();
+  else if(current.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));
+  else present(()=>renderer.render(scene,camera));
+  return true;
+ },
+ setTime(value,{rain=false}={}){
+  if(!Number.isFinite(value))throw new Error('Audit time must be finite town minutes');
+  minutes=value;followRealClock=false;townClock.set(minutes,1);weather=!!rain;world.setRain(weather);
+  advanceTown(0,true);setTime();world.quarters?.shutter?.update(minutes,0,{snap:true});$('#clock').textContent=fmt(minutes);
+  // The shop mascot and hanging decorations normally use wall-clock animation.
+  // Sample them once at a fixed phase after fixture sync, without changing live play.
+  if(this.frozen)sakuraShop.display.tick(0);
+ },
+ teleport(x,z,facing){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;},
+ get mouse(){return {walking:pointWalk.active,destination:pointWalk.destination,yaw,pitch,thirdPerson};},
  camera:null,
- step(milliseconds){const seconds=Math.min(300000,Math.max(0,Number(milliseconds)||0))/1000;const following=followRealClock;followRealClock=false;try{for(let elapsed=0;elapsed<seconds;elapsed+=1/60)simulate(Math.min(1/60,seconds-elapsed),false);}finally{followRealClock=following;}const view=this.camera;if(view){camera.position.set(...view.pos);camera.lookAt(...view.at);camera.updateMatrixWorld();}characters?.update(0);castAI?.pose(0);setTime();updateContextControls();$('#clock').textContent=fmt(minutes);renderer.render(scene,camera);},
+ step(milliseconds){
+  if(creatorOpen||photoStudio?.active)return this.render();
+  const seconds=Math.min(300000,Math.max(0,Number(milliseconds)||0))/1000,following=followRealClock;followRealClock=false;
+  try{for(let elapsed=0;elapsed<seconds;elapsed+=SIM_STEP){
+   const dt=Math.min(SIM_STEP,seconds-elapsed),paused=activities.paused||roomLoading||cameraControls.active||inspector?.active||itemViewer?.active||!$('#directory').classList.contains('hidden');
+   simulate(dt,!!paused);hands?.update(paused?0:dt);updateJohansson(paused?0:dt);characters?.update(dt);castAI?.pose(dt);facing.update(dt);
+   spawnScene?.update(dt,{paused:!!paused,unavailable:!!(islandPlay?.active||this.camera)});
+  }}finally{followRealClock=following;}
+  const view=this.camera;if(view){camera.position.set(...view.pos);camera.lookAt(...view.at);camera.updateMatrixWorld();}
+  setTime();updateContextControls();if(!activities.paused&&!roomLoading&&!cameraControls.active&&!inspector?.active&&!itemViewer?.active&&$('#directory').classList.contains('hidden'))interaction();$('#clock').textContent=fmt(minutes);this.render();
+ },
  photo:()=>openPhotoStudio(),
  get photoActive(){return !!photoStudio?.active;},
  get world(){return world;},
- get sites(){return SITES.map(s=>({id:s.id,title:s.title,x:s.x,z:s.z}));},
+ get sites(){return SITES.map(s=>({id:s.id,title:s.title,x:s.x,z:s.z,door:s.door,entryFacing:s.entryFacing,exitPosition:s.exitPosition,approachPosition:s.approachPosition}));},
+ /** Read-only coordinates of visible interactions in the current coordinate frame. */
+ get targets(){return interactables.flatMap(o=>{const hit=o.userData.hit;if(!hit||!!hit.inside!==!!current)return [];for(let p=o;p;p=p.parent)if(!p.visible)return [];const pos=o.getWorldPosition(new THREE.Vector3()),distance=pos.distanceTo(player.position);return current||distance<35?[{label:hit.label,position:pos.toArray(),distance,inside:!!hit.inside}]:[];});},
+ get roomNavigation(){return current?{id:current.id,title:current.title,bounds:activeRoomLayout?.bounds||{minX:-5,maxX:5,minZ:-5,maxZ:5},spawn:activeRoomLayout?.spawn||[0,0,4.3],exit:activeRoomLayout?.exit||roomDoorway,yaw:activeRoomLayout?.yaw||0}:null;},
  /** The ground and the surface under a point, as the simulation reads them (clipping audits). */
  ground(x,z){return groundHeight(x,z);},route(x,z){const r=routeAt(x,z);return r?{id:r.id,surface:r.surface}:null;},
+ /** Read the same standing collision rules used by actual player movement. */
+ navigation(x,z,radius=PLAYER_RADIUS){
+  if(!Number.isFinite(x)||!Number.isFinite(z)||!Number.isFinite(radius)||radius<.1||radius>.6)throw Error('Invalid navigation probe');
+  const y=current?0:groundHeight(x,z),bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,radius):roomBoundsBlocked(x,z,radius)):townBoundsBlocked(x,z,radius);
+  const solids=(current?roomColliders:world.colliders).filter(c=>standingHitsRect(x,z,radius,y,c)).map(c=>({id:c.id||'solid',x:c.x,z:c.z,w:c.w,d:c.d,yaw:c.yaw||0}));
+  const residents=world.people.filter(p=>!p.g.userData.playerControlled&&residentInView(p.g)&&circleHitsCircle(x,z,radius,p.g.position.x,p.g.position.z,NPC_RADIUS)).map(p=>p.profile.name);
+  return {x,z,y,radius,room:current?.id||null,bounds,staticBlocked:bounds||solids.length>0,residentBlocked:residents.length>0&&!(!current&&inEntrance(x,z)),solids,residents,route:this.route(x,z)};
+ },
  enter(id){const s=id===CITY_RESTAURANT.id?NAHA_TRIP:SITES.find(site=>site.id===id);return s?enterRoom(s):null;},
  leave(){leaveRoom();},
  interact(){doInteract();},
@@ -1470,19 +1568,23 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  get active(){return active?.label||null;},
  near(r=3.2){const q=new THREE.Vector3();return interactables.map(o=>{o.getWorldPosition(q);return [o.userData.hit?.label,+q.distanceTo(player.position).toFixed(2),o.visible,!!o.userData.hit?.inside];}).filter(x=>x[1]<r);},
  get seated(){return seated;},
+ get arrival(){return spawnScene?.snapshot();},
  get beer(){return beerService?{pending:beerService.pending,drink:beerService.drink}:null;},
- get paused(){return !!activities?.paused;},
- get blocked(){return {catchingUp,roomLoading,camera:!!cameraControls.active,inspector:!!inspector?.active,directory:!$('#directory').classList.contains('hidden'),started,hidden:document.hidden};},
+ get paused(){return !!(activities?.paused||creatorOpen||photoStudio?.active||itemViewer?.active);},
+ get blocked(){return {catchingUp,roomLoading,camera:!!cameraControls.active,inspector:!!inspector?.active,viewer:!!itemViewer?.active,creator:creatorOpen,photo:!!(photoStudio?.active||photoLoading||photoReturning),directory:!$('#directory').classList.contains('hidden'),started,hidden:document.hidden};},
  get johansson(){return johansson;},get hands(){return hands;},
  get room(){return room;},get scene(){return scene;},get renderer(){return renderer;},get layout(){return activeRoomLayout;},
  get island(){return islandPlay;},
  get activities(){return activities;},get bookshopCustomers(){return bookshopCustomers.snapshot();},
+ get shop(){return {customers:[...sakuraShop.retail.customers].map(([p,r])=>({name:p.profile.name,item:r.item,phase:r.phase,position:r.position,picked:r.picked,paid:r.paid,finished:r.finished,atCounter:r.atCounter})),stock:Object.fromEntries(Object.entries(activities.state.sakura.stock).map(([id,s])=>[id,{shelf:s.shelf,reserve:s.reserve}]))};},
  /** The neighbours' small talk: how many chats so far, the one running, and how many the model has written. */
  get chats(){const c=neighbourChats.current;return {count:neighbourChats.count,written:neighbourWriter.written,model:neighbourWriter.ready,current:c?{pair:c.pair.map(p=>p.profile.name),topic:c.topic,text:c.text}:null};},
 };
+window.__JOHANSSON_AGENT_CONTEXT__=()=>({destinations:Object.fromEntries([...SITES,...(world.landmarks||[])].map(s=>[s.id,s.title])),controlsAllowed:controlsAllowed()&&!catchingUp});
 if(window.__JOHANSSON_AUDIT__){
+ window.__JOHANSSON_GRAPHICS__=createGraphicsInspector({canvas,renderer,canCapture:()=>!graphicsLifecycle?.lost&&started&&!document.hidden});
  window.advanceTime=ms=>window.__JOHANSSON_AUDIT__.step(ms);
- window.render_game_to_text=()=>JSON.stringify({coordinates:'x/z in metres; y is height; interiors use local coordinates',room:current?.id||null,home:activeRoomLayout?.snapshot?.()||null,minutes,player:player.position.toArray(),customers:bookshopCustomers.snapshot(),island:islandPlay?.snapshot()});
+ window.render_game_to_text=()=>JSON.stringify({coordinates:'x/z in metres; y is height; interiors use local coordinates',room:current?.id||null,home:activeRoomLayout?.snapshot?.()||null,minutes,player:player.position.toArray(),customers:bookshopCustomers.snapshot(),island:islandPlay?.snapshot(),arrival:spawnScene?.snapshot()});
 }
 // Where the player is standing and what they are standing on. Read-only, and the same
 // answer the simulation uses, so a screenshot can be tied to a place on the ground.
@@ -1534,7 +1636,7 @@ detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:3
 }
 let detailsStarted=false;
 
-function loop(){requestAnimationFrame(loop);if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}if(creatorOpen){clock.getDelta();return;}izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);governResolution(frameDt);updateWantCards(frameDt);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden&&!activities.paused)activeRoomLayout?.ownedUpdate?.(frameDt);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||itemViewer?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused,relax:!!(seated&&!current)});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine){chatBubble.render(conversationLine?null:(neighbourChats.current||residentSpeech()));updateConversationLift(frameDt);}if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+function loop(){requestAnimationFrame(loop);if(graphicsLifecycle?.lost){clock.getDelta();return;}if(window.__JOHANSSON_AUDIT__?.frozen){clock.getDelta();if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});if(window.__JOHANSSON_AUDIT__.renderFrozen!==false)window.__JOHANSSON_AUDIT__.render();return;}if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}if(creatorOpen){clock.getDelta();return;}izakayaTV?.update({camera,active:current?.id==='izakaya',paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);governResolution(frameDt);updateWantCards(frameDt);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden&&!activities.paused)activeRoomLayout?.ownedUpdate?.(frameDt);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson&&!spawnScene?.active;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=catchingUp||cameraControls.active||roomLoading||inspector?.active||itemViewer?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused,relax:!!(seated&&!current)});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine){chatBubble.render(conversationLine?null:(neighbourChats.current||residentSpeech()));updateConversationLift(frameDt);}if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}spawnScene?.update(frameDt,{paused,unavailable:!!(islandPlay?.active||window.__JOHANSSON_AUDIT__?.camera)});if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(current?.id==='market')present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:current.streetFrontage?{...current.streetFrontage,interiorZ:sakuraShop.layout.frontZ}:null}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
 
 function renderOutdoor(){
   const audit=window.__JOHANSSON_AUDIT__?.camera;

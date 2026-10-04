@@ -11,6 +11,7 @@
  * game.js asks it who to put a card over.
  */
 import {RESIDENT_PERSONALITIES} from './resident-personalities.js';
+import {STREET_CAST_NAMES} from './residents.js';
 
 /** Points at which each heart fills: stranger, then five hearts. */
 export const HEART_STEPS=Object.freeze([10,30,60,100,150]);
@@ -19,7 +20,7 @@ export const LEVEL_NAMES=Object.freeze(['Stranger','Acquaintance','Friend','Good
 /** What each taste in resident-personalities.js is, as a thing you can carry. */
 export const TASTE_ITEMS=Object.freeze({
  bun:'Steamed pork bun',tea:'Green tea',rice:'Plum rice ball',beer:'Umineko lager',soda:'Ramune soda',
- coffee:'Canned coffee',fish:'Mackerel',cola:'Sea breeze cola',milk:'Asamori milk',
+ coffee:'Canned coffee',fish:'Sea bream',cola:'Sea breeze cola',milk:'Asamori milk',
 });
 
 const POINTS=Object.freeze({talk:2,gift:3,favourite:6,want:10});
@@ -102,6 +103,8 @@ export function talked(state,name,minutes){
  * @returns {{points:number,yen:number,kind:'want'|'favourite'|'gift'|'again',hearts:number,up:boolean}}
  */
 export function gave(state,name,item,minutes,names){
+ // Old saves called the pier's catch mackerel; today's bag calls it sea bream.
+ if(item==='Mackerel')item='Sea bream';
  const r=record(state,name),day=dayOf(minutes),before=heartsFor(r.points);
  if(r.giftDay!==day){r.giftDay=day;r.giftsToday=0;}
  const want=openWant(state,minutes,names,name);
@@ -124,12 +127,12 @@ export function giftLine(name,item,result){
 }
 /** How they mention their want in conversation. */
 export function wantLine(want){
- const where=want.item==='Mackerel'?'If the boats bring any in':'If you are passing Sakura';
+ const where=['Sea bream','Mackerel'].includes(want.item)?'If you are passing the fishing pier':'If you are passing Sakura';
  return `${where}, I could really do with ${withArticle(want.item.toLowerCase())} today.`;
 }
 /**
- * The residents whose wants the town draws from: everyone in the personality registry,
- * bar Thuan, whose presents work their own way. It is the registry, not whoever happens
- * to be loaded, so the "!" cards and the conversations always agree on who wants what.
+ * The authored playable cast, bar Thuan, whose presents work their own way. Keep this
+ * independent of who is visible or loaded, so cards and conversations agree throughout
+ * the day, without assigning errands to retired avatar identities.
  */
-export function wantPool(){return Object.keys(RESIDENT_PERSONALITIES).filter(n=>n!=='Thuan');}
+export function wantPool(){return STREET_CAST_NAMES.filter(n=>n!=='Thuan'&&RESIDENT_PERSONALITIES[n]);}

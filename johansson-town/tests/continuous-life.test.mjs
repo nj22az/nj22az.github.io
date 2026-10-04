@@ -15,6 +15,7 @@ import {circleHitsRect} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
 import {MARKET_THRESHOLD} from '../src/world/town-grid.js';
 import {buildHomes} from '../src/world/homes.js';
+import {configureTownMode} from '../src/world/town-mode.js';
 function person(name,parent){const profile=RESIDENTS.find(p=>p.name===name),g=new THREE.Group();g.userData={name,hit:{inside:false}};g.position.set(...[profile.home[0],0,profile.home[1]]);parent.add(g);return {profile,g};}
 const tick=(fn,from,seconds)=>{for(let i=0;i<seconds*30;i++)fn(1/30,from+i/30);};
 function roomFor(p){
@@ -35,11 +36,13 @@ test('all ten home owners can be selected even where their building entrance is 
  assert.deepEqual([...selected].sort(),HOME_OWNERS.map(p=>p.name).sort());
 });
 test('every current resident keeps a door address and a live neighbour behind the commuter answer',async()=>{
+ configureTownMode('shopping-district');
+ try{
  const dom=installDOM(),{createActivities}=await import('../activities.js?snappy=1');
  const acts=createActivities({say(){},onWeather(){},onTime(){}});
  for(const p of RESIDENTS){
   assert.ok(RESIDENTS.some(friend=>friend.name===p.friend),p.name+' has a current friend');
-  // The published shopping district commutes the cast in on the Harbour Line, so
+  // The archived shopping district commutes the cast in on the Harbour Line, so
   // the modal offers travel rather than an address. The addressed home line stays
   // authored behind it and is still what archived saves and the map read.
   const home=DIALOGUE[p.name].find(r=>r[0]==='home')[1];
@@ -62,6 +65,7 @@ test('every current resident keeps a door address and a live neighbour behind th
   }
  }
  for(const pair of GOSSIP)for(const name of [pair.a,pair.b])assert.ok(RESIDENTS.some(p=>p.name===name),'Overheard conversations use the existing cast');
+ }finally{configureTownMode('legacy');}
 });
 test('two complete days give every resident work, meals and uninterrupted sleep at their own home',()=>{
  for(const profile of HOME_OWNERS){

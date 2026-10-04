@@ -170,8 +170,8 @@ function addStreetLife(world,options,factory){
   addSakuraFlyer(group,{position:[3.57,1.55,-37.215],width:.43});
   anchor(group,[3.2,1,-36.6],'Read Thuan’s shop flyer · harbour notice board',()=>options.onAction?.('sakura-flyer','Harbour notice board'),options.register);interactions++;
 
-  addWithCollider(group,colliders,factory.utilityCabinet(-7,13.8,0));// On the footway, clear of the six-metre carriageway.
-  inspect([-5.55,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
+  addWithCollider(group,colliders,factory.utilityCabinet(3.7,13.8,0));// The east footway leaves the freight pullout clear.
+  inspect([2.9,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
   // Thuan's bicycle stands on the west footway, a short walk from Sakura. The
   // peninsula keeps it as an interactive ride; archived layouts keep the bookshop
@@ -303,7 +303,8 @@ export function createTown(options){
     for(const [x,z,ry] of [[43.3,67.88,Math.PI],[23.5,64.12,0],[11.5,67.88,Math.PI]])ishiganto(g,{x,z,y:ky,ry});
     stopMarking(g,{x:43.3,z:63.7,y:ky,width:KITAHAMA.approach.maxX-KITAHAMA.approach.minX});
     roadSign(g,'stop',{x:KITAHAMA.approach.minX+.22,z:63.2,y:ky,ry:Math.PI,colliders:world.colliders});
-    edgeLines(g,COAST_ROAD,{width:5,heightAt:groundHeight});
+    edgeLines(g,COAST_ROAD.slice(0,2),{width:2.6,heightAt:groundHeight});
+    edgeLines(g,COAST_ROAD.slice(1),{width:5,heightAt:groundHeight});
    }
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
     await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});

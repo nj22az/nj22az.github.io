@@ -6,6 +6,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
 import {GATEBALL_ACTIVE} from '../world/okinawa/layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
+import {FLOWER_SHOP} from '../world/flower-shop.js';
 
 /**
  * The people who live and work in the new streets.
@@ -86,7 +87,7 @@ const ALL_NEIGHBOURS=Object.freeze([
   lines:[
    'Thirty minutes, not a second more! — Oh, a visitor. My wife makes the andagi at the shop on Main Street. I referee, which is how I keep out of her kitchen.']},
  // Two who walk: one doing her shopping, one on his round.
- {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'arranging flowers at Rainflower Florist',at:[100.2,101],face:[-1,0],pose:'Interact',hours:[[H(9),H(18)]],
+ {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'arranging flowers at Rainflower Florist',at:FLOWER_SHOP.staffAt,face:[-1,0],pose:'Interact',hours:[[H(9),H(18)]],
   lines:['Welcome to Rainflower. Fresh stems, a small bouquet, or something green for your windowsill? I wrap everything by hand.',
    'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. The flowers finish work on time; he never does.']},
  {name:'Postman Tōma',look:'Kenta',height:1.7,role:'on his round',walk:true,speed:1.25,hours:[[H(9),H(13)],[H(14),H(17)]],

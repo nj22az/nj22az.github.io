@@ -108,7 +108,7 @@ export function drawCover(ctx,title,issue,w=320,h=440){
   else {rect(24,250,W-48,64,'#2f5c45');ctx.fillStyle='#d9e2e8';ctx.beginPath();ctx.ellipse(160,200,70,22,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(220,200);ctx.lineTo(250,180);ctx.lineTo(250,220);ctx.fill();}
   fit(issue.head,W/2,344,22,inkC,W-24,800);fit(issue.sub,W/2,374,16,acc,W-24,800);barcode(14,H-46,8);price(inkC);break;}
  case 'paper':{
-  rect(0,0,W,H,'#ebe7d9');rect(14,14,W-28,70,title.colour);t(title.name,W/2-20,50,36,'#fff');t(title.edition,W-40,50,16,'#fff',800);
+  rect(0,0,W,H,'#ebe7d9');rect(14,14,W-28,70,title.colour);fit(title.name,W/2,40,32,'#fff',W-40);fit(title.edition,W/2,68,12,'#fff',W-40,800);
   t(issue.dateLine,W/2,100,15,'#3a3530',700);
   ctx.fillStyle=title.id==='shimaspo'?'#d7263d':'#17141a';fit(issue.head,W/2,148,36,ctx.fillStyle,W-24);t(issue.sub,W/2,192,22,'#3a3530');
   rect(18,216,140,108,'#a8a296');ctx.fillStyle='#57524a';for(let c=0;c<6;c++)for(let y=220;y<322;y+=12)ctx.fillRect(170+c*22,y,16,6);
