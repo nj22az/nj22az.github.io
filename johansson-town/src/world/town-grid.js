@@ -19,7 +19,7 @@ export const TOWN_DESTINATIONS=Object.freeze({
  // is first read, and on the peninsula these two shops stand on the west pavement
  // instead of in the night-market alley. Kenji and Tetsuo worked at the alley's door
  // for as long as it was stored -- out on the boardwalk, nowhere near their shop.
- get workshop(){return peninsulaActive()?[DOCK_WORKSHOP_PLOT.door[0],DOCK_WORKSHOP_PLOT.door[2]]:westShopDoor('form3d')||[ALLEY_WORKSHOP.door[0],ALLEY_WORKSHOP.door[2]];},
+ get workshop(){return [DOCK_WORKSHOP_PLOT.door[0],DOCK_WORKSHOP_PLOT.door[2]];},
  get books(){return westShopDoor('frontrow')||[ALLEY_BOOKS.door[0],ALLEY_BOOKS.door[2]];},
  pier:[-1.6,-62],
 });

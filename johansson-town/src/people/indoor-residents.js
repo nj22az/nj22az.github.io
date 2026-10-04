@@ -13,7 +13,7 @@ import {SATO_GUEST_SEATS,SATO_COOK,SATO_ROOM} from '../world/sato-ramen-layout.j
 export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,getStandingVisit=()=>null,collides=()=>false,getRain=()=>false,layout=null}){
  const borrowed=new Map();let clock=0,walker=null;
  // On the peninsula the ramen counter is Sato Ramen, beside Minato (world/sato-ramen-layout.js).
- const sato=place==='ramen'&&peninsulaActive();
+ const sato=(place==='ramen');
  const entrance=layout?.entrance|| (sato?[SATO_ROOM.spawn[0],0,SATO_ROOM.spawn[2]]:place==='ramen'?[RAMEN_LAYOUT.spawn[0],0,3.2]:place==='izakaya'?[0,0,5.2]:[0,0,5.2]);
  const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:world.people.find(p=>p.profile.name==='Thuan').profile.work;
  const wanted=p=>residentPlan(p.profile,clock,getRain(),getState()).place===place&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');

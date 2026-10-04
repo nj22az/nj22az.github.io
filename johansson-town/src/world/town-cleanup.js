@@ -1,5 +1,4 @@
 import * as THREE from '../../vendor/three.module.js';
-import {FULL_TOWN} from './full-town-state.js';
 import {groundHeight} from './layout.js';
 import {CLEANUP_SPOTS} from '../commerce/town-cleanup.js';
 import {TOWN_FINDS} from '../commerce/sakura-economy.js';
@@ -18,7 +17,7 @@ export function createTownCleanup({parent,register,action,getState,blocked=()=>f
   return hit?Math.max(ground,hit.point.y):ground;
  };
  for(const spot of CLEANUP_SPOTS){
-  const original=spot[FULL_TOWN.active?'full':'classic'];let position=null;
+  const original=spot['classic'];let position=null;
   for(let radius=0;radius<=2&&!position;radius+=.4)for(let i=0;i<12;i++){
    const x=original[0]+Math.cos(i*Math.PI/6)*radius,z=original[1]+Math.sin(i*Math.PI/6)*radius;
    if(!blocked(x,z,.35)){position=[x,surfaceAt(x,z),z];break;}

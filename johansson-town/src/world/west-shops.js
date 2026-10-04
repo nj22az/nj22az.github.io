@@ -26,7 +26,7 @@ export const WEST_SHOPS=Object.freeze({
  * own door stands.
  */
 export function westShopDoor(id){
- const plot=peninsulaActive()&&WEST_SHOPS[businessId(id)];
+ const plot=WEST_SHOPS[businessId(id)];
  return plot?[MAIN_ROAD.pavementWest+.65,plot.z]:null;
 }
 

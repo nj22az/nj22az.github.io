@@ -7,7 +7,7 @@ const minute=m=>((m%1440)+1440)%1440;
 export function sleepHours(profile){
  if(profile.name==='Officer Mori')return {sleep:420,wake:900};
  // On the peninsula he lives in the office and keeps early hours (social.js HARBOUR_MASTER_DAY).
- if(profile.name==='Harbour master'&&peninsulaActive())return {sleep:1260,wake:330};
+ if((profile.name==='Harbour master'))return {sleep:1260,wake:330};
  if(profile.name==='Nao')return {sleep:240,wake:720};
  return {sleep:minute(profile.retire+20),wake:minute(profile.start-90)};
 }

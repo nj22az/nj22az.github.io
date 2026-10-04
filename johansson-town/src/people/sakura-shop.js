@@ -68,7 +68,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   * fitted to its own window: without that its ends stand outside the side walls, in
   * daylight, as two black slabs either side of the fascia.
   */
- const WINDOW_FIT=peninsulaActive()?1:.7;
+ const WINDOW_FIT=1;
  /**
   * Strip lights, so the aisles are legible from the pavement. A shop lit only by what
   * gets past its own ceiling is a dark hole, which is not what a konbini looks like

@@ -42,7 +42,7 @@ export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
  // The same for home: on the peninsula the shop's staff live in the yard houses behind
  // Front-Row (yard-homes-layout.js); elsewhere, the Main Street flats they always had.
  if(YARD_RESIDENT_NAMES.includes(name)||WORKPLACE_HOMES[name]||ISLAND_RESIDENT_NAMES.includes(name)){
-  const yard=()=>peninsulaActive()?(WORKPLACE_HOMES[name]?.()||kitahamaHomeFor(name)||YARD_HOMES[householdFor(name)?.id]):null,street={home:profile.home,homeAddress:profile.homeAddress};
+  const yard=()=>(WORKPLACE_HOMES[name]?.()||kitahamaHomeFor(name)||YARD_HOMES[householdFor(name)?.id]),street={home:profile.home,homeAddress:profile.homeAddress};
   Object.defineProperty(profile,'home',{get:()=>yard()?[...yard().door]:street.home,enumerable:true,configurable:true});
   Object.defineProperty(profile,'homeAddress',{get:()=>yard()?.address||street.homeAddress,enumerable:true,configurable:true});
  }
@@ -53,7 +53,7 @@ export function residentHomeDescription(name){
  if(!profile)return '';
  if(!householdFor(name))return profile.homeAddress?'I live at '+profile.homeAddress+'.':'Home? Minato, mostly. Nao says I pay rent in bottle caps.';
  // The shared Main Street entrances are not built on the peninsula.
- const neighbour=peninsulaActive()?null:RESIDENTS.find(p=>p.name!==name&&p.homeEntry===profile.homeEntry);
+ const neighbour=null;
  const address=name==='Kenji'?'My place is at '+profile.homeAddress+', bro.':'I live at '+profile.homeAddress+'.';
  const roommates=householdFor(name).residents.filter(n=>n!==name);
  return address+(roommates.length?' I share the flat with '+roommates.join(' and ')+'.':neighbour?' '+neighbour.name+' has the other flat through our shared entrance.':'');

@@ -50,35 +50,32 @@ export function buildDistricts(world,options){
   // The peninsula keeps the ground and the seafront and nothing that is a shop. The
   // buildings are switched off here rather than deleted, so they come back one at a
   // time once the core is right.
-  const shops=!peninsulaActive();
+  const shops=!true;
   if(shops)buildTeaHouse(world,options);
   if(shops&&!buildRamenRestaurant(world,options)){
     building({id:'ramen',x:24,z:10,w:4.5,d:7,h:4.1,jp:"Ramen Sato",title:'Sato Ramen',roof:1,colour:0xb6a98a});
   }
   // The western lane is the seafront service edge behind the shopping street. The island
   // has its own seawall (okinawa/quarters.js), and this one ran down the middle of its walk.
-  if(!peninsulaActive())box([.45,1.0,78],[-38.4,-.05,-6],'concrete',0x808f83);
+  
   // The heron fishes the seawall, which the peninsula keeps out of reach behind the yard.
-  if(!peninsulaActive()){
-  for(const [x,z] of [[-41,-22],[-43,-8]]){const bird=new THREE.Group();bird.position.set(x,.18,z);const body=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6),new THREE.MeshStandardMaterial({color:0xb8bcb0,roughness:1}));body.scale.set(1,1.6,1);bird.add(body);group.add(bird);}
-  verb([-36,1,-22],'Watch the heron','inspect','Grey heron','It waits for a fish along the seawall.');
-  }
+  
   // Sparse bilingual junction signs, above eye level and outside the walking lane.
   // Each faces the people it is directing: the port sign is read walking up from the
   // shops, the bus-stop sign walking down to the terminus.
-  const signs=peninsulaActive()?[[3.2,-34,"港へ →",'HARBOUR'],[4.8,18.9,"港湾ターミナル ↓",'PORT TERMINAL · FERRIES',Math.PI]]:[[.8,6.1,"Shopping Street",'BOOKS ↑ · RAMEN ↓'],[3.2,-34,"Harbour Street",'PORT · WAREHOUSE AHEAD'],[4.8,18.9,"North Street",'TEA HOUSE → · BUS TERMINAL ↑']];
-  if(!shoppingDistrictActive())signs.splice(1,0,[-7.4,6.5,"Home",'MAIN STREET HOMES ←']);
+  const signs=[[3.2,-34,"港へ →",'HARBOUR'],[4.8,18.9,"港湾ターミナル ↓",'PORT TERMINAL · FERRIES',Math.PI]];
+  
   for(const [x,z,jp,en,angle=0] of signs){
     const marker=sign(jp,en,[x,2.1,z],1.55,.42,angle);marker.name='District direction';
     box([.09,2.15,.09],[x,1.075,z],'timber',0x655444);
   }
-  if(!shoppingDistrictActive())buildHomes(world,options,box);
+  
   // The bookshop and workshop staff live in the yard behind Front-Row (yard-homes.js).
-  if(peninsulaActive())buildYardHomes(world,options);
+  buildYardHomes(world,options);
   // Officer Mori's police box, on the lawn corner at the bus plaza. See koban.js.
-  if(peninsulaActive())buildKoban(world,options);
+  buildKoban(world,options);
   // Kitahama's houses on the north-east land (island-homes.js).
-  if(peninsulaActive())buildIslandHomes(world,options);
+  buildIslandHomes(world,options);
   for(const batch of batches.values()){const m=new THREE.InstancedMesh(unit,batch.mat,batch.items.length);batch.items.forEach((v,i)=>m.setMatrixAt(i,v));m.castShadow=options.shadows;m.receiveShadow=true;group.add(m);}
   return {shutters,windows,animators,sign,library};
 }

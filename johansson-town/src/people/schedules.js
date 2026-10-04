@@ -3,7 +3,6 @@ import {soberUp} from './drunk.js';
 import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {RAMEN_DOOR,IZAKAYA_DOOR} from './social.js';
 import {homeRoutine} from './home-life.js';
-import {FULL_TOWN} from '../world/full-town-state.js';
 import {residentPlan,NIGHT_PATROL} from './social.js';
 import {VOICE_LINES} from './voice-lines.js';
 import {createNavigation} from './navmesh.js?snappy=1';
@@ -65,10 +64,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  const clearOfTunnelMouth=target=>{
   if(!target||!Number.isFinite(target[0])||!Number.isFinite(target[1]))return target;
   // The island has no bus road or tunnel mouth to keep people off.
-  if(peninsulaActive()||target[1]<=BUS_STATION.maxZ-0.35)return target;
+  return target;
   return [...BUS_STATION.platform];
  };
- const patrol=FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL;
+ const patrol=NIGHT_PATROL;
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();let clockMinutes=1002;
  // Both published layouts run on the Harbour Line, so both are commuter layouts. Only
  // the archived residential street is not.
@@ -288,7 +287,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
    // Still on the platform: the plan has written them off as away, so put them back in
    // the queue rather than sending them walking up the bus road on foot.
-   if(holdForBus){g.visible=true;target=transitStop().queue;tag='bus';g.userData.place='bus';g.userData.activity=peninsulaActive()?'waiting for the ferry':'waiting for the Harbour Line';}
+   if(holdForBus){g.visible=true;target=transitStop().queue;tag='bus';g.userData.place='bus';g.userData.activity='waiting for the ferry';}
    // The bus stands at the arch, not at the shelter, so that is where it is boarded --
    // and they set off for it as soon as they are going, rather than waiting on the
    // platform for it to show and then having twelve metres of road to cover in the
@@ -306,7 +305,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     patrols.set(g,index);target=patrol[index];tag='patrol-'+index;
    }
    if(v.name==='Kenji'&&state().kenjiEscort==='walking'){
-    target=FULL_TOWN.active?FULL_TOWN.escort:TOWN_DESTINATIONS.workshop;tag='escort';g.userData.activity='showing the workshop';
+    target=TOWN_DESTINATIONS.workshop;tag='escort';g.userData.activity='showing the workshop';
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
    // Venue thresholds must not be displaced by generic crowd spacing.
@@ -356,7 +355,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    if(transit&&tag==='bus'&&(phase==='departing'||holdForBus)&&(world.ferry||world.bus)?.boarding&&(g.userData.boarding||arrived())){
     const [insideX,insideZ]=(world.ferry||world.bus).doorway;
     g.userData.boarding=true;g.userData.usingTownObject=true;
-    g.userData.activity=peninsulaActive()?'going aboard the ferry':'getting on the Harbour Line';
+    g.userData.activity='going aboard the ferry';
     const dx=insideX-g.position.x,dz=insideZ-g.position.z,reach=Math.hypot(dx,dz);
     if(reach>.3){
      const step=Math.min(reach,dt*1.1);
@@ -367,7 +366,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     world.busStation?.board(v.name,minutes);aboard.add(g);
     queued.delete(g);delete g.userData.busQueue;
     delete g.userData.boarding;delete g.userData.usingTownObject;
-    g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity=peninsulaActive()?ferryWords('left by bus'):'left by bus';
+    g.userData.commuterAwayDay=day;g.userData.place='away';g.userData.activity=ferryWords('left by bus');
     g.visible=false;routes.delete(g);continue;
    }
    if(indoor&&(g.userData.indoors===tag||arrived())){
@@ -379,6 +378,6 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   }
   // Ten distinct low-poly residents remain present; camera rank cannot hide a neighbour.
   outside.forEach(p=>{if(!(transit&&p.g.userData.commuterAwayDay===day))p.g.visible=true;});world.updateHomes?.(minutes);
-  if(world.cat){const s=state();const spots=FULL_TOWN.active?FULL_TOWN.catTargets:[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
+  if(world.cat){const s=state();const spots=[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
  },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,phase=commuterMode()?commuterPhase(p.profile,clockMinutes):'legacy',target=phase==='away'?transitStop().exit:indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target&&phase!=='away'?inside:null,place:phase==='away'?'away':g.userData.place}];}));},pose(){}};
 }

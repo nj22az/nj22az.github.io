@@ -19,7 +19,7 @@ export function consolidateBusinesses(sites){
  // Also accept callers carrying the older eight-shop catalogue.
  for(let i=sites.length-1;i>=0;i--)if(retired.has(sites[i].id))sites.splice(i,1);
  for(const definition of CORE_BUSINESSES){const site=sites.find(s=>s.id===definition.id);if(site)Object.assign(site,definition);}
- if(peninsulaActive()){
+ {
   let workshop=sites.find(s=>s.id==='form3d');if(!workshop){workshop={...CORE_BUSINESSES.find(s=>s.id==='form3d')};sites.push(workshop);}Object.assign(workshop,DOCK_WORKSHOP);
   const books=sites.find(s=>s.id==='frontrow');if(books)Object.assign(books,BOOKSHOP_WORKSHOP);
  }

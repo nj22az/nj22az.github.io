@@ -51,7 +51,7 @@ export function buildOfficeWorkplace({room:parent,reg,action,collider=()=>{}}){
  records([1.15,1.05,-2.40],'Open warehouse stock ledger','warehouse-stock');
  records([2.45,1.23,1.30],'Open berth record binders','berth-register');
  label('JOHANSSON HARBOUR',[0,2.48,-3.27],2.5,.28);
- if(peninsulaActive())buildBedNook({room,box,label,reg,action,collider,mat});
+ buildBedNook({room,box,label,reg,action,collider,mat});
  // A staffed office -- and the harbour master's home -- has its WC: the front-west corner,
  // its door facing into the room (docs/BUILDING-AUDIT.md).
  {const kit=createPlanKit({box:(size,pos,c,name)=>box(name||'WC wall',size,pos,c),collider,height:2.9,wall:0xeee6cf,frame:0x6f8a76});

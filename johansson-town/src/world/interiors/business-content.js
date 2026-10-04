@@ -19,7 +19,7 @@ export const COMBINED_CONTENT=Object.freeze({
 });
 export const BUSINESS_CONTENT_CATALOGUE=ITEMS.map(item=>{
  const originalSite=Object.keys(positions).find(id=>positions[id][item.id]);
- return {...item,get siteId(){return originalSite;},get place(){return peninsulaActive()?this.siteId==='frontrow'?'Front-Row Books · Main Street':this.siteId==='form3d'?'Dock Electrical & Repair Workshop · western quay':'Johansson Harbour Office · quay':{frontrow:'Front-Row Books & Press · shopping alley',form3d:'Kenji & Tetsuo Repairs · shopping alley',office:'Johansson Harbour Office · quay'}[originalSite];}};
+ return {...item,get siteId(){return originalSite;},get place(){return (this.siteId==='frontrow'?'Front-Row Books · Main Street':this.siteId==='form3d'?'Dock Electrical & Repair Workshop · western quay':'Johansson Harbour Office · quay');}};
 });
 export function buildBusinessContent({site,room,register,onInspect,onAction}){
  const entries=site.bookshop?Object.fromEntries(Object.entries(COMBINED_CONTENT).filter(([id])=>Object.hasOwn(positions.frontrow,id))):site.industrialWorkshop?dockContent:positions[site.id]||{},objects=new Map();

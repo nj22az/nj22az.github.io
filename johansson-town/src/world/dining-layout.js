@@ -53,9 +53,9 @@ export const SATO_RAMEN_DOOR=Object.freeze([-7.05,-13.9]);
 export const IZAKAYA_APPROACH=[-6.35,-20.4];
 export const IZAKAYA_LANE=[[0,-20.4],IZAKAYA_DOOR];
 export function izakayaPlot(){
- const [x,z]=IZAKAYA_PLOTS[peninsulaActive()?'peninsula':'street'];
+ const [x,z]=IZAKAYA_PLOTS['peninsula'];
  IZAKAYA_DOOR[1]=z;IZAKAYA_APPROACH[1]=z;IZAKAYA_LANE[0][1]=z;
- const ramen=peninsulaActive()?SATO_RAMEN_DOOR:DINING.ramenDoor;RAMEN_DOOR[0]=ramen[0];RAMEN_DOOR[1]=ramen[1];
+ const ramen=SATO_RAMEN_DOOR;RAMEN_DOOR[0]=ramen[0];RAMEN_DOOR[1]=ramen[1];
  return {x,z,yaw:DINING.izakayaYaw,door:IZAKAYA_DOOR};
 }
 const restaurantPlot=kind=>kind==='izakaya'?izakayaPlot()

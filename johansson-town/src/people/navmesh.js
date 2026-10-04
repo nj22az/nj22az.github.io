@@ -1,4 +1,3 @@
-import {FULL_TOWN} from '../world/full-town-state.js';
 import {MAP_BOUNDS,groundHeight} from '../world/layout.js?snappy=1';
 
 // A conservative walkability raster. It shares the player's radius-aware collision
@@ -10,7 +9,7 @@ import {MAP_BOUNDS,groundHeight} from '../world/layout.js?snappy=1';
 // Wider only makes a route more conservative, and every room in the town was laid out
 // against this margin, so it is the floor as well as the default.
 export const NAV_MARGIN=.32;
-export function createNavigation(blocked,{step=FULL_TOWN.active?.5:1,bounds=FULL_TOWN.active?FULL_TOWN.bounds:MAP_BOUNDS,heightAt=groundHeight,radius=NAV_MARGIN}={}){
+export function createNavigation(blocked,{step=1,bounds=MAP_BOUNDS,heightAt=groundHeight,radius=NAV_MARGIN}={}){
   const cache=new Map(),edges=new Map(),key=(x,z)=>x+','+z;
   const clear=(x,z)=>{const k=key(x,z);if(!cache.has(k))cache.set(k,!blocked(x*step,z*step,radius));return cache.get(k);};
   const edgeClear=(a,b)=>{const k=key(...a)+'>'+key(...b);if(!edges.has(k)){

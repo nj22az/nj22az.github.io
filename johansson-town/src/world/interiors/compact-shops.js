@@ -35,7 +35,7 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
  for(const z of [-hd,hd])box('Wall skirting',[w,.14,.08],[0,.1,z],dark);
  for(const x of [-hw,hw])box('Wall skirting',[.08,.14,d],[x,.1,0],dark);
  const door=buildShopDoor(room,{name:site.id+'-inside-door',width:1.0});door.group.position.set(doorX,0,hd-.02);door.group.rotation.y=Math.PI;
- anchor(layout.exit,'Exit to '+(site.bookshop?'Main Street':site.id==='tea-house'?'North Street':peninsulaActive()?'the street':'the shopping alley'),'exit');
+ anchor(layout.exit,'Exit to '+(site.bookshop?'Main Street':site.id==='tea-house'?'North Street':'the street'),'exit');
  // A small illuminated shop window gives the front wall a clear street orientation.
  const windowX=doorX<0?Math.min(hw-.65,doorX+2):Math.max(-hw+.65,doorX-1.8);
  box('Window surround',[1.08,1.22,.06],[windowX,1.75,hd-.02],dark);

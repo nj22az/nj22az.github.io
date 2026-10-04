@@ -114,7 +114,7 @@ function addAsset(id,parent){
 // timber neighbour on the left. The live shopping district keeps the restaurant
 // frontage only; the legacy town mode retains both supplied doorways.
 function buildInakayaPair(world,options){
-  const shopping=shoppingDistrictActive();
+  const shopping=true;
   const building=new THREE.Group();building.name=shopping?'Sato Ramen restaurant':'Inakaya restaurant and neighbour';
   building.position.set(DINING.ramenX,0,DINING.ramenZ);building.rotation.y=DINING.ramenYaw;world.group.add(building);
   const model=shopping?false:addAsset('ramen-exterior',building);

@@ -176,7 +176,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     // kit. The peninsula does not build that kit, so on this layout a shop that has a
     // west-pavement plot gets a building of its own instead of a door standing in the
     // open air. See west-shops.js.
-    if(peninsulaActive()&&WEST_SHOPS[s.id]){
+    if(WEST_SHOPS[s.id]){
       const shop=buildWestShop({parent:group,site:s,register,enter,label,colliders,shadows});
       if(shop){harbourShops.push(shop);return;}
     }
@@ -192,7 +192,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
       // switched off: on the street proper the izakaya is against its shoulder, which
       // is why this was never simply made bigger. The door moves to the middle with it,
       // where the interior's own door is.
-      if(peninsulaActive()){
+      {
        const centre=s.z+1.2,span={width:SAKURA_FRONT.width,depth:SAKURA_FRONT.depth,doorX:0};
        const storefront=buildStorefront({parent:group,site:s,register,enter,label,span,placement:{x:front,z:centre,yaw:Math.PI/2,scale:1}});
        shopDoors.push(storefront.shopDoor);
@@ -223,21 +223,18 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // The Front-Row gable pole is measured against the peninsula bookshop. The older
   // layouts put Front-Row's alley door 0.2 m from it, so they go without that pole.
   const streetLamps=buildStreetLamps({parent:group,colliders,shadows,mobile,
-   placements:peninsulaActive()?STREET_LAMP_PLACEMENTS:STREET_LAMP_PLACEMENTS.filter(p=>p.z!==-3.05)});
+   placements:STREET_LAMP_PLACEMENTS});
 
   // Useful street furniture sits in the block recesses, clear of junctions.
   // The mid-street machine is gone: vending stays at Sakura, the onsen lane and the fish
   // quay, where a drink is a reason to stop (docs/AMPLIFY-AUDIT.md, decluttering).
-  if(!peninsulaActive()){const vending=createVendingMachine({shadows});vending.position.set(4.35,0,9.1);group.add(vending);
-  if(!vendingReady())details.push({id:'street-vending',x:4.35,z:9.1,radius:42,load:()=>hydrateVending(vending,{shadows})});
-  obstacle(4.35,9.1,1.3,1);anchor([4.35,1,10.1],'Buy a drink',()=>onAction('vending'));}
+  
   // Payphone sits fully on the west footway: narrowing Main Street to six metres
   // left it overhanging the kerb into the carriageway.
   box([1.1,2.5,1],[-7.1,1.25,17.2],0x457e73);box([.91,1.6,.91],[-7.1,1.55,17.2],0x648c87);box([.35,.65,.28],[-7.1,1.4,17.73],0x3d9c6c);label("Telephone",'TELEPHONE',[-7.1,2.4,17.75],1,.28);anchor([-7.1,1,18.2],'Use payphone',()=>onAction('phone'));obstacle(-7.1,17.2,1.1,1);
   // The island has no road out: its people come and go by the ferry from the outer pier,
   // and the terminal on the quay takes the bus station's part. Elsewhere, the bus.
-  const busStation=peninsulaActive()?buildFerryTerminal({parent:group,colliders,register,onAction,enter,label,shadows})
-   :buildBusStation({parent:group,colliders,register,onAction,label,shadows});
+  const busStation=buildFerryTerminal({parent:group,colliders,register,onAction,enter,label,shadows});
 
   // The one at [-7.4,-33] stood against the konbini's frontage, in front of the only
   // window the shop is read through from the street. The others are along the harbour.
@@ -279,7 +276,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   }
   // On the island the ferry's ticket booth stands where the west stack was.
   // On the island the ferry terminal stands where the second stack was.
-  if(!peninsulaActive()){crateStack(-7.3,-44,2,3);crateStack(7.2,-46.2,3,2);}
+  
 
   // Nets dry beside the north wall, clear of both the loading bay and pedestrian door.
   for(const x of [-14.75,-12.45])cyl(.06,2.4,[x,1.3,-35.7],0x655747);beam([-14.75,2.45,-35.7],[-12.45,2.45,-35.7],.055,0x655747);
@@ -287,15 +284,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   // Period service kei-truck. On the island the ferry terminal stands here, and the town
   // has its own trucks (the town hall's, and the ones the car ferry brings).
-  if(!peninsulaActive()){
-  // Period service kei-truck — original procedural model, not a branded vehicle.
-  const truck=new THREE.Group();truck.position.set(6.2,.12,-42.3);truck.rotation.y=.06;group.add(truck);
-  directBox([1.55,.52,2.8],[0,.47,.15],0xd7d4c6,truck,[0,0,0],true);directBox([1.5,1.25,1.18],[0,1.15,-.73],0xdedbcf,truck,[0,0,0],true);directBox([1.28,.52,.055],[0,1.35,-1.335],0x385965,truck);
-  directBox([1.42,.12,1.35],[0,.84,.92],0x8c918b,truck);directBox([1.36,.28,.06],[0,.52,1.57],0xd6d1b9,truck);
-  for(const x of [-.69,.69])for(const z of [-.88,1.03]){const wheel=directMesh(new THREE.TorusGeometry(.25,.09,7,16),material(0x252b2c),truck,[x,.38,z],[0,Math.PI/2,0]);wheel.castShadow=shadows;}
-  box([.3,.13,.08],[5.75,.62,-40.72],0xb36b4b);box([.3,.13,.08],[6.65,.62,-40.72],0xe5cf8c);obstacle(6.2,-42.3,1.8,3.2);
-
-  }
+  
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
   directBox([1.15,1.55,.85],[8.7,.88,-36.8],0xd8d8cc,group,[0,0,0],true);label("Ice",'ICE',[8.7,1.85,-36.35],.78,.5,0,'#dde1d7','#37636a');obstacle(8.7,-36.8,1.2,.9);
 

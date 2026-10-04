@@ -37,7 +37,6 @@ import { createTown as createBaseTown } from './harbour.js?snappy=1';
 import { createPropFactory, createLivingProps } from '../../prop-factory.js';
 import {buildStreetPlants,preloadStreetPlants} from './street-plants.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
-import {FULL_TOWN} from './full-town-state.js';
 import {buildSakuraBench} from './sakura-bench.js';
 import {applyShopAddresses} from './town-grid.js';
 import {configureTownMode,peninsulaActive} from './town-mode.js';
@@ -179,17 +178,12 @@ function addStreetLife(world,options,factory){
   // peninsula keeps it as an interactive ride; archived layouts keep the bookshop
   // inspection spot and its original placement.
   // On the west footway, between Sakura's front and the kerb (the carriageway is narrower now).
-  const bicycleSpot=peninsulaActive()?{x:-5.8,z:-23.2}:BOOKSHOP_BICYCLE;
+  const bicycleSpot=({x:-5.8,z:-23.2});
   const bicycle=buildBicycle({...bicycleSpot,shadows:options.shadows,animated:true});
   bicycle.object.name="Thuan's commuter bicycle";
   addWithCollider(group,colliders,bicycle);
-  if(peninsulaActive()){
-    anchor(bicycle.object,[1,.9,0],'Ride Thuan’s bicycle',()=>options.onAction?.('bicycle',bicycle),options.register);
+  anchor(bicycle.object,[1,.9,0],'Ride Thuan’s bicycle',()=>options.onAction?.('bicycle',bicycle),options.register);
     interactions++;
-  }else{
-    addWithCollider(group,colliders,factory.bicycleRack(BOOKSHOP_BICYCLE.x+.22,BOOKSHOP_BICYCLE.z+.54,0));
-    inspect([BOOKSHOP_BICYCLE.x-.8,.9,BOOKSHOP_BICYCLE.z],'Inspect parked bicycle','Bookshop bicycle','A well-kept commuter bicycle with a wire basket, mudguards and a rear carrier. It is parked at the entrance to the bookshop alley, clear of the junction.');
-  }
 
   addWithCollider(group,colliders,factory.convexMirror(-7.4,6.2,.02));
   inspect([-6.85,1,5.7],'Inspect traffic mirror','Convex traffic mirror','The mirror gives a broad view of the narrow side street and helps cyclists see around the corner.');
@@ -236,19 +230,19 @@ function pavedAt(){
 
 export function createTown(options){
   const mode=configureTownMode(options.townMode);izakayaPlot();
-  if(peninsulaActive())beginPowerPlan();
+  beginPowerPlan();
   applyShopAddresses(options.sites);
   const world=createBaseTown(options);
   world.townMode=mode;
   // Only the street cast lives in the playable town; nothing else may arrive as a person.
   for(const person of world.people)person.g?.removeFromParent();
   world.people.length=0;
-  const forestEdge=buildForestEdge({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows,trees:!peninsulaActive()});
+  const forestEdge=buildForestEdge({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows,trees:!true});
   world.forestEdge=forestEdge;
   // The road out of town ends at the Minato Tunnel through the headland, which only the
   // bus goes through. See coyote-tunnel.js.
   // Without the cave there is no footpath up to it either.
-  if(peninsulaActive()&&!CAVE_ACTIVE){
+  if((!CAVE_ACTIVE)){
    forestEdge.group.removeFromParent();
    // The old terminus at the top of Main Street stays at the street's height -- it is the
    // way round to the police box -- as a lawn on a low bank, over the island ground.
@@ -257,8 +251,7 @@ export function createTown(options){
    const bank=new THREE.Mesh(new THREE.BoxGeometry(B.maxX-B.minX,.42,B.maxZ-B.minZ),[0,1,2,3,4,5].map(i=>i===2?turf:new THREE.MeshStandardMaterial({color:0x8e8a78,roughness:1})));
    bank.position.set((B.minX+B.maxX)/2,GROUND_LAYER.grass-.21,(B.minZ+B.maxZ)/2);bank.name='Main Street end lawn';bank.receiveShadow=true;world.group.add(bank);
   }
-  if(peninsulaActive()){
-   if(CAVE_ACTIVE)world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
+  if(CAVE_ACTIVE)world.tunnel=buildCoyoteTunnel({parent:world.group,colliders:world.colliders,
     register:options.register,onAction:options.onAction,shadows:options.shadows});
    // The port is north, the shops are west; the east is the green side of the town and
    // the west is the working one, with the shop and the warehouse standing on it.
@@ -310,17 +303,16 @@ export function createTown(options){
    }
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
     await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});
-  }
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
   world.bicycle=street.bicycle;
-  if(peninsulaActive())world.docklandsLife=buildDocklandsLife(world,options);
-  if(!FULL_TOWN.active)buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
+  world.docklandsLife=buildDocklandsLife(world,options);
+  buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
   // Thuan's break. Only the peninsula has a yard behind the shop to put it in.
-  if(peninsulaActive())world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
+  world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  if(peninsulaActive()){world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});}
+  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of STREET_CAST){
    const spawn=profile.work;
@@ -336,7 +328,7 @@ export function createTown(options){
   // yard, so it stays off. The izakaya is a building on the west pavement and comes
   // back on its own: it is where Thuan has a beer between closing Sakura and the last
   // bus home, and it stands at whichever plot this layout gives it.
-  if(!peninsulaActive())buildDiningStreet(world,options);
+  
   buildIzakaya(world,options);
   buildPark(world,options);
   const plants=buildStreetPlants(world.group,world.plantSites,options);

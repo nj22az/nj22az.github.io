@@ -17,7 +17,7 @@ export function laneEdges(){
   const a=route.points[i-1],b=route.points[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]),dx=(b[0]-a[0])/length,dz=(b[1]-a[1])/length,count=Math.ceil(length);
   for(let j=0;j<count;j++)for(const side of [-1,1]){
    const t=(j+.5)/count,x=a[0]+dx*length*t-dz*side*(route.width/2+.22),z=a[1]+dz*length*t+dx*side*(route.width/2+.22),span=length/count;
-   if([-.5,0,.5].some(u=>routeAt(x+dx*span*u,z+dz*span*u)||!shoppingDistrictActive()&&inResidential(x+dx*span*u,z+dz*span*u)||inDiningLane(x+dx*span*u,z+dz*span*u)))continue;
+   if([-.5,0,.5].some(u=>routeAt(x+dx*span*u,z+dz*span*u)||inDiningLane(x+dx*span*u,z+dz*span*u)))continue;
    edges.push({x,z,w:dx?span:.18,d:dz?span:.18,y:groundHeight(x+dz*side*.3,z-dx*side*.3),height:route.id==='park-approach'?.55:.7});
   }
  }
@@ -41,7 +41,7 @@ export function lanePatches(routes=activeRoutes().slice(3)) {
   const patches=[];
   for(let i=1;i<xs.length;i++)for(let j=1;j<zs.length;j++) {
     const x=(xs[i-1]+xs[i])/2,z=(zs[j-1]+zs[j])/2;
-    if(!shoppingDistrictActive()&&inResidential(x,z)||inDiningLane(x,z))continue;
+    if(inDiningLane(x,z))continue;
     if(x>MAIN_ROAD.pavementWest&&x<MAIN_ROAD.pavementEast&&z>MAIN_ROAD.minZ&&z<MAIN_ROAD.maxZ)continue;
     if(Math.abs(x)<19&&z>-50&&z<MAIN_ROAD.minZ)continue;
     if(pavedByTerminus(x,z))continue;

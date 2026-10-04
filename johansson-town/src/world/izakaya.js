@@ -42,9 +42,7 @@ export function buildIzakaya(world,options){
  // The supplied exterior was a flat glazed box with no eave, no lantern and nothing to
  // say what was behind it — an office frontage with a bar's name on it. See
  // minato-facade.js for what stands there now.
- const built=peninsulaActive()
-  ? buildMinatoFacade({parent:exterior,shadows:options.shadows,anisotropy:options.maxAnisotropy,colliders:facadeColliders})
-  : null;
+ const built=buildMinatoFacade({parent:exterior,shadows:options.shadows,anisotropy:options.maxAnisotropy,colliders:facadeColliders});
  const suppliedExterior=built?true:asset('exterior',exterior);
  // Something behind the glass, for the supplied model only: the built frontage has
  // solid walls behind its own windows and needs no backing block.

@@ -6,7 +6,6 @@ import {IZAKAYA_DOOR} from '../world/dining-layout.js';
 import {SHOP_CROSSING_Z} from '../world/main-road.js';
 import {MARKET_THRESHOLD} from '../world/town-grid.js';
 import {STAFF_BENCH} from '../world/staff-bench.js';
-import {FULL_TOWN} from '../world/full-town-state.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS} from './residents.js';
 import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
@@ -152,7 +151,7 @@ export function thuanAtOnsen(profile,minutes,rain=false,state=null,commuter=true
 }
 /** The evening she would be at the bath if asked now: tonight, or tomorrow once tonight has gone. */
 export function onsenInvitationDay(profile,minutes,rain=false,state=null){
- const commuter=state?.townMode==='shopping-district'||state?.townMode==='peninsula'||shoppingDistrictActive();
+ const commuter=state?.townMode==='shopping-district'||state?.townMode==='peninsula'||true;
  const day=Math.floor(minutes/1440),m=minuteOfDay(minutes),shift=shiftFor(profile);
  const end=commuter&&shift&&!shift.permanent?departureFor(profile,rain)-THUAN_BUS_MARGIN:Math.min((profile?.close??1200)+80,ONSEN.closes);
  return m<end?day:day+1;
@@ -229,7 +228,7 @@ export function visitsMarket(profile,minutes,state=null){
 }
 export const ramenOpen=m=>inTimeRange(m,540,1260);
 export function visitsRamen(profile,minutes){
- if(peninsulaActive())return false; // This layout has no ramen building to enter.
+ return false; // This layout has no ramen building to enter.
  const visit=RAMEN_VISITS[profile.name];
  return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&ramenOpen(minutes)&&!!visit&&inTimeRange(minutes,...visit);
 }
@@ -237,7 +236,7 @@ function legacyResidentPlan(profile,minutes,rain=false,state=null){
  const m=minuteOfDay(minutes);
  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a snack at Sakura'};
  if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
- if(profile.name==='Officer Mori')return inTimeRange(m,1320,1800)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:{place:'home',target:profile.home,activity:'resting after the night patrol'};
+ if(profile.name==='Officer Mori')return inTimeRange(m,1320,1800)?{place:'patrol',target:(NIGHT_PATROL)[0],activity:'night patrol'}:{place:'home',target:profile.home,activity:'resting after the night patrol'};
  if(profile.name==='Nao')return izakayaOpen(m)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'welcoming guests'}:{place:'home',target:profile.home,activity:'going home after closing'};
  if(profile.name==='Thuan'){
   if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
@@ -319,8 +318,8 @@ export const ferryWords=text=>typeof text!=='string'?text:text
  .replace(/running the Harbour Line/g,'working the ferry').replace(/left by bus/g,'left on the ferry');
 function commuterPlan(...args){
  const scheduled=kitahamaPlan(args[0],commuterPlanOn(...args));
- const plan=peninsulaActive()?bookshopVisitPlan(args[0],args[1],scheduled,args[3]):scheduled;
- if(plan&&peninsulaActive()&&plan.activity)return {...plan,activity:ferryWords(plan.activity)};
+ const plan=bookshopVisitPlan(args[0],args[1],scheduled,args[3]);
+ if(plan&&plan.activity)return {...plan,activity:ferryWords(plan.activity)};
  return plan;
 }
 /** Where the timetable said 'ferry', somebody who lives in Kitahama goes home instead. */
@@ -353,13 +352,13 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   return bus('walking to the Harbour Line for departure');
  }
  // Mrs Sato on the peninsula: fish at the harbour first, then her own kitchen.
- if(profile.name==='Mrs Sato'&&peninsulaActive()&&phase==='town'){
+ if((profile.name==='Mrs Sato')&&phase==='town'){
   if(shiftActive(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'cooking the lunch ramen at Sato Ramen'};
   if(minuteOfDay(minutes-SATO_SHIFT.arrival)<SATO_SHIFT.start-SATO_SHIFT.arrival)return {place:'stroll',target:[3.2,-44],activity:'buying fish for the stock at the harbour'};
  }
  if(profile.name==='Bus driver')return {place:'station',target:transitStop().driver,activity:'running the Harbour Line'};
  if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
- if(profile.name==='Officer Mori')return shiftActive(profile,minutes)?{place:'patrol',target:(FULL_TOWN.active?FULL_TOWN.patrol:NIGHT_PATROL)[0],activity:'night patrol'}:bus('waiting for the night shift bus');
+ if(profile.name==='Officer Mori')return shiftActive(profile,minutes)?{place:'patrol',target:(NIGHT_PATROL)[0],activity:'night patrol'}:bus('waiting for the night shift bus');
  if(profile.name==='Nao'){
   const morning=naoBeforeShift(profile,minutes,rain);
   if(morning)return morning;
@@ -407,13 +406,13 @@ export function residentPlan(profile,minutes,rain=false,state=null,mode=null){
  }
  const commuter=mode===false?false
   :mode!=null&&mode!==''?true
-  :state?.townMode==='shopping-district'||state?.townMode==='peninsula'||shoppingDistrictActive();
+  :state?.townMode==='shopping-district'||state?.townMode==='peninsula'||true;
  const plan=commuter?commuterPlan(profile,minutes,rain,state):legacyResidentPlan(profile,minutes,rain,state);
  // The two gardens have regular visitors; work and bad-weather routines stay intact.
  // Thuan is not among them: her afternoon break is its own walk (THUAN_WALK), Minato
  // Park's bench and the sea wall, ten minutes from the counter. Aoba Garden is 170 m
  // away, and redirecting her there left the plan and the walk in two places at once.
- if(peninsulaActive()&&!rain&&['Reiko','Tetsuo'].includes(profile.name)&&['park','stroll'].includes(plan.place)&&Math.hypot(plan.target[0]-PARK_STAND[0],plan.target[1]-PARK_STAND[1])<3){
+ if((!rain)&&['Reiko','Tetsuo'].includes(profile.name)&&['park','stroll'].includes(plan.place)&&Math.hypot(plan.target[0]-PARK_STAND[0],plan.target[1]-PARK_STAND[1])<3){
   return {...plan,place:'park',target:gardenPoint(profile.name==='Reiko'?-42:-26,profile.name==='Reiko'?144.9:143.9),activity:plan.activity+' at Aoba Garden'};
  }
  return plan;

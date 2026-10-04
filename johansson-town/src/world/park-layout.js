@@ -1,6 +1,5 @@
 import {PARK_HEIGHTS} from './park-height.js';
 import {GROUND} from '../render/ground-palette.js';
-import {FULL_TOWN} from './full-town-state.js';
 import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
 import {peninsulaActive} from './town-mode.js';
 /** Inside the gateball court the ground stays level; a low wall holds the hill back (quarters.js). */
@@ -46,7 +45,7 @@ export const TURF_TINT=GROUND.grass,PARK_PATH_TINT=0xcfc2a0;
 export const PARK_TERRAIN_SEGMENTS=96;
 export const PARK={id:'harbour-park',x:15.8,z:-23.8,half:7.84,lift:1,scale:.56,surface:'stone'};
 export const COMPACT_PARK={id:'harbour-park',x:14.2,z:-16.4,half:4.2,halfX:5.2,halfZ:4,lift:0,plaza:true,surface:'stone'};
-export function activePark(){return FULL_TOWN.active?COMPACT_PARK:PARK;}
+export function activePark(){return PARK;}
 export function parkHeight(x,z){
  const p=activePark();
  if(p.plaza){
@@ -92,7 +91,7 @@ export function parkSkirtHeight(x,z){
  const reach=PARK_SKIRT+(PARK_SKIRT_WEST-PARK_SKIRT)*west;
  const edge=d<reach?parkHeight(ex,ez):null;
  const natural=edge===null?null:edge*(1-d/reach);
- const terrace=peninsulaActive()?courtTerraceHeight(x,z,natural??0):null;
+ const terrace=courtTerraceHeight(x,z,natural??0);
  return terrace??natural;
 }
 export function parkApproachHeight(x,z){
