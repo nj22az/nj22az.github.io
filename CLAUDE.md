@@ -112,6 +112,20 @@ assets/
   video/                # Video assets
 ```
 
+## Johansson Town
+
+**Purpose: Johansson Town is a storytelling game.** Everything it does should tell stories — to teach,
+to make people laugh, for drama, or just to be silly — and at the highest quality we can reach.
+Exploring the town is the fun, awesome bonus: every place, person and item discovered feeds the
+storyteller and opens more stories and experiences. When choosing between features, prefer the one
+that makes more or better stories.
+
+- The storyteller (`johansson-town/src/feed/`) builds coherent stories from a database of genres,
+  real places, residents and items; it may be random and silly, but it must always make sense.
+- Comics are shot inside the real rooms (captured by `tools/render-feed-backdrops.mjs`), with the
+  residents' own looks, walks, poses and props. Quality over quantity.
+- New places, residents, props and moves should be usable by the storyteller, not only by the game.
+
 ## Sjöskolan
 
 **Läs `sjoskolan/ANDRINGSLOGG.md` först.** Där står reglerna från tidigare fel (ledtrådar utan svaret, verkliga exempel,
