@@ -122,6 +122,9 @@ export function createDrinkProp(kind,{held=false}={}){
  }
  g.userData.portion=1;g.userData.targetPortion=1;g.userData.consumable='drink';
  g.userData.rimHeight=kind==='draft'?.15:kind==='bottle'?.09:kind==='can'?.122:kind==='coffee'?.07:.11;
+ // Where the palm closes on it (prop-local x, y): round the handle of a mug or cup, else
+ // against the side of the glass at half height (avatars/consume.js gripOffset).
+ g.userData.grip=kind==='draft'?[.075,.08]:kind==='coffee'?[.052,.04]:kind==='bottle'?[.045,.045]:kind==='can'?[.048,.06]:[.05,.055];
  g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
  return g;
 }

@@ -22,12 +22,12 @@
 <link rel="stylesheet" href="./photo-mode.css?h=17316f51">
 <link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
 <link rel="stylesheet" href="./line-ui.css?h=019d0251">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-DuG-shmf.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-DqIkwAjg.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-RrRr0WaS.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CajBlBfy.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-4gNO2ByO.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-CYHHGp_u.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-C9u0Gud3.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-BR5J652U.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-DyNkE1Ey.js">
 </head>
 <body>
@@ -352,7 +352,7 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON TOWN</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=e2014866"></script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-B4HdvaYx.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-DVtKt8Yy.js";</script>
 <script src="./landing.js?h=a9321e19"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -516,7 +516,7 @@ import {unlockTownAudio} from './runtime/audio-C8P9scra.js';
     try{
       // Let the browser paint the first fact before constructing the town.
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      try { await import('./runtime/boot-DuG-shmf.js'); } catch (error) {
+      try { await import('./runtime/boot-DqIkwAjg.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

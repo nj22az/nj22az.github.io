@@ -51,7 +51,7 @@ test('shirt collars and buttons are painted on the +z front, with nothing stuck 
  }
 });
 
-test('glasses stay clear of the hand and their rim meets the measured mouth at every height',()=>{
+test('glasses sit in the hand and their rim meets the measured mouth at every height',()=>{
  for(const name of ['Johansson','Thuan'])for(const height of [0,.5,1])for(const kind of ['draft','bottle']){
   const a=buildAvatar({...CAST_RECIPES[name],body:{...CAST_RECIPES[name].body,height}});
   const prop=createDrinkProp(kind,{held:true}),anim=createAvatarAnimator(a);a.bones.handR.add(prop);
@@ -62,8 +62,10 @@ test('glasses stay clear of the hand and their rim meets the measured mouth at e
   const mouth=a.bones.head.localToWorld(new THREE.Vector3(v.x*m.Rh*m.headSX,m.headCentre-m.headY+v.y*m.Rh*m.headSY,v.z*m.Rh*.98+.025*m.k));
   const rim=prop.localToWorld(new THREE.Vector3(0,prop.userData.rimHeight,0));
   assert.ok(rim.distanceTo(mouth)<.015,name+' '+height+' '+kind+' reaches lips');
-  const hand=a.bones.handR.getWorldPosition(new THREE.Vector3()),local=prop.worldToLocal(hand.clone());
-  assert.ok(local.x>.09*m.k,'hand beside cup handle rather than inside cup');
+  // The palm closes on the grip (the mug's handle, the side of the glass), not in the glass.
+  const palm=prop.worldToLocal(a.bones.handR.localToWorld(new THREE.Vector3(0,-.55*m.hand,0))),[gx,gy]=prop.userData.grip;
+  assert.ok(Math.hypot(palm.x-gx,palm.y-gy,palm.z)<.01,name+' '+height+' '+kind+' holds it by the grip');
+  assert.ok(Math.hypot(palm.x,palm.z)>.04,'the palm is beside the glass, not inside it');
   disposeServing(prop);a.dispose();
  }
  assert.equal(consumptionPhase(0).lift,0);assert.equal(consumptionPhase(1.2).lift,1);assert.equal(consumptionPhase(2.4).lift,0);
