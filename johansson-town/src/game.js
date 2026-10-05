@@ -1,3 +1,4 @@
+import {createIzakayaStreetView} from './render/izakaya-street-view.js';
 import {WEATHERS,WEATHER_CHANGE_MINUTES,WEATHER_LINES,nextWeather,readWeather,writeWeather} from './world/weather.js';
 import {izakayaOpen} from './people/social.js';
 import {closedGreeting} from './people/izakaya-hours.js';
@@ -803,7 +804,7 @@ function addRoomProps(s){
     if(homeOwner(s)){activeRoomLayout.tick?.(0,minutes,elapsed);homeGuests.enter(activeRoomLayout.prepareBedding?{...s,homeLayouts:{[homeOwner(s)]:activeRoomLayout}}:activeRoomLayout.homeLayouts?{...s,homeLayouts:{...s.homeLayouts,...activeRoomLayout.homeLayouts}}:s,minutes);}
     return;
   }
-  if(s.id==='izakaya'){activeRoomLayout=buildIzakayaRoom({room,box,reg,collider:roomCollider,action:activities.action,exit:leaveRoom,signTexture:signTex,getMinutes:()=>minutes});if(!izakayaOpen(minutes))say(closedGreeting(minutes),6);izakayaTV=activeRoomLayout.television;izakayaGuests.sync(minutes);startVenueService('izakaya');beerService=createBeerService({room,say,blocked:environmentBlocked,getNao:()=>{const n=world.people.find(p=>p.profile.name==='Nao')?.g;return n&&n.userData.inIzakaya&&n.visible&&!n.userData.roomTransition?n:null;}});const light=new THREE.HemisphereLight(0xffdfaa,0x886d5f,1.6);room.add(light);return;}
+  if(s.id==='izakaya'){activeRoomLayout=buildIzakayaRoom({room,box,reg,collider:roomCollider,action:activities.action,exit:leaveRoom,signTexture:signTex,getMinutes:()=>minutes,windowView:createIzakayaStreetView({renderer,scene,town,room,site:s,viewCamera:camera}),exploration:{state:activities.state,show:activities.menu,save:activities.save,close:activities.close}});if(!izakayaOpen(minutes))say(closedGreeting(minutes),6);izakayaTV=activeRoomLayout.television;izakayaGuests.sync(minutes);startVenueService('izakaya');beerService=createBeerService({room,say,blocked:environmentBlocked,getNao:()=>{const n=world.people.find(p=>p.profile.name==='Nao')?.g;return n&&n.userData.inIzakaya&&n.visible&&!n.userData.roomTransition?n:null;}});const light=new THREE.HemisphereLight(0xffdfaa,0x886d5f,1.6);room.add(light);return;}
 
 }
 
@@ -1585,7 +1586,7 @@ window.__JOHANSSON_AGENT_CONTEXT__=()=>({destinations:Object.fromEntries([...SIT
 if(window.__JOHANSSON_AUDIT__){
  window.__JOHANSSON_GRAPHICS__=createGraphicsInspector({canvas,renderer,canCapture:()=>!graphicsLifecycle?.lost&&started&&!document.hidden});
  window.advanceTime=ms=>window.__JOHANSSON_AUDIT__.step(ms);
- window.render_game_to_text=()=>JSON.stringify({coordinates:'x/z in metres; y is height; interiors use local coordinates',room:current?.id||null,home:activeRoomLayout?.snapshot?.()||null,calendar:activeRoomLayout?.calendar?.()||null,minutes,player:player.position.toArray(),customers:bookshopCustomers.snapshot(),island:islandPlay?.snapshot(),arrival:spawnScene?.snapshot()});
+ window.render_game_to_text=()=>JSON.stringify({coordinates:'x/z in metres; y is height; interiors use local coordinates',room:current?.id||null,home:activeRoomLayout?.snapshot?.()||null,calendar:activeRoomLayout?.calendar?.()||null,discoveries:activeRoomLayout?.discoveries?.()||null,minutes,player:player.position.toArray(),customers:bookshopCustomers.snapshot(),island:islandPlay?.snapshot(),arrival:spawnScene?.snapshot()});
 }
 // Where the player is standing and what they are standing on. Read-only, and the same
 // answer the simulation uses, so a screenshot can be tied to a place on the ground.
