@@ -8,7 +8,7 @@ import {VOICE_LINES} from './voice-lines.js';
 import {createNavigation} from './navmesh.js?snappy=1';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {PROFILES} from './profiles.js';
-import {RESIDENTS,residentHomeDescription} from './residents.js';
+import {RESIDENTS,HOME_OWNERS,residentHomeDescription} from './residents.js';
 import {BUS_STATION} from '../world/bus-station.js';
 import {transitStop,awayPlace} from '../world/transit.js';
 import {ferryWords} from './social.js';
@@ -19,6 +19,7 @@ import {createStaffBenchRoutine} from './staff-bench-routine.js';
 import {commuterPhase,townPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
+const HOME_RESIDENT_NAMES=new Set(HOME_OWNERS.map(p=>p.name));
 export const DIALOGUE={
  Thuan:[['hello',"Welcome.\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled."],['pink',"This shirt is my favorite.\nThis yellow flower set is my favourite. My aunt says the shop is easier to find when I stand outside."],['work',"Afternoon stocking has finished.\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits."],['harbour',"Would you like to take a walk to the port?\nWalking to the harbour? The light turns the water pink just before supper."],['catalogue',"Click here for the order form.\nThe mail-order book is on the counter. I keep those orders separate from the daily till."]],
  Aya:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
@@ -68,9 +69,8 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  };
  const patrol=NIGHT_PATROL;
  const navigation=createNavigation(collides),routes=new Map(),destinations=new Map(),initialised=new Set(),patrols=new Map();let clockMinutes=1002;
- // Both published layouts run on the Harbour Line, so both are commuter layouts. Only
- // the archived residential street is not.
- const commuterMode=()=>true;
+ // Visiting workers use the ferry; residents with playable homes sleep here.
+ const commuterMode=profile=>!profile||!HOME_RESIDENT_NAMES.has(profile.name);
  for(const person of world.people)person.g.userData.scheduled=true;
  const thuan=world.people.find(p=>p.profile?.name==='Thuan');
  const staffBreak=thuan&&world.staffBench?createStaffBenchRoutine({entity:thuan.g,seat:world.staffBench.seat,isOccupied:()=>{
@@ -259,7 +259,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     routes.delete(g);outside.push(p);continue;
    }
    if(g.userData.inVehicle||g.userData.inBookshop||g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inMarket||g.userData.inRamen||g.userData.inHome)continue;
-   const phase=transit?townPhase(v,minutes,rain):'legacy';
+   const phase=commuterMode(v)?townPhase(v,minutes,rain):'town';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has
    // been a bus standing there for them to go in.
@@ -313,7 +313,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     const remembered=state().residentLocations?.[v.name],valid=remembered&&Array.isArray(remembered.position)&&remembered.position.length===2&&remembered.position.every(Number.isFinite)&&Math.abs(remembered.position[0])<300&&Math.abs(remembered.position[1])<300;
     // Indoor saves name a place, whose threshold may have moved since saving.
     // If its schedule has changed, the resident leaves that door and walks onward.
-    const rememberedDoor=transit&&remembered?.indoors==='home'?null:indoorDoor(v,remembered?.indoors),savedWalk=valid&&!transit&&!collides(...remembered.position,.32);
+    const rememberedDoor=remembered?.indoors==='home'&&!HOME_RESIDENT_NAMES.has(v.name)?null:indoorDoor(v,remembered?.indoors),savedWalk=valid&&remembered.place!=='away'&&!commuterMode(v)&&!collides(...remembered.position,.32);
     const spawn=rememberedDoor||(savedWalk?clearOfTunnelMouth(remembered.position):transit&&phase==='arriving'?transitStop().arrival:clearOfTunnelMouth(target));
     delete g.userData.indoors;
     if(rememberedDoor)g.userData.indoors=remembered.indoors;
@@ -377,5 +377,5 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   // Ten distinct low-poly residents remain present; camera rank cannot hide a neighbour.
   outside.forEach(p=>{if(!(transit&&p.g.userData.commuterAwayDay===day))p.g.visible=true;});world.updateHomes?.(minutes);
   if(world.cat){const s=state();const spots=[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.includes('Sea bream'))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
- },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,phase=commuterMode()?commuterPhase(p.profile,clockMinutes):'legacy',target=phase==='away'?transitStop().exit:indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target&&phase!=='away'?inside:null,place:phase==='away'?'away':g.userData.place}];}));},pose(){}};
+ },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,phase=commuterMode(p.profile)?commuterPhase(p.profile,clockMinutes):'town',target=phase==='away'?transitStop().exit:indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target&&phase!=='away'?inside:null,place:phase==='away'?'away':g.userData.place}];}));},pose(){}};
 }

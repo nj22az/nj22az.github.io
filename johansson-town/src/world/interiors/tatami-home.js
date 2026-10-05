@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {homeExitLabel} from './home-exit-label.js';
 import {GLTFLoader} from '../../../vendor/GLTFLoader.js';
 import {assetURL} from '../../assets.js';
 import {homeRoutine,sleepHours} from '../../people/home-life.js';
@@ -15,7 +16,7 @@ export function createFutonRoutine(profile){
  }};
 }
 
-export function buildTatamiHome({profile,room,box,reg,collider,action,exit}){
+export function buildTatamiHome({site,profile,room,box,reg,collider,action,exit}){
  const shell=new THREE.Group();shell.name='Blender tatami home';room.add(shell);
  const fallback=new THREE.Group();shell.add(fallback);
  const part=(s,p,c)=>box(s,p,c,fallback,false);
@@ -46,7 +47,12 @@ export function buildTatamiHome({profile,room,box,reg,collider,action,exit}){
  // resurrect a room after exit. Clone materials so normal room cleanup owns them.
  const ready=(typeof document==='undefined'||!document.baseURI)?Promise.resolve(false):new GLTFLoader().loadAsync(assetURL('models/tatami-home/tatami-home.glb')).then(gltf=>{
   if(disposed){gltf.scene.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m?.dispose();});return false;}
-  model=gltf.scene;model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});shell.add(model);fallback.visible=false;apply();return true;
+  model=gltf.scene;model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+  // The supplied rear paper stops at 2.35 m and its rail starts at 2.37 m.
+  // Back the 20 mm aperture with an overlapping header behind both front faces.
+  const header=box([6,.1,.06],[0,2.375,-3.045],0x6d5238,model,false);
+  header.name='Rear fusuma header backing';header.castShadow=false;header.receiveShadow=false;
+  shell.add(model);fallback.visible=false;apply();return true;
  }).catch(e=>{console.warn('Tatami home uses its simple furnishings until the model is available',e);return false;});
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);shell.add(o);reg(o,label,fn,true);};
  anchor([2.1,1,-2.1],'Inspect the futon cupboard',()=>action('inspect','Futon cupboard',profile.name+' keeps the mattress, quilt and pillow here during the day. At bedtime the futon is laid on the tatami; after waking it is folded away. It is currently '+bedding.phase+'.'));
@@ -54,7 +60,7 @@ export function buildTatamiHome({profile,room,box,reg,collider,action,exit}){
  anchor([2.35,1.1,1.4],'Inspect the standing fan',()=>action('inspect','Summer standing fan','A pale green three-blade fan keeps this little room comfortable through the island summer.'));
  const hours=sleepHours(profile),fmt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
  anchor([-1.65,.55,1.1],'Read daily routine',()=>action('read',profile.name+' at home','Tea at the low table, a quiet fan, and bedding stored until evening. Usually sleeps at '+fmt(hours.sleep)+' and wakes at '+fmt(hours.wake)+'.'));
- anchor(TATAMI_HOME_LAYOUT.exit,'Exit to Main Street',exit);
+ anchor(TATAMI_HOME_LAYOUT.exit,homeExitLabel(site,profile),exit);
  shell.add(new THREE.HemisphereLight(0xfff0d4,0x887958,1.5));const lamp=new THREE.PointLight(0xffe7b7,1.5,9,2);lamp.position.set(0,2.4,-.65);shell.add(lamp);
  return {...TATAMI_HOME_LAYOUT,home:true,ready,tick(dt,minutes){elapsed+=dt;lastMinutes=minutes;const needed=['bedtime','sleep','wake'].includes(homeRoutine(profile,minutes).id);
  if(observedNeed!==null&&needed!==observedNeed){workRequired=true;workStage='walk';workAge=0;}observedNeed=needed;

@@ -10,23 +10,27 @@ export function createSectionInstances(mesh){
   items.push({index:i,bounds:mesh.geometry.boundingBox.clone().applyMatrix4(world)});
  }
  const matrix=new THREE.InstancedBufferAttribute(new Float32Array(mesh.count*16),16).setUsage(THREE.DynamicDrawUsage);
- const color=mesh.instanceColor?new THREE.InstancedBufferAttribute(new Float32Array(mesh.count*3),3).setUsage(THREE.DynamicDrawUsage):null;
+ let color=null,colorSource=null,colorVersion=-1;
  let signature=null,count=0;
  return {select(intersects){
   const selected=items.filter(item=>intersects(item.bounds)),key=selected.map(item=>item.index).join(',');
-  if(signature!==key){
+  const selectionChanged=signature!==key;
+  if(selectionChanged){
    signature=key;count=selected.length;
    selected.forEach(({index},i)=>{
     matrix.array.set(mesh.instanceMatrix.array.subarray(index*16,index*16+16),i*16);
-    // Asked of the mesh each time rather than trusting the decision made when this
-    // was built: a mesh can lose its per-instance colours long after that — the east
-    // lawn drops its greens the moment the park's own leaf texture arrives — and the
-    // stale answer here dereferenced a null every frame, threw out of the render, and
-    // took the ink and the grade down with it for the rest of the session.
-    if(color&&mesh.instanceColor)color.array.set(mesh.instanceColor.array.subarray(index*3,index*3+3),i*3);
    });
-   matrix.needsUpdate=true;if(color)color.needsUpdate=true;
+   matrix.needsUpdate=true;
   }
-  return {matrix,color,count};
+  // Streamed textures can remove, replace or recolour an instance palette without
+  // moving the camera. Carry the current palette rather than a stale packed copy.
+  const source=mesh.instanceColor;
+  if(source&&(selectionChanged||source!==colorSource||source.version!==colorVersion)){
+   if(!color||color.array.length!==mesh.count*3)color=new THREE.InstancedBufferAttribute(new Float32Array(mesh.count*3),3).setUsage(THREE.DynamicDrawUsage);
+   selected.forEach(({index},i)=>color.array.set(source.array.subarray(index*3,index*3+3),i*3));
+   color.needsUpdate=true;
+  }
+  colorSource=source;colorVersion=source?.version??-1;
+  return {matrix,color:source?color:null,count};
  }};
 }

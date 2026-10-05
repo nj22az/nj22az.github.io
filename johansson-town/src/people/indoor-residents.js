@@ -9,8 +9,16 @@ import {SATO_GUEST_SEATS,SATO_COOK,SATO_ROOM} from '../world/sato-ramen-layout.j
 
 // One actor belongs to one location. New visitors cross the door and walk to a
 // reserved place; changing the clock sends seated guests back to the exit.
-export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,getStandingVisit=()=>null,collides=()=>false,getRain=()=>false,layout=null}){
- const borrowed=new Map();let clock=0,walker=null;
+export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,getStandingVisit=()=>null,collides=()=>false,getRain=()=>false,layout=null,isOccupied=()=>false,radiusFor=()=>.3,validateSpawn=false}){
+ const borrowed=new Map(),walkers=new Map();let clock=0;
+ function walk(p,target,dt){
+  // The shared Minato/Sato building extends to x11.4; market rooms instead use
+  // their own bounds and a separate dynamic plan for each actual person.
+  let path=walkers.get(p);if(!path){path={walker:createRoomWalk((x,z,r)=>collides(x,z,r)||isOccupied(x,z,r,p),{bounds:layout?.bounds||{minX:-8,maxX:12,minZ:-8,maxZ:8},radius:radiusFor(p)}),stalled:0};walkers.set(p,path);}
+  const before=p.g.position.clone(),arrived=path.walker.move(p,target,dt);
+  if(validateSpawn&&!arrived&&p.g.position.distanceTo(before)<.0001){path.stalled+=dt;if(path.stalled>=2){path.walker.clear();path.stalled=0;}}else path.stalled=0;
+  return arrived;
+ }
  // On the island the ramen counter is Sato Ramen, beside Minato (world/sato-ramen-layout.js).
  const sato=(place==='ramen');
  const entrance=layout?.entrance|| (sato?[SATO_ROOM.spawn[0],0,SATO_ROOM.spawn[2]]:[0,0,5.2]);
@@ -20,12 +28,21 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   const saved=borrowed.get(p);if(!saved)return;const g=p.g,point=door(p),remaining=wanted(p);
   saved.parent.add(g);g.position.set(point[0],groundHeight(...point),point[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
   for(const key of ['inMarket','inRamen','inIzakaya','inOnsen','outfit','indoors','socialPose','seatHeight','chairBlend','floorHeight','ramenSeat','storeSeatId','serving','heldItem','mealState','residentSpeech','roomTransition','carrying','carriedTray','shopGoods','shopReach','shopping','tool'])delete g.userData[key];
-  if(remaining)g.userData.indoors=place;g.visible=!remaining;borrowed.delete(p);walker?.forget(p);
+  if(remaining)g.userData.indoors=place;g.visible=!remaining;borrowed.delete(p);walkers.get(p)?.walker.clear();walkers.delete(p);
  }
  function seatFor(p){
   const name=p.profile.name;
   const standing=getStandingVisit(p,clock);if(standing)return {position:standing,stand:standing,yaw:0,managed:true};
   if(place==='market'&&name==='Thuan')return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true};
+  if(place==='market'&&layout?.guestStands){
+   // A finished errand can still be followed by an evening browse. These are
+   // standing places in the actual shop, never the older store's removed chairs.
+   const radius=radiusFor(p),position=layout.guestStands.find(at=>
+    !collides(at[0],at[2],radius)&&!isOccupied(at[0],at[2],radius,p)&&
+    ![...borrowed.values()].some(v=>v.seat.guestStand===at));
+   if(!position)return null;
+   return {position,stand:position,guestStand:position,standing:true,yaw:Math.PI,activity:'browsing the magazines at Sakura'};
+  }
   if(sato&&name==='Mrs Sato')return {position:[...SATO_COOK.position],stand:[...SATO_COOK.position],yaw:SATO_COOK.yaw,staff:true};
   if(place==='izakaya'&&name==='Nao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
   // Umi-no-yu: into the rock bath by the sea wall, leaving the other side for the player.
@@ -48,18 +65,20 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
  function moveAcrossSeat(g,from,to,amount){g.position.set(from[0]+(to[0]-from[0])*amount,0,from[2]+(to[2]-from[2])*amount);}
  function sync(minutes,dt=0){
   clock=minutes;
-  // The shared Minato building runs on to x 11.4 (Sato Ramen): past the default bounds, a walker there had no route and stood at the door.
-  walker??=createRoomWalk(collides,{bounds:{minX:-8,maxX:12,minZ:-8,maxZ:8}});
   for(const p of world.people){
    const g=p.g;let saved=borrowed.get(p);
    if(!saved){
     if(!wanted(p)||!atDestination(p,place,door(p),place==='onsen'?ONSEN_ENTRY_RADIUS:.85))continue;
     const seat=seatFor(p);if(!seat)continue;
-    const settled=g.userData.indoors===place&&!g.userData.justArrived;
-    walker.forget(p);onBorrow(p,minutes);saved={parent:g.parent,rotation:g.quaternion.clone(),inside:g.userData.hit.inside,seat,index:seat.index,phase:settled||seat.managed?'seated':'arriving',blend:settled?1:0};borrowed.set(p,saved);parent.add(g);
+    const settled=g.userData.indoors===place&&!g.userData.justArrived,radius=radiusFor(p);
+    let at=settled||seat.managed?seat.position:entrance;
+    if(validateSpawn&&(collides(at[0],at[2],radius)||isOccupied(at[0],at[2],radius,p)))at=entrance;
+    if(validateSpawn&&(collides(at[0],at[2],radius)||isOccupied(at[0],at[2],radius,p)))continue;
+    const atSeat=at===seat.position;
+    walkers.get(p)?.walker.clear();walkers.delete(p);onBorrow(p,minutes);saved={parent:g.parent,rotation:g.quaternion.clone(),inside:g.userData.hit.inside,seat,index:seat.index,phase:seat.managed||settled&&atSeat?'seated':'arriving',blend:settled&&atSeat?1:0};borrowed.set(p,saved);parent.add(g);
     // Face the path we will walk. Using seat.yaw at the door made visitors moonwalk
     // toward their stand (Walk clip forward, body aimed at the chair).
-    if(settled||seat.managed){g.position.set(...seat.position);g.rotation.set(0,seat.yaw,0);}
+    if(atSeat||seat.managed){g.position.set(...at);g.rotation.set(0,seat.yaw,0);}
     else{
      const stand=seat.stand||seat.position;
      g.position.set(...entrance);
@@ -98,26 +117,26 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     if(saved.phase==='standing'){
      saved.blend=Math.max(0,saved.blend-dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===0){if(saved.pending){saved.seat=saved.pending;saved.index=saved.pending.index;delete saved.pending;saved.phase='arriving';}else saved.phase='leaving';}
     }else if(saved.phase==='leaving'){
-     if(walker.move(p,entrance,dt))restore(p);
+     if(walk(p,entrance,dt))restore(p);
     }else if(saved.phase==='arriving'){
-     if(walker.move(p,seat.stand,dt)){g.rotation.set(0,seat.yaw,0);saved.phase='sitting';}
+     if(walk(p,seat.stand,dt)){g.rotation.set(0,seat.yaw,0);saved.phase=seat.standing?'seated':'sitting';}
     }else if(saved.phase==='sitting'){
      saved.blend=Math.min(1,saved.blend+dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===1)saved.phase='seated';
     }
     continue;
    }
    delete g.userData.roomTransition;
-   if(!seat.staff&&!seat.managed){g.position.set(...seat.position);g.rotation.set(0,seat.yaw,0);}
+   if(!seat.staff&&!seat.managed&&!seat.standing){g.position.set(...seat.position);g.rotation.set(0,seat.yaw,0);}
    if(Number.isFinite(seat.height)){g.userData.seatHeight=seat.height;if(!g.userData.mealState)g.userData.socialPose=seat.soak?'Soak':'Sit';}
    if(place==='market'&&!seat.staff&&!seat.managed)g.userData.storeSeatId=seat.id;
    if(place==='ramen')g.userData.ramenSeat=seat.index;
    if(seat.job){g.userData.socialPose=seat.job.pose;if(seat.job.tool)g.userData.tool=seat.job.tool;else delete g.userData.tool;g.userData.activity=seat.job.activity;continue;}
    // Mrs Sato's kitchen (people/ramen-kitchen.js) hands her a cloth or a glass itself.
    if(!g.userData.kitchen)delete g.userData.tool;
-   if(!seat.managed&&!g.userData.mealState&&!(seat.staff&&g.userData.serving))g.userData.activity=seat.staff?p.profile.role:seat.soak?'soaking in the rock bath':'relaxing at '+place;
+   if(!seat.managed&&!g.userData.mealState&&!(seat.staff&&g.userData.serving))g.userData.activity=seat.activity||(seat.staff?p.profile.role:seat.soak?'soaking in the rock bath':'relaxing at '+place);
    const home=world.homes?.get(p.profile.name);if(home)home.occupied=false;
   }
   return [...borrowed.keys()].map(p=>p.profile.name);
  }
- return {sync,names:()=>[...borrowed.keys()].map(p=>p.profile.name),restore(){for(const p of [...borrowed.keys()])restore(p);walker?.clear();walker=null;}};
+ return {sync,names:()=>[...borrowed.keys()].map(p=>p.profile.name),restore(){for(const p of [...borrowed.keys()])restore(p);for(const path of walkers.values())path.walker.clear();walkers.clear();}};
 }

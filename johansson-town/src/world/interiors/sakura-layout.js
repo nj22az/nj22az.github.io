@@ -95,6 +95,9 @@ export const SAKURA_LAYOUT={
  bounds:{minX:-6.8,maxX:6.8,minZ:-6.78,maxZ:3.88},
  floorPolygon:[[-6.8,3.88],[6.8,3.88],[6.8,-3.95],[5.7,-3.95],[5.7,-6.78],[-5.7,-6.78],[-5.7,-3.95],[-6.8,-3.95]],
  spawn:[0,0,3.2],entrance:[0,0,3.45],exit:[0,1.35,3.88],yaw:0,
+ // Returning visitors browse on the floor in front of the rack. The old shop's
+ // guest chairs were inside this fitting; Sakura has standing readers instead.
+ guestStands:[-.75,0,.75].map(dx=>[MAGAZINE_RACK.x+dx,0,MAGAZINE_RACK.z-MAGAZINE_RACK.depth/2-.45]),
  // The glazing plane, in room coordinates. Both directions of the shop window use
  // it: the street seen from inside, and the real interior seen from the street.
  frontZ:3.91,

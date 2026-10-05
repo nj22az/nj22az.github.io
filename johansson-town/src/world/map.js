@@ -41,7 +41,8 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
   ctx.lineJoin='round';ctx.lineCap='round';
   for(const route of (activeRoutes())){
     ctx.strokeStyle=route.surface==='wood'||/quay|port-walk|harbour-apron|coast-|pier/.test(route.id)?'#a28459':'#766c50';
-    ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();
+    if(route.segmentWidths){for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i];ctx.lineWidth=Math.max(2,(route.segmentWidths[i-1]??route.width)*scale);ctx.beginPath();ctx.moveTo(px(a[0]),pz(a[1]));ctx.lineTo(px(b[0]),pz(b[1]));ctx.stroke();}}
+    else{ctx.lineWidth=Math.max(2,route.width*scale);ctx.beginPath();route.points.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.stroke();}
   }
   ctx.strokeStyle='#a28459';ctx.lineWidth=Math.max(2,BOARDWALK.width*scale);ctx.beginPath();ctx.moveTo(px(BOARDWALK.x),pz(BOARDWALK.minZ));ctx.lineTo(px(BOARDWALK.x),pz(BOARDWALK.maxZ));ctx.stroke();
   {

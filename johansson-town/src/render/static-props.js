@@ -67,6 +67,10 @@ export function createStandIn(root,{name='stand-in'}={}){
     matrix.multiplyMatrices(inverse,o.matrixWorld);
     if(o.isInstancedMesh){o.getMatrixAt(i,instance);if(instance.decompose(new THREE.Vector3(),new THREE.Quaternion(),scale)&&scale.lengthSq()<1e-10)continue;matrix.multiply(instance);}
     const g=base.clone().applyMatrix4(matrix),c=tint.copy(colour);
+    // Shelf labels choose their flavour in the live instance shader. A street
+    // copy is ordinary geometry, so keep that choice in its printed UVs.
+    const shift=o.isInstancedMesh&&o.geometry.attributes.atlasShift,uv=g.attributes.uv;
+    if(shift&&uv)for(let v=0;v<uv.count;v++)uv.setXY(v,uv.getX(v)+shift.getX(i),uv.getY(v)+shift.getY(i));
     if(o.isInstancedMesh&&o.instanceColor)c.multiply(new THREE.Color().fromBufferAttribute(o.instanceColor,i));
     const col=new Float32Array(n*3);
     for(let v=0;v<n;v++){if(own){col[v*3]=own.getX(v)*c.r;col[v*3+1]=own.getY(v)*c.g;col[v*3+2]=own.getZ(v)*c.b;}else c.toArray(col,v*3);}

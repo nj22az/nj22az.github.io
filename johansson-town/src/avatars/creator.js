@@ -662,7 +662,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   copy.onclick=async()=>{try{await navigator.clipboard.writeText(text.value);copy.textContent='Copied';}catch{text.select();}};
   use.onclick=()=>{const raw=paste.value.trim();let code=raw;try{if(raw.includes('=')){const url=new URL(raw,location.href);code=url.searchParams.get('r')||url.searchParams.get('avatar');}}catch{code='';}const r=decodeRecipe(code||'');
    if(!r){use.textContent='That code did not work';return;}remember();recipe=r;name.value=r.name||'';dirty=true;renderBody();closeShare();};
-  done.onclick=closeShare;shareLayer=layer;for(const child of root.children)child.inert=true;root.append(layer);done.focus();
+  done.onclick=closeShare;shareLayer=layer;for(const child of root.children)child.inert=true;root.append(layer);
+  // Start a scrollable dialog at its heading, with the next Tab reaching the code.
+  const heading=layer.querySelector('h3');heading.tabIndex=-1;heading.focus({preventScroll:true});
  };
  function finish(saving){
   if(!root.isConnected)return;

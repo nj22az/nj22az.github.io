@@ -39,11 +39,11 @@ function shell(group,{floor,wall,dado,ceiling=0xf3efe2,tatami=false}){
   for(const z of [-hd/2,0,hd/2])box([w,.012,.04],[0,.006,z],0x3f4a3a);
  }else box([w,.04,d],[0,-.02,0],floor,'Floor');
  const wallSet=(len,pos,ry)=>{const g=new THREE.Group();g.position.set(...pos);g.rotation.y=ry;group.add(g);
-  const p=(size,at,c)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);m.receiveShadow=true;g.add(m);};
-  p([len,.9,.04],[0,.45,0],dado);p([len,h-.9,.04],[0,.9+(h-.9)/2,0],wall);p([len,.05,.06],[0,.9,.01],0x6f5a44);p([len,.08,.06],[0,.04,.01],0x5a4a3a);};
+  const p=(size,at,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);m.receiveShadow=true;if(name)m.name=name;g.add(m);};
+  p([len,.9,.04],[0,.45,0],dado);p([len,h-.9,.04],[0,.9+(h-.9)/2,0],wall,'Upper wall');p([len,.05,.06],[0,.9,.01],0x6f5a44);p([len,.08,.06],[0,.04,.01],0x5a4a3a);};
  wallSet(w,[0,0,-hd-.02],0);wallSet(d,[-hw-.02,0,0],Math.PI/2);wallSet(d,[hw+.02,0,0],-Math.PI/2);
  for(const [x,len] of [[-(hw+.55)/2,hw-.55],[(hw+.55)/2,hw-.55]])wallSet(len,[x,0,hd+.02],Math.PI);
- box([1.1,h-2.1,.04],[0,2.1+(h-2.1)/2,hd+.02],wall);
+ box([1.1,h-2.1,.04],[0,2.1+(h-2.1)/2,hd+.02],wall,'Upper wall');
  for(const x of [-.57,.57])box([.06,2.12,.1],[x,1.06,hd],0x8a9092);
  box([w,.04,d],[0,h+.02,0],ceiling,'Ceiling');
  const tube=new THREE.MeshBasicMaterial({color:0xf6fbf4});
@@ -207,6 +207,12 @@ export function buildMayorHome({room,reg,action,collider=()=>{},exit,openMaker=n
  const mirror=new THREE.Mesh(new THREE.PlaneGeometry(.38,1.3),new THREE.MeshStandardMaterial({color:0xcfe0e6,roughness:.08,metalness:.6}));mirror.position.set(-hw+.6+.22,1.05,hd-1.1+.28);mirror.name='Wardrobe mirror';group.add(mirror);
  // A framed photograph: a harbour in Sweden, and one of the island the year he came.
  box([.5,.38,.03],[0,1.75,-hd+.04],0x3a3a3a,'Photograph frame');
+ box([.44,.32,.008],[0,1.75,-hd+.076],0xe9dcc3,'Two harbour photographs');
+ for(const [x,sea,roof] of [[-.11,0x7498aa,0xac5149],[.11,0x78aaa2,0xae8063]]){
+  box([.19,.09,.008],[x,1.69,-hd+.099],sea,'Photograph harbour water');
+  box([.08,.07,.008],[x,1.78,-hd+.122],roof,'Photograph harbour house');
+  box([.15,.018,.008],[x,1.741,-hd+.145],0xa79b84,'Photograph quay');
+ }
  anchor([-.6,.8,-.4],'Sit at the low table',()=>action('seat','Low table','Tea from the thermos, still warm. The ferry horn comes across the field.'));
  anchor([hw-.75,.6,-hd+1.15],'Lie down on the futon',()=>sleep?sleep():action('inspect','Futon','Folded square every morning, the way the harbour master taught you.'));
  anchor([-hw+.8,1.3,hd-.85],'Look in the wardrobe mirror',()=>openMaker?openMaker():action('inspect','Wardrobe','Three kariyushi shirts, a suit for assembly days and a straw hat.'));

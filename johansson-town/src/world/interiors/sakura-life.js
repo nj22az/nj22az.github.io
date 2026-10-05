@@ -177,7 +177,7 @@ function buildShopFloor(parent,anchor,action){
  box(.1,.14,.08,4.9,1.07,.2,0xffffff,'Charity box');
  const charity=canvasTex(256,256,(ctx,w,h)=>{ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#7ccc4a';ctx.fillRect(0,0,w,70);text(ctx,"Donation box",w/2,36,44,'#ffffff');text(ctx,"Thank you",w/2,130,30,'#3b3f55');ctx.fillStyle='#3b3f55';ctx.fillRect(80,190,96,10);});
  print(charity,.075,.075,4.849,1.08,.2,-Math.PI/2,'Charity box label');
- return {tick(){},dispose:()=>cat.dispose()};
+ return {ready:cat.ready,tick(){},dispose:()=>cat.dispose()};
 }
 
 
@@ -310,5 +310,5 @@ export function buildSakuraLife(room,{anchor,action}){
  const restroom=buildSakuraRestroom(room,{anchor,action});
  const officeDoor=buildOfficeDoor(room);
  let last=0;
- return {officeDoor,tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot,dispose:()=>floor.dispose()};
+ return {officeDoor,ready:Promise.all([floor.ready,backroom.ready]),tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot,dispose(){floor.dispose();backroom.dispose();}};
 }

@@ -6,7 +6,7 @@ import {normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,DEFAULT_RECIPE,PA
 import {CAST_RECIPES,NEIGHBOUR_RECIPES,recipeFor} from '../src/avatars/cast.js';
 import {buildAvatar,BONES,measure} from '../src/avatars/build.js';
 import {createAvatarAnimator} from '../src/avatars/animate.js';
-import {createAvatarActor,updateAvatarActor,createAvatarJohansson,playerRecipe,savePlayerRecipe,COUNTER_STEP,PLAYER_RECIPE_KEY} from '../src/avatars/actors.js';
+import {createAvatarActor,updateAvatarActor,createAvatarJohansson,playerRecipe,savePlayerRecipe,PLAYER_RECIPE_KEY} from '../src/avatars/actors.js';
 import {createLocalCharacters} from '../src/people/models.js?snappy=1';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
 
@@ -54,14 +54,22 @@ test('a body is one skinned mesh standing on the ground, with soft joints',()=>{
  avatar.dispose();
 });
 
-test('sitting puts the backs of the thighs on the seat, and a counter gets a step',()=>{
+test('sitting rests on the seat and standing counter poses keep shoes on the floor',()=>{
  const avatar=buildAvatar(CAST_RECIPES.Johansson,{shadows:false}),animator=createAvatarAnimator(avatar),m=avatar.measure;
  settle(animator,{seated:true,seatHeight:.45});
  assert.ok(Math.abs(avatar.root.position.y+m.hipY-m.seatDrop-.45)<.01);
  const scene=new THREE.Scene(),entity=new THREE.Group();entity.userData.name='Thuan';scene.add(entity);
  const actor=createAvatarActor(entity,'Thuan');
  entity.userData.socialPose='CounterIdle';for(let i=0;i<60;i++)updateAvatarActor(actor,1/30,0);
- assert.ok(Math.abs(actor.avatar.root.position.y-COUNTER_STEP)<.01,'Standing behind the counter, on the step');
+ const body=actor.avatar.body,indices=[],feet=['footL','footR'].map(n=>body.skeleton.bones.indexOf(actor.avatar.bones[n]));
+ const {skinIndex,skinWeight}=body.geometry.attributes;
+ for(let i=0;i<skinIndex.count;i++)if(feet.includes(skinIndex.getX(i))&&skinWeight.getX(i)>.999)indices.push(i);
+ assert.ok(indices.length>20,'Rendered rigid foot samples');
+ const sole=()=>{actor.avatar.root.updateMatrixWorld(true);let lowest=Infinity;for(const i of indices){const p=new THREE.Vector3().fromBufferAttribute(body.geometry.attributes.position,i);body.applyBoneTransform(i,p);body.localToWorld(p);lowest=Math.min(lowest,p.y);}return lowest;};
+ assert.ok(Math.abs(sole())<1e-5,'CounterIdle shoes stand on the floor, with no artificial lift');
+ actor.animator.play('Wave');
+ for(let i=0;i<120;i++){updateAvatarActor(actor,1/60,0);assert.ok(Math.abs(sole())<1e-5,'The greeting keeps the same floor contact');}
+ avatar.dispose();actor.avatar.dispose();
 });
 
 test('people turn their heads to whoever they are looking at',()=>{

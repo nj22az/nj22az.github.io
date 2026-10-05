@@ -1,0 +1,114 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import * as THREE from '../vendor/three.module.js';
+import {installDOM} from './fixtures.mjs';
+import {RESIDENTS} from '../src/people/residents.js';
+import {createResidentLedger} from '../src/people/resident-personalities.js';
+import {residentPlan} from '../src/people/social.js';
+import {createSakuraShop} from '../src/people/sakura-shop.js';
+import {restoreSakura,recordSakuraSale} from '../src/commerce/sakura-economy.js';
+import {stockSpec} from '../src/commerce/shop-stock.js';
+import {MAGAZINE_RACK} from '../src/world/interiors/sakura-magazine-rack.js';
+import {SAKURA_LAYOUT} from '../src/world/interiors/sakura-layout.js';
+import {circleHitsRect} from '../physics.js';
+
+const DT=1/60,EVENING=1115;
+const rack={x:MAGAZINE_RACK.x,z:MAGAZINE_RACK.z,w:MAGAZINE_RACK.width,d:MAGAZINE_RACK.depth};
+function fixture({finished=false,player=null}={}){
+ installDOM();const scene=new THREE.Scene(),street=new THREE.Group();scene.add(street);
+ const state={yen:1200,inventory:[],sakura:restoreSakura(),residentLife:{}},world={people:[]};
+ let minutes=EVENING,playerPosition=player&&new THREE.Vector3(...player);
+ const door=RESIDENTS.find(p=>p.name==='Thuan').work;
+ for(const name of ['Thuan','Aya']){
+  const profile=RESIDENTS.find(p=>p.name===name),g=new THREE.Group();
+  g.userData={name,hit:{inside:false},justArrived:name==='Aya',visualReady:false,...(name==='Thuan'?{indoors:'market'}:{})};
+  g.position.set(door[0],0,door[1]);street.add(g);world.people.push({profile,g});
+ }
+ const ledger=createResidentLedger(()=>state);
+ if(finished){
+  const item=stockSpec('tea'),account=ledger.account('Aya',minutes);
+  ledger.purchase('Aya',minutes,'shop-goods',item.id,item.cost);state.sakura.stock.tea.shelf--;
+  recordSakuraSale(state,item.cost,'goods-0-Aya',{minute:minutes-30,item:item.name,buyer:'Aya',unitCost:item.unitCost});
+  account.shopping={phase:'finished',started:minutes-30,finished:true,item:'tea',picked:true,paid:true,timer:0,position:[3.9,0,.85]};
+ }
+ const shop=createSakuraShop({world,scene,state,ledger,register(o,label,fn,inside){o.userData.hit={inside,fn,label};},action(){},exit(){},getMinutes:()=>minutes,getPlayerPosition:()=>playerPosition,isInside:()=>!!playerPosition});
+ shop.group.visible=true;
+ return {shop,state,world,ledger,aya:world.people[1],clerk:world.people[0],get minutes(){return minutes;},get player(){return playerPosition;},setMinutes(value){minutes=value;},step(){minutes+=DT/60;shop.update(DT);},dispose(){shop.display.dispose();}};
+}
+function assertClear(f,p,radius){
+ if(!p.g.userData.inMarket)return;
+ const {x,z}=p.g.position;
+ assert.equal(circleHitsRect(x,z,radius,rack),false,p.profile.name+' enters the actual widened rack at '+[x,z]);
+ assert.equal(f.shop.blocked(x,z,radius),false,p.profile.name+' intersects another actual shop fitting');
+ if(f.player)assert.ok(Math.hypot(x-f.player.x,z-f.player.z)>=radius+.28-1e-6,p.profile.name+' overlaps Johansson');
+ for(const other of f.world.people)if(other!==p&&other.g.visible&&other.g.userData.inMarket)assert.ok(p.g.position.distanceTo(other.g.position)>=radius+(other===f.clerk?.36:.35)-1e-6,p.profile.name+' overlaps '+other.profile.name);
+}
+function stepClear(f){
+ const inside=f.aya.g.userData.inMarket,before=f.aya.g.position.clone();f.step();
+ if(inside&&f.aya.g.userData.inMarket)assert.ok(f.aya.g.position.distanceTo(before)<=DT+1e-6,'Aya recovers by walking, without jumping through the rack');
+ assertClear(f,f.aya,.35);assertClear(f,f.clerk,.36);
+}
+function walkUntil(f,condition,seconds=300){
+ for(let i=0;i<seconds/DT;i++){stepClear(f);if(condition())return;}
+ assert.fail('Aya did not finish her real evening route within '+seconds+' seconds: '+f.aya.g.position.toArray()+' '+f.aya.g.userData.activity);
+}
+function leaveEvening(f){
+ f.setMinutes(1156);assert.notEqual(residentPlan(f.aya.profile,f.minutes,false,f.state).place,'market');
+ walkUntil(f,()=>!f.aya.g.userData.inMarket);assert.notEqual(f.aya.g.parent,f.shop.group,'Aya crosses the real exit and returns to her street parent');
+}
+
+test('Aya buys during her real evening errand at 60 Hz, claims at the shelf, and walks out after the errand',()=>{
+ const f=fixture();try{
+  assert.equal(residentPlan(f.aya.profile,EVENING,false,f.state).place,'market');
+  let seenClaim=false;const phases=new Set();
+  walkUntil(f,()=>{
+   const record=f.state.residentLife.Aya?.shopping;if(!record)return false;phases.add(record.phase);
+   if(record.picked&&!seenClaim){
+    const spec=stockSpec(record.item),at=f.shop.display.unitApproaches.get(record.item+':'+(spec.capacity-1));
+    assert.ok(f.aya.g.position.distanceTo(new THREE.Vector3(...at))<.13,'The actual Aya reaches the stock approach before claiming her item');seenClaim=true;
+   }
+   return record.finished;
+  });
+  assert.ok(seenClaim);assert.ok(phases.has('pickup'));assert.ok(phases.has('queue'));assert.ok(phases.has('paid'));
+  assert.equal(f.state.sakura.journal.filter(r=>r.kind==='Sale').length,1);
+  assert.equal(f.ledger.account('Aya',f.minutes).purchases.filter(p=>p.id==='shop-goods').length,1);
+  leaveEvening(f);
+ }finally{f.dispose();}
+});
+
+test('Aya returns after a finished purchase and browses clear of Johansson and the rack without buying twice',()=>{
+ const reader=[MAGAZINE_RACK.x,0,MAGAZINE_RACK.z-MAGAZINE_RACK.depth/2-.45],f=fixture({finished:true,player:reader});
+ try{
+  const stock=JSON.stringify(f.state.sakura.stock),sales=f.state.sakura.sales;
+  assert.equal(residentPlan(f.aya.profile,EVENING,false,f.state).place,'market');
+  walkUntil(f,()=>f.aya.g.userData.activity==='browsing the magazines at Sakura');
+  assert.ok(SAKURA_LAYOUT.guestStands.some(p=>f.aya.g.position.distanceTo(new THREE.Vector3(...p))<.13));
+  assert.equal(f.aya.g.userData.seatHeight,undefined,'The returning reader never sits on a removed chair');
+  for(let i=0;i<5/DT;i++)stepClear(f);
+  assert.equal(JSON.stringify(f.state.sakura.stock),stock);assert.equal(f.state.sakura.sales,sales);
+  assert.equal(f.ledger.account('Aya',f.minutes).purchases.length,1);leaveEvening(f);
+ }finally{f.dispose();}
+});
+
+test('an evening reader waits when all real standing spots are occupied, then walks in when one clears',()=>{
+ const stands=SAKURA_LAYOUT.guestStands,f=fixture({finished:true,player:stands[1]});
+ try{
+  const blockers=[];
+  for(const [i,name] of [[0,'Kenji'],[2,'Tetsuo']]){
+   const g=new THREE.Group();g.position.set(...stands[i]);g.userData={name,inMarket:true,hit:{inside:true}};
+   f.shop.group.add(g);const p={profile:RESIDENTS.find(p=>p.name===name),g};f.world.people.push(p);blockers.push(p);
+  }
+  for(let i=0;i<2/DT;i++){stepClear(f);assert.equal(!!f.aya.g.userData.inMarket,false,'Every occupied standing spot must defer borrowing instead of using a legacy chair');}
+  blockers[0].g.visible=false;delete blockers[0].g.userData.inMarket;
+  walkUntil(f,()=>f.aya.g.userData.activity==='browsing the magazines at Sakura');leaveEvening(f);
+  assert.equal(f.ledger.account('Aya',f.minutes).purchases.length,1);
+ }finally{f.dispose();}
+});
+
+test('the actual magazine-reading interaction has customer body clearance from every shop fitting',()=>{
+ const f=fixture();try{
+  let anchor;f.shop.group.traverse(o=>{if(o.userData.hit?.label==='Read the magazines')anchor=o;});
+  assert.ok(anchor);assert.equal(anchor.position.x,MAGAZINE_RACK.x);
+  assert.equal(f.shop.blocked(anchor.position.x,anchor.position.z,.35),false,'The actual reader anchor must be on usable floor, outside the .35 m rack clearance');
+ }finally{f.dispose();}
+});

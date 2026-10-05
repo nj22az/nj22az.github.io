@@ -57,8 +57,9 @@ export function residentHomeDescription(name){
  const roommates=householdFor(name).residents.filter(n=>n!==name);
  return address+(roommates.length?' I share the flat with '+roommates.join(' and ')+'.':neighbour?' '+neighbour.name+' has the other flat through our shared entrance.':'');
 }
-/** Residents with a flat on the street. Minato's barfly lives on his stool and has none. */
-export const HOME_OWNERS=RESIDENTS.filter(p=>p.homeEntry);
+/** Residents with an authored playable home. The retired driver flat is kept in
+ * profile/save history, but has no door in the unified town. */
+export const HOME_OWNERS=RESIDENTS.filter(p=>p.homeEntry&&p.name!=='Bus driver');
 // Reintroduce residents deliberately, one at a time. Nao was the first neighbour back;
 // the Front-Row staff followed with their own homes in the yard behind the shop, then
 // the harbour master and Officer Mori, who live at the office and the police box, and

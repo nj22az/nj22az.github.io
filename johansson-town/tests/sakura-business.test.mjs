@@ -5,10 +5,28 @@ import {recordSakuraSale,restoreSakura,sellToSakura,TOWN_FINDS} from '../src/com
 import {collectTownFind,restoreTownCleanup,CLEANUP_SPOTS} from '../src/commerce/town-cleanup.js';
 import {marketVisitsForDay,residentPlan} from '../src/people/social.js';
 import {RESIDENTS} from '../src/people/residents.js';
+import {homeRoutine} from '../src/people/home-life.js';
 import {readSave,SAVE_KEY} from '../src/save.js';
 import {installDOM} from './fixtures.mjs';
 import {createActivities} from '../activities.js';
 const fresh=()=>({yen:1200,inventory:[],sakura:restoreSakura(),townCleanup:restoreTownCleanup()});
+
+test('a month of shopping keeps five errands without waking night workers or cancelling Reiko’s grocery visit',()=>{
+ for(let day=0;day<31;day++){
+  const visits=marketVisitsForDay(day*1440),entries=Object.entries(visits);
+  assert.equal(entries.length,5,'day '+day+' retains the five neighbourhood errands');
+  for(const [name,[start,end]] of entries){
+   const profile=RESIDENTS.find(p=>p.name===name);
+   for(let m=start;m<end;m++)assert.equal(['sleep','wake','breakfast','prepare'].includes(homeRoutine(profile,day*1440+m).id),false,name+' can shop at '+m);
+  }
+  for(let a=0;a<entries.length;a++)for(let b=a+1;b<entries.length;b++){
+   const [,one]=entries[a],[,two]=entries[b];assert.ok(one[1]<=two[0]||two[1]<=one[0],'visits keep room for the counter and player');
+  }
+ }
+ const reiko=RESIDENTS.find(p=>p.name==='Reiko'),[start,end]=marketVisitsForDay(0).Reiko;
+ assert.equal(residentPlan(reiko,start+5).place,'market','Reiko actually reaches Sakura after sleeping');
+ assert.ok(end<=900,'the grocery errand finishes before her press shift');
+});
 
 
 test('sales fund inventory purchases, with no free money or lost items when the till is empty',()=>{

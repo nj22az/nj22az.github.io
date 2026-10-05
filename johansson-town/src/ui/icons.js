@@ -87,7 +87,8 @@ const ACTIONS=[
  [/dismount/i,'bike','GET OFF'],
  [/bicycle|^Ride/i,'bike','RIDE'],
  [/service bell|\bbell\b/i,'bell','RING'],
- [/^(Enter|Exit|Leave|Go (in|out))|door|entrance/i,'door','ENTER'],
+ [/^(Exit|Leave|Go out)\b/i,'exit','EXIT'],
+ [/^(Enter|Go in)\b|door|entrance/i,'door','ENTER'],
  [/\b(cat|Tama)\b/i,'cat','GREET'],
  [/fish|Cast|rod\b|bait/i,'fish','FISH'],
  [/bath|soak|onsen|bandai|Umi-no-yu/i,'bath','BATHE'],
@@ -119,10 +120,10 @@ const ITEMS=[
  [/tea|coffee|cola|water|lager|beer|milk|juice|sake|ramune|awamori/i,'cup'],
  [/bream|fish|mackerel|squid|tuna/i,'fish'],
  [/^Ice$/i,'ice'],
- [/rice ball|onigiri|biscuit|bun|bread|cake|snack|mochi|noodle|bento|dango|andagi/i,'food'],
+ [/rice ball|onigiri|biscuit|bun|bread|cake|snack|mochi|noodle|bento|dango|andagi|nikuman|karaage|korokke|oden|sandwich|pudding|yogurt/i,'food'],
  [/soap|shampoo|towel/i,'soap'],
  [/page|letter|postcard|paper|ticket|note/i,'page'],
- [/bottle|cans|metal parts|scrap/i,'recycle'],
+ [/bottle|\bcan(s)?\b|metal parts|scrap/i,'recycle'],
  [/flower|plant|mozuku|seaweed/i,'leaf']
 ];
 export function itemIcon(name='',{printed=false}={}){

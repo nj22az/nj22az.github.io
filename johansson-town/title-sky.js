@@ -37,7 +37,7 @@ if(host){try{
  }
  if(title)new MutationObserver(()=>{applyWeather();wake();}).observe(title,{attributes:true,attributeFilter:['data-weather']});
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let frame=0,last=0;
- function resize(){const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h);const a=w/h;camera.left=-6*a;camera.right=6*a;camera.updateProjectionMatrix();sun.position.x=4.2*a;width=6.4*a;placeRain(0);renderer.render(scene,camera);}new ResizeObserver(resize).observe(host);resize();
+ function resize(){const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h);const a=w/h;camera.left=-6*a;camera.right=6*a;camera.updateProjectionMatrix();sun.position.x=Math.max(0,Math.min(4.2*a,6*a-1.5));width=6.4*a;placeRain(0);renderer.render(scene,camera);}new ResizeObserver(resize).observe(host);resize();
  function draw(t){frame=0;if(document.hidden||start.classList.contains('hidden')||start.classList.contains('guide-open')||start.classList.contains('booting'))return;if(t-last>50){const dt=last?Math.min(.1,(t-last)/1000):0;last=t;const seconds=t/1000;if(rain.visible&&!reduced)placeRain(dt);for(const c of clouds)c.position.x=c.userData.origin+(reduced?0:Math.sin(seconds*.045+c.userData.origin)*1.1);sun.rotation.z=reduced?0:Math.sin(seconds*.12)*.025;renderer.render(scene,camera);}if(!reduced)frame=requestAnimationFrame(draw);}
  const wake=()=>{if(!frame)frame=requestAnimationFrame(draw);};new MutationObserver(wake).observe(start,{attributes:true,attributeFilter:['class']});document.addEventListener('visibilitychange',wake);applyWeather();wake();
 }catch(error){console.warn('Title sky using its illustrated fallback:',error);}}

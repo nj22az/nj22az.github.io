@@ -287,5 +287,5 @@ export function buildSakuraBackroom(room,{anchor,action}={}){
   anchor([D.x,.9,D.z],'Look at the rice delivery',()=>action('inspect',"Banju · The 11:00 rice delivery",
    'Four blue trays of onigiri and bento off the morning van, parked on the daisha at the end of the room. They go out on the shelves before the lunch crowd; the empty trays go back on the 16:00 run.'));
  }
- return {tick(time){rack.led.visible=Math.sin(time*2.4)>-.6;},dispose(){figurine.dispose();}};
+ return {ready:figurine.ready,tick(time){rack.led.visible=Math.sin(time*2.4)>-.6;},dispose(){figurine.dispose();}};
 }

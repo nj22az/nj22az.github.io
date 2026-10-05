@@ -3,7 +3,7 @@ import {KITAHAMA} from '../kitahama-layout.js';
 import {plotGate} from './layout.js';
 import {poster,nameplate} from './signs.js';
 import {gajumaru,potPlant,hibiscus,blockWall} from './houses.js';
-import {utilityPole,wiresBetween,serviceDrop,keiTruck,bicycle,laundry,gasBottles} from './props.js';
+import {utilityPole,wiresBetween,serviceDrop,bicycle,laundry,gasBottles} from './props.js';
 import {householdAtHome} from '../../people/island-households.js';
 
 /**
@@ -20,7 +20,7 @@ import {householdAtHome} from '../../people/island-households.js';
  *   the quarter's notice board beside it;
  * - the pole line carried along the spine and up Fukugi Lane, with a transformer and a
  *   drop to every house;
- * - and the odd sign of somebody's life: a kei truck at the end of the lane, a dog house,
+ * - and the odd sign of somebody's life: a dog house and
  *   bicycles at the flats.
  *
  * Built inside Kitahama's frame (kit.at(..., KITAHAMA.y)): local y = 0 is the ground.
@@ -46,8 +46,7 @@ export function buildKitahamaQuarter(kit,solid,{anchor,onAction,vending},{across
   serviceDrop(kit,nearest(door[0],door[1]),target.toArray());
  }
  {const A=K.apartment;serviceDrop(kit,north,kit.point(A.maxX-1.9,5.3,(A.minZ+A.maxZ)/2).toArray());}
- // ---- Somebody's life: the water lorry's kei truck at the dead end, a dog house.
- solid(keiTruck(kit,K.fukugiLane.minX+.85,K.fukugiLane.maxZ-1.9,{ry:-Math.PI/2,colour:0xe6e2d6,load:'sheet'}));
+ // ---- Somebody's life: a dog house inside the yard.
  {const p=K.plots.find(q=>q.id==='kitahama-10'),x=p.maxX-1.3,z=p.maxZ-1.4;
   kit.box(.7,.5,.8,x,.25,z,0x9a6a3e);kit.box(.82,.06,.95,x,.56,z,0x7a4b2e,{rz:.18});kit.box(.82,.06,.95,x,.56,z,0x7a4b2e,{rz:-.18});kit.box(.32,.32,.02,x,.22,z+.41,0x2a2420);
   solid(kit.rect(x-.4,x+.4,z-.45,z+.45,.7,'dog-house'));}

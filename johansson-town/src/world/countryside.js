@@ -10,7 +10,7 @@ import {routeAt,groundHeight} from './layout.js';
  *  - a farmstead with a red-tile roof, a coral-stone wall, a water tank and a cattle pen,
  *    and its cows grazing;
  *  - turtleback tombs (亀甲墓) on the west coast, facing the sea;
- *  - a field shed, a scarecrow, a parked kei truck.
+ *  - a field shed and a scarecrow.
  *
  * Nothing is placed by hand alone: every field cell and building is checked against the
  * town's own ground map, the colliders and the trees, so nothing lands on a road, a
@@ -37,7 +37,7 @@ export const STEADS=Object.freeze([
  // The Ōshiro farmstead in the corner of its own cane, the pen beside the house.
  [-39,117,'farmhouse',0],[-28,118,'pen',0],[-33,111.5,'tank',0],[-19,113,'shed',0],
  [-46,172,'tomb',-Math.PI/2],[-47,183,'tomb',-Math.PI/2],[-45,194,'tomb',-Math.PI/2],
- [6,92,'trellis',0],[-20,108,'scarecrow',0],[34,256,'truck',.3],[108,180,'shed',Math.PI/2],
+ [6,92,'trellis',0],[-20,108,'scarecrow',0],[108,180,'shed',Math.PI/2],
 ].map(Object.freeze));
 
 const OPEN=new Set(['island-ground','island-uplands']);
@@ -61,7 +61,7 @@ export function buildCountryside({world,register=()=>{},onAction=()=>{},mobile=f
  // ---- The farmstead, the tombs, and the odd things in the fields.
  const cows=[];
  for(const [x,z,kind,yaw] of STEADS){
-  const size={farmhouse:[9,8],pen:[7,6],tank:[2,2],shed:[3.2,2.6],tomb:[5,6],trellis:[4,1.6],scarecrow:[.8,.8],truck:[1.6,3.6]}[kind];
+  const size={farmhouse:[9,8],pen:[7,6],tank:[2,2],shed:[3.2,2.6],tomb:[5,6],trellis:[4,1.6],scarecrow:[.8,.8]}[kind];
   const pad=Math.max(...size)/2+.4;
   if(!open(x,z,pad))continue;
   footprints.push([x,z,size[0]/2,size[1]/2]);
@@ -101,18 +101,14 @@ export function buildCountryside({world,register=()=>{},onAction=()=>{},mobile=f
   }else if(kind==='trellis'){
    for(const [px] of [[-1.9],[-.6],[.6],[1.9]])for(const pz of [-.7,.7])add(B(.08,1.9,.08),0x8a6a46,px,.95,pz);
    add(B(4,.05,1.6),0x8a6a46,0,1.9,0);
-   const leaves=add(B(3.9,.35,1.5),new THREE.MeshStandardMaterial({color:0x4f8a3e,roughness:.95}),0,1.75,0,'Gōya trellis');void leaves;
+   const leaves=add(B(3.9,.35,1.5),new THREE.MeshStandardMaterial({color:0x4f8a3e,roughness:.95}),0,1.78,0,'Gōya trellis');void leaves;
    for(let i=0;i<9;i++){const goya=add(new THREE.CapsuleGeometry(.07,.28,4,8),0x5f9e3a,-1.7+i*.42,1.45,(i%2?.35:-.35),'Gōya');goya.rotation.z=.15*(i%3-1);}
    for(const s of [-1,1])add(B(4,1.5,.03),new THREE.MeshStandardMaterial({color:0x5f9a48,roughness:.95,transparent:true,opacity:.85,side:THREE.DoubleSide}),0,1.05,s*.8,'Green curtain');
    anchor(x,z+1.4,1.4,'Look at the gōya trellis','Gōya','Bitter melon climbing a net: warty, bright green, the length of your hand. Sliced thin and fried with egg, tofu and Spam, it is champurū.');
   }else if(kind==='scarecrow'){
    add(B(.08,1.8,.08),0x6d5238,0,.9,0);add(B(1.2,.08,.08),0x6d5238,0,1.45,0);add(B(.5,.6,.2),0x3f6a8a,0,1.35,0,'Scarecrow');
    add(new THREE.SphereGeometry(.17,10,8),0xe8dcc0,0,1.85,0);add(new THREE.ConeGeometry(.38,.22,12),0xd8b864,0,2.05,0,'Straw hat');
-  }else if(kind==='truck'){
-   add(B(1.4,.7,3.3),0xf1efe8,0,.6,0,'Kei truck');add(B(1.36,.75,1.1),0xf1efe8,0,1.3,-1.05);add(B(1.2,.4,.04),0x6f8f9c,0,1.42,-1.62);
-   for(const [px,pz] of [[-.7,-1.1],[.7,-1.1],[-.7,1.1],[.7,1.1]]){const w=add(new THREE.CylinderGeometry(.27,.27,.18,12),0x2b2b2b,px,.27,pz);w.rotation.z=Math.PI/2;}
-   add(B(1.2,.4,1.6),0x7c8f3c,0,1.1,.6,'Cut cane in the back');
-   solid(x,z,2.4,3.6,1.6);
+
   }
   placed.steads.push(kind);
  }

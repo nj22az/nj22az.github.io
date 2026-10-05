@@ -13,6 +13,7 @@ test('Mr Fujita’s shed: the ballgame in the afternoon, a beer in his hand, the
  assert.equal(tvProgramme(15*60),'baseball');assert.equal(tvProgramme(19*60+10),'news');assert.equal(tvProgramme(2*60),'off');
  shed.tick(.1,15*60);assert.equal(shed.fujita.userData.socialPose,'Drink');assert.equal(shed.fujita.userData.heldItem,'beer');
  shed.tick(.1,3*60);assert.equal(shed.fujita.userData.socialPose,'Sit');assert.equal(shed.fujita.userData.heldItem,undefined);
+ assert.equal(tvProgramme(22*60+55),'snow');shed.tick(.1,22*60+55);
  // The walk along the pier past the open front stays clear.
  for(let z=-66;z<=-50;z+=.5)assert.ok(!colliders.some(c=>circleHitsRect(-35.3,z,.3,c)),'pier walk is open at z='+z);
  // He sits facing his set.

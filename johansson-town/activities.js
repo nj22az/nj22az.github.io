@@ -1,6 +1,8 @@
 import {foodArtForItem} from './src/commerce/food-art.js';
 import {FLYER_ITEM,FLYER_PATH,FLYER_PAPER,collectSakuraFlyer} from './src/commerce/sakura-flyer.js';
 import {restoreIsland} from './src/island/services.js';
+import {playerRecipe} from './src/avatars/actors.js';
+import {encodeRecipe} from './src/avatars/recipe.js';
 import {restoreArchive,seedArchive,fileDocument,retainArchive} from './src/office/archive.js';
 import {createArchiveView} from './src/office/archive-ui.js';
 import {isWorkshopSite} from './src/world/businesses.js';
@@ -22,9 +24,10 @@ import {loadOfficeWorkbooks,createOfficeWorkbookView} from './src/office/workboo
 import {STORE_MENU} from './src/commerce/store-menu.js';
 import {restoreResidentLife} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
+import {restoreHomeDecor} from './src/progression/home-decor.js';
 import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,RADIO_821} from './src/progression/soft-quests.js';
 import {PROFILES} from './src/people/profiles.js';
-import {RESIDENTS} from './src/people/residents.js';
+import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
 import {gossipAt,izakayaOpen,onsenInvitationDay} from './src/people/social.js';
 import {DRINKS,DISHES,menuItem} from './src/people/izakaya-beer.js';
 import {VENDING_PRODUCTS,DRINKABLE,EMPTY_CAN,CAN_REFUND} from './src/commerce/vending-catalogue.js';
@@ -54,15 +57,16 @@ import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorag
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
+export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{},onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
   const $=s=>document.querySelector(s);
-  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false};
+  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'peninsula',homeDecor:restoreHomeDecor()};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
   let pendingAbsence=0,ledgerView=null,magazineView=null;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
   try {
     const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
+      state.homeDecor=restoreHomeDecor(saved.homeDecor);
       state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
@@ -78,6 +82,9 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   state.sakura=restoreSakura(state.sakura);
   state.townCleanup=restoreTownCleanup(state.townCleanup);
   state.workshop=restoreWorkshop(state.workshop,state.inventory);
+  state.homeDecor=restoreHomeDecor(state.homeDecor);
+  // Retain the old save field while all live directions describe the island.
+  state.townMode='peninsula';
   seedArchive(state,getMinutes());
 
   const commuterDescription=name=>name==='Harbour master'?'The harbour office is staffed around the clock. I stay on the quay.':name==='Bus driver'?'I work the Harbour Line and stay at the northern terminal.':'I commute into the shopping district on the Harbour Line and leave by bus after my shift.';
@@ -95,6 +102,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   }
 
   function save(){
+    state.avatarRecipe=encodeRecipe(playerRecipe());
     retainArchive(state.documentArchive,getMinutes());
     if(travelProgress(state).unlocked&&!state.quickTravelNotified){state.quickTravelNotified=true;state.notes.push('Earned the town shortcuts: Tama is home and Kenji’s workshop route is complete.');say('Town shortcuts unlocked! Quick travel is now in your Town Book.',7);}
     try {const locations=getResidentLocations();if(locations)state.residentLocations=locations;state.minutes=getMinutes();state.savedAt=Date.now();localStorage.setItem(slotKey(readPlayers(localStorage).active),JSON.stringify(state));touchPlayer(localStorage,state.savedAt);$('#saveState').textContent='PROGRESS SAVED';}
@@ -107,7 +115,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     modal.classList.remove('bag-view','flyer-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
     modalRevision++;const revision=modalRevision;
-    townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen)previousFocus=document.activeElement;modalOpen=true;document.exitPointerLock?.();
+    townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen){onOpen();previousFocus=document.activeElement;}modalOpen=true;document.exitPointerLock?.();
     heading.textContent=title;delete heading.dataset.hearts;delete heading.dataset.level;body.classList.remove('signal');body.replaceChildren();
     const p=document.createElement('p');p.textContent=text;body.append(p);actions.replaceChildren();
     buttons.forEach(([label,fn,disabled=false,say])=>{const b=document.createElement('button');b.textContent=label;b.disabled=disabled;if(say!==undefined)b.dataset.say=say||'';b.onclick=()=>{if(modalOpen&&modalRevision===revision&&!b.disabled)fn();};actions.append(b);});
@@ -151,13 +159,14 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   function bagItem(item){
     if(item===FLYER_ITEM){sakuraFlyer();return;}
     const model=printedModels(state.inventory).find(m=>m.name===item);
-    const special=SPECIAL_BY_NAME[item];
+    const special=SPECIAL_BY_NAME[item],hotSnack=HOT_SNACKS.find(snack=>snack.name===item);
     const drinkable=(DRINKABLE.has(item)||special?.kind==='drink')&&state.inventory.includes(item);
-    const edible=special?.kind==='food'&&state.inventory.includes(item);
+    const edible=(special?.kind==='food'||!!hotSnack)&&state.inventory.includes(item);
     const spec=GROCERY_ITEMS.find(g=>g.name===item),find=TOWN_FINDS.find(f=>f.name===item);
     const text=model?'A model you printed on the Form 3. Thuan would put it by the till.'
       :item===EMPTY_CAN?`Empty. The recycling box by Sakura’s door takes cans: Thuan gives ¥${CAN_REFUND} a can.`
       :special?`${special.note}. From the board at Sakura.`
+      :hotSnack?hotSnack.line
       :spec?spec.text:find?`Worth ¥${find.price} back at Sakura’s till.`
       :item==='Sea bream'?'Fresh from the pier. Nao — or Thuan — would know what to do with it.'
       :'Something you picked up in town.';
@@ -303,8 +312,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const replies={
       snack:"Recommended? Leave it to me!\nMy recommendation? Tea and a biscuit. The tea makes it a sensible decision. The biscuit makes it a good one.",
       ribbon:"Hair? Thank you!\nMy hair? Thank you! I let it grow long and tie it back when I restock. On a hot day I braid it — my little sister says my plaits are crooked.",
-      town:"I like the harbour at dusk.\nSakura closes at eight. I walk to the Harbour Line terminal and take the last bus after my shift. Nao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.",
-      home:commuterDescription('Thuan'),
+      town:"I like the harbour at dusk.\nSakura closes at eight. Some evenings I stop by Minato after twenty past, until half past nine; other evenings I walk home by the harbour. Nao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.",
+      home:residentHomeDescription('Thuan')||commuterDescription('Thuan'),
       compliment:"You’re making me blush.\nOh, now you have made me shy. I was trying to look very professional behind this counter. Thank you. That was lovely.",
       challenge:"Let's compete!\nA challenge! Find the strangest postcard on the rack. I will defend the seagull one. He looks as though he owns the harbour.",
       radio:"It's a secret.\nIf the radio plays my favourite song, this becomes a very small concert hall. The assistant manager is a plant, so the reviews are generous.",
@@ -333,7 +342,7 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
       ['What is your favourite snack?','snack'],
       ['I like your hair','ribbon'],
       ['Where do you go after work?','town'],
-      ['How do you travel?','home'],
+      ['Where do you live?','home'],
       ['You make this place lovely','compliment'],
       ['Give me a little challenge','challenge'],
       ['Do you sing along to the radio?','radio'],
@@ -397,8 +406,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     };
     // A present from your bag. She is delighted; a second the same day makes her shy.
     const gifts=giftableItems(state.inventory);
-    const giveGift=()=>show(title,"What, can you give me something?\nFor me? What have you brought?",[
-      ...gifts.slice(0,8).map(item=>[item,()=>{
+    const giveGift=(page=0)=>show(title,"What, can you give me something?\nFor me? What have you brought?",[
+      ...gifts.slice(page*8,(page+1)*8).map(item=>[item,()=>{
         if(!takeGift(state.inventory,item)){thuanConversation();return;}
         const story=state.story,day=Math.floor(getMinutes()/1440);
         if(story.gift_day!==day){story.gift_day=day;story.gifts_today=0;}
@@ -408,6 +417,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
         characterControl()?.feel?.('Thuan',reaction.mood,10);
         show(title,reaction.text,[['Back to Thuan',()=>thuanConversation()],['See you soon, Thuan',close]],{mood:reaction.mood});
       },false,'I brought you this — '+item.toLowerCase()+'.']),
+      ...(page>0?[['Previous presents',()=>giveGift(page-1)]]:[]),
+      ...((page+1)*8<gifts.length?[['More presents',()=>giveGift(page+1)]]:[]),
       ['Never mind',()=>thuanConversation()]]);
     show(title,greeting,[
       ...(basketTotal(state)?[[`Pay for ${basketLines(state).reduce((n,l)=>n+l.count,0)} item(s) · ¥${basketTotal(state)}`,konbiniCounter]]:[]),
@@ -460,10 +471,11 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
     const available=all.filter(([id,line,requires])=>(!requires||state.inspectedIds.includes(requires))&&!history.includes(id));
     // Newly discovered callbacks take precedence, then cycle through authored topics.
     const row=available.find(r=>r[2])||available[0]||all[0];history.push(row[0]);histories.set(name,history.slice(-3));
-    let text=row[0]==='home'?commuterDescription(name):row[1];
+    let text=row[0]==='home'?(residentHomeDescription(name)||commuterDescription(name)):row[1];
     const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);
     const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
-    buttons.push(['How do you travel?',()=>show(name+' · Harbour Line',commuterDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
+    const home=residentHomeDescription(name);
+    buttons.push([home?'Where do you live?':'How do you travel?',()=>show(name+' · '+(home?'Home':'Harbour Line'),home||commuterDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
     if(name==='Nao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);
     // Mingling at Minato: stand somebody a drink. They remember it.
     if(getSocialContext().inside==='izakaya'&&name!=='Nao'&&name!=='Barfly'&&izakayaOpen(getMinutes()))buttons.push(['Buy '+name+' a drink · ¥'+DRINKS.draft.price,()=>treat(name)]);
@@ -491,12 +503,12 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
   /** The hearts on the name tab, for whoever is talking. */
   function showHearts(name){const h=heading;if(!h)return;const r=state.friendship?.[name];h.dataset.hearts=heartLine(r?.points||0);h.dataset.level=levelName(r?.points||0);}
   /** Giving a resident something from the bag. */
-  function residentGift(name){
+  function residentGift(name,page=0){
     const gifts=giftableItems(state.inventory);
     if(!gifts.length){receipt(name,'Your bag has nothing to give just now.');return;}
     const pool=wantPool(),want=openWant(state,getMinutes(),pool,name);
     show(name+' · A present','What will you give '+name+'?'+(want?'\n(They mentioned '+withArticle(want.item.toLowerCase())+'.)':''),[
-      ...gifts.slice(0,8).map(item=>[item,()=>{
+      ...gifts.slice(page*8,(page+1)*8).map(item=>[item,()=>{
         if(!takeGift(state.inventory,item))return;
         const result=gave(state,name,item,getMinutes(),pool);
         if(result.yen)state.yen+=result.yen;
@@ -505,6 +517,8 @@ export function createActivities({say,getResidentLocations=()=>null,onConversati
         show(name,giftLine(name,item,result)+extra,[['Thank you',close]]);showHearts(name);
         onTreat(name);
       }]),
+      ...(page>0?[['Previous presents',()=>residentGift(name,page-1)]]:[]),
+      ...((page+1)*8<gifts.length?[['More presents',()=>residentGift(name,page+1)]]:[]),
       ['Not now',()=>resident(name)]]);
     showHearts(name);
   }

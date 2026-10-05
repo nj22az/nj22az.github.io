@@ -37,6 +37,6 @@ test('every departure is sold at the counter, and none is left loose on the quay
  assert.ok(!labels.some(l=>/Airport ferry tickets/.test(l.label)),'the old quay ticket prompt is gone');
  const spots=[];const room=new THREE.Group();
  const layout=buildPortHall({room,reg:(o,label)=>spots.push(label),action(){},collider(){}});
- for(const want of ['Buy a ticket: Mainland ferry','Buy a ticket: Airport ferry','Take the evening boat to Naha with Thuan','Go up to the Harbour Office'])assert.ok(spots.includes(want),want);
+ for(const want of ['Read about cargo crossings','Buy a ticket: Airport ferry','Take the evening boat to Naha with Thuan','Go up to the Harbour Office'])assert.ok(spots.includes(want),want);
  assert.equal(layout.yaw,0);assert.ok(layout.spawn[2]<layout.bounds.maxZ&&layout.exit[2]>layout.spawn[2]);
 });

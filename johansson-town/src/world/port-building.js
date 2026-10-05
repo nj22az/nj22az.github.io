@@ -2,7 +2,6 @@ import * as THREE from '../../vendor/three.module.js';
 import {createKit} from './okinawa/kit.js';
 import {createMaterials} from '../render/materials.js';
 import {flowerBlock,roofTile,poster} from './okinawa/signs.js';
-import {HARBOUR_LINE} from '../people/commuter-schedule.js';
 
 /**
  * The Minato Port Building (docs/PORT-BUILDING-PLAN.md): one building on the quay for
@@ -20,7 +19,7 @@ export const PORT_BUILDING=Object.freeze({
  ground:3.4,upper:3,
  /** The waiting hall's glass doors, on the pier side. */
  hallDoor:Object.freeze([5.6,0,-42.6]),
- /** Kept clear of the second quay car bay, whose cars reach x 3.55. */
+ /** Passenger cover remains clear of the cargo bays and their turning paths. */
  canopy:Object.freeze({minX:3.85,maxX:5.6,minZ:-45.2,maxZ:-40}),
  /** Where somebody waiting for the boat stands, and where the driver waits for his. */
  platform:Object.freeze([4.7,-44.3]),
@@ -123,7 +122,7 @@ export function buildPortBuilding({parent,label=()=>{},shadows=false}){
  for(const dz of [-.6,.6])kit.box(.38,.42,.08,C.maxX-.45,.23,-43.25+dz,STEEL,{finish:'metal'});
 
  // The timetable, on the pier between the tower and the glass.
- kit.sign(poster({title:'Timetable',lines:['FERRY TIMETABLE','MINATO ⇄ MAINLAND',...HARBOUR_LINE.map(m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}  dep.`),'Tickets inside'],band:'#2b5a78',bg:'#f3ecd8'}),.62,.86,wx-.04,1.55,-44.98,{ry:-Math.PI/2,name:'Ferry timetable'});
+ kit.sign(poster({title:'Timetable',lines:['SHARED PASSENGER & CAR FERRY','MINATO ⇄ KITANO-JIMA','Crossings on request','Some trips carry cars','Tickets inside'],band:'#2b5a78',bg:'#f3ecd8'}),.62,.86,wx-.04,1.55,-44.98,{ry:-Math.PI/2,name:'Ferry timetable'});
  kit.finish(group,'Port building shell');
 
  // Names: the terminal over the canopy, to the pier; tickets over the doors.

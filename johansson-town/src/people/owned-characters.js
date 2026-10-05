@@ -5,10 +5,11 @@ import {assetURL} from '../assets.js';
 import {celFrom} from '../render/cel.js';
 
 const cache=new Map();
-export const OWNED_CHARACTERS=Object.freeze({barfly:{height:1.5,clip:'Idle'},Jonsson:{height:1.35,clip:'Work'},merry_Moose:{height:.62},Maneki_neko_Colorful:{height:.32},thuanFigurine:{height:.24,path:"figurines/thuan/thuan-realistic.glb",static:true}});
+export const OWNED_CHARACTERS=Object.freeze({barfly:{height:1.5,clip:'Idle'},Jonsson:{height:1.35,clip:'Work'},merry_Moose:{height:.62},Maneki_neko_Colorful:{height:.32,path:'models/owned/maneki-neko-display.glb',static:true},thuanFigurine:{height:.24,path:"figurines/thuan/thuan-display.glb",static:true}});
 function load(kind){
  if(!cache.has(kind))cache.set(kind,new GLTFLoader().loadAsync(assetURL(OWNED_CHARACTERS[kind].path||'models/owned/'+kind+'.glb')).then(g=>{
-  g.scene.traverse(o=>{if(o.isMesh){o.material=Array.isArray(o.material)?o.material.map(m=>celFrom(m,{bands:3})):celFrom(o.material,{bands:3});o.castShadow=o.receiveShadow=true;}});return g;
+  const material=m=>{if(kind==='thuanFigurine'){m.userData.keepPhysical=true;m.userData.keepPhysicalStrict=true;return m;}return celFrom(m,{bands:3});};
+  g.scene.traverse(o=>{if(o.isMesh){o.material=Array.isArray(o.material)?o.material.map(material):material(o.material);o.castShadow=o.receiveShadow=true;}});return g;
  }).catch(e=>{cache.delete(kind);throw e;}));return cache.get(kind);
 }
 /** Each instance owns its skeleton/mixer; cached geometry and textures are shared. */

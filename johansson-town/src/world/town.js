@@ -166,12 +166,12 @@ function addStreetLife(world,options,factory){
 
   addWithCollider(group,colliders,factory.postbox(2.4,16.4,Math.PI/2));
   inspect([1.75,1,16.4],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
-  addWithCollider(group,colliders,factory.noticeBoard(3.2,-37.3,0));
-  addSakuraFlyer(group,{position:[3.57,1.55,-37.215],width:.43});
-  anchor(group,[3.2,1,-36.6],'Read Thuan’s shop flyer · harbour notice board',()=>options.onAction?.('sakura-flyer','Harbour notice board'),options.register);interactions++;
+  addWithCollider(group,colliders,factory.noticeBoard(5.5,-37.3,0));
+  addSakuraFlyer(group,{position:[5.87,1.55,-37.215],width:.43});
+  anchor(group,[5.5,1,-36.6],'Read Thuan’s shop flyer · harbour notice board',()=>options.onAction?.('sakura-flyer','Harbour notice board'),options.register);interactions++;
 
-  addWithCollider(group,colliders,factory.utilityCabinet(-7,13.8,0));// On the footway, clear of the six-metre carriageway.
-  inspect([-5.55,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
+  addWithCollider(group,colliders,factory.utilityCabinet(3.7,13.8,0));// The east footway leaves the freight pullout clear.
+  inspect([2.9,1,13.2],'Inspect utility cabinet','Street utility cabinet','Telephone and power distribution diagrams are tucked behind the inspection glass.');
 
   // Thuan's bicycle stands on the west footway, a short walk from Sakura, as an interactive ride.
   // On the west footway, between Sakura's front and the kerb (the carriageway is narrower now).
@@ -215,6 +215,18 @@ function addStreetLife(world,options,factory){
   machine([-5.9,1,-42.4],'Work the hand pump','Harbour hand pump','A cast-iron hand pump on a concrete plinth, for rinsing fish boxes and sluicing the quay. Two strokes of the handle and the water comes, cold, from the well under the harbour.');
 
   return {interactions,lights,bicycle};
+}
+
+/** Paint the actual coastal paving, including its graded garden-bank triangles. */
+function addCoastalRoadPaint(world){
+ const road=world.group.getObjectByName('island-coastal-road'),group=world.group.getObjectByName('Road standards');
+ if(!road||!group)return;
+ road.updateWorldMatrix(true,false);
+ const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0),origin=new THREE.Vector3();
+ const heightAt=(x,z)=>{ray.set(origin.set(x,32,z),down);const floor=ray.intersectObject(road,false)[0];return (floor?.point.y??groundHeight(x,z))-.03;};
+ // edgeLines adds 35 mm itself; these marks finish 5 mm above their drawn floor.
+ edgeLines(group,COAST_ROAD.slice(0,2),{width:2.6,heightAt});
+ edgeLines(group,COAST_ROAD.slice(1),{width:5,heightAt});
 }
 
 function findSea(group){let sea=null;group.traverse(o=>{if(o.isMesh&&(o.name==='Island surrounding sea'||o.name==='Harbour basin')){if(!sea||o.name==='Harbour basin')sea=o;}});return sea;}
@@ -295,7 +307,7 @@ export function createTown(options){
     for(const [x,z,ry] of [[43.3,67.88,Math.PI],[23.5,64.12,0],[11.5,67.88,Math.PI]])ishiganto(g,{x,z,y:ky,ry});
     stopMarking(g,{x:43.3,z:63.7,y:ky,width:KITAHAMA.approach.maxX-KITAHAMA.approach.minX});
     roadSign(g,'stop',{x:KITAHAMA.approach.minX+.22,z:63.2,y:ky,ry:Math.PI,colliders:world.colliders});
-    edgeLines(g,COAST_ROAD,{width:5,heightAt:groundHeight});
+
    }
    if(!world.eastLawn.useParkGreenery(parkFoliage()))registerDetail(world,{id:'east-lawn-grass',x:19,z:-6,radius:64,load:async()=>
     await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});
@@ -308,7 +320,7 @@ export function createTown(options){
   world.staffBench=buildStaffBench({parent:world.group,factory,colliders:world.colliders,
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
-  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});
+  world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.traditionalGarden=buildTraditionalGarden({world,register:options.register,onAction:options.onAction});world.parkAccess=buildParkAccess(world,{register:options.register,onAction:options.onAction});world.powerNetwork=buildTownPower(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);world.countrysideLife=buildCountryside({world,register:options.register,onAction:options.onAction,mobile:options.mobile});
   const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;const close=site.id==='market'?1200:site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   // Minato's regular comes back with them: he lives in the izakaya and keeps it
   // company when it is shut (people/izakaya-hours.js), so it is never empty.

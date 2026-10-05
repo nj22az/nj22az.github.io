@@ -7,7 +7,11 @@ export function createVehicleDrivers({people}){
  function board(v){
   if(borrowed.has(v))return true;
   const person=people().find(p=>p.profile?.name===v.driver),g=person?.g,u=g?.userData;
-  if(!g||u.playerControlled||u.inVehicle||u.indoors||u.inHome||u.inMarket||u.inIzakaya||u.inRamen||u.inBookshop||u.inWorkplace||u.inOnsen||u.sleeping||u.roomTransition||u.playerConversation)return false;
+  // The street scheduler represents offscreen work/home with `indoors` on the town
+  // avatar. A scheduled delivery may borrow that exact resident; active interiors,
+  // conversations and visible indoor work still keep ownership of their avatar.
+  const scheduledOffscreen=!!(g&&!g.visible&&g.parent===v.g.parent?.parent&&v.purpose);
+  if(!g||u.playerControlled||u.inVehicle||u.indoors&&!scheduledOffscreen||u.inHome||u.inMarket||u.inIzakaya||u.inRamen||u.inBookshop||u.inWorkplace||u.inOnsen||u.sleeping||u.roomTransition||u.playerConversation)return false;
   const saved={g,parent:g.parent,position:g.position.clone(),rotation:g.rotation.clone(),visible:g.visible,flags:Object.fromEntries(keys.map(k=>[k,u[k]]))};borrowed.set(v,saved);
   v.g.add(g);const seat=v.g.userData.driverSeat;
   g.position.set(seat.x,0,seat.z);g.rotation.set(0,Math.PI,0);g.visible=true;
