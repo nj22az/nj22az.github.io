@@ -230,3 +230,7 @@ LACK side table (30449908) and IVAR pine cabinet (70033766): IKEA / Inter IKEA S
 ### Harbour Park Blender bench
 
 `models/park/harbour-bench.glb`: original Johansson Town geometry authored in Blender. Editable `.blend`, measured design, reproducible generator, export budget and provenance are in `../art/park/PROVENANCE.md`. Plain worn-cedar and dark-iron materials; no third-party model or image texture. Runtime seating, collider and exported mesh share the same generated physical dimensions.
+
+### IEC 90L pump motor (Dock Electrical Workshop)
+
+`models/props/motor-90l-display.glb`: the site's own 1.5 kW IEC 90L pump motor (`../../motor-90l/`, original nj22az.github.io content), built from `motor-90l/motor.js` and packed by `../tools/pack-motor-90l.mjs`: the closed motor's outside only, simplified with meshoptimizer, one vertex-coloured mesh with `KHR_mesh_quantization`, true size in metres (shown 1.7x on the bench). No third-party model or texture. Source hashes, part list and budget: `models/props/motor-90l-display-provenance.json`. The steel test bench is original procedural geometry (`../src/workshop/motor-bench.js`).
