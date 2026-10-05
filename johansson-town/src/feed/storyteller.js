@@ -124,10 +124,11 @@ export function tellComic(rng,catalogue,opts={}){
 /** A recipe a resident claims, with one step that has no business being there. */
 export function tellRecipe(rng,catalogue,opts={}){
  const ctx={...stage(rng,catalogue,{need:2,...opts}),vars:{}};
- ctx.vars.dish=expand(rng.pick(RECIPE.dish),ctx,rng);
+ const [dish,needs]=rng.pick(RECIPE.dish);ctx.vars.dish=expand(dish,ctx,rng);const key=expand(needs,ctx,rng);
  ctx.vars.main=expand(rng.pick(RECIPE.main),ctx,rng);
- const ingredients=[ctx.vars.main,...rng.sample(RECIPE.ingredients,4).map(i=>expand(i,ctx,rng))];
- const steps=rng.sample(RECIPE.steps,4).map(s=>expand(s,ctx,rng));
+ const ingredients=[...new Set([key,ctx.vars.main,...rng.sample(RECIPE.ingredients,4).map(i=>expand(i,ctx,rng))])].slice(0,6);
+ // Four steps in the order a cook does them.
+ const steps=rng.sample(RECIPE.steps.map((step,i)=>[i,step]),4).sort((a,b)=>a[0]-b[0]).map(([,step])=>expand(step,ctx,rng));
  steps.splice(1+rng.int(steps.length-1),0,expand(rng.pick(RECIPE.odd),ctx,rng));
  return {type:'recipe',title:sentence(expand(rng.pick(RECIPE.title),ctx,rng)),place:ctx.place.id,placeName:ctx.place.name,cast:[ctx.A.name],
   by:ctx.A.name,serves:1+rng.int(4),minutes:5*(2+rng.int(8)),ingredients:ingredients.map(sentence),steps:steps.map(sentence),tip:sentence(expand(rng.pick(RECIPE.tip),ctx,rng))};

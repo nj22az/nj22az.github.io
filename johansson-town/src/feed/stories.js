@@ -191,15 +191,16 @@ export const ENDINGS=Object.freeze([
 ]);
 
 /** Opening panels: a wide establishing shot before the story starts (longer strips, Sundays). */
-export const OPENINGS=Object.freeze(['{place}. {hour}.','Meanwhile, at {place.short}…','{place}, on a [quiet|busy|perfectly ordinary] day.','{hour} at {place.short}. {weather} again.']);
+export const OPENINGS=Object.freeze(['{place}. {hour}.','Meanwhile, at {place.short}…','{place}, on a [quiet|busy|perfectly ordinary] day.','{hour} at {place.short}.']);
 /** Reaction panels: a beat of silence before the pay-off. Lines may be empty. */
 export const REACTIONS=Object.freeze(['','…','!','Wait.','Hm.']);
 
 /** Recipes: a dish a resident claims as their own, with one step that has no business being there. */
 export const RECIPE=Object.freeze({
  title:['{A}’s famous {$dish}','{$dish}, the {place.bare} way','{$dish} for people in a hurry'],
- dish:['island fried rice','{food} sandwich','{snack} parfait','harbour omurice','emergency champurū','typhoon curry','three-minute miso soup'],
- main:['luncheon meat','spring onions','{food}','tofu','pork belly'],
+ // Each dish names the one ingredient it cannot be without.
+ dish:[['island fried rice','two bowls of rice'],['{food} sandwich','{food}'],['harbour omurice','one egg, at room temperature'],['emergency champurū','tofu'],['typhoon curry','a box of curry roux'],['three-minute miso soup','a spoon of miso']],
+ main:['luncheon meat','spring onions','tofu','pork belly'],
  ingredients:['two bowls of rice','one egg, at room temperature','a spoon of miso','{snack}, crushed','a pinch of salt','a squeeze of shikuwasa','soy sauce, to taste','{drink}, for the cook'],
  steps:['Wash the rice until the water runs nearly clear.','Heat the pan until a drop of water dances.','Fry the {$main} until golden.','Stir in the miso and turn the heat down.','Add the egg and do not touch it for one minute.','Season with soy sauce and taste it.','Fold everything together gently.','Serve in the biggest bowl you own.'],
  odd:['Hum quietly while it simmers; the pan can tell.','Ask {thing} for its opinion.','Wait for {weather} to pass.','Do this step facing the sea.','If {B} is watching, pretend you meant to do that.'],
