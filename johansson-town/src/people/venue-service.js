@@ -101,7 +101,7 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
     continue;
    }
    const account=ledger.account(name,minutes),taste=residentPersonality(name);account.meals??={};
-   const record=account.meals[place]??={item:place==='ramen'?'ramen':taste.meal,drink:place==='ramen'?drinkFor?.(name)||'tea':taste.drink==='beer'&&!wantsAnother(person.g.userData.tipsy,BEER)?'tea':taste.drink,delivered:false,eaten:0,finished:false};
+   const record=account.meals[place]??={item:place==='ramen'?'ramen':taste.meal,drink:place==='ramen'?drinkFor?.(name)||'tea':(drinkFor?.(name)||taste.drink)==='beer'&&!wantsAnother(person.g.userData.tipsy,BEER)?'tea':(drinkFor?.(name)||taste.drink),delivered:false,eaten:0,finished:false};
    let setting=settings.get(person);if(setting&&setting.record!==record){remove(person);setting=null;}
    if(!setting){
     const food=createDishProp(record.item==='fish'?'hokke':record.item),drink=createDrinkProp(DRINK_PROP[record.drink]||'oolong');food.visible=drink.visible=false;room.add(food,drink);setting={record,food,drink};settings.set(person,setting);

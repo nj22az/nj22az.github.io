@@ -31,7 +31,7 @@ export const NIGHT_PATROL=[[0,28],[0,SHOP_CROSSING_Z],[0,-16],[0,-36],[0,-44],[0
 // Keep the unwrapped saved clock so revisiting or reloading never rerolls her.
 export function thuanVisitsIzakaya(minutes){
  const minute=((minutes%1440)+1440)%1440,day=Math.floor(minutes/1440);
- return day%2===0&&minute>=1220&&minute<1290;
+ return day%2===0&&minute>=1200&&minute<1290;
 }
 /**
  * Thuan's afternoon walk.
@@ -112,31 +112,12 @@ export function naoBeforeShift(profile,minutes,rain=false){
  return NAO_DAY.find(leg=>m<leg.until)||null;
 }
 
-/**
- * Whether Thuan is at the izakaya rather than the bus queue, on a commuter day.
- *
- * She spends the evening after closing at Minato, then walks to the shared 22:00
- * service. Rain sends her straight to the stop to wait for the same bus.
- *
- * Fifty-five minutes of walking, not fifteen. The bus stands at the arch at the top of
- * the bus road now rather than at the shelter, which is forty-five metres from
- * Minato's door, and this town walks it at about eight tenths of a metre a second once
- * the turn at each corner is paid for. Fifteen never worked even at the old stop: she
- * was two metres short of the queue when the bus pulled out, and nobody noticed,
- * because a commuter past her departure time is marked away wherever she is standing.
- * Now that she has to reach the door and step through it, being late shows.
- *
- * It stops short of an hour because the evening service is at ten and the shop shuts
- * at eight: at sixty she would be leaving Minato on the hour, and the hour is the one
- * time anybody looks at a clock.
- */
+/** Alternate dry evenings at Minato, keyed to the saved town day.
+ * Thuan now walks home; the ferry margin remains for invited onsen visits. */
 export const THUAN_BUS_MARGIN=55;
 export function thuanAtMinato(profile,minutes,rain=false){
- const shift=shiftFor(profile);
- if(rain||!shift||shift.permanent)return false;
- const m=minuteOfDay(minutes);
- // Leave time to walk to the stop before the evening bus arrives.
- return izakayaOpen(m)&&inTimeRange(m,shift.finish,departureFor(profile,rain)-THUAN_BUS_MARGIN);
+ if(profile?.name!=='Thuan'||rain)return false;
+ return izakayaOpen(minutes)&&thuanVisitsIzakaya(minutes);
 }
 
 /**
@@ -230,9 +211,7 @@ export function visitsMarket(profile,minutes,state=null){
 }
 export const ramenOpen=m=>inTimeRange(m,540,1260);
 export function visitsRamen(profile,minutes){
- return false; // This layout has no ramen building to enter.
- const visit=RAMEN_VISITS[profile.name];
- return ACTIVE_RESIDENT_NAMES.includes(profile.name)&&ramenOpen(minutes)&&!!visit&&inTimeRange(minutes,...visit);
+ return profile?.name!=='Thuan'&&!!satoLunch(profile,minutes);
 }
 /**
  * The Front-Row staff at home in the yard: to work for their shift, a Sakura errand or
@@ -323,7 +302,8 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
   if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
   if(thuanAtOnsen(profile,minutes,rain,state))return {place:'onsen',target:ONSEN_DOOR,activity:'a soak at Umi-no-yu before the last bus'};
-  if(thuanAtMinato(profile,minutes,rain))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a beer at Minato before the last bus'};
+  if(thuanAtMinato(profile,minutes,rain))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a beer with Nao after closing Sakura'};
+  return {place:'home',target:profile.home,activity:'walking home after closing Sakura'};
  }
  if(phase==='departing'){
   const afterWork=afterWorkPlan(profile,minutes,rain);
@@ -344,11 +324,14 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   return shiftActive(profile,minutes)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'serving guests and tidying Minato'}:bus('travelling to the next shift');
  }
  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a shopping errand at Sakura'};
- if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of ramen at Inakaya'};
+ if(visitsRamen(profile,minutes))return {place:'ramen',target:RAMEN_DOOR,activity:'a bowl of noodles at Sato Ramen'};
  if(profile.name==='Mrs Sato'&&shiftActive(profile,minutes))return profile.workSite==='warehouse'?{place:'work',target:profile.work,activity:'checking the quay stores'}:{place:'ramen',target:RAMEN_DOOR,activity:'serving the Sato Ramen counter'};
  if(profile.name==='Thuan'){
   if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
   if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
+  // Finish serving customers already in the shop before taking her lunch break.
+  const waiting=Object.values(state?.residentLife||{}).some(account=>account.day===Math.floor(minutes/1440)&&account.shopping&&!account.shopping.finished&&Number.isFinite(account.shopping.started)&&minutes>=account.shopping.started&&minutes<account.shopping.started+160);
+  const lunch=satoLunch(profile,minutes);if(lunch&&!waiting)return lunch;
   // Her afternoon walk, read before the shift so that being on shift does not simply
   // put her back behind her own counter for the whole of it.
   const walk=thuanAfternoon(profile,minutes,rain);
@@ -377,6 +360,14 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  if(HOME_RESIDENT_NAMES.has(profile?.name)){
   const routine=homeRoutine(profile,minutes);
   if(['sleep','wake','breakfast','prepare'].includes(routine.id))return {place:'home',target:profile.home,activity:routine.activity+' at home'};
+ }
+ // Local residents leave early enough to be seen walking from home to work.
+ // Sleep/breakfast above and night shifts retain priority.
+ const shift=shiftFor(profile),m=minuteOfDay(minutes);
+ if(HOME_RESIDENT_NAMES.has(profile?.name)&&shift&&!shift.permanent&&inTimeRange(m,shift.start-30,shift.start)){
+  const place=profile.name==='Thuan'?'market':profile.name==='Nao'?'izakaya':'work';
+  const target=place==='market'?MARKET_THRESHOLD:place==='izakaya'?IZAKAYA_DOOR:place==='ramen'?RAMEN_DOOR:profile.work;
+  return {place,target,activity:'walking to work before opening'};
  }
  const plan=commuterPlan(profile,minutes,rain,state);
  // The two gardens have regular visitors; work and bad-weather routines stay intact.

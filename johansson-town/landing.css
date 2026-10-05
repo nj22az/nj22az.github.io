@@ -845,7 +845,7 @@
 
 /* LINE entry and guide controls, including title/loading and player slots. */
 #start{font-family:var(--gothic);font-size:20px;background:#f7f8f9;color:#000}
-#start .title-screen{font-family:var(--gothic);background:#f7f8f9;color:#000}
+#start .title-screen{font-family:var(--gothic);background:linear-gradient(180deg,#5fb4e6 0%,#9fd6f0 42%,#ffe3b8 78%,#ffd199 100%);color:#000}
 #start :is(button,input,select,a){font-family:var(--gothic);letter-spacing:normal;text-shadow:none;box-sizing:border-box}
 #start :is(button,.title-guide,.board-back a,.board-cta a,.guide-nav a){min-height:44px;padding:12px 16px;border:1px solid #e5e5e5;border-radius:8px;background:#fff;color:#000;font-size:16px;font-weight:700;line-height:1.4;box-shadow:none;text-decoration:none}
 #start :is(button,.title-guide,.board-back a,.board-cta a,.guide-nav a):focus-visible{outline:2px solid #06c755;outline-offset:3px;box-shadow:none}

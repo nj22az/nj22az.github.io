@@ -63,8 +63,8 @@ test('supper charges once, advances the evening, saves a memory and refuses insu
 });
 
 test('Thuan visits after closing on alternate days and has off-duty conversation',()=>{
- for(const m of [0,1199,1200,1219,1290,1439,1440+1230])assert.equal(thuanVisitsIzakaya(m),false);
- for(const m of [1220,1230,1289,2880+1230])assert.equal(thuanVisitsIzakaya(m),true);
+ for(const m of [0,1199,1290,1439,1440+1230])assert.equal(thuanVisitsIzakaya(m),false);
+ for(const m of [1200,1219,1220,1230,1289,2880+1230])assert.equal(thuanVisitsIzakaya(m),true);
  const dom=installDOM();const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1230,getSocialContext:()=>({inside:'izakaya',names:['Thuan','Nao']})});
  acts.action('resident','Thuan');assert.equal(document.querySelector('#activityTitle').textContent,'Thuan · After hours');
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/all locked up/);
