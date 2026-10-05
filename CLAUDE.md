@@ -125,6 +125,12 @@ that makes more or better stories.
 - Comics are shot inside the real rooms (captured by `tools/render-feed-backdrops.mjs`), with the
   residents' own looks, walks, poses and props. Quality over quantity.
 - New places, residents, props and moves should be usable by the storyteller, not only by the game.
+- **No glitches, jagged edges or unnatural behaviour.** Anything that clips, pops, floats, flickers or
+  moves in a way a person would not is a bug, not polish for later.
+- **Nothing is random.** Every item, prop and product has a purpose: who it is for, why they would want
+  it, and why it is placed where it is. Shops are merchandised with a philosophy (traffic, impulse,
+  daily needs, the people who actually live here); record that reasoning with the data so it can be
+  tested and so stories can use it.
 
 ## Sjöskolan
 
