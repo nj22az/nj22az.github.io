@@ -350,11 +350,13 @@ export function drawBack(id,w=1024,h=1024){
  text(ctx,brand.name+' · '+brand.line,w/2,h*.05,Math.round(m*.042),brand.paper,{maxWidth:w*.9});
  // The panel every pack carries, in a ruled white box.
  const bx=pad,by=h*.14,bw=w-pad*2,bh=h*.5;
+ text(ctx,'一括表示',bx,by-h*.018,Math.round(m*.026),brand.ink,{align:'left',font:GOTHIC});
  ctx.fillStyle='#fffdf7';ctx.fillRect(bx,by,bw,bh);ctx.strokeStyle='#2a2a2a';ctx.lineWidth=m*.004;ctx.strokeRect(bx,by,bw,bh);
- const food=FOOD.has(id),rows=[['Product',brand.line],[food?'Ingredients':'Contents',INGREDIENTS[id]||'—'],['Net',pack.net],[food?'Best before':'Made',food?'See base':'1997'],['Storage',food?'Keep cool, dry and out of the sun':'Keep out of reach of children'],['Maker',brand.name+' Co. · 1-'+(seedOf(id)%40+1)+' Harbour Town, Okinawa']];
+ const food=FOOD.has(id),rows=[['名称|Product',brand.line],[food?'原材料名|Ingredients':'品名|Contents',INGREDIENTS[id]||'—'],['内容量|Net',pack.net],[food?'賞味期限|Best before':'製造|Made',food?'See base':'1997'],['保存方法|Storage',food?'Keep cool, dry and out of the sun':'Keep out of reach of children'],['製造者|Maker',brand.name+' Co. · 1-'+(seedOf(id)%40+1)+' Harbour Town, Okinawa']];
  const rh=bh/rows.length,col=bw*.24,fs=Math.round(m*.032);
  rows.forEach(([k,v],i)=>{const y=by+i*rh;if(i){ctx.beginPath();ctx.moveTo(bx,y);ctx.lineTo(bx+bw,y);ctx.stroke();}
-  text(ctx,k,bx+col/2,y+rh/2,fs,'#2a2a2a',{font:GOTHIC});
+  // The key in Japanese as printed, with the English under it in small type.
+  const [jp,en]=k.split('|');text(ctx,jp,bx+col/2,y+rh*.4,fs,'#2a2a2a',{font:GOTHIC,maxWidth:col*.92});text(ctx,en,bx+col/2,y+rh*.75,Math.round(fs*.62),'#6a6258',{font:GOTHIC,weight:'normal',maxWidth:col*.92});
   // Long ingredient lists wrap onto a second line.
   ctx.font=`normal ${fs}px ${GOTHIC}`;const max=bw-col-pad*.4;let line=v,rest='';
   // Wrap at a space, so a word is never cut in two.
