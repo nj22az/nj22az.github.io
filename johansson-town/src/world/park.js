@@ -12,6 +12,7 @@ import {broadleafGeometry} from './okinawa/trees.js';
 import {GROUND_LAYER} from './ground-layers.js';
 import {applyTerrainNormals} from './terrain-surface.js';
 import {townCalendarAt} from '../town-clock.js';
+import {placeTeaStop} from './roadside-props.js';
 
 /**
  * Harbour Park, built in the town's own hand (docs/AMPLIFY-AUDIT.md, §10): the mound it
@@ -131,6 +132,8 @@ export function buildPark(world,options){
  options.register(bench,'Sit and watch the town and harbour',()=>options.onAction('seat','Harbour Park bench','A quiet view across the rooftops and port, under the old cherry.'));
  const sign=new THREE.Object3D();{const [x,z]=at(-13.2,-2.2);sign.position.set(x-.6,ground(x,z)+1.1,z);}world.group.add(sign);
  options.register(sign,'Read the park board',()=>options.onAction('read','Minato Park','Laid out in 1972 on the old lookout mound. The kanhizakura was planted by the class of that year and flowers in January, the first cherry in Japan. Please take your rubbish home. No ball games on the mound. — Minato Town Office'));
+ // A tea stop on the open turf south of the path in: red felt, a paper parasol, a cup of sencha.
+ {const [x,z]=at(-7,-5.6);placeTeaStop(world,options,{x,y:ground(x,z),z,ry:0});}
  const pools=createLightPools(world.group,PARK_LAMPS.map(([lx,lz])=>{const [x,z]=at(lx,lz);return {x,z,y:ground(x,z),radius:2.6};}));
  (world.hourly||(world.hourly=[])).push(minutes=>{const glow=lanternGlow(minutes);pools.update(glow);if(materials.lamp)materials.lamp.emissiveIntensity=.1+glow*1.6;dress(minutes);});
  world.park={group,bench,seat:PARK_BENCH,loaded:true,pools,trees,benchObject,benchSource:benchSource?'blender':'procedural',benchDimensions:benchGeometry.dimensions};

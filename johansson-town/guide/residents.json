@@ -843,5 +843,24 @@
       "ambition": "Pass the kanji test without the last ten characters.",
       "favourite": "The pink guava Blue Coral ice cream"
     }
+  },
+  {
+    "name": "Mr Toguchi",
+    "role": "Fish seller",
+    "place": "His push cart on the main street",
+    "bio": "Sells the dawn catch from a push cart on ice, up and down the main street until the sun clears the roofs.",
+    "backstory": "He buys straight off the boats at first light: gurukun when they run, mackerel most days, a bigeye or a parrotfish when the night was kind. By seven he is on the main street, pushing slowly and calling out what he has. Whatever is left at eleven goes to Thao at Minato, after a haggle both of them enjoy losing. He keeps a hanging scale he trusts more than any shop's and a cloth shade his late wife sewed.",
+    "portrait": "assets/images/residents/mr-toguchi.webp",
+    "islandPersonality": {
+      "title": "The morning caller",
+      "traits": [
+        "Early",
+        "talkative",
+        "proud of his fish"
+      ],
+      "habit": "Taps the side of the cart twice before he names a price.",
+      "ambition": "Sell out before the sun gets over the roofs.",
+      "favourite": "The bigeye that fought him for half an hour"
+    }
   }
 ]
