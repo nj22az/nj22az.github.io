@@ -3,6 +3,7 @@ import {addOwnedCharacter} from '../../people/owned-characters.js';
 import {addBookshopDetail} from './bookshop-detail.js';
 import {DOCK_WORKSHOP_ROOM} from '../dock-workshop-layout.js';
 import {buildWorkshopMachine} from '../../workshop/machine.js';
+import {buildMotorBench,MOTOR_BENCH,MOTOR_NOTE} from '../../workshop/motor-bench.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {createMaterials} from '../../render/materials.js';
 import {buildShopDoor} from '../shop-door.js';
@@ -84,6 +85,9 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   anchor([-1.24,1.25,-hd+.58],'Use Form 3D printer','workshop','Form 3D printer',null,'Chin');
   anchor([.55,1.18,-hd+.22],'Test the bench calibrator','machine','Bench calibrator','Zero, span and reference checks share Tetsuo’s instrument bench.','Tetsuo');
   anchor([1.50,1.05,-hd+.18],'Tune workshop radio','radio','Workshop radio','Tetsuo has restored the tuner. Harbour weather and late-night music come through clearly.','Tetsuo');
+  // The site's IEC 90L pump motor (/motor-90l/) on Tetsuo's test bench, rating plate to the door.
+  buildMotorBench({room,collider});
+  anchor([MOTOR_BENCH.x,1.05,MOTOR_BENCH.z+.18],'Look at the pump motor','motor-bench','Pump motor on the test bench',MOTOR_NOTE,'Tetsuo');
   box('Star Port cabinet',[.60,1.48,.47],[-1.65,.74,hd-.29],0x4b414d,true);box('Star Port screen',[.46,.43,.028],[-1.65,1.09,hd-.545],0x344f57);
   const arcade=anchor([-1.65,1,hd-.57],'Play Star Port','arcade','Star Port');arcade.userData.npcInteraction=false;
   board('KENJI & TETSUO REPAIRS','FORM 3D · STEPWISE · REPAIRS',[0,2.52,-hd+.08],3.65);

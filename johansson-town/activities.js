@@ -2,6 +2,7 @@ import {MINATO_MEMORY_STORY,MINATO_RECIPE_CARD} from './src/world/interiors/izak
 import {foodArtForItem} from './src/commerce/food-art.js';
 import {FLYER_ITEM,FLYER_PATH,FLYER_PAPER,collectSakuraFlyer} from './src/commerce/sakura-flyer.js';
 import {restoreIsland} from './src/island/services.js';
+import {MOTOR_LINKS} from './src/workshop/motor-bench.js';
 import {playerRecipe} from './src/avatars/actors.js';
 import {encodeRecipe} from './src/avatars/recipe.js';
 import {restoreArchive,seedArchive,fileDocument,retainArchive} from './src/office/archive.js';
@@ -807,6 +808,11 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
 
   function inspect(name,detail){if(name==='Convex traffic mirror'){note('Traffic mirror: Tama was behind me. No cat when I turned.');say('A ginger shape in the mirror. Behind you: only the street.',5);}show(name,detail||'A thumb-sized clean patch marks the part everybody touches.',[['Close',close]]);}
   function read(name,detail){if(/harbour notice/i.test(String(name))&&hasDailyQuest(state,'notice')&&!isDailyDone(state,'notice')){markDailyDone(state,'notice');save();say(NOTICE_NUDGE,6);}show(name,detail||'One corner is pinned with a bent brass tack. Read the complete dispatch at the Field Notes rack.',[['Put it back',close]]);}
+  // Links out to the full motor model and Erik's routine in a new tab, so the town keeps its place.
+  function motorBench(name,detail){
+    const open=href=>()=>window.open(href,'_blank','noopener');
+    show(name,detail,[['See the full strip-down',open(MOTOR_LINKS.stripDown)],['Watch Erik’s routine',open(MOTOR_LINKS.routine)],['Close',close]]);
+  }
   function operate(name,detail){
     const already=state.operated.includes(name);
     show(name,detail||'A working machine from the late 1980s.',[
@@ -1054,6 +1060,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       case 'arcade':arcade();break;
       case 'sakura-flyer':sakuraFlyer(name);break;
       case 'inspect':inspect(name,detail);break;
+      case 'motor-bench':motorBench(name,detail);break;
       case 'read':if(typeof detail==='string')fileDocument(state,{type:'Notice',title:name,text:detail,source:'notice:'+name,organisation:'Community Hall'},getMinutes());save();read(name,detail);break;
       case 'machine':operate(name,detail);break;
       case 'store-table':tableService();break;
