@@ -33,7 +33,7 @@ test('crowd radii give Thuan a wide bubble and a softer advance',()=>{
 });
 
 test('shopping and other authored activities hold right of way',()=>{
- assert.equal(residentCommitted({userData:{shopping:true}}),true,'Nao buying soda must not be displaced');
+ assert.equal(residentCommitted({userData:{shopping:true}}),true,'Thao buying soda must not be displaced');
  assert.equal(residentCommitted({userData:{usingTownObject:true}}),true);
  assert.equal(residentCommitted({userData:{serving:true}}),true);
  assert.equal(residentCommitted({userData:{seatHeight:.55}}),true);

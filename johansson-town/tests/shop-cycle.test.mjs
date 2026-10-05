@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as T from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {RESIDENTS} from '../src/people/residents.js';
+import {marketVisitsForDay} from '../src/people/market-visits.js';
 import {createResidentLedger,restoreResidentLife} from '../src/people/resident-personalities.js';
 import {createSakuraShop} from '../src/people/sakura-shop.js';
 import {restoreSakura,advanceDeliveries} from '../src/commerce/sakura-economy.js';
@@ -13,7 +14,7 @@ import {SAVE_KEY} from '../src/save.js';
 
 function fixture({visible=true,saved=null}={}){
  installDOM();const scene=new T.Scene(),street=new T.Group();scene.add(street);
- const state=saved||{yen:1200,inventory:[],sakura:restoreSakura()},world={people:[]};let minutes=600;
+ const state=saved||{yen:1200,inventory:[],sakura:restoreSakura()},world={people:[]};let minutes=marketVisitsForDay(0).Reiko[0]+5;
  for(const name of ['Thuan','Reiko']){const profile=RESIDENTS.find(p=>p.name===name),g=new T.Group();g.userData={name,hit:{inside:false},indoors:'market',justArrived:name==='Reiko',visualReady:false};g.position.set(...[profile.work[0],0,profile.work[1]]);street.add(g);world.people.push({profile,g});}
  const ledger=createResidentLedger(()=>state),hits=[];
  const shop=createSakuraShop({world,scene,state,ledger,register:(o,label,fn,inside)=>{o.userData.hit={inside,fn,label};hits.push({o,label,fn});},action(){},exit(){},getMinutes:()=>minutes,getPlayerSeat:()=>null,getPlayerPosition:()=>new T.Vector3(5,0,5),isInside:()=>visible,pay:()=>{throw Error('NPC must pay from their own wallet');},say(){}});
@@ -109,9 +110,10 @@ test('the readable spreadsheet shows actual sales and stock and updates while op
 });
 
 test('sold-out goods get Thuan’s apology, no charge and no daytime refill, even with reserve stock',()=>{
- const f=fixture(),spec=stockSpec('notebook');f.state.sakura.stock.notebook.shelf=0;f.step(100);
+ const f=fixture(),spec=stockSpec('notebook');f.state.sakura.stock.notebook.shelf=0;let apologised=false;
+ f.step(100,()=>{apologised ||= /Please come back tomorrow/.test(f.world.people[0].g.userData.residentSpeech?.text||'');});
  assert.equal(f.state.sakura.stock.notebook.shelf,0);assert.equal(f.state.sakura.stock.notebook.reserve,spec.capacity*2);assert.equal(f.state.sakura.sales,0);assert.ok(f.state.residentLife.Reiko.shopping.finished);
- assert.match(f.world.people[0].g.userData.residentSpeech?.text||'',/Please come back tomorrow/);
+ assert.equal(apologised,true,'Thuan gives the apology while serving, before her scheduled afternoon break');
  f.time(1200);f.step(130);assert.equal(f.state.sakura.stock.notebook.shelf,spec.capacity);assert.equal(f.state.sakura.restockedDay,0);
  const rows=f.state.sakura.journal.filter(r=>r.kind==='Restocked');assert.equal(rows.length,1);assert.ok(rows.every(r=>r.minute>=1200));
  installDOM({[SAVE_KEY]:JSON.stringify({...f.state,minutes:600,sakura:{...f.state.sakura,stock:{...f.state.sakura.stock,notebook:{shelf:0,reserve:2}}}})});
@@ -137,4 +139,3 @@ test('Thuan visibly prepares a closing carton without replenishing shelves early
  assert.equal(f.world.people[0].g.userData.heldItem,undefined);
  assert.equal(f.world.people[0].g.userData.shopReach,undefined);
 });
-

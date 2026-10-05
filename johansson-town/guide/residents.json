@@ -4,7 +4,7 @@
     "role": "Engineer and island resident",
     "place": "Harbour Office and Dock Electrical & Repairs",
     "bio": "Curious about how things work, Johansson enjoys practical projects, small-town life and a good conversation over dinner.",
-    "backstory": "Johansson arrived with a toolbox, a bundle of notebooks and a habit of taking the long way to learn a place. A failed harbour radio first brought him to Kenji and Tetsuo’s workshop; helping with the repair made him a familiar face at the quay. He now keeps the Harbour Office’s service records, follows deliveries from ship to shop, and spends spare afternoons testing ideas at the workshop. Airport expansion excites him, although he insists that a growing island still needs its bookshop, bathhouse and working boats. Aya saves unusual technical books for him. Thuan knows when a long day calls for a quiet tea rather than another question. He is happiest when a practical improvement gives his neighbours more time to enjoy their island.",
+    "backstory": "Johansson arrived with a toolbox, a bundle of notebooks and a habit of taking the long way to learn a place. A failed harbour radio first brought him to Chin and Tetsuo’s workshop; helping with the repair made him a familiar face at the quay. He now keeps the Harbour Office’s service records, follows deliveries from ship to shop, and spends spare afternoons testing ideas at the workshop. Airport expansion excites him, although he insists that a growing island still needs its bookshop, bathhouse and working boats. Nhung saves unusual technical books for him. Thuan knows when a long day calls for a quiet tea rather than another question. He is happiest when a practical improvement gives his neighbours more time to enjoy their island.",
     "portrait": "assets/images/residents/01.webp",
     "islandPersonality": {
       "title": "Practical dreamer",
@@ -23,7 +23,7 @@
     "role": "Vietnamese shopkeeper",
     "place": "Sakura Shop",
     "bio": "A warm, independent Vietnamese woman who runs Sakura, the island’s small shop for everyday provisions.",
-    "backstory": "Thuan came to the island from Vietnam and made Sakura her livelihood one shelf at a time. At first she wrote every supplier’s name in a little notebook; now she recognises the harbour deliveries by the sound of the cart outside. Her shelves hold tea, rice, soap, batteries and small treats, but regulars also come for her clear advice and easy welcome. She shares a home with Nao, whose late bar evenings overlap with her early shop mornings. The two trade leftovers, gossip and reminders to get some sleep. Away from the till, Thuan tends the plants beside Sakura, visits Mrs Kinjō for flowers and enjoys choosing a good meal. Johansson is becoming a favourite companion for those dinners. She has plans for the shop’s future, and she intends to build them at her own pace.",
+    "backstory": "Thuan came to the island from Vietnam and made Sakura her livelihood one shelf at a time. At first she wrote every supplier’s name in a little notebook; now she recognises the harbour deliveries by the sound of the cart outside. Her shelves hold tea, rice, soap, batteries and small treats, but regulars also come for her clear advice and easy welcome. She is the youngest of three sisters. She shares a home with Thao, the middle one, whose late bar evenings overlap with her early shop mornings. The two trade leftovers, gossip and reminders to get some sleep. Away from the till, Thuan tends the plants beside Sakura, visits Mrs Kinjō for flowers and enjoys choosing a good meal. Johansson is becoming a favourite companion for those dinners. She has plans for the shop’s future, and she intends to build them at her own pace.",
     "portrait": "assets/images/residents/02.webp",
     "islandPersonality": {
       "title": "Neighbourhood spark",
@@ -38,13 +38,13 @@
     }
   },
   {
-    "name": "Nao",
+    "name": "Thao",
     "role": "Izakaya owner",
     "place": "Minato Izakaya",
-    "bio": "A generous host with a quick reply, Nao makes room for newcomers and keeps the regulars fed long after sunset.",
-    "backstory": "Her evenings are measured in warm plates and familiar voices. Masaru brings suggestions for the specials; she decides which deserve a place on the menu. She shares a home with Thuan, whose early shop mornings begin while Minato’s last conversations are still ending. The shared cooking aisle connects her bar to Sato’s lunch counter. In the west corner a worn upholstered bench and small tables give neighbours a place to linger beneath amber globe lamps. She keeps that corner for unhurried conversations rather than turning every seat into a hurried meal.",
+    "bio": "Stubborn but friendly: Thao will not be talked out of anything, and will feed you while she refuses.",
+    "backstory": "Her evenings are measured in warm plates and familiar voices. Masaru brings suggestions for the specials; she decides which deserve a place on the menu. She is the middle of three sisters and shares a home with Thuan, the youngest, whose early shop mornings begin while Minato’s last conversations are still ending. The shared cooking aisle connects her bar to Sato’s lunch counter. In the west corner a worn upholstered bench and small tables give neighbours a place to linger beneath amber globe lamps. She keeps that corner for unhurried conversations rather than turning every seat into a hurried meal. Nhung, the eldest, comes in on Thuan’s Minato nights and takes the good stool; Thao has stopped arguing about it, mostly.",
     "portrait": "assets/images/residents/03.webp",
-    "age": 34,
+    "age": 28,
     "friend": "Masaru",
     "dailyLife": "Come in, come in. The spare chair has been expecting you.",
     "islandPersonality": {
@@ -117,13 +117,13 @@
     }
   },
   {
-    "name": "Aya",
+    "name": "Nhung",
     "role": "Bookseller",
     "place": "Front-Row Books",
-    "bio": "Aya has claimed the window seat and has a habit of marking the funny parts of borrowed books.",
-    "backstory": "She and Reiko share a home, so a bookshop day often carries on as a conversation about the evening paper. Emi lends her practical kindness in the form of generous pockets. Aya once tried to involve Tama in a tiny apron fitting; the cat has maintained his refusal. Her shelves now hold pocket poetry, island histories and practical sea guides. Recommendations are tucked into volumes on little paper slips. Visitors can ask a question, buy a second-hand paperback or stay in the window chair while the next edition takes shape at Reiko’s desk.",
+    "bio": "Nhung has claimed the window seat and has a habit of marking the funny parts of borrowed books.",
+    "backstory": "She and Reiko share a home, so a bookshop day often carries on as a conversation about the evening paper. Emi lends her practical kindness in the form of generous pockets. Nhung once tried to involve Tama in a tiny apron fitting; the cat has maintained his refusal. Her shelves now hold pocket poetry, island histories and practical sea guides. Recommendations are tucked into volumes on little paper slips. Visitors can ask a question, buy a second-hand paperback or stay in the window chair while the next edition takes shape at Reiko’s desk. She is the eldest of three sisters: after the bookshop shuts she visits Thuan at Sakura’s counter, waits at the freezer outside with two ice creams, and on Thuan’s Minato nights the two of them sit at Thao’s bar. On some afternoons the bookshop and Sakura take their breaks together, and the sisters play jan-ken-pon in the park.",
     "portrait": "assets/images/residents/07.webp",
-    "age": 24,
+    "age": 31,
     "friend": "Emi",
     "dailyLife": "Window seat is mine. I bookmark the funny parts — apparently that is not how a lending library works.",
     "islandPersonality": {
@@ -139,11 +139,11 @@
     }
   },
   {
-    "name": "Kenji",
+    "name": "Chin",
     "role": "Pattern maker and repairman",
     "place": "Dock Electrical & Repair Workshop",
     "bio": "An enthusiastic tinkerer who believes almost any everyday object could work a little better.",
-    "backstory": "Kenji’s workbench is where small repairs turn into experiments. Tetsuo provides a running commentary on their success, while apprentice Kenta brings new ideas of his own. The two repairmen share a home as well as a workshop, giving the discussion plenty of time to continue. Around town, Tetsuo is one of the familiar people in Kenji’s day. Visitors usually find Kenji at Dock Electrical & Repair Workshop. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Tetsuo says my repairs are too loud. His radio can be heard from the pier.",
+    "backstory": "Chin’s workbench is where small repairs turn into experiments. Tetsuo provides a running commentary on their success, while apprentice Kenta brings new ideas of his own. The two repairmen share a home as well as a workshop, giving the discussion plenty of time to continue. Around town, Tetsuo is one of the familiar people in Chin’s day. Visitors usually find Chin at Dock Electrical & Repair Workshop. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Tetsuo says my repairs are too loud. His radio can be heard from the pier.",
     "portrait": "assets/images/residents/08.webp",
     "age": 32,
     "friend": "Tetsuo",
@@ -165,7 +165,7 @@
     "role": "Ramen cook and quay storekeeper",
     "place": "Sato Ramen and Quay Warehouse",
     "bio": "Formidable about ledgers and generous about supper, Sato notices who has eaten and who has merely said they have.",
-    "backstory": "The quay stores have made her familiar with the neighbourhood’s daily needs. She and Fumiko describe their conversations as keeping the oral history, which is a useful distinction when anybody accuses them of gossip. A large bowl is usually waiting when Fumiko arrives for tea. At lunch she works the stock pots in Sato Ramen, sharing Minato’s kitchen with Nao. The steaming bowls and freight ledgers are different kinds of work, but both reward the same habits: remembering what people need and doing things properly. At home in Kitahama she keeps a quiet six-mat room. A pendulum clock hangs above the tea cabinet, the standing fan turns through the humid months, and a floor cushion waits beside the low table. The futon comes out of the cupboard at night and returns there after waking, leaving the room open again for tea.",
+    "backstory": "The quay stores have made her familiar with the neighbourhood’s daily needs. She and Fumiko describe their conversations as keeping the oral history, which is a useful distinction when anybody accuses them of gossip. A large bowl is usually waiting when Fumiko arrives for tea. At lunch she works the stock pots in Sato Ramen, sharing Minato’s kitchen with Thao. The steaming bowls and freight ledgers are different kinds of work, but both reward the same habits: remembering what people need and doing things properly. At home in Kitahama she keeps a quiet six-mat room. A pendulum clock hangs above the tea cabinet, the standing fan turns through the humid months, and a floor cushion waits beside the low table. The futon comes out of the cupboard at night and returns there after waking, leaving the room open again for tea.",
     "portrait": "assets/images/residents/09.webp",
     "age": 68,
     "friend": "Fumiko",
@@ -341,10 +341,10 @@
     "role": "Fisherman",
     "place": "Harbour and Minato",
     "bio": "A boisterous fisherman who thinks every good catch should become a good supper.",
-    "backstory": "He has a cook’s enthusiasm and an ample supply of menu suggestions for Nao. Not every catch is large enough to justify the description, which gives her useful material for teasing him. The evening usually brings him back to Minato to see what actually reached the plates. Around town, Nao is one of the familiar people in Masaru’s day. Visitors usually find Masaru at Harbour and Minato. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Nao lets me suggest specials. She very sensibly ignores most of them.",
+    "backstory": "He has a cook’s enthusiasm and an ample supply of menu suggestions for Thao. Not every catch is large enough to justify the description, which gives her useful material for teasing him. The evening usually brings him back to Minato to see what actually reached the plates. Around town, Thao is one of the familiar people in Masaru’s day. Visitors usually find Masaru at Harbour and Minato. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Thao lets me suggest specials. She very sensibly ignores most of them.",
     "portrait": "assets/images/residents/17.webp",
     "age": 51,
-    "friend": "Nao",
+    "friend": "Thao",
     "dailyLife": "A good catch is a good supper. A poor catch is a very long story.",
     "islandPersonality": {
       "title": "A wholehearted fisherman",
@@ -353,7 +353,7 @@
         "generous",
         "cheerful"
       ],
-      "habit": "Brings Nao the catch he thinks deserves the chalkboard.",
+      "habit": "Brings Thao the catch he thinks deserves the chalkboard.",
       "ambition": "Earn a place for local fish on every restaurant menu.",
       "favourite": "Minato’s supper rush"
     }
@@ -385,7 +385,7 @@
     "role": "Newspaper editor",
     "place": "Front-Row Books",
     "bio": "Curious and quick with a pencil, Reiko keeps the evening press supplied with neighbourhood news.",
-    "backstory": "She shares a home with Aya and a lively professional friendship with Officer Mori. His thorough reports can be short on incident, so even a remark about lunch may find its way into print. She is careful to tell visitors when the pencil is finally put away. Around town, Officer Mori is one of the familiar people in Reiko’s day. Visitors usually find Reiko at Front-Row Books. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Mori writes beautiful incident reports. Unfortunately nothing ever happens.",
+    "backstory": "She shares a home with Nhung and a lively professional friendship with Officer Mori. His thorough reports can be short on incident, so even a remark about lunch may find its way into print. She is careful to tell visitors when the pencil is finally put away. Around town, Officer Mori is one of the familiar people in Reiko’s day. Visitors usually find Reiko at Front-Row Books. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Mori writes beautiful incident reports. Unfortunately nothing ever happens.",
     "portrait": "assets/images/residents/19.webp",
     "age": 36,
     "friend": "Officer Mori",
@@ -407,10 +407,10 @@
     "role": "Radio repairer",
     "place": "Dock Electrical & Repair Workshop",
     "bio": "A deadpan music lover who handles radios gently and treats static as a form of conversation.",
-    "backstory": "Repairs, spare screws and competing weather bulletins are familiar parts of his working life. Kenji shares both his workshop and his home, ensuring that their disagreements about volume are never entirely finished. A well-tuned radio remains his preferred answer to a quiet room. Around town, Kenji is one of the familiar people in Tetsuo’s day. Visitors usually find Tetsuo at Dock Electrical & Repair Workshop. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Kenji has repaired my radio twice. I keep finding extra screws.",
+    "backstory": "Repairs, spare screws and competing weather bulletins are familiar parts of his working life. Chin shares both his workshop and his home, ensuring that their disagreements about volume are never entirely finished. A well-tuned radio remains his preferred answer to a quiet room. Around town, Chin is one of the familiar people in Tetsuo’s day. Visitors usually find Tetsuo at Dock Electrical & Repair Workshop. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Chin has repaired my radio twice. I keep finding extra screws.",
     "portrait": "assets/images/residents/20.webp",
     "age": 40,
-    "friend": "Kenji",
+    "friend": "Chin",
     "dailyLife": "Turn it gently. Radios have feelings. Mostly static, but feelings.",
     "islandPersonality": {
       "title": "Listener to small mysteries",
@@ -429,10 +429,10 @@
     "role": "Seamstress",
     "place": "Shopping street",
     "bio": "Warm and quietly daring, Emi saves fabric scraps because each still has something useful to become.",
-    "backstory": "Aya keeps her supplied with adventure novels. Emi returns the favour through thoughtful sewing, including pockets deep enough to carry a book. Her patience extends to small experiments, although persuading Tama to wear an apron has proved beyond the current pattern. Around town, Aya is one of the familiar people in Emi’s day. Visitors usually find Emi at Shopping street. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Aya lends me adventure novels. I repay her in pockets deep enough to hide one.",
+    "backstory": "Nhung keeps her supplied with adventure novels. Emi returns the favour through thoughtful sewing, including pockets deep enough to carry a book. Her patience extends to small experiments, although persuading Tama to wear an apron has proved beyond the current pattern. Around town, Nhung is one of the familiar people in Emi’s day. Visitors usually find Emi at Shopping street. A conversation can begin with the day's work and continue into ordinary neighbourhood news. Nhung lends me adventure novels. I repay her in pockets deep enough to hide one.",
     "portrait": "assets/images/residents/21.webp",
     "age": 29,
-    "friend": "Aya",
+    "friend": "Nhung",
     "dailyLife": "I keep little fabric scraps. They are not clutter; they are future possibilities.",
     "islandPersonality": {
       "title": "Maker of possibilities",
@@ -443,7 +443,7 @@
       ],
       "habit": "Saves tiny fabric scraps in carefully labelled envelopes.",
       "ambition": "Sew something special for the island’s next festival.",
-      "favourite": "Choosing cloth with Aya"
+      "favourite": "Choosing cloth with Nhung"
     }
   },
   {
@@ -539,7 +539,7 @@
     "role": "Apprentice engineer",
     "place": "Front-Row Books & Workshop",
     "bio": "A sweetly awkward inventor whose time-saving machines tend to require lengthy explanations.",
-    "backstory": "The workshop offers him room to try things under Kenji’s eye. The cold-store assistant is a faithful listener to both his inventions and his rehearsed introductions. Kenta is learning that a practical machine and a practical conversation both benefit from fewer moving parts. Around town, Cold-storage kid is one of the familiar people in Kenta’s day. Visitors usually find Kenta at Front-Row Books & Workshop. A conversation can begin with the day's work and continue into ordinary neighbourhood news. The cold-store lad laughs at my jokes. Slowly, but the room is very cold.",
+    "backstory": "The workshop offers him room to try things under Chin’s eye. The cold-store assistant is a faithful listener to both his inventions and his rehearsed introductions. Kenta is learning that a practical machine and a practical conversation both benefit from fewer moving parts. Around town, Cold-storage kid is one of the familiar people in Kenta’s day. Visitors usually find Kenta at Front-Row Books & Workshop. A conversation can begin with the day's work and continue into ordinary neighbourhood news. The cold-store lad laughs at my jokes. Slowly, but the room is very cold.",
     "portrait": "assets/images/residents/26.webp",
     "age": 21,
     "friend": "Cold-storage kid",
@@ -560,12 +560,12 @@
     "name": "Barfly",
     "role": "Minato regular",
     "place": "Minato Izakaya",
-    "bio": "Unhurried and firmly attached to his counter stool, the regular needs little introduction to Nao.",
-    "backstory": "He has watched enough evenings at Minato to know when the lanterns need attention. Nao knows his usual order and the end of the counter has become his settled vantage point. Last buses have come and gone without greatly disturbing the arrangement. Around town, Nao is one of the familiar people in Barfly’s day. Visitors usually find Barfly at Minato Izakaya. A conversation can begin with the day's work and continue into ordinary neighbourhood news. I have been at this stool long enough to know when the lanterns need trimming.",
+    "bio": "Unhurried and firmly attached to his counter stool, the regular needs little introduction to Thao.",
+    "backstory": "He has watched enough evenings at Minato to know when the lanterns need attention. Thao knows his usual order and the end of the counter has become his settled vantage point. Last buses have come and gone without greatly disturbing the arrangement. Around town, Thao is one of the familiar people in Barfly’s day. Visitors usually find Barfly at Minato Izakaya. A conversation can begin with the day's work and continue into ordinary neighbourhood news. I have been at this stool long enough to know when the lanterns need trimming.",
     "portrait": "assets/images/residents/27.webp",
     "age": 43,
-    "friend": "Nao",
-    "dailyLife": "Another one? Nao knows my usual. I am staying right here.",
+    "friend": "Thao",
+    "dailyLife": "Another one? Thao knows my usual. I am staying right here.",
     "islandPersonality": {
       "title": "Master of the slow evening",
       "traits": [
@@ -575,7 +575,7 @@
       ],
       "habit": "Notices a loose lantern hook before anyone else looks up.",
       "ambition": "Keep his favourite corner of Minato exactly welcoming enough.",
-      "favourite": "The stool at the end of Nao’s counter"
+      "favourite": "The stool at the end of Thao’s counter"
     }
   },
   {
@@ -792,7 +792,7 @@
     "role": "Dock cargo crew",
     "place": "Western quay",
     "bio": "Riku checks the containers and walks the cargo circuit, from the morning supplies boat to the evening fish dispatch.",
-    "backstory": "He knows which crates go to Sakura and which radio parts belong at Kenji and Tetsuo’s workshop. His cargo circuit is part of the island’s daily exchange. The containers can look anonymous until he tells you which hold shop deliveries and which contain repair spares. He works around the hoist, keeps the pedestrian passage clear and watches for the next supply ship.",
+    "backstory": "He knows which crates go to Sakura and which radio parts belong at Chin and Tetsuo’s workshop. His cargo circuit is part of the island’s daily exchange. The containers can look anonymous until he tells you which hold shop deliveries and which contain repair spares. He works around the hoist, keeps the pedestrian passage clear and watches for the next supply ship.",
     "portrait": "assets/images/residents/riku.webp",
     "islandPersonality": {
       "title": "The willing pair of hands",
@@ -823,6 +823,25 @@
       "habit": "Puts a pencil dot beside each crate she has checked herself.",
       "ambition": "Make every island delivery easy to trace from ship to shop.",
       "favourite": "A reconciled manifest and a fresh cup of tea"
+    }
+  },
+  {
+    "name": "Vy",
+    "role": "High-school student",
+    "place": "Bus stop, Sakura and the park",
+    "bio": "A high-school girl in a sailor uniform who believes ice cream before homework is a rule, because she made it one.",
+    "backstory": "Vy takes the school bus at twenty past seven and comes back in the middle of the afternoon with a satchel full of kanji. Her first stop is the chest freezer outside Sakura, where Thuan quietly keeps the pink guava one for her. Then she spreads her homework across a park bench and does the hard half first, or says she will. She counts the pleats in her skirt when she is thinking and knows every bus driver by the way they brake.",
+    "portrait": "assets/images/residents/vy.webp",
+    "islandPersonality": {
+      "title": "The rule maker",
+      "traits": [
+        "Bright",
+        "stubborn about small things",
+        "cheerful"
+      ],
+      "habit": "Counts the pleats in her skirt when she is thinking.",
+      "ambition": "Pass the kanji test without the last ten characters.",
+      "favourite": "The pink guava Blue Coral ice cream"
     }
   }
 ]

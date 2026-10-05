@@ -17,6 +17,10 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  // Re-checked twice a second too: the interior's lights arrive when its model loads.
  let lightsInside=null,lightCheck=0;
  const group=new THREE.Group();group.name='Sakura Shōten continuous shop';group.userData.sharedAsset=true;group.visible=false;scene.add(group);
+ const syncLightVisibility=inside=>{
+  lightsInside=inside;lightCheck=.5;
+  group.traverse(o=>{if(o.isLight)o.visible=inside;});
+ };
  if(state.sakura.playerClaim){returnShopStock(state,state.sakura.playerClaim);delete state.sakura.playerClaim;}
  for(const account of Object.values(state.residentLife||{})){
   const meal=account.meals?.market;if(meal?.stockClaim&&!meal.delivered){returnShopStock(state,meal.stockClaim);meal.stockClaim=null;}if(meal)meal.finished=true;
@@ -123,6 +127,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    const frame=frontFrame();if(frame)frame.visible=true;
    windowView(false);lit(false);backRooms(true);
    group.visible=true;showPeople(true);display.updateStock(state.sakura.stock);
+   syncLightVisibility(true);
    // The door chime: a bright little arpeggio of our own as the automatic door opens.
    townAudio.bells([[1319,0],[1568,.13],[2093,.26],[1760,.44],[2093,.57],[2637,.72]],.32);
   },
@@ -149,15 +154,18 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    group.visible=true;showPeople(false);
    display.updateStock(state.sakura.stock);
    windowView(true);
+   // Window mounting can finish after the outside light scan. Synchronise the new
+   // tube lights now, including when a frozen fixture has no next simulation tick.
+   syncLightVisibility(false);
    return true;
   },
-  hide(){windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);},
+  hide(){windowView(false);scene.add(group);group.position.set(0,0,0);group.rotation.set(0,0,0);group.scale.setScalar(1);group.visible=false;lit(false);backRooms(true);const frame=frontFrame();if(frame)frame.visible=true;showPeople(true);syncLightVisibility(false);},
   update(dt){
    // The shop's lights are for the inside of the shop. The interior stays in the street
    // scene so you can see it through the glass, but a light has no walls: left on, its
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
    // roof and the road. Outside, the shop shows through the window by its own glow.
-   {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0){lightsInside=inside;lightCheck=.5;group.traverse(o=>{if(o.isLight)o.visible=inside;});}}
+   {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0)syncLightVisibility(inside);}
    display.tick?.(performance.now()/1000);if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
    // The office door opens for whoever is in the shop and near it: the player, Thuan, anyone borrowed in.
    if(display.officeDoor){const points=[];if(isInside()){const p=getPlayerPosition();points.push([p.x,p.z]);}for(const other of world.people)if(other.g.parent===group)points.push([other.g.position.x,other.g.position.z]);display.officeDoor.update(dt,points);}},

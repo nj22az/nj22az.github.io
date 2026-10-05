@@ -1,5 +1,6 @@
 import {addIkeaFurniture} from './ikea-furniture.js';
 import {buildTatamiHome} from './tatami-home.js';
+import {homeExitLabel} from './home-exit-label.js';
 import {TATAMI_HOME_OWNER} from './tatami-home-layout.js';
 import {householdFor} from '../../people/households.js';
 import {RESIDENTS} from '../../people/residents.js';
@@ -30,13 +31,13 @@ import {YARD_HOMES} from '../yard-homes-layout.js';
 import {buildYardHomeInterior} from './yard-home.js';
 import {buildFamilyHome} from './family-home.js';
 export function buildResidentHome({site,profile,room,box,reg,collider,action,exit}){
- if(profile.name===TATAMI_HOME_OWNER)return buildTatamiHome({profile,room,box,reg,collider,action,exit});
+ if(profile.name===TATAMI_HOME_OWNER)return buildTatamiHome({site,profile,room,box,reg,collider,action,exit});
  // Shared houses are drawn to the house you walked into (docs/BUILDING-AUDIT.md): the
- // Front-Row yard staff houses, and Thuan and Nao's house in Kitahama, which is built
+ // Front-Row yard staff houses, and Thuan and Thao's house in Kitahama, which is built
  // like its neighbours.
  if(site&&YARD_HOMES[site.id])return buildYardHomeInterior({site,room,reg,action,collider});
  if(site?.plot&&site.homeOwners?.length>1)return buildFamilyHome({room,reg,action,collider,title:site.title,kind:site.houseKind||'concrete',residents:site.homeOwners});
- if(householdFor(profile.name)?.residents.length>1)return buildSharedHome({profile,room,box,reg,collider,action,exit});
+ if(householdFor(profile.name)?.residents.length>1)return buildSharedHome({site,profile,room,box,reg,collider,action,exit});
  const style=residentPersonality(profile.name),colour=new THREE.Color(style.top),hours=sleepHours(profile),details=householdDetails([{name:profile.name,role:profile.role}]);
  const part=(size,pos,c,solid=false)=>{const m=box(size,pos,c,room,false);if(solid)collider(pos[0],pos[2],size[0],size[2],pos[1]+size[1]/2);return m;};
  const detailBox=(size,pos,c,name)=>{const m=part(size,pos,c);m.name=name;return m;};
@@ -61,12 +62,12 @@ export function buildResidentHome({site,profile,room,box,reg,collider,action,exi
  addFamilyPhoto(detailBox,{x:.15,z:-2.93,members:[profile]});
  addEntryDetails(part,HOME_LAYOUT.exit[0]);
  hatPeg(part,HOME_LAYOUT.hatHook);
- const door=new THREE.Object3D();door.position.set(...HOME_LAYOUT.exit);room.add(door);reg(door,'Exit to Main Street',exit,true);
+ const door=new THREE.Object3D();door.position.set(...HOME_LAYOUT.exit);room.add(door);reg(door,homeExitLabel(site,profile),exit,true);
  room.add(new THREE.HemisphereLight(0xffe4b4,0x887867,1.6));
  return {...HOME_LAYOUT,home:true,homeLayouts:{[profile.name]:HOME_LAYOUT}};
 }
 
-function buildSharedHome({profile,room,box,reg,collider,action,exit}){
+function buildSharedHome({site,profile,room,box,reg,collider,action,exit}){
  const household=householdFor(profile.name),layout=SHARED_HOME_LAYOUT,homeLayouts=sharedHomeLayouts(household.residents);
  const part=(size,pos,color,solid=false)=>{const mesh=box(size,pos,color,room,false);if(solid)collider(pos[0],pos[2],size[0],size[2],pos[1]+size[1]/2);return mesh;};
  const detailBox=(size,pos,c,name)=>{const m=part(size,pos,c);m.name=name;return m;};
@@ -94,7 +95,7 @@ function buildSharedHome({profile,room,box,reg,collider,action,exit}){
  addTeaSetting(detailBox,{x:0,y:.745,z:1.3,people:household.residents.length});
  addFamilyPhoto(detailBox,{x:0,z:-3.33,members:household.residents.map(name=>({name}))});
  addEntryDetails(part,0,3.15);
- const door=new THREE.Object3D();door.position.set(...layout.exit);room.add(door);reg(door,'Exit to Main Street',exit,true);
+ const door=new THREE.Object3D();door.position.set(...layout.exit);room.add(door);reg(door,homeExitLabel(site,profile),exit,true);
  room.add(new THREE.HemisphereLight(0xffe4b4,0x887867,1.6));return {...layout,home:true,homeLayouts};
 }
 

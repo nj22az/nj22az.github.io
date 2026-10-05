@@ -32,9 +32,9 @@ const R=ONSEN_ROOM;
 
 /** Seats: where you sit, and where your weight goes. `soak` seats put you in the water. */
 export const ONSEN_SEATS=Object.freeze({
- bench:{id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.42},
+ bench:{id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.46},
  tatami:{id:'tatami',label:'Sit on the tatami',position:[LOBBY.koagari.x-.25,0,LOBBY.koagari.z+.5],stand:[LOBBY.koagari.x,0,3.55],eyeY:LOBBY.koagari.h+.8,yaw:Math.PI,surfaceY:LOBBY.koagari.h+.07},
- massage:{id:'massage',label:'Sit in the massage chair',position:[4.25,0,3.55],stand:[3.4,0,3.55],eyeY:1.12,yaw:Math.PI/2,surfaceY:.46},
+ massage:{id:'massage',label:'Sit in the massage chair',position:[4.25,0,3.55],stand:[3.4,0,3.55],eyeY:1.12,yaw:Math.PI/2,surfaceY:.5},
  ...WASH_SEATS,
  indoor:{id:'indoor',label:'Get into the indoor bath',position:[3.1,0,-3.35],stand:[3.1,0,-1.66],eyeY:R.tub.floor+.78,yaw:Math.PI,surfaceY:R.tub.floor+.04,soak:true},
  rock:{id:'rock',label:'Get into the rock bath',position:[.75,0,-6.45],stand:[.75,0,-4.75],eyeY:R.pool.floor+.82,yaw:0,surfaceY:R.pool.floor+.04,soak:true},

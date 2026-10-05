@@ -5,7 +5,7 @@ import {registerHomeLight,setHomeLight,clearHomeLights} from '../render/window-i
  * The lights in Kitahama's windows follow the people who live behind them
  * (docs/RESIDENTIAL-PLAN.md: "a home's lights follow its residents").
  *
- * - Thuan and Nao's house and Mrs Sato's follow the walking residents themselves: lit
+ * - Thuan and Thao's house and Mrs Sato's follow the walking residents themselves: lit
  *   when one of them is in and up, dark when they are out or asleep.
  * - The other households keep a routine of their own: the grandparents are in bed by
  *   nine, the auction hand is up at half past four, the nurse's light comes on for a

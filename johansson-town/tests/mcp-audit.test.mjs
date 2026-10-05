@@ -56,8 +56,8 @@ test('navigation components preserve real walls and reject height jumps above st
  assert.equal(analyseGrid(cells,5,3,-1).cells.some(c=>c.reachable),false,'A player outside the sampled grid cannot be marked reachable');
 });
 
-test('MCP preview serves game bytes only and handles actual binary range requests',async()=>{
- const root=resolve(fileURLToPath(new URL('../',import.meta.url))),server=await serveGame(root);
+test('MCP preview accepts a directory URL path, serves game bytes only and handles actual binary range requests',async()=>{
+ const root=fileURLToPath(new URL('../',import.meta.url)),server=await serveGame(root);
  try{
   const response=await fetch(server.url);assert.equal(response.status,200);assert.match(await response.text(),/JOHANSSON|Johansson/);
   const module=await fetch(new URL('tools/mcp/navigation.mjs',server.url));assert.match(module.headers.get('content-type'),/javascript/,'Browser navigation module must have a valid ESM MIME type');

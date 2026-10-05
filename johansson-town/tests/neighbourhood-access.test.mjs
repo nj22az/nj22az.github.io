@@ -91,7 +91,10 @@ test('Rainflower geometry, staff, map and collision share the compact central lo
 });
 test('dry-weather garden visits use the existing residents and respect rain routines',async()=>{
  const {residentPlan}=await import('../src/people/social.js');const {RESIDENTS}=await import('../src/people/residents.js');
- for(const [name,minute] of [['Reiko',690],['Tetsuo',780]]){const profile=RESIDENTS.find(p=>p.name===name),plan=residentPlan(profile,minute,false,{});assert.equal(plan.place,'park');assert.ok(plan.activity.includes('Aoba Garden'));assert.ok(plan.target[0]<0&&plan.target[1]>34);assert.notEqual(residentPlan(profile,minute,true,{}).place,'park');}
+ const {sleepHours,homeRoutine}=await import('../src/people/home-life.js'),reiko=RESIDENTS.find(p=>p.name==='Reiko'),{wake}=sleepHours(reiko);
+ assert.equal(homeRoutine(reiko,wake+16).id,'breakfast');assert.equal(residentPlan(reiko,wake+16,false,{}).place,'home','breakfast finishes before the garden trip');
+ assert.equal(residentPlan(reiko,690,false,{}).place,'home','the former garden fixture is now inside the authored wake/preparation hour');
+ for(const [name,minute] of [['Reiko',wake+65],['Tetsuo',780]]){const profile=RESIDENTS.find(p=>p.name===name),plan=residentPlan(profile,minute,false,{});assert.equal(plan.place,'park');assert.ok(plan.activity.includes('Aoba Garden'));assert.ok(plan.target[0]<0&&plan.target[1]>34);assert.notEqual(residentPlan(profile,minute,true,{}).place,'park');}
 });
 
 test('visible garden approaches match walking heights across the whole entrance, not only the path',()=>{

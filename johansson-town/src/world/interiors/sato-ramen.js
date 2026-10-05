@@ -63,7 +63,7 @@ export function buildSatoRamenRoom({room,reg,collider,action,exit,getMinutes=()=
  [...SATO_COUNTER,...SATO_LEDGE,...SATO_CORNER].forEach((seat,i)=>{
   const corner=i>=SATO_COUNTER.length+SATO_LEDGE.length,ledge=!corner&&i>=SATO_COUNTER.length,label=corner?'Sit at the window table':ledge?'Sit at the wall ledge':'Sit at the ramen counter';
   const o=anchor([seat.position[0],1,seat.position[2]],label,()=>action('seat',corner?'Sato Ramen window table':ledge?'Sato Ramen ledge':'Sato Ramen counter','A red stool and a glass of cold water. Mrs Sato nods at you over the steam.'));
-  o.userData.seat={ramenSeatId:i,position:[...seat.position],stand:[...seat.stand],eyeY:seat.height+.6,yaw:seat.yaw,pitch:0,table:[...seat.table],surfaceY:seat.height};
+  o.userData.seat={ramenSeatId:i,position:[...seat.position],stand:[...seat.stand],eyeY:seat.height+.6,yaw:seat.yaw,pitch:0,table:[...seat.table],surfaceY:seat.surfaceY};
  });
  anchor([6.95,1.3,3.0],'Use the ticket machine',()=>action('ramen-ticket'));
  anchor([10.9,2.9,3.1],'Watch the lunchtime news',()=>action('inspect','Lunchtime news','NHK Okinawa: a typhoon well to the south, turning away; the ferry timetable as usual; a man in Nago has grown a very large goya.'));

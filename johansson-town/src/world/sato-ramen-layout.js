@@ -14,9 +14,9 @@ export const SATO_ROOM=Object.freeze({
  spawn:Object.freeze([9.75,0,2.95]),exit:Object.freeze([9.75,1.1,3.45]),yaw:0,
 });
 /** The five chrome stools at the counter, and the three at the wall ledge. */
-export const SATO_COUNTER=Object.freeze([7.1,7.8,8.5,9.2,9.9].map(x=>Object.freeze({position:[x,0,-1.42],height:.76,yaw:0,stand:[x,0,-.72],table:[x,1.11,-2.2]})));
-export const SATO_LEDGE=Object.freeze([.3,1.2,2.1].map(z=>Object.freeze({position:[10.65,0,z],height:.735,yaw:-Math.PI/2,stand:[10.0,0,z],table:[11.02,1.08,z]})));
-export const SATO_CORNER=Object.freeze([.35,1.95].map(z=>Object.freeze({position:[7.65,0,z],height:.46,yaw:z<1?Math.PI:0,stand:[8.65,0,z],table:[7.65,.80,z<1?.85:1.45]})));
+export const SATO_COUNTER=Object.freeze([7.1,7.8,8.5,9.2,9.9].map(x=>Object.freeze({position:[x,0,-1.42],height:.76,surfaceY:.76,yaw:0,stand:[x,0,-.72],table:[x,1.11,-2.2]})));
+export const SATO_LEDGE=Object.freeze([.3,1.2,2.1].map(z=>Object.freeze({position:[10.65,0,z],height:.735,surfaceY:.735,yaw:-Math.PI/2,stand:[10.0,0,z],table:[11.02,1.08,z]})));
+export const SATO_CORNER=Object.freeze([.35,1.95].map(z=>Object.freeze({position:[7.65,0,z],height:.495,surfaceY:.495,yaw:z<1?Math.PI:0,stand:[8.65,0,z],table:[7.65,.80,z<1?.85:1.45]})));
 /**
  * Where the lunch regulars sit: every other stool first, so there is room for you, then
  * one more stool, and the ledge last -- Mrs Sato serves the counter across it.
@@ -55,8 +55,8 @@ export const SATO_MENU=Object.freeze([
  * visit is inside the lunch hours; the shift workers take it as their lunch break.
  */
 export const SATO_LUNCH=Object.freeze({
- Kenji:Object.freeze([690,735]),Reiko:Object.freeze([725,760]),Aya:Object.freeze([745,790]),
+ Thuan:Object.freeze([780,830]),Chin:Object.freeze([690,735]),Reiko:Object.freeze([725,760]),Nhung:Object.freeze([745,790]),
  Tetsuo:Object.freeze([700,745]),'Harbour master':Object.freeze([720,765]),
 });
 /** What each regular drinks with lunch: a hot coffee or a glass of cold barley tea. */
-export const SATO_LUNCH_DRINK=Object.freeze({Kenji:'mugicha',Reiko:'coffee',Aya:'mugicha',Tetsuo:'coffee','Harbour master':'coffee'});
+export const SATO_LUNCH_DRINK=Object.freeze({Thuan:'mugicha',Chin:'mugicha',Reiko:'coffee',Nhung:'mugicha',Tetsuo:'coffee','Harbour master':'coffee'});

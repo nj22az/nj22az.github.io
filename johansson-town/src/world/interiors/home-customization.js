@@ -1,6 +1,13 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {HOME_WALLS,HOME_TEXTILES,restoreHomeDecor,setHomeDecor,unlockedHomeKeepsakes} from '../../progression/home-decor.js';
 
+// Main-room east wall, between the window and the bathroom partition. The display
+// faces west into the room, and its control stays on the accessible side of the wall.
+export const HOME_CUSTOMIZATION_PLACEMENT=Object.freeze({
+ shelf:Object.freeze([3.13,1.3,.85]),yaw:Math.PI/2,
+ anchor:Object.freeze([2.65,1.3,.85]),
+});
+
 export function createHomeCustomization({room,state,menu,save,close,reg}){
  const group=room.getObjectByName('Mayor’s home'),walls=[],textiles=[];
  if(!group)return null;
@@ -9,7 +16,7 @@ export function createHomeCustomization({room,state,menu,save,close,reg}){
   const targets=o.name==='Upper wall'?walls:['Zabuton','Quilt'].includes(o.name)?textiles:null;
   if(targets){o.material=o.material.clone();targets.push(o);}
  });
- const shelf=new THREE.Group();shelf.name='Earned keepsake shelf';shelf.position.set(1.6,1.3,2.64);group.add(shelf);
+ const shelf=new THREE.Group();shelf.name='Earned keepsake shelf';shelf.position.set(...HOME_CUSTOMIZATION_PLACEMENT.shelf);shelf.rotation.y=HOME_CUSTOMIZATION_PLACEMENT.yaw;group.add(shelf);
  const part=(size,pos,colour,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),new THREE.MeshStandardMaterial({color:colour,roughness:.9}));m.position.set(...pos);m.name=name;shelf.add(m);return m;};
  part([.8,.05,.24],[0,0,0],0x8a6a4a,'Keepsake shelf board');
  const objects={};
@@ -35,6 +42,6 @@ export function createHomeCustomization({room,state,menu,save,close,reg}){
   ['Keepsake shelf',()=>choose('keepsake',unlockedHomeKeepsakes(state),'Keepsake shelf')],
   ['Done',close],
  ]);}
- const anchor=new THREE.Object3D();anchor.position.set(1.6,1.3,2.25);anchor.userData.npcInteraction=false;group.add(anchor);reg(anchor,'Decorate your home',open,true);
+ const anchor=new THREE.Object3D();anchor.position.set(...HOME_CUSTOMIZATION_PLACEMENT.anchor);anchor.userData.npcInteraction=false;group.add(anchor);reg(anchor,'Decorate your home',open,true);
  apply();return {snapshot:apply,open};
 }

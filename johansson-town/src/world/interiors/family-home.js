@@ -123,17 +123,17 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  // Shoes stay along the wall, with a full passage through the entrance.
  for(const dx of [-.08,.08])box([.12,.065,.24],[-.35+dx,.033,2.53],0x556c61,'Household shoes');
  anchor([table.x,.8,table.z+.45],'Inspect the household’s everyday things',()=>action('inspect',title,details.map(d=>d.owner+' · '+d.text).join('\n')+'\nThe cups have been used, the bedding has a place, and the photograph by the wall belongs to this family.'));
- // Walking residents (Thuan and Nao): futons laid out in the sleeping room, and where each
+ // Walking residents (Thuan and Thao): futons laid out in the sleeping room, and where each
  // of them sleeps, sits and hangs a hat (home-residents.js). Low futons are walked onto.
  if(residents){
   const homeLayouts={},beds=redTile?[[1.2,-1.7],[2.6,-1.7]]:[[.65,-1.68],[2.6,-1.68]];
   // Seats: either side of the low table in the ichibanza, or at the 2DK's dining table.
-  const seats=redTile?[[table.x,table.z+.75],[table.x,table.z-.75]]:[[-1.3,1.25],[-.2,.35]];
+  const seats=redTile?[[table.x,table.z+.62],[table.x,table.z-.62]]:[[-1.3,.95],[-.45,.35]];
   residents.forEach((name,i)=>{
    const [x,zc]=beds[i%2],bed=futon(x,zc,[0xe06a7a,0x3f6a8a][i%2],'Futon '+name);
    const hatHook=redTile?{position:[.8+i*.25,1.6,hd-.04],yaw:Math.PI}:{position:[.7,1.6,2.15+i*.35],yaw:-Math.PI/2};
    addHatPeg(box,hatHook);
-   homeLayouts[name]={...FAMILY_HOME_LAYOUT,...bed,table:[seats[i%2][0],0,seats[i%2][1]],door:[0,0,hd-.5],hatHook};
+   homeLayouts[name]={...FAMILY_HOME_LAYOUT,...bed,table:[seats[i%2][0],0,seats[i%2][1]],tableSeatHeight:redTile?.075:.445,door:[0,0,hd-.5],hatHook};
   });
   // Thuan's wardrobe: against the nibanza's back wall (where a family keeps its altar), or
   // in the 2DK's west tatami room.

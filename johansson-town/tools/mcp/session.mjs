@@ -15,7 +15,7 @@ export class TownAuditSession{
   try{
    preview=await this.serve(root);check();this.preview=preview;
    browser=await this.launch({headless,args:process.platform==='darwin'?['--use-angle=metal']:[]});check();this.browser=browser;
-   context=await browser.newContext({viewport:viewport==='phone'?{width:390,height:844}:{width:1280,height:800},serviceWorkers:'block'});check();this.context=context;
+   context=await browser.newContext({viewport:viewport==='phone'?{width:390,height:844}:{width:1280,height:800},isMobile:viewport==='phone',hasTouch:viewport==='phone',serviceWorkers:'block'});check();this.context=context;
    await context.addInitScript(start=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start,speed:1}));Object.defineProperty(navigator,'getGamepads',{value:()=>[]});Element.prototype.requestFullscreen=async()=>{};},time);check();
    page=await context.newPage();check();this.page=page;page.setDefaultTimeout(240000);
    const record=item=>{if(generation===this.generation&&!this.closing)this.errors.push(item);};
@@ -25,7 +25,7 @@ export class TownAuditSession{
    page.on('requestfailed',r=>record({type:'request',message:`${r.url()} ${r.failure()?.errorText}`}));
    const url=new URL(preview.url);url.searchParams.set('audit','');url.searchParams.set('spawn',spawn);
    await page.goto(url.href,{waitUntil:'domcontentloaded'});check();await page.locator('#enter').click();check();
-   await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp,null,{timeout:240000});check();
+   await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__&&window.__JOHANSSON_AGENT_API__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp,null,{timeout:240000});check();
    await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=true;window.__JOHANSSON_AUDIT__.renderFrozen=false;window.__JOHANSSON_AUDIT__.step(0);});check();
    return await this.observe();
   }catch(error){
@@ -118,7 +118,7 @@ export class TownAuditSession{
   return {reached:true,before,after:await this.observe(),route};
  }
  async ui({control}){
-  const selectors={exit_room:'#exitRoomButton',close_activity:'#closeActivity',close_directory:'#closeDirectory',town_menu:'#directoryButton',field_book:'#notebookButton',clock:'#timeButton',weather:'#weatherButton',moves:'#movesButton',bag:'#bagButton'};
+  const selectors={exit_room:'#exitRoomButton',close_activity:'#closeActivity',close_directory:'#closeDirectory',town_menu:'#directoryButton',settings:'#directory .menu-settings > summary',field_book:'#notebookButton',clock:'#timeButton',weather:'#weatherButton',moves:'#movesButton',bag:'#bagButton'};
   const button=this.requirePage().locator(selectors[control]);
   if(!await button.isVisible()||!await button.isEnabled())return {accepted:false,reason:'This normal game button is not currently available.',state:await this.observe()};
   await button.click();await this.page.waitForTimeout(250);this.history.push({control:'ui',button:control});

@@ -124,8 +124,8 @@ export function addBookshopDetail({room,collider,reg,action}){
   const light=new THREE.PointLight(0xffd9a0,1.6,6,2);light.position.set(x,2.1,z);g.add(light);
  }
  const browse=(pos,label,title,text)=>{const a=new THREE.Object3D();a.position.set(...pos);g.add(a);reg(a,label,()=>action('read',title,text),true);};
- browse([3.6,1,-.4],'Browse the collected editions','Front-Row collected editions','Island histories, sea guides, cookery and children’s books from the floor to the ceiling. Aya writes her recommendations on paper slips tucked into the spines; the ladder runs along the rail for the top shelves.');
- browse([-3.6,1,-1.2],'Browse fiction and poetry','Fiction, mystery and poetry','Paperbacks two deep, the poetry in thin spines you have to tilt your head to read. A slip in one of them, in Aya’s hand: "Read the third poem first."');
+ browse([3.6,1,-.4],'Browse the collected editions','Front-Row collected editions','Island histories, sea guides, cookery and children’s books from the floor to the ceiling. Nhung writes her recommendations on paper slips tucked into the spines; the ladder runs along the rail for the top shelves.');
+ browse([-3.6,1,-1.2],'Browse fiction and poetry','Fiction, mystery and poetry','Paperbacks two deep, the poetry in thin spines you have to tilt your head to read. A slip in one of them, in Nhung’s hand: "Read the third poem first."');
  browse([.6,1,-2.9],'Look along the back wall','Maps, papers and second-hand','Old sea charts rolled on the top shelf, the island’s papers bound by year, and a bay of second-hand books at ¥100 each.');
  return g;
 }

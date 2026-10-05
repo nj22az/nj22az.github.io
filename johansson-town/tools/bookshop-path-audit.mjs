@@ -14,13 +14,13 @@ try{
  const fixture=await session.page.evaluate(async()=>{
   const a=window.__JOHANSSON_AUDIT__,state=a.activities.state,people=a.world.people;
   a.frozen=true;a.world.traffic.reconcileAbsent();
-  const person=people.find(p=>p.profile.name==='Kenji'),index=people.indexOf(person),day=(6-index%6)%6,minutes=day*1440+912;
-  state.residentLife??={};state.residentLife.Kenji={day,yen:2400,purchases:[],activities:[],shopping:{finished:true}};
+  const person=people.find(p=>p.profile.name==='Chin'),index=people.indexOf(person),day=(6-index%6)%6,minutes=day*1440+912;
+  state.residentLife??={};state.residentLife.Chin={day,yen:2400,purchases:[],activities:[],shopping:{finished:true}};
   a.setTime(minutes);
   // Fixture placement sets up the previously observed obstruction. Every journey
   // after entering the room runs the normal compiled customer and walking code.
   const {TOWN_DESTINATIONS}=await import('/johansson-town/src/world/town-grid.js');
-  for(const name of ['Aya','Reiko']){const p=people.find(p=>p.profile.name===name);p.g.position.set(p.profile.work[0],0,p.profile.work[1]);p.g.userData.indoors='work';p.g.visible=false;}
+  for(const name of ['Nhung','Reiko']){const p=people.find(p=>p.profile.name===name);p.g.position.set(p.profile.work[0],0,p.profile.work[1]);p.g.userData.indoors='work';p.g.visible=false;}
   person.g.position.set(TOWN_DESTINATIONS.books[0],0,TOWN_DESTINATIONS.books[1]);
   person.g.userData.indoors='bookshop';person.g.visible=false;
   a.teleport(-8,8,0);await a.enter('frontrow');
@@ -44,7 +44,7 @@ try{
    assert.ok(clearance>=.7,'Real input clears the browsing stop');released=true;await capture('shelf-cleared');
   }
   const sample=await session.page.evaluate(()=>{
-   const a=window.__JOHANSSON_AUDIT__,p=a.world.people.find(p=>p.profile.name==='Kenji'),before=p.g.position.clone();
+   const a=window.__JOHANSSON_AUDIT__,p=a.world.people.find(p=>p.profile.name==='Chin'),before=p.g.position.clone();
    let displacement=0,minPersonClearance=Infinity,badFloor=false;
    a.step(250);
    if(p.g.userData.inBookshop){
@@ -52,8 +52,8 @@ try{
     badFloor=a.navigation(p.g.position.x,p.g.position.z,.3).staticBlocked;
     for(const other of a.world.people)if(other!==p&&other.g.visible&&(other.g.userData.inBookshop||other.g.userData.inWorkplace==='frontrow'))minPersonClearance=Math.min(minPersonClearance,p.g.position.distanceTo(other.g.position));
    }
-   const s=JSON.parse(window.render_game_to_text()),visit=a.bookshopCustomers.find(p=>p.name==='Kenji');
-   return {visit,position:p.g.position.toArray(),displacement,minPersonClearance,badFloor,player:s.player,minutes:s.minutes,sales:(a.activities.state.bookshop?.sales||[]).filter(s=>s.buyer==='Kenji').length,purchases:(a.activities.state.residentLife?.Kenji?.purchases||[]).filter(p=>p.id==='bookshop-paperback').length,completed:(a.activities.state.bookshop?.completed||[]).some(s=>s.key.endsWith(':Kenji')),actorCount:a.world.people.length};
+   const s=JSON.parse(window.render_game_to_text()),visit=a.bookshopCustomers.find(p=>p.name==='Chin');
+   return {visit,position:p.g.position.toArray(),displacement,minPersonClearance,badFloor,player:s.player,minutes:s.minutes,sales:(a.activities.state.bookshop?.sales||[]).filter(s=>s.buyer==='Chin').length,purchases:(a.activities.state.residentLife?.Chin?.purchases||[]).filter(p=>p.id==='bookshop-paperback').length,completed:(a.activities.state.bookshop?.completed||[]).some(s=>s.key.endsWith(':Chin')),actorCount:a.world.people.length};
   });
   report.samples.push({second,...sample});
   assert.ok(sample.displacement<=.25+.001,'Customer walks without teleporting');assert.equal(sample.badFloor,false,'Customer clears actual furniture and room bounds');

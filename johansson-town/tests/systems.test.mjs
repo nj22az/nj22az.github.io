@@ -43,7 +43,7 @@ test('v4 save import preserves money, inventory and quest; transactions and Tama
  const initial=JSON.stringify({yen:888,quest:2,inventory:['Sea bream'],visited:['office'],kenjiEscort:'walking'}),dom=installDOM({'johansson-town-1988-v4':initial});let minutes=1002;
  const acts=createActivities({say(){},onWeather(){},onTime:value=>{if(value?.restore)minutes=value.restore;},getMinutes:()=>minutes});
  assert.equal(acts.state.yen,888);assert.equal(dom.storage.get('johansson-town-1988-v4'),initial);assert.equal(acts.state.kenjiEscort,'walking');
- acts.action('resident','Aya');dom.button('About Tama');assert.equal(acts.state.yen,1388);assert.equal(acts.state.quest,3);acts.action('resident','Aya');dom.button('About Tama');assert.equal(acts.state.yen,1388);
+ acts.action('resident','Nhung');dom.button('About Tama');assert.equal(acts.state.yen,1388);assert.equal(acts.state.quest,3);acts.action('resident','Nhung');dom.button('About Tama');assert.equal(acts.state.yen,1388);
  acts.action('vending');dom.button('Dockside Coffee · ¥120');assert.equal(acts.state.yen,1268);assert.ok(acts.state.inventory.includes('Canned coffee'));
  const restored=JSON.parse(dom.storage.get('johansson-town-1988-v5'));assert.equal(restored.quest,3);assert.equal(restored.yen,1268);assert.ok(restored.visited.includes('office'));
  acts.state.yen=0;acts.action('vending');dom.button('Harbour Tea · Green tea · ¥120');assert.equal(acts.state.yen,0);assert.ok(!acts.state.inventory.includes('Green tea'));
@@ -51,7 +51,7 @@ test('v4 save import preserves money, inventory and quest; transactions and Tama
 test('every resident has several authored subjects and schedules retain all outdoor residents',()=>{
  const {world}=build(),player=new THREE.Group();player.position.set(0,0,30);const state={inventory:[],quest:0};const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:(x,z,r)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c))});
  for(const p of world.people){assert.ok(DIALOGUE[p.g.userData.name].length>=3,p.g.userData.name);assert.ok(p.profile.age>0);}
- ai.update(1/60,1230,false);assert.ok(world.people.filter(p=>p.g.visible).length<=world.people.length);if(inCast('Aya'))assert.equal(world.people.find(p=>p.g.userData.name==='Aya').g.visible,false);
+ ai.update(1/60,1230,false);assert.ok(world.people.filter(p=>p.g.visible).length<=world.people.length);if(inCast('Nhung'))assert.equal(world.people.find(p=>p.g.userData.name==='Nhung').g.visible,false);
 });
 test('runtime assets, PBR maps and sound files exist locally',async()=>{
  for(const name of ['asphalt','timber','plaster','roof'])for(const suffix of ['nor_gl','arm'])assert.ok((await readFile(resolve(root,'assets/materials/'+name+'-'+suffix+'.jpg'))).length>1000);
@@ -70,7 +70,7 @@ test('malformed current save falls back to valid legacy data without deleting it
 });
 
 
-test('resident paths clear detailed props; evening destinations and Kenji escort do not deadlock',()=>{
+test('resident paths clear detailed props; evening destinations and Chin escort do not deadlock',()=>{
  const {world}=build(),player=new THREE.Group();player.position.set(-2,0,-5.5);const state={inventory:[],quest:0,kenjiEscort:'walking'};
  const blocked=(x,z,r=.3)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>circleHitsRect(x,z,r,c));const nav=createNavigation(blocked);
  for(const target of [...Object.values(TOWN_DESTINATIONS),...world.homes.values()].map(t=>t.door||t)){
@@ -78,7 +78,7 @@ test('resident paths clear detailed props; evening destinations and Kenji escort
   for(let i=1;i<path.length;i++)for(let t=0;t<=1;t+=.05)assert.equal(blocked(path[i-1][0]*(1-t)+path[i][0]*t,path[i-1][1]*(1-t)+path[i][1]*t),false,'Path edge is clear');
  }
  const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:blocked});
- if(inCast('Kenji')){for(let i=0;i<1800&&state.kenjiEscort!=='done';i++)ai.update(1/60,1002,false);assert.equal(state.kenjiEscort,'done','Kenji reaches his workshop without stopping against Kenta');}
+ if(inCast('Chin')){for(let i=0;i<1800&&state.kenjiEscort!=='done';i++)ai.update(1/60,1002,false);assert.equal(state.kenjiEscort,'done','Chin reaches his workshop without stopping against Kenta');}
  player.position.set(0,0,26);for(let i=0;i<120;i++)ai.update(1/60,1115,false);player.position.set(25,0,4);for(let i=0;i<120;i++)ai.update(1/60,1115,false);
  const visible=world.people.filter(p=>p.g.visible);for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++)assert.ok(visible[i].g.position.distanceTo(visible[j].g.position)>.55,'Evening residents do not occupy one point');
 });

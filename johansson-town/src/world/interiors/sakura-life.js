@@ -177,7 +177,7 @@ function buildShopFloor(parent,anchor,action){
  box(.1,.14,.08,4.9,1.07,.2,0xffffff,'Charity box');
  const charity=canvasTex(256,256,(ctx,w,h)=>{ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#7ccc4a';ctx.fillRect(0,0,w,70);text(ctx,"Donation box",w/2,36,44,'#ffffff');text(ctx,"Thank you",w/2,130,30,'#3b3f55');ctx.fillStyle='#3b3f55';ctx.fillRect(80,190,96,10);});
  print(charity,.075,.075,4.849,1.08,.2,-Math.PI/2,'Charity box label');
- return {tick(){},dispose:()=>cat.dispose()};
+ return {ready:cat.ready,tick(){},dispose:()=>cat.dispose()};
 }
 
 
@@ -220,10 +220,10 @@ function buildOfficeFun(parent){
   ctx.fillStyle='#b98a55';ctx.fillRect(0,0,w,h);for(let i=0;i<2400;i++){ctx.fillStyle=`rgba(${hash(i)>.5?90:230},${hash(i)>.5?60:200},40,.18)`;ctx.fillRect(hash(i,1)*w,hash(i,2)*h,2,2);}
   ctx.strokeStyle='#7a5530';ctx.lineWidth=18;ctx.strokeRect(0,0,w,h);
   const photo=(x,y,r,draw,caption)=>{ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.fillStyle='#ffffff';ctx.fillRect(-70,-80,140,170);draw(-60,-70,120,120);text(ctx,caption,0,72,18,'#3b3f55');ctx.fillStyle='#d7263d';ctx.beginPath();ctx.arc(0,-76,7,0,Math.PI*2);ctx.fill();ctx.restore();};
-  photo(110,130,-.12,(x,y,w,h)=>{ctx.fillStyle='#86cff2';ctx.fillRect(x,y,w,h);ctx.fillStyle='#ffe28a';ctx.beginPath();ctx.arc(x+95,y+25,16,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2a8fcc';ctx.fillRect(x,y+80,w,40);ctx.fillStyle='#1c1714';ctx.beginPath();ctx.arc(x+45,y+62,14,0,Math.PI*2);ctx.arc(x+78,y+62,14,0,Math.PI*2);ctx.fill();},"Nao & me · Minato");
+  photo(110,130,-.12,(x,y,w,h)=>{ctx.fillStyle='#86cff2';ctx.fillRect(x,y,w,h);ctx.fillStyle='#ffe28a';ctx.beginPath();ctx.arc(x+95,y+25,16,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2a8fcc';ctx.fillRect(x,y+80,w,40);ctx.fillStyle='#1c1714';ctx.beginPath();ctx.arc(x+45,y+62,14,0,Math.PI*2);ctx.arc(x+78,y+62,14,0,Math.PI*2);ctx.fill();},"Thao & me · Minato");
   photo(290,120,.08,(x,y,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(x,y,w,h);drawJagabo(ctx,x+60,y+64,.45);},"Jagabo!!");
   photo(470,150,-.05,(x,y,w,h)=>{ctx.fillStyle='#7ccc4a';ctx.fillRect(x,y,w,h);ctx.fillStyle='#3f8f46';for(let i=0;i<6;i++){ctx.beginPath();ctx.ellipse(x+60+Math.cos(i)*25,y+50+Math.sin(i)*20,18,8,i,0,Math.PI*2);ctx.fill();}},"Assistant Manager 1st day");
-  for(const [x,y,r,c,t] of [[640,110,.1,'#ffe28a',"Milk Order!"],[620,260,-.08,'#ff9dc6',"Battery ×12"],[150,360,.06,'#a6e57c','Nao B-day 9/13'],[340,380,-.1,'#9fd6f0',"Taking out the garbage Tuesday/Friday"],[540,390,.12,'#ffe28a',"Good luck!"]]){
+  for(const [x,y,r,c,t] of [[640,110,.1,'#ffe28a',"Milk Order!"],[620,260,-.08,'#ff9dc6',"Battery ×12"],[150,360,.06,'#a6e57c','Thao B-day 9/13'],[340,380,-.1,'#9fd6f0',"Taking out the garbage Tuesday/Friday"],[540,390,.12,'#ffe28a',"Good luck!"]]){
    ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.fillStyle=c;ctx.fillRect(-70,-50,140,100);text(ctx,t,0,0,t.length>6?20:26,'#3b3f55');ctx.restore();}
  });
  print(board,.9,.6,4.68,1.5,-2.55,Math.PI/2,'Office cork board');
@@ -279,7 +279,7 @@ function buildStorage(parent){
    ctx.fillStyle='#ffffff';ctx.fillRect(40,720,w-80,60);text(ctx,"Sea Breeze Cola",w/2,750,40,'#b63231');})],
   // Tanabata star and a summer palm from past campaigns.
   [.75,.75,.9,-6.62,.15,standee(400,400,(ctx,w,h)=>{ctx.fillStyle='#ffc93c';ctx.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?80:190;ctx.lineTo(w/2+Math.cos(a)*r,h/2+Math.sin(a)*r);}ctx.fill();text(ctx,"Tanabata",w/2,h/2,64,'#d7263d');})],
-  [.8,1.4,4.95,-6.45,-.2,standee(400,700,(ctx,w,h)=>{ctx.fillStyle='#8a5a30';ctx.fillRect(180,260,40,420);ctx.fillStyle='#57a52f';for(let i=0;i<7;i++){ctx.save();ctx.translate(200,260);ctx.rotate(-Math.PI/2+(i-3)*.45);ctx.beginPath();ctx.ellipse(0,-120,40,130,0,0,Math.PI*2);ctx.fill();ctx.restore();}ctx.fillStyle='#ffffff';ctx.fillRect(30,590,340,90);text(ctx,"It's summer! Cooling",w/2,635,40,'#2a8fcc');})],
+  [.8,1.4,4.95,-6.45,-.2,standee(400,700,(ctx,w,h)=>{ctx.fillStyle='#8a5a30';ctx.fillRect(180,260,40,420);ctx.fillStyle='#57a52f';for(let i=0;i<7;i++){ctx.save();ctx.translate(200,260);ctx.rotate(-Math.PI/2+(i-3)*.45);ctx.beginPath();ctx.ellipse(0,-120,40,130,0,0,Math.PI*2);ctx.fill();ctx.restore();}ctx.fillStyle='#ffffff';ctx.fillRect(30,590,340,90);ctx.fillStyle='#2a8fcc';ctx.font=`bold 40px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("夏だ！冷たいものどうぞ",w/2,635,320);})],
  ];
  for(const [w,h,x,z,tilt,tex] of cutouts){
   const front=print(tex,w,h,x,h/2+.02,z,0,'Cardboard stand-up');front.rotation.x=-.08;front.rotation.y=tilt;
@@ -310,5 +310,5 @@ export function buildSakuraLife(room,{anchor,action}){
  const restroom=buildSakuraRestroom(room,{anchor,action});
  const officeDoor=buildOfficeDoor(room);
  let last=0;
- return {officeDoor,tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot,dispose:()=>floor.dispose()};
+ return {officeDoor,ready:Promise.all([floor.ready,backroom.ready]),tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot,dispose(){floor.dispose();backroom.dispose();}};
 }

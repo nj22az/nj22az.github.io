@@ -1,12 +1,13 @@
 import {createLocalCharacters} from './models.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
+import {faceYaw,turnToward} from './facing.js';
 
 // Each resident has one appearance. Keep the logical entity while its chosen
 // model loads; never render an obsolete body or borrow another resident’s face.
 const CAST=Object.freeze({
   player:{source:'first-person-controller',height:1.82,identity:'Johansson'},
-  Aya:{source:'local-authored',height:1.62,identity:'Aya'},
-  Kenji:{source:'local-authored',height:1.76,identity:'Kenji'},
+  Nhung:{source:'local-authored',height:1.62,identity:'Nhung'},
+  Chin:{source:'local-authored',height:1.76,identity:'Chin'},
   'Mrs Sato':{source:'local-authored',height:1.55,identity:'Mrs Sato'},
   'Harbour master':{source:'local-authored',height:1.74,identity:'Harbour master'}
 });
@@ -44,7 +45,10 @@ export function createCharacters(options={}){
     const targetDistance=1.34;
     // Facing never moves the player through a wall or prop.
     const hold=1900,now=performance.now();conversations.set(entity,{until:now+hold,x:entity.position.x,z:entity.position.z});
-    face(entity,playerEntity,true);face(playerEntity,entity,false);models.gesture(entity);
+    // Only they turn, and smoothly (update): the player's own turn belongs to the
+    // conversation camera (game.js frameConversation). Snapping the player here used to
+    // point their back at the speaker, and the two fought every frame.
+    models.gesture(entity);
   }
 
   function gesture(entity){stageConversation(entity);}
@@ -123,7 +127,7 @@ export function createCharacters(options={}){
   function update(dt){
     updateAIControls(dt);
     const now=performance.now();
-    for(const [entity,c] of conversations){if(c.until<=now||bodyBusy(entity)){conversations.delete(entity);continue;}entity.position.x=c.x;entity.position.z=c.z;face(entity,playerEntity,true);face(playerEntity,entity,false);}
+    for(const [entity,c] of conversations){if(c.until<=now||bodyBusy(entity)){conversations.delete(entity);continue;}entity.position.x=c.x;entity.position.z=c.z;if(playerEntity)entity.rotation.y=turnToward(entity.rotation.y,faceYaw(entity.position,playerEntity.position),dt,7);}
     models.update(dt);
     // Re-apply the AI target after the conversation layer so a commanded resident does not drift.
   }

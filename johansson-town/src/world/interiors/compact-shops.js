@@ -48,19 +48,19 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   // entrance and central aisle open between the counter, the desks and the reading table.
   bench('Bookselling counter',-2.55,2.12,1.65,.55);
   box('Brass till',[.25,.19,.22],[-3.05,1,2.12],0x53685d);
-  anchor([-2.55,1,2.12],'Browse the bookshop ledger','read','Books & evening papers','Aya keeps the reading copies and Reiko’s evening paper at the front counter.','Aya');
-  const newspaper=anchor([-1.85,1,2.12],'Buy newspaper · ¥80','buy','Evening newspaper',{cost:80,item:'Evening newspaper',text:'Reiko’s evening edition, collected at Aya’s counter.'});newspaper.userData.npcInteraction=false;
+  anchor([-2.55,1,2.12],'Browse the bookshop ledger','read','Books & evening papers','Nhung keeps the reading copies and Reiko’s evening paper at the front counter.','Nhung');
+  const newspaper=anchor([-1.85,1,2.12],'Buy newspaper · ¥80','buy','Evening newspaper',{cost:80,item:'Evening newspaper',text:'Reiko’s evening edition, collected at Nhung’s counter.'});newspaper.userData.npcInteraction=false;
   bench('Newspaper and book wrapping desk',-2.55,-2.84,2.45,.5);
   box('Wrapping paper roll',[.65,.11,.22],[-2.7,.97,-2.84],0xc8b493);
   box('Evening newspaper proofs',[.48,.025,.36],[-2.0,.97,-2.84],0xf1ead8);
   anchor([-1.65,1,-2.55],'Read the editor’s proofs','read','Editor’s desk','Corrections and harbour reports for the next edition.','Reiko');
   bench('New arrivals display',1.62,-2.84,4.0,.5);
   for(let i=0;i<12;i++)box('New and second-hand books',[.22,.11,.32],[.1+(i%6)*.53,1.0+Math.floor(i/6)*.13,-2.84],[0x814c3e,0x4d6668,0xa49267][i%3]);
-  const usedBook=anchor([-1.4,1,2.12],'Buy a second-hand paperback · ¥300','buy','Second-hand paperback',{cost:300,item:'Second-hand paperback',text:'Aya wraps a well-loved paperback in brown paper.'});usedBook.userData.npcInteraction=false;
+  const usedBook=anchor([-1.4,1,2.12],'Buy a second-hand paperback · ¥300','buy','Second-hand paperback',{cost:300,item:'Second-hand paperback',text:'Nhung wraps a well-loved paperback in brown paper.'});usedBook.userData.npcInteraction=false;
   bench('Reading table',2.15,.4,1.45,.8);
-  anchor([1.4,1,-2.45],'Ask about the new arrivals','read','Aya’s book recommendations','A sea adventure, an island history, and a well-loved poetry collection. Aya will help you find a book without hurrying you.','Aya');
+  anchor([1.4,1,-2.45],'Ask about the new arrivals','read','Nhung’s book recommendations','A sea adventure, an island history, and a well-loved poetry collection. Nhung will help you find a book without hurrying you.','Nhung');
   anchor([2.15,1,.4],'Browse the local history books','read','Local history reading table','Reading copies stay in the shop. Please return each book to its marked place.');
-  const seat=chair(-3.7,2.85,Math.PI/2);seat.userData.seat={position:[-3.7,0,2.85],stand:[-3.02,0,2.95],eyeY:1.12,yaw:Math.PI/2,pitch:0};seat.userData.npcInteraction=false;reg(seat,'Sit in the reading chair',()=>action('seat','Reading chair','A quiet chair beside the window. Read for a while, with the harbour outside.'),true);
+  const seat=chair(-3.7,2.85,Math.PI/2);seat.userData.seat={position:[-3.7,0,2.85],stand:[-3.02,0,2.95],surfaceY:.5,eyeY:1.12,yaw:Math.PI/2,pitch:0};seat.userData.npcInteraction=false;reg(seat,'Sit in the reading chair',()=>action('seat','Reading chair','A quiet chair beside the window. Read for a while, with the harbour outside.'),true);
   // The name board hangs from the ceiling over the aisle, facing the door: the back wall is books.
   board('FRONT-ROW BOOKS','BOOKS · NEWSPAPERS · LOCAL STORIES',[0,2.42,-1.4],2.6);
  }else if(site.industrialWorkshop){
@@ -80,7 +80,7 @@ export function buildCompactShop({site,room,reg,collider,action,exit}){
   for(const x of [.66,.77])box('Instrument control',[.035,.035,.03],[x,1.13,-hd+.04],0xd2c9ab);
   box('Repair radio',[.36,.25,.26],[1.50,1,-hd+.25],0x6f503d);
   for(let i=0;i<5;i++)box('Radio grille',[.016,.16,.025],[1.36+i*.045,1,-hd+.1],0xd0b992);
-  anchor([-1.24,1.25,-hd+.58],'Use Form 3D printer','workshop','Form 3D printer',null,'Kenji');
+  anchor([-1.24,1.25,-hd+.58],'Use Form 3D printer','workshop','Form 3D printer',null,'Chin');
   anchor([.55,1.18,-hd+.22],'Test the bench calibrator','machine','Bench calibrator','Zero, span and reference checks share Tetsuo’s instrument bench.','Tetsuo');
   anchor([1.50,1.05,-hd+.18],'Tune workshop radio','radio','Workshop radio','Tetsuo has restored the tuner. Harbour weather and late-night music come through clearly.','Tetsuo');
   box('Star Port cabinet',[.60,1.48,.47],[-1.65,.74,hd-.29],0x4b414d,true);box('Star Port screen',[.46,.43,.028],[-1.65,1.09,hd-.545],0x344f57);

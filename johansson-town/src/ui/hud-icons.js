@@ -7,7 +7,7 @@
  */
 import {svg,iconUrl} from './icons.js';
 
-const RAIL=Object.freeze({directoryButton:'book',exitRoomButton:'exit'});
+const RAIL=Object.freeze({directoryButton:'book',exitRoomButton:'exit',enterBuildingButton:'door'});
 /** The town book's tiles carry their icon in data-icon. */
 
 export function dressHud({doc=globalThis.document,onBag=()=>{}}={}){
@@ -17,12 +17,12 @@ export function dressHud({doc=globalThis.document,onBag=()=>{}}={}){
  }
  for(const tile of doc.querySelectorAll?.('.app-tile[data-icon]')||[])tile.style?.setProperty?.('--icon',iconUrl(tile.dataset.icon));
  const drink=doc.querySelector('#drink');
- if(drink)drink.innerHTML=`${svg('cup')}<b>DRINK</b>`;
+ if(drink)drink.innerHTML=`${svg('cup')}<b>Drink</b>`;
  const jump=doc.querySelector('#jump');
- if(jump)jump.innerHTML=`<span class="jump-glyph">${svg('jump')}</span><b class="jump-label">JUMP</b>`;
+ if(jump)jump.innerHTML=`<span class="jump-glyph">${svg('jump')}</span><b class="jump-label">Jump</b>`;
  let bag=doc.querySelector('#bagButton');
  if(!bag){
-  bag=doc.createElement('button');bag.id='bagButton';bag.type='button';
+  bag=doc.createElement('button');bag.id='bagButton';bag.type='button';bag.hidden=true;
   bag.className='icon-btn bag-button app-tile control-off';bag.setAttribute('aria-label','Bag');
   bag.innerHTML=`${svg('bag')}<b class="bag-label">Bag</b><span class="bag-count" aria-hidden="true"></span>`;
   bag.addEventListener('click',()=>onBag());
@@ -34,7 +34,7 @@ export function dressHud({doc=globalThis.document,onBag=()=>{}}={}){
   /** How many things are in the bag: the badge, and the button's name for a reader. */
   count(n){
    if(n===shown)return;shown=n;
-   const badge=bag.querySelector('.bag-count');if(badge)badge.textContent=n>99?'99+':String(n);
+   const badge=bag.querySelector('.bag-count');if(badge){badge.textContent=n>99?'99+':n>0?String(n):'';badge.hidden=n<=0;}bag.hidden=n<=0;
    bag.setAttribute('aria-label',n?`Bag · ${n} thing${n===1?'':'s'}`:'Bag');
   }
  };
@@ -42,5 +42,5 @@ export function dressHud({doc=globalThis.document,onBag=()=>{}}={}){
 
 /** The run toggle's face: the runner, and whether it is on. */
 export function runButtonFace(running){
- return `${svg('run')}<b>${running?'RUNNING':'RUN'}</b>`;
+ return `${svg('run')}<b>Run</b>`;
 }

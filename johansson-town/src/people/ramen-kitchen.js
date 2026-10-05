@@ -112,7 +112,7 @@ export function createRamenKitchen({getCook,isAfterLunch=()=>false}){
     return;
    }
    // Between orders: a round of small jobs, never standing about.
-   if(!idle){const list=isAfterLunch()?WASHUP:IDLE,[name,seconds,activity,workPose='Use',tool=null]=list[idleIndex++%list.length];idle={name,seconds,activity,workPose,tool,x:K.minX+.4+Math.random()*(K.maxX-K.minX-.8),path:null,phase:'walking'};idle.path=route(g,spot(name,idle.x));pose(g,{activity:'on the way to the '+name});}
+   if(!idle){const list=isAfterLunch()?WASHUP:IDLE,[name,seconds,activity,workPose='Use',tool=null]=list[idleIndex++%list.length];idle={name,seconds,activity,workPose,tool,x:K.minX+.4+Math.random()*(K.maxX-K.minX-.8),path:null,phase:'walking'};idle.path=route(g,spot(name,idle.x));pose(g,{tool,activity:'on the way to the '+name});}
    if(idle.phase==='walking'){if(walk(g,idle.path,dt))idle.phase='turning';}
    else if(idle.phase==='turning'){if(turnTo(g,facing(idle.name),dt)){idle.phase='working';pose(g,{socialPose:idle.workPose,tool:idle.tool,activity:idle.activity});}}
    else if((idle.seconds-=dt)<=0)idle=null;

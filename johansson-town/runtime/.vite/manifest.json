@@ -1,41 +1,51 @@
 {
-  "_actors-DEl0bnBZ.js": {
-    "file": "actors-DEl0bnBZ.js",
+  "_actors-BZ5PdI4E.js": {
+    "file": "actors-BZ5PdI4E.js",
     "name": "actors"
   },
-  "_icons-MrOxZM18.js": {
-    "file": "icons-MrOxZM18.js",
+  "_icons-RrRr0WaS.js": {
+    "file": "icons-RrRr0WaS.js",
     "name": "icons"
   },
-  "_town-audio-DyNkE1Ey.js": {
-    "file": "town-audio-DyNkE1Ey.js",
+  "_preload-helper-PPVm8Dsz.js": {
+    "file": "preload-helper-PPVm8Dsz.js",
+    "name": "preload-helper"
+  },
+  "_spector.bundle-_JPoFEkN.js": {
+    "file": "spector.bundle-_JPoFEkN.js",
+    "name": "spector.bundle",
+    "isDynamicEntry": true
+  },
+  "_town-audio-ygTjb9SR.js": {
+    "file": "town-audio-ygTjb9SR.js",
     "name": "town-audio"
   },
   "src/audio/town-audio.js?snappy=1": {
-    "file": "audio-C8P9scra.js",
+    "file": "audio-83dQfoLt.js",
     "name": "audio",
     "src": "src/audio/town-audio.js?snappy=1",
     "isEntry": true,
     "imports": [
-      "_town-audio-DyNkE1Ey.js"
+      "_town-audio-ygTjb9SR.js"
     ]
   },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-DJXGqqhw.js",
+    "file": "portraits-Dom14-Fm.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
     "imports": [
-      "_actors-DEl0bnBZ.js"
+      "_actors-BZ5PdI4E.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-DqJqMDyc.js",
+    "file": "boot-DZmMvyfl.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
     "imports": [
-      "_icons-MrOxZM18.js"
+      "_preload-helper-PPVm8Dsz.js",
+      "_icons-RrRr0WaS.js"
     ],
     "dynamicImports": [
       "touch-ui.js?ui=controls-3",
@@ -45,33 +55,37 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-Df52_zoE.js",
+    "file": "game-BaG6XWnX.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_actors-DEl0bnBZ.js",
-      "_town-audio-DyNkE1Ey.js",
-      "_icons-MrOxZM18.js"
+      "_actors-BZ5PdI4E.js",
+      "_town-audio-ygTjb9SR.js",
+      "_icons-RrRr0WaS.js",
+      "_preload-helper-PPVm8Dsz.js"
+    ],
+    "dynamicImports": [
+      "_spector.bundle-_JPoFEkN.js"
     ]
   },
   "touch-ui.js?ui=controls-3": {
-    "file": "touch-ui-CCG0tNLG.js",
+    "file": "touch-ui-CajBlBfy.js",
     "name": "touch-ui",
     "src": "touch-ui.js?ui=controls-3",
     "isDynamicEntry": true,
     "imports": [
-      "_icons-MrOxZM18.js"
+      "_icons-RrRr0WaS.js"
     ]
   },
   "webmcp-characters.js": {
-    "file": "webmcp-characters-OJ-jcBMt.js",
+    "file": "webmcp-characters-BkXkAGJZ.js",
     "name": "webmcp-characters",
     "src": "webmcp-characters.js",
     "isDynamicEntry": true
   },
   "webmcp.js": {
-    "file": "webmcp-Caj8m7xi.js",
+    "file": "webmcp-B7GEQD6t.js",
     "name": "webmcp",
     "src": "webmcp.js",
     "isDynamicEntry": true

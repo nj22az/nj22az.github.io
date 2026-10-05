@@ -1,35 +1,30 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Shippori+Mincho:wght@400;500;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Press+Start+2P&display=swap");
-
 /* ==== Town guide page (landing.css) ==== */
-/* Johansson Town entry board — Toraya-inspired harbour visitor page.
-   Tokens adapted from awesome-design-md-jp design-md/toraya/DESIGN.md
-   (deep navy #27455c, mincho headings, gothic body, cream surfaces, pill CTA).
-   Not a Toraya clone: harbour vermillion + sakura pastel for Johansson Town. */
+/* The entry board shares LINE's green, white surfaces and system typography.
+   Reference: awesome-design-md-jp/design-md/line/DESIGN.md. */
 :root {
-  --harbour-navy: #27455c;
-  --harbour-navy-deep: #1c3344;
+  --harbour-navy: #06c755;
+  --harbour-navy-deep: #05b34c;
   --ink: #111111;
-  --ink-muted: #777777;
+  --ink-muted: #666666;
   --paper: #ffffff;
-  --paper-warm: #f7f5f2;
-  --surface: #f2f1f1;
-  --line: #cccccc;
+  --paper-warm: #f7f8f9;
+  --surface: #f7f8f9;
+  --line: #e5e5e5;
   --sakura: #eee0e9;
   --matcha: #d6e2db;
-  --vermillion: #c41230;
+  --vermillion: #d93025;
   --sp-1: .25rem;
   --sp-2: .5rem;
   --sp-3: 1rem;
   --sp-4: 1.5rem;
   --sp-5: 2.5rem;
   --sp-6: 4rem;
-  --rd-s: 0;
-  --rd-m: 0;
-  --rd-l: 0;
+  --rd-s: 8px;
+  --rd-m: 12px;
+  --rd-l: 12px;
   --rd-pill: 1.5rem;
-  --gothic: "Yu Gothic Medium", "Yu Gothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
-  --mincho: "Shippori Mincho", "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --gothic: -apple-system, BlinkMacSystemFont, "SF Pro Text", SFPro, Arial, "Noto Sans JP", "Noto Sans KR", sans-serif;
+  --mincho: var(--gothic);
   --aui-grey-900: var(--ink);
   --aui-grey-700: #444444;
   --aui-grey-536: var(--ink-muted);
@@ -400,14 +395,14 @@
    The start page is only this screen. The visitor's guide is a menu page behind
    TOWN GUIDE, like an options screen, and BACK returns to the title. */
 #start {
-  --ts-navy: #1c3344;
-  --ts-ink: #10202b;
+  --ts-navy: #06c755;
+  --ts-ink: #000000;
   --ts-sun: #ffd54a;
   --ts-orange: #ff9f1c;
   --ts-red: #d7263d;
-  --ts-cream: #fff8e7;
-  --ts-pop: "Mochiy Pop One", "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", var(--gothic);
-  --ts-pixel: "Press Start 2P", ui-monospace, "Courier New", monospace;
+  --ts-cream: #ffffff;
+  --ts-pop: var(--gothic);
+  --ts-pixel: var(--gothic);
   overflow: hidden;
 }
 #start:not(.guide-open) .board-wrap { display: none; }
@@ -474,7 +469,8 @@
   grid-template-rows: 1fr auto;
   overflow: hidden;
   isolation: isolate;
-  background: linear-gradient(180deg, #5fb4e6 0%, #9fd6f0 42%, #ffe3b8 78%, #ffd199 100%);
+  background: linear-gradient(180deg, #2f8fdc 0%, #6bbcf0 45%, #bfe5fa 100%);
+  transition: background .6s ease;
   color: var(--ts-cream);
   text-align: center;
   font-family: var(--ts-pop);
@@ -847,3 +843,52 @@
   #start .title-loading { margin-top: .75rem; }
 }
 @media (prefers-reduced-motion: reduce) { .title-bar span { animation: none; width: 100%; opacity: .65; } }
+
+/* LINE entry and guide controls, including title/loading and player slots. */
+#start{font-family:var(--gothic);font-size:20px;background:#f7f8f9;color:#000}
+#start .title-screen{font-family:var(--gothic);background:linear-gradient(180deg,#2f8fdc 0%,#6bbcf0 45%,#bfe5fa 100%);color:#000}
+#start :is(button,input,select,a){font-family:var(--gothic);letter-spacing:normal;text-shadow:none;box-sizing:border-box}
+#start :is(button,.title-guide,.board-back a,.board-cta a,.guide-nav a){min-height:44px;padding:12px 16px;border:1px solid #e5e5e5;border-radius:8px;background:#fff;color:#000;font-size:16px;font-weight:700;line-height:1.4;box-shadow:none;text-decoration:none}
+#start :is(button,.title-guide,.board-back a,.board-cta a,.guide-nav a):focus-visible{outline:2px solid #06c755;outline-offset:3px;box-shadow:none}
+#start :is(input,select){min-height:48px;padding:12px 16px;border:1px solid #e5e5e5;border-radius:8px;font-size:16px;background:#fff;color:#000}
+#start .title-menu{gap:8px;padding:24px;border:1px solid #e5e5e5;border-radius:12px;background:#fff;box-shadow:0 2px 8px #00000014;width:min(360px,calc(100vw - 32px));box-sizing:border-box}
+#start .title-menu :is(#enter,.title-guide){width:100%;padding:12px 24px;color:#000;background:#f7f8f9;border:1px solid #e5e5e5;border-radius:8px;font:700 16px/1.4 var(--gothic);text-shadow:none;letter-spacing:normal;box-shadow:none}
+#start .title-menu #enter{background:#06c755;color:#fff;border-color:#06c755}
+#start .title-menu #enter:hover{background:#05b34c}
+#start .title-menu #enter b{animation:none}
+#start .title-cursor{display:none}
+#start .logo-small{color:#666;font:700 16px/1.4 var(--gothic);letter-spacing:normal;text-shadow:none}
+#start .logo-main{font:700 clamp(32px,7vw,70px)/1.15 var(--gothic);letter-spacing:normal}
+#start .logo-main span,#start .logo-main span:nth-child(n){color:#000;text-shadow:none}
+#start .logo-town{font:700 clamp(24px,4vw,40px)/1.2 var(--gothic);letter-spacing:normal;text-indent:0;color:#06c755;background:transparent;border:0;border-radius:0;box-shadow:none;transform:none}
+#start .logo-town span{text-shadow:none}
+#start .title-tag{font:400 20px/1.5 var(--gothic);color:#666}
+#start .title-foot{font:400 14px/1.5 var(--gothic);letter-spacing:normal;text-shadow:none;color:#000;background:#fff;border-top:1px solid #e5e5e5}
+#start .title-loading #bootStatus{font:400 16px/1.5 var(--gothic);letter-spacing:normal;background:#fff;color:#666;text-shadow:none}
+#start .title-bar{border:1px solid #e5e5e5;box-shadow:none;background:#fff;border-radius:8px}
+#start .title-bar span{background:#06c755}
+#start :is(.board-frame,.paper,.roll-card,.player-card,.clock-setup){border-color:#e5e5e5;border-radius:12px;background:#fff;box-shadow:0 2px 8px #00000014}
+#start :is(h1,h2,h3,h4){font-family:var(--gothic);font-weight:700;letter-spacing:normal}
+#start :is(.board-back a,.board-cta a,.clock-speeds button[aria-pressed=true],.clock-modes button[aria-pressed=true],.guide-nav button){background:#06c755;color:#fff;border-color:#06c755;box-shadow:none;border-radius:8px}
+#start .board-foot{background:#06c755}
+@media(max-width:767px){#start{font-size:16px}#start .title-tag{font-size:16px}#start .title-menu{padding:16px}#start .title-foot{font-size:12px}}
+
+#start .title-menu :is(#enter,.title-guide){justify-content:center!important;gap:12px}
+#start :is(.guide-nav,.board-kicker,.section-bar,.paper,.directory-row,.island-brochure-hero){border-color:#e5e5e5}
+#start :is(.hero-image,.island-brochure-hero>img){border-color:#fff;box-shadow:0 2px 8px #00000014}
+#start :is(.board-head,.board-intro,.section-bar,.resident-personality){background:#f7f8f9;border-color:#e5e5e5;border-radius:12px}
+#start :is(.resident-traits span,.clock-setup){border-color:#e5e5e5;background:#f7f8f9;color:#000}
+
+/* Title weather: a blue day by default; the button by the sky changes it (title-sky.js). */
+#start .title-screen[data-weather="cloudy"] { background: linear-gradient(180deg, #7f98ad 0%, #a9bccb 50%, #d3dee6 100%); }
+#start .title-screen[data-weather="rain"] { background: linear-gradient(180deg, #4f5f6e 0%, #6f8090 50%, #9aa8b4 100%); }
+#start .title-screen:not([data-weather="sunny"]) :is(.title-sun, .title-spark) { display: none; }
+#start .title-weather { position: absolute; z-index: 2; top: calc(env(safe-area-inset-top, 0px) + 14px); left: 14px; display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border: 1px solid rgba(255,255,255,.45); border-radius: 50%; background: rgba(20,32,44,.38); color: #fff; cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+#start .title-weather svg { width: 26px; height: 26px; }
+#start .title-weather:not(.title-dice) g { display: none; }
+#start .title-dice { left: 70px; }
+#start .title-screen[data-weather-mode="random"] .title-dice { color: #06c755; }
+#start .title-screen[data-weather="sunny"] .title-weather g[data-icon="sunny"],
+#start .title-screen[data-weather="cloudy"] .title-weather g[data-icon="cloudy"],
+#start .title-screen[data-weather="rain"] .title-weather g[data-icon="rain"] { display: inline; }
+#start .title-weather:focus-visible { outline: 3px solid #e9aa48; outline-offset: 3px; }

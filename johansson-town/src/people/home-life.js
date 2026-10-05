@@ -6,7 +6,7 @@ export function sleepHours(profile){
  if(profile.name==='Officer Mori')return {sleep:420,wake:900};
  // On the island he lives in the office and keeps early hours (social.js HARBOUR_MASTER_DAY).
  if((profile.name==='Harbour master'))return {sleep:1260,wake:330};
- if(profile.name==='Nao')return {sleep:240,wake:720};
+ if(profile.name==='Thao')return {sleep:240,wake:720};
  // The press and radio shifts run past midnight. Keep the two hours of
  // after-work errands, then eight hours at home instead of the old day shift bedtimes.
  if(profile.name==='Reiko')return {sleep:170,wake:650};
@@ -32,11 +32,11 @@ export const HOME_LAYOUT={bounds:{minX:-3,maxX:3,minZ:-3,maxZ:3},spawn:[1.5,0,2]
  /** A peg by the door for the hat (home-residents.js). */
  hatHook:{position:[2.93,1.6,1.2],yaw:-Math.PI/2}};
 export const SHARED_HOME_LAYOUT={bounds:{minX:-3.5,maxX:3.5,minZ:-3.4,maxZ:3.4},spawn:[0,0,2.6],exit:[0,1.1,3.3],door:[0,0,2.8]};
-/** Where Thuan and Nao sleep, eat and leave from in their shared flat. */
+/** Where Thuan and Thao sleep, eat and leave from in their shared flat. */
 const THUAN_APARTMENT_ROUTINES={
  Thuan:{bed:[-4.15,.58,3.95],bedside:[-3.08,0,2.25],table:[-1.6,0,.5],door:[-.45,0,.4],
   cover:{position:[-4.15,.64,3.35],width:1.08,length:1.3,axis:'z'}},
- Nao:{bed:[-1.6,.58,3.95],bedside:[-2.65,0,3.3],table:[-3.98,0,.5],door:[-.45,0,.4],
+ Thao:{bed:[-1.6,.58,3.95],bedside:[-2.65,0,3.3],table:[-3.98,0,.5],door:[-.45,0,.4],
   cover:{position:[-1.6,.64,3.35],width:1.08,length:1.3,axis:'z'}},
 };
 export function homeLayoutFor(name){

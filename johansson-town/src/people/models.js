@@ -8,7 +8,7 @@ import {createAvatarActor,updateAvatarActor,avatarConversationTarget} from '../a
  * Everybody is a Shimanchu: one family of bodies built at load time from recipes
  * (src/avatars/). There is nothing to download, so every resident is ready on the
  * frame they are attached. The GLB cast that used to stream in behind placeholders —
- * the MakeHuman Thuan and Johansson, Nao's VRoid, the low-poly residents — was retired
+ * the MakeHuman Thuan and Johansson, Thao's VRoid, the low-poly residents — was retired
  * in the September 2026 cleanup (see docs/EXPANSION-NOTES.md to recover it).
  */
 export function createLocalCharacters({shadows=false}={}){

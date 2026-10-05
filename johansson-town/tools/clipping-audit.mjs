@@ -1,10 +1,11 @@
 // Diagnostic fixtures: ablate ink and shadow state at the same real shop window.
 import {chromium} from 'playwright';
 import {mkdir,writeFile} from 'node:fs/promises';
-const out=new URL('../../output/clipping-diagnosis/',import.meta.url);await mkdir(out,{recursive:true});
+const phone=process.argv[2]==='phone';
+const out=new URL('../../output/clipping-diagnosis'+(phone?'-phone':'')+'/',import.meta.url);await mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true,args:['--use-angle=metal']}),errors=[];
 try{
- const page=await browser.newPage({viewport:{width:1280,height:800},serviceWorkers:'block'});page.setDefaultTimeout(240000);
+ const page=await browser.newPage({viewport:phone?{width:390,height:844}:{width:1280,height:800},serviceWorkers:'block'});page.setDefaultTimeout(240000);
  page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(()=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:00',speed:1}));Object.defineProperty(navigator,'getGamepads',{value:()=>[]});Element.prototype.requestFullscreen=async()=>{};});
  await page.goto('http://127.0.0.1:8767/johansson-town/?audit&spawn=sakura-bench');await page.locator('#enter').click();

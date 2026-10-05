@@ -12,8 +12,8 @@ export const HOME_TEXTILES=Object.freeze([
 export function unlockedHomeKeepsakes(state={}){
  const items=[{id:'postcard',name:'Swedish harbour postcard',text:'A little reminder of the shore you came from.'}];
  if(state.fish>0)items.push({id:'shell',name:'Fishing-pier shell',text:'A shell found after your first catch.'});
- if(state.quest>=3)items.push({id:'cat',name:'Tama thank-you cat',text:'Aya’s small clay cat, to thank you for bringing Tama home.'});
- if(state.kenjiEscort==='done')items.push({id:'radio',name:'Workshop miniature radio',text:'Kenji’s little radio case, made from a spare part after your workshop walk.'});
+ if(state.quest>=3)items.push({id:'cat',name:'Tama thank-you cat',text:'Nhung’s small clay cat, to thank you for bringing Tama home.'});
+ if(state.kenjiEscort==='done')items.push({id:'radio',name:'Workshop miniature radio',text:'Chin’s little radio case, made from a spare part after your workshop walk.'});
  return items;
 }
 export function restoreHomeDecor(raw){

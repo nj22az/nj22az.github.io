@@ -158,7 +158,7 @@ function addStreetLife(world,options,factory){
   const group=world.group,colliders=world.colliders,lights=[];let interactions=addSiteFrontage(world,options,factory,lights);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
-  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[2.05,0,17.02],stand:[2.05,0,16.15],eyeY:1.26,yaw:0,pitch:0};interactions++;};
+  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[2.05,0,17.02],stand:[2.05,0,16.15],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
 
   addWithCollider(group,colliders,factory.bench(2.05,17.1,0));

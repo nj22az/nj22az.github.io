@@ -23,9 +23,9 @@ const airportPts=pts=>pts.map(([u,v])=>airportVehiclePoint(u,v));
 export function buildTownNetwork(){
  const net=createRoadNetwork();
  net.add(makeLane('main-north',flat([[MAIN_NORTH_X,-33.5],[MAIN_NORTH_X,13.3]]),{speed:3.8}));
- net.add(makeLane('main-south',flat([[MAIN_SOUTH_X,-2],[MAIN_SOUTH_X,-38.6]]),{speed:3.8}));
+ net.add(makeLane('main-south',flat([[MAIN_SOUTH_X,1.5],[MAIN_SOUTH_X,-38.6]]),{speed:3.8}));
  const turn=[];for(let i=0;i<=32;i++){const a=i*Math.PI/32;turn.push([MAIN_ROAD.x+Math.cos(a)*1.1,.04,16.5+Math.sin(a)*1.1]);}
- SERVICE_BAYS.forEach(([x,z],i)=>{const entry=smooth([[MAIN_SOUTH_X,16.5],[MAIN_SOUTH_X,z+(i?5.6:5.5)],[x,z+(i?4.8:4.7)],[x,z]]);net.add(makeLane('service-in-'+i,[[MAIN_NORTH_X,0,13.3],...turn,...flat(entry)],{speed:1.5}));net.add(makeLane('service-out-'+i,flat(smooth([[x,z],[x,z-(i?3.3:1)],[MAIN_SOUTH_X,z-(i?4.5:2.3)],[MAIN_SOUTH_X,-2]])),{speed:2.2}));});
+ SERVICE_BAYS.forEach(([x,z],i)=>{const entry=smooth([[MAIN_SOUTH_X,16.5],[MAIN_SOUTH_X,z+(i?3.3:5.5)],[x,z+(i?2:4.7)],[x,z]]);net.add(makeLane('service-in-'+i,[[MAIN_NORTH_X,0,13.3],...turn,...flat(entry)],{speed:1.5}));net.add(makeLane('service-out-'+i,flat(smooth([[x,z],[x,z-1],[MAIN_SOUTH_X,z-2.3],[MAIN_SOUTH_X,1.5]])),{speed:2.2}));});
  QUAY_BAYS.forEach(([x,z],i)=>{
   net.add(makeLane('quay-out-'+i,flat(smooth([[x,z],[x,-34.8],[MAIN_NORTH_X+.3,-34.8],[MAIN_NORTH_X,-33.5]])),{speed:2}));
   net.add(makeLane('quay-in-'+i,flat(smooth([[MAIN_SOUTH_X,-39.4],[-2.7,-42.6],[-2.2,-45.6],[-.9,-46.7],[x,-45.7],[x,z]])),{speed:1.8}));
@@ -76,7 +76,7 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  const serviceBay=i=>{const [x,z]=SERVICE_BAYS[i];return {where:'service',bay:i,x,y:0,z,yaw:Math.PI};};
  const islanders=[make('kei truck',0x5f8f5a,'islander','Tetsuo','Collect airport cargo for the workshop'),make('car',0xe9e6dc,'islander','Harbour master','Inspect airport cargo manifests')];
  const appointments=[{leave:690,back:750},{leave:960,back:1020}];islanders.forEach((v,i)=>{v.home='town';v.homeBay=i;v.appointment=appointments[i];parkAt(v,quayBay(i));});
- const fleet=[make('kei truck',0xf2f0ea,'ferry','Kenji','Deliver airport repair freight to Main Street'),make('car',0x3f7fc0,'ferry','Reiko','Deliver airport newspapers to Main Street'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Aya','Deliver airport book orders to Main Street')];
+ const fleet=[make('kei truck',0xf2f0ea,'ferry','Chin','Deliver airport repair freight to Main Street'),make('car',0x3f7fc0,'ferry','Reiko','Deliver airport newspapers to Main Street'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Nhung','Deliver airport book orders to Main Street')];
  fleet.forEach((v,i)=>{v.home='airport';v.appointment={leave:600+i*180,back:690+i*180};const bay=reserve('airport');v.homeBay=bay;parkAt(v,airportVehicleBay(bay));});
  const all=[...islanders,...fleet];
  const wantedShore=(v,minutes)=>{const m=((minutes%1440)+1440)%1440,a=v.appointment;return m>=a.leave&&m<a.back?(v.home==='town'?'airport':'town'):v.home;};

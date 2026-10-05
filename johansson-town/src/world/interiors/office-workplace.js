@@ -2,14 +2,14 @@ import * as THREE from '../../../vendor/three.module.js';
 import {createPlanKit} from './house-plan.js';
 
 export const OFFICE_STAFF={'Harbour master':[-1.85,0,-1.20]};
-export const OFFICE_DESK_SEAT={position:[-2.52,0,-2.02],stand:[-1.85,0,-1.20],eyeY:1.18,yaw:0,pitch:0};
+export const OFFICE_DESK_SEAT={position:[-2.52,0,-2.02],stand:[-1.85,0,-1.20],surfaceY:.495,eyeY:1.18,yaw:0,pitch:0};
 /**
  * On the island the harbour master lives here: a tatami mat and futon behind a
  * folding screen on the east side, a tea stool, his coat on a stand. home-residents.js
  * walks him to bed from these points.
  */
 export const OFFICE_HOME_LAYOUT=Object.freeze({bounds:{minX:-3.37,maxX:3.37,minZ:-3.37,maxZ:3.37},spawn:[0,0,2.4],exit:[0,1.1,3.34],
- door:[0,0,2.45],table:[-.9,0,1.35],bedside:[1.0,0,.95],bed:[2.1,.35,1.82],
+ door:[0,0,2.45],table:[-.9,0,1.35],tableSeatHeight:.42,bedside:[1.0,0,.95],bed:[2.1,.35,1.82],
  cover:{position:[2.1,.41,1.22],width:1.1,length:1.3,axis:'z'},
  hatHook:{mode:'stand',position:[2.9,1.76,-.45],yaw:Math.PI/2}});
 export function buildOfficeWorkplace({room:parent,reg,action,collider=()=>{}}){
@@ -56,7 +56,7 @@ export function buildOfficeWorkplace({room:parent,reg,action,collider=()=>{}}){
  {const kit=createPlanKit({box:(size,pos,c,name)=>box(name||'WC wall',size,pos,c),collider,height:2.9,wall:0xeee6cf,frame:0x6f8a76});
   kit.partition(-3.37,1.4,-2.2,1.4);kit.partition(-2.2,1.4,-2.2,3.37,[[1.6,2.4]]);
   kit.wetRoom(-3.33,-2.24,1.44,3.33,'Toilet',true,'x1');}
- const visitorSeat=new THREE.Object3D();visitorSeat.position.set(1.14,.7,-2.05);visitorSeat.userData.npcInteraction=false;visitorSeat.userData.seat={position:[1.14,0,-2.05],stand:[1.14,0,-1.1],eyeY:1.2,yaw:0,pitch:0};room.add(visitorSeat);reg(visitorSeat,'Sit at the visitor desk',()=>action('seat','Visitor desk','A clean writing pad and the harbour ledgers are ready.'),true);
+ const visitorSeat=new THREE.Object3D();visitorSeat.position.set(1.14,.7,-2.05);visitorSeat.userData.npcInteraction=false;visitorSeat.userData.seat={position:[1.14,0,-2.0],stand:[1.14,0,-1.1],surfaceY:.495,eyeY:1.2,yaw:0,pitch:0};room.add(visitorSeat);reg(visitorSeat,'Sit at the visitor desk',()=>action('seat','Visitor desk','A clean writing pad and the harbour ledgers are ready.'),true);
  return {computer,staff:OFFICE_STAFF};
 }
 

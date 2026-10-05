@@ -5,7 +5,7 @@ import {buildAvatar,measure} from './build.js';
 import {createAvatarAnimator,GESTURES} from './animate.js';
 import {recipeFor,CAST_RECIPES} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
-import {fitAvatarHeldProp} from './consume.js';
+import {fitAvatarHeldProp,gripWheel} from './consume.js';
 import {DEFAULT_PLAYER,readPlayers,readSave} from '../save.js';
 import {swingsAt} from './springs.js';
 const swingAt=new THREE.Vector3();
@@ -38,14 +38,6 @@ export function playerRecipe(storage=globalThis.localStorage){
 export function savePlayerRecipe(recipe,storage=globalThis.localStorage){
  const code=encodeRecipe({...recipe,outfit:appropriateOutfit('Johansson',recipe.outfit)});try{storage?.setItem(playerRecipeKey(storage),code);}catch{}return code;
 }
-
-/**
- * Behind a counter everyone stands on a step: a counter is built for grown-up bodies,
- * and a Shimanchu's shoulders would otherwise be under it with only the head showing.
- */
-export const COUNTER_STEP=.2;
-
-const SEATED=['Wake','Sit','Type','Eat','Drink','Sleep','Soak'];
 
 /**
  * ?avatar=<code> in the address: somebody shared an islander. It becomes the player's,
@@ -86,18 +78,23 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  // At home the hat is on its hook (home-residents.js), not on the head.
  const hatOn=!u.hatOff;if(actor.hatOn!==hatOn){avatar.setHat?.(hatOn);actor.hatOn=hatOn;}
  const riding=!!(u.playerControlled&&actor.isThuan);
- const seated=!riding&&(Number.isFinite(u.seatHeight)&&SEATED.includes(u.socialPose)||Number.isFinite(u.chairBlend)&&u.chairBlend>.5);
+ // The seat owns the support, while the pose owns the hands and head. Reading,
+ // talking or using a telephone must not stand somebody up inside their chair.
+ const seated=!riding&&Number.isFinite(u.seatHeight);
  const mood=u.thuanMood,line=u.lineFeeling,feeling=mood&&mood.until>now?mood.expression:line&&line.until>now?line.expression:null;
  const engaged=!!(u.playerConversation||u.chat||actor.gestureTime);
  const sleeping=Number(u.sleepBlend)>.28||(u.sleeping&&!u.roomTransition);
  actor.animator.update(dt,{
-  speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,floorHeight:(Number(u.floorHeight)||0)+(u.socialPose==='CounterIdle'?COUNTER_STEP:0),
+  speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,chairBlend:u.chairBlend,floorHeight:Number(u.floorHeight)||0,
   pose:u.socialPose,seat:u.socialPose,driving:!!u.inVehicle,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
   waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
   talking:!!(u.chat?.speaking||u.speakingUntil>now),
   expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
-  sleeping,gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,tipsy:u.tipsy||0,
+  sleeping,conversing:!!(u.playerConversation||u.chat||u.playing),gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,tipsy:u.tipsy||0,
  });
+ // A driver's hands are on the wheel, not hovering in front of it.
+ const wheel=u.inVehicle&&entity.parent?.userData?.steeringWheel;
+ if(wheel)gripWheel(avatar,entity.parent,wheel,now/1000);
  // Hair, skirts and hems swing (springs.js): always for Thuan, near the camera for everyone else.
  if(swingsAt(entity.getWorldPosition(swingAt),actor.isThuan)){avatar.springs?.update(dt);actor.swingResting=false;}
  else if(!actor.swingResting){avatar.springs?.reset();actor.swingResting=true;}
@@ -186,11 +183,10 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
    time+=dt;root.visible=!!state.visible;
    if(expressionUntil&&time>expressionUntil){expression='neutral';expressionUntil=0;}
    if(!animator.gesture)move=null;
-   // The root sits where game.js puts it; seated, it has already been lowered to the seat.
+   // Player and residents use the same measured seat support.
    animator.update(dt,{speed:state.speed||0,running:!!state.running,seated:!!state.seated,
-    seatHeight:state.seated?avatar.measure.hipY-avatar.measure.seatDrop:undefined,seat:seatMove,airborne:!!state.airborne,
+    seatHeight:state.seatHeight,seat:seatMove,airborne:!!state.airborne,
     talking:time<speakUntil,expression,gaze:lookPoint,heldProp:held,tipsy:state.tipsy||0});
-   if(state.seated)avatar.root.position.y=0;
    // Johansson's shirt hem swings wherever he is.
    if(root.visible)avatar.springs?.update(dt);
    if(held?.userData.consumable){

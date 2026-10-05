@@ -39,14 +39,16 @@ test('published page uses one compiled audio/boot graph with local hashed depend
 
 test('every stylesheet link carries a hash of the file it points at',async()=>{
  const {createHash}=await import('node:crypto');
- const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
- const links=[...html.matchAll(/href="(\.\/)?([\w-]+\.css)(\?[^"]*)?"/g)];
- assert.ok(links.length>=5,'The page still links its stylesheets');
- for(const [,,file,query] of links){
-  const css=await readFile(new URL('../'+file,import.meta.url));
+ for(const page of ['index.html','creator/index.html']){
+ const pageUrl=new URL('../'+page,import.meta.url),html=await readFile(pageUrl,'utf8');
+ const links=[...html.matchAll(/href="((?:\.\/|\.\.\/)?[\w/-]+\.css)(\?[^"]*)?"/g)];
+ assert.ok(links.length>=(page==='index.html'?5:2),'The page still links its stylesheets');
+ for(const [,file,query] of links){
+  const css=await readFile(new URL(file,pageUrl));
   const hash=createHash('sha256').update(css).digest('hex').slice(0,8);
   // A hand-written version string goes stale the moment someone edits the stylesheet
   // and forgets it, which serves new markup with old CSS out of the browser cache.
   assert.equal(query,'?h='+hash,file+' is cached under the wrong key; run npm run build:runtime');
+ }
  }
 });

@@ -11,18 +11,30 @@ import {stockSpec} from '../src/commerce/shop-stock.js';
 import {MAGAZINE_RACK} from '../src/world/interiors/sakura-magazine-rack.js';
 const rackPosition=[MAGAZINE_RACK.x,0,MAGAZINE_RACK.z],readerPosition=[MAGAZINE_RACK.x,0,MAGAZINE_RACK.z-MAGAZINE_RACK.depth/2-.44];
 import {SAVE_KEY} from '../src/save.js';
+import {realTownMinutes} from '../src/town-clock.js';
+import {residentPlan} from '../src/people/social.js';
+import {RESIDENTS} from '../src/people/residents.js';
+import {ownedDisplayView} from './owned-display-views.mjs';
 
 const viewport=process.argv[2]||'desktop';assert.ok(['desktop','phone'].includes(viewport));
-const start=marketVisitsForDay(0).Reiko[0]+5,time=`${String(Math.floor(start/60)).padStart(2,'0')}:${String(start%60).padStart(2,'0')}`;
+const day=Math.floor(realTownMinutes()/1440),visits=marketVisitsForDay(day*1440);
+assert.ok(visits.Reiko,'This saved-Reiko fixture requires a day with her authored shopping visit');
+// A restored unfinished errand may continue outside its original visit window.
+// Reiko's current work/sleep/lunch plan still wins; do not force a shop visitor
+// during her Front Row shift merely because an older catalogue chose that hour.
+const profile=RESIDENTS.find(p=>p.name==='Reiko');
+const minute=Array.from({length:660},(_,i)=>540+i).find(m=>residentPlan(profile,day*1440+m,false,{residentLife:{Reiko:{day,shopping:{started:day*1440+m,finished:false}}}}).place==='market');
+assert.ok(Number.isFinite(minute),'Reiko has an available time for the restored shop errand');
+const start=day*1440+minute,time=`${String(Math.floor(minute/60)).padStart(2,'0')}:${String(minute%60).padStart(2,'0')}`;
 const out=new URL('../../output/sakura-rack/',import.meta.url);await mkdir(out,{recursive:true});
-const saved={minutes:start,inventory:[],yen:1200,sound:false,sakura:restoreSakura(),residentLocations:{Reiko:{position:[0,0],indoors:'market'}},residentLife:{Reiko:{day:0,yen:2400,purchases:[],activities:[],shopping:{phase:'browse',started:start,finished:false,item:'pudding',picked:false,paid:false,timer:0,position:rackPosition}}}};
+const saved={minutes:start,inventory:[],yen:1200,sound:false,sakura:restoreSakura(),residentLocations:{Reiko:{position:[0,0],indoors:'market'}},residentLife:{Reiko:{day,yen:2400,purchases:[],activities:[],shopping:{phase:'browse',started:start,finished:false,item:'pudding',picked:false,paid:false,timer:0,position:rackPosition}}}};
 const report={viewport,scenario:'Restored real Reiko embedded in Sakura magazine rack; Johansson remains at its front while she shops.',samples:[],phases:[],errors:[]};
 let server,browser,page,closing=false;
 const capture=async label=>{await page.evaluate(()=>window.__JOHANSSON_AUDIT__.render());await page.screenshot({path:new URL(`${viewport}-${label}.png`,out).pathname});};
 try{
  server=await serveGame(fileURLToPath(new URL('../',import.meta.url)));
  browser=await chromium.launch({headless:true,args:process.platform==='darwin'?['--use-angle=metal']:[]});
- const context=await browser.newContext({viewport:viewport==='phone'?{width:390,height:844}:{width:1280,height:800},serviceWorkers:'block'});
+ const context=await browser.newContext({viewport:viewport==='phone'?{width:390,height:844}:{width:1280,height:800},timezoneId:Intl.DateTimeFormat().resolvedOptions().timeZone,serviceWorkers:'block'});
  await context.addInitScript(({saved,time,key})=>{localStorage.setItem(key,JSON.stringify({...saved,savedAt:Date.now()}));localStorage.setItem('johansson-town-clock',JSON.stringify({start:time,speed:1}));Object.defineProperty(navigator,'getGamepads',{value:()=>[]});Element.prototype.requestFullscreen=async()=>{};},{saved,time,key:SAVE_KEY});
  page=await context.newPage();page.setDefaultTimeout(120000);
  page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error')report.errors.push(m.text());});
@@ -34,7 +46,13 @@ try{
   const a=window.__JOHANSSON_AUDIT__;a.frozen=true;a.renderFrozen=false;a.teleport(-8,8,0);await a.enter('market');a.teleport(readerPosition[0],readerPosition[2],0);
   a.camera={pos:[-2.8,1.8,1.2],at:[-4.65,.9,2.3]};a.step(0);
   const reiko=a.world.people.find(p=>p.profile.name==='Reiko');
-  return {room:JSON.parse(window.render_game_to_text()).room,position:reiko.g.position.toArray(),inside:!!reiko.g.userData.inMarket,clear:a.navigation(reiko.g.position.x,reiko.g.position.z,.35),shop:a.shop,count:a.world.people.length};
+  // Startup can restore a local worker at her real bookshop door before the
+  // requested clock is applied. Let the normal schedule walk her to Sakura;
+  // neither the customer nor the saved rack position is teleported here.
+  let arrivalSeconds=0;
+  for(;arrivalSeconds<120&&!reiko.g.userData.inMarket;arrivalSeconds+=.25)a.step(250);
+  const game=JSON.parse(window.render_game_to_text());
+  return {room:game.room,minutes:game.minutes,day:Math.floor(game.minutes/1440),arrivalSeconds,shopping:a.activities.state.residentLife.Reiko,position:reiko.g.position.toArray(),inside:!!reiko.g.userData.inMarket,clear:a.navigation(reiko.g.position.x,reiko.g.position.z,.35),shop:a.shop,count:a.world.people.length};
  },{readerPosition});
  assert.equal(report.initial.room,'market');assert.equal(report.initial.inside,true);assert.equal(report.initial.clear.staticBlocked,false,'Restored customer stands outside the magazine rack');
  assert.ok(Math.hypot(report.initial.position[0]-rackPosition[0],report.initial.position[2]-rackPosition[2])>.6,'Save recovery does not leave her inside the rack');
@@ -51,6 +69,23 @@ try{
  ]){
   await page.evaluate(({pos,at})=>{const a=window.__JOHANSSON_AUDIT__;a.camera={pos,at};a.step(16);},{pos,at});
   await capture(label);report.detailViews.push({label,pos,at});
+ }
+ for(const [label,kind] of [['detail-lucky-cat','Maneki_neko_Colorful'],['detail-thuan-figurine','thuanFigurine']]){
+  const bounds=await page.evaluate(async kind=>{
+   const a=window.__JOHANSSON_AUDIT__,{Box3}=await import('./vendor/three.module.js');
+   let holder=null;
+   a.scene.traverse(node=>{
+    if(node.name!==kind||!node.userData.ready)return;
+    let visible=true;for(let p=node;p;p=p.parent)if(!p.visible)visible=false;
+    if(visible)holder=node;
+   });
+   if(!holder)throw Error('Loaded visible display missing: '+kind);
+   holder.updateWorldMatrix(true,true);const box=new Box3().setFromObject(holder);
+   return {min:box.min.toArray(),max:box.max.toArray()};
+  },kind);
+  const {pos,at}=ownedDisplayView(kind,bounds);
+  await page.evaluate(({pos,at})=>{const a=window.__JOHANSSON_AUDIT__;a.camera={pos,at};a.step(16);},{pos,at});
+  await capture(label);report.detailViews.push({label,kind,bounds,pos,at});
  }
  await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.camera={pos:[-2.8,1.8,1.2],at:[-4.65,.9,2.3]};a.step(0);});
  let complete=false,detoured=false;const phases=new Set();

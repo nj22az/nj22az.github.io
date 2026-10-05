@@ -3,7 +3,7 @@ import {build} from 'vite';
 import {readFile,writeFile,readdir,unlink} from 'node:fs/promises';
 import {readFileSync,existsSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {resolve} from 'node:path';
+import {resolve,dirname,relative} from 'node:path';
 import {runtimeSourceHash} from './runtime-source.mjs';
 const root=resolve(new URL('..',import.meta.url).pathname);
 // The manifest from the build before this one. Its files are kept alongside the new
@@ -42,14 +42,17 @@ for(const file of ['resident-guide.js','landing.js']){const hash=createHash('sha
 // version served the old file from cache: new markup with stale CSS. The hash means
 // the link changes exactly when the file does, and never when it does not.
 const cssHashes=[];
-html=html.replace(/href="(\.\/)?([\w-]+\.css)(\?[^"]*)?"/g,(match,prefix='',file)=>{
- const path=resolve(root,file);
+const stampStylesheets=(source,page)=>source.replace(/href="((?:\.\/|\.\.\/)?[\w/-]+\.css)(\?[^"]*)?"/g,(match,file)=>{
+ const path=resolve(dirname(resolve(root,page)),file);
  if(!existsSync(path))return match;
  const hash=createHash('sha256').update(readFileSync(path)).digest('hex').slice(0,8);
- cssHashes.push(file+' '+hash);
- return `href="${prefix}${file}?h=${hash}"`;
+ cssHashes.push(relative(root,path)+' '+hash);
+ return `href="${file}?h=${hash}"`;
 });
+html=stampStylesheets(html,'index.html');
 await writeFile(resolve(root,'index.html'),html);
+const creatorPath=resolve(root,'creator/index.html');
+if(existsSync(creatorPath))await writeFile(creatorPath,stampStylesheets(await readFile(creatorPath,'utf8'),'creator/index.html'));
 // Prune: every hashed chunk that neither this build nor the previous one lists. With
 // emptyOutDir off (the runtime folder also holds source.json), nothing else ever
 // removes them, and each rebuild used to leave another 1.6 MB game chunk behind.
@@ -60,4 +63,4 @@ await writeFile(resolve(root,'runtime/source.json'),JSON.stringify({sha256:await
 console.log('Stylesheet hashes:',cssHashes.join(', '));
 console.log('Published runtime entry points:',boot,audio,'files:',(await readdir(resolve(root,'runtime'))).filter(f=>f.endsWith('.js')).length);
 
-const swPath=resolve(root,'sw.js');if(existsSync(swPath)){const release=createHash('sha256').update(await runtimeSourceHash(root));for(const path of ['index.html','manifest.webmanifest',...cssHashes.map(item=>item.split(' ')[0]),...(await readdir(resolve(root,'assets/food'))).map(name=>'assets/food/'+name),...(await readdir(resolve(root,'assets/icons'))).map(name=>'assets/icons/'+name)])release.update(path).update(await readFile(resolve(root,path)));const version=release.digest('hex').slice(0,20);await writeFile(swPath,(await readFile(swPath,'utf8')).replace(/const VERSION = '[^']*';/,`const VERSION = '${version}';`));}
+const swPath=resolve(root,'sw.js');if(existsSync(swPath)){const release=createHash('sha256').update(await runtimeSourceHash(root));for(const path of new Set(['index.html','creator/index.html','manifest.webmanifest',...cssHashes.map(item=>item.split(' ')[0]),...(await readdir(resolve(root,'assets/food'))).map(name=>'assets/food/'+name),...(await readdir(resolve(root,'assets/icons'))).map(name=>'assets/icons/'+name)]))release.update(path).update(await readFile(resolve(root,path)));const version=release.digest('hex').slice(0,20);await writeFile(swPath,(await readFile(swPath,'utf8')).replace(/const VERSION = '[^']*';/,`const VERSION = '${version}';`));}

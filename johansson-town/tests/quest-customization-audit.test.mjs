@@ -14,7 +14,7 @@ test('restoring a retired layout cannot change dialogue about the live peninsula
  {
   const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>600});
   assert.equal(acts.state.townMode,'peninsula');
-  acts.action('resident','Aya');
+  acts.action('resident','Nhung');
   assert.ok(dom.has('Where do you live?'));
   dom.button('Where do you live?');
   assert.match(document.querySelector('#activityBody').firstChild.textContent,/Front-Row Yard/);

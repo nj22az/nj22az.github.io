@@ -37,7 +37,7 @@ test('every door opens onto a building',async()=>{
   'Enter Front-Row Books','Enter Dock Electrical & Repair Workshop','Enter Harbour Warehouse',
   'Enter Johansson Harbour Office','Enter Minato Port Terminal','Enter Sakura Shōten','Enter Minato Police Box',
  ].sort(),'Separate bookshop and dock workshop entrances, with other businesses retained');
- // Kenji & Tetsuo Repairs offered a way in at 0.4,-6.7 -- out on the boardwalk beside a
+ // Chin & Tetsuo Repairs offered a way in at 0.4,-6.7 -- out on the boardwalk beside a
  // lamp post, because that is where the old night-market alley put its door. A door has to be in a wall.
  const adrift=entrances.filter(e=>!walls.some(w=>
   e.x>w.min.x-3&&e.x<w.max.x+3&&e.z>w.min.z-3&&e.z<w.max.z+3))
@@ -48,7 +48,7 @@ test('every door opens onto a building',async()=>{
 test('the shop staff stand at their own shop',async()=>{
  
  const {RESIDENTS}=await import('../src/people/residents.js?shopfronts');
- for(const [name,id] of [['Aya','frontrow'],['Reiko','frontrow'],['Kenji','form3d'],['Tetsuo','form3d']]){
+ for(const [name,id] of [['Nhung','frontrow'],['Reiko','frontrow'],['Chin','form3d'],['Tetsuo','form3d']]){
   const work=RESIDENTS.find(p=>p.name===name)?.work,door=id==='form3d'?DOCK_WORKSHOP_PLOT.door.filter((_,i)=>i!==1):westShopDoor(id);
   assert.ok(work,name+' has nowhere to work');
   assert.ok(Math.hypot(work[0]-door[0],work[1]-door[1])<.6,name+' works at '+JSON.stringify(work)+', not at '+JSON.stringify(door));

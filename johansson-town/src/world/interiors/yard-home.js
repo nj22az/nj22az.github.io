@@ -76,11 +76,11 @@ export function buildYardHomeInterior({site,room,reg,action,collider=()=>{}}){
  // A little table for two with its stools.
  at([.6,.04,.5],[1.25,.7,-.2],0x8a6a46,'Kitchen table');for(const [dx,dz] of [[-.25,-.2],[.25,-.2],[-.25,.2],[.25,.2]])at([.04,.7,.04],[1.25+dx,.35,-.2+dz],0x6b4a32);block(1.25,-.2,.6,.5,.75);
  for(const [x,z] of [[.6,-.2],[1.25,.5]])at([.32,.45,.32],[x,.22,z],0x6b4a32,'Stool');
- // Against the east wall: Aya and Reiko's books, or Kenji and Tetsuo's radio bench.
+ // Against the east wall: Nhung and Reiko's books, or Chin and Tetsuo's radio bench.
  if(aya){at([.35,1.6,.8],[hw-.18,.8,-.25],0x8a6a46,'Bookshelf');for(let r=0;r<4;r++)for(let b=0;b<5;b++)at([.24,.28,.12],[hw-.2,.32+r*.36,-.55+b*.15],[0xb2453b,0x3f6a8a,0xe8c06a,0x3f6a4a,0xf4ecd6][(r+b)%5]);block(hw-.18,-.25,.35,.8,1.6);
-  anchor([hw-.6,1.1,-.25],'Look at the bookshelf',()=>action('inspect','Aya and Reiko’s shelf','Shop copies with cracked spines, two library books three weeks overdue, a stack of Ribon and a photo of the two of them on the Ferry Kitano.'));}
+  anchor([hw-.6,1.1,-.25],'Look at the bookshelf',()=>action('inspect','Nhung and Reiko’s shelf','Shop copies with cracked spines, two library books three weeks overdue, a stack of Ribon and a photo of the two of them on the Ferry Kitano.'));}
  else{at([.45,.75,.8],[hw-.24,.375,-.25],0x6b4a32,'Workbench');at([.3,.18,.22],[hw-.26,.84,-.4],0x485c58,'Radio in pieces');at([.06,.06,.3],[hw-.3,.78,-.05],0xc4a35a,'Soldering iron');block(hw-.24,-.25,.45,.8,.8);
-  anchor([hw-.7,1.0,-.25],'Look at the radio bench',()=>action('inspect','Kenji’s radio bench','A short-wave set with its back off, a soldering iron on a tin lid, and a tide table for Kitahama with the good surf days ringed in red.'));}
+  anchor([hw-.7,1.0,-.25],'Look at the radio bench',()=>action('inspect','Chin’s radio bench','A short-wave set with its back off, a soldering iron on a tin lid, and a tide table for Kitahama with the good surf days ringed in red.'));}
 
  // The two futons, laid out for the night; each person's place and hat peg.
  const names=household?.residents||[site.homeOwner],homeLayouts={};
@@ -99,7 +99,7 @@ export function buildYardHomeInterior({site,room,reg,action,collider=()=>{}}){
   const bed=kit.futon(X(fx),zc,style.top,name+' futon');
   const hatHook={position:[X(1.3+i*.2),1.6+i*.12,hd-.05],yaw:Math.PI};addHatPeg(box,hatHook);
   homeLayouts[name]={bounds:{minX:-hw+.05,maxX:hw-.05,minZ:-hd+.05,maxZ:hd-.05},spawn:[X(doorX),0,hd-.5],exit:[X(doorX),1.1,hd-.04],
-   ...bed,table:i?[X(1.25),0,.55]:[X(.6),0,-.2],door:[X(doorX),0,hd-.45],hatHook};
+   ...bed,table:i?[X(1.25),0,.5]:[X(.6),0,-.2],tableSeatHeight:.445,door:[X(doorX),0,hd-.45],hatHook};
   anchor([X(fx),.6,zc+.9],'Inspect '+name+'’s belongings',()=>action('inspect',name+' at home',(p?.role||'')+'. '+name+' keeps a futon, a hook by the door and a stool at the table.'));
  });
  return {bounds:{minX:-hw+.05,maxX:hw-.05,minZ:-hd+.05,maxZ:hd-.05},spawn:[X(doorX),0,hd-.5],exit:[X(doorX),1.1,hd-.04],yaw:0,home:true,homeLayouts};

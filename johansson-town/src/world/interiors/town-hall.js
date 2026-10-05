@@ -132,7 +132,7 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  anchor([-.7,1,-.8],'Use the mayor’s computer',()=>action('document-archive','Community Hall Document Register'));
  anchor([1.35,1,-1.2],'Use the office telephone',()=>action('read','Town office telephone','The harbour master confirms Thursday’s supply ferry. Mori reports the crossing outside the school is clear. Thuan asks whether the bus-stop bench has reached the carpenter yet.'));
  anchor([-2.4,1.1,-1.9],'Browse the town reference books',()=>action('read','Town reference library','Ferry timetables, old island surveys, typhoon preparedness manuals and annotated town budgets. The most-thumbed volume is the harbour maintenance handbook.'));
- anchor([-1.6,1,1.7],'Sit with a visitor',()=>action('seat','Town office visitor sofa','A comfortable green sofa for neighbours bringing their requests. The mayor keeps this corner informal: tea first, paperwork afterwards.'));
+ for(const z of [.05,1.55]){const sofa=anchor([-1.6,1,z],'Sit with a visitor',()=>action('seat','Town office visitor sofa','A comfortable green sofa for neighbours bringing their requests. The mayor keeps this corner informal: tea first, paperwork afterwards.'));sofa.userData.seat={position:[-1.6,0,z],stand:[-.4,0,z],surfaceY:.42,eyeY:1.14,yaw:z<.8?Math.PI:0,pitch:0};}
  // Flags behind the desk: Japan and the town's own, on stands.
  const flag=(x,draw)=>{box([.03,2.1,.03],[x,1.05,-hd+.25],0xc9a64a);const f=new THREE.Mesh(new THREE.PlaneGeometry(.7,.48),new THREE.MeshStandardMaterial({map:canvasTexture(140,96,draw),side:THREE.DoubleSide,roughness:.9}));f.position.set(x+.36,1.78,-hd+.25);group.add(f);};
  flag(-1.6,(c,w0,h0)=>{c.fillStyle='#f4f1ea';c.fillRect(0,0,w0,h0);c.fillStyle='#c8102e';c.beginPath();c.arc(w0/2,h0/2,h0*.3,0,Math.PI*2);c.fill();});
@@ -149,18 +149,19 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  for(const dz of [-.75,.75]){box([1.2,.42,.55],[-1.6,.21,.8+dz],0x5d6f5a);box([1.2,.45,.14],[-1.6,.55,.8+dz+Math.sign(dz)*.24],0x5d6f5a);collider(-1.6,.8+dz,1.2,.55,.6);}
  box([.45,1.8,1.4],[hw-.3,.9,1.3],0x8a6a4a,'Cabinet of minutes');collider(hw-.3,1.3,.45,1.4,1.8);
  for(let i=0;i<8;i++)box([.05,.3,.22],[hw-.45,1.1+(i>3?.45:0),.85+(i%4)*.3],[0x2f4f6f,0x6f2f2f,0x2f5f3f][i%3]);
- const deskSeat=anchor([1.4,1.0,-1.8],'Sit at the mayor’s desk',()=>action('seat','The mayor’s desk','Your desk. The chair still squeaks the way it did when it was the headmaster’s.'));deskSeat.userData.seat={position:[0,0,-2.05],stand:[1.5,0,-1.8],eyeY:1.2,yaw:Math.PI,pitch:0};collider(0,-2.08,.55,.5,.75);
+ const deskSeat=anchor([1.4,1.0,-1.8],'Sit at the mayor’s desk',()=>action('seat','The mayor’s desk','Your desk. The chair still squeaks the way it did when it was the headmaster’s.'));deskSeat.userData.seat={position:[0,0,-2.05],stand:[1.5,0,-1.8],surfaceY:.52,eyeY:1.2,yaw:Math.PI,pitch:0};collider(0,-2.08,.55,.5,.75);
  anchor([.55,1.0,-1.5],'Read the petitions',()=>{const list=petitions();action('read','Petitions to the mayor',list.length?list.join('\n\n'):'The tray is empty. A quiet week on the island, or nobody has told you yet.');});
  anchor([-hw+.4,1.4,-.4],'Study the island map',()=>action('inspect','Map of Minato-chō','The island in hand-coloured ink, every lot numbered: the harbour, the shotengai, Nishi-machi inside its seawall, the new houses up at Kitahama, the oil jetty, the town hall and its field. Kitano-jima sits off the corner with its airport and the sewage works. Pins mark this year\'s roadworks.'));
  plate(group,'文書台帳',{w:1.4,h:.3,at:[hw-.55,1.9,1.3],ry:-Math.PI/2,sub:'COMMUNITY HALL · ONE YEAR'});
  anchor([hw-.8,1.0,1.3],'Open the document register',()=>action('document-archive','Community Hall Document Register'));
  for(let month=0;month<12;month++){const folder=box([.045,.28,.22],[hw-.45,.5+(month>5?.36:0),.72+(month%6)*.2],0xb5a16c,'Archive folder '+(month+1));}
  anchor([hw-.6,1.2,1.3],'Look through the minutes',()=>action('read','Town assembly minutes, 1997','Item 3: the power house\'s second diesel set to be overhauled before typhoon season; the old barber\'s shop to be let to the post office. Item 5: the ferry company asks for a longer ramp so the new cargo trucks can board. Item 7: Mrs Sato\'s complaint about the gulls, again. Item 9: the sewage works on Kitano-jima to be inspected by the prefecture in November.'));
- // Tiny keepsakes sit on the filing cabinet, leaving the writing desk clear.
- const moose=addOwnedCharacter({parent:group,kind:'merry_Moose',height:.18,position:[2.6,.8,-2.44]});
- const thuan=addOwnedCharacter({parent:group,kind:'thuanFigurine',height:.24,position:[2.85,.8,-2.44],yaw:Math.PI});
- anchor([2.65,1,-2.05],'Look at the office figurines',()=>action('inspect','Island keepsakes','A tiny Merry Moose and a carefully detailed Thuan watch over the annual accounts. The mayor dusts them before every town assembly.'));
- const owned=[moose,thuan];
+ // The Merry Moose on its own plinth against the east wall, where you see it coming in.
+ box([.42,.5,.42],[2.85,.25,-.9],0x8a6a4a,'Merry Moose plinth');collider(2.85,-.9,.42,.42,1.1);
+ const moose=addOwnedCharacter({parent:group,kind:'merry_Moose',height:.6,position:[2.85,.5,-.9],yaw:-Math.PI/2});
+ anchor([2.4,1.0,-.9],'Look at the Merry Moose',()=>action('inspect','The Merry Moose','The island’s good-luck moose, given to the town and kept by the mayor’s desk. Visitors pat its nose on the way out; the paint there is wearing thin.'));
+ // The Thuan figurine has moved to her own back room at Sakura (sakura-backroom.js).
+ const owned=[moose];
  return {...layoutFor(),office:true,owned,dispose:()=>owned.forEach(prop=>prop.dispose())};
 }
 
@@ -212,7 +213,7 @@ export function buildMayorHome({room,reg,action,collider=()=>{},exit,openMaker=n
   box([.08,.07,.008],[x,1.78,-hd+.122],roof,'Photograph harbour house');
   box([.15,.018,.008],[x,1.741,-hd+.145],0xa79b84,'Photograph quay');
  }
- anchor([-.6,.8,-.4],'Sit at the low table',()=>action('seat','Low table','Tea from the thermos, still warm. The ferry horn comes across the field.'));
+ for(const [x,z,yaw] of [[-.6,.25,0],[-.6,-1.05,Math.PI],[-1.35,-.4,-Math.PI/2],[.15,-.4,Math.PI/2]]){const cushion=anchor([x,.8,z],'Sit at the low table',()=>action('seat','Low table','Tea from the thermos, still warm. The ferry horn comes across the field.'));cushion.userData.seat={position:[x,0,z],stand:[x,0,z+.7],surfaceY:.09,eyeY:.82,yaw,pitch:0};}
  anchor([hw-.75,.6,-hd+1.15],'Lie down on the futon',()=>sleep?sleep():action('inspect','Futon','Folded square every morning, the way the harbour master taught you.'));
  anchor([-hw+.8,1.3,hd-.85],'Look in the wardrobe mirror',()=>openMaker?openMaker():action('inspect','Wardrobe','Three kariyushi shirts, a suit for assembly days and a straw hat.'));
  anchor([1.2,1,-hd+.7],'Watch the television',()=>action('inspect','Television','NHK Okinawa: the weather map with a typhoon symbol far to the south, then sumo highlights. You leave it on low for company.'));

@@ -45,7 +45,7 @@ export function giftReaction(item,{giftsToday=0}={}){
  if(item==='Mozuku')
   return {mood:'happy',text:"Mozuku!\nMozuku from Yonamine-san! With vinegar, cold, after work. You are learning how to live here."};
  if(item==='Sea bream')
-  return {mood:'happy',text:"Sea bream! Splendid!\nA whole sea bream! Supper is solved. I will tell Nao I caught it myself. She will not believe me."};
+  return {mood:'happy',text:"Sea bream! Splendid!\nA whole sea bream! Supper is solved. I will tell Thao I caught it myself. She will not believe me."};
  if(item==='Coffee milk')
   return {mood:'happy',text:"Coffee milk!\nCoffee milk! That is the best part of the bath. How did you know?"};
  if(item==='Ice')

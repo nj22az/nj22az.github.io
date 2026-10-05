@@ -24,21 +24,55 @@ export function drinkHeadTilt(prop,lift,food=false){
  const left=THREE.MathUtils.clamp(prop?.userData?.portion??1,0,1);
  return -.05*(1-left)*THREE.MathUtils.smoothstep(lift,.5,1);
 }
+/**
+ * Where a drink sits against the hand, in the hand's level frame: from the palm's centre
+ * to the drink's base. A mug or cup hangs off the outside of its handle; a tumbler, a
+ * bottle or a can is held round its body, so the palm rests on the glass rather than
+ * hovering beside it. Shared by the grip and the drinking pose so the rim and the
+ * mouth agree.
+ */
+export function drinkGrip(prop,m,side='R'){
+ const g=prop?.userData?.grip,s=side==='R'?-1:1;
+ if(!g)return new THREE.Vector3(s*.10*m.k,-.08*m.k+m.hand*.55,.015*m.k);
+ const out=g.handle!=null?g.handle+m.hand*.25:g.radius+m.hand*.85;
+ return new THREE.Vector3(s*out,-g.height,0);
+}
+/** The palm's centre, below the wrist the hand bone pivots on (build.js, the mitten hand). */
+const palm=m=>new THREE.Vector3(0,-m.hand*.55,0);
 function aim(bone,child,target){
  const start=bone.getWorldPosition(new THREE.Vector3());
  const from=child.getWorldPosition(new THREE.Vector3()).sub(start).normalize();
  const q=new THREE.Quaternion().setFromUnitVectors(from,target.clone().sub(start).normalize()).multiply(bone.getWorldQuaternion(new THREE.Quaternion()));
  bone.quaternion.copy(bone.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(q));bone.updateWorldMatrix(false,true);
 }
-function reach(avatar,target){
- const b=avatar.bones,start=b.shoulderR.getWorldPosition(new THREE.Vector3());
- const a=start.distanceTo(b.elbowR.getWorldPosition(new THREE.Vector3())),length=b.elbowR.getWorldPosition(new THREE.Vector3()).distanceTo(b.handR.getWorldPosition(new THREE.Vector3()));
+/** Two-bone reach: the hand of `side` ('R' or 'L') to a world point, the elbow out and down. */
+export function reach(avatar,target,side='R'){
+ const b=avatar.bones,shoulder=b['shoulder'+side],elbow=b['elbow'+side],hand=b['hand'+side];
+ const start=shoulder.getWorldPosition(new THREE.Vector3());
+ const a=start.distanceTo(elbow.getWorldPosition(new THREE.Vector3())),length=elbow.getWorldPosition(new THREE.Vector3()).distanceTo(hand.getWorldPosition(new THREE.Vector3()));
  const dir=target.clone().sub(start),d=THREE.MathUtils.clamp(dir.length(),Math.abs(a-length)+.0001,a+length-.0001);dir.normalize();
- const pole=new THREE.Vector3(-1,-.25,0).transformDirection(avatar.root.matrixWorld);
+ const pole=new THREE.Vector3(side==='R'?-1:1,-.25,0).transformDirection(avatar.root.matrixWorld);
  pole.addScaledVector(dir,-pole.dot(dir)).normalize();
  const along=(a*a-length*length+d*d)/(2*d),height=Math.sqrt(Math.max(0,a*a-along*along));
- aim(b.shoulderR,b.elbowR,start.clone().addScaledVector(dir,along).addScaledVector(pole,height));
- aim(b.elbowR,b.handR,start.clone().addScaledVector(dir,d));
+ aim(shoulder,elbow,start.clone().addScaledVector(dir,along).addScaledVector(pole,height));
+ aim(elbow,hand,start.clone().addScaledVector(dir,d));
+}
+/**
+ * Both hands on a steering wheel, at nine and three on its rim. `wheel` is {x,y,z,r} in
+ * `vehicle`'s frame (world/road-vehicles.js steeringWheel). The wrist goes to the rim, so
+ * the mitten closes over it. A gentle drift of the wheel keeps it from looking welded.
+ */
+export function gripWheel(avatar,vehicle,wheel,time=0){
+ avatar.root.updateWorldMatrix(true,true);vehicle.updateWorldMatrix(true,false);
+ const steer=Math.sin(time*.7)*.05+Math.sin(time*1.9)*.02;
+ const rim=a=>vehicle.localToWorld(new THREE.Vector3(wheel.x+Math.cos(a)*wheel.r,wheel.y+Math.sin(a)*wheel.r,wheel.z));
+ const three=rim(steer),nine=rim(Math.PI+steer);
+ // Each hand takes the side of the rim nearer its own shoulder, whichever way round the
+ // vehicle has turned the body.
+ const left=avatar.bones.shoulderL.getWorldPosition(new THREE.Vector3());
+ const leftTakesThree=left.distanceTo(three)<left.distanceTo(nine);
+ reach(avatar,leftTakesThree?three:nine,'L');
+ reach(avatar,leftTakesThree?nine:three,'R');
 }
 /** Keep the rim/morsel at the measured mouth, independent of height or head shape. */
 export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
@@ -49,7 +83,7 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
  const lips=new THREE.Vector3(v.x*m.Rh*m.headSX,m.headCentre-m.headY+v.y*m.Rh*m.headSY,v.z*m.Rh*.98+.025*m.k);
  const rest=root.localToWorld(new THREE.Vector3(-m.shoulderX,m.shoulderY-m.upper*.75,m.depth*.75+m.fore*.45));
  const q=root.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),drinkTilt(prop,lift,food)));
- const contact=new THREE.Vector3(food?0:-.10*m.k,food?.04:(prop?.userData.rimHeight??.15)-.08*m.k,food?.115:.015*m.k).applyQuaternion(q);
+ const contact=(food?new THREE.Vector3(0,.04,.115):palm(m).add(drinkGrip(prop,m)).add(new THREE.Vector3(0,prop?.userData.rimHeight??.15,0))).applyQuaternion(q);
  // Big heads put the mouth beyond a short arm's reach. Then the head dips to meet the
  // cup, the way anyone leans in to a drink, a little more each pass until it reaches.
  const shoulder=b.shoulderR.getWorldPosition(new THREE.Vector3());
@@ -62,17 +96,16 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
   if(over<=.0005||lift<.01)break;
   head.rotation.x+=Math.min(.12,over/(m.Rh*1.1));
  }
- reach(avatar,target);
+ reach(avatar,target,'R');
  // The palm is level, rather than inheriting the forearm's angle.
  b.handR.quaternion.copy(b.handR.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(q));b.handR.updateWorldMatrix(false,true);
 }
-/** A cup is gripped beside its handle, clear of the arm; its base remains upright. */
+/** A drink is gripped in the palm (drinkGrip), clear of the arm; its base remains upright. */
 export function fitAvatarHeldProp(avatar,prop,lift=0,side='R'){
  const food=!!prop.userData.food,m=avatar.measure,hand=avatar.bones['hand'+side];
  avatar.root.updateWorldMatrix(true,true);
  const q=avatar.root.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),drinkTilt(prop,lift,food)));
- const offset=new THREE.Vector3(food?0:(side==='R'?-.10:.10)*m.k,food?0:-.08*m.k,.015*m.k).applyQuaternion(q);
- const p=hand.getWorldPosition(new THREE.Vector3()).add(offset);
+ const p=food?hand.getWorldPosition(new THREE.Vector3()):hand.localToWorld(palm(m)).add(drinkGrip(prop,m,side).applyQuaternion(q));
  const world=new THREE.Matrix4().compose(p,q,new THREE.Vector3(1,1,1));
  prop.matrixAutoUpdate=false;prop.matrix.copy(hand.matrixWorld).invert().multiply(world);prop.matrixWorldNeedsUpdate=true;
 }

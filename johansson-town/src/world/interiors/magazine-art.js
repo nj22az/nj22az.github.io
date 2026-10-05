@@ -20,13 +20,24 @@ const hash=(i,s=0)=>{const n=Math.sin(i*127.1+s*311.7)*43758.5453;return n-Math.
 function pen(ctx,w,h){
  const k=w/320;ctx.save();ctx.scale(k,h/440);
  const t=(s,x,y,size,colour,weight=900,align='center')=>{ctx.fillStyle=colour;ctx.font=`${weight} ${size}px ${MARU}`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(s,x,y);};
- const fit=(s,x,y,size,colour,max,weight=900)=>{ctx.font=`${weight} ${size}px ${MARU}`;const m=ctx.measureText(s).width;t(s,x,y,m>max?size*max/m:size,colour,weight);};
+ const fit=(s,x,y,size,colour,max,weight=900,align='center')=>{ctx.font=`${weight} ${size}px ${MARU}`;const m=ctx.measureText(s).width;t(s,x,y,m>max?size*max/m:size,colour,weight,align);};
+ const block=(s,x,y,size,colour,max,maxLines=2,weight=800)=>{
+  const words=String(s).trim().split(/\s+/);let rows,font=size;
+  do{
+   ctx.font=`${weight} ${font}px ${MARU}`;rows=[];let line='';
+   for(const word of words){const next=line?line+' '+word:word;if(ctx.measureText(next).width<=max)line=next;
+    else{if(line)rows.push(line);line='';for(const char of word){if(line&&ctx.measureText(line+char).width>max){rows.push(line);line='';}line+=char;}}
+   }
+   if(line)rows.push(line);if(rows.length>maxLines)font*=.9;
+  }while(rows.length>maxLines&&font>.01);
+  const gap=font*1.1;rows.forEach((line,i)=>t(line,x,y+(i-(rows.length-1)/2)*gap,font,colour,weight,'left'));
+ };
  const rect=(x,y,ww,hh,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,ww,hh);};
  const ink=(lw=5,c='#17141a')=>{ctx.lineWidth=lw;ctx.strokeStyle=c;};
  const lines=(x,y,ww,rows,gap=11,c='#6e695f',seed=1)=>{for(let r=0;r<rows;r++)rect(x,y+r*gap,ww*(r===rows-1?.55:.9+hash(r,seed)*.1),4,c);};
  const barcode=(x,y,seed)=>{rect(x,y,92,40,'#fff');ctx.fillStyle='#111';let bx=x+6;for(let i=0;i<24&&bx<x+86;i++){const b=hash(i,seed)>.5?3:1.5;ctx.fillRect(bx,y+4,b,26);bx+=b+2;}};
  const done=()=>ctx.restore();
- return {ctx,t,fit,rect,ink,lines,barcode,done};
+ return {ctx,t,fit,block,rect,ink,lines,barcode,done};
 }
 /** One accent per issue: the base colour turned round the hue wheel a little each time. */
 function accent(hex,variant,turn=38){
@@ -128,13 +139,13 @@ export function drawBackAd(ctx,w=320,h=440){
 
 // ==================================================================== pages
 function page(ctx,w,h,draw){const p=pen(ctx,w,h);p.rect(0,0,320,440,'#fbf8ee');draw(p);p.done();}
-const header=(p,title,label,colour='#2b2b2b')=>{p.rect(0,0,320,34,colour);p.t(label,14,18,16,'#fff',900,'left');p.t(title.name,306,18,11,'#fff',700,'right');};
+const header=(p,title,label,colour='#2b2b2b')=>{p.rect(0,0,320,34,colour);p.fit(label,14,12,16,'#fff',292,900,'left');p.fit(title.name,306,27,9,'#fff',292,700,'right');};
 const footer=(p,n)=>p.t(String(n),160,428,11,'#888',700);
 
 function contents(title,issue,colour){
- return ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,"Table of contents CONTENTS",colour);
+ return ctx=>(w,h)=>page(ctx,w,h,p=>{header(p,title,'CONTENTS',colour);
   const items=[issue.head,issue.sub,...title.subs.filter(s=>s!==issue.sub).slice(0,3),"Reader's page","Next issue preview"];
-  items.forEach((s,i)=>{p.rect(18,52+i*44,6,30,colour);p.fit(s,40,67+i*44,17,'#2b2b2b',230,800);p.ctx.textAlign='left';p.t(String(4+i*6),300,67+i*44,15,colour,800,'right');});
+  items.forEach((s,i)=>{p.rect(18,52+i*44,6,30,colour);p.block(s,40,67+i*44,16,'#2b2b2b',224);p.t(String(4+i*6),300,67+i*44,15,colour,800,'right');});
   p.t(title.en,160,400,12,'#777',700);footer(p,3);});
 }
 function tvListings(title,issue){

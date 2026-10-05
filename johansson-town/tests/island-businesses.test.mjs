@@ -58,7 +58,7 @@ test('published businesses have reachable real doors and a clear passage beside 
   assert.notDeepEqual(TOWN_DESTINATIONS.workshop,TOWN_DESTINATIONS.books);assert.deepEqual(TOWN_DESTINATIONS.workshop,[sites.find(s=>s.id==='form3d').door[0],sites.find(s=>s.id==='form3d').door[2]]);
   assert.deepEqual(TOWN_DESTINATIONS.books,[sites.find(s=>s.id==='frontrow').door[0],1.6]);
   const roles=Object.fromEntries(world.people.map(p=>[p.profile.name,p.profile.workSite]));
-  for(const name of ['Aya','Reiko'].filter(inCast))assert.equal(roles[name],'frontrow');for(const name of ['Kenji','Tetsuo'].filter(inCast))assert.equal(roles[name],'form3d');
+  for(const name of ['Nhung','Reiko'].filter(inCast))assert.equal(roles[name],'frontrow');for(const name of ['Chin','Tetsuo'].filter(inCast))assert.equal(roles[name],'form3d');
   if(inCast('Harbour master'))assert.equal(roles['Harbour master'],'office');if(inCast('Mrs Sato'))assert.equal(roles['Mrs Sato'],'ramen');
   for(let minute=0;minute<1440;minute+=10)for(const p of world.people){
    // Sato Ramen is on the island now, beside Minato: open at lunch, with Mrs Sato in from 10:30.

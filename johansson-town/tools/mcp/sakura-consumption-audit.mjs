@@ -22,18 +22,23 @@ try{
  assert.equal(wallet(client.state),startWallet-120,'Purchase pays the actual price once');
  await client.call('wait',{durationMs:1000});await client.shot('purchased-can-ready-first-person');
  // The explicit wait lets the normal offer/drop animation finish before drinking.
- await client.call('ui_control',{control:'bag'});await client.call('choose_action',{label:'Canned coffee'});
+ await client.call('ui_control',{control:'town_menu'});await client.call('ui_control',{control:'bag'});await client.call('choose_action',{label:'Canned coffee'});
  assert.ok(client.state.ui.activity?.actions.some(a=>a.label==='Drink it'),'Owned drink has its normal bag action');
- await client.call('choose_action',{label:'Drink it'});await client.call('wait',{durationMs:180});
+ await client.call('choose_action',{label:'Drink it'});
+ if(client.state.ui.directoryOpen)await client.call('ui_control',{control:'close_directory'});
+ // The purchase has already put this can in his hand. The bag action starts
+ // its 850ms sip immediately; capture the lift before it finishes.
+ await client.call('wait',{durationMs:350});
  await client.shot('drinking-first-person');check();
  // V is the real view control: this capture checks the same consumption's avatar pose.
- await client.call('press_control',{control:'view',durationMs:16});await client.shot('drinking-avatar');check();
+ await client.call('press_control',{control:'view',durationMs:16});await client.call('wait',{durationMs:120});await client.shot('drinking-avatar');check();
  await client.call('wait',{durationMs:1800});await client.shot('consumption-complete');
- await client.call('ui_control',{control:'bag'});
+ await client.call('ui_control',{control:'town_menu'});await client.call('ui_control',{control:'bag'});
  assert.ok(client.state.ui.activity?.body.includes('Empty can'),'Actual consumption leaves a recycling can');
  assert.ok(!client.state.ui.activity?.actions.some(a=>a.label==='Canned coffee'),'Consumed drink is absent from the bag');
  assert.equal(wallet(client.state),startWallet-120,'Consumption never charges twice');
  report.checks=['normal walking to vending','normal purchase','explicit wait before consumption','owned bag action','first-person and avatar pixels','empty container','single payment'];
+ report.captureTiming={pickupMs:600,sipMs:850,firstPersonWaitAfterDrinkActionMs:350,avatarViewControlMs:16,avatarAdditionalWaitMs:120,expectedFirstPersonPhase:'mid-sip lift',expectedAvatarPhase:'mid-sip lift'};
  report.final=client.state;check();report.passed=true;
  console.log(`Normal MCP consumption ${viewport}: coffee bought, waited, drunk and recycled once`);
 }catch(error){report.failure=error.message;throw error;}

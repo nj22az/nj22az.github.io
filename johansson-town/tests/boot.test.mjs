@@ -120,7 +120,7 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     // Check the actual actions as well as the mode-aware diagnostic count.
     const streetLabels=new Set();api.world.group.traverse(o=>{if(o.userData.hit)streetLabels.add(o.userData.hit.label);});
     for(const label of ['Sit on neighbourhood bench','Inspect post box','Inspect utility cabinet','Inspect traffic mirror','Inspect recycling bins','Work the hand pump'])assert.ok(streetLabels.has(label),label);
-    const waiting=api.world.people.find(p=>p.profile.name==='Nao').g;
+    const waiting=api.world.people.find(p=>p.profile.name==='Thao').g;
     const savedPosition=waiting.position.clone(),savedVisibility=waiting.visible;
     waiting.position.set(0,0,10);waiting.visible=true;waiting.userData.visualReady=false;
     assert.equal(api.residentBlocked(0,10),false,'Pending characters cannot create invisible collisions');
@@ -223,8 +223,8 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     // After afternoon shopping staff resume work, or remain the actual driver of
     // their scheduled delivery. Opening a workplace must not duplicate a driver.
     const {createResidentLedger}=await import('../src/people/resident-personalities.js');
-    const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Aya','Kenji','Reiko','Tetsuo'].filter(name=>STREET_CAST_NAMES.includes(name));
-    const placeOf={Aya:'frontrow',Reiko:'frontrow',Kenji:'form3d',Tetsuo:'form3d'};
+    const ledger=createResidentLedger(()=>api.activities.state),staffNames=['Nhung','Chin','Reiko','Tetsuo'].filter(name=>STREET_CAST_NAMES.includes(name));
+    const placeOf={Nhung:'frontrow',Reiko:'frontrow',Chin:'form3d',Tetsuo:'form3d'};
     for(const name of staffNames)ledger.account(name,1050).shopping={finished:true};
     api.reviewSetMinutes(1050);api.player.position.set(0,0,14);
     const staff=api.world.people.filter(p=>staffNames.includes(p.profile.name));

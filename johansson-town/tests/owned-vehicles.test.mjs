@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as T from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {createTownTraffic,FERRY_VEHICLE_DECK_Z} from '../src/world/town-traffic.js';
+import {createTownTraffic,FERRY_VEHICLE_DECK_Z,SERVICE_BAYS} from '../src/world/town-traffic.js';
 import {createFerryRun} from '../src/world/ferry.js';
 import {airportVehicleBay} from '../src/world/airport-vehicle-yard.js';
 import {buildVehicle,DRIVER_SEATS} from '../src/world/road-vehicles.js';
@@ -11,7 +11,8 @@ import {buildAvatar} from '../src/avatars/build.js';
 import {recipeFor} from '../src/avatars/cast.js';
 import {createAvatarAnimator} from '../src/avatars/animate.js';
 import {createTownSections} from '../src/render/town-sections.js';
-function fixture(){installDOM();const parent=new T.Group(),people=['Tetsuo','Harbour master','Kenji','Reiko','Mrs Sato','Aya'].map(name=>{const g=new T.Group();g.userData.name=name;parent.add(g);return {g,profile:{name}};});const ferry=createFerryRun({parent});ferry.parkAt('town');const cars=createTownTraffic({parent,ferry,people:()=>people});return {parent,people,cars,ferry};}
+import {renderedVehicleFootprint,vehicleHitsRect} from './vehicle-footprint.mjs';
+function fixture(){installDOM();const parent=new T.Group(),people=['Tetsuo','Harbour master','Chin','Reiko','Mrs Sato','Nhung'].map(name=>{const g=new T.Group();g.userData.name=name;parent.add(g);return {g,profile:{name}};});const ferry=createFerryRun({parent});ferry.parkAt('town');const cars=createTownTraffic({parent,ferry,people:()=>people});return {parent,people,cars,ferry};}
 test('all cars have distinct existing owners, drivers and purposes; cars stay parked without their driver',()=>{
  const {cars,people}=fixture();assert.equal(cars.snapshot().length,6);
  for(const v of cars.snapshot()){assert.ok(people.some(p=>p.profile.name===v.owner));assert.equal(v.driver,v.owner);assert.ok(v.purpose);}
@@ -46,7 +47,7 @@ test('the complete combined-ferry cargo round trip finishes by ordinary timestep
  assert.equal(cars.drivers.has(v),false);assert.equal(cars.loadingVehicles,0);
 });
 test('airport couriers stage through a clear aisle with the complete parked fleet present',()=>{
- for(const owner of ['Kenji','Reiko','Mrs Sato','Aya']){
+ for(const owner of ['Chin','Reiko','Mrs Sato','Nhung']){
   const {cars,people}=fixture(),v=cars.fleet.find(v=>v.owner===owner);for(const p of people)p.g.position.set(-30,0,30);
   for(let i=0;i<9000&&v.where!=='waiting-ferry';i++)cars.update(1/60,v.appointment.leave);
   assert.equal(v.where,'waiting-ferry',`${owner} cannot leave its bay: ${v.blocker?.owner||v.blocker}`);
@@ -63,21 +64,28 @@ test('every airport bay has clear entry and departure paths when the other five 
 });
 test('both quay bays and their exits clear the other parked car and the port canopy',async()=>{
  const {portBuildingColliders}=await import('../src/world/port-building.js');
- const {circleHitsRect}=await import('../physics.js');
  const solids=portBuildingColliders();
  for(let bay=0;bay<2;bay++){
   const {cars,people}=fixture(),v=cars.islanders[bay];for(const p of people)p.g.position.set(-30,0,30);
-  assert.ok(cars.drivers.board(v));
+  assert.ok(cars.drivers.board(v));const body=renderedVehicleFootprint(v.kind);
   for(const lane of ['quay-out-'+bay,'main-south','quay-in-'+bay]){
    const path=cars.network.path([lane]);cars.traffic.drive(v,path);
    for(let i=0;i<9000&&v.trip;i++){
     cars.traffic.update(1/60);
-    for(let along=-v.length/2;along<=v.length/2+.01;along+=.3){
-     const x=v.g.position.x+Math.sin(v.g.rotation.y)*along,z=v.g.position.z+Math.cos(v.g.rotation.y)*along;
-     assert.ok(!solids.some(c=>circleHitsRect(x,z,v.width/2,c)),lane+' car body intersects the Port Building');
-    }
+    assert.ok(!solids.some(c=>vehicleHitsRect(v.g.position.x,v.g.position.z,Math.sin(v.g.rotation.y),Math.cos(v.g.rotation.y),body,c)),lane+' rendered car body intersects the Port Building');
    }
    assert.equal(v.trip,null,lane+' cannot clear '+(v.blocker?.owner||v.blocker));
+  }
+ }
+});
+test('both Main Street service bays can be entered and left with the other bay occupied',()=>{
+ for(let bay=0;bay<2;bay++){
+  const {cars,people}=fixture(),v=cars.islanders[bay],other=cars.islanders[1-bay];for(const p of people)p.g.position.set(-30,0,30);
+  const [x,z]=SERVICE_BAYS[1-bay];cars.traffic.park(other,{x,y:0,z,yaw:Math.PI});assert.ok(cars.drivers.board(v));
+  for(const lane of ['service-in-'+bay,'service-out-'+bay]){
+   cars.traffic.drive(v,cars.network.path([lane]));
+   for(let i=0;i<9000&&v.trip;i++)cars.traffic.update(1/60);
+   assert.equal(v.trip,null,lane+' blocked by '+(v.blocker?.owner||v.blocker));
   }
  }
 });
@@ -88,12 +96,12 @@ test('one car can sail while a second matching car waits for the next deck space
  ferry.beginCrossing('airport');cars.update(.1,700);assert.equal(cars.islanders[1].where,'waiting-ferry');
 });
 test('borrowing and releasing preserves the existing resident and restores occupied-driver exclusions',()=>{
- installDOM();const parent=new T.Group(),g=new T.Group();parent.add(g);g.position.set(4,0,5);g.userData.socialPose='Idle';const people=[{profile:{name:'Kenji'},g}],drivers=createVehicleDrivers({people:()=>people}),v={id:'test-car',driver:'Kenji',purpose:'Repair parts',width:1.62,g:buildVehicle('car',0xffffff)};
+ installDOM();const parent=new T.Group(),g=new T.Group();parent.add(g);g.position.set(4,0,5);g.userData.socialPose='Idle';const people=[{profile:{name:'Chin'},g}],drivers=createVehicleDrivers({people:()=>people}),v={id:'test-car',driver:'Chin',purpose:'Repair parts',width:1.62,g:buildVehicle('car',0xffffff)};
  assert.ok(drivers.board(v));assert.equal(drivers.board({...v,id:'other'}),false);assert.equal(v.g.children.filter(o=>o===g).length,1);
  drivers.release(v,{restore:true});assert.deepEqual(g.position.toArray(),[4,0,5]);assert.equal(g.userData.socialPose,'Idle');assert.equal(g.parent,parent);
 });
 test('a scheduled offscreen worker can drive the errand while active interiors retain their resident',()=>{
- const {cars,people}=fixture(),v=cars.fleet[0],person=people.find(p=>p.profile.name==='Kenji');person.g.visible=false;person.g.userData.indoors='work';
+ const {cars,people}=fixture(),v=cars.fleet[0],person=people.find(p=>p.profile.name==='Chin');person.g.visible=false;person.g.userData.indoors='work';
  cars.update(.1,630);assert.ok(v.trip);assert.equal(person.g.parent,v.g);assert.equal(person.g.visible,true);assert.equal(person.g.userData.inVehicle,v.id);
  cars.drivers.release(v,{restore:true});assert.equal(person.g.visible,false);assert.equal(person.g.userData.indoors,'work');
  person.g.userData.inWorkplace=true;assert.equal(cars.drivers.board(v),false,'An active room keeps its avatar');delete person.g.userData.inWorkplace;person.g.visible=true;assert.equal(cars.drivers.board(v),false,'Visible indoor activity is not interrupted');

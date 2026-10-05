@@ -102,3 +102,32 @@ export function createClock(setting,startMinutes,now=()=>Date.now()){
   real(){mode='real';speed=1;},
  };
 }
+
+/**
+ * The calendar axis everything dated keys off (people/happenings.js, and later the diary,
+ * the soundscape and the town book): which day it is, the 1997 date, the island's season
+ * and the part of the day. One helper, so they all turn over together.
+ */
+export const townDay=minutes=>Math.floor(minutes/1440);
+/** {month 1–12, day, weekday 0 (Sunday)–6, key 'MM-DD'} for an absolute town minute. */
+export function townDate(minutes){
+ const {date,weekday}=townCalendarAt(minutes),month=date.getMonth()+1,day=date.getDate();
+ return {month,day,weekday,key:String(month).padStart(2,'0')+'-'+String(day).padStart(2,'0')};
+}
+/**
+ * Okinawa's year: a short mild winter, spring, the rainy season (tsuyu, from about the
+ * tenth of May to the end of June, ending around Irei no Hi), the long summer and autumn.
+ */
+export function okinawaSeason(minutes){
+ const {key}=townDate(minutes);
+ if(key>='12-01'||key<'03-01')return 'winter';
+ if(key<'05-10')return 'spring';
+ if(key<'06-23')return 'rainy';
+ if(key<'10-01')return 'summer';
+ return 'autumn';
+}
+/** The part of the day: night, morning (05–10), midday (10–15), afternoon (15–19), evening (19–22). */
+export function timeBand(minutes){
+ const h=(((minutes%1440)+1440)%1440)/60;
+ return h<5?'night':h<10?'morning':h<15?'midday':h<19?'afternoon':h<22?'evening':'night';
+}

@@ -119,9 +119,9 @@ export const PARK_BENCH_FIT=Object.freeze({x:2.12,y:1.58,z:0,scale:2,seat:1.96,t
 /** A park-model point on the bench, after the bench has been scaled up. */
 export const benchPoint=(x,y,z)=>{const f=PARK_BENCH_FIT;return [f.x+(x-f.x)*f.scale,f.y+(y-f.y)*f.scale,f.z+(z-f.z)*f.scale];};
 export function parkBench(p=activePark()){
- if(p.plaza)return {position:[p.x,0,p.z+.35],eyeY:1.3,yaw:0,pitch:0,stand:[p.x,0,p.z+1.45]};
+ if(p.plaza)return {position:[p.x,0,p.z+.35],surfaceY:.54,eyeY:1.3,yaw:0,pitch:0,stand:[p.x,0,p.z+1.45]};
  // The seat point is on the same slat as before the scaling; the stand is clear of the bigger frame.
  const s=p.scale||1,bx=p.x+benchPoint(2.06,0,0)[0]*s,bz=p.z,h=parkHeight(bx,bz)??p.lift,seat=benchPoint(0,PARK_BENCH_FIT.seat,0)[1];
- return {position:[bx,h,bz],eyeY:p.lift+seat*s+.75,yaw:1.1,pitch:0,stand:[p.x+.5*s,h,p.z]};
+ return {position:[bx,h,bz],surfaceY:p.lift+seat*s,eyeY:p.lift+seat*s+.75,yaw:Math.PI/2,pitch:0,stand:[p.x+.5*s,parkHeight(p.x+.5*s,p.z)??h,p.z]};
 }
 export const PARK_BENCH=parkBench(PARK);

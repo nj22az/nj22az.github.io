@@ -7,7 +7,7 @@ import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {PNG} from 'pngjs';
 import {comparePng,comparisonReport} from './visual-compare.mjs';
-import {homeViews} from './visual-home-views.mjs';
+import {homeViews,homeEntranceView} from './visual-home-views.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const args=process.argv.slice(2);
@@ -75,7 +75,8 @@ try{
    const state=await page.evaluate(()=>{
     const a=window.__JOHANSSON_AUDIT__,invalid=[],loadErrors=[];a.scene.updateMatrixWorld(true);
     a.scene.traverse(o=>{if(!o.matrixWorld.elements.every(Number.isFinite))invalid.push(o.name||o.type);if(o.userData.loadError){let visible=true;for(let p=o;p;p=p.parent)if(!p.visible)visible=false;if(visible)loadErrors.push({name:o.name||o.type,error:String(o.userData.loadError)});}});
-    return {game:JSON.parse(window.render_game_to_text()),invalid,loadErrors,draws:a.renderer.info.render.calls,dpr:a.renderer.getPixelRatio(),ink:window.__JOHANSSON_LOOK__.ink,streaming:structuredClone(window.__JOHANSSON_STREAMING__)};
+    const look=window.__JOHANSSON_LOOK__,lights=Object.fromEntries(Object.entries(look.lights).map(([name,l])=>[name,{intensity:l.intensity,color:l.color.getHex(),position:l.position.toArray()}]));
+    return {game:JSON.parse(window.render_game_to_text()),invalid,loadErrors,draws:a.renderer.info.render.calls,dpr:a.renderer.getPixelRatio(),ink:look.ink,lighting:{lights,grade:look.state,exposure:a.renderer.toneMappingExposure},streaming:structuredClone(window.__JOHANSSON_STREAMING__)};
    });
    assert.deepEqual(state.invalid,[],'Invalid scene transforms: '+label);assert.ok(state.draws>0,'Empty render: '+label);assert.equal(state.ink,true,'Postprocessing unavailable: '+label);
    assert.deepEqual(state.loadErrors,[],'Visible asset unavailable: '+label);
@@ -117,7 +118,8 @@ try{
   const homes=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.sites.filter(s=>/home/.test(s.id)));
   assert.equal(homes.length,15,'Every accessible home belongs to the visual suite');
   for(const home of homes){
-   await page.evaluate(async id=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter(id);a.camera={pos:[.15,1.8,2.25],at:[-.4,.8,-2.4]};a.render();},home.id);
+   const entrance=homeEntranceView(home.id);
+   await page.evaluate(async ({id,camera})=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;await a.enter(id);a.camera=camera;a.render();},{id:home.id,camera:entrance});
    assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),home.id);
    await capture(home.id);
    const secondary=homeViews(home.id);

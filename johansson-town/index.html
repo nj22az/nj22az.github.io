@@ -3,30 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no,interactive-widget=resizes-content">
-<meta name="theme-color" content="#27455c">
+<meta name="theme-color" content="#06c755">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Johansson Town">
 <meta name="description" content="A small harbour town, 1997. Walk its streets, meet the residents, browse the shops and settle into daily life.">
-<style>:root,html,body{margin:0;background:#f7f5f2!important}</style>
+<style>:root,html,body{margin:0;background:#f7f8f9!important}</style>
 <link rel="icon" type="image/png" href="./assets/icons/town-192.png">
 <link rel="apple-touch-icon" href="./assets/icons/town-192.png">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="stylesheet" href="./base.css?h=2cec600f">
 <link rel="stylesheet" href="./context-controls.css?h=323342df">
 <title>Johansson Town</title>
-<link rel="stylesheet" href="./landing.css?h=2db6f686">
+<link rel="stylesheet" href="./landing.css?h=eaefda77">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
 <link rel="stylesheet" href="./photo-mode.css?h=17316f51">
 <link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-DqJqMDyc.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/icons-MrOxZM18.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CCG0tNLG.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-Df52_zoE.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-DEl0bnBZ.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-DyNkE1Ey.js">
+<link rel="stylesheet" href="./line-ui.css?h=019d0251">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-DZmMvyfl.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/icons-RrRr0WaS.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-CajBlBfy.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-BaG6XWnX.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-BZ5PdI4E.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-ygTjb9SR.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
@@ -35,7 +37,9 @@
 <button id="exitRoomButton" class="hidden" aria-label="Exit building to street">Exit to street</button><button id="enterBuildingButton" class="hidden" aria-label="Enter building">Enter</button>
 <section id="start">
   <div id="splash" class="splash done" aria-hidden="true"></div>
-  <section id="title" class="title-screen" aria-labelledby="titleLogo">
+  <section id="title" class="title-screen" data-weather="sunny" aria-labelledby="titleLogo">
+    <button id="titleWeather" class="title-weather" type="button" aria-label="Weather: sunny. Tap to change" title="Change the weather"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><g data-icon="sunny"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></g><g data-icon="cloudy"><path d="M7 18h10a4 4 0 0 0 .4-8A5.5 5.5 0 0 0 6.8 11 3.5 3.5 0 0 0 7 18z"/></g><g data-icon="rain"><path d="M7 14h10a3.6 3.6 0 0 0 .4-7.2A5 5 0 0 0 6.8 8 3 3 0 0 0 7 14z"/><path d="M8.5 17l-1 3M12.5 17l-1 3M16.5 17l-1 3"/></g></svg></button>
+    <button id="titleDice" class="title-weather title-dice" type="button" aria-label="Random weather" title="Random weather"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="9" cy="9" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></button>
     <div class="title-sky" aria-hidden="true">
       <span class="title-sun"></span>
       <span class="title-cloud c1"></span><span class="title-cloud c2"></span><span class="title-cloud c3"></span>
@@ -108,7 +112,7 @@
         <div class="brochure-itinerary">
           <article><span class="brochure-number">01</span><h3>Morning at Sakura</h3><p>A shop door opens, shelves fill, and the street wakes up. Drop in for something small and a familiar hello.</p><span class="brochure-stop">Sakura Shop · GROCERIES & DAILY GOODS</span></article>
           <article><span class="brochure-number">02</span><h3>The long way round</h3><p>Browse Front-Row Books, visit the dock workshop, or follow the paths through Aoba Garden. The pond and onsen make a peaceful afternoon stop.</p><span class="brochure-stop">Minato Town · STREETS & HARBOUR</span></article>
-          <article><span class="brochure-number">03</span><h3>Stay for the evening</h3><p>When the lanterns come on, stop by Minato. Nao is there, and there’s always time for one more conversation.</p><span class="brochure-stop">Minato · THE NEIGHBOURHOOD IZAKAYA</span></article>
+          <article><span class="brochure-number">03</span><h3>Stay for the evening</h3><p>When the lanterns come on, stop by Minato. Thao is there, and there’s always time for one more conversation.</p><span class="brochure-stop">Minato · THE NEIGHBOURHOOD IZAKAYA</span></article>
         </div>
       </section>
 
@@ -119,7 +123,7 @@
             <h2 id="roll-heading">Island resident catalogue</h2>
           </div>
         </div>
-        <p class="brochure-intro">Thuan opens Sakura. Nao keeps the evening going at Minato. Around them, the neighbourhood goes about its day — working, walking, talking and coming home.</p>
+        <p class="brochure-intro">Thuan opens Sakura. Thao keeps the evening going at Minato. Around them, the neighbourhood goes about its day — working, walking, talking and coming home.</p>
         <label class="catalogue-search">Find a resident <input id="residentSearch" type="search" placeholder="Name, occupation or place" autocomplete="off"></label><p id="catalogueCount" role="status">Meet the people of the island</p>
         <div class="roll-grid" id="rollGrid"></div>
       </section>
@@ -154,7 +158,7 @@
             <figcaption>
               <p class="notice-no">Harbour Birds</p>
               <h3>MINATO TORI</h3>
-              <p>Charcoal yakitori until last pour. Hiroshi turns the skewers; Nao keeps the sauce.</p>
+              <p>Charcoal yakitori until last pour. Hiroshi turns the skewers; Thao keeps the sauce.</p>
             </figcaption>
           </figure>
           <figure class="poster-card">
@@ -306,7 +310,7 @@
           <article class="notice-card">
             <p class="notice-no">NOTICE B-07</p>
             <h3>Evening paper</h3>
-            <p>Reiko works the evening press inside Front-Row Books until 00:30. Newspapers are available at Aya’s counter.</p>
+            <p>Reiko works the evening press inside Front-Row Books until 00:30. Newspapers are available at Nhung’s counter.</p>
           </article>
           <article class="notice-card">
             <p class="notice-no">NOTICE C-02</p>
@@ -347,9 +351,9 @@
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON TOWN</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
-<script src="./resident-guide.js?h=e2014866"></script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-DJXGqqhw.js";</script>
-<script src="./landing.js?h=a9321e19"></script>
+<script src="./resident-guide.js?h=6d9e4ccf"></script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-Dom14-Fm.js";</script>
+<script src="./landing.js?h=c29b2dbb"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
 // behind it. Launching the game stays in index.html; this only presses its button.
@@ -468,7 +472,7 @@
 </script>
 <script type="module">
 import {createLoadingFacts} from './loading-facts.js';
-import {unlockTownAudio} from './runtime/audio-C8P9scra.js';
+import {unlockTownAudio} from './runtime/audio-83dQfoLt.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
@@ -512,7 +516,7 @@ import {unlockTownAudio} from './runtime/audio-C8P9scra.js';
     try{
       // Let the browser paint the first fact before constructing the town.
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      try { await import('./runtime/boot-DqJqMDyc.js'); } catch (error) {
+      try { await import('./runtime/boot-DZmMvyfl.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

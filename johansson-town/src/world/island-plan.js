@@ -2,6 +2,14 @@ import {SHOPPING_LANE,SHOPPING_LANE_ROUTES} from './shopping-lane-plan.js';
 import {GARDEN,GARDEN_PATHS,gardenHeight} from './garden-layout.js';
 /** Shared fictional island masterplan. Existing harbour addresses stay fixed. */
 export const ISLAND=Object.freeze({name:'Johansson Island',mountain:{name:'Mount Aoba',x:40,z:175,height:0,radiusX:30,radiusZ:30},pond:{...GARDEN.pond,radius:GARDEN.pond.rx},village:{name:'Hoshizaki Fishing Village',x:132,z:190},lighthouse:{x:-54,z:204},viewpoint:{x:40,z:158}});
+/** Separate customer, shopkeeper and lunch queue positions outside the south wall. */
+export const HOSHIZAKI_STORE=Object.freeze({
+ customer:Object.freeze([126,207.3]),
+ clerk:Object.freeze([126,205.65]),
+ waiting:Object.freeze([127.25,207.3]),
+ clerkFace:Object.freeze([0,1]),
+ waitingFace:Object.freeze([-1.25,-1.65]),
+});
 export const ISLAND_COAST=[[-52,85],[-63,120],[-73,160],[-68,210],[-42,250],[0,280],[55,295],[110,280],[150,240],[162,190],[156,140],[135,98],[100,70],[70,60]];
 // The coastal road leaves the existing Kitahama cross lane on solid land. Its old
 // southern bend at [60,49] was outside the coastline and could never be walked.

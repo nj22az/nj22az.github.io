@@ -177,8 +177,8 @@ export function buildSakuraInterior({room,reg,action,exit}){
    mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;
   }
  };
- let mounted=false,last='';
- return {dispose:()=>life.dispose(),officeDoor:life.officeDoor,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const ok=await preloadSakuraInterior();if(ok&&!mounted){
+ let mounted=false,disposed=false,last='';
+ return {dispose:()=>{disposed=true;life.dispose();},officeDoor:life.officeDoor,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:time=>{decorations.tick(time);life.tick(time);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready]);if(disposed)return false;if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};

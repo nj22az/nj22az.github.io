@@ -13,7 +13,7 @@ import {groundHeight,planHeight,setWalkSurface} from '../src/world/layout.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
 import {townBoundsBlocked,circleHitsRect,standingHitsRect,canStepBetween} from '../physics.js';
 
-test('Aya and Reiko walk from Sakura back to Front Row and their yard home on the drawn floors',async()=>{
+test('Nhung and Reiko walk from Sakura back to Front Row and their yard home on the drawn floors',async()=>{
  installDOM();globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js');
  const {createBusinesses}=await import('../src/world/businesses.js');
@@ -34,8 +34,12 @@ test('Aya and Reiko walk from Sakura back to Front Row and their yard home on th
  function checkPoint(x,z,label,drawFloor=true){
   assert.equal(blocked(x,z),false,label+' NPC capsule at '+[x,z]);
   assert.equal(standingBlocked(x,z),false,label+' standing capsule at '+[x,z]);
-  if(drawFloor){const y=groundHeight(x,z);ray.set(new THREE.Vector3(x,y+.24,z),new THREE.Vector3(0,-1,0));
-   assert.ok(ray.intersectObjects(floors.get(Math.floor(x/cell)+','+Math.floor(z/cell))||[],false).some(hit=>Math.abs(hit.point.y-y)<=.06),label+' drawn floor at '+[x,z]);}
+  if(drawFloor){const y=groundHeight(x,z),candidates=floors.get(Math.floor(x/cell)+','+Math.floor(z/cell))||[];
+   // BoxGeometry stores dimensions as Float32: adjacent road/footway facets can
+   // leave a sub-micrometre numerical seam at their shared edge. Keep the height
+   // test strict and only allow that coordinate precision at a facet boundary.
+   const supported=[[0,0],[1e-6,0],[-1e-6,0],[0,1e-6],[0,-1e-6]].some(([dx,dz])=>{ray.set(new THREE.Vector3(x+dx,y+.24,z+dz),new THREE.Vector3(0,-1,0));return ray.intersectObjects(candidates,false).some(hit=>Math.abs(hit.point.y-y)<=.06);});
+   assert.ok(supported,label+' drawn floor at '+[x,z]);}
  }
  function checkRoute(from,to,label){
   const nav=createNavigation(blocked,{heightAt:groundHeight}),points=nav.path({x:from[0],z:from[1]},{x:to[0],z:to[1]});
@@ -44,11 +48,11 @@ test('Aya and Reiko walk from Sakura back to Front Row and their yard home on th
   for(const [tx,tz] of points){const sx=x,sz=z,n=Math.max(1,Math.ceil(Math.hypot(tx-x,tz-z)/.04));for(let k=1;k<=n;k++)for(const [px,pz] of [[sx+(tx-sx)*k/n,z],[sx+(tx-sx)*k/n,sz+(tz-sz)*k/n]]){assert.ok(canStepBetween(groundHeight(x,z),groundHeight(px,pz)),label+' floor step');checkPoint(px,pz,label,k%5===0||k===n);x=px;z=pz;}}
  }
  try{
-  const books=TOWN_DESTINATIONS.books,home=RESIDENTS.find(p=>p.name==='Aya').home;
+  const books=TOWN_DESTINATIONS.books,home=RESIDENTS.find(p=>p.name==='Nhung').home;
   for(const [from,to,label] of [[MARKET_THRESHOLD,books,'Sakura to bookshop'],[books,MARKET_THRESHOLD,'Bookshop to Sakura'],[books,home,'Bookshop to shared home'],[home,books,'Shared home to bookshop']])checkRoute(from,to,label);
   // A reachable graph is insufficient: run the actual forward-facing schedule
   // controller from the saved market exit until both workers enter their shop.
-  for(const name of ['Aya','Reiko']){
+  for(const name of ['Nhung','Reiko']){
    const profile=world.people.find(p=>p.profile.name===name).profile;
    const minute=Array.from({length:1440},(_,m)=>m).find(m=>{const p=residentPlan(profile,m,false,{});return p.place==='work'&&Math.hypot(p.target[0]-books[0],p.target[1]-books[1])<.01;});
    assert.notEqual(minute,undefined,name+' bookshop shift');

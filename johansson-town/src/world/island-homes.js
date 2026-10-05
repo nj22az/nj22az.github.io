@@ -7,7 +7,7 @@ import {householdFor} from '../people/households.js';
  * The doors of the Kitahama houses (okinawa/layout.js KITAHAMA), as sites like every
  * door in town. The houses themselves are built with the Okinawan quarter (quarters.js).
  *
- * Thuan & Nao and Mrs Sato are walking residents: their houses are home sites with a
+ * Thuan & Thao and Mrs Sato are walking residents: their houses are home sites with a
  * homeOwner, so home-residents.js puts them to bed there and they no longer leave on
  * the ferry at night. The others are families from the household registry, whose room
  * is built by family-home.js; the house to let is empty.

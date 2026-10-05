@@ -7,6 +7,7 @@ const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript
 
 /** A private, ephemeral loopback preview of this game's compiled checkout. */
 export async function serveGame(root){
+ root=resolve(root);
  const server=createServer(async(req,res)=>{
   try{
    if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);res.end();return;}

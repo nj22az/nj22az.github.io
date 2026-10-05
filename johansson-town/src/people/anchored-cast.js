@@ -12,19 +12,19 @@ import {STREET_CAST_NAMES,RESIDENTS} from './residents.js';
  */
 export const CAST_TIERS=Object.freeze({
  core:Object.freeze(['Johansson','Thuan']),
- key:Object.freeze(['Nao','Mrs Sato','Officer Mori','Harbour master']),
- // Kept for now (you asked to keep Aya and Kenji); Reiko and Tetsuo share their yard homes.
- kept:Object.freeze(['Aya','Kenji','Reiko','Tetsuo']),
+ key:Object.freeze(['Thao','Mrs Sato','Officer Mori','Harbour master']),
+ // Kept for now (you asked to keep Nhung and Chin); Reiko and Tetsuo share their yard homes.
+ kept:Object.freeze(['Nhung','Chin','Reiko','Tetsuo']),
 });
 
 const LIFE=Object.freeze({
- Thuan:{dayOff:'Wednesday',leisure:['Minato izakaya with Nao after closing','Umi-no-yu rock bath','the beach corner chairs']},
- Nao:{dayOff:'Monday',leisure:['the morning market','Umi-no-yu']},
+ Thuan:{dayOff:'Wednesday',leisure:['Minato izakaya with Thao after closing','Umi-no-yu rock bath','the beach corner chairs']},
+ Thao:{dayOff:'Monday',leisure:['the morning market','Umi-no-yu']},
  'Mrs Sato':{dayOff:'Sunday',leisure:['the fish auction at nine','Kitahama pocket park bench']},
  'Officer Mori':{dayOff:'Thursday',leisure:['the seawall with a fishing rod','Sato Ramen at lunch']},
  'Harbour master':{dayOff:'Sunday',leisure:['Mr Fujita’s shed on the pier, for the ballgame','the quay at dusk']},
- Aya:{dayOff:'Tuesday',leisure:['the window chair at Front-Row','the beach']},
- Kenji:{dayOff:'Sunday',leisure:['Star Port at the arcade cabinet','Minato']},
+ Nhung:{dayOff:'Tuesday',leisure:['the window chair at Front-Row','the beach']},
+ Chin:{dayOff:'Sunday',leisure:['Star Port at the arcade cabinet','Minato']},
  Reiko:{dayOff:'Sunday',leisure:['Front-Row print bench (she cannot help it)','Umi-no-yu']},
  Tetsuo:{dayOff:'Monday',leisure:['the pier with his radio','Minato']},
 });

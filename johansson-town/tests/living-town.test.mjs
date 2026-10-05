@@ -35,7 +35,7 @@ test('izakaya borrows existing entities, updates guests and restores interaction
  const before=world.people.map(p=>({g:p.g,pos:p.g.position.clone(),hit:p.g.userData.hit}));const guests=createIzakayaGuests({world,parent:scene});
  for(const p of world.people)if(residentPlan(p.profile,1135).place==='izakaya'){p.g.position.set(IZAKAYA_DOOR[0],0,IZAKAYA_DOOR[1]);p.g.userData.indoors='izakaya';}
  const names=guests.sync(1135);assert.ok(names.length>1);assert.equal(new Set(world.people.map(p=>p.g.uuid)).size,PROFILES.length);
- for(const name of names){const g=world.people.find(p=>p.g.userData.name===name).g;assert.equal(g.parent,scene);assert.equal(g.userData.hit.inside,true);assert.ok(g.userData.socialPose||g.userData.name==='Nao');}
+ for(const name of names){const g=world.people.find(p=>p.g.userData.name===name).g;assert.equal(g.parent,scene);assert.equal(g.userData.hit.inside,true);assert.ok(g.userData.socialPose||g.userData.name==='Thao');}
  const laterNames=guests.sync(1335);guests.restore();guests.restore();assert.equal(guests.names().length,0);
  for(const {g,pos,hit} of before){
   assert.equal(g.parent,street);
@@ -50,9 +50,9 @@ test('izakaya borrows existing entities, updates guests and restores interaction
 });
 
 test('supper charges once, advances the evening, saves a memory and refuses insufficient funds',()=>{
- // Ordered from your seat: Nao cooks it and brings it over (people/izakaya-beer.js).
+ // Ordered from your seat: Thao cooks it and brings it over (people/izakaya-beer.js).
  const dom=installDOM();let minutes=1100;const ordered=[];
- const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({inside:'izakaya',names:['Aya','Reiko']}),
+ const acts=createActivities({say(){},onWeather(){},onTime:v=>{if(typeof v==='number')minutes+=v;},getMinutes:()=>minutes,getSocialContext:()=>({inside:'izakaya',names:['Nhung','Reiko']}),
   getBeerTable:()=>({drink:null,dish:null,order:null,naoHere:true}),onOrderDrink:id=>{ordered.push(id);return true;}});
  acts.action('izakaya-table');dom.button('Order something to eat…');dom.button('Assorted Yakitori · ¥180');
  assert.equal(acts.state.yen,1020);assert.equal(minutes,1102);assert.deepEqual(ordered,['yakitori']);
@@ -63,14 +63,14 @@ test('supper charges once, advances the evening, saves a memory and refuses insu
 });
 
 test('Thuan visits after closing on alternate days and has off-duty conversation',()=>{
- for(const m of [0,1199,1200,1219,1290,1439,1440+1230])assert.equal(thuanVisitsIzakaya(m),false);
- for(const m of [1220,1230,1289,2880+1230])assert.equal(thuanVisitsIzakaya(m),true);
- const dom=installDOM();const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1230,getSocialContext:()=>({inside:'izakaya',names:['Thuan','Nao']})});
+ for(const m of [0,1199,1290,1439,1440+1230])assert.equal(thuanVisitsIzakaya(m),false);
+ for(const m of [1200,1219,1220,1230,1289,2880+1230])assert.equal(thuanVisitsIzakaya(m),true);
+ const dom=installDOM();const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1230,getSocialContext:()=>({inside:'izakaya',names:['Thuan','Thao']})});
  acts.action('resident','Thuan');assert.equal(document.querySelector('#activityTitle').textContent,'Thuan · After hours');
  assert.match(document.querySelector('#activityBody').firstChild.textContent,/all locked up/);
- dom.button('What is your favourite snack?');assert.match(document.querySelector('#activityBody').firstChild.textContent,/Nao saved me/);
+ dom.button('What is your favourite snack?');assert.match(document.querySelector('#activityBody').firstChild.textContent,/Thao saved me/);
  assert.ok(acts.state.notes.includes('Caught up with Thuan after closing at Minato Izakaya.'));
- assert.equal(gossipAt(1230,['Thuan','Nao']).id,'yuri-evening');
+ assert.equal(gossipAt(1230,['Thuan','Thao']).id,'yuri-evening');
 });
 
 
@@ -89,9 +89,9 @@ test('izakaya exports load locally with bounded geometry and at most ten static 
 
 test('at Minato you can stand somebody a drink, and they remember it',()=>{
  const dom=installDOM();const treated=[];
- const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1200,getSocialContext:()=>({inside:'izakaya',names:['Aya','Nao']}),onTreat:name=>treated.push(name)});
- const yen=acts.state.yen;acts.action('resident','Aya');dom.button('Buy Aya a drink · ¥450');
- assert.equal(acts.state.yen,yen-450);assert.equal(acts.state.treats.Aya,1);assert.deepEqual(treated,['Aya']);
- assert.ok(acts.state.notes.includes('Bought Aya a drink at Minato.'));
- acts.action('resident','Nao');assert.ok(!dom.has('Buy Nao a drink · ¥450'),'Nao is working');
+ const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1200,getSocialContext:()=>({inside:'izakaya',names:['Nhung','Thao']}),onTreat:name=>treated.push(name)});
+ const yen=acts.state.yen;acts.action('resident','Nhung');dom.button('Buy Nhung a drink · ¥450');
+ assert.equal(acts.state.yen,yen-450);assert.equal(acts.state.treats.Nhung,1);assert.deepEqual(treated,['Nhung']);
+ assert.ok(acts.state.notes.includes('Bought Nhung a drink at Minato.'));
+ acts.action('resident','Thao');assert.ok(!dom.has('Buy Thao a drink · ¥450'),'Thao is working');
 });
