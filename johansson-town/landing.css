@@ -885,7 +885,9 @@
 #start .title-screen:not([data-weather="sunny"]) :is(.title-sun, .title-spark) { display: none; }
 #start .title-weather { position: absolute; z-index: 2; top: calc(env(safe-area-inset-top, 0px) + 14px); left: 14px; display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border: 1px solid rgba(255,255,255,.45); border-radius: 50%; background: rgba(20,32,44,.38); color: #fff; cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 #start .title-weather svg { width: 26px; height: 26px; }
-#start .title-weather g { display: none; }
+#start .title-weather:not(.title-dice) g { display: none; }
+#start .title-dice { left: 70px; }
+#start .title-screen[data-weather-mode="random"] .title-dice { color: #06c755; }
 #start .title-screen[data-weather="sunny"] .title-weather g[data-icon="sunny"],
 #start .title-screen[data-weather="cloudy"] .title-weather g[data-icon="cloudy"],
 #start .title-screen[data-weather="rain"] .title-weather g[data-icon="rain"] { display: inline; }

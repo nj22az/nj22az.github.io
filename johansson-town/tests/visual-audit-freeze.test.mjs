@@ -15,7 +15,7 @@ test('repeated frozen draws refresh lighting and late materials without advancin
  const renderStart=source.indexOf(' render(){',source.indexOf('window.__JOHANSSON_AUDIT__={'));
  const renderSource=source.slice(renderStart,source.indexOf('\n setTime(value',renderStart));
  let hours=0,shutterY=0,skyUpdates=0,celSweeps=0,outdoor=0,interior=0,market=0;
- const context={THREE,duskClock,world:{updateHours(){hours++;shutterY+=.02;}},minutes:1260,weather:false,
+ const context={THREE,duskClock,world:{updateHours(){hours++;shutterY+=.02;}},minutes:1260,weather:false,weatherKind:'sunny',
   current:null,graphicsLifecycle:null,activeRoomLayout:null,creatorOpen:false,photoStudio:null,spawnScene:null,player:new THREE.Group(),tabletLike:false,
   lightBudget:{update(){}},colliderGrid:{refresh(){}},
   sun:new THREE.DirectionalLight(),ambient:new THREE.HemisphereLight(),bounce:new THREE.PointLight(),
