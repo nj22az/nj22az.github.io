@@ -169,7 +169,9 @@ async function drawSetPanel({ctx,w,h,set,p,shot,actors,scene,base,place,i}){
   const toCam=Math.atan2(camera.position.x-a.mark.x,camera.position.z-a.mark.z),toOther=Math.atan2(centre.x-a.mark.x,centre.z-a.mark.z);
   const turn=actors.length>1?Math.atan2(Math.sin(toOther-toCam),Math.cos(toOther-toCam)):0;
   // In conversation they face each other, opened a little to the camera, as on a stage.
-  a.holder.rotation.y=actors.length>1?toCam+Math.max(-1.15,Math.min(1.15,turn*.78)):toCam;
+  // A close-up is on a face, so its subject turns to the camera; the rest face each other.
+  const facing=shot==='close'&&a.name===p.focus?.3:.78;
+  a.holder.rotation.y=actors.length>1?toCam+Math.max(-1.15,Math.min(1.15,turn*facing)):toCam;
   const sit=a.mark.seat!=null&&!['Crouch','Bow','HeelKick','Kachashi'].includes(a.pose);
   pose(a.avatar,sit?'Sit':a.pose,a.expression,a.mark.seat);
   if(show)scene.add(a.holder);
@@ -276,7 +278,7 @@ function averageColour(ctx,w,h){
 /** Marks, sound effects and the bubble. */
 function letter(ctx,w,h,p,actors,tops,i){
  (p.fx||[]).forEach((kind,j)=>tops[j]&&drawFaceFx(ctx,kind,tops[j].x,tops[j].y,tops[j].s,i+j));
- drawSfx(ctx,p.sfx,w,h,i+(p.say===actors[0]?.name?1:0));
+ const xs=tops.flatMap(t=>[t.x-t.s,t.x+t.s]);drawSfx(ctx,p.sfx,w,h,i,{avoid:xs.length?[Math.min(...xs),Math.max(...xs)]:null});
  const speaker=actors.findIndex(a=>a.name===p.say);
  if(speaker>=0&&tops[speaker]){const {x,y}=tops[speaker];bubble(ctx,p.line,w,h,{x:Math.max(150,Math.min(w-150,x+(x<w/2?50:-50))),y:12,maxW:w*.72,tx:x,ty:y-8});}
  else bubble(ctx,p.line,w,h,{x:w/2,y:12,maxW:w*.84});

@@ -1,4 +1,4 @@
-import {FEED_PLACES} from './places.js';
+import {FEED_PLACES,feedPlace} from './places.js';
 import {choosePanelFx} from './manga-fx.js';
 import {GENRES,ENDINGS,OPENINGS,REACTIONS,FOODS,DRINKS,SNACKS,WEATHER,HOURS,RECIPE,COURSE,OVERHEARD} from './stories.js';
 
@@ -86,8 +86,11 @@ function chooseShot(rng,index,people){
 /** One four-panel comic. */
 export function tellComic(rng,catalogue,opts={}){
  const long=opts.long??rng.chance(.4);
- const genre=opts.genre?GENRES.find(g=>g.id===opts.genre):rng.pick(GENRES);
- const ctx={...stage(rng,catalogue,{need:genre.cast,...opts}),vars:{}};
+ // A genre that needs a particular kind of place is only told there.
+ const fits=g=>!g.places||!opts.place||g.places.includes(opts.place.id);
+ const genre=opts.genre?GENRES.find(g=>g.id===opts.genre):rng.pick(GENRES.filter(fits));
+ const place=opts.place||(genre.places?feedPlace(rng.pick(genre.places)):null);
+ const ctx={...stage(rng,catalogue,{need:genre.cast,...opts,place}),vars:{}};
  for(const [k,options] of Object.entries(genre.bind||{}))ctx.vars[k]=expand(rng.pick(options),ctx,rng);
  let previous=null;const panels=[];
  // A third resident, in case the ending wants someone to walk in.
@@ -118,6 +121,9 @@ export function tellComic(rng,catalogue,opts={}){
  const act=ctx.place.activity||{},props={};
  for(const who of [ctx.A,ctx.B].filter(Boolean))if(act.hold&&rng.chance(act.chance??.5))props[who.name]=rng.pick(act.hold);
  const sitting=rng.chance(act.sit??0);
+ // The same framing twice reads as a mistake: a repeated establishing shot moves up high, any
+ // other repeat back to a medium shot or the low angle.
+ const seen=new Set();for(const p of panels){if(seen.has(p.shot)&&p.shot!=='eyes')p.shot=p.shot==='wide'?'high':seen.has('medium')?'low':'medium';seen.add(p.shot);}
  return {type:'comic',genre:genre.id,title:sentence(expand(rng.pick(genre.title),ctx,rng)),place:ctx.place.id,placeName:ctx.place.name,cast:[...new Set(panels.flatMap(p=>p.actors.map(a=>a.name)))],props,sitting,panels};
 }
 

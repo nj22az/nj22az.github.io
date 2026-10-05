@@ -17,7 +17,8 @@
  * (only at places of these kinds). {A.ajob} is the job with a or an. sfx and bg force a sound
  * effect or panel background (see manga-fx.js); otherwise the storyteller picks them from the
  * expressions and poses. shot picks the camera (wide, medium, close, eyes, low, high, dutch,
- * close-thing) and focus whose face a close shot is on; cast:'C' gives the panel to a third resident. Poses and expressions are
+ * close-thing) and focus whose face a close shot is on; cast:'C' gives the panel to a third resident.
+ * A genre with `places` only happens there (a fish story needs water). Poses and expressions are
  * the photo studio's (src/photo/layout.js). A pose list picks one.
  */
 export const FOODS=Object.freeze(['yakitori','edamame','oden','shoyu ramen','tuna onigiri','tamago sando','custard pudding','gōya champurū','sāta andāgī','soki soba','fried gurukun','karaage']);
@@ -27,6 +28,32 @@ export const WEATHER=Object.freeze(['the rain','the sea breeze','a typhoon warni
 export const HOURS=Object.freeze(['seven in the morning','half past eleven','three in the afternoon','closing time','last orders','a quarter to six']);
 
 export const GENRES=Object.freeze([
+ // Harbour stories (places: only where they can happen).
+ {id:'catch',places:['harbour','pier'],title:['The one that got away','{A}’s fish','A fish story'],cast:2,
+  bind:{fish:['gurukun','parrotfish','mackerel','bigeye tuna']},
+  beats:[
+   [{say:'A',line:'I caught a {$fish} this morning. This big.',shot:'wide',a:['HandsOnHips','happy'],b:['Idle','neutral']},
+    {say:null,line:'At {place.short}, {A} was describing a {$fish}.',shot:'wide',a:['Point','happy'],b:['Idle','neutral']}],
+   [{say:'B',line:'That big?',tag:'doubt',a:['Tada','happy'],b:['Think','surprised']},
+    {say:'B',line:'Last week it was smaller.',tag:'doubt',a:['HandsOnHips','content'],b:['Shrug','thinking']}],
+   [{say:'A',line:'Bigger. The ferry had to wait for it to pass.',after:['doubt'],shot:'low',sfx:'SPLASH!',a:['Tada','laugh'],b:['Shrug','surprised']},
+    {say:null,line:'By lunchtime the {$fish} was the size of the ferry.',shot:'wide',sfx:'SPLASH!',a:['Cheer','laugh'],b:['Think','grumpy']}],
+   [{say:null,line:'{C} walked past with a {$fish} the size of a thumb.',cast:'C',shot:'medium',sfx:'…',a:['Peace','happy']},
+    {say:'B',line:'I was there. It was a sardine.',shot:'close',a:['Shrug','shy'],b:['HandsOnHips','content']},
+    {say:null,line:'The fish has since grown to the size of the island.',shot:'high',a:['Laugh','laugh'],b:['Laugh','laugh']}],
+  ]},
+ {id:'ferry',places:['harbour','pier'],title:['The last ferry','{A} and the timetable','Running for the boat'],cast:2,
+  beats:[
+   [{say:null,line:'{hour}. The ferry leaves in one minute.',shot:'wide',a:['Idle','neutral'],b:['Idle','neutral']},
+    {say:'A',line:'Is that the ferry horn?',shot:'medium',a:['Think','surprised'],b:['Idle','neutral']}],
+   [{say:'B',line:'Run!',shot:'close',sfx:'BWOOOO',a:['Idle','surprised'],b:['Point','surprised']},
+    {say:'A',line:'My bag! My ticket! My other bag!',shot:'dutch',sfx:'BWOOOO',a:['Shrug','worried'],b:['Point','surprised']}],
+   [{say:null,line:'{A} ran the whole length of the quay.',shot:'low',sfx:'DASH DASH',a:['HeelKick','surprised'],b:['Cheer','happy']},
+    {say:null,line:'Nobody had ever seen {A} move that fast.',shot:'high',sfx:'DASH DASH',a:['HeelKick','worried'],b:['Clap','laugh']}],
+   [{say:'B',line:'That was the cargo boat. It does not take passengers.',shot:'medium',a:['Shrug','sad'],b:['Shrug','smile']},
+    {say:null,line:'It was tomorrow’s timetable.',shot:'wide',sfx:'…',a:['Shrug','surprised'],b:['Laugh','laugh']},
+    {say:'A',line:'I meant to do that. I like running.',shot:'close',a:['HandsOnHips','shy'],b:['Laugh','laugh']}],
+  ]},
  {id:'showdown',title:['Showdown at {place.short}','The last {$prize}','High noon at {place.short}'],cast:2,
   bind:{prize:['{food}','{snack}','seat by the window','copy of the evening paper','umbrella']},
   beats:[
@@ -161,7 +188,7 @@ export const GENRES=Object.freeze([
     {say:null,line:'{A} had {snack} instead and called it a success.',a:['Peace','happy']}],
   ]},
  {id:'invention',title:['{A}’s invention','Patent pending','The {$gadget}'],cast:2,
-  bind:{gadget:['automatic {food} turner','umbrella for {thing}','pocket tide clock','self-sweeping broom','{snack} detector']},
+  bind:{gadget:['automatic {food} turner','umbrella for {thing.bare}','pocket tide clock','self-sweeping broom','snack detector']},
   beats:[
    [{say:'A',line:'Behold: the {$gadget}!',a:['Tada','happy'],b:['Idle','surprised']},
     {say:null,line:'{A} had been building something instead of {doing}.',a:['Think','thinking'],b:['Idle','neutral']}],
@@ -199,7 +226,7 @@ export const REACTIONS=Object.freeze(['','…','!','Wait.','Hm.']);
 export const RECIPE=Object.freeze({
  title:['{A}’s famous {$dish}','{$dish}, the {place.bare} way','{$dish} for people in a hurry'],
  // Each dish names the one ingredient it cannot be without.
- dish:[['island fried rice','two bowls of rice'],['{food} sandwich','{food}'],['harbour omurice','one egg, at room temperature'],['emergency champurū','tofu'],['typhoon curry','a box of curry roux'],['three-minute miso soup','a spoon of miso']],
+ dish:[['island fried rice','two bowls of rice'],['harbour club sandwich','one tin of luncheon meat'],['harbour omurice','one egg, at room temperature'],['emergency champurū','tofu'],['typhoon curry','a box of curry roux'],['three-minute miso soup','a spoon of miso']],
  main:['luncheon meat','spring onions','tofu','pork belly'],
  ingredients:['two bowls of rice','one egg, at room temperature','a spoon of miso','{snack}, crushed','a pinch of salt','a squeeze of shikuwasa','soy sauce, to taste','{drink}, for the cook'],
  steps:['Wash the rice until the water runs nearly clear.','Heat the pan until a drop of water dances.','Fry the {$main} until golden.','Stir in the miso and turn the heat down.','Add the egg and do not touch it for one minute.','Season with soy sauce and taste it.','Fold everything together gently.','Serve in the biggest bowl you own.'],

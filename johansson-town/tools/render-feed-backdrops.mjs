@@ -77,9 +77,12 @@ try{
    if(!h)continue;const n=h.face.normal.clone().transformDirection(h.object.matrixWorld);if(n.y<.9)continue;
    hits.push({p:h.point,d:h.distance,sx,sy});
   }
-  const floor=Math.min(...hits.map(h=>h.p.y)),spots={stand:[],seat:[],counter:[]},taken=new Set();
+  // The floor is the level most of the picture's level ground is at — not the lowest, which by
+  // the harbour is the sea.
+  const levels=new Map();for(const h of hits){const k=Math.round(h.p.y/.05);levels.set(k,(levels.get(k)||0)+1);}
+  const floor=([...levels].sort((a,b)=>b[1]-a[1])[0]?.[0]??0)*.05,spots={stand:[],seat:[],counter:[]},taken=new Set();
   for(const h of hits){
-   const lift=h.p.y-floor,kind=lift<.12?'stand':lift>.33&&lift<.62?'seat':lift>.8&&lift<1.15?'counter':null;if(!kind||h.d<1.4||h.d>9)continue;
+   const lift=h.p.y-floor;if(lift<-.12)continue;const kind=Math.abs(lift)<.12?'stand':lift>.33&&lift<.62?'seat':lift>.8&&lift<1.15?'counter':null;if(!kind||h.d<1.4||h.d>9)continue;
    const key=kind+Math.round(h.p.x/.6)+','+Math.round(h.p.z/.6);if(taken.has(key))continue;
    if(kind==='stand'){
     // Room to stand: the floor carries on all round, with nothing at body height in the way.

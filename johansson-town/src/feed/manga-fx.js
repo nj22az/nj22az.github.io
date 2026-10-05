@@ -31,7 +31,7 @@ export function choosePanelFx(rng,actors,index,beat={}){
  if(!bg&&(has('sad')||has('worried'))&&rng.chance(.5))bg='gloom';
  if(!bg&&index===3&&(has('laugh')||has('happy'))&&rng.chance(.4))bg='sparkles';
  let sfx=beat.sfx||null;
- if(!sfx&&rng.chance(.55)){const options=actors.flatMap(a=>[POSE_SFX[a.pose],FACE_SFX[a.expression]]).filter(Boolean);if(options.length)sfx=rng.pick(options);}
+ if(!sfx&&rng.chance(.3)){const options=actors.flatMap(a=>[POSE_SFX[a.pose],FACE_SFX[a.expression]]).filter(Boolean);if(options.length)sfx=rng.pick(options);}
  return {fx,bg,sfx};
 }
 
@@ -114,8 +114,13 @@ export function drawFaceFx(ctx,kind,x,y,s,seed=1){
 }
 
 /** A sound effect lettered big across the panel. */
-export function drawSfx(ctx,text,w,h,seed=1){
+export function drawSfx(ctx,text,w,h,seed=1,{avoid=null}={}){
  if(!text)return;
- const left=seed%2===0,size=text.length>8?44:58;
- lettered(ctx,text,left?w*.22:w*.78,h*.82,size,{fill:'#fff',angle:left?-.16:.14});
+ // Sized to the panel and set in the open space beside the people, never over a face.
+ ctx.save();ctx.font=`800 10px "LINE Seed JP","Arial Black",sans-serif`;const per=ctx.measureText(text).width/10;ctx.restore();
+ const size=Math.min(46,w*.075,(w*.38)/Math.max(1,per));
+ let left=seed%2===0;
+ if(avoid){const [a,b]=avoid;left=a>w-b;}
+ const x=left?w*.06+per*size/2:w*.94-per*size/2;
+ lettered(ctx,text,x,h*.86,size,{fill:'#fff',angle:left?-.12:.1});
 }
