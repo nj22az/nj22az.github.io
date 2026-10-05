@@ -3,15 +3,15 @@ import {assetURL} from '../../assets.js';
 
 export const IZAKAYA_POSTERS=Object.freeze([
  {id:'yakitori',file:'minato-tori.webp',title:"MINATO TORI · Harbour Birds",jp:"Harbour Birds",
-  position:[-6.28,2.16,3.05],yaw:Math.PI/2,approach:[-5.15,1.55,3.05],
+  position:[-6.28,1.96,2.7],yaw:Math.PI/2,approach:[-5.15,1.55,2.7],
   paper:'#f3efe4',ink:'#141414',accent:'#c41230',
   line:'Charcoal yakitori until last pour. Hiroshi turns the skewers; Nao keeps the sauce.'},
  {id:'sake',file:'shiomachi-sake.webp',title:"SHIOMACHI · Waiting for the tide",jp:"Waiting for the tide",
-  position:[-6.28,2.16,0.55],yaw:Math.PI/2,approach:[-5.15,1.55,0.55],
+  position:[-6.28,1.96,0.55],yaw:Math.PI/2,approach:[-5.15,1.55,0.55],
   paper:'#e7efe8',ink:'#1a3036',accent:'#c41230',
   line:'Junmai from a fictional harbour brewery. Waiting for the tide, one cup at a time.'},
  {id:'house',file:'minato-lanterns.webp',title:"MINATO · Minato",jp:"Minato",
-  position:[4.15,2.18,6.28],yaw:Math.PI,approach:[4.15,1.55,5.15],
+  position:[4.15,1.98,6.28],yaw:Math.PI,approach:[4.15,1.55,5.15],
   paper:'#1a3036',ink:'#f3efe4',accent:'#c41230',
   line:"The house poster. Red lanterns, the noren, and Welcome back — welcome back."},
 ]);

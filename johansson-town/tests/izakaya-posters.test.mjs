@@ -15,10 +15,16 @@ test('Minato hangs three inspectable Showa posters',()=>{
  });
  assert.equal(IZAKAYA_POSTERS.length,3);
  assert.equal(posters.children.length,3);
+ for(const poster of posters.children){
+  const height=poster.geometry.parameters.height;
+  assert.ok(poster.position.y+height/2<2.805,'The entire print clears the picture rail');
+  assert.ok(poster.position.y-height/2>1.05,'The print clears the timber dado');
+ }
  assert.equal(hits.length,3);
  for(const spec of IZAKAYA_POSTERS){
   const hit=hits.find(h=>h.label==='Read '+spec.title);
   assert.ok(hit);assert.equal(hit.inside,true);hit.fn();
+  if(spec.id==='yakitori')assert.ok(spec.position[2]+.54<3.29,'The print clears the west sconce');
  }
  assert.equal(calls.length,3);
  assert.equal(calls[0][0],'inspect');

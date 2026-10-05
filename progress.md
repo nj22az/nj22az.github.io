@@ -355,3 +355,17 @@ Current request, 4 October 2026: Audit Johansson Town through the installed MCP,
 - Final LINE acceptance: common white/green/black presentation, semantic SVGs and preserved structured content across menus/dialogue/bag/magazines/records/camera/photo/creator. Standalone creator also uses the shared theme. Final source fingerprint5f9cc437ae0334309f1e82e246eac96340882eb844ba4f651322f94427c110aa. The last Share repair focuses its heading without auto-scrolling to Done; real initial-title checks cover panel clipping, not only viewport bounds. Compact voice meters now use their own row and visible 1px-gapped segments with44px controls.
 - Final cache/focus/runtime/icons/MCP regressions16/16pass; retained actual previous-main0c runtime graph plus current graph for cached-page compatibility. Latest realMCP smoke passes. Portable standalone creator audit69/69checks,16reported captures plus4Done-scroll PNGs, zero errors. New reports clearly separate actual UI captures/presentation fixtures from the normal town/home MCP walking tour.
 - Final expanded UI acceptance is120/120checks across96captures; normal menu review36captures; standalone69/69checks across16reportedcaptures plus4Done-scroll images. Phone/compact were repeated after the last compact-meter CSS fix; desktop/landscape effective rules are unchanged. All reviewed exposed controls/initial dialog headings are clear; no recorded JavaScript/resource errors. Home agent independently confirmed final actual pixels.
+
+
+## 2026-10-05 · Worn, cozy Minato and a real-date Future Calendar
+
+User request: make the izakaya more run down, cozy and realistic, with detail comparable to the konbini; fix calendar placement, title it “Future Calendar”, display today’s real date and refresh daily.
+
+- Started from latest main af713af, preserving the newly published sky, title and indoor camera improvements.
+- Developing aged cedar/plaster/upholstery finishes, grounded dining and service props, and an independent Stockholm real-date calendar.
+- Calendar moves to the entry wall beside the lounge shoji; verified clear of coat pegs, timber posts, window frame and picture rail.
+
+- Finished 25 grounded dining/service placements, three merged aged-finish draws and four detail draws. Lowered large posters below the picture rail and shifted yakitori print away from the west sconce.
+- Real calendar title/date/month highlight added to audit text state; exact Stockholm midnight/DST updates run even with a menu or frozen audit open. Re-entering rooms disposes the old calendar.
+- 33 focused tests passed. Desktop/phone midnight, pause, re-entry and rendered-view checks passed. Actual MCP: 129 calls, 10 walking goals, 8 captures, calendar read/dining seat/normal exit, no errors/invalid transforms; optional order/drink not claimed.
+- Preserved fresh main weather randomiser (1da559f) before the final build. Retained that published chunk graph alongside the new graph for cached pages.

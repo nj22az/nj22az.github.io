@@ -1,3 +1,4 @@
+import {MINATO_MEMORY_STORY,MINATO_RECIPE_CARD} from './src/world/interiors/izakaya-exploration.js';
 import {foodArtForItem} from './src/commerce/food-art.js';
 import {FLYER_ITEM,FLYER_PATH,FLYER_PAPER,collectSakuraFlyer} from './src/commerce/sakura-flyer.js';
 import {restoreIsland} from './src/island/services.js';
@@ -157,6 +158,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const image=document.createElement('img');image.src=FLYER_PATH;image.alt=FLYER_PAPER.text;image.width=900;image.height=1280;image.style.cssText='display:block;width:100%;height:auto;max-width:620px;margin:12px auto;box-shadow:0 4px 18px #0003';body.append(image);
   }
   function bagItem(item){
+    if(item===MINATO_RECIPE_CARD){receipt(MINATO_RECIPE_CARD,MINATO_MEMORY_STORY);return;}
     if(item===FLYER_ITEM){sakuraFlyer();return;}
     const model=printedModels(state.inventory).find(m=>m.name===item);
     const special=SPECIAL_BY_NAME[item],hotSnack=HOT_SNACKS.find(snack=>snack.name===item);
@@ -939,6 +941,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     show(name,text,[[`Buy · ¥${cost}`,()=>{if(!spend(cost))return;onTime(2);addItem(item);tone(700,.12);receipt(name,`${item} has been added to your bag.`);}],['Leave',close]]);
   }
   function radio(name,detail){
+    radioStation=Number.isInteger(state.radioStation)?Math.max(0,Math.min(2,state.radioStation)):0;
     const stations=[
       RADIO_821,
       '89.4 JOJO — tonight’s request: '+JOURNAL[Math.floor(getMinutes())%JOURNAL.length][1]+'. A title from the journal, for the late shift.',

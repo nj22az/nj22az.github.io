@@ -4,6 +4,10 @@ import {japaneseSign,signText} from './okinawa/signs.js';
 import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './interiors/shared-dining-layout.js';
 import {createIzakayaTV} from './advertising-billboard.js';
 import {hangIzakayaPosters} from './interiors/izakaya-posters.js';
+import {buildIzakayaExploration} from './interiors/izakaya-exploration.js';
+import {createFutureCalendar} from './interiors/future-calendar.js';
+import {buildIzakayaLivedIn} from './interiors/izakaya-lived-in.js';
+import {buildIzakayaPatina} from './interiors/izakaya-patina.js';
 import {buildIzakayaDressing} from './interiors/izakaya-dressing.js';
 import {buildIzakayaInteractive} from './interiors/izakaya-interactive.js';
 import {restaurantCollider,restaurantApproach,izakayaPlot,SATO_RAMEN_DOOR} from './dining-layout.js';
@@ -105,8 +109,9 @@ export function buildIzakaya(world,options){
  }});
  return site;
 }
-export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,getMinutes=()=>1200}){
- if(!asset('interior',room)){
+export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,getMinutes=()=>1200,windowView=null,exploration}){
+ const furnished=asset('interior',room);
+ if(!furnished){
   box([13,.2,13],[0,-.1,0],0x965332,room,false);box([13,3.8,.2],[0,1.9,-6.4],0xe8c894,room,false);box([8,1,1],[-.8,.5,-2.6],0x965332,room,false);
  }
  // Complete the cutaway asset for first-person viewing. Keep the exit opening.
@@ -131,10 +136,15 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,
  }
  for(const z of [4.15,5.0]){const o=anchor([-5.52,.8,z],'Sit in the cosy bar corner',()=>action('seat','Minato lounge corner','A worn upholstered bench, a small wooden table and a warm globe light.'));o.userData.seat={position:[-5.52,0,z],stand:[-3.9,0,z],eyeY:1.12,yaw:Math.PI/2,pitch:0};}
  anchor([4.1,1,-3.8],'Inspect the shared kitchen',()=>action('inspect','Minato and Sato shared kitchen','The ramen stock pots, sink, prep board and range share a working aisle. Walk around the counter through the open passage. Please keep clear while Nao and Mrs Sato are carrying hot bowls.'));
- anchor([-.4,2.5,-5.6],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
+ if(!exploration)anchor([-.4,2.5,-5.6],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
  buildIzakayaDressing(room,{collider});
+ if(furnished){buildIzakayaPatina(room);buildIzakayaLivedIn(room);}
+ // The entry wall has a full clear panel: away from the shoji, coat pegs, posts and picture rail.
+ const calendar=createFutureCalendar();calendar.group.position.set(-5.55,2.03,6.255);calendar.group.rotation.y=Math.PI;room.add(calendar.group);
+ anchor([-5.55,2.03,6.21],'Read Future Calendar',()=>{calendar.update();action('inspect','Future Calendar',calendar.mesh.userData.dateLabel+'\nToday’s real date · Europe/Stockholm. This calendar turns a page every real day.');});
  const play=buildIzakayaInteractive(room,{anchor,action,collider});
+ const discovery=buildIzakayaExploration(room,{anchor,windowView,exploration});
  // Imported American beer advertising: Barfly is a countertop mascot, not another resident.
  box([.58,.08,.45],[-4.4,1.34,-2.6],0x244b46,room,false);
  const barfly=addOwnedCharacter({parent:room,kind:'barfly',position:[-4.4,1.38,-2.6],height:.48,staticDisplay:true,yaw:.15});
@@ -142,7 +152,7 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,
  beerSign.name='Hawaii Lager advertising';beerSign.position.set(-4.4,2.2,-2.95);room.add(beerSign);
  anchor([-4.4,1.6,-2.2],'Look at Hawaii Lager',()=>action('inspect','Hawaii Lager','An American lager advertisement sent by the harbour importer. The little Barfly mascot wears his favourite island shirt. Nao keeps the display at the quiet end of the counter.'));
  const owned=[barfly],closed=buildClosedMinato(room,lamps);closed.update(getMinutes());
- return {keep:play,owned,ownedUpdate:dt=>{owned.forEach(actor=>actor.update(dt));closed.update(getMinutes());},dispose:()=>owned.forEach(actor=>actor.dispose()),name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
+ return {keep:play,owned,calendar:()=>({...calendar.mesh.userData}),discoveries:()=>discovery.memories?.snapshot(),realUpdate:()=>{calendar.update();discovery.update();},ownedUpdate:dt=>{owned.forEach(actor=>actor.update(dt));closed.update(getMinutes());},dispose:()=>{calendar.dispose();discovery.dispose();owned.forEach(actor=>actor.dispose());},name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
 }
 
 /**
@@ -190,7 +200,9 @@ function buildClosedMinato(room,lamps){
  const mat=hex=>new THREE.MeshStandardMaterial({color:hex,roughness:.8});
  // The noren, folded over its pole, leaning in the corner by the door.
  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,1.9,6),mat(0x6e4c30));pole.position.set(-2.05,.95,6.0);pole.rotation.z=.08;group.add(pole);
- const cloth=new THREE.Mesh(new THREE.BoxGeometry(.5,1.1,.04),mat(0x1f3a5a));cloth.position.set(-2.0,1.25,5.98);cloth.rotation.z=.08;group.add(cloth);
+ const folded=new THREE.PlaneGeometry(.5,1.1,16,2);
+ const folds=folded.attributes.position;for(let i=0;i<folds.count;i++)folds.setZ(i,Math.sin((folds.getX(i)+.25)*Math.PI*16)*.016);folded.computeVertexNormals();
+ const cloth=new THREE.Mesh(folded,new THREE.MeshStandardMaterial({color:0x1f3a5a,roughness:.95,side:THREE.DoubleSide}));cloth.position.set(-2.0,1.25,5.98);cloth.rotation.z=.08;group.add(cloth);
  // The card in the doorway: 準備中, "getting ready".
  const c=document.createElement('canvas');c.width=256;c.height=128;const x=c.getContext('2d');
  x.fillStyle='#f6efdc';x.fillRect(0,0,256,128);x.strokeStyle='#5a3b22';x.lineWidth=6;x.strokeRect(4,4,248,120);
@@ -200,8 +212,15 @@ function buildClosedMinato(room,lamps){
  for(const yaw of [0,Math.PI]){const card=new THREE.Mesh(new THREE.PlaneGeometry(.5,.25),new THREE.MeshStandardMaterial({map:t,roughness:.9}));card.position.set(0,2.3,6.2+(yaw?.004:-.004));card.rotation.y=yaw;card.name='Minato closed card';group.add(card);}
  const string=new THREE.Mesh(new THREE.CylinderGeometry(.003,.003,.4,4),mat(0x2a2a2a));string.position.set(0,2.6,6.2);group.add(string);
  // The mop bucket in the corner by the barrels.
- const bucket=new THREE.Mesh(new THREE.CylinderGeometry(.17,.14,.3,12),mat(0x2a7ac0));bucket.position.set(-5.6,.15,1.25);group.add(bucket);
- const water=new THREE.Mesh(new THREE.CylinderGeometry(.15,.15,.01,12),mat(0x9fb8c4));water.position.set(-5.6,.27,1.25);group.add(water);
+ const p=new THREE.Group();p.name='Minato cleaning bucket and mop';p.position.set(-5.6,.04,1.25);group.add(p);
+ const blue=new THREE.MeshStandardMaterial({color:0x477a94,roughness:.5,side:THREE.DoubleSide,forceSinglePass:true});
+ const bucket=new THREE.Mesh(new THREE.LatheGeometry([[0,0],[.14,0],[.145,.025],[.17,.3],[.163,.307],[.154,.29],[.135,.029],[0,.029]].map(([r,y])=>new THREE.Vector2(r,y)),20),blue);p.add(bucket);
+ const rim=new THREE.Mesh(new THREE.TorusGeometry(.164,.006,6,24).rotateX(Math.PI/2),blue);rim.position.y=.302;p.add(rim);
+ const handle=new THREE.Mesh(new THREE.TorusGeometry(.142,.003,6,24,Math.PI),new THREE.MeshStandardMaterial({color:0x959a98,roughness:.45,metalness:.65}));handle.position.set(0,.235,0);p.add(handle);
+ const water=new THREE.Mesh(new THREE.CircleGeometry(.147,20).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0x9fb8b6,roughness:.19}));water.position.y=.195;p.add(water);
+ const mop=new THREE.Mesh(new THREE.CylinderGeometry(.011,.012,1.1,10),mat(0x9a7852));mop.position.set(-.035,.68,0);mop.rotation.z=.065;p.add(mop);
+ const grip=new THREE.Mesh(new THREE.CylinderGeometry(.016,.016,.095,12),blue);grip.position.set(-.071,1.18,0);grip.rotation.z=.065;p.add(grip);
+ for(let i=0;i<12;i++){const strand=new THREE.Mesh(new THREE.CylinderGeometry(.002,.003,.08,6),mat(0xa9a594));strand.position.set(-.035+Math.cos(i)*.022,.18,Math.sin(i)*.025);strand.rotation.z=Math.sin(i)*.2;p.add(strand);}
  const base=lamps.map(l=>l.intensity);let last=null;
  return {update(minutes){
   const open=izakayaOpen(minutes);if(open===last)return;last=open;
