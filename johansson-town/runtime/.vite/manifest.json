@@ -39,7 +39,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-DuG-shmf.js",
+    "file": "boot-LCWrSMC3.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -55,7 +55,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-4gNO2ByO.js",
+    "file": "game-CpFWaf_p.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,

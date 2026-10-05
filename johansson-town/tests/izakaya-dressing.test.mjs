@@ -8,7 +8,7 @@ test('Minato carries its 1997 posters, the bottle keep and the table things in a
  installDOM();
  const room=new THREE.Group(),colliders=[];
  const {group,bottles}=buildIzakayaDressing(room,{collider:(x,z,w,d,h)=>colliders.push({x,z,w,d,h})});
- assert.ok(MINATO_1997_POSTERS.length>=6,'Six posters of the year');
+ assert.ok(MINATO_1997_POSTERS.length===5,'Five period posters; the real calendar is separate');
  for(const [,x,y,z,yaw,w,h] of MINATO_1997_POSTERS){
   // On a wall of the room (x or z at the wall line), clear of the floor and the ceiling.
   assert.ok(Math.abs(Math.abs(x)-6.29)<.01||Math.abs(Math.abs(z)-6.29)<.01,'On a wall');

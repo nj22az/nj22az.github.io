@@ -4,6 +4,9 @@ import {japaneseSign,signText} from './okinawa/signs.js';
 import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './interiors/shared-dining-layout.js';
 import {createIzakayaTV} from './advertising-billboard.js';
 import {hangIzakayaPosters} from './interiors/izakaya-posters.js';
+import {createFutureCalendar} from './interiors/future-calendar.js';
+import {buildIzakayaLivedIn} from './interiors/izakaya-lived-in.js';
+import {buildIzakayaPatina} from './interiors/izakaya-patina.js';
 import {buildIzakayaDressing} from './interiors/izakaya-dressing.js';
 import {buildIzakayaInteractive} from './interiors/izakaya-interactive.js';
 import {restaurantCollider,restaurantApproach,izakayaPlot,SATO_RAMEN_DOOR} from './dining-layout.js';
@@ -106,7 +109,8 @@ export function buildIzakaya(world,options){
  return site;
 }
 export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,getMinutes=()=>1200}){
- if(!asset('interior',room)){
+ const furnished=asset('interior',room);
+ if(!furnished){
   box([13,.2,13],[0,-.1,0],0x965332,room,false);box([13,3.8,.2],[0,1.9,-6.4],0xe8c894,room,false);box([8,1,1],[-.8,.5,-2.6],0x965332,room,false);
  }
  // Complete the cutaway asset for first-person viewing. Keep the exit opening.
@@ -134,6 +138,10 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,
  anchor([-.4,2.5,-5.6],'Choose the evening music',()=>action('radio','Minato radio','Nao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
  buildIzakayaDressing(room,{collider});
+ if(furnished){buildIzakayaPatina(room);buildIzakayaLivedIn(room);}
+ // The entry wall has a full clear panel: away from the shoji, coat pegs, posts and picture rail.
+ const calendar=createFutureCalendar();calendar.group.position.set(-5.55,2.03,6.255);calendar.group.rotation.y=Math.PI;room.add(calendar.group);
+ anchor([-5.55,2.03,6.21],'Read Future Calendar',()=>{calendar.update();action('inspect','Future Calendar',calendar.mesh.userData.dateLabel+'\nToday’s real date · Europe/Stockholm. This calendar turns a page every real day.');});
  const play=buildIzakayaInteractive(room,{anchor,action,collider});
  // Imported American beer advertising: Barfly is a countertop mascot, not another resident.
  box([.58,.08,.45],[-4.4,1.34,-2.6],0x244b46,room,false);
@@ -142,7 +150,7 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,
  beerSign.name='Hawaii Lager advertising';beerSign.position.set(-4.4,2.2,-2.95);room.add(beerSign);
  anchor([-4.4,1.6,-2.2],'Look at Hawaii Lager',()=>action('inspect','Hawaii Lager','An American lager advertisement sent by the harbour importer. The little Barfly mascot wears his favourite island shirt. Nao keeps the display at the quiet end of the counter.'));
  const owned=[barfly],closed=buildClosedMinato(room,lamps);closed.update(getMinutes());
- return {keep:play,owned,ownedUpdate:dt=>{owned.forEach(actor=>actor.update(dt));closed.update(getMinutes());},dispose:()=>owned.forEach(actor=>actor.dispose()),name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
+ return {keep:play,owned,calendar:()=>({...calendar.mesh.userData}),realUpdate:()=>calendar.update(),ownedUpdate:dt=>{owned.forEach(actor=>actor.update(dt));closed.update(getMinutes());},dispose:()=>{calendar.dispose();owned.forEach(actor=>actor.dispose());},name:'Minato',bounds:SHARED_DINING_BOUNDS,floorPolygon:SHARED_DINING_FLOOR,spawn:[0,0,5.4],exit:[0,1.1,6.2],cutaway:true,television:createIzakayaTV({parent:room})};
 }
 
 /**

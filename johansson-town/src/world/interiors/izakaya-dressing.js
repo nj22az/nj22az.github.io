@@ -4,8 +4,8 @@ import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 /**
  * Minato in October 1997: the things on its walls and tables.
  *
- * - Six posters of the year, sun-faded and taped up: Umineko Beer's summer campaign
- *   (still up in autumn, as they are), the awamori brewery's calendar open at October,
+ * - Five posters of the year, sun-faded and taped up: Umineko Beer's summer campaign
+ *   (still up in autumn, as they are),
  *   the island team's autumn fixtures, an enka singer at the harbour hall, the police's
  *   drink-driving notice, and the karaoke contest.
  * - The bottle keep: the regulars' own bottles of awamori on a shelf by the counter's
@@ -36,14 +36,13 @@ export const MINATO_1997_POSTERS=Object.freeze([
  ['beer',6.29,2.02,-1.45,-Math.PI/2,.6,.86],
  ['enka',-6.29,2.02,4.55,Math.PI/2,.6,.86],
  ['police',-6.29,1.92,-1.35,Math.PI/2,.46,.66],
- ['calendar',-5.35,2.0,6.29,Math.PI,.56,.8],
  ['karaoke',2.75,2.08,6.29,Math.PI,.5,.72],
  ['baseball',6.29,2.02,4.3,-Math.PI/2,.6,.86],
 ]);
 
 const SHEET={w:2048,h:1024},P=[300,430];
 const CELLS={
- beer:[0,0,...P],enka:[300,0,...P],baseball:[600,0,...P],calendar:[900,0,...P],police:[1200,0,...P],karaoke:[1500,0,...P],
+ beer:[0,0,...P],enka:[300,0,...P],baseball:[600,0,...P],police:[1200,0,...P],karaoke:[1500,0,...P],
 };
 BOTTLE_KEEP.forEach((b,i)=>{CELLS['tag'+i]=[(i%16)*128,440+Math.floor(i/16)*64,128,64];});
 
@@ -79,18 +78,6 @@ function sheet(){
    const y=206+i*42;c.fillStyle=i%2?'#e9e1cc':'#f4efe2';c.fillRect(14,y-18,w-28,38);
    c.fillStyle='#1b4f8a';c.font=`800 17px ${GOTHIC}`;c.textAlign='left';c.textBaseline='middle';c.fillText(d,22,y);c.fillStyle='#2a2a2a';c.fillText(v,96,y,170);c.fillStyle=ha==='H'?'#c8102e':'#555';c.textAlign='right';c.fillText(ha==='H'?'Home':'Away',w-22,y);
   });
-  fade(c,w,h);
- });
- at('calendar',(c,w,h)=>{
-  c.fillStyle='#fbf7ee';c.fillRect(0,0,w,h);
-  // A brewery's calendar: a picture of the still-house over the month.
-  c.fillStyle='#5a3b22';c.fillRect(0,0,w,150);c.fillStyle='#e9c27a';for(let i=0;i<5;i++)c.fillRect(30+i*52,70,36,64);
-  write(c,"瑞泉酒造",w/2,36,32,'#ffffff',MINCHO);
-  write(c,'OCTOBER 1997',w/2,176,22,'#5a3b22',GOTHIC,900);
-  const days=['S','M','T','W','T','F','S'];days.forEach((d,i)=>write(c,d,26+i*41,206,15,i===0?'#c8102e':'#555',GOTHIC,800));
-  // 1 October 1997 was a Wednesday.
-  for(let d=1;d<=31;d++){const k=d+2,col=k%7,row=Math.floor(k/7);write(c,String(d),26+col*41,234+row*34,16,col===0?'#c8102e':'#2a2a2a',GOTHIC,700);}
-  c.strokeStyle='#c8102e';c.lineWidth=3;c.beginPath();c.arc(26+5*41,234+2*34,14,0,Math.PI*2);c.stroke();
   fade(c,w,h);
  });
  at('police',(c,w,h)=>{
