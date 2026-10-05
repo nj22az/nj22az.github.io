@@ -26,6 +26,7 @@ export function buildTatamiHome({site,profile,room,box,reg,collider,action,exit}
  for(const x of [-2.15,2.15])part([1.7,2.8,.08],[x,1.4,3],0xeee4cb);
  part([1.25,1.35,.56],[-1.95,.675,-2.57],0x86643e);
  part([1.18,.07,.78],[-1.65,.35,1.45],0x86643e);
+ part([.65,.12,.60],[-1.0,.065,2.10],0x63775e);
  const fallbackBed=new THREE.Group();fallbackBed.name='LaidFuton';fallback.add(fallbackBed);
  box([1.18,.15,2.15],[.65,.095,-.6],0xeee4cb,fallbackBed,false);
  box([1.1,.055,1.43],[.65,.19,-.32],0x63775e,fallbackBed,false);
@@ -54,12 +55,13 @@ export function buildTatamiHome({site,profile,room,box,reg,collider,action,exit}
   header.name='Rear fusuma header backing';header.castShadow=false;header.receiveShadow=false;
   shell.add(model);fallback.visible=false;apply();return true;
  }).catch(e=>{console.warn('Tatami home uses its simple furnishings until the model is available',e);return false;});
- const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);shell.add(o);reg(o,label,fn,true);};
+ const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);shell.add(o);reg(o,label,fn,true);return o;};
  anchor([2.1,1,-2.1],'Inspect the futon cupboard',()=>action('inspect','Futon cupboard',profile.name+' keeps the mattress, quilt and pillow here during the day. At bedtime the futon is laid on the tatami; after waking it is folded away. It is currently '+bedding.phase+'.'));
  anchor([-1.95,1.1,-2.15],'Look at the tea cabinet',()=>action('inspect','The tea cabinet','A wooden glass-front cabinet holds rice bowls, tea cups and two tins of barley tea. The pendulum clock above keeps island time.'));
  anchor([2.35,1.1,1.4],'Inspect the standing fan',()=>action('inspect','Summer standing fan','A pale green three-blade fan keeps this little room comfortable through the island summer.'));
  const hours=sleepHours(profile),fmt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
  anchor([-1.65,.55,1.1],'Read daily routine',()=>action('read',profile.name+' at home','Tea at the low table, a quiet fan, and bedding stored until evening. Usually sleeps at '+fmt(hours.sleep)+' and wakes at '+fmt(hours.wake)+'.'));
+ const cushion=anchor([-1.0,.7,2.1],'Sit at the tea table',()=>action('seat','Tatami tea table','A cushion beside the low tea table.'));cushion.userData.npcInteraction=false;cushion.userData.seat={position:[-1.0,0,2.1],stand:[-.15,0,2.1],surfaceY:.125,eyeY:.85,yaw:Math.PI/4,pitch:0};
  anchor(TATAMI_HOME_LAYOUT.exit,homeExitLabel(site,profile),exit);
  shell.add(new THREE.HemisphereLight(0xfff0d4,0x887958,1.5));const lamp=new THREE.PointLight(0xffe7b7,1.5,9,2);lamp.position.set(0,2.4,-.65);shell.add(lamp);
  return {...TATAMI_HOME_LAYOUT,home:true,ready,tick(dt,minutes){elapsed+=dt;lastMinutes=minutes;const needed=['bedtime','sleep','wake'].includes(homeRoutine(profile,minutes).id);

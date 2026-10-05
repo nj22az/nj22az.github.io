@@ -4,7 +4,7 @@ import * as THREE from '../../vendor/three.module.js';
 /**
  * The one room still described by a layout table: the harbour office, built in code
  * (office-workplace.js). Geometry is in metres; the doorway and floor are at Y=0.
- * The other supplied rooms (the old ramen shop, Thuan and Nao's flat) belonged to the
+ * The other supplied rooms (the old ramen shop, Thuan and Thao's flat) belonged to the
  * retired town layouts.
  */
 export const SUPPLIED_ROOM_LAYOUTS={

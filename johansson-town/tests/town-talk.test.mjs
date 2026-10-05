@@ -28,7 +28,7 @@ test('the town is a mix of temperaments, and a conversation sounds like its spea
 });
 
 test('what they talk about follows the hour and the weather, and does not repeat',()=>{
- const a=who('Aya'),b=who('Emi'),r=seeded(9);
+ const a=who('Nhung'),b=who('Emi'),r=seeded(9);
  const night=new Set(),rain=new Set();
  for(let i=0;i<60;i++){night.add(writtenChat(a,b,{minutes:23*60,random:r}).topic);rain.add(writtenChat(a,b,{rain:true,random:r}).topic);}
  assert.ok(night.has('night'));assert.ok(!night.has('sunset'));assert.ok(rain.has('rain'));
@@ -40,7 +40,7 @@ test('the model is told who each person is, and its answer is checked before any
  const messages=chatPrompt(who('Masaru'),who('Tetsuo'),{minutes:17*60+40,rain:true,place:'the harbour street'});
  assert.match(messages[1].content,/Masaru, 51, .*Boisterous cook-at-heart\. Typhoon/);
  assert.match(messages[1].content,/Tetsuo, 40.*Quiet craftsman/);assert.match(messages[1].content,/17:40, in the rain/);
- assert.match(describe(who('Aya')),/Aya, 24, bookshop assistant/);
+ assert.match(describe(who('Nhung')),/Nhung, 31, bookshop assistant/);
  const ok=parseChat('Sure! {"lines":[{"who":"A","text":"Masaru: The squid is winning."},{"who":"B","text":"Let it."},{"who":"A","text":"\\"Never!\\""},{"who":"B","text":"Then bring a bigger pot."}]}','Masaru','Tetsuo');
  assert.deepEqual(ok,{speakers:[0,1,0,1],lines:['The squid is winning.','Let it.','Never!','Then bring a bigger pot.']});
  assert.equal(parseChat('{"lines":[{"who":"A","text":"As an AI I cannot"},{"who":"B","text":"Hi"}]}'),null);
@@ -51,7 +51,7 @@ test('the model is told who each person is, and its answer is checked before any
 
 test('with the model running, pairs get conversations written ahead, and a chat uses one',async()=>{
  const calls=[];
- const mind={ready:true,complete:async messages=>{calls.push(messages);return JSON.stringify({lines:[{who:'A',text:'Kenji fixed my radio. Now it only plays the weather.'},{who:'B',text:'Improvement.'},{who:'A',text:'It says rain. Forever.'},{who:'B',text:'Then it is accurate.'}]});}};
+ const mind={ready:true,complete:async messages=>{calls.push(messages);return JSON.stringify({lines:[{who:'A',text:'Chin fixed my radio. Now it only plays the weather.'},{who:'B',text:'Improvement.'},{who:'A',text:'It says rain. Forever.'},{who:'B',text:'Then it is accurate.'}]});}};
  const writer=createNeighbourWriter({mind,random:()=>.7});
  const scene=new THREE.Scene(),names=['Masaru','Tetsuo'];
  const world={people:names.map((name,i)=>{const g=new THREE.Group();g.userData.name=name;g.position.set(i*7,0,-4);scene.add(g);return {g,profile:PROFILES.find(p=>p.name===name)};})};
@@ -59,14 +59,14 @@ test('with the model running, pairs get conversations written ahead, and a chat 
  chats.update(2,1002);assert.equal(chats.current,null,'too far apart to chat yet');assert.equal(calls.length,1,'but near enough to write ahead');
  await new Promise(r=>setTimeout(r,0));assert.equal(writer.written,1);
  world.people[1].g.position.x=2;chats.update(1,1003);
- assert.equal(chats.current.topic,'llm');assert.equal(chats.current.text,'Kenji fixed my radio. Now it only plays the weather.');
+ assert.equal(chats.current.topic,'llm');assert.equal(chats.current.text,'Chin fixed my radio. Now it only plays the weather.');
  assert.equal(chats.current.speaker.profile.name,'Masaru');
  chats.update(4.5,1007);assert.equal(chats.current.text,'Improvement.');assert.equal(chats.current.speaker.profile.name,'Tetsuo');
 });
 
 test('without the model nothing is fetched, and neighbours chat often, on varied subjects',()=>{
  let asked=0;const writer=createNeighbourWriter({mind:{ready:false,complete:async()=>{asked++;return null;}}});
- const scene=new THREE.Scene(),names=['Aya','Hiroshi'];
+ const scene=new THREE.Scene(),names=['Nhung','Hiroshi'];
  const world={people:names.map((name,i)=>{const g=new THREE.Group();g.userData.name=name;g.position.set(i*4,0,-4);scene.add(g);return {g,profile:PROFILES.find(p=>p.name===name)};})};
  const chats=createNeighbourChats({world,observer:()=>new THREE.Vector3(),writer,random:seeded(5)});
  const topics=[];let last=-1;

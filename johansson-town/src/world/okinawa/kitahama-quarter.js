@@ -136,7 +136,7 @@ function buildPark(kit,solid,{anchor,onAction,vending}){
  solid(kit.rect(bx-.25,bx+.3,bz-.8,bz+.8,.9,'park-bench'));
  const seatAt=kit.point(bx,0,bz),standAt=kit.point(bx-.9,0,bz),marker=anchor(seatAt.x,seatAt.y+1,seatAt.z,'Sit on the park bench',()=>onAction?.('seat','Kitahama pocket park',
   'You sit under the gajumaru. A swing creaks somewhere behind the vending machines. Across the lane a radio is giving the weather for the outer islands, and somebody is frying onions.'));
- if(marker)marker.userData.seat={id:'kitahama-park-bench',position:[seatAt.x,seatAt.y,seatAt.z],stand:[standAt.x,standAt.y,standAt.z],eyeY:seatAt.y+1.12,yaw:-Math.PI/2,pitch:0};
+ if(marker)marker.userData.seat={id:'kitahama-park-bench',position:[seatAt.x,seatAt.y,seatAt.z],stand:[standAt.x,standAt.y,standAt.z],surfaceY:seatAt.y+.49,eyeY:seatAt.y+1.12,yaw:Math.PI/2,pitch:0};
  hibiscus(kit,P.maxX-.6,P.maxZ-.6,{seed:271});potPlant(kit,P.minX+.5,P.maxZ-.5,{seed:272});
  kit.sign(poster({title:'KITAHAMA POCKET PARK',lines:['Please take your rubbish home','Ball games: before 18:00'],bg:'#eef1e4',band:'#5f8f5a'}),.5,.7,P.maxX+.3,1.1,P.minZ+6.6,{ry:Math.PI/2,name:'park sign'});
  // The vending machines on the lane, lit at night: tea, coffee, juice.

@@ -1,8 +1,8 @@
 // One household is one room and one save destination. Roommates retain individual schedules.
 export const HOUSEHOLDS=Object.freeze([
- {id:'yuri-home',entry:'one',number:'1',residents:['Thuan','Nao']},
- {id:'resident-home-aya',entry:'two',number:'2',residents:['Aya','Reiko']},
- {id:'resident-home-kenji',entry:'three',number:'3',residents:['Kenji','Tetsuo']},
+ {id:'yuri-home',entry:'one',number:'1',residents:['Thuan','Thao']},
+ {id:'resident-home-aya',entry:'two',number:'2',residents:['Nhung','Reiko']},
+ {id:'resident-home-kenji',entry:'three',number:'3',residents:['Chin','Tetsuo']},
  {id:'resident-home-mrs-sato',entry:'four',number:'4A',residents:['Mrs Sato']},
  {id:'resident-home-officer-mori',entry:'four',number:'4B',residents:['Officer Mori']},
  {id:'resident-home-harbour-master',entry:'five',number:'5A',residents:['Harbour master']},

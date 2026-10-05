@@ -10,10 +10,10 @@ import {createHomeCustomization} from '../src/world/interiors/home-customization
 
 test('new staff and Thuan home camera fixtures are inside their real plans and clear of partition faces',()=>{
  installDOM();
- for(const [id,owner] of [['resident-home-aya','Aya'],['resident-home-kenji','Kenji'],['resident-home-thuan','Thuan']]){
+ for(const [id,owner] of [['resident-home-aya','Nhung'],['resident-home-kenji','Chin'],['resident-home-thuan','Thuan']]){
   const room=new THREE.Group(),colliders=[];
   const args={room,reg(){},action(){},collider(x,z,w,d,height){colliders.push({x,z,w,d,height});}};
-  const layout=id==='resident-home-thuan'?buildFamilyHome({...args,kind:'red-tile',residents:['Thuan','Nao']}):buildYardHomeInterior({...args,site:{id,homeOwner:owner}});
+  const layout=id==='resident-home-thuan'?buildFamilyHome({...args,kind:'red-tile',residents:['Thuan','Thao']}):buildYardHomeInterior({...args,site:{id,homeOwner:owner}});
   room.updateMatrixWorld(true);const ray=new THREE.Raycaster(),walls=[];
   room.traverse(o=>{if(o.isMesh&&new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()).y>1.8)walls.push(o);});
   for(const view of [homeEntranceView(id),...homeViews(id,layout)]){

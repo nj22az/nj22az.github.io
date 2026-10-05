@@ -35,7 +35,7 @@ export function mealState(plan,t){
 }
 // Persistent meal records stop guests ordering again when the player re-enters.
 // A venue can keep its props under a hidden group and continue its dining cycle.
-export function createVenueService({room,place,getCustomers,getMinutes,getStaff=()=>null,ledger=createResidentLedger(),staffName=place==='izakaya'?'Nao':null,venueName=place==='ramen'?'Inakaya':'Minato',drinkFor=null,tableFor=null,kitchen=null,meal=null}){
+export function createVenueService({room,place,getCustomers,getMinutes,getStaff=()=>null,ledger=createResidentLedger(),staffName=place==='izakaya'?'Thao':null,venueName=place==='ramen'?'Inakaya':'Minato',drinkFor=null,tableFor=null,kitchen=null,meal=null}){
  const inside=place==='ramen'?'inRamen':'inIzakaya';
  const settings=new Map();let serving=null,timer=0;
  function clear(person){for(const key of ['heldItem','mealState','residentSpeech','heldPortion','foodPortion','consumeElapsed'])delete person.g.userData[key];}
@@ -50,7 +50,7 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
  const mealCost=record=>place==='ramen'?300:record.drinkOnly?180:({yakitori:180,fish:260,rice:150}[record.item]||180)+(record.drink==='beer'?180:120);
  /** The bowl arrives: pay for it, say thank you. Without the yen, they go without. */
  function settle(person,record,minutes){
-  if(ledger.purchase(person.profile.name,minutes,place+'-meal'+(record.drinkOnly?'-round-'+record.rounds:''),record.drinkOnly?'another '+record.drink:record.item+' + '+record.drink,mealCost(record))){record.delivered=true;person.g.userData.residentSpeech={text:place==='ramen'?'That smells wonderful.':'Thank you, Nao.',until:minutes+4};}
+  if(ledger.purchase(person.profile.name,minutes,place+'-meal'+(record.drinkOnly?'-round-'+record.rounds:''),record.drinkOnly?'another '+record.drink:record.item+' + '+record.drink,mealCost(record))){record.delivered=true;person.g.userData.residentSpeech={text:place==='ramen'?'That smells wonderful.':'Thank you, Thao.',until:minutes+4};}
   else record.finished=true;
  }
  /**
@@ -105,13 +105,13 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
    let setting=settings.get(person);if(setting&&setting.record!==record){remove(person);setting=null;}
    if(!setting){
     const food=createDishProp(record.item==='fish'?'hokke':record.item),drink=createDrinkProp(DRINK_PROP[record.drink]||'oolong');food.visible=drink.visible=false;room.add(food,drink);setting={record,food,drink};settings.set(person,setting);
-    if(!record.delivered&&!record.finished)person.g.userData.residentSpeech={text:place==='ramen'?(drinkFor?'One ramen and a '+LABELS[record.drink]+', please.':'One ramen, please.'):'A '+LABELS[record.drink]+' and '+LABELS[record.item]+', please, Nao.',until:minutes+5};
+    if(!record.delivered&&!record.finished)person.g.userData.residentSpeech={text:place==='ramen'?(drinkFor?'One ramen and a '+LABELS[record.drink]+', please.':'One ramen, please.'):'A '+LABELS[record.drink]+' and '+LABELS[record.item]+', please, Thao.',until:minutes+5};
    }
    const data=person.g.userData,seated=Number.isFinite(data.seatHeight);
    // Another round? Only beer drinkers, only after a pause, and only while there is room under the limit.
    if(record.finished&&record.drink==='beer'&&place==='izakaya'&&(record.rounds||1)<MAX_ROUNDS&&minutes>=(record.nextRound??Infinity)&&wantsAnother(data.tipsy,BEER)){
     Object.assign(record,{finished:false,delivered:false,eaten:0,drunk:0,drinkOnly:true,rounds:(record.rounds||1)+1});delete record.nextRound;
-    setPropPortion(setting.drink,1,{immediate:true});data.residentSpeech={text:'Nao, another beer, please!',until:minutes+5};
+    setPropPortion(setting.drink,1,{immediate:true});data.residentSpeech={text:'Thao, another beer, please!',until:minutes+5};
    }
    if(record.finished&&kitchen&&seated){linger(person,setting,data,dt,minutes);continue;}
    if(record.finished){const merry=(data.tipsy||0)>=LIMIT-1;data.socialPose=seated?'Sit':'Idle_Neutral';delete data.heldItem;delete data.heldPortion;delete data.foodPortion;delete data.consumeElapsed;data.mealState='finished';data.activity=merry?'merry after a few beers':'relaxing after '+LABELS[record.item];setting.food.visible=setting.drink.visible=false;continue;}
@@ -134,9 +134,9 @@ export function createVenueService({room,place,getCustomers,getMinutes,getStaff=
     if(m.done){record.finished=true;record.nextRound=minutes+ROUND_GAP;setPropPortion(setting.food,0);if(!kitchen)setPropPortion(setting.drink,0);ledger.record(name,minutes,record.drinkOnly?'had another beer at '+place:'enjoyed '+LABELS[record.item]+' and '+LABELS[record.drink]+' at '+place);}
    }
   }
-  // While Nao is bringing the player a drink, izakaya-beer.js has her.
+  // While Thao is bringing the player a drink, izakaya-beer.js has her.
   // After last orders she is cleaning down (izakaya-hours.js); the job has her then.
-  const candidate=kitchen?null:getStaff(),staff=candidate&&candidate.visible&&candidate.userData[inside]&&!candidate.userData.roomTransition&&!candidate.userData.playerService&&!(place==='izakaya'&&izakayaJob('Nao',minutes))?candidate:null;if(staff){
+  const candidate=kitchen?null:getStaff(),staff=candidate&&candidate.visible&&candidate.userData[inside]&&!candidate.userData.roomTransition&&!candidate.userData.playerService&&!(place==='izakaya'&&izakayaJob('Thao',minutes))?candidate:null;if(staff){
    const tidying=!serving&&Math.floor(minutes/6)%3!==2;
    staff.userData.serving=!!serving;staff.userData.socialPose=serving||tidying?'Use':'Idle_Neutral';
    staff.userData.activity=place==='ramen'?serving?'ladling a bowl of ramen for '+serving.profile.name:tidying?'minding the stock pots':'wiping down the ramen counter'

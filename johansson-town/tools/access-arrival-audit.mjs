@@ -88,7 +88,7 @@ try{
    }
    if(data.vehicles.some(v=>v.location==='aboard')){boarded=true;assert.ok(data.vehicles.filter(v=>v.location==='aboard').every(v=>v.occupied),'Every moving car has its driver');await page.waitForTimeout(700);await capture(page,'ferry-car-and-driver');break;}
   }
-  if(!boarded){await capture(page,'ferry-boarding-failed');console.log('Boarding diagnostic',JSON.stringify(await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;return {blocked:a.blocked,island:a.island.snapshot(),ferry:{phase:a.world.ferry.phase,berth:a.world.ferry.berth},cars:a.world.traffic.traffic.vehicles.map(v=>({owner:v.owner,where:v.where,s:v.s,speed:v.speed,blocker:v.blocker?.owner||v.blocker,trip:!!v.trip,transfer:v.transfer,position:v.g.position.toArray()})),drivers:a.world.people.filter(p=>['Kenji','Reiko','Mrs Sato','Aya'].includes(p.profile.name)).map(p=>({name:p.profile.name,visible:p.g.visible,parent:p.g.parent.name,flags:Object.fromEntries(Object.entries(p.g.userData).filter(([key])=>key==='indoors'||key.startsWith('in')||key==='roomTransition'||key==='sleeping'||key==='playerConversation'))}))};})));}
+  if(!boarded){await capture(page,'ferry-boarding-failed');console.log('Boarding diagnostic',JSON.stringify(await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;return {blocked:a.blocked,island:a.island.snapshot(),ferry:{phase:a.world.ferry.phase,berth:a.world.ferry.berth},cars:a.world.traffic.traffic.vehicles.map(v=>({owner:v.owner,where:v.where,s:v.s,speed:v.speed,blocker:v.blocker?.owner||v.blocker,trip:!!v.trip,transfer:v.transfer,position:v.g.position.toArray()})),drivers:a.world.people.filter(p=>['Chin','Reiko','Mrs Sato','Nhung'].includes(p.profile.name)).map(p=>({name:p.profile.name,visible:p.g.visible,parent:p.g.parent.name,flags:Object.fromEntries(Object.entries(p.g.userData).filter(([key])=>key==='indoors'||key.startsWith('in')||key==='roomTransition'||key==='sleeping'||key==='playerConversation'))}))};})));}
   assert.equal(boarded,true,'Scheduled airport courier drives aboard the shared ferry');
   assert.ok(report.checks.some(c=>c.name==='car-ramp-boarding'),'The courier physically passes over the bow ramp');
   await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(9000));await capture(page,'ferry-car-crossing');
@@ -102,8 +102,8 @@ try{
    }
   }
   assert.equal((await state(page)).vehicles.some(v=>v.location==='aboard'),false,'Arrived car drives off instead of becoming decoration');
-  assert.equal((await state(page)).vehicles.find(v=>v.owner==='Kenji').location,'service','The courier completes its delivery at a connected freight bay');
-  await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,v=a.world.traffic.traffic.vehicles.find(v=>v.owner==='Kenji'),p=v.g.position.clone();a.teleport(p.x+3,p.z+3,0);a.frozen=true;a.renderFrozen=false;a.camera={pos:[p.x+5,p.y+3,p.z+5],at:[p.x,p.y+1,p.z]};a.step(17);});await capture(page,'town-car-unloaded');
+  assert.equal((await state(page)).vehicles.find(v=>v.owner==='Chin').location,'service','The courier completes its delivery at a connected freight bay');
+  await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,v=a.world.traffic.traffic.vehicles.find(v=>v.owner==='Chin'),p=v.g.position.clone();a.teleport(p.x+3,p.z+3,0);a.frozen=true;a.renderFrozen=false;a.camera={pos:[p.x+5,p.y+3,p.z+5],at:[p.x,p.y+1,p.z]};a.step(17);});await capture(page,'town-car-unloaded');
   }
   if(process.argv[4]!=='flight-only')await context.close();
   if(process.argv[4]!=='cargo-only'){

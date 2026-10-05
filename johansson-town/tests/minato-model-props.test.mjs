@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../src/world/furniture-standards.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -44,8 +45,8 @@ test('hollow empty glass and ceramic interiors are below their rims in the real 
 test('the rolled cotton towels rest on their shallow trays',async()=>{
  const root=await scene();
  for(const x of [-3.45,-1.95,-.45,1.05,2.55]){
-  const hits=down(root,x,-2.1,1.18);assert.ok(hits.length);
-  assert.ok(Math.abs(hits[0].point.y-1.160)<.002,'Cotton roll is grounded on its tray at '+x);
+  const hits=down(root,x,-2.1,FURNITURE_HEIGHTS.serviceCounter+.07);assert.ok(hits.length);
+  assert.ok(Math.abs(hits[0].point.y-(FURNITURE_HEIGHTS.serviceCounter+.05))<.002,'Cotton roll is grounded on its tray at '+x);
  }
 });
 

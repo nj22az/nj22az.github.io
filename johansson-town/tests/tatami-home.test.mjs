@@ -55,7 +55,7 @@ test('entry, bedside and tea cushion remain accessible and inspection describes 
  const room=new THREE.Group(),colliders=[],actions=[],prompts=[];
  const home=buildTatamiHome({profile,room,box:(s,p,c,parent)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...s),new THREE.MeshBasicMaterial({color:c}));m.position.fromArray(p);parent.add(m);return m;},collider:(x,z,w,d,height)=>colliders.push({x,z,w,d,height}),reg:(o,label,fn)=>prompts.push({label,fn}),action:(...a)=>actions.push(a),exit(){}});
  assert.deepEqual(homeLayoutFor(TATAMI_HOME_OWNER),TATAMI_HOME_LAYOUT);
- for(const p of [home.spawn,home.door,home.table,home.bedside])assert.ok(!colliders.some(c=>circleHitsRect(p[0],p[2],.32,c)),String(p));
+ for(const p of [home.spawn,home.door,home.tableStand,home.bedside])assert.ok(!colliders.some(c=>circleHitsRect(p[0],p[2],.32,c)),String(p));
  home.tick(0,3*60);assert.equal(home.snapshot().futon.phase,'laid out');assert.equal(room.getObjectByName('LaidFuton').visible,true);
  const inspect=prompts.find(p=>p.label==='Inspect the futon cupboard');inspect.fn();assert.match(actions.at(-1)[2],/laid out/);
  home.tick(0,sleepHours(profile).wake+60);home.prepareBedding({g:new THREE.Group()},{move:()=>true},2);home.tick(2,sleepHours(profile).wake+60);assert.equal(home.snapshot().futon.phase,'stored');assert.equal(room.getObjectByName('LaidFuton').visible,false);

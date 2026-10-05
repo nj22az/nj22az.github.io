@@ -40,17 +40,17 @@ test('two complete days give every resident work, meals and uninterrupted sleep 
    if(homeRoutine(profile,minutes).id==='sleep')assert.equal(plan.place,'home',profile.name+' must not be called out during sleep at '+minutes);
   }
   assert.ok(places.has('home'),profile.name+' returns to their home each day');
-  const work=profile.name==='Nao'?'izakaya':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Bus driver'?'station':'work';
+  const work=profile.name==='Thao'?'izakaya':profile.name==='Thuan'?'market':profile.name==='Officer Mori'?'patrol':profile.name==='Mrs Sato'?'ramen':profile.name==='Bus driver'?'station':'work';
   assert.ok(places.has(work),profile.name+' retains their job');
  }
- const nao=RESIDENTS.find(p=>p.name==='Nao'),freeTime=[850,880,910].map(m=>homeRoutine(nao,m).activity);
+ const nao=RESIDENTS.find(p=>p.name==='Thao'),freeTime=[850,880,910].map(m=>homeRoutine(nao,m).activity);
  assert.equal(new Set(freeTime).size,3,'Free time changes with the saved clock');
  assert.deepEqual(freeTime,[850,880,910].map(m=>homeRoutine(nao,m+1440).activity));
 });
 test('indoor saves follow moved homes and venues, then depart from that same door when the schedule changes',()=>{
  const cases=HOME_OWNERS.flatMap(p=>[[p.name,'home',(sleepHours(p).sleep+5)%1440,p.home,true],[p.name,'home',departureFor(p),p.home,false]]);
  const market=[...MARKET_THRESHOLD];
- for(const [name,place,door] of [['Kenji','ramen',RAMEN_DOOR],['Nao','izakaya',IZAKAYA_DOOR],['Reiko','market',market]]){
+ for(const [name,place,door] of [['Chin','ramen',RAMEN_DOOR],['Thao','izakaya',IZAKAYA_DOOR],['Reiko','market',market]]){
   const profile=RESIDENTS.find(p=>p.name===name),inside=Array.from({length:1440},(_,m)=>m).find(m=>residentPlan(profile,m).place===place),outside=Array.from({length:1440},(_,offset)=>(inside+offset+1)%1440).find(m=>residentPlan(profile,m).place!==place);
   assert.ok(inside!==undefined&&outside!==undefined,name+' has an actual '+place+' visit');cases.push([name,place,inside,door,true],[name,place,outside,door,false]);
  }
@@ -95,8 +95,8 @@ test('every resident sleeps, wakes, eats breakfast and leaves their actual furni
 });
 
 test('residents travelling home cannot be teleported into a visited apartment',()=>{
- const street=new THREE.Group(),parent=new THREE.Group(),p=person('Kenji',street);p.g.position.set(0,0,40);
- const homes=createHomeResidents({world:{people:[p]},parent});homes.enter({homeOwner:'Kenji'},1300);
+ const street=new THREE.Group(),parent=new THREE.Group(),p=person('Chin',street);p.g.position.set(0,0,40);
+ const homes=createHomeResidents({world:{people:[p]},parent});homes.enter({homeOwner:'Chin'},1300);
  assert.equal(p.g.parent,street);assert.equal(p.g.visible,true);
  p.g.position.set(p.profile.home[0],0,p.profile.home[1]);homes.update(1/30,1301);assert.equal(p.g.parent,parent);assert.equal(p.g.userData.roomTransition,true);
 });
@@ -108,7 +108,7 @@ test('camera rank cannot remove a visible street resident',()=>{
  for(const p of world.people){p.profile={...p.profile,name:'Worker '+p.profile.name};delete p.g.userData.indoors;}
  ai.update(0,1002,false);assert.equal(world.people.filter(p=>p.g.visible).length,world.people.length);
 });
-test('Kenji retains quest dialogue with his own 1980s American slang',()=>{
- assert.match(DIALOGUE.Kenji.find(r=>r[0]==='hello')[1],/Yo, bro/);assert.ok(DIALOGUE.Kenji.some(r=>r[2]==='book'));assert.ok(DIALOGUE.Kenji.some(r=>r[2]==='keychain'));
- assert.ok(DIALOGUE.Kenji.every(r=>!r[3]),'Old spoken recordings must not contradict new lines');
+test('Chin retains quest dialogue with his own 1980s American slang',()=>{
+ assert.match(DIALOGUE.Chin.find(r=>r[0]==='hello')[1],/Yo, bro/);assert.ok(DIALOGUE.Chin.some(r=>r[2]==='book'));assert.ok(DIALOGUE.Chin.some(r=>r[2]==='keychain'));
+ assert.ok(DIALOGUE.Chin.every(r=>!r[3]),'Old spoken recordings must not contradict new lines');
 });

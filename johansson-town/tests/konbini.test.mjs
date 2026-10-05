@@ -154,10 +154,10 @@ test('a hand-edited save cannot mint stamps, items or a full card',()=>{
 test('the receipt reads like something the till printed',()=>{
  const state=shopper();fill(state);
  addToBasket(state,'rice');addToBasket(state,'rice');addToBasket(state,'tea');
- const {receipt}=checkout(state,{warm:true,bag:false},610);
+ const {receipt}=checkout(state,{warm:true,bag:false},610.5000000000337);
  const text=receiptText(receipt);
  assert.match(text,/SAKURA SHOP/);
- assert.match(text,/10:10/,'It carries the hour of the visit');
+ assert.match(text,/1997 · 10:10\n/,'Fractional simulation minutes print as a whole minute');
  assert.match(text,/Plum rice ball ×2/,'Two of a thing is one line');
  assert.match(text,/TOTAL/);
  assert.match(text,/CHANGE/);

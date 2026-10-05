@@ -26,7 +26,7 @@ export function createWorkshopUI({state,show,close,save,say,note,getContext,getM
   if(job){
    const model=workshopModel(job.id),ready=job.remaining===0;
    show('Form 3D · '+(ready?'Ready to collect':'Printing'),model.name+'\n\n'+(ready?'Your model is on the print bed. Collect it for your inventory, or leave it here until there is room.':Math.ceil(job.remaining)+' seconds remaining. The machine runs while you explore; return to collect the finished model.'),[
-    ...(ready?[['Collect model',()=>{if(!inWorkshop()){unavailable();return;}const result=collectPrint(state);if(!result.ok){show('Form 3D',result.message,[['Back to printer',printer]]);return;}save();note('Printed '+model.name+' at Kenji’s workshop.');show('Added to your inventory',model.name+' · 1 of 1\n\nTalk to Thuan at Sakura Konbini. When her takings cover it, she offers ¥'+model.price+'.',[['Inspect model',()=>preview(model)],['Back to printer',printer],['Leave the bench',close]]);}]]:[]),
+    ...(ready?[['Collect model',()=>{if(!inWorkshop()){unavailable();return;}const result=collectPrint(state);if(!result.ok){show('Form 3D',result.message,[['Back to printer',printer]]);return;}save();note('Printed '+model.name+' at Chin’s workshop.');show('Added to your inventory',model.name+' · 1 of 1\n\nTalk to Thuan at Sakura Konbini. When her takings cover it, she offers ¥'+model.price+'.',[['Inspect model',()=>preview(model)],['Back to printer',printer],['Leave the bench',close]]);}]]:[]),
     [ready?'Leave it on the machine':'Leave the machine running',close],
    ]);return;
   }
@@ -50,7 +50,7 @@ export function createWorkshopUI({state,show,close,save,say,note,getContext,getM
  function selling(){
   if(!canSellAtSakura(getContext(),getMinutes())){show('Thuan · Shop counter','Bring your items to Sakura while I am working, from 09:00 to 20:00.',[['Back',close]]);return;}
   const offers=sakuraStock(state),cash=state.sakura.cash;
-  show('Thuan · Buy and sell','Shop takings available: ¥'+cash+'\n\nI use my sales to buy useful finds, fresh fish and your workshop creations. Tidy up around town or make something at Kenji’s workshop. Personal papers stay with you.\n\n'+(offers.length?'My offers are below. Grey offers need a few more shop sales.':'There is nothing I can buy in your bag yet.'),[
+  show('Thuan · Buy and sell','Shop takings available: ¥'+cash+'\n\nI use my sales to buy useful finds, fresh fish and your workshop creations. Tidy up around town or make something at Chin’s workshop. Personal papers stay with you.\n\n'+(offers.length?'My offers are below. Grey offers need a few more shop sales.':'There is nothing I can buy in your bag yet.'),[
    ...offers.map(offer=>['Sell '+offer.name+' · +¥'+offer.price,()=>{
     if(!canSellAtSakura(getContext(),getMinutes())){selling();return;}
     const result=sellToSakura(state,offer.name,getMinutes());if(!result.ok){show('Thuan · Shop counter',result.message,[['Back to offers',selling],['Keep looking around',close]]);return;}

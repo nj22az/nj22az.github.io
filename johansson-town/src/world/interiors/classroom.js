@@ -419,7 +419,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
  // A spare desk by the window, for a visitor: Kinjō's brother moved to Naha in July.
  const spare=buildUnit(CLASS_SIZE);spare.target={x:-1.9,z:-2.85,rot:0,up:false};spare.pos.set(-1.9,0,-2.85);
  const spareSeat=anchor([-2.3,.9,-2.85],'Sit at the spare desk',()=>action('seat','Spare desk','The empty desk by the window. Somebody has left a pencil in the groove and a folded paper crane in the drawer.'));
- spareSeat.userData.seat={position:[-2.35,0,-2.85],stand:[-2.9,0,-2.3],eyeY:1.05,yaw:-Math.PI/2,pitch:-.1};
+ spareSeat.userData.seat={position:[-2.35,0,-2.85],stand:[-2.9,0,-2.3],surfaceY:.41,eyeY:1.05,yaw:-Math.PI/2,pitch:-.1};
 
  // ------------------------------------------------------------------ light
  const hemi=new THREE.HemisphereLight(0xeef5ff,0x9a8a70,1.2);room.add(hemi);

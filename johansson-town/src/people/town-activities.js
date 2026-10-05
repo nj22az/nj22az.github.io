@@ -40,8 +40,12 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
  function release(person,minutes,delay=25){
   const use=active.get(person);if(!use)return;
   reservations.delete(use.object);if(use.object.userData.reservedBy===person.profile.name)delete use.object.userData.reservedBy;
-  if(use.object.userData.seat&&use.phase==='using')person.g.position.set(use.target[0],inside?0:groundHeight(...use.target),use.target[1]);
-  for(const key of ['usingTownObject','heldItem','socialPose','seatHeight'])delete person.g.userData[key];
+  if(use.object.userData.seat&&use.phase==='using'){
+   const stand=use.object.userData.seat.stand;
+   if(stand)person.g.position.set(...stand);
+   else person.g.position.set(use.target[0],inside?0:groundHeight(...use.target),use.target[1]);
+  }
+  for(const key of ['usingTownObject','heldItem','socialPose','seatHeight','chairBlend'])delete person.g.userData[key];
   recent.set(person,use.id);active.delete(person);nextScan.set(person,minutes+delay);
  }
  function approach(object,person){
@@ -57,7 +61,7 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
   const taste=residentPersonality(person.profile.name),range=base.place==='work'?7:18,player=getPlayerPosition();
   const candidates=[];
   for(const object of getTargets()){
-   const affordance=townAffordance(object);if(!affordance||!!object.userData.hit.inside!==inside||!object.parent||!object.visible||reservations.has(object))continue;
+   const affordance=townAffordance(object);if(!affordance||!!object.userData.hit.inside!==inside||!object.parent||!object.visible||reservations.has(object)||object.userData.reservedBy)continue;
    if(inside&&object.userData.workers&&!object.userData.workers.includes(person.profile.name))continue;
    object.getWorldPosition(point);const distance=person.g.position.distanceTo(point);if(distance>range||Math.abs(point.y-person.g.position.y)>2.8||player&&point.distanceTo(player)<1.6)continue;
    if([...reservations.values()].some(use=>Math.hypot(use.location.x-point.x,use.location.z-point.z)<1.6))continue;
@@ -78,7 +82,8 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
  }
  function plan(person,base,minutes,rain,dt){
   const g=person.g;
-  const interrupted=!eligible(base.place)||rain&&!inside||g.userData.chatHold||g.userData.facePlayerUntil>performance.now()||person.profile.name==='Kenji'&&getState().kenjiEscort==='walking';
+  // A game with somebody (social.js sistersAtPlay) is not left for a bench or a vending machine.
+  const interrupted=!eligible(base.place)||base.play||rain&&!inside||g.userData.chatHold||g.userData.facePlayerUntil>performance.now()||person.profile.name==='Chin'&&getState().kenjiEscort==='walking';
   if(interrupted){release(person,minutes);return base;}
   let use=active.get(person);
   if(use&&(use.base!==base.place||!use.object.parent||!use.object.visible||minutes>use.deadline)){release(person,minutes);use=null;}
@@ -96,8 +101,9 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
    if(use.kind==='seat'||use.kind==='office'&&use.object.userData.seat){
     const seat=use.object.userData.seat;
     if(seat?.position)g.position.set(...seat.position);
-    // eyeY is measured from the ground under the seat, which is raised on the park's mound.
-    g.userData.seatHeight=seat?Math.max(.35,(seat.eyeY||1.15)-(inside?0:seat.position?.[1]||0)-.64):.51;
+    // Furniture exports its physical seat surface in the same frame as position.
+    // Camera eye height is independent of the avatar's support and proportions.
+    g.userData.seatHeight=Number.isFinite(seat?.surfaceY)?seat.surfaceY-g.position.y:Number.isFinite(seat?.height)?seat.height:.45;
     if(Number.isFinite(seat?.yaw))g.rotation.y=seat.yaw;
    }
   }

@@ -177,6 +177,10 @@ export function buildServingDrink(kind,{held=false}={}){
   if(rocks){liquid.material.transparent=true;liquid.material.opacity=.26;liquid.material.depthWrite=false;}
   const ice=pieces(level,'Floating ice in '+kind,'glass');for(let i=0;i<3;i++)ice.rounded(.021,.019,.021,.002,0xd6e0d6,(i-1)*.012,h-.025+(i%2)*.005,(i%2)*.013-.004);ice.finish();
  }
+ // Where a hand takes hold (avatars/consume.js drinkGrip): a mug or cup by the outside of
+ // its handle, anything else round its body, so the fingers close on the glass itself.
+ group.userData.grip=kind==='draft'?{handle:.073,height:.079}:kind==='coffee'?{handle:.055,height:.04}:kind==='bottle'?{radius:.03,height:.04}
+  :kind==='can'?{radius:.033,height:.06}:kind==='sake'?{radius:.029,height:.02}:{radius:kind==='awamori'?.038:.036,height:(kind==='awamori'?.085:.115)*.45};
  glass.finish();china.finish();metal.finish();group.userData.portion=1;group.userData.targetPortion=1;group.userData.consumable='drink';group.userData.rimHeight=rimHeight;group.userData.vessel='hollow';
  return {group,level,liquid,head,height,radius};
 }

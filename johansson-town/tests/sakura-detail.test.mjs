@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../src/world/furniture-standards.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -179,7 +180,7 @@ test('checkout equipment remains over existing furniture and both LCDs face the 
  const room=new T.Group(),equipment=buildSakuraCounterDetail(room),bodies=equipment.children.find(o=>o.name.endsWith(' bodies')),prints=equipment.children.find(o=>o.name.endsWith(' print'));
  assert.equal(equipment.children.length,2,'checkout detail should remain two shared draws');
  const cabinet=SAKURA_TILL_CABINET,copyCollider=SAKURA_LAYOUT.colliders.find(c=>Math.abs(c.x-COPY_MACHINE.x)<.01&&Math.abs(c.z-COPY_MACHINE.z)<.01);assert.ok(copyCollider);
- for(const p of worldVertices(bodies))assert.ok((p.x>=4.54-1e-6&&p.x<=5.06+1e-6&&p.z>=.08-1e-6&&p.z<=3.86+1e-6&&p.y>=1-1e-6)||(p.x>=cabinet.x0-1e-6&&p.x<=cabinet.x1+1e-6&&p.z>=cabinet.z0-1e-6&&p.z<=cabinet.z1+1e-6&&p.y>=cabinet.boards[1]-1e-6)||(p.x>=copyCollider.x-copyCollider.w/2-1e-6&&p.x<=copyCollider.x+copyCollider.w/2+1e-6&&p.z>=copyCollider.z-copyCollider.d/2-1e-6&&p.z<=copyCollider.z+copyCollider.d/2+1e-6&&p.y>=.5),'checkout equipment enters a walking aisle at '+p.toArray());
+ for(const p of worldVertices(bodies))assert.ok((p.x>=4.54-1e-6&&p.x<=5.06+1e-6&&p.z>=.08-1e-6&&p.z<=3.86+1e-6&&p.y>=FURNITURE_HEIGHTS.serviceCounter-1e-6)||(p.x>=cabinet.x0-1e-6&&p.x<=cabinet.x1+1e-6&&p.z>=cabinet.z0-1e-6&&p.z<=cabinet.z1+1e-6&&p.y>=cabinet.boards[1]-1e-6)||(p.x>=copyCollider.x-copyCollider.w/2-1e-6&&p.x<=copyCollider.x+copyCollider.w/2+1e-6&&p.z>=copyCollider.z-copyCollider.d/2-1e-6&&p.z<=copyCollider.z+copyCollider.d/2+1e-6&&p.y>=.5),'checkout equipment enters a walking aisle at '+p.toArray());
  equipment.updateMatrixWorld(true);
  for(const id of ['pos','customer']){
   const feature=equipment.userData.features.find(f=>f.id===id);assert.ok(feature);

@@ -106,6 +106,8 @@ export function buildVehicle(kind,colour){
  function finish(parts,name,material){const geo=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());geo.computeBoundingSphere();const m=new THREE.Mesh(geo,material);m.name=name;m.castShadow=true;m.receiveShadow=true;g.add(m);}
  finish(opaque,'Sculpted vehicle body, cabin and wheels',new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6}));
  finish(lamps,'Vehicle lamps',new THREE.MeshStandardMaterial({vertexColors:true,roughness:.35}));
- g.userData.driverSeat={...seat};g.userData.vehicleStyle=car?'1990s Japanese compact hatchback':delivery?'1990s Japanese cab-over delivery truck':'1990s Japanese kei pickup';
+ g.userData.driverSeat={...seat};
+ // Where the driver's hands go (people/vehicle-driver.js): the rim at nine and three.
+ g.userData.steeringWheel={x:seat.x,y:belt+.10,z:seat.z+.32,r:.13};g.userData.vehicleStyle=car?'1990s Japanese compact hatchback':delivery?'1990s Japanese cab-over delivery truck':'1990s Japanese kei pickup';
  g.visible=false;g.userData.dynamicProp=true;g.userData.walkSurface=false;return g;
 }

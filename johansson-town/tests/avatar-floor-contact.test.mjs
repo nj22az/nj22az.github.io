@@ -6,6 +6,7 @@ import {buildAvatar} from '../src/avatars/build.js';
 import {CAST_RECIPES} from '../src/avatars/cast.js';
 import {createAvatarAnimator,GESTURES} from '../src/avatars/animate.js';
 import {createAvatarJohansson} from '../src/avatars/actors.js';
+import {seatContactHeight} from './seating-contact.mjs';
 installDOM();
 
 function soles(avatar){
@@ -40,7 +41,7 @@ test('grounding preserves real jumps and seated support instead of snapping thos
  for(let i=0;i<60;i++){anim.update(1/60);airborne||=height()>.1;assert.ok(height()>-1e-5);}
  assert.ok(airborne,'The jump still leaves the floor');
  anim.stop();for(let i=0;i<120;i++)anim.update(1/60,{seated:true,seatHeight:.71});
- assert.ok(Math.abs(avatar.root.position.y-(.71-avatar.measure.hipY+avatar.measure.seatDrop))<1e-5,'The seat remains its support');avatar.dispose();
+ assert.ok(Math.abs(seatContactHeight(avatar)-.71)<1e-5,'The rendered seat remains its support');avatar.dispose();
 });
 
 test('Johansson greets with a small inclination, including after an appearance change',()=>{

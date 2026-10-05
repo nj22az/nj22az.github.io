@@ -2,7 +2,7 @@
 export const ISLAND_FACTS = [
   'Thuan keeps Sakura Shōten stocked with tea, snacks and the little things neighbours need.',
   'The harbour brings fresh deliveries to the island. Watch for a cargo ship at the quay.',
-  'Aya’s bookshop has a quiet reading corner. There is no hurry to finish your chapter.',
+  'Nhung’s bookshop has a quiet reading corner. There is no hurry to finish your chapter.',
   'Officer Mori patrols the island’s streets. A familiar face makes a small town feel like home.',
   'The garden is a short stroll from town. Take a seat and let the afternoon go by.',
   'Riku checks the harbour pallets twice before sending them on to the shops.',

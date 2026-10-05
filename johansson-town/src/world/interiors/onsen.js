@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildAvatar} from '../../avatars/build.js';
 import {createAvatarAnimator} from '../../avatars/animate.js';
@@ -32,9 +33,9 @@ const R=ONSEN_ROOM;
 
 /** Seats: where you sit, and where your weight goes. `soak` seats put you in the water. */
 export const ONSEN_SEATS=Object.freeze({
- bench:{id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.42},
+ bench:{id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.46},
  tatami:{id:'tatami',label:'Sit on the tatami',position:[LOBBY.koagari.x-.25,0,LOBBY.koagari.z+.5],stand:[LOBBY.koagari.x,0,3.55],eyeY:LOBBY.koagari.h+.8,yaw:Math.PI,surfaceY:LOBBY.koagari.h+.07},
- massage:{id:'massage',label:'Sit in the massage chair',position:[4.25,0,3.55],stand:[3.4,0,3.55],eyeY:1.12,yaw:Math.PI/2,surfaceY:.46},
+ massage:{id:'massage',label:'Sit in the massage chair',position:[4.25,0,3.55],stand:[3.4,0,3.55],eyeY:1.12,yaw:Math.PI/2,surfaceY:.5},
  ...WASH_SEATS,
  indoor:{id:'indoor',label:'Get into the indoor bath',position:[3.1,0,-3.35],stand:[3.1,0,-1.66],eyeY:R.tub.floor+.78,yaw:Math.PI,surfaceY:R.tub.floor+.04,soak:true},
  rock:{id:'rock',label:'Get into the rock bath',position:[.75,0,-6.45],stand:[.75,0,-4.75],eyeY:R.pool.floor+.82,yaw:0,surfaceY:R.pool.floor+.04,soak:true},
@@ -120,8 +121,8 @@ export function buildOnsenInterior({room,reg,action,exit}){
 
  // ---- Genkan and bandai.
  rect(-4.8,4.51,.4,1.05,1.4);
- box([.62,1.05,1.7],[-3.85,.525,2.55],darkWood,'Bandai counter');box([.7,.05,1.78],[-3.85,1.075,2.55],wood,'Bandai top');rect(-3.85,2.55,.66,1.74,1.1);
- box([.2,.12,.14],[-3.75,1.16,2.2],mat(0xd9c9a0,.6),'Ticket tray');
+ box([.62,FURNITURE_HEIGHTS.serviceCounter-.05,1.7],[-3.85,(FURNITURE_HEIGHTS.serviceCounter-.05)/2,2.55],darkWood,'Bandai counter');box([.7,.05,1.78],[-3.85,FURNITURE_HEIGHTS.serviceCounter-.025,2.55],wood,'Bandai top');rect(-3.85,2.55,.66,1.74,FURNITURE_HEIGHTS.serviceCounter);
+ box([.2,.12,.14],[-3.75,FURNITURE_HEIGHTS.serviceCounter+.06,2.2],mat(0xd9c9a0,.6),'Ticket tray');
  // Higa-san, a Shimanchu like everyone else, up on the bandai's raised floor so she can
  // see over the counter -- which is the point of a bandai.
  box([.9,.35,1.4],[-4.45,.175,2.6],darkWood,'Bandai platform');

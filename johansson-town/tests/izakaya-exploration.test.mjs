@@ -91,6 +91,10 @@ test('the Minato guestbook rests on its actual table and leaves lived-in objects
  assert.ok(!book.isEmpty());const table=MINATO_DETAIL_SURFACES.loungeSouth;
  assert.ok(book.min.x>=table.minX&&book.max.x<=table.maxX&&book.min.z>=table.minZ&&book.max.z<=table.maxZ);
  assert.ok(Math.abs(book.min.y-table.y-.004)<.000001,'Book clears the thin table patina');
+ const paper=group.getObjectByName('Minato memory guestbook and recipe').geometry.attributes.position;
+ const pageYs=[];for(let i=0;i<paper.count;i++){const p=new THREE.Vector3().fromBufferAttribute(paper,i);if(p.x<0)pageYs.push(p.y);}
+ assert.ok(pageYs.every(y=>Math.abs(y-book.max.y-.0005)<.000001),'Printed page rests immediately above the paper surface');
+ assert.equal(MINATO_MEMORIES.find(m=>m.id==='guestbook').position[1],table.y+.08,'Guestbook interaction follows its tabletop');
  const {placements}=buildIzakayaLivedIn(new THREE.Group());
  for(const p of placements.filter(p=>p.surface==='loungeSouth'))assert.ok(!(book.min.x<p.max[0]&&book.max.x>p.min[0]&&book.min.z<p.max[2]&&book.max.z>p.min[2]),'Guestbook clears '+p.id);
 });

@@ -1,25 +1,25 @@
 import {migratedVisits} from './world/businesses.js';
+import {RENAMED_RESIDENTS,renameResidents} from './people/renamed.js';
+export {RENAMED_RESIDENTS,renameResidents};
 
 export const SAVE_KEY='johansson-town-1988-v5';
 export const LEGACY_KEYS=['johansson-town-1988-v4','johansson-town-1988-v3'];
+/** Moves records kept under an old name to the new one; a record already under the new name wins. */
+function renameKeys(records,key=k=>RENAMED_RESIDENTS[k]){
+ if(!records||typeof records!=='object'||Array.isArray(records))return;
+ for(const old of Object.keys(records)){const now=key(old);if(!now||now===old)continue;if(!Object.hasOwn(records,now))records[now]=records[old];delete records[old];}
+}
 export function migrateThuan(saved){
-  // Keep the existing home ID and move only the renamed resident's records.
-  // Yui was the original Sakura clerk and Yuri the later one; both read as Thuan.
-  // A newer Thuan record wins if a save contains more than one of the names.
-  const rename=text=>typeof text==='string'?text.replace(/\b(?:Yuri|Yui)\b/g,'Thuan'):text;
-  for(const key of ['residentLocations','residentLife']){
-    const records=saved[key];
-    if(!records||typeof records!=='object'||Array.isArray(records))continue;
-    for(const legacy of ['Yuri','Yui']){
-      if(!Object.hasOwn(records,legacy))continue;
-      if(!Object.hasOwn(records,'Thuan'))records.Thuan=records[legacy];
-      delete records[legacy];
-    }
-  }
-  if(Array.isArray(saved.notes))saved.notes=[...new Set(saved.notes.map(rename))];
-  for(const record of Object.values(saved.residentLife||{}))if(Array.isArray(record?.activities))record.activities=record.activities.map(rename);
+  // Keep the existing home IDs (resident-home-aya, yuri-home) and move only the renamed
+  // residents' records.
+  for(const key of ['residentLocations','residentLife','friendship','treats'])renameKeys(saved[key]);
+  // The bookshop remembers finished jobs as `day:Name`.
+  renameKeys(saved.bookshop?.completed,k=>{const at=k.lastIndexOf(':');return at<0?null:k.slice(0,at+1)+renameResidents(k.slice(at+1));});
+  if(Array.isArray(saved.notes))saved.notes=[...new Set(saved.notes.map(renameResidents))];
+  for(const record of Object.values(saved.residentLife||{}))if(Array.isArray(record?.activities))record.activities=record.activities.map(renameResidents);
   // The ledger prints the buyer column, so untouched rows would still show the old name.
-  if(Array.isArray(saved.sakura?.journal))for(const row of saved.sakura.journal)if(row&&typeof row==='object')row.buyer=rename(row.buyer);
+  if(Array.isArray(saved.sakura?.journal))for(const row of saved.sakura.journal)if(row&&typeof row==='object')row.buyer=renameResidents(row.buyer);
+  if(Array.isArray(saved.documentArchive))for(const doc of saved.documentArchive)if(doc&&typeof doc==='object')doc.author=renameResidents(doc.author);
   return saved;
 }
 /**

@@ -91,7 +91,7 @@ test('on the island Minato leaves a passage beside the bookshop and clears the k
 
   // Everything that holds the door holds the same array, so it moved with the plot.
   assert.equal(IZAKAYA_DOOR[1],izakayaPlot().z);
-  assert.deepEqual(RESIDENTS.find(p=>p.name==='Nao').work,IZAKAYA_DOOR);
+  assert.deepEqual(RESIDENTS.find(p=>p.name==='Thao').work,IZAKAYA_DOOR);
   assert.deepEqual(RESIDENTS.find(p=>p.name==='Thuan').evening,restaurantApproach('izakaya'));
  }finally{}
 });

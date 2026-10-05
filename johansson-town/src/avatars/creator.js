@@ -37,7 +37,13 @@ export function drawFaceFormThumb(canvas,form,skin='#f5d0ae'){
 const FACE_TABS=new Set(['head','hair','eyes','brows','nose','mouth','extras','hat','accessories']);
 const LABEL={
  crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',ponytail:'Ponytail',braids:'Braids',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
+ pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',
  round:'Round',dot:'Dot',almond:'Almond',sleepy:'Sleepy',lashes:'Lashes',narrow:'Narrow',sparkle:'Sparkle',gentle:'Gentle',
+ doe:'Doe',cat:'Cat',droopy:'Droopy',heavy:'Heavy-lidded',bright:'Bright',tired:'Tired',squint:'Squint',starry:'Starry',
+ angled:'Angled',short:'Short',rounded:'Rounded',tapered:'Tapered',feathered:'Feathered',maro:'Maro',
+ pointed:'Pointed',snub:'Snub',bulb:'Bulb',ridge:'Ridge',
+ teeth:'Teeth',open:'Open',lopsided:'Lopsided',tongue:'Tongue out',buck:'Buck teeth',soft:'Soft',
+ handlebar:'Handlebar',pencil:'Pencil',chinstrap:'Chinstrap',
  straight:'Straight',arched:'Arched',thick:'Thick',thin:'Thin',worried:'Worried',bushy:'Bushy',none:'None',
  button:'Button',line:'Line',wide:'Wide',hook:'Hook',
  smile:'Smile',flat:'Flat',grin:'Grin',small:'Small',smirk:'Smirk',pout:'Pout',
@@ -69,6 +75,8 @@ const TABS=[
  {id:'head',name:'Face',controls:[
   {kind:'face-forms',page:'style',at:'head.form',label:'Face shape',list:PARTS.head},
   {kind:'toggle',page:'style',at:'freckles',label:'Freckles'},{kind:'toggle',page:'style',at:'mole',label:'Beauty spot'},
+  {kind:'position',page:'adjust',at:'moleSpot.height',horizontal:'moleSpot.x',label:'Beauty spot',when:r=>r.mole},
+  {kind:'stepper',page:'adjust',at:'moleSpot.size',label:'Spot size',less:'Smaller spot',more:'Bigger spot',when:r=>r.mole},
   {kind:'colours',page:'colour',at:'body.skin',label:'Skin',palette:PALETTE.skin},
   {kind:'stepper',page:'adjust',at:'head.size',label:'Head size',less:'Smaller head',more:'Bigger head'},
   {kind:'stepper',page:'adjust',at:'head.shape',label:'Width',less:'Narrower',more:'Broader'},
@@ -105,9 +113,14 @@ const TABS=[
   {kind:'stepper',page:'adjust',at:'mouth.width',label:'Width',less:'Narrower',more:'Wider'}]},
  {id:'extras',name:'Glasses & beard',controls:[
   {kind:'parts',page:'style',at:'glasses.style',label:'Glasses',list:PARTS.glasses,draw:'glasses'},
-  {kind:'parts',page:'style',at:'facial.style',label:'Beard',list:PARTS.facial,draw:'facial'},
+  {kind:'parts',page:'style',at:'facial.moustache',label:'Moustache',list:PARTS.moustache,draw:'moustache'},
+  {kind:'parts',page:'style',at:'facial.beard',label:'Beard',list:PARTS.beard,draw:'beard'},
   {kind:'colours',page:'colour',at:'glasses.colour',label:'Frames',palette:['#2b2b2b','#8a4a3a','#c8a060','#e06a7a','#3d6a8a','#d8342c']},
-  {kind:'colours',page:'colour',at:'facial.colour',label:'Beard',palette:PALETTE.hair}]},
+  {kind:'colours',page:'colour',at:'facial.colour',label:'Moustache & beard',palette:PALETTE.hair},
+  {kind:'stepper',page:'adjust',at:'glasses.size',label:'Glasses size',less:'Smaller glasses',more:'Bigger glasses'},
+  {kind:'stepper',page:'adjust',at:'glasses.height',label:'Glasses height',less:'Lower glasses',more:'Higher glasses'},
+  {kind:'stepper',page:'adjust',at:'facial.size',label:'Whiskers size',less:'Smaller moustache and beard',more:'Bigger moustache and beard'},
+  {kind:'stepper',page:'adjust',at:'facial.height',label:'Whiskers height',less:'Lower moustache',more:'Higher moustache'}]},
  // The wardrobe. Everyone has the base layer on (tank top, underwear, bare feet);
  // clothes are added over it, and the first tile of each grid takes them off again.
  {id:'top',name:'Top',wardrobe:true,controls:[
@@ -504,8 +517,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
    off.onclick=()=>{remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});recipe=normalizeRecipe(recipe);dirty=true;renderBody();};
    body.append(el('p',{className:'shm-note',textContent:'Underneath it all: a tank top, underwear and bare feet. Tap something to put it on; the first picture takes it off.'}),off);
   }
-  for(const control of t.controls.filter(c=>c.page===page)){
-   if(control.label&&control.kind!=='toggle'&&control.kind!=='stepper')body.append(el('h4',{textContent:control.label}));
+  for(const control of t.controls.filter(c=>c.page===page&&(!c.when||c.when(recipe)))){
+   if(control.label&&control.kind!=='toggle'&&control.kind!=='stepper'&&control.kind!=='position')body.append(el('h4',{textContent:control.label}));
    if(control.kind==='face-forms'){
     const grid=el('div',{className:'shm-grid shm-face-forms',role:'group',ariaLabel:'Face shapes'}),skin=el('div',{className:'shm-swatches shm-face-skin',role:'group',ariaLabel:'Skin tone'});
     for(const form of control.list){const c=el('canvas',{width:136,height:136}),label=({'soft-square':'Soft square','soft-round':'Soft round',wide:'Broad'}[form]||form[0].toUpperCase()+form.slice(1)),b=el('button',{type:'button',ariaLabel:label,title:label},c,label);b.setAttribute('aria-pressed',String(recipe.head.form===form));b.onclick=()=>{change('head.form',form);pressed(grid,b);};drawFaceFormThumb(c,form,recipe.body.skin);grid.append(b);}
@@ -526,8 +539,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
      b.onclick=()=>{change(control.at,hex);pressed(row,b);};row.append(b);}
     body.append(row);
    }else if(control.kind==='position'){
-    body.append(el('h4',{textContent:'Position'}));
-    const pad=el('div',{className:'shm-pad',role:'group',ariaLabel:'Move '+t.name.toLowerCase()});
+    body.append(el('h4',{textContent:control.label||'Position'}));
+    const pad=el('div',{className:'shm-pad',role:'group',ariaLabel:'Move '+(control.label||t.name).toLowerCase()});
     const directions=[['up','arrow-up','Move up',control.at,NOTCH],['down','arrow-down','Move down',control.at,-NOTCH],
      ['left','arrow-left',control.paired?'Closer':'Move left',control.horizontal,-NOTCH],['right','arrow-right',control.paired?'Wider apart':'Move right',control.horizontal,NOTCH]];
     for(const [cls,icon,label,at,delta] of directions){const b=iconButton(icon,label,{className:cls});b.onclick=()=>change(at,Math.round(Math.max(0,Math.min(1,get(recipe,at)+delta))*16)/16);pad.append(b);}

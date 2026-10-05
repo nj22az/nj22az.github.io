@@ -33,10 +33,10 @@ const CREAM=0xeee6d2,PLINTH=0xa9aa9c,TEAL=0x2f5f6a,TILE=0xb9573f,STEEL=0x7f888b,
 export function portBuildingColliders(){
  const r=(id,b,height)=>({id,x:(b.minX+b.maxX)/2,z:(b.minZ+b.maxZ)/2,w:b.maxX-b.minX,d:b.maxZ-b.minZ,height});
  const posts=[[P.canopy.minX+.1,P.canopy.minZ+.15],[P.canopy.minX+.1,P.canopy.maxZ-.15]].map(([x,z])=>({id:'port-canopy-post',x,z,w:.2,d:.2,height:2.9}));
- return [r('port-waiting-hall',P.hall,P.ground+.4),r('port-clock-tower',P.tower,P.tower.height),...posts];
+ return [r('port-waiting-hall',P.hall,P.ground+.4),r('port-clock-tower',P.tower,P.tower.height),...posts,{id:'port-canopy-bench',x:P.canopy.minX+.3,z:-44.0,w:.42,d:1.7,height:.5}];
 }
 
-export function buildPortBuilding({parent,label=()=>{},shadows=false}){
+export function buildPortBuilding({parent,label=()=>{},shadows=false,register,onAction}){
  const group=new THREE.Group();group.name='Minato Port Building';parent.add(group);
  const kit=createKit({shadows});
  const plaster=createMaterials().material('plaster');
@@ -118,8 +118,10 @@ export function buildPortBuilding({parent,label=()=>{},shadows=false}){
  kit.block(C.minX-.02,C.maxX,2.92,3.06,C.minZ-.02,C.maxZ+.02,TEAL);
  for(const z of [C.minZ+.15,C.maxZ-.15])kit.cyl(.065,.065,2.78,C.minX+.1,1.39,z,STEEL,{segments:8,finish:'metal'});
  // A bench under it, for the boat.
- kit.box(1.7,.08,.42,C.maxX-.45,.46,-44.5+1.25,0x8d7652,{ry:Math.PI/2});
- for(const dz of [-.6,.6])kit.box(.38,.42,.08,C.maxX-.45,.23,-43.25+dz,STEEL,{finish:'metal'});
+ kit.box(1.7,.08,.42,C.minX+.3,.46,-44.0,0x8d7652,{ry:Math.PI/2});
+ for(const dz of [-.6,.6])kit.box(.38,.42,.08,C.minX+.3,.23,-44.0+dz,STEEL,{finish:'metal'});
+
+ const waitingSeat=new THREE.Object3D();waitingSeat.position.set(C.minX+1.15,1,-44.0);waitingSeat.userData.seat={id:'port-canopy-bench',position:[C.minX+.3,0,-44.0],stand:[C.minX+1.15,0,-44.0],surfaceY:.5,eyeY:1.2,yaw:-Math.PI/2,pitch:0};group.add(waitingSeat);register?.(waitingSeat,'Sit under the ferry canopy',()=>onAction?.('seat','Ferry canopy bench','A dry bench beside the waiting hall, looking out across the quay.'));
 
  // The timetable, on the pier between the tower and the glass.
  kit.sign(poster({title:'Timetable',lines:['SHARED PASSENGER & CAR FERRY','MINATO ⇄ KITANO-JIMA','Crossings on request','Some trips carry cars','Tickets inside'],band:'#2b5a78',bg:'#f3ecd8'}),.62,.86,wx-.04,1.55,-44.98,{ry:-Math.PI/2,name:'Ferry timetable'});

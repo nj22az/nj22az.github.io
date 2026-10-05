@@ -12,6 +12,6 @@ import {readSave,SAVE_KEY} from '../src/save.js';
 const native=globalThis.fetch;
 function localAssets(){installDOM();globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:1024,height:1024,close(){}});globalThis.fetch=async u=>String(u).startsWith('blob:')?native(u):new Response(await readFile(new URL('../assets/'+new URL(u).pathname.split('/assets/')[1],import.meta.url)));}
 test('old flat IDs migrate without changing individual schedules or belongings',()=>{
- const saved={visited:['resident-home-nao','yuri-home','resident-home-reiko','resident-home-tetsuo'],residentLocations:{Nao:{indoors:'home',position:[-24,10]}},residentLife:{Nao:{yen:800}}};
+ const saved={visited:['resident-home-nao','yuri-home','resident-home-reiko','resident-home-tetsuo'],residentLocations:{Thao:{indoors:'home',position:[-24,10]}},residentLife:{Thao:{yen:800}}};
  const result=readSave({getItem:key=>key===SAVE_KEY?JSON.stringify(saved):null});assert.deepEqual(result.visited,['yuri-home','resident-home-aya','resident-home-kenji']);assert.deepEqual(result.residentLocations,saved.residentLocations);assert.deepEqual(result.residentLife,saved.residentLife);
 });

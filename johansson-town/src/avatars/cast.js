@@ -35,25 +35,30 @@ export const CAST_RECIPES=castSet({
   glasses:{style:'round',colour:'#e06a7a'},blush:.65,
   outfit:{top:'blouse',topColour:'#f4d23c',pattern:'flowers',bottom:'trousers',bottomColour:'#27304d',shoes:'#f4f1ea',accent:'#f4d23c'},
   swim:{colour:'#e98aa6'}}),
- Nao:R({name:'Nao',body:{height:.42,build:.45,skin:'#e8bf98'},head:{size:.46,shape:.4,form:'oval',jaw:.35,cheeks:.45},
-  hair:{style:'ponytail',colour:'#292a30'},eyes:{style:'almond',colour:'#2a1d16',size:.55,spacing:.5,height:.5,tilt:.6},
-  brows:{style:'straight',colour:'#292a30',size:.5},nose:{style:'button',size:.4},mouth:{style:'grin',colour:'#b8544a',size:.5},blush:.3,
-  outfit:{top:'apron',topColour:'#bd7557',bottom:'trousers',bottomColour:'#394b58',shoes:'#2b2b2b',hat:'kerchief',hatColour:'#27304d',accent:'#f4f1ea'}}),
- // Front-Row Books & Workshop, and the two little houses behind it.
- Aya:R({name:'Aya',accessories:{earrings:'hoops',pin:true,colour:'#c8a060'},body:{height:.34,build:.38,skin:'#efc9a4'},head:{size:.5,shape:.52,form:'round',jaw:.35,cheeks:.6},
+ // Thuan's middle sister: slim, a high ponytail, a plain white tee and blue shorts.
+ // Stubborn but friendly: the flat set mouth and straight brows, and the grin under them.
+ Thao:R({name:'Thao',body:{height:.44,build:.3,silhouette:'feminine',skin:'#ecc6a0'},head:{size:.46,shape:.4,form:'oval',jaw:.3,cheeks:.4},
+  hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'almond',colour:'#2a1d16',size:.5,spacing:.5,height:.5,tilt:.55},
+  brows:{style:'straight',colour:'#1c1714',size:.45,tilt:.42},nose:{style:'button',size:.35},mouth:{style:'flat',colour:'#b8544a',size:.42},blush:.2,
+  accessories:{earrings:'studs',colour:'#e0b93a'},
+  outfit:{top:'tee',topColour:'#f4f1ea',bottom:'shorts',bottomColour:'#7fb0d8',footwear:'sandals',shoes:'#f4f1ea',accent:'#7fb0d8'}}),
+ // Front-Row Books & Workshop, and the two little houses behind it. Nhung is the eldest of
+ // the three sisters (Nhung, Thao, Thuan).
+ Nhung:R({name:'Nhung',accessories:{earrings:'hoops',pin:true,colour:'#c8a060'},body:{height:.34,build:.38,skin:'#efc9a4'},head:{size:.5,shape:.52,form:'round',jaw:.35,cheeks:.6},
   hair:{style:'bob',colour:'#2e211b'},eyes:{style:'round',colour:'#3a2a1e',size:.6,spacing:.5,height:.5,tilt:.5},
   brows:{style:'arched',colour:'#2e211b',size:.45},nose:{style:'button',size:.35},mouth:{style:'small',colour:'#c4485a',size:.45},
-  glasses:{style:'round',colour:'#7a4a2a'},blush:.45,
+  blush:.45,
   outfit:{hat:'beret',hatColour:'#5f8f6a',top:'jacket',topColour:'#5f8f6a',pattern:'dots',bottom:'longskirt',bottomColour:'#e6d3b0',shoes:'#6b4a2e',accent:'#f4e4c8'}}),
  Reiko:R({name:'Reiko',accessories:{neckwear:'scarf',colour:'#d8342c'},body:{height:.46,build:.42,skin:'#e8bf98'},head:{size:.47,shape:.44,form:'oval',jaw:.4,cheeks:.4},
   hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'almond',colour:'#2a1d16',size:.5,tilt:.6},
   brows:{style:'straight',colour:'#1c1714',size:.5},nose:{style:'line',size:.4},mouth:{style:'smirk',colour:'#a8433e',size:.45},
   outfit:{top:'smock',topColour:'#3f5f7a',bottom:'trousers',bottomColour:'#2b2b33',shoes:'#2b2b2b',accent:'#f4f1ea'}}),
- Kenji:R({name:'Kenji',body:{height:.6,build:.55,skin:'#c98d62'},head:{size:.48,shape:.5,form:'square',jaw:.6,cheeks:.45},
-  hair:{style:'spiky',colour:'#2b1d14'},eyes:{style:'sparkle',colour:'#2a1d16',size:.55},
-  brows:{style:'thick',colour:'#2b1d14',size:.55},nose:{style:'wide',size:.5},mouth:{style:'grin',size:.55},
-  facial:{style:'stubble',colour:'#2b1d14'},
-  outfit:{top:'kariyushi',topColour:'#f2a93b',pattern:'flowers',bottom:'shorts',bottomColour:'#3f5f7a',shoes:'#f4f1ea',accent:'#f4f1ea'}}),
+ // The repair shop: wiry and sun-browned, a dark cap pulled down, a pale blue tee with an
+ // orange trim (the roundel on his chest wants a print of its own), black shorts and sandals.
+ Chin:R({name:'Chin',body:{height:.5,build:.32,silhouette:'masculine',skin:'#b27449'},head:{size:.47,shape:.42,form:'narrow',jaw:.5,cheeks:.3},
+  hair:{style:'buzz',colour:'#1c1714'},eyes:{style:'narrow',colour:'#2a1d16',size:.45},
+  brows:{style:'straight',colour:'#1c1714',size:.45},nose:{style:'line',size:.45},mouth:{style:'soft',size:.45},
+  outfit:{top:'tee',topColour:'#a9c3df',bottom:'shorts',bottomColour:'#2b2b2b',footwear:'sandals',shoes:'#6d4a32',hat:'cap',hatColour:'#1f2228',accent:'#e8742a'}}),
  Tetsuo:R({name:'Tetsuo',accessories:{pin:true,colour:'#e0b93a'},body:{height:.44,build:.5,skin:'#dca97e'},head:{size:.5,shape:.5,form:'narrow',jaw:.55,cheeks:.35},
   hair:{style:'horseshoe',colour:'#8a8680'},eyes:{style:'sleepy',colour:'#2a1d16',size:.45},
   brows:{style:'bushy',colour:'#8a8680',size:.6},nose:{style:'hook',size:.55},mouth:{style:'flat',size:.5},
@@ -86,6 +91,13 @@ export const CAST_RECIPES=castSet({
 
 /** The people of the new streets, drawn to their lines in neighbours.js. */
 export const NEIGHBOUR_RECIPES=castSet({
+ // Vy: a high-school girl in her sailor uniform -- white blouse, red ribbon, navy pleated
+ // skirt -- long dark hair tied back. A teen, so the maker's life stage sets her height
+ // and proportions (recipe.js AGES).
+ Vy:R({name:'Vy',age:'teen',body:{silhouette:'feminine',height:.42,build:.3,skin:'#efd2b4'},head:{size:.5,shape:.42,form:'oval',jaw:.3,cheeks:.5},
+  hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'gentle',colour:'#2a1d16',size:.58,tilt:.5},brows:{style:'thin',colour:'#1c1714',size:.45},
+  nose:{style:'dot',size:.32},mouth:{style:'soft',colour:'#c4485a',size:.4},blush:.35,
+  outfit:{top:'sailor',topColour:'#f4f1ea',bottom:'pleatedskirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',accent:'#d8342c'}}),
  Riku:R({body:{silhouette:'masculine',height:.56,build:.55,skin:'#c89a74'},hair:{style:'crop',colour:'#33271f'},eyes:{style:'round'},brows:{style:'thick'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#587d83',bottom:'trousers',bottomColour:'#505f65',hat:'helmet',hatColour:'#dabb55'}}),
  'Emi Kado':R({body:{silhouette:'feminine',height:.43,build:.42,skin:'#d1a079'},hair:{style:'ponytail',colour:'#3c2c24'},eyes:{style:'almond'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#a77e67',bottom:'trousers',bottomColour:'#465d69',hat:'cap',hatColour:'#465d69'}}),
  Haru:R({head:{form:'square',jaw:.72,cheeks:.4},body:{height:.63,build:.58,skin:'#bf875f'},hair:{style:'crop',colour:'#302419'},eyes:{style:'narrow'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'smile'},facial:{style:'stubble',colour:'#302419'},outfit:{top:'polo',topColour:'#607c84',bottom:'shorts',bottomColour:'#7b7155',hat:'cap',hatColour:'#c4b486'}}),
@@ -124,7 +136,7 @@ export function recipeFor(name=''){
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
  if(NEIGHBOUR_RECIPES[name])return aged(normalizeRecipe(withTownDials(NEIGHBOUR_RECIPES[name],name)),name);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];
- const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Aya|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name));
+ const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Nhung|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name));
  const grey=/^#[a-f0-9]{6}$/i.test(style.hair||'')&&parseInt(style.hair.slice(1,3),16)>150;
  const hat=ACCESSORY_HAT[style.accessory]||(style.helmet?['helmet',style.helmet]:['none','#f4f1ea']);
  const generated=normalizeRecipe(withTownDials({name,age:ageClass(AGE_OF.get(name)),

@@ -136,7 +136,7 @@ async function travel({destination}={}){
   await sleep(20);
   const button=document.querySelector(`#directoryGrid .dir-item[data-id="${CSS.escape(id)}"]`);
   if(!button)return result(false,{error:'Destination button is unavailable.',destination:id,state:getState()});
-  if(button.dataset.travel!=='ready'){button.click();return result(false,{error:'Quick travel is locked. Bring Tama home and finish Kenji’s workshop escort. Walking directions are marked.',destination:id,state:getState()});}
+  if(button.dataset.travel!=='ready'){button.click();return result(false,{error:'Quick travel is locked. Bring Tama home and finish Chin’s workshop escort. Walking directions are marked.',destination:id,state:getState()});}
   button.click();
   await sleep(80);
   return result(true,{action:'directory_travel',destination:id,label:destinations[id],state:getState()});
@@ -211,7 +211,7 @@ const tools=[
   },
   {
     name:TOOL_PREFIX+'travel',
-    description:'Use unlocked town shortcuts to travel to a named place. Requires bringing Tama home and finishing Kenji’s workshop escort. Before unlocking, marks walking directions and returns a locked result without moving the player.',
+    description:'Use unlocked town shortcuts to travel to a named place. Requires bringing Tama home and finishing Chin’s workshop escort. Before unlocking, marks walking directions and returns a locked result without moving the player.',
     inputSchema:{type:'object',properties:{destination:{type:'string',description:'Destination id or display name, such as frontrow or Front-Row Books.'}},required:['destination'],additionalProperties:false},
     annotations:{readOnlyHint:false,untrustedContentHint:false},
     execute:travel

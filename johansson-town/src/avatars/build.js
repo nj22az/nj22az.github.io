@@ -218,6 +218,16 @@ const HAIR=Object.freeze({
  afro:{front:.48,side:-.12,back:-.5,radius:1.34,faceHalf:.74,lift:.18},
  horseshoe:{ring:true,radius:1.03},
  bald:null,
+ pixie:{front:.36,swoop:.2,side:-.04,back:-.42,radius:1.06,faceHalf:.78},
+ shoulder:{front:.28,side:-.42,back:-.56,radius:1.1,faceHalf:.66},
+ // Parted in the middle, the fringe falling away to both sides.
+ curtains:{front:.5,centre:.3,side:-.14,back:-.5,radius:1.09,faceHalf:.72},
+ slick:{front:.62,side:.04,back:-.5,radius:1.04,faceHalf:.82},
+ mullet:{front:.46,side:.0,back:-.78,radius:1.08,faceHalf:.78},
+ // The old island topknot (katakashira): close at the sides, a knot on the crown.
+ topknot:{front:.56,side:.08,back:-.36,radius:1.04,faceHalf:.8},
+ pigtails:{front:.4,side:-.1,back:-.3,radius:1.08,faceHalf:.76},
+ twinbuns:{front:.42,side:-.04,back:-.36,radius:1.08,faceHalf:.76},
 });
 function hairCap(style,flip){
  const spec=HAIR[style];if(!spec)return null;
@@ -229,6 +239,7 @@ function hairCap(style,flip){
   // The fringe: straight across, or swept down to one side from a parting.
   let front=spec.front;
   if(spec.swoop)front-=spec.swoop*THREE.MathUtils.smoothstep(v.x*side,-.3,.5);
+  if(spec.centre)front-=spec.centre*THREE.MathUtils.smoothstep(Math.abs(v.x),.04,.42);
   // How far this point is inside the hair (positive) or out of it (negative): outside the
   // face opening and above the line at the sides and back. A smooth field rather than a
   // yes/no, so the hairline is a clean curve where the cap meets the head, not stair steps.
@@ -283,6 +294,9 @@ function addHair(list,recipe,m){
  if(style==='long'){ball(list,R*.95,at(0,cy-R*.72,-R*.55),tailShare,c,[1.05,1.25,.5]);}
  if(style==='ponytail'){ball(list,R*.34,at(0,cy+R*.1,-R*1.05),'head',c,[1,1,1]);ball(list,R*.3,at(0,cy-R*.45,-R*1.18),tailShare,c,[.9,1.9,.9]);ball(list,R*.16,at(0,cy+R*.1,-R*1.2),'head',recipe.outfit.accent);}
  if(style==='bun'){ball(list,R*.42,at(0,cy+R*.95,-R*.3),'head',c);}
+ if(style==='topknot'){ball(list,R*.24,at(0,cy+R*1.02,-R*.05),'head',c,[1,1.25,1.4],10,8);ball(list,R*.1,at(0,cy+R*.98,-R*.18),'head',dark,[1.3,1,1],8,6);}
+ if(style==='twinbuns')for(const s of [-1,1])ball(list,R*.32,at(s*R*.62,cy+R*.82,-R*.18),'head',c);
+ if(style==='pigtails')for(const s of [-1,1]){ball(list,R*.2,at(s*R*.92,cy+R*.05,-R*.25),'head',recipe.outfit.accent,[1,1,1],8,6);ball(list,R*.24,at(s*R*1.08,cy-R*.4,-R*.3),'head',c,[.9,1.8,.9]);}
  if(style==='spiky')for(let i=0;i<9;i++){const a=i/9*Math.PI*2;const x=Math.cos(a)*R*.55,z=Math.sin(a)*R*.5-R*.1;
   const g=new THREE.ConeGeometry(R*.2,R*.5,6);part(list,g,'head',c,M(x,m.headY+cy+R*.88,z,Math.sin(a)*.5,0,-Math.cos(a)*.5));}
  if(style==='perm')for(let i=0;i<22;i++){const a=i*2.39996,y=.2+.75*((i*.618)%1);const rr=Math.sqrt(1-y*y);const x=Math.cos(a)*rr,z=Math.sin(a)*rr;if(z>.35&&y<.55)continue;ball(list,R*.24,at(x*R*1.1*m.headSX,cy+y*R*1.1,z*R*1.05),'head',i%3?c:dark,[1,1,1],8,6);}
@@ -451,7 +465,7 @@ function addAccessories(list,recipe,m){
 }
 
 /** Long hair, a lipstick or no beard and a slight build: a swimming costume, not trunks. */
-export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','ponytail','braids','bun','perm'].includes(recipe.hair.style)||recipe.mouth.colour!=='#b8544a');
+export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','ponytail','braids','bun','perm','shoulder','pigtails','twinbuns'].includes(recipe.hair.style)||recipe.mouth.colour!=='#b8544a');
 
 function torsoProfile(recipe,m){
  const belly=1+(recipe.body.build-.5)*.12,hipRatio=m.hips/m.width;

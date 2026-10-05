@@ -4,7 +4,7 @@ import {actionFor,itemIcon,svg,iconUrl,ICON_NAMES} from '../src/ui/icons.js';
 
 test('the action button shows the icon for what you are facing',()=>{
  const cases={
-  'Talk to Thuan':['talk','TALK'],'E · Talk to Nao':['talk','TALK'],
+  'Talk to Thuan':['talk','TALK'],'E · Talk to Thao':['talk','TALK'],
   'Enter Front-Row Books & Workshop':['door','ENTER'],'Ring service bell':['bell','RING'],
   'Open refrigerated drinks and dairy':['basket','SHOP'],'Browse mail-order catalogue':['basket','SHOP'],
   'Pick up returnable glass bottle':['hand','TAKE'],'Read Sakura sales ledger':['book','READ'],

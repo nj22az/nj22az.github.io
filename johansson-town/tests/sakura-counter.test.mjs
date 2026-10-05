@@ -1,3 +1,4 @@
+import {SAKURA_EQUIPMENT} from '../src/world/interiors/sakura-counter-detail.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
@@ -22,9 +23,9 @@ const overlapXZ=(a,b)=>a.min.x<b.max.x&&a.max.x>b.min.x&&a.min.z<b.max.z&&a.max.
 
 test('the counter pieces stand apart: lucky cat, register, hot case, steamer, flyers, oden and charity box',()=>{
  const {room}=shop();
- const [rx,,rz]=SAKURA_LAYOUT.register;
+ const R=SAKURA_EQUIPMENT.register;
  const pieces={
-  register:new THREE.Box3(new THREE.Vector3(rx-.16,1,rz-.3),new THREE.Vector3(rx+.16,1.38,rz+.08)),
+  register:new THREE.Box3(new THREE.Vector3(R.minX,R.minY,R.minZ),new THREE.Vector3(R.maxX,R.maxY,R.maxZ)),
   'hot case':footprint(room,/^Sakura hot case/),
   steamer:footprint(room,/^Sakura bun steamer|^Sakura bun /),
   flyers:footprint(room,/shop flyer/),
@@ -34,7 +35,7 @@ test('the counter pieces stand apart: lucky cat, register, hot case, steamer, fl
  // The cat is a loaded model; its holder stands where it was placed, about 0.14 m across.
  const cat=room.getObjectByName('Maneki_neko_Colorful');assert.ok(cat,'The lucky cat is on the counter');
  const p=cat.getWorldPosition(new THREE.Vector3());
- pieces.cat=new THREE.Box3(new THREE.Vector3(p.x-.07,1,p.z-.07),new THREE.Vector3(p.x+.07,1.23,p.z+.07));
+ pieces.cat=new THREE.Box3(new THREE.Vector3(p.x-.07,p.y,p.z-.07),new THREE.Vector3(p.x+.07,p.y+.23,p.z+.07));
  const names=Object.keys(pieces);
  for(const n of names)assert.ok(!pieces[n].isEmpty(),n+' was found');
  for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++)

@@ -247,5 +247,5 @@ function dressBookshop(kit,solid,{inspect}){
  solid({id:'book-cart',x,z,w:.32,d:1.4,height:1});
  kit.sign(poster({title:'¥100',lines:["Paperback",'PAPERBACKS'],band:'#8a3b2e'}),.34,.46,x+.17,1.35,z,{ry:Math.PI/2,depth:.02,name:'book cart card'});
  inspect(x+.9,1,z,'Browse the ¥100 cart','Front-Row ¥100 cart',
-  'Paperbacks with their covers curled by the sea air: detective stories, a Ryūkyū cookery book, three copies of the same romance and a tide table from 1989. Aya puts it out at nine and brings it in when it rains, which is most afternoons in June.');
+  'Paperbacks with their covers curled by the sea air: detective stories, a Ryūkyū cookery book, three copies of the same romance and a tide table from 1989. Nhung puts it out at nine and brings it in when it rains, which is most afternoons in June.');
 }

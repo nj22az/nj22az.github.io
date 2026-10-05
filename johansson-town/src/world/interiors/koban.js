@@ -16,7 +16,7 @@ export const KOBAN_ROOM=Object.freeze({
 });
 /** Where Officer Mori walks, eats and sleeps when he is at home (home-residents.js). */
 export const KOBAN_HOME_LAYOUT=Object.freeze({...KOBAN_ROOM,hatHook:{position:[.45,1.6,3.04],yaw:Math.PI},
- door:[.9,0,-2.3],table:[1.35,0,2.42],bedside:[-1.15,0,1.95],bed:[-2.3,.31,2.88],
+ door:[.9,0,-2.3],table:[1.35,0,2.42],tableSeatHeight:.42,bedside:[-1.15,0,1.95],bed:[-2.3,.31,2.88],
  cover:{position:[-2.3,.37,2.28],width:1.1,length:1.3,axis:'z'}});
 
 const time=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
@@ -66,7 +66,7 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
  cyl('Officer chair post',.03,.42,[-1.4,.22,.28],0x555a60,6);
  box('Visitor stool',[.38,.44,.38],[-1.4,.22,-1.55],0x8a6a4a,true);
  const stool=spot([-1.4,.7,-1.55],'Sit on the visitor’s stool','seat','Visitor’s stool','A plain wooden stool facing the desk. The officer keeps a tin of boiled sweets for lost children.');
- stool.userData.npcInteraction=false;stool.userData.seat={position:[-1.4,0,-1.55],stand:[-.6,0,-1.8],eyeY:1.2,yaw:Math.PI,pitch:0};
+ stool.userData.npcInteraction=false;stool.userData.seat={position:[-1.4,0,-1.55],stand:[-.6,0,-1.8],surfaceY:.44,eyeY:1.2,yaw:Math.PI,pitch:0};
  const hours=sleepHours({name:'Officer Mori'});
  spot([-1.4,1.0,-.6],'Read the incident log','read','Minato Police Box · incident log',
   '13 Sep, 22:40 — Harbour round. Nothing to report.\n14 Sep, 01:15 — A cat in a fish crate at the quay. Cat declined to give a statement.\n14 Sep, 03:30 — Main Street quiet. Lamp outside Sakura flickering; noted for the electrician.\n14 Sep, 05:50 — End of patrol. Nothing to report.\n\n— Mori');
@@ -111,6 +111,7 @@ export function buildKobanInterior({room,reg,collider,action,exit}){
  box('Tea table',[.7,.05,.5],[1.35,.6,1.75],0x8a6a4a);for(const [dx,dz] of [[-.3,-.2],[.3,-.2],[-.3,.2],[.3,.2]])box('Table leg',[.04,.58,.04],[1.35+dx,.29,1.75+dz],0x6d5238);
  collider(1.35,1.75,.7,.5,.62);
  box('Kitchen stool',[.36,.42,.36],[1.35,.21,2.42],0x6d5238);
+ const teaSeat=spot([.65,.9,2.42],'Sit at the police box tea table','seat','Police box tea stool','The little stool beside Mori’s tea table.');teaSeat.userData.npcInteraction=false;teaSeat.userData.seat={position:[1.35,0,2.42],stand:[.65,0,2.42],surfaceY:.42,eyeY:1.14,yaw:0,pitch:0};
  box('Rice bowl',[.12,.06,.12],[1.25,.66,1.7],0xf4f1ea);box('Tea cup',[.07,.07,.07],[1.5,.66,1.8],0x3f7a55);
  box('TV cabinet',[.7,.5,.45],[3.0,.25,2.75],0x6d5238,true);box('Portable television',[.5,.4,.4],[3.0,.7,2.75],0x3b3f45);
  box('TV screen',[.36,.28,.01],[3.0,.72,2.545],0x21302c);

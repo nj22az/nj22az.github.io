@@ -7,8 +7,8 @@ import {glazeWithRoom} from '../render/window-interior.js';
 /**
  * The yard houses behind Front-Row Books & Workshop (yard-homes-layout.js).
  *
- * Two small Okinawan concrete-block houses: Aya and Reiko's with a red-tiled roof and
- * a shisa on the ridge, Kenji and Tetsuo's flat-roofed with a water tank and a TV
+ * Two small Okinawan concrete-block houses: Nhung and Reiko's with a red-tiled roof and
+ * a shisa on the ridge, Chin and Tetsuo's flat-roofed with a water tank and a TV
  * aerial. Each is a home site, so its door works like every other door in town — walk
  * in at any hour, including while the people who live there are asleep in bed
  * (home-residents.js puts them there). Windows light up in the evening.
@@ -69,7 +69,7 @@ export function buildYardHomes(world,options){
    mesh(new THREE.SphereGeometry(.2,8,6),std(0x3f8f46),doorX+.9,.62,face+front*.45,'Geranium');
   }else{
    // A surfboard against the wall and a crate of radio parts.
-   const board=mesh(new THREE.CapsuleGeometry(.22,1.5,4,10),std(0xffc93c),x+w/2-.3,1.1,face+front*.25,'Kenji surfboard');board.scale.z=.18;board.rotation.z=.12;
+   const board=mesh(new THREE.CapsuleGeometry(.22,1.5,4,10),std(0xffc93c),x+w/2-.3,1.1,face+front*.25,'Chin surfboard');board.scale.z=.18;board.rotation.z=.12;
    mesh(new THREE.BoxGeometry(.5,.32,.4),std(0x3b3f55),doorX-1.0,.34,face+front*.4,'Crate of radio parts');
    mesh(new THREE.BoxGeometry(.18,.12,.12),std(0x7a7f7a),doorX-1.0,.56,face+front*.4,'Old radio chassis');
   }

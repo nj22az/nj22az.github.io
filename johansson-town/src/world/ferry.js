@@ -52,8 +52,41 @@ const DEPARTURE=new THREE.CatmullRomCurve3([
  [TURN_AT[0],TURN_AT[1]],[-24,-73],[-45,-79.5],[-54,-97],[-82,-142],[-120,-205],
 ].map(([x,z])=>new THREE.Vector3(x,0,z)),false,'centripetal');
 
-/** Seconds (town minutes) for each part of a call. */
-export const FERRY_TIMES=Object.freeze({arrive:55,reverse:9,turn:9,depart:45});
+/**
+ * Town minutes for each part of a call -- real minutes, since the clock is the one on your
+ * wall (town-clock.js). A small ferry comes in off the sea, slows to a crawl inside the
+ * breakwater and is alongside four and a half minutes later; it loads for a quarter of an
+ * hour (BUS_DWELL); getting out of port takes five minutes -- astern off the berth, a slow
+ * swing in the basin, dead slow to the breakwater -- and only then does it open up and
+ * go. These used to be seconds, from when a town minute passed every second, which made
+ * the whole manoeuvre sixty times too quick.
+ */
+export const FERRY_TIMES=Object.freeze({sea:1,harbour:3.5,reverse:1.5,turn:1.5,leaveHarbour:2,leaveSea:1.5});
+/** Where along a curve it passes the breakwater's end: the harbour is the rest of the way. */
+function shareAt(curve,[px,pz]){
+ let best=0,bestD=Infinity;const v=new THREE.Vector3();
+ for(let i=0;i<=400;i++){curve.getPointAt(i/400,v);const d=Math.hypot(v.x-px,v.z-pz);if(d<bestD){bestD=d;best=i/400;}}
+ return best;
+}
+const BREAKWATER_END=[-45,-79];
+export const HARBOUR_IN=shareAt(APPROACH,BREAKWATER_END),HARBOUR_OUT=shareAt(DEPARTURE,BREAKWATER_END);
+/**
+ * How far along (0–1) after `e` minutes of a leg with a speed change at a share `h`: the
+ * arrival slows steadily across the sea and comes to rest at the berth; the departure
+ * gathers way in the harbour and keeps accelerating at sea. Speeds match at the breakwater.
+ */
+export function inboundShare(e,T=FERRY_TIMES,h=HARBOUR_IN){
+ const S=T.sea,H=T.harbour,v1=2*(1-h)/H,v0=2*h/S-v1;
+ if(e<=0)return 0;if(e>=S+H)return 1;
+ if(e<S)return v0*e+.5*(v1-v0)/S*e*e;
+ const t=e-S;return h+v1*t-.5*v1/H*t*t;
+}
+export function outboundShare(e,T=FERRY_TIMES,h=HARBOUR_OUT){
+ const H=T.leaveHarbour,S=T.leaveSea,v1=2*h/H,a=2*((1-h)-v1*S)/(S*S);
+ if(e<=0)return 0;if(e>=H+S)return 1;
+ if(e<H)return h*(e/H)**2;
+ const t=e-H;return h+v1*t+.5*a*t*t;
+}
 
 /** A small white island ferry of the 1990s, built from boxes and one extruded hull. */
 export function buildFerry({shadows=false}={}){
@@ -222,38 +255,32 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
    }finally{trackSolid();}
   },
   step(dt,minutes=0){
-   const T=FERRY_TIMES;
+   // Everything is read off the clock rather than added up frame by frame, so the ferry is
+   // where the timetable says whatever the frame rate or the clock's speed.
+   const T=FERRY_TIMES,inbound=T.sea+T.harbour;
    if(phase==='away'){
     const due=nextService(minutes);
-    if(due.wait<=T.arrive){service=due.service;serviceAt=minutes+due.wait;phase='arriving';t=0;ferry.visible=true;ferry.userData.lights?.(true);}
+    if(due.wait<=inbound){service=due.service;serviceAt=minutes+due.wait;phase='arriving';ferry.visible=true;ferry.userData.lights?.(true);}
     else return;
    }
    if(phase==='arriving'){
-    t=Math.min(1,t+dt/T.arrive);
-    // Full ahead across the open water, easing down to a crawl alongside.
-    const u=1-(1-t)**2;const heading=along(APPROACH,u,point,tangent);set(point.x,point.z,heading);
-    if(t>=1){park();serviceAt=Math.max(serviceAt,minutes);phase='waiting';}
+    const e=inbound-(serviceAt-minutes);
+    if(e>=inbound){park();serviceAt=Math.max(serviceAt,minutes);phase='waiting';return;}
+    const heading=along(APPROACH,inboundShare(e),point,tangent);set(point.x,point.z,heading);
     return;
    }
    if(phase==='waiting'){
-    if(minutes-serviceAt>=BUS_DWELL){phase='reversing';t=0;}
-    return;
+    if(minutes-serviceAt>=BUS_DWELL)phase='reversing';
+    else return;
    }
-   if(phase==='reversing'){
-    t=Math.min(1,t+dt/T.reverse);const k=t*t*(3-2*t);
-    set(FERRY_BERTH.x,FERRY_BERTH.z+(TURN_AT[1]-FERRY_BERTH.z)*k,0);
-    if(t>=1){phase='swinging';t=0;}
-    return;
-   }
-   if(phase==='swinging'){
-    t=Math.min(1,t+dt/T.turn);set(TURN_AT[0],TURN_AT[1],turnBetween(0,departYaw,t*t*(3-2*t)));
-    if(t>=1){phase='leaving';t=0;}
-    return;
-   }
-   // Leaving: gathering way out of the basin and off round the breakwater.
-   t=Math.min(1,t+dt/T.depart);
-   const heading=along(DEPARTURE,t*t,point,tangent);set(point.x,point.z,heading);
-   if(t>=1){ferry.visible=false;phase='away';service=null;ferry.userData.lights?.(false);}
+   const e=minutes-(serviceAt+BUS_DWELL),k=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u);};
+   if(e<T.reverse){phase='reversing';set(FERRY_BERTH.x,FERRY_BERTH.z+(TURN_AT[1]-FERRY_BERTH.z)*k(e/T.reverse),0);return;}
+   if(e<T.reverse+T.turn){phase='swinging';set(TURN_AT[0],TURN_AT[1],turnBetween(0,departYaw,k((e-T.reverse)/T.turn)));return;}
+   // Dead slow to the breakwater, then opening up at sea until it is out of sight.
+   phase='leaving';
+   const out=e-T.reverse-T.turn;
+   if(out>=T.leaveHarbour+T.leaveSea){ferry.visible=false;phase='away';service=null;ferry.userData.lights?.(false);return;}
+   const heading=along(DEPARTURE,outboundShare(out),point,tangent);set(point.x,point.z,heading);
   },
  };
  return run;

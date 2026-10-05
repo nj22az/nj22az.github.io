@@ -7,14 +7,14 @@ import {YARD_HOMES} from '../src/world/yard-homes-layout.js';
 import {createRoomWalk} from '../src/people/room-walk.js';
 
 // The shared houses are drawn to the house you see (docs/BUILDING-AUDIT.md, B4): the yard
-// staff houses are the size of their walls, Thuan and Nao live in a Kitahama house like
+// staff houses are the size of their walls, Thuan and Thao live in a Kitahama house like
 // their neighbours', and everyone who lives there can walk from the door to their place
 // at the table and to their futon, and back.
 const homes=[
- {site:{id:'resident-home-aya',title:'Aya & Reiko’s home',homeOwner:'Aya',homeOwners:['Aya','Reiko']},names:['Aya','Reiko']},
- {site:{id:'resident-home-kenji',title:'Kenji & Tetsuo’s home',homeOwner:'Kenji',homeOwners:['Kenji','Tetsuo']},names:['Kenji','Tetsuo']},
- {site:{id:'resident-home-thuan',title:'Thuan & Nao’s home',homeOwner:'Thuan',homeOwners:['Thuan','Nao'],plot:'kitahama-1',houseKind:'red-tile'},names:['Thuan','Nao']},
- {site:{id:'resident-home-thuan',title:'Thuan & Nao’s home',homeOwner:'Thuan',homeOwners:['Thuan','Nao'],plot:'kitahama-1',houseKind:'concrete'},names:['Thuan','Nao']},
+ {site:{id:'resident-home-aya',title:'Nhung & Reiko’s home',homeOwner:'Nhung',homeOwners:['Nhung','Reiko']},names:['Nhung','Reiko']},
+ {site:{id:'resident-home-kenji',title:'Chin & Tetsuo’s home',homeOwner:'Chin',homeOwners:['Chin','Tetsuo']},names:['Chin','Tetsuo']},
+ {site:{id:'resident-home-thuan',title:'Thuan & Thao’s home',homeOwner:'Thuan',homeOwners:['Thuan','Thao'],plot:'kitahama-1',houseKind:'red-tile'},names:['Thuan','Thao']},
+ {site:{id:'resident-home-thuan',title:'Thuan & Thao’s home',homeOwner:'Thuan',homeOwners:['Thuan','Thao'],plot:'kitahama-1',houseKind:'concrete'},names:['Thuan','Thao']},
 ];
 for(const {site,names} of homes){
  test(`${site.title} (${site.houseKind||'yard'}): a real plan, and its people walk to the table and to bed`,()=>{
@@ -34,7 +34,7 @@ for(const {site,names} of homes){
    const L=layout.homeLayouts?.[name];assert.ok(L,name+' has a place in the house');
    const person={g:new THREE.Object3D(),profile:{name,age:30}};person.g.position.set(...L.door);
    const walk=createRoomWalk(blocked);
-   for(const [label,target] of [['table',L.table],['bed',L.bedside],['door',L.door]]){
+   for(const [label,target] of [['table',L.tableStand??L.table],['bed',L.bedside],['door',L.door]]){
     let done=false;for(let i=0;i<1200&&!done;i++)done=walk.move(person,target,1/20);
     assert.ok(done,`${name} cannot walk to the ${label} in ${site.title} (stopped at ${person.g.position.x.toFixed(2)}, ${person.g.position.z.toFixed(2)})`);
    }

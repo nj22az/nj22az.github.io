@@ -5,7 +5,7 @@ export const IZAKAYA_POSTERS=Object.freeze([
  {id:'yakitori',file:'minato-tori.webp',title:"MINATO TORI · Harbour Birds",jp:"Harbour Birds",
   position:[-6.28,1.96,2.7],yaw:Math.PI/2,approach:[-5.15,1.55,2.7],
   paper:'#f3efe4',ink:'#141414',accent:'#c41230',
-  line:'Charcoal yakitori until last pour. Hiroshi turns the skewers; Nao keeps the sauce.'},
+  line:'Charcoal yakitori until last pour. Hiroshi turns the skewers; Thao keeps the sauce.'},
  {id:'sake',file:'shiomachi-sake.webp',title:"SHIOMACHI · Waiting for the tide",jp:"Waiting for the tide",
   position:[-6.28,1.96,0.55],yaw:Math.PI/2,approach:[-5.15,1.55,0.55],
   paper:'#e7efe8',ink:'#1a3036',accent:'#c41230',

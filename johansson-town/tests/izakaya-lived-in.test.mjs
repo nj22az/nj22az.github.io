@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../src/world/furniture-standards.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
@@ -19,7 +20,7 @@ test('Minato everyday props actually rest on furniture within existing collision
   assert.ok(SHARED_DINING_COLLIDERS.some(c=>item.min[0]>=c.x-c.w/2-.000001&&item.max[0]<=c.x+c.w/2+.000001&&item.min[2]>=c.z-c.d/2-.000001&&item.max[2]<=c.z+c.d/2+.000001),item.id+' uses an existing solid furniture footprint');
  }
  // Actual lounge tops differ from the collision height; using .73 buries napkins.
- assert.equal(MINATO_DETAIL_SURFACES.loungeNorth.y,.7475);
+ assert.equal(MINATO_DETAIL_SURFACES.loungeNorth.y,FURNITURE_HEIGHTS.table);
 });
 
 test('Minato details leave ordered meals and existing fitted props clear',()=>{
@@ -33,9 +34,9 @@ test('Minato details leave ordered meals and existing fitted props clear',()=>{
  }
  const existing=[];
  for(const [x,z] of [[-3.5,2.2],[2.6,2]]){
-  for(const [dx,dz,w,d,label] of [[0,0,.3,.14,'condiment tray'],[-.4,-.05,.14,.025,'menu'],[-.7,-.25,.08,.08,'beer bottle'],[-.95,.15,.068,.068,'glass'],[-.35,-.35,.068,.068,'glass'],[.35,-.25,.16,.16,'edamame'],[.8,-.3,.3,.11,'skewers'],[.55,.3,.12,.12,'ashtray']])existing.push({id:label,y:.945,...footprint(x+dx,z+dz,w,d)});
+  for(const [dx,dz,w,d,label] of [[0,0,.3,.14,'condiment tray'],[-.4,-.05,.14,.025,'menu'],[-.7,-.25,.08,.08,'beer bottle'],[-.95,.15,.068,.068,'glass'],[-.35,-.35,.068,.068,'glass'],[.35,-.25,.16,.16,'edamame'],[.8,-.3,.3,.11,'skewers'],[.55,.3,.12,.12,'ashtray']])existing.push({id:label,y:FURNITURE_HEIGHTS.table,...footprint(x+dx,z+dz,w,d)});
  }
- for(const z of [4.15,5])existing.push({id:'lounge menu card',y:.7475,...footprint(-4.6,z-.15,.11,.04)});
+ for(const z of [4.15,5])existing.push({id:'lounge menu card',y:FURNITURE_HEIGHTS.table,...footprint(-4.6,z-.15,.11,.04)});
  existing.push({id:'prep chopping board',y:.8975,...footprint(5.4,-5.9,.5,.32)});
  for(const item of placements)for(const occupied of existing){
   if(Math.abs(MINATO_DETAIL_SURFACES[item.surface].y-occupied.y)>.01)continue;

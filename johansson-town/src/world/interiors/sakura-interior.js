@@ -138,7 +138,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   const pane=(w,h,d,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),glass);m.position.set(x,y,z);m.name='Sakura bun steamer glass';room.add(m);};
   const y=B.top+.06+(B.h-.1)/2,h=B.h-.1;
   pane(.008,h,B.d,B.x-B.w/2,y,B.z);for(const s of [-1,1])pane(B.w,h,.008,B.x,y,B.z+s*B.d/2);
-  anchor([B.x-.35,1.25,B.z],'Ask for a steamed bun',()=>action('sakura-hot-snacks'));}
+  anchor([B.x-.35,B.top+.25,B.z],'Ask for a steamed bun',()=>action('sakura-hot-snacks'));}
  anchor([COPY_MACHINE.x,1.1,COPY_MACHINE.z-.45],'Use the copy machine',()=>action('inspect','Copy machine · fax',
   'Ten yen a copy, fifty a page to fax. The fishermen\u2019s co-op sends its catch sheets to Naha from here every morning, and the lid is warm by nine.'));
  const magazineRack=buildMagazineRack(room,{anchor,action});
