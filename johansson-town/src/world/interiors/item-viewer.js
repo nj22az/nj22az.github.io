@@ -21,24 +21,29 @@ import {stockSpec} from '../../commerce/shop-stock.js';
  * packaging-art.js rather than from the shelf's atlas.
  */
 const CSS=`
-#itemViewer{position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
- background:radial-gradient(ellipse at 50% 42%,rgba(255,248,232,.30),rgba(24,20,16,.72) 70%);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
- font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",system-ui,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+#itemViewer{--ivg:var(--line-green,#06c755);--ivgh:var(--line-green-hover,#05b34c);--ivs:var(--line-surface,#f7f8f9);--ivb:var(--line-border,#e5e5e5);--ivt:var(--line-text,#000);--iv2:var(--line-secondary,#666);
+ position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+ background:radial-gradient(ellipse at 50% 42%,rgba(255,255,255,.22),rgba(0,0,0,.6) 72%);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+ font-family:var(--line-font,-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,"Noto Sans JP",sans-serif);letter-spacing:normal;touch-action:none;user-select:none;-webkit-user-select:none}
 #itemViewer[hidden]{display:none}
 #itemViewer canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab}
 #itemViewer canvas:active{cursor:grabbing}
-#itemViewer .iv-card{position:relative;margin:0 12px max(12px,env(safe-area-inset-bottom));width:min(560px,calc(100% - 24px));background:#f8f1e1;color:#2f2a24;
- border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:14px 16px 12px}
-#itemViewer .iv-brand{font-size:13px;letter-spacing:.06em;color:#7a6a58}
+/* LINE (awesome-design-md-jp): a white 12px card, 8px buttons, one green primary action. */
+#itemViewer .iv-card{position:relative;margin:0 12px max(12px,env(safe-area-inset-bottom));width:min(560px,calc(100% - 24px));box-sizing:border-box;background:#fff;color:var(--ivt);
+ border:1px solid var(--ivb);border-radius:12px;box-shadow:0 2px 8px rgb(0 0 0 / .08);padding:16px}
+#itemViewer .iv-brand{font-size:12px;line-height:1.4;color:var(--iv2)}
 #itemViewer .iv-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-#itemViewer .iv-name{font-size:20px;font-weight:700;margin:2px 0}
-#itemViewer .iv-price{font-size:22px;font-weight:800;color:#b8332c;white-space:nowrap}
-#itemViewer .iv-line{font-size:14px;line-height:1.45;margin:4px 0 10px;color:#4a4038}
+#itemViewer .iv-name{font-size:18px;line-height:1.35;font-weight:700;margin:2px 0}
+#itemViewer .iv-price{font-size:18px;font-weight:700;color:var(--ivt);white-space:nowrap}
+#itemViewer .iv-line{font-size:14px;line-height:1.5;margin:4px 0 12px;color:var(--iv2)}
 #itemViewer .iv-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-#itemViewer button{min-height:46px;border:0;border-radius:14px;font:inherit;font-size:15px;font-weight:700;background:#e9dcc4;color:#2f2a24}
-#itemViewer button.iv-buy{background:#b8332c;color:#fff}
-#itemViewer .iv-close{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:46px;height:46px;border-radius:50%;background:rgba(248,241,225,.92);font-size:22px;min-height:0}
-#itemViewer .iv-hint{position:absolute;top:max(22px,env(safe-area-inset-top));left:0;right:0;text-align:center;color:#fff8e8;font-size:13px;opacity:.85;text-shadow:0 1px 2px rgba(0,0,0,.5);pointer-events:none}
+#itemViewer button{min-height:48px;padding:0 12px;letter-spacing:normal;text-shadow:none;border:1px solid var(--ivb);border-radius:8px;font:inherit;font-size:15px;font-weight:700;background:var(--ivs);color:var(--ivt);cursor:pointer}
+#itemViewer button:hover{background:#eef0f2}
+#itemViewer button:focus-visible{outline:2px solid var(--ivg);outline-offset:3px}
+#itemViewer button.iv-buy{background:var(--ivg);border-color:var(--ivg);color:#fff}
+#itemViewer button.iv-buy:hover{background:var(--ivgh)}
+#itemViewer .iv-close{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:44px;height:44px;min-height:0;padding:0;border-radius:8px;background:#fff;font-size:20px;box-shadow:0 2px 8px rgb(0 0 0 / .08)}
+#itemViewer .iv-hint{position:absolute;top:max(18px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);padding:6px 12px;border-radius:999px;background:rgb(0 0 0 / .45);color:#fff;font-size:12px;white-space:nowrap;pointer-events:none}
 `;
 
 
