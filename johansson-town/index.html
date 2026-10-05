@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="./base.css?h=2cec600f">
 <link rel="stylesheet" href="./context-controls.css?h=323342df">
 <title>Johansson Town</title>
-<link rel="stylesheet" href="./landing.css?h=2db6f686">
+<link rel="stylesheet" href="./landing.css?h=575e4cbb">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
 <link rel="stylesheet" href="./photo-mode.css?h=17316f51">
@@ -35,7 +35,8 @@
 <button id="exitRoomButton" class="hidden" aria-label="Exit building to street">Exit to street</button><button id="enterBuildingButton" class="hidden" aria-label="Enter building">Enter</button>
 <section id="start">
   <div id="splash" class="splash done" aria-hidden="true"></div>
-  <section id="title" class="title-screen" aria-labelledby="titleLogo">
+  <section id="title" class="title-screen" data-weather="sunny" aria-labelledby="titleLogo">
+    <button id="titleWeather" class="title-weather" type="button" aria-label="Weather: sunny. Tap to change" title="Change the weather"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><g data-icon="sunny"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></g><g data-icon="cloudy"><path d="M7 18h10a4 4 0 0 0 .4-8A5.5 5.5 0 0 0 6.8 11 3.5 3.5 0 0 0 7 18z"/></g><g data-icon="rain"><path d="M7 14h10a3.6 3.6 0 0 0 .4-7.2A5 5 0 0 0 6.8 8 3 3 0 0 0 7 14z"/><path d="M8.5 17l-1 3M12.5 17l-1 3M16.5 17l-1 3"/></g></svg></button>
     <div class="title-sky" aria-hidden="true">
       <span class="title-sun"></span>
       <span class="title-cloud c1"></span><span class="title-cloud c2"></span><span class="title-cloud c3"></span>
