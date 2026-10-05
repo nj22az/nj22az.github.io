@@ -323,6 +323,10 @@
 
   document.querySelectorAll('a[href="#visit-planning"]').forEach(link=>link.addEventListener('click',()=>{document.getElementById('visit-planning').open=true;}));
   renderStatic();
+  // The town feed loads with the guide, not the title screen: it brings the avatar renderer.
+  const feedList=document.getElementById("townFeed");let feedMounted=false;
+  const mountFeed=()=>{if(feedMounted||!start.classList.contains("guide-open"))return;feedMounted=true;import(window.JOHANSSON_FEED_MODULE || "./src/feed/mount.js").then(m=>m.mountTownFeed({list:feedList,more:document.getElementById("feedMore")})).catch(error=>{feedMounted=false;console.warn("Town feed:",error.message);});};
+  if(feedList){new MutationObserver(mountFeed).observe(start,{attributes:true,attributeFilter:["class"]});mountFeed();}
   import(window.JOHANSSON_PORTRAIT_MODULE || "./src/avatars/guide-portraits.js").then(m=>m.mountResidentPortraits()).catch(error=>console.warn("Resident portraits:",error.message));
   ticks();
   tick();

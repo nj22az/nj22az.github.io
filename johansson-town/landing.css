@@ -909,3 +909,34 @@
 #start .article-card .resident-facts dt{color:#777;font-weight:400}
 @media(min-width:760px){#start .article-card:has(.resident-story[open]){grid-template-columns:minmax(260px,34%) 1fr}#start .article-card:has(.resident-story[open])>.article-lead{position:sticky;top:16px}#start .article-card:has(.resident-story[open]) .article-body{max-width:68ch}}
 @media(max-width:560px){#start .article-inline{float:none;width:100%;margin:0 0 1rem}#start .article-lead img{aspect-ratio:4/5}}
+/* Town feed: the storyteller's daily posts, LINE style. */
+#start .town-feed .feed-list{display:grid;gap:16px;max-width:620px;margin:0 auto}
+#start .feed-day{display:grid;gap:16px}
+#start .feed-date{margin:8px 0 0;font-size:12px;font-weight:700;color:#777;text-align:center}
+#start .feed-post{background:#fff;border:1px solid #e5e5e5;border-radius:12px;box-shadow:0 2px 8px #00000014;padding:16px;min-width:0}
+#start .feed-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+#start .feed-head>div{flex:1;min-width:0;display:grid;line-height:1.35}
+#start .feed-head b{font-size:15px;color:#111}
+#start .feed-head span{font-size:12px;color:#777;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#start .feed-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:50% 18%;background:#f7f8f9;flex:none}
+#start .feed-kind{flex:none;font-size:11px;font-weight:700;color:#06c755;background:#e6f9ee;border-radius:999px;padding:4px 10px}
+#start .feed-post h3{font:700 1.15rem/1.4 var(--line-font,system-ui,sans-serif);color:#111;margin:0 0 10px}
+#start .feed-comic{margin:0;border-radius:8px;overflow:hidden;background:#f7f8f9}
+#start .feed-comic img{display:block;width:100%;height:auto;min-height:240px;opacity:0;transition:opacity .3s}
+#start .feed-comic.drawn img{min-height:0;opacity:1}
+#start .feed-meta{margin:-4px 0 10px;font-size:13px;color:#777}
+#start .feed-recipe{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:16px}
+#start .feed-recipe h4{margin:0 0 6px;font-size:13px;color:#06c755}
+#start .feed-recipe :is(ul,ol),#start .feed-lessons{margin:0;padding-left:1.2em;font-size:14px;line-height:1.7;color:#222}
+#start .feed-lessons{list-style:none;padding:0;display:grid;gap:8px}
+#start .feed-lessons li{background:#f7f8f9;border-radius:8px;padding:10px 12px;font-size:14px;line-height:1.6}
+#start .feed-lessons li span{display:block;font-size:11px;font-weight:700;color:#06c755}
+#start .feed-tip{margin:12px 0 0;padding:10px 12px;border-left:3px solid #06c755;background:#f7f8f9;border-radius:0 8px 8px 0;font-size:14px;line-height:1.6;color:#333}
+#start .feed-more{display:block;margin:16px auto 0;min-height:44px;padding:0 20px;border:1px solid #e5e5e5;border-radius:8px;background:#f7f8f9;color:#111;font-weight:700;cursor:pointer}
+@media(max-width:560px){#start .feed-recipe{grid-template-columns:1fr}#start .feed-post{padding:12px}}
+
+/* Start page: icons sit in the middle of their buttons, and the footer is centred. */
+#start .guide-nav :is(a,button){display:grid!important;place-items:center;padding:0!important;width:48px;height:48px;line-height:0}
+#start .guide-nav svg{display:block;width:24px;height:24px;margin:0}
+#start :is(.title-guide,#enter,#installTown,.weather-button,.title-dice) svg{display:block;flex:none;margin:0}
+#start .title-foot{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;text-align:center}

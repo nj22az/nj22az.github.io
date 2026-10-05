@@ -136,7 +136,9 @@ const ACCESSORY_HAT={captain:['captain','#f4f1ea'],police:['police','#27304d'],d
  */
 const AGE_OF=new Map(PROFILES.map(p=>[p.name,p.age]));
 /** A drawn recipe at the life stage the resident's profile gives them. */
-const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name));return AGE_OF.has(name)&&recipe.age!==age?normalizeRecipe({...recipe,age}):recipe;};
+// A recipe always carries its resident's name: the body's own ways (its gait, its seeded
+// habits) are keyed by it.
+const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name)),named=name&&!recipe.name?{...recipe,name}:recipe;return AGE_OF.has(name)&&named.age!==age?normalizeRecipe({...named,age}):named;};
 export function recipeFor(name=''){
  const saved=residentRecipe(name);if(saved)return saved;
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);

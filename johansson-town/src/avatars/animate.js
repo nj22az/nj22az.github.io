@@ -6,6 +6,7 @@ import {consumptionPhase,poseAvatarConsumption,drinkHeadTilt} from './consume.js
 import {bodyLanguage,CONVERSATION_BIG} from './body-language.js';
 import {createFootGrounder} from './foot-ground.js';
 import {createSeatSupport} from './seat-support.js';
+import {gaitOf} from './gait.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -20,13 +21,14 @@ import {createSeatSupport} from './seat-support.js';
  */
 const JOINTS=['hips','spine','chest','neck','head','shoulderL','elbowL','handL','shoulderR','elbowR','handR','thighL','kneeL','footL','thighR','kneeR','footR'];
 const env=(t,d)=>t<0||t>d?0:Math.sin(Math.PI*Math.min(1,t/d));
+const TIC_TIME={glance:1.4,sky:1.6,nod:1,hum:2.4,watch:1.8,hair:1.4,kick:.8,skip:1.1};
 const ease=(t,d,edge=.25)=>Math.min(1,t/edge,(d-t)/edge);
 
 /** How long each move lasts (loops run until something else happens). */
 export const GESTURES=Object.freeze({
  Wave:1.6,Bow:1.5,Nod:1.1,HeadShake:1.2,Point:1.6,Shrug:1.3,Clap:1.8,Laugh:2,Think:2.4,LookAround:2.6,Stretch:2.2,
  PickUp:1.6,Fist:1.4,Jab:.42,JabL:.42,Swipe:.7,Hurt:.5,Jump:.9,Cheer:1.6,Hop:1.2,Gasp:1.6,Stomp:1.4,Slump:2.2,Fidget:2.4,SitEnjoyFood:3.8,SitPresentFood:4.2,SitToast:2.4,SitDrink:2.4,SitEat:2.4,Drink:2.4,Eat:2.4,
- Heart:2.8,Peace:2.8,Coy:3,Tada:2.4,HandsOnHips:2.6,HeelKick:2.6,
+ Heart:2.8,Peace:2.8,Coy:3,Tada:2.4,HandsOnHips:2.6,HeelKick:2.6,CheekRest:3,DoubleCheek:3,
  // Habits (body-language.js quirk): small, done while somebody else is talking.
  ScratchHead:1.8,HairTuck:1.6,HeelRock:2.4,ChinTap:2,CollarTug:1.5,
  Talk:Infinity,Kachashi:Infinity,Crouch:Infinity,Phone:Infinity,FishIdle:Infinity,Reel:Infinity,
@@ -52,6 +54,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  const individual=seeded(avatar.recipe.name||JSON.stringify(avatar.recipe));
  const strideStyle=.92+individual()*.16,armStyle=.8+individual()*.25;
  const posture=(individual()-.5)*.055,idleRate=.85+individual()*.3;
+ // How they walk (gait.js): their type, their age and, for a few, their own way of going.
+ const gait=gaitOf(avatar.recipe,individual);
+ let ticIn=gait.ticEvery[0]+random()*(gait.ticEvery[1]-gait.ticEvery[0]),tic=null,ticT=0;
  // Listening (body-language.js listen): which way their head leans, and their two habits:
  // the one their personality has, and one that is just theirs.
  const listen=style.listen,tiltSide=individual()<.5?-1:1,habits=[style.quirk,['ScratchHead','HairTuck','HeelRock','ChinTap','CollarTug'][Math.floor(individual()*5)]];
@@ -66,6 +71,25 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  let consumption=null,consumeTime=0,lastConsume=null,driftX=0;
  const set=(j,x=0,y=0,z=0)=>target[j].set(x,y,z);
  const add=(j,x=0,y=0,z=0)=>target[j].add(new THREE.Vector3(x,y,z));
+
+ /** What the arms do on the walk (gait.js carry). */
+ function carryArms(carry,sp,A){
+  if(carry==='behind'){set('shoulderL',.38,0,.18);set('shoulderR',.38,0,-.18);set('elbowL',-.95);set('elbowR',-.95);}
+  else if(carry==='pockets'){set('shoulderL',sp*A*.15+.05,0,.07);set('shoulderR',-sp*A*.15+.05,0,-.07);set('elbowL',-.4);set('elbowR',-.4);}
+  else if(carry==='stiff'){set('shoulderL',sp*A*1.25,0,.08);set('shoulderR',-sp*A*1.25,0,-.08);set('elbowL',-.05);set('elbowR',-.05);}
+  else if(carry==='hips'){set('shoulderL',.1,0,.62);set('shoulderR',.1,0,-.62);set('elbowL',-1.6);set('elbowR',-1.6);}
+ }
+ /** A walking tic, at strength e (0..1, in and out). */
+ function walkTic(kind,e,sp){
+  if(kind==='glance')add('head',0,.75*e*tiltSide,0);
+  else if(kind==='sky')add('head',-.45*e,0,0);
+  else if(kind==='nod')add('head',Math.abs(Math.sin(e*Math.PI*2))*.22*e,0,0);
+  else if(kind==='hum')add('head',0,0,Math.sin(time*6)*.14*e);
+  else if(kind==='watch'){set('shoulderL',-1.15*e,0,.15+.25*e);set('elbowL',-.25-1.45*e);add('head',.3*e,.35*e,0);}
+  else if(kind==='hair'){set('shoulderR',-2.1*e,0,-.12-.35*e);set('elbowR',-.25-1.55*e);add('head',0,0,-.1*e);}
+  else if(kind==='kick'){add(sp>0?'thighL':'thighR',-.55*e,0,0);}
+  else if(kind==='skip'){add('shoulderL',0,0,.35*e);add('shoulderR',0,0,-.35*e);}
+ }
 
  /** @param {number} [seconds] how long to hold a move that would otherwise loop. */
  function play(name,seconds){
@@ -134,16 +158,26 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    else if(pose==='Wake'){const w=Math.max(0,Math.sin(time*.8));set('shoulderL',0,0,.4+w*2.2);set('shoulderR',0,0,-.4-w*2.2);}
   }else if(moving){
    // Walking and running: short legs, a quick step and a proper bounce.
-   const run=s.running||speed>2.6,stride=m.leg*(run?2.6:1.7)*strideStyle;
+   // Their own gait (gait.js) shapes every part of the step; running evens people out.
+   const run=s.running||speed>2.6,G=run?{...gait,carry:'swing',lean:gait.lean*.5,sway:gait.sway*.5}:gait;
+   const stride=m.leg*(run?2.6:1.7)*strideStyle*G.stride;
    phase+=speed/stride*Math.PI*2*dt*.5;
-   const A=run?.95:Math.min(.62,.25+speed*.3),sp=Math.sin(phase),cp=Math.cos(phase);
-   set('thighL',-sp*A);set('thighR',sp*A);
-   set('kneeL',Math.max(0,Math.sin(phase-.9))*A*1.5+.05);set('kneeR',Math.max(0,Math.sin(phase+Math.PI-.9))*A*1.5+.05);
+   const A=(run?.95:Math.min(.62,.25+speed*.3))*Math.sqrt(G.stride),sp=Math.sin(phase),cp=Math.cos(phase);
+   set('thighL',-sp*A,G.toe,0);set('thighR',sp*A,-G.toe,0);
+   set('kneeL',(Math.max(0,Math.sin(phase-.9))*A*1.5+.05)*G.lift);set('kneeR',(Math.max(0,Math.sin(phase+Math.PI-.9))*A*1.5+.05)*G.lift);
    set('footL',sp*A*.3);set('footR',-sp*A*.3);
-   set('shoulderL',sp*A*armStyle,0,.12);set('shoulderR',-sp*A*armStyle,0,-.12);
-   set('elbowL',run?-1.35:-.25-Math.max(0,-sp)*.3);set('elbowR',run?-1.35:-.25-Math.max(0,sp)*.3);
-   set('hips',0,sp*.14,0);set('chest',run?.22:.05,-sp*.18,0);set('head',run?-.12:-.02,sp*.08,0);
-   targetHips=Math.abs(cp)*(run?.055:.025)*m.k-(run?.02:0);
+   const swing=A*armStyle*G.arms;
+   set('shoulderL',sp*swing,0,.12);set('shoulderR',-sp*swing,0,-.12);
+   set('elbowL',run?-1.35:-.25-G.elbow-Math.max(0,-sp)*.3);set('elbowR',run?-1.35:-.25-G.elbow-Math.max(0,sp)*.3);
+   set('hips',0,sp*.14*G.swagger,Math.sin(phase)*G.sway);set('chest',(run?.22:.05)+G.lean,-sp*.18*G.swagger,-Math.sin(phase)*G.sway*.6);
+   set('head',(run?-.12:-.02)-G.lean*.5+Math.abs(cp)*G.headBob,sp*.08,0);
+   if(!s.carrying&&!run)carryArms(G.carry,sp,A);
+   targetHips=Math.abs(cp)*(run?.055:.025)*m.k*G.bounce-(run?.02:0);
+   // Now and then, their walking tic.
+   if(!run&&!s.carrying){
+    if(!tic){ticIn-=dt;if(ticIn<=0){tic=pick(gait.tics);ticT=0;ticIn=gait.ticEvery[0]+random()*(gait.ticEvery[1]-gait.ticEvery[0]);}}
+    if(tic){ticT+=dt;const d=TIC_TIME[tic]||1.2,e=env(ticT,d);walkTic(tic,e,sp);if(tic==='skip')targetHips+=Math.abs(Math.sin(ticT/d*Math.PI*2))*.05*m.k*e;if(ticT>=d)tic=null;}
+   }
    if(s.carrying){set('shoulderL',-1.15,0,.3);set('shoulderR',-1.15,0,-.3);set('elbowL',-.5);set('elbowR',-.5);}
   }else{
    // Standing: breathing, the weight moving from foot to foot, the odd look round.
@@ -154,6 +188,8 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    if(attention>.01)add('head',-Math.sin(time*.7)*.03*attention,-Math.sin(time*.31)*.12*attention*.8,-Math.sin(time*.5)*.04*attention*.8);
    targetHips=Math.sin(time*1.6*idleRate)*.004;
    const pose=s.pose;
+   // Standing about the way they walk: an elder's hands behind the back, a loafer's in the pockets.
+   if(!pose&&!s.carrying&&!gesture){add('chest',gait.lean*.6);if(gait.carry==='behind'||gait.carry==='pockets')carryArms(gait.carry,0,0);}
    if(pose==='CounterIdle'){set('shoulderL',-.5,0,.2);set('shoulderR',-.5,0,-.2);set('elbowL',-.95);set('elbowR',-.95);}
    else if(pose==='Interact'){set('shoulderL',-.75+Math.sin(time*4.5)*.18,0,.15);set('shoulderR',-.75+Math.sin(time*4.5+1.7)*.18,0,-.15);set('elbowL',-.8);set('elbowR',-.8);add('chest',.12);add('head',.2);}
    // Cleaning (people/izakaya-hours.js): the arms work, the chest turns into it.
@@ -374,6 +410,18 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     set('shoulderR',-1.15*q,0,-.12*q);set('elbowR',-2.1*q);
     set('shoulderL',.15*q,0,.75*q);set('elbowL',-.3*q,0,-1.5*q);
     add('head',.12*q,.2*q,.2*q);add('chest',0,.12*q,-.05*q);set('hips',0,-.2*q,.08*q);set('thighR',-.1*q,0,-.06*q);set('kneeR',.3*q);break;}
+   case 'CheekRest':{
+    // The photo-booth pose: a palm cupping the cheek, the head tipped into it, shoulders up a
+    // little, the other arm loose, one knee soft.
+    set('shoulderR',-.55*q,.6*q,-1.58*q);set('elbowR',-1.92*q,.6*q,0);
+    set('shoulderL',-.12*q,0,.16*q);set('elbowL',-.35*q);
+    add('head',.1*q,-.08*q,.29*q+Math.sin(t*2)*.02*q);add('chest',.04*q,-.06*q,.04*q);set('hips',0,.06*q,.04*q);set('thighL',-.08*q);set('kneeL',.25*q);
+    return {root:Math.abs(Math.sin(t*2))*.006*q};}
+   case 'DoubleCheek':{
+    // Both palms to the cheeks, elbows tucked, a little sway from side to side.
+    set('shoulderR',-.55*q,.6*q,-1.58*q);set('elbowR',-1.92*q,.6*q,0);set('shoulderL',-.55*q,-.6*q,1.58*q);set('elbowL',-1.92*q,-.6*q,0);
+    add('head',.1*q,0,Math.sin(t*2.6)*.12*q);add('chest',.05*q,0,-Math.sin(t*2.6)*.04*q);set('kneeL',.18*q);set('kneeR',.18*q);
+    return {root:Math.abs(Math.sin(t*2.6))*.008*q};}
    case 'Tada':{
     // Arms flung wide and a heel kicked up behind.
     const pop=Math.min(1,t/.3);
@@ -403,5 +451,5 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   }
   return null;
  }
- return {update,play,stop,style,get gesture(){return gesture?.name||null;},get consumption(){return consumption;}};
+ return {update,play,stop,style,gait,get gesture(){return gesture?.name||null;},get consumption(){return consumption;}};
 }
