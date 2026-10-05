@@ -30,3 +30,26 @@ test('the floor follows its philosophy',()=>{
  // Most people in town have a reason to come in.
  const shoppers=[...residents].filter(n=>linesFor(n).length);assert.ok(shoppers.length>=residents.size*.75,'Most of the town shops here: '+shoppers.length+'/'+residents.size);
 });
+
+test('Sakura supplies every business in town, with lines it really stocks',async()=>{
+ const {TRADE_ACCOUNTS,tradeBuyersOf}=await import('../src/commerce/merchandising.js');
+ const {readdir}=await import('node:fs/promises');
+ const sources=(await Promise.all((await readdir(new URL('../src/world/',import.meta.url),{recursive:true})).filter(f=>f.endsWith('.js')).map(f=>readFile(new URL('../src/world/'+f,import.meta.url),'utf8')))).join('\n');
+ const stock=new Set(SHOP_STOCK.map(i=>i.id));
+ for(const [site,a] of Object.entries(TRADE_ACCOUNTS)){
+  assert.ok(new RegExp(`id:'${site}'|'${site}'`).test(sources),site+' is a real place in town');
+  assert.ok(a.owner?residents.has(a.owner):a.contact,(a.owner||a.contact)+' orders for '+a.name);
+  assert.ok(a.lines.length&&a.lines.every(l=>stock.has(l)),a.name+' orders lines Sakura stocks');
+  assert.ok(a.why.length>30&&a.delivery.length>20,a.name+' says why and when');
+ }
+ for(const id of ['izakaya','ramen','onsen','frontrow','form3d','office'])assert.ok(TRADE_ACCOUNTS[id],id+' buys from Sakura');
+ // Alcohol comes from the Higas, office supplies from Front-Row; Sakura sells neither on account.
+ const {ACCOUNTS,SUPPLIERS,suppliersOf}=await import('../src/commerce/merchandising.js');
+ for(const a of Object.values(TRADE_ACCOUNTS))assert.ok(!a.lines.includes('beer')&&!a.lines.includes('notebook'),a.name+' gets alcohol and stationery from their own suppliers');
+ assert.ok(suppliersOf('izakaya').some(s=>s.supplier==='higa-saketen'),'Higa Liquor supplies Minato');
+ assert.ok(ACCOUNTS['higa-saketen'].market,'Higa Liquor supplies Sakura');
+ assert.ok(ACCOUNTS.frontrow.office&&ACCOUNTS.frontrow['mayor-office'],'Front-Row supplies the offices');
+ for(const [id,s] of Object.entries(SUPPLIERS)){assert.ok(residents.has(s.owner),s.owner+' runs '+s.name);for(const [site,a] of Object.entries(ACCOUNTS[id])){assert.ok(new RegExp(`id:'${site}'|'${site}'`).test(sources),site+' is a real place');assert.ok(a.owner?residents.has(a.owner):a.contact,site);}}
+ assert.ok(ACCOUNTS['rainflower-florist'].market,'Rainflower Florist decorates Sakura');
+ assert.ok(SHOP_STOCK.filter(i=>tradeBuyersOf(i.id).length).length>=15,'Half the lines go to a business too');
+});

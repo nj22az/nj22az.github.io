@@ -38,7 +38,7 @@ export const ARTICLES={
   body:[
    'At four o’clock Thao hangs the noren and the evening begins: lanterns, the pink ¥10 telephone by the door, a laserdisc karaoke that takes its time finding the disc. Regulars keep their own bottles on the shelf behind the counter, each with a tag in Thao’s careful hand. Keep one yourself and she will warn you that being a regular is worse for you than it sounds.',
    'Chin has won the last-Friday karaoke contest three times running. The police notice by the door asks drivers not to drink; Officer Mori put it up himself and then sat under it with a beer. He walked home. Thao tells this story more often than Mori would like.',
-   'At three in the morning the cushions are stacked and Thao wipes the counter down while the Barfly mops. She goes home to the house she shares with Thuan, the youngest of the three sisters, sleeps until noon, buys the two of them ice cream from Sakura’s freezer when Nhung is not looking, and is back at her station by three to prep. The amber corner by the window is kept for unhurried conversations. She will not turn it into a hurried table, however full the room.',
+   'At three in the morning the cushions are stacked and Thao wipes the counter down while the Barfly mops. She goes home to the house she shares with Thuan, the youngest of the three sisters, sleeps until noon, buys the two of them Blue Coral cones on the lane when Nhung is not looking, and is back at her station by three to prep. The amber corner by the window is kept for unhurried conversations. She will not turn it into a hurried table, however full the room.',
   ],
   quote:'The spare chair is for whoever arrives last. Somebody always does.',
   photos:[shot('Laugh','laugh','sunset','warm','Last orders, which at Minato is a suggestion.'),shot('Clap','happy','night','vivid','Karaoke night. Chin is already queueing.',{with:'Chin'})],
@@ -331,10 +331,10 @@ export const ARTICLES={
  },
  Vy:{
   headline:'Ice cream before homework: the rule Vy made and keeps',
-  standfirst:'The school bus leaves at twenty past seven. By mid-afternoon Vy is back, satchel full of kanji, and heading straight for Sakura’s freezer.',
+  standfirst:'The school bus leaves at twenty past seven. By mid-afternoon Vy is back, satchel full of kanji, and heading straight for the Blue Coral counter.',
   body:[
    'Vy is in her second year of high school and wears the sailor uniform like a reasonable compromise. She takes the twenty-past-seven bus across the bridge and knows every driver by the way they brake. Her verdict on the island’s one bus driver is that he is “gentle, but late on purpose”.',
-   'Her first stop on the way home is the chest freezer outside Sakura, where Thuan keeps the pink guava one aside for her. Thuan says this is good customer service. Vy says it is a contract. Then she spreads her homework across a park bench and does the hard half first, or says she will.',
+   'Her first stop on the way home is Blue Coral on Rainflower Lane, where the lady at the counter keeps the pink guava scoop aside for her. The lady says this is good customer service. Vy says it is a contract. Then she spreads her homework across a park bench and does the hard half first, or says she will.',
    'When she is thinking she counts the pleats in her skirt. When she is not, she is watching the jan-ken-pon games in the park and keeping score for the three sisters, who all claim to be winning. She would like to be a ferry captain, or a translator, or both on alternate days.',
   ],
   quote:'Homework is easier with guava. That is not an opinion, it is research.',

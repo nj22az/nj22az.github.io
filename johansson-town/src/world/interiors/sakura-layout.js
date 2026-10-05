@@ -109,7 +109,7 @@ export const SAKURA_LAYOUT={
   rect(CASH_CORNER.atm.x,CASH_CORNER.atm.z,CASH_CORNER.atm.w,CASH_CORNER.atm.d,1.6),rect(CASH_CORNER.film.x,CASH_CORNER.film.z,CASH_CORNER.film.w,CASH_CORNER.film.d,1.2),
   rect(MAGAZINE_RACK.x,MAGAZINE_RACK.z,MAGAZINE_RACK.width,MAGAZINE_RACK.depth,MAGAZINE_RACK.height),rect(-5.17,-2.16,2.04,.61,1.5),
   rect(-6.4,.43,.9,4.03,2.25),rect(.4,-3.55,5.35,.8,2.3),
-  rect(4.8,1.97,.52,3.78,FURNITURE_HEIGHTS.serviceCounter),rect(6.74,2.08,.18,3.48,2.0),rect(3.64,3.6,1.35,.57,1.06),
+  rect(4.8,1.97,.52,3.78,FURNITURE_HEIGHTS.serviceCounter),rect(6.74,2.08,.18,3.48,2.0),
   rect(-.66,-3.99,7.82,.12),rect(5.62,-3.99,2.46,.12),
   // The restroom's east wall: two jambs either side of its doorway (z -3.66..-2.78).
   rect(-4.02,-3.81,.12,.31),rect(-4.02,-2.6,.12,.33),rect(-5.4,-2.48,2.82,.12),

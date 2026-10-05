@@ -11,13 +11,13 @@
  */
 export const FEED_PLACES=Object.freeze([
  {id:'sakura',name:'Sakura Shōten',short:'Sakura',kind:'shop',regulars:['Thuan'],
-  things:['the chest freezer','the onigiri shelf','the potted palm','the till','the price gun','the ATM','the biscuit aisle','the staff roster'],
+  things:['the drinks fridge','the onigiri shelf','the potted palm','the till','the price gun','the ATM','the biscuit aisle','the staff roster'],
   doing:['restocking the biscuit aisle','arguing with the price gun','counting onigiri','dusting the potted palm','reading the staff roster'],
   activity:{hold:['can','coffee'],chance:.4,sit:0},
   shot:{room:'market'}},
  {id:'sakura-street',name:'outside Sakura Shōten',short:'Sakura',kind:'outdoor',regulars:['Thuan','Vy'],
-  things:['the chest freezer','the vending machine','the bus stop sign','the shop awning','the bicycle rack'],
-  doing:['waiting for the bus','picking an ice cream','reading the shop window','sheltering under the awning'],
+  things:['the parcel sign','the vending machine','the bus stop sign','the shop awning','the bicycle rack'],
+  doing:['waiting for the bus','carrying out a delivery crate','reading the shop window','sheltering under the awning'],
   activity:{hold:['can','coffee'],chance:.7,sit:.2},
   shot:{at:[-1,-24],camera:{pos:[3.5,1.7,-21.5],at:[-5.5,2,-27.3]}}},
  {id:'minato',name:'Minato Izakaya',short:'Minato',kind:'bar',regulars:['Thao','Barfly'],

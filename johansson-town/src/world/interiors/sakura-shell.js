@@ -16,7 +16,7 @@ import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
  * wainscot under cream plaster, a ceiling of white boards on dark beams with bare tubes
  * on battens and a striped till canopy over the counter; wooden gondolas with green end
  * panels and cream price rails; a long wooden counter; the glass bun cabinet on the west
- * wall with dagashi jars on top; an ice-cream chest by the window; the medicine boards
+ * wall with dagashi jars on top; the medicine boards
  * behind the till; a steel rack in the back room; the office and the restroom.
  *
  * The meshes keep the names the rest of the shop looks for: `sakura-building` (the
@@ -244,8 +244,6 @@ function buildWallShelving(){
   for(const y of K.levels)span(a,b,y-.025,y,K.front,K.back,C.steel);
   for(const x of [a+.02,b-.02])for(const z of [K.front+.02,K.back-.02])span(x-.02,x+.02,0,2.25,z-.02,z+.02,0x6f7a7c);
  }
- // The ice-cream chest by the window (x 2.97..4.32, z 3.31..3.88): white, a sliding glass lid.
- span(2.99,4.3,0,.84,3.0,3.54,0xf4f6f2);span(2.99,4.3,.84,.88,3.0,3.54,0x3a7fc0);
  // The magazine rack's plinth so it does not float on the terrazzo.
  const R=MAGAZINE_RACK;span(R.x-R.width/2,R.x+R.width/2,0,.06,R.z-R.depth/2,R.z+R.depth/2,C.plinth);
  return mesh(material());
