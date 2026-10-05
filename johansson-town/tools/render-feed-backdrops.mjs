@@ -4,9 +4,12 @@
 //   assets/images/feed/<id>-<view>.webp        the picture (the wide one is also <id>.webp)
 //   assets/images/feed/<id>-<view>-depth.webp  linear depth at half size, 16-bit in red and green, lossless
 // and assets/images/feed/views.json holds each view's camera and the spots a resident can use:
-// open floor to stand on, seats to sit on, counters to lean at. The comic renderer rebuilds
-// that camera and draws the residents with the depth, so they stand inside the room.
-// node tools/render-feed-backdrops.mjs [id …]   (serves the repository itself; needs the built runtime)
+// open floor to stand on and counters to lean at, found by rays, and the game's own seats in
+// view (stools, benches, sofas: where the seat is, its height and which way a sitter faces).
+// The comic renderer rebuilds that camera and draws the residents with the depth, so they stand
+// and sit inside the room.
+// node tools/render-feed-backdrops.mjs [--seats-only] [id …]   (serves the repository itself; needs the built runtime)
+// --seats-only keeps the pictures and depth and refreshes only the seats in views.json.
 import {chromium} from 'playwright';
 import {createServer} from 'node:http';
 import {readFile,mkdir,writeFile,unlink} from 'node:fs/promises';
@@ -17,7 +20,7 @@ import {fileURLToPath} from 'node:url';
 import {FEED_PLACES} from '../src/feed/places.js';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),site=resolve(root,'..');
-const only=new Set(process.argv.slice(2));
+const args=process.argv.slice(2),seatsOnly=args.includes('--seats-only'),only=new Set(args.filter(a=>!a.startsWith('--')));
 const W=1600,H=1200,DEPTH_FAR=60;
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.svg':'image/svg+xml','.ogg':'audio/ogg','.mp3':'audio/mpeg','.wasm':'application/wasm','.ktx2':'image/ktx2','.woff2':'font/woff2'};
 const server=createServer(async(req,res)=>{
@@ -48,6 +51,31 @@ try{
  /** The camera the game is drawing with now, as position and look-at. */
  const currentPose=()=>page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.render();let cam=null;a.scene.traverse(o=>{if(o.isPerspectiveCamera&&!cam)cam=o;});
   const d=cam.getWorldDirection(new cam.position.constructor()),p=cam.getWorldPosition(new cam.position.constructor());return {pos:p.toArray(),dir:d.toArray()};});
+
+ /**
+  * The game's own seats in view: every visible seat record (the ones residents and the player
+  * sit on) that is in the picture, 1.2–9 m off and not a bath, in the frame the camera is in.
+  */
+ const seatScan=async()=>{
+  const a=window.__JOHANSSON_AUDIT__,THREE=await import('/johansson-town/vendor/three.module.js'),inside=!!a.roomNavigation,base=inside?a.room:a.world.group;
+  let camera=null;a.scene.traverse(o=>{if(o.isPerspectiveCamera&&!camera)camera=o;});camera.updateMatrixWorld(true);
+  const cam=camera.getWorldPosition(new THREE.Vector3()),seats=[],seen=new Set(),r=v=>+(+v).toFixed(3);
+  const visit=(s,id)=>{
+   const [x,y,z]=s.position,key=x.toFixed(2)+','+z.toFixed(2);if(seen.has(key))return;
+   const at=new THREE.Vector3(x,s.surfaceY??y+.45,z),d=at.distanceTo(cam);if(d<1.2||d>9)return;
+   const ndc=at.clone().project(camera);if(ndc.z>1||Math.abs(ndc.x)>.95||ndc.y<-.98||ndc.y>.9)return;
+   seen.add(key);
+   seats.push({id,position:s.position.map(r),stand:(s.stand||s.position).map(r),surfaceY:r(s.surfaceY??y+.45),yaw:r(s.yaw||0),...(Array.isArray(s.table)?{table:s.table.map(r)}:{})});
+  };
+  base.updateMatrixWorld(true);base.traverse(o=>{
+   const s=o.userData.seat,h=o.userData.hit;if(!s||!h||!!h.inside!==inside||s.soak||o.userData.officeTask)return;
+   for(let p=o;p;p=p.parent)if(!p.visible)return;
+   visit(s,h.label||o.name||'seat');
+  });
+  // Seats only residents use, with no marker of their own (Minato's table bench).
+  if(a.roomNavigation?.id==='izakaya'){const {IZAKAYA_GUEST_SEATS}=await import('/johansson-town/src/people/indoor-residents.js');for(const s of IZAKAYA_GUEST_SEATS)visit({position:s.position,stand:s.stand,surfaceY:s.surfaceY,yaw:s.yaw},'Minato guest seat');}
+  return seats;
+ };
 
  /** Depth, camera and usable spots for the view on screen. */
  const measure=()=>page.evaluate(async({W,H,FAR})=>{
@@ -80,9 +108,9 @@ try{
   // The floor is the level most of the picture's level ground is at — not the lowest, which by
   // the harbour is the sea.
   const levels=new Map();for(const h of hits){const k=Math.round(h.p.y/.05);levels.set(k,(levels.get(k)||0)+1);}
-  const floor=([...levels].sort((a,b)=>b[1]-a[1])[0]?.[0]??0)*.05,spots={stand:[],seat:[],counter:[]},taken=new Set();
+  const floor=([...levels].sort((a,b)=>b[1]-a[1])[0]?.[0]??0)*.05,spots={stand:[],counter:[]},taken=new Set();
   for(const h of hits){
-   const lift=h.p.y-floor;if(lift<-.12)continue;const kind=Math.abs(lift)<.12?'stand':lift>.33&&lift<.62?'seat':lift>.8&&lift<1.15?'counter':null;if(!kind||h.d<1.4||h.d>9)continue;
+   const lift=h.p.y-floor;if(lift<-.12)continue;const kind=Math.abs(lift)<.12?'stand':lift>.8&&lift<1.15?'counter':null;if(!kind||h.d<1.4||h.d>9)continue;
    const key=kind+Math.round(h.p.x/.6)+','+Math.round(h.p.z/.6);if(taken.has(key))continue;
    if(kind==='stand'){
     // Room to stand: the floor carries on all round, with nothing at body height in the way.
@@ -98,14 +126,15 @@ try{
  const capture=async(place,name)=>{
   await hideCast();
   await page.evaluate(()=>window.__JOHANSSON_AUDIT__.render());
+  if(seatsOnly){const seats=await page.evaluate(seatScan);const view=views[place.id]?.[name];if(view){view.seats=seats;delete view.spots.seat;}console.log('Seats:',place.id,name,seats.length);return;}
   const png=resolve(out,'.capture.png');await page.locator('#game').screenshot({path:png});
   execFileSync('convert',[png,'-quality','80','-define','webp:method=6',resolve(out,`${place.id}-${name}.webp`)]);
   if(name==='wide')execFileSync('convert',[png,'-resize','960x720','-quality','78','-define','webp:method=6',resolve(out,place.id+'.webp')]);
   await unlink(png);
-  const m=await measure(),depthPng=resolve(out,'.depth.png');await writeFile(depthPng,Buffer.from(m.depth,'base64'));
+  const m=await measure(),seats=await page.evaluate(seatScan),depthPng=resolve(out,'.depth.png');await writeFile(depthPng,Buffer.from(m.depth,'base64'));
   execFileSync('convert',[depthPng,'-define','webp:lossless=true','-define','webp:method=6',resolve(out,`${place.id}-${name}-depth.webp`)]);await unlink(depthPng);
-  (views[place.id]??={})[name]={camera:m.camera,floor:m.floor,spots:m.spots};
-  console.log('View:',place.id,name,'stand',m.spots.stand.length,'seat',m.spots.seat.length,'counter',m.spots.counter.length);
+  (views[place.id]??={})[name]={camera:m.camera,floor:m.floor,spots:m.spots,seats};
+  console.log('View:',place.id,name,'stand',m.spots.stand.length,'seats',seats.length,'counter',m.spots.counter.length);
  };
  /** The wide view, then the same camera pushed in, dropped low and raised high. */
  const variations=async place=>{

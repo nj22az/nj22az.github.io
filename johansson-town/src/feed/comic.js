@@ -27,11 +27,12 @@ function context(w,h){
 const load=url=>{if(!images.has(url))images.set(url,new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error('Missing comic set: '+url));img.src=url;}));return images.get(url);};
 async function placeViews(base){views??=fetch(base+'assets/images/feed/views.json').then(r=>r.ok?r.json():{}).catch(()=>({}));return views;}
 
-function pose(avatar,name,expression,seatHeight){
- const animator=createAvatarAnimator(avatar),duration=GESTURES[name],time=Number.isFinite(duration)?duration*.43:.7;
+/** Poses a resident: a gesture, standing or (with a seat height) seated, the legs kept on the seat. */
+function pose(avatar,name,expression,seatHeight=null){
+ const animator=createAvatarAnimator(avatar),duration=GESTURES[name],time=Number.isFinite(duration)?duration*.43:.7,seated=name==='Sit'||seatHeight!=null;
  if(duration)animator.play(name);
  const steps=Math.max(1,Math.ceil(time/.025));
- for(let i=0;i<steps;i++)animator.update(time/steps,{expression,seated:name==='Sit',seatHeight:seatHeight??.48});
+ for(let i=0;i<steps;i++)animator.update(time/steps,{expression,seated,seatHeight:seatHeight??.48});
  avatar.paintFace({expression,blink:0,talk:0,look:[0,0]});
 }
 
@@ -85,35 +86,64 @@ function depthPass(r,camera,depthTex,data){
    offset:{value:new THREE.Vector4(view.offsetX/view.fullWidth,1-(view.offsetY+view.height)/view.fullHeight,view.width/view.fullWidth,view.height/view.fullHeight)}},
   vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',
   fragmentShader:'uniform sampler2D tex;uniform float far,near,cfar;uniform vec4 offset;varying vec2 vUv;void main(){vec2 uv=offset.xy+vUv*offset.zw;vec4 c=texture2D(tex,uv);float z=(c.r*255.*256.+c.g*255.)/65535.*far;gl_FragDepth=z>=far*.999?1.:clamp((1./near-1./z)/(1./near-1./cfar),0.,1.);gl_FragColor=vec4(0.);}',
-  colorWrite:false,depthWrite:true,depthTest:false});
+  // The test stays on, always passing: with it off, WebGL writes no depth at all.
+  colorWrite:false,depthWrite:true,depthTest:true,depthFunc:THREE.AlwaysDepth});
  const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),m),scene=new THREE.Scene();quad.frustumCulled=false;scene.add(quad);
  r.render(scene,new THREE.Camera());quad.geometry.dispose();m.dispose();
 }
 
 /**
- * Where the residents stand in a place, once per strip so every panel agrees: open spots a
- * conversation apart near the middle of the pushed-in view; sometimes a seat for the first.
+ * Where the residents stand or sit in a place, once per strip so every panel agrees. Standing:
+ * open floor a conversation apart near the middle of the pushed-in view. Sitting: the game's
+ * own seats (a stool at the counter, the bench, the sofa), only those a sitter faces the
+ * camera from, two a conversation apart; with one seat free the other resident stands by.
+ * A seated mark is the seat's floor point with {height, yaw}; a standing one has seat null.
  */
-function blocking(set,count,seed,sitting=false){
- const view=set.push||set.wide;let s=seed;const rand=()=>{s=(s*16807)%2147483647;return s/2147483647;};
- // Spots from every view of the place, seen through the pushed-in camera that most panels use:
- // open floor a comfortable distance away, side by side across the picture rather than one
- // behind the other.
+export function blocking(set,count,seed,sitting=false){
+ // Seated, the reference is the wide view, which the seats are captured from; standing, the
+ // pushed-in view most panels use. A panel whose own view loses someone falls back to a view
+ // that has everyone (drawSetPanel).
+ if(sitting&&set.wide){const marks=arrange(set,set.wide,count,seed,true);if(marks.length>=count&&marks.some(m=>m.seat))return marks;}
+ return arrange(set,set.push||set.wide,count,seed,false);
+}
+
+function arrange(set,view,count,seed,sitting){
+ let s=seed;const rand=()=>{s=(s*16807)%2147483647;return s/2147483647;};
  const camera=sceneCamera(view),cam=camera.position;
- const seen=list=>{const out=[],keys=new Set();for(const v of Object.values(set))for(const a of v.spots[list]){const key=Math.round(a[0]/.4)+','+Math.round(a[2]/.4);if(keys.has(key))continue;keys.add(key);
-  const q=new THREE.Vector3(a[0],a[1],a[2]).project(camera);if(q.z<1&&Math.abs(q.x)<.8&&q.y>-1&&q.y<.6)out.push({x:a[0],y:a[1],z:a[2],sx:(q.x+1)/2,d:Math.hypot(a[0]-cam.x,a[2]-cam.z)});}return out;};
- const good=a=>Math.abs(a.d-3.2)+Math.abs(a.sx-.5)*2;
- const stands=seen('stand').filter(a=>a.d>2&&a.d<6).sort((a,b)=>good(a)-good(b)),seats=seen('seat').sort((a,b)=>good(a)-good(b));
- const pick=[];
- // Sitting together: two seats a conversation apart (across a table, along a counter or bench).
- if(sitting&&seats.length>1){
-  outer:for(const a of seats.slice(0,8))for(const b of seats){const d=Math.hypot(a.x-b.x,a.z-b.z);if(a!==b&&d>.55&&d<2.2&&Math.abs(a.sx-b.sx)>.08){pick.push({...a,seat:true},{...b,seat:true});break outer;}}
+ const onScreen=(x,y,z)=>{const q=new THREE.Vector3(x,y,z).project(camera);return q.z<1&&Math.abs(q.x)<.8&&q.y>-1&&q.y<.6?q:null;};
+ const stands=[],keys=new Set();
+ for(const v of Object.values(set))for(const a of v.spots?.stand||[]){const key=Math.round(a[0]/.4)+','+Math.round(a[2]/.4);if(keys.has(key))continue;keys.add(key);
+  const q=onScreen(a[0],a[1],a[2]),d=Math.hypot(a[0]-cam.x,a[2]-cam.z);if(q&&d>2&&d<6)stands.push({x:a[0],y:a[1],z:a[2],sx:(q.x+1)/2,d});}
+ const seats=[];keys.clear();
+ if(sitting)for(const v of Object.values(set))for(const t of v.seats||[]){
+  const [x,y,z]=t.position,key=x.toFixed(2)+','+z.toFixed(2),height=t.surfaceY-y;if(keys.has(key))continue;keys.add(key);
+  // A chair, stool, bench or sofa; not a floor cushion, nor a seat on a counter.
+  if(!(height>.3&&height<.8))continue;
+  // Far enough off to see the whole sitter, and facing the camera at least half-way: no backs
+  // of heads, no profile filling the panel.
+  const d=Math.hypot(cam.x-x,cam.z-z),q=onScreen(x,t.surfaceY,z);if(!q||d<2.2)continue;
+  const face=(-Math.sin(t.yaw)*(cam.x-x)-Math.cos(t.yaw)*(cam.z-z))/(d||1);
+  if(face<.3)continue;
+  seats.push({x,y,z,sx:(q.x+1)/2,d,face,seat:{height,yaw:t.yaw}});
  }
- if(sitting&&!pick.length&&seats.length&&rand()<.8)pick.push({...seats[Math.floor(rand()*Math.min(3,seats.length))],seat:true});
- const fits=(spot,min)=>pick.every(p=>{const d=Math.hypot(p.x-spot.x,p.z-spot.z);return d>min&&d<2.4&&Math.abs(p.sx-spot.sx)>.13&&Math.abs(p.d-spot.d)<1.2;});
- for(const min of [1,.8,.6])for(const spot of stands){if(pick.length>=count)break;if(fits(spot,min))pick.push({...spot,seat:false});}
- for(const spot of stands){if(pick.length>=count)break;if(!pick.some(p=>p.x===spot.x&&p.z===spot.z))pick.push({...spot,seat:false});}
- return pick.map(p=>({x:p.x,y:p.seat?view.floor:p.y,z:p.z,seat:p.seat?p.y-view.floor:null}));
+ const good=a=>Math.abs(a.d-3.2)+Math.abs(a.sx-.5)*2-(a.seat?a.face*.6:0);
+ stands.sort((a,b)=>good(a)-good(b));seats.sort((a,b)=>good(a)-good(b));
+ const pick=[];
+ if(seats.length){
+  // Two seats a conversation apart: neighbours along a counter or bench, or across a table.
+  const pairs=[];
+  for(const a of seats.slice(0,10))for(const b of seats){const d=Math.hypot(a.x-b.x,a.z-b.z);if(a!==b&&d>.55&&d<2.2&&Math.abs(a.sx-b.sx)>.08)pairs.push([a,b,good(a)+good(b)+Math.abs(d-1)*.5]);}
+  pairs.sort((p,q)=>p[2]-q[2]);
+  if(count>1&&pairs.length){const [a,b]=pairs[Math.floor(rand()*Math.min(2,pairs.length))];pick.push(...(a.sx<b.sx?[a,b]:[b,a]));}
+  else pick.push(seats[Math.floor(rand()*Math.min(2,seats.length))]);
+ }
+ // Never closer than a person's width to anyone; near a seat, close enough to be talking to it.
+ const apart=spot=>pick.every(p=>Math.hypot(p.x-spot.x,p.z-spot.z)>.6);
+ const near=pick.length?1.8:2.4;
+ const fits=(spot,min)=>pick.every(p=>{const d=Math.hypot(p.x-spot.x,p.z-spot.z);return d>min&&d<near&&Math.abs(p.sx-spot.sx)>.13&&Math.abs(p.d-spot.d)<1.2;});
+ for(const min of [1,.8,.6])for(const spot of stands){if(pick.length>=count)break;if(fits(spot,min))pick.push(spot);}
+ for(const spot of stands){if(pick.length>=count)break;if(apart(spot))pick.push(spot);}
+ return pick.map(p=>({x:p.x,y:p.y,z:p.z,seat:p.seat||null}));
 }
 
 const VIEWS={wide:'wide',medium:'push',close:'push',low:'low',high:'high',dutch:'push','close-thing':'push'};
@@ -135,9 +165,7 @@ export async function renderComic({panels,place,props={},sitting=false},{base='.
  const cast=new Map(names.map(name=>{const avatar=buildAvatar(recipeFor(name),{shadows:false,faceSize:512}),holder=new THREE.Group();holder.add(avatar.root);avatar.root.rotation.y=0;return [name,{avatar,holder}];}));
  const seed=[...place+names.join()].reduce((a,c)=>(a*31+c.charCodeAt(0))%2147483647,7)||7;
  // Everyone keeps their spot for the whole strip; a resident who walks in late gets one of their own.
- // Seats are found by their height alone, without the way they face, so for now everyone
- // stands; sitting returns with the rooms' own seat data.
- const marks=set?blocking(set,names.length,seed,false&&sitting):null,markOf=new Map(names.map((n,j)=>[n,marks?.[j]??null]));
+ const marks=set?blocking(set,names.length,seed,sitting):null,markOf=new Map(names.map((n,j)=>[n,marks?.[j]??null]));
  try{
   for(const [i,p] of panels.entries()){
    const cell=layout.cells[i],w=cell.w,h=cell.h;
@@ -157,23 +185,63 @@ export async function renderComic({panels,place,props={},sitting=false},{base='.
  return page.toDataURL('image/webp',quality);
 }
 
+const depthPixels=new WeakMap();
+/**
+ * Whether a view shows everyone: each resident inside the picture, head and body not hidden
+ * behind the room (a quay block, a counter, a tabletop seen from below). Read from the view's
+ * captured depth: a point is in sight when nothing in the room is nearer the camera.
+ */
+async function inSight(view,depthImg,actors){
+ let px=depthPixels.get(depthImg);
+ if(!px){const c=document.createElement('canvas');c.width=depthImg.width;c.height=depthImg.height;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(depthImg,0,0);px={w:c.width,h:c.height,data:g.getImageData(0,0,c.width,c.height).data};depthPixels.set(depthImg,px);}
+ const camera=sceneCamera(view),far=view.camera.depthFar;
+ const seen=v=>{const q=v.clone().project(camera);if(!(q.z<1&&Math.abs(q.x)<.92&&q.y>-1.02&&q.y<.95))return null;
+  const x=Math.min(px.w-1,Math.round((q.x+1)/2*px.w)),y=Math.min(px.h-1,Math.round((1-q.y)/2*px.h)),i=(y*px.w+x)*4;
+  const scene=(px.data[i]*256+px.data[i+1])/65535*far,depth=-v.clone().applyMatrix4(camera.matrixWorldInverse).z;
+  return scene>=far*.999||scene>depth-.12;};
+ return actors.every(a=>{
+  // Heights of the crown, then what must show: the face and chest, and standing, the knees
+  // too (someone sitting at a table is fine with their legs under it; someone standing is not
+  // to be cut off at the waist by a quay block).
+  const m=a.mark,[crown,...shown]=m.seat?[1.25,1.05,m.seat.height+.38]:[1.55,1.4,1,.5];
+  // In the picture from feet to crown, and those parts in sight.
+  if(seen(new THREE.Vector3(m.x,m.y,m.z))===null||seen(new THREE.Vector3(m.x,m.y+crown,m.z))===null)return false;
+  return shown.every(up=>seen(new THREE.Vector3(m.x,m.y+up,m.z)));
+ });
+}
+
 /** A panel inside the captured room: backdrop, depth, residents on their spots, then the lettering. */
 async function drawSetPanel({ctx,w,h,set,p,shot,actors,scene,base,place,i}){
- const viewName=set[VIEWS[shot]]?VIEWS[shot]:set.push?'push':'wide',data=set[viewName];
+ // The shot's own view if everyone is in it and in sight; else the nearest view where they are.
+ const wanted=set[VIEWS[shot]]?VIEWS[shot]:set.push?'push':'wide';
+ let viewName=wanted;
+ for(const name of [...new Set([wanted,'push','wide','high','low'])])if(set[name]&&await inSight(set[name],await load(`${base}assets/images/feed/${place}-${name}-depth.webp`),actors)){viewName=name;break;}
+ const data=set[viewName];
  const [img,depthImg]=await Promise.all([load(`${base}assets/images/feed/${place}-${viewName}.webp`),load(`${base}assets/images/feed/${place}-${viewName}-depth.webp`)]);
  const camera=sceneCamera(data),show=shot!=='close-thing';
  // Stage the residents on their marks, turned towards the camera and a little towards each other.
- const centre=new THREE.Vector3();actors.forEach(a=>centre.add(new THREE.Vector3(a.mark.x,0,a.mark.z)));centre.divideScalar(actors.length);
  for(const a of actors){
-  a.holder.position.set(a.mark.x,a.mark.y,a.mark.z);
-  const toCam=Math.atan2(camera.position.x-a.mark.x,camera.position.z-a.mark.z),toOther=Math.atan2(centre.x-a.mark.x,centre.z-a.mark.z);
-  const turn=actors.length>1?Math.atan2(Math.sin(toOther-toCam),Math.cos(toOther-toCam)):0;
-  // In conversation they face each other, opened a little to the camera, as on a stage.
-  // A close-up is on a face, so its subject turns to the camera; the rest face each other.
-  const facing=shot==='close'&&a.name===p.focus?.3:.78;
-  a.holder.rotation.y=actors.length>1?toCam+Math.max(-1.15,Math.min(1.15,turn*facing)):toCam;
-  const sit=a.mark.seat!=null&&!['Crouch','Bow','HeelKick','Kachashi'].includes(a.pose);
-  pose(a.avatar,sit?'Sit':a.pose,a.expression,a.mark.seat);
+  // Someone on a seat stays on it: the animator keeps the legs on the seat for any gesture.
+  a.at=a.mark;a.seated=!!a.mark.seat;
+ }
+ for(const a of actors){
+  const at=a.at;a.holder.position.set(at.x,at.y,at.z);
+  const others=actors.filter(b=>b!==a),toCam=Math.atan2(camera.position.x-at.x,camera.position.z-at.z);
+  const toOther=others.length?Math.atan2(others.reduce((t,b)=>t+b.at.x,0)/others.length-at.x,others.reduce((t,b)=>t+b.at.z,0)/others.length-at.z):toCam;
+  const wrap=v=>Math.atan2(Math.sin(v),Math.cos(v)),clamp=(v,m)=>Math.max(-m,Math.min(m,v));
+  if(a.seated){
+   // The way the seat faces (the game's yaw; these avatars face +Z, the game's -Z), swivelled
+   // a little: towards the camera for a close-up, towards the other person otherwise.
+   const ahead=a.mark.seat.yaw+Math.PI,want=shot==='close'&&a.name===p.focus||!others.length?toCam:toOther;
+   a.holder.rotation.y=ahead+clamp(wrap(want-ahead),.35);
+   pose(a.avatar,a.pose&&a.pose!=='Idle'?a.pose:'Sit',a.expression,a.mark.seat.height);
+  }else{
+   // In conversation they face each other, opened a little to the camera, as on a stage.
+   // A close-up is on a face, so its subject turns to the camera; the rest face each other.
+   const turn=others.length?wrap(toOther-toCam):0,facing=shot==='close'&&a.name===p.focus?.3:.78;
+   a.holder.rotation.y=others.length?toCam+clamp(turn*facing,1.15):toCam;
+   pose(a.avatar,a.pose,a.expression);
+  }
   if(show)scene.add(a.holder);
  }
  scene.updateMatrixWorld(true);actors.forEach(a=>a.avatar.body.skeleton.update());
@@ -183,7 +251,7 @@ async function drawSetPanel({ctx,w,h,set,p,shot,actors,scene,base,place,i}){
  // wants the people a certain size in the panel, whatever the view's distance.
  const heads=actors.map(headOf),focus=heads[Math.max(0,actors.findIndex(a=>a.name===p.focus))];
  const px=v=>{const q=v.clone().project(camera);return [(q.x+1)/2*VIEW_W,(1-q.y)/2*VIEW_H];};
- const feet=actors.map(a=>px(new THREE.Vector3(a.mark.x,a.mark.y,a.mark.z))),crowns=heads.map(hd=>px(hd.top));
+ const feet=actors.map(a=>px(new THREE.Vector3(a.at.x,a.at.y,a.at.z))),crowns=heads.map(hd=>px(hd.top));
  const tall=Math.max(40,...actors.map((a,j)=>feet[j][1]-crowns[j][1])),faceH=Math.max(20,px(focus.top.clone().setY(focus.top.y-focus.size))[1]-px(focus.top)[1]);
  let ch={wide:tall/.38,medium:tall/.72,low:tall/.66,high:tall/.62,dutch:tall/.72,close:faceH/.48,'close-thing':VIEW_H/2.6}[shot]||tall/.7;
  ch=Math.min(VIEW_H,Math.max(VIEW_H/4.2,ch));let cw=ch*w/h;if(cw>VIEW_W){cw=VIEW_W;ch=cw*h/w;}
@@ -199,13 +267,14 @@ async function drawSetPanel({ctx,w,h,set,p,shot,actors,scene,base,place,i}){
  // Light the residents in the colour of the room.
  const tone=averageColour(lc,w,h);
  scene.add(new THREE.HemisphereLight(new THREE.Color().setRGB(.7+tone[0]*.55,.7+tone[1]*.55,.7+tone[2]*.55),0x6a5a48,2.1));
- const key=new THREE.DirectionalLight(0xfff2e0,2.2);key.position.copy(camera.position).add(new THREE.Vector3(1.5,2.5,0));key.target.position.copy(centre);scene.add(key,key.target);
+ const key=new THREE.DirectionalLight(0xfff2e0,2.2);key.position.copy(camera.position).add(new THREE.Vector3(1.5,2.5,0));key.target.position.set(actors.reduce((t,a)=>t+a.at.x,0)/actors.length,0,actors.reduce((t,a)=>t+a.at.z,0)/actors.length);scene.add(key,key.target);
  const tops=show?heads.map(hd=>toPanel(hd,camera,w,h)):[];
  if(p.bg)drawBackground(lc,p.bg,w,h,[tops.reduce((t,v)=>t+v.x,0)/(tops.length||1)||w/2,(tops[0]?.y??h*.3)+(tops[0]?.s??60)*.6],i*7919+31);
  if(show){
-  // A soft shadow where each resident meets the floor.
+  // A soft shadow where each resident stands on the floor (a seat carries the rest).
   for(const a of actors){
-   const f=new THREE.Vector3(a.mark.x,a.mark.y+.01,a.mark.z).project(camera),g2=new THREE.Vector3(a.mark.x+.32,a.mark.y+.01,a.mark.z).project(camera);
+   if(a.seated)continue;
+   const f=new THREE.Vector3(a.at.x,a.at.y+.01,a.at.z).project(camera),g2=new THREE.Vector3(a.at.x+.32,a.at.y+.01,a.at.z).project(camera);
    const fx=(f.x+1)/2*w,fy=(1-f.y)/2*h,size=Math.max(10,Math.abs((g2.x-f.x)/2*w));
    if(fy>0&&fy<h*1.15){const g=lc.createRadialGradient(fx,fy,0,fx,fy,size);g.addColorStop(0,'rgba(0,0,0,.38)');g.addColorStop(1,'rgba(0,0,0,0)');lc.fillStyle=g;lc.beginPath();lc.ellipse(fx,fy,size,size*.35,0,0,Math.PI*2);lc.fill();}
   }
