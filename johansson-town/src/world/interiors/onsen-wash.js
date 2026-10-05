@@ -27,7 +27,7 @@ export const WASH_SEATS=Object.freeze(Object.fromEntries([
  ...WALL_PLACES.map(z=>({position:[-4.25,0,z],stand:[-3.45,0,z],yaw:Math.PI/2})),
  ...ISLAND_PLACES.map(z=>({position:[WASH.island.x-WASH.island.half-.38,0,z],stand:[-3.05,0,z],yaw:-Math.PI/2})),
  ...ISLAND_PLACES.map(z=>({position:[WASH.island.x+WASH.island.half+.38,0,z],stand:[-.3,0,z],yaw:Math.PI/2})),
-].map((s,i)=>['wash'+i,{id:'wash'+i,label:'Wash at the tap',...s,eyeY:.98,surfaceY:.27,wash:true}])));
+].map((s,i)=>['wash'+i,{id:'wash'+i,label:'Wash at the tap',...s,eyeY:.98,surfaceY:.26,wash:true}])));
 
 // The advertisements along the bottoms of the mirrors: businesses in town, in English.
 const ADS=[

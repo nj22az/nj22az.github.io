@@ -4,14 +4,14 @@ const shifts={
  // Day staff share the evening service; night staff return on the morning bus.
  // Work hours stay unchanged. Departure identifies the service's arrival time.
  Thuan:{arrival:510,start:540,finish:1200,departure:1320},
- Aya:{arrival:510,start:540,finish:1110,departure:1320},
- Kenji:{arrival:510,start:540,finish:1140,departure:1320},
+ Nhung:{arrival:510,start:540,finish:1110,departure:1320},
+ Chin:{arrival:510,start:540,finish:1140,departure:1320},
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
  Reiko:{arrival:870,start:900,finish:1470,departure:1950},
  Tetsuo:{arrival:870,start:1020,finish:1440,departure:1950},
- // Nao takes the morning service so her Konbini errand and park walk happen before
+ // Thao takes the morning service so her Konbini errand and park walk happen before
  // Minato opens. Her return service is the next morning after the night shift.
- Nao:{arrival:510,start:960,finish:1620,departure:1950},
+ Thao:{arrival:510,start:960,finish:1620,departure:1950},
  'Officer Mori':{arrival:870,start:1200,finish:1800,departure:1950},
  'Harbour master':{permanent:true},
  'Bus driver':{permanent:true},
@@ -99,7 +99,7 @@ export function shiftActive(profile,minutes){
 /** On the island the Front-Row staff live in the yard behind the shop and never take the bus. */
 export const livesInYard=profile=>YARD_RESIDENT_NAMES.includes(typeof profile==='string'?profile:profile?.name);
 /**
- * Since the island grew, Thuan, Nao and Mrs Sato live in Kitahama (kitahama-layout.js).
+ * Since the island grew, Thuan, Thao and Mrs Sato live in Kitahama (kitahama-layout.js).
  * They keep their own days -- the shop, the bench break, the beer at Minato, the lunch
  * counter -- but where the timetable used to put them on the ferry, they walk home.
  */

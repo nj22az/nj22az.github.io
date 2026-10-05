@@ -96,14 +96,14 @@ test('loading keeps passengers off vehicle lanes and waits for actual boarding r
 });
 
 test('an owned car reaches the opposite shore with its existing driver without a player ferry ride',()=>{
- const s=playerService(),g=new THREE.Group();g.name='Kenji';g.visible=false;g.userData.indoors='home';s.group.add(g);
- s.world.people.push({profile:{name:'Kenji'},g});
+ const s=playerService(),g=new THREE.Group();g.name='Chin';g.visible=false;g.userData.indoors='home';s.group.add(g);
+ s.world.people.push({profile:{name:'Chin'},g});
  s.world.traffic=createTownTraffic({parent:s.group,colliders:s.world.colliders,ferry:s.run,people:()=>s.world.people});
- const car=s.world.traffic.fleet.find(v=>v.owner==='Kenji'),playerBefore=s.player.position.clone(),cameraBefore=s.camera.matrixWorld.clone();
+ const car=s.world.traffic.fleet.find(v=>v.owner==='Chin'),playerBefore=s.player.position.clone(),cameraBefore=s.camera.matrixWorld.clone();
  let emptyPickup=false,loadedCrossing=false,boarding=false,unloading=false,parked=false;
  for(let i=0;i<72000;i++){
   s.play.tick(1/60);s.run.update(1/60,600);s.world.traffic.update(1/60,600);
-  const at=s.world.traffic.snapshot().find(v=>v.owner==='Kenji');
+  const at=s.world.traffic.snapshot().find(v=>v.owner==='Chin');
   boarding||=at.transfer==='on';unloading||=at.transfer==='off';
   if(s.run.automaticCrossing){
    emptyPickup||=s.run.destination==='airport'&&at.location!=='aboard';

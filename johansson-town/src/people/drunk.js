@@ -3,7 +3,7 @@
  *
  * `tipsy` runs from 0 (sober) to 4. Each drink adds its `alcohol` (izakaya-beer.js);
  * from DRUNK up the walk goes (animate.js). Nobody drinks past LIMIT: residents stop
- * ordering, and Nao stops pouring for the player -- drunk, yes, but never on the floor.
+ * ordering, and Thao stops pouring for the player -- drunk, yes, but never on the floor.
  * The body sobers by SOBER_PER_HOUR every town hour.
  */
 /** A can of Umineko lager from Sakura, drunk wherever you are. Minato's can is .8 too. */

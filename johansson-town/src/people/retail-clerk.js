@@ -27,7 +27,7 @@ export function createRetailClerk({person,room,layout,collides,getWork,completeW
     else{box.visible=false;phase='return';}
    }else if(phase==='return'){if(walk(layout.staff,dt)&&turn(layout.staffYaw,dt))phase='counter';}
    else if(phase==='checkout'){clerk.userData.activity='serving a customer at the till';if(walk(job.position,dt)&&turn(job.yaw,dt)){phase='checkout-pay';timer=2;}}
-   else if(phase==='checkout-pay'){if(job.ready()){clerk.userData.shopReach=layout.register;if((timer-=dt)<=0)finish();}}
+   else if(phase==='checkout-pay'){if(job.ready()){clerk.userData.shopReach=clerkTarget(layout.register);if((timer-=dt)<=0)finish();}}
    else if(phase==='stock-fetch'){clerk.userData.activity='fetching stock from the back room';if(walk(job.pickup,dt)){phase='stock-collect';timer=1.3;}}
    else if(phase==='stock-collect'){clerk.userData.activity='opening a carton of '+(job.name||job.item).toLowerCase();if((timer-=dt)<=0){box.visible=true;cartonStops=3;phase='stock-carry';}}
    else if(phase==='stock-carry'){clerk.userData.activity='carrying '+(job.name||job.item).toLowerCase()+' to the shelf';if(walk(job.position,dt)&&turn(job.yaw,dt)){phase='stock-place';timer=1.8;beginPlacement();}}

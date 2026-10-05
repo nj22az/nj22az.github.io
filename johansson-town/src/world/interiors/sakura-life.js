@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import {addOwnedCharacter} from '../../people/owned-characters.js';
 import {addSakuraFlyer} from '../sakura-flyers.js';
 import * as THREE from '../../../vendor/three.module.js';
@@ -171,12 +172,12 @@ function buildShopFloor(parent,anchor,action){
   umbrella(0xd7263d,0,.05);umbrella(0x27304d,1,-.04);umbrella(0xffffff,3,.06,true);
  }
  // On the counter, Thuan's side: a beckoning cat and a charity box.
- // Between the register (z .55..93) and the hot case (z 1.44..1.96), touching neither.
- const cat=addOwnedCharacter({parent:group,kind:'Maneki_neko_Colorful',height:.23,position:[4.84,1.0,1.18],yaw:-Math.PI/2});
- anchor([4.4,1.2,1.18],'Look at Thuan’s lucky cat',()=>action('inspect','Maneki-neko · Lucky cat','Thuan keeps her colourful lucky cat beside the till. It welcomes every customer, from the first newspaper buyer to the last harbour worker of the evening.'));
- box(.1,.14,.08,4.9,1.07,.2,0xffffff,'Charity box');
+ // At the south end beyond the oden pot, clear of the clerk and customer sightline.
+ const cat=addOwnedCharacter({parent:group,kind:'Maneki_neko_Colorful',height:.23,position:[4.84,FURNITURE_HEIGHTS.serviceCounter,3.66],yaw:-Math.PI/2});
+ anchor([4.4,FURNITURE_HEIGHTS.serviceCounter+.2,3.66],'Look at Thuan’s lucky cat',()=>action('inspect','Maneki-neko · Lucky cat','Thuan keeps her colourful lucky cat beside the till. It welcomes every customer, from the first newspaper buyer to the last harbour worker of the evening.'));
+ box(.1,.14,.08,4.9,FURNITURE_HEIGHTS.serviceCounter+.07,.2,0xffffff,'Charity box');
  const charity=canvasTex(256,256,(ctx,w,h)=>{ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#7ccc4a';ctx.fillRect(0,0,w,70);text(ctx,"Donation box",w/2,36,44,'#ffffff');text(ctx,"Thank you",w/2,130,30,'#3b3f55');ctx.fillStyle='#3b3f55';ctx.fillRect(80,190,96,10);});
- print(charity,.075,.075,4.849,1.08,.2,-Math.PI/2,'Charity box label');
+ print(charity,.075,.075,4.849,FURNITURE_HEIGHTS.serviceCounter+.08,.2,-Math.PI/2,'Charity box label');
  return {ready:cat.ready,tick(){},dispose:()=>cat.dispose()};
 }
 
@@ -220,10 +221,10 @@ function buildOfficeFun(parent){
   ctx.fillStyle='#b98a55';ctx.fillRect(0,0,w,h);for(let i=0;i<2400;i++){ctx.fillStyle=`rgba(${hash(i)>.5?90:230},${hash(i)>.5?60:200},40,.18)`;ctx.fillRect(hash(i,1)*w,hash(i,2)*h,2,2);}
   ctx.strokeStyle='#7a5530';ctx.lineWidth=18;ctx.strokeRect(0,0,w,h);
   const photo=(x,y,r,draw,caption)=>{ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.fillStyle='#ffffff';ctx.fillRect(-70,-80,140,170);draw(-60,-70,120,120);text(ctx,caption,0,72,18,'#3b3f55');ctx.fillStyle='#d7263d';ctx.beginPath();ctx.arc(0,-76,7,0,Math.PI*2);ctx.fill();ctx.restore();};
-  photo(110,130,-.12,(x,y,w,h)=>{ctx.fillStyle='#86cff2';ctx.fillRect(x,y,w,h);ctx.fillStyle='#ffe28a';ctx.beginPath();ctx.arc(x+95,y+25,16,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2a8fcc';ctx.fillRect(x,y+80,w,40);ctx.fillStyle='#1c1714';ctx.beginPath();ctx.arc(x+45,y+62,14,0,Math.PI*2);ctx.arc(x+78,y+62,14,0,Math.PI*2);ctx.fill();},"Nao & me · Minato");
+  photo(110,130,-.12,(x,y,w,h)=>{ctx.fillStyle='#86cff2';ctx.fillRect(x,y,w,h);ctx.fillStyle='#ffe28a';ctx.beginPath();ctx.arc(x+95,y+25,16,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2a8fcc';ctx.fillRect(x,y+80,w,40);ctx.fillStyle='#1c1714';ctx.beginPath();ctx.arc(x+45,y+62,14,0,Math.PI*2);ctx.arc(x+78,y+62,14,0,Math.PI*2);ctx.fill();},"Thao & me · Minato");
   photo(290,120,.08,(x,y,w,h)=>{ctx.fillStyle='#fff7df';ctx.fillRect(x,y,w,h);drawJagabo(ctx,x+60,y+64,.45);},"Jagabo!!");
   photo(470,150,-.05,(x,y,w,h)=>{ctx.fillStyle='#7ccc4a';ctx.fillRect(x,y,w,h);ctx.fillStyle='#3f8f46';for(let i=0;i<6;i++){ctx.beginPath();ctx.ellipse(x+60+Math.cos(i)*25,y+50+Math.sin(i)*20,18,8,i,0,Math.PI*2);ctx.fill();}},"Assistant Manager 1st day");
-  for(const [x,y,r,c,t] of [[640,110,.1,'#ffe28a',"Milk Order!"],[620,260,-.08,'#ff9dc6',"Battery ×12"],[150,360,.06,'#a6e57c','Nao B-day 9/13'],[340,380,-.1,'#9fd6f0',"Taking out the garbage Tuesday/Friday"],[540,390,.12,'#ffe28a',"Good luck!"]]){
+  for(const [x,y,r,c,t] of [[640,110,.1,'#ffe28a',"Milk Order!"],[620,260,-.08,'#ff9dc6',"Battery ×12"],[150,360,.06,'#a6e57c','Thao B-day 9/13'],[340,380,-.1,'#9fd6f0',"Taking out the garbage Tuesday/Friday"],[540,390,.12,'#ffe28a',"Good luck!"]]){
    ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.fillStyle=c;ctx.fillRect(-70,-50,140,100);text(ctx,t,0,0,t.length>6?20:26,'#3b3f55');ctx.restore();}
  });
  print(board,.9,.6,4.68,1.5,-2.55,Math.PI/2,'Office cork board');
@@ -300,8 +301,8 @@ function buildStorage(parent){
 
 export function buildSakuraLife(room,{anchor,action}){
  // In the gap between the bun steamer and the oden pot, long side across the counter.
- addSakuraFlyer(room,{position:[4.76,1.015,2.875],width:.25,rotation:[-Math.PI/2,0,-Math.PI/2+.06],stack:true});
- anchor([4.4,1.2,2.875],'Pick up Thuan’s shop flyer',()=>action('sakura-flyer','Sakura counter'));
+ addSakuraFlyer(room,{position:[4.76,FURNITURE_HEIGHTS.serviceCounter+.015,2.875],width:.25,rotation:[-Math.PI/2,0,-Math.PI/2+.06],stack:true});
+ anchor([4.4,FURNITURE_HEIGHTS.serviceCounter+.2,2.875],'Pick up Thuan’s shop flyer',()=>action('sakura-flyer','Sakura counter'));
  const mascot=buildMascot(room,anchor,action);
  const floor=buildShopFloor(room,anchor,action);
  const office=buildOfficeFun(room);

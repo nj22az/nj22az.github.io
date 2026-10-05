@@ -51,8 +51,8 @@ test('shirt collars and buttons are painted on the +z front, with nothing stuck 
  }
 });
 
-test('glasses sit in the hand and their rim meets the measured mouth at every height',()=>{
- for(const name of ['Johansson','Thuan'])for(const height of [0,.5,1])for(const kind of ['draft','bottle']){
+test('glasses stay clear of the hand and their rim meets the measured mouth at every height',()=>{
+ for(const name of ['Johansson','Thuan'])for(const height of [0,.5,1])for(const kind of ['draft','bottle','oolong','can','coffee']){
   const a=buildAvatar({...CAST_RECIPES[name],body:{...CAST_RECIPES[name].body,height}});
   const prop=createDrinkProp(kind,{held:true}),anim=createAvatarAnimator(a);a.bones.handR.add(prop);
   anim.play('SitDrink');for(let i=0;i<36;i++)anim.update(1/30,{seated:true,heldProp:prop});
@@ -62,10 +62,12 @@ test('glasses sit in the hand and their rim meets the measured mouth at every he
   const mouth=a.bones.head.localToWorld(new THREE.Vector3(v.x*m.Rh*m.headSX,m.headCentre-m.headY+v.y*m.Rh*m.headSY,v.z*m.Rh*.98+.025*m.k));
   const rim=prop.localToWorld(new THREE.Vector3(0,prop.userData.rimHeight,0));
   assert.ok(rim.distanceTo(mouth)<.015,name+' '+height+' '+kind+' reaches lips');
-  // The palm closes on the grip (the mug's handle, the side of the glass), not in the glass.
-  const palm=prop.worldToLocal(a.bones.handR.localToWorld(new THREE.Vector3(0,-.55*m.hand,0))),[gx,gy]=prop.userData.grip;
-  assert.ok(Math.hypot(palm.x-gx,palm.y-gy,palm.z)<.01,name+' '+height+' '+kind+' holds it by the grip');
-  assert.ok(Math.hypot(palm.x,palm.z)>.04,'the palm is beside the glass, not inside it');
+  // The palm closes on the drink: on the outside of a mug's handle, on a tumbler's side.
+  const palm=prop.worldToLocal(a.bones.handR.localToWorld(new THREE.Vector3(0,-m.hand*.55,0))),grip=prop.userData.grip;
+  const across=Math.hypot(palm.x,palm.z);
+  if(grip.handle!=null)assert.ok(palm.x>grip.handle&&across<grip.handle+m.hand,name+' '+kind+' holds the handle');
+  else assert.ok(across>grip.radius&&across<grip.radius+m.hand*1.1,name+' '+kind+' palm on the glass, not floating beside it ('+across.toFixed(3)+')');
+  assert.ok(Math.abs(palm.y-grip.height)<.01,name+' '+kind+' held at the grip height');
   disposeServing(prop);a.dispose();
  }
  assert.equal(consumptionPhase(0).lift,0);assert.equal(consumptionPhase(1.2).lift,1);assert.equal(consumptionPhase(2.4).lift,0);

@@ -40,3 +40,38 @@ test('a hat comes off without a third draw call, and the copy on the peg is the 
  assert.equal(prop.geometry.attributes.position.count,whole-a.body.geometry.drawRange.start-(a.setHat(false),a.body.geometry.drawRange.count),'the peg holds the hat that came off');
  assert.equal(buildHatProp(CAST_RECIPES.Reiko),null,'no hat, nothing to hang up');a.dispose();
 });
+test('moustache and beard are separate, and older one-style facial hair still reads',()=>{
+ for(const [style,moustache,beard] of [['walrus','walrus','none'],['goatee','none','goatee'],['none','none','none']]){
+  const r=normalizeRecipe({facial:{style,colour:'#dedbd3'}});
+  assert.equal(r.facial.moustache,moustache);assert.equal(r.facial.beard,beard);assert.equal(r.facial.style,style);
+ }
+ const both=normalizeRecipe({facial:{style:'walrus',moustache:'handlebar',beard:'chinstrap',size:.8,height:.2}});
+ assert.equal(both.facial.moustache,'handlebar');assert.equal(both.facial.beard,'chinstrap');assert.equal(both.facial.style,'chinstrap','style names the beard for older readers');
+ const r=normalizeRecipe({facial:{moustache:'pencil',beard:'stubble'},glasses:{style:'round',size:.9,height:.1},mole:true,moleSpot:{x:.2,height:.8,size:1}});
+ assert.deepEqual(decodeRecipe(encodeRecipe(r)),r);
+ assert.equal(normalizeRecipe({facial:{moustache:'nonsense'}}).facial.moustache,'none');
+});
+test('glasses, whiskers and the beauty spot move and size on their own',()=>{
+ const r=normalizeRecipe({mole:true}),base=faceLayout(r);
+ // The default spot is where the fixed one always was, so nobody's face changes.
+ assert.ok(Math.abs(base.moleX-(128+base.spread*.9))<1);assert.ok(Math.abs(base.moleY-(base.mouthY-6))<1);
+ assert.equal(base.glassY,base.eyeY);assert.equal(base.glassS,1);assert.equal(base.facialS,1);assert.ok(Math.abs(base.facialDY)<1e-9);
+ const moved=faceLayout(normalizeRecipe({...r,glasses:{style:'round',size:1,height:1},facial:{moustache:'moustache',size:1,height:1},moleSpot:{x:0,height:1,size:1}}));
+ assert.ok(moved.glassY<base.glassY&&moved.glassS>base.glassS);assert.equal(moved.eyeY,base.eyeY,'the eyes stay put');
+ assert.ok(moved.facialDY<0&&moved.facialS>base.facialS);
+ assert.ok(moved.moleX<base.moleX&&moved.moleY<base.moleY&&moved.moleR>base.moleR);
+});
+test('every face part and hairstyle builds',()=>{
+ const r=CAST_RECIPES.Thuan;
+ for(const [section,list] of [['eyes',PARTS.eyes],['brows',PARTS.brows],['nose',PARTS.nose],['mouth',PARTS.mouth]])for(const style of list){
+  const a=buildAvatar({...r,[section]:{...r[section],style}},{shadows:false,faceSize:128});a.dispose();
+ }
+ for(const moustache of PARTS.moustache)for(const beard of PARTS.beard){const a=buildAvatar({...r,facial:{moustache,beard,colour:'#3a2618'}},{shadows:false,faceSize:128});a.dispose();}
+ const counts=new Set();
+ for(const style of PARTS.hair){
+  const a=buildAvatar({...r,hair:{...r.hair,style},outfit:{...r.outfit,hat:'none'}},{shadows:false,faceSize:128});
+  for(const v of a.body.geometry.attributes.position.array)assert.ok(Number.isFinite(v),style);
+  counts.add(style+':'+a.body.geometry.attributes.position.count);a.dispose();
+ }
+ assert.equal(counts.size,PARTS.hair.length);
+});

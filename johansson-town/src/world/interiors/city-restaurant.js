@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildAvatar} from '../../avatars/build.js';
 import {createAvatarAnimator} from '../../avatars/animate.js';
@@ -95,7 +96,7 @@ export function buildCityRestaurant({room,reg,action,collider=()=>{},johansson=n
  group.add(new THREE.HemisphereLight(0x8a7aa8,0x3a1d18,.55));
 
  // The table for two: a round top under a white cloth, set for dinner.
- const T=[0,-.45],top=.74;
+ const T=[0,-.45],top=FURNITURE_HEIGHTS.table-.015;
  cyl(.5,.5,.03,[T[0],top,T[1]],0xf6f3ec,'Tablecloth',28);cyl(.52,.56,.3,[T[0],top-.16,T[1]],0xf2eee4,null,28);
  cyl(.05,.05,.44,[T[0],.22,T[1]],0x2a2a2a);cyl(.25,.28,.04,[T[0],.02,T[1]],0x2a2a2a);
  collider(T[0],T[1],1.05,1.05,.8);

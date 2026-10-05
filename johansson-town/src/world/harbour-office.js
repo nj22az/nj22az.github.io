@@ -4,12 +4,12 @@ import {buildShopDoor} from './shop-door.js';
 import {HARBOUR_OFFICE as O} from './business-layout.js';
 import {OFFICE_HOME_LAYOUT} from './interiors/office-workplace.js';
 // A single quay office replaces the old cold-store box and both office addresses.
-export function buildHarbourOffice({parent,site,register,enter,label,shadows}){
+export function buildHarbourOffice({parent,site,register,enter,label,shadows,onAction}){
  // The office is the town-side half of the Minato Port Building (port-building.js),
  // which also holds the ferry's waiting hall and the clock tower. Its door, windows
  // and footprint are the ones the interior and the residents expect.
  const group=new THREE.Group();group.name='Consolidated harbour office';group.position.set(O.x,0,O.frontZ);parent.add(group);
- const port=buildPortBuilding({parent,label,shadows});
+ const port=buildPortBuilding({parent,label,shadows,register,onAction});
  const door=buildShopDoor(group,{name:'office-quay-door',width:1.4,shadows});door.group.position.z=.13;
  label(site.jp,'HARBOUR OFFICE · 24 HOUR MARINE SERVICE',[O.x,3.04,O.frontZ+.2],4.6,.45,0,'#e7dcc0','#3e463f',true);
  const entrance=new THREE.Object3D();entrance.name='office-quay-entrance';entrance.position.set(O.x,1.25,O.frontZ+.65);parent.add(entrance);register(entrance,'Enter '+site.title,()=>enter(site));

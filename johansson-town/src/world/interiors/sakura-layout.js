@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
 import {shelfCapacity} from '../../commerce/shop-stock.js';
 // Measured from the supplied convenience-store model, in metres at floor Y=0.
@@ -102,13 +103,13 @@ export const SAKURA_LAYOUT={
  // it: the street seen from inside, and the real interior seen from the street.
  frontZ:3.91,
  clearance:CLERK_CLEARANCE,
- staff:[5.5,0,.85],staffYaw:Math.PI/2,checkout:[3.9,0,.85],stockroom:[.7,0,-5.5],register:[4.78,1.1,.85],
+ staff:[5.5,0,.85],staffYaw:Math.PI/2,checkout:[3.9,0,.85],stockroom:[.7,0,-5.5],register:[4.88,FURNITURE_HEIGHTS.serviceCounter+.12,1.17],
  colliders:[
   ...GONDOLA.map(([id,r])=>turned(id,r)),
   rect(CASH_CORNER.atm.x,CASH_CORNER.atm.z,CASH_CORNER.atm.w,CASH_CORNER.atm.d,1.6),rect(CASH_CORNER.film.x,CASH_CORNER.film.z,CASH_CORNER.film.w,CASH_CORNER.film.d,1.2),
   rect(MAGAZINE_RACK.x,MAGAZINE_RACK.z,MAGAZINE_RACK.width,MAGAZINE_RACK.depth,MAGAZINE_RACK.height),rect(-5.17,-2.16,2.04,.61,1.5),
   rect(-6.4,.43,.9,4.03,2.25),rect(.4,-3.55,5.35,.8,2.3),
-  rect(4.8,1.97,.52,3.78,1.0),rect(6.74,2.08,.18,3.48,2.0),rect(3.64,3.6,1.35,.57,1.06),
+  rect(4.8,1.97,.52,3.78,FURNITURE_HEIGHTS.serviceCounter),rect(6.74,2.08,.18,3.48,2.0),rect(3.64,3.6,1.35,.57,1.06),
   rect(-.66,-3.99,7.82,.12),rect(5.62,-3.99,2.46,.12),
   // The restroom's east wall: two jambs either side of its doorway (z -3.66..-2.78).
   rect(-4.02,-3.81,.12,.31),rect(-4.02,-2.6,.12,.33),rect(-5.4,-2.48,2.82,.12),
@@ -224,8 +225,8 @@ for(const [upper,lower,z] of CHILLED_BAYS){
   SAKURA_SHELVES[id]={x,z,levels,yaw:Math.PI/2,stand,spacing:.2,depth:.13,columns:facingsFor(shelfCapacity(id)/levels.length,6),width:1.25};
 }
 /** The bun steamer on the counter, beside the hot case: two racks behind glass. */
-export const BUN_STEAMER=Object.freeze({x:4.8,z:2.45,w:.38,d:.52,top:1.0,h:.44});
-SAKURA_SHELVES.bun={x:BUN_STEAMER.x,z:BUN_STEAMER.z,levels:[1.03,1.23],columns:3,yaw:-Math.PI/2,stand:[4.05,0,BUN_STEAMER.z],spacing:.15,depth:.11};
+export const BUN_STEAMER=Object.freeze({x:4.8,z:2.45,w:.38,d:.52,top:FURNITURE_HEIGHTS.serviceCounter,h:.44});
+SAKURA_SHELVES.bun={x:BUN_STEAMER.x,z:BUN_STEAMER.z,levels:[BUN_STEAMER.top+.03,BUN_STEAMER.top+.23],columns:3,yaw:-Math.PI/2,stand:[4.05,0,BUN_STEAMER.z],spacing:.15,depth:.11};
 
 
 /**

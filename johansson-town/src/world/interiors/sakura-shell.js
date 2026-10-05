@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {SAKURA_LAYOUT,AISLE_LEVELS,CHILLER,BUN_STEAMER,FRONT_ENDCAPS,COPY_MACHINE} from './sakura-layout.js';
@@ -221,7 +222,7 @@ function buildWallShelving(){
  {const B=BUN_STEAMER,x0=B.x-B.w/2,x1=B.x+B.w/2,z0=B.z-B.d/2,z1=B.z+B.d/2,y0=B.top;
   span(x0,x1,y0,y0+.06,z0,z1,0xc9ced2);span(x0,x1,y0+B.h-.04,y0+B.h,z0,z1,0xd7263d);
   span(x1-.02,x1,y0+.06,y0+B.h-.04,z0,z1,0xc9ced2);
-  for(const y of [1.02,1.215])span(x0+.02,x1-.02,y-.006,y,z0+.02,z1-.02,0xb8bec0);}
+  for(const y of [B.top+.02,B.top+.215])span(x0+.02,x1-.02,y-.006,y,z0+.02,z1-.02,0xb8bec0);}
  // The copy machine by the east window, with the fax on its own little table beside it.
  {const M=COPY_MACHINE,x0=M.x-M.w/2,x1=M.x+M.w/2,z0=M.z-M.d/2,z1=M.z+M.d/2;
   span(x0,x1,0,.08,z0,z1,0x3a3e40);span(x0,x1,.08,.9,z0,z1,0xe9e6dc);span(x0+.02,x1-.02,.9,.96,z0+.02,z1-.02,0x5d6a70);
@@ -253,9 +254,9 @@ function buildWallShelving(){
 /**
  * The counter, the way a 1990s konbini till reads: a long run of warm wood-veneer bays
  * framed in dark rails, a pale laminate top with a dark edge band, and a black kick
- * plinth set back underneath. Top at 1.0 m; the customer stands at x < 4.54.
+ * plinth set back underneath. Top at the shared service-counter height; the customer stands at x < 4.54.
  */
-export const SAKURA_COUNTER=Object.freeze({x0:4.54,x1:5.06,z0:.08,z1:3.86,top:1.0,bay:.62});
+export const SAKURA_COUNTER=Object.freeze({x0:4.54,x1:5.06,z0:.08,z1:3.86,top:FURNITURE_HEIGHTS.serviceCounter,bay:.62});
 function buildCounter(){
  const {span,mesh}=parts('sakura-counter');
  const {x0,x1,z0,z1,top,bay}=SAKURA_COUNTER,rail=0x87968e,veneer=0xdde2d7,laminate=0xf0eee4;

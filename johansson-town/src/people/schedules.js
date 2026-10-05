@@ -22,8 +22,8 @@ import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
 const HOME_RESIDENT_NAMES=new Set(HOME_OWNERS.map(p=>p.name));
 export const DIALOGUE={
  Thuan:[['hello',"Welcome.\nWelcome to Sakura Shōten. Take your time; the kettle has only just boiled."],['pink',"This shirt is my favorite.\nThis yellow flower set is my favourite. My aunt says the shop is easier to find when I stand outside."],['work',"Afternoon stocking has finished.\nThe afternoon shelves are ready. Cold tea is in the cooler; postcards are beside the biscuits."],['harbour',"Would you like to take a walk to the port?\nWalking to the harbour? The light turns the water pink just before supper."],['catalogue',"Click here for the order form.\nThe mail-order book is on the counter. I keep those orders separate from the daily till."]],
- Aya:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
- Kenji:[['delivery','The morning round is parcels for half the arcade, and every one of them is heavier than it looks.'],['folio','Harbour office tray, unless the wind took it. Look for the blue tape.'],['game','One perfect Star Port run and I will show you the workshop. No charge for directions.'],['book','I delivered those books. My back now has a historical perspective.','book'],['part','A keychain without keys. Sensible. Nothing to lose yet.','keychain'],['map','Our repair bench is in the electrical workshop on the western quay, beside the warehouse.'],['weather','Rain is just the harbour making a delivery inland.'],['model','Don’t drop it. We’re inside.']],
+ Nhung:[['books','The Swedish engineer keeps leaving historical novels here as if they were spare parts.'],['shelf','Six books. The shelf has requested a structural assessment.'],['century','Which century did you like? The seventeenth leaks through the shutters.','book'],['job','So he does have a real job. I assumed he only wrote about captains.','cv'],['cat','Tama has not read them. He reviews the binding by sleeping on it.'],['rain','Please leave the rain outside. The histories have enough disasters.'],['chair','The window chair is free. Twenty seconds of peace is an excellent bargain.'],['water','The harbour office tray is towards the water. Documents, not treasure.']],
+ Chin:[['delivery','The morning round is parcels for half the arcade, and every one of them is heavier than it looks.'],['folio','Harbour office tray, unless the wind took it. Look for the blue tape.'],['game','One perfect Star Port run and I will show you the workshop. No charge for directions.'],['book','I delivered those books. My back now has a historical perspective.','book'],['part','A keychain without keys. Sensible. Nothing to lose yet.','keychain'],['map','Our repair bench is in the electrical workshop on the western quay, beside the warehouse.'],['weather','Rain is just the harbour making a delivery inland.'],['model','Don’t drop it. We’re inside.']],
  'Mrs Sato':[['stock','I sell many useful things. You seem determined to pick up paper.'],['shifts','The ramen counter keeps its own timetable. I arrive before the lunch rush and stay until the last bowl.'],['bligh','A captain is easier to judge from a dry chair.','bligh'],['fish','That fish is not becoming fresher while we discuss it.'],['food','Umeboshi rice ball. Eighty yen. Twenty seconds of renewed purpose.'],['book','Six books? He should charge by the kilogram.'],['weather','The noren is not an umbrella. Visitors continue to test this.'],['home','Leave things where you found them. A town runs on this small miracle.']],
  'Harbour master':[['obvious','Did you check the obvious thing twice? Good. Now check the connector.'],['folio','It is a document, not a relic. Put it back in the tray.'],['pattern','I still prefer a wooden pattern and a sharp pencil.','keychain'],['bligh','Read the Bligh paper? Command is not the same thing as shouting.','bligh'],['commission','Commissioning: prove it works before everyone goes home.'],['diagnostics','A useful fault report begins with what happened. Not what you hoped happened.'],['tide','The tide has not read the work order. Allow for this.'],['radio','Harbour Service, 82.1. Clear instructions. Mostly clear reception.']],
  'Bus driver':[['time','The timetable is optimistic. I admire that in paper.'],['stop','This is the Harbour Line. The bus is the part currently missing.'],['book','Those Swedish books need their own ticket.','book'],['cv','Two bases? I have two stops. It is not quite the same.','cv'],['rain','A wet timetable is still wrong.'],['route','Station that way. Harbour the other way. I keep it simple.']],
@@ -34,8 +34,8 @@ for(const archived of PROFILES){
  const personal=[['hello',p.hello],['friends',p.gossip],['discovery',p.clue],['home',residentHomeDescription(p.name)||'I live at '+p.homeAddress+'.']];
  DIALOGUE[p.name]=[...personal,...(DIALOGUE[p.name]||[])];
 }
-// Kenji's own voice: friendly 1980s American slang, still grounded in his job.
-DIALOGUE.Kenji=[
+// Chin's own voice: friendly 1980s American slang, still grounded in his job.
+DIALOGUE.Chin=[
  ['hello','Yo, bro! How’s it going? Just keeping this old workshop running.'],
  ['delivery','Parcels for the whole arcade, bro. Half of them are books. My back keeps a list.'],
  ['folio','Yo, bro, try the harbour office tray. Blue tape on the folder. Can’t miss it.'],
@@ -47,7 +47,7 @@ DIALOGUE.Kenji=[
  ['model','Easy, bro. That prototype took all afternoon.'],
  ['friends','Tetsuo’s got the electronics covered. Me? I handle the parts that need a proper wrench.'],
  ['discovery','Hey, bro, ask the harbour master about that waterlogged folder.'],
- ['home',residentHomeDescription('Kenji')+' After supper I put the tools away and kick back.']
+ ['home',residentHomeDescription('Chin')+' After supper I put the tools away and kick back.']
 ];
 DIALOGUE.Thuan.push(['home',residentHomeDescription('Thuan')+' The plants by the shop stay here overnight.']);
 // Apply the recorded clips last: a later rewrite of a resident's lines must not
@@ -302,7 +302,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     if(Math.hypot(g.position.x-patrol[index][0],g.position.z-patrol[index][1])<.85)index=(index+1)%patrol.length;
     patrols.set(g,index);target=patrol[index];tag='patrol-'+index;
    }
-   if(v.name==='Kenji'&&state().kenjiEscort==='walking'){
+   if(v.name==='Chin'&&state().kenjiEscort==='walking'){
     target=TOWN_DESTINATIONS.workshop;tag='escort';g.userData.activity='showing the workshop';
     if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<1)state().kenjiEscort='done';
    }
@@ -337,6 +337,15 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     g.userData.activity='making way for Thuan';
     move(p,yieldTarget,dt,'yield-thuan');
    }else if(!g.userData.indoors&&!g.userData.usingTownObject&&!g.userData.chatHold&&!(g.userData.facePlayerUntil>performance.now())&&!(tag==='escort'&&g.position.distanceTo(player.position)>6))move(p,target,dt,tag,plan.pace);
+   // Playing (social.js sistersAtPlay): once both are there, they turn to each other,
+   // keep their eyes on each other and play; until then, whoever is first waits.
+   const partner=plan.play?world.people.find(q=>q.profile?.name===plan.play):null;
+   if(partner&&arrived()&&Math.hypot(partner.g.position.x-g.position.x,partner.g.position.z-g.position.z)<2.6){
+    g.userData.socialPose='Janken';g.userData.playing=plan.play;
+    const yaw=Math.atan2(g.position.x-partner.g.position.x,g.position.z-partner.g.position.z);
+    g.rotation.y+=Math.atan2(Math.sin(yaw-g.rotation.y),Math.cos(yaw-g.rotation.y))*(1-Math.exp(-dt*6));
+    g.userData.lookTarget=[partner.g.position.x,partner.g.position.y+1.3,partner.g.position.z];g.userData.lookSource='play';
+   }else if(g.userData.playing){delete g.userData.playing;if(g.userData.socialPose==='Janken')delete g.userData.socialPose;if(g.userData.lookSource==='play'){delete g.userData.lookTarget;delete g.userData.lookSource;}}
    // A passenger caught halfway through the step when the bus goes is put back on
    // their feet, rather than left holding a hand on a door that is not there.
    if(g.userData.boarding&&!(transit&&tag==='bus'&&(world.ferry||world.bus)?.boarding)){

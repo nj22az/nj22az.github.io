@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
-import {createFerryRun,FERRY,FERRY_BERTH,FERRY_TERMINAL,FERRY_TIMES} from '../src/world/ferry.js';
+import {createFerryRun,FERRY,FERRY_BERTH,FERRY_TERMINAL,FERRY_TIMES,inboundShare,outboundShare} from '../src/world/ferry.js';
 import {HARBOUR_LINE,BUS_DWELL} from '../src/people/commuter-schedule.js';
 import {OUTER_PIER,routeAt} from '../src/world/layout.js';
 import {transitStop} from '../src/world/transit.js';
@@ -46,7 +46,7 @@ test('it comes in round the breakwater, never through it, and stays in open wate
 });
 
 test('the ferry has a solid hull only while it is alongside',()=>{
- const {ferry,colliders}=run(HARBOUR_LINE[0]-FERRY_TIMES.arrive-5,HARBOUR_LINE[0]+2);
+ const {ferry,colliders}=run(HARBOUR_LINE[0]-FERRY_TIMES.sea-FERRY_TIMES.harbour-5,HARBOUR_LINE[0]+2);
  const hull=colliders.find(c=>c.id==='ferry');
  assert.equal(ferry.phase,'waiting');assert.ok(circleHitsRect(FERRY_BERTH.x,FERRY_BERTH.z,.3,hull));
  for(let m=HARBOUR_LINE[0]+2;m<HARBOUR_LINE[0]+BUS_DWELL+15;m+=.1)ferry.update(.1,m,m);
@@ -60,4 +60,20 @@ test('on the island the stop is the ferry terminal and the game can start off th
   assert.equal(chooseOpening({minutes:600,force:'ferry',storage:null}).id,'ferry');
   assert.equal(chooseOpening({minutes:600,force:'bus-stop',storage:null}).id,'ferry','Old links to the bus stop go nowhere');
  }finally{}
+});
+
+test('the ferry keeps real time: in slowly, fifteen minutes alongside, five to clear the port, then away',()=>{
+ const T=FERRY_TIMES,start=HARBOUR_LINE[0]-T.sea-T.harbour-2,{ferry}=run(start,start);
+ const at={};let m=start;
+ const go=until=>{for(;m<until;m+=1/60)ferry.update(1/60,m,m*60);return {phase:ferry.phase,x:ferry.ferry.position.x,z:ferry.ferry.position.z,visible:ferry.ferry.visible};};
+ at.arriving=go(HARBOUR_LINE[0]-1);assert.equal(at.arriving.phase,'arriving');
+ at.alongside=go(HARBOUR_LINE[0]+BUS_DWELL-.5);assert.equal(at.alongside.phase,'waiting','loading for a quarter of an hour');
+ at.backing=go(HARBOUR_LINE[0]+BUS_DWELL+1);assert.equal(at.backing.phase,'reversing');
+ at.inPort=go(HARBOUR_LINE[0]+BUS_DWELL+4);assert.equal(at.inPort.phase,'leaving');assert.ok(at.inPort.z>-80,'still inside the breakwater four minutes after letting go');
+ at.clear=go(HARBOUR_LINE[0]+BUS_DWELL+5.2);assert.ok(at.clear.z<-79,'clear of the port in five minutes');
+ at.gone=go(HARBOUR_LINE[0]+BUS_DWELL+T.reverse+T.turn+T.leaveHarbour+T.leaveSea+.2);assert.equal(at.gone.phase,'away');assert.equal(at.gone.visible,false);
+ // Faster at sea than in the harbour, and it never jumps.
+ const harbour=outboundShare(T.leaveHarbour)-outboundShare(T.leaveHarbour-.25),sea=outboundShare(T.leaveHarbour+T.leaveSea)-outboundShare(T.leaveHarbour+T.leaveSea-.25);
+ assert.ok(sea>harbour*3,'it opens up once it is out');
+ for(let e=0;e<T.sea+T.harbour;e+=.05)assert.ok(inboundShare(e+.05)>=inboundShare(e));
 });

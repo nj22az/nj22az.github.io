@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../src/world/furniture-standards.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -87,7 +88,7 @@ test('shop readiness waits for both loaded displays, counts their real geometry 
   await new Promise(done=>setTimeout(done,30));assert.equal(requested,true);assert.equal(ready,false,'Room readiness cannot complete before its figurine loads');release();assert.equal(await completion,true);
   for(const kind of ['thuanFigurine','Maneki_neko_Colorful'])assert.equal(room.getObjectByName(kind)?.userData.ready,true,kind+' is part of the fully ready room');
   room.updateMatrixWorld(true);
-  for(const [kind,sole,height] of [['thuanFigurine',BACKROOM.figurine.plinth,BACKROOM.figurine.height],['Maneki_neko_Colorful',1,.23]]){
+  for(const [kind,sole,height] of [['thuanFigurine',BACKROOM.figurine.plinth,BACKROOM.figurine.height],['Maneki_neko_Colorful',FURNITURE_HEIGHTS.serviceCounter,.23]]){
    const holder=room.getObjectByName(kind),box=new THREE.Box3().setFromObject(holder);assert.ok(Math.abs(box.min.y-sole)<1e-6);assert.ok(Math.abs(box.max.y-box.min.y-height)<1e-6,'The loaded display retains its exact authored height and support');
    const view=ownedDisplayView(kind,{min:box.min.toArray(),max:box.max.toArray()}),origin=new THREE.Vector3(...view.pos),direction=new THREE.Vector3(...view.at).sub(origin).normalize();
    const meshes=[];room.traverse(o=>{if(o.isMesh&&o.visible)meshes.push(o);});

@@ -11,8 +11,8 @@ import {satoRamenOpen} from './sato-ramen-layout.js';
  * point facing a way, or go inside and sit), and what the first caption says.
  */
 export const OPENINGS=Object.freeze([
- {id:'sakura-bench',weight:3,hours:[0,1440],seat:'Sit and look at Sakura',caption:'Stand — Sakura is across the street.'},
- {id:'izakaya',weight:3,open:izakayaOpen,room:'izakaya',seat:'Sit at the counter',drink:'draft',caption:'Minato · a cold beer in front of you, and Nao behind the counter.'},
+ {id:'sakura-bench',weight:3,hours:[0,1440],seat:'Sit and look at Sakura',caption:'Sakura is across the street.'},
+ {id:'izakaya',weight:3,open:izakayaOpen,room:'izakaya',seat:'Sit at the counter',drink:'draft',caption:'Minato · a cold beer in front of you, and Thao behind the counter.'},
  {id:'ramen',weight:3,open:satoRamenOpen,room:'ramen',seat:'Sit at the ramen counter',meal:'shoyu',caption:'Sato Ramen · a bowl of shoyu ramen steaming in front of you, and Mrs Sato at the pots.'},
  {id:'pier',weight:2,hours:[300,1320],stand:[-2.5,-60.5],facing:-1.03,caption:'The end of the pier · the lighthouse, and the open sea.'},
  {id:'park-bench',weight:2,hours:[360,1260],dry:true,seat:'Sit and watch the town and harbour',caption:'Harbour Park · the rooftops and the port below.'},

@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {izakayaPlot,IZAKAYA_DOOR} from '../src/world/dining-layout.js';
-import {residentPlan,thuanAtMinato,izakayaOpen,THUAN_BUS_MARGIN,thuanAfternoon,THUAN_WALK_START,THUAN_WALK_END} from '../src/people/social.js';
+import {residentPlan,thuanAtMinato,izakayaOpen,THUAN_BUS_MARGIN,thuanAfternoon,THUAN_WALK_START,THUAN_WALK_END,SAKURA_FREEZER} from '../src/people/social.js';
 import {departureFor} from '../src/people/commuter-schedule.js';
 import {installDOM} from './fixtures.mjs';
 import {STAFF_BENCH} from '../src/world/staff-bench.js';
@@ -19,7 +19,10 @@ const plan=minutes=>residentPlan(THUAN,minutes,false,{},true);
 test('Thuan locks up, has an occasional beer, and walks home',()=>{
  izakayaPlot();
  assert.equal(plan(1190).place,'market');
- assert.equal(plan(1205).place,'izakaya');
+ // First an ice cream with Nhung at the chest freezer outside the shop.
+ assert.equal(plan(1205).place,'stroll');
+ assert.deepEqual(plan(1205).target,SAKURA_FREEZER[0]);
+ assert.match(plan(1205).activity,/Nhung/);
  assert.equal(plan(1220).place,'izakaya');
  assert.deepEqual(plan(1260).target,IZAKAYA_DOOR);
  assert.match(plan(1260).activity,/beer/);
@@ -93,7 +96,7 @@ test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop
   // Rain keeps her in, and nobody else gets her walk.
   assert.equal(thuanAfternoon(THUAN,THUAN_WALK_START+10,true),null);
   assert.equal(residentPlan(THUAN,THUAN_WALK_START+10,true,{},true).place,'market');
-  assert.equal(thuanAfternoon({name:'Aya'},THUAN_WALK_START+10,false),null);
+  assert.equal(thuanAfternoon({name:'Nhung'},THUAN_WALK_START+10,false),null);
  }finally{izakayaPlot();}
 });
 
@@ -106,7 +109,7 @@ test('the whole day runs commute, shop, noodles, break, beer and home without a 
   const order=seen.map(s=>s.place);
   // Arrives on the bus, opens up, takes her walk, comes back, has a beer, catches it.
   // Comes in from Kitahama, opens up, takes her walk, comes back, has a beer, walks home.
-  assert.deepEqual(order,['market','ramen','market','nap','park','stroll','market','izakaya','home']);
+  assert.deepEqual(order,['market','ramen','market','nap','park','stroll','market','stroll','izakaya','home']);
   // and every one of those is somewhere she can actually stand.
   for(const {m} of seen){const p=plan(m);assert.ok(Array.isArray(p.target)&&p.target.length===2,'No target at '+m);}
  }finally{izakayaPlot();}

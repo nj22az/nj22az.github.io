@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {createVendingMachine} from '../vending.js';
 import {japaneseSign} from '../okinawa/signs.js';
@@ -58,13 +59,13 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
 
  // The ticket counter along the back wall: three windows, one for each way off the island.
  const cz=-hd+.75;
- box('Ticket counter',[6.6,1.05,.7],[-.4,.52,cz],0x7a5b40);
- box('Ticket counter top',[6.7,.05,.8],[-.4,1.07,cz],0xd9d0bd);
+ box('Ticket counter',[6.6,FURNITURE_HEIGHTS.serviceCounter-.05,.7],[-.4,(FURNITURE_HEIGHTS.serviceCounter-.05)/2,cz],0x7a5b40);
+ box('Ticket counter top',[6.7,.05,.8],[-.4,FURNITURE_HEIGHTS.serviceCounter-.025,cz],0xd9d0bd);
  box('Ticket counter kick',[6.6,.12,.05],[-.4,.06,cz+.36],0x2b3436);
- for(const x of [-3.7,-1.5,.7,2.9])box('Counter screen post',[.05,1.2,.05],[x,1.7,cz-.05],0xb8bec0);
- box('Counter screen',[6.6,1.15,.02],[-.4,1.68,cz-.05],new THREE.MeshStandardMaterial({color:0xcfe6ea,roughness:.1,transparent:true,opacity:.28}));
+ for(const x of [-3.7,-1.5,.7,2.9])box('Counter screen post',[.05,1.2,.05],[x,FURNITURE_HEIGHTS.serviceCounter+.6,cz-.05],0xb8bec0);
+ box('Counter screen',[6.6,1.15,.02],[-.4,FURNITURE_HEIGHTS.serviceCounter+.575,cz-.05],new THREE.MeshStandardMaterial({color:0xcfe6ea,roughness:.1,transparent:true,opacity:.28}));
  box('Back office wall',[6.6,.4,.06],[-.4,2.45,cz-.05],dado);
- collider(-.4,cz,6.8,.85,1.1);
+ collider(-.4,cz,6.8,.85,FURNITURE_HEIGHTS.serviceCounter);
  const windows=[
   {x:-2.6,title:'Cargo crossing',sub:'CARS WITH DRIVERS · ISLAND ERRANDS',go:()=>action('read','Cargo crossing','The same ferry carries passengers and occasional island deliveries. Drivers reverse their cars up its lowered ramp, stay aboard for the crossing, and drive off onto the cargo court. Some sailings carry no cars.')},
   {x:-.4,title:'Airport ferry',sub:'KITANO-JIMA AIRPORT · ¥400',go:()=>action('airport-ferry')},
@@ -72,7 +73,7 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
  ];
  for(const win of windows){
   panel('Counter window sign',1.9,.36,[win.x,2.86,cz-.02],0,(x,cw,ch)=>{x.fillStyle='#2b5a78';x.fillRect(0,0,cw,ch);x.fillStyle='#f3ecd8';x.textAlign='center';x.textBaseline='middle';x.font=`700 ${ch*.42}px ${GOTHIC}`;x.fillText(japaneseSign(win.title)===win.title?win.title.toUpperCase():japaneseSign(win.title),cw/2,ch*.36);x.font=`600 ${ch*.2}px system-ui`;x.fillText(win.sub,cw/2,ch*.78);},512);
-  box('Ticket tray',[.5,.04,.3],[win.x,1.11,cz+.25],0x8e979a);
+  box('Ticket tray',[.5,.04,.3],[win.x,FURNITURE_HEIGHTS.serviceCounter+.02,cz+.25],0x8e979a);
   spot([win.x,1.25,cz+.6],win.title==='Evening boat to Naha'?'Take the evening boat to Naha with Thuan':win.title==='Cargo crossing'?'Read about cargo crossings':'Buy a ticket: '+win.title,win.go);
  }
  // Departures board over the counter: amber on black, the sailings of the day.
@@ -90,6 +91,7 @@ export function buildPortHall({room,reg,collider=()=>{},action,naha=()=>{},upsta
   const zz=z+(i-2)*.55,x=-.6+row*1.9;
   box('Hall seat',[.46,.06,.46],[x,.44,zz],seatColours[(i+row)%2]);
   box('Hall seat back',[.06,.42,.46],[x+.24,.68,zz],seatColours[(i+row)%2]);
+  const seat=spot([x-.65,.9,zz],'Sit in the ferry waiting hall',()=>action('seat','Ferry waiting hall','A seat by the pier windows while you wait for the boat.'));seat.userData.seat={id:'port-hall-'+row+'-'+i,position:[x,0,zz],stand:[x-.85,0,zz],surfaceY:.47,eyeY:1.18,yaw:Math.PI/2,pitch:0};
  }
  for(const [x,z] of [[-.4,.3],[1.5,.3]]){box('Bench rail',[.08,.08,3],[x,.36,z],0x8e979a);collider(x-.2,z,.7,2.8,.7);}
  // The east wall: a map of the strait, the stairs to the Harbour Office, a vending machine.

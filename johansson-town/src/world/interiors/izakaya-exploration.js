@@ -1,8 +1,11 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
+
+const guestbookBaseY=FURNITURE_HEIGHTS.table+.004;
 
 export const MINATO_MEMORIES=Object.freeze([
- {id:'guestbook',label:'Open the old guestbook',position:[-4.82,.83,4.86],title:'The guestbook',text:'Under a coffee ring: “First lantern night. Four things make a house: a window, a song, a good meal and someone who remembers.” A drawing points from the window to the radio, then to the kitchen recipe.',choice:'Read the first lantern-night entry'},
+ {id:'guestbook',label:'Open the old guestbook',position:[-4.82,FURNITURE_HEIGHTS.table+.08,4.86],title:'The guestbook',text:'Under a coffee ring: “First lantern night. Four things make a house: a window, a song, a good meal and someone who remembers.” A drawing points from the window to the radio, then to the kitchen recipe.',choice:'Read the first lantern-night entry'},
  {id:'window',label:'Look out of the street window',position:[-3.9,1.65,6.13],title:'The window seat',text:'A ferry ticket is tucked into the sash. On the back: “We waited for the last boat here, and stayed for another song.” The real street carries on outside the glass.',choice:'Read the ticket in the sash'},
  {id:'radio',label:'Tune the old kitchen radio',position:[-.4,2.58,-5.70],title:'The old radio',text:'A pencil mark on the dial is labelled “Lantern night”. Beside it: “If the music goes quiet, someone always starts singing.”',choice:'Read the station note'},
  {id:'recipe',label:'Read the handwritten kitchen recipe',position:[5.65,1.55,-6.16],title:'The house recipe',text:'A grease-marked card: soy, mirin, a little sugar; turn the skewers, keep the last warm plate for whoever misses the ferry. Beneath it: “The first meal we cooked here.”',choice:'Read the old sauce recipe'},
@@ -84,12 +87,12 @@ export function buildIzakayaExploration(room,{anchor,windowView,exploration}){
  const curtainOpen=on=>curtains.children.forEach(m=>{m.position.x=-3.9+m.userData.side*(on?.94:.55);m.scale.x=on?.325:1;});
  curtainOpen(true);
  // Physical guestbook, ferry-ticket bookmark and grease-marked recipe sheet.
- box(.15,.025,.20,-4.82,.764,4.86,0x4a4937);box(.138,.006,.18,-4.82,.783,4.86,0xe5dbc0);
+ box(.15,.025,.20,-4.82,guestbookBaseY+.0125,4.86,0x4a4937);box(.138,.006,.18,-4.82,guestbookBaseY+.025+.003,4.86,0xe5dbc0);
  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle='#e5dbc0';ctx.fillRect(0,0,512,256);ctx.fillStyle='#5a4938';ctx.textAlign='center';
  ctx.font='700 22px serif';ctx.fillText('FIRST LANTERN NIGHT',128,32);ctx.font='italic 16px serif';['A window. A song.','A good meal.','Someone who remembers.'].forEach((s,i)=>ctx.fillText(s,128,84+i*32));
  ctx.fillStyle='#936b43';ctx.font='700 25px serif';ctx.fillText('HOUSE TARE',384,36);ctx.fillStyle='#5a4938';ctx.font='italic 18px serif';['Soy · mirin · a little sugar','Turn the skewers','Keep one warm plate','for a late arrival'].forEach((s,i)=>ctx.fillText(s,384,90+i*31));
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
- const page=new THREE.PlaneGeometry(.137,.18).rotateX(-Math.PI/2).translate(-4.82,.787,4.86);for(let i=0;i<page.attributes.uv.count;i++)page.attributes.uv.setX(i,page.attributes.uv.getX(i)*.5);print.push(page);
+ const page=new THREE.PlaneGeometry(.137,.18).rotateX(-Math.PI/2).translate(-4.82,guestbookBaseY+.025+.006+.0005,4.86);for(let i=0;i<page.attributes.uv.count;i++)page.attributes.uv.setX(i,page.attributes.uv.getX(i)*.5);print.push(page);
  const recipe=new THREE.PlaneGeometry(.26,.34).translate(5.65,1.55,-6.16);for(let i=0;i<recipe.attributes.uv.count;i++)recipe.attributes.uv.setX(i,.5+recipe.attributes.uv.getX(i)*.5);print.push(recipe);
  box(.07,.008,.038,-3.84,1.145,6.205,0xe7cda0);box(.028,.018,.008,5.65,1.72,-6.153,steel);
  const solids=new THREE.Mesh(mergeGeometries(parts),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.72}));solids.name='Minato door joinery and discovery objects';group.add(solids);parts.forEach(g=>g.dispose());

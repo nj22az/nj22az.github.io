@@ -29,22 +29,22 @@ test('a drunk avatar sways off its line while walking; a sober one walks straigh
 });
 
 test('beer drinkers at Minato order rounds until drunk, then stop before the limit',()=>{
- const room=new THREE.Group(),state={yen:5000},ledger=createResidentLedger(()=>state),kenji=person('Kenji'),nao=person('Nao');
+ const room=new THREE.Group(),state={yen:5000},ledger=createResidentLedger(()=>state),kenji=person('Chin'),nao=person('Thao');
  kenji.g.position.set(0,0,-1.42);kenji.g.userData.inIzakaya=true;kenji.g.userData.seatHeight=.71;nao.g.userData.inIzakaya=true;
  let minutes=1100,peak=0;const service=createVenueService({room,place:'izakaya',getCustomers:()=>[kenji],getStaff:()=>nao.g,getMinutes:()=>minutes,ledger});
  // A town minute a second: every round comes and goes inside the test.
  for(let i=0;i<60*300;i++){service.update(1/60);minutes+=1/60;peak=Math.max(peak,kenji.g.userData.tipsy||0);}
- const record=state.residentLife.Kenji.meals.izakaya;
+ const record=state.residentLife.Chin.meals.izakaya;
  assert.ok(record.rounds>=3,'more than one beer');assert.equal(record.finished,true);
  assert.ok(peak>=DRUNK,'properly drunk');assert.ok(peak<MAX_TIPSY,'but stopped before the floor');
- assert.ok(!wantsAnother(kenji.g.userData.tipsy,1));assert.equal(state.residentLife.Kenji.purchases.length,record.rounds,'every round is paid for');
+ assert.ok(!wantsAnother(kenji.g.userData.tipsy,1));assert.equal(state.residentLife.Chin.purchases.length,record.rounds,'every round is paid for');
  // Tomorrow's first visit, still drunk: green tea, not another beer.
  const tomorrow={yen:5000},fresh=createResidentLedger(()=>tomorrow);const next=createVenueService({room,place:'izakaya',getCustomers:()=>[kenji],getStaff:()=>nao.g,getMinutes:()=>minutes,ledger:fresh});next.update(1/60);
- assert.equal(fresh.account('Kenji',minutes).meals.izakaya.drink,'tea');next.dispose();service.dispose();
+ assert.equal(fresh.account('Chin',minutes).meals.izakaya.drink,'tea');next.dispose();service.dispose();
 });
 
 test('the Barfly drinks himself drunk and then rests with an empty glass',()=>{
- const room=new THREE.Group(),barfly=person('Kenji');barfly.profile={...barfly.profile,name:'Barfly'};barfly.g.userData.inIzakaya=true;barfly.g.userData.seatHeight=.71;
+ const room=new THREE.Group(),barfly=person('Chin');barfly.profile={...barfly.profile,name:'Barfly'};barfly.g.userData.inIzakaya=true;barfly.g.userData.seatHeight=.71;
  const service=createVenueService({room,place:'izakaya',getCustomers:()=>[barfly],getMinutes:()=>1200});
  let rested=false,peak=0;for(let i=0;i<60*400;i++){service.update(1/60);peak=Math.max(peak,barfly.g.userData.tipsy||0);rested||=barfly.g.userData.socialPose==='Sit'&&!barfly.g.userData.heldItem;}
  assert.ok(rested);assert.ok(peak>=DRUNK&&peak<=LIMIT,'drunk, never past the limit');

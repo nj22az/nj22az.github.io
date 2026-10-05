@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildSakuraHotFood} from './sakura-counter-detail.js';
 
@@ -28,7 +29,7 @@ function card(room,texture,w,h,x,y,z,yaw=0,name='Sakura POP',side=THREE.DoubleSi
 }
 
 /** The glass hot case and the oden pot on the counter. The customer stands at x < 4.54. */
-export const HOT_CASE=Object.freeze({x:4.82,z:1.7,w:.4,d:.52,h:.36,top:1.0});
+export const HOT_CASE=Object.freeze({x:4.82,z:1.7,w:.4,d:.52,h:.36,top:FURNITURE_HEIGHTS.serviceCounter});
 export const ODEN_POT=Object.freeze({x:4.8,z:3.2});
 function buildHotCase(room,anchor,action){
  const C=HOT_CASE,y0=C.top,cx=C.x,cz=C.z;
@@ -145,7 +146,7 @@ export const SAKURA_BAND=Object.freeze({y0:2.56,y1:2.86,runs:Object.freeze([
  {x:-6.8,z0:-2.42,z1:3.2,yaw:Math.PI/2},
  {z:-3.93,x0:-4.02,x1:6.8,yaw:0},
  {x:6.8,z0:-1.1,z1:3.52,yaw:-Math.PI/2},
-]),counter:{x:4.52,z0:.1,z1:3.52,y0:.08,y1:.92}});
+]),counter:{x:4.52,z0:.1,z1:3.52,y0:.08,y1:FURNITURE_HEIGHTS.serviceCounter-.08}});
 export function buildSakuraBand(room){
  const B=SAKURA_BAND,h=B.y1-B.y0;
  // A family shop's boards rather than a chain's band: planed wood round the top of the

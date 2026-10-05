@@ -42,7 +42,7 @@ test('local players each keep their own save; the first keeps the original slot'
 test('activities save into the active player’s slot and offer the player menu',async()=>{
  const dom=installDOM();
  const {createActivities}=await import('../activities.js?players=1');
- addPlayer(localStorage,'Aya');
+ addPlayer(localStorage,'Nhung');
  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>1002,getSocialContext:()=>({})});
  acts.state.yen=777;acts.save();
  const slot=slotKey(readPlayers(localStorage).active);

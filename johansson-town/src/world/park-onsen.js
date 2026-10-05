@@ -136,10 +136,10 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
  const [sx,sz]=onsenPoint(1.9,7.72),[tx,tz]=onsenPoint(1.9,8.5);
  const soak=anchor(1.9,.8,7.9,'Soak your feet in the footbath',()=>onAction?.('seat','Umi-no-yu footbath',
   'You slip off your shoes and put your feet in. It is hotter than you expect, then exactly right. Somebody has left a folded towel on the rim.'));
- soak.userData.seat={position:[sx,0,sz],stand:[tx,0,tz],eyeY:1.15,yaw:ONSEN.yaw,pitch:-.22};
+ soak.userData.seat={position:[sx,0,sz],stand:[tx,0,tz],surfaceY:.48,eyeY:1.15,yaw:ONSEN.yaw,pitch:-.22};
  const [bx,bz]=onsenPoint(1.7,4.9),[bsx,bsz]=onsenPoint(1.7,5.5);
  const bench=anchor(1.7,.8,5.1,'Cool off on the bench',()=>onAction?.('seat','Umi-no-yu bench','The bench under the bathhouse windows, for sitting out the heat afterwards. The sea wind finds you here.'));
- bench.userData.seat={position:[bx,0,bz],stand:[bsx,0,bsz],eyeY:1.1,yaw:ONSEN.yaw+Math.PI,pitch:0};
+ bench.userData.seat={position:[bx,0,bz],stand:[bsx,0,bsz],surfaceY:.485,eyeY:1.1,yaw:ONSEN.yaw+Math.PI,pitch:0};
 
  let model=null;
  registerDetail(world,{id:'park-onsen',x:ONSEN.x,z:ONSEN.z,radius:72,load:async()=>{

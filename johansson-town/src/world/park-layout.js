@@ -1,6 +1,7 @@
 import {PARK_HEIGHTS} from './park-height.js';
 import {GROUND} from '../render/ground-palette.js';
 import {GATEBALL,GATEBALL_ACTIVE} from './okinawa/layout.js';
+import {HARBOUR_BENCH_DIMENSIONS} from './harbour-bench-dimensions.js';
 /** Inside the gateball court the ground stays level; a low wall holds the hill back (quarters.js). */
 export const inGateball=(x,z)=>GATEBALL_ACTIVE&&x>GATEBALL.minX&&x<GATEBALL.maxX&&z>GATEBALL.minZ&&z<GATEBALL.maxZ;
 /**
@@ -115,13 +116,19 @@ export function parkApproachHeight(x,z){
  * ground: anyone sitting on it had their feet through the path. The bench alone is scaled
  * back up about its own foot (model units) so the seat stands at a real 42 cm.
  */
-export const PARK_BENCH_FIT=Object.freeze({x:2.12,y:1.58,z:0,scale:2,seat:1.96,top:2.51,width:.94,length:1.86});
+export const PARK_BENCH_FIT=Object.freeze({x:2.12,y:1.58,z:0,scale:2,seat:1.96,top:2.51,width:.52,length:1.86});
 /** A park-model point on the bench, after the bench has been scaled up. */
 export const benchPoint=(x,y,z)=>{const f=PARK_BENCH_FIT;return [f.x+(x-f.x)*f.scale,f.y+(y-f.y)*f.scale,f.z+(z-f.z)*f.scale];};
+/** Blender bench dimensions and placement share the generator's measured design. */
+export function parkBenchGeometry(p=activePark()){
+ const d=HARBOUR_BENCH_DIMENSIONS,s=p.scale||1,k=s/d.referenceParkScale;
+ return {dimensions:d,scale:k,x:p.x+d.parkModelX*s,z:p.z,footY:p.lift+d.parkModelFootY*s,
+  seatY:p.lift+d.parkModelFootY*s+d.seatHeight*k,width:d.footprintDepth*k,length:d.length*k,top:d.backHeight*k};
+}
 export function parkBench(p=activePark()){
- if(p.plaza)return {position:[p.x,0,p.z+.35],eyeY:1.3,yaw:0,pitch:0,stand:[p.x,0,p.z+1.45]};
- // The seat point is on the same slat as before the scaling; the stand is clear of the bigger frame.
- const s=p.scale||1,bx=p.x+benchPoint(2.06,0,0)[0]*s,bz=p.z,h=parkHeight(bx,bz)??p.lift,seat=benchPoint(0,PARK_BENCH_FIT.seat,0)[1];
- return {position:[bx,h,bz],eyeY:p.lift+seat*s+.75,yaw:1.1,pitch:0,stand:[p.x+.5*s,h,p.z]};
+ if(p.plaza)return {position:[p.x,0,p.z+.35],surfaceY:.54,eyeY:1.3,yaw:0,pitch:0,stand:[p.x,0,p.z+1.45]};
+ // Sit near the front slat so short shins clear the seat; its height and length stay independent of the walking approach.
+ const g=parkBenchGeometry(p),d=g.dimensions,s=p.scale||1,bx=g.x+d.sitZ*g.scale,bz=p.z,h=parkHeight(bx,bz)??p.lift,standX=p.x+d.standModelX*s;
+ return {position:[bx,h,bz],surfaceY:g.seatY,eyeY:g.seatY+.75,yaw:Math.PI/2,pitch:0,stand:[standX,parkHeight(standX,p.z)??h,p.z]};
 }
 export const PARK_BENCH=parkBench(PARK);

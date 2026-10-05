@@ -17,10 +17,10 @@ import {MINATO_1997_POSTERS,KEEP_SHELF,BOTTLE_KEEP} from './izakaya-dressing.js'
 export const PINK_PHONE=Object.freeze({x:3.42,y:.95,z:6.16});
 export const KARAOKE=Object.freeze({x:5.86,z:5.2,w:.62,d:.48,h:.72});
 const POSTER_LINES=Object.freeze({
- beer:['Umineko Beer · Summer 1997','The summer campaign is still up in October. Nao says she will take it down when the brewery rep brings the winter one, and the brewery rep says the same about her.'],
+ beer:['Umineko Beer · Summer 1997','The summer campaign is still up in October. Thao says she will take it down when the brewery rep brings the winter one, and the brewery rep says the same about her.'],
  enka:['Harbour Lights · Kayoko Shima','An enka evening at the harbour hall on Saturday the 25th. Mr Higa has two tickets and has not yet decided who the second one is for.'],
  police:['If you drink, don’t drive','The police box’s notice. Officer Mori put it up himself, then sat down under it with a beer. He walked home.'],
- karaoke:['Karaoke contest','Last Friday of the month, from nine. The prize is a bottle on the keep shelf with your name on it. Kenji has won it three times running.'],
+ karaoke:['Karaoke contest','Last Friday of the month, from nine. The prize is a bottle on the keep shelf with your name on it. Chin has won it three times running.'],
  baseball:['Minato Seagulls · autumn fixtures','Home to Aoba on the 25th. The Seagulls have not beaten Aoba since 1989, and the whole counter will tell you why.'],
 });
 
@@ -51,7 +51,7 @@ export function buildIzakayaInteractive(room,{anchor,action,collider}){
    const n=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw)),[title,text]=POSTER_LINES[cell];
    anchor([x+n.x*.45,Math.min(1.75,y),z+n.z*.45],'Read the '+title.split(' · ')[0]+' poster',()=>action('inspect',title,text));
   }
-  anchor([2.25,.8,5.3],'Pat the tanuki',()=>action('inspect','The tanuki','A potbellied tanuki in a straw hat, a sake flask in one paw and an unpaid bill in the other. Nao pats his belly on the way in every evening, for trade. So does the Barfly, for luck.'));
+  anchor([2.25,.8,5.3],'Pat the tanuki',()=>action('inspect','The tanuki','A potbellied tanuki in a straw hat, a sake flask in one paw and an unpaid bill in the other. Thao pats his belly on the way in every evening, for trade. So does the Barfly, for luck.'));
  }
  return {
   /** Shows the player's own bottle, tagged, once they keep one at the counter. */

@@ -20,7 +20,7 @@ test('Thuan topics and resident quest replies retain bubbles; notebook and close
  acts.action('resident','Thuan');assert.equal(speakers.at(-1),'Thuan');assert.ok(modal.classList.contains('conversation'));
  dom.button('I like your hair');assert.equal(speakers.at(-1),'Thuan');
  acts.close();assert.equal(speakers.at(-1),null);assert.ok(!document.body.classList.contains('conversation-open'));
- acts.action('resident','Aya');dom.button('About Tama');assert.equal(speakers.at(-1),'Aya');
+ acts.action('resident','Nhung');dom.button('About Tama');assert.equal(speakers.at(-1),'Nhung');
  assert.ok(modal.classList.contains('conversation'));
  acts.inventory();assert.equal(speakers.at(-1),null);assert.ok(!modal.classList.contains('conversation'));acts.close();
 });

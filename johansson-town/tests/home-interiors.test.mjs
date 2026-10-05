@@ -71,9 +71,9 @@ test('the rental house stays ready for its future owner without fabricated perso
  assert.equal(room.getObjectByName('Framed household photograph'),undefined);assert.ok(room.getObjectByName('Rental note'));
 });
 test('shared routines are fresh room-local values with no supplied-apartment coordinates',()=>{
- const a=sharedHomeLayouts(['Thuan','Nao']),b=sharedHomeLayouts(['Thuan','Nao']);
+ const a=sharedHomeLayouts(['Thuan','Thao']),b=sharedHomeLayouts(['Thuan','Thao']);
  assert.notEqual(a.Thuan,b.Thuan);assert.notEqual(a.Thuan.bed,b.Thuan.bed);
- assert.deepEqual(a.Thuan.bed,[-2.1,.58,-.3]);assert.deepEqual(a.Nao.table,[.72,0,2.15]);
+ assert.deepEqual(a.Thuan.bed,[-2.1,.58,-.3]);assert.deepEqual(a.Thao.table,[.72,0,2.15]);
 });
 
 test('both portrait orientations expose their people in front of the opaque frame',()=>{

@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 
 /**
@@ -87,20 +88,20 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
 
  // ---- The bandai's counter top: andon, desk bell, push-button phone, ledger.
  const andonPaper=new THREE.MeshStandardMaterial({color:0xfff2d8,emissive:0xffb766,emissiveIntensity:.8,roughness:.9});
- add(new THREE.BoxGeometry(.2,.03,.2),darkWood,-3.95,1.115,1.86,'Andon base');add(new THREE.BoxGeometry(.16,.3,.16),andonPaper,-3.95,1.28,1.86,'Andon');add(new THREE.BoxGeometry(.22,.03,.22),darkWood,-3.95,1.445,1.86,'Andon top');
- const bell=new THREE.Group();bell.position.set(-3.62,1.1,3.15);bell.name='Desk bell';group.add(bell);
+ add(new THREE.BoxGeometry(.2,.03,.2),darkWood,-3.95,FURNITURE_HEIGHTS.serviceCounter+.015,1.86,'Andon base');add(new THREE.BoxGeometry(.16,.3,.16),andonPaper,-3.95,FURNITURE_HEIGHTS.serviceCounter+.18,1.86,'Andon');add(new THREE.BoxGeometry(.22,.03,.22),darkWood,-3.95,FURNITURE_HEIGHTS.serviceCounter+.345,1.86,'Andon top');
+ const bell=new THREE.Group();bell.position.set(-3.62,FURNITURE_HEIGHTS.serviceCounter,3.15);bell.name='Desk bell';group.add(bell);
  const bellBase=new THREE.Mesh(new THREE.CylinderGeometry(.05,.055,.015,16),new THREE.MeshStandardMaterial({color:0x2a2420,roughness:.5}));bellBase.position.y=.008;bell.add(bellBase);
  const dome=new THREE.Mesh(new THREE.SphereGeometry(.045,16,8,0,Math.PI*2,0,Math.PI/2),brass);dome.position.y=.015;bell.add(dome);
  const plunger=new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,.03,8),brass);plunger.position.y=.07;bell.add(plunger);
  let rangAt=-9;
  anchor([-3.62,1.25,3.15],'Ring the desk bell',()=>{rangAt=time;action('inspect',"Chin · The desk bell",
   'Ting. Higa-san looks up over her glasses, finds you are standing right in front of her, and goes back to the crossword. "I saw you come in, dear."');});
- const phone=new THREE.Group();phone.position.set(-3.9,1.1,3.2);phone.rotation.y=.3;phone.name='Push-button phone';group.add(phone);
+ const phone=new THREE.Group();phone.position.set(-3.9,FURNITURE_HEIGHTS.serviceCounter,3.2);phone.rotation.y=.3;phone.name='Push-button phone';group.add(phone);
  const ivory=new THREE.MeshStandardMaterial({color:0xddd2bc,roughness:.45});
  const pb=new THREE.Mesh(new THREE.BoxGeometry(.2,.05,.17),ivory);pb.position.y=.025;phone.add(pb);
  const hs=new THREE.Mesh(new THREE.BoxGeometry(.05,.04,.22),ivory);hs.position.set(-.06,.065,0);phone.add(hs);
  for(let i=0;i<12;i++){const k=new THREE.Mesh(new THREE.BoxGeometry(.016,.006,.012),new THREE.MeshStandardMaterial({color:0x6b6458}));k.position.set(.02+(i%3)*.022,.053,-.04+Math.floor(i/3)*.022);phone.add(k);}
- add(new THREE.BoxGeometry(.24,.025,.18),new THREE.MeshStandardMaterial({color:0x7a2a22,roughness:.7}),-3.85,1.115,2.55,'Bandai ledger').rotation.y=-.1;
+ add(new THREE.BoxGeometry(.24,.025,.18),new THREE.MeshStandardMaterial({color:0x7a2a22,roughness:.7}),-3.85,FURNITURE_HEIGHTS.serviceCounter+.015,2.55,'Bandai ledger').rotation.y=-.1;
 
  // ---- 小上がり: a raised tatami corner with a chabudai, tea and a small television.
  const K=LOBBY.koagari;
@@ -192,7 +193,7 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
  return {tick(dt,minutes,day,weekday){
   time+=dt;
   shoji.emissiveIntensity=.15+day*.75;
-  bell.position.y=1.1-(time-rangAt<.12?.01:0);
+  bell.position.y=FURNITURE_HEIGHTS.serviceCounter-(time-rangAt<.12?.01:0);
   for(const [i,p] of noren.entries())p.rotation.x=Math.sin(time*1.1+i*1.7)*.035;
   if(screenTex&&time-drawnAt>(channel===3?.08:.25)){drawnAt=time;drawScreen(time);}
   drawBathBoard(weekday);

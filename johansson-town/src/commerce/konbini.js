@@ -215,7 +215,8 @@ export function checkout(state,{warm=false,bag=true}={},minutes=0,thuanAvailable
 export function receiptText(receipt){
  if(!receipt)return '';
  const yen=n=>'¥'+n.toLocaleString('en-GB');
- const clock=String(Math.floor((receipt.minute%1440)/60)).padStart(2,'0')+':'+String(receipt.minute%60).padStart(2,'0');
+ const minute=Math.floor(((receipt.minute%1440)+1440)%1440);
+ const clock=String(Math.floor(minute/60)).padStart(2,'0')+':'+String(minute%60).padStart(2,'0');
  const rows=receipt.lines.map(line=>
   `${line.name}${line.count>1?' ×'+line.count:''}   ${yen(line.cost*line.count)}`);
  const tail=[

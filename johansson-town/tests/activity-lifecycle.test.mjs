@@ -26,6 +26,6 @@ test('dialogue replies and switching to the field book do not reopen the activit
  dom.button('I like your hair');assert.equal(opens,1);assert.equal(document.body.classList.contains('conversation-open'),true);
  acts.inventory();assert.equal(opens,1);assert.equal(document.body.classList.contains('conversation-open'),false);
  acts.close();assert.equal(document.activeElement,opener);
- acts.action('resident','Aya');assert.equal(opens,2);dom.button('About Tama');assert.equal(opens,2);
+ acts.action('resident','Nhung');assert.equal(opens,2);dom.button('About Tama');assert.equal(opens,2);
  acts.close();assert.equal(document.activeElement,opener);
 });

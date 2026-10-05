@@ -8,6 +8,7 @@ import {RESIDENTS} from '../src/people/residents.js';
 import {createRamenPlayerService} from '../src/people/ramen-player-service.js';
 import {circleHitsRect} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
+import {FURNITURE_HEIGHTS} from '../src/world/furniture-standards.js';
 
 const profile=name=>RESIDENTS.find(p=>p.name===name);
 
@@ -38,7 +39,13 @@ test('Mrs Sato buys fish, cooks the lunch and walks home to Kitahama; the regula
 test('every stool can be reached and sat on, and the cook stands in the kitchen',()=>{
  const b=SATO_ROOM.bounds,blocked=(x,z,r=.28)=>x<b.minX+r||x>b.maxX-r||z<b.minZ+r||z>b.maxZ-r||SATO_COLLIDERS.some(c=>circleHitsRect(x,z,r,c));
  assert.equal(blocked(SATO_ROOM.spawn[0],SATO_ROOM.spawn[2]),false,'the door is clear');
- for(const seat of [...SATO_COUNTER,...SATO_LEDGE]){assert.equal(blocked(seat.stand[0],seat.stand[2]),false,'stand clear at '+seat.stand);assert.ok(seat.table[1]>1)}
+ for(const seat of [...SATO_COUNTER,...SATO_LEDGE]){
+  assert.equal(blocked(seat.stand[0],seat.stand[2]),false,'stand clear at '+seat.stand);
+  assert.equal(seat.table[1],FURNITURE_HEIGHTS.serviceCounter,'Serving point rests on the shared counter surface');
+  const dx=seat.table[0]-seat.position[0],dz=seat.table[2]-seat.position[2],forward=-Math.sin(seat.yaw)*dx-Math.cos(seat.yaw)*dz;
+  assert.ok(forward>.3&&forward<.9,'The serving point sits within reach in front of the stool');
+  assert.ok(Math.abs(Math.cos(seat.yaw)*dx-Math.sin(seat.yaw)*dz)<.000001,'The place setting stays aligned with its stool');
+ }
  assert.ok(SATO_GUEST_SEATS.length>=5);
  assert.ok(SATO_COOK.position[2]<-3.35,'Mrs Sato is behind the counter, on the kitchen side');
 });

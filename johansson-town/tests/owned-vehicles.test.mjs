@@ -12,7 +12,7 @@ import {recipeFor} from '../src/avatars/cast.js';
 import {createAvatarAnimator} from '../src/avatars/animate.js';
 import {createTownSections} from '../src/render/town-sections.js';
 import {renderedVehicleFootprint,vehicleHitsRect} from './vehicle-footprint.mjs';
-function fixture(){installDOM();const parent=new T.Group(),people=['Tetsuo','Harbour master','Kenji','Reiko','Mrs Sato','Aya'].map(name=>{const g=new T.Group();g.userData.name=name;parent.add(g);return {g,profile:{name}};});const ferry=createFerryRun({parent});ferry.parkAt('town');const cars=createTownTraffic({parent,ferry,people:()=>people});return {parent,people,cars,ferry};}
+function fixture(){installDOM();const parent=new T.Group(),people=['Tetsuo','Harbour master','Chin','Reiko','Mrs Sato','Nhung'].map(name=>{const g=new T.Group();g.userData.name=name;parent.add(g);return {g,profile:{name}};});const ferry=createFerryRun({parent});ferry.parkAt('town');const cars=createTownTraffic({parent,ferry,people:()=>people});return {parent,people,cars,ferry};}
 test('all cars have distinct existing owners, drivers and purposes; cars stay parked without their driver',()=>{
  const {cars,people}=fixture();assert.equal(cars.snapshot().length,6);
  for(const v of cars.snapshot()){assert.ok(people.some(p=>p.profile.name===v.owner));assert.equal(v.driver,v.owner);assert.ok(v.purpose);}
@@ -47,7 +47,7 @@ test('the complete combined-ferry cargo round trip finishes by ordinary timestep
  assert.equal(cars.drivers.has(v),false);assert.equal(cars.loadingVehicles,0);
 });
 test('airport couriers stage through a clear aisle with the complete parked fleet present',()=>{
- for(const owner of ['Kenji','Reiko','Mrs Sato','Aya']){
+ for(const owner of ['Chin','Reiko','Mrs Sato','Nhung']){
   const {cars,people}=fixture(),v=cars.fleet.find(v=>v.owner===owner);for(const p of people)p.g.position.set(-30,0,30);
   for(let i=0;i<9000&&v.where!=='waiting-ferry';i++)cars.update(1/60,v.appointment.leave);
   assert.equal(v.where,'waiting-ferry',`${owner} cannot leave its bay: ${v.blocker?.owner||v.blocker}`);
@@ -96,12 +96,12 @@ test('one car can sail while a second matching car waits for the next deck space
  ferry.beginCrossing('airport');cars.update(.1,700);assert.equal(cars.islanders[1].where,'waiting-ferry');
 });
 test('borrowing and releasing preserves the existing resident and restores occupied-driver exclusions',()=>{
- installDOM();const parent=new T.Group(),g=new T.Group();parent.add(g);g.position.set(4,0,5);g.userData.socialPose='Idle';const people=[{profile:{name:'Kenji'},g}],drivers=createVehicleDrivers({people:()=>people}),v={id:'test-car',driver:'Kenji',purpose:'Repair parts',width:1.62,g:buildVehicle('car',0xffffff)};
+ installDOM();const parent=new T.Group(),g=new T.Group();parent.add(g);g.position.set(4,0,5);g.userData.socialPose='Idle';const people=[{profile:{name:'Chin'},g}],drivers=createVehicleDrivers({people:()=>people}),v={id:'test-car',driver:'Chin',purpose:'Repair parts',width:1.62,g:buildVehicle('car',0xffffff)};
  assert.ok(drivers.board(v));assert.equal(drivers.board({...v,id:'other'}),false);assert.equal(v.g.children.filter(o=>o===g).length,1);
  drivers.release(v,{restore:true});assert.deepEqual(g.position.toArray(),[4,0,5]);assert.equal(g.userData.socialPose,'Idle');assert.equal(g.parent,parent);
 });
 test('a scheduled offscreen worker can drive the errand while active interiors retain their resident',()=>{
- const {cars,people}=fixture(),v=cars.fleet[0],person=people.find(p=>p.profile.name==='Kenji');person.g.visible=false;person.g.userData.indoors='work';
+ const {cars,people}=fixture(),v=cars.fleet[0],person=people.find(p=>p.profile.name==='Chin');person.g.visible=false;person.g.userData.indoors='work';
  cars.update(.1,630);assert.ok(v.trip);assert.equal(person.g.parent,v.g);assert.equal(person.g.visible,true);assert.equal(person.g.userData.inVehicle,v.id);
  cars.drivers.release(v,{restore:true});assert.equal(person.g.visible,false);assert.equal(person.g.userData.indoors,'work');
  person.g.userData.inWorkplace=true;assert.equal(cars.drivers.board(v),false,'An active room keeps its avatar');delete person.g.userData.inWorkplace;person.g.visible=true;assert.equal(cars.drivers.board(v),false,'Visible indoor activity is not interrupted');

@@ -2,12 +2,12 @@
  * Minato when it is closed (open 16:00–03:00, people/social.js izakayaOpen).
  *
  * It is never empty. The Barfly lives there and works off his tab:
- *   03:00–04:00  Nao wipes the counter down; he stacks up the stools' cushions and mops.
- *   04:00–10:00  He sleeps on his stool (Nao has gone home; she sleeps 04:00–12:00).
+ *   03:00–04:00  Thao wipes the counter down; he stacks up the stools' cushions and mops.
+ *   04:00–10:00  He sleeps on his stool (Thao has gone home; she sleeps 04:00–12:00).
  *   10:00–12:00  He sweeps the floor.
  *   12:00–14:00  He washes and polishes the glasses behind the counter.
  *   14:00–15:00  He mops.
- *   15:00–16:00  He wipes the tables while Nao preps at her station (social.js NAO_DAY).
+ *   15:00–16:00  He wipes the tables while Thao preps at her station (social.js NAO_DAY).
  *
  * A job is a list of stations: where to stand, which way to face, the pose, the tool in
  * the right hand. The station changes every few minutes of town time, and the walker in
@@ -32,7 +32,7 @@ const JOBS=Object.freeze({
   {from:840,to:900,every:6,stations:FLOOR.map((at,i)=>({at,yaw:i*1.3+.6})),pose:'Mop',tool:'mop',activity:'mopping the floor before opening'},
   {from:900,to:960,every:7,stations:TABLES.map(([x,y,z,yaw])=>({at:[x,y,z],yaw})),pose:'Wipe',tool:'cloth',activity:'wiping the tables down for the evening'},
  ],
- Nao:[
+ Thao:[
   {from:180,to:240,every:9,stations:BEHIND.map(at=>({at,yaw:FACE_DOOR})),pose:'Wipe',tool:'cloth',activity:'wiping the counter down after closing'},
  ],
 });
@@ -46,9 +46,9 @@ export function izakayaJob(name,minutes){
 /** Who is cleaning, for the line you get coming in while Minato is closed. */
 export function closedGreeting(minutes){
  const m=minuteOfDay(minutes);
- if(m>=180&&m<240)return 'Minato is closed. Nao and the Barfly are cleaning up.';
+ if(m>=180&&m<240)return 'Minato is closed. Thao and the Barfly are cleaning up.';
  if(m>=240&&m<600)return 'Minato is closed. The Barfly is asleep on his stool; someone has put a jacket over him.';
- if(m>=900&&m<960)return 'Minato opens at four. Nao is getting ready; the Barfly is wiping the tables.';
+ if(m>=900&&m<960)return 'Minato opens at four. Thao is getting ready; the Barfly is wiping the tables.';
  return 'Minato is closed until four. The Barfly is cleaning, to pay off his tab.';
 }
 export const CLEANING_POSES=Object.freeze(['Stack','Sweep','Polish','Mop','Wipe']);

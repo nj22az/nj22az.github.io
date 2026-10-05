@@ -8,7 +8,7 @@ import {installDOM} from './fixtures.mjs';
 
 test('actual home ceilings keep the camera and its near plane below the roof',()=>{
  installDOM();
- for(const [build,height] of [[args=>buildYardHomeInterior({...args,site:{id:'resident-home-aya',homeOwner:'Aya'}}),2.5],[args=>buildFamilyHome({...args,residents:['Thuan','Nao']}),2.7]]){
+ for(const [build,height] of [[args=>buildYardHomeInterior({...args,site:{id:'resident-home-aya',homeOwner:'Nhung'}}),2.5],[args=>buildFamilyHome({...args,residents:['Thuan','Thao']}),2.7]]){
   const room=new THREE.Group();build({room,reg(){},action(){},collider(){}});
   const ceiling=createIndoorCeilings(room);
   assert.ok(ceiling.count>0);
