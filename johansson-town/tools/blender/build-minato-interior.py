@@ -30,7 +30,7 @@ wall ledge, a ticket machine by the door and its own noren.
 Menu strips and signs are drawn at runtime (izakaya.js) so the lettering stays sharp.
 Input coordinates are Three.js (x, y, z); Blender takes (x, -z, y).
 """
-import bpy, math, sys, argparse, json, random
+import bpy, bmesh, math, sys, argparse, json, random
 from pathlib import Path
 
 args = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
@@ -117,38 +117,51 @@ M = dict(
 )
 
 def loc(v): return (v[0], -v[2], v[1])
+def made_mesh(name, verts, faces, at, m, smooth=False):
+    data=bpy.data.meshes.new(name);data.from_pydata(verts,[],faces);data.materials.append(m);data.update()
+    o=bpy.data.objects.new(name,data);bpy.context.collection.objects.link(o);o.location=loc(at)
+    if smooth:
+        for f in data.polygons:f.use_smooth=True
+    return o
+
 def cube(name, size, at, m, rot=0., bevel=0.):
-    bpy.ops.mesh.primitive_cube_add(size=1, location=loc(at))
-    o = bpy.context.object; o.name = name
-    o.scale = (size[0], size[2], size[1]); o.rotation_euler.z = rot
-    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-    o.data.materials.append(m)
+    x,y,z=size[0]/2,size[2]/2,size[1]/2
+    verts=[(-x,-y,-z),(x,-y,-z),(x,y,-z),(-x,y,-z),(-x,-y,z),(x,-y,z),(x,y,z),(-x,y,z)]
+    faces=[(0,3,2,1),(4,5,6,7),(0,1,5,4),(1,2,6,5),(2,3,7,6),(3,0,4,7)]
+    o=made_mesh(name,verts,faces,at,m);o.rotation_euler.z=rot
     if bevel:
-        b = o.modifiers.new('Worked edges', 'BEVEL'); b.width = min(bevel, min(size) / 3); b.segments = 1
-        bpy.ops.object.modifier_apply(modifier=b.name)
+        bm=bmesh.new();bm.from_mesh(o.data)
+        bmesh.ops.bevel(bm,geom=list(bm.edges),offset=min(bevel,min(size)/3),segments=1,affect='EDGES')
+        bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(o.data);bm.free()
     return o
+
 def cyl(name, r, h, at, m, verts=12, axis='y', rot=0.):
-    bpy.ops.mesh.primitive_cylinder_add(vertices=verts, radius=r, depth=h, location=loc(at))
-    o = bpy.context.object; o.name = name
-    if axis == 'x': o.rotation_euler.y = math.pi / 2
-    elif axis == 'z': o.rotation_euler.x = math.pi / 2
-    o.rotation_euler.z += rot
-    o.data.materials.append(m)
-    for f in o.data.polygons: f.use_smooth = verts > 8
-    return o
+    vs=[(math.cos(k*math.tau/verts)*r,math.sin(k*math.tau/verts)*r,z) for z in (-h/2,h/2) for k in range(verts)]
+    faces=[tuple(reversed(range(verts))),tuple(range(verts,2*verts))]+[(k,(k+1)%verts,(k+1)%verts+verts,k+verts) for k in range(verts)]
+    o=made_mesh(name,vs,faces,at,m,verts>8)
+    if axis=='x':o.rotation_euler.y=math.pi/2
+    elif axis=='z':o.rotation_euler.x=math.pi/2
+    o.rotation_euler.z+=rot;return o
+
 def cone(name, r1, r2, h, at, m, verts=12):
-    bpy.ops.mesh.primitive_cone_add(vertices=verts, radius1=r1, radius2=r2, depth=h, location=loc(at))
-    o = bpy.context.object; o.name = name; o.data.materials.append(m)
-    for f in o.data.polygons: f.use_smooth = True
+    bm=bmesh.new();bmesh.ops.create_cone(bm,cap_ends=True,cap_tris=False,segments=verts,radius1=r1,radius2=r2,depth=h)
+    data=bpy.data.meshes.new(name);bm.to_mesh(data);bm.free();data.materials.append(m)
+    o=bpy.data.objects.new(name,data);bpy.context.collection.objects.link(o);o.location=loc(at)
+    for f in data.polygons:f.use_smooth=True
     return o
+
 def ball(name, scale, at, m, seg=10, rings=6):
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=seg, ring_count=rings, radius=1, location=loc(at))
-    o = bpy.context.object; o.name = name; o.scale = (scale[0], scale[2], scale[1]); o.data.materials.append(m)
-    for f in o.data.polygons: f.use_smooth = True
+    bm=bmesh.new();bmesh.ops.create_uvsphere(bm,u_segments=seg,v_segments=rings,radius=1)
+    data=bpy.data.meshes.new(name);bm.to_mesh(data);bm.free();data.materials.append(m)
+    o=bpy.data.objects.new(name,data);bpy.context.collection.objects.link(o);o.location=loc(at);o.scale=(scale[0],scale[2],scale[1])
+    for f in data.polygons:f.use_smooth=True
     return o
+
 def ring(name, R, r, at, m):
-    bpy.ops.mesh.primitive_torus_add(major_segments=20, minor_segments=4, major_radius=R, minor_radius=r, location=loc(at))
-    o = bpy.context.object; o.name = name; o.data.materials.append(m); return o
+    segments=12
+    vs=[((R+r*math.cos(j*math.tau/4))*math.cos(i*math.tau/segments),(R+r*math.cos(j*math.tau/4))*math.sin(i*math.tau/segments),r*math.sin(j*math.tau/4)) for i in range(segments) for j in range(4)]
+    faces=[(i*4+j,((i+1)%segments)*4+j,((i+1)%segments)*4+(j+1)%4,i*4+(j+1)%4) for i in range(segments) for j in range(4)]
+    return made_mesh(name,vs,faces,at,m,True)
 
 # --------------------------------------------------------------------------- floor
 cube('Diorama base', (13, .3, 13), (0, -.16, 0), M['smoke'])
@@ -746,7 +759,7 @@ def surface(name, rough, metal=0., vertex=True, glow=None, glow_strength=0., alp
     return m
 SURFACES = {
     'matte': surface('Minato matte', .78), 'gloss': surface('Minato glossy', .32),
-    'metal': surface('Minato steel', .38, .7), 'glass': surface('Minato glass', .05, vertex=False, alpha=.22),
+    'metal': surface('Minato steel', .38, .7), 'glass': surface('Minato glass', .05, vertex=False, alpha=.10),
     'lantern': surface('Minato lantern paper', .7, vertex=False, glow='c8402e', glow_strength=.9),
     'warm': surface('Minato lamplight', .8, vertex=False, glow='f6e2b8', glow_strength=1.2),
     'ember': surface('Minato embers', .9, vertex=False, glow='ff6a1f', glow_strength=3.0),
@@ -757,6 +770,7 @@ def surface_for(m):
     if m in (M['shoji'], M['bulb']): return 'warm'
     if m == M['ember']: return 'ember'
     bs = m.node_tree.nodes['Principled BSDF']
+    if bs.inputs['Alpha'].default_value < .99: return 'glass'
     if bs.inputs['Metallic'].default_value > .3: return 'metal'
     return 'gloss' if bs.inputs['Roughness'].default_value < .5 else 'matte'
 
@@ -783,6 +797,27 @@ def merge_export(name):
     return {'meshes': len(meshes), 'triangles': sum(sum(len(p.vertices) - 2 for p in o.data.polygons) for o in meshes),
             'bytes': (out / (name + '.glb')).stat().st_size}
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from minato_real_props import create_prop_api, upgrade_real_props
+from minato_food_props import upgrade_food_props
+from minato_device_props import upgrade_device_props
+prop_api = create_prop_api(globals())
+before = {'objects': len([o for o in bpy.context.scene.objects if o.type == 'MESH']),
+          'triangles': sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in bpy.context.scene.objects if o.type == 'MESH')}
+coverage = {}
+for category, upgrade in [('vessels-kitchen-storage-furniture', upgrade_real_props), ('food', upgrade_food_props), ('devices', upgrade_device_props)]:
+    print('Upgrading', category, flush=True)
+    coverage[category] = upgrade(prop_api)
+    print('Completed', category, flush=True)
+after = {'objects': len([o for o in bpy.context.scene.objects if o.type == 'MESH']),
+         'triangles': sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in bpy.context.scene.objects if o.type == 'MESH')}
+geometry_by_family = {}
+import re
+for obj in [o for o in bpy.context.scene.objects if o.type == 'MESH']:
+    family=re.sub(r'\.\d+$','',obj.name)
+    geometry_by_family[family]=geometry_by_family.get(family,0)+sum(len(p.vertices)-2 for p in obj.data.polygons)
+(art / 'minato-prop-inventory.json').write_text(json.dumps({'before': before, 'after': after, 'coverage': coverage,
+    'geometryByFamily': dict(sorted(geometry_by_family.items(),key=lambda entry:-entry[1]))}, indent=2))
 report = merge_export('minato-interior')
 path = art / 'export-report.json'
 data = json.loads(path.read_text()) if path.exists() else {}

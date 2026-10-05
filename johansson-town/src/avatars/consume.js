@@ -49,7 +49,9 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
  const lips=new THREE.Vector3(v.x*m.Rh*m.headSX,m.headCentre-m.headY+v.y*m.Rh*m.headSY,v.z*m.Rh*.98+.025*m.k);
  const rest=root.localToWorld(new THREE.Vector3(-m.shoulderX,m.shoulderY-m.upper*.75,m.depth*.75+m.fore*.45));
  const q=root.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),drinkTilt(prop,lift,food)));
- const contact=new THREE.Vector3(food?0:-.10*m.k,food?.04:(prop?.userData.rimHeight??.15)-.08*m.k,food?.115:.015*m.k).applyQuaternion(q);
+ const grip=prop?.userData.grip;
+ // Wrist to rim: with a known grip the palm (just below the wrist) closes on the grip point.
+ const contact=(!food&&grip?new THREE.Vector3(-grip[0],-.55*m.hand+(prop.userData.rimHeight??.15)-grip[1],0):new THREE.Vector3(food?0:-.10*m.k,food?.04:(prop?.userData.rimHeight??.15)-.08*m.k,food?.115:.015*m.k)).applyQuaternion(q);
  // Big heads put the mouth beyond a short arm's reach. Then the head dips to meet the
  // cup, the way anyone leans in to a drink, a little more each pass until it reaches.
  const shoulder=b.shoulderR.getWorldPosition(new THREE.Vector3());
@@ -71,8 +73,16 @@ export function fitAvatarHeldProp(avatar,prop,lift=0,side='R'){
  const food=!!prop.userData.food,m=avatar.measure,hand=avatar.bones['hand'+side];
  avatar.root.updateWorldMatrix(true,true);
  const q=avatar.root.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),drinkTilt(prop,lift,food)));
- const offset=new THREE.Vector3(food?0:(side==='R'?-.10:.10)*m.k,food?0:-.08*m.k,.015*m.k).applyQuaternion(q);
- const p=hand.getWorldPosition(new THREE.Vector3()).add(offset);
+ const grip=!food&&prop.userData.grip;let p;
+ if(grip){
+  // The palm, where the mitten actually is (just below the wrist, along the hand), closes on
+  // the grip point: round the handle, or against the glass. The glass keeps its own upright.
+  const palm=hand.localToWorld(new THREE.Vector3(0,-.55*m.hand,0));
+  p=palm.sub(new THREE.Vector3(side==='R'?grip[0]:-grip[0],grip[1],0).applyQuaternion(q));
+ }else{
+  const offset=new THREE.Vector3(food?0:(side==='R'?-.10:.10)*m.k,food?0:-.08*m.k,.015*m.k).applyQuaternion(q);
+  p=hand.getWorldPosition(new THREE.Vector3()).add(offset);
+ }
  const world=new THREE.Matrix4().compose(p,q,new THREE.Vector3(1,1,1));
  prop.matrixAutoUpdate=false;prop.matrix.copy(hand.matrixWorld).invert().multiply(world);prop.matrixWorldNeedsUpdate=true;
 }

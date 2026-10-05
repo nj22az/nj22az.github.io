@@ -16,36 +16,19 @@ const shift=COMMUTER_SHIFTS.Thuan;
 /** The commuter plan, which is the one the island runs. */
 const plan=minutes=>residentPlan(THUAN,minutes,false,{},true);
 
-test('Thuan has a beer at Minato between closing the shop and walking home',()=>{
+test('Thuan locks up, has an occasional beer, and walks home',()=>{
  izakayaPlot();
- try{
-  // On shift she is behind her own counter.
-  assert.equal(plan(shift.finish-60).place,'market');
-
-  // The shop shuts and she goes two doors up the pavement.
-  const after=plan(shift.finish+5);
-  assert.equal(after.place,'izakaya');
-  assert.deepEqual(after.target,IZAKAYA_DOOR,'She is sent somewhere other than the izakaya door');
-  assert.match(after.activity,/beer/i);
-  assert.ok(izakayaOpen(shift.finish+5),'Minato is shut when she gets there');
-
-  // The single evening service leaves time for Minato and the walk to the stop.
-  const last=departureFor(THUAN,false);
-  assert.equal(last,1320,'She uses the shared evening service');
-  assert.equal(plan(1260).place,'izakaya','There is no extra nine o’clock bus');
-  assert.equal(plan(last-THUAN_BUS_MARGIN-1).place,'izakaya');
-  const leaving=plan(last-THUAN_BUS_MARGIN);
-  // She lives in Kitahama now: where the last ferry used to take her, she walks home.
-  assert.equal(leaving.place,'home');
-  assert.deepEqual(leaving.target,THUAN.home);
-  assert.equal(plan(last-1).place,'home','She is still drinking when she should be on her way home');
-  // Rain changes her evening activity, not the bus schedule.
-  assert.equal(departureFor(THUAN,true),shift.departure);
-
-  // Rain sends her straight home.
-  assert.equal(residentPlan(THUAN,shift.finish+5,true,{},true).place,'home');
-  assert.equal(thuanAtMinato(THUAN,shift.finish+5,true),false);
- }finally{izakayaPlot();}
+ assert.equal(plan(1190).place,'market');
+ assert.equal(plan(1205).place,'izakaya');
+ assert.equal(plan(1220).place,'izakaya');
+ assert.deepEqual(plan(1260).target,IZAKAYA_DOOR);
+ assert.match(plan(1260).activity,/beer/);
+ assert.ok(izakayaOpen(1260));
+ assert.equal(plan(1290).place,'home');
+ assert.deepEqual(plan(1290).target,THUAN.home);
+ assert.equal(plan(1440+1260).place,'home','alternate evening stays at home');
+ assert.equal(residentPlan(THUAN,1260,true,{}).place,'home','rain sends her home');
+ assert.equal(thuanAtMinato(THUAN,1260,true),false);
 });
 
 test('the beer is a commuter habit, not something bolted onto every layout',()=>{
@@ -114,7 +97,7 @@ test('Thuan has an afternoon: the park bench, the sea wall, and back to the shop
  }finally{izakayaPlot();}
 });
 
-test('the whole day runs shop, walk, shop, beer, bus without a gap',()=>{
+test('the whole day runs commute, shop, noodles, break, beer and home without a gap',()=>{
  izakayaPlot();
  try{
   const seen=[];
@@ -123,7 +106,7 @@ test('the whole day runs shop, walk, shop, beer, bus without a gap',()=>{
   const order=seen.map(s=>s.place);
   // Arrives on the bus, opens up, takes her walk, comes back, has a beer, catches it.
   // Comes in from Kitahama, opens up, takes her walk, comes back, has a beer, walks home.
-  assert.deepEqual(order,['home','market','nap','park','stroll','market','izakaya','home']);
+  assert.deepEqual(order,['market','ramen','market','nap','park','stroll','market','izakaya','home']);
   // and every one of those is somewhere she can actually stand.
   for(const {m} of seen){const p=plan(m);assert.ok(Array.isArray(p.target)&&p.target.length===2,'No target at '+m);}
  }finally{izakayaPlot();}
@@ -142,7 +125,7 @@ test('every caller gets the same routine, however it asks',()=>{
   assert.equal(unasked.place,asked.place,'The layout answers differently depending on who asks');
   assert.notEqual(unasked.place,'market','The shop would keep her through her own walk');
   // The same holds for the evening, which is the other thing the shop could swallow.
-  assert.equal(residentPlan(THUAN,shift.finish+10,false,{}).place,'izakaya');
+  assert.equal(residentPlan(THUAN,shift.finish+25,false,{}).place,'izakaya');
  }finally{izakayaPlot();}
  // and the archived street still gets the archived routine when nobody names a mode.
  assert.notEqual(residentPlan(THUAN,THUAN_WALK_START+20,false,{}).place,'park');

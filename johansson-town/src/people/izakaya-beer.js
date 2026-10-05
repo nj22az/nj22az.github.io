@@ -1,4 +1,4 @@
-import {attachFoodCutout,updateFoodCutout} from './food-cutouts.js';
+import {buildServingDish,buildServingDrink,buildServingBite} from './izakaya-serving-visuals.js';
 import * as THREE from '../../vendor/three.module.js';
 
 /**
@@ -76,93 +76,18 @@ function settlePour(u,dt){
  for(let i=0;i<pos.count;i++){let y=pos.getY(i)+p.rise[i]*dt*(left>.1?1:.3);if(y>top)y=p.bottom+(y-top)%Math.max(.005,top-p.bottom);pos.setY(i,y);}
  pos.needsUpdate=true;
 }
-export function createDrinkProp(kind,{held=false}={}){
- const g=new THREE.Group();g.name='Minato drink · '+kind;
- const glass=new THREE.MeshStandardMaterial({color:0xdfe8e4,roughness:.08,metalness:0,transparent:true,opacity:.42,depthWrite:false});
- const beer=new THREE.MeshStandardMaterial({color:0xd9941e,roughness:.3,emissive:0x4a2a02,emissiveIntensity:.25});
- const foam=new THREE.MeshStandardMaterial({color:0xfbf5e6,roughness:.9});
- const add=(geo,mat,y=0,x=0,z=0)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);g.add(m);return m;};
- const level=new THREE.Group();g.add(level);g.userData.level=level;
- if(kind==='draft'){
-  add(new THREE.CylinderGeometry(.045,.042,.15,20),glass,.075);
-  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.041,.039,.12,20),beer);liquid.position.y=.063;level.add(liquid);
-  const head=new THREE.Mesh(new THREE.CylinderGeometry(.043,.041,.025,20),foam);head.position.y=.135;level.add(head);
-  pour(g,liquid,head,.12,.036);
-  const handle=add(new THREE.TorusGeometry(.03,.007,8,16,Math.PI),glass,.08,.05);handle.rotation.z=-Math.PI/2;
- }else if(kind==='bottle'){
-  const brown=new THREE.MeshStandardMaterial({color:0x5a2e10,roughness:.25,transparent:true,opacity:.48,depthWrite:false});
-  if(!held){
-   add(new THREE.CylinderGeometry(.038,.038,.2,18),brown,.1,-.06);add(new THREE.CylinderGeometry(.013,.036,.08,14),brown,.24,-.06);
-   add(new THREE.CylinderGeometry(.034,.034,.05,18),new THREE.MeshStandardMaterial({color:0xf2f0e8,roughness:.6}),.1,-.06);
-   const contents=new THREE.Mesh(new THREE.CylinderGeometry(.034,.034,.185,18),beer);contents.position.set(-.06,.095,0);level.add(contents);
-  }
-  const x=held?0:.05;
-  add(new THREE.CylinderGeometry(.03,.027,.09,16),glass,.045,x);
-  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.027,.025,.07,16),beer);liquid.position.set(x,.037,0);level.add(liquid);
-  const head=new THREE.Mesh(new THREE.CylinderGeometry(.028,.027,.012,16),foam);head.position.set(x,.078,0);level.add(head);
-  pour(g,liquid,head,.07,.022);
- }else if(kind==='can'){
-  const can=add(new THREE.CylinderGeometry(.033,.033,.122,20),new THREE.MeshStandardMaterial({color:0xf2f2ee,roughness:.35,metalness:.55}),.061);
-  add(new THREE.CylinderGeometry(.0335,.0335,.045,20),new THREE.MeshStandardMaterial({color:0x1e4f9c,roughness:.4,metalness:.4}),.07);
-  add(new THREE.CylinderGeometry(.0336,.0336,.008,20),new THREE.MeshStandardMaterial({color:0xc8322a,roughness:.4}),.095);
-  void can;
- }else if(kind==='coffee'){
-  // Hot coffee at the ramen counter: a thick white cup, on a saucer when it is set down.
-  const china=new THREE.MeshStandardMaterial({color:0xf4f1ea,roughness:.35});
-  const cup=add(new THREE.CylinderGeometry(.036,.028,.07,20,1,true),new THREE.MeshStandardMaterial({color:0xf4f1ea,roughness:.35,side:THREE.DoubleSide}),.035);void cup;
-  add(new THREE.CylinderGeometry(.028,.028,.004,20),china,.002);
-  const handle=add(new THREE.TorusGeometry(.017,.005,8,14,Math.PI),china,.04,.038);handle.rotation.z=-Math.PI/2;
-  if(!held)add(new THREE.CylinderGeometry(.062,.055,.008,24),china,-.004);
-  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.033,.028,.055,20),new THREE.MeshStandardMaterial({color:0x2b160a,roughness:.15}));liquid.position.y=.03;level.add(liquid);
- }else{
-  // Oolong, and the ramen counter's cold barley tea (mugicha), paler, in the same tumbler.
-  add(new THREE.CylinderGeometry(.036,.032,.11,18),glass,.055);
-  const liquid=new THREE.Mesh(new THREE.CylinderGeometry(.033,.03,.085,18),new THREE.MeshStandardMaterial({color:kind==='mugicha'?0xa8682a:0x7a3f18,roughness:.25,transparent:true,opacity:kind==='mugicha'?.78:.85}));liquid.position.y=.045;level.add(liquid);
-  for(let i=0;i<3;i++){const ice=new THREE.Mesh(new THREE.BoxGeometry(.022,.022,.022),glass);ice.position.set((i-1)*.012,.08,(i%2)*.01);ice.rotation.set(i,i*.7,0);level.add(ice);}
- }
- g.userData.portion=1;g.userData.targetPortion=1;g.userData.consumable='drink';
- g.userData.rimHeight=kind==='draft'?.15:kind==='bottle'?.09:kind==='can'?.122:kind==='coffee'?.07:.11;
- g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
- return g;
+export function createDrinkProp(kind,options={}){
+ const {group,liquid,head,height,radius}=buildServingDrink(kind,options);
+ if(head)pour(group,liquid,head,height,radius);
+ group.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
+ return group;
 }
 
-/** A dish as a small prop on its plate or in its bowl, with a `level` that empties as you eat. */
+/** Real turned dishes and separate edible portions, visible from every seat. */
 export function createDishProp(kind){
- const g=new THREE.Group();g.name='Minato dish · '+kind;
- const m=c=>new THREE.MeshStandardMaterial({color:c,roughness:.6});
- const add=(geo,mat,x=0,y=0,z=0,parent=g)=>{const o=new THREE.Mesh(geo,mat);o.position.set(x,y,z);parent.add(o);return o;};
- const level=new THREE.Group();g.add(level);g.userData.level=level;
- const plate=(w,d,c=0x2f5872)=>add(new THREE.BoxGeometry(w,.014,d),m(c),0,.007);
- const bowl=(r,h,c=0xf1ece0)=>add(new THREE.CylinderGeometry(r,r*.7,h,16,1,true),new THREE.MeshStandardMaterial({color:c,roughness:.35,side:THREE.DoubleSide}),0,h/2);
- if(kind==='yakitori'||kind==='hokke'){
-  plate(.26,.12,0xf1ece0);
-  if(kind==='yakitori')for(let k=0;k<4;k++){add(new THREE.BoxGeometry(.22,.006,.006),m(0xa06c42),0,.02,-.04+k*.027,level);for(let j=0;j<4;j++)add(new THREE.BoxGeometry(.03,.024,.024),m(k%2?0x7c3f1b:0xd9b27a),-.07+j*.045,.028,-.04+k*.027,level);}
-  else{const fish=add(new THREE.BoxGeometry(.2,.025,.08),m(0xb07a45),0,.027,0,level);fish.rotation.y=.1;add(new THREE.SphereGeometry(.018,8,6),m(0xf2e35a),.09,.03,.04,level);}
- }else if(kind==='sashimi'){
-  plate(.24,.16,0xf1ece0);for(let k=0;k<6;k++)add(new THREE.BoxGeometry(.04,.018,.1),m([0xea8a5c,0x9e2c35,0xefe3d2][k%3]),-.08+k*.032,.024,0,level).rotation.y=.25;
-  add(new THREE.SphereGeometry(.015,8,6),m(0x7d9b45),.1,.025,.05,level);
- }else if(kind==='edamame'||kind==='karaage'){
-  bowl(.07,.045,0x2f5872);
-  for(let k=0;k<(kind==='edamame'?9:6);k++){const a=k*2.3,r=.035*((k%3)/2+.3);add(kind==='edamame'?new THREE.BoxGeometry(.045,.014,.018):new THREE.SphereGeometry(.022,8,6),m(kind==='edamame'?0x7d9b45:0xb8742e),Math.cos(a)*r,.045,Math.sin(a)*r,level).rotation.y=a;}
- }else if(kind==='oden'||kind==='agedashi'||kind==='ochazuke'||kind==='ramen'||kind==='rice'){
-  bowl(.075,.06,kind==='ochazuke'?0x2f5872:0x8a5a3a);
-  add(new THREE.CylinderGeometry(.068,.068,.004,16),m(kind==='ochazuke'?0xb7a35c:0xa8732f),0,.045,0,level);
-  if(kind==='oden'){add(new THREE.CylinderGeometry(.025,.025,.03,12),m(0xe3d3a6),-.025,.05,0,level);add(new THREE.SphereGeometry(.02,8,6),m(0xb98a4a),.025,.052,.01,level);}
-  else if(kind==='agedashi')for(let k=0;k<2;k++)add(new THREE.BoxGeometry(.04,.03,.04),m(0xd7a55a),-.02+k*.04,.05,0,level);
-  else if(kind==='ramen'||kind==='rice'){
-   for(let i=0;i<6;i++)add(new THREE.SphereGeometry(.016,8,6),m(0xe8cf7a),(i%3-1)*.025,.052,Math.floor(i/3)*.025-.012,level);
-  }else add(new THREE.BoxGeometry(.05,.004,.05),m(0x1f2a22),0,.05,0,level);
- }else if(kind==='hiyayakko'){
-  plate(.12,.12,0x2f5872);add(new THREE.BoxGeometry(.07,.04,.07),m(0xf1ece0),0,.035,0,level);add(new THREE.BoxGeometry(.02,.01,.02),m(0xd9b35a),0,.06,0,level);
- }else if(kind==='gyoza'){
-  plate(.22,.12,0xf1ece0);for(let k=0;k<6;k++){const d=add(new THREE.SphereGeometry(.024,8,6),m(0xd9b27a),-.08+k*.032,.022,0,level);d.scale.set(.8,.6,1.4);}
- }else{ // dashimaki
-  plate(.2,.1,0xf1ece0);for(let k=0;k<4;k++)add(new THREE.BoxGeometry(.035,.035,.06),m(0xf0c94a),-.06+k*.04,.03,0,level);
- }
- attachFoodCutout(g,kind);
- g.userData.portion=1;g.userData.targetPortion=1;g.userData.consumable='food';
- g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
- return g;
+ const group=buildServingDish(kind);
+ group.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
+ return group;
 }
 
 /** Smooth liquid levels; remove food portions in sequence rather than flattening a dish. */
@@ -175,7 +100,7 @@ export function updatePropPortion(prop,dt){
  const u=prop.userData,level=u.level;if(!level)return;
  const target=u.targetPortion??1,current=u.portion??1;
  u.portion=Math.abs(current-target)<.001?target:THREE.MathUtils.damp(current,target,7,Math.max(0,dt));
- level.visible=u.portion>0;updateFoodCutout(prop);
+ level.visible=u.portion>0;
  if(u.consumable==='food'){
   const amount=level.children.length*u.portion;
   level.children.forEach((piece,i)=>{piece.visible=i<Math.ceil(amount);piece.scale.setScalar(Math.min(1,Math.max(0,amount-i)));});
@@ -185,14 +110,7 @@ export function updatePropPortion(prop,dt){
   for(const piece of level.children)if(piece!==u.pour.liquid&&piece!==u.pour.head){piece.userData.baseY??=piece.position.y;piece.scale.y=Math.max(.001,u.portion);piece.position.y=piece.userData.baseY*u.portion;}
  }else level.scale.y=Math.max(.001,u.portion);
 }
-export function createBiteProp(kind){
- const g=new THREE.Group();g.userData.food=true;g.userData.consumable='food';g.userData.portion=1;g.userData.targetPortion=1;
- const wood=new THREE.MeshStandardMaterial({color:0xc9a26b,roughness:.6});
- for(const x of [-.008,.008]){const stick=new THREE.Mesh(new THREE.BoxGeometry(.005,.005,.16),wood);stick.position.set(x,.02,.04);g.add(stick);}
- const level=new THREE.Group();g.add(level);g.userData.level=level;
- const food=new THREE.Mesh(new THREE.SphereGeometry(.018,8,6),new THREE.MeshStandardMaterial({color:kind==='edamame'?0x7d9b45:kind==='sashimi'?0xea8a5c:0xd9b27a,roughness:.6}));
- food.position.set(0,.04,.10);level.add(food);return g;
-}
+export function createBiteProp(kind){return buildServingBite(kind);}
 export function disposeServing(prop){
  if(!prop)return;prop.removeFromParent();const materials=new Set();
  prop.traverse(o=>{if(o.isMesh||o.isSprite){if(o.isMesh)o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);}});

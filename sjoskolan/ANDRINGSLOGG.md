@@ -590,3 +590,5 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   `simulatorer/stationA-manus.mjs`, ett inslag per steg. Test: Erik nämner inga tal och pekar bara på mätpunkter som
   steget självt nämner. Utan WebGL visas stegen som text. Stegen, kontrollerna och protokollet är oförändrade.
   Regel: i ett steg där eleven själv ska koppla visar Erik var, men det är eleven som kopplar och läser av.
+
+- **2026-10-05** Vecka 41, PR #153: fredagens M/S/T-körplan och separat protokollbilaga bevarade. Inlämning 3:s rättade länkar, distansalternativ och felsökningslogg flyttade till källposten EL-000816 så att innehållsbygget inte återställer den gamla texten. Skyddade lärarsidor är oförändrade; jämförelsen inväntar en upplåst kopia.

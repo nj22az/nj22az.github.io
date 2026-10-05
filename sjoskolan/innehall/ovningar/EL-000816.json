@@ -3,7 +3,7 @@
   "titel": "Labbet: motorn, startaren och tången",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Genomför labbet fredag 9 oktober enligt sidan Labbet och skriv ett eget protokoll.",
+    "fraga": "Genomför labbet fredag 9 oktober enligt sidan Labbet och skriv ett eget protokoll. Om du inte kan komma gör du samma stationer och felsökning i Motorlabbet.",
     "delfragor": [
       {
         "id": "a",
@@ -30,6 +30,10 @@
       },
       {
         "id": "c",
+        "text": "Felsökning: observation, hypotes, skiljande kontroll, åtgärd och mätning efter rättning."
+      },
+      {
+        "id": "d",
         "text": "Välj en mätning där uppmätt värde avvek från förväntat och förklara avvikelsen med dina siffror."
       }
     ],
@@ -46,8 +50,12 @@
     "publik": "elev",
     "resurser": [
       {
-        "url": "vecka-41/aktuell/Simulerade_stationer.html",
-        "titel": "Simulerade stationer A, B och C"
+        "url": "vecka-41/aktuell/Labbet.html",
+        "titel": "Labbet: stationerna M, S och T"
+      },
+      {
+        "url": "motorlabbet/",
+        "titel": "Motorlabbet för dig som inte kan komma"
       },
       {
         "url": "vecka-41/aktuell/Elevprotokoll.html",

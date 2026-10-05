@@ -3,6 +3,7 @@ import {assetURL} from '../../assets.js';
 import {STORE_BRANDS,BRAND_ATLAS_KEYS} from '../../commerce/brands.js';
 import {GROCERY_ITEMS as STORE_ITEMS} from '../../commerce/catalogue.js';
 import {FLAVOURS} from '../../commerce/flavours.js';
+import {FRESH_LABELS,drawFreshLabel} from '../../commerce/fresh-labels.js';
 
 export const POSTER_SPECS=Object.freeze([
  {id:'tea',file:'thuan-labels/golden-tea.webp',title:"GOLDEN MILK TEA · Golden milk tea",position:[-6.325,2.02,1.3],yaw:Math.PI/2,approach:[-5.15,1.55,1.3]},
@@ -86,6 +87,8 @@ export function createLabelAtlas(){
  const ctx=canvas.getContext('2d');ctx.fillStyle='#f0e5ca';ctx.fillRect(0,0,canvas.width,canvas.height);
  for(const [id,index] of slots){
   const b=STORE_BRANDS[id]||STORE_BRANDS.stock,x=index%COLS*TW,y=Math.floor(index/COLS)*TH;
+  // Fresh food and the paper have their own printed faces (fresh-labels.js).
+  if(FRESH_LABELS.includes(id)){ctx.save();ctx.translate(x,y);drawFreshLabel(ctx,id,TW,TH);ctx.restore();continue;}
   ctx.save();ctx.translate(x,y);ctx.fillStyle=b.paper;ctx.fillRect(0,0,TW,TH);
   ctx.strokeStyle=b.ink;ctx.lineWidth=2;ctx.strokeRect(6,6,TW-12,TH-12);
   ctx.fillStyle=b.accent;ctx.fillRect(8,90,TW-16,30);

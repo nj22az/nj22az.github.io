@@ -47,11 +47,16 @@ export function createTownSky(scene){
   }
  }
  const texture=new THREE.DataTexture(data,width,height,THREE.RGBAFormat);texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=texture.minFilter=THREE.LinearFilter;texture.needsUpdate=true;
+ // The same painting under a grey lid, for cloudy and rainy days: the blue drained to a
+ // soft blue-grey, the bank of cloud still showing a little lighter than the sky around it.
+ const greyData=new Uint8Array(data.length);
+ for(let i=0;i<data.length;i+=4){const l=data[i]*.3+data[i+1]*.59+data[i+2]*.11,v=Math.min(255,l*.72+62);greyData[i]=lerp(data[i],v*.95,.88);greyData[i+1]=lerp(data[i+1],v*.98,.88);greyData[i+2]=lerp(data[i+2],v*1.03,.88);greyData[i+3]=255;}
+ const greyTexture=new THREE.DataTexture(greyData,width,height,THREE.RGBAFormat);greyTexture.colorSpace=THREE.SRGBColorSpace;greyTexture.magFilter=greyTexture.minFilter=THREE.LinearFilter;greyTexture.needsUpdate=true;
  const material=new THREE.MeshBasicMaterial({map:texture,side:THREE.BackSide,depthWrite:false,fog:false,toneMapped:false});
  const mesh=new THREE.Mesh(new THREE.SphereGeometry(180,48,24),material);mesh.name='Open harbour sky';mesh.renderOrder=-1000;mesh.frustumCulled=false;scene.add(mesh);
  const night=new THREE.Color(0x33465e),daylight=new THREE.Color(0xffffff),wet=new THREE.Color(0xa7b2bc);
  // The painting is already a daytime sky, so the clock's sky colour is applied relative
  // to its daytime blue: noon leaves the clouds white, dusk warms them, night darkens them.
  const noon=new THREE.Color(PALETTE.skyDay);
- return {mesh,update(camera,day,rain,inside,tint){mesh.visible=!inside;mesh.position.copy(camera.position);if(tint!=null){material.color.set(tint);material.color.r=Math.min(1.2,material.color.r/noon.r);material.color.g=Math.min(1.2,material.color.g/noon.g);material.color.b=Math.min(1.2,material.color.b/noon.b);}else{material.color.copy(night).lerp(daylight,day);if(rain)material.color.multiply(wet);}}};
+ return {mesh,update(camera,day,rain,inside,tint,overcast=false){mesh.visible=!inside;mesh.position.copy(camera.position);const map=rain||overcast?greyTexture:texture;if(material.map!==map){material.map=map;material.needsUpdate=true;}if(tint!=null){material.color.set(tint);material.color.r=Math.min(1.2,material.color.r/noon.r);material.color.g=Math.min(1.2,material.color.g/noon.g);material.color.b=Math.min(1.2,material.color.b/noon.b);}else{material.color.copy(night).lerp(daylight,day);if(rain)material.color.multiply(wet);}if(rain&&tint!=null)material.color.multiply(wet);}};
 }
