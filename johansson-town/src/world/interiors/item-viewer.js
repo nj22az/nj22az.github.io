@@ -1,5 +1,9 @@
 import * as THREE from '../../../vendor/three.module.js';
-import {PACKS,drawFront,drawBack,drawSide} from '../../commerce/packaging-art.js';
+import {assetURL} from '../../assets.js';
+import {shopProductTemplate} from '../../commerce/shop-product.js';
+import {drawBack} from '../../commerce/packaging-art.js';
+import {FRESH_LABELS,drawFreshLabel} from '../../commerce/fresh-labels.js';
+import {getLabelMaterial,packagingSlot,ATLAS_COLS,ATLAS_ROWS,ATLAS_SPAN} from './store-advertising.js';
 import {STORE_BRANDS} from '../../commerce/brands.js';
 import {stockSpec} from '../../commerce/shop-stock.js';
 
@@ -17,111 +21,89 @@ import {stockSpec} from '../../commerce/shop-stock.js';
  * packaging-art.js rather than from the shelf's atlas.
  */
 const CSS=`
-#itemViewer{position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
- background:radial-gradient(ellipse at 50% 42%,rgba(255,248,232,.30),rgba(24,20,16,.72) 70%);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
- font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",system-ui,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+#itemViewer{--ivg:var(--line-green,#06c755);--ivgh:var(--line-green-hover,#05b34c);--ivs:var(--line-surface,#f7f8f9);--ivb:var(--line-border,#e5e5e5);--ivt:var(--line-text,#000);--iv2:var(--line-secondary,#666);
+ position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+ background:radial-gradient(ellipse at 50% 42%,rgba(255,255,255,.22),rgba(0,0,0,.6) 72%);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+ font-family:var(--line-font,-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,"Noto Sans JP",sans-serif);letter-spacing:normal;touch-action:none;user-select:none;-webkit-user-select:none}
 #itemViewer[hidden]{display:none}
 #itemViewer canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab}
 #itemViewer canvas:active{cursor:grabbing}
-#itemViewer .iv-card{position:relative;margin:0 12px max(12px,env(safe-area-inset-bottom));width:min(560px,calc(100% - 24px));background:#f8f1e1;color:#2f2a24;
- border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:14px 16px 12px}
-#itemViewer .iv-brand{font-size:13px;letter-spacing:.06em;color:#7a6a58}
+/* LINE (awesome-design-md-jp): a white 12px card, 8px buttons, one green primary action. */
+#itemViewer .iv-card{position:relative;margin:0 12px max(12px,env(safe-area-inset-bottom));width:min(560px,calc(100% - 24px));box-sizing:border-box;background:#fff;color:var(--ivt);
+ border:1px solid var(--ivb);border-radius:12px;box-shadow:0 2px 8px rgb(0 0 0 / .08);padding:16px}
+#itemViewer .iv-brand{font-size:12px;line-height:1.4;color:var(--iv2)}
 #itemViewer .iv-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-#itemViewer .iv-name{font-size:20px;font-weight:700;margin:2px 0}
-#itemViewer .iv-price{font-size:22px;font-weight:800;color:#b8332c;white-space:nowrap}
-#itemViewer .iv-line{font-size:14px;line-height:1.45;margin:4px 0 10px;color:#4a4038}
+#itemViewer .iv-name{font-size:18px;line-height:1.35;font-weight:700;margin:2px 0}
+#itemViewer .iv-price{font-size:18px;font-weight:700;color:var(--ivt);white-space:nowrap}
+#itemViewer .iv-line{font-size:14px;line-height:1.5;margin:4px 0 12px;color:var(--iv2)}
 #itemViewer .iv-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-#itemViewer button{min-height:46px;border:0;border-radius:14px;font:inherit;font-size:15px;font-weight:700;background:#e9dcc4;color:#2f2a24}
-#itemViewer button.iv-buy{background:#b8332c;color:#fff}
-#itemViewer .iv-close{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:46px;height:46px;border-radius:50%;background:rgba(248,241,225,.92);font-size:22px;min-height:0}
-#itemViewer .iv-hint{position:absolute;top:max(22px,env(safe-area-inset-top));left:0;right:0;text-align:center;color:#fff8e8;font-size:13px;opacity:.85;text-shadow:0 1px 2px rgba(0,0,0,.5);pointer-events:none}
+#itemViewer button{min-height:48px;padding:0 12px;letter-spacing:normal;text-shadow:none;border:1px solid var(--ivb);border-radius:8px;font:inherit;font-size:15px;font-weight:700;background:var(--ivs);color:var(--ivt);cursor:pointer}
+#itemViewer button:hover{background:#eef0f2}
+#itemViewer button:focus-visible{outline:2px solid var(--ivg);outline-offset:3px}
+#itemViewer button.iv-buy{background:var(--ivg);border-color:var(--ivg);color:#fff}
+#itemViewer button.iv-buy:hover{background:var(--ivgh)}
+#itemViewer .iv-close{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:44px;height:44px;min-height:0;padding:0;border-radius:8px;background:#fff;font-size:20px;box-shadow:0 2px 8px rgb(0 0 0 / .08)}
+#itemViewer .iv-hint{position:absolute;top:max(18px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);padding:6px 12px;border-radius:999px;background:rgb(0 0 0 / .45);color:#fff;font-size:12px;white-space:nowrap;pointer-events:none}
 `;
 
-function texture(canvas,renderer){const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t;}
 
-/** The pack as a mesh, from its shape in PACKS and its faces from packaging-art.js. */
+/** The painted labels at the resolution they were painted (store-advertising.js draws them into the shelf atlas at 256×128). */
+// Round packs wrap their label most of the way round; the back panel fills the gap.
+const ROUND=new Set(['tea','water','cola','orange','soy','soda','coffee','beer','tuna','peaches','noodles','yogurt','pudding']),TOP_PRINTED=new Set(['bento','newspaper']);
+const SOURCES=['packaging-atlas.webp','packaging-groceries.webp'],sourceImages=new Map();
+function sourceImage(file){
+ if(!sourceImages.has(file))sourceImages.set(file,new Promise(resolve=>new THREE.ImageLoader().load(assetURL('graphics/konbini/'+file),resolve,undefined,()=>resolve(null))));
+ return sourceImages.get(file);
+}
+/**
+ * The pack in your hand is the pack on the shelf: the same shape (shop-product.js, with
+ * more segments for the round ones) and the same painted label, cut from the painting at
+ * full size instead of the shelf's small copy, so nothing changes but the sharpness.
+ */
 export function buildPack(id,renderer){
- const pack=PACKS[id]||{shape:'box',size:[.15,.15,.06]},brand=STORE_BRANDS[id==='bun'?'buns':id]||STORE_BRANDS.stock;
- const [w,h,d]=pack.size,group=new THREE.Group(),textures=[];
- const tex=c=>{const t=texture(c,renderer);textures.push(t);return t;};
- const film=(map,extra={})=>new THREE.MeshStandardMaterial({map,roughness:.42,metalness:.02,...extra});
- const plain=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.55,...extra});
- // Front and back are drawn at the pack's own aspect, so nothing is stretched.
- const aspect=(a,b)=>{const s=1024/Math.max(a,b);return [Math.round(a*s),Math.round(b*s)];};
- if(pack.shape==='box'||pack.shape==='flat'||pack.shape==='bag'){
-  const [fw,fh]=aspect(w,h),front=tex(drawFront(id,fw,fh)),back=tex(drawBack(id,fw,fh));
-  const sideTex=tex(drawSide(id,256,Math.round(256*h/Math.max(d,.01)))),paper=plain(brand.paper);
-  const bag=pack.shape==='bag';
-  const geometry=new THREE.BoxGeometry(w,h,d,bag?6:1,bag?12:1,bag?6:1);
-  if(bag){
-   // A pillow pack: full in the middle, pressed flat to its seals at the top and bottom.
-   const p=geometry.attributes.position;
-   for(let i=0;i<p.count;i++){const t=Math.abs(p.getY(i))/(h/2),s=Math.abs(p.getX(i))/(w/2);p.setZ(i,p.getZ(i)*(1-.92*t**3)*(1-.25*s**4));p.setX(i,p.getX(i)*(1-.05*t));}
-   geometry.computeVertexNormals();
-  }
-  const sideMat=pack.shape==='flat'?paper:film(sideTex);
-  const mesh=new THREE.Mesh(geometry,[sideMat,sideMat,paper,paper,film(front,{roughness:bag?.32:.5}),film(back,{roughness:bag?.32:.5})]);
-  group.add(mesh);
-  if(bag)for(const sy of [-1,1]){
-   // The crimped seals: a strip of film with its teeth.
-   const seal=new THREE.Mesh(new THREE.BoxGeometry(w*1.0,h*.06,d*.08),plain(brand.accent,{roughness:.35}));seal.position.y=sy*(h/2-h*.03);group.add(seal);
-   for(let i=0;i<Math.round(w/.008);i++){const tooth=new THREE.Mesh(new THREE.BoxGeometry(.0035,h*.055,d*.1),plain(brand.ink));tooth.position.set(-w/2+.004+i*.008,sy*(h/2-h*.03),0);group.add(tooth);}
-  }
- }else if(pack.shape==='can'||pack.shape==='bottle'||pack.shape==='cup'){
-  const r=w/2,label=pack.shape==='bottle'?h*.45:h*.92,wrapW=2048,wrapH=Math.round(wrapW*label/(Math.PI*2*r));
-  // One canvas round the whole body: the back panel, then the front, each half the way round.
-  const wrap=document.createElement('canvas');wrap.width=wrapW;wrap.height=Math.max(256,Math.min(2048,wrapH));
-  const ctx=wrap.getContext('2d');ctx.drawImage(drawBack(id,1024,wrap.height),0,0,wrapW/2,wrap.height);ctx.drawImage(drawFront(id,1024,wrap.height),wrapW/2,0,wrapW/2,wrap.height);
-  const map=tex(wrap);
-  const bottom=pack.shape==='cup'?r*.76:r;
-  const body=new THREE.Mesh(new THREE.CylinderGeometry(r,bottom,label,64,1,true),film(map,{side:THREE.DoubleSide,roughness:pack.shape==='can'?.3:.42,metalness:pack.shape==='can'?.25:.02}));
-  // The front's middle (u = .75) is at +x before this turn; turned, it faces the viewer.
-  body.rotation.y=Math.PI/2;
-  if(pack.shape==='can'){
-   body.position.y=0;group.add(body);
-   const metal=plain(0xc9ced2,{metalness:.8,roughness:.25});
-   for(const sy of [-1,1]){const rim=new THREE.Mesh(new THREE.CylinderGeometry(r*.98,r,h*.04,48),metal);rim.position.y=sy*(label/2+h*.02);group.add(rim);}
-   const lid=new THREE.Mesh(new THREE.CircleGeometry(r*.9,48).rotateX(-Math.PI/2),metal);lid.position.y=label/2+h*.04;group.add(lid);
-   const tab=new THREE.Mesh(new THREE.BoxGeometry(r*.5,.002,r*.25),metal);tab.position.set(0,label/2+h*.045,r*.25);group.add(tab);
-  }else if(pack.shape==='bottle'){
-   const liquid={tea:0x8a9a3c,cola:0x3a1a12,water:0xd8eef2,soy:0x2a120c,soda:0xc8ecee}[id]??0xd8eef2;
-   const clear=new THREE.MeshPhysicalMaterial({color:liquid,roughness:.08,transmission:.35,transparent:true,opacity:id==='cola'||id==='soy'?.95:.55,thickness:.02});
-   const lower=new THREE.Mesh(new THREE.CylinderGeometry(r,r*.95,h*.2,48),clear);lower.position.y=-h*.4;group.add(lower);
-   body.position.y=-h*.075;group.add(body);
-   const shoulder=new THREE.Mesh(new THREE.CylinderGeometry(r*.32,r,h*.22,48),clear);shoulder.position.y=h*.26;group.add(shoulder);
-   const neck=new THREE.Mesh(new THREE.CylinderGeometry(r*.3,r*.32,h*.06,32),clear);neck.position.y=h*.4;group.add(neck);
-   const cap=new THREE.Mesh(new THREE.CylinderGeometry(r*.34,r*.34,h*.07,32),plain(brand.ink,{roughness:.4}));cap.position.y=h*.465;group.add(cap);
-  }else{
-   body.position.y=0;group.add(body);
-   const [fw,fh]=[1024,1024],lidArt=tex(drawFront(id,fw,fh));
-   const lid=new THREE.Mesh(new THREE.CircleGeometry(r*1.02,48).rotateX(-Math.PI/2),film(lidArt,{roughness:.3,metalness:.3}));lid.position.y=label/2+.001;group.add(lid);
-   const rim=new THREE.Mesh(new THREE.TorusGeometry(r*1.01,.0025,8,48).rotateX(Math.PI/2),plain(brand.ink));rim.position.y=label/2;group.add(rim);
-   const base=new THREE.Mesh(new THREE.CircleGeometry(bottom,48).rotateX(Math.PI/2),plain(brand.paper));base.position.y=-label/2;group.add(base);
-  }
- }else if(pack.shape==='carton'){
-  const body=h*.8,[fw,fh]=aspect(w,body),front=tex(drawFront(id,fw,fh)),back=tex(drawBack(id,fw,fh)),side=tex(drawSide(id,256,Math.round(256*body/d)));
-  const box=new THREE.Mesh(new THREE.BoxGeometry(w,body,d),[film(side),film(side),plain(brand.paper),plain(brand.paper),film(front),film(back)]);box.position.y=-h*.1;group.add(box);
-  // The gable top: two sloping panels meeting at a ridge, and the sealed fin along it.
-  const top=body/2-h*.1,rise=h*.15,shape=new THREE.Shape([new THREE.Vector2(-d/2,0),new THREE.Vector2(d/2,0),new THREE.Vector2(0,rise)]);
-  const gable=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:w,bevelEnabled:false}).rotateY(Math.PI/2).translate(-w/2,0,0),plain(brand.paper,{flatShading:true}));
-  gable.position.y=top;group.add(gable);
-  const fin=new THREE.Mesh(new THREE.BoxGeometry(w,h*.05,.006),plain(brand.ink));fin.position.y=top+rise+h*.02;group.add(fin);
- }else if(pack.shape==='tray'){
-  // The bento: a black tray, its clear lid and the printed band across it, seen from above.
-  const tray=new THREE.Mesh(new THREE.BoxGeometry(w,h*.6,d),plain(0x1d1d1d,{roughness:.4}));tray.position.y=-h*.2;group.add(tray);
-  const top=tex(drawFront(id,1024,Math.round(1024*d/w)));
-  const lid=new THREE.Mesh(new THREE.PlaneGeometry(w*.98,d*.98).rotateX(-Math.PI/2),film(top,{roughness:.2}));lid.position.y=h*.12;group.add(lid);
-  // The paper band round one end, clear of the picture on the lid.
-  const band=new THREE.Mesh(new THREE.BoxGeometry(w*.09,h*.5,d+.004),plain(brand.accent));band.position.set(w*.41,-h*.04,0);group.add(band);
-  const cover=new THREE.Mesh(new THREE.BoxGeometry(w,h*.4,d),new THREE.MeshPhysicalMaterial({color:0xffffff,transparent:true,opacity:.18,roughness:.05}));cover.position.y=h*.1-.001;group.add(cover);
-  // Held up and tilted to you, so the lid is what you read.
-  group.rotation.x=Math.PI*.38;
+ const t=shopProductTemplate(id,{sides:64}),slot=packagingSlot(id),col=slot%ATLAS_COLS,row=Math.floor(slot/ATLAS_COLS);
+ const art=t.art.clone(),uv=art.attributes.uv;
+ for(let i=0;i<uv.count;i++){
+  const u=(uv.getX(i)*ATLAS_SPAN-col-.025)/.95,v=1-((1-uv.getY(i))*ATLAS_ROWS-row-.025)/.95;
+  uv.setXY(i,THREE.MathUtils.clamp(u,0,1),THREE.MathUtils.clamp(v,0,1));
  }
- group.userData.radius=Math.hypot(w,h,d)/2;
- group.userData.dispose=()=>{group.traverse(o=>{if(!o.isMesh)return;o.geometry.dispose();for(const m of [].concat(o.material))m.dispose();});textures.forEach(t=>t.dispose());};
+ uv.needsUpdate=true;
+ const label=document.createElement('canvas');label.width=1024;label.height=512;const ctx=label.getContext('2d');
+ // At once: the shelf's own copy, scaled up; then the original painting when it has loaded.
+ const atlas=getLabelMaterial().map.image,TW=atlas.width/ATLAS_SPAN,TH=atlas.height/ATLAS_ROWS;
+ if(!drawFreshLabel(ctx,id,label.width,label.height))ctx.drawImage(atlas,col*TW,row*TH,TW,TH,0,0,label.width,label.height);
+ const map=new THREE.CanvasTexture(label);map.colorSpace=THREE.SRGBColorSpace;map.anisotropy=renderer?.capabilities?.getMaxAnisotropy?.()||4;
+ const file=SOURCES[Math.floor(row/4)];
+ if(file&&!FRESH_LABELS.includes(id))sourceImage(file).then(image=>{
+  if(!image)return;const cw=image.width/ATLAS_COLS,ch=image.height/4;
+  ctx.drawImage(image,col*cw,(row%4)*ch,cw,ch,0,0,label.width,label.height);map.needsUpdate=true;
+ });
+ const body=t.body.clone(),group=new THREE.Group(),inner=new THREE.Group();
+ inner.add(new THREE.Mesh(body,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55})));
+ inner.add(new THREE.Mesh(art,new THREE.MeshStandardMaterial({map,roughness:.42,emissive:0xffffff,emissiveMap:map,emissiveIntensity:.35})));
+ const box=t.bounds,centre=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());
+ // Turned over: the 一括表示 panel every pack carries, ingredients, contents, maker and
+ // barcode, printed from the item's own data (packaging-art.js drawBack).
+ art.computeBoundingBox();const a=art.boundingBox,round=ROUND.has(id);
+ const faceW=round?Math.PI*.38*Math.max(Math.abs(a.min.x),Math.abs(a.max.x)):a.max.x-a.min.x,faceH=a.max.y-a.min.y;
+ const backMap=new THREE.CanvasTexture(drawBack(id,768,Math.round(THREE.MathUtils.clamp(768*faceH/Math.max(faceW,.01),512,1536))));backMap.colorSpace=THREE.SRGBColorSpace;backMap.anisotropy=map.anisotropy;
+ const backMaterial=new THREE.MeshStandardMaterial({map:backMap,roughness:.5,emissive:0xffffff,emissiveMap:backMap,emissiveIntensity:.3});
+ let panel=null;
+ if(round){
+  const r=Math.max(Math.abs(a.min.x),Math.abs(a.max.x))+.0006,hgt=(a.max.y-a.min.y)*.96,arc=Math.PI*.38;
+  panel=new THREE.Mesh(new THREE.CylinderGeometry(r,r,hgt,24,1,true,Math.PI-arc/2,arc),backMaterial);panel.position.y=(a.min.y+a.max.y)/2;
+ }else if(a.min.z<-.002&&!TOP_PRINTED.has(id)){
+  const pw=faceW+.001,ph=faceH+.001;
+  panel=new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),backMaterial);panel.rotation.y=Math.PI;panel.position.set((a.min.x+a.max.x)/2,(a.min.y+a.max.y)/2,a.min.z-.0008);
+ }
+ if(panel)inner.add(panel);
+ inner.position.copy(centre).multiplyScalar(-1);group.add(inner);
+ // Lidded packs are printed on top: held up and tilted to you, so the lid is what you read.
+ if(['bento','newspaper'].includes(id))group.rotation.x=Math.PI*.38;
+ group.userData.radius=size.length()/2;
+ group.userData.dispose=()=>{body.dispose();art.dispose();map.dispose();backMap.dispose();panel?.geometry.dispose();backMaterial.dispose();inner.traverse(o=>{if(o.isMesh)o.material.dispose();});};
  return group;
 }
-
 export function createItemViewer({onClose=()=>{}}={}){
  if(!document.getElementById('itemViewerStyle')){const s=document.createElement('style');s.id='itemViewerStyle';s.textContent=CSS;document.head.append(s);}
  const root=document.createElement('section');root.id='itemViewer';root.hidden=true;root.setAttribute('role','dialog');root.setAttribute('aria-label','Looking at an item');

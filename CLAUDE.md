@@ -112,6 +112,30 @@ assets/
   video/                # Video assets
 ```
 
+## Johansson Town
+
+**Purpose: Johansson Town is a storytelling game.** Everything it does should tell stories — to teach,
+to make people laugh, for drama, or just to be silly — and at the highest quality we can reach.
+Exploring the town is the fun, awesome bonus: every place, person and item discovered feeds the
+storyteller and opens more stories and experiences. When choosing between features, prefer the one
+that makes more or better stories.
+
+- The storyteller (`johansson-town/src/feed/`) builds coherent stories from a database of genres,
+  real places, residents and items; it may be random and silly, but it must always make sense.
+- Comics are shot inside the real rooms (captured by `tools/render-feed-backdrops.mjs`), with the
+  residents' own looks, walks, poses and props. Quality over quantity.
+- New places, residents, props and moves should be usable by the storyteller, not only by the game.
+- **No glitches, jagged edges or unnatural behaviour.** Anything that clips, pops, floats, flickers or
+  moves in a way a person would not is a bug, not polish for later.
+- **Nothing is random.** Every item, prop and product has a purpose: who it is for, why they would want
+  it, and why it is placed where it is. Shops are merchandised with a philosophy (traffic, impulse,
+  daily needs, the people who actually live here); record that reasoning with the data so it can be
+  tested and so stories can use it.
+- **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten is a konbini *and* the
+  town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading). Higa Liquor supplies
+  all alcohol (to Sakura, Minato and Sato Ramen); Front-Row Books & Stationery supplies office supplies; Rainflower
+  Florist supplies decorations. Blue Coral on Rainflower Lane is the town's only ice-cream shop.
+
 ## Sjöskolan
 
 **Läs `sjoskolan/ANDRINGSLOGG.md` först.** Där står reglerna från tidigare fel (ledtrådar utan svaret, verkliga exempel,

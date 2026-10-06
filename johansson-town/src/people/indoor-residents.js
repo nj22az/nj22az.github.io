@@ -8,6 +8,9 @@ import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {ONSEN_SEATS} from '../world/interiors/onsen.js';
 import {SATO_GUEST_SEATS,SATO_COOK,SATO_ROOM} from '../world/sato-ramen-layout.js';
 
+/** Minato's guest seats as seat records: the five counter stools, the table bench, the far end. */
+export const IZAKAYA_GUEST_SEATS=Object.freeze(IZAKAYA_SEATS.map(([x,z],i)=>Object.freeze({position:[x,0,z],surfaceY:FURNITURE_HEIGHTS.seat,height:FURNITURE_HEIGHTS.seat,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]})));
+
 // One actor belongs to one location. New visitors cross the door and walk to a
 // reserved place; changing the clock sends seated guests back to the exit.
 export function createIndoorResidents({world,parent,place,getState=()=>({}),getPlayerSeat=()=>null,onBorrow=()=>{},canLeave=()=>true,getStandingVisit=()=>null,collides=()=>false,getRain=()=>false,layout=null,isOccupied=()=>false,radiusFor=()=>.3,validateSpawn=false}){
@@ -51,7 +54,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    const seat=ONSEN_SEATS[getPlayerSeat()==='rockBeside'?'rock':'rockBeside'];
    return {...seat,height:seat.surfaceY,soak:true};
   }
-  const seats=sato?SATO_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_SEATS.map(([x,z],i)=>({position:[x,0,z],surfaceY:FURNITURE_HEIGHTS.seat,height:FURNITURE_HEIGHTS.seat,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]}));
+  const seats=sato?SATO_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_GUEST_SEATS;
   if(place==='izakaya'&&name==='Barfly'){
    // His own stool, at the kitchen end of the counter, where he sleeps when Minato is shut.
    const index=4;if([...borrowed.values()].some(v=>v.index===index&&!v.seat.staff))return null;
@@ -95,8 +98,10 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    }
    g.visible=true;g.userData.hit.inside=true;g.userData.indoors=place;
    g.userData[place==='ramen'?'inRamen':place==='market'?'inMarket':place==='onsen'?'inOnsen':'inIzakaya']=true;g.userData.place=place;
-   // Changed at the lockers by the door: in and out of the bath in swimwear.
-   if(place==='onsen')g.userData.outfit='swim';
+   // Changed at the lockers by the door. Umi-no-yu is a family bath, so nobody bathes bare:
+   // grown-ups wrap up in one of the bath's yuamigi (bath wraps) with a towel on the head,
+   // children and teenagers wear swimwear. 'bath' asks each body for its own (build.js bathOutfit).
+   if(place==='onsen')g.userData.outfit='bath';
    // Closed Minato: whoever is there works through their cleaning stations
    // (izakaya-hours.js), walking from one to the next; when the job ends they go back
    // to their own place (the Barfly to his stool).

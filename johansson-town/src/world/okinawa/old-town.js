@@ -12,7 +12,8 @@ import {fishCrates,buoys,bicycle} from './props.js';
  * everything that walks in and out of them are exactly as they were.
  *
  *   Sakura      the flat above the shop, its outside stair up the back, the rooftop sign,
- *               an ice-cream mural on the side wall and enamel tins on the other.
+ *               a Blue Coral mural on the side wall (an advert for the shop on Rainflower
+ *               Lane) and enamel tins on the other.
  *   Warehouse   its name painted big on the street wall, floats and crates at its foot.
  *   Office      big-catch flags on a pole by the door, a life ring and the tide board.
  *   Bookshop    a cart of cheap paperbacks out on the pavement.
@@ -104,17 +105,10 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  const fruit=[[0xf0a63c,'mango'],[0x8fbf4a,'goya'],[0xe0574a,'dragon fruit'],[0xe8c84a,'shiquasa']];
  fruit.forEach(([colour],i)=>{const z=tz-.6+i*.4;kit.cyl(.17,.13,.12,front+.36,.8,z,0xb48a4a,{segments:10});for(let k=0;k<3;k++)kit.sphere(.06,front+.32+(k%2)*.08,.9,z-.06+k*.06,colour,{detail:0});});
  solid({id:'sakura-trestle',x:front+.36,z:tz,w:.6,d:1.7,height:.8});
- // The ice-cream freezer at the north end: a white chest with a blue lid, glass on top.
- const fz=S.maxZ-1.1;
- kit.box(.62,.78,1.1,front+.36,.39,fz,0xf1efe8);kit.box(.64,.06,1.12,front+.36,.8,fz,0x2d7fb8);
- kit.box(.5,.02,.98,front+.36,.84,fz,0xbfe0ee,{finish:'gloss'});
- for(let k=0;k<6;k++)kit.box(.12,.05,.12,front+.26+(k%2)*.2,.78,fz-.35+Math.floor(k/2)*.35,[0xe98aa6,0xf6efe0,0x8a5a3c][k%3]);
- kit.sign(poster({title:"Ice",lines:['BLUE CORAL','¥150',"It's cold!"],band:'#2d7fb8'}),.5,.34,front+.68,.45,fz,{ry:Math.PI/2,depth:.01,name:'freezer card'});
- solid({id:'sakura-freezer',x:front+.36,z:fz,w:.66,d:1.15,height:.9});
- anchor(front+1.1,1,fz,'Buy a Blue Coral ice cream',()=>onAction?.('buy','Blue Coral ice cream',{cost:150,item:'Blue Coral ice cream',text:'Blue Coral, from the chest freezer outside Sakura: ube, salt cookie or the pink one that is guava. It starts melting before you have your change.'}));
  // At the two corners of the frontage, so they mark the shop without standing in front
  // of its window.
- for(const [z,jp,bg] of [[S.maxZ-.35,"Ice cream",'#2d7fb8'],[S.minZ+.45,"Cold drinks",'#c8392e']]){
+ // One flag: the town's ice cream is Blue Coral's, on Rainflower Lane.
+ for(const [z,jp,bg] of [[S.minZ+.45,"Cold drinks",'#c8392e']]){
   kit.cyl(.025,.025,2.8,front+.95,1.4,z,0x9aa0a4,{segments:6});kit.rod([front+.95,2.72,z],[front+.95,2.72,z+.5],.012,0x9aa0a4);
   kit.sign(vertical({jp,bg}),.46,1.9,front+.95,1.75,z+.26,{ry:Math.PI/2,depth:.01,both:true,name:'nobori'});
   solid({id:'nobori',x:front+.95,z,w:.1,d:.1,height:2.8});
@@ -205,7 +199,7 @@ function dressSakura(kit,solid,{inspect}){
  kit.sign(enamel({jp:"Ryukyu Cider",en:'Ryukyu cider'}),.7,1.05,S.maxX-2,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
  kit.sign(enamel({jp:"Mosquito coil",en:'mosquito coils',bg:'#2a6a4a',ink:'#f4e6b0'}),.7,1.05,S.maxX-3,1.7,S.minZ-.04,{ry:Math.PI,depth:.02,name:'enamel sign'});
  inspect(S.maxX-2.2,1.2,S.maxZ+1.2,'Look at the ice-cream mural','Blue Coral mural',
-  'Painted straight onto the wall in 1981 and touched up every summer since by whoever has the paint. The pink scoop is guava. Thuan says the man who painted it still comes in for his cigarettes and complains that nobody has got the blue right.');
+  'Painted straight onto the wall in 1981 and touched up every summer since by whoever has the paint. The pink scoop is guava. Thuan says the man who painted it still comes in for his cigarettes and complains that nobody has got the blue right. The scoops themselves are Blue Coral’s, up on Rainflower Lane.');
 }
 
 function dressWarehouse(kit,solid,{inspect}){

@@ -60,7 +60,7 @@ export function createAvatarActor(entity,name,{shadows=false}={}){
  entity.userData.visualReady=true;entity.userData.visualSource='Shimanchu · '+(recipe.name||name);
  return {isAvatar:true,avatar,animator:createAvatarAnimator(avatar,{lively:true}),entity,model:avatar.root,mixer:null,actions:new Map(),
   current:null,last:entity.position.clone(),gestureTime:0,speed:0,moving:false,wasVisible:true,height:avatar.height,
-  isThuan:name==='Thuan',outfit:'clothes'};
+  isThuan:name==='Thuan',outfit:'clothes',requested:'clothes'};
 }
 
 /** Once a frame: what the flags say, into the body. */
@@ -74,7 +74,10 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  actor.speed=THREE.MathUtils.damp(actor.speed,measured,20,dt);
  actor.moving=actor.speed>(actor.moving?.03:.07);
  actor.gestureTime=Math.max(0,actor.gestureTime-dt);
- const outfit=u.outfit==='swim'?'swim':actor.isThuan?(u.alternativeOutfit||'clothes'):(u.outfit||'clothes');if(actor.outfit!==outfit){avatar.wear(outfit);actor.outfit=outfit;}
+ // In the bath: 'bath' is whatever this person wears at Umi-no-yu (build.js bathOutfit: a bath
+ // wrap for grown-ups, swimwear for children), or 'towel'/'swim' outright. The actor records
+ // what they actually have on, so a child asked into a towel reads as in swimwear.
+ const bathing=['swim','towel','bath'].includes(u.outfit),outfit=bathing?u.outfit:actor.isThuan?(u.alternativeOutfit||'clothes'):(u.outfit||'clothes');if(actor.requested!==outfit){actor.outfit=avatar.wear(outfit)||outfit;actor.requested=outfit;}
  // At home the hat is on its hook (home-residents.js), not on the head.
  const hatOn=!u.hatOff;if(actor.hatOn!==hatOn){avatar.setHat?.(hatOn);actor.hatOn=hatOn;}
  const riding=!!(u.playerControlled&&actor.isThuan);
@@ -147,7 +150,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
  const root=new THREE.Group();root.name='Johansson (third person)';root.visible=false;scene.add(root);
  let avatar=buildAvatar(recipe,{shadows:true,faceSize:512}),animator=createAvatarAnimator(avatar,{bowDepth:.18});
  root.add(avatar.root);
- let expression='neutral',expressionUntil=0,speakUntil=0,time=0,seatMove='Sit',outfit='clothes',held=null,lookPoint=null,move=null;
+ let expression='neutral',expressionUntil=0,speakUntil=0,time=0,seatMove='Sit',outfit='clothes',requested='clothes',held=null,lookPoint=null,move=null;
  const hand=()=>avatar.bones.handR;
  const api={
   root,loading:Promise.resolve(true),
@@ -164,7 +167,8 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   speak(seconds=2){speakUntil=Math.max(speakUntil,time+seconds);},
   lookAt(point){lookPoint=point?point.clone?.()||point:null;},
   seat(name='Sit'){seatMove=name;},
-  wear(name){outfit=name==='swim'?'swim':'clothes';avatar.wear(outfit);},
+  /** 'clothes', 'swim', 'towel', or 'bath' (what they wear at Umi-no-yu: bathOutfit). Returns what is on. */
+  wear(name){requested=['swim','towel','bath'].includes(name)?name:'clothes';outfit=avatar.wear(requested)||requested;return outfit;},
   get outfit(){return outfit;},
   /** Where the third-person lens pivots: above the big head and clear of it to the right. */
   get lens(){const m=avatar.measure;return {eye:m.H+.14,side:m.Rh*m.headSX+.26,head:m.headCentre};},
@@ -177,7 +181,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   setRecipe(next){
    const r=normalizeRecipe(next);avatar.root.removeFromParent();avatar.dispose();
    avatar=buildAvatar(r,{shadows:true,faceSize:512});animator=createAvatarAnimator(avatar,{bowDepth:.18});root.add(avatar.root);
-   avatar.wear(outfit);if(held)hand().add(held);
+   outfit=avatar.wear(requested)||requested;if(held)hand().add(held);
   },
   update(dt,state={}){
    time+=dt;root.visible=!!state.visible;

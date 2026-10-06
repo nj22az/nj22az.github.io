@@ -20,7 +20,13 @@ test('the window decorations follow the real calendar, every month',()=>{
 
 test('the posters are on walls, not on the glazing, and the medicine shelf is stocked',()=>{
  installDOM();
- for(const p of WALL_POSTERS)assert.ok(p.position[2]<3,'A poster is back on the front window: '+p.id);
+ // Off the glazing (z 3.91): a poster facing the room keeps well back; one on a side wall ends before the window.
+ for(const p of WALL_POSTERS){
+  const side=Math.abs(Math.sin(p.yaw))>.9,front=side?p.position[2]+p.size[0]/2:p.position[2];
+  assert.ok(side?front<3.88:front<3,'A poster is back on the front window: '+p.id);
+ }
+ const sale=WALL_POSTERS.find(p=>p.id==='sale');
+ assert.deepEqual([sale.size,sale.position],[[1.0,1.4],[-6.78,1.5,3.3]],'The sale poster moved: the Shorts draw it at this spot');
  const room=new THREE.Group(),shelf=buildMedicineShelf(room);
  const box=new THREE.Box3().setFromObject(shelf.boxes);
  assert.ok(box.min.x>=MEDICINE_SHELF.front-.01&&box.max.x<=MEDICINE_SHELF.back+.01,'Medicine sticks out of its shelf');

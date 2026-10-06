@@ -109,7 +109,7 @@ export const SAKURA_LAYOUT={
   rect(CASH_CORNER.atm.x,CASH_CORNER.atm.z,CASH_CORNER.atm.w,CASH_CORNER.atm.d,1.6),rect(CASH_CORNER.film.x,CASH_CORNER.film.z,CASH_CORNER.film.w,CASH_CORNER.film.d,1.2),
   rect(MAGAZINE_RACK.x,MAGAZINE_RACK.z,MAGAZINE_RACK.width,MAGAZINE_RACK.depth,MAGAZINE_RACK.height),rect(-5.17,-2.16,2.04,.61,1.5),
   rect(-6.4,.43,.9,4.03,2.25),rect(.4,-3.55,5.35,.8,2.3),
-  rect(4.8,1.97,.52,3.78,FURNITURE_HEIGHTS.serviceCounter),rect(6.74,2.08,.18,3.48,2.0),rect(3.64,3.6,1.35,.57,1.06),
+  rect(4.8,1.97,.52,3.78,FURNITURE_HEIGHTS.serviceCounter),rect(6.74,2.08,.18,3.48,2.0),
   rect(-.66,-3.99,7.82,.12),rect(5.62,-3.99,2.46,.12),
   // The restroom's east wall: two jambs either side of its doorway (z -3.66..-2.78).
   rect(-4.02,-3.81,.12,.31),rect(-4.02,-2.6,.12,.33),rect(-5.4,-2.48,2.82,.12),
@@ -174,7 +174,7 @@ function bay(ids,site,x,z,yaw,stand){
  // (the heavier ones, low down) taking any left over.
  for(const [i,id] of ids.entries()){
   const take=share+(i<extra?1:0);
-  SAKURA_SHELVES[id]={x:px+Math.sin(facing)*.14,z:pz+Math.cos(facing)*.14,levels:AISLE_LEVELS.slice(level,level+take),yaw:facing,stand:[sx,0,sz],spacing:.23,depth:.12,columns:facingsFor(shelfCapacity(id)/take,8),width:BAY_WIDTH[site]};
+  SAKURA_SHELVES[id]={x:px+Math.sin(facing)*.14,z:pz+Math.cos(facing)*.14,levels:AISLE_LEVELS.slice(level,level+take),yaw:facing,stand:[sx,0,sz],spacing:.23,depth:.12,columns:facingsFor(shelfCapacity(id)/take,8),width:BAY_WIDTH[site],fitting:site};
   level+=take;
  }
 }
@@ -186,8 +186,9 @@ function bay(ids,site,x,z,yaw,stand){
 // Pantry: the noodles, soups and curry on one face, the bottles and tins on the other.
 bay(['noodles','soup','curry'],'west',-1.50,-.93,0,[-1.50,0,-.11]);
 bay(['soy','tuna','peaches'],'west',-1.50,-1.39,Math.PI,[-1.50,0,-2.21]);
-// Sweets: crisps and crackers at a grown-up's eye, chocolate and sweets low for children.
-bay(['chips','crackers','biscuit'],'middle',.832,1.56,0,[.832,0,2.38]);
+// Sweets: rice crackers on the low boards, crisps at a grown-up's eye, biscuits on top;
+// chocolate and sweets low on the far face for children.
+bay(['crackers','chips','biscuit'],'middle',.832,1.56,0,[.832,0,2.38]);
 bay(['candy','chocolate'],'middle',.832,1.10,Math.PI,[.832,0,.28]);
 // Daily goods: washing, paper, the bathroom; then batteries and stationery.
 bay(['detergent','soap'],'east',-3.319,1.56,0,[-3.319,0,2.38]);
@@ -209,7 +210,7 @@ for(const {column,lines} of COLD_CABINET){
  const x=-1.60+column*1.33,stand=standBack(x,-3.48,[x,0,-2.78]);
  for(const [id,levels] of lines){
   const perLevel=shelfCapacity(id)/levels.length;
-  SAKURA_SHELVES[id]={x,z:-3.48,levels:levels.map(l=>FRIDGE_LEVELS[l]),yaw:0,stand,spacing:.19,depth:.12,columns:facingsFor(perLevel,6),fridge:column,width:1.2};
+  SAKURA_SHELVES[id]={x,z:-3.48,levels:levels.map(l=>FRIDGE_LEVELS[l]),yaw:0,stand,spacing:.19,depth:.12,columns:facingsFor(perLevel,6),fridge:column,width:1.2,fitting:'fridge'};
  }
 }
 /**
@@ -222,11 +223,11 @@ const CHILLED_BAYS=[['rice','bento',-.93],['sandwich','bread',.43],['pudding','y
 for(const [upper,lower,z] of CHILLED_BAYS){
  const stand=standBack(-6.4,z,[-5.5,0,z]),L=CHILLER.levels;
  for(const [id,levels,x] of [[upper,[L[2],L[3]],-6.48],[lower,[L[0],L[1]],-6.4]])
-  SAKURA_SHELVES[id]={x,z,levels,yaw:Math.PI/2,stand,spacing:.2,depth:.13,columns:facingsFor(shelfCapacity(id)/levels.length,6),width:1.25};
+  SAKURA_SHELVES[id]={x,z,levels,yaw:Math.PI/2,stand,spacing:.2,depth:.13,columns:facingsFor(shelfCapacity(id)/levels.length,6),width:1.25,fitting:'chiller'};
 }
 /** The bun steamer on the counter, beside the hot case: two racks behind glass. */
 export const BUN_STEAMER=Object.freeze({x:4.8,z:2.45,w:.38,d:.52,top:FURNITURE_HEIGHTS.serviceCounter,h:.44});
-SAKURA_SHELVES.bun={x:BUN_STEAMER.x,z:BUN_STEAMER.z,levels:[BUN_STEAMER.top+.03,BUN_STEAMER.top+.23],columns:3,yaw:-Math.PI/2,stand:[4.05,0,BUN_STEAMER.z],spacing:.15,depth:.11};
+SAKURA_SHELVES.bun={x:BUN_STEAMER.x,z:BUN_STEAMER.z,levels:[BUN_STEAMER.top+.03,BUN_STEAMER.top+.23],columns:3,yaw:-Math.PI/2,stand:[4.05,0,BUN_STEAMER.z],spacing:.15,depth:.11,fitting:'steamer'};
 
 
 /**

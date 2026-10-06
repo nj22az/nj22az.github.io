@@ -8,6 +8,7 @@ import {GATEBALL_ACTIVE} from '../world/okinawa/layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
 import {FLOWER_SHOP} from '../world/flower-shop.js';
 import {HOSHIZAKI_STORE} from '../world/island-plan.js';
+import {buildFishCart} from '../world/roadside-props.js';
 
 /**
  * The people who live and work in the new streets.
@@ -92,14 +93,22 @@ const ALL_NEIGHBOURS=Object.freeze([
   lines:['Welcome to Rainflower. Fresh stems, a small bouquet, or something green for your windowsill? I wrap everything by hand.',
    'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. The flowers finish work on time; he never does.']},
  // Vy, at the high school on the mainland: the school bus at twenty past seven, then after
- // school an ice cream from the chest freezer outside Sakura and her homework in the park.
+ // school an ice cream at the Blue Coral counter on Rainflower Lane and her homework in the park.
  {name:'Vy',look:'Vy',height:1.56,role:'waiting for the school bus',at:[-2.4,-57],face:[0,-1],hours:[[H(7,20),H(8)],[H(15,40),H(18,40)]],
-  routine:[{from:0,at:[-2.4,-57],face:[0,-1],role:'waiting for the school bus'},{from:H(15,40),at:[-6.2,-22.8],face:[1,0],role:'eating a Blue Coral ice cream after school'},{from:H(16,20),at:[18.2,-21.8],face:[-1,0],role:'doing her homework in the park'},{from:H(18,10),at:[-2.4,-57],face:[0,-1],role:'waiting for the bus home'}],
+  routine:[{from:0,at:[-2.4,-57],face:[0,-1],role:'waiting for the school bus'},{from:H(15,40),at:[7.1,48.6],face:[1,0],role:'eating a Blue Coral ice cream after school'},{from:H(16,20),at:[18.2,-21.8],face:[-1,0],role:'doing her homework in the park'},{from:H(18,10),at:[-2.4,-57],face:[0,-1],role:'waiting for the bus home'}],
   lines:[
    'Ice cream before homework. It is a rule. I made the rule, but it is still a rule.',
    'Kanji test tomorrow. Two hundred characters. I know one hundred and ninety. The other ten are probably not important.',
-   'Thuan at Sakura saves me the pink one. Do not tell her sisters; they think she is strict.',
+   'The lady at Blue Coral saves me the pink one. Do not tell anyone; she says it is a secret menu.',
    'My skirt has exactly twenty-four pleats. Our teacher counts them.']},
+ // The fish seller: the dawn catch on ice in his push cart, up and down the main street
+ // all morning, slowly, calling out what he has.
+ {name:'Mr Toguchi',look:'Mr Toguchi',height:1.66,role:'selling the morning catch from his cart',walk:true,cart:true,speed:.45,hours:[[H(7),H(11)]],
+  route:[[2.2,-13.8],[2.2,13.8]],
+  lines:[
+   'Gurukun this morning, and a bigeye that fought me for half an hour. He lost. You can have him for six hundred yen.',
+   'Fish has to be sold before the sun gets over the roofs. After that I am just a man pushing ice up a hill.',
+   'Thao at Minato takes whatever I have left at eleven. She pretends to haggle. I pretend to lose.']},
  {name:'Postman Tōma',look:'Kenta',height:1.7,role:'on his round',walk:true,speed:1.25,hours:[[H(9),H(13)],[H(14),H(17)]],
   route:[[2.6,15.2],[2.6,-14.6],[4.3,-15.2],[4.3,-1.6],[5.4,2.4],[14,2.4],[14,9.2],[14,2.4],[5.4,2.4],[4.3,-1.6],[2.6,-1.2]],
   lines:[
@@ -145,6 +154,8 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
   g.position.set(start.x,spec.y??groundAt(start.x,start.z),start.z);faceAlong(g,start.dx,start.dz);
   parent.add(g);
   characters?.attach(g,spec.look,spec.height);
+  // A cart goes ahead of whoever pushes it (roadside-props.js): its shafts at their hands.
+  if(spec.cart){const cart=buildFishCart();cart.position.set(0,0,-1.55);g.add(cart);}
   register?.(g,'Talk to '+spec.name,()=>onAction?.('neighbour',spec.name));
   return {g,spec,travelled:i*7};
  });

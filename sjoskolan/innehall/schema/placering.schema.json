@@ -56,11 +56,6 @@
             "type": "string",
             "description": "Fil eller dokument (relativt sjoskolan/ eller bok:)."
           },
-          "teori": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "Teoriavsnittet på delsidan som ledtråd 1 hänvisar till. Utan fältet väljs avsnittet efter sambandets begrepp."
-          },
           "del": {
             "type": "string",
             "description": "Avsnitt på ytan, till exempel kapitel v41_02 eller bokkapitel 10."
@@ -108,9 +103,45 @@
           "kontroll": {
             "type": "boolean",
             "description": "Texten är en del av en figur och skrivs inte om. Exportören kontrollerar i stället att bilden stämmer med posten."
+          },
+          "teorikort": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Exakt rubrik på det primära teorikortet i samma del av presentationen. Vecka 41–45: används för både Öva nu och Ledtråd 1. Saknad, ändrad eller tvetydig rubrik stoppar exporten."
           }
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "yta": {
+            "const": "kurs-formelstod"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "placeringar": {
+            "items": {
+              "if": {
+                "properties": {
+                  "plats": {
+                    "pattern": "^vecka-4[1-5]/aktuell/Formelstod_och_ovningar\\.html$"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "teorikort"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

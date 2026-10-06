@@ -1,11 +1,18 @@
 {
-  "_actors-DwzwIfp7.js": {
-    "file": "actors-DwzwIfp7.js",
-    "name": "actors"
+  "_actors-CSwjHsa7.js": {
+    "file": "actors-CSwjHsa7.js",
+    "name": "actors",
+    "imports": [
+      "_izakaya-serving-visuals-Czxqyd10.js"
+    ]
   },
   "_icons-BJJ0w3BS.js": {
     "file": "icons-BJJ0w3BS.js",
     "name": "icons"
+  },
+  "_izakaya-serving-visuals-Czxqyd10.js": {
+    "file": "izakaya-serving-visuals-Czxqyd10.js",
+    "name": "izakaya-serving-visuals"
   },
   "_spector.bundle-_JPoFEkN.js": {
     "file": "spector.bundle-_JPoFEkN.js",
@@ -26,16 +33,17 @@
     ]
   },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-C58yZemc.js",
+    "file": "portraits-C3ShwEPp.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
     "imports": [
-      "_actors-DwzwIfp7.js"
+      "_izakaya-serving-visuals-Czxqyd10.js",
+      "_actors-CSwjHsa7.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-CyY-jjvI.js",
+    "file": "boot-ypXDYZr_.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -49,13 +57,23 @@
       "webmcp-characters.js"
     ]
   },
+  "src/feed/mount.js": {
+    "file": "feed-CkgB9gC4.js",
+    "name": "feed",
+    "src": "src/feed/mount.js",
+    "isEntry": true,
+    "imports": [
+      "_izakaya-serving-visuals-Czxqyd10.js"
+    ]
+  },
   "src/game.js?snappy=1": {
-    "file": "game-DXud0z7i.js",
+    "file": "game-ZZsdh7sH.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_actors-DwzwIfp7.js",
+      "_izakaya-serving-visuals-Czxqyd10.js",
+      "_actors-CSwjHsa7.js",
       "_town-audio-ygTjb9SR.js",
       "_icons-BJJ0w3BS.js"
     ],

@@ -13,4 +13,8 @@ Evidence: [whole-cast report](../../output/playwright/drink-grip/report.json), [
 
 Preview/camera positions and fixed consumption phases are controlled review fixtures. The production shed and avatar pipeline remain in use. The installed skill client exercised the preview using real arrow-key input; its PNG/state were inspected. The same installed game client completed two normal input bursts (seated → standing/walking), with PNG/state inspected and no error files. Its default SwiftShader game run stalled on macOS and was stopped; a launch-only Metal shim was used for the successful game run. Evidence: `output/playwright/drink-grip/skill-game-metal/`.
 
-Changes are local; the live site has not been published.
+Initial acceptance was performed locally before publication.
+
+Main integration rechecked the expanded cast: all 46 named characters, eight vessels and creator size extremes. The rebuilt production shed passes hold/sip/lower with zero browser errors. Runtime and resident-guide checks pass (5 tests). Latest compiled game: `game-ZZsdh7sH.js`; source fingerprint: `517afeb6058c8bbd046ac8a1e9898f29709df5746535f6c12325330360eb64ea`. Main’s current portrait images and newer shop, bath and storytelling features are preserved. Previously published JavaScript chunks are retained for cached clients.
+
+Integration validation: 897 tests, 892 passed and 5 expected skips. The initial full run had one missing-fixture failure because the sparse checkout omitted `motor-90l/motor.js` and `calc.mjs`; restoring the tracked files and rerunning all three motor tests passes. No production code change was needed. The audit-tool checks also pass independently (7 tests).

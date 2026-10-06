@@ -55,7 +55,7 @@ export function thuanVisitsIzakaya(minutes){
  * the ones that let her stop.
  */
 export const THUAN_WALK_START=840,THUAN_WALK_END=930;
-/** Two places to stand at the ice-cream chest freezer outside Sakura (world/okinawa/old-town.js). */
+/** Two places to stand outside Sakura's window, where the sisters wait for Thuan to lock up (world/okinawa/old-town.js). */
 export const SAKURA_FREEZER=Object.freeze([Object.freeze([-6.2,-21.0]),Object.freeze([-6.2,-21.9])]);
 const PARK_STAND=[PARK_BENCH.stand[0],PARK_BENCH.stand[2]];
 /**
@@ -164,13 +164,13 @@ export function onsenInvitationDay(profile,minutes,rain=false,state=null){
 // the harbour and a closing walk. The last leg is deliberately omitted so every
 // resident still returns to the normal bus plan with ample boarding time.
 const AFTER_WORK=Object.freeze({
- // The eldest sister's evening is her sisters': Thuan at Sakura's counter, an ice cream at
- // the chest freezer outside while Thuan locks up, then, on Thuan's Minato nights, Minato,
+ // The eldest sister's evening is her sisters': Thuan at Sakura's counter, a Blue Coral cone
+ // from the lane, eaten outside while Thuan locks up, then, on Thuan's Minato nights, Minato,
  // where Thao is behind the bar (afterWorkPlan).
  Nhung:Object.freeze([
   {until:60,place:'market',target:MARKET_THRESHOLD,activity:'visiting her little sister Thuan at the Sakura counter'},
-  {until:90,place:'stroll',target:SAKURA_FREEZER[1],activity:'eating a Blue Coral ice cream outside Sakura, waiting for Thuan to lock up'},
-  {until:105,place:'stroll',target:SAKURA_FREEZER[1],activity:'sharing ice creams with Thuan outside Sakura'},
+  {until:90,place:'stroll',target:SAKURA_FREEZER[1],activity:'waiting outside Sakura with two Blue Coral cones from the lane, for Thuan to lock up'},
+  {until:105,place:'stroll',target:SAKURA_FREEZER[1],activity:'sharing Blue Coral cones with Thuan outside Sakura'},
   {until:180,place:'izakaya',target:IZAKAYA_DOOR,activity:'at Minato with her sisters Thao and Thuan',withThuan:true},
  ]),
  Chin:Object.freeze([
@@ -331,7 +331,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
   if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
   if(thuanAtOnsen(profile,minutes,rain,state))return {place:'onsen',target:ONSEN_DOOR,activity:'a soak at Umi-no-yu before the last bus'};
-  // Nhung has been waiting at the freezer outside with an ice cream for her.
+  // Nhung has been waiting outside with a Blue Coral cone for her.
   const finish=shiftFor(profile)?.finish??profile.close??1200;
   if(!rain&&inTimeRange(minuteOfDay(minutes),finish,finish+15))return {place:'stroll',target:SAKURA_FREEZER[0],activity:'an ice cream with her big sister Nhung outside Sakura'};
   if(thuanAtMinato(profile,minutes,rain))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a beer with her sisters Thao and Nhung after closing Sakura'};

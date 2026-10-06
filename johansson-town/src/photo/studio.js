@@ -17,7 +17,7 @@ const PATTERNS=['none','stripes','dots','flowers'];
 
 // Wardrobe fields are named wear* so they never collide with the caption fields.
 const WARDROBE=['top','pattern','bottom','footwear','hat'],wear=n=>'wear'+n[0].toUpperCase()+n.slice(1);
-const POSE_LABELS={Kachashi:'Dance',Tada:'Ta-da!',HandsOnHips:'Hands on hips',HeelKick:'Heel kick'};
+const POSE_LABELS={Kachashi:'Dance',Tada:'Ta-da!',HandsOnHips:'Hands on hips',HeelKick:'Heel kick',CheekRest:'Hand on cheek',DoubleCheek:'Both cheeks'};
 
 export function poseStudioActor(actor){
  const animator=createAvatarAnimator(actor.avatar),duration=GESTURES[actor.pose],time=Number.isFinite(duration)?duration*.43:.7;

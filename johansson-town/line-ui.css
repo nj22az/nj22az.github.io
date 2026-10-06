@@ -3,7 +3,7 @@
  --line-green:#06c755;--line-green-hover:#05b34c;--line-white:#fff;
  --line-surface:#f7f8f9;--line-text:#000;--line-secondary:#666;
  --line-disabled:#999;--line-border:#e5e5e5;--line-danger:#d93025;
- --line-font:-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,"Noto Sans JP","Noto Sans KR",sans-serif;
+ --line-font:"LINE Seed JP",-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,"Noto Sans JP","Noto Sans KR",sans-serif;
  --line-shadow:0 2px 8px rgb(0 0 0 / .08);--line-overlay:rgb(0 0 0 / .24);
  --ink:var(--line-text);--paper:var(--line-white);--gold:var(--line-green);--rust:var(--line-green);
  --isle-font:var(--line-font);--isle-ink:var(--line-text);--isle-white:var(--line-white);--isle-cream:var(--line-white);--isle-edge:var(--line-border);
@@ -296,3 +296,8 @@ body>.shm .shm-share{background:var(--line-overlay)}body>.shm .shm-share>div{box
  #activity:not(.conversation) #activityActions{max-height:35dvh}
  #activity.conversation.rpg .activity-card{padding:12px 16px}
 }
+
+/* One typeface for every piece of interface text: LINE Seed JP, with the LINE stack behind it.
+   Product packaging, shop signs and other in-world artwork are painted into their own textures
+   and keep their own lettering. */
+body,body :is(div,p,span,a,b,i,em,strong,small,h1,h2,h3,h4,h5,h6,li,dt,dd,label,legend,summary,button,input,select,textarea,th,td,caption,figcaption,blockquote,time,output,kbd,code){font-family:var(--line-font)!important;letter-spacing:normal}

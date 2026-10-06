@@ -98,6 +98,12 @@ export const NEIGHBOUR_RECIPES=castSet({
   hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'gentle',colour:'#2a1d16',size:.58,tilt:.5},brows:{style:'thin',colour:'#1c1714',size:.45},
   nose:{style:'dot',size:.32},mouth:{style:'soft',colour:'#c4485a',size:.4},blush:.35,
   outfit:{top:'sailor',topColour:'#f4f1ea',bottom:'pleatedskirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',accent:'#d8342c'}}),
+ // Mr Toguchi, the fish seller: weathered from dawns at the auction, a twisted towel headband,
+ // a rubber apron over a work shirt and white boots for the wet ice of his cart.
+ 'Mr Toguchi':R({name:'Mr Toguchi',body:{height:.4,build:.62,skin:'#c98d62'},head:{size:.48,shape:.6,form:'square',jaw:.6,cheeks:.45},
+  hair:{style:'buzz',colour:'#5a5650'},eyes:{style:'squint',colour:'#2a1d16',size:.42,tilt:.48},brows:{style:'bushy',colour:'#5a5650',size:.6},
+  nose:{style:'wide',size:.55},mouth:{style:'grin',colour:'#9c5a4a',size:.5},blush:.1,
+  outfit:{top:'apron',topColour:'#2f5d74',bottom:'trousers',bottomColour:'#4a4a48',footwear:'boots',shoes:'#f2f0ea',accent:'#f2f0ea',hat:'headband'}}),
  Riku:R({body:{silhouette:'masculine',height:.56,build:.55,skin:'#c89a74'},hair:{style:'crop',colour:'#33271f'},eyes:{style:'round'},brows:{style:'thick'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#587d83',bottom:'trousers',bottomColour:'#505f65',hat:'helmet',hatColour:'#dabb55'}}),
  'Emi Kado':R({body:{silhouette:'feminine',height:.43,build:.42,skin:'#d1a079'},hair:{style:'ponytail',colour:'#3c2c24'},eyes:{style:'almond'},mouth:{style:'smile'},outfit:{top:'polo',topColour:'#a77e67',bottom:'trousers',bottomColour:'#465d69',hat:'cap',hatColour:'#465d69'}}),
  Haru:R({head:{form:'square',jaw:.72,cheeks:.4},body:{height:.63,build:.58,skin:'#bf875f'},hair:{style:'crop',colour:'#302419'},eyes:{style:'narrow'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'smile'},facial:{style:'stubble',colour:'#302419'},outfit:{top:'polo',topColour:'#607c84',bottom:'shorts',bottomColour:'#7b7155',hat:'cap',hatColour:'#c4b486'}}),
@@ -130,7 +136,9 @@ const ACCESSORY_HAT={captain:['captain','#f4f1ea'],police:['police','#27304d'],d
  */
 const AGE_OF=new Map(PROFILES.map(p=>[p.name,p.age]));
 /** A drawn recipe at the life stage the resident's profile gives them. */
-const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name));return AGE_OF.has(name)&&recipe.age!==age?normalizeRecipe({...recipe,age}):recipe;};
+// A recipe always carries its resident's name: the body's own ways (its gait, its seeded
+// habits) are keyed by it.
+const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name)),named=name&&!recipe.name?{...recipe,name}:recipe;return AGE_OF.has(name)&&named.age!==age?normalizeRecipe({...named,age}):named;};
 export function recipeFor(name=''){
  const saved=residentRecipe(name);if(saved)return saved;
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
