@@ -11,8 +11,8 @@
  */
 export const FEED_PLACES=Object.freeze([
  {id:'sakura',name:'Sakura Shōten',short:'Sakura',kind:'shop',regulars:['Thuan'],
-  things:['the drinks fridge','the onigiri shelf','the potted palm','the till','the price gun','the ATM','the biscuit aisle','the staff roster'],
-  doing:['restocking the biscuit aisle','arguing with the price gun','counting onigiri','dusting the potted palm','reading the staff roster'],
+  things:['the drinks fridge','the sale poster by the door','the onigiri shelf','the potted palm','the till','the price gun','the ATM','the biscuit aisle','the staff roster'],
+  doing:['restocking the biscuit aisle','taping up the sale poster','arguing with the price gun','counting onigiri','dusting the potted palm','reading the staff roster'],
   activity:{hold:['can','coffee'],chance:.4,sit:0},
   shot:{room:'market'}},
  {id:'sakura-street',name:'outside Sakura Shōten',short:'Sakura',kind:'outdoor',regulars:['Thuan','Vy'],
