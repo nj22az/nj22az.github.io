@@ -77,3 +77,22 @@ test('creator proportions keep the grip at minimum and maximum sizes',()=>{
   }a.dispose();
  }
 });
+
+
+test('resting arms stay low beside the body and lift the drink only to sip',()=>{
+ for(const name of names){
+  const a=buildAvatar(recipeFor(name)),anim=createAvatarAnimator(a),prop=createDrinkProp('draft',{held:true});a.bones.handR.add(prop);
+  try{
+   for(let i=0;i<60;i++)anim.update(1/60,{seated:true,seatHeight:.42,pose:'Drink',heldProp:prop,consumeElapsed:0});
+   fitAvatarHeldProp(a,prop,0);
+   const wrist=a.root.worldToLocal(a.bones.handR.getWorldPosition(new THREE.Vector3())),m=a.measure;
+   assert.ok(wrist.y<m.shoulderY-m.upper*.8,name+' rests the drink below the chest');
+   assert.ok(wrist.z<m.depth*.9,name+' does not hold the drink out in front');
+   const free=a.root.worldToLocal(a.bones.handL.getWorldPosition(new THREE.Vector3()));
+   assert.ok(free.z<m.depth*.7,name+' free arm rests beside the thighs');
+   for(let i=0;i<30;i++)anim.update(1/60,{seated:true,seatHeight:.42,pose:'Drink',heldProp:prop,consumeElapsed:1.2});
+   const sipping=a.root.worldToLocal(a.bones.handR.getWorldPosition(new THREE.Vector3()));
+   assert.ok(sipping.y>wrist.y+m.hand,name+' raises the drink to sip');
+  }finally{disposeServing(prop);a.dispose();}
+ }
+});

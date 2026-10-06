@@ -96,8 +96,13 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
  const tvGlow=new THREE.PointLight(0x9fc0ff,0,3.2,2);tvGlow.position.set(tx,.7,tz+.6);g.add(tvGlow);
  // The armchair: low, sagging, its arms worn pale.
  const chairMat=std(0x7a4b3a,.95);
- box([.62,.2,.6],[cx,.3,cz],chairMat,'Armchair seat');box([.62,.55,.14],[cx,.62,cz+.3],chairMat,'Armchair back');
- for(const s of [-1,1])box([.12,.3,.6],[cx+s*.31,.45,cz],std(0x8f6a54,.95),'Armchair arm');
+ // A shallow cushion leaves the calves clear of the upholstered front.
+ box([.62,.12,.44],[cx,.34,cz+.07],chairMat,'Armchair seat');box([.62,.55,.14],[cx,.62,cz+.3],chairMat,'Armchair back');
+ for(const s of [-1,1])box([.12,.3,.48],[cx+s*.31,.45,cz+.1],std(0x8f6a54,.95),'Armchair arm');
+ // The short-legged cast needs a real support below this seat, not shoes dangling
+ // through its upholstery. A low timber footstool belongs in his worn armchair corner.
+ box([.48,.08,.30],[cx,.148,cz-.32],plank,'Armchair footrest');
+ for(const side of [-1,1])box([.05,.108,.24],[cx+side*.19,.054,cz-.32],timber,'Footrest leg');
  // Beer: a cool box beside him, empties lined up on the floor.
  box([.42,.3,.3],[cx+.62,.15,cz-.05],std(0xd8d4c8,.6),'Cool box');box([.44,.05,.32],[cx+.62,.32,cz-.05],std(0x2f6fa8,.6),'Cool box lid');
  const can=new THREE.CylinderGeometry(.033,.033,.12,10),canMat=std(0xc9c9c2,.35,{metalness:.6}),band=std(0xb8322a,.5);
@@ -138,9 +143,9 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
  }
  // ---- Mr Fujita, in his chair.
  const fujita=new THREE.Group();fujita.name='Mr Fujita';fujita.userData.name='Mr Fujita';fujita.userData.walkSurface=false;
- fujita.position.set(cx,.02,cz);g.add(fujita);
+ fujita.position.set(cx,.02,cz-.08);g.add(fujita);
  let actor=null;try{actor=createAvatarActor(fujita,'Mr Fujita',{shadows});}catch{actor=null;}
- Object.assign(fujita.userData,{socialPose:'Drink',seatHeight:.42,heldItem:'beer',heldPortion:.6,activity:'watching the ballgame with a beer'});
+ Object.assign(fujita.userData,{socialPose:'Drink',seatHeight:.38,heldItem:'beer',heldPortion:.6,activity:'watching the ballgame with a beer'});
  register(fujita,'Talk to Mr Fujita',()=>onAction('resident','Mr Fujita'));
  const tvAnchor=new THREE.Object3D();tvAnchor.position.set(tx,1,tz+.4);g.add(tvAnchor);
  register(tvAnchor,'Watch the shed television',()=>onAction('read','Mr Fujita’s television',
