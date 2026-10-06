@@ -1,0 +1,129 @@
+{
+  "base": "ca49bd628b7e90616e7dba8feb033cd5d5afd319",
+  "browser": "149.0.7827.55",
+  "assetSha256": "4dbe93af4607dc2dc35b7e33ccd8a55da5e68f1b072a0e0012ecb4c2ae6e21de",
+  "diagnosis": {
+    "conditions": "25ms response chunks; HeapProfiler.collectGarbage every 20ms",
+    "comparisons": [
+      {
+        "mode": "stream",
+        "loaded": {
+          "meshes": 1
+        },
+        "status": 200,
+        "contentLength": "5171572",
+        "terminalEvent": "loadingFailed",
+        "errorText": "net::ERR_ABORTED",
+        "encodedDataLength": null
+      },
+      {
+        "mode": "retained",
+        "loaded": {
+          "meshes": 1
+        },
+        "status": 200,
+        "contentLength": "5171572",
+        "terminalEvent": "loadingFailed",
+        "errorText": "net::ERR_ABORTED",
+        "encodedDataLength": null
+      },
+      {
+        "mode": "native",
+        "loaded": {
+          "meshes": 1,
+          "bytes": 5171572
+        },
+        "status": 200,
+        "contentLength": "5171572",
+        "terminalEvent": "loadingFinished",
+        "errorText": null,
+        "encodedDataLength": 5171780
+      }
+    ]
+  },
+  "focusedNodeChecks": 11,
+  "ownedAssetBrowserChecks": [
+    {
+      "mode": "complete",
+      "loaded": {
+        "ready": true,
+        "loadError": false,
+        "children": 1,
+        "triangles": 98972
+      },
+      "errors": [],
+      "failures": [],
+      "finished": 1
+    },
+    {
+      "mode": "http-error",
+      "loaded": {
+        "ready": false,
+        "loadError": true,
+        "children": 0,
+        "triangles": 0
+      },
+      "errors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Owned character unavailable: thuanFigurine Error: Owned asset "
+      ],
+      "failures": [],
+      "finished": 1
+    },
+    {
+      "mode": "invalid-glb",
+      "loaded": {
+        "ready": false,
+        "loadError": true,
+        "children": 0,
+        "triangles": 0
+      },
+      "errors": [
+        "Owned character unavailable: thuanFigurine SyntaxError: Unexpected token 'B', \"Broken glTF\" is not valid JSON\n    at JSON.parse (<anonymous>)\n    at GLTFLoader.parse ("
+      ],
+      "failures": [],
+      "finished": 1
+    }
+  ],
+  "mcpGateRuns": [
+    {
+      "passed": true,
+      "checks": [
+        "boot",
+        "movement",
+        "interaction",
+        "interior transition",
+        "clean state and screenshot"
+      ],
+      "room": "market",
+      "errors": [],
+      "invalidTransforms": [],
+      "running": true,
+      "player": [
+        9.627375528109925e-07,
+        0,
+        3.0850841131084885
+      ]
+    },
+    {
+      "passed": true,
+      "checks": [
+        "boot",
+        "movement",
+        "interaction",
+        "interior transition",
+        "clean state and screenshot"
+      ],
+      "room": "market",
+      "errors": [],
+      "invalidTransforms": [],
+      "running": true,
+      "player": [
+        9.627375528109925e-07,
+        0,
+        3.0850841131084885
+      ]
+    }
+  ],
+  "policy": "No request cancellation allowlist; real requests, HTTP, console, page/crash and WebGL context loss remain hard failures. Actions must run cleanly before leaving draft."
+}

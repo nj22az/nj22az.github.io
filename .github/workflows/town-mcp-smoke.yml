@@ -36,6 +36,9 @@ jobs:
         run: npm run build:runtime
       - name: Check MCP protocol and session lifecycle
         run: node --test tests/mcp-audit.test.mjs
+      - name: Check owned asset completion and real failures
+        timeout-minutes: 1
+        run: node tests/owned-assets.browser.mjs
       - name: Boot, move, interact and enter an interior over MCP
         timeout-minutes: 6
         run: npm run audit:mcp:ci
