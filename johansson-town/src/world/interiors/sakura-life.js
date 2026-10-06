@@ -213,6 +213,42 @@ function buildOfficeDoor(parent){
   }};
 }
 
+/**
+ * The front door, seen from inside. The street storefront has the automatic sliding door
+ * (storefront.js), but the street is drawn through the shop front with everything up to
+ * the glass clipped away, so from inside there was an open hole where the door should be:
+ * nobody could be seen to go out through it. These are its two glass leaves on the shop's
+ * side, in the doorway between the jambs (x ±0.95 at the front), and they behave like the
+ * street's: they part briskly for anybody who comes up to the mat and slide shut slowly.
+ */
+export const FRONT_DOOR=Object.freeze({x:0,z:3.91,width:1.78,height:2.25,reach:2.9,mat:[0,3.3]});
+function buildFrontDoor(parent){
+ const D=FRONT_DOOR,group=new THREE.Group();group.name='Sakura front door';group.position.set(D.x,0,D.z-.09);parent.add(group);
+ const frame=std(0x879692,{roughness:.5}),bar=std(0x465854,{roughness:.6});
+ const glass=new THREE.MeshStandardMaterial({color:0xcfe6e2,transparent:true,opacity:.14,roughness:.1,metalness:.05,depthWrite:false,side:THREE.DoubleSide});
+ const travel=D.width/2-.1,leaves=[];
+ const rail=new THREE.Mesh(new THREE.BoxGeometry(D.width+.3,.1,.12),frame);rail.position.set(0,D.height+.06,0);rail.name='Sakura front door rail';group.add(rail);
+ for(const side of [-1,1]){
+  const leaf=new THREE.Group(),w=D.width/2+.03;leaf.position.set(side*D.width/4,0,side*.025);leaf.name='Sakura front door leaf';group.add(leaf);
+  const pane=new THREE.Mesh(new THREE.PlaneGeometry(w-.08,D.height-.12),glass);pane.position.y=D.height/2;pane.renderOrder=3;pane.name='Sakura front door pane';leaf.add(pane);
+  for(const [sw,sh,x,y] of [[.05,D.height,-w/2+.025,D.height/2],[.05,D.height,w/2-.025,D.height/2],[w,.07,0,.035],[w,.06,0,D.height-.03]]){
+   const m=new THREE.Mesh(new THREE.BoxGeometry(sw,sh,.05),frame);m.position.set(x,y,0);leaf.add(m);}
+  const handle=new THREE.Mesh(new THREE.BoxGeometry(.035,.6,.035),bar);handle.position.set(-side*(w/2-.15),1.06,-.05);leaf.add(handle);
+  leaves.push({leaf,side,home:leaf.position.x});
+ }
+ let amount=0,held=false;
+ const place=()=>{for(const {leaf,side,home} of leaves)leaf.position.x=home+side*travel*amount;};
+ return {group,get amount(){return amount;},
+  /** Hold it at an amount (0 shut, 1 open) for a film's photographs; null lets people open it again. */
+  set(value){held=value!==null&&value!==undefined;if(held){amount=Math.max(0,Math.min(1,+value||0));place();}},
+  /** points: [x,z] pairs in the shop's frame; dt in seconds. */
+  update(dt,points=[]){
+   if(!(dt>0)||held)return;
+   const near=points.some(p=>p&&Math.hypot(p[0]-D.mat[0],p[1]-D.mat[1])<D.reach);
+   amount+=Math.max(-(near?4.2:1.9)*dt,Math.min((near?4.2:1.9)*dt,(near?1:0)-amount));amount=Math.max(0,Math.min(1,amount));place();
+  }};
+}
+
 // ================================================================== the office
 function buildOfficeFun(parent){
  const {group,mesh,box,print}=kit(parent,'Sakura office life');
@@ -310,6 +346,7 @@ export function buildSakuraLife(room,{anchor,action}){
  const backroom=buildSakuraBackroom(room,{anchor,action});
  const restroom=buildSakuraRestroom(room,{anchor,action});
  const officeDoor=buildOfficeDoor(room);
+ const frontDoor=buildFrontDoor(room);
  let last=0;
- return {officeDoor,ready:Promise.all([floor.ready,backroom.ready]),tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot,dispose(){floor.dispose();backroom.dispose();}};
+ return {officeDoor,frontDoor,ready:Promise.all([floor.ready,backroom.ready]),tick(time){const dt=Math.min(.1,Math.max(0,time-last));last=time;mascot.tick(time,dt);floor.tick(time);office.tick(time);backroom.tick(time);restroom.tick(time);},mascot,dispose(){floor.dispose();backroom.dispose();}};
 }

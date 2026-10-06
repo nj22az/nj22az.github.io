@@ -1577,9 +1577,9 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  leave(){leaveRoom();},
  // Film photographs (remotion/tools/capture-room.mjs): a shop door held open by an amount, a fridge door held open,
  // and how many of a product are on Sakura's shelves (each one is drawn, so a gap is a real gap).
- shopDoor(id,amount){const s=SITES.find(site=>site.id===id);if(!s?.shopDoor)throw Error(`No shop door for ${id}`);s.shopDoor.set(amount);return s.shopDoor.amount;},
+ shopDoor(id,amount){const s=SITES.find(site=>site.id===id);if(!s?.shopDoor)throw Error(`No shop door for ${id}`);s.shopDoor.set(amount);if(id==='market')sakuraShop.display.frontDoor?.set(amount);return s.shopDoor.amount;},
  fridgeDoor(column,amount){return sakuraShop.display.refrigerator.hold(column,amount);},
- stock(id,shelf){const st=activities.state.sakura?.stock;if(!st?.[id])throw Error(`No Sakura stock line ${id}`);if(Number.isFinite(shelf)){st[id].shelf=Math.max(0,shelf|0);sakuraShop.display.updateStock(st);}return {shelf:st[id].shelf,capacity:st[id].capacity??null};},
+ stock(id,shelf){const st=activities.state.sakura?.stock;if(!st?.[id])throw Error(`No Sakura stock line ${id}`);if(Number.isFinite(shelf)){st[id].shelf=Math.max(0,shelf|0);sakuraShop.display.updateStock(st);}return {shelf:st[id].shelf,capacity:id==='bun'?12:24};},
  interact(){doInteract();},
  get conversation(){const sp=conversationLine?.speaker;if(!sp)return {name:conversationName,speaker:null};const w=sp.getWorldPosition(new THREE.Vector3()),t=characters.conversationTarget(sp);return {name:conversationName,visible:sp.visible,seated,third:thirdPerson,speaker:w.toArray().map(v=>+v.toFixed(2)),target:t?.toArray?.().map(v=>+v.toFixed(2)),player:player.position.toArray().map(v=>+v.toFixed(2)),yaw:+yaw.toFixed(2)};},
  use(label){const o=interactables.find(o=>o.userData.hit?.label===label);if(!o)return false;active={...o.userData.hit,object:o};o.userData.hit.fn();return true;},
