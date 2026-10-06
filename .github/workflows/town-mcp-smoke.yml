@@ -1,0 +1,51 @@
+name: Town MCP browser smoke
+
+on:
+  push:
+    branches: [main]
+    paths: ['johansson-town/**', '.mcp.json', '.github/workflows/town-mcp-smoke.yml']
+  pull_request:
+    paths: ['johansson-town/**', '.mcp.json', '.github/workflows/town-mcp-smoke.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: town-mcp-smoke-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: johansson-town
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install Chromium and system dependencies
+        run: npx --no-install playwright install --with-deps chromium
+      - name: Build the checkout runtime
+        run: npm run build:runtime
+      - name: Check MCP protocol and session lifecycle
+        run: node --test tests/mcp-audit.test.mjs
+      - name: Check owned asset completion and real failures
+        timeout-minutes: 1
+        run: node tests/owned-assets.browser.mjs
+      - name: Boot, move, interact and enter an interior over MCP
+        timeout-minutes: 6
+        run: npm run audit:mcp:ci
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: town-mcp-smoke-evidence
+          path: output/mcp-ci-smoke-tour/
+          if-no-files-found: warn
+          retention-days: 7

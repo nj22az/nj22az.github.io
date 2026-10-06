@@ -11,7 +11,8 @@
     "audit:visual:update": "node tools/visual-audit.mjs --update-baselines",
     "mcp:audit": "node tools/mcp/server.mjs",
     "audit:mcp": "node tools/mcp/smoke.mjs",
-    "build:runtime": "node scripts/build-runtime.mjs"
+    "build:runtime": "node scripts/build-runtime.mjs",
+    "audit:mcp:ci": "node tools/mcp/ci-smoke.mjs"
   },
   "devDependencies": {
     "@modelcontextprotocol/client": "2.3.0",

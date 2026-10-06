@@ -16,10 +16,13 @@ export class TownAuditSession{
    preview=await this.serve(root);check();this.preview=preview;
    browser=await this.launch({headless,args:process.platform==='darwin'?['--use-angle=metal']:[]});check();this.browser=browser;
    context=await browser.newContext({viewport:viewport==='phone'?{width:390,height:844}:{width:1280,height:800},isMobile:viewport==='phone',hasTouch:viewport==='phone',serviceWorkers:'block'});check();this.context=context;
-   await context.addInitScript(start=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start,speed:1}));Object.defineProperty(navigator,'getGamepads',{value:()=>[]});Element.prototype.requestFullscreen=async()=>{};},time);check();
+   // Optional hosted typography must not make gameplay audits depend on Google DNS.
+   await context.route('https://fonts.googleapis.com/**',route=>route.fulfill({status:200,contentType:'text/css',body:''}));check();
+   await context.addInitScript(start=>{localStorage.setItem('johansson-town-clock',JSON.stringify({start,speed:1}));Object.defineProperty(navigator,'getGamepads',{value:()=>[]});Element.prototype.requestFullscreen=async()=>{};document.addEventListener('webglcontextlost',()=>console.error('MCP audit: WebGL context lost'),true);},time);check();
    page=await context.newPage();check();this.page=page;page.setDefaultTimeout(240000);
    const record=item=>{if(generation===this.generation&&!this.closing)this.errors.push(item);};
    page.on('pageerror',e=>record({type:'page',message:e.message}));
+   page.on('crash',()=>record({type:'page',message:'Browser page crashed'}));
    page.on('console',m=>{if(m.type()==='error')record({type:'console',message:m.text()});});
    page.on('response',r=>{if(r.status()>=400)record({type:'asset',message:`${r.status()} ${r.url()}`});});
    page.on('requestfailed',r=>record({type:'request',message:`${r.url()} ${r.failure()?.errorText}`}));
