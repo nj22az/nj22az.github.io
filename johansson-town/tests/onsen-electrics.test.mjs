@@ -166,3 +166,12 @@ test('the storyteller knows the board and the towels',()=>{
  for(const thing of ['the breaker board','a stack of rental towels'])assert.ok(onsen.things.includes(thing),thing);
  assert.ok(onsen.doing.includes('resetting a tripped breaker'));
 });
+
+
+test('a tripped lever takes interaction priority over the board notice',()=>{
+ resetAll();const {hits,layout}=build();trip('changing-sockets');
+ const board=hits.find(h=>h.label==='Look at the breaker board'),reset=hits.find(h=>h.label==='Reset the changing-room sockets');
+ assert.ok(reset.o.visible);const player=new THREE.Vector3(-3.4,1,.7),forward=new THREE.Vector3(board.o.position.x-player.x,0,board.o.position.z-player.z).normalize();
+ const score=h=>{const v=h.o.position.clone().sub(player),d=v.length();v.y=0;return d*(1+(1-forward.dot(v.normalize()))*1.4)+(h.o.userData.promptPenalty||0);};
+ assert.ok(score(reset)<score(board),'the reset can be selected from the vanity aisle');
+});

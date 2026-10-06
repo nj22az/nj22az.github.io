@@ -9,6 +9,7 @@ import {buildOnsenLobby,hinokiTexture,LOBBY} from './onsen-lobby.js';
 import {buildWashArea,WASH_SEATS} from './onsen-wash.js';
 import {buildOnsenElectrics,isPowered} from './onsen-electrics.js';
 import {buildOnsenTowels} from './onsen-towels.js';
+import {ceramicTileMaterial,sizeCeramic,wovenBasket,buildOnsenPeriodDetails,harbourMuralTexture} from './onsen-period.js';
 
 /**
  * Inside Umi-no-yu: through the noren to the bandai, the changing room, the washing
@@ -86,13 +87,13 @@ export function buildOnsenInterior({room,reg,action,exit}){
  const seat=(spec,title,text)=>{const o=anchor([spec.position[0],.9,spec.position[2]],spec.label,()=>action('seat',title,typeof text==='function'?text():text));o.userData.seat={...spec,onsen:spec.id,pitch:spec.soak?-.05:0};return o;};
 
  const wood=mat(0xc79f6e,.7),darkWood=mat(0x6b4a2e,.75),plaster=mat(0xeee6d3,.95),stone=mat(0x8c877c,.95);
- const tiles=new THREE.MeshStandardMaterial({map:tileTexture(120,150,160),roughness:.35});tiles.map.repeat.set(6,4);
+ const tiles=ceramicTileMaterial([120,150,160]);
  const wallTiles=new THREE.MeshStandardMaterial({map:tileTexture(214,222,220,[170,176,174]),roughness:.4});wallTiles.map.repeat.set(10,3);
  const flags=new THREE.MeshStandardMaterial({map:flagTexture(),roughness:.95});flags.map.repeat.set(3,2);
  const water=new THREE.MeshStandardMaterial({color:0x7fc3c6,roughness:.06,metalness:.05,transparent:true,opacity:.72,depthWrite:false});
 
  // ---- Floors: wood indoors, tiles in the bath hall, flags outside; holes where the baths are.
- const floorRect=(x0,x1,z0,z1,m,y=0)=>{const f=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0),m);f.rotation.x=-Math.PI/2;f.position.set((x0+x1)/2,y,(z0+z1)/2);f.receiveShadow=true;f.name='Umi-no-yu floor';room.add(f);return f;};
+ const floorRect=(x0,x1,z0,z1,m,y=0)=>{const f=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0),m===tiles?sizeCeramic(m,x1-x0,z1-z0):m);f.rotation.x=-Math.PI/2;f.position.set((x0+x1)/2,y,(z0+z1)/2);f.receiveShadow=true;f.name='Umi-no-yu floor';room.add(f);return f;};
  const hinoki=hinokiTexture([5,3]),floorWood=hinoki?new THREE.MeshStandardMaterial({map:hinoki,roughness:.55}):wood;
  floorRect(-5,5,3.6,5,stone);floorRect(-5,5,R.hall.changing,3.6,floorWood);
  floorRect(-5,R.tub.minX,R.hall.bath,R.hall.changing,tiles);floorRect(R.tub.minX,5,R.tub.maxZ,R.hall.changing,tiles);floorRect(R.tub.minX,5,R.hall.bath,R.tub.minZ,tiles);
@@ -133,7 +134,7 @@ export function buildOnsenInterior({room,reg,action,exit}){
  const attendant=new THREE.Group();attendant.name='Umi-no-yu attendant';attendant.position.set(-4.5,.35,2.6);attendant.rotation.y=-Math.PI/2;room.add(attendant);
  // Her face is painted on a canvas, so without a page (the room tests) the stool is empty.
  const higa=typeof document!=='undefined'&&document.createElement?buildAvatar(recipeFor('Mrs Higa'),{shadows:true,faceSize:256}):null,higaMotion=higa&&createAvatarAnimator(higa);if(higa)attendant.add(higa.root);
- anchor([-3.5,1.25,2.55],'Pay at the bandai · ¥300',()=>action('onsen-pay'));
+ anchor([-3.5,1.25,2.2],'Pay at the bandai · ¥300',()=>action('onsen-pay'));
  anchor([-3.5,1.25,3.1],'Talk to the attendant',()=>action('inspect','Umi-no-yu attendant',
   'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her crossword. "A bath wrap or swimwear in the bath, please -- it is a family bath. The rock bath is best after dark."'));
  const fee=canvasSign([["Adult ¥300",1],["Towel ¥100 · Milk ¥100",.5]],{w:384,h:192,bg:'#fbf6ea',size:60});
@@ -157,7 +158,7 @@ export function buildOnsenInterior({room,reg,action,exit}){
  for(let i=0;i<6;i++)for(let r=0;r<2;r++){const z=1.25-i*.42;box([.45,.9,.4],[-4.75,.45+r*.95,z],mat(0xb9b2a0,.45),'Locker');box([.02,.12,.08],[-4.52,.55+r*.95,z+.12],mat(0xc9a13c,.3),'Locker key');}
  rect(-4.75,-.1,.5,2.6,1.9);
  anchor([-4.2,1.2,.2],'Change at the lockers',()=>action('onsen-change'));
- for(let r=0;r<3;r++){box([.5,.03,2.4],[4.72,.35+r*.55,.2],wood,'Basket shelf');for(let i=0;i<4;i++)box([.4,.22,.4],[4.68,.48+r*.55,-.7+i*.6],mat(0xc9a36a,.9),'Rattan basket');}
+ for(let r=0;r<3;r++){box([.5,.03,2.4],[4.72,.35+r*.55,.2],wood,'Basket shelf');for(let i=0;i<4;i++)wovenBasket(room,4.68,.365+r*.55,-.7+i*.6);}
  rect(4.72,.2,.5,2.45,1.6);
  box([2.2,.08,.42],[2.1,.42,.25],wood,'Changing bench');for(const x of [1.15,3.05])box([.08,.38,.36],[x,.19,.25],darkWood,'Bench leg');
  rect(2.1,.25,2.25,.5,.45);seat(ONSEN_SEATS.bench,'Changing-room bench','You sit and let the heat come out of you. The fan turns its head towards you and away again.');
@@ -195,7 +196,7 @@ export function buildOnsenInterior({room,reg,action,exit}){
  const fall=new THREE.Mesh(new THREE.PlaneGeometry(.12,.38),new THREE.MeshStandardMaterial({color:0xd9eef0,transparent:true,opacity:.5,depthWrite:false,side:THREE.DoubleSide}));fall.position.set(4.5,.58,-2.55);fall.name='Spout water';fall.rotation.y=Math.PI/2;room.add(fall);
  seat(ONSEN_SEATS.indoor,'Indoor bath','You lower yourself in a little at a time. 42 degrees. The heat goes into your knees first, then everywhere. Through the glass the steam rolls off the rock bath.');
  // The mural: the reef and the open sea, not Fuji.
- const mural=new THREE.Mesh(new THREE.PlaneGeometry(3.7,1.2),new THREE.MeshStandardMaterial({map:seaTexture(),roughness:.8}));mural.position.set(4.93,1.55,-2.95);mural.rotation.y=-Math.PI/2;room.add(mural);
+ const mural=new THREE.Mesh(new THREE.PlaneGeometry(3.7,1.2),new THREE.MeshStandardMaterial({map:harbourMuralTexture()||seaTexture(),roughness:.8}));mural.position.set(4.93,1.55,-2.95);mural.rotation.y=-Math.PI/2;room.add(mural);
 
  // ---- The rock bath outside.
  const P=R.pool;
@@ -244,6 +245,7 @@ export function buildOnsenInterior({room,reg,action,exit}){
  const sun=new THREE.DirectionalLight(0xfff0dc,0);sun.position.set(3,8,-2);sun.target.position.set(0,0,-6.5);room.add(sun,sun.target);
  // The breaker board and what hangs off it (lamp fixtures over these lights, the dryers), and the towels.
  const power=buildOnsenElectrics({room,rect,anchor,action,lamps,hall:R.hall});buildOnsenTowels({room,rect});
+ buildOnsenPeriodDetails({room,box,cyl,mat,anchor,action,R});
 
  anchor([0,1.1,4.75],'Step outside',exit);
  let time=0,fanTime=0;

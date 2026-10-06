@@ -29,3 +29,13 @@ test('dialogue replies and switching to the field book do not reopen the activit
  acts.action('resident','Nhung');assert.equal(opens,2);dom.button('About Tama');assert.equal(opens,2);
  acts.close();assert.equal(document.activeElement,opener);
 });
+
+
+test('a touch that opens a menu cannot dismiss it through the newly exposed backdrop',()=>{
+ installDOM();const a=createActivities({say(){},onWeather(){},onTime(){}}),modal=document.querySelector('#activity');
+ const dispatch=(name,event)=>modal.listeners[name].forEach(fn=>fn(event));
+ a.action('onsen-pay');assert.equal(a.paused,true);
+ let stopped=false;dispatch('click',{target:document.querySelector('#closeActivity'),detail:1,stopImmediatePropagation(){stopped=true;}});assert.equal(stopped,true,'opening click retargeted to Close is consumed');assert.equal(a.paused,true,'opening touch release retains the payment menu');
+ dispatch('pointerdown',{target:modal});dispatch('click',{target:modal,detail:1});assert.equal(a.paused,false,'a deliberate backdrop tap still closes');
+ a.action('onsen-pay');dispatch('pointerdown',{target:modal});dispatch('pointercancel',{});dispatch('click',{target:modal,detail:1});assert.equal(a.paused,true,'cancelled gesture cannot close');
+});

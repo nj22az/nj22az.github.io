@@ -38,7 +38,7 @@ const plain=(o)=>Object.freeze(o);
  */
 export const ONSEN_CIRCUITS=Object.freeze([
  plain({id:'changing-sockets',no:1,jp:'脱衣所コンセント',en:'Changing-room sockets',amps:20,volts:ONSEN_VOLTS,
-  why:'The sockets under the vanity mirrors, where people dry their hair after the bath. When the massage chair arrived in 2003 its socket on the east lobby wall was run as a spur off this cable, the nearest one round the corner, so the chair shares the dryers’ breaker.',
+  why:'The sockets under the vanity mirrors, where people dry their hair after the bath. When the massage chair arrived in 1993 its socket on the east lobby wall was run as a spur off this cable, the nearest one round the corner, so the chair shares the dryers’ breaker.',
   normal:['dryer-2','massage-chair'],
   loads:Object.freeze([
    plain({id:'dryer-1',en:'Hair dryer 1, cream, at the left mirror',watts:1200,meshes:['Hair dryer 1'],socket:'Vanity socket 1',
@@ -344,6 +344,9 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],hall={fron
     ?`You push the ${name} lever all the way down until it clicks, then up to on. `+(again?`Everything on it at once draws ${wattsOf(id)} watts: ${loadOf(id)} amps on a ${c.amps} amp breaker. Use the dryers one or two at a time, or it will go again.`:'The power comes back.')
     :`You push the ${name} lever down until it clicks, then up to on. The whole board comes back.`);
   });
+  // The general notice sits in front of these levers; a live reset must win
+  // the player's facing/distance selection when its circuit has tripped.
+  o.userData.promptPenalty=-1;
   o.visible=!on.get(id);resetAnchors.set(id,o);
  }
  anchor([vanity.mirrors[1]+.12,1.05,-.8],'Use a hair dryer',()=>action('inspect','Hair dryer · 1200 W',isLive('changing-sockets')
