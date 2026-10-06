@@ -151,23 +151,27 @@ export const WALL_POSTERS=Object.freeze([
  {id:'biscuit',position:[4.57,1.82,-2.35],yaw:-Math.PI/2,size:[.94,1.41]},
  // Up and along, clear of the cash corner under it (sakura-corners.js).
  {id:'eisa',position:[-3.45,2.0,-3.94],yaw:0,size:[.74,1.04]},
- // Thuan's own sale poster, 100 × 140 cm, on the side wall by the door, beside the drinks fridge it sells from: the
- // first thing you see walking in, so this week's cold drinks are an impulse buy. Its top-left corner once tore off
- // (60 cm along the top, 80 cm down the side) and is taped back along the tear: exactly the last metre on Thuan's roll
- // (the Pythagoras story, Johansson Shorts). The Shorts draw it at this very spot.
- {id:'sale',position:[-6.78,1.5,3.3],yaw:Math.PI/2,size:[1.0,1.4]},
+ // Thuan's own sale poster, 50 × 70 cm, on the side wall by the door: the first thing you see walking in, so this week's
+ // cold drinks are an impulse buy. Its top-left corner carries a "30% OFF" burst, which Tetsuo once took for a coupon and
+ // tore off (30 cm along the top, 40 cm down the side); it is taped back along the 50 cm tear: exactly the last half metre
+ // on Thuan's roll, worked out over lunch at Sato Ramen (the Pythagoras story, Johansson Shorts). The Shorts draw it here.
+ {id:'sale',position:[-6.78,1.5,3.3],yaw:Math.PI/2,size:[.5,.7]},
 ]);
-/** The sale poster: Sakura's pink band, SALE, drinks 30% off this week, and the strip of tape along the old tear. */
+/** The sale poster: Sakura's pink band, the "30% OFF" corner burst, SALE on all drinks this week, and the strip of tape
+ *  along the old tear. */
 function salePoster(){
  return canvasTexture(500,700,(ctx,w,h)=>{
-  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#f4a3bd';ctx.fillRect(0,0,w,h*.16);
-  ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillStyle='#ffffff';ctx.font=`bold 34px ${GOTHIC}`;ctx.fillText('SAKURA SHŌTEN',w/2,h*.1);
-  ctx.fillStyle='#111111';ctx.font=`900 150px ${GOTHIC}`;ctx.fillText('SALE',w/2,h*.42);
-  ctx.fillStyle='#c5281c';ctx.font=`bold 50px ${GOTHIC}`;ctx.fillText('drinks 30% off',w/2,h*.56);
-  ctx.fillStyle='#06c755';const bw=w*.6,bh=h*.08,bx=w*.2,by=h*.7,r=bh/2;ctx.beginPath();ctx.moveTo(bx+r,by);ctx.arcTo(bx+bw,by,bx+bw,by+bh,r);ctx.arcTo(bx+bw,by+bh,bx,by+bh,r);ctx.arcTo(bx,by+bh,bx,by,r);ctx.arcTo(bx,by,bx+bw,by,r);ctx.fill();
-  ctx.fillStyle='#ffffff';ctx.font=`bold 30px ${GOTHIC}`;ctx.fillText('this week only',w/2,h*.755);
-  // the repaired tear: a hairline seam from 60 cm along the top to 80 cm down the side, under a strip of tape
-  const A=[w*.6,0],B=[0,h*80/140];ctx.strokeStyle='rgba(60,50,40,.35)';ctx.lineWidth=2;ctx.beginPath();
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#f4a3bd';ctx.fillRect(0,0,w,h*.13);
+  ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillStyle='#ffffff';ctx.font=`bold 32px ${GOTHIC}`;ctx.fillText('SAKURA SHŌTEN',w*.62,h*.085);
+  // the corner burst (what looked like a coupon)
+  ctx.save();ctx.translate(w*.2,h*.17);ctx.rotate(-.28);ctx.beginPath();for(let i=0;i<24;i++){const r=i%2?66:90,a=i*Math.PI/12;ctx[i?'lineTo':'moveTo'](Math.cos(a)*r,Math.sin(a)*r);}ctx.closePath();
+  ctx.fillStyle='#f2b705';ctx.fill();ctx.strokeStyle='#c5281c';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#c5281c';ctx.font=`900 44px ${GOTHIC}`;ctx.fillText('30%',0,-2);ctx.font=`900 30px ${GOTHIC}`;ctx.fillText('OFF',0,36);ctx.restore();
+  ctx.fillStyle='#111111';ctx.font=`900 146px ${GOTHIC}`;ctx.fillText('SALE',w*.56,h*.5);
+  ctx.fillStyle='#c5281c';ctx.font=`bold 50px ${GOTHIC}`;ctx.fillText('all drinks',w/2,h*.64);
+  ctx.fillStyle='#06c755';const bw=w*.64,bh=h*.085,bx=w*.18,by=h*.76,r=bh/2;ctx.beginPath();ctx.moveTo(bx+r,by);ctx.arcTo(bx+bw,by,bx+bw,by+bh,r);ctx.arcTo(bx+bw,by+bh,bx,by+bh,r);ctx.arcTo(bx,by+bh,bx,by,r);ctx.arcTo(bx,by,bx+bw,by,r);ctx.fill();
+  ctx.fillStyle='#ffffff';ctx.font=`bold 30px ${GOTHIC}`;ctx.fillText('this week only',w/2,h*.818);
+  // the repaired tear: a hairline seam from 30 cm along the top to 40 cm down the side, under a strip of tape
+  const A=[w*.6,0],B=[0,h*40/70];ctx.strokeStyle='rgba(60,50,40,.35)';ctx.lineWidth=2;ctx.beginPath();
   for(let i=0;i<=12;i++){const k=i/12,j=(i%2?4:-4)*(i&&i<12?1:0),len=Math.hypot(A[0],B[1]);ctx[i?'lineTo':'moveTo'](A[0]+(B[0]-A[0])*k+B[1]/len*j,A[1]+(B[1]-A[1])*k+A[0]/len*j);}
   ctx.stroke();ctx.strokeStyle='rgba(236,224,190,.88)';ctx.lineWidth=22;ctx.beginPath();ctx.moveTo(A[0]+6,-4);ctx.lineTo(-4,B[1]+6);ctx.stroke();
  });
@@ -177,7 +181,7 @@ const OWN_POSTERS={
  eisa:{texture:()=>eisaPoster(),name:'Eisa festival poster',verb:'Read the Eisa poster',title:"Acer · Eisa poster",
   text:"The youth association’s Eisa: drummers and dancers down the harbour road on the last night of Obon, ending at the festival ground. Thuan has written \"Rest 8/17\" underneath in marker -- closed that evening, so she can go."},
  sale:{texture:()=>salePoster(),name:'Sakura sale poster',verb:'Read the sale poster',title:'Sakura · SALE poster',
-  text:'Drinks 30% off this week, by the door and beside the fridge that sells them. The top corner tore off once; Thuan worked out the tear was exactly a metre -- her last metre of tape -- and taped it straight back. Nhung had hoped to sell her a new roll.'},
+  text:'All drinks 30% off this week. The "30% OFF" corner was torn off once -- Tetsuo took it for a coupon, of all people -- and over lunch at Sato Ramen Thuan worked out the tear was exactly 50 cm, her last half metre of tape, and taped it straight back. Nhung had hoped to sell her a new roll.'},
 };
 function eisaPoster(){
  return canvasTexture(512,720,(ctx,w,h)=>{

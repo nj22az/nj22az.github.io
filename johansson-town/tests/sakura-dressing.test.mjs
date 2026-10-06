@@ -26,7 +26,7 @@ test('the posters are on walls, not on the glazing, and the medicine shelf is st
   assert.ok(side?front<3.88:front<3,'A poster is back on the front window: '+p.id);
  }
  const sale=WALL_POSTERS.find(p=>p.id==='sale');
- assert.deepEqual([sale.size,sale.position],[[1.0,1.4],[-6.78,1.5,3.3]],'The sale poster moved: the Shorts draw it at this spot');
+ assert.deepEqual([sale.size,sale.position],[[.5,.7],[-6.78,1.5,3.3]],'The sale poster moved: the Shorts draw it at this spot');
  const room=new THREE.Group(),shelf=buildMedicineShelf(room);
  const box=new THREE.Box3().setFromObject(shelf.boxes);
  assert.ok(box.min.x>=MEDICINE_SHELF.front-.01&&box.max.x<=MEDICINE_SHELF.back+.01,'Medicine sticks out of its shelf');
