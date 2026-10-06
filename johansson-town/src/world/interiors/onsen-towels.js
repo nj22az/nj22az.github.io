@@ -12,7 +12,7 @@ import * as THREE from '../../../vendor/three.module.js';
  * tests check both, and that nothing passes through the furniture it sits on.
  * Room frame as in onsen.js: street door at +z, sea at -z, metres, floor at y = 0.
  */
-export const TOWEL_SHELF=Object.freeze({x:-2.55,z:1.9,w:.7,d:.3,h:.8,middle:.43,bottom:.06});
+export const TOWEL_SHELF=Object.freeze({x:-1.95,z:1.9,w:.7,d:.3,h:.8,middle:.43,bottom:.06});
 export const TOWEL_RAIL=Object.freeze({x0:.92,x1:1.68,y:1.22,z:-1.06,r:.012});
 export const TOWEL_PRICE=100;
 

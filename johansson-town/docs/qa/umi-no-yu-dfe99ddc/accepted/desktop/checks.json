@@ -1,0 +1,311 @@
+{
+  "completed": true,
+  "checks": [
+    {
+      "label": "changed",
+      "outfit": "towel",
+      "seated": false,
+      "seat": null,
+      "meshes": [
+        "root",
+        "Shimanchu bath towel",
+        "Shimanchu bath towel outline"
+      ],
+      "info": {
+        "programs": 188,
+        "calls": 33051,
+        "triangles": 11865588,
+        "geometries": 2321,
+        "textures": 327
+      }
+    },
+    {
+      "label": "bench",
+      "outfit": "towel",
+      "seated": true,
+      "seat": {
+        "position": [
+          2.1,
+          0,
+          0.25
+        ],
+        "stand": [
+          1.9566471810718709,
+          0,
+          0.8893448912816175
+        ],
+        "surfaceY": 0.46,
+        "yaw": 0
+      },
+      "meshes": [
+        "root",
+        "Shimanchu bath towel",
+        "Shimanchu bath towel outline"
+      ],
+      "info": {
+        "programs": 188,
+        "calls": 42592,
+        "triangles": 13758550,
+        "geometries": 2321,
+        "textures": 327
+      }
+    },
+    {
+      "label": "washing",
+      "outfit": "towel",
+      "seated": true,
+      "seat": {
+        "position": [
+          -0.85,
+          0,
+          -2.35
+        ],
+        "stand": [
+          -0.31911855347786516,
+          0,
+          -2.3466039211005083
+        ],
+        "surfaceY": 0.26,
+        "yaw": 1.5707963267948966
+      },
+      "meshes": [
+        "root",
+        "Shimanchu bath towel",
+        "Shimanchu bath towel outline"
+      ],
+      "info": {
+        "programs": 188,
+        "calls": 53296,
+        "triangles": 15342232,
+        "geometries": 2321,
+        "textures": 327
+      }
+    },
+    {
+      "label": "indoor-soak",
+      "outfit": "towel",
+      "seated": true,
+      "seat": {
+        "position": [
+          3.1,
+          0,
+          -3.35
+        ],
+        "stand": [
+          3.0964533879660525,
+          0,
+          -1.7327829080206374
+        ],
+        "surfaceY": -0.28,
+        "yaw": 3.141592653589793
+      },
+      "meshes": [
+        "root",
+        "Shimanchu bath towel",
+        "Shimanchu bath towel outline"
+      ],
+      "info": {
+        "programs": 188,
+        "calls": 62646,
+        "triangles": 17041036,
+        "geometries": 2321,
+        "textures": 327
+      }
+    },
+    {
+      "label": "rock-soak",
+      "outfit": "towel",
+      "seated": true,
+      "seat": {
+        "position": [
+          0.75,
+          0,
+          -6.45
+        ],
+        "stand": [
+          0.6899731058351944,
+          0,
+          -4.818502369637858
+        ],
+        "surfaceY": -0.42000000000000004,
+        "yaw": 0
+      },
+      "meshes": [
+        "root",
+        "Shimanchu bath towel",
+        "Shimanchu bath towel outline"
+      ],
+      "info": {
+        "programs": 188,
+        "calls": 73763,
+        "triangles": 19144048,
+        "geometries": 2321,
+        "textures": 327
+      }
+    },
+    {
+      "label": "resident-entry-0",
+      "resident": {
+        "name": "Thuan",
+        "position": [
+          -0.10442016518728972,
+          0,
+          -0.08122677267887031
+        ],
+        "visible": true,
+        "parent": "",
+        "activity": "walking to a seat",
+        "indoors": "onsen",
+        "outfit": "bath"
+      }
+    },
+    {
+      "label": "resident-entry-1",
+      "resident": {
+        "name": "Thuan",
+        "position": [
+          -0.2523458122970138,
+          0,
+          -4.098122455649387
+        ],
+        "visible": true,
+        "parent": "",
+        "activity": "walking to a seat",
+        "indoors": "onsen",
+        "outfit": "bath"
+      }
+    },
+    {
+      "label": "resident-entry-2",
+      "resident": {
+        "name": "Thuan",
+        "position": [
+          -0.85,
+          0,
+          -6.55
+        ],
+        "visible": true,
+        "parent": "",
+        "activity": "soaking in the rock bath",
+        "pose": "Soak",
+        "indoors": "onsen",
+        "outfit": "bath"
+      }
+    },
+    {
+      "label": "younger-swimwear",
+      "outfit": "swim",
+      "seated": false,
+      "seat": null,
+      "meshes": [
+        "root",
+        "Shimanchu swimwear"
+      ],
+      "info": {
+        "programs": 188,
+        "calls": 79429,
+        "triangles": 20838164,
+        "geometries": 2321,
+        "textures": 328
+      }
+    },
+    {
+      "label": "resident-departure",
+      "resident": {
+        "name": "Thuan",
+        "position": [
+          -17.2,
+          0,
+          44.7
+        ],
+        "visible": false,
+        "parent": "",
+        "activity": "walking home after closing Sakura"
+      }
+    },
+    {
+      "label": "breaker-reset",
+      "on": true
+    },
+    {
+      "label": "dressed",
+      "outfit": "clothes",
+      "seated": false,
+      "seat": null,
+      "meshes": [
+        "Shimanchu body",
+        "root",
+        "Shimanchu body outline"
+      ],
+      "info": {
+        "programs": 188,
+        "calls": 100762,
+        "triangles": 24938848,
+        "geometries": 2321,
+        "textures": 328
+      }
+    },
+    {
+      "label": "street-restoration",
+      "outfit": "clothes",
+      "seated": false,
+      "seat": null,
+      "meshes": [
+        "Shimanchu body",
+        "root",
+        "Shimanchu body outline"
+      ],
+      "info": {
+        "programs": 190,
+        "calls": 106167,
+        "triangles": 28581962,
+        "geometries": 2360,
+        "textures": 329
+      }
+    },
+    {
+      "label": "save-reload",
+      "paidBefore": 20732,
+      "paidAfter": 20732,
+      "outfit": "clothes"
+    }
+  ],
+  "errors": [
+    {
+      "type": "request",
+      "message": "https://fonts.googleapis.com/css2?family=LINE+Seed+JP:wght@400;700;800&display=swap net::ERR_EMPTY_RESPONSE"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: net::ERR_EMPTY_RESPONSE"
+    },
+    {
+      "type": "request",
+      "message": "https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap net::ERR_EMPTY_RESPONSE"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: net::ERR_EMPTY_RESPONSE"
+    },
+    {
+      "type": "request",
+      "message": "http://127.0.0.1:34121/johansson-town/assets/figurines/thuan/thuan-display.glb net::ERR_ABORTED"
+    },
+    {
+      "type": "request",
+      "message": "https://fonts.googleapis.com/css2?family=LINE+Seed+JP:wght@400;700;800&display=swap net::ERR_EMPTY_RESPONSE"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: net::ERR_EMPTY_RESPONSE"
+    },
+    {
+      "type": "request",
+      "message": "https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap net::ERR_EMPTY_RESPONSE"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: net::ERR_EMPTY_RESPONSE"
+    }
+  ]
+}

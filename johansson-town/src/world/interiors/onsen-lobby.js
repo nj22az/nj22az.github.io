@@ -27,8 +27,8 @@ export const LOBBY=Object.freeze({
 });
 /** The day's bath, by weekday (0 = Sunday). */
 export const DAILY_BATH=Object.freeze([
- ["Gettoyu",'Shell-ginger leaves'],["Yuzu hot water",'Yuzu'],["Mugwort hot water",'Mugwort'],["Hinoki hot water",'Hinoki chips'],
- ["Salt bath",'Sea salt from the harbour'],["Ginger soup",'Ginger'],["Shikwasa hot water",'Shikwasa'],
+ ["月桃湯",'Shell-ginger leaves'],["ゆず湯",'Yuzu'],["よもぎ湯",'Mugwort'],["ひのき湯",'Hinoki chips'],
+ ["塩湯",'Sea salt from the harbour'],["しょうが湯",'Ginger'],["シークヮーサー湯",'Shikwasa'],
 ]);
 
 const MINCHO='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
@@ -136,9 +136,9 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
  function drawScreen(t){
   if(!screenCtx)return;const c=screenCtx,w=160,h=120;
   if(channel===0){c.fillStyle='#2f7a3a';c.fillRect(0,0,w,h);c.fillStyle='#c9a46a';c.beginPath();c.moveTo(80,40);c.lineTo(130,90);c.lineTo(80,118);c.lineTo(30,90);c.closePath();c.fill();
-   c.fillStyle='#fff';c.fillRect(78+Math.sin(t*2)*30,70+Math.cos(t*3)*10,3,3);c.fillStyle='#000a';c.fillRect(0,0,w,18);c.fillStyle='#fff';c.font=`bold 11px ${GOTHIC}`;c.fillText("7Back of the inning  3 - 2",6,13);}
-  else if(channel===1){c.fillStyle='#0b2a5a';c.fillRect(0,0,w,h);c.fillStyle='#ffd23f';c.font=`bold 13px ${GOTHIC}`;c.fillText("Okinawa region Tomorrow's weather",8,20);
-   c.fillStyle='#e8f0d8';c.beginPath();c.ellipse(70,70,34,18,-.5,0,Math.PI*2);c.fill();c.fillStyle='#ff5a3c';c.beginPath();c.arc(120,64,13,0,Math.PI*2);c.fill();c.fillStyle='#fff';c.font=`bold 12px ${GOTHIC}`;c.fillText("Sunny 31℃",96,104);}
+   c.fillStyle='#fff';c.fillRect(78+Math.sin(t*2)*30,70+Math.cos(t*3)*10,3,3);c.fillStyle='#000a';c.fillRect(0,0,w,18);c.fillStyle='#fff';c.font=`bold 11px ${GOTHIC}`;c.fillText("７回裏　３－２",6,13);}
+  else if(channel===1){c.fillStyle='#0b2a5a';c.fillRect(0,0,w,h);c.fillStyle='#ffd23f';c.font=`bold 13px ${GOTHIC}`;c.fillText("沖縄地方 あすの天気",8,20);
+   c.fillStyle='#e8f0d8';c.beginPath();c.ellipse(70,70,34,18,-.5,0,Math.PI*2);c.fill();c.fillStyle='#ff5a3c';c.beginPath();c.arc(120,64,13,0,Math.PI*2);c.fill();c.fillStyle='#fff';c.font=`bold 12px ${GOTHIC}`;c.fillText("晴れ 31℃",96,104);}
   else if(channel===2){c.fillStyle='#4a3826';c.fillRect(0,0,w,h);c.fillStyle='#d9b07a';c.fillRect(0,80,w,40);c.fillStyle='#1c1410';c.fillRect(50+Math.sin(t)*8,36,18,46);c.fillRect(96-Math.sin(t)*8,40,18,42);c.fillStyle='#ddd';c.fillRect(66+Math.sin(t)*8,50,30,2);}
   else {const img=c.createImageData?.(w,h);if(img){for(let i=0;i<img.data.length;i+=4){const v=Math.random()*255;img.data[i]=img.data[i+1]=img.data[i+2]=v;img.data[i+3]=255;}c.putImageData(img,0,0);}}
   c.fillStyle='rgba(0,0,0,.22)';for(let y=0;y<h;y+=3)c.fillRect(0,y,w,1);
@@ -152,7 +152,7 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
  add(new THREE.BoxGeometry(.06,1.6,.6),red,4.88,.8,2.3,'Milk cooler');
  for(const z of [2.03,2.57])add(new THREE.BoxGeometry(.62,1.6,.06),red,4.6,.8,z,'Milk cooler side');
  add(new THREE.BoxGeometry(.62,.3,.6),red,4.6,1.45,2.3,'Milk cooler top');add(new THREE.BoxGeometry(.62,.26,.6),red,4.6,.13,2.3,'Milk cooler plinth');
- const header=paint(256,96,(ctx,w,h)=>{ctx.fillStyle='#f5ecd6';ctx.fillRect(0,0,w,h);ctx.fillStyle='#b8342e';ctx.font=`bold 44px ${MINCHO}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("Cow Breasts",w/2,40);ctx.font=`bold 16px ${GOTHIC}`;ctx.fillText("Each ¥100",w/2,78);});
+ const header=paint(256,96,(ctx,w,h)=>{ctx.fillStyle='#f5ecd6';ctx.fillRect(0,0,w,h);ctx.fillStyle='#b8342e';ctx.font=`bold 44px ${MINCHO}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText("牛乳",w/2,40);ctx.font=`bold 16px ${GOTHIC}`;ctx.fillText("各 ¥100",w/2,78);});
  add(new THREE.PlaneGeometry(.55,.2),textured(header,0xf5ecd6),4.285,1.45,2.3,'Milk cooler sign').rotation.y=-Math.PI/2;
  add(new THREE.PlaneGeometry(.48,1.04),new THREE.MeshStandardMaterial({color:0xe9f6ff,emissive:0xd8f0ff,emissiveIntensity:.9,roughness:.6}),4.845,.82,2.3,'Milk cooler light').rotation.y=-Math.PI/2;
  add(new THREE.BoxGeometry(.02,1.04,.48),new THREE.MeshStandardMaterial({color:0xdfeff2,roughness:.08,transparent:true,opacity:.2,depthWrite:false}),4.3,.82,2.3,'Milk cooler glass');
@@ -163,7 +163,7 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
 
  // ---- Noren into the changing room: indigo, ♨ and ゆ, the hem stitched.
  const norenTex=paint(256,256,(ctx,w,h)=>{ctx.fillStyle='#1f3558';ctx.fillRect(0,0,w,h);ctx.fillStyle='rgba(255,255,255,.04)';for(let i=0;i<900;i++)ctx.fillRect(hash(i,1)*w,hash(i,2)*h,2,2);
-  ctx.fillStyle='#f3efe4';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 64px ${MINCHO}`;ctx.fillText('♨',w/2,62);ctx.font=`bold 112px ${MINCHO}`;ctx.fillText("Yu",w/2,160);
+  ctx.fillStyle='#f3efe4';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 64px ${MINCHO}`;ctx.fillText('♨',w/2,62);ctx.font=`bold 112px ${MINCHO}`;ctx.fillText("ゆ",w/2,160);
   ctx.strokeStyle='rgba(243,239,228,.75)';ctx.lineWidth=3;ctx.setLineDash?.([8,6]);ctx.beginPath();ctx.moveTo(14,h-18);ctx.lineTo(w-14,h-18);ctx.stroke();});
  const noren=[];
  const norenMat=new THREE.MeshStandardMaterial(norenTex?{map:norenTex,roughness:.9,side:THREE.DoubleSide}:{color:0x1f3558,roughness:.9,side:THREE.DoubleSide});
@@ -179,14 +179,14 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
  function drawBathBoard(weekday){
   if(!bathCtx||weekday===bathDay)return;bathDay=weekday;const c=bathCtx,w=192,h=320,[jp]=DAILY_BATH[weekday];
   c.fillStyle='#e9d6ae';c.fillRect(0,0,w,h);c.strokeStyle='#5a3a20';c.lineWidth=8;c.strokeRect(4,4,w-8,h-8);
-  c.fillStyle='#8a2f22';c.font=`bold 26px ${MINCHO}`;c.textAlign='center';c.textBaseline='middle';c.fillText("Today's hot water",w/2,36);
+  c.fillStyle='#8a2f22';c.font=`bold 26px ${MINCHO}`;c.textAlign='center';c.textBaseline='middle';c.fillText("本日の湯",w/2,36);
   c.fillStyle='#2b1a0e';c.font=`bold 38px ${MINCHO}`;[...jp].forEach((ch,i)=>c.fillText(ch==='ー'?'｜':ch,w/2,84+i*(200/Math.max(3,jp.length))));
   bathTex.needsUpdate=true;
  }
  anchor([-1.6,1.4,R.hall.front+.3],'Read today’s bath',()=>{const [jp,en]=DAILY_BATH[bathDay<0?0:bathDay];action('inspect',"Today's hot water · "+jp,`Today the indoor bath is ${jp}: ${en.toLowerCase()} in a cotton bag, floating at the spout end. A different one every day of the week.`);});
  const poster=paint(192,288,(ctx,w,h)=>{const g=ctx.createLinearGradient(0,0,0,h*.62);g.addColorStop(0,'#f2a03d');g.addColorStop(.7,'#e05a5a');g.addColorStop(1,'#3f7fb0');ctx.fillStyle='#efe2c4';ctx.fillRect(0,0,w,h);ctx.fillStyle=g;ctx.fillRect(10,10,w-20,h*.6);
   ctx.fillStyle='#fff6d8';ctx.beginPath();ctx.arc(w/2,h*.3,22,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2d5f86';ctx.fillRect(10,h*.48,w-20,h*.14);ctx.fillStyle='#1f3f2a';ctx.beginPath();ctx.moveTo(20,h*.5);ctx.quadraticCurveTo(60,h*.36,110,h*.5);ctx.fill();
-  ctx.fillStyle='#3a2012';ctx.font=`bold 20px ${MINCHO}`;ctx.textAlign='center';ctx.fillText("South Island Visiting hot springs",w/2,h*.74);ctx.font=`12px ${GOTHIC}`;ctx.fillStyle='#664532';ctx.fillText("Minato no Yu, Umi no Yu, Mori no Yu",w/2,h*.83);ctx.font='10px monospace';ctx.fillText('HARBOUR LINE · 1997',w/2,h*.92);});
+  ctx.fillStyle='#3a2012';ctx.font=`bold 20px ${MINCHO}`;ctx.textAlign='center';ctx.fillText("南の島 湯めぐり",w/2,h*.74);ctx.font=`12px ${GOTHIC}`;ctx.fillStyle='#664532';ctx.fillText("港の湯・海の湯・森の湯",w/2,h*.83);ctx.font='10px monospace';ctx.fillText('HARBOUR LINE · 1997',w/2,h*.92);});
  add(new THREE.PlaneGeometry(.46,.69),textured(poster,0xefe2c4,{roughness:.6}),2.6,1.6,R.hall.front+.12,'Travel poster');
 
  let time=0;
