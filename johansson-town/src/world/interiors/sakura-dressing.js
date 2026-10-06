@@ -152,9 +152,10 @@ export const WALL_POSTERS=Object.freeze([
  // Up and along, clear of the cash corner under it (sakura-corners.js).
  {id:'eisa',position:[-3.45,2.0,-3.94],yaw:0,size:[.74,1.04]},
  // Thuan's own sale poster, 50 × 70 cm, on the side wall by the door: the first thing you see walking in, so this week's
- // cold drinks are an impulse buy. Its top-left corner carries a "30% OFF" burst, which Tetsuo once took for a coupon and
- // tore off (30 cm along the top, 40 cm down the side); it is taped back along the 50 cm tear: exactly the last half metre
- // on Thuan's roll, worked out over lunch at Sato Ramen (the Pythagoras story, Johansson Shorts). The Shorts draw it here.
+ // cold drinks are an impulse buy. Its top-left corner carries a "30% OFF" burst. Tetsuo (of all people) once tore that
+ // corner off with a mad laugh (30 cm along the top, 40 cm down the side) and Thuan chased it back down Main Street; it is
+ // taped back along the 50 cm tear: exactly the last half metre on her roll, as Johansson worked out at Sato Ramen (the
+ // Pythagoras story, Johansson Shorts). The Shorts draw it here.
  {id:'sale',position:[-6.78,1.5,3.3],yaw:Math.PI/2,size:[.5,.7]},
 ]);
 /** The sale poster: Sakura's pink band, the "30% OFF" corner burst, SALE on all drinks this week, and the strip of tape
@@ -163,7 +164,7 @@ function salePoster(){
  return canvasTexture(500,700,(ctx,w,h)=>{
   ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#f4a3bd';ctx.fillRect(0,0,w,h*.13);
   ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillStyle='#ffffff';ctx.font=`bold 32px ${GOTHIC}`;ctx.fillText('SAKURA SHŌTEN',w*.62,h*.085);
-  // the corner burst (what looked like a coupon)
+  // the corner burst
   ctx.save();ctx.translate(w*.2,h*.17);ctx.rotate(-.28);ctx.beginPath();for(let i=0;i<24;i++){const r=i%2?66:90,a=i*Math.PI/12;ctx[i?'lineTo':'moveTo'](Math.cos(a)*r,Math.sin(a)*r);}ctx.closePath();
   ctx.fillStyle='#f2b705';ctx.fill();ctx.strokeStyle='#c5281c';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#c5281c';ctx.font=`900 44px ${GOTHIC}`;ctx.fillText('30%',0,-2);ctx.font=`900 30px ${GOTHIC}`;ctx.fillText('OFF',0,36);ctx.restore();
   ctx.fillStyle='#111111';ctx.font=`900 146px ${GOTHIC}`;ctx.fillText('SALE',w*.56,h*.5);
@@ -181,7 +182,7 @@ const OWN_POSTERS={
  eisa:{texture:()=>eisaPoster(),name:'Eisa festival poster',verb:'Read the Eisa poster',title:"Acer · Eisa poster",
   text:"The youth association’s Eisa: drummers and dancers down the harbour road on the last night of Obon, ending at the festival ground. Thuan has written \"Rest 8/17\" underneath in marker -- closed that evening, so she can go."},
  sale:{texture:()=>salePoster(),name:'Sakura sale poster',verb:'Read the sale poster',title:'Sakura · SALE poster',
-  text:'All drinks 30% off this week. The "30% OFF" corner was torn off once -- Tetsuo took it for a coupon, of all people -- and over lunch at Sato Ramen Thuan worked out the tear was exactly 50 cm, her last half metre of tape, and taped it straight back. Nhung had hoped to sell her a new roll.'},
+  text:'All drinks 30% off this week. The "30% OFF" corner was torn off once -- by Tetsuo, of all people, laughing like a madman -- and Thuan chased it back down Main Street. The tear was exactly 50 cm, her last half metre of tape, and it is taped straight back. Nhung had hoped to sell her a new roll.'},
 };
 function eisaPoster(){
  return canvasTexture(512,720,(ctx,w,h)=>{
