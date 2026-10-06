@@ -59,7 +59,7 @@ export const CAST_RECIPES=castSet({
   hair:{style:'buzz',colour:'#1c1714'},eyes:{style:'narrow',colour:'#2a1d16',size:.45},
   brows:{style:'straight',colour:'#1c1714',size:.45},nose:{style:'line',size:.45},mouth:{style:'soft',size:.45},
   outfit:{top:'tee',topColour:'#a9c3df',bottom:'shorts',bottomColour:'#2b2b2b',footwear:'sandals',shoes:'#6d4a32',hat:'cap',hatColour:'#1f2228',accent:'#e8742a'}}),
- Tetsuo:R({name:'Tetsuo',accessories:{pin:true,colour:'#e0b93a'},body:{height:.44,build:.5,skin:'#dca97e'},head:{size:.5,shape:.5,form:'narrow',jaw:.55,cheeks:.35},
+ Tetsuo:R({name:'Tetsuo',accessories:{pin:true,colour:'#e0b93a'},body:{height:.62,build:.5,skin:'#dca97e'},head:{size:.5,shape:.5,form:'narrow',jaw:.55,cheeks:.35},
   hair:{style:'horseshoe',colour:'#8a8680'},eyes:{style:'sleepy',colour:'#2a1d16',size:.45},
   brows:{style:'bushy',colour:'#8a8680',size:.6},nose:{style:'hook',size:.55},mouth:{style:'flat',size:.5},
   glasses:{style:'half',colour:'#2b2b2b'},wrinkles:.6,
