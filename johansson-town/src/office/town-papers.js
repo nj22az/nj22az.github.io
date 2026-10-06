@@ -73,6 +73,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Shiosai — Mr Fujita’s houseboat",
+    "organisation": "Town Services",
+    "text": "Mr Fujita rebuilt this little working boat into a home: one berth, a kettle and a radio. At half past eleven he switches off the shed television and comes aboard. The gangway must stay clear.",
+    "source": "notice:Shiosai — Mr Fujita’s houseboat"
+  },
+  {
+    "type": "Notice",
     "title": "Class board",
     "organisation": "Town Services",
     "text": "Over the cubbies: the class goal, \"Everyone friendly, cheerful, and say hello,\" eight sheets of calligraphy -- Sea sea, Dream dream, Friend friend, Sky sky -- each with a red circle from the teacher. Kenta's essay about rowing in the Hāri boat race with his grandfather. The paper wheel of cleaning duties. Summer projects: reef creatures, how to make sata andagi, a typhoon diary. This week's lunch squad: Kinjō, Arakaki, Taira -- \"don't forget your smock, cap and mask.\"",
@@ -196,6 +203,13 @@ export const TOWN_PAPERS=[
     "organisation": "Town Services",
     "text": "Laid out in 1972 on the old lookout mound. The kanhizakura was planted by the class of that year and flowers in January, the first cherry in Japan. Please take your rubbish home. No ball games on the mound. — Minato Town Office",
     "source": "notice:Minato Park"
+  },
+  {
+    "type": "Notice",
+    "title": "Mr Fujita is asleep",
+    "organisation": "Town Services",
+    "text": "He is asleep in his berth aboard Shiosai. He returns to the shed at six in the morning.",
+    "source": "notice:Mr Fujita is asleep"
   },
   {
     "type": "Notice",
