@@ -342,9 +342,11 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // On the back: tipped over about the hips so they lie where they stood, raised by the back of the head
    // (the biggest thing on them) so nothing goes through the floor.
    const l=THREE.MathUtils.smoothstep(lie,0,1),rest=Math.max(m.Rh*Math.max(m.headSX,m.headSY),m.depth/2);
-   avatar.root.rotation.x=-Math.PI/2*l;
+   // A body faces -z: a quarter turn about x the positive way lays its back on the floor, face up, the head
+   // behind where they stood; the hips stay on their mark.
+   avatar.root.rotation.x=Math.PI/2*l;
    avatar.root.position.y=avatar.root.position.y*(1-l)+rest*l;
-   avatar.root.position.z+=m.hipY*l;
+   avatar.root.position.z-=m.hipY*l;
    lyingTilt=l>0;
   }
   // The face: blinks, words, glances, and whatever it is feeling.
