@@ -6,7 +6,7 @@
  * state says what the face is doing right now: an expression, a blink, a word.
  *
  * Expressions: neutral, happy, laugh, smile, sad, angry, shy, surprised, worried,
- * thinking, grumpy, content, sleep.
+ * thinking, grumpy, content, sleep, dizzy (knocked silly: spiral eyes), scheme (an evil grin).
  */
 const TAU=Math.PI*2;
 /** Mouth colours that are just a mouth; anything else is lipstick. */
@@ -17,6 +17,10 @@ function shade(hex,k){
  return '#'+[f(n>>16),f(n>>8&255),f(n&255)].map(v=>v.toString(16).padStart(2,'0')).join('');
 }
 
+/** How wide the mouth is drawn: the narrow half of the slider as it always was, the wide half reaching
+ *  further (up to a big cartoon mouth), so nobody already made changes and a wide grin is possible. */
+export const mouthWidth=w=>w<=.5?.65+w*.7:1+(w-.5)*1.4;
+
 /** Where the parts sit, in canvas units, from the recipe's sliders. */
 export function faceLayout(recipe){
  const e=recipe.eyes,b=recipe.brows,n=recipe.nose,m=recipe.mouth,g=recipe.glasses||{},f=recipe.facial||{},spot=recipe.moleSpot||{};
@@ -25,7 +29,7 @@ export function faceLayout(recipe){
   eyeY,spread,eyeS,eyeW:.85+(e.width??.5)*.7,eyeTilt:(e.tilt-.5)*.85,
   browY:70+(b.height-.5)*-48,browSpread:spread+((b.spacing??.5)-.5)*32,browS:.75+b.size*.6,browTilt:(b.tilt-.5)*.85,
   noseY:134+(n.height-.5)*-48,noseX:128+((n.x??.5)-.5)*48,noseS:.7+n.size*.7,
-  mouthY:160+(m.height-.5)*-54,mouthX:128+((m.x??.5)-.5)*56,mouthS:1+m.size*.8,mouthW:.65+(m.width??.5)*.7,
+  mouthY:160+(m.height-.5)*-54,mouthX:128+((m.x??.5)-.5)*56,mouthS:1+m.size*.8,mouthW:mouthWidth(m.width??.5),
   glassS:.7+(g.size??.5)*.6,glassY:eyeY+((g.height??.5)-.5)*-40,
   facialS:.7+(f.size??.5)*.6,facialDY:((f.height??.5)-.5)*-24,
   moleX:64+(spot.x??.77)*128,moleY:200-(spot.height??.33)*140,moleR:1.2+(spot.size??.5)*2.4,
@@ -46,6 +50,8 @@ const MOOD=Object.freeze({
  surprised:{eyes:'wide',brow:0,browLift:20,mouth:'o',blush:0},
  thinking:{eyes:'side',brow:.3,browLift:0,mouth:'hmm',blush:0},
  sleep:{eyes:'closed',brow:0,browLift:-1,mouth:'small',blush:0},
+ dizzy:{eyes:'spiral',brow:-1,browLift:8,mouth:'wobble',blush:0},
+ scheme:{eyes:'angry',brow:1.7,browLift:-7,mouth:'grin',blush:0},
 });
 export const EXPRESSION_NAMES=Object.freeze(Object.keys(MOOD));
 
@@ -78,7 +84,7 @@ export function drawFace(ctx,recipe,state={}){
   if(mood.blush>=.9){ctx.strokeStyle='rgba(210,80,90,.7)';ctx.lineWidth=1.6;for(const s of [-1,1])for(let i=0;i<3;i++){const x=128+s*(L.spread+2+i*6);ctx.beginPath();ctx.moveTo(x-2,L.noseY+6);ctx.lineTo(x+2,L.noseY-2);ctx.stroke();}}}
  // Eyes.
  const blink=Math.max(0,Math.min(1,state.blink||0));
- const eyesState=blink>.5&&mood.eyes!=='happy'?'closed':mood.eyes;
+ const eyesState=blink>.5&&!['happy','spiral'].includes(mood.eyes)?'closed':mood.eyes;
  const look=state.look||[0,0];
  for(const s of [-1,1])drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,recipe.eyes,eyesState,look,L.eyeTilt,L.eyeW);
  // Brows.
@@ -103,6 +109,13 @@ function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
   ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(3,-5,3,0,TAU);ctx.fill();
   if(style==='lashes')for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(side*rx*.8,-9+i*5);ctx.lineTo(side*(rx+6),-12+i*6);ctx.stroke();}
   ctx.restore();return;
+ }
+ // Knocked silly: a spiral in a white eye, the cartoon daze, the same for every eye style.
+ if(state==='spiral'){
+  ctx.fillStyle='#fbfaf6';ctx.beginPath();ctx.ellipse(0,0,14,16,0,0,TAU);ctx.fill();ctx.stroke();
+  ctx.lineWidth=2.4;ctx.beginPath();
+  for(let i=0;i<=60;i++){const a=i/60*TAU*2.6,r=1+i/60*11;ctx.lineTo(side*Math.cos(a)*r,Math.sin(a)*r*1.1);}
+  ctx.stroke();ctx.restore();return;
  }
  if(state==='closed'||state==='content'){
   ctx.beginPath();ctx.arc(0,state==='content'?-3:-6,11,Math.PI*.18,Math.PI*.82);ctx.stroke();

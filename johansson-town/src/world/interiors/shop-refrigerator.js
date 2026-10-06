@@ -29,5 +29,7 @@ export function createShopRefrigerator(room,reg){
   const entry={door,x,amount:0,timer:0,direction:i%2?-1:1};doors.push(entry);
   const target=new THREE.Object3D();target.position.set(x+.652,1.65,-3.10);group.add(target);reg(target,'Open refrigerated drinks and dairy',()=>{entry.timer=6;},true);
  }
- return {group,doors,open(column){if(doors[column])doors[column].timer=3;},update(dt){for(const d of doors){d.timer=Math.max(0,d.timer-dt);d.amount=THREE.MathUtils.damp(d.amount,d.timer>0?1:0,5,dt);d.door.position.x=d.x+d.direction*d.amount*1.10;}}};
+ return {group,doors,open(column){if(doors[column])doors[column].timer=3;},
+  /** Hold a door at an amount (0 shut, 1 open): a film's photographs of somebody restocking. */
+  hold(column,amount){const d=doors[column];if(!d)return false;d.amount=Math.max(0,Math.min(1,amount));d.timer=d.amount>0?1e9:0;d.door.position.x=d.x+d.direction*d.amount*1.10;return true;},update(dt){for(const d of doors){d.timer=Math.max(0,d.timer-dt);d.amount=THREE.MathUtils.damp(d.amount,d.timer>0?1:0,5,dt);d.door.position.x=d.x+d.direction*d.amount*1.10;}}};
 }

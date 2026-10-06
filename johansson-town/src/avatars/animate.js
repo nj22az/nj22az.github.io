@@ -31,6 +31,9 @@ export const GESTURES=Object.freeze({
  Heart:2.8,Peace:2.8,Coy:3,Tada:2.4,HandsOnHips:2.6,HeelKick:2.6,CheekRest:3,DoubleCheek:3,
  // Habits (body-language.js quirk): small, done while somebody else is talking.
  ScratchHead:1.8,HairTuck:1.6,HeelRock:2.4,ChinTap:2,CollarTug:1.5,
+ // Comedy and work: a villain's laugh rubbing the hands, the wind-up before a cartoon dash,
+ // and putting something on a shelf at chest height (restocking).
+ EvilLaugh:2.4,WindUp:.6,Shelve:1.3,
  Talk:Infinity,Kachashi:Infinity,Crouch:Infinity,Phone:Infinity,FishIdle:Infinity,Reel:Infinity,
 });
 /** The body that goes with a feeling, played once when the feeling arrives. */
@@ -67,6 +70,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  const target=Object.fromEntries(JOINTS.map(j=>[j,new THREE.Vector3()]));
  const gazeLocal=new THREE.Vector3();
  let phase=0,time=Math.random()*10,rootY=0,hipsY=0,lean=0;
+ let lie=0,lyingTilt=false;
  let gesture=null,blinkIn=1+Math.random()*3,blinkT=-1,talkT=0,talkOpen=0,glance=[0,0],glanceIn=2,lastExpression='neutral';
  let consumption=null,consumeTime=0,lastConsume=null,driftX=0;
  const set=(j,x=0,y=0,z=0)=>target[j].set(x,y,z);
@@ -106,7 +110,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   *   speed, running, seated, seatHeight, floorHeight, pose, riding, ridePhase, carrying,
   *   waving, talking, expression, sleeping, airborne, seat ('Sit'|'SitEat'|'Soak'),
   *   gaze (a world point to look at), tipsy (0–4: how much they have drunk),
-  *   conversing (in a conversation, talking or listening)
+  *   conversing (in a conversation, talking or listening),
+  *   lying (flat on their back on the floor, knocked out: arms and legs flung out, head lolling;
+  *   0–1 blends them down and up again)
   */
  function update(dt,s={}){
   time+=dt;
@@ -295,6 +301,16 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    if(eyes&&conversing){awayIn-=dt;if(awayIn<=0&&awayT<=0){if(random()<listen.glanceAway){awayT=.5+random()*.5;awaySide=random()<.5?-1:1;}awayIn=1.5+random()*2.5;}
     if(awayT>0){awayT-=dt;eyes=[awaySide*.75,.35];}}
   }
+  // Knocked out flat on the back: arms and legs flung out, a knee up, the head lolling.
+  const lying=s.lying===true?1:Math.max(0,Math.min(1,+s.lying||0));
+  lie+=(lying-lie)*(1-Math.exp(-dt*10));if(lie<.001)lie=0;
+  if(lie>0){
+   const l=lie,roll=Math.sin(time*1.7);
+   for(const j of ['hips','spine','chest','neck','head','shoulderL','elbowL','handL','shoulderR','elbowR','handR','thighL','kneeL','footL','thighR','kneeR','footR'])target[j].multiplyScalar(1-l);
+   add('shoulderL',-.2*l,0,1.35*l);add('shoulderR',-.35*l,0,-1.15*l);add('elbowL',-.35*l);add('elbowR',-.6*l);
+   add('thighL',-.12*l,0,.2*l);add('thighR',-.65*l,0,-.14*l);add('kneeR',1.05*l);add('footL',.45*l);add('footR',.25*l);
+   add('head',0,(.35+.12*roll)*l,.08*roll*l);targetRoot*=1-l;
+  }
   // Ease every joint toward where it is going.
   if(onChair&&chairBlend<1){
    for(const j of ['thighL','kneeL','footL','thighR','kneeR','footR'])target[j].multiplyScalar(chairBlend);
@@ -321,7 +337,16 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     supportSeat(Number.isFinite(s.seatHeight)?s.seatHeight:.45);
     avatar.root.position.y=THREE.MathUtils.lerp(standingY,avatar.root.position.y,chairBlend);
    }else supportSeat(Number.isFinite(s.seatHeight)?s.seatHeight:.45);
-  }else if(!s.riding&&!s.sleeping)groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Cheer','Hop','Gasp'].includes(gesture?.name)});
+  }else if(!s.riding&&!s.sleeping&&!lie)groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Cheer','Hop','Gasp'].includes(gesture?.name)});
+  if(lie>0||lyingTilt){
+   // On the back: tipped over about the hips so they lie where they stood, raised by the back of the head
+   // (the biggest thing on them) so nothing goes through the floor.
+   const l=THREE.MathUtils.smoothstep(lie,0,1),rest=Math.max(m.Rh*Math.max(m.headSX,m.headSY),m.depth/2);
+   avatar.root.rotation.x=-Math.PI/2*l;
+   avatar.root.position.y=avatar.root.position.y*(1-l)+rest*l;
+   avatar.root.position.z+=m.hipY*l;
+   lyingTilt=l>0;
+  }
   // The face: blinks, words, glances, and whatever it is feeling.
   blinkIn-=dt;if(blinkIn<=0&&blinkT<0){blinkT=0;blinkIn=1.8+Math.random()*3.8;}
   let blink=0;if(blinkT>=0){blinkT+=dt;blink=blinkT<.13?1:0;if(blinkT>=.13)blinkT=-1;}
@@ -351,6 +376,16 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    case 'Think':set('shoulderR',-1.25*q,0,-.35);set('elbowR',-1.95*q);set('shoulderL',-.4*q,0,.3);set('elbowL',-1.4*q);add('head',.12*q,0,.18*q);break;
    case 'LookAround':add('head',0,Math.sin(t*2.4)*.75*e);add('chest',0,Math.sin(t*2.4)*.2*e);break;
    case 'Stretch':set('shoulderL',-.2,0,2.8*e);set('shoulderR',-.2,0,-2.8*e);add('chest',-.25*e);add('head',-.3*e);break;
+   // The villain's laugh: hunched over, rubbing the hands together, the shoulders shaking.
+   case 'EvilLaugh':{const rub=Math.sin(t*13)*.12*q;
+    set('shoulderL',-.95*q,0,.42*q);set('shoulderR',-.95*q,0,-.42*q);set('elbowL',-1.75*q,rub,0);set('elbowR',-1.75*q,rub,0);
+    add('chest',.18*q+Math.sin(t*15)*.05*e);add('head',-.28*q+Math.sin(t*15)*.04*e);return {root:-.02*q};}
+   // The wind-up before a cartoon dash: leaning back, a knee up, the arms drawn back.
+   case 'WindUp':set('thighR',-1.0*q);set('kneeR',1.4*q);add('chest',-.28*q);add('head',-.1*q);set('shoulderL',.7*q,0,.2);set('shoulderR',.7*q,0,-.2);set('elbowL',-.6*q);set('elbowR',-.6*q);return {root:.03*q};
+   // Putting something on a shelf at chest height: the right arm out, a little lean, up on the toes.
+   case 'Shelve':{const reach=Math.sin(Math.PI*Math.min(1,t/d));
+    set('shoulderR',-1.55*reach,0,-.08);set('elbowR',-.35+.2*reach);add('chest',.12*reach);add('head',-.08*reach);
+    set('shoulderL',-.35*q,0,.15);set('elbowL',-.9*q);return {root:.025*reach};}
    case 'PickUp':add('chest',1.1*e);add('spine',.3*e);set('shoulderR',-1.3*e);set('thighL',-.5*e);set('thighR',-.5*e);set('kneeL',.9*e);set('kneeR',.9*e);return {root:-.08*e};
    case 'Fist':set('shoulderR',-2.4*q+Math.sin(t*8)*.2*q,0,-.1);set('elbowR',-.5*q);add('chest',-.1*q);break;
    // Fighting with bare hands: a straight punch, the other fist kept up by the chin.

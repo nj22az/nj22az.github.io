@@ -174,16 +174,20 @@ function buildSlidingDoor({group,doorX,width,glazing,box}){
  // compared with it without anybody having to know how the shop is placed.
  group.updateMatrixWorld(true);
  const mat=group.localToWorld(new THREE.Vector3(doorX,0,.55));
- let amount=0;
+ let amount=0,held=false;
+ const place=()=>{for(const {leaf,side,home} of leaves)leaf.position.x=home+side*TRAVEL*amount;};
  return {
   group,mat,
   get amount(){return amount;},
+  /** Hold the door at an amount (0 shut, 1 open), e.g. for a film's photographs of it opening;
+   *  null hands it back to the people walking up to it. */
+  set(value){held=value!==null&&value!==undefined;if(held){amount=Math.max(0,Math.min(1,+value||0));place();}},
   /**
    * @param {number} dt
    * @param {Array<{x:number,z:number}>} bodies everyone who could open it.
    */
   update(dt,bodies){
-   if(!(dt>0))return;
+   if(!(dt>0)||held)return;
    let near=false;
    for(const b of bodies||[]){
     const bx=b?.x??b?.position?.x,bz=b?.z??b?.position?.z;
@@ -194,7 +198,7 @@ function buildSlidingDoor({group,doorX,width,glazing,box}){
    const target=near?1:0,rate=near?4.2:1.9;
    amount+=Math.max(-rate*dt,Math.min(rate*dt,target-amount));
    amount=Math.max(0,Math.min(1,amount));
-   for(const {leaf,side,home} of leaves)leaf.position.x=home+side*TRAVEL*amount;
+   place();
   },
  };
 }

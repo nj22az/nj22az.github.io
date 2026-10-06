@@ -165,7 +165,7 @@ const STEPS=[['start','Choose a face'],['look','Make them'],['profile','Who are 
 /** How far one press of a step button moves a value (0–1). */
 const NOTCH=1/16;
 
-const POSES=[['idle','Stand'],['Wave','Wave'],['Hop','Happy'],['walk','Walk'],['Kachashi','Dance'],['Bow','Bow'],['Heart','Heart'],['Peace','Cheek'],['Coy','Coy'],['Tada','Ta-da!'],['HandsOnHips','Hips'],['HeelKick','Heel kick'],['sit','Sit']];
+const POSES=[['idle','Stand'],['Wave','Wave'],['Hop','Happy'],['walk','Walk'],['Kachashi','Dance'],['Bow','Bow'],['Heart','Heart'],['Peace','Cheek'],['Coy','Coy'],['Tada','Ta-da!'],['HandsOnHips','Hips'],['HeelKick','Heel kick'],['EvilLaugh','Evil laugh'],['sit','Sit'],['lie','Knocked out']];
 
 const get=(r,at)=>at.split('.').reduce((o,k)=>o?.[k],r);
 function set(r,at,value){const keys=at.split('.'),last=keys.pop();let o=r;for(const k of keys)o=o[k];o[last]=value;}
@@ -358,7 +358,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   avatar=buildAvatar(recipe,{shadows:false,faceSize:512});animator=createAvatarAnimator(avatar);holder.add(avatar.root);
   // Dressed as the preview says; a child asked into the towel comes out in swimwear.
   if(wearing!=='clothes')wearing=avatar.wear(wearing);fillDress();
-  if(pose!=='idle'&&pose!=='walk'&&pose!=='sit')animator.play(pose);
+  if(!['idle','walk','sit','lie'].includes(pose))animator.play(pose);
   // Frame from the real meshes, not from estimates, so a big head or a tall hat is
   // never cut off and the face fills the view the same way for everybody.
   avatar.root.updateMatrixWorld(true);
@@ -394,8 +394,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   // A body faces -z in the town; here it turns round to face you.
   if(!featureDrag)holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
   const talking=speech&&speech.typing;
-  if(!featureDrag)animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,talk:talking?.5+.5*Math.sin(now/70):0,
-   expression:step==='hello'?'happy':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
+  if(!featureDrag)animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,lying:pose==='lie',talk:talking?.5+.5*Math.sin(now/70):0,
+   expression:step==='hello'?'happy':pose==='lie'?'dizzy':pose==='EvilLaugh'?'scheme':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
   if(!featureDrag)aim(dt);renderer.render(scene,camera);
  }
  const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
@@ -675,7 +675,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const angle=el('select',{className:'shm-select shm-angle',ariaLabel:'Preview angle'},el('option',{value:'front',textContent:'Front'}),el('option',{value:'back',textContent:'Back'}));
   angle.onchange=()=>{endDrag();previewFacing=angle.value==='back'?Math.PI:0;spin=previewFacing;spinVelocity=0;};
   const select=el('select',{className:'shm-select',ariaLabel:'Preview pose'},...POSES.map(([id,label])=>el('option',{value:id,textContent:label})));select.value=pose;
-  select.onchange=()=>{endDrag();pose=select.value;if(!['idle','walk','sit'].includes(pose))animator.play(pose);else animator.stop();};
+  select.onchange=()=>{endDrag();pose=select.value;if(!['idle','walk','sit','lie'].includes(pose))animator.play(pose);else animator.stop();};
   dress=el('select',{className:'shm-select',ariaLabel:'Preview outfit'});fillDress();
   dress.onchange=()=>{endDrag();showIn(dress.value);};
   poses.append(angle,select,dress);
