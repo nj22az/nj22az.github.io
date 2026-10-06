@@ -10,9 +10,12 @@ export function createSeatSupport(avatar){
   signature=key;supports=[];
   const m=avatar.measure;
   for(const mesh of meshes){
-   const {position,skinIndex,skinWeight}=mesh.geometry.attributes;if(!skinIndex||!skinWeight)continue;
+   const {position,skinIndex,skinWeight,towelFit}=mesh.geometry.attributes;if(!skinIndex||!skinWeight)continue;
    const indices=[],unique=new Set();
    for(let i=0;i<position.count;i++){
+    // A bath wrap is sat on, not sat up on: the body rests on its thighs and the cloth lies on
+    // the seat under them (towel-fit.js), so the wrap never lifts anyone off the seat.
+    if(towelFit?.getX(i)>.5)continue;
     const y=position.getY(i);
     if(y<m.hipY-m.thigh||y>m.hipY+m.legR*.5)continue;
     const bones=[skinIndex.getX(i),skinIndex.getY(i),skinIndex.getZ(i),skinIndex.getW(i)];

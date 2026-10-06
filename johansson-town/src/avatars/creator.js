@@ -1,6 +1,6 @@
 import {ISLAND_OUTFITS,ISLAND_COSTUMES,outfitAllowedFor,appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
-import {buildAvatar} from './build.js';
+import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
 import {drawPart,drawFace} from './face.js';
 import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
@@ -35,7 +35,20 @@ export function drawFaceFormThumb(canvas,form,skin='#f5d0ae'){
  */
 
 const FACE_TABS=new Set(['head','hair','eyes','brows','nose','mouth','extras','hat','accessories']);
+/**
+ * What the preview can show someone in: their clothes, or what they would wear at Umi-no-yu,
+ * the family bath -- swimwear, or for a grown-up the bath towel wrap (yuamigi) with a towel on
+ * the head. Children keep their swimwear there, so the towel is offered to grown-ups only.
+ */
+export const PREVIEW_OUTFITS=Object.freeze([['clothes','Clothes'],['swim','Swimwear'],['towel','Bath towel']]);
+export const BATH_CHILD_NOTE='At Umi-no-yu, the family bath, children wear swimwear. The bath towel wrap is for grown-ups.';
+/** The preview's outfits for this recipe, the towel disabled (and saying why) for a child or teenager. */
+export function previewOutfits(recipe){
+ const grown=wearsBathTowel(normalizeRecipe(recipe));
+ return PREVIEW_OUTFITS.map(([value,label])=>({value,label:value==='towel'&&!grown?label+' (grown-ups)':label,disabled:value==='towel'&&!grown}));
+}
 const LABEL={
+ towel:'Bath towel',swimwear:'Swimwear',
  crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',ponytail:'Ponytail',braids:'Braids',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
  pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',
  round:'Round',dot:'Dot',almond:'Almond',sleepy:'Sleepy',lashes:'Lashes',narrow:'Narrow',sparkle:'Sparkle',gentle:'Gentle',
@@ -64,7 +77,7 @@ const LABEL={
  * 'adjust'. `at` is where in the recipe a control writes, as 'section.field'.
  * Steppers carry the words for their two buttons.
  */
-const TABS=[
+export const TABS=[
  {id:'body',name:'Body',controls:[
   {kind:'chips',page:'style',at:'age',label:'Age',list:AGES},
   {kind:'chips',page:'style',at:'body.proportion',label:'Proportions',list:['classic','rounded']},
@@ -131,7 +144,10 @@ const TABS=[
  {id:'bottom',name:'Bottoms',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.bottom',list:PARTS.bottom,draw:'figure'},
   {kind:'colours',page:'colour',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth},
-  {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth}]},
+  {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth},
+  // What they wear in Umi-no-yu's family bath: grown-ups choose; children wear swimwear.
+  {kind:'chips',page:'style',at:'swim.bath',list:['towel','swimwear'],label:'At Umi-no-yu, the family bath',when:r=>wearsBathTowel(r)},
+  {kind:'note',page:'style',text:BATH_CHILD_NOTE,when:r=>!wearsBathTowel(r)}]},
  {id:'shoes',name:'Shoes',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.footwear',list:PARTS.footwear,draw:'feet'},
   {kind:'colours',page:'colour',at:'outfit.shoes',label:'Colour',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6']}]},
@@ -276,7 +292,7 @@ const CSS=`
 export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
  const wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];
- let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',previewFacing=0;
+ let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',previewFacing=0,wearing='clothes',dress=null;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
  // ----- Layout -----
@@ -340,6 +356,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function rebuild(){
   if(avatar){avatar.root.removeFromParent();avatar.dispose();}
   avatar=buildAvatar(recipe,{shadows:false,faceSize:512});animator=createAvatarAnimator(avatar);holder.add(avatar.root);
+  // Dressed as the preview says; a child asked into the towel comes out in swimwear.
+  if(wearing!=='clothes')wearing=avatar.wear(wearing);fillDress();
   if(pose!=='idle'&&pose!=='walk'&&pose!=='sit')animator.play(pose);
   // Frame from the real meshes, not from estimates, so a big head or a tall hat is
   // never cut off and the face fills the view the same way for everybody.
@@ -554,8 +572,10 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     body.append(b);
    }else if(control.kind==='chips'){
     const row=el('div',{className:'shm-chips'});
-    for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);};row.append(b);}
+    for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);if(control.at==='swim.bath')showIn(value==='towel'?'towel':'swim');};row.append(b);}
     body.append(row);
+   }else if(control.kind==='note'){
+    body.append(el('p',{className:'shm-note',textContent:control.text}));
    }
   }
  }
@@ -656,8 +676,14 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   angle.onchange=()=>{endDrag();previewFacing=angle.value==='back'?Math.PI:0;spin=previewFacing;spinVelocity=0;};
   const select=el('select',{className:'shm-select',ariaLabel:'Preview pose'},...POSES.map(([id,label])=>el('option',{value:id,textContent:label})));select.value=pose;
   select.onchange=()=>{endDrag();pose=select.value;if(!['idle','walk','sit'].includes(pose))animator.play(pose);else animator.stop();};
-  poses.append(angle,select);
+  dress=el('select',{className:'shm-select',ariaLabel:'Preview outfit'});fillDress();
+  dress.onchange=()=>{endDrag();showIn(dress.value);};
+  poses.append(angle,select,dress);
  }
+ /** The preview's outfit list, for whoever is in the maker now (the towel is for grown-ups). */
+ function fillDress(){if(!dress)return;dress.replaceChildren(...previewOutfits(recipe).map(o=>el('option',{value:o.value,textContent:o.label,disabled:o.disabled})));dress.value=wearing;}
+ /** Show them in their clothes, their swimwear or the bath towel, without changing the recipe. */
+ function showIn(outfit){wearing=avatar?avatar.wear(outfit):outfit;if(dress)dress.value=wearing;}
 
  // ----- Buttons -----
  name.oninput=()=>{endDrag();recipe.name=name.value.slice(0,24);};
@@ -691,5 +717,5 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  close.onclick=()=>finish(false);
 
  rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
- return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo};
+ return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,get wearing(){return wearing;}};
 }

@@ -98,8 +98,10 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    }
    g.visible=true;g.userData.hit.inside=true;g.userData.indoors=place;
    g.userData[place==='ramen'?'inRamen':place==='market'?'inMarket':place==='onsen'?'inOnsen':'inIzakaya']=true;g.userData.place=place;
-   // Changed at the lockers by the door: in and out of the bath in swimwear.
-   if(place==='onsen')g.userData.outfit='swim';
+   // Changed at the lockers by the door. Umi-no-yu is a family bath, so nobody bathes bare:
+   // grown-ups wrap up in one of the bath's yuamigi (bath wraps) with a towel on the head,
+   // children and teenagers wear swimwear. 'bath' asks each body for its own (build.js bathOutfit).
+   if(place==='onsen')g.userData.outfit='bath';
    // Closed Minato: whoever is there works through their cleaning stations
    // (izakaya-hours.js), walking from one to the next; when the job ends they go back
    // to their own place (the Barfly to his stool).

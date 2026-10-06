@@ -22,8 +22,8 @@ export function createLocalCharacters({shadows=false}={}){
   function conversationTarget(entity,target=new THREE.Vector3()){
     const actor=byEntity.get(entity);return actor?avatarConversationTarget(actor,target):null;
   }
-  /** 'swim' puts a resident into their swimwear, anything else back into their clothes. */
-  function wear(entity,outfit){const actor=byEntity.get(entity);if(!actor)return false;actor.avatar.wear(outfit);actor.outfit=outfit;return true;}
+  /** 'swim', 'towel' or 'bath' dresses a resident for the bath (avatars/build.js wear), anything else back into their clothes. */
+  function wear(entity,outfit){const actor=byEntity.get(entity);if(!actor)return false;actor.outfit=actor.avatar.wear(outfit)||outfit;actor.requested=outfit;return true;}
   function gesture(entity){const actor=byEntity.get(entity);if(!actor)return false;if(!(actor.gestureTime>0))actor.gestureTime=1.6;return true;}
   return {attach,refresh,update,actors,conversationTarget,wear,gesture};
 }

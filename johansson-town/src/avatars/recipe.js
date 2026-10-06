@@ -76,7 +76,9 @@ export const DEFAULT_RECIPE=Object.freeze({
  // clothes are put on over it in the maker's wardrobe.
  outfit:Object.freeze({top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',shoes:'#6d4a32',hat:'none',hatColour:'#f4f1ea',accent:'#f4d23c'}),
  accessories:Object.freeze({earrings:'none',neckwear:'none',colour:'#e0b93a',pin:false}),
- swim:Object.freeze({colour:'#2f5f9e'}),
+ // What they wear in the water, and (adults) whether they wrap up in a bath towel or wear
+ // their swimwear at Umi-no-yu's family bath (avatars/build.js, bathOutfit).
+ swim:Object.freeze({colour:'#2f5f9e',bath:'towel'}),
  // Who they are (personality.js): four dials, a voice, a birthday, a favourite colour
  // and a catchphrase. Old recipes without one get this middle-of-the-road islander.
  profile:Object.freeze({pace:.5,talk:.5,show:.5,outlook:.5,pitch:.5,speed:.5,month:7,day:1,favourite:'#3fa0c8',catchphrase:''}),
@@ -104,7 +106,7 @@ export function normalizeRecipe(input={}){
   moleSpot:sub('moleSpot',{x:num,height:num,size:num}),
   outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>['none','flowers','stripes','dots'].includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,bottomPattern:(v)=>v==='plaid'?'plaid':'none',footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col})),
   accessories:sub('accessories',{earrings:(v,f)=>pick(PARTS.earrings,v,f),neckwear:(v,f)=>pick(PARTS.neckwear,v,f),colour:col,pin:flag}),
-  swim:sub('swim',{colour:col}),
+  swim:sub('swim',{colour:col,bath:(v,f)=>v==='swimwear'||v==='towel'?v:f}),
   profile:(()=>{
    const out=sub('profile',{pace:num,talk:num,show:num,outlook:num,pitch:num,speed:num,month:(v,f)=>Number.isInteger(+v)&&+v>=1&&+v<=12?+v:f,day:(v,f)=>Number.isInteger(+v)&&+v>=1&&+v<=31?+v:f,favourite:col,
     catchphrase:(v,f)=>v===undefined?f:String(v).replace(/[\u0000-\u001f<>]/g,'').slice(0,40)});

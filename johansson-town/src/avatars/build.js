@@ -7,6 +7,7 @@ import {normalizeRecipe} from './recipe.js';
 import {drawFace,faceLayout} from './face.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {celFrom} from '../render/cel.js';
+import {createTowelFit} from './towel-fit.js';
 import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG,CAMP_COLLAR} from './garment.js';
 
 /**
@@ -495,8 +496,11 @@ function bodyMaterial(recipe,m){
  material.userData.garment={canvas,texture,marks};
  return material;
 }
+/** swim: false for clothes, true for swimwear, 'towel' for the bare body under a bath wrap (addTowel). */
 function addBody(list,recipe,m,swim=false){
  const o=recipe.outfit,skin=recipe.body.skin,top=swim?skin:o.topColour,bottom=swim?recipe.swim.colour:o.bottomColour;
+ // Under a bath wrap nothing else is worn: the wrap is the garment, so nothing can show through it.
+ const bare=swim==='towel';
  const W=m.width,D=m.depth,hipY=m.hipY;
  // The base layer everyone has on under their clothes: a tank top and underwear.
  const tank=!swim&&o.top==='tank',briefs=!swim&&o.bottom==='underwear';
@@ -509,7 +513,7 @@ function addBody(list,recipe,m,swim=false){
  // Underwear sits lower than a waistband.
  const waist=hipY+m.torso*(briefs?.05:.13);
  const torsoColour=p=>{
-  if(swim)return p.y<waist?bottom:skin;
+  if(swim)return !bare&&p.y<waist?bottom:skin;
   if(p.y<waist)return bottom;
   // Under a tank top the body is bare; the vest is its own garment, added below.
   if(tank)return skin;
@@ -536,7 +540,7 @@ function addBody(list,recipe,m,swim=false){
   }
  }
  // A swimmer's top, for anyone who would wear one.
- if(swim&&wearsSwimTop(recipe))
+ if(swim&&!bare&&wearsSwimTop(recipe))
   part(list,new THREE.CylinderGeometry(W*.52,W*.52,m.torso*.2,16,1,true),'chest',recipe.swim.colour,M(0,hipY+m.torso*.66,0,0,0,0,1,1,D/W));
  // Neck.
  tube(list,[0,m.neckY-.02,0],[0,m.headY+.01,0],m.armR*1.08,'neck',skin,8);
@@ -633,7 +637,7 @@ function addBody(list,recipe,m,swim=false){
   limb(list,hp,an,m.legR*(b==='widepants'?1.32:1.02),m.legR*(b==='widepants'?1.28:.86),trousers?bottom:skin,leg);
   if(b==='cropped'||b==='culottes'){const end=b==='cropped'?m.foot+m.shin*.35:hipY-m.thigh*1.12;limb(list,hp,[hp[0],end,0],m.legR*(b==='culottes'?1.55:1.12),m.legR*(b==='culottes'?1.7:1.16),bottom,leg);}
   // Shorts and trunks: a wider piece over the top of the thigh.
-  if(b==='shorts'||b==='swim')limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.04,hipY-m.thigh*(b==='swim'?.22:.55),0],m.legR*1.2,m.legR*1.26,bottom,{...leg,joints:[]});
+  if(b==='shorts'||b==='swim'&&!bare)limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.04,hipY-m.thigh*(b==='swim'?.22:.55),0],m.legR*1.2,m.legR*1.26,bottom,{...leg,joints:[]});
   // Underwear: short briefs, snug over the top of the thigh.
   if(b==='underwear')limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.02,hipY-m.thigh*.16,0],m.legR*1.12,m.legR*1.14,bottom,{...leg,joints:[]});
   // Feet: bare (and at the beach), or in sandals, sneakers or leather shoes.
@@ -660,6 +664,141 @@ function addBody(list,recipe,m,swim=false){
   const hem=hemSpec(recipe,m);
   part(list,skirt,hem?quarterShare(hem,drape):drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):bottom,M(0,waist-len/2,0,0,0,0,1,1,D/W));
  }
+}
+
+/**
+ * The bath wrap: a yuamigi (湯浴み着), the towel-cloth wrap families wear in a mixed bath.
+ *
+ * Umi-no-yu is a family bath -- husbands and wives, grandparents and grandchildren, friends
+ * from work share the water -- so nobody bathes bare. Grown-ups wrap up in one of the
+ * bath's own terry wraps from the bandai, as family baths and kashikiri baths in Japan do:
+ * under the arms to the knees, the end tucked in at the chest, for anyone who would wear a
+ * swimsuit top; from the waist to the knees for everyone else. A small folded towel rests on
+ * the head, the classic way to keep it out of the water and cool the head in a hot bath.
+ * Children and teenagers keep their swimwear: that is what a family bath asks of them, and
+ * a wrap that can come undone is no garment for a child splashing about.
+ *
+ * The wrap is shrink-wrapped round the body: at each height it is the convex outline of the
+ * torso and both legs (the arms hang outside it, over the cloth), pushed out by a small gap;
+ * then, at each angle round the body, the tightest straight-sided profile that holds every
+ * one of those outlines (a towel under tension spans a hollow rather than clinging to it).
+ * Below the hips it eases away from the thighs, so a step or a seat moves the legs inside
+ * the cloth instead of through it. Its skin is the body's own: the torso's weights above the
+ * hips, the skirt's drape onto the thighs below.
+ */
+// Umi-no-yu's own: off-white terry with the navy band its rental towels carry (onsen-towels.js), so they come back.
+export const TOWEL=Object.freeze({colour:'#f2ede2',band:'#2e3e68',fold:'#ddd5c3'});
+/** Who wraps up in a bath towel: grown-ups. Children and teenagers keep their swimwear. */
+export const wearsBathTowel=recipe=>recipe.age==='adult'||recipe.age==='elder';
+/** What this person wears at Umi-no-yu: 'towel', or 'swim' for the young and anyone who prefers it. */
+export function bathOutfit(input){const r=normalizeRecipe(input);return wearsBathTowel(r)&&r.swim.bath!=='swimwear'?'towel':'swim';}
+/** Where the wrap runs: under the arms (or the waist) to just above the knee. Pure, for tests. */
+export function towelSpan(recipe,m){
+ const chest=wearsSwimTop(recipe);
+ return {chest,top:m.hipY+m.torso*(chest?.72:.17),hem:m.hipY-m.thigh*.92};
+}
+/** The convex hull of [x,z] points (monotone chain), anticlockwise. */
+function hull2(points){
+ const p=points.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]),cross=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+ const lower=[],upper=[];
+ for(const q of p){while(lower.length>1&&cross(lower.at(-2),lower.at(-1),q)<=0)lower.pop();lower.push(q);}
+ for(const q of p.slice().reverse()){while(upper.length>1&&cross(upper.at(-2),upper.at(-1),q)<=0)upper.pop();upper.push(q);}
+ return lower.slice(0,-1).concat(upper.slice(0,-1));
+}
+/** How far from the body's axis a convex outline (round the axis) lies in the direction (x,z). */
+function hullReach(hull,x,z){
+ let best=Infinity;
+ for(let i=0;i<hull.length;i++){
+  const a=hull[i],b=hull[(i+1)%hull.length],ex=b[0]-a[0],ez=b[1]-a[1],den=x*ez-z*ex;
+  if(Math.abs(den)<1e-12)continue;
+  const t=(a[0]*ez-a[1]*ex)/den,u=(a[0]*z-a[1]*x)/den;
+  if(t>0&&u>=-1e-9&&u<=1+1e-9)best=Math.min(best,t);
+ }
+ return best;
+}
+/** The body's outline at height y in its rest pose: the torso lathe and both legs, as points, `gap` outside. */
+function bodySection(prof,m,y,gap){
+ const pts=[],t=(y-m.hipY)/m.torso;
+ if(t>=-.1&&t<=1.04){const r=latheRadius(prof,THREE.MathUtils.clamp(t,-.1,1.04));for(let i=0;i<64;i++){const a=i/64*Math.PI*2;pts.push([Math.sin(a)*(m.width/2*r+gap),Math.cos(a)*(m.depth/2*r+gap)]);}}
+ // The legs as addBody makes them: a capsule from the hip to the ankle, round over the top.
+ const r0=m.legR*1.02,r1=m.legR*.86;
+ const r=y<=m.hipY&&y>=m.foot?THREE.MathUtils.lerp(r0,r1,(m.hipY-y)/(m.hipY-m.foot)):y>m.hipY&&y<m.hipY+r0?Math.sqrt(r0*r0-(y-m.hipY)**2):0;
+ if(r>0)for(const sx of [-1,1])for(let i=0;i<32;i++){const a=i/32*Math.PI*2;pts.push([sx*m.hipX+Math.sin(a)*(r+gap),Math.cos(a)*(r+gap)]);}
+ return pts;
+}
+/** The highest of each [y] list's linear profile: the outer (concave) envelope of (y, r) points sorted by y. */
+function outerEnvelope(ys,rs){
+ const idx=ys.map((_,i)=>i).sort((a,b)=>ys[a]-ys[b]),h=[];
+ for(const i of idx){while(h.length>1){const o=h.at(-2),a=h.at(-1),c=(ys[a]-ys[o])*(rs[i]-rs[o])-(rs[a]-rs[o])*(ys[i]-ys[o]);if(c>=0)h.pop();else break;}h.push(i);}
+ return ys.map(y=>{for(let j=1;j<h.length;j++){const a=h[j-1],b=h[j];if(y<=ys[b]+1e-12){const f=(y-ys[a])/((ys[b]-ys[a])||1);return rs[a]+(rs[b]-rs[a])*f;}}return rs[h.at(-1)];});
+}
+/** The terry wrap round the body, and the end tucked in at the front. Returns where it lies, for the tuck and tests. */
+function addTowel(list,recipe,m){
+ const span=towelSpan(recipe,m),prof=torsoProfile(recipe,m),k=m.k,N=48,gap=.007*k,step=.012*k;
+ const dirs=Array.from({length:N},(_,i)=>{const a=i/N*Math.PI*2;return [Math.sin(a),Math.cos(a)];});
+ const reach=(y,g)=>{const h=hull2(bodySection(prof,m,y,g));return dirs.map(([x,z])=>hullReach(h,x,z));};
+ // Rows from the hem up, so the woven band sits exactly on two of them; and every row where the torso's outline turns.
+ const ys=[];for(let y=span.hem;y<span.top-step*.5;y+=step)ys.push(y);ys.push(span.top);
+ for(const [,t] of prof){const y=m.hipY+t*m.torso;if(y>span.hem+step*2.5&&y<span.top-step*.5&&ys.every(v=>Math.abs(v-y)>step*.2))ys.push(y);}
+ ys.sort((a,b)=>b-a);
+ // Below the hips the cloth stands off the thighs: room for a stride or a seat.
+ const ease=y=>.028*k*THREE.MathUtils.smoothstep(m.hipY-y,0,m.thigh*.9);
+ const want=ys.map(y=>reach(y,gap).map(r=>r+ease(y)));
+ const radius=ys.map(()=>new Array(N));
+ for(let i=0;i<N;i++){const env=outerEnvelope(ys,want.map(r=>r[i]));env.forEach((r,j)=>{radius[j][i]=r;});}
+ // The top edge is folded over once and rolled a little proud; the hem is turned under.
+ const roll=.006*k,rings=[];
+ const inner=(y,r)=>rings.push({y,r});
+ inner(span.top-.01*k,reach(span.top-.01*k,gap*.35));
+ rings.push({y:span.top+.004*k,r:radius[0].map(r=>r+roll*.5)});
+ ys.forEach((y,j)=>rings.push({y,r:radius[j].map(r=>r+roll*(1-THREE.MathUtils.smoothstep(span.top-y,0,.016*k)))}));
+ const hemR=radius.at(-1),hemIn=reach(span.hem+.004*k,gap*.35);
+ rings.push({y:span.hem-.005*k,r:hemR.map(r=>r-.003*k)});
+ rings.push({y:span.hem+.003*k,r:hemR.map((r,i)=>Math.max(hemIn[i],r-.011*k))});
+ const pos=[],index=[];
+ for(const ring of rings)for(let i=0;i<N;i++)pos.push(dirs[i][0]*ring.r[i],ring.y,dirs[i][1]*ring.r[i]);
+ for(let j=0;j+1<rings.length;j++)for(let i=0;i<N;i++){const a=j*N+i,b=j*N+(i+1)%N,c=(j+1)*N+i,d=(j+1)*N+(i+1)%N;index.push(a,c,b,b,c,d);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(index);g.computeVertexNormals();
+ // Skin: exactly the torso's above the hips; below, the skirt's drape onto each thigh.
+ const share=p=>{
+  if(p.y>=m.hipY){const chest=THREE.MathUtils.smoothstep(p.y,m.hipY+m.torso*.15,m.hipY+m.torso*.55);return [['hips',1-chest],['chest',chest]];}
+  const leg=THREE.MathUtils.smoothstep(m.hipY-p.y,.02*k,.12*k),w=THREE.MathUtils.smoothstep(p.x,-m.hipX,m.hipX);
+  return [['hips',1-leg],['thighL',leg*w],['thighR',leg*(1-w)]];
+ };
+ // Off-white terry, matte, with Umi-no-yu's navy band woven a hand's width above the hem.
+ const band=[span.hem+step*4.02,span.hem+step*4.98];
+ part(list,g,share,p=>p.y>band[0]&&p.y<band[1]?TOWEL.band:TOWEL.colour);
+ // The end of the towel overlaps at the front, on the wearer's left, where the right hand
+ // tucks it in: its edge runs down the wrap from the top to the hem, and the corner is tucked
+ // under at the top, a small fold standing just proud of the cloth.
+ const ti=Math.round(.42/(Math.PI*2)*N),nx=dirs[ti][0],nz=dirs[ti][1],lift=.0025*k;
+ const edge=ys.map((y,j)=>new THREE.Vector3(nx*(radius[j][ti]+lift),y,nz*(radius[j][ti]+lift)));
+ part(list,new THREE.TubeGeometry(new THREE.CatmullRomCurve3(edge),ys.length*2,.0032*k,6,false),share,TOWEL.fold);
+ const fold=.0045*k,y0=span.top-.006*k,y1=y0-.03*k,r=Math.max(radius[0][ti],radius[Math.min(3,ys.length-1)][ti]);
+ part(list,new THREE.SphereGeometry(1,10,12),share,TOWEL.fold,M(nx*(r+fold*.3),(y0+y1)/2,nz*(r+fold*.3),0,Math.atan2(nx,nz),.5,.016*k,(y0-y1)/2,fold));
+ return {span,rings,dirs};
+}
+/**
+ * The folded towel on the head, lying on the crown (or the hair) and draped to its shape: each
+ * point of its underside is dropped onto the head from above, so it rests rather than floats,
+ * and nothing of the head comes through it. It is the head bone's, so it goes where the head goes.
+ */
+function addHeadTowel(list,m,surfaces){
+ const k=m.k,R=m.Rh,lx=R*m.headSX*1.15,lz=R*.72,th=.02*k,rad=th*.5,cz=-R*.06,gap=.0025*k;
+ // One smooth piece (shared vertices), so its ink line follows it rather than splitting at the edges.
+ let g=new THREE.BoxGeometry(lx,th,lz,16,2,10);g.deleteAttribute('uv');g.deleteAttribute('normal');g=mergeVertices(g,1e-7);
+ const P=g.attributes.position,v=new THREE.Vector3(),q=new THREE.Vector3();
+ const half=new THREE.Vector3(lx/2-rad,0,lz/2-rad);
+ for(let i=0;i<P.count;i++){v.fromBufferAttribute(P,i);q.set(THREE.MathUtils.clamp(v.x,-half.x,half.x),0,THREE.MathUtils.clamp(v.z,-half.z,half.z));const d=v.clone().sub(q);if(d.lengthSq()>1e-14)d.setLength(rad);v.copy(q).add(d);P.setXYZ(i,v.x,v.y,v.z);}
+ const surface=new THREE.Mesh(mergeGeometries(surfaces.map(s=>{const c=new THREE.BufferGeometry();c.setAttribute('position',s.attributes.position.clone());return c;}),false),new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));
+ const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0),from=new THREE.Vector3(),d=.006*k;
+ const ground=(x,z)=>{let top=-Infinity;for(const [ox,oz] of [[0,0],[d,0],[-d,0],[0,d],[0,-d]]){ray.set(from.set(x+ox,m.H+1,z+oz),down);const hit=ray.intersectObject(surface,false)[0];if(hit)top=Math.max(top,hit.point.y);}return top;};
+ const cache=new Map();
+ for(let i=0;i<P.count;i++){const x=P.getX(i),z=P.getZ(i)+cz,key=x.toFixed(5)+','+z.toFixed(5);if(!cache.has(key))cache.set(key,ground(x,z));P.setXYZ(i,x,cache.get(key)+gap+P.getY(i)+th/2,z);}
+ surface.geometry.dispose();g.computeVertexNormals();
+ // Folded in four, with the end of its band showing along one fold.
+ const b0=-lx/2+lx*11/16,b1=-lx/2+lx*12/16;
+ part(list,g,'head',p=>p.x>b0&&p.x<b1?TOWEL.band:TOWEL.colour);
 }
 
 /**
@@ -786,8 +925,8 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const body=new THREE.SkinnedMesh(geometry,material);body.name='Shimanchu body';
  body.add(bones.root);body.bind(new THREE.Skeleton(list));
  body.castShadow=shadows;body.receiveShadow=true;body.frustumCulled=false;
- // Swimwear is a second body, swapped in at the onsen.
- let swimBody=null,alternativeBody=null,alternativeOutline=null,alternativeKey=null;
+ // Swimwear and the bath wrap are further bodies, swapped in at the onsen.
+ let swimBody=null,towelBody=null,towelOutline=null,alternativeBody=null,alternativeOutline=null,alternativeKey=null;
  const face=buildHead(recipe,m,faceSize);
  face.head.castShadow=shadows;face.head.receiveShadow=true;
  bones.head.add(face.head);
@@ -799,7 +938,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  for(let i=fingerStart;i<fingerEnd;i++){const sx=geometry.attributes.skinIndex.getX(i)===BI.handL?1:-1,j=(i-fingerStart)*3;closedFingerPositions[j]=sx*(m.shoulderX+.015);closedFingerPositions[j+1]=m.shoulderY-m.upper-m.fore-m.hand*.55;closedFingerPositions[j+2]=0;}
  geometry.attributes.position.array.set(closedFingerPositions,fingerStart*3);let handsOpen=false;
  const avatar={
-  recipe,measure:m,root,body,bones,face,height:m.H,hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
+  recipe,measure:m,root,body,bones,face,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
   setOpenHands(on){on=!!on;if(handsOpen===on)return;handsOpen=on;geometry.attributes.position.array.set(on?openFingerPositions:closedFingerPositions,fingerStart*3);geometry.attributes.position.needsUpdate=true;},
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
   setHat(on){geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){for(const range of hatHairRanges){const source=on?range.tucked:range.original;geometry.attributes.position.array.set(source.position,range.offset);geometry.attributes.normal.array.set(source.normal,range.offset);}if(hatHairRanges.length){geometry.attributes.position.needsUpdate=true;geometry.attributes.normal.needsUpdate=true;}hairCovered=!!on;}},
@@ -813,8 +952,34 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    avatar.faceKey=key;Object.assign(s,n);
    drawFace(face.ctx,recipe,{...n,size:face.canvas.width});face.texture.needsUpdate=true;return true;
   },
-  /** 'swim' or 'clothes'. */
-  wear(outfit){
+  /**
+   * 'clothes', 'swim', 'towel' (the bath wrap), 'bath' (whichever of the two this person wears
+   * at Umi-no-yu: bathOutfit), or Thuan's 'sailor' and 'nozomi'. A child or teenager asked into
+   * a towel gets their swimwear (wearsBathTowel). Returns what they ended up wearing.
+   */
+  wear(requested){
+   const outfit=requested==='bath'?bathOutfit(recipe):requested==='towel'&&!wearsBathTowel(recipe)?'swim':requested;
+   avatar.outfit=outfit;
+   if(outfit==='towel'&&!towelBody){
+    const parts=[];addBody(parts,recipe,m,'towel');addNose(parts,recipe,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
+    const hairStart=parts.length;addHair(parts,{...recipe,outfit:{...recipe.outfit,hat:'none'}},m);
+    const hair=parts.slice(hairStart),count=()=>parts.reduce((n,g)=>n+g.attributes.position.count,0),wrapStart=count();
+    const head=face.head.geometry.clone();head.translate(0,m.headCentre,0);
+    addTowel(parts,recipe,m);const wrapEnd=count();addHeadTowel(parts,m,[head,...hair]);head.dispose();
+    const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());
+    // The wrap's vertices are kept out of the body after skinning (towel-fit.js); nothing else is.
+    const fitFlag=new Float32Array(g.attributes.position.count);fitFlag.fill(1,wrapStart,wrapEnd);g.setAttribute('towelFit',new THREE.BufferAttribute(fitFlag,1));
+    const towelMaterial=celFrom(new THREE.MeshStandardMaterial({vertexColors:true}),{bands:'soft3'});
+    towelBody=new THREE.SkinnedMesh(g,towelMaterial);towelBody.name='Shimanchu bath towel';towelBody.bind(body.skeleton,body.bindMatrix);
+    const fit=createTowelFit(avatar,towelBody);fit.fitted(towelMaterial,'body');
+    // Which vertices are the wrap (with its tuck) and which the towel on the head, for tests and the seat.
+    towelBody.userData.towel={wrap:[wrapStart,wrapEnd],head:[wrapEnd,count()]};towelBody.towelFit=fit;
+    towelBody.castShadow=shadows;towelBody.frustumCulled=false;root.add(towelBody);towelOutline=addOutline(root,towelBody,true);
+    const ink=towelOutline.material,line=ink.clone();line.onBeforeCompile=ink.onBeforeCompile;line.customProgramCacheKey=ink.customProgramCacheKey;towelOutline.material=fit.fitted(line,'outline');
+    towelBody.customDepthMaterial=fit.fitted(new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking}),'depth');
+    // Read the pose as it is drawn, for the picture, its ink line and its shadow alike.
+    towelBody.onBeforeRender=towelBody.onBeforeShadow=towelOutline.onBeforeRender=()=>fit.refresh();
+   }
    if(['nozomi','sailor'].includes(outfit)&&alternativeKey!==outfit){alternativeBody?.removeFromParent();alternativeOutline?.removeFromParent();alternativeBody?.geometry.dispose();alternativeKey=outfit;const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...(outfit==='sailor'?THUAN_SAILOR_OUTFIT:SHOPPING_LANE_OUTFIT)}}),parts=[];addBody(parts,r,m);addNose(parts,r,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);addHair(parts,r,m);const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());alternativeBody=new THREE.SkinnedMesh(g,bodyMaterial(r,m));alternativeBody.name=outfit==='sailor'?'Thuan · harbour academy sailor':'Thuan · shopping lane outfit';alternativeBody.bind(body.skeleton,body.bindMatrix);alternativeBody.castShadow=shadows;alternativeBody.frustumCulled=false;root.add(alternativeBody);alternativeOutline=addOutline(root,alternativeBody,true);}
    if(outfit==='swim'&&!swimBody){
     const parts=[];addBody(parts,recipe,m,true);addNose(parts,recipe,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
@@ -824,11 +989,12 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
     swimBody.castShadow=shadows;swimBody.frustumCulled=false;root.add(swimBody);
    }
    // What swings depends on what is worn: Thuan's sailor skirt, Johansson's shirt hem, nothing in the bath.
-   const worn=outfit==='sailor'?{...recipe,outfit:{...recipe.outfit,...THUAN_SAILOR_OUTFIT}}:outfit==='nozomi'?{...recipe,outfit:{...recipe.outfit,...SHOPPING_LANE_OUTFIT}}:outfit==='swim'?{...recipe,outfit:{...recipe.outfit,top:'tank',bottom:'shorts'}}:recipe;
+   const worn=outfit==='sailor'?{...recipe,outfit:{...recipe.outfit,...THUAN_SAILOR_OUTFIT}}:outfit==='nozomi'?{...recipe,outfit:{...recipe.outfit,...SHOPPING_LANE_OUTFIT}}:outfit==='swim'||outfit==='towel'?{...recipe,outfit:{...recipe.outfit,top:'tank',bottom:'shorts'}}:recipe;
    if(avatar.springKey!==outfit){avatar.springKey=outfit;avatar.springs?.reset();avatar.springSetup=springRest(normalizeRecipe(worn),m);avatar.springs=createSprings(avatar);}
-   body.visible=outfit!=='swim'&&!['nozomi','sailor'].includes(outfit);outline.visible=body.visible;if(alternativeBody){alternativeBody.visible=outfit===alternativeKey;alternativeOutline.visible=alternativeBody.visible;}if(swimBody)swimBody.visible=outfit==='swim';
+   body.visible=!['swim','towel','nozomi','sailor'].includes(outfit);outline.visible=body.visible;if(alternativeBody){alternativeBody.visible=outfit===alternativeKey;alternativeOutline.visible=alternativeBody.visible;}if(swimBody)swimBody.visible=outfit==='swim';if(towelBody){towelBody.visible=outfit==='towel';towelOutline.visible=towelBody.visible;}
+   return outfit;
   },
-  dispose(){geometry.dispose();material.dispose();material.map?.dispose();if(alternativeBody){alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();swimBody?.geometry.dispose();alternativeBody?.geometry.dispose();},
+  dispose(){geometry.dispose();material.dispose();material.map?.dispose();if(alternativeBody){alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();swimBody?.geometry.dispose();if(towelBody){towelBody.geometry.dispose();towelBody.material.dispose();towelBody.customDepthMaterial.dispose();towelOutline.material.dispose();}alternativeBody?.geometry.dispose();},
  };
  avatar.springs=createSprings(avatar);
  avatar.paintFace({});

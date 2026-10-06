@@ -605,7 +605,9 @@ function eatDish(){
 }
 /** Swimwear on or off: the model changes, and the game remembers for the camera-less view. */
 let swimwear=false;
-function wearSwim(on){if(swimwear===!!on)return;swimwear=!!on;if(on&&!johansson)ensureJohansson();johansson?.wear(on?'swim':'clothes');if(on)say('You change into your swimming trunks at the lockers.',3);}
+// The player dresses for Umi-no-yu as the residents do (indoor-residents.js): 'bath' is a yuamigi
+// (bath wrap) and a towel on the head for a grown-up, swimwear for a child or anyone who chose it in the maker.
+function wearSwim(on){if(swimwear===!!on)return;swimwear=!!on;if(on&&!johansson)ensureJohansson();const worn=johansson?.wear(on?'bath':'clothes');if(on)say(worn==='towel'?'You change at the lockers into one of the bath\'s wraps, a folded towel on your head.':'You change into your swimwear at the lockers.',3);}
 function updateJohansson(dt){
  const ferryView=islandPlay?.phase==='ferry';
  hands.firstPersonVisible=!thirdPerson&&!spawnScene?.active&&!islandPlay?.active&&current?.id!==CITY_RESTAURANT.id;

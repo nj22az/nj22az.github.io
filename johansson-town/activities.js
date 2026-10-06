@@ -727,7 +727,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const m=((getMinutes()%1440)+1440)%1440;
     if(m<600||m>=1320){show("Sea Bath · Umi-no-yu",'Higa-san is counting the day’s coins. "The bath is closed -- ten o’clock tomorrow. The footbath outside never closes."',[['Back',close]]);return;}
     if(onsenPaid()){receipt("Sea Bath · Umi-no-yu",'You have paid for today. Higa-san waves you through without looking up.');return;}
-    show("Sea Bath · Umi-no-yu",'Higa-san looks up from her crossword. Adults ¥300. Swimwear in the water -- it is a family bath.',[
+    show("Sea Bath · Umi-no-yu",'Higa-san looks up from her crossword. Adults ¥300. A bath wrap or swimwear in the water -- it is a family bath.',[
       ['Pay ¥300',()=>{if(!spend(300))return;state.onsenPaidDay=townDay();save();note('Bathed at Umi-no-yu.');receipt("Sea Bath · Umi-no-yu",'Three coins in the tray. "Lockers through the curtain. Wash before you get in."');}],
       ['Not today',close]]);
   }
@@ -738,8 +738,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   }
   function onsenChange(){
     const swimming=getOutfit();
-    show('Lockers',swimming?'Your clothes are folded in locker 14, the key on its rubber band round your wrist.':'A locker with a brass key on a rubber band. The notice says swimwear in the bath.',[
-      [swimming?'Get dressed':'Change into swimwear',()=>{close();onOutfit(!swimming);}],['Back',close]]);
+    show('Lockers',swimming?'Your clothes are folded in locker 14, the key on its rubber band round your wrist.':'A locker with a brass key on a rubber band. The notice says a bath wrap or swimwear in the bath: grown-ups wrap up, children wear swimwear.',[
+      [swimming?'Get dressed':'Change for the bath',()=>{close();onOutfit(!swimming);}],['Back',close]]);
   }
   function onsen(){
     const m=((getMinutes()%1440)+1440)%1440;
