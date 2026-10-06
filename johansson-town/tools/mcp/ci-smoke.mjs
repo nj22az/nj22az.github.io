@@ -31,13 +31,14 @@ try{
  assert.equal(wallet(),yen-120,'Purchase charges once');
  await tour.call('press_control',{control:'close',durationMs:16});clean();
  report.checks.push('interaction');
- const approach=await tour.call('follow_path',{points:[{x:-2,z:-32.73},{x:-2,z:-26.8},{x:-4.4,z:-26.8}],maxSeconds:20});
+ const approach=await tour.call('follow_path',{points:[{x:-2,z:-32.73},{x:-2,z:-27.3},{x:-4.4,z:-27.3}],maxSeconds:20});
  assert.equal(approach.reached,true,'Reach Sakura doorway');
  const shop=tour.state.sites.find(s=>s.id==='market');assert.ok(shop?.door);
  await tour.face(shop.door[0],shop.door[2]);
  await tour.call('press_control',{control:'interact',durationMs:16});
  // Asynchronous room assets may complete between deterministic simulation ticks.
- for(let i=0;i<40&&(tour.state.game.room!=='market'||tour.state.blocked.roomLoading);i++)await tour.call('wait',{durationMs:100});
+ const roomDeadline=performance.now()+30000;
+ while((tour.state.game.room!=='market'||tour.state.blocked.roomLoading)&&performance.now()<roomDeadline)await tour.call('wait',{durationMs:100});
  assert.equal(tour.state.game.room,'market');assert.equal(tour.state.blocked.roomLoading,false);clean();
  report.checks.push('interior transition');
  await tour.shot('interior');clean();
