@@ -1,3 +1,4 @@
+import {registerHomeSeats} from './home-seats.js';
 import {addIkeaFurniture} from './ikea-furniture.js';
 import {buildTatamiHome} from './tatami-home.js';
 import {homeExitLabel} from './home-exit-label.js';
@@ -62,6 +63,7 @@ export function buildResidentHome({site,profile,room,box,reg,collider,action,exi
  addFamilyPhoto(detailBox,{x:.15,z:-2.93,members:[profile]});
  addEntryDetails(part,HOME_LAYOUT.exit[0]);
  hatPeg(part,HOME_LAYOUT.hatHook);
+ registerHomeSeats({parent:room,reg,action,layouts:{[profile.name]:HOME_LAYOUT}});
  const door=new THREE.Object3D();door.position.set(...HOME_LAYOUT.exit);room.add(door);reg(door,homeExitLabel(site,profile),exit,true);
  room.add(new THREE.HemisphereLight(0xffe4b4,0x887867,1.6));
  return {...HOME_LAYOUT,home:true,homeLayouts:{[profile.name]:HOME_LAYOUT}};
@@ -95,6 +97,7 @@ function buildSharedHome({site,profile,room,box,reg,collider,action,exit}){
  addTeaSetting(detailBox,{x:0,y:.745,z:1.3,people:household.residents.length});
  addFamilyPhoto(detailBox,{x:0,z:-3.33,members:household.residents.map(name=>({name}))});
  addEntryDetails(part,0,3.15);
+ registerHomeSeats({parent:room,reg,action,layouts:homeLayouts});
  const door=new THREE.Object3D();door.position.set(...layout.exit);room.add(door);reg(door,homeExitLabel(site,profile),exit,true);
  room.add(new THREE.HemisphereLight(0xffe4b4,0x887867,1.6));return {...layout,home:true,homeLayouts};
 }

@@ -809,6 +809,9 @@ for category, upgrade in [('vessels-kitchen-storage-furniture', upgrade_real_pro
     print('Upgrading', category, flush=True)
     coverage[category] = upgrade(prop_api)
     print('Completed', category, flush=True)
+from minato_furniture_heights import apply_furniture_heights
+furniture_report=apply_furniture_heights(bpy,root)
+(art/'furniture-height-report.json').write_text(json.dumps(furniture_report,indent=2))
 after = {'objects': len([o for o in bpy.context.scene.objects if o.type == 'MESH']),
          'triangles': sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in bpy.context.scene.objects if o.type == 'MESH')}
 geometry_by_family = {}

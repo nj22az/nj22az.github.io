@@ -9,8 +9,8 @@ import {residentPersonality} from './resident-personalities.js';
 import {buildHatProp} from '../avatars/build.js';
 import {recipeFor} from '../avatars/cast.js';
 
-function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},getRain=()=>false,getState=()=>({})},name){
- let site=null,person=null,saved=null,layout=null,walker=null,cover=null,hat=null,clock=0,rest=0,sleepBlend=0;
+function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},getRain=()=>false,getState=()=>({}),getPlayerSeat=()=>null},name){
+ let site=null,person=null,saved=null,layout=null,walker=null,cover=null,hat=null,clock=0,rest=0,sleepBlend=0,tableBlend=0;
  // Home, the hat comes off and goes on its hook; it goes back on at the door. A room
  // with no hook for them leaves it on their head rather than make it vanish.
  function hangHat(g){
@@ -28,10 +28,10 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
   if(!saved)return;
   const g=person.g,stillHome=residentPlan(person.profile,clock,getRain(),getState()).place==='home';
   saved.parent.add(g);g.position.set(person.profile.home[0],groundHeight(...person.profile.home),person.profile.home[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
-  for(const key of ['inHome','socialPose','seatHeight','heldItem','sleeping','waking','sleepBlend','roomTransition','facePlayerUntil','chatHold'])delete g.userData[key];
+  for(const key of ['inHome','socialPose','seatHeight','chairBlend','heldItem','sleeping','waking','sleepBlend','roomTransition','facePlayerUntil','chatHold'])delete g.userData[key];
   if(stillHome){g.userData.indoors='home';g.visible=false;}else{delete g.userData.indoors;g.visible=true;}
   const home=world.homes?.get(person.profile.name);if(home)home.occupied=stillHome;
-  saved=null;rest=0;sleepBlend=0;
+  saved=null;rest=0;sleepBlend=0;tableBlend=0;
  }
  function update(dt,minutes){
   clock=minutes;if(!site)return;
@@ -48,18 +48,39 @@ function createHomeResident({world,parent,collides=()=>false,onBorrow=()=>{},get
   const routine=homeRoutine(person.profile,minutes),bedtime=plan.place==='home'&&['sleep','wake','bedtime'].includes(routine.id);
   g.userData.place=site.id;g.userData.activity=plan.place==='home'?routine.activity:'leaving home';
   g.userData.sleeping=bedtime&&routine.id==='sleep';g.userData.waking=bedtime&&routine.id==='wake';
-  delete g.userData.socialPose;delete g.userData.seatHeight;delete g.userData.heldItem;
+  delete g.userData.socialPose;delete g.userData.seatHeight;delete g.userData.chairBlend;delete g.userData.heldItem;
+  const occupied=getPlayerSeat(),tableTaken=occupied&&Math.hypot(occupied[0]-layout.table[0],occupied[2]-layout.table[2])<.55;
+  const atTable=plan.place==='home'&&!bedtime&&!tableTaken,tableStand=layout.tableStand||layout.table;
+  if(!atTable&&tableBlend>0){
+   tableBlend=Math.max(0,tableBlend-dt*2);setTable(g,tableStand,tableBlend,'Sit');
+   g.userData.sleeping=false;g.userData.waking=false;g.userData.roomTransition=true;
+   if(tableBlend===0)for(const key of ['socialPose','seatHeight','chairBlend'])delete g.userData[key];
+   return;
+  }
   if(!bedtime&&rest>0){
    sleepBlend=Math.max(0,sleepBlend-dt*1.5);rest=Math.max(0,rest-dt*1.5);setRest(g,rest,false);cover?.update(dt,sleepBlend*rest);g.userData.roomTransition=true;return;
   }
   if(plan.place==='home'&&layout.prepareBedding?.(person,walker,dt)){g.userData.roomTransition=true;return;}
-  const target=plan.place!=='home'?layout.door:bedtime?layout.bedside:layout.table;
-  if(rest===0&&!walker.move(person,target,dt)){g.userData.roomTransition=true;return;}
+  const target=plan.place!=='home'?layout.door:bedtime?layout.bedside:tableStand;
+  // Navigation ends on clear floor; the chair routine owns the short movement
+  // through its furniture footprint until they have stood clear again.
+  if(rest===0&&tableBlend===0&&!walker.move(person,target,dt)){g.userData.roomTransition=true;return;}
   delete g.userData.roomTransition;
   if(plan.place!=='home'){restore();return;}
   if(bedtime){rest=Math.min(1,rest+dt*1.5);sleepBlend=Math.max(0,Math.min(1,sleepBlend+(routine.id==='sleep'?dt:-dt)*1.5));setRest(g,rest,routine.id==='sleep');cover?.update(dt,sleepBlend*rest);}
-  else {g.rotation.set(0,0,0);g.userData.socialPose=routine.pose;g.userData.heldItem=routine.item;if(['Eat','Drink'].includes(routine.pose))g.userData.seatHeight=.42;}
+  else {
+   if(tableTaken){g.userData.activity='waiting for a free seat';delete g.userData.roomTransition;return;}
+   tableBlend=Math.min(1,tableBlend+dt*2);setTable(g,tableStand,tableBlend,routine.pose);g.userData.heldItem=routine.item;
+   if(tableBlend<1)g.userData.roomTransition=true;
+   else delete g.userData.chairBlend;
+  }
   const home=world.homes?.get(person.profile.name);if(home)home.occupied=true;
+ }
+ function setTable(g,stand,amount,pose){
+  const at=layout.table;
+  g.position.set(stand[0]+(at[0]-stand[0])*amount,stand[1]+(at[1]-stand[1])*amount,stand[2]+(at[2]-stand[2])*amount);
+  g.rotation.set(0,layout.tableSeatYaw??0,0);g.userData.socialPose=pose;
+  g.userData.seatHeight=(layout.tableSeatHeight??.42)+at[1]-g.position.y;g.userData.chairBlend=amount;
  }
  function setRest(g,amount,asleep){
   const from=layout.bedside,to=layout.bed;

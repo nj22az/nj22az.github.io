@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildAvatar} from '../../avatars/build.js';
 import {createAvatarAnimator} from '../../avatars/animate.js';
@@ -120,8 +121,8 @@ export function buildOnsenInterior({room,reg,action,exit}){
 
  // ---- Genkan and bandai.
  rect(-4.8,4.51,.4,1.05,1.4);
- box([.62,1.05,1.7],[-3.85,.525,2.55],darkWood,'Bandai counter');box([.7,.05,1.78],[-3.85,1.075,2.55],wood,'Bandai top');rect(-3.85,2.55,.66,1.74,1.1);
- box([.2,.12,.14],[-3.75,1.16,2.2],mat(0xd9c9a0,.6),'Ticket tray');
+ box([.62,FURNITURE_HEIGHTS.serviceCounter-.05,1.7],[-3.85,(FURNITURE_HEIGHTS.serviceCounter-.05)/2,2.55],darkWood,'Bandai counter');box([.7,.05,1.78],[-3.85,FURNITURE_HEIGHTS.serviceCounter-.025,2.55],wood,'Bandai top');rect(-3.85,2.55,.66,1.74,FURNITURE_HEIGHTS.serviceCounter);
+ box([.2,.12,.14],[-3.75,FURNITURE_HEIGHTS.serviceCounter+.06,2.2],mat(0xd9c9a0,.6),'Ticket tray');
  // Higa-san, a Shimanchu like everyone else, up on the bandai's raised floor so she can
  // see over the counter -- which is the point of a bandai.
  box([.9,.35,1.4],[-4.45,.175,2.6],darkWood,'Bandai platform');

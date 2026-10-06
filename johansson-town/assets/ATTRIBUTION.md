@@ -226,3 +226,7 @@ data. All titles, characters and brands are fictional.
 ### IKEA home furniture
 
 LACK side table (30449908) and IVAR pine cabinet (70033766): IKEA / Inter IKEA Systems. Downloaded from IKEA's published product-viewer GLBs using the discovery approach in [IKEA 3D Model Download Button](https://github.com/apinanaivot/IKEA-3D-Model-Download-Button). Exact model URLs and original files are retained in `models/furniture/SOURCES.json`. Blender variants remove photographic textures, simplify dense meshes and use the town's cel materials. The downloader's code license does not grant a license to IKEA's designs or models; no open asset license is asserted.
+
+### Harbour Park Blender bench
+
+`models/park/harbour-bench.glb`: original Johansson Town geometry authored in Blender. Editable `.blend`, measured design, reproducible generator, export budget and provenance are in `../art/park/PROVENANCE.md`. Plain worn-cedar and dark-iron materials; no third-party model or image texture. Runtime seating, collider and exported mesh share the same generated physical dimensions.

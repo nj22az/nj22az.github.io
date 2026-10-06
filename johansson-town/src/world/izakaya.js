@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from './furniture-standards.js';
 import {izakayaOpen} from '../people/social.js';
 import {addOwnedCharacter} from '../people/owned-characters.js';
 import {japaneseSign,signText} from './okinawa/signs.js';
@@ -112,7 +113,7 @@ export function buildIzakaya(world,options){
 export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,getMinutes=()=>1200,windowView=null,exploration}){
  const furnished=asset('interior',room);
  if(!furnished){
-  box([13,.2,13],[0,-.1,0],0x965332,room,false);box([13,3.8,.2],[0,1.9,-6.4],0xe8c894,room,false);box([8,1,1],[-.8,.5,-2.6],0x965332,room,false);
+  box([13,.2,13],[0,-.1,0],0x965332,room,false);box([13,3.8,.2],[0,1.9,-6.4],0xe8c894,room,false);box([8,FURNITURE_HEIGHTS.serviceCounter,1],[-.8,FURNITURE_HEIGHTS.serviceCounter/2,-2.6],0x965332,room,false);
  }
  // Complete the cutaway asset for first-person viewing. Keep the exit opening.
  box([13,.16,13],[0,3.88,0],0x574638,room,false);
@@ -134,7 +135,7 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,
   const title=seat.id==='window'?'Minato window seat':seat.counter?'Minato counter':'Minato table',o=anchor([seat.position[0],1,seat.position[2]],seat.label,()=>action('seat',title,'A warm table, a little conversation, and nowhere to hurry.'));
   o.userData.seat={...seat,izakaya:seat,pitch:0};
  }
- for(const z of [4.15,5.0]){const o=anchor([-5.52,.8,z],'Sit in the cosy bar corner',()=>action('seat','Minato lounge corner','A worn upholstered bench, a small wooden table and a warm globe light.'));o.userData.seat={position:[-5.52,0,z],stand:[-3.9,0,z],surfaceY:.56,eyeY:1.12,yaw:-Math.PI/2,pitch:0};}
+ for(const z of [4.15,5.0]){const o=anchor([-3.9,.85,z],'Sit in the cosy bar corner',()=>action('seat','Minato lounge corner','A worn upholstered bench, a small wooden table and a warm globe light.'));o.userData.seat={position:[-5.52,0,z],stand:[-3.9,0,z],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.12,yaw:-Math.PI/2,pitch:0};}
  anchor([4.1,1,-3.8],'Inspect the shared kitchen',()=>action('inspect','Minato and Sato shared kitchen','The ramen stock pots, sink, prep board and range share a working aisle. Walk around the counter through the open passage. Please keep clear while Thao and Mrs Sato are carrying hot bowls.'));
  if(!exploration)anchor([-.4,2.5,-5.6],'Choose the evening music',()=>action('radio','Minato radio','Thao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
@@ -146,8 +147,8 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,
  const play=buildIzakayaInteractive(room,{anchor,action,collider});
  const discovery=buildIzakayaExploration(room,{anchor,windowView,exploration});
  // Imported American beer advertising: Barfly is a countertop mascot, not another resident.
- box([.58,.08,.45],[-4.4,1.34,-2.6],0x244b46,room,false);
- const barfly=addOwnedCharacter({parent:room,kind:'barfly',position:[-4.4,1.38,-2.6],height:.48,staticDisplay:true,yaw:.15});
+ box([.58,.08,.45],[-4.4,FURNITURE_HEIGHTS.serviceCounter+.04,-2.6],0x244b46,room,false);
+ const barfly=addOwnedCharacter({parent:room,kind:'barfly',position:[-4.4,FURNITURE_HEIGHTS.serviceCounter+.08,-2.6],height:.48,staticDisplay:true,yaw:.15});
  const beerSign=new THREE.Mesh(new THREE.PlaneGeometry(1.05,.55),new THREE.MeshStandardMaterial({map:signTexture('Hawaii Lager','ハワイラガー · アメリカのビール','#244b46'),roughness:.85}));
  beerSign.name='Hawaii Lager advertising';beerSign.position.set(-4.4,2.2,-2.95);room.add(beerSign);
  anchor([-4.4,1.6,-2.2],'Look at Hawaii Lager',()=>action('inspect','Hawaii Lager','An American lager advertisement sent by the harbour importer. The little Barfly mascot wears his favourite island shirt. Thao keeps the display at the quiet end of the counter.'));

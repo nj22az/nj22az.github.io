@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from './furniture-standards.js';
 import {SHARED_DINING_BOUNDS,SHARED_DINING_FLOOR,SHARED_DINING_COLLIDERS} from './interiors/shared-dining-layout.js';
 /**
  * Sato Ramen: the corner shop on Minato's alley flank, open at lunch while Minato is shut.
@@ -14,9 +15,9 @@ export const SATO_ROOM=Object.freeze({
  spawn:Object.freeze([9.75,0,2.95]),exit:Object.freeze([9.75,1.1,3.45]),yaw:0,
 });
 /** The five chrome stools at the counter, and the three at the wall ledge. */
-export const SATO_COUNTER=Object.freeze([7.1,7.8,8.5,9.2,9.9].map(x=>Object.freeze({position:[x,0,-1.42],height:.76,surfaceY:.76,yaw:0,stand:[x,0,-.72],table:[x,1.11,-2.2]})));
-export const SATO_LEDGE=Object.freeze([.3,1.2,2.1].map(z=>Object.freeze({position:[10.65,0,z],height:.735,surfaceY:.735,yaw:-Math.PI/2,stand:[10.0,0,z],table:[11.02,1.08,z]})));
-export const SATO_CORNER=Object.freeze([.35,1.95].map(z=>Object.freeze({position:[7.65,0,z],height:.495,surfaceY:.495,yaw:z<1?Math.PI:0,stand:[8.65,0,z],table:[7.65,.80,z<1?.85:1.45]})));
+export const SATO_COUNTER=Object.freeze([7.1,7.8,8.5,9.2,9.9].map(x=>Object.freeze({position:[x,0,-1.42],height:FURNITURE_HEIGHTS.seat,surfaceY:FURNITURE_HEIGHTS.seat,yaw:0,stand:[x,0,-.72],table:[x,FURNITURE_HEIGHTS.serviceCounter,-2.2]})));
+export const SATO_LEDGE=Object.freeze([.3,1.2,2.1].map(z=>Object.freeze({position:[10.65,0,z],height:FURNITURE_HEIGHTS.seat,surfaceY:FURNITURE_HEIGHTS.seat,yaw:-Math.PI/2,stand:[10.0,0,z],table:[11.02,FURNITURE_HEIGHTS.serviceCounter,z]})));
+export const SATO_CORNER=Object.freeze([.35,1.95].map(z=>Object.freeze({position:[7.65,0,z],height:FURNITURE_HEIGHTS.seat,surfaceY:FURNITURE_HEIGHTS.seat,yaw:z<1?Math.PI:0,stand:[8.65,0,z],table:[7.65,FURNITURE_HEIGHTS.table,z<1?.85:1.45]})));
 /**
  * Where the lunch regulars sit: every other stool first, so there is room for you, then
  * one more stool, and the ledge last -- Mrs Sato serves the counter across it.

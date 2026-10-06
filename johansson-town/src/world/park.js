@@ -1,5 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
-import {PARK_BENCH,PARK_BENCH_FIT,benchPoint,parkHeight,parkSkirtHeight,parkApproachHeight,activePark,parkBench,TURF_TINT,PARK_PATH_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
+import {PARK_BENCH,parkBenchGeometry,parkHeight,parkSkirtHeight,parkApproachHeight,activePark,parkBench,TURF_TINT,PARK_PATH_TINT,PARK_TERRAIN_SEGMENTS} from './park-layout.js';
+import {GLTFLoader} from '../../vendor/GLTFLoader.js';
+import {assetURL} from '../assets.js';
+import {registerDetail} from './detail-stream.js';
 import {createLightPools} from './light-pools.js';
 import {lanternGlow} from '../render/dusk.js';
 import {paintedTurf} from '../render/toy-surfaces.js';
@@ -28,8 +31,37 @@ export const PARK_TREE=Object.freeze([3.5,0]);
 const BLOSSOM={light:0xf7b8cf,mid:0xe98fb2,core:0xb4587f,bark:0x5a4030};
 const LEAF={light:0x6cb544,mid:0x48a23a,core:0x1f5226,bark:0x5a4030};
 
-/** Nothing to fetch any more; kept so callers that waited for the model still can. */
-export async function preloadPark(){return true;}
+let benchSource=null,benchPending=null;
+/** Small original Blender prop; the lawn/tree remain the town's procedural geometry. */
+export function preloadPark(){
+ if(benchSource)return Promise.resolve(true);
+ if(benchPending)return benchPending;
+ if(typeof document==='undefined')return Promise.resolve(false);
+ const controller=new AbortController();let timer;
+ benchPending=Promise.race([
+  fetch(assetURL('models/park/harbour-bench.glb?harbour-bench-1'),{signal:controller.signal}).then(response=>{
+   if(!response.ok)throw Error('Harbour bench HTTP '+response.status);return response.arrayBuffer();
+  }).then(data=>new GLTFLoader().parseAsync(data,'')),
+  new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('Harbour bench asset timeout'));},8000);})
+ ]).then(gltf=>{benchSource=gltf.scene;benchSource.updateMatrixWorld(true);return true;})
+  .catch(error=>{console.warn('Harbour bench unavailable; using its measured local fallback.',error.message);return false;})
+  .finally(()=>{clearTimeout(timer);benchPending=null;});
+ return benchPending;
+}
+function makeParkBench(g,shadows){
+ const group=new THREE.Group();group.name='Harbour Park Blender bench';group.position.set(g.x,g.footY,g.z);group.rotation.y=Math.PI/2;group.scale.setScalar(g.scale);
+ if(benchSource){const model=benchSource.clone(true);model.traverse(mesh=>{if(mesh.isMesh){mesh.castShadow=shadows;mesh.receiveShadow=true;mesh.userData.staticProp=true;}});group.add(model);return group;}
+ const d=g.dimensions,kit=createKit({shadows}),legX=d.length/2-.14;
+ for(const x of [-legX,legX]){
+  for(const z of [-d.seatDepth/2+.055,d.seatDepth/2-.055])kit.box(.055,d.seatHeight-d.seatThickness,.055,x,(d.seatHeight-d.seatThickness)/2,z,0x303638);
+  kit.box(.095,.035,d.footprintDepth,x,.0175,0,0x303638);
+  kit.box(.05,d.backHeight+.025,.05,x,d.seatHeight+d.backHeight/2-.0125,d.backZ,0x303638);
+ }
+ const gap=.008,slat=(d.seatDepth-gap*3)/4;
+ for(let i=0;i<4;i++)kit.box(d.length,d.seatThickness,slat,0,d.seatHeight-d.seatThickness/2,-d.seatDepth/2+slat/2+i*(slat+gap),0x9a6a42);
+ for(let i=0;i<3;i++)kit.box(d.length,.1,.04,0,d.seatHeight+.2+i*.14,d.backZ,0x9a6a42);
+ kit.finish(group,'Harbour Park measured bench fallback');group.traverse(mesh=>{if(mesh.isMesh)mesh.userData.staticProp=false;});return group;
+}
 /** The park's lawn is the town's painted turf, so the lawn round it is the same field. */
 export function parkFoliage(){
  let grass=null;
@@ -61,12 +93,12 @@ export function buildPark(world,options){
  const kit=createKit({shadows});
  // The bench under the tree, at the seat the town has always sat on: slats on cast legs,
  // its back to the trunk, looking out west over the roofs to the port.
- const f=PARK_BENCH_FIT,bx=p.x+f.x*s,bz=p.z,seatY=p.lift+benchPoint(0,f.seat,0)[1]*s,bw=f.width*f.scale*s,bl=f.length*f.scale*s,g0=ground(bx,bz);
- for(const dz of [-bl/2+.12,bl/2-.12]){kit.box(.06,seatY-g0,bw*.86,bx,(seatY+g0)/2,bz+dz,0x2f3436,{ry:Math.PI/2});kit.box(bw*.9,.06,.06,bx,g0+.03,bz+dz,0x2f3436);}
- kit.box(bw*.78,.05,bl,bx-bw*.02,seatY-.025,bz,0x9a6a42);
- for(let k=1;k<4;k++)kit.box(.012,.052,bl,bx-bw*.41+k*bw*.195,seatY-.024,bz,0x6b4a2e);
- for(let k=0;k<3;k++)kit.box(.04,.1,bl,bx+bw*.42,seatY+.2+k*.14,bz,0x9a6a42);
- for(const dz of [-bl/2+.12,bl/2-.12])kit.box(.05,.5,.05,bx+bw*.44,seatY+.25,bz+dz,0x2f3436);
+ const benchGeometry=parkBenchGeometry(p);let benchObject=makeParkBench(benchGeometry,shadows);group.add(benchObject);
+ if(!benchSource)registerDetail(world,{id:'harbour-park-bench',x:benchGeometry.x,z:benchGeometry.z,radius:40,priority:0,load:async()=>{
+  if(!await preloadPark())return false;
+  const object=makeParkBench(benchGeometry,shadows);group.add(object);benchObject.removeFromParent();benchObject=object;
+  world.park.benchObject=object;world.park.benchSource='blender';return true;
+ }});
  // The three lamp posts: a green post, a white globe that lights at dusk.
  for(const [lx,lz] of PARK_LAMPS){const [x,z]=at(lx,lz),y=ground(x,z);
   kit.cyl(.12,.16,.3,x,y+.15,z,0x9a958a,{segments:10});kit.cyl(.05,.06,3.1,x,y+1.75,z,0x2f5a4a,{segments:8});
@@ -92,7 +124,7 @@ export function buildPark(world,options){
  // The last backrest slat ends 53 cm above the seat. Collider height is a span
  // from its foot, not an absolute world elevation; otherwise the hill gets added
  // twice and an invisible wall blocks the seated avatar's camera above the bench.
- world.colliders.push({x:bx,z:bz,w:bw,d:bl,minY:g0,height:seatY+.53-g0,park:true});
+ world.colliders.push({x:benchGeometry.x,z:benchGeometry.z,w:benchGeometry.width,d:benchGeometry.length,minY:benchGeometry.footY,height:benchGeometry.seatY+benchGeometry.top-benchGeometry.footY,park:true});
  world.colliders.push({x:tx,z:tz,w:.85*s,d:.85*s,height:10,park:true});
  for(const [lx,lz] of PARK_LAMPS){const [x,z]=at(lx,lz);world.colliders.push({x,z,w:.25*s,d:.25*s,height:8,park:true});}
  const bench=new THREE.Object3D();bench.position.set(PARK_BENCH.stand[0],PARK_BENCH.position[1]+1,PARK_BENCH.stand[2]);bench.userData.seat=PARK_BENCH;world.group.add(bench);
@@ -101,7 +133,7 @@ export function buildPark(world,options){
  options.register(sign,'Read the park board',()=>options.onAction('read','Minato Park','Laid out in 1972 on the old lookout mound. The kanhizakura was planted by the class of that year and flowers in January, the first cherry in Japan. Please take your rubbish home. No ball games on the mound. — Minato Town Office'));
  const pools=createLightPools(world.group,PARK_LAMPS.map(([lx,lz])=>{const [x,z]=at(lx,lz);return {x,z,y:ground(x,z),radius:2.6};}));
  (world.hourly||(world.hourly=[])).push(minutes=>{const glow=lanternGlow(minutes);pools.update(glow);if(materials.lamp)materials.lamp.emissiveIntensity=.1+glow*1.6;dress(minutes);});
- world.park={group,bench,seat:PARK_BENCH,loaded:true,pools,trees};
+ world.park={group,bench,seat:PARK_BENCH,loaded:true,pools,trees,benchObject,benchSource:benchSource?'blender':'procedural',benchDimensions:benchGeometry.dimensions};
 }
 function buildPlaza(world,options,p){
  const group=new THREE.Group();group.name='Harbour Park';group.position.set(p.x,0,p.z);world.group.add(group);

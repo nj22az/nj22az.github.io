@@ -63,6 +63,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  const gazeLocal=new THREE.Vector3();
  let phase=0,time=Math.random()*10,rootY=0,hipsY=0,lean=0;
  let gesture=null,blinkIn=1+Math.random()*3,blinkT=-1,talkT=0,talkOpen=0,glance=[0,0],glanceIn=2,lastExpression='neutral';
+ const headRestPosition=bones.head.position.clone();
  let consumption=null,consumeTime=0,lastConsume=null,driftX=0;
  const set=(j,x=0,y=0,z=0)=>target[j].set(x,y,z);
  const add=(j,x=0,y=0,z=0)=>target[j].add(new THREE.Vector3(x,y,z));
@@ -115,6 +116,14 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const soak=s.seat==='Soak'||s.pose==='Soak';
    targetRoot=(Number.isFinite(s.seatHeight)?s.seatHeight:.45)-m.hipY+m.seatDrop;
    set('thighL',-1.52,0,.06);set('thighR',-1.52,0,-.06);set('kneeL',1.45);set('kneeR',1.45);
+   // On cushions and low benches, extend the shins instead of driving the
+   // shoes through the floor. Higher stools let the short legs hang naturally.
+   const ankle=(Number.isFinite(s.seatHeight)?s.seatHeight:.45)+m.seatDrop-m.thigh*Math.cos(1.52)-(s.floorHeight||0)-m.foot-m.legR*.28;
+   if(!soak&&ankle<m.shin*Math.cos(.07)){
+    const shinAngle=-Math.acos(THREE.MathUtils.clamp(ankle/m.shin,0,1));
+    set('kneeL',1.52+shinAngle);set('kneeR',1.52+shinAngle);
+    set('footL',-shinAngle);set('footR',-shinAngle);
+   }
    set('shoulderL',-.45,0,.15);set('shoulderR',-.45,0,-.15);set('elbowL',-.55);set('elbowR',-.55);
    add('chest',Math.sin(time*1.5)*.02);
    const pose=s.pose;
@@ -264,6 +273,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   avatar.root.position.z=s.riding?.21*(s.bicycleFit||bicycleRiderFit(m)).scale:0;
   avatar.root.position.y=rootY+(s.seated||s.riding?0:(s.floorHeight||0));
   bones.hips.position.y=m.hipY+(s.riding?0:hipsY);
+  bones.head.position.copy(headRestPosition);
   if(s.riding)poseAvatarOnBicycle(avatar,s.ridePhase||0,s.bicycleFit||bicycleRiderFit(m));
   else if(consumption){
    bones.head.rotation.x+=drinkHeadTilt(s.heldProp,consumption.lift,consumption.food);

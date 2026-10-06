@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../src/world/furniture-standards.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
 import {RESIDENTS} from '../src/people/residents.js';
 import test from 'node:test';
@@ -80,7 +81,7 @@ test('izakaya exports load locally with bounded geometry and at most ten static 
   assert.ok(size.x<=(kind==='interior'?18.2:13.1));assert.ok(size.z<=13.1);
   if(kind==='interior'){gltf.scene.updateMatrixWorld(true);IZAKAYA_SEATS.forEach(([x,z],i)=>{
    const hits=new THREE.Raycaster(new THREE.Vector3(x,1.5,z),new THREE.Vector3(0,-1,0)).intersectObject(gltf.scene,true);
-   assert.ok(hits.length);assert.ok(Math.abs(hits[0].point.y-(i<5?.71:.565))<.015,'Runtime seat height matches the actual furniture');
+   assert.ok(hits.length);assert.ok(Math.abs(hits[0].point.y-FURNITURE_HEIGHTS.seat)<.015,'Runtime seat height matches the actual furniture');
   });}
 }
 });

@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 
@@ -15,7 +16,7 @@ import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
  *
  * All of it is one print sheet and a handful of merged or instanced meshes.
  * Room coordinates: Minato is x -6.3..6.3, z -6.3..6.3; the counter's customer ledge is
- * at y 1.11 (z -2.1..-2.4), the tables at 0.945, the koagari's low tables at 0.77.
+ * at the shared service height (z -2.1..-2.4), the tables at the shared dining height, the koagari's low tables at 0.77.
  */
 const MINCHO='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 const GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
@@ -217,8 +218,8 @@ export function buildIzakayaDressing(room,{collider}={}){
   for(const dx of [.047,.235]){localBox(.004,.02,.067,p,0x99693b,dx,.02);for(const dz of [-.026,.026])localBox(.004,.014,.015,p,0x99693b,dx,.037,dz);}
   for(let i=0;i<10;i++)piece(new THREE.CylinderGeometry(.0013,.0022,.176,6).rotateZ(Math.PI/2).rotateY((i%3-1)*.012),p,solids,i%2?0xcbb079:0xb88d51,.141,.013+Math.floor(i/5)*.005,-.022+(i%5)*.0105);
  });
- for(const x of [-3.05,-1.55,-.05,1.45])caddy(x,1.11,-2.24);
- for(const [x,z] of [[-4.55,2.2],[1.55,2.0]])caddy(x,.945,z,Math.PI/2);
+ for(const x of [-3.05,-1.55,-.05,1.45])caddy(x,FURNITURE_HEIGHTS.serviceCounter,-2.24);
+ for(const [x,z] of [[-4.55,2.2],[1.55,2.0]])caddy(x,FURNITURE_HEIGHTS.table,z,Math.PI/2);
  caddy(5.0,.77,.25,Math.PI/2);
  // The towel cabinet now rests on the steel counter and opens toward the staff.
  const W=OSHIBORI_WARMER;

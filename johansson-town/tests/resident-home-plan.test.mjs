@@ -34,7 +34,7 @@ for(const {site,names} of homes){
    const L=layout.homeLayouts?.[name];assert.ok(L,name+' has a place in the house');
    const person={g:new THREE.Object3D(),profile:{name,age:30}};person.g.position.set(...L.door);
    const walk=createRoomWalk(blocked);
-   for(const [label,target] of [['table',L.table],['bed',L.bedside],['door',L.door]]){
+   for(const [label,target] of [['table',L.tableStand??L.table],['bed',L.bedside],['door',L.door]]){
     let done=false;for(let i=0;i<1200&&!done;i++)done=walk.move(person,target,1/20);
     assert.ok(done,`${name} cannot walk to the ${label} in ${site.title} (stopped at ${person.g.position.x.toFixed(2)}, ${person.g.position.z.toFixed(2)})`);
    }

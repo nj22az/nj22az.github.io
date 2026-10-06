@@ -5,8 +5,10 @@ import {installDOM} from './fixtures.mjs';
 import {createAvatarActor,updateAvatarActor} from '../src/avatars/actors.js';
 import {createTownActivities} from '../src/people/town-activities.js';
 import {createIndoorResidents} from '../src/people/indoor-residents.js';
+import {createHomeResidents} from '../src/people/home-residents.js';
+import {homeRoutine} from '../src/people/home-life.js';
 import {RESIDENTS} from '../src/people/residents.js';
-import {RAMEN_DOOR} from '../src/people/social.js';
+import {RAMEN_DOOR,residentPlan} from '../src/people/social.js';
 import {SATO_GUEST_SEATS} from '../src/world/sato-ramen-layout.js';
 
 installDOM();
@@ -77,11 +79,53 @@ test('indoor visitors lower into chairs and finish standing before returning to 
  assert.ok(g.position.z>seat.position[2]&&g.position.z<seat.stand[2]);
  visitors.sync(700,.4);visitors.sync(700,0);
  assert.equal(g.userData.chairBlend,undefined);assert.deepEqual(g.position.toArray(),seat.position);
- // Interrupting during an arrival must still take the same clear route back out.
  visitors.sync(850,.1);
  assert.equal(g.userData.chairBlend,.8);assert.ok(Number.isFinite(g.userData.seatHeight));
  for(let frame=0;frame<300&&g.parent===room;frame++)visitors.sync(850,1/60);
  assert.equal(g.parent,street);
  for(const key of ['seatHeight','chairBlend','socialPose','roomTransition'])assert.equal(g.userData[key],undefined,key);
+ // A schedule change halfway into the chair must stand them clear too.
+ delete g.userData.indoors;g.position.set(RAMEN_DOOR[0],0,RAMEN_DOOR[1]);
+ visitors.sync(700,0);visitors.sync(700,.1);visitors.sync(850,.05);
+ assert.equal(g.userData.chairBlend,.1);assert.ok(Number.isFinite(g.userData.seatHeight));
+ visitors.sync(850,.05);
+ assert.deepEqual(g.position.toArray(),seat.stand);
+ for(const key of ['seatHeight','chairBlend','socialPose'])assert.equal(g.userData[key],undefined,key);
+ for(let frame=0;frame<300&&g.parent===room;frame++)visitors.sync(850,1/60);
+ assert.equal(g.parent,street);
  visitors.restore();
+});
+
+test('home reading uses the furnished cushion height and releases before walking out',()=>{
+ const street=new THREE.Group(),room=new THREE.Group(),profile=RESIDENTS.find(p=>p.name==='Harbour master'),g=new THREE.Group();street.add(g);
+ g.userData={name:profile.name,hit:{inside:false},indoors:'home'};g.position.set(profile.home[0],0,profile.home[1]);
+ const minute=Array.from({length:1440},(_,m)=>m).find(m=>residentPlan(profile,m).place==='home'&&homeRoutine(profile,m).pose==='Read');
+ assert.ok(Number.isFinite(minute));
+ const layout={table:[0,0,0],tableStand:[0,0,.4],tableSeatHeight:.075,tableSeatYaw:Math.PI/4,door:[0,0,1],bedside:[0,0,0],bed:[0,.6,-1]};
+ const homes=createHomeResidents({world:{people:[{g,profile}]},parent:room,collides:()=>false});
+ homes.enter({homeOwner:profile.name,homeLayouts:{[profile.name]:layout}},minute);
+ for(let frame=0;frame<180;frame++)homes.update(1/60,minute);
+ assert.equal(g.userData.socialPose,'Read');assert.equal(g.userData.seatHeight,.075);
+ assert.deepEqual(g.position.toArray(),layout.table);assert.equal(g.rotation.y,Math.PI/4);
+ const departure=Array.from({length:1440},(_,offset)=>minute+offset).find(m=>residentPlan(profile,m).place!=='home');
+ homes.update(1/60,departure);assert.ok(g.userData.chairBlend>0&&g.userData.chairBlend<1,'A departing reader stands before walking');
+ for(let frame=0;frame<300&&g.parent===room;frame++)homes.update(1/60,departure);
+ assert.equal(g.parent,street);assert.equal(g.userData.seatHeight,undefined);homes.restore();
+});
+
+
+test('a home resident waits until the player releases their household seat',()=>{
+ const street=new THREE.Group(),room=new THREE.Group(),profile=RESIDENTS.find(p=>p.name==='Harbour master'),g=new THREE.Group();street.add(g);
+ g.userData={name:profile.name,hit:{inside:false},indoors:'home'};g.position.set(profile.home[0],0,profile.home[1]);
+ const minute=Array.from({length:1440},(_,m)=>m).find(m=>residentPlan(profile,m).place==='home'&&homeRoutine(profile,m).pose==='Read');
+ const layout={table:[0,0,0],tableStand:[0,0,.4],tableSeatHeight:.075,tableSeatYaw:0,door:[0,0,1],bedside:[0,0,0],bed:[0,.6,-1]};
+ let playerSeat=layout.table;
+ const homes=createHomeResidents({world:{people:[{g,profile}]},parent:room,collides:()=>false,getPlayerSeat:()=>playerSeat});
+ homes.enter({homeOwner:profile.name,homeLayouts:{[profile.name]:layout}},minute);
+ for(let frame=0;frame<180;frame++)homes.update(1/60,minute);
+ assert.equal(g.userData.seatHeight,undefined);assert.equal(g.userData.activity,'waiting for a free seat');assert.ok(g.position.distanceTo(new THREE.Vector3(...layout.tableStand))<.15,'The resident waits on clear floor beside the seat');
+ playerSeat=null;
+ for(let frame=0;frame<60;frame++)homes.update(1/60,minute);
+ assert.equal(g.userData.seatHeight,.075);assert.equal(g.userData.socialPose,'Read');assert.deepEqual(g.position.toArray(),layout.table);
+ homes.restore();
 });

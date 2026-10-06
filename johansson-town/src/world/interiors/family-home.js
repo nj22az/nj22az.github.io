@@ -1,3 +1,4 @@
+import {registerHomeSeats} from './home-seats.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {RESIDENTS} from '../../people/residents.js';
 import {householdDetails,addPersonalObject,addFamilyPhoto,addTeaSetting} from './home-details.js';
@@ -99,10 +100,13 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  box([.18,.08,.18],[a.x,1.32,a.z+.12],0xd9a43a,'Incense bowl');
  for(const [dx,c] of [[-.35,0xe8742a],[.35,0xf4d23c]])box([.12,.12,.12],[a.x+dx,1.36,a.z+.12],c,'Offering');
  collider(a.x,a.z,1.2,.5,1.3);}
+ const visitorSeats=[];
+ const addSeat=(x,z,yaw,surfaceY,label,stand)=>visitorSeats.push({label,position:[x,0,z],stand:stand||[x+Math.sin(yaw)*.65,0,z+Math.cos(yaw)*.65],surfaceY,yaw});
+ if(!redTile)for(const [x,z,yaw,stand] of [[-1.3,-.25,Math.PI,[-.15,0,-.25]],[-1.3,.95,0,[-1.3,0,1.4]],[-2.15,.35,-Math.PI/2,[-2.15,0,1.55]],[-.45,.35,Math.PI/2,[.05,0,.35]]])addSeat(x,z,yaw,.445,'Sit at the dining table',stand);
  // Low table and cushions in the tatami room; the television.
  box([1.1,.05,.75],[table.x,.36,table.z],0x6b4a32,'Low table');collider(table.x,table.z,1.1,.75,.4);
  // Keep cushions inside the west wall and out from under the altar cabinet.
- for(const [dx,dz] of (redTile?[[0,.62],[0,-.62],[-.75,0],[.75,0]]:[[0,.62],[-.6,0],[.75,0]]))box([.48,.07,.48],[table.x+dx,.04,table.z+dz],0x3f6f8a,'Zabuton');
+ for(const [dx,dz] of (redTile?[[0,.62],[0,-.62],[-.75,0],[.75,0]]:[[0,.62],[-.6,0],[.75,0]])){box([.48,.07,.48],[table.x+dx,.04,table.z+dz],0x3f6f8a,'Zabuton');const stand=!redTile&&dx<0?[-1.1,0,-1.45]:redTile&&dx<0?[.5,0,1]:redTile&&dz<0?[1.05,0,.1]:redTile&&dx>0?[2.35,0,1.85]:undefined;addSeat(table.x+dx,table.z+dz,Math.atan2(dx,dz),.075,'Sit at the tea table',stand);}
  {const g=new THREE.Group();g.position.set(tv.x,0,tv.z);g.rotation.y=tv.ry;group.add(g);
   const add=(size,at,c,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.position.set(...at);if(name)m.name=name;g.add(m);};
   add([.8,.42,.4],[0,.21,0],0x6b4a32,'TV stand');add([.58,.44,.42],[0,.64,.02],0x2b2b2b,'Television');
@@ -133,11 +137,12 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
    const [x,zc]=beds[i%2],bed=futon(x,zc,[0xe06a7a,0x3f6a8a][i%2],'Futon '+name);
    const hatHook=redTile?{position:[.8+i*.25,1.6,hd-.04],yaw:Math.PI}:{position:[.7,1.6,2.15+i*.35],yaw:-Math.PI/2};
    addHatPeg(box,hatHook);
-   homeLayouts[name]={...FAMILY_HOME_LAYOUT,...bed,table:[seats[i%2][0],0,seats[i%2][1]],tableSeatHeight:redTile?.075:.445,door:[0,0,hd-.5],hatHook};
+   homeLayouts[name]={...FAMILY_HOME_LAYOUT,...bed,table:[seats[i%2][0],0,seats[i%2][1]],tableStand:redTile?(i%2?[1.05,0,.1]:[table.x,0,table.z+.95]):i%2?[.05,0,.35]:[-1.3,0,1.4],tableSeatHeight:redTile?.075:.445,tableSeatYaw:i%2?(redTile?Math.PI:Math.PI/2):0,door:[0,0,hd-.5],hatHook};
   });
   // Thuan's wardrobe: against the nibanza's back wall (where a family keeps its altar), or
   // in the 2DK's west tatami room.
   if(residents.includes('Thuan')){const [x,z]=redTile?[-2.4,-.12]:[-hw+.45,-hd+.65];box([.85,1.8,.5],[x,.9,z],0x765343,'Thuan’s wardrobe');collider(x,z,.85,.5,1.8);anchor([x,1.1,z+.55],'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'));}
+  registerHomeSeats({parent:group,reg,action,layouts:homeLayouts,extra:visitorSeats});
   return {...FAMILY_HOME_LAYOUT,home:true,homeLayouts};
  }
  // One futon per person, folded along the back wall of the sleeping room, each in their own colour.
@@ -149,5 +154,6 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  anchor([board.x+(board.ry?-.35:0),1.4,board.z-(board.ry?0:.35)],'Read the household board',()=>action('read',title,household.members.map(m=>m.name+' — '+m.purpose).join('\n')));
  anchor([altar.x,1.1,altar.z+.7],'Look at the family altar',()=>action('inspect','Tōtōmē · the family altar','The ancestors\' tablets in their lacquer case, a bowl of incense ash, an orange and a box of sweets. On the first and fifteenth of the month somebody lights three sticks and says the family\'s news out loud.'));
  if(household?.members?.some(m=>m.name==='Thuan')){box([.85,1.8,.5],[-hw+.45,.9,-hd+.65],0x765343,'Thuan’s wardrobe');collider(-hw+.45,-hd+.65,.85,.5,1.8);anchor([-hw+.7,1.1,-hd+1.15],'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'));}
+ registerHomeSeats({parent:group,reg,action,extra:visitorSeats});
  return {...FAMILY_HOME_LAYOUT,home:true};
 }

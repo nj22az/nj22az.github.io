@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../src/world/furniture-standards.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
@@ -29,7 +30,7 @@ test('Minato detailed vessels remain supported and clear of served meals and the
  const caddies=placements.filter(p=>p.id.startsWith('Condiment caddy'));
  assert.equal(caddies.length,7);
  for(const caddy of caddies){
-  const surface=caddy.id.includes(',-2.24')?1.11:caddy.id==='Condiment caddy 5,0.25'?.77:.945;
+  const surface=caddy.id.includes(',-2.24')?FURNITURE_HEIGHTS.serviceCounter:caddy.id==='Condiment caddy 5,0.25'?.77:FURNITURE_HEIGHTS.table;
   assert.ok(Math.abs(caddy.min[1]-surface-.002)<.000001,'Caddy base rests on its actual table');
   for(const seat of Object.values(IZAKAYA_PLAYER_SEATS))for(const pos of [seat.table,seat.dish]){
    if(Math.abs(pos[1]-surface)>.01)continue;

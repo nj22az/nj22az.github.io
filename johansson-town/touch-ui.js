@@ -1,44 +1,13 @@
 // Touch-first controls for Johansson Town. No image dependency: the controls are CSS/vector shapes,
 // so they remain sharp on Retina displays and cannot fail because an external asset host is unavailable.
-import {svg,iconUrl,actionFor} from './src/ui/icons.js';
-const coarse=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
-const stick=document.querySelector('#stick');
-const knob=document.querySelector('#knob');
-const act=document.querySelector('#act');
-const prompt=document.querySelector('#prompt');
 const qte=document.querySelector('#qte');
 const qteGlyph=document.querySelector('#qteGlyph');
 const qteText=document.querySelector('#qteText');
 const qteTimer=document.querySelector('#qteTimer');
 let qteState=null,qteStart=null,lastRound=0;
 
-// The action button lingers for a moment after its target is lost, so a tap already on
-// its way still lands. Remember the last real label: reverting to a generic one the
-// instant the target goes flashes a meaningless verb on the button as it fades out.
-// It shows the icon for what you are facing (a speech bubble, a door, a basket...) and
-// one word; the keyboard prompt gets the same icon in front of its text.
-let lastAction={icon:'eye',verb:'LOOK'},lastText='',lastKey='';
-function setActionLabel(){
-  if(!act||!prompt)return;
-  const text=prompt.textContent.trim();
-  const active=prompt.classList.contains('on')&&text;
-  const lingering=!active&&!act.classList.contains('control-off');
-  const action=active?actionFor(text):lingering?lastAction:{icon:'eye',verb:'LOOK'};
-  if(active){lastAction=action;lastText=text;}
-  act.classList.toggle('available',!!active||lingering);
-  const key=action.icon+'/'+action.verb;
-  if(key!==lastKey){act.innerHTML=`<span class="act-glyph">${svg(action.icon)}</span><b class="act-label">${action.verb}</b>`;lastKey=key;}
-  act.setAttribute('aria-label',active?text:lingering&&lastText?lastText:'Context action');
-  // Only when it changes: the prompt is watched for changes, so an unconditional write
-  // here would wake this function again, and again, and freeze the page.
-  if(active&&prompt.dataset.icon!==action.icon){prompt.dataset.icon=action.icon;prompt.style.setProperty('--icon',iconUrl(action.icon));if(!prompt.classList.contains('has-icon'))prompt.classList.add('has-icon');}
-}
-
-if(prompt){
-  const observer=new MutationObserver(setActionLabel);
-  observer.observe(prompt,{attributes:true,attributeFilter:['class'],childList:true,characterData:true,subtree:true});
-  setActionLabel();
-}
+// The contextual rail owns action labels and accessibility for touch and keyboard.
+// This module only owns the gesture mini-game, so labels have a single writer.
 
 const directions={
   left:{glyph:'←',text:'SWIPE LEFT'},
@@ -106,4 +75,4 @@ if(title){
   watch.observe(title,{childList:true,characterData:true,subtree:true});
 }
 
-window.__JOHANSSON_TOUCH_UI__={version:12,dualSticks:true,contextAction:true,qteGestures:true,controller(frame){if(!qteState)return;const gesture=frame.pressed[0]?'tap':frame.pressed[12]?'up':frame.pressed[13]?'down':frame.pressed[14]?'left':frame.pressed[15]?'right':null;if(gesture)completeQTE(gesture===qteState.direction);}};
+window.__JOHANSSON_TOUCH_UI__={version:13,dualSticks:true,contextAction:true,contextRail:true,qteGestures:true,controller(frame){if(!qteState)return;const gesture=frame.pressed[0]?'tap':frame.pressed[12]?'up':frame.pressed[13]?'down':frame.pressed[14]?'left':frame.pressed[15]?'right':null;if(gesture)completeQTE(gesture===qteState.direction);}};

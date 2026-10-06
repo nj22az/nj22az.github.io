@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS,TILL_TOP} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {CHILLER,SAKURA_TILL_CABINET,COPY_MACHINE} from './sakura-layout.js';
@@ -5,9 +6,9 @@ import {HOT_SNACKS} from '../../commerce/konbini.js';
 
 // The equipment sits on existing counter/cabinet tops; these are not new floor obstacles.
 export const SAKURA_EQUIPMENT=Object.freeze({
- register:Object.freeze({minX:4.60,maxX:4.99,minZ:.56,maxZ:.945,minY:1,maxY:1.40}),
- scanner:Object.freeze({minX:4.62,maxX:4.80,minZ:.24,maxZ:.44,minY:1,maxY:1.14}),
- cardTray:Object.freeze({minX:4.565,maxX:4.695,minZ:1.025,maxZ:1.205,minY:1,maxY:1.045}),
+ register:Object.freeze({minX:4.60,maxX:4.99,minZ:.98,maxZ:1.415,minY:FURNITURE_HEIGHTS.serviceCounter,maxY:TILL_TOP}),
+ scanner:Object.freeze({minX:4.62,maxX:4.80,minZ:.24,maxZ:.44,minY:FURNITURE_HEIGHTS.serviceCounter,maxY:FURNITURE_HEIGHTS.serviceCounter+.14}),
+ cardTray:Object.freeze({minX:4.565,maxX:4.695,minZ:.47,maxZ:.65,minY:FURNITURE_HEIGHTS.serviceCounter,maxY:FURNITURE_HEIGHTS.serviceCounter+.045}),
  microwave:Object.freeze({minX:6.24,maxX:6.59,minZ:1.425,maxZ:1.775,minY:.722,maxY:.936}),
  supplies:Object.freeze({minX:6.27,maxX:6.58,minZ:1.145,maxZ:1.365,minY:.722,maxY:.93}),
  copy:Object.freeze({minX:1.75,maxX:2.45,minZ:3.18,maxZ:3.82,minY:.5,maxY:1.01}),
@@ -87,26 +88,26 @@ function batch(name){
 export function buildSakuraCounterDetail(room){
  const b=batch('Sakura checkout equipment'),{box,cyl,print}=b;
  const cream=0xe3e5d8,dark=0x3d4946,key=0xf2efe3,steel=0x9aa9a4;
- // Drawer, printer and a raised CRT/LCD housing. Customer-facing print is 4mm clear.
- box(.38,.075,.38,4.80,1.0375,.75,cream);box(.30,.05,.31,4.81,1.10,.75,dark);
- box(.012,.018,.30,4.608,1.031,.75,dark);box(.035,.016,.11,4.635,1.093,.62,steel);
- box(.10,.14,.12,4.87,1.20,.80,cream);box(.095,.17,.28,4.68,1.265,.75,dark);
- print('pos',.232,.124,[4.6285,1.265,.75],-Math.PI/2);
- // Raised keypad keys and separate drawer release; all remain within the register.
- for(let r=0;r<4;r++)for(let c=0;c<3;c++)box(.034,.012,.032,4.84+r*.027,1.1375,.60+c*.041,c===2&&r===3?0x5f916a:key);
- box(.029,.008,.11,4.72,1.139,.90,0xb9c5b8);
- box(.027,.17,.026,4.79,1.24,.90,steel);box(.04,.09,.19,4.77,1.355,.83,dark);
- print('customer',.17,.066,[4.746,1.355,.83],-Math.PI/2);
- // Printer feed slot and a curled strip of paper, facing the customer above the top.
- box(.12,.011,.014,4.78,1.081,.932,dark);
- print('receipt',.095,.155,[4.782,1.089,.967],0,true);
- // Barcode scanner window, cable socket and the familiar shallow change tray.
- box(.15,.036,.17,4.71,1.018,.34,dark);box(.055,.075,.10,4.67,1.073,.34,cream);
- box(.008,.047,.078,4.638,1.08,.34,0x713d31);print('scan',.069,.035,[4.633,1.08,.34],-Math.PI/2);
- box(.13,.012,.18,4.63,1.006,1.115,0x3d7184);
- for(const x of [4.57,4.69])box(.01,.032,.18,x,1.027,1.115,0x528e9f);
- for(const z of [1.03,1.20])box(.11,.032,.01,4.63,1.027,z,0x528e9f);
- print('tray',.103,.145,[4.63,1.0135,1.115],0,true);
+ const top=FURNITURE_HEIGHTS.serviceCounter,registerZ=1.17,dz=registerZ-.75;
+ // The low register sits beside the clerk's face line, with all equipment on the counter.
+ box(.38,.075,.38,4.80,top+.0375,registerZ,cream);box(.30,.05,.31,4.81,top+.10,registerZ,dark);
+ box(.012,.018,.30,4.608,top+.031,registerZ,dark);box(.035,.016,.11,4.635,top+.093,.62+dz,steel);
+ box(.10,.12,.12,4.87,top+.185,.80+dz,cream);box(.095,.13,.28,4.68,top+.185,registerZ,dark);
+ print('pos',.232,.10,[4.6285,top+.185,registerZ],-Math.PI/2);
+ for(let r=0;r<4;r++)for(let c=0;c<3;c++)box(.034,.012,.032,4.84+r*.027,top+.1375,.60+c*.041+dz,c===2&&r===3?0x5f916a:key);
+ box(.029,.008,.11,4.72,top+.139,.90+dz,0xb9c5b8);
+ box(.027,.10,.026,4.79,top+.17,.90+dz,steel);box(.04,.065,.19,4.77,top+.225,1.32,dark);
+ print('customer',.17,.047,[4.746,top+.225,1.32],-Math.PI/2);
+ box(.12,.011,.014,4.78,top+.081,1.29,dark);
+ print('receipt',.095,.155,[4.782,top+.089,1.32],0,true);
+ // Scanner and change tray remain separate, clear of the staff's sight line.
+ box(.15,.036,.17,4.71,top+.018,.34,dark);box(.055,.075,.10,4.67,top+.073,.34,cream);
+ box(.008,.047,.078,4.638,top+.08,.34,0x713d31);print('scan',.069,.035,[4.633,top+.08,.34],-Math.PI/2);
+ const trayZ=.56;
+ box(.13,.012,.18,4.63,top+.006,trayZ,0x3d7184);
+ for(const x of [4.57,4.69])box(.01,.032,.18,x,top+.027,trayZ,0x528e9f);
+ for(const z of [trayZ-.085,trayZ+.085])box(.11,.032,.01,4.63,top+.027,z,0x528e9f);
+ print('tray',.103,.145,[4.63,top+.0135,trayZ],0,true);
  // Microwave in the existing cabinet's middle bay. No part enters the staff aisle.
  box(.33,.205,.35,6.42,.8245,1.60,cream);box(.014,.145,.285,6.255,.825,1.60,dark);
  box(.008,.126,.207,6.246,.825,1.57,0x394f4b);

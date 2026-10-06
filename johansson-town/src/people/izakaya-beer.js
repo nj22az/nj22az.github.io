@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../world/furniture-standards.js';
 import {buildServingDish,buildServingDrink,buildServingBite} from './izakaya-serving-visuals.js';
 import * as THREE from '../../vendor/three.module.js';
 
@@ -45,12 +46,12 @@ export const NAO_STATION=Object.freeze([3.5,0,-3.8]);
  * on the table in front of the player; `serve` is Thao's floor spot beside it.
  */
 export const IZAKAYA_PLAYER_SEATS=Object.freeze({
- table:Object.freeze({id:'table',label:'Sit at the table',position:[3.3,0,.92],stand:[3.3,0,.25],surfaceY:.56,eyeY:1.14,yaw:Math.PI,table:[3.3,.945,1.52],dish:[3.02,.945,1.5],serve:[3.95,0,.3],route:[[3.95,-3.55],[3.95,.3]]}),
- window:Object.freeze({id:'window',label:'Sit and enjoy the evening',position:[3.4,0,3.08],stand:[4.35,0,3.08],surfaceY:.56,eyeY:1.2,yaw:0,table:[3.4,.945,2.55],dish:[3.15,.945,2.55],serve:[4.1,0,2.7],route:[[3.95,-3.55],[3.95,.3],[4.1,2.7]]}),
+ table:Object.freeze({id:'table',label:'Sit at the table',position:[3.3,0,.92],stand:[3.3,0,.25],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.14,yaw:Math.PI,table:[3.3,FURNITURE_HEIGHTS.table,1.52],dish:[3.02,FURNITURE_HEIGHTS.table,1.5],serve:[3.95,0,.3],route:[[3.95,-3.55],[3.95,.3]]}),
+ window:Object.freeze({id:'window',label:'Sit and enjoy the evening',position:[3.4,0,3.08],stand:[4.35,0,3.08],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.2,yaw:0,table:[3.4,FURNITURE_HEIGHTS.table,2.55],dish:[3.15,FURNITURE_HEIGHTS.table,2.55],serve:[3.9,0,2.7],route:[[3.95,-3.55],[3.95,.3],[3.9,2.7]]}),
  // The five counter stools, among the regulars. Thao serves these across the counter
  // from the kitchen side, so their route never leaves the working aisle.
  ...Object.fromEntries([-3.8,-2.3,-.8,.7,2.2].map((x,i)=>['counter'+i,Object.freeze({id:'counter'+i,label:'Sit at the counter',counter:true,
-  position:[x,0,-1.42],stand:[x,0,-.72],surfaceY:.71,eyeY:1.32,yaw:0,table:[x+.15,1.11,-2.2],dish:[x-.12,1.11,-2.24],serve:[x,0,-3.75],route:[[x,-3.75]]})])),
+  position:[x,0,-1.42],stand:[x,0,-.72],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.32,yaw:0,table:[x+.15,FURNITURE_HEIGHTS.serviceCounter,-2.2],dish:[x-.12,FURNITURE_HEIGHTS.serviceCounter,-2.24],serve:[x,0,-3.75],route:[[x,-3.75]]})])),
 });
 
 /** A drink as a small prop: a mug with a head, a brown bottle and glass, a can, a tumbler. */

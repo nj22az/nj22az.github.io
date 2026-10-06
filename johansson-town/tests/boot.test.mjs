@@ -93,7 +93,7 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const threeImport="import * as THREE from '"+threeUrl+"';";
     assert.ok(source.includes(threeImport),'Expected canonical vendored Three.js import');
     source=source.replace(threeImport,"import * as THREE from '"+rendererShim+"';");
-    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,catchUpFrame,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,groundHeight,characters,interaction,resizeRenderer,doInteract,touchSticks,residentBlocked,occupiedByPerson};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>{followRealClock=false;minutes=value;};export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
+    source+='\nexport {scene,camera,world,player,SITES,activities,simulate,advanceAbsentTown,catchUpFrame,enterRoom,leaveRoom,runStabilityChecks,setTime,keys,groundHeight,characters,interaction,resizeRenderer,doInteract,touchSticks,residentBlocked,occupiedByPerson,updateContextControls};\nexport const reviewRoom=()=>room;export const reviewShop=()=>sakuraShop;export const reviewSetActive=o=>active={...o.userData.hit,object:o};\nexport const reviewCurrentRoom=()=>current;\nexport const reviewSetMinutes=value=>{followRealClock=false;minutes=value;};export const reviewSetYaw=value=>yaw=value;\nexport const reviewRoomState=()=>({visible:room.visible,townVisible:town.visible,colliders:roomColliders.length});\nexport const reviewHiddenCutaways=()=>{let hidden=0;room.traverse(o=>{if(o.userData.cutaway&&o.layers.mask!==1)hidden++;});return hidden;};\n//# sourceURL=johansson-town-cpu-smoke.js\n';
     // Exercise the new geometry in the full game, including actual room exits.
     const originalFetch=globalThis.fetch;
     globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:2048,height:2048,close(){}});
@@ -166,12 +166,12 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     api.activities.state.quest=3;api.activities.state.kenjiEscort='done';
     directory();assert.equal(find('frontrow').dataset.travel,'ready');find('frontrow').onclick();
     assert.ok(Math.hypot(api.player.position.x-books.door[0],api.player.position.z-books.door[2])<1.2);
-    api.simulate(1/60);api.interaction();assert.match(document.querySelector('#prompt').textContent,/Enter Front-Row Books/);
+    api.simulate(1/60);api.interaction();api.updateContextControls();assert.equal(document.querySelector('#enterBuildingButton').hidden,false,'The doorway remains available beside a nearby conversation');assert.match(document.querySelector('#enterBuildingButton').children.find(c=>c.className==='context-label').textContent,/Enter Front-Row Books/);
     // The street action includes the real asynchronous threshold animation.
     const entrance=api.world.group.getObjectByName('frontrow-west-entrance');
     await entrance.userData.hit.fn();assert.equal(api.reviewCurrentRoom()?.id,'frontrow');
     atDoor(api.player.position.toArray(),BOOKSHOP_WORKSHOP_ROOM.spawn);
-    await document.querySelector('#exitRoomButton').onclick();assert.equal(api.reviewCurrentRoom(),null);
+    api.player.position.set(...BOOKSHOP_WORKSHOP_ROOM.spawn);api.interaction();api.updateContextControls();assert.equal(document.querySelector('#exitRoomButton').hidden,false,'Exit is available on the clear floor beside the door');await document.querySelector('#exitRoomButton').onclick({detail:0});assert.equal(api.reviewCurrentRoom(),null);
     assert.ok(Math.hypot(api.player.position.x-books.door[0],api.player.position.z-books.door[2])<1.2,'Return to the same entrance');
 
     const visited=new Set();
@@ -213,7 +213,7 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
         globalThis.innerWidth=1024;globalThis.innerHeight=768;api.resizeRenderer();
         api.activities.action('resident','Thuan');
       }
-      await document.querySelector('#exitRoomButton').onclick();
+      api.leaveRoom();
       assert.equal(api.activities.paused,false);assert.equal(api.reviewCurrentRoom(),null);
       assert.equal(api.reviewRoomState().townVisible,true);assert.equal(api.reviewRoom().getObjectByName('Minato CRT television'),undefined);
       assertFiniteTransforms(api,'outside '+site.id);visited.add(site.id);

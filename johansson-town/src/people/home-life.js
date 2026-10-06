@@ -27,11 +27,11 @@ export const homeSiteId=name=>householdFor(name)?.id||'resident-home-'+name.toLo
 export const homeOwner=site=>householdNames(site)[0]||null;
 
 export const HOME_LAYOUT={bounds:{minX:-3,maxX:3,minZ:-3,maxZ:3},spawn:[1.5,0,2],exit:[1.5,1.1,2.9],
- bed:[-1.75,.58,.65],bedside:[-.5,0,-.3],table:[1.1,0,-1.2],door:[1.5,0,2.45],
+ bed:[-1.75,.58,.65],bedside:[-.5,0,-.3],table:[1.1,0,-1.2],tableStand:[1.1,0,-.65],tableSeatYaw:0,tableSeatHeight:.41,door:[1.5,0,2.45],
  cover:{position:[-1.75,.64,.05],width:1.10,length:1.30,axis:'z'},
  /** A peg by the door for the hat (home-residents.js). */
  hatHook:{position:[2.93,1.6,1.2],yaw:-Math.PI/2}};
-export const SHARED_HOME_LAYOUT={bounds:{minX:-3.5,maxX:3.5,minZ:-3.4,maxZ:3.4},spawn:[0,0,2.6],exit:[0,1.1,3.3],door:[0,0,2.8]};
+export const SHARED_HOME_LAYOUT={bounds:{minX:-3.5,maxX:3.5,minZ:-3.4,maxZ:3.4},spawn:[0,0,2.6],exit:[0,1.1,3.3],door:[0,0,2.8],tableSeatHeight:.41};
 /** Where Thuan and Thao sleep, eat and leave from in their shared flat. */
 const THUAN_APARTMENT_ROUTINES={
  Thuan:{bed:[-4.15,.58,3.95],bedside:[-3.08,0,2.25],table:[-1.6,0,.5],door:[-.45,0,.4],

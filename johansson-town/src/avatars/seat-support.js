@@ -14,7 +14,7 @@ export function createSeatSupport(avatar){
    const indices=[],unique=new Set();
    for(let i=0;i<position.count;i++){
     const y=position.getY(i);
-    if(y<m.hipY-m.thigh*.5||y>m.hipY+m.legR*.5)continue;
+    if(y<m.hipY-m.thigh||y>m.hipY+m.legR*.5)continue;
     const bones=[skinIndex.getX(i),skinIndex.getY(i),skinIndex.getZ(i),skinIndex.getW(i)];
     const weights=[skinWeight.getX(i),skinWeight.getY(i),skinWeight.getZ(i),skinWeight.getW(i)];
     if(!bones.every((b,j)=>weights[j]<.001||['hips','thighL','thighR'].includes(mesh.skeleton.bones[b]?.name)))continue;
@@ -26,12 +26,18 @@ export function createSeatSupport(avatar){
  }
  return (height)=>{
   refresh();if(!supports.length)return;
-  avatar.root.updateWorldMatrix(true,true);inverse.copy(avatar.root.matrixWorld).invert();
+  avatar.root.updateWorldMatrix(true,false);avatar.root.updateMatrixWorld(true);
+  inverse.copy(avatar.root.matrixWorld).invert();
   let lowest=Infinity;
   for(const {mesh,indices} of supports){
    matrix.multiplyMatrices(inverse,mesh.matrixWorld);
-   for(const i of indices){mesh.getVertexPosition(i,point);lowest=Math.min(lowest,point.applyMatrix4(matrix).y);}
+   for(const i of indices){
+    mesh.getVertexPosition(i,point);point.applyMatrix4(matrix);
+    // Only the part over the seat bears weight; the knees extend past its edge.
+    if(Math.abs(point.x)<=avatar.measure.width*.6&&Math.abs(point.z)<=avatar.measure.thigh*.5)lowest=Math.min(lowest,point.y);
+   }
   }
+  if(!Number.isFinite(lowest))return;
   avatar.root.position.y+=height-avatar.root.position.y-lowest;
  };
 }

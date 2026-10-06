@@ -1,15 +1,11 @@
 {
-  "_actors-BZ5PdI4E.js": {
-    "file": "actors-BZ5PdI4E.js",
+  "_actors-DwzwIfp7.js": {
+    "file": "actors-DwzwIfp7.js",
     "name": "actors"
   },
-  "_icons-RrRr0WaS.js": {
-    "file": "icons-RrRr0WaS.js",
+  "_icons-BJJ0w3BS.js": {
+    "file": "icons-BJJ0w3BS.js",
     "name": "icons"
-  },
-  "_preload-helper-PPVm8Dsz.js": {
-    "file": "preload-helper-PPVm8Dsz.js",
-    "name": "preload-helper"
   },
   "_spector.bundle-_JPoFEkN.js": {
     "file": "spector.bundle-_JPoFEkN.js",
@@ -30,22 +26,21 @@
     ]
   },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-Dom14-Fm.js",
+    "file": "portraits-C58yZemc.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
     "imports": [
-      "_actors-BZ5PdI4E.js"
+      "_actors-DwzwIfp7.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-DZmMvyfl.js",
+    "file": "boot-CyY-jjvI.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
     "imports": [
-      "_preload-helper-PPVm8Dsz.js",
-      "_icons-RrRr0WaS.js"
+      "_icons-BJJ0w3BS.js"
     ],
     "dynamicImports": [
       "touch-ui.js?ui=controls-3",
@@ -55,28 +50,24 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-BaG6XWnX.js",
+    "file": "game-DXud0z7i.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_actors-BZ5PdI4E.js",
+      "_actors-DwzwIfp7.js",
       "_town-audio-ygTjb9SR.js",
-      "_icons-RrRr0WaS.js",
-      "_preload-helper-PPVm8Dsz.js"
+      "_icons-BJJ0w3BS.js"
     ],
     "dynamicImports": [
       "_spector.bundle-_JPoFEkN.js"
     ]
   },
   "touch-ui.js?ui=controls-3": {
-    "file": "touch-ui-CajBlBfy.js",
+    "file": "touch-ui-D34cMzo7.js",
     "name": "touch-ui",
     "src": "touch-ui.js?ui=controls-3",
-    "isDynamicEntry": true,
-    "imports": [
-      "_icons-RrRr0WaS.js"
-    ]
+    "isDynamicEntry": true
   },
   "webmcp-characters.js": {
     "file": "webmcp-characters-BkXkAGJZ.js",
