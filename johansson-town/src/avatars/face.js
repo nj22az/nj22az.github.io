@@ -6,7 +6,8 @@
  * state says what the face is doing right now: an expression, a blink, a word.
  *
  * Expressions: neutral, happy, laugh, smile, sad, angry, shy, surprised, worried,
- * thinking, grumpy, content, sleep, dizzy (knocked silly: spiral eyes), scheme (an evil grin).
+ * thinking, grumpy, content, sleep, dizzy (knocked silly: spiral eyes), scheme (an evil grin), embarrassed (caught out:
+ * red to the ears, a wobbly mouth).
  */
 const TAU=Math.PI*2;
 /** Mouth colours that are just a mouth; anything else is lipstick. */
@@ -52,6 +53,7 @@ const MOOD=Object.freeze({
  sleep:{eyes:'closed',brow:0,browLift:-1,mouth:'small',blush:0},
  dizzy:{eyes:'spiral',brow:-1,browLift:8,mouth:'wobble',blush:0},
  scheme:{eyes:'angry',brow:1.7,browLift:-7,mouth:'grin',blush:0},
+ embarrassed:{eyes:'shy',brow:-.9,browLift:7,mouth:'wobble',blush:1},
 });
 export const EXPRESSION_NAMES=Object.freeze(Object.keys(MOOD));
 
