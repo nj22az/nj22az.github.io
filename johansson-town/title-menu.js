@@ -20,6 +20,7 @@ export function describeSave(state,lastPlayed){
  if(!state)return null;
  const friends=Object.values(state.friendship||{}).filter(f=>heartsFor(f?.points)>=1).length;
  const parts=['¥'+Number(state.yen??0).toLocaleString('en-GB'),friends===1?'1 friend':friends+' friends'];
+ if(state.loops>0)parts.push('year '+(state.loops+1)+' of 1997');
  const last=lastPlayed||state.savedAt;if(last)parts.push('last played '+when(last));
  return parts.join(' · ');
 }

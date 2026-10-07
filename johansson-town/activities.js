@@ -1,3 +1,4 @@
+import {openYear,realYear} from './src/progression/year-loop.js';
 import {MINATO_MEMORY_STORY,MINATO_RECIPE_CARD} from './src/world/interiors/izakaya-exploration.js';
 import {foodArtForItem} from './src/commerce/food-art.js';
 import {FLYER_ITEM,FLYER_PATH,FLYER_PAPER,collectSakuraFlyer} from './src/commerce/sakura-flyer.js';
@@ -65,11 +66,12 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'peninsula',homeDecor:restoreHomeDecor()};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
-  let pendingAbsence=0,ledgerView=null,magazineView=null;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
+  let pendingAbsence=0,ledgerView=null,magazineView=null,yearTurned=false;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
   try {
-    const saved=readSave(localStorage);
-    if(saved&&typeof saved==='object'){pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
+    // A new real year starts the island's 1997 over, keeping friendships, the bag, money and decorating (year-loop.js).
+    const {saved,turned}=openYear(readSave(localStorage));yearTurned=turned;
+    if(saved&&typeof saved==='object'){state.loopYear=saved.loopYear;state.loops=saved.loops|0;pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
       state.homeDecor=restoreHomeDecor(saved.homeDecor);state.diary=restoreDiary(saved.diary);
       state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
       state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
@@ -81,6 +83,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     }
   } catch {}
 
+  if(!Number.isInteger(state.loopYear)){state.loopYear=realYear();state.loops=0;}
+  if(yearTurned)setTimeout(()=>say('1 January 1997, again. The year has started over; your friends still know you.',8),6000);
   state.story=restoreStory(state.story);
   ensureDailyQuests(state);
   state.konbini=restoreKonbini(state.konbini);
