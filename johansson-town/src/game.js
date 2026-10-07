@@ -115,6 +115,7 @@ import {createGraphicsLifecycle} from './render/graphics-lifecycle.js';
 import {BUILD_CATALOGUE} from './build/catalogue.js';
 import {DOOR_KEEP_CLEAR} from './world/street-lamps.js';
 import {createPlacements,readPlacementsFile,PLACEMENTS_FILE} from './build/placements.js';
+import {createBuildMode} from './build/build-mode.js';
 import {createGraphicsInspector} from './render/graphics-inspector.js';
 import {dressHud,runButtonFace} from './ui/hud-icons.js';
 
@@ -425,7 +426,9 @@ function advanceWeather(){
  Promise.resolve().then(()=>fetch(new URL(PLACEMENTS_FILE,document.baseURI||location.href),{cache:'no-cache'})).then(r=>r.ok?r.text():null).then(t=>{
   if(!t)return;const skipped=placements.load(readPlacementsFile(t));if(skipped.length)console.warn('Builder placements left out:',skipped);
  }).catch(e=>console.warn('Builder placements not loaded:',e.message));
- if(new URLSearchParams(location.search).has('build'))window.__JOHANSSON_BUILDER__={catalogue:BUILD_CATALOGUE,...placements};
+ if(new URLSearchParams(location.search).has('build'))window.__JOHANSSON_BUILDER__={catalogue:BUILD_CATALOGUE,...placements,
+  ...createBuildMode({canvas:renderer.domElement,camera,group:world.group,placements,factory:world.propFactory,heightAt:groundHeight,
+   getAudit:()=>window.__JOHANSSON_AUDIT__,getStart:()=>player&&{x:player.position.x,z:player.position.z}})};
 assignWorkplaces(world,SITES);
 // The evening boat to Naha leaves from the ferry terminal: dinner with Thuan in the city
 // (interiors/city-restaurant.js). It is an outing, not a door in town, so it is not one of
