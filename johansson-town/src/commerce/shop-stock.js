@@ -69,27 +69,52 @@ export function applyStorageRestock(state,minutes){
  return {moved,dayMarked};
 }
 
-/** Read and clear the storage-won handshake written by thuans-storage. */
-export function consumeStorageWonHandshake(){
- let raw=null;
- try{raw=localStorage.getItem(STORAGE_WON_KEY);}catch{return null;}
+/** Player-specific hand-off key; the unscoped key is the original player's legacy result. */
+export const storageWonKey=player=>player?STORAGE_WON_KEY+':'+player:STORAGE_WON_KEY;
+/** Read a result; retain it until acknowledgement when applying it to a town save. */
+export function consumeStorageWonHandshake(expectedPlayer=null,{retain=false}={}){
+ let raw=null,key=storageWonKey(expectedPlayer);
+ try{raw=localStorage.getItem(key);if(!raw){key=STORAGE_WON_KEY;raw=localStorage.getItem(key);}}catch{return null;}
  if(!raw)return null;
- try{localStorage.removeItem(STORAGE_WON_KEY);}catch{}
  try{
   const payload=JSON.parse(raw);
-  if(!payload||typeof payload!=='object')return null;
+  if(!payload||typeof payload!=='object'||Array.isArray(payload))return null;
+  const player=typeof payload.player==='string'?payload.player:'player-1';
+  if(expectedPlayer&&player!==expectedPlayer)return null;
+  if(!retain){try{localStorage.removeItem(key);}catch{return null;}}
   // The night's boss, from the sea cave: who was in the suit, and whether Thuan saw them off.
   const boss=payload.boss&&typeof payload.boss==='object'&&typeof payload.boss.who==='string'&&typeof payload.boss.animal==='string'
    ?{who:payload.boss.who.slice(0,40),animal:payload.boss.animal.slice(0,20),defeated:payload.boss.defeated===true}:null;
-  return {
-   day:Number.isFinite(payload.day)?payload.day:null,
+  const outcome={
+   day:Number.isSafeInteger(payload.day)&&payload.day>=0?payload.day:null,
+   player,
    assisted:payload.assisted===true,
    boss,
    // Cave coins come only from a boss seen off, and never more than one drops.
    yen:boss?.defeated&&Number.isSafeInteger(payload.yen)&&payload.yen>0?Math.min(payload.yen,BOSS_YEN):0,
    t:Number.isFinite(payload.t)?payload.t:Date.now(),
   };
+  Object.defineProperty(outcome,'_pending',{value:{key,raw}});
+  return outcome;
  }catch{return null;}
 }
 
 export {STORAGE_WON_KEY};
+
+/** Acknowledge only the exact pending result, after the town save is durable. */
+export function acknowledgeStorageOutcome(outcome){
+ const pending=outcome?._pending;if(!pending)return false;
+ try{if(localStorage.getItem(pending.key)!==pending.raw)return false;localStorage.removeItem(pending.key);return true;}catch{return false;}
+}
+/** Restock and pay one boss outcome once in the receiving player's save slot. */
+export function applyStorageOutcome(state,minutes,outcome,expectedPlayer='player-1'){
+ const shop=state?.sakura,day=outcome?.day;
+ const savedMinutes=Number.isFinite(state?.minutes)?state.minutes:minutes;
+ if(!shop||!Number.isSafeInteger(day)||day<0||outcome.player!==expectedPlayer||day>Math.floor(Math.max(minutes,savedMinutes)/1440)||day<=(shop.storageOutcomeDay??-1))return {applied:false,moved:0,dayMarked:false,yen:0};
+ // A late return marks its own closing day, never a newer night. Do not
+ // refill shelves again when that day has already been automatically restocked.
+ const result=(shop.restockedDay??-1)>=day?{moved:0,dayMarked:false}:applyStorageRestock(state,day*1440+1200);
+ const yen=outcome.boss?.defeated&&Number.isSafeInteger(outcome.yen)?Math.max(0,Math.min(BOSS_YEN,outcome.yen)):0;
+ state.yen=(state.yen||0)+yen;shop.storageOutcomeDay=day;
+ return {...result,applied:true,yen};
+}

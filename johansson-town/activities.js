@@ -57,7 +57,7 @@ import {sharedMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
 import {createThuanChat} from './src/people/thuan-chat.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
-import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorageWonHandshake} from './src/commerce/shop-stock.js';
+import {closingStockPending,shelvesNeedRestock,consumeStorageWonHandshake,applyStorageOutcome,acknowledgeStorageOutcome,closingDay} from './src/commerce/shop-stock.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
@@ -107,12 +107,14 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   }
 
   function save(){
+    let saved=false;
     state.avatarRecipe=encodeRecipe(playerRecipe());
     retainArchive(state.documentArchive,getMinutes());
     if(travelProgress(state).unlocked&&!state.quickTravelNotified){state.quickTravelNotified=true;state.notes.push('Earned the town shortcuts: Tama is home and Chin’s workshop route is complete.');say('Town shortcuts unlocked! Quick travel is now in your Town Book.',7);}
-    try {const locations=getResidentLocations();if(locations)state.residentLocations=locations;state.minutes=getMinutes();state.savedAt=Date.now();localStorage.setItem(slotKey(readPlayers(localStorage).active),JSON.stringify(state));touchPlayer(localStorage,state.savedAt);$('#saveState').textContent='PROGRESS SAVED';}
+    try {const locations=getResidentLocations();if(locations)state.residentLocations=locations;state.minutes=getMinutes();state.savedAt=Date.now();localStorage.setItem(slotKey(readPlayers(localStorage).active),JSON.stringify(state));saved=true;touchPlayer(localStorage,state.savedAt);$('#saveState').textContent='PROGRESS SAVED';}
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
+    return saved;
   }
   function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
@@ -996,22 +998,28 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       show('Stockroom','Shelves are already set.',[['Leave',close]]);
       return;
     }
-    const day=Math.floor(minutes/1440);
+    const day=closingDay(minutes)??Math.floor(minutes/1440);
+    const player=readPlayers(localStorage).active;
+    const bridge='&player='+encodeURIComponent(player);
+    if(!save()){show('Stockroom','Progress could not be saved. Please try again.',[['Leave',close]]);return;}
     show('Thuan\'s stockroom','Cartons wait in the back room. Restock the shelves before the next open.\n\nThere is a hole at the back of the stockroom now, down to the old sea cave, and something big comes up through it at night. Somebody from town, in a suit. Mind the aisles.',[
-      ['Play as Thuan',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=play&day='+day;}],
-      ['Let Thuan restock',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=auto&day='+day;}],
+      ['Play as Thuan',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=play&day='+day+bridge;}],
+      ['Let Thuan restock',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=auto&day='+day+bridge;}],
       ['Leave',close],
     ]);
   }
   function consumeStorageRestock(){
-    const handshake=consumeStorageWonHandshake();
+    const player=readPlayers(localStorage).active;
+    const handshake=consumeStorageWonHandshake(player,{retain:true});
     if(!handshake)return false;
+    if(handshake.day!==null&&handshake.day>Math.floor(Math.max(getMinutes(),state.minutes??0)/1440))return false;
     state.sakura=restoreSakura(state.sakura);
-    applyStorageRestock(state,getMinutes());
+    const {applied,yen}=applyStorageOutcome(state,getMinutes(),handshake,player);
+    if(!applied){if(save())acknowledgeStorageOutcome(handshake);return false;}
     // The night's boss from the sea cave (thuans-storage): seen off, it leaves its cave coins behind.
     const boss=handshake.boss;
-    if(handshake.yen){state.yen+=handshake.yen;note('Saw off '+(boss?boss.who+' in a '+boss.animal+' suit':'a Bizarro visitor')+' in Thuan’s stockroom: ¥'+handshake.yen+' in old cave coins.');}
-    save();
+    if(yen){note('Saw off '+(boss?boss.who+' in a '+boss.animal+' suit':'a Bizarro visitor')+' in Thuan’s stockroom: ¥'+handshake.yen+' in old cave coins.');}
+    if(save())acknowledgeStorageOutcome(handshake);
     say(boss?.defeated?'Shelves restocked. And '+boss.who+' -- the '+boss.animal+' in the stockroom -- has gone back down the hole, leaving ¥'+handshake.yen+' in cave coins.':boss?'Shelves restocked, with a '+boss.animal+' still loose in the back room.':'Shelves restocked.',6);
     return true;
   }
