@@ -98,10 +98,10 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "Mizuhama 1988",
+      title: "Johansson World",
       description:
-        "A playable Three.js street-adventure demo set in an original late-1980s Japanese harbour shopping district, with third-person exploration and CC0 environmental assets.",
-      url: "/mizuhama-1988/",
+        "A living 1997 Okinawan island in Three.js: explore the harbour town and get to know its residents, decorate homes in Build mode, and watch the town's own stories happen. The calendar follows the real date.",
+      url: "/johansson-world/",
       icon: "home",
       tags: ["Three.js", "Playable Demo", "3D Web"],
       bento: "wide",

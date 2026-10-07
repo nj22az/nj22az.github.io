@@ -940,3 +940,32 @@
 #start .guide-nav svg{display:block;width:24px;height:24px;margin:0}
 #start :is(.title-guide,#enter,#installTown,.weather-button,.title-dice) svg{display:block;flex:none;margin:0}
 #start .title-foot{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;text-align:center}
+
+/* Johansson World title menu (2026-10-07): the save line, two modes side by side, then Load / New game / Guide.
+   LINE look: green #06c755 for the main choice, white cards, 8px buttons, 12px cards. */
+#start .title-menu{width:min(440px,calc(100vw - 32px))}
+#start .title-save{margin:0 0 4px;font:400 14px/1.45 var(--gothic);color:#555;text-align:center;overflow-wrap:anywhere}
+#start .title-modes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#start .title-menu .title-mode{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:96px;padding:12px;border-radius:8px;font:700 16px/1.3 var(--gothic);letter-spacing:.02em}
+#start .title-menu .title-mode small{display:block;font:400 12px/1.35 var(--gothic);letter-spacing:normal;opacity:.92;font-family:var(--gothic)}
+#start .title-menu .title-mode-build{background:#fff;color:#000;border:2px solid #06c755}
+#start .title-menu .title-mode-build:hover{background:#f2fbf5}
+#start .title-menu .title-mode-build .title-action-icon{color:#06c755}
+#start .title-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+#start .title-row .title-guide{padding:10px 8px!important;font-size:14px!important;gap:6px!important}
+#start .title-row .title-action-icon{width:18px;height:18px;flex-basis:18px}
+@media (max-width:380px){#start .title-modes{grid-template-columns:1fr}#start .title-menu .title-mode{min-height:72px}}
+#start .title-slots{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px;background:#0006}
+#start .title-slots.hidden{display:none}
+#start .title-slots-card{width:min(480px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:24px;border-radius:12px;background:#fff;color:#000;box-shadow:0 4px 16px #0003;box-sizing:border-box;font-family:var(--gothic)}
+#start .title-slots-card h2{margin:0 0 6px;font:700 20px/1.3 var(--gothic)}
+#start .title-slots-note{margin:0 0 14px;font:400 13px/1.5 var(--gothic);color:#666}
+#start #titleSlotList{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:8px}
+#start #titleSlotList button{width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:#f7f8f9}
+#start #titleSlotList button span{font:400 13px/1.4 var(--gothic);color:#555}
+#start #titleSlotList button:hover{border-color:#06c755}
+#start .title-new{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
+#start .title-new.hidden{display:none}
+#start .title-new label{font:700 14px/1.4 var(--gothic)}
+#start .title-new button{background:#06c755;color:#fff;border-color:#06c755}
+#start .title-slots-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}

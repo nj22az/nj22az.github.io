@@ -26,10 +26,10 @@ export function createHomeDecorating({group,colliders,state,save,canvas,camera,f
  function makeBar(){
   const el=document.createElement('div');el.id='decorBar';el.setAttribute('role','toolbar');el.setAttribute('aria-label','Arrange furniture');
   el.style.cssText='position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;'
-   +'max-width:min(920px,calc(100vw - 32px));padding:12px 14px;background:#fffdf8;color:#1f2a28;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.18);font:600 14px/1.3 "LINE Seed JP",system-ui,sans-serif';
+   +'max-width:min(920px,calc(100vw - 32px));padding:12px 14px;background:#fff;color:#000;border:1px solid #e5e5e5;border-radius:12px;box-shadow:0 2px 8px #00000014;font:700 14px/1.4 system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",Arial,sans-serif';
   const row=(cls)=>{const r=document.createElement('div');r.style.cssText='display:flex;flex-wrap:wrap;gap:6px;align-items:center';if(cls)r.className=cls;el.append(r);return r;};
   const btn=(parent,label,fn,title='')=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;
-   b.style.cssText='font:inherit;padding:7px 11px;border-radius:9px;border:1px solid #d9d3c6;background:#f6f3ec;color:inherit;cursor:pointer';b.onclick=fn;parent.append(b);return b;};
+   b.style.cssText='font:inherit;min-height:40px;padding:8px 12px;border-radius:8px;border:1px solid #e5e5e5;background:#f7f8f9;color:inherit;cursor:pointer';b.onclick=fn;parent.append(b);return b;};
   const pieces=row();
   const buttons=HOME_CATALOGUE.map(f=>{const b=btn(pieces,f.name,()=>{mode.choose(f.id);mark();},f.purpose);b.dataset.id=f.id;return b;});
   const tools=row();tools.style.flexWrap='nowrap';
@@ -38,8 +38,8 @@ export function createHomeDecorating({group,colliders,state,save,canvas,camera,f
   btn(tools,'Stop',()=>{mode.choose(null);mark();},'Esc');
   const spacer=document.createElement('span');spacer.style.flex='1';tools.append(spacer);
   const done=btn(tools,'Done',close);
-  const status=document.createElement('div');status.style.cssText='font-weight:400;color:#5d6b67;min-height:1.3em';el.append(status);done.style.background='#2f7d6d';done.style.color='#fff';done.style.borderColor='#2f7d6d';
-  function mark(){const k=mode.status().kind;for(const b of buttons){const on=b.dataset.id===k;b.style.background=on?'#2f7d6d':'#f6f3ec';b.style.color=on?'#fff':'inherit';}}
+  const status=document.createElement('div');status.style.cssText='font-weight:400;color:#666;min-height:1.4em';el.append(status);done.style.background='#06c755';done.style.color='#fff';done.style.borderColor='#06c755';
+  function mark(){const k=mode.status().kind;for(const b of buttons){const on=b.dataset.id===k;b.style.background=on?'#06c755':'#f7f8f9';b.style.borderColor=on?'#06c755':'#e5e5e5';b.style.color=on?'#fff':'inherit';}}
   const tick=()=>{if(!bar)return;const s=mode.status();
    status.textContent=s.picked?'Click to move it · R turns it · Remove takes it away':s.hover&&!s.hover.ok?s.hover.problems[0]:s.kind?'Click on the floor to place it':'Choose a piece, or click one in the room to move it';
    mark();requestAnimationFrame(tick);};

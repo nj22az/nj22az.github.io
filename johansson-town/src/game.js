@@ -549,7 +549,11 @@ const tpPivot=new THREE.Vector3(),tpDir=new THREE.Vector3(),tpRight=new THREE.Ve
 /** Whether the camera itself would be inside something: walls and anything taller than the lens. */
 let indoorCeilings=null;
 // Arranging furniture at home: the game pauses and the camera looks down into the room (src/build/home-decorate.js).
-let decorView=null,decorating=false;
+let decorView=null,decorating=false,buildModeStarted=false;
+async function startBuildMode(){
+ const home=SITES.find(s=>s.id==='mayor-home');if(!home)return;
+ try{if(current?.id!=='mayor-home')await enterRoom(home);activeRoomLayout?.arranging?.open();}catch(error){console.warn('Build mode could not open:',error);}
+}
 const decorStage={hold(){decorating=true;resetInput();},release(){decorating=false;decorView=null;},show(pos,at){decorView={pos,at};}};
 function cameraBlocked(x,z,y,r){
  if(current&&indoorCeilings&&y>indoorCeilings.limit(x,z,player.position.y,Math.max(.22,r)))return true;
@@ -1728,6 +1732,8 @@ function renderOutdoor(){
   if(audit){camera.position.set(...audit.pos);camera.lookAt(...audit.at);camera.updateMatrixWorld();}
   present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
+  // The title screen's BUILD: straight into Johansson's own rooms with the furniture out (src/build/home-decorate.js).
+  if(window.__JOHANSSON_MODE__==='build'&&!buildModeStarted){buildModeStarted=true;startBuildMode();}
 }
 // Open on the device's clock: a save from earlier today is fast-forwarded to now so the
 // town is where it would be; anything older, or from the old fast clock, opens at now.
