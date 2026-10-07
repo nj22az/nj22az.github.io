@@ -51,7 +51,7 @@ test('consumeStorageWonHandshake clears the localStorage key once',()=>{
   };
   localStorage.setItem(STORAGE_WON_KEY,JSON.stringify({day:2,assisted:true,t:123}));
   const once=consumeStorageWonHandshake();
-  assert.deepEqual(once,{day:2,assisted:true,boss:null,yen:0,t:123});
+  assert.deepEqual(once,{day:2,player:'player-1',assisted:true,boss:null,yen:0,t:123});
   assert.equal(localStorage.getItem(STORAGE_WON_KEY),null);
   assert.equal(consumeStorageWonHandshake(),null);
 });

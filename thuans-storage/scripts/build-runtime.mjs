@@ -29,9 +29,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const name = `storage-${hash}.js`;
   await writeFile(root + 'assets/' + name, code);
   const html = await readFile(root + 'index.html', 'utf8');
+  const previous=html.match(/\/thuans-storage\/assets\/(storage-[^" ]+\.js)/)?.[1];
   await writeFile(root + 'index.html', html.replace(/\/thuans-storage\/assets\/(?:ghpages|storage)-[^" ]+\.js/, '/thuans-storage/assets/' + name));
   for (const file of await readdir(root + 'assets')) {
-    if (/^storage-.*\.js$/.test(file) && file !== name) await unlink(root + 'assets/' + file);
+    if (previous !== name && /^storage-.*\.js$/.test(file) && file !== name && file !== previous) await unlink(root + 'assets/' + file);
   }
   console.log(`Built ${name} (${code.length} characters)`);
 }
