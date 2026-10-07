@@ -1,3 +1,4 @@
+import {restoreHomeItems} from '../build/home-furniture.js';
 // Small, saved choices for Johansson's real room; rewards come from island life.
 export const HOME_WALLS=Object.freeze([
  {id:'cream',name:'Island cream',colour:0xf1e9d6},
@@ -18,9 +19,11 @@ export function unlockedHomeKeepsakes(state={}){
 }
 export function restoreHomeDecor(raw){
  const data=raw&&typeof raw==='object'?raw:{};
+ const items=restoreHomeItems(data.items);
  return {wall:HOME_WALLS.some(c=>c.id===data.wall)?data.wall:'cream',
   textile:HOME_TEXTILES.some(c=>c.id===data.textile)?data.textile:'indigo',
-  keepsake:['postcard','shell','cat','radio'].includes(data.keepsake)?data.keepsake:'postcard'};
+  keepsake:['postcard','shell','cat','radio'].includes(data.keepsake)?data.keepsake:'postcard',
+  ...(items.length?{items}:{})};
 }
 export function setHomeDecor(state,key,id){
  const available=key==='wall'?HOME_WALLS:key==='textile'?HOME_TEXTILES:key==='keepsake'?unlockedHomeKeepsakes(state):[];

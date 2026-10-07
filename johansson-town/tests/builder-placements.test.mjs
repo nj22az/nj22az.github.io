@@ -40,7 +40,7 @@ test('a placement must be on walkable ground, clear, out of doorways, and say wh
  assert.deepEqual(placementProblems({kind:'bench',x:0,z:0,yaw:0,note:'For people waiting for the bus.'},size,world),[]);
  const sayWhy=placementProblems({kind:'bench',x:0,z:0,yaw:0,note:' '},size,world);
  assert.equal(sayWhy.length,1);assert.match(sayWhy[0],/why/);
- assert.match(placementProblems({kind:'bench',x:19.5,z:0,yaw:0,note:'x'},size,world)[0],/walkable/);
+ assert.match(placementProblems({kind:'bench',x:19.5,z:0,yaw:0,note:'x'},size,world)[0],/ground people walk on/);
  assert.match(placementProblems({kind:'bench',x:9.5,z:0,yaw:0,note:'x'},size,world)[0],/overlaps/);
  assert.match(placementProblems({kind:'bench',x:0,z:10.6,yaw:0,note:'x'},size,world)[0],/doorway/);
  assert.match(placementProblems({kind:'spaceship',x:0,z:0,note:'x'},size,world)[0],/catalogue/);
@@ -93,6 +93,19 @@ test('the placements file round-trips; a bad entry is not built into a wall, and
  assert.deepEqual(again.builder.held(),[]);
  assert.throws(()=>readPlacementsFile('{"version":2,"placements":[]}'));
  assert.throws(()=>readPlacementsFile({version:1,placements:[{id:'a'},{id:'a'}]}));
+});
+
+test('things that come and go (parked cars, the ferry) never decide a placement; their bays are kept clear instead',()=>{
+ const world={colliders:[{x:0,z:0,w:2,d:4.5,moving:true}],doors:[[6,0,4.8]],walkable:()=>true};
+ assert.deepEqual(placementProblems({kind:'postbox',x:0,z:0,note:'x'},{w:.74,d:.58},world),[]);
+ assert.match(placementProblems({kind:'postbox',x:5,z:0,note:'x'},{w:.74,d:.58},world)[0],/doorway/);
+});
+
+test('a broken number in the file is kept as written, never saved as 0',()=>{
+ const t=town(),list=readPlacementsFile({version:1,placements:[{id:'p1',kind:'bench',x:'abc',z:2,yaw:0,note:'?'}]});
+ assert.equal(t.builder.load(list).length,1);
+ assert.equal(readPlacementsFile(t.builder.file()).length,1);
+ assert.equal(JSON.parse(t.builder.file()).placements[0].x,'abc');
 });
 
 test('the published placements file is valid, and every placement in it stands on the real town ground',()=>{

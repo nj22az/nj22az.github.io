@@ -192,7 +192,7 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
  };
  // Nobody walks on the harbour, but the gangway's foot is on the pier: a collider for the
  // hull alongside stops the player stepping off the pier's open flank onto the water.
- const solid=colliders?{id:'ferry',x:FERRY_BERTH.x,z:FERRY_BERTH.z,w:FERRY.beam,d:FERRY.length,height:3}:null;
+ const solid=colliders?{id:'ferry',moving:true,x:FERRY_BERTH.x,z:FERRY_BERTH.z,w:FERRY.beam,d:FERRY.length,height:3}:null;
  if(solid)colliders.push(solid);
  const trackSolid=()=>{if(!solid)return;const here=ferry.visible&&phase==='waiting';solid.x=here?x:1e6;solid.z=here?z:1e6;solid.yaw=yaw;};
  park();ferry.visible=false;trackSolid();

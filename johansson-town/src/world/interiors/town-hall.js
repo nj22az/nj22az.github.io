@@ -57,6 +57,26 @@ function shell(group,{floor,wall,dado,ceiling=0xf3efe2,tatami=false}){
  return box;
 }
 
+/**
+ * Where furniture may go in Johansson's main room (src/build/home-decorate.js): the open floor, not the WC or the bath
+ * behind their partitions; and squares kept free so the door, the seats and everything he uses stay reachable.
+ */
+export const MAYOR_HOME_FLOOR=(()=>{
+ const {w,d}=SHELL,hw=w/2,hd=d/2;
+ return Object.freeze({
+  // Not the WC and bath behind their partitions, nor the raised genkan step (1.4 × 0.7 m) inside the door.
+  walkable:(x,z)=>x>-hw+.02&&x<hw-.02&&z>-hd+.02&&z<hd-.02&&!(x>1.25&&z>1.4)&&!(Math.abs(x)<.72&&z>hd-.72),
+  keepClear:Object.freeze([
+   [0,hd-.45,1.5],                                   // the genkan inside the door
+   [-hw+1.25,hd-1.1,.9],[-1.45,hd-.75,.9],           // in front of the wardrobe mirror and the bookshelf
+   [hw-1.65,-hd+1.15,.8],[1.2,-hd+.85,.8],           // beside the futon, in front of the television
+   [-hw+1.05,-1.6,.8],[-hw+1.05,-.25,.8],            // the kitchen counter and the fridge
+   [1.77,1.0,.7],[2.85,1.0,.7],[2.65,.85,.7],        // the WC and bath doors, and the keepsake shelf
+   [-.6,.25,.55],[-.6,-1.05,.55],[-1.35,-.4,.55],[.15,-.4,.55],   // the four cushions at the low table
+  ]),
+ });
+})();
+
 function layoutFor(){
  const {w,d}=SHELL;
  return {bounds:{minX:-w/2+.05,maxX:w/2-.05,minZ:-d/2+.05,maxZ:d/2-.05},spawn:[0,0,d/2-.6],exit:[0,1.1,d/2-.04],yaw:0};
