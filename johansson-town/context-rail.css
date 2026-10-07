@@ -40,8 +40,8 @@ body.inspecting #contextActions,body.conversation-open #contextActions{visibilit
  #hud #contextActions{width:140px;right:max(12px,env(safe-area-inset-right));bottom:max(24px,calc(env(safe-area-inset-bottom) + 20px))}
  #hud #contextActions>button{grid-template-columns:24px minmax(0,1fr);gap:8px;padding:12px 10px;min-height:48px}
  #contextActions kbd{display:none}
- /* Locomotion remains beside the movement thumb; it never competes with context. */
- .touch-controls #mobile #movementActions{left:max(16px,env(safe-area-inset-left));right:auto;bottom:calc(env(safe-area-inset-bottom) + 190px);gap:8px}
+ /* Run and Jump sit above the context rail, clear of the left movement thumb. */
+ .touch-controls #mobile #movementActions{left:auto;right:max(16px,env(safe-area-inset-right));bottom:calc(env(safe-area-inset-bottom) + 190px);gap:8px}
  .touch-controls #mobile #movementActions #run,.touch-controls #mobile #movementActions #jump{min-height:44px;height:44px;width:56px}
  body #hud #subtitle{top:max(76px,calc(env(safe-area-inset-top) + 70px));bottom:auto;width:calc(100vw - 88px);max-width:calc(100vw - 88px);font-size:14px;padding:10px 12px}
 }
@@ -49,7 +49,7 @@ body.inspecting #contextActions,body.conversation-open #contextActions{visibilit
  #hud #contextActions{right:max(12px,env(safe-area-inset-right));bottom:max(12px,calc(env(safe-area-inset-bottom) + 8px));width:164px;gap:6px}
  #hud #contextActions>button{min-height:44px;padding:9px 10px;font-size:13px}
  #hud #contextActions>button.context-primary{min-height:48px}
- .touch-controls #mobile #movementActions{left:max(16px,env(safe-area-inset-left));right:auto;bottom:calc(env(safe-area-inset-bottom) + 130px)}
+ .touch-controls #mobile #movementActions{left:auto;right:max(16px,env(safe-area-inset-right));bottom:calc(env(safe-area-inset-bottom) + 130px)}
  body #hud #subtitle{top:max(66px,calc(env(safe-area-inset-top) + 60px));bottom:auto;max-width:min(50vw,400px);width:fit-content;font-size:13px}
  #hud #contextActionStatus{font-size:11px;padding:6px 10px}
 }

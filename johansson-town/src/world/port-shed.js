@@ -89,11 +89,16 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false,
  const [tx,tz]=[S.tv[0]-S.x,S.tv[1]-S.z],[cx,cz]=[S.chair[0]-S.x,S.chair[1]-S.z];
  box([.6,.32,.42],[tx,.16,tz],std(0x2f6fa8,.6),'Fish crate');
  box([.52,.42,.46],[tx,.53,tz],std(0x9c8f78,.6),'CRT television');
- box([.03,.36,.38],[tx,.55,tz+.24],std(0x2a2826,.5),'Television bezel');
+ // Four thin frame rails leave the picture open; a solid box crossed the screen.
+ const bezelMat=std(0x2a2826,.5);
+ for(const side of [-1,1]){
+  box([.04,.37,.04],[tx+side*.21,.56,tz+.25],bezelMat,'Television bezel side');
+  box([.38,.04,.04],[tx,.56+side*.165,tz+.25],bezelMat,'Television bezel edge');
+ }
  const screenCanvas=typeof document!=='undefined'?document.createElement('canvas'):null;let screenCtx=null,screenTex=null;
  if(screenCanvas){screenCanvas.width=160;screenCanvas.height=120;screenCtx=screenCanvas.getContext('2d');if(screenCtx){screenTex=new THREE.CanvasTexture(screenCanvas);screenTex.colorSpace=THREE.SRGBColorSpace;}}
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(.38,.29),screenTex?new THREE.MeshBasicMaterial({map:screenTex}):std(0x223,.3));
- screen.position.set(tx,.56,tz+.236);screen.name='Television screen';g.add(screen);
+ screen.position.set(tx,.56,tz+.272);screen.name='Television screen';g.add(screen);
  const aerial=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,.4,4),std(0xbfc4c6,.3));aerial.position.set(tx-.1,.92,tz);aerial.rotation.z=.5;g.add(aerial);
  const aerial2=aerial.clone();aerial2.position.x=tx+.1;aerial2.rotation.z=-.5;g.add(aerial2);
  const tvGlow=new THREE.PointLight(0x9fc0ff,0,3.2,2);tvGlow.position.set(tx,.7,tz+.6);g.add(tvGlow);

@@ -8,6 +8,20 @@ import {updateAvatarActor} from '../src/avatars/actors.js';
 import {circleHitsRect} from '../physics.js';
 installDOM();
 
+test('the television picture is clear through its open bezel',()=>{
+ const shed=buildPortShed({parent:new THREE.Group(),colliders:[],register(){},onAction(){}});
+ try{
+  const screen=shed.group.getObjectByName('Television screen');
+  shed.group.updateMatrixWorld(true);
+  const centre=screen.getWorldPosition(new THREE.Vector3());
+  for(const [x,y] of [[0,0],[-.17,-.12],[.17,.12],[-.17,.12],[.17,-.12]]){
+   const ray=new THREE.Raycaster(new THREE.Vector3(centre.x+x,centre.y+y,centre.z+.4),new THREE.Vector3(0,0,-1));
+   const hit=ray.intersectObjects(shed.group.children,true)[0];
+   assert.equal(hit?.object,screen,'the picture is the first visible surface');
+  }
+ }finally{shed.dispose();}
+});
+
 test('Mr Fujita’s shed: the ballgame in the afternoon, a beer in his hand, the pier left open',()=>{
  const parent=new THREE.Group(),colliders=[],hits=[];
  const shed=buildPortShed({parent,colliders,register:(o,label,fn)=>hits.push({o,label,fn}),onAction(){}});
