@@ -131,6 +131,9 @@ that makes more or better stories.
   it, and why it is placed where it is. Shops are merchandised with a philosophy (traffic, impulse,
   daily needs, the people who actually live here); record that reasoning with the data so it can be
   tested and so stories can use it.
+- **Build in small batches, and look after each one.** A command or test that succeeds does not mean the world is right:
+  after every batch, check it in the live game (the `johansson-town-audit` MCP server: walk it, look, screenshot) or in
+  real photographs of it, before the next. Never change ground or terrain, lighting and characters in the same batch.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten is a konbini *and* the
   town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading). Higa Liquor supplies
   all alcohol (to Sakura, Minato and Sato Ramen); Front-Row Books & Stationery supplies office supplies; Rainflower
