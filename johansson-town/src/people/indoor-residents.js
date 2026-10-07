@@ -45,7 +45,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     !collides(at[0],at[2],radius)&&!isOccupied(at[0],at[2],radius,p)&&
     ![...borrowed.values()].some(v=>v.seat.guestStand===at));
    if(!position)return null;
-   return {position,stand:position,guestStand:position,standing:true,yaw:Math.PI,activity:'browsing the magazines at Sakura'};
+   return {position,stand:position,guestStand:position,standing:true,yaw:layout.guestYaw??Math.PI,activity:layout.guestActivity??'visiting Sakura'};
   }
   if(sato&&name==='Mrs Sato')return {position:[...SATO_COOK.position],stand:[...SATO_COOK.position],yaw:SATO_COOK.yaw,staff:true};
   if(place==='izakaya'&&name==='Thao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};

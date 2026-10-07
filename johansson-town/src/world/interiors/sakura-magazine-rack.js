@@ -18,9 +18,9 @@ import {drawCover,drawBackAd} from './magazine-art.js';
  * calendar turns one over. The back of the rack faces the street, so it carries a print.
  */
 // Widened to run most of the window, as a konbini's magazine wall does.
-// A konbini's window rack: waist to chest high so the street can see in over it, and short enough to leave the poster
-// corner by the west wall clear (it ran to x −5.3 and stood in front of anyone at the poster).
-export const MAGAZINE_RACK=Object.freeze({x:-3.6,z:3.22,width:1.8,depth:.56,height:1.3});
+// A konbini's window rack, waist to chest high. Not placed at the moment (placed: false): it stood under Sakura's west
+// window, in front of the sale poster and across anyone standing there, and is kept to be put somewhere else.
+export const MAGAZINE_RACK=Object.freeze({placed:false,x:-3.6,z:3.22,width:1.8,depth:.56,height:1.3});
 
 const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
 const COLS=4,ROWS=4,CW=320,CH=440;
