@@ -6,14 +6,18 @@ import {buildPortShed,PORT_SHED,SHED_PIER,tvProgramme} from '../src/world/port-s
 import {circleHitsRect} from '../physics.js';
 installDOM();
 
-test('Mr Fujita’s shed: the ballgame in the afternoon, a beer in his hand, the pier left open',()=>{
+test('Mr Fujita’s shed: channels flipping, a glass in his hand, the empties round him, the pier left open',()=>{
  const parent=new THREE.Group(),colliders=[],hits=[];
  const shed=buildPortShed({parent,colliders,register:(o,label,fn)=>hits.push({o,label,fn}),onAction(){}});
  assert.ok(hits.some(h=>h.label==='Talk to Mr Fujita'));assert.ok(hits.some(h=>h.label==='Watch the shed television'));
- assert.equal(tvProgramme(15*60),'baseball');assert.equal(tvProgramme(19*60+10),'news');assert.equal(tvProgramme(2*60),'off');
- shed.tick(.1,15*60);assert.equal(shed.fujita.userData.socialPose,'Drink');assert.equal(shed.fujita.userData.heldItem,'beer');
- shed.tick(.1,3*60);assert.equal(shed.fujita.userData.socialPose,'Sit');assert.equal(shed.fujita.userData.heldItem,undefined);
+ assert.ok(['baseball','sumo','variety','drama','cooking'].includes(tvProgramme(15*60)));assert.equal(tvProgramme(2*60),'off');
+ shed.tick(.1,15*60);assert.ok(['SitHold','SitPour'].includes(shed.fujita.userData.socialPose));assert.equal(shed.fujita.userData.heldItem,'bottle');
+ assert.ok(shed.fujita.userData.heldPortion>=0&&shed.fujita.userData.heldPortion<=1,'his glass has a level');
+ shed.tick(.1,3*60);assert.equal(shed.fujita.userData.socialPose,'Sit');assert.equal(shed.fujita.userData.heldItem,undefined);assert.ok(shed.fujita.userData.sleeping,'asleep at three');
  assert.equal(tvProgramme(22*60+55),'snow');shed.tick(.1,22*60+55);
+ // The empties: none when the van has been, a pile by night.
+ const empties=()=>shed.group.children.find(o=>o.name==='Empty Umineko bottles').count;
+ shed.tick(.1,6*60+10);assert.equal(empties(),0);shed.tick(.1,22*60);assert.ok(empties()>=20,'a day’s bottles round him');
  // The walk along the pier past the open front stays clear.
  for(let z=-66;z<=-50;z+=.5)assert.ok(!colliders.some(c=>circleHitsRect(-35.3,z,.3,c)),'pier walk is open at z='+z);
  // He sits facing his set.

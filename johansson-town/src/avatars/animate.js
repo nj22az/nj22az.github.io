@@ -111,6 +111,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   *   waving, talking, expression, sleeping, airborne, seat ('Sit'|'SitEat'|'Soak'),
   *   gaze (a world point to look at), tipsy (0–4: how much they have drunk),
   *   conversing (in a conversation, talking or listening),
+  *   pose 'SitPour' (seated, pouring a bottle into the glass in the other hand), 'SitHold' (a glass held up),
   *   lying (flat on their back on the floor, knocked out: arms and legs flung out, head lolling;
   *   0–1 blends them down and up again)
   */
@@ -159,6 +160,11 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    if(s.driving){set('shoulderL',-.95,0,.12);set('shoulderR',-.95,0,-.12);set('elbowL',-.65);set('elbowR',-.65);set('head',-.06);}
    else if(pose==='Type'){set('shoulderL',-.9,0,.1);set('shoulderR',-.9,0,-.1);set('elbowL',-.7+Math.sin(time*14)*.08);set('elbowR',-.7+Math.sin(time*13+1)*.08);set('head',.15);}
    else if(pose==='Eat'||pose==='Drink'||s.seat==='SitEat'){const lift=Math.max(0,Math.sin(time*1.4))**4;set('shoulderR',-.6-lift*.9,0,-.25);set('elbowR',-.8-lift*1.3);set('head',.08-lift*.1);}
+   // Pouring from the chair: the glass held out low in the right hand, the bottle brought across in the left
+   // and tipped over it, the head down to watch the level (never filling it past the foam).
+   // Holding a glass between sips: the forearm up off the arm of the chair, the glass in front of him.
+   else if(pose==='SitHold'){set('shoulderR',-.62,0,-.1);set('elbowR',-1.25);}
+   else if(pose==='SitPour'){set('shoulderR',-.75,0,.12);set('elbowR',-1.3);set('shoulderL',-1.2,0,-.5);set('elbowL',-.7);set('head',.32,-.18,0);set('chest',.08);}
    else if(pose==='Sleep'||s.sleeping){set('head',.45,0,.15);set('chest',.15);}
    else if(soak){set('thighL',-1.3,0,.25);set('thighR',-1.3,0,-.25);set('kneeL',.9);set('kneeR',.9);set('shoulderL',0,0,.9);set('shoulderR',0,0,-.9);set('head',-.1);}
    else if(pose==='Wake'){const w=Math.max(0,Math.sin(time*.8));set('shoulderL',0,0,.4+w*2.2);set('shoulderR',0,0,-.4-w*2.2);}

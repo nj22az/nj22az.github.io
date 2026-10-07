@@ -145,6 +145,9 @@ export const ACCOUNTS=Object.freeze({
   ramen:{name:'Sato Ramen',owner:'Mrs Sato',lines:['Umineko lager, large bottles'],
    why:'A bottle with the gyōza, for the lunch crowd who are not going back to work.',
    delivery:'With the Minato order, one crate left at the back door.'},
+  'fujita-shed':{name:'Mr Fujita’s shed on the pier',contact:'Mr Fujita',lines:['Umineko lager, large bottles'],
+   why:'Twenty-four to forty-nine large bottles a day, three small glasses a bottle, poured from the armchair in front of the television.',
+   delivery:'Six every morning at the pier root: the day’s crates down, yesterday’s empties up off his floor. Returnable bottles, counted by Grandmother Higa.'},
  },
  'rainflower-florist':{
   market:{name:'Sakura Shōten',owner:'Thuan',lines:['seasonal window decorations','Tanabata bamboo','New Year shimenawa'],

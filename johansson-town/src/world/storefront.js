@@ -1,6 +1,7 @@
 import {createShopGlass} from './shop-glass.js';
 import {createMaterials} from '../render/materials.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
+import {SLIDING_DOOR,buildSlidingLeaves,doorState,stepDoor} from './sliding-door.js';
 import {localToWorld} from './landmark-lots.js';
 import {buildSakuraDetails} from './exterior-details.js';
 // Sakura's shopfront: a family shōten's wooden sashes and signboard under a tile hood,
@@ -151,37 +152,21 @@ export function buildStorefront({parent,site,register,enter,label,placement,span
  * parked against the glass rather than pocketed into the wall.
  */
 function buildSlidingDoor({group,doorX,width,glazing,box}){
- const HEIGHT=DOOR_HEIGHT,TRAVEL=width/2-.12,leaves=[];
- const rail=box([width+.26,.1,.16],[doorX,HEIGHT+.06,.02],0x879692);rail.userData.staticProp=true;
- for(const side of [-1,1]){
-  const leaf=new THREE.Group();leaf.position.set(doorX+side*width/4,0,.02);group.add(leaf);
-  const pane=new THREE.Mesh(new THREE.PlaneGeometry(width/2-.06,HEIGHT-.28),glazing);
-  pane.position.set(0,HEIGHT/2-.06,0);pane.name='Sakura door pane';pane.userData.clearWindow=true;leaf.add(pane);
-  // The frame, in four pieces, so the leaf reads as a leaf edge-on as well as flat.
-  const stile=(lx)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.06,HEIGHT,.07),
-   new THREE.MeshStandardMaterial({color:0x879692,roughness:.5}));m.position.set(lx,HEIGHT/2,0);m.castShadow=true;leaf.add(m);return m;};
-  stile(-(width/4-.03));stile(width/4-.03);
-  for(const y of [.04,HEIGHT-.04]){
-   const m=new THREE.Mesh(new THREE.BoxGeometry(width/2,.08,.07),new THREE.MeshStandardMaterial({color:0x879692,roughness:.5}));
-   m.position.set(0,y,0);m.castShadow=true;leaf.add(m);
-  }
-  // The handle bar, which is the part you actually look at from the pavement.
-  const bar=new THREE.Mesh(new THREE.BoxGeometry(.035,.62,.035),new THREE.MeshStandardMaterial({color:0x465854,roughness:.6}));
-  bar.position.set(side*-(width/4-.16),1.06,.06);leaf.add(bar);
-  leaves.push({leaf,side,home:leaf.position.x});
- }
+ const HEIGHT=DOOR_HEIGHT;
+ const rail=box([width+.26,.1,.16],[doorX,HEIGHT+.06,.02],SLIDING_DOOR.frame);rail.userData.staticProp=true;
+ // The town's standard sliding door (sliding-door.js): the same leaves and the same motion as from inside.
+ const {place}=buildSlidingLeaves({parent:group,x:doorX,z:.02,width,height:HEIGHT,glazing,name:'Sakura door leaf'});
  // Where the mat is, in the town's own coordinates, so a person's position can be
  // compared with it without anybody having to know how the shop is placed.
  group.updateMatrixWorld(true);
  const mat=group.localToWorld(new THREE.Vector3(doorX,0,.55));
- let amount=0,held=false;
- const place=()=>{for(const {leaf,side,home} of leaves)leaf.position.x=home+side*TRAVEL*amount;};
+ const state=doorState();let held=false;
  return {
   group,mat,
-  get amount(){return amount;},
+  get amount(){return state.amount;},
   /** Hold the door at an amount (0 shut, 1 open), e.g. for a film's photographs of it opening;
    *  null hands it back to the people walking up to it. */
-  set(value){held=value!==null&&value!==undefined;if(held){amount=Math.max(0,Math.min(1,+value||0));place();}},
+  set(value){held=value!==null&&value!==undefined;if(held){state.amount=Math.max(0,Math.min(1,+value||0));state.speed=0;place(state.amount);}},
   /**
    * @param {number} dt
    * @param {Array<{x:number,z:number}>} bodies everyone who could open it.
@@ -192,13 +177,9 @@ function buildSlidingDoor({group,doorX,width,glazing,box}){
    for(const b of bodies||[]){
     const bx=b?.x??b?.position?.x,bz=b?.z??b?.position?.z;
     if(!Number.isFinite(bx)||!Number.isFinite(bz))continue;
-    if((bx-mat.x)**2+(bz-mat.z)**2<2.9*2.9){near=true;break;}
+    if((bx-mat.x)**2+(bz-mat.z)**2<SLIDING_DOOR.reach**2){near=true;break;}
    }
-   // Opens briskly and closes slowly, which is how they behave and how you notice them.
-   const target=near?1:0,rate=near?4.2:1.9;
-   amount+=Math.max(-rate*dt,Math.min(rate*dt,target-amount));
-   amount=Math.max(0,Math.min(1,amount));
-   place();
+   stepDoor(state,dt,near);place(state.amount);
   },
  };
 }

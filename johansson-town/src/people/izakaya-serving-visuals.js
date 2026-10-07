@@ -148,6 +148,16 @@ function hollowGlass(p,r,h,x=0,y=0){
 }
 
 /** Fixed hollow vessels are separate from the live liquid and foam used by pour(). */
+/** An Umineko large bottle on its own, cap and label (the one Minato pours from): for a hand, a crate or a pile of empties.
+ *  Its base is at the origin, its mouth at 0.28 m. */
+export function buildBeerBottle(){
+ const group=new THREE.Group();group.name='Umineko large bottle';
+ const bottle=pieces(group,'Brown beer bottle');bottle.lathe([[0,0],[.03,0],[.037,.005],[.038,.032],[.037,.203],[.03,.22],[.014,.254],[.013,.278],[0,.278]],0x604128);bottle.finish();
+ const metal=pieces(group,'Bottle cap','metal');metal.cyl(.015,.005,0x968f70,0,.28);metal.ring(.015,.0012,0xc3bb92,0,.28);metal.finish();
+ productLabel(group,0,.0382,.083,0,.139,0,2.5);
+ return group;
+}
+
 export function buildServingDrink(kind,{held=false}={}){
  const group=new THREE.Group(),level=new THREE.Group();group.name='Minato drink · '+kind;level.name='Live '+kind+' contents';group.add(level);group.userData.level=level;
  const glass=pieces(group,'Hollow '+kind+' glass','glass'),china=pieces(group,kind+' glazed vessel','china'),metal=pieces(group,kind+' metal details','metal');let liquid=null,head=null,height=0,radius=0,rimHeight=.11;
