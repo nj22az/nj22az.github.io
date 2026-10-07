@@ -31,3 +31,9 @@ test('clock reversal reverses the current walk continuously',()=>{
 test('cargo calls never overlap the houseboat or gangway',()=>{
  const {shed}=make(),shipping=buildCargoShipping({group:new THREE.Group()});for(const minute of [420,450,500,540,870,900,980,1010]){shipping.update(0,minute);const ship=new THREE.Box3().setFromObject(shipping.ship);assert.ok(!ship.intersectsBox(new THREE.Box3().setFromObject(shed.boat.group)));assert.ok(!ship.intersectsBox(new THREE.Box3().setFromObject(shed.boat.gangway)));}shed.dispose();
 });
+
+test('the open cabin approach clears a standing player beside the freshwater tank',()=>{
+ const {shed,colliders}=make();
+ for(let z=HOUSEBOAT.z+2.3;z>HOUSEBOAT.z+.8;z-=.05)assert.ok(!colliders.some(c=>circleHitsRect(HOUSEBOAT.x+.65,z,.28,c)),`player approach ${z}`);
+ shed.dispose();
+});
