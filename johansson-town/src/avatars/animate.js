@@ -72,6 +72,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  let phase=0,time=Math.random()*10,rootY=0,hipsY=0,lean=0;
  let lie=0,lyingTilt=false;
  let gesture=null,blinkIn=1+Math.random()*3,blinkT=-1,talkT=0,talkOpen=0,glance=[0,0],glanceIn=2,lastExpression='neutral';
+ const headRestPosition=bones.head.position.clone();
  let consumption=null,consumeTime=0,lastConsume=null,driftX=0;
  const set=(j,x=0,y=0,z=0)=>target[j].set(x,y,z);
  const add=(j,x=0,y=0,z=0)=>target[j].add(new THREE.Vector3(x,y,z));
@@ -154,7 +155,8 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     set('kneeL',1.52+shinAngle);set('kneeR',1.52+shinAngle);
     set('footL',-shinAngle);set('footR',-shinAngle);
    }
-   set('shoulderL',-.45,0,.15);set('shoulderR',-.45,0,-.15);set('elbowL',-.55);set('elbowR',-.55);
+   // Rest beside the thighs; task poses lift only the arms they need.
+   set('shoulderL',-.10,0,.13);set('shoulderR',-.10,0,-.13);set('elbowL',-.15);set('elbowR',-.15);
    add('chest',Math.sin(time*1.5)*.02);
    const pose=s.pose;
    if(s.driving){set('shoulderL',-.95,0,.12);set('shoulderR',-.95,0,-.12);set('elbowL',-.65);set('elbowR',-.65);set('head',-.06);}
@@ -330,6 +332,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   avatar.root.position.z=s.riding?.21*(s.bicycleFit||bicycleRiderFit(m)).scale:0;
   avatar.root.position.y=rootY+(s.seated||s.riding?0:(s.floorHeight||0));
   bones.hips.position.y=m.hipY+(s.riding?0:hipsY);
+  bones.head.position.copy(headRestPosition);
   if(s.riding)poseAvatarOnBicycle(avatar,s.ridePhase||0,s.bicycleFit||bicycleRiderFit(m));
   else if(consumption){
    bones.head.rotation.x+=drinkHeadTilt(s.heldProp,consumption.lift,consumption.food);

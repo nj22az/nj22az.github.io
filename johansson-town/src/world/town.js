@@ -277,7 +277,7 @@ export function createTown(options){
    // A quiet corner at the north end to sit and listen to the sea. See beach-corner.js.
    world.beachCorner=buildBeachCorner({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows});
    // Mr Fujita's shed on the working pier, where he watches the ballgame with a beer. See port-shed.js.
-   world.portShed=buildPortShed({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows});
+   world.portShed=buildPortShed({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows,getPlayerPosition:options.getPlayerPosition});
    // Kitahama's windows light when the people who live there are in and up. See home-lights.js.
    world.homeLights=createHomeLights({people:()=>world.people});
    // Tetrapods at the foot of the west seawall and two breakwaters off the east beach.

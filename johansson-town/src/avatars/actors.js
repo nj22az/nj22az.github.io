@@ -87,20 +87,6 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  const mood=u.thuanMood,line=u.lineFeeling,feeling=mood&&mood.until>now?mood.expression:line&&line.until>now?line.expression:null;
  const engaged=!!(u.playerConversation||u.chat||actor.gestureTime);
  const sleeping=Number(u.sleepBlend)>.28||(u.sleeping&&!u.roomTransition);
- actor.animator.update(dt,{
-  speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,chairBlend:u.chairBlend,floorHeight:Number(u.floorHeight)||0,
-  pose:u.socialPose,seat:u.socialPose,driving:!!u.inVehicle,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
-  waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
-  talking:!!(u.chat?.speaking||u.speakingUntil>now),
-  expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
-  sleeping,conversing:!!(u.playerConversation||u.chat||u.playing),gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,tipsy:u.tipsy||0,
- });
- // A driver's hands are on the wheel, not hovering in front of it.
- const wheel=u.inVehicle&&entity.parent?.userData?.steeringWheel;
- if(wheel)gripWheel(avatar,entity.parent,wheel,now/1000);
- // Hair, skirts and hems swing (springs.js): always for Thuan, near the camera for everyone else.
- if(swingsAt(entity.getWorldPosition(swingAt),actor.isThuan)){avatar.springs?.update(dt);actor.swingResting=false;}
- else if(!actor.swingResting){avatar.springs?.reset();actor.swingResting=true;}
  // Every resident uses the same hand fit and portion animation as the player.
  const heldKind=u.heldItem||(['Drink','DrinkStanding'].includes(u.socialPose)?'beer':u.socialPose==='Eat'?'rice':null);
  if(actor.heldKind!==heldKind){
@@ -118,6 +104,20 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   if(actor.heldProp&&Number.isFinite(u.heldPortion))setPropPortion(actor.heldProp,u.heldPortion,{immediate:true});
   if(actor.dishProp&&Number.isFinite(u.foodPortion))setPropPortion(actor.dishProp,u.foodPortion,{immediate:true});
  }
+ actor.animator.update(dt,{
+  speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,chairBlend:u.chairBlend,floorHeight:Number(u.floorHeight)||0,
+  pose:u.socialPose,seat:u.socialPose,driving:!!u.inVehicle,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
+  waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
+  talking:!!(u.chat?.speaking||u.speakingUntil>now),
+  expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
+  sleeping,conversing:!!(u.playerConversation||u.chat||u.playing),gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,tipsy:u.tipsy||0,
+ });
+ // A driver's hands are on the wheel, not hovering in front of it.
+ const wheel=u.inVehicle&&entity.parent?.userData?.steeringWheel;
+ if(wheel)gripWheel(avatar,entity.parent,wheel,now/1000);
+ // Hair, skirts and hems swing (springs.js): always for Thuan, near the camera for everyone else.
+ if(swingsAt(entity.getWorldPosition(swingAt),actor.isThuan)){avatar.springs?.update(dt);actor.swingResting=false;}
+ else if(!actor.swingResting){avatar.springs?.reset();actor.swingResting=true;}
  // Cleaning tools (izakaya-hours.js): one in the right hand while the pose works it.
  const toolKind=u.tool||null;
  if(actor.toolKind!==toolKind){actor.toolProp?.removeFromParent();actor.toolProp=toolKind?createToolProp(toolKind):null;actor.toolKind=toolKind;if(actor.toolProp)avatar.bones.handR.add(actor.toolProp);}

@@ -24,20 +24,20 @@
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
 <link rel="stylesheet" href="./photo-mode.css?h=17316f51">
 <link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
+<link rel="stylesheet" href="./context-rail.css?h=989b4888">
 <link rel="stylesheet" href="./line-ui.css?h=9efe343d">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-CXZJuN05.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-C-P5UmGj.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-BJJ0w3BS.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-DKFH3YcL.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-D_Cx6U7_.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-BLo8Emxn.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-DRdFTQne.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-DqltQt4C.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-D9ksLUq-.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-ygTjb9SR.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson Town three-dimensional game"></canvas>
 <div id="ink"></div>
 <div id="threshold"></div>
-<button id="exitRoomButton" class="hidden" aria-label="Exit building to street">Exit to street</button><button id="enterBuildingButton" class="hidden" aria-label="Enter building">Enter</button>
 <section id="start">
   <div id="splash" class="splash done" aria-hidden="true"></div>
   <section id="title" class="title-screen" data-weather="sunny" aria-labelledby="titleLogo">
@@ -342,19 +342,29 @@
 
 
 
-  <div id="prompt" role="status"></div>
+  <div id="prompt" hidden aria-hidden="true"></div>
+  <nav id="contextActions" hidden aria-label="Nearby actions">
+    <p id="contextActionStatus" hidden role="status"></p>
+    <button id="standButton" class="control-off" type="button" hidden aria-label="Stand up">Stand up</button>
+    <button id="orderButton" class="control-off" type="button" hidden aria-label="Order food and drinks">Order</button>
+    <button id="eatButton" class="control-off" type="button" hidden aria-label="Eat">Eat</button>
+    <button id="drink" class="control-off" type="button" hidden aria-label="Drink">Drink</button>
+    <button id="exitRoomButton" class="hidden control-off" type="button" hidden aria-label="Exit to street">Exit to street</button>
+    <button id="enterBuildingButton" class="hidden control-off" type="button" hidden aria-label="Enter building">Enter</button>
+    <button id="act" class="control-off" type="button" hidden aria-label="Nearby action">Action</button>
+  </nav>
   <div id="subtitle" role="status" aria-live="polite"></div>
   <div class="timecard"><small>AFTERNOON</small><div id="timeText">Shops are open.</div></div>
 </div>
 <div id="directory" class="hidden" role="dialog" aria-modal="true" aria-label="Town menu"><div class="directory-card"><div class="directory-head"><div><h2>Town book</h2><p id="wallet">¥1,200</p></div><button id="closeDirectory" aria-label="Close the town book">×</button></div><nav id="townControls" class="menu-apps" aria-label="Things to do"><button id="notebookButton" class="app-tile" data-icon="page">Field book</button><button id="photoButton" class="app-tile" data-icon="camera" aria-label="Open photo studio (P)">Photo studio</button><button id="movesButton" class="app-tile" data-icon="moves" aria-label="Choose something for Johansson to do (G)">Moves</button><button id="playerButton" class="app-tile" data-icon="person">Player &amp; save</button><button id="cameraButton" class="app-tile" data-icon="game" aria-label="Open camera and controller settings" aria-controls="cameraPanel">Controls</button></nav><details class="menu-settings" aria-label="Settings"><summary>Settings</summary><div class="setting-row"><span>View</span><button id="viewButton" aria-pressed="false" aria-label="Switch between first- and third-person view (V)">Behind him</button></div><div class="setting-row"><span>Clock</span><button id="timeButton">Set the time</button></div><div class="setting-row"><span>Weather</span><button id="weatherButton">Clear</button></div><div class="setting-row"><span>Sound</span><button id="soundButton">On</button></div><div class="setting-row"><span>Screen</span><button id="fullscreenButton">Full screen</button></div></details><details class="menu-map"><summary>Map of the town</summary><div class="map-frame"><canvas id="minimap" width="110" height="200" aria-label="Live town map with your position, buildings and residents"></canvas><span>HARBOUR ↓</span></div></details><details class="menu-places"><summary>Places</summary><div id="directoryGrid"></div></details><div class="directory-foot">HARBOUR DISTRICT · 1997 · <span id="saveState">Progress saved</span> <button id="creditsButton">Credits</button></div></div></div>
 <div id="activity" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="activityTitle"><section class="activity-card"><header><span><span aria-hidden="true">✿</span> A LITTLE MOMENT · 1997</span><button id="closeActivity" aria-label="Close activity"><span aria-hidden="true">×</span></button></header><h2 id="activityTitle"></h2><div id="activityBody"></div><div id="activityActions"></div></section></div>
-<div id="mobile" class="hidden"><button id="drink" class="control-off" aria-label="Drink held can">DRINK</button><div id="stick" class="touch-stick" aria-label="Movement area"><div id="stickBase" class="stick-base" aria-hidden="true"><div id="knob" class="stick-knob"></div></div></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="control-off" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="control-off" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div><button id="act" class="control-off" aria-label="Context action"><span class="act-glyph">◎</span><b class="act-label">ACTION</b></button></div>
+<div id="mobile" class="hidden"><div id="stick" class="touch-stick" aria-label="Movement area"><div id="stickBase" class="stick-base" aria-hidden="true"><div id="knob" class="stick-knob"></div></div></div><div id="movementActions" aria-label="Movement actions"><button id="run" class="control-off" aria-label="Toggle running" aria-pressed="false">RUN</button><button id="jump" class="control-off" aria-label="Jump"><span class="jump-glyph">↑</span><b class="jump-label">JUMP</b></button></div></div>
 <div id="qte" class="hidden" aria-live="assertive"><div class="qte-card"><span id="qteGlyph">←</span><b id="qteText">SWIPE LEFT</b><div class="qte-track"><span id="qteTimer"></span></div></div></div>
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON TOWN</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON TOWN</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=ed3e331a"></script>
-<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-m58JwmXx.js";</script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-QARbpR35.js";</script>
+<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-CIvWMwZe.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-BK8RHsKr.js";</script>
 <script src="./landing.js?h=7591566d"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -518,7 +528,7 @@ import {unlockTownAudio} from './runtime/audio-83dQfoLt.js';
     try{
       // Let the browser paint the first fact before constructing the town.
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      try { await import('./runtime/boot-CXZJuN05.js'); } catch (error) {
+      try { await import('./runtime/boot-C-P5UmGj.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

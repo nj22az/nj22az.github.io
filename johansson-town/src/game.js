@@ -1558,6 +1558,43 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  get renderInfo(){const i=renderer.info;return {programs:i.programs?.length??0,calls:i.render.calls,triangles:i.render.triangles,geometries:i.memory.geometries,textures:i.memory.textures};},
  photo:()=>openPhotoStudio(),
  get photoActive(){return !!photoStudio?.active;},
+ /**
+  * The distance along the view to the first opaque surface, for every pixel of the audit camera's view (w × h), as
+  * millimetres in 24 bits (R high, G, B low; 0 = nothing there), top row first, base64. The films photograph a set
+  * with it, so the people they draw in 3D pass behind what stands in front of them (an umbrella stand, a shelf)
+  * instead of over it. Glass and other see-through surfaces are left out; inside a room, so is the town outside.
+  */
+ depth(w,h){
+  const view=this.camera;if(view){camera.position.set(...view.pos);camera.lookAt(...view.at);camera.updateMatrixWorld();}
+  const target=new THREE.WebGLRenderTarget(w,h),cache=new Map(),undo=[],aspect=camera.aspect;
+  const depthOf=m=>{if(!m.alphaTest&&!m.alphaMap)return null;if(!cache.has(m))cache.set(m,new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:m.map,alphaMap:m.alphaMap,alphaTest:m.alphaTest||.5,side:m.side}));return cache.get(m);};
+  const plain=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking}),plainDouble=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,side:THREE.DoubleSide});
+  scene.traverse(o=>{
+   if(o.isLine||o.isPoints||o.isSprite){const v=o.visible;undo.push(()=>{o.visible=v;});o.visible=false;return;}
+   if(!o.isMesh)return;const m=o.material,list=Array.isArray(m)?m:[m];
+   // People, traffic and moving props come and go between one photograph and the next: only the set itself.
+   let passing=o.isSkinnedMesh;for(let p=o;p&&!passing;p=p.parent)passing=!!(p.userData.character||p.userData.name||p.userData.vehicle||p.userData.dynamicProp);
+   const clear=passing||o.userData.clearWindow||list.every(x=>!x||(x.transparent&&(x.opacity??1)<.9)||x.colorWrite===false);
+   const v=o.visible;undo.push(()=>{o.visible=v;o.material=m;});
+   if(clear){o.visible=false;return;}
+   o.material=Array.isArray(m)?m.map(x=>depthOf(x)||(x.side===THREE.DoubleSide?plainDouble:plain)):depthOf(m)||(m.side===THREE.DoubleSide?plainDouble:plain);
+  });
+  const outside=town.visible;if(current)town.visible=false;
+  const bg=scene.background,fog=scene.fog;scene.background=null;scene.fog=null;
+  camera.aspect=w/h;camera.updateProjectionMatrix();
+  const px=new Uint8Array(w*h*4),clearColour=renderer.getClearColor(new THREE.Color()),clearAlpha=renderer.getClearAlpha();
+  try{renderer.setRenderTarget(target);renderer.setClearColor(0xffffff,1);renderer.clear();renderer.render(scene,camera);renderer.readRenderTargetPixels(target,0,0,w,h,px);}
+  finally{renderer.setRenderTarget(null);renderer.setClearColor(clearColour,clearAlpha);scene.background=bg;scene.fog=fog;town.visible=outside;camera.aspect=aspect;camera.updateProjectionMatrix();for(const u of undo)u();target.dispose();plain.dispose();plainDouble.dispose();for(const d of cache.values())d.dispose();}
+  // RGBADepthPacking (three r170 packing.glsl: R the high byte … A the low): the window depth in [0,1], then the distance along the view.
+  const n=camera.near,f=camera.far,out=new Uint8Array(w*h*3);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+   const i=((h-1-y)*w+x)*4,d=px[i]/256+px[i+1]/65536+px[i+2]/16777216+px[i+3]/255/16777216;
+   if(d>=.99999)continue;
+   const mm=Math.min(16777215,Math.round(n*f/(f-d*(f-n))*1000)),o=(y*w+x)*3;out[o]=mm>>16;out[o+1]=(mm>>8)&255;out[o+2]=mm&255;
+  }
+  let bin='';for(let i=0;i<out.length;i+=32768)bin+=String.fromCharCode(...out.subarray(i,i+32768));
+  return {w,h,near:n,far:f,fov:camera.fov,data:btoa(bin)};
+ },
  get world(){return world;},
  get sites(){return SITES.map(s=>({id:s.id,title:s.title,x:s.x,z:s.z,door:s.door,entryFacing:s.entryFacing,exitPosition:s.exitPosition,approachPosition:s.approachPosition}));},
  /** Read-only coordinates of visible interactions in the current coordinate frame. */

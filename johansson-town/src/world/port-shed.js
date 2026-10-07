@@ -3,6 +3,9 @@ import {createAvatarActor,updateAvatarActor} from '../avatars/actors.js';
 import {reach} from '../avatars/consume.js';
 import {buildBeerBottle} from '../people/izakaya-serving-visuals.js';
 import {fujitaBeer,laughingAt,seeded,tvProgramme} from './fujita-day.js';
+import {buildFujitaHouseboat,HOUSEBOAT} from './fujita-houseboat.js';
+import {createFujitaRoutine} from './fujita-routine.js';
+import {createSleepCover} from '../people/sleep-cover.js';
 export {tvProgramme} from './fujita-day.js';
 
 /**
@@ -10,15 +13,15 @@ export {tvProgramme} from './fujita-day.js';
  *
  * A fisherman's banya: timber framed, clad in corrugated iron gone to rust at the seams,
  * open along the pier side so the breeze comes through. Mr Fujita, retired, more or less
- * lives in it. He sits in a sagging armchair with a small glass of beer and flips channels on
- * an old CRT on a fish crate (fujita-day.js: what is on, when he laughs, how the beer goes):
- * the ballgame in the afternoon, the news, the variety shows, snow when the signal goes. His
- * Umineko comes in large bottles from Higa Liquor's morning van: the crates stand at his
- * right hand, the bottle he is on at his left foot, and the empties pile up in front of him
- * all day, standing at first and lying down when the floor fills. Around him: nets and glass
- * floats hung from the rafters, a camp stove and kettle, rubber boots, a calendar from the
- * co-op and a folded cot for the nights he does not go home. After the set goes off he dozes
- * among the empties under the bare bulb until the van comes.
+ * lives in it. He sits in a sagging armchair, his feet on a timber footstool, with a small glass of
+ * beer, and flips channels on an old CRT on a fish crate (fujita-day.js: what is on, when he laughs,
+ * how the beer goes): the ballgame in the afternoon, the news, the variety shows, snow when the
+ * signal goes. His Umineko comes in large bottles from Higa Liquor's morning van: the crates stand
+ * at his right hand, the bottle he is on at his left foot, and the empties pile up in front of him
+ * all day, standing at first and lying down when the floor fills. Around him: nets and glass floats
+ * hung from the rafters, a camp stove and kettle, rubber boots, a calendar from the co-op and a
+ * folded cot kept for visitors. At 23.30 he switches off the set and walks aboard his houseboat
+ * Shiosai alongside the pier, leaving the day's empties for the van; at six he returns to the shed.
  *
  * Pier frame: the shed stands on the west edge of the L-pier, open to the east.
  */
@@ -89,7 +92,7 @@ function drawTV(ctx,w,h,programme,t){
  if(Math.sin(t*.9)>.4){ctx.fillStyle='#fff';ctx.font='bold 16px sans-serif';ctx.fillText('HA HA HA!',w*.32,h*.25);}
 }
 
-export function buildPortShed({parent,colliders,register,onAction,shadows=false}){
+export function buildPortShed({parent,colliders,register,onAction,shadows=false,getPlayerPosition=()=>null}){
  const g=new THREE.Group();g.name='Mr Fujita’s shed';g.position.set(S.x,S.y,S.z);parent.add(g);
  const std=(color,rough=.85,extra={})=>new THREE.MeshStandardMaterial({color,roughness:rough,...extra});
  const box=(s,p,m,name)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(...s),m);b.position.set(...p);b.castShadow=shadows;b.receiveShadow=true;b.name=name;g.add(b);return b;};
@@ -116,20 +119,28 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
  const [tx,tz]=[S.tv[0]-S.x,S.tv[1]-S.z],[cx,cz]=[S.chair[0]-S.x,S.chair[1]-S.z];
  box([.6,.32,.42],[tx,.16,tz],std(0x2f6fa8,.6),'Fish crate');
  box([.52,.42,.46],[tx,.53,tz],std(0x9c8f78,.6),'CRT television');
- // The dark bezel round the picture tube, flat on the set's face (the screen sits just proud of it).
- box([.46,.36,.012],[tx,.55,tz+.231],std(0x2a2826,.5),'Television bezel');
+ // Four thin frame rails leave the picture open; a solid box crossed the screen.
+ const bezelMat=std(0x2a2826,.5);
+ for(const side of [-1,1]){
+  box([.04,.37,.04],[tx+side*.21,.56,tz+.25],bezelMat,'Television bezel side');
+  box([.38,.04,.04],[tx,.56+side*.165,tz+.25],bezelMat,'Television bezel edge');
+ }
  const screenCanvas=typeof document!=='undefined'?document.createElement('canvas'):null;let screenCtx=null,screenTex=null;
  if(screenCanvas){screenCanvas.width=160;screenCanvas.height=120;screenCtx=screenCanvas.getContext('2d');if(screenCtx){screenTex=new THREE.CanvasTexture(screenCanvas);screenTex.colorSpace=THREE.SRGBColorSpace;}}
  const screen=new THREE.Mesh(new THREE.PlaneGeometry(.38,.29),screenTex?new THREE.MeshBasicMaterial({map:screenTex}):std(0x223,.3));
- screen.position.set(tx,.56,tz+.236);screen.name='Television screen';g.add(screen);
+ screen.position.set(tx,.56,tz+.272);screen.name='Television screen';g.add(screen);
  const aerial=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,.4,4),std(0xbfc4c6,.3));aerial.position.set(tx-.1,.92,tz);aerial.rotation.z=.5;g.add(aerial);
  const aerial2=aerial.clone();aerial2.position.x=tx+.1;aerial2.rotation.z=-.5;g.add(aerial2);
  const tvGlow=new THREE.PointLight(0x9fc0ff,0,3.2,2);tvGlow.position.set(tx,.7,tz+.6);g.add(tvGlow);
  // The armchair: low, sagging, its arms worn pale.
  const chairMat=std(0x7a4b3a,.95);
- // Small enough that he sits in it rather than through it: the seat ends behind his knees, so his shins hang clear.
- box([.54,.4,.4],[cx,.2,cz+.1],chairMat,'Armchair seat');box([.54,.55,.12],[cx,.62,cz+.31],chairMat,'Armchair back');
- for(const s of [-1,1])box([.1,.28,.46],[cx+s*.27,.54,cz+.08],std(0x8f6a54,.95),'Armchair arm');
+ // A shallow cushion leaves the calves clear of the upholstered front.
+ box([.62,.12,.44],[cx,.34,cz+.07],chairMat,'Armchair seat');box([.62,.55,.14],[cx,.62,cz+.3],chairMat,'Armchair back');
+ for(const s of [-1,1])box([.12,.3,.48],[cx+s*.31,.45,cz+.1],std(0x8f6a54,.95),'Armchair arm');
+ // The short-legged cast needs a real support below this seat, not shoes dangling
+ // through its upholstery. A low timber footstool belongs in his worn armchair corner.
+ box([.48,.08,.30],[cx,.148,cz-.32],plank,'Armchair footrest');
+ for(const side of [-1,1])box([.05,.108,.24],[cx+side*.19,.054,cz-.32],timber,'Footrest leg');
  // ---- Beer. One Umineko large bottle, built once; the crates, the bottle he is on and the empties are copies of it.
  // All of it moves or changes through the day, so none of it may be baked into the town's static batches (dynamicProp).
  const proto=buildBeerBottle(),parts=[];proto.updateMatrixWorld(true);
@@ -155,7 +166,7 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
  // The empties: in front of him and to his left-front, clear of the way in at his left and of the set. They
  // go down one by one, nearest his left hand first; standing while there is floor, lying down after thirty.
  const emptySlots=[];{
-  const keep=[[cx,cz,.36,.36],[tx,tz,.36,.28],[cx+.62,cz+.09,.26,.42]];   // the chair, the set and its crate, the beer crates
+  const keep=[[cx,cz,.36,.36],[cx,cz-.32,.27,.18],[tx,tz,.36,.28],[cx+.62,cz+.09,.26,.42]];   // the chair, its footstool, the set and its crate, the beer crates
   const free=(x,z,r)=>x>-.22&&x<D/2-.12&&z>-W/2+.12&&z<W/2-.12&&!keep.some(([kx,kz,w,d])=>Math.abs(x-kx)<w+r&&Math.abs(z-kz)<d+r)&&emptySlots.every(([px,pz,,,,pr])=>Math.hypot(px-x,pz-z)>r+pr);
   for(let i=0,tries=0;emptySlots.length<49&&tries<6000;tries++){
    const a=seeded(i,tries,11)*Math.PI*2,rad=.3+seeded(i,tries,12)*(.25+emptySlots.length*.018),x=cx-.25+Math.cos(a)*rad,z=cz-.45+Math.sin(a)*rad*1.3;
@@ -207,14 +218,17 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
  }
  // ---- Mr Fujita, in his chair.
  const fujita=new THREE.Group();fujita.name='Mr Fujita';fujita.userData.name='Mr Fujita';fujita.userData.walkSurface=false;
- fujita.position.set(cx,.02,cz);g.add(fujita);
+ fujita.position.set(cx,.02,cz-.08);g.add(fujita);
  let actor=null;try{actor=createAvatarActor(fujita,'Mr Fujita',{shadows});}catch{actor=null;}
- Object.assign(fujita.userData,{socialPose:'Drink',seatHeight:.42,heldItem:'beer',heldPortion:.6,activity:'watching the ballgame with a beer'});
- register(fujita,'Talk to Mr Fujita',()=>onAction('resident','Mr Fujita'));
+ Object.assign(fujita.userData,{socialPose:'Drink',seatHeight:.38,heldItem:'beer',heldPortion:.6,activity:'watching the ballgame with a beer'});
+ register(fujita,'Talk to Mr Fujita',()=>fujita.userData.sleeping?onAction('read','Mr Fujita is asleep','He is asleep in his berth aboard Shiosai. He returns to the shed at six in the morning.'):onAction('resident','Mr Fujita'));
  const tvAnchor=new THREE.Object3D();tvAnchor.position.set(tx,1,tz+.4);g.add(tvAnchor);
  register(tvAnchor,'Watch the shed television',()=>onAction('read','Mr Fujita’s television',
   'A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. "Sit, sit. The eighth innings is the only one worth watching. Have a can; they are cold, the box is new."'));
 
+ const boat=buildFujitaHouseboat({parent,colliders,register,onAction,shadows});
+ const cover=createSleepCover(boat.group,{cover:HOUSEBOAT.cover},0x557b72);
+ const routine=createFujitaRoutine(fujita,{origin:[S.x,S.z],chair:S.chair,cover,boat});
  let clock=0,redraw=0,programme='',laughing=false,sips=-1;
  /**
   * Pouring, the way a man does it without getting up: the glass held still in his right hand over his lap, the
@@ -256,7 +270,7 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
   }
  }
  return {
-  group:g,actor,fujita,
+  group:g,actor,fujita,boat,routine,
   /** Once a frame: the picture, the light it throws, the beer, and what he is doing about all of it. */
   tick(dt,minutes=720){
    clock+=dt;const now=tvProgramme(minutes),m=((minutes%1440)+1440)%1440,night=m<6*60||m>=18*60+30;
@@ -264,18 +278,18 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
    const on=now!=='off';
    tvGlow.intensity=on?.8+Math.sin(clock*13)*.18+Math.sin(clock*5.3)*.12:0;
    bulbMat.emissiveIntensity=night?1.4:0;bulbLight.intensity=night?1.6:0;
-   // The beer: the crates, the floor, the bottle he is on, the glass.
-   const b=fujitaBeer(minutes),u=fujita.userData;
+   routine.update(dt,minutes,now);
+   boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition()});
+   // The beer: the crates, the floor, the bottle he is on, the glass. The pile stays in the shed overnight, when he
+   // has gone aboard Shiosai, until the Higas' van takes it at six.
+   const b=fujitaBeer(minutes),u=fujita.userData,seated=routine.state==='watching',pouring=seated&&b.phase==='pour';
    for(const mesh of full)mesh.count=b.full;
    // The third crate, on top, only on a day of more than forty: he drinks from the top crate down.
    crates[2].visible=b.bottles>40;
    for(const mesh of empties)mesh.count=Math.min(b.empties,emptySlots.length);
-   openBottle.visible=b.bottle!==null&&b.phase==='drink';
-   if(b.phase==='doze'||b.phase==='waiting'){
-    u.socialPose='Sit';delete u.heldItem;delete u.heldPortion;u.sleeping=b.phase==='doze';u.tipsy=b.tipsy;
-    u.activity=b.phase==='doze'?'asleep in his armchair among the empties':'waiting for the Higas’ van';
-    delete u.thuanExpression;pourBottle.visible=stream.visible=false;
-   }else{
+   openBottle.visible=b.bottle!==null&&b.phase==='drink'&&seated;
+   pourBottle.visible=stream.visible=false;
+   if(seated&&(b.phase==='drink'||b.phase==='pour')){
     u.sleeping=false;u.heldItem='bottle';u.tipsy=b.tipsy;
     // A sip at a time: the level goes down in eight steps, each one a lift of the glass.
     const step=Math.ceil(b.glass*8-1e-6);u.heldPortion=b.phase==='pour'?b.glass:step/8;
@@ -288,10 +302,13 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
     if(l)u.thuanExpression='laugh';else delete u.thuanExpression;
     u.activity=b.phase==='pour'?'pouring himself another':now==='baseball'?'watching the ballgame with a beer':now==='news'?'watching the news with a beer':'flipping channels with a beer';
     pourBottle.visible=stream.visible=false;
-   }
+   }else if(seated){
+    // Back from the boat before half past six: in his chair, nothing open yet, waiting for the first bottle.
+    u.socialPose='Sit';delete u.heldItem;delete u.heldPortion;delete u.thuanExpression;u.activity='waiting for the Higas’ van';
+   }else delete u.thuanExpression;
    if(actor)updateAvatarActor(actor,dt);
-   if(actor&&b.phase==='pour')pour(b);
+   if(actor&&pouring)pour(b);
   },
-  dispose(){screenTex?.dispose();actor?.avatar?.dispose?.();},
+  dispose(){screenTex?.dispose();cover?.dispose();boat.dispose();actor?.avatar?.dispose?.();},
  };
 }
