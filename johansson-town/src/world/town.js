@@ -390,6 +390,7 @@ export function createTown(options){
     }
   };
   world.resources=factory.resources;
+  world.propFactory=factory;   // the builder places the same props (src/build)
   world.quality={
     ...(world.quality||{}),
     cableSegments,

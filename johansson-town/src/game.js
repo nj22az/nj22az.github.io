@@ -112,6 +112,9 @@ import { createCelPass } from './render/cel.js?snappy=1';
 import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snappy=1';
 import { createInkRecovery } from './render/ink-recovery.js';
 import {createGraphicsLifecycle} from './render/graphics-lifecycle.js';
+import {BUILD_CATALOGUE} from './build/catalogue.js';
+import {DOOR_KEEP_CLEAR} from './world/street-lamps.js';
+import {createPlacements,readPlacementsFile,PLACEMENTS_FILE} from './build/placements.js';
 import {createGraphicsInspector} from './render/graphics-inspector.js';
 import {dressHud,runButtonFace} from './ui/hud-icons.js';
 
@@ -416,6 +419,13 @@ function advanceWeather(){
  const world=createTown({scene:town,sites:SITES,mobile,shadows,maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='bicycle'){startBicycleRide(args[1]);return;}if(args[0]==='dungeon'){enterDungeon();return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
  // Colliders by where they are, for the camera, walking and residents (collider-grid.js).
  const colliderGrid=createColliderGrid(world.colliders);
+ // What the creator placed with the builder (src/build), published with the town in data/world-placements.json.
+ const placements=createPlacements({group:world.group,colliders:world.colliders,factory:world.propFactory,walkable:(x,z)=>!townBoundsBlocked(x,z,0),heightAt:groundHeight,
+  doors:[...DOOR_KEEP_CLEAR.map(d=>[d.x,d.z]),...SITES.filter(s=>s.exitPosition).map(s=>[s.exitPosition[0],s.exitPosition[2]])]});
+ Promise.resolve().then(()=>fetch(new URL(PLACEMENTS_FILE,document.baseURI||location.href),{cache:'no-cache'})).then(r=>r.ok?r.text():null).then(t=>{
+  if(!t)return;const skipped=placements.load(readPlacementsFile(t));if(skipped.length)console.warn('Builder placements left out:',skipped);
+ }).catch(e=>console.warn('Builder placements not loaded:',e.message));
+ if(new URLSearchParams(location.search).has('build'))window.__JOHANSSON_BUILDER__={catalogue:BUILD_CATALOGUE,...placements};
 assignWorkplaces(world,SITES);
 // The evening boat to Naha leaves from the ferry terminal: dinner with Thuan in the city
 // (interiors/city-restaurant.js). It is an outing, not a door in town, so it is not one of
