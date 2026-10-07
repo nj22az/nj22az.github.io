@@ -134,6 +134,9 @@ that makes more or better stories.
 - **Build in small batches, and look after each one.** A command or test that succeeds does not mean the world is right:
   after every batch, check it in the live game (the `johansson-town-audit` MCP server: walk it, look, screenshot) or in
   real photographs of it, before the next. Never change ground or terrain, lighting and characters in the same batch.
+- **Plan a change before making it.** Before moving or resizing anything in a place, list what it affects: colliders, standing
+  spots and walking routes, tests, residents' routines, and every film shot that photographed it (the studio's
+  `remotion/tools/impact.py` lists the shots, marks and photographs). Then change it, and check each item on the list.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten is a konbini *and* the
   town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading). Higa Liquor supplies
   all alcohol (to Sakura, Minato and Sato Ramen); Front-Row Books & Stationery supplies office supplies; Rainflower
