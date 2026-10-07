@@ -25,6 +25,18 @@ test('a stand-in draws a room as a few meshes, and the real room comes back unto
  assert.equal(standIn.group.visible,false);
 });
 
+test('moving things are neither copied into the stand-in nor drawn from outside',()=>{
+ const room=new THREE.Group(),box=new THREE.BoxGeometry(.2,.2,.2);
+ room.add(new THREE.Mesh(box,new THREE.MeshStandardMaterial()));
+ const door=new THREE.Group();door.userData.dynamicProp=true;door.add(new THREE.Mesh(box,new THREE.MeshStandardMaterial()));room.add(door);
+ const standIn=createStandIn(room);
+ assert.equal(standIn.sources,1,'A door is merged into the street copy, frozen where it stood');
+ standIn.show(true);
+ assert.ok(!door.children[0].layers.isEnabled(0),'The real door is still drawn through the glass from the street');
+ standIn.show(false);
+ assert.ok(door.children[0].layers.isEnabled(0));
+});
+
 test('street copies preserve each stocked flavour without requiring an instance shader',()=>{
  const room=new THREE.Group(),geometry=new THREE.PlaneGeometry(.4,.6),texture=new THREE.Texture();
  geometry.setAttribute('atlasShift',new THREE.InstancedBufferAttribute(new Float32Array([0,0,.125,.25]),2));
