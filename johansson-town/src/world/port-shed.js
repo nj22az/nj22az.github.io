@@ -1,5 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
 import {createAvatarActor,updateAvatarActor} from '../avatars/actors.js';
+import {buildFujitaHouseboat,HOUSEBOAT} from './fujita-houseboat.js';
+import {createFujitaRoutine} from './fujita-routine.js';
+import {createSleepCover} from '../people/sleep-cover.js';
 
 /**
  * Mr Fujita's shed on the working pier.
@@ -10,8 +13,8 @@ import {createAvatarActor,updateAvatarActor} from '../avatars/actors.js';
  * a fish crate: the ballgame in the afternoon, the news after dark, snow when the signal
  * goes. Around him: nets and glass floats hung from the rafters, a cool box of beer, a
  * row of empties, a camp stove and kettle, rubber boots, a calendar from the co-op and a
- * folded cot for the nights he does not go home. Late at night the set is off and he dozes
- * in the chair under the bare bulb.
+ * folded cot kept for visitors. At 23.30 he switches off the set and walks aboard his
+ * houseboat Shiosai alongside the pier; at six he returns to the shed.
  *
  * Pier frame: the shed stands on the west edge of the L-pier, open to the east.
  */
@@ -59,7 +62,7 @@ function drawTV(ctx,w,h,programme,t){
  if(Math.sin(t*.9)>.4){ctx.fillStyle='#fff';ctx.font='bold 16px sans-serif';ctx.fillText('HA HA HA!',w*.32,h*.25);}
 }
 
-export function buildPortShed({parent,colliders,register,onAction,shadows=false}){
+export function buildPortShed({parent,colliders,register,onAction,shadows=false,getPlayerPosition=()=>null}){
  const g=new THREE.Group();g.name='Mr Fujita’s shed';g.position.set(S.x,S.y,S.z);parent.add(g);
  const std=(color,rough=.85,extra={})=>new THREE.MeshStandardMaterial({color,roughness:rough,...extra});
  const box=(s,p,m,name)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(...s),m);b.position.set(...p);b.castShadow=shadows;b.receiveShadow=true;b.name=name;g.add(b);return b;};
@@ -146,14 +149,17 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
  fujita.position.set(cx,.02,cz-.08);g.add(fujita);
  let actor=null;try{actor=createAvatarActor(fujita,'Mr Fujita',{shadows});}catch{actor=null;}
  Object.assign(fujita.userData,{socialPose:'Drink',seatHeight:.38,heldItem:'beer',heldPortion:.6,activity:'watching the ballgame with a beer'});
- register(fujita,'Talk to Mr Fujita',()=>onAction('resident','Mr Fujita'));
+ register(fujita,'Talk to Mr Fujita',()=>fujita.userData.sleeping?onAction('read','Mr Fujita is asleep','He is asleep in his berth aboard Shiosai. He returns to the shed at six in the morning.'):onAction('resident','Mr Fujita'));
  const tvAnchor=new THREE.Object3D();tvAnchor.position.set(tx,1,tz+.4);g.add(tvAnchor);
  register(tvAnchor,'Watch the shed television',()=>onAction('read','Mr Fujita’s television',
   'A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. "Sit, sit. The eighth innings is the only one worth watching. Have a can; they are cold, the box is new."'));
 
+ const boat=buildFujitaHouseboat({parent,colliders,register,onAction,shadows});
+ const cover=createSleepCover(boat.group,{cover:HOUSEBOAT.cover},0x557b72);
+ const routine=createFujitaRoutine(fujita,{origin:[S.x,S.z],chair:S.chair,cover,boat});
  let clock=0,redraw=0,programme='';
  return {
-  group:g,actor,fujita,
+  group:g,actor,fujita,boat,routine,
   /** Once a frame: the picture, the light it throws, and what he is doing about it. */
   tick(dt,minutes=720){
    clock+=dt;const now=tvProgramme(minutes),m=((minutes%1440)+1440)%1440,night=m<6*60||m>=18*60+30;
@@ -161,11 +167,10 @@ export function buildPortShed({parent,colliders,register,onAction,shadows=false}
    const on=now!=='off';
    tvGlow.intensity=on?.8+Math.sin(clock*13)*.18+Math.sin(clock*5.3)*.12:0;
    bulbMat.emissiveIntensity=night?1.4:0;bulbLight.intensity=night?1.6:0;
-   const u=fujita.userData;
-   if(on){u.socialPose='Drink';u.heldItem='beer';u.activity=now==='baseball'?'watching the ballgame with a beer':now==='news'?'watching the evening news':'watching television with a beer';}
-   else{u.socialPose='Sit';delete u.heldItem;u.activity='dozing in his armchair';}
+   routine.update(dt,minutes,now);
+   boat.tick({sleeping:fujita.userData.sleepBlend>.01,player:getPlayerPosition()});
    if(actor)updateAvatarActor(actor,dt);
   },
-  dispose(){screenTex?.dispose();actor?.avatar?.dispose?.();},
+  dispose(){screenTex?.dispose();cover?.dispose();boat.dispose();actor?.avatar?.dispose?.();},
  };
 }

@@ -1,3 +1,4 @@
+import {houseboatSurface} from './fujita-houseboat.js';
 import {DOCKLANDS,docklandsAt} from './docklands-layout.js';
 import {ISLAND_ROUTES} from './island-plan.js';
 import {airportSurface} from './airport-ground.js';
@@ -87,6 +88,7 @@ export function routeAt(x,z,r=0){
  return here;
 }
 function regionAt(x,z,r=0){
+ const boat=houseboatSurface(x,z,r);if(boat)return boat;
 
  if(inDiningLane(x,z))return {id:'shop-pavement',surface:'stone'};
 
@@ -145,6 +147,7 @@ export function setWalkSurface(surface){globalThis.__JOHANSSON_WALK_SURFACE__=su
 /** Where feet go: the plan's ground, lifted onto whatever slab is drawn over it. */
 export function groundHeight(x,z){const h=planHeight(x,z),walk=globalThis.__JOHANSSON_WALK_SURFACE__;return walk?(walk.level?.(x,z)??(h+walk.lift(x,z))):h;}
 export function planHeight(x,z){
+ const boat=houseboatSurface(x,z);if(boat)return boat.y;
  {
   if(x>MAIN_ROAD.pavementEast){const road=kitanoRoadAt(x,z);if(road)return road.y;}
   if(docklandsAt(x,z))return DOCKLANDS.y;
