@@ -52,7 +52,8 @@ const MOOD=Object.freeze({
  thinking:{eyes:'side',brow:.3,browLift:0,mouth:'hmm',blush:0},
  sleep:{eyes:'closed',brow:0,browLift:-1,mouth:'small',blush:0},
  dizzy:{eyes:'spiral',brow:-1,browLift:8,mouth:'wobble',blush:0},
- scheme:{eyes:'angry',brow:1.7,browLift:-7,mouth:'grin',blush:0},
+ // the evil grin is wide and tall: it sits lower, so a long nose (Tetsuo's hook) never touches it
+ scheme:{eyes:'angry',brow:1.7,browLift:-7,mouth:'grin',blush:0,mouthDY:12},
  embarrassed:{eyes:'shy',brow:-.9,browLift:7,mouth:'wobble',blush:1},
 });
 export const EXPRESSION_NAMES=Object.freeze(Object.keys(MOOD));
@@ -92,7 +93,7 @@ export function drawFace(ctx,recipe,state={}){
  // Brows.
  if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift,L.browS,s,recipe.brows,L.browTilt,mood.brow);
  drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);
- drawMouth(ctx,L.mouthX,L.mouthY,L.mouthS,recipe.mouth,mood.mouth,state.talk||0,line,L.mouthW);
+ drawMouth(ctx,L.mouthX,L.mouthY+(mood.mouthDY||0),L.mouthS,recipe.mouth,mood.mouth,state.talk||0,line,L.mouthW);
  drawFacialHair(ctx,L,recipe.facial);
  drawGlasses(ctx,L,recipe.glasses);
  ctx.restore();
