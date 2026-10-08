@@ -842,7 +842,8 @@ function roomShell(s){
   const decor=createHomeCustomization({room,state:activities.state,menu:activities.menu,save:activities.save,close:activities.close,reg,arrange:decoratorEnabled()?arranging.open:null});
   const dispose=activeRoomLayout.dispose;activeRoomLayout.dispose=()=>{arranging.close();dispose?.();};
   activeRoomLayout.arranging=arranging;activeRoomLayout.snapshot=()=>({decor:decor.snapshot(),furniture:arranging.placements.list()});return;}
- if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior(shared);return;}
+ // Who is at the street door and who is past the step (their shoes are there): the player, unnamed, and the bathers.
+ if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior({...shared,people:()=>[{name:null,x:player.position.x,z:player.position.z},...world.people.filter(p=>p.g.userData.inOnsen&&p.g.visible).map(p=>({name:p.profile.name,x:p.g.position.x,z:p.g.position.z}))]});return;}
  if(s.id==='koban'){activeRoomLayout=buildKobanInterior(shared);return;}
  if((s.id==='ramen')){activeRoomLayout=buildSatoRamenRoom({...shared,getMinutes:()=>minutes});return;}
  // A home with a room of its own (the office, the police box) keeps it; everyone else gets a flat.
@@ -1646,9 +1647,9 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  },
  enter(id){const s=id===CITY_RESTAURANT.id?NAHA_TRIP:id===NAHA_ARRIVALS.id?NAHA_ARRIVALS:SITES.find(site=>site.id===id)||world.landmarks?.find(site=>site.id===id);return s?enterRoom(s):null;},
  leave(){leaveRoom();},
- // Film photographs (remotion/tools/capture-room.mjs): a shop door held open by an amount, a fridge door held open,
+ // Film photographs (remotion/tools/capture-room.mjs): a shop door held open by an amount ("onsen", inside Umi-no-yu: its street door), a fridge door held open,
  // and how many of a product are on Sakura's shelves (each one is drawn, so a gap is a real gap).
- shopDoor(id,amount){const s=SITES.find(site=>site.id===id);if(!s?.shopDoor)throw Error(`No shop door for ${id}`);s.shopDoor.set(amount);if(id==='market')sakuraShop.display.frontDoor?.set(amount);return s.shopDoor.amount;},
+ shopDoor(id,amount){if(id==='onsen'&&current?.id==='onsen'&&activeRoomLayout?.streetDoor){activeRoomLayout.streetDoor.set(amount);return activeRoomLayout.streetDoor.amount;}const s=SITES.find(site=>site.id===id);if(!s?.shopDoor)throw Error(`No shop door for ${id}`);s.shopDoor.set(amount);if(id==='market')sakuraShop.display.frontDoor?.set(amount);return s.shopDoor.amount;},
  fridgeDoor(column,amount){return sakuraShop.display.refrigerator.hold(column,amount);},
  stock(id,shelf){const st=activities.state.sakura?.stock;if(!st?.[id])throw Error(`No Sakura stock line ${id}`);if(Number.isFinite(shelf)){st[id].shelf=Math.max(0,shelf|0);sakuraShop.display.updateStock(st);}return {shelf:st[id].shelf,capacity:id==='bun'?12:24};},
  interact(){doInteract();},

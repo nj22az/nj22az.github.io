@@ -3,6 +3,7 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
 import {ONSEN_SIGNS} from './interiors/onsen-signs.js';
+import {frostedGlassTexture} from './interiors/onsen-front.js';
 
 /**
  * Umi-no-yu, the town's hot spring, on the flat of the east lawn below the park mound.
@@ -15,8 +16,8 @@ import {ONSEN_SIGNS} from './interiors/onsen-signs.js';
  *
  * Collision and prompts are in place from the start and the model streams in when you
  * come near, the way every other building here does: loading a model never moves a
- * wall. The noren, the signs and the steam are made here; the noren and the name
- * board go up with the building.
+ * wall. The noren, the signs, the frosted door glass and the steam are made here; the
+ * noren, the name board and the door glass go up with the building.
  */
 import {ONSEN,ONSEN_DOOR,ONSEN_APPROACH,onsenPoint,onsenOpen} from './onsen-layout.js';
 export {ONSEN,onsenPoint,onsenOpen};
@@ -92,6 +93,22 @@ function signs(group){
  return {notice:face,kanban};
 }
 
+/**
+ * The frosted lower panes of the model's two street doors, with ゆ left clear in them to read
+ * from the street: the same glass as the doors seen from the genkan (interiors/onsen-front.js).
+ * The model's glass is one see-through surface for every pane, so the frosting is laid just
+ * outside each leaf's lower pane, between its stiles and under its waist rail
+ * (tools/blender/build-park-onsen.py: leaves at x -1.85 and -1.15, glass at z 4.04 and 3.99).
+ */
+function doorGlass(){
+ const map=frostedGlassTexture(),group=new THREE.Group();group.name='Umi-no-yu door glass';
+ const material=new THREE.MeshStandardMaterial(map?{map,transparent:true,side:THREE.DoubleSide,roughness:.55}:{color:0xe8eeec,transparent:true,opacity:.92,side:THREE.DoubleSide,roughness:.55});
+ for(const [x,z] of [[-1.85,4.04],[-1.15,3.99]]){
+  const pane=new THREE.Mesh(new THREE.PlaneGeometry(.81,.62),material);pane.position.set(x,.715,z+.006);pane.name='Umi-no-yu frosted door glass';pane.renderOrder=3;group.add(pane);
+ }
+ return group;
+}
+
 /** Soft rising steam: one draw per source, drifting up and thinning as it goes. */
 function steam(group){
  const soft=canvasTexture(64,64,(ctx,w,h)=>{
@@ -122,7 +139,7 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
  const group=new THREE.Group();group.name='Umi-no-yu';group.position.set(ONSEN.x,0,ONSEN.z);group.rotation.y=ONSEN.yaw;world.group.add(group);
  world.colliders.push(...ONSEN_COLLIDERS.map(c=>({...c})));
  // The noren and the name board hang on the bathhouse, so they arrive with it.
- const {notice,kanban}=signs(group),curtain=noren(),plumes=steam(group);
+ const {notice,kanban}=signs(group),curtain=noren(),frosting=doorGlass(),plumes=steam(group);
  const anchor=(x,y,z,label,fn)=>{const o=new THREE.Object3D();o.position.set(x,y,z);group.add(o);register?.(o,label,fn);return o;};
  // Through the noren: the bathhouse is a room you walk into (interiors/onsen.js).
  const [doorX,doorZ]=ONSEN_DOOR,[outX,outZ]=ONSEN_APPROACH;
@@ -150,7 +167,7 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
   scene.traverse(o=>{if(o.isMesh){o.castShadow=!!shadows&&!o.material.transparent;o.receiveShadow=!!shadows;
    // The model's glass and water are its only see-through surfaces; drawn after the rest.
    if(o.material.transparent){o.material.depthWrite=false;o.renderOrder=2;}}});
-  group.add(scene,kanban,curtain);model=scene;return true;
+  group.add(scene,kanban,curtain,frosting);model=scene;return true;
  }});
 
  function tick(time){
