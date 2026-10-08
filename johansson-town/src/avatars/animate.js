@@ -118,7 +118,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   */
  function update(dt,s={}){
   time+=dt;
-  const action=gesture?.name||s.pose||s.seat;avatar.setOpenHands?.(['SitEnjoyFood','SitPresentFood'].includes(action));
+  const action=gesture?.name||s.pose||s.seat;avatar.setOpenHands?.(false);   // always mitten hands (the creator): never fingers, in any move
   const eating=['Eat','EatStanding','SitEat'].includes(action),drinking=['Drink','DrinkStanding','SitDrink','SitToast'].includes(action);
   if(eating||drinking){
    if(action!==lastConsume)consumeTime=0;
