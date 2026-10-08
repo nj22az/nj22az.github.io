@@ -7,10 +7,10 @@ from pathlib import Path
 root=Path(__file__).resolve().parents[2]
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 parts=[]
-def meshpart(name,vertices,faces,kind='head',shade=1):
+def meshpart(name,vertices,faces,kind='head',shade=1,colour=None):
  mesh=bpy.data.meshes.new(name);mesh.from_pydata(vertices,[],faces);mesh.update()
  obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
- parts.append({'name':name,'kind':kind,'shade':shade,'vertices':vertices,'indices':[i for f in faces for i in f]})
+ parts.append({'name':name,'kind':kind,'shade':shade,'colour':colour,'vertices':vertices,'indices':[i for f in faces for i in f]})
  return obj
 # Closed clean hairline: the perimeter is explicitly modelled, rather than burying
 # the remainder of a whole sphere beneath the skin.
@@ -18,7 +18,7 @@ verts=[];faces=[];cols=48;rows=16
 for row in range(rows+1):
  for col in range(cols+1):
   phi=2*math.pi*col/cols;front=max(0,math.cos(phi));back=max(0,-math.cos(phi))
-  y=-.13-.40*back+front*(.55+.17*math.sin(phi))
+  y=-.13-.40*back+front*(.63+.06*math.sin(phi)+.13*math.exp(-((math.sin(phi)+.23)/.18)**2)-.05*math.cos(4*phi))
   theta=(.012+(math.acos(y)-.012)*row/rows)
   verts.append([1.075*math.sin(theta)*math.sin(phi),1.075*math.cos(theta),1.06*math.sin(theta)*math.cos(phi)])
 for row in range(rows):
@@ -29,19 +29,35 @@ meshpart('Swept scalp',verts,faces)
 for ribbon in range(3):
  verts=[];faces=[]
  for i in range(21):
-  t=i/20;x=-.35+1.05*t;y=.91-.50*t+.055*math.sin(math.pi*t)+ribbon*.055
+  t=i/20;x=-.23+1.00*t;y=.88-.42*t+.085*math.sin(math.pi*t)+ribbon*.045
   for side in [-1,1]:
    yy=y+side*.055*math.sin(math.pi*(.06+.88*t));zz=math.sqrt(max(.02,1-x*x-yy*yy))+.105
    verts.append([x,yy,zz])
  for i in range(20):a=i*2;faces.extend([(a,a+2,a+1),(a+1,a+2,a+3)])
  meshpart('Swept fringe '+str(ribbon+1),verts,faces,shade=1+.025*ribbon)
-# A dark part line separates the swept sides, visible from the front and crown.
+# A narrow exposed scalp part is readable even in black hair. It follows the
+# actual cap surface rather than disappearing into its crown.
 verts=[];faces=[]
-for i in range(21):
- t=i/20;x=-.37-.08*t;y=.60+.38*t
- for dx in [-.009,.009]:verts.append([x+dx,y,math.sqrt(max(.01,1-(x+dx)**2-y*y))+.13])
-for i in range(20):a=i*2;faces.extend([(a,a+2,a+1),(a+1,a+2,a+3)])
-meshpart('Side part',verts,[(a,c,b) for a,b,c in faces],shade=.67)
+for i in range(25):
+ t=i/24;x=-.23-.035*t;y=.60+.43*t;width=.018*(1-.72*t)
+ for dx in [-width,width]:
+  xx=x+dx;z=1.06*math.sqrt(max(.001,1-(xx/1.075)**2-(y/1.075)**2))+.025
+  verts.append([xx,y,z])
+for i in range(24):a=i*2;faces.extend([(a,a+2,a+1),(a+1,a+2,a+3)])
+meshpart('Soft scalp part',verts,[(a,c,b) for a,b,c in faces],shade=.95,colour='scalp')
+# Two tapered face-framing locks soften the temples without covering the eyes.
+for side in [-1,1]:
+ verts=[];faces=[]
+ for row in range(17):
+  t=row/16;radius=.055*(1-t)**.65+.004
+  cx=side*(.84+.08*math.sin(math.pi*t)-.055*t);y=.34-.58*t;z=.52-.10*t
+  for col in range(12):
+   a=2*math.pi*col/12;verts.append([cx+radius*math.cos(a),y,z+radius*.7*math.sin(a)])
+ for row in range(16):
+  for col in range(12):a=row*12+col;b=row*12+(col+1)%12;c=a+12;d=b+12;faces.extend([(a,b,c),(b,d,c)])
+ faces.extend([(0,i+1,i) for i in range(1,11)])
+ base=16*12;faces.extend([(base,base+i,base+i+1) for i in range(1,11)])
+ meshpart('Soft temple lock '+str(side),verts,faces,shade=1.04)
 # Tapered locks gather low at the nape, then hang behind the shoulders.
 for lock in range(5):
  verts=[];faces=[]
@@ -60,5 +76,7 @@ for lock in range(5):
 mat=bpy.data.materials.new('Recolourable hair');mat.diffuse_color=(.65,.43,.2,1)
 for obj in bpy.context.scene.objects:
  if obj.type=='MESH':obj.data.materials.append(mat)
+scalp=bpy.data.materials.new('Scalp follows skin colour');scalp.diffuse_color=(.88,.67,.48,1)
+bpy.data.objects['Soft scalp part'].data.materials.clear();bpy.data.objects['Soft scalp part'].data.materials.append(scalp)
 bpy.ops.wm.save_as_mainfile(filepath=str(root/'art/avatars/swept-ponytail.blend'))
 print('Exported',len(parts),'reusable hair parts')

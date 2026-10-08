@@ -76,3 +76,13 @@ or assign every town role to every resident.
 The creator pose menu includes the complete shared move catalogue for every
 character. The cross-cast test exercises 24 named moves plus walking, running and
 sitting for all 33 authored cast/neighbour recipes with the new hair and outfit.
+
+The refined Blender hairline has a visible narrow scalp part that follows the
+character's skin colour, a softer curved fringe and tapered temple strands. These
+parts remain shared, recolourable and mirrored with the hairstyle; no face settings
+were changed to achieve the softer look.
+
+The branch incorporates current main’s bathhouse electrical/layout updates and
+journal content. Generated runtime conflicts were resolved by rebuilding the
+combined sources, retaining main’s previous runtime chunks for cached pages.
+Onsen and runtime-package integration checks passed after the merge.

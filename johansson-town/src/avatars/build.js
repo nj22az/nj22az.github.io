@@ -302,7 +302,7 @@ function addHair(list,recipe,m){
    });
    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
    const indices=[...asset.indices];if(side<0)for(let i=0;i<indices.length;i+=3)[indices[i],indices[i+2]]=[indices[i+2],indices[i]];
-   g.setIndex(indices);g.computeVertexNormals();part(list,g,asset.kind==='tail'?tailShare:'head',new THREE.Color(c).multiplyScalar(asset.shade).getStyle());
+   g.setIndex(indices);g.computeVertexNormals();part(list,g,asset.kind==='tail'?tailShare:'head',new THREE.Color(asset.colour==='scalp'?recipe.body.skin:c).multiplyScalar(asset.shade).getStyle());
   }
  }
  if(style==='long'){ball(list,R*.95,at(0,cy-R*.72,-R*.55),tailShare,c,[1.05,1.25,.5]);}

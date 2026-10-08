@@ -28,9 +28,9 @@ export const ONSEN_VOLTS=100;
 
 /** The board: on the changing-room face of the wall between the lobby and the changing room. */
 export const ONSEN_BOARD=Object.freeze({
- x:-3.6,y:1.55,wallZ:1.54,w:.52,h:.62,d:.14,
+ x:-3.6,y:1.1,wallZ:1.54,w:.52,h:.62,d:.14,
  facing:'-z',doorOpen:165,
- where:'On the changing-room face of the bandai wall, just round the noren from the bandai: Mrs Higa can reach it in four steps without leaving the building, it sits above the lockers’ end where nobody leans, and the door stays open in the evening so the levers can be read from the vanity.',
+ where:'On the changing-room face of the bandai wall, just round the noren from the bandai: Mrs Higa can reach it in four steps without leaving the building. It hangs low, the main lever at shoulder height and the rest below it, so anyone in the house can throw a lever in the dark without a step stool. It is clear of the lockers’ end, where nobody leans, and the door stays open in the evening so the levers can be read from the vanity.',
  main:Object.freeze({id:'main',jp:'主幹',en:'Main breaker',amps:60,
   why:'The whole bathhouse is one 60 A supply at 100 V: 6 000 W before the main opens. It protects the service cable from the pole.'}),
  elcb:Object.freeze({id:'elcb',jp:'漏電遮断器',en:'Earth-leakage breaker',amps:60,milliamps:30,
@@ -518,7 +518,8 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],hall={fron
   dryers.push({id,group:g,air,streaks,spin:0,phase:hash(i+1,17)*Math.PI*2,hz:8+hash(i+1,19)*3});
   socket(sx,.88,vanity.wall,0,'Vanity socket '+(i+1));
   const hx=x-.01;
-  cord([[hx,.825,-1.016],[hx,.815,-1.04],[(hx+sx)/2,.814,-1.07],[sx,.815,-1.095],[sx,.83,-1.112],[sx,.862,-1.117]],'Hair dryer cord');
+  // Each cord is named for its dryer, so a film can hide one dryer and its cord and keep the others.
+  cord([[hx,.825,-1.016],[hx,.815,-1.04],[(hx+sx)/2,.814,-1.07],[sx,.815,-1.095],[sx,.83,-1.112],[sx,.862,-1.117]],'Hair dryer '+(i+1)+' cord');
  });
  // ---- The massage chair's 2003 spur (ONSEN_RACEWAY): white raceway round the changing
  // room and over the noren, through the wall, down to a surface socket box by the chair.
@@ -634,7 +635,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],hall={fron
    ?`Below, eight ${ONSEN_CIRCUITS[0].amps} A breakers, one for each circuit: ${list}. The last two are new and whiter than the rest, in the ways that were spare, labelled by hand on masking tape. `
    :`Below, six ${ONSEN_CIRCUITS[0].amps} A breakers, one for each circuit: ${list}; and two spare ways (予備) at the end of the lower row, blank behind white covers. `;
   action('inspect','Breaker board · Distribution board',
-   'Grandmother Higa’s breaker board, grey steel, the door left open in the evening so the levers can be read from the vanity. Lever up is on. '+
+   'Grandmother Higa’s breaker board, grey steel, the door left open in the evening so the levers can be read from the vanity. It hangs at shoulder height, so anyone can reach the main lever without a stool. Lever up is on. '+
    `At the top, the ${B.main.amps} A main breaker: the whole bath can draw ${B.main.amps*ONSEN_VOLTS} watts at ${ONSEN_VOLTS} volts before it goes. Beside it the earth-leakage breaker, which switches everything off in a blink if ${B.elcb.milliamps} thousandths of an amp leak away to earth, through wet tiles or through a person. In a building full of water it is the most important switch here. `+
    ways+
    `A breaker protects the cable, not the hair dryer. The cable in the wall is good for ${ONSEN_CIRCUITS[0].amps} A, so the breaker opens at ${ONSEN_CIRCUITS[0].amps} A. Fit a bigger one and the cable becomes the fuse, warming up inside the wall where nobody can see it. So when the sockets trip you never fit a bigger breaker: you spread the load out.`+
