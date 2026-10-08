@@ -447,6 +447,39 @@ export function buildHatProp(input,{mode='wall',shadows=true}={}){
  return mesh;
 }
 
+/** A shoe (or boot) on the foot of side s ('L' or 'R'): its upper and its sole, tagged so it can come off. */
+function addShoe(list,recipe,m,s,wear){
+ const o=recipe.outfit,sx=s==='L'?1:-1;
+ ball(list,m.legR*1.25,[sx*m.hipX,m.foot*.62,m.legR*.55],'foot'+s,o.shoes,[1,.6,wear==='shoes'?1.85:1.75],12,8).userData.shoe=s;
+ if(wear==='boots')limb(list,[sx*m.hipX,m.foot,0],[sx*m.hipX,m.foot+m.shin*.65,0],m.legR*1.08,m.legR*1.05,o.shoes,{bone:'knee'+s,joints:[]});
+ // The sole: white rubber on a sneaker, dark under a leather shoe or an elder's.
+ ball(list,m.legR*1.32,[sx*m.hipX,m.foot*.16,m.legR*.6],'foot'+s,wear==='shoes'?'#2b2622':recipe.age==='elder'?'#6b4a32':'#f2efe6',[1,.24,1.8],12,6).userData.shoe=s;
+}
+/** The sock left on a foot whose shoe has come off: pale, and a little smaller than the shoe was. */
+export const SOCK=Object.freeze({colour:'#e7e1d3',size:.84});
+
+/**
+ * Somebody's shoe on its own (one that has come off: kicked off in a scuffle, left at a door): the same
+ * pieces their foot wears, painted the same, inked like them, as a plain mesh. Its sole's middle is at the
+ * origin, the toe towards +z. Null for somebody barefoot or in sandals.
+ */
+export function buildShoeProp(input,{side='R',shadows=true}={}){
+ const recipe=normalizeRecipe(input),m=measure(recipe),wear=recipe.outfit.footwear;
+ if(wear==='barefoot'||wear==='sandals')return null;
+ const parts=[];addShoe(parts,recipe,m,side,wear);
+ const geometry=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
+ for(const key of ['skinIndex','skinWeight','ink'])geometry.deleteAttribute(key);
+ geometry.computeBoundingBox();
+ const b=geometry.boundingBox,c=b.getCenter(new THREE.Vector3());
+ geometry.translate(-c.x,-b.min.y,-c.z);geometry.computeBoundingSphere();
+ const mesh=new THREE.Mesh(geometry,celFrom(new THREE.MeshStandardMaterial({vertexColors:true}),{bands:'soft3'}));
+ mesh.name=(recipe.name||'Resident')+'’s shoe';mesh.castShadow=shadows;mesh.receiveShadow=true;mesh.userData.shoeProp=true;
+ // its ink line: the same back-faced hull as theirs, pushed out from the shoe's own middle
+ const ink=geometry.clone();ink.translate(0,-(b.max.y-b.min.y)/2,0);
+ const line=new THREE.Mesh(ink,outlineMaterial({skinned:false}));line.position.y=(b.max.y-b.min.y)/2;line.name=mesh.name+' outline';line.userData.outline=true;mesh.add(line);
+ return mesh;
+}
+
 /** Accessories join the existing skinned mesh, adding no extra draw calls. */
 function addAccessories(list,recipe,m){
  const a=recipe.accessories,R=m.Rh,c=a.colour;
@@ -649,12 +682,7 @@ function addBody(list,recipe,m,swim=false){
     ball(list,m.legR*1.24,[sx*m.hipX,m.foot*.12,m.legR*.55],'foot'+s,recipe.age==='elder'?'#6b4a32':'#c8a878',[1,.18,1.8],12,6);
     ball(list,m.legR*.42,[sx*m.hipX,m.foot*.55+m.legR*.55,m.legR*.95],'foot'+s,o.shoes,[2.3,.5,.8],10,6);
    }
-  }else{
-   ball(list,m.legR*1.25,[sx*m.hipX,m.foot*.62,m.legR*.55],'foot'+s,o.shoes,[1,.6,wear==='shoes'?1.85:1.75],12,8);
-   if(wear==='boots')limb(list,[sx*m.hipX,m.foot,0],[sx*m.hipX,m.foot+m.shin*.65,0],m.legR*1.08,m.legR*1.05,o.shoes,{bone:'knee'+s,joints:[]});
-   // The sole: white rubber on a sneaker, dark under a leather shoe or an elder's.
-   ball(list,m.legR*1.32,[sx*m.hipX,m.foot*.16,m.legR*.6],'foot'+s,wear==='shoes'?'#2b2622':recipe.age==='elder'?'#6b4a32':'#f2efe6',[1,.24,1.8],12,6);
-  }
+  }else addShoe(list,recipe,m,s,wear);
  }
  if(b==='skirt'||b==='longskirt'||b==='pleatedskirt'){
   const len=b==='skirt'||b==='pleatedskirt'?m.thigh*.9:m.thigh+m.shin*.85;
@@ -923,8 +951,12 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const hatHairRanges=[];let hairOffset=0;
  for(const g of parts){if(g.userData.hatHair)hatHairRanges.push({offset:hairOffset,original:g.userData.hatHair,tucked:{position:g.attributes.position.array.slice(),normal:g.attributes.normal.array.slice()}});hairOffset+=g.attributes.position.count*3;}
  let hairCovered=true;
+ // Each shoe's vertices, so a shoe can come off and leave a sock (setShoe).
+ const shoeRanges={L:[],R:[]};{let at=0;for(const g of parts){const n=g.attributes.position.count;if(g.userData.shoe)shoeRanges[g.userData.shoe].push([at,n]);at+=n;}}
  const geometry=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
  const hasHat=geometry.attributes.position.count>hatStart;
+ const shoeOn={L:true,R:true},shoeSaved={};
+ for(const side of ['L','R'])for(const [at,n] of shoeRanges[side])(shoeSaved[side]??=[]).push({at,n,position:geometry.attributes.position.array.slice(at*3,(at+n)*3),colour:geometry.attributes.color.array.slice(at*3,(at+n)*3)});
  geometry.computeBoundingSphere();
  const material=bodyMaterial(recipe,m);
  const body=new THREE.SkinnedMesh(geometry,material);body.name='Shimanchu body';
@@ -948,6 +980,21 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
   setHat(on){geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){for(const range of hatHairRanges){const source=on?range.tucked:range.original;geometry.attributes.position.array.set(source.position,range.offset);geometry.attributes.normal.array.set(source.normal,range.offset);}if(hatHairRanges.length){geometry.attributes.position.needsUpdate=true;geometry.attributes.normal.needsUpdate=true;}hairCovered=!!on;}},
   get hatOn(){return hasHat&&geometry.drawRange.count===Infinity;},
+  /** A shoe on or off ('L' or 'R'). Off, the foot is in its sock (SOCK); where the shoe went is somebody
+   *  else's to show (buildShoeProp). */
+  setShoe(side,on){
+   on=!!on;if(!shoeSaved[side]||shoeOn[side]===on)return;shoeOn[side]=on;
+   const P=geometry.attributes.position.array,C=geometry.attributes.color.array,sock=new THREE.Color(SOCK.colour),mid=new THREE.Vector3(),q=new THREE.Vector3();
+   // the sock: the shoe drawn in towards the middle of its upper (the first piece), in the sock's colour
+   const upper=shoeSaved[side][0];for(let i=0;i<upper.n;i++)mid.add(q.fromArray(upper.position,i*3));mid.multiplyScalar(1/upper.n);
+   for(const r of shoeSaved[side])for(let i=0;i<r.n;i++){
+    const j=(r.at+i)*3;
+    if(on){P.set(r.position.subarray(i*3,i*3+3),j);C.set(r.colour.subarray(i*3,i*3+3),j);continue;}
+    q.fromArray(r.position,i*3).sub(mid).multiplyScalar(SOCK.size).add(mid);P[j]=q.x;P[j+1]=q.y;P[j+2]=q.z;C[j]=sock.r;C[j+1]=sock.g;C[j+2]=sock.b;
+   }
+   geometry.attributes.position.needsUpdate=true;geometry.attributes.color.needsUpdate=true;
+  },
+  shoeOn(side){return shoeOn[side];},
   faceState:{expression:'neutral',blink:0,talk:0,look:[0,0]},
   /** Repaint the face if what it is doing has changed. */
   paintFace(state){

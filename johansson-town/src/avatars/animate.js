@@ -4,7 +4,7 @@ import {bicycleRiderFit} from '../world/bicycle-fit.js';
 import {seeded} from './recipe.js';
 import {consumptionPhase,poseAvatarConsumption,drinkHeadTilt} from './consume.js';
 import {bodyLanguage,CONVERSATION_BIG} from './body-language.js';
-import {createFootGrounder} from './foot-ground.js';
+import {createFootGrounder,createLieGrounder} from './foot-ground.js';
 import {createSeatSupport} from './seat-support.js';
 import {gaitOf} from './gait.js';
 
@@ -23,6 +23,9 @@ const JOINTS=['hips','spine','chest','neck','head','shoulderL','elbowL','handL',
 const env=(t,d)=>t<0||t>d?0:Math.sin(Math.PI*Math.min(1,t/d));
 const TIC_TIME={glance:1.4,sky:1.6,nod:1,hum:2.4,watch:1.8,hair:1.4,kick:.8,skip:1.1};
 const ease=(t,d,edge=.25)=>Math.min(1,t/edge,(d-t)/edge);
+/** Face down, how far the head is raised (radians, neck and head together) so its cheek, the widest thing on
+ *  them, rests on the ground beside the chest rather than holding it up off it. */
+const PRONE_LIFT=m=>Math.asin(THREE.MathUtils.clamp((m.Rh*m.headSX*1.04-m.depth/2)/(m.headCentre-m.neckY),0,.9));
 
 /** How long each move lasts (loops run until something else happens). */
 export const GESTURES=Object.freeze({
@@ -48,7 +51,7 @@ export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump
  */
 export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bowDepth=1}={}){
  const {bones,measure:m}=avatar;
- const groundFeet=createFootGrounder(avatar);
+ const groundFeet=createFootGrounder(avatar),groundLying=createLieGrounder(avatar);
  const supportSeat=createSeatSupport(avatar);
  const style=bodyLanguage(avatar.recipe?.profile||{});
  const pick=list=>list[Math.floor(random()*list.length)];
@@ -70,7 +73,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  const target=Object.fromEntries(JOINTS.map(j=>[j,new THREE.Vector3()]));
  const gazeLocal=new THREE.Vector3();
  let phase=0,time=Math.random()*10,rootY=0,hipsY=0,lean=0;
- let lie=0,lyingTilt=false;
+ let lie=0,lyingTilt=false,prone=false;
  let gesture=null,blinkIn=1+Math.random()*3,blinkT=-1,talkT=0,talkOpen=0,glance=[0,0],glanceIn=2,lastExpression='neutral';
  const headRestPosition=bones.head.position.clone();
  let consumption=null,consumeTime=0,lastConsume=null,driftX=0;
@@ -114,7 +117,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   *   conversing (in a conversation, talking or listening),
   *   pose 'SitPour' (seated, pouring a bottle into the glass in the other hand), 'SitHold' (a glass held up),
   *   lying (flat on their back on the floor, knocked out: arms and legs flung out, head lolling;
-  *   0–1 blends them down and up again)
+  *   0–1 blends them down and up again; 'prone': face down instead, the cartoon knock-out: flat on the
+  *   front, the arms flung out on the ground, the head turned to rest on a cheek, the knees bent and
+  *   the feet up in the air, swaying gently)
   */
  function update(dt,s={}){
   time+=dt;
@@ -310,14 +315,27 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     if(awayT>0){awayT-=dt;eyes=[awaySide*.75,.35];}}
   }
   // Knocked out flat on the back: arms and legs flung out, a knee up, the head lolling.
-  const lying=s.lying===true?1:Math.max(0,Math.min(1,+s.lying||0));
+  // Or face down ('prone'): which way they went down holds until they are up again.
+  const lying=s.lying===true||s.lying==='prone'?1:Math.max(0,Math.min(1,+s.lying||0));
+  if(lie===0&&lying>0)prone=s.lying==='prone';
   lie+=(lying-lie)*(1-Math.exp(-dt*10));if(lie<.001)lie=0;
   if(lie>0){
    const l=lie,roll=Math.sin(time*1.7);
    for(const j of ['hips','spine','chest','neck','head','shoulderL','elbowL','handL','shoulderR','elbowR','handR','thighL','kneeL','footL','thighR','kneeR','footR'])target[j].multiplyScalar(1-l);
-   add('shoulderL',-.2*l,0,1.35*l);add('shoulderR',-.35*l,0,-1.15*l);add('elbowL',-.35*l);add('elbowR',-.6*l);
-   add('thighL',-.12*l,0,.2*l);add('thighR',-.65*l,0,-.14*l);add('kneeR',1.05*l);add('footL',.45*l);add('footR',.25*l);
-   add('head',0,(.35+.12*roll)*l,.08*roll*l);targetRoot*=1-l;
+   if(prone){
+    // Splat: the arms out flat on the ground either side (out to the side only, so they stay on it: a
+    // reach forward would go into the pavement), the head turned onto its cheek, the knees bent so the
+    // feet stand up in the air, swaying together slowly from side to side, the toes pointed.
+    const sway=Math.sin(time*1.8),pump=Math.sin(time*1.8+1.3);
+    add('shoulderL',.06*l,0,1.3*l);add('shoulderR',.06*l,0,-1.4*l);add('elbowL',-.12*l);add('elbowR',-.18*l);
+    add('thighL',.08*l,.3*sway*l,.06*l);add('thighR',.08*l,.3*sway*l,-.06*l);
+    add('kneeL',(1.5+.1*pump)*l);add('kneeR',(1.75-.1*pump)*l);add('footL',.5*l);add('footR',.45*l);
+    const lift=PRONE_LIFT(m);add('neck',-lift*.45*l);add('head',-lift*.55*l,1.25*l,0);targetRoot*=1-l;
+   }else{
+    add('shoulderL',-.2*l,0,1.35*l);add('shoulderR',-.35*l,0,-1.15*l);add('elbowL',-.35*l);add('elbowR',-.6*l);
+    add('thighL',-.12*l,0,.2*l);add('thighR',-.65*l,0,-.14*l);add('kneeR',1.05*l);add('footL',.45*l);add('footR',.25*l);
+    add('head',0,(.35+.12*roll)*l,.08*roll*l);targetRoot*=1-l;
+   }
   }
   // Ease every joint toward where it is going.
   if(onChair&&chairBlend<1){
@@ -352,10 +370,12 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // (the biggest thing on them) so nothing goes through the floor.
    const l=THREE.MathUtils.smoothstep(lie,0,1),rest=Math.max(m.Rh*Math.max(m.headSX,m.headSY),m.depth/2);
    // A body faces -z: a quarter turn about x the positive way lays its back on the floor, face up, the head
-   // behind where they stood; the hips stay on their mark.
-   avatar.root.rotation.x=Math.PI/2*l;
-   avatar.root.position.y=avatar.root.position.y*(1-l)+rest*l;
-   avatar.root.position.z-=m.hipY*l;
+   // behind where they stood; the hips stay on their mark. Face down is the quarter turn the other way, the
+   // head in front of where they stood, resting on whatever on them is lowest (the cheek, the chest).
+   avatar.root.rotation.x=(prone?-1:1)*Math.PI/2*l;
+   avatar.root.position.z+=(prone?1:-1)*m.hipY*l;
+   if(prone){const y=avatar.root.position.y;avatar.root.position.y=0;avatar.root.position.y=y*(1-l)+(groundLying(s.floorHeight||0))*l;}
+   else avatar.root.position.y=avatar.root.position.y*(1-l)+rest*l;
    lyingTilt=l>0;
   }
   // The face: blinks, words, glances, and whatever it is feeling.
