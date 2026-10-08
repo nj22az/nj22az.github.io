@@ -13,7 +13,7 @@ import {buildSakuraShell} from './sakura-shell.js';
 import {PALETTE,fluorescent} from '../../render/dusk.js';
 import {buildSakuraCheer,buildSakuraBand} from './sakura-cheer.js';
 import {buildSakuraLife} from './sakura-life.js';
-import {buildMagazineRack} from './sakura-magazine-rack.js';
+import {buildMagazineRack,MAGAZINE_RACK} from './sakura-magazine-rack.js';
 import {buildShelfEdges} from './sakura-shelf-edge.js';
 import {buildSakuraCorners} from './sakura-corners.js';
 import {buildSakuraSurfaces} from './sakura-surfaces.js';
@@ -141,7 +141,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
   anchor([B.x-.35,B.top+.25,B.z],'Ask for a steamed bun',()=>action('sakura-hot-snacks'));}
  anchor([COPY_MACHINE.x,1.1,COPY_MACHINE.z-.45],'Use the copy machine',()=>action('inspect','Copy machine · fax',
   'Ten yen a copy, fifty a page to fax. The fishermen\u2019s co-op sends its catch sheets to Naha from here every morning, and the lid is warm by nine.'));
- const magazineRack=buildMagazineRack(room,{anchor,action});
+ const magazineRack=MAGAZINE_RACK.placed?buildMagazineRack(room,{anchor,action}):null;
  const ads=advertising.finish();
  // The posters hang on the shop's own walls, not across its windows (sakura-dressing.js):
  // the glass is for seeing in, and for the paper decorations that change with the season.
@@ -171,7 +171,7 @@ export function buildSakuraInterior({room,reg,action,exit}){
  let lightLevel=1;const tubes=[];
  const updateLighting=minutes=>{
   // The decorations and the magazine rack follow the town calendar, looked at once an hour.
-  decorations.refresh(townCalendarAt(minutes).date);magazineRack.refresh(townCalendarAt(minutes).date);
+  decorations.refresh(townCalendarAt(minutes).date);magazineRack?.refresh(townCalendarAt(minutes).date);
   lightLevel=fluorescent(minutes);fill.intensity=1.7*lightLevel;
   for(const tube of tubes)for(const mat of Array.isArray(tube.material)?tube.material:[tube.material]){
    mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;

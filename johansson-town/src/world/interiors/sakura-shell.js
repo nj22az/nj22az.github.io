@@ -245,7 +245,7 @@ function buildWallShelving(){
   for(const x of [a+.02,b-.02])for(const z of [K.front+.02,K.back-.02])span(x-.02,x+.02,0,2.25,z-.02,z+.02,0x6f7a7c);
  }
  // The magazine rack's plinth so it does not float on the terrazzo.
- const R=MAGAZINE_RACK;span(R.x-R.width/2,R.x+R.width/2,0,.06,R.z-R.depth/2,R.z+R.depth/2,C.plinth);
+ const R=MAGAZINE_RACK;if(R.placed)span(R.x-R.width/2,R.x+R.width/2,0,.06,R.z-R.depth/2,R.z+R.depth/2,C.plinth);
  return mesh(material());
 }
 

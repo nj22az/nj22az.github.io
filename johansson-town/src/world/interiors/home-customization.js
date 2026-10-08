@@ -8,7 +8,7 @@ export const HOME_CUSTOMIZATION_PLACEMENT=Object.freeze({
  anchor:Object.freeze([2.65,1.3,.85]),
 });
 
-export function createHomeCustomization({room,state,menu,save,close,reg}){
+export function createHomeCustomization({room,state,menu,save,close,reg,arrange=null}){
  const group=room.getObjectByName('Mayor’s home'),walls=[],textiles=[];
  if(!group)return null;
  group.traverse(o=>{
@@ -37,6 +37,7 @@ export function createHomeCustomization({room,state,menu,save,close,reg}){
   ...items.map(item=>[item.name,()=>{if(setHomeDecor(state,key,item.id)){apply();save();}choose(key,items,title);},state.homeDecor?.[key]===item.id]),['Back',open],
  ]);
  function open(){menu('Make yourself at home','Choose wall colours, textiles and a keepsake earned around the island. Your choices stay with this player.',[
+  ...(arrange?[['Arrange furniture',()=>{close();arrange();}]]:[]),
   ['Wall colour',()=>choose('wall',HOME_WALLS,'Wall colour')],
   ['Cushions and quilt',()=>choose('textile',HOME_TEXTILES,'Cushions and quilt')],
   ['Keepsake shelf',()=>choose('keepsake',unlockedHomeKeepsakes(state),'Keepsake shelf')],

@@ -96,9 +96,11 @@ export const SAKURA_LAYOUT={
  bounds:{minX:-6.8,maxX:6.8,minZ:-6.78,maxZ:3.88},
  floorPolygon:[[-6.8,3.88],[6.8,3.88],[6.8,-3.95],[5.7,-3.95],[5.7,-6.78],[-5.7,-6.78],[-5.7,-3.95],[-6.8,-3.95]],
  spawn:[0,0,3.2],entrance:[0,0,3.45],exit:[0,1.35,3.88],yaw:0,
- // Returning visitors browse on the floor in front of the rack. The old shop's
- // guest chairs were inside this fitting; Sakura has standing readers instead.
- guestStands:[-.75,0,.75].map(dx=>[MAGAZINE_RACK.x+dx,0,MAGAZINE_RACK.z-MAGAZINE_RACK.depth/2-.45]),
+ // Returning visitors in the evening (Nhung visiting her sister, a friend after work) stand at the customer side of the
+ // counter and talk to Thuan across it: standing places, never the older store's removed chairs. Along the counter,
+ // north of the till so the queue keeps its place, either side of the bun steamer (its buyers stand at 4.05, 2.45);
+ // a third guest waits a step back between them.
+ guestStands:[[4.1,0,1.75],[4.1,0,3.15],[3.3,0,2.45]],guestYaw:-Math.PI/2,guestActivity:'chatting with Thuan at the counter',
  // The glazing plane, in room coordinates. Both directions of the shop window use
  // it: the street seen from inside, and the real interior seen from the street.
  frontZ:3.91,
@@ -107,7 +109,7 @@ export const SAKURA_LAYOUT={
  colliders:[
   ...GONDOLA.map(([id,r])=>turned(id,r)),
   rect(CASH_CORNER.atm.x,CASH_CORNER.atm.z,CASH_CORNER.atm.w,CASH_CORNER.atm.d,1.6),rect(CASH_CORNER.film.x,CASH_CORNER.film.z,CASH_CORNER.film.w,CASH_CORNER.film.d,1.2),
-  rect(MAGAZINE_RACK.x,MAGAZINE_RACK.z,MAGAZINE_RACK.width,MAGAZINE_RACK.depth,MAGAZINE_RACK.height),rect(-5.17,-2.16,2.04,.61,1.5),
+  ...(MAGAZINE_RACK.placed?[rect(MAGAZINE_RACK.x,MAGAZINE_RACK.z,MAGAZINE_RACK.width,MAGAZINE_RACK.depth,MAGAZINE_RACK.height)]:[]),rect(-5.17,-2.16,2.04,.61,1.5),
   rect(-6.4,.43,.9,4.03,2.25),rect(.4,-3.55,5.35,.8,2.3),
   rect(4.8,1.97,.52,3.78,FURNITURE_HEIGHTS.serviceCounter),rect(6.74,2.08,.18,3.48,2.0),
   rect(-.66,-3.99,7.82,.12),rect(5.62,-3.99,2.46,.12),

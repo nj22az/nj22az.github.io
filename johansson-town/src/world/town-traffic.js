@@ -69,7 +69,8 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  const traffic=createTraffic({obstacles});let serial=0,requestedCrossing=null;
  const make=(kind,colour,role,owner,purpose)=>{const g=buildVehicle(kind,colour);group.add(g);const v=traffic.add({g,kind,role,owner,driver:owner,purpose,id:'owned-car-'+(++serial),...VEHICLE_SIZE[kind]});Object.assign(g.userData,{owner,driver:owner,purpose,vehicleId:v.id});g.name=owner+' · '+kind;const a=new THREE.Object3D();a.position.y=1.2;g.add(a);register?.(a,'Inspect '+owner+'’s '+kind,()=>onAction?.('inspect',owner+'’s '+kind,'Owner and driver: '+owner+'. '+purpose+'.'));v.solid={id:'parked-vehicle',x:1e6,z:1e6,w:v.width,d:v.length,yaw:0,height:2};colliders?.push(v.solid);return v;};
  const airportTaken=new Set(),townTaken=new Set();
- const parkAt=(v,p)=>{v.where=p.where;v.bay=p.bay;v.shore=p.where==='airport'?'airport':'town';delete v.stageOrigin;traffic.park(v,p);Object.assign(v.solid,{x:p.x,z:p.z,yaw:p.yaw,height:p.y+1.9});};
+ // Cars come and go, so the builder keeps their bays clear instead of asking whether one is parked now.
+ const parkAt=(v,p)=>{v.solid.moving=true;v.where=p.where;v.bay=p.bay;v.shore=p.where==='airport'?'airport':'town';delete v.stageOrigin;traffic.park(v,p);Object.assign(v.solid,{x:p.x,z:p.z,yaw:p.yaw,height:p.y+1.9});};
  const unpark=v=>{v.solid.x=v.solid.z=1e6;if(v.where==='airport')airportTaken.delete(v.bay);if(v.where==='service')townTaken.delete(v.bay);v.where='driving';};
  const reserve=(shore)=>{const set=shore==='airport'?airportTaken:townTaken,order=shore==='airport'?[0,1,2,3,4,5]:[1,0];for(const i of order)if(!set.has(i)){set.add(i);return i;}return null;};
  const quayBay=i=>{const [x,z]=QUAY_BAYS[i];return {where:'quay',bay:i,x,y:0,z,yaw:0};};

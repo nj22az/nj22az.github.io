@@ -1,6 +1,7 @@
 import {createLocalCharacters} from './models.js?snappy=1';
 import * as THREE from '../../vendor/three.module.js';
 import {faceYaw,turnToward} from './facing.js';
+import {separateBodies} from './body-collision.js';
 
 // Each resident has one appearance. Keep the logical entity while its chosen
 // model loads; never render an obsolete body or borrow another resident’s face.
@@ -130,6 +131,30 @@ export function createCharacters(options={}){
     for(const [entity,c] of conversations){if(c.until<=now||bodyBusy(entity)){conversations.delete(entity);continue;}entity.position.x=c.x;entity.position.z=c.z;if(playerEntity)entity.rotation.y=turnToward(entity.rotation.y,faceYaw(entity.position,playerEntity.position),dt,7);}
     models.update(dt);
     // Re-apply the AI target after the conversation layer so a commanded resident does not drift.
+    separateAll();
+  }
+
+  // Bodies are solid (body-collision.js): every standing, visible person, the player included, kept apart from the
+  // others in the same space. Busy bodies (seated, serving, asleep, in a conversation hold) do not move.
+  const scratch=new THREE.Vector3();
+  function separateAll(){
+    const bodies=[];
+    for(const entity of new Set(entities.values())){
+      if(!entity?.parent||(entity!==playerEntity&&!entity.visible))continue;
+      const u=entity.userData;
+      if(u.lying||u.ridingBicycle)continue;
+      entity.getWorldPosition(scratch);
+      bodies.push({entity,x:scratch.x,z:scratch.z,x0:scratch.x,z0:scratch.z,space:entity.parent,
+        fixed:entity!==playerEntity&&(bodyBusy(entity)&&!entity.userData.character?.moving||conversations.has(entity)||!!u.sleeping||Number.isFinite(u.seatHeight))});
+    }
+    if(bodies.length<2)return;
+    if(!separateBodies(bodies,{blocked:options.isBlocked}))return;
+    for(const b of bodies){
+      if(Math.abs(b.x-b.x0)+Math.abs(b.z-b.z0)<1e-6)continue;
+      // the new spot in the world, back into the room's own frame (a room may be turned or scaled)
+      b.entity.getWorldPosition(scratch);scratch.x=b.x;scratch.z=b.z;b.entity.parent.worldToLocal(scratch);
+      b.entity.position.x=scratch.x;b.entity.position.z=scratch.z;
+    }
   }
 
   function conversationTarget(entity){

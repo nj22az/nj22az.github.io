@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {registerDetail} from './detail-stream.js';
+import {ONSEN_SIGNS} from './interiors/onsen-signs.js';
 
 /**
  * Umi-no-yu, the town's hot spring, on the flat of the east lawn below the park mound.
@@ -51,8 +52,8 @@ function noren(){
  const map=canvasTexture(384,256,(ctx,w,h)=>{
   ctx.fillStyle='#253a5e';ctx.fillRect(0,0,w,h);
   ctx.fillStyle='#f3efe4';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font=`bold 150px ${SERIF}`;ctx.fillText("Yu",w/2,h*.55);
-  ctx.font=`bold 30px ${SERIF}`;ctx.fillText('♨',w*.17,h*.2);ctx.fillText('♨',w*.83,h*.2);
+  const N=ONSEN_SIGNS.noren;ctx.font=`bold 150px ${SERIF}`;ctx.fillText(N.jp,w/2,h*.55);
+  ctx.font=`bold 30px ${SERIF}`;ctx.fillText(N.mark,w*.17,h*.2);ctx.fillText(N.mark,w*.83,h*.2);
  });
  const material=new THREE.MeshStandardMaterial({map,roughness:.9,side:THREE.DoubleSide});
  for(let k=0;k<3;k++){
@@ -68,15 +69,15 @@ function signs(group){
  const board=canvasTexture(512,140,(ctx,w,h)=>{
   ctx.fillStyle='#3a2a1c';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#c9a86a';ctx.lineWidth=5;ctx.strokeRect(8,8,w-16,h-16);
   ctx.fillStyle='#f1e2bd';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font=`bold 74px ${SERIF}`;ctx.fillText("♨ Sea Bath",w/2,h*.44);
-  ctx.font='bold 20px sans-serif';ctx.fillText('UMI-NO-YU · HOT SPRING',w/2,h*.82);
+  const K=ONSEN_SIGNS.kanban;ctx.font=`bold 74px ${SERIF}`;ctx.fillText(K.mark+' '+K.jp,w/2,h*.44);
+  ctx.font='bold 20px sans-serif';ctx.fillText(K.sub,w/2,h*.82);
  });
  const kanban=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.41),new THREE.MeshStandardMaterial({map:board,roughness:.8}));
  kanban.position.set(-1.4,2.68,4.3);kanban.name='Umi-no-yu sign';
  // The notice by the path: hours, fee, and what is in the water.
  const notice=canvasTexture(256,320,(ctx,w,h)=>{
   ctx.fillStyle='#efe6cf';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2b2520';ctx.textAlign='center';
-  ctx.font=`bold 34px ${SERIF}`;ctx.fillText("Sea Bath",w/2,44);
+  ctx.font=`bold 34px ${SERIF}`;ctx.fillText(ONSEN_SIGNS.notice.jp,w/2,44);
   ctx.font='16px sans-serif';
   ['Harbour hot spring','','Bath 10:00 – 22:00','Adults ¥300 · Children ¥150','Footbath: free, any hour','','Sodium chloride spring','42°C at the spout','Towel ¥100 at the desk'].forEach((line,i)=>ctx.fillText(line,w/2,82+i*24));
   ctx.fillStyle='#b3382c';ctx.font='bold 15px sans-serif';ctx.fillText('Please wash before you bathe',w/2,h-18);

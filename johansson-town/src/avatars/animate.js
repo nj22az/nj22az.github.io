@@ -27,7 +27,7 @@ const ease=(t,d,edge=.25)=>Math.min(1,t/edge,(d-t)/edge);
 /** How long each move lasts (loops run until something else happens). */
 export const GESTURES=Object.freeze({
  Wave:1.6,Bow:1.5,Nod:1.1,HeadShake:1.2,Point:1.6,Shrug:1.3,Clap:1.8,Laugh:2,Think:2.4,LookAround:2.6,Stretch:2.2,
- PickUp:1.6,Fist:1.4,Jab:.42,JabL:.42,Swipe:.7,Hurt:.5,Jump:.9,Cheer:1.6,Hop:1.2,Gasp:1.6,Stomp:1.4,Slump:2.2,Fidget:2.4,SitEnjoyFood:3.8,SitPresentFood:4.2,SitToast:2.4,SitDrink:2.4,SitEat:2.4,Drink:2.4,Eat:2.4,
+ PickUp:1.6,Fist:1.4,Jab:.42,JabL:.42,Swipe:.7,Hurt:.5,Tackle:.75,Jump:.9,Cheer:1.6,Hop:1.2,Gasp:1.6,Stomp:1.4,Slump:2.2,Fidget:2.4,SitEnjoyFood:3.8,SitPresentFood:4.2,SitToast:2.4,SitDrink:2.4,SitEat:2.4,Drink:2.4,Eat:2.4,
  Heart:2.8,Peace:2.8,Coy:3,Tada:2.4,HandsOnHips:2.6,HeelKick:2.6,CheekRest:3,DoubleCheek:3,
  // Habits (body-language.js quirk): small, done while somebody else is talking.
  ScratchHead:1.8,HairTuck:1.6,HeelRock:2.4,ChinTap:2,CollarTug:1.5,
@@ -346,7 +346,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     supportSeat(Number.isFinite(s.seatHeight)?s.seatHeight:.45);
     avatar.root.position.y=THREE.MathUtils.lerp(standingY,avatar.root.position.y,chairBlend);
    }else supportSeat(Number.isFinite(s.seatHeight)?s.seatHeight:.45);
-  }else if(!s.riding&&!s.sleeping&&!lie)groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Cheer','Hop','Gasp'].includes(gesture?.name)});
+  }else if(!s.riding&&!s.sleeping&&!lie)groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)});
   if(lie>0||lyingTilt){
    // On the back: tipped over about the hips so they lie where they stood, raised by the back of the head
    // (the biggest thing on them) so nothing goes through the floor.
@@ -416,6 +416,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     return {root:.04*up};}
    // Hit: knocked back a step, arms flung out, head snapped back.
    case 'Hurt':set('shoulderL',-.5*e,0,.9*e+.13);set('shoulderR',-.5*e,0,-.9*e-.13);set('elbowL',-.5*e);set('elbowR',-.5*e);add('chest',-.4*e);add('head',-.35*e,Math.sin(t*20)*.1*e);return {root:-.03*e};
+   // A flying tackle: both arms thrown forward and closing round the other's middle, legs swept out behind
+   // (the body's dive itself, leaning flat and off the ground, comes from whoever moves them: the film's lean/lift).
+   case 'Tackle':set('shoulderL',-1.55*q,0,-.22*q);set('shoulderR',-1.55*q,0,.22*q);set('elbowL',-.75*q);set('elbowR',-.75*q);set('thighL',.55*q);set('thighR',.35*q);set('kneeL',.7*q);set('kneeR',.45*q);add('head',-.25*q);return {root:0};
    case 'Jump':{const up=t<.2?-.08:Math.sin(Math.PI*Math.min(1,(t-.2)/.6))*.25;set('shoulderL',-.3,0,1.4*q);set('shoulderR',-.3,0,-1.4*q);set('kneeL',t<.2?.8:.3);set('kneeR',t<.2?.8:.3);set('thighL',t<.2?-.5:-.2);set('thighR',t<.2?-.5:-.2);return {root:up};}
    case 'Cheer':set('shoulderL',-.2,0,2.6*q);set('shoulderR',-.2,0,-2.6*q);set('elbowL',-.3);set('elbowR',-.3);return {root:Math.abs(Math.sin(t*7))*.1*e};
    case 'Hop':set('shoulderL',-.2,0,.9*e);set('shoulderR',-.2,0,-.9*e);add('head',-.15*e);return {root:Math.abs(Math.sin(t*8))*.12*e};

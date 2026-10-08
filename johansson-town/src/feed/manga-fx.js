@@ -88,8 +88,14 @@ export function drawFaceFx(ctx,kind,x,y,s,seed=1){
   ctx.strokeStyle=INK;ctx.lineWidth=5;
   for(const a of [-2.6,-2.1,-1.57,-1.05,-.5]){const cx=x,cy=y+s*.45;ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*s*.72,cy+Math.sin(a)*s*.72);ctx.lineTo(cx+Math.cos(a)*s*.98,cy+Math.sin(a)*s*.98);ctx.stroke();}
  }else if(kind==='sweat'){
-  const dx=x+s*.5,dy=y+s*.3;ctx.fillStyle='#bfe6ff';ctx.strokeStyle=INK;ctx.lineWidth=3;
-  ctx.beginPath();ctx.moveTo(dx,dy-s*.2);ctx.bezierCurveTo(dx+s*.14,dy,dx+s*.12,dy+s*.14,dx,dy+s*.14);ctx.bezierCurveTo(dx-s*.12,dy+s*.14,dx-s*.14,dy,dx,dy-s*.2);ctx.fill();ctx.stroke();
+  // on the upper side of the skull, over its outline, clear of the face (never over an eye)
+  const dx=x-s*.06,dy=y+s*.02,k=1.25;ctx.fillStyle='#bfe6ff';ctx.strokeStyle=INK;ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(dx,dy-s*.2*k);ctx.bezierCurveTo(dx+s*.14*k,dy,dx+s*.12*k,dy+s*.14*k,dx,dy+s*.14*k);ctx.bezierCurveTo(dx-s*.12*k,dy+s*.14*k,dx-s*.14*k,dy,dx,dy-s*.2*k);ctx.fill();ctx.stroke();
+  // a highlight on the drop, and small beads of sweat running down the skull (above the brows, never on an eye)
+  ctx.fillStyle='rgba(255,255,255,.9)';ctx.beginPath();ctx.ellipse(dx-s*.045*k,dy+s*.02*k,s*.022*k,s*.05*k,-.25,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#d8f1ff';ctx.lineWidth=2;
+  for(const [bx,by,bs] of [[x+s*.1,y+s*.03,.05],[x+s*.25,y+s*.08,.04],[x+s*.02,y+s*.14,.035]]){
+   ctx.beginPath();ctx.moveTo(bx,by-s*bs*1.4);ctx.bezierCurveTo(bx+s*bs*.9,by,bx+s*bs*.8,by+s*bs*.9,bx,by+s*bs*.9);ctx.bezierCurveTo(bx-s*bs*.8,by+s*bs*.9,bx-s*bs*.9,by,bx,by-s*bs*1.4);ctx.fill();ctx.stroke();}
  }else if(kind==='vein'){
   // The cross-shaped anger mark.
   const vx=side-s*.05,vy=top+s*.12,k=s*.13;ctx.strokeStyle='#d6232f';ctx.lineWidth=Math.max(4,s*.06);

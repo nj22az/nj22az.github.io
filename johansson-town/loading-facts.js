@@ -11,7 +11,7 @@ export const ISLAND_FACTS = [
   'Jun straightens the airport departure board before the first passenger arrives.',
   'Reiko likes an evening newspaper. A good day on the island still leaves time to read.',
   'Look above the shopfronts: balconies, washing and plants tell their own island stories.',
-  'Johansson Town is living in 1997. Paper notices and handwritten signs keep neighbours in touch.',
+  'The island is living in 1997. Paper notices and handwritten signs keep neighbours in touch.',
 ];
 
 export function createLoadingFacts(element, {random = Math.random, interval = 6000} = {}) {

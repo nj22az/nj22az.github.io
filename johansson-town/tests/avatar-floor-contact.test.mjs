@@ -18,7 +18,7 @@ function soles(avatar){
 }
 
 test('Thuan keeps a supporting foot on the actual floor throughout every grounded gesture and outfit',()=>{
- const jumping=new Set(['Jump','Hop','Cheer','Gasp']);
+ const jumping=new Set(['Jump','Tackle','Hop','Cheer','Gasp']);   // a tackle leaves the floor: the dive itself
  for(const outfit of ['clothes','nozomi','sailor','swim']){
   const avatar=buildAvatar(CAST_RECIPES.Thuan);avatar.wear(outfit);
   const parent=new THREE.Group();parent.position.y=.62;parent.add(avatar.root);
