@@ -23,7 +23,7 @@ export const CAST_RECIPES=castSet({
  'Harbour visitor':R({name:'Harbour visitor',age:'adult',
   body:{height:.56,build:.25,silhouette:'feminine',skin:'#f1cfae'},
   head:{size:.44,shape:.42,form:'oval',jaw:.32,cheeks:.38},
-  hair:{style:'ponytail',colour:'#caa568',flip:true},
+  hair:{style:'sweptponytail',colour:'#caa568',flip:false},
   eyes:{style:'lashes',colour:'#625644',size:.48,width:.58,spacing:.48,height:.52,tilt:.52},
   brows:{style:'arched',colour:'#826447',size:.44,height:.57,tilt:.52},
   nose:{style:'ridge',size:.40,height:.48},

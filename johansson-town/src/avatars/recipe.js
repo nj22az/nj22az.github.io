@@ -33,7 +33,7 @@ export const ageClass=years=>!Number.isFinite(+years)?'adult':years<13?'child':y
 export const PARTS=Object.freeze({
  silhouette:Object.freeze(['neutral','feminine','masculine']),
  head:HEAD_FORMS,
- hair:Object.freeze(['crop','sidepart','bob','long','ponytail','braids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns']),
+ hair:Object.freeze(['crop','sidepart','bob','long','ponytail','sweptponytail','braids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns']),
  eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle','doe','cat','droopy','heavy','bright','tired','squint','starry']),
  brows:Object.freeze(['straight','arched','thick','thin','worried','bushy','angled','short','rounded','tapered','feathered','maro','none']),
  nose:Object.freeze(['button','dot','line','wide','hook','pointed','snub','bulb','ridge','none']),
@@ -167,7 +167,7 @@ export function randomRecipe(seed=Math.random().toString(36)){
  const r=seeded(seed),any=list=>list[Math.floor(r()*list.length)],pal=PALETTE;
  // Some are young: the maker's life stage (AGES) makes them a child or a teen.
  const young=r(),age=young<.1?'child':young<.22?'teen':'adult',older=age==='adult'&&r()<.3,feminine=r()<.5;
- const hair=older?(feminine?any(['perm','bun','bob']):any(['horseshoe','buzz','crop','bald'])):feminine?any(['bob','long','ponytail','braids','bun','sidepart']):any(['crop','sidepart','spiky','buzz','afro']);
+ const hair=older?(feminine?any(['perm','bun','bob']):any(['horseshoe','buzz','crop','bald'])):feminine?any(['bob','long','ponytail','sweptponytail','braids','bun','sidepart']):any(['crop','sidepart','spiky','buzz','afro']);
  return normalizeRecipe({age,
   body:{height:.3+r()*.5,build:.25+r()*.55,skin:any(pal.skin.slice(0,7))},
   head:{size:.4+r()*.25,shape:r(),form:any(HEAD_FORMS),jaw:r(),cheeks:r()},

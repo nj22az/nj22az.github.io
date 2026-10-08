@@ -1,3 +1,4 @@
+import {SWEPT_PONYTAIL} from './swept-ponytail-mesh.js';
 import {POLO_COLLAR} from './contrast-polo-mesh.js';
 import {THUAN_SAILOR_OUTFIT} from './outfits.js';
 import {SPRING_BONES,SPRING_PARENT,springRest,chainShare,quarterShare,hemSpec,createSprings} from './springs.js';
@@ -293,6 +294,17 @@ function addHair(list,recipe,m){
  const dark=new THREE.Color(c).multiplyScalar(.82).getStyle();
  // What hangs swings on its own chain of bones (springs.js); the rest is the head's.
  const swing=springRest(recipe,m),tailShare=chainShare('head',['hairA','hairB'],[swing.rest.hairA,swing.rest.hairB,swing.chains.find(ch=>ch.kind==='hair')?.tip??swing.rest.hairB]);
+ if(style==='sweptponytail'){
+  for(const asset of SWEPT_PONYTAIL){
+   const positions=asset.vertices.flatMap(([x,y,z])=>{
+    const p=new THREE.Vector3(x*side,y,z);if(asset.kind==='head')shapeHeadPoint(p,m.profile);
+    return [p.x*m.headSX*R,m.headCentre+p.y*m.headSY*R,p.z*R*.98];
+   });
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+   const indices=[...asset.indices];if(side<0)for(let i=0;i<indices.length;i+=3)[indices[i],indices[i+2]]=[indices[i+2],indices[i]];
+   g.setIndex(indices);g.computeVertexNormals();part(list,g,asset.kind==='tail'?tailShare:'head',new THREE.Color(c).multiplyScalar(asset.shade).getStyle());
+  }
+ }
  if(style==='long'){ball(list,R*.95,at(0,cy-R*.72,-R*.55),tailShare,c,[1.05,1.25,.5]);}
  if(style==='ponytail'){ball(list,R*.34,at(0,cy+R*.1,-R*1.05),'head',c,[1,1,1]);ball(list,R*.3,at(0,cy-R*.45,-R*1.18),tailShare,c,[.9,1.9,.9]);ball(list,R*.16,at(0,cy+R*.1,-R*1.2),'head',recipe.outfit.accent);}
  if(style==='bun'){ball(list,R*.42,at(0,cy+R*.95,-R*.3),'head',c);}
@@ -500,7 +512,7 @@ function addAccessories(list,recipe,m){
 }
 
 /** Long hair, a lipstick or no beard and a slight build: a swimming costume, not trunks. */
-export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','ponytail','braids','bun','perm','shoulder','pigtails','twinbuns'].includes(recipe.hair.style)||recipe.mouth.colour!=='#b8544a');
+export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','ponytail','sweptponytail','braids','bun','perm','shoulder','pigtails','twinbuns'].includes(recipe.hair.style)||recipe.mouth.colour!=='#b8544a');
 
 function torsoProfile(recipe,m){
  const belly=1+(recipe.body.build-.5)*.12,hipRatio=m.hips/m.width;
@@ -597,6 +609,7 @@ function addBody(list,recipe,m,swim=false){
   const ri=m.armR*1.08+.004*m.k;
   const band=new THREE.LatheGeometry([[ri,0],[ri+.006*m.k,0],[ri+.012*m.k,.026*m.k],[ri,.026*m.k],[ri,0]].map(([r,y])=>new THREE.Vector2(r,y)),24,.55,Math.PI*2-1.1);
   part(list,band,'chest',o.accent,M(0,m.neckY-.012*m.k,0));
+  part(list,new THREE.CylinderGeometry(ri*1.12,ri*1.22,.026*m.k,32,1,true),'chest',top,M(0,m.neckY+.003*m.k,0));
   const positions=POLO_COLLAR.vertices.flatMap(([f,t,lift])=>{
    const r=latheRadius(prof,t),x=f*W/2*r,z=D/2*r*Math.sqrt(Math.max(0,1-f*f));
    return [x,hipY+t*m.torso+lift*m.k*THREE.MathUtils.smoothstep(t,.9,1.03),z+lift*m.k];
@@ -647,7 +660,8 @@ function addBody(list,recipe,m,swim=false){
   const sx=s==='L'?1:-1,sh=[sx*m.shoulderX,m.shoulderY,0],hd=[sx*(m.shoulderX+.015),m.shoulderY-m.upper-m.fore,0];
   const arm={bone:'shoulder'+s,joints:[[armT,'shoulder'+s,'elbow'+s]]};
   // A long sleeve is the arm itself, in the shirt, with the print and the cuff painted on.
-  limb(list,sh,hd,m.armR*1.04,m.armR*.86,swim||!longSleeve?skin:top,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
+  const armColour=!swim&&o.top==='contrastpolo'?p=>p.y>=sh[1]-m.upper*.58?top:skin:swim||!longSleeve?skin:top;
+  limb(list,sh,hd,m.armR*1.04,m.armR*.86,armColour,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
   // The shoulder: a rounded cap over the joint, in the shirt, that joins the arm to the
   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
   // it stretches over a raised arm rather than coming apart from the body.
@@ -661,6 +675,10 @@ function addBody(list,recipe,m,swim=false){
   if(!swim&&!longSleeve&&!tank&&o.top!=='sundress'){
    const roomy=o.top==='kariyushi',a0=[sh[0]-sx*m.armR*.05,sh[1]+m.armR*.08,0],a1=[sh[0]+sx*.008,sh[1]-m.upper*(roomy?.52:.56),0];
    limb(list,a0,a1,m.armR*(roomy?1.20:1.16),m.armR*(roomy?1.16:1.12),top,{...arm,joints:[],root:['chest',.55,.3],uvAt:p=>sleeveUV(p,a0,a1,sx)});
+  }
+  if(!swim&&o.top==='contrastpolo'){
+   const a=[sx*(m.shoulderX-m.armR*.72),sh[1]-m.armR*.78,0],b=[sh[0],sh[1]-m.upper*.30,0];
+   limb(list,a,b,m.armR*1.05,m.armR*1.12,top,{...arm,joints:[],root:['chest',.9,.15]});
   }
   // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
   // so a wave or a point reads as a hand rather than a ball on a stick.

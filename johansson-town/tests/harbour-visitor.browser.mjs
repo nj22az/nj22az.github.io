@@ -7,7 +7,7 @@ const server=createServer(async(req,res)=>{try{let path=new URL(req.url,'http://
 const browser=await chromium.launch({executablePath:process.env.CREATOR_CHROME,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'],env:process.env});const results=[];
 try{
 for(const [width,height] of [[1280,800],[390,844]]){
-const context=await browser.newContext({viewport:{width,height},hasTouch:width===390,isMobile:width===390});const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+const context=await browser.newContext({viewport:{width,height},hasTouch:width===390,isMobile:width===390});const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.route('https://**/*',route=>route.abort());
 await page.goto('http://127.0.0.1:5173/creator/?preset=harbour-visitor');await page.getByRole('textbox',{name:'Name',exact:true}).waitFor();assert.equal(await page.getByRole('textbox',{name:'Name',exact:true}).inputValue(),'Harbour visitor');
 await page.waitForTimeout(1000);await page.screenshot({path:out+'/creator-'+width+'.png'});
 // Save and play uses the real standalone creator callback.
@@ -20,9 +20,13 @@ await page.goto('http://127.0.0.1:5173/creator/');await page.reload();await page
 await page.goto('http://127.0.0.1:5173/tools/avatar-preview.html?who=Harbour%20visitor');await page.waitForFunction(()=>window.__READY__);await page.waitForTimeout(300);await page.screenshot({path:out+'/front-'+width+'.png'});
 for(const pose of ['walk','sit','wave']){await page.goto('http://127.0.0.1:5173/tools/avatar-preview.html?who=Harbour%20visitor&pose='+pose);await page.waitForFunction(()=>window.__READY__);await page.waitForTimeout(500);await page.screenshot({path:out+'/'+pose+'-'+width+'.png'});}
 await page.goto('http://127.0.0.1:5173/tools/avatar-preview.html?who=Harbour%20visitor&turn=3.14159');await page.waitForFunction(()=>window.__READY__);await page.waitForTimeout(300);await page.screenshot({path:out+'/rear-'+width+'.png'});
+// The hairstyle is a real creator part, independently assignable to Thuan.
+const thuan=await page.evaluate(async()=>{const {recipeFor}=await import('/src/avatars/cast.js'),{encodeRecipe}=await import('/src/avatars/recipe.js');const r=recipeFor('Thuan');return {r,code:encodeRecipe(r)};});
+await page.goto('http://127.0.0.1:5173/creator/?r='+thuan.code);await page.locator('.shm-dots button').nth(1).click();if(width===390)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('hair');else await page.getByRole('tab',{name:'Hair',exact:true}).click();console.log('hair-menu',width);await page.getByRole('button',{name:'Swept low ponytail',exact:true}).click();console.log('hair-selected',width);await page.locator('.shm-dots button').nth(3).click();await page.getByRole('button',{name:'Walk the town as them',exact:true}).click();
+const hairSaved=await page.evaluate(async()=>{const {playerRecipe}=await import('/src/avatars/actors.js');return playerRecipe();});assert.equal(hairSaved.hair.style,'sweptponytail');assert.deepEqual(hairSaved.head,thuan.r.head);assert.deepEqual(hairSaved.outfit,thuan.r.outfit);
 // Any resident can use the outfit without losing her own head and hair.
 const other=await page.evaluate(async()=>{const {recipeFor}=await import('/src/avatars/cast.js'),{HARBOUR_POLO_OUTFIT}=await import('/src/avatars/outfits.js'),{saveResidentRecipe,residentRecipe}=await import('/src/avatars/wardrobe.js');const original=recipeFor('Thuan');saveResidentRecipe('Thuan',{...original,outfit:{...original.outfit,...HARBOUR_POLO_OUTFIT}});return {original,saved:residentRecipe('Thuan')};});assert.deepEqual(other.saved.hair,other.original.hair);assert.equal(other.saved.outfit.top,'contrastpolo');
-assert.deepEqual(errors,[]);results.push({width,height,touch:width===390,saveReload:true,wardrobeReuse:true,poses:['idle','walk','sit','wave','rear'],pageErrors:errors});await context.close();
+assert.deepEqual(errors,[]);results.push({width,height,touch:width===390,saveReload:true,wardrobeReuse:true,hairSelection:true,poses:['idle','walk','sit','wave','rear'],pageErrors:errors});await context.close();
 }
 await writeFile(out+'/results.json',JSON.stringify({results},null,2)+'\n');console.log('PASS',JSON.stringify(results));
 }finally{await browser.close();server.close();}

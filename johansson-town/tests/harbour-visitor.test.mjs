@@ -10,7 +10,7 @@ import {saveResidentRecipe,residentRecipe} from '../src/avatars/wardrobe.js';
 import {POLO_COLLAR} from '../src/avatars/contrast-polo-mesh.js';
 
 test('photo-inspired adult is a complete editable recipe and survives sharing',()=>{
- const r=recipeFor('Harbour visitor');assert.equal(r.age,'adult');assert.equal(r.body.silhouette,'feminine');assert.equal(r.hair.style,'ponytail');assert.equal(r.outfit.top,'contrastpolo');assert.deepEqual(decodeRecipe(encodeRecipe(r)),r);assert.ok(PARTS.top.includes('contrastpolo'));assert.equal(r.freckles,false);
+ const r=recipeFor('Harbour visitor');assert.equal(r.age,'adult');assert.equal(r.body.silhouette,'feminine');assert.equal(r.hair.style,'sweptponytail');assert.equal(r.outfit.top,'contrastpolo');assert.deepEqual(decodeRecipe(encodeRecipe(r)),r);assert.ok(PARTS.top.includes('contrastpolo'));assert.equal(r.freckles,false);
 });
 test('outfit can be assigned independently to every female town resident and saved',()=>{
  const values=new Map(),storage={getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)};
@@ -35,4 +35,13 @@ test('Blender collar topology is valid and both sides have a finite fitted anima
 test('playing as the visitor preserves her skirt across save and reload',async()=>{
  const {savePlayerRecipe,playerRecipe}=await import('../src/avatars/actors.js');const values=new Map(),storage={getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)};
  savePlayerRecipe(CAST_RECIPES['Harbour visitor'],storage);assert.equal(playerRecipe(storage).outfit.bottom,'pleatedskirt');assert.equal(playerRecipe(storage).name,'Harbour visitor');
+});
+
+
+test('Blender hairstyle is available to all ages, shapes and both part directions',()=>{
+ installDOM();assert.ok(PARTS.hair.includes('sweptponytail'));
+ for(const age of ['child','teen','adult','elder'])for(const form of PARTS.head)for(const flip of [false,true]){
+  const r=normalizeRecipe({name:'Hair fitting',age,hair:{style:'sweptponytail',colour:'#3a2618',flip},head:{form},outfit:{top:'tee',bottom:'trousers',footwear:'shoes'}}),a=buildAvatar(r);
+  assert.equal(a.recipe.hair.style,'sweptponytail');assert.ok(a.body.geometry.attributes.position.array.every(Number.isFinite));assert.ok(a.springSetup.chains.some(c=>c.kind==='hair'));assert.equal(decodeRecipe(encodeRecipe(r)).hair.style,'sweptponytail');a.dispose();
+ }
 });

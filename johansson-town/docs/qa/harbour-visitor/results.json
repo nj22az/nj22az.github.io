@@ -6,6 +6,7 @@
       "touch": false,
       "saveReload": true,
       "wardrobeReuse": true,
+      "hairSelection": true,
       "poses": [
         "idle",
         "walk",
@@ -21,6 +22,7 @@
       "touch": true,
       "saveReload": true,
       "wardrobeReuse": true,
+      "hairSelection": true,
       "poses": [
         "idle",
         "walk",
