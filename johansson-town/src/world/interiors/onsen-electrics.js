@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {pinLobbyChannel,lobbyChannelPin,LOBBY_CHANNELS} from './onsen-lobby.js';
 
 /**
  * Umi-no-yu's electrics: the 分電盤 (distribution board) on the changing-room side of the
@@ -13,6 +14,13 @@ import * as THREE from '../../../vendor/three.module.js';
  * Everything here is data first (ONSEN_CIRCUITS): what each circuit feeds, how much it
  * draws, which lamps and screens go dark without it, and why it is wired the way it is,
  * so stories and tests can ask the same questions the room answers.
+ *
+ * Loads are switched on and off (switchOn / switchOff): `atRest` is how each one stands
+ * when nobody touches it (the lamps, the fridge and the pump run; the dryers and the chair
+ * wait for a bather or a coin). A breaker is a thermal switch, so an overloaded branch
+ * does not open at once: it warms for as long as its trip curve says (BREAKER_CURVE) and
+ * then lets go, which is why everything roars for a while before the CLICK. The film stages
+ * the moments it needs by name (ONSEN_SCENARIOS, stageScenario).
  *
  * Room frame as in onsen.js: street door at +z, sea at -z, metres, floor at y = 0.
  */
@@ -41,20 +49,20 @@ export const ONSEN_CIRCUITS=Object.freeze([
   why:'The sockets under the vanity mirrors, where people dry their hair after the bath. When the massage chair arrived in 2003 its socket on the east lobby wall was run as a spur off this cable, the nearest one round the corner, so the chair shares the dryers’ breaker.',
   normal:['dryer-2','massage-chair'],
   loads:Object.freeze([
-   plain({id:'dryer-1',en:'Hair dryer 1, cream, at the left mirror',watts:1200,meshes:['Hair dryer 1'],socket:'Vanity socket 1',
+   plain({id:'dryer-1',en:'Hair dryer 1, cream, at the left mirror',watts:1200,atRest:'off',by:'a bather at the left mirror',meshes:['Hair dryer 1'],socket:'Vanity socket 1',
     purpose:'The oldest dryer, kept at the end mirror by the lockers for regulars who dry their hair before they dress.'}),
-   plain({id:'dryer-2',en:'Hair dryer 2, blue, at the middle mirror',watts:1200,meshes:['Hair dryer 2'],socket:'Vanity socket 2',
+   plain({id:'dryer-2',en:'Hair dryer 2, blue, at the middle mirror',watts:1200,atRest:'off',by:'a bather at the middle mirror',meshes:['Hair dryer 2'],socket:'Vanity socket 2',
     purpose:'The one most people use: the middle mirror has the best light from the pendant.'}),
-   plain({id:'dryer-3',en:'Hair dryer 3, coral, at the right mirror',watts:1200,meshes:['Hair dryer 3'],socket:'Vanity socket 3',
+   plain({id:'dryer-3',en:'Hair dryer 3, coral, at the right mirror',watts:1200,atRest:'off',by:'a bather at the right mirror',meshes:['Hair dryer 3'],socket:'Vanity socket 3',
     purpose:'Added for the evening rush, when families come in after the ferry and three people want the mirror at once.'}),
-   plain({id:'massage-chair',en:'Massage chair',watts:200,meshes:['Massage chair seat'],socket:'Massage chair socket',
+   plain({id:'massage-chair',en:'Massage chair',watts:200,atRest:'off',by:'a ¥100 coin: ten minutes',meshes:['Massage chair seat'],socket:'Massage chair socket',
     purpose:'Ten minutes for ¥100 in the lobby after the bath; the coins pay for itself and the coffee-milk habit.'}),
   ])}),
  plain({id:'changing-lights',no:2,jp:'脱衣所照明',en:'Changing-room lights',amps:20,volts:ONSEN_VOLTS,
   why:'The changing room’s lamp on a circuit of its own, so a tripped socket never leaves people undressing in the dark.',
   normal:['changing-pendant'],
   loads:Object.freeze([
-   plain({id:'changing-pendant',en:'Changing-room pendant lamp',watts:40,meshes:['Changing-room pendant lamp'],lights:['Changing-room light'],
+   plain({id:'changing-pendant',en:'Changing-room pendant lamp',watts:40,atRest:'on',by:'Mrs Higa at opening time',meshes:['Changing-room pendant lamp'],lights:['Changing-room light'],
     fixture:plain({kind:'pendant',at:[1.5,2.7,.2],light:[1.5,2.5,.3]}),
     purpose:'Hangs from the middle beam over the bench and the mirrors, the brightest place to find your locker key.'}),
   ])}),
@@ -62,10 +70,10 @@ export const ONSEN_CIRCUITS=Object.freeze([
   why:'Sealed damp-proof lamps over the washing places and the indoor bath, on their own breaker so a fault in the wet room is found on its own.',
   normal:['bath-lamp-west','bath-lamp-east'],
   loads:Object.freeze([
-   plain({id:'bath-lamp-west',en:'Bath-hall lamp over the washing places',watts:60,meshes:['Bath hall lamp west'],lights:['Bath hall light west'],
+   plain({id:'bath-lamp-west',en:'Bath-hall lamp over the washing places',watts:60,atRest:'on',by:'Mrs Higa at opening time',meshes:['Bath hall lamp west'],lights:['Bath hall light west'],
     fixture:plain({kind:'sealed',at:[-1.5,2.8,-2.8],light:[-1.5,2.5,-2.8]}),
     purpose:'Lights the taps and mirrors where people wash before they get in.'}),
-   plain({id:'bath-lamp-east',en:'Bath-hall lamp over the indoor bath',watts:60,meshes:['Bath hall lamp east'],lights:['Bath hall light east'],
+   plain({id:'bath-lamp-east',en:'Bath-hall lamp over the indoor bath',watts:60,atRest:'on',by:'Mrs Higa at opening time',meshes:['Bath hall lamp east'],lights:['Bath hall light east'],
     fixture:plain({kind:'sealed',at:[2.8,2.8,-2.9],light:[2.8,2.5,-2.9]}),
     purpose:'Lights the indoor bath so you can see the step down into the water.'}),
   ])}),
@@ -73,28 +81,28 @@ export const ONSEN_CIRCUITS=Object.freeze([
   why:'The front of the house: the lobby lamp, the andon on the bandai, the television, and the changing-room fan, whose socket is back to back with the television’s through the same wall.',
   normal:['lobby-lamp','andon','television','fan'],
   loads:Object.freeze([
-   plain({id:'lobby-lamp',en:'Lobby ceiling lamp',watts:40,meshes:['Lobby ceiling lamp'],lights:['Lobby light'],
+   plain({id:'lobby-lamp',en:'Lobby ceiling lamp',watts:40,atRest:'on',by:'Mrs Higa at opening time',meshes:['Lobby ceiling lamp'],lights:['Lobby light'],
     fixture:plain({kind:'flush',at:[-2,2.8,3],light:[-2,2.5,3]}),
     purpose:'Over the genkan and the bandai, so Mrs Higa can see the coins and you can see your shoes.'}),
-   plain({id:'andon',en:'Andon on the bandai',watts:25,meshes:['Andon'],
+   plain({id:'andon',en:'Andon on the bandai',watts:25,atRest:'on',by:'Mrs Higa at opening time',meshes:['Andon'],
     purpose:'The paper lamp Grandmother Higa put on the bandai in the seventies; it says the bath is open from the street.'}),
-   plain({id:'television',en:'Lobby television',watts:80,screens:['Lobby CRT'],
+   plain({id:'television',en:'Lobby television',watts:80,atRest:'on',by:'Mrs Higa, for the night game',screens:['Lobby CRT'],
     purpose:'The night game for people cooling down on the tatami.'}),
-   plain({id:'fan',en:'Changing-room fan',watts:30,socket:'Fan socket',
+   plain({id:'fan',en:'Changing-room fan',watts:30,atRest:'on',by:'Mrs Higa at opening time',socket:'Fan socket',
     purpose:'Cools people coming out of the bath at 42 degrees; it turns its head so everyone on the bench gets some.'}),
   ])}),
  plain({id:'fridge',no:5,jp:'冷蔵庫',en:'Milk fridge',amps:20,volts:ONSEN_VOLTS,
   why:'A dedicated circuit so nobody’s hair dryer can ever switch the milk off overnight.',
   normal:['milk-cooler'],
   loads:Object.freeze([
-   plain({id:'milk-cooler',en:'Coffee-milk cooler',watts:150,meshes:['Milk cooler light'],
+   plain({id:'milk-cooler',en:'Coffee-milk cooler',watts:150,atRest:'on',by:'its own thermostat, day and night',meshes:['Milk cooler light'],
     purpose:'Keeps the white, coffee and fruit milk at 5 degrees for drinking standing up, hand on hip.'}),
   ])}),
  plain({id:'pump',no:6,jp:'ポンプ',en:'Bath pump',amps:20,volts:ONSEN_VOLTS,
   why:'A motor on its own breaker: it never trips with anything else, so the bath water keeps turning over through the filter.',
   normal:['circulation-pump'],
   loads:Object.freeze([
-   plain({id:'circulation-pump',en:'Bath circulation pump',watts:400,hides:['Spout water'],
+   plain({id:'circulation-pump',en:'Bath circulation pump',watts:400,atRest:'on',by:'the time switch in the boiler room',hides:['Spout water'],
     purpose:'Pushes the indoor bath through the filter and the heater and back out of the stone spout at 42 degrees.'}),
   ])}),
 ]);
@@ -115,8 +123,33 @@ export const loadOf=(circuitId,running=null)=>wattsOf(circuitId,running)/ONSEN_V
 export const overloaded=(circuitId,running=null)=>loadOf(circuitId,running)>BY_ID.get(circuitId).amps;
 export const circuitOf=loadId=>LOAD_CIRCUIT.get(loadId);
 
+/**
+ * How long a breaker carries an overload before its thermal element opens it, in seconds,
+ * by multiple of its rating. An illustrative curve for a 1990s Japanese branch breaker,
+ * inside the JIS limits for 30 A and under (it must open within 60 minutes at 125 % and
+ * within 2 minutes at 200 %); from ten times its rating the magnetic trip opens it at once.
+ * Between the points the time is read on a log-log line. At or under 105 % it never trips.
+ */
+export const BREAKER_CURVE=Object.freeze([[1.05,7200],[1.25,1200],[1.5,240],[2,30],[3,8],[5,3],[10,0]].map(p=>Object.freeze(p)));
+/** Seconds a breaker carries `amps` before it trips (Infinity: never). */
+export function tripSeconds(amps,rating){
+ const r=amps/rating,C=BREAKER_CURVE;if(!(r>C[0][0]))return Infinity;if(r>=C.at(-1)[0])return 0;
+ const i=C.findIndex(p=>p[0]>=r),[r0,t0]=C[i-1],[r1,t1]=C[i],k=Math.log(r/r0)/Math.log(r1/r0);
+ return t1===0?t0*(1-k):Math.exp(Math.log(t0)+k*(Math.log(t1)-Math.log(t0)));
+}
+const ALL_LOADS=ONSEN_CIRCUITS.flatMap(c=>c.loads);
+const LOAD_BY_ID=new Map(ALL_LOADS.map(l=>[l.id,l]));
+const knownLoad=id=>{if(!LOAD_BY_ID.has(id))throw new Error('No such load at Umi-no-yu: '+id);return id;};
+/** The loads that run when nobody touches anything. */
+export const AT_REST=Object.freeze(ALL_LOADS.filter(l=>l.atRest==='on').map(l=>l.id));
+
 // The board's state lives as long as the page: leave and come back and the lever is still down.
 const on=new Map(SWITCHES.map(id=>[id,true]));
+// Which loads are switched on (whether or not their breaker lets the power through), and
+// how far each breaker's thermal element has got towards opening (0 cold, 1 open).
+const running=new Set(AT_REST);
+const heat=new Map(SWITCHES.map(id=>[id,0]));
+let held=false;
 const listeners=new Set();
 const changed=()=>{for(const fn of listeners)fn();};
 /** Is that breaker itself on (its own lever up)? */
@@ -124,9 +157,81 @@ export const isOn=id=>on.get(known(id));
 /** Is there power on that circuit: its own lever, the earth-leakage breaker and the main all on. */
 export function isLive(id){known(id);if(!on.get('main'))return false;if(id==='main')return true;if(!on.get('elcb'))return false;return on.get(id);}
 export const isPowered=loadId=>isLive(circuitOf(loadId));
-export function trip(id){known(id);if(!on.get(id))return false;on.set(id,false);changed();return true;}
-export function reset(id){known(id);if(on.get(id))return false;on.set(id,true);changed();return true;}
+/** Is that load switched on (its own switch, whatever the breaker is doing)? */
+export const isRunning=loadId=>running.has(knownLoad(loadId));
+/** Switched on and powered: the lamp is lit, the dryer blows, the chair kneads. */
+export const isWorking=loadId=>isRunning(loadId)&&isPowered(loadId);
+/** Every load switched on, in board order. */
+export const runningLoads=()=>ALL_LOADS.filter(l=>running.has(l.id)).map(l=>l.id);
+/** The ids of the loads switched on on that circuit. */
+export const runningOn=circuitId=>{const c=BY_ID.get(circuitId);if(!c)throw new Error('No such circuit: '+circuitId);return c.loads.filter(l=>running.has(l.id)).map(l=>l.id);};
+
+/**
+ * What the board carries right now: each branch's current from the loads switched on
+ * (drawn only while the branch is live), whether it is over its rating and how many
+ * seconds it has left; and the main, which sees every live branch added up.
+ */
+export function assess(){
+ const circuits=ONSEN_CIRCUITS.map(c=>{const on=runningOn(c.id),demand=loadOf(c.id,on),live=isLive(c.id),amps=live?demand:0,limit=tripSeconds(amps,c.amps);
+  return {id:c.id,running:on,demand,amps,rating:c.amps,live,over:amps>c.amps,tripIn:Number.isFinite(limit)?Math.max(0,limit*(1-heat.get(c.id))):Infinity};});
+ const amps=circuits.reduce((s,c)=>s+c.amps,0),limit=tripSeconds(amps,ONSEN_BOARD.main.amps);
+ return {volts:ONSEN_VOLTS,circuits,main:{amps,rating:ONSEN_BOARD.main.amps,live:isLive('main'),over:amps>ONSEN_BOARD.main.amps,
+  tripIn:Number.isFinite(limit)?Math.max(0,limit*(1-heat.get('main'))):Infinity}};
+}
+/**
+ * Let `seconds` pass on the board: an overloaded live breaker warms towards its trip time
+ * and opens when it gets there; one that is back within its rating cools off over a minute.
+ * Returns the ids of the breakers that tripped.
+ */
+export function advance(seconds){
+ if(held||!(seconds>0))return [];
+ const tripped=[],a=assess();
+ for(const x of [...a.circuits,{...a.main,id:'main'}]){
+  if(!x.live){heat.set(x.id,0);continue;}
+  const limit=tripSeconds(x.amps,x.rating);
+  if(!Number.isFinite(limit)){heat.set(x.id,Math.max(0,heat.get(x.id)-seconds/60));continue;}
+  const h=limit===0?1:heat.get(x.id)+seconds/limit;heat.set(x.id,Math.min(1,h));
+  if(h>=1)tripped.push(x.id);
+ }
+ if(tripped.length){for(const id of tripped){on.set(id,false);heat.set(id,0);}changed();}
+ return tripped;
+}
+/** Run the clock until nothing more will trip: what the room settles into if left alone. */
+export function settle(){const all=[];for(let i=0;i<SWITCHES.length;i++){const a=assess(),next=Math.min(...a.circuits.map(c=>c.tripIn),a.main.tripIn);if(!Number.isFinite(next))break;all.push(...advance(next+1e-6));}return all;}
+/** Switch a load on. It draws at once; an overload trips its breaker in the curve's time (advance). */
+export function switchOn(loadId){knownLoad(loadId);held=false;if(running.has(loadId))return false;running.add(loadId);changed();return true;}
+export function switchOff(loadId){knownLoad(loadId);held=false;if(!running.delete(loadId))return false;changed();return true;}
+export function trip(id){known(id);held=false;if(!on.get(id))return false;on.set(id,false);heat.set(id,0);changed();return true;}
+export function reset(id){known(id);held=false;if(on.get(id))return false;on.set(id,true);changed();return true;}
 export function resetAll(){let any=false;for(const id of SWITCHES)if(!on.get(id)){on.set(id,true);any=true;}if(any)changed();}
+
+/**
+ * The moments the film and the stories stage, by name. `on` are the loads switched on
+ * besides the ones at rest, `down` the levers pulled down by hand, `settle` lets the
+ * breakers do what they would, `hold` keeps the moment (no breaker warms until something
+ * is switched), and `tv` is the channel the lobby set is pinned to.
+ */
+const BUSY=Object.freeze(['dryer-1','dryer-2','dryer-3','massage-chair']);
+export const ONSEN_SCENARIOS=Object.freeze({
+ rest:Object.freeze({on:[],down:[],tv:null,
+  en:'Nobody at the mirrors and the chair free: the lamps, the andon, the television, the fan, the milk cooler and the pump.'}),
+ quiet:Object.freeze({on:['dryer-2','massage-chair'],down:[],tv:'night-game',
+  en:'A quiet evening: one dryer and the chair, 14 A on the changing-room sockets, well inside 20 A.'}),
+ rush:Object.freeze({on:BUSY,down:[],hold:true,tv:'night-game',panels:Object.freeze(['2a','2b','2c','2d','4d']),
+  en:'The ferry is in: three dryers and the massage chair at once, 38 A on a 20 A branch, the lever still up for the half minute before it lets go. The main sees 47 A.'}),
+ busy:Object.freeze({on:BUSY,down:[],settle:true,tv:'night-game',panels:Object.freeze(['3a','3b','3c','3d','3e','4a','4b','4c','4e','5e','6a','6b','6c','6d']),
+  en:'The same four loads, after the click: the changing-room sockets are down, the dryers and the chair dead with their switches still on; the lamps, the television and the main hold.'}),
+ isolated:Object.freeze({on:[],down:['main','changing-sockets'],tv:'night-game',panels:Object.freeze(['7a']),
+  en:'Isolate first: the main off before anybody touches the board. The whole house is dark and the television black.'}),
+});
+/** Set the room to a named moment (ONSEN_SCENARIOS). Returns what the board then carries. */
+export function stageScenario(name){
+ const s=ONSEN_SCENARIOS[name];if(!s)throw new Error('No such Umi-no-yu scenario: '+name);
+ running.clear();for(const id of [...AT_REST,...s.on])running.add(knownLoad(id));
+ for(const id of SWITCHES){on.set(id,!s.down.includes(id));heat.set(id,0);}
+ held=false;if(s.settle)settle();held=!!s.hold;
+ pinLobbyChannel(s.tv);changed();return assess();
+}
 
 /** A canvas texture, or null where there is no page to draw it on (the room tests). */
 function paint(w,h,draw){
@@ -299,10 +404,10 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],hall={fron
  const zones={lobby:[hall.front,Infinity],changing:[hall.changing,hall.front],bath:[-Infinity,hall.changing]};
  const zoneOf=z=>Object.keys(zones).find(k=>z>=zones[k][0]&&z<zones[k][1]);
  const SPILL=.6,AWAY=.15;
- const hemiOn=hemi?.intensity??0,lampLoads=ONSEN_CIRCUITS.flatMap(c=>c.loads.filter(l=>l.fixture).map(l=>({c:c.id,w:l.watts,zone:zones[zoneOf(l.fixture.at[2])]})));
+ const hemiOn=hemi?.intensity??0,lampLoads=ONSEN_CIRCUITS.flatMap(c=>c.loads.filter(l=>l.fixture).map(l=>({id:l.id,c:c.id,w:l.watts,zone:zones[zoneOf(l.fixture.at[2])]})));
  let day=0,viewZ=null;
  const fill=()=>{if(!hemi)return;let lit=0,all=0;
-  for(const l of lampLoads){const d=viewZ===null?0:Math.max(l.zone[0]-viewZ,viewZ-l.zone[1],0),k=AWAY+(1-AWAY)*Math.max(0,1-d/SPILL),w=l.w*k;all+=w;if(isLive(l.c))lit+=w;}
+  for(const l of lampLoads){const d=viewZ===null?0:Math.max(l.zone[0]-viewZ,viewZ-l.zone[1],0),k=AWAY+(1-AWAY)*Math.max(0,1-d/SPILL),w=l.w*k;all+=w;if(isLive(l.c)&&running.has(l.id))lit+=w;}
   const share=lit/all,floor=.3+.5*day;hemi.intensity=hemiOn*(share+(1-share)*floor);};
  // Where the picture is taken from: the plate is always drawn, so it hears every frame's camera.
  plate.frustumCulled=false;
@@ -311,8 +416,8 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],hall={fron
  const resetAnchors=new Map();
  function apply(){
   for(const [id,pivot] of levers)pivot.rotation.x=on.get(id)?LEVER.on:LEVER.off;
-  for(const c of ONSEN_CIRCUITS){const live=isLive(c.id);
-   for(const l of c.loads){
+  for(const c of ONSEN_CIRCUITS){const circuitLive=isLive(c.id);
+   for(const l of c.loads){const live=circuitLive&&running.has(l.id);
     for(const name of l.meshes||[])for(const e of glow.get(name)||[])e.material.emissiveIntensity=live?e.on:0;
     for(const name of l.lights||[]){const e=lightByName.get(name);if(e)e.light.intensity=live?e.on:0;}
     for(const name of l.screens||[]){const s=screens.get(name);if(s)s.visible=live;}
@@ -351,10 +456,12 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],hall={fron
   :'Nothing. The socket under the mirror is dead: the changing-room sockets breaker has tripped. The board is on the wall by the lockers.'));
 
  listeners.add(apply);apply();
- const api={trip,reset,isLive,isOn,loadOf,wattsOf,overloaded,resetAll,circuits:ONSEN_CIRCUITS,board:ONSEN_BOARD};
+ const api={trip,reset,isLive,isOn,loadOf,wattsOf,overloaded,resetAll,circuits:ONSEN_CIRCUITS,board:ONSEN_BOARD,
+  switchOn,switchOff,isRunning,isWorking,runningLoads,assess,advance,settle,stage:stageScenario,scenarios:ONSEN_SCENARIOS,
+  tv:{pin:pinLobbyChannel,get pinned(){return lobbyChannelPin();},channels:LOBBY_CHANNELS}};
  const audit=typeof window!=='undefined'?window.__JOHANSSON_AUDIT__:null;
  if(audit)audit.onsenPower=api;
- /** Daylight (0 night, 1 noon) from onsen.js's tick: by day the windows light a dark house. */
- const tick=d=>{if(d!==day){day=d;fill();}};
+ /** Daylight (0 night, 1 noon) from onsen.js's tick: by day the windows light a dark house. `dt` warms an overloaded breaker. */
+ const tick=(d,dt=0)=>{advance(dt);if(d!==day){day=d;fill();}};
  return {...api,group,levers,tick,dispose(){listeners.delete(apply);if(audit&&audit.onsenPower===api)delete audit.onsenPower;}};
 }

@@ -7,8 +7,9 @@ import {daylight} from '../../render/dusk.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildOnsenLobby,hinokiTexture,LOBBY} from './onsen-lobby.js';
 import {buildWashArea,WASH_SEATS} from './onsen-wash.js';
-import {buildOnsenElectrics,isPowered} from './onsen-electrics.js';
+import {buildOnsenElectrics,isPowered,isWorking} from './onsen-electrics.js';
 import {buildOnsenTowels} from './onsen-towels.js';
+import {ONSEN_SIGNS} from './onsen-signs.js';
 
 /**
  * Inside Umi-no-yu: through the noren to the bandai, the changing room, the washing
@@ -136,7 +137,7 @@ export function buildOnsenInterior({room,reg,action,exit}){
  anchor([-3.5,1.25,2.55],'Pay at the bandai · ¥300',()=>action('onsen-pay'));
  anchor([-3.5,1.25,3.1],'Talk to the attendant',()=>action('inspect','Umi-no-yu attendant',
   'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her crossword. "A bath wrap or swimwear in the bath, please -- it is a family bath. The rock bath is best after dark."'));
- const fee=canvasSign([["Adult ¥300",1],["Towel ¥100 · Milk ¥100",.5]],{w:384,h:192,bg:'#fbf6ea',size:60});
+ const fee=canvasSign(ONSEN_SIGNS.fee.lines.map((text,i)=>[text,i?.5:1]),{w:384,h:192,bg:'#fbf6ea',size:60});
  if(fee){const s=new THREE.Mesh(new THREE.PlaneGeometry(.7,.35),new THREE.MeshStandardMaterial({map:fee,roughness:.8}));s.position.set(-3.53,1.55,2.55);s.rotation.y=Math.PI/2;room.add(s);}
  // Coffee milk in the glass-fronted fridge, drunk standing, hand on hip.
  rect(4.6,2.3,.64,.62,1.6);
@@ -252,14 +253,14 @@ export function buildOnsenInterior({room,reg,action,exit}){
   const day=daylight(minutes),night=1-day;
   lobby.tick(dt,minutes,day,townCalendarAt(minutes).weekday);
   seaMat.color.setRGB(.25+.75*day,.3+.7*day,.45+.55*day);
-  power.tick(day);lanternGlow.emissiveIntensity=night*1.4;outdoor.intensity=night*5;sun.intensity=day*1.6;
+  power.tick(day,dt);lanternGlow.emissiveIntensity=night*1.4;outdoor.intensity=night*5;sun.intensity=day*1.6;
   for(const s of steam){const u=(s.userData.phase+time*s.userData.speed)%1,[x,y,z]=s.userData.base;s.position.set(x+Math.sin(u*6+x)*.15,y+.1+u*1.4,z);s.scale.setScalar(.35+u*.9);s.material.opacity=.3*Math.sin(u*Math.PI)*(.55+.45*night);}
   const k=time*1.3;tubWater.position.y=T.water+Math.sin(k)*.004;poolWater.position.y=P.water+Math.sin(k*.8+1)*.005;
-  if(isPowered('fan')){fanTime+=dt;fanHead.rotation.y=Math.sin(fanTime*.4)*.9;blades.rotation.z+=dt*18;}
+  if(isWorking('fan')){fanTime+=dt;fanHead.rotation.y=Math.sin(fanTime*.4)*.9;blades.rotation.z+=dt*18;}
   const m=((minutes%1440)+1440)%1440;hands[0].rotation.z=-(m%720)/720*Math.PI*2;hands[1].rotation.z=-(m%60)/60*Math.PI*2;
   // Seated at the bandai; now and then she looks up from her crossword.
   higaMotion?.update(dt,{speed:0,seated:true,seatHeight:.4,pose:Math.floor(time/9)%3===2?'Sit':'Read',expression:'neutral'});
  }
  tick(0);
- return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,power,dispose(){power.dispose();}};
+ return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,power,tv:lobby.tv,dispose(){power.dispose();}};
 }
