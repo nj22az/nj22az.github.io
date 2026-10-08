@@ -1,5 +1,5 @@
 {
-  "fingeravtryck_publikt": "9bb8518f754fb0bf",
+  "fingeravtryck_publikt": "86ec1521b98287c3",
   "schema_version": 1,
   "utdata": {
     "bok": {
@@ -322,7 +322,7 @@
       "sammanfattning": "408 avsnitt oförändrade, 72 omskrivna ur databasen. PDF måste sättas om separat."
     },
     "larare": {
-      "klartext_hash": "3f491c6a8348e3e7",
+      "klartext_hash": "13407a8335caed70",
       "revisioner": {
         "EL-000801": 3,
         "EL-000802": 3,
@@ -335,11 +335,11 @@
         "EL-000809": 1,
         "EL-000810": 6,
         "EL-000811": 6,
-        "EL-000812": 5,
-        "EL-000813": 6,
+        "EL-000812": 6,
+        "EL-000813": 7,
         "EL-000814": 1,
         "EL-000815": 1,
-        "EL-000816": 4,
+        "EL-000816": 6,
         "EL-000817": 1,
         "EL-000818": 2,
         "EL-000819": 1,
@@ -353,7 +353,7 @@
         "EL-000827": 1,
         "EL-000828": 1
       },
-      "sammanfattning": "Lararguide.html låst, klartext 3f491c6a8348e3e7"
+      "sammanfattning": "Lararguide.html låst, klartext 13407a8335caed70"
     },
     "presentationer": {
       "avvikelser": [],

@@ -40,8 +40,10 @@ jobs:
         env:
           LARARLOSEN: ${{ secrets.LARARLOSEN }}
         run: node --test sjoskolan/vecka-40/aktuell/resultat*.test.mjs
-      - name: Vecka 41 – resultatkod (svar, kontrollfrågor, protokoll)
-        run: node --test sjoskolan/vecka-41/aktuell/resultat.test.mjs
+      - name: Vecka 41 – resultatkod och skyddad läraracceptans
+        env:
+          LARARLOSEN: ${{ secrets.LARARLOSEN }}
+        run: node --test sjoskolan/vecka-41/aktuell/resultat*.test.mjs
       - name: Multimeterlabbets gränssnittstest
         working-directory: sjoskolan/multimetersimulator
         run: npm ci --ignore-scripts --no-audit --no-fund && npm test
