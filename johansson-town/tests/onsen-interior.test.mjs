@@ -43,4 +43,18 @@ test('Higa-san at the bandai is a Shimanchu like everyone else, up where she can
  assert.ok(attendant.getObjectByName('Shimanchu body'),'built from her recipe, not a placeholder figure');
  const head=new THREE.Vector3();attendant.getObjectByName('head')?.getWorldPosition(head);
  assert.ok(head.y>1.1,'her head is above the bandai top at '+head.y.toFixed(2));
+ // The price board is on the counter's front, under the top, so it never hides her face from the genkan or the lobby.
+ room.updateMatrixWorld(true);
+ const fee=room.getObjectByName('Fee sign');assert.ok(fee,'the price board is named, for the film');
+ const sign=new THREE.Box3().setFromObject(fee),top=new THREE.Box3().setFromObject(room.getObjectByName('Bandai top')),base=new THREE.Box3().setFromObject(room.getObjectByName('Bandai counter'));
+ assert.ok(sign.max.y<top.min.y,'under the counter top: '+sign.max.y.toFixed(3));
+ assert.ok(sign.min.x>=base.max.x&&sign.min.x-base.max.x<.02,'on the counter’s front face');
+ assert.ok(new THREE.Vector3(0,0,-1).applyQuaternion(fee.getWorldQuaternion(new THREE.Quaternion())).x<-.99||new THREE.Vector3(0,0,1).applyQuaternion(fee.getWorldQuaternion(new THREE.Quaternion())).x>.99,'facing the lobby (+x)');
+ const ray=new THREE.Raycaster();
+ for(const eye of [[-1.4,1.5,4.3],[0,1.5,4.2],[.6,1.25,2.7],[-2.55,1.35,3.85]]){const from=new THREE.Vector3(...eye),to=head.clone().sub(from);
+  ray.set(from,to.clone().normalize());ray.far=to.length();assert.ok(!ray.intersectObject(fee,false).length,'the price board is not between '+eye+' and her face');}
+ // The phone's handset is a part of its own, so a film can take it off the hook (hide it while she holds hers).
+ const phone=room.getObjectByName('Push-button phone'),handset=room.getObjectByName('Push-button phone handset');
+ assert.ok(handset&&handset.parent===phone,'the handset sits on the phone');
+ layout.dispose?.();
 });
