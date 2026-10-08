@@ -13,7 +13,7 @@ permissions:
 jobs:
   browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: sjoskolan/multimetersimulator
@@ -24,7 +24,15 @@ jobs:
           node-version: '24'
           package-manager-cache: false
       - run: npm ci --ignore-scripts --no-audit --no-fund
-      - run: npx playwright install --with-deps chromium webkit
+      # The browsers are cached by Playwright version; the system libraries are installed every time (apt), with
+      # its own time limit so a stuck mirror fails fast instead of eating the job.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('sjoskolan/multimetersimulator/package-lock.json') }}
+      - run: npx playwright install chromium webkit
+      - run: npx playwright install-deps chromium webkit
+        timeout-minutes: 12
       - run: npm test
       - run: npm run test:browser
       - uses: actions/upload-artifact@v4

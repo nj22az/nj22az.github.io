@@ -604,3 +604,5 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 - **2026-10-08** Vecka 41, PR #153: lärarportal, labbhandbok, frivilliga A/B/C och QR-visning upplåsta, granskade och krypterade igen. Lärarens körplan har samma tider och återställningar som elevsidan; samma borttagna bleck används för varje grupp. Fredagens grundarbete är M/S/T eller Motorlabbet, inte A/B/C. QR redovisar frivilliga A/B/C separat från inlämning 3, vars protokoll/felsökningslogg bifogas som PDF eller tydliga foton. Bedömning uppdaterad i skyddade källposten EL-000816 (revision 6) och lärarguiden ombyggd. Utgåvans konflikt löst genom ombyggnad mot aktuell main.
 
 - **2026-10-08** CI: Sjöskolans kontroller och multimeterns webbläsartest kan nu startas för hand (workflow_dispatch). De röda körningarna 7–8 oktober startade aldrig på grund av ett faktureringsstopp på kontot; lokalt går alla steg igenom.
+
+- **2026-10-08** CI: multimeterns webbläsartest fick 30 minuter i stället för 15 och cachar webbläsarna. Första riktiga körningen efter faktureringsstoppet stoppades efter 15 minuter medan `playwright install --with-deps` fortfarande installerade; inga tester hann köras.
