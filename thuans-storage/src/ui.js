@@ -6,7 +6,8 @@ function storageBridgeParams() {
     return {
       fromTown: q.get('from') === 'johansson-town',
       mode: q.get('mode') === 'auto' ? 'auto' : q.get('mode') === 'play' ? 'play' : null,
-      day: Number.isFinite(Number(q.get('day'))) ? Number(q.get('day')) : null,
+      day: q.has('day') && Number.isSafeInteger(Number(q.get('day'))) && Number(q.get('day'))>=0 ? Number(q.get('day')) : null,
+      player: /^[\w-]{1,40}$/.test(q.get('player')||'') ? q.get('player') : 'player-1',
     };
   } catch {
     return { fromTown: false, mode: null, day: null };
@@ -15,17 +16,20 @@ function storageBridgeParams() {
 // What Sakura gets back: the night's result, read by johansson-town/src/commerce/shop-stock.js.
 // `boss` is who came up the sea-cave hole in which suit and whether Thuan saw them off; `yen`
 // the cave coins they left, which go in the player's purse.
-function writeStorageWonHandshake({ day, assisted, boss = null, yen = 0 }) {
+function writeStorageWonHandshake({ day, player, assisted, boss = null, yen = 0 }) {
   try {
     localStorage.setItem(
-      STORAGE_WON_KEY,
-      JSON.stringify({ day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, boss, yen, t: Date.now() }),
+      STORAGE_WON_KEY+':'+player,
+      JSON.stringify({ player, day: day ?? Math.floor(Date.now() / 86400000), assisted: !!assisted, boss, yen, t: Date.now() }),
     );
   } catch {}
 }
 function returnToJohanssonTown() {
   window.location.href = '/johansson-town/';
 }
+function storageCheckpointKey(){const b=storageBridgeParams();return b.fromTown&&b.day!==null?'johansson-town:storage-night:'+b.player+':'+b.day:null;}
+function readStorageCheckpoint(){try{const key=storageCheckpointKey();return key?JSON.parse(localStorage.getItem(key)):null;}catch{return null;}}
+function saveStorageCheckpoint(data){try{const key=storageCheckpointKey();if(key)localStorage.setItem(key,JSON.stringify(data));}catch{}}
 function yg() {
   let e = (0, C.useRef)(null),
     t = (0, C.useRef)(null),
@@ -57,13 +61,14 @@ function yg() {
                 canvas: r,
                 minimap: i,
                 gltf: e,
+                resumeData:readStorageCheckpoint(),onCheckpoint:saveStorageCheckpoint,nightLocked:!!storageCheckpointKey(),
                 onHud: (e) => {
                   let t = hm.getState();
                   (t.setHud(e), e.phase === `won` && !e.assisted && t.saveBest(e.time));
                   if (e.phase === `won` && storageBridgeParams().fromTown && !window.__storageWonPosted) {
                     window.__storageWonPosted = true;
                     const bridge = storageBridgeParams();
-                    writeStorageWonHandshake({ day: bridge.day, assisted: !!e.assisted, boss: e.boss ? { who: e.boss.who, animal: e.boss.animal, defeated: !!e.boss.defeated } : null, yen: e.yenFound || 0 });
+                    writeStorageWonHandshake({ day: bridge.day, player:bridge.player, assisted: !!e.assisted, boss: e.boss ? { who: e.boss.who, animal: e.boss.animal, defeated: !!e.boss.defeated } : null, yen: e.yenFound || 0 });
                     // A moment on the results first, so you see what you saved.
                     window.setTimeout(returnToJohanssonTown, 2600);
                     return;
@@ -76,7 +81,9 @@ function yg() {
               }
               ((n.current = t), a(`ready`));
               const bridge = storageBridgeParams();
-              if (bridge.fromTown && bridge.mode === `auto`) {
+              if (t.restored) {
+                queueMicrotask(() => n.current?.resume());
+              } else if (bridge.fromTown && bridge.mode === `auto`) {
                 queueMicrotask(() => n.current?.autoRestock());
               } else if (bridge.fromTown && bridge.mode === `play`) {
                 queueMicrotask(() => n.current?.start());
@@ -365,6 +372,7 @@ function yg() {
                   }),
                   (0, $.jsx)(vg, {
                     variant: `ghost`,
+                    disabled:!!storageCheckpointKey(),
                     onClick: () => n.current?.restart(`same`),
                     children: `Restart`,
                   }),
@@ -466,11 +474,13 @@ function yg() {
                 children: [
                   (0, $.jsx)(vg, {
                     className: `flex-1`,
+                    disabled:!!storageCheckpointKey(),
                     onClick: () => n.current?.restart(),
                     children: `New list`,
                   }),
                   (0, $.jsx)(vg, {
                     variant: `ghost`,
+                    disabled:!!storageCheckpointKey(),
                     onClick: () => n.current?.restart(`same`),
                     children: `Same stockroom`,
                   }),

@@ -18,7 +18,7 @@ export const TREFASNYCKEL = 'sjoskolan-trefas-v1';
 export const LARARSIDA = '/sjoskolan/larare/resultat-v41.html';
 
 // Inlämningens svarsfält: [nyckel, storhet, enhet]. uppgift = sidans ankare (uppgift-N), nr = numret eleven ser.
-// Inlämning 3 (stationerna) har inga tal; protokollen följer med i stället.
+// Inlämning 3 (M/S/T eller Motorlabbet) bifogas separat. QR innehåller bara frivilliga A/B/C-sammanfattningar.
 export const SVAR = [
   { uppgift: 1, nr: 1, titel: 'Samma värmare i Y och Δ', falt: [
     ['y_Ugren', 'Y: U_{gren}', 'V'], ['y_I', 'Y: I_{gren} = I_{L}', 'A'], ['y_P', 'Y: P', 'kW'],

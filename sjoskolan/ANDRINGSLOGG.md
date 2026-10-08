@@ -598,3 +598,7 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   `simulatorer/stationA-manus.mjs`, ett inslag per steg. Test: Erik nämner inga tal och pekar bara på mätpunkter som
   steget självt nämner. Utan WebGL visas stegen som text. Stegen, kontrollerna och protokollet är oförändrade.
   Regel: i ett steg där eleven själv ska koppla visar Erik var, men det är eleven som kopplar och läser av.
+
+- **2026-10-05** Vecka 41, PR #153: fredagens M/S/T-körplan och separat protokollbilaga bevarade. Inlämning 3:s rättade länkar, distansalternativ och felsökningslogg flyttade till källposten EL-000816 så att innehållsbygget inte återställer den gamla texten. Skyddade lärarsidor kontrollerade och synkroniserade 8 oktober; se rättelsen nedan.
+
+- **2026-10-08** Vecka 41, PR #153: lärarportal, labbhandbok, frivilliga A/B/C och QR-visning upplåsta, granskade och krypterade igen. Lärarens körplan har samma tider och återställningar som elevsidan; samma borttagna bleck används för varje grupp. Fredagens grundarbete är M/S/T eller Motorlabbet, inte A/B/C. QR redovisar frivilliga A/B/C separat från inlämning 3, vars protokoll/felsökningslogg bifogas som PDF eller tydliga foton. Bedömning uppdaterad i skyddade källposten EL-000816 (revision 6) och lärarguiden ombyggd. Utgåvans konflikt löst genom ombyggnad mot aktuell main.
