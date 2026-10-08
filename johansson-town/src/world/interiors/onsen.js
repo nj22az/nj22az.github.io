@@ -252,7 +252,8 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const outdoor=new THREE.PointLight(0xffc27a,0,9,2);outdoor.position.set(-3.2,1.4,-7.4);room.add(outdoor);
  const sun=new THREE.DirectionalLight(0xfff0dc,0);sun.position.set(3,8,-2);sun.target.position.set(0,0,-6.5);room.add(sun,sun.target);
  // The breaker board and what hangs off it (lamp fixtures over these lights, the dryers), and the towels.
- const power=buildOnsenElectrics({room,rect,anchor,action,lamps,hall:R.hall});buildOnsenTowels({room,rect});
+ // The board also sets the sun (day × 1.6), so a dead house keeps only the daylight's share of it.
+ const power=buildOnsenElectrics({room,rect,anchor,action,lamps,sun,sunAtNoon:1.6,hall:R.hall});buildOnsenTowels({room,rect});
 
  anchor([0,1.1,4.75],'Step outside',exit);
  let time=0,fanTime=0;
@@ -262,7 +263,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   lobby.tick(dt,minutes,day,townCalendarAt(minutes).weekday);
   front.update(dt,minutes,people());front.light(day);
   seaMat.color.setRGB(.25+.75*day,.3+.7*day,.45+.55*day);
-  power.tick(day,dt);lanternGlow.emissiveIntensity=night*1.4;outdoor.intensity=night*5;sun.intensity=day*1.6;
+  power.tick(day,dt);lanternGlow.emissiveIntensity=night*1.4;outdoor.intensity=night*5;
   for(const s of steam){const u=(s.userData.phase+time*s.userData.speed)%1,[x,y,z]=s.userData.base;s.position.set(x+Math.sin(u*6+x)*.15,y+.1+u*1.4,z);s.scale.setScalar(.35+u*.9);s.material.opacity=.3*Math.sin(u*Math.PI)*(.55+.45*night);}
   const k=time*1.3;tubWater.position.y=T.water+Math.sin(k)*.004;poolWater.position.y=P.water+Math.sin(k*.8+1)*.005;
   if(isWorking('fan')){fanTime+=dt;fanHead.rotation.y=Math.sin(fanTime*.4)*.9;blades.rotation.z+=dt*18;}
@@ -272,5 +273,5 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   higaMotion?.update(dt,{speed:0,seated:true,seatHeight:.4,pose:Math.floor(time/9)%3===2?'Sit':'SitHold',expression:'neutral'});
  }
  tick(0);
- return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,power,tv:lobby.tv,streetDoor:front.door,genkan:front.genkan,dispose(){power.dispose();front.dispose();}};
+ return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,power,townFill:power.townFill,tv:lobby.tv,streetDoor:front.door,genkan:front.genkan,dispose(){power.dispose();front.dispose();}};
 }
