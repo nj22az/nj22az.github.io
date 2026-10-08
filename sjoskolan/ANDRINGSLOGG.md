@@ -160,7 +160,15 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 46. **SVG-reservvyer behöver attributstyrning.** Visa/dölj SVG med `toggleAttribute("hidden", ...)`;
     `.hidden` på SVG kan bli en vanlig JS-egenskap utan att ändra synligheten. Prova WebGL-reservläget i webbläsare.
 
+47. **Teorikoppling är ett pedagogiskt val, inte ordlikhet.** Vecka 41–45 anger exakt `teorikort` i placeringen.
+    Samma rubrik styr Öva nu och Ledtråd 1; saknad eller tvetydig rubrik stoppar exporten.
+    *Kontroll: `innehall/tests/test_delsidor_veckor.py`.*
+
 ## Ändringar
+
+- **2026-10-06** PR #115 återapplicerad på aktuell main: explicita teorikort för alla 150 övningar vecka 41–45,
+  bevarade kontrollfrågor och senare innehåll. Delsidorna ombyggda från källan; aktuell CI kompletterad med
+  python-pptx och fokuserade kopplingstester. Numeriska teoriöverskrivningar ersatta med rubrikreferenser.
 
 - **2026-09-30** PR #113 framflyttad: multimeterns övning 7 behåller läsbara diagrametiketter, separat spetsrad och sladdar i kanten; main:s senare notation och elevdata bevarade. Ny cacheversion. 24 modell-/DOM-tester och 10 Chromium-fall godkända på telefon, surfplatta och två skrivbordsbredder. Fysisk iPhone/iPad och WebKit kvarstår separat.
 
@@ -591,4 +599,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   steget självt nämner. Utan WebGL visas stegen som text. Stegen, kontrollerna och protokollet är oförändrade.
   Regel: i ett steg där eleven själv ska koppla visar Erik var, men det är eleven som kopplar och läser av.
 
-- **2026-10-05** Vecka 41, PR #153: fredagens M/S/T-körplan och separat protokollbilaga bevarade. Inlämning 3:s rättade länkar, distansalternativ och felsökningslogg flyttade till källposten EL-000816 så att innehållsbygget inte återställer den gamla texten. Skyddade lärarsidor är oförändrade; jämförelsen inväntar en upplåst kopia.
+- **2026-10-05** Vecka 41, PR #153: fredagens M/S/T-körplan och separat protokollbilaga bevarade. Inlämning 3:s rättade länkar, distansalternativ och felsökningslogg flyttade till källposten EL-000816 så att innehållsbygget inte återställer den gamla texten. Skyddade lärarsidor kontrollerade och synkroniserade 8 oktober; se rättelsen nedan.
+
+- **2026-10-08** Vecka 41, PR #153: lärarportal, labbhandbok, frivilliga A/B/C och QR-visning upplåsta, granskade och krypterade igen. Lärarens körplan har samma tider och återställningar som elevsidan; samma borttagna bleck används för varje grupp. Fredagens grundarbete är M/S/T eller Motorlabbet, inte A/B/C. QR redovisar frivilliga A/B/C separat från inlämning 3, vars protokoll/felsökningslogg bifogas som PDF eller tydliga foton. Bedömning uppdaterad i skyddade källposten EL-000816 (revision 6) och lärarguiden ombyggd. Utgåvans konflikt löst genom ombyggnad mot aktuell main.

@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 
@@ -15,19 +16,19 @@ import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
  *
  * All of it is one print sheet and a handful of merged or instanced meshes.
  * Room coordinates: Minato is x -6.3..6.3, z -6.3..6.3; the counter's customer ledge is
- * at y 1.11 (z -2.1..-2.4), the tables at 0.945, the koagari's low tables at 0.77.
+ * at the shared service height (z -2.1..-2.4), the tables at the shared dining height, the koagari's low tables at 0.77.
  */
 const MINCHO='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 const GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
 
 /** The regulars who keep a bottle (and so whose names are on the shelf). */
 export const BOTTLE_KEEP=Object.freeze([
- {name:'Kenji',drink:'Zuisen awamori',colour:0x5a3b22},{name:'Mr Higa',drink:'Kumesen awamori',colour:0x2c4a33},
+ {name:'Chin',drink:'Zuisen awamori',colour:0x5a3b22},{name:'Mr Higa',drink:'Kumesen awamori',colour:0x2c4a33},
  {name:'Officer Mori',drink:'Shochu, barley',colour:0xd8dccf},{name:'Hiroshi',drink:'Awamori, 10 years',colour:0x5a3b22},
  {name:'Tetsuo',drink:'Shochu, sweet potato',colour:0x34465a},{name:'Harbour master',drink:'Awamori, 5 years',colour:0x2c4a33},
  {name:'Mr Fujita',drink:'Shochu, rice',colour:0xd8dccf},{name:'Masaru',drink:'Awamori',colour:0x5a3b22},
  {name:'Reiko',drink:'Plum wine',colour:0x7a2b2b},{name:'Mr Tanabe',drink:'Awamori, 3 years',colour:0x34465a},
- {name:'Aya',drink:'Plum wine',colour:0x7a2b2b},{name:'Daichi',drink:'Shochu, barley',colour:0xd8dccf},
+ {name:'Nhung',drink:'Plum wine',colour:0x7a2b2b},{name:'Daichi',drink:'Shochu, barley',colour:0xd8dccf},
 ]);
 /** The shelf, on the west wall beside the counter's end. */
 export const KEEP_SHELF=Object.freeze({x:-6.29,z:-2.9,width:1.15,levels:Object.freeze([1.45,1.86]),depth:.2});
@@ -94,7 +95,7 @@ function sheet(){
   write(c,"飲んだら乗るな",w/2,38,34,'#ffffff',GOTHIC);
   c.strokeStyle='#c8102e';c.lineWidth=12;c.beginPath();c.arc(w/2,190,80,0,Math.PI*2);c.stroke();c.beginPath();c.moveTo(w/2-56,134);c.lineTo(w/2+56,246);c.stroke();
   c.fillStyle='#2a2a2a';c.fillRect(w/2-44,182,88,30);c.beginPath();c.arc(w/2-26,216,12,0,Math.PI*2);c.arc(w/2+26,216,12,0,Math.PI*2);c.fill();
-  write(c,"IF YOU DRINK, DON'T DRIVE",w/2,312,19,'#c8102e',GOTHIC,900);write(c,'Minato Police Box',w/2,350,16,'#2a2a2a',GOTHIC,700);write(c,'Ask Nao to call a taxi',w/2,380,15,'#2a2a2a',GOTHIC,700);
+  write(c,"IF YOU DRINK, DON'T DRIVE",w/2,312,19,'#c8102e',GOTHIC,900);write(c,'Minato Police Box',w/2,350,16,'#2a2a2a',GOTHIC,700);write(c,'Ask Thao to call a taxi',w/2,380,15,'#2a2a2a',GOTHIC,700);
  });
  at('karaoke',(c,w,h)=>{
   c.fillStyle='#ffe14d';c.fillRect(0,0,w,h);
@@ -217,8 +218,8 @@ export function buildIzakayaDressing(room,{collider}={}){
   for(const dx of [.047,.235]){localBox(.004,.02,.067,p,0x99693b,dx,.02);for(const dz of [-.026,.026])localBox(.004,.014,.015,p,0x99693b,dx,.037,dz);}
   for(let i=0;i<10;i++)piece(new THREE.CylinderGeometry(.0013,.0022,.176,6).rotateZ(Math.PI/2).rotateY((i%3-1)*.012),p,solids,i%2?0xcbb079:0xb88d51,.141,.013+Math.floor(i/5)*.005,-.022+(i%5)*.0105);
  });
- for(const x of [-3.05,-1.55,-.05,1.45])caddy(x,1.11,-2.24);
- for(const [x,z] of [[-4.55,2.2],[1.55,2.0]])caddy(x,.945,z,Math.PI/2);
+ for(const x of [-3.05,-1.55,-.05,1.45])caddy(x,FURNITURE_HEIGHTS.serviceCounter,-2.24);
+ for(const [x,z] of [[-4.55,2.2],[1.55,2.0]])caddy(x,FURNITURE_HEIGHTS.table,z,Math.PI/2);
  caddy(5.0,.77,.25,Math.PI/2);
  // The towel cabinet now rests on the steel counter and opens toward the staff.
  const W=OSHIBORI_WARMER;

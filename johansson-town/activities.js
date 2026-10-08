@@ -2,6 +2,7 @@ import {MINATO_MEMORY_STORY,MINATO_RECIPE_CARD} from './src/world/interiors/izak
 import {foodArtForItem} from './src/commerce/food-art.js';
 import {FLYER_ITEM,FLYER_PATH,FLYER_PAPER,collectSakuraFlyer} from './src/commerce/sakura-flyer.js';
 import {restoreIsland} from './src/island/services.js';
+import {MOTOR_LINKS} from './src/workshop/motor-bench.js';
 import {playerRecipe} from './src/avatars/actors.js';
 import {encodeRecipe} from './src/avatars/recipe.js';
 import {restoreArchive,seedArchive,fileDocument,retainArchive} from './src/office/archive.js';
@@ -14,6 +15,8 @@ import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {createMagazineReader} from './src/ui/magazine-reader.js';
 import {townCalendarAt} from './src/town-clock.js';
+import {happeningLine} from './src/people/happenings.js';
+import {recordMoment,diaryPage,diaryDays,restoreDiary} from './src/progression/diary.js';
 import {wantsAnother} from './src/people/drunk.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
 import {restoreSakura,recordSakuraSale} from './src/commerce/sakura-economy.js';
@@ -54,7 +57,7 @@ import {sharedMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
 import {createThuanChat} from './src/people/thuan-chat.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
-import {closingStockPending,shelvesNeedRestock,applyStorageRestock,consumeStorageWonHandshake} from './src/commerce/shop-stock.js';
+import {closingStockPending,shelvesNeedRestock,consumeStorageWonHandshake,applyStorageOutcome,acknowledgeStorageOutcome,closingDay} from './src/commerce/shop-stock.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
@@ -67,7 +70,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   try {
     const saved=readSave(localStorage);
     if(saved&&typeof saved==='object'){pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
-      state.homeDecor=restoreHomeDecor(saved.homeDecor);
+      state.homeDecor=restoreHomeDecor(saved.homeDecor);state.diary=restoreDiary(saved.diary);
+      state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
       state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
@@ -103,12 +107,14 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   }
 
   function save(){
+    let saved=false;
     state.avatarRecipe=encodeRecipe(playerRecipe());
     retainArchive(state.documentArchive,getMinutes());
-    if(travelProgress(state).unlocked&&!state.quickTravelNotified){state.quickTravelNotified=true;state.notes.push('Earned the town shortcuts: Tama is home and Kenji’s workshop route is complete.');say('Town shortcuts unlocked! Quick travel is now in your Town Book.',7);}
-    try {const locations=getResidentLocations();if(locations)state.residentLocations=locations;state.minutes=getMinutes();state.savedAt=Date.now();localStorage.setItem(slotKey(readPlayers(localStorage).active),JSON.stringify(state));touchPlayer(localStorage,state.savedAt);$('#saveState').textContent='PROGRESS SAVED';}
+    if(travelProgress(state).unlocked&&!state.quickTravelNotified){state.quickTravelNotified=true;state.notes.push('Earned the town shortcuts: Tama is home and Chin’s workshop route is complete.');say('Town shortcuts unlocked! Quick travel is now in your Town Book.',7);}
+    try {const locations=getResidentLocations();if(locations)state.residentLocations=locations;state.minutes=getMinutes();state.savedAt=Date.now();localStorage.setItem(slotKey(readPlayers(localStorage).active),JSON.stringify(state));saved=true;touchPlayer(localStorage,state.savedAt);$('#saveState').textContent='PROGRESS SAVED';}
     catch {$('#saveState').textContent='SAVING UNAVAILABLE';}
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
+    return saved;
   }
   function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
@@ -170,7 +176,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       :special?`${special.note}. From the board at Sakura.`
       :hotSnack?hotSnack.line
       :spec?spec.text:find?`Worth ¥${find.price} back at Sakura’s till.`
-      :item==='Sea bream'?'Fresh from the pier. Nao — or Thuan — would know what to do with it.'
+      :item==='Sea bream'?'Fresh from the pier. Thao — or Thuan — would know what to do with it.'
       :'Something you picked up in town.';
     show(item,text,[...(drinkable?[['Drink it',()=>{close();onDrink(item);}]]:[]),...(edible?[['Eat it',()=>{close();onSnack(item);}]]:[]),...(model?[['Look at it',()=>previewPrint(model)]]:[]),['Back to the bag',bag],['Close',close]]);
     modal.classList.add('bag-view');
@@ -223,8 +229,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   }
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
-    const quest=['Speak to Aya beside the bookshop.','Find Tama, Aya’s cat, near the ramen stall. A fish might help.','Return to Aya with news of Tama.','Tama is safely home. Aya has paid you ¥500.'][state.quest];
-    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Konbini passport',konbiniPassport],['Back to town',close]]);
+    const quest=['Speak to Nhung beside the bookshop.','Find Tama, Nhung’s cat, near the ramen stall. A fish might help.','Return to Nhung with news of Tama.','Tama is safely home. Nhung has paid you ¥500.'][state.quest];
+    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Diary',()=>diary()],['Konbini passport',konbiniPassport],['Back to town',close]]);
     const map=onMap();if(map)body.append(map);
   }
 
@@ -249,13 +255,23 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
        ['Back to the field book',inventory]]);
   }
 
-  function note(text){if(!state.notes.includes(text)){state.notes.push(text);state.notes=state.notes.slice(-100);save();}}
+  function note(text){
+    // Everything noted is offered to today's diary page too, weighed by what it was.
+    recordMoment(state,getMinutes(),{text,kind:/^Gave /.test(text)?'gift':/^Bought .+ a drink/.test(text)?'friend':'note'});
+    if(!state.notes.includes(text)){state.notes.push(text);state.notes=state.notes.slice(-100);save();}
+  }
+  // The diary (progression/diary.js): today's page first, then back through the days.
+  function diary(index=0){
+    const days=diaryDays(state,getMinutes()),day=days[Math.min(index,days.length-1)];
+    const page=diaryPage(state,day*1440+720);save();
+    show('Diary',page,[...(index+1<days.length?[['An earlier page',()=>diary(index+1)]]:[]),...(index>0?[['A later page',()=>diary(index-1)]]:[]),['Back to the field book',inventory]]);
+  }
   const ramenTickets=createRamenTicketMachine({state,show,close,spend,save,receipt,getMinutes});
   const izakayaPlay=createIzakayaPlay({state,show,close,spend,save,receipt,getMinutes,say,note});
   function inspectItem(item){if(!state.inspectedIds.includes(item.id)){state.inspectedIds.push(item.id);note(item.note);save();}}
   function openURL(){say('The ledger is kept here in town.');}
 
-  function quietRead(){if(!state.inspectedIds.includes('book')){receipt('Window chair','Lift The Venture from the display first. Aya has kept your place.');return;}let left=20;show('Quiet reading','Rain on the shutters. The street can wait.',[['Put down the book',close]]);timer=setInterval(()=>{left--;body.firstChild.textContent='A page, a breath, the harbour. '+left+' seconds.';if(left<=0){onTime(10);note('Read by the window. Ten town minutes passed.');receipt('Window chair','The bookmark is a ferry ticket. Returned it to the same page.');}},1000);}
+  function quietRead(){if(!state.inspectedIds.includes('book')){receipt('Window chair','Lift The Venture from the display first. Nhung has kept your place.');return;}let left=20;show('Quiet reading','Rain on the shutters. The street can wait.',[['Put down the book',close]]);timer=setInterval(()=>{left--;body.firstChild.textContent='A page, a breath, the harbour. '+left+' seconds.';if(left<=0){onTime(10);note('Read by the window. Ten town minutes passed.');receipt('Window chair','The bookmark is a ferry ticket. Returned it to the same page.');}},1000);}
   const histories=new Map();
   // Runs a ported gd_dialog script through the existing conversation modal: one speaker
   // line, its choices as buttons, and the node's own actions writing the story flags.
@@ -313,8 +329,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     if(!met)note('Met Thuan, the heart of Sakura Konbini.');
     const replies={
       snack:"Recommended? Leave it to me!\nMy recommendation? Tea and a biscuit. The tea makes it a sensible decision. The biscuit makes it a good one.",
-      ribbon:"Hair? Thank you!\nMy hair? Thank you! I let it grow long and tie it back when I restock. On a hot day I braid it — my little sister says my plaits are crooked.",
-      town:"I like the harbour at dusk.\nSakura closes at eight. Some evenings I stop by Minato after twenty past, until half past nine; other evenings I walk home by the harbour. Nao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.",
+      ribbon:"Hair? Thank you!\nMy hair? Thank you! I let it grow long and tie it back when I restock. On a hot day I braid it — my big sister Nhung says my plaits are crooked.",
+      town:"I like the harbour at dusk.\nSakura closes at eight. Some evenings I stop by Minato after twenty past, until half past nine; other evenings I walk home by the harbour. Thao’s izakaya is beside Main Street — follow the red lanterns. She always keeps a chair for a good story.",
       home:residentHomeDescription('Thuan')||commuterDescription('Thuan'),
       compliment:"You’re making me blush.\nOh, now you have made me shy. I was trying to look very professional behind this counter. Thank you. That was lovely.",
       challenge:"Let's compete!\nA challenge! Find the strangest postcard on the rack. I will defend the seagull one. He looks as though he owns the harbour.",
@@ -322,10 +338,10 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       secret:"It's just a story here.\nA little shop secret: I name the plants. The stubborn one by the door is the assistant manager. Terrible at counting change.",
     };
     if(offDuty){
-      replies.snack='Nao saved me some edamame and barley tea. Choosing a snack is much easier when I am not the person stocking the shelves.';
+      replies.snack='Thao saved me some edamame and barley tea. Choosing a snack is much easier when I am not the person stocking the shelves.';
       replies.compliment='Thank you. It is lovely being here with everyone, just as Thuan. No till to count tonight.';
-      replies.challenge='A little challenge: ask Nao which neighbour tells the tallest stories. I have my suspicions.';
-      replies.radio='When this song comes on at Sakura I sing along. Here I let Nao join in. She knows all the wrong words with enormous confidence.';
+      replies.challenge='A little challenge: ask Thao which neighbour tells the tallest stories. I have my suspicions.';
+      replies.radio='When this song comes on at Sakura I sing along. Here I let Thao join in. She knows all the wrong words with enormous confidence.';
     }
     if(ramenVisit){
       replies.snack='Tonight, a hot bowl of shoyu ramen. I have spent all day recommending snacks to everyone else.';
@@ -333,7 +349,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       replies.challenge='Try naming every topping before the steam fogs your glasses. I always forget one.';
       replies.radio='I leave the singing to the shop radio tonight. Here I am listening to the kitchen.';
     }
-    const greeting=onsenBath?"Haa… It feels good.\nYou came! Sit, sit — the water is perfect tonight. Listen: you can hear the sea on the other side of the fence. This is the best part of my whole day.":ramenVisit?"Good work today!\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.":offDuty?"Good to see you!\nYou found me! Sakura is all locked up. Nao saved me some supper. Come keep me company — I want to hear about your day.":met?"Welcome back!\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?":"Welcome! I’m Thuan.\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?";
+    const greeting=onsenBath?"Haa… It feels good.\nYou came! Sit, sit — the water is perfect tonight. Listen: you can hear the sea on the other side of the fence. This is the best part of my whole day.":ramenVisit?"Good work today!\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.":offDuty?"Good to see you!\nYou found me! Sakura is all locked up. Thao saved me some supper. Come keep me company — I want to hear about your day.":met?"Welcome back!\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?":"Welcome! I’m Thuan.\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?";
     const title=onsenBath?'Thuan · Umi-no-yu':ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
     const openHotCase=topic==='hot-case';if(openHotCase)topic=null;
     if(topic){show(title,replies[topic],[['Tell me something else',()=>thuanConversation()],['See you soon, Thuan',close]]);return;}
@@ -465,6 +481,13 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       thuanConversation();return;
     }
 
+    // What today is (happenings.js) is what they say first, once a day; everything else
+    // they offer (a drink at Minato, the Tama errand) stays on the buttons.
+    let today=happeningLine(name,getMinutes());
+    if(today&&!(state.heardHappenings||=[]).includes(today.key)){
+     state.heardHappenings=[...state.heardHappenings,today.key].slice(-40);
+     recordMoment(state,getMinutes(),{kind:'happening',text:today.title+'. '+name+' said: “'+today.text+'”'});
+    }else today=null;
     const all=DIALOGUE[name];if(!all){legacyResident(name);return;}
     const history=histories.get(name)||[];
     // The home topic keeps its place in the rotation while commuting. Dropping it
@@ -474,16 +497,17 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     // Newly discovered callbacks take precedence, then cycle through authored topics.
     const row=available.find(r=>r[2])||available[0]||all[0];history.push(row[0]);histories.set(name,history.slice(-3));
     let text=row[0]==='home'?(residentHomeDescription(name)||commuterDescription(name)):row[1];
+    if(today)text=today.text;
     const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);
     const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
     const home=residentHomeDescription(name);
     buttons.push([home?'Where do you live?':'How do you travel?',()=>show(name+' · '+(home?'Home':'Harbour Line'),home||commuterDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
-    if(name==='Nao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);
+    if(name==='Thao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);
     // Mingling at Minato: stand somebody a drink. They remember it.
-    if(getSocialContext().inside==='izakaya'&&name!=='Nao'&&name!=='Barfly'&&izakayaOpen(getMinutes()))buttons.push(['Buy '+name+' a drink · ¥'+DRINKS.draft.price,()=>treat(name)]);
-    if(name==='Aya')buttons.push(['About Tama',()=>legacyResident(name)]);
-    if(name==='Kenji')buttons.push(['How does the 3D printer work?',()=>show('Kenji · Form 3D','Yo bro, pick a pattern on the Form 3D machine. StepWise checks the material cost and what Thuan will pay. Start the print, let the machine run, then collect it. One of each in your bag. Thuan buys them at Sakura from nine till eight, using the money her shop earns.',[['Got it, bro',close]])]);
-    if(name==='Kenji'&&state.kenjiEscort&&state.kenjiEscort!=='done')buttons.push(['Show me the workshop',()=>{onEscort();close();say('Kenji: Come on, bro. I’ll show you the way.',4);}]);
+    if(getSocialContext().inside==='izakaya'&&name!=='Thao'&&name!=='Barfly'&&izakayaOpen(getMinutes()))buttons.push(['Buy '+name+' a drink · ¥'+DRINKS.draft.price,()=>treat(name)]);
+    if(name==='Nhung')buttons.push(['About Tama',()=>legacyResident(name)]);
+    if(name==='Chin')buttons.push(['How does the 3D printer work?',()=>show('Chin · Form 3D','Yo bro, pick a pattern on the Form 3D machine. StepWise checks the material cost and what Thuan will pay. Start the print, let the machine run, then collect it. One of each in your bag. Thuan buys them at Sakura from nine till eight, using the money her shop earns.',[['Got it, bro',close]])]);
+    if(name==='Chin'&&state.kenjiEscort&&state.kenjiEscort!=='done')buttons.push(['Show me the workshop',()=>{onEscort();close();say('Chin: Come on, bro. I’ll show you the way.',4);}]);
     if(name==='Mrs Sato')buttons.push(['Umeboshi rice ball · ¥80',()=>{if(spend(80)){state.sprintUntil=performance.now()+20000;note('Umeboshi rice ball. Ready to move.');close();}}]);
     if(name==='Cold-storage kid')buttons.push(['Ice · ¥20',()=>{if(spend(20)){addItem('Ice');receipt(name,'Keep it out of the sun. That is the entire manual.');}}]);
     if(name==='Harbour master')buttons.push(['Sell a catch',()=>legacyResident(name)]);
@@ -526,14 +550,14 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   }
   function izakayaTable(){
     const table=getBeerTable()||{},drink=table.drink,dish=table.dish,order=table.order,buttons=[],open=izakayaOpen(getMinutes());
-    let text=open?'Lanterns, the radio low, the smell of the grill. Nao is behind the counter.':'Minato is closing. Nao is stacking the stools.';
-    if(order){const item=menuItem(order.kind);text='Nao is '+(order.phase==='cooking'?'at the '+DISHES[order.kind].station+' with your '+item.en.replace(/^(a|an|the) /,'').replace(/^(plate|bowl|flask) of /,''):order.phase==='pouring'?'pouring your '+item.en.toLowerCase():'on her way over with it')+'.';}
+    let text=open?'Lanterns, the radio low, the smell of the grill. Thao is behind the counter.':'Minato is closing. Thao is stacking the stools.';
+    if(order){const item=menuItem(order.kind);text='Thao is '+(order.phase==='cooking'?'at the '+DISHES[order.kind].station+' with your '+item.en.replace(/^(a|an|the) /,'').replace(/^(plate|bowl|flask) of /,''):order.phase==='pouring'?'pouring your '+item.en.toLowerCase():'on her way over with it')+'.';}
     const onTable=[drink&&drink.left>0?'your '+DRINKS[drink.kind].en.toLowerCase().replace(/^(a|an) /,'')+(drink.left<drink.sips?' ('+drink.left+' sips left)':''):null,dish&&dish.left>0?DISHES[dish.kind].en+(dish.left<dish.bites?' ('+dish.left+' left)':''):null].filter(Boolean);
     if(!order&&onTable.length)text+='\n\nIn front of you: '+onTable.join(' and ')+'.';
     if(drink&&drink.left>0)buttons.push([drink.left===drink.sips?"Cheers · Kanpai, and drink":'Drink',()=>{close();onSip();}]);
     if(dish&&dish.left>0)buttons.push([dish.left===dish.bites?"Enjoy your meal · Eat":'Eat some more',()=>{close();onEat();}]);
     if(!order&&open){
-      if(!table.naoHere)text+='\n\nNao is not at the counter just now.';
+      if(!table.naoHere)text+='\n\nThao is not at the counter just now.';
       else{
         if(!drink||drink.left<=1)buttons.push(['Order a drink…',()=>izakayaOrder('drinks')]);
         if(!dish||dish.left<=0)buttons.push(['Order something to eat…',()=>izakayaOrder('food')]);
@@ -545,30 +569,30 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   /** Minato's wall, one list for drink and one for food. What you cannot pay for is marked, not hidden. */
   function izakayaOrder(kind){
     const items=Object.values(kind==='drinks'?DRINKS:DISHES);
-    show(kind==='drinks'?'Minato · to drink':'Minato · from the kitchen','You have ¥'+state.yen+'. Nao waits with her pad.',[
-      ...items.map(item=>[item.jp+' · ¥'+item.price+(state.yen<item.price?' (not enough yen)':item.alcohol>0&&!wantsAnother(getTipsy(),item.alcohol)?' (Nao says enough)':''),()=>{
-        if(state.yen<item.price){receipt('Minato',"Nao smiles: Next time. Next time, then. You have ¥"+state.yen+'.');return;}
-        if(item.alcohol>0&&!wantsAnother(getTipsy(),item.alcohol)){receipt('Minato',"Nao puts a glass of water in front of you: You’ve had enough. Enough for tonight -- drink this, and then home.");return;}
+    show(kind==='drinks'?'Minato · to drink':'Minato · from the kitchen','You have ¥'+state.yen+'. Thao waits with her pad.',[
+      ...items.map(item=>[item.jp+' · ¥'+item.price+(state.yen<item.price?' (not enough yen)':item.alcohol>0&&!wantsAnother(getTipsy(),item.alcohol)?' (Thao says enough)':''),()=>{
+        if(state.yen<item.price){receipt('Minato',"Thao smiles: Next time. Next time, then. You have ¥"+state.yen+'.');return;}
+        if(item.alcohol>0&&!wantsAnother(getTipsy(),item.alcohol)){receipt('Minato',"Thao puts a glass of water in front of you: You’ve had enough. Enough for tonight -- drink this, and then home.");return;}
         if(!spend(item.price))return;
-        if(!onOrderDrink(item.id)){state.yen+=item.price;save();receipt('Minato','Nao is busy -- try again in a moment.');return;}
+        if(!onOrderDrink(item.id)){state.yen+=item.price;save();receipt('Minato','Thao is busy -- try again in a moment.');return;}
         onTime(2);note('Ordered '+item.en.toLowerCase()+' at Minato.');close();
-        say("「Sorry,"+item.jp+"Please!」 "+(DISHES[item.id]?'Nao calls it back and goes to the '+DISHES[item.id].station+'.':'Nao nods and reaches for '+(item.id==='draft'?'a mug.':item.id==='bottle'?'a big bottle.':item.id==='can'?'the fridge.':item.id==='sake'?'the kettle for the tokkuri.':item.id==='awamori'?'the kame of awamori.':'the tea jug.')),4);
+        say("「Sorry,"+item.jp+"Please!」 "+(DISHES[item.id]?'Thao calls it back and goes to the '+DISHES[item.id].station+'.':'Thao nods and reaches for '+(item.id==='draft'?'a mug.':item.id==='bottle'?'a big bottle.':item.id==='can'?'the fridge.':item.id==='sake'?'the kettle for the tokkuri.':item.id==='awamori'?'the kame of awamori.':'the tea jug.')),4);
       }]),
       ['Back',izakayaTable]
     ]);
   }
-  /** A round for somebody at Minato: Nao pours it, they raise it, and the town remembers who bought it. */
+  /** A round for somebody at Minato: Thao pours it, they raise it, and the town remembers who bought it. */
   function treat(name){
     if(state.yen<DRINKS.draft.price){receipt(name,'You check your pockets: ¥'+state.yen+'. '+name+' laughs -- next time, then.');return;}
     if(!spend(DRINKS.draft.price))return;
     state.treats??={};const times=state.treats[name]=(state.treats[name]||0)+1;save();
     onTime(2);onTreat(name);note('Bought '+name+' a drink at Minato.');
-    const lines=times===1?["Cheers! That is very kind. The next one is mine -- I will remember.",'Kanpai! Nao, did you see that? A gentleman.']:times<4?["Again? Then I owe you two. Cheers!",'You keep doing this. Sit down, then, and tell me about your day.']:['At this point you are a regular. Nao is going to put your name on a bottle.',"Cheers, my friend. To the harbour."];
+    const lines=times===1?["Cheers! That is very kind. The next one is mine -- I will remember.",'Kanpai! Thao, did you see that? A gentleman.']:times<4?["Again? Then I owe you two. Cheers!",'You keep doing this. Sit down, then, and tell me about your day.']:['At this point you are a regular. Thao is going to put your name on a bottle.',"Cheers, my friend. To the harbour."];
     receipt(name,lines[(times+name.length)%lines.length]);
   }
   function izakayaMenu(){
-    if(!izakayaOpen(getMinutes())){close();say('Minato closes at 03:00. Nao is locking up.');return;}
-    show('Minato · Tonight’s wall','Nao: Take a seat -- the counter, a table, wherever there is room -- and I will bring you anything on the wall. The stories are on the house.',[
+    if(!izakayaOpen(getMinutes())){close();say('Minato closes at 03:00. Thao is locking up.');return;}
+    show('Minato · Tonight’s wall','Thao: Take a seat -- the counter, a table, wherever there is room -- and I will bring you anything on the wall. The stories are on the house.',[
       ['Read the drinks',()=>show('Minato · to drink',Object.values(DRINKS).map(d=>d.jp+' · '+d.en+' · ¥'+d.price).join('\n'),[['Back',izakayaMenu]])],
       ['Read the food',()=>show('Minato · from the kitchen',Object.values(DISHES).map(d=>d.jp+' · '+d.en+' · ¥'+d.price).join('\n'),[['Back',izakayaMenu]])],
       ['Just looking, thank you',close]
@@ -705,7 +729,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const m=((getMinutes()%1440)+1440)%1440;
     if(m<600||m>=1320){show("Sea Bath · Umi-no-yu",'Higa-san is counting the day’s coins. "The bath is closed -- ten o’clock tomorrow. The footbath outside never closes."',[['Back',close]]);return;}
     if(onsenPaid()){receipt("Sea Bath · Umi-no-yu",'You have paid for today. Higa-san waves you through without looking up.');return;}
-    show("Sea Bath · Umi-no-yu",'Higa-san looks up from her crossword. Adults ¥300. Swimwear in the water -- it is a family bath.',[
+    show("Sea Bath · Umi-no-yu",'Higa-san looks up from her crossword. Adults ¥300. A bath wrap or swimwear in the water -- it is a family bath.',[
       ['Pay ¥300',()=>{if(!spend(300))return;state.onsenPaidDay=townDay();save();note('Bathed at Umi-no-yu.');receipt("Sea Bath · Umi-no-yu",'Three coins in the tray. "Lockers through the curtain. Wash before you get in."');}],
       ['Not today',close]]);
   }
@@ -716,8 +740,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   }
   function onsenChange(){
     const swimming=getOutfit();
-    show('Lockers',swimming?'Your clothes are folded in locker 14, the key on its rubber band round your wrist.':'A locker with a brass key on a rubber band. The notice says swimwear in the bath.',[
-      [swimming?'Get dressed':'Change into swimwear',()=>{close();onOutfit(!swimming);}],['Back',close]]);
+    show('Lockers',swimming?'Your clothes are folded in locker 14, the key on its rubber band round your wrist.':'A locker with a brass key on a rubber band. The notice says a bath wrap or swimwear in the bath: grown-ups wrap up, children wear swimwear.',[
+      [swimming?'Get dressed':'Change for the bath',()=>{close();onOutfit(!swimming);}],['Back',close]]);
   }
   function onsen(){
     const m=((getMinutes()%1440)+1440)%1440;
@@ -738,14 +762,14 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   function buyDrink(product){if(!spend(product.price))return;onTime(1);onMove('Give');const name=product.inventoryName;addItem(name);townAudio.play('clunk',.7);close();if(!onPurchase(name))receipt('Thank you',`${product.brand} — ${name} is in your bag.`);}
 
   function legacyResident(name){
-    if(name==='Aya'){
-      if(state.quest===0){show('Aya · Bookshop assistant','My ginger cat Tama has wandered off again. He likes the warm corner by the ramen stall. Would you find him?',[['I will look for Tama',()=>{state.quest=1;save();receipt('A note in your notebook','Look near the ramen stall. If Tama is hungry, try the fishing pier.');}],['Later',close]]);}
-      else if(state.quest===2){state.quest=3;state.yen+=500;save();receipt('Aya','Tama followed you back to the shopping street! Thank you. Please take ¥500 for your trouble. That is one town favour complete — your Field book tracks the shortcuts you can earn.');}
-      else receipt('Aya',state.quest===3?'Tama is sleeping upstairs. The harbour is lovely at sunset.':'Try the ramen stall further down the street. Tama cannot resist fresh fish.');
+    if(name==='Nhung'){
+      if(state.quest===0){show('Nhung · Bookshop assistant','My ginger cat Tama has wandered off again. He likes the warm corner by the ramen stall. Would you find him?',[['I will look for Tama',()=>{state.quest=1;save();receipt('A note in your notebook','Look near the ramen stall. If Tama is hungry, try the fishing pier.');}],['Later',close]]);}
+      else if(state.quest===2){state.quest=3;state.yen+=500;save();receipt('Nhung','Tama followed you back to the shopping street! Thank you. Please take ¥500 for your trouble. That is one town favour complete — your Field book tracks the shortcuts you can earn.');}
+      else receipt('Nhung',state.quest===3?'Tama is sleeping upstairs. The harbour is lovely at sunset.':'Try the ramen stall further down the street. Tama cannot resist fresh fish.');
       return;
     }
     const lines={
-      Kenji:'The Star Port cabinet is outside the workshop. Stop the signal in the illuminated zone three times to win. It costs ¥100; a perfect round pays ¥250.',
+      Chin:'The Star Port cabinet is outside the workshop. Stop the signal in the illuminated zone three times to win. It costs ¥100; a perfect round pays ¥250.',
       'Mrs Sato':'Ramen is ¥300 today. The payphone near the bookshop still works, and the Harbour Line timetable is at the northern terminal.',
       'Harbour master':'There are sea bream off the pier. Cast a line and wait until the float dips. Reel in while the signal reads BITE. You can sell your catch here.'
     };
@@ -758,7 +782,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   function cat(){
     note('Tama approved this route');
     if(state.quest===1){
-      if(state.inventory.includes('Sea bream'))show('Tama','The ginger cat watches the fish in your bag.',[['Give Tama a fish',()=>{state.inventory.splice(state.inventory.indexOf('Sea bream'),1);state.quest=2;save();receipt('Tama','Tama eats the fish and trots towards Aya’s shop. Tell Aya where he is.');}],['Leave',close]]);
+      if(state.inventory.includes('Sea bream'))show('Tama','The ginger cat watches the fish in your bag.',[['Give Tama a fish',()=>{state.inventory.splice(state.inventory.indexOf('Sea bream'),1);state.quest=2;save();receipt('Tama','Tama eats the fish and trots towards Nhung’s shop. Tell Nhung where he is.');}],['Leave',close]]);
       else receipt('Tama','The ginger cat chirps, but keeps his distance. He seems hungry. Try fishing at the harbour.');
     } else receipt('Ginger cat',state.quest===3?'A neighbourhood cat stretches in the afternoon warmth.':'A ginger cat is warming himself beside the ramen stall.');
   }
@@ -767,7 +791,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     show('Harbour fishing','Cast a line. Wait for BITE, then reel in before the fish gets away.',[
       // Waiting for a bite is the time the town gets on without you.
       ['Cast line',()=>{onTime(8);onMove('Cast');let elapsed=0,biteAt=2+Math.random()*2.5,caught=false;show('Harbour fishing','Waiting for a bite…',[
-        ['Reel in',()=>{if(caught)return;caught=true;onMove('Reel');if(elapsed>=biteAt&&elapsed<biteAt+1.35){state.fish++;if(state.fish===2){addItem('Waterlogged page · Kings of Ben…');note('Recovered a Book Three fragment: Kings of Ben…');receipt('A waterlogged page','Only “Kings of Ben…” survives. Aya will want this dried away from the stove.');return;}addItem('Sea bream');tone(880,.2);receipt('A sea bream!','A fresh sea bream is in your bag. Keep it, give it to Tama, or sell it to the harbour master.');}else receipt('The line is empty','You reeled in too soon. Watch for BITE.');}],
+        ['Reel in',()=>{if(caught)return;caught=true;onMove('Reel');if(elapsed>=biteAt&&elapsed<biteAt+1.35){state.fish++;if(state.fish===2){addItem('Waterlogged page · Kings of Ben…');note('Recovered a Book Three fragment: Kings of Ben…');receipt('A waterlogged page','Only “Kings of Ben…” survives. Nhung will want this dried away from the stove.');return;}addItem('Sea bream');tone(880,.2);receipt('A sea bream!','A fresh sea bream is in your bag. Keep it, give it to Tama, or sell it to the harbour master.');}else receipt('The line is empty','You reeled in too soon. Watch for BITE.');}],
         ['Put away the rod',close]
       ]);timer=setInterval(()=>{elapsed+=.05;if(elapsed>=biteAt&&elapsed<biteAt+1.35){body.firstChild.textContent='BITE — REEL IN NOW';body.classList.add('signal');}if(elapsed>=biteAt+1.35){body.classList.remove('signal');receipt('The fish got away','Try again and reel in when BITE appears.');}},50);}],
       ['Leave',close]
@@ -776,7 +800,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
 
   function arcade(){
     show('STAR PORT','A 1988 cabinet, nine years on and still taking hundred-yen coins. Stop the moving signal inside the green zone. Three rounds. Entry ¥100; three hits pays ¥250.',[
-      ['Insert ¥100',()=>{if(!spend(100))return;onTime(4);let round=0,hits=0,start=performance.now(),position=0;function next(){show(`STAR PORT · Round ${round+1}/3`,`Successful docks: ${hits}`,[['DOCK',()=>{if(position>=.36&&position<=.64){hits++;tone(700,.1);}else tone(170,.12);round++;if(round===3){state.best=Math.max(state.best,hits);if(hits===3){state.yen+=250;if(state.kenjiEscort!=='done')state.kenjiEscort=true;note('Perfect Star Port run. Kenji offered a workshop escort.');}save();receipt('STAR PORT · Results',`${hits}/3 successful docks.${hits===3?' Perfect run — ¥250 paid.':' Try another flight at the cabinet.'}`);}else{start=performance.now();next();}}],['Leave cabinet',close]]);const track=document.createElement('div');track.className='arcade-track';track.innerHTML='<span class="target-zone"></span><span class="arcade-marker"></span>';body.append(track);timer=setInterval(()=>{position=(Math.sin((performance.now()-start)/380)+1)/2;track.lastChild.style.left=`${position*100}%`;},25);}next();}],
+      ['Insert ¥100',()=>{if(!spend(100))return;onTime(4);let round=0,hits=0,start=performance.now(),position=0;function next(){show(`STAR PORT · Round ${round+1}/3`,`Successful docks: ${hits}`,[['DOCK',()=>{if(position>=.36&&position<=.64){hits++;tone(700,.1);}else tone(170,.12);round++;if(round===3){state.best=Math.max(state.best,hits);if(hits===3){state.yen+=250;if(state.kenjiEscort!=='done')state.kenjiEscort=true;note('Perfect Star Port run. Chin offered a workshop escort.');}save();receipt('STAR PORT · Results',`${hits}/3 successful docks.${hits===3?' Perfect run — ¥250 paid.':' Try another flight at the cabinet.'}`);}else{start=performance.now();next();}}],['Leave cabinet',close]]);const track=document.createElement('div');track.className='arcade-track';track.innerHTML='<span class="target-zone"></span><span class="arcade-marker"></span>';body.append(track);timer=setInterval(()=>{position=(Math.sin((performance.now()-start)/380)+1)/2;track.lastChild.style.left=`${position*100}%`;},25);}next();}],
       ['Leave',close]
     ]);
   }
@@ -786,6 +810,11 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
 
   function inspect(name,detail){if(name==='Convex traffic mirror'){note('Traffic mirror: Tama was behind me. No cat when I turned.');say('A ginger shape in the mirror. Behind you: only the street.',5);}show(name,detail||'A thumb-sized clean patch marks the part everybody touches.',[['Close',close]]);}
   function read(name,detail){if(/harbour notice/i.test(String(name))&&hasDailyQuest(state,'notice')&&!isDailyDone(state,'notice')){markDailyDone(state,'notice');save();say(NOTICE_NUDGE,6);}show(name,detail||'One corner is pinned with a bent brass tack. Read the complete dispatch at the Field Notes rack.',[['Put it back',close]]);}
+  // Links out to the full motor model and Erik's routine in a new tab, so the town keeps its place.
+  function motorBench(name,detail){
+    const open=href=>()=>window.open(href,'_blank','noopener');
+    show(name,detail,[['See the full strip-down',open(MOTOR_LINKS.stripDown)],['Watch Erik’s routine',open(MOTOR_LINKS.routine)],['Close',close]]);
+  }
   function operate(name,detail){
     const already=state.operated.includes(name);
     show(name,detail||'A working machine from the late 1980s.',[
@@ -969,22 +998,28 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       show('Stockroom','Shelves are already set.',[['Leave',close]]);
       return;
     }
-    const day=Math.floor(minutes/1440);
+    const day=closingDay(minutes)??Math.floor(minutes/1440);
+    const player=readPlayers(localStorage).active;
+    const bridge='&player='+encodeURIComponent(player);
+    if(!save()){show('Stockroom','Progress could not be saved. Please try again.',[['Leave',close]]);return;}
     show('Thuan\'s stockroom','Cartons wait in the back room. Restock the shelves before the next open.\n\nThere is a hole at the back of the stockroom now, down to the old sea cave, and something big comes up through it at night. Somebody from town, in a suit. Mind the aisles.',[
-      ['Play as Thuan',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=play&day='+day;}],
-      ['Let Thuan restock',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=auto&day='+day;}],
+      ['Play as Thuan',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=play&day='+day+bridge;}],
+      ['Let Thuan restock',()=>{close();location.href='/thuans-storage/?from=johansson-town&mode=auto&day='+day+bridge;}],
       ['Leave',close],
     ]);
   }
   function consumeStorageRestock(){
-    const handshake=consumeStorageWonHandshake();
+    const player=readPlayers(localStorage).active;
+    const handshake=consumeStorageWonHandshake(player,{retain:true});
     if(!handshake)return false;
+    if(handshake.day!==null&&handshake.day>Math.floor(Math.max(getMinutes(),state.minutes??0)/1440))return false;
     state.sakura=restoreSakura(state.sakura);
-    applyStorageRestock(state,getMinutes());
+    const {applied,yen}=applyStorageOutcome(state,getMinutes(),handshake,player);
+    if(!applied){if(save())acknowledgeStorageOutcome(handshake);return false;}
     // The night's boss from the sea cave (thuans-storage): seen off, it leaves its cave coins behind.
     const boss=handshake.boss;
-    if(handshake.yen){state.yen+=handshake.yen;note('Saw off '+(boss?boss.who+' in a '+boss.animal+' suit':'a Bizarro visitor')+' in Thuan’s stockroom: ¥'+handshake.yen+' in old cave coins.');}
-    save();
+    if(yen){note('Saw off '+(boss?boss.who+' in a '+boss.animal+' suit':'a Bizarro visitor')+' in Thuan’s stockroom: ¥'+handshake.yen+' in old cave coins.');}
+    if(save())acknowledgeStorageOutcome(handshake);
     say(boss?.defeated?'Shelves restocked. And '+boss.who+' -- the '+boss.animal+' in the stockroom -- has gone back down the hole, leaving ¥'+handshake.yen+' in cave coins.':boss?'Shelves restocked, with a '+boss.animal+' still loose in the back room.':'Shelves restocked.',6);
     return true;
   }
@@ -1033,6 +1068,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       case 'arcade':arcade();break;
       case 'sakura-flyer':sakuraFlyer(name);break;
       case 'inspect':inspect(name,detail);break;
+      case 'motor-bench':motorBench(name,detail);break;
       case 'read':if(typeof detail==='string')fileDocument(state,{type:'Notice',title:name,text:detail,source:'notice:'+name,organisation:'Community Hall'},getMinutes());save();read(name,detail);break;
       case 'machine':operate(name,detail);break;
       case 'store-table':tableService();break;
@@ -1051,7 +1087,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   document.addEventListener('keydown',e=>{if(!modalOpen)return;if(e.code==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const focusable=[...modal.querySelectorAll('button:not(:disabled),a[href],iframe,input:not(:disabled),[tabindex="0"]')];const index=focusable.indexOf(document.activeElement);e.preventDefault();focusable[(index+(e.shiftKey?-1:1)+focusable.length)%focusable.length]?.focus();}});
   $('#notebookButton').onclick=inventory;
   $('#soundButton').onclick=toggleSound;
-  // Random → Sunny → Cloudy → Rain; the town keeps the weather (src/world/weather.js) and says what it is.
+  // Random → Sunny → Cloudy → Rain; the town owns the weather.
   $('#weatherButton').onclick=()=>{const label=onWeather?.('cycle');if(typeof label==='string')$('#weatherButton').textContent=label;save();};
   $('#timeButton').onclick=()=>onTime('cycle');
   $('#playerButton').onclick=players;

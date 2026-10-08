@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {createBeerService,DRINKS,IZAKAYA_PLAYER_SEATS,NAO_STATION} from '../src/people/izakaya-beer.js';
 
-test('Nao pours, walks the drink over, sets it down and goes back to the counter',()=>{
+test('Thao pours, walks the drink over, sets it down and goes back to the counter',()=>{
  const room=new THREE.Group(),nao=new THREE.Group(),said=[];nao.position.set(...NAO_STATION);
  const beer=createBeerService({room,getNao:()=>nao,blocked:()=>false,say:t=>said.push(t)});
  const seat=IZAKAYA_PLAYER_SEATS.table;
@@ -19,7 +19,7 @@ test('Nao pours, walks the drink over, sets it down and goes back to the counter
  assert.equal(last.left,0);assert.ok(last.alcohol>0);
 });
 
-test('the route Nao walks stays out of the counter and the koagari',()=>{
+test('the route Thao walks stays out of the counter and the koagari',()=>{
  // Colliders from world/izakaya.js: the counter and the raised tatami.
  const counter={x:-.8,z:-2.64,w:8.4,d:1.43},koagari={x:5.3,z:1.8,w:2,d:5.4};
  const hit=(c,x,z,r=.25)=>Math.abs(x-c.x)<c.w/2+r&&Math.abs(z-c.z)<c.d/2+r;

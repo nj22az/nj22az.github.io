@@ -1,6 +1,6 @@
 import {ISLAND_OUTFITS,ISLAND_COSTUMES,outfitAllowedFor,appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
-import {buildAvatar} from './build.js';
+import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
 import {drawPart,drawFace} from './face.js';
 import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
@@ -35,9 +35,28 @@ export function drawFaceFormThumb(canvas,form,skin='#f5d0ae'){
  */
 
 const FACE_TABS=new Set(['head','hair','eyes','brows','nose','mouth','extras','hat','accessories']);
+/**
+ * What the preview can show someone in: their clothes, or what they would wear at Umi-no-yu,
+ * the family bath -- swimwear, or for a grown-up the bath towel wrap (yuamigi) with a towel on
+ * the head. Children keep their swimwear there, so the towel is offered to grown-ups only.
+ */
+export const PREVIEW_OUTFITS=Object.freeze([['clothes','Clothes'],['swim','Swimwear'],['towel','Bath towel']]);
+export const BATH_CHILD_NOTE='At Umi-no-yu, the family bath, children wear swimwear. The bath towel wrap is for grown-ups.';
+/** The preview's outfits for this recipe, the towel disabled (and saying why) for a child or teenager. */
+export function previewOutfits(recipe){
+ const grown=wearsBathTowel(normalizeRecipe(recipe));
+ return PREVIEW_OUTFITS.map(([value,label])=>({value,label:value==='towel'&&!grown?label+' (grown-ups)':label,disabled:value==='towel'&&!grown}));
+}
 const LABEL={
+ towel:'Bath towel',swimwear:'Swimwear',
  crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',ponytail:'Ponytail',braids:'Braids',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
+ pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',
  round:'Round',dot:'Dot',almond:'Almond',sleepy:'Sleepy',lashes:'Lashes',narrow:'Narrow',sparkle:'Sparkle',gentle:'Gentle',
+ doe:'Doe',cat:'Cat',droopy:'Droopy',heavy:'Heavy-lidded',bright:'Bright',tired:'Tired',squint:'Squint',starry:'Starry',
+ angled:'Angled',short:'Short',rounded:'Rounded',tapered:'Tapered',feathered:'Feathered',maro:'Maro',
+ pointed:'Pointed',snub:'Snub',bulb:'Bulb',ridge:'Ridge',
+ teeth:'Teeth',open:'Open',lopsided:'Lopsided',tongue:'Tongue out',buck:'Buck teeth',soft:'Soft',
+ handlebar:'Handlebar',pencil:'Pencil',chinstrap:'Chinstrap',
  straight:'Straight',arched:'Arched',thick:'Thick',thin:'Thin',worried:'Worried',bushy:'Bushy',none:'None',
  button:'Button',line:'Line',wide:'Wide',hook:'Hook',
  smile:'Smile',flat:'Flat',grin:'Grin',small:'Small',smirk:'Smirk',pout:'Pout',
@@ -58,7 +77,7 @@ const LABEL={
  * 'adjust'. `at` is where in the recipe a control writes, as 'section.field'.
  * Steppers carry the words for their two buttons.
  */
-const TABS=[
+export const TABS=[
  {id:'body',name:'Body',controls:[
   {kind:'chips',page:'style',at:'age',label:'Age',list:AGES},
   {kind:'chips',page:'style',at:'body.proportion',label:'Proportions',list:['classic','rounded']},
@@ -69,6 +88,8 @@ const TABS=[
  {id:'head',name:'Face',controls:[
   {kind:'face-forms',page:'style',at:'head.form',label:'Face shape',list:PARTS.head},
   {kind:'toggle',page:'style',at:'freckles',label:'Freckles'},{kind:'toggle',page:'style',at:'mole',label:'Beauty spot'},
+  {kind:'position',page:'adjust',at:'moleSpot.height',horizontal:'moleSpot.x',label:'Beauty spot',when:r=>r.mole},
+  {kind:'stepper',page:'adjust',at:'moleSpot.size',label:'Spot size',less:'Smaller spot',more:'Bigger spot',when:r=>r.mole},
   {kind:'colours',page:'colour',at:'body.skin',label:'Skin',palette:PALETTE.skin},
   {kind:'stepper',page:'adjust',at:'head.size',label:'Head size',less:'Smaller head',more:'Bigger head'},
   {kind:'stepper',page:'adjust',at:'head.shape',label:'Width',less:'Narrower',more:'Broader'},
@@ -105,9 +126,14 @@ const TABS=[
   {kind:'stepper',page:'adjust',at:'mouth.width',label:'Width',less:'Narrower',more:'Wider'}]},
  {id:'extras',name:'Glasses & beard',controls:[
   {kind:'parts',page:'style',at:'glasses.style',label:'Glasses',list:PARTS.glasses,draw:'glasses'},
-  {kind:'parts',page:'style',at:'facial.style',label:'Beard',list:PARTS.facial,draw:'facial'},
+  {kind:'parts',page:'style',at:'facial.moustache',label:'Moustache',list:PARTS.moustache,draw:'moustache'},
+  {kind:'parts',page:'style',at:'facial.beard',label:'Beard',list:PARTS.beard,draw:'beard'},
   {kind:'colours',page:'colour',at:'glasses.colour',label:'Frames',palette:['#2b2b2b','#8a4a3a','#c8a060','#e06a7a','#3d6a8a','#d8342c']},
-  {kind:'colours',page:'colour',at:'facial.colour',label:'Beard',palette:PALETTE.hair}]},
+  {kind:'colours',page:'colour',at:'facial.colour',label:'Moustache & beard',palette:PALETTE.hair},
+  {kind:'stepper',page:'adjust',at:'glasses.size',label:'Glasses size',less:'Smaller glasses',more:'Bigger glasses'},
+  {kind:'stepper',page:'adjust',at:'glasses.height',label:'Glasses height',less:'Lower glasses',more:'Higher glasses'},
+  {kind:'stepper',page:'adjust',at:'facial.size',label:'Whiskers size',less:'Smaller moustache and beard',more:'Bigger moustache and beard'},
+  {kind:'stepper',page:'adjust',at:'facial.height',label:'Whiskers height',less:'Lower moustache',more:'Higher moustache'}]},
  // The wardrobe. Everyone has the base layer on (tank top, underwear, bare feet);
  // clothes are added over it, and the first tile of each grid takes them off again.
  {id:'top',name:'Top',wardrobe:true,controls:[
@@ -118,7 +144,10 @@ const TABS=[
  {id:'bottom',name:'Bottoms',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.bottom',list:PARTS.bottom,draw:'figure'},
   {kind:'colours',page:'colour',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth},
-  {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth}]},
+  {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth},
+  // What they wear in Umi-no-yu's family bath: grown-ups choose; children wear swimwear.
+  {kind:'chips',page:'style',at:'swim.bath',list:['towel','swimwear'],label:'At Umi-no-yu, the family bath',when:r=>wearsBathTowel(r)},
+  {kind:'note',page:'style',text:BATH_CHILD_NOTE,when:r=>!wearsBathTowel(r)}]},
  {id:'shoes',name:'Shoes',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.footwear',list:PARTS.footwear,draw:'feet'},
   {kind:'colours',page:'colour',at:'outfit.shoes',label:'Colour',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6']}]},
@@ -136,7 +165,7 @@ const STEPS=[['start','Choose a face'],['look','Make them'],['profile','Who are 
 /** How far one press of a step button moves a value (0–1). */
 const NOTCH=1/16;
 
-const POSES=[['idle','Stand'],['Wave','Wave'],['Hop','Happy'],['walk','Walk'],['Kachashi','Dance'],['Bow','Bow'],['Heart','Heart'],['Peace','Cheek'],['Coy','Coy'],['Tada','Ta-da!'],['HandsOnHips','Hips'],['HeelKick','Heel kick'],['sit','Sit']];
+const POSES=[['idle','Stand'],['Wave','Wave'],['Hop','Happy'],['walk','Walk'],['Kachashi','Dance'],['Bow','Bow'],['Heart','Heart'],['Peace','Cheek'],['Coy','Coy'],['Tada','Ta-da!'],['HandsOnHips','Hips'],['HeelKick','Heel kick'],['EvilLaugh','Evil laugh'],['sit','Sit'],['lie','Knocked out']];
 
 const get=(r,at)=>at.split('.').reduce((o,k)=>o?.[k],r);
 function set(r,at,value){const keys=at.split('.'),last=keys.pop();let o=r;for(const k of keys)o=o[k];o[last]=value;}
@@ -263,7 +292,7 @@ const CSS=`
 export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
  const wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];
- let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',previewFacing=0;
+ let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',previewFacing=0,wearing='clothes',dress=null;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
  // ----- Layout -----
@@ -327,7 +356,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function rebuild(){
   if(avatar){avatar.root.removeFromParent();avatar.dispose();}
   avatar=buildAvatar(recipe,{shadows:false,faceSize:512});animator=createAvatarAnimator(avatar);holder.add(avatar.root);
-  if(pose!=='idle'&&pose!=='walk'&&pose!=='sit')animator.play(pose);
+  // Dressed as the preview says; a child asked into the towel comes out in swimwear.
+  if(wearing!=='clothes')wearing=avatar.wear(wearing);fillDress();
+  if(!['idle','walk','sit','lie'].includes(pose))animator.play(pose);
   // Frame from the real meshes, not from estimates, so a big head or a tall hat is
   // never cut off and the face fills the view the same way for everybody.
   avatar.root.updateMatrixWorld(true);
@@ -363,8 +394,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   // A body faces -z in the town; here it turns round to face you.
   if(!featureDrag)holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
   const talking=speech&&speech.typing;
-  if(!featureDrag)animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,talk:talking?.5+.5*Math.sin(now/70):0,
-   expression:step==='hello'?'happy':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
+  if(!featureDrag)animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,lying:pose==='lie',talk:talking?.5+.5*Math.sin(now/70):0,
+   expression:step==='hello'?'happy':pose==='lie'?'dizzy':pose==='EvilLaugh'?'scheme':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
   if(!featureDrag)aim(dt);renderer.render(scene,camera);
  }
  const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
@@ -504,8 +535,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
    off.onclick=()=>{remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});recipe=normalizeRecipe(recipe);dirty=true;renderBody();};
    body.append(el('p',{className:'shm-note',textContent:'Underneath it all: a tank top, underwear and bare feet. Tap something to put it on; the first picture takes it off.'}),off);
   }
-  for(const control of t.controls.filter(c=>c.page===page)){
-   if(control.label&&control.kind!=='toggle'&&control.kind!=='stepper')body.append(el('h4',{textContent:control.label}));
+  for(const control of t.controls.filter(c=>c.page===page&&(!c.when||c.when(recipe)))){
+   if(control.label&&control.kind!=='toggle'&&control.kind!=='stepper'&&control.kind!=='position')body.append(el('h4',{textContent:control.label}));
    if(control.kind==='face-forms'){
     const grid=el('div',{className:'shm-grid shm-face-forms',role:'group',ariaLabel:'Face shapes'}),skin=el('div',{className:'shm-swatches shm-face-skin',role:'group',ariaLabel:'Skin tone'});
     for(const form of control.list){const c=el('canvas',{width:136,height:136}),label=({'soft-square':'Soft square','soft-round':'Soft round',wide:'Broad'}[form]||form[0].toUpperCase()+form.slice(1)),b=el('button',{type:'button',ariaLabel:label,title:label},c,label);b.setAttribute('aria-pressed',String(recipe.head.form===form));b.onclick=()=>{change('head.form',form);pressed(grid,b);};drawFaceFormThumb(c,form,recipe.body.skin);grid.append(b);}
@@ -526,8 +557,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
      b.onclick=()=>{change(control.at,hex);pressed(row,b);};row.append(b);}
     body.append(row);
    }else if(control.kind==='position'){
-    body.append(el('h4',{textContent:'Position'}));
-    const pad=el('div',{className:'shm-pad',role:'group',ariaLabel:'Move '+t.name.toLowerCase()});
+    body.append(el('h4',{textContent:control.label||'Position'}));
+    const pad=el('div',{className:'shm-pad',role:'group',ariaLabel:'Move '+(control.label||t.name).toLowerCase()});
     const directions=[['up','arrow-up','Move up',control.at,NOTCH],['down','arrow-down','Move down',control.at,-NOTCH],
      ['left','arrow-left',control.paired?'Closer':'Move left',control.horizontal,-NOTCH],['right','arrow-right',control.paired?'Wider apart':'Move right',control.horizontal,NOTCH]];
     for(const [cls,icon,label,at,delta] of directions){const b=iconButton(icon,label,{className:cls});b.onclick=()=>change(at,Math.round(Math.max(0,Math.min(1,get(recipe,at)+delta))*16)/16);pad.append(b);}
@@ -541,8 +572,10 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     body.append(b);
    }else if(control.kind==='chips'){
     const row=el('div',{className:'shm-chips'});
-    for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);};row.append(b);}
+    for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);if(control.at==='swim.bath')showIn(value==='towel'?'towel':'swim');};row.append(b);}
     body.append(row);
+   }else if(control.kind==='note'){
+    body.append(el('p',{className:'shm-note',textContent:control.text}));
    }
   }
  }
@@ -642,9 +675,15 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const angle=el('select',{className:'shm-select shm-angle',ariaLabel:'Preview angle'},el('option',{value:'front',textContent:'Front'}),el('option',{value:'back',textContent:'Back'}));
   angle.onchange=()=>{endDrag();previewFacing=angle.value==='back'?Math.PI:0;spin=previewFacing;spinVelocity=0;};
   const select=el('select',{className:'shm-select',ariaLabel:'Preview pose'},...POSES.map(([id,label])=>el('option',{value:id,textContent:label})));select.value=pose;
-  select.onchange=()=>{endDrag();pose=select.value;if(!['idle','walk','sit'].includes(pose))animator.play(pose);else animator.stop();};
-  poses.append(angle,select);
+  select.onchange=()=>{endDrag();pose=select.value;if(!['idle','walk','sit','lie'].includes(pose))animator.play(pose);else animator.stop();};
+  dress=el('select',{className:'shm-select',ariaLabel:'Preview outfit'});fillDress();
+  dress.onchange=()=>{endDrag();showIn(dress.value);};
+  poses.append(angle,select,dress);
  }
+ /** The preview's outfit list, for whoever is in the maker now (the towel is for grown-ups). */
+ function fillDress(){if(!dress)return;dress.replaceChildren(...previewOutfits(recipe).map(o=>el('option',{value:o.value,textContent:o.label,disabled:o.disabled})));dress.value=wearing;}
+ /** Show them in their clothes, their swimwear or the bath towel, without changing the recipe. */
+ function showIn(outfit){wearing=avatar?avatar.wear(outfit):outfit;if(dress)dress.value=wearing;}
 
  // ----- Buttons -----
  name.oninput=()=>{endDrag();recipe.name=name.value.slice(0,24);};
@@ -678,5 +717,5 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  close.onclick=()=>finish(false);
 
  rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
- return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo};
+ return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,get wearing(){return wearing;}};
 }

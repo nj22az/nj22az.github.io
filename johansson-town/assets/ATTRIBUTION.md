@@ -226,3 +226,18 @@ data. All titles, characters and brands are fictional.
 ### IKEA home furniture
 
 LACK side table (30449908) and IVAR pine cabinet (70033766): IKEA / Inter IKEA Systems. Downloaded from IKEA's published product-viewer GLBs using the discovery approach in [IKEA 3D Model Download Button](https://github.com/apinanaivot/IKEA-3D-Model-Download-Button). Exact model URLs and original files are retained in `models/furniture/SOURCES.json`. Blender variants remove photographic textures, simplify dense meshes and use the town's cel materials. The downloader's code license does not grant a license to IKEA's designs or models; no open asset license is asserted.
+
+### Harbour Park Blender bench
+
+`models/park/harbour-bench.glb`: original Johansson Town geometry authored in Blender. Editable `.blend`, measured design, reproducible generator, export budget and provenance are in `../art/park/PROVENANCE.md`. Plain worn-cedar and dark-iron materials; no third-party model or image texture. Runtime seating, collider and exported mesh share the same generated physical dimensions.
+
+### IEC 90L pump motor (Dock Electrical Workshop)
+
+`models/props/motor-90l-display.glb`: the site's own 1.5 kW IEC 90L pump motor (`../../motor-90l/`, original nj22az.github.io content), built from `motor-90l/motor.js` and packed by `../tools/pack-motor-90l.mjs`: the closed motor's outside only, simplified with meshoptimizer, one vertex-coloured mesh with `KHR_mesh_quantization`, true size in metres (shown 1.7x on the bench). No third-party model or texture. Source hashes, part list and budget: `models/props/motor-90l-display-provenance.json`. The steel test bench is original procedural geometry (`../src/workshop/motor-bench.js`).
+
+
+### Shiosai houseboat (6 October 2026)
+
+`models/harbour/fujita-houseboat-hull.glb` retains three reshaped hull meshes from the owner-supplied **Animal Crossing: New Horizons Crazy Redd Boat** upload by **damien_max59** ([source](https://sketchfab.com/3d-models/animal-crossing-new-horizons-crazy-redd-boat-f8cb034fa89e497588fb041f3e0c6704)). The embedded uploader metadata states [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); this preserves that metadata, not an independent rights verification of the original game. The retained hull geometry is attributed and not claimed as original Johansson Town work.
+
+Changes: discard the merchant cabin, sprite textures, merchant fittings, signs, masts and decorations; shorten and broaden the hull, reduce its depth, rebuild normals and replace its materials. `src/world/fujita-houseboat.js` supplies the original replacement timber cabin, sleeping berth, galley, radio, deck, rails, tyres, mooring fittings and SHIOSAI name board. `models/harbour/fujita-houseboat.glb` is the complete reusable export. No Nintendo endorsement is implied.

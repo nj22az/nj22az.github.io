@@ -5,15 +5,24 @@ import {writtenChat} from './chat-lines.js';
 import {residentPlan} from './social.js';
 
 const EXCHANGES=[
- ['Aya','Emi',['Did Tama agree to the apron?','He has asked for a larger salary.','Payment in sardines, presumably.']],
- ['Kenji','Tetsuo',['Yo, bro! Fixed that crackling on your radio.','That was the music, Kenji.','Totally improved it, then, dude.']],
+ ['Nhung','Emi',['Did Tama agree to the apron?','He has asked for a larger salary.','Payment in sardines, presumably.']],
+ ['Chin','Tetsuo',['Yo, bro! Fixed that crackling on your radio.','That was the music, Chin.','Totally improved it, then, dude.']],
  ['Mrs Sato','Fumiko',['You said you were only coming for tea.','I am. The rice ball is keeping it company.','I shall fetch a second cup.']],
  ['Harbour master','Mr Fujita',['How large was the fish today?','Larger than yesterday.','Your hands say that every day.']],
  ['Hana','Daichi',['Hold still. I am drawing you.','Is this my heroic side?','It is your only still side.']],
  ['Officer Mori','Reiko',['Nothing suspicious on my rounds.','What about the cat in the fish crate?','An ongoing investigation.']],
  ['Kenta','Cold-storage kid',['I practised saying hello to Emi.','The freezer heard every word.','Was it convincing?']],
- ['Nao','Masaru',['Is this the catch of the day?','Small, but exceptionally brave.','I will need smaller plates.']],
- ['Thuan','Nao',['I promised my plants an early night.','Did they answer?','The fern looked disappointed.']],
+ ['Thao','Masaru',['Is this the catch of the day?','Small, but exceptionally brave.','I will need smaller plates.']],
+ ['Thuan','Thao',['I promised my plants an early night.','Did they answer?','The fern looked disappointed.']],
+ // The three sisters: Nhung the eldest, Thao in the middle (stubborn, and kind with it),
+ // Thuan the youngest. A pair can have several exchanges; one is picked each time.
+ ['Thao','Thuan',['Did you eat?','I had ice cream with Nhung.','That is not eating. Sit. Rice.']],
+ ['Nhung','Thuan',['Your plaits are crooked again.','They are artistic.','Hold still. I am fixing your art.']],
+ ['Thuan','Nhung',['Jan, ken... you always throw rock first!','I am the eldest. Rock is tradition.','Then paper is my tradition.']],
+ ['Nhung','Thuan',['Ube, or the pink one?','Both. You are paying.','That is not how being the eldest works.']],
+ ['Thuan','Nhung',['A customer asked if we are twins.','I hope you said I am the pretty one.','I said you are the loud one.']],
+ ['Thao','Nhung',['You are on my good stool.','It has my name on it.','You wrote that there yourself.']],
+ ['Nhung','Thao',['One more beer for Thuan?','No.','She walks home now, Thao.','Then she walks. Bed.']],
  ['Bus driver','Naoko',['Any letters for the harbour bus?','Only complaints about the timetable.','At least somebody is reading it.']],
  ['Mr Tanabe','Fumiko',['A quiet evening is good for the soul.','So is a little gossip.','We shall call it local history.']]
 ];
@@ -45,8 +54,8 @@ export function createNeighbourChats({world,observer,blocked=()=>false,state=()=
  const signature=(p,minutes,rain)=>residentPlan(p.profile,minutes,rain,state()).place+'/'+place(p);
  const person=p=>({name:p.profile.name,age:p.profile.age,role:p.profile.role,personality:p.profile.personality,gossip:p.profile.gossip,profile:recipeFor(p.profile.name).profile});
  const pairKey=(a,b)=>[a.profile.name,b.profile.name].sort().join('|');
- function cancel(){if(active){for(const p of active.pair){delete p.g.userData.chat;delete p.g.userData.chatHold;cooldown.set(p.profile.name,clock+CHAT_REACH.cooldown+random()*10);}active=null;}nextScan=clock+CHAT_REACH.between;}
- function eligible(p){return visible(p.g)&&!p.g.userData.sleeping&&!p.g.userData.waking&&!p.g.userData.roomTransition&&!p.g.userData.shopping&&!p.g.userData.serving&&!p.g.userData.usingTownObject&&!p.g.userData.mealState&&(!p.g.userData.indoors||place(p)!=='street')&&!(p.g.userData.facePlayerUntil>performance.now())&&!(p.profile.name==='Kenji'&&state().kenjiEscort==='walking')&&p.g.position.distanceTo(observer())<CHAT_REACH.observer;}
+ function cancel(){if(active){for(const p of active.pair){delete p.g.userData.chat;delete p.g.userData.chatHold;if(p.g.userData.lookSource==='chat'){delete p.g.userData.lookTarget;delete p.g.userData.lookSource;}cooldown.set(p.profile.name,clock+CHAT_REACH.cooldown+random()*10);}active=null;}nextScan=clock+CHAT_REACH.between;}
+ function eligible(p){return visible(p.g)&&!p.g.userData.sleeping&&!p.g.userData.waking&&!p.g.userData.roomTransition&&!p.g.userData.shopping&&!p.g.userData.serving&&!p.g.userData.usingTownObject&&!p.g.userData.mealState&&(!p.g.userData.indoors||place(p)!=='street')&&!(p.g.userData.facePlayerUntil>performance.now())&&!(p.profile.name==='Chin'&&state().kenjiEscort==='walking')&&p.g.position.distanceTo(observer())<CHAT_REACH.observer;}
  function update(dt,minutes,rain=false){
   clock+=dt;
   if(active){
@@ -57,7 +66,11 @@ export function createNeighbourChats({world,observer,blocked=()=>false,state=()=
    // The speaker wears the feeling of the line; their personality decides the move.
    if(active.feltTurn!==turn){active.feltTurn=turn;const f=lineFeeling(active.text);speaker.g.userData.lineFeeling=f?{expression:f,until:performance.now()+4000}:null;}
    active.pair.forEach(p=>{const partner=active.pair.find(q=>q!==p);p.g.userData.chat={speaking:p===speaker,time:elapsed,partner:partner.g,greeting:elapsed<1.8};p.g.userData.chatHold=true;
-    if(place(p)==='street'){const dx=partner.g.position.x-p.g.position.x,dz=partner.g.position.z-p.g.position.z,heading=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(heading-p.g.rotation.y),Math.cos(heading-p.g.rotation.y));p.g.rotation.y+=delta*(1-Math.exp(-dt*5));}
+    // They look at each other, wherever they are; standing, they turn to each other too.
+    // (Someone sitting keeps their seat and turns only their head.)
+    p.g.userData.lookTarget=point(partner).toArray();p.g.userData.lookSource='chat';
+    const sitting=Number.isFinite(p.g.userData.seatHeight)||p.g.userData.chairBlend>.5;
+    if(!sitting){const dx=partner.g.position.x-p.g.position.x,dz=partner.g.position.z-p.g.position.z,heading=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(heading-p.g.rotation.y),Math.cos(heading-p.g.rotation.y));p.g.rotation.y+=delta*(1-Math.exp(-dt*5));}
    });return;
   }
   if(clock<nextScan)return;nextScan=clock+1;
@@ -67,7 +80,7 @@ export function createNeighbourChats({world,observer,blocked=()=>false,state=()=
    // Further off, the model can start writing for them before they meet.
    if(d<12&&(!soon||d<soon.d))soon={a,b,d};
    if(d>CHAT_REACH.apart||(cooldown.get(a.profile.name)||0)>clock||(cooldown.get(b.profile.name)||0)>clock||blocked(point(a),point(b)))continue;
-   const authored=EXCHANGES.find(e=>[a.profile.name,b.profile.name].includes(e[0])&&[a.profile.name,b.profile.name].includes(e[1]));
+   const written=EXCHANGES.filter(e=>[a.profile.name,b.profile.name].includes(e[0])&&[a.profile.name,b.profile.name].includes(e[1])),authored=written.length?written[Math.floor(random()*written.length)]:null;
    const ready=writer?.has?.(person(a),person(b));
    const score=d+(ready?-6:0)+(authored&&!recent.get(pairKey(a,b))?.includes('authored')?-4:0);if(!best||score<best.score)best={a,b,authored,score};
   }

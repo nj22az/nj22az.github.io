@@ -49,6 +49,22 @@ The original Thuan model supplies walking, running, greeting, breathing and
 celebration clips. Pickup reactions add a nod and a brief hand movement. An
 animated stand-in keeps the game playable while the model loads.
 
+### Saved nights from town
+
+Town launches carry the local player ID and the closing trading day (including after
+midnight). A version 2 checkpoint under
+`johansson-town:storage-night:<player>:<day>` retains the layout, boss identity and
+fight state, collected goods, Thuan's position, and manual/automatic control. It is
+saved on pickups, shoos, completion, pause, page exit and once a second while playing.
+Re-entering a completed town night shows its existing result; a new list is available
+in standalone play. Version 1 carton-thief checkpoints are not restored.
+
+Results are written under `johansson-town:storage-won:<player>`. The town records
+`storageOutcomeDay` in the same player save as the purse and shelves, then acknowledges
+the pending result. A failed town save leaves the hand-off available for reload.
+Replaying a completed result neither pays again nor refills shelves sold from since
+that night's restock. Legacy unscoped results belong to the original `player-1` slot.
+
 ### Source and verification
 
 The original export contained only a compiled bundle. Its unchanged dependency
@@ -57,7 +73,7 @@ under `src/`. No dependency installation is required:
 
 ```sh
 node thuans-storage/scripts/build-runtime.mjs
-node --test thuans-storage/tests/playability.test.mjs
+node --test thuans-storage/tests/*.test.mjs
 ```
 
 The build produces a content-hashed runtime and updates `index.html`. Commit both

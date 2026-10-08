@@ -4,13 +4,13 @@ import * as THREE from '../vendor/three.module.js';
 import {PROFILES} from '../src/people/profiles.js';
 import {createNeighbourChats,clearChatLine,createChatBubble} from '../src/people/neighbour-chats.js';
 import {installDOM} from './fixtures.mjs';
-function setup(names=['Kenji','Tetsuo'],options={}){
+function setup(names=['Chin','Tetsuo'],options={}){
  const scene=new THREE.Scene(),world={people:names.map((name,i)=>{const profile=PROFILES.find(p=>p.name===name),g=new THREE.Group();g.userData.name=name;g.position.set(i*1.5,0,-4);scene.add(g);return {g,profile};})};
  return {scene,world,chats:createNeighbourChats({world,observer:()=>new THREE.Vector3(),...options})};
 }
 test('nearby friends take turns, face each other, then release their schedules and cool down',()=>{
  const {world,chats}=setup();const before=world.people.map(p=>p.g.position.clone());chats.update(2,1002);
- assert.ok(chats.current);assert.match(chats.current.text,/radio/);assert.equal(chats.current.speaker.profile.name,'Kenji');
+ assert.ok(chats.current);assert.match(chats.current.text,/radio/);assert.equal(chats.current.speaker.profile.name,'Chin');
  assert.equal(world.people[0].g.userData.chat.speaking,true);assert.equal(world.people[1].g.userData.chat.speaking,false);
  chats.update(4.1,1006);assert.equal(chats.current.speaker.profile.name,'Tetsuo');assert.match(chats.current.text,/music/);
  world.people.forEach((p,i)=>assert.ok(p.g.position.equals(before[i]),'Ambient gestures never move actors towards the player'));
@@ -26,7 +26,7 @@ test('ambient bubble follows its speaker and hides behind walls or off screen',(
  installDOM();const camera=new THREE.PerspectiveCamera(65,1,0.1,50);camera.position.set(0,1.7,0);camera.updateMatrixWorld(true);
  const canvas={getBoundingClientRect:()=>({left:0,top:0,width:800,height:800})};const {chats}=setup();chats.update(2,1002);
  let occluded=false;const ui=createChatBubble({camera,canvas,target:g=>g.position.clone().add(new THREE.Vector3(0,1.4,0)),blocked:()=>occluded});
- const bubble=document.body.lastChild;ui.render(chats.current);assert.equal(bubble.hidden,false);assert.equal(bubble.firstChild.textContent,'Kenji');
+ const bubble=document.body.lastChild;ui.render(chats.current);assert.equal(bubble.hidden,false);assert.equal(bubble.firstChild.textContent,'Chin');
  occluded=true;ui.render(chats.current);assert.equal(bubble.hidden,true);occluded=false;camera.rotation.y=Math.PI;camera.updateMatrixWorld(true);ui.render(chats.current);assert.equal(bubble.hidden,true);
  ui.hide();assert.equal(bubble.hidden,true);
 });

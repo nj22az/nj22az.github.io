@@ -35,7 +35,7 @@ test('all face forms have distinct geometry and stay in proportion at slider lim
   }
  }
  assert.equal(shapes.size,PARTS.head.length);
- const names=['Johansson','Thuan','Nao','Mr Ōshiro','Uncle Kinjō','Mrs Nakamura'];
+ const names=['Johansson','Thuan','Thao','Mr Ōshiro','Uncle Kinjō','Mrs Nakamura'];
  assert.ok(new Set(names.map(n=>recipeFor(n).head.form)).size>=4);
 });
 

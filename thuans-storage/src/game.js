@@ -21,7 +21,7 @@ function loadPretend() {
   return pretendLoad;
 }
 
-function om({canvas,minimap,onHud,gltf=null}) {
+function om({canvas,minimap,onHud,gltf=null,resumeData=null,onCheckpoint=()=>{},nightLocked=false}) {
   const renderer = new rd({canvas,antialias:true,powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1,1.75));
   renderer.outputColorSpace=yt;renderer.toneMapping=4;renderer.toneMappingExposure=1.1;
@@ -33,7 +33,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
   const sound=Object.fromEntries(Object.keys(rawSound).map(name=>[name,(...args)=>{
     try { return rawSound[name](...args); } catch { return undefined; }
   }]));
-  let maze=hd(Math.floor(Math.random()*1e9)),world=Yp(maze);scene.add(world.group);
+  let maze=hd(Number.isSafeInteger(resumeData?.seed)&&resumeData.seed>=0?resumeData.seed:Math.floor(Math.random()*1e9)),world=Yp(maze);scene.add(world.group);
   let characterReady=false;
   const character=$f({gltf,onReady(){characterReady=true;}});scene.add(character.group);
   characterReady ||= character.ready;
@@ -42,7 +42,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
   let accumulator=0,lastFrame=performance.now(),hudElapsed=0,idleTime=0;
   let reaction='',reactionTime=0,route=[],autoTarget=null,autoWait=0;
   let collectedBefore=0,explored=new Set(),lastPickup='';
-  let simTime=0,cameraInitial=true;
+  let simTime=0,cameraInitial=true,checkpointTime=0,restored=false;
   let boomLength=3.55,lookIdle=0.5,guestLine=0,guestCooldown=0,guestPrompt='';
   let boss=null,freeCells=[],bossDefeated=false,yenFound=0,stun=0,knockX=0,knockZ=0,shooCool=0,shooHeld=false,shooQueued=false,chaseReplan=0;
   const focus=new G(),desired=new G(),cameraPosition=new G(),dummy=new lr();
@@ -72,6 +72,41 @@ function om({canvas,minimap,onHud,gltf=null}) {
       zone,assisted,quote:reaction,reaction:reactionTime>0?reaction:'',autoRestocking:automatic,seed:maze.seed,
       explored:[...explored].filter(key=>{const[c,r]=key.split(',').map(Number);return yd(c,r,maze);}).length/maze.cells.filter(v=>v===0).length,guestPrompt,guest:world.guest?{name:world.guest.name,id:world.guest.id}:null});
   }
+  const bossNumbers=['x','z','yaw','t','hp','phase','said','replan','dirX','dirZ','cool','appear','pause'];
+  function checkpoint(){
+    if(disposed)return;
+    onCheckpoint({version:2,seed:maze.seed,phase,time,px,pz,yaw,pitch,automatic,assisted,
+      explored:[...explored],items:world.items.map(i=>({id:i.id,taken:!!i.taken})),
+      boss:boss?{who:boss.who,animal:boss.animal,state:boss.state,
+        ...Object.fromEntries(bossNumbers.map(k=>[k,boss[k]])),hitThisRest:!!boss.hitThisRest,
+        path:boss.path.map(p=>({...p})),wander:boss.wander,goods:boss.goods?.id}:null,
+      stun,knockX,knockZ,shooCool});
+  }
+  function restoreCheckpoint(data){
+    const states=['waiting','roam','beat','charge','skid','pound','jaws','lunge','rear','swipe','kick','bray','tired','defeated','leaving','gone'];
+    if(data?.version!==2||data.seed!==maze.seed||!['title','playing','paused','won'].includes(data.phase)||
+      ![data.time,data.px,data.pz,data.yaw,data.pitch,data.stun,data.knockX,data.knockZ,data.shooCool].every(Number.isFinite)||data.time<0||
+      !Array.isArray(data.items)||data.items.length!==world.items.length||data.items.some((i,n)=>i.id!==world.items[n].id||typeof i.taken!=='boolean'))return false;
+    const b=data.boss;
+    if(boss&&(!b||b.who!==boss.who||b.animal!==boss.animal||!states.includes(b.state)||!bossNumbers.every(k=>Number.isFinite(b[k]))||
+      !Number.isInteger(b.hp)||b.hp<0||b.hp>BOSS_HP||((b.hp===0)!==['defeated','leaving','gone'].includes(b.state))||
+      !Array.isArray(b.path)||b.path.length>maze.cells.length||b.path.some(p=>![p.x,p.z].every(Number.isFinite))||
+      (b.wander&&(![b.wander.x,b.wander.z,b.wander.cell?.c,b.wander.cell?.r].every(Number.isFinite)))||
+      (b.goods&&!world.items.some(i=>i.id===b.goods))))return false;
+    if(data.phase==='won'&&world.items.some((i,n)=>i.needed&&!data.items[n].taken))return false;
+    time=data.time;px=data.px;pz=data.pz;yaw=data.yaw;pitch=data.pitch;
+    automatic=!!data.automatic;assisted=!!data.assisted;stun=Math.max(0,data.stun);knockX=data.knockX;knockZ=data.knockZ;shooCool=Math.max(0,data.shooCool);
+    explored=new Set(Array.isArray(data.explored)?data.explored.filter(k=>typeof k==='string').slice(0,maze.cells.length*2):[]);
+    for(let n=0;n<world.items.length;n++){const i=world.items[n];i.taken=data.items[n].taken;i.mesh.visible=!i.taken;}
+    if(boss){
+      Object.assign(boss,Object.fromEntries(bossNumbers.map(k=>[k,b[k]])),{state:b.state,hitThisRest:!!b.hitThisRest,path:b.path.map(p=>({...p})),wander:b.wander,goods:world.items.find(i=>i.id===b.goods)||null});
+      bossDefeated=!!(boss.hp===0);yenFound=bossDefeated?BOSS_YEN:0;
+      boss.body.group.visible=boss.state!=='waiting'&&boss.state!=='gone';poseBoss(0);
+    }
+    collectedBefore=world.items.filter(i=>i.needed&&i.taken).length;
+    phase=data.phase==='won'?'won':'paused';character.group.position.set(px,0,pz);character.setHeading(yaw,true);
+    character.setCelebrate(phase==='won');character.setWave(false);return data.phase!=='title';
+  }
   function chooseRoute() {
     const from=_d(px,pz,maze);
     // The boss worn out and close by: go and shoo it while it has stars round its head.
@@ -99,6 +134,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     }
     const count=world.items.filter(item=>item.needed&&item.taken).length;
     if(count>collectedBefore&&world.items.filter(item=>item.needed).every(item=>item.taken))say('All packed. Back to the pink shop curtain.',5);
+    if(count!==collectedBefore)checkpoint();
     collectedBefore=count;
   }
   function step(dt) {
@@ -156,7 +192,7 @@ function om({canvas,minimap,onHud,gltf=null}) {
     idleTime=speed<0.08?idleTime+dt:0;
     time+=dt;reveal();collect();talkToGuest(dt);updateBoss(dt);
     if(world.items.filter(item=>item.needed).every(item=>item.taken)&&Math.hypot(world.exit.x-px,world.exit.z-pz)<1.05){
-      phase='won';automatic=false;speed=vx=vz=0;controls.reset();releasePointer();
+      phase='won';automatic=false;checkpoint();speed=vx=vz=0;controls.reset();releasePointer();
       reaction=bossDefeated?`Everything is ready, and ${boss.name} has gone back down the hole. Sakura is open.`:bossAbout()?`Everything is ready. ${boss.name} can have the back room. Sakura is open.`:'Everything is ready. Sakura is open.';reactionTime=10;
       character.setCelebrate(true);character.setWave(false);sound.win();emitHud();
     }
@@ -313,9 +349,9 @@ function om({canvas,minimap,onHud,gltf=null}) {
     if(boss.hp<=0){
       boss.state='defeated';boss.t=2.6;bossDefeated=true;yenFound=BOSS_YEN;
       say(`${boss.name} takes off the ${boss.animal} head: it was ${boss.who==='Bus driver'?'the bus driver':boss.who} all along. A bow, the head back on backwards, and ¥${BOSS_YEN} in old cave coins on the floor.`,5);
-      return;
+      checkpoint();return;
     }
-    say(`Shoo! ${boss.name} gets up, cross. “${bossLine()}”`,2.6);boss.t=Math.min(boss.t,.5);
+    say(`Shoo! ${boss.name} gets up, cross. “${bossLine()}”`,2.6);boss.t=Math.min(boss.t,.5);checkpoint();
   }
   function updateBoss(dt){
     if(!boss)return;
@@ -427,17 +463,18 @@ function om({canvas,minimap,onHud,gltf=null}) {
   }
   function resize(){const w=canvas.clientWidth||1,h=canvas.clientHeight||1;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   function releasePointer(){if(controls.isPointerLocked())document.exitPointerLock?.();}
-  function pause(){if(phase!=='playing')return;phase='paused';speed=vx=vz=0;lookIdle=0.5;controls.reset();releasePointer();emitHud();}
+  function pause(){if(phase!=='playing')return;phase='paused';checkpoint();speed=vx=vz=0;lookIdle=0.5;controls.reset();releasePointer();emitHud();}
   function visibility(){if(document.hidden)pause();}
   function start(auto=false){
+    if(phase==='won')return;
     sound.unlock();controls.reset();accumulator=0;lastFrame=performance.now();
     if(phase==='title'||phase==='paused'||phase==='restocking')phase='playing';
     automatic=auto;assisted ||= auto;route=[];autoTarget=null;character.setWave(false);cameraInitial=true;
     say(auto?'I will collect the list. You can take over at any time.':'Tea, biscuits, and a little order. Let us begin.',4);emitHud();
   }
-  resetPosition();resize();
+  resetPosition();restored=restoreCheckpoint(resumeData);checkpoint();resize();
   const observer=new ResizeObserver(resize);observer.observe(canvas);
-  window.addEventListener('resize',resize);window.addEventListener('blur',pause);document.addEventListener('visibilitychange',visibility);
+  window.addEventListener('pagehide',checkpoint);window.addEventListener('resize',resize);window.addEventListener('blur',pause);document.addEventListener('visibilitychange',visibility);
   canvas.addEventListener('wheel',onWheel,{passive:false});
   canvas.addEventListener('touchstart',onTouchStart,{passive:true});
   canvas.addEventListener('touchmove',onTouchMove,{passive:true});
@@ -456,10 +493,11 @@ function om({canvas,minimap,onHud,gltf=null}) {
     }
     const exitCell=_d(world.exit.x,world.exit.z,maze);
     Md({canvas:minimap,maze,explored,x:px,z:pz,yaw,charms:world.items,exit:world.exit,exitKnown:explored.has(`${exitCell.c},${exitCell.r}`)});
-    renderer.render(scene,camera);hudElapsed+=dt;if(hudElapsed>0.12){hudElapsed=0;emitHud();}
+    renderer.render(scene,camera);if(phase==='playing'&&(checkpointTime+=dt)>=1){checkpointTime=0;checkpoint();}hudElapsed+=dt;if(hudElapsed>0.12){hudElapsed=0;emitHud();}
   });
   emitHud();
   return {
+    restored,
     start:()=>start(false),autoRestock:()=>start(true),pause,
     resume(){if(phase==='paused'){controls.reset();phase='playing';emitHud();}},
     takeControl(){automatic=false;route=[];controls.reset();say('Your turn. I have the list.');emitHud();},
@@ -470,9 +508,9 @@ function om({canvas,minimap,onHud,gltf=null}) {
       if(at&&boss){if(boss.state==='waiting'){boss.body.group.visible=true;}Object.assign(boss,{x:at[0],z:at[1],yaw:at[2]??boss.yaw,state:'roam',cool:0,appear:1,path:[],wander:null,pause:at[3]??9});}
       automatic=false;route=[];stun=0;
     },
-    restart(seed){sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();emitHud();},
+    restart(seed){if(nightLocked)return;sound.unlock();scene.remove(world.group);world.dispose();maze=hd(seed==='same'?maze.seed:seed??(Math.random()*1e9|0));world=Yp(maze);scene.add(world.group);phase='title';resetPosition();checkpoint();emitHud();},
     setMuted:muted=>sound.setMuted(muted),
     setTouchMove:(x,y)=>controls.setTouchMove(x,y),setTouchLook:(x,y)=>controls.setTouchLook(x,y),setTouchSprint:value=>controls.setTouchSprint(value),requestLock:()=>controls.tryPointerLock(canvas),
-    dispose(){disposed=true;renderer.setAnimationLoop(null);controls.detach();observer.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('blur',pause);document.removeEventListener('visibilitychange',visibility);canvas.removeEventListener('wheel',onWheel);canvas.removeEventListener('touchstart',onTouchStart);canvas.removeEventListener('touchmove',onTouchMove);releasePointer();sound.dispose();world.dispose();character.dispose();renderer.dispose();},
+    dispose(){checkpoint();disposed=true;window.removeEventListener('pagehide',checkpoint);renderer.setAnimationLoop(null);controls.detach();observer.disconnect();window.removeEventListener('resize',resize);window.removeEventListener('blur',pause);document.removeEventListener('visibilitychange',visibility);canvas.removeEventListener('wheel',onWheel);canvas.removeEventListener('touchstart',onTouchStart);canvas.removeEventListener('touchmove',onTouchMove);releasePointer();sound.dispose();world.dispose();character.dispose();renderer.dispose();},
   };
 }

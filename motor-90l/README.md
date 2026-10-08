@@ -21,6 +21,7 @@ The workshop page loads three.js from `johansson-town/vendor/` (the same r170 bu
 three.js instance. Town characters are drawn big-headed, so the workshop shows the motor and tools at 1.7 × true size,
 the way the town sizes its props.
 
-Johansson Town also runs three.js r170, so the parts and the exported `.glb` (metres, one node per part) can move into the
-Dock Electrical Workshop without conversion. The export is about 14 MB uncompressed; index and meshopt-compress it with the
-town's asset pipeline before it goes in.
+Johansson Town also runs three.js r170, and the motor now stands on Tetsuo's test bench in its Dock Electrical Workshop.
+`johansson-town/tools/pack-motor-90l.mjs` builds it from `motor.js` (no browser), keeps the closed motor's outside, simplifies
+it with meshoptimizer and writes one quantised, vertex-coloured mesh (about 0.45 MB against the 14 MB full export). Rerun it
+after changing `motor.js` or `calc.mjs`; the town's `tests/motor-bench.test.mjs` checks their hashes.

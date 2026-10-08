@@ -20,8 +20,8 @@
 
 /** Each speaker's subtitle colour; Johansson is white. Anyone else gets a stable one. */
 export const SPEAKER_COLOURS=Object.freeze({
- Johansson:'#ffffff',Thuan:'#ffd56b',Nao:'#ffa585',Aya:'#cdb0ff','Mrs Sato':'#ff9ec0',Yoshiko:'#b9e59a',
- Kenji:'#8fd3ff',Reiko:'#ffb3c7',Emi:'#ffc9a8','Harbour master':'#9fd8ff',Masaru:'#ffbf80'
+ Johansson:'#ffffff',Thuan:'#ffd56b',Thao:'#ffa585',Nhung:'#cdb0ff','Mrs Sato':'#ff9ec0',Yoshiko:'#b9e59a',
+ Chin:'#8fd3ff',Reiko:'#ffb3c7',Emi:'#ffc9a8','Harbour master':'#9fd8ff',Masaru:'#ffbf80'
 });
 const PALETTE=['#8fd3ff','#a8f0b8','#ffbe7a','#e3aaff','#ffe08a','#86e3d3','#ffa7b8','#bccaff'];
 export function speakerColour(name=''){

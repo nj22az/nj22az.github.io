@@ -32,14 +32,16 @@ test('the shop door opens for whoever walks up to it and closes behind them',()=
  door.update(1/30,[new THREE.Vector3(mat.x,0,mat.z)]);
  assert.ok(door.amount>.9,'The door only opens for one kind of caller');
 
- // Away down the street, it shuts again — slower than it opened.
- for(let t=0;t<2;t+=1/30)door.update(1/30,[{x:mat.x+40,z:mat.z}]);
- assert.equal(door.amount,0,'The door stays open once everybody has gone');
+ // Away down the street, it holds a moment (sliding-door.js), then shuts again — slower than it opened.
+ for(let t=0;t<1;t+=1/30)door.update(1/30,[{x:mat.x+40,z:mat.z}]);
+ assert.ok(door.amount>.9,'The door slams on the heels of whoever has just gone');
+ for(let t=0;t<3.5;t+=1/30)door.update(1/30,[{x:mat.x+40,z:mat.z}]);
+ assert.ok(door.amount<.02,'The door stays open once everybody has gone');
 });
 
 test('the leaves part from the middle and clear the doorway',()=>{
  const {group,door}=frontage();
- const leaves=[];group.traverse(o=>{if(o.isMesh&&o.name==='Sakura door pane')leaves.push(o.parent);});
+ const leaves=[];group.traverse(o=>{if(o.isMesh&&o.name==='Sakura door leaf pane')leaves.push(o.parent);});
  assert.equal(leaves.length,2,'A sliding door needs two leaves');
 
  group.updateMatrixWorld(true);

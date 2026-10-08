@@ -27,8 +27,8 @@
   };
   const PLACES = [
     { id: "market", code: "01", title: "Sakura Shōten", jp: "Sakura Shop", sub: "Daily goods", district: "Shopping street", open: 540, close: 1200, line: "Thuan’s convenience store. Tea, snacks, everyday things. Thuan at the till 09:00–20:00." },
-    { id: "frontrow", code: "02", title: "Front-Row Books", jp: "Front-Row Books", sub: "Books · newspapers · reading", district: "Main Street west", open: 540, close: 1470, line: "Aya’s books, a quiet reading corner, and Reiko’s evening newspaper. North of Minato, with a passage to the yard." },
-    { id: "form3d", code: "03A", title: "Dock Electrical & Repair Workshop", jp: "Dock Electrical Workshop", sub: "INSTRUMENTS · ELECTRICAL · REPAIRS", district: "Western quay", open: 540, close: 1140, line: "Kenji and Tetsuo repair radios and instruments beside the harbour warehouse." },
+    { id: "frontrow", code: "02", title: "Front-Row Books", jp: "Front-Row Books", sub: "Books · newspapers · reading", district: "Main Street west", open: 540, close: 1470, line: "Nhung’s books, a quiet reading corner, and Reiko’s evening newspaper. North of Minato, with a passage to the yard." },
+    { id: "form3d", code: "03A", title: "Dock Electrical & Repair Workshop", jp: "Dock Electrical Workshop", sub: "INSTRUMENTS · ELECTRICAL · REPAIRS", district: "Western quay", open: 540, close: 1140, line: "Chin and Tetsuo repair radios and instruments beside the harbour warehouse." },
     { id: "office", code: "03", title: "Johansson Harbour Office", jp: "Port Affairs and Technology Office", sub: "Marine service · records", district: "Quay", open: null, close: null, line: "Shipping records, tide tables, and Johansson’s marine files. Staffed around the clock." },
     { id: "izakaya", code: "04", title: "Minato Izakaya", jp: "Minato Izakaya", sub: "Lanterns · yakitori", district: "Main Street west", open: 960, close: 1620, line: "Opens at sixteen hundred. Last pour around three in the morning." },
     { id: "bus-station", code: "05", title: "Harbour Line Bus Station", jp: "Bus stop", sub: "Arrivals · departures", district: "Town terminus", open: null, close: null, line: "The northern terminus. Day staff arrive here and leave by the last bus." },
@@ -42,9 +42,9 @@
     { id: "pier", code: "08", title: "Outer Pier", jp: "Oki Pier", sub: "Boards · night warning", district: "Harbour", open: null, close: null, line: "Connected western and eastern lanes, second jetty. Caution after dark." },
   ];
   const DUTIES = {
-    Thuan: [540,1200], Aya: [540,1110], Kenji: [540,1140],
+    Thuan: [540,1200], Nhung: [540,1110], Chin: [540,1140],
     "Mrs Sato": [540,1260], Reiko: [900,1470], Tetsuo: [1020,1440],
-    Nao: [960,1620], "Officer Mori": [1320,1800]
+    Thao: [960,1620], "Officer Mori": [1320,1800]
   };
   const RESIDENTS = (window.JOHANSSON_RESIDENT_GUIDE || []).map(r => ({
     ...r, start: DUTIES[r.name]?.[0], end: DUTIES[r.name]?.[1],
@@ -196,26 +196,32 @@
       </article>`).join("");
     // Resident content is authored in the guide catalogue, independent of the schedule engine.
     const escape = value => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-    rollGrid.innerHTML = RESIDENTS.map(r => `
-      <article class="roll-card" data-resident="${escape(r.name)}">
-        <img class="resident-portrait" src="./${escape(r.portrait)}?v=${encodeURIComponent(window.JOHANSSON_PORTRAIT_MODULE || 'live')}" width="480" height="480" loading="lazy" decoding="async" alt="${escape(r.name)}, as seen around Johansson Town">
+    // Each resident is a magazine profile: lead photo, headline and standfirst, then the full piece.
+    const photo = (p, cls) => p ? `<figure class="${cls}"><img src="./${escape(p.file)}" width="900" height="1200" loading="lazy" decoding="async" alt="${escape(p.caption)}"><figcaption>${escape(p.caption)}</figcaption></figure>` : '';
+    rollGrid.innerHTML = RESIDENTS.map(r => {
+      const a = r.article || {headline: r.name, standfirst: r.bio, body: [r.backstory], photos: []};
+      const [lead, second] = a.photos || [];
+      const body = a.body.map((para, i) => `<p>${escape(para)}</p>${i === 0 && a.quote ? `<blockquote class="article-quote">“${escape(a.quote)}”</blockquote>` : ''}${i === 1 ? photo(second, 'article-inline') : ''}`).join('');
+      const p = r.islandPersonality;
+      return `
+      <article class="roll-card article-card" data-resident="${escape(r.name)}">
+        ${lead ? photo(lead, 'article-lead') : `<img class="resident-portrait" src="./${escape(r.portrait)}" width="480" height="480" loading="lazy" alt="${escape(r.name)}">`}
         <div class="resident-copy">
-          <p class="resident-role">${escape(r.role)}</p>
-          <h3>${escape(r.name)}</h3>
-          <p class="resident-place">${escape(r.place)}</p>
-          <p class="resident-bio">${escape(r.bio)}</p>
-          <details class="resident-story"><summary>Open character profile</summary>
-          <div class="resident-model-sheet" aria-label="Game character views">${['front','three-quarter','side'].map(view=>`<figure><img class="resident-portrait" data-portrait-view="${view}" src="./${escape(r.portrait)}" width="480" height="480" loading="lazy" alt="${escape(r.name)} · ${view} face view"><figcaption>${view==='front'?'Face':view==='side'?'Side':'Three-quarter'}</figcaption></figure>`).join('')}</div>
-          <dl class="resident-facts"><dt>Occupation</dt><dd>${escape(r.role)}</dd><dt>Usually found</dt><dd>${escape(r.place)}</dd>${r.age?'<dt>Age</dt><dd>'+escape(r.age)+'</dd>':''}${r.friend?'<dt>Close friend</dt><dd>'+escape(r.friend)+'</dd>':''}</dl>
-          ${r.islandPersonality?`<section class="resident-personality" aria-label="Island personality"><p class="board-tiny">ISLAND PERSONALITY</p><h4>${escape(r.islandPersonality.title)}</h4><div class="resident-traits">${r.islandPersonality.traits.map(t=>`<span>${escape(t)}</span>`).join('')}</div>${r.dailyLife?`<blockquote>${escape(r.dailyLife)}</blockquote>`:''}<div class="resident-moments"><section><span aria-hidden="true">♡</span><h5>Favourite moment</h5><p>${escape(r.islandPersonality.favourite)}</p></section><section><span aria-hidden="true">☀</span><h5>A small habit</h5><p>${escape(r.islandPersonality.habit)}</p></section><section><span aria-hidden="true">☆</span><h5>Island ambition</h5><p>${escape(r.islandPersonality.ambition)}</p></section></div></section>`:''}
-          <h4>Life on the island</h4><p>${escape(r.backstory)}</p></details>
+          <p class="resident-role">${escape(r.name)} · ${escape(r.role)}</p>
+          <h3>${escape(a.headline)}</h3>
+          <p class="resident-bio">${escape(a.standfirst)}</p>
+          <details class="resident-story"><summary>Read the article</summary>
+            <div class="article-body">${body}</div>
+            <dl class="resident-facts"><dt>Usually found</dt><dd>${escape(r.place)}</dd>${r.age ? '<dt>Age</dt><dd>' + escape(r.age) + '</dd>' : ''}${r.friend ? '<dt>Close friend</dt><dd>' + escape(r.friend) + '</dd>' : ''}${p ? '<dt>In a word</dt><dd>' + escape(p.title) + ' · ' + p.traits.map(escape).join(', ') + '</dd><dt>Ambition</dt><dd>' + escape(p.ambition) + '</dd>' : ''}</dl>
+          </details>
           ${r.start != null || r.always ? '<p class="duty"><span class="flag"></span></p>' : ''}
         </div>
-      </article>`).join("");
+      </article>`;
+    }).join("");
   }
 
   const catalogueSearch=document.getElementById('residentSearch');
-  catalogueSearch?.addEventListener('input',()=>{const q=catalogueSearch.value.trim().toLowerCase();let n=0;rollGrid.querySelectorAll('[data-resident]').forEach(card=>{const r=RESIDENTS.find(r=>r.name===card.dataset.resident);card.hidden=!`${r.name} ${r.role} ${r.place}`.toLowerCase().includes(q);if(!card.hidden)n++;});document.getElementById('catalogueCount').textContent=`${n} residents`;});
+  catalogueSearch?.addEventListener('input',()=>{const q=catalogueSearch.value.trim().toLowerCase();let n=0;rollGrid.querySelectorAll('[data-resident]').forEach(card=>{const r=RESIDENTS.find(r=>r.name===card.dataset.resident);card.hidden=!`${r.name} ${r.role} ${r.place} ${r.article?.headline||''}`.toLowerCase().includes(q);if(!card.hidden)n++;});document.getElementById('catalogueCount').textContent=`${n} residents`;});
   function tick() {
     if (start.classList.contains("hidden")) return;
     const now = Date.now();
@@ -317,6 +323,10 @@
 
   document.querySelectorAll('a[href="#visit-planning"]').forEach(link=>link.addEventListener('click',()=>{document.getElementById('visit-planning').open=true;}));
   renderStatic();
+  // The town feed loads with the guide, not the title screen: it brings the avatar renderer.
+  const feedList=document.getElementById("townFeed");let feedMounted=false;
+  const mountFeed=()=>{if(feedMounted||!start.classList.contains("guide-open"))return;feedMounted=true;import(window.JOHANSSON_FEED_MODULE || "./src/feed/mount.js").then(m=>m.mountTownFeed({list:feedList,more:document.getElementById("feedMore")})).catch(error=>{feedMounted=false;console.warn("Town feed:",error.message);});};
+  if(feedList){new MutationObserver(mountFeed).observe(start,{attributes:true,attributeFilter:["class"]});mountFeed();}
   import(window.JOHANSSON_PORTRAIT_MODULE || "./src/avatars/guide-portraits.js").then(m=>m.mountResidentPortraits()).catch(error=>console.warn("Resident portraits:",error.message));
   ticks();
   tick();

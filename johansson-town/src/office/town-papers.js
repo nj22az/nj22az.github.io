@@ -73,6 +73,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Shiosai — Mr Fujita’s houseboat",
+    "organisation": "Town Services",
+    "text": "Mr Fujita rebuilt this little working boat into a home: one berth, a kettle and a radio. At half past eleven he switches off the shed television and comes aboard. The gangway must stay clear.",
+    "source": "notice:Shiosai — Mr Fujita’s houseboat"
+  },
+  {
+    "type": "Notice",
     "title": "Class board",
     "organisation": "Town Services",
     "text": "Over the cubbies: the class goal, \"Everyone friendly, cheerful, and say hello,\" eight sheets of calligraphy -- Sea sea, Dream dream, Friend friend, Sky sky -- each with a red circle from the teacher. Kenta's essay about rowing in the Hāri boat race with his grandfather. The paper wheel of cleaning duties. Summer projects: reef creatures, how to make sata andagi, a typhoon diary. This week's lunch squad: Kinjō, Arakaki, Taira -- \"don't forget your smock, cap and mask.\"",
@@ -199,6 +206,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Mr Fujita is asleep",
+    "organisation": "Town Services",
+    "text": "He is asleep in his berth aboard Shiosai. He returns to the shed at six in the morning.",
+    "source": "notice:Mr Fujita is asleep"
+  },
+  {
+    "type": "Notice",
     "title": "Mr Fujita’s television",
     "organisation": "Town Services",
     "text": "A portable set older than the boat, on a fish crate, the aerial bent to find the signal from across the water. Mr Fujita does not look away from it. \"Sit, sit. The eighth innings is the only one worth watching. Have a can; they are cold, the box is new.\"",
@@ -242,43 +256,43 @@ export const TOWN_PAPERS=[
   {
     "type": "Message",
     "title": "The Venture",
-    "organisation": "Aya’s bookshop",
-    "text": "The Venture\nAya’s reading copy. Please return it to the display shelf.\n\nTHE VENTURE\nThe rain has not let up in three days. At the waterside inn, a young sailor watches the clerk put away his pen. A berth is available. The price of passage is work.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
+    "organisation": "Nhung’s bookshop",
+    "text": "The Venture\nNhung’s reading copy. Please return it to the display shelf.\n\nTHE VENTURE\nThe rain has not let up in three days. At the waterside inn, a young sailor watches the clerk put away his pen. A berth is available. The price of passage is work.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
     "source": "item:book"
   },
   {
     "type": "Message",
     "title": "The Gallows Years",
-    "organisation": "Aya’s bookshop",
-    "text": "The Gallows Years\nAya’s reading copy. Please return it to the display shelf.\n\nTHE GALLOWS YEARS\nThe old captain keeps his coat on by the fire. Nobody asks him about the rope marks. He has come to hear whether the packet ship made harbour before the storm.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
+    "organisation": "Nhung’s bookshop",
+    "text": "The Gallows Years\nNhung’s reading copy. Please return it to the display shelf.\n\nTHE GALLOWS YEARS\nThe old captain keeps his coat on by the fire. Nobody asks him about the rope marks. He has come to hear whether the packet ship made harbour before the storm.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
     "source": "item:book2"
   },
   {
     "type": "Message",
     "title": "Kings of Bengal",
-    "organisation": "Aya’s bookshop",
-    "text": "Kings of Bengal\nAya’s reading copy. Please return it to the display shelf.\n\nKINGS OF BENGAL\nBetween the cargo columns somebody has pressed a flower. The accounts say nothing about it. The flower says nothing about the accounts.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
+    "organisation": "Nhung’s bookshop",
+    "text": "Kings of Bengal\nNhung’s reading copy. Please return it to the display shelf.\n\nKINGS OF BENGAL\nBetween the cargo columns somebody has pressed a flower. The accounts say nothing about it. The flower says nothing about the accounts.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
     "source": "item:book3"
   },
   {
     "type": "Message",
     "title": "The Poppy",
-    "organisation": "Aya’s bookshop",
-    "text": "The Poppy\nAya’s reading copy. Please return it to the display shelf.\n\nTHE POPPY\nA boat waits at the river steps. Its owner counts the bundles once, then again. On the other bank, the morning market has begun.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
+    "organisation": "Nhung’s bookshop",
+    "text": "The Poppy\nNhung’s reading copy. Please return it to the display shelf.\n\nTHE POPPY\nA boat waits at the river steps. Its owner counts the bundles once, then again. On the other bank, the morning market has begun.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
     "source": "item:book4"
   },
   {
     "type": "Message",
     "title": "The Watchman’s Daughter",
-    "organisation": "Aya’s bookshop",
-    "text": "The Watchman’s Daughter\nAya’s reading copy. Please return it to the display shelf.\n\nTHE WATCHMAN’S DAUGHTER\nShe carries a white bowl through the crowded lane. It was her father’s. In a new city, it is useful to know the weight of one familiar thing.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
+    "organisation": "Nhung’s bookshop",
+    "text": "The Watchman’s Daughter\nNhung’s reading copy. Please return it to the display shelf.\n\nTHE WATCHMAN’S DAUGHTER\nShe carries a white bowl through the crowded lane. It was her father’s. In a new city, it is useful to know the weight of one familiar thing.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
     "source": "item:book5"
   },
   {
     "type": "Message",
     "title": "The Engine Room",
-    "organisation": "Aya’s bookshop",
-    "text": "The Engine Room\nAya’s reading copy. Please return it to the display shelf.\n\nTHE ENGINE ROOM\nThe watch changes at four. A hand rests on the bearing housing; the new engineer listens before he touches a tool. Above them, the harbour lights drift past.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
+    "organisation": "Nhung’s bookshop",
+    "text": "The Engine Room\nNhung’s reading copy. Please return it to the display shelf.\n\nTHE ENGINE ROOM\nThe watch changes at four. A hand rests on the bearing housing; the new engineer listens before he touches a tool. Above them, the harbour lights drift past.\n\nBOOKMARK\nA faded ferry ticket marks this page. On the back: “Meet me after the last boat.”",
     "source": "item:book6"
   },
   {
@@ -319,7 +333,7 @@ export const TOWN_PAPERS=[
   {
     "type": "Message",
     "title": "Brass key tag",
-    "organisation": "Kenji’s pattern bench",
+    "organisation": "Chin’s pattern bench",
     "text": "KEY TAG\nThe stamping reads COLD STORE. The key is missing.",
     "source": "item:keychain"
   },
@@ -361,7 +375,7 @@ export const TOWN_PAPERS=[
   {
     "type": "Message",
     "title": "Johansson Town · 1:40",
-    "organisation": "Kenji’s workshop",
+    "organisation": "Chin’s workshop",
     "text": "JOHANSSON TOWN\nA scale model of the old shopping street. 1:40. Handle with care.",
     "source": "item:model"
   },

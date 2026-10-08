@@ -19,11 +19,11 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'clinic',address:'The doctor’s flat behind the town hall clinic',members:[['Dr Kakazu','the island doctor: posted from Naha for two years, surgery at the town hall clinic, on call at night']]},
  {home:'koban',address:'Minato police box',members:[['Officer Mori','the island’s police officer: desk from four, night patrol']]},
  // The Front-Row yard.
- {home:'resident-home-aya',address:'1 Front-Row Yard',members:[['Aya','bookshop assistant'],['Reiko','edits the evening paper']]},
- {home:'resident-home-kenji',address:'2 Front-Row Yard',members:[['Kenji','repairman at the workshop'],['Tetsuo','radio repairer']]},
+ {home:'resident-home-aya',address:'1 Front-Row Yard',members:[['Nhung','bookshop assistant'],['Reiko','edits the evening paper']]},
+ {home:'resident-home-kenji',address:'2 Front-Row Yard',members:[['Chin','repairman at the workshop'],['Tetsuo','radio repairer']]},
  // Kitahama, the new lane on the north-east land.
  {home:'market',address:'The flat over Sakura Shōten',members:[['Grandmother Sakurai','owns Sakura Shōten, which her parents opened in 1963; does the books on Sundays and minds the shop when Thuan is at the auction']]},
- {home:'kitahama-1',address:'1 Kitahama',members:[['Thuan','keeps Sakura Shōten for the Sakurai family'],['Nao','runs Minato Izakaya']]},
+ {home:'kitahama-1',address:'1 Kitahama',members:[['Thuan','keeps Sakura Shōten for the Sakurai family'],['Thao','runs Minato Izakaya']]},
  {home:'kitahama-2',address:'2 Kitahama',members:[['Mrs Sato','cooks at Sato Ramen; buys fish at the morning auction']]},
  {home:'kitahama-3',address:'3 Kitahama',members:[['Kōji','sorts the catch at the fish auction; crews on the Ōshiro boat']]},
  {home:'kitahama-4',address:'4 Kitahama',members:[['Postman Tōma','runs the post office and the round: collections 10:30 and 16:30']]},

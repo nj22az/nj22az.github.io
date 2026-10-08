@@ -56,7 +56,9 @@ function buildWeapon(name){
 const REST=side=>new THREE.Vector3(side*.19,-.235,-.46),HIT=side=>new THREE.Vector3(side*.03,-.08,-.74);
 
 export function createFists({camera,skin=0xd9a57c,sleeve=0x3f6a8a}={}){
- const view=new THREE.Group();view.name='Johansson’s fists';camera.add(view);
+ // Hidden until a fight raises them: frames drawn before the first update (the title fly-in,
+ // frozen captures) must not show a pair of arms in front of the camera.
+ const view=new THREE.Group();view.name='Johansson’s fists';view.visible=false;camera.add(view);
  const fists={1:buildFist(skin,1,sleeve),[-1]:buildFist(skin,-1,sleeve)};
  for(const side of [1,-1]){fists[side].position.copy(REST(side));view.add(fists[side]);}
  let weapon=null,weaponName=null,guard=0,guardWanted=false,punch=null,next=1,shown=true;

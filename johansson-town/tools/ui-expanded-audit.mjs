@@ -62,7 +62,7 @@ try{
  check('Nikuman offers the food action',await page.getByRole('button',{name:'Eat it',exact:true}).count()===1);
  await closeActivity();check('Child activity dismissal returns to Town book button',await page.evaluate(()=>document.activeElement.id)==='directoryButton');
 
- await page.evaluate(()=>{const acts=window.__JOHANSSON_AUDIT__.activities;acts.menu('Aya · A quick conversation','The books and the evening paper are at our counter. Tama still prefers the window chair. We can take our time: there is room for a long line, and room for your reply.',[['Tell me something else',()=>acts.menu('Aya · A quick conversation','I will put a copy aside for you. The next reply stays in this same conversation.',[['Close',acts.close]])],['Close',acts.close]]);});
+ await page.evaluate(()=>{const acts=window.__JOHANSSON_AUDIT__.activities;acts.menu('Nhung · A quick conversation','The books and the evening paper are at our counter. Tama still prefers the window chair. We can take our time: there is room for a long line, and room for your reply.',[['Tell me something else',()=>acts.menu('Nhung · A quick conversation','I will put a copy aside for you. The next reply stays in this same conversation.',[['Close',acts.close]])],['Close',acts.close]]);});
  await capture('dialogue-incoming-listening');check('Incoming line enters listening phase',await page.locator('#activity').evaluate(e=>e.classList.contains('listening')));
  await page.keyboard.press('Space');await capture('dialogue-replies');
  await click(page.getByRole('button',{name:'Tell me something else',exact:true}));await capture('dialogue-player-reply');

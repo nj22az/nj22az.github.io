@@ -84,6 +84,8 @@ export function createFacing({world,getPlayerPosition,getPlayerEyeHeight=()=>1.6
    const entity=person?.g;if(!entity)continue;
    const data=entity.userData;
    const talking=data.playerConversation===true;
+   // In a conversation of their own they look at each other (neighbour-chats.js), not at you.
+   if(!talking&&(data.chat||data.playing)){if(data.facingPlayer)delete data.facingPlayer;continue;}
    const near=Math.hypot(entity.position.x-player.x,entity.position.z-player.z)<=range;
    // Standing next to someone is not the same as talking to them, so proximity only
    // earns a look when they have nothing else on.
@@ -101,6 +103,14 @@ export function createFacing({world,getPlayerPosition,getPlayerEyeHeight=()=>1.6
    if(busy||!talking)continue;
    entity.rotation.y=turnToward(entity.rotation.y,faceYaw(entity.position,player),dt,turnRate);
    stats.turning++;
+  }
+  // Street neighbours you are talking to turn and look at you as well.
+  for(const entity of world.neighbours||[]){
+   const data=entity?.userData;if(!data?.playerConversation)continue;
+   point.set(player.x,player.y+getPlayerEyeHeight(),player.z);
+   data.lookTarget=point.toArray();data.lookSource='facing';stats.addressed++;
+   if(occupied(data,!!data.walking||!!data.character?.moving))continue;
+   entity.rotation.y=turnToward(entity.rotation.y,faceYaw(entity.position,player),dt,turnRate);stats.turning++;
   }
   return stats;
  }};

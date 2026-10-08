@@ -21,6 +21,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Beroende för delsidornas presentationsexport
+        run: python3 -m pip install python-pptx
       - name: Innehållsdatabasen är giltig och de genererade filerna aktuella
         run: |
           python3 sjoskolan/innehall/innehall.py validera
@@ -30,14 +32,18 @@ jobs:
         run: python3 sjoskolan/verktyg/qa/week40.py
       - name: Veckolås – beroenden och avgränsning
         run: python3 -m unittest discover -s sjoskolan/verktyg/las -p 'test_*.py'
+      - name: Vecka 41–45 – teori och övningar hör ihop
+        run: python3 -m unittest discover -s sjoskolan/innehall/tests -p 'test_*.py'
       - name: Labbens modelltester
         run: node --test sjoskolan/*/model.test.mjs sjoskolan/verktyg/larare/las.test.mjs sjoskolan/gemensamt/labbprotokoll.test.mjs
       - name: Vecka 40 – resultatkod och lärarlänk
         env:
           LARARLOSEN: ${{ secrets.LARARLOSEN }}
         run: node --test sjoskolan/vecka-40/aktuell/resultat*.test.mjs
-      - name: Vecka 41 – resultatkod (svar, kontrollfrågor, protokoll)
-        run: node --test sjoskolan/vecka-41/aktuell/resultat.test.mjs
+      - name: Vecka 41 – resultatkod och skyddad läraracceptans
+        env:
+          LARARLOSEN: ${{ secrets.LARARLOSEN }}
+        run: node --test sjoskolan/vecka-41/aktuell/resultat*.test.mjs
       - name: Multimeterlabbets gränssnittstest
         working-directory: sjoskolan/multimetersimulator
         run: npm ci --ignore-scripts --no-audit --no-fund && npm test

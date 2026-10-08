@@ -15,7 +15,7 @@ test('the pink phone takes ¥10 a call and the harbour office reads the real tim
  assert.equal(h.shown.at(-1).buttons.length,4,'Three numbers and hang up');
  h.press('Call Harbour office');assert.equal(h.state.yen,5000-CALL_PRICE);assert.match(h.shown.at(-1).text,/Harbour office/);
 });
-test('keeping a bottle costs ¥2,500 once, is saved, and pours a glass at a time; Nao keeps it only when open',()=>{
+test('keeping a bottle costs ¥2,500 once, is saved, and pours a glass at a time; Thao keeps it only when open',()=>{
  const closed=harness(10*60);closed.play.bottleKeep();closed.press('Keep a bottle');
  assert.equal(closed.state.izakayaBottle,undefined,'Not while Minato is closed');assert.equal(closed.state.yen,5000);
  const h=harness(20*60);h.play.bottleKeep();h.press('Keep a bottle');

@@ -9,6 +9,7 @@ import {createAvatarAnimator} from '../src/avatars/animate.js';
 import {createAvatarActor,updateAvatarActor,createAvatarJohansson,playerRecipe,savePlayerRecipe,PLAYER_RECIPE_KEY} from '../src/avatars/actors.js';
 import {createLocalCharacters} from '../src/people/models.js?snappy=1';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
+import {seatContactHeight} from './seating-contact.mjs';
 
 installDOM();
 const settle=(animator,state,seconds=2)=>{for(let t=0;t<seconds;t+=1/30)animator.update(1/30,state);};
@@ -57,7 +58,7 @@ test('a body is one skinned mesh standing on the ground, with soft joints',()=>{
 test('sitting rests on the seat and standing counter poses keep shoes on the floor',()=>{
  const avatar=buildAvatar(CAST_RECIPES.Johansson,{shadows:false}),animator=createAvatarAnimator(avatar),m=avatar.measure;
  settle(animator,{seated:true,seatHeight:.45});
- assert.ok(Math.abs(avatar.root.position.y+m.hipY-m.seatDrop-.45)<.01);
+ assert.ok(Math.abs(seatContactHeight(avatar)-.45)<.001,'Rendered clothing rests on the seat');
  const scene=new THREE.Scene(),entity=new THREE.Group();entity.userData.name='Thuan';scene.add(entity);
  const actor=createAvatarActor(entity,'Thuan');
  entity.userData.socialPose='CounterIdle';for(let i=0;i<60;i++)updateAvatarActor(actor,1/30,0);

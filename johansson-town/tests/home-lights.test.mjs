@@ -11,15 +11,15 @@ test('Kitahama’s windows follow the people who live there',()=>{
  const lights=createHomeLights({people:()=>people});
  const slot=id=>lights.homes.find(h=>h.id===id).slot;
  // Thuan home and up at nine in the evening: her house is lit; out, or asleep, it is dark.
- people=[person('Thuan',{indoors:'home'}),person('Nao',{},{start:960,retire:1620})];
+ people=[person('Thuan',{indoors:'home'}),person('Thao',{},{start:960,retire:1620})];
  lights.update(3*day+H(21));assert.equal(homeLightLevel(slot('kitahama-1')),1);
- people=[person('Thuan',{}),person('Nao',{})];
+ people=[person('Thuan',{}),person('Thao',{})];
  lights.update(3*day+H(21,5));assert.equal(homeLightLevel(slot('kitahama-1')),0,'nobody home, the light is off');
  people=[person('Thuan',{indoors:'home',sleeping:true})];
  lights.update(3*day+H(23,50));assert.equal(homeLightLevel(slot('kitahama-1')),0,'asleep, the light is off');
- // Nao comes in from the izakaya at three and is up for a while; Thuan is asleep.
- assert.ok(residentUpAtHome(person('Nao',{indoors:'home'},{start:960,retire:1620}),H(2,30)));
- assert.ok(!residentUpAtHome(person('Nao',{indoors:'home'},{start:960,retire:1620}),H(5)));
+ // Thao comes in from the izakaya at three and is up for a while; Thuan is asleep.
+ assert.ok(residentUpAtHome(person('Thao',{indoors:'home'},{start:960,retire:1620}),H(2,30)));
+ assert.ok(!residentUpAtHome(person('Thao',{indoors:'home'},{start:960,retire:1620}),H(5)));
  // The grandparents are in bed by half past eight; Mr Iha is up past eleven.
  lights.update(4*day+H(22));
  assert.equal(homeLightLevel(slot('kitahama-6')),0);assert.equal(homeLightLevel(slot('kitahama-11')),1);

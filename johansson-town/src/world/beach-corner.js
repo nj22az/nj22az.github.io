@@ -23,7 +23,7 @@ const sand=(x,z)=>beachHeight(x,z)??-.1;
 export const BEACH_CORNER_SEATS=Object.freeze([-.55,.55].map((dz,i)=>Object.freeze({
  id:'beach-chair-'+i,label:'Sit in the beach chair',beachCorner:true,
  position:[C.x,sand(C.x,C.z+dz),C.z+dz],stand:[C.x-1.05,sand(C.x-1.05,C.z+dz),C.z+dz],
- eyeY:sand(C.x,C.z+dz)+.92,yaw:-Math.PI/2,pitch:.04,
+ surfaceY:sand(C.x,C.z+dz)+.2575,eyeY:sand(C.x,C.z+dz)+.92,yaw:-Math.PI/2,pitch:.04,
 })));
 
 function stripes(){

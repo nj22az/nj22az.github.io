@@ -15,9 +15,9 @@ test('published voice topics have matching subtitles and real local WAVs',async(
   const wav=await readFile(new URL('../assets/audio/voices/'+clip.id+'.wav',import.meta.url));
   assert.equal(wav.toString('ascii',0,4),'RIFF');assert.equal(wav.toString('ascii',8,12),'WAVE');assert.ok(wav.length>100000);
  }
- // Retired with Kenji's rewrite; the clip stays on disk with its provenance.
+ // Retired with Chin's rewrite; the clip stays on disk with its provenance.
  assert.ok(!VOICE_LINES.some(clip=>clip.id==='kenji-game'));
- assert.ok(DIALOGUE.Kenji.every(row=>!row[3]),'no recording contradicts Kenji\u2019s rewritten lines');
+ assert.ok(DIALOGUE.Chin.every(row=>!row[3]),'no recording contradicts Chin\u2019s rewritten lines');
 });
 
 test('delayed speech cannot play after close, replacement, mute or hidden page',async()=>{

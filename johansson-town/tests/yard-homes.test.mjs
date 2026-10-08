@@ -22,8 +22,8 @@ test('the Front-Row staff live in the yard behind the shop and sleep at home, no
    assert.equal(night.place,'home',name+' is at home at three in the morning');
    assert.deepEqual(night.target,p.home);
   }
-  const aya=STREET_CAST.find(r=>r.name==='Aya');
-  assert.equal(residentPlan(aya,12*60,false,{}).place,'work','Aya works her shift');
+  const aya=STREET_CAST.find(r=>r.name==='Nhung');
+  assert.equal(residentPlan(aya,12*60,false,{}).place,'work','Nhung works her shift');
  }finally{}
 });
 
@@ -43,6 +43,6 @@ test('the yard houses are home sites you can walk up to and into, clear of the p
   for(const [x,z] of [[-23.8,1.6],[-19.6,1.6],[-16.2,1.6],[-18,-4.2]])
    assert.ok(!world.colliders.some(c=>circleHitsRect(x,z,.32,c)),'clear at '+[x,z]);
   assert.equal(world.homes.get('Reiko').household,'resident-home-aya');
-  doors.find(d=>/Kenji/.test(d.label)).fn();assert.equal(doors.entered,'resident-home-kenji');
+  doors.find(d=>/Chin/.test(d.label)).fn();assert.equal(doors.entered,'resident-home-kenji');
  }finally{}
 });

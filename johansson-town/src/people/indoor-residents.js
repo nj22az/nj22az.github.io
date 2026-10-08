@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../world/furniture-standards.js';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {STORE_CLERK_POSITION,STORE_SEATS} from '../world/interiors/store-layout.js';
 import {residentPlan,RAMEN_DOOR,IZAKAYA_DOOR,IZAKAYA_SEATS} from './social.js';
@@ -6,6 +7,9 @@ import {izakayaJob} from './izakaya-hours.js';
 import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {ONSEN_SEATS} from '../world/interiors/onsen.js';
 import {SATO_GUEST_SEATS,SATO_COOK,SATO_ROOM} from '../world/sato-ramen-layout.js';
+
+/** Minato's guest seats as seat records: the five counter stools, the table bench, the far end. */
+export const IZAKAYA_GUEST_SEATS=Object.freeze(IZAKAYA_SEATS.map(([x,z],i)=>Object.freeze({position:[x,0,z],surfaceY:FURNITURE_HEIGHTS.seat,height:FURNITURE_HEIGHTS.seat,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]})));
 
 // One actor belongs to one location. New visitors cross the door and walk to a
 // reserved place; changing the clock sends seated guests back to the exit.
@@ -23,7 +27,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
  const sato=(place==='ramen');
  const entrance=layout?.entrance|| (sato?[SATO_ROOM.spawn[0],0,SATO_ROOM.spawn[2]]:[0,0,5.2]);
  const door=p=>place==='ramen'?RAMEN_DOOR:place==='izakaya'?IZAKAYA_DOOR:place==='onsen'?ONSEN_DOOR:world.people.find(p=>p.profile.name==='Thuan').profile.work;
- const wanted=p=>residentPlan(p.profile,clock,getRain(),getState()).place===place&&!(p.profile.name==='Kenji'&&getState().kenjiEscort==='walking');
+ const wanted=p=>residentPlan(p.profile,clock,getRain(),getState()).place===place&&!(p.profile.name==='Chin'&&getState().kenjiEscort==='walking');
  function restore(p){
   const saved=borrowed.get(p);if(!saved)return;const g=p.g,point=door(p),remaining=wanted(p);
   saved.parent.add(g);g.position.set(point[0],groundHeight(...point),point[1]);g.quaternion.copy(saved.rotation);g.userData.hit.inside=saved.inside;
@@ -44,13 +48,13 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    return {position,stand:position,guestStand:position,standing:true,yaw:Math.PI,activity:'browsing the magazines at Sakura'};
   }
   if(sato&&name==='Mrs Sato')return {position:[...SATO_COOK.position],stand:[...SATO_COOK.position],yaw:SATO_COOK.yaw,staff:true};
-  if(place==='izakaya'&&name==='Nao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
+  if(place==='izakaya'&&name==='Thao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
   // Umi-no-yu: into the rock bath by the sea wall, leaving the other side for the player.
   if(place==='onsen'){
    const seat=ONSEN_SEATS[getPlayerSeat()==='rockBeside'?'rock':'rockBeside'];
-   return {id:seat.id,position:seat.position,stand:seat.stand,yaw:seat.yaw,height:seat.surfaceY,soak:true};
+   return {...seat,height:seat.surfaceY,soak:true};
   }
-  const seats=sato?SATO_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_SEATS.map(([x,z],i)=>({position:[x,0,z],height:i<5?.71:.565,yaw:i===5||i===6?Math.PI:0,stand:i<5?[x,0,z+.8]:i<7?[x,0,z-.8]:[4.4,0,z]}));
+  const seats=sato?SATO_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_GUEST_SEATS;
   if(place==='izakaya'&&name==='Barfly'){
    // His own stool, at the kitchen end of the counter, where he sleeps when Minato is shut.
    const index=4;if([...borrowed.values()].some(v=>v.index===index&&!v.seat.staff))return null;
@@ -62,7 +66,13 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   if(index<0)return null;const seat=seats[index];
   return {...seat,index,stand:seat.stand||[1.16,0,seat.position[2]]};
  }
- function moveAcrossSeat(g,from,to,amount){g.position.set(from[0]+(to[0]-from[0])*amount,0,from[2]+(to[2]-from[2])*amount);}
+ const hasSeat=seat=>Number.isFinite(seat.surfaceY)||Number.isFinite(seat.height);
+ const seatHeight=(seat,g)=>Number.isFinite(seat.surfaceY)?seat.surfaceY-g.position.y:seat.height;
+ function moveAcrossSeat(g,from,to,amount){g.position.set(from[0]+(to[0]-from[0])*amount,from[1]+(to[1]-from[1])*amount,from[2]+(to[2]-from[2])*amount);}
+ function chairPose(g,seat,blend){
+  if(!hasSeat(seat))return;
+  g.userData.seatHeight=seatHeight(seat,g);g.userData.chairBlend=blend;g.userData.socialPose=seat.soak?'Soak':'Sit';
+ }
  function sync(minutes,dt=0){
   clock=minutes;
   for(const p of world.people){
@@ -88,8 +98,10 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    }
    g.visible=true;g.userData.hit.inside=true;g.userData.indoors=place;
    g.userData[place==='ramen'?'inRamen':place==='market'?'inMarket':place==='onsen'?'inOnsen':'inIzakaya']=true;g.userData.place=place;
-   // Changed at the lockers by the door: in and out of the bath in swimwear.
-   if(place==='onsen')g.userData.outfit='swim';
+   // Changed at the lockers by the door. Umi-no-yu is a family bath, so nobody bathes bare:
+   // grown-ups wrap up in one of the bath's yuamigi (bath wraps) with a towel on the head,
+   // children and teenagers wear swimwear. 'bath' asks each body for its own (build.js bathOutfit).
+   if(place==='onsen')g.userData.outfit='bath';
    // Closed Minato: whoever is there works through their cleaning stations
    // (izakaya-hours.js), walking from one to the next; when the job ends they go back
    // to their own place (the Barfly to his stool).
@@ -101,7 +113,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
      if(next){
       delete g.userData.socialPose;delete g.userData.tool;delete g.userData.seatHeight;
       // Off a seat first (seats sit inside their furniture), then walk to the next place.
-      if(saved.phase==='seated'&&Number.isFinite(saved.seat.height)){saved.pending=next;saved.phase='standing';saved.blend=1;}
+      if(saved.phase==='seated'&&hasSeat(saved.seat)){saved.pending=next;saved.phase='standing';saved.blend=1;}
       else{saved.seat=next;saved.index=next.index;saved.phase='arriving';saved.blend=0;}
      }
     }
@@ -109,25 +121,25 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    const seat=saved.seat;
    // Staff can be at a break chair or carrying an order when their shift ends.
    // Let the service finish standing/returning before the exit walker takes over.
-   if(!wanted(p)&&!['standing','leaving'].includes(saved.phase)&&canLeave(p))saved.phase=saved.phase==='seated'&&Number.isFinite(seat.height)?'standing':'leaving';
+   if(!wanted(p)&&!['standing','leaving'].includes(saved.phase)&&canLeave(p))saved.phase=['seated','sitting'].includes(saved.phase)&&hasSeat(seat)?'standing':'leaving';
    if(saved.phase!=='seated'){
     g.userData.roomTransition=true;
-    for(const key of ['socialPose','seatHeight','storeSeatId','heldItem','mealState','serving','carrying','carriedTray','shopGoods','shopReach','shopping'])delete g.userData[key];
+    for(const key of ['socialPose','seatHeight','chairBlend','storeSeatId','heldItem','mealState','serving','carrying','carriedTray','shopGoods','shopReach','shopping'])delete g.userData[key];
     g.userData.activity=saved.pending||saved.phase==='arriving'&&seat.job?'getting up to work':['standing','leaving'].includes(saved.phase)?'leaving '+place:'walking to '+(seat.staff?'work':'a seat');
     if(saved.phase==='standing'){
-     saved.blend=Math.max(0,saved.blend-dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===0){if(saved.pending){saved.seat=saved.pending;saved.index=saved.pending.index;delete saved.pending;saved.phase='arriving';}else saved.phase='leaving';}
+     saved.blend=Math.max(0,saved.blend-dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);chairPose(g,seat,saved.blend);if(saved.blend===0){for(const key of ['seatHeight','chairBlend','socialPose'])delete g.userData[key];if(saved.pending){saved.seat=saved.pending;saved.index=saved.pending.index;delete saved.pending;saved.phase='arriving';}else saved.phase='leaving';}
     }else if(saved.phase==='leaving'){
      if(walk(p,entrance,dt))restore(p);
     }else if(saved.phase==='arriving'){
      if(walk(p,seat.stand,dt)){g.rotation.set(0,seat.yaw,0);saved.phase=seat.standing?'seated':'sitting';}
     }else if(saved.phase==='sitting'){
-     saved.blend=Math.min(1,saved.blend+dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);if(saved.blend===1)saved.phase='seated';
+     saved.blend=Math.min(1,saved.blend+dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);chairPose(g,seat,saved.blend);if(saved.blend===1)saved.phase='seated';
     }
     continue;
    }
-   delete g.userData.roomTransition;
+   delete g.userData.roomTransition;delete g.userData.chairBlend;
    if(!seat.staff&&!seat.managed&&!seat.standing){g.position.set(...seat.position);g.rotation.set(0,seat.yaw,0);}
-   if(Number.isFinite(seat.height)){g.userData.seatHeight=seat.height;if(!g.userData.mealState)g.userData.socialPose=seat.soak?'Soak':'Sit';}
+   if(hasSeat(seat)){g.userData.seatHeight=seatHeight(seat,g);if(!g.userData.mealState)g.userData.socialPose=seat.soak?'Soak':'Sit';}
    if(place==='market'&&!seat.staff&&!seat.managed)g.userData.storeSeatId=seat.id;
    if(place==='ramen')g.userData.ramenSeat=seat.index;
    if(seat.job){g.userData.socialPose=seat.job.pose;if(seat.job.tool)g.userData.tool=seat.job.tool;else delete g.userData.tool;g.userData.activity=seat.job.activity;continue;}

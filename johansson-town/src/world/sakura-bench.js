@@ -11,6 +11,7 @@ export const SAKURA_BENCH_PLACE=Object.freeze({
   yaw:Math.atan2(4.42-SAKURA_SHOP.x,-19.8-SAKURA_SHOP.z),
   pitch:-.08,
   eyeY:1.16,
+  surfaceY:.4675,
   sitLocal:[0,0,-.08],
   standLocal:[0,0,-1.45]
 });
@@ -45,6 +46,7 @@ export function sakuraBenchSeat(){
     position,
     stand,
     eyeY:SAKURA_BENCH_PLACE.eyeY,
+    surfaceY:SAKURA_BENCH_PLACE.surfaceY,
     yaw:SAKURA_BENCH_PLACE.yaw,
     pitch:SAKURA_BENCH_PLACE.pitch
   };
@@ -54,6 +56,7 @@ function fallbackBench(factory){
   const {x,z,yaw}=SAKURA_BENCH_PLACE;
   const built=factory.bench(x,z,yaw);
   built.object.name='sakura-viewing-bench';
+  built.object.scale.y=SAKURA_BENCH_PLACE.surfaceY/.62;
   return built;
 }
 

@@ -1,19 +1,20 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 
 /** Actual upper faces in build-minato-interior.py, rather than collider heights. */
 export const MINATO_DETAIL_SURFACES=Object.freeze({
- counter:Object.freeze({y:1.11,minX:-5,maxX:3.4,minZ:-2.475,maxZ:-1.925}),
- westTable:Object.freeze({y:.945,minX:-4.75,maxX:-2.25,minZ:1.525,maxZ:2.875}),
- eastTable:Object.freeze({y:.945,minX:1.35,maxX:3.85,minZ:1.325,maxZ:2.675}),
+ counter:Object.freeze({y:FURNITURE_HEIGHTS.serviceCounter,minX:-5,maxX:3.4,minZ:-2.475,maxZ:-1.925}),
+ westTable:Object.freeze({y:FURNITURE_HEIGHTS.table,minX:-4.75,maxX:-2.25,minZ:1.525,maxZ:2.875}),
+ eastTable:Object.freeze({y:FURNITURE_HEIGHTS.table,minX:1.35,maxX:3.85,minZ:1.325,maxZ:2.675}),
  lowNorth:Object.freeze({y:.77,minX:4.925,maxX:5.675,minZ:-.1,maxZ:1.1}),
  lowSouth:Object.freeze({y:.77,minX:4.925,maxX:5.675,minZ:2.5,maxZ:3.7}),
- loungeNorth:Object.freeze({y:.7475,minX:-4.93,maxX:-4.27,minZ:3.82,maxZ:4.48}),
- loungeSouth:Object.freeze({y:.7475,minX:-4.93,maxX:-4.27,minZ:4.67,maxZ:5.33}),
+ loungeNorth:Object.freeze({y:FURNITURE_HEIGHTS.table,minX:-4.93,maxX:-4.27,minZ:3.82,maxZ:4.48}),
+ loungeSouth:Object.freeze({y:FURNITURE_HEIGHTS.table,minX:-4.93,maxX:-4.27,minZ:4.67,maxZ:5.33}),
  backBar:Object.freeze({y:.92,minX:-4.575,maxX:-1.175,minZ:-6.25,maxZ:-5.65}),
  prep:Object.freeze({y:.8975,minX:4.84,maxX:6.26,minZ:-6.335,maxZ:-5.565}),
- loungeSeat:Object.freeze({y:.56,minX:-5.98,maxX:-5.26,minZ:3.76,maxZ:4.54}),
- boothSeat:Object.freeze({y:.565,minX:-4.75,maxX:-2.25,minZ:3.05,maxZ:3.51}),
+ loungeSeat:Object.freeze({y:FURNITURE_HEIGHTS.seat,minX:-5.98,maxX:-5.26,minZ:3.76,maxZ:4.54}),
+ boothSeat:Object.freeze({y:FURNITURE_HEIGHTS.seat,minX:-4.75,maxX:-2.25,minZ:3.05,maxZ:3.51}),
 });
 
 const C={paper:0xeadfc8,fold:0xc4b598,cloth:0xd0c2a3,hem:0x9b8d72,

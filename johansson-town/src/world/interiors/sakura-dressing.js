@@ -151,7 +151,39 @@ export const WALL_POSTERS=Object.freeze([
  {id:'biscuit',position:[4.57,1.82,-2.35],yaw:-Math.PI/2,size:[.94,1.41]},
  // Up and along, clear of the cash corner under it (sakura-corners.js).
  {id:'eisa',position:[-3.45,2.0,-3.94],yaw:0,size:[.74,1.04]},
+ // Thuan's own sale poster, 50 × 70 cm, on the side wall by the door: the first thing you see walking in, so this week's
+ // cold drinks are an impulse buy. Its top-left corner carries a "30% OFF" burst. Tetsuo (of all people) once tore that
+ // corner off with a mad laugh (30 cm along the top, 40 cm down the side) and Thuan chased it back down Main Street; it is
+ // taped back along the 50 cm tear: exactly the last half metre on her roll, as Johansson worked out at Sato Ramen (the
+ // Pythagoras story, Johansson Shorts). The Shorts draw it here.
+ {id:'sale',position:[-6.78,1.5,3.3],yaw:Math.PI/2,size:[.5,.7]},
 ]);
+/** The sale poster: Sakura's pink band, the "30% OFF" corner burst, SALE on all drinks this week, and the strip of tape
+ *  along the old tear. */
+function salePoster(){
+ return canvasTexture(500,700,(ctx,w,h)=>{
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#f4a3bd';ctx.fillRect(0,0,w,h*.13);
+  ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillStyle='#ffffff';ctx.font=`bold 32px ${GOTHIC}`;ctx.fillText('SAKURA SHŌTEN',w*.62,h*.085);
+  // the corner burst
+  ctx.save();ctx.translate(w*.2,h*.17);ctx.rotate(-.28);ctx.beginPath();for(let i=0;i<24;i++){const r=i%2?66:90,a=i*Math.PI/12;ctx[i?'lineTo':'moveTo'](Math.cos(a)*r,Math.sin(a)*r);}ctx.closePath();
+  ctx.fillStyle='#f2b705';ctx.fill();ctx.strokeStyle='#c5281c';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#c5281c';ctx.font=`900 44px ${GOTHIC}`;ctx.fillText('30%',0,-2);ctx.font=`900 30px ${GOTHIC}`;ctx.fillText('OFF',0,36);ctx.restore();
+  ctx.fillStyle='#111111';ctx.font=`900 146px ${GOTHIC}`;ctx.fillText('SALE',w*.56,h*.5);
+  ctx.fillStyle='#c5281c';ctx.font=`bold 50px ${GOTHIC}`;ctx.fillText('all drinks',w/2,h*.64);
+  ctx.fillStyle='#06c755';const bw=w*.64,bh=h*.085,bx=w*.18,by=h*.76,r=bh/2;ctx.beginPath();ctx.moveTo(bx+r,by);ctx.arcTo(bx+bw,by,bx+bw,by+bh,r);ctx.arcTo(bx+bw,by+bh,bx,by+bh,r);ctx.arcTo(bx,by+bh,bx,by,r);ctx.arcTo(bx,by,bx+bw,by,r);ctx.fill();
+  ctx.fillStyle='#ffffff';ctx.font=`bold 30px ${GOTHIC}`;ctx.fillText('this week only',w/2,h*.818);
+  // the repaired tear: a hairline seam from 30 cm along the top to 40 cm down the side, under a strip of tape
+  const A=[w*.6,0],B=[0,h*40/70];ctx.strokeStyle='rgba(60,50,40,.35)';ctx.lineWidth=2;ctx.beginPath();
+  for(let i=0;i<=12;i++){const k=i/12,j=(i%2?4:-4)*(i&&i<12?1:0),len=Math.hypot(A[0],B[1]);ctx[i?'lineTo':'moveTo'](A[0]+(B[0]-A[0])*k+B[1]/len*j,A[1]+(B[1]-A[1])*k+A[0]/len*j);}
+  ctx.stroke();ctx.strokeStyle='rgba(236,224,190,.88)';ctx.lineWidth=22;ctx.beginPath();ctx.moveTo(A[0]+6,-4);ctx.lineTo(-4,B[1]+6);ctx.stroke();
+ });
+}
+/** The posters Sakura draws itself (the others come from Thuan's label atlas, store-advertising.js). */
+const OWN_POSTERS={
+ eisa:{texture:()=>eisaPoster(),name:'Eisa festival poster',verb:'Read the Eisa poster',title:"Acer · Eisa poster",
+  text:"The youth association’s Eisa: drummers and dancers down the harbour road on the last night of Obon, ending at the festival ground. Thuan has written \"Rest 8/17\" underneath in marker -- closed that evening, so she can go."},
+ sale:{texture:()=>salePoster(),name:'Sakura sale poster',verb:'Read the sale poster',title:'Sakura · SALE poster',
+  text:'All drinks 30% off this week. The "30% OFF" corner was torn off once -- by Tetsuo, of all people, laughing like a madman -- and Thuan chased it back down Main Street. The tear was exactly 50 cm, her last half metre of tape, and it is taped straight back. Nhung had hoped to sell her a new roll.'},
+};
 function eisaPoster(){
  return canvasTexture(512,720,(ctx,w,h)=>{
   const sky=ctx.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#0f2a55');sky.addColorStop(.6,'#b8324a');sky.addColorStop(1,'#f0a33a');ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
@@ -175,10 +207,10 @@ function eisaPoster(){
 export function hangWallPosters(room,{anchor,action}){
  const meshes=[];
  for(const spot of WALL_POSTERS){
-  const spec=POSTER_SPECS.find(p=>p.id===spot.id);
-  const material=spec?getPosterMaterial(spec):new THREE.MeshStandardMaterial({map:eisaPoster(),roughness:.85});
+  const spec=POSTER_SPECS.find(p=>p.id===spot.id),own=OWN_POSTERS[spot.id];
+  const material=spec?getPosterMaterial(spec):new THREE.MeshStandardMaterial({map:own.texture(),roughness:.85});
   const mesh=new THREE.Mesh(new THREE.PlaneGeometry(...spot.size),material);
-  mesh.position.set(...spot.position);mesh.rotation.y=spot.yaw;mesh.name=spec?spec.title:'Eisa festival poster';mesh.userData.sharedAsset=true;room.add(mesh);
+  mesh.position.set(...spot.position);mesh.rotation.y=spot.yaw;mesh.name=spec?spec.title:own.name;mesh.userData.sharedAsset=true;room.add(mesh);
   // Tape at the corners, because it is a poster on a wall.
   const tape=new THREE.MeshStandardMaterial({color:0xf2ecd2,roughness:.7,transparent:true,opacity:.8});
   for(const [sx,sy] of [[-1,1],[1,1],[-1,-1],[1,-1]]){
@@ -186,9 +218,8 @@ export function hangWallPosters(room,{anchor,action}){
   }
   const normal=new THREE.Vector3(Math.sin(spot.yaw),0,Math.cos(spot.yaw));
   const at=new THREE.Vector3(...spot.position).addScaledVector(normal,.3);
-  anchor([at.x,Math.min(1.8,spot.position[1]),at.z],spec?'Read '+spec.id+' poster':'Read the Eisa poster',()=>action('inspect',spec?spec.title:"Acer · Eisa poster",
-   spec?'Thuan’s own label, printed for the shop, taped up where you see it as you walk in.':
-   "The youth association’s Eisa: drummers and dancers down the harbour road on the last night of Obon, ending at the festival ground. Thuan has written \"Rest 8/17\" underneath in marker -- closed that evening, so she can go."));
+  anchor([at.x,Math.min(1.8,spot.position[1]),at.z],spec?'Read '+spec.id+' poster':own.verb,()=>action('inspect',spec?spec.title:own.title,
+   spec?'Thuan’s own label, printed for the shop, taped up where you see it as you walk in.':own.text));
   meshes.push(mesh);
  }
  return meshes;

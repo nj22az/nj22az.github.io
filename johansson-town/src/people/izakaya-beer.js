@@ -1,8 +1,9 @@
+import {FURNITURE_HEIGHTS} from '../world/furniture-standards.js';
 import {buildServingDish,buildServingDrink,buildServingBite} from './izakaya-serving-visuals.js';
 import * as THREE from '../../vendor/three.module.js';
 
 /**
- * Beer at Minato: order it at your table, Nao pours it and brings it over, you drink it
+ * Beer at Minato: order it at your table, Thao pours it and brings it over, you drink it
  * a sip at a time.
  *
  * Okinawa in 1997 drinks Orion. Minato keeps it three ways -- on draught in a frosted
@@ -20,7 +21,7 @@ export const DRINKS=Object.freeze({
 /**
  * The food on Minato's wall, each cooked where it would be: skewers and fish over the
  * charcoal at the counter, oden from its pot, the fryer, the range, or the prep bench
- * for the cold dishes. `cook` is how long Nao is at it; `bites` how long it lasts you.
+ * for the cold dishes. `cook` is how long Thao is at it; `bites` how long it lasts you.
  */
 export const DISHES=Object.freeze({
  yakitori:Object.freeze({id:'yakitori',jp:"Assorted Yakitori",en:'a plate of yakitori',price:180,bites:4,station:'grill',cook:6,line:"Yakitori. Two tare, two salt."}),
@@ -36,21 +37,21 @@ export const DISHES=Object.freeze({
 });
 export const MINATO_MENU=Object.freeze([...Object.values(DISHES),...Object.values(DRINKS)]);
 export const menuItem=id=>DRINKS[id]||DISHES[id]||null;
-/** Where Nao stands to cook each kind of dish (see tools/blender/build-minato-interior.py). */
+/** Where Thao stands to cook each kind of dish (see tools/blender/build-minato-interior.py). */
 export const KITCHEN_STATIONS=Object.freeze({grill:[1.7,0,-3.6],oden:[-4.2,0,-3.6],range:[1.4,0,-5.15],fryer:[2.75,0,-5.15],prep:[5.4,0,-5.15]});
 export const NAO_STATION=Object.freeze([3.5,0,-3.8]);
 
 /**
- * Where the player can sit, and where Nao stands to serve that seat. `table` is the spot
- * on the table in front of the player; `serve` is Nao's floor spot beside it.
+ * Where the player can sit, and where Thao stands to serve that seat. `table` is the spot
+ * on the table in front of the player; `serve` is Thao's floor spot beside it.
  */
 export const IZAKAYA_PLAYER_SEATS=Object.freeze({
- table:Object.freeze({id:'table',label:'Sit at the table',position:[3.3,0,.9],stand:[3.3,0,.25],eyeY:1.14,yaw:Math.PI,table:[3.3,.945,1.52],dish:[3.02,.945,1.5],serve:[3.95,0,.3],route:[[3.95,-3.55],[3.95,.3]]}),
- window:Object.freeze({id:'window',label:'Sit and enjoy the evening',position:[4,0,2.7],stand:[2.95,0,2.7],eyeY:1.2,yaw:Math.PI/2,table:[3.62,.945,2.55],dish:[3.62,.945,2.3],serve:[4,0,1.6],route:[[3.95,-3.55],[3.95,.3],[4,1.6]]}),
- // The five counter stools, among the regulars. Nao serves these across the counter
+ table:Object.freeze({id:'table',label:'Sit at the table',position:[3.3,0,.92],stand:[3.3,0,.25],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.14,yaw:Math.PI,table:[3.3,FURNITURE_HEIGHTS.table,1.52],dish:[3.02,FURNITURE_HEIGHTS.table,1.5],serve:[3.95,0,.3],route:[[3.95,-3.55],[3.95,.3]]}),
+ window:Object.freeze({id:'window',label:'Sit and enjoy the evening',position:[3.4,0,3.08],stand:[4.35,0,3.08],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.2,yaw:0,table:[3.4,FURNITURE_HEIGHTS.table,2.55],dish:[3.15,FURNITURE_HEIGHTS.table,2.55],serve:[3.9,0,2.7],route:[[3.95,-3.55],[3.95,.3],[3.9,2.7]]}),
+ // The five counter stools, among the regulars. Thao serves these across the counter
  // from the kitchen side, so their route never leaves the working aisle.
  ...Object.fromEntries([-3.8,-2.3,-.8,.7,2.2].map((x,i)=>['counter'+i,Object.freeze({id:'counter'+i,label:'Sit at the counter',counter:true,
-  position:[x,0,-1.42],stand:[x,0,-.72],eyeY:1.32,yaw:0,table:[x+.15,1.11,-2.2],dish:[x-.12,1.11,-2.24],serve:[x,0,-3.75],route:[[x,-3.75]]})])),
+  position:[x,0,-1.42],stand:[x,0,-.72],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.32,yaw:0,table:[x+.15,FURNITURE_HEIGHTS.serviceCounter,-2.2],dish:[x-.12,FURNITURE_HEIGHTS.serviceCounter,-2.24],serve:[x,0,-3.75],route:[[x,-3.75]]})])),
 });
 
 /** A drink as a small prop: a mug with a head, a brown bottle and glass, a can, a tumbler. */
@@ -120,7 +121,7 @@ export function disposeServing(prop){
 /**
  * @param {object} options
  * @param {THREE.Object3D} options.room
- * @param {()=>THREE.Object3D|null} options.getNao Nao's entity when she is working the room
+ * @param {()=>THREE.Object3D|null} options.getNao Thao's entity when she is working the room
  * @param {(x:number,z:number,r:number)=>boolean} options.blocked
  * @param {(text:string,seconds?:number)=>void} [options.say]
  */
@@ -129,7 +130,7 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
  void blocked;
  function release(g){if(!g)return;for(const key of ['playerService','heldItem','socialPose','carrying'])delete g.userData[key];}
  /**
-  * Walk Nao along the seat's route: round the end of the counter and down the aisle.
+  * Walk Thao along the seat's route: round the end of the counter and down the aisle.
   * The route is laid through the gap the colliders leave, so no path search is needed.
   * True once she is at the last point.
   */
@@ -164,7 +165,7 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
   get dish(){return dish?{kind:dish.kind,left:dish.left,bites:DISHES[dish.kind].bites}:null;},
   get served(){return served;},
   /**
-   * Ask for a drink or a dish at this seat. False if Nao is not here or something is
+   * Ask for a drink or a dish at this seat. False if Thao is not here or something is
    * already on its way. A drink she pours where she stands; a dish she cooks at its
    * station in the kitchen first.
    */
@@ -217,7 +218,7 @@ export function createBeerService({room,getNao,blocked,say=()=>{}}){
     if((order.timer-=dt)<=0){
      serve(order.kind,seat);
      delete nao.userData.heldItem;delete nao.userData.carrying;nao.userData.socialPose='Greet';
-     say('Nao: '+spec.line,4);order.phase='bowing';order.timer=.9;
+     say('Thao: '+spec.line,4);order.phase='bowing';order.timer=.9;
     }
    }else if(order.phase==='bowing'){
     if((order.timer-=dt)<=0){delete nao.userData.socialPose;order.path=[...seat.route.slice(0,-1).reverse(),station()].map(p=>[...p]);order.phase='returning';nao.userData.activity='back to the counter';}

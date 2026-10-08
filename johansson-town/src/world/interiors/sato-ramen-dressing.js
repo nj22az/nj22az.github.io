@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {satoRamenOpen} from '../sato-ramen-layout.js';
@@ -15,7 +16,7 @@ import {satoRamenOpen} from '../sato-ramen-layout.js';
  * - Closed (outside 11:00-14:00): the 準備中 card in the doorway.
  *
  * Room frame of the shared interior: the shop is x 6.54 (west wall) to 11.4 (east wall),
- * front wall z 3.6; the counter's customer ledge is at y 1.11 (z -2.1..-2.4).
+ * front wall z 3.6; the counter's customer ledge is at the shared service height (z -2.1..-2.4).
  */
 const MINCHO='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 const GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
@@ -79,14 +80,14 @@ export function buildSatoRamenDressing(room,{anchor,action,collider}={}){
  }
  // The condiments, one set between each pair of stools, and a tissue box at each end.
  for(const x of [7.45,8.15,8.85,9.55]){
-  cyl(.018,.075,x-.09,1.11+.0375,-2.25,0xf4f1ea,.014);cyl(.02,.005,x-.09,1.11+.078,-2.25,0x9aa0a6);
-  cyl(.022,.06,x-.03,1.11+.03,-2.25,0xe9dcc0);
-  cyl(.018,.08,x+.03,1.11+.04,-2.25,0xb8321e,.012);
-  cyl(.026,.05,x+.09,1.11+.025,-2.25,0xf2a7b4);cyl(.027,.012,x+.09,1.11+.056,-2.25,0xc8102e);
+  cyl(.018,.075,x-.09,FURNITURE_HEIGHTS.serviceCounter+.0375,-2.25,0xf4f1ea,.014);cyl(.02,.005,x-.09,FURNITURE_HEIGHTS.serviceCounter+.078,-2.25,0x9aa0a6);
+  cyl(.022,.06,x-.03,FURNITURE_HEIGHTS.serviceCounter+.03,-2.25,0xe9dcc0);
+  cyl(.018,.08,x+.03,FURNITURE_HEIGHTS.serviceCounter+.04,-2.25,0xb8321e,.012);
+  cyl(.026,.05,x+.09,FURNITURE_HEIGHTS.serviceCounter+.025,-2.25,0xf2a7b4);cyl(.027,.012,x+.09,FURNITURE_HEIGHTS.serviceCounter+.056,-2.25,0xc8102e);
  }
- for(const x of [6.85,10.0])box(.18,.07,.1,x,1.11+.035,-2.22,0xf2f2ee);
+ for(const x of [6.85,10.0])box(.18,.07,.1,x,FURNITURE_HEIGHTS.serviceCounter+.035,-2.22,0xf2f2ee);
  // The day's bowl, on a little easel at the counter's end.
- {const g=printed('board',.42,.17);g.rotateX(-.25);prints.push(at(g,9.86,1.11+.11,-2.1,0));box(.02,.18,.02,9.86,1.11+.08,-2.16,0x5a3b22);}
+ {const g=printed('board',.42,.17);g.rotateX(-.25);prints.push(at(g,9.86,FURNITURE_HEIGHTS.serviceCounter+.11,-2.1,0));box(.02,.18,.02,9.86,FURNITURE_HEIGHTS.serviceCounter+.08,-2.16,0x5a3b22);}
  // Bowls stacked on the back line, ready for the pass.
  for(const [x,n] of [[9.9,5],[10.25,4]])for(let k=0;k<n;k++){cyl(.075,.05,x,.897+.025+k*.045,-5.6,0xf4efe6,.09,14);cyl(.091,.006,x,.897+.05+k*.045,-5.6,0xc8102e,.091,14);}
  // The okamochi by the door: an aluminium box with a sliding front and a handle on top.

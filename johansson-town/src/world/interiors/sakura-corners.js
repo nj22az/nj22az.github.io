@@ -1,3 +1,4 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {SAKURA_ISLANDS} from './sakura-shell.js';
@@ -57,10 +58,11 @@ function sheet(){
   c.fillStyle='#ffd23f';c.beginPath();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,r=i%2?40:92;c.lineTo(w/2+Math.cos(a)*r,130+Math.sin(a)*r);}c.fill();
   text("宝くじ",w/2,250,58,'#ffffff');text('AUTUMN JUMBO',w/2,300,26,'#ffd23f',800);text('1st prize ¥100,000,000',w/2,334,18,'#ffffff',700);
  });
- poster('posterIce','#7cc8e8',(c,w,h)=>{
-  c.fillStyle='#f5d7a1';c.beginPath();c.moveTo(w/2-44,170);c.lineTo(w/2,300);c.lineTo(w/2+44,170);c.fill();
-  [['#ffb6c8',-26,130],['#fff3d6',26,130],['#b9e6a8',0,92]].forEach(([col,dx,y])=>{c.fillStyle=col;c.beginPath();c.arc(w/2+dx,y,44,0,Math.PI*2);c.fill();});
-  text("アイス",w/2,50,46,'#1d4f8a');text('ICE CREAM FAIR',w/2,330,24,'#1d4f8a',800);
+ // Sakura is the town's supplier (commerce/merchandising.js): the window says so.
+ poster('posterIce','#f4f0e4',(c,w,h)=>{
+  c.fillStyle='#a76680';c.fillRect(0,0,w,92);text("配達",w/2,48,52,'#ffffff');
+  c.fillStyle='#c79a5b';for(const [x,y] of [[-60,170],[0,170],[60,170],[-30,120],[30,120]])c.fillRect(w/2+x-26,y,52,44);
+  text('BUSINESS ORDERS',w/2,276,24,'#a76680',800);text('Delivered every morning',w/2,308,18,'#3b3f55',700);
  });
  poster('posterParcel','#f4f0e4',(c,w,h)=>{
   c.fillStyle='#2f6b3a';c.fillRect(0,0,w,92);text("宅配便",w/2,48,52,'#ffffff');
@@ -132,11 +134,11 @@ export function buildSakuraCorners(room,{anchor,action}={}){
  box(F.w,F.h-.3,F.d,F.x,.3+(F.h-.3)/2,F.z,0xf2b705);
  for(const sx of [-1,1])for(const sz of [-1,1])box(.03,.3,.03,F.x+sx*(F.w/2-.04),.15,F.z+sz*(F.d/2-.04),0x5b6268);
  prints.push(place(printed('film',F.w-.04,F.h-.36),F.x,.3+(F.h-.3)/2,ff+.002,0));
- // At the till (counter top y 1.0, customer side x < 4.54; register z .55-.93).
+ // At the low till, customer side x < 4.54; the register is shifted south of the clerk.
  // The scanner, change tray and receipt feed belong to sakura-counter-detail.js.
  // Gum and mints on the customer's lip in front of the register: a low tray of small packs.
- box(.06,.025,.4,4.565,1.012,.74,0xe9e4d8);
- [0x2aa36b,0xf0c419,0xe8553e,0x3b7dd8,0xf2f2f2,0x8e44ad,0x2aa36b,0xe8553e].forEach((hex,i)=>box(.045,.03,.042,4.565,1.035,.57+i*.048,hex));
+ box(.06,.025,.4,4.565,FURNITURE_HEIGHTS.serviceCounter+.012,.74,0xe9e4d8);
+ [0x2aa36b,0xf0c419,0xe8553e,0x3b7dd8,0xf2f2f2,0x8e44ad,0x2aa36b,0xe8553e].forEach((hex,i)=>box(.045,.03,.042,4.565,FURNITURE_HEIGHTS.serviceCounter+.035,.57+i*.048,hex));
  const group=new THREE.Group();group.name='Sakura corners';room.add(group);
  const signs=new THREE.Mesh(mergeGeometries(prints),new THREE.MeshBasicMaterial({map:sheet(),toneMapped:false}));signs.name='Sakura aisle cards, window posters and cash corner prints';group.add(signs);
  const body=new THREE.Mesh(mergeGeometries(solids),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,metalness:.1}));body.name='Sakura cash corner';group.add(body);

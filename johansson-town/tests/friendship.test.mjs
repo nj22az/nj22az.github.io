@@ -21,12 +21,14 @@ test('talking counts once a day; presents count more; the want counts most and p
  assert.equal(openWant(state,m,names,want.name),null,'the want is still open after it was met');
  const again=gave(state,want.name,want.item,m,names);assert.equal(again.kind,'again');assert.equal(again.yen,0);
  const other=names.find(n=>n!==want.name&&favouriteOf(n));
- assert.equal(gave(state,other,favouriteOf(other),m,names).kind==='favourite'||openWant(state,m,names,other)?.item===favouriteOf(other),true);
+ // Their favourite counts as a favourite, or as their want when today they want it.
+ const open=openWant(state,m,names,other);
+ assert.ok(['favourite','want'].includes(gave(state,other,favouriteOf(other),m,names).kind)||open?.item===favouriteOf(other));
 });
 
 test('hearts fill at their steps and the save keeps only sane records',()=>{
  assert.equal(heartsFor(0),0);assert.equal(heartsFor(HEART_STEPS[0]),1);assert.equal(heartsFor(999),5);
  assert.equal(heartLine(HEART_STEPS[1]),'♥♥♡♡♡');
- const restored=restoreFriendship({Aya:{points:42,talkDay:3},bad:{points:'x'},Kenji:{points:5000}});
- assert.equal(restored.Aya.points,42);assert.equal(restored.bad,undefined);assert.equal(restored.Kenji.points,999);
+ const restored=restoreFriendship({Nhung:{points:42,talkDay:3},bad:{points:'x'},Chin:{points:5000}});
+ assert.equal(restored.Nhung.points,42);assert.equal(restored.bad,undefined);assert.equal(restored.Chin.points,999);
 });

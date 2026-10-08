@@ -5,7 +5,7 @@ import {buildAvatar,measure} from './build.js';
 import {createAvatarAnimator,GESTURES} from './animate.js';
 import {recipeFor,CAST_RECIPES} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
-import {fitAvatarHeldProp} from './consume.js';
+import {fitAvatarHeldProp,gripWheel} from './consume.js';
 import {DEFAULT_PLAYER,readPlayers,readSave} from '../save.js';
 import {swingsAt} from './springs.js';
 const swingAt=new THREE.Vector3();
@@ -39,8 +39,6 @@ export function savePlayerRecipe(recipe,storage=globalThis.localStorage){
  const code=encodeRecipe({...recipe,outfit:appropriateOutfit('Johansson',recipe.outfit)});try{storage?.setItem(playerRecipeKey(storage),code);}catch{}return code;
 }
 
-const SEATED=['Wake','Sit','Type','Eat','Drink','Sleep','Soak'];
-
 /**
  * ?avatar=<code> in the address: somebody shared an islander. It becomes the player's,
  * and the code leaves the address so a reload does not undo a later change.
@@ -62,7 +60,7 @@ export function createAvatarActor(entity,name,{shadows=false}={}){
  entity.userData.visualReady=true;entity.userData.visualSource='Shimanchu · '+(recipe.name||name);
  return {isAvatar:true,avatar,animator:createAvatarAnimator(avatar,{lively:true}),entity,model:avatar.root,mixer:null,actions:new Map(),
   current:null,last:entity.position.clone(),gestureTime:0,speed:0,moving:false,wasVisible:true,height:avatar.height,
-  isThuan:name==='Thuan',outfit:'clothes'};
+  isThuan:name==='Thuan',outfit:'clothes',requested:'clothes'};
 }
 
 /** Once a frame: what the flags say, into the body. */
@@ -76,25 +74,19 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  actor.speed=THREE.MathUtils.damp(actor.speed,measured,20,dt);
  actor.moving=actor.speed>(actor.moving?.03:.07);
  actor.gestureTime=Math.max(0,actor.gestureTime-dt);
- const outfit=u.outfit==='swim'?'swim':actor.isThuan?(u.alternativeOutfit||'clothes'):(u.outfit||'clothes');if(actor.outfit!==outfit){avatar.wear(outfit);actor.outfit=outfit;}
+ // In the bath: 'bath' is whatever this person wears at Umi-no-yu (build.js bathOutfit: a bath
+ // wrap for grown-ups, swimwear for children), or 'towel'/'swim' outright. The actor records
+ // what they actually have on, so a child asked into a towel reads as in swimwear.
+ const bathing=['swim','towel','bath'].includes(u.outfit),outfit=bathing?u.outfit:actor.isThuan?(u.alternativeOutfit||'clothes'):(u.outfit||'clothes');if(actor.requested!==outfit){actor.outfit=avatar.wear(outfit)||outfit;actor.requested=outfit;}
  // At home the hat is on its hook (home-residents.js), not on the head.
  const hatOn=!u.hatOff;if(actor.hatOn!==hatOn){avatar.setHat?.(hatOn);actor.hatOn=hatOn;}
  const riding=!!(u.playerControlled&&actor.isThuan);
- const seated=!riding&&(Number.isFinite(u.seatHeight)&&SEATED.includes(u.socialPose)||Number.isFinite(u.chairBlend)&&u.chairBlend>.5);
+ // The seat owns the support, while the pose owns the hands and head. Reading,
+ // talking or using a telephone must not stand somebody up inside their chair.
+ const seated=!riding&&Number.isFinite(u.seatHeight);
  const mood=u.thuanMood,line=u.lineFeeling,feeling=mood&&mood.until>now?mood.expression:line&&line.until>now?line.expression:null;
  const engaged=!!(u.playerConversation||u.chat||actor.gestureTime);
  const sleeping=Number(u.sleepBlend)>.28||(u.sleeping&&!u.roomTransition);
- actor.animator.update(dt,{
-  speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,floorHeight:Number(u.floorHeight)||0,
-  pose:u.socialPose,seat:u.socialPose,driving:!!u.inVehicle,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
-  waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
-  talking:!!(u.chat?.speaking||u.speakingUntil>now),
-  expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
-  sleeping,gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,tipsy:u.tipsy||0,
- });
- // Hair, skirts and hems swing (springs.js): always for Thuan, near the camera for everyone else.
- if(swingsAt(entity.getWorldPosition(swingAt),actor.isThuan)){avatar.springs?.update(dt);actor.swingResting=false;}
- else if(!actor.swingResting){avatar.springs?.reset();actor.swingResting=true;}
  // Every resident uses the same hand fit and portion animation as the player.
  const heldKind=u.heldItem||(['Drink','DrinkStanding'].includes(u.socialPose)?'beer':u.socialPose==='Eat'?'rice':null);
  if(actor.heldKind!==heldKind){
@@ -112,6 +104,20 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   if(actor.heldProp&&Number.isFinite(u.heldPortion))setPropPortion(actor.heldProp,u.heldPortion,{immediate:true});
   if(actor.dishProp&&Number.isFinite(u.foodPortion))setPropPortion(actor.dishProp,u.foodPortion,{immediate:true});
  }
+ actor.animator.update(dt,{
+  speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,chairBlend:u.chairBlend,floorHeight:Number(u.floorHeight)||0,
+  pose:u.socialPose,seat:u.socialPose,driving:!!u.inVehicle,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
+  waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
+  talking:!!(u.chat?.speaking||u.speakingUntil>now),
+  expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
+  sleeping,conversing:!!(u.playerConversation||u.chat||u.playing),gaze:Array.isArray(u.lookTarget)?u.lookTarget:null,consumeElapsed:u.consumeElapsed,tipsy:u.tipsy||0,
+ });
+ // A driver's hands are on the wheel, not hovering in front of it.
+ const wheel=u.inVehicle&&entity.parent?.userData?.steeringWheel;
+ if(wheel)gripWheel(avatar,entity.parent,wheel,now/1000);
+ // Hair, skirts and hems swing (springs.js): always for Thuan, near the camera for everyone else.
+ if(swingsAt(entity.getWorldPosition(swingAt),actor.isThuan)){avatar.springs?.update(dt);actor.swingResting=false;}
+ else if(!actor.swingResting){avatar.springs?.reset();actor.swingResting=true;}
  // Cleaning tools (izakaya-hours.js): one in the right hand while the pose works it.
  const toolKind=u.tool||null;
  if(actor.toolKind!==toolKind){actor.toolProp?.removeFromParent();actor.toolProp=toolKind?createToolProp(toolKind):null;actor.toolKind=toolKind;if(actor.toolProp)avatar.bones.handR.add(actor.toolProp);}
@@ -144,7 +150,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
  const root=new THREE.Group();root.name='Johansson (third person)';root.visible=false;scene.add(root);
  let avatar=buildAvatar(recipe,{shadows:true,faceSize:512}),animator=createAvatarAnimator(avatar,{bowDepth:.18});
  root.add(avatar.root);
- let expression='neutral',expressionUntil=0,speakUntil=0,time=0,seatMove='Sit',outfit='clothes',held=null,lookPoint=null,move=null;
+ let expression='neutral',expressionUntil=0,speakUntil=0,time=0,seatMove='Sit',outfit='clothes',requested='clothes',held=null,lookPoint=null,move=null;
  const hand=()=>avatar.bones.handR;
  const api={
   root,loading:Promise.resolve(true),
@@ -161,7 +167,8 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   speak(seconds=2){speakUntil=Math.max(speakUntil,time+seconds);},
   lookAt(point){lookPoint=point?point.clone?.()||point:null;},
   seat(name='Sit'){seatMove=name;},
-  wear(name){outfit=name==='swim'?'swim':'clothes';avatar.wear(outfit);},
+  /** 'clothes', 'swim', 'towel', or 'bath' (what they wear at Umi-no-yu: bathOutfit). Returns what is on. */
+  wear(name){requested=['swim','towel','bath'].includes(name)?name:'clothes';outfit=avatar.wear(requested)||requested;return outfit;},
   get outfit(){return outfit;},
   /** Where the third-person lens pivots: above the big head and clear of it to the right. */
   get lens(){const m=avatar.measure;return {eye:m.H+.14,side:m.Rh*m.headSX+.26,head:m.headCentre};},
@@ -174,17 +181,16 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   setRecipe(next){
    const r=normalizeRecipe(next);avatar.root.removeFromParent();avatar.dispose();
    avatar=buildAvatar(r,{shadows:true,faceSize:512});animator=createAvatarAnimator(avatar,{bowDepth:.18});root.add(avatar.root);
-   avatar.wear(outfit);if(held)hand().add(held);
+   outfit=avatar.wear(requested)||requested;if(held)hand().add(held);
   },
   update(dt,state={}){
    time+=dt;root.visible=!!state.visible;
    if(expressionUntil&&time>expressionUntil){expression='neutral';expressionUntil=0;}
    if(!animator.gesture)move=null;
-   // The root sits where game.js puts it; seated, it has already been lowered to the seat.
+   // Player and residents use the same measured seat support.
    animator.update(dt,{speed:state.speed||0,running:!!state.running,seated:!!state.seated,
-    seatHeight:state.seated?avatar.measure.hipY-avatar.measure.seatDrop:undefined,seat:seatMove,airborne:!!state.airborne,
+    seatHeight:state.seatHeight,seat:seatMove,airborne:!!state.airborne,
     talking:time<speakUntil,expression,gaze:lookPoint,heldProp:held,tipsy:state.tipsy||0});
-   if(state.seated)avatar.root.position.y=0;
    // Johansson's shirt hem swings wherever he is.
    if(root.visible)avatar.springs?.update(dt);
    if(held?.userData.consumable){

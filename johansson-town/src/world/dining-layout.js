@@ -15,11 +15,11 @@ export const DINING=Object.freeze({
  *
  * It stands next to the bookshop, which is where it was asked
  * for: Minato's north gable is at z -6.10 and the relocated bookshop's
- * south wall is at -3.02, leaving a walkable passage between them. Thuan comes out of Sakura, up the west pavement past Aya's window, and
+ * south wall is at -3.02, leaving a walkable passage between them. Thuan comes out of Sakura, up the west pavement past Nhung's window, and
  * in.
  *
  * The door, its approach and the lane to it are live arrays rather than copies:
- * Thuan's evening, Nao's shift and the walkable route all hold these exact arrays, so
+ * Thuan's evening, Thao's shift and the walkable route all hold these exact arrays, so
  * moving the plot moves them too. Anything that reads the plot syncs them on the way
  * past, and createTown asks for it once as soon as the layout is chosen.
  */

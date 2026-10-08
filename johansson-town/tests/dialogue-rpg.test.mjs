@@ -8,7 +8,7 @@ import {SAVE_KEY} from '../src/save.js';
 
 test('the name tag is the speaker, with the place beside it',()=>{
  assert.deepEqual(splitTitle('Thuan · Heart of Sakura'),{speaker:'Thuan',place:'Heart of Sakura'});
- assert.deepEqual(splitTitle('Aya'),{speaker:'Aya',place:''});
+ assert.deepEqual(splitTitle('Nhung'),{speaker:'Nhung',place:''});
  assert.deepEqual(splitTitle('Thuan · Counter · Evening'),{speaker:'Thuan',place:'Counter · Evening'});
 });
 

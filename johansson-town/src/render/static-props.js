@@ -42,7 +42,11 @@ export function createStandIn(root,{name='stand-in'}={}){
  root.updateMatrixWorld(true);
  const inverse=new THREE.Matrix4().copy(root.matrixWorld).invert(),buckets=new Map(),sources=[];
  const visible=o=>{for(let p=o;p&&p!==root;p=p.parent)if(!p.visible)return false;return true;};
+ // Moving things (dynamicProp: the shop's own front door) are not copied, since a merged copy would hold them still (a door
+ // frozen shut in the doorway while the street's door slides open), and they are not drawn from outside either.
+ const moves=o=>{for(let p=o;p&&p!==root;p=p.parent)if(p.userData.dynamicProp)return true;return false;},moving=[];
  root.traverse(o=>{
+  if(o.isMesh&&visible(o)&&o.layers.isEnabled(0)&&moves(o)){moving.push(o);return;}
   if(!o.isMesh||o.isSkinnedMesh||Array.isArray(o.material)||!MERGEABLE.has(o.material.type)||!visible(o)||!o.layers.isEnabled(0))return;
   const m=o.material,r=v=>Math.round((v??0)*20)/20;
   const key=[m.type,m.map?.uuid,m.alphaMap?.uuid,m.transparent,r(m.opacity),m.side,m.alphaTest,m.depthWrite,m.depthTest,m.toneMapped,m.blending,r(m.roughness),r(m.metalness),m.fog,m.polygonOffset&&m.polygonOffsetFactor,o.renderOrder].join('/');
@@ -86,7 +90,7 @@ export function createStandIn(root,{name='stand-in'}={}){
  return {group,sources:sources.length,meshes:group.children.length,
   show(on){
    group.visible=on;
-   if(on)for(const o of sources){if(!masks.has(o))masks.set(o,o.layers.mask);o.layers.set(31);}
+   if(on)for(const o of [...sources,...moving]){if(!masks.has(o))masks.set(o,o.layers.mask);o.layers.set(31);}
    else{for(const [o,mask] of masks)o.layers.mask=mask;masks.clear();}
   },
   dispose(){this.show(false);group.removeFromParent();group.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});}};

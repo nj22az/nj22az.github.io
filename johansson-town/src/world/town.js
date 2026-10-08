@@ -158,11 +158,11 @@ function addStreetLife(world,options,factory){
   const group=world.group,colliders=world.colliders,lights=[];let interactions=addSiteFrontage(world,options,factory,lights);
   const inspect=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('inspect',title,text),options.register);interactions++;};
   const read=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('read',title,text),options.register);interactions++;};
-  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[2.05,0,17.02],stand:[2.05,0,16.15],eyeY:1.26,yaw:0,pitch:0};interactions++;};
+  const seat=(pos,label,title,text)=>{const marker=anchor(group,pos,label,()=>options.onAction?.('seat',title,text),options.register);marker.userData.seat={position:[2.05,0,17.02],stand:[.85,0,16.1],surfaceY:.62,eyeY:1.26,yaw:0,pitch:0};interactions++;};
   const machine=(pos,label,title,text)=>{anchor(group,pos,label,()=>options.onAction?.('machine',title,text),options.register);interactions++;};
 
   addWithCollider(group,colliders,factory.bench(2.05,17.1,0));
-  seat([2.05,1,16.65],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
+  seat([.85,.85,16.1],'Sit on neighbourhood bench','Neighbourhood bench','From here the shop signs, bicycles and overhead cables make the street feel almost domestic.');
 
   addWithCollider(group,colliders,factory.postbox(2.4,16.4,Math.PI/2));
   inspect([1.75,1,16.4],'Inspect post box','Post box','The collection plate lists two pickups: 10:30 and 16:30. A few handwritten postcards are visible through the slot.');
@@ -277,7 +277,7 @@ export function createTown(options){
    // A quiet corner at the north end to sit and listen to the sea. See beach-corner.js.
    world.beachCorner=buildBeachCorner({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows});
    // Mr Fujita's shed on the working pier, where he watches the ballgame with a beer. See port-shed.js.
-   world.portShed=buildPortShed({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows});
+   world.portShed=buildPortShed({parent:world.group,colliders:world.colliders,register:options.register,onAction:options.onAction,shadows:options.shadows,getPlayerPosition:options.getPlayerPosition});
    // Kitahama's windows light when the people who live there are in and up. See home-lights.js.
    world.homeLights=createHomeLights({people:()=>world.people});
    // Tetrapods at the foot of the west seawall and two breakwaters off the east beach.

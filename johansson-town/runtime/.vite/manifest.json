@@ -1,51 +1,54 @@
 {
-  "_actors-CIzLYmGJ.js": {
-    "file": "actors-CIzLYmGJ.js",
-    "name": "actors"
+  "_actors-k1-5GRVc.js": {
+    "file": "actors-k1-5GRVc.js",
+    "name": "actors",
+    "imports": [
+      "_izakaya-serving-visuals-BgMRsUXf.js"
+    ]
   },
-  "_icons-RrRr0WaS.js": {
-    "file": "icons-RrRr0WaS.js",
+  "_icons-BJJ0w3BS.js": {
+    "file": "icons-BJJ0w3BS.js",
     "name": "icons"
   },
-  "_preload-helper-PPVm8Dsz.js": {
-    "file": "preload-helper-PPVm8Dsz.js",
-    "name": "preload-helper"
+  "_izakaya-serving-visuals-BgMRsUXf.js": {
+    "file": "izakaya-serving-visuals-BgMRsUXf.js",
+    "name": "izakaya-serving-visuals"
   },
   "_spector.bundle-_JPoFEkN.js": {
     "file": "spector.bundle-_JPoFEkN.js",
     "name": "spector.bundle",
     "isDynamicEntry": true
   },
-  "_town-audio-DyNkE1Ey.js": {
-    "file": "town-audio-DyNkE1Ey.js",
+  "_town-audio-ygTjb9SR.js": {
+    "file": "town-audio-ygTjb9SR.js",
     "name": "town-audio"
   },
   "src/audio/town-audio.js?snappy=1": {
-    "file": "audio-C8P9scra.js",
+    "file": "audio-83dQfoLt.js",
     "name": "audio",
     "src": "src/audio/town-audio.js?snappy=1",
     "isEntry": true,
     "imports": [
-      "_town-audio-DyNkE1Ey.js"
+      "_town-audio-ygTjb9SR.js"
     ]
   },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-ie8HDYZA.js",
+    "file": "portraits-B0h3d07Y.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
     "imports": [
-      "_actors-CIzLYmGJ.js"
+      "_izakaya-serving-visuals-BgMRsUXf.js",
+      "_actors-k1-5GRVc.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-DiFikRJZ.js",
+    "file": "boot-CajPrtBb.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
     "imports": [
-      "_preload-helper-PPVm8Dsz.js",
-      "_icons-RrRr0WaS.js"
+      "_icons-BJJ0w3BS.js"
     ],
     "dynamicImports": [
       "touch-ui.js?ui=controls-3",
@@ -54,38 +57,44 @@
       "webmcp-characters.js"
     ]
   },
+  "src/feed/mount.js": {
+    "file": "feed-942dmLuA.js",
+    "name": "feed",
+    "src": "src/feed/mount.js",
+    "isEntry": true,
+    "imports": [
+      "_izakaya-serving-visuals-BgMRsUXf.js"
+    ]
+  },
   "src/game.js?snappy=1": {
-    "file": "game-BMAz9ecB.js",
+    "file": "game-Is-bsdPr.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_actors-CIzLYmGJ.js",
-      "_town-audio-DyNkE1Ey.js",
-      "_icons-RrRr0WaS.js",
-      "_preload-helper-PPVm8Dsz.js"
+      "_izakaya-serving-visuals-BgMRsUXf.js",
+      "_actors-k1-5GRVc.js",
+      "_town-audio-ygTjb9SR.js",
+      "_icons-BJJ0w3BS.js"
     ],
     "dynamicImports": [
       "_spector.bundle-_JPoFEkN.js"
     ]
   },
   "touch-ui.js?ui=controls-3": {
-    "file": "touch-ui-CajBlBfy.js",
+    "file": "touch-ui-D34cMzo7.js",
     "name": "touch-ui",
     "src": "touch-ui.js?ui=controls-3",
-    "isDynamicEntry": true,
-    "imports": [
-      "_icons-RrRr0WaS.js"
-    ]
+    "isDynamicEntry": true
   },
   "webmcp-characters.js": {
-    "file": "webmcp-characters-OJ-jcBMt.js",
+    "file": "webmcp-characters-BkXkAGJZ.js",
     "name": "webmcp-characters",
     "src": "webmcp-characters.js",
     "isDynamicEntry": true
   },
   "webmcp.js": {
-    "file": "webmcp-DXS_cxa8.js",
+    "file": "webmcp-B7GEQD6t.js",
     "name": "webmcp",
     "src": "webmcp.js",
     "isDynamicEntry": true

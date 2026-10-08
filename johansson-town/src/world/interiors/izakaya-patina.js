@@ -1,19 +1,20 @@
+import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 
 // Thin finishes sit on the existing furniture, never in a walking or serving lane.
 // Keep the original bevels, floorboard gaps, shoji and timber posts visible.
 export const MINATO_WORN_SURFACES=Object.freeze([
- {name:'Guest ledge',kind:'wood',size:[8.34,.49],position:[-.8,1.112,-2.2],floor:true,color:0x673d28},
- ...[[-3.5,2.2],[2.6,2]].map(([x,z])=>({name:'Dining table',kind:'wood',size:[2.43,1.28],position:[x,.947,z],floor:true,color:0x795236})),
- ...[4.15,5].map(z=>({name:'Lounge table',kind:'wood',size:[.60,.60],position:[-4.6,.7495,z],floor:true,color:0x946844})),
+ {name:'Guest ledge',kind:'wood',size:[8.34,.49],position:[-.8,FURNITURE_HEIGHTS.serviceCounter+.002,-2.2],floor:true,color:0x673d28},
+ ...[[-3.5,2.2],[2.6,2]].map(([x,z])=>({name:'Dining table',kind:'wood',size:[2.43,1.28],position:[x,FURNITURE_HEIGHTS.table+.002,z],floor:true,color:0x795236})),
+ ...[4.15,5].map(z=>({name:'Lounge table',kind:'wood',size:[.60,.60],position:[-4.6,FURNITURE_HEIGHTS.table+.002,z],floor:true,color:0x946844})),
  ...[.5,3.1].map(z=>({name:'Koagari table',kind:'wood',size:[.70,1.15],position:[5.3,.772,z],floor:true,color:0x795236})),
  {name:'West plaster',kind:'plaster',size:[12.6,2.54],position:[-6.297,2.32,0],yaw:Math.PI/2,color:0xb18d68},
  {name:'East plaster',kind:'plaster',size:[9.65,2.54],position:[6.297,2.32,1.525],yaw:-Math.PI/2,color:0xb18d68},
  ...[-4.08,4.08].map(x=>({name:'Entry plaster',kind:'plaster',size:[4.37,2.54],position:[x,2.32,6.297],yaw:Math.PI,color:0xb18d68})),
  ...[4.15,5].flatMap(z=>[
-  {name:'Lounge cushion',kind:'fabric',size:[.62,.68],position:[-5.62,.562,z],floor:true,color:0x7b7057},
-  {name:'Lounge back',kind:'fabric',size:[.68,.59],position:[-5.858,.88,z],yaw:Math.PI/2,color:0x7b7057}
+  {name:'Lounge cushion',kind:'fabric',size:[.62,.68],position:[-5.62,FURNITURE_HEIGHTS.seat+.002,z],floor:true,color:0x7b7057},
+  {name:'Lounge back',kind:'fabric',size:[.68,.59*FURNITURE_HEIGHTS.seat/.56],position:[-5.858,.88*FURNITURE_HEIGHTS.seat/.56,z],yaw:Math.PI/2,color:0x7b7057}
  ])
 ]);
 

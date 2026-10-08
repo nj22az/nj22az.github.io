@@ -8,6 +8,7 @@ import {GATEBALL_ACTIVE} from '../world/okinawa/layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
 import {FLOWER_SHOP} from '../world/flower-shop.js';
 import {HOSHIZAKI_STORE} from '../world/island-plan.js';
+import {buildFishCart} from '../world/roadside-props.js';
 
 /**
  * The people who live and work in the new streets.
@@ -24,11 +25,11 @@ import {HOSHIZAKI_STORE} from '../world/island-plan.js';
 const H=(h,m=0)=>h*60+m;
 
 const ALL_NEIGHBOURS=Object.freeze([
- {name:'Riku',look:'Kenji',height:1.7,role:'checking the cargo yard',walk:true,route:DOCK_CREW_ROUTE,speed:.65,at:[-35.8,-38.3],face:[0,-1],hours:[[420,1320]],lines:['Rice for Sakura, fuses for the workshop, ice for the fishing boats. This quay keeps the whole island going.','The early boat brings supplies; the evening boat takes fish and outgoing post. Keep the workshop doorway clear, please.']},
- {name:'Emi Kado',look:'Reiko',height:1.61,role:'checking island freight manifests',at:[-23.1,-35.1],face:[1,0],pose:'Think',hours:[[360,1440]],lines:['Every parcel gets a line in the freight book. The Community Hall keeps our filed records for one year.','Kenji and Tetsuo are in the blue electrical workshop. The last cargo check is at ten; I stay for the late passenger boat.']},
+ {name:'Riku',look:'Chin',height:1.7,role:'checking the cargo yard',walk:true,route:DOCK_CREW_ROUTE,speed:.65,at:[-35.8,-38.3],face:[0,-1],hours:[[420,1320]],lines:['Rice for Sakura, fuses for the workshop, ice for the fishing boats. This quay keeps the whole island going.','The early boat brings supplies; the evening boat takes fish and outgoing post. Keep the workshop doorway clear, please.']},
+ {name:'Emi Kado',look:'Reiko',height:1.61,role:'checking island freight manifests',at:[-23.1,-35.1],face:[1,0],pose:'Think',hours:[[360,1440]],lines:['Every parcel gets a line in the freight book. The Community Hall keeps our filed records for one year.','Chin and Tetsuo are in the blue electrical workshop. The last cargo check is at ten; I stay for the late passenger boat.']},
  {name:'Haru',look:'Shin',height:1.76,role:'sorting the village catch',at:[151,188],face:[-1,0],hours:[[0,1440]],home:[127,182],routine:[{from:0,at:[127,182],role:'at home',home:true},{from:360,at:[151,188],role:'landing and sorting the catch'},{from:720,at:HOSHIZAKI_STORE.waiting,face:HOSHIZAKI_STORE.waitingFace,role:'collecting lunch at the general store'},{from:780,at:[149,183],role:'mending fishing nets'},{from:1080,at:[127,182],role:'at home',home:true}],lines:['The airport takes our parcels, but the boats still set the pace of the village.','I land the catch at dawn, collect lunch from Mina and mend the nets before going home.']},
  {name:'Mina',look:'Yui',height:1.6,role:'keeping the village store',at:HOSHIZAKI_STORE.clerk,face:HOSHIZAKI_STORE.clerkFace,hours:[[0,1440]],home:[126,202.8],routine:[{from:0,at:[126,205.5],role:'at home',home:true},{from:480,at:HOSHIZAKI_STORE.clerk,role:'opening the village general store'},{from:720,at:[130,208],role:'taking a lunch break'},{from:780,at:HOSHIZAKI_STORE.clerk,role:'serving village customers'},{from:1080,at:[126,205.5],role:'at home',home:true}],lines:['Tea, rice crackers and postcards. Most customers are our neighbours.','The new guesthouse will bring a few visitors, but this will still be a quiet fishing village.']},
- {name:'Jun',look:'Daichi',height:1.7,role:'checking commuter tickets',at:airportWorld(-16,18.5),face:[1,0],hours:[[0,1440]],home:airportWorld(-20,18.5),routine:[{from:0,at:airportWorld(-20,18.5),role:'off duty',home:true},{from:420,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:720,at:airportWorld(-26,18.5),role:'taking lunch beside the terminal'},{from:780,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:1200,at:airportWorld(-20,18.5),role:'off duty',home:true}],lines:['Check in ten minutes before your flight. Keep your cabin bag with you.','The ground-service radio goes to Kenji and Tetsuo at the docks. The test sheet comes back with it.']},
+ {name:'Jun',look:'Daichi',height:1.7,role:'checking commuter tickets',at:airportWorld(-16,18.5),face:[1,0],hours:[[0,1440]],home:airportWorld(-20,18.5),routine:[{from:0,at:airportWorld(-20,18.5),role:'off duty',home:true},{from:420,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:720,at:airportWorld(-26,18.5),role:'taking lunch beside the terminal'},{from:780,at:airportWorld(-16,18.5),role:'checking commuter tickets'},{from:1200,at:airportWorld(-20,18.5),role:'off duty',home:true}],lines:['Check in ten minutes before your flight. Keep your cabin bag with you.','The ground-service radio goes to Chin and Tetsuo at the docks. The test sheet comes back with it.']},
 
  {name:'Grandmother Higa',look:'Fumiko',height:1.46,role:'on her verandah',at:[-29.8,-20.7],y:.47,face:[0,-1],pose:'Interact',hours:[[H(7),H(18,30)]],
   lines:[
@@ -91,6 +92,23 @@ const ALL_NEIGHBOURS=Object.freeze([
  {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'arranging flowers at Rainflower Florist',at:FLOWER_SHOP.staffAt,face:[-1,0],pose:'Interact',hours:[[H(9),H(18)]],
   lines:['Welcome to Rainflower. Fresh stems, a small bouquet, or something green for your windowsill? I wrap everything by hand.',
    'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. The flowers finish work on time; he never does.']},
+ // Vy, at the high school on the mainland: the school bus at twenty past seven, then after
+ // school an ice cream at the Blue Coral counter on Rainflower Lane and her homework in the park.
+ {name:'Vy',look:'Vy',height:1.56,role:'waiting for the school bus',at:[-2.4,-57],face:[0,-1],hours:[[H(7,20),H(8)],[H(15,40),H(18,40)]],
+  routine:[{from:0,at:[-2.4,-57],face:[0,-1],role:'waiting for the school bus'},{from:H(15,40),at:[7.1,48.6],face:[1,0],role:'eating a Blue Coral ice cream after school'},{from:H(16,20),at:[18.2,-21.8],face:[-1,0],role:'doing her homework in the park'},{from:H(18,10),at:[-2.4,-57],face:[0,-1],role:'waiting for the bus home'}],
+  lines:[
+   'Ice cream before homework. It is a rule. I made the rule, but it is still a rule.',
+   'Kanji test tomorrow. Two hundred characters. I know one hundred and ninety. The other ten are probably not important.',
+   'The lady at Blue Coral saves me the pink one. Do not tell anyone; she says it is a secret menu.',
+   'My skirt has exactly twenty-four pleats. Our teacher counts them.']},
+ // The fish seller: the dawn catch on ice in his push cart, up and down the main street
+ // all morning, slowly, calling out what he has.
+ {name:'Mr Toguchi',look:'Mr Toguchi',height:1.66,role:'selling the morning catch from his cart',walk:true,cart:true,speed:.45,hours:[[H(7),H(11)]],
+  route:[[2.2,-13.8],[2.2,13.8]],
+  lines:[
+   'Gurukun this morning, and a bigeye that fought me for half an hour. He lost. You can have him for six hundred yen.',
+   'Fish has to be sold before the sun gets over the roofs. After that I am just a man pushing ice up a hill.',
+   'Thao at Minato takes whatever I have left at eleven. She pretends to haggle. I pretend to lose.']},
  {name:'Postman Tōma',look:'Kenta',height:1.7,role:'on his round',walk:true,speed:1.25,hours:[[H(9),H(13)],[H(14),H(17)]],
   route:[[2.6,15.2],[2.6,-14.6],[4.3,-15.2],[4.3,-1.6],[5.4,2.4],[14,2.4],[14,9.2],[14,2.4],[5.4,2.4],[4.3,-1.6],[2.6,-1.2]],
   lines:[
@@ -136,6 +154,8 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
   g.position.set(start.x,spec.y??groundAt(start.x,start.z),start.z);faceAlong(g,start.dx,start.dz);
   parent.add(g);
   characters?.attach(g,spec.look,spec.height);
+  // A cart goes ahead of whoever pushes it (roadside-props.js): its shafts at their hands.
+  if(spec.cart){const cart=buildFishCart();cart.position.set(0,0,-1.55);g.add(cart);}
   register?.(g,'Talk to '+spec.name,()=>onAction?.('neighbour',spec.name));
   return {g,spec,travelled:i*7};
  });

@@ -2,14 +2,14 @@ import {stockSpec} from '../commerce/shop-stock.js';
 // Stable identities, shared by wardrobe, errands and menus. No random reroll on load.
 const DEFAULT={interests:['read','inspect','seat','shop'],snack:'rice',drink:'tea',meal:'rice'};
 export const RESIDENT_PERSONALITIES=Object.freeze(Object.fromEntries(Object.entries({
- Kenji:{source:'casual_2',top:'#477697',trousers:'#334b55',hair:'#24272b',skin:'#bd8b65',width:.96,accessory:'tool-pouch',interests:['arcade','machine','radio','inspect'],snack:'bun',drink:'beer',meal:'yakitori'},
+ Chin:{source:'casual_2',top:'#477697',trousers:'#334b55',hair:'#24272b',skin:'#bd8b65',width:.96,accessory:'tool-pouch',interests:['arcade','machine','radio','inspect'],snack:'bun',drink:'beer',meal:'yakitori'},
  'Mrs Sato':{source:'female_formal',top:'#96566d',trousers:'#96566d',hair:'#c5c0ae',skin:'#c69c7c',width:1.06,accessory:'glasses',interests:['read','shop','seat','post'],snack:'tea',drink:'tea',meal:'rice'},
  'Harbour master':{source:'suit',top:'#455b6b',trousers:'#374653',hair:'#92958d',skin:'#b5805d',width:1.10,accessory:'captain',interests:['office','fish','read','machine','phone'],snack:'rice',drink:'beer',meal:'fish'},
  Tetsuo:{source:'worker',top:'#698071',trousers:'#4a5146',hair:'#444035',skin:'#ba895d',helmet:'#737768',width:1.03,accessory:'glasses',interests:['radio','machine','arcade','inspect'],snack:'bun',drink:'beer',meal:'yakitori'},
  'Officer Mori':{source:'suit',top:'#3c5780',trousers:'#303e57',hair:'#202528',skin:'#c79872',width:.98,accessory:'police',interests:['read','phone','post','inspect'],snack:'rice',drink:'tea',meal:'rice'},
  'Bus driver':{source:'suit',top:'#437f78',trousers:'#3b514e',hair:'#61564b',skin:'#b88968',width:1.04,accessory:'driver',interests:['seat','read','phone','shop'],snack:'tea',drink:'tea',meal:'fish'},
- Nao:{source:'female_casual',top:'#bd7557',trousers:'#394b58',hair:'#292a30',skin:'#cf9b77',width:.98,accessory:'apron',interests:['shop','post','read','radio'],shopping:'soda',snack:'rice',drink:'tea',meal:'yakitori'},
- Aya:{source:'female_casual',top:'#424552',trousers:'#74764e',hair:'#24212a',skin:'#d5a17d',width:.91,accessory:'ponytail-satchel',accent:'#ab799e',height:1.62,interests:['read','seat','post','shop'],snack:'tea',drink:'beer',meal:'rice'},
+ Thao:{source:'female_casual',top:'#bd7557',trousers:'#394b58',hair:'#292a30',skin:'#cf9b77',width:.98,accessory:'apron',interests:['shop','post','read','radio'],shopping:'soda',snack:'rice',drink:'tea',meal:'yakitori'},
+ Nhung:{source:'female_casual',top:'#424552',trousers:'#74764e',hair:'#24212a',skin:'#d5a17d',width:.91,accessory:'ponytail-satchel',accent:'#ab799e',height:1.62,interests:['read','seat','post','shop'],snack:'tea',drink:'beer',meal:'rice'},
  Reiko:{source:'female_formal',top:'#a05c75',trousers:'#a05c75',hair:'#44332b',skin:'#d8ae8c',width:.96,accessory:'headband-scarf',accent:'#efe2c3',height:1.62,interests:['read','radio','phone','shop'],snack:'rice',drink:'beer',meal:'fish'},
  Thuan:{source:'thuan-mh',top:'#d8b23a',trousers:'#27304d',hair:'#1c1612',skin:'#e6c3a8',width:1.02,accessory:'ribbon',interests:['shop','seat','read','post'],snack:'tea',drink:'tea',meal:'rice',height:1.64},
  'Cold-storage kid':{source:'worker',top:'#87a5b2',trousers:'#495e71',hair:'#664634',skin:'#d4a982',helmet:'#658499',width:.90,accessory:'scarf',accent:'#ddd6ba'},
@@ -28,7 +28,7 @@ export const RESIDENT_PERSONALITIES=Object.freeze(Object.fromEntries(Object.entr
  Barfly:{source:'casual_2',top:'#b74e43',trousers:'#36343a',hair:'#77766f',skin:'#b9825f',width:1.14,accessory:'hawaiian',interests:['seat','drink','radio'],snack:'yakitori',drink:'beer',meal:'yakitori',height:1.72},
 }).map(([name,style])=>[name,Object.freeze({...DEFAULT,...style})])));
 // Historical names address the same resident; they do not create extra townspeople.
-const ALIASES=Object.freeze({Aiko:'Aya',Nozomi:'Reiko'});
+const ALIASES=Object.freeze({Aiko:'Nhung',Nozomi:'Reiko'});
 export const residentPersonality=name=>RESIDENT_PERSONALITIES[ALIASES[name]||name]||DEFAULT;
 
 export function restoreResidentLife(saved){

@@ -3,7 +3,7 @@ Run: blender -b --python tools/blender/build-minato-interior.py -- --root .
  or: python -c "import bpy" available -> python tools/blender/build-minato-interior.py -- --root .
 
 A small harbour izakaya as it would have stood in 1997, fitted into the room the game
-already walks: the counter, its five stools, the two shared tables, Nao's place at the
+already walks: the counter, its five stools, the two shared tables, Thao's place at the
 kitchen end and every collider and prompt in izakaya.js keep the coordinates they had.
 What changes is everything round them.
 
@@ -11,7 +11,7 @@ What changes is everything round them.
    above, posts, a picture rail, beams and a slatted ceiling, and lattice windows with
    the paper lit from behind.
  - The counter is a working counter. A guest ledge at elbow height, a raised serving
-   shelf behind it with the glass fish case, and a steel work top on Nao's side with
+   shelf behind it with the glass fish case, and a steel work top on Thao's side with
    the charcoal grill under its hood, the oden pot, the sink and the beer tap.
  - Things a bar of that year actually had on it: soy and shichimi, ashtrays, paper
    chopstick sleeves, rolled oshibori, a till, a beckoning cat, a kamidana up in the
@@ -19,7 +19,7 @@ What changes is everything round them.
  - The east side is a raised tatami koagari with low tables and cushions, shoes left on
    the stone at its step.
 
-The kitchen is a real one, and it is shared. Behind Nao's counter the back bar keeps
+The kitchen is a real one, and it is shared. Behind Thao's counter the back bar keeps
 the west end; the rest of the back wall is the cooking line -- a tall fridge, a four
 burner range under a steel canopy, the fryer, a double sink and the prep bench -- and it
 runs on, through an opening in the east wall, into Sato Ramen: the little corner shop
@@ -809,6 +809,9 @@ for category, upgrade in [('vessels-kitchen-storage-furniture', upgrade_real_pro
     print('Upgrading', category, flush=True)
     coverage[category] = upgrade(prop_api)
     print('Completed', category, flush=True)
+from minato_furniture_heights import apply_furniture_heights
+furniture_report=apply_furniture_heights(bpy,root)
+(art/'furniture-height-report.json').write_text(json.dumps(furniture_report,indent=2))
 after = {'objects': len([o for o in bpy.context.scene.objects if o.type == 'MESH']),
          'triangles': sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in bpy.context.scene.objects if o.type == 'MESH')}
 geometry_by_family = {}

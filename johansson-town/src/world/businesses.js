@@ -6,8 +6,8 @@ export const BUSINESS_ALIASES=Object.freeze({journal:'frontrow',electronics:'for
 export const businessId=id=>{const canonical=BUSINESS_ALIASES[id]||id;return canonical;};
 export const isWorkshopSite=id=>id==='form3d';
 export const CORE_BUSINESSES=Object.freeze([
- {id:'frontrow',title:'Front-Row Books & Press',jp:"Maegeru Shobo/Printing",sub:'BOOKS · EVENING PRESS',side:1,z:4,color:0x735849,accent:'#8b3f36',line:'Aya’s books and Reiko’s evening paper, under one roof.',directions:'The bookshop and printing desk share the west block, facing Main Street.'},
- {id:'form3d',title:'Kenji & Tetsuo Repairs',jp:"Three-dimensional/electrical workshop",sub:'PATTERNS · RADIOS · INSTRUMENTS',side:1,z:4,color:0x566b73,accent:'#385f6e',line:'Kenji’s pattern bench and Tetsuo’s radio and instrument repairs.',directions:'The repair workshop is in the east block, across Main Street from the bookshop.'},
+ {id:'frontrow',title:'Front-Row Books & Press',jp:"Maegeru Shobo/Printing",sub:'BOOKS · EVENING PRESS',side:1,z:4,color:0x735849,accent:'#8b3f36',line:'Nhung’s books and Reiko’s evening paper, under one roof.',directions:'The bookshop and printing desk share the west block, facing Main Street.'},
+ {id:'form3d',title:'Chin & Tetsuo Repairs',jp:"Three-dimensional/electrical workshop",sub:'PATTERNS · RADIOS · INSTRUMENTS',side:1,z:4,color:0x566b73,accent:'#385f6e',line:'Chin’s pattern bench and Tetsuo’s radio and instrument repairs.',directions:'The repair workshop is in the east block, across Main Street from the bookshop.'},
  {id:'office',title:'Johansson Harbour Office',jp:"Port Affairs and Technology Office",sub:'MARINE SERVICE · HARBOUR RECORDS',side:1,z:-42,color:0x62776e,accent:'#49675d',line:'Shipping records, tide tables and Johansson’s marine service files.',directions:'Follow the main street to the quay. The harbour office is on the right, opposite the warehouse.'},
  {id:'market',title:'Sakura Shōten',jp:"Sakura Shop",sub:'DAILY GOODS',side:-1,z:-28,color:0x9d7c7e,accent:'#a76680',line:'Thuan’s convenience store · tea, snacks and everyday things.'},
 ].map(Object.freeze));

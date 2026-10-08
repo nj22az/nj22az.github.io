@@ -177,7 +177,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Shopfronts — masonry and timber with glass where useful.
   sites.forEach((s,i)=>{
     if(s.industrialWorkshop){harbourShops.push(buildDockWorkshop({parent:group,site:s,register,enter,label,colliders}));return;}
-    if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows});harbourShops.push(office);colliders.push(office.collider,...office.colliders);return;}
+    if(s.id==='office'){const office=buildHarbourOffice({parent:group,site:s,register,enter,label,shadows,onAction});harbourShops.push(office);colliders.push(office.collider,...office.colliders);return;}
     // The alley units are a recessed door in the side of the supplied night-market
     // kit. The island does not build that kit, so on this layout a shop that has a
     // west-pavement plot gets a building of its own instead of a door standing in the
@@ -300,7 +300,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
 
   // The waiting hall supplies the east-side seating; this west bench leaves the roll-on lane clear.
-  for(const x of [-15.8]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);}
+  for(const x of [-17.8]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);const seat=anchor([x,1,-44.1],'Sit on the quay bench',()=>onAction('seat','Quay bench','A place to rest while the boats come and go.'));seat.userData.seat={id:'quay-bench',position:[x,0,-43.2],stand:[x,0,-44.1],surfaceY:.69,eyeY:1.39,yaw:0,pitch:0};}
 
 
   // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights.

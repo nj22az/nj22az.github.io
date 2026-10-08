@@ -412,7 +412,7 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
 
  /**
   * The frontage after dark and when the bar is open.
-  * @param {boolean} open whether Nao has the place running
+  * @param {boolean} open whether Thao has the place running
   * @param {number} day 1 at noon, 0 at night
   * @param {number} [lantern] paper-lantern glow 0–1 from the dusk clock; falls back to 1−day
   */

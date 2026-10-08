@@ -105,8 +105,8 @@ export const TOWN_DIALS=Object.freeze(Object.fromEntries(Object.entries({
  Johansson:[.3,.7,.7,.8],          // Wanderer: sixty-odd, sunburnt, in no hurry, glad of everything
  Thuan:[.7,.35,.75,.75],           // Festival friend: quick, polite, bright as her blouse
  'Mrs Higa':[.25,.3,.3,.3],        // Lighthouse keeper: thirty years at the bandai
- Aya:[.6,.65,.4,.75],              // Joker: playful mischief behind the bookshop counter
- Kenji:[.7,.4,.75,.7],             // Festival friend: enthusiastic tinkerer
+ Nhung:[.6,.65,.4,.75],             // Joker: the eldest sister, playful mischief behind the bookshop counter
+ Chin:[.7,.4,.75,.7],             // Festival friend: enthusiastic tinkerer
  'Mrs Sato':[.4,.75,.7,.3],        // Big heart: affectionately formidable
  'Harbour master':[.3,.7,.3,.65],  // Easy neighbour: dry wit, soft heart
  'Bus driver':[.25,.35,.7,.3],     // Old storyteller: patient storyteller
@@ -125,7 +125,7 @@ export const TOWN_DIALS=Object.freeze(Object.fromEntries(Object.entries({
  Hiroshi:[.65,.4,.8,.3],           // Rising star: proud amateur singer
  Fumiko:[.7,.85,.4,.3],            // Straight shooter: fearless neighbourhood aunt
  Kenta:[.4,.25,.6,.65],            // Cloud watcher: sweetly awkward inventor
- Nao:[.7,.75,.6,.8],               // Typhoon: generous host, wicked timing
+ Thao:[.7,.85,.4,.45],              // Straight shooter: stubborn but friendly; will not be talked out of it
  Barfly:[.15,.65,.35,.8],          // Easy neighbour: unhurried, permanently thirsty
 }).map(([name,[pace,talk,show,outlook]])=>[name,Object.freeze({pace,talk,show,outlook})])));
 

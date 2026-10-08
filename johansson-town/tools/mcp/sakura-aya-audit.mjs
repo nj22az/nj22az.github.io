@@ -10,7 +10,7 @@ const viewport=process.argv[2]||'desktop';assert.ok(['desktop','phone'].includes
 const start=process.argv[3]||'18:35';assert.ok(['18:35','19:13'].includes(start));
 const departureCheck=start==='19:13',mode=departureCheck?'departure':'shopping';
 const client=new TourClient('sakura-aya-'+viewport+'-'+mode),report={viewport,normalControls:true,fixturePlacement:false,start,mode,samples:[]};
-const aya=()=>client.state.residents.find(p=>p.name==='Aya');
+const aya=()=>client.state.residents.find(p=>p.name==='Nhung');
 const check=()=>{assert.deepEqual(client.state.errors,[]);assert.deepEqual(client.state.invalidTransforms,[]);};
 try{
  await client.connect();await client.call('start_session',{viewport,spawn:'sakura-bench',time:start});
@@ -32,19 +32,19 @@ try{
  for(let second=0;second<(departureCheck?140:60);second++){
   await client.call('wait',{durationMs:1000});check();const person=aya();
   report.samples.push({second,minutes:client.state.game.minutes,aya:person,shop:client.state.shop});
-  const customer=client.state.shop?.customers.find(c=>c.name==='Aya');
+  const customer=client.state.shop?.customers.find(c=>c.name==='Nhung');
   picked||=!!customer?.picked;paid||=!!customer?.paid;
   if(person?.inMarket&&person.visible){
    const [x,,z]=person.position,dx=Math.max(Math.abs(x-R.x)-R.width/2,0),dz=Math.max(Math.abs(z-R.z)-R.depth/2,0);
-   assert.ok(Math.hypot(dx,dz)>=.35-1e-5,'Aya’s body clears the real widened magazine rack');
+   assert.ok(Math.hypot(dx,dz)>=.35-1e-5,'Nhung’s body clears the real widened magazine rack');
    if(!observed){observed=true;await client.face(x,z);await client.shot('aya-evening-customer');}
    if(!browsing&&Math.abs(z-(R.z-R.depth/2-.45))<.3&&Math.abs(x-R.x)<1.2){browsing=true;await client.face(x,z);await client.shot('aya-clear-rack-browse');}
   }else if(observed){departed=true;await client.shot('aya-left-normally');break;}
  }
- assert.ok(observed,'The actual scheduled Aya is visible during the authored evening stop');
+ assert.ok(observed,'The actual scheduled Nhung is visible during the authored evening stop');
  if(departureCheck)assert.ok(departed,'The actual customer walks out after 19:15');
  else{assert.ok(picked,'The actual customer claims a stocked item');assert.ok(paid,'The actual customer completes payment');}
  report.browsingObserved=browsing;report.departureObserved=departed;report.picked=picked;report.paid=paid;report.final=client.state;report.passed=true;
- console.log(`Normal MCP Aya ${viewport} ${mode}: ${departureCheck?'departure observed':'stock pickup and payment observed'}; body clears the widened rack`);
+ console.log(`Normal MCP Nhung ${viewport} ${mode}: ${departureCheck?'departure observed':'stock pickup and payment observed'}; body clears the widened rack`);
 }catch(error){report.failure=error.message;throw error;}
 finally{if(client.output)await writeFile(resolve(client.output,'report.json'),JSON.stringify(report,null,2)+'\n');await client.close();}

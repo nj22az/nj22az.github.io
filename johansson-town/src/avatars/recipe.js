@@ -33,13 +33,17 @@ export const ageClass=years=>!Number.isFinite(+years)?'adult':years<13?'child':y
 export const PARTS=Object.freeze({
  silhouette:Object.freeze(['neutral','feminine','masculine']),
  head:HEAD_FORMS,
- hair:Object.freeze(['crop','sidepart','bob','long','ponytail','braids','bun','spiky','perm','buzz','afro','horseshoe','bald']),
- eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle']),
- brows:Object.freeze(['straight','arched','thick','thin','worried','bushy','none']),
- nose:Object.freeze(['button','dot','line','wide','hook','none']),
- mouth:Object.freeze(['smile','flat','grin','small','wide','smirk','pout']),
+ hair:Object.freeze(['crop','sidepart','bob','long','ponytail','braids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns']),
+ eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle','doe','cat','droopy','heavy','bright','tired','squint','starry']),
+ brows:Object.freeze(['straight','arched','thick','thin','worried','bushy','angled','short','rounded','tapered','feathered','maro','none']),
+ nose:Object.freeze(['button','dot','line','wide','hook','pointed','snub','bulb','ridge','none']),
+ mouth:Object.freeze(['smile','flat','grin','small','wide','smirk','pout','cat','teeth','open','lopsided','tongue','buck','soft']),
  glasses:Object.freeze(['none','round','square','sun','half']),
- facial:Object.freeze(['none','moustache','walrus','stubble','beard','goatee']),
+ // Moustache and beard are worn together or apart, as in any face maker; `facial` is
+ // every style either can be, the single name older recipes gave.
+ moustache:Object.freeze(['none','moustache','walrus','handlebar','pencil']),
+ beard:Object.freeze(['none','stubble','beard','goatee','chinstrap']),
+ facial:Object.freeze(['none','moustache','walrus','handlebar','pencil','stubble','beard','goatee','chinstrap']),
  top:Object.freeze(['tank','tee','kariyushi','polo','blouse','jacket','apron','smock','sailor','sailorlong','police','hoodie','cardigan','overalls','sundress','festival','lighthouse','lantern','reef']),
  bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt','widepants','cropped','culottes','pleatedskirt']),
  footwear:Object.freeze(['barefoot','sneakers','sandals','shoes','boots']),
@@ -62,14 +66,19 @@ export const DEFAULT_RECIPE=Object.freeze({
  brows:Object.freeze({style:'straight',colour:'#1c1714',size:.5,spacing:.5,height:.5,tilt:.5}),
  nose:Object.freeze({style:'button',size:.5,height:.5,x:.5}),
  mouth:Object.freeze({style:'smile',colour:'#b8544a',size:.5,width:.5,height:.5,x:.5}),
- glasses:Object.freeze({style:'none',colour:'#2b2b2b'}),
- facial:Object.freeze({style:'none',colour:'#1c1714'}),
+ glasses:Object.freeze({style:'none',colour:'#2b2b2b',size:.5,height:.5}),
+ // `style` is kept for older readers: the beard if there is one, else the moustache.
+ facial:Object.freeze({style:'none',moustache:'none',beard:'none',colour:'#1c1714',size:.5,height:.5}),
  blush:.25,freckles:false,mole:false,wrinkles:0,
+ // Where the beauty spot sits on the face (when `mole` is on), and how big it is.
+ moleSpot:Object.freeze({x:.77,height:.33,size:.5}),
  // Everybody starts in the base layer -- a tank top, underwear and bare feet -- and
  // clothes are put on over it in the maker's wardrobe.
  outfit:Object.freeze({top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',shoes:'#6d4a32',hat:'none',hatColour:'#f4f1ea',accent:'#f4d23c'}),
  accessories:Object.freeze({earrings:'none',neckwear:'none',colour:'#e0b93a',pin:false}),
- swim:Object.freeze({colour:'#2f5f9e'}),
+ // What they wear in the water, and (adults) whether they wrap up in a bath towel or wear
+ // their swimwear at Umi-no-yu's family bath (avatars/build.js, bathOutfit).
+ swim:Object.freeze({colour:'#2f5f9e',bath:'towel'}),
  // Who they are (personality.js): four dials, a voice, a birthday, a favourite colour
  // and a catchphrase. Old recipes without one get this middle-of-the-road islander.
  profile:Object.freeze({pace:.5,talk:.5,show:.5,outlook:.5,pitch:.5,speed:.5,month:7,day:1,favourite:'#3fa0c8',catchphrase:''}),
@@ -91,18 +100,33 @@ export function normalizeRecipe(input={}){
   brows:sub('brows',{style:(v,f)=>pick(PARTS.brows,v,f),colour:col,size:num,spacing:num,height:num,tilt:num}),
   nose:sub('nose',{style:(v,f)=>pick(PARTS.nose,v,f),size:num,height:num,x:num}),
   mouth:sub('mouth',{style:(v,f)=>pick(PARTS.mouth,v,f),colour:col,size:num,width:num,height:num,x:num}),
-  glasses:sub('glasses',{style:(v,f)=>pick(PARTS.glasses,v,f),colour:col}),
-  facial:sub('facial',{style:(v,f)=>pick(PARTS.facial,v,f),colour:col}),
+  glasses:sub('glasses',{style:(v,f)=>pick(PARTS.glasses,v,f),colour:col,size:num,height:num}),
+  facial:facialHair(r.facial,sub('facial',{colour:col,size:num,height:num})),
   blush:num(r.blush,d.blush),freckles:!!r.freckles,mole:!!r.mole,wrinkles:num(r.wrinkles,d.wrinkles),
+  moleSpot:sub('moleSpot',{x:num,height:num,size:num}),
   outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>['none','flowers','stripes','dots'].includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,bottomPattern:(v)=>v==='plaid'?'plaid':'none',footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col})),
   accessories:sub('accessories',{earrings:(v,f)=>pick(PARTS.earrings,v,f),neckwear:(v,f)=>pick(PARTS.neckwear,v,f),colour:col,pin:flag}),
-  swim:sub('swim',{colour:col}),
+  swim:sub('swim',{colour:col,bath:(v,f)=>v==='swimwear'||v==='towel'?v:f}),
   profile:(()=>{
    const out=sub('profile',{pace:num,talk:num,show:num,outlook:num,pitch:num,speed:num,month:(v,f)=>Number.isInteger(+v)&&+v>=1&&+v<=12?+v:f,day:(v,f)=>Number.isInteger(+v)&&+v>=1&&+v<=31?+v:f,favourite:col,
     catchphrase:(v,f)=>v===undefined?f:String(v).replace(/[\u0000-\u001f<>]/g,'').slice(0,40)});
    out.day=Math.min(out.day,[31,29,31,30,31,30,31,31,30,31,30,31][out.month-1]);return out;
   })(),
  };
+}
+
+/**
+ * Moustache and beard from a recipe's facial hair. Recipes written before the two were
+ * separate gave one `style`; it is read as whichever of the two it names. `style` is
+ * written back as the beard if there is one, else the moustache.
+ */
+function facialHair(src,out){
+ const f=src&&typeof src==='object'?src:{};
+ const split=f.moustache!==undefined||f.beard!==undefined;
+ out.moustache=split?pick(PARTS.moustache,f.moustache,'none'):PARTS.moustache.includes(f.style)?f.style:'none';
+ out.beard=split?pick(PARTS.beard,f.beard,'none'):PARTS.beard.includes(f.style)?f.style:'none';
+ out.style=out.beard!=='none'?out.beard:out.moustache;
+ return out;
 }
 
 /**
@@ -141,9 +165,10 @@ export function seeded(text=''){
 /** Somebody new, at random (or from a seed): what the creator's dice button does. */
 export function randomRecipe(seed=Math.random().toString(36)){
  const r=seeded(seed),any=list=>list[Math.floor(r()*list.length)],pal=PALETTE;
- const older=r()<.3,feminine=r()<.5;
+ // Some are young: the maker's life stage (AGES) makes them a child or a teen.
+ const young=r(),age=young<.1?'child':young<.22?'teen':'adult',older=age==='adult'&&r()<.3,feminine=r()<.5;
  const hair=older?(feminine?any(['perm','bun','bob']):any(['horseshoe','buzz','crop','bald'])):feminine?any(['bob','long','ponytail','braids','bun','sidepart']):any(['crop','sidepart','spiky','buzz','afro']);
- return normalizeRecipe({
+ return normalizeRecipe({age,
   body:{height:.3+r()*.5,build:.25+r()*.55,skin:any(pal.skin.slice(0,7))},
   head:{size:.4+r()*.25,shape:r(),form:any(HEAD_FORMS),jaw:r(),cheeks:r()},
   hair:{style:hair,colour:older?any(['#9a9a96','#d8d6d0','#5a3a22']):any(pal.hair.slice(0,6)),flip:r()<.5},
@@ -151,9 +176,9 @@ export function randomRecipe(seed=Math.random().toString(36)){
   brows:{style:any(PARTS.brows.slice(0,6)),colour:older?'#8a8a86':'#1c1714',size:.4+r()*.3,height:.4+r()*.3,tilt:.3+r()*.4},
   nose:{style:any(PARTS.nose.slice(0,5)),size:.3+r()*.5,height:.4+r()*.2},
   mouth:{style:any(PARTS.mouth),colour:feminine&&r()<.5?any(pal.lips):'#b8544a',size:.35+r()*.4,height:.4+r()*.2},
-  glasses:{style:r()<.25?any(PARTS.glasses.slice(1)):'none',colour:any(['#2b2b2b','#8a4a3a','#c8a060','#e06a7a'])},
-  facial:{style:!feminine&&r()<.3?any(PARTS.facial.slice(1)):'none',colour:'#3a2618'},
-  blush:feminine?.3+r()*.4:r()*.2,freckles:r()<.12,mole:r()<.1,wrinkles:older?.5+r()*.5:0,
+  glasses:{style:r()<.25?any(PARTS.glasses.slice(1)):'none',colour:any(['#2b2b2b','#8a4a3a','#c8a060','#e06a7a']),size:.35+r()*.3,height:.4+r()*.2},
+  facial:{moustache:age==='adult'&&!feminine&&r()<.22?any(PARTS.moustache.slice(1)):'none',beard:age==='adult'&&!feminine&&r()<.2?any(PARTS.beard.slice(1)):'none',colour:'#3a2618',size:.35+r()*.3,height:.4+r()*.2},
+  blush:feminine?.3+r()*.4:r()*.2,freckles:r()<.12,mole:r()<.1,moleSpot:{x:r(),height:r(),size:.3+r()*.4},wrinkles:older?.5+r()*.5:0,
   outfit:{top:any(['tee','kariyushi','polo','blouse','jacket']),topColour:any(pal.cloth),pattern:r()<.3?any(['flowers','stripes','dots']):'none',
    bottom:feminine&&r()<.4?any(['skirt','longskirt','widepants','cropped','culottes','pleatedskirt']):any(['shorts','trousers']),bottomColour:any(['#27304d','#6d7478','#c8b48a','#2b2b2b','#9a6a42','#2f5f9e']),shoes:any(['#6d4a32','#2b2b2b','#f4f1ea','#d8342c']),footwear:any(['sneakers','sandals','shoes','boots']),hat:'none',hatColour:'#f4f1ea',accent:any(pal.cloth)},
   profile:{pace:r(),talk:r(),show:r(),outlook:r(),pitch:feminine?.45+r()*.5:r()*.6,speed:r(),month:1+Math.floor(r()*12),day:1+Math.floor(r()*28),favourite:any(pal.cloth)},

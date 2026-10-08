@@ -86,10 +86,10 @@ export const TOPICS=Object.freeze([
    'Tell it the shop is shut.'),
   close:T('I named it Mochi. We are best friends now.','I will not sleep tonight, {b}.','That is my plan for most things.','It is learning nothing from me.')},
  {id:'icecream',open:T(
-   'Blue Seal has a new flavour! Purple sweet potato! Purple!',
-   'They have run out of beni-imo at Blue Seal. My whole day is ruined.',
-   'Thinking about a Blue Seal ice cream. It is that kind of afternoon.',
-   'I have had three Blue Seal ice creams this week. For research.'),
+   'Blue Coral has a new flavour! Purple sweet potato! Purple!',
+   'They have run out of beni-imo at Blue Coral. My whole day is ruined.',
+   'Thinking about a Blue Coral ice cream. It is that kind of afternoon.',
+   'I have had three Blue Coral ice creams this week. For research.'),
   reply:T(
    'Let us get two each! One for each hand!',
    'Some days only ice cream understands.',

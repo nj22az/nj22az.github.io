@@ -1,5 +1,6 @@
 import {assetURL} from '../assets.js';
 import {BEACH_CORNER} from '../world/beach-layout.js';
+import {ambience} from './soundscape.js';
 let ctx=null,master=null,enabled=true,buffers=new Map(),loops=new Map(),lastTrain=-1,speech=null,speechRequest=0;
 export function unlockTownAudio(){
   const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return;
@@ -61,6 +62,82 @@ function updateShore(player,{inside,paused,relax}){
  }
  if(t>shore.nextSplash){shoreSplash(t);shore.nextSplash=t+12+Math.random()*16;}
 }
+/**
+ * The living soundscape (soundscape.js decides the levels; this plays them). Two cicada
+ * species are the one recording at two pitches -- the big kumazemi slower and deeper in the
+ * morning, the aburazemi quicker in the afternoon -- and everything else is synthesised,
+ * so nothing loops audibly: the rain, the frogs of the rainy season, the yamori geckos on
+ * the eaves, the morning birds, the higurashi's falling evening call and the harbour
+ * gulls. Each layer has its own gain and moves with a slow time constant, so the morning
+ * fades into the afternoon rather than switching.
+ */
+let scape=null;
+const LOOPED=Object.freeze({kumazemi:['cicadas',.82,.3],aburazemi:['cicadas',1.14,.24],crickets:['crickets',1,.26]});
+const SYNTH_LEVEL=Object.freeze({frogs:.22,geckos:.12,birds:.1,higurashi:.09,gulls:.1,rain:.3});
+function startScape(){
+ const bus={};for(const name of Object.keys(SYNTH_LEVEL)){bus[name]=ctx.createGain();bus[name].gain.value=0;bus[name].connect(master);}
+ // Rain: white noise, hiss on top and a soft roar under it.
+ const len=ctx.sampleRate*3,buffer=ctx.createBuffer(1,len,ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<len;i++)data[i]=Math.random()*2-1;
+ const rain=ctx.createBufferSource();rain.buffer=buffer;rain.loop=true;
+ const hiss=ctx.createBiquadFilter();hiss.type='highpass';hiss.frequency.value=900;const roar=ctx.createBiquadFilter();roar.type='lowpass';roar.frequency.value=380;
+ const roarGain=ctx.createGain();roarGain.gain.value=1.6;
+ rain.connect(hiss).connect(bus.rain);rain.connect(roar).connect(roarGain).connect(bus.rain);rain.start();
+ const t=ctx.currentTime;
+ return {bus,loops:{},next:{frogs:t,geckos:t+3,birds:t,higurashi:t+2,gulls:t+4},level:{},lastFerry:null};
+}
+function note(out,at,from,to,length,level,type='sine'){
+ const osc=ctx.createOscillator(),env=ctx.createGain();osc.type=type;
+ osc.frequency.setValueAtTime(from,at);osc.frequency.exponentialRampToValueAtTime(Math.max(20,to),at+length);
+ env.gain.setValueAtTime(.0001,at);env.gain.exponentialRampToValueAtTime(level,at+Math.min(.015,length/3));env.gain.exponentialRampToValueAtTime(.0001,at+length);
+ osc.connect(env).connect(out);osc.start(at);osc.stop(at+length+.02);
+}
+const CALLS={
+ // A pair of short low croaks, sometimes three.
+ frogs(out,t){const base=150+Math.random()*60;for(let k=0;k<1+Math.floor(Math.random()*3);k++)note(out,t+k*.16,base,base*.78,.1,.5,'square');return .35+Math.random()*1.1;},
+ // The yamori: a dry run of chirps.
+ geckos(out,t){const n=5+Math.floor(Math.random()*4);for(let k=0;k<n;k++)note(out,t+k*.085,2700-k*40,2300,.028,.6);return 7+Math.random()*12;},
+ // A bulbul's three notes, or a white-eye's thin trill.
+ birds(out,t){if(Math.random()<.6){for(let k=0;k<3;k++){const f=1700+Math.random()*1500;note(out,t+k*.17,f,f*(.8+Math.random()*.5),.14,.45);}}else for(let k=0;k<6;k++)note(out,t+k*.05,4200+Math.random()*500,3900,.04,.3);return .7+Math.random()*2.6;},
+ // Kana-kana-kana: a falling, slowing run.
+ higurashi(out,t){const n=10+Math.floor(Math.random()*5);for(let k=0;k<n;k++){const f=4300-k*45,gap=.07+k*.006;note(out,t+k*gap,f,f*.9,.05,.5*(1-k/(n+2)));}return 4+Math.random()*6;},
+ // A herring gull's call over the water.
+ gulls(out,t){for(let k=0;k<1+Math.floor(Math.random()*3);k++)note(out,t+k*.42,1250+Math.random()*200,640,.34,.35,'sawtooth');return 5+Math.random()*10;},
+};
+/** Two long blasts on leaving, one on coming in: the ferry's horn across the harbour. */
+function ferryHorn(blasts,distance){
+ const level=.28*Math.max(.15,1-distance/220),t=ctx.currentTime+.05;
+ const out=ctx.createGain();out.gain.value=level;const low=ctx.createBiquadFilter();low.type='lowpass';low.frequency.value=700;out.connect(low).connect(master);
+ for(let b=0;b<blasts;b++){const at=t+b*3.2;for(const f of [110,138.6]){const osc=ctx.createOscillator(),env=ctx.createGain();osc.type='sawtooth';osc.frequency.value=f;env.gain.setValueAtTime(0,at);env.gain.linearRampToValueAtTime(.5,at+.25);env.gain.setValueAtTime(.5,at+2.2);env.gain.linearRampToValueAtTime(0,at+2.6);osc.connect(env).connect(out);osc.start(at);osc.stop(at+2.7);}}
+}
+function updateScape(player,{minutes,rain,inside,paused,ferry}){
+ // Gulls want the water: the harbour is to the south of the town, past z = -35.
+ const harbour=Math.max(0,Math.min(1,(-player.z-25)/25));
+ const mix=paused?Object.fromEntries(Object.keys(SYNTH_LEVEL).concat(Object.keys(LOOPED)).map(k=>[k,0])):ambience({minutes,rain,inside,harbour});
+ if(!scape){if(!Object.values(mix).some(v=>v>.01))return;scape=startScape();}
+ const t=ctx.currentTime;
+ for(const [layer,[file,rate,base]] of Object.entries(LOOPED)){
+  const level=(mix[layer]||0)*base;
+  if(!scape.loops[layer]&&level>.005){
+   if(!buffers.has(file)){void loadSound(file);continue;}
+   const source=ctx.createBufferSource(),gain=ctx.createGain();source.buffer=buffers.get(file);source.loop=true;source.playbackRate.value=rate;gain.gain.value=0;
+   source.connect(gain).connect(master);source.start(0,Math.random()*source.buffer.duration);scape.loops[layer]={source,gain};
+  }
+  scape.loops[layer]?.gain.gain.setTargetAtTime(level,t,4);
+ }
+ for(const [layer,base] of Object.entries(SYNTH_LEVEL)){
+  const level=(mix[layer]||0)*base;scape.level[layer]=level;
+  scape.bus[layer].gain.setTargetAtTime(level,t,layer==='rain'?2:4);
+  if(CALLS[layer]&&level>.004&&t>=scape.next[layer])scape.next[layer]=t+CALLS[layer](scape.bus[layer],t+.02);
+ }
+ if(ferry&&!paused){
+  if(ferry.phase!==scape.lastFerry){
+   const d=Math.hypot(ferry.x-player.x,ferry.z-player.z);
+   if(scape.lastFerry==='waiting'&&ferry.phase==='reversing')ferryHorn(2,d);
+   else if(scape.lastFerry==='away'&&ferry.phase==='arriving')ferryHorn(1,d);
+   scape.lastFerry=ferry.phase;
+  }
+ }
+}
 export const townAudio={
   stopSpeech(){speechRequest++;if(speech){try{speech.source.stop();}catch{}speech=null;}},
   async speak(id){
@@ -77,8 +154,9 @@ export const townAudio={
   // There is no grass recording, so the lawn borrows the stone one at about half the
   // level rather than sounding like a pavement.
   step(surface){this.play('steps-'+(surface==='asphalt'?'asphalt':surface==='wood'||surface==='timber'?'wood':'stone'),surface==='grass'?.13:.27);},
-  update({player,yaw=0,minutes=1002,rain=false,inside=false,station=0,paused=false,relax=false}){if(!ctx)return;if(enabled)updateShore(player,{inside,paused,relax});const night=minutes%1440>=1140||minutes%1440<360;
-    const sources=[['water',0,-54,.5,95],['cicadas',-28,24,night?0:.25,140],['crickets',-28,24,night?.25:0,140],['engine',6,-42,.27,22],['radio-'+station,-4,-15,.36,22]];
+  update({player,yaw=0,minutes=1002,rain=false,inside=false,station=0,paused=false,relax=false,ferry=null}){if(!ctx)return;if(enabled)updateShore(player,{inside,paused,relax});const night=minutes%1440>=1140||minutes%1440<360;
+    void night;const sources=[['water',0,-54,.5,95],['engine',6,-42,.27,22],['radio-'+station,-4,-15,.36,22]];
+    if(enabled)updateScape(player,{minutes,rain,inside,paused,ferry});
     for(const name of ['radio-0','radio-1','radio-2'])if(name!=='radio-'+station&&loops.has(name))loops.get(name).gain.gain.setTargetAtTime(0,ctx.currentTime,.12);
     for(const [name,x,z,volume,range] of sources){if(!loops.has(name)&&!paused&&volume>0&&Math.hypot(x-player.x,z-player.z)<range){const v=voice(name,true);if(v)loops.set(name,v);}const v=loops.get(name);if(!v)continue;const dx=x-player.x,dz=z-player.z,d=Math.hypot(dx,dz),gain=paused?0:volume*Math.max(0,1-d/range)*(inside?.24:1);v.gain.gain.setTargetAtTime(gain,ctx.currentTime,.2);v.pan.pan.setTargetAtTime(Math.max(-.85,Math.min(.85,(dx*Math.cos(yaw)-dz*Math.sin(yaw))/Math.max(d,1))),ctx.currentTime,.2);}
     const train=Math.floor(minutes/8);if(train!==lastTrain){if(lastTrain>=0&&!paused)this.play('train',.16);lastTrain=train;}

@@ -243,7 +243,7 @@ function buildPromenade(kit,solid,{anchor,onAction}){
   for(const dz of [-.65,.65])kit.box(.45,.44,.08,x,.22,z+dz,0x5d6468);
   solid({id:'promenade-bench',x,z,w:.6,d:1.7,height:.8});
   const seat=anchor(x+.6,1,z,'Sit on the seawall bench',()=>onAction?.('seat','Seawall bench','You sit with your back to the town. Over the parapet the reef goes green, then blue; the tetrapods at the foot of the wall break each wave into spray and a long hiss.'));
-  if(seat)seat.userData.seat={id:'seawall-bench-'+z,position:[x,0,z],stand:[x+.85,0,z],eyeY:1.12,yaw:Math.PI/2,pitch:-.03};
+  if(seat)seat.userData.seat={id:'seawall-bench-'+z,position:[x,0,z],stand:[x+.85,0,z],surfaceY:.5,eyeY:1.12,yaw:Math.PI/2,pitch:-.03};
  }
  for(const z of [-8,12]){
   kit.cyl(.16,.22,2.6,-38.9,1.3,z,0x6e5a44,{segments:7});
@@ -535,7 +535,7 @@ const NAMEPLATES=Object.freeze({
  nakasone:'The Nakasones keep the lawn in front of Umi-no-yu cut, because nobody else will. Mr Nakasone plays the sanshin on the verandah after supper; if the wind is right you can hear it from the bath.',
  miyagi:'Mrs Miyagi is ninety-one, walks to the utaki every morning and has outlived two husbands and a typhoon that took the roof off everything else on this side. The shisa on her ridge is older than she is.',
  kamiya:'Mrs Kamiya worked the post-office counter for thirty-one years and still corrects the postman\'s handwriting. Her gateball mallet hangs inside the gate.',
- 'kitahama-1':'Thuan and Nao\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. Nao comes home after three in the morning and the gate latch is oiled so it does not wake anybody.',
+ 'kitahama-1':'Thuan and Thao\'s house: a red-tile roof, a hinpun, and a row of herb pots that Thuan names after customers. Thao comes home after three in the morning and the gate latch is oiled so it does not wake anybody.',
  'kitahama-2':'Mrs Sato\'s house, concrete and very tidy, with a stock pot always on the back step to cool. She walks down to the morning auction at nine and to the ramen counter at half past ten.',
  'kitahama-3':'Kōji Uehara\'s house. A wetsuit on the line, fish boxes stacked by the gate and a radio that plays the weather on the hour.',
  'kitahama-4':'Tōma. The postman lives here: his red Super Cub stands in the yard at night with its box padlocked, and he grows goya over the gate.',

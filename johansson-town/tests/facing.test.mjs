@@ -70,7 +70,7 @@ test('speaking to a walking Thuan cannot turn her body away from her route',()=>
 });
 
 test('standing near someone earns a glance, not a pirouette',()=>{
- const him=person(0,0,{name:'Kenji'});
+ const him=person(0,0,{name:'Chin'});
  him.g.rotation.y=Math.PI;
  const pass=createFacing({world:world([him]),getPlayerPosition:()=>at(0,-1.4)});
  for(let i=0;i<120;i++)pass.update(1/60);
@@ -80,7 +80,7 @@ test('standing near someone earns a glance, not a pirouette',()=>{
 });
 
 test('walking away is noticed: the look is dropped again',()=>{
- const him=person(0,0,{name:'Kenji'});
+ const him=person(0,0,{name:'Chin'});
  const pass=createFacing({world:world([him]),getPlayerPosition:()=>at(0,-1.4)});
  pass.update(1/60);
  assert.ok(him.g.userData.facingPlayer);

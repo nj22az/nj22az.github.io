@@ -40,6 +40,6 @@ export function buildAobaRadio(world,{register,onAction,shadows=false}={}){
  anchor([34,.9,158.8],'Read the island radio bulletin',()=>onAction?.('read','Aoba Radio, 76.4 FM','Since 1986, Aoba Radio has broadcast the ferry notices, weather, school announcements and the evening request show. The technician checks the transmitter after breakfast. The old oversized hill has given way to a small public station yard. Take the outside stairs to the roof lookout; please keep the aerial enclosure clear.'));
  anchor([36.2,Y+H+1,164.8],'Look out from Aoba Radio',()=>onAction?.('read','Aoba lookout','The homes of Kitahama lie along the southern lane. Beyond them are the town hall, the harbour roofs and the boat channel. On clear evenings the lights of Kitano-jima show across the water.'));
  const seat=anchor([34.8,Y+H+1,166.8],'Sit at the radio lookout',()=>onAction?.('seat','Aoba roof lookout','The ferry forecast drifts out of the studio downstairs.'));
- seat.userData.seat={position:[34.8,Y+H,166.8],stand:[34.8,Y+H,165.8],eyeY:Y+H+1.12,yaw:0,pitch:0};
+ seat.userData.seat={position:[34.8,Y+H,166.8],stand:[34.8,Y+H,165.8],surfaceY:Y+H+.49,eyeY:Y+H+1.12,yaw:0,pitch:0};
  return {group};
 }

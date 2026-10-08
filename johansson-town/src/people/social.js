@@ -10,6 +10,7 @@ import {STAFF_BENCH} from '../world/staff-bench.js';
 import {PROFILES} from './profiles.js';
 import {ACTIVE_RESIDENT_NAMES,RESIDENTS,HOME_OWNERS} from './residents.js';
 import {homeRoutine} from './home-life.js';
+import {happeningPlan} from './happenings.js';
 const HOME_RESIDENT_NAMES=new Set(HOME_OWNERS.map(p=>p.name));
 import {closingStockPending,closingPreparationPending} from '../commerce/shop-stock.js';
 import {transitStop,awayPlace} from '../world/transit.js';
@@ -54,6 +55,8 @@ export function thuanVisitsIzakaya(minutes){
  * the ones that let her stop.
  */
 export const THUAN_WALK_START=840,THUAN_WALK_END=930;
+/** Two places to stand outside Sakura's window, where the sisters wait for Thuan to lock up (world/okinawa/old-town.js). */
+export const SAKURA_FREEZER=Object.freeze([Object.freeze([-6.2,-21.0]),Object.freeze([-6.2,-21.9])]);
 const PARK_STAND=[PARK_BENCH.stand[0],PARK_BENCH.stand[2]];
 /**
  * The afternoon off, and the one pace in the town that is not the pace of an errand.
@@ -85,15 +88,31 @@ const THUAN_WALK=Object.freeze([
  // shortcuts and made the old loose facing gate look acceptable.
  {until:THUAN_WALK_END,place:'market',target:MARKET_THRESHOLD,activity:'walking back to Sakura',pace:1.4},
 ].map(Object.freeze));
+/**
+ * The three sisters: Nhung (the eldest, at the bookshop), Thao (Minato) and Thuan (the
+ * youngest, at Sakura). On the dry days Thuan is not at Minato in the evening, Nhung takes her break when Thuan does, and
+ * the two of them play jan-ken-pon in the park instead of Thuan's nap and walk; `play`
+ * names the partner, and the schedule (schedules.js) faces them off and plays.
+ */
+export const SISTERS_PLAY=Object.freeze({start:880,end:914,thuan:[PARK_STAND[0]+.75,PARK_STAND[1]+.2],nhung:[PARK_STAND[0]-.75,PARK_STAND[1]+.2]});
+export const sistersPlayDay=minutes=>Math.floor(minutes/1440)%2===1;
+export function sistersAtPlay(profile,minutes,rain=false){
+ if(rain||!sistersPlayDay(minutes)||!['Thuan','Nhung'].includes(profile?.name))return null;
+ const m=minuteOfDay(minutes);if(m<SISTERS_PLAY.start||m>=SISTERS_PLAY.end)return null;
+ const thuan=profile.name==='Thuan';
+ return {place:'park',target:thuan?SISTERS_PLAY.thuan:SISTERS_PLAY.nhung,play:thuan?'Nhung':'Thuan',activity:'playing jan-ken-pon with '+(thuan?'her big sister Nhung':'her little sister Thuan')+' in the park'};
+}
 /** The leg of the walk she is on, or null when she is not on it. */
 export function thuanAfternoon(profile,minutes,rain=false){
  if(rain||profile?.name!=='Thuan')return null;
  const m=minuteOfDay(minutes);
  if(m<THUAN_WALK_START||m>=THUAN_WALK_END)return null;
+ // On a play day the nap and the sea wall give way to a game with Nhung.
+ if(sistersPlayDay(minutes)&&m<SISTERS_PLAY.end)return m<SISTERS_PLAY.start?THUAN_WALK[0]:sistersAtPlay(profile,minutes,rain);
  return THUAN_WALK.find(leg=>m<leg.until)||null;
 }
 
-// Nao has a real pre-shift day rather than materialising behind Minato's counter.
+// Thao has a real pre-shift day rather than materialising behind Minato's counter.
 // The generous legs account for the town's actual street distances and the time she
 // spends turning at corners. Two park targets make this a walk around the grounds,
 // rather than every resident being sent to the same bench coordinate.
@@ -105,7 +124,7 @@ export const NAO_DAY=Object.freeze([
  {until:960,place:'izakaya',target:IZAKAYA_DOOR,activity:'tidying Minato before opening'},
 ].map(Object.freeze));
 export function naoBeforeShift(profile,minutes,rain=false){
- if(profile?.name!=='Nao')return null;
+ if(profile?.name!=='Thao')return null;
  const shift=shiftFor(profile),m=minuteOfDay(minutes);
  if(!shift||m<shift.arrival+30||m>=shift.start)return null;
  if(rain)return {place:'izakaya',target:IZAKAYA_DOOR,activity:'tidying Minato before opening'};
@@ -145,18 +164,22 @@ export function onsenInvitationDay(profile,minutes,rain=false,state=null){
 // the harbour and a closing walk. The last leg is deliberately omitted so every
 // resident still returns to the normal bus plan with ample boarding time.
 const AFTER_WORK=Object.freeze({
- Aya:Object.freeze([
-  {until:45,place:'market',target:MARKET_THRESHOLD,activity:'picking up tea for the book counter'},
-  {until:120,place:'park',target:[PARK_STAND[0]-.9,PARK_STAND[1]+.7],activity:'reading in the park'},
-  {until:155,place:'stroll',target:[8,-43],activity:'checking the evening-paper box at the quay'},
+ // The eldest sister's evening is her sisters': Thuan at Sakura's counter, a Blue Coral cone
+ // from the lane, eaten outside while Thuan locks up, then, on Thuan's Minato nights, Minato,
+ // where Thao is behind the bar (afterWorkPlan).
+ Nhung:Object.freeze([
+  {until:60,place:'market',target:MARKET_THRESHOLD,activity:'visiting her little sister Thuan at the Sakura counter'},
+  {until:90,place:'stroll',target:SAKURA_FREEZER[1],activity:'waiting outside Sakura with two Blue Coral cones from the lane, for Thuan to lock up'},
+  {until:105,place:'stroll',target:SAKURA_FREEZER[1],activity:'sharing Blue Coral cones with Thuan outside Sakura'},
+  {until:180,place:'izakaya',target:IZAKAYA_DOOR,activity:'at Minato with her sisters Thao and Thuan',withThuan:true},
  ]),
- Kenji:Object.freeze([
+ Chin:Object.freeze([
   {until:55,place:'market',target:MARKET_THRESHOLD,activity:'buying a cold soda after work'},
   {until:130,place:'stroll',target:[3.5,-47],activity:'looking over the harbour machinery'},
   {until:165,place:'park',target:[PARK_STAND[0]+.8,PARK_STAND[1]-.6],activity:'taking a breather in the park'},
  ]),
  'Mrs Sato':Object.freeze([
-  {until:75,place:'izakaya',target:IZAKAYA_DOOR,activity:'having tea with Nao after the lunch shift'},
+  {until:75,place:'izakaya',target:IZAKAYA_DOOR,activity:'having tea with Thao after the lunch shift'},
   {until:135,place:'stroll',target:[11,-40],activity:'choosing fish at the harbour'},
  ]),
  Reiko:Object.freeze([
@@ -165,11 +188,11 @@ const AFTER_WORK=Object.freeze({
   {until:400,place:'stroll',target:[18,-45],activity:'watching the harbour lights'},
  ]),
  Tetsuo:Object.freeze([
-  {until:105,place:'izakaya',target:IZAKAYA_DOOR,activity:'playing the counter radio for Nao'},
+  {until:105,place:'izakaya',target:IZAKAYA_DOOR,activity:'playing the counter radio for Thao'},
   {until:235,place:'stroll',target:[6,-48],activity:'checking the harbour radio signal'},
   {until:390,place:'park',target:[PARK_STAND[0]+1.1,PARK_STAND[1]+.5],activity:'listening to a pocket radio in the park'},
  ]),
- Nao:Object.freeze([
+ Thao:Object.freeze([
   {until:60,place:'izakaya',target:IZAKAYA_DOOR,activity:'clearing tables and closing Minato'},
   {until:165,place:'stroll',target:[14,-42],activity:'taking kitchen scraps to the harbour cats'},
   {until:270,place:'park',target:[PARK_STAND[0]+.2,PARK_STAND[1]+1.1],activity:'resting her feet in the park'},
@@ -189,7 +212,10 @@ export function afterWorkPlan(profile,minutes,rain=false){
  // safe if a shift or service changes without every personal stop being retimed.
  const available=departureFor(profile,false)-shift.finish-60;
  if(elapsed<0||elapsed>=available)return null;
- return routine.find(stop=>elapsed<Math.min(stop.until,available))||null;
+ const stop=routine.find(stop=>elapsed<Math.min(stop.until,available))||null;
+ // Nhung goes on to Minato only on the nights Thuan does.
+ if(stop?.withThuan&&!thuanVisitsIzakaya(minutes))return null;
+ return stop;
 }
 export function thuanEveningPlace(minutes){
  const m=minuteOfDay(minutes);
@@ -201,7 +227,7 @@ export const IZAKAYA_SEATS=[[-3.8,-1.42],[-2.3,-1.42],[-.8,-1.42],[.7,-1.42],[2.
 export function supperGuests(minutes){
  const minute=((minutes%1440)+1440)%1440;
  if(!izakayaOpen(minutes))return [];
- return PROFILES.filter(p=>ACTIVE_RESIDENT_NAMES.includes(p.name)&&p.name!=='Nao'&&inTimeRange(minute,p.supperStart,p.supperEnd)).slice(0,IZAKAYA_SEATS.length);
+ return PROFILES.filter(p=>ACTIVE_RESIDENT_NAMES.includes(p.name)&&p.name!=='Thao'&&inTimeRange(minute,p.supperStart,p.supperEnd)).slice(0,IZAKAYA_SEATS.length);
 }
 export function visitsMarket(profile,minutes,state=null){
  const visit=marketVisitsForDay(minutes)[profile.name],account=state?.residentLife?.[profile.name],meal=account?.day===Math.floor(minutes/1440)?(marketVisitPurpose(profile.name,minutes,state||{})==='goods'?(account.shopping||account.meals?.market):account.meals?.market):null;
@@ -225,8 +251,11 @@ function satoLunch(profile,minutes){
  const slot=SATO_LUNCH[profile.name];
  return slot&&satoRamenOpen(minutes)&&inTimeRange(minutes,...slot)?{place:'ramen',target:RAMEN_DOOR,activity:'lunch at Sato Ramen'}:null;
 }
+/** Yard residents whose evening runs longer than the usual two hours. */
+const YARD_EVENING=Object.freeze({Nhung:180});
 function yardResidentPlan(profile,minutes,rain=false,state=null){
  const lunch=satoLunch(profile,minutes);if(lunch)return lunch;
+ const play=sistersAtPlay(profile,minutes,rain);if(play)return play;
  if(shiftActive(profile,minutes))return {place:'work',target:profile.work,activity:profile.role};
  if(visitsMarket(profile,minutes,state))return {place:'market',target:MARKET_THRESHOLD,activity:'a shopping errand at Sakura'};
  const morning=MORNING_PARK[profile.name];
@@ -234,7 +263,7 @@ function yardResidentPlan(profile,minutes,rain=false,state=null){
  if(!rain&&morning&&inTimeRange(minutes,...morning))return {place:'park',target:[PARK_STAND[0]+1.4,PARK_STAND[1]+.9],activity:'sitting in the park'};
  // Their evening stops were timed against the last bus; living next door, they take
  // at most a couple of hours after work before heading home to bed.
- const shift=shiftFor(profile),evening=shift&&minuteOfDay(minutes-shift.finish)<120?afterWorkPlan(profile,minutes,rain):null;
+ const shift=shiftFor(profile),evening=shift&&minuteOfDay(minutes-shift.finish)<(YARD_EVENING[profile.name]||120)?afterWorkPlan(profile,minutes,rain):null;
  if(evening)return evening;
  return {place:'home',target:profile.home,activity:rain?'sheltering at home':'at home in the yard'};
 }
@@ -287,8 +316,8 @@ function kitahamaPlan(profile,plan){
  return plan.activity?{...plan,activity:plan.activity.replace(/ before the last (bus|ferry)/,' before walking home').replace(/the Harbour Line/g,'home')}:plan;
 }
 function commuterPlanOn(profile,minutes,rain=false,state=null){
- // After last orders Nao stays an hour to wipe down and lock up (izakaya-hours.js).
- if(profile.name==='Nao'){const job=izakayaJob('Nao',minutes);if(job)return {place:'izakaya',target:IZAKAYA_DOOR,activity:job.activity};}
+ // After last orders Thao stays an hour to wipe down and lock up (izakaya-hours.js).
+ if(profile.name==='Thao'){const job=izakayaJob('Thao',minutes);if(job)return {place:'izakaya',target:IZAKAYA_DOOR,activity:job.activity};}
  if(livesAtWork(profile))return workplaceResidentPlan(profile,minutes,rain,state);
  if(livesInYard(profile))return yardResidentPlan(profile,minutes,rain,state);
  const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:transitStop().queue,activity});
@@ -302,7 +331,10 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   if(state?.sakura&&closingStockPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'restocking after closing'};
   if(state?.sakura&&closingPreparationPending(state,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:'checking closing stock'};
   if(thuanAtOnsen(profile,minutes,rain,state))return {place:'onsen',target:ONSEN_DOOR,activity:'a soak at Umi-no-yu before the last bus'};
-  if(thuanAtMinato(profile,minutes,rain))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a beer with Nao after closing Sakura'};
+  // Nhung has been waiting outside with a Blue Coral cone for her.
+  const finish=shiftFor(profile)?.finish??profile.close??1200;
+  if(!rain&&inTimeRange(minuteOfDay(minutes),finish,finish+15))return {place:'stroll',target:SAKURA_FREEZER[0],activity:'an ice cream with her big sister Nhung outside Sakura'};
+  if(thuanAtMinato(profile,minutes,rain))return {place:'izakaya',target:IZAKAYA_DOOR,activity:'a beer with her sisters Thao and Nhung after closing Sakura'};
   return {place:'home',target:profile.home,activity:'walking home after closing Sakura'};
  }
  if(phase==='departing'){
@@ -318,7 +350,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
  if(profile.name==='Bus driver')return {place:'station',target:transitStop().driver,activity:'running the Harbour Line'};
  if(profile.name==='Harbour master')return {place:'work',target:profile.work,activity:'on duty at the harbour office'};
  if(profile.name==='Officer Mori')return shiftActive(profile,minutes)?{place:'patrol',target:(NIGHT_PATROL)[0],activity:'night patrol'}:bus('waiting for the night shift bus');
- if(profile.name==='Nao'){
+ if(profile.name==='Thao'){
   const morning=naoBeforeShift(profile,minutes,rain);
   if(morning)return morning;
   return shiftActive(profile,minutes)?{place:'izakaya',target:IZAKAYA_DOOR,activity:'serving guests and tidying Minato'}:bus('travelling to the next shift');
@@ -338,7 +370,7 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
   // Carry the leg's pace through. Dropping it here is what kept her break at the
   // town's errand speed of 1.25 m/s, which is above the handover between her walk and
   // her stroll -- so the unhurried cycle her model carries was never once played.
-  if(walk)return {place:walk.place,target:walk.target,activity:walk.activity,pace:walk.pace};
+  if(walk)return {place:walk.place,target:walk.target,activity:walk.activity,pace:walk.pace,...(walk.play?{play:walk.play}:{})};
   if(shiftActive(profile,minutes))return {place:'market',target:MARKET_THRESHOLD,activity:profile.role};
   return bus('leaving Sakura for the last bus');
  }
@@ -356,16 +388,20 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  }
  // These homes remain playable after the island expansion. A night worker must
  // finish sleeping and breakfast before a generic shopping or ferry rule sends
- // them outside. The Minato closing shift finishes exactly at Nao's 04:00 bedtime.
+ // them outside. The Minato closing shift finishes exactly at Thao's 04:00 bedtime.
  if(HOME_RESIDENT_NAMES.has(profile?.name)){
   const routine=homeRoutine(profile,minutes);
   if(['sleep','wake','breakfast','prepare'].includes(routine.id))return {place:'home',target:profile.home,activity:routine.activity+' at home'};
  }
+ // Today's happening, if it names them (happenings.js): the fish auction, the eisa. Read
+ // after sleep and breakfast, so nobody is got out of bed for one.
+ const happening=happeningPlan(profile,minutes,rain);
+ if(happening)return happening;
  // Local residents leave early enough to be seen walking from home to work.
  // Sleep/breakfast above and night shifts retain priority.
  const shift=shiftFor(profile),m=minuteOfDay(minutes);
  if(HOME_RESIDENT_NAMES.has(profile?.name)&&shift&&!shift.permanent&&inTimeRange(m,shift.start-30,shift.start)){
-  const place=profile.name==='Thuan'?'market':profile.name==='Nao'?'izakaya':'work';
+  const place=profile.name==='Thuan'?'market':profile.name==='Thao'?'izakaya':'work';
   const target=place==='market'?MARKET_THRESHOLD:place==='izakaya'?IZAKAYA_DOOR:place==='ramen'?RAMEN_DOOR:profile.work;
   return {place,target,activity:'walking to work before opening'};
  }
@@ -380,10 +416,10 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  return plan;
 }
 export const GOSSIP=[
- {id:'yuri-evening',a:'Thuan',b:'Nao',line:'Thuan: I told the assistant manager I would be on the last ferry.\nNao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Check the terminal timetable for her evening service.'},
- {id:'apron',a:'Aya',b:'Reiko',line:'Aya: Tama needs his own column.\nReiko: What would he write?\nAya: Strong opinions about the window chair.',clue:'Aya and Reiko share Books & Press and commute in for their shifts.'},
- {id:'radio',a:'Kenji',b:'Tetsuo',line:'Kenji: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nKenji: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
+ {id:'yuri-evening',a:'Thuan',b:'Thao',line:'Thuan: I told the assistant manager I would be on the last ferry.\nThao: The plant?\nThuan: He looked very disappointed. I watered him twice.',clue:'Thuan leaves Sakura for the Harbour Line after closing. Check the terminal timetable for her evening service.'},
+ {id:'apron',a:'Nhung',b:'Reiko',line:'Nhung: Tama needs his own column.\nReiko: What would he write?\nNhung: Strong opinions about the window chair.',clue:'Nhung and Reiko share Books & Press and commute in for their shifts.'},
+ {id:'radio',a:'Chin',b:'Tetsuo',line:'Chin: Hey, bro, I fixed the crackling.\nTetsuo: That was the music.\nChin: Totally improved it, then, dude.',clue:'Find the street radio and try the other stations.'},
  {id:'fish',a:'Harbour master',b:'Bus driver',line:'Bus driver: I arrived exactly on time.\nHarbour master: Which timetable?\nBus driver: The one I am writing now.',clue:'The harbour master keeps the office records; the bus driver works at the northern terminal.'},
- {id:'special',a:'Nao',b:'Mrs Sato',line:'Mrs Sato: Is that a proper supper?\nNao: You taught me the portions.\nMrs Sato: Good. Then there will be seconds.',clue:'Try Nao’s supper special at the counter.'}
+ {id:'special',a:'Thao',b:'Mrs Sato',line:'Mrs Sato: Is that a proper supper?\nThao: You taught me the portions.\nMrs Sato: Good. Then there will be seconds.',clue:'Try Thao’s supper special at the counter.'}
 ];
-export function gossipAt(minutes,names){return GOSSIP.filter(g=>names.includes(g.a)&&names.includes(g.b))[Math.floor(minutes/7)%Math.max(1,GOSSIP.filter(g=>names.includes(g.a)&&names.includes(g.b)).length)]||{id:'welcome',line:'Nao: Pull up a chair. Nobody leaves this table a stranger.\nA gull outside offers a surprisingly firm objection.',clue:'Neighbours arrive after their shifts. Visit again later for different conversations.'};}
+export function gossipAt(minutes,names){return GOSSIP.filter(g=>names.includes(g.a)&&names.includes(g.b))[Math.floor(minutes/7)%Math.max(1,GOSSIP.filter(g=>names.includes(g.a)&&names.includes(g.b)).length)]||{id:'welcome',line:'Thao: Pull up a chair. Nobody leaves this table a stranger.\nA gull outside offers a surprisingly firm objection.',clue:'Neighbours arrive after their shifts. Visit again later for different conversations.'};}
