@@ -38,3 +38,54 @@ export function createFootGrounder(avatar){
   avatar.root.position.y+=airborne?Math.max(0,correction):correction;
  };
 }
+
+/**
+ * Someone lying on the ground rests on whatever on them is lowest -- a cheek, the chest, a hip -- never
+ * through it and never hovering over it: the body's skin (each point carried by its bones, as it is drawn)
+ * and the face are found in their place this frame and the body is raised or lowered by what the lowest
+ * point is off the floor. The swinging parts (a braid, a hem) are left out: they hang from the body and
+ * follow it. Returns how far the root must move up (metres), for whoever blends it in.
+ */
+export function createLieGrounder(avatar){
+ const swinging=new Set(['hairA','hairB','braidL1','braidL2','braidR1','braidR2','skirtF','skirtB','skirtL','skirtR']);
+ const inverse=new THREE.Matrix4(),matrix=new THREE.Matrix4(),point=new THREE.Vector3(),sum=new THREE.Vector3();
+ let signature='',bones=[],samples=[];
+ function refresh(){
+  const meshes=avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible),key=meshes.map(o=>o.uuid).join('/');
+  if(key===signature)return;signature=key;bones=[];samples=[];
+  const slot=new Map(),seen=new Set(),unique=new Set();
+  const slotOf=bone=>{if(!slot.has(bone)){slot.set(bone,bones.length);bones.push(bone);}return slot.get(bone);};
+  for(const mesh of meshes){
+   const g=mesh.geometry;if(seen.has(g))continue;seen.add(g);
+   const {position,skinIndex,skinWeight}=g.attributes;if(!skinIndex||!skinWeight)continue;
+   for(let i=0;i<position.count;i++){
+    const id=[position.getX(i),position.getY(i),position.getZ(i)].map(v=>v.toFixed(4)).join('/');if(unique.has(id))continue;unique.add(id);
+    const parts=[];let swing=0;
+    for(let k=0;k<4;k++){
+     const w=skinWeight.getComponent(i,k);if(w<1e-3)continue;
+     const index=skinIndex.getComponent(i,k),bone=mesh.skeleton.bones[index];
+     if(swinging.has(bone.name)){swing+=w;continue;}
+     parts.push([slotOf(bone),w,point.fromBufferAttribute(position,i).applyMatrix4(mesh.bindMatrix).applyMatrix4(mesh.skeleton.boneInverses[index]).clone()]);
+    }
+    if(swing<.5&&parts.length)samples.push(parts);
+   }
+  }
+  // The face is its own mesh on the head bone: its sphere, in the head bone's frame.
+  const head=avatar.face?.head;
+  if(head){const p=head.geometry.attributes.position,b=slotOf(avatar.bones.head);head.updateMatrix();for(let i=0;i<p.count;i++)samples.push([[b,1,point.fromBufferAttribute(p,i).applyMatrix4(head.matrix).clone()]]);}
+ }
+ const placed=[];
+ return (floor=0)=>{
+  refresh();if(!samples.length)return 0;
+  const parent=avatar.root.parent;avatar.root.updateWorldMatrix(true,true);
+  if(parent)inverse.copy(parent.matrixWorld).invert();else inverse.identity();
+  bones.forEach((bone,i)=>{(placed[i]??=new THREE.Matrix4()).multiplyMatrices(inverse,bone.matrixWorld);});
+  let lowest=Infinity;
+  for(const parts of samples){
+   sum.set(0,0,0);let total=0;
+   for(const [b,w,p] of parts){sum.addScaledVector(point.copy(p).applyMatrix4(placed[b]),w);total+=w;}
+   lowest=Math.min(lowest,sum.y/total);
+  }
+  return floor-lowest;
+ };
+}
