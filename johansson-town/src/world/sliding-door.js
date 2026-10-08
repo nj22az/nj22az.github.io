@@ -22,14 +22,16 @@ export const doorState=()=>({amount:0,speed:0,hold:0});
 
 /**
  * One step of the door (pure; the game and the films both use it). near: is anybody within reach of the mat.
- * Long steps are split so it moves the same at any frame rate.
+ * rest: where it settles when nobody is near (0, shut, for an automatic door; a hand-slid door can be left
+ * standing a little open, like Umi-no-yu's street door in opening hours). Long steps are split so it moves
+ * the same at any frame rate.
  */
-export function stepDoor(state,dt,near){
+export function stepDoor(state,dt,near,rest=0){
  if(!(dt>0))return state;
  for(let left=dt;left>1e-6;){
   const h=Math.min(left,1/60);left-=h;
   if(near)state.hold=SLIDING_DOOR.hold;else state.hold=Math.max(0,state.hold-h);
-  const target=near||state.hold>0?1:0,w=target>state.amount?SLIDING_DOOR.open:SLIDING_DOOR.close;
+  const target=near||state.hold>0?1:rest,w=target>state.amount?SLIDING_DOOR.open:SLIDING_DOOR.close;
   state.speed+=(w*w*(target-state.amount)-2*w*state.speed)*h;
   state.amount+=state.speed*h;
   if(state.amount<0){state.amount=0;state.speed=0;}

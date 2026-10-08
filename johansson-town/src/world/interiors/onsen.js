@@ -10,6 +10,7 @@ import {buildWashArea,WASH_SEATS} from './onsen-wash.js';
 import {buildOnsenElectrics,isPowered,isWorking} from './onsen-electrics.js';
 import {buildOnsenTowels} from './onsen-towels.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
+import {buildOnsenFront} from './onsen-front.js';
 
 /**
  * Inside Umi-no-yu: through the noren to the bandai, the changing room, the washing
@@ -21,7 +22,8 @@ import {ONSEN_SIGNS} from './onsen-signs.js';
  * the water with a friend. The board, lamps and dryers are in onsen-electrics.js; towels in
  * onsen-towels.js. The pools are sunk below the floor: you walk round them and get in by the seats.
  *
- * The front of the house (genkan, bandai, lobby, noren) is dressed in onsen-lobby.js.
+ * The front of the house (genkan, bandai, lobby, noren) is dressed in onsen-lobby.js; the street
+ * doors, the shoes at the step and the umbrella stand are in onsen-front.js.
  *
  * Room frame: the street door is at +z, the sea at -z. Metres, floor at y = 0.
  */
@@ -75,8 +77,10 @@ function canvasSign(lines,{w=512,h=256,bg='#efe6cf',fg='#2b2520',size=64}={}){
  * @param {(o:THREE.Object3D,label:string,fn:Function,near?:boolean)=>void} shared.reg
  * @param {(kind:string,...args:any[])=>void} shared.action
  * @param {()=>void} shared.exit
+ * @param {()=>{name:string|null,x:number,z:number}[]} [shared.people] who is in the room and where (the player
+ *   with no name): the street door opens for them, and the residents' shoes are at the step once they are past it.
  */
-export function buildOnsenInterior({room,reg,action,exit}){
+export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  room.name='Umi-no-yu interior';
  const colliders=[],mats=new Map(),animated=[];
  const mat=(color,rough=.8,extra={})=>{const key=color+':'+rough+JSON.stringify(Object.keys(extra));if(!mats.has(key)||Object.keys(extra).length){const m=new THREE.MeshStandardMaterial({color,roughness:rough,...extra});if(Object.keys(extra).length)return m;mats.set(key,m);}return mats.get(key);};
@@ -153,6 +157,8 @@ export function buildOnsenInterior({room,reg,action,exit}){
  // The noren into the changing room.
  // Noren, getabako, milk cooler, the tatami corner and the rest: onsen-lobby.js.
  const lobby=buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seats:ONSEN_SEATS});
+ // The street doors, the porch beyond them, the shoes at the step and the umbrella stand.
+ const front=buildOnsenFront({room,rect,anchor,action});
 
  // ---- Changing room.
  for(let i=0;i<6;i++)for(let r=0;r<2;r++){const z=1.25-i*.42;box([.45,.9,.4],[-4.75,.45+r*.95,z],mat(0xb9b2a0,.45),'Locker');box([.02,.12,.08],[-4.52,.55+r*.95,z+.12],mat(0xc9a13c,.3),'Locker key');}
@@ -252,6 +258,7 @@ export function buildOnsenInterior({room,reg,action,exit}){
   time+=dt;
   const day=daylight(minutes),night=1-day;
   lobby.tick(dt,minutes,day,townCalendarAt(minutes).weekday);
+  front.update(dt,minutes,people());front.light(day);
   seaMat.color.setRGB(.25+.75*day,.3+.7*day,.45+.55*day);
   power.tick(day,dt);lanternGlow.emissiveIntensity=night*1.4;outdoor.intensity=night*5;sun.intensity=day*1.6;
   for(const s of steam){const u=(s.userData.phase+time*s.userData.speed)%1,[x,y,z]=s.userData.base;s.position.set(x+Math.sin(u*6+x)*.15,y+.1+u*1.4,z);s.scale.setScalar(.35+u*.9);s.material.opacity=.3*Math.sin(u*Math.PI)*(.55+.45*night);}
@@ -262,5 +269,5 @@ export function buildOnsenInterior({room,reg,action,exit}){
   higaMotion?.update(dt,{speed:0,seated:true,seatHeight:.4,pose:Math.floor(time/9)%3===2?'Sit':'Read',expression:'neutral'});
  }
  tick(0);
- return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,power,tv:lobby.tv,dispose(){power.dispose();}};
+ return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,power,tv:lobby.tv,streetDoor:front.door,genkan:front.genkan,dispose(){power.dispose();front.dispose();}};
 }
