@@ -115,7 +115,7 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
  const dome=new THREE.Mesh(new THREE.SphereGeometry(.045,16,8,0,Math.PI*2,0,Math.PI/2),brass);dome.position.y=.015;bell.add(dome);
  const plunger=new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,.03,8),brass);plunger.position.y=.07;bell.add(plunger);
  let rangAt=-9;
- anchor([-3.62,1.25,3.15],'Ring the desk bell',()=>{rangAt=time;action('inspect',"Chin · The desk bell",
+ anchor([-3.62,1.25,3.15],'Ring the desk bell',()=>{rangAt=time;action('inspect',"The desk bell",
   'Ting. Higa-san looks up over her glasses, finds you are standing right in front of her, and goes back to the crossword. "I saw you come in, dear."');});
  const phone=new THREE.Group();phone.position.set(-3.9,FURNITURE_HEIGHTS.serviceCounter,3.2);phone.rotation.y=.3;phone.name='Push-button phone';group.add(phone);
  const ivory=new THREE.MeshStandardMaterial({color:0xddd2bc,roughness:.45});
@@ -141,8 +141,8 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
  add(new THREE.CylinderGeometry(.05,.05,.035,12),new THREE.MeshStandardMaterial({color:0xb0302a,roughness:.5}),T.x+.02,T.y+.337,T.z-.2,'Senbei tin');
  const zabuton=new THREE.MeshStandardMaterial({color:0x8a2f3a,roughness:.85});
  for(const [dx,dz] of [[0,.5],[-.62,0]])add(new THREE.BoxGeometry(.5,.07,.5),zabuton,T.x+dx,T.y+.035,T.z+dz,'Zabuton');
- seat(seats.tatami,"Small rise · Tatami corner",'You slip your slippers off at the edge and sit on the zabuton. The kyūsu is still warm. Somebody has left half a packet of senbei and the evening paper.');
- anchor([T.x,T.y+.6,T.z],'Pour a cup of tea',()=>action('inspect',"Tea · Tea",'You pour from the kyūsu: genmaicha, a little stewed, exactly as it should be after a bath. Higa-san calls over without looking: "Help yourself, it is free."'));
+ seat(seats.tatami,"Tatami corner",'You slip your slippers off at the edge and sit on the zabuton. The kyūsu is still warm. Somebody has left half a packet of senbei and the evening paper.');
+ anchor([T.x,T.y+.6,T.z],'Pour a cup of tea',()=>action('inspect',"Tea",'You pour from the kyūsu: genmaicha, a little stewed, exactly as it should be after a bath. Higa-san calls over without looking: "Help yourself, it is free."'));
  // The small television on its own stand in the back corner of the tatami.
  const TV=LOBBY.tv,tv=new THREE.Group();tv.position.set(TV.x,K.h,TV.z);tv.rotation.y=-Math.PI*.18;tv.name='Lobby CRT';group.add(tv);
  const tvStand=new THREE.Mesh(new THREE.BoxGeometry(.6,.3,.42),darkWood);tvStand.position.y=.15;tv.add(tvStand);

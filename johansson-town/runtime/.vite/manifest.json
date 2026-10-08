@@ -43,7 +43,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-CG5AjBbO.js",
+    "file": "boot-Dpfq8Zs2.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -67,7 +67,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-C1f3pL8Q.js",
+    "file": "game-DoTYZ_ue.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
