@@ -1,3 +1,4 @@
+import {HARBOUR_POLO_OUTFIT} from './outfits.js';
 import {residentRecipe} from './wardrobe.js';
 import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
 import {PROFILES} from '../people/profiles.js';
@@ -17,6 +18,18 @@ const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).
 })));
 
 export const CAST_RECIPES=castSet({
+ // Photo reference: a blonde adult with side-swept tied hair, arched brows,
+ // almond eyes and berry lips. A neutral editable name, not an invented identity.
+ 'Harbour visitor':R({name:'Harbour visitor',age:'adult',
+  body:{height:.56,build:.25,silhouette:'feminine',skin:'#f1cfae'},
+  head:{size:.44,shape:.42,form:'oval',jaw:.32,cheeks:.38},
+  hair:{style:'ponytail',colour:'#caa568',flip:true},
+  eyes:{style:'lashes',colour:'#625644',size:.48,width:.58,spacing:.48,height:.52,tilt:.52},
+  brows:{style:'arched',colour:'#826447',size:.44,height:.57,tilt:.52},
+  nose:{style:'ridge',size:.40,height:.48},
+  mouth:{style:'soft',colour:'#a84353',size:.48,width:.54,height:.48},
+  blush:.20,freckles:false,mole:false,wrinkles:.12,
+  outfit:HARBOUR_POLO_OUTFIT}),
  Johansson:R({name:'Johansson',
   body:{height:.72,build:.72,silhouette:'masculine',skin:'#dc9d7a'},head:{size:.48,shape:.45,form:'square',jaw:.75,cheeks:.55},
   hair:{style:'horseshoe',colour:'#b8b4aa'},

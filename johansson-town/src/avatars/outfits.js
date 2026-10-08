@@ -1,7 +1,10 @@
 /** Thuan’s own long-sleeved island sailor set. */
 export const THUAN_SAILOR_OUTFIT=Object.freeze({top:'sailorlong',topColour:'#283760',bottom:'pleatedskirt',bottomColour:'#283760',footwear:'boots',shoes:'#30292b',accent:'#c64951',pattern:'none',hat:'none'});
+/** Photo-inspired clothing, shared independently of the character's appearance. */
+export const HARBOUR_POLO_OUTFIT=Object.freeze({top:'contrastpolo',topColour:'#202d50',accent:'#f2eee5',bottom:'pleatedskirt',bottomColour:'#d9cfba',footwear:'shoes',shoes:'#eee9df',pattern:'none',hat:'none'});
 /** Original island wardrobe sets; faces, body proportions, hair and hats stay independent. */
 export const ISLAND_OUTFITS=Object.freeze([
+ {name:'Harbour polo and cream pleats',outfit:HARBOUR_POLO_OUTFIT},
  {name:'Harbour academy sailor',outfit:THUAN_SAILOR_OUTFIT},
  {name:'Minato police uniform',outfit:{top:'police',topColour:'#273858',bottom:'trousers',bottomColour:'#273858',footwear:'shoes',shoes:'#25262d',accent:'#c7ad64',pattern:'none',hat:'police',hatColour:'#273858'}},
  {name:'Cape café bow blouse',outfit:{top:'blouse',topColour:'#f2dfc5',bottom:'pleatedskirt',bottomColour:'#667d86',footwear:'shoes',shoes:'#543e34',accent:'#94525c',pattern:'none'}},

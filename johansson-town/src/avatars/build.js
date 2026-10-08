@@ -1,3 +1,4 @@
+import {POLO_COLLAR} from './contrast-polo-mesh.js';
 import {THUAN_SAILOR_OUTFIT} from './outfits.js';
 import {SPRING_BONES,SPRING_PARENT,springRest,chainShare,quarterShare,hemSpec,createSprings} from './springs.js';
 import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
@@ -590,6 +591,20 @@ function addBody(list,recipe,m,swim=false){
   const P=band.attributes.position;for(let i=0;i<P.count;i++){const a=Math.abs(Math.atan2(P.getX(i),P.getZ(i)));P.setY(i,P.getY(i)*THREE.MathUtils.smoothstep(a,open,open+1.1));}band.computeVertexNormals();
   part(list,band,'chest',top,M(0,m.neckY-.012*m.k,0));
   campCollar(list,m,prof,top);
+ }
+ // The contrasting polo's collar is authored in Blender and fitted to this body.
+ if(!swim&&o.top==='contrastpolo'){
+  const ri=m.armR*1.08+.004*m.k;
+  const band=new THREE.LatheGeometry([[ri,0],[ri+.006*m.k,0],[ri+.012*m.k,.026*m.k],[ri,.026*m.k],[ri,0]].map(([r,y])=>new THREE.Vector2(r,y)),24,.55,Math.PI*2-1.1);
+  part(list,band,'chest',o.accent,M(0,m.neckY-.012*m.k,0));
+  const positions=POLO_COLLAR.vertices.flatMap(([f,t,lift])=>{
+   const r=latheRadius(prof,t),x=f*W/2*r,z=D/2*r*Math.sqrt(Math.max(0,1-f*f));
+   return [x,hipY+t*m.torso+lift*m.k*THREE.MathUtils.smoothstep(t,.9,1.03),z+lift*m.k];
+  });
+  const collar=new THREE.BufferGeometry();collar.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));collar.setIndex(POLO_COLLAR.indices);collar.computeVertexNormals();
+  // Front and back are both visible when a raised arm or a bow reveals the fold.
+  const back=collar.clone();const I=back.index;for(let i=0;i<I.count;i+=3){const a=I.getX(i);I.setX(i,I.getX(i+2));I.setX(i+2,a);}back.computeVertexNormals();
+  part(list,collar,'chest',o.accent);part(list,back,'chest',o.accent);
  }
  // A hood lies on the back; everything else on the front of a top is painted.
  if(!swim&&o.top==='hoodie')part(list,new THREE.SphereGeometry(m.width*.35,16,12,0,Math.PI*2,0,Math.PI*.75),'chest',top,M(0,m.neckY-.045,-D*.32,.9,0,0,1,.7,.55));
