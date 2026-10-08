@@ -1,0 +1,78 @@
+name: Johansson Town live
+
+# Keeps the online game (GitHub Pages, served from main) up to date while the town is built on its work branch:
+# every push there that touches johansson-town/ is tested, then johansson-town/ (only that folder) is copied onto main.
+# The decorator (title-screen BUILD, "Arrange furniture", ?build) stays off online: src/features.js turns it off on
+# the live host, and the tests below check that guard before anything is published.
+on:
+  push:
+    branches: ['claude/sjoskolan-youtube-strategy-gofi3o']
+    paths: ['johansson-town/**', '.github/workflows/johansson-town-live.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: johansson-town-live
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: johansson-town
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: The decorator is off on the live site
+        run: node --test tests/live-features.test.mjs
+      - name: Game tests (including a fresh runtime build and portraits)
+        run: npm test
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Copy johansson-town onto main
+        env:
+          SOURCE: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898613+github-actions[bot]@users.noreply.github.com'
+          git fetch --no-tags origin "$SOURCE"
+          # Never overwrite game changes that reached main some other way: main's johansson-town must be a version
+          # the work branch already has (or the same as now). If not, merge main into the branch first.
+          live=$(git rev-parse HEAD:johansson-town)
+          known=no
+          for c in $(git rev-list --max-count=1000 "$SOURCE" -- johansson-town); do
+            if [ "$(git rev-parse "$c:johansson-town" 2>/dev/null || true)" = "$live" ]; then known=yes; break; fi
+          done
+          if [ "$known" != yes ]; then
+            echo "::error::main has Johansson Town changes the branch does not have. Merge main into $BRANCH, then push again."
+            exit 1
+          fi
+          git rm -rq --ignore-unmatch johansson-town
+          git checkout "$SOURCE" -- johansson-town
+          if git diff --cached --quiet; then echo 'The live game is already up to date.'; exit 0; fi
+          git commit -q -m "Johansson Town live: ${SOURCE::8} from $BRANCH"
+          for i in 1 2 3; do
+            git push origin HEAD:main && exit 0
+            sleep $((i * 5)); git pull --rebase -q origin main
+          done
+          exit 1

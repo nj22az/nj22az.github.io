@@ -1,5 +1,6 @@
 import {readPlayers,switchPlayer,addPlayer,slotKey,SAVE_KEY,LEGACY_KEYS} from './src/save.js';
 import {heartsFor} from './src/people/friendship.js';
+import {decoratorEnabled} from './src/features.js';
 
 /**
  * The title screen's choices: EXPLORE or BUILD with the active save, LOAD another save, start a NEW GAME, or import a
@@ -53,7 +54,9 @@ export function createTitleMenu({launch}){
 
  // EXPLORE is the original START button; BUILD sets the mode first and starts the same way.
  enter.addEventListener('click',()=>{if(!window.__JOHANSSON_MODE__)window.__JOHANSSON_MODE__='explore';},{capture:true});
- build.addEventListener('click',()=>{window.__JOHANSSON_MODE__='build';launch();});
+ // The decorator is off on the live site (src/features.js): no BUILD button there.
+ if(!decoratorEnabled())build.remove();
+ else build.addEventListener('click',()=>{window.__JOHANSSON_MODE__='build';launch();});
  $('titleLoad').addEventListener('click',()=>open(false));
  $('titleNew').addEventListener('click',()=>open(true));
  $('titleSlotsClose').addEventListener('click',close);

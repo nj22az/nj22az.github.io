@@ -19,17 +19,17 @@
 <link rel="stylesheet" href="./base.css?h=2cec600f">
 <link rel="stylesheet" href="./context-controls.css?h=323342df">
 <title>Johansson World</title>
-<link rel="stylesheet" href="./landing.css?h=b4027c48">
+<link rel="stylesheet" href="./landing.css?h=9aa3be2e">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
 <link rel="stylesheet" href="./photo-mode.css?h=17316f51">
 <link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
 <link rel="stylesheet" href="./context-rail.css?h=989b4888">
 <link rel="stylesheet" href="./line-ui.css?h=9efe343d">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-i537AIdd.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-B1Izt4Uw.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-BJJ0w3BS.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-DJtu8YS2.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-D41WSRSD.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-C-iIZ0fx.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/actors-CKkQowd0.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-ygTjb9SR.js">
@@ -392,7 +392,8 @@
   const enter = document.getElementById("enter");
   const guideLink = document.querySelector("[data-guide-open]");
   // EXPLORE, BUILD, then LOAD, NEW GAME and GUIDE: arrows and the d-pad move through them in reading order.
-  const items = [...document.querySelectorAll(".title-menu .title-mode, .title-menu .title-row > *")];
+  // Read each time: the live site removes BUILD (src/features.js).
+  const titleItems = () => [...document.querySelectorAll(".title-menu .title-mode, .title-menu .title-row > *")];
   const SPLASH_KEY = "johansson-town-splash";
 
   // The company mark plays once per visit; a tap or key skips it.
@@ -467,11 +468,12 @@
     if (!splash.classList.contains("done")) { endSplash(); event.preventDefault(); return; }
     if (start.classList.contains("guide-open") && event.key === "Escape") { closeGuide(event); return; }
     if (!titleActive()) return;
-    const index = items.indexOf(document.activeElement);
+    const list = titleItems();
+    const index = list.indexOf(document.activeElement);
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
       const step = event.key === "ArrowDown" ? 1 : -1;
-      items[((index < 0 ? 0 : index + step) + items.length) % items.length].focus();
+      list[((index < 0 ? 0 : index + step) + list.length) % list.length].focus();
     } else if ((event.key === "Enter" || event.key === " ") && index < 0) {
       event.preventDefault();
       enter.click();
@@ -490,10 +492,11 @@
       const edge = (i) => { const now = pressed(i), was = held[pad.index + ":" + i]; held[pad.index + ":" + i] = now; return now && !was; };
       if (!splash.classList.contains("done")) { if (edge(9) || edge(0)) endSplash(); continue; }
       if (!titleActive()) { if (edge(1) && start.classList.contains("guide-open")) closeGuide(); continue; }
-      const current = Math.max(0, items.indexOf(document.activeElement));
-      if (edge(12) || edge(13)) items[(current + 1) % items.length].focus();
+      const list = titleItems();
+      const current = Math.max(0, list.indexOf(document.activeElement));
+      if (edge(12) || edge(13)) list[(current + 1) % list.length].focus();
       if (edge(9)) enter.click();
-      else if (edge(0)) items[current].click();
+      else if (edge(0)) list[current].click();
     }
     requestAnimationFrame(pollPads);
   }
@@ -547,7 +550,7 @@ import {unlockTownAudio} from './runtime/audio-83dQfoLt.js';
     try{
       // Let the browser paint the first fact before constructing the town.
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      try { await import('./runtime/boot-i537AIdd.js'); } catch (error) {
+      try { await import('./runtime/boot-B1Izt4Uw.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

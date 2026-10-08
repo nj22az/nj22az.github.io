@@ -121,6 +121,7 @@ import {createBuildMode} from './build/build-mode.js';
 import {createHomeDecorating} from './build/home-decorate.js';
 import {createGraphicsInspector} from './render/graphics-inspector.js';
 import {dressHud,runButtonFace} from './ui/hud-icons.js';
+import {decoratorEnabled} from './features.js';
 
 // Change the emitted game chunk URL when repairing a cached live runtime.
 window.__JOHANSSON_RUNTIME_VERSION__='town-bicycle-ride-2';
@@ -433,7 +434,7 @@ function advanceWeather(){
  Promise.resolve().then(()=>fetch(new URL(PLACEMENTS_FILE,document.baseURI||location.href),{cache:'no-cache'})).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.text();}).then(t=>{
   const skipped=placements.load(readPlacementsFile(t));if(skipped.length)console.warn('Builder placements left out:',skipped);placementsLoad.done=true;
  }).catch(e=>{placementsLoad.error=e.message;console.warn('Builder placements not loaded:',e.message);});
- if(new URLSearchParams(location.search).has('build'))window.__JOHANSSON_BUILDER__={catalogue:BUILD_CATALOGUE,...placements,loaded:()=>({...placementsLoad}),
+ if(decoratorEnabled()&&new URLSearchParams(location.search).has('build'))window.__JOHANSSON_BUILDER__={catalogue:BUILD_CATALOGUE,...placements,loaded:()=>({...placementsLoad}),
   ...createBuildMode({canvas:renderer.domElement,camera,group:world.group,placements,factory:world.propFactory,heightAt:groundHeight,
    getAudit:()=>window.__JOHANSSON_AUDIT__,getStart:()=>player&&{x:player.position.x,z:player.position.z}})};
 assignWorkplaces(world,SITES);
@@ -838,7 +839,7 @@ function roomShell(s){
   // Furniture he has arranged himself (src/build/home-decorate.js), saved with this player.
   const arranging=createHomeDecorating({group:room.getObjectByName('Mayor’s home'),colliders:roomColliders,state:activities.state,save:activities.save,canvas:renderer.domElement,camera,
    floor:MAYOR_HOME_FLOOR.walkable,keepClear:MAYOR_HOME_FLOOR.keepClear,stage:decorStage});
-  const decor=createHomeCustomization({room,state:activities.state,menu:activities.menu,save:activities.save,close:activities.close,reg,arrange:arranging.open});
+  const decor=createHomeCustomization({room,state:activities.state,menu:activities.menu,save:activities.save,close:activities.close,reg,arrange:decoratorEnabled()?arranging.open:null});
   const dispose=activeRoomLayout.dispose;activeRoomLayout.dispose=()=>{arranging.close();dispose?.();};
   activeRoomLayout.arranging=arranging;activeRoomLayout.snapshot=()=>({decor:decor.snapshot(),furniture:arranging.placements.list()});return;}
  if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior(shared);return;}
@@ -1733,7 +1734,8 @@ function renderOutdoor(){
   present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
   // The title screen's BUILD: straight into Johansson's own rooms with the furniture out (src/build/home-decorate.js).
-  if(window.__JOHANSSON_MODE__==='build'&&!buildModeStarted){buildModeStarted=true;startBuildMode();}
+  // Not on the live site, where the decorator stays off (src/features.js).
+  if(window.__JOHANSSON_MODE__==='build'&&decoratorEnabled()&&!buildModeStarted){buildModeStarted=true;startBuildMode();}
 }
 // Open on the device's clock: a save from earlier today is fast-forwarded to now so the
 // town is where it would be; anything older, or from the old fast clock, opens at now.

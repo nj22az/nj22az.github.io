@@ -946,6 +946,7 @@
 #start .title-menu{width:min(440px,calc(100vw - 32px))}
 #start .title-save{margin:0 0 4px;font:400 14px/1.45 var(--gothic);color:#555;text-align:center;overflow-wrap:anywhere}
 #start .title-modes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#start .title-modes>.title-mode:only-child{grid-column:1/-1}
 #start .title-menu .title-mode{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:96px;padding:12px;border-radius:8px;font:700 16px/1.3 var(--gothic);letter-spacing:.02em}
 #start .title-menu .title-mode small{display:block;font:400 12px/1.35 var(--gothic);letter-spacing:normal;opacity:.92;font-family:var(--gothic)}
 #start .title-menu .title-mode-build{background:#fff;color:#000;border:2px solid #06c755}
