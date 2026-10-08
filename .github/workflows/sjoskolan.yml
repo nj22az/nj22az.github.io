@@ -1,6 +1,7 @@
 name: Sjöskolan kontroller
 
 on:
+  workflow_dispatch:
   push:
     paths: ['sjoskolan/**', '.github/workflows/sjoskolan.yml']
   pull_request:

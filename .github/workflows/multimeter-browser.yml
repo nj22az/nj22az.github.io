@@ -1,6 +1,7 @@
 name: Multimeter browser acceptance
 
 on:
+  workflow_dispatch:
   push:
     paths: ['sjoskolan/multimetersimulator/**', 'sjoskolan/gemensamt/**', '.github/workflows/multimeter-browser.yml']
   pull_request:
