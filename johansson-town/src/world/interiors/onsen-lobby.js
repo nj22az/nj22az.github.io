@@ -120,7 +120,7 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
  const phone=new THREE.Group();phone.position.set(-3.9,FURNITURE_HEIGHTS.serviceCounter,3.2);phone.rotation.y=.3;phone.name='Push-button phone';group.add(phone);
  const ivory=new THREE.MeshStandardMaterial({color:0xddd2bc,roughness:.45});
  const pb=new THREE.Mesh(new THREE.BoxGeometry(.2,.05,.17),ivory);pb.position.y=.025;phone.add(pb);
- const hs=new THREE.Mesh(new THREE.BoxGeometry(.05,.04,.22),ivory);hs.position.set(-.06,.065,0);phone.add(hs);
+ const hs=new THREE.Mesh(new THREE.BoxGeometry(.05,.04,.22),ivory);hs.position.set(-.06,.065,0);hs.name='Push-button phone handset';phone.add(hs);
  for(let i=0;i<12;i++){const k=new THREE.Mesh(new THREE.BoxGeometry(.016,.006,.012),new THREE.MeshStandardMaterial({color:0x6b6458}));k.position.set(.02+(i%3)*.022,.053,-.04+Math.floor(i/3)*.022);phone.add(k);}
  add(new THREE.BoxGeometry(.24,.025,.18),new THREE.MeshStandardMaterial({color:0x7a2a22,roughness:.7}),-3.85,FURNITURE_HEIGHTS.serviceCounter+.015,2.55,'Bandai ledger').rotation.y=-.1;
 

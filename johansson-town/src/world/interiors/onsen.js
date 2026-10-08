@@ -141,8 +141,10 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  anchor([-3.5,1.25,2.55],'Pay at the bandai · ¥300',()=>action('onsen-pay'));
  anchor([-3.5,1.25,3.1],'Talk to the attendant',()=>action('inspect','Umi-no-yu attendant',
   'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her crossword. "A bath wrap or swimwear in the bath, please -- it is a family bath. The rock bath is best after dark."'));
+ // The price board on the counter's front, under the top (ONSEN_SIGNS.fee): read from the genkan while you count your
+ // coins, and never between Mrs Higa's face and the people she is talking to.
  const fee=canvasSign(ONSEN_SIGNS.fee.lines.map((text,i)=>[text,i?.5:1]),{w:384,h:192,bg:'#fbf6ea',size:60});
- if(fee){const s=new THREE.Mesh(new THREE.PlaneGeometry(.7,.35),new THREE.MeshStandardMaterial({map:fee,roughness:.8}));s.position.set(-3.53,1.55,2.55);s.rotation.y=Math.PI/2;room.add(s);}
+ if(fee){const s=new THREE.Mesh(new THREE.PlaneGeometry(.7,.35),new THREE.MeshStandardMaterial({map:fee,roughness:.8}));s.position.set(-3.53,.55,2.55);s.rotation.y=Math.PI/2;s.name='Fee sign';room.add(s);}
  // Coffee milk in the glass-fronted fridge, drunk standing, hand on hip.
  rect(4.6,2.3,.64,.62,1.6);
  anchor([4.2,1.1,2.3],'Buy coffee milk · ¥100',()=>action('onsen-milk'));
@@ -265,8 +267,9 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   const k=time*1.3;tubWater.position.y=T.water+Math.sin(k)*.004;poolWater.position.y=P.water+Math.sin(k*.8+1)*.005;
   if(isWorking('fan')){fanTime+=dt;fanHead.rotation.y=Math.sin(fanTime*.4)*.9;blades.rotation.z+=dt*18;}
   const m=((minutes%1440)+1440)%1440;hands[0].rotation.z=-(m%720)/720*Math.PI*2;hands[1].rotation.z=-(m%60)/60*Math.PI*2;
-  // Seated at the bandai; now and then she looks up from her crossword.
-  higaMotion?.update(dt,{speed:0,seated:true,seatHeight:.4,pose:Math.floor(time/9)%3===2?'Sit':'Read',expression:'neutral'});
+  // Seated at the bandai; now and then she looks up from her crossword. Until the town has a seated Read pose
+  // she holds it up the way a seated person holds a glass (SitHold), one forearm up before her.
+  higaMotion?.update(dt,{speed:0,seated:true,seatHeight:.4,pose:Math.floor(time/9)%3===2?'Sit':'SitHold',expression:'neutral'});
  }
  tick(0);
  return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,power,tv:lobby.tv,streetDoor:front.door,genkan:front.genkan,dispose(){power.dispose();front.dispose();}};

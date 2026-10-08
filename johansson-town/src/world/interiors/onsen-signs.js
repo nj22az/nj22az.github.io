@@ -29,7 +29,7 @@ export const ONSEN_SIGNS=Object.freeze({
   where:'A paper tag on a string round the crook of the umbrella in the stand by the street door.',
   why:'Higa-san tags whatever is left behind and keeps it where its owner will walk past it.'}),
  fee:plain({lines:Object.freeze(['大人 ¥300','タオル ¥100・牛乳 ¥100']),en:'Adults ¥300 · towel ¥100, milk ¥100',
-  where:'On the wall behind the bandai, facing the genkan.',
+  where:'On the front of the bandai counter, below the top and facing the genkan ("Fee sign"), where it never stands between Mrs Higa and the people she is talking to.',
   why:'The three things the bandai sells, readable from the shoe lockers while you count your coins.'}),
  milk:plain({jp:'牛乳',price:'各 ¥100',en:'Milk, ¥100 each',
   where:'The header over the red cooler’s glass, in the lobby’s east corner.',

@@ -5,6 +5,8 @@ import {buildOnsenInterior,ONSEN_ROOM} from '../src/world/interiors/onsen.js';
 import {ONSEN_CIRCUITS,ONSEN_BOARD,ONSEN_VOLTS,loadOf,wattsOf,overloaded,trip,reset,resetAll,isLive,isOn,isPowered} from '../src/world/interiors/onsen-electrics.js';
 import {ONSEN_TOWELS,TOWEL_PRICE} from '../src/world/interiors/onsen-towels.js';
 import {FEED_PLACES} from '../src/feed/places.js';
+import {measure} from '../src/avatars/build.js';
+import {recipeFor} from '../src/avatars/cast.js';
 
 const build=()=>{const room=new THREE.Group(),hits=[],actions=[];const layout=buildOnsenInterior({room,reg:(o,label,fn)=>hits.push({o,label,fn}),action:(...a)=>actions.push(a),exit(){}});room.updateMatrixWorld(true);return {room,hits,actions,layout};};
 const circuit=id=>ONSEN_CIRCUITS.find(c=>c.id===id);
@@ -104,8 +106,17 @@ test('the cabinet hangs on the changing-room side of the bandai wall, in the roo
  const B=ONSEN_ROOM.bounds;
  assert.ok(box.min.x>B.minX&&box.max.x<B.maxX&&box.min.z>ONSEN_ROOM.hall.changing&&box.max.z<=ONSEN_ROOM.hall.front);
  assert.ok(Math.abs(box.max.z-ONSEN_BOARD.wallZ)<.002,'its back is on the wall face');
- assert.ok(box.min.y>1.1&&box.max.y<2.1,'at a height you can reach and read');
+ assert.ok(box.min.y>.6&&box.max.y<1.5,'hung low enough to work, above the knees: '+box.min.y.toFixed(2)+'–'+box.max.y.toFixed(2));
  for(const o of meshes(room).filter(m=>m.name==='Locker'))assert.ok(!new THREE.Box3().setFromObject(o).intersectsBox(box),'clear of the lockers');
+ // Every lever, the spare ways' new breakers included, is within a town figure's reach: the shortest who works it
+ // (Mrs Higa) gets her mitten to the main with her arm up, the electrician at 30–50° above level.
+ for(const who of ['Mrs Higa','Tetsuo']){const m=measure(recipeFor(who)),reach=m.shoulderY+m.upper+m.fore+m.hand/2;
+  for(const id of ['main','elcb',...ONSEN_CIRCUITS.map(c=>c.id),'vanity-2','vanity-3']){const y=room.getObjectByName('Breaker lever '+id).getWorldPosition(new THREE.Vector3()).y;
+   assert.ok(y<=reach,`${who} reaches the ${id} lever at ${y.toFixed(2)} m (mitten ${reach.toFixed(2)} m)`);assert.ok(y>.85,id+' lever above the waist: '+y.toFixed(2));}}
+ // The open cabinet and its door touch nothing but the wall it hangs on.
+ const own=new Set(meshes(board)),shrunk=box.clone().expandByScalar(-.002);
+ for(const o of meshes(room)){if(own.has(o)||/^(Umi-no-yu wall|Umi-no-yu floor)$/.test(o.name))continue;const ob=new THREE.Box3().setFromObject(o);if(ob.isEmpty())continue;
+  assert.ok(!shrunk.intersectsBox(ob),'the board clips '+(o.name||o.type));}
  layout.dispose();
 });
 
@@ -116,7 +127,8 @@ test('dryers, chair and fan are plugged in, and the dryers carry legible ratings
   const bottom=new THREE.Box3().setFromObject(d).min.y;assert.ok(Math.abs(bottom-.81)<.003,'dryer '+i+' rests on the vanity at '+bottom.toFixed(3));
   assert.ok(room.getObjectByName('Vanity socket '+i));assert.ok(d.getObjectByName('Hair dryer rating sticker'));}
  const colours=new Set([1,2,3].map(i=>room.getObjectByName('Hair dryer '+i).children[0].material.color.getHex()));assert.equal(colours.size,3,'three different dryers');
- assert.equal(all.filter(m=>m.name==='Hair dryer cord').length,3);
+ // Each dryer and its cord are named apart, so a film can hide one and keep the others.
+ for(let i=1;i<=3;i++){assert.equal(all.filter(m=>m.name==='Hair dryer '+i+' cord').length,1,'dryer '+i+'’s cord');assert.ok(room.getObjectByName('Hair dryer '+i).isGroup,'dryer '+i+' is one object');}
  for(const name of ['Massage chair socket','Fan socket','Massage chair rating plate','Massage chair cord','Fan cord'])assert.ok(room.getObjectByName(name),name);
  // Every socket named by a load exists.
  for(const c of ONSEN_CIRCUITS)for(const l of c.loads)if(l.socket)assert.ok(room.getObjectByName(l.socket),l.socket);
