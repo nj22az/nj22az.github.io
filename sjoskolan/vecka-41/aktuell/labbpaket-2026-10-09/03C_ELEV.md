@@ -1,24 +1,22 @@
-# 03 C — ELEV — Guidad trefasmotor, AC, Y/Δ och felsökning
-**Tid:** 40 min. **Mål:** LM-1, LM-4 (teori/isolerad mätning), LM-5, LM-6, LM-8, LM-9.
+# 03 C — ELEV — Trefasmotor, AC och Y/Δ
+**Tid:** 40 min. **Mål:** säkert arbete, märkskylt, lindningspar, Y/Δ och enkel felsökning.
 
-**SÄKERHET:** Motorn ska vara frånskild, säkrad mot återinkoppling och godkänd av läraren innan resistansmätning. Inga elever får ansluta nätspänning, flytta bryggor utan klartecken eller göra live-mätningar. Om något är oklart: stoppa.
+**SÄKERHET:** Motorn ska vara frånskild och säkrad mot återinkoppling. Ingen elev får spänningssätta motorn, ändra bryggor eller göra mätningar på spänningssatt utrustning. En stoppknapp bevisar inte spänningslöshet. Resistansmätning får endast ske efter lärarens uttryckliga klartecken.
 
-**0–5 min — Säkerhet och orientering.** Läs hela uppgiften. Anteckna hur läraren har bekräftat att motorn är säker att undersöka. En stoppknapp är inte bevis på spänningslöshet.
+**0–5 min — Säkerhet.** Lyssna på lärarens säkerhetsgenomgång. Skriv hur säkerheten kontrollerats: __________.
 
-**5–13 min — Märkskylt och lindningar.** Läs av märkspänning Δ/Y ___/___ V, frekvens ___ Hz, märkström ___ A och effekt ___ kW. Identifiera plintens märkningar. De tre statorlindningarnas ändar är **U1–U2, V1–V2, W1–W2**. Plintarnas fysiska ordning kan variera. Rita de sex terminalerna och befintliga bryggor. Är kopplingen Y, Δ eller okänd? ____
+**5–15 min — Märkskylt och plint.** Anteckna märkspänning Δ/Y ____/____ V och frekvens ____ Hz. Hitta U1, U2, V1, V2, W1 och W2 på den frånskilda motorn. Rita plinten och eventuella befintliga bryggor. Ändra inget. De tre lindningsparen är U1–U2, V1–V2 och W1–W2.
 
-**13–20 min — Resistansmätning (endast om läraren tillåter).** Ställ multimetern på Ω. Mät en lindning i taget bara när lindningen är isolerad från andra parallella vägar. Bryggor kan annars ge missvisande värden. Ändra inga bryggor själv. U1–U2 ___ Ω, V1–V2 ___ Ω, W1–W2 ___ Ω. Om mätning inte får göras, skriv 'ej utförd'. Jämför värdena.
+**15–25 min — Beräkna och välj koppling.** Huvudspänning U_L är spänning mellan två faser. I stjärna (Y) är lindningsspänningen U_L/√3; i triangel (Δ) är den U_L. Beräkna vid U_L = 400 V: Y = ____ V; Δ = ____ V. En motor märkt 230/400 V Δ/Y används normalt i Y vid 400 V; en motor märkt 400/690 V Δ/Y används normalt i Δ vid 400 V. Vad anger **den verkliga motorns** märkskylt? __________.
 
-**20–30 min — Förstå AC och trefas.** Vid 50 Hz genomför spänningen 50 perioder per sekund. I symmetrisk trefas ligger faserna 120° förskjutna. Motorns stator skapar ett roterande magnetfält. **Huvudspänning U_L** är mellan två faser. **Lindningens fasspänning U_F** är i Y U_L/√3 och i Δ U_L. Beräkna vid 400 V: Y ___ V; Δ ___ V. En märkskylt **230/400 V Δ/Y** innebär normalt Δ vid 230 V och Y vid 400 V; **400/690 V Δ/Y** innebär normalt Δ vid 400 V och Y vid 690 V. Vilken koppling gäller enligt er verkliga märkskylt vid 400 V? ____
+**25–32 min — Simulerat fel.** Tre isolerade lindningar ger 4,1 Ω, 4,0 Ω och OL vid mätning. Vad kan OL betyda? Vilka mätfel eller anslutningsproblem måste uteslutas innan du drar slutsats? __________.
 
-**30–36 min — Teoretisk mätning och felsökning.** På en avsedd, riskbedömd mätanläggning mäts huvudspänning mellan L1–L2, L2–L3 och L3–L1. Fas–neutral kan bara mätas där neutralledare finns och mätningen är tillåten. Fasström mäts med lämplig strömtång runt **en ledare i taget**. **Utför inte dessa live-mätningar här.** Simulerat fel: isolerade lindningar ger 4,1 Ω, 4,0 Ω och OL. Vad kan vara fel? ____ Vilken kontroll behövs före diagnos? ____ Varför kan motorns driftström inte bestämmas från DC-resistansen ensam? ____
+**32–40 min — Redovisa.** Visa ritning, beräkningar och en kort slutsats. Skilj observation från simulering och beräkning.
 
-**36–40 min — Dokumentera.** Skilj på det ni observerat, det ni verkligen mätt, beräknade värden och antaganden. Skriv en slutsats och en osäkerhet. Lämna in.
+**Frivilligt extramoment – endast om läraren uttryckligen tillåter och tid finns:** Mät en isolerad lindning i taget på en säkert frånskild motor med godkänd mätuppställning. Bryggor kan ge felaktiga värden. Flytta inga bryggor själv. Markera tydligt 'ej utförd' om ingen praktisk mätning görs. Teoretisk beskrivning räknas inte som utförd mätning.
 
-**Ritning, uträkningar och slutsats:**
+**Ritning och svar:**
 
-____________________________
+__________________________
 
-____________________________
-
-____________________________
+__________________________
