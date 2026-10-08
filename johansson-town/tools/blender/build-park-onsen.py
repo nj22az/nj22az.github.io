@@ -175,6 +175,8 @@ for x in (DOOR0 - .1, DOOR1 + .1):
 cube('Porch beam', (2.3, .16, .16), ((DOOR0 + DOOR1) / 2, 2.62, D + 1.0), F['beam'])
 cube('Porch roof', (2.7, .1, 1.4), ((DOOR0 + DOOR1) / 2, 2.86, D + .6), F['roof'], rx=.24)
 cube('Porch roof edge', (2.75, .08, .1), ((DOOR0 + DOOR1) / 2, 2.72, D + 1.28), F['ridge'])
+# The name board itself is not here: park-onsen.js hangs it on the porch beam's front face (z D + 1.09),
+# where it reads from the street. This backing on the wall above the door is left bare behind the porch.
 cube('Sign board backing', (1.9, .56, .08), ((DOOR0 + DOOR1) / 2, 2.8, D + .04), F['beam'])
 cube('Entrance step', (2.0, .2, .6), ((DOOR0 + DOOR1) / 2, .1, D + .5), F['stone'], bevel=.03)
 

@@ -73,8 +73,14 @@ function signs(group){
   const K=ONSEN_SIGNS.kanban;ctx.font=`bold 74px ${SERIF}`;ctx.fillText(K.mark+' '+K.jp,w/2,h*.44);
   ctx.font='bold 20px sans-serif';ctx.fillText(K.sub,w/2,h*.82);
  });
- const kanban=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.41),new THREE.MeshStandardMaterial({map:board,roughness:.8}));
- kanban.position.set(-1.4,2.68,4.3);kanban.name='Umi-no-yu sign';
+ // The name board hangs on the front face of the porch beam (model: beam 2.3 × .16 × .16 at y 2.62, z 5.2,
+ // front face z 5.28), where a sentō hangs its name: its top flush with the beam's top (2.70), its lower part
+ // below the beam (to 2.34, well above every head), so it reads whole from the street under the porch roof's
+ // edge (2.68 at z 5.43). Between the porch posts (inner faces x -2.33 and -.47). A board, not a sheet: dark
+ // timber on the back and edges, seen from under the porch.
+ const timber=new THREE.MeshStandardMaterial({color:0x3a2a1c,roughness:.85});
+ const kanban=new THREE.Mesh(new THREE.BoxGeometry(1.3,.355,.03),[timber,timber,timber,timber,new THREE.MeshStandardMaterial({map:board,roughness:.8}),timber]);
+ kanban.position.set(-1.4,2.5225,5.296);kanban.name='Umi-no-yu sign';
  // The notice by the path: hours, fee, and what is in the water.
  const notice=canvasTexture(256,320,(ctx,w,h)=>{
   ctx.fillStyle='#efe6cf';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2b2520';ctx.textAlign='center';

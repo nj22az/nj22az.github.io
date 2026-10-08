@@ -14,7 +14,7 @@ const plain=o=>Object.freeze(o);
 
 export const ONSEN_SIGNS=Object.freeze({
  kanban:plain({jp:'海の湯',mark:'♨',sub:'UMI-NO-YU · HOT SPRING',en:'Umi-no-yu, "the sea bath"',
-  where:'The name board over the street door (park-onsen.js, "Umi-no-yu sign").',
+  where:'The name board on the front face of the porch beam, over the street door (park-onsen.js, "Umi-no-yu sign"): it reads whole from the street.',
   why:'A bathhouse names itself in brushed kanji on a dark board; the romaji line under it is for the visitors off the ferry.'}),
  notice:plain({jp:'海の湯',en:'Umi-no-yu',
   where:'The heading of the notice board by the path ("Umi-no-yu notice"); the hours and prices under it are in English for the ferry visitors.',
