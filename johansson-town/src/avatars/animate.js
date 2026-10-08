@@ -27,7 +27,7 @@ const ease=(t,d,edge=.25)=>Math.min(1,t/edge,(d-t)/edge);
 /** How long each move lasts (loops run until something else happens). */
 export const GESTURES=Object.freeze({
  Wave:1.6,Bow:1.5,Nod:1.1,HeadShake:1.2,Point:1.6,Shrug:1.3,Clap:1.8,Laugh:2,Think:2.4,LookAround:2.6,Stretch:2.2,
- PickUp:1.6,Fist:1.4,Jab:.42,JabL:.42,Swipe:.7,Hurt:.5,Tackle:.75,Jump:.9,Cheer:1.6,Hop:1.2,Gasp:1.6,Stomp:1.4,Slump:2.2,Fidget:2.4,SitEnjoyFood:3.8,SitPresentFood:4.2,SitToast:2.4,SitDrink:2.4,SitEat:2.4,Drink:2.4,Eat:2.4,
+ PickUp:1.6,Fist:1.4,Jab:.42,JabL:.42,Swipe:.7,Hurt:.5,Tackle:.75,Jump:.9,Cheer:1.6,Hop:1.2,Gasp:1.6,Stomp:1.4,Slump:2.2,Fidget:2.4,SitEnjoyFood:3.8,SitPresentFood:4.2,SitToast:2.4,SitPress:2.4,SitDrink:2.4,SitEat:2.4,Drink:2.4,Eat:2.4,
  Heart:2.8,Peace:2.8,Coy:3,Tada:2.4,HandsOnHips:2.6,HeelKick:2.6,CheekRest:3,DoubleCheek:3,
  // Habits (body-language.js quirk): small, done while somebody else is talking.
  ScratchHead:1.8,HairTuck:1.6,HeelRock:2.4,ChinTap:2,CollarTug:1.5,
@@ -118,7 +118,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   */
  function update(dt,s={}){
   time+=dt;
-  const action=gesture?.name||s.pose||s.seat;avatar.setOpenHands?.(['SitEnjoyFood','SitPresentFood'].includes(action));
+  const action=gesture?.name||s.pose||s.seat;avatar.setOpenHands?.(['SitEnjoyFood','SitPresentFood','SitPress'].includes(action));
   const eating=['Eat','EatStanding','SitEat'].includes(action),drinking=['Drink','DrinkStanding','SitDrink','SitToast'].includes(action);
   if(eating||drinking){
    if(action!==lastConsume)consumeTime=0;
@@ -438,6 +438,13 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     set('elbowL',-1.18*q);set('elbowR',-1.18*q);
     set('handL',-1.45*q,0,.18*q);set('handR',-1.45*q,0,-.18*q);
     add('head',-.08*e,0,-.10*e);break;
+   }
+   case 'SitPress':{
+    // Seated, both hands reach across the table and press something flat (a strip of tape, a map, a poster):
+    // lean in, arms forward and nearly straight, palms down, two firm presses.
+    const press=Math.max(0,Math.sin(t*5.2))**2*.08*q;
+    add('chest',.34*q);set('shoulderL',-1.48*q+press,0,.16*q);set('shoulderR',-1.48*q+press,0,-.16*q);
+    set('elbowL',-.12*q);set('elbowR',-.12*q);set('handL',.6*q);set('handR',.6*q);add('head',.25*q);break;
    }
    case 'SitToast':set('shoulderR',-1.9*q,0,-.2);set('elbowR',-.6*q);add('head',-.15*q);break;
    case 'SitDrink':{const lift=Math.max(0,Math.sin(t*2.6))**2;set('shoulderR',-.6-lift*1,0,-.25);set('elbowR',-.9-lift*1.2);break;}
