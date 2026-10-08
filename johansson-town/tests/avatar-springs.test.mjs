@@ -15,11 +15,11 @@ function stage(recipe){
 }
 const run=(s,seconds,move=()=>{})=>{for(let t=0;t<seconds;t+=1/60){move(t);s.animator.update(1/60,{speed:0});s.avatar.springs.update(1/60);}};
 
-test('Thuan’s braids and Johansson’s shirt hem hang on swing bones; a cropped head has none',()=>{
- assert.equal(stage(CAST_RECIPES.Thuan).avatar.springs.links.length,4);
+test('Thuan’s ponytail and Johansson’s shirt hem hang on swing bones; a cropped head has none',()=>{
+ assert.equal(stage(CAST_RECIPES.Thuan).avatar.springs.links.length,2);
  assert.equal(stage(CAST_RECIPES.Johansson).avatar.springs.links.length,4);
  const thuan=stage(CAST_RECIPES.Thuan).avatar;thuan.wear('sailor');
- assert.equal(thuan.springs.links.length,8,'in her sailor set the pleated skirt swings too');
+ assert.equal(thuan.springs.links.length,6,'in her sailor set the pleated skirt swings too');
 });
 
 test('standing still, everything hangs where the pose puts it; a sudden move swings it, and it settles',()=>{

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {installDOM} from './fixtures.mjs';
-import {CAST_RECIPES,recipeFor} from '../src/avatars/cast.js';
+import {CAST_RECIPES,NEIGHBOUR_RECIPES,recipeFor} from '../src/avatars/cast.js';
 import {normalizeRecipe,encodeRecipe,decodeRecipe,PARTS} from '../src/avatars/recipe.js';
 import {HARBOUR_POLO_OUTFIT,ISLAND_OUTFITS,outfitAllowedFor} from '../src/avatars/outfits.js';
 import {buildAvatar} from '../src/avatars/build.js';
@@ -43,5 +43,17 @@ test('Blender hairstyle is available to all ages, shapes and both part direction
  for(const age of ['child','teen','adult','elder'])for(const form of PARTS.head)for(const flip of [false,true]){
   const r=normalizeRecipe({name:'Hair fitting',age,hair:{style:'sweptponytail',colour:'#3a2618',flip},head:{form},outfit:{top:'tee',bottom:'trousers',footwear:'shoes'}}),a=buildAvatar(r);
   assert.equal(a.recipe.hair.style,'sweptponytail');assert.ok(a.body.geometry.attributes.position.array.every(Number.isFinite));assert.ok(a.springSetup.chains.some(c=>c.kind==='hair'));assert.equal(decodeRecipe(encodeRecipe(r)).hair.style,'sweptponytail');a.dispose();
+ }
+});
+
+test('every authored character shares the new parts and complete move catalogue',async()=>{
+ installDOM();const {MOVES}=await import('../src/avatars/moves.js');
+ for(const [name,original] of Object.entries({...CAST_RECIPES,...NEIGHBOUR_RECIPES})){
+  const recipe=normalizeRecipe({...original,hair:{...original.hair,style:'sweptponytail'},outfit:{...original.outfit,...HARBOUR_POLO_OUTFIT}});
+  assert.ok(outfitAllowedFor(name,recipe.outfit));const a=buildAvatar(recipe),anim=createAvatarAnimator(a);
+  assert.deepEqual(a.recipe.head,original.head);
+  for(const [move] of MOVES){anim.play(move);for(let frame=0;frame<3;frame++){anim.update(.1,{speed:0});a.springs.update(.1);}a.root.updateMatrixWorld(true);for(const bone of Object.values(a.bones))assert.ok(bone.matrixWorld.elements.every(Number.isFinite),name+' '+move);}
+  for(const state of [{speed:1.2},{speed:3.5,running:true},{seated:true,seatHeight:.45}]){anim.stop();anim.update(.1,state);a.root.updateMatrixWorld(true);for(const bone of Object.values(a.bones))assert.ok(bone.matrixWorld.elements.every(Number.isFinite),name);}
+  a.dispose();
  }
 });

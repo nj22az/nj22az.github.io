@@ -17,12 +17,11 @@ the editable accent colour. The existing pleated skirt and shoes are reused. The
 Blender asset, not the original cap-and-ball ponytail.
 No additional runtime model request is needed.
 
-Player recipe save/load now applies outfit restrictions to the selected character's
-name rather than applying Johansson's restrictions to all avatars. Johansson's own
-skirt/dress restriction and older unnamed saves retain their previous handling.
+All characters now use the same wardrobe catalogue. Name-based outfit restrictions
+are removed; existing and new saved recipes retain the selected clothing.
 
 Validation:
-- 57 avatar, wardrobe, animation, bath outfit and visitor tests passed.
+- 58 avatar, wardrobe, animation, bath outfit and visitor tests passed.
 - Runtime build completed and source hash regenerated.
 - Real Chromium WebGL checks passed at 1280×800 and 390×844 with touch enabled.
 - Standalone creator save and reload kept the complete outfit.
@@ -50,3 +49,30 @@ existing hair/hat combination tests include this style.
 See `tomodachi-resource-analysis.md` for the bounded Ghidra/ROM study. The supplied
 ROM, extracted resources, decompiled game code and Ghidra database are not included
 in this repository. The new Blender hairstyle is original to Johansson World.
+
+Creator improvements
+--------------------
+Thuan now uses the shared swept low ponytail in her existing black hair colour. Her
+face, accessories and clothes are unchanged. Saved custom resident recipes remain
+editable and continue to take precedence over cast defaults.
+The Hair style picker offers front and rear views of each real game hairstyle, so
+buns, ponytails and braids can be compared independently of their colour.
+`thuan-creator-*.png`, `thuan-front-*.png` and `thuan-rear-*.png` show Thuan herself.
+
+The creator's Make them step now uses a feature icon rail on the left, a large
+live preview in the centre, and a part grid with a persistent colour palette on
+the right. Phone screens stack the preview above the part tray while retaining
+the icon rail and independent Style, Colour and Adjust pages. The supplied interface
+reference and Tomodachi Life usability target informed this original layout.
+
+Character standardisation
+-------------------------
+All identities use the same wardrobe catalogue, fitted body builder, skeleton and
+animation player. Character names no longer remove clothing choices or rewrite
+saved skirts/dresses. Personality and gait remain individual recipe settings.
+This update standardises avatar capabilities; it does not change story schedules
+or assign every town role to every resident.
+
+The creator pose menu includes the complete shared move catalogue for every
+character. The cross-cast test exercises 24 named moves plus walking, running and
+sitting for all 33 authored cast/neighbour recipes with the new hair and outfit.

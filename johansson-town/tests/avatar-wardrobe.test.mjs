@@ -29,14 +29,14 @@ test('taking off a hat restores the original hairstyle and putting it on tucks i
  const tucked=a.body.geometry.attributes.position.array.slice();a.setHat(false);assert.notDeepEqual(a.body.geometry.attributes.position.array,tucked,'original bun emerges when the hat is hung up');a.setHat(true);assert.deepEqual(a.body.geometry.attributes.position.array,tucked,'hat fits exactly as before');a.dispose();
 });
 
-test('Johansson wardrobe excludes dresses, migrates old saved skirts, and preserves Thuan choices',async()=>{
+test('shared wardrobe preserves every character’s chosen outfit across save and reload',async()=>{
  const {outfitAllowedFor}=await import('../src/avatars/outfits.js');
  const {playerRecipe,savePlayerRecipe,PLAYER_RECIPE_KEY}=await import('../src/avatars/actors.js');
  const {encodeRecipe,normalizeRecipe}=await import('../src/avatars/recipe.js');
  const values=new Map(),storage={getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)};
  const outfit={...CAST_RECIPES.Johansson.outfit,top:'sundress',bottom:'pleatedskirt'};
- assert.equal(outfitAllowedFor('Johansson',outfit),false);assert.equal(outfitAllowedFor('Thuan',outfit),true);
+ assert.equal(outfitAllowedFor('Johansson',outfit),true);assert.equal(outfitAllowedFor('Thuan',outfit),true);
  storage.setItem(PLAYER_RECIPE_KEY,encodeRecipe({...CAST_RECIPES.Johansson,outfit}));
- assert.equal(playerRecipe(storage).outfit.bottom,'trousers');assert.equal(playerRecipe(storage).outfit.top,'kariyushi');assert.equal(normalizeRecipe(playerRecipe(storage)).outfit.bottom,'trousers','Migration must survive the renderer’s recipe normalization');
+ assert.equal(playerRecipe(storage).outfit.bottom,'pleatedskirt');assert.equal(playerRecipe(storage).outfit.top,'sundress');assert.equal(normalizeRecipe(playerRecipe(storage)).outfit.bottom,'pleatedskirt','Chosen wardrobe must survive the renderer’s recipe normalization');
  savePlayerRecipe({...CAST_RECIPES.Johansson,outfit},storage);assert.equal(outfitAllowedFor('Johansson',playerRecipe(storage).outfit),true);
 });
