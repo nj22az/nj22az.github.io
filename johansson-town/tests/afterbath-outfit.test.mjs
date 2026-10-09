@@ -180,6 +180,10 @@ test('the turban covers the hair, sized to it, and leaves the brows and eyes cle
    if(z>.55&&Math.abs(x)<.35)lowestFront=Math.min(lowestFront,y);
   }
   assert.equal(hairLeft,0,name+': no hair outside the towel');assert.ok(towel>2000,name+': the turban');
+  // It reads as a towel: Umi-no-yu's navy band shows on it, in the twist at the front and round the back.
+  const navy=new THREE.Color('#2e3e68');let front=0,back=0;
+  for(let i=0;i<P.count;i++){if(I.getX(i)!==head||Math.abs(C.getX(i)-navy.r)>1e-3||Math.abs(C.getZ(i)-navy.b)>1e-3)continue;if(P.getZ(i)>m.Rh*.3)front++;else if(P.getZ(i)<-m.Rh*.3)back++;}
+  assert.ok(front>200&&back>200,`${name}: the towel's navy band, ${front} in front and ${back} behind`);
   // Long hair (all four have it) needs the fuller turban.
   assert.ok(reach>=TURBAN.longRadius*.98,name+': a turban for long hair, '+reach.toFixed(2));
   // Its front edge is above the brows at their highest (surprised: browLift 20 px of the 256 px face).

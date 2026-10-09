@@ -1,17 +1,17 @@
 {
-  "_actors-DxctZn0M.js": {
-    "file": "actors-DxctZn0M.js",
+  "_actors-BG8v4Nys.js": {
+    "file": "actors-BG8v4Nys.js",
     "name": "actors",
     "imports": [
-      "_izakaya-serving-visuals-BqwCpa1D.js"
+      "_izakaya-serving-visuals-BmOJ6eDd.js"
     ]
   },
   "_icons-BJJ0w3BS.js": {
     "file": "icons-BJJ0w3BS.js",
     "name": "icons"
   },
-  "_izakaya-serving-visuals-BqwCpa1D.js": {
-    "file": "izakaya-serving-visuals-BqwCpa1D.js",
+  "_izakaya-serving-visuals-BmOJ6eDd.js": {
+    "file": "izakaya-serving-visuals-BmOJ6eDd.js",
     "name": "izakaya-serving-visuals"
   },
   "_spector.bundle-_JPoFEkN.js": {
@@ -33,17 +33,17 @@
     ]
   },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-CBkFi8WL.js",
+    "file": "portraits-BW3tBBgw.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-BqwCpa1D.js",
-      "_actors-DxctZn0M.js"
+      "_izakaya-serving-visuals-BmOJ6eDd.js",
+      "_actors-BG8v4Nys.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-DMQzZv3H.js",
+    "file": "boot-CEqE_hhE.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -58,22 +58,22 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-PQ0aSbXS.js",
+    "file": "feed-Bjz9LnXt.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-BqwCpa1D.js"
+      "_izakaya-serving-visuals-BmOJ6eDd.js"
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-BRIPKv-Y.js",
+    "file": "game-CN2sRdM1.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-BqwCpa1D.js",
-      "_actors-DxctZn0M.js",
+      "_izakaya-serving-visuals-BmOJ6eDd.js",
+      "_actors-BG8v4Nys.js",
       "_town-audio-ygTjb9SR.js",
       "_icons-BJJ0w3BS.js"
     ],

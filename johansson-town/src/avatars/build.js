@@ -234,6 +234,8 @@ function hairCap(style,flip,spec=HAIR[style]){
  if(!spec)return null;
  if(spec.ring)return hairRing(spec);
  const g=new THREE.SphereGeometry(1,64,44),pos=g.attributes.position,v=new THREE.Vector3();
+ // The sphere's seam (its first and last meridian) made exactly one, so no pinholes show along it.
+ for(let iy=0;iy<=44;iy++)pos.setXYZ(iy*65+64,pos.getX(iy*65),pos.getY(iy*65),pos.getZ(iy*65));
  const side=flip?-1:1;
  // How far each point is into the hair (the field below) and how much of the hair it is (0 tucked inside the head,
  // 1 on the hair's surface): the hair states (setHairState) reshape by them.
@@ -249,11 +251,14 @@ function hairCap(style,flip,spec=HAIR[style]){
   // yes/no, so the hairline is a clean curve where the cap meets the head, not stair steps.
   const outFace=Math.max(.18-v.z,Math.abs(v.x)-spec.faceHalf,v.y-front);
   const low=THREE.MathUtils.lerp(spec.side,spec.back,THREE.MathUtils.smoothstep(-v.z,-.2,.7));
-  const f=Math.min(outFace,v.y-low),keep=f>0;
+  const f=spec.field?spec.field(v):Math.min(outFace,v.y-low),keep=f>0;
   // Bare scalp is tucked just inside the head; a close crop needs only a short step.
-  const full=spec.radius*(1+(spec.lift&&v.y>0?v.y*spec.lift:0)),inner=spec.radius<1.04?.985:.8;
-  const w=THREE.MathUtils.smoothstep(f,-.035,.035),r=THREE.MathUtils.lerp(inner,full,w);keepAt[i]=w;fieldAt[i]=f;
-  pos.setXYZ(i,v.x*r,v.y*r+(spec.lift&&keep?spec.lift*.25:0),v.z*r);
+  // (A towel turban is snug at its edge and swells behind it: spec.snug, spec.swell; its edge goes in gently, spec.inner
+  // and spec.tuck, so where it meets the skin is a smooth line across the mesh, not along its triangles.)
+  const sw=spec.snug?THREE.MathUtils.smoothstep(f,0,spec.swell):1;
+  const full=THREE.MathUtils.lerp(spec.snug??spec.radius,spec.radius*(1+(spec.lift&&v.y>0?v.y*spec.lift:0)),sw),inner=spec.inner??(spec.radius<1.04?.985:.8);
+  const tuck=spec.tuck??.035,w=THREE.MathUtils.smoothstep(f,-tuck,tuck),r=THREE.MathUtils.lerp(inner,full,w);keepAt[i]=w;fieldAt[i]=f;
+  pos.setXYZ(i,v.x*r,v.y*r+(spec.lift&&keep?spec.lift*.25*sw:0),v.z*r);
  }
  g.computeVertexNormals();
  return g;
@@ -934,13 +939,15 @@ export function bodyVolume(recipe,m){
 /**
  * A strip of cloth along `frames` ({c: centre, side: across, n: off the body, lay}): laid (lay true), on the body as
  * bodyVolume.layOn puts it; free, where its frame puts it in the air, pushed `gap` clear of the body. `hw` is half its
- * width, `th` its thickness. Returns an indexed geometry with smooth normals, and each vertex's fraction along it.
+ * width, `th` its thickness. A frame may give its row of points instead (`across`: [inner, outer] for each of the
+ * `across`+1). Returns an indexed geometry with smooth normals, and each vertex's fraction along it.
  */
 function clothStrip(vol,frames,{hw,th,gap,across=6}){
  const N=frames.length,J=across,pos=[],along=[],index=[],v=new THREE.Vector3(),g=new THREE.Vector3();
  for(let i=0;i<N;i++){
   const f=frames[i],row=[];
   for(let j=0;j<=J;j++){
+   if(f.across){row.push(f.across[j]);continue;}
    v.copy(f.c).addScaledVector(f.side,(j/J*2-1)*hw);
    if(f.lay){row.push([vol.layOn(v,f.n,gap),vol.layOn(v,f.n,gap+th)]);continue;}
    const a=v.clone().addScaledVector(f.n,-th/2),b=v.clone().addScaledVector(f.n,th/2);
@@ -1091,31 +1098,90 @@ function addTenugui(list,recipe,m){
 
 /**
  * A towel turban (after the bath, the women): the bath's terry towel wound round the head over the drying hair, the hair
- * all inside it. A dome over the crown, the back and the sides to just above the ears, its front edge rolled into a
- * two-ply twist across the forehead, the end tucked in a knot at the back of the crown. Long hair needs more towel round
- * it: a fuller dome and a bigger knot (LONG_HAIR).
+ * all inside it, built so it reads as a towel and never as hair:
+ * - a tall soft dome over the crown and the back, its sides no lower than the twist, so nothing off-white hangs by the
+ *   face to be taken for hair; taller than any hairstyle;
+ * - its front edge twisted into a fat two-ply roll from above one ear across the forehead to the other, as thick as the
+ *   towel is deep there, so it rests on the forehead and covers the dome's edge (a clean line between the towel and the
+ *   face, no strip of towel to be taken for a fringe), Umi-no-yu's navy band showing in the twist;
+ * - the towel's hem round the back from one end of the twist to the other, lying on its lower edge (a clean line between
+ *   the towel and the head), Umi-no-yu's navy stripe woven in;
+ * - the edge of the outer turn of towel, a soft ridge from the twist's end over the crown to the tucked end;
+ * - the end tucked in at the back of the crown, a flap with its band near the edge, coming out from under that turn.
+ * Long hair needs more towel round it: a fuller dome (LONG_HAIR).
  */
 const LONG_HAIR=new Set(['bob','long','ponytail','braids','bun','perm','shoulder','pigtails','twinbuns','afro','mullet','curtains']);
-export const TURBAN=Object.freeze({front:.5,side:.16,back:-.5,faceHalf:.72,radius:1.13,longRadius:1.2});
+export const TURBAN=Object.freeze({front:.54,side:.3,back:-.48,lift:.16,radius:1.17,longRadius:1.23,snug:1.05,swell:.3,inner:.96,tuck:.08,
+ twist:Object.freeze({reach:1.45,radius:.11,turns:1.5,band:Object.freeze([.5,.63])}),
+ hem:Object.freeze({rows:Object.freeze([-.03,0,.03,.06,.09,.13,.17,.2]),band:Object.freeze([.09,.17])}),flap:Object.freeze({from:2.38,to:2.95,band:Object.freeze([.6,.78])})});
 function addTurban(list,recipe,m){
- const R=m.Rh,S=[m.headSX*R,m.headSY*R,R*.98],long=LONG_HAIR.has(recipe.hair.style),rad=long?TURBAN.longRadius:TURBAN.radius;
- const dome=hairCap(null,false,{front:TURBAN.front,side:TURBAN.side,back:TURBAN.back,radius:rad,faceHalf:TURBAN.faceHalf});
+ const T=TURBAN,R=m.Rh,S=[m.headSX*R,m.headSY*R,R*.98],long=LONG_HAIR.has(recipe.hair.style),rad=long?T.longRadius:T.radius,C=new THREE.Vector3(0,m.headCentre,0);
+ // Its edge, a smooth line all round: across the forehead at `front`, down under the twist's ends to `side` above the ears,
+ // and round the back down to `back`. (Not the hair's face opening, whose corners would show at the temples below the twist.)
+ const low=z=>THREE.MathUtils.lerp(T.side,T.back,THREE.MathUtils.smoothstep(-z,-.2,.7));
+ const field=d=>d.y-low(d.z)-(T.front-T.side)*(1-THREE.MathUtils.smoothstep(Math.abs(Math.atan2(d.x,d.z)),1.1,T.twist.reach));
+ const spec={front:T.front,side:T.side,back:T.back,radius:rad,faceHalf:1,lift:T.lift,snug:T.snug,swell:T.swell,inner:T.inner,tuck:T.tuck,field};
+ const dome=hairCap(null,false,spec);
  const p=dome.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);shapeHeadPoint(v,m.profile);p.setXYZ(i,v.x,v.y,v.z);}dome.computeVertexNormals();
- part(list,dome,'head',TOWEL.colour,M(0,m.headCentre,0,0,0,0,...S));
- // The twist across the forehead: two strands round each other along the dome's front edge, temple to temple.
- const yc=TURBAN.front+.06,rho=Math.sqrt(Math.max(0,(rad*.99)**2-yc*yc)),pts=[];
- for(let i=0;i<=24;i++){const phi=-1.2+2.4*i/24,u=new THREE.Vector3(Math.sin(phi)*rho,yc-.1*(Math.abs(phi)/1.2)**2,Math.cos(phi)*rho);shapeHeadPoint(u,m.profile);pts.push(new THREE.Vector3(u.x*S[0],m.headCentre+u.y*S[1],u.z*S[2]));}
- const mid=new THREE.CatmullRomCurve3(pts),N=60,rs=R*.072,off=R*.05,twists=3.5;
+ const hf=dome.userData.hairField,di=dome.index,domePiece=part(list,dome,'head',TOWEL.colour,M(0,m.headCentre,0,0,0,0,...S));
+ // Where its edge is inside the head it has no ink of its own.
+ for(let i=0;i<di.count;i++)domePiece.attributes.ink.setX(i,THREE.MathUtils.smoothstep(hf.field[di.getX(i)],-.03,.02));
+ // A point of the dome's surface in a direction (unit, before the head's shaping), `off` of its radius further out: the
+ // same field and radius hairCap gives the dome.
+ const at=(d,off=0)=>{const sw=THREE.MathUtils.smoothstep(field(d),0,T.swell),r=THREE.MathUtils.lerp(T.snug,rad*(1+Math.max(0,d.y)*T.lift),sw)*(1+off);
+  const q=shapeHeadPoint(new THREE.Vector3(d.x*r,d.y*r+T.lift*.25*sw,d.z*r),m.profile);return new THREE.Vector3(q.x*S[0],C.y+q.y*S[1],q.z*S[2]);};
+ const out=d=>at(d,.02).sub(at(d)).normalize(),round=(phi,y)=>{const h=Math.sqrt(Math.max(0,1-y*y));return new THREE.Vector3(Math.sin(phi)*h,y,Math.cos(phi)*h);};
+ // The dome's own surface normal there (it swells away from its edge, so it is not the radial direction).
+ const normalAt=d=>{const u=new THREE.Vector3(Math.abs(d.y)<.9?0:1,Math.abs(d.y)<.9?1:0,0).cross(d).normalize(),w=d.clone().cross(u),e=.01;
+  const step=(a,k)=>at(d.clone().addScaledVector(a,k).normalize());
+  const n=step(u,e).sub(step(u,-e)).cross(step(w,e).sub(step(w,-e))).normalize();return n.dot(at(d).sub(C))<0?n.negate():n;};
+ // A strip of towel lying on the dome (the tucked end): laid along a line of directions.
+ const onDome={layOn:(q,n,l)=>q.clone().addScaledVector(n,l),sdf:()=>1,normal:()=>new THREE.Vector3()};
+ const framesOn=dirs=>{const c=dirs.map(d=>at(d)),n=dirs.map(normalAt);return c.map((q,i)=>{const t=c[Math.min(c.length-1,i+1)].clone().sub(c[Math.max(0,i-1)]).normalize();return {c:q,n:n[i],side:t.clone().cross(n[i]).normalize(),lay:true};});};
+ const paintAlong=(piece,index,along,band,colour)=>{const P=piece.attributes.color,c=new THREE.Color(colour);
+  for(let i=0;i<index.length;i+=3){const a=[along[index[i]],along[index[i+1]],along[index[i+2]]];if(Math.min(...a)>=band[0]-1e-6&&Math.max(...a)<=band[1]+1e-6)for(let j=0;j<3;j++)P.setXYZ(i+j,c.r,c.g,c.b);}return piece;};
+ // The twist: right over the dome's front edge, from above one ear, across the forehead, to above the other, so the roll
+ // covers the edge and meets the skin of the forehead under it (no strip of towel to be taken for a fringe).
+ const W=T.twist,N=72,RAD=10,edgeAt=phi=>round(phi,THREE.MathUtils.lerp(T.front+.02,T.side+.04,THREE.MathUtils.smoothstep(Math.abs(phi),1.1,W.reach)));
+ // Its middle stands off the snug edge by the roll's own reach, so the roll rests on the dome's edge and the forehead.
+ const cr=T.snug+1.05*W.radius,twistAt=d=>{const q=shapeHeadPoint(new THREE.Vector3(d.x*cr,d.y*cr,d.z*cr),m.profile);return new THREE.Vector3(q.x*S[0],C.y+q.y*S[1],q.z*S[2]);};
  for(const strand of [0,1]){
   const line=[];
-  for(let i=0;i<=N;i++){const s=i/N,c=mid.getPointAt(s),t=mid.getTangentAt(s),out=c.clone().sub(new THREE.Vector3(0,m.headCentre,0)).normalize(),b=t.clone().cross(out).normalize(),n=b.clone().cross(t).normalize(),a=s*twists*Math.PI*2+strand*Math.PI;
-   line.push(c.clone().addScaledVector(n,Math.cos(a)*off).addScaledVector(b,Math.sin(a)*off));}
-  part(list,new THREE.TubeGeometry(new THREE.CatmullRomCurve3(line),N*2,rs,8,false),'head',strand?TOWEL.fold:TOWEL.colour);
-  for(const end of [line[0],line.at(-1)])ball(list,rs*1.15,end.toArray(),'head',strand?TOWEL.fold:TOWEL.colour,[1,1,1],8,6);
+  for(let i=0;i<=N;i++){const s=i/N,phi=-W.reach+2*W.reach*s,d=edgeAt(phi),rs=R*W.radius,n=out(d),c=twistAt(d);
+   const t=twistAt(edgeAt(phi+.01)).sub(c).normalize(),b=t.clone().cross(n).normalize(),ang=s*W.turns*Math.PI*2+strand*Math.PI;
+   line.push(c.addScaledVector(n,Math.cos(ang)*rs*.45).addScaledVector(b,Math.sin(ang)*rs*.45));}
+  const tube=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(line),N*2,R*W.radius*.66,RAD,false),index=tube.index.array.slice();
+  const along=new Float32Array(tube.attributes.position.count).map((_,i)=>Math.floor(i/(RAD+1))/(N*2));
+  paintAlong(part(list,tube,'head',strand?TOWEL.fold:TOWEL.colour),index,along,W.band,TOWEL.band);
+  for(const e of [line[0],line.at(-1)])ball(list,R*W.radius*.66,e.toArray(),'head',strand?TOWEL.fold:TOWEL.colour,[1,1,1],10,8);
  }
- // The tucked end, a soft knot standing out of the back of the crown.
- const kd=new THREE.Vector3(0,.55,-.84).normalize().multiplyScalar(rad*1.02),kr=R*(long?.36:.3);
- ball(list,kr,[0,m.headCentre+kd.y*S[1],kd.z*S[2]],'head',TOWEL.fold,[1.2,.9,.9],14,10);
+ // The towel's hem round the back, from under one end of the twist to the other: a band of towel lying on the dome's
+ // edge, Umi-no-yu's navy stripe woven in, its lower edge on the skin, so the line between the towel and the head is a
+ // clean curve (the dome itself goes in under it, out of sight). Its rows follow the edge, so the stripe's edges are smooth.
+ const yAt=(phi,f)=>{let a=-.95,b=.97;for(let k=0;k<30;k++){const y=(a+b)/2;if(field(round(phi,y))<f)a=y;else b=y;}return (a+b)/2;};
+ const hemAt=(d,off)=>{const f=field(d);if(f>=0)return at(d,off);
+  const r=THREE.MathUtils.lerp(1.006,T.snug,THREE.MathUtils.smoothstep(f,-.03,0))*(1+off),q=shapeHeadPoint(new THREE.Vector3(d.x*r,d.y*r,d.z*r),m.profile);
+  return new THREE.Vector3(q.x*S[0],C.y+q.y*S[1],q.z*S[2]);};
+ const H=T.hem,J=H.rows.length-1,hemFrames=[];
+ // Narrower towards its ends, so it comes out from under the twist's ends rather than standing above them.
+ const h0=W.reach-.06,h1=Math.PI*2-h0;
+ for(let i=0;i<=64;i++){const phi=h0+(h1-h0)*i/64,k=THREE.MathUtils.lerp(.3,1,THREE.MathUtils.smoothstep(Math.min(phi-h0,h1-phi),0,.4));
+  const across=H.rows.map(f=>{const d=round(phi,yAt(phi,f*k));return [hemAt(d,.003),hemAt(d,.016)];});
+  hemFrames.push({c:across[J>>1][1],side:across[J][0].clone().sub(across[0][0]).normalize(),across});}
+ const hem=clothStrip(null,hemFrames,{hw:0,th:0,gap:0,across:J}).geometry,hindex=hem.index.array.slice(),hemPiece=part(list,hem,'head',TOWEL.colour);
+ hemPiece.attributes.ink.array.fill(.7);
+ {const P=hemPiece.attributes.color,c=new THREE.Color(TOWEL.band),f=k=>H.rows[k%(J+1)];
+  for(let i=0;i<hindex.length;i+=3){const a=[f(hindex[i]),f(hindex[i+1]),f(hindex[i+2])];if(Math.min(...a)>=H.band[0]-1e-6&&Math.max(...a)<=H.band[1]+1e-6)for(let j=0;j<3;j++)P.setXYZ(i+j,c.r,c.g,c.b);}}
+ // The edge of the outer turn of towel: a soft ridge from under the twist's left end, up over the crown, to the top of
+ // the tucked end at the back, which comes out from under it. It stays on the towel, never on the face.
+ const F=T.flap,f0=round(-W.reach,T.side+.06),f1=round(Math.PI,Math.sin(F.from)+.03),fold=[];
+ for(let i=0;i<=24;i++){const s=i/24;fold.push(at(f0.clone().lerp(f1,s).add(new THREE.Vector3(0,.7*Math.sin(Math.PI*s),0)).normalize(),.012));}
+ part(list,new THREE.TubeGeometry(new THREE.CatmullRomCurve3(fold,false,'centripetal'),48,R*.032,8,false),'head',TOWEL.fold);
+ for(const e of [fold[0],fold.at(-1)])ball(list,R*.032,e.toArray(),'head',TOWEL.fold,[1,1,1],8,6);
+ // The tucked end at the back, under the turn, its band near the edge.
+ const flapDirs=[];for(let i=0;i<=16;i++){const a=F.from+(F.to-F.from)*i/16;flapDirs.push(new THREE.Vector3(0,Math.sin(a),Math.cos(a)));}
+ const flap=clothStrip(onDome,framesOn(flapDirs),{hw:R*.2,th:R*.03,gap:R*.008,across:6}),findex=flap.geometry.index.array.slice();
+ paintAlong(part(list,flap.geometry,'head',TOWEL.colour),findex,flap.along,F.band,TOWEL.band);
 }
 
 /**
