@@ -77,6 +77,15 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   if(saved.leg.i<points.length&&walk(p,points[saved.leg.i],dt))saved.leg.i++;
   return saved.leg.i>=points.length;
  }
+ /**
+  * What a bather has on at Umi-no-yu: their clothes until they reach their side's lockers (the walk's waypoints, `via`) on
+  * the way in, and again from there on the way out; swimwear (build.js wear('swim')) in between, in the shared bath.
+  */
+ function onsenDress(g,saved){
+  const via=saved.seat.via||[],leg=saved.leg,past=leg&&leg.i>=via.length;
+  const swim=saved.phase==='arriving'?!!(leg?.dir==='in'&&past):saved.phase==='leaving'?!(leg?.dir==='out'&&past):true;
+  if(swim)g.userData.outfit='swim';else delete g.userData.outfit;
+ }
  const hasSeat=seat=>Number.isFinite(seat.surfaceY)||Number.isFinite(seat.height);
  const seatHeight=(seat,g)=>Number.isFinite(seat.surfaceY)?seat.surfaceY-g.position.y:seat.height;
  function moveAcrossSeat(g,from,to,amount){g.position.set(from[0]+(to[0]-from[0])*amount,from[1]+(to[1]-from[1])*amount,from[2]+(to[2]-from[2])*amount);}
@@ -109,11 +118,10 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    }
    g.visible=true;g.userData.hit.inside=true;g.userData.indoors=place;
    g.userData[place==='ramen'?'inRamen':place==='market'?'inMarket':place==='onsen'?'inOnsen':'inIzakaya']=true;g.userData.place=place;
-   // Changed on their own side (the women at the lockers, the men at the baskets). Past the bath doors the washing room
-   // and the rock bath are shared, a swimwear zone, so nobody bathes bare: grown-ups wrap up in one of the bath's yuamigi
-   // (bath wraps) with a towel on the head, children and teenagers wear swimwear. 'bath' asks each body for its own
-   // (build.js bathOutfit).
-   if(place==='onsen')g.userData.outfit='bath';
+   // Changed on their own side (the women at the lockers, the men at the baskets): in through the lobby in their clothes,
+   // into swimwear at their side's lockers, because past the bath doors the washing room and the rock bath are shared, a
+   // swimwear zone (nobody bathes bare), and dressed again at the lockers on the way home (onsenDress).
+   if(place==='onsen')onsenDress(g,saved);
    // Closed Minato: whoever is there works through their cleaning stations
    // (izakaya-hours.js), walking from one to the next; when the job ends they go back
    // to their own place (the Barfly to his stool).

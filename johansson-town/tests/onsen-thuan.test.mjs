@@ -27,7 +27,7 @@ test('asked along, Thuan goes from locking up to Umi-no-yu, and still makes her 
  assert.equal(onsenInvitationDay(thuan,3*1440+1300,false,commuter),4);
 });
 
-test('the bath borrows Thuan into the rock pool dressed for the family bath and gives her back dressed',()=>{
+test('the bath borrows Thuan into the rock pool in her swimwear (the shared bath is a swimwear zone) and gives her back dressed',()=>{
  const street=new THREE.Group(),scene=new THREE.Group();scene.add(street);
  const world={people:RESIDENTS.map((profile,i)=>{const g=new THREE.Group();g.userData.name=profile.name;g.userData.hit={inside:false};g.position.set(i,0,i+1);street.add(g);return {g,profile};})};
  const person=world.people.find(p=>p.profile.name==='Thuan'),g=person.g,state={...commuter,onsenDate:0};
@@ -35,7 +35,7 @@ test('the bath borrows Thuan into the rock pool dressed for the family bath and 
  const guests=createIndoorResidents({world,parent:scene,place:'onsen',layout:{entrance:ONSEN_ROOM.spawn},getState:()=>state,getPlayerSeat:()=>playerSeat});
  g.position.set(ONSEN_DOOR[0],0,ONSEN_DOOR[1]);g.userData.indoors='onsen';
  assert.deepEqual(guests.sync(1215),['Thuan']);
- assert.equal(g.parent,scene);assert.equal(g.userData.inOnsen,true);assert.equal(g.userData.outfit,'bath');
+ assert.equal(g.parent,scene);assert.equal(g.userData.inOnsen,true);assert.equal(g.userData.outfit,'swim');
  assert.equal(g.userData.socialPose,'Soak');assert.equal(g.userData.seatHeight,ONSEN_SEATS.rockBeside.surfaceY);
  assert.deepEqual(g.position.toArray(),ONSEN_SEATS.rockBeside.position);
  guests.restore();

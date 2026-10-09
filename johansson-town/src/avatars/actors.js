@@ -9,6 +9,8 @@ import {fitAvatarHeldProp,gripWheel} from './consume.js';
 import {DEFAULT_PLAYER,readPlayers,readSave} from '../save.js';
 import {swingsAt} from './springs.js';
 const swingAt=new THREE.Vector3();
+/** What can be worn at Umi-no-yu (build.js wear): anything else asked for is the clothes. */
+const BATH_OUTFITS=Object.freeze(['swim','towel','bath','afterbath']);
 import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropPortion,disposeServing} from '../people/izakaya-beer.js';
 
 /**
@@ -74,10 +76,10 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  actor.speed=THREE.MathUtils.damp(actor.speed,measured,20,dt);
  actor.moving=actor.speed>(actor.moving?.03:.07);
  actor.gestureTime=Math.max(0,actor.gestureTime-dt);
- // In the bath: 'bath' is whatever this person wears at Umi-no-yu (build.js bathOutfit: a bath
- // wrap for grown-ups, swimwear for children), or 'towel'/'swim' outright. The actor records
- // what they actually have on, so a child asked into a towel reads as in swimwear.
- const bathing=['swim','towel','bath'].includes(u.outfit),outfit=bathing?u.outfit:actor.isThuan?(u.alternativeOutfit||'clothes'):(u.outfit||'clothes');if(actor.requested!==outfit){actor.outfit=avatar.wear(outfit)||outfit;actor.requested=outfit;}
+ // At the bath: 'bath' is whatever this person wears behind Umi-no-yu's noren (build.js bathOutfit: a bath
+ // wrap for grown-ups, swimwear for children), or 'towel'/'swim' outright, and 'afterbath' the lobby's after-bath
+ // clothes. The actor records what they actually have on, so a child asked into a towel reads as in swimwear.
+ const bathing=BATH_OUTFITS.includes(u.outfit),outfit=bathing?u.outfit:actor.isThuan?(u.alternativeOutfit||'clothes'):(u.outfit||'clothes');if(actor.requested!==outfit){actor.outfit=avatar.wear(outfit)||outfit;actor.requested=outfit;}
  // At home the hat is on its hook (home-residents.js), not on the head.
  const hatOn=!u.hatOff;if(actor.hatOn!==hatOn){avatar.setHat?.(hatOn);actor.hatOn=hatOn;}
  const riding=!!(u.playerControlled&&actor.isThuan);
@@ -167,8 +169,9 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   speak(seconds=2){speakUntil=Math.max(speakUntil,time+seconds);},
   lookAt(point){lookPoint=point?point.clone?.()||point:null;},
   seat(name='Sit'){seatMove=name;},
-  /** 'clothes', 'swim', 'towel', or 'bath' (what they wear at Umi-no-yu: bathOutfit). Returns what is on. */
-  wear(name){requested=['swim','towel','bath'].includes(name)?name:'clothes';outfit=avatar.wear(requested)||requested;return outfit;},
+  /** 'clothes', 'swim', 'towel', 'bath' (what they wear behind Umi-no-yu's noren: bathOutfit) or 'afterbath' (the
+   *  lobby's after-bath clothes). Returns what is on. */
+  wear(name){requested=BATH_OUTFITS.includes(name)?name:'clothes';outfit=avatar.wear(requested)||requested;return outfit;},
   get outfit(){return outfit;},
   /** Where the third-person lens pivots: above the big head and clear of it to the right. */
   get lens(){const m=avatar.measure;return {eye:m.H+.14,side:m.Rh*m.headSX+.26,head:m.headCentre};},

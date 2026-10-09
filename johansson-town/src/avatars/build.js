@@ -1,4 +1,4 @@
-import {THUAN_SAILOR_OUTFIT} from './outfits.js';
+import {THUAN_SAILOR_OUTFIT,AFTERBATH,houseDressColour} from './outfits.js';
 import {SPRING_BONES,SPRING_PARENT,springRest,chainShare,quarterShare,hemSpec,createSprings} from './springs.js';
 import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -230,11 +230,16 @@ const HAIR=Object.freeze({
  pigtails:{front:.4,side:-.1,back:-.3,radius:1.08,faceHalf:.76},
  twinbuns:{front:.42,side:-.04,back:-.36,radius:1.08,faceHalf:.76},
 });
-function hairCap(style,flip){
- const spec=HAIR[style];if(!spec)return null;
+function hairCap(style,flip,spec=HAIR[style]){
+ if(!spec)return null;
  if(spec.ring)return hairRing(spec);
  const g=new THREE.SphereGeometry(1,64,44),pos=g.attributes.position,v=new THREE.Vector3();
+ // The sphere's seam (its first and last meridian) made exactly one, so no pinholes show along it.
+ for(let iy=0;iy<=44;iy++)pos.setXYZ(iy*65+64,pos.getX(iy*65),pos.getY(iy*65),pos.getZ(iy*65));
  const side=flip?-1:1;
+ // How far each point is into the hair (the field below) and how much of the hair it is (0 tucked inside the head,
+ // 1 on the hair's surface): the hair states (setHairState) reshape by them.
+ const keepAt=new Float32Array(pos.count),fieldAt=new Float32Array(pos.count);g.userData.hairField={keep:keepAt,field:fieldAt};
  for(let i=0;i<pos.count;i++){
   v.fromBufferAttribute(pos,i);
   // The fringe: straight across, or swept down to one side from a parting.
@@ -246,11 +251,14 @@ function hairCap(style,flip){
   // yes/no, so the hairline is a clean curve where the cap meets the head, not stair steps.
   const outFace=Math.max(.18-v.z,Math.abs(v.x)-spec.faceHalf,v.y-front);
   const low=THREE.MathUtils.lerp(spec.side,spec.back,THREE.MathUtils.smoothstep(-v.z,-.2,.7));
-  const f=Math.min(outFace,v.y-low),keep=f>0;
+  const f=spec.field?spec.field(v):Math.min(outFace,v.y-low),keep=f>0;
   // Bare scalp is tucked just inside the head; a close crop needs only a short step.
-  const full=spec.radius*(1+(spec.lift&&v.y>0?v.y*spec.lift:0)),inner=spec.radius<1.04?.985:.8;
-  const r=THREE.MathUtils.lerp(inner,full,THREE.MathUtils.smoothstep(f,-.035,.035));
-  pos.setXYZ(i,v.x*r,v.y*r+(spec.lift&&keep?spec.lift*.25:0),v.z*r);
+  // (A towel turban is snug at its edge and swells behind it: spec.snug, spec.swell; its edge goes in gently, spec.inner
+  // and spec.tuck, so where it meets the skin is a smooth line across the mesh, not along its triangles.)
+  const sw=spec.snug?THREE.MathUtils.smoothstep(f,0,spec.swell):1;
+  const full=THREE.MathUtils.lerp(spec.snug??spec.radius,spec.radius*(1+(spec.lift&&v.y>0?v.y*spec.lift:0)),sw),inner=spec.inner??(spec.radius<1.04?.985:.8);
+  const tuck=spec.tuck??.035,w=THREE.MathUtils.smoothstep(f,-tuck,tuck),r=THREE.MathUtils.lerp(inner,full,w);keepAt[i]=w;fieldAt[i]=f;
+  pos.setXYZ(i,v.x*r,v.y*r+(spec.lift&&keep?spec.lift*.25*sw:0),v.z*r);
  }
  g.computeVertexNormals();
  return g;
@@ -288,7 +296,12 @@ function addHair(list,recipe,m){
  // Hair and hat are built in head-bone space, then carried to model space.
  const at=(x,y,z)=>[x,m.headY+y,z];
  const cap=hairCap(style,recipe.hair.flip);
- if(cap){const p=cap.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);shapeHeadPoint(v,m.profile);p.setXYZ(i,v.x,v.y,v.z);}cap.computeVertexNormals();part(list,cap,'head',c,M(cx,m.headY+cy,0,0,0,0,...S));}
+ if(cap){const p=cap.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);shapeHeadPoint(v,m.profile);p.setXYZ(i,v.x,v.y,v.z);}cap.computeVertexNormals();
+  // The cap's own field, laid out the way part() lays out its triangles (one vertex per corner, in index order).
+  const hf=cap.userData.hairField,index=cap.index;
+  const piece=part(list,cap,'head',c,M(cx,m.headY+cy,0,0,0,0,...S));
+  if(hf&&index){const n=index.count,keep=new Float32Array(n),field=new Float32Array(n);for(let i=0;i<n;i++){const j=index.getX(i);keep[i]=hf.keep[j];field[i]=hf.field[j];}piece.userData.hairField={keep,field};}
+ }
  const dark=new THREE.Color(c).multiplyScalar(.82).getStyle();
  // What hangs swings on its own chain of bones (springs.js); the rest is the head's.
  const swing=springRest(recipe,m),tailShare=chainShare('head',['hairA','hairB'],[swing.rest.hairA,swing.rest.hairB,swing.chains.find(ch=>ch.kind==='hair')?.tip??swing.rest.hairB]);
@@ -500,6 +513,14 @@ function addAccessories(list,recipe,m){
 
 /** Long hair, a lipstick or no beard and a slight build: a swimming costume, not trunks. */
 export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','ponytail','braids','bun','perm','shoulder','pigtails','twinbuns'].includes(recipe.hair.style)||recipe.mouth.colour!=='#b8544a');
+/**
+ * Swimwear (wear('swim')), modest, for Umi-no-yu's shared rock bath and the beach: a one-piece costume from the hips to
+ * straight across above the bust, on two straps, with short legs, for anyone who would wear a swimsuit top; bath trunks to
+ * mid-thigh for everyone else. A woman of the older generation -- an elder, or drawn with the lines of her years (wrinkles,
+ * as Mrs Higa is) -- wears the skirted costume her generation swam in: a little skirt over the hips.
+ */
+export const SWIMSUIT=Object.freeze({top:.79,trunks:.5,legs:.2});
+export const wearsSwimSkirt=recipe=>wearsSwimTop(recipe)&&(recipe.age==='elder'||recipe.wrinkles>=.6);
 
 function torsoProfile(recipe,m){
  const belly=1+(recipe.body.build-.5)*.12,hipRatio=m.hips/m.width;
@@ -533,10 +554,12 @@ function bodyMaterial(recipe,m){
 function addBody(list,recipe,m,swim=false){
  const o=recipe.outfit,skin=recipe.body.skin,top=swim?skin:o.topColour,bottom=swim?recipe.swim.colour:o.bottomColour;
  // Under a bath wrap nothing else is worn: the wrap is the garment, so nothing can show through it.
- const bare=swim==='towel';
+ const bare=swim==='towel',onePiece=swim===true&&wearsSwimTop(recipe);
  const W=m.width,D=m.depth,hipY=m.hipY;
  // The base layer everyone has on under their clothes: a tank top and underwear.
  const tank=!swim&&o.top==='tank',briefs=!swim&&o.bottom==='underwear';
+ // A running vest after the bath (outfits.js AFTERBATH) is its own shell over the bare body, like the tank top's.
+ const running=!swim&&o.top==='running';
  // The torso: a lathe, full width up to square shoulders that round off into the neck.
  // A sturdier build carries a little more round the middle, so a bare torso is shaped
  // like a body rather than a box.
@@ -546,10 +569,10 @@ function addBody(list,recipe,m,swim=false){
  // Underwear sits lower than a waistband.
  const waist=hipY+m.torso*(briefs?.05:.13);
  const torsoColour=p=>{
-  if(swim)return !bare&&p.y<waist?bottom:skin;
+  if(swim)return !bare&&(p.y<waist||onePiece&&p.y<hipY+m.torso*SWIMSUIT.top)?bottom:skin;
   if(p.y<waist)return bottom;
   // Under a tank top the body is bare; the vest is its own garment, added below.
-  if(tank)return skin;
+  if(tank||running)return skin;
   if(['jacket','cardigan','festival'].includes(o.top)&&p.z>D*.18&&Math.abs(p.x)<W*.13)return o.accent;
   if(o.top==='sundress'&&(p.y-hipY)/m.torso>.78)return skin;
   return top;
@@ -572,9 +595,10 @@ function addBody(list,recipe,m,swim=false){
    for(let i=1;i<path.length;i++)tube(list,path[i-1],path[i],.016*m.k,'chest',top,6);
   }
  }
- // A swimmer's top, for anyone who would wear one.
- if(swim&&!bare&&wearsSwimTop(recipe))
-  part(list,new THREE.CylinderGeometry(W*.52,W*.52,m.torso*.2,16,1,true),'chest',recipe.swim.colour,M(0,hipY+m.torso*.66,0,0,0,0,1,1,D/W));
+ if(running)runningShirt(list,recipe,m,top);
+ // A one-piece costume: the torso itself is painted (torsoColour) to a clean line along a row of the lathe, and two
+ // flat straps run from it over the shoulders and down the back to it again.
+ if(onePiece)addStraps(list,bodyVolume(recipe,m),m,{x:W/2*.4,from:SWIMSUIT.top-.04,hw:.014*m.k,th:.003*m.k,gap:.002*m.k,colour:bottom,skin:'chest'});
  // Neck.
  tube(list,[0,m.neckY-.02,0],[0,m.headY+.01,0],m.armR*1.08,'neck',skin,8);
  // A kariyushi's open camp collar is modelled, not painted: a stand behind the neck that
@@ -638,12 +662,12 @@ function addBody(list,recipe,m,swim=false){
   // it stretches over a raised arm rather than coming apart from the body.
   const capShare=p=>{const w=THREE.MathUtils.smoothstep(Math.abs(p.x),m.shoulderX-m.armR*1.1,m.shoulderX+m.armR*.3);return [['chest',1-w],['shoulder'+s,w]];};
   // Flattened on top so the shoulder slopes from the neck rather than standing up in a pad.
-  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||o.top==='sundress'?skin:top,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.62,Math.min(1.1,D/W*1.6)));
+  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||running||o.top==='sundress'?skin:top,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.62,Math.min(1.1,D/W*1.6)));
   // A short sleeve: one closed, rounded sleeve over the top of the arm, starting inside the
   // shoulder cap and lent to the chest at its top, so the shirt runs from the neck to the
   // hem without a seam. A kariyushi's is a little roomier and boxier, as real ones are.
   // Its print and its hem band are painted (garment.js), not separate pieces.
-  if(!swim&&!longSleeve&&!tank&&o.top!=='sundress'){
+  if(!swim&&!longSleeve&&!tank&&!running&&o.top!=='sundress'){
    const roomy=o.top==='kariyushi',a0=[sh[0]-sx*m.armR*.05,sh[1]+m.armR*.08,0],a1=[sh[0]+sx*.008,sh[1]-m.upper*(roomy?.52:.56),0];
    limb(list,a0,a1,m.armR*(roomy?1.20:1.16),m.armR*(roomy?1.16:1.12),top,{...arm,joints:[],root:['chest',.55,.3],uvAt:p=>sleeveUV(p,a0,a1,sx)});
   }
@@ -670,10 +694,13 @@ function addBody(list,recipe,m,swim=false){
   limb(list,hp,an,m.legR*(b==='widepants'?1.32:1.02),m.legR*(b==='widepants'?1.28:.86),trousers?bottom:skin,leg);
   if(b==='cropped'||b==='culottes'){const end=b==='cropped'?m.foot+m.shin*.35:hipY-m.thigh*1.12;limb(list,hp,[hp[0],end,0],m.legR*(b==='culottes'?1.55:1.12),m.legR*(b==='culottes'?1.7:1.16),bottom,leg);}
   // Shorts and trunks: a wider piece over the top of the thigh.
-  if(b==='shorts'||b==='swim'&&!bare)limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.04,hipY-m.thigh*(b==='swim'?.22:.55),0],m.legR*1.2,m.legR*1.26,bottom,{...leg,joints:[]});
+  if(b==='shorts'||b==='swim'&&!bare)limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.04,hipY-m.thigh*(b==='swim'?(onePiece?SWIMSUIT.legs:SWIMSUIT.trunks):.55),0],m.legR*1.2,m.legR*1.26,bottom,{...leg,joints:[]});
+  // Long cotton drawers (ステテコ) after the bath: loose, from the waist to just below the knee, bending there.
+  if(b==='suteteko'){const top=[hp[0],hp[1]+m.legR*.3,0],end=[hp[0]*1.04,hipY-m.thigh-m.shin*.18,0],len=top[1]-end[1];
+   limb(list,top,end,m.legR*1.3,m.legR*1.22,bottom,{bone:'thigh'+s,joints:[[(top[1]-(hipY-m.thigh))/len,'thigh'+s,'knee'+s]]});}
   // Underwear: short briefs, snug over the top of the thigh.
   if(b==='underwear')limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.02,hipY-m.thigh*.16,0],m.legR*1.12,m.legR*1.14,bottom,{...leg,joints:[]});
-  // Feet: bare (and at the beach), or in sandals, sneakers or leather shoes.
+  // Feet: bare (and at the beach, and after the bath), or in sandals, sneakers or leather shoes.
   const wear=swim?'barefoot':o.footwear;
   if(wear==='barefoot'||wear==='sandals'){
    ball(list,m.legR*1.12,[sx*m.hipX,m.foot*.55,m.legR*.5],'foot'+s,skin,[1,.55,1.7],12,8);
@@ -684,6 +711,9 @@ function addBody(list,recipe,m,swim=false){
    }
   }else addShoe(list,recipe,m,s,wear);
  }
+ // The house dress's skirt and an older woman's swimsuit's little skirt are cloth round the legs (addHullSkirt).
+ if(b==='housedress')addHullSkirt(list,recipe,m,'housedress',bottom);
+ if(b==='swim'&&!bare&&wearsSwimSkirt(recipe))addHullSkirt(list,recipe,m,'swim',bottom);
  if(b==='skirt'||b==='longskirt'||b==='pleatedskirt'){
   const len=b==='skirt'||b==='pleatedskirt'?m.thigh*.9:m.thigh+m.shin*.85;
   // The skirt hangs from the hips and, lower down, goes with the legs: seated, it lies on the lap; and a long skirt,
@@ -700,16 +730,18 @@ function addBody(list,recipe,m,swim=false){
 }
 
 /**
- * The bath wrap: a yuamigi (湯浴み着), the towel-cloth wrap families wear in a mixed bath.
+ * The bath wrap: a yuamigi (湯浴み着), the towel-cloth wrap of a bath where people are seen.
  *
- * Umi-no-yu is a family bath -- husbands and wives, grandparents and grandchildren, friends
- * from work share the water -- so nobody bathes bare. Grown-ups wrap up in one of the
- * bath's own terry wraps from the bandai, as family baths and kashikiri baths in Japan do:
- * under the arms to the knees, the end tucked in at the chest, for anyone who would wear a
- * swimsuit top; from the waist to the knees for everyone else. A small folded towel rests on
- * the head, the classic way to keep it out of the water and cool the head in a hot bath.
- * Children and teenagers keep their swimwear: that is what a family bath asks of them, and
- * a wrap that can come undone is no garment for a child splashing about.
+ * Nobody is ever bare at Umi-no-yu. It has a men's and a women's side, each behind its noren, a
+ * lobby they share and a bath they share past the bath doors. Behind the noren grown-ups wrap
+ * up in one of the bath's own terry wraps from the bandai (this): under the arms to the knees,
+ * the end tucked in at the chest, for anyone who would wear a swimsuit top; from the waist to
+ * the knees for everyone else. A small folded towel rests on the head, the classic way to keep
+ * it out of the water and cool the head (wear('towel',{headTowel:false}) leaves it off, for
+ * drying the hair at the mirror). Past the bath doors, in the washing room and the rock bath,
+ * everybody wears swimwear (wear('swim')); in the lobby, the after-bath clothes (wear('afterbath')).
+ * Children and teenagers keep their swimwear behind the noren too: a wrap that can come undone
+ * is no garment for a child splashing about.
  *
  * The wrap is shrink-wrapped round the body: at each height it is the convex outline of the
  * torso and both legs (the arms hang outside it, over the cloth), pushed out by a small gap;
@@ -723,7 +755,7 @@ function addBody(list,recipe,m,swim=false){
 export const TOWEL=Object.freeze({colour:'#f2ede2',band:'#2e3e68',fold:'#ddd5c3'});
 /** Who wraps up in a bath towel: grown-ups. Children and teenagers keep their swimwear. */
 export const wearsBathTowel=recipe=>recipe.age==='adult'||recipe.age==='elder';
-/** What this person wears at Umi-no-yu: 'towel', or 'swim' for the young and anyone who prefers it. */
+/** What this person wears behind Umi-no-yu's noren: 'towel', or 'swim' for the young and anyone who prefers it. */
 export function bathOutfit(input){const r=normalizeRecipe(input);return wearsBathTowel(r)&&r.swim.bath!=='swimwear'?'towel':'swim';}
 /** Where the wrap runs: under the arms (or the waist) to just above the knee. Pure, for tests. */
 export function towelSpan(recipe,m){
@@ -765,17 +797,20 @@ function outerEnvelope(ys,rs){
  for(const i of idx){while(h.length>1){const o=h.at(-2),a=h.at(-1),c=(ys[a]-ys[o])*(rs[i]-rs[o])-(rs[a]-rs[o])*(ys[i]-ys[o]);if(c>=0)h.pop();else break;}h.push(i);}
  return ys.map(y=>{for(let j=1;j<h.length;j++){const a=h[j-1],b=h[j];if(y<=ys[b]+1e-12){const f=(y-ys[a])/((ys[b]-ys[a])||1);return rs[a]+(rs[b]-rs[a])*f;}}return rs[h.at(-1)];});
 }
-/** The terry wrap round the body, and the end tucked in at the front. Returns where it lies, for the tuck and tests. */
-function addTowel(list,recipe,m){
- const span=towelSpan(recipe,m),prof=torsoProfile(recipe,m),k=m.k,N=48,gap=.007*k,step=.012*k;
+/**
+ * Cloth shrink-wrapped round the body from the height `top` down to `hem`: the bath wrap (addTowel), the house dress's skirt
+ * and an older woman's swimsuit skirt (addHullSkirt). At each height it is the convex outline of the torso and both legs, a
+ * small gap outside, and `ease(y)` more below the hips; then, round the body, the tightest straight-sided profile that holds
+ * them all. Its top is folded over and its hem turned under. Returns the cloth, its skin, and where it lies.
+ */
+function hullCloth(recipe,m,{top,hem,ease}){
+ const span={top,hem},prof=torsoProfile(recipe,m),k=m.k,N=48,gap=.007*k,step=.012*k;
  const dirs=Array.from({length:N},(_,i)=>{const a=i/N*Math.PI*2;return [Math.sin(a),Math.cos(a)];});
  const reach=(y,g)=>{const h=hull2(bodySection(prof,m,y,g));return dirs.map(([x,z])=>hullReach(h,x,z));};
  // Rows from the hem up, so the woven band sits exactly on two of them; and every row where the torso's outline turns.
  const ys=[];for(let y=span.hem;y<span.top-step*.5;y+=step)ys.push(y);ys.push(span.top);
  for(const [,t] of prof){const y=m.hipY+t*m.torso;if(y>span.hem+step*2.5&&y<span.top-step*.5&&ys.every(v=>Math.abs(v-y)>step*.2))ys.push(y);}
  ys.sort((a,b)=>b-a);
- // Below the hips the cloth stands off the thighs: room for a stride or a seat.
- const ease=y=>.028*k*THREE.MathUtils.smoothstep(m.hipY-y,0,m.thigh*.9);
  const want=ys.map(y=>reach(y,gap).map(r=>r+ease(y)));
  const radius=ys.map(()=>new Array(N));
  for(let i=0;i<N;i++){const env=outerEnvelope(ys,want.map(r=>r[i]));env.forEach((r,j)=>{radius[j][i]=r;});}
@@ -791,6 +826,12 @@ function addTowel(list,recipe,m){
  const pos=[],index=[];
  for(const ring of rings)for(let i=0;i<N;i++)pos.push(dirs[i][0]*ring.r[i],ring.y,dirs[i][1]*ring.r[i]);
  for(let j=0;j+1<rings.length;j++)for(let i=0;i<N;i++){const a=j*N+i,b=j*N+(i+1)%N,c=(j+1)*N+i,d=(j+1)*N+(i+1)%N;index.push(a,c,b,b,c,d);}
+ // Its inside: a lining a few millimetres in, facing in, from the top down to the row above the turned hem, so a look
+ // into the hem (seated, from the front) finds the cloth's inner face rather than the dark inside of its ink line. It
+ // carries no ink of its own (lining, the triangles from that index on).
+ const lining=index.length,inset=.0035*k,first=rings.length;
+ for(let j=0;j<ys.length-1;j++)for(let i=0;i<N;i++){const r=radius[j][i]-inset;pos.push(dirs[i][0]*r,ys[j],dirs[i][1]*r);}
+ for(let j=0;j+1<ys.length-1;j++)for(let i=0;i<N;i++){const a=(first+j)*N+i,b=(first+j)*N+(i+1)%N,c=(first+j+1)*N+i,d=(first+j+1)*N+(i+1)%N;index.push(a,b,c,b,d,c);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(index);g.computeVertexNormals();
  // Skin: exactly the torso's above the hips; below, the skirt's drape onto each thigh.
  const share=p=>{
@@ -798,9 +839,19 @@ function addTowel(list,recipe,m){
   const leg=THREE.MathUtils.smoothstep(m.hipY-p.y,.02*k,.12*k),w=THREE.MathUtils.smoothstep(p.x,-m.hipX,m.hipX);
   return [['hips',1-leg],['thighL',leg*w],['thighR',leg*(1-w)]];
  };
+ return {geometry:g,share,span,rings,dirs,ys,radius,step,lining};
+}
+/** A hull cloth's part: its lining (from `lining` on in the index, three corners a triangle in part()'s order) without ink. */
+function unInk(piece,lining){piece.attributes.ink.array.fill(0,lining);return piece;}
+/** The terry wrap round the body, and the end tucked in at the front. Returns where it lies, for the tuck and tests. */
+function addTowel(list,recipe,m){
+ const k=m.k,s0=towelSpan(recipe,m);
+ // Below the hips the cloth stands off the thighs: room for a stride or a seat.
+ const {geometry:g,share,span,rings,dirs,ys,radius,step,lining}=hullCloth(recipe,m,{top:s0.top,hem:s0.hem,ease:y=>.028*k*THREE.MathUtils.smoothstep(m.hipY-y,0,m.thigh*.9)});
+ span.chest=s0.chest;const N=dirs.length;
  // Off-white terry, matte, with Umi-no-yu's navy band woven a hand's width above the hem.
  const band=[span.hem+step*4.02,span.hem+step*4.98];
- part(list,g,share,p=>p.y>band[0]&&p.y<band[1]?TOWEL.band:TOWEL.colour);
+ unInk(part(list,g,share,p=>p.y>band[0]&&p.y<band[1]?TOWEL.band:TOWEL.colour),lining);
  // The end of the towel overlaps at the front, on the wearer's left, where the right hand
  // tucks it in: its edge runs down the wrap from the top to the hem, and the corner is tucked
  // under at the top, a small fold standing just proud of the cloth.
@@ -812,12 +863,31 @@ function addTowel(list,recipe,m){
  return {span,rings,dirs};
 }
 /**
+ * Skirts that are cloth round the legs rather than a bell from the hips (hullCloth), so seated they lie on the lap as the
+ * wrap does instead of standing up over it, and are fitted out of the legs and onto the seat as they are drawn (fit):
+ * - the house dress's (after the bath): from just above the waist (where the bodice is sewn on) to just below the knee,
+ *   loose, flaring a little to the hem;
+ * - an older woman's swimsuit's (wearsSwimSkirt): from the waist to the top of the thigh.
+ * Heights: `top` a fraction of the torso above the hips, `hem` a fraction of the thigh below them; `ease` and `flare`
+ * (per thigh length down) in metres for a body of 1.6 m.
+ */
+export const HULL_SKIRTS=Object.freeze({
+ housedress:Object.freeze({top:.2,hem:1.06,ease:.024,flare:.03}),
+ swim:Object.freeze({top:.13,hem:.42,ease:.016,flare:.03}),
+});
+function addHullSkirt(list,recipe,m,kind,colour){
+ const S=HULL_SKIRTS[kind],k=m.k;
+ const {geometry,share,lining}=hullCloth(recipe,m,{top:m.hipY+m.torso*S.top,hem:m.hipY-m.thigh*S.hem,
+  ease:y=>{const d=Math.max(0,m.hipY-y);return k*(S.ease*THREE.MathUtils.smoothstep(d,0,m.thigh*.9)+S.flare*d/m.thigh);}});
+ const piece=unInk(part(list,geometry,share,colour),lining);piece.userData.fit=true;return piece;
+}
+/**
  * The folded towel on the head, lying on the crown (or the hair) and draped to its shape: each
  * point of its underside is dropped onto the head from above, so it rests rather than floats,
  * and nothing of the head comes through it. It is the head bone's, so it goes where the head goes.
  */
 function addHeadTowel(list,m,surfaces){
- const k=m.k,R=m.Rh,lx=R*m.headSX*1.15,lz=R*.72,th=.02*k,rad=th*.5,cz=-R*.06,gap=.0025*k;
+ const k=m.k,R=m.Rh,lx=R*m.headSX*1.15,lz=R*.72,th=.026*k,rad=th*.5,cz=-R*.06,gap=.0025*k;
  // One smooth piece (shared vertices), so its ink line follows it rather than splitting at the edges.
  let g=new THREE.BoxGeometry(lx,th,lz,16,2,10);g.deleteAttribute('uv');g.deleteAttribute('normal');g=mergeVertices(g,1e-7);
  const P=g.attributes.position,v=new THREE.Vector3(),q=new THREE.Vector3();
@@ -832,6 +902,286 @@ function addHeadTowel(list,m,surfaces){
  // Folded in four, with the end of its band showing along one fold.
  const b0=-lx/2+lx*11/16,b1=-lx/2+lx*12/16;
  part(list,g,'head',p=>p.x>b0&&p.x<b1?TOWEL.band:TOWEL.colour);
+}
+
+/**
+ * Cloth laid on the body: the running vest and its straps, the tenugui round the neck.
+ *
+ * The body here is its rest pose's volume as addBody builds it -- the torso lathe, the two shoulder caps and the neck --
+ * as an approximate signed distance (metres, negative inside). A strip of cloth is laid along a centre line on it: each
+ * point across the strip is dropped onto the body along the body's normal there and lifted `gap` off it (its inner face)
+ * and `gap+th` (its outer), so it lies on the body, bends with it and is never inside it. The strips are the chest's, and
+ * the chest carries the torso's top, so they stay where they were laid in every pose.
+ */
+export function bodyVolume(recipe,m){
+ const prof=torsoProfile(recipe,m),W=m.width,D=m.depth,neckR=m.armR*1.08,n0=m.neckY-.02,n1=m.headY+.01,top=m.hipY+1.04*m.torso;
+ const caps=[1,-1].map(sx=>({c:new THREE.Vector3(sx*m.shoulderX-sx*m.armR*.12,m.shoulderY-m.armR*.05,0),r:new THREE.Vector3(m.armR*1.18,m.armR*1.18*.62,m.armR*1.18*Math.min(1.1,D/W*1.6))}));
+ const sdf=p=>{
+  const t=(p.y-m.hipY)/m.torso;
+  let d=t<-.1||t>1.04?Math.hypot(p.x,p.z,p.y-top):(Math.hypot(p.x/(W/2),p.z/(D/2))-latheRadius(prof,t))*Math.min(W,D)/2;
+  for(const {c,r} of caps)d=Math.min(d,(Math.hypot((p.x-c.x)/r.x,(p.y-c.y)/r.y,(p.z-c.z)/r.z)-1)*r.y);
+  return Math.min(d,Math.hypot(p.x,p.y-THREE.MathUtils.clamp(p.y,n0,n1),p.z)-neckR);
+ };
+ const h=.002*m.k,q=new THREE.Vector3();
+ const normal=p=>{const n=new THREE.Vector3();for(const [ax,k] of [['x',0],['y',1],['z',2]]){q.copy(p);q[ax]+=h;const a=sdf(q);q[ax]-=2*h;n.setComponent(k,a-sdf(q));}return n.normalize();};
+ /** p dropped onto the body along n (the outermost surface on that line) and lifted `lift` off it. */
+ const layOn=(p,n,lift,reach=.1*m.k)=>{
+  const steps=50,step=2*reach/steps;let hit=null;
+  for(let i=0;i<=steps;i++){q.copy(p).addScaledVector(n,reach-i*step);if(sdf(q)<0){hit=reach-i*step;break;}}
+  if(hit===null)return p.clone().addScaledVector(n,lift);
+  let a=hit,b=hit+step;for(let k=0;k<22;k++){const mid=(a+b)/2;q.copy(p).addScaledVector(n,mid);if(sdf(q)<0)a=mid;else b=mid;}
+  return p.clone().addScaledVector(n,b+lift);
+ };
+ return {prof,sdf,normal,layOn,surf:(a,t)=>{const r=latheRadius(prof,t);return new THREE.Vector3(Math.sin(a)*W/2*r,m.hipY+t*m.torso,Math.cos(a)*D/2*r);},
+  /** The height t (upper torso, above the shoulder line) at which the lathe's radius is r. */
+  tAt:r=>{for(let i=prof.length-1;i>0;i--){const [r0,t0]=prof[i],[r1,t1]=prof[i-1];if(t1<.66)break;if((r-r0)*(r-r1)<=0)return t0+(t1-t0)*((r-r0)/((r1-r0)||1));}return .66;}};
+}
+/**
+ * A strip of cloth along `frames` ({c: centre, side: across, n: off the body, lay}): laid (lay true), on the body as
+ * bodyVolume.layOn puts it; free, where its frame puts it in the air, pushed `gap` clear of the body. `hw` is half its
+ * width, `th` its thickness. A frame may give its row of points instead (`across`: [inner, outer] for each of the
+ * `across`+1). Returns an indexed geometry with smooth normals, and each vertex's fraction along it.
+ */
+function clothStrip(vol,frames,{hw,th,gap,across=6}){
+ const N=frames.length,J=across,pos=[],along=[],index=[],v=new THREE.Vector3(),g=new THREE.Vector3();
+ for(let i=0;i<N;i++){
+  const f=frames[i],row=[];
+  for(let j=0;j<=J;j++){
+   if(f.across){row.push(f.across[j]);continue;}
+   v.copy(f.c).addScaledVector(f.side,(j/J*2-1)*hw);
+   if(f.lay){row.push([vol.layOn(v,f.n,gap),vol.layOn(v,f.n,gap+th)]);continue;}
+   const a=v.clone().addScaledVector(f.n,-th/2),b=v.clone().addScaledVector(f.n,th/2);
+   // In the air: both faces moved together, out of the body, until the nearer is `gap` clear of it.
+   for(let k=0;k<8;k++){const d=Math.min(vol.sdf(a),vol.sdf(b));if(d>=gap)break;g.copy(vol.normal(vol.sdf(a)<vol.sdf(b)?a:b)).multiplyScalar(gap-d+1e-4);a.add(g);b.add(g);}
+   row.push([a,b]);
+  }
+  for(let layer=0;layer<2;layer++)for(let j=0;j<=J;j++){const p=row[j][layer];pos.push(p.x,p.y,p.z);along.push(i/(N-1));}
+ }
+ const at=(i,layer,j)=>i*2*(J+1)+layer*(J+1)+j,P=k=>new THREE.Vector3(pos[k*3],pos[k*3+1],pos[k*3+2]);
+ const quad=(a,b,c,d,want)=>{const n=P(b).sub(P(a)).cross(P(c).sub(P(a)));if(n.dot(want)<0)index.push(a,c,b,a,d,c);else index.push(a,b,c,a,c,d);};
+ for(let i=0;i<N;i++){
+  const f=frames[i],t=frames[Math.min(N-1,i+1)].c.clone().sub(frames[Math.max(0,i-1)].c).normalize(),n=t.clone().cross(f.side).normalize();
+  // which way is out of the cloth's face here: across the thickness, from the inner face to the outer
+  const out=P(at(i,1,J>>1)).sub(P(at(i,0,J>>1)));if(out.lengthSq()>1e-14)n.copy(out.normalize());
+  if(i<N-1)for(let j=0;j<J;j++){quad(at(i,1,j),at(i+1,1,j),at(i+1,1,j+1),at(i,1,j+1),n);quad(at(i,0,j),at(i+1,0,j),at(i+1,0,j+1),at(i,0,j+1),n.clone().negate());}
+  if(i<N-1){quad(at(i,0,0),at(i+1,0,0),at(i+1,1,0),at(i,1,0),f.side.clone().negate());quad(at(i,0,J),at(i+1,0,J),at(i+1,1,J),at(i,1,J),f.side);}
+  if(i===0||i===N-1)for(let j=0;j<J;j++)quad(at(i,0,j),at(i,0,j+1),at(i,1,j+1),at(i,1,j),i===0?t.clone().negate():t);
+ }
+ const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geometry.setIndex(index);geometry.computeVertexNormals();
+ return {geometry,along:Float32Array.from(along)};
+}
+/** Frames along a centre line laid on the body: each point dropped onto it, the strip's width across it. */
+function laidFrames(vol,points){
+ const c=points.map(p=>vol.layOn(p,vol.normal(p),0));
+ return c.map((p,i)=>{const n=vol.normal(p),t=c[Math.min(c.length-1,i+1)].clone().sub(c[Math.max(0,i-1)]).normalize();return {c:p,n,side:t.clone().cross(n).normalize(),lay:true};});
+}
+
+/**
+ * The running vest (ランニングシャツ) after the bath: white cotton from below the waist of the drawers to a deep scoop at
+ * the neck front and back, cut away under the arms, on two flat straps over the shoulders. The body of it is a shell
+ * round the torso, its top edge one smooth curve (so a clean line, not a stair of triangles); the straps are strips laid
+ * on the shoulders that run down over the shell's edge. Its skin is the torso's own at every height.
+ */
+export const RUNNING_VEST=Object.freeze({hem:.02,neckFront:.8,neckBack:.86,straps:.92,armhole:.7,strapAt:.52,gap:.006});
+function runningShirt(list,recipe,m,colour){
+ const vol=bodyVolume(recipe,m),V=RUNNING_VEST,W=m.width,D=m.depth,k=m.k;
+ // Its top edge round the body, by the angle from the front: the scoop, the strap's root, the armhole, the back's scoop.
+ const knots=[[0,V.neckFront],[V.strapAt,V.straps],[Math.PI/2,V.armhole],[Math.PI-V.strapAt,V.straps],[Math.PI,V.neckBack]];
+ const edge=a=>{a=Math.abs(((a+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI);for(let i=1;i<knots.length;i++){const [a0,t0]=knots[i-1],[a1,t1]=knots[i];if(a<=a1)return t0+(t1-t0)*THREE.MathUtils.smoothstep(a,a0,a1);}return V.neckBack;};
+ const cols=112,rows=18,pos=[],index=[];
+ for(let i=0;i<=cols;i++){const a=i/cols*Math.PI*2,tTop=edge(a);
+  for(let j=0;j<=rows;j++){const t=V.hem+(tTop-V.hem)*j/rows,r=latheRadius(vol.prof,t);pos.push(Math.sin(a)*(W/2*r+V.gap*k),m.hipY+t*m.torso,Math.cos(a)*(D/2*r+V.gap*k));}}
+ for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){const a=i*(rows+1)+j,b=(i+1)*(rows+1)+j;index.push(a,b,a+1,b,b+1,a+1);}
+ let shell=new THREE.BufferGeometry();shell.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));shell.setIndex(index);
+ shell=mergeVertices(shell,1e-6);shell.computeVertexNormals();
+ const torsoSkin=p=>{const chest=THREE.MathUtils.smoothstep(p.y,m.hipY+m.torso*.15,m.hipY+m.torso*.55);return [['hips',1-chest],['chest',chest]];};
+ part(list,shell,torsoSkin,colour);
+ // The straps: from a little below the shell's edge at the front, over the shoulder between the neck and the shoulder's
+ // round, to the same below the edge at the back, lying just over the shell.
+ addStraps(list,vol,m,{x:Math.sin(V.strapAt)*W/2*latheRadius(vol.prof,V.straps),from:V.straps-.05,hw:.019*k,th:.003*k,gap:(V.gap+.0015)*k,colour,skin:torsoSkin});
+}
+/**
+ * Two flat straps laid over the shoulders, `x` either side of the middle, from the height `from` up the front, over the
+ * top between the neck and the shoulder's round, and down the back to `from` again (the running vest's, a swimsuit's).
+ */
+function addStraps(list,vol,m,{x,from,hw,th,gap,colour,skin}){
+ const W=m.width,D=m.depth;
+ for(const sx of [1,-1]){
+  const px=sx*x,pts=[],tTop=vol.tAt(Math.abs(px)/(W/2)+.02);
+  for(const side of [1,-1])for(let i=0;i<=24;i++){const t=from+(tTop-from)*(side>0?i/24:1-i/24),r=latheRadius(vol.prof,t);
+   pts.push(new THREE.Vector3(px,m.hipY+t*m.torso,side*D/2*Math.sqrt(Math.max(0,r*r-(px/(W/2))**2))));}
+  // in order from the front root over the top to the back root, evenly spaced
+  const ordered=pts.slice(0,25).concat(pts.slice(26));
+  const frames=laidFrames(vol,new THREE.CatmullRomCurve3(ordered).getSpacedPoints(36));
+  const strap=part(list,clothStrip(vol,frames,{hw,th,gap,across:4}).geometry,skin,colour);
+  strap.attributes.ink.array.fill(.6);
+ }
+}
+
+/**
+ * The bath's tenugui round a man's neck after the bath: a thin cotton towel folded to a band, laid round the back of the
+ * neck on the shoulders' slope, its two ends down the chest over the vest. Umi-no-yu's own, off-white with the navy band
+ * its towels carry near each end. All the chest's, so it goes where the chest goes; it stands off the neck, which turns
+ * inside it, and the chin, which nods above it.
+ *
+ * 'flag' (setTenugui): a gust has the two ends: from where they leave the shoulders they stream away the way the wind
+ * blows, over the shoulders, rippling, the cloth on edge to it as a flag is. Every shape is a pure function of where the
+ * wind blows and the moment (time), so the same call always draws the same cloth.
+ */
+// The navy band: rows `band` from each end of the strip (of samples), so its edges run straight across the cloth.
+// Round the back of the neck it keeps `clear` (metres, for 1.6 m) between its inner edge and the neck; its ends leave the
+// shoulders at `anchor` radians either side of the front and hang to `end` of the torso's height. In a gust (flag) the wind
+// lifts it off from `lift` radians either side of the front, behind the neck, and the rest streams.
+export const TENUGUI=Object.freeze({clear:.012,anchor:.72,lift:1.9,end:.42,halfWidth:.03,thickness:.006,gap:.012,band:Object.freeze([4,7]),samples:85});
+function tenuguiShape(recipe,m,{state='rest',direction=Math.PI,time=0}={}){
+ const vol=bodyVolume(recipe,m),T=TENUGUI,W=m.width,D=m.depth,k=m.k;
+ // Round the neck at a set distance from it, wherever on the shoulders' slope that is: lower behind, where the neck is nearer
+ // the back, than at the sides.
+ const rho=m.armR*1.08+(T.halfWidth+T.clear)*k,ringT=a=>vol.tAt(Math.min(1,rho*Math.hypot(Math.sin(a)/(W/2),Math.cos(a)/(D/2))));
+ const onRing=a=>vol.surf(a,ringT(a)),tA=ringT(T.anchor),xA=Math.abs(onRing(T.anchor).x);
+ const down=(sx,t)=>{const x=sx*xA*(1+(tA-t)*.1),r=latheRadius(vol.prof,t);return new THREE.Vector3(x,m.hipY+t*m.torso,D/2*Math.sqrt(Math.max(0,r*r-(x/(W/2))**2)));};
+ // From the right end's tip up the chest, round the back of the neck, and down to the left end's tip.
+ const drop=[T.end,.6,.72,.82,.9,tA-.035];
+ const ctrl=[...drop.map(t=>down(-1,t)),onRing(Math.PI*2-T.anchor)];
+ for(let i=1;i<=7;i++)ctrl.push(onRing(Math.PI*2-T.anchor-i/8*(Math.PI*2-2*T.anchor)));
+ ctrl.push(onRing(T.anchor),...drop.slice().reverse().map(t=>down(1,t)));
+ const curve=new THREE.CatmullRomCurve3(ctrl,false,'centripetal'),rest=laidFrames(vol,curve.getSpacedPoints(T.samples-1));
+ // The two anchors: where the ends leave the shoulders.
+ const nearest=p=>rest.reduce((best,f,i)=>f.c.distanceTo(p)<rest[best].c.distanceTo(p)?i:best,0);
+ const anchors=[nearest(ctrl[drop.length]),nearest(ctrl[drop.length+8])],lifted=[nearest(onRing(Math.PI*2-T.lift)),nearest(onRing(T.lift))];
+ let frames=rest;
+ if(state==='flag'){
+  // A gust from in front of him or from a side blows the ends behind him or away to the side. One from behind him would
+  // stream them forward, through his arms; it is drawn as from the side, and so is one from straight ahead's other half.
+  const hd=new THREE.Vector3(Math.sin(direction),0,Math.cos(direction));if(hd.z>0)hd.set(Math.sign(hd.x)||1,0,0);
+  const up=new THREE.Vector3(0,1,0),across=up.clone().cross(hd).normalize();
+  frames=rest.slice();
+  for(const [a,step,sx] of [[lifted[0],-1,-1],[lifted[1],1,1]]){
+   const o=new THREE.Vector3(sx,0,0),count=step<0?a:rest.length-1-a;
+   let length=0;for(let i=a;i!==a+step*count;i+=step)length+=rest[i].c.distanceTo(rest[i+step].c);
+   // Each end first goes back from the neck, over the top of the back, and only then turns with the wind; the end on the far
+   // side from the wind drops as it goes, so it crosses the upper back well under the head to reach the other side.
+   const back=new THREE.Vector3(0,0,-1),far=o.dot(hd)<-.2;
+   const first=(far?o.clone().multiplyScalar(.3).addScaledVector(back,.6).addScaledVector(up,-.7):o.clone().multiplyScalar(.2).addScaledVector(back,.8).addScaledVector(up,.12)).normalize();
+   const last=hd.clone().addScaledVector(back,.35).addScaledVector(o,Math.max(0,o.dot(hd))*.3).addScaledVector(up,far?-.05:.06).normalize(),ds=length/count;
+   const p=rest[a].c.clone(),s0=rest[a].side.clone(),flagUp=up.clone().multiplyScalar(Math.sign(s0.dot(up))||1);
+   const centres=[];
+   for(let n=1;n<=count;n++){const tau=n/count;p.addScaledVector(first.clone().lerp(last,THREE.MathUtils.smoothstep(tau,0,.45)).normalize(),ds);
+    const ripple=Math.sin(Math.PI*2*(1.3*tau-.9*time)+(sx>0?0:1.7))*.1*length*tau;
+    centres.push(p.clone().addScaledVector(across,ripple).addScaledVector(up,Math.sin(Math.PI*2*(.8*tau-.7*time)+sx)*.03*length*tau));}
+   for(let n=1;n<=count;n++){
+    const c=centres[n-1],prev=n>1?centres[n-2]:rest[a].c,next=centres[Math.min(count-1,n)],t=next.clone().sub(prev).normalize();
+    const tau=n/count,w=s0.clone().lerp(flagUp,THREE.MathUtils.smoothstep(tau,.12,.5));w.addScaledVector(t,-w.dot(t)).normalize();
+    frames[a+step*n]={c,side:w,n:w.clone().cross(t).normalize(),lay:false};
+   }
+  }
+ }
+ const {geometry,along}=clothStrip(vol,frames,{hw:T.halfWidth*k,th:T.thickness*k,gap:T.gap*k,across:6});
+ return {geometry,along,anchors};
+}
+/**
+ * The tenugui as a part of the body: painted, inked lightly, skinned as the torso under it is at each height (the chest's
+ * round the neck, the torso's blend of chest and hips lower down the ends), so it moves exactly with what it lies on.
+ * Returns the piece and its index (for setTenugui).
+ */
+function addTenugui(list,recipe,m){
+ const {geometry,along}=tenuguiShape(recipe,m),index=geometry.index.array.slice();
+ const torsoSkin=p=>{const chest=THREE.MathUtils.smoothstep(p.y,m.hipY+m.torso*.15,m.hipY+m.torso*.55);return [['hips',1-chest],['chest',chest]];};
+ const piece=part(list,geometry,torsoSkin,TOWEL.colour),C=piece.attributes.color,band=new THREE.Color(TOWEL.band),last=TENUGUI.samples-1;
+ const [b0,b1]=TENUGUI.band.map(r=>r/last),rows=[[b0,b1],[1-b1,1-b0]];
+ // A whole quad of the cloth is in the band or out of it, so its edges are straight lines across.
+ for(let i=0;i<index.length;i+=3){const a=[along[index[i]],along[index[i+1]],along[index[i+2]]],lo=Math.min(...a),hi=Math.max(...a);
+  if(rows.some(([x,y])=>lo>=x-1e-6&&hi<=y+1e-6))for(let j=0;j<3;j++)C.setXYZ(i+j,band.r,band.g,band.b);}
+ piece.attributes.ink.array.fill(.55);
+ return {piece,index};
+}
+
+/**
+ * A towel turban (after the bath, the women): the bath's terry towel wound round the head over the drying hair, the hair
+ * all inside it, built so it reads as a towel and never as hair:
+ * - a tall soft dome over the crown and the back, its sides no lower than the twist, so nothing off-white hangs by the
+ *   face to be taken for hair; taller than any hairstyle;
+ * - its front edge twisted into a fat two-ply roll from above one ear across the forehead to the other, as thick as the
+ *   towel is deep there, so it rests on the forehead and covers the dome's edge (a clean line between the towel and the
+ *   face, no strip of towel to be taken for a fringe), Umi-no-yu's navy band showing in the twist;
+ * - the towel's hem round the back from one end of the twist to the other, lying on its lower edge (a clean line between
+ *   the towel and the head), Umi-no-yu's navy stripe woven in;
+ * - the edge of the outer turn of towel, a soft ridge from the twist's end over the crown to the tucked end;
+ * - the end tucked in at the back of the crown, a flap with its band near the edge, coming out from under that turn.
+ * Long hair needs more towel round it: a fuller dome (LONG_HAIR).
+ */
+const LONG_HAIR=new Set(['bob','long','ponytail','braids','bun','perm','shoulder','pigtails','twinbuns','afro','mullet','curtains']);
+export const TURBAN=Object.freeze({front:.54,side:.3,back:-.48,lift:.16,radius:1.17,longRadius:1.23,snug:1.05,swell:.3,inner:.96,tuck:.08,
+ twist:Object.freeze({reach:1.45,radius:.11,turns:1.5,band:Object.freeze([.5,.63])}),
+ hem:Object.freeze({rows:Object.freeze([-.03,0,.03,.06,.09,.13,.17,.2]),band:Object.freeze([.09,.17])}),flap:Object.freeze({from:2.38,to:2.95,band:Object.freeze([.6,.78])})});
+function addTurban(list,recipe,m){
+ const T=TURBAN,R=m.Rh,S=[m.headSX*R,m.headSY*R,R*.98],long=LONG_HAIR.has(recipe.hair.style),rad=long?T.longRadius:T.radius,C=new THREE.Vector3(0,m.headCentre,0);
+ // Its edge, a smooth line all round: across the forehead at `front`, down under the twist's ends to `side` above the ears,
+ // and round the back down to `back`. (Not the hair's face opening, whose corners would show at the temples below the twist.)
+ const low=z=>THREE.MathUtils.lerp(T.side,T.back,THREE.MathUtils.smoothstep(-z,-.2,.7));
+ const field=d=>d.y-low(d.z)-(T.front-T.side)*(1-THREE.MathUtils.smoothstep(Math.abs(Math.atan2(d.x,d.z)),1.1,T.twist.reach));
+ const spec={front:T.front,side:T.side,back:T.back,radius:rad,faceHalf:1,lift:T.lift,snug:T.snug,swell:T.swell,inner:T.inner,tuck:T.tuck,field};
+ const dome=hairCap(null,false,spec);
+ const p=dome.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);shapeHeadPoint(v,m.profile);p.setXYZ(i,v.x,v.y,v.z);}dome.computeVertexNormals();
+ const hf=dome.userData.hairField,di=dome.index,domePiece=part(list,dome,'head',TOWEL.colour,M(0,m.headCentre,0,0,0,0,...S));
+ // Where its edge is inside the head it has no ink of its own.
+ for(let i=0;i<di.count;i++)domePiece.attributes.ink.setX(i,THREE.MathUtils.smoothstep(hf.field[di.getX(i)],-.03,.02));
+ // A point of the dome's surface in a direction (unit, before the head's shaping), `off` of its radius further out: the
+ // same field and radius hairCap gives the dome.
+ const at=(d,off=0)=>{const sw=THREE.MathUtils.smoothstep(field(d),0,T.swell),r=THREE.MathUtils.lerp(T.snug,rad*(1+Math.max(0,d.y)*T.lift),sw)*(1+off);
+  const q=shapeHeadPoint(new THREE.Vector3(d.x*r,d.y*r+T.lift*.25*sw,d.z*r),m.profile);return new THREE.Vector3(q.x*S[0],C.y+q.y*S[1],q.z*S[2]);};
+ const out=d=>at(d,.02).sub(at(d)).normalize(),round=(phi,y)=>{const h=Math.sqrt(Math.max(0,1-y*y));return new THREE.Vector3(Math.sin(phi)*h,y,Math.cos(phi)*h);};
+ // The dome's own surface normal there (it swells away from its edge, so it is not the radial direction).
+ const normalAt=d=>{const u=new THREE.Vector3(Math.abs(d.y)<.9?0:1,Math.abs(d.y)<.9?1:0,0).cross(d).normalize(),w=d.clone().cross(u),e=.01;
+  const step=(a,k)=>at(d.clone().addScaledVector(a,k).normalize());
+  const n=step(u,e).sub(step(u,-e)).cross(step(w,e).sub(step(w,-e))).normalize();return n.dot(at(d).sub(C))<0?n.negate():n;};
+ // A strip of towel lying on the dome (the tucked end): laid along a line of directions.
+ const onDome={layOn:(q,n,l)=>q.clone().addScaledVector(n,l),sdf:()=>1,normal:()=>new THREE.Vector3()};
+ const framesOn=dirs=>{const c=dirs.map(d=>at(d)),n=dirs.map(normalAt);return c.map((q,i)=>{const t=c[Math.min(c.length-1,i+1)].clone().sub(c[Math.max(0,i-1)]).normalize();return {c:q,n:n[i],side:t.clone().cross(n[i]).normalize(),lay:true};});};
+ const paintAlong=(piece,index,along,band,colour)=>{const P=piece.attributes.color,c=new THREE.Color(colour);
+  for(let i=0;i<index.length;i+=3){const a=[along[index[i]],along[index[i+1]],along[index[i+2]]];if(Math.min(...a)>=band[0]-1e-6&&Math.max(...a)<=band[1]+1e-6)for(let j=0;j<3;j++)P.setXYZ(i+j,c.r,c.g,c.b);}return piece;};
+ // The twist: right over the dome's front edge, from above one ear, across the forehead, to above the other, so the roll
+ // covers the edge and meets the skin of the forehead under it (no strip of towel to be taken for a fringe).
+ const W=T.twist,N=72,RAD=10,edgeAt=phi=>round(phi,THREE.MathUtils.lerp(T.front+.02,T.side+.04,THREE.MathUtils.smoothstep(Math.abs(phi),1.1,W.reach)));
+ // Its middle stands off the snug edge by the roll's own reach, so the roll rests on the dome's edge and the forehead.
+ const cr=T.snug+1.05*W.radius,twistAt=d=>{const q=shapeHeadPoint(new THREE.Vector3(d.x*cr,d.y*cr,d.z*cr),m.profile);return new THREE.Vector3(q.x*S[0],C.y+q.y*S[1],q.z*S[2]);};
+ for(const strand of [0,1]){
+  const line=[];
+  for(let i=0;i<=N;i++){const s=i/N,phi=-W.reach+2*W.reach*s,d=edgeAt(phi),rs=R*W.radius,n=out(d),c=twistAt(d);
+   const t=twistAt(edgeAt(phi+.01)).sub(c).normalize(),b=t.clone().cross(n).normalize(),ang=s*W.turns*Math.PI*2+strand*Math.PI;
+   line.push(c.addScaledVector(n,Math.cos(ang)*rs*.45).addScaledVector(b,Math.sin(ang)*rs*.45));}
+  const tube=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(line),N*2,R*W.radius*.66,RAD,false),index=tube.index.array.slice();
+  const along=new Float32Array(tube.attributes.position.count).map((_,i)=>Math.floor(i/(RAD+1))/(N*2));
+  paintAlong(part(list,tube,'head',strand?TOWEL.fold:TOWEL.colour),index,along,W.band,TOWEL.band);
+  for(const e of [line[0],line.at(-1)])ball(list,R*W.radius*.66,e.toArray(),'head',strand?TOWEL.fold:TOWEL.colour,[1,1,1],10,8);
+ }
+ // The towel's hem round the back, from under one end of the twist to the other: a band of towel lying on the dome's
+ // edge, Umi-no-yu's navy stripe woven in, its lower edge on the skin, so the line between the towel and the head is a
+ // clean curve (the dome itself goes in under it, out of sight). Its rows follow the edge, so the stripe's edges are smooth.
+ const yAt=(phi,f)=>{let a=-.95,b=.97;for(let k=0;k<30;k++){const y=(a+b)/2;if(field(round(phi,y))<f)a=y;else b=y;}return (a+b)/2;};
+ const hemAt=(d,off)=>{const f=field(d);if(f>=0)return at(d,off);
+  const r=THREE.MathUtils.lerp(1.006,T.snug,THREE.MathUtils.smoothstep(f,-.03,0))*(1+off),q=shapeHeadPoint(new THREE.Vector3(d.x*r,d.y*r,d.z*r),m.profile);
+  return new THREE.Vector3(q.x*S[0],C.y+q.y*S[1],q.z*S[2]);};
+ const H=T.hem,J=H.rows.length-1,hemFrames=[];
+ // Narrower towards its ends, so it comes out from under the twist's ends rather than standing above them.
+ const h0=W.reach-.06,h1=Math.PI*2-h0;
+ for(let i=0;i<=64;i++){const phi=h0+(h1-h0)*i/64,k=THREE.MathUtils.lerp(.3,1,THREE.MathUtils.smoothstep(Math.min(phi-h0,h1-phi),0,.4));
+  const across=H.rows.map(f=>{const d=round(phi,yAt(phi,f*k));return [hemAt(d,.003),hemAt(d,.016)];});
+  hemFrames.push({c:across[J>>1][1],side:across[J][0].clone().sub(across[0][0]).normalize(),across});}
+ const hem=clothStrip(null,hemFrames,{hw:0,th:0,gap:0,across:J}).geometry,hindex=hem.index.array.slice(),hemPiece=part(list,hem,'head',TOWEL.colour);
+ hemPiece.attributes.ink.array.fill(.7);
+ {const P=hemPiece.attributes.color,c=new THREE.Color(TOWEL.band),f=k=>H.rows[k%(J+1)];
+  for(let i=0;i<hindex.length;i+=3){const a=[f(hindex[i]),f(hindex[i+1]),f(hindex[i+2])];if(Math.min(...a)>=H.band[0]-1e-6&&Math.max(...a)<=H.band[1]+1e-6)for(let j=0;j<3;j++)P.setXYZ(i+j,c.r,c.g,c.b);}}
+ // The edge of the outer turn of towel: a soft ridge from under the twist's left end, up over the crown, to the top of
+ // the tucked end at the back, which comes out from under it. It stays on the towel, never on the face.
+ const F=T.flap,f0=round(-W.reach,T.side+.06),f1=round(Math.PI,Math.sin(F.from)+.03),fold=[];
+ for(let i=0;i<=24;i++){const s=i/24;fold.push(at(f0.clone().lerp(f1,s).add(new THREE.Vector3(0,.7*Math.sin(Math.PI*s),0)).normalize(),.012));}
+ part(list,new THREE.TubeGeometry(new THREE.CatmullRomCurve3(fold,false,'centripetal'),48,R*.032,8,false),'head',TOWEL.fold);
+ for(const e of [fold[0],fold.at(-1)])ball(list,R*.032,e.toArray(),'head',TOWEL.fold,[1,1,1],8,6);
+ // The tucked end at the back, under the turn, its band near the edge.
+ const flapDirs=[];for(let i=0;i<=16;i++){const a=F.from+(F.to-F.from)*i/16;flapDirs.push(new THREE.Vector3(0,Math.sin(a),Math.cos(a)));}
+ const flap=clothStrip(onDome,framesOn(flapDirs),{hw:R*.2,th:R*.03,gap:R*.008,across:6}),findex=flap.geometry.index.array.slice();
+ paintAlong(part(list,flap.geometry,'head',TOWEL.colour),findex,flap.along,F.band,TOWEL.band);
 }
 
 /**
@@ -912,10 +1262,6 @@ function buildHead(recipe,m,faceSize){
  return {head,canvas,ctx,texture};
 }
 
-/**
- * @param {object} input recipe (anything; it is normalized)
- * @param {{shadows?:boolean,faceSize?:number}} [options]
- */
 function addNose(parts,recipe,m){
  if(recipe.nose.style==='none')return;
  const layout=faceLayout(recipe),theta=Math.PI*.28+layout.noseY/256*Math.PI*.58,phi=Math.PI/2-.95+layout.noseX/256*1.9;
@@ -926,6 +1272,38 @@ function addNose(parts,recipe,m){
   [wide?1.45:.85,hook?1.55:.85,hook?1.65:1.2],12,10);
 }
 
+/**
+ * Hair states (avatar.setHairState): the hair a body already has (its cap and its pieces) reshaped, so they work with any
+ * hairstyle and in any outfit where the hair shows (under a turban or a towel on the head it does not, and nothing changes):
+ * - 'halfDry': one side (the right unless told: the dryer is in the right hand) blown out in a frizzy puff, the other as it was;
+ * - 'cloud': all of it blown up into a round, soft, lumpy cloud on the head, HAIR_CLOUD.size head widths across, in its own
+ *   colour, rising from the hairline (which stays where it was), so the face is clear under it;
+ * - 'wetFlat': slicked flat to the scalp and darker with water; what hangs (a ponytail, braids) keeps its shape.
+ * Each is a pure function of the hair at rest, so the same state always looks the same, and a blend from one to another
+ * (amount, from) moves every point in a straight line between the two, so nothing pops.
+ */
+export const HAIR_STATES=Object.freeze([null,'halfDry','cloud','wetFlat']);
+// size: head widths across; lift, forward: where its middle is, in head radii above and in front of the head's; ramp: how far
+// into the hair (hairCap's field) it reaches full size; tuck: how much less it stands out low behind the head, where a
+// chair's back or a bath's rim is (the dryers blew it up and forward).
+export const HAIR_CLOUD=Object.freeze({size:2.75,lift:.6,forward:.35,lumps:.05,ramp:.32,tuck:.8});
+export const HAIR_WET=Object.freeze({darken:.6,lie:1.02});
+/** Where, in one body's merged geometry, its hair is, and how much of each vertex is hair (hairCap's own field). */
+function hairSpan(parts,from,to){
+ let start=0;for(let i=0;i<from;i++)start+=parts[i].attributes.position.count;
+ let n=0;for(let i=from;i<to;i++)n+=parts[i].attributes.position.count;
+ const keep=new Float32Array(n).fill(-1),field=new Float32Array(n).fill(1);let at=0;
+ for(let i=from;i<to;i++){const g=parts[i],hf=g.userData.hairField;if(hf){keep.set(hf.keep,at);field.set(hf.field,at);}at+=g.attributes.position.count;}
+ return {start,end:start+n,keep,field};
+}
+const vertexCount=parts=>parts.reduce((n,g)=>n+g.attributes.position.count,0);
+/** The cloth that is fitted out of the legs and onto the seat after skinning (towel-fit.js): a flag per vertex. */
+function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at=0;for(const g of parts){const n=g.attributes.position.count;if(g.userData.fit)flags.fill(1,at,at+n);at+=n;}return flags;}
+
+/**
+ * @param {object} input recipe (anything; it is normalized)
+ * @param {{shadows?:boolean,faceSize?:number}} [options]
+ */
 export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const recipe=normalizeRecipe(input),m=measure(recipe);
  const swing=springRest(recipe,m),rest={...restPositions(m),...swing.rest},bones={},list=BONES.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
@@ -943,13 +1321,14 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const fingerEnd=parts.reduce((n,g)=>n+g.attributes.position.count,0);
  addNose(parts,recipe,m);
  // Ears.
- for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
- addHair(parts,recipe,m);addAccessories(parts,recipe,m);
+ const ears=list=>{for(const s of [-1,1])ball(list,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);};
+ ears(parts);
+ const mainHairFrom=parts.length;addHair(parts,recipe,m);const mainHairSpan=hairSpan(parts,mainHairFrom,parts.length);addAccessories(parts,recipe,m);
  // The hat goes in last, so taking it off is drawing one range shorter: people hang it
  // up when they get home (home-residents.js) and put it back on to go out.
  const hatStart=parts.reduce((n,g)=>n+g.attributes.position.count,0);addHat(parts,recipe,m);
- const hatHairRanges=[];let hairOffset=0;
- for(const g of parts){if(g.userData.hatHair)hatHairRanges.push({offset:hairOffset,original:g.userData.hatHair,tucked:{position:g.attributes.position.array.slice(),normal:g.attributes.normal.array.slice()}});hairOffset+=g.attributes.position.count*3;}
+ const hatHairRanges=[];
+ for(const g of parts.slice(mainHairFrom))if(g.userData.hatHair)hatHairRanges.push({original:g.userData.hatHair,tucked:{position:g.attributes.position.array.slice(),normal:g.attributes.normal.array.slice()}});
  let hairCovered=true;
  // Each shoe's vertices, so a shoe can come off and leave a sock (setShoe).
  const shoeRanges={L:[],R:[]};{let at=0;for(const g of parts){const n=g.attributes.position.count;if(g.userData.shoe)shoeRanges[g.userData.shoe].push([at,n]);at+=n;}}
@@ -962,8 +1341,9 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const body=new THREE.SkinnedMesh(geometry,material);body.name='Shimanchu body';
  body.add(bones.root);body.bind(new THREE.Skeleton(list));
  body.castShadow=shadows;body.receiveShadow=true;body.frustumCulled=false;
- // Swimwear and the bath wrap are further bodies, swapped in at the onsen.
- let swimBody=null,towelBody=null,towelOutline=null,alternativeBody=null,alternativeOutline=null,alternativeKey=null;
+ // Swimwear, the bath wrap and the lobby's after-bath clothes are further bodies, swapped in at the onsen.
+ let swimBody=null,towelBody=null,towelOutline=null,alternativeBody=null,alternativeOutline=null,alternativeKey=null,afterbathBody=null,afterbathOutline=null;
+ let swimOutline=null;
  const face=buildHead(recipe,m,faceSize);
  face.head.castShadow=shadows;face.head.receiveShadow=true;
  bones.head.add(face.head);
@@ -974,11 +1354,101 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const openFingerPositions=geometry.attributes.position.array.slice(fingerStart*3,fingerEnd*3),closedFingerPositions=openFingerPositions.slice();
  for(let i=fingerStart;i<fingerEnd;i++){const sx=geometry.attributes.skinIndex.getX(i)===BI.handL?1:-1,j=(i-fingerStart)*3;closedFingerPositions[j]=sx*(m.shoulderX+.015);closedFingerPositions[j+1]=m.shoulderY-m.upper-m.fore-m.hand*.55;closedFingerPositions[j+2]=0;}
  geometry.attributes.position.array.set(closedFingerPositions,fingerStart*3);let handsOpen=false;
+
+ // ---- Hair states: every body's hair, as built, and its shape in each state.
+ let hair={state:null,amount:1,from:null,side:'R'};const hairRecords=[];
+ const headC=new THREE.Vector3(0,m.headCentre,0),HS=[m.headSX*m.Rh,m.headSY*m.Rh,m.Rh*.98];
+ const cloudCentre=headC.clone().add(new THREE.Vector3(0,HAIR_CLOUD.lift*m.Rh,HAIR_CLOUD.forward*m.Rh)),cloudR=HAIR_CLOUD.size*m.Rh*m.headSX;
+ // Soft cumulus bulges: a few broad swells, a few smaller ones on them.
+ const lumps=d=>1+HAIR_CLOUD.lumps*(Math.sin(3.7*d.x+1.1)*Math.sin(3.3*d.y+.3)*Math.sin(3.9*d.z+2.3)*1.8+Math.sin(6.1*d.x+1.9*d.y+.7)*Math.sin(5.7*d.z-1.3*d.y+1.4)*.7);
+ // How far out the head's surface is along a direction (in the head's unit space): the point of the unit sphere that
+ // shapeHeadPoint carries onto that direction, found in a few steps.
+ const hw=new THREE.Vector3(),hsd=new THREE.Vector3();
+ const headSurface=d=>{hw.copy(d);for(let k=0;k<6;k++){hsd.copy(shapeHeadPoint(hsd.copy(hw),m.profile)).normalize();hw.add(hsd.subVectors(d,hsd)).normalize();}return shapeHeadPoint(hsd.copy(hw),m.profile).length();};
+ // Frizz: soft tufts, not spikes.
+ const frizz=d=>Math.sin(7*d.x+2.1)*Math.sin(6*d.y+.7)*Math.sin(7*d.z+1.3)+.35*Math.sin(13*d.x-9*d.z+.4)*Math.sin(11*d.y+1.2);
+ function hairShape(rec,state,side){
+  const key=state+'|'+side;if(rec.cache.has(key))return rec.cache.get(key);
+  if(!state){const out={position:rec.base.position,normal:rec.base.normal,colour:rec.colour};rec.cache.set(key,out);return out;}
+  const B=rec.base.position,n=B.length/3,position=new Float32Array(B.length),colour=rec.colour.slice(),p=new THREE.Vector3(),u=new THREE.Vector3(),d=new THREE.Vector3(),q=new THREE.Vector3(),s=new THREE.Vector3();
+  const sideSign=side==='L'?1:-1,delta=cloudCentre.clone().sub(headC);
+  for(let i=0;i<n;i++){
+   p.fromArray(B,i*3);u.set(p.x/HS[0],(p.y-headC.y)/HS[1],p.z/HS[2]);const ru=u.length()||1e-6;d.copy(u).divideScalar(ru);
+   const hs=headSurface(d),rel=ru/hs,k=rec.keep[i]>=0?rec.keep[i]:THREE.MathUtils.smoothstep(rel,.98,1.03);
+   if(state==='halfDry'){
+    const w=k*THREE.MathUtils.smoothstep(d.x*sideSign,-.2,.3),puff=w*(.16+Math.max(0,ru-hs)*1.5)*(1+.4*frizz(d));
+    u.multiplyScalar((ru+puff)/ru);p.set(u.x*HS[0],headC.y+u.y*HS[1],u.z*HS[2]);
+   }else if(state==='wetFlat'){
+    const lie=hs*HAIR_WET.lie,w=k*(1-THREE.MathUtils.smoothstep(rel,1.22,1.4));
+    if(ru>lie){u.multiplyScalar((ru+(lie-ru)*w)/ru);p.set(u.x*HS[0],headC.y+u.y*HS[1],u.z*HS[2]);}
+    for(let c=0;c<3;c++)colour[i*3+c]*=HAIR_WET.darken;
+   }else if(state==='cloud'){
+    // Out along the line from the head's middle to where it meets the cloud's sphere, more the further into the hair.
+    s.copy(p).sub(headC);const r=s.length()||1e-6;s.divideScalar(r);
+    const b=s.dot(delta),t=(b+Math.sqrt(Math.max(0,b*b-delta.lengthSq()+cloudR*cloudR)))*lumps(s);
+    // (eased out, so the cloud bulges round from the hairline instead of rising off it in a straight cone)
+    const e=1-(1-THREE.MathUtils.smoothstep(rec.field[i],0,HAIR_CLOUD.ramp))**2;
+    const w=k*e*(1-HAIR_CLOUD.tuck*THREE.MathUtils.smoothstep(-s.z,.3,.9)*THREE.MathUtils.smoothstep(-s.y,-.35,.3));
+    if(t>r)p.addScaledVector(s,(t-r)*w);
+   }
+   p.toArray(position,i*3);
+  }
+  // Smooth normals for the new shape: each corner's faces, summed over every corner at the same rest position.
+  if(!rec.weld){const ids=new Int32Array(n),map=new Map();for(let i=0;i<n;i++){const key=Math.round(B[i*3]*1e5)+','+Math.round(B[i*3+1]*1e5)+','+Math.round(B[i*3+2]*1e5);if(!map.has(key))map.set(key,map.size);ids[i]=map.get(key);}rec.weld={ids,count:map.size};}
+  const acc=new Float32Array(rec.weld.count*3),a=new THREE.Vector3(),e1=new THREE.Vector3(),e2=new THREE.Vector3();
+  for(let i=0;i<n;i+=3){a.fromArray(position,i*3);e1.fromArray(position,i*3+3).sub(a);e2.fromArray(position,i*3+6).sub(a);e1.cross(e2);for(let j=0;j<3;j++){const id=rec.weld.ids[i+j]*3;acc[id]+=e1.x;acc[id+1]+=e1.y;acc[id+2]+=e1.z;}}
+  const normal=new Float32Array(B.length);
+  for(let i=0;i<n;i++){const id=rec.weld.ids[i]*3;a.set(acc[id],acc[id+1],acc[id+2]);if(a.lengthSq()<1e-20)a.fromArray(rec.base.normal,i*3);a.normalize().toArray(normal,i*3);}
+  const out={position,normal,colour};rec.cache.set(key,out);return out;
+ }
+ function applyHair(rec){
+  if(!rec)return;
+  const g=rec.geometry,P=g.attributes.position,N=g.attributes.normal,C=g.attributes.color,o=rec.start*3,covered=rec.covered();
+  if(covered||!hair.state&&!hair.from){const src=covered&&rec.tucked?rec.tucked:rec.base;P.array.set(src.position,o);N.array.set(src.normal,o);C.array.set(rec.colour,o);}
+  else{
+   const A=hairShape(rec,hair.from,hair.side),Bs=hairShape(rec,hair.state,hair.side),t=hair.amount,v=new THREE.Vector3();
+   for(let i=0;i<A.position.length;i++){P.array[o+i]=A.position[i]+(Bs.position[i]-A.position[i])*t;C.array[o+i]=A.colour[i]+(Bs.colour[i]-A.colour[i])*t;}
+   for(let i=0;i<A.normal.length;i+=3){v.set(A.normal[i]+(Bs.normal[i]-A.normal[i])*t,A.normal[i+1]+(Bs.normal[i+1]-A.normal[i+1])*t,A.normal[i+2]+(Bs.normal[i+2]-A.normal[i+2])*t).normalize();N.array[o+i]=v.x;N.array[o+i+1]=v.y;N.array[o+i+2]=v.z;}
+  }
+  P.needsUpdate=N.needsUpdate=C.needsUpdate=true;
+ }
+ function hairRecord(g,span,{covered=()=>false,base=null,tucked=null}={}){
+  const {start,end}=span,P=g.attributes.position.array,N=g.attributes.normal.array;
+  const rec={geometry:g,start,end,keep:span.keep,field:span.field,covered,tucked,cache:new Map(),weld:null,
+   base:base||{position:P.slice(start*3,end*3),normal:N.slice(start*3,end*3)},colour:g.attributes.color.array.slice(start*3,end*3)};
+  hairRecords.push(rec);if(hair.state||hair.from)applyHair(rec);return rec;
+ }
+ const join=list=>{const out=new Float32Array(list.reduce((n,a)=>n+a.length,0));let at=0;for(const a of list){out.set(a,at);at+=a.length;}return out;};
+ const mainHair=mainHairSpan.end>mainHairSpan.start?hairRecord(geometry,mainHairSpan,hatHairRanges.length?{
+  covered:()=>hairCovered,
+  base:{position:join(hatHairRanges.map(r=>r.original.position)),normal:join(hatHairRanges.map(r=>r.original.normal))},
+  tucked:{position:join(hatHairRanges.map(r=>r.tucked.position)),normal:join(hatHairRanges.map(r=>r.tucked.normal))}}:{}):null;
+ let swimHair=null,towelHair=null,altHair=null,afterbathHair=null,headTowelOn=false,tenugui={state:'rest',direction:Math.PI,time:0},tenuguiRange=null;
+
+ /** A body's cloth fitted out of the legs and onto the seat as it is drawn (towel-fit.js), with its ink and its shadow. */
+ function fitCloth(mesh){
+  const fit=createTowelFit(avatar,mesh);fit.fitted(mesh.material,'body');
+  const line=addOutline(root,mesh,true),ink=line.material,fitted=ink.clone();fitted.onBeforeCompile=ink.onBeforeCompile;fitted.customProgramCacheKey=ink.customProgramCacheKey;line.material=fit.fitted(fitted,'outline');
+  mesh.customDepthMaterial=fit.fitted(new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking}),'depth');
+  // Read the pose as it is drawn, for the picture, its ink line and its shadow alike.
+  mesh.onBeforeRender=mesh.onBeforeShadow=line.onBeforeRender=()=>fit.refresh();
+  mesh.towelFit=fit;return line;
+ }
+ function applyTenugui(){
+  if(!tenuguiRange)return;
+  const {geometry:g}=tenuguiShape(recipe,m,tenugui),idx=tenuguiRange.index;
+  // The rest's own triangles, so every state is the same cloth (vertex for vertex) in a new place.
+  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();
+  const P=afterbathBody.geometry.attributes.position,N=afterbathBody.geometry.attributes.normal,src=g.attributes.position.array,nrm=g.attributes.normal.array;
+  for(let i=0;i<idx.length;i++){const j=idx[i]*3,o=(tenuguiRange.start+i)*3;for(let c=0;c<3;c++){P.array[o+c]=src[j+c];N.array[o+c]=nrm[j+c];}}
+  P.needsUpdate=N.needsUpdate=true;g.dispose();
+ }
+
  const avatar={
   recipe,measure:m,root,body,bones,face,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
   setOpenHands(on){on=!!on;if(handsOpen===on)return;handsOpen=on;geometry.attributes.position.array.set(on?openFingerPositions:closedFingerPositions,fingerStart*3);geometry.attributes.position.needsUpdate=true;},
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
-  setHat(on){geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){for(const range of hatHairRanges){const source=on?range.tucked:range.original;geometry.attributes.position.array.set(source.position,range.offset);geometry.attributes.normal.array.set(source.normal,range.offset);}if(hatHairRanges.length){geometry.attributes.position.needsUpdate=true;geometry.attributes.normal.needsUpdate=true;}hairCovered=!!on;}},
+  setHat(on){geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){hairCovered=!!on;if(hatHairRanges.length)applyHair(mainHair);}},
   get hatOn(){return hasHat&&geometry.drawRange.count===Infinity;},
   /** A shoe on or off ('L' or 'R'). Off, the foot is in its sock (SOCK); where the shoe went is somebody
    *  else's to show (buildShoeProp). */
@@ -1004,49 +1474,120 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    avatar.faceKey=key;Object.assign(s,n);
    drawFace(face.ctx,recipe,{...n,size:face.canvas.width});face.texture.needsUpdate=true;return true;
   },
+  /** Whether the folded towel is on the head now (the bath wrap's, or swimwear's when asked for). */
+  get headTowel(){return headTowelOn;},
+  /** The hair state now: {state, amount, from, side}. */
+  get hairState(){return {...hair};},
   /**
-   * 'clothes', 'swim', 'towel' (the bath wrap), 'bath' (whichever of the two this person wears
-   * at Umi-no-yu: bathOutfit), or Thuan's 'sailor' and 'nozomi'. A child or teenager asked into
-   * a towel gets their swimwear (wearsBathTowel). Returns what they ended up wearing.
+   * The hair's state, in every body that shows it (HAIR_STATES): null (as it is), 'halfDry' (one side blown into a puff;
+   * side 'R' or 'L'), 'cloud' or 'wetFlat'. `amount` (0–1) of the way from `from` (another state, or null for the hair as it
+   * is) to it, for a change over time: a cloud sinking in the water is setHairState('wetFlat',{from:'cloud',amount:t}).
    */
-  wear(requested){
-   const outfit=requested==='bath'?bathOutfit(recipe):requested==='towel'&&!wearsBathTowel(recipe)?'swim':requested;
+  setHairState(state=null,{amount=1,from=null,side='R'}={}){
+   if(!HAIR_STATES.includes(state)||!HAIR_STATES.includes(from))throw new Error('No hair state '+(HAIR_STATES.includes(state)?from:state));
+   hair={state,amount:THREE.MathUtils.clamp(+amount,0,1),from,side:side==='L'?'L':'R'};
+   for(const rec of hairRecords)applyHair(rec);
+   return state;
+  },
+  /** The tenugui round the neck after the bath: 'rest' (draped) or 'flag' (streaming in a gust). */
+  get tenuguiState(){return {...tenugui};},
+  /**
+   * The after-bath tenugui ('rest' or 'flag'). `direction` is where the wind blows the ends, in radians round the up axis
+   * in the body's own frame (Math.PI behind them, the default, a gust in the face; Math.PI/2 to their left, -Math.PI/2 to
+   * their right; a direction ahead of sideways is drawn as sideways, since ends blown forward would pass through the arms);
+   * `time` (seconds) ripples the cloth, the same for the same moment. Only a man's after-bath clothes have one; it is
+   * remembered until they put them on.
+   */
+  setTenugui(state='rest',direction=Math.PI,{time=0}={}){
+   if(!['rest','flag'].includes(state))throw new Error('No tenugui state '+state);
+   tenugui={state,direction:+direction||0,time:+time||0};applyTenugui();return state;
+  },
+  /**
+   * 'clothes', 'swim', 'towel' (the bath wrap), 'bath' (whichever of the two this person wears behind Umi-no-yu's noren:
+   * bathOutfit), 'afterbath' (the lobby's after-bath clothes, outfits.js AFTERBATH), or Thuan's 'sailor' and 'nozomi'.
+   * A child or teenager asked into a towel gets their swimwear (wearsBathTowel), and asked into after-bath clothes keeps
+   * their clothes. Options: headTowel, the folded towel on the head: on by default with the wrap (off for drying the
+   * hair at the mirror), off by default with swimwear (on for a soak: Tetsuo's, square on his head). Returns what they
+   * ended up wearing.
+   */
+  wear(requested,{headTowel}={}){
+   let outfit=requested==='bath'?bathOutfit(recipe):requested;
+   if(outfit==='towel'&&!wearsBathTowel(recipe))outfit='swim';
+   if(outfit==='afterbath'&&!wearsBathTowel(recipe))outfit='clothes';
    avatar.outfit=outfit;
    if(outfit==='towel'&&!towelBody){
-    const parts=[];addBody(parts,recipe,m,'towel');addNose(parts,recipe,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
+    const parts=[];addBody(parts,recipe,m,'towel');addNose(parts,recipe,m);ears(parts);
     const hairStart=parts.length;addHair(parts,{...recipe,outfit:{...recipe.outfit,hat:'none'}},m);
-    const hair=parts.slice(hairStart),count=()=>parts.reduce((n,g)=>n+g.attributes.position.count,0),wrapStart=count();
+    const hair=parts.slice(hairStart),span=hairSpan(parts,hairStart,parts.length),wrapStart=vertexCount(parts);
     const head=face.head.geometry.clone();head.translate(0,m.headCentre,0);
-    addTowel(parts,recipe,m);const wrapEnd=count();addHeadTowel(parts,m,[head,...hair]);head.dispose();
-    const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());
+    addTowel(parts,recipe,m);const wrapEnd=vertexCount(parts);addHeadTowel(parts,m,[head,...hair]);head.dispose();
+    const g=mergeGeometries(parts,false),count=vertexCount(parts);parts.forEach(p=>p.dispose());
     // The wrap's vertices are kept out of the body after skinning (towel-fit.js); nothing else is.
-    const fitFlag=new Float32Array(g.attributes.position.count);fitFlag.fill(1,wrapStart,wrapEnd);g.setAttribute('towelFit',new THREE.BufferAttribute(fitFlag,1));
-    const towelMaterial=celFrom(new THREE.MeshStandardMaterial({vertexColors:true}),{bands:'soft3'});
-    towelBody=new THREE.SkinnedMesh(g,towelMaterial);towelBody.name='Shimanchu bath towel';towelBody.bind(body.skeleton,body.bindMatrix);
-    const fit=createTowelFit(avatar,towelBody);fit.fitted(towelMaterial,'body');
+    g.setAttribute('towelFit',new THREE.BufferAttribute(new Float32Array(count).fill(1,wrapStart,wrapEnd),1));
+    towelBody=new THREE.SkinnedMesh(g,celFrom(new THREE.MeshStandardMaterial({vertexColors:true}),{bands:'soft3'}));towelBody.name='Shimanchu bath towel';towelBody.bind(body.skeleton,body.bindMatrix);
     // Which vertices are the wrap (with its tuck) and which the towel on the head, for tests and the seat.
-    towelBody.userData.towel={wrap:[wrapStart,wrapEnd],head:[wrapEnd,count()]};towelBody.towelFit=fit;
-    towelBody.castShadow=shadows;towelBody.frustumCulled=false;root.add(towelBody);towelOutline=addOutline(root,towelBody,true);
-    const ink=towelOutline.material,line=ink.clone();line.onBeforeCompile=ink.onBeforeCompile;line.customProgramCacheKey=ink.customProgramCacheKey;towelOutline.material=fit.fitted(line,'outline');
-    towelBody.customDepthMaterial=fit.fitted(new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking}),'depth');
-    // Read the pose as it is drawn, for the picture, its ink line and its shadow alike.
-    towelBody.onBeforeRender=towelBody.onBeforeShadow=towelOutline.onBeforeRender=()=>fit.refresh();
+    towelBody.userData.towel={wrap:[wrapStart,wrapEnd],head:[wrapEnd,count]};
+    towelBody.castShadow=shadows;towelBody.frustumCulled=false;root.add(towelBody);towelOutline=fitCloth(towelBody);
+    towelHair=hairRecord(g,span,{covered:()=>headTowelOn});
    }
-   if(['nozomi','sailor'].includes(outfit)&&alternativeKey!==outfit){alternativeBody?.removeFromParent();alternativeOutline?.removeFromParent();alternativeBody?.geometry.dispose();alternativeKey=outfit;const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...(outfit==='sailor'?THUAN_SAILOR_OUTFIT:SHOPPING_LANE_OUTFIT)}}),parts=[];addBody(parts,r,m);addNose(parts,r,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);addHair(parts,r,m);const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());alternativeBody=new THREE.SkinnedMesh(g,bodyMaterial(r,m));alternativeBody.name=outfit==='sailor'?'Thuan · harbour academy sailor':'Thuan · shopping lane outfit';alternativeBody.bind(body.skeleton,body.bindMatrix);alternativeBody.castShadow=shadows;alternativeBody.frustumCulled=false;root.add(alternativeBody);alternativeOutline=addOutline(root,alternativeBody,true);}
+   if(['nozomi','sailor'].includes(outfit)&&alternativeKey!==outfit){
+    if(alternativeBody){hairRecords.splice(hairRecords.indexOf(altHair),1);alternativeBody.removeFromParent();alternativeOutline.removeFromParent();alternativeBody.geometry.dispose();alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}
+    alternativeKey=outfit;const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...(outfit==='sailor'?THUAN_SAILOR_OUTFIT:SHOPPING_LANE_OUTFIT)}}),parts=[];addBody(parts,r,m);addNose(parts,r,m);ears(parts);
+    const hairStart=parts.length;addHair(parts,r,m);const span=hairSpan(parts,hairStart,parts.length);
+    const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());alternativeBody=new THREE.SkinnedMesh(g,bodyMaterial(r,m));alternativeBody.name=outfit==='sailor'?'Thuan · harbour academy sailor':'Thuan · shopping lane outfit';alternativeBody.bind(body.skeleton,body.bindMatrix);alternativeBody.castShadow=shadows;alternativeBody.frustumCulled=false;root.add(alternativeBody);alternativeOutline=addOutline(root,alternativeBody,true);
+    altHair=hairRecord(g,span);
+   }
    if(outfit==='swim'&&!swimBody){
-    const parts=[];addBody(parts,recipe,m,true);addNose(parts,recipe,m);for(const s of [-1,1])ball(parts,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);
-    addHair(parts,{...recipe,outfit:{...recipe.outfit,hat:'none'}},m);
-    const g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());
-    swimBody=new THREE.SkinnedMesh(g,material);swimBody.name='Shimanchu swimwear';swimBody.bind(body.skeleton,body.bindMatrix);
+    const parts=[];addBody(parts,recipe,m,true);addNose(parts,recipe,m);ears(parts);
+    const hairStart=parts.length;addHair(parts,{...recipe,outfit:{...recipe.outfit,hat:'none'}},m);
+    const hair=parts.slice(hairStart),span=hairSpan(parts,hairStart,parts.length),headStart=vertexCount(parts);
+    // The folded towel for the head (headTowel), last, so leaving it off is drawing one range shorter.
+    const head=face.head.geometry.clone();head.translate(0,m.headCentre,0);addHeadTowel(parts,m,[head,...hair]);head.dispose();
+    const flags=fitFlags(parts),count=vertexCount(parts),g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());
+    g.setAttribute('towelFit',new THREE.BufferAttribute(flags,1));
+    swimBody=new THREE.SkinnedMesh(g,celFrom(new THREE.MeshStandardMaterial({vertexColors:true}),{bands:'soft3'}));swimBody.name='Shimanchu swimwear';swimBody.bind(body.skeleton,body.bindMatrix);
+    swimBody.userData.swim={headTowel:[headStart,count],skirt:flags.some(f=>f>0)};
     swimBody.castShadow=shadows;swimBody.frustumCulled=false;root.add(swimBody);
+    // An older woman's swimsuit's little skirt is fitted like the wrap; everything else is skin-tight.
+    swimOutline=swimBody.userData.swim.skirt?fitCloth(swimBody):addOutline(root,swimBody,true);
+    swimHair=hairRecord(g,span,{covered:()=>headTowelOn});
    }
-   // What swings depends on what is worn: Thuan's sailor skirt, Johansson's shirt hem, nothing in the bath.
-   const worn=outfit==='sailor'?{...recipe,outfit:{...recipe.outfit,...THUAN_SAILOR_OUTFIT}}:outfit==='nozomi'?{...recipe,outfit:{...recipe.outfit,...SHOPPING_LANE_OUTFIT}}:outfit==='swim'||outfit==='towel'?{...recipe,outfit:{...recipe.outfit,top:'tank',bottom:'shorts'}}:recipe;
+   if(outfit==='afterbath'&&!afterbathBody){
+    const women=recipe.body.silhouette==='feminine',dress=women?houseDressColour(recipe):null;
+    const r={...recipe,outfit:{...recipe.outfit,...(women?{...AFTERBATH.women,topColour:dress,bottomColour:dress,accent:dress}:AFTERBATH.men)}};
+    const parts=[];addBody(parts,r,m,false);addNose(parts,r,m);ears(parts);
+    let span=null,tenuguiAt=null;
+    if(women)addTurban(parts,r,m);
+    else{const hairStart=parts.length;addHair(parts,{...r,outfit:{...r.outfit,hat:'none'}},m);span=hairSpan(parts,hairStart,parts.length);tenuguiAt={start:vertexCount(parts),...addTenugui(parts,r,m)};}
+    const flags=fitFlags(parts),g=mergeGeometries(parts,false);parts.forEach(p=>p.dispose());
+    const mat=bodyMaterial(r,m);
+    afterbathBody=new THREE.SkinnedMesh(g,mat);afterbathBody.name=women?'Shimanchu after the bath · house dress':'Shimanchu after the bath · vest and drawers';afterbathBody.bind(body.skeleton,body.bindMatrix);
+    afterbathBody.castShadow=shadows;afterbathBody.frustumCulled=false;root.add(afterbathBody);
+    if(flags.some(f=>f>0)){g.setAttribute('towelFit',new THREE.BufferAttribute(flags,1));afterbathOutline=fitCloth(afterbathBody);}else afterbathOutline=addOutline(root,afterbathBody,true);
+    if(tenuguiAt){tenuguiRange={start:tenuguiAt.start,count:tenuguiAt.index.length,index:tenuguiAt.index};afterbathBody.userData.tenugui=tenuguiRange;if(tenugui.state!=='rest')applyTenugui();}
+    afterbathBody.userData.afterbath={women,dress,skirt:flags.some(f=>f>0)};
+    if(span)afterbathHair=hairRecord(g,span);
+   }
+   // The folded towel on the head.
+   headTowelOn=outfit==='towel'?headTowel!==false:outfit==='swim'?!!headTowel:false;
+   if(towelBody){towelBody.geometry.setDrawRange(0,outfit==='towel'&&!headTowelOn?towelBody.userData.towel.head[0]:Infinity);applyHair(towelHair);}
+   if(swimBody){swimBody.geometry.setDrawRange(0,outfit==='swim'&&headTowelOn?Infinity:swimBody.userData.swim.headTowel[0]);applyHair(swimHair);}
+   // What swings depends on what is worn: Thuan's sailor skirt, Johansson's shirt hem, nothing in the bath or after it.
+   const worn=outfit==='sailor'?{...recipe,outfit:{...recipe.outfit,...THUAN_SAILOR_OUTFIT}}:outfit==='nozomi'?{...recipe,outfit:{...recipe.outfit,...SHOPPING_LANE_OUTFIT}}
+    :['swim','towel','afterbath'].includes(outfit)?{...recipe,outfit:{...recipe.outfit,top:'tank',bottom:'shorts'},...(outfit==='afterbath'&&afterbathBody?.userData.afterbath.women?{hair:{...recipe.hair,style:'crop'}}:{})}:recipe;
    if(avatar.springKey!==outfit){avatar.springKey=outfit;avatar.springs?.reset();avatar.springSetup=springRest(normalizeRecipe(worn),m);avatar.springs=createSprings(avatar);}
-   body.visible=!['swim','towel','nozomi','sailor'].includes(outfit);outline.visible=body.visible;if(alternativeBody){alternativeBody.visible=outfit===alternativeKey;alternativeOutline.visible=alternativeBody.visible;}if(swimBody)swimBody.visible=outfit==='swim';if(towelBody){towelBody.visible=outfit==='towel';towelOutline.visible=towelBody.visible;}
+   body.visible=!['swim','towel','nozomi','sailor','afterbath'].includes(outfit);outline.visible=body.visible;
+   if(alternativeBody){alternativeBody.visible=outfit===alternativeKey;alternativeOutline.visible=alternativeBody.visible;}
+   if(swimBody){swimBody.visible=outfit==='swim';swimOutline.visible=swimBody.visible;}
+   if(towelBody){towelBody.visible=outfit==='towel';towelOutline.visible=towelBody.visible;}
+   if(afterbathBody){afterbathBody.visible=outfit==='afterbath';afterbathOutline.visible=afterbathBody.visible;}
    return outfit;
   },
-  dispose(){geometry.dispose();material.dispose();material.map?.dispose();if(alternativeBody){alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();swimBody?.geometry.dispose();if(towelBody){towelBody.geometry.dispose();towelBody.material.dispose();towelBody.customDepthMaterial.dispose();towelOutline.material.dispose();}alternativeBody?.geometry.dispose();},
+  dispose(){
+   geometry.dispose();material.dispose();material.map?.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();
+   if(alternativeBody){alternativeBody.geometry.dispose();alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}
+   for(const [mesh,line] of [[swimBody,swimOutline],[towelBody,towelOutline],[afterbathBody,afterbathOutline]]){if(!mesh)continue;mesh.geometry.dispose();mesh.material.map?.dispose();mesh.material.dispose();mesh.customDepthMaterial?.dispose();if(mesh.towelFit)line.material.dispose();}
+  },
  };
  avatar.springs=createSprings(avatar);
  avatar.paintFace({});

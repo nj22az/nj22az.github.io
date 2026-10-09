@@ -112,13 +112,16 @@ test('residents change on their own side, by their silhouette, in and out throug
  const guests=createIndoorResidents({world,parent:scene,place:'onsen',layout:{entrance:ONSEN_ROOM.spawn,bounds:ONSEN_ROOM.bounds},getState:()=>state,collides:(x,z,r)=>resident(x,z,r)});
  g.position.set(ONSEN_DOOR[0],0,ONSEN_DOOR[1]);
  const track=[];let sat=false;
- for(let t=0;t<90&&!sat;t+=1/30){guests.sync(clock,1/30);if(g.parent===scene){track.push([g.position.x,g.position.z]);sat=g.userData.socialPose==='Soak'&&g.userData.chairBlend===undefined;}}
+ for(let t=0;t<90&&!sat;t+=1/30){guests.sync(clock,1/30);if(g.parent===scene){track.push([g.position.x,g.position.z,g.userData.outfit]);sat=g.userData.socialPose==='Soak'&&g.userData.chairBlend===undefined;}}
  assert.ok(sat,'Thuan reaches the rock bath and sits in it');
+ // Nobody is ever bare: in her clothes through the lobby, into swimwear at her side's lockers for the shared bath.
+ const dressed=list=>{for(const [x,z,outfit] of list){if(z>H.front+.05)assert.equal(outfit,undefined,'in her clothes in the lobby at '+x.toFixed(2)+', '+z.toFixed(2));if(z<H.changing)assert.equal(outfit,'swim','in swimwear in the bath at '+x.toFixed(2)+', '+z.toFixed(2));}};
+ dressed(track);assert.ok(track.some(([,z])=>z>H.front+.05)&&track.some(([,z])=>z<H.changing));assert.equal(g.userData.outfit,'swim');
  assert.ok(track.some(([x,z])=>x<-1.5&&z>-1.2&&z<1.6),'she changes on the women’s side, at the lockers');
  for(const [x,z] of track)if(Math.abs(z-H.front)<.15||Math.abs(z-H.changing)<.15)assert.ok(x<0,'through the women’s doorways only: '+x.toFixed(2)+', '+z.toFixed(2));
  // Out the same way at closing.
- clock=1330;const out=[];for(let t=0;t<90&&g.parent===scene;t+=1/30){guests.sync(clock,1/30);if(g.parent===scene)out.push([g.position.x,g.position.z]);}
- assert.equal(g.parent,street,'she leaves');
+ clock=1330;const out=[];for(let t=0;t<90&&g.parent===scene;t+=1/30){guests.sync(clock,1/30);if(g.parent===scene)out.push([g.position.x,g.position.z,g.userData.outfit]);}
+ assert.equal(g.parent,street,'she leaves');dressed(out);assert.ok(out.some(([,z])=>z>H.front+.05),'and dressed again through the lobby');
  for(const [x,z] of out)if(Math.abs(z-H.front)<.15||Math.abs(z-H.changing)<.15)assert.ok(x<0,'out through the women’s side: '+x.toFixed(2)+', '+z.toFixed(2));
  layout.dispose();
 });
