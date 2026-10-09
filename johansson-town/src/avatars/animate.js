@@ -103,10 +103,11 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   else if(kind==='skip'){add('shoulderL',0,0,.35*e);add('shoulderR',0,0,-.35*e);}
  }
 
- /** @param {number} [seconds] how long to hold a move that would otherwise loop. */
- function play(name,seconds){
+ /** @param {number} [seconds] how long to hold a move that would otherwise loop.
+  *  @param {boolean} [hold] also stretch a timed move to `seconds` (a Point held through a line: in and out at its own pace). */
+ function play(name,seconds,hold){
   if(!(name in GESTURES))return false;
-  gesture={name,t:0,d:GESTURES[name]===Infinity&&seconds?seconds:GESTURES[name]};return true;
+  gesture={name,t:0,d:(GESTURES[name]===Infinity||hold)&&seconds?seconds:GESTURES[name]};return true;
  }
  /** A move of one's own choosing: loops are held for a few seconds, not for ever. */
  const flourish=name=>play(name,2.6+random()*1.4);
