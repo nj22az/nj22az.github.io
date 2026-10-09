@@ -418,7 +418,7 @@ function sticker(text,sub,{w=256,h=96,bg='#f6f4ee',fg='#1d2422'}={}){
  * to the circuit state. `lamps` are onsen.js's point lights; each fixture claims the one
  * that hangs at it.
  */
-export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],hall={front:1.6,changing:-1.2}}){
+export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,sunAtNoon=1.6,hall={front:1.6,changing:-1.2}}){
  const group=new THREE.Group();group.name='Umi-no-yu electrics';room.add(group);
  const steel=new THREE.MeshStandardMaterial({color:0x9aa09c,roughness:.45,metalness:.55});
  const darkPlastic=new THREE.MeshStandardMaterial({color:0x2f3331,roughness:.55});
@@ -600,10 +600,23 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],hall={fron
  const zoneOf=z=>Object.keys(zones).find(k=>z>=zones[k][0]&&z<zones[k][1]);
  const SPILL=.6,AWAY=.15;
  const hemiOn=hemi?.intensity??0,lampLoads=ONSEN_CIRCUITS.flatMap(c=>c.loads.filter(l=>l.fixture).map(l=>({id:l.id,c:c.id,w:l.watts,zone:zones[zoneOf(l.fixture.at[2])]})));
- let day=0,viewZ=null;
- const fill=()=>{if(!hemi)return;let lit=0,all=0;
-  for(const l of lampLoads){const d=viewZ===null?0:Math.max(l.zone[0]-viewZ,viewZ-l.zone[1],0),k=AWAY+(1-AWAY)*Math.max(0,1-d/SPILL),w=l.w*k;all+=w;if(isLive(l.c)&&running.has(l.id))lit+=w;}
-  const share=lit/all,floor=.3+.5*day;hemi.intensity=hemiOn*(share+(1-share)*floor);};
+ // A lamp switched off at its own switch leaves the house its usual floor of fill (the
+ // other rooms' lamps through the doorways, the street through the glass). A lamp whose
+ // breaker is off, or the main, takes that with it: with the whole house isolated, only the
+ // daylight (or the dusk) through the shoji and the door glass is left, dark enough that a
+ // torch would read. Set from the breaker listeners, so it changes in the same frame as the
+ // levers, and comes back exactly when the power does.
+ const FLOOR={off:.3,dead:.03,day:.5};
+ let day=0,viewZ=null,townFill=1;
+ const fill=()=>{if(!hemi)return;let lit=0,dead=0,all=0;
+  for(const l of lampLoads){const d=viewZ===null?0:Math.max(l.zone[0]-viewZ,viewZ-l.zone[1],0),k=AWAY+(1-AWAY)*Math.max(0,1-d/SPILL),w=l.w*k;all+=w;if(!isLive(l.c))dead+=w;else if(running.has(l.id))lit+=w;}
+  const off=all-lit-dead,dark=FLOOR.dead+FLOOR.day*day;
+  hemi.intensity=hemiOn*(lit+off*(FLOOR.off+FLOOR.day*day)+dead*dark)/all;
+  // The town's own indoor fill (sky, bounce, sun: game.js) stands for the same house light, so a
+  // dead house lets in only the daylight's share of it too; with the lamps on it is untouched.
+  townFill=(lit+off+dead*dark)/all;
+  // The room's own sun (onsen.js) is the daylight in the house as well as on the rock bath: the same share of it.
+  if(sun)sun.intensity=sunAtNoon*day*townFill;};
  // Where the picture is taken from: the plate is always drawn, so it hears every frame's camera.
  plate.frustumCulled=false;
  plate.onBeforeRender=(renderer,scene,camera)=>{if(!camera.isPerspectiveCamera)return;const p=new THREE.Vector3().setFromMatrixPosition(camera.matrixWorld);const z=room.worldToLocal(p).z;if(viewZ===null||Math.abs(z-viewZ)>.005){viewZ=z;fill();}};
@@ -682,7 +695,9 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],hall={fron
  const api={trip,reset,isLive,isOn,isFitted,loadOf,wattsOf,overloaded,resetAll,circuits:ONSEN_CIRCUITS,board:ONSEN_BOARD,
   switchOn,switchOff,isRunning,isWorking,runningLoads,assess,advance,settle,stage:stageScenario,scenarios:ONSEN_SCENARIOS,
   wiring:boardWiring,circuitOf,spareWays:ONSEN_SPARE_WAYS,fix:ONSEN_FIX,raceway:ONSEN_RACEWAY,appearance,
-  tv:{pin:pinLobbyChannel,get pinned(){return lobbyChannelPin();},channels:LOBBY_CHANNELS}};
+  tv:{pin:pinLobbyChannel,get pinned(){return lobbyChannelPin();},channels:LOBBY_CHANNELS},
+  /** The share of the town's indoor fill that reaches the house now (1 with its lamps on; the daylight's share when they are dead). */
+  townFill:()=>townFill};
  const audit=typeof window!=='undefined'?window.__JOHANSSON_AUDIT__:null;
  if(audit)audit.onsenPower=api;
  /** Daylight (0 night, 1 noon) from onsen.js's tick: by day the windows light a dark house. `dt` warms an overloaded breaker and moves what is running. */

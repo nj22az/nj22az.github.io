@@ -37,6 +37,10 @@ export const GESTURES=Object.freeze({
  // Comedy and work: a villain's laugh rubbing the hands, the wind-up before a cartoon dash,
  // and putting something on a shelf at chest height (restocking).
  EvilLaugh:2.4,WindUp:.6,Shelve:1.3,
+ // Held until the next move (the onsen): drying the hair with a hand dryer by the side of the head; a hand on a
+ // breaker's lever about 25° above the shoulder (Switch) or 50° (SwitchHigh, the other hand held out with a torch);
+ // singing into whatever is in the hand as a microphone (Sing: Laugh's body, held, swaying to the tune).
+ HairDry:Infinity,Switch:Infinity,SwitchHigh:Infinity,Sing:Infinity,
  Talk:Infinity,Kachashi:Infinity,Crouch:Infinity,Phone:Infinity,FishIdle:Infinity,Reel:Infinity,
 });
 /** The body that goes with a feeling, played once when the feeling arrives. */
@@ -99,10 +103,11 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   else if(kind==='skip'){add('shoulderL',0,0,.35*e);add('shoulderR',0,0,-.35*e);}
  }
 
- /** @param {number} [seconds] how long to hold a move that would otherwise loop. */
- function play(name,seconds){
+ /** @param {number} [seconds] how long to hold a move that would otherwise loop.
+  *  @param {boolean} [hold] also stretch a timed move to `seconds` (a Point held through a line: in and out at its own pace). */
+ function play(name,seconds,hold){
   if(!(name in GESTURES))return false;
-  gesture={name,t:0,d:GESTURES[name]===Infinity&&seconds?seconds:GESTURES[name]};return true;
+  gesture={name,t:0,d:(GESTURES[name]===Infinity||hold)&&seconds?seconds:GESTURES[name]};return true;
  }
  /** A move of one's own choosing: loops are held for a few seconds, not for ever. */
  const flourish=name=>play(name,2.6+random()*1.4);
@@ -116,6 +121,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   *   gaze (a world point to look at), tipsy (0–4: how much they have drunk),
   *   conversing (in a conversation, talking or listening),
   *   pose 'SitPour' (seated, pouring a bottle into the glass in the other hand), 'SitHold' (a glass held up),
+  *   'DrinkHip' / 'SitDrinkHip' (drinking with the other hand on the hip, chin up: coffee milk after the bath),
   *   lying (flat on their back on the floor, knocked out: arms and legs flung out, head lolling;
   *   0–1 blends them down and up again; 'prone': face down instead, the cartoon knock-out: flat on the
   *   front, the arms flung out on the ground, the head turned to rest on a cheek, the knees bent and
@@ -124,7 +130,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  function update(dt,s={}){
   time+=dt;
   const action=gesture?.name||s.pose||s.seat;avatar.setOpenHands?.(false);   // always mitten hands (the creator): never fingers, in any move
-  const eating=['Eat','EatStanding','SitEat'].includes(action),drinking=['Drink','DrinkStanding','SitDrink','SitToast'].includes(action);
+  const eating=['Eat','EatStanding','SitEat'].includes(action),drinking=['Drink','DrinkStanding','DrinkHip','SitDrink','SitDrinkHip','SitToast'].includes(action);
   if(eating||drinking){
    if(action!==lastConsume)consumeTime=0;
    consumeTime+=dt;
@@ -166,7 +172,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const pose=s.pose;
    if(s.driving){set('shoulderL',-.95,0,.12);set('shoulderR',-.95,0,-.12);set('elbowL',-.65);set('elbowR',-.65);set('head',-.06);}
    else if(pose==='Type'){set('shoulderL',-.9,0,.1);set('shoulderR',-.9,0,-.1);set('elbowL',-.7+Math.sin(time*14)*.08);set('elbowR',-.7+Math.sin(time*13+1)*.08);set('head',.15);}
-   else if(pose==='Eat'||pose==='Drink'||s.seat==='SitEat'){const lift=Math.max(0,Math.sin(time*1.4))**4;set('shoulderR',-.6-lift*.9,0,-.25);set('elbowR',-.8-lift*1.3);set('head',.08-lift*.1);}
+   else if(pose==='Eat'||pose==='Drink'||pose==='SitDrinkHip'||s.seat==='SitEat'){const lift=Math.max(0,Math.sin(time*1.4))**4;set('shoulderR',-.6-lift*.9,0,-.25);set('elbowR',-.8-lift*1.3);set('head',.08-lift*.1);
+    // the bathhouse way with a bottle of milk: the other hand on the hip, the chin up
+    if(pose==='SitDrinkHip'){set('shoulderL',.15,0,.75);set('elbowL',-.3,0,-1.5);add('head',-.12);}}
    // Pouring from the chair: the glass held out low in the right hand, the bottle brought across in the left
    // and tipped over it, the head down to watch the level (never filling it past the foam).
    // Holding a glass between sips: the forearm up off the arm of the chair, the glass in front of him.
@@ -216,7 +224,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    else if(pose==='Wipe'){const a=time*3.2;set('shoulderR',-.95+Math.sin(a)*.12,Math.cos(a)*.22,-.15);set('elbowR',-.45);set('shoulderL',-.35,0,.25);set('elbowL',-.4);add('chest',.35);add('head',.25);}
    else if(pose==='Polish'){set('shoulderL',-.9,0,.25);set('shoulderR',-.9,0,-.25);set('elbowL',-1.45);set('elbowR',-1.45+Math.sin(time*5)*.18);add('head',.28);}
    else if(pose==='Stack'){const l=(Math.sin(time*1.4)+1)/2;set('shoulderL',-.6-l,0,.2);set('shoulderR',-.6-l,0,-.2);set('elbowL',-.6+l*.3);set('elbowR',-.6+l*.3);add('chest',.2-l*.15);}
-   else if(pose==='DrinkStanding'||pose==='Drink'){const lift=Math.max(0,Math.sin(time*1.2))**4;set('shoulderR',-.5-lift*1.1,0,-.2);set('elbowR',-.9-lift*1.2);}
+   else if(pose==='DrinkStanding'||pose==='Drink'||pose==='DrinkHip'){const lift=Math.max(0,Math.sin(time*1.2))**4;set('shoulderR',-.5-lift*1.1,0,-.2);set('elbowR',-.9-lift*1.2);
+    // DrinkHip: a bottle of coffee milk after the bath, the free hand on the hip, the chin up
+    if(pose==='DrinkHip'){set('shoulderL',.15,0,.75);set('elbowL',-.3,0,-1.5);add('chest',-.06);add('head',-.12);}}
    else if(pose==='Sit'||pose==='Sleep'){set('head',.2);}
    // Jan-ken-pon (people/social.js sistersAtPlay): three pumps of the fist, then the throw
    // held out between them, round again.
@@ -521,6 +531,19 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     return {root:Math.abs(step)*.03};
    }
    case 'Crouch':set('thighL',-1.7,0,.25);set('thighR',-1.7,0,-.25);set('kneeL',2.3);set('kneeR',2.3);set('footL',-.6);set('footR',-.6);add('chest',.5);set('shoulderL',-.9,0,.1);set('shoulderR',-.9,0,-.1);set('elbowL',-.4);set('elbowR',-.4);return {root:-(m.thigh+m.shin)*.72};
+   // Drying the hair: the forearm up, the elbow out, the mitten (and the dryer in it) well out from the side of
+   // the head (the dryer's length between), waved in small, even strokes over it; the head tips a little into the warm air.
+   case 'HairDry':{const w=Math.sin(t*5.5)*q;
+    set('shoulderR',-1.3*q+w*.08,0,-1.6*q+w*.05);set('elbowR',-1.4*q+w*.1);add('head',0,0,-.08*q+Math.sin(t*2.75)*.03*q);break;}
+   // A hand on a breaker's lever: the arm up and forward, nearly straight, and held there (a little lean in to it).
+   case 'Switch':case 'SwitchHigh':{const high=g.name==='SwitchHigh';
+    set('shoulderR',(high?-2.4:-1.98)*q,0,-.12*q);set('elbowR',-.12*q);add('chest',.06*q);add('head',(high?-.1:0)*q,0,0);
+    if(high){set('shoulderL',-1.2*q,0,.1*q);set('elbowL',-.35*q);}break;}
+   // Singing: Laugh's body held (the chest up, the head back, the free hand up), the microphone (a hair dryer will
+   // do) held out before the chin in the right mitten, swaying with the tune.
+   case 'Sing':{const sway=Math.sin(t*2.6)*q;
+    add('chest',-.2*q);add('head',-.3*q,0,sway*.1);set('shoulderL',-.85*q,0,.4);set('elbowL',-1.65*q);
+    set('shoulderR',-1.1*q,.5*q,-.2*q);set('elbowR',-1.35*q);add('hips',0,0,sway*.04);break;}
    case 'Phone':set('shoulderR',-.4,0,-.5);set('elbowR',-2.2);add('head',0,0,-.15);break;
    case 'FishIdle':set('shoulderL',-1,0,.1);set('shoulderR',-1,0,-.1);set('elbowL',-.6);set('elbowR',-.6);break;
    case 'Reel':set('shoulderL',-1,0,.1);set('elbowL',-.6);set('shoulderR',-1+Math.sin(t*9)*.25,0,-.2);set('elbowR',-.8+Math.cos(t*9)*.3);break;

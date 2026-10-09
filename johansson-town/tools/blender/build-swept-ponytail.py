@@ -35,6 +35,28 @@ for ribbon in range(3):
    verts.append([x,yy,zz])
  for i in range(20):a=i*2;faces.extend([(a,a+2,a+1),(a+1,a+2,a+3)])
  meshpart('Swept fringe '+str(ribbon+1),verts,faces,shade=1+.025*ribbon)
+# Lifted crown locks give the silhouette actual hair volume and a small cowlick.
+# Each lock is a closed curved tube with a rounded belly and a tapered curling tip.
+def raised_lock(name,controls,radius,shade):
+ verts=[];faces=[];steps=24;sides=12
+ def centre(t):
+  return [sum(controls[i][axis]*[ (1-t)**3,3*(1-t)**2*t,3*(1-t)*t*t,t**3 ][i] for i in range(4)) for axis in range(3)]
+ for row in range(steps+1):
+  t=row/steps;cx,cy,cz=centre(t);a=centre(max(0,t-.002));b=centre(min(1,t+.002));dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy);nx,ny=-dy/length,dx/length
+  r=radius*math.sin(math.pi*t)**.7+.008*(1-t)+.001
+  for col in range(sides):
+   angle=2*math.pi*col/sides;ridge=1+.035*math.cos(3*angle)
+   verts.append([cx+nx*r*math.cos(angle)*ridge,cy+ny*r*math.cos(angle)*ridge,cz+r*.82*math.sin(angle)])
+ for row in range(steps):
+  for col in range(sides):
+   a=row*sides+col;b=row*sides+(col+1)%sides;c=a+sides;d=b+sides;faces.extend([(a,b,c),(b,d,c)])
+ faces.extend([(0,i+1,i) for i in range(1,sides-1)])
+ base=steps*sides;faces.extend([(base,base+i,base+i+1) for i in range(1,sides-1)])
+ meshpart(name,verts,faces,shade=shade)
+raised_lock('Lifted swept crown',[( -.11,.98,.32),(0,1.28,.24),(.46,1.29,.10),(.65,1.08,0)],.115,1.45)
+raised_lock('Crown curl behind',[( -.22,.99,0),(-.05,1.15,-.10),(.25,1.22,-.20),(.55,1.00,-.26)],.085,1.20)
+raised_lock('Soft crown side lock',[( -.30,.91,.20),(-.45,1.10,.10),(-.40,1.15,0),(-.20,1.08,-.12)],.08,1.30)
+
 # A narrow exposed scalp part is readable even in black hair. It follows the
 # actual cap surface rather than disappearing into its crown.
 verts=[];faces=[]

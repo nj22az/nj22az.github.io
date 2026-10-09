@@ -321,7 +321,7 @@ const CEL_EXPOSURE=1.04;
 const NIGHT_TINT=Object.freeze({light:GRADE_DEFAULTS.lightTint??0xffffff,shadow:0xe0dcf0});
 const ambient=new THREE.HemisphereLight(0xdbe7f2,0x6b5f8c,1.15);scene.add(ambient);
 const bounce=new THREE.DirectionalLight(0x9db6e8,1.25);bounce.position.set(26,16,-22);scene.add(bounce);
-const uplight=new THREE.DirectionalLight(0xc9b9e0,.35);uplight.position.set(4,-18,6);scene.add(uplight);
+const UPLIGHT=.35,uplight=new THREE.DirectionalLight(0xc9b9e0,UPLIGHT);uplight.position.set(4,-18,6);scene.add(uplight);
 const sun=new THREE.DirectionalLight(0xffdca8,highTier?2.6:2.3);sun.position.set(-28,38,18);sun.castShadow=shadows;
 if(shadows){sun.shadow.mapSize.set(tabletLike?1024:2048,tabletLike?1024:2048);sun.shadow.camera.left=-26;sun.shadow.camera.right=26;sun.shadow.camera.top=26;sun.shadow.camera.bottom=-26;sun.shadow.camera.near=.5;sun.shadow.camera.far=120;sun.shadow.bias=-.00035;sun.shadow.normalBias=.045}scene.add(sun);
 
@@ -1141,6 +1141,11 @@ function setTime({updateHours=true}={}){
  // Underground the sun and the sky do not reach: the lantern, the torches and a little
  // cold fill are all the light there is, and the dark closes in a few tiles off.
  if(current?.id==='dungeon'){sun.intensity=0;bounce.intensity=0;ambient.intensity*=.12;scene.environmentIntensity=.03;scene.background.set(0x050404);scene.fog=DUNGEON_FOG;}
+ // A room whose own lights are dead (Umi-no-yu with its main breaker down) lets in only its
+ // share of the town's indoor fill: the daylight through its windows, not the lamps' bounce.
+ {const k=current?activeRoomLayout?.townFill?.():1,share=Number.isFinite(k)?Math.min(1,Math.max(0,k)):1;
+  if(share<1){sun.intensity*=share;bounce.intensity*=share;ambient.intensity*=share;scene.environmentIntensity*=share;}
+  uplight.intensity=UPLIGHT*share;}
  // and the grade's shadow lift, which keeps the town's shade from ever going black, is
  // taken nearly off down there, or the whole cave sits behind a grey veil.
  pipeline?.tune({uLift:current?.id==='dungeon'?.003:INK_OPTIONS.gradeOptions.lift??GRADE_DEFAULTS.lift});

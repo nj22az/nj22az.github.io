@@ -86,3 +86,15 @@ The branch incorporates current main’s bathhouse electrical/layout updates and
 journal content. Generated runtime conflicts were resolved by rebuilding the
 combined sources, retaining main’s previous runtime chunks for cached pages.
 Onsen and runtime-package integration checks passed after the merge.
+
+The Blender crown now has three closed, curved locks with a lifted sweep and small
+curl, tapered tips and shallow strand ridges. They add actual silhouette volume
+above the scalp and subtle hair-colour shading. The part and temple strands remain
+independent fitted head pieces, using the same mirroring and hat-tucking controls.
+
+Raised-crown validation: 71 focused avatar/bathhouse checks and three runtime
+package checks passed after integrating current main a482cf3. Chromium checks at
+1280×800 and 390×844 exercise the creator and the actual Umi-no-yu room preview,
+including the town’s ink/colour-grade settings and room lights. Front and three-
+quarter room screenshots are in `thuan-room-*.png` and `thuan-room-side-*.png`.
+`tools/avatar-room-preview.html` can preview any recipe with `?who=Name`.

@@ -12,6 +12,7 @@
       "featureRail": true,
       "inlinePalette": true,
       "sharedMoveMenu": true,
+      "roomLighting": true,
       "poses": [
         "idle",
         "walk",
@@ -33,6 +34,7 @@
       "featureRail": true,
       "inlinePalette": true,
       "sharedMoveMenu": true,
+      "roomLighting": true,
       "poses": [
         "idle",
         "walk",

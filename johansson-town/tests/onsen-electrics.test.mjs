@@ -178,3 +178,34 @@ test('the storyteller knows the board and the towels',()=>{
  for(const thing of ['the breaker board','a stack of rental towels'])assert.ok(onsen.things.includes(thing),thing);
  assert.ok(onsen.doing.includes('resetting a tripped breaker'));
 });
+
+test('with the main off the lobby goes dark (only the dusk through the glass), and comes back exactly with the power',()=>{
+ resetAll();const {room,layout}=build();
+ let hemi;room.traverse(o=>{if(o.isHemisphereLight)hemi=o;});
+ const look=z=>{const cam=new THREE.PerspectiveCamera();cam.position.set(0,1.6,z);cam.updateMatrixWorld();room.getObjectByName('Breaker board plate').onBeforeRender(null,null,cam);return hemi.intensity;};
+ layout.tick(1/30,1170);
+ const lit=look(4),glow=name=>room.getObjectByName(name).material.emissiveIntensity;
+ let daylight;room.traverse(o=>{if(o.isDirectionalLight&&!daylight)daylight=o;});const sunLit=daylight.intensity;
+ const before={andon:glow('Andon'),cooler:glow('Milk cooler light'),lamp:room.getObjectByName('Lobby light').intensity};
+ assert.ok(before.andon>0&&before.cooler>0&&before.lamp>0);
+ // The same frame the main goes down: lamps, andon, cooler and screen out, and the fill falls far below the lit house.
+ assert.equal(layout.townFill(),1,'with the lamps on the town\'s indoor fill is untouched');
+ trip('main');const dark=look(4);
+ assert.ok(dark<lit*.3,`lobby fill ${dark.toFixed(3)} with the main off, ${lit.toFixed(3)} lit`);
+ assert.ok(layout.townFill()<.3,`and only the daylight's share of the town's fill comes in: ${layout.townFill().toFixed(3)}`);
+ assert.equal(glow('Andon'),0);assert.equal(glow('Milk cooler light'),0);assert.equal(room.getObjectByName('Lobby light').intensity,0);
+ let screen;room.getObjectByName('Lobby CRT').traverse(o=>{if(o.isMesh&&o.geometry?.type==='PlaneGeometry'&&o.name!=='Lobby CRT glass'&&!screen)screen=o;});
+ assert.ok(!screen||screen.visible===false,'the CRT shows dead glass');
+ // Every lamp in the house is dead, so it is as dark seen from the changing room as from the lobby.
+ assert.ok(Math.abs(look(.2)-dark)<1e-9,'the whole house is equally dark');
+ layout.tick(1/30,1170);assert.ok(daylight.intensity<sunLit*.3,'the daylight in the house is only what comes through the glass');
+ // Ticking does not bring anything back or flicker.
+ for(let i=0;i<20;i++){layout.tick(1/30,1170);assert.equal(look(4),dark);assert.equal(glow('Andon'),0);}
+ // Daylight still comes in through the shoji and the glass: noon in a dead house is brighter than dusk.
+ layout.tick(1/30,720);const noon=look(4);assert.ok(noon>dark,'the windows still light it by day');
+ layout.tick(1/30,1170);
+ reset('main');layout.tick(1/30,1170);
+ assert.equal(look(4),lit,'exactly as before');assert.equal(daylight.intensity,sunLit);assert.equal(layout.townFill(),1);
+ assert.equal(glow('Andon'),before.andon);assert.equal(glow('Milk cooler light'),before.cooler);assert.equal(room.getObjectByName('Lobby light').intensity,before.lamp);
+ layout.dispose();
+});

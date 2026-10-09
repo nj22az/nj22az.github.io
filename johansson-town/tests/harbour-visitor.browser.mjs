@@ -26,9 +26,13 @@ await page.goto('http://127.0.0.1:5173/creator/?r='+thuan.code);await page.locat
 const hairSaved=await page.evaluate(async()=>{const {playerRecipe}=await import('/src/avatars/actors.js');return playerRecipe();});assert.equal(hairSaved.hair.style,'sweptponytail');assert.equal(hairSaved.hair.colour,thuan.r.hair.colour);assert.deepEqual(hairSaved.head,thuan.r.head);assert.deepEqual(hairSaved.outfit,thuan.r.outfit);
 await page.goto('http://127.0.0.1:5173/tools/avatar-preview.html?who=Thuan&body=1');await page.waitForFunction(()=>window.__READY__);await page.waitForTimeout(300);await page.screenshot({path:out+'/thuan-front-'+width+'.png'});
 await page.goto('http://127.0.0.1:5173/tools/avatar-preview.html?who=Thuan&body=1&turn=3.14159');await page.waitForFunction(()=>window.__READY__);await page.waitForTimeout(300);await page.screenshot({path:out+'/thuan-rear-'+width+'.png'});
+// Read the crown under the real bathhouse geometry, lights and town ink pipeline.
+await page.goto('http://127.0.0.1:5173/tools/avatar-room-preview.html?who=Thuan');await page.waitForFunction(()=>window.__READY__);await page.waitForTimeout(500);await page.screenshot({path:out+'/thuan-room-'+width+'.png'});
+await page.goto('http://127.0.0.1:5173/tools/avatar-room-preview.html?who=Thuan&turn=-0.55');await page.waitForFunction(()=>window.__READY__);await page.waitForTimeout(500);await page.screenshot({path:out+'/thuan-room-side-'+width+'.png'});
+
 // Any resident can use the outfit without losing her own head and hair.
 const other=await page.evaluate(async()=>{const {recipeFor}=await import('/src/avatars/cast.js'),{HARBOUR_POLO_OUTFIT}=await import('/src/avatars/outfits.js'),{saveResidentRecipe,residentRecipe}=await import('/src/avatars/wardrobe.js');const original=recipeFor('Thuan');saveResidentRecipe('Thuan',{...original,outfit:{...original.outfit,...HARBOUR_POLO_OUTFIT}});return {original,saved:residentRecipe('Thuan')};});assert.deepEqual(other.saved.hair,other.original.hair);assert.equal(other.saved.outfit.top,'contrastpolo');
-assert.deepEqual(errors,[]);results.push({width,height,touch:width===390,saveReload:true,wardrobeReuse:true,hairSelection:true,hairFrontRear:true,thuanScreenshots:true,featureRail:true,inlinePalette:true,sharedMoveMenu:true,poses:['idle','walk','sit','wave','rear'],pageErrors:errors});await context.close();
+assert.deepEqual(errors,[]);results.push({width,height,touch:width===390,saveReload:true,wardrobeReuse:true,hairSelection:true,hairFrontRear:true,thuanScreenshots:true,featureRail:true,inlinePalette:true,sharedMoveMenu:true,roomLighting:true,poses:['idle','walk','sit','wave','rear'],pageErrors:errors});await context.close();
 }
 await writeFile(out+'/results.json',JSON.stringify({results},null,2)+'\n');console.log('PASS',JSON.stringify(results));
 }finally{await browser.close();server.close();}
