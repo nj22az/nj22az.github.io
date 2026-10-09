@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {buildOnsenInterior,ONSEN_ROOM,ONSEN_SEATS,ROCK_RING} from '../src/world/interiors/onsen.js';
-import {ONSEN_DOORWAYS,onsenSide} from '../src/world/interiors/onsen-lobby.js';
+import {ONSEN_DOORWAYS,ONSEN_NOREN,onsenSide} from '../src/world/interiors/onsen-lobby.js';
 import {ONSEN_SIGNS} from '../src/world/interiors/onsen-signs.js';
 import {ONSEN_RACEWAY} from '../src/world/interiors/onsen-electrics.js';
 import {RESIDENTS} from '../src/people/residents.js';
@@ -28,10 +28,10 @@ test('two noren, crimson 女 west and indigo 男 east, a short wall between them
  assert.ok(W.x1<0&&M.x0>0&&W.x1-W.x0>=.8&&M.x1-M.x0>=.8,'two openings, each wide enough to walk through');
  for(const [name,D] of [['Women’s noren',W],['Men’s noren',M]]){
   const panels=[];room.traverse(o=>{if(o.name===name)panels.push(o);});assert.equal(panels.length,2,name+': two panels with a slit');
-  for(const p of panels){const b=box(p);assert.ok(b.min.x>=D.x0-.001&&b.max.x<=D.x1+.001,name+' hangs in its own doorway');assert.ok(b.min.y>1.4,'above the heads of most of the town');}
+  for(const p of panels){const b=box(p);assert.ok(b.min.x>=D.x0-.001&&b.max.x<=D.x1+.001,name+' hangs in its own doorway');assert.ok(Math.abs(b.min.y-ONSEN_NOREN.hem)<.005&&Math.abs(b.max.y-ONSEN_NOREN.top)<.005,name+' hangs from the rod to its hem at '+ONSEN_NOREN.hem+' m');}
  }
  // The partition: plaster from the noren wall to the bath doors at x 0, full height, solid for everybody.
- const walls=meshes(room).filter(m=>m.name==='Umi-no-yu wall').map(box);
+ const walls=meshes(room).filter(m=>m.userData.wall).map(box);
  const partition=walls.find(b=>b.min.x>-.1&&b.max.x<.1&&b.min.z<=H.changing+.01&&b.max.z>=H.front-.01);
  assert.ok(partition,'a partition at x 0 from z '+H.changing+' to '+H.front);assert.ok(partition.max.y>=ONSEN_ROOM.walls.height-.01,'to the ceiling');
  const stub=walls.find(b=>b.min.x>=W.x1-.001&&b.max.x<=M.x0+.001&&Math.abs((b.min.z+b.max.z)/2-H.front)<.02);assert.ok(stub,'a short wall between the two noren');

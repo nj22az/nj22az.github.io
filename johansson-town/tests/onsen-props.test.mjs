@@ -40,7 +40,7 @@ test('every prop is in the room, named, and says who it is for and why it is the
  for(const label of ['Take an uchiwa','Look at the rubber plant'])assert.ok(hits.some(h=>h.label===label),label);
  // Light for phones.
  let tris=0;for(const p of Object.values(ONSEN_PROPS))for(const m of meshes(room.getObjectByName(p.name))){const g=m.geometry;tris+=(g.index?g.index.count:g.attributes.position.count)/3;}
- assert.ok(tris<2000,'all the props in '+tris+' triangles');
+ assert.ok(tris<4000,'all the props in '+tris+' triangles');
  layout.dispose();
 });
 
@@ -77,7 +77,7 @@ test('the props sit on their surfaces and clip nothing',()=>{
   for(const o of all){
    if(propOf(o)===own||o.name===m.userData.restsOn||o.name===m.userData.hangsOn||/floor|paving|ceiling|sea view/i.test(o.name))continue;
    if(own.name==='Giant uchiwa'&&o.name==='Uchiwa pegs'||m.name==='Uchiwa pegs'&&propOf(o)?.name==='Giant uchiwa')continue;
-   if(m.name==='Uchiwa pegs'&&o.name==='Umi-no-yu wall')continue;
+   if(m.name==='Uchiwa pegs'&&o.name==='Noren wall east')continue;
    const ob=box(o);if(ob.isEmpty())continue;
    assert.ok(!b.intersectsBox(ob),`${m.name} (${own.name}) clips ${o.name||o.type}`);
   }

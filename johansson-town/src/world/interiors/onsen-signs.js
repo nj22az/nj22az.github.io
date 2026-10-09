@@ -67,6 +67,17 @@ export const ONSEN_SIGNS=Object.freeze({
   plain({id:'harii',jp:'ハーリー',sub:'協賛 海の湯',en:'Hārī (the harbour dragon-boat race); sponsor: Umi-no-yu',giant:true,
    why:'The sponsors’ giant fan from the harbour Hārī every May: Umi-no-yu is a sponsor, and the fan is too big to use politely, so it hangs by the tatami.'}),
  ]),
+ /** Page 5's paper war (onsen-lobby.js, onsen-props.js): taped to the crimson noren from both sides, and one on her book. */
+ paperWar:plain({
+  reserved:plain({jp:'予約席',line:'一週間ためた男のために',en:'RESERVED FOR THE MAN WHO SAVED ALL WEEK',by:'Mr Fujita',
+   where:'Taped across the slit of the crimson noren on the lobby side, at his eye level: he seals their gate.',
+   why:'Written in black marker on the back of a page torn off the lobby’s calendar, the way anyone in the eighties made a sign in a hurry.'}),
+  hairRights:plain({jp:'髪の権利宣言',line:'ドライヤーは三台同時に!',en:'HAIR RIGHTS',by:'Thao, Thuan and Nhung',
+   where:'Taped on the changing-room side of the crimson noren, over the slit: their manifesto, answering his.',
+   why:'Drawing paper and Nhung’s glitter pens (she sold them both the pens): pink and gold letters, three dryers drawn like flowers.'}),
+  flyer:plain({en:'A copy of HAIR RIGHTS, slid onto the bandai',where:'On Mrs Higa’s account book, across the right-hand page; she writes round it.',
+   why:'Page 5: one of the signs lands on her book and she does not look up.'}),
+ }),
  ledger:plain({jp:'金銭出納帳',en:'Cash book',columns:Object.freeze(['月日','摘要','入金','出金','残高']),
   // Today's page in pencil: 38 adult baths, 6 towels and 21 milks in at the prices on the board; the soap from Sakura Shōten out.
   rows:Object.freeze([['8/14','入浴 大人 38','11,400','','11,400'],['','タオル 6','600','','12,000'],['','牛乳 21','2,100','','14,100'],['','石鹸 さくら商店','','1,850','12,250']].map(r=>Object.freeze(r))),
@@ -75,6 +86,11 @@ export const ONSEN_SIGNS=Object.freeze({
  tv:plain({
   nightGame:plain({inning:'7回裏',away:'鹿',home:'沖',score:Object.freeze({away:2,home:3}),count:Object.freeze({balls:2,strikes:1,outs:1}),en:'Bottom of the seventh, Okinawa 3, Kagoshima 2',
    why:'A 1990s baseball broadcast keeps a small score box in the corner: the two teams by one kanji each, the inning, and the ball, strike and out lamps.'}),
+  // The story's held score cards (onsen-lobby.js LOBBY_TV_STATES): the visitors on top, as the broadcast lists them.
+  score07:plain({inning:'6回表',away:'鹿児島',home:'沖縄',score:Object.freeze({away:7,home:0}),en:'Top of the sixth: Kagoshima 7, Okinawa 0',
+   why:'The full-screen score card a 1990s night-game broadcast put up between batters: the inning, each side’s prefecture, the runs.'}),
+  score011:plain({inning:'8回表',away:'鹿児島',home:'沖縄',score:Object.freeze({away:11,home:0}),en:'Top of the eighth: Kagoshima 11, Okinawa 0',
+   why:'The same card two innings later. Fujita’s team is Okinawa.'}),
   weather:plain({title:'沖縄地方 あすの天気',forecast:'晴れ 31℃',en:'Okinawa region, tomorrow’s weather: sunny, 31 °C',
    why:'The evening forecast card, the way the regional news drew it.'}),
  }),
