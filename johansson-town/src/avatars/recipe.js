@@ -33,7 +33,7 @@ export const ageClass=years=>!Number.isFinite(+years)?'adult':years<13?'child':y
 export const PARTS=Object.freeze({
  silhouette:Object.freeze(['neutral','feminine','masculine']),
  head:HEAD_FORMS,
- hair:Object.freeze(['crop','sidepart','bob','long','ponytail','sweptponytail','braids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns']),
+ hair:Object.freeze(['crop','sidepart','bob','long','ponytail','sweptponytail','braids','bun','spiky','perm','buzz','afro','horseshoe','bald','pixie','shoulder','curtains','slick','mullet','topknot','pigtails','twinbuns','jpmash','jptwoblock','jpcentre','jpcomma','jpspiky','jpwolf','jpminibob','jpseethrough','jpoutward','jplayered','jphime','jplongwaves']),
  eyes:Object.freeze(['round','dot','almond','sleepy','lashes','narrow','sparkle','gentle','doe','cat','droopy','heavy','bright','tired','squint','starry']),
  brows:Object.freeze(['straight','arched','thick','thin','worried','bushy','angled','short','rounded','tapered','feathered','maro','none']),
  nose:Object.freeze(['button','dot','line','wide','hook','pointed','snub','bulb','ridge','none']),

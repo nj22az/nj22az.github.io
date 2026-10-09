@@ -49,10 +49,10 @@ export function springRest(recipe,m){
  // Hair: a ponytail from its tie, long hair from the back of the head.
  const tail=style==='sweptponytail'?[[0,H(-R*.45),-R*1.02],[0,H(-R*.95),-R*1.19],[0,H(-R*1.48),-R*1.02]]
   :style==='ponytail'?[[0,H(R*.1),-R*1.12],[0,H(-R*.45),-R*1.18],[0,H(-R*1.02),-R*1.2]]
-  :style==='long'?[[0,H(-R*.05),-R*.55],[0,H(-R*.7),-R*.58],[0,H(-R*1.38),-R*.55]]
+  :['long','jpwolf','jpminibob','jpseethrough','jpoutward','jplayered','jphime','jplongwaves'].includes(style)?[[0,H(-R*.05),-R*.55],[0,H(-R*.7),-R*.58],[0,H(-R*1.38),-R*.55]]
   :[[0,H(0),-R*.5],[0,H(-R*.3),-R*.5],[0,H(-R*.6),-R*.5]];
  rest.hairA=tail[0];rest.hairB=tail[1];
- if(style==='ponytail'||style==='sweptponytail'||style==='long')chains.push({bones:['hairA','hairB'],tip:tail[2],...SWING.hair,kind:'hair'});
+ if(style==='ponytail'||style==='sweptponytail'||['long','jpwolf','jpminibob','jpseethrough','jpoutward','jplayered','jphime','jplongwaves'].includes(style))chains.push({bones:['hairA','hairB'],tip:tail[2],...SWING.hair,kind:'hair'});
  // Braids: from behind each ear to the shoulders.
  for(const [s,side] of [[1,'L'],[-1,'R']]){
   const x=s*R*.85;

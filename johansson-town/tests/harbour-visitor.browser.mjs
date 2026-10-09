@@ -8,14 +8,14 @@ const browser=await chromium.launch({executablePath:process.env.CREATOR_CHROME,a
 try{
 for(const [width,height] of [[1280,800],[390,844]]){
 const context=await browser.newContext({viewport:{width,height},hasTouch:width===390,isMobile:width===390});const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.route('https://**/*',route=>route.abort());
-await page.goto('http://127.0.0.1:5173/creator/?preset=harbour-visitor');await page.getByRole('textbox',{name:'Name',exact:true}).waitFor();assert.equal(await page.getByRole('textbox',{name:'Name',exact:true}).inputValue(),'Harbour visitor');
+await page.goto('http://127.0.0.1:5173/creator/?preset=harbour-visitor');await page.getByRole('textbox',{name:'Name',exact:true}).waitFor();assert.equal(await page.getByRole('textbox',{name:'Name',exact:true}).inputValue(),'Ruta');
 await page.waitForTimeout(1000);await page.screenshot({path:out+'/creator-'+width+'.png'});
 // Save and play uses the real standalone creator callback.
 const buttons=await page.getByRole('button').allTextContents();console.log(width,buttons.filter(x=>/Next|Save|town|Hello|look|Start|person/i.test(x)));
 const save=page.getByRole('button',{name:'Walk the town as them',exact:true});
 for(let i=0;i<5 && !await save.isVisible();i++){const next=page.locator('.shm-next');await next.click();await page.waitForTimeout(200);}
 await save.click();
-const saved=await page.evaluate(async()=>{const {playerRecipe}=await import('/src/avatars/actors.js');return playerRecipe();});assert.equal(saved.name,'Harbour visitor');assert.equal(saved.outfit.bottom,'pleatedskirt');
+const saved=await page.evaluate(async()=>{const {playerRecipe}=await import('/src/avatars/actors.js');return playerRecipe();});assert.equal(saved.name,'Ruta');assert.equal(saved.outfit.bottom,'pleatedskirt');
 await page.goto('http://127.0.0.1:5173/creator/');await page.reload();await page.getByRole('textbox',{name:'Name',exact:true}).waitFor();const restored=await page.evaluate(async()=>{const {playerRecipe}=await import('/src/avatars/actors.js');return playerRecipe();});assert.equal(restored.outfit.top,'contrastpolo');assert.equal(restored.outfit.bottom,'pleatedskirt');
 await page.goto('http://127.0.0.1:5173/tools/avatar-preview.html?who=Harbour%20visitor');await page.waitForFunction(()=>window.__READY__);await page.waitForTimeout(300);await page.screenshot({path:out+'/front-'+width+'.png'});
 for(const pose of ['walk','sit','wave']){await page.goto('http://127.0.0.1:5173/tools/avatar-preview.html?who=Harbour%20visitor&pose='+pose);await page.waitForFunction(()=>window.__READY__);await page.waitForTimeout(500);await page.screenshot({path:out+'/'+pose+'-'+width+'.png'});}
