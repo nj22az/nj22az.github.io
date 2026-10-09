@@ -6,7 +6,7 @@ import {createNavigation} from '../src/people/navmesh.js';
 import {ONSEN_PROPS} from '../src/world/interiors/onsen-props.js';
 import {LOBBY_CHANNELS,LOBBY_TV_STATES,pinLobbyChannel} from '../src/world/interiors/onsen-lobby.js';
 import {ONSEN_SIGNS} from '../src/world/interiors/onsen-signs.js';
-import {ONSEN_BOARD,ONSEN_FIX,CHAIR_TIMER,DRYER_CORD,MASSAGE_CHAIR,stageScenario,chairTimer,timerReads,trip,reset,isRunning,boardWiring} from '../src/world/interiors/onsen-electrics.js';
+import {ONSEN_BOARD,ONSEN_CIRCUITS,CHAIR_TIMER,DRYER_CORD,MASSAGE_CHAIR,stageScenario,chairTimer,timerReads,trip,reset,isRunning,higaReset} from '../src/world/interiors/onsen-electrics.js';
 import {circleHitsRect} from '../physics.js';
 import {FEED_PLACES} from '../src/feed/places.js';
 
@@ -51,16 +51,18 @@ test('the coin timer reads the chair’s own state: 10:00 for a coin, counting d
  assert.ok(coinBox.max.x<=arm.min.x+1e-6&&coinBox.max.x>arm.min.x-.002,'the coin box stands against the arm’s front');
  assert.ok(coinBox.max.y<arm.max.y&&coinBox.min.y>.5,'under the arm’s top, above the seat');
  const ledBox=box(led);assert.ok(ledBox.max.x<coinBox.min.x&&ledBox.max.x>coinBox.min.x-.006,'on its face, facing the lobby');
- // Page 2: five seconds of heaven, held.
- stageScenario('rush');ticks(layout,1);assert.equal(chairTimer().reads,'9:55');assert.equal(chairTimer().lit,true);
- // The click: the readout goes dark and the coin is forgotten; when the lever goes back up the chair stays still.
- stageScenario('busy');ticks(layout,.5);assert.equal(chairTimer().lit,false);assert.equal(chairTimer().left,0);
- reset('changing-sockets');ticks(layout,.5);assert.equal(isRunning('massage-chair'),false,'the coin is gone: it needs another');
+ // Page 4: two seconds of heaven, held.
+ stageScenario('last-straw');ticks(layout,1);assert.equal(chairTimer().reads,'9:58');assert.equal(chairTimer().lit,true);
+ // The blackout: the readout goes dark and the coin is forgotten; when the power comes back the chair stays still.
+ stageScenario('blackout');ticks(layout,.5);assert.equal(chairTimer().lit,false);assert.equal(chairTimer().left,0);
+ assert.equal(isRunning('massage-chair'),false,'the coin is gone: it needs another');
+ stageScenario('retrip');ticks(layout,.5);assert.equal(isRunning('massage-chair'),false,'the lights blink on and the chair stays still');
+ higaReset();ticks(layout,.5);assert.equal(isRunning('massage-chair'),false);
  // A coin on a quiet evening: it counts down while the chair runs and stops it at 0:00.
  stageScenario('quiet');ticks(layout,2);assert.equal(chairTimer().reads,'9:58');
  chairTimer(1);chairTimer(null);ticks(layout,1.5);assert.equal(isRunning('massage-chair'),false,'ten minutes up: it stops');assert.equal(chairTimer().reads,'0:00');
- // Page 10: the board shut, everything running, and the timer held at 9:58 for the last panel.
- stageScenario('peace');ticks(layout,3);assert.deepEqual([chairTimer().reads,chairTimer().pinned,chairTimer().lit],['9:58',true,true]);
+ // A film can hold the readout at a reading on any running chair.
+ stageScenario('quiet');chairTimer('9:58');ticks(layout,3);assert.deepEqual([chairTimer().reads,chairTimer().pinned,chairTimer().lit],['9:58',true,true]);
  assert.equal(layout.power.boardDoor(),ONSEN_BOARD.door.shut);
  assert.throws(()=>chairTimer('11:00'),/0:00 to 10:00/);assert.throws(()=>chairTimer('9:5'),/0:00 to 10:00/);
  // A trip lets a held reading go.
@@ -87,14 +89,12 @@ test('the lobby set can be pinned to the story’s held scores and to the power-
  stageScenario('rest');pinLobbyChannel(null);layout.dispose();
 });
 
-test('the fixed board carries three tapes: the two new ways and circuit 1’s new name',()=>{
+test('the board carries the rewiring’s three tapes in every moment: the two new ways and circuit 1’s new name',()=>{
  const {room,layout}=build();
- assert.ok(ONSEN_FIX.relabel.why.length>40);assert.match(ONSEN_FIX.relabel.tape.jp,/左鏡/);
+ const one=ONSEN_CIRCUITS.find(c=>c.id==='changing-sockets');assert.ok(one.tape.why.length>40);assert.match(one.tape.jp,/左鏡/);
  const tapes=()=>meshes(room).filter(m=>/^Tape label /.test(m.name)&&m.name!=='Tape label circuit list'&&visible(m)).map(m=>m.name).sort();
- stageScenario('busy');layout.realUpdate();assert.deepEqual(tapes(),[],'none before the fix');
- stageScenario('fitting');assert.deepEqual(tapes(),[],'none while he fits the breakers');
- stageScenario('fixed');assert.equal(boardWiring().taped,true);
- assert.deepEqual(tapes(),['Tape label changing-sockets','Tape label vanity-2','Tape label vanity-3']);
+ for(const moment of ['rest','evening','blackout','restored']){stageScenario(moment);layout.realUpdate();
+  assert.deepEqual(tapes(),['Tape label changing-sockets','Tape label vanity-2','Tape label vanity-3'],moment);}
  stageScenario('rest');layout.dispose();
 });
 

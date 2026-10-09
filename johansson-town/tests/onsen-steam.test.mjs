@@ -32,7 +32,7 @@ test('the steam is data: three fields, each saying what it is, why it is there a
 });
 
 test('the room builds it: three named meshes, one draw each, lit by lamps that exist, and no new lights',()=>{
- resetAll();stageScenario('peace');const {room,layout}=build();
+ resetAll();stageScenario('restored');const {room,layout}=build();
  const group=room.getObjectByName('Umi-no-yu steam');
  assert.ok(group&&group.userData.dynamicProp,'never baked into the static batches or a depth photograph');
  for(const f of ONSEN_STEAM.fields){const m=room.getObjectByName(f.name);
@@ -50,7 +50,7 @@ test('the steam is deterministic: the same moment always looks the same',()=>{
  for(const f of ONSEN_STEAM.fields)for(const minutes of [NOON,DUSK,NIGHT,NIGHT+.5])
   assert.deepEqual(steamAt(f,R,minutes*60,0),steamAt(f,R,minutes*60,0),f.id+' at '+minutes);
  // Two rooms built apart, ticked differently, set to the same minute: the same steam, puff for puff.
- resetAll();stageScenario('peace');
+ resetAll();stageScenario('restored');
  const a=build(),b=build();
  a.layout.tick(0,NIGHT-3);for(let i=0;i<90;i++)a.layout.tick(1/30,NIGHT);a.layout.tick(0,NIGHT);
  b.layout.tick(0,NIGHT);
@@ -115,14 +115,14 @@ test('denser at night: the rock bath steams thickest in the cool of the night, a
  assert.ok(mean(indoor,0)>mean(indoor,1)&&mean(indoor,0)<mean(rock,0));
  // The porch haze is an evening thing: nothing by day, there at dusk (8a at 19:30).
  assert.equal(mean(porch,1),0);assert.ok(mean(porch,.167)>.8*mean(porch,0));
- resetAll();stageScenario('busy');const {room,layout}=build();
+ resetAll();stageScenario('evening');const {room,layout}=build();
  layout.tick(0,NOON);assert.equal(room.getObjectByName('Porch haze').visible,false,'no haze at noon');
  layout.tick(0,DUSK);assert.ok(room.getObjectByName('Porch haze').visible,'haze at dusk');
  layout.dispose();
 });
 
 test('lit by the lamps: the hall’s glow and the lantern on the rock bath’s steam after dark, and nothing when they are out',()=>{
- resetAll();stageScenario('peace');let {room,layout}=build();
+ resetAll();stageScenario('restored');let {room,layout}=build();
  layout.tick(0,NIGHT);
  const [glow,lantern]=layout.steam.lamps('rock'),[porch]=layout.steam.lamps('porch');
  assert.ok(glow.r>1&&lantern.r>1,'the warm glass and the lantern light it');

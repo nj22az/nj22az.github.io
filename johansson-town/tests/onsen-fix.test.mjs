@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import * as THREE from '../vendor/three.module.js';
 import {buildOnsenInterior} from '../src/world/interiors/onsen.js';
-import {ONSEN_CIRCUITS,ONSEN_SPARE_WAYS,ONSEN_FIX,ONSEN_WIRING,ONSEN_RACEWAY,ONSEN_SCENARIOS,stageScenario,assess,advance,settle,
- circuitOf,isFitted,isOn,isWorking,trip,boardWiring} from '../src/world/interiors/onsen-electrics.js';
+import {ONSEN_CIRCUITS,ONSEN_REWIRING,ONSEN_RACEWAY,stageScenario,assess,
+ circuitOf,isOn,isWorking,isRunning} from '../src/world/interiors/onsen-electrics.js';
 import {circleHitsRect} from '../physics.js';
 
 const build=()=>{const room=new THREE.Group(),hits=[],actions=[];const layout=buildOnsenInterior({room,reg:(o,label,fn)=>hits.push({o,label,fn}),action:(...a)=>actions.push(a),exit(){}});room.updateMatrixWorld(true);return {room,hits,actions,layout};};
@@ -13,69 +13,30 @@ const meshes=room=>{const list=[];room.traverse(o=>{if(o.isMesh&&!o.isInstancedM
 const visibleInWorld=o=>{for(let p=o;p;p=p.parent)if(!p.visible)return false;return true;};
 const ticks=(layout,seconds,step=1/30)=>{for(let t=0;t<seconds;t+=step)layout.tick(step,20*60);};
 
-test('as built, the board has two spare ways (予備) at the end of the lower row, blank behind covers',()=>{
- stageScenario('rest');const {room,hits,actions,layout}=build();
- assert.deepEqual(ONSEN_SPARE_WAYS.map(w=>w.way),[7,8]);
- assert.equal(assess().circuits.length,6,'six circuits wired');
- for(const w of ONSEN_SPARE_WAYS){
-  assert.equal(isFitted(w.id),false);assert.throws(()=>trip(w.id),/spare/);
-  const cover=room.getObjectByName(w.cover);assert.ok(cover&&visibleInWorld(cover),w.cover+' shows');
-  assert.equal(visibleInWorld(room.getObjectByName('New breaker '+w.id)),false,'no breaker in way '+w.way+' yet');
- }
- // The covers sit in the lower row, beside the pump's breaker, level with it.
- const at=name=>new THREE.Box3().setFromObject(room.getObjectByName(name)).getCenter(new THREE.Vector3());
- const pump=at('Breaker pump'),fridge=at('Breaker fridge');
- for(const w of ONSEN_SPARE_WAYS){const c=at(w.cover);assert.ok(Math.abs(c.y-pump.y)<.002,'lower row');}
- // Facing the board (it faces +x, so you look -x and your left is +z), the ways count from your left: fridge, pump, then the spares.
- const along=v=>-v.z;assert.ok(along(fridge)<along(pump)&&along(pump)<along(at(ONSEN_SPARE_WAYS[0].cover))&&along(at(ONSEN_SPARE_WAYS[0].cover))<along(at(ONSEN_SPARE_WAYS[1].cover)));
- for(const t of meshes(room).filter(m=>/^Tape label/.test(m.name)))assert.equal(visibleInWorld(t),false,'no tape before the fix');
- hits.find(h=>h.label==='Look at the breaker board').fn();assert.match(actions.at(-1)[2],/two spare ways \(予備\)/);
- layout.dispose();
-});
-
-test('the fix: two new 20 A breakers, each mirror on its own circuit, and everything on at once holds',()=>{
- // The rewired board loses and duplicates nothing.
- const ids=c=>c.flatMap(x=>x.loads.map(l=>l.id)).sort();
- assert.deepEqual(ids(ONSEN_WIRING.rewired),ids(ONSEN_WIRING['as-built']));
- for(const c of ONSEN_WIRING.rewired)assert.ok(c.loads.reduce((s,l)=>s+l.watts,0)/c.volts<=c.amps,c.id+' within its rating with everything on');
- let a=stageScenario('fixed');
- assert.equal(boardWiring().wiring,'rewired');assert.equal(boardWiring().taped,true);
- assert.equal(a.circuits.length,8);
+// The board as it is now: the rewiring (each mirror on its own branch) is the onsen's normal wiring. The single-branch overload
+// it cured (three dryers and the chair on circuit 1, 38 A on 20) is history, kept in ONSEN_REWIRING and ONSEN_RACEWAY.
+test('the rewired board: eight ways, the two once spare whiter and labelled on tape, each mirror on its own circuit',()=>{
+ const a=stageScenario('rest');const {room,hits,actions,layout}=build();
+ assert.equal(a.circuits.length,8,'eight circuits wired');
  const mirrors=['dryer-1','dryer-2','dryer-3'].map(circuitOf);assert.equal(new Set(mirrors).size,3,'each mirror on a circuit of its own: '+mirrors);
  assert.equal(circuitOf('massage-chair'),'changing-sockets','the chair keeps its 1994 spur off the left mirror');
- for(const c of a.circuits){assert.ok(c.live,c.id+' live');assert.ok(c.amps<=c.rating,`${c.id}: ${c.amps} A on ${c.rating}`);}
- assert.equal(a.circuits.find(c=>c.id==='changing-sockets').amps,14);
- for(const f of ONSEN_FIX.circuits)assert.equal(a.circuits.find(c=>c.id===f.id).amps,12);
- assert.equal(Math.round(a.main.amps),47);assert.ok(!a.main.over);
- assert.deepEqual(settle(),[]);assert.deepEqual(advance(7200),[],'two hours of the evening rush and no click');
- for(const id of BUSY)assert.equal(isWorking(id),true,id);
- for(const f of ONSEN_FIX.circuits){
-  assert.match(f.tape.jp,/^[\p{Script=Han}\p{Script=Katakana}ー ]+$/u,'the tape is written in Japanese');assert.ok(f.tape.en.length>5,'with a small English line');
-  assert.equal(f.amps,20);assert.ok(f.why.length>30);
+ for(const id of ONSEN_REWIRING.ways){
+  assert.ok(visibleInWorld(room.getObjectByName('New breaker '+id)),'a breaker in way '+id);
+  assert.ok(room.getObjectByName('Breaker lever '+id).rotation.x<Math.PI/2,'lever up');
+  assert.ok(visibleInWorld(room.getObjectByName('Tape label '+id)),'its tape');
  }
- assert.ok(ONSEN_FIX.tape.why.length>30&&ONSEN_FIX.route.length>30,'the fix says where the cable goes and why the labels');
- assert.ok(ONSEN_SCENARIOS.fixed.panels.includes('7c')&&ONSEN_SCENARIOS.fitting.panels.includes('7b'));
- // In the room: covers out, new breakers in with their levers up, tape on, the inspect text knows.
- const {room,hits,actions,layout}=build();
- for(const w of ONSEN_SPARE_WAYS){
-  assert.equal(visibleInWorld(room.getObjectByName(w.cover)),false);
-  assert.ok(visibleInWorld(room.getObjectByName('New breaker '+w.id)));
-  assert.ok(room.getObjectByName('Breaker lever '+w.id).rotation.x<Math.PI/2,'lever up');
-  assert.ok(visibleInWorld(room.getObjectByName('Tape label '+w.id)));
- }
- assert.ok(visibleInWorld(room.getObjectByName('Tape label circuit list')),'ways 7 and 8 written in on the circuit list too');
+ assert.equal(room.getObjectByName('Spare way cover 7'),undefined,'no blanking covers left');
+ // The new ones are whiter than the 1987 ones, in the lower row beside the pump's breaker.
+ const at=name=>new THREE.Box3().setFromObject(room.getObjectByName(name)).getCenter(new THREE.Vector3());
+ const colour=id=>room.getObjectByName('Breaker '+id).material.color.getHex();
+ assert.notEqual(colour('vanity-2'),colour('pump'));
+ for(const id of ONSEN_REWIRING.ways)assert.ok(Math.abs(at('Breaker '+id).y-at('Breaker pump').y)<.002,'lower row');
+ // Facing the board (it faces +x, so you look -x and your left is +z), the ways count from your left: fridge, pump, 7, 8.
+ const along=v=>-v.z;assert.ok(along(at('Breaker fridge'))<along(at('Breaker pump'))&&along(at('Breaker pump'))<along(at('Breaker vanity-2'))&&along(at('Breaker vanity-2'))<along(at('Breaker vanity-3')));
+ const tapes=meshes(room).filter(m=>/^Tape label /.test(m.name)&&visibleInWorld(m)).map(m=>m.name).sort();
+ assert.deepEqual(tapes,['Tape label changing-sockets','Tape label circuit list','Tape label vanity-2','Tape label vanity-3'],'three tapes on the board and one on the circuit list');
  hits.find(h=>h.label==='Look at the breaker board').fn();assert.match(actions.at(-1)[2],/eight 20 A breakers/);assert.match(actions.at(-1)[2],/masking tape/);
- hits.find(h=>h.label==='Use a hair dryer').fn();assert.match(actions.at(-1)[2],/circuit of its own/);
- ticks(layout,3);for(const id of BUSY)assert.equal(isWorking(id),true,id+' still running after the room has ticked');
  layout.dispose();
- // 7b: isolated while he fits them: main off, the new levers down, no tape yet.
- stageScenario('fitting');const b=build();
- assert.equal(isOn('main'),false);
- for(const f of ONSEN_FIX.circuits){assert.ok(visibleInWorld(b.room.getObjectByName('New breaker '+f.id)));assert.ok(b.room.getObjectByName('Breaker lever '+f.id).rotation.x>Math.PI/2,'lever down while fitting');
-  assert.equal(visibleInWorld(b.room.getObjectByName('Tape label '+f.id)),false,'not labelled yet');}
- b.layout.dispose();
- // Back to the story's start: as built again.
- stageScenario('rest');assert.equal(boardWiring().wiring,'as-built');assert.equal(circuitOf('dryer-2'),'changing-sockets');assert.equal(isFitted('vanity-2'),false);
 });
 
 test('the 1994 raceway runs from the women\'s left mirror, through the partition and over both noren to the chair, flat on the walls',()=>{
@@ -121,15 +82,17 @@ test('the 1994 raceway runs from the women\'s left mirror, through the partition
  layout.dispose();
 });
 
-test('dryers and the chair look on when they run and dead when they do not, and the same moment always looks the same',()=>{
+test('dryers, the chair and the pot look on when they run and dead when they do not, and the same moment always looks the same',()=>{
  const src=readFileSync(new URL('../src/world/interiors/onsen-electrics.js',import.meta.url),'utf8');
  assert.ok(!/Math\.random/.test(src),'nothing random in the electrics');
- const sample=()=>{stageScenario('rush');const {room,layout}=build();ticks(layout,2);
-  const out={layout,room,look:Object.fromEntries(BUSY.map(id=>[id,layout.power.appearance(id)])),
+ const ALL=[...BUSY,'kettle'];
+ const sample=()=>{stageScenario('last-straw');const {room,layout}=build();ticks(layout,2);
+  const out={layout,room,look:Object.fromEntries(ALL.map(id=>[id,layout.power.appearance(id)])),
    yaw:[1,2,3].map(i=>room.getObjectByName('Hair dryer '+i).rotation.y),rollers:meshes(room).filter(m=>m.name==='Massage chair roller').map(m=>m.position.toArray())};return out;};
  const first=sample();
  for(const id of ['dryer-1','dryer-2','dryer-3']){const l=first.look[id];assert.ok(l.working&&l.lamp&&l.air,id+' lamp lit and air blowing: '+JSON.stringify(l));}
  assert.ok(first.look['massage-chair'].lamp&&first.look['massage-chair'].moving,'the chair’s lamp is lit and it kneads');
+ assert.ok(first.look.kettle.lamp&&first.look.kettle.plugged,'the pot boils, plugged in');
  assert.equal(first.rollers.length,2);
  // Resting on the counter while it hums: never below the vanity top.
  for(let i=1;i<=3;i++){const b=new THREE.Box3().setFromObject(first.room.getObjectByName('Hair dryer '+i));assert.ok(b.min.y>.81-.0005,'dryer '+i+' on the counter: '+b.min.y.toFixed(4));}
@@ -141,17 +104,21 @@ test('dryers and the chair look on when they run and dead when they do not, and 
  first.layout.dispose();
  const second=sample();
  assert.deepEqual(second.yaw,first.yaw,'the same hum at the same moment');assert.deepEqual(second.rollers,first.rollers);
- // The click: lamps out at once, the air fades out within a second, the chair stops where it is.
- stageScenario('busy');
- for(const id of BUSY){const l=second.layout.power.appearance(id);assert.equal(l.working,false);assert.equal(l.lamp,false,id+' lamp dark at once');}
+ // The blackout: lamps out at once, the air fades out within a second, the chair stops where it is, the pot's lamp dark.
+ const stopped0=meshes(second.room).filter(m=>m.name==='Massage chair roller').map(m=>m.position.toArray());
+ stageScenario('blackout');
+ for(const id of ALL){const l=second.layout.power.appearance(id);assert.equal(l.working,false);assert.equal(l.lamp,false,id+' lamp dark at once');}
+ assert.equal(isRunning('kettle'),true,'the pot still switched on');assert.equal(second.layout.power.appearance('kettle').plugged,true);
  ticks(second.layout,1.2);
  for(const id of ['dryer-1','dryer-2','dryer-3']){assert.equal(second.layout.power.appearance(id).air,false,id+' no air');assert.equal(second.room.getObjectByName('Hair dryer '+id.at(-1)).rotation.y,0,'still');}
  const stopped=meshes(second.room).filter(m=>m.name==='Massage chair roller').map(m=>m.position.toArray());ticks(second.layout,1);
- assert.deepEqual(meshes(second.room).filter(m=>m.name==='Massage chair roller').map(m=>m.position.toArray()),stopped,'mid-knead, and it stays there');
+ assert.deepEqual(stopped,stopped0,'stopped mid-knead');
+ assert.deepEqual(meshes(second.room).filter(m=>m.name==='Massage chair roller').map(m=>m.position.toArray()),stopped,'and it stays there');
  assert.equal(second.layout.power.appearance('massage-chair').moving,false);
- // After the fix, everything runs at once and keeps running.
- stageScenario('fixed');ticks(second.layout,2);
- for(const id of BUSY){const l=second.layout.power.appearance(id);assert.ok(l.working&&l.lamp,id+' on after the fix');}
- assert.ok(second.layout.power.appearance('massage-chair').moving);
+ // Restored: the house lit, everything big switched off and still, the pot unplugged.
+ stageScenario('restored');ticks(second.layout,2);
+ for(const id of ALL){const l=second.layout.power.appearance(id);assert.ok(!l.working&&!l.lamp,id+' off after the reset');}
+ assert.equal(second.layout.power.appearance('kettle').plugged,false);assert.ok(isWorking('lobby-lamp')&&isWorking('women-tube'));
+ assert.ok(assess().contract.amps<40);
  second.layout.dispose();stageScenario('rest');
 });
