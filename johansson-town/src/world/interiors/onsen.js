@@ -13,6 +13,7 @@ import {ONSEN_SIGNS} from './onsen-signs.js';
 import {buildOnsenFront} from './onsen-front.js';
 import {buildOnsenProps} from './onsen-props.js';
 import {buildOnsenNight} from './onsen-night.js';
+import {buildOnsenSteam} from './onsen-steam.js';
 
 /**
  * Inside Umi-no-yu: past the bandai to two noren, the women's (女湯, crimson, west) and the
@@ -103,9 +104,6 @@ function dataTexture(size,paint){
 const tileTexture=(r,g,b,grout=[214,218,214])=>dataTexture(64,(u,v)=>{const edge=Math.min(u%.5,v%.5)<.035;const n=((u*97+v*53)%1)*8;return edge?grout:[r+n,g+n,b+n];});
 /** Rough stone flags. */
 const flagTexture=()=>dataTexture(64,(u,v)=>{const edge=(u*3.1+Math.sin(v*9)*.06)%1<.04||(v*2.3+Math.sin(u*7)*.05)%1<.04;const n=Math.sin(u*41)*Math.cos(v*37)*10;return edge?[96,92,86]:[150+n,145+n,134+n];});
-/** A soft puff for steam. */
-let puff=null;
-const puffTexture=()=>puff??=dataTexture(64,(u,v)=>{const d=Math.min(1,Math.hypot(u-.5,v-.5)*2),a=Math.max(0,1-d);return [255,255,255,Math.round(200*a*a)];});
 /** The view over the fence: sky above, the sea below the horizon. */
 const seaTexture=()=>{const t=dataTexture(128,(u,v)=>{if(v>.46)return [120+60*(1-v),175+50*(1-v),215];const k=v/.46;return [40+30*k,110+40*k,150+30*k];});t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping;return t;};
 
@@ -330,11 +328,6 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  cyl(.14,2.6,[4.2,1.3,-8.2],mat(0x5d4a36,.9),'Fukugi trunk',10);
  for(const [dx,dy,dz,s] of [[0,2.8,0,1],[.4,2.4,.3,.75],[-.35,2.5,-.2,.8]]){const c=new THREE.Mesh(new THREE.IcosahedronGeometry(s,1),mat(0x2f5a33,.85));c.position.set(4.2+dx,dy,-8.2+dz);c.scale.y=.8;c.castShadow=true;room.add(c);}
  rect(4.2,-8.2,.4,.4,2.6);
- // Steam off both baths.
- const steamMat=new THREE.SpriteMaterial({map:puffTexture(),color:0xffffff,transparent:true,opacity:.28,depthWrite:false});
- const steam=[];for(let i=0;i<22;i++){const s=new THREE.Sprite(steamMat.clone());const indoor=i<8;
-  const base=indoor?[T.minX+.4+rnd()*(tw-.8),T.water,T.minZ+.3+rnd()*(td-.6)]:[P.x+(rnd()-.5)*P.rx*1.6,P.water,P.z+(rnd()-.5)*P.rz*1.4];
-  s.userData={base,phase:rnd(),speed:.08+rnd()*.06};s.name='Steam';room.add(s);steam.push(s);}
 
  // ---- Light: the house's bounce (its colour and share follow the lamps: onsen-electrics.js fill()), the lamps themselves
  // with their fittings and the stone lantern's bulb (onsen-electrics.js), the harbour across the water after dark
@@ -345,6 +338,8 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // The board also sets the sun (day × 1.6), so a dead house keeps only the daylight's share of it.
  const harbour=buildOnsenNight({room});
  const power=buildOnsenElectrics({room,rect,anchor,action,sun,sunAtNoon:1.6,hall:R.hall});buildOnsenTowels({room,rect});
+ // The steam off both baths and the evening haze at the street door (onsen-steam.js), lit by the lamps above.
+ const steam=buildOnsenSteam({room,R});
 
  anchor([0,1.1,4.75],'Step outside',exit);
  // Its lamps stop at its walls (render/cel.js lampsStopAtWalls): the lobby's bulb does not shine on the women's side of
@@ -368,7 +363,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   // The view over the fence darkens with the sky: at night a deep navy, so the harbour lights across the water carry.
   seaMat.color.setRGB(.13+.87*day,.15+.85*day,.22+.78*day);
   power.tick(day,dt);harbour.update(night);
-  for(const s of steam){const u=(s.userData.phase+time*s.userData.speed)%1,[x,y,z]=s.userData.base;s.position.set(x+Math.sin(u*6+x)*.15,y+.1+u*1.4,z);s.scale.setScalar(.35+u*.9);s.material.opacity=.3*Math.sin(u*Math.PI)*(.55+.45*night);}
+  steam.update(dt,minutes,day);
   const k=time*1.3;tubWater.position.y=T.water+Math.sin(k)*.004;poolWater.position.y=P.water+Math.sin(k*.8+1)*.005;
   if(fanOn){fanHead.rotation.y=fanYaw(fanTime);blades.rotation.z+=dt*18;}
   const m=((minutes%1440)+1440)%1440;hands[0].rotation.z=-(m%720)/720*Math.PI*2;hands[1].rotation.z=-(m%60)/60*Math.PI*2;
@@ -399,6 +394,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,doorways:ONSEN_DOORWAYS,power,townFill:power.townFill,tv:lobby.tv,streetDoor:front.door,genkan:front.genkan,
   noren:lobby.noren,props:propsApi,
   // Every frame, and for a frozen photograph (game.js audit render): what shows the room's state without time passing.
-  realUpdate(){lobby.refresh(people());power.refresh();},
-  dispose(){power.dispose();front.dispose();if(audit&&audit.onsenProps===propsApi)delete audit.onsenProps;}};
+  realUpdate(){lobby.refresh(people());power.refresh();steam.refresh();},
+  steam,
+  dispose(){power.dispose();front.dispose();steam.dispose();if(audit&&audit.onsenProps===propsApi)delete audit.onsenProps;}};
 }
