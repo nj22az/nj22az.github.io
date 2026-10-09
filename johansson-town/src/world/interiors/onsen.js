@@ -12,6 +12,7 @@ import {buildOnsenTowels} from './onsen-towels.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
 import {buildOnsenFront} from './onsen-front.js';
 import {buildOnsenProps} from './onsen-props.js';
+import {buildOnsenNight} from './onsen-night.js';
 
 /**
  * Inside Umi-no-yu: past the bandai to two noren, the women's (女湯, crimson, west) and the
@@ -323,7 +324,8 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const seaMat=new THREE.MeshBasicMaterial({map:seaTexture(),fog:false});const sea=new THREE.Mesh(new THREE.PlaneGeometry(90,30),seaMat);sea.position.set(0,6,-45);sea.name='Umi-no-yu sea view';room.add(sea);
  // Stone lantern and a fukugi tree in the corner.
  box([.34,.5,.34],[-4.2,.25,-8.2],stone,'Lantern base');box([.5,.08,.5],[-4.2,.54,-8.2],stone,'Lantern ledge');
- const lanternGlow=new THREE.MeshStandardMaterial({color:0xfff0c8,emissive:0xffc070,emissiveIntensity:0,roughness:.8});box([.3,.26,.3],[-4.2,.71,-8.2],lanternGlow,'Lantern light');
+ // Its bulb is on the bath lights, behind a photocell (onsen-electrics.js 'garden-lantern').
+ const lanternGlow=new THREE.MeshStandardMaterial({color:0xfff0c8,emissive:0xffc070,emissiveIntensity:1.4,roughness:.8});box([.3,.26,.3],[-4.2,.71,-8.2],lanternGlow,'Lantern light');
  const roof=new THREE.Mesh(new THREE.ConeGeometry(.42,.24,4),stone);roof.position.set(-4.2,.96,-8.2);roof.rotation.y=Math.PI/4;room.add(roof);rect(-4.2,-8.2,.55,.55,1.1);
  cyl(.14,2.6,[4.2,1.3,-8.2],mat(0x5d4a36,.9),'Fukugi trunk',10);
  for(const [dx,dy,dz,s] of [[0,2.8,0,1],[.4,2.4,.3,.75],[-.35,2.5,-.2,.8]]){const c=new THREE.Mesh(new THREE.IcosahedronGeometry(s,1),mat(0x2f5a33,.85));c.position.set(4.2+dx,dy,-8.2+dz);c.scale.y=.8;c.castShadow=true;room.add(c);}
@@ -334,16 +336,24 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   const base=indoor?[T.minX+.4+rnd()*(tw-.8),T.water,T.minZ+.3+rnd()*(td-.6)]:[P.x+(rnd()-.5)*P.rx*1.6,P.water,P.z+(rnd()-.5)*P.rz*1.4];
   s.userData={base,phase:rnd(),speed:.08+rnd()*.06};s.name='Steam';room.add(s);steam.push(s);}
 
- // ---- Light: warm lamps inside, the lantern outside after dark.
+ // ---- Light: the house's bounce (its colour and share follow the lamps: onsen-electrics.js fill()), the lamps themselves
+ // with their fittings and the stone lantern's bulb (onsen-electrics.js), the harbour across the water after dark
+ // (onsen-night.js), and the room's own daylight.
  room.add(new THREE.HemisphereLight(0xfff1dc,0x8a7a68,1.25));
- const lamps=[];for(const [x,y,z,p] of [[-2,2.5,3],[1.5,2.5,.3],[-1.5,2.5,-2.8],[2.8,2.5,-2.9]]){const l=new THREE.PointLight(0xffd9a8,p||5,7,2);l.position.set(x,y,z);room.add(l);lamps.push(l);}
- const outdoor=new THREE.PointLight(0xffc27a,0,9,2);outdoor.position.set(-3.2,1.4,-7.4);room.add(outdoor);
  const sun=new THREE.DirectionalLight(0xfff0dc,0);sun.position.set(3,8,-2);sun.target.position.set(0,0,-6.5);room.add(sun,sun.target);
- // The breaker board and what hangs off it (lamp fixtures over these lights, the dryers), and the towels.
+ // The breaker board and what hangs off it (the lamp fixtures and their lights, the dryers), and the towels.
  // The board also sets the sun (day × 1.6), so a dead house keeps only the daylight's share of it.
- const power=buildOnsenElectrics({room,rect,anchor,action,lamps,sun,sunAtNoon:1.6,hall:R.hall});buildOnsenTowels({room,rect});
+ const harbour=buildOnsenNight({room});
+ const power=buildOnsenElectrics({room,rect,anchor,action,sun,sunAtNoon:1.6,hall:R.hall});buildOnsenTowels({room,rect});
 
  anchor([0,1.1,4.75],'Step outside',exit);
+ // Its lamps stop at its walls (render/cel.js lampsStopAtWalls): the lobby's bulb does not shine on the women's side of
+ // the noren wall, nor the bath lamps on the changing rooms' mirrors, nor the porch lamp on the inside of the street wall.
+ // The noren is cloth and lets the lamp behind it glow through, and Mrs Higa is the town's like everyone else: they keep
+ // the town's light.
+ {const keep=new Set();room.getObjectByName('Umi-no-yu attendant')?.traverse(o=>keep.add(o));
+  room.traverse(o=>{if(!o.isMesh||keep.has(o)||o.name==='Noren'||o.userData.sharedAsset)return;
+   for(const m of Array.isArray(o.material)?o.material:[o.material])if(m?.isMeshStandardMaterial)m.userData.lampsStopAtWalls=true;});}
  let time=0,fanTime=0;
  function tick(dt,minutes=720){
   time+=dt;
@@ -355,8 +365,9 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   front.update(dt,minutes,here);front.light(day);
   const me=here.find(p=>p.name==null),inMen=!!me&&me.x>.05&&me.z<R.hall.front&&me.z>R.hall.changing;
   for(const o of womenSide)o.visible=!inMen;
-  seaMat.color.setRGB(.25+.75*day,.3+.7*day,.45+.55*day);
-  power.tick(day,dt);lanternGlow.emissiveIntensity=night*1.4;outdoor.intensity=night*5;
+  // The view over the fence darkens with the sky: at night a deep navy, so the harbour lights across the water carry.
+  seaMat.color.setRGB(.13+.87*day,.15+.85*day,.22+.78*day);
+  power.tick(day,dt);harbour.update(night);
   for(const s of steam){const u=(s.userData.phase+time*s.userData.speed)%1,[x,y,z]=s.userData.base;s.position.set(x+Math.sin(u*6+x)*.15,y+.1+u*1.4,z);s.scale.setScalar(.35+u*.9);s.material.opacity=.3*Math.sin(u*Math.PI)*(.55+.45*night);}
   const k=time*1.3;tubWater.position.y=T.water+Math.sin(k)*.004;poolWater.position.y=P.water+Math.sin(k*.8+1)*.005;
   if(fanOn){fanHead.rotation.y=fanYaw(fanTime);blades.rotation.z+=dt*18;}
