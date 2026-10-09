@@ -1,6 +1,9 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {pinLobbyChannel,lobbyChannelPin,LOBBY_CHANNELS} from './onsen-lobby.js';
 
+/** The massage chair's seat front (room x, metres): the seat runs from here back to its backrest at 4.725. */
+export const MASSAGE_CHAIR=Object.freeze({front:4.2});
+
 /**
  * Umi-no-yu's electrics: the 分電盤 (distribution board) on the changing-room side of the
  * bandai wall, the circuits it feeds, and the things on them.
@@ -557,10 +560,10 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   add(new THREE.BoxGeometry(.035,.04,.022),greyPlastic,0,-.01,X.d+.004+.011,'Massage chair socket plug',g);}
  // The plug hangs its cord down the wall, in front of the wainscot rail, and across the floor to the chair.
  cord([[4.6,.012,3.146],[4.72,.004,3.02],[4.84,.004,2.93],[4.872,.03,2.905],[4.877,.3,2.9],[4.879,.9,2.9],[4.882,1.03,2.9],[4.884,1.075,2.9]],'Massage chair cord');
- const chairPlate=add(new THREE.PlaneGeometry(.11,.05),printed(sticker('200W  100V','MASSAGE CHAIR'),0xf6f4ee),3.972,.3,3.75,'Massage chair rating plate');chairPlate.rotation.y=-Math.PI/2;chairPlate.castShadow=false;
+ const chairPlate=add(new THREE.PlaneGeometry(.11,.05),printed(sticker('200W  100V','MASSAGE CHAIR'),0xf6f4ee),MASSAGE_CHAIR.front-.003,.3,3.75,'Massage chair rating plate');chairPlate.rotation.y=-Math.PI/2;chairPlate.castShadow=false;
  // The coin timer on the front of the chair's right arm: ¥100 for ten minutes, and the red
  // 運転中 lamp that says it is running.
- const timer=new THREE.Group();timer.name='Massage chair coin timer';timer.position.set(3.985,.6,3.17);group.add(timer);
+ const timer=new THREE.Group();timer.name='Massage chair coin timer';timer.position.set(MASSAGE_CHAIR.front+.035,.6,3.17);group.add(timer);
  add(new THREE.BoxGeometry(.03,.1,.08),new THREE.MeshStandardMaterial({color:0xd9d3c4,roughness:.5}),0,0,0,'Massage chair coin box',timer);
  const chairLamp=add(new THREE.SphereGeometry(.009,12,8),new THREE.MeshStandardMaterial({color:0x6a2018,emissive:0xff4a2a,emissiveIntensity:2,roughness:.3}),-.015,.028,0,'Massage chair lamp',timer);chairLamp.castShadow=false;
  const coin=add(new THREE.PlaneGeometry(.066,.036),printed(sticker('100円 10分','¥100 · 10 MIN'),0xf6f4ee),-.0155,-.016,0,'Massage chair timer label',timer);coin.rotation.y=-Math.PI/2;coin.castShadow=false;
