@@ -42,6 +42,21 @@ export const ONSEN_SIGNS=Object.freeze({
  poster:plain({title:'南の島 湯めぐり',line:'港の湯・海の湯・森の湯',en:'Southern-island bath tour: Minato-no-yu, Umi-no-yu, Mori-no-yu',
   where:'The travel poster on the lobby side of the changing-room wall.',
   why:'The ferry line’s 1997 poster for the island’s three baths.'}),
+ /** The faces of the lobby's summer fans (onsen-props.js, "Uchiwa rack"): four hand fans and the giant one. */
+ uchiwa:Object.freeze([
+  plain({id:'goldfish',jp:'金魚',en:'Goldfish',why:'The commonest summer print of all: cool water to look at while you fan yourself.'}),
+  plain({id:'asagao',jp:'朝顔',en:'Morning glories',why:'The summer flower every child grows in a pot over the school holidays.'}),
+  plain({id:'hanabi',jp:'花火',en:'Fireworks',why:'Printed for the harbour’s August fireworks night, and kept.'}),
+  plain({id:'sakura-ad',jp:'さくら商店',sub:'日用品・食料品',en:'Sakura Shōten: daily goods and groceries',
+   why:'A shop’s summer giveaway fan (広告うちわ), handed out at the till in July. Umi-no-yu buys its soap and shampoo from Sakura Shōten, so Mrs Higa gets a bundle every year.'}),
+  plain({id:'harii',jp:'ハーリー',sub:'協賛 海の湯',en:'Hārī (the harbour dragon-boat race); sponsor: Umi-no-yu',giant:true,
+   why:'The sponsors’ giant fan from the harbour Hārī every May: Umi-no-yu is a sponsor, and the fan is too big to use politely, so it hangs by the tatami.'}),
+ ]),
+ ledger:plain({jp:'金銭出納帳',en:'Cash book',columns:Object.freeze(['月日','摘要','入金','出金','残高']),
+  // Today's page in pencil: 38 adult baths, 6 towels and 21 milks in at the prices on the board; the soap from Sakura Shōten out.
+  rows:Object.freeze([['8/14','入浴 大人 38','11,400','','11,400'],['','タオル 6','600','','12,000'],['','牛乳 21','2,100','','14,100'],['','石鹸 さくら商店','','1,850','12,250']].map(r=>Object.freeze(r))),
+  where:'Open on the bandai top in front of Mrs Higa ("Account book"), the top of the page away from her.',
+  why:'Every bathhouse keeper does the day’s takings in a cash book: baths, towels and milk in, soap and the boiler’s oil out. She writes in pencil so she can rub out.'}),
  tv:plain({
   nightGame:plain({inning:'7回裏',away:'鹿',home:'沖',score:Object.freeze({away:2,home:3}),count:Object.freeze({balls:2,strikes:1,outs:1}),en:'Bottom of the seventh, Okinawa 3, Kagoshima 2',
    why:'A 1990s baseball broadcast keeps a small score box in the corner: the two teams by one kanji each, the inning, and the ball, strike and out lamps.'}),
