@@ -1,12 +1,13 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {pinLobbyChannel,lobbyChannelPin,LOBBY_CHANNELS} from './onsen-lobby.js';
+import {ONSEN_SIGNS} from './onsen-signs.js';
 
 /** The massage chair's seat front (room x, metres): the seat runs from here back to its backrest at 4.725. */
 export const MASSAGE_CHAIR=Object.freeze({front:4.2});
 
 /**
- * Umi-no-yu's electrics: the 分電盤 (distribution board) on the changing-room side of the
- * bandai wall, the circuits it feeds, and the things on them.
+ * Umi-no-yu's electrics: the 分電盤 (distribution board) on the wall behind Mrs Higa's stool
+ * at the bandai, the circuits it feeds, and the things on them.
  *
  * Okinawa is 100 V, and every branch here is a 20 A breaker on 1.6 mm cable, so a branch
  * carries at most 2 000 W. On a busy evening three people dry their hair at once
@@ -29,11 +30,22 @@ export const MASSAGE_CHAIR=Object.freeze({front:4.2});
  */
 export const ONSEN_VOLTS=100;
 
-/** The board: on the changing-room face of the wall between the lobby and the changing room. */
+/**
+ * The board: in the keeper's corner behind the bandai, on the lobby's west wall just behind Mrs Higa's stool, on her left.
+ * `wallX` is the wall face it hangs on, `z` and `y` its centre; it faces into the room (+x). Its top is at 1.85 m, where a
+ * Japanese board hangs, and its door is shut (`door.shut`); it opens (`door.open`, degrees, hinged on its right, the
+ * bandai-wall side, so it swings away from her and stops short of that wall) only while someone works inside it.
+ * `keeper` is where Mrs Higa sits (onsen.js, the attendant's stool): every branch lever is in her reach from there
+ * (tests/onsen-electrics.test.mjs); the main and the earth-leakage breaker, at the top, she reaches standing up on the
+ * bandai floor beside her stool (`stand`), which is a job for the electrician anyway. The board stops short of her head:
+ * her bun, at the back, clears its front edge.
+ */
 export const ONSEN_BOARD=Object.freeze({
- x:-3.6,y:1.1,wallZ:1.54,w:.52,h:.62,d:.14,
- facing:'-z',doorOpen:165,
- where:'On the changing-room face of the bandai wall, just round the noren from the bandai: Mrs Higa can reach it in four steps without leaving the building. It hangs low, the main lever at shoulder height and the rest below it, so anyone in the house can throw a lever in the dark without a step stool. It is clear of the lockers’ end, where nobody leans, and the door stays open in the evening so the levers can be read from the vanity.',
+ wallX:-4.94,z:2.15,y:1.51,w:.52,h:.62,d:.175,
+ facing:'+x',door:Object.freeze({shut:0,open:100,hinge:'right'}),
+ // Seated, she reaches with her arm and a lean of the body (30 degrees from the hip), the way anyone reaches round from a stool.
+ keeper:Object.freeze({who:'Mrs Higa',seat:Object.freeze([-4.5,.75,2.6]),stand:Object.freeze([-4.55,.35,2.15]),facing:'+x',lean:30}),
+ where:'Behind the bandai, on the wall at Mrs Higa’s back, just to her left: the keeper’s corner, where only she reaches it. She turns on her stool and flicks a lever up without looking up from her account book, and nobody else can get to it without climbing over the counter. It hangs where a Japanese board hangs, its top at 1.82 m, with its door shut and the printed card on it: 関係者以外さわらないでください, staff only.',
  main:Object.freeze({id:'main',jp:'主幹',en:'Main breaker',amps:60,
   why:'The whole bathhouse is one 60 A supply at 100 V: 6 000 W before the main opens. It protects the service cable from the pole.'}),
  elcb:Object.freeze({id:'elcb',jp:'漏電遮断器',en:'Earth-leakage breaker',amps:60,milliamps:30,
@@ -49,7 +61,7 @@ const plain=(o)=>Object.freeze(o);
  */
 export const ONSEN_CIRCUITS=Object.freeze([
  plain({id:'changing-sockets',no:1,jp:'脱衣所コンセント',en:'Changing-room sockets',amps:20,volts:ONSEN_VOLTS,
-  why:'The sockets under the vanity mirrors, where people dry their hair after the bath. When the massage chair arrived in 2003 its socket was run as a spur off the left mirror’s socket, in white surface raceway round the changing room and over the noren (ONSEN_RACEWAY), rather than from the board, so the chair shares the dryers’ breaker.',
+  why:'The sockets under the women’s vanity mirrors, where people dry their hair after the bath. When the new massage chair came in 1994 its socket was run as a spur off the left mirror’s socket, in white surface raceway round the women’s changing room, through the partition, over both noren and the men’s side (ONSEN_RACEWAY), rather than from the board, so the chair shares the dryers’ breaker.',
   normal:['dryer-2','massage-chair'],
   loads:Object.freeze([
    plain({id:'dryer-1',en:'Hair dryer 1, cream, at the left mirror',watts:1200,atRest:'off',by:'a bather at the left mirror',meshes:['Hair dryer 1','Hair dryer 1 pilot'],socket:'Vanity socket 1',
@@ -85,8 +97,8 @@ export const ONSEN_CIRCUITS=Object.freeze([
     purpose:'Lights the indoor bath so you can see the step down into the water.'}),
   ])}),
  plain({id:'lobby',no:4,jp:'玄関・番台',en:'Lobby and bandai',amps:20,volts:ONSEN_VOLTS,
-  why:'The front of the house: the lobby lamp, the andon on the bandai, the television, and the changing-room fan, whose socket is back to back with the television’s through the same wall.',
-  normal:['lobby-lamp','andon','television','fan'],
+  why:'The front of the house: the lobby lamp, the andon on the bandai, the television, and on the men’s side the fan and the comb sterilizer, whose sockets are spurs off the television’s through the same wall.',
+  normal:['lobby-lamp','andon','television','fan','comb-sterilizer'],
   loads:Object.freeze([
    plain({id:'lobby-lamp',en:'Lobby ceiling lamp',watts:40,atRest:'on',by:'Mrs Higa at opening time',meshes:['Lobby ceiling lamp'],lights:['Lobby light'],
     fixture:plain({kind:'flush',at:[-2,2.8,3],light:[-2,2.5,3]}),
@@ -97,6 +109,8 @@ export const ONSEN_CIRCUITS=Object.freeze([
     purpose:'The night game for people cooling down on the tatami.'}),
    plain({id:'fan',en:'Changing-room fan',watts:30,atRest:'on',by:'Mrs Higa at opening time',socket:'Fan socket',
     purpose:'Cools people coming out of the bath at 42 degrees; it turns its head so everyone on the bench gets some.'}),
+   plain({id:'comb-sterilizer',en:'Comb sterilizer on the men’s vanity',watts:6,atRest:'on',by:'Mrs Higa at opening time',meshes:['Comb sterilizer lamp'],socket:'Men’s vanity socket',
+    purpose:'A small ultraviolet lamp in a box that keeps the men’s side’s house combs clean between customers: the blue glow of every Shōwa barber’s and bath’s mirror.'}),
   ])}),
  plain({id:'fridge',no:5,jp:'冷蔵庫',en:'Milk fridge',amps:20,volts:ONSEN_VOLTS,
   why:'A dedicated circuit so nobody’s hair dryer can ever switch the milk off overnight.',
@@ -121,7 +135,7 @@ const knownLoad=id=>{if(!LOAD_BY_ID.has(id))throw new Error('No such load at Umi
 /**
  * The board has eight ways. Six were wired when the bath was rewired in 1987; the last two
  * in the lower row were left blank for later (予備), behind white blanking covers, the way
- * a careful electrician leaves room on a board. In 2003 nobody used them (ONSEN_RACEWAY).
+ * a careful electrician leaves room on a board. In 1994 nobody used them (ONSEN_RACEWAY).
  */
 export const ONSEN_SPARE_WAYS=Object.freeze([
  plain({way:7,id:'vanity-2',jp:'予備',en:'Spare',cover:'Spare way cover 7'}),
@@ -129,24 +143,27 @@ export const ONSEN_SPARE_WAYS=Object.freeze([
 ].map(w=>plain({...w,why:'Left blank in 1987 behind a white blanking cover, so a new circuit can be added later without a new board.'})));
 
 /**
- * The massage chair's spur: white PVC surface raceway (モール), added in 2003. It leaves the
- * left mirror's socket, climbs the vanity wall beside the lockers' end, runs round the
- * changing room at picture-rail height (west wall, then the bandai wall over the board and
- * over the noren), goes through the wall at the east end and comes down the lobby's east
- * wall to a surface socket box beside the chair. `path` is its centre line, room metres;
- * `face` is the wall each run is screwed to (the direction the raceway's back faces).
+ * The massage chair's spur: white PVC surface raceway (モール), added in 1994. It leaves the
+ * left mirror's socket on the women's vanity, climbs the vanity wall beside the lockers' end,
+ * runs round the women's changing room at picture-rail height (west wall, then the bandai
+ * wall over the women's noren), goes straight through the partition into the men's side,
+ * on over the men's noren and the men's mirror, through the wall at the east end and down the
+ * lobby's east wall to a surface socket box beside the chair. `path` is its centre line,
+ * room metres; `face` is the wall each run is screwed to (the direction the raceway's back
+ * faces); `end`/`start` 'wall' is an end cap where it goes into a wall.
  */
 export const ONSEN_RACEWAY=Object.freeze({
- id:'chair-spur',name:'Massage chair raceway',jp:'モール',en:'White PVC surface raceway',year:2003,
+ id:'chair-spur',name:'Massage chair raceway',jp:'モール',en:'White PVC surface raceway',year:1994,
  from:'Vanity socket 1',to:'Massage chair socket',circuit:'changing-sockets',
  w:.035,d:.016,height:2.45,colour:0xfbfbf7,
- why:'When the massage chair came in 2003 there was no electrician on the island that week, so a handyman ran its socket off the nearest outlet on the dryers’ cable instead of opening the board: raceway screwed to the walls at picture-rail height, all the way round the changing room and through the wall to the chair. It works on a quiet evening (14 A) and puts the chair on the dryers’ 20 A breaker on a busy one, while two spare ways sat empty a metre away.',
+ why:'The old chair died and the new one came in 1994 (平成6年), the week there was no electrician on the island, so a handyman ran its socket off the nearest outlet on the dryers’ cable instead of opening the board: raceway screwed to the walls at picture-rail height, all the way round the women’s changing room, straight through the partition (he drilled it), across the men’s side and through the wall to the chair. It works on a quiet evening (14 A) and puts the chair on the dryers’ 20 A breaker on a busy one, while two spare ways sat empty in the board behind the bandai.',
  period:'Surface raceway is how Japanese houses and shops were extended without opening the walls from the 1980s on: white PVC, 25 mm, snap-on covers, moulded corner pieces and an end cap where it goes through a wall.',
  runs:Object.freeze([
   // Points on the wall face it is screwed to; `face` is that wall's outward normal.
   plain({side:'changing',wall:'vanity wall',face:'+z',path:Object.freeze([[-4.185,.88,-1.14],[-4.49,.88,-1.14],[-4.49,2.45,-1.14],[-4.94,2.45,-1.14]])}),
   plain({side:'changing',wall:'west wall, over the lockers',face:'+x',path:Object.freeze([[-4.94,2.45,-1.14],[-4.94,2.45,1.54]])}),
-  plain({side:'changing',wall:'bandai wall, over the board and the noren',face:'-z',path:Object.freeze([[-4.94,2.45,1.54],[4.82,2.45,1.54]]),end:'wall'}),
+  plain({side:'women',wall:'bandai wall, over the women’s noren',face:'-z',path:Object.freeze([[-4.94,2.45,1.54],[-.05,2.45,1.54]]),end:'wall'}),
+  plain({side:'men',wall:'bandai wall, through the partition and over the men’s noren',face:'-z',path:Object.freeze([[.05,2.45,1.54],[4.82,2.45,1.54]]),start:'wall',end:'wall'}),
   plain({side:'lobby',wall:'lobby side of the bandai wall',face:'+z',path:Object.freeze([[4.82,2.45,1.66],[4.94,2.45,1.66]]),start:'wall'}),
   plain({side:'lobby',wall:'east lobby wall, over the milk cooler',face:'-x',path:Object.freeze([[4.94,2.45,1.66],[4.94,2.45,2.9],[4.94,1.16,2.9]])}),
  ]),
@@ -155,7 +172,7 @@ export const ONSEN_RACEWAY=Object.freeze({
 
 /**
  * The fix (page 7): two new 20 A breakers in the spare ways, the middle and right mirrors'
- * sockets each moved to one of them. The left mirror's socket and the chair's 2003 spur
+ * sockets each moved to one of them. The left mirror's socket and the chair's 1994 spur
  * stay on circuit 1: 14 A at most. The new cables go up into the ceiling void and down
  * inside the vanity wall, so nothing new shows but the breakers and their labels, written
  * by hand on masking tape from Nhung's roll.
@@ -176,17 +193,17 @@ export const ONSEN_FIX=Object.freeze({
  ]),
 });
 const MOVED=new Map(ONSEN_FIX.circuits.flatMap(c=>c.moves.map(id=>[id,c.id])));
-/** How the board is wired: as built (with the 2003 spur), or rewired after the fix. Each is a full circuit list. */
+/** How the board is wired: as built (with the 1994 spur), or rewired after the fix. Each is a full circuit list. */
 export const ONSEN_WIRING=Object.freeze({
  'as-built':ONSEN_CIRCUITS,
  rewired:Object.freeze([
   ...ONSEN_CIRCUITS.map(c=>c.id!=='changing-sockets'?c:plain({...c,loads:Object.freeze(c.loads.filter(l=>!MOVED.has(l.id))),normal:Object.freeze(['dryer-1','massage-chair']),
-   why:'After the fix: the left mirror’s socket and the chair’s 2003 spur. One dryer and the chair: 14 A on 20.'})),
+   why:'After the fix: the left mirror’s socket and the chair’s 1994 spur. One dryer and the chair: 14 A on 20.'})),
   ...ONSEN_FIX.circuits.map(f=>plain({id:f.id,no:f.no,jp:f.jp,en:f.en,amps:f.amps,volts:f.volts,why:f.why,fitted:'fix',normal:f.moves,loads:Object.freeze(f.moves.map(id=>LOAD_BY_ID.get(id)))})),
  ]),
 });
 const FIX_IDS=ONSEN_FIX.circuits.map(c=>c.id);
-let wiring='as-built',taped=false;
+let wiring='as-built',taped=false,doorAngle=ONSEN_BOARD.door.shut;
 const circuitsNow=()=>ONSEN_WIRING[wiring];
 const byId=id=>circuitsNow().find(c=>c.id===id);
 const ALL_SWITCHES=['main','elcb',...ONSEN_CIRCUITS.map(c=>c.id),...FIX_IDS];
@@ -297,6 +314,7 @@ export function resetAll(){let any=false;for(const id of switchesNow())if(!on.ge
  * breakers do what they would, `hold` keeps the moment (no breaker warms until something
  * is switched), and `tv` is the channel the lobby set is pinned to. `wiring` is the board
  * as built (the default) or rewired after the fix, and `tape` puts the hand-written labels on.
+ * `board` is the board's door: shut, as it hangs at rest, unless the moment is someone working inside it (Tetsuo, page 7).
  */
 const BUSY=Object.freeze(['dryer-1','dryer-2','dryer-3','massage-chair']);
 export const ONSEN_SCENARIOS=Object.freeze({
@@ -308,17 +326,27 @@ export const ONSEN_SCENARIOS=Object.freeze({
   en:'The ferry is in: three dryers and the massage chair at once, 38 A on a 20 A branch, the lever still up for the half minute before it lets go. The main sees 47 A.'}),
  busy:Object.freeze({on:BUSY,down:[],settle:true,tv:'night-game',panels:Object.freeze(['3a','3b','3c','3d','3e','4a','4b','4c','4e','5e','6a','6b','6c','6d']),
   en:'The same four loads, after the click: the changing-room sockets are down, the dryers and the chair dead with their switches still on; the lamps, the television and the main hold.'}),
- isolated:Object.freeze({on:[],down:['main','changing-sockets'],tv:'night-game',panels:Object.freeze(['7a']),
+ isolated:Object.freeze({on:[],down:['main','changing-sockets'],board:'open',tv:'night-game',panels:Object.freeze(['7a']),
   en:'Isolate first: the main off before anybody touches the board. The whole house is dark and the television black.'}),
- fitting:Object.freeze({on:[],down:['main','vanity-2','vanity-3'],wiring:'rewired',tape:false,tv:'night-game',panels:Object.freeze(['7b']),
+ fitting:Object.freeze({on:[],down:['main','vanity-2','vanity-3'],wiring:'rewired',tape:false,board:'open',tv:'night-game',panels:Object.freeze(['7b']),
   en:'Still isolated, the blanking covers out of the spare ways and two new 20 A breakers clipped in, their levers down and no labels yet: the moment Nhung offers the tape.'}),
- fixed:Object.freeze({on:BUSY,down:[],wiring:'rewired',tape:true,settle:true,tv:'night-game',panels:Object.freeze(['7c','8a','8b','8c']),
+ fixed:Object.freeze({on:BUSY,down:[],wiring:'rewired',tape:true,settle:true,board:'open',tv:'night-game',panels:Object.freeze(['7c','8a','8b','8c']),
   en:'After the fix, everything at once: the left mirror and the chair on circuit 1 (14 A), the middle and right mirrors on the new circuits 7 and 8 (12 A each), the main at 47 A. Nothing trips.'}),
 });
+/**
+ * The board's door: 'shut', 'open' or an angle in degrees (0 shut … ONSEN_BOARD.door.open). A film can open it in any
+ * shot (Mrs Higa flicking a lever back up) without changing the moment. Returns the angle now.
+ */
+export function boardDoor(state){
+ if(state!==undefined){const a=typeof state==='number'?state:ONSEN_BOARD.door[state];
+  if(!Number.isFinite(a)||a<0||a>ONSEN_BOARD.door.open)throw new Error('The board door opens from 0 to '+ONSEN_BOARD.door.open+' degrees: '+state);
+  if(a!==doorAngle){doorAngle=a;changed();}}
+ return doorAngle;
+}
 /** Set the room to a named moment (ONSEN_SCENARIOS). Returns what the board then carries. */
 export function stageScenario(name){
  const s=ONSEN_SCENARIOS[name];if(!s)throw new Error('No such Umi-no-yu scenario: '+name);
- wiring=s.wiring||'as-built';taped=!!s.tape;
+ wiring=s.wiring||'as-built';taped=!!s.tape;doorAngle=ONSEN_BOARD.door[s.board||'shut'];
  running.clear();for(const id of [...AT_REST,...s.on])running.add(knownLoad(id));
  for(const id of s.down)known(id);
  for(const id of ALL_SWITCHES){on.set(id,!s.down.includes(id));heat.set(id,0);}
@@ -430,10 +458,11 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
  const cordMat=new THREE.MeshStandardMaterial({color:0x2a2a2a,roughness:.7});
  const add=(geometry,material,x,y,z,name,parent=group)=>{const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.name=name;m.castShadow=m.receiveShadow=true;m.userData.staticProp=true;parent.add(m);return m;};
 
- // ---- The board: a grey steel box with the door swung right open.
- const B=ONSEN_BOARD,board=new THREE.Group();board.name='Breaker board';board.position.set(B.x,B.y,B.wallZ);board.rotation.y=Math.PI;group.add(board);
+ // ---- The board: a grey steel box on the wall behind the bandai, its door shut.
+ const B=ONSEN_BOARD,board=new THREE.Group();board.name='Breaker board';board.position.set(B.wallX,B.y,B.z);board.rotation.y=Math.PI/2;group.add(board);
  add(new THREE.BoxGeometry(B.w,B.h,.01),steel,0,0,.005,'Breaker board back',board);
- for(const s of [-1,1]){add(new THREE.BoxGeometry(.012,B.h,B.d),steel,s*(B.w/2-.006),0,B.d/2,'Breaker board side',board);add(new THREE.BoxGeometry(B.w,.012,B.d),steel,0,s*(B.h/2-.006),B.d/2,'Breaker board side',board);}
+ // The sides stop just behind the door, so its edge and theirs never share a face.
+ const side=B.d-.014;for(const s of [-1,1]){add(new THREE.BoxGeometry(.012,B.h,side),steel,s*(B.w/2-.006),0,side/2,'Breaker board side',board);add(new THREE.BoxGeometry(B.w,.012,side),steel,0,s*(B.h/2-.006),side/2,'Breaker board side',board);}
  const plateTex=plateTexture(),plateMat=printed(plateTex,0xd6d8d2,{polygonOffset:false});
  const plate=add(new THREE.BoxGeometry(PLATE.w,PLATE.h,.006),[steel,steel,steel,steel,plateMat,steel],0,0,.09,'Breaker board plate',board);
  const face=.093,levers=new Map(),fitted=new Map();// fitted: the spare ways' new breakers, shown only once fitted
@@ -456,16 +485,21 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   const t=add(new THREE.PlaneGeometry(LABEL_W*.98,LABEL_H*.92),new THREE.MeshStandardMaterial(Object.assign({roughness:.85,alphaTest:.5},(()=>{const tex=tapeTexture([[`${f.no}  ${f.tape.jp}`,58,.4],[`${f.tape.en} · ${f.amps}A`,34,.76]],seed);return tex?{map:tex}:{color:0xead9a4};})())),
    L.x,labelY(L)+.001,face+.0012,'Tape label '+f.id,board);
   t.rotation.z=(hash(f.no,5)-.5)*.06;t.castShadow=false;t.userData.tape=f.id;tapes.push(t);}
- // The door, hinged on its left, swung back so its circuit list faces the room.
- const hinge=new THREE.Group();hinge.position.set(-B.w/2,0,B.d);hinge.rotation.y=-B.doorOpen*Math.PI/180;hinge.name='Breaker board door';board.add(hinge);
- add(new THREE.BoxGeometry(B.w,B.h,.012),steel,B.w/2,0,-.006,'Breaker board door panel',hinge);
- const card=add(new THREE.PlaneGeometry(.36,.45),printed(directoryTexture(),0xf4efdf),B.w/2,.02,-.0125,'Circuit list',hinge);card.rotation.y=Math.PI;card.castShadow=false;
+ // The door, hinged on its right (the bandai-wall side, so it opens away from Mrs Higa and clear of the wall), the
+ // circuit list inside it; on its face a printed staff-only card and a small latch.
+ const hinge=new THREE.Group();hinge.position.set(B.w/2,0,B.d);hinge.name='Breaker board door';board.add(hinge);
+ add(new THREE.BoxGeometry(B.w,B.h,.012),steel,-B.w/2,0,-.006,'Breaker board door panel',hinge);
+ const card=add(new THREE.PlaneGeometry(.36,.45),printed(directoryTexture(),0xf4efdf),-B.w/2,.02,-.0125,'Circuit list',hinge);card.rotation.y=Math.PI;card.castShadow=false;
+ {const S=ONSEN_SIGNS.staffOnly,tex=paint(384,128,(ctx,W,H)=>{ctx.fillStyle='#fbfaf4';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#b8342e';ctx.lineWidth=6;ctx.strokeRect(5,5,W-10,H-10);
+   ctx.fillStyle='#b8342e';ctx.textAlign='center';ctx.textBaseline='middle';line(ctx,S.lines[0],W/2,H*.34,W-30,44);line(ctx,S.lines[1],W/2,H*.72,W-30,34);});
+  const label=add(new THREE.PlaneGeometry(.24,.08),printed(tex,0xfbfaf4),-B.w/2,.17,.0006,'Staff only card',hinge);label.castShadow=false;
+  add(new THREE.BoxGeometry(.018,.06,.012),darkPlastic,-B.w+.035,0,.006,'Breaker board latch',hinge);}
  // ...and the same two ways written in on the circuit list, on one strip over its last two rows.
  {const D=DIRECTORY,rowY=py=>.45*(.5-py/D.h),y=(rowY(D.y0+6*D.step)+rowY(D.y0+7*D.step+23))/2,h=Math.abs(rowY(D.y0+6*D.step-24)-rowY(D.y0+7*D.step+40));
   const t=add(new THREE.PlaneGeometry(.33,h),new THREE.MeshStandardMaterial(Object.assign({roughness:.85,alphaTest:.5},(()=>{const tex=tapeTexture(ONSEN_FIX.circuits.map((f,i)=>[`${f.no}  ${f.tape.jp}  ${f.amps}A`,44,.3+i*.42]),97,{w:512,h:220});return tex?{map:tex}:{color:0xead9a4};})())),
    0,y,.0009,'Tape label circuit list',card);t.rotation.z=.012;t.castShadow=false;tapes.push(t);}
- // It hangs on the wall: no floor footprint, but you cannot walk through the open door.
- rect(B.x+.2,B.wallZ-.12,1.05,.24,B.y+B.h/2);
+ // It hangs over the bandai's raised floor, behind the counter: nobody walks there but Mrs Higa.
+ rect(B.wallX+B.d/2,B.z,B.d,B.w,B.y+B.h/2);
  const toWorld=(x,y,z)=>{board.updateMatrix();return new THREE.Vector3(x,y,z).applyMatrix4(board.matrix);};
 
  // ---- Lamp fixtures, each over the point light onsen.js already hangs there.
@@ -524,8 +558,8 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   // Each cord is named for its dryer, so a film can hide one dryer and its cord and keep the others.
   cord([[hx,.825,-1.016],[hx,.815,-1.04],[(hx+sx)/2,.814,-1.07],[sx,.815,-1.095],[sx,.83,-1.112],[sx,.862,-1.117]],'Hair dryer '+(i+1)+' cord');
  });
- // ---- The massage chair's 2003 spur (ONSEN_RACEWAY): white raceway round the changing
- // room and over the noren, through the wall, down to a surface socket box by the chair.
+ // ---- The massage chair's 1994 spur (ONSEN_RACEWAY): white raceway round the women's changing
+ // room, through the partition, over both noren, through the wall, down to a surface socket box by the chair.
  const RW=ONSEN_RACEWAY,rwMat=new THREE.MeshStandardMaterial({color:RW.colour,roughness:.32});
  const raceway=new THREE.Group();raceway.name=RW.name;raceway.userData.raceway=RW.id;group.add(raceway);
  const AX={x:0,y:1,z:2},axisOf=f=>f[1],signOf=f=>f[0]==='+'?1:-1;
@@ -578,7 +612,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   for(const l of lumps){const k=Math.sin(t*2*Math.PI*.7+(l.userData.side>0?Math.PI:0));l.position.set(backBox.min.x,y+.015*k,cz+l.userData.side*(.095+.012*k));l.scale.x=.24+.06*(k+1)/2;}};
  placeRollers();
  // The fan's socket, back to back with the television's on the lobby side of the wall.
- socket(3.62,.3,B.wallZ,Math.PI,'Fan socket');
+ socket(3.62,.3,hall.front-.06,Math.PI,'Fan socket');
  cord([[3.85,.004,1.222],[3.8,.004,1.33],[3.66,.004,1.47],[3.625,.03,1.505],[3.62,.15,1.515],[3.62,.28,1.517]],'Fan cord');
 
  // ---- What each circuit switches. Found once, by name, among what the room built.
@@ -630,6 +664,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   for(const [id,g] of fitted)g.visible=isFitted(id);
   for(const [id,c] of covers)c.visible=!isFitted(id);
   for(const t of tapes)t.visible=taped&&wiring==='rewired';
+  hinge.rotation.y=doorAngle*Math.PI/180;
   for(const l of ALL_LOADS){const live=running.has(l.id)&&isPowered(l.id);
    for(const name of l.meshes||[])for(const e of glow.get(name)||[])e.material.emissiveIntensity=live?e.on:0;
    for(const name of l.lights||[]){const e=lightByName.get(name);if(e)e.light.intensity=live?e.on:0;}
@@ -651,7 +686,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
    ?`Below, eight ${ONSEN_CIRCUITS[0].amps} A breakers, one for each circuit: ${list}. The last two are new and whiter than the rest, in the ways that were spare, labelled by hand on masking tape. `
    :`Below, six ${ONSEN_CIRCUITS[0].amps} A breakers, one for each circuit: ${list}; and two spare ways (予備) at the end of the lower row, blank behind white covers. `;
   action('inspect','Breaker board · Distribution board',
-   'Grandmother Higa’s breaker board, grey steel, the door left open in the evening so the levers can be read from the vanity. It hangs at shoulder height, so anyone can reach the main lever without a stool. Lever up is on. '+
+   'Grandmother Higa’s breaker board, grey steel, on the wall behind the bandai at Higa-san’s back. Its door is shut, with a printed card on it: 関係者以外さわらないでください, staff only. She can open it and reach every lever from her stool without getting up, and nobody else can reach it at all. Inside, lever up is on. '+
    `At the top, the ${B.main.amps} A main breaker: the whole bath can draw ${B.main.amps*ONSEN_VOLTS} watts at ${ONSEN_VOLTS} volts before it goes. Beside it the earth-leakage breaker, which switches everything off in a blink if ${B.elcb.milliamps} thousandths of an amp leak away to earth, through wet tiles or through a person. In a building full of water it is the most important switch here. `+
    ways+
    `A breaker protects the cable, not the hair dryer. The cable in the wall is good for ${ONSEN_CIRCUITS[0].amps} A, so the breaker opens at ${ONSEN_CIRCUITS[0].amps} A. Fit a bigger one and the cable becomes the fuse, warming up inside the wall where nobody can see it. So when the sockets trip you never fit a bigger breaker: you spread the load out.`+
@@ -662,9 +697,10 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   const o=anchor([p.x,p.y,p.z],'Reset the '+name,()=>{
    if(!isFitted(id)||!reset(id))return;
    const c=byId(id),again=c&&overloaded(id);
+   // The keeper's board: you ask, and Mrs Higa does it from her stool.
    action('inspect','Breaker · Reset',c
-    ?`You push the ${name} lever all the way down until it clicks, then up to on. `+(again?`Everything on it at once draws ${wattsOf(id)} watts: ${loadOf(id)} amps on a ${c.amps} amp breaker. Use the dryers one or two at a time, or it will go again.`:'The power comes back.')
-    :`You push the ${name} lever down until it clicks, then up to on. The whole board comes back.`);
+    ?`Higa-san turns on her stool without looking up from her account book, opens the board with one finger, pushes the ${name} lever all the way down until it clicks, then up to on, and shuts the door. `+(again?`Everything on it at once draws ${wattsOf(id)} watts: ${loadOf(id)} amps on a ${c.amps} amp breaker. Use the dryers one or two at a time, or it will go again.`:'The power comes back.')
+    :`Higa-san reaches round, pushes the ${name} lever down until it clicks, then up to on, and shuts the door. The whole board comes back.`);
   });
   o.visible=isFitted(id)&&!on.get(id);resetAnchors.set(id,o);
  }
@@ -672,7 +708,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   ?(circuitOf('dryer-2')==='changing-sockets'
    ?'Warm air and a noise like a small aeroplane. The sticker on the side says 1200 W, 100 V: twelve amps on its own. One dryer is fine on a 20 A circuit; three at once, with the massage chair going in the lobby, is thirty-eight.'
    :'Warm air and a noise like a small aeroplane. 1200 W, 100 V: twelve amps, on a 20 A circuit of its own now, number 7 on the tape. Whatever the other mirrors do, this one holds.')
-  :`Nothing. The socket under the mirror is dead: the ${nameOf(circuitOf('dryer-2'))} breaker has tripped. The board is on the wall by the lockers.`));
+  :`Nothing. The socket under the mirror is dead: the ${nameOf(circuitOf('dryer-2'))} breaker has tripped. The board is behind the bandai: ask Higa-san.`));
 
  listeners.add(apply);apply();
  // ---- What the running loads show, frame by frame. Dryers spin up and down over a
@@ -697,7 +733,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   return out;};
  const api={trip,reset,isLive,isOn,isFitted,loadOf,wattsOf,overloaded,resetAll,circuits:ONSEN_CIRCUITS,board:ONSEN_BOARD,
   switchOn,switchOff,isRunning,isWorking,runningLoads,assess,advance,settle,stage:stageScenario,scenarios:ONSEN_SCENARIOS,
-  wiring:boardWiring,circuitOf,spareWays:ONSEN_SPARE_WAYS,fix:ONSEN_FIX,raceway:ONSEN_RACEWAY,appearance,
+  wiring:boardWiring,circuitOf,spareWays:ONSEN_SPARE_WAYS,fix:ONSEN_FIX,raceway:ONSEN_RACEWAY,appearance,boardDoor,
   tv:{pin:pinLobbyChannel,get pinned(){return lobbyChannelPin();},channels:LOBBY_CHANNELS},
   /** The share of the town's indoor fill that reaches the house now (1 with its lamps on; the daylight's share when they are dead). */
   townFill:()=>townFill};

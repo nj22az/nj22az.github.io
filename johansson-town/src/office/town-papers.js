@@ -194,7 +194,7 @@ export const TOWN_PAPERS=[
     "type": "Flyer",
     "title": "Umi-no-yu notice",
     "organisation": "Town Services",
-    "text": "Harbour hot spring. Bath 10:00–22:00, adults ¥300. The footbath is free and never closes. Sodium chloride spring, 42°C at the spout — good for cold hands and long shifts on the quay. Please wash before you bathe.",
+    "text": "Harbour bath, heated sea water (shio-yu). Bath 10:00–22:00, adults ¥300, children ¥150. The footbath is free and never closes. Sea water from the harbour, heated to 42°C at the spout — good for cold hands and long shifts on the quay. Please wash before you bathe.",
     "source": "notice:Umi-no-yu notice"
   },
   {

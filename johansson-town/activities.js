@@ -733,8 +733,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const m=((getMinutes()%1440)+1440)%1440;
     if(m<600||m>=1320){show("Sea Bath · Umi-no-yu",'Higa-san is counting the day’s coins. "The bath is closed -- ten o’clock tomorrow. The footbath outside never closes."',[['Back',close]]);return;}
     if(onsenPaid()){receipt("Sea Bath · Umi-no-yu",'You have paid for today. Higa-san waves you through without looking up.');return;}
-    show("Sea Bath · Umi-no-yu",'Higa-san looks up from her crossword. Adults ¥300. A bath wrap or swimwear in the water -- it is a family bath.',[
-      ['Pay ¥300',()=>{if(!spend(300))return;state.onsenPaidDay=townDay();save();note('Bathed at Umi-no-yu.');receipt("Sea Bath · Umi-no-yu",'Three coins in the tray. "Lockers through the curtain. Wash before you get in."');}],
+    show("Sea Bath · Umi-no-yu",'Higa-san looks up from her account book. Adults ¥300. Gentlemen through the indigo noren, ladies the crimson; past the bath doors it is a bath wrap or swimwear -- the washing room and the rock bath are for everybody.',[
+      ['Pay ¥300',()=>{if(!spend(300))return;state.onsenPaidDay=townDay();save();note('Bathed at Umi-no-yu.');receipt("Sea Bath · Umi-no-yu",'Three coins in the tray. "The men’s baskets are through the indigo curtain. Wash before you get in."');}],
       ['Not today',close]]);
   }
   function onsenMilk(){
@@ -744,7 +744,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   }
   function onsenChange(){
     const swimming=getOutfit();
-    show('Lockers',swimming?'Your clothes are folded in locker 14, the key on its rubber band round your wrist.':'A locker with a brass key on a rubber band. The notice says a bath wrap or swimwear in the bath: grown-ups wrap up, children wear swimwear.',[
+    show('Baskets',swimming?'Your clothes are folded in a rattan basket on the men’s shelf; your wallet is with Higa-san at the bandai.':'A rattan basket on the men’s shelf for your clothes, and your wallet to Higa-san at the bandai. The notice says a bath wrap or swimwear past the bath doors: grown-ups wrap up, children wear swimwear.',[
       [swimming?'Get dressed':'Change for the bath',()=>{close();onOutfit(!swimming);}],['Back',close]]);
   }
   function onsen(){

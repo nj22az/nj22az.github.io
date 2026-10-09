@@ -12,7 +12,9 @@ import {ONSEN_SIGNS} from './onsen-signs.js';
  *   after the bath; the giant Hārī fan Fujita takes to the noren);
  * - Mrs Higa's rubber plant in the changing room, by the frosted bath door where the light
  *   from the bath hall's sea glass comes through, a step from the right-hand mirror's dryer;
- * - Mrs Higa's account book, open on the bandai in front of her, with its pencil.
+ * - Mrs Higa's account book, open on the bandai in front of her, with its pencil;
+ * - the men's side's small vanity: one mirror on a wall shelf, a bottle of hair tonic and a comb sterilizer
+ *   glowing blue (plugged into its own socket on the lobby circuit, onsen-electrics.js).
  *
  * Everything is data first (ONSEN_PROPS): where it stands, what it stands on, who it is
  * for and why, what it is made of in the period. The builder only draws the data, and
@@ -29,6 +31,8 @@ const plain=o=>Object.freeze(o);
 const COOLER_TOP=1.6;
 /** The lobby face of the wall between the lobby and the changing room (onsen.js: a 0.12 m wall centred on z 1.6). */
 const LOBBY_WALL=1.66;
+/** The same wall's face on the changing-room side. */
+const CHANGING_WALL=1.54;
 
 export const ONSEN_PROPS=Object.freeze({
  strawJar:plain({id:'straw-jar',name:'Straw jar',jp:'ストロー',
@@ -63,6 +67,16 @@ export const ONSEN_PROPS=Object.freeze({
   for:'Mrs Higa, who has kept it alive for twelve years; and, one evening, Thuan.',
   why:'The changing room has no window to the street (it is the middle of the house), so the brightest place is beside the frosted bath door, where the light of the bath hall’s sea glass comes through. That puts it a step from the right-hand mirror’s dryer, out of the doorway and clear of the vanity and its mirrors.',
   period:'The rubber plant (インドゴムの木) in a glazed pot on a saucer was the houseplant of Shōwa homes, offices and bathhouses: it survives steam, neglect and the occasional hair dryer. The pot is Okinawan yachimun, green glaze from the Tsuboya kilns.'}),
+
+ menVanity:plain({id:'men-vanity',name:'Men’s vanity',jp:'洗面台',
+  // A mirror over a wall shelf on the men's side of the bandai wall, between the noren and the fan.
+  wallZ:CHANGING_WALL,x:2.95,mirror:plain({w:.6,h:.75,y:1.42}),shelf:plain({w:.9,d:.2,y:1,t:.03}),
+  tonic:plain({x:2.66,r:.03,h:.17,jp:'ヘアトニック',brand:'潮風',en:'Shiokaze hair tonic'}),
+  sterilizer:plain({x:3.1,w:.2,h:.12,d:.1,jp:'くし消毒器',en:'Comb sterilizer'}),
+  socket:plain({x:3.33,y:1.12,name:'Men’s vanity socket'}),
+  for:'The men after the bath: a comb through the hair and a splash of tonic before they go back out to the lobby and the night game.',
+  why:'On the men’s side of the bandai wall, beside the doorway and out of the walk from the noren to the baskets and the bath door: one mirror is enough for the men’s side (the women’s side has three, with the dryers). Its socket is a spur off the television’s through the wall, on the lobby circuit, like the fan’s, so the sterilizer never shares the dryers’ breaker.',
+  period:'A Shōwa men’s changing room had a mirror, a big bottle of green hair tonic for anyone to use, and a small ultraviolet comb sterilizer (くし消毒器) with a blue window and the house combs standing in it. The tonic is an invented island brand, 潮風 (sea breeze).'}),
 
  accountBook:plain({id:'account-book',name:'Account book',jp:ONSEN_SIGNS.ledger.jp,
   at:Object.freeze([-3.98,FURNITURE_HEIGHTS.serviceCounter,2.62]),on:'Bandai top',yaw:-.08,w:.19,d:.28,
@@ -239,5 +253,34 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
  const body=add(new THREE.CylinderGeometry(pr,pr,.15,6).rotateZ(Math.PI/2),std(0x2f6a45,.5),0,0,0,'Account book pencil body',pencil);body.userData.restsOn='Account book spread';
  add(new THREE.ConeGeometry(pr,.02,6).rotateZ(-Math.PI/2),std(0xd9b78a,.7),.085,0,0,'Account book pencil tip',pencil);
 
- return {group,jar,taken,rack,giant,plant,book};
+ // ---- The men's vanity: mirror, shelf, tonic, comb sterilizer and its socket.
+ const V=ONSEN_PROPS.menVanity,vanity=node(V.name,0,0,0);vanity.userData.prop=V.id;
+ {const M=V.mirror,S=V.shelf,top=S.y,shelfZ=V.wallZ-S.d/2;
+  const mir=add(new THREE.BoxGeometry(M.w,M.h,.02),std(0xcfd8da,.05,{metalness:.9}),V.x,M.y,V.wallZ-.01,'Men’s mirror',vanity);mir.userData.hangsOn='Umi-no-yu wall';
+  add(new THREE.BoxGeometry(M.w+.04,M.h+.04,.012),wood,V.x,M.y,V.wallZ-.006,'Men’s mirror frame',vanity).userData.hangsOn='Umi-no-yu wall';
+  const shelf=add(new THREE.BoxGeometry(S.w,S.t,S.d),wood,V.x,top-S.t/2,shelfZ,'Men’s vanity shelf',vanity);shelf.userData.hangsOn='Umi-no-yu wall';
+  rect(V.x,shelfZ,S.w,S.d,top);// a hanging shelf at hip height: nobody walks through it
+  for(const dx of [-.35,.35])add(new THREE.BoxGeometry(.03,.14,S.d-.02),wood,V.x+dx,top-S.t-.07,shelfZ+.01,'Men’s vanity bracket',vanity).userData.hangsOn='Umi-no-yu wall';
+  // The tonic: a tall green bottle with a red cap and a paper label facing the room.
+  const T=V.tonic,bottle=add(new THREE.CylinderGeometry(T.r*.9,T.r,T.h,14),std(0x3f8f5a,.15,{transparent:true,opacity:.85}),T.x,top+T.h/2,shelfZ,'Hair tonic bottle',vanity);bottle.userData.restsOn='Men’s vanity shelf';
+  add(new THREE.CylinderGeometry(.016,.016,.03,10),std(0xb8342e,.5),T.x,top+T.h+.015,shelfZ,'Hair tonic cap',vanity).userData.restsOn='Hair tonic bottle';
+  const tonicTex=paint(128,160,(ctx,w,h)=>{ctx.fillStyle='#f4efdf';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2f6a45';ctx.fillRect(0,0,w,22);ctx.fillRect(0,h-16,w,16);ctx.fillStyle='#1f3558';ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.font=`bold 40px ${MINCHO}`;ctx.fillText(T.brand,w/2,62);ctx.font=`bold 17px ${GOTHIC}`;ctx.fillText(T.jp,w/2,112);});
+  const label=add(new THREE.PlaneGeometry(.042,.055),tonicTex?new THREE.MeshStandardMaterial({map:tonicTex,roughness:.8}):std(0xf4efdf,.8),T.x,top+T.h*.45,shelfZ-T.r*.96-.002,'Hair tonic label',vanity);label.rotation.y=Math.PI;label.castShadow=false;
+  // The comb sterilizer: a cream box with a blue ultraviolet window, the combs standing in the light.
+  const C=V.sterilizer,cz=shelfZ+.02;
+  add(new THREE.BoxGeometry(C.w,C.h,C.d),std(0xe8e0cc,.5),C.x,top+C.h/2,cz,'Comb sterilizer',vanity).userData.restsOn='Men’s vanity shelf';
+  const uv=paint(128,64,(ctx,w,h)=>{ctx.fillStyle='#9fdcff';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2b3a52';for(let i=0;i<4;i++){const x=18+i*28;ctx.fillRect(x,14,20,6);for(let t=0;t<6;t++)ctx.fillRect(x+1+t*3.2,20,1.6,26);}});
+  const lamp=add(new THREE.PlaneGeometry(C.w*.7,C.h*.5),new THREE.MeshStandardMaterial(uv?{map:uv,emissiveMap:uv,emissive:0x9fdcff,emissiveIntensity:1.1,roughness:.3}:{color:0x9fdcff,emissive:0x9fdcff,emissiveIntensity:1.1,roughness:.3}),C.x,top+C.h*.55,cz-C.d/2-.001,'Comb sterilizer lamp',vanity);lamp.rotation.y=Math.PI;lamp.castShadow=false;
+  const tag=paint(128,32,(ctx,w,h)=>{ctx.fillStyle='#e8e0cc';ctx.fillRect(0,0,w,h);ctx.fillStyle='#3a3f3c';ctx.font=`bold 18px ${GOTHIC}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(C.jp,w/2,h/2);});
+  const tg=add(new THREE.PlaneGeometry(C.w*.7,C.h*.17),tag?new THREE.MeshStandardMaterial({map:tag,roughness:.6}):std(0xe8e0cc,.6),C.x,top+C.h*.12,cz-C.d/2-.001,'Comb sterilizer tag',vanity);tg.rotation.y=Math.PI;tg.castShadow=false;
+  // Its socket on the wall above the shelf's end, and the cord down the side of the box.
+  const K=V.socket,sock=node(K.name,K.x,K.y,V.wallZ,vanity);sock.rotation.y=Math.PI;
+  add(new THREE.BoxGeometry(.07,.11,.012),std(0xeeece4,.45),0,0,.006,K.name+' plate',sock);add(new THREE.BoxGeometry(.035,.04,.022),std(0xc9cbc4,.5),0,-.02,.023,K.name+' plug',sock);
+  const pts=[[C.x+C.w/2,top+.03,cz],[C.x+C.w/2+.06,top+.02,cz+.03],[K.x-.004,top+.03,V.wallZ-.025],[K.x,top+.07,V.wallZ-.023],[K.x,K.y-.04,V.wallZ-.023]].map(p=>new THREE.Vector3(...p));
+  const cord=add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),10,.0035,5),std(0xf2f0ea,.6),0,0,0,'Comb sterilizer cord',vanity);cord.castShadow=false;
+  if(anchor)anchor([V.x,1.35,V.wallZ-.45],'Look in the men’s mirror',()=>action('inspect','The men’s mirror',
+   'One mirror, a bottle of 潮風 hair tonic for anyone who wants it, and the comb sterilizer humming blue with the house combs standing in its light. You comb your hair. It is the best it has looked all week.'));}
+
+ return {group,jar,taken,rack,giant,plant,book,vanity};
 }
