@@ -98,3 +98,11 @@ package checks passed after integrating current main a482cf3. Chromium checks at
 including the town’s ink/colour-grade settings and room lights. Front and three-
 quarter room screenshots are in `thuan-room-*.png` and `thuan-room-side-*.png`.
 `tools/avatar-room-preview.html` can preview any recipe with `?who=Name`.
+
+## Distinct visitor hairstyle
+
+The blonde Harbour visitor now defaults to the shared shoulder-length hairstyle,
+leaving Thuan’s raised swept ponytail unchanged. This uses an existing reusable
+creator part; hair colour, face and outfit stay as authored. Six focused avatar
+checks and three runtime checks passed after rebuilding. Desktop and phone
+creator captures are `visitor-hair-1280.png` and `visitor-hair-390.png`.

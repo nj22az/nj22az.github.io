@@ -10,7 +10,7 @@ import {saveResidentRecipe,residentRecipe} from '../src/avatars/wardrobe.js';
 import {POLO_COLLAR} from '../src/avatars/contrast-polo-mesh.js';
 
 test('photo-inspired adult is a complete editable recipe and survives sharing',()=>{
- const r=recipeFor('Harbour visitor');assert.equal(r.age,'adult');assert.equal(r.body.silhouette,'feminine');assert.equal(r.hair.style,'sweptponytail');assert.equal(r.outfit.top,'contrastpolo');assert.deepEqual(decodeRecipe(encodeRecipe(r)),r);assert.ok(PARTS.top.includes('contrastpolo'));assert.equal(r.freckles,false);
+ const r=recipeFor('Harbour visitor');assert.equal(r.age,'adult');assert.equal(r.body.silhouette,'feminine');assert.equal(r.hair.style,'shoulder');assert.equal(r.outfit.top,'contrastpolo');assert.deepEqual(decodeRecipe(encodeRecipe(r)),r);assert.ok(PARTS.top.includes('contrastpolo'));assert.equal(r.freckles,false);
 });
 test('outfit can be assigned independently to every female town resident and saved',()=>{
  const values=new Map(),storage={getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)};
