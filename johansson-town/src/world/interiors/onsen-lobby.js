@@ -16,20 +16,35 @@ import {ONSEN_SIGNS} from './onsen-signs.js';
  * - a raised tatami 小上がり with a chabudai, a kyūsu and cups (sit and pour), zabuton,
  *   and a small CRT on its stand that changes channel when you ask it to;
  * - the old red milk cooler, lit inside, with white, coffee and fruit milk in glass;
- * - indigo noren with ♨ and ゆ, swaying a little;
+ * - two noren into the changing rooms, crimson 女 (women, west) and indigo 男 (men, east), swaying a little;
  * - the 本日の湯 board, which names the day's bath additive by weekday, and a poster.
  *
  * What the signs say, in Japanese, is in onsen-signs.js.
  * Every canvas print has a plain-colour fallback so the room still builds without a
  * page (the room tests run in Node). Room frame as in onsen.js: street door at +z.
  */
+/** The noren's cloth: its top under the rod, its drop, and the slit between its two panels. */
+const NOREN=Object.freeze({top:2.25,h:.8,slit:.004});// the panels hang edge to edge: the slit opens when somebody parts it
+/**
+ * The two doorways from the lobby into the changing rooms, either side of a short wall (onsen.js): every town bath of the
+ * period was a 男湯 and a 女湯. The women's side is west, by the bandai (their lockers, the three mirrors and dryers, Mrs
+ * Higa's rubber plant); the men's side east, on the massage chair's side (the bench, the baskets, the fan, a mirror).
+ * `x0`..`x1` is each opening at the lobby wall (z = hall.front); `changeAt` is where a bather of that side goes to
+ * change before the bath, so a resident walks in through their own noren and out the same way (indoor-residents.js).
+ */
+export const ONSEN_DOORWAYS=Object.freeze({// what each side is called in Japanese: ONSEN_SIGNS[sign].bath
+ women:Object.freeze({side:'women',sign:'norenWomen',silhouette:'feminine',x0:-.9,x1:-.05,changeAt:Object.freeze([-3.8,0,.2])}),
+ men:Object.freeze({side:'men',sign:'norenMen',silhouette:'masculine',x0:.05,x1:.9,changeAt:Object.freeze([4,0,-.5])}),
+});
+/** Which side of the bath a person changes on: their own body's silhouette (cast.js recipes); anyone else uses the men's side. */
+export const onsenSide=recipe=>recipe?.body?.silhouette==='feminine'?'women':'men';
 export const LOBBY=Object.freeze({
  koagari:Object.freeze({x:2.45,z:2.45,w:2.4,d:1.4,h:.3}),
  tv:Object.freeze({x:3.3,z:1.95}),
 });
 /** The day's bath, by weekday (0 = Sunday): its name, and what is in the cotton bag. The board writes it in Japanese (ONSEN_SIGNS.dailyBath). */
 export const DAILY_BATH=Object.freeze([
- ["Gettō-yu",'Shell-ginger leaves'],["Yuzu-yu",'Yuzu'],["Yomogi-yu",'Mugwort'],["Hinoki-yu",'Hinoki chips'],
+ ["Gettō-yu",'Shell-ginger leaves'],["Yuzu-yu",'Yuzu'],["Fūchibā-yu",'Mugwort (fūchibā, as Okinawa calls it)'],["Hinoki-yu",'Hinoki chips'],
  ["Shio-yu",'Sea salt from the harbour'],["Shōga-yu",'Ginger'],["Shīkwāsā-yu",'Shikwasa'],
 ]);
 
@@ -193,14 +208,26 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
   for(let c=0;c<4;c++){const [body,cap]=kinds[(r+c)%3],z=2.12+c*.12;add(new THREE.CylinderGeometry(.03,.03,.13,10),new THREE.MeshStandardMaterial({color:body,roughness:.25}),4.4,.5+r*.32,z,'Milk bottle');
    add(new THREE.CylinderGeometry(.022,.028,.04,10),new THREE.MeshStandardMaterial({color:body,roughness:.25}),4.4,.585+r*.32,z,'Milk bottle neck');add(new THREE.CylinderGeometry(.023,.023,.01,10),new THREE.MeshStandardMaterial({color:cap,roughness:.6}),4.4,.61+r*.32,z,'Milk cap');}}
 
- // ---- Noren into the changing room: indigo, ♨ and ゆ, the hem stitched.
- const norenTex=paint(256,256,(ctx,w,h)=>{ctx.fillStyle='#1f3558';ctx.fillRect(0,0,w,h);ctx.fillStyle='rgba(255,255,255,.04)';for(let i=0;i<900;i++)ctx.fillRect(hash(i,1)*w,hash(i,2)*h,2,2);
-  ctx.fillStyle='#f3efe4';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 64px ${MINCHO}`;ctx.fillText(ONSEN_SIGNS.noren.mark,w/2,62);ctx.font=`bold 112px ${MINCHO}`;ctx.fillText(ONSEN_SIGNS.noren.jp,w/2,160);
-  ctx.strokeStyle='rgba(243,239,228,.75)';ctx.lineWidth=3;ctx.setLineDash?.([8,6]);ctx.beginPath();ctx.moveTo(14,h-18);ctx.lineTo(w-14,h-18);ctx.stroke();});
+ // ---- The two noren into the changing rooms (ONSEN_DOORWAYS): crimson 女 over the women's doorway, indigo 男 over the
+ // men's, ゆ small at the top, the hem stitched. Each is two panels with a slit down the middle (the gap both armies
+ // peek through); the big kanji runs across the slit, as it does on a real noren.
  const noren=[];
- const norenMat=new THREE.MeshStandardMaterial(norenTex?{map:norenTex,roughness:.9,side:THREE.DoubleSide}:{color:0x1f3558,roughness:.9,side:THREE.DoubleSide});
- for(let k=0;k<2;k++){const pivot=new THREE.Group();pivot.position.set(-.45+k*.9,2.25,R.hall.front);group.add(pivot);const p=new THREE.Mesh(new THREE.PlaneGeometry(.88,.8),norenMat);p.position.y=-.4;p.name='Noren';pivot.add(p);noren.push(pivot);}
- add(new THREE.CylinderGeometry(.02,.02,1.9,8),darkWood,0,2.26,R.hall.front,'Noren rod').rotation.z=Math.PI/2;
+ for(const D of Object.values(ONSEN_DOORWAYS)){
+  const sign=ONSEN_SIGNS[D.sign],w=D.x1-D.x0,cx=(D.x0+D.x1)/2,panel=(w-NOREN.slit)/2;
+  const tex=paint(256,256,(ctx,W,H)=>{ctx.fillStyle=sign.colour;ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(255,255,255,.04)';for(let i=0;i<900;i++)ctx.fillRect(hash(i,1)*W,hash(i,2)*H,2,2);
+   ctx.fillStyle='#f3efe4';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`bold 50px ${MINCHO}`;ctx.fillText(sign.mark,W/2,40);ctx.font=`bold 138px ${MINCHO}`;ctx.fillText(sign.jp,W/2,150);
+   ctx.strokeStyle='rgba(243,239,228,.75)';ctx.lineWidth=3;ctx.setLineDash?.([8,6]);ctx.beginPath();ctx.moveTo(14,H-18);ctx.lineTo(W-14,H-18);ctx.stroke();});
+  const m=new THREE.MeshStandardMaterial(tex?{map:tex,roughness:.9,side:THREE.DoubleSide}:{color:new THREE.Color(sign.colour),roughness:.9,side:THREE.DoubleSide});
+  for(let k=0;k<2;k++){
+   // Each panel shows its own half of the cloth's print.
+   const g=new THREE.PlaneGeometry(panel,NOREN.h),uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setX(i,(uv.getX(i)*panel+k*(panel+NOREN.slit))/w);
+   const pivot=new THREE.Group();pivot.position.set(D.x0+panel/2+k*(panel+NOREN.slit),NOREN.top,R.hall.front);pivot.name=sign.side==='women'?'Women’s noren':'Men’s noren';pivot.userData.side=sign.side;group.add(pivot);
+   const p=new THREE.Mesh(g,m);p.position.y=-NOREN.h/2;p.name='Noren';p.userData.side=sign.side;pivot.add(p);noren.push(pivot);}
+  add(new THREE.CylinderGeometry(.02,.02,w-.02,8),darkWood,cx,NOREN.top+.01,R.hall.front,'Noren rod').rotation.z=Math.PI/2;
+ }
+ // A man at the crimson noren: Mrs Higa sends him to the indigo one without looking up.
+ {const W=ONSEN_DOORWAYS.women;anchor([(W.x0+W.x1)/2,1.4,R.hall.front+.35],'Women’s side',()=>action('inspect','The women’s side',
+  'The crimson noren with the kanji for woman on it is the women’s side: their lockers, the mirrors and the hair dryers. Higa-san, without looking up from her account book: “Gentlemen through the indigo one, dear. Man is the kanji with the rice field and the strength in it.”'));}
 
  // ---- 本日の湯 board and a travel poster on the changing-room wall.
  const bathCanvas=typeof document!=='undefined'&&document.createElement?document.createElement('canvas'):null;

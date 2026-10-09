@@ -40,7 +40,7 @@ test('every prop is in the room, named, and says who it is for and why it is the
  for(const label of ['Take an uchiwa','Look at the rubber plant'])assert.ok(hits.some(h=>h.label===label),label);
  // Light for phones.
  let tris=0;for(const p of Object.values(ONSEN_PROPS))for(const m of meshes(room.getObjectByName(p.name))){const g=m.geometry;tris+=(g.index?g.index.count:g.attributes.position.count)/3;}
- assert.ok(tris<2000,'all four props in '+tris+' triangles');
+ assert.ok(tris<2000,'all the props in '+tris+' triangles');
  layout.dispose();
 });
 
@@ -87,9 +87,9 @@ test('the props sit on their surfaces and clip nothing',()=>{
 
 test('the props keep the ways, the seats, the mirrors and the people clear',()=>{
  const {room,layout}=build();
- const blocked=(x,z,r=.25)=>layout.colliders.some(c=>circleHitsRect(x,z,r,c));
- // Through the noren, across the changing room and out to the bath door; and from the bath door to the mirrors.
- for(const [x,z] of [[0,1.4],[0,.4],[-.3,-.6],[-.5,-1.2],[.4,-1.2],[-2,-.33],[-2.95,-.33],[-3.9,-.33],[-1.2,-.45]])assert.ok(!blocked(x,z),`open at ${x}, ${z}`);
+ const blocked=(x,z,r=.25)=>layout.colliders.some(c=>c.only!=='player'&&circleHitsRect(x,z,r,c));
+ // Through each noren, across its changing room and out to its bath door; and from the women's bath door to the mirrors.
+ for(const [x,z] of [[-.45,1.4],[-.45,.4],[-.3,-.6],[-.45,-1.2],[.45,1.4],[.45,.4],[.45,-1.2],[-2,-.33],[-2.95,-.33],[-3.9,-.33],[-1.2,-.45]])assert.ok(!blocked(x,z),`open at ${x}, ${z}`);
  // Only the plant pot is new under foot: it stands on the floor where a walker would really hit it.
  const P=ONSEN_PROPS.plant;assert.ok(blocked(P.at[0],P.at[2],.05),'the pot is solid');
  // The rubber plant: out of the bath doorway (x -0.8..0.8), off the vanity, in front of no mirror, a dryer's reach from the right-hand one.

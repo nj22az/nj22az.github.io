@@ -21,7 +21,7 @@ test('at rest the fixed loads run and the dryers and chair wait for somebody',()
  assert.deepEqual(BUSY.map(isRunning),[false,false,false,false]);
  assert.ok(AT_REST.includes('changing-pendant')&&AT_REST.includes('television')&&AT_REST.includes('circulation-pump'));
  const a=assess();assert.equal(circuit(a,'changing-sockets').amps,0);
- assert.ok(Math.abs(a.main.amps-8.85)<1e-9,'the house idles at 8.85 A: '+a.main.amps);
+ assert.ok(Math.abs(a.main.amps-8.91)<1e-9,'the house idles at 8.91 A: '+a.main.amps);
  assert.deepEqual(advance(3600),[],'nothing trips at rest, however long');
 });
 
@@ -40,7 +40,7 @@ test('three dryers and the chair: 38 A trips the 20 A branch, the main sees 47 A
  assert.equal(isOn('changing-sockets'),false);assert.equal(isOn('main'),true,'the main holds');
  for(const id of BUSY){assert.equal(isRunning(id),true,id+' still switched on');assert.equal(isWorking(id),false,id+' dead');}
  for(const id of ['changing-pendant','bath-lamp-west','bath-lamp-east','lobby-lamp','andon','television','milk-cooler','circulation-pump'])assert.equal(isWorking(id),true,id+' unaffected');
- assert.ok(Math.abs(assess().main.amps-8.85)<1e-9,'after the trip the main carries the rest of the house');
+ assert.ok(Math.abs(assess().main.amps-8.91)<1e-9,'after the trip the main carries the rest of the house');
  // Reset with everything still switched on, and it goes again (page 4: "Who switched on last?!").
  reset('changing-sockets');assert.equal(isLive('changing-sockets'),true);
  assert.deepEqual(settle(),['changing-sockets']);

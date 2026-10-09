@@ -6,7 +6,7 @@ import {ONSEN_SIGNS} from './interiors/onsen-signs.js';
 import {frostedGlassTexture} from './interiors/onsen-front.js';
 
 /**
- * Umi-no-yu, the town's hot spring, on the flat of the east lawn below the park mound.
+ * Umi-no-yu, the town's public bath (a 潮湯, heated sea water: Okinawa had no hot springs), on the flat of the east lawn below the park mound.
  *
  * The bathhouse faces the town with the footbath out front where anybody crossing the
  * park can sit and put their feet in; the rock bath is behind it inside a bamboo fence
@@ -86,7 +86,7 @@ function signs(group){
   ctx.fillStyle='#efe6cf';ctx.fillRect(0,0,w,h);ctx.fillStyle='#2b2520';ctx.textAlign='center';
   ctx.font=`bold 34px ${SERIF}`;ctx.fillText(ONSEN_SIGNS.notice.jp,w/2,44);
   ctx.font='16px sans-serif';
-  ['Harbour hot spring','','Bath 10:00 – 22:00','Adults ¥300 · Children ¥150','Footbath: free, any hour','','Sodium chloride spring','42°C at the spout','Towel ¥100 at the desk'].forEach((line,i)=>ctx.fillText(line,w/2,82+i*24));
+  ['Harbour bath','','Bath 10:00 – 22:00','Adults ¥300 · Children ¥150','Footbath: free, any hour','','Sea water, heated','42°C at the spout','Towel ¥100 at the desk'].forEach((line,i)=>ctx.fillText(line,w/2,82+i*24));
   ctx.fillStyle='#b3382c';ctx.font='bold 15px sans-serif';ctx.fillText('Please wash before you bathe',w/2,h-18);
  });
  const post=new THREE.Mesh(new THREE.BoxGeometry(.08,1.6,.08),new THREE.MeshStandardMaterial({color:0x43301f,roughness:.85}));
@@ -149,13 +149,13 @@ export function buildParkOnsen(world,{register,onAction,enter,sites,shadows=fals
  const anchor=(x,y,z,label,fn)=>{const o=new THREE.Object3D();o.position.set(x,y,z);group.add(o);register?.(o,label,fn);return o;};
  // Through the noren: the bathhouse is a room you walk into (interiors/onsen.js).
  const [doorX,doorZ]=ONSEN_DOOR,[outX,outZ]=ONSEN_APPROACH;
- const site={id:'onsen',title:'Umi-no-yu',jp:"Sea Bath",sub:'HOT SPRING · FAMILY BATH',x:doorX,z:doorZ,color:0x3f5f7a,accent:'#253a5e',
+ const site={id:'onsen',title:'Umi-no-yu',jp:"Sea Bath",sub:'PUBLIC BATH · SEA WATER',x:doorX,z:doorZ,color:0x3f5f7a,accent:'#253a5e',
   line:'Bath 10:00–22:00 · adults ¥300 · swimwear please',door:[doorX,0,doorZ],exitPosition:[outX,0,outZ],approachPosition:[outX,0,outZ],
   entryFacing:ONSEN.yaw,opens:'10:00'};
  sites?.push(site);
  anchor(-1.4,1.2,4.75,'Go into Umi-no-yu',()=>enter?enter(site):onAction?.('onsen'));
  register?.(notice,'Read the onsen notice',()=>onAction?.('read','Umi-no-yu notice',
-  'Harbour hot spring. Bath 10:00–22:00, adults ¥300. The footbath is free and never closes. Sodium chloride spring, 42°C at the spout — good for cold hands and long shifts on the quay. Please wash before you bathe.'));
+  'Harbour bath, heated sea water (shio-yu). Bath 10:00–22:00, adults ¥300, children ¥150. The footbath is free and never closes. Sea water from the harbour, heated to 42°C at the spout — good for cold hands and long shifts on the quay. Please wash before you bathe.'));
  // Sit on the footbath's rim with your feet in the water, looking across it.
  const [sx,sz]=onsenPoint(1.9,7.72),[tx,tz]=onsenPoint(1.9,8.5);
  const soak=anchor(1.9,.8,7.9,'Soak your feet in the footbath',()=>onAction?.('seat','Umi-no-yu footbath',

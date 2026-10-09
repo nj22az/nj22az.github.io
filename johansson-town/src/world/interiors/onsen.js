@@ -5,7 +5,7 @@ import {createAvatarAnimator} from '../../avatars/animate.js';
 import {recipeFor} from '../../avatars/cast.js';
 import {daylight} from '../../render/dusk.js';
 import {townCalendarAt} from '../../town-clock.js';
-import {buildOnsenLobby,hinokiTexture,LOBBY} from './onsen-lobby.js';
+import {buildOnsenLobby,hinokiTexture,LOBBY,ONSEN_DOORWAYS} from './onsen-lobby.js';
 import {buildWashArea,WASH_SEATS} from './onsen-wash.js';
 import {buildOnsenElectrics,isPowered,isWorking,MASSAGE_CHAIR} from './onsen-electrics.js';
 import {buildOnsenTowels} from './onsen-towels.js';
@@ -14,14 +14,19 @@ import {buildOnsenFront} from './onsen-front.js';
 import {buildOnsenProps} from './onsen-props.js';
 
 /**
- * Inside Umi-no-yu: through the noren to the bandai, the changing room, the washing
- * places and the tiled indoor bath, and out through the glass to the rock bath under the
- * sky, with a bamboo fence kept low on the sea side.
+ * Inside Umi-no-yu: past the bandai to two noren, the women's (女湯, crimson, west) and the
+ * men's (男湯, indigo, east), each into its own changing room either side of a plaster
+ * partition; through each side's own bath door to the washing places and the tiled indoor
+ * bath, and out through the glass to the rock bath under the sky, with a bamboo fence kept
+ * low on the sea side.
  *
- * Umi-no-yu is a harbour bath that lets families and couples in together, so the sign by
- * the bath door asks for a bath wrap or swimwear (湯あみ着・水着着用) -- which is how you can share
- * the water with a friend. The board, lamps and dryers are in onsen-electrics.js; towels in
- * onsen-towels.js. The pools are sunk below the floor: you walk round them and get in by the seats.
+ * Like every town bath of the period it is two baths in one building (ONSEN_DOORWAYS). The
+ * washing room and the rock bath beyond the bath doors are, for now, shared the way a 1990s
+ * health land shares its swimwear zone (水着ゾーン): bathers in swimsuits, trunks or a bath
+ * wrap (湯あみ着・水着着用), families together. Splitting the washing room with a 2 m tiled
+ * partition is the next batch. The board (behind the bandai), lamps and dryers are in
+ * onsen-electrics.js; towels in onsen-towels.js. The pools are sunk below the floor: you walk
+ * round them and get in by the seats.
  *
  * The front of the house (genkan, bandai, lobby, noren) is dressed in onsen-lobby.js; the street
  * doors, the shoes at the step and the umbrella stand are in onsen-front.js; the small things with a story
@@ -47,8 +52,20 @@ export const ONSEN_SEATS=Object.freeze({
  ...WASH_SEATS,
  indoor:{id:'indoor',label:'Get into the indoor bath',position:[3.1,0,-3.35],stand:[3.1,0,-1.66],eyeY:R.tub.floor+.78,yaw:Math.PI,surfaceY:R.tub.floor+.04,soak:true},
  rock:{id:'rock',label:'Get into the rock bath',position:[.75,0,-6.45],stand:[.75,0,-4.75],eyeY:R.pool.floor+.82,yaw:0,surfaceY:R.pool.floor+.04,soak:true},
- rockBeside:{id:'rockBeside',label:'Get into the rock bath beside the rocks',position:[-.85,0,-6.55],stand:[-.6,0,-4.78],eyeY:R.pool.floor+.82,yaw:0,surfaceY:R.pool.floor+.04,soak:true}
+ rockBeside:{id:'rockBeside',label:'Get into the rock bath beside the rocks',position:[-.85,0,-6.55],stand:[-.6,0,-4.78],eyeY:R.pool.floor+.82,yaw:0,surfaceY:R.pool.floor+.04,soak:true},
+ // Four more round the pool, so six can sit in a ring (ROCK_RING): everyone steps in at the low rocks by the door and
+ // wades to their place, the sea-side two between the first two, the east and west two along the pool's long sides.
+ ...Object.fromEntries([
+  ['rockEast','Get into the rock bath on the east side',[1.9,-6.85],[.3,-4.78]],
+  ['rockSeaEast','Get into the rock bath by the sea fence',[.45,-7.6],[0,-4.78]],
+  ['rockSeaWest','Get into the rock bath by the sea fence, west',[-.55,-7.6],[-.1,-4.78]],
+  ['rockWest','Get into the rock bath on the west side',[-2,-6.85],[-.4,-4.78]],
+ ].map(([id,label,[x,z],[sx,sz]])=>[id,{id,label,position:[x,0,z],stand:[sx,0,sz],eyeY:R.pool.floor+.82,
+  // Facing the middle of the ring (the camera's yaw: forward is (-sin, -cos)).
+  yaw:Math.atan2(-(-.05-x),-(-7-z)),surfaceY:R.pool.floor+.04,soak:true}]))
 });
+/** The six places round the rock bath, for a scene with everybody in the water (the story's last night). */
+export const ROCK_RING=Object.freeze(['rock','rockEast','rockSeaEast','rockSeaWest','rockWest','rockBeside']);
 
 function dataTexture(size,paint){
  const data=new Uint8Array(size*size*4);
@@ -89,7 +106,11 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const rect=(x,z,w,d,height=1)=>{const c={x,z,w,d,height,minY:0};colliders.push(c);return c;};
  const box=(size,pos,m,name='',parent=room)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(...size),m);b.position.set(...pos);b.castShadow=b.receiveShadow=true;b.name=name;b.userData.staticProp=true;parent.add(b);return b;};
  const cyl=(r,h,pos,m,name='',seg=16)=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg),m);c.position.set(...pos);c.castShadow=true;c.name=name;room.add(c);return c;};
- const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);return o;};
+ // Prompts on the women's side (the plant, the dryers, their notice) are not offered through the partition: while the
+ // player (a man) is in the men's changing room they are put away (tick), and back when he is anywhere else.
+ const womenSide=[];
+ const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);
+  if(pos[0]<-.05&&pos[2]<R.hall.front&&pos[2]>R.hall.changing-.05){o.userData.side='women';womenSide.push(o);}return o;};
  const seat=(spec,title,text)=>{const o=anchor([spec.position[0],.9,spec.position[2]],spec.label,()=>action('seat',title,typeof text==='function'?text():text));o.userData.seat={...spec,onsen:spec.id,pitch:spec.soak?-.05:0};return o;};
 
  const wood=mat(0xc79f6e,.7),darkWood=mat(0x6b4a2e,.75),plaster=mat(0xeee6d3,.95),stone=mat(0x8c877c,.95);
@@ -113,21 +134,41 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  wall(-5,5,-1,5);wall(1,5,5,5);wall(-1,5,1,5,.6,plaster,2.2);
  for(const x of [-5,5]){wall(x,R.hall.changing,x,5);wall(x,R.hall.bath,x,R.hall.changing,R.walls.height,wallTiles);}
  wall(-5,R.hall.front,-.9,R.hall.front);wall(.9,R.hall.front,5,R.hall.front);wall(-.9,R.hall.front,.9,R.hall.front,.55,plaster,2.25);
+ // The men's and women's sides: a short wall between the two noren, and a plaster partition from it to the bath doors.
+ const DW=ONSEN_DOORWAYS,PART=DW.men.x0-DW.women.x1;
+ box([PART,2.25,.12],[0,1.125,R.hall.front],plaster,'Umi-no-yu wall');
+ box([PART,R.walls.height,R.hall.front-R.hall.changing],[0,R.walls.height/2,(R.hall.front+R.hall.changing)/2],plaster,'Umi-no-yu wall');
  wall(-5,R.hall.changing,-.8,R.hall.changing);wall(.8,R.hall.changing,5,R.hall.changing);wall(-.8,R.hall.changing,.8,R.hall.changing,.6,plaster,2.2);
  // The bath hall's sea end is glass, so from the indoor bath you see the rocks outside.
  wall(-5,R.hall.bath,-1,R.hall.bath,.5,wallTiles);wall(1,R.hall.bath,5,R.hall.bath,.5,wallTiles);wall(-5,R.hall.bath,5,R.hall.bath,.45,plaster,2.35);
  const glass=new THREE.MeshStandardMaterial({color:0xcfe3e6,roughness:.1,transparent:true,opacity:.22,depthWrite:false});
  for(const [x0,x1] of [[-5,-1],[1,5]])box([x1-x0,1.85,.03],[(x0+x1)/2,1.425,R.hall.bath],glass,'Umi-no-yu glass');
  for(const x of [-5,-3,-1,1,3,5])box([.08,1.85,.1],[x,1.425,R.hall.bath],darkWood,'Glass mullion');
- box([.9,1.95,.04],[-.46,.98,R.hall.changing+.03],new THREE.MeshStandardMaterial({color:0xe8efee,roughness:.5,transparent:true,opacity:.55}),'Frosted sliding door');
+ // Each side's bath door: a frosted leaf in its own half of the opening, slid open behind the tiled wall on the bath-hall
+ // side, on a track over the doorway (so the doorway is clear to walk through and the leaf is not in anyone's way).
+ {const frosted=new THREE.MeshStandardMaterial({color:0xe8efee,roughness:.5,transparent:true,opacity:.55}),z=R.hall.changing-.06-.03;
+  for(const s of [-1,1]){const x=s*1.25,h=2.13;box([.82,h-.08,.02],[x,.005+h/2,z],frosted,'Frosted sliding door');
+   // Its wooden frame: two stiles and two rails round the frosted glass, so it reads as a door against the plaster.
+   for(const dx of [-.43,.43])box([.04,h,.035],[x+dx,.005+h/2,z],darkWood,'Bath door frame');for(const y of [.025,h-.015])box([.82,.04,.035],[x,.005+y,z],darkWood,'Bath door frame');
+   box([1.67,.04,.05],[s*(.05+1.67/2),2.18,z-.005],darkWood,'Bath door track');}}
  const ceiling=new THREE.Mesh(new THREE.PlaneGeometry(10,5-R.hall.bath),mat(0xe9e0cc,.95));ceiling.rotation.x=Math.PI/2;ceiling.position.set(0,R.walls.height,(5+R.hall.bath)/2);room.add(ceiling);
  for(const z of [3.8,2.1,.2,-1.9,-3.4])box([10,.1,.12],[0,R.walls.height-.05,z],darkWood,'Ceiling beam');
+ // Over the glass doorway to the rock bath, on the header facing the bath hall: the swimwear zone (ONSEN_SIGNS.swimZone).
+ {const Z=ONSEN_SIGNS.swimZone,tex=canvasSign([[Z.lines[0],1],[Z.lines[1],.62],[Z.sub,.3]],{w:640,h:256,bg:'#f4f8f6',fg:'#1f5a7a',size:84});
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(.9,.36),tex?new THREE.MeshStandardMaterial({map:tex,roughness:.8}):mat(0xf4f8f6,.8));sign.position.set(0,2.575,R.hall.bath+.065);sign.name='Swimwear zone sign';room.add(sign);
+  box([.94,.4,.012],[0,2.575,R.hall.bath+.064-.006],darkWood,'Swimwear zone sign frame');
+  reg(sign,'Read the sign over the rock-bath door',()=>action('inspect','Swimwear zone',
+   'Over the glass door: swimwear zone, mixed bathing in swimwear. Both sides come out here to the same rock bath, the way a health land shares its outdoor pool: swimsuits, trunks or a bath wrap, families together, six round the water on a busy night.'),true);}
  // A short eave over the door to the rock bath.
  box([4,.08,1.1],[0,2.6,R.hall.bath-.55],darkWood,'Outdoor eave');
  for(const x of [-1.9,1.9])cyl(.06,2.6,[x,1.3,R.hall.bath-1.05],darkWood,'Eave post',8);
  rect(-1.9,R.hall.bath-1.05,.15,.15,2.6);rect(1.9,R.hall.bath-1.05,.15,.15,2.6);
  // Room walls as colliders (the doorways are left open).
  for(const [x0,x1,z] of [[-5,-.9,R.hall.front],[.9,5,R.hall.front],[-5,-.8,R.hall.changing],[.8,5,R.hall.changing],[-5,-1,R.hall.bath],[1,5,R.hall.bath]])rect((x0+x1)/2,z,x1-x0,.2,2.8);
+ rect(0,R.hall.front,PART,.2,2.8);rect(0,(R.hall.front+R.hall.changing)/2,PART,R.hall.front-R.hall.changing,2.8);
+ // The player is a man (Johansson): the women's doorways are closed to him and to him only (`only`); the residents walk
+ // through their own side's (indoor-residents.js, by ONSEN_DOORWAYS).
+ for(const [x0,x1,z] of [[DW.women.x0,DW.women.x1,R.hall.front],[-.8,-.05,R.hall.changing]])rect((x0+x1)/2,z,x1-x0,.2,2.8).only='player';
 
  // ---- Genkan and bandai.
  rect(-4.8,4.51,.4,1.05,1.4);
@@ -142,7 +183,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const higa=typeof document!=='undefined'&&document.createElement?buildAvatar(recipeFor('Mrs Higa'),{shadows:true,faceSize:256}):null,higaMotion=higa&&createAvatarAnimator(higa);if(higa)attendant.add(higa.root);
  anchor([-3.5,1.25,2.55],'Pay at the bandai · ¥300',()=>action('onsen-pay'));
  anchor([-3.5,1.25,3.1],'Talk to the attendant',()=>action('inspect','Umi-no-yu attendant',
-  'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her account book. "A bath wrap or swimwear in the bath, please -- it is a family bath. The rock bath is best after dark."'));
+  'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her account book. "Gentlemen through the indigo noren, ladies the crimson. Past the bath doors it is swimwear or a bath wrap, please: the washing room and the rock bath are for everybody. The rock bath is best after dark."'));
  // The price board on the counter's front, under the top (ONSEN_SIGNS.fee): read from the genkan while you count your
  // coins, and never between Mrs Higa's face and the people she is talking to.
  const fee=canvasSign(ONSEN_SIGNS.fee.lines.map((text,i)=>[text,i?.5:1]),{w:384,h:192,bg:'#fbf6ea',size:60});
@@ -172,7 +213,9 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // ---- Changing room.
  for(let i=0;i<6;i++)for(let r=0;r<2;r++){const z=1.25-i*.42;box([.45,.9,.4],[-4.75,.45+r*.95,z],mat(0xb9b2a0,.45),'Locker');box([.02,.12,.08],[-4.52,.55+r*.95,z+.12],mat(0xc9a13c,.3),'Locker key');}
  rect(-4.75,-.1,.5,2.6,1.9);
- anchor([-4.2,1.2,.2],'Change at the lockers',()=>action('onsen-change'));
+ // The women's side keeps the lockers, the vanity and the scales; the men change at the rattan baskets on the east wall,
+ // which is where the player (a man) changes.
+ anchor([4.2,1.2,.2],'Change at the baskets',()=>action('onsen-change'));
  for(let r=0;r<3;r++){box([.5,.03,2.4],[4.72,.35+r*.55,.2],wood,'Basket shelf');for(let i=0;i<4;i++)box([.4,.22,.4],[4.68,.48+r*.55,-.7+i*.6],mat(0xc9a36a,.9),'Rattan basket');}
  rect(4.72,.2,.5,2.45,1.6);
  box([2.2,.08,.42],[2.1,.42,.25],wood,'Changing bench');for(const x of [1.15,3.05])box([.08,.38,.36],[x,.19,.25],darkWood,'Bench leg');
@@ -186,15 +229,18 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const fanHead=new THREE.Group();fanHead.position.y=1.12;fan.add(fanHead);
  fanHead.add(new THREE.Mesh(new THREE.TorusGeometry(.18,.01,6,24),mat(0x8fb3c6,.5)));const blades=new THREE.Mesh(new THREE.CircleGeometry(.16,5),mat(0x9fc6d8,.5,{side:THREE.DoubleSide,transparent:true,opacity:.7}));fanHead.add(blades);
  rect(3.85,1.2,.35,.35,1.3);
- // The family-bath rule: adults in a bath wrap (yuamigi) or swimwear, children in swimwear.
+ // The rule past the bath doors, by each side's door: the washing room and the rock bath are shared, so adults wear a
+ // bath wrap (yuamigi) or swimwear and children swimwear.
  const swim=(()=>{if(typeof document==='undefined'||!document.createElement)return null;const c=document.createElement('canvas');c.width=640;c.height=248;const ctx=c.getContext?.('2d');if(!ctx||!ctx.fillRect)return null;
   ctx.fillStyle='#fbf6ea';ctx.fillRect(0,0,640,248);ctx.fillStyle='#8a2f22';ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.font='bold 64px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText('湯あみ着・水着着用',320,98);
-  ctx.font='bold 25px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText('FAMILY BATH · BATH WRAP OR SWIMWEAR',320,192);
+  ctx.font='bold 25px "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';ctx.fillText('BEYOND THIS DOOR · BATH WRAP OR SWIMWEAR',320,192);
   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;})();
- const swimSign=new THREE.Mesh(new THREE.PlaneGeometry(.8,.31),swim?new THREE.MeshStandardMaterial({map:swim,roughness:.8}):plaster);swimSign.position.set(1.6,1.6,R.hall.changing+.07);room.add(swimSign);
- reg(swimSign,'Read the notice by the bath door',()=>action('inspect',"Bath wrap or swimwear · Family bath",
-  'Umi-no-yu is a family bath: husbands and wives, grandparents and children, friends from work, all in the same water. Adults wear a yuamigi, the bath wrap, or swimwear; children wear swimwear. Wash before you get in. No towels in the bath: hang yours on the rail by the door. Rock bath until 22:00.'),true);
+ for(const [x,w,side] of [[1.6,.8,'men'],[-1.24,.6,'women']]){
+  const swimSign=new THREE.Mesh(new THREE.PlaneGeometry(w,w*.31/.8),swim?new THREE.MeshStandardMaterial({map:swim,roughness:.8}):plaster);swimSign.position.set(x,1.6,R.hall.changing+.07);swimSign.name='Bath door notice';swimSign.userData.side=side;room.add(swimSign);
+  const read=side==='women'?(label,fn)=>anchor([x,1.6,R.hall.changing+.12],label,fn):(label,fn)=>reg(swimSign,label,fn,true);
+  read('Read the notice by the bath door',()=>action('inspect',"Bath wrap or swimwear · Past the bath doors",
+   'Men change on the indigo side, women on the crimson. Past the bath doors the washing room and the rock bath are for everybody, like a health land’s swimwear zone: grown-ups wear a yuamigi, the bath wrap, or swimwear; children wear swimwear. Wash before you get in. No towels in the bath: hang yours on the rail by the door. Rock bath until 22:00.'));}
 
  // ---- Bath hall: the washing places along the west wall, the indoor bath along the east.
  // The arai-ba, sentō-style: a tiled ledge of taps along the wall and an island down the middle (onsen-wash.js).
@@ -230,6 +276,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  rect(P.x,P.z,P.rx*2+.3,P.rz*2+.25,.5);
  seat(ONSEN_SEATS.rock,'Rock bath','You find the smooth step under the water and sit. The water is up to your chest and the night air is on your head. Over the low fence the harbour lights come and go in the steam.');
  seat(ONSEN_SEATS.rockBeside,'Rock bath','The other side of the rock bath, with your back to a warm boulder.');
+ for(const id of ['rockEast','rockSeaEast','rockSeaWest','rockWest'])seat(ONSEN_SEATS[id],'Rock bath','You step in over the low rocks by the door and wade to a place on the far side. Everyone in the water faces everyone else; the steam does the talking.');
  // Bamboo fence, tall to the sides, low on the sea side; the sea and sky beyond it.
  const bamboo=new THREE.CylinderGeometry(.035,.035,1,8),bambooMat=mat(0x9c8a52,.7);
  const posts=[];for(const x of [-4.95,4.95])for(let z=R.hall.bath-.1;z>R.walls.minZ;z-=.075)posts.push([x,z,2.2]);
@@ -268,7 +315,9 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   time+=dt;
   const day=daylight(minutes),night=1-day;
   lobby.tick(dt,minutes,day,townCalendarAt(minutes).weekday);
-  front.update(dt,minutes,people());front.light(day);
+  const here=people();front.update(dt,minutes,here);front.light(day);
+  const me=here.find(p=>p.name==null),inMen=!!me&&me.x>.05&&me.z<R.hall.front&&me.z>R.hall.changing;
+  for(const o of womenSide)o.visible=!inMen;
   seaMat.color.setRGB(.25+.75*day,.3+.7*day,.45+.55*day);
   power.tick(day,dt);lanternGlow.emissiveIntensity=night*1.4;outdoor.intensity=night*5;
   for(const s of steam){const u=(s.userData.phase+time*s.userData.speed)%1,[x,y,z]=s.userData.base;s.position.set(x+Math.sin(u*6+x)*.15,y+.1+u*1.4,z);s.scale.setScalar(.35+u*.9);s.material.opacity=.3*Math.sin(u*Math.PI)*(.55+.45*night);}
@@ -280,5 +329,5 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   higaMotion?.update(dt,{speed:0,seated:true,seatHeight:.4,pose:Math.floor(time/9)%3===2?'Sit':'SitHold',expression:'neutral'});
  }
  tick(0);
- return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,power,townFill:power.townFill,tv:lobby.tv,streetDoor:front.door,genkan:front.genkan,dispose(){power.dispose();front.dispose();}};
+ return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,doorways:ONSEN_DOORWAYS,power,townFill:power.townFill,tv:lobby.tv,streetDoor:front.door,genkan:front.genkan,dispose(){power.dispose();front.dispose();}};
 }

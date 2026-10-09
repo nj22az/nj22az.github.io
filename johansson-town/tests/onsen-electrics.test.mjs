@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {buildOnsenInterior,ONSEN_ROOM} from '../src/world/interiors/onsen.js';
-import {ONSEN_CIRCUITS,ONSEN_BOARD,ONSEN_VOLTS,loadOf,wattsOf,overloaded,trip,reset,resetAll,isLive,isOn,isPowered} from '../src/world/interiors/onsen-electrics.js';
+import {ONSEN_CIRCUITS,ONSEN_BOARD,ONSEN_VOLTS,ONSEN_SCENARIOS,loadOf,wattsOf,overloaded,trip,reset,resetAll,isLive,isOn,isPowered,boardDoor,stageScenario} from '../src/world/interiors/onsen-electrics.js';
 import {ONSEN_TOWELS,TOWEL_PRICE} from '../src/world/interiors/onsen-towels.js';
 import {FEED_PLACES} from '../src/feed/places.js';
 import {measure} from '../src/avatars/build.js';
@@ -100,23 +100,55 @@ test('the board reads well: inspect text, labels in data, and the audit hook onl
  ({layout}=build());layout.dispose();
 });
 
-test('the cabinet hangs on the changing-room side of the bandai wall, in the room, clear of the lockers',()=>{
- resetAll();const {room,layout}=build();
+test('the cabinet hangs behind the bandai, its door shut, every lever in Mrs Higa\'s reach from her stool and nobody else\'s',()=>{
+ resetAll();stageScenario('rest');const {room,layout}=build();
  const board=room.getObjectByName('Breaker board'),box=new THREE.Box3().setFromObject(board);
- const B=ONSEN_ROOM.bounds;
- assert.ok(box.min.x>B.minX&&box.max.x<B.maxX&&box.min.z>ONSEN_ROOM.hall.changing&&box.max.z<=ONSEN_ROOM.hall.front);
- assert.ok(Math.abs(box.max.z-ONSEN_BOARD.wallZ)<.002,'its back is on the wall face');
- assert.ok(box.min.y>.6&&box.max.y<1.5,'hung low enough to work, above the knees: '+box.min.y.toFixed(2)+'–'+box.max.y.toFixed(2));
- for(const o of meshes(room).filter(m=>m.name==='Locker'))assert.ok(!new THREE.Box3().setFromObject(o).intersectsBox(box),'clear of the lockers');
- // Every lever, the spare ways' new breakers included, is within a town figure's reach: the shortest who works it
- // (Mrs Higa) gets her mitten to the main with her arm up, the electrician at 30–50° above level.
- for(const who of ['Mrs Higa','Tetsuo']){const m=measure(recipeFor(who)),reach=m.shoulderY+m.upper+m.fore+m.hand/2;
-  for(const id of ['main','elcb',...ONSEN_CIRCUITS.map(c=>c.id),'vanity-2','vanity-3']){const y=room.getObjectByName('Breaker lever '+id).getWorldPosition(new THREE.Vector3()).y;
-   assert.ok(y<=reach,`${who} reaches the ${id} lever at ${y.toFixed(2)} m (mitten ${reach.toFixed(2)} m)`);assert.ok(y>.85,id+' lever above the waist: '+y.toFixed(2));}}
- // The open cabinet and its door touch nothing but the wall it hangs on.
- const own=new Set(meshes(board)),shrunk=box.clone().expandByScalar(-.002);
- for(const o of meshes(room)){if(own.has(o)||/^(Umi-no-yu wall|Umi-no-yu floor)$/.test(o.name))continue;const ob=new THREE.Box3().setFromObject(o);if(ob.isEmpty())continue;
-  assert.ok(!shrunk.intersectsBox(ob),'the board clips '+(o.name||o.type));}
+ // In the keeper's corner: over the bandai's raised floor, behind the counter, on the lobby's west wall.
+ const platform=new THREE.Box3().setFromObject(room.getObjectByName('Bandai platform')),counter=new THREE.Box3().setFromObject(room.getObjectByName('Bandai counter'));
+ assert.ok(box.min.z>ONSEN_ROOM.hall.front&&box.max.x<counter.min.x,'in the lobby, behind the counter');
+ assert.ok(box.min.z>=counter.min.z&&box.max.z<=platform.max.z&&box.max.x<platform.max.x,'in the keeper\'s corner, over the bandai floor, the counter between it and the lobby');
+ assert.ok(Math.abs(box.min.x-ONSEN_BOARD.wallX)<.002,'its back is on the wall face');
+ assert.ok(box.max.y<1.95&&box.max.y>1.8,'its top where a Japanese board hangs: '+box.max.y.toFixed(3));
+ // Shut at rest, with the staff-only card on it; open only while someone works inside it.
+ assert.equal(boardDoor(),0);assert.equal(room.getObjectByName('Breaker board door').rotation.y,0,'the door is shut');
+ assert.ok(room.getObjectByName('Staff only card'),'関係者以外 on the door');
+ for(const name of ['isolated','fitting','fixed']){assert.equal(ONSEN_SCENARIOS[name].board,'open',name+' opens it');}
+ for(const name of ['rest','quiet','rush','busy'])assert.ok(!ONSEN_SCENARIOS[name].board,name+' leaves it shut');
+ // Mrs Higa reaches every lever from her stool: arm and a lean from the hip (ONSEN_BOARD.keeper), from the nearer shoulder.
+ const K=ONSEN_BOARD.keeper,m=measure(recipeFor(K.who)),arm=m.upper+m.fore+m.hand/2,reach=arm+(m.shoulderY-m.hipY)*Math.sin(K.lean*Math.PI/180);
+ const shoulderY=K.seat[1]+m.seatDrop+m.shoulderY-m.hipY,shoulders=[-1,1].map(s=>new THREE.Vector3(K.seat[0],shoulderY,K.seat[2]+s*m.shoulderX));
+ const standing=[-1,1].map(s=>new THREE.Vector3(K.stand[0],K.stand[1]+m.shoulderY,K.stand[2]+s*m.shoulderX));
+ const branches=[...ONSEN_CIRCUITS.map(c=>c.id),'vanity-2','vanity-3'],levers=['main','elcb',...branches];
+ const lever=id=>room.getObjectByName('Breaker lever '+id).getWorldPosition(new THREE.Vector3());
+ for(const id of branches){const d=Math.min(...shoulders.map(s=>s.distanceTo(lever(id))));
+  assert.ok(d<=reach,`Mrs Higa reaches the ${id} lever from her stool: ${d.toFixed(2)} m (reach ${reach.toFixed(2)} m)`);}
+ for(const id of levers){const d=Math.min(...standing.map(s=>s.distanceTo(lever(id))));
+  assert.ok(d<=reach,`standing on the bandai floor she reaches the ${id} lever: ${d.toFixed(2)} m`);}
+ // The board stands on the bandai floor's edge of the stool, not where she stands: her standing place is clear.
+ assert.ok(!new THREE.Box3().setFromObject(room.getObjectByName('Attendant stool')).containsPoint(new THREE.Vector3(K.stand[0],K.stand[1]+.1,K.stand[2])),'she can stand beside her stool');
+ // Nobody on the customer side can reach it: the counter is in the way.
+ const customer=new THREE.Vector3(counter.max.x+.3,1.3,2.35),tall=measure(recipeFor('Tetsuo'));
+ for(const id of levers)assert.ok(customer.distanceTo(room.getObjectByName('Breaker lever '+id).getWorldPosition(new THREE.Vector3()))>tall.upper+tall.fore+tall.hand+.35,'out of a customer\'s reach: '+id);
+ // The shut cabinet, and the open one, touch nothing but the wall it hangs on (the levers stay inside the shut door).
+ for(const state of ['shut','open']){boardDoor(state);
+  const now=new THREE.Box3().setFromObject(board),own=new Set(meshes(board)),shrunk=now.clone().expandByScalar(-.002);
+  // Mrs Higa is checked vertex by vertex below: her box is far bigger than she is.
+  const higa=room.getObjectByName('Umi-no-yu attendant'),hers=new Set(higa?meshes(higa):[]);
+  for(const o of meshes(room)){if(own.has(o)||hers.has(o)||/^(Umi-no-yu wall|Umi-no-yu floor)$/.test(o.name))continue;const ob=new THREE.Box3().setFromObject(o);if(ob.isEmpty())continue;
+   assert.ok(!shrunk.intersectsBox(ob),state+': the board clips '+(o.name||o.type));}
+  if(state==='shut'){const door=new THREE.Box3().setFromObject(room.getObjectByName('Breaker board door panel'));
+   const tips=new THREE.Box3();for(const id of levers)tips.union(new THREE.Box3().setFromObject(room.getObjectByName('Breaker lever '+id)));
+   assert.ok(tips.max.x<door.min.x,'the levers stay behind the shut door: '+tips.max.x.toFixed(3)+' < '+door.min.x.toFixed(3));}}
+ boardDoor('shut');assert.throws(()=>boardDoor(200),/opens from 0/);
+ // Her head and bun clear the board through her whole loop at the bandai (reading, then looking up), door shut or open.
+ const higa=room.getObjectByName('Umi-no-yu attendant');
+ if(higa&&meshes(higa).length)for(const state of ['shut','open']){boardDoor(state);room.updateMatrixWorld(true);const v=new THREE.Vector3();
+  // Each part of the board on its own (the open door's box is a thin slab; the board's whole box would take in her shoulder).
+  const parts=meshes(board).map(m=>new THREE.Box3().setFromObject(m).expandByScalar(-.001)).filter(b=>!b.isEmpty()),solid={containsPoint:p=>parts.some(b=>b.containsPoint(p))};
+  for(let f=0;f<30*28;f++){layout.tick(1/30,1170);if(f%30)continue;room.updateMatrixWorld(true);
+   for(const o of meshes(higa)){const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);if(o.isSkinnedMesh)o.applyBoneTransform(i,v);v.applyMatrix4(o.matrixWorld);
+    assert.ok(!solid.containsPoint(v),`Mrs Higa (${o.name}) passes into the board at ${v.toArray().map(n=>n.toFixed(3))}, door ${state}`);}}}}
+ boardDoor('shut');
  layout.dispose();
 });
 
@@ -168,8 +200,8 @@ test('towels: rental stacks by the bandai, a rail by the bath door, one on the b
   }
  }
  // The rental shelf and the rail do not block the way through or the bath door.
- const blocked=(x,z,r)=>layout.colliders.some(c=>Math.abs(x-c.x)<c.w/2+r&&Math.abs(z-c.z)<c.d/2+r);
- for(const z of [3,1.6,0,-1.2])assert.ok(!blocked(.2,z,.25),'the middle stays open at '+z);
+ const blocked=(x,z,r)=>layout.colliders.some(c=>c.only!=='player'&&Math.abs(x-c.x)<c.w/2+r&&Math.abs(z-c.z)<c.d/2+r);
+ for(const x of [-.45,.45])for(const z of [3,1.6,0,-1.2])assert.ok(!blocked(x,z,.25),'the way through each side stays open at '+x+', '+z);
  layout.dispose();
 });
 

@@ -6,6 +6,8 @@ import {createRoomWalk,atDestination} from './room-walk.js';
 import {izakayaJob} from './izakaya-hours.js';
 import {ONSEN_DOOR,ONSEN_ENTRY_RADIUS} from '../world/onsen-layout.js';
 import {ONSEN_SEATS} from '../world/interiors/onsen.js';
+import {ONSEN_DOORWAYS,onsenSide} from '../world/interiors/onsen-lobby.js';
+import {recipeFor} from '../avatars/cast.js';
 import {SATO_GUEST_SEATS,SATO_COOK,SATO_ROOM} from '../world/sato-ramen-layout.js';
 
 /** Minato's guest seats as seat records: the five counter stools, the table bench, the far end. */
@@ -49,10 +51,12 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   }
   if(sato&&name==='Mrs Sato')return {position:[...SATO_COOK.position],stand:[...SATO_COOK.position],yaw:SATO_COOK.yaw,staff:true};
   if(place==='izakaya'&&name==='Thao')return {position:[3.5,0,-3.8],stand:[3.5,0,-3.8],yaw:Math.PI,staff:true};
-  // Umi-no-yu: into the rock bath by the sea wall, leaving the other side for the player.
+  // Umi-no-yu: into the rock bath by the sea wall, leaving the other side for the player. Everyone goes in through
+  // their own side's noren and changes there (ONSEN_DOORWAYS: by the body's silhouette in its recipe), then out through
+  // that side's bath door; they come back the same way. `via` is the walk's waypoints before the seat.
   if(place==='onsen'){
-   const seat=ONSEN_SEATS[getPlayerSeat()==='rockBeside'?'rock':'rockBeside'];
-   return {...seat,height:seat.surfaceY,soak:true};
+   const seat=ONSEN_SEATS[getPlayerSeat()==='rockBeside'?'rock':'rockBeside'],side=onsenSide(recipeFor(name));
+   return {...seat,height:seat.surfaceY,soak:true,side,via:[ONSEN_DOORWAYS[side].changeAt]};
   }
   const seats=sato?SATO_GUEST_SEATS:place==='market'?STORE_SEATS:IZAKAYA_GUEST_SEATS;
   if(place==='izakaya'&&name==='Barfly'){
@@ -65,6 +69,13 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
   const index=seats.findIndex((s,i)=>(place!=='market'||i>=2&&s.id!==mine)&&!taken(s)&&![...borrowed.values()].some(v=>v.index===i&&!v.seat.staff));
   if(index<0)return null;const seat=seats[index];
   return {...seat,index,stand:seat.stand||[1.16,0,seat.position[2]]};
+ }
+ // A walk through waypoints: `via` in order, then `to`; going out, the same waypoints backwards. Returns true on arrival.
+ function walkVia(p,saved,via,to,dt,dir){
+  if(saved.leg?.dir!==dir)saved.leg={dir,i:0};
+  const points=[...(dir==='out'?[...via].reverse():via),to];
+  if(saved.leg.i<points.length&&walk(p,points[saved.leg.i],dt))saved.leg.i++;
+  return saved.leg.i>=points.length;
  }
  const hasSeat=seat=>Number.isFinite(seat.surfaceY)||Number.isFinite(seat.height);
  const seatHeight=(seat,g)=>Number.isFinite(seat.surfaceY)?seat.surfaceY-g.position.y:seat.height;
@@ -98,9 +109,10 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
    }
    g.visible=true;g.userData.hit.inside=true;g.userData.indoors=place;
    g.userData[place==='ramen'?'inRamen':place==='market'?'inMarket':place==='onsen'?'inOnsen':'inIzakaya']=true;g.userData.place=place;
-   // Changed at the lockers by the door. Umi-no-yu is a family bath, so nobody bathes bare:
-   // grown-ups wrap up in one of the bath's yuamigi (bath wraps) with a towel on the head,
-   // children and teenagers wear swimwear. 'bath' asks each body for its own (build.js bathOutfit).
+   // Changed on their own side (the women at the lockers, the men at the baskets). Past the bath doors the washing room
+   // and the rock bath are shared, a swimwear zone, so nobody bathes bare: grown-ups wrap up in one of the bath's yuamigi
+   // (bath wraps) with a towel on the head, children and teenagers wear swimwear. 'bath' asks each body for its own
+   // (build.js bathOutfit).
    if(place==='onsen')g.userData.outfit='bath';
    // Closed Minato: whoever is there works through their cleaning stations
    // (izakaya-hours.js), walking from one to the next; when the job ends they go back
@@ -129,9 +141,9 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     if(saved.phase==='standing'){
      saved.blend=Math.max(0,saved.blend-dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);chairPose(g,seat,saved.blend);if(saved.blend===0){for(const key of ['seatHeight','chairBlend','socialPose'])delete g.userData[key];if(saved.pending){saved.seat=saved.pending;saved.index=saved.pending.index;delete saved.pending;saved.phase='arriving';}else saved.phase='leaving';}
     }else if(saved.phase==='leaving'){
-     if(walk(p,entrance,dt))restore(p);
+     if(walkVia(p,saved,seat.via||[],entrance,dt,'out'))restore(p);
     }else if(saved.phase==='arriving'){
-     if(walk(p,seat.stand,dt)){g.rotation.set(0,seat.yaw,0);saved.phase=seat.standing?'seated':'sitting';}
+     if(walkVia(p,saved,seat.via||[],seat.stand,dt,'in')){g.rotation.set(0,seat.yaw,0);saved.phase=seat.standing?'seated':'sitting';}
     }else if(saved.phase==='sitting'){
      saved.blend=Math.min(1,saved.blend+dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);chairPose(g,seat,saved.blend);if(saved.blend===1)saved.phase='seated';
     }
