@@ -26,10 +26,10 @@
 <link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
 <link rel="stylesheet" href="./context-rail.css?h=989b4888">
 <link rel="stylesheet" href="./line-ui.css?h=9efe343d">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-Dc49u0fk.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-BfZwJ8hM.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-BJJ0w3BS.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-CLyVg8H9.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-B8B1I7B5.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-CSOV2N07.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/actors-C6ovhl5D.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-ygTjb9SR.js">
@@ -550,7 +550,7 @@ import {unlockTownAudio} from './runtime/audio-83dQfoLt.js';
     try{
       // Let the browser paint the first fact before constructing the town.
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      try { await import('./runtime/boot-Dc49u0fk.js'); } catch (error) {
+      try { await import('./runtime/boot-BfZwJ8hM.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

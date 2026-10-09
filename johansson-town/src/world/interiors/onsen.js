@@ -106,7 +106,11 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const rect=(x,z,w,d,height=1)=>{const c={x,z,w,d,height,minY:0};colliders.push(c);return c;};
  const box=(size,pos,m,name='',parent=room)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(...size),m);b.position.set(...pos);b.castShadow=b.receiveShadow=true;b.name=name;b.userData.staticProp=true;parent.add(b);return b;};
  const cyl=(r,h,pos,m,name='',seg=16)=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg),m);c.position.set(...pos);c.castShadow=true;c.name=name;room.add(c);return c;};
- const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);return o;};
+ // Prompts on the women's side (the plant, the dryers, their notice) are not offered through the partition: while the
+ // player (a man) is in the men's changing room they are put away (tick), and back when he is anywhere else.
+ const womenSide=[];
+ const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);
+  if(pos[0]<-.05&&pos[2]<R.hall.front&&pos[2]>R.hall.changing-.05){o.userData.side='women';womenSide.push(o);}return o;};
  const seat=(spec,title,text)=>{const o=anchor([spec.position[0],.9,spec.position[2]],spec.label,()=>action('seat',title,typeof text==='function'?text():text));o.userData.seat={...spec,onsen:spec.id,pitch:spec.soak?-.05:0};return o;};
 
  const wood=mat(0xc79f6e,.7),darkWood=mat(0x6b4a2e,.75),plaster=mat(0xeee6d3,.95),stone=mat(0x8c877c,.95);
@@ -234,8 +238,9 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;})();
  for(const [x,w,side] of [[1.6,.8,'men'],[-1.24,.6,'women']]){
   const swimSign=new THREE.Mesh(new THREE.PlaneGeometry(w,w*.31/.8),swim?new THREE.MeshStandardMaterial({map:swim,roughness:.8}):plaster);swimSign.position.set(x,1.6,R.hall.changing+.07);swimSign.name='Bath door notice';swimSign.userData.side=side;room.add(swimSign);
-  reg(swimSign,'Read the notice by the bath door',()=>action('inspect',"Bath wrap or swimwear · Past the bath doors",
-   'Men change on the indigo side, women on the crimson. Past the bath doors the washing room and the rock bath are for everybody, like a health land’s swimwear zone: grown-ups wear a yuamigi, the bath wrap, or swimwear; children wear swimwear. Wash before you get in. No towels in the bath: hang yours on the rail by the door. Rock bath until 22:00.'),true);}
+  const read=side==='women'?(label,fn)=>anchor([x,1.6,R.hall.changing+.12],label,fn):(label,fn)=>reg(swimSign,label,fn,true);
+  read('Read the notice by the bath door',()=>action('inspect',"Bath wrap or swimwear · Past the bath doors",
+   'Men change on the indigo side, women on the crimson. Past the bath doors the washing room and the rock bath are for everybody, like a health land’s swimwear zone: grown-ups wear a yuamigi, the bath wrap, or swimwear; children wear swimwear. Wash before you get in. No towels in the bath: hang yours on the rail by the door. Rock bath until 22:00.'));}
 
  // ---- Bath hall: the washing places along the west wall, the indoor bath along the east.
  // The arai-ba, sentō-style: a tiled ledge of taps along the wall and an island down the middle (onsen-wash.js).
@@ -310,7 +315,9 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   time+=dt;
   const day=daylight(minutes),night=1-day;
   lobby.tick(dt,minutes,day,townCalendarAt(minutes).weekday);
-  front.update(dt,minutes,people());front.light(day);
+  const here=people();front.update(dt,minutes,here);front.light(day);
+  const me=here.find(p=>p.name==null),inMen=!!me&&me.x>.05&&me.z<R.hall.front&&me.z>R.hall.changing;
+  for(const o of womenSide)o.visible=!inMen;
   seaMat.color.setRGB(.25+.75*day,.3+.7*day,.45+.55*day);
   power.tick(day,dt);lanternGlow.emissiveIntensity=night*1.4;outdoor.intensity=night*5;
   for(const s of steam){const u=(s.userData.phase+time*s.userData.speed)%1,[x,y,z]=s.userData.base;s.position.set(x+Math.sin(u*6+x)*.15,y+.1+u*1.4,z);s.scale.setScalar(.35+u*.9);s.material.opacity=.3*Math.sin(u*Math.PI)*(.55+.45*night);}

@@ -63,6 +63,18 @@ test('the women keep the vanity, the three dryers, the lockers and the plant; th
  layout.dispose();
 });
 
+test('the women’s side’s prompts are not offered through the partition to a man in the men’s changing room',()=>{
+ let me={name:null,x:0,z:4.2};const room=new THREE.Group(),hits=[];
+ const layout=buildOnsenInterior({room,reg:(o,label)=>hits.push({o,label}),action(){},exit(){},people:()=>[me]});
+ const women=hits.filter(h=>h.o.userData.side==='women');
+ for(const label of ['Look at the rubber plant','Use a hair dryer','Read the notice by the bath door'])assert.ok(women.some(h=>h.label===label),label+' is a women’s-side prompt');
+ assert.ok(!hits.some(h=>h.o.userData.side==='women'&&h.o.position.x>0),'none of them on the men’s side');
+ layout.tick(1/30,1170);assert.ok(women.every(h=>h.o.visible),'offered from the lobby');
+ me={name:null,x:.6,z:-.5};layout.tick(1/30,1170);assert.ok(women.every(h=>!h.o.visible),'put away while he is on the men’s side');
+ me={name:null,x:.3,z:-2.5};layout.tick(1/30,1170);assert.ok(women.every(h=>h.o.visible),'back in the bath hall');
+ layout.dispose();
+});
+
 test('everyone reaches their own changing room and the baths; the player (a man) never the women’s side',()=>{
  const {layout}=build();
  const B=ONSEN_ROOM.bounds,resident=blockedFor(layout,'resident'),player=blockedFor(layout,'player');
