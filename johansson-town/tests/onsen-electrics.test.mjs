@@ -221,7 +221,8 @@ test('with the main off the lobby goes dark (only the dusk through the glass), a
  const before={andon:glow('Andon'),cooler:glow('Milk cooler light'),lamp:room.getObjectByName('Lobby light').intensity};
  assert.ok(before.andon>0&&before.cooler>0&&before.lamp>0);
  // The same frame the main goes down: lamps, andon, cooler and screen out, and the fill falls far below the lit house.
- assert.equal(layout.townFill(),1,'with the lamps on the town\'s indoor fill is untouched');
+ // With the lamps on after dark the house is lit by its lamps and takes a little of the town's sky fill; at noon all of it.
+ const litShare=layout.townFill();assert.ok(litShare>.25&&litShare<.6,'lamp-lit at dusk: '+litShare.toFixed(3));
  trip('main');const dark=look(4);
  assert.ok(dark<lit*.3,`lobby fill ${dark.toFixed(3)} with the main off, ${lit.toFixed(3)} lit`);
  assert.ok(layout.townFill()<.3,`and only the daylight's share of the town's fill comes in: ${layout.townFill().toFixed(3)}`);
@@ -237,7 +238,8 @@ test('with the main off the lobby goes dark (only the dusk through the glass), a
  layout.tick(1/30,720);const noon=look(4);assert.ok(noon>dark,'the windows still light it by day');
  layout.tick(1/30,1170);
  reset('main');layout.tick(1/30,1170);
- assert.equal(look(4),lit,'exactly as before');assert.equal(daylight.intensity,sunLit);assert.equal(layout.townFill(),1);
+ assert.equal(look(4),lit,'exactly as before');assert.equal(daylight.intensity,sunLit);assert.equal(layout.townFill(),litShare);
+ layout.tick(1/30,720);assert.equal(layout.townFill(),1,'at noon the lit house takes all of the town\'s daylight fill');
  assert.equal(glow('Andon'),before.andon);assert.equal(glow('Milk cooler light'),before.cooler);assert.equal(room.getObjectByName('Lobby light').intensity,before.lamp);
  layout.dispose();
 });

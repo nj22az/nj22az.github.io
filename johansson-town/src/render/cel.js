@@ -89,6 +89,25 @@ let flattenChunk='';
 export const flattenAvailable=()=>!!flattenChunk;
 
 /**
+ * Lamps that stop at walls, for a room that asks for it (a material whose userData has
+ * `lampsStopAtWalls`). The toon ramp gives a surface facing away from a light its darkest
+ * band rather than nothing (a pale plaster wall two thirds of it), which is the soft
+ * wrap the sun wants outdoors; but indoors, where rooms share a wall, it lets a point
+ * light shine on the far side of the wall it hangs behind: the lobby's bulb on the women's
+ * side of the noren wall, the porch lamp on the inside of the street wall. For those
+ * materials a point light lights only the faces turned towards it. The sun and the sky
+ * keep their wrap; everything that does not ask is untouched.
+ */
+const LIGHTS_CHUNK='lights_fragment_begin';
+const POINT_LINE='getPointLightInfo( pointLight, geometryPosition, directLight );';
+let wallChunk='';
+{
+ const source=THREE.ShaderChunk[LIGHTS_CHUNK];
+ if(source&&source.includes(POINT_LINE))wallChunk=source.replace(POINT_LINE,POINT_LINE+'\n\t\tdirectLight.color *= step( 0.0, dot( geometryNormal, directLight.direction ) );');
+}
+export const wallsStopLampsAvailable=()=>!!wallChunk;
+
+/**
  * How much of a photographic map survives. 1 keeps it whole, 0 removes it.
  *
  * Sakura Crossing can flatten everything because it has no photographs to flatten.
@@ -120,7 +139,8 @@ export function photographic(material){
 export function applyShadowTint(material,tint,flatten=1,{base=null,baseKey=''}={}){
  const tinting=!!patchedChunk;
  const flattening=!!flattenChunk&&flatten<1&&!!material.map;
- if(!tinting&&!flattening&&!base)return material;
+ const walled=!!wallChunk&&material.userData?.lampsStopAtWalls===true;
+ if(!tinting&&!flattening&&!base&&!walled)return material;
  const tintUniform={value:new THREE.Color(tint)};
  const flattenUniform={value:flatten};
  material.userData.shadowTint=tintUniform;
@@ -141,11 +161,12 @@ export function applyShadowTint(material,tint,flatten=1,{base=null,baseKey=''}={
    shader.uniforms.uFlatten=flattenUniform;
    shader.fragmentShader=FLATTEN_UNIFORM+shader.fragmentShader.replace('#include <'+MAP_CHUNK+'>',flattenChunk);
   }
+  if(walled)shader.fragmentShader=shader.fragmentShader.replace('#include <'+LIGHTS_CHUNK+'>',wallChunk);
  };
  // Without this every patched material compiles its own program. The base key has
  // to be in here too, or a world-projected surface shares a program with a plain one.
  const hex=new THREE.Color(tint).getHexString();
- material.customProgramCacheKey=()=>'cel_'+hex+'_'+(flattening?flatten:1)+'_'+baseKey;
+ material.customProgramCacheKey=()=>'cel_'+hex+'_'+(flattening?flatten:1)+'_'+baseKey+(walled?'_walls':'');
  return material;
 }
 

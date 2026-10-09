@@ -242,3 +242,17 @@ test('the camera clip planes and the exposure reach the ink and the grade',()=>{
  assert.equal(typeof GRADE_DEFAULTS.lift,'number');
  pipeline.dispose();
 });
+
+test('a room can ask that its lamps stop at its walls: point lights then light only the faces turned to them',async()=>{
+ const {wallsStopLampsAvailable}=await import('../src/render/cel.js');
+ assert.ok(wallsStopLampsAvailable(),'the lights chunk still has the point-light line, so the option is live');
+ const run=material=>{const shader={uniforms:{},vertexShader:'void main(){}',fragmentShader:'void main(){\n#include <lights_fragment_begin>\n}\n#include <lights_toon_pars_fragment>'};material.onBeforeCompile?.(shader,{});return shader;};
+ const plain=celFrom(standard()),walled=standard();walled.userData.lampsStopAtWalls=true;const toon=celFrom(walled);
+ // Untouched unless asked: the town keeps the soft wrap on every light.
+ assert.ok(run(plain).fragmentShader.includes('#include <lights_fragment_begin>'));
+ const body=run(toon).fragmentShader;
+ assert.ok(!body.includes('#include <lights_fragment_begin>'),'the chunk is inlined with the change');
+ assert.match(body,/getPointLightInfo\( pointLight, geometryPosition, directLight \);\s*directLight\.color \*= step\( 0\.0, dot\( geometryNormal, directLight\.direction \) \);/);
+ assert.equal((body.match(/step\( 0\.0, dot\( geometryNormal/g)||[]).length,1,'only the point lights: the sun and the spot lights keep their wrap');
+ assert.notEqual(plain.customProgramCacheKey(),toon.customProgramCacheKey(),'its own program');
+});
