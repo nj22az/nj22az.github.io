@@ -134,7 +134,8 @@ test('the cabinet hangs behind the bandai, its door shut, every lever in Mrs Hig
   const now=new THREE.Box3().setFromObject(board),own=new Set(meshes(board)),shrunk=now.clone().expandByScalar(-.002);
   // Mrs Higa is checked vertex by vertex below: her box is far bigger than she is.
   const higa=room.getObjectByName('Umi-no-yu attendant'),hers=new Set(higa?meshes(higa):[]);
-  for(const o of meshes(room)){if(own.has(o)||hers.has(o)||o.userData.wall||/^(Umi-no-yu floor)$/.test(o.name))continue;const ob=new THREE.Box3().setFromObject(o);if(ob.isEmpty())continue;
+  // The sea view wraps round the bath 45–70 m out, so its box holds the whole house (onsen-night.js ONSEN_SEA_VIEW).
+  for(const o of meshes(room)){if(own.has(o)||hers.has(o)||o.userData.wall||/^(Umi-no-yu floor|Umi-no-yu sea view)$/.test(o.name))continue;const ob=new THREE.Box3().setFromObject(o);if(ob.isEmpty())continue;
    assert.ok(!shrunk.intersectsBox(ob),state+': the board clips '+(o.name||o.type));}
   if(state==='shut'){const door=new THREE.Box3().setFromObject(room.getObjectByName('Breaker board door panel'));
    const tips=new THREE.Box3();for(const id of levers)tips.union(new THREE.Box3().setFromObject(room.getObjectByName('Breaker lever '+id)));

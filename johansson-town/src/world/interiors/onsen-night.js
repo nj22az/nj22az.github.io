@@ -35,6 +35,38 @@ export const ONSEN_HARBOUR=(()=>{
   why:'The rock bath faces the harbour across the water (story page 12: the six in the bath, the night, the harbour lights behind them; 12c: the red and the green light between Nhung and Tetsuo).'});
 })();
 
+/**
+ * The sea view itself (onsen.js 'Umi-no-yu sea view'): the painted sea and sky the harbour lights sit on. Where the
+ * lights are it is the flat backdrop it always was (45 m out, 90 m wide, the horizon at y 4.8, the painting 30 m tall
+ * from y -9); past its ends it bends round towards the house on a wide curve and runs on behind the tall side fences,
+ * and it goes on up as plain sky, so from the water (12b, 12c: a lens a hand above the surface tilted up into the sky)
+ * and in the wide views (12a, 12d) there is no edge of it anywhere, no band of the room's own background at the top, no
+ * ink line round it. Its painting depends on height only, so the horizon and the sky carry on round the bend unbroken.
+ */
+export const ONSEN_SEA_VIEW=Object.freeze({z:-45,halfWidth:45,bottom:-9,paint:30,horizon:4.8,top:160,bend:25,bendSteps:16,wingTo:5,
+ why:'The backdrop is wider and taller than any lens in the bath can see past: its edges are always behind the side fences, the house or above the frame.'});
+
+/**
+ * The sea view's surface, in the room's frame, facing the bath: west wing, the bend, the flat backdrop, the bend, the
+ * east wing. uv: u along it (0 … 1 across the flat part, as before), v = (y − bottom) / paint, so the sky above the old
+ * top edge is the painting's top row (clamped).
+ */
+export function seaViewGeometry(S=ONSEN_SEA_VIEW){
+ const cx=S.halfWidth,cz=S.z+S.bend,side=[];
+ // The east half's outline from the middle out: the flat part, the bend (a quarter circle), the wing back to the house.
+ side.push([0,S.z],[cx,S.z]);
+ for(let i=1;i<=S.bendSteps;i++){const a=-Math.PI/2+i/S.bendSteps*Math.PI/2;side.push([cx+S.bend*Math.cos(a),cz+S.bend*Math.sin(a)]);}
+ side.push([cx+S.bend,S.wingTo]);
+ const line=[...side.slice(1).reverse().map(([x,z])=>[-x,z]),...side.slice(1)];
+ // u by distance along the outline, 0 and 1 at the flat part's ends.
+ const u=[0];for(let i=1;i<line.length;i++)u.push(u[i-1]+Math.hypot(line[i][0]-line[i-1][0],line[i][1]-line[i-1][1]));
+ const u0=u[side.length-2],pos=[],uv=[],index=[];
+ line.forEach(([x,z],i)=>{for(const y of [S.bottom,S.top]){pos.push(x,y,z);uv.push((u[i]-u0)/(2*cx),(y-S.bottom)/S.paint);}});
+ for(let i=0;i+1<line.length;i++){const a=i*2,b=a+2;index.push(a,b,b+1,a,b+1,a+1);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+ g.setIndex(index);g.computeVertexNormals();g.computeBoundingSphere();g.computeBoundingBox();return g;
+}
+
 let dot=null;
 function dotTexture(){
  if(dot)return dot;
