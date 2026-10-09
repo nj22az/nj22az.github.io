@@ -103,15 +103,16 @@ test('the 1994 raceway runs from the women\'s left mirror, through the partition
  for(const n of meshes(room).filter(m=>m.name==='Noren'))assert.ok(rods.some(rod=>box(n).max.y<rod.max.y+.001));
  const shrink=b=>b.clone().expandByScalar(-.0008);
  const own=new Set(pieces);
- const allowed=o=>own.has(o)||/^(Umi-no-yu wall|Umi-no-yu floor|Rock bath paving|Umi-no-yu sea view)$/.test(o.name)||o.name===R.from+' plate'||o.parent?.name===R.to;
+ const allowed=o=>own.has(o)||o.userData.wall||/^(Umi-no-yu floor|Rock bath paving|Umi-no-yu sea view)$/.test(o.name)||o.name===R.from+' plate'||o.parent?.name===R.to;
  for(const p of pieces){
   const b=box(p);assert.ok(b.min.y>.85,p.name+' is up on the wall, not at a foot or a towel');
   for(const o of meshes(room)){if(allowed(o))continue;const ob=box(o);if(ob.isEmpty())continue;
    assert.ok(!shrink(b).intersectsBox(ob),`${p.name} at ${b.getCenter(new THREE.Vector3()).toArray().map(v=>v.toFixed(2))} clips ${o.name||o.type}`);}
  }
  // Under the ceiling beams, and its back on a wall face: never floating, never inside the plaster.
- for(const beam of meshes(room).filter(m=>m.name==='Ceiling beam'))for(const p of pieces)assert.ok(!box(p).intersectsBox(box(beam)));
- const walls=meshes(room).filter(m=>m.name==='Umi-no-yu wall').map(box);
+ const beams=meshes(room).filter(m=>m.userData.beam);assert.equal(beams.length,6,'the ceiling beams');
+ for(const beam of beams)for(const p of pieces)assert.ok(!box(p).intersectsBox(box(beam)));
+ const walls=meshes(room).filter(m=>m.userData.wall).map(box);
  for(const p of pieces.filter(m=>m.name==='Raceway run')){const b=box(p),touch=walls.some(w=>w.clone().expandByScalar(.0005).intersectsBox(b)),inside=walls.some(w=>shrink(w).intersectsBox(shrink(b)));
   assert.ok(touch,'a run sits on a wall');assert.ok(!inside,'a run is not inside a wall');}
  // The socket box by the chair is out of reach of a walking body (the cooler and the chair fence it).

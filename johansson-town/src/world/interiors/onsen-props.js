@@ -14,7 +14,10 @@ import {ONSEN_SIGNS} from './onsen-signs.js';
  *   from the bath hall's sea glass comes through, a step from the right-hand mirror's dryer;
  * - Mrs Higa's account book, open on the bandai in front of her, with its pencil;
  * - the men's side's small vanity: one mirror on a wall shelf, a bottle of hair tonic and a comb sterilizer
- *   glowing blue (plugged into its own socket on the lobby circuit, onsen-electrics.js).
+ *   glowing blue (plugged into its own socket on the lobby circuit, onsen-electrics.js);
+ * - Mrs Higa's noren pole on two hooks on the wall behind her stool;
+ * - the box of white extension cords on the bandai's floor, beside her stool;
+ * - and, only when a story sets it (stage), three coffee milks on the massage chair's arm: Fujita's offering.
  *
  * Everything is data first (ONSEN_PROPS): where it stands, what it stands on, who it is
  * for and why, what it is made of in the period. The builder only draws the data, and
@@ -77,6 +80,30 @@ export const ONSEN_PROPS=Object.freeze({
   for:'The men after the bath: a comb through the hair and a splash of tonic before they go back out to the lobby and the night game.',
   why:'On the men’s side of the bandai wall, beside the doorway and out of the walk from the noren to the baskets and the bath door: one mirror is enough for the men’s side (the women’s side has three, with the dryers). Its socket is a spur off the television’s through the wall, on the lobby circuit, like the fan’s, so the sterilizer never shares the dryers’ breaker.',
   period:'A Shōwa men’s changing room had a mirror, a big bottle of green hair tonic for anyone to use, and a small ultraviolet comb sterilizer (くし消毒器) with a blue window and the house combs standing in it. The tonic is an invented island brand, 潮風 (sea breeze).'}),
+
+ norenPole:plain({id:'noren-pole',name:'Noren pole',jp:'暖簾掛け棒',
+  // Along the west wall behind the stool, above the wainscot rail (top 0.945) and under the breaker board (bottom 1.2).
+  wallX:-4.94,y:1,z0:1.75,len:1.45,r:.014,hooks:Object.freeze([1.95,3]),off:.04,nodes:Object.freeze([.22,.55,.88,1.21]),
+  reach:plain({from:Object.freeze([-4.5,1.15,2.6]),arm:.75,why:'Her shoulder on the stool (onsen-electrics.js ONSEN_BOARD.keeper) to the pole on the wall behind her: she takes it down without standing up.'}),
+  for:'Mrs Higa: she hangs the street noren out with it at opening and lifts it in at ten, and from her stool she nudges the changing-room noren straight with it without looking up.',
+  why:'On two brass hooks on the wall right behind her stool, along the wall above the wainscot rail and under the breaker board: in reach of her hand from the stool and of nobody else’s, and flat to the wall, so it is in nobody’s way.',
+  period:'A length of madake bamboo with its nodes and a brass hook (鉤) bound on at the tip with wire: the noren pole every shop with a noren kept by the door. 1.45 m: from the step it reaches the rod over the street door, and it fits behind the bandai.'}),
+
+ extensionCords:plain({id:'extension-cords',name:'Extension cord box',jp:'延長コード',
+  // On the bandai's raised floor (top 0.35), at the street end beside her stool: under the counter's height, clear of her feet.
+  at:Object.freeze([-4.46,.35,3.1]),on:'Bandai platform',box:plain({w:.52,d:.24,h:.12,t:.012}),
+  cords:Object.freeze([1,2,3].map(n=>plain({n,metres:5,amps:15,volts:125,colour:0xf3f1ea,name:'Extension cord '+n,
+   use:plain({from:'Vanity socket '+n,to:'Massage chair'})}))),
+  for:'The house: the floor polisher at closing, the summer festival’s lanterns out on the porch, the New Year mochi machine on the tatami; and on page 10, the three dryers at the massage chair, each from its own mirror’s socket.',
+  why:'Mrs Higa keeps the bath’s odds where she sits, so nobody borrows them without asking: a box on the bandai’s floor, under the counter, at the street end beside her stool and clear of her feet. Three cords because the bath has three sockets that matter: the three mirrors.',
+  period:'White two-core cords, 5 m each, with a moulded two-pin plug and a single socket on the end, rated 15 A 125 V on a paper tag: the cord every 1980s hardware shop sold. Each one carries one dryer (12 A) well inside its 15 A; a three-way reel with all three dryers on it would carry 36 A, which is why there are three.'}),
+
+ offering:plain({id:'milk-offering',name:'Coffee milk offering',jp:'コーヒー牛乳',
+  on:'Massage chair arm',z:3.17,top:.71,xs:Object.freeze([4.33,4.45,4.57]),states:Object.freeze(['none','full','empty']),
+  bottle:plain({r:.028,h:.133,neck:.021}),
+  for:'Mr Fujita: three coffee milks lined up on the chair’s arm as an offering before his ten minutes (page 1); on page 10 Mrs Higa pays his ¥300 back in three coffee milks, and in the last panel the three stand there empty, lined up like offerings.',
+  why:'On the right arm’s flat top, behind the coin box and in a row towards the backrest, so a sitter’s elbow does not knock them over and the coin slot stays free. Only there when a story puts them there (stage): nobody leaves milk on the chair otherwise.',
+  period:'Glass 180 ml bottles of coffee milk (コーヒー牛乳) with paper caps, ¥100 each from the lobby cooler: drunk standing, hand on hip, after the bath. Empty, they keep a brown film at the bottom until they go back in the crate.'}),
 
  accountBook:plain({id:'account-book',name:'Account book',jp:ONSEN_SIGNS.ledger.jp,
   at:Object.freeze([-3.98,FURNITURE_HEIGHTS.serviceCounter,2.62]),on:'Bandai top',yaw:-.08,w:.19,d:.28,
@@ -164,6 +191,40 @@ function ledgerTexture(){
  });
 }
 
+/** A fixed hash in [0, 1): the same glitter every time. */
+const hash=(i,s=0)=>{let h=(i*374761393+s*668265263)|0;h=Math.imul(h^(h>>>13),1274126177);h^=h>>>16;return (h>>>0)/4294967296;};
+/**
+ * Page 5's paper war (ONSEN_SIGNS.paperWar), as sheets of paper: 'reserved' is Fujita's, black marker on the back of a
+ * calendar page (the month's numbers faint through the paper, back to front); 'hairRights' the women's, glitter pen on
+ * drawing paper, three dryers drawn like flowers. Null without a page (the room tests).
+ */
+export function paperWarTexture(kind){
+ const W=ONSEN_SIGNS.paperWar;
+ return paint(256,352,(ctx,w,h)=>{
+  const text=(t,x,y,px,color,font=HAND)=>{ctx.fillStyle=color;ctx.font=`bold ${px}px ${font}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t,x,y);};
+  const fit=(t,y,max,px,color,font)=>{ctx.font=`bold ${px}px ${font||HAND}`;while(ctx.measureText(t).width>max&&px>8){px--;ctx.font=`bold ${px}px ${font||HAND}`;}text(t,w/2,y,px,color,font);};
+  if(kind==='reserved'){const R=W.reserved;
+   ctx.fillStyle='#f3efe2';ctx.fillRect(0,0,w,h);
+   // The calendar's printed grid, seen through from the back: faint and mirrored.
+   ctx.save();ctx.translate(w,0);ctx.scale(-1,1);ctx.globalAlpha=.1;ctx.strokeStyle='#5a5a5a';ctx.lineWidth=1;for(let r=0;r<6;r++)for(let c=0;c<7;c++)ctx.strokeRect(14+c*33,96+r*38,33,38);
+   ctx.fillStyle='#b8342e';ctx.font=`bold 64px ${GOTHIC}`;ctx.textAlign='center';ctx.fillText('8',w/2,64);ctx.restore();
+   // The perforation along the top where he tore it off.
+   ctx.fillStyle='#d9d2bf';for(let x=4;x<w;x+=9)ctx.fillRect(x,4,4,3);
+   text(R.jp,w/2,130,78,'#141414');fit(R.line,206,w-28,26,'#141414');fit(R.en,262,w-24,20,'#141414',GOTHIC);
+   ctx.strokeStyle='#141414';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(30,290);ctx.lineTo(w-30,286);ctx.stroke();}
+  else{const H=W.hairRights;
+   ctx.fillStyle='#fbfaf6';ctx.fillRect(0,0,w,h);
+   // Three dryers drawn like flowers, with their air in curls.
+   for(const [x,y,c] of [[52,250,'#e05a8a'],[128,236,'#e0a83a'],[204,250,'#5ab0d8']]){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,16,0,Math.PI*2);ctx.fill();ctx.fillRect(x-4,y+12,8,26);
+    ctx.strokeStyle=c;ctx.lineWidth=3;for(let k=0;k<3;k++){ctx.beginPath();ctx.arc(x,y-30-k*12,6+k*3,Math.PI,Math.PI*2);ctx.stroke();}}
+   fit(H.jp.slice(0,4),58,w-24,62,'#e05a8a');text(H.jp.slice(4),w/2,122,54,'#d29a2a');fit(H.line,172,w-24,24,'#c84a7a');fit(H.en,318,w-24,40,'#d29a2a',GOTHIC);
+   // Glitter: gold and pink points where the pens went.
+   for(let i=0;i<260;i++){const x=hash(i,3)*w,y=hash(i,4)*h;if(y>196&&y<290)continue;ctx.fillStyle=hash(i,5)>.5?'rgba(230,180,60,.8)':'rgba(230,110,160,.7)';ctx.fillRect(x,y,2,2);}}
+  // Masking tape at the top corners, a little crooked.
+  ctx.fillStyle='rgba(234,217,164,.85)';for(const [x,a] of [[22,-.3],[w-22,.3]]){ctx.save();ctx.translate(x,14);ctx.rotate(a);ctx.fillRect(-20,-7,40,14);ctx.restore();}
+ });
+}
+
 /**
  * Builds the props into the room. `rect` adds a collider (only for what really blocks a walker), `anchor` a prompt.
  * Returns the group and, by id, the parts the film and the room switch.
@@ -199,7 +260,7 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
    new THREE.BoxGeometry(P.w,P.h,t).translate(0,P.h/2,P.d-t/2),                              // front
    new THREE.BoxGeometry(t,P.h,P.d-2*t).translate(-P.w/2+t/2,P.h/2,P.d/2),new THREE.BoxGeometry(t,P.h,P.d-2*t).translate(P.w/2-t/2,P.h/2,P.d/2),
    new THREE.BoxGeometry(P.w-2*t,t,P.d-2*t).translate(0,t/2,P.d/2)];                         // floor
-  const pocket=add(mergeGeometries(parts,false),bamboo,0,0,0,'Uchiwa rack pocket',rack);pocket.userData.hangsOn='Umi-no-yu wall';parts.forEach(g=>g.dispose());
+  const pocket=add(mergeGeometries(parts,false),bamboo,0,0,0,'Uchiwa rack pocket',rack);pocket.userData.hangsOn='Noren wall east';parts.forEach(g=>g.dispose());
   // Two dark cane bindings across the front, the way a woven pocket is finished.
   const bands=[.03,P.h-.03].map(y=>new THREE.BoxGeometry(P.w+.004,.012,.004).translate(0,y,P.d+.002));
   add(mergeGeometries(bands,false),darkBamboo,0,0,0,'Uchiwa rack binding',rack).castShadow=false;bands.forEach(g=>g.dispose());}
@@ -217,7 +278,7 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
  add(giantHead,paper,0,0,0,'Giant uchiwa face',giant).castShadow=false;
  add(new THREE.BoxGeometry(.03,G.handle+.06,.012).translate(0,-.86*G.r-(G.handle-.06)/2,0),bamboo,0,0,0,'Giant uchiwa handle',giant);
  const pegs=G.pegs.map(deg=>{const a=deg*Math.PI/180;return new THREE.CylinderGeometry(.008,.008,.05,8).rotateX(Math.PI/2).translate(G.x+Math.cos(a)*G.r,G.y+Math.sin(a)*G.r-.0085,P.wallZ+.025);});
- const pegMesh=add(mergeGeometries(pegs,false),wood,0,0,0,'Uchiwa pegs');pegMesh.userData.hangsOn='Umi-no-yu wall';pegs.forEach(g=>g.dispose());
+ const pegMesh=add(mergeGeometries(pegs,false),wood,0,0,0,'Uchiwa pegs');pegMesh.userData.hangsOn='Noren wall east';pegs.forEach(g=>g.dispose());
  if(anchor)anchor([P.x+.3,1.35,P.wallZ+.4],'Take an uchiwa',()=>action('inspect','Uchiwa',
   'You take the goldfish one and fan yourself. After forty-two degrees it is the best wind in the world. The giant Hārī fan on the pegs is for show, Higa-san says without looking up, and for emergencies.'));
 
@@ -252,15 +313,18 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
  const pr=.0038,pencil=node('Account book pencil',.01,.0145+pr,A.d*.28,book);pencil.rotation.y=.5;
  const body=add(new THREE.CylinderGeometry(pr,pr,.15,6).rotateZ(Math.PI/2),std(0x2f6a45,.5),0,0,0,'Account book pencil body',pencil);body.userData.restsOn='Account book spread';
  add(new THREE.ConeGeometry(pr,.02,6).rotateZ(-Math.PI/2),std(0xd9b78a,.7),.085,0,0,'Account book pencil tip',pencil);
+ // Page 5: a copy of HAIR RIGHTS lands on today's page (ONSEN_SIGNS.paperWar.flyer); she writes round it. Only when staged.
+ {const tex=paperWarTexture('hairRights'),f=add(new THREE.PlaneGeometry(.1,.138).rotateX(-Math.PI/2).rotateY(Math.PI/2+.14),tex?new THREE.MeshStandardMaterial({map:tex,roughness:.9}):std(0xfbfaf6,.9),.004,.0151,-.07,'Hair rights flyer',book);
+  f.castShadow=false;f.userData.restsOn='Account book spread';f.visible=false;}
 
  // ---- The men's vanity: mirror, shelf, tonic, comb sterilizer and its socket.
  const V=ONSEN_PROPS.menVanity,vanity=node(V.name,0,0,0);vanity.userData.prop=V.id;
  {const M=V.mirror,S=V.shelf,top=S.y,shelfZ=V.wallZ-S.d/2;
-  const mir=add(new THREE.BoxGeometry(M.w,M.h,.02),std(0xcfd8da,.05,{metalness:.9}),V.x,M.y,V.wallZ-.01,'Men’s mirror',vanity);mir.userData.hangsOn='Umi-no-yu wall';
-  add(new THREE.BoxGeometry(M.w+.04,M.h+.04,.012),wood,V.x,M.y,V.wallZ-.006,'Men’s mirror frame',vanity).userData.hangsOn='Umi-no-yu wall';
-  const shelf=add(new THREE.BoxGeometry(S.w,S.t,S.d),wood,V.x,top-S.t/2,shelfZ,'Men’s vanity shelf',vanity);shelf.userData.hangsOn='Umi-no-yu wall';
+  const mir=add(new THREE.BoxGeometry(M.w,M.h,.02),std(0xcfd8da,.05,{metalness:.9}),V.x,M.y,V.wallZ-.01,'Men’s mirror',vanity);mir.userData.hangsOn='Noren wall east';
+  add(new THREE.BoxGeometry(M.w+.04,M.h+.04,.012),wood,V.x,M.y,V.wallZ-.006,'Men’s mirror frame',vanity).userData.hangsOn='Noren wall east';
+  const shelf=add(new THREE.BoxGeometry(S.w,S.t,S.d),wood,V.x,top-S.t/2,shelfZ,'Men’s vanity shelf',vanity);shelf.userData.hangsOn='Noren wall east';
   rect(V.x,shelfZ,S.w,S.d,top);// a hanging shelf at hip height: nobody walks through it
-  for(const dx of [-.35,.35])add(new THREE.BoxGeometry(.03,.14,S.d-.02),wood,V.x+dx,top-S.t-.07,shelfZ+.01,'Men’s vanity bracket',vanity).userData.hangsOn='Umi-no-yu wall';
+  for(const dx of [-.35,.35])add(new THREE.BoxGeometry(.03,.14,S.d-.02),wood,V.x+dx,top-S.t-.07,shelfZ+.01,'Men’s vanity bracket',vanity).userData.hangsOn='Noren wall east';
   // The tonic: a tall green bottle with a red cap and a paper label facing the room.
   const T=V.tonic,bottle=add(new THREE.CylinderGeometry(T.r*.9,T.r,T.h,14),std(0x3f8f5a,.15,{transparent:true,opacity:.85}),T.x,top+T.h/2,shelfZ,'Hair tonic bottle',vanity);bottle.userData.restsOn='Men’s vanity shelf';
   add(new THREE.CylinderGeometry(.016,.016,.03,10),std(0xb8342e,.5),T.x,top+T.h+.015,shelfZ,'Hair tonic cap',vanity).userData.restsOn='Hair tonic bottle';
@@ -282,5 +346,66 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
   if(anchor)anchor([V.x,1.35,V.wallZ-.45],'Look in the men’s mirror',()=>action('inspect','The men’s mirror',
    'One mirror, a bottle of 潮風 hair tonic for anyone who wants it, and the comb sterilizer humming blue with the house combs standing in its light. You comb your hair. It is the best it has looked all week.'));}
 
- return {group,jar,taken,rack,giant,plant,book,vanity};
+ // ---- Mrs Higa's noren pole on two hooks behind her stool.
+ const NP=ONSEN_PROPS.norenPole,poleX=NP.wallX+NP.off,pole=node(NP.name,poleX,NP.y,NP.z0+NP.len/2);pole.userData.prop=NP.id;
+ {const cane=add(new THREE.CylinderGeometry(NP.r,NP.r*1.1,NP.len,8,1,true).rotateX(Math.PI/2),bamboo,0,0,0,'Noren pole cane',pole);cane.userData.hangsOn='Noren pole hook';
+  // The nodes: a ring a little proud of the cane every third of a metre.
+  const rings=NP.nodes.map(t=>new THREE.CylinderGeometry(NP.r*1.18,NP.r*1.18,.012,8,1,true).rotateX(Math.PI/2).translate(0,0,-NP.len/2+t*NP.len/(NP.nodes.at(-1)+.24)));
+  add(mergeGeometries(rings,false),darkBamboo,0,0,0,'Noren pole nodes',pole).castShadow=false;rings.forEach(g=>g.dispose());
+  // The brass hook at the street end: a short shank and a crook turned up, bound on with wire.
+  const brass=std(0xc9a24e,.35,{metalness:.7}),tip=NP.len/2;
+  add(new THREE.CylinderGeometry(.005,.005,.08,6).rotateX(Math.PI/2),brass,0,0,tip+.03,'Noren pole hook shank',pole);
+  add(new THREE.TorusGeometry(.022,.0045,4,8,Math.PI).rotateZ(-Math.PI/2).rotateY(-Math.PI/2),brass,0,.022,tip+.07,'Noren pole crook',pole);// a J: out along the cane, then up
+  add(new THREE.CylinderGeometry(NP.r*1.15,NP.r*1.15,.03,8).rotateX(Math.PI/2),std(0x8a8a86,.4,{metalness:.6}),0,0,tip-.012,'Noren pole binding',pole);
+  // Two hooks screwed to the wall: a back plate and an arm under the cane with its end turned up.
+  const hooks=NP.hooks.map(z=>{const dz=z-pole.position.z,armY=-NP.r*1.1-.004;return [// the arm under the cane's thicker end
+   new THREE.BoxGeometry(.006,.05,.02).translate(NP.wallX+.003-poleX,armY+.012,dz),
+   new THREE.CylinderGeometry(.004,.004,NP.off+.024,6).rotateZ(Math.PI/2).translate((NP.off+.024)/2-NP.off,armY,dz),
+   new THREE.CylinderGeometry(.004,.004,.022,6).translate(.024,armY+.011,dz)];}).flat();
+  const hookMesh=add(mergeGeometries(hooks,false),brass,0,0,0,'Noren pole hook',pole);hookMesh.userData.hangsOn='Lobby wall west';hooks.forEach(g=>g.dispose());}
+
+ // ---- The box of extension cords on the bandai's floor.
+ const EC=ONSEN_PROPS.extensionCords,B=EC.box,ec=node(EC.name,...EC.at);ec.userData.prop=EC.id;
+ {const crate=std(0x9a7448,.8),t=B.t,parts=[
+   new THREE.BoxGeometry(B.w,t,B.d).translate(0,t/2,0),
+   new THREE.BoxGeometry(B.w,B.h,t).translate(0,B.h/2,-B.d/2+t/2),new THREE.BoxGeometry(B.w,B.h,t).translate(0,B.h/2,B.d/2-t/2),
+   new THREE.BoxGeometry(t,B.h,B.d-2*t).translate(-B.w/2+t/2,B.h/2,0),new THREE.BoxGeometry(t,B.h,B.d-2*t).translate(B.w/2-t/2,B.h/2,0)];
+  const boxMesh=add(mergeGeometries(parts,false),crate,0,0,0,'Extension cord box crate',ec);boxMesh.userData.restsOn=EC.on;parts.forEach(g=>g.dispose());
+  // Mrs Higa's label on the box's front (the side that faces the counter), in marker: 延長コード.
+  const label=paint(192,64,(ctx,w,h)=>{ctx.fillStyle='#ead9a4';ctx.fillRect(0,0,w,h);ctx.fillStyle='#1b1a18';ctx.font=`bold 34px ${HAND}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(EC.jp,w/2,h/2+2);});
+  const tag=add(new THREE.PlaneGeometry(.15,.05),label?new THREE.MeshStandardMaterial({map:label,roughness:.85}):std(0xead9a4,.85),0,B.h*.55,B.d/2+.0006,'Extension cord box label',ec);tag.castShadow=false;// on the street end, read from the genkan
+  // Three coils side by side, each two loops of white cord, its plug and its socket end laid on top.
+  const white=std(0xf3f1ea,.55),grey=std(0xd8d6ce,.5),metal=std(0xb8b8b0,.35,{metalness:.7}),R=.068,cr=.0048,floor=t;
+  EC.cords.forEach((c,i)=>{const g=node(c.name,-B.w/2+t+.008+R+cr+i*(2*R+2*cr+.006),floor,0,ec);g.userData.cord=c.n;
+   const loops=[0,1].map(k=>new THREE.TorusGeometry(R-k*.008,cr,4,14).rotateX(Math.PI/2).translate(k*.004,cr+k*2*cr,k*.003));
+   const coil=add(mergeGeometries(loops,false),white,0,0,0,c.name+' coil',g);coil.userData.restsOn='Extension cord box crate';loops.forEach(l=>l.dispose());
+   // The plug and the socket end lie across the top loop (radius R - 0.008, its centre a few millimetres off), each turned along it.
+   const top=4*cr,a=.9+i*1.1,ring=R-.008,on=(ang,len)=>[.004+Math.cos(ang)*ring,top,.003+Math.sin(ang)*ring,len];
+   const [px,,pz]=on(a),tx=-Math.sin(a),tz=Math.cos(a);// along the loop
+   const plug=add(new THREE.BoxGeometry(.022,.016,.03),white,px,top+.008,pz,c.name+' plug',g);plug.rotation.y=-a;plug.userData.restsOn=c.name+' coil';
+   for(const s of [-1,1])add(new THREE.BoxGeometry(.002,.006,.016),metal,px+tx*.023+Math.cos(a)*s*.006,top+.008,pz+tz*.023+Math.sin(a)*s*.006,c.name+' pin',g).rotation.y=-a;
+   const [ex,,ez]=on(a+Math.PI*.8);
+   const end=add(new THREE.BoxGeometry(.034,.022,.05),grey,ex,top+.011,ez,c.name+' socket',g);end.rotation.y=-(a+Math.PI*.8);end.userData.restsOn=c.name+' coil';});}
+
+ // ---- Fujita's offering: three coffee milks on the massage chair's right arm (stage({offering})).
+ const O=ONSEN_PROPS.offering,offering=node(O.name,0,O.top,O.z);offering.userData.prop=O.id;offering.visible=false;
+ const Bt=O.bottle,profile=[[0,0],[Bt.r-.002,0],[Bt.r,.004],[Bt.r,.082],[Bt.r-.003,.098],[Bt.neck+.001,.114],[Bt.neck,.126],[Bt.neck+.0025,.128],[Bt.neck+.0025,Bt.h],[Bt.neck-.0015,Bt.h],[Bt.neck-.0015,Bt.h-.012]].map(([x,y])=>new THREE.Vector2(x,y));
+ const full=std(0x9b6a3c,.28),empty=std(0xe6efee,.12,{transparent:true,opacity:.38,depthWrite:false,side:THREE.DoubleSide}),film=std(0x8a5a32,.5),capMat=std(0xd88a2a,.6);
+ const bottleGeo=new THREE.LatheGeometry(profile,8),milks=O.xs.map((x,i)=>{const g=node('Coffee milk '+(i+1),x-0,0,0,offering);
+  const body=add(bottleGeo,full,0,0,0,'Coffee milk '+(i+1)+' bottle',g);body.userData.restsOn=O.on;
+  const cap=add(new THREE.CylinderGeometry(Bt.neck+.003,Bt.neck+.003,.006,8),capMat,0,Bt.h+.003,0,'Coffee milk '+(i+1)+' cap',g);cap.userData.on='Coffee milk '+(i+1)+' bottle';// pressed into the mouth, over the lip
+  const dregs=add(new THREE.CylinderGeometry(Bt.r-.003,Bt.r-.003,.004,8),film,0,.004,0,'Coffee milk '+(i+1)+' dregs',g);dregs.visible=false;dregs.castShadow=false;
+  return {g,body,cap,dregs};});
+ let offered='none';
+ /** Fujita's offering on the chair's arm: 'none' (the arm bare), 'full' (three unopened coffee milks), 'empty' (drunk, caps off). */
+ const setOffering=state=>{if(!O.states.includes(state))throw new Error('The offering is '+O.states.join(', ')+': '+state);offered=state;offering.visible=state!=='none';
+  for(const m of milks){m.body.material=state==='empty'?empty:full;m.body.castShadow=state!=='empty';m.cap.visible=state==='full';m.dregs.visible=state==='empty';}return offered;};
+
+ /**
+  * A story's props, set by name (the film and capture-room.mjs `onsen.props`): {offering}. Returns what is set now.
+  */
+ const flyer=book.getObjectByName('Hair rights flyer');
+ const stage=(o={})=>{if(o.offering!==undefined)setOffering(o.offering);if(o.flyer!==undefined)flyer.visible=!!o.flyer;return {offering:offered,flyer:flyer.visible};};
+
+ return {group,jar,taken,rack,giant,plant,book,vanity,pole,cords:ec,offering,stage,get offered(){return offered;},get flyer(){return flyer.visible;}};
 }

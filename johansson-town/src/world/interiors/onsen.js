@@ -44,6 +44,32 @@ export const ONSEN_ROOM=Object.freeze({
 });
 const R=ONSEN_ROOM;
 
+/**
+ * The walls and ceilings by name, as the room builds them (each wall mesh has userData.wall, each ceiling group
+ * userData.ceiling): a film lifts one at a time (capture-room.mjs HIDE) for a camera that stands in a wall's line or looks
+ * down into a room. `faces` is what the wall stands between; the ceilings are groups, the boards and their beams inside.
+ */
+export const ONSEN_WALLS=Object.freeze([
+ ['Street wall west','the genkan and the street, west of the door'],['Street wall east','the genkan and the street, east of the door'],['Street door lintel','over the street door'],
+ ['Lobby wall west','the lobby and the bandai (the board hangs on it)'],['Lobby wall east','the lobby and the milk cooler'],
+ ['Women’s room wall west','the women’s changing room (the lockers)'],['Men’s room wall east','the men’s changing room (the baskets)'],
+ ['Noren wall west','the lobby and the women’s changing room, west of the crimson noren'],['Noren wall east','the lobby and the men’s changing room, east of the indigo noren'],
+ ['Noren wall lintel','over both noren'],['Noren wall stub','between the two noren (the clock)'],['Partition','the women’s and the men’s changing rooms'],
+ ['Bath door wall west','the women’s changing room and the bath hall'],['Bath door wall east','the men’s changing room and the bath hall'],['Bath door lintel','over the two bath doors'],
+ ['Bath hall wall west','the bath hall, west'],['Bath hall wall east','the bath hall, east'],
+ ['Sea glass sill west','under the glass to the rock bath, west'],['Sea glass sill east','under the glass to the rock bath, east'],['Sea glass head','over the glass to the rock bath'],
+].map(([name,faces])=>Object.freeze({name,faces})));
+export const ONSEN_CEILINGS=Object.freeze([
+ {name:'Lobby ceiling',x0:-5,x1:5,z0:R.hall.front,z1:5,beams:[[3.8,'Lobby ceiling beam street'],[2.1,'Lobby ceiling beam bandai']]},
+ {name:'Women’s room ceiling',x0:-5,x1:0,z0:R.hall.changing,z1:R.hall.front,beams:[[.2,'Women’s room ceiling beam']]},
+ {name:'Men’s room ceiling',x0:0,x1:5,z0:R.hall.changing,z1:R.hall.front,beams:[[.2,'Men’s room ceiling beam']]},
+ {name:'Bath hall ceiling',x0:-5,x1:5,z0:R.hall.bath,z1:R.hall.changing,beams:[[-1.9,'Bath hall ceiling beam doors'],[-3.4,'Bath hall ceiling beam glass']]},
+].map(c=>Object.freeze({...c,beams:Object.freeze(c.beams.map(b=>Object.freeze(b)))})));
+
+/** The men's changing-room fan: where it stands (x, z), and how its head sweeps (radians either side of facing the street wall, rad/s of its clock). */
+export const ONSEN_FAN=Object.freeze({at:Object.freeze([3.85,1.2]),sweep:.9,rate:.4});
+const fanYaw=t=>Math.sin(t*ONSEN_FAN.rate)*ONSEN_FAN.sweep;
+
 /** Seats: where you sit, and where your weight goes. `soak` seats put you in the water. */
 export const ONSEN_SEATS=Object.freeze({
  bench:{id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.46},
@@ -129,18 +155,21 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   const paving=new THREE.Mesh(new THREE.ShapeGeometry(shape,48),flags);paving.rotation.x=-Math.PI/2;paving.receiveShadow=true;paving.name='Rock bath paving';room.add(paving);}
  // The agarikamachi: the polished edge where the genkan stops and the wood floor starts.
  box([10,.05,.12],[0,.025,3.6],darkWood,'Genkan step');
- // ---- Walls and ceilings.
- const wall=(x0,z0,x1,z1,h=R.walls.height,m=plaster,y=0)=>box([Math.max(.12,Math.abs(x1-x0)),h,Math.max(.12,Math.abs(z1-z0))],[(x0+x1)/2,y+h/2,(z0+z1)/2],m,'Umi-no-yu wall');
- wall(-5,5,-1,5);wall(1,5,5,5);wall(-1,5,1,5,.6,plaster,2.2);
- for(const x of [-5,5]){wall(x,R.hall.changing,x,5);wall(x,R.hall.bath,x,R.hall.changing,R.walls.height,wallTiles);}
- wall(-5,R.hall.front,-.9,R.hall.front);wall(.9,R.hall.front,5,R.hall.front);wall(-.9,R.hall.front,.9,R.hall.front,.55,plaster,2.25);
+ // ---- Walls and ceilings. Every piece has its own name (ONSEN_WALLS), so a film can lift one wall or one room's ceiling at a
+ // time (capture-room.mjs HIDE) for a shot that stands where the wall is, or looks down into the room from above.
+ const wall=(name,x0,z0,x1,z1,h=R.walls.height,m=plaster,y=0)=>{const w=box([Math.max(.12,Math.abs(x1-x0)),h,Math.max(.12,Math.abs(z1-z0))],[(x0+x1)/2,y+h/2,(z0+z1)/2],m,name);w.userData.wall=true;return w;};
+ wall('Street wall west',-5,5,-1,5);wall('Street wall east',1,5,5,5);wall('Street door lintel',-1,5,1,5,.6,plaster,2.2);
+ // The side walls run in one line from the street to the bath doors, in two pieces: the lobby's and its changing room's.
+ for(const [x,side] of [[-5,'west'],[5,'east']]){wall('Lobby wall '+side,x,R.hall.front,x,5);wall((side==='west'?'Women’s':'Men’s')+' room wall '+side,x,R.hall.changing,x,R.hall.front);
+  wall('Bath hall wall '+side,x,R.hall.bath,x,R.hall.changing,R.walls.height,wallTiles);}
+ wall('Noren wall west',-5,R.hall.front,-.9,R.hall.front);wall('Noren wall east',.9,R.hall.front,5,R.hall.front);wall('Noren wall lintel',-.9,R.hall.front,.9,R.hall.front,.55,plaster,2.25);
  // The men's and women's sides: a short wall between the two noren, and a plaster partition from it to the bath doors.
  const DW=ONSEN_DOORWAYS,PART=DW.men.x0-DW.women.x1;
- box([PART,2.25,.12],[0,1.125,R.hall.front],plaster,'Umi-no-yu wall');
- box([PART,R.walls.height,R.hall.front-R.hall.changing],[0,R.walls.height/2,(R.hall.front+R.hall.changing)/2],plaster,'Umi-no-yu wall');
- wall(-5,R.hall.changing,-.8,R.hall.changing);wall(.8,R.hall.changing,5,R.hall.changing);wall(-.8,R.hall.changing,.8,R.hall.changing,.6,plaster,2.2);
+ box([PART,2.25,.12],[0,1.125,R.hall.front],plaster,'Noren wall stub').userData.wall=true;
+ box([PART,R.walls.height,R.hall.front-R.hall.changing],[0,R.walls.height/2,(R.hall.front+R.hall.changing)/2],plaster,'Partition').userData.wall=true;
+ wall('Bath door wall west',-5,R.hall.changing,-.8,R.hall.changing);wall('Bath door wall east',.8,R.hall.changing,5,R.hall.changing);wall('Bath door lintel',-.8,R.hall.changing,.8,R.hall.changing,.6,plaster,2.2);
  // The bath hall's sea end is glass, so from the indoor bath you see the rocks outside.
- wall(-5,R.hall.bath,-1,R.hall.bath,.5,wallTiles);wall(1,R.hall.bath,5,R.hall.bath,.5,wallTiles);wall(-5,R.hall.bath,5,R.hall.bath,.45,plaster,2.35);
+ wall('Sea glass sill west',-5,R.hall.bath,-1,R.hall.bath,.5,wallTiles);wall('Sea glass sill east',1,R.hall.bath,5,R.hall.bath,.5,wallTiles);wall('Sea glass head',-5,R.hall.bath,5,R.hall.bath,.45,plaster,2.35);
  const glass=new THREE.MeshStandardMaterial({color:0xcfe3e6,roughness:.1,transparent:true,opacity:.22,depthWrite:false});
  for(const [x0,x1] of [[-5,-1],[1,5]])box([x1-x0,1.85,.03],[(x0+x1)/2,1.425,R.hall.bath],glass,'Umi-no-yu glass');
  for(const x of [-5,-3,-1,1,3,5])box([.08,1.85,.1],[x,1.425,R.hall.bath],darkWood,'Glass mullion');
@@ -151,8 +180,13 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
    // Its wooden frame: two stiles and two rails round the frosted glass, so it reads as a door against the plaster.
    for(const dx of [-.43,.43])box([.04,h,.035],[x+dx,.005+h/2,z],darkWood,'Bath door frame');for(const y of [.025,h-.015])box([.82,.04,.035],[x,.005+y,z],darkWood,'Bath door frame');
    box([1.67,.04,.05],[s*(.05+1.67/2),2.18,z-.005],darkWood,'Bath door track');}}
- const ceiling=new THREE.Mesh(new THREE.PlaneGeometry(10,5-R.hall.bath),mat(0xe9e0cc,.95));ceiling.rotation.x=Math.PI/2;ceiling.position.set(0,R.walls.height,(5+R.hall.bath)/2);room.add(ceiling);
- for(const z of [3.8,2.1,.2,-1.9,-3.4])box([10,.1,.12],[0,R.walls.height-.05,z],darkWood,'Ceiling beam');
+ // A ceiling for each room, with its beams: one name lifts the lid off one room (the lamps stay, hanging where they hang).
+ const ceilingMat=mat(0xe9e0cc,.95);
+ for(const C of ONSEN_CEILINGS){const g=new THREE.Group();g.name=C.name;g.userData.ceiling=true;room.add(g);
+  const boards=new THREE.Mesh(new THREE.PlaneGeometry(C.x1-C.x0,C.z1-C.z0),ceilingMat);boards.rotation.x=Math.PI/2;boards.position.set((C.x0+C.x1)/2,R.walls.height,(C.z0+C.z1)/2);boards.name=C.name+' boards';boards.receiveShadow=true;g.add(boards);
+  // A changing room's beam stops at the partition's face.
+  const bx0=C.x0===0?PART/2:C.x0,bx1=C.x1===0?-PART/2:C.x1;
+  for(const [z,name] of C.beams){const b=box([bx1-bx0,.1,.12],[(bx0+bx1)/2,R.walls.height-.05,z],darkWood,name,g);b.userData.beam=true;}}
  // Over the glass doorway to the rock bath, on the header facing the bath hall: the swimwear zone (ONSEN_SIGNS.swimZone).
  {const Z=ONSEN_SIGNS.swimZone,tex=canvasSign([[Z.lines[0],1],[Z.lines[1],.62],[Z.sub,.3]],{w:640,h:256,bg:'#f4f8f6',fg:'#1f5a7a',size:84});
   const sign=new THREE.Mesh(new THREE.PlaneGeometry(.9,.36),tex?new THREE.MeshStandardMaterial({map:tex,roughness:.8}):mat(0xf4f8f6,.8));sign.position.set(0,2.575,R.hall.bath+.065);sign.name='Swimwear zone sign';room.add(sign);
@@ -208,7 +242,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // The street doors, the porch beyond them, the shoes at the step and the umbrella stand.
  const front=buildOnsenFront({room,rect,anchor,action});
  // The straw jar on the milk cooler, the uchiwa rack by the tatami, the rubber plant by the bath door, the account book.
- buildOnsenProps({room,rect,anchor,action});
+ const props=buildOnsenProps({room,rect,anchor,action});
 
  // ---- Changing room.
  for(let i=0;i<6;i++)for(let r=0;r<2;r++){const z=1.25-i*.42;box([.45,.9,.4],[-4.75,.45+r*.95,z],mat(0xb9b2a0,.45),'Locker');box([.02,.12,.08],[-4.52,.55+r*.95,z+.12],mat(0xc9a13c,.3),'Locker key');}
@@ -224,7 +258,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const mirror=new THREE.MeshStandardMaterial({color:0xcfd8da,roughness:.05,metalness:.9});
  for(const x of [-3.9,-2.95,-2])box([.7,.8,.02],[x,1.35,-1.12],mirror,'Mirror');
  box([.34,.06,.34],[-2.3,.03,1.1],mat(0xdedad0,.4),'Scales');
- const fan=new THREE.Group();fan.position.set(3.85,0,1.2);room.add(fan);
+ const fan=new THREE.Group();fan.position.set(ONSEN_FAN.at[0],0,ONSEN_FAN.at[1]);fan.name='Changing-room fan';room.add(fan);
  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,1.1,8),mat(0xe6e2d8,.5));pole.position.y=.55;fan.add(pole);
  const fanHead=new THREE.Group();fanHead.position.y=1.12;fan.add(fanHead);
  fanHead.add(new THREE.Mesh(new THREE.TorusGeometry(.18,.01,6,24),mat(0x8fb3c6,.5)));const blades=new THREE.Mesh(new THREE.CircleGeometry(.16,5),mat(0x9fc6d8,.5,{side:THREE.DoubleSide,transparent:true,opacity:.7}));fanHead.add(blades);
@@ -313,21 +347,47 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  let time=0,fanTime=0;
  function tick(dt,minutes=720){
   time+=dt;
-  const day=daylight(minutes),night=1-day;
-  lobby.tick(dt,minutes,day,townCalendarAt(minutes).weekday);
-  const here=people();front.update(dt,minutes,here);front.light(day);
+  const day=daylight(minutes),night=1-day,fanOn=isWorking('fan');
+  if(fanOn)fanTime+=dt;
+  const here=people();
+  // The noren part for whoever passes, and the indigo one breathes in the fan's draught (onsen-lobby.js ONSEN_NOREN).
+  lobby.tick(dt,minutes,day,townCalendarAt(minutes).weekday,{people:here,fan:{at:ONSEN_FAN.at,time:fanTime,on:fanOn,yawAt:fanYaw}});
+  front.update(dt,minutes,here);front.light(day);
   const me=here.find(p=>p.name==null),inMen=!!me&&me.x>.05&&me.z<R.hall.front&&me.z>R.hall.changing;
   for(const o of womenSide)o.visible=!inMen;
   seaMat.color.setRGB(.25+.75*day,.3+.7*day,.45+.55*day);
   power.tick(day,dt);lanternGlow.emissiveIntensity=night*1.4;outdoor.intensity=night*5;
   for(const s of steam){const u=(s.userData.phase+time*s.userData.speed)%1,[x,y,z]=s.userData.base;s.position.set(x+Math.sin(u*6+x)*.15,y+.1+u*1.4,z);s.scale.setScalar(.35+u*.9);s.material.opacity=.3*Math.sin(u*Math.PI)*(.55+.45*night);}
   const k=time*1.3;tubWater.position.y=T.water+Math.sin(k)*.004;poolWater.position.y=P.water+Math.sin(k*.8+1)*.005;
-  if(isWorking('fan')){fanTime+=dt;fanHead.rotation.y=Math.sin(fanTime*.4)*.9;blades.rotation.z+=dt*18;}
+  if(fanOn){fanHead.rotation.y=fanYaw(fanTime);blades.rotation.z+=dt*18;}
   const m=((minutes%1440)+1440)%1440;hands[0].rotation.z=-(m%720)/720*Math.PI*2;hands[1].rotation.z=-(m%60)/60*Math.PI*2;
   // Seated at the bandai; now and then she looks up from her account book. Until the town has a seated Read pose
   // she holds it up the way a seated person holds a glass (SitHold), one forearm up before her.
   higaMotion?.update(dt,{speed:0,seated:true,seatHeight:.4,pose:Math.floor(time/9)%3===2?'Sit':'SitHold',expression:'neutral'});
  }
  tick(0);
- return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,doorways:ONSEN_DOORWAYS,power,townFill:power.townFill,tv:lobby.tv,streetDoor:front.door,genkan:front.genkan,dispose(){power.dispose();front.dispose();}};
+ /**
+  * The story's state of the room's things, by name (the film and capture-room.mjs `onsen.props`):
+  * - offering: 'none' | 'full' | 'empty' (Fujita's three coffee milks on the chair's arm);
+  * - timer: '9:58' or seconds (the chair's coin timer held at a reading), null to let it run;
+  * - dryers: {1: {at, aim} | null, …} (a dryer off the counter, its cord taut to its socket);
+  * - noren: {part, breathe} (part: false for a photograph with nobody in it);
+  * - signs: {reserved, hairRights, flyer} (page 5's paper war: his sign and their manifesto on the crimson noren, a flyer on her book).
+  * Returns what is set now.
+  */
+ const stageProps=(o={})=>{
+  if(o.offering!==undefined)props.stage({offering:o.offering});
+  if(o.signs!==undefined){lobby.paperWar(o.signs);if(o.signs.flyer!==undefined)props.stage({flyer:o.signs.flyer});}
+  if(o.timer!==undefined)power.chairTimer(o.timer);
+  for(const [n,pose] of Object.entries(o.dryers??{}))power.holdDryer(+n,pose);
+  if(o.noren!==undefined)lobby.noren.stage(o.noren);
+  return {offering:props.offered,signs:{...lobby.paperWar(),flyer:props.stage().flyer},timer:power.chairTimer(),noren:lobby.noren.state};};
+ const propsApi={stage:stageProps,get state(){return stageProps();}};
+ const audit=typeof window!=='undefined'?window.__JOHANSSON_AUDIT__:null;
+ if(audit)audit.onsenProps=propsApi;
+ return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,doorways:ONSEN_DOORWAYS,power,townFill:power.townFill,tv:lobby.tv,streetDoor:front.door,genkan:front.genkan,
+  noren:lobby.noren,props:propsApi,
+  // Every frame, and for a frozen photograph (game.js audit render): what shows the room's state without time passing.
+  realUpdate(){lobby.refresh(people());power.refresh();},
+  dispose(){power.dispose();front.dispose();if(audit&&audit.onsenProps===propsApi)delete audit.onsenProps;}};
 }

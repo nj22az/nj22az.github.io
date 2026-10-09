@@ -6,6 +6,22 @@ import {ONSEN_SIGNS} from './onsen-signs.js';
 export const MASSAGE_CHAIR=Object.freeze({front:4.2});
 
 /**
+ * The chair's coin timer (コインタイマー) on the front of its right arm: ¥100 buys ten minutes, counted down on a red LED
+ * readout, minutes and seconds, over the 運転中 lamp and the coin slot. The readout is the chair's own state (chairTimer):
+ * a coin starts it at 10:00, it counts down only while the chair has power and runs, and at 0:00 the chair stops. Like any
+ * coin timer of the period it keeps the paid time in a relay, so a power cut forgets it: the readout goes dark and the coin
+ * is gone (page 2: "the coin is gone"); when the power comes back the chair stays still until somebody pays again.
+ */
+export const CHAIR_TIMER=Object.freeze({coin:100,seconds:600,name:'Massage chair timer display',
+ for:'Whoever sits in the chair, to see how much of their hundred yen is left; and Mrs Higa, who can read it from the bandai when somebody says the chair cheated them.',
+ why:'On the coin box at the front of the right arm, at the sitter’s right hand and facing the lobby, so the sitter and the people waiting both see it.',
+ period:'A 1994 coin-operated chair: a cream steel coin box with a coin slot, a red 運転中 lamp and a four-digit red seven-segment LED, the cheap readout of every coin-op machine of the late eighties (coin TVs in inns, game machines). A dial cannot show seconds; the LED can, which is why the story can say 9:58.'});
+
+/** A hair dryer's cord (all three, ~1.7 m from the handle to the plug): how far a bather can take it from its socket. */
+export const DRYER_CORD=Object.freeze({length:1.7,
+ why:'A household dryer’s cord of the period is about 1.7 m: enough to dry your hair standing at the mirror, not enough to reach the noren 3 m away, so the women fire from their mirrors (the story’s artillery), the cords taut to the sockets.'});
+
+/**
  * Umi-no-yu's electrics: the 分電盤 (distribution board) on the wall behind Mrs Higa's stool
  * at the bandai, the circuits it feeds, and the things on them.
  *
@@ -183,6 +199,10 @@ export const ONSEN_FIX=Object.freeze({
  route:'New 1.6 mm cable from each new breaker up into the ceiling void and down inside the vanity wall to its mirror’s socket: nothing on the walls, nothing to snag a towel.',
  tape:plain({en:'One roll of cream masking tape, written on in black marker',roll:'Nhung’s',
   why:'Every way on a board is labelled, or the next person to open it guesses. A printed label is for the next inspection; tonight it is tape and a marker, which is what an electrician carries.'}),
+ // Circuit 1's printed label still says changing-room sockets; after the fix it feeds only the left mirror and the chair,
+ // so he tapes its new name over it too: three tapes, one straw each.
+ relabel:plain({id:'changing-sockets',no:1,tape:plain({jp:'左鏡 ドライヤー・椅子',en:'left mirror dryer + chair'}),
+  why:'The printed label says changing-room sockets, but after the fix circuit 1 feeds only the left mirror and the massage chair (14 A at most): the label must say what the breaker feeds, so he writes it on tape like the new ones.'}),
  circuits:Object.freeze([
   plain({id:'vanity-2',no:7,way:7,jp:'中鏡ドライヤー',en:'Middle mirror dryer',amps:20,volts:ONSEN_VOLTS,moves:Object.freeze(['dryer-2']),
    tape:plain({jp:'中鏡 ドライヤー',en:'middle mirror dryer'}),
@@ -252,6 +272,8 @@ const on=new Map(ALL_SWITCHES.map(id=>[id,true]));
 const running=new Set(AT_REST);
 const heat=new Map(ALL_SWITCHES.map(id=>[id,0]));
 let held=false;
+// The coin timer: seconds of the coin left, and whether a film holds it at a reading (chairTimer).
+let chairLeft=0,timerPinned=false;
 const listeners=new Set();
 const changed=()=>{for(const fn of listeners)fn();};
 const switchesNow=()=>['main','elcb',...circuitsNow().map(c=>c.id)];
@@ -302,9 +324,24 @@ export function advance(seconds){
 /** Run the clock until nothing more will trip: what the room settles into if left alone. */
 export function settle(){const all=[];for(let i=0;i<ALL_SWITCHES.length;i++){const a=assess(),next=Math.min(...a.circuits.map(c=>c.tripIn),a.main.tripIn);if(!Number.isFinite(next))break;all.push(...advance(next+1e-6));}return all;}
 /** Switch a load on. It draws at once; an overload trips its breaker in the curve's time (advance). */
-export function switchOn(loadId){knownLoad(loadId);held=false;if(running.has(loadId))return false;running.add(loadId);changed();return true;}
-export function switchOff(loadId){knownLoad(loadId);held=false;if(!running.delete(loadId))return false;changed();return true;}
-export function trip(id){known(id);held=false;if(!on.get(id))return false;on.set(id,false);heat.set(id,0);changed();return true;}
+export function switchOn(loadId){knownLoad(loadId);held=false;if(running.has(loadId))return false;running.add(loadId);if(loadId===CHAIR){chairLeft=CHAIR_TIMER.seconds;timerPinned=false;}changed();return true;}
+export function switchOff(loadId){knownLoad(loadId);held=false;if(!running.delete(loadId))return false;if(loadId===CHAIR){chairLeft=0;timerPinned=false;}changed();return true;}
+const CHAIR='massage-chair';
+/** A reading as the LED shows it: whole seconds, rounded up, M:SS. */
+export const timerReads=seconds=>{const t=Math.max(0,Math.ceil(seconds-1e-9));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');};
+const readSeconds=v=>{if(typeof v==='number'&&v>=0&&v<=CHAIR_TIMER.seconds)return v;const m=/^(\d{1,2}):([0-5]\d)$/.exec(String(v));const t=m?+m[1]*60+ +m[2]:NaN;
+ if(!(t>=0&&t<=CHAIR_TIMER.seconds))throw new Error('The chair’s timer reads 0:00 to 10:00: '+v);return t;};
+/**
+ * The chair's coin timer: with no argument, what it shows ({left seconds, reads 'M:SS', lit, running, pinned}). With a
+ * reading ('9:58' or seconds) a film holds it there (the chair keeps kneading; any coin, switch or click lets it go);
+ * null lets it run again.
+ */
+export function chairTimer(value){
+ if(value===null){timerPinned=false;changed();}
+ else if(value!==undefined){chairLeft=readSeconds(value);timerPinned=true;changed();}
+ return {left:chairLeft,reads:timerReads(chairLeft),lit:isPowered(CHAIR),running:running.has(CHAIR),pinned:timerPinned};
+}
+export function trip(id){known(id);held=false;timerPinned=false;if(!on.get(id))return false;on.set(id,false);heat.set(id,0);changed();return true;}
 export function reset(id){known(id);held=false;if(on.get(id))return false;on.set(id,true);changed();return true;}
 export function resetAll(){let any=false;for(const id of switchesNow())if(!on.get(id)){on.set(id,true);any=true;}if(any)changed();}
 
@@ -322,7 +359,7 @@ export const ONSEN_SCENARIOS=Object.freeze({
   en:'Nobody at the mirrors and the chair free: the lamps, the andon, the television, the fan, the milk cooler and the pump.'}),
  quiet:Object.freeze({on:['dryer-2','massage-chair'],down:[],tv:'night-game',
   en:'A quiet evening: one dryer and the chair, 14 A on the changing-room sockets, well inside 20 A.'}),
- rush:Object.freeze({on:BUSY,down:[],hold:true,tv:'night-game',panels:Object.freeze(['2a','2b','2c','2d','4d']),
+ rush:Object.freeze({on:BUSY,down:[],hold:true,chair:5,tv:'night-game',panels:Object.freeze(['2a','2b','2c','2d','4d']),
   en:'The ferry is in: three dryers and the massage chair at once, 38 A on a 20 A branch, the lever still up for the half minute before it lets go. The main sees 47 A.'}),
  busy:Object.freeze({on:BUSY,down:[],settle:true,tv:'night-game',panels:Object.freeze(['3a','3b','3c','3d','3e','4a','4b','4c','4e','5e','6a','6b','6c','6d']),
   en:'The same four loads, after the click: the changing-room sockets are down, the dryers and the chair dead with their switches still on; the lamps, the television and the main hold.'}),
@@ -332,6 +369,8 @@ export const ONSEN_SCENARIOS=Object.freeze({
   en:'Still isolated, the blanking covers out of the spare ways and two new 20 A breakers clipped in, their levers down and no labels yet: the moment Nhung offers the tape.'}),
  fixed:Object.freeze({on:BUSY,down:[],wiring:'rewired',tape:true,settle:true,board:'open',tv:'night-game',panels:Object.freeze(['7c','8a','8b','8c']),
   en:'After the fix, everything at once: the left mirror and the chair on circuit 1 (14 A), the middle and right mirrors on the new circuits 7 and 8 (12 A each), the main at 47 A. Nothing trips.'}),
+ peace:Object.freeze({on:BUSY,down:[],wiring:'rewired',tape:true,settle:true,timer:'9:58',tv:'night-game',panels:Object.freeze(['11a','11b','11c','11d','11e']),
+  en:'Page 10: the board shut again as if it saw nothing, all three dryers and the chair running on the rewired board, and the chair’s timer held at 9:58: two seconds into his ten minutes, and he is asleep.'}),
 });
 /**
  * The board's door: 'shut', 'open' or an angle in degrees (0 shut … ONSEN_BOARD.door.open). A film can open it in any
@@ -350,7 +389,9 @@ export function stageScenario(name){
  running.clear();for(const id of [...AT_REST,...s.on])running.add(knownLoad(id));
  for(const id of s.down)known(id);
  for(const id of ALL_SWITCHES){on.set(id,!s.down.includes(id));heat.set(id,0);}
+ chairLeft=running.has(CHAIR)?CHAIR_TIMER.seconds-(s.chair||0):0;timerPinned=false;
  held=false;if(s.settle)settle();held=!!s.hold;
+ if(s.timer!==undefined){chairLeft=readSeconds(s.timer);timerPinned=true;}
  pinLobbyChannel(s.tv);changed();return assess();
 }
 
@@ -485,6 +526,10 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   const t=add(new THREE.PlaneGeometry(LABEL_W*.98,LABEL_H*.92),new THREE.MeshStandardMaterial(Object.assign({roughness:.85,alphaTest:.5},(()=>{const tex=tapeTexture([[`${f.no}  ${f.tape.jp}`,58,.4],[`${f.tape.en} · ${f.amps}A`,34,.76]],seed);return tex?{map:tex}:{color:0xead9a4};})())),
    L.x,labelY(L)+.001,face+.0012,'Tape label '+f.id,board);
   t.rotation.z=(hash(f.no,5)-.5)*.06;t.castShadow=false;t.userData.tape=f.id;tapes.push(t);}
+ {const f=ONSEN_FIX.relabel,L=LAYOUT[f.id];
+  const t=add(new THREE.PlaneGeometry(LABEL_W*.98,LABEL_H*.92),new THREE.MeshStandardMaterial(Object.assign({roughness:.85,alphaTest:.5},(()=>{const tex=tapeTexture([[`${f.no}  ${f.tape.jp}`,52,.4],[`${f.tape.en} · ${ONSEN_CIRCUITS[0].amps}A`,32,.76]],f.no*31);return tex?{map:tex}:{color:0xead9a4};})())),
+   L.x,labelY(L)+.001,face+.0012,'Tape label '+f.id,board);
+  t.rotation.z=(hash(f.no,5)-.5)*.06;t.castShadow=false;t.userData.tape=f.id;tapes.push(t);}
  // The door, hinged on its right (the bandai-wall side, so it opens away from Mrs Higa and clear of the wall), the
  // circuit list inside it; on its face a printed staff-only card and a small latch.
  const hinge=new THREE.Group();hinge.position.set(B.w/2,0,B.d);hinge.name='Breaker board door';board.add(hinge);
@@ -527,11 +572,12 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   add(new THREE.BoxGeometry(.035,.04,.022),greyPlastic,0,0,.023,name+' plug',g);return g;};
  // A cord through its points with the corners rounded by quadratic curves, which never
  // leave the hull of their points: it cannot dip through the floor or the counter.
- const cord=(points,name)=>{const v=points.map(p=>new THREE.Vector3(...p)),mid=(a,b)=>a.clone().add(b).multiplyScalar(.5),path=new THREE.CurvePath();
+ const cordGeometry=points=>{const v=points.map(p=>new THREE.Vector3(...p)),mid=(a,b)=>a.clone().add(b).multiplyScalar(.5),path=new THREE.CurvePath();
   path.add(new THREE.LineCurve3(v[0],mid(v[0],v[1])));
   for(let i=1;i<v.length-1;i++)path.add(new THREE.QuadraticBezierCurve3(mid(v[i-1],v[i]),v[i],mid(v[i],v[i+1])));
   path.add(new THREE.LineCurve3(mid(v.at(-2),v.at(-1)),v.at(-1)));
-  const tube=new THREE.Mesh(new THREE.TubeGeometry(path,48,.004,6),cordMat);tube.name=name;tube.castShadow=true;group.add(tube);return tube;};
+  const g=new THREE.TubeGeometry(path,48,.004,6);g.userData.length=path.getLength();return g;};
+ const cord=(points,name)=>{const tube=new THREE.Mesh(cordGeometry(points),cordMat);tube.name=name;tube.castShadow=true;tube.userData.points=points;group.add(tube);return tube;};
  const DRYERS=[{color:0xe9e3d3,len:.17,nozzle:.055},{color:0x8fbcd4,len:.18,nozzle:.075},{color:0xe39a8c,len:.16,nozzle:.05}];
  const rating=sticker('1200W  100V','HAIR DRYER');
  // What a running dryer shows: its pilot lamp lit, a faint hum on the counter, and air
@@ -556,8 +602,32 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   socket(sx,.88,vanity.wall,0,'Vanity socket '+(i+1));
   const hx=x-.01;
   // Each cord is named for its dryer, so a film can hide one dryer and its cord and keep the others.
-  cord([[hx,.825,-1.016],[hx,.815,-1.04],[(hx+sx)/2,.814,-1.07],[sx,.815,-1.095],[sx,.83,-1.112],[sx,.862,-1.117]],'Hair dryer '+(i+1)+' cord');
+  const rest=[[hx,.825,-1.016],[hx,.815,-1.04],[(hx+sx)/2,.814,-1.07],[sx,.815,-1.095],[sx,.83,-1.112],[sx,.862,-1.117]];
+  const c=cord(rest,'Hair dryer '+(i+1)+' cord');
+  Object.assign(dryers.at(-1),{cord:c,rest,plug:new THREE.Vector3(sx,.862,-1.117),home:{position:g.position.clone(),quaternion:g.quaternion.clone()}});
  });
+ /**
+  * A dryer taken off the counter (the film puts it in a hand): `at` is where the dryer's body sits (its group origin),
+  * `aim` the point the nozzle looks at, the handle hanging below. Its cord runs taut from the foot of the handle to its
+  * socket, with the little sag a pulled cord keeps, and must reach (DRYER_CORD). null puts it back on the counter.
+  * Returns the cord's length and how much of the cord is left.
+  */
+ const handleFoot=new THREE.Vector3(-.01,.015,-.155),UP=new THREE.Vector3(0,1,0);
+ function holdDryer(n,pose=null){
+  const D=dryers[n-1];if(!D)throw new Error('No hair dryer '+n+' at the mirrors');
+  if(pose==null){D.group.position.copy(D.home.position);D.group.quaternion.copy(D.home.quaternion);D.held=null;D.cord.geometry.dispose();D.cord.geometry=cordGeometry(D.rest);D.cord.userData.points=D.rest;return {dryer:n,held:false,length:D.cord.geometry.userData.length};}
+  const at=new THREE.Vector3(...pose.at),X=new THREE.Vector3(...pose.aim).sub(at).normalize(),Z=UP.clone().addScaledVector(X,-X.dot(UP));
+  if(!(Z.lengthSq()>1e-6))throw new Error('Aim a dryer at something, not straight up or down');Z.normalize();const Y=Z.clone().cross(X);
+  // Worked out first and applied only if the cord reaches: a refused pose leaves the dryer where it was.
+  const g=D.group,q=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Y,Z)),m=new THREE.Matrix4().compose(at,q,g.scale);
+  const foot=handleFoot.clone().applyMatrix4(m),plug=D.plug,drop=foot.clone().add(new THREE.Vector3(0,-.03,0));
+  const midPoint=drop.clone().lerp(plug,.5);midPoint.y-=.012*drop.distanceTo(plug);
+  const points=[foot,drop,midPoint,plug.clone().add(new THREE.Vector3(0,0,.03)),plug].map(v=>v.toArray());
+  const geometry=cordGeometry(points),length=geometry.userData.length;
+  if(length>DRYER_CORD.length){geometry.dispose();throw new Error(`Hair dryer ${n}'s cord is ${DRYER_CORD.length} m; that needs ${length.toFixed(2)} m`);}
+  g.position.copy(at);g.quaternion.copy(q);D.cord.geometry.dispose();D.cord.geometry=geometry;D.cord.userData.points=points;D.held={at:pose.at,aim:pose.aim};
+  return {dryer:n,held:true,length,spare:DRYER_CORD.length-length};
+ }
  // ---- The massage chair's 1994 spur (ONSEN_RACEWAY): white raceway round the women's changing
  // room, through the partition, over both noren, through the wall, down to a surface socket box by the chair.
  const RW=ONSEN_RACEWAY,rwMat=new THREE.MeshStandardMaterial({color:RW.colour,roughness:.32});
@@ -597,10 +667,28 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
  const chairPlate=add(new THREE.PlaneGeometry(.11,.05),printed(sticker('200W  100V','MASSAGE CHAIR'),0xf6f4ee),MASSAGE_CHAIR.front-.003,.3,3.75,'Massage chair rating plate');chairPlate.rotation.y=-Math.PI/2;chairPlate.castShadow=false;
  // The coin timer on the front of the chair's right arm: ¥100 for ten minutes, and the red
  // 運転中 lamp that says it is running.
- const timer=new THREE.Group();timer.name='Massage chair coin timer';timer.position.set(MASSAGE_CHAIR.front+.035,.6,3.17);group.add(timer);
- add(new THREE.BoxGeometry(.03,.1,.08),new THREE.MeshStandardMaterial({color:0xd9d3c4,roughness:.5}),0,0,0,'Massage chair coin box',timer);
- const chairLamp=add(new THREE.SphereGeometry(.009,12,8),new THREE.MeshStandardMaterial({color:0x6a2018,emissive:0xff4a2a,emissiveIntensity:2,roughness:.3}),-.015,.028,0,'Massage chair lamp',timer);chairLamp.castShadow=false;
- const coin=add(new THREE.PlaneGeometry(.066,.036),printed(sticker('100円 10分','¥100 · 10 MIN'),0xf6f4ee),-.0155,-.016,0,'Massage chair timer label',timer);coin.rotation.y=-Math.PI/2;coin.castShadow=false;
+ // 運転中 lamp that says it is running, the coin slot, and the LED readout of the time left (CHAIR_TIMER).
+ // The box stands against the arm's front face (x = MASSAGE_CHAIR.front + 0.05) and under its top (y 0.71).
+ const timer=new THREE.Group();timer.name='Massage chair coin timer';timer.position.set(MASSAGE_CHAIR.front+.0325,.6,3.17);group.add(timer);
+ const BOXD=.035,faceX=-BOXD/2;
+ add(new THREE.BoxGeometry(BOXD,.15,.08),new THREE.MeshStandardMaterial({color:0xd9d3c4,roughness:.5}),0,0,0,'Massage chair coin box',timer);
+ // The readout: a smoked window with four red seven-segment digits; dark glass when the chair has no power.
+ const ledCanvas=typeof document!=='undefined'&&document.createElement?document.createElement('canvas'):null;let ledCtx=null,ledTex=null;
+ if(ledCanvas){ledCanvas.width=128;ledCanvas.height=56;ledCtx=ledCanvas.getContext?.('2d')||null;if(ledCtx?.fillRect){ledTex=new THREE.CanvasTexture(ledCanvas);ledTex.colorSpace=THREE.SRGBColorSpace;}else ledCtx=null;}
+ add(new THREE.BoxGeometry(.004,.034,.068),darkPlastic,faceX-.002,.044,0,'Massage chair timer bezel',timer).castShadow=false;
+ const led=add(new THREE.PlaneGeometry(.062,.028),new THREE.MeshBasicMaterial(ledTex?{map:ledTex,toneMapped:false}:{color:0x1a0c0a}),faceX-.0042,.044,0,CHAIR_TIMER.name,timer);led.rotation.y=-Math.PI/2;led.castShadow=false;
+ const chairLamp=add(new THREE.SphereGeometry(.007,12,8),new THREE.MeshStandardMaterial({color:0x6a2018,emissive:0xff4a2a,emissiveIntensity:2,roughness:.3}),faceX-.002,.012,-.024,'Massage chair lamp',timer);chairLamp.castShadow=false;
+ add(new THREE.BoxGeometry(.004,.026,.004),darkPlastic,faceX-.0015,.012,.012,'Massage chair coin slot',timer).castShadow=false;
+ const coin=add(new THREE.PlaneGeometry(.066,.036),printed(sticker('100円 10分','¥100 · 10 MIN'),0xf6f4ee),faceX-.0005,-.04,0,'Massage chair timer label',timer);coin.rotation.y=-Math.PI/2;coin.castShadow=false;
+ // Seven segments a digit (a b c d e f g), drawn lit or as the faint unlit bars an LED shows behind its smoked glass.
+ const SEG={0:'abcdef',1:'bc',2:'abged',3:'abgcd',4:'fgbc',5:'afgcd',6:'afgedc',7:'abc',8:'abcdefg',9:'abcdfg'};
+ let ledShown=null;
+ const drawLed=(text,lit)=>{if(!ledCtx||ledShown===text+lit)return;ledShown=text+lit;const c=ledCtx;c.fillStyle='#160806';c.fillRect(0,0,128,56);
+  const digits=text.padStart(5,' ').split(''),on=lit?'#ff3b1f':'#2a0d09',off=lit?'#3a120c':'#22100c',W=18,H=40,T=4;
+  const seg=(x,y,k,col)=>{c.fillStyle=col;const S={a:[x+T,y,W-2*T,T],b:[x+W-T,y+T,T,H/2-T],c:[x+W-T,y+H/2,T,H/2-T],d:[x+T,y+H-T,W-2*T,T],e:[x,y+H/2,T,H/2-T],f:[x,y+T,T,H/2-T],g:[x+T,y+H/2-T/2,W-2*T,T]}[k];c.fillRect(...S);};
+  let x=10;for(const ch of digits){if(ch===':'){c.fillStyle=lit?on:off;c.fillRect(x+1,20,4,4);c.fillRect(x+1,32,4,4);x+=10;continue;}
+   for(const k of 'abcdefg')seg(x,8,k,ch!==' '&&SEG[ch]?.includes(k)?on:off);x+=W+6;}
+  ledTex.needsUpdate=true;};
  // The kneading rollers behind the backrest's cover: two soft lumps that knead and travel
  // up and down the back while it runs, and stop where they are when the power goes.
  // Measured in the room's own frame from the backrest onsen.js built (its parent is the room).
@@ -672,6 +760,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
    for(const name of l.hides||[]){const o=hidden.get(name);if(o)o.visible=live;}
   }
   for(const [id,o] of resetAnchors)o.visible=isFitted(id)&&!on.get(id);
+  drawLed(timerReads(chairLeft),isPowered(CHAIR));
   fill();
  }
 
@@ -720,11 +809,16 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   clock+=dt;
   for(const D of dryers){const target=isWorking(D.id)?1:0,rate=target>D.spin?1/.35:1/.8;
    D.spin=target>D.spin?Math.min(target,D.spin+dt*rate):Math.max(target,D.spin-dt*rate);
-   D.group.rotation.y=D.spin*.008*Math.sin(clock*2*Math.PI*D.hz+D.phase);
+   if(!D.held)D.group.rotation.y=D.spin*.008*Math.sin(clock*2*Math.PI*D.hz+D.phase);// on the counter it hums; in a hand the hand holds it
    D.air.visible=D.spin>.01;
    if(D.air.visible)for(const st of D.streaks){const u=(clock*1.8+st.userData.k/3+D.phase)%1;st.position.x=.02+u*.11;st.material.opacity=.7*D.spin*Math.sin(Math.PI*u);}
   }
   chairMoving=isWorking(chair.id)&&dt>0;if(chairMoving){chair.time+=dt;placeRollers();}
+  // The coin timer: a power cut forgets the coin; with power it counts down while the chair runs, and stops it at 0:00.
+  if(running.has(CHAIR)){
+   if(!isPowered(CHAIR)){if(chairLeft>0)chairLeft=0;}
+   else if(!timerPinned&&!held&&dt>0){chairLeft=Math.max(0,chairLeft-dt);if(chairLeft<=0)switchOff(CHAIR);}}
+  drawLed(timerReads(chairLeft),isPowered(CHAIR));
  };
  const appearance=loadId=>{const l=LOAD_BY_ID.get(knownLoad(loadId)),sh=l.shows||{},out={id:loadId,working:isWorking(loadId)};
   if(sh.lamp){const m=room.getObjectByName(sh.lamp);out.lamp=!!m&&m.material.emissiveIntensity>0;}
@@ -732,7 +826,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
   if(sh.motion)out.moving=chairMoving;
   return out;};
  const api={trip,reset,isLive,isOn,isFitted,loadOf,wattsOf,overloaded,resetAll,circuits:ONSEN_CIRCUITS,board:ONSEN_BOARD,
-  switchOn,switchOff,isRunning,isWorking,runningLoads,assess,advance,settle,stage:stageScenario,scenarios:ONSEN_SCENARIOS,
+  switchOn,switchOff,isRunning,isWorking,runningLoads,assess,advance,settle,stage:stageScenario,scenarios:ONSEN_SCENARIOS,chairTimer,holdDryer,
   wiring:boardWiring,circuitOf,spareWays:ONSEN_SPARE_WAYS,fix:ONSEN_FIX,raceway:ONSEN_RACEWAY,appearance,boardDoor,
   tv:{pin:pinLobbyChannel,get pinned(){return lobbyChannelPin();},channels:LOBBY_CHANNELS},
   /** The share of the town's indoor fill that reaches the house now (1 with its lamps on; the daylight's share when they are dead). */
@@ -741,5 +835,7 @@ export function buildOnsenElectrics({room,rect,anchor,action,lamps=[],sun=null,s
  if(audit)audit.onsenPower=api;
  /** Daylight (0 night, 1 noon) from onsen.js's tick: by day the windows light a dark house. `dt` warms an overloaded breaker and moves what is running. */
  const tick=(d,dt=0)=>{advance(dt);animate(dt);if(d!==day){day=d;fill();}};
- return {...api,group,levers,tick,dispose(){listeners.delete(apply);if(audit&&audit.onsenPower===api)delete audit.onsenPower;}};
+ /** What the room shows of its state without time passing (a frozen photograph): the timer's readout. */
+ const refresh=()=>drawLed(timerReads(chairLeft),isPowered(CHAIR));
+ return {...api,group,levers,tick,refresh,dispose(){listeners.delete(apply);if(audit&&audit.onsenPower===api)delete audit.onsenPower;}};
 }
