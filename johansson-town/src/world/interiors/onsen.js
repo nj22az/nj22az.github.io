@@ -12,7 +12,8 @@ import {buildOnsenTowels} from './onsen-towels.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
 import {buildOnsenFront} from './onsen-front.js';
 import {buildOnsenProps} from './onsen-props.js';
-import {buildOnsenNight} from './onsen-night.js';
+import {buildOnsenNight,seaViewGeometry} from './onsen-night.js';
+import {rockGeometry} from './onsen-rocks.js';
 import {buildOnsenSteam} from './onsen-steam.js';
 
 /**
@@ -297,9 +298,18 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const poolFloor=new THREE.Mesh(new THREE.CircleGeometry(1,40),stone);poolFloor.scale.set(P.rx,P.rz,1);poolFloor.rotation.x=-Math.PI/2;poolFloor.position.set(P.x,P.floor,P.z);room.add(poolFloor);
  const poolWall=new THREE.Mesh(new THREE.CylinderGeometry(1,1,P.rim-P.floor,40,1,true),mat(0x6f6a60,.95,{side:THREE.DoubleSide}));poolWall.scale.set(P.rx,1,P.rz);poolWall.position.set(P.x,(P.rim+P.floor)/2,P.z);room.add(poolWall);
  const poolWater=new THREE.Mesh(new THREE.CircleGeometry(1,40,0,Math.PI*2),water);poolWater.scale.set(P.rx-.02,P.rz-.02,1);poolWater.rotation.x=-Math.PI/2;poolWater.position.set(P.x,P.water,P.z);poolWater.name='Rock bath water';poolWater.renderOrder=2;room.add(poolWater);
+ // The ink draws its lines from the depth of the picture (render/ink-pipeline.js), and the water, being see-through, writes
+ // none: the rocks' and the bathers' parts under it were inked through it as scribbles on the surface. This copy of the
+ // surface writes depth and no colour, last of all (after the steam, which it must not cut), and out to the pool's wall,
+ // so the ink sees the water as the surface it is: a line where a stone or a shoulder comes out of it, nothing below.
+ {const surface=new THREE.Mesh(poolWater.geometry,new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:true,transparent:true,fog:false}));
+  surface.name='Rock bath water surface (ink)';surface.renderOrder=10;surface.scale.set((P.rx+.01)/(P.rx-.02),(P.rz+.01)/(P.rz-.02),1);
+  surface.raycast=()=>{};surface.castShadow=surface.receiveShadow=false;surface.userData.inkSurface=true;poolWater.add(surface);}
  let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
  const rockMat=mat(0x77716a,.95),darkRock=mat(0x5b5750,.95);
- const rock=(x,z,s,y=0)=>{const g=new THREE.IcosahedronGeometry(1,1),p=g.attributes.position;for(let i=0;i<p.count;i++){const k=.78+rnd()*.35;p.setXYZ(i,p.getX(i)*k,p.getY(i)*k*.62,p.getZ(i)*k);}g.computeVertexNormals();
+ // Closed, smooth stones (onsen-rocks.js): the shape takes the same 240 draws from the sequence as it always did, so the
+ // colour, turn and size of every rock after it are as they were.
+ const rock=(x,z,s,y=0)=>{const g=rockGeometry(rnd,s);
   const m=new THREE.Mesh(g,rnd()>.5?rockMat:darkRock);m.scale.setScalar(s);m.position.set(x,y+s*.25,z);m.rotation.y=rnd()*6;m.castShadow=m.receiveShadow=true;m.name='Bath rock';room.add(m);return m;};
  for(let i=0;i<30;i++){const a=i/30*Math.PI*2,x=P.x+Math.cos(a)*(P.rx+.12),z=P.z+Math.sin(a)*(P.rz+.1);
   // Leave the step-in gap facing the door low.
@@ -319,7 +329,9 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  for(const h of [.4,.9])box([10,.05,.05],[0,h,R.walls.minZ+.1],darkWood,'Fence rail');
  for(const x of [-4.95,4.95])for(const h of [.6,1.5])box([.05,.05,Math.abs(R.walls.minZ-R.hall.bath)],[x,h,(R.walls.minZ+R.hall.bath)/2],darkWood,'Fence rail');
  rect(-4.95,(R.walls.minZ+R.hall.bath)/2,.2,4.8,2.2);rect(4.95,(R.walls.minZ+R.hall.bath)/2,.2,4.8,2.2);rect(0,R.walls.minZ+.05,10,.2,1.1);
- const seaMat=new THREE.MeshBasicMaterial({map:seaTexture(),fog:false});const sea=new THREE.Mesh(new THREE.PlaneGeometry(90,30),seaMat);sea.position.set(0,6,-45);sea.name='Umi-no-yu sea view';room.add(sea);
+ // The painted sea and sky: flat where the harbour lights are, bending round behind the side fences and on up as sky, so
+ // no edge of it shows from the water or the wide views (onsen-night.js ONSEN_SEA_VIEW).
+ const seaMat=new THREE.MeshBasicMaterial({map:seaTexture(),fog:false});const sea=new THREE.Mesh(seaViewGeometry(),seaMat);sea.name='Umi-no-yu sea view';room.add(sea);
  // Stone lantern and a fukugi tree in the corner.
  box([.34,.5,.34],[-4.2,.25,-8.2],stone,'Lantern base');box([.5,.08,.5],[-4.2,.54,-8.2],stone,'Lantern ledge');
  // Its bulb is on the bath lights, behind a photocell (onsen-electrics.js 'garden-lantern').
