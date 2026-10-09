@@ -11,6 +11,7 @@ import {buildOnsenElectrics,isPowered,isWorking,MASSAGE_CHAIR} from './onsen-ele
 import {buildOnsenTowels} from './onsen-towels.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
 import {buildOnsenFront} from './onsen-front.js';
+import {buildOnsenProps} from './onsen-props.js';
 
 /**
  * Inside Umi-no-yu: through the noren to the bandai, the changing room, the washing
@@ -23,7 +24,8 @@ import {buildOnsenFront} from './onsen-front.js';
  * onsen-towels.js. The pools are sunk below the floor: you walk round them and get in by the seats.
  *
  * The front of the house (genkan, bandai, lobby, noren) is dressed in onsen-lobby.js; the street
- * doors, the shoes at the step and the umbrella stand are in onsen-front.js.
+ * doors, the shoes at the step and the umbrella stand are in onsen-front.js; the small things with a story
+ * (the straw jar, the uchiwa rack, Mrs Higa's rubber plant and her account book) in onsen-props.js.
  *
  * Room frame: the street door is at +z, the sea at -z. Metres, floor at y = 0.
  */
@@ -140,7 +142,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const higa=typeof document!=='undefined'&&document.createElement?buildAvatar(recipeFor('Mrs Higa'),{shadows:true,faceSize:256}):null,higaMotion=higa&&createAvatarAnimator(higa);if(higa)attendant.add(higa.root);
  anchor([-3.5,1.25,2.55],'Pay at the bandai · ¥300',()=>action('onsen-pay'));
  anchor([-3.5,1.25,3.1],'Talk to the attendant',()=>action('inspect','Umi-no-yu attendant',
-  'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her crossword. "A bath wrap or swimwear in the bath, please -- it is a family bath. The rock bath is best after dark."'));
+  'Higa-san has kept the bandai for thirty years. She takes your coins without looking up from her account book. "A bath wrap or swimwear in the bath, please -- it is a family bath. The rock bath is best after dark."'));
  // The price board on the counter's front, under the top (ONSEN_SIGNS.fee): read from the genkan while you count your
  // coins, and never between Mrs Higa's face and the people she is talking to.
  const fee=canvasSign(ONSEN_SIGNS.fee.lines.map((text,i)=>[text,i?.5:1]),{w:384,h:192,bg:'#fbf6ea',size:60});
@@ -164,6 +166,8 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const lobby=buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seats:ONSEN_SEATS});
  // The street doors, the porch beyond them, the shoes at the step and the umbrella stand.
  const front=buildOnsenFront({room,rect,anchor,action});
+ // The straw jar on the milk cooler, the uchiwa rack by the tatami, the rubber plant by the bath door, the account book.
+ buildOnsenProps({room,rect,anchor,action});
 
  // ---- Changing room.
  for(let i=0;i<6;i++)for(let r=0;r<2;r++){const z=1.25-i*.42;box([.45,.9,.4],[-4.75,.45+r*.95,z],mat(0xb9b2a0,.45),'Locker');box([.02,.12,.08],[-4.52,.55+r*.95,z+.12],mat(0xc9a13c,.3),'Locker key');}
@@ -271,7 +275,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   const k=time*1.3;tubWater.position.y=T.water+Math.sin(k)*.004;poolWater.position.y=P.water+Math.sin(k*.8+1)*.005;
   if(isWorking('fan')){fanTime+=dt;fanHead.rotation.y=Math.sin(fanTime*.4)*.9;blades.rotation.z+=dt*18;}
   const m=((minutes%1440)+1440)%1440;hands[0].rotation.z=-(m%720)/720*Math.PI*2;hands[1].rotation.z=-(m%60)/60*Math.PI*2;
-  // Seated at the bandai; now and then she looks up from her crossword. Until the town has a seated Read pose
+  // Seated at the bandai; now and then she looks up from her account book. Until the town has a seated Read pose
   // she holds it up the way a seated person holds a glass (SitHold), one forearm up before her.
   higaMotion?.update(dt,{speed:0,seated:true,seatHeight:.4,pose:Math.floor(time/9)%3===2?'Sit':'SitHold',expression:'neutral'});
  }
