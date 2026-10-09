@@ -7,6 +7,7 @@ import {bodyLanguage,CONVERSATION_BIG} from './body-language.js';
 import {createFootGrounder,createLieGrounder} from './foot-ground.js';
 import {createSeatSupport} from './seat-support.js';
 import {gaitOf} from './gait.js';
+import {bodyVolume} from './build.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -23,9 +24,55 @@ const JOINTS=['hips','spine','chest','neck','head','shoulderL','elbowL','handL',
 const env=(t,d)=>t<0||t>d?0:Math.sin(Math.PI*Math.min(1,t/d));
 const TIC_TIME={glance:1.4,sky:1.6,nod:1,hum:2.4,watch:1.8,hair:1.4,kick:.8,skip:1.1};
 const ease=(t,d,edge=.25)=>Math.min(1,t/edge,(d-t)/edge);
+const smooth=x=>{x=Math.min(1,Math.max(0,x));return x*x*(3-2*x);};
+/** A big move (kneeling down, a deep bow): in over `a` seconds and, when it has an end, out over `b`, eased at both ends. */
+const inOut=(t,d,a,b=a)=>smooth(Math.min(t/a,d===Infinity?1:(d-t)/b));
 /** Face down, how far the head is raised (radians, neck and head together) so its cheek, the widest thing on
  *  them, rests on the ground beside the chest rather than holding it up off it. */
 const PRONE_LIFT=m=>Math.asin(THREE.MathUtils.clamp((m.Rh*m.headSX*1.04-m.depth/2)/(m.headCentre-m.neckY),0,.9));
+const _pose=new THREE.Vector3();
+/** KneelHug's kneel at a seat 0.5 m high whose front edge is 0.38 m before the mark (Umi-no-yu's massage chair; its back
+ *  0.43 m behind that edge): the thighs upright, the knees on the floor and the toes tucked under; leaning over the seat from
+ *  the hips, the head laid on its right cheek on the seat with the face turned to the left, the right forearm along the
+ *  seat, the left arm round its front. The arms are written for the right side (armTo mirrors the left). */
+const KNEEL=Object.freeze({hips:.3,spine:.1,chest:.24,neck:.4,head:[.5,1.45,0],thigh:0,knee:2.1,foot:-.28,
+ armR:[-1.7,.03,-.37,-.39],armL:[-.19,.34,-.47,-1.19],handR:[0,0,0],handL:[0,0,0]});
+/** LieKnead on the back: the knees up and the feet flat on the floor. */
+const KNEAD=Object.freeze({thigh:-.7,knee:1.92,foot:.35});
+/** On the back, how far the neck and head bend forward (radians, together) so the back of the head (with its hair) and the
+ *  back both rest on the floor: the head is far bigger than the body is deep. */
+const SUPINE_LIFT=m=>Math.asin(THREE.MathUtils.clamp((m.Rh*1.085-m.depth/2)/(m.headCentre-m.neckY),0,.9));
+/** Nelder–Mead from a fixed start: the same answer every time. */
+function minimise(f,x0,step=.25,iterations=320){
+ const n=x0.length;let S=[x0.slice()];for(let i=0;i<n;i++){const x=x0.slice();x[i]+=step;S.push(x);}let F=S.map(f);
+ for(let it=0;it<iterations;it++){
+  const o=S.map((_,i)=>i).sort((a,b)=>F[a]-F[b]);S=o.map(i=>S[i]);F=o.map(i=>F[i]);
+  const c=new Array(n).fill(0);for(let i=0;i<n;i++)for(let j=0;j<n;j++)c[j]+=S[i][j]/n;
+  const at=k=>c.map((v,j)=>v+k*(S[n][j]-v)),r=at(-1),fr=f(r);
+  if(fr<F[0]){const e=at(-2),fe=f(e);if(fe<fr){S[n]=e;F[n]=fe;}else{S[n]=r;F[n]=fr;}}
+  else if(fr<F[n-1]){S[n]=r;F[n]=fr;}
+  else{const k=at(.5),fk=f(k);if(fk<F[n]){S[n]=k;F[n]=fk;}else for(let i=1;i<=n;i++){S[i]=S[i].map((v,j)=>S[0][j]+.5*(v-S[0][j]));F[i]=f(S[i]);}}
+ }
+ let best=0;for(let i=1;i<=n;i++)if(F[i]<F[best])best=i;return S[best];
+}
+/**
+ * The moves whose mittens go to a place on the body itself -- the cheek, the sides of the neck, the edges of the face, together
+ * before the chest -- are worked out for each body, once (heads, shoulders and arms differ from one resident to the next): the
+ * arm's angles that put the middle of the mitten there, with the forearm kept out of the head and the chest. A place is on
+ * the head ([direction from its centre in its own frame, then how far off its surface], with the head turned as the move
+ * turns it: neck, head) or in the body's own frame at rest (`at`, from its measures). `seed`: the pose for Mr Fujita, written
+ * for the right arm; the left arm is the mirror unless it has its own.
+ */
+const REACH=Object.freeze({
+ CupHands:{head:[.2,0,0],R:{at:m=>[-m.hand*.95,m.shoulderY-.085*m.k,m.depth/2+.12*m.k],seed:[-.5,.83,-.15,-1.81,-.03],hand:[.63,0,.2]}},
+ CoinToCheek:{head:[.06,0,-.24],R:{head:[-.72,-.45,.55,.05],seed:[-1.55,.72,-.72,-1.55]},L:{head:[-.45,-.72,.62,.07],seed:[-2.19,.45,.89,-.82,-.02]}},
+ HoldOn:{head:[.05,0,0],R:{at:m=>[-(m.armR*1.08+.1*m.k),m.shoulderY+.09*m.k,.045*m.k],elbow:m=>[-(m.shoulderX+.05*m.k),m.shoulderY+.015*m.k,.24*m.k],seed:[-1.66,.47,-.2,-2.53,.55]}},
+ Peek:{neck:.2,head:[-.14,0,0],R:{head:[-.8,-.1,.75,.065],seed:[-1.67,.82,-.73,-.88]}},
+ GrenadeCoin:{head:[.08,0,0],R:{head:[-1,-.35,.25,.08],seed:[-1.63,.19,-1.01,-1.64]},L:{at:m=>[0,m.shoulderY-.1*m.k,m.depth/2+.13*m.k],seed:[-.89,.96,.19,-1.48]}},
+ BannerUp:{head:[-.08,0,0],R:{at:m=>[-(m.Rh*m.headSX+.09*m.k),m.headCentre+.03*m.k,.06*m.k],seed:[-2.98,.1,-.21,-.01]}},
+ HoldUp:{R:{at:m=>[-.04*m.k,m.headCentre-m.Rh*m.headSY*1.2,m.Rh*1.35],seed:[-1.29,.59,.18,-1.26]}},
+ HoldUpStraws:{R:{at:m=>[-(m.Rh*m.headSX+.06*m.k),m.headCentre-m.Rh*m.headSY*1.13,m.Rh*1.25],seed:[-.95,.08,-.35,-1.56]}},
+});
 
 /** How long each move lasts (loops run until something else happens). */
 export const GESTURES=Object.freeze({
@@ -42,7 +89,15 @@ export const GESTURES=Object.freeze({
  // singing into whatever is in the hand as a microphone (Sing: Laugh's body, held, swaying to the tune).
  HairDry:Infinity,Switch:Infinity,SwitchHigh:Infinity,Sing:Infinity,
  Talk:Infinity,Kachashi:Infinity,Crouch:Infinity,Phone:Infinity,FishIdle:Infinity,Reel:Infinity,
+ // Fujita's Ten Minutes of Heaven (the shot plan's batch C2). Held until the next move unless a time is given; BowDeep and
+ // PoleFlick are one movement that ends in a held pose (with `hold`, the hold takes the extra time, in and out at their pace).
+ CupHands:Infinity,CoinToCheek:Infinity,BowDeep:1.8,BowWalk:Infinity,KneelHug:Infinity,PoleFlick:2.4,Peek:Infinity,
+ BannerUp:Infinity,FanWild:Infinity,HoldOn:Infinity,FingerStop:Infinity,Tape:Infinity,Offer:Infinity,Reach:Infinity,
+ LieKnead:Infinity,GrenadeCoin:Infinity,Aim:Infinity,HoldUp:Infinity,HoldUpStraws:Infinity,Call:Infinity,WriteAbove:Infinity,
 });
+/** The moves that ease in from wherever the body is and back to it (the story's: they lerp from the pose under them). */
+const EASED=new Set(['CupHands','CoinToCheek','BowDeep','BowWalk','KneelHug','PoleFlick','Peek','BannerUp','FanWild','HoldOn','FingerStop',
+ 'Tape','Offer','Reach','LieKnead','GrenadeCoin','Aim','HoldUp','HoldUpStraws','Call','WriteAbove']);
 /** The body that goes with a feeling, played once when the feeling arrives. */
 export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump',angry:'Stomp',shy:'Fidget',surprised:'Gasp',worried:'Think'});
 
@@ -78,8 +133,50 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  const gazeLocal=new THREE.Vector3();
  let phase=0,time=Math.random()*10,rootY=0,hipsY=0,lean=0;
  let lie=0,lyingTilt=false,prone=false;
+ // KneelHug's kneel, 0..1: eased down and up over 0.8 s whatever ends the move (its time, another move, a stop).
+ let kneelRamp=0,kneel=0,kneelT=0;
  let gesture=null,blinkIn=1+Math.random()*3,blinkT=-1,talkT=0,talkOpen=0,glance=[0,0],glanceIn=2,lastExpression='neutral';
  const headRestPosition=bones.head.position.clone();
+ // ---- Hands on this body's own shape (REACH): worked out the first time each move is played, then kept.
+ const reached=new Map();let volume=null;
+ const _q=[0,1,2,3].map(()=>new THREE.Quaternion()),_eu=new THREE.Euler(),_p=[0,1,2,3,4].map(()=>new THREE.Vector3());
+ function reachFor(name){
+  if(reached.has(name))return reached.get(name);
+  const spec=REACH[name],k=m.k,S=[m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98],hc=m.headCentre-m.headY;volume??=bodyVolume(avatar.recipe,m);
+  // The head in the chest's frame, turned as the move turns it.
+  const qNeck=new THREE.Quaternion().setFromEuler(_eu.set(spec.neck||0,0,0)),qHead=qNeck.clone().multiply(new THREE.Quaternion().setFromEuler(_eu.set(...(spec.head||[0,0,0])))),qInv=qHead.clone().invert();
+  const headAt=bones.neck.position.clone().add(headRestPosition.clone().applyQuaternion(qNeck)),chestAt=new THREE.Vector3(0,m.chestY,0);
+  const onHead=([dx,dy,dz,off])=>{const u=new THREE.Vector3(dx,dy,dz).normalize(),n=new THREE.Vector3(u.x/S[0],u.y/S[1],u.z/S[2]).normalize();
+   return new THREE.Vector3(u.x*S[0],u.y*S[1]+hc,u.z*S[2]).addScaledVector(n,off*k).applyQuaternion(qHead).add(headAt);};
+  const headR=p=>{const q=_p[4].copy(p).sub(headAt).applyQuaternion(qInv);return Math.hypot(q.x/S[0],(q.y-hc)/S[1],q.z/S[2]);};
+  const out={};
+  for(const side of ['R','L']){
+   // a side without its own place is the mirror of the right
+   const own=!!spec[side],want=spec[side]||spec.R,sg=side==='R'?1:-1,mirror=a=>a.map((v,i)=>i===1||i===2||i===4?v*sg:v);
+   const flipX=v=>own?v:[-v[0],...v.slice(1)];
+   const target=want.head?onHead(flipX(want.head)):new THREE.Vector3(...flipX(want.at(m))).sub(chestAt);
+   const elbowAt=want.elbow?new THREE.Vector3(...flipX(want.elbow(m))).sub(chestAt):null;
+   const hand=want.hand?mirror(want.hand):[0,0,0],seed=mirror([...want.seed,0].slice(0,5));
+   const sh=bones['shoulder'+side].position,el=bones['elbow'+side].position,wr=bones['hand'+side].position,mit=new THREE.Vector3(0,-m.hand*.55,0);
+   const qHand=new THREE.Quaternion().setFromEuler(_eu.set(...hand));
+   const cost=x=>{
+    _q[0].setFromEuler(_eu.set(x[0],x[1],x[2]));const E=_p[0].copy(el).applyQuaternion(_q[0]).add(sh);
+    _q[1].copy(_q[0]).multiply(_q[2].setFromEuler(_eu.set(x[3],x[4],0)));const W=_p[1].copy(wr).applyQuaternion(_q[1]).add(E);
+    _q[3].copy(_q[1]).multiply(qHand);const M=_p[2].copy(mit).applyQuaternion(_q[3]).add(W);
+    let c=M.distanceToSquared(target)*100/(k*k);
+    if(elbowAt)c+=E.distanceToSquared(elbowAt)*10/(k*k);
+    // the forearm and the mitten out of the head and the chest
+    for(let i=0;i<=4;i++){const p=_p[3].copy(E).lerp(W,i/4),r=headR(p),near=1+m.armR*1.15/m.Rh;if(r<near)c+=(near-r)**2*40;
+     const d=volume.sdf(p.add(chestAt));if(d<m.armR*1.1&&p.y>m.hipY+.1*k)c+=((m.armR*1.1-d)/k)**2*400;}
+    const rm=headR(M),nearM=1+m.hand*.85/m.Rh;if(rm<nearM)c+=(nearM-rm)**2*300;
+    const dm=volume.sdf(_p[3].copy(M).add(chestAt));if(dm<m.hand*.9)c+=((m.hand*.9-dm)/k)**2*400;
+    for(let i=0;i<5;i++)c+=.01*(x[i]-seed[i])**2;if(x[3]>0)c+=x[3]**2;if(x[3]<-2.6)c+=(x[3]+2.6)**2;
+    return c;};
+   let x=seed;for(const step of [.3,.1,.03])x=minimise(cost,x,step);
+   out[side]=mirror(x);out['hand'+side]=want.hand||null;
+  }
+  reached.set(name,out);return out;
+ }
  let consumption=null,consumeTime=0,lastConsume=null,driftX=0;
  const set=(j,x=0,y=0,z=0)=>target[j].set(x,y,z);
  const add=(j,x=0,y=0,z=0)=>target[j].add(new THREE.Vector3(x,y,z));
@@ -187,9 +284,11 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // Walking and running: short legs, a quick step and a proper bounce.
    // Their own gait (gait.js) shapes every part of the step; running evens people out.
    const run=s.running||speed>2.6,G=run?{...gait,carry:'swing',lean:gait.lean*.5,sway:gait.sway*.5}:gait;
-   const stride=m.leg*(run?2.6:1.7)*strideStyle*G.stride;
-   phase+=speed/stride*Math.PI*2*dt*.5;
-   const A=(run?.95:Math.min(.62,.25+speed*.3))*Math.sqrt(G.stride),sp=Math.sin(phase),cp=Math.cos(phase);
+   // Backing out of a room with a bow (BowWalk): small steps, taken backwards (the step cycle runs the other way).
+   const backing=!run&&gesture?.name==='BowWalk',small=backing?.55:1;
+   const stride=m.leg*(run?2.6:1.7)*strideStyle*G.stride*small;
+   phase+=(backing?-1:1)*speed/stride*Math.PI*2*dt*.5;
+   const A=(run?.95:Math.min(.62,.25+speed*.3))*Math.sqrt(G.stride)*(backing?.6:1),sp=Math.sin(phase),cp=Math.cos(phase);
    set('thighL',-sp*A,G.toe,0);set('thighR',sp*A,-G.toe,0);
    set('kneeL',(Math.max(0,Math.sin(phase-.9))*A*1.5+.05)*G.lift);set('kneeR',(Math.max(0,Math.sin(phase+Math.PI-.9))*A*1.5+.05)*G.lift);
    set('footL',sp*A*.3);set('footR',-sp*A*.3);
@@ -216,7 +315,8 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    targetHips=Math.sin(time*1.6*idleRate)*.004;
    const pose=s.pose;
    // Standing about the way they walk: an elder's hands behind the back, a loafer's in the pockets.
-   if(!pose&&!s.carrying&&!gesture){add('chest',gait.lean*.6);if(gait.carry==='behind'||gait.carry==='pockets')carryArms(gait.carry,0,0);}
+   // (The story's moves ease in from this and back to it, so it stays under them.)
+   if(!pose&&!s.carrying&&(!gesture||EASED.has(gesture.name))){add('chest',gait.lean*.6);if(gait.carry==='behind'||gait.carry==='pockets')carryArms(gait.carry,0,0);}
    if(pose==='CounterIdle'){set('shoulderL',-.5,0,.2);set('shoulderR',-.5,0,-.2);set('elbowL',-.95);set('elbowR',-.95);}
    else if(pose==='Interact'){set('shoulderL',-.75+Math.sin(time*4.5)*.18,0,.15);set('shoulderR',-.75+Math.sin(time*4.5+1.7)*.18,0,-.15);set('elbowL',-.8);set('elbowR',-.8);add('chest',.12);add('head',.2);}
    // Cleaning (people/izakaya-hours.js): the arms work, the chest turns into it.
@@ -293,14 +393,22 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   if(attention>.01&&!talking)add('head',0,0,listen.tilt*tiltSide*attention);
   quietFor=talking?0:quietFor+dt;wasTalking=talking;
   if(s.waving&&!gesture)play('Wave');
+  let gestureEyes=null;
   if(gesture){gesture.t+=dt;if(gesture.t>=gesture.d)gesture=null;else{
    // A move from the menu may change the arms/head while sitting. Its standing
    // leg pose and bounce must not pull the sitter through or off the furniture.
    const legs=onChair?['hips','thighL','kneeL','footL','thighR','kneeR','footR'].map(j=>[j,target[j].clone()]):null;
-   const r=applyGesture(gesture,s);
+   const r=applyGesture(gesture,s,onChair);
    if(legs)for(const [j,pose] of legs)target[j].copy(pose);
    else if(r?.root!==undefined)targetRoot+=r.root;
+   // Some moves say where the eyes are (down on the book while calling out): unless the scene says otherwise.
+   gestureEyes=r?.eyes||null;
   }}
+  // Kneeling down and getting up take their time (0.8 s each way), however the kneel ends; seated, nobody kneels.
+  const kneeling=gesture?.name==='KneelHug'&&!onChair&&(gesture.d===Infinity||gesture.t<gesture.d-.8);
+  if(kneeling&&kneelRamp===0)kneelT=0;
+  kneelRamp=THREE.MathUtils.clamp(kneelRamp+(kneeling?dt:-dt)/.8,0,1);kneelT+=dt;kneel=smooth(kneelRamp);
+  if(kneel>0)kneelPose(kneel,kneelT);
   // Looking at someone: the head turns, the chest helps with a big turn, and the eyes
   // carry whatever is left over. `gaze` is a point in the world.
   let eyes=null;
@@ -329,6 +437,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const lying=s.lying===true||s.lying==='prone'?1:Math.max(0,Math.min(1,+s.lying||0));
   if(lie===0&&lying>0)prone=s.lying==='prone';
   lie+=(lying-lie)*(1-Math.exp(-dt*10));if(lie<.001)lie=0;
+  const kneading=!prone&&gesture?.name==='LieKnead';let kneadWeight=0;
   if(lie>0){
    const l=lie,roll=Math.sin(time*1.7);
    for(const j of ['hips','spine','chest','neck','head','shoulderL','elbowL','handL','shoulderR','elbowR','handR','thighL','kneeL','footL','thighR','kneeR','footR'])target[j].multiplyScalar(1-l);
@@ -342,9 +451,22 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     add('kneeL',(1.5+.1*pump)*l);add('kneeR',(1.75-.1*pump)*l);add('footL',.5*l);add('footR',.45*l);
     const lift=PRONE_LIFT(m);add('neck',-lift*.45*l);add('head',-lift*.55*l,1.25*l,0);targetRoot*=1-l;
    }else{
-    add('shoulderL',-.2*l,0,1.35*l);add('shoulderR',-.35*l,0,-1.15*l);add('elbowL',-.35*l);add('elbowR',-.6*l);
-    add('thighL',-.12*l,0,.2*l);add('thighR',-.65*l,0,-.14*l);add('kneeR',1.05*l);add('footL',.45*l);add('footR',.25*l);
-    add('head',0,(.35+.12*roll)*l,.08*roll*l);targetRoot*=1-l;
+    // "I'll BE the chair" (LieKnead), blended in from the knocked-out sprawl over half a second: on the back, the knees up
+    // and the feet flat, the head resting on the floor with the back, both arms up kneading the air in slow rolls like the
+    // chair's rollers, one arm half a turn after the other.
+    kneadWeight=kneading?inOut(gesture.t,gesture.d,.5):0;const kw=kneadWeight*l,ko=l-kw;
+    add('shoulderL',-.2*ko,0,1.35*ko);add('shoulderR',-.35*ko,0,-1.15*ko);add('elbowL',-.35*ko);add('elbowR',-.6*ko);
+    add('thighL',-.12*ko,0,.2*ko);add('thighR',-.65*ko,0,-.14*ko);add('kneeR',1.05*ko);add('footL',.45*ko);add('footR',.25*ko);
+    add('head',0,(.35+.12*roll)*ko,.08*roll*ko);
+    if(kw>0){
+     const r=gesture.t*Math.PI*1.1;
+     for(const [side,k,o] of [['R',1,0],['L',-1,Math.PI]]){
+      add('shoulder'+side,(-1.45+Math.sin(r+o)*.2)*kw,0,-.16*k*kw);add('elbow'+side,(-.9+Math.cos(r+o)*.4)*kw);add('hand'+side,Math.sin(r+o+.6)*.35*kw);
+      add('thigh'+side,KNEAD.thigh*kw,0,-.06*k*kw);add('knee'+side,KNEAD.knee*kw);add('foot'+side,KNEAD.foot*kw);
+     }
+     const lift=SUPINE_LIFT(m);add('neck',lift*.5*kw);add('head',lift*.5*kw);
+    }
+    targetRoot*=1-l;
    }
   }
   // Ease every joint toward where it is going.
@@ -374,7 +496,12 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     supportSeat(Number.isFinite(s.seatHeight)?s.seatHeight:.45);
     avatar.root.position.y=THREE.MathUtils.lerp(standingY,avatar.root.position.y,chairBlend);
    }else supportSeat(Number.isFinite(s.seatHeight)?s.seatHeight:.45);
-  }else if(!s.riding&&!s.sleeping&&!lie)groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)});
+  }else if(!s.riding&&!s.sleeping&&!lie){
+   groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)});
+   // Kneeling rests on the knees as well as the toes: nothing on the body (a boot's leg, a knee in thick cloth) goes
+   // below the floor; whichever is lowest touches it.
+   if(kneel>0){const up=groundLying(s.floorHeight||0);if(up>0)avatar.root.position.y+=up;}
+  }
   if(lie>0||lyingTilt){
    // On the back: tipped over about the hips so they lie where they stood, raised by the back of the head
    // (the biggest thing on them) so nothing goes through the floor.
@@ -385,7 +512,13 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    avatar.root.rotation.x=(prone?-1:1)*Math.PI/2*l;
    avatar.root.position.z+=(prone?1:-1)*m.hipY*l;
    if(prone){const y=avatar.root.position.y;avatar.root.position.y=0;avatar.root.position.y=y*(1-l)+(groundLying(s.floorHeight||0))*l;}
-   else avatar.root.position.y=avatar.root.position.y*(1-l)+rest*l;
+   else{
+    // Kneading, the body rests on whatever on it is lowest (the head, the back and the feet together); knocked out, on the
+    // back of the head; between them, between the two.
+    const standY=avatar.root.position.y,knockedOut=standY*(1-l)+rest*l;
+    if(kneadWeight>0){avatar.root.position.y=0;const ground=groundLying(s.floorHeight||0);avatar.root.position.y=THREE.MathUtils.lerp(knockedOut,standY*(1-l)+ground*l,kneadWeight);}
+    else avatar.root.position.y=knockedOut;
+   }
    lyingTilt=l>0;
   }
   // The face: blinks, words, glances, and whatever it is feeling.
@@ -394,11 +527,34 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   if(s.talking){talkT-=dt;if(talkT<=0){talkT=.09+Math.random()*.12;talkOpen=talkOpen?0:(Math.random()<.8?1:0);}}else talkOpen=0;
   glanceIn-=dt;if(glanceIn<=0){glanceIn=1.2+Math.random()*3;glance=Math.random()<.45?[0,0]:[(Math.random()-.5)*1.6,(Math.random()-.5)*.8];}
   const face=s.sleeping?'sleep':expression;
-  avatar.paintFace({expression:face,blink,talk:talkOpen,look:s.look||eyes||(face==='thinking'?[1,-1]:glance)});
+  avatar.paintFace({expression:face,blink,talk:talkOpen,look:s.look||eyes||gestureEyes||(face==='thinking'?[1,-1]:glance)});
  }
 
- function applyGesture(g,s){
+ /**
+  * Heartbreak at the dead chair (KneelHug, 3a): down on the knees (and the tucked toes) in front of the seat, leaning over
+  * it from the hips, the head laid on its right cheek with the face turned to his left, the right forearm along the seat
+  * and the left arm round its front; once, after a moment, he nuzzles his face into it. k: how far down (0..1); t: how
+  * long since it began. All of it held still: a head resting on a seat does not sway on it.
+  */
+ function kneelPose(k,t){
+  const K=KNEEL,press=Math.sin(Math.PI*smooth((t-1.4)/1))*.12*k;
+  toward('hips',K.hips,0,0,k);toward('spine',K.spine,0,0,k);toward('chest',K.chest,0,0,k);toward('neck',K.neck,0,0,k);toward('head',K.head[0],K.head[1]-press,K.head[2],k);
+  for(const side of ['L','R']){toward('thigh'+side,K.thigh-K.hips,0,0,k);toward('knee'+side,K.knee,0,0,k);toward('foot'+side,K.foot,0,0,k);}
+  armTo('R',K.armR,k,K.handR);armTo('L',K.armL,k,K.handL);
+ }
+ /** Toward a joint's pose by w (0..1) from wherever the body has it this frame (walking, sitting): no jump at the start. */
+ const toward=(j,x,y,z,w)=>target[j].lerp(_pose.set(x,y,z),w);
+ /** An arm toward [shoulder x, y, z, elbow x, elbow y] (and the wrist), written for the right arm: the left is its mirror. The
+  *  arm swings forward or back first and turns in or out after (and the other way round going back), so an arm that ends
+  *  across the chest goes round the front of it, never through its side. */
+ const armTo=(side,a,w,hand)=>{const k=side==='R'?1:-1,later=smooth((w-.3)/.7),sh=target['shoulder'+side];
+  sh.x+=(a[0]-sh.x)*w;sh.y+=(a[1]*k-sh.y)*later;sh.z+=(a[2]*k-sh.z)*later;
+  toward('elbow'+side,a[3],(a[4]||0)*k,0,w);if(hand)toward('hand'+side,hand[0],hand[1]*k,hand[2]*k,w);};
+ const mix=(a,b,u)=>a.map((v,i)=>v+((b[i]??0)-v)*u);
+ function applyGesture(g,s,seated=false){
   const t=g.t,d=g.d,e=d===Infinity?1:env(t,d),q=d===Infinity?Math.min(1,t/.3):ease(t,d);
+  // the moves for Fujita's Ten Minutes of Heaven come in smoothly over half a second (big ones slower)
+  const w=inOut(t,d,.5),soak=s.seat==='Soak'||s.pose==='Soak';
   switch(g.name){
    case 'Wave':set('shoulderR',-.2,0,-2.55*q);set('elbowR',0,0,-.45+Math.sin(t*10)*.45*q);add('head',0,0,.08*q);break;
    case 'Bow':add('chest',.95*e*bowDepth);add('spine',.25*e*bowDepth);add('head',.2*e*bowDepth);set('shoulderL',.1,0,.05);set('shoulderR',.1,0,-.05);break;
@@ -547,6 +703,88 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    case 'Phone':set('shoulderR',-.4,0,-.5);set('elbowR',-2.2);add('head',0,0,-.15);break;
    case 'FishIdle':set('shoulderL',-1,0,.1);set('shoulderR',-1,0,-.1);set('elbowL',-.6);set('elbowR',-.6);break;
    case 'Reel':set('shoulderL',-1,0,.1);set('elbowL',-.6);set('shoulderR',-1+Math.sin(t*9)*.25,0,-.2);set('elbowR',-.8+Math.cos(t*9)*.3);break;
+   // ---- Fujita's Ten Minutes of Heaven (shot plan C2). Every hand is a closed mitten; where a prop is named, the mitten is
+   // where the film's prop is gripped (it hangs from the hand bone, 6 cm into the mitten).
+   // Carrying something small and precious (the coin, 1a): both mittens cupped together at the chest, the elbows in, the
+   // head bent over them. It walks: the legs keep their step, the hands stay still.
+   case 'CupHands':{const A=reachFor('CupHands');armTo('R',A.R,w,A.handR);armTo('L',A.L,w,A.handL);add('head',.2*w);add('chest',.04*w);break;}
+   // Warming the coin against his cheek (1b): the right mitten holds it on the right cheek, the left mitten cupped over it,
+   // the head tipped into them, the eyes shut (the face's 'content'), a whisper.
+   case 'CoinToCheek':{const A=reachFor('CoinToCheek');add('chest',.05*w);add('head',.06*w,0,-.24*w+Math.sin(t*1.3)*.015*w);
+    armTo('R',A.R,w);armTo('L',A.L,w);break;}
+   // The deep bow (最敬礼, 1c): 45° from the hips with a straight back, the legs straight, the arms hanging along the
+   // thighs; down in 0.6 s, held, up in 0.6 s (held longer with `hold`).
+   case 'BowDeep':{const b=inOut(t,d,.6),a=Math.PI/4*b;
+    add('hips',a);add('thighL',-a);add('thighR',-a);add('head',.08*b);
+    armTo('R',[-a*.85,0,-.06,-.12],b);armTo('L',[-a*.85,0,-.06,-.12],b);break;}
+   // Bowing while backing out of a room (8c): little bows, one after another, the hands together in front of the body
+   // (or round whatever they carry), small steps backwards (the walk itself, above).
+   case 'BowWalk':{const bob=.5-.5*Math.cos(t*Math.PI*2*.8);
+    add('chest',(.36+.18*bob)*w);add('spine',.08*w);add('head',(.1+.08*bob)*w);
+    armTo('R',[-.23,.73,-.11,-1.41],w);armTo('L',[-.23,.73,-.11,-1.41],w);break;}
+   // Heartbreak at the dead chair (3a): see kneelPose.
+   case 'KneelHug':break;   // posed in update(), from the kneel's own ease (kneelPose)
+   // The noren pole flicks the breaker up behind her (3b), seated, reading: the right arm goes up and back over the
+   // shoulder with the pole, a little flick at the top, and stays; the chest turns into it, the head stays down on the
+   // book, the left hand keeps the place.
+   case 'PoleFlick':{const r=inOut(t,d,.55,.5),f=smooth((t-.55)/.2);
+    add('chest',.06*r,-.4*r,0);add('head',.5*r,.35*r,0);
+    armTo('R',mix([-2.55,-.1,-.92,-1.46],[-2.83,.1,-.77,-.88],f),r);armTo('L',[.28,.15,-.3,-1.95],r);return {eyes:[0,.85]};}
+   // Peeking through the slit of a noren (3e, 6c–e): close to the cloth, both mittens holding the slit open at eye height,
+   // one each side of the face, and the head pushed forward into the gap.
+   case 'Peek':{const A=reachFor('Peek');add('chest',.08*w);add('neck',.2*w);add('head',-.14*w);
+    armTo('R',A.R,w,[0,.4,0]);armTo('L',A.L,w,[0,.4,0]);break;}
+   // Holding something up high like a war banner (4a, the giant uchiwa in the right mitten): both arms up beside the head,
+   // the chin up; it marches.
+   case 'BannerUp':{const A=reachFor('BannerUp');add('chest',-.05*w);add('head',-.08*w);armTo('R',A.R,w);armTo('L',A.L,w);break;}
+   // Fanning wildly (4b, the giant uchiwa in the right mitten): fast strokes from high at the side to low in front, the
+   // wrist flicking, the body leaning into it with one foot forward; the left fist at the belly.
+   case 'FanWild':{const p=Math.sin(t*Math.PI*2*2.2),u=(p+1)/2;
+    add('chest',.2*w,.12*p*w,0);add('head',-.05*w);
+    armTo('R',mix([-.81,-.03,-.39,-1.56],[-1.21,.17,.35,0],u),w,[.45*p,0,0]);armTo('L',[.16,.49,-.65,-2.13],w);
+    if(!seated){toward('thighL',-.3,0,.04,w);toward('kneeL',.3,0,0,w);toward('thighR',.22,0,-.04,w);toward('footR',-.22,0,0,w);}break;}
+   // Holding on in a gale (4c): both mittens clutching the tenugui at the sides of the neck (the ends are streaming
+   // behind), leaning into the wind, one foot braced back.
+   case 'HoldOn':{const A=reachFor('HoldOn');add('chest',.12*w);add('head',.05*w);armTo('R',A.R,w);armTo('L',A.L,w);
+    if(!seated){toward('thighL',-.3,0,.04,w);toward('kneeL',.3,0,0,w);toward('thighR',.22,0,-.04,w);toward('footR',-.22,0,0,w);}break;}
+   // Stopping someone without looking up (4d; standing or seated): the right arm out level, the mitten raised like a stop
+   // sign, the left holding the book she reads, the head and eyes down on it.
+   case 'FingerStop':add('head',.35*w);armTo('R',[-1.33,.07,.04,-.49],w,[-1.35,0,0]);armTo('L',[-.4,.54,-.05,-1.53],w);return {eyes:[0,.85]};
+   // Taping a sign to a cloth (5a, 5b): both mittens pressed flat on it at chest height, pressing and smoothing; up on the
+   // toes to reach (standing).
+   case 'Tape':{const press=Math.max(0,Math.sin(t*4.2))**2*.07;add('chest',.06*w);
+    armTo('R',[-1.14-press,.22,.1,-1.1+press],w,[-.9,0,0]);armTo('L',[-1.14-press,.22,.1,-1.1+press],w,[-.9,0,0]);
+    if(!seated){add('footL',.3*w);add('footR',.3*w);}break;}
+   // Holding something out, politely (5c, 11a, 12c): the right mitten forward with it, the left beside it, a little bow.
+   // In the bath the right hand comes up out of the water with it, the left stays on the water.
+   case 'Offer':add('chest',(soak?.08:.12)*w);add('head',.08*w);
+    if(soak)armTo('R',[-1.59,.24,.04,-.55],w);
+    else{armTo('R',[-1.28,.33,.16,-.46],w);armTo('L',[-.85,.41,.1,-.97],w);}break;
+   // Reaching up and out to take something (5c): the right arm straight, up on the toes, leaning in.
+   case 'Reach':{const strain=Math.sin(t*3.1)*.03;add('chest',.12*w);
+    armTo('R',[-1.6+strain,.05,-.1,-.66],w);armTo('L',[.25,0,-.2,-.35],w);if(!seated){add('footL',.18*w);add('footR',.18*w);}break;}
+   // "I'll BE the chair" (5e): with lying, flat on the back kneading the air (below, where lying is worked out); without,
+   // the same kneading rolls in the air before the chest.
+   case 'LieKnead':{const r=t*Math.PI*1.1;
+    armTo('R',[-1.35+Math.sin(r)*.22,0,-.12,-.95+Math.cos(r)*.4],w,[Math.sin(r+.6)*.35,0,0]);
+    armTo('L',[-1.35+Math.sin(r+Math.PI)*.22,0,-.12,-.95+Math.cos(r+Math.PI)*.4],w,[Math.sin(r+.6+Math.PI)*.35,0,0]);break;}
+   // The coin raised like a grenade about to be thrown (6a, seated in the chair): held up in the right mitten a hand's breadth
+   // from the right cheek, the left mitten a fist before the chest, hunched forward, tense; the face clear for the lens.
+   case 'GrenadeCoin':{const A=reachFor('GrenadeCoin');add('chest',.12*w);add('head',.08*w);armTo('R',A.R,w);armTo('L',A.L,w);break;}
+   // A hair dryer aimed like a pistol (6b): the right arm straight out ahead, the left mitten under the forearm steadying it.
+   case 'Aim':add('head',.04*w);armTo('R',[-1.2,0,.14,0],w);armTo('L',[-1.12,.84,.5,-.72],w);break;
+   // Holding one thing up to show it (8a: the tiny screwdriver, upright before his face like a sacred object).
+   case 'HoldUp':armTo('R',reachFor('HoldUp').R,w);break;
+   // Showing a fan of straws (9b–d): held up in the right mitten beside the right of the face (both read), chest to eye height.
+   case 'HoldUpStraws':armTo('R',reachFor('HoldUpStraws').R,w);break;
+   // Calling out without looking up (8b, seated at the bandai): the head turned to her left to call, the eyes still down on
+   // the book in the left mitten, the pencil in the right still moving.
+   case 'Call':{const pen=Math.sin(t*7)*.05;add('chest',.05*w,.1*w,0);add('head',.3*w,.5*w,0);
+    armTo('R',[-.4,.61+pen,-.04,-1.66],w);armTo('L',[-.42,.66,-.03,-1.49],w);return {eyes:[-.5,.8]};}
+   // Writing in the book held up out of the water (12d, soaking): the left mitten holds it open before her left shoulder,
+   // just above the water, the right one writes in it, the head bent over it (the face clear of it).
+   case 'WriteAbove':{const pen=Math.sin(t*6)*.05;add('head',.35*w,.3*w,0);
+    armTo('R',[-1.84,.37+pen,.77,-.49],w);armTo('L',[-.93,.11,-.3,-1.52],w);return {eyes:[-.2,.85]};}
   }
   return null;
  }
