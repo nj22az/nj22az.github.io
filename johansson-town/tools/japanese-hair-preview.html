@@ -1,0 +1,17 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Johansson World · Japanese hairstyles</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#eee9dc;color:#263830;font:16px system-ui}header{height:90px;padding:18px 26px}h1{font-size:24px;margin:0 0 5px}p{margin:0}#gallery{position:relative;height:1020px}canvas{position:absolute;inset:0;width:100%;height:100%}.labels{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);pointer-events:none}.labels div{padding-top:305px;text-align:center;font-weight:600;border:1px solid #d9d4c4}@media(max-width:600px){header{height:110px;padding:14px}h1{font-size:21px}#gallery{height:2040px}.labels{grid-template-columns:repeat(2,1fr)}}
+</style><header><h1>Japanese hairstyle collection</h1><p>12 original Blender styles · shared by every character</p></header><div id="gallery"><div class="labels"></div></div>
+<script type="module">
+import * as THREE from '../vendor/three.module.js';
+import {JAPANESE_HAIR} from '../src/avatars/japanese-hair-mesh.js';
+import {buildAvatar} from '../src/avatars/build.js';
+import {recipeFor} from '../src/avatars/cast.js';
+import {createAvatarAnimator} from '../src/avatars/animate.js';
+const labels=['Natural mash','Two-block','Flowing centre part','Comma fringe','Spiky short','Layered wolf','Mini bob','Airy fringe bob','Outward-curl bob','Face-framing layers','Hime cut','Long loose waves'];
+const host=document.querySelector('#gallery'),names=Object.keys(JAPANESE_HAIR),turn=+(new URLSearchParams(location.search).get('turn')||0);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(1);renderer.setSize(host.clientWidth,host.clientHeight);renderer.setScissorTest(true);host.prepend(renderer.domElement);
+const scenes=names.map((style,i)=>{const label=document.createElement('div');label.textContent=labels[i];document.querySelector('.labels').append(label);const scene=new THREE.Scene();scene.background=new THREE.Color(i<6?0xdfe7e4:0xeee0d5);scene.add(new THREE.HemisphereLight(0xffffff,0x77736a,2));const key=new THREE.DirectionalLight(0xffffff,2);key.position.set(-3,5,5);scene.add(key);
+ const base=recipeFor(i<6?'Chin':'Thuan'),r={...base,hair:{...base.hair,style,colour:'#3a2618'},outfit:{...base.outfit,hat:'none'}};const a=buildAvatar(r,{faceSize:256});a.root.rotation.y=turn;scene.add(a.root);const camera=new THREE.PerspectiveCamera(32,1,.1,30);camera.position.set(0,a.measure.headCentre,1.75);camera.lookAt(0,a.measure.headCentre-.08,0);return {scene,camera,a,anim:createAvatarAnimator(a)};});
+function frame(){const cols=innerWidth<=600?2:4,w=host.clientWidth/cols,h=340;scenes.forEach((s,i)=>{s.camera.aspect=w/h;s.camera.updateProjectionMatrix();renderer.setViewport((i%cols)*w,host.clientHeight-(Math.floor(i/cols)+1)*h,w,h);renderer.setScissor((i%cols)*w,host.clientHeight-(Math.floor(i/cols)+1)*h,w,h);renderer.render(s.scene,s.camera);});}
+frame();window.__READY__=true;
+</script></html>

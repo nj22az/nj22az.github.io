@@ -64,6 +64,7 @@ export function previewOutfits(recipe){
  return PREVIEW_OUTFITS.map(([value,label])=>({value,label:value==='towel'&&!grown?label+' (grown-ups)':label,disabled:value==='towel'&&!grown}));
 }
 const LABEL={
+ jpmash:'Natural mash',jptwoblock:'Two-block',jpcentre:'Flowing centre part',jpcomma:'Comma fringe',jpspiky:'Spiky short',jpwolf:'Layered wolf',jpminibob:'Mini bob',jpseethrough:'Airy fringe bob',jpoutward:'Outward-curl bob',jplayered:'Face-framing layers',jphime:'Hime cut',jplongwaves:'Long loose waves',
  towel:'Bath towel',swimwear:'Swimwear',
  crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',sweptponytail:'Swept low ponytail',ponytail:'Ponytail',braids:'Braids',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
  pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',

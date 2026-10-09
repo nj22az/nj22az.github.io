@@ -1,3 +1,4 @@
+import {JAPANESE_HAIR} from './japanese-hair-mesh.js';
 import {SWEPT_PONYTAIL} from './swept-ponytail-mesh.js';
 import {POLO_COLLAR} from './contrast-polo-mesh.js';
 import {THUAN_SAILOR_OUTFIT} from './outfits.js';
@@ -294,8 +295,8 @@ function addHair(list,recipe,m){
  const dark=new THREE.Color(c).multiplyScalar(.82).getStyle();
  // What hangs swings on its own chain of bones (springs.js); the rest is the head's.
  const swing=springRest(recipe,m),tailShare=chainShare('head',['hairA','hairB'],[swing.rest.hairA,swing.rest.hairB,swing.chains.find(ch=>ch.kind==='hair')?.tip??swing.rest.hairB]);
- if(style==='sweptponytail'){
-  for(const asset of SWEPT_PONYTAIL){
+ if(style==='sweptponytail'||JAPANESE_HAIR[style]){
+  for(const asset of JAPANESE_HAIR[style]||SWEPT_PONYTAIL){
    const positions=asset.vertices.flatMap(([x,y,z])=>{
     const p=new THREE.Vector3(x*side,y,z);if(asset.kind==='head')shapeHeadPoint(p,m.profile);
     return [p.x*m.headSX*R,m.headCentre+p.y*m.headSY*R,p.z*R*.98];

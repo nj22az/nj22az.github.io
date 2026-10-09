@@ -18,13 +18,13 @@ const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).
 })));
 
 export const CAST_RECIPES=castSet({
- // Photo reference: a blonde adult with shoulder-length hair, arched brows,
+ // Ruta is Lithuanian (user-provided). Blonde layers, arched brows,
  // almond eyes and berry lips. A neutral editable name, not an invented identity.
- 'Harbour visitor':R({name:'Harbour visitor',age:'adult',
+ 'Harbour visitor':R({name:'Ruta',age:'adult',
   body:{height:.56,build:.25,silhouette:'feminine',skin:'#f1cfae'},
   head:{size:.44,shape:.42,form:'oval',jaw:.32,cheeks:.38},
-  hair:{style:'shoulder',colour:'#caa568',flip:false},
-  eyes:{style:'lashes',colour:'#625644',size:.48,width:.58,spacing:.48,height:.52,tilt:.52},
+  hair:{style:'jplayered',colour:'#caa568',flip:false},
+  eyes:{style:'doe',colour:'#625644',size:.60,width:.58,spacing:.48,height:.52,tilt:.52},
   brows:{style:'arched',colour:'#826447',size:.44,height:.57,tilt:.52},
   nose:{style:'ridge',size:.40,height:.48},
   mouth:{style:'soft',colour:'#a84353',size:.48,width:.54,height:.48},
@@ -61,7 +61,7 @@ export const CAST_RECIPES=castSet({
   hair:{style:'bob',colour:'#2e211b'},eyes:{style:'round',colour:'#3a2a1e',size:.6,spacing:.5,height:.5,tilt:.5},
   brows:{style:'arched',colour:'#2e211b',size:.45},nose:{style:'button',size:.35},mouth:{style:'small',colour:'#c4485a',size:.45},
   blush:.45,
-  outfit:{hat:'beret',hatColour:'#5f8f6a',top:'jacket',topColour:'#5f8f6a',pattern:'dots',bottom:'longskirt',bottomColour:'#e6d3b0',shoes:'#6b4a2e',accent:'#f4e4c8'}}),
+  outfit:{hat:'straw',hatColour:'#d8bd83',top:'jacket',topColour:'#5f8f6a',pattern:'dots',bottom:'longskirt',bottomColour:'#e6d3b0',shoes:'#6b4a2e',accent:'#f4e4c8'}}),
  Reiko:R({name:'Reiko',accessories:{neckwear:'scarf',colour:'#d8342c'},body:{height:.46,build:.42,skin:'#e8bf98'},head:{size:.47,shape:.44,form:'oval',jaw:.4,cheeks:.4},
   hair:{style:'ponytail',colour:'#1c1714'},eyes:{style:'almond',colour:'#2a1d16',size:.5,tilt:.6},
   brows:{style:'straight',colour:'#1c1714',size:.5},nose:{style:'line',size:.4},mouth:{style:'smirk',colour:'#a8433e',size:.45},
@@ -154,6 +154,8 @@ const AGE_OF=new Map(PROFILES.map(p=>[p.name,p.age]));
 const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name)),named=name&&!recipe.name?{...recipe,name}:recipe;return AGE_OF.has(name)&&named.age!==age?normalizeRecipe({...named,age}):named;};
 export function recipeFor(name=''){
  const saved=residentRecipe(name);if(saved)return saved;
+ // Keep the original shared visitor links working after naming her Ruta.
+ if(name==='Ruta')return CAST_RECIPES['Harbour visitor'];
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
  if(NEIGHBOUR_RECIPES[name])return aged(normalizeRecipe(withTownDials(NEIGHBOUR_RECIPES[name],name)),name);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];

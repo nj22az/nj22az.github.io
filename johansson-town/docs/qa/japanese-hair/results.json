@@ -1,0 +1,17 @@
+{
+  "styles": 12,
+  "viewports": [
+    [
+      1280,
+      800
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "selection": true,
+  "saveReload": true,
+  "overflow": false,
+  "pageErrors": []
+}
