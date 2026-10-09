@@ -205,6 +205,9 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   }
   case 'sundress':for(const s of [-1,1]){poly([[s*W*.3,.8],[s*W*.18,.8],[s*W*.16,1.02],[s*W*.28,1.02]],top,{width:line*.8});poly([[s*W*.3,.8],[s*W*.18,.8],[s*W*.16,1.02],[s*W*.28,1.02]],top,{back:true,width:line*.8});}ctx.fillStyle=shade(top,.7);ctx.fillRect(0,Y(.795),TW,line*.8);marks.push('straps');break;
   case 'apron':collar('#f8f6ef',{drop:.88,spread:.1,round:true});break;
+  // After the bath (outfits.js AFTERBATH): a house dress's round neck, bound in a paler bias tape; a running vest is
+  // its own shell over the bare body (build.js runningShirt), so nothing is drawn for it.
+  case 'housedress':rib(lighten(top,.45));break;
  }
 
  // The sleeves' band: the print carried on round the arm, and a hem or a cuff.
@@ -224,7 +227,7 @@ export function paintGarment(ctx,recipe,m,radiusAt){
    }
   }
   // The hem of a short sleeve, or the cuff of a long one: a band and a line above it.
-  if(!['tank','sundress'].includes(col)){
+  if(!['tank','sundress','running'].includes(col)){
    const bandH=Math.max(3,(long?.03:.018)*m.k*pxV),ink=shade(o.topColour,.5);
    ctx.fillStyle=col==='kariyushi'?lighten(o.topColour,.22):shade(o.topColour,.86);ctx.fillRect(0,yBot-bandH,TW,bandH);
    ctx.fillStyle=ink;ctx.fillRect(0,yBot-bandH-1.2,TW,1.2);

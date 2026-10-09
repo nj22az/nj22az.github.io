@@ -631,16 +631,21 @@ function eatDish(){
  say(r.left?"Enjoy your meal. "+(r.left===1?'One mouthful left.':r.left+' mouthfuls left.'):"Thank you for the meal. The plate is clean.",3);
  return true;
 }
-/** Swimwear on or off: the model changes, and the game remembers for the camera-less view. */
-let swimwear=false;
-// The player dresses for Umi-no-yu as the residents do (indoor-residents.js): 'bath' is a yuamigi
-// (bath wrap) and a towel on the head for a grown-up, swimwear for a child or anyone who chose it in the maker.
-function wearSwim(on){if(swimwear===!!on)return;swimwear=!!on;if(on&&!johansson)ensureJohansson();const worn=johansson?.wear(on?'bath':'clothes');if(on)say(worn==='towel'?'You change at the lockers into one of the bath\'s wraps, a folded towel on your head.':'You change into your swimwear at the lockers.',3);}
+/** Changed for the bath or not: the model changes, and the game remembers for the camera-less view. */
+let swimwear=false,bathWear='clothes';
+// The player dresses for Umi-no-yu as the residents do (indoor-residents.js), by where they are once changed: behind the
+// noren, in the changing room, 'bath' (a yuamigi, the bath wrap, and a towel on the head for a grown-up; swimwear for a
+// child or anyone who chose it in the maker); past the bath doors, where the washing room and the rock bath are shared,
+// swimwear; out in the lobby, the after-bath clothes (avatars/outfits.js AFTERBATH).
+function onsenWear(){if(!swimwear||current?.id!=='onsen')return null;const z=player.position.z,H=ONSEN_ROOM.hall;return z<H.changing?'swim':z<H.front?'bath':'afterbath';}
+function wearSwim(on){if(swimwear===!!on)return;swimwear=!!on;if(on&&!johansson)ensureJohansson();bathWear=on?onsenWear()||'bath':'clothes';const worn=johansson?.wear(bathWear);if(on)say(worn==='towel'?'You change at the lockers into one of the bath\'s wraps, a folded towel on your head.':'You change into your swimwear at the lockers.',3);}
+function followOnsenWear(){const w=onsenWear();if(w&&w!==bathWear){bathWear=w;johansson?.wear(w);}}
 function updateJohansson(dt){
  const ferryView=islandPlay?.phase==='ferry';
  hands.firstPersonVisible=!thirdPerson&&!spawnScene?.active&&!islandPlay?.active&&current?.id!==CITY_RESTAURANT.id;
  if(ferryView&&!johansson)ensureJohansson();
  if(!johansson)return;
+ followOnsenWear();
  const r=johansson.root;r.position.copy(player.position);
  if(seated&&parkSeat){
   // Hips on the seat, facing the way the seat faces.

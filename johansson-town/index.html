@@ -26,12 +26,12 @@
 <link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
 <link rel="stylesheet" href="./context-rail.css?h=989b4888">
 <link rel="stylesheet" href="./line-ui.css?h=9efe343d">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-p8ajmNxO.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-DMQzZv3H.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-BJJ0w3BS.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-B7eUQ7A7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-Bnrgipgp.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-CRRtJ-M8.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-BRIPKv-Y.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-BqwCpa1D.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-DxctZn0M.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-ygTjb9SR.js">
 </head>
 <body>
@@ -380,8 +380,8 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON WORLD</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON WORLD</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=ed3e331a"></script>
-<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-SlVjy9Yx.js";</script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-CSKVFUbY.js";</script>
+<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-PQ0aSbXS.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-CBkFi8WL.js";</script>
 <script src="./landing.js?h=7591566d"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -550,7 +550,7 @@ import {unlockTownAudio} from './runtime/audio-83dQfoLt.js';
     try{
       // Let the browser paint the first fact before constructing the town.
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      try { await import('./runtime/boot-p8ajmNxO.js'); } catch (error) {
+      try { await import('./runtime/boot-DMQzZv3H.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;
