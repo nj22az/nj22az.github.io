@@ -2,7 +2,7 @@ import {ISLAND_OUTFITS,ISLAND_COSTUMES,outfitAllowedFor,appropriateOutfit} from 
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
-import {drawPart,drawFace} from './face.js';
+import {drawPart,drawFace,EXPRESSION_NAMES} from './face.js';
 import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
 import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
 import {CAST_RECIPES} from './cast.js';
@@ -114,12 +114,16 @@ export const TABS=[
   {kind:'stepper',page:'adjust',at:'head.shape',label:'Width',less:'Narrower',more:'Broader'},
   {kind:'stepper',page:'adjust',at:'head.jaw',label:'Jaw',less:'Narrower jaw',more:'Wider jaw'},
   {kind:'stepper',page:'adjust',at:'head.cheeks',label:'Cheeks',less:'Slimmer cheeks',more:'Fuller cheeks'},
+  {kind:'slider',page:'adjust',at:'head.roundness',label:'Face roundness',low:'Oval',high:'Round'},
   {kind:'stepper',page:'adjust',at:'blush',label:'Rosy cheeks',less:'Less rosy',more:'More rosy'},
   {kind:'stepper',page:'adjust',at:'wrinkles',label:'Laughter lines',less:'Fewer lines',more:'More lines'}]},
  {id:'hair',name:'Hair',controls:[
   {kind:'parts',page:'style',at:'hair.style',list:PARTS.hair,draw:'head'},
   {kind:'toggle',page:'style',at:'hair.flip',label:'Part on the other side'},
-  {kind:'colours',page:'colour',at:'hair.colour',label:'Colour',palette:PALETTE.hair}]},
+  {kind:'colours',page:'colour',at:'hair.colour',label:'Colour',palette:PALETTE.hair},
+  {kind:'colours',page:'colour',at:'hair.tieColour',label:'Braid ties',palette:PALETTE.cloth,when:r=>r.hair.style==='longbraids'},
+  {kind:'slider',page:'adjust',at:'hair.length',label:'Braid length',low:'Upper chest',high:'Past waist',when:r=>r.hair.style==='longbraids'},
+  {kind:'slider',page:'adjust',at:'hair.volume',label:'Braid volume',low:'Fine',high:'Full',when:r=>r.hair.style==='longbraids'}]},
  {id:'eyes',name:'Eyes',controls:[
   {kind:'parts',page:'style',at:'eyes.style',list:PARTS.eyes,draw:'eyes'},
   {kind:'colours',page:'colour',at:'eyes.colour',label:'Colour',palette:PALETTE.eyes},
@@ -145,6 +149,7 @@ export const TABS=[
   {kind:'stepper',page:'adjust',at:'mouth.width',label:'Width',less:'Narrower',more:'Wider'}]},
  {id:'extras',name:'Glasses & beard',controls:[
   {kind:'parts',page:'style',at:'glasses.style',label:'Glasses',list:PARTS.glasses,draw:'glasses'},
+  {kind:'toggle',page:'style',at:'glasses.enabled',label:'Wear glasses'},
   {kind:'parts',page:'style',at:'facial.moustache',label:'Moustache',list:PARTS.moustache,draw:'moustache'},
   {kind:'parts',page:'style',at:'facial.beard',label:'Beard',list:PARTS.beard,draw:'beard'},
   {kind:'colours',page:'colour',at:'glasses.colour',label:'Frames',palette:['#2b2b2b','#8a4a3a','#c8a060','#e06a7a','#3d6a8a','#d8342c']},
@@ -178,7 +183,8 @@ export const TABS=[
   {kind:'parts',page:'style',at:'accessories.earrings',label:'Earrings',list:PARTS.earrings,draw:'head'},
   {kind:'parts',page:'style',at:'accessories.neckwear',label:'Neckwear',list:PARTS.neckwear,draw:'figure'},
   {kind:'toggle',page:'style',at:'accessories.pin',label:'Lapel pin'},
-  {kind:'colours',page:'colour',at:'accessories.colour',label:'Accessory colour',palette:PALETTE.cloth}]},
+  {kind:'colours',page:'colour',at:'accessories.colour',label:'Earring and pin colour',palette:PALETTE.cloth},
+  {kind:'colours',page:'colour',at:'accessories.necklaceColour',label:'Necklace colour',palette:PALETTE.cloth}]},
 ];
 const PAGES=[['style','Style'],['colour','Colour'],['adjust','Adjust']];
 const STEPS=[['start','Choose a face'],['look','Make them'],['profile','Who are they?'],['hello','Say hello']];
@@ -358,7 +364,7 @@ const CSS=`
 export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
  let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];
- let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null;
+ let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',expression='auto',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null;
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
  // ----- Layout -----
@@ -463,7 +469,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   if(!featureDrag)holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
   const talking=speech&&speech.typing;
   if(!featureDrag)animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,lying:pose==='lie',talk:talking?.5+.5*Math.sin(now/70):0,
-   expression:step==='hello'?'happy':pose==='lie'?'dizzy':pose==='EvilLaugh'?'scheme':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
+   expression:expression!=='auto'?expression:step==='hello'?'happy':pose==='lie'?'dizzy':pose==='EvilLaugh'?'scheme':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
   if(!featureDrag)aim(dt);renderer.render(scene,camera);
  }
  const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
@@ -550,6 +556,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function drawThumb(control,value,c){
   const r=structuredClone(recipe);set(r,control.at,value);
+  if(control.at==='glasses.style')r.glasses.enabled=true;
   // A hat on the hat tab only, and a bare head for the hairstyles and earrings.
   if(control.at!=='outfit.hat')r.outfit.hat='none';
   if(control.at==='outfit.bottom')r.__bottom=true;
@@ -566,7 +573,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   endDrag();
   if(get(recipe,at)===value)return;
   if(keep)remember();
-  set(recipe,at,value);recipe=normalizeRecipe(recipe);dirty=true;
+  set(recipe,at,value);if(at==='glasses.style')recipe.glasses.enabled=true;recipe=normalizeRecipe(recipe);dirty=true;
  }
  function chooseTab(id){endDrag();tab=id;category.value=id;const t=TABS.find(x=>x.id===id);if(!t.controls.some(c=>c.page===page))page='style';renderTabs();renderBody();body.scrollTop=0;syncFocus();}
  category.onchange=()=>chooseTab(category.value);
@@ -641,6 +648,14 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     for(const [cls,icon,label,at,delta] of directions){const b=iconButton(icon,label,{className:cls});b.onclick=()=>change(at,Math.round(Math.max(0,Math.min(1,get(recipe,at)+delta))*16)/16);pad.append(b);}
     pad.append(el('b',{textContent:control.paired?'apart':'move'}));
     body.append(pad);
+   }else if(control.kind==='slider'){
+    const slider=el('input',{type:'range',min:0,max:1,step:.01,value:get(recipe,control.at),ariaLabel:control.label});
+    slider.style.cssText='width:100%;min-height:44px;accent-color:#356579';
+    const output=el('output',{textContent:Math.round(slider.value*100)+'%'});
+    let dragging=false;
+    slider.oninput=()=>{if(!dragging){remember();dragging=true;}change(control.at,Number(slider.value),false);output.textContent=Math.round(slider.value*100)+'%';};
+    slider.onchange=()=>{dragging=false;};
+    body.append(el('label',{},control.low+' — '+control.high,slider,output));
    }else if(control.kind==='stepper'){
     body.append(stepper(control.label,control.at,control.less,control.more));
    }else if(control.kind==='toggle'){
@@ -664,6 +679,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const visitor=el('button',{type:'button',className:'shm-pill',textContent:'Harbour visitor'});
   visitor.onclick=()=>{remember();recipe=normalizeRecipe(CAST_RECIPES['Harbour visitor']);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();};
   if(!owner)body.append(visitor);
+  if(!owner){const thuan=el('button',{type:'button',className:'shm-pill',textContent:'Thuận'});thuan.onclick=()=>{remember();recipe=normalizeRecipe(CAST_RECIPES.Thuan);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();};body.append(thuan);}
   body.append(el('h4',{textContent:'Pick someone to start from'}));
   const grid=el('div',{className:'shm-grid shm-faces'});
   faces.forEach((face,i)=>{
@@ -763,7 +779,19 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   select.onchange=()=>{endDrag();pose=select.value;if(!['idle','walk','sit','lie'].includes(pose))animator.play(pose);else animator.stop();};
   dress=el('select',{className:'shm-select',ariaLabel:'Preview outfit'});fillDress();
   dress.onchange=()=>{endDrag();showIn(dress.value);};
-  poses.append(angle,select,dress);
+  const exportButton=el('button',{type:'button',className:'shm-pill',textContent:'Export T-pose (.glb)'});
+  exportButton.onclick=async()=>{
+   exportButton.disabled=true;exportButton.textContent='Exporting…';
+   try{
+    const {exportAvatarGLB}=await import('./export.js'),data=await exportAvatarGLB(recipe);
+    const url=URL.createObjectURL(new Blob([data],{type:'model/gltf-binary'})),link=el('a',{href:url,download:(recipe.name||'islander').replace(/[^a-z0-9_-]/gi,'-')+'-tpose.glb'});
+    link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);exportButton.textContent='Export T-pose (.glb)';
+   }catch(error){console.error(error);exportButton.textContent='Export failed — retry';}
+   finally{exportButton.disabled=false;}
+  };
+  const mood=el('select',{className:'shm-select',ariaLabel:'Preview expression'},el('option',{value:'auto',textContent:'Expression: automatic'}),...EXPRESSION_NAMES.map(value=>el('option',{value,textContent:value[0].toUpperCase()+value.slice(1)})));
+  mood.onchange=()=>{expression=mood.value;};
+  poses.append(angle,select,dress,mood,exportButton);
  }
  /** The preview's outfit list, for whoever is in the maker now (the towel is for grown-ups). */
  function fillDress(){if(!dress)return;dress.replaceChildren(...previewOutfits(recipe).map(o=>el('option',{value:o.value,textContent:o.label,disabled:o.disabled})));dress.value=wearing;}

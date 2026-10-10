@@ -346,17 +346,18 @@ function addHair(list,recipe,m){
   // Three interwoven, tapered strands on each side; the roots start below the
   // ears and come forward over the shoulders, as in Thuan's reference photos.
   for(const s of [-1,1]){
-   const points=longBraidPoints(m,s),name=s>0?'L':'R';
+   const points=longBraidPoints(m,s,recipe.hair),name=s>0?'L':'R',volume=.65+recipe.hair.volume*.7;
    const share=chainShare('head',['braid'+name+'1','braid'+name+'2'],points);
    const centre=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));
    for(let strand=0;strand<3;strand++){
     const path=[];
     for(let i=0;i<=72;i++){
-     const t=i/72,p=centre.getPoint(t),phase=t*Math.PI*8+strand*Math.PI*2/3;
-     const radius=R*.09*(1-.35*t);
+     const t=i/72,p=centre.getPoint(t),phase=t*Math.PI*(8+recipe.hair.length*10)+strand*Math.PI*2/3;
+     p.x+=s*Math.sin(t*Math.PI*2)*R*.035*recipe.hair.length;
+     const radius=R*.09*volume*(1-.35*t);
      p.x+=Math.sin(phase)*radius;p.z+=Math.cos(phase)*radius*.65;path.push(p);
     }
-    const curve=new THREE.CatmullRomCurve3(path),g=new THREE.TubeGeometry(curve,72,R*.075,8,false),P=g.attributes.position;
+    const curve=new THREE.CatmullRomCurve3(path),g=new THREE.TubeGeometry(curve,72,R*.075*volume,8,false),P=g.attributes.position;
     for(let i=0;i<P.count;i++){
      const t=Math.floor(i/9)/72,p=curve.getPointAt(t),v=new THREE.Vector3().fromBufferAttribute(P,i);
      v.sub(p).multiplyScalar(1-.35*t).add(p);P.setXYZ(i,v.x,v.y,v.z);
@@ -364,8 +365,14 @@ function addHair(list,recipe,m){
     g.computeVertexNormals();part(list,g,share,strand===1?dark:c);
    }
    const tip=points[2];
-   part(list,new THREE.TorusGeometry(R*.083,R*.022,6,12),share,'#f4f1ea',M(...tip,Math.PI/2,0,0));
-   ball(list,R*.073,[tip[0],tip[1]-R*.13,tip[2]],share,c,[.9,1.8,.8],12,8);
+   part(list,new THREE.TorusGeometry(R*.083*volume,R*.022,6,12),share,recipe.hair.tieColour,M(...tip,Math.PI/2,0,0));
+   ball(list,R*.073*volume,[tip[0],tip[1]-R*.13,tip[2]],share,c,[.9,1.8,.8],12,8);
+  }
+  // Three restrained loose wisps soften the raised crown without obscuring the face.
+  for(let i=0;i<3;i++){
+   const x=side*R*(.15+i*.13),y=m.headCentre+R*m.headSY*(.91-i*.03);
+   const curve=new THREE.QuadraticBezierCurve3(new THREE.Vector3(x,y,-R*.05),new THREE.Vector3(x+side*R*.18,y+R*.14,-R*.10),new THREE.Vector3(x+side*R*.25,y+R*.04,-R*.08));
+   part(list,new THREE.TubeGeometry(curve,8,R*.012,4,false),'head',i===1?dark:c);
   }
  }
  if(style==='sidepart'||style==='braids'){ball(list,R*.34,at(side*R*.5,cy+R*.62,R*.62),'head',c,[1.4,.55,.7],10,6);}
@@ -538,15 +545,15 @@ export function buildShoeProp(input,{side='R',shadows=true}={}){
 
 /** Accessories join the existing skinned mesh, adding no extra draw calls. */
 function addAccessories(list,recipe,m){
- const a=recipe.accessories,R=m.Rh,c=a.colour;
+ const a=recipe.accessories,R=m.Rh,c=a.colour,nc=a.necklaceColour;
  if(a.earrings!=='none')for(const sign of [-1,1]){
   const x=sign*R*m.headSX*1.035,y=m.headCentre-R*.21,z=R*.04;
   if(a.earrings==='studs')ball(list,R*.085,[x,y,z],'head',c,[1,1,.65],8,6);
   else part(list,new THREE.TorusGeometry(R*.16,R*.035,6,14),'head',c,M(x,y-R*.1,z,0,sign*.5));
  }
  if(a.neckwear==='pendant'){
-  part(list,new THREE.TorusGeometry(m.width*.3,m.k*.007,5,18),'chest',c,M(0,m.neckY-.035,m.depth*.05,Math.PI/2-.5));
-  ball(list,m.k*.025,[0,m.neckY-.12,m.depth*.53],'chest',c,[.7,1,.35],8,6);
+  part(list,new THREE.TorusGeometry(m.width*.3,m.k*.007,5,18),'chest',nc,M(0,m.neckY-.035,m.depth*.05,Math.PI/2-.5));
+  ball(list,m.k*.025,[0,m.neckY-.12,m.depth*.53],'chest',nc,[.7,1,.35],8,6);
  }else if(a.neckwear==='scarf'){
   part(list,new THREE.TorusGeometry(m.armR*1.7,m.armR*.55,6,18),'chest',c,M(0,m.neckY-.035,0,Math.PI/2));
   part(list,new THREE.BoxGeometry(m.width*.22,m.torso*.5,.025),'chest',c,M(m.width*.14,m.neckY-m.torso*.28,m.depth*.53,0,0,-.15));
