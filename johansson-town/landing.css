@@ -938,7 +938,7 @@
 /* Start page: icons sit in the middle of their buttons, and the footer is centred. */
 #start .guide-nav :is(a,button){display:grid!important;place-items:center;padding:0!important;width:48px;height:48px;line-height:0}
 #start .guide-nav svg{display:block;width:24px;height:24px;margin:0}
-#start :is(.title-guide,#enter,#installTown,.weather-button,.title-dice) svg{display:block;flex:none;margin:0}
+#start :is(.title-guide,#enter,#installTown,#openStudio,.weather-button,.title-dice) svg{display:block;flex:none;margin:0}
 #start .title-foot{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;text-align:center}
 
 /* Johansson World title menu (2026-10-07): the save line, two modes side by side, then Load / New game / Guide.
@@ -970,3 +970,8 @@
 #start .title-new label{font:700 14px/1.4 var(--gothic)}
 #start .title-new button{background:#06c755;color:#fff;border-color:#06c755}
 #start .title-slots-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+
+/* Sister app: Johansson Studio (characters, scenes, comics). Same weight as Install, never louder than the modes. */
+#openStudio{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:1px solid #e5e5e5;border-radius:12px;background:#fff;color:#000;font:700 15px/1 var(--line-font,inherit);text-decoration:none;-webkit-tap-highlight-color:transparent}
+#openStudio:active{transform:scale(.97);background:#f7f8f9}
+#openStudio:focus-visible{outline:3px solid #06c755;outline-offset:2px}

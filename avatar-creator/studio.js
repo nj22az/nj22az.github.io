@@ -21,13 +21,13 @@ let currentRecipe=shared||restored||CAST_RECIPES.Johansson,editor=null,workspace
 const modes=document.createElement('nav');modes.className='studio-modes';modes.setAttribute('aria-label','Johansson Studio modes');
 for(const [id,label] of [['character','Edit character'],['scene','Build scene'],['comic','Make comic']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
 document.body.prepend(modes);
-function switchMode(mode){
+function switchMode(mode,{focus=true}={}){
  if(editor&&mode==='character'){editor.creator.goTo('look');return;}
  if(editor){currentRecipe=editor.creator.recipe;switching=true;editor.cleanup();editor.creator.close();editor=null;switching=false;}
  if(mode==='character'){workspace?.hide();editor=createCharacterEditor();}
  else{workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode);}
  for(const b of modes.children)b.setAttribute('aria-pressed',String(b.dataset.mode===mode));
- modes.querySelector(`[data-mode="${mode}"]`)?.focus({preventScroll:true});
+ if(focus)modes.querySelector(`[data-mode="${mode}"]`)?.focus({preventScroll:true});
 }
 function createCharacterEditor(){
 const creator=openCreator({recipe:currentRecipe,templates,startAt:'look',keepOpenOnSave:true,saveLabel:'Save character',shareLink:code=>new URL('./?r='+code,location.href).href,onSave:save,onClose:recipe=>{currentRecipe=recipe;if(!switching)location.href='/#projects';}});
@@ -36,7 +36,8 @@ creator.root.setAttribute('aria-label','Johansson Studio');
 creator.root.querySelector('canvas').setAttribute('aria-label','Your character. Drag to turn.');
 // Keep the original appearance controls while giving this independent studio its own title.
 const heading=creator.root.querySelector('.shm-top h2');
-const titleObserver=new MutationObserver(()=>{if(heading.textContent!=='Johansson Studio')heading.textContent='Johansson Studio';});titleObserver.observe(heading,{childList:true,subtree:true});heading.textContent='Johansson Studio';
+const lockup=()=>{heading.innerHTML='<span class="sr-only">Johansson Studio</span><span class="studio-mark" aria-hidden="true"><b>JOHANSSON</b><i>STUDIO</i></span>';};
+const titleObserver=new MutationObserver(()=>{if(!heading.querySelector('.studio-mark')){titleObserver.disconnect();lockup();titleObserver.observe(heading,{childList:true,subtree:true});}});lockup();titleObserver.observe(heading,{childList:true,subtree:true});
 const toolbar=document.createElement('div');toolbar.className='studio-tools';toolbar.setAttribute('role','group');toolbar.setAttribute('aria-label','Character files and templates');
 const label=document.createElement('label');label.textContent='Template';
 const select=document.createElement('select');select.setAttribute('aria-label','Starting template');
@@ -57,12 +58,13 @@ const downloadDesign=button('Download design',()=>{const url=URL.createObjectURL
 const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.hidden=true;
 input.onchange=async()=>{
  try{const file=input.files[0];if(!file)return;if(file.size>1000000)throw new Error('size');const design=JSON.parse(await file.text());if(design.format!=='nj-avatar-studio'||design.version!==1||!design.recipe||typeof design.recipe!=='object'||Array.isArray(design.recipe))throw new Error('format');creator.setRecipe(normalizeRecipe(design.recipe));status.textContent='Design opened. Save character to keep it in this browser.';}
- catch{status.textContent='Unable to open this design. Choose an Avatar Creator JSON file.';}finally{input.value='';}
+ catch{status.textContent='Unable to open this design. Choose a Johansson Studio design file (.avatar.json).';}finally{input.value='';}
 };
 const openDesign=button('Open design',()=>input.click());
 const shareCharacter=creator.root.querySelector('.shm-top button');if(shareCharacter){shareCharacter.textContent='Share character link';fileMenu.append(shareCharacter);}
-fileMenu.append(downloadDesign,openDesign);toolbar.append(status,files,input);
-fileMenu.addEventListener('click',()=>{files.open=false;});
+label.className='studio-template';fileMenu.append(label,downloadDesign,openDesign);toolbar.append(status,files,input);
+fileMenu.addEventListener('click',event=>{if(event.target.closest('button'))files.open=false;});
+select.addEventListener('change',()=>{files.open=false;});
 const closeFiles=event=>{if(!files.contains(event.target))files.open=false;};document.addEventListener('click',closeFiles);
 files.addEventListener('keydown',event=>{if(event.key==='Escape'){files.open=false;fileLabel.focus();}});
 let noticeTimer;
@@ -109,5 +111,7 @@ creator.root.addEventListener('keydown',event=>{
 return {creator,cleanup};
 }
 
-switchMode('character');
+switchMode('character',{focus:false});
+// The maker focuses its close button on open; on first load nothing should wear a focus ring until the user acts.
+requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=document.activeElement;if(a&&a!==document.body&&a.closest('.shm'))a.blur();}));
 window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();},{once:true});

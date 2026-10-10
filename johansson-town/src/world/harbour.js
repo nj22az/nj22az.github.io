@@ -10,7 +10,7 @@ import {buildBicycle} from './bicycle.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
-import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,SHOP_CROSSING_Z} from './main-road.js';
+import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,SHOP_CROSSING_Z} from './main-road.js';
 import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts} from './road-standards.js';
 import {buildStreetLamps,STREET_LAMP_PLACEMENTS} from './street-lamps.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
@@ -137,10 +137,13 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // The delivery turn stays on asphalt, with a flush entrance through the old kerb.
   const court=MAIN_SERVICE_COURT;const apron=directBox([court.maxX-court.minX,.04,court.maxZ-court.minZ],[(court.minX+court.maxX)/2,.02,(court.minZ+court.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');apron.name='Main Street service turnout';
   const loading=MAIN_LOADING_APRON,loadingPaving=directBox([loading.maxX-loading.minX,.04,loading.maxZ-loading.minZ],[(loading.minX+loading.maxX)/2,.02,(loading.minZ+loading.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');loadingPaving.name='Main Street freight pullout';
+  const layby=MAIN_PARKING_LAYBY,laybyPaving=directBox([layby.maxX-layby.minX,.04,layby.maxZ-layby.minZ],[(layby.minX+layby.maxX)/2,.02,(layby.minZ+layby.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');laybyPaving.name='Main Street parking lay-by';
+  for(const z of [layby.minZ+.25,layby.maxZ-.25]){const line=directBox([layby.maxX-layby.minX-.2,.012,.09],[(layby.minX+layby.maxX)/2+.1,.046,z],0xd6c8a7,group);line.name='Lay-by bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
   // The working quay bays connect to Main Street through a marked, flush driveway.
   // Drivers straighten clear of the Port Building canopy before crossing the footway.
   const cargoDrive=directBox([3.9,.04,14.8],[1.25,GROUND_LAYER.grass-.02,-40.2],GROUND.asphalt,group,[0,0,0],false,'road');cargoDrive.name='Quay cargo driveway';
-  for(const [x,z] of QUAY_BAYS)for(const dx of [-1.02,1.02]){const line=directBox([.09,.012,4.5],[x+dx,GROUND_LAYER.grass+.006,z],0xd6c8a7,group);line.name='Working quay bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
+  // The lay-by (QUAY_BAYS[1]) carries its own end marks, drawn with its paving above.
+  for(const [x,z] of QUAY_BAYS.slice(0,1))for(const dx of [-1.02,1.02]){const line=directBox([.09,.012,4.5],[x+dx,GROUND_LAYER.grass+.006,z],0xd6c8a7,group);line.name='Working quay bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
 
   // Kerbstones: a light concrete edge between footway and carriageway on both sides,
   // dropped flush where the two crossings meet the road so a pram (or a player) rolls
@@ -148,7 +151,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   {
     const kerb=new THREE.MeshStandardMaterial({color:0xd9d6cc,roughness:.9});
     for(const x of [MAIN_ROAD.west-.09,MAIN_ROAD.east+.09]){
-      const gaps=[...([SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6])),[court.minZ,court.maxZ],...(x<MAIN_ROAD.x?[[loading.minZ,loading.maxZ]]:[])].sort((a,b)=>a[0]-b[0]);
+      const gaps=[...([SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6])),[court.minZ,court.maxZ],...(x<MAIN_ROAD.x?[[loading.minZ,loading.maxZ]]:[[MAIN_PARKING_LAYBY.minZ,MAIN_PARKING_LAYBY.kerbTo]])].sort((a,b)=>a[0]-b[0]);
       let z0=MAIN_ROAD.minZ;
       for(const [a,b] of [...gaps,[MAIN_ROAD.maxZ,MAIN_ROAD.maxZ]]){
         if(b>z0&&a>z0){const len=a-z0;const k=new THREE.Mesh(new THREE.BoxGeometry(.18,.11,len),kerb);k.position.set(x,.025,z0+len/2);k.name='Main Street kerb';k.receiveShadow=true;k.castShadow=false;group.add(k);}
@@ -213,9 +216,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   });
 
   // Low deck lights remain at the southern quay, separate from the overhead grid.
-  for(const px of [-7.2,.8]){
-   cyl(.10,.85,[px,.425,-32],0x3b4848);box([.22,.10,.22],[px,.9,-32],0xe7c080);obstacle(px,-32,.25,.25);
-   const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(px,1,-32);group.add(light);lampLights.push(light);
+  // The east one stands 1.25 m back from the kerb, on the footway side of the parking
+  // lay-by (main-road.js), where the harbour master's car stands by the kerb.
+  for(const [px,pz] of [[-7.2,-32],[2.05,-32]]){
+   cyl(.10,.85,[px,.425,pz],0x3b4848);box([.22,.10,.22],[px,.9,pz],0xe7c080);obstacle(px,pz,.25,.25);
+   const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(px,1,pz);group.add(light);lampLights.push(light);
   }
   // The shopping street is fed from the Main Street line (okinawa/quarters.js): a second
   // and third row of poles a few metres from it was clutter.
@@ -264,12 +269,13 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function bollard(x,z){
     directCyl(.22,.48,[x,.35,z],0x2f3c3f,group,[0,0,0],true,12);directCyl(.31,.12,[x,.61,z],0x2f3c3f);obstacle(x,z,.48,.48);
   }
-  [-15,-10,-5,5,10,15].forEach(x=>bollard(x,-48.45));
+  // On the coping, as on any quay, not 1.2 m back from it where they closed the lane in front of the sheds.
+  [-15,-10,-5,5,10,15].forEach(x=>bollard(x,-49.3));
 
   function ropeCoil(x,z,scale=1){
     const rm=material(0xa38a62);for(let i=0;i<3;i++){const t=directMesh(new THREE.TorusGeometry(.35*scale+i*.07,.045*scale,6,20),rm,group,[x,.18+i*.035,z],[Math.PI/2,0,(i%2)*.25],[1,1,1],false);t.castShadow=false;}
   }
-  ropeCoil(-8.3,-47.1,.9);
+  ropeCoil(-8.6,-44.15,.9);
 
   function crateStack(x,z,cols=2,rows=2){
     const colors=[0x4f6f76,0xa9854e,0x6f805e];
@@ -280,13 +286,17 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // On the island the ferry terminal stands where the second stack was.
 
 
-  // Nets dry beside the north wall, clear of both the loading bay and pedestrian door.
-  for(const x of [-14.75,-12.45])cyl(.06,2.4,[x,1.3,-35.7],0x655747);beam([-14.75,2.45,-35.7],[-12.45,2.45,-35.7],.055,0x655747);
-  for(let x=-14.5;x<-12.65;x+=.22)beam([x,.5,-35.68],[x,2.32,-35.68],.012,0x65736f);obstacle(-13.6,-35.7,2.5,.5);
+  // Nets dry on the apron by the water, where the boats land them: east of the warehouse, end-on
+  // to the quay so the lane along the edge stays open. (They stood behind the warehouse, in the one
+  // passage from the main street to the west quay, and cut it to a metre.)
+  // Between the warehouse's loading frontage (kept clear to x -9.2) and the cars' lane to the ferry ramp.
+  for(const z of [-47.5,-45.2])cyl(.06,2.4,[-8.6,1.3,z],0x655747);beam([-8.6,2.45,-47.5],[-8.6,2.45,-45.2],.055,0x655747);
+  for(let z=-47.25;z<-45.4;z+=.22)beam([-8.58,.5,z],[-8.58,2.32,z],.012,0x65736f);obstacle(-8.6,-46.35,.5,2.5);
 
 
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
-  directBox([1.15,1.55,.85],[8.7,.88,-36.8],0xd8d8cc,group,[0,0,0],true);label("Ice",'ICE',[8.7,1.85,-36.35],.78,.5,0,'#dde1d7','#37636a');obstacle(8.7,-36.8,1.2,.9);
+  // The ice cabinet stands against the waiting hall's wall, not across the pavement (it left 1 m).
+  directBox([1.15,1.55,.85],[8,.88,-39.1],0xd8d8cc,group,[0,0,0],true);label("Ice",'ICE',[8,1.85,-38.65],.78,.5,0,'#dde1d7','#37636a');obstacle(8,-39.1,1.2,.9);
 
   for(const [x,z] of [[-17.1,-48],[17.6,-47.6]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
 

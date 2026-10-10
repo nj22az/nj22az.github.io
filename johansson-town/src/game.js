@@ -1,6 +1,6 @@
 import {createLensOcclusion} from './render/lens-occlusion.js';
 import {createIzakayaStreetView} from './render/izakaya-street-view.js';
-import {WEATHERS,WEATHER_CHANGE_MINUTES,WEATHER_LINES,nextWeather,readWeather,writeWeather} from './world/weather.js';
+import {WEATHERS,WEATHER_CHANGE_MINUTES,weatherLine,nextWeather,readWeather,writeWeather} from './world/weather.js';
 import {izakayaOpen} from './people/social.js';
 import {closedGreeting} from './people/izakaya-hours.js';
 import {createPointWalk} from './input/point-walk.js';
@@ -406,7 +406,7 @@ const weatherLabel=()=>weatherMode==='random'?'Random · '+WEATHER_NAMES[weather
 function applyWeather(kind,{announce=false}={}){
  weatherKind=kind;weather=kind==='rain';world.setRain(weather);if(activities?.state)activities.state.weather=weather;
  writeWeather({mode:weatherMode,weather:kind});const button=$('#weatherButton');if(button)button.textContent=weatherLabel();
- if(announce&&!current)say(WEATHER_LINES[kind],4);
+ if(announce&&!current)say(weatherLine(kind,minutes),4);
 }
 function startWeather(){const saved=readWeather();weatherMode=saved.mode;nextWeatherAt=minutes+WEATHER_CHANGE_MINUTES;applyWeather(saved.weather);return weatherLabel();}
 function cycleWeather(){
@@ -463,7 +463,7 @@ if(benchSeat){
   seated=true;world.spawn=benchSeat.stand;
 }else if(konbiniDoor){player.position.copy(konbiniDoor);yaw=konbini.streetFrontage?.yaw??Math.PI/2;world.spawn=player.position.toArray();}
 else if(world.spawn)player.position.set(...world.spawn);
-activities=createActivities({say,onOpen:()=>toggleDir(false),onOutfit:on=>wearSwim(on),getOutfit:()=>swimwear,onMove:name=>{johansson?.play(name);},getBeerTable:()=>beerService?{drink:beerService.drink,dish:beerService.dish,order:beerService.pending,naoHere:!!world.people.find(p=>p.profile.name==='Thao'&&p.g.userData.inIzakaya&&p.g.visible)}:null,onOrderDrink:kind=>!!beerService?.order(kind,parkSeat?.izakaya),getTipsy:()=>tipsy,onSip:()=>sipDrink(),onEat:()=>eatDish(),onSnack:item=>{const inv=activities.state.inventory,i=inv.indexOf(item);if(i<0)return false;inv.splice(i,1);activities.save();activities.close();hands.bite(SPECIAL_BY_NAME[item]?.bite||(HOT_SNACKS.some(snack=>snack.id==='nikuman'&&snack.name===item)?'bun':'rice'));johansson?.play(seated?'SitEat':'Eat');say(item+'. Still warm.',3);return true;},onTreat:name=>{const g=world.people.find(p=>p.profile.name===name)?.g;if(g){g.userData.residentSpeech={text:"Cheers!",until:minutes+4};characters?.gesture?.(g);}},onInspectModel:item=>inspector.open(item),onInspectShopGood:item=>{resetInput();document.exitPointerLock?.();(itemViewer??=createItemViewer()).open(item);},getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='ramen'&&Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,onDialoguePhase,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,thuanAvailable:world.people.some(p=>p.profile.name==='Thuan'&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Johansson Town, 1997");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if(selected?.position&&occupiedByPerson(selected.position[0],selected.position[2])){say('That seat is occupied.',3);return true;}if((selected?.soak||selected?.wash)&&!activities.onsenPaid()){say('Pay ¥300 at the bandai by the door first.',4);return true;}if(selected?.soak||selected?.wash)wearSwim(true);{const inside=selected?.izakaya?'inIzakaya':Number.isInteger(selected?.ramenSeatId)?'inRamen':null;if(inside&&world.people.some(p=>p.g.userData[inside]&&p.g.visible&&Math.hypot(p.g.position.x-selected.position[0],p.g.position.z-selected.position[2])<.4)){say('Someone is already sitting there.',3);return true;}}if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={seatId:seat?.id,ramenSeatId:seat?.ramenSeatId,storeSeatId:seat?.storeSeatId,izakaya:seat?.izakaya||null,surfaceY:seat?.surfaceY,soak:!!seat?.soak,wash:!!seat?.wash,beachCorner:!!seat?.beachCorner,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;johansson?.seat(parkSeat.soak?'Soak':'Sit');resetInput();say(Number.isInteger(parkSeat.ramenSeatId)?'Ramen counter · Make yourself comfortable.':name+' · Make yourself comfortable.',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:command=>command==='cycle'?cycleWeather():startWeather(),onTime:value=>{
+activities=createActivities({say,onOpen:()=>toggleDir(false),onOutfit:on=>wearSwim(on),getOutfit:()=>swimwear,onMove:name=>{johansson?.play(name);},getBeerTable:()=>beerService?{drink:beerService.drink,dish:beerService.dish,order:beerService.pending,naoHere:!!world.people.find(p=>p.profile.name==='Thao'&&p.g.userData.inIzakaya&&p.g.visible)}:null,onOrderDrink:kind=>!!beerService?.order(kind,parkSeat?.izakaya),getTipsy:()=>tipsy,onSip:()=>sipDrink(),onEat:()=>eatDish(),onSnack:item=>{const inv=activities.state.inventory,i=inv.indexOf(item);if(i<0)return false;inv.splice(i,1);activities.save();activities.close();hands.bite(SPECIAL_BY_NAME[item]?.bite||(HOT_SNACKS.some(snack=>snack.id==='nikuman'&&snack.name===item)?'bun':'rice'));johansson?.play(seated?'SitEat':'Eat');say(item+'. Still warm.',3);return true;},onTreat:name=>{const g=world.people.find(p=>p.profile.name===name)?.g;if(g){g.userData.residentSpeech={text:"Cheers!",until:minutes+4};characters?.gesture?.(g);}},onInspectModel:item=>inspector.open(item),onInspectShopGood:item=>{resetInput();document.exitPointerLock?.();(itemViewer??=createItemViewer()).open(item);},getResidentLocations:()=>castAI?.snapshot?.(),getTableService:()=>current?.id==='ramen'&&Number.isInteger(parkSeat?.ramenSeatId)?ramenPlayerService:null,onStand:standUp,onConversation:setConversation,onDialoguePhase,getMinutes:()=>minutes,getSocialContext:()=>({inside:current?.id,thuanAvailable:world.people.some(p=>p.profile.name==='Thuan'&&p.g.userData.inMarket&&p.g.visible&&!p.g.userData.sleeping),names:current?.id==='izakaya'?izakayaGuests.sync(minutes):current?.id==='ramen'?ramenGuests.sync(minutes):[]}),onMap:()=>{const c=document.createElement("canvas");c.width=680;c.height=640;c.style.width="100%";c.style.height="auto";c.style.position="static";c.setAttribute("aria-label","Folded visitor map, Minato Machi, 1997");drawTownMap(c.getContext("2d"),c.width,c.height,{sites:SITES,landmarks:world.landmarks,people:world.people,player:current?doors.get(current.id):player.position,yaw,visited:activities.state.visited});return c;},onPhone:()=>{const p=world.people.find(p=>p.g.userData.name==='Harbour master');if(p&&(p.g.position.z<-37)){characters.gesture(p.g);activities.close();say('The harbour master answers from the quay.',4);return true;}return false;},onPurchase:name=>{const p=new THREE.Vector3();active?.object?.getWorldPosition(p);hands.offer(name,p);return true;},onSeat:name=>{if(active?.object?.userData.reservedBy){say('That seat is occupied.',3);return true;}const selected=active?.object?.userData.seat;if(selected?.position&&occupiedByPerson(selected.position[0],selected.position[2])){say('That seat is occupied.',3);return true;}if((selected?.soak||selected?.wash)&&!activities.onsenPaid()){say('Pay ¥300 at the bandai by the door first.',4);return true;}if(selected?.soak||selected?.wash)wearSwim(true);{const inside=selected?.izakaya?'inIzakaya':Number.isInteger(selected?.ramenSeatId)?'inRamen':null;if(inside&&world.people.some(p=>p.g.userData[inside]&&p.g.visible&&Math.hypot(p.g.position.x-selected.position[0],p.g.position.z-selected.position[2])<.4)){say('Someone is already sitting there.',3);return true;}}if(selected?.storeSeatId&&(storeService?.occupied(selected.storeSeatId)||world.people.some(p=>p.g.userData.inMarket&&p.g.userData.storeSeatId===selected.storeSeatId))){say('That chair is occupied.',3);return true;}activities.close();const ax=player.position.x,az=player.position.z,ay=player.position.y,seat=active?.object?.userData.seat,approachClear=!environmentBlocked(ax,az)&&!occupiedByPerson(ax,az);const sit=seat?.position||[ax,ay,az];const stand=approachClear?[ax,ay,az]:seat?.stand||(()=>{const p=findClear(ax,az);return [p[0],ay,p[1]];})();parkSeat={seatId:seat?.id,ramenSeatId:seat?.ramenSeatId,storeSeatId:seat?.storeSeatId,izakaya:seat?.izakaya||null,surfaceY:seat?.surfaceY,soak:!!seat?.soak,wash:!!seat?.wash,beachCorner:!!seat?.beachCorner,position:sit,stand,eyeY:seat?.eyeY??1.15,yaw:Number.isFinite(seat?.yaw)?seat.yaw:yaw,pitch:Number.isFinite(seat?.pitch)?seat.pitch:pitch};player.position.set(...parkSeat.position);if(Number.isFinite(parkSeat.yaw))yaw=parkSeat.yaw;if(Number.isFinite(parkSeat.pitch))pitch=parkSeat.pitch;seated=true;johansson?.seat(parkSeat.soak?'Soak':'Sit');resetInput();say(Number.isInteger(parkSeat.ramenSeatId)?'Ramen counter · Make yourself comfortable.':name+' · Make yourself comfortable.',5);return true;},onDrink:name=>{activities.close();if(hands.held===name)hands.drink();else hands.offer(name,player.position,true);return true;},onEscort:()=>{activities.state.kenjiEscort='walking';activities.save();},onWeather:command=>command==='cycle'?cycleWeather():startWeather(),onTime:value=>{
   // time passes in the telling. The TIME button says what time and day it is in town.
   if(value&&typeof value==='object'){if(!followRealClock)minutes=value.restore;return;}
   if(value==='cycle'){if(followRealClock){clockMenu();return;}timePreset=(timePreset+1)%4;minutes=[1002,1110,1230,540][timePreset];}
@@ -478,7 +478,7 @@ fists=createFists({camera,skin:playerRecipe()?.body?.skin||'#d9a57c',sleeve:play
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;const lager=name==='Umineko lager';if(lager&&!wantsAnother(tipsy,LAGER_ALCOHOL)){say('Enough for tonight. The can goes back in your bag for tomorrow.',3);return false;}if(lager)tipsy=drinkUp(tipsy,LAGER_ALCOHOL);activities.state.inventory.splice(i,1);const left=SPECIAL_BY_NAME[name]?.cup?null:emptyFor(name);if(left)activities.state.inventory.push(left);activities.save();return true;},canColour,onDrink:()=>johansson?.play(seated?'SitDrink':'Drink')});
 // Johansson himself, for the third-person view. The model loads the first time the view is used.
 const VIEW_KEY='johansson-town-view';
-let thirdPerson=false,johansson=null,playerSpeed=0,playerRunning=false,thirdDistance=3.1;
+let thirdPerson=false,johansson=null,playerSpeed=0,playerRunning=false,thirdDistance=3.1,crampedEase=0,pivotSide=.34;
 const shopCarry=createShopCarry({holder:()=>johansson});
 // Third person unless you have asked for your own eyes: a life-sim is about seeing your
 // islander in the town (docs/AMPLIFY-AUDIT.md, decision 5). V switches.
@@ -557,10 +557,10 @@ async function startBuildMode(){
  try{if(current?.id!=='mayor-home')await enterRoom(home);activeRoomLayout?.arranging?.open();}catch(error){console.warn('Build mode could not open:',error);}
 }
 const decorStage={hold(){decorating=true;resetInput();},release(){decorating=false;decorView=null;},show(pos,at){decorView={pos,at};}};
-function cameraBlocked(x,z,y,r){
+function cameraBlocked(x,z,y,r,ignore=null){
  if(current&&indoorCeilings&&y>indoorCeilings.limit(x,z,player.position.y,Math.max(.22,r)))return true;
  const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;
- const hit=c=>!c.only&&(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c);
+ const hit=c=>!c.only&&!(ignore&&ignore(c))&&(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c);
  return current?roomColliders.some(hit):colliderGrid.some(x,z,r,hit);
 }
 const arrivalPerson=new THREE.Vector3();
@@ -577,40 +577,92 @@ const lensOcclusion=createLensOcclusion({root:scene,skip:o=>o===room||o===player
 /** Outdoors, when a wall or awning has pulled the lens right up to him, it would sit inside his own head: look over it instead of through it. */
 const headPoint=new THREE.Vector3();
 function lensInsideHead(){headPoint.set(player.position.x,player.position.y+1.45,player.position.z);return camera.position.distanceTo(headPoint)<.62;}
+/**
+ * How far the third-person lens can stand back behind him at a heading, inside the room he has
+ * just entered (the same boom and ceiling test the lens uses each frame).
+ */
+function boomRoom(x,z,heading,tilt=-.08){
+ const y=player.position.y+1.6,cx=Math.sin(heading)*Math.cos(tilt),cy=-Math.sin(tilt),cz=Math.cos(heading)*Math.cos(tilt);
+ // From his right shoulder, as placeThirdPerson hangs the lens (or his middle if the shoulder is in a wall).
+ const side=johansson?.lens?.side??.34;let px=x+Math.cos(heading)*side,pz=z-Math.sin(heading)*side;if(cameraBlocked(px,pz,y,.16)){px=x;pz=z;}
+ for(let d=.1;d<=2.2;d+=.1)if(cameraBlocked(px+cx*d,pz+cz*d,y+cy*d,.16))return Math.max(0,d-.22);
+ return 2.2;
+}
+/**
+ * Coming in through a door you keep looking the way you walked, unless that leaves the lens no
+ * room: in a family home's genkan he faced a partition a step away with the door wall behind him,
+ * the boom shrank to 0.38 m, his body was hidden and the screen was wall. Then he turns to the
+ * nearest heading the lens has room for (into the dining-kitchen, there).
+ */
+function roomyHeading(heading){
+ if(!thirdPerson)return heading;
+ const x=player.position.x,z=player.position.z;
+ if(boomRoom(x,z,heading)>=1)return heading;
+ const turns=[1,-1,2,-2,3,-3,4].map(k=>({h:heading+k*Math.PI/4,r:boomRoom(x,z,heading+k*Math.PI/4)}));
+ // The nearest turn with room to stand back comfortably, else the nearest with room at all, else the most room.
+ return (turns.find(t=>t.r>=1.6)||turns.find(t=>t.r>=1)||turns.reduce((a,b)=>b.r>a.r?b:a)).h;
+}
 function placeThirdPerson(dt){
  // Seated, the lens rises a little so his head does not fill the view of the table. In a
  // bath he is down at the water, so it looks over his shoulder from standing height.
  const lens=johansson?.lens,tall=lens?lens.eye-1.6:0;
  const eye=(seated&&parkSeat?(parkSeat.soak?1.25:Math.min(1.45,parkSeat.eyeY-player.position.y)+.3):1.6)+tall;
  tpDir.set(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch));tpRight.set(Math.cos(yaw),0,-Math.sin(yaw));
- tpPivot.set(player.position.x,player.position.y+eye+(camera.aspect<1?.18:0),player.position.z).addScaledVector(tpRight,lens?.side??.34);
- if(current){
-  tpPivot.y=Math.min(tpPivot.y,indoorCeilings?.limit(tpPivot.x,tpPivot.z,player.position.y)??Infinity);
-  if(cameraBlocked(tpPivot.x,tpPivot.z,tpPivot.y,.16)){tpPivot.x=player.position.x;tpPivot.z=player.position.z;}
- }
+ tpPivot.set(player.position.x,player.position.y+eye+(camera.aspect<1?.18:0),player.position.z);
+ if(current)tpPivot.y=Math.min(tpPivot.y,indoorCeilings?.limit(tpPivot.x,tpPivot.z,player.position.y)??Infinity);
+ // Seated outdoors, the bench or chair under him is not a wall to stand the lens in front of.
+ // (It used to skip everything within 0.85 m of him instead, so with his back to a building the
+ // first test was already inside it and the lens stopped in the building: a dark screen.)
+ const own=!current&&seated?c=>circleHitsRect(player.position.x,player.position.z,.3,c):null;
  // On a portrait screen (an iPad held upright) the frame is narrow and his big Shimanchu
  // head filled a third of it: the lens stands further back and a little higher there.
- const portrait=camera.aspect<1,want=(current?2.2:3.2)*(portrait?1.32:1);let reach=want;
- // Outdoors ignore his own bench; indoors check the entire boom, including the ceiling.
- if(!current){
-  // An awning, a canopy or a shop's glass is drawn, not walked into: the boom also
-  // stops at what is drawn, and the shoulder offset first, so the lens never ends up
-  // under a valance or behind a window looking out through it.
-  lensFrom.set(player.position.x,tpPivot.y,player.position.z);lensDir.subVectors(tpPivot,lensFrom);const side=lensDir.length();
-  if(side>.01){lensDir.divideScalar(side);const free=lensOcclusion.clear(lensFrom,lensDir,side+.2);if(free<side+.2)tpPivot.copy(lensFrom).addScaledVector(lensDir,Math.max(0,free-.2));}
-  lensDir.copy(tpDir).negate();reach=Math.min(reach,Math.max(0,lensOcclusion.clear(tpPivot,lensDir,want+.3)-.3));
- }
- for(let d=.1;d<=reach+.001;d+=.1){const x=tpPivot.x-tpDir.x*d,z=tpPivot.z-tpDir.z*d;if(!current&&Math.hypot(x-player.position.x,z-player.position.z)<.85)continue;if(cameraBlocked(x,z,tpPivot.y-tpDir.y*d,.16)){reach=Math.max(0,d-.22);break;}}
- thirdDistance=reach<thirdDistance?reach:THREE.MathUtils.damp(thirdDistance,reach,4,dt);
+ const portrait=camera.aspect<1,want=(current?2.2:3.2)*(portrait?1.32:1);
+ // The whole boom, from a pivot `side` metres to his right; indoors the ceiling too. -1: the pivot is in a wall.
+ // Outdoors the boom also stops at what is drawn rather than walked into (an awning, a canopy,
+ // a shop's glass): otherwise the lens slid under the valance or behind a window and looked out through it.
+ const drawn=(px,pz)=>{if(current)return want;lensFrom.set(px,tpPivot.y,pz);lensDir.copy(tpDir).negate();return Math.max(0,lensOcclusion.clear(lensFrom,lensDir,want+.3)-.3);};
+ const shoulderClear=side=>{if(current||!side)return true;lensFrom.set(tpPivot.x,tpPivot.y,tpPivot.z);lensDir.copy(tpRight).multiplyScalar(Math.sign(side));return lensOcclusion.clear(lensFrom,lensDir,Math.abs(side)+.2)>=Math.abs(side)+.2;};
+ const boom=side=>{const px=tpPivot.x+tpRight.x*side,pz=tpPivot.z+tpRight.z*side;if(side&&(cameraBlocked(px,pz,tpPivot.y,.16,own)||!shoulderClear(side)))return -1;
+  const limit=drawn(px,pz);for(let d=.1;d<=limit+.001;d+=.1)if(cameraBlocked(px-tpDir.x*d,pz-tpDir.z*d,tpPivot.y-tpDir.y*d,.16,own))return Math.max(0,d-.22);return limit;};
+ // Over his right shoulder, drawn in towards his middle as the boom shortens (a short boom from the
+ // shoulder sees past him, with him out of the side of the frame), and his middle whenever the
+ // shoulder has the worse boom: walking out past the end of a wall used to flip the pivot 0.5 m
+ // sideways into a boom that ran straight into the wall, and the lens popped from 3.2 m to nothing.
+ const shoulder=(lens?.side??.34)*(1-.8*crampedEase),fromShoulder=boom(shoulder),fromMiddle=boom(0);
+ pivotSide=THREE.MathUtils.damp(pivotSide,fromShoulder>=fromMiddle-.3?shoulder:0,6,dt);
+ let reach=boom(pivotSide);if(reach<0){pivotSide=0;reach=fromMiddle;}
+ tpPivot.addScaledVector(tpRight,pivotSide);
+ // And the line from the lens to his head: a trunk or a post beside the boom still stood
+ // between them (Harbour Park's bench). Come in front of it.
+ const headY=player.position.y+eye-.2;
+ const sightBlocked=d=>{const cx=tpPivot.x-tpDir.x*d,cy=tpPivot.y-tpDir.y*d,cz=tpPivot.z-tpDir.z*d,dx=player.position.x-cx,dy=headY-cy,dz=player.position.z-cz,len=Math.hypot(dx,dy,dz);
+  for(let t=0;t<len-.45;t+=.15){const k=t/len;if(cameraBlocked(cx+dx*k,cz+dz*k,cy+dy*k,.12,own))return true;}return false;};
+ let sight=reach;for(let i=0;i<16&&sight>.3&&sightBlocked(sight);i++)sight=Math.max(.3,sight-.2);
+ // A wall in the boom: in at once, never through it. Something only in the line of sight: in
+ // quickly but smoothly (a lamp post passing behind him used to pop the lens 2.6 m in a frame).
+ // Clear again: out slowly.
+ if(reach<thirdDistance)thirdDistance=reach;
+ if(sight<thirdDistance)thirdDistance=THREE.MathUtils.damp(thirdDistance,sight,14,dt);
+ else thirdDistance=THREE.MathUtils.damp(thirdDistance,sight,4,dt);
  camera.position.copy(tpPivot).addScaledVector(tpDir,-thirdDistance);
- // Outdoors the lens can climb over him. Indoors it stays below the roof;
- // at very close range updateJohansson hides his body to keep the view clear.
- const cramped=Math.max(0,1.4-thirdDistance)/1.1;
- if(cramped>0&&!current){const lift=Math.min(cramped*.6,Math.max(0,lensOcclusion.clear(camera.position,lensUp,cramped*.6+.3)-.3));camera.position.y+=lift;camera.rotation.x-=cramped*.3;}
+ // Close in, the lens rises over his shoulder and looks down at him, so a narrow alley or a
+ // small room still shows him rather than the back of his head or nothing at all. Eased, so a
+ // post passing behind him does not jerk the view; it rises only where there is room.
+ const cramped=Math.min(1,Math.max(0,1.4-thirdDistance)/1.1);
+ crampedEase=THREE.MathUtils.damp(crampedEase,cramped,8,dt);
+ if(crampedEase>.001){
+  let lift=crampedEase*.3;if(!current)lift=Math.min(lift,lensOcclusion.clear(camera.position,lensUp,lift+.3)-.3);while(lift>.05&&cameraBlocked(camera.position.x,camera.position.z,camera.position.y+lift,.16,own))lift-=.1;
+  camera.position.y+=Math.max(0,lift);
+ }
  camera.position.y=Math.max(camera.position.y,player.position.y+.3);
  // On a hillside the boom can swing into the slope behind: keep the lens above the ground.
  if(!current)camera.position.y=Math.max(camera.position.y,groundHeight(camera.position.x,camera.position.z)+.35);
  if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
+ if(crampedEase>.001){
+  // His head low in the frame, not in the middle of it: the view still looks ahead, past him.
+  const flat=Math.max(.25,Math.hypot(camera.position.x-player.position.x,camera.position.z-player.position.z)),down=Math.max(-.6,Math.atan2(player.position.y+eye-.1-camera.position.y,flat)+.35);
+  camera.rotation.x=THREE.MathUtils.lerp(camera.rotation.x,Math.min(camera.rotation.x,down),crampedEase);
+ }
 }
 /** R, the drink button, or Drink at the table: a can from the bag, or a sip of what Thao brought. */
 function drinkNow(){if(parkSeat?.izakaya&&beerService?.drink)return sipDrink();return hands.drink();}
@@ -670,7 +722,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.85:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
+ johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -935,18 +987,18 @@ async function enterRoom(s){spawnScene?.cancel('room');
  // The heading goes through the door with you. Snapping to the room's own yaw and a
  // level pitch is the single thing that most makes an interior read as a different
  // place: you walk in looking where you were looking, not where the room says.
- yaw=streetToRoom(streetYaw,s,activeRoomLayout);
+ yaw=roomyHeading(streetToRoom(streetYaw,s,activeRoomLayout));player.quaternion.setFromAxisAngle(yAxis,yaw);
  pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
 function leaveRoom(){if(!current)return;spawnScene?.cancel('room');if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}const leavingDungeon=current.id==='dungeon';wearSwim(false);showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;beerService?.clear();beerService=null;workplaceResidents.restore();bookshopCustomers.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');document.body.classList.remove('town-menu-open');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();onsenGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;current=null;if(s?.id===CITY_RESTAURANT.id)hands.firstPersonVisible=!thirdPerson;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);
  // and back out again the same way, by the same rotation: you leave facing where you
  // were facing inside, which for somebody who walked at the door is the street.
- if(s){yaw=roomToStreet(roomYaw,s,roomLayout);pitch=THREE.MathUtils.clamp(roomPitch,-.55,.55);}
+ if(s){yaw=roomToStreet(roomYaw,s,roomLayout);pitch=THREE.MathUtils.clamp(roomPitch,-.55,.55);player.quaternion.setFromAxisAngle(yAxis,yaw);}
  say(syncExteriorPlace(),1.5);if(leavingDungeon)finishDungeon();}
 
 function syncExteriorPlace(){
  const phase=islandPlay?.phase,airport=islandPlay?.snapshot().location==='airport';
- const title=phase==='ferry'?'MINATO–KITANO-JIMA FERRY':phase==='flight'?'ISLAND COMMUTER FLIGHT':airport?'KITANO-JIMA AIRPORT':'JOHANSSON TOWN';
- const detail=phase==='ferry'?'Minato–Kitano-jima · PASSENGER DECK':phase==='flight'?'Island commuter service · IN FLIGHT':airport?'Kitano-jima · PASSENGER TERMINAL':'Johansson Town · HARBOUR DISTRICT';
+ const title=phase==='ferry'?'MINATO–KITANO-JIMA FERRY':phase==='flight'?'ISLAND COMMUTER FLIGHT':airport?'KITANO-JIMA AIRPORT':'MINATO MACHI';
+ const detail=phase==='ferry'?'Minato–Kitano-jima · PASSENGER DECK':phase==='flight'?'Island commuter service · IN FLIGHT':airport?'Kitano-jima · PASSENGER TERMINAL':'Minato Machi · HARBOUR DISTRICT';
  const line=airport?'The passenger counter and promenade are open.':'Shops are open.';
  if($('#place').textContent!==title)$('#place').textContent=title;
  if($('#placeSub').textContent!==detail)$('#placeSub').textContent=detail;

@@ -211,7 +211,8 @@ function dressWarehouse(kit,solid,{inspect}){
  buoys(kit,x+.25,1.75,-46.5,{count:5,seed:4});
  for(const z of [-46.85,-46.5,-46.15])kit.rod([x+.25,2.45,z],[x+.25,1.65,z],.012,0x796e52);
 
- solid(fishCrates(kit,-14.8,-49,{rows:1,cols:3,seed:12}));
+ // Under the floats, along the wall: on the coping they shut the only lane along the quay.
+ solid(fishCrates(kit,x+.29,-45.835,{ry:Math.PI/2,rows:1,cols:3,seed:12}));
 }
 
 function dressOffice(kit,solid,{inspect}){

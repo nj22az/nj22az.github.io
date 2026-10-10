@@ -80,7 +80,7 @@ const CONFIG = {
     {
       title: "Johansson World",
       description:
-        "Explore a 1997 Okinawan harbour town, meet its residents, and discover its shops, bathhouse and waterfront.",
+        "A storytelling game set in Johansson Town, a 1997 Okinawan harbour town. Meet the residents and discover the shops, bathhouse and waterfront.",
       url: "/johansson-town/",
       icon: "home",
       tags: ["3D World", "Exploration", "Okinawa"],
@@ -88,12 +88,12 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "Avatar Creator",
+      title: "Johansson Studio",
       description:
-        "Make your own character using Johansson or Thuận as a starting template. Customise their face, hair and clothes, save your character, and export a transparent PNG.",
+        "The creative companion to Johansson World. Make characters, pose them in the island's real locations, and export photos, memes and comics as PNG.",
       url: "/avatar-creator/",
-      icon: "home",
-      tags: ["Character Design", "PNG Export", "Standalone"],
+      icon: "user",
+      tags: ["Characters", "Scenes", "Comics"],
       bento: "wide",
       featured: true,
     },
