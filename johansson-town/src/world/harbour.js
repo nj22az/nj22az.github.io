@@ -142,7 +142,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // The working quay bays connect to Main Street through a marked, flush driveway.
   // Drivers straighten clear of the Port Building canopy before crossing the footway.
   const cargoDrive=directBox([3.9,.04,14.8],[1.25,GROUND_LAYER.grass-.02,-40.2],GROUND.asphalt,group,[0,0,0],false,'road');cargoDrive.name='Quay cargo driveway';
-  for(const [x,z] of QUAY_BAYS)for(const dx of [-1.02,1.02]){const line=directBox([.09,.012,4.5],[x+dx,GROUND_LAYER.grass+.006,z],0xd6c8a7,group);line.name='Working quay bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
+  // The lay-by (QUAY_BAYS[1]) carries its own end marks, drawn with its paving above.
+  for(const [x,z] of QUAY_BAYS.slice(0,1))for(const dx of [-1.02,1.02]){const line=directBox([.09,.012,4.5],[x+dx,GROUND_LAYER.grass+.006,z],0xd6c8a7,group);line.name='Working quay bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
 
   // Kerbstones: a light concrete edge between footway and carriageway on both sides,
   // dropped flush where the two crossings meet the road so a pram (or a player) rolls
