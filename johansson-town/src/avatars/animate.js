@@ -8,6 +8,7 @@ import {createFootGrounder,createLieGrounder} from './foot-ground.js';
 import {createSeatSupport} from './seat-support.js';
 import {gaitOf} from './gait.js';
 import {bodyVolume} from './build.js';
+import {storyProps,pocketSpot,PAPER} from './story-props.js';
 
 /**
  * Moves a Shimanchu. There are no animation clips: every pose is a handful of joint
@@ -63,6 +64,10 @@ function minimise(f,x0,step=.25,iterations=320){
  * turns it: neck, head) or in the body's own frame at rest (`at`, from its measures). `seed`: the pose for Mr Fujita, written
  * for the right arm; the left arm is the mirror unless it has its own.
  */
+/** Points over a mitten (in hand lengths, the hand bone's frame): its tip, its two faces and its sides, low and high. */
+const TOUCH=Object.freeze([[0,-1.65,0],[.9,-.6,0],[-.9,-.6,0],[0,-.6,.8],[0,-.6,-.8],[.85,-1.2,0],[-.85,-1.2,0],[0,-1.2,.7],[0,-1.2,-.7],[.9,0,0],[-.9,0,0],[0,0,.8],[0,0,-.8],
+ ...[[1,1],[1,-1],[-1,1],[-1,-1]].flatMap(([x,z])=>[[.85*x,-.35,.72*z],[.8*x,-1.2,.6*z]])]);
+const _t=new THREE.Vector3();
 const REACH=Object.freeze({
  CupHands:{head:[.2,0,0],R:{at:m=>[-m.hand*.95,m.shoulderY-.085*m.k,m.depth/2+.12*m.k],seed:[-.5,.83,-.15,-1.81,-.03],hand:[.63,0,.2]}},
  CoinToCheek:{head:[.06,0,-.24],R:{head:[-.72,-.45,.55,.05],seed:[-1.55,.72,-.72,-1.55]},L:{head:[-.45,-.72,.62,.07],seed:[-2.19,.45,.89,-.82,-.02]}},
@@ -72,7 +77,67 @@ const REACH=Object.freeze({
  BannerUp:{head:[-.08,0,0],R:{at:m=>[-(m.Rh*m.headSX+.09*m.k),m.headCentre+.03*m.k,.06*m.k],seed:[-2.98,.1,-.21,-.01]}},
  HoldUp:{R:{at:m=>[-.04*m.k,m.headCentre-m.Rh*m.headSY*1.2,m.Rh*1.35],seed:[-1.29,.59,.18,-1.26]}},
  HoldUpStraws:{R:{at:m=>[-(m.Rh*m.headSX+.06*m.k),m.headCentre-m.Rh*m.headSY*1.13,m.Rh*1.25],seed:[-.95,.08,-.35,-1.56]}},
+ // ---- Fujita's Back (story v7). A place carried by a bone (`on`: the bone, and the place in the body's frame at rest) is
+ // found with the body in the move's own pose (`pose`), so a mitten lands on the small of a bent back or on a knee.
+ // The right mitten flat on the small of the back, the fingers across the spine (BentStuck, CrabWalk, CarriedBent).
+ BentBack:{pose:()=>bentJoints('stand'),neck:-.12,head:[-.26,0,0],only:'R',R:{touch:true,on:['hips',(m,v)=>onBack(m,v,-1,.32)],seed:[.55,-.35,-.25,-1.75,0],hand:[.35,0,0]}},
+ // Shuffling, or carried, both mittens on the small of the back (CrabWalk, CarriedBent): the left one too.
+ BentBackL:{pose:()=>bentJoints('stand'),neck:-.12,head:[-.26,0,0],only:'L',L:{touch:true,on:['hips',(m,v)=>onBack(m,v,1,.32)],seed:[.55,.35,.25,-1.75,0],hand:[.35,0,0]}},
+ // In the massage chair, both mittens on the thighs by the knees: curled over them, and half uncurled (ChairUncurl).
+ ChairCurl:{pose:()=>chairJoints(1),R:{touch:true,on:['thighR',m=>[-m.hipX,m.hipY-m.thigh*.78,m.legR*1.15+m.hand*.85]],seed:[-.9,.1,-.1,-.6,0],hand:[-.2,0,0]}},
+ ChairHalf:{pose:()=>chairJoints(1-UNCURL.half),seedFrom:'ChairCurl',R:{touch:true,on:['thighR',m=>[-m.hipX,m.hipY-m.thigh*.62,m.legR*1.15+m.hand*.85]],seed:[-.5,.1,-.1,-.6,0],hand:[-.2,0,0]}},
+ // Stuck twisted in the chair, the left mitten pressed to the small of the back (FrozenAbsurd).
+ // ...and the right arm flung up at the dark, the mitten above and out beside the head (clear of it).
+ AbsurdUp:{neck:.05,head:[-.08,-.3,-.2],only:'R',R:{at:m=>[-(m.Rh*m.headSX+.16*m.k),m.headCentre+m.Rh*.75,.05*m.k],seed:[-2.6,.1,-.5,-.25,0]}},
+ AbsurdBack:{pose:()=>absurdJoints(),only:'L',L:{touch:true,on:['hips',(m,v)=>onBack(m,v,1,.3)],seed:[.5,.35,.25,-1.75,0],hand:[.35,0,0]}},
+ // Carrying furniture: the forearms forward under the load at the waist, the mittens a shoulder's width apart, palms up.
+ CarryFurniture:{R:{at:m=>[-m.width*.42,m.hipY+.15*m.k,m.depth/2+.17*m.k],seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
+ // Reading the paper held open before the chest at reading distance: the mittens at its outer edges (SitRead).
+ SitRead:{R:{at:m=>[-PAPER.leaf*.92,m.chestY+.03*m.k,m.depth/2+.2*m.k],seed:[-1.05,.3,.05,-1.2,0],hand:[-.25,0,0]}},
+ // The torch: the right mitten on it at the left chest pocket; held up before the chest (beam forward and up, its light
+ // under the chin); held low at the waist, pointing down (TorchUp, TorchOff).
+ TorchPocket:{only:'R',R:{chest:a=>{const p=pocketSpot(a);return p.position.clone().addScaledVector(p.normal,a.measure.hand*.45);},seed:[-.9,.6,.35,-1.9,0],hand:[0,0,0]}},
+ TorchHigh:{only:'R',R:{at:m=>[-.05*m.k,m.chestY+.04*m.k,m.depth/2+.2*m.k],seed:[-1.1,.4,.1,-1.5,0],hand:[0,0,0]}},
+ TorchLow:{only:'R',R:{at:m=>[.02*m.k,m.hipY+.14*m.k,m.depth/2+.12*m.k],seed:[-.45,.4,.1,-1.2,0],hand:[0,0,0]}},
 });
+/** A mitten on the small of the back, on the side `side` (+1 the left, -1 the right) at height t up the torso: on the body's
+ *  surface (bodyVolume), its middle a little under half its own thickness off it. In the body's frame at rest. */
+const onBack=(m,vol,side,t)=>{const p=vol.surf(Math.PI-side*.38,t);return p.addScaledVector(vol.normal(p),m.hand*.95).toArray();};
+/** Fujita's stuck back (ぎっくり腰): bent at the hips to a level back (with the spine and chest, about 90°), the knees bent and
+ *  forward and the bottom out behind so he stands over his feet, the feet a little apart and flat; the head lifted a little
+ *  (in the after-bath clothes no further: the back of the head would come down on the tenugui round his neck; without it, up
+ *  to look ahead), the face down and ahead; headTo turns it
+ *  to the lens. Carried, the legs hang straight and stiff, the toes down. */
+const BENT=Object.freeze({hips:1.36,spine:.06,chest:.16,neck:-.12,head:-.26,thigh:-.3,knee:.52,spread:.07,
+ carried:Object.freeze({thigh:.02,knee:.08,foot:.45}),
+ // without a tenugui round the neck (in his clothes at the harbour, in swimwear) the head comes up further, to look ahead
+ free:Object.freeze({neck:-.5,head:-.55})});
+const TENUGUI_OUTFITS=new Set(['afterbath']);
+function bentJoints(mode,outfit='afterbath'){
+ const B=BENT,c=mode==='carried',up=TENUGUI_OUTFITS.has(outfit)?B:B.free,th=c?B.carried.thigh:B.thigh,kn=c?B.carried.knee:B.knee,ft=c?B.carried.foot:-(B.thigh+B.knee),sp=c?.02:B.spread;
+ return {hips:[B.hips,0,0],spine:[B.spine,0,0],chest:[B.chest,0,0],neck:[up.neck,0,0],head:[up.head,0,0],
+  thighL:[th-B.hips,0,sp],kneeL:[kn,0,0],footL:[ft,0,-sp],thighR:[th-B.hips,0,-sp],kneeR:[kn,0,0],footR:[ft,0,sp]};
+}
+/** In the massage chair (seat 0.5 m), curled forward over the knees (curl 1) and slowly uncurling: the rounded back is the
+ *  spine and the chest (the hips stay on the seat), the head up to look ahead. UNCURL: how far he gets before the lights go
+ *  (half), and how long it takes (2.4 s, the rollers' first pass). */
+const UNCURL=Object.freeze({spine:.42,chest:.62,neck:-.32,head:-.22,half:.45,time:2.4});
+function chairJoints(curl){
+ const U=UNCURL;
+ return {spine:[U.spine*curl,0,0],chest:[U.chest*curl,0,0],neck:[U.neck*curl,0,0],head:[U.head*curl,0,0],thighL:[-1.52,0,.06],kneeL:[1.45,0,0],thighR:[-1.52,0,-.06],kneeR:[1.45,0,0]};
+}
+/** Stuck in the chair in a new shape when the lights come back: the chest twisted to his left and leaning to his right, the
+ *  right arm flung up at the dark (the whole of him stretched up and over to the left, like a teapot), the left mitten pressed
+ *  to the small of his back, the left knee hiked up to the seat's edge, the head cocked away from the raised arm. Every joint within what a back in spasm allows. */
+const ABSURD=Object.freeze({spine:[.04,.12,-.1],chest:[-.06,.36,-.22],neck:[.05,-.18,-.12],head:[-.08,-.3,-.2],
+ thighL:[-1.92,0,.1],kneeL:[2.1,0,0],footL:[-.3,0,0],roll:.12});
+function absurdJoints(){const A=ABSURD;return {spine:A.spine,chest:A.chest,thighL:A.thighL,kneeL:A.kneeL,thighR:[-1.52,0,-.06],kneeR:[1.45,0,0]};}
+/** CrabWalk's sideways shuffle, bent: a wide stance (each foot `wide` further out), steps of `step` (metres a cycle), the
+ *  leading foot swinging out over the first 35% of its cycle, the other a half cycle behind closing in. */
+const CRAB=Object.freeze({wide:.05,step:.15,swing:.35,lift:.3});
+/** The story's held moves that the scene can name as a pose (a mark's `pose`): played as that move for as long as it is
+ *  named, eased in and out over half a second. */
+export const STORY_POSES=new Set(['BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarryFurniture','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff']);
 
 /** How long each move lasts (loops run until something else happens). */
 export const GESTURES=Object.freeze({
@@ -94,10 +159,14 @@ export const GESTURES=Object.freeze({
  CupHands:Infinity,CoinToCheek:Infinity,BowDeep:1.8,BowWalk:Infinity,KneelHug:Infinity,PoleFlick:2.4,Peek:Infinity,
  BannerUp:Infinity,FanWild:Infinity,HoldOn:Infinity,FingerStop:Infinity,Tape:Infinity,Offer:Infinity,Reach:Infinity,
  LieKnead:Infinity,GrenadeCoin:Infinity,Aim:Infinity,HoldUp:Infinity,HoldUpStraws:Infinity,Call:Infinity,WriteAbove:Infinity,
+ // Fujita's Back (story v7): held until the next move, or named by the scene as a pose (STORY_POSES).
+ BentStuck:Infinity,CrabWalk:Infinity,ChairUncurl:Infinity,FrozenAbsurd:Infinity,CarriedBent:Infinity,CarryFurniture:Infinity,
+ CordWrapped:Infinity,BasketHead:Infinity,SitRead:Infinity,TorchUp:Infinity,TorchOff:Infinity,
 });
 /** The moves that ease in from wherever the body is and back to it (the story's: they lerp from the pose under them). */
 const EASED=new Set(['CupHands','CoinToCheek','BowDeep','BowWalk','KneelHug','PoleFlick','Peek','BannerUp','FanWild','HoldOn','FingerStop',
- 'Tape','Offer','Reach','LieKnead','GrenadeCoin','Aim','HoldUp','HoldUpStraws','Call','WriteAbove']);
+ 'Tape','Offer','Reach','LieKnead','GrenadeCoin','Aim','HoldUp','HoldUpStraws','Call','WriteAbove',
+ 'BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarryFurniture','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff']);
 /** The body that goes with a feeling, played once when the feeling arrives. */
 export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump',angry:'Stomp',shy:'Fidget',surprised:'Gasp',worried:'Think'});
 
@@ -150,13 +219,22 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    return new THREE.Vector3(u.x*S[0],u.y*S[1]+hc,u.z*S[2]).addScaledVector(n,off*k).applyQuaternion(qHead).add(headAt);};
   const headR=p=>{const q=_p[4].copy(p).sub(headAt).applyQuaternion(qInv);return Math.hypot(q.x/S[0],(q.y-hc)/S[1],q.z/S[2]);};
   const out={};
+  // A place carried by a bone, with the body in the move's pose: where it is in the chest's frame then.
+  const posed=spec.pose?posedPlaces(spec.pose()):null,hipsM=spec.pose?chestToHips(spec.pose()):null,_h=new THREE.Vector3();
+  // how far a point (in the chest's frame) is from the torso: bent, from the hips' part or the chest's, whichever is nearer
+  // (and, posed, from the legs too: each a round limb of the leg's thickness and its clothes)
+  const _s=new THREE.Line3(),_n=new THREE.Vector3();
+  const torso=p=>{const d=volume.sdf(_h.copy(p).add(chestAt));if(!hipsM)return d;let e=Math.min(d,volume.sdf(_h.copy(p).applyMatrix4(hipsM)));
+   for(const [a,b] of hipsM.legs){_s.set(a,b);e=Math.min(e,_s.closestPointToPoint(p,true,_n).distanceTo(p)-m.legR*1.15);}return e;};
   for(const side of ['R','L']){
+   if(spec.only&&side!==spec.only)continue;
    // a side without its own place is the mirror of the right
    const own=!!spec[side],want=spec[side]||spec.R,sg=side==='R'?1:-1,mirror=a=>a.map((v,i)=>i===1||i===2||i===4?v*sg:v);
    const flipX=v=>own?v:[-v[0],...v.slice(1)];
-   const target=want.head?onHead(flipX(want.head)):new THREE.Vector3(...flipX(want.at(m))).sub(chestAt);
+   const target=want.head?onHead(flipX(want.head)):want.on?posed(own?want.on[0]:want.on[0].replace(/[RL]$/,c=>c==='R'?'L':'R'),flipX(want.on[1](m,volume)))
+    :want.chest?want.chest(avatar):new THREE.Vector3(...flipX(want.at(m))).sub(chestAt);
    const elbowAt=want.elbow?new THREE.Vector3(...flipX(want.elbow(m))).sub(chestAt):null;
-   const hand=want.hand?mirror(want.hand):[0,0,0],seed=mirror([...want.seed,0].slice(0,5));
+   const hand=want.hand?mirror(want.hand):[0,0,0],seed=mirror(spec.seedFrom?reachFor(spec.seedFrom)[side]:[...want.seed,0].slice(0,5));
    const sh=bones['shoulder'+side].position,el=bones['elbow'+side].position,wr=bones['hand'+side].position,mit=new THREE.Vector3(0,-m.hand*.55,0);
    const qHand=new THREE.Quaternion().setFromEuler(_eu.set(...hand));
    const cost=x=>{
@@ -167,16 +245,49 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     if(elbowAt)c+=E.distanceToSquared(elbowAt)*10/(k*k);
     // the forearm and the mitten out of the head and the chest
     for(let i=0;i<=4;i++){const p=_p[3].copy(E).lerp(W,i/4),r=headR(p),near=1+m.armR*1.15/m.Rh;if(r<near)c+=(near-r)**2*40;
-     const d=volume.sdf(p.add(chestAt));if(d<m.armR*1.1&&p.y>m.hipY+.1*k)c+=((m.armR*1.1-d)/k)**2*400;}
+     // (a mitten laid on the body (touch) brings its wrist to it: there only the forearm's upper part is kept off)
+     if(want.touch&&i>2)continue;
+     const d=torso(p);if(d<m.armR*1.1&&(hipsM||p.y+chestAt.y>m.hipY+.1*k))c+=((m.armR*1.1-d)/k)**2*400;}
     const rm=headR(M),nearM=1+m.hand*.85/m.Rh;if(rm<nearM)c+=(nearM-rm)**2*300;
-    const dm=volume.sdf(_p[3].copy(M).add(chestAt));if(dm<m.hand*.9)c+=((m.hand*.9-dm)/k)**2*400;
+    const dm=torso(M),clear=want.touch?m.hand*.7:m.hand*.9;if(dm<clear)c+=((clear-dm)/k)**2*400;
+    // laid on the body, the whole mitten stays on it, not in it: its tip and the backs of its sides
+    if(want.touch)for(const q of TOUCH){const d=torso(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W));if(d<.009*k)c+=((.009*k-d)/k)**2*2000;}
     for(let i=0;i<5;i++)c+=.01*(x[i]-seed[i])**2;if(x[3]>0)c+=x[3]**2;if(x[3]<-2.6)c+=(x[3]+2.6)**2;
+    // (a move may keep the upper arm's and the forearm's twist near its seed, so the arm is not wound round to get there)
+    if(want.twist)c+=want.twist*((x[1]-seed[1])**2+(x[4]-seed[4])**2);
     return c;};
    let x=seed;for(const step of [.3,.1,.03])x=minimise(cost,x,step);
    out[side]=mirror(x);out['hand'+side]=want.hand||null;
   }
   reached.set(name,out);return out;
  }
+ /** With the body put in `pose` (joint: [x, y, z]; every other joint straight) for a moment: a function giving, for a place
+  *  carried by a bone (in the body's frame at rest), where it is in the chest's frame. The body is put back as it was. */
+ function posedPlaces(pose){
+  const root=avatar.root,saved=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));
+  const put=rot=>{JOINTS.forEach((j,i)=>bones[j].rotation.set(...rot(j,i)));root.updateMatrixWorld(true);};
+  return (bone,p)=>{
+   put(()=>[0,0,0]);const v=bones[bone].worldToLocal(root.localToWorld(new THREE.Vector3(...p)));
+   put(j=>pose[j]||[0,0,0]);const out=bones.chest.worldToLocal(bones[bone].localToWorld(v));
+   put((j,i)=>saved[i]);return out;};
+ }
+ /** In `pose`, the matrix from the chest's frame to the hips' frame placed at rest (the body's frame at rest, as bodyVolume
+  *  has it), so a bent body's lower back is where the hips have taken it. */
+ function chestToHips(pose){
+  const root=avatar.root,saved=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));
+  JOINTS.forEach(j=>bones[j].rotation.set(...(pose[j]||[0,0,0])));root.updateMatrixWorld(true);
+  const M=new THREE.Matrix4().copy(bones.hips.matrixWorld).invert().multiply(bones.chest.matrixWorld).premultiply(new THREE.Matrix4().makeTranslation(0,m.hipY,0));
+  // the legs in the chest's frame: hip, knee and ankle of each, for keeping a mitten on a thigh out of it
+  const at=b=>bones.chest.worldToLocal(bones[b].getWorldPosition(new THREE.Vector3()));
+  M.legs=['L','R'].flatMap(s=>[[at('thigh'+s),at('knee'+s)],[at('knee'+s),at('foot'+s)]]);
+  JOINTS.forEach((j,i)=>bones[j].rotation.set(...saved[i]));root.updateMatrixWorld(true);return M;
+ }
+ // ---- Fujita's Back: the pose the scene names (s.pose, one of STORY_POSES) and how far in it is (ramp 0..1); CrabWalk's step
+ // (cycles) and which way he goes (+1 to his left, -1 to his right: the way he is moved); how far CordWrapped's cord is
+ // wound; whether a move wants the paper or the basket this frame; the torch's arm (torchArm); the head's turn (headTo).
+ let posed=null,crabPhase=0,crabSide=1,wrap=0,reading=0,basketWanted=false,headToW=0;const lastHolder=new THREE.Vector3();let holderSeen=false;
+ const lastHeadTo=new THREE.Vector3();
+ const torch={at:'pocket',goal:null,t:0,d:0,from:null,to:null,fromW:0,toW:0,cur:[0,0,0,0,0],w:0,p0:new THREE.Vector3(),q0:new THREE.Quaternion()};
  let consumption=null,consumeTime=0,lastConsume=null,driftX=0;
  const set=(j,x=0,y=0,z=0)=>target[j].set(x,y,z);
  const add=(j,x=0,y=0,z=0)=>target[j].add(new THREE.Vector3(x,y,z));
@@ -316,7 +427,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const pose=s.pose;
    // Standing about the way they walk: an elder's hands behind the back, a loafer's in the pockets.
    // (The story's moves ease in from this and back to it, so it stays under them.)
-   if(!pose&&!s.carrying&&(!gesture||EASED.has(gesture.name))){add('chest',gait.lean*.6);if(gait.carry==='behind'||gait.carry==='pockets')carryArms(gait.carry,0,0);}
+   if((!pose||STORY_POSES.has(pose))&&!s.carrying&&(!gesture||EASED.has(gesture.name))){add('chest',gait.lean*.6);if(gait.carry==='behind'||gait.carry==='pockets')carryArms(gait.carry,0,0);}
    if(pose==='CounterIdle'){set('shoulderL',-.5,0,.2);set('shoulderR',-.5,0,-.2);set('elbowL',-.95);set('elbowR',-.95);}
    else if(pose==='Interact'){set('shoulderL',-.75+Math.sin(time*4.5)*.18,0,.15);set('shoulderR',-.75+Math.sin(time*4.5+1.7)*.18,0,-.15);set('elbowL',-.8);set('elbowR',-.8);add('chest',.12);add('head',.2);}
    // Cleaning (people/izakaya-hours.js): the arms work, the chest turns into it.
@@ -370,7 +481,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const beat=g=>{if(!conversing)return flourish(g);if(beatCool>0)return false;beatCool=3.5;return flourish(CONVERSATION_BIG.has(g)?habits[0]:g);};
   // Which move depends on who they are: a happy Typhoon throws a ta-da, a happy
   // Lighthouse keeper nods.
-  if(expression!==lastExpression){lastExpression=expression;const g=style.feel[expression]||EMOTION_GESTURE[expression];if(g&&!s.seated&&!moving&&!gesture)beat(g);}
+  if(expression!==lastExpression){lastExpression=expression;const g=style.feel[expression]||EMOTION_GESTURE[expression];if(g&&!s.seated&&!moving&&!gesture&&!STORY_POSES.has(s.pose))beat(g);}
   const talking=!!s.talking;
   if(lively){
    const free=!moving&&!s.seated&&!s.riding&&!s.airborne&&!s.sleeping&&!s.carrying&&!consumption&&(!s.pose||s.pose==='Idle')&&!s.heldProp;
@@ -394,16 +505,36 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   quietFor=talking?0:quietFor+dt;wasTalking=talking;
   if(s.waving&&!gesture)play('Wave');
   let gestureEyes=null;
+  // A held move the scene names as a pose (s.pose, one of STORY_POSES) is played as that move while it is named: in over half
+  // a second, and out over half a second once it is not (a new one comes in when the old one is out).
+  const named=STORY_POSES.has(s.pose)&&gesture?.name!==s.pose?s.pose:null;
+  if(named&&!posed)posed={name:named,t:0,d:Infinity,ramp:0};
+  if(posed){const on=posed.name===named;posed.ramp=THREE.MathUtils.clamp(posed.ramp+(on?dt:-dt)/.5,0,1);posed.t+=dt;
+   if(!on&&posed.ramp===0)posed=named?{name:named,t:0,d:Infinity,ramp:0}:null;}
+  wrap=0;reading=0;basketWanted=false;
+  const crabbing=gesture?.name==='CrabWalk'||posed?.name==='CrabWalk';
+  if(crabbing){
+   // which way he is moved (along his own left, the body's +x), unless the scene says (s.crab)
+   const holder=avatar.root.parent;
+   if(holder){avatar.root.updateWorldMatrix(true,false);const at=new THREE.Vector3().setFromMatrixPosition(holder.matrixWorld);
+    if(holderSeen){const left=new THREE.Vector3(1,0,0).transformDirection(avatar.root.matrixWorld),side=at.clone().sub(lastHolder).dot(left);if(Math.abs(side)>1e-5)crabSide=Math.sign(side);}
+    lastHolder.copy(at);holderSeen=true;}
+   if(s.crab===1||s.crab===-1)crabSide=s.crab;
+   if(moving)crabPhase+=speed/(CRAB.step*m.k)*dt;
+  }
+  // A move may change the arms and head while sitting; its standing legs and bounce must not pull the sitter through or off
+  // the furniture (unless it says the legs are its own: a knee hiked up on the seat).
+  const legs=onChair?['hips','thighL','kneeL','footL','thighR','kneeR','footR'].map(j=>[j,target[j].clone()]):null;let ownLegs=false;
   if(gesture){gesture.t+=dt;if(gesture.t>=gesture.d)gesture=null;else{
-   // A move from the menu may change the arms/head while sitting. Its standing
-   // leg pose and bounce must not pull the sitter through or off the furniture.
-   const legs=onChair?['hips','thighL','kneeL','footL','thighR','kneeR','footR'].map(j=>[j,target[j].clone()]):null;
    const r=applyGesture(gesture,s,onChair);
-   if(legs)for(const [j,pose] of legs)target[j].copy(pose);
-   else if(r?.root!==undefined)targetRoot+=r.root;
+   if(!legs&&r?.root!==undefined)targetRoot+=r.root;
    // Some moves say where the eyes are (down on the book while calling out): unless the scene says otherwise.
-   gestureEyes=r?.eyes||null;
+   gestureEyes=r?.eyes||null;ownLegs||=!!r?.legs;
   }}
+  // the named pose after the move, so a pose that binds the body (a cord round it) keeps it through a laugh
+  if(posed&&posed.ramp>0){const r=applyGesture(posed,s,onChair);if(r?.eyes)gestureEyes=r.eyes;ownLegs||=!!r?.legs;if(!legs&&r?.root!==undefined)targetRoot+=r.root;}
+  if(legs&&!ownLegs)for(const [j,pose] of legs)target[j].copy(pose);
+  torchArm(dt,s);
   // Kneeling down and getting up take their time (0.8 s each way), however the kneel ends; seated, nobody kneels.
   const kneeling=gesture?.name==='KneelHug'&&!onChair&&(gesture.d===Infinity||gesture.t<gesture.d-.8);
   if(kneeling&&kneelRamp===0)kneelT=0;
@@ -521,13 +652,14 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    }
    lyingTilt=l>0;
   }
+  storyAfter(dt,s);
   // The face: blinks, words, glances, and whatever it is feeling.
   blinkIn-=dt;if(blinkIn<=0&&blinkT<0){blinkT=0;blinkIn=1.8+Math.random()*3.8;}
   let blink=0;if(blinkT>=0){blinkT+=dt;blink=blinkT<.13?1:0;if(blinkT>=.13)blinkT=-1;}
   if(s.talking){talkT-=dt;if(talkT<=0){talkT=.09+Math.random()*.12;talkOpen=talkOpen?0:(Math.random()<.8?1:0);}}else talkOpen=0;
   glanceIn-=dt;if(glanceIn<=0){glanceIn=1.2+Math.random()*3;glance=Math.random()<.45?[0,0]:[(Math.random()-.5)*1.6,(Math.random()-.5)*.8];}
   const face=s.sleeping?'sleep':expression;
-  avatar.paintFace({expression:face,blink,talk:talkOpen,look:s.look||eyes||gestureEyes||(face==='thinking'?[1,-1]:glance)});
+  avatar.paintFace({expression:face,blink,talk:talkOpen,look:s.look||(headToW>.5?[0,0]:null)||eyes||gestureEyes||(face==='thinking'?[1,-1]:glance)});
  }
 
  /**
@@ -551,10 +683,111 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   sh.x+=(a[0]-sh.x)*w;sh.y+=(a[1]*k-sh.y)*later;sh.z+=(a[2]*k-sh.z)*later;
   toward('elbow'+side,a[3],(a[4]||0)*k,0,w);if(hand)toward('hand'+side,hand[0],hand[1]*k,hand[2]*k,w);};
  const mix=(a,b,u)=>a.map((v,i)=>v+((b[i]??0)-v)*u);
+ /**
+  * The torch in Tetsuo's right hand (TorchUp, TorchOff): the hand goes to his pocket and takes it (0.5 s), brings it up before
+  * the chest, the beam forward and up, and clicks it on once it is there (TorchUp); clicks it off and lowers it to the waist,
+  * pointing down (TorchOff); when neither is played any more, puts it back on the pocket and the hand down again. The arm
+  * goes from wherever it is to the next place, eased; the torch is placed in the hand after the bones (storyAfter).
+  */
+ function torchArm(dt,s){
+  const names=[gesture?.name,s.pose];
+  const want=names.includes('TorchUp')?'up':names.includes('TorchOff')?'low':null;
+  if(!want&&!avatar.storyProps?.has('torch'))return;
+  const props=storyProps(avatar),T=torch,tor=props.give('torch');
+  const ang=k=>reachFor(k==='up'?'TorchHigh':k==='low'?'TorchLow':'TorchPocket').R;
+  const go=(goal,to,toW,d)=>{T.goal=goal;T.from=T.cur.slice();T.fromW=T.w;T.to=to;T.toW=toW;T.t=0;T.d=d;T.p0.copy(tor.position);T.q0.copy(tor.quaternion);};
+  T.t+=dt;const done=()=>T.t>=T.d;
+  if(want){
+   if(T.at==='pocket'){if(T.goal!=='fetch')go('fetch',ang('pocket'),1,.65);else if(done()){avatar.root.updateMatrixWorld(true);props.torchTo('R');T.at='hand';}}
+   if(T.at==='hand'&&T.goal!==want)go(want,ang(want),1,want==='up'?.75:.8);
+  }else if(T.at==='hand'){if(T.goal!=='stow')go('stow',ang('pocket'),1,.7);else if(done()){props.torchTo('pocket');T.at='pocket';go('down',T.cur,0,.6);}}
+  else if(T.w>0&&T.goal!=='down')go('down',T.cur,0,.6);
+  if(T.from){const u=T.d>0?smooth(T.t/T.d):1;T.cur=T.from.map((v,i)=>v+(T.to[i]-v)*u);T.w=T.fromW+(T.toW-T.fromW)*u;}
+  if(T.w>0)armTo('R',T.cur,T.w);
+  // the click: on once it is up and held there; off the moment TorchOff begins, or it goes back
+  tor.userData.torch.setOn(want==='up'&&T.at==='hand'&&T.goal==='up'&&done());
+ }
+ /** After the bones: the things the story's moves hold put where the hands are, and the head turned to `headTo`. */
+ const _a=new THREE.Vector3(),_b=new THREE.Vector3(),_c=new THREE.Vector3(),_qa=new THREE.Quaternion(),_qb=new THREE.Quaternion(),_eA=new THREE.Euler();
+ function storyAfter(dt,s){
+  const props=avatar.storyProps;
+  if(!props&&!wrap&&!reading&&!basketWanted&&!s.headTo&&headToW<.001)return;
+  avatar.root.updateMatrixWorld(true);const root=avatar.root;
+  const P=props||storyProps(avatar);
+  // the torch in the hand: from where it was taken, to the grip, turned to the beam's way (forward and up, or down when
+  // lowered); going back, to its place on the pocket
+  const tor=P.get('torch');
+  if(tor&&torch.at==='hand'&&tor.parent===bones.handR){
+   const T=torch,u=T.d>0?smooth(T.t/T.d):1,hq=bones.handR.getWorldQuaternion(_qa).invert();
+   if(T.goal==='stow'){const spot=pocketSpot(avatar);
+    _a.copy(spot.position);bones.chest.localToWorld(_a);bones.handR.worldToLocal(_a);
+    _qb.copy(hq).multiply(bones.chest.getWorldQuaternion(new THREE.Quaternion())).multiply(spot.quaternion);
+    tor.position.lerpVectors(T.p0,_a,u);tor.quaternion.slerpQuaternions(T.q0,_qb,u);}
+   else if(T.goal==='low'){
+    // held low, it lies across the fist (along the hand's breadth), pointing the way that is more ahead of him
+    const fwd=_b.set(0,0,1).transformDirection(root.matrixWorld),across=new THREE.Vector3(1,0,0).transformDirection(bones.handR.matrixWorld);
+    if(across.dot(fwd)<0)across.negate();const up=new THREE.Vector3(0,1,0).transformDirection(bones.handR.matrixWorld),side=new THREE.Vector3().crossVectors(up,across).normalize();up.crossVectors(across,side);
+    _qb.copy(hq).multiply(new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(side,up,across)));
+    tor.position.lerpVectors(T.p0,_a.set(0,-m.hand*.55,0),u);tor.quaternion.slerpQuaternions(T.q0,_qb,u);}
+   else{const pitch=-.42;
+    _qb.copy(hq).multiply(root.getWorldQuaternion(new THREE.Quaternion())).multiply(new THREE.Quaternion().setFromEuler(_eA.set(pitch,0,0)));
+    tor.position.lerpVectors(T.p0,_a.set(0,-m.hand*.55,0),u);tor.quaternion.slerpQuaternions(T.q0,_qb,u);}
+   // lit, its light on his face: the middle of the face, a little below the eyes
+   if(tor.userData.torch.on){tor.updateMatrixWorld(true);tor.userData.torch.aimAt(bones.head.localToWorld(_a.set(0,m.headCentre-m.headY-m.Rh*.25,m.Rh*.8)));}
+  }
+  // the paper: its two outer edges in the mittens (the right one always; the left as far as the paper reaches), the fold
+  // away from the reader, opened as far as the hands are apart
+  if(reading>0){
+   const paper=P.give('newspaper');paper.visible=true;
+   const mR=bones.handR.localToWorld(_a.set(0,-m.hand*.55,0)),mL=bones.handL.localToWorld(_b.set(0,-m.hand*.55,0));root.worldToLocal(mR);root.worldToLocal(mL);
+   const across=_c.subVectors(mL,mR),dist=across.length();across.normalize();
+   const a=paper.userData.paper.setSpread(Math.min(dist/2,PAPER.leaf)),away=new THREE.Vector3(0,0,1).addScaledVector(across,-across.z).normalize();
+   const up=new THREE.Vector3().crossVectors(away,across);
+   paper.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(across,up,away));
+   const edge=new THREE.Vector3(-PAPER.leaf*Math.cos(a),-.07*m.k,-PAPER.leaf*Math.sin(a)).applyQuaternion(paper.quaternion);
+   paper.position.copy(mR).sub(edge);
+  }else{const paper=P.get('newspaper');if(paper)paper.visible=false;}
+  // the basket on the head, once a move puts it there (it stays until it is taken)
+  if(basketWanted)P.give('basketOnHead');
+  // the cord: wound round her once her arms are pinned, from the hand up (built from her body as it stands then)
+  const cord=P.get('dryerCord');
+  if(wrap>=.8){const c=cord&&cord.userData.outfit===avatar.outfit?cord:(P.take('dryerCord'),P.give('dryerCord'));c.userData.outfit=avatar.outfit;
+   c.visible=true;const n=c.userData.indexCount;c.geometry.setDrawRange(0,Math.max(3,Math.round(n*smooth((wrap-.8)/.2)/3)*3));}
+  else if(cord)cord.visible=false;
+  // the head turned to a point (headTo: in the world, [x, y, z], or [x, z] at the head's own height), the body as it is
+  // (turned, not lifted, over a tenugui)
+  headToW+=((s.headTo?1:0)-headToW)*(1-Math.exp(-dt*5));
+  if(s.headTo){const h=s.headTo;if(h.isVector3)lastHeadTo.copy(h);else if(h.length===2)lastHeadTo.set(h[0],NaN,h[1]);else lastHeadTo.set(h[0],h[1],h[2]);}
+  if(headToW>.001){
+   const head=bones.head,centre=head.localToWorld(_a.set(0,m.headCentre-m.headY,0));
+   const at=_b.copy(lastHeadTo);if(Number.isNaN(at.y))at.y=centre.y;
+   const dir=at.sub(centre).normalize().applyQuaternion(bones.neck.getWorldQuaternion(_qa).invert());
+   const face=_c.set(0,0,1).applyQuaternion(head.quaternion);
+   // with a tenugui round the neck the head turns but does not go back further (the back of the head would come down on it)
+   if(TENUGUI_OUTFITS.has(avatar.outfit)){const up=new THREE.Vector3(0,1,0).applyQuaternion(head.quaternion),over=dir.dot(up)-face.dot(up);if(over>0)dir.addScaledVector(up,-over).normalize();}
+   const turn=new THREE.Quaternion().setFromUnitVectors(face,dir);
+   const angle=2*Math.acos(Math.min(1,Math.abs(turn.w)));if(angle>1.3)turn.slerp(_qb.identity(),1-1.3/angle);
+   head.quaternion.slerp(turn.multiply(head.quaternion),headToW);head.updateMatrixWorld(true);
+  }
+ }
+ /** CrabWalk's legs while he is moved sideways: the leading foot steps out, the other closes in half a cycle later; each foot
+  *  planted while it carries him (its stance moves back exactly as far as he goes), lifted by the knee while it swings. */
+ function crabLegs(w){
+  const C=CRAB,D=C.step*m.k,S=D*(1-C.swing),L=m.thigh+m.shin+m.foot*.5,lead=crabSide>0?'L':'R';
+  for(const side of ['L','R']){
+   const sg=side==='L'?1:-1,p=(((crabPhase+(side===lead?0:.5))%1)+1)%1,swinging=p<C.swing;
+   const u=swinging?-S/2+S*smooth(p/C.swing):S/2-S*(p-C.swing)/(1-C.swing),lift=swinging?Math.sin(Math.PI*p/C.swing):0;
+   const z=sg*BENT.spread+Math.asin(THREE.MathUtils.clamp((crabSide*u+sg*C.wide*m.k)/L,-.6,.6));
+   const tx=BENT.thigh-lift*C.lift,kn=BENT.knee+lift*C.lift*1.7;
+   toward('thigh'+side,tx-BENT.hips,0,z,w);toward('knee'+side,kn,0,0,w);toward('foot'+side,-(tx+kn),0,-z,w);
+  }
+ }
  function applyGesture(g,s,seated=false){
   const t=g.t,d=g.d,e=d===Infinity?1:env(t,d),q=d===Infinity?Math.min(1,t/.3):ease(t,d);
-  // the moves for Fujita's Ten Minutes of Heaven come in smoothly over half a second (big ones slower)
-  const w=inOut(t,d,.5),soak=s.seat==='Soak'||s.pose==='Soak';
+  // the moves for Fujita's Ten Minutes of Heaven come in smoothly over half a second (big ones slower); a pose the scene
+  // names comes in and goes out on its own ramp
+  const raw=g.ramp!==undefined?g.ramp:THREE.MathUtils.clamp(Math.min(t/.5,d===Infinity?1:(d-t)/.5),0,1);
+  const w=g.ramp!==undefined?smooth(g.ramp):inOut(t,d,.5),soak=s.seat==='Soak'||s.pose==='Soak';
   switch(g.name){
    case 'Wave':set('shoulderR',-.2,0,-2.55*q);set('elbowR',0,0,-.45+Math.sin(t*10)*.45*q);add('head',0,0,.08*q);break;
    case 'Bow':add('chest',.95*e*bowDepth);add('spine',.25*e*bowDepth);add('head',.2*e*bowDepth);set('shoulderL',.1,0,.05);set('shoulderR',.1,0,-.05);break;
@@ -785,6 +1018,67 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // just above the water, the right one writes in it, the head bent over it (the face clear of it).
    case 'WriteAbove':{const pen=Math.sin(t*6)*.05;add('head',.35*w,.3*w,0);
     armTo('R',[-1.84,.37+pen,.77,-.49],w);armTo('L',[-.93,.11,-.3,-1.52],w);return {eyes:[-.2,.85]};}
+   // ---- Fujita's Back (story v7). Every hand a closed mitten. Each is held until the next move, or for as long as the scene
+   // names it as a pose.
+   // Stuck (ぎっくり腰, 1b–4b): bent level at the hips, the knees bent and forward and the bottom out behind so he stands over
+   // his feet, the head lifted a little; the right mitten pressed to the small of his back, the left arm hanging bent,
+   // not daring to move; frozen, but for a little shiver. CrabWalk (2a, 4a): the same, shuffling sideways the way he is
+   // moved (crabLegs), both mittens on his back, the head turned a little the way he goes. CarriedBent (8a–8d): the
+   // same rigid shape lifted (the scene lifts him): the legs hanging straight and stiff, the toes down, both mittens held to
+   // his back.
+   case 'BentStuck':case 'CrabWalk':case 'CarriedBent':{
+    const carried=g.name==='CarriedBent',crab=g.name==='CrabWalk',J=bentJoints(carried?'carried':'stand',avatar.outfit),shiver=carried?0:Math.sin(t*23)*.005;
+    for(const j of ['hips','spine','chest','neck','head'])toward(j,J[j][0]+(j==='chest'?shiver:0),J[j][1],J[j][2],w);
+    if(!seated){if(crab&&(s.speed||0)>.08)crabLegs(w);else for(const j of ['thighL','kneeL','footL','thighR','kneeR','footR'])toward(j,...J[j],w);}
+    const back=reachFor('BentBack');armTo('R',back.R,w,back.handR);
+    if(carried||crab){const both=reachFor('BentBackL');armTo('L',both.L,w,both.handL);if(crab)add('head',0,crabSide*.25*w,0);}
+    else armTo('L',[-1.35,.1,.14,-1.35+shiver*4],w);
+    break;}
+   // In the massage chair (4d, 5b, 6i): curled over his knees, the mittens on his thighs, and uncurling slowly as the rollers
+   // work, over UNCURL.time, until he is half way (where the blackout catches him); `s.uncurl` (0 curled .. 1 upright) says
+   // where he is instead. The head up to look ahead.
+   case 'ChairUncurl':{
+    const u=Number.isFinite(s.uncurl)?THREE.MathUtils.clamp(s.uncurl,0,1):UNCURL.half*smooth(t/UNCURL.time),J=chairJoints(1-u);
+    for(const j of ['spine','chest','neck','head'])toward(j,...J[j],w);
+    const A=reachFor('ChairCurl'),B=reachFor('ChairHalf'),f=u/UNCURL.half;
+    armTo('R',mix(A.R,B.R,f),w,A.handR);armTo('L',mix(A.L,B.L,f),w,A.handL);break;}
+   // Stuck in the chair in a new shape when the lights come back (7a, 7c, 7f): see ABSURD. Seated, the left knee is its own.
+   case 'FrozenAbsurd':{const A=ABSURD;
+    for(const j of ['spine','chest','neck','head'])toward(j,...A[j],w);
+    const U=reachFor('AbsurdUp');armTo('R',U.R,w);const B=reachFor('AbsurdBack');armTo('L',B.L,w,B.handL);
+    // seated, the left knee hiked up: the pelvis rolls onto the right buttock (the left one comes up off the seat as the thigh
+    // lifts), the right thigh staying where it was on the seat
+    if(seated){for(const j of ['thighL','kneeL','footL'])toward(j,...A[j],w);toward('hips',0,0,A.roll,w);add('spine',0,0,-A.roll*w);add('thighR',0,0,-A.roll*w);return {legs:true};}
+    break;}
+   // Carrying a person like a piece of furniture (8a–8d): both mittens forward under the load at the height of the hips,
+   // palms up, the back straight and a little back, the knees bent ("Lift with your legs"); it walks.
+   case 'CarryFurniture':{const A=reachFor('CarryFurniture'),strain=Math.sin(t*17)*.008;
+    armTo('R',[A.R[0]+strain,...A.R.slice(1)],w,A.handR);armTo('L',[A.L[0]-strain,...A.L.slice(1)],w,A.handL);add('chest',-.04*w);add('head',-.04*w);
+    // leaning in a little from the hips with a straight back, the knees well bent (walking, the step goes on under it)
+    if(!seated){const lean=.1,walk=(s.speed||0)>.08;toward('hips',lean,0,0,w);
+     if(walk){add('thighL',-lean*w);add('thighR',-lean*w);}
+     else for(const [j,v] of [['thigh',-.32-lean],['knee',.64],['foot',-.32]]){toward(j+'L',v,0,j==='thigh'?.07:j==='foot'?-.07:0,w);toward(j+'R',v,0,j==='thigh'?-.07:j==='foot'?.07:0,w);}}
+    break;}
+   // Wound up in her dryer's cord like a parcel (6d, 7a, 7b, 7e): the arms pinned straight down her sides first, then the cord
+   // round her and them (storyAfter); the body held still (a laugh moves only her head), the feet together.
+   case 'CordWrapped':{const pin=smooth(Math.min(1,raw/.4));
+    for(const j of ['hips','spine','chest'])toward(j,0,0,0,w);
+    armTo('R',[.02,0,-.07,-.04],pin,[0,0,0]);armTo('L',[.02,0,-.07,-.04],pin,[0,0,0]);
+    if(!seated)for(const [j,z] of [['thighL',-.015],['thighR',.015],['kneeL',0],['kneeR',0],['footL',.015],['footR',-.015]])toward(j,0,0,z,w);
+    add('head',.04*w,0,.1*w);wrap=Math.max(wrap,raw);break;}
+   // Dazed under a basket (7a, 7b, 7e): the locker basket upside down on her head (storyAfter), both arms out before her
+   // feeling for anything in the dark, slowly, the head tipped and wandering.
+   case 'BasketHead':{const p=Math.sin(t*1.5),r=Math.sin(t*2.1+1);
+    armTo('R',[-1.28+p*.1,.12,-.12,-.32+r*.12],w);armTo('L',[-1.28-p*.1,.12,-.12,-.32-r*.12],w);
+    add('chest',.05*w);add('head',(.06+Math.sin(t*.8)*.03)*w,Math.sin(t*.6)*.12*w,.14*w);basketWanted=true;break;}
+   // Reading the evening paper after his bath (3a, 3f, 4a, 5a; seated on the koagari edge): held open in both mittens before
+   // the chest (storyAfter places it), the head bent over it; a Nod lowers it to look over it, nods, and brings it back up.
+   case 'SitRead':{const nod=gesture?.name==='Nod'?env(gesture.t,gesture.d):0,A=reachFor('SitRead'),low=[.42,0,0,.3,0];
+    armTo('R',A.R.map((v,i)=>v+low[i]*nod),w,A.handR);armTo('L',A.L.map((v,i)=>v+low[i]*nod),w,A.handL);
+    add('head',(.24-.34*nod)*w);reading=Math.max(reading,w);return {eyes:[0,.7*(1-nod)]};}
+   // The torch (6f, 7a, 7d): the arm is torchArm's; the body stands easy and calm.
+   case 'TorchUp':add('chest',.02*w);break;
+   case 'TorchOff':add('head',.05*w);break;
   }
   return null;
  }

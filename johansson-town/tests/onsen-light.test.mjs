@@ -75,7 +75,7 @@ test('each lamp lights its own camp: no lamp reaches the floor on the far side o
 });
 
 test('two camps: each room is seen by its own lamp, and the floor changes colour exactly under the noren',()=>{
- resetAll();stageScenario('busy');const {room,layout}=build();layout.tick(1/30,1170);
+ resetAll();stageScenario('evening');const {room,layout}=build();layout.tick(1/30,1170);
  const W=loads['women-tube'].light,M=loads['changing-pendant'].light,L=loads['lobby-lamp'].light;
  assert.ok(cool(new THREE.Color(W.colour))>.1&&warm(new THREE.Color(L.colour))>.1,'a daylight tube and a bulb');
  // The light on each floor is clipped to its room: the women's and the lobby's meet on the noren line, and the
@@ -93,14 +93,14 @@ test('two camps: each room is seen by its own lamp, and the floor changes colour
  // Walking through the noren it eases, never jumps.
  layout.tick(1/30,1170);let last=lookFrom(room,-.47,2.4).intensity;
  for(let z=2.4;z>=.6;z-=.01){const v=lookFrom(room,-.47,z).intensity;assert.ok(Math.abs(v-last)<.02,'smooth at z '+z.toFixed(2));last=v;}
- // The busy evening's trip leaves every lamp lit (the story's fair-play clue), so the camps hold.
+ // The evening rush, before the click: every lamp lit, so the camps hold.
  for(const id of ['women-tube','changing-pendant','lobby-lamp','andon'])assert.ok(isWorking(id),id);
  // A dead circuit takes its floor light with it.
  trip('changing-lights');for(const p of pools.filter(p=>!p.name.startsWith('Lobby')))assert.equal(p.visible,false,p.name+' out');
  resetAll();layout.dispose();
 });
 
-test('the women’s lamp goes out with its breaker and with the main; the fitting moment is as dark as the isolated one',()=>{
+test('the women’s lamp goes out with its breaker and with the main; the blackout and the isolated house are equally dark',()=>{
  resetAll();stageScenario('rest');const {room,layout}=build();layout.tick(1/30,1170);
  const light=room.getObjectByName('Women’s changing-room light'),tube=room.getObjectByName('Women’s changing-room lamp');
  trip('changing-lights');assert.equal(light.intensity,0);assert.equal(tube.material.emissiveIntensity,0);
@@ -112,16 +112,23 @@ test('the women’s lamp goes out with its breaker and with the main; the fittin
  stageScenario('isolated');const isolated=snapshot();
  for(const [name,v] of isolated.lights)assert.equal(v,0,name+' dark with the main off');
  assert.ok(isolated.town<.3&&isolated.hemi<hemiOf(room).intensity+1e-9);
- stageScenario('fitting');const fitting=snapshot();
- assert.deepEqual(fitting,isolated,'fitting matches isolated');
+ // The blackout: the contract breaker down, every lamp in the house dark, as dark as the house with its main off.
+ stageScenario('blackout');const blackout=snapshot();
+ for(const [name,v] of blackout.lights)assert.equal(v,0,name+' dark in the blackout');
+ assert.deepEqual(blackout,isolated,'the blackout matches the isolated house');
+ for(const n of ['Women’s changing-room lamp','Changing-room pendant lamp','Lobby ceiling lamp','Andon','Bath hall lamp west','Bath hall lamp east','Milk cooler light','Comb sterilizer lamp','Electric pot boil lamp','Massage chair lamp'])
+  assert.equal(room.getObjectByName(n).material.emissiveIntensity,0,n+' dark');
+ assert.equal(room.getObjectByName('Spout water').visible,false,'no pump');
+ // The retrip's one second: every lamp lit again, then dark.
+ stageScenario('retrip');const blink=snapshot();assert.ok(blink.lights.filter(([n])=>!/glow|lantern|Porch/.test(n)).every(([,v])=>v>0),'the lights blink on');
  // Not pitch black: the dusk through the glass still lights faces at a low key, and it is cool, not lamp-warm.
  assert.ok(isolated.hemi>.1,'faces still read: '+isolated.hemi.toFixed(3));
- stageScenario('fixed');const fixed=snapshot();assert.ok(fixed.lights.every(([,v])=>v>0)||fixed.lights.filter(([,v])=>v===0).every(([n])=>/glow|lantern|Porch/.test(n)));
+ stageScenario('restored');const restored=snapshot();assert.ok(restored.lights.filter(([,v])=>v===0).every(([n])=>/glow|lantern|Porch/.test(n)),'restored: every lamp lit (the photocell lamps by the hour)');
  layout.dispose();
 });
 
 test('the andon lights the board from below at the bandai',()=>{
- resetAll();stageScenario('busy');const {room,layout}=build();
+ resetAll();stageScenario('evening');const {room,layout}=build();
  const A=loads.andon,light=room.getObjectByName('Andon light'),andon=room.getObjectByName('Andon');
  assert.equal(A.circuit,'lobby');assert.ok(light?.isPointLight&&light.intensity>0);
  const p=new THREE.Vector3();andon.getWorldPosition(p);
@@ -148,7 +155,7 @@ test('the porch lamp rims the doorway from the street after dusk; it is on the l
 });
 
 test('night: the harbour lights stand still over the fence, red right and green left, and the lit hall keys the rock bath',()=>{
- resetAll();stageScenario('peace');const {room,layout}=build();
+ resetAll();stageScenario('restored');const {room,layout}=build();
  const lights=room.getObjectByName('Harbour light'),streaks=room.getObjectByName('Harbour light reflection');
  assert.ok(lights?.isInstancedMesh&&streaks?.isInstancedMesh);
  assert.equal(lights.count,ONSEN_HARBOUR.lights.length+2);
@@ -171,15 +178,16 @@ test('night: the harbour lights stand still over the fence, red right and green 
  layout.dispose();
 });
 
-test('the story’s numbers hold with the new lamps: 38 A on the sockets, the main sees 47 A of its 60',()=>{
+test('the story’s numbers hold with the lamps: the house idles at 9.46 A, the evening rush is 58.46 A on the 40 A contract',()=>{
  resetAll();stageScenario('rest');
- assert.equal(loadOf('changing-sockets'),38);
  const lights=ONSEN_CIRCUITS.find(c=>c.id==='changing-lights');
  assert.deepEqual(lights.loads.map(l=>[l.id,l.watts]),[['changing-pendant',30],['women-tube',40]]);
  assert.equal(wattsOf('changing-lights'),70);
- stageScenario('rush');const a=assess();
- assert.equal(Math.round(a.main.amps),47);assert.ok(a.main.amps<ONSEN_BOARD.main.amps);
- const every=ONSEN_CIRCUITS.reduce((s,c)=>s+wattsOf(c.id),0)/ONSEN_VOLTS;assert.ok(every<ONSEN_BOARD.main.amps,'everything at once: '+every);
+ assert.ok(Math.abs(assess().contract.amps-9.46)<1e-9);
+ let a=stageScenario('evening');
+ assert.ok(Math.abs(a.contract.amps-58.46)<1e-9,'evening: '+a.contract.amps);assert.ok(a.contract.over&&a.contract.live,'over the contract, the lever still up');
+ a=stageScenario('last-straw');assert.ok(Math.abs(a.contract.amps-60.46)<1e-9);assert.equal(a.main.tripIn,Infinity,'the main holds');
+ const every=ONSEN_CIRCUITS.reduce((s,c)=>s+wattsOf(c.id),0)/ONSEN_VOLTS;assert.ok(every<ONSEN_BOARD.main.amps*1.05,'everything at once: '+every);
  // Every lamp says what it is, why it is there and what light it gives.
  for(const l of Object.values(loads))if(l.light){assert.ok(l.light.range>0&&l.light.intensity>0&&l.light.kelvin>=2000,l.id);assert.ok(ONSEN_FILL.why.length>20);}
  resetAll();stageScenario('rest');
