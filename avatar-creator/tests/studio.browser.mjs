@@ -86,10 +86,10 @@ try{
   await page.getByRole('button',{name:'Next: Pose & position',exact:true}).click();
   await page.getByLabel('Pose',{exact:true}).selectOption('Cheer');
   await page.getByLabel('Expression',{exact:true}).selectOption('surprised');
-  await page.getByLabel('Near / far',{exact:true}).fill('.8');
-  await page.getByLabel('Camera turn',{exact:true}).fill('15');
+  await page.getByLabel('Near / far',{exact:true}).evaluate(el=>{el.value='.8';el.dispatchEvent(new Event('input',{bubbles:true}));});
+  await page.getByLabel('Camera turn',{exact:true}).evaluate(el=>{el.value='14';el.dispatchEvent(new Event('input',{bubbles:true}));});
   await page.waitForFunction(()=>document.querySelector('.scene-picture canvas').getAttribute('aria-busy')==='false',{},{timeout:60000});
-  const sceneState=await page.evaluate(()=>JSON.parse(localStorage.getItem('nj-studio-scene-v1')));assert.equal(sceneState.version,2);assert.equal(sceneState.camera.orbit,15);assert.ok(sceneState.actors.every(a=>Number.isFinite(a.z)));
+  const sceneState=await page.evaluate(()=>JSON.parse(localStorage.getItem('nj-studio-scene-v1')));assert.equal(sceneState.version,2);assert.equal(sceneState.camera.orbit,14);assert.ok(sceneState.actors.every(a=>Number.isFinite(a.z)));
   await page.getByRole('button',{name:'Reset camera',exact:true}).click();
   await page.getByRole('button',{name:'Next: Add text',exact:true}).click();
   await page.getByLabel('Selected character’s speech',{exact:true}).fill('The ferry is late!');
