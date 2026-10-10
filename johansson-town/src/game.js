@@ -1,3 +1,4 @@
+import {createLensOcclusion} from './render/lens-occlusion.js';
 import {createIzakayaStreetView} from './render/izakaya-street-view.js';
 import {WEATHERS,WEATHER_CHANGE_MINUTES,WEATHER_LINES,nextWeather,readWeather,writeWeather} from './world/weather.js';
 import {izakayaOpen} from './people/social.js';
@@ -572,6 +573,10 @@ function arrivalLensBlocked(x,z,y,r){
  }
  return false;
 }
+const lensOcclusion=createLensOcclusion({root:scene,skip:o=>o===room||o===player||o.name==='Johansson (third person)'}),lensFrom=new THREE.Vector3(),lensDir=new THREE.Vector3(),lensUp=new THREE.Vector3(0,1,0);
+/** Outdoors, when a wall or awning has pulled the lens right up to him, it would sit inside his own head: look over it instead of through it. */
+const headPoint=new THREE.Vector3();
+function lensInsideHead(){headPoint.set(player.position.x,player.position.y+1.45,player.position.z);return camera.position.distanceTo(headPoint)<.62;}
 function placeThirdPerson(dt){
  // Seated, the lens rises a little so his head does not fill the view of the table. In a
  // bath he is down at the water, so it looks over his shoulder from standing height.
@@ -587,14 +592,24 @@ function placeThirdPerson(dt){
  // head filled a third of it: the lens stands further back and a little higher there.
  const portrait=camera.aspect<1,want=(current?2.2:3.2)*(portrait?1.32:1);let reach=want;
  // Outdoors ignore his own bench; indoors check the entire boom, including the ceiling.
- for(let d=.1;d<=want+.001;d+=.1){const x=tpPivot.x-tpDir.x*d,z=tpPivot.z-tpDir.z*d;if(!current&&Math.hypot(x-player.position.x,z-player.position.z)<.85)continue;if(cameraBlocked(x,z,tpPivot.y-tpDir.y*d,.16)){reach=Math.max(0,d-.22);break;}}
+ if(!current){
+  // An awning, a canopy or a shop's glass is drawn, not walked into: the boom also
+  // stops at what is drawn, and the shoulder offset first, so the lens never ends up
+  // under a valance or behind a window looking out through it.
+  lensFrom.set(player.position.x,tpPivot.y,player.position.z);lensDir.subVectors(tpPivot,lensFrom);const side=lensDir.length();
+  if(side>.01){lensDir.divideScalar(side);const free=lensOcclusion.clear(lensFrom,lensDir,side+.2);if(free<side+.2)tpPivot.copy(lensFrom).addScaledVector(lensDir,Math.max(0,free-.2));}
+  lensDir.copy(tpDir).negate();reach=Math.min(reach,Math.max(0,lensOcclusion.clear(tpPivot,lensDir,want+.3)-.3));
+ }
+ for(let d=.1;d<=reach+.001;d+=.1){const x=tpPivot.x-tpDir.x*d,z=tpPivot.z-tpDir.z*d;if(!current&&Math.hypot(x-player.position.x,z-player.position.z)<.85)continue;if(cameraBlocked(x,z,tpPivot.y-tpDir.y*d,.16)){reach=Math.max(0,d-.22);break;}}
  thirdDistance=reach<thirdDistance?reach:THREE.MathUtils.damp(thirdDistance,reach,4,dt);
  camera.position.copy(tpPivot).addScaledVector(tpDir,-thirdDistance);
  // Outdoors the lens can climb over him. Indoors it stays below the roof;
  // at very close range updateJohansson hides his body to keep the view clear.
  const cramped=Math.max(0,1.4-thirdDistance)/1.1;
- if(cramped>0&&!current){camera.position.y+=cramped*.6;camera.rotation.x-=cramped*.3;}
+ if(cramped>0&&!current){const lift=Math.min(cramped*.6,Math.max(0,lensOcclusion.clear(camera.position,lensUp,cramped*.6+.3)-.3));camera.position.y+=lift;camera.rotation.x-=cramped*.3;}
  camera.position.y=Math.max(camera.position.y,player.position.y+.3);
+ // On a hillside the boom can swing into the slope behind: keep the lens above the ground.
+ if(!current)camera.position.y=Math.max(camera.position.y,groundHeight(camera.position.x,camera.position.z)+.35);
  if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
 }
 /** R, the drink button, or Drink at the table: a can from the bag, or a sip of what Thao brought. */
@@ -655,7 +670,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(!current||thirdDistance>=.85))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
+ johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.85:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -1584,7 +1599,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
   // Sample them once at a fixed phase after fixture sync, without changing live play.
   if(this.frozen)sakuraShop.display.tick(0);
  },
- teleport(x,z,facing){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;},
+ teleport(x,z,facing,tilt){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
+ get lensOcclusion(){return lensOcclusion;},
  get lens(){return {position:camera.position.toArray(),rotation:camera.rotation.toArray().slice(0,3),distance:thirdDistance,ceiling:current?indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y):null,blocked:cameraBlocked(camera.position.x,camera.position.z,camera.position.y,.16)};},
  get mouse(){return {walking:pointWalk.active,destination:pointWalk.destination,yaw,pitch,thirdPerson};},
  camera:null,

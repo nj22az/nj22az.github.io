@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
+import {TROPIC_TRAILS} from '../src/world/tropical-island.js';
 import {installDOM} from './fixtures.mjs';
 import {COAST_BOUNDS} from '../src/world/island-coast.js';
 import {AIRPORT_LANDING,AIRPORT_COUNTER,airportWorld} from '../src/world/airport-ground.js';
@@ -60,8 +61,12 @@ test('both ferry landings have real, unobstructed walking routes to their passen
   const airport=[airportWorld(-54.8,31),AIRPORT_LANDING,airportWorld(-40,31),airportWorld(-40,18.7),AIRPORT_COUNTER];
   walk(airport,'Kitano-jima pier to check-in',true);walk([...airport].reverse(),'Kitano-jima check-in to pier',true);
   walk([airportWorld(-51,31.5),airportWorld(-16,31.5)],'Airport cargo aisle',true);
-  // All public slab levels, their intersections and the bare reclaimed foundation.
-  for(const [u,v] of [[-40,37],[-40,22],[-54.5,32],[-10,18.7],[-40,20.1],[-40,20.9],[0,30],[0,70],[-12,48],[65,48],[0,64],[100,64],[45,80]]){
+  // The island's trail: plaza to Coral Bay, up through the jungle to the lookout, down to Turtle Cove.
+  const plaza=airportWorld(-4,30);
+  for(const trail of TROPIC_TRAILS){const route=trail.map(p=>airportWorld(...p));walk(route,'Kitano-jima trail',true);walk([...route].reverse(),'Kitano-jima trail back',true);}
+  walk([AIRPORT_COUNTER,plaza,airportWorld(...TROPIC_TRAILS[0][0])],'Check-in to the trail',true);
+  // All public slab levels, their intersections, the beach, the hillside and the lookout deck.
+  for(const [u,v] of [[-40,37],[-40,22],[-54.5,32],[-10,18.7],[-40,20.1],[-40,20.9],[0,30],[30,25],[-13,76],[30,56],[54,68],[88,64],[-30,60],[60,95]]){
    const p=airportWorld(u,v),y=groundHeight(...p);ray.set(new THREE.Vector3(p[0],y+.24,p[1]),new THREE.Vector3(0,-1,0));
    const candidates=floors.filter(({bounds:b})=>p[0]>=b.min.x&&p[0]<=b.max.x&&p[1]>=b.min.z&&p[1]<=b.max.z&&b.min.y<=y+.2&&b.max.y>=y-.06).map(o=>o.mesh);
    const top=ray.intersectObjects(candidates,false).find(hit=>hit.point.y>=y-.06&&hit.point.y<=y+.2);

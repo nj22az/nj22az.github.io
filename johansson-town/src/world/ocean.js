@@ -1,6 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {COASTLINE} from './island-coast.js';
-import {AIRPORT_ISLAND} from './airport-island.js';
+import {airportShoreDistance} from './airport-island.js';
 
 // Cel-shaded Gerstner water for the island. Shared by the surrounding sea and
 // the harbour basin so the whole shore reads as one body of water.
@@ -206,7 +206,7 @@ void main() {
 
 /**
  * How far each patch of sea is from land, baked once into a small texture: the coast
- * of the island (island-coast.js) and the airport island offshore. Zero on land, rising
+ * of the island (island-coast.js) and the tropical airport island offshore. Zero on land, rising
  * to `range` metres out, which counts as open water.
  */
 export const SHORE_FIELD=Object.freeze({minX:-150,maxX:390,minZ:-200,maxZ:410,size:384,range:80});
@@ -223,19 +223,15 @@ function insidePolygon(px,pz,poly){
   }
   return inside;
 }
-function airportOutline(){
-  const A=AIRPORT_ISLAND,c=Math.cos(A.yaw),s=Math.sin(A.yaw);
-  // Its group turns by yaw about y, so a local (x,z) lands at x·c+z·s, −x·s+z·c.
-  return [[-1,-1],[1,-1],[1,1],[-1,1]].map(([u,v])=>{const x=u*A.halfLength,z=v*A.halfWidth;return [A.x+x*c+z*s,A.z-x*s+z*c];});
-}
+
 /** Metres from (x,z) to the nearest land, capped at SHORE_FIELD.range. */
 export function shoreDistance(x,z){
   let best=SHORE_FIELD.range;
-  for(const poly of [COASTLINE,airportOutline()]){
-    if(insidePolygon(x,z,poly))return 0;
-    for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];best=Math.min(best,segmentDistance(x,z,a[0],a[1],b[0],b[1]));}
-  }
-  return best;
+  const poly=COASTLINE;
+  if(insidePolygon(x,z,poly))return 0;
+  for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];best=Math.min(best,segmentDistance(x,z,a[0],a[1],b[0],b[1]));}
+  // The airport island measures its own (long, curving) shore; past 36 m it is open sea.
+  return Math.min(best,airportShoreDistance(x,z));
 }
 let shoreTexture=null;
 export function shoreDistanceTexture(){
