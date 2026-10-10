@@ -1,6 +1,6 @@
 # Thuận: editable reference preset
 
-For the earlier look, choose **Thuận · original** in “Choose a face”, or **Original Thuận braids** under Hair → Style. The original preset restores her heart-shaped face, lashes, rose glasses, lipstick and compact braids with yellow ties, while keeping the shared navy/cream outfit. Both braid styles can change tie colors independently of their clothing.
+For the earlier look, choose **Thuận · original** in “Choose a face”, or **Original Thuận braids** under Hair → Style. The original preset restores her heart-shaped face, lashes, rose glasses, lipstick and compact braids with yellow ties, while keeping the shared navy/cream outfit. It has no earrings or necklace. Both braid styles can change tie colors independently of their clothing.
 
 The shared cast preset now uses a softer oval-to-round face, fuller cheeks, warm skin (`#e8bd9e`), restrained blush, round highlighted eyes, fuller rose lips and arched brows. It wears the navy contrast-collar polo, cream pleated skirt, gold pendant/studs and white shoes. Glasses are off by default; their rose frames are preserved for turning them back on.
 
@@ -30,6 +30,8 @@ The **Preview expression** menu also exposes happy, shy, thinking, excited and t
 The face remains its own low-poly mesh and canvas texture. Roundness interpolates the same head profile used by the face, scalp and hair. The runtime retains its existing painted eye/mouth expression system and body draw-call count. Bright eyes gain a softer catchlight and subtle eyelid line. Hair retains the raised side-part crown, with three small loose wisps.
 
 Each braid has three tapered woven strands, white/palette-colored ties and a small tail. Length changes both mesh and spring anchors; volume changes strand thickness with a constant vertex budget. Two bones per braid keep the existing spring animation and pose library. The cream skirt keeps its four spring sectors and existing cloth clearance shader.
+
+Skirt front panels follow the thighs smoothly; rear panels remain mostly attached to the hips. A skirt-specific lap support pass keeps seated front panels above a continuous surface across both thighs before the existing leg-clearance pass. Bath wraps retain their previous fitting behavior. The same fitting runs for the skirt, outline and shadow.
 
 ## Export
 

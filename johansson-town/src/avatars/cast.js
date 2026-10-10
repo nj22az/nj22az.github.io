@@ -14,7 +14,7 @@ const R=(o)=>normalizeRecipe(withTownDials(o));
 /** Thuận before the hair/face experiments. The original parts remain shared
  * creator assets; only the outfit uses the current navy/cream wardrobe set. */
 export const ORIGINAL_THUAN_RECIPE=R({name:'Thuan',
- accessories:{earrings:'studs',neckwear:'pendant',colour:'#e0b93a'},
+ accessories:{earrings:'none',neckwear:'none',colour:'#e0b93a'},
  body:{height:.36,build:.35,silhouette:'feminine',skin:'#f1cfae'},
  head:{size:.48,shape:.48,form:'heart',jaw:.3,cheeks:.62},
  hair:{style:'braids',colour:'#1c1714',flip:false,tieColour:'#f4d23c'},

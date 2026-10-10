@@ -790,7 +790,10 @@ function addBody(list,recipe,m,swim=false){
   // The skirt hangs from the hips and, lower down, goes with the legs: seated, it lies on the lap; and a long skirt,
   // below the knee, goes with the shins, so seated it falls over them instead of sticking out past the knees like a tube.
   const drape=p=>{
-   const leg=THREE.MathUtils.smoothstep(hipY-p.y,.02,.12),w=THREE.MathUtils.smoothstep(p.x,-W*.25,W*.25);
+   // The front lies on the raised thighs; the back remains attached to the
+   // pelvis instead of rotating upward with both legs into a rigid hoop.
+   const front=THREE.MathUtils.smoothstep(p.z,-D*.35,D*.22);
+   const leg=b==='longskirt'?THREE.MathUtils.smoothstep(hipY-p.y,.02,.12):THREE.MathUtils.smoothstep(waist-p.y,len*.15,len*.85)*(.08+.92*front),w=THREE.MathUtils.smoothstep(p.x,-W*.4,W*.4);
    const shin=b==='longskirt'?THREE.MathUtils.smoothstep(hipY-p.y,m.thigh*.82,m.thigh*1.02):0;
    return [['hips',1-leg],['thighL',leg*(1-shin)*w],['thighR',leg*(1-shin)*(1-w)],['kneeL',leg*shin*w],['kneeR',leg*shin*(1-w)]];
   };
@@ -800,7 +803,7 @@ function addBody(list,recipe,m,swim=false){
    const angle=Math.atan2(p.x,p.z*W/D),phase=((angle/(Math.PI*2)*12)%1+1)%1;
    const crease=Math.min(phase,1-phase)<.13,down=(waist-p.y)/len;
    return crease&&down>.12?new THREE.Color(bottom).multiplyScalar(.87).getStyle():bottom;
-  }):bottom,M(0,waist-len/2,0,0,0,0,1,1,D/W));cloth.userData.fit=true;
+  }):bottom,M(0,waist-len/2,0,0,0,0,1,1,D/W));cloth.userData.fit=b==='longskirt'?1:2;
  }
 }
 
@@ -1373,7 +1376,7 @@ function hairSpan(parts,from,to){
 }
 const vertexCount=parts=>parts.reduce((n,g)=>n+g.attributes.position.count,0);
 /** The cloth that is fitted out of the legs and onto the seat after skinning (towel-fit.js): a flag per vertex. */
-function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at=0;for(const g of parts){const n=g.attributes.position.count;if(g.userData.fit)flags.fill(1,at,at+n);at+=n;}return flags;}
+function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at=0;for(const g of parts){const n=g.attributes.position.count;if(g.userData.fit)flags.fill(Number(g.userData.fit),at,at+n);at+=n;}return flags;}
 
 /**
  * @param {object} input recipe (anything; it is normalized)
