@@ -720,12 +720,15 @@ function addBody(list,recipe,m,swim=false){
  // Arms: one soft piece from shoulder to wrist, bending at the elbow; a sleeve over the
  // top that rounds into the shoulder; a round hand.
  const longSleeve=!swim&&SLEEVED_LONG.includes(o.top);
+ const coveredSleeve=!swim&&!tank&&!running&&o.top!=='sundress';
  const armT=m.upper/(m.upper+m.fore);
  for(const s of ['L','R']){
   const sx=s==='L'?1:-1,sh=[sx*m.shoulderX,m.shoulderY,0],hd=[sx*(m.shoulderX+.015),m.shoulderY-m.upper-m.fore,0];
   const arm={bone:'shoulder'+s,joints:[[armT,'shoulder'+s,'elbow'+s]]};
   // A long sleeve is the arm itself, in the shirt, with the print and the cuff painted on.
-  const armColour=!swim&&o.top==='contrastpolo'?p=>p.y>=sh[1]-m.upper*.58?top:skin:swim||!longSleeve?skin:top;
+  // The shirt lining covers the upper arm underneath the sleeve, so a
+  // raised arm cannot reveal a bare patch between the cap and sleeve shell.
+  const armColour=coveredSleeve?(longSleeve?top:p=>p.y>=sh[1]-m.upper*.58?top:skin):skin;
   limb(list,sh,hd,m.armR*1.04,m.armR*.86,armColour,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
   // The shoulder: a rounded cap over the joint, in the shirt, that joins the arm to the
   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
@@ -741,9 +744,11 @@ function addBody(list,recipe,m,swim=false){
    const roomy=o.top==='kariyushi',a0=[sh[0]-sx*m.armR*.05,sh[1]+m.armR*.08,0],a1=[sh[0]+sx*.008,sh[1]-m.upper*(roomy?.52:.56),0];
    limb(list,a0,a1,m.armR*(roomy?1.20:1.16),m.armR*(roomy?1.16:1.12),top,{...arm,joints:[],root:['chest',.55,.3],uvAt:p=>sleeveUV(p,a0,a1,sx)});
   }
-  if(!swim&&o.top==='contrastpolo'){
+  if(coveredSleeve){
+   // A closed underarm gusset shared by every sleeved top. The chest end
+   // stays inside the torso while the outer end follows the upper arm.
    const a=[sx*(m.shoulderX-m.armR*.72),sh[1]-m.armR*.78,0],b=[sh[0],sh[1]-m.upper*.30,0];
-   limb(list,a,b,m.armR*1.05,m.armR*1.12,top,{...arm,joints:[],root:['chest',.9,.15]});
+   limb(list,a,b,m.armR*1.05,m.armR*1.12,top,{...arm,joints:[],root:['chest',.9,.15],uvAt:p=>sleeveUV(p,a,b,sx)});
   }
   // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
   // so a wave or a point reads as a hand rather than a ball on a stick.
