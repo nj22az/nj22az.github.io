@@ -14,7 +14,8 @@ export function createIslandPlay({world,player,camera,activities,getMinutes,getR
  registerAirportFerryPier({parent:world.group,register,onBoard:()=>ferry(false)});
  const aircraft=buildPlane();aircraft.name='Boarded commuter aircraft';aircraft.userData.dynamicProp=true;aircraft.visible=false;world.group.add(aircraft);
  const result=(title,r,back)=>{a.save();if(!r.ok){a.menu(title,r.message,[['Back',back]]);return false;}return true;};
- function standOnFerry(){boat.updateWorldMatrix(true,false);player.position.copy(new THREE.Vector3(1.3,boat.userData.deckY??1.01,.2).applyMatrix4(boat.matrixWorld));}
+ // Passengers ride on the open upper deck, not among the cars (ferry-ship.js FERRY_DECKS.passenger).
+ function standOnFerry(){boat.updateWorldMatrix(true,false);player.position.copy(new THREE.Vector3(...(boat.userData.passengerDeck||[1.3,boat.userData.deckY??1.01,.2])).applyMatrix4(boat.matrixWorld));}
  function automaticFerry(dt){
   if(ferryRun.automaticCrossing){ferryRun.advanceAutomaticCrossing(dt);return;}
   if(ride||ferryRun.phase!=='waiting')return;

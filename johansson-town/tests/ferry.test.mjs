@@ -23,6 +23,8 @@ test('the ferry lies alongside the pier for each sailing, boarded from the pier 
  // Beside the pier, not in it: the hull stops short of the pier's west flank and the quay.
  assert.ok(FERRY_BERTH.x+FERRY.beam/2<OUTER_PIER.x-OUTER_PIER.width/2);
  assert.ok(FERRY_BERTH.z+FERRY.length/2< -50,'The bow runs into the quay wall');
+ // Her gangway lands on the pier, short of its end.
+ assert.ok(FERRY_BERTH.gangwayZ>OUTER_PIER.z-OUTER_PIER.length/2+.5);
  // The gangway's foot and the queue are on the pier's deck, where people can stand.
  const {ferry}=run(0,1);
  for(let i=0;i<4;i++){const [x,z]=ferry.queueSpot(i);assert.equal(routeAt(x,z,.3)?.id,'outer-pier','Queue place '+i+' is off the pier');}
@@ -32,13 +34,22 @@ test('the ferry lies alongside the pier for each sailing, boarded from the pier 
  assert.ok(seen.at(-1).phase==='away'&&!seen.at(-1).visible,'It never left');
 });
 
-test('it comes in round the breakwater, never through it, and stays in open water',()=>{
+/** Every point of the hull's outline at a pose (centre, yaw), on a 0.4 m grid. */
+const hullPoints=({x,z,yaw})=>{const c=Math.cos(yaw),sn=Math.sin(yaw),out=[];
+ for(let dx=-FERRY.beam/2;dx<=FERRY.beam/2+1e-9;dx+=FERRY.beam/8)for(let dz=-FERRY.length/2;dz<=FERRY.length/2+1e-9;dz+=.4)out.push([x+c*dx+sn*dz,z-sn*dx+c*dz]);return out;};
+const inRect=([px,pz],x0,x1,z0,z1,m=0)=>px>x0-m&&px<x1+m&&pz>z0-m&&pz<z1+m;
+
+test('it comes in round the breakwater, never through it, and keeps every part of the hull off the pier and the quay',()=>{
  const {seen}=run(HARBOUR_LINE[1]-80,HARBOUR_LINE[1]+BUS_DWELL+80,1/20);
- for(const s of seen.filter(s=>s.visible)){
-  // The breakwater: a 68 m wall across the harbour mouth at z -83.
-  assert.ok(!(Math.abs(s.z+83)<2+FERRY.beam&&Math.abs(s.x)<34+FERRY.beam),'Through the breakwater at '+[s.x.toFixed(1),s.z.toFixed(1)]);
-  // Never on the land or the quay.
-  assert.ok(s.z< -50+.01||Math.abs(s.x-FERRY_BERTH.x)<.01,'Onto the quay at '+[s.x,s.z]);
+ const pierW=OUTER_PIER.x-OUTER_PIER.width/2,pierE=OUTER_PIER.x+OUTER_PIER.width/2,pierS=OUTER_PIER.z-OUTER_PIER.length/2,pierN=OUTER_PIER.z+OUTER_PIER.length/2;
+ for(const s of seen.filter(s=>s.visible))for(const p of hullPoints(s)){
+  // The breakwater: a 68 m wall across the harbour mouth at z -83, 4 m thick; a metre of water kept off it.
+  assert.ok(!inRect(p,-34,34,-85,-81,1),'Hull within a metre of the breakwater at '+p.map(v=>v.toFixed(1)));
+  // The outer pier and the second pier: never closer than her moored clearance.
+  assert.ok(!inRect(p,pierW,pierE,pierS,pierN,.1),'Hull touches the outer pier at '+p.map(v=>v.toFixed(1)));
+  assert.ok(!inRect(p,-38.3,-33.7,-62,-44,.5),'Hull touches the second pier at '+p.map(v=>v.toFixed(1)));
+  // And never over the quay.
+  assert.ok(p[1]< -50,'Hull over the quay at '+p.map(v=>v.toFixed(1)));
  }
  // It turns before it sails away, rather than steaming out backwards or flipping round.
  const yaws=seen.filter(s=>s.visible).map(s=>s.yaw);
