@@ -11,7 +11,7 @@ const root=fileURLToPath(new URL('../../',import.meta.url));
 const server=createServer(async(req,res)=>{try{
  let path=new URL(req.url,'http://localhost').pathname;if(path.endsWith('/'))path+='index.html';
  const file=root+path.slice(1);const info=await stat(file);assert.ok(info.isFile());
- res.setHeader('Content-Type',path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':path.endsWith('.html')?'text/html':'application/octet-stream');res.end(await readFile(file));
+ res.setHeader('Content-Type',(path.endsWith('.js')||path.endsWith('.mjs'))?'text/javascript':path.endsWith('.css')?'text/css':path.endsWith('.html')?'text/html':'application/octet-stream');res.end(await readFile(file));
 }catch{res.writeHead(404);res.end();}});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const base=process.env.STUDIO_TEST_URL||`http://127.0.0.1:${server.address().port}`;
@@ -30,7 +30,6 @@ try{
   assert.equal(await page.evaluate(()=>localStorage.getItem('johansson-player-recipe')),'game-sentinel');
   await page.reload();await page.locator('.studio-tools').waitFor();
   assert.equal(await page.getByRole('textbox',{name:'Name',exact:true}).inputValue(),'My character');
-  await page.getByRole('button',{name:'Step 2: Make them',exact:true}).click();
   await page.getByRole('tab',{name:'Hair',exact:true}).click();
   await page.getByRole('button',{name:'Crop',exact:true}).click();
   await page.getByRole('button',{name:'Reset feature',exact:true}).click();
@@ -75,7 +74,48 @@ try{
   assert.ok(await page.evaluate(()=>document.body.scrollWidth<=innerWidth),'No horizontal page overflow');
   if(width===1280)await page.screenshot({path:'/tmp/avatar-studio-desktop.png'});
   if(width===390)await page.screenshot({path:'/tmp/avatar-studio-phone.png'});
+
+  await page.getByRole('button',{name:'Use in scene',exact:true}).click();
+  await page.locator('.scene-workspace').waitFor();
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('nj-studio-scene-v1')).actors.length),1);
+  await page.getByRole('button',{name:'1. Choose location',exact:true}).click();
+  await page.getByRole('button',{name:'Sakura Shōten',exact:true}).click();
+  await page.getByRole('button',{name:'Next: Add characters',exact:true}).click();
+  await page.getByLabel('Town resident',{exact:true}).selectOption('Thuan');
+  await page.getByRole('button',{name:'Add resident',exact:true}).click();
+  await page.getByRole('button',{name:'Next: Pose & position',exact:true}).click();
+  await page.getByLabel('Pose',{exact:true}).selectOption('Cheer');
+  await page.getByLabel('Expression',{exact:true}).selectOption('surprised');
+  await page.getByRole('button',{name:'Next: Add text',exact:true}).click();
+  await page.getByLabel('Selected character’s speech',{exact:true}).fill('The ferry is late!');
+  await page.getByRole('button',{name:'Next: Export',exact:true}).click();
+  await page.getByLabel('Picture format',{exact:true}).selectOption('square');
+  await page.waitForFunction(()=>document.querySelector('.scene-picture canvas').getAttribute('aria-busy')==='false');
+  const [scenePNG]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Export scene PNG',exact:true}).click()]);
+  const sceneImage=PNG.sync.read(await readFile(await scenePNG.path()));assert.equal(sceneImage.width,1200);assert.equal(sceneImage.height,1200);
+  await page.getByRole('button',{name:'Add panel to comic',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('[data-panel-count]').textContent==='1');
+  await page.getByRole('button',{name:'4. Add text',exact:true}).click();
+  await page.getByLabel('Selected character’s speech',{exact:true}).fill('Let us make a comic.');
+  await page.getByRole('button',{name:'5. Export',exact:true}).click();
+  await page.getByRole('button',{name:'Add panel to comic',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('[data-panel-count]').textContent==='2');
+  await page.getByRole('button',{name:'Make comic',exact:true}).click();
+  assert.equal(await page.locator('.scene-panels figure').count(),2);
+  const [comicPNG]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Export comic PNG',exact:true}).click()]);
+  assert.equal(PNG.sync.read(await readFile(await comicPNG.path())).width,1200);
+  const [project]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Download project',exact:true}).click()]);
+  const projectPath=await project.path();const projectJSON=JSON.parse(await readFile(projectPath,'utf8'));assert.equal(projectJSON.scene.actors.length,2);assert.equal(projectJSON.panels.length,2);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('johansson-player-recipe')),'game-sentinel');
+  await page.reload();await page.locator('.studio-tools').waitFor();
+  await page.getByRole('button',{name:'Build scene',exact:true}).click();
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('nj-studio-scene-v1')).actors.length),2);
+  await page.locator('[data-project-input]').setInputFiles(projectPath);
+  await page.waitForFunction(()=>document.querySelector('[data-panel-count]').textContent==='2');
+  await page.getByRole('button',{name:'Make comic',exact:true}).click();
+  assert.ok(await page.evaluate(()=>document.body.scrollWidth<=innerWidth),'Scene workspace fits the viewport');
   await context.close();console.log(`PASS ${width}×${height}: templates, PNG pixels, design import, reload, isolated storage, layout`);
  }
  assert.deepEqual(errors,[]);
 }finally{await browser.close();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+

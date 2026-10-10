@@ -1,6 +1,7 @@
 import {openCreator} from '../johansson-town/src/avatars/creator.js';
 import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from '../johansson-town/src/avatars/cast.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
+import {createSceneWorkspace} from './scene.js';
 
 // Independent of the town's player and all game save keys.
 const SAVE_KEY='nj-avatar-studio-v1';
@@ -15,8 +16,22 @@ function save(recipe){
  try{localStorage.setItem(SAVE_KEY,JSON.stringify({format:'nj-avatar-studio',version:1,recipe}));status.textContent='Character saved in this browser. Download a design for a portable copy.';}
  catch{status.textContent='Browser storage is unavailable. Use Download design to save your character.';}
 }
-const creator=openCreator({recipe:shared||restored||CAST_RECIPES.Johansson,templates,startAt:'look',keepOpenOnSave:true,saveLabel:'Save character',shareLink:code=>new URL('./?r='+code,location.href).href,onSave:save,onClose:()=>{location.href='/#projects';}});
-document.getElementById('loading').remove();
+
+let currentRecipe=shared||restored||CAST_RECIPES.Johansson,editor=null,workspace=null,switching=false,editingId=null;
+const modes=document.createElement('nav');modes.className='studio-modes';modes.setAttribute('aria-label','Johansson Studio modes');
+for(const [id,label] of [['character','Edit character'],['scene','Build scene'],['comic','Make comic']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
+document.body.prepend(modes);
+function switchMode(mode){
+ if(editor&&mode==='character'){editor.creator.goTo('look');return;}
+ if(editor){currentRecipe=editor.creator.recipe;switching=true;editor.cleanup();editor.creator.close();editor=null;switching=false;}
+ if(mode==='character'){workspace?.hide();editor=createCharacterEditor();}
+ else{workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode);}
+ for(const b of modes.children)b.setAttribute('aria-pressed',String(b.dataset.mode===mode));
+ modes.querySelector(`[data-mode="${mode}"]`)?.focus({preventScroll:true});
+}
+function createCharacterEditor(){
+const creator=openCreator({recipe:currentRecipe,templates,startAt:'look',keepOpenOnSave:true,saveLabel:'Save character',shareLink:code=>new URL('./?r='+code,location.href).href,onSave:save,onClose:recipe=>{currentRecipe=recipe;if(!switching)location.href='/#projects';}});
+document.getElementById('loading')?.remove();
 creator.root.setAttribute('aria-label','Johansson Studio');
 creator.root.querySelector('canvas').setAttribute('aria-label','Your character. Drag to turn.');
 // Keep the original appearance controls while giving this independent studio its own title.
@@ -45,14 +60,15 @@ input.onchange=async()=>{
  catch{status.textContent='Unable to open this design. Choose an Avatar Creator JSON file.';}finally{input.value='';}
 };
 const openDesign=button('Open design',()=>input.click());
+const shareCharacter=creator.root.querySelector('.shm-top button');if(shareCharacter){shareCharacter.textContent='Share character link';fileMenu.append(shareCharacter);}
 fileMenu.append(downloadDesign,openDesign);toolbar.append(status,files,input);
 fileMenu.addEventListener('click',()=>{files.open=false;});
-document.addEventListener('click',event=>{if(!files.contains(event.target))files.open=false;});
+const closeFiles=event=>{if(!files.contains(event.target))files.open=false;};document.addEventListener('click',closeFiles);
 files.addEventListener('keydown',event=>{if(event.key==='Escape'){files.open=false;fileLabel.focus();}});
 let noticeTimer;
 const noticeObserver=new MutationObserver(()=>{clearTimeout(noticeTimer);if(status.textContent)noticeTimer=setTimeout(()=>{status.textContent='';},8000);});
 noticeObserver.observe(status,{childList:true});creator.root.querySelector('.shm-top').after(toolbar);
-window.addEventListener('pagehide',()=>{titleObserver.disconnect();noticeObserver.disconnect();clearTimeout(noticeTimer);},{once:true});
+function cleanup(){titleObserver.disconnect();noticeObserver.disconnect();clearTimeout(noticeTimer);document.removeEventListener('click',closeFiles);}
 
 // Inspect the same character in several views without changing its design.
 const preview=document.createElement('details');preview.className='studio-preview';
@@ -70,9 +86,28 @@ const expression=creator.root.querySelector('[aria-label="Preview expression"]')
 const expressionRow=document.createElement('label');expressionRow.append('Expression',expression);previewMenu.append(expressionRow);
 const pose=creator.root.querySelector('[aria-label="Preview pose"]');
 const poseRow=document.createElement('label');poseRow.append('Pose',pose);previewMenu.append(poseRow);
+const previewOutfit=creator.root.querySelector('[aria-label="Preview outfit"]');const outfitRow=document.createElement('label');outfitRow.append('Preview outfit',previewOutfit);previewMenu.append(outfitRow);
 creator.root.querySelector('.shm-side').append(preview);
 const featureReset=document.createElement('button');featureReset.type='button';featureReset.className='studio-reset-feature';featureReset.textContent='Reset feature';featureReset.title='Restore this feature to the loaded template or design. Undo remains available.';
 featureReset.onclick=()=>{creator.resetFeature();status.textContent='Selected feature restored. Undo reverses this change.';};
 creator.root.querySelector('.shm-panel').append(featureReset);
 preview.addEventListener('keydown',event=>{if(event.key==='Escape'&&preview.open){event.preventDefault();event.stopPropagation();preview.open=false;previewTitle.focus();}});
 creator.root.addEventListener('pointerdown',event=>{if(!preview.contains(event.target))preview.open=false;});
+
+
+// Model export is an advanced file action; composition stays prominent.
+const modelExport=creator.root.querySelector('.shm-poses button');
+if(modelExport){modelExport.textContent='Download 3D model (.glb)';fileMenu.append(modelExport);}
+const addToScene=button(editingId?'Apply to scene':'Use in scene',()=>{const recipe=creator.recipe;const id=editingId;switchMode('scene');workspace.useCharacter(recipe,id);editingId=null;},true);
+creator.root.setAttribute('role','region');creator.root.removeAttribute('aria-modal');
+creator.root.addEventListener('keydown',event=>{
+ if(event.key!=='Tab'||creator.root.querySelector('.shm-share'))return;
+ const controls=[...creator.root.querySelectorAll('button:not(:disabled),input,select,textarea,summary,[tabindex="0"]')].filter(e=>e.getClientRects().length);
+ if((event.shiftKey&&document.activeElement===controls[0])||(!event.shiftKey&&document.activeElement===controls.at(-1))){event.preventDefault();event.stopImmediatePropagation();modes.querySelector('[data-mode="character"]').focus();}
+},true);
+
+return {creator,cleanup};
+}
+
+switchMode('character');
+window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();},{once:true});
