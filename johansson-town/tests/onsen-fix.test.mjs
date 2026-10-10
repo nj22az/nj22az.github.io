@@ -26,8 +26,8 @@ test('as built, the board has two spare ways (予備) at the end of the lower ro
  const at=name=>new THREE.Box3().setFromObject(room.getObjectByName(name)).getCenter(new THREE.Vector3());
  const pump=at('Breaker pump'),fridge=at('Breaker fridge');
  for(const w of ONSEN_SPARE_WAYS){const c=at(w.cover);assert.ok(Math.abs(c.y-pump.y)<.002,'lower row');}
- // Facing the board (it faces -z), the ways count from your left: fridge, pump, then the spares.
- const along=v=>-v.x;assert.ok(along(fridge)<along(pump)&&along(pump)<along(at(ONSEN_SPARE_WAYS[0].cover))&&along(at(ONSEN_SPARE_WAYS[0].cover))<along(at(ONSEN_SPARE_WAYS[1].cover)));
+ // Facing the board (it faces +x, so you look -x and your left is +z), the ways count from your left: fridge, pump, then the spares.
+ const along=v=>-v.z;assert.ok(along(fridge)<along(pump)&&along(pump)<along(at(ONSEN_SPARE_WAYS[0].cover))&&along(at(ONSEN_SPARE_WAYS[0].cover))<along(at(ONSEN_SPARE_WAYS[1].cover)));
  for(const t of meshes(room).filter(m=>/^Tape label/.test(m.name)))assert.equal(visibleInWorld(t),false,'no tape before the fix');
  hits.find(h=>h.label==='Look at the breaker board').fn();assert.match(actions.at(-1)[2],/two spare ways \(予備\)/);
  layout.dispose();
@@ -42,7 +42,7 @@ test('the fix: two new 20 A breakers, each mirror on its own circuit, and everyt
  assert.equal(boardWiring().wiring,'rewired');assert.equal(boardWiring().taped,true);
  assert.equal(a.circuits.length,8);
  const mirrors=['dryer-1','dryer-2','dryer-3'].map(circuitOf);assert.equal(new Set(mirrors).size,3,'each mirror on a circuit of its own: '+mirrors);
- assert.equal(circuitOf('massage-chair'),'changing-sockets','the chair keeps its 2003 spur off the left mirror');
+ assert.equal(circuitOf('massage-chair'),'changing-sockets','the chair keeps its 1994 spur off the left mirror');
  for(const c of a.circuits){assert.ok(c.live,c.id+' live');assert.ok(c.amps<=c.rating,`${c.id}: ${c.amps} A on ${c.rating}`);}
  assert.equal(a.circuits.find(c=>c.id==='changing-sockets').amps,14);
  for(const f of ONSEN_FIX.circuits)assert.equal(a.circuits.find(c=>c.id===f.id).amps,12);
@@ -78,10 +78,10 @@ test('the fix: two new 20 A breakers, each mirror on its own circuit, and everyt
  stageScenario('rest');assert.equal(boardWiring().wiring,'as-built');assert.equal(circuitOf('dryer-2'),'changing-sockets');assert.equal(isFitted('vanity-2'),false);
 });
 
-test('the 2003 raceway runs from the left mirror over the noren to the chair, flat on the walls and through nothing',()=>{
+test('the 1994 raceway runs from the women\'s left mirror, through the partition and over both noren to the chair, flat on the walls',()=>{
  stageScenario('rest');const {room,layout}=build();
  const R=ONSEN_RACEWAY;
- assert.equal(R.year,2003);assert.equal(R.circuit,circuitOf('massage-chair'));assert.ok(R.why.length>60&&R.period.length>40);
+ assert.equal(R.year,1994,'inside the town\'s years (1985–1999)');assert.equal(R.circuit,circuitOf('massage-chair'));assert.ok(R.why.length>60&&R.period.length>40);
  assert.equal(ONSEN_CIRCUITS[0].loads.find(l=>l.id==='massage-chair').raceway,R.name);
  assert.ok(room.getObjectByName(R.from)&&room.getObjectByName(R.to),'both ends are real sockets');
  const group=room.getObjectByName(R.name);assert.ok(group);
@@ -92,21 +92,27 @@ test('the 2003 raceway runs from the left mirror over the noren to the chair, fl
  const box=b=>new THREE.Box3().setFromObject(b),start=box(room.getObjectByName(R.from)),end=box(room.getObjectByName('Massage chair socket box'));
  assert.ok(Math.abs(R.runs[0].path[0][0]-start.min.x)<.002,'leaves the side of the left mirror’s socket');
  assert.ok(Math.abs(R.runs.at(-1).path.at(-1)[1]-end.max.y)<.002,'arrives on top of the socket box');
- // Over the noren: where it crosses the doorway it is above the noren rod and the header's underside.
- const crossing=R.runs.find(r=>r.path.some(p=>p[0]<-.9)&&r.path.some(p=>p[0]>.9));assert.ok(crossing&&crossing.path.every(p=>Math.abs(p[2]-1.6)<.08),'crosses the doorway on the bandai wall');
- const rod=box(room.getObjectByName('Noren rod'));
- for(const n of meshes(room).filter(m=>m.name==='Noren'))assert.ok(box(n).max.y<rod.max.y+.001);
+ // Over both noren: along the bandai wall from the west wall to the partition, end caps either side of the hole he
+ // drilled through it, and on along the men's side; where it crosses the doorways it is above the rods and the header.
+ const women=R.runs.find(r=>r.side==='women'&&r.end==='wall'),men=R.runs.find(r=>r.side==='men'&&r.start==='wall');
+ assert.ok(women&&men,'one run each side of the partition');
+ assert.ok(Math.abs(women.path.at(-1)[0]+.05)<.002&&Math.abs(men.path[0][0]-.05)<.002,'through the partition (x ±0.05)');
+ for(const r of [women,men])assert.ok(r.path.every(p=>Math.abs(p[2]-1.6)<.08),'on the bandai wall');
+ const rods=meshes(room).filter(m=>m.name==='Noren rod').map(box);assert.equal(rods.length,2,'two noren, two rods');
+ for(const p of pieces)for(const rod of rods){const b=box(p);if(b.max.x>rod.min.x&&b.min.x<rod.max.x&&b.max.z>1.45&&b.min.z<1.75)assert.ok(b.min.y>rod.max.y,'the raceway crosses over the noren rods');}
+ for(const n of meshes(room).filter(m=>m.name==='Noren'))assert.ok(rods.some(rod=>box(n).max.y<rod.max.y+.001));
  const shrink=b=>b.clone().expandByScalar(-.0008);
  const own=new Set(pieces);
- const allowed=o=>own.has(o)||/^(Umi-no-yu wall|Umi-no-yu floor|Rock bath paving|Umi-no-yu sea view)$/.test(o.name)||o.name===R.from+' plate'||o.parent?.name===R.to;
+ const allowed=o=>own.has(o)||o.userData.wall||/^(Umi-no-yu floor|Rock bath paving|Umi-no-yu sea view)$/.test(o.name)||o.name===R.from+' plate'||o.parent?.name===R.to;
  for(const p of pieces){
   const b=box(p);assert.ok(b.min.y>.85,p.name+' is up on the wall, not at a foot or a towel');
   for(const o of meshes(room)){if(allowed(o))continue;const ob=box(o);if(ob.isEmpty())continue;
    assert.ok(!shrink(b).intersectsBox(ob),`${p.name} at ${b.getCenter(new THREE.Vector3()).toArray().map(v=>v.toFixed(2))} clips ${o.name||o.type}`);}
  }
  // Under the ceiling beams, and its back on a wall face: never floating, never inside the plaster.
- for(const beam of meshes(room).filter(m=>m.name==='Ceiling beam'))for(const p of pieces)assert.ok(!box(p).intersectsBox(box(beam)));
- const walls=meshes(room).filter(m=>m.name==='Umi-no-yu wall').map(box);
+ const beams=meshes(room).filter(m=>m.userData.beam);assert.equal(beams.length,6,'the ceiling beams');
+ for(const beam of beams)for(const p of pieces)assert.ok(!box(p).intersectsBox(box(beam)));
+ const walls=meshes(room).filter(m=>m.userData.wall).map(box);
  for(const p of pieces.filter(m=>m.name==='Raceway run')){const b=box(p),touch=walls.some(w=>w.clone().expandByScalar(.0005).intersectsBox(b)),inside=walls.some(w=>shrink(w).intersectsBox(shrink(b)));
   assert.ok(touch,'a run sits on a wall');assert.ok(!inside,'a run is not inside a wall');}
  // The socket box by the chair is out of reach of a walking body (the cooler and the chair fence it).

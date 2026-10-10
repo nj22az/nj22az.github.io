@@ -11,7 +11,7 @@ import {previewOutfits,TABS,BATH_CHILD_NOTE} from '../src/avatars/creator.js';
 installDOM();
 
 /**
- * The bath wrap (yuamigi) at Umi-no-yu, the family bath: grown-ups wrap up, children keep
+ * The bath wrap (yuamigi) behind Umi-no-yu's noren: grown-ups wrap up, children keep
  * their swimwear, and the cloth never shows the body through it.
  */
 const towelOf=avatar=>avatar.root.children.find(o=>o.name==='Shimanchu bath towel');
@@ -51,7 +51,7 @@ test('children and teenagers keep their swimwear; a grown-up may choose it',()=>
   const avatar=buildAvatar(recipe,{shadows:false});
   assert.equal(avatar.wear('towel'),'swim','Asked into a towel, a child gets swimwear');
   assert.equal(towelOf(avatar),undefined,'No towel is ever made for them');
-  assert.deepEqual(shown(avatar),['Shimanchu swimwear']);
+  assert.deepEqual(shown(avatar),['Shimanchu swimwear','Shimanchu swimwear outline']);
   assert.equal(avatar.wear('bath'),'swim');avatar.dispose();
  }
  // The choice is part of the recipe and survives a share code; children cannot opt in.
@@ -154,7 +154,7 @@ test('residents asked into the bath and the player dress the same way',()=>{
 
 test('the maker offers the bath towel to grown-ups and says why children keep swimwear',()=>{
  const grown=previewOutfits(CAST_RECIPES.Johansson);
- assert.deepEqual(grown.map(o=>o.value),['clothes','swim','towel']);
+ assert.deepEqual(grown.map(o=>o.value),['clothes','swim','towel','afterbath']);
  assert.equal(grown.find(o=>o.value==='towel').disabled,false);
  const young=previewOutfits(child).find(o=>o.value==='towel');
  assert.equal(young.disabled,true);assert.match(young.label,/grown-ups/);

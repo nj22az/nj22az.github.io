@@ -5,15 +5,19 @@ import {buildOnsenInterior,ONSEN_ROOM,ONSEN_SEATS} from '../src/world/interiors/
 import {circleHitsRect} from '../physics.js';
 
 const build=()=>{const room=new THREE.Group(),hits=[],actions=[];const layout=buildOnsenInterior({room,reg:(o,label,fn)=>hits.push({o,label,fn}),action:(...a)=>actions.push(a),exit(){}});return {room,hits,actions,layout};};
-const blocked=(layout,x,z,r=.3)=>layout.colliders.some(c=>circleHitsRect(x,z,r,c));
+// Who walks: the player (a man) is kept out of the women's side by colliders only he meets; residents are not.
+const blocked=(layout,x,z,r=.3,who='player')=>layout.colliders.some(c=>(!c.only||c.only===who)&&circleHitsRect(x,z,r,c));
 
 test('Umi-no-yu is a room you walk through: bandai, lockers, washing places, two baths, the door',()=>{
  const {hits,layout}=build();
  const labels=hits.map(h=>h.label);
- for(const label of ['Pay at the bandai · ¥300','Change at the lockers','Wash at the tap','Get into the indoor bath','Get into the rock bath','Buy coffee milk · ¥100','Step outside'])assert.ok(labels.includes(label),label);
+ for(const label of ['Pay at the bandai · ¥300','Change at the baskets','Women’s side','Wash at the tap','Get into the indoor bath','Get into the rock bath','Buy coffee milk · ¥100','Step outside'])assert.ok(labels.includes(label),label);
  assert.ok(!blocked(layout,...[ONSEN_ROOM.spawn[0],ONSEN_ROOM.spawn[2]]),'you arrive in the clear');
- // A walk from the door to the rock bath, down the middle of the building.
- for(const z of [4.2,3,1.6,0,-1.2,-2.5,-4.4,-4.75])assert.ok(!blocked(layout,0.2,z,.25),'the way through is open at z='+z);
+ // A walk from the door to the rock bath through the men's side (the player's), and through the women's (a resident's).
+ assert.ok(!blocked(layout,0,4.2,.25),'in through the middle metre of the genkan step');
+ for(const z of [3,1.6,0,-1.2,-2.5,-4.4,-4.75])assert.ok(!blocked(layout,.45,z,.25),'the men\'s way through is open at z='+z);
+ for(const z of [3,1.6,0,-1.2,-2.5,-4.4,-4.75])assert.ok(!blocked(layout,-.45,z,.25,'resident'),'the women\'s way through is open at z='+z);
+ for(const z of [1.6,-1.2])assert.ok(blocked(layout,-.45,z,.25),'the player is kept out of the women\'s side at z='+z);
 });
 
 test('every seat can be reached, and the baths put you in the water up to the chest',()=>{

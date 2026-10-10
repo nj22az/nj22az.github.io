@@ -52,16 +52,19 @@ const featureIcon=id=>FEATURE_PATHS[id]?'<svg class="ui-icon" viewBox="0 0 24 24
 
 const FACE_TABS=new Set(['head','hair','eyes','brows','nose','mouth','extras','hat','accessories']);
 /**
- * What the preview can show someone in: their clothes, or what they would wear at Umi-no-yu,
- * the family bath -- swimwear, or for a grown-up the bath towel wrap (yuamigi) with a towel on
- * the head. Children keep their swimwear there, so the towel is offered to grown-ups only.
+ * What the preview can show someone in: their clothes, or what they would wear at Umi-no-yu --
+ * swimwear (the shared bath), for a grown-up the bath towel wrap (yuamigi) with a towel on the
+ * head (behind the noren), and the after-bath clothes of the lobby (outfits.js AFTERBATH).
+ * Children keep their swimwear and their clothes there, so the towel and the after-bath clothes
+ * are offered to grown-ups only.
  */
-export const PREVIEW_OUTFITS=Object.freeze([['clothes','Clothes'],['swim','Swimwear'],['towel','Bath towel']]);
-export const BATH_CHILD_NOTE='At Umi-no-yu, the family bath, children wear swimwear. The bath towel wrap is for grown-ups.';
-/** The preview's outfits for this recipe, the towel disabled (and saying why) for a child or teenager. */
+export const PREVIEW_OUTFITS=Object.freeze([['clothes','Clothes'],['swim','Swimwear'],['towel','Bath towel'],['afterbath','After the bath']]);
+export const BATH_CHILD_NOTE='At Umi-no-yu children wear swimwear behind the noren and their own clothes in the lobby. The bath towel wrap and the after-bath clothes are for grown-ups.';
+const GROWN_UP_OUTFITS=new Set(['towel','afterbath']);
+/** The preview's outfits for this recipe, the grown-ups' ones disabled (and saying why) for a child or teenager. */
 export function previewOutfits(recipe){
  const grown=wearsBathTowel(normalizeRecipe(recipe));
- return PREVIEW_OUTFITS.map(([value,label])=>({value,label:value==='towel'&&!grown?label+' (grown-ups)':label,disabled:value==='towel'&&!grown}));
+ return PREVIEW_OUTFITS.map(([value,label])=>{const off=GROWN_UP_OUTFITS.has(value)&&!grown;return {value,label:off?label+' (grown-ups)':label,disabled:off};});
 }
 const LABEL={
  towel:'Bath towel',swimwear:'Swimwear',
@@ -161,8 +164,9 @@ export const TABS=[
   {kind:'parts',page:'style',at:'outfit.bottom',list:PARTS.bottom,draw:'figure'},
   {kind:'colours',page:'colour',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth},
   {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth},
-  // What they wear in Umi-no-yu's family bath: grown-ups choose; children wear swimwear.
-  {kind:'chips',page:'style',at:'swim.bath',list:['towel','swimwear'],label:'At Umi-no-yu, the family bath',when:r=>wearsBathTowel(r)},
+  // What they wear behind Umi-no-yu's noren: grown-ups choose; children wear swimwear. (Past the bath doors, in the shared
+  // bath, everybody wears swimwear.)
+  {kind:'chips',page:'style',at:'swim.bath',list:['towel','swimwear'],label:'Behind the noren at Umi-no-yu',when:r=>wearsBathTowel(r)},
   {kind:'note',page:'style',text:BATH_CHILD_NOTE,when:r=>!wearsBathTowel(r)}]},
  {id:'shoes',name:'Shoes',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.footwear',list:PARTS.footwear,draw:'feet'},

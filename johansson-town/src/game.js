@@ -559,7 +559,7 @@ const decorStage={hold(){decorating=true;resetInput();},release(){decorating=fal
 function cameraBlocked(x,z,y,r){
  if(current&&indoorCeilings&&y>indoorCeilings.limit(x,z,player.position.y,Math.max(.22,r)))return true;
  const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;
- const hit=c=>(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c);
+ const hit=c=>!c.only&&(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c);
  return current?roomColliders.some(hit):colliderGrid.some(x,z,r,hit);
 }
 const arrivalPerson=new THREE.Vector3();
@@ -631,16 +631,21 @@ function eatDish(){
  say(r.left?"Enjoy your meal. "+(r.left===1?'One mouthful left.':r.left+' mouthfuls left.'):"Thank you for the meal. The plate is clean.",3);
  return true;
 }
-/** Swimwear on or off: the model changes, and the game remembers for the camera-less view. */
-let swimwear=false;
-// The player dresses for Umi-no-yu as the residents do (indoor-residents.js): 'bath' is a yuamigi
-// (bath wrap) and a towel on the head for a grown-up, swimwear for a child or anyone who chose it in the maker.
-function wearSwim(on){if(swimwear===!!on)return;swimwear=!!on;if(on&&!johansson)ensureJohansson();const worn=johansson?.wear(on?'bath':'clothes');if(on)say(worn==='towel'?'You change at the lockers into one of the bath\'s wraps, a folded towel on your head.':'You change into your swimwear at the lockers.',3);}
+/** Changed for the bath or not: the model changes, and the game remembers for the camera-less view. */
+let swimwear=false,bathWear='clothes';
+// The player dresses for Umi-no-yu as the residents do (indoor-residents.js), by where they are once changed: behind the
+// noren, in the changing room, 'bath' (a yuamigi, the bath wrap, and a towel on the head for a grown-up; swimwear for a
+// child or anyone who chose it in the maker); past the bath doors, where the washing room and the rock bath are shared,
+// swimwear; out in the lobby, the after-bath clothes (avatars/outfits.js AFTERBATH).
+function onsenWear(){if(!swimwear||current?.id!=='onsen')return null;const z=player.position.z,H=ONSEN_ROOM.hall;return z<H.changing?'swim':z<H.front?'bath':'afterbath';}
+function wearSwim(on){if(swimwear===!!on)return;swimwear=!!on;if(on&&!johansson)ensureJohansson();bathWear=on?onsenWear()||'bath':'clothes';const worn=johansson?.wear(bathWear);if(on)say(worn==='towel'?'You change at the lockers into one of the bath\'s wraps, a folded towel on your head.':'You change into your swimwear at the lockers.',3);}
+function followOnsenWear(){const w=onsenWear();if(w&&w!==bathWear){bathWear=w;johansson?.wear(w);}}
 function updateJohansson(dt){
  const ferryView=islandPlay?.phase==='ferry';
  hands.firstPersonVisible=!thirdPerson&&!spawnScene?.active&&!islandPlay?.active&&current?.id!==CITY_RESTAURANT.id;
  if(ferryView&&!johansson)ensureJohansson();
  if(!johansson)return;
+ followOnsenWear();
  const r=johansson.root;r.position.copy(player.position);
  if(seated&&parkSeat){
   // Hips on the seat, facing the way the seat faces.
@@ -769,7 +774,7 @@ function residentSpeech(){const person=world.people.filter(p=>!p.g.userData.play
 function roomCollider(x,z,w,d,height=2.8,minY=0){roomColliders.push({x,z,w,d,height,minY});}
 
 // Umi-no-yu has one regular guest: Thuan, on the evenings she has been asked along.
-const onsenGuests=createIndoorResidents({world,parent:scene,collides:environmentBlocked,getRain:()=>weather,place:'onsen',layout:{entrance:ONSEN_ROOM.spawn},getPlayerSeat:()=>parkSeat?.seatId,onBorrow:npcActivities.release,getState:()=>activities.state});
+const onsenGuests=createIndoorResidents({world,parent:scene,collides:(x,z,r)=>environmentBlocked(x,z,r,'resident'),getRain:()=>weather,place:'onsen',layout:{entrance:ONSEN_ROOM.spawn},getPlayerSeat:()=>parkSeat?.seatId,onBorrow:npcActivities.release,getState:()=>activities.state});
 const izakayaGuests=createIzakayaGuests({world,parent:scene,collides:environmentBlocked,getPlayerSeat:()=>parkSeat?.izakaya?.position||null,getRain:()=>weather,getState:()=>activities.state,onBorrow:npcActivities.release,getThuan:()=>{const g=ensureThuan();if(!interactables.includes(g))reg(g,'Catch up with Thuan',()=>activities.action('resident','Thuan'),true);return g;}});
 const ramenLife=new THREE.Group();ramenLife.name='Inakaya continuous dining';ramenLife.userData.sharedAsset=true;ramenLife.visible=false;scene.add(ramenLife);
 // On the island the ramen counter is Sato Ramen, inside Minato's building (world/sato-ramen-layout.js).
@@ -949,8 +954,10 @@ function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touc
   const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d*(1+(1-facingDot)*1.4)+(o.userData.promptPenalty||0)-(/^Talk to /.test(h.label)?.6:0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();say(FORM3_NUDGE,6);}else say('You stand up.',2);}
 function doInteract(){spawnScene?.cancel();if(islandPlay?.active)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
-function environmentBlocked(x,z,r=PLAYER_RADIUS){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;
- const y=current?0:groundHeight(x,z),hit=c=>standingHitsRect(x,z,r,y,c);
+// `who`: a room collider with `only` set stops only that walker (Umi-no-yu's women's doorways stop the player, a man,
+// and let the residents through to their own side).
+function environmentBlocked(x,z,r=PLAYER_RADIUS,who='player'){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;
+ const y=current?0:groundHeight(x,z),hit=c=>(!c.only||c.only===who)&&standingHitsRect(x,z,r,y,c);
  return current?roomColliders.some(hit):colliderGrid.some(x,z,r,hit);}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
 function inEntrance(x,z,r=1.2){return entrancePoints().some(([dx,dz])=>Math.hypot(x-dx,z-dz)<r);}

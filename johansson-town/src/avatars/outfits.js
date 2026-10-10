@@ -30,3 +30,30 @@ export const DRESS_BOTTOMS=Object.freeze(['skirt','longskirt','pleatedskirt']);
 /** Every character uses the same wardrobe; identity never filters shared parts. */
 export function outfitAllowedFor(_name,_outfit){return true;}
 export function appropriateOutfit(_name,outfit){return {...outfit};}
+
+/**
+ * After the bath (build.js wear('afterbath')): what a town bath's regulars wore in its shared lobby in the 1980s and 90s,
+ * cooling off with a coffee milk, in the massage chair or in front of the night game. Grown-ups only: children keep their
+ * clothes, as they do behind the noren (wearsBathTowel). Bare feet: the shoes are in the getabako at the genkan.
+ * - men: a white cotton running vest (ランニングシャツ), long light-beige cotton drawers to below the knee (ステテコ), and
+ *   one of the bath's tenugui round the neck, both ends on the chest (Umi-no-yu sells them at the bandai, printed with
+ *   the navy band its towels carry, so they come back);
+ * - women: her own house dress (アッパッパ), loose, short-sleeved, to the knee, in a pastel of what she likes to wear
+ *   (houseDressColour), and the bath's towel wound into a turban over the hair while it dries.
+ */
+export const AFTERBATH=Object.freeze({
+ men:Object.freeze({top:'running',topColour:'#f7f4ec',bottom:'suteteko',bottomColour:'#e4d8bd',footwear:'barefoot',hat:'none',pattern:'none'}),
+ women:Object.freeze({top:'housedress',bottom:'housedress',footwear:'barefoot',hat:'none',pattern:'none'}),
+});
+const mixHex=(a,b,f)=>'#'+[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-f)+parseInt(b.slice(i,i+2),16)*f).toString(16).padStart(2,'0')).join('');
+/** Near-white tops (a white tee) give no colour of her own: then the accent she wears with it does. */
+const pale=hex=>[1,3,5].every(i=>parseInt(hex.slice(i,i+2),16)>215);
+/**
+ * Her house dress: a pastel of the top she usually wears (Thuan's yellow, Nhung's sage, Mrs Higa's green), or of its
+ * accent when that top is white (Thao's tee, with her blue shorts and ties), washed out as a much-laundered cotton is.
+ */
+export function houseDressColour(recipe){
+ const o=recipe.outfit,base=pale(o.topColour)?o.accent:o.topColour;
+ return mixHex(base,'#fbf8f1',.55);
+}
+
