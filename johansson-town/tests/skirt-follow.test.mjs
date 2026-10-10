@@ -56,3 +56,18 @@ test('side hem follows its own leg through an alternating stride',()=>{
  }
  assert.ok(maxZ-minZ>m.thigh*.2,'hem moves with the stride');a.dispose();
 });
+
+test('walking cloth does not stretch adjoining panels into sharp spikes',()=>{
+ const a=buildAvatar(ORIGINAL_THUAN_RECIPE,{shadows:false}),anim=createAvatarAnimator(a),g=a.body.geometry,P=g.attributes.position,F=g.attributes.towelFit;
+ for(let frame=0;frame<100;frame++){
+  anim.update(1/60,{speed:1.4});if(frame%10)continue;
+  a.root.updateMatrixWorld(true);a.body.skeleton.update();a.body.towelFit.refresh();
+  const posed=new Map();
+  for(let i=0;i<P.count;i++)if(F.getX(i)===2){const r=new THREE.Vector3().fromBufferAttribute(P,i),p=a.body.getVertexPosition(i,new THREE.Vector3());a.body.towelFit.fitPoint(p,2,r);posed.set(i,p);}
+  for(let i=0;i<P.count;i+=3)if(posed.has(i))for(const [j,k] of [[i,i+1],[i+1,i+2],[i+2,i]]){
+   const distance=new THREE.Vector3().fromBufferAttribute(P,j).distanceTo(new THREE.Vector3().fromBufferAttribute(P,k));
+   if(distance>.003)assert.ok(posed.get(j).distanceTo(posed.get(k))<distance*2,'cloth edges remain bounded across a stride');
+  }
+ }
+ a.dispose();
+});
