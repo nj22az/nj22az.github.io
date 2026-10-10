@@ -83,3 +83,30 @@ Two causes: the game's chair is a plain box, and the comic shot it as a wide set
   (a resident, a place, a prop from the library), previews it, and the comic builds from that. The same modules feed
   the film's shots.
 - First use: page 2's chair as an `insert`, after the massage chair is rebuilt as a real 1990s coin massage chair.
+
+## 5. Studio's 3D modelling section: build assets in Studio, assemble them in World (the creator, 2026-10-10)
+
+> "I would like to build assets in studio and assemble them in world , I would like to implement a 3d modelling section ,
+> that can make assets in code or by drawing"
+
+Studio is the Python app in `jojo/town-studio` (`python3 -m townstudio`, a local web page). The modeller is a new page in
+it, using World's own vendored three.js and toon look, so what you model is exactly what World shows.
+
+- **One asset = one folder** (`jojo/town-studio/assets/<id>/`): `asset.json` (name; purpose: who it is for, why, where
+  it belongs, per the "nothing is random" rule; real size in metres; colours from World's palette; collider; seats,
+  standing spots and the action label; phone budget) plus its shape as either a **code recipe** (a small JS module using
+  the same kit World uses: boxes, cylinders, lathe, extrude, rounded boxes) or a **GLB**.
+- **Two ways to make one, same result:**
+  - *Code*: an editor beside a live 3D preview; edit numbers, see the model change.
+  - *Drawing*: sketch on a grid with a finger or mouse: draw a side profile and spin it (lathe: pots, bottles, lamps),
+    draw an outline and give it depth (extrude: signs, panels, a chair's side), or stack and snap blocks (furniture,
+    machines). Drawings are saved as the same code recipe, so they can be refined in code later.
+- **Checks before publishing:** stands on the floor (no floating), real-world size next to a 1.6 m resident, under the
+  phone budget (triangles, materials), collider generated and sensible, purpose filled in, no real brands.
+- **Outputs:** a GLB + `asset.json` published into World's catalogue (`johansson-town/assets/catalog/`), and a hero
+  render for the comic prop library (section 4).
+- **World side:** a catalogue loader that places assets by id (from a place's layout file or the Build page), with the
+  collider and interaction points from `asset.json`. Existing hand-coded props move over gradually.
+- **First batch:** the asset format + the code mode + publishing one asset end to end: the 1990s coin massage chair
+  (section 2), shown in the onsen and as the comic's insert. Then the drawing mode. Then the ferry's parts (section 1)
+  are built in Studio this way.

@@ -122,8 +122,11 @@ When the creator says **World** or **Studio**, they mean:
   Code: the studio repo `jojo/`: the app in `town-studio/`, the comic builder in `art/pencil/`, the film in `remotion/`,
   the stories in `content/`. (The folder `jojo/studio/` and `STUDIO.md` are the JoJo Engineering YouTube week, not
   Johansson Studio.)
-- **Assets** (places, residents, props, poses) are built once in World's code and copied into Studio
-  (`remotion/tools/sync-town.sh`), so both always use the same ones.
+- **Assets: built in Studio, assembled in World** (the creator, 2026-10-10: "I would like to build assets in studio and
+  assemble them in world , I would like to implement a 3d modelling section , that can make assets in code or by
+  drawing"). New assets are made in Studio's modelling section and published into World's asset catalogue, where
+  World places them. Older assets still live in World's code and are copied to Studio (`remotion/tools/sync-town.sh`)
+  until they are moved over. Plan: `johansson-town/briefs/NEXT.md` section 5.
 
 ## Johansson Town
 
