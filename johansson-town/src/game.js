@@ -491,7 +491,7 @@ function openAvatarMaker(name=null){spawnScene?.cancel('creator');
  if(typeof name!=='string')name=null;
  if(creatorOpen)return;
  toggleDir(false);resetInput();document.exitPointerLock?.();creatorOpen=true;
- openCreator({owner:name||'Johansson',recipe:name?recipeFor(name):playerRecipe(),saveLabel:name?'Save appearance':'Save and play',voice:(freq,type)=>townAudio.blip?.(freq,type),shareLink:code=>new URL('./creator/?r='+code,location.href).href,
+ openCreator({owner:name||playerRecipe().name||'Johansson',recipe:name?recipeFor(name):playerRecipe(),saveLabel:name?'Save appearance':'Save and play',voice:(freq,type)=>townAudio.blip?.(freq,type),shareLink:code=>new URL('./creator/?r='+code,location.href).href,
   onSave:r=>{if(name){saveResidentRecipe(name,r);if(name==='Thuan'){activities.state.thuanOutfit='clothes';const actor=characters.actors.find(a=>a.entity?.userData.name===name);if(actor)actor.entity.userData.alternativeOutfit='clothes';activities.save();}characters.refresh(name);say(name+' has a new look.',3);return;}savePlayerRecipe(r);ensureJohansson().setRecipe?.(r);if(!thirdPerson)setThirdPerson(true,false);say((r.name?r.name+' · ':'')+'Looking good. V switches between your eyes and this view.',4);},
   onClose:()=>{creatorOpen=false;resetInput();clock.getDelta();}});
 }

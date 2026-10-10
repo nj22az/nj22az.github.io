@@ -46,7 +46,7 @@ const lighten=(hex,f)=>'#'+new THREE.Color(hex).lerp(new THREE.Color('#ffffff'),
  * corner, its foot by the first button, the centre; it closes back up along the open V.
  */
 export const CAMP_COLLAR=Object.freeze([[.6,1.0],[.9,.83],[.7,.84],[.85,.79],[.16,.725],[.035,.73]].map(Object.freeze));
-const COLLARED=['polo','blouse','kariyushi','jacket','smock','cardigan'];
+const COLLARED=['contrastpolo','polo','blouse','kariyushi','jacket','smock','cardigan'];
 
 /**
  * Paints a top's details onto ctx. Pure drawing from the recipe and the body's
@@ -141,6 +141,9 @@ export function paintGarment(ctx,recipe,m,radiusAt){
    for(const s of [-1,1]){path([[s*.024*k,.97],[s*.03*k,.74]],o.accent,line*1.6);dotAt(s*.03*k,.73,.007*k,o.accent);}
    marks.push('pocket','drawstrings');hemRound();break;
   }
+  case 'contrastpolo':
+   poly([[-.024*k,.99],[.024*k,.99],[.024*k,.78],[-.024*k,.78]],o.accent);
+   buttons([.9,.82],.0075,shade(o.accent,.85));marks.push('contrast placket','modelled collar');hemRound();break;
   case 'polo':collar(lighten(top,.12));placket(.97,.78);buttons([.9,.82],.0075,lighten(top,.5));hemRound();break;
   case 'blouse':collar('#f8f6ef',{drop:.88,spread:.1,round:true});placket(.97,hem+.04,.018);buttons([.85,.69,.53,.37],.007,'#f8f6ef');break;
   case 'smock':collar('#f8f6ef',{drop:.88,spread:.1,round:true});pocket(0,.42,W*.5,.16,shade(top,.94));hemRound();break;
@@ -229,7 +232,7 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   // The hem of a short sleeve, or the cuff of a long one: a band and a line above it.
   if(!['tank','sundress','running'].includes(col)){
    const bandH=Math.max(3,(long?.03:.018)*m.k*pxV),ink=shade(o.topColour,.5);
-   ctx.fillStyle=col==='kariyushi'?lighten(o.topColour,.22):shade(o.topColour,.86);ctx.fillRect(0,yBot-bandH,TW,bandH);
+   ctx.fillStyle=col==='contrastpolo'?o.accent:col==='kariyushi'?lighten(o.topColour,.22):shade(o.topColour,.86);ctx.fillRect(0,yBot-bandH,TW,bandH);
    ctx.fillStyle=ink;ctx.fillRect(0,yBot-bandH-1.2,TW,1.2);
    marks.push(long?'cuffs':'sleeve-hems');
   }

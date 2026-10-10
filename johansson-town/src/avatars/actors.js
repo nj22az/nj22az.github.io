@@ -33,12 +33,12 @@ export function playerRecipe(storage=globalThis.localStorage){
  // A save-file snapshot restores imported appearances; a later creator edit wins.
  try{
   const r=decodeRecipe(storage?.getItem(playerRecipeKey(storage)))||decodeRecipe(readSave(storage)?.avatarRecipe);
-  if(r)return {...r,outfit:appropriateOutfit('Johansson',r.outfit)};
+  if(r)return {...r,outfit:appropriateOutfit(r.name||'Johansson',r.outfit)};
  }catch{}
  return CAST_RECIPES.Johansson;
 }
 export function savePlayerRecipe(recipe,storage=globalThis.localStorage){
- const code=encodeRecipe({...recipe,outfit:appropriateOutfit('Johansson',recipe.outfit)});try{storage?.setItem(playerRecipeKey(storage),code);}catch{}return code;
+ const code=encodeRecipe({...recipe,outfit:appropriateOutfit(recipe.name||'Johansson',recipe.outfit)});try{storage?.setItem(playerRecipeKey(storage),code);}catch{}return code;
 }
 
 /**

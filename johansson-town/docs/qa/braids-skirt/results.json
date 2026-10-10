@@ -1,0 +1,32 @@
+{
+  "results": [
+    {
+      "width": 1280,
+      "height": 800,
+      "touch": false,
+      "hairSelection": true,
+      "saveReload": true,
+      "headAndOutfitPreserved": true,
+      "poses": [
+        "walk",
+        "sit",
+        "wave"
+      ],
+      "pageErrors": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "hairSelection": true,
+      "saveReload": true,
+      "headAndOutfitPreserved": true,
+      "poses": [
+        "walk",
+        "sit",
+        "wave"
+      ],
+      "pageErrors": []
+    }
+  ]
+}

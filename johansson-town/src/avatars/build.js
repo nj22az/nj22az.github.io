@@ -1,3 +1,5 @@
+import {SWEPT_PONYTAIL} from './swept-ponytail-mesh.js';
+import {POLO_COLLAR} from './contrast-polo-mesh.js';
 import {THUAN_SAILOR_OUTFIT,AFTERBATH,houseDressColour} from './outfits.js';
 import {SPRING_BONES,SPRING_PARENT,springRest,chainShare,quarterShare,hemSpec,createSprings} from './springs.js';
 import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
@@ -6,6 +8,8 @@ import {mergeGeometries,mergeVertices} from '../../vendor/BufferGeometryUtils.js
 import {normalizeRecipe} from './recipe.js';
 import {drawFace,faceLayout} from './face.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
+import {longBraidPoints} from './braid-path.js';
+import {pleatedSkirtGeometry} from './pleated-skirt.js';
 import {celFrom} from '../render/cel.js';
 import {createTowelFit} from './towel-fit.js';
 import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG,CAMP_COLLAR} from './garment.js';
@@ -212,6 +216,7 @@ const HAIR=Object.freeze({
  long:{front:.3,side:-.62,back:-.7,radius:1.11,faceHalf:.64},
  ponytail:{front:.44,side:.02,back:-.25,radius:1.08,faceHalf:.78},
  braids:{front:.4,swoop:.26,side:-.12,back:-.6,radius:1.08,faceHalf:.74},
+ longbraids:{front:.5,swoop:.31,side:-.12,back:-.6,radius:1.07,faceHalf:.76},
  bun:{front:.46,side:.02,back:-.32,radius:1.07,faceHalf:.78},
  spiky:{front:.5,side:.05,back:-.34,radius:1.08,faceHalf:.78},
  perm:{front:.42,side:-.12,back:-.44,radius:1.15,faceHalf:.74,bumps:true},
@@ -295,7 +300,7 @@ function addHair(list,recipe,m){
  const R=m.Rh,cx=0,cy=m.headCentre-m.headY,S=[m.headSX*R,m.headSY*R,R*.98];
  // Hair and hat are built in head-bone space, then carried to model space.
  const at=(x,y,z)=>[x,m.headY+y,z];
- const cap=hairCap(style,recipe.hair.flip);
+ const cap=style==='longbraids'?null:hairCap(style,recipe.hair.flip);
  if(cap){const p=cap.attributes.position,v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);shapeHeadPoint(v,m.profile);p.setXYZ(i,v.x,v.y,v.z);}cap.computeVertexNormals();
   // The cap's own field, laid out the way part() lays out its triangles (one vertex per corner, in index order).
   const hf=cap.userData.hairField,index=cap.index;
@@ -305,6 +310,18 @@ function addHair(list,recipe,m){
  const dark=new THREE.Color(c).multiplyScalar(.82).getStyle();
  // What hangs swings on its own chain of bones (springs.js); the rest is the head's.
  const swing=springRest(recipe,m),tailShare=chainShare('head',['hairA','hairB'],[swing.rest.hairA,swing.rest.hairB,swing.chains.find(ch=>ch.kind==='hair')?.tip??swing.rest.hairB]);
+ if(style==='sweptponytail'||style==='longbraids'){
+  for(const asset of SWEPT_PONYTAIL){
+   if(style==='longbraids'&&asset.kind==='tail')continue;
+   const positions=asset.vertices.flatMap(([x,y,z])=>{
+    const p=new THREE.Vector3(x*side,y,z);if(asset.kind==='head')shapeHeadPoint(p,m.profile);
+    return [p.x*m.headSX*R,m.headCentre+p.y*m.headSY*R,p.z*R*.98];
+   });
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+   const indices=[...asset.indices];if(side<0)for(let i=0;i<indices.length;i+=3)[indices[i],indices[i+2]]=[indices[i+2],indices[i]];
+   g.setIndex(indices);g.computeVertexNormals();part(list,g,asset.kind==='tail'?tailShare:'head',new THREE.Color(asset.colour==='scalp'?recipe.body.skin:c).multiplyScalar(asset.shade).getStyle());
+  }
+ }
  if(style==='long'){ball(list,R*.95,at(0,cy-R*.72,-R*.55),tailShare,c,[1.05,1.25,.5]);}
  if(style==='ponytail'){ball(list,R*.34,at(0,cy+R*.1,-R*1.05),'head',c,[1,1,1]);ball(list,R*.3,at(0,cy-R*.45,-R*1.18),tailShare,c,[.9,1.9,.9]);ball(list,R*.16,at(0,cy+R*.1,-R*1.2),'head',recipe.outfit.accent);}
  if(style==='bun'){ball(list,R*.42,at(0,cy+R*.95,-R*.3),'head',c);}
@@ -323,6 +340,32 @@ function addHair(list,recipe,m){
    for(let i=0;i<6;i++){const r=R*(.2-i*.012);ball(list,r,at(x0+s*R*.05,y,z0+R*.05*i),share,i%2?c:dark,[1,1.3,1],8,6);y-=r*1.5;}
    ball(list,R*.13,at(x0+s*R*.05,y+R*.05,z0+R*.3),share,recipe.outfit.accent,[1.2,.7,1.2],8,6);
    ball(list,R*.12,at(x0+s*R*.05,y-R*.12,z0+R*.3),share,c,[1,1.4,1],8,6);
+  }
+ }
+ if(style==='longbraids'){
+  // Three interwoven, tapered strands on each side; the roots start below the
+  // ears and come forward over the shoulders, as in Thuan's reference photos.
+  for(const s of [-1,1]){
+   const points=longBraidPoints(m,s),name=s>0?'L':'R';
+   const share=chainShare('head',['braid'+name+'1','braid'+name+'2'],points);
+   const centre=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));
+   for(let strand=0;strand<3;strand++){
+    const path=[];
+    for(let i=0;i<=72;i++){
+     const t=i/72,p=centre.getPoint(t),phase=t*Math.PI*16+strand*Math.PI*2/3;
+     const radius=R*.078*(1-.42*t);
+     p.x+=Math.sin(phase)*radius;p.z+=Math.cos(phase)*radius*.65;path.push(p);
+    }
+    const curve=new THREE.CatmullRomCurve3(path),g=new THREE.TubeGeometry(curve,72,R*.065,6,false),P=g.attributes.position;
+    for(let i=0;i<P.count;i++){
+     const t=Math.floor(i/7)/72,p=curve.getPointAt(t),v=new THREE.Vector3().fromBufferAttribute(P,i);
+     v.sub(p).multiplyScalar(1-.42*t).add(p);P.setXYZ(i,v.x,v.y,v.z);
+    }
+    g.computeVertexNormals();part(list,g,share,strand===1?dark:c);
+   }
+   const tip=points[2];
+   part(list,new THREE.TorusGeometry(R*.083,R*.022,6,12),share,'#f4f1ea',M(...tip,Math.PI/2,0,0));
+   ball(list,R*.073,[tip[0],tip[1]-R*.2,tip[2]],share,c,[.8,2.8,.65],10,8);
   }
  }
  if(style==='sidepart'||style==='braids'){ball(list,R*.34,at(side*R*.5,cy+R*.62,R*.62),'head',c,[1.4,.55,.7],10,6);}
@@ -512,7 +555,7 @@ function addAccessories(list,recipe,m){
 }
 
 /** Long hair, a lipstick or no beard and a slight build: a swimming costume, not trunks. */
-export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','ponytail','braids','bun','perm','shoulder','pigtails','twinbuns'].includes(recipe.hair.style)||recipe.mouth.colour!=='#b8544a');
+export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','ponytail','sweptponytail','braids','longbraids','bun','perm','shoulder','pigtails','twinbuns'].includes(recipe.hair.style)||recipe.mouth.colour!=='#b8544a');
 /**
  * Swimwear (wear('swim')), modest, for Umi-no-yu's shared rock bath and the beach: a one-piece costume from the hips to
  * straight across above the bust, on two straps, with short legs, for anyone who would wear a swimsuit top; bath trunks to
@@ -521,6 +564,7 @@ export const wearsSwimTop=recipe=>recipe.facial.style==='none'&&(['bob','long','
  */
 export const SWIMSUIT=Object.freeze({top:.79,trunks:.5,legs:.2});
 export const wearsSwimSkirt=recipe=>wearsSwimTop(recipe)&&(recipe.age==='elder'||recipe.wrinkles>=.6);
+
 
 function torsoProfile(recipe,m){
  const belly=1+(recipe.body.build-.5)*.12,hipRatio=m.hips/m.width;
@@ -615,6 +659,21 @@ function addBody(list,recipe,m,swim=false){
   part(list,band,'chest',top,M(0,m.neckY-.012*m.k,0));
   campCollar(list,m,prof,top);
  }
+ // The contrasting polo's collar is authored in Blender and fitted to this body.
+ if(!swim&&o.top==='contrastpolo'){
+  const ri=m.armR*1.08+.004*m.k;
+  const band=new THREE.LatheGeometry([[ri,0],[ri+.006*m.k,0],[ri+.012*m.k,.026*m.k],[ri,.026*m.k],[ri,0]].map(([r,y])=>new THREE.Vector2(r,y)),24,.55,Math.PI*2-1.1);
+  part(list,band,'chest',o.accent,M(0,m.neckY-.012*m.k,0));
+  part(list,new THREE.CylinderGeometry(ri*1.12,ri*1.22,.026*m.k,32,1,true),'chest',top,M(0,m.neckY+.003*m.k,0));
+  const positions=POLO_COLLAR.vertices.flatMap(([f,t,lift])=>{
+   const r=latheRadius(prof,t),x=f*W/2*r,z=D/2*r*Math.sqrt(Math.max(0,1-f*f));
+   return [x,hipY+t*m.torso+lift*m.k*THREE.MathUtils.smoothstep(t,.9,1.03),z+lift*m.k];
+  });
+  const collar=new THREE.BufferGeometry();collar.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));collar.setIndex(POLO_COLLAR.indices);collar.computeVertexNormals();
+  // Front and back are both visible when a raised arm or a bow reveals the fold.
+  const back=collar.clone();const I=back.index;for(let i=0;i<I.count;i+=3){const a=I.getX(i);I.setX(i,I.getX(i+2));I.setX(i+2,a);}back.computeVertexNormals();
+  part(list,collar,'chest',o.accent);part(list,back,'chest',o.accent);
+ }
  // A hood lies on the back; everything else on the front of a top is painted.
  if(!swim&&o.top==='hoodie')part(list,new THREE.SphereGeometry(m.width*.35,16,12,0,Math.PI*2,0,Math.PI*.75),'chest',top,M(0,m.neckY-.045,-D*.32,.9,0,0,1,.7,.55));
  // Original festival costumes are attached to the chest; limbs keep their normal rig.
@@ -656,7 +715,8 @@ function addBody(list,recipe,m,swim=false){
   const sx=s==='L'?1:-1,sh=[sx*m.shoulderX,m.shoulderY,0],hd=[sx*(m.shoulderX+.015),m.shoulderY-m.upper-m.fore,0];
   const arm={bone:'shoulder'+s,joints:[[armT,'shoulder'+s,'elbow'+s]]};
   // A long sleeve is the arm itself, in the shirt, with the print and the cuff painted on.
-  limb(list,sh,hd,m.armR*1.04,m.armR*.86,swim||!longSleeve?skin:top,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
+  const armColour=!swim&&o.top==='contrastpolo'?p=>p.y>=sh[1]-m.upper*.58?top:skin:swim||!longSleeve?skin:top;
+  limb(list,sh,hd,m.armR*1.04,m.armR*.86,armColour,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
   // The shoulder: a rounded cap over the joint, in the shirt, that joins the arm to the
   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
   // it stretches over a raised arm rather than coming apart from the body.
@@ -670,6 +730,10 @@ function addBody(list,recipe,m,swim=false){
   if(!swim&&!longSleeve&&!tank&&!running&&o.top!=='sundress'){
    const roomy=o.top==='kariyushi',a0=[sh[0]-sx*m.armR*.05,sh[1]+m.armR*.08,0],a1=[sh[0]+sx*.008,sh[1]-m.upper*(roomy?.52:.56),0];
    limb(list,a0,a1,m.armR*(roomy?1.20:1.16),m.armR*(roomy?1.16:1.12),top,{...arm,joints:[],root:['chest',.55,.3],uvAt:p=>sleeveUV(p,a0,a1,sx)});
+  }
+  if(!swim&&o.top==='contrastpolo'){
+   const a=[sx*(m.shoulderX-m.armR*.72),sh[1]-m.armR*.78,0],b=[sh[0],sh[1]-m.upper*.30,0];
+   limb(list,a,b,m.armR*1.05,m.armR*1.12,top,{...arm,joints:[],root:['chest',.9,.15]});
   }
   // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
   // so a wave or a point reads as a hand rather than a ball on a stick.
@@ -723,9 +787,13 @@ function addBody(list,recipe,m,swim=false){
    const shin=b==='longskirt'?THREE.MathUtils.smoothstep(hipY-p.y,m.thigh*.82,m.thigh*1.02):0;
    return [['hips',1-leg],['thighL',leg*(1-shin)*w],['thighR',leg*(1-shin)*(1-w)],['kneeL',leg*shin*w],['kneeR',leg*shin*(1-w)]];
   };
-  const skirt=new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,b==='pleatedskirt'?64:24,6,true);if(b==='pleatedskirt'){const pos=skirt.attributes.position;for(let i=0;i<pos.count;i++){const x=pos.getX(i),z=pos.getZ(i),f=1+.055*Math.cos(Math.atan2(z,x)*16);pos.setXYZ(i,x*f,pos.getY(i),z*f);}skirt.computeVertexNormals();}
+  const skirt=b==='pleatedskirt'?pleatedSkirtGeometry(m,len):new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,32,8,true);
   const hem=hemSpec(recipe,m);
-  part(list,skirt,hem?quarterShare(hem,drape):drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):bottom,M(0,waist-len/2,0,0,0,0,1,1,D/W));
+  const cloth=part(list,skirt,hem?quarterShare(hem,drape):drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):b==='pleatedskirt'?(p=>{
+   const angle=Math.atan2(p.x,p.z*W/D),phase=((angle/(Math.PI*2)*12)%1+1)%1;
+   const crease=Math.min(phase,1-phase)<.13,down=(waist-p.y)/len;
+   return crease&&down>.12?new THREE.Color(bottom).multiplyScalar(.87).getStyle():bottom;
+  }):bottom,M(0,waist-len/2,0,0,0,0,1,1,D/W));cloth.userData.fit=true;
  }
 }
 
@@ -1110,7 +1178,7 @@ function addTenugui(list,recipe,m){
  * - the end tucked in at the back of the crown, a flap with its band near the edge, coming out from under that turn.
  * Long hair needs more towel round it: a fuller dome (LONG_HAIR).
  */
-const LONG_HAIR=new Set(['bob','long','ponytail','braids','bun','perm','shoulder','pigtails','twinbuns','afro','mullet','curtains']);
+const LONG_HAIR=new Set(['bob','long','ponytail','braids','longbraids','bun','perm','shoulder','pigtails','twinbuns','afro','mullet','curtains']);
 export const TURBAN=Object.freeze({front:.54,side:.3,back:-.48,lift:.16,radius:1.17,longRadius:1.23,snug:1.05,swell:.3,inner:.96,tuck:.08,
  twist:Object.freeze({reach:1.45,radius:.11,turns:1.5,band:Object.freeze([.5,.63])}),
  hem:Object.freeze({rows:Object.freeze([-.03,0,.03,.06,.09,.13,.17,.2]),band:Object.freeze([.09,.17])}),flap:Object.freeze({from:2.38,to:2.95,band:Object.freeze([.6,.78])})});
@@ -1332,7 +1400,8 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  let hairCovered=true;
  // Each shoe's vertices, so a shoe can come off and leave a sock (setShoe).
  const shoeRanges={L:[],R:[]};{let at=0;for(const g of parts){const n=g.attributes.position.count;if(g.userData.shoe)shoeRanges[g.userData.shoe].push([at,n]);at+=n;}}
- const geometry=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
+ const bodyFit=fitFlags(parts);const geometry=mergeGeometries(parts,false);parts.forEach(g=>g.dispose());
+ if(bodyFit.some(f=>f>0))geometry.setAttribute('towelFit',new THREE.BufferAttribute(bodyFit,1));
  const hasHat=geometry.attributes.position.count>hatStart;
  const shoeOn={L:true,R:true},shoeSaved={};
  for(const side of ['L','R'])for(const [at,n] of shoeRanges[side])(shoeSaved[side]??=[]).push({at,n,position:geometry.attributes.position.array.slice(at*3,(at+n)*3),colour:geometry.attributes.color.array.slice(at*3,(at+n)*3)});
@@ -1350,7 +1419,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const root=new THREE.Group();root.name='Shimanchu · '+(recipe.name||'resident');
  // Keep the skeleton and face visible when a clothing mesh is swapped out.
  root.add(body,bones.root);root.rotation.y=Math.PI;
- const outline=addOutline(root,body,true);addOutline(face.head,face.head,false);
+ let outline=addOutline(root,body,true);addOutline(face.head,face.head,false);
  const openFingerPositions=geometry.attributes.position.array.slice(fingerStart*3,fingerEnd*3),closedFingerPositions=openFingerPositions.slice();
  for(let i=fingerStart;i<fingerEnd;i++){const sx=geometry.attributes.skinIndex.getX(i)===BI.handL?1:-1,j=(i-fingerStart)*3;closedFingerPositions[j]=sx*(m.shoulderX+.015);closedFingerPositions[j+1]=m.shoulderY-m.upper-m.fore-m.hand*.55;closedFingerPositions[j+2]=0;}
  geometry.attributes.position.array.set(closedFingerPositions,fingerStart*3);let handsOpen=false;
@@ -1584,11 +1653,13 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    return outfit;
   },
   dispose(){
+   body.customDepthMaterial?.dispose();if(body.towelFit)outline.material.dispose();
    geometry.dispose();material.dispose();material.map?.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();
    if(alternativeBody){alternativeBody.geometry.dispose();alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}
    for(const [mesh,line] of [[swimBody,swimOutline],[towelBody,towelOutline],[afterbathBody,afterbathOutline]]){if(!mesh)continue;mesh.geometry.dispose();mesh.material.map?.dispose();mesh.material.dispose();mesh.customDepthMaterial?.dispose();if(mesh.towelFit)line.material.dispose();}
   },
  };
+ if(bodyFit.some(f=>f>0)){outline.removeFromParent();outline=fitCloth(body);}
  avatar.springs=createSprings(avatar);
  avatar.paintFace({});
  return avatar;
