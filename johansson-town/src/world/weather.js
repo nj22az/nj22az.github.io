@@ -32,3 +32,7 @@ export function writeWeather(record,storage=globalThis.localStorage){
 }
 /** What the town says when the weather turns. */
 export const WEATHER_LINES=Object.freeze({sunny:'The clouds break up and the sun comes out.',cloudy:'Clouds roll in off the sea.',rain:'It starts to rain.'});
+/** The same, at night: there is no sun to come out at half past eleven. */
+export const WEATHER_NIGHT_LINES=Object.freeze({sunny:'The clouds break up; stars over the harbour.',cloudy:'Clouds roll in and cover the stars.',rain:'It starts to rain.'});
+/** The line for a change of weather at a town minute: night is 19:00 to 05:30. */
+export function weatherLine(kind,minutes){const m=((minutes%1440)+1440)%1440;return (m>=1140||m<330?WEATHER_NIGHT_LINES:WEATHER_LINES)[kind];}

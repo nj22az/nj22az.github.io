@@ -22,8 +22,9 @@ test('you can walk from the quay yard onto the pier and into Mr Fujita’s shed'
  for(let z=-46.7;z<=-38.4;z+=.2)assert.ok(!blocked(-9.5,z),'Clear warehouse frontage at '+z);
  // Onto the pier along its west side, past the cargo on the quay, to the shed's open end.
  const x=SHED_PIER.minX+.9;
- // From the yard, between the oil drums and the container, then out along the pier.
- for(const [px,pz] of [[-35,-44],[-35.7,-45.4],[-36.6,-46.2]])assert.ok(!blocked(px,pz),`the way from the yard is blocked at ${px},${pz}`);
+ // From the yard along the seawall, past the sterns of the two sabani hauled out there,
+ // then out along the pier.
+ for(const [px,pz] of [[-38,-41],[-38,-43.8],[-37.9,-46.1],[-37.6,-46.6]])assert.ok(!blocked(px,pz),`the way from the yard is blocked at ${px},${pz}`);
  for(let z=-46.2;z>=PORT_SHED.z+PORT_SHED.width/2+.4;z-=.4)assert.ok(!blocked(x,z),`the pier is blocked at ${x.toFixed(2)},${z.toFixed(1)}`);
  // And in at the shed's open end.
  for(let z=PORT_SHED.z+PORT_SHED.width/2+.8;z>=PORT_SHED.z+.4;z-=.3)assert.ok(!blocked(PORT_SHED.x-.55,z),'the shed doorway is blocked at z='+z.toFixed(1));

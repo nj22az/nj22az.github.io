@@ -32,6 +32,10 @@ test('all appropriate public interaction classes are available without executing
  for(const [label,kind] of [['Read evening papers','read'],['Use telephone','phone'],['Play Star Port','arcade'],['Tune street radio','radio'],['Inspect post box','post'],['Inspect recycling bins','recycle'],['Buy newspaper · ¥80','shop'],['Fish from the outer pier','fish'],['Sit on bench','seat'],['Operate winch','machine'],['Inspect bicycle','inspect']])assert.equal(townAffordance(marker(root,label)).kind,kind);
  for(const label of ['Talk to Nhung','Enter Sakura','Step outside','Take the folio','Travel to the harbour'])assert.equal(townAffordance(marker(root,label)),null);
  assert.equal(townAffordance(marker(root,'Buy newspaper · ¥80')).item,'paper');
+ // Whole words: a door ("Visit …", which holds "sit") is not a seat, and Mr Fujita's houseboat
+ // ("use") and a utility cabinet ("bin") are not machines or recycling for residents to use.
+ for(const label of ['Visit Grandmother Gushiken’s home','Visit Thuan & Thao’s home','Visit Rainflower Florist','Come into Minato Izakaya','Mr Fujita’s houseboat','Complete the airport radio service','Ride Thuan’s bicycle'])assert.equal(townAffordance(marker(root,label)),null,label);
+ for(const [label,kind] of [['Inspect utility cabinet','inspect'],['Look at the farmhouse','inspect'],['Look round House to let','inspect'],['Sit on the quay bench','seat'],['Cool off on the bench','seat']])assert.equal(townAffordance(marker(root,label)).kind,kind,label);
 });
 
 test('residents walk to objects, reserve them, use them, yield to the player and preserve schedules and escort quests',()=>{

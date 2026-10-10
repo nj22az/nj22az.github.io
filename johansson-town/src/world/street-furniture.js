@@ -20,7 +20,8 @@ import {MAIN_ROAD,SHOP_CROSSING_Z} from './main-road.js';
 export const CHAIN_RUNS=Object.freeze([
  [32.75,-37.4,32.75,-12.2],
  [32.75,-7.8,32.75,20.2],
- [19.2,-37.55,32.2,-37.55],
+ // Along the parapet's south return; it starts at the return's west end, by the gate into the auction apron.
+ [21.8,-37.55,32.2,-37.55],
 ]);
 /** Planters at the corners of the crossings, on the east footway. */
 export const PLANTERS=Object.freeze([

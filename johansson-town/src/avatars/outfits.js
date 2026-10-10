@@ -53,7 +53,10 @@ const pale=hex=>[1,3,5].every(i=>parseInt(hex.slice(i,i+2),16)>215);
  * accent when that top is white (Thao's tee, with her blue shorts and ties), washed out as a much-laundered cotton is.
  */
 export function houseDressColour(recipe){
- const o=recipe.outfit,base=pale(o.topColour)?o.accent:o.topColour;
- return mixHex(base,'#fbf8f1',.55);
+ const o=recipe.outfit,base=pale(o.topColour)?o.accent:o.topColour,cloth='#fbf8f1';
+ // At least 55% of the way to the cloth's white, further for a dark top (Thuan's navy), so it always reads as a pastel.
+ const mean=hex=>[1,3,5].reduce((sum,i)=>sum+parseInt(hex.slice(i,i+2),16),0)/3;
+ const wash=Math.min(.85,Math.max(.55,(190-mean(base))/(mean(cloth)-mean(base))));
+ return mixHex(base,cloth,wash);
 }
 

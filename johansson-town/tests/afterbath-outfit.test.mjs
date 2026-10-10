@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
-import {buildAvatar,bodyVolume,wearsSwimTop,wearsSwimSkirt,SWIMSUIT,TENUGUI,TURBAN,HAIR_CLOUD,HAIR_STATES,BONES} from '../src/avatars/build.js';
+import {buildAvatar,bodyVolume,wearsSwimTop,wearsSwimSkirt,SWIMSUIT,TENUGUI,TURBAN,HAIR_STATES,BONES} from '../src/avatars/build.js';
 import {AFTERBATH,houseDressColour} from '../src/avatars/outfits.js';
 import {recipeFor,CAST_RECIPES} from '../src/avatars/cast.js';
 import {normalizeRecipe} from '../src/avatars/recipe.js';
@@ -233,36 +233,24 @@ test('swimwear for the story’s six is modest: one-piece costumes (Mrs Higa’s
 const hairOf=(mesh,recipe)=>{const P=mesh.geometry.attributes.position,I=mesh.geometry.attributes.skinIndex,C=mesh.geometry.attributes.color,c=new THREE.Color(recipe.hair.colour),out=[];
  for(let i=0;i<P.count;i++){if(I.getX(i)!==BONES.indexOf('head'))continue;const k=C.getX(i)/c.r;if(Math.abs(C.getY(i)-c.g*k)<2e-3&&Math.abs(C.getZ(i)-c.b*k)<2e-3&&k>.5&&k<1.01)out.push(i);}return out;};
 
-test('hair states: a cloud of hair on Fujita that clears his face and the massage chair, Nhung’s half-dried bob, hair slicked flat',()=>{
- assert.deepEqual(HAIR_STATES,[null,'halfDry','cloud','wetFlat']);
+test('hair states: half-dried on one side, slicked flat with water, Nhung’s half-dried bob (the cloud is retired)',()=>{
+ assert.deepEqual(HAIR_STATES,[null,'halfDry','wetFlat']);
  const fujita=recipeFor('Mr Fujita'),a=buildAvatar(fujita,{shadows:false});a.wear('afterbath');
  const body=after(a),m=a.measure,P=body.geometry.attributes.position,hair=hairOf(body,fujita),rest=hair.map(i=>new THREE.Vector3().fromBufferAttribute(P,i));
  assert.ok(hair.length>10000,'his hair: '+hair.length);
  assert.throws(()=>a.setHairState('frizz'));
- assert.equal(a.setHairState('cloud'),'cloud');assert.equal(a.hairState.state,'cloud');
- const cloud=hair.map(i=>new THREE.Vector3().fromBufferAttribute(P,i));
- // About HAIR_CLOUD.size head widths across, round it is wide, in his own colour.
- const width=Math.max(...cloud.map(p=>p.x))-Math.min(...cloud.map(p=>p.x)),head=2*m.Rh*m.headSX;
- assert.ok(width/head>2.3&&width/head<3.2,'the cloud is '+(width/head).toFixed(2)+' head widths across');
- assert.ok(Math.max(...cloud.map(p=>p.y))-m.headCentre>m.Rh*2.5,'it rises high above the head');
- // The face stays clear: no hair in front of it, from the chin to the brows.
- const brow=m.headCentre+m.Rh*m.headSY*Math.cos(Math.PI*.28+faceLayout(fujita).browY/256*Math.PI*.58);
- const outside=p=>Math.hypot(p.x/(m.Rh*m.headSX),(p.y-m.headCentre)/(m.Rh*m.headSY),p.z/(m.Rh*.98))>1;
- for(const p of cloud)if(outside(p)&&p.y<brow&&p.y>m.headCentre-m.Rh*m.headSY)assert.ok(!(p.z>m.Rh*.5&&Math.abs(p.x)<m.Rh*m.headSX*.75),'hair over his face at '+p.toArray().map(v=>v.toFixed(3)));
- // Deterministic: another Fujita gets the same cloud.
- const b=buildAvatar(fujita,{shadows:false});b.wear('afterbath');b.setHairState('cloud');
+ // The creator, 2026-10-10: "I don't want Fujitas hair blown up like that".
+ assert.throws(()=>a.setHairState('cloud'),'no blown-up cloud of hair');
+ assert.equal(a.setHairState('halfDry'),'halfDry');assert.equal(a.hairState.state,'halfDry');
+ const puffed=hair.map(i=>new THREE.Vector3().fromBufferAttribute(P,i));
+ assert.ok(puffed.some((p,k)=>p.distanceTo(rest[k])>.01),'one side stands out');
+ // Deterministic: another Fujita gets the same half-dried hair.
+ const b=buildAvatar(fujita,{shadows:false});b.wear('afterbath');b.setHairState('halfDry');
  assert.deepEqual(Array.from(after(b).geometry.attributes.position.array),Array.from(P.array));b.dispose();
- // Asleep or awake in the massage chair (its back .38-.56 m behind the seat's middle, 1.275 m high), it never touches the chair.
- for(const pose of [undefined,'Sleep','SitDrinkHip']){
-  const holder=new THREE.Group();holder.add(a.root);const animator=createAvatarAnimator(a,{random:seeded()}),p=new THREE.Vector3();
-  for(let f=0;f<240;f++){animator.update(1/60,{seated:true,seatHeight:.5,pose});if(f<60||f%30)continue;holder.updateMatrixWorld(true);
-   for(const i of hair){body.getVertexPosition(i,p);body.localToWorld(p);assert.ok(!(p.z>.38&&p.z<.56&&Math.abs(p.x)<.4&&p.y<1.275+.02),`the cloud touches the massage chair's back (${pose}) at `+p.toArray().map(v=>v.toFixed(3)));}}
-  a.root.removeFromParent();
- }
- // Sinking in the water: from the cloud to wet and flat, every point on a straight line, nothing popping.
- a.setHairState('wetFlat',{from:'cloud',amount:0});hair.forEach((i,k)=>assert.ok(new THREE.Vector3().fromBufferAttribute(P,i).distanceTo(cloud[k])<1e-6));
+ // Sinking in the water: from half-dried to wet and flat, every point on a straight line, nothing popping.
+ a.setHairState('wetFlat',{from:'halfDry',amount:0});hair.forEach((i,k)=>assert.ok(new THREE.Vector3().fromBufferAttribute(P,i).distanceTo(puffed[k])<1e-6));
  a.setHairState('wetFlat');const wet=hair.map(i=>new THREE.Vector3().fromBufferAttribute(P,i));
- a.setHairState('wetFlat',{from:'cloud',amount:.5});hair.forEach((i,k)=>assert.ok(new THREE.Vector3().fromBufferAttribute(P,i).distanceTo(cloud[k].clone().lerp(wet[k],.5))<1e-5));
+ a.setHairState('wetFlat',{from:'halfDry',amount:.5});hair.forEach((i,k)=>assert.ok(new THREE.Vector3().fromBufferAttribute(P,i).distanceTo(puffed[k].clone().lerp(wet[k],.5))<1e-5));
  // Wet: darker, and flat to the scalp but never inside it.
  a.setHairState('wetFlat');
  const C=body.geometry.attributes.color,colour=new THREE.Color(fujita.hair.colour);assert.ok(near(C.getX(hair[0]),colour.r*.6,1e-3),'darker with water');

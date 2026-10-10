@@ -223,12 +223,17 @@ function utaki(kit,solid,p,{anchor,onAction,inspect}){
 
 function buildWestQuay(kit,solid,{inspect,anchor,onAction,vending}){
  const Q=NISHI.quay;
- solid(sabani(kit,-31,-45.6,{ry:.08}));
- solid(sabani(kit,-24.5,-46.8,{ry:-.05,colour:0x8a3b2e}));
+ // Two sabani hauled out side by side in the yard, square to it, up on blocks: the blue
+ // one against the staging container, Mr Ōshiro's red one in front of it, with a lane
+ // between them. Their sterns stop 2.1 m short of the seawall, so the way along it to
+ // Mr Fujita's pier stays open, and their bows 1.5 m short of the Dock Electrical wall,
+ // the lane to the hoist and the quay edge. (The red one used to lie inside the Dock
+ // Electrical building and the blue one's bow ran into its wall: both were here before
+ // the workshop was built. So were a net pile and a stack of fish boxes, inside it.)
+ solid(sabani(kit,-34,-46.1));
+ solid(sabani(kit,-34,-43.8,{colour:0x8a3b2e}));
  solid(fishCrates(kit,-36.6,-41.6,{rows:2,cols:3,seed:3}));
- solid(fishCrates(kit,-21.6,-42.2,{rows:2,cols:2,seed:5}));
- netPile(kit,-27.5,-41.5);solid({id:'net-pile',x:-27.3,z:-41.6,w:2.4,d:1.4,height:.6});
- inspect(-31,1,-44,'Inspect the sabani','Sabani',
+ inspect(-31.8,1,-45,'Inspect the sabani','Sabani',
   'A narrow island fishing boat, cedar planked and painted, up on blocks for its bottom to be scraped. The sail is rolled along the thwarts. Old men still race these in the summer.');
  anchor(-29,1,Q.minZ+.9,'Fish from the west quay',()=>onAction?.('fishing'));
 }
@@ -344,6 +349,8 @@ function buildEastBack(kit,solid,ctx){
 function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.lane;
  kit.block(Q.minX+.05,Q.maxX+.4,lane-.06,lane,Q.minZ,Q.maxZ+.55,GROUND.concrete);
+ // The gate's paving, from the quay's concrete to the lawn's edge.
+ kit.block(Q.gate.minX+.05,Q.gate.maxX,lane-.06,lane,Q.maxZ+.55,Q.gate.maxZ,GROUND.concrete);
  // The quay edge, its yellow kerb, bollards and the tyres hung on its face.
  kit.block(Q.minX,Q.maxX+.4,-.7,lane,Q.minZ-.45,Q.minZ,0xa9a497);
  kit.block(Q.minX,Q.maxX+.4,lane,lane+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);
@@ -390,10 +397,19 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  // Boats lying to the quay, a forklift, crates, the fuel pump.
  fishingBoat(kit,24.6,Q.minZ-2.1,{ry:0,colour:0x2f6fb8,name:"Daisan Minatomaru"});
  fishingBoat(kit,33.6,Q.minZ-2.2,{ry:Math.PI,colour:0x8a3b2e,length:7.2});
- kit.box(1.1,1,1.8,S.maxX+1.1,.55,S.maxZ-1.2,0xe0b93a);kit.box(.9,.06,1.2,S.maxX+1.1,.2,S.minZ+5.5,0x3a3f42);
- for(const dx of [-.3,.3])kit.box(.06,2,.06,S.maxX+1.1+dx,1,S.maxZ-2.2,0x3a3f42);
- solid({id:'forklift',x:S.maxX+1.1,z:S.maxZ-1.5,w:1.2,d:2.4,height:2});
- solid(fishCrates(kit,Q.minX+2.1,Q.maxZ-1.6,{rows:2,cols:3,seed:31}));
+ // The forklift runs ice from the plant's door to the boats. Between runs it waits on the
+ // quay side of the plant, along its wall under the chute, forks to the west: parked in the
+ // lane between the shed and the plant it stood in front of the ice door (and 0.3 m into
+ // the plant's wall), and Mr Tamaki loads ice there.
+ kit.at(I.minX+2.8,I.minZ-.65,Math.PI/2,()=>{
+  kit.box(1.1,1,1.8,0,.55,.3,0xe0b93a);kit.box(.9,.06,1.2,0,.2,-.6,0x3a3f42);
+  for(const dx of [-.3,.3])kit.box(.06,2,.06,dx,1,-.7,0x3a3f42);
+  solid(kit.rect(-.6,.6,-1.2,1.2,2,'forklift'));
+ });
+ // The boxes Kōji sorts the catch into, just inside the shed's front beside him, between two
+ // of its columns. In front of the shed they stood through one column and left 1 m of the
+ // walk between the shed and the parapet, from the lawn gate to the ice plant.
+ solid(fishCrates(kit,Q.minX+2.62,Q.maxZ-2.53,{rows:2,cols:2,seed:31}));
  kit.box(.5,1.4,.4,I.maxX-.4,.7,Q.maxZ-.9,0xc0392b);kit.box(.3,.3,.06,I.maxX-.4,1.1,Q.maxZ-1.12,0xf2efe4);
  solid({id:'fuel-pump',x:I.maxX-.4,z:Q.maxZ-.9,w:.6,d:.5,height:1.4});
  vending(S.minX-.9,S.maxZ-1.9,-Math.PI/2);

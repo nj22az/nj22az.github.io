@@ -1363,17 +1363,13 @@ function addNose(parts,recipe,m){
  * Hair states (avatar.setHairState): the hair a body already has (its cap and its pieces) reshaped, so they work with any
  * hairstyle and in any outfit where the hair shows (under a turban or a towel on the head it does not, and nothing changes):
  * - 'halfDry': one side (the right unless told: the dryer is in the right hand) blown out in a frizzy puff, the other as it was;
- * - 'cloud': all of it blown up into a round, soft, lumpy cloud on the head, HAIR_CLOUD.size head widths across, in its own
- *   colour, rising from the hairline (which stays where it was), so the face is clear under it;
  * - 'wetFlat': slicked flat to the scalp and darker with water; what hangs (a ponytail, braids) keeps its shape.
  * Each is a pure function of the hair at rest, so the same state always looks the same, and a blend from one to another
  * (amount, from) moves every point in a straight line between the two, so nothing pops.
  */
-export const HAIR_STATES=Object.freeze([null,'halfDry','cloud','wetFlat']);
-// size: head widths across; lift, forward: where its middle is, in head radii above and in front of the head's; ramp: how far
-// into the hair (hairCap's field) it reaches full size; tuck: how much less it stands out low behind the head, where a
-// chair's back or a bath's rim is (the dryers blew it up and forward).
-export const HAIR_CLOUD=Object.freeze({size:2.75,lift:.6,forward:.35,lumps:.05,ramp:.32,tuck:.8});
+// (A 'cloud' state, all the hair blown up round the head, was retired: the creator, 2026-10-10: "I don't want Fujitas hair
+// blown up like that".)
+export const HAIR_STATES=Object.freeze([null,'halfDry','wetFlat']);
 export const HAIR_WET=Object.freeze({darken:.6,lie:1.02});
 /** Where, in one body's merged geometry, its hair is, and how much of each vertex is hair (hairCap's own field). */
 function hairSpan(parts,from,to){
@@ -1454,9 +1450,6 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  // ---- Hair states: every body's hair, as built, and its shape in each state.
  let hair={state:null,amount:1,from:null,side:'R'};const hairRecords=[];
  const headC=new THREE.Vector3(0,m.headCentre,0),HS=[m.headSX*m.Rh,m.headSY*m.Rh,m.Rh*.98];
- const cloudCentre=headC.clone().add(new THREE.Vector3(0,HAIR_CLOUD.lift*m.Rh,HAIR_CLOUD.forward*m.Rh)),cloudR=HAIR_CLOUD.size*m.Rh*m.headSX;
- // Soft cumulus bulges: a few broad swells, a few smaller ones on them.
- const lumps=d=>1+HAIR_CLOUD.lumps*(Math.sin(3.7*d.x+1.1)*Math.sin(3.3*d.y+.3)*Math.sin(3.9*d.z+2.3)*1.8+Math.sin(6.1*d.x+1.9*d.y+.7)*Math.sin(5.7*d.z-1.3*d.y+1.4)*.7);
  // How far out the head's surface is along a direction (in the head's unit space): the point of the unit sphere that
  // shapeHeadPoint carries onto that direction, found in a few steps.
  const hw=new THREE.Vector3(),hsd=new THREE.Vector3();
@@ -1467,7 +1460,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   const key=state+'|'+side;if(rec.cache.has(key))return rec.cache.get(key);
   if(!state){const out={position:rec.base.position,normal:rec.base.normal,colour:rec.colour};rec.cache.set(key,out);return out;}
   const B=rec.base.position,n=B.length/3,position=new Float32Array(B.length),colour=rec.colour.slice(),p=new THREE.Vector3(),u=new THREE.Vector3(),d=new THREE.Vector3(),q=new THREE.Vector3(),s=new THREE.Vector3();
-  const sideSign=side==='L'?1:-1,delta=cloudCentre.clone().sub(headC);
+  const sideSign=side==='L'?1:-1;
   for(let i=0;i<n;i++){
    p.fromArray(B,i*3);u.set(p.x/HS[0],(p.y-headC.y)/HS[1],p.z/HS[2]);const ru=u.length()||1e-6;d.copy(u).divideScalar(ru);
    const hs=headSurface(d),rel=ru/hs,k=rec.keep[i]>=0?rec.keep[i]:THREE.MathUtils.smoothstep(rel,.98,1.03);
@@ -1478,14 +1471,6 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
     const lie=hs*HAIR_WET.lie,w=k*(1-THREE.MathUtils.smoothstep(rel,1.22,1.4));
     if(ru>lie){u.multiplyScalar((ru+(lie-ru)*w)/ru);p.set(u.x*HS[0],headC.y+u.y*HS[1],u.z*HS[2]);}
     for(let c=0;c<3;c++)colour[i*3+c]*=HAIR_WET.darken;
-   }else if(state==='cloud'){
-    // Out along the line from the head's middle to where it meets the cloud's sphere, more the further into the hair.
-    s.copy(p).sub(headC);const r=s.length()||1e-6;s.divideScalar(r);
-    const b=s.dot(delta),t=(b+Math.sqrt(Math.max(0,b*b-delta.lengthSq()+cloudR*cloudR)))*lumps(s);
-    // (eased out, so the cloud bulges round from the hairline instead of rising off it in a straight cone)
-    const e=1-(1-THREE.MathUtils.smoothstep(rec.field[i],0,HAIR_CLOUD.ramp))**2;
-    const w=k*e*(1-HAIR_CLOUD.tuck*THREE.MathUtils.smoothstep(-s.z,.3,.9)*THREE.MathUtils.smoothstep(-s.y,-.35,.3));
-    if(t>r)p.addScaledVector(s,(t-r)*w);
    }
    p.toArray(position,i*3);
   }
@@ -1576,8 +1561,8 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
   get hairState(){return {...hair};},
   /**
    * The hair's state, in every body that shows it (HAIR_STATES): null (as it is), 'halfDry' (one side blown into a puff;
-   * side 'R' or 'L'), 'cloud' or 'wetFlat'. `amount` (0–1) of the way from `from` (another state, or null for the hair as it
-   * is) to it, for a change over time: a cloud sinking in the water is setHairState('wetFlat',{from:'cloud',amount:t}).
+   * side 'R' or 'L') or 'wetFlat'. `amount` (0–1) of the way from `from` (another state, or null for the hair as it is) to
+   * it, for a change over time: a half-dried bob sinking in the water is setHairState('wetFlat',{from:'halfDry',amount:t}).
    */
   setHairState(state=null,{amount=1,from=null,side='R'}={}){
    if(!HAIR_STATES.includes(state)||!HAIR_STATES.includes(from))throw new Error('No hair state '+(HAIR_STATES.includes(state)?from:state));

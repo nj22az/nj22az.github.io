@@ -37,7 +37,7 @@ const ALL_NEIGHBOURS=Object.freeze([
    'These are shima-rakkyō beans — no, you are right, rakkyō is an onion. I have been saying it wrong for seventy years and nobody corrects a grandmother.',
    'The bus? Eight minutes to, eight minutes past. I can hear it in the tunnel before it comes out. My husband drove that bus for thirty years.',
    'When the typhoon comes you close the amado, fill the bath with water and wait. The house has been here since before the war. It knows what to do.']},
- {name:'Mr Ōshiro',look:'Mr Fujita',height:1.62,role:'scraping his sabani',at:[-24.6,-45.2],face:[0,-1],pose:'Interact',hours:[[H(6,30),H(17)]],
+ {name:'Mr Ōshiro',look:'Mr Fujita',height:1.62,role:'scraping his sabani',at:[-33.4,-42.75],face:[0,-1],pose:'Interact',hours:[[H(6,30),H(17)]],
   lines:[
    'Cedar, this. From Yakushima, before you could not get it any more. I built her in 1968 and I will be buried before she is.',
    'Weed and barnacles, every spring. You scrape to the wood, you let her dry a week, then tar. My son says buy a fibreglass one. My son also says buy a microwave.',

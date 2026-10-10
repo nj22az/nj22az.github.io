@@ -10,5 +10,13 @@ export const SHOP_CROSSING_Z=5.1;
 /** The shopping street’s open service turnout: deliveries turn here without mounting a kerb. */
 export const MAIN_SERVICE_COURT=Object.freeze({id:'main-service-court',minX:-7.1,maxX:.35,minZ:13.3,maxZ:20.3});
 
+/**
+ * A parking lay-by on the east side at the top of the street, between the lamp at the
+ * office crossing and the market crossing: the harbour master parks here, by the crossing
+ * to his office, rather than on the port apron. The kerb is dropped from its north end
+ * through the market crossing, so a car pulls in and out without mounting it.
+ */
+export const MAIN_PARKING_LAYBY=Object.freeze({minX:-.5,maxX:1.65,minZ:-33.9,maxZ:-27.5,kerbTo:-24.5});
+
 /** Freight stops in a west-side pullout, keeping the southbound lane open. */
 export const MAIN_LOADING_APRON=Object.freeze({minX:-7.1,maxX:-4.95,minZ:2,maxZ:13.3});
