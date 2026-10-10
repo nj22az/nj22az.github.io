@@ -112,6 +112,19 @@ assets/
   video/                # Video assets
 ```
 
+## Words: World and Studio (the creator, 2026-10-10)
+
+When the creator says **World** or **Studio**, they mean:
+- **World** = **Johansson World**, the explorable game built from our assets. Code: `nj22az.github.io/johansson-town/`
+  (branch `claude/sjoskolan-youtube-strategy-gofi3o`, live on the website). Its port town is shown as **Minato Machi**;
+  "Johansson Town" is only the code's old name.
+- **Studio** = **Johansson Studio**, where the assets are trimmed and refined and turned into comics, images and memes.
+  Code: the studio repo `jojo/`: the app in `town-studio/`, the comic builder in `art/pencil/`, the film in `remotion/`,
+  the stories in `content/`. (The folder `jojo/studio/` and `STUDIO.md` are the JoJo Engineering YouTube week, not
+  Johansson Studio.)
+- **Assets** (places, residents, props, poses) are built once in World's code and copied into Studio
+  (`remotion/tools/sync-town.sh`), so both always use the same ones.
+
 ## Johansson Town
 
 **Names (the creator, 2026-10-10):** Johansson World is the hub (the title screen); the port town on screen is
