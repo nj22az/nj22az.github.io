@@ -7,6 +7,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries,mergeVertices} from '../../vendor/BufferGeometryUtils.js';
 import {normalizeRecipe} from './recipe.js';
 import {drawFace,faceLayout} from './face.js';
+import {buildFaceObjects} from './face-objects.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {longBraidPoints} from './braid-path.js';
 import {pleatedSkirtGeometry} from './pleated-skirt.js';
@@ -1441,6 +1442,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const face=buildHead(recipe,m,faceSize);
  face.head.castShadow=shadows;face.head.receiveShadow=true;
  bones.head.add(face.head);
+ const faceObjects=buildFaceObjects(recipe,m,{shadows});bones.head.add(faceObjects);
  const root=new THREE.Group();root.name='Shimanchu · '+(recipe.name||'resident');
  // Keep the skeleton and face visible when a clothing mesh is swapped out.
  root.add(body,bones.root);root.rotation.y=Math.PI;
@@ -1566,7 +1568,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    const key=n.expression+'|'+(n.blink>.5?1:0)+'|'+(n.talk>.5?1:0)+'|'+Math.round(n.look[0]*2)+','+Math.round(n.look[1]*2);
    if(key===avatar.faceKey)return false;
    avatar.faceKey=key;Object.assign(s,n);
-   drawFace(face.ctx,recipe,{...n,size:face.canvas.width});face.texture.needsUpdate=true;return true;
+   drawFace(face.ctx,recipe,{...n,size:face.canvas.width,objects:true});face.texture.needsUpdate=true;return true;
   },
   /** Whether the folded towel is on the head now (the bath wrap's, or swimwear's when asked for). */
   get headTowel(){return headTowelOn;},
@@ -1678,6 +1680,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
    return outfit;
   },
   dispose(){
+   faceObjects.userData.dispose();
    body.customDepthMaterial?.dispose();if(body.towelFit)outline.material.dispose();
    geometry.dispose();material.dispose();material.map?.dispose();face.texture.dispose();face.head.geometry.dispose();face.head.material.dispose();
    if(alternativeBody){alternativeBody.geometry.dispose();alternativeBody.material.map?.dispose();alternativeBody.material.dispose();}
