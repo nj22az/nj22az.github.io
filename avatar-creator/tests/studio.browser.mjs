@@ -17,7 +17,7 @@ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const base=process.env.STUDIO_TEST_URL||`http://127.0.0.1:${server.address().port}`;
 const errors=[];
 try{
- for(const [width,height] of [[1280,800],[390,844],[320,568]]){
+ for(const [width,height] of [[1280,800],[820,1180],[768,1024],[844,390],[390,844],[320,568]]){
   const context=await browser.newContext({viewport:{width,height},acceptDownloads:true});
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base+'/avatar-creator/');
@@ -41,12 +41,16 @@ try{
   let opaque=0;for(let i=3;i<image.data.length;i+=4)if(image.data[i]>128)opaque++;
   assert.ok(opaque>10000&&opaque<1024*1024*.8,'PNG contains a visible character and transparent background');
   assert.equal(image.data[3],0); // transparent corner
+  await page.locator('.studio-files summary').click();
   const [design]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Download design',exact:true}).click()]);
   const designPath=await design.path();const json=JSON.parse(await readFile(designPath,'utf8'));assert.equal(json.recipe.hair.style,'braids');
   await page.getByLabel('Starting template').selectOption('0');assert.equal(await page.getByRole('textbox',{name:'Name',exact:true}).inputValue(),'Johansson');
   await page.locator('input[type=file]').setInputFiles(designPath);await page.waitForFunction(()=>document.querySelector('.shm-name').value==='My character');
   assert.equal(await page.evaluate(()=>localStorage.getItem('johansson-player-recipe')),'game-sentinel');
-  assert.ok(await page.locator('.studio-tools').evaluate(el=>[...el.querySelectorAll('button,select')].every(b=>{const r=b.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.height>=44;})),'Toolbar fits and keeps touch targets');
+  assert.ok(await page.locator('.studio-tools').evaluate(el=>[...el.querySelectorAll('button,select,summary')].filter(b=>b.getClientRects().length).every(b=>{const r=b.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.height>=44;})),'Toolbar fits and keeps touch targets');
+  await page.getByRole('tab',{name:'Mouth',exact:true}).click();
+  assert.ok(await page.locator('.shm-body').evaluate(el=>{const body=el.getBoundingClientRect(),pages=document.querySelector('.shm-pages').getBoundingClientRect(),palette=document.querySelector('.shm-palette').getBoundingClientRect();return body.height>40&&body.top>=pages.bottom-1&&body.bottom<=palette.top+1;}),'Choices occupy their own scroll track between tabs and palette');
+  assert.ok(await page.locator('.shm-stage').evaluate(el=>{const stage=el.getBoundingClientRect(),panel=document.querySelector('.shm-panel').getBoundingClientRect();return stage.height>80&&(stage.right<=panel.left+1||stage.bottom<=panel.top+1); }),'Preview and inspector do not overlap');
   assert.ok(await page.evaluate(()=>document.body.scrollWidth<=innerWidth),'No horizontal page overflow');
   if(width===1280)await page.screenshot({path:'/tmp/avatar-studio-desktop.png'});
   if(width===390)await page.screenshot({path:'/tmp/avatar-studio-phone.png'});
