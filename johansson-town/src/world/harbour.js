@@ -264,12 +264,13 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function bollard(x,z){
     directCyl(.22,.48,[x,.35,z],0x2f3c3f,group,[0,0,0],true,12);directCyl(.31,.12,[x,.61,z],0x2f3c3f);obstacle(x,z,.48,.48);
   }
-  [-15,-10,-5,5,10,15].forEach(x=>bollard(x,-48.45));
+  // On the coping, as on any quay, not 1.2 m back from it where they closed the lane in front of the sheds.
+  [-15,-10,-5,5,10,15].forEach(x=>bollard(x,-49.3));
 
   function ropeCoil(x,z,scale=1){
     const rm=material(0xa38a62);for(let i=0;i<3;i++){const t=directMesh(new THREE.TorusGeometry(.35*scale+i*.07,.045*scale,6,20),rm,group,[x,.18+i*.035,z],[Math.PI/2,0,(i%2)*.25],[1,1,1],false);t.castShadow=false;}
   }
-  ropeCoil(-8.3,-47.1,.9);
+  ropeCoil(-8.6,-44.15,.9);
 
   function crateStack(x,z,cols=2,rows=2){
     const colors=[0x4f6f76,0xa9854e,0x6f805e];
@@ -280,13 +281,17 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // On the island the ferry terminal stands where the second stack was.
 
 
-  // Nets dry beside the north wall, clear of both the loading bay and pedestrian door.
-  for(const x of [-14.75,-12.45])cyl(.06,2.4,[x,1.3,-35.7],0x655747);beam([-14.75,2.45,-35.7],[-12.45,2.45,-35.7],.055,0x655747);
-  for(let x=-14.5;x<-12.65;x+=.22)beam([x,.5,-35.68],[x,2.32,-35.68],.012,0x65736f);obstacle(-13.6,-35.7,2.5,.5);
+  // Nets dry on the apron by the water, where the boats land them: east of the warehouse, end-on
+  // to the quay so the lane along the edge stays open. (They stood behind the warehouse, in the one
+  // passage from the main street to the west quay, and cut it to a metre.)
+  // Between the warehouse's loading frontage (kept clear to x -9.2) and the cars' lane to the ferry ramp.
+  for(const z of [-47.5,-45.2])cyl(.06,2.4,[-8.6,1.3,z],0x655747);beam([-8.6,2.45,-47.5],[-8.6,2.45,-45.2],.055,0x655747);
+  for(let z=-47.25;z<-45.4;z+=.22)beam([-8.58,.5,z],[-8.58,2.32,z],.012,0x65736f);obstacle(-8.6,-46.35,.5,2.5);
 
 
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
-  directBox([1.15,1.55,.85],[8.7,.88,-36.8],0xd8d8cc,group,[0,0,0],true);label("Ice",'ICE',[8.7,1.85,-36.35],.78,.5,0,'#dde1d7','#37636a');obstacle(8.7,-36.8,1.2,.9);
+  // The ice cabinet stands against the waiting hall's wall, not across the pavement (it left 1 m).
+  directBox([1.15,1.55,.85],[8,.88,-39.1],0xd8d8cc,group,[0,0,0],true);label("Ice",'ICE',[8,1.85,-38.65],.78,.5,0,'#dde1d7','#37636a');obstacle(8,-39.1,1.2,.9);
 
   for(const [x,z] of [[-17.1,-48],[17.6,-47.6]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
 
