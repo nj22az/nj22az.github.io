@@ -7,7 +7,7 @@ import {daylight} from '../../render/dusk.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildOnsenLobby,hinokiTexture,LOBBY,ONSEN_DOORWAYS} from './onsen-lobby.js';
 import {buildWashArea,WASH_SEATS} from './onsen-wash.js';
-import {buildOnsenElectrics,isPowered,isWorking,MASSAGE_CHAIR} from './onsen-electrics.js';
+import {buildOnsenElectrics,isPowered,isWorking,isLive,MASSAGE_CHAIR} from './onsen-electrics.js';
 import {buildOnsenTowels} from './onsen-towels.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
 import {buildOnsenFront} from './onsen-front.js';
@@ -231,7 +231,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const MC=MASSAGE_CHAIR,depth=4.725-MC.front;
  box([depth,.5,.8],[MC.front+depth/2,.25,3.55],mat(0x5a2c24,.55),'Massage chair seat');box([.18,.95,.8],[4.72,.8,3.55],mat(0x5a2c24,.55),'Massage chair back');
  for(const z of [3.17,3.93])box([depth-.05,.22,.12],[MC.front+(depth+.05)/2,.6,z],mat(0x4a241e,.55),'Massage chair arm');
- rect(MC.front+(4.81-MC.front)/2,3.55,4.81-MC.front,.9,1);seat(ONSEN_SEATS.massage,'Massage chair',()=>isPowered('massage-chair')?'You feed it a hundred-yen coin. It grinds up your back like a slow, well-meaning truck. Ten minutes later you feel two centimetres taller.':'You feed it a hundred-yen coin and nothing happens. Its socket is on the changing-room circuit, and that breaker is down. Higa-san hands the coin back.');
+ rect(MC.front+(4.81-MC.front)/2,3.55,4.81-MC.front,.9,1);seat(ONSEN_SEATS.massage,'Massage chair',()=>isPowered('massage-chair')?'You feed it a hundred-yen coin. It grinds up your back like a slow, well-meaning truck. Ten minutes later you feel two centimetres taller.':(isLive('main')?'You feed it a hundred-yen coin and nothing happens. Its socket is on the changing-room circuit, and that breaker is down. Higa-san hands the coin back.':'You feed it a hundred-yen coin and nothing happens: the whole house is dark. The contract breaker by the bandai has let go. Higa-san hands the coin back.'));
  const clock=new THREE.Group();clock.position.set(0,2.45,R.hall.front+.08);room.add(clock);
  clock.add(new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.04,24).rotateX(Math.PI/2),mat(0xf6f1e6,.5)));
  const hands=[new THREE.Mesh(new THREE.BoxGeometry(.012,.13,.01),mat(0x222222)),new THREE.Mesh(new THREE.BoxGeometry(.008,.17,.01),mat(0x222222))];

@@ -7,7 +7,7 @@
  *
  * Expressions: neutral, happy, laugh, smile, sad, angry, shy, surprised, worried,
  * thinking, grumpy, content, sleep, dizzy (knocked silly: spiral eyes), scheme (an evil grin), embarrassed (caught out:
- * red to the ears, a wobbly mouth).
+ * red to the ears, a wobbly mouth); and pain, bliss, shock, dismay, calm, daze, dry, hope, focus, relieved (MOOD).
  */
 const TAU=Math.PI*2;
 /** Mouth colours that are just a mouth; anything else is lipstick. */
@@ -55,6 +55,20 @@ const MOOD=Object.freeze({
  // the evil grin is wide and tall: it sits lower, so a long nose (Tetsuo's hook) never touches it
  scheme:{eyes:'angry',brow:1.7,browLift:-7,mouth:'grin',blush:0,mouthDY:12},
  embarrassed:{eyes:'shy',brow:-.9,browLift:7,mouth:'wobble',blush:1},
+ // The faces Fujita's Back asks for (content/onsen-breaker/shot-plan.json marks): a back that has just gone (pain: the eyes
+ // squeezed shut, the teeth gritted), the chair's rollers (bliss), the lights coming back (shock: tiny pupils in wide eyes),
+ // "…Not now." (dismay), Tetsuo by torchlight (calm), dazed under a basket (daze), Nhung unimpressed (dry), the coin going
+ // in (hope), switching off in the dark (focus), and the bath at last (relieved).
+ pain:{eyes:'pain',brow:-1.3,browLift:2,mouth:'teeth',blush:0},
+ bliss:{eyes:'closed',brow:-.6,browLift:8,mouth:'wide',blush:.6},
+ shock:{eyes:'shock',brow:0,browLift:24,mouth:'o',blush:0,mouthDY:4},
+ dismay:{eyes:'worry',brow:-1.5,browLift:6,mouth:'flat',blush:0},
+ calm:{eyes:'open',brow:0,browLift:2,mouth:'soft',blush:0},
+ daze:{eyes:'daze',brow:-.5,browLift:5,mouth:'wobble',blush:0},
+ dry:{eyes:'dry',brow:.25,browLift:-3,mouth:'flat',blush:0},
+ hope:{eyes:'open',brow:-.9,browLift:9,mouth:'small',blush:.2},
+ focus:{eyes:'angry',brow:.5,browLift:-1,mouth:'flat',blush:0},
+ relieved:{eyes:'content',brow:-.6,browLift:5,mouth:'soft',blush:.25},
 });
 export const EXPRESSION_NAMES=Object.freeze(Object.keys(MOOD));
 
@@ -103,6 +117,24 @@ function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
  const style=eyes.style,line='#2b2623';
  ctx.save();ctx.translate(x,y);ctx.rotate(side*tilt*-1);ctx.scale(s*width,s);
  ctx.strokeStyle=line;ctx.fillStyle=line;ctx.lineWidth=3.2;
+ // Squinting eyes (Mr Fujita's) are drawn their own way for every feeling they show, so they stay his.
+ if(style==='squint'&&SQUINT_STATES.has(state)){squintEye(ctx,side,state,look);ctx.restore();return;}
+ // Pain: squeezed shut, the two eyes chevrons pointing at the nose (> <), whatever the eyes are like open.
+ if(state==='pain'){ctx.lineWidth=4;const tip=-side*8;ctx.beginPath();ctx.moveTo(-tip,-8);ctx.lineTo(tip,0);ctx.lineTo(-tip,8);ctx.stroke();ctx.restore();return;}
+ // Shock: wide whites with the pupils shrunk to dots.
+ if(state==='shock'){
+  ctx.fillStyle='#fbfaf6';ctx.beginPath();ctx.ellipse(0,0,14,18,0,0,TAU);ctx.fill();ctx.stroke();
+  ctx.fillStyle=line;ctx.beginPath();ctx.arc(look[0]*3,look[1]*3,3.2,0,TAU);ctx.fill();ctx.restore();return;
+ }
+ // Dazed and deadpan: the upper lid down to the middle of the eye, the pupil showing under it (dazed: drifting up and out,
+ // the lid drooping to the outside; deadpan: straight ahead under a level lid).
+ if(state==='daze'||state==='dry'){
+  const daze=state==='daze',lid=daze?-1:-2,px=daze?side*3+look[0]*2:look[0]*2,py=daze?1:3;
+  ctx.save();ctx.beginPath();ctx.rect(-16,lid,32,20);ctx.clip();ctx.beginPath();ctx.ellipse(px,py,8,9,0,0,TAU);ctx.fill();ctx.restore();
+  ctx.lineWidth=3.6;ctx.beginPath();ctx.moveTo(-13,lid-(daze?-side*2:0));ctx.lineTo(13,lid+(daze?-side*2:0));ctx.stroke();
+  if(!daze){ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-9,12);ctx.lineTo(9,12);ctx.stroke();}
+  ctx.restore();return;
+ }
  // Big outlined reaction eyes stay readable across every authored eye style.
  if(state==='wide'||state==='worry'){
   const rx=state==='wide'?15:13,ry=state==='wide'?19:16;
@@ -193,6 +225,32 @@ function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
  }
  if(state==='sad'){ctx.strokeStyle='rgba(120,180,230,.7)';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(side*-4,ry);ctx.lineTo(side*-5,ry+8);ctx.stroke();}
  ctx.restore();
+}
+
+/**
+ * A squint (Mr Fujita's screwed-up, cheerful eyes) following the feeling and still his: the short thick arch at rest;
+ * smiling, the arch with a cheek pushed up under it; laughing, shut tight with laughter lines at the corners; sad, the arch
+ * drooping to the outside; cross, a hard dash down to the nose; shy, a small low arch; thinking, a slit with the eye
+ * showing at one end; surprised or worried, small round eyes popped open (worried under a slanted lid); shocked, the same
+ * with pinpoint pupils.
+ */
+const SQUINT_STATES=new Set(['open','smiling','happy','sad','angry','shy','side','wide','worry','shock']);
+function squintEye(ctx,side,state,look){
+ const line='#2b2623';ctx.lineCap='round';
+ const arch=(w,h,y=3)=>{ctx.beginPath();ctx.moveTo(-w,y);ctx.quadraticCurveTo(0,y-h,w,y);ctx.stroke();};
+ if(state==='open'){ctx.lineWidth=4.2;arch(11,12);return;}
+ if(state==='smiling'){ctx.lineWidth=4.2;arch(11,13,1);ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(-8,10);ctx.quadraticCurveTo(0,6,8,10);ctx.stroke();return;}
+ if(state==='happy'){ctx.lineWidth=5;arch(12,15,4);ctx.lineWidth=2;for(const dy of [-4,3]){ctx.beginPath();ctx.moveTo(side*14,dy);ctx.lineTo(side*19,dy+(dy<0?-3:3));ctx.stroke();}return;}
+ if(state==='sad'){ctx.lineWidth=4;ctx.save();ctx.rotate(-side*.32);arch(10,8,4);ctx.restore();
+  ctx.strokeStyle='rgba(120,180,230,.7)';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(side*-4,8);ctx.lineTo(side*-5,16);ctx.stroke();return;}
+ if(state==='angry'){ctx.lineWidth=4.6;ctx.beginPath();ctx.moveTo(-side*-11,-3);ctx.lineTo(-side*11,4);ctx.stroke();return;}
+ if(state==='shy'){ctx.lineWidth=3.6;arch(8,7,6);return;}
+ if(state==='side'){ctx.lineWidth=3.6;ctx.beginPath();ctx.moveTo(-11,1);ctx.lineTo(11,1);ctx.stroke();const x=(look[0]>=0?1:-1)*6;ctx.beginPath();ctx.arc(x,2.5,3.4,0,TAU);ctx.fill();return;}
+ // popped open: small round whites, the pupil a dot (pinpoint for shock), a lid slanted up to the nose when worried
+ const rx=state==='shock'?9.5:8,ry=state==='shock'?11:9.5;
+ ctx.fillStyle='#fbfaf6';ctx.lineWidth=2.8;ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,TAU);ctx.fill();ctx.stroke();
+ ctx.fillStyle=line;ctx.beginPath();ctx.arc(look[0]*2,look[1]*2,state==='shock'?2.2:3.6,0,TAU);ctx.fill();
+ if(state==='worry'){ctx.lineWidth=3.2;ctx.beginPath();ctx.moveTo(-side*-10,-ry-1);ctx.lineTo(-side*10,-ry-5);ctx.stroke();}
 }
 
 function drawBrow(ctx,x,y,s,side,brows,tilt,mood){
