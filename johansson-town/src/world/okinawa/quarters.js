@@ -344,6 +344,8 @@ function buildEastBack(kit,solid,ctx){
 function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.lane;
  kit.block(Q.minX+.05,Q.maxX+.4,lane-.06,lane,Q.minZ,Q.maxZ+.55,GROUND.concrete);
+ // The gate's paving, from the quay's concrete to the lawn's edge.
+ kit.block(Q.gate.minX+.05,Q.gate.maxX,lane-.06,lane,Q.maxZ+.55,Q.gate.maxZ,GROUND.concrete);
  // The quay edge, its yellow kerb, bollards and the tyres hung on its face.
  kit.block(Q.minX,Q.maxX+.4,-.7,lane,Q.minZ-.45,Q.minZ,0xa9a497);
  kit.block(Q.minX,Q.maxX+.4,lane,lane+.12,Q.minZ-.4,Q.minZ-.1,0xe0b93a);

@@ -72,8 +72,17 @@ export const EAST_QUAY=Object.freeze({
  minX:19,maxX:37.4,minZ:-49.6,maxZ:-38.9,
  shed:Object.freeze({minX:20.8,maxX:29.2,minZ:-48.2,maxZ:-40.6,height:4.4}),
  ice:Object.freeze({minX:30.6,maxX:36.2,minZ:-46.4,maxZ:-40.4,height:7.2}),
+ /**
+  * The gate from the lawn into the auction apron, where the lawn's parapet stops short
+  * (east-lawn.js): truck-width, paved level with the quay across the parapet's line.
+  */
+ gate:Object.freeze({minX:19,maxX:21.65,minZ:-38.9,maxZ:-38}),
 });
-export const eastQuayAt=(x,z,r=0)=>x>=EAST_QUAY.minX-1+r&&x<=EAST_QUAY.maxX-r&&z>=EAST_QUAY.minZ+r&&z<=EAST_QUAY.maxZ-r;
+export const eastQuayAt=(x,z,r=0)=>{
+ const g=EAST_QUAY.gate;
+ return x>=EAST_QUAY.minX-1+r&&x<=EAST_QUAY.maxX-r&&z>=EAST_QUAY.minZ+r&&z<=EAST_QUAY.maxZ-r
+  ||x>=g.minX+r&&x<=g.maxX-r&&z>=g.minZ+r&&z<=g.maxZ-r;
+};
 
 /**
  * Houses on the lawn behind the east row, either side of Umi-no-yu, reached by the back
@@ -106,6 +115,7 @@ export function mapPlan(){
  const walks=[[NISHI.promenade.minX,NISHI.promenade.maxX,NISHI.minZ,NISHI.maxZ],[NISHI.quay.minX,NISHI.quay.maxX,NISHI.quay.minZ,NISHI.quay.maxZ],
   ...NISHI.lanes.map(l=>[NISHI.promenade.maxX,WEST_YARD.minX,l.z-l.half,l.z+l.half]),
   [EAST_QUAY.minX,EAST_QUAY.maxX,EAST_QUAY.minZ,EAST_QUAY.maxZ],
+  [EAST_QUAY.gate.minX,EAST_QUAY.gate.maxX,EAST_QUAY.gate.minZ,EAST_QUAY.gate.maxZ],
   [EAST_BACK.lane.minX,EAST_BACK.lane.maxX,EAST_ROW.plots[0].minZ,EAST_ROW.plots[3].maxZ+2.4],
   [MAIN_ROAD.pavementEast,EAST_ROW.maxX+.5,EAST_ROW.onsenLane.minZ,EAST_ROW.onsenLane.maxZ]];
  const yards=[...NISHI.plots,...EAST_BACK.plots].map(p=>[p.minX,p.maxX,p.minZ,p.maxZ]);
