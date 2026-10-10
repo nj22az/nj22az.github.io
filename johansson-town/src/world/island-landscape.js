@@ -40,14 +40,13 @@ export function buildIslandLandscape({world,register,onAction,mobile=false}){
  const tower=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.6,9,12),mat(0xe1d8c2));tower.position.set(-54,4.1,204);group.add(tower);box('Lighthouse lantern',[2.5,1.5,2.5],[-54,9.4,204],0x466b75);sign('WEST CAPE LIGHTHOUSE',-51,207,4,1.8);anchor([-51,.8,207],'Read the lighthouse log','read','West Cape Lighthouse','The keeper checks the lamp at dusk, cleans the salt from the glass and records visibility. The coastal road returns to Minato through the western quarter.');
  for(const [label,x,z] of [['COASTAL LOOP → HOSHIZAKI',66.5,65.5],['← MINATO · AOBA RADIO →',23.5,104],['HOSHIZAKI · COASTAL BUS',138,188]]){sign(label,x,z,5,1.8);box('Direction sign post',[.12,2,.12],[x,.6,z],0x6b775c);}
  anchor([138,.7,188],'Take the coastal village bus','island-bus');anchor([13.3,1,-37.55],'Review island development projects','island-projects');anchor([-25,1,-39.65],'Complete the airport radio service','island-repair');
- // Airport passenger walkway, check-in counter, fence and a usable local landing.
+ // Airport passenger walkway, check-in counter and a usable local landing (the fence is in airport-district.js).
  world.shoppingLane=buildShoppingLane({world,register,onAction});
  buildAirportDistrict({world,register,onAction});
  world.airportVehicleYard=buildAirportVehicleYard(world);
  const airport=world.airportIsland.group;box('Airport passenger pavement',[88,.1,2.7],[0,1.05+GROUND_LAYER.grass,18.35],0xc4c0aa,false,airport);box('Check-in desk',[4,.9,.55],[-10,1.55,17.8],0x517282,false,airport);
- for(let x=-50;x<=38;x+=4)box('Airport perimeter post',[.09,1.3,.09],[x,1.75,16.75],0x81918a,false,airport);box('Airport perimeter rail',[88,.07,.08],[-6,2.1,16.75],0x81918a,false,airport);
  const [cx,cz]=AIRPORT_COUNTER;anchor([cx,AIRPORT_HEIGHT+1.2,cz],'Airport tickets and check-in','airport-counter');const [lx,lz]=AIRPORT_LANDING;anchor([lx,AIRPORT_HEIGHT+1.2,lz],'Airport ferry back to Minato','airport-return');const view=airportWorld(30,18.4);anchor([view[0],AIRPORT_HEIGHT+1,view[1]],'Read the airport departures board','airport-counter');
  const cargo=box('Airport cargo shelter',[6,.2,3],[-23,3.8,18.2],0x517282,false,airport);cargo.visible=false;
- (world.landmarks??=[]).push(...ISLAND_LANDMARKS,{id:'airport-island',title:'Kitano-jima Airport',sub:'COMMUTER FLIGHTS · FERRY TRANSFER',x:cx,z:cz,exitPosition:[cx,AIRPORT_HEIGHT,cz],entryFacing:0,line:'Reach the airport on the Minato local ferry. Check-in closes ten minutes before departure.'});
+ (world.landmarks??=[]).push(...ISLAND_LANDMARKS,{id:'airport-island',title:'Kitano-jima Airport',sub:'COMMUTER FLIGHTS · FERRY TRANSFER',x:cx,z:cz,exitPosition:[cx,AIRPORT_HEIGHT,cz],entryFacing:0,line:'A tropical island across the strait: Coral Bay, the jungle trail and the commuter airport. Take the Minato ferry; check-in closes ten minutes before departure.'});
  return {group,mountain,cargo,guestAwning,update(state){const s=state.island;cargo.visible=!!s?.projects.includes('cargo');guestAwning.visible=!!s?.projects.includes('guesthouse');}};
 }

@@ -1,3 +1,4 @@
+import {createLensOcclusion} from './render/lens-occlusion.js';
 import {createIzakayaStreetView} from './render/izakaya-street-view.js';
 import {WEATHERS,WEATHER_CHANGE_MINUTES,weatherLine,nextWeather,readWeather,writeWeather} from './world/weather.js';
 import {izakayaOpen} from './people/social.js';
@@ -572,6 +573,10 @@ function arrivalLensBlocked(x,z,y,r){
  }
  return false;
 }
+const lensOcclusion=createLensOcclusion({root:scene,skip:o=>o===room||o===player||o.name==='Johansson (third person)'}),lensFrom=new THREE.Vector3(),lensDir=new THREE.Vector3(),lensUp=new THREE.Vector3(0,1,0);
+/** Outdoors, when a wall or awning has pulled the lens right up to him, it would sit inside his own head: look over it instead of through it. */
+const headPoint=new THREE.Vector3();
+function lensInsideHead(){headPoint.set(player.position.x,player.position.y+1.45,player.position.z);return camera.position.distanceTo(headPoint)<.62;}
 /**
  * How far the third-person lens can stand back behind him at a heading, inside the room he has
  * just entered (the same boom and ceiling test the lens uses each frame).
@@ -613,8 +618,12 @@ function placeThirdPerson(dt){
  // head filled a third of it: the lens stands further back and a little higher there.
  const portrait=camera.aspect<1,want=(current?2.2:3.2)*(portrait?1.32:1);
  // The whole boom, from a pivot `side` metres to his right; indoors the ceiling too. -1: the pivot is in a wall.
- const boom=side=>{const px=tpPivot.x+tpRight.x*side,pz=tpPivot.z+tpRight.z*side;if(side&&cameraBlocked(px,pz,tpPivot.y,.16,own))return -1;
-  for(let d=.1;d<=want+.001;d+=.1)if(cameraBlocked(px-tpDir.x*d,pz-tpDir.z*d,tpPivot.y-tpDir.y*d,.16,own))return Math.max(0,d-.22);return want;};
+ // Outdoors the boom also stops at what is drawn rather than walked into (an awning, a canopy,
+ // a shop's glass): otherwise the lens slid under the valance or behind a window and looked out through it.
+ const drawn=(px,pz)=>{if(current)return want;lensFrom.set(px,tpPivot.y,pz);lensDir.copy(tpDir).negate();return Math.max(0,lensOcclusion.clear(lensFrom,lensDir,want+.3)-.3);};
+ const shoulderClear=side=>{if(current||!side)return true;lensFrom.set(tpPivot.x,tpPivot.y,tpPivot.z);lensDir.copy(tpRight).multiplyScalar(Math.sign(side));return lensOcclusion.clear(lensFrom,lensDir,Math.abs(side)+.2)>=Math.abs(side)+.2;};
+ const boom=side=>{const px=tpPivot.x+tpRight.x*side,pz=tpPivot.z+tpRight.z*side;if(side&&(cameraBlocked(px,pz,tpPivot.y,.16,own)||!shoulderClear(side)))return -1;
+  const limit=drawn(px,pz);for(let d=.1;d<=limit+.001;d+=.1)if(cameraBlocked(px-tpDir.x*d,pz-tpDir.z*d,tpPivot.y-tpDir.y*d,.16,own))return Math.max(0,d-.22);return limit;};
  // Over his right shoulder, drawn in towards his middle as the boom shortens (a short boom from the
  // shoulder sees past him, with him out of the side of the frame), and his middle whenever the
  // shoulder has the worse boom: walking out past the end of a wall used to flip the pivot 0.5 m
@@ -642,10 +651,12 @@ function placeThirdPerson(dt){
  const cramped=Math.min(1,Math.max(0,1.4-thirdDistance)/1.1);
  crampedEase=THREE.MathUtils.damp(crampedEase,cramped,8,dt);
  if(crampedEase>.001){
-  let lift=crampedEase*.3;while(lift>.05&&cameraBlocked(camera.position.x,camera.position.z,camera.position.y+lift,.16,own))lift-=.1;
+  let lift=crampedEase*.3;if(!current)lift=Math.min(lift,lensOcclusion.clear(camera.position,lensUp,lift+.3)-.3);while(lift>.05&&cameraBlocked(camera.position.x,camera.position.z,camera.position.y+lift,.16,own))lift-=.1;
   camera.position.y+=Math.max(0,lift);
  }
  camera.position.y=Math.max(camera.position.y,player.position.y+.3);
+ // On a hillside the boom can swing into the slope behind: keep the lens above the ground.
+ if(!current)camera.position.y=Math.max(camera.position.y,groundHeight(camera.position.x,camera.position.z)+.35);
  if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
  if(crampedEase>.001){
   // His head low in the frame, not in the middle of it: the view still looks ahead, past him.
@@ -711,7 +722,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(!current||thirdDistance>=.5))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
+ johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -1640,7 +1651,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
   // Sample them once at a fixed phase after fixture sync, without changing live play.
   if(this.frozen)sakuraShop.display.tick(0);
  },
- teleport(x,z,facing){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;},
+ teleport(x,z,facing,tilt){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
+ get lensOcclusion(){return lensOcclusion;},
  get lens(){return {position:camera.position.toArray(),rotation:camera.rotation.toArray().slice(0,3),distance:thirdDistance,ceiling:current?indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y):null,blocked:cameraBlocked(camera.position.x,camera.position.z,camera.position.y,.16)};},
  get mouse(){return {walking:pointWalk.active,destination:pointWalk.destination,yaw,pitch,thirdPerson};},
  camera:null,

@@ -1,6 +1,8 @@
 import {ISLAND} from './island-plan.js';
 import {GARDEN} from './garden-layout.js';
 import {airportWorld} from './airport-ground.js';
+import {AIRPORT_OUTLINE_WORLD} from './airport-island.js';
+import {TROPIC_PLACES} from './tropical-island.js';
 import {COASTLINE} from './island-coast.js';
 import {PARK} from './park-layout.js';
 import {activeRoutes,MAP_BOUNDS,BOARDWALK} from './layout.js?snappy=1';
@@ -28,7 +30,7 @@ export function drawTownMap(ctx,w,h,{sites=[],landmarks=[],people=[],player={x:0
   ctx.fillStyle='#eadfbe';ctx.fillRect(0,0,w,h);
   ctx.fillStyle='#89b5b5';ctx.fillRect(0,0,mapWidth,h);ctx.fillStyle='#eadfbe';ctx.beginPath();COASTLINE.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();
   {
-    ctx.fillStyle='#91a776';ctx.beginPath();ctx.ellipse(px(ISLAND.mountain.x),pz(ISLAND.mountain.z),12*scale,12*scale,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#415c40';ctx.font='bold 11px sans-serif';ctx.fillText('AOBA RADIO',px(31),pz(175));ctx.fillStyle='#6a9988';ctx.beginPath();ctx.ellipse(px(GARDEN.pond.x),pz(GARDEN.pond.z),GARDEN.pond.rx*scale,GARDEN.pond.rz*scale,0,0,Math.PI*2);ctx.fill();const corners=[[-65,-23],[65,-23],[65,20],[178,20],[178,132],[-54,132],[-54,23],[-65,23]].map(p=>airportWorld(...p));ctx.fillStyle='#b4bc97';ctx.beginPath();corners.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();ctx.fillStyle='#8d9e77';for(const [x,z] of headlandPatches)ctx.fillRect(px(x),pz(z+4),4*scale,4*scale);
+    ctx.fillStyle='#91a776';ctx.beginPath();ctx.ellipse(px(ISLAND.mountain.x),pz(ISLAND.mountain.z),12*scale,12*scale,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#415c40';ctx.font='bold 11px sans-serif';ctx.fillText('AOBA RADIO',px(31),pz(175));ctx.fillStyle='#6a9988';ctx.beginPath();ctx.ellipse(px(GARDEN.pond.x),pz(GARDEN.pond.z),GARDEN.pond.rx*scale,GARDEN.pond.rz*scale,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#eadfbe';ctx.beginPath();AIRPORT_OUTLINE_WORLD.forEach(([x,z],i)=>i?ctx.lineTo(px(x),pz(z)):ctx.moveTo(px(x),pz(z)));ctx.closePath();ctx.fill();{const [hx,hz]=airportWorld(...TROPIC_PLACES.lookout);ctx.fillStyle='#7e9d68';ctx.beginPath();ctx.ellipse(px(hx),pz(hz),20*scale,20*scale,0,0,Math.PI*2);ctx.fill();}ctx.fillStyle='#8d9e77';for(const [x,z] of headlandPatches)ctx.fillRect(px(x),pz(z+4),4*scale,4*scale);
     const tide=BEACH_DRY_EDGE_X;
     ctx.fillStyle='#dfcf9d';ctx.fillRect(px(BEACH.profile[0][0]),pz(BEACH.maxZ),(tide-BEACH.profile[0][0])*scale,(BEACH.maxZ-BEACH.minZ)*scale);
     ctx.strokeStyle='#8b8268';ctx.lineWidth=Math.max(2,2*scale);

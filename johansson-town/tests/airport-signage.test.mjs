@@ -4,7 +4,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildAirportDistrict} from '../src/world/airport-district.js';
 import {AIRPORT_ISLAND} from '../src/world/airport-island.js';
-import {AIRPORT_SHOPS,AIRPORT_TERMINALS} from '../src/world/airport-district-plan.js';
+import {AIRPORT_SHOPS,AIRPORT_GATES} from '../src/world/airport-district-plan.js';
 import {SEA_LEVEL} from '../src/world/ocean.js';
 
 test('airport signs present their textured front to the actual customer and gate anchors',()=>{
@@ -27,7 +27,6 @@ test('airport signs present their textured front to the actual customer and gate
   assert.ok(hit.face.normal.clone().transformDirection(sign.matrixWorld).dot(towardCustomer)>.75,'Customer ray intersects the textured front of '+text);
  }
  for(const shop of AIRPORT_SHOPS)facesCustomer(shop.title,'Visit '+shop.title);
- for(const terminal of AIRPORT_TERMINALS.filter(t=>!t.construction))for(let gate=1;gate<=4;gate++)facesCustomer('GATE '+terminal.id.toUpperCase()+gate,'Read gate '+terminal.id.toUpperCase()+gate);
- facesCustomer('KITANO-JIMA AIRPORT · UNDER CONSTRUCTION','Read the airport construction notice');
- facesCustomer('AIRPORT HOTEL · FUTURE PHASE','Read the airport district masterplan');
+ for(const gate of AIRPORT_GATES)facesCustomer(gate.title,'Read gate '+gate.id);
+ facesCustomer('CORAL BAY ↓  ·  HINATA LOOKOUT ↗','Read the island trail map');
 });
