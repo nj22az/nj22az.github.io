@@ -24,9 +24,10 @@ try{
  const info=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,f=a.world.ferry;return {phase:f.phase,berth:f.berth,pos:f.ferry.position.toArray(),visible:f.ferry.visible};});
  console.log('ferry',JSON.stringify(info));
  const shot=async(name,pos,at,setup)=>{await page.evaluate(([pos,at,setup])=>{const a=window.__JOHANSSON_AUDIT__,f=a.world.ferry.ferry;
-   f.userData.__y??=f.position.y;f.position.y=f.userData.__y;f.userData.lights(false);f.userData.setRamp(1,.24);
+   f.userData.__y??=f.position.y;f.position.y=f.userData.__y;f.userData.lights(false);f.userData.setRamp(1,setup==='airport'?-.008:.24);
+   if(setup==='airport'){const run=a.world.ferry;run.parkAt('airport');f.userData.__y=f.position.y;}
    if(setup==='lift'){f.position.y+=2.2;} if(setup==='night')f.userData.lights(true);if(setup==='rampUp')f.userData.setRamp(0);
-   a.camera={pos,at};a.render();},[pos,at,setup]);await page.waitForTimeout(700);await page.locator('#game').screenshot({path:resolve(out,name+'.png')});console.log('saved',name);};
+   a.camera={pos,at};a.render();return {phase:a.world.ferry.phase,berth:a.world.ferry.berth,pos:f.position.toArray().map(v=>+v.toFixed(2)),visible:f.visible};},[pos,at,setup]).then(r=>setup==='airport'&&console.log(name,JSON.stringify(r)));await page.waitForTimeout(700);await page.locator('#game').screenshot({path:resolve(out,name+'.png')});console.log('saved',name);};
  const [fx,,fz]=info.pos;const L=(dx,dy,dz)=>[fx+dx,dy,fz+dz];
  await shot('01-quay-three-quarter',L(9,4.5,18),L(0,1.2,0));
  await shot('02-pier-gangway',L(5.2,1.7,-1),L(-1,1.8,-3));
@@ -43,4 +44,10 @@ try{
  await shot('13-draft-marks-close',L(-5.2,.15,9.2),L(-2.9,0,9.6));
  await shot('14-load-line-close',L(-5.5,.4,-.5),L(-3.2,.3,-.5));
  await shot('15-car-deck',L(1.4,3.4,12.5),L(0,.6,1));
+ // At Kitano-jima: bow in to the jetty with her ramp down on it. The player goes over first, so that
+ // side of the sound is the one the game draws.
+ await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__,{AIRPORT_LANDING}=await import('/johansson-town/src/world/airport-ground.js');a.teleport(AIRPORT_LANDING[0],AIRPORT_LANDING[1]);a.step(2000);});await page.waitForTimeout(3000);
+ const away=await page.evaluate(()=>{const f=window.__JOHANSSON_AUDIT__.world.ferry;f.parkAt('airport');f.ferry.userData.__y=f.ferry.position.y;f.ferry.updateMatrixWorld(true);const w=(x,y,z)=>{const v=f.ferry.localToWorld(new f.ferry.position.constructor(x,y,z));return v.toArray();};return {a:w(-14,6,-8),b:w(0,1,6),c:w(9,3,16),d:w(0,1,9)};});
+ await shot('16-kitano-jima-berth',away.a,away.b,'airport');
+ await shot('17-kitano-jima-ramp',away.c,away.d,'airport');
 }finally{await browser.close();server.close();}

@@ -105,7 +105,10 @@ The island households (`island-households.js`) and the resident guide (the maste
   berth, swing on the thruster, ahead round the breakwater; the reverse to come in. *Checked:* a metre off the
   breakwater, 0.1 m+ off both piers, never over the quay, no spinning.
 - **Kitano-jima crossing:** the same departure, the sea route, then bow in to the jetty 1.9 m off; leaving it, astern
-  16 m before swinging. *Checked:* `tests/airport-ferry.test.mjs` with the real hull outline.
+  16 m before swinging. *Checked:* `tests/airport-ferry.test.mjs` with the real hull outline, and against the new
+  tropical Kitano-jima (merged from main the same day): the seabed shelves from 2.2 m under her after body to 1.3 m
+  under her bow, where her forefoot draws 0.35 m, and her ramp lands between the jetty's side rails
+  (`docs/qa/ferry/16-…`, `17-…`).
 - **Gangway, queue and landing:** the gangway now runs from the deckhouse's port door, through a gangway gate in the
   bulwark (shut at sea, folded back and hooked alongside), to the pier end (z −63.5); the queue and the arrival point
   moved south of the crate stack.
