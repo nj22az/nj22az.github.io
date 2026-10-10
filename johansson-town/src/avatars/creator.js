@@ -462,7 +462,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   frame=requestAnimationFrame(loop);
   const now=performance.now(),dt=Math.min(.05,(now-clock)/1000);clock=now;
   if(dirty){
-   if(featureDrag){drawFace(avatar.face.ctx,recipe,{expression:'neutral',size:avatar.face.canvas.width});avatar.face.texture.needsUpdate=true;}
+   if(featureDrag){drawFace(avatar.face.ctx,recipe,{expression:'neutral',size:avatar.face.canvas.width,objects:true});avatar.face.texture.needsUpdate=true;}
    else rebuild();
    dirty=false;
   }
@@ -563,7 +563,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   if(control.at!=='outfit.hat')r.outfit.hat='none';
   if(control.at==='outfit.bottom')r.__bottom=true;
   const framing=control.at==='hair.style'&&hairThumbView==='rear'?'hair-rear':control.draw;
-  const flat=!['head','figure','feet'].includes(control.draw);
+  const objects=['glasses','moustache','beard'].includes(control.draw);
+  if(objects){r.hair.style='bald';if(control.draw==='moustache')r.facial.beard='none';if(control.draw==='beard')r.facial.moustache='none';if(control.draw!=='glasses')r.glasses.enabled=false;}
+  const flat=!objects&&!['head','figure','feet'].includes(control.draw);
   const key=control.at+'|'+framing+'|'+value+'|'+JSON.stringify(flat?{eyes:r.eyes,brows:r.brows,nose:r.nose,mouth:r.mouth,glasses:r.glasses,facial:r.facial,skin:r.body.skin}:{...r,name:0,profile:0});
   cached(key,c,()=>flat?drawPart(c.getContext('2d'),normalizeRecipe(r),control.draw,c.width):figureThumb(r,c,framing));
  }

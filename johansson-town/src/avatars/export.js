@@ -37,10 +37,10 @@ export async function exportAvatarGLB(recipe){
   addFaceMorphs(a.face.head,a.recipe,a.measure);
   const expressions={};
   for(const expression of ['neutral','smile','happy','shy','thinking','excited','surprised']){
-   drawFace(a.face.ctx,a.recipe,{expression,size:256});expressions[expression]=a.face.canvas.toDataURL('image/png');
+   drawFace(a.face.ctx,a.recipe,{expression,size:256,objects:true});expressions[expression]=a.face.canvas.toDataURL('image/png');
   }
-  drawFace(a.face.ctx,a.recipe,{expression:'neutral',blink:1,size:256});expressions.blink=a.face.canvas.toDataURL('image/png');
-  drawFace(a.face.ctx,a.recipe,{expression:'neutral',size:256});a.face.texture.needsUpdate=true;
+  drawFace(a.face.ctx,a.recipe,{expression:'neutral',blink:1,size:256,objects:true});expressions.blink=a.face.canvas.toDataURL('image/png');
+  drawFace(a.face.ctx,a.recipe,{expression:'neutral',size:256,objects:true});a.face.texture.needsUpdate=true;
   a.root.userData={recipe:a.recipe,pose:'T-pose',faceExpressions:expressions,faceExpressionFormat:'PNG data URI; apply to head base-color texture',faceMorphs:['smile','shy','surprised','blink']};
   a.bones.shoulderL.rotation.z=Math.PI/2;a.bones.shoulderR.rotation.z=-Math.PI/2;
   a.root.updateMatrixWorld(true);a.body.skeleton.update();

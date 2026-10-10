@@ -109,8 +109,7 @@ export function drawFace(ctx,recipe,state={}){
  if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift,L.browS,s,recipe.brows,L.browTilt,mood.brow);
  drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);
  drawMouth(ctx,L.mouthX,L.mouthY+(mood.mouthDY||0),L.mouthS,recipe.mouth,mood.mouth,state.talk||0,line,L.mouthW);
- drawFacialHair(ctx,L,recipe.facial);
- drawGlasses(ctx,L,recipe.glasses);
+ if(!state.objects){drawFacialHair(ctx,L,recipe.facial);drawGlasses(ctx,L,recipe.glasses);}
  ctx.restore();
 }
 
