@@ -986,8 +986,8 @@ function leaveRoom(){if(!current)return;spawnScene?.cancel('room');if(!photoStud
 
 function syncExteriorPlace(){
  const phase=islandPlay?.phase,airport=islandPlay?.snapshot().location==='airport';
- const title=phase==='ferry'?'MINATO–KITANO-JIMA FERRY':phase==='flight'?'ISLAND COMMUTER FLIGHT':airport?'KITANO-JIMA AIRPORT':'JOHANSSON TOWN';
- const detail=phase==='ferry'?'Minato–Kitano-jima · PASSENGER DECK':phase==='flight'?'Island commuter service · IN FLIGHT':airport?'Kitano-jima · PASSENGER TERMINAL':'Johansson Town · HARBOUR DISTRICT';
+ const title=phase==='ferry'?'MINATO–KITANO-JIMA FERRY':phase==='flight'?'ISLAND COMMUTER FLIGHT':airport?'KITANO-JIMA AIRPORT':'MINATO MACHI';
+ const detail=phase==='ferry'?'Minato–Kitano-jima · PASSENGER DECK':phase==='flight'?'Island commuter service · IN FLIGHT':airport?'Kitano-jima · PASSENGER TERMINAL':'Minato Machi · HARBOUR DISTRICT';
  const line=airport?'The passenger counter and promenade are open.':'Shops are open.';
  if($('#place').textContent!==title)$('#place').textContent=title;
  if($('#placeSub').textContent!==detail)$('#placeSub').textContent=detail;
