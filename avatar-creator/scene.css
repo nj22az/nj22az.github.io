@@ -40,3 +40,4 @@ body.standalone-studio .studio-file-menu button{width:100%}
 .scene-frame{position:relative}
 .scene-workspace[data-mode=comic] .scene-layout{grid-template-columns:minmax(0,1fr)}
 .scene-workspace[data-mode=comic] .scene-picture{max-width:740px;position:relative;top:0}
+.scene-camera{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}.scene-camera label{display:grid;gap:8px;font-size:14px}.scene-camera input{width:100%;min-height:36px}.scene-camera button{grid-column:1/-1}.scene-picture canvas{cursor:grab}.scene-picture canvas:active{cursor:grabbing}@media(max-width:600px){.scene-camera{grid-template-columns:1fr}}

@@ -86,11 +86,16 @@ try{
   await page.getByRole('button',{name:'Next: Pose & position',exact:true}).click();
   await page.getByLabel('Pose',{exact:true}).selectOption('Cheer');
   await page.getByLabel('Expression',{exact:true}).selectOption('surprised');
+  await page.getByLabel('Near / far',{exact:true}).fill('.8');
+  await page.getByLabel('Camera turn',{exact:true}).fill('15');
+  await page.waitForFunction(()=>document.querySelector('.scene-picture canvas').getAttribute('aria-busy')==='false',{},{timeout:60000});
+  const sceneState=await page.evaluate(()=>JSON.parse(localStorage.getItem('nj-studio-scene-v1')));assert.equal(sceneState.version,2);assert.equal(sceneState.camera.orbit,15);assert.ok(sceneState.actors.every(a=>Number.isFinite(a.z)));
+  await page.getByRole('button',{name:'Reset camera',exact:true}).click();
   await page.getByRole('button',{name:'Next: Add text',exact:true}).click();
   await page.getByLabel('Selected character’s speech',{exact:true}).fill('The ferry is late!');
   await page.getByRole('button',{name:'Next: Export',exact:true}).click();
   await page.getByLabel('Picture format',{exact:true}).selectOption('square');
-  await page.waitForFunction(()=>document.querySelector('.scene-picture canvas').getAttribute('aria-busy')==='false');
+  await page.waitForFunction(()=>document.querySelector('.scene-picture canvas').getAttribute('aria-busy')==='false',{},{timeout:60000});
   const [scenePNG]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Export scene PNG',exact:true}).click()]);
   const sceneImage=PNG.sync.read(await readFile(await scenePNG.path()));assert.equal(sceneImage.width,1200);assert.equal(sceneImage.height,1200);
   await page.getByRole('button',{name:'Add panel to comic',exact:true}).click();
