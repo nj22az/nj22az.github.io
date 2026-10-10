@@ -1,0 +1,21 @@
+.standalone-studio {font-family:system-ui,sans-serif;background:#f7f8f9;color:#25313a}
+#loading {padding:24px}
+.standalone-studio .shm {grid-template-rows:auto auto minmax(0,1fr) auto}
+.standalone-studio .shm-top h2 {font-size:18px}
+.standalone-studio .shm-top h2 small {display:none}
+.studio-tools {display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #d8dfe3;background:#fff}
+.studio-tools button,.studio-tools select {min-height:44px;padding:8px 12px;border:1px solid #b7c5cc;border-radius:12px;background:#f7f8f9;color:#25313a;font:600 14px system-ui,sans-serif;cursor:pointer}
+.studio-tools button[data-primary] {background:#06c755;border-color:#06a647;color:#fff}
+.studio-tools label {display:flex;align-items:center;gap:6px;font-size:13px}
+.studio-status {flex:1 1 220px;font-size:12px;color:#475b64;line-height:1.4}
+@media(max-width:760px){.studio-tools {gap:6px;padding:6px 8px}.studio-tools button,.studio-tools select {font-size:12px;padding:6px 8px}.studio-status {flex-basis:100%;font-size:11px}.studio-tools label {font-size:12px}}
+@media(max-height:500px){.studio-status {display:none}.studio-tools {padding:4px 8px}}
+.standalone-studio .shm-main {overflow:hidden}
+.standalone-studio .shm-poses {max-height:100px;overflow-y:auto;flex-shrink:1}
+@media(max-width:760px){
+ .standalone-studio .shm[data-step=look] .shm-main {grid-template-rows:minmax(0,42%) minmax(0,1fr)}
+}
+@media(max-width:360px){
+ .standalone-studio .shm-foot :is(.shm-pill,.shm-next,.shm-save) {width:auto;min-width:44px;font-size:12px;padding:8px}
+ .standalone-studio .shm-dots button {min-width:32px;padding:4px}
+}

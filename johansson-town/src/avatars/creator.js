@@ -359,9 +359,11 @@ const CSS=`
  * @param {(code:string)=>string} [options.shareLink] a link that opens a recipe code
  * @param {'start'|'look'|'profile'|'hello'} [options.startAt] the step to open on
  * @param {(freq:number,type:string)=>void} [options.voice] plays one voice blip
- * @returns {{close:()=>void, get recipe():object}}
+ * @param {Array<[string,object]>} [options.templates] optional starting templates
+ * @param {boolean} [options.keepOpenOnSave] save without leaving the editor
+ * @returns {object} creator controls, current recipe and transparent PNG export
  */
-export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null}={}){
+export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null,templates=null,keepOpenOnSave=false}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
  let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];
  let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',expression='auto',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null;
@@ -676,10 +678,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function dealFaces(){faces=[recipe,...Array.from({length:11},()=>keepSelf(randomRecipe('face-'+Date.now().toString(36)+'-'+(faceSeed++)),recipe))];}
  function renderStart(){
   if(!faces.length)dealFaces();
-  const visitor=el('button',{type:'button',className:'shm-pill',textContent:'Harbour visitor'});
-  visitor.onclick=()=>{remember();recipe=normalizeRecipe(CAST_RECIPES['Harbour visitor']);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();};
-  if(!owner)body.append(visitor);
-  if(!owner)for(const [label,preset] of [['Thuận · original',ORIGINAL_THUAN_RECIPE],['Thuận · photo reference',CAST_RECIPES.Thuan]]){const thuan=el('button',{type:'button',className:'shm-pill',textContent:label});thuan.onclick=()=>{remember();recipe=normalizeRecipe(preset);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();};body.append(thuan);}
+  const defaults=templates||[['Harbour visitor',CAST_RECIPES['Harbour visitor']],['Thuận · original',ORIGINAL_THUAN_RECIPE],['Thuận · photo reference',CAST_RECIPES.Thuan]];
+  if(!owner)for(const [label,preset] of defaults){const button=el('button',{type:'button',className:'shm-pill',textContent:label});button.onclick=()=>setRecipe(preset);body.append(button);}
   body.append(el('h4',{textContent:'Pick someone to start from'}));
   const grid=el('div',{className:'shm-grid shm-faces'});
   faces.forEach((face,i)=>{
@@ -820,6 +820,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  };
  function finish(saving){
   if(!root.isConnected)return;
+  if(saving&&keepOpenOnSave){onSave(normalizeRecipe({...recipe,name:name.value}));return;}
   endDrag();
   stopSpeech();cancelAnimationFrame(frame);cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);observer?.disconnect();viewport?.removeEventListener('resize',fitViewport);viewport?.removeEventListener('scroll',fitViewport);
   root.removeEventListener('keydown',swallow);root.removeEventListener('keyup',swallow);
@@ -829,6 +830,28 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  close.onclick=()=>finish(false);
 
+ /** Replace the editable character without closing the studio. */
+ function setRecipe(value){endDrag();remember();recipe=normalizeRecipe(value);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();}
+ /** Render a full-body transparent PNG independently of the preview's face zoom. */
+ function exportPNG(size=1024){
+  endDrag();if(dirty){rebuild();dirty=false;}
+  size=Math.max(256,Math.min(2048,Math.round(size)||1024));
+  const target=new THREE.WebGLRenderTarget(size,size,{depthBuffer:true});target.texture.colorSpace=THREE.SRGBColorSpace;
+  const previous=renderer.getRenderTarget(),clearColour=renderer.getClearColor(new THREE.Color()),alpha=renderer.getClearAlpha(),floorVisible=floor.visible;
+  const shot=camera.clone();shot.aspect=1;shot.updateProjectionMatrix();
+  try{
+   floor.visible=false;scene.updateMatrixWorld(true);
+   const box=new THREE.Box3().setFromObject(avatar.root),centre=box.getCenter(new THREE.Vector3()),bounds=box.getSize(new THREE.Vector3());
+   const distance=Math.max(bounds.y,bounds.x)*1.18/(2*Math.tan(THREE.MathUtils.degToRad(shot.fov/2)))+bounds.z/2;
+   shot.position.set(centre.x,centre.y,centre.z+distance);shot.lookAt(centre);
+   renderer.setRenderTarget(target);renderer.setClearColor(0x000000,0);renderer.clear();renderer.render(scene,shot);
+   const pixels=new Uint8Array(size*size*4);renderer.readRenderTargetPixels(target,0,0,size,size,pixels);
+   const image=el('canvas',{width:size,height:size}),ctx=image.getContext('2d'),data=ctx.createImageData(size,size),stride=size*4;
+   for(let row=0;row<size;row++)data.data.set(pixels.subarray((size-1-row)*stride,(size-row)*stride),row*stride);
+   ctx.putImageData(data,0,0);return image.toDataURL('image/png');
+  }finally{floor.visible=floorVisible;renderer.setRenderTarget(previous);renderer.setClearColor(clearColour,alpha);target.dispose();}
+ }
+
  rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
- return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,get wearing(){return wearing;}};
+ return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
 }
