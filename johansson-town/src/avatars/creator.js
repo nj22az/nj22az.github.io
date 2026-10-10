@@ -215,6 +215,9 @@ const CSS=`
 .shm-main{display:grid;grid-template-columns:minmax(0,1fr) clamp(112px,32%,340px);gap:12px;min-height:0;padding:0 max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left))}
 .shm[data-step=hello] .shm-main{grid-template-columns:minmax(0,1fr)}
 .shm[data-step=hello] .shm-panel{display:none}
+/* Phone portrait: the start and profile steps stack (character above, choices below). Side by side, the
+   choice column was ~100px wide and its labels broke letter by letter. */
+@media(max-width:520px) and (orientation:portrait){.shm:is([data-step=start],[data-step=profile]) .shm-main{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,44%) minmax(0,1fr)}.shm:is([data-step=start],[data-step=profile]) .shm-stage{aspect-ratio:auto;flex:1 1 auto}.shm:is([data-step=start],[data-step=profile]) .shm-side{overflow-y:auto;overscroll-behavior:contain}.shm:is([data-step=start],[data-step=profile]) .shm-side>.shm-stage{flex:0 0 auto;height:calc(100% - 52px)}}
 .shm-side{display:flex;flex-direction:column;gap:8px;min-height:0}
 .shm-stage{position:relative;flex:0 1 auto;width:100%;aspect-ratio:3/4;max-height:100%;min-height:0;overflow:hidden;border:3px solid #f0dcb0;border-radius:24px;background:radial-gradient(circle at 50% 35%,#fffdf6,#ffeccc)}
 .shm[data-step=hello] .shm-stage{flex:1;aspect-ratio:auto;border:0;background:transparent}

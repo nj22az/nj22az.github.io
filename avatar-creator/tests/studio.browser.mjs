@@ -23,7 +23,10 @@ try{
   await page.goto(base+'/avatar-creator/');
   await page.locator('.studio-tools').waitFor();
   await page.evaluate(()=>localStorage.setItem('johansson-player-recipe','game-sentinel'));
+  // Templates live in the Files menu (a "new from template" action), keeping the phone toolbar to one row.
+  await page.locator('.studio-files summary').click();
   await page.getByLabel('Starting template').selectOption('1');
+  assert.equal(await page.locator('.studio-files').evaluate(e=>e.open),false,'choosing a template closes the menu');
   await page.getByRole('textbox',{name:'Name',exact:true}).fill('My character');
   await page.locator('.studio-tools').getByRole('button',{name:'Save character',exact:true}).click();
   assert.match(await page.locator('.studio-status').innerText(),/saved/);
@@ -64,6 +67,7 @@ try{
   await page.locator('.studio-files summary').click();
   const [design]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Download design',exact:true}).click()]);
   const designPath=await design.path();const json=JSON.parse(await readFile(designPath,'utf8'));assert.equal(json.recipe.hair.style,'braids');
+  await page.locator('.studio-files summary').click();
   await page.getByLabel('Starting template').selectOption('0');assert.equal(await page.getByRole('textbox',{name:'Name',exact:true}).inputValue(),'Johansson');
   await page.locator('input[type=file]').setInputFiles(designPath);await page.waitForFunction(()=>document.querySelector('.shm-name').value==='My character');
   assert.equal(await page.evaluate(()=>localStorage.getItem('johansson-player-recipe')),'game-sentinel');

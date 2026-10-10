@@ -226,8 +226,10 @@ body>.shm .shm-share{background:var(--line-overlay)}body>.shm .shm-share>div{box
 .touch-controls #mobile :is(.act-label,.jump-label,#drink b,#run b){font:700 14px/1.3 var(--line-font)}
 .touch-controls #mobile .stick-base{border:1px solid var(--line-border);background:rgb(247 248 249 / .86);box-shadow:var(--line-shadow)}
 .touch-controls #mobile .stick-knob{border:1px solid var(--line-green);background:var(--line-green);box-shadow:none}
-@media(pointer:coarse){body.touch-controls #hud #subtitle{bottom:calc(env(safe-area-inset-bottom) + 232px);font-size:18px}}
-@media(pointer:coarse) and (max-height:520px){body.touch-controls #hud #subtitle{bottom:calc(env(safe-area-inset-bottom) + 192px);width:min(560px,calc(100vw - 264px));font-size:16px;padding:12px}}
+/* Touch captions sit under the place card, never on the thumb zone: the action buttons own the bottom edge.
+   (The class lives on <html>; these rules previously targeted body.touch-controls and never applied.) */
+@media(pointer:coarse){html.touch-controls body #hud #subtitle{top:max(76px,calc(env(safe-area-inset-top) + 70px));bottom:auto;left:max(16px,env(safe-area-inset-left));right:auto;transform:none;width:calc(100vw - 88px);max-width:calc(100vw - 88px);font-size:16px;padding:10px 14px}}
+@media(pointer:coarse) and (max-height:520px){html.touch-controls body #hud #subtitle{top:max(66px,calc(env(safe-area-inset-top) + 60px));width:fit-content;max-width:min(50vw,420px);font-size:15px;padding:10px 12px}}
 #qte .qte-card{border:1px solid var(--line-border);border-radius:12px;background:var(--line-white);box-shadow:var(--line-shadow);backdrop-filter:none}
 #qte #qteGlyph{color:var(--line-text);text-shadow:none}#qte #qteText{font:700 16px/1.4 var(--line-font);letter-spacing:normal;color:var(--line-text)}
 #qte .qte-track{background:var(--line-border);height:8px;border-radius:4px}#qte .qte-track span{background:var(--line-green)}

@@ -8,7 +8,7 @@
   "display": "standalone",
   "orientation": "any",
   "background_color": "#f7f8f9",
-  "theme_color": "#294b60",
+  "theme_color": "#06c755",
   "icons": [
     {
       "src": "./assets/icons/town-192.png",
