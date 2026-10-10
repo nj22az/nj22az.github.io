@@ -477,7 +477,7 @@ fists=createFists({camera,skin:playerRecipe()?.body?.skin||'#d9a57c',sleeve:play
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;const lager=name==='Umineko lager';if(lager&&!wantsAnother(tipsy,LAGER_ALCOHOL)){say('Enough for tonight. The can goes back in your bag for tomorrow.',3);return false;}if(lager)tipsy=drinkUp(tipsy,LAGER_ALCOHOL);activities.state.inventory.splice(i,1);const left=SPECIAL_BY_NAME[name]?.cup?null:emptyFor(name);if(left)activities.state.inventory.push(left);activities.save();return true;},canColour,onDrink:()=>johansson?.play(seated?'SitDrink':'Drink')});
 // Johansson himself, for the third-person view. The model loads the first time the view is used.
 const VIEW_KEY='johansson-town-view';
-let thirdPerson=false,johansson=null,playerSpeed=0,playerRunning=false,thirdDistance=3.1;
+let thirdPerson=false,johansson=null,playerSpeed=0,playerRunning=false,thirdDistance=3.1,crampedEase=0,pivotSide=.34;
 const shopCarry=createShopCarry({holder:()=>johansson});
 // Third person unless you have asked for your own eyes: a life-sim is about seeing your
 // islander in the town (docs/AMPLIFY-AUDIT.md, decision 5). V switches.
@@ -556,10 +556,10 @@ async function startBuildMode(){
  try{if(current?.id!=='mayor-home')await enterRoom(home);activeRoomLayout?.arranging?.open();}catch(error){console.warn('Build mode could not open:',error);}
 }
 const decorStage={hold(){decorating=true;resetInput();},release(){decorating=false;decorView=null;},show(pos,at){decorView={pos,at};}};
-function cameraBlocked(x,z,y,r){
+function cameraBlocked(x,z,y,r,ignore=null){
  if(current&&indoorCeilings&&y>indoorCeilings.limit(x,z,player.position.y,Math.max(.22,r)))return true;
  const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;
- const hit=c=>!c.only&&(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c);
+ const hit=c=>!c.only&&!(ignore&&ignore(c))&&(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c);
  return current?roomColliders.some(hit):colliderGrid.some(x,z,r,hit);
 }
 const arrivalPerson=new THREE.Vector3();
@@ -603,24 +603,55 @@ function placeThirdPerson(dt){
  const lens=johansson?.lens,tall=lens?lens.eye-1.6:0;
  const eye=(seated&&parkSeat?(parkSeat.soak?1.25:Math.min(1.45,parkSeat.eyeY-player.position.y)+.3):1.6)+tall;
  tpDir.set(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch));tpRight.set(Math.cos(yaw),0,-Math.sin(yaw));
- tpPivot.set(player.position.x,player.position.y+eye+(camera.aspect<1?.18:0),player.position.z).addScaledVector(tpRight,lens?.side??.34);
- if(current){
-  tpPivot.y=Math.min(tpPivot.y,indoorCeilings?.limit(tpPivot.x,tpPivot.z,player.position.y)??Infinity);
-  if(cameraBlocked(tpPivot.x,tpPivot.z,tpPivot.y,.16)){tpPivot.x=player.position.x;tpPivot.z=player.position.z;}
- }
+ tpPivot.set(player.position.x,player.position.y+eye+(camera.aspect<1?.18:0),player.position.z);
+ if(current)tpPivot.y=Math.min(tpPivot.y,indoorCeilings?.limit(tpPivot.x,tpPivot.z,player.position.y)??Infinity);
+ // Seated outdoors, the bench or chair under him is not a wall to stand the lens in front of.
+ // (It used to skip everything within 0.85 m of him instead, so with his back to a building the
+ // first test was already inside it and the lens stopped in the building: a dark screen.)
+ const own=!current&&seated?c=>circleHitsRect(player.position.x,player.position.z,.3,c):null;
  // On a portrait screen (an iPad held upright) the frame is narrow and his big Shimanchu
  // head filled a third of it: the lens stands further back and a little higher there.
- const portrait=camera.aspect<1,want=(current?2.2:3.2)*(portrait?1.32:1);let reach=want;
- // Outdoors ignore his own bench; indoors check the entire boom, including the ceiling.
- for(let d=.1;d<=want+.001;d+=.1){const x=tpPivot.x-tpDir.x*d,z=tpPivot.z-tpDir.z*d;if(!current&&Math.hypot(x-player.position.x,z-player.position.z)<.85)continue;if(cameraBlocked(x,z,tpPivot.y-tpDir.y*d,.16)){reach=Math.max(0,d-.22);break;}}
- thirdDistance=reach<thirdDistance?reach:THREE.MathUtils.damp(thirdDistance,reach,4,dt);
+ const portrait=camera.aspect<1,want=(current?2.2:3.2)*(portrait?1.32:1);
+ // The whole boom, from a pivot `side` metres to his right; indoors the ceiling too. -1: the pivot is in a wall.
+ const boom=side=>{const px=tpPivot.x+tpRight.x*side,pz=tpPivot.z+tpRight.z*side;if(side&&cameraBlocked(px,pz,tpPivot.y,.16,own))return -1;
+  for(let d=.1;d<=want+.001;d+=.1)if(cameraBlocked(px-tpDir.x*d,pz-tpDir.z*d,tpPivot.y-tpDir.y*d,.16,own))return Math.max(0,d-.22);return want;};
+ // Over his right shoulder, drawn in towards his middle as the boom shortens (a short boom from the
+ // shoulder sees past him, with him out of the side of the frame), and his middle whenever the
+ // shoulder has the worse boom: walking out past the end of a wall used to flip the pivot 0.5 m
+ // sideways into a boom that ran straight into the wall, and the lens popped from 3.2 m to nothing.
+ const shoulder=(lens?.side??.34)*(1-.8*crampedEase),fromShoulder=boom(shoulder),fromMiddle=boom(0);
+ pivotSide=THREE.MathUtils.damp(pivotSide,fromShoulder>=fromMiddle-.3?shoulder:0,6,dt);
+ let reach=boom(pivotSide);if(reach<0){pivotSide=0;reach=fromMiddle;}
+ tpPivot.addScaledVector(tpRight,pivotSide);
+ // And the line from the lens to his head: a trunk or a post beside the boom still stood
+ // between them (Harbour Park's bench). Come in front of it.
+ const headY=player.position.y+eye-.2;
+ const sightBlocked=d=>{const cx=tpPivot.x-tpDir.x*d,cy=tpPivot.y-tpDir.y*d,cz=tpPivot.z-tpDir.z*d,dx=player.position.x-cx,dy=headY-cy,dz=player.position.z-cz,len=Math.hypot(dx,dy,dz);
+  for(let t=0;t<len-.45;t+=.15){const k=t/len;if(cameraBlocked(cx+dx*k,cz+dz*k,cy+dy*k,.12,own))return true;}return false;};
+ let sight=reach;for(let i=0;i<16&&sight>.3&&sightBlocked(sight);i++)sight=Math.max(.3,sight-.2);
+ // A wall in the boom: in at once, never through it. Something only in the line of sight: in
+ // quickly but smoothly (a lamp post passing behind him used to pop the lens 2.6 m in a frame).
+ // Clear again: out slowly.
+ if(reach<thirdDistance)thirdDistance=reach;
+ if(sight<thirdDistance)thirdDistance=THREE.MathUtils.damp(thirdDistance,sight,14,dt);
+ else thirdDistance=THREE.MathUtils.damp(thirdDistance,sight,4,dt);
  camera.position.copy(tpPivot).addScaledVector(tpDir,-thirdDistance);
- // Outdoors the lens can climb over him. Indoors it stays below the roof;
- // at very close range updateJohansson hides his body to keep the view clear.
- const cramped=Math.max(0,1.4-thirdDistance)/1.1;
- if(cramped>0&&!current){camera.position.y+=cramped*.6;camera.rotation.x-=cramped*.3;}
+ // Close in, the lens rises over his shoulder and looks down at him, so a narrow alley or a
+ // small room still shows him rather than the back of his head or nothing at all. Eased, so a
+ // post passing behind him does not jerk the view; it rises only where there is room.
+ const cramped=Math.min(1,Math.max(0,1.4-thirdDistance)/1.1);
+ crampedEase=THREE.MathUtils.damp(crampedEase,cramped,8,dt);
+ if(crampedEase>.001){
+  let lift=crampedEase*.3;while(lift>.05&&cameraBlocked(camera.position.x,camera.position.z,camera.position.y+lift,.16,own))lift-=.1;
+  camera.position.y+=Math.max(0,lift);
+ }
  camera.position.y=Math.max(camera.position.y,player.position.y+.3);
  if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
+ if(crampedEase>.001){
+  // His head low in the frame, not in the middle of it: the view still looks ahead, past him.
+  const flat=Math.max(.25,Math.hypot(camera.position.x-player.position.x,camera.position.z-player.position.z)),down=Math.max(-.6,Math.atan2(player.position.y+eye-.1-camera.position.y,flat)+.35);
+  camera.rotation.x=THREE.MathUtils.lerp(camera.rotation.x,Math.min(camera.rotation.x,down),crampedEase);
+ }
 }
 /** R, the drink button, or Drink at the table: a can from the bag, or a sip of what Thao brought. */
 function drinkNow(){if(parkSeat?.izakaya&&beerService?.drink)return sipDrink();return hands.drink();}
@@ -680,7 +711,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(!current||thirdDistance>=.85))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
+ johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(!current||thirdDistance>=.5))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
