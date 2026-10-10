@@ -65,3 +65,21 @@ sea, a fouled propeller, a broken ramp…). The engine room's electrics should b
 - Questions for the creator: Thuan's Wednesday off? A loading screen until interiors are ready? Town book rows that
   show where a resident is?
 - The town's on-screen name is now Minato Machi: change it in the studio's comics and stories when next working there.
+
+## 4. Modular comics in Johansson Studio (the creator, 2026-10-10)
+
+> "I mean here in the comic, is it a way to enhance and make the comics modular, I'm thinking if it can be incorporated
+> into the Johansson Studio?" (about page 2's bottom panel: the massage chair reads as a brown slab.)
+
+Two causes: the game's chair is a plain box, and the comic shot it as a wide set photo. Plan:
+- **Prop hero shots:** every important prop in the town gets a "hero" render: the model alone, lit, on a plain
+  background, at a fixed three-quarter angle, with its name and purpose from the data (who it's for, why it's there).
+  Rendered once by a tool from the game's own model, stored in a prop library the studio reads.
+- **Panel modules:** the comic engine gets reusable panel types, picked per panel in the storyboard instead of
+  hand-coded per story: `set` (a room photo), `cast` (people on a plain background), `insert` (a prop hero shot,
+  big, optionally with a label or a coin/hand), `dark` (eyes and voices), `explainer` (diagram + presenter),
+  `sfx` (a sound filling the panel). Each module has the simplicity rule built in.
+- **In Johansson Studio** (the Town Studio app): a storyboard editor where each panel picks a module and its subject
+  (a resident, a place, a prop from the library), previews it, and the comic builds from that. The same modules feed
+  the film's shots.
+- First use: page 2's chair as an `insert`, after the massage chair is rebuilt as a real 1990s coin massage chair.
