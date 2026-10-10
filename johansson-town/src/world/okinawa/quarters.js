@@ -223,12 +223,17 @@ function utaki(kit,solid,p,{anchor,onAction,inspect}){
 
 function buildWestQuay(kit,solid,{inspect,anchor,onAction,vending}){
  const Q=NISHI.quay;
- solid(sabani(kit,-31,-45.6,{ry:.08}));
- solid(sabani(kit,-24.5,-46.8,{ry:-.05,colour:0x8a3b2e}));
+ // Two sabani hauled out side by side in the yard, square to it, up on blocks: the blue
+ // one against the staging container, Mr Ōshiro's red one in front of it, with a lane
+ // between them. Their sterns stop 1.9 m short of the seawall, so the way along it to
+ // Mr Fujita's pier stays open, and their bows 1.7 m short of the Dock Electrical wall,
+ // the lane to the hoist and the quay edge. (The red one used to lie inside the Dock
+ // Electrical building and the blue one's bow ran into its wall: both were here before
+ // the workshop was built. So were a net pile and a stack of fish boxes, inside it.)
+ solid(sabani(kit,-34.2,-46.1));
+ solid(sabani(kit,-34.2,-43.8,{colour:0x8a3b2e}));
  solid(fishCrates(kit,-36.6,-41.6,{rows:2,cols:3,seed:3}));
- solid(fishCrates(kit,-21.6,-42.2,{rows:2,cols:2,seed:5}));
- netPile(kit,-27.5,-41.5);solid({id:'net-pile',x:-27.3,z:-41.6,w:2.4,d:1.4,height:.6});
- inspect(-31,1,-44,'Inspect the sabani','Sabani',
+ inspect(-32,1,-45,'Inspect the sabani','Sabani',
   'A narrow island fishing boat, cedar planked and painted, up on blocks for its bottom to be scraped. The sail is rolled along the thwarts. Old men still race these in the summer.');
  anchor(-29,1,Q.minZ+.9,'Fish from the west quay',()=>onAction?.('fishing'));
 }
