@@ -114,6 +114,9 @@ assets/
 
 ## Johansson Town
 
+**Names (the creator, 2026-10-10):** Johansson World is the hub (the title screen); the port town on screen is
+**Minato Machi**. ("Johansson Town" stays as the project's and the code's name.)
+
 **Purpose: Johansson Town is a storytelling game.** Everything it does should tell stories — to teach,
 to make people laugh, for drama, or just to be silly — and at the highest quality we can reach.
 Exploring the town is the fun, awesome bonus: every place, person and item discovered feeds the
