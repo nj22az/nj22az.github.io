@@ -31,7 +31,7 @@ The face remains its own low-poly mesh and canvas texture. Roundness interpolate
 
 Each braid has three tapered woven strands, white/palette-colored ties and a small tail. Length changes both mesh and spring anchors; volume changes strand thickness with a constant vertex budget. Two bones per braid keep the existing spring animation and pose library. The cream skirt keeps its four spring sectors and existing cloth clearance shader.
 
-Skirt front and side panels follow their own thigh, with a narrow blend across the centre. Rear panels retain 72% hip/spring support at the hem. A skirt-specific lap support pass keeps seated front panels above a continuous surface across both thighs and spreads them forward by their rest length before the existing leg-clearance pass. Bath wraps retain their previous fitting behavior. The same fitting runs for the skirt, outline and shadow.
+Short skirts use a continuous surface deformation after skinning: the average thigh angle bends the cloth, and a gentle shear follows the leading leg without separating neighbouring panels. When seated, the cloth transitions from the fixed waistband to a hem over the knees in front and on the seat behind. Surface normals turn with the cloth. The existing body clearance pass still runs for the body, outline and shadow; bath wraps and long skirts retain their previous fitting. The GLB retains the skeleton/skin weights; this procedural deformation remains a game-renderer feature.
 
 ## Export
 
