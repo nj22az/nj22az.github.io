@@ -10,7 +10,7 @@ import {buildBicycle} from './bicycle.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK} from './layout.js?snappy=1';
-import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,SHOP_CROSSING_Z} from './main-road.js';
+import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,SHOP_CROSSING_Z} from './main-road.js';
 import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts} from './road-standards.js';
 import {buildStreetLamps,STREET_LAMP_PLACEMENTS} from './street-lamps.js';
 import {createHarbourInstances} from '../render/harbour-instances.js';
@@ -137,6 +137,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // The delivery turn stays on asphalt, with a flush entrance through the old kerb.
   const court=MAIN_SERVICE_COURT;const apron=directBox([court.maxX-court.minX,.04,court.maxZ-court.minZ],[(court.minX+court.maxX)/2,.02,(court.minZ+court.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');apron.name='Main Street service turnout';
   const loading=MAIN_LOADING_APRON,loadingPaving=directBox([loading.maxX-loading.minX,.04,loading.maxZ-loading.minZ],[(loading.minX+loading.maxX)/2,.02,(loading.minZ+loading.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');loadingPaving.name='Main Street freight pullout';
+  const layby=MAIN_PARKING_LAYBY,laybyPaving=directBox([layby.maxX-layby.minX,.04,layby.maxZ-layby.minZ],[(layby.minX+layby.maxX)/2,.02,(layby.minZ+layby.maxZ)/2],GROUND.asphalt,group,[0,0,0],false,'road');laybyPaving.name='Main Street parking lay-by';
+  for(const z of [layby.minZ+.25,layby.maxZ-.25]){const line=directBox([layby.maxX-layby.minX-.2,.012,.09],[(layby.minX+layby.maxX)/2+.1,.046,z],0xd6c8a7,group);line.name='Lay-by bay marking';line.material=line.material.clone();Object.assign(line.material,{depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});line.raycast=()=>{};}
   // The working quay bays connect to Main Street through a marked, flush driveway.
   // Drivers straighten clear of the Port Building canopy before crossing the footway.
   const cargoDrive=directBox([3.9,.04,14.8],[1.25,GROUND_LAYER.grass-.02,-40.2],GROUND.asphalt,group,[0,0,0],false,'road');cargoDrive.name='Quay cargo driveway';
@@ -148,7 +150,7 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   {
     const kerb=new THREE.MeshStandardMaterial({color:0xd9d6cc,roughness:.9});
     for(const x of [MAIN_ROAD.west-.09,MAIN_ROAD.east+.09]){
-      const gaps=[...([SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6])),[court.minZ,court.maxZ],...(x<MAIN_ROAD.x?[[loading.minZ,loading.maxZ]]:[])].sort((a,b)=>a[0]-b[0]);
+      const gaps=[...([SHOP_CROSSING_Z,-18].map(z=>[z-1.6,z+1.6])),[court.minZ,court.maxZ],...(x<MAIN_ROAD.x?[[loading.minZ,loading.maxZ]]:[[MAIN_PARKING_LAYBY.minZ,MAIN_PARKING_LAYBY.kerbTo]])].sort((a,b)=>a[0]-b[0]);
       let z0=MAIN_ROAD.minZ;
       for(const [a,b] of [...gaps,[MAIN_ROAD.maxZ,MAIN_ROAD.maxZ]]){
         if(b>z0&&a>z0){const len=a-z0;const k=new THREE.Mesh(new THREE.BoxGeometry(.18,.11,len),kerb);k.position.set(x,.025,z0+len/2);k.name='Main Street kerb';k.receiveShadow=true;k.castShadow=false;group.add(k);}
