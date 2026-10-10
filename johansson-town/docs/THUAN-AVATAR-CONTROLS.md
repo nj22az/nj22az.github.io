@@ -1,0 +1,43 @@
+# Thuận: editable reference preset
+
+The shared cast preset now uses a softer oval-to-round face, fuller cheeks, warm skin (`#e8bd9e`), restrained blush, round highlighted eyes, fuller rose lips and arched brows. It wears the navy contrast-collar polo, cream pleated skirt, gold pendant/studs and white shoes. Glasses are off by default; their rose frames are preserved for turning them back on.
+
+| Recipe parameter | Creator location | Range / options |
+| --- | --- | --- |
+| `head.roundness` | Face → Adjust | 0–1: original form → soft round |
+| `head.shape`, `head.jaw`, `head.cheeks` | Face → Adjust | Existing width, jaw and cheek adjustments |
+| `body.skin` | Body or Face → Colour | Skin swatches, including the new warm tone; recipe accepts hex colors |
+| `blush` | Face → Adjust | 0–1 intensity |
+| `hair.length` | Hair → Adjust, Twin braids | 0–1: upper chest → below waist; Thuận: 0.92 |
+| `hair.volume` | Hair → Adjust, Twin braids | 0–1: fine → full; Thuận: 0.70 |
+| `hair.tieColour` | Hair → Colour, Twin braids | Independent tie color |
+| `hair.colour`, `hair.flip` | Hair → Colour / Style | Color and side part |
+| `glasses.enabled` | Glasses & beard → Style | Wear glasses toggle |
+| `glasses.style`, `glasses.colour` | Glasses & beard → Style / Colour | None, round, square, shades, half-rim; frame color |
+| `outfit.topColour` | Top → Colour | Polo color |
+| `outfit.bottomColour` | Bottom → Colour | Skirt color |
+| `accessories.necklaceColour` | Accessories → Colour | Independent pendant/chain color |
+| `accessories.earrings`, `accessories.colour` | Accessories → Style / Colour | None, studs, hoops; earring/pin color |
+
+All fields normalize and survive recipe codes and saved avatars. Older braid recipes without length/volume retain the compact silhouette. Older accessories without a necklace color inherit their shared accessory color.
+
+The **Preview expression** menu also exposes happy, shy, thinking, excited and the rest of the existing face library alongside the pose preview.
+
+## Geometry and materials
+
+The face remains its own low-poly mesh and canvas texture. Roundness interpolates the same head profile used by the face, scalp and hair. The runtime retains its existing painted eye/mouth expression system and body draw-call count. Bright eyes gain a softer catchlight and subtle eyelid line. Hair retains the raised side-part crown, with three small loose wisps.
+
+Each braid has three tapered woven strands, white/palette-colored ties and a small tail. Length changes both mesh and spring anchors; volume changes strand thickness with a constant vertex budget. Two bones per braid keep the existing spring animation and pose library. The cream skirt keeps its four spring sectors and existing cloth clearance shader.
+
+## Export
+
+Use **Export T-pose (.glb)** below the body preview. The export includes:
+
+- Neutral T-pose with open hands, existing skeleton and skin weights.
+- Separate `Braid L` and `Braid R` skinned meshes.
+- Relative face position morph targets: `smile`, `shy`, `surprised`, `blink`.
+- Normalized recipe and PNG expression textures in the root node's extras: neutral, smile, happy, shy, thinking, excited, surprised and blink.
+
+Morph targets add small localized cheek, jaw and eyelid deformations. The matching painted textures are still needed for the exact eye/mouth expressions; a generic GLB viewer does not automatically switch the PNGs stored in extras. Game-specific cel outlines and procedural cloth clearance remain in the game renderer, while the GLB uses standard materials and vertex colors.
+
+The checked export and game-rendered pose sheet are in `docs/qa/braids-skirt/`.

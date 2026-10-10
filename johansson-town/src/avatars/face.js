@@ -42,6 +42,7 @@ const MOOD=Object.freeze({
  smile:{eyes:'smiling',brow:0,browLift:3,mouth:'smile',blush:.15},
  content:{eyes:'content',brow:0,browLift:1,mouth:'smile',blush:.1},
  happy:{eyes:'happy',brow:0,browLift:10,mouth:'grin',blush:.4},
+ excited:{eyes:'wide',brow:0,browLift:13,mouth:'grin',blush:.45},
  laugh:{eyes:'happy',brow:0,browLift:14,mouth:'laugh',blush:.55},
  sad:{eyes:'sad',brow:-1,browLift:3,mouth:'frown',blush:0},
  worried:{eyes:'worry',brow:-1.35,browLift:10,mouth:'wobble',blush:0},
@@ -177,10 +178,12 @@ function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
   if(!['angry','sad','shy'].includes(state)){
    const cx=look[0]*2+2,cy=-h*.35+look[1]*2;ctx.fillStyle='#fbfaf6';ctx.beginPath();
    if(style==='starry'){for(let i=0;i<8;i++){const a=i/8*TAU-Math.PI/2,r=i%2?1.3:4;ctx.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}ctx.closePath();}
-   else ctx.arc(cx,cy,style==='bright'?2.6:1.8,0,TAU);
+   else {ctx.globalAlpha=style==='bright'?.88:1;ctx.arc(cx,cy,style==='bright'?3:1.8,0,TAU);}
    ctx.fill();
+   ctx.globalAlpha=1;
    if(style==='bright'){ctx.beginPath();ctx.arc(look[0]*2-2.5,h*.4+look[1]*2,1.3,0,TAU);ctx.fill();}
   }
+  if(style==='bright'){ctx.strokeStyle='rgba(43,38,35,.22)';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(0,-2,12,h+3,0,Math.PI*1.12,Math.PI*1.88);ctx.stroke();ctx.strokeStyle=line;}
   // Tired eyes: a soft bag under each.
   if(style==='tired'){ctx.strokeStyle='rgba(43,38,35,.45)';ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(0,h*.2,10,Math.PI*.2,Math.PI*.8);ctx.stroke();ctx.strokeStyle=line;}
   if(style==='lashes'){ctx.lineWidth=2.8;for(let i=0;i<2;i++){ctx.beginPath();ctx.moveTo(side*5,-5-i*3);ctx.lineTo(side*(11+i*2),-8-i*4);ctx.stroke();}}
@@ -364,6 +367,7 @@ function drawFacialHair(ctx,L,facial){
 }
 
 function drawGlasses(ctx,L,glasses){
+ if(glasses.enabled===false)return;
  if(glasses.style==='none')return;
  ctx.save();ctx.strokeStyle=glasses.colour;ctx.lineWidth=3.2;
  const r=(15*L.eyeS+2)*(L.glassS??1),y=L.glassY??L.eyeY,rx=r*L.eyeW;

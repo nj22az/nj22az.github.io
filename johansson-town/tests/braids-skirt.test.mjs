@@ -14,7 +14,7 @@ test('long twin braids remain a selectable shared part after saving a recipe',()
  for(const age of ['child','teen','adult','elder']){
   const r=normalizeRecipe({...CAST_RECIPES.Thuan,age,hair:{style:'longbraids',colour:'#3a2618',flip:true}});
   assert.deepEqual(decodeRecipe(encodeRecipe(r)),r);
-  const m=measure(r),left=longBraidPoints(m,1),right=longBraidPoints(m,-1);
+  const m=measure(r),left=longBraidPoints(m,1,r.hair),right=longBraidPoints(m,-1,r.hair);
   assert.equal(left[2][1],m.chestY+m.torso*.15);
   assert.deepEqual(left.map(p=>[-p[0],p[1],p[2]]),right);
  }

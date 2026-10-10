@@ -60,7 +60,7 @@ export function springRest(recipe,m){
   rest['braid'+side+'1']=[x,H(-R*.3),-R*.35];rest['braid'+side+'2']=[x,H(-R*1.05),-R*.2];
   if(style==='braids')chains.push({bones:['braid'+side+'1','braid'+side+'2'],tip:[x,H(-R*1.98),-R*.05],...SWING.braid,kind:'braid'});
   if(style==='longbraids'){
-   const points=longBraidPoints(m,s);rest['braid'+side+'1']=points[0];rest['braid'+side+'2']=points[1];
+   const points=longBraidPoints(m,s,recipe.hair);rest['braid'+side+'1']=points[0];rest['braid'+side+'2']=points[1];
    chains.push({bones:['braid'+side+'1','braid'+side+'2'],tip:points[2],...SWING.braid,kind:'braid'});
   }
  }
