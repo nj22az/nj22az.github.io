@@ -25,7 +25,7 @@ test('a recipe is always complete and safe, and survives a share code',()=>{
 });
 
 test('everyone in town has their own recipe, and strangers get a steady face from their name',()=>{
- assert.equal(CAST_RECIPES.Thuan.hair.style,'sweptponytail');assert.equal(CAST_RECIPES.Johansson.hair.style,'horseshoe');
+ assert.equal(CAST_RECIPES.Thuan.hair.style,'longbraids');assert.equal(CAST_RECIPES.Johansson.hair.style,'horseshoe');
  for(const n of NEIGHBOURS)assert.ok(NEIGHBOUR_RECIPES[n.name],'Recipe for '+n.name);
  const faces=new Set(NEIGHBOURS.map(n=>JSON.stringify(recipeFor(n.name))));assert.equal(faces.size,NEIGHBOURS.length,'No two neighbours share a face');
  assert.deepEqual(recipeFor('A passing stranger'),recipeFor('A passing stranger'));
@@ -103,10 +103,10 @@ test('the player body offers everything the game asks of Johansson, and takes a 
  assert.ok(j.sitHip>.2&&j.sitHip<.7);assert.ok(j.lens.eye>j.lens.head);
  j.play('Kachashi');j.update(.1,{visible:true});assert.equal(j.move,'Kachashi');
  const cup=new THREE.Group();j.hold(cup);assert.equal(cup.parent,j.avatar.bones.handR);
- j.setRecipe(CAST_RECIPES.Thuan);assert.equal(j.avatar.recipe.hair.style,'sweptponytail');assert.equal(cup.parent,j.avatar.bones.handR,'Still holding the drink');
+ j.setRecipe(CAST_RECIPES.Thuan);assert.equal(j.avatar.recipe.hair.style,'longbraids');assert.equal(cup.parent,j.avatar.bones.handR,'Still holding the drink');
  const storage=new Map(),store={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)};
  assert.equal(playerRecipe(store).hair.style,'horseshoe','Johansson until the creator saves someone else');
- savePlayerRecipe(CAST_RECIPES.Thuan,store);assert.ok(storage.get(PLAYER_RECIPE_KEY));assert.equal(playerRecipe(store).hair.style,'sweptponytail');
+ savePlayerRecipe(CAST_RECIPES.Thuan,store);assert.ok(storage.get(PLAYER_RECIPE_KEY));assert.equal(playerRecipe(store).hair.style,'longbraids');
 });
 
 

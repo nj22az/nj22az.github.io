@@ -1,4 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
+import {longBraidPoints} from './braid-path.js';
 
 /**
  * Swing: hair, skirts and shirt hems that follow the body a moment late, the way
@@ -58,6 +59,10 @@ export function springRest(recipe,m){
   const x=s*R*.85;
   rest['braid'+side+'1']=[x,H(-R*.3),-R*.35];rest['braid'+side+'2']=[x,H(-R*1.05),-R*.2];
   if(style==='braids')chains.push({bones:['braid'+side+'1','braid'+side+'2'],tip:[x,H(-R*1.98),-R*.05],...SWING.braid,kind:'braid'});
+  if(style==='longbraids'){
+   const points=longBraidPoints(m,s);rest['braid'+side+'1']=points[0];rest['braid'+side+'2']=points[1];
+   chains.push({bones:['braid'+side+'1','braid'+side+'2'],tip:points[2],...SWING.braid,kind:'braid'});
+  }
  }
  // Skirts and hems: four quarters round a pivot at the waist, each swinging its own side.
  const hem=hemSpec(recipe,m),waist=hem?.waist??m.hipY+m.torso*.13;

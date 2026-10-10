@@ -8,7 +8,7 @@ import {withTownDials} from './personality.js';
 /**
  * Who everybody is, as recipes. Johansson and Thuan are drawn from the photographs the
  * town was built for: he is sixty-odd, bald and sunburnt in his kariyushi shirt; she has
- * her braids with the yellow ties, the side part, round rose glasses and lipstick.
+ * her long twin braids with pale ties, the side part, round rose glasses and lipstick.
  */
 const R=(o)=>normalizeRecipe(withTownDials(o));
 const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō']);
@@ -41,7 +41,7 @@ export const CAST_RECIPES=castSet({
   swim:{colour:'#2f5f9e'}}),
  Thuan:R({name:'Thuan',accessories:{earrings:'studs',neckwear:'pendant',colour:'#e0b93a'},
   body:{height:.36,build:.35,silhouette:'feminine',skin:'#f1cfae'},head:{size:.48,shape:.48,form:'heart',jaw:.3,cheeks:.62},
-  hair:{style:'sweptponytail',colour:'#1c1714',flip:false},
+  hair:{style:'longbraids',colour:'#1c1714',flip:false},
   eyes:{style:'lashes',colour:'#2a1d16',size:.78,spacing:.5,height:.48,tilt:.55},
   brows:{style:'arched',colour:'#2a1d16',size:.42,height:.55,tilt:.5},
   nose:{style:'dot',size:.35,height:.5},mouth:{style:'smile',colour:'#cc3d52',size:.42,height:.5},
