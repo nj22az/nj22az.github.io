@@ -28,8 +28,13 @@ import {broadleafGeometry} from './okinawa/trees.js';
 export const EAST_LAWN=Object.freeze({
  id:'east-lawn',surface:'grass',
  minX:MAIN_ROAD.pavementEast,maxX:33.2,minZ:-38,maxZ:24.6,
- /** The parapet at the far end, and the south return that closes the corner. */
- wall:Object.freeze({x:33.55,z:-38.35,depth:.7,height:.58,southFrom:18.6}),
+ /**
+  * The parapet at the far end, and the south return along the auction apron. The return
+  * stops at x 21.65 (southFrom less half its depth), leaving a truck-width gate between
+  * it and the harbour office into the auction apron (EAST_QUAY.gate); before, the shed,
+  * the ice plant and the east quay were reached through a 1.3 m slot beside the office.
+  */
+ wall:Object.freeze({x:33.55,z:-38.35,depth:.7,height:.58,southFrom:22}),
  /**
   * Sand from the foot of the wall out past the headland's edge. It has to stay above
   * the island's own ground (y -0.4) the whole way it is dry, or the land draws
