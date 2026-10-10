@@ -11,6 +11,18 @@ import {withTownDials} from './personality.js';
  * her long twin braids with pale ties, the side part, round rose glasses and lipstick.
  */
 const R=(o)=>normalizeRecipe(withTownDials(o));
+/** Thuận before the hair/face experiments. The original parts remain shared
+ * creator assets; only the outfit uses the current navy/cream wardrobe set. */
+export const ORIGINAL_THUAN_RECIPE=R({name:'Thuan',
+ accessories:{earrings:'studs',neckwear:'pendant',colour:'#e0b93a'},
+ body:{height:.36,build:.35,silhouette:'feminine',skin:'#f1cfae'},
+ head:{size:.48,shape:.48,form:'heart',jaw:.3,cheeks:.62},
+ hair:{style:'braids',colour:'#1c1714',flip:false,tieColour:'#f4d23c'},
+ eyes:{style:'lashes',colour:'#2a1d16',size:.78,spacing:.5,height:.48,tilt:.55},
+ brows:{style:'arched',colour:'#2a1d16',size:.42,height:.55,tilt:.5},
+ nose:{style:'dot',size:.35,height:.5},mouth:{style:'smile',colour:'#cc3d52',size:.42,height:.5},
+ glasses:{style:'round',colour:'#e06a7a'},blush:.65,
+ outfit:HARBOUR_POLO_OUTFIT,swim:{colour:'#e98aa6'}});
 const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō']);
 const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).map(([name,r])=>{
  const female=PROFILES.find(p=>p.name===name)?.female??FEMALE_NEIGHBOURS.has(name);

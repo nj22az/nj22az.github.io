@@ -338,7 +338,7 @@ function addHair(list,recipe,m){
    const side=s>0?'L':'R',chain=swing.chains.find(ch=>ch.bones[0]==='braid'+side+'1');
    const share=chainShare('head',['braid'+side+'1','braid'+side+'2'],[swing.rest['braid'+side+'1'],swing.rest['braid'+side+'2'],chain.tip]);
    for(let i=0;i<6;i++){const r=R*(.2-i*.012);ball(list,r,at(x0+s*R*.05,y,z0+R*.05*i),share,i%2?c:dark,[1,1.3,1],8,6);y-=r*1.5;}
-   ball(list,R*.13,at(x0+s*R*.05,y+R*.05,z0+R*.3),share,recipe.outfit.accent,[1.2,.7,1.2],8,6);
+   ball(list,R*.13,at(x0+s*R*.05,y+R*.05,z0+R*.3),share,recipe.hair.tieColour,[1.2,.7,1.2],8,6);
    ball(list,R*.12,at(x0+s*R*.05,y-R*.12,z0+R*.3),share,c,[1,1.4,1],8,6);
   }
  }

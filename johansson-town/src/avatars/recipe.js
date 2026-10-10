@@ -95,7 +95,7 @@ export function normalizeRecipe(input={}){
   v:1,name:String(r.name||'').slice(0,24),age:pick(AGES,r.age,'adult'),
   body:sub('body',{height:num,build:num,proportion:(v)=>pick(['classic','rounded'],v,'classic'),silhouette:(v)=>pick(PARTS.silhouette,v,'neutral'),skin:col}),
   head:sub('head',{size:num,shape:num,form:(v,f)=>pick(HEAD_FORMS,v,f),jaw:num,cheeks:num,roundness:num}),
-  hair:sub('hair',{style:(v,f)=>pick(PARTS.hair,v,f),colour:col,flip:flag,length:num,volume:num,tieColour:col}),
+  hair:sub('hair',{style:(v,f)=>pick(PARTS.hair,v,f),colour:col,flip:flag,length:num,volume:num,tieColour:(v,f)=>col(v,r.hair?.style==='braids'?col(r.outfit?.accent,f):f)}),
   eyes:sub('eyes',{style:(v,f)=>pick(PARTS.eyes,v,f),colour:col,size:num,width:num,spacing:num,height:num,tilt:num}),
   brows:sub('brows',{style:(v,f)=>pick(PARTS.brows,v,f),colour:col,size:num,spacing:num,height:num,tilt:num}),
   nose:sub('nose',{style:(v,f)=>pick(PARTS.nose,v,f),size:num,height:num,x:num}),
