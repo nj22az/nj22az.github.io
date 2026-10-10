@@ -47,3 +47,7 @@ Morph targets add small localized cheek, jaw and eyelid deformations. The matchi
 The checked export and game-rendered pose sheet are in `docs/qa/braids-skirt/`.
 
 The original braid cap now leaves curved openings around the ears. Ears sit slightly higher and forward, with a small inner-ear inset; the original face, fringe and braid lengths are retained. This adds small low-poly inner-ear pieces to the shared body mesh for the original braid style, with no new material or draw call.
+
+## Sleeve coverage
+
+All sleeved tops share a closed underarm gusset between the chest and upper-arm bones. Short sleeves also colour the underlying upper-arm surface as cloth, so raising an arm does not expose a skin patch behind the sleeve cap. The gusset samples the existing sleeve texture and stays in the same skinned body mesh/material. Sleeveless tops and swimwear retain bare shoulders. Raised-arm checks for Johansson and Thuận are in `docs/qa/braids-skirt/underarms-after.jpg`.
