@@ -110,3 +110,28 @@ it, using World's own vendored three.js and toon look, so what you model is exac
 - **First batch:** the asset format + the code mode + publishing one asset end to end: the 1990s coin massage chair
   (section 2), shown in the onsen and as the comic's insert. Then the drawing mode. Then the ferry's parts (section 1)
   are built in Studio this way.
+
+## 6. Studio as "Mario Maker for Johansson World": the island builder (the creator, 2026-10-10)
+
+> "I would like a sim city kind of mode where I can build the island from my assets and build the houses and rooms and
+> streets with my assets in studio and then choose to update Johansson World with it, with my studio setup the studio
+> should sort of be Mario maker for Johansson World"
+
+Studio already has a Build page (place things, save them into the town) and Publish (tests, build, then the online
+town). Grow it into a builder with zoom levels, all made of the asset catalogue (section 5):
+- **Island view** (SimCity-like, top-down): shape the coast and ground, lay streets and paths (with pavements, kerbs,
+  crossings), zone plots (shop, home, harbour, park), place whole buildings from the catalogue, set the ferry berth.
+- **Building view:** pick a building, set its floors and footprint, draw its rooms on a grid (walls, doors, windows,
+  stairs), choose the facade, sign and roof from the catalogue.
+- **Room view:** furnish a room from the catalogue with snapping to walls and floor; each asset brings its collider,
+  seats and actions; give the room its purpose and who uses it (residents' routines, shop merchandising).
+- **Play-test inside Studio** at any time (walk it as the player, see residents walk their routes), with the World
+  rules checked live: walkways at least 1.4 m, nothing floating or clipping, no spawn inside anything, phone budget,
+  every item has a purpose.
+- **Update World:** a single button that shows what changed (a before/after map and a list), runs World's tests and
+  build, and only then publishes. Nothing goes live without the creator choosing it.
+- **Data, not code:** the island, buildings and rooms are saved as layout files (JSON) that World loads, so World becomes
+  the player for what Studio makes. Existing hand-coded places are converted to layout files gradually; each
+  conversion must look and play the same (photographs before and after).
+- **Order:** section 5's asset format and modeller first; then the room view (smallest, proves the idea, e.g. the
+  onsen's lobby); then the building view; then the island view; then converting existing places.
