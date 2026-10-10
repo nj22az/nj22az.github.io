@@ -112,7 +112,7 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
   const moored=phase==='waiting',sea=waveHeight(x,z,clock)-SEA_LEVEL;
   ferry.position.set(x,SEA_LEVEL+.12+sea*(moored?.25:.8),z);
   ferry.rotation.set(Math.sin(clock*.7+x)*(moored?.004:.02),yaw,Math.sin(clock*.9)*(moored?.006:.03));
-  ferry.userData.gangway.visible=moored&&berth==='town';
+  ferry.userData.gangway.visible=moored&&berth==='town';ferry.userData.setGate?.(moored&&berth==='town');
   ferry.userData.setRamp?.(run.rampDown,berth==='airport'?-.008:.24);
   // Her screws turn and the radar sweeps while she moves; alongside both are still.
   const moved=Math.hypot(x-last.x,z-last.z),dt=clock-last.t;last.x=x;last.z=z;last.t=clock;
@@ -142,7 +142,7 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
   },
   beginCrossing(destination,{automatic=false}={}){
    if(phase==='crossing'||!AIRPORT_FERRY_PORTS[destination]||destination===berth)return false;
-   localService=true;phase='crossing';crossing={destination,progress:0,automatic:!!automatic,elapsed:0};ferry.userData.gangway.visible=false;run.setCrossingProgress(0);trackSolid();return true;
+   localService=true;phase='crossing';crossing={destination,progress:0,automatic:!!automatic,elapsed:0};ferry.userData.gangway.visible=false;ferry.userData.setGate?.(false);run.setCrossingProgress(0);trackSolid();return true;
   },
   /** The island simulation advances unaccompanied cargo runs without taking the camera. */
   advanceAutomaticCrossing(dt){

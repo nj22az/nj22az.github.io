@@ -97,11 +97,16 @@ function addWalkablePier(world,options,factory){
   factory.box(group,[.34,.56,15.45],[4.02,OUTER_PIER.height+.02-.28,-57.3],dark,null,options.shadows);
   factory.box(group,[8.2,.58,.42],[0,OUTER_PIER.height+.02-.29,-64.84],dark,null,options.shadows);
   const posts=[];
-  for(const side of [-1,1]){
+  // Rails on the east flank only. The west flank is the ferry's berth: a berthing face carries
+  // fenders and bollards, and a rail there would foul her lines and stand across her gangway.
+  for(const side of [1]){
     for(const z of [-51.1,-53.7,-62.2,-64.1])posts.push(factory.cylinder(group,.065,1,[side*3.92,.62,z],steel,10));
     factory.beam(group,[side*3.92,1.06,-51.1],[side*3.92,1.06,-53.7],.045,steel);
     factory.beam(group,[side*3.92,1.06,-62.2],[side*3.92,1.06,-64.1],.045,steel);
   }
+  // Rubber fenders on the berthing face, where the Minato Maru's side lies 0.15 m off the coping:
+  // D-section fenders, hung from the coping down past her waterline.
+  for(const z of [-51.6,-55.2,-58.8,-62.4])factory.box(group,[.15,1.1,.42],[-4.1-.075,-.3,z],dark,null,options.shadows);
   for(const x of [-3.92,-1.3,1.3,3.92])factory.cylinder(group,.065,1,[x,.62,-64.18],steel,10);
   for(const x of [-3.92,-1.3,1.3])factory.beam(group,[x,1.06,-64.18],[x+2.62,1.06,-64.18],.045,steel);
   for(const [x,z] of [[-2.75,-55],[2.75,-55],[-2.75,-61],[2.75,-61]]){

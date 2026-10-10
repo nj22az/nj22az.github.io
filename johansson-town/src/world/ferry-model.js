@@ -72,7 +72,8 @@ function hullShell(){
   // Port side top-down to the keel, then starboard keel-up to the top.
   for(const side of [1,-1]){const list=side===1?[...rows].reverse():rows;for(const r of list){pos.push(r.x*side,r.y,z);c.setHex(r.c);col.push(c.r,c.g,c.b);}}
  }
- for(let i=0;i<stations.length-1;i++)for(let j=0;j<per-1;j++){const a=i*per+j,b=a+1,d=a+per,e=d+1;idx.push(a,d,b,b,d,e);}
+ // The port bulwark is open at the gangway gate (GATE): no plating between those two stations.
+ for(let i=0;i<stations.length-1;i++)for(let j=0;j<per-1;j++){if(j===0&&stations[i]>=GATE.from-1e-6&&stations[i+1]<=GATE.to+1e-6)continue;const a=i*per+j,b=a+1,d=a+per,e=d+1;idx.push(a,d,b,b,d,e);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
  // Normals must face out: a port-side vertex amidships points to +x.
  const mid=Math.floor(stations.length/2)*per+Math.floor(per/4),n=g.getAttribute('normal');
@@ -109,6 +110,7 @@ function deckAndBulwarks(){
   const z2=z+.5,w1=halfBreadth(z)-.07,w2=halfBreadth(z2)-.07;
   tri([-w1,DECK,z],[w1,DECK,z],[-w2,DECK,z2],up,DECKGREEN);tri([w1,DECK,z],[w2,DECK,z2],[-w2,DECK,z2],up,DECKGREEN);
   for(const side of [1,-1]){
+   if(side===1&&z>=GATE.from-1e-6&&z2<=GATE.to+1e-6)continue;     // the gangway gate's opening
    const inward=new THREE.Vector3(-side,0,0),a=[side*w1,DECK,z],b=[side*w1,bulwarkTop(z)-.02,z],d=[side*w2,DECK,z2],e=[side*w2,bulwarkTop(z2)-.02,z2];
    tri(a,b,d,inward,BULWARK_IN);tri(b,e,d,inward,BULWARK_IN);
   }
@@ -181,11 +183,14 @@ export function buildFerryModel({shadows=false}={}){
  for(const side of [1,-1]){
   for(let z=-HALF+.25;z<HALF-.2;z+=1){const z2=Math.min(HALF-.2,z+1);
    kit.bar('rubber',[side*(halfBreadth(z)+.05),deckEdge(z)-.12,z],[side*(halfBreadth(z2)+.05),deckEdge(z2)-.12,z2],.09,DARK,6);
-   kit.bar('paint',[side*(halfBreadth(z)-.03),bulwarkTop(z)+.02,z],[side*(halfBreadth(z2)-.03),bulwarkTop(z2)+.02,z2],.045,HULL,5);}
+   if(side===1&&z2>GATE.from&&z<GATE.to){for(const [a,b] of [[z,GATE.from],[GATE.to,z2]])if(b-a>.05)kit.bar('paint',[side*(halfBreadth(a)-.03),bulwarkTop(a)+.02,a],[side*(halfBreadth(b)-.03),bulwarkTop(b)+.02,b],.045,HULL,5);}
+   else kit.bar('paint',[side*(halfBreadth(z)-.03),bulwarkTop(z)+.02,z],[side*(halfBreadth(z2)-.03),bulwarkTop(z2)+.02,z2],.045,HULL,5);}
   // Bulwark stiffeners on the inside, every 1.2 m, and the scuppers (freeing ports) at the deck.
-  for(let z=-8.4;z<10.2;z+=1.2){const hb=halfBreadth(z)-.1;kit.box('paint',[.06,BULWARK-.08,.08],[side*hb,DECK+BULWARK/2-.04+sheer(z),z],BULWARK_IN);}
+  for(let z=-8.4;z<10.2;z+=1.2){if(side===1&&z>GATE.from-.1&&z<GATE.to+.1)continue;const hb=halfBreadth(z)-.1;kit.box('paint',[.06,BULWARK-.08,.08],[side*hb,DECK+BULWARK/2-.04+sheer(z),z],BULWARK_IN);}
   for(let z=-.6;z<10;z+=2.2)kit.box('paint',[.03,.12,.42],[side*(halfBreadth(z)+.005),DECK+.07,z],DARK);
  }
+ // The gangway gate's posts: the opening's edges, plated and capped.
+ for(const z of [GATE.from,GATE.to]){kit.box('paint',[.12,BULWARK+.04,.08],[halfBreadth(z)-.05,DECK+BULWARK/2,z],WHITE);}
  // ---- Under the water: keel bar, skeg, bilge keels, shafts, brackets, screws, rudders, thruster, anodes, sea chests.
  kit.box('paint',[.16,.12,17],[0,KEEL+.02,-1.5],ANTIFOULING);
  {const skeg=new THREE.Shape();skeg.moveTo(-2,KEEL+.05);skeg.lineTo(-8.2,KEEL-.04);skeg.lineTo(-8.2,keelY(-8.2)+.02);skeg.lineTo(-4,keelY(-4)+.1);skeg.closePath();
@@ -229,8 +234,7 @@ export function buildFerryModel({shadows=false}={}){
   for(let s=1;s<9;s++){const f=s/9;kit.box('metal',[.6,.03,.14],[x,DECK+(top-DECK)*f,-.15+(D.saloon.fore+.15)*f],STEEL);}
   for(const k of [-.3,.3])kit.bar('paint',[x+k,DECK+.9,-.15],[x+k,top+.9,D.saloon.fore],.02,YELLOW);
  }
- // Car-deck exhaust fan housings and the engine-room supply trunks on the deckhouse front corners.
- for(const side of [1,-1]){kit.box('paint',[.5,1.1,.5],[side*2.62,DECK+.55+1.2,-1.5],WHITE);kit.box('metal',[.52,.18,.52],[side*2.62,DECK+2.2,-1.5],STEEL);}
+ // An open car deck breathes on its own: no exhaust fans. The engine room's supply fans are on the upper deck aft.
  // ---- Forward: mooring bitts and fairleads each side of the ramp, the windlass and the anchor.
  for(const side of [1,-1]){
   const x=side*(halfBreadth(9.6)-.55);kit.box('paint',[.8,.25,1.4],[x,DECK+.12,9.6],HULL);
@@ -255,9 +259,9 @@ export function buildFerryModel({shadows=false}={}){
  kit.box('paint',[SAL.width-.1,.012,salL-.1],[0,salTop+.106,salZ],DECKGREEN);                       // the upper deck's deck paint
  const glass=[];
  for(const side of [1,-1]){
-  for(let z=SAL.fore-1.4;z>SAL.aft+.6;z-=1.15)glass.push([[.04,.62,.9],[side*(SAL.width/2+.01),DECK+1.45,z]]);
-  kit.box('paint',[.04,1.9,.8],[side*(SAL.width/2+.02),DECK+.95,SAL.fore-.6],0x5d6b6a);           // the side door
-  kit.box('metal',[.05,.06,.82],[side*(SAL.width/2+.03),DECK+1.92,SAL.fore-.6],STEEL);
+  for(let z=SAL.fore-1.95;z>SAL.aft+.6;z-=1.15)glass.push([[.04,.62,.9],[side*(SAL.width/2+.01),DECK+1.45,z]]);
+  kit.box('paint',[.04,1.9,.8],[side*(SAL.width/2+.02),DECK+.95,GATE.z],0x5d6b6a);                   // the side door, at the gangway gate
+  kit.box('metal',[.05,.06,.82],[side*(SAL.width/2+.03),DECK+1.92,GATE.z],STEEL);
  }
  for(const x of [-1.6,1.6])glass.push([[.9,.62,.04],[x,DECK+1.45,SAL.fore+.01]]);
  kit.box('paint',[.9,1.9,.04],[0,DECK+.95,SAL.fore+.02],0x5d6b6a);                                 // the front door
@@ -333,7 +337,7 @@ export function buildFerryModel({shadows=false}={}){
    for(const z of [6.8,-8.8]){const x=Math.max(hullX(WL-.36,z),hullX(WL+.46,z),halfBreadth(z)*0)+.015;pieces.push(decal([0,2,1,2],.32,.82,[side*x,WL+.06,z],rot));}
    pieces.push(decal([1,2,1,2],.55,.55,[side*(hullX(WL+.35,-.5)+.012),WL+.38,-.5],rot));              // the load line, amidships
    pieces.push(decal([2,2,1,2],.4,.4,[side*(hullX(.15,8)+.012),.18,8],rot));                         // the thruster mark
-   pieces.push(decal([3,2,1,1],.7,.35,[side*(SAL.width/2+.03),DECK+1.95,SAL.fore-1.4],rot));         // life jackets
+   pieces.push(decal([3,2,1,1],.7,.35,[side*(SAL.width/2+.03),DECK+1.95,SAL.fore-1.95],rot));        // life jackets, over the first window
   }
   pieces.push(decal([2,0,2,1],1.9,.55,[0,.42,-HALF-.012],Math.PI));                                  // name and port on the transom
   pieces.push(decal([3,3,1,1],.7,.35,[.9,DECK+1.95,SAL.fore+.04],0));                                // muster station, saloon front
@@ -371,6 +375,13 @@ export function buildFerryModel({shadows=false}={}){
  {const k3=createKit(shadows);k3.box('paint',[1.7,.06,.9],[.85,0,0],DECKGREEN);for(const dz of [-.43,.43]){k3.box('metal',[1.7,.04,.04],[.85,.85,dz],WHITE);for(const x of [.1,.85,1.6])k3.box('metal',[.03,.85,.03],[x,.42,dz],WHITE);}k3.finish(gangway);}
  gangway.position.set(halfBreadth(GANGWAY_Z)-.05,DECK,GANGWAY_Z);gangway.rotation.z=-.3;
  ferry.userData.gangway=gangway;
+ // The gate leaf, hinged on its forward post: shut across the opening at sea; alongside it folds right
+ // back against the inside of the bulwark, forward of the opening, and is hooked there.
+ const gate=new THREE.Group();gate.name='Gangway gate';gate.position.set(halfBreadth(GATE.to)-.1,DECK,GATE.to);ferry.add(gate);
+ {const k4=createKit(shadows);k4.box('paint',[.04,BULWARK-.06,GATE.to-GATE.from-.06],[0,BULWARK/2,-(GATE.to-GATE.from)/2],WHITE);k4.box('paint',[.05,.06,GATE.to-GATE.from-.06],[0,BULWARK-.05,-(GATE.to-GATE.from)/2],HULL);k4.finish(gate);}
+ ferry.userData.gate=gate;
+ ferry.userData.setGate=open=>{gate.rotation.y=open?Math.PI:0;};
+ ferry.userData.setGate(false);
  // ---- Moving parts: screws turn and the radar sweeps while she is under way.
  ferry.userData.screws=screws;ferry.userData.radar=radar;
  ferry.userData.underway=(dt,speed)=>{for(const s of screws)s.rotation.z+=s.userData.hand*dt*speed*25;radar.rotation.y+=dt*(speed>0?2.6:0);};
@@ -379,7 +390,9 @@ export function buildFerryModel({shadows=false}={}){
  return ferry;
 }
 
+/** The gangway gate in the port bulwark, beside the deckhouse's port door: a 1 m opening between two loft stations. */
+export const GATE=Object.freeze({z:-2,from:-2.5,to:-1.5});
 /** The bow ramp: 3.8 m wide (a 4-tonne truck is 2.2 m), 2.4 m long from its hinge to its toe. */
 export const FERRY_RAMP=Object.freeze({width:3.8,length:2.4});
 /** The port side door, where the gangway lands on the pier: 1.6 m aft of the deckhouse front. */
-export const GANGWAY_Z=D.saloon.fore-.6;
+export const GANGWAY_Z=GATE.z;

@@ -35,6 +35,8 @@ export const FERRY_DECKS=Object.freeze({
   lanes:Object.freeze([1.4,-1.4]),laneWidth:2.6,
   /** The three car places: two in the starboard lane, one in the port lane, nose to the ramp. */
   slots:Object.freeze([Object.freeze([-1.4,7.4]),Object.freeze([-1.4,2.6]),Object.freeze([1.4,6.2])]),
+  /** An open car deck: it breathes through its open top and needs no exhaust fans. */
+  open:true,
   /** Walkways each side, inside the bulwark: 0.5 m clear, for the crew and the lashings. */
   walkway:.5,bulwark:1.05}),
  /** The deckhouse aft on the car deck: the passenger saloon, its toilets and vending corner, the purser's window. */
@@ -92,7 +94,6 @@ export const FERRY_LOADS=Object.freeze([
  load('fire-pump','Fire and general-service pump',7.5,445,true,{atSea:0,manoeuvring:0,loading:0,night:0},'Stands by on the fire main; the deck wash on Sundays'),
  load('bilge','Bilge pump',2.2,445,true,{atSea:.1,manoeuvring:0,loading:.1,night:.1},'Pumped on the oiler’s rounds'),
  load('er-fans','Engine-room supply fans (two)',7.4,445,true,{atSea:1,manoeuvring:1,loading:.5,night:0},'The diesels breathe engine-room air'),
- load('car-fans','Car-deck exhaust fans (two)',3,445,true,{atSea:.5,manoeuvring:1,loading:1,night:0},'Clears the exhaust while cars run their engines aboard'),
  load('ramp','Ramp hydraulic power pack',11,445,true,{atSea:0,manoeuvring:0,loading:.5,night:0},'Raises and lowers the bow ramp and drives its locking pins'),
  load('capstan','Stern capstan',5.5,445,true,{atSea:0,manoeuvring:.4,loading:0,night:0},'Heaves the stern lines in'),
  load('windlass','Anchor windlass',5.5,445,true,{atSea:0,manoeuvring:0,loading:0,night:0},'The anchor is for emergencies here; it is tried once a week'),

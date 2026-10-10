@@ -69,8 +69,8 @@ two pumps, hand pump for emergency steering. Fuel: A-type heavy oil (A重油).
 
 **Electrics.** Two 60 kVA (48 kW) 445 V 60 Hz generators; IT main switchboard with insulation monitor; 445/105 V
 lighting transformers; 24 V emergency bank; 30 kVA shore supply through a 200/445 V transformer at Minato. The load
-balance (`FERRY_LOADS`, tested): at sea 36 kW on one set (75 %), manoeuvring 66 kW on two (69 %), loading 35 kW on
-one, night 8 kW on shore power. The bow thruster will not start on one generator; a preferential trip sheds the air
+balance (`FERRY_LOADS`, tested): at sea 35 kW on one set (72 %), manoeuvring 63 kW on two (66 %), loading 32 kW on
+one, night 8 kW on shore power. The car deck is open to the sky and needs no exhaust fans. The bow thruster will not start on one generator; a preferential trip sheds the air
 conditioning, galley and water heater. The emergency bank holds the emergency lighting, navigation lights, VHF and
 alarms for about 7 hours.
 
@@ -106,8 +106,11 @@ The island households (`island-households.js`) and the resident guide (the maste
   breakwater, 0.1 m+ off both piers, never over the quay, no spinning.
 - **Kitano-jima crossing:** the same departure, the sea route, then bow in to the jetty 1.9 m off; leaving it, astern
   16 m before swinging. *Checked:* `tests/airport-ferry.test.mjs` with the real hull outline.
-- **Gangway, queue and landing:** the gangway now runs from the deckhouse's port door to the pier end (z −63.4); the
-  queue and the arrival point moved south of the crate stack. *Checked:* `tests/airport-dock-access.test.mjs`.
+- **Gangway, queue and landing:** the gangway now runs from the deckhouse's port door, through a gangway gate in the
+  bulwark (shut at sea, folded back and hooked alongside), to the pier end (z −63.5); the queue and the arrival point
+  moved south of the crate stack.
+- **The pier's berthing face:** the guard rails on the outer pier's west flank are gone (they stood across her gangway
+  and would foul her lines); four D-section rubber fenders hang there instead, where her side lies. *Checked:* `tests/airport-dock-access.test.mjs`.
 - **Cars:** ride in car place 1 (starboard lane forward). Boarding at Minato is now a three-point turn: down, left onto
   the open quay, back round a 3 m arc onto her centreline and straight back down the ramp. *Checked:*
   `tests/kitano-link.test.mjs` (the full car body against every solid), `tests/airport-ferry.test.mjs`.
@@ -121,7 +124,9 @@ The island households (`island-households.js`) and the resident guide (the maste
   the bow and ramp (down and up), the car deck, the waterline (draft marks, load line) and lifted out of the water as a
   dry dock would see her (the reviewed set: `docs/qa/ferry/`). Faults those photographs found and fixed: the car deck and inner bulwarks drawn facing
   down (see-through), the transom's paint smeared and then half missing, the bow name half inside the plating, the
-  draft marks inside the curved bow, the wheelhouse wings floating at half height.
+  draft marks inside the curved bow, the wheelhouse wings floating at half height, the gangway through the bulwark and
+  across the pier's rail, a car-deck fan housing hanging in the air (and the fans themselves, which an open car deck
+  does not need), a sign over the door frame.
 
 ## 5. Open: what is not built yet (in this order)
 
