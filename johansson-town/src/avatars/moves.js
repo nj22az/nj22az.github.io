@@ -1,4 +1,4 @@
-/** The things Johansson can do on request, in the order the moves menu lists them. */
+/** Shared actions available to every avatar, in the order the moves menu lists them. */
 export const MOVES=Object.freeze([
  ['Wave','Wave'],['Bow','Bow'],['Nod','Nod'],['HeadShake','Shake your head'],['Point','Point'],
  ['Shrug','Shrug'],['Clap','Clap'],['Laugh','Laugh'],['Think','Think it over'],['LookAround','Look around'],

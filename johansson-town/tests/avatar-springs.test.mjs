@@ -15,8 +15,8 @@ function stage(recipe){
 }
 const run=(s,seconds,move=()=>{})=>{for(let t=0;t<seconds;t+=1/60){move(t);s.animator.update(1/60,{speed:0});s.avatar.springs.update(1/60);}};
 
-test('Thuan’s braids and Johansson’s shirt hem hang on swing bones; a cropped head has none',()=>{
- assert.equal(stage(CAST_RECIPES.Thuan).avatar.springs.links.length,4);
+test('Thuan’s twin braids and Johansson’s shirt hem hang on swing bones; a cropped head has none',()=>{
+ assert.equal(stage(CAST_RECIPES.Thuan).avatar.springs.links.length,8,'both braids and four pleated skirt quarters');
  assert.equal(stage(CAST_RECIPES.Johansson).avatar.springs.links.length,4);
  const thuan=stage(CAST_RECIPES.Thuan).avatar;thuan.wear('sailor');
  assert.equal(thuan.springs.links.length,8,'in her sailor set the pleated skirt swings too');
