@@ -46,9 +46,10 @@ vec3 towelFitPoint(vec3 p){
 vec3 skirtLapPoint(vec3 p,vec3 rest){
  if(uSeat < -1e5)return p;
  float front=smoothstep(-uSkirt.w*.25,uSkirt.w*.25,rest.z);
- float down=smoothstep(.12,.75,(uSkirt.x-rest.y)/uSkirt.y);
+ float down=smoothstep(.02,.55,(uSkirt.x-rest.y)/uSkirt.y);
  vec3 a=(uLegA[0]+uLegA[1])*.5,b=(uLegB[0]+uLegB[1])*.5,ab=b-a;
- float t=clamp(dot(p-a,ab)/max(dot(ab,ab),1e-8),0.,1.);
+ float t=clamp((uSkirt.x-rest.y)/max(length(ab),1e-6),0.,1.);
+ p.z=mix(p.z,mix(a.z,b.z,t)+rest.z*.5,front*down);
  float top=mix(a.y,b.y,t)+mix(uLegR[0].x,uLegR[0].y,t)+uSkirt.z;
  p.y=mix(p.y,max(p.y,top),front*down);
  return p;
@@ -98,9 +99,10 @@ export function createTowelFit(avatar,mesh){
  function fitPoint(p,kind=1,rest=null){
   const u=uniforms;
   if(kind>1.5&&rest&&u.uSeat.value>-1e5){
-   const S=u.uSkirt.value,front=THREE.MathUtils.smoothstep(rest.z,-S.w*.25,S.w*.25),down=THREE.MathUtils.smoothstep((S.x-rest.y)/S.y,.12,.75);
+   const S=u.uSkirt.value,front=THREE.MathUtils.smoothstep(rest.z,-S.w*.25,S.w*.25),down=THREE.MathUtils.smoothstep((S.x-rest.y)/S.y,.02,.55);
    a.copy(u.uLegA.value[0]).add(u.uLegA.value[1]).multiplyScalar(.5);b.copy(u.uLegB.value[0]).add(u.uLegB.value[1]).multiplyScalar(.5);ab.subVectors(b,a);
-   const t=THREE.MathUtils.clamp(d.subVectors(p,a).dot(ab)/Math.max(ab.lengthSq(),1e-8),0,1),R=u.uLegR.value[0],top=THREE.MathUtils.lerp(a.y,b.y,t)+THREE.MathUtils.lerp(R.x,R.y,t)+S.z;
+   const t=THREE.MathUtils.clamp((S.x-rest.y)/Math.max(ab.length(),1e-6),0,1),R=u.uLegR.value[0],top=THREE.MathUtils.lerp(a.y,b.y,t)+THREE.MathUtils.lerp(R.x,R.y,t)+S.z;
+   p.z=THREE.MathUtils.lerp(p.z,THREE.MathUtils.lerp(a.z,b.z,t)+rest.z*.5,front*down);
    p.y=THREE.MathUtils.lerp(p.y,Math.max(p.y,top),front*down);
   }
   h.copy(p).applyMatrix4(u.uHips.value);

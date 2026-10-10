@@ -31,7 +31,7 @@ The face remains its own low-poly mesh and canvas texture. Roundness interpolate
 
 Each braid has three tapered woven strands, white/palette-colored ties and a small tail. Length changes both mesh and spring anchors; volume changes strand thickness with a constant vertex budget. Two bones per braid keep the existing spring animation and pose library. The cream skirt keeps its four spring sectors and existing cloth clearance shader.
 
-Skirt front panels follow the thighs smoothly; rear panels remain mostly attached to the hips. A skirt-specific lap support pass keeps seated front panels above a continuous surface across both thighs before the existing leg-clearance pass. Bath wraps retain their previous fitting behavior. The same fitting runs for the skirt, outline and shadow.
+Skirt front and side panels follow their own thigh, with a narrow blend across the centre. Rear panels retain 72% hip/spring support at the hem. A skirt-specific lap support pass keeps seated front panels above a continuous surface across both thighs and spreads them forward by their rest length before the existing leg-clearance pass. Bath wraps retain their previous fitting behavior. The same fitting runs for the skirt, outline and shadow.
 
 ## Export
 
@@ -45,3 +45,5 @@ Use **Export T-pose (.glb)** below the body preview. The export includes:
 Morph targets add small localized cheek, jaw and eyelid deformations. The matching painted textures are still needed for the exact eye/mouth expressions; a generic GLB viewer does not automatically switch the PNGs stored in extras. Game-specific cel outlines and procedural cloth clearance remain in the game renderer, while the GLB uses standard materials and vertex colors.
 
 The checked export and game-rendered pose sheet are in `docs/qa/braids-skirt/`.
+
+The original braid cap now leaves curved openings around the ears. Ears sit slightly higher and forward, with a small inner-ear inset; the original face, fringe and braid lengths are retained. This adds small low-poly inner-ear pieces to the shared body mesh for the original braid style, with no new material or draw call.

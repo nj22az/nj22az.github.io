@@ -256,7 +256,10 @@ function hairCap(style,flip,spec=HAIR[style]){
   // yes/no, so the hairline is a clean curve where the cap meets the head, not stair steps.
   const outFace=Math.max(.18-v.z,Math.abs(v.x)-spec.faceHalf,v.y-front);
   const low=THREE.MathUtils.lerp(spec.side,spec.back,THREE.MathUtils.smoothstep(-v.z,-.2,.7));
-  const f=spec.field?spec.field(v):Math.min(outFace,v.y-low),keep=f>0;
+  // Leave a small curved opening around the ears on the original braid cap.
+  // The fringe and plaits keep their original silhouette.
+  const earOpening=style==='braids'&&v.z>-.32?Math.hypot((v.y+.035)/.25,(v.z-.04)/.30)-1:1;
+  const f=spec.field?spec.field(v):Math.min(outFace,v.y-low,earOpening*.1),keep=f>0;
   // Bare scalp is tucked just inside the head; a close crop needs only a short step.
   // (A towel turban is snug at its edge and swells behind it: spec.snug, spec.swell; its edge goes in gently, spec.inner
   // and spec.tuck, so where it meets the skin is a smooth line across the mesh, not along its triangles.)
@@ -790,10 +793,10 @@ function addBody(list,recipe,m,swim=false){
   // The skirt hangs from the hips and, lower down, goes with the legs: seated, it lies on the lap; and a long skirt,
   // below the knee, goes with the shins, so seated it falls over them instead of sticking out past the knees like a tube.
   const drape=p=>{
-   // The front lies on the raised thighs; the back remains attached to the
-   // pelvis instead of rotating upward with both legs into a rigid hoop.
+   // Front and side panels track their own thigh during a stride. Retain
+   // some hip/spring support behind so sitting does not lift the rear hem.
    const front=THREE.MathUtils.smoothstep(p.z,-D*.35,D*.22);
-   const leg=b==='longskirt'?THREE.MathUtils.smoothstep(hipY-p.y,.02,.12):THREE.MathUtils.smoothstep(waist-p.y,len*.15,len*.85)*(.08+.92*front),w=THREE.MathUtils.smoothstep(p.x,-W*.4,W*.4);
+   const leg=b==='longskirt'?THREE.MathUtils.smoothstep(hipY-p.y,.02,.12):THREE.MathUtils.smoothstep(waist-p.y,len*.15,len*.85)*(.28+.72*front),w=THREE.MathUtils.smoothstep(p.x,-W*.20,W*.20);
    const shin=b==='longskirt'?THREE.MathUtils.smoothstep(hipY-p.y,m.thigh*.82,m.thigh*1.02):0;
    return [['hips',1-leg],['thighL',leg*(1-shin)*w],['thighR',leg*(1-shin)*(1-w)],['kneeL',leg*shin*w],['kneeR',leg*shin*(1-w)]];
   };
@@ -1399,7 +1402,14 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const fingerEnd=parts.reduce((n,g)=>n+g.attributes.position.count,0);
  addNose(parts,recipe,m);
  // Ears.
- const ears=list=>{for(const s of [-1,1])ball(list,m.Rh*.2,[s*m.Rh*m.headSX*.97,m.headCentre-m.Rh*.08,-m.Rh*.05],'head',recipe.body.skin,[.55,1,.8],8,6);};
+ const ears=list=>{
+  const visible=recipe.hair.style==='braids';
+  for(const s of [-1,1]){
+   const at=[s*m.Rh*m.headSX*(visible?1.025:.97),m.headCentre-m.Rh*(visible?.025:.08),m.Rh*(visible?.08:-.05)];
+   ball(list,m.Rh*(visible?.22:.2),at,'head',recipe.body.skin,[.55,1,.8],10,8);
+   if(visible)ball(list,m.Rh*.105,[at[0]+s*m.Rh*.018,at[1],at[2]+m.Rh*.145],'head',new THREE.Color(recipe.body.skin).multiplyScalar(.91).getStyle(),[.55,1,.22],8,6);
+  }
+ };
  ears(parts);
  const mainHairFrom=parts.length;addHair(parts,recipe,m);const mainHairSpan=hairSpan(parts,mainHairFrom,parts.length);addAccessories(parts,recipe,m);
  // The hat goes in last, so taking it off is drawing one range shorter: people hang it
