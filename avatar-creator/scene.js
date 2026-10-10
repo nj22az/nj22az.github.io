@@ -5,7 +5,7 @@ import {poseSceneAvatar} from './scene-avatar.js';
 import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from '../johansson-town/src/avatars/cast.js';
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,POSES,EXPRESSIONS,emptyScene,normalizeScene,addCharacter,moveCharacter,panelOrder,text} from './scene-model.mjs';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,POSES,EXPRESSIONS,emptyScene,normalizeScene,addCharacter,panelOrder,text} from './scene-model.mjs';
 
 const friendly={Idle:'Standing',Kachashi:'Dance',Tada:'Ta-da',HandsOnHips:'Hands on hips',HeelKick:'Heel kick',CheekRest:'Hand on cheek',DoubleCheek:'Both cheeks'};
 const nameOf=n=>n==='Thuan'?'Thuận':n;
@@ -76,7 +76,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  async function loadWorld(id){
   if(world&&worldId===id)return world;
   views??=await fetch(new URL('../johansson-town/assets/images/feed/views.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('Locations unavailable');return r.json();});
-  const next=await buildSceneWorld(id,views,townData);townData=next.townData||townData;world?.dispose();world=next;worldId=id;
+  const next=await buildSceneWorld(id,views,townData);townData=next.townData||townData;world?.dispose();world=next;worldId=id;renderer?.renderLists.dispose();
   field('seat').replaceChildren(new Option('Stand on ground',''),...world.seats.filter(s=>Math.hypot(s.position[0]-world.origin[0],s.position[2]-world.origin[2])<12).map(s=>new Option(s.label,s.id)));
   return world;
  }
@@ -101,7 +101,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      const position=environment.place(actor),avatar=entry.avatar;
      // Each avatar is a mesh in the same scene graph as the counter and walls.
      environment.scene.add(avatar.root);avatar.root.position.set(0,0,0);avatar.root.scale.setScalar(actor.size);
-     poseSceneAvatar(avatar,{...actor,seatHeight:position.seat?(position.seat.surfaceY-position.y)/actor.size:.48});
+     poseSceneAvatar(avatar,{...actor,seatHeight:position.seat?(position.seat.surfaceY-position.y)/actor.size:0});
      if(position.seat)avatar.root.rotation.y=Math.PI+(position.seat.yaw||0);
      avatar.root.position.set(position.x,position.y,position.z);avatar.root.updateMatrixWorld(true);
      const box=new THREE.Box3().setFromObject(avatar.root),head=new THREE.Vector3(position.x,box.max.y,position.z),projected=head.clone().project(camera);
