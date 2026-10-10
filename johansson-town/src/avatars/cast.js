@@ -1,3 +1,4 @@
+import {HARBOUR_POLO_OUTFIT} from './outfits.js';
 import {residentRecipe} from './wardrobe.js';
 import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
 import {PROFILES} from '../people/profiles.js';
@@ -7,9 +8,21 @@ import {withTownDials} from './personality.js';
 /**
  * Who everybody is, as recipes. Johansson and Thuan are drawn from the photographs the
  * town was built for: he is sixty-odd, bald and sunburnt in his kariyushi shirt; she has
- * her braids with the yellow ties, the side part, round rose glasses and lipstick.
+ * her long twin braids with pale ties, the side part, round rose glasses and lipstick.
  */
 const R=(o)=>normalizeRecipe(withTownDials(o));
+/** Thuận before the hair/face experiments. The original parts remain shared
+ * creator assets; only the outfit uses the current navy/cream wardrobe set. */
+export const ORIGINAL_THUAN_RECIPE=R({name:'Thuan',
+ accessories:{earrings:'none',neckwear:'none',colour:'#e0b93a'},
+ body:{height:.36,build:.35,silhouette:'feminine',skin:'#f1cfae'},
+ head:{size:.48,shape:.48,form:'heart',jaw:.3,cheeks:.62},
+ hair:{style:'braids',colour:'#1c1714',flip:false,tieColour:'#f4d23c'},
+ eyes:{style:'lashes',colour:'#2a1d16',size:.78,spacing:.5,height:.48,tilt:.55},
+ brows:{style:'arched',colour:'#2a1d16',size:.42,height:.55,tilt:.5},
+ nose:{style:'dot',size:.35,height:.5},mouth:{style:'smile',colour:'#cc3d52',size:.42,height:.5},
+ glasses:{style:'round',colour:'#e06a7a'},blush:.65,
+ outfit:HARBOUR_POLO_OUTFIT,swim:{colour:'#e98aa6'}});
 const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō']);
 const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).map(([name,r])=>{
  const female=PROFILES.find(p=>p.name===name)?.female??FEMALE_NEIGHBOURS.has(name);
@@ -17,6 +30,18 @@ const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).
 })));
 
 export const CAST_RECIPES=castSet({
+ // Photo reference: a blonde adult with shoulder-length hair, arched brows,
+ // almond eyes and berry lips. A neutral editable name, not an invented identity.
+ 'Harbour visitor':R({name:'Harbour visitor',age:'adult',
+  body:{height:.56,build:.25,silhouette:'feminine',skin:'#f1cfae'},
+  head:{size:.44,shape:.42,form:'oval',jaw:.32,cheeks:.38},
+  hair:{style:'shoulder',colour:'#caa568',flip:false},
+  eyes:{style:'lashes',colour:'#625644',size:.48,width:.58,spacing:.48,height:.52,tilt:.52},
+  brows:{style:'arched',colour:'#826447',size:.44,height:.57,tilt:.52},
+  nose:{style:'ridge',size:.40,height:.48},
+  mouth:{style:'soft',colour:'#a84353',size:.48,width:.54,height:.48},
+  blush:.20,freckles:false,mole:false,wrinkles:.12,
+  outfit:HARBOUR_POLO_OUTFIT}),
  Johansson:R({name:'Johansson',
   body:{height:.72,build:.72,silhouette:'masculine',skin:'#dc9d7a'},head:{size:.48,shape:.45,form:'square',jaw:.75,cheeks:.55},
   hair:{style:'horseshoe',colour:'#b8b4aa'},
@@ -27,13 +52,13 @@ export const CAST_RECIPES=castSet({
   outfit:{top:'kariyushi',topColour:'#7fb0d8',pattern:'flowers',bottom:'shorts',bottomColour:'#c8b48a',footwear:'sandals',shoes:'#6d4a32',accent:'#f4f1ea'},
   swim:{colour:'#2f5f9e'}}),
  Thuan:R({name:'Thuan',accessories:{earrings:'studs',neckwear:'pendant',colour:'#e0b93a'},
-  body:{height:.36,build:.35,silhouette:'feminine',skin:'#f1cfae'},head:{size:.48,shape:.48,form:'heart',jaw:.3,cheeks:.62},
-  hair:{style:'braids',colour:'#1c1714',flip:false},
-  eyes:{style:'lashes',colour:'#2a1d16',size:.78,spacing:.5,height:.48,tilt:.55},
-  brows:{style:'arched',colour:'#2a1d16',size:.42,height:.55,tilt:.5},
-  nose:{style:'dot',size:.35,height:.5},mouth:{style:'smile',colour:'#cc3d52',size:.42,height:.5},
-  glasses:{style:'round',colour:'#e06a7a'},blush:.65,
-  outfit:{top:'blouse',topColour:'#f4d23c',pattern:'flowers',bottom:'trousers',bottomColour:'#27304d',shoes:'#f4f1ea',accent:'#f4d23c'},
+  body:{height:.36,build:.35,silhouette:'feminine',skin:'#e8bd9e'},head:{size:.48,shape:.53,form:'oval',jaw:.48,cheeks:.72,roundness:.72},
+  hair:{style:'longbraids',colour:'#1c1714',flip:false,length:.92,volume:.7,tieColour:'#f4f1ea'},
+  eyes:{style:'bright',colour:'#2a1d16',size:.8,width:.64,spacing:.5,height:.48,tilt:.53},
+  brows:{style:'arched',colour:'#2a1d16',size:.51,height:.55,tilt:.5},
+  nose:{style:'button',size:.27,height:.5},mouth:{style:'soft',colour:'#a94f4b',size:.5,width:.57,height:.5},
+  glasses:{style:'round',enabled:false,colour:'#e06a7a'},blush:.38,
+  outfit:HARBOUR_POLO_OUTFIT,
   swim:{colour:'#e98aa6'}}),
  // Thuan's middle sister: slim, a high ponytail, a plain white tee and blue shorts.
  // Stubborn but friendly: the flat set mouth and straight brows, and the grin under them.

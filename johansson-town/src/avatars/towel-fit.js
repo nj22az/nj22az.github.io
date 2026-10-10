@@ -26,6 +26,7 @@ uniform mat4 uHipsInv;
 uniform vec3 uTorso;
 uniform vec3 uTorsoY;
 uniform float uSeat;
+uniform vec4 uSkirt;
 vec3 towelCapsule(vec3 p,vec3 a,vec3 b,vec2 r){
  vec3 ab=b-a;float u=clamp(dot(p-a,ab)/max(dot(ab,ab),1e-8),0.,1.);
  vec3 q=a+ab*u,d=p-q;float l=length(d),rad=mix(r.x,r.y,u);
@@ -42,6 +43,38 @@ vec3 towelFitPoint(vec3 p){
  for(int i=0;i<4;i++)p=towelCapsule(p,uLegA[i],uLegB[i],uLegR[i]);
  return p;
 }
+// One continuous cloth surface around both legs. Independent thigh rotations
+// made adjoining panels cross and invert during strides and seated poses.
+vec3 skirtSurfacePoint(vec3 p,vec3 rest){
+ vec3 la=(uHips*vec4(uLegA[0],1.)).xyz,lb=(uHips*vec4(uLegB[0],1.)).xyz;
+ vec3 ra=(uHips*vec4(uLegA[1],1.)).xyz,rb=(uHips*vec4(uLegB[1],1.)).xyz;
+ vec3 axis=((lb-la)+(rb-ra))*.5;
+ float angle=clamp(atan(axis.z,-axis.y),-.35,1.55);
+ float down=clamp((uSkirt.x-rest.y)/uSkirt.y,0.,1.);
+ float bend=angle*smoothstep(0.,.65,down),c=cos(bend),s=sin(bend);
+ vec3 h=rest;float y=rest.y-uTorsoY.y;
+ h.y=uTorsoY.y+y*c+rest.z*s*mix(1.,.4,smoothstep(.3,1.3,angle));
+ h.z=rest.z*c-y*s;
+ // A broad, gentle shear follows the leading leg without scissoring panels.
+ float side=clamp(rest.x/max(uTorso.x,1e-6),-1.,1.);
+ h.z+=side*((lb.z-la.z)-(rb.z-ra.z))*.22*down*down;
+ // Seated cloth spans from the fixed waistband to a smooth hem over the
+ // knees in front and the seat behind, rather than rotating a whole hoop.
+ float radial=max(length(vec2(rest.x*uTorso.y/uTorso.x,rest.z)),1e-6);
+ float face=clamp(rest.z/radial,-1.,1.);
+ vec3 lap=vec3(rest.x,mix(uSkirt.x,(la.y+ra.y)*.5+uLegR[0].x*face-uSkirt.y*.14*max(face,0.),down),rest.z*(1.-.75*down*max(face,0.))+uSkirt.y*down*1.12*max(face,0.));
+ h=mix(h,lap,smoothstep(.6,1.3,angle));
+ h=(uHipsInv*vec4(h,1.)).xyz;
+ return mix(h,p,.06*down);
+}
+vec3 skirtSurfaceNormal(vec3 n,vec3 rest){
+ vec3 axis=(mat3(uHips)*((uLegB[0]-uLegA[0])+(uLegB[1]-uLegA[1])))*.5;
+ float angle=clamp(atan(axis.z,-axis.y),-.35,1.55);
+ float down=clamp((uSkirt.x-rest.y)/uSkirt.y,0.,1.);
+ float bend=angle*smoothstep(0.,.65,down),c=cos(bend),s=sin(bend);
+ return normalize(mat3(uHipsInv)*vec3(n.x,n.y*c+n.z*s,n.z*c-n.y*s));
+}
+
 `;
 const NO_SEAT=-1e6;
 
@@ -61,6 +94,7 @@ export function createTowelFit(avatar,mesh){
   uTorso:{value:new THREE.Vector3(m.width/2*hipRatio,m.depth/2*hipRatio,clear)},
   uTorsoY:{value:new THREE.Vector3(m.hipY-m.torso*.08,m.hipY+m.torso*.05,m.hipY+m.torso*.15)},
   uSeat:{value:NO_SEAT},
+  uSkirt:{value:new THREE.Vector4(m.hipY+m.torso*.13,avatar.recipe.outfit.bottom==='longskirt'?m.thigh+m.shin*.85:m.thigh*.9,clear,m.depth)},
  };
  const hipsIndex=mesh.skeleton.bones.indexOf(bones.hips),inverse=new THREE.Matrix4(),a=new THREE.Vector3(),b=new THREE.Vector3(),down=new THREE.Vector3();
  const legs=[['thighL','kneeL'],['thighR','kneeR'],['kneeL','footL'],['kneeR','footR']];
@@ -83,8 +117,21 @@ export function createTowelFit(avatar,mesh){
  }
  const h=new THREE.Vector3(),q=new THREE.Vector3(),ab=new THREE.Vector3(),d=new THREE.Vector3();
  /** The shader's towelFitPoint, in JavaScript: a posed point (mesh space) out of the body. */
- function fitPoint(p){
+ function fitPoint(p,kind=1,rest=null){
   const u=uniforms;
+  if(kind>1.5&&rest){
+   const S=u.uSkirt.value;
+   a.copy(u.uLegA.value[0]).applyMatrix4(u.uHips.value);b.copy(u.uLegB.value[0]).applyMatrix4(u.uHips.value);ab.subVectors(b,a);
+   q.copy(u.uLegA.value[1]).applyMatrix4(u.uHips.value);d.copy(u.uLegB.value[1]).applyMatrix4(u.uHips.value).sub(q);
+   const angle=THREE.MathUtils.clamp(Math.atan2((ab.z+d.z)*.5,-(ab.y+d.y)*.5),-.35,1.55);
+   const down=THREE.MathUtils.clamp((S.x-rest.y)/S.y,0,1),bend=angle*THREE.MathUtils.smoothstep(down,0,.65),c=Math.cos(bend),sn=Math.sin(bend),y=rest.y-u.uTorsoY.value.y;
+   const side=THREE.MathUtils.clamp(rest.x/Math.max(u.uTorso.value.x,1e-6),-1,1),hip=(a.y+q.y)*.5;
+   h.set(rest.x,u.uTorsoY.value.y+y*c+rest.z*sn*THREE.MathUtils.lerp(1,.4,THREE.MathUtils.smoothstep(angle,.3,1.3)),rest.z*c-y*sn+side*(ab.z-d.z)*.22*down*down);
+   const radial=Math.max(Math.hypot(rest.x*u.uTorso.value.y/u.uTorso.value.x,rest.z),1e-6),face=THREE.MathUtils.clamp(rest.z/radial,-1,1);
+   q.set(rest.x,THREE.MathUtils.lerp(S.x,hip+u.uLegR.value[0].x*face-S.y*.14*Math.max(face,0),down),rest.z*(1-.75*down*Math.max(face,0))+S.y*down*1.12*Math.max(face,0));
+   h.lerp(q,THREE.MathUtils.smoothstep(angle,.6,1.3)).applyMatrix4(u.uHipsInv.value);
+   p.lerp(h,1-.06*down);
+  }
   h.copy(p).applyMatrix4(u.uHips.value);
   const [yMin,yHip,yMax]=u.uTorsoY.value.toArray();
   if(h.y>=yMin&&h.y<=yMax){
@@ -104,7 +151,7 @@ export function createTowelFit(avatar,mesh){
  /** Adds the fit to a material's vertex shader, after skinning, for the wrap's vertices only. */
  function patch(shader){
   Object.assign(shader.uniforms,uniforms);
-  shader.vertexShader=GLSL+shader.vertexShader.replace('#include <skinning_vertex>','#include <skinning_vertex>\n if( towelFit > 0.5 ) transformed = towelFitPoint( transformed );');
+  shader.vertexShader=GLSL+shader.vertexShader.replace('#include <skinnormal_vertex>','#include <skinnormal_vertex>\n if( towelFit > 1.5 ) objectNormal = skirtSurfaceNormal( normal, position );').replace('#include <skinning_vertex>','#include <skinning_vertex>\n if( towelFit > 1.5 ) transformed = skirtSurfacePoint( transformed, position );\n if( towelFit > 0.5 ) transformed = towelFitPoint( transformed );');
  }
  /** A material that draws `material` with the fit (its own compile hook kept). */
  function fitted(material,key){

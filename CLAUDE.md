@@ -118,10 +118,19 @@ When the creator says **World** or **Studio**, they mean:
 - **World** = **Johansson World**, the explorable game built from our assets. Code: `nj22az.github.io/johansson-town/`
   (branch `claude/sjoskolan-youtube-strategy-gofi3o`, live on the website). Its port town is shown as **Minato Machi**;
   "Johansson Town" is only the code's old name.
-- **Studio** = **Johansson Studio**, where the assets are trimmed and refined and turned into comics, images and memes.
-  Code: the studio repo `jojo/`: the app in `town-studio/`, the comic builder in `art/pencil/`, the film in `remotion/`,
-  the stories in `content/`. (The folder `jojo/studio/` and `STUDIO.md` are the JoJo Engineering YouTube week, not
-  Johansson Studio.)
+- **Studio** = **Johansson Studio**, the web app at `nj22az.github.io/avatar-creator/` (folder `avatar-creator/` in this
+  repo): workspaces Edit character, Build scene (location → characters → pose & position → text → export) and Make comic,
+  rendered with World's own code (`../johansson-town/src/...`). It is where the assets are trimmed and refined and turned
+  into comics, images and memes; the creator uses it on an iPad in Safari. (The creator, 2026-10-10, chose that Claude
+  takes it over and publishes it the same checked way as World.) The studio repo `jojo/` holds the offline tools behind it:
+  the desktop companion `town-studio/`, the comic builder `art/pencil/`, the film `remotion/`, the stories `content/`.
+  (The folder `jojo/studio/` and `STUDIO.md` are the JoJo Engineering YouTube week, not Johansson Studio.)
+- **Publishing World and Studio:** both are developed on the branch `claude/sjoskolan-youtube-strategy-gofi3o`; the
+  workflow `.github/workflows/johansson-town-live.yml` tests a push and copies `johansson-town/` and `avatar-creator/` onto
+  main (the live site). If anything changed those folders directly on main, publishing stops ("main has … changes the
+  branch does not have"): **before pushing, `git fetch origin main` and merge main into the branch**, then check the
+  workflow run (`gh api repos/nj22az/nj22az.github.io/actions/workflows/johansson-town-live.yml/runs?per_page=3`). Never
+  call a change live until that run has succeeded.
 - **Studio is "Mario Maker for Johansson World"** (the creator, 2026-10-10: "I would like a sim city kind of mode where I
   can build the island from my assets and build the houses and rooms and streets with my assets in studio and then choose
   to update Johansson World with it, with my studio setup the studio should sort of be Mario maker for Johansson World").

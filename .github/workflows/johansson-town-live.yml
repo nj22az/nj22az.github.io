@@ -1,13 +1,14 @@
 name: Johansson Town live
 
-# Keeps the online game (GitHub Pages, served from main) up to date while the town is built on its work branch:
-# every push there that touches johansson-town/ is tested, then johansson-town/ (only that folder) is copied onto main.
+# Keeps the online game and its web Studio (GitHub Pages, served from main) up to date while they are built on the
+# work branch: every push there that touches johansson-town/ (World) or avatar-creator/ (Johansson Studio, which
+# imports World's code) is tested, then those two folders (only those) are copied onto main.
 # The decorator (title-screen BUILD, "Arrange furniture", ?build) stays off online: src/features.js turns it off on
 # the live host, and the tests below check that guard before anything is published.
 on:
   push:
     branches: ['claude/sjoskolan-youtube-strategy-gofi3o']
-    paths: ['johansson-town/**', '.github/workflows/johansson-town-live.yml']
+    paths: ['johansson-town/**', 'avatar-creator/**', '.github/workflows/johansson-town-live.yml']
   workflow_dispatch:
 
 concurrency:
@@ -35,6 +36,9 @@ jobs:
         run: node --test tests/live-features.test.mjs
       - name: Game tests (including a fresh runtime build and portraits)
         run: npm test
+      - name: Johansson Studio tests (the web Studio runs on World's code)
+        working-directory: .
+        run: node --test avatar-creator/tests/*.test.mjs
 
   publish:
     needs: test
@@ -47,7 +51,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Copy johansson-town onto main
+      - name: Copy johansson-town and avatar-creator onto main
         env:
           SOURCE: ${{ github.sha }}
           BRANCH: ${{ github.ref_name }}
@@ -56,21 +60,25 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898613+github-actions[bot]@users.noreply.github.com'
           git fetch --no-tags origin "$SOURCE"
-          # Never overwrite game changes that reached main some other way: main's johansson-town must be a version
-          # the work branch already has (or the same as now). If not, merge main into the branch first.
-          live=$(git rev-parse HEAD:johansson-town)
-          known=no
-          for c in $(git rev-list --max-count=1000 "$SOURCE" -- johansson-town); do
-            if [ "$(git rev-parse "$c:johansson-town" 2>/dev/null || true)" = "$live" ]; then known=yes; break; fi
+          for dir in johansson-town avatar-creator; do
+            # Never overwrite changes that reached main some other way: main's folder must be a version the work branch
+            # already has (or absent). If not, merge main into the branch first.
+            live=$(git rev-parse "HEAD:$dir" 2>/dev/null || true)
+            if [ -n "$live" ]; then
+              known=no
+              for c in $(git rev-list --max-count=1000 "$SOURCE" -- "$dir"); do
+                if [ "$(git rev-parse "$c:$dir" 2>/dev/null || true)" = "$live" ]; then known=yes; break; fi
+              done
+              if [ "$known" != yes ]; then
+                echo "::error::main has $dir changes the branch does not have. Merge main into $BRANCH, then push again."
+                exit 1
+              fi
+            fi
+            git rm -rq --ignore-unmatch "$dir"
+            git checkout "$SOURCE" -- "$dir"
           done
-          if [ "$known" != yes ]; then
-            echo "::error::main has Johansson Town changes the branch does not have. Merge main into $BRANCH, then push again."
-            exit 1
-          fi
-          git rm -rq --ignore-unmatch johansson-town
-          git checkout "$SOURCE" -- johansson-town
-          if git diff --cached --quiet; then echo 'The live game is already up to date.'; exit 0; fi
-          git commit -q -m "Johansson Town live: ${SOURCE::8} from $BRANCH"
+          if git diff --cached --quiet; then echo 'The live game and Studio are already up to date.'; exit 0; fi
+          git commit -q -m "Johansson World and Studio live: ${SOURCE::8} from $BRANCH"
           for i in 1 2 3; do
             git push origin HEAD:main && exit 0
             sleep $((i * 5)); git pull --rebase -q origin main

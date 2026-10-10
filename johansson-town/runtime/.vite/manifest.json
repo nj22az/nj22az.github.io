@@ -1,17 +1,17 @@
 {
-  "_actors-CvUULTi6.js": {
-    "file": "actors-CvUULTi6.js",
+  "_actors-DlpXhLMR.js": {
+    "file": "actors-DlpXhLMR.js",
     "name": "actors",
     "imports": [
-      "_izakaya-serving-visuals-B3O2weLw.js"
+      "_izakaya-serving-visuals-B3Vmqgvk.js"
     ]
   },
   "_icons-BJJ0w3BS.js": {
     "file": "icons-BJJ0w3BS.js",
     "name": "icons"
   },
-  "_izakaya-serving-visuals-B3O2weLw.js": {
-    "file": "izakaya-serving-visuals-B3O2weLw.js",
+  "_izakaya-serving-visuals-B3Vmqgvk.js": {
+    "file": "izakaya-serving-visuals-B3Vmqgvk.js",
     "name": "izakaya-serving-visuals"
   },
   "_spector.bundle-_JPoFEkN.js": {
@@ -32,18 +32,27 @@
       "_town-audio-ygTjb9SR.js"
     ]
   },
+  "src/avatars/export.js": {
+    "file": "export-DwCrN3PE.js",
+    "name": "export",
+    "src": "src/avatars/export.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_izakaya-serving-visuals-B3Vmqgvk.js"
+    ]
+  },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-Da1zdAJ3.js",
+    "file": "portraits-BLSFGNrC.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-B3O2weLw.js",
-      "_actors-CvUULTi6.js"
+      "_izakaya-serving-visuals-B3Vmqgvk.js",
+      "_actors-DlpXhLMR.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-Cjv5phu_.js",
+    "file": "boot-BHOpP_7s.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -58,26 +67,27 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-Dvz5lNV6.js",
+    "file": "feed-cvuZ7xxI.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-B3O2weLw.js"
+      "_izakaya-serving-visuals-B3Vmqgvk.js"
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-CbiQSPde.js",
+    "file": "game-DgXLHmWT.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-B3O2weLw.js",
-      "_actors-CvUULTi6.js",
+      "_izakaya-serving-visuals-B3Vmqgvk.js",
+      "_actors-DlpXhLMR.js",
       "_town-audio-ygTjb9SR.js",
       "_icons-BJJ0w3BS.js"
     ],
     "dynamicImports": [
+      "src/avatars/export.js",
       "_spector.bundle-_JPoFEkN.js"
     ]
   },

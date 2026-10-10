@@ -2,10 +2,11 @@ import {ISLAND_OUTFITS,ISLAND_COSTUMES,outfitAllowedFor,appropriateOutfit} from 
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
-import {drawPart,drawFace} from './face.js';
+import {drawPart,drawFace,EXPRESSION_NAMES} from './face.js';
 import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
 import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
-import {CAST_RECIPES} from './cast.js';
+import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from './cast.js';
+import {MOVES} from './moves.js';
 import {DIALS,DIAL_STEPS,dialStep,stepValue,personalityOf,voiceOf,MONTHS,daysIn,hello} from './personality.js';
 import {svg} from '../ui/icons.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
@@ -34,6 +35,21 @@ export function drawFaceFormThumb(canvas,form,skin='#f5d0ae'){
  * (creator/), which is what a shared link opens.
  */
 
+const FEATURE_PATHS={
+ head:'<path d="M8 21v-3C3 15 3 4 10 3c8-2 11 6 8 12l-3 3v3z"/>',
+ hair:'<path d="M5 18C0 7 6 2 12 2s12 5 7 16M5 12c4-1 7-4 9-7 0 5 2 6 5 7M6 12c0 6 3 9 6 9s6-3 6-9"/>',
+ eyes:'<path d="M1 12s4-7 9 0c-5 7-9 0-9 0zM14 12s4-7 9 0c-5 7-9 0-9 0z"/><circle cx="5.5" cy="12" r="1"/><circle cx="18.5" cy="12" r="1"/>',
+ brows:'<path d="M2 9q4-5 8 0M14 9q4-5 8 0M2 13q4-4 8 0M14 13q4-4 8 0"/>',
+ nose:'<path d="M10 3L8 13l-3 3q1 4 5 1h4q4 3 5-1l-3-3-2-10"/>',
+ mouth:'<path d="M2 12q5-8 10-3 5-5 10 3-10 14-20 0zM2 12h20"/>',
+ extras:'<circle cx="6" cy="12" r="5"/><circle cx="18" cy="12" r="5"/><path d="M11 11h2"/>',
+ bottom:'<path d="M6 3h12l2 18h-7l-1-11-1 11H4z"/>',
+ shoes:'<path d="M5 3h8v10l7 3v5H3v-8z"/>',
+ hat:'<path d="M5 14V9a7 7 0 0114 0v5M1 14h22v4H1z"/>',
+ accessories:'<path d="M4 4q0 14 8 16 8-2 8-16M9 17l3 5 3-5z"/>'
+};
+const featureIcon=id=>FEATURE_PATHS[id]?'<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+FEATURE_PATHS[id]+'</svg>':svg(id==='top'?'shirt':'person');
+
 const FACE_TABS=new Set(['head','hair','eyes','brows','nose','mouth','extras','hat','accessories']);
 /**
  * What the preview can show someone in: their clothes, or what they would wear at Umi-no-yu --
@@ -52,7 +68,7 @@ export function previewOutfits(recipe){
 }
 const LABEL={
  towel:'Bath towel',swimwear:'Swimwear',
- crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',ponytail:'Ponytail',braids:'Braids',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
+ crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',sweptponytail:'Swept low ponytail',ponytail:'Ponytail',braids:'Original Thuận braids',longbraids:'Twin braids · Thuan',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
  pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',
  round:'Round',dot:'Dot',almond:'Almond',sleepy:'Sleepy',lashes:'Lashes',narrow:'Narrow',sparkle:'Sparkle',gentle:'Gentle',
  doe:'Doe',cat:'Cat',droopy:'Droopy',heavy:'Heavy-lidded',bright:'Bright',tired:'Tired',squint:'Squint',starry:'Starry',
@@ -67,7 +83,7 @@ const LABEL={
  moustache:'Moustache',walrus:'Walrus',stubble:'Stubble',beard:'Beard',goatee:'Goatee',
  lighthouse:'Lighthouse costume',lantern:'Lantern costume',reef:'Reef costume',sailorlong:'Long-sleeved sailor',police:'Police jacket',sailor:'Sailor shirt',hoodie:'Hooded sweater',cardigan:'Cardigan',overalls:'Work overalls',sundress:'Sundress bodice',festival:'Festival coat',widepants:'Wide trousers',cropped:'Cropped trousers',culottes:'Culottes',pleatedskirt:'Pleated skirt',squid:'Squid cap',teapot:'Teapot hat',sunflower:'Sunflower bonnet',paperboat:'Paper-boat hat',mountain:'Mount Aoba hat',
  tank:'Tank top',underwear:'Underwear',barefoot:'Bare feet',sneakers:'Sneakers',sandals:'Sandals',shoes:'Shoes',
- tee:'T-shirt',kariyushi:'Kariyushi',polo:'Polo',blouse:'Blouse',jacket:'Jacket',apron:'Apron',smock:'Smock',
+ tee:'T-shirt',kariyushi:'Kariyushi',contrastpolo:'Contrast-collar polo',polo:'Polo',blouse:'Blouse',jacket:'Jacket',apron:'Apron',smock:'Smock',
  boots:'Boots',shorts:'Shorts',trousers:'Trousers',skirt:'Skirt',longskirt:'Long skirt',
  cap:'Cap',captain:'Captain',police:'Police',helmet:'Helmet',straw:'Straw hat',headband:'Headband',kerchief:'Kerchief',
  beanie:'Beanie',beret:'Beret',bucket:'Bucket hat',ribbon:'Hair bow',studs:'Studs',hoops:'Hoops',pendant:'Pendant',scarf:'Scarf',
@@ -98,12 +114,16 @@ export const TABS=[
   {kind:'stepper',page:'adjust',at:'head.shape',label:'Width',less:'Narrower',more:'Broader'},
   {kind:'stepper',page:'adjust',at:'head.jaw',label:'Jaw',less:'Narrower jaw',more:'Wider jaw'},
   {kind:'stepper',page:'adjust',at:'head.cheeks',label:'Cheeks',less:'Slimmer cheeks',more:'Fuller cheeks'},
+  {kind:'slider',page:'adjust',at:'head.roundness',label:'Face roundness',low:'Oval',high:'Round'},
   {kind:'stepper',page:'adjust',at:'blush',label:'Rosy cheeks',less:'Less rosy',more:'More rosy'},
   {kind:'stepper',page:'adjust',at:'wrinkles',label:'Laughter lines',less:'Fewer lines',more:'More lines'}]},
  {id:'hair',name:'Hair',controls:[
   {kind:'parts',page:'style',at:'hair.style',list:PARTS.hair,draw:'head'},
   {kind:'toggle',page:'style',at:'hair.flip',label:'Part on the other side'},
-  {kind:'colours',page:'colour',at:'hair.colour',label:'Colour',palette:PALETTE.hair}]},
+  {kind:'colours',page:'colour',at:'hair.colour',label:'Colour',palette:PALETTE.hair},
+  {kind:'colours',page:'colour',at:'hair.tieColour',label:'Braid ties',palette:PALETTE.cloth,when:r=>['braids','longbraids'].includes(r.hair.style)},
+  {kind:'slider',page:'adjust',at:'hair.length',label:'Braid length',low:'Upper chest',high:'Past waist',when:r=>r.hair.style==='longbraids'},
+  {kind:'slider',page:'adjust',at:'hair.volume',label:'Braid volume',low:'Fine',high:'Full',when:r=>r.hair.style==='longbraids'}]},
  {id:'eyes',name:'Eyes',controls:[
   {kind:'parts',page:'style',at:'eyes.style',list:PARTS.eyes,draw:'eyes'},
   {kind:'colours',page:'colour',at:'eyes.colour',label:'Colour',palette:PALETTE.eyes},
@@ -129,6 +149,7 @@ export const TABS=[
   {kind:'stepper',page:'adjust',at:'mouth.width',label:'Width',less:'Narrower',more:'Wider'}]},
  {id:'extras',name:'Glasses & beard',controls:[
   {kind:'parts',page:'style',at:'glasses.style',label:'Glasses',list:PARTS.glasses,draw:'glasses'},
+  {kind:'toggle',page:'style',at:'glasses.enabled',label:'Wear glasses'},
   {kind:'parts',page:'style',at:'facial.moustache',label:'Moustache',list:PARTS.moustache,draw:'moustache'},
   {kind:'parts',page:'style',at:'facial.beard',label:'Beard',list:PARTS.beard,draw:'beard'},
   {kind:'colours',page:'colour',at:'glasses.colour',label:'Frames',palette:['#2b2b2b','#8a4a3a','#c8a060','#e06a7a','#3d6a8a','#d8342c']},
@@ -162,14 +183,15 @@ export const TABS=[
   {kind:'parts',page:'style',at:'accessories.earrings',label:'Earrings',list:PARTS.earrings,draw:'head'},
   {kind:'parts',page:'style',at:'accessories.neckwear',label:'Neckwear',list:PARTS.neckwear,draw:'figure'},
   {kind:'toggle',page:'style',at:'accessories.pin',label:'Lapel pin'},
-  {kind:'colours',page:'colour',at:'accessories.colour',label:'Accessory colour',palette:PALETTE.cloth}]},
+  {kind:'colours',page:'colour',at:'accessories.colour',label:'Earring and pin colour',palette:PALETTE.cloth},
+  {kind:'colours',page:'colour',at:'accessories.necklaceColour',label:'Necklace colour',palette:PALETTE.cloth}]},
 ];
 const PAGES=[['style','Style'],['colour','Colour'],['adjust','Adjust']];
 const STEPS=[['start','Choose a face'],['look','Make them'],['profile','Who are they?'],['hello','Say hello']];
 /** How far one press of a step button moves a value (0–1). */
 const NOTCH=1/16;
 
-const POSES=[['idle','Stand'],['Wave','Wave'],['Hop','Happy'],['walk','Walk'],['Kachashi','Dance'],['Bow','Bow'],['Heart','Heart'],['Peace','Cheek'],['Coy','Coy'],['Tada','Ta-da!'],['HandsOnHips','Hips'],['HeelKick','Heel kick'],['EvilLaugh','Evil laugh'],['sit','Sit'],['lie','Knocked out']];
+const POSES=[...new Map([...[['idle','Stand'],['Wave','Wave'],['Hop','Happy'],['walk','Walk'],['Kachashi','Dance'],['Bow','Bow'],['Heart','Heart'],['Peace','Cheek'],['Coy','Coy'],['Tada','Ta-da!'],['HandsOnHips','Hips'],['HeelKick','Heel kick'],['EvilLaugh','Evil laugh'],['sit','Sit'],['lie','Knocked out']],...MOVES].map(entry=>[entry[0],entry])).values()];
 
 const get=(r,at)=>at.split('.').reduce((o,k)=>o?.[k],r);
 function set(r,at,value){const keys=at.split('.'),last=keys.pop();let o=r;for(const k of keys)o=o[k];o[last]=value;}
@@ -202,7 +224,7 @@ const CSS=`
 .shm-poses{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px}
 .shm-poses .shm-select{flex:1 1 90px;min-width:0}
 .shm[data-focus=face] .shm-poses,.shm[data-step=hello] .shm-poses,.shm[data-step=hello] .shm-dice{display:none}
-.shm[data-step=start] .shm-panel>div:first-child,.shm[data-step=profile] .shm-panel>div:first-child,.shm[data-step=start] .shm-pages,.shm[data-step=profile] .shm-pages{display:none}
+.shm[data-step=start] .shm-panel>.shm-category-wrap,.shm[data-step=profile] .shm-panel>.shm-category-wrap,.shm[data-step=start] .shm-pages,.shm[data-step=profile] .shm-pages{display:none}
 .shm-note{margin:0 0 8px;font-size:13px;line-height:1.45;color:#6b5d44}
 .shm-undress{margin-bottom:6px}
 .shm-bubble{position:absolute;left:50%;bottom:14px;width:min(560px,calc(100% - 24px));transform:translateX(-50%);padding:16px 20px;border:3px solid #3b3f55;border-radius:24px;background:#fffdf6;font-size:18px;font-weight:700;line-height:1.45;white-space:pre-line;box-shadow:0 6px 0 #3b3f5522}
@@ -280,6 +302,52 @@ const CSS=`
 }
 @media(max-width:520px){.shm-top h2{display:none}.shm-name{max-width:none}.shm-foot .shm-pill{padding:8px 10px}.shm-dots{gap:3px}.shm-dots button{min-width:36px;padding:0 6px}.shm-main{gap:8px;padding:0 8px}.shm-grid{grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:8px}.shm-step{grid-template-columns:56px 40px minmax(0,1fr) 40px;gap:4px}.shm-step button{width:40px;height:40px}}
 @media(max-height:500px){.shm-top h2 small{display:none}.shm-pages{margin:4px 8px 0}.shm-pages button{min-height:34px}.shm-category{padding:4px 8px}.shm-top,.shm-foot{padding-top:4px;padding-bottom:4px}.shm-tabs{display:none}.shm-category{display:flex}.shm-dots button span{display:none!important}}
+/* Part-led studio: feature rail, large figure, and a compact choices tray. */
+.shm[data-step=look]{background:radial-gradient(ellipse at 45% 38%,#f2f0e9,#d9d7cf);color:#303b43}
+.shm-part-title,.shm-palette{display:none}
+.shm[data-step=look] .shm-main{grid-template-columns:76px minmax(0,1fr) 340px;gap:18px}
+.shm-main>.shm-tabs{display:none}
+.shm[data-step=look] .shm-main>.shm-tabs{display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;padding:0 4px 8px;border:0;gap:7px;scrollbar-width:thin}
+.shm[data-step=look] .shm-tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:0 0 auto;min-height:62px;padding:6px 2px;border:1px solid #b6b8b6;border-radius:12px;background:#f9f9f6;font-size:10px;box-shadow:0 2px 2px #0002}
+.shm[data-step=look] .shm-tabs .ui-icon{width:30px;height:30px}
+.shm[data-step=look] .shm-tabs button[aria-selected=true]{background:#dbe9e7;color:#203f3c;border:2px solid #498579;box-shadow:none}
+.shm[data-step=look] .shm-side{grid-column:2;grid-row:1}
+.shm[data-step=look] .shm-stage{flex:1;aspect-ratio:auto;max-height:none;border:0;background:transparent;border-radius:0}
+.shm[data-step=look] .shm-panel{grid-column:3;grid-row:1;background:#ffffff35;border:0;border-radius:18px;grid-template-rows:auto auto auto minmax(0,1fr) auto}
+.shm[data-step=look] .shm-part-title{display:block;margin:14px 16px 4px;font-size:32px;text-transform:uppercase;letter-spacing:.04em}
+.shm[data-step=look] .shm-category{display:none}
+.shm[data-step=look] .shm-pages{background:#c9cecb80;margin:8px 12px}
+.shm[data-step=look] .shm-body{padding:8px 14px 14px}
+.shm[data-step=look] .shm-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.shm[data-step=look] .shm-grid button{border:2px solid #d5d6d1;border-radius:13px;background:#f9f9f5;font-size:11px;min-height:96px}
+.shm[data-step=look] .shm-grid button canvas{background:#eeeee8}
+.shm[data-step=look] .shm-grid button[aria-pressed=true]{border-color:#498579;background:#e6f1ee}
+.shm[data-step=look] .shm-grid button[aria-pressed=true]::after{background:#498579}
+.shm[data-step=look] .shm-face-picker{display:block}.shm[data-step=look] .shm-face-skin{display:none}
+.shm[data-step=look] .shm-palette:not([hidden]){display:block;padding:10px 16px 14px;border-top:1px solid #bbc1bb}
+.shm-palette h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.shm[data-step=look] .shm-swatches{gap:10px}
+.shm[data-step=look] .shm-swatches button{border-radius:8px;box-shadow:0 0 0 1px #b9bfba;border:2px solid #f9f9f5}
+.shm[data-step=look] .shm-swatches button[aria-pressed=true]{box-shadow:0 0 0 3px #498579}
+.shm[data-step=look] .shm-dice button{border-color:#b9bfba;background:#f9f9f5}
+.shm[data-step=hello] .shm-side{grid-column:1}
+@media(max-width:760px){
+ .shm[data-step=look] .shm-main{grid-template-columns:56px minmax(0,1fr);grid-template-rows:minmax(220px,42%) minmax(0,1fr);gap:8px}
+ .shm[data-step=look] .shm-main>.shm-tabs{grid-column:1;grid-row:1/3}
+ .shm[data-step=look] .shm-tabs button{min-height:56px;font-size:9px;border-radius:10px}
+ .shm[data-step=look] .shm-tabs .ui-icon{width:25px;height:25px}
+ .shm[data-step=look] .shm-panel{grid-column:2;grid-row:2;border-radius:12px;grid-template-rows:auto auto auto minmax(0,1fr) auto}
+ .shm[data-step=look] .shm-side{grid-column:2;grid-row:1;position:relative;gap:0}
+ .shm[data-step=look] .shm-dice{position:absolute;bottom:0;left:0;gap:4px}
+ .shm[data-step=look] .shm-dice button{width:36px;height:36px}
+ .shm[data-step=look] .shm-part-title{font-size:20px;margin:6px 10px 0}
+ .shm[data-step=look] .shm-pages{margin:4px 8px}.shm[data-step=look] .shm-pages button{min-height:36px}
+ .shm[data-step=look] .shm-body{padding:8px}.shm[data-step=look] .shm-palette:not([hidden]){padding:8px 10px}
+ .shm[data-step=look] .shm-grid{gap:6px}.shm[data-step=look] .shm-grid button{min-height:82px}.shm[data-step=look] .shm-grid button canvas{width:52px;height:52px}
+ .shm[data-step=look] .shm-swatches{gap:7px}.shm[data-step=look] .shm-swatches button{width:36px;height:36px}
+}
+@media(max-height:500px) and (min-width:761px){.shm[data-step=look] .shm-main{grid-template-columns:60px minmax(0,1fr) 300px}.shm[data-step=look] .shm-tabs button{min-height:54px}.shm[data-step=look] .shm-part-title{font-size:22px;margin:4px 12px 0}.shm[data-step=look] .shm-palette:not([hidden]){padding:6px 12px}}
+
 `;
 
 /**
@@ -291,12 +359,14 @@ const CSS=`
  * @param {(code:string)=>string} [options.shareLink] a link that opens a recipe code
  * @param {'start'|'look'|'profile'|'hello'} [options.startAt] the step to open on
  * @param {(freq:number,type:string)=>void} [options.voice] plays one voice blip
- * @returns {{close:()=>void, get recipe():object}}
+ * @param {Array<[string,object]>} [options.templates] optional starting templates
+ * @param {boolean} [options.keepOpenOnSave] save without leaving the editor
+ * @returns {object} creator controls, current recipe and transparent PNG export
  */
-export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null}={}){
+export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null,templates=null,keepOpenOnSave=false}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
- const wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];
- let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',previewFacing=0,wearing='clothes',dress=null;
+ let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];let featureBaseline=structuredClone(recipe);
+ let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',expression='auto',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null,previewFraming='auto';
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
  // ----- Layout -----
@@ -324,8 +394,10 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const tabs=el('div',{className:'shm-tabs',role:'tablist',ariaLabel:'Appearance category'});
  const pages=el('div',{className:'shm-pages',role:'tablist',ariaLabel:'Part, colour or adjust'});
  const body=el('div',{className:'shm-body',id:'shm-body',role:'tabpanel'});
- const panel=el('div',{className:'shm-panel'},el('div',{},tabs,categoryRow),pages,body);
- root.append(el('div',{className:'shm-main'},panel,side));
+ const panel=el('div',{className:'shm-panel'},el('div',{className:'shm-category-wrap'},categoryRow),pages,body);
+ const paletteTray=el('div',{className:'shm-palette',role:'group',ariaLabel:'Part colours',hidden:true});
+ const partTitle=el('h3',{className:'shm-part-title'});panel.prepend(partTitle);panel.append(paletteTray);
+ root.append(el('div',{className:'shm-main'},tabs,side,panel));
  const back=el('button',{className:'shm-pill',textContent:'Back'});
  const dots=el('nav',{className:'shm-dots',ariaLabel:'Steps'});
  const next=el('button',{className:'shm-next'});
@@ -350,7 +422,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
  renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));renderer.outputColorSpace=THREE.SRGBColorSpace;
  const scene=new THREE.Scene();
- scene.add(new THREE.HemisphereLight(0xffffff,0xc8a878,2.2));
+ const fillLight=new THREE.HemisphereLight(0xffffff,0xc8a878,2.2);scene.add(fillLight);
  const sun=new THREE.DirectionalLight(0xfff4e0,1.9);sun.position.set(2,4,5);scene.add(sun);
  const floor=new THREE.Mesh(new THREE.CircleGeometry(.62,40),new THREE.MeshBasicMaterial({color:0xf6d79c}));floor.rotation.x=-Math.PI/2;scene.add(floor);
  const holder=new THREE.Group();scene.add(holder);
@@ -377,7 +449,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  /** The distance at which a box of this size fits the view with some air round it. */
  const fit=(size,air)=>{const t=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));return Math.max(size.y*air/2/t,size.x*air/2/(t*camera.aspect))+size.z/2;};
- const faceFocus=()=>step==='look'&&FACE_TABS.has(tab);
+ const faceFocus=()=>previewFraming==='face'||(previewFraming==='auto'&&step==='look'&&FACE_TABS.has(tab));
  function aim(dt){
   const want=faceFocus()?1:0;focus+=(want-focus)*Math.min(1,dt*5);
   const F=frames.face,B=frames.full;
@@ -390,7 +462,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   frame=requestAnimationFrame(loop);
   const now=performance.now(),dt=Math.min(.05,(now-clock)/1000);clock=now;
   if(dirty){
-   if(featureDrag){drawFace(avatar.face.ctx,recipe,{expression:'neutral',size:avatar.face.canvas.width});avatar.face.texture.needsUpdate=true;}
+   if(featureDrag){drawFace(avatar.face.ctx,recipe,{expression:'neutral',size:avatar.face.canvas.width,objects:true});avatar.face.texture.needsUpdate=true;}
    else rebuild();
    dirty=false;
   }
@@ -399,7 +471,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   if(!featureDrag)holder.rotation.y=Math.PI+spin+(pose==='walk'?now/1000*.6:0);
   const talking=speech&&speech.typing;
   if(!featureDrag)animator.update(dt,{speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.42,lying:pose==='lie',talk:talking?.5+.5*Math.sin(now/70):0,
-   expression:step==='hello'?'happy':pose==='lie'?'dizzy':pose==='EvilLaugh'?'scheme':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
+   expression:expression!=='auto'?expression:step==='hello'?'happy':pose==='lie'?'dizzy':pose==='EvilLaugh'?'scheme':pose==='Hop'?'happy':pose==='Kachashi'?'laugh':pose==='idle'?'neutral':'smile'});
   if(!featureDrag)aim(dt);renderer.render(scene,camera);
  }
  const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
@@ -465,7 +537,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  thumbScene.add(new THREE.HemisphereLight(0xffffff,0xc8a878,2.2));const thumbSun=sun.clone();thumbScene.add(thumbSun);
  function figureThumb(r,c,framing){
   const a=buildAvatar(r,{shadows:false,faceSize:128}),m=a.measure;
-  a.root.rotation.y=framing==='figure'?.35:framing==='feet'?.6:.2;thumbScene.add(a.root);a.root.updateMatrixWorld(true);
+  a.root.rotation.y=framing==='figure'?.35:framing==='feet'?.6:.2+(framing==='hair-rear'?Math.PI:0);thumbScene.add(a.root);a.root.updateMatrixWorld(true);
   const px=c.width;
   if(framing==='outfit'){const y=m.H*.5;thumbCamera.position.set(0,y,m.H*2.7);thumbCamera.lookAt(0,y,0);}
   else if(framing==='feet'){const y=m.foot*1.6+m.legR,d=m.H*.42;thumbCamera.position.set(0,y+m.H*.12,d);thumbCamera.lookAt(0,y,0);}
@@ -486,12 +558,16 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function drawThumb(control,value,c){
   const r=structuredClone(recipe);set(r,control.at,value);
+  if(control.at==='glasses.style')r.glasses.enabled=true;
   // A hat on the hat tab only, and a bare head for the hairstyles and earrings.
   if(control.at!=='outfit.hat')r.outfit.hat='none';
   if(control.at==='outfit.bottom')r.__bottom=true;
-  const flat=!['head','figure','feet'].includes(control.draw);
-  const key=control.at+'|'+value+'|'+JSON.stringify(flat?{eyes:r.eyes,brows:r.brows,nose:r.nose,mouth:r.mouth,glasses:r.glasses,facial:r.facial,skin:r.body.skin}:{...r,name:0,profile:0});
-  cached(key,c,()=>flat?drawPart(c.getContext('2d'),normalizeRecipe(r),control.draw,c.width):figureThumb(r,c,control.draw));
+  const framing=control.at==='hair.style'&&hairThumbView==='rear'?'hair-rear':control.draw;
+  const objects=['glasses','moustache','beard'].includes(control.draw);
+  if(objects){r.hair.style='bald';if(control.draw==='moustache')r.facial.beard='none';if(control.draw==='beard')r.facial.moustache='none';if(control.draw!=='glasses')r.glasses.enabled=false;}
+  const flat=!objects&&!['head','figure','feet'].includes(control.draw);
+  const key=control.at+'|'+framing+'|'+value+'|'+JSON.stringify(flat?{eyes:r.eyes,brows:r.brows,nose:r.nose,mouth:r.mouth,glasses:r.glasses,facial:r.facial,skin:r.body.skin}:{...r,name:0,profile:0});
+  cached(key,c,()=>flat?drawPart(c.getContext('2d'),normalizeRecipe(r),control.draw,c.width):figureThumb(r,c,framing));
  }
 
  // ----- Editing -----
@@ -501,16 +577,16 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   endDrag();
   if(get(recipe,at)===value)return;
   if(keep)remember();
-  set(recipe,at,value);recipe=normalizeRecipe(recipe);dirty=true;
+  set(recipe,at,value);if(at==='glasses.style')recipe.glasses.enabled=true;recipe=normalizeRecipe(recipe);dirty=true;
  }
  function chooseTab(id){endDrag();tab=id;category.value=id;const t=TABS.find(x=>x.id===id);if(!t.controls.some(c=>c.page===page))page='style';renderTabs();renderBody();body.scrollTop=0;syncFocus();}
  category.onchange=()=>chooseTab(category.value);
  function renderTabs(){
-  if(!tabs.children.length)tabs.append(...TABS.map(t=>{const b=el('button',{role:'tab',id:'shm-tab-'+t.id,textContent:t.name});b.setAttribute('aria-controls','shm-body');b.onclick=()=>chooseTab(t.id);return b;}));
+  if(!tabs.children.length)tabs.append(...TABS.map(t=>{const b=el('button',{role:'tab',id:'shm-tab-'+t.id,ariaLabel:t.name,title:t.name});b.innerHTML=featureIcon(t.id);b.append(el('span',{textContent:t.name}));b.setAttribute('aria-controls','shm-body');b.onclick=()=>chooseTab(t.id);return b;}));
   [...tabs.children].forEach((b,i)=>{const active=TABS[i].id===tab;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
   const t=TABS.find(x=>x.id===tab);
   pages.replaceChildren(...PAGES.filter(([id])=>t.controls.some(c=>c.page===id)).map(([id,label])=>{const b=el('button',{role:'tab',textContent:label});b.setAttribute('aria-selected',String(id===page));b.onclick=()=>{page=id;renderTabs();renderBody();};return b;}));
-  body.setAttribute('aria-label',TABS.find(t=>t.id===tab).name);
+  body.setAttribute('aria-label',TABS.find(t=>t.id===tab).name);partTitle.textContent=TABS.find(t=>t.id===tab).name;
   const positioning=step==='look'&&POSITION_FEATURES.has(tab);
   dragHint.textContent=positioning?'Drag the '+tab+' on the face to position them. Adjustment buttons also work.':'';
   dragHint.hidden=!positioning;
@@ -533,6 +609,14 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function renderLook(){
   const t=TABS.find(x=>x.id===tab);
+  if(t.id==='hair'&&page==='style'){
+   const views=el('div',{className:'shm-row',role:'group',ariaLabel:'Hairstyle pictures'});
+   for(const [value,label] of [['front','Front views'],['rear','Rear views']]){
+    const b=el('button',{type:'button',className:'shm-pill',textContent:label});b.setAttribute('aria-pressed',String(hairThumbView===value));
+    b.onclick=()=>{hairThumbView=value;renderBody();};views.append(b);
+   }
+   body.append(views,el('p',{className:'shm-note',textContent:'Compare the fringe and the back. Choose a style, then set its colour and parting independently.'}));
+  }
   if(t.id==='top'&&page==='style'){for(const [title,presets] of [['Island outfit sets',ISLAND_OUTFITS],['Island costumes',ISLAND_COSTUMES]]){const sets=el('div',{className:'shm-grid'});sets.setAttribute('aria-label',title);for(const preset of presets.filter(p=>outfitAllowedFor(wardrobeOwner,p.outfit))){const c=el('canvas',{width:136,height:136}),button=el('button',{type:'button',ariaLabel:preset.name,title:preset.name},c,preset.name);button.onclick=()=>change('outfit',{...recipe.outfit,...preset.outfit});sets.append(button);pictureJobs.push(()=>{const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...preset.outfit}});cached('outfit|'+preset.name+'|'+JSON.stringify(r),c,()=>figureThumb(r,c,'outfit'));});}body.append(el('h3',{},title),sets);}}
   if(t.wardrobe&&page==='style'){
    const off=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all clothes off'});
@@ -568,6 +652,14 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     for(const [cls,icon,label,at,delta] of directions){const b=iconButton(icon,label,{className:cls});b.onclick=()=>change(at,Math.round(Math.max(0,Math.min(1,get(recipe,at)+delta))*16)/16);pad.append(b);}
     pad.append(el('b',{textContent:control.paired?'apart':'move'}));
     body.append(pad);
+   }else if(control.kind==='slider'){
+    const slider=el('input',{type:'range',min:0,max:1,step:.01,value:get(recipe,control.at),ariaLabel:control.label});
+    slider.style.cssText='width:100%;min-height:44px;accent-color:#356579';
+    const output=el('output',{textContent:Math.round(slider.value*100)+'%'});
+    let dragging=false;
+    slider.oninput=()=>{if(!dragging){remember();dragging=true;}change(control.at,Number(slider.value),false);output.textContent=Math.round(slider.value*100)+'%';};
+    slider.onchange=()=>{dragging=false;};
+    body.append(el('label',{},control.low+' — '+control.high,slider,output));
    }else if(control.kind==='stepper'){
     body.append(stepper(control.label,control.at,control.less,control.more));
    }else if(control.kind==='toggle'){
@@ -588,6 +680,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function dealFaces(){faces=[recipe,...Array.from({length:11},()=>keepSelf(randomRecipe('face-'+Date.now().toString(36)+'-'+(faceSeed++)),recipe))];}
  function renderStart(){
   if(!faces.length)dealFaces();
+  const defaults=templates||[['Harbour visitor',CAST_RECIPES['Harbour visitor']],['Thuận · original',ORIGINAL_THUAN_RECIPE],['Thuận · photo reference',CAST_RECIPES.Thuan]];
+  if(!owner)for(const [label,preset] of defaults){const button=el('button',{type:'button',className:'shm-pill',textContent:label});button.onclick=()=>setRecipe(preset);body.append(button);}
   body.append(el('h4',{textContent:'Pick someone to start from'}));
   const grid=el('div',{className:'shm-grid shm-faces'});
   faces.forEach((face,i)=>{
@@ -637,8 +731,13 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function renderBody(){recipe.outfit=appropriateOutfit(wardrobeOwner,recipe.outfit);
   cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);pictureQueue=[];pictureJobs=[];
-  body.replaceChildren();
-  if(step==='start')renderStart();else if(step==='profile')renderProfile();else if(step==='look')renderLook();
+  body.replaceChildren();paletteTray.replaceChildren();paletteTray.hidden=true;
+  if(step==='start')renderStart();else if(step==='profile')renderProfile();else if(step==='look'){renderLook();
+   const colour=TABS.find(t=>t.id===tab).controls.find(c=>c.kind==='colours'&&(!c.when||c.when(recipe)));
+   if(page==='style'&&colour){paletteTray.hidden=false;paletteTray.append(el('h4',{textContent:colour.label}),el('div',{className:'shm-swatches'}));const row=paletteTray.lastChild;
+    for(const hex of colour.palette){const b=el('button',{type:'button',ariaLabel:colour.label+' '+hex,title:hex});b.style.background=hex;b.setAttribute('aria-pressed',String(get(recipe,colour.at)===hex));b.onclick=()=>{change(colour.at,hex);pressed(row,b);renderPictures();};row.append(b);}
+   }
+  }
   pictureQueue=[...pictureJobs];paintQueued();
  }
 
@@ -682,7 +781,19 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   select.onchange=()=>{endDrag();pose=select.value;if(!['idle','walk','sit','lie'].includes(pose))animator.play(pose);else animator.stop();};
   dress=el('select',{className:'shm-select',ariaLabel:'Preview outfit'});fillDress();
   dress.onchange=()=>{endDrag();showIn(dress.value);};
-  poses.append(angle,select,dress);
+  const exportButton=el('button',{type:'button',className:'shm-pill',textContent:'Export T-pose (.glb)'});
+  exportButton.onclick=async()=>{
+   exportButton.disabled=true;exportButton.textContent='Exporting…';
+   try{
+    const {exportAvatarGLB}=await import('./export.js'),data=await exportAvatarGLB(recipe);
+    const url=URL.createObjectURL(new Blob([data],{type:'model/gltf-binary'})),link=el('a',{href:url,download:(recipe.name||'islander').replace(/[^a-z0-9_-]/gi,'-')+'-tpose.glb'});
+    link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);exportButton.textContent='Export T-pose (.glb)';
+   }catch(error){console.error(error);exportButton.textContent='Export failed — retry';}
+   finally{exportButton.disabled=false;}
+  };
+  const mood=el('select',{className:'shm-select',ariaLabel:'Preview expression'},el('option',{value:'auto',textContent:'Expression: automatic'}),...EXPRESSION_NAMES.map(value=>el('option',{value,textContent:value[0].toUpperCase()+value.slice(1)})));
+  mood.onchange=()=>{expression=mood.value;};
+  poses.append(angle,select,dress,mood,exportButton);
  }
  /** The preview's outfit list, for whoever is in the maker now (the towel is for grown-ups). */
  function fillDress(){if(!dress)return;dress.replaceChildren(...previewOutfits(recipe).map(o=>el('option',{value:o.value,textContent:o.label,disabled:o.disabled})));dress.value=wearing;}
@@ -711,6 +822,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  };
  function finish(saving){
   if(!root.isConnected)return;
+  if(saving&&keepOpenOnSave){onSave(normalizeRecipe({...recipe,name:name.value}));return;}
   endDrag();
   stopSpeech();cancelAnimationFrame(frame);cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);observer?.disconnect();viewport?.removeEventListener('resize',fitViewport);viewport?.removeEventListener('scroll',fitViewport);
   root.removeEventListener('keydown',swallow);root.removeEventListener('keyup',swallow);
@@ -720,6 +832,45 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  close.onclick=()=>finish(false);
 
+ /** Replace the editable character without closing the studio. */
+ function setRecipe(value){endDrag();remember();recipe=normalizeRecipe(value);featureBaseline=structuredClone(recipe);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();}
+ /** Restore only controls belonging to the selected feature, as one undoable edit. */
+ function resetFeature(){
+  endDrag();const next=structuredClone(recipe),controls=TABS.find(t=>t.id===tab).controls;
+  for(const control of controls)for(const at of [control.at,control.horizontal].filter(Boolean))set(next,at,structuredClone(get(featureBaseline,at)));
+  if(JSON.stringify(next)===JSON.stringify(recipe))return;
+  remember();recipe=normalizeRecipe(next);dirty=true;renderBody();
+ }
+ /** Preview settings never modify the saved character. */
+ function setPreview({angle,framing,lighting,mood}={}){
+  endDrag();
+  const angles={front:0,quarter:-Math.PI/4,left:-Math.PI/2,right:Math.PI/2,back:Math.PI};
+  if(Object.hasOwn(angles,angle)){previewFacing=angles[angle];spin=previewFacing;spinVelocity=0;const input=poses.querySelector('.shm-angle');if(input)input.value=angle;}
+  if(['auto','face','full'].includes(framing)){previewFraming=framing;syncFocus();}
+  if(mood==='auto'||EXPRESSION_NAMES.includes(mood)){expression=mood;const input=poses.querySelector('[aria-label="Preview expression"]');if(input)input.value=mood;}
+  const lights={warm:[0xffffff,0xc8a878,2.2,0xfff4e0,1.9,[2,4,5]],neutral:[0xffffff,0x8896aa,1.8,0xffffff,2.2,[-3,4,5]],contour:[0xddeaff,0x647388,1.1,0xffffff,3.2,[4,2,2]]};
+  if(Object.hasOwn(lights,lighting)){const [sky,ground,fill,key,power,position]=lights[lighting];fillLight.color.setHex(sky);fillLight.groundColor.setHex(ground);fillLight.intensity=fill;sun.color.setHex(key);sun.intensity=power;sun.position.set(...position);}
+ }
+ /** Render a full-body transparent PNG independently of the preview's face zoom. */
+ function exportPNG(size=1024){
+  endDrag();if(dirty){rebuild();dirty=false;}
+  size=Math.max(256,Math.min(2048,Math.round(size)||1024));
+  const target=new THREE.WebGLRenderTarget(size,size,{depthBuffer:true});target.texture.colorSpace=THREE.SRGBColorSpace;
+  const previous=renderer.getRenderTarget(),clearColour=renderer.getClearColor(new THREE.Color()),alpha=renderer.getClearAlpha(),floorVisible=floor.visible;
+  const shot=camera.clone();shot.aspect=1;shot.updateProjectionMatrix();
+  try{
+   floor.visible=false;scene.updateMatrixWorld(true);
+   const box=new THREE.Box3().setFromObject(avatar.root),centre=box.getCenter(new THREE.Vector3()),bounds=box.getSize(new THREE.Vector3());
+   const distance=Math.max(bounds.y,bounds.x)*1.18/(2*Math.tan(THREE.MathUtils.degToRad(shot.fov/2)))+bounds.z/2;
+   shot.position.set(centre.x,centre.y,centre.z+distance);shot.lookAt(centre);
+   renderer.setRenderTarget(target);renderer.setClearColor(0x000000,0);renderer.clear();renderer.render(scene,shot);
+   const pixels=new Uint8Array(size*size*4);renderer.readRenderTargetPixels(target,0,0,size,size,pixels);
+   const image=el('canvas',{width:size,height:size}),ctx=image.getContext('2d'),data=ctx.createImageData(size,size),stride=size*4;
+   for(let row=0;row<size;row++)data.data.set(pixels.subarray((size-1-row)*stride,(size-row)*stride),row*stride);
+   ctx.putImageData(data,0,0);return image.toDataURL('image/png');
+  }finally{floor.visible=floorVisible;renderer.setRenderTarget(previous);renderer.setClearColor(clearColour,alpha);target.dispose();}
+ }
+
  rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
- return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,get wearing(){return wearing;}};
+ return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setPreview,resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
 }

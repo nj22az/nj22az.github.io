@@ -18,12 +18,13 @@
 // A shared islander (?r=code) opens here; saving it walks you into the town as them.
 import {openCreator} from '../src/avatars/creator.js';
 import {playerRecipe,savePlayerRecipe} from '../src/avatars/actors.js';
+import {CAST_RECIPES} from '../src/avatars/cast.js';
 import {decodeRecipe} from '../src/avatars/recipe.js';
 import {installIconControls} from '../src/ui/icon-controls.js';
 // This shared page uses the same semantic controls as the in-town maker.
 const disposeIcons=installIconControls(document.body);
 window.addEventListener('pagehide',disposeIcons,{once:true});
-const code=new URLSearchParams(location.search).get('r'),shared=code?decodeRecipe(code):null;
+const params=new URLSearchParams(location.search),code=params.get('r'),preset=params.get('preset')==='harbour-visitor'?CAST_RECIPES['Harbour visitor']:null,shared=(code?decodeRecipe(code):null)||preset;
 // Voice blips for the maker's own page; in the town they go through the town's audio.
 let audio=null;
 const voice=(freq,type)=>{try{audio??=new (window.AudioContext||window.webkitAudioContext)();const t=audio.currentTime,o=audio.createOscillator(),g=audio.createGain();
