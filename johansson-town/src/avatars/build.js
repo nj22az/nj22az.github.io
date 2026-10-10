@@ -352,20 +352,20 @@ function addHair(list,recipe,m){
    for(let strand=0;strand<3;strand++){
     const path=[];
     for(let i=0;i<=72;i++){
-     const t=i/72,p=centre.getPoint(t),phase=t*Math.PI*16+strand*Math.PI*2/3;
-     const radius=R*.078*(1-.42*t);
+     const t=i/72,p=centre.getPoint(t),phase=t*Math.PI*8+strand*Math.PI*2/3;
+     const radius=R*.09*(1-.35*t);
      p.x+=Math.sin(phase)*radius;p.z+=Math.cos(phase)*radius*.65;path.push(p);
     }
-    const curve=new THREE.CatmullRomCurve3(path),g=new THREE.TubeGeometry(curve,72,R*.065,6,false),P=g.attributes.position;
+    const curve=new THREE.CatmullRomCurve3(path),g=new THREE.TubeGeometry(curve,72,R*.075,8,false),P=g.attributes.position;
     for(let i=0;i<P.count;i++){
-     const t=Math.floor(i/7)/72,p=curve.getPointAt(t),v=new THREE.Vector3().fromBufferAttribute(P,i);
-     v.sub(p).multiplyScalar(1-.42*t).add(p);P.setXYZ(i,v.x,v.y,v.z);
+     const t=Math.floor(i/9)/72,p=curve.getPointAt(t),v=new THREE.Vector3().fromBufferAttribute(P,i);
+     v.sub(p).multiplyScalar(1-.35*t).add(p);P.setXYZ(i,v.x,v.y,v.z);
     }
     g.computeVertexNormals();part(list,g,share,strand===1?dark:c);
    }
    const tip=points[2];
    part(list,new THREE.TorusGeometry(R*.083,R*.022,6,12),share,'#f4f1ea',M(...tip,Math.PI/2,0,0));
-   ball(list,R*.073,[tip[0],tip[1]-R*.2,tip[2]],share,c,[.8,2.8,.65],10,8);
+   ball(list,R*.073,[tip[0],tip[1]-R*.13,tip[2]],share,c,[.9,1.8,.8],12,8);
   }
  }
  if(style==='sidepart'||style==='braids'){ball(list,R*.34,at(side*R*.5,cy+R*.62,R*.62),'head',c,[1.4,.55,.7],10,6);}

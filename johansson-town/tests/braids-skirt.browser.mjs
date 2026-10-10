@@ -11,7 +11,7 @@ try{for(const [width,height] of [[1280,800],[390,844]]){
  await page.goto('http://127.0.0.1:5173/creator/');await page.getByRole('textbox',{name:'Name',exact:true}).waitFor();
  const reference=await page.evaluate(async()=>{const {recipeFor}=await import('/src/avatars/cast.js'),{encodeRecipe}=await import('/src/avatars/recipe.js');const r=recipeFor('Thuan');return {r,code:encodeRecipe(r)};});
  await page.goto('http://127.0.0.1:5173/creator/?r='+reference.code);await page.locator('.shm-dots button').nth(1).click();await page.getByRole('tab',{name:'Hair',exact:true}).click();
- await page.getByRole('button',{name:'Short twin braids',exact:true}).click();await page.getByRole('button',{name:'Long twin braids · Thuan',exact:true}).click();
+ await page.getByRole('button',{name:'Short twin braids',exact:true}).click();await page.getByRole('button',{name:'Twin braids · Thuan',exact:true}).click();
  console.log('selected',width,errors,await page.locator('.shm').count());
  await page.waitForTimeout(500);await page.screenshot({path:out+'/creator-'+width+'.jpg',type:'jpeg',quality:85});
  await page.locator('.shm-dots button').nth(3).click();await page.getByRole('button',{name:'Walk the town as them',exact:true}).click();
