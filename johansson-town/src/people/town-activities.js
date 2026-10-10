@@ -29,6 +29,10 @@ export function townAffordance(object){
 }
 
 const POSE={read:'Read',inspect:'Use',machine:'Use',radio:'Use',post:'Use',recycle:'Use',arcade:'Use',phone:'Phone',fish:'Fish',seat:'Sit',shop:'Use'};
+// An action label is an order to the player ("Read the Gushiken nameplate"); a resident's activity names only its object
+// ("reading the Gushiken nameplate"), so the label's own verb is dropped.
+const LABEL_VERB=/^(?:read|inspect|use|look (?:at|into|out for)|browse|watch|work|visit|enter|go into|come into|talk to|sit (?:on|under|beside)|fish from|buy|return|pray at|soak your feet in|cool off on|greet|cast|complete|board)\s+/i;
+export const labelObject=label=>{const rest=String(label).replace(LABEL_VERB,'');return rest===label?label:rest.replace(/^The\b/,'the');};
 const VERB={read:'reading',inspect:'examining',machine:'using',radio:'listening to',post:'posting a letter at',recycle:'sorting recycling at',arcade:'playing',phone:'making a call at',fish:'fishing at',seat:'resting at',shop:'buying a snack at'};
 // A park visit is free time too: people who go there to rest find the bench, rather than
 // standing beside it for an hour.
@@ -116,9 +120,9 @@ export function createTownActivities({getTargets,collides,getPlayerPosition=()=>
    const office=use.object.userData.officeTask;
    g.userData.socialPose=office?office.pose:shopping?(use.item==='paper'?'Read':['rice','bun'].includes(use.item)?'EatStanding':'DrinkStanding'):POSE[use.kind];
    g.userData.heldItem=office?office.heldItem||null:shopping?use.item:use.kind==='phone'?'phone':use.kind==='fish'?'rod':use.kind==='read'?'paper':null;
-   if(use.remaining<=0){ledger.record(person.profile.name,minutes,office?.activity||VERB[use.kind]+' '+use.label);release(person,minutes,35);return base;}
+   if(use.remaining<=0){ledger.record(person.profile.name,minutes,office?.activity||VERB[use.kind]+' '+labelObject(use.label));release(person,minutes,35);return base;}
   }
-  return {place:'town-activity-'+use.id,target:use.target,activity:use.phase==='walking'?'going to '+use.label:use.object.userData.officeTask?.activity||VERB[use.kind]+' '+use.label};
+  return {place:'town-activity-'+use.id,target:use.target,activity:use.phase==='walking'?'going to '+labelObject(use.label):use.object.userData.officeTask?.activity||VERB[use.kind]+' '+labelObject(use.label)};
  }
  return {plan,release,stateFor:person=>active.get(person),dispose(){for(const person of [...active.keys()])release(person,0);nextScan.clear();recent.clear();}};
 }
