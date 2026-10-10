@@ -365,8 +365,8 @@ const CSS=`
  */
 export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},onClose=()=>{},saveLabel='Save and play',shareLink=null,startAt='look',voice=()=>{},owner=null,templates=null,keepOpenOnSave=false}={}){
  if(!document.getElementById('shimanchu-css')){const style=document.createElement('style');style.id='shimanchu-css';style.textContent=CSS;document.head.append(style);}
- let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];
- let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',expression='auto',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null;
+ let wardrobeOwner=owner||start.name;let recipe=normalizeRecipe({...start,outfit:appropriateOutfit(wardrobeOwner,start.outfit)});const history=[];let featureBaseline=structuredClone(recipe);
+ let step=STEPS.some(s=>s[0]===startAt)?startAt:'look',tab='body',page='style',pose='idle',expression='auto',previewFacing=0,hairThumbView='front',wearing='clothes',dress=null,previewFraming='auto';
  const el=(tag,props={},...children)=>{const e=Object.assign(document.createElement(tag),props);for(const c of children)if(c!=null)e.append(c);return e;};
 
  // ----- Layout -----
@@ -422,7 +422,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
  renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));renderer.outputColorSpace=THREE.SRGBColorSpace;
  const scene=new THREE.Scene();
- scene.add(new THREE.HemisphereLight(0xffffff,0xc8a878,2.2));
+ const fillLight=new THREE.HemisphereLight(0xffffff,0xc8a878,2.2);scene.add(fillLight);
  const sun=new THREE.DirectionalLight(0xfff4e0,1.9);sun.position.set(2,4,5);scene.add(sun);
  const floor=new THREE.Mesh(new THREE.CircleGeometry(.62,40),new THREE.MeshBasicMaterial({color:0xf6d79c}));floor.rotation.x=-Math.PI/2;scene.add(floor);
  const holder=new THREE.Group();scene.add(holder);
@@ -449,7 +449,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  /** The distance at which a box of this size fits the view with some air round it. */
  const fit=(size,air)=>{const t=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));return Math.max(size.y*air/2/t,size.x*air/2/(t*camera.aspect))+size.z/2;};
- const faceFocus=()=>step==='look'&&FACE_TABS.has(tab);
+ const faceFocus=()=>previewFraming==='face'||(previewFraming==='auto'&&step==='look'&&FACE_TABS.has(tab));
  function aim(dt){
   const want=faceFocus()?1:0;focus+=(want-focus)*Math.min(1,dt*5);
   const F=frames.face,B=frames.full;
@@ -833,7 +833,24 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  close.onclick=()=>finish(false);
 
  /** Replace the editable character without closing the studio. */
- function setRecipe(value){endDrag();remember();recipe=normalizeRecipe(value);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();}
+ function setRecipe(value){endDrag();remember();recipe=normalizeRecipe(value);featureBaseline=structuredClone(recipe);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();}
+ /** Restore only controls belonging to the selected feature, as one undoable edit. */
+ function resetFeature(){
+  endDrag();const next=structuredClone(recipe),controls=TABS.find(t=>t.id===tab).controls;
+  for(const control of controls)for(const at of [control.at,control.horizontal].filter(Boolean))set(next,at,structuredClone(get(featureBaseline,at)));
+  if(JSON.stringify(next)===JSON.stringify(recipe))return;
+  remember();recipe=normalizeRecipe(next);dirty=true;renderBody();
+ }
+ /** Preview settings never modify the saved character. */
+ function setPreview({angle,framing,lighting,mood}={}){
+  endDrag();
+  const angles={front:0,quarter:-Math.PI/4,left:-Math.PI/2,right:Math.PI/2,back:Math.PI};
+  if(Object.hasOwn(angles,angle)){previewFacing=angles[angle];spin=previewFacing;spinVelocity=0;const input=poses.querySelector('.shm-angle');if(input)input.value=angle;}
+  if(['auto','face','full'].includes(framing)){previewFraming=framing;syncFocus();}
+  if(mood==='auto'||EXPRESSION_NAMES.includes(mood)){expression=mood;const input=poses.querySelector('[aria-label="Preview expression"]');if(input)input.value=mood;}
+  const lights={warm:[0xffffff,0xc8a878,2.2,0xfff4e0,1.9,[2,4,5]],neutral:[0xffffff,0x8896aa,1.8,0xffffff,2.2,[-3,4,5]],contour:[0xddeaff,0x647388,1.1,0xffffff,3.2,[4,2,2]]};
+  if(Object.hasOwn(lights,lighting)){const [sky,ground,fill,key,power,position]=lights[lighting];fillLight.color.setHex(sky);fillLight.groundColor.setHex(ground);fillLight.intensity=fill;sun.color.setHex(key);sun.intensity=power;sun.position.set(...position);}
+ }
  /** Render a full-body transparent PNG independently of the preview's face zoom. */
  function exportPNG(size=1024){
   endDrag();if(dirty){rebuild();dirty=false;}
@@ -855,5 +872,5 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
 
  rebuild();dirty=false;renderPoses();goTo(step);loop();close.focus();
- return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
+ return {close:()=>finish(false),get recipe(){return normalizeRecipe({...recipe,name:name.value});},get root(){return root;},goTo,showIn,setRecipe,setPreview,resetFeature,exportPNG,save:()=>finish(true),get wearing(){return wearing;}};
 }

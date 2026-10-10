@@ -53,3 +53,26 @@ let noticeTimer;
 const noticeObserver=new MutationObserver(()=>{clearTimeout(noticeTimer);if(status.textContent)noticeTimer=setTimeout(()=>{status.textContent='';},8000);});
 noticeObserver.observe(status,{childList:true});creator.root.querySelector('.shm-top').after(toolbar);
 window.addEventListener('pagehide',()=>{titleObserver.disconnect();noticeObserver.disconnect();clearTimeout(noticeTimer);},{once:true});
+
+// Inspect the same character in several views without changing its design.
+const preview=document.createElement('details');preview.className='studio-preview';
+const previewTitle=document.createElement('summary');previewTitle.textContent='Preview';preview.append(previewTitle);
+const previewMenu=document.createElement('div');previewMenu.className='studio-preview-menu';preview.append(previewMenu);
+function previewSelect(label,options,action){
+ const row=document.createElement('label');row.append(label);
+ const select=document.createElement('select');select.setAttribute('aria-label',label);select.append(...options.map(([value,text])=>new Option(text,value)));select.onchange=()=>action(select.value);row.append(select);previewMenu.append(row);return select;
+}
+previewSelect('View',[['front','Front'],['quarter','Three-quarter'],['left','Left profile'],['right','Right profile'],['back','Back']],angle=>creator.setPreview({angle}));
+previewSelect('Framing',[['auto','Automatic'],['face','Face detail'],['full','Full body']],framing=>creator.setPreview({framing}));
+previewSelect('Lighting',[['warm','Warm'],['neutral','Neutral studio'],['contour','Side light']],lighting=>creator.setPreview({lighting}));
+// Reuse the creator's expression catalogue and pose controls on phones as well.
+const expression=creator.root.querySelector('[aria-label="Preview expression"]');
+const expressionRow=document.createElement('label');expressionRow.append('Expression',expression);previewMenu.append(expressionRow);
+const pose=creator.root.querySelector('[aria-label="Preview pose"]');
+const poseRow=document.createElement('label');poseRow.append('Pose',pose);previewMenu.append(poseRow);
+creator.root.querySelector('.shm-side').append(preview);
+const featureReset=document.createElement('button');featureReset.type='button';featureReset.className='studio-reset-feature';featureReset.textContent='Reset feature';featureReset.title='Restore this feature to the loaded template or design. Undo remains available.';
+featureReset.onclick=()=>{creator.resetFeature();status.textContent='Selected feature restored. Undo reverses this change.';};
+creator.root.querySelector('.shm-panel').append(featureReset);
+preview.addEventListener('keydown',event=>{if(event.key==='Escape'&&preview.open){event.preventDefault();event.stopPropagation();preview.open=false;previewTitle.focus();}});
+creator.root.addEventListener('pointerdown',event=>{if(!preview.contains(event.target))preview.open=false;});
