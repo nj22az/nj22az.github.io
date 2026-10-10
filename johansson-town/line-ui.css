@@ -297,6 +297,13 @@ body>.shm .shm-share{background:var(--line-overlay)}body>.shm .shm-share>div{box
  #activity.conversation.rpg .activity-card{padding:12px 16px}
 }
 
+/* A phone held upright: the action tray (the Town clock's eight buttons) gets room to show them,
+   instead of 24% of the height with the last row cut off below a scroll nobody can see. */
+@media(max-width:600px) and (min-height:640px){
+ #activity:not(.conversation) .activity-card{max-height:75dvh}
+ #activity:not(.conversation) #activityActions{max-height:44dvh}
+}
+
 /* One typeface for every piece of interface text: LINE Seed JP, with the LINE stack behind it.
    Product packaging, shop signs and other in-world artwork are painted into their own textures
    and keep their own lettering. */

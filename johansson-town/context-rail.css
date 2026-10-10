@@ -37,7 +37,8 @@ body #hud #subtitle{left:max(16px,env(safe-area-inset-left));right:auto;transfor
 body:has(#activity:not(.hidden),#directory:not(.hidden),#cameraPanel:not([hidden]),#photoStudio:not([hidden]),>.shm) #contextActions,
 body.inspecting #contextActions,body.conversation-open #contextActions{visibility:hidden;pointer-events:none}
 @media(pointer:coarse){
- #hud #contextActions{width:140px;right:max(12px,env(safe-area-inset-right));bottom:max(24px,calc(env(safe-area-inset-bottom) + 20px))}
+ /* 168 px: a place name fits its two lines (at 140 it read "Enter / Sakura…"). */
+ #hud #contextActions{width:168px;right:max(12px,env(safe-area-inset-right));bottom:max(24px,calc(env(safe-area-inset-bottom) + 20px))}
  #hud #contextActions>button{grid-template-columns:24px minmax(0,1fr);gap:8px;padding:12px 10px;min-height:48px}
  #contextActions kbd{display:none}
  /* Run and Jump sit above the context rail, clear of the left movement thumb. */

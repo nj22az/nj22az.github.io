@@ -1,5 +1,5 @@
 import {createIzakayaStreetView} from './render/izakaya-street-view.js';
-import {WEATHERS,WEATHER_CHANGE_MINUTES,WEATHER_LINES,nextWeather,readWeather,writeWeather} from './world/weather.js';
+import {WEATHERS,WEATHER_CHANGE_MINUTES,weatherLine,nextWeather,readWeather,writeWeather} from './world/weather.js';
 import {izakayaOpen} from './people/social.js';
 import {closedGreeting} from './people/izakaya-hours.js';
 import {createPointWalk} from './input/point-walk.js';
@@ -405,7 +405,7 @@ const weatherLabel=()=>weatherMode==='random'?'Random · '+WEATHER_NAMES[weather
 function applyWeather(kind,{announce=false}={}){
  weatherKind=kind;weather=kind==='rain';world.setRain(weather);if(activities?.state)activities.state.weather=weather;
  writeWeather({mode:weatherMode,weather:kind});const button=$('#weatherButton');if(button)button.textContent=weatherLabel();
- if(announce&&!current)say(WEATHER_LINES[kind],4);
+ if(announce&&!current)say(weatherLine(kind,minutes),4);
 }
 function startWeather(){const saved=readWeather();weatherMode=saved.mode;nextWeatherAt=minutes+WEATHER_CHANGE_MINUTES;applyWeather(saved.weather);return weatherLabel();}
 function cycleWeather(){

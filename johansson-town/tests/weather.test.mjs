@@ -21,3 +21,11 @@ test('the shared weather record survives a round trip and falls back on junk',()
  store.setItem(WEATHER_KEY,'{not json');assert.deepEqual(readWeather(store),{mode:'random',weather:'sunny'});
  store.setItem(WEATHER_KEY,JSON.stringify({mode:'random',weather:'snow'}));assert.equal(readWeather(store).weather,'sunny');
 });
+
+test('a change of weather at night does not bring the sun out',async()=>{
+ const {weatherLine}=await import('../src/world/weather.js');
+ assert.match(weatherLine('sunny',12*60),/sun comes out/);
+ for(const m of [23*60+31,2*60,19*60])assert.doesNotMatch(weatherLine('sunny',m),/sun/,String(m));
+ assert.match(weatherLine('cloudy',1440*3+23*60),/stars/);
+ assert.equal(weatherLine('rain',23*60),weatherLine('rain',12*60));
+});
