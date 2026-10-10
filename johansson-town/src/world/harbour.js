@@ -213,9 +213,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   });
 
   // Low deck lights remain at the southern quay, separate from the overhead grid.
-  for(const px of [-7.2,.8]){
-   cyl(.10,.85,[px,.425,-32],0x3b4848);box([.22,.10,.22],[px,.9,-32],0xe7c080);obstacle(px,-32,.25,.25);
-   const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(px,1,-32);group.add(light);lampLights.push(light);
+  // The east one stands 1.25 m back from the kerb, on the footway side of the parking
+  // lay-by (main-road.js), where the harbour master's car stands by the kerb.
+  for(const [px,pz] of [[-7.2,-32],[2.05,-32]]){
+   cyl(.10,.85,[px,.425,pz],0x3b4848);box([.22,.10,.22],[px,.9,pz],0xe7c080);obstacle(px,pz,.25,.25);
+   const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(px,1,pz);group.add(light);lampLights.push(light);
   }
   // The shopping street is fed from the Main Street line (okinawa/quarters.js): a second
   // and third row of poles a few metres from it was clutter.
