@@ -1,7 +1,13 @@
 import {SHOPPING_LANE,SHOPPING_LANE_ROUTES} from './shopping-lane-plan.js';
 import {GARDEN,GARDEN_PATHS,gardenHeight} from './garden-layout.js';
-/** Shared fictional island masterplan. Existing harbour addresses stay fixed. */
-export const ISLAND=Object.freeze({name:'Johansson Island',mountain:{name:'Mount Aoba',x:40,z:175,height:0,radiusX:30,radiusZ:30},pond:{...GARDEN.pond,radius:GARDEN.pond.rx},village:{name:'Hoshizaki Fishing Village',x:132,z:190},lighthouse:{x:-54,z:204},viewpoint:{x:40,z:158}});
+/**
+ * Shared fictional island masterplan. Existing harbour addresses stay fixed.
+ * Mount Aoba stands in the open uplands south-east of Aoba Radio, clear of the radio
+ * station (built on the level), the cane fields, the coastal road and Hoshizaki: every
+ * other thing on its slopes (trees, walking, the map) reads the same terrain grid. Its
+ * flanks stay under 40° so the whole hill can be walked.
+ */
+export const ISLAND=Object.freeze({name:'Johansson Island',mountain:{name:'Mount Aoba',x:66,z:198,height:14,radiusX:30,radiusZ:28},pond:{...GARDEN.pond,radius:GARDEN.pond.rx},village:{name:'Hoshizaki Fishing Village',x:132,z:190},lighthouse:{x:-54,z:204},viewpoint:{x:40,z:158}});
 /** Separate customer, shopkeeper and lunch queue positions outside the south wall. */
 export const HOSHIZAKI_STORE=Object.freeze({
  customer:Object.freeze([126,207.3]),
