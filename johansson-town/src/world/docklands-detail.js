@@ -17,13 +17,13 @@ export function addDocklandsDetail(world,group,{register,onAction}={}){
  // Empty drums go back on the cargo boat. They wait against the Dock Electrical wall on the
  // hoist's side of the yard, south of the lane to the hoist; they used to stand at the root
  // of Mr Fujita's pier, where the way onto it was 1.2 m between them and the container.
- for(const [x,z] of [[-29.7,-42.1],[-29.7,-41.5],[-30.25,-41.8]]){
+ for(const [x,z] of [[-29.7,-41.8],[-29.7,-41.2],[-30.25,-41.5]]){
   cylinder(.26,.82,[x,.41,z],0x657779);for(const y of [.1,.72])cylinder(.275,.025,[x,y,z],0x424f50);
   for(let k=0;k<4;k++)box([.12,.15,.016],[x-.15+k*.09,.19+k%2*.33,z+.26],0x986341);
   solid('rusted-empty-drum',x,z,.56,.56,.85);
  }
  // A pallet with a box of net floats on it, beside the drum bay, against the same wall.
- const PX=-29.98,PZ=-40.55;
+ const PX=-29.98,PZ=-40.3;
  for(let i=0;i<6;i++)box([.12,.045,.85],[PX-.45+i*.17,.12,PZ],0x897459);
  for(const dx of [-.3,.15])box([.11,.12,.85],[PX+dx,.06,PZ],0x594b3a);
  solid('dock-pallet-stack',PX,PZ,1.1,.9,.2);
@@ -38,5 +38,5 @@ export function addDocklandsDetail(world,group,{register,onAction}={}){
  for(const [c,list] of geos){const m=new THREE.Mesh(mergeGeometries(list,false),new THREE.MeshStandardMaterial({color:c,roughness:.94}));m.name='Weathered dock finish';m.receiveShadow=true;group.add(m);list.forEach(g=>g.dispose());}
  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle='#cbbd92';ctx.fillRect(0,0,512,256);ctx.fillStyle='#354e54';ctx.font='bold 48px monospace';ctx.fillText('KITANO CARGO',30,70);ctx.font='25px monospace';ctx.fillText('JT-047 · ISLAND SUPPLIES',30,120);ctx.fillText('RICE / MAIL / REPAIR PARTS',30,160);ctx.fillText('RETURN EMPTY TO WEST QUAY',30,210);
  const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;const label=new THREE.Mesh(new THREE.PlaneGeometry(1.6,.8),new THREE.MeshStandardMaterial({map:t,roughness:1}));label.position.set(-33.5,2.65,-46.65);group.add(label);
- const a=new THREE.Object3D();a.position.set(-30.7,1,-41.2);group.add(a);register?.(a,'Inspect the cargo staging bay',()=>onAction?.('inspect','West quay cargo staging','The containers carry rice, shop stock, letters and electrical spares. Empty drums wait against the workshop wall for the hoist to swing them back aboard. Riku checks the load; Emi Kado keeps the manifest and the evening dispatch copies.'));
+ const a=new THREE.Object3D();a.position.set(-30.7,1,-40.9);group.add(a);register?.(a,'Inspect the cargo staging bay',()=>onAction?.('inspect','West quay cargo staging','The containers carry rice, shop stock, letters and electrical spares. Empty drums wait against the workshop wall for the hoist to swing them back aboard. Riku checks the load; Emi Kado keeps the manifest and the evening dispatch copies.'));
 }

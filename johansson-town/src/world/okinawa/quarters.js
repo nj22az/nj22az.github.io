@@ -406,8 +406,10 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
   for(const dx of [-.3,.3])kit.box(.06,2,.06,dx,1,-.7,0x3a3f42);
   solid(kit.rect(-.6,.6,-1.2,1.2,2,'forklift'));
  });
- // The morning's boxes at the shed's front, between two of its columns rather than through one.
- solid(fishCrates(kit,Q.minX+2.6,Q.maxZ-1.6,{rows:2,cols:3,seed:31}));
+ // The boxes Kōji sorts the catch into, just inside the shed's front beside him, between two
+ // of its columns. In front of the shed they stood through one column and left 1 m of the
+ // walk between the shed and the parapet, from the lawn gate to the ice plant.
+ solid(fishCrates(kit,Q.minX+2.62,Q.maxZ-2.53,{rows:2,cols:2,seed:31}));
  kit.box(.5,1.4,.4,I.maxX-.4,.7,Q.maxZ-.9,0xc0392b);kit.box(.3,.3,.06,I.maxX-.4,1.1,Q.maxZ-1.12,0xf2efe4);
  solid({id:'fuel-pump',x:I.maxX-.4,z:Q.maxZ-.9,w:.6,d:.5,height:1.4});
  vending(S.minX-.9,S.maxZ-1.9,-Math.PI/2);
