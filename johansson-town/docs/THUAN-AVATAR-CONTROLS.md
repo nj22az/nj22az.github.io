@@ -1,5 +1,7 @@
 # Thuận: editable reference preset
 
+For the earlier look, choose **Thuận · original** in “Choose a face”, or **Original Thuận braids** under Hair → Style. The original preset restores her heart-shaped face, lashes, rose glasses, lipstick and compact braids with yellow ties, while keeping the shared navy/cream outfit. Both braid styles can change tie colors independently of their clothing.
+
 The shared cast preset now uses a softer oval-to-round face, fuller cheeks, warm skin (`#e8bd9e`), restrained blush, round highlighted eyes, fuller rose lips and arched brows. It wears the navy contrast-collar polo, cream pleated skirt, gold pendant/studs and white shoes. Glasses are off by default; their rose frames are preserved for turning them back on.
 
 | Recipe parameter | Creator location | Range / options |

@@ -5,7 +5,7 @@ import {createAvatarAnimator} from './animate.js';
 import {drawPart,drawFace,EXPRESSION_NAMES} from './face.js';
 import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
 import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
-import {CAST_RECIPES} from './cast.js';
+import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from './cast.js';
 import {MOVES} from './moves.js';
 import {DIALS,DIAL_STEPS,dialStep,stepValue,personalityOf,voiceOf,MONTHS,daysIn,hello} from './personality.js';
 import {svg} from '../ui/icons.js';
@@ -68,7 +68,7 @@ export function previewOutfits(recipe){
 }
 const LABEL={
  towel:'Bath towel',swimwear:'Swimwear',
- crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',sweptponytail:'Swept low ponytail',ponytail:'Ponytail',braids:'Short twin braids',longbraids:'Twin braids · Thuan',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
+ crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',sweptponytail:'Swept low ponytail',ponytail:'Ponytail',braids:'Original Thuận braids',longbraids:'Twin braids · Thuan',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
  pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',
  round:'Round',dot:'Dot',almond:'Almond',sleepy:'Sleepy',lashes:'Lashes',narrow:'Narrow',sparkle:'Sparkle',gentle:'Gentle',
  doe:'Doe',cat:'Cat',droopy:'Droopy',heavy:'Heavy-lidded',bright:'Bright',tired:'Tired',squint:'Squint',starry:'Starry',
@@ -121,7 +121,7 @@ export const TABS=[
   {kind:'parts',page:'style',at:'hair.style',list:PARTS.hair,draw:'head'},
   {kind:'toggle',page:'style',at:'hair.flip',label:'Part on the other side'},
   {kind:'colours',page:'colour',at:'hair.colour',label:'Colour',palette:PALETTE.hair},
-  {kind:'colours',page:'colour',at:'hair.tieColour',label:'Braid ties',palette:PALETTE.cloth,when:r=>r.hair.style==='longbraids'},
+  {kind:'colours',page:'colour',at:'hair.tieColour',label:'Braid ties',palette:PALETTE.cloth,when:r=>['braids','longbraids'].includes(r.hair.style)},
   {kind:'slider',page:'adjust',at:'hair.length',label:'Braid length',low:'Upper chest',high:'Past waist',when:r=>r.hair.style==='longbraids'},
   {kind:'slider',page:'adjust',at:'hair.volume',label:'Braid volume',low:'Fine',high:'Full',when:r=>r.hair.style==='longbraids'}]},
  {id:'eyes',name:'Eyes',controls:[
@@ -679,7 +679,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const visitor=el('button',{type:'button',className:'shm-pill',textContent:'Harbour visitor'});
   visitor.onclick=()=>{remember();recipe=normalizeRecipe(CAST_RECIPES['Harbour visitor']);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();};
   if(!owner)body.append(visitor);
-  if(!owner){const thuan=el('button',{type:'button',className:'shm-pill',textContent:'Thuận'});thuan.onclick=()=>{remember();recipe=normalizeRecipe(CAST_RECIPES.Thuan);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();};body.append(thuan);}
+  if(!owner)for(const [label,preset] of [['Thuận · original',ORIGINAL_THUAN_RECIPE],['Thuận · photo reference',CAST_RECIPES.Thuan]]){const thuan=el('button',{type:'button',className:'shm-pill',textContent:label});thuan.onclick=()=>{remember();recipe=normalizeRecipe(preset);wardrobeOwner=recipe.name;name.value=recipe.name;dirty=true;faces=[];renderBody();};body.append(thuan);}
   body.append(el('h4',{textContent:'Pick someone to start from'}));
   const grid=el('div',{className:'shm-grid shm-faces'});
   faces.forEach((face,i)=>{
