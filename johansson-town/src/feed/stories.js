@@ -42,7 +42,7 @@ export const GENRES=Object.freeze([
     {say:'B',line:'I was there. It was a sardine.',shot:'close',a:['Shrug','shy'],b:['HandsOnHips','content']},
     {say:null,line:'The fish has since grown to the size of the island.',shot:'high',a:['Laugh','laugh'],b:['Laugh','laugh']}],
   ]},
- {id:'ferry',places:['harbour','pier'],title:['The last ferry','{A} and the timetable','Running for the boat'],cast:2,
+ {id:'ferry',places:['harbour','pier','ferry'],title:['The last ferry','{A} and the timetable','Running for the boat'],cast:2,
   beats:[
    [{say:null,line:'{hour}. The ferry leaves in one minute.',shot:'wide',a:['Idle','neutral'],b:['Idle','neutral']},
     {say:'A',line:'Is that the ferry horn?',shot:'medium',a:['Think','surprised'],b:['Idle','neutral']}],

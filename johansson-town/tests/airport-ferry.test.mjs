@@ -4,7 +4,9 @@ import * as THREE from '../vendor/three.module.js';
 import {AIRPORT_JETTY,buildAirportIsland} from '../src/world/airport-island.js';
 import {airportWorld,airportLocal,airportSurface,AIRPORT_LANDING,AIRPORT_LANDING_HEIGHT,AIRPORT_PIER_HEIGHT} from '../src/world/airport-ground.js';
 import {buildAirportVehicleYard} from '../src/world/airport-vehicle-yard.js';
-import {AIRPORT_FERRY_PORTS,airportFerryPose} from '../src/world/airport-ferry.js';
+import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,airportFerryPose} from '../src/world/airport-ferry.js';
+import {FERRY_DECKS} from '../src/world/ferry-ship.js';
+import {FERRY_RAMP} from '../src/world/ferry-model.js';
 import {createFerryRun,FERRY_BERTH} from '../src/world/ferry.js';
 import {createIslandPlay} from '../src/island/play.js';
 import {createTownTraffic} from '../src/world/town-traffic.js';
@@ -30,8 +32,9 @@ test('airport arrival feet match the drawn pier and connect to the public distri
  // Body-radius clearance all the way from ramp landing onto the open arrival plaza.
  for(let x=-54.8;x<=-40;x+=.1){const p=airportWorld(x,31);assert.ok(airportSurface(...p,.32),'Pier/plaza seam at local '+x);}
  const [x,z]=airportLocal(...AIRPORT_FERRY_PORTS.airport.berth);
- assert.ok(x+7.5<AIRPORT_JETTY.minX,'Hull overlaps the pier');
- assert.ok(x+7.5+2.4>AIRPORT_JETTY.minX,'Bow ramp does not reach the pier');
+ const half=AIRPORT_FERRY.length/2;
+ assert.ok(x+half<AIRPORT_JETTY.minX,'Hull overlaps the pier');
+ assert.ok(x+half+FERRY_RAMP.length>AIRPORT_JETTY.minX,'Bow ramp does not reach the pier');
  assert.ok(Math.abs(z-31)<1e-7);
 });
 
@@ -40,8 +43,12 @@ test('the shared ferry crosses around the harbour wall and stays off reclaimed l
  assert.deepEqual(ports.town.berth,[FERRY_BERTH.x,FERRY_BERTH.z]);
  for(const destination of ['airport','town'])for(let i=0;i<=1000;i++){
   const p=airportFerryPose(destination,i/1000);assert.ok(Object.values(p).every(Number.isFinite));
-  const c=Math.cos(p.yaw),s=Math.sin(p.yaw);for(const dx of [-2.2,0,2.2])for(let dz=-7.5;dz<=7.5;dz+=.3){const x=p.x+c*dx+s*dz,z=p.z-s*dx+c*dz;assert.ok(!(Math.abs(z+83)<2&&Math.abs(x)<34),'Hull crosses breakwater at '+x+','+z);}
-  for(const dx of [-2.2,0,2.2])for(let dz=-7.5;dz<=7.5;dz+=.3){const x=p.x+c*dx+s*dz,z=p.z-s*dx+c*dz;assert.ok(!(Math.abs(x)<4.1&&z> -64.95&&z< -49.65),'Hull crosses outer pier at '+x+','+z);}
+  const c=Math.cos(p.yaw),s=Math.sin(p.yaw),hb=AIRPORT_FERRY.beam/2,hl=AIRPORT_FERRY.length/2;
+  for(const dx of [-hb,0,hb])for(let dz=-hl;dz<=hl;dz+=.4){const x=p.x+c*dx+s*dz,z=p.z-s*dx+c*dz;
+   assert.ok(!(Math.abs(z+83)<2+1&&Math.abs(x)<34+1),'Hull within a metre of the breakwater at '+x+','+z);
+   assert.ok(!(Math.abs(x)<4.1+.1&&z> -64.95-.1&&z< -49.65),'Hull crosses outer pier at '+x+','+z);
+   // Off Kitano-jima's reclaimed land and its jetty, except the bow at the berth.
+   const [u,v]=airportLocal(x,z);assert.ok(!(u> -60&&u<178&&v>20&&v<132)||(u<AIRPORT_JETTY.minX&&v>27&&v<35),'Hull over airport land at local '+[u.toFixed(1),v.toFixed(1)]);}
   const [u,v]=airportLocal(p.x,p.z);
   assert.ok(!(u> -60&&u<178&&v>20&&v<132),'Hull sails over airport land');
  }
@@ -82,15 +89,21 @@ test('calling from the opposite shore brings the same empty hull before boarding
 });
 
 test('loading keeps passengers off vehicle lanes and waits for actual boarding readiness',()=>{
- const s=playerService(),shore=new THREE.Vector3(-3.2,.098,-56.4);s.player.position.copy(shore);
+ const s=playerService(),shore=new THREE.Vector3(AIRPORT_FERRY_PORTS.town.landing[0],AIRPORT_FERRY_PORTS.town.height,AIRPORT_FERRY_PORTS.town.landing[1]);s.player.position.copy(shore);
  let preparation=0;s.world.traffic={prepareCrossing(){return ++preparation>=4;}};
  s.play.action('airport-ferry');s.choose('Buy return');s.choose('Board');
  for(let i=0;i<3;i++){s.play.tick(1);assert.equal(s.run.phase,'waiting');assert.deepEqual(s.player.position.toArray(),shore.toArray());}
  s.play.tick(1);assert.equal(s.run.phase,'crossing');s.run.ferry.updateMatrixWorld(true);
  const local=s.player.position.clone().applyMatrix4(s.run.ferry.matrixWorld.clone().invert());
- assert.ok(Math.abs(local.x-1.3)<1e-7&&Math.abs(local.z-.2)<1e-7);
- assert.ok(local.z+.32<3.3-3.8/2,'Passenger overlaps foredeck car');
- assert.ok(local.z-.32> -1.6&&local.x+.32<2.04,'Passenger overlaps cabin or side wall');
+ // Passengers ride on the open upper deck, never on the car deck among the cars.
+ const [px,py,pz]=FERRY_DECKS.passenger;assert.ok(local.distanceTo(new THREE.Vector3(px,py,pz))<1e-6);
+ assert.ok(Math.abs(local.y-FERRY_DECKS.upper.y)<1e-6,'Passenger is not on the upper deck');
+ assert.ok(local.z+.32<FERRY_DECKS.upper.fore&&local.z-.32>FERRY_DECKS.upper.aft,'Passenger is off the upper deck');
+ assert.ok(Math.abs(local.x)+.32<FERRY_DECKS.saloon.width/2-.08,'Passenger is outside the rails');
+ // Clear of what stands on that deck: the funnel, the benches and the vents.
+ assert.ok(local.z+.32< -6.9-.62*1.5,'Passenger stands in the funnel');
+ assert.ok(Math.abs(local.x)+.32<1.75-.23,'Passenger stands on a bench');
+ assert.ok(Math.abs(local.x)+.32<1.5-.28,'Passenger stands in a ventilator');
  const [u,v]=airportLocal(...AIRPORT_LANDING);assert.ok(Math.abs(v-31)>1.5,'Airport waiting point blocks vehicle lane');
  assert.ok(airportSurface(...AIRPORT_LANDING,.32));
 });

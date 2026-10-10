@@ -163,6 +163,11 @@ that makes more or better stories.
 - **Build in small batches, and look after each one.** A command or test that succeeds does not mean the world is right:
   after every batch, check it in the live game (the `johansson-town-audit` MCP server: walk it, look, screenshot) or in
   real photographs of it, before the next. Never change ground or terrain, lighting and characters in the same batch.
+- **No shortcuts when making the world** (the creator, 2026-10-10: "don't take or make shortcuts when making the world").
+  Build things whole and true to how they really are, even the parts the camera rarely sees: a ship is modelled with
+  its underwater hull, screws, rudders and machinery (a dry dock will show them), a building with its inside, a
+  machine with its real parts and numbers. No stand-in boxes, faked fronts, borrowed placeholder data or skipped
+  systems left for later without saying so; if a part is not built yet, record it as open in the plan.
 - **Plan a change before making it.** Before moving or resizing anything in a place, list what it affects: colliders, standing
   spots and walking routes, tests, residents' routines, and every film shot that photographed it (the studio's
   `remotion/tools/impact.py` lists the shots, marks and photographs). Then change it, and check each item on the list.

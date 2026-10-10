@@ -551,10 +551,10 @@
  },
  {
   "name": "Bus driver",
-  "role": "Harbour Line driver",
-  "place": "Bus Station",
+  "role": "Master of the Minato Maru",
+  "place": "The Minato Maru’s wheelhouse",
   "bio": "The bus driver collects opening sentences from his passengers and waits at the terminus for the endings.",
-  "backstory": "His route connects work, shopping and the last journey home. He notices who is carrying groceries, who has missed lunch and who just wants a little company at the terminus, and he recognises the regulars by the way they wave at the stop. The airport has brought new faces to remember. He welcomes them without changing his affection for the old stops, the coastal loop in the evening light most of all. Grandmother Higa can still hear a bus coming before it clears the tunnel; her husband drove this route for thirty years. The driver considers that the highest standard in his profession, and drives accordingly.",
+  "backstory": "His route connects work, shopping and the last journey home. He notices who is carrying groceries, who has missed lunch and who just wants a little company at the terminus, and he recognises the regulars by the way they wave at the stop. The airport has brought new faces to remember. He welcomes them without changing his affection for the old stops, the coastal loop in the evening light most of all. Grandmother Higa can still hear a bus coming before it clears the tunnel; her husband drove this route for thirty years. The driver considers that the highest standard in his profession, and drives accordingly. When the Harbour Line became the town ferry he sat his deck licence and went with it; he has been the Minato Maru’s master since 1994, and the island still calls him the bus driver.",
   "portrait": "assets/images/residents/11.webp",
   "age": 49,
   "friend": "Grandmother Higa",

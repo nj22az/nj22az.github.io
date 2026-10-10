@@ -5,6 +5,10 @@ Pushing `claude/sjoskolan-youtube-strategy-gofi3o` deploys the live game: test a
 
 ## 1. The Minato–Kitano-jima ferry (the creator, 2026-10-10)
 
+**Status (2026-10-10, later):** audited and the first batch built: `docs/FERRY-AUDIT.md`. The Minato Maru (22 m, three
+cars) is modelled whole, hull and underwater body; her particulars, machinery, load balance and scenarios are data
+(`src/world/ferry-ship.js`); her crew is allocated (`src/people/ferry-crew.js`). Next: the open list in the audit, §5.
+
 > "the ferry , I think it's easier if you audit it as marine ship construction engineer in Japan in the 1990's now it
 > looks like a floating toy, it needs to be a realistic functional ship with loading decks, passenger waiting spaces, a
 > realistic functional engine room with realistic engine electrical distribution and supply for all common systems found

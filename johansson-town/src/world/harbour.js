@@ -275,7 +275,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   function ropeCoil(x,z,scale=1){
     const rm=material(0xa38a62);for(let i=0;i<3;i++){const t=directMesh(new THREE.TorusGeometry(.35*scale+i*.07,.045*scale,6,20),rm,group,[x,.18+i*.035,z],[Math.PI/2,0,(i%2)*.25],[1,1,1],false);t.castShadow=false;}
   }
-  ropeCoil(-8.6,-44.15,.9);
+  // The bow line's coil, by the bollard the Minato Maru's starboard bow line goes to.
+  ropeCoil(-10.1,-48.55,.9);
 
   function crateStack(x,z,cols=2,rows=2){
     const colors=[0x4f6f76,0xa9854e,0x6f805e];
@@ -289,9 +290,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Nets dry on the apron by the water, where the boats land them: east of the warehouse, end-on
   // to the quay so the lane along the edge stays open. (They stood behind the warehouse, in the one
   // passage from the main street to the west quay, and cut it to a metre.)
-  // Between the warehouse's loading frontage (kept clear to x -9.2) and the cars' lane to the ferry ramp.
-  for(const z of [-47.5,-45.2])cyl(.06,2.4,[-8.6,1.3,z],0x655747);beam([-8.6,2.45,-47.5],[-8.6,2.45,-45.2],.055,0x655747);
-  for(let z=-47.25;z<-45.4;z+=.22)beam([-8.58,.5,z],[-8.58,2.32,z],.012,0x65736f);obstacle(-8.6,-46.35,.5,2.5);
+  // Against the warehouse's loading frontage (kept clear to x -9.2), north of the ferry's ramp head:
+  // cars boarding the Minato Maru back round on a 3 m arc onto her centreline (town-traffic.js), and
+  // the ramp head between the bollards is theirs.
+  {const rz=-42.9;for(const z of [rz-1.15,rz+1.15])cyl(.06,2.4,[-8.9,1.3,z],0x655747);beam([-8.9,2.45,rz-1.15],[-8.9,2.45,rz+1.15],.055,0x655747);
+  for(let z=rz-.9;z<rz+.95;z+=.22)beam([-8.88,.5,z],[-8.88,2.32,z],.012,0x65736f);obstacle(-8.9,rz,.5,2.5);}
 
 
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.

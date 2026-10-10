@@ -43,7 +43,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-CMrMSDtj.js",
+    "file": "boot-Cjv5phu_.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -58,7 +58,7 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-DPc01Ax7.js",
+    "file": "feed-Dvz5lNV6.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
@@ -67,7 +67,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-BdhsNd7D.js",
+    "file": "game-CbiQSPde.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
