@@ -572,6 +572,31 @@ function arrivalLensBlocked(x,z,y,r){
  }
  return false;
 }
+/**
+ * How far the third-person lens can stand back behind him at a heading, inside the room he has
+ * just entered (the same boom and ceiling test the lens uses each frame).
+ */
+function boomRoom(x,z,heading,tilt=-.08){
+ const y=player.position.y+1.6,cx=Math.sin(heading)*Math.cos(tilt),cy=-Math.sin(tilt),cz=Math.cos(heading)*Math.cos(tilt);
+ // From his right shoulder, as placeThirdPerson hangs the lens (or his middle if the shoulder is in a wall).
+ const side=johansson?.lens?.side??.34;let px=x+Math.cos(heading)*side,pz=z-Math.sin(heading)*side;if(cameraBlocked(px,pz,y,.16)){px=x;pz=z;}
+ for(let d=.1;d<=2.2;d+=.1)if(cameraBlocked(px+cx*d,pz+cz*d,y+cy*d,.16))return Math.max(0,d-.22);
+ return 2.2;
+}
+/**
+ * Coming in through a door you keep looking the way you walked, unless that leaves the lens no
+ * room: in a family home's genkan he faced a partition a step away with the door wall behind him,
+ * the boom shrank to 0.38 m, his body was hidden and the screen was wall. Then he turns to the
+ * nearest heading the lens has room for (into the dining-kitchen, there).
+ */
+function roomyHeading(heading){
+ if(!thirdPerson)return heading;
+ const x=player.position.x,z=player.position.z;
+ if(boomRoom(x,z,heading)>=1)return heading;
+ const turns=[1,-1,2,-2,3,-3,4].map(k=>({h:heading+k*Math.PI/4,r:boomRoom(x,z,heading+k*Math.PI/4)}));
+ // The nearest turn with room to stand back comfortably, else the nearest with room at all, else the most room.
+ return (turns.find(t=>t.r>=1.6)||turns.find(t=>t.r>=1)||turns.reduce((a,b)=>b.r>a.r?b:a)).h;
+}
 function placeThirdPerson(dt){
  // Seated, the lens rises a little so his head does not fill the view of the table. In a
  // bath he is down at the water, so it looks over his shoulder from standing height.
@@ -920,12 +945,12 @@ async function enterRoom(s){spawnScene?.cancel('room');
  // The heading goes through the door with you. Snapping to the room's own yaw and a
  // level pitch is the single thing that most makes an interior read as a different
  // place: you walk in looking where you were looking, not where the room says.
- yaw=streetToRoom(streetYaw,s,activeRoomLayout);
+ yaw=roomyHeading(streetToRoom(streetYaw,s,activeRoomLayout));player.quaternion.setFromAxisAngle(yAxis,yaw);
  pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
 function leaveRoom(){if(!current)return;spawnScene?.cancel('room');if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}const leavingDungeon=current.id==='dungeon';wearSwim(false);showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;beerService?.clear();beerService=null;workplaceResidents.restore();bookshopCustomers.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');document.body.classList.remove('town-menu-open');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();onsenGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;current=null;if(s?.id===CITY_RESTAURANT.id)hands.firstPersonVisible=!thirdPerson;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);
  // and back out again the same way, by the same rotation: you leave facing where you
  // were facing inside, which for somebody who walked at the door is the street.
- if(s){yaw=roomToStreet(roomYaw,s,roomLayout);pitch=THREE.MathUtils.clamp(roomPitch,-.55,.55);}
+ if(s){yaw=roomToStreet(roomYaw,s,roomLayout);pitch=THREE.MathUtils.clamp(roomPitch,-.55,.55);player.quaternion.setFromAxisAngle(yAxis,yaw);}
  say(syncExteriorPlace(),1.5);if(leavingDungeon)finishDungeon();}
 
 function syncExteriorPlace(){
