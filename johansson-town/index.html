@@ -19,17 +19,17 @@
 <link rel="stylesheet" href="./base.css?h=2cec600f">
 <link rel="stylesheet" href="./context-controls.css?h=1c5769f8">
 <title>Johansson World</title>
-<link rel="stylesheet" href="./landing.css?h=9aa3be2e">
+<link rel="stylesheet" href="./landing.css?h=cfea2daa">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
 <link rel="stylesheet" href="./photo-mode.css?h=17316f51">
 <link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
 <link rel="stylesheet" href="./context-rail.css?h=a4e11923">
-<link rel="stylesheet" href="./line-ui.css?h=e64077bd">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-CNiczBbE.js">
+<link rel="stylesheet" href="./line-ui.css?h=5aa283d2">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-BmWqqPbV.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-BJJ0w3BS.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-BFN4xGBX.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-DzgjvdhQ.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-B3Vmqgvk.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/actors-DlpXhLMR.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-ygTjb9SR.js">
@@ -85,7 +85,7 @@
     </div>
     <footer class="title-foot">
       <span>© 1997 JOHANSSON CO.</span>
-      <button id="installTown" type="button" aria-label="Install on iPhone or iPad"><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 10v11h14V10M12 16V2M7 7l5-5 5 5"/></svg>Install app</button><span class="title-hint">TOUCH · KEYBOARD · CONTROLLER</span>
+      <button id="installTown" type="button" aria-label="Install on iPhone or iPad"><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 10v11h14V10M12 16V2M7 7l5-5 5 5"/></svg>Install app</button><a id="openStudio" href="/avatar-creator/"><svg class="title-action-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1L19 8l-3-3L5 16zM14 7l3 3"/></svg>Johansson Studio</a><span class="title-hint">TOUCH · KEYBOARD · CONTROLLER</span>
     </footer>
   </section>
   <div class="board-wrap">
@@ -550,7 +550,7 @@ import {unlockTownAudio} from './runtime/audio-83dQfoLt.js';
     try{
       // Let the browser paint the first fact before constructing the town.
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      try { await import('./runtime/boot-CNiczBbE.js'); } catch (error) {
+      try { await import('./runtime/boot-BmWqqPbV.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;
