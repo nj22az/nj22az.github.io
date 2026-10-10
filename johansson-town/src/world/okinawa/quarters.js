@@ -390,10 +390,17 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  // Boats lying to the quay, a forklift, crates, the fuel pump.
  fishingBoat(kit,24.6,Q.minZ-2.1,{ry:0,colour:0x2f6fb8,name:"Daisan Minatomaru"});
  fishingBoat(kit,33.6,Q.minZ-2.2,{ry:Math.PI,colour:0x8a3b2e,length:7.2});
- kit.box(1.1,1,1.8,S.maxX+1.1,.55,S.maxZ-1.2,0xe0b93a);kit.box(.9,.06,1.2,S.maxX+1.1,.2,S.minZ+5.5,0x3a3f42);
- for(const dx of [-.3,.3])kit.box(.06,2,.06,S.maxX+1.1+dx,1,S.maxZ-2.2,0x3a3f42);
- solid({id:'forklift',x:S.maxX+1.1,z:S.maxZ-1.5,w:1.2,d:2.4,height:2});
- solid(fishCrates(kit,Q.minX+2.1,Q.maxZ-1.6,{rows:2,cols:3,seed:31}));
+ // The forklift runs ice from the plant's door to the boats. Between runs it waits on the
+ // quay side of the plant, along its wall under the chute, forks to the west: parked in the
+ // lane between the shed and the plant it stood in front of the ice door (and 0.3 m into
+ // the plant's wall), and Mr Tamaki loads ice there.
+ kit.at(I.minX+2.8,I.minZ-.65,Math.PI/2,()=>{
+  kit.box(1.1,1,1.8,0,.55,.3,0xe0b93a);kit.box(.9,.06,1.2,0,.2,-.6,0x3a3f42);
+  for(const dx of [-.3,.3])kit.box(.06,2,.06,dx,1,-.7,0x3a3f42);
+  solid(kit.rect(-.6,.6,-1.2,1.2,2,'forklift'));
+ });
+ // The morning's boxes at the shed's front, between two of its columns rather than through one.
+ solid(fishCrates(kit,Q.minX+2.6,Q.maxZ-1.6,{rows:2,cols:3,seed:31}));
  kit.box(.5,1.4,.4,I.maxX-.4,.7,Q.maxZ-.9,0xc0392b);kit.box(.3,.3,.06,I.maxX-.4,1.1,Q.maxZ-1.12,0xf2efe4);
  solid({id:'fuel-pump',x:I.maxX-.4,z:Q.maxZ-.9,w:.6,d:.5,height:1.4});
  vending(S.minX-.9,S.maxZ-1.9,-Math.PI/2);
