@@ -4,9 +4,11 @@ import {groundHeight} from '../world/layout.js?snappy=1';
 
 // Interpret affordances, never player callbacks: NPCs must not open the player's
 // menus, spend their money, remove quest items or trigger a journey on their behalf.
+// Whole words only: "visit" holds "sit", "houseboat" holds "use", "cabinet" holds "bin". Matching inside
+// words sent residents to sit on the ground at strangers' front doors and to "use" Mr Fujita's houseboat.
 export function townAffordance(object){
  const label=object.userData.hit?.label||'',lower=label.toLowerCase();
- if(!label||object.userData.npcInteraction===false||object.userData.name||/^(talk|catch up|say hello|enter|exit|step outside|travel|board|return|take|pick up|ring service)/i.test(label))return null;
+ if(!label||object.userData.npcInteraction===false||object.userData.name||/^(talk|catch up|say hello|enter|come into|visit|exit|step outside|travel|board|return|take|pick up|ring service|complete|ride|review)/i.test(label))return null;
  let kind;
  if(object.userData.officeTask)kind='office';
  else if(/fish from|fishing/.test(lower))kind='fish';
@@ -14,11 +16,11 @@ export function townAffordance(object){
  else if(/arcade|star port|play/.test(lower))kind='arcade';
  else if(/radio|music|tune/.test(lower))kind='radio';
  else if(/post ?box|postcard|mail/.test(lower))kind='post';
- else if(/recycl|rubbish|bin/.test(lower))kind='recycle';
+ else if(/recycl|rubbish|\bbins?\b/.test(lower))kind='recycle';
  else if(/^(buy|order)|vending/.test(lower))kind='shop';
- else if(/sit|rest on|bench/.test(lower))kind='seat';
+ else if(/\bsit\b|rest on|bench/.test(lower))kind='seat';
  else if(/read|browse|ledger|notice|newspaper|book/.test(lower))kind='read';
- else if(/operate|use|test|switch|open|close/.test(lower))kind='machine';
+ else if(/\b(operate|use|test|switch|open|close)\b/.test(lower))kind='machine';
  else if(/inspect|admire|look|listen|check/.test(lower))kind='inspect';
  else return null;
  const cost=Number(label.match(/[¥￥]\s*(\d+)/)?.[1]||(['shop','arcade','phone'].includes(kind)?kind==='phone'?10:kind==='arcade'?100:120:0));
