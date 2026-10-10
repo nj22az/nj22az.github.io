@@ -43,7 +43,7 @@ export async function buildSceneWorld(id,views,townData=null){
  const camera=new THREE.PerspectiveCamera(55,4/3,.05,250);camera.position.fromArray(preset.camera.position);camera.quaternion.fromArray(preset.camera.quaternion);camera.updateMatrixWorld(true);
  const sky=inside?null:(townData?.sky||createTownSky(scene)),cel=createCelPass({tint:0xffffff});cel.apply(scene);
  let lamps=0;scene.traverse(o=>{if(o.isPointLight&&++lamps>4)o.visible=false;});
- const meshes=[];scene.traverse(o=>{if(o.isMesh){let p=o,actor=false;while(p){if(p.userData.studioActor)actor=true;p=p.parent;}if(!actor)meshes.push(o);}});scene.updateMatrixWorld(true);
+ const meshes=[];scene.traverse(o=>{if(o.isMesh){let p=o,actor=false;while(p){if(p.userData.studioActor||!p.visible)actor=true;p=p.parent;}if(!actor)meshes.push(o);}});scene.updateMatrixWorld(true);
  return {scene,camera,origin,seats,floor,blocked,meshes,sky,townData:inside?null:{scene,world,sun,sky},
   settle(actors){const occupied=[];for(const a of actors){let p=this.place(a);if(!a.seat&&(blocked(p.x,p.z,.23*a.size)||occupied.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<.23*(q.size+a.size)))){const choices=[...candidates];for(let dx=-2;dx<=2;dx+=.6)for(let dz=-2;dz<=2;dz+=.6)choices.push([origin[0]+dx,0,origin[2]+dz]);const free=choices.find(q=>!blocked(q[0],q[2],.23*a.size)&&!occupied.some(o=>Math.hypot(o.x-q[0],o.z-q[2])<.23*(o.size+a.size)));if(free){a.x=free[0]-origin[0];a.z=free[2]-origin[2];p=this.place(a);}}occupied.push({...p,size:a.size});}},
   place(actor){if(actor.seat){const s=seats.find(s=>s.id===actor.seat);if(s)return {x:s.position[0],y:s.position[1],z:s.position[2],seat:s};actor.seat='';}
