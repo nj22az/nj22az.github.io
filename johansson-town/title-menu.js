@@ -28,6 +28,7 @@ export function describeSave(state,lastPlayed){
 
 export function createTitleMenu({launch}){
  const enter=$('enter'),dialog=$('titleSlots'),list=$('titleSlotList'),form=$('titleNewForm'),name=$('titleNewName');
+ const summary=$('titleSave');
  let opener=null;
 
  function refresh(){
