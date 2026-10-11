@@ -83,8 +83,22 @@ def _veckor():
 VECKOSIDOR = _veckor()
 
 
-def visning(week):
-    """Veckan eleven ser och veckosidan, när de skiljer sig från mappen (kursen började vecka 38, vecka-38/ ingår i vecka 40)."""
+def _undervisas():
+    """Presentationer som undervisas en annan vecka än mappen: {'v45_01': 43, …} ur lektionsbildernas 'vecka'."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('lektioner_bildspel', ROOT / 'verktyg' / 'lektionsbilder' / 'lektioner.py')
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    return {lek['id']: lek['vecka'] for lek in mod.LEKTIONER if lek.get('vecka')}
+
+
+UNDERVISAS = _undervisas()
+
+
+def visning(week, did=''):
+    """Veckan eleven ser och veckosidan, när de skiljer sig från mappen (kursen började vecka 38, vecka-38/ ingår i vecka 40;
+    vecka 45:s delar undervisas i vecka 43 och 44)."""
+    if did[:6] in UNDERVISAS:
+        return UNDERVISAS[did[:6]], f'../vecka-{UNDERVISAS[did[:6]]}/aktuell/'
     w = VECKOSIDOR.VECKOR.get(week, {})
     href = w['flyttad']['href'].replace('../../', '../') if w.get('flyttad') else f'../vecka-{week}/aktuell/'
     return w.get('vecka', week), href
@@ -154,12 +168,12 @@ def build(pptx, force=False):
         'id': did, 'week': week, 'title': deck_title(pptx, slides[0]['title']), 'stamp': stamp,
         'w': img.width, 'h': img.height,
         'pdf': f'../vecka-{week}/aktuell/{pdf.name}', 'pptx': f'../vecka-{week}/aktuell/{pptx.name}',
-        'weekUrl': visning(week)[1],
+        'weekUrl': visning(week, did)[1],
         'exercises': f'../vecka-{week}/aktuell/Formelstod_och_ovningar.html#{chapter}' if any(e.startswith(chapter) for e in ex_ids) else None,
         'slides': slides,
     }
-    if visning(week)[0] != week:
-        data['vecka'] = visning(week)[0]
+    if visning(week, did)[0] != week:
+        data['vecka'] = visning(week, did)[0]
     data_file.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     return did, True
 
@@ -177,7 +191,7 @@ if __name__ == '__main__':
         f = OUT / did / 'data.json'
         d = json.loads(f.read_text())
         # Visad vecka och veckosida kan ändras utan ny rendering.
-        vecka, href = visning(d['week'])
+        vecka, href = visning(d['week'], did)
         ny = {**{k: v for k, v in d.items() if k != 'vecka'}, 'weekUrl': href, **({'vecka': vecka} if vecka != d['week'] else {})}
         if ny != d:
             f.write_text(json.dumps(ny, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
