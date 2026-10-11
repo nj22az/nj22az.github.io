@@ -2,6 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {cargoVisit,buildCargoShipping,CARGO_CALLS} from '../src/world/cargo-shipping.js';
+import {CARGO_BERTH} from '../src/world/minato-berth.js';
 import {buildFlowerShop,FLOWER_SHOP} from '../src/world/flower-shop.js';
 import {shoppingLanePoint,SHOPPING_LANE_ROWS} from '../src/world/shopping-lane-plan.js';
 import {NEIGHBOURS} from '../src/people/neighbours.js';
@@ -24,7 +25,7 @@ test('shared dining entrances reach both kitchens without crossing counters or s
 test('cargo ships arrive twice, stay alongside, depart continuously and reopen correctly',()=>{
  for(const c of CARGO_CALLS){assert.equal(cargoVisit(c.arrival).phase,'arriving');assert.equal(cargoVisit(c.alongside).phase,'alongside');assert.equal(cargoVisit(c.departure).phase,'departing');assert.equal(cargoVisit(c.gone).visible,false);}
  assert.equal(cargoVisit(720).visible,false);assert.notEqual(cargoVisit(480).name,cargoVisit(480+1440).name);
- const world={group:new THREE.Group()},service=buildCargoShipping(world);service.update(0,480);assert.equal(service.ship.visible,true);assert.equal(service.ship.position.z,-56);service.update(0,420);assert.equal(service.ship.position.z,-146);service.update(0,720);assert.equal(service.ship.visible,false);
+ const world={group:new THREE.Group()},service=buildCargoShipping(world);service.update(0,480);assert.equal(service.ship.visible,true);assert.equal(service.ship.position.z,CARGO_BERTH.z);service.update(0,CARGO_CALLS[0].arrival+.01);assert.ok(service.ship.position.z< -300,'She comes in from beyond sight');service.update(0,720);assert.equal(service.ship.visible,false);
 });
 test('flower shop uses the existing Mrs Kinjō actor and preserves a walkable shop entrance',()=>{
  const world={colliders:[]},group=new THREE.Group(),prompts=[],actions=[];buildFlowerShop({world,group,register:(o,label,fn)=>prompts.push({label,fn}),onAction:(...args)=>actions.push(args)});

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_GA,FERRY_ACCESS,FERRY_CAR_PLACES,FERRY_TRUCK_PLAN,FERRY_MACHINERY,FERRY_ELECTRICS,FERRY_LOADS,FERRY_CONDITIONS,FERRY_SUPPLY,
  FERRY_SAFETY,FERRY_MANNING,FERRY_SCENARIOS,ferryDemand,ferrySupplyKW,thrusterMayStart,preferenceShed,motorAmps,gaSpace,toShip,rollPeriod} from '../src/world/ferry-ship.js';
-import {buildFerryModel,halfBreadth,keelY,WL,FERRY_RAMP,FERRY_HULL,FERRY_DECKS} from '../src/world/ferry-model.js';
+import {buildFerryModel,halfBreadth,keelY,WL,FERRY_RAMP,FERRY_HULL,FERRY_DECKS,FERRY_WALK,GANGWAY_Z} from '../src/world/ferry-model.js';
 import {FERRY_CREW,FERRY_SHORE,FERRY_WATCH,crewFor,crewDoing,crewOnDuty,deckHandFor,FERRY_PEOPLE} from '../src/people/ferry-crew.js';
 import {ISLAND_HOUSEHOLDS} from '../src/people/island-households.js';
 import {VEHICLE_SIZE} from '../src/world/road-vehicles.js';
@@ -164,32 +164,58 @@ test('the scenarios: real posts of her manning, in real places on board',()=>{
  const b=FERRY_SCENARIOS.find(s=>s.id==='blackout');assert.match(b.title,/breakwater/);assert.ok(b.steps.some(([,where,what])=>where==='eg-room'&&/45 seconds/.test(what)));
 });
 
-test('the hull as drawn is still the 22 m one: closed, faired, with her underwater body, and light enough for a phone',()=>{
+test('the hull as drawn is the ship as designed: 34.5 × 8.4 m, closed, faired, her decks at their heights, and light enough for a phone',()=>{
  const ferry=buildFerryModel();let tris=0,meshes=0;
  ferry.traverse(o=>{if(o.isMesh){meshes++;const g=o.geometry;tris+=(g.index?g.index.count:g.getAttribute('position').count)/3;}});
- assert.ok(meshes<40,meshes+' meshes');assert.ok(tris<30000,tris+' triangles');
- assert.equal(FERRY_HULL.length,22,'the model is grown to the new size in its own batch');
+ assert.ok(meshes<40,meshes+' meshes');assert.ok(tris<40000,tris+' triangles');
+ // Her particulars, from the data.
+ for(const k of ['length','beam','depth','draft','freeboard'])assert.equal(FERRY_HULL[k],FERRY_SHIP[k],k);
  assert.ok(Math.abs(FERRY_HULL.depth-(FERRY_HULL.draft+FERRY_HULL.freeboard))<.05,'depth is draft plus freeboard');
- assert.equal(halfBreadth(0),FERRY_HULL.beam/2);assert.ok(halfBreadth(FERRY_HULL.length/2)<halfBreadth(0)*.9);
+ assert.equal(halfBreadth(0),FERRY_HULL.beam/2);assert.ok(halfBreadth(FERRY_HULL.length/2)<halfBreadth(0)*.95);
  assert.ok(Math.abs(keelY(0)-(WL-FERRY_HULL.draft))<1e-9,'the keel is at her draft');
- assert.ok(keelY(10.5)>keelY(0)+.8&&keelY(-10.5)>keelY(0)+1,'forefoot and counter rise');
- // Three car places in two lanes, inside the walkways.
+ assert.ok(keelY(16)>keelY(0)+.8&&keelY(-16)>keelY(0)+1.5,'forefoot and counter rise');
+ // Her decks where the general arrangement puts them (heights above the keel, less the draft).
+ const at=y=>y-FERRY_SHIP.draft;
+ assert.ok(Math.abs(FERRY_DECKS.car.y-at(FERRY_HEIGHTS.carDeck))<1e-9&&Math.abs(FERRY_DECKS.upper.y-at(FERRY_HEIGHTS.passengerDeck))<1e-9&&Math.abs(FERRY_DECKS.bridge.y-at(FERRY_HEIGHTS.bridgeDeck))<1e-9);
+ const box=new THREE.Box3().setFromObject(ferry);
+ assert.ok(Math.abs(box.max.y-at(FERRY_HEIGHTS.mastTop))<.3,'her mast top at '+box.max.y.toFixed(2));
+ assert.ok(Math.abs(ferry.getObjectByName('Masthead light').position.y-at(FERRY_HEIGHTS.mastheadLight))<.05,'the masthead light 15 m above the keel');
+ // Ten car places in two lanes between the casings, clear of the walkway.
+ assert.equal(FERRY_DECKS.car.slots.length,FERRY_SHIP.vehicles);
  const laneEdge=Math.max(...FERRY_DECKS.car.lanes.map(Math.abs))+FERRY_DECKS.car.laneWidth/2;
- assert.ok(laneEdge<=FERRY_HULL.beam/2-FERRY_DECKS.car.walkway,'lanes leave the walkways clear');
- for(const [x,z] of FERRY_DECKS.car.slots){assert.ok(z+VEHICLE_SIZE.car.length/2<FERRY_DECKS.car.fore&&z-VEHICLE_SIZE.car.length/2>FERRY_DECKS.car.aft);assert.ok(FERRY_DECKS.car.lanes.includes(x));}
- assert.ok(FERRY_RAMP.width>2.2+.6,'the ramp takes a 4-tonne truck with room each side');
+ assert.ok(laneEdge<=FERRY_HULL.beam/2-FERRY_DECKS.car.walkway+1e-9,'lanes stop at the casings');
+ for(const [x,z] of FERRY_DECKS.car.slots){assert.ok(z+VEHICLE_SIZE.car.length/2<FERRY_DECKS.car.fore&&z-VEHICLE_SIZE.car.length/2>FERRY_DECKS.car.aft);assert.ok(Math.abs(x)+VEHICLE_SIZE.car.width/2<laneEdge);}
+ assert.ok(FERRY_RAMP.clear>=2.5+1.5,'the ramp takes an 8-tonne truck with room each side');
  // The screws: inside the hull's breadth, above the keel line, under the counter.
  for(const s of ferry.userData.screws){const r=FERRY_HULL.screw/2;
   assert.ok(s.position.y-r>keelY(0)-.1,'screw below the keel line');
   assert.ok(s.position.y+r<keelY(s.position.z)-.1,'screw tip within 0.1 m of the counter');
   assert.ok(Math.abs(s.position.x)+r<halfBreadth(s.position.z)-.3,'screw sticks out beyond the hull’s side');
   assert.ok(Math.abs(s.position.x)>r+.15,'the two screws are too close to the skeg');}
- assert.ok(ferry.getObjectByName('Radar scanner'));assert.ok(ferry.getObjectByName('Ferry bow ramp'));
+ assert.ok(ferry.getObjectByName('Radar scanner'));assert.ok(ferry.getObjectByName('Ferry bow ramp'));assert.ok(ferry.getObjectByName('Ferry ramp flap'));
  for(const n of ['Masthead light','Port sidelight','Starboard sidelight','Stern light'])assert.ok(ferry.getObjectByName(n),n);
  assert.ok(ferry.getObjectByName('Port sidelight').position.x>0&&ferry.getObjectByName('Starboard sidelight').position.x<0);
  ferry.userData.lights(true);assert.equal(ferry.getObjectByName('Port sidelight').material.color.getHex(),0xff3a2a);
  const rams=[];ferry.traverse(o=>{if(o.name==='Ramp ram'&&o.geometry.parameters.radiusTop<.06)rams.push(o);});
  ferry.userData.setRamp(0);const up=rams[0].scale.y;ferry.userData.setRamp(1);const down=rams[0].scale.y;assert.notEqual(up,down);
  ferry.traverse(o=>{if(o.isMesh){const p=o.geometry.getAttribute('position');for(let i=0;i<p.count;i+=97)assert.ok(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)),o.name);}});
- const box=new THREE.Box3().setFromObject(ferry);assert.ok(box.max.z-box.min.z<FERRY_HULL.length+FERRY_RAMP.length+.6);
+ ferry.userData.setRamp(0);const shut=new THREE.Box3().setFromObject(ferry);assert.ok(shut.max.z-shut.min.z<FERRY_HULL.length+.6,'raised, the ramp closes the bow');
+ // The gangway door is on her port side, the side she lies to at Minato.
+ assert.ok(GANGWAY_Z>-FERRY_HULL.length/2&&ferry.userData.gangway.position.x>0);
+});
+
+test('the decks a person walks on are drawn floors at their heights, with headroom',()=>{
+ const ferry=buildFerryModel();ferry.updateMatrixWorld(true);
+ const meshes=[];ferry.traverse(o=>{if(o.isMesh&&!/windows|markings|screw/.test(o.name))meshes.push(o);});
+ const ray=new THREE.Raycaster();
+ for(const w of FERRY_WALK)for(const fx of [.2,.5,.8])for(const fz of [.2,.5,.8]){
+  const x=w.x[0]+(w.x[1]-w.x[0])*fx,z=w.z[0]+(w.z[1]-w.z[0])*fz;
+  ray.set(new THREE.Vector3(x,w.y+.5,z),new THREE.Vector3(0,-1,0));ray.far=1;
+  // A bench or a coil may stand on it; the floor must be under them.
+  const hits=ray.intersectObjects(meshes,false);
+  assert.ok(hits.some(h=>Math.abs(h.point.y-w.y)<.06),`${w.id}: no floor at ${x.toFixed(2)},${z.toFixed(2)} (hits ${hits.map(h=>h.point.y.toFixed(3))})`);
+  // Two metres of headroom over it, unless something stands on it there (a bench, a funnel).
+  const standing=hits.some(h=>h.point.y>w.y+.06);
+  if(!standing){ray.set(new THREE.Vector3(x,w.y+.1,z),new THREE.Vector3(0,1,0));ray.far=1.9;const over=ray.intersectObjects(meshes,false)[0];assert.ok(!over,`${w.id}: ${over?.object.name} ${(over?.point.y-w.y).toFixed(2)} m over the deck at ${x.toFixed(2)},${z.toFixed(2)}`);}
+ }
 });

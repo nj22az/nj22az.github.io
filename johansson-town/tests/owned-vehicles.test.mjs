@@ -4,6 +4,7 @@ import * as T from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {createTownTraffic,FERRY_VEHICLE_DECK_Z,SERVICE_BAYS} from '../src/world/town-traffic.js';
 import {createFerryRun} from '../src/world/ferry.js';
+import {FERRY_DECKS} from '../src/world/ferry-model.js';
 import {airportVehicleBay} from '../src/world/airport-vehicle-yard.js';
 import {buildVehicle,DRIVER_SEATS} from '../src/world/road-vehicles.js';
 import {createVehicleDrivers} from '../src/people/vehicle-driver.js';
@@ -31,7 +32,7 @@ test('a purposeful errand stages, reverses aboard with its resident driver, sail
  cars.traffic.finish(v);assert.equal(v.where,'waiting-ferry');assert.equal(cars.prepareCrossing('airport'),false);assert.equal(v.trip.reverse,true);
  const start=v.g.position.clone();for(let i=0;i<20;i++)cars.update(.1,720);assert.ok(v.g.position.distanceTo(start)>.1,'Actually drives along the ramp');assert.ok(v.g.position.distanceTo(start)<3,'No jump from shore to deck');
  cars.traffic.finish(v);assert.equal(v.where,'aboard');assert.equal(cars.prepareCrossing('airport'),true);assert.ok(cars.drivers.has(v));
- const local=v.g.position.clone();ferry.ferry.worldToLocal(local);assert.ok(Math.abs(local.z-FERRY_VEHICLE_DECK_Z)<.01);assert.ok(local.z-v.length/2>-1.6,'Clear of the passenger cabin');
+ const local=v.g.position.clone();ferry.ferry.worldToLocal(local);assert.ok(Math.abs(local.z-FERRY_VEHICLE_DECK_Z)<.01);assert.ok(local.z-v.length/2>FERRY_DECKS.car.aft&&local.z+v.length/2<FERRY_DECKS.car.fore,'On the car deck, between the aft mooring station and the bow houses');
  ferry.beginCrossing('airport');ferry.setCrossingProgress(.5);cars.update(.1,720);assert.ok(v.g.position.distanceTo(start)>40);assert.equal(people[0].g.parent,v.g);
  ferry.parkAt('airport');cars.update(.1,720);assert.equal(v.transfer,'off');cars.traffic.finish(v);assert.equal(v.where,'airport');assert.equal(v.stageOrigin,undefined);
  cars.update(.1,800);cars.traffic.finish(v);assert.equal(v.where,'waiting-ferry');cars.prepareCrossing('town');cars.traffic.finish(v);assert.equal(v.where,'aboard');assert.equal(cars.prepareCrossing('town'),true);

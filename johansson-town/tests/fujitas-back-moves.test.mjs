@@ -4,33 +4,40 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildAvatar,bodyVolume} from '../src/avatars/build.js';
 import {recipeFor} from '../src/avatars/cast.js';
-import {createAvatarAnimator,GESTURES,STORY_POSES} from '../src/avatars/animate.js';
+import {createAvatarAnimator,GESTURES,STORY_POSES,CARRY,REACH_BACK} from '../src/avatars/animate.js';
 import {MOVES} from '../src/avatars/moves.js';
-import {STORY_PROPS,BASKET,CORD,PAPER,TORCH,pocketSpot} from '../src/avatars/story-props.js';
+import {STORY_PROPS,BASKET,CORD,PAPER,TORCH,pocketSpot,storyProps} from '../src/avatars/story-props.js';
 import {drawFace,faceLayout} from '../src/avatars/face.js';
 import {normalizeRecipe} from '../src/avatars/recipe.js';
 import {seatContactHeight} from './seating-contact.mjs';
+import {surface,core,intrusion as coreIntrusion,clearance} from './body-contact.mjs';
 installDOM();
 
 /**
  * The moves Fujita's Back needs (story v7; the shot plan's section 5), each on the person and in the clothes the story gives
- * it: Fujita stuck bent (standing, shuffling sideways, in the massage chair uncurling and stuck in a new shape, carried), the
- * three women carrying him, Thao wound in her dryer's cord, Thuan under a basket, Tetsuo reading and with his torch; and
- * Fujita's squinting eyes following his face. Each plays as a move and as a pose the scene names, holds, and lets go smoothly
+ * it: Fujita stuck bent (standing, shuffling sideways, in the massage chair uncurling and stuck in a new shape, carried bent,
+ * and carried stiff and level like a plank), the three women carrying him, Thao wound in her dryer's cord, Thuan under a
+ * basket, Tetsuo reading and with his torch, Mrs Higa reaching back for the contract breaker; and Fujita's squinting eyes
+ * following his face. Each plays as a move and as a pose the scene names, holds, and lets go smoothly
  * and the same every time; the feet, the seat or the carriers hold the body; the mittens are where they belong (on the back,
  * on the knee, under the load, at the paper's edges, round the torch) and in nothing; the props rest on what carries them.
  */
 const FPS=60,dt=1/FPS;
-const NEW=['BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarryFurniture','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff'];
+const NEW=['BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarriedPlank','CarryFurniture','CarryLegs','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff','ReachBack'];
+/** The moves that are over when their time is (the rest are held until let go). */
+const TIMED={ReachBack:3.2};
 const F={who:'Mr Fujita',outfit:'afterbath'},FC={who:'Mr Fujita',outfit:'clothes'},T={who:'Tetsuo',outfit:'afterbath'};
-const CHAIR={seated:true,seatHeight:.5},KOAGARI={seated:true,seatHeight:.3};
+const CHAIR={seated:true,seatHeight:.5},KOAGARI={seated:true,seatHeight:.3},STOOL={seated:true,seatHeight:.4};
 /** Every place the story uses each move (the shot plan's marks): who, in what, doing what. */
 const CASES=[
  ['BentStuck',FC],['BentStuck',F],['CrabWalk',F],['CrabWalk',{...F,state:{speed:.35},walking:true}],
  ['ChairUncurl',{...F,state:CHAIR}],['FrozenAbsurd',{...F,state:CHAIR}],['CarriedBent',F],['CarriedBent',{who:'Mr Fujita',outfit:'swim'}],
+ ['CarriedPlank',F],['CarriedPlank',{who:'Mr Fujita',outfit:'swim'}],
  ['CarryFurniture',{who:'Thuan',outfit:'towel'}],['CarryFurniture',{who:'Nhung',outfit:'towel',state:{speed:.6},walking:true}],['CarryFurniture',{who:'Thao',outfit:'towel'}],
+ ['CarryLegs',{who:'Thuan',outfit:'towel'}],['CarryLegs',{who:'Thuan',outfit:'towel',state:{speed:.6},walking:true}],
  ['CordWrapped',{who:'Thao',outfit:'towel'}],['BasketHead',{who:'Thuan',outfit:'towel'}],
  ['SitRead',{...T,state:KOAGARI}],['TorchUp',T],['TorchOff',T],
+ ['ReachBack',{who:'Mrs Higa',outfit:'clothes',state:STOOL}],
 ];
 const label=(name,c)=>`${name} (${c.who}, ${c.outfit}${c.state?.seated?', seated':''}${c.walking?', walking':''})`;
 function seededRandom(seed=7){let s=seed;return ()=>{s=(s*16807)%2147483647;return s/2147483647;};}
@@ -76,7 +83,7 @@ function torsoDistance(b){
 }
 
 test('the moves are on the body’s list, and the scene can name each as a pose; none is on the moves menu',()=>{
- for(const name of NEW){assert.equal(GESTURES[name],Infinity,name);assert.ok(STORY_POSES.has(name),name);assert.ok(!MOVES.some(([n])=>n===name),name);}
+ for(const name of NEW){assert.equal(GESTURES[name],TIMED[name]??Infinity,name);assert.ok(STORY_POSES.has(name),name);assert.ok(!MOVES.some(([n])=>n===name),name);}
  // every prop says who it is for, why, and where it is
  for(const [kind,p] of Object.entries(STORY_PROPS))for(const k of ['who','why','where'])assert.ok(p[k]?.length>(k==='who'?2:20),kind+' '+k);
 });
@@ -95,7 +102,7 @@ test('every move plays, holds and lets go: as a move and as a pose, smoothly, no
     // not jump.
     for(let j=0;j<now.length;j+=4){const d=Math.abs(now[j]*prev[j]+now[j+1]*prev[j+1]+now[j+2]*prev[j+2]+now[j+3]*prev[j+3]);fastest=Math.max(fastest,2*Math.acos(Math.min(1,d)));}
     jump=Math.max(jump,b.avatar.root.position.distanceTo(prevRoot));prev=now;prevRoot=b.avatar.root.position.clone();frames.push(now);
-    if(f===Math.round(2.8*FPS))assert.ok(as==='pose'||b.animator.gesture===name,label(name,c)+' is held');
+    if(f===Math.round(2.8*FPS)&&!TIMED[name])assert.ok(as==='pose'||b.animator.gesture===name,label(name,c)+' is held');
    }
    assert.ok(fastest<.15,`${label(name,c)} as a ${as}: a joint turns ${fastest.toFixed(3)} rad in one frame`);
    assert.ok(jump<.03,`${label(name,c)} as a ${as}: the body jumps ${jump.toFixed(3)} m in one frame`);
@@ -108,11 +115,17 @@ test('every move plays, holds and lets go: as a move and as a pose, smoothly, no
  }
 });
 
-test('standing, a foot is on the floor and nothing goes through it; seated, the seat carries them as before',()=>{
+test('standing, a foot is on the floor and nothing goes through it; seated, the seat carries them as before; carried, the carriers',()=>{
  for(const [name,c] of CASES){
   const b=cast(c),still=cast(c);b.step(20);still.step(20);b.state.pose=name;const sole=soles(b);
   for(let f=0;f<150;f++){
    b.step();still.step();if(f%10)continue;
+   // carried like a plank, the body is lifted off its feet (eased in over the move's ramp) onto the carriers' mittens: his
+   // underside, along his back, at the tops of them (CARRY.under above the floor) once he is up
+   if(name==='CarriedPlank'){assert.ok(lowest(b)>-.004,`${label(name,c)}: something goes below the floor at ${f}`);
+    if(f>=80){const under=Math.min(...skin(b,2).filter(([p,bone])=>['hips','spine','chest'].includes(bone)&&Math.abs(p.x)<.05).map(([p])=>p.y));
+     assert.ok(Math.abs(under-CARRY.under)<.006,`${label(name,c)}: his underside ${under.toFixed(3)} m above the floor, not at the carriers' mittens (${CARRY.under})`);}
+    continue;}
    // seated, the body sits on the seat as the town's seating puts it (on whatever of the pelvis and thighs is lowest over it)
    if(c.state?.seated){assert.ok(Math.abs(seatContactHeight(b.avatar)-c.state.seatHeight)<2e-3,`${label(name,c)} off the seat at ${f}: ${seatContactHeight(b.avatar).toFixed(4)}`);
     if(name!=='FrozenAbsurd')assert.ok(Math.abs(b.avatar.root.position.y-still.avatar.root.position.y)<1e-4,`${label(name,c)} moves on the seat at ${f}`);continue;}
@@ -198,23 +211,52 @@ test('stuck in the chair in a new shape (FrozenAbsurd): an arm up clear of the h
  b.avatar.dispose();
 });
 
-test('carried (CarriedBent) and carrying (CarryFurniture): the same rigid shape, held from below at the carriers’ waist',()=>{
- const f=cast(F),m=f.m;f.step(20);f.state.pose='CarriedBent';f.step(90);
- // the legs hang straight and stiff from the level back, the toes down
+test('carried bent (CarriedBent): the legs hang straight and stiff from the level back',()=>{
+ const f=cast(F);f.step(20);f.state.pose='CarriedBent';f.step(90);
  const thigh=local(f,world(f,'kneeL')).sub(local(f,world(f,'thighL'))).normalize(),shin=local(f,world(f,'footL')).sub(local(f,world(f,'kneeL'))).normalize();
  assert.ok(thigh.y<-.97&&shin.y<-.95,'straight down');
  const back=local(f,world(f,'neck')).sub(local(f,world(f,'hips'))).normalize();assert.ok(Math.abs(back.y)<.2,'the back level');
- // his underside along the torso (the lowest of the hips, the spine and the chest under the back)
- const under=Math.min(...skin(f).filter(([p,bone])=>['hips','spine','chest'].includes(bone)&&p.z>.05).map(([p])=>p.y));
- // each carrier's mittens, palms up, at a height the plan's lift of 0.15–0.25 m puts under him
- for(const who of ['Thuan','Nhung','Thao']){
-  const w=cast({who,outfit:'towel'});w.step(20);w.state.pose='CarryFurniture';w.step(90);
-  const tops=['L','R'].map(s=>Math.max(...mittenPoints(w,s).map(p=>p.y)));assert.ok(Math.abs(tops[0]-tops[1])<.01,'level');
-  const lift=tops[0]-under;assert.ok(lift>.15&&lift<.26,`${who}: under him at a lift of ${lift.toFixed(3)} m`);
-  for(const s of ['L','R'])assert.ok(mitten(w,s).z>w.m.depth/2+.1,'forward of her');
-  w.avatar.dispose();
- }
  f.avatar.dispose();
+});
+
+/** The plank carry as the film stages it: Fujita on his mark, the three women at CARRY.stations round him, facing him. */
+function plankCarry(outfit='afterbath'){
+ const him=cast({who:'Mr Fujita',outfit,state:{pose:'CarriedPlank'}}),who=['Thao','Nhung','Thuan'];
+ // he faces -z on his mark (the holder's frame) and lies with his head to +z: his left is the holder's -x
+ const carriers=CARRY.stations.map((st,i)=>{const x=-st.side*st.out,w=cast({who:who[i],outfit:'towel',state:{pose:st.move}});
+  w.holder.position.set(x,0,st.along);w.holder.rotation.y=Math.atan2(x,0);w.holder.updateMatrixWorld(true);return w;});
+ for(let f=0;f<150;f++)for(const b of [him,...carriers])b.step();
+ return {him,carriers,dispose:()=>[him,...carriers].forEach(b=>b.avatar.dispose())};
+}
+
+test('carried like a plank (CarriedPlank): level and rigid on the three women’s mittens, the face to the side, in no one',()=>{
+ const {him,carriers,dispose}=plankCarry(),m=him.m;
+ // rigid and level: the hips, the neck and the ankles on one level line, the legs straight and together
+ const hips=local(him,world(him,'hips')),neck=local(him,world(him,'neck')),feet=['L','R'].map(s=>local(him,world(him,'foot'+s)));
+ const back=neck.clone().sub(hips).normalize();assert.ok(Math.abs(back.y)<.05&&back.z<-.99,'the back level, the head where his back was: '+back.toArray().map(v=>v.toFixed(2)));
+ for(const [i,f] of feet.entries()){const leg=f.clone().sub(local(him,world(him,'thigh'+'LR'[i]))).normalize();assert.ok(Math.abs(leg.y)<.06&&leg.z>.99,'the legs straight out from the hips: '+leg.toArray().map(v=>v.toFixed(2)));}
+ assert.ok(Math.abs(feet[0].x-feet[1].x)<4*m.legR,'the legs together');
+ // the face turned to his right and a little up, toward the camera at the side, not down into a carrier or up at the ceiling
+ const face=world(him,'head',[0,0,1]).sub(world(him,'head')).normalize();
+ assert.ok(Math.abs(face.x)>.8&&face.y>0&&face.y<.6,'the face to the side: '+face.toArray().map(v=>v.toFixed(2)));
+ // his mittens laid on his belly, on it and in it nowhere
+ const torso=torsoDistance(him);for(const s of ['L','R']){const d=Math.min(...mittenPoints(him,s).map(torso));assert.ok(d>-.006&&d<.015,`his ${s} mitten on his belly: ${d.toFixed(3)}`);}
+ // every carrier's mittens under him: the top of each at his drawn underside (within a few mm either way: cloth gives), and
+ // nobody's body in anybody's
+ const his=surface(him.avatar),hisCore=core(him.avatar);
+ for(const w of carriers){const hers=surface(w.avatar),herCore=core(w.avatar),name=w.avatar.recipe.name||'a carrier';
+  for(const hand of ['handL','handR']){const pts=hers.filter(q=>q.bone===hand),top=Math.max(...pts.map(q=>q.p.y));let gap=Infinity;
+   for(const a of pts)if(a.p.y>top-.012)for(const q of his)if(Math.hypot(q.p.x-a.p.x,q.p.z-a.p.z)<.012&&q.p.y>a.p.y-.06)gap=Math.min(gap,q.p.y-a.p.y);
+   assert.ok(gap>-.008&&gap<.012,`${name}'s ${hand} under him: ${(gap*1000).toFixed(1)} mm from his underside`);}
+  const into=coreIntrusion(hers,hisCore),back=coreIntrusion(his,herCore);
+  assert.ok(into.depth<.005,`${name} ${(into.depth*1000).toFixed(1)} mm into him (${into.bone})`);assert.ok(back.depth<.005,`he is ${(back.depth*1000).toFixed(1)} mm into ${name} (${back.bone})`);
+ }
+ // the carriers clear of each other
+ for(let i=0;i<carriers.length;i++)for(let j=i+1;j<carriers.length;j++)assert.ok(clearance(surface(carriers[i].avatar,{stride:2}),core(carriers[j].avatar))>.03,'two carriers too close');
+ // the carriers' mittens palms up and forward of them, level
+ for(const w of carriers){const tops=['L','R'].map(s=>Math.max(...mittenPoints(w,s).map(p=>p.y)));assert.ok(Math.abs(tops[0]-tops[1])<.012,'level');
+  for(const s of ['L','R'])assert.ok(mitten(w,s).z>w.m.depth/2+.1,'forward of her');}
+ dispose();
 });
 
 test('CordWrapped: the arms pinned, then the cord wound round her and them, close but in nothing, from the dryer’s handle',()=>{
@@ -254,14 +296,32 @@ test('BasketHead: the locker basket upside down on her head, resting on the head
  b.avatar.dispose();
 });
 
-test('SitRead: the paper held open by its edges before his chest, his eyes on it; a Nod lowers it to look over it',()=>{
- const b=cast({...T,state:KOAGARI}),m=b.m;b.step(20);b.state.pose='SitRead';b.step(90);
+test('SitRead: the paper held open by its edges low over his lap, the torch on his pocket showing over it; a Nod looks up',()=>{
+ const b=cast({...T,state:KOAGARI}),m=b.m;storyProps(b.avatar).give('torch');b.step(20);b.state.pose='SitRead';b.step(90);
  const paper=b.avatar.storyProps.get('newspaper');assert.ok(paper?.visible);
  const edge=s=>local(b,paper.children[s<0?0:1].localToWorld(new THREE.Vector3(s*PAPER.leaf,-.07*m.k,0)));
  assert.ok(edge(-1).distanceTo(mitten(b,'R'))<.01,'the right edge in the right mitten');assert.ok(edge(1).distanceTo(mitten(b,'L'))<.02,'the left edge in the left mitten');
- for(const s of [-1,1])for(const y of [-1,1])assert.ok(local(b,paper.children[s<0?0:1].localToWorld(new THREE.Vector3(s*PAPER.leaf,y*PAPER.height/2,0))).z>m.depth/2+.02,'before the chest');
+ // over his lap: every corner ahead of his front, and the whole of it below his chest
+ const corners=[-1,1].flatMap(s=>[-1,1].map(y=>local(b,paper.children[s<0?0:1].localToWorld(new THREE.Vector3(s*PAPER.leaf,y*PAPER.height/2,0)))));
+ const torch=b.avatar.storyProps.get('torch'),pocket=local(b,torch.getWorldPosition(new THREE.Vector3()));
+ for(const c of corners)assert.ok(c.z>m.depth/2+.02,'ahead of him');
+ // its lower edge in his lap (below where his chest begins) and its middle below the torch, the top tilted away from him
+ assert.ok(Math.max(corners[0].y,corners[2].y)<local(b,world(b,'chest')).y,'the lower edge in his lap');
+ assert.ok(corners.reduce((y,c)=>y+c.y/4,0)<pocket.y,'below the pocket');assert.ok(corners[1].z>corners[0].z+.08,'tilted back');
+ // the torch on his pocket in full view from in front of him, standing or sitting, straight on or from the side (none of it
+ // behind the paper)
+ const pts=[],sheets=[];
+ torch.traverse(o=>{if(o.isMesh&&o.visible){const P=o.geometry.attributes.position;for(let i=0;i<P.count;i+=3)pts.push(o.localToWorld(new THREE.Vector3().fromBufferAttribute(P,i)));}});
+ paper.traverse(o=>{if(o.isMesh)sheets.push(o);});const ray=new THREE.Raycaster();
+ for(const cam of [[0,1.05,-1.9],[0,1.4,-1.8],[-1.2,1.1,-1.4],[1.2,1.1,-1.4]]){const c=new THREE.Vector3(...cam);let hidden=0;
+  for(const p of pts){const d=p.clone().sub(c),len=d.length();ray.set(c,d.normalize());ray.far=len-.002;if(ray.intersectObjects(sheets,true).length)hidden++;}
+  assert.equal(hidden,0,'the torch behind the paper from '+cam);}
  assert.ok(b.looks.at(-1)[1]>.5,'the eyes on it');
- const before=mitten(b,'R').y;b.animator.play('Nod');b.step(30);assert.ok(mitten(b,'R').y<before-.04,'lowered for the nod');b.step(60);assert.ok(Math.abs(mitten(b,'R').y-before)<.01,'and up again');
+ // a Nod: the head comes up off the paper (to look at someone) and goes back to it; the paper stays in his lap
+ const faceY=()=>world(b,'head',[0,0,1]).sub(world(b,'head')).normalize().y,down=faceY(),before=mitten(b,'R');
+ assert.ok(down<-.3,'the head bent over it: '+down.toFixed(2));
+ b.animator.play('Nod');b.step(30);assert.ok(faceY()>down+.2,'looks up for the nod: '+faceY().toFixed(2));assert.ok(mitten(b,'R').distanceTo(before)<.02,'the paper stays in his lap');
+ b.step(60);assert.ok(Math.abs(faceY()-down)<.03,'and back to the paper');assert.ok(mitten(b,'R').distanceTo(before)<.01,'where it was');
  b.avatar.dispose();
 });
 
@@ -293,6 +353,43 @@ test('the torch: clipped on his pocket; TorchUp takes it, holds it up and clicks
  assert.equal(torch.parent,b.avatar.bones.chest,'back on the pocket');assert.ok(jump<.03,'without a jump: '+jump.toFixed(3));
  const spot=pocketSpot(b.avatar);assert.ok(torch.position.distanceTo(spot.position)<1e-6,'exactly where it was');
  assert.ok(mitten(b,'R').y<m.hipY+.1,'the hand down');
+ b.avatar.dispose();
+});
+
+test('ReachBack: from her stool, the left mitten back over her shoulder to the breaker, up under the lever and pushing it up, eyes on her book',()=>{
+ const b=cast({who:'Mrs Higa',outfit:'clothes',state:STOOL}),m=b.m,R=REACH_BACK,seat=STOOL.seatHeight;b.step(40);
+ // where things are round her, in her frame (x to her left, y up from the floor, z ahead)
+ const here=v=>new THREE.Vector3(v[0],seat+v[1],v[2]),pivot=here(R.lever);
+ const boxes=[['the breaker',R.box],['the board',R.board],['the wall',{min:[-1,-1,R.wall-1],max:[1,3,R.wall]}]].map(([n,x])=>[n,new THREE.Box3(here(x.min),here(x.max))]);
+ // the lever (onsen-electrics.js): 22 mm wide, 32 mm long, 14 mm thick, from its pivot, 0.6 rad from upright, down or up
+ const lever=up=>{const a=up?.6:Math.PI-.6,out=[];for(const x of [-.011,.011])for(const l of [0,.032])for(const t of [-.007,.007])
+  out.push(pivot.clone().add(new THREE.Vector3(x,l*Math.cos(a)-t*Math.sin(a),l*Math.sin(a)+t*Math.cos(a))));return out;};
+ const inMitten=p=>{const q=b.avatar.bones.handL.worldToLocal(b.holder.localToWorld(new THREE.Vector3(-p.x,p.y,-p.z)));return Math.hypot(q.x/(m.hand*.9),(q.y+m.hand*.55)/(m.hand*1.15),q.z/(m.hand*.78));};
+ const tip=()=>local(b,world(b,'handL',[0,-m.hand*1.45,0]));
+ const H=()=>b.avatar.bones.head.matrixWorld.clone().invert(),S=[m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98],hc=m.headCentre-m.headY;
+ b.animator.play('ReachBack');let atReach=null,nearHead=Infinity,deepHead=Infinity;
+ for(let f=1;f<=Math.round(3.4*FPS);f++){b.step();const t=f/FPS,pts=skin(b),inv=H();
+  const arm=pts.filter(([,bone])=>['shoulderL','elbowL','handL'].includes(bone)).map(([p])=>p),head=pts.filter(([,bone])=>bone==='head').map(([p])=>p);
+  // never through her face or head, nor brushing her hair, nor into the breaker, the board or the wall
+  for(const p of arm){const q=b.holder.localToWorld(new THREE.Vector3(-p.x,p.y,-p.z)).applyMatrix4(inv);deepHead=Math.min(deepHead,Math.hypot(q.x/S[0],(q.y-hc)/S[1],q.z/S[2]));
+   for(const [n,box] of boxes)assert.ok(!box.containsPoint(p),`the arm in ${n} at ${t.toFixed(2)} s`);}
+  const shoulder=local(b,world(b,'shoulderL')).y+.03;
+  if(f%3===0)for(const p of arm.filter((p,i)=>i%2===0))if(p.y>shoulder)for(const q of head)nearHead=Math.min(nearHead,p.distanceToSquared(q));
+  if(f===Math.round(R.reach*FPS))atReach=tip().sub(pivot);
+  // the lever down while the mitten comes to it, up once it is pushed: in the mitten nowhere
+  if(t<R.reach)for(const p of lever(false))assert.ok(inMitten(p)>1,'the lever (down) in the mitten at '+t.toFixed(2));
+  if(t>R.reach+.3&&t<GESTURES.ReachBack-R.out)for(const p of lever(true))assert.ok(inMitten(p)>1,'the lever (up) in the mitten at '+t.toFixed(2));
+  if(f===Math.round((R.reach+.5)*FPS)){
+   // held: the mitten's end on the lever's pivot, over the lever (pushed up level with its pivot), the head down on the book
+   const d=tip().sub(pivot);assert.ok(Math.abs(d.x)<.01&&Math.abs(d.y)<.01&&Math.abs(d.z-R.ahead)<.01,'the mitten’s end at the lever: '+d.toArray().map(v=>(v*100).toFixed(1)).join(', ')+' cm');
+   const face=world(b,'head',[0,0,1]).sub(world(b,'head')).normalize();assert.ok(face.y<-.25,'the head down: '+face.y.toFixed(2));
+   assert.ok(b.looks.at(-1)[1]>.5,'the eyes down on the book');}
+ }
+ assert.ok(deepHead>1.05,'the arm through her head: '+deepHead.toFixed(2));assert.ok(Math.sqrt(nearHead)>.03,'the arm brushes her hair: '+(Math.sqrt(nearHead)*100).toFixed(1)+' cm');
+ // it comes to the lever from below it, then pushes it up
+ assert.ok(atReach.y<-.025&&atReach.length()<.1,'under the lever first: '+atReach.toArray().map(v=>(v*100).toFixed(1)).join(', ')+' cm');
+ // and is back in her lap when it is over
+ assert.ok(mitten(b,'L').y<seat+m.chestY-m.hipY&&mitten(b,'L').z>0,'back in front of her');
  b.avatar.dispose();
 });
 
@@ -346,7 +443,7 @@ test('the arms keep out of the body, the clothes and the head as far as the town
  const seen=new Map();
  for(const [name,c] of CASES){
   // the mittens laid on the back or the thighs are tested where they lie (above); here the moves that hold things before them
-  if(['BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent'].includes(name))continue;
+  if(['BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarriedPlank'].includes(name))continue;
   const key=c.who+'|'+c.outfit+'|'+(c.state?.seated?'seated':'standing');
   if(!seen.has(key)){
    const b=cast({...c,state:c.state?.seated?c.state:{}}),hull=torsoHull(b);b.step(30);let ref=intrusion(b,hull);
@@ -364,7 +461,7 @@ test('the arms keep out of the body, the clothes and the head as far as the town
 });
 
 test('bent in the after-bath clothes, the head (turned to the lens or not) never comes down on the tenugui round his neck',()=>{
- for(const [state,direction] of [['rest'],['flag',Math.PI],['flag',Math.PI/2]])for(const pose of ['BentStuck','CrabWalk','CarriedBent'])for(const headTo of [null,[0,1.1,-3],[2,1,-1]]){
+ for(const [state,direction] of [['rest'],['flag',Math.PI],['flag',Math.PI/2]])for(const pose of ['BentStuck','CrabWalk','CarriedBent','CarriedPlank'])for(const headTo of [null,[0,1.1,-3],[2,1,-1]]){
   const b=cast(F),m=b.m;b.avatar.setTenugui(state,direction);b.step(10);b.state.pose=pose;if(headTo)b.state.headTo=headTo;
   const body=b.avatar.root.children.find(o=>o.name.startsWith('Shimanchu after the bath')&&!o.name.endsWith('outline')),t=body.userData.tenugui;
   const S=[m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98],hc=m.headCentre-m.headY,p=new THREE.Vector3();

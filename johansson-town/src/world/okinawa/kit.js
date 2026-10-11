@@ -189,12 +189,17 @@ export function createKit({shadows=false}={}){
  /** Where a local point lands in the world, under the current frame. */
  function point(x,y,z){const v=new THREE.Vector3(x,y,z);return frame?v.applyMatrix4(frame):v;}
  /**
-  * A local rectangle as a world collider: frames only ever turn by quarter turns, so
-  * the rectangle stays axis-aligned and only its corners need carrying across.
+  * A local rectangle as a world collider, the whole of it and no more, however the frame is turned: under a quarter turn
+  * (or none) it is the axis-aligned rectangle it always was; under any other turn it keeps its own width and depth and
+  * turns with the frame (the collider's `yaw`, as physics.js circleHitsRect reads it). (Two of its corners carried across
+  * used to give an axis-aligned rectangle that shrank as the frame turned a little from square.)
   */
  function rect(x0,x1,z0,z1,height=3,id=''){
-  const a=point(x0,0,z0),b=point(x1,0,z1);
-  return {id,x:(a.x+b.x)/2,z:(a.z+b.z)/2,w:Math.abs(b.x-a.x),d:Math.abs(b.z-a.z),height,...(a.y?{minY:a.y}:{})};
+  const c=point((x0+x1)/2,0,(z0+z1)/2),w=Math.abs(x1-x0),d=Math.abs(z1-z0),y=c.y?{minY:c.y}:{};
+  const e=frame?new THREE.Vector3(1,0,0).transformDirection(frame):null,yaw=e?Math.atan2(-e.z,e.x):0;
+  const quarter=Math.round(yaw/(Math.PI/2));
+  if(Math.abs(yaw-quarter*Math.PI/2)<1e-6){const across=quarter%2!==0;return {id,x:c.x,z:c.z,w:across?d:w,d:across?w:d,height,...y};}
+  return {id,x:c.x,z:c.z,w,d,yaw,height,...y};
  }
  const signs=[];
  /** A painted board, w×h, facing local +z (after `ry`), made at finish time. */

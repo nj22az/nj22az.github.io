@@ -54,7 +54,7 @@ export const FEED_PLACES=Object.freeze([
   things:['the end of the pier','a fishing rod','the warning light','a bucket of bait','the sea'],
   doing:['fishing off the pier','watching the sunset','reading the night warning sign','feeding a gull'],
   activity:{hold:['can','draft'],chance:.6,sit:0},
-  shot:{at:[-1.6,-56],camera:{pos:[-1.2,1.8,-50],at:[-1.6,1,-64]},time:1080}},
+  shot:{at:[-.6,-83.2],camera:{pos:[-1.2,1.8,-80.2],at:[-1.6,1,-94.2]},time:1080}},
  {id:'ferry',name:'the Minato Maru',short:'the ferry',kind:'work',regulars:['Bus driver','Harbour master'],
   things:['the gangway','the bow ramp','the bow line on its bollard','the wheelhouse wing','the orange life floats','the funnel','the name on her bow','the draft marks','the stern capstan','the car lashings'],
   doing:['waiting for the gangway','watching the ramp come down','backing a kei truck aboard','reading the name on her bow','reading the draft marks','coiling the bow line','waving from the wheelhouse wing','counting the cars aboard'],
