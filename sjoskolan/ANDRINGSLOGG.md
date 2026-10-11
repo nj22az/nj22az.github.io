@@ -166,6 +166,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Enklare veckosidor. Vecka 42–45 är en enda numrerad väg (lektion online → hemma → labb → inlämning,
+  `enkel_vecka` i bygg.py) i stället för fyra listor med samma delar. Kursplanens punkter visas med enkla ord (`ENKEL` i
+  `kursplan.py`; den formella texten när man pekar på koden) och med var punkten tränas. Vecka 45 har egna rubriker per steg.
+
 - **2026-10-11** Från vecka 42 räknar alla elever med samma D = 12 (`KURS_D` i `gemensamt/elevtal.mjs`,
   `verktyg/inlamning/bygg.py` och `innehall/lib/berakningar.py`): inlämningssidorna 42–45 visar D = 12 i stället för
   namnrutan och Motorlabbet använder `kursD()`. Bara den slutliga tentamen får individuella värden. Vecka 38–41 är

@@ -34,6 +34,20 @@ def _placeringar(yta):
 FORMELSTOD, ARBETSBLAD, SIMULATOR, INLAMNING, TENTAMEN = (
     _placeringar(y) for y in ('kurs-formelstod', 'arbetsblad', 'simulator', 'inlamning', 'tentamen'))
 
+# Kursplanens punkter med enkla ord (elevens text). Den formella texten (teori.json) visas när man pekar på koden.
+ENKEL = {
+    'LM-1': 'Du känner igen vanliga komponenter, skydd och mätinstrument och vet vad de gör.',
+    'LM-2': 'Du kan förklara hur el kan skada och hur man arbetar säkert, vid både låg och hög spänning.',
+    'LM-3': 'Du följer reglerna för säkert elarbete ombord när du mäter och bedömer risker.',
+    'LM-4': 'Du kan mäta spänning, ström och resistans i likström, växelström och trefas.',
+    'LM-5': 'Du kan hitta ett fel med mätningar och ritningar.',
+    'LM-6': 'Du arbetar elsäkert när du mäter, kontrollerar och letar fel.',
+    'LM-7': 'Du ser till att felsökning och kontroll görs rätt och skrivs ner i ett protokoll.',
+    'LM-8': 'Du förstår vad dina mätvärden betyder och drar rätt slutsats.',
+    'LM-9': 'Du arbetar säkert, i rätt ordning, och skriver ner vad du har gjort.',
+}
+assert set(ENKEL) == set(MAL)
+
 # Det praktiska provet vecka 45 (praktiskt-prov.html): stationerna och målen de visar.
 PRAKTISKT_PROV = [('Station 1: motorn i plinten', ['LM-4', 'LM-5', 'LM-6', 'LM-8']),
                   ('Station 2: hållkretsen med dolt fel', ['LM-5', 'LM-7', 'LM-8', 'LM-9']),
@@ -56,6 +70,9 @@ CSS = ('<style>'
        '.kp-tal{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:12px;margin:0 0 16px}'
        '.kp-tal div{padding:12px 14px;border-radius:10px;background:#edf4f9}.kp-tal b{display:block;font-size:24px;line-height:1.2}'
        '.kp-tal small{font-size:15px;color:#4d6579}'
+       '.kp-lista{list-style:none;margin:0;padding:0}.kp-lista li{display:grid;grid-template-columns:4.2em 1fr;gap:4px 12px;padding:12px 0;border-top:1px solid #e3ecf2}'
+       '.kp-lista .kp-id{font-weight:700;color:#064f91;padding-top:2px}.kp-enkel{margin:0;font-size:18px;font-weight:700;line-height:1.4}'
+       '.kp-var{margin:4px 0 0;font-size:15px;color:#4d6579}'
        '.kp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr));gap:12px}'
        '.kp-kort{display:flex;flex-direction:column;padding:16px;border:1px solid #cad8e2;border-radius:12px;scroll-margin-top:16px}'
        '.kp-kort:target{border:2px solid #064f91}'
@@ -70,12 +87,9 @@ CSS = ('<style>'
        '.kp-antal{margin:6px 0 0;font-size:15px;color:#4d6579}'
        '</style>')
 
-SCRIPT = ('<script>(function(){var c={},las=function(m){if(!(m in c)){try{c[m]=JSON.parse(localStorage.getItem("sj-ovningar:/sjoskolan/"+m+"/aktuell/Formelstod_och_ovningar.html")||"{}")||{};}catch(e){c[m]={};}}return c[m];};'
-          'var alla={},gjorda={};document.querySelectorAll(".kp-kort[data-ovningar]").forEach(function(k){var g=JSON.parse(k.dataset.ovningar),n=0,t=0;'
-          'g.forEach(function(x){var s=las(x[0]);x[1].forEach(function(a){t++;alla[x[0]+a]=1;if(s[a]){n++;gjorda[x[0]+a]=1;}});});'
-          'k.querySelector(".kp-bar span").style.width=(t?100*n/t:0)+"%";k.classList.toggle("klar",t&&n===t);'
-          'k.querySelector(".kp-antal").textContent=n?n+" av "+t+" övningar klara":t+" övningar";});'
-          'var d=document.getElementById("kp-dina");if(d){var a=Object.keys(alla).length;d.textContent=Object.keys(gjorda).length+" av "+a;}})();</script>')
+SCRIPT = ('<script>(function(){var k=document.querySelector(".kp[data-ovningar]"),d=document.getElementById("kp-dina");if(!k||!d)return;'
+          'var n=0,t=0;JSON.parse(k.dataset.ovningar).forEach(function(x){var s={};try{s=JSON.parse(localStorage.getItem("sj-ovningar:/sjoskolan/"+x[0]+"/aktuell/Formelstod_och_ovningar.html")||"{}")||{};}catch(e){}'
+          'x[1].forEach(function(a){t++;if(s[a])n++;});});d.textContent=n+" av "+t;})();</script>')
 
 
 def _ovningsgrupper(nr, w):
@@ -185,30 +199,33 @@ def kursplan_html(nr, w):
     aktiva = [m for m in sorted(MAL, key=lambda x: int(x.split('-')[1])) if per_mal.get(m)]
     if not aktiva:
         return ''
-    plan = ''.join(f'<li><a href="#kp-{m}" title="{escape(MAL[m]["text"])}">{m}</a></li>' if m in aktiva
-                   else f'<li><span title="{escape(MAL[m]["text"])}">{m}</span></li>'
-                   for m in sorted(MAL, key=lambda x: int(x.split('-')[1])))
-    kort = []
+    rader = []
     for m in aktiva:
-        akt = ''.join(f'<li><span class="typ">{escape(t)}</span><a href="{lank}">{escape(titel)}</a>'
-                      + (f'<small>{escape(txt)}</small>' if txt else '') + '</li>'
-                      for _, t, titel, lank, txt in sorted(per_mal[m], key=lambda x: x[0]))
-        grupper = [[mapp, a] for mapp, a in framsteg[m].items()]
-        fram = (f'<div class="kp-fram"><div class="kp-bar"><span></span></div><p class="kp-antal">'
-                f'{sum(len(a) for _, a in grupper)} övningar</p></div>') if grupper else ''
-        data = f" data-ovningar='{json.dumps(grupper)}'" if grupper else ''
-        kort.append(f'<article class="kp-kort" id="kp-{m}"{data}><div class="kp-huvud"><span class="kp-id">{m}</span>'
-                    f'<span class="kp-prov">prövas {escape(MAL[m]["prov"])}</span></div>'
-                    f'<p class="kp-text">{escape(MAL[m]["text"])}</p><ul class="kp-akt">{akt}</ul>{fram}</article>')
-    antal_ovn = sum(len(a) for m in aktiva for a in framsteg[m].values())
+        var, sett = [], set()
+        for _, t, titel, lank, _txt in sorted(per_mal[m], key=lambda x: x[0]):
+            if w.get('tenta') and t == 'Inlämning':
+                continue  # övningstentan står redan som egen rad
+            etikett = {'Labb': 'Labb', 'Skriftligt': 'Övningstentan', 'Praktiskt': 'Praktiskt prov'}.get(t)
+            if etikett is None:
+                etikett = t if t.startswith('Del ') else (f'Inlämning: {titel}' if t == 'Inlämning' else titel)
+            if etikett not in sett:
+                sett.add(etikett)
+                var.append(f'<a href="{lank}">{escape(etikett)}</a>')
+        rader.append(f'<li id="kp-{m}"><span class="kp-id" title="{escape(MAL[m]["text"])}">{m}</span>'
+                     f'<div><p class="kp-enkel">{escape(ENKEL[m])}</p><p class="kp-var">Här tränar du: {" · ".join(var)}</p></div></li>')
+    grupper = defaultdict(list)
+    for m in aktiva:
+        for mapp, a in framsteg[m].items():
+            grupper[mapp] += [x for x in a if x not in grupper[mapp]]
+    antal_ovn = sum(len(a) for a in grupper.values())
+    data = f" data-ovningar='{json.dumps([[k, v] for k, v in grupper.items()])}'" if antal_ovn else ''
     tal = (f'<div><small>Kursplanens punkter</small><b>{len(aktiva)} av {len(MAL)}</b></div>'
-           + (f'<div><small>Dina övningar</small><b id="kp-dina">–</b></div>' if antal_ovn else '')
+           + (f'<div><small>Dina övningar</small><b id="kp-dina">0 av {antal_ovn}</b></div>' if antal_ovn else '')
            + f'<div><small>{"Protokollen senast" if w.get("tenta") else "Inlämning senast"}</small><b>{escape(_sista(w))}</b></div>')
-    ingress = ('Veckan prövar kursplanens punkter i tentamen och det praktiska provet.' if w.get('tenta')
-               else 'Det här är kursplanens punkter som veckan arbetar med, och vad du gör för var och en.')
-    return (CSS + f'<section class="kp" aria-labelledby="kp-rubrik"><h2 id="kp-rubrik">Kursplanen den här veckan</h2>'
-            f'<p class="kp-ingress">{ingress}</p><ul class="kp-plan" aria-label="Kursplanens punkter LM-1 till LM-9">{plan}</ul>'
-            f'<div class="kp-tal">{tal}</div><div class="kp-grid">{"".join(kort)}</div></section>' + SCRIPT)
+    ingress = ('Tentamen och det praktiska provet prövar de här punkterna i kursplanen.' if w.get('tenta')
+               else 'Punkterna kommer från kursplanen. Under varje punkt står var du tränar den.')
+    return (CSS + f'<section class="kp" aria-labelledby="kp-rubrik"{data}><h2 id="kp-rubrik">Det här lär du dig</h2>'
+            f'<p class="kp-ingress">{ingress}</p><div class="kp-tal">{tal}</div><ul class="kp-lista">{"".join(rader)}</ul></section>' + SCRIPT)
 
 
 MANAD = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
