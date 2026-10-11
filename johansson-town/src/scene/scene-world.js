@@ -6,10 +6,30 @@ import {suppliedRoomBoundsBlocked} from '../world/supplied-rooms.js';
 import {createTownSky} from '../render/sky.js';
 import {createCelPass} from '../render/cel.js';
 import {createWalkSurface} from '../world/walk-surface.js';
+import {clock as duskClock} from '../render/dusk.js';
 import {hitsSolid,walkTo} from './scene-physics.mjs';
 import {studioAssetsEnabled,preloadStudioAsset} from '../world/studio-assets.js';
 const interiors=new Set(['sakura','minato','sato-ramen','books','onsen','town-hall']);
 const noop=()=>{};
+/**
+ * The hour on a street: the game's own clock (src/render/dusk.js) for the sun's colour and
+ * strength, the sky and its fill, the lit windows and lanterns (world.updateHours) and the
+ * street lamps. Every light is set relative to its noon value, so noon looks exactly as a
+ * scene built without a clock does and the evening and night follow the game. A room keeps
+ * its own lamps' light: its lighting does not follow the sky.
+ */
+const NOON=duskClock(720),BASE={sun:new THREE.Color(0xfff3de),sky:new THREE.Color(0xfff5e5),ground:new THREE.Color(0x80949c),background:new THREE.Color(0xb4dce8)};
+const relative=(base,now,noon)=>{const a=new THREE.Color(now),b=new THREE.Color(noon);return base.clone().setRGB(base.r*a.r/Math.max(b.r,.01),base.g*a.g/Math.max(b.g,.01),base.b*a.b/Math.max(b.b,.01));};
+function setClock({minutes,camera,inside,scene,world,sun,fill,sky}){
+ if(inside||!Number.isFinite(minutes))return;
+ const c=duskClock(minutes);
+ world?.updateHours?.(minutes);
+ sun.color.copy(relative(BASE.sun,c.sun,NOON.sun));sun.intensity=2.4*c.sunIntensity/NOON.sunIntensity;
+ fill.color.copy(relative(BASE.sky,c.skyFill,NOON.skyFill));fill.groundColor.copy(relative(BASE.ground,c.groundFill,NOON.groundFill));fill.intensity=2*c.ambient/NOON.ambient;
+ scene.background=relative(BASE.background,c.sky,NOON.sky);
+ sky?.update(camera,c.day,false,false,c.sky);
+ for(const l of world?.streetLights||[])l.intensity=(1-c.day)*1.55;
+}
 export async function buildSceneWorld(id,views,townData=null){
  const inside=interiors.has(id);
  const scene=!inside&&townData?townData.scene:new THREE.Scene(),room=new THREE.Group();scene.background=new THREE.Color(inside?0xe8e4d8:0xb4dce8);if(inside)scene.add(room);
@@ -38,14 +58,15 @@ export async function buildSceneWorld(id,views,townData=null){
  for(const d of world?.details||[])if(Math.hypot(d.x-origin[0],d.z-origin[2])<Math.min(d.radius||20,25)){try{if(!d.studioLoaded){await d.load();d.studioLoaded=true;}}catch(e){console.warn('Optional scene detail',e);}}
  walk=createWalkSurface({minX:origin[0]-12,maxX:origin[0]+12,minZ:origin[2]-12,maxZ:origin[2]+12,base});walk.add(scene);
  const seats=[];scene.traverse(o=>{const s=o.userData.seat;if(s?.position&&!s.soak&&!s.wash)seats.push({...s,id:'seat-'+seats.length,label:o.userData.studioLabel||'Seat '+(seats.length+1)});});
- if(inside||!townData)scene.add(new THREE.HemisphereLight(0xfff5e5,0x80949c,2));
+ const fill=inside||!townData?new THREE.HemisphereLight(0xfff5e5,0x80949c,2):townData.fill;if(inside||!townData)scene.add(fill);
  const sun=townData&&!inside?townData.sun:new THREE.DirectionalLight(0xfff3de,2.4);sun.position.set(origin[0]+5,10,origin[2]+6);sun.target.position.set(origin[0],0,origin[2]);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-10,right:10,top:10,bottom:-10,near:.1,far:40});sun.shadow.bias=-.0005;if(inside||!townData)scene.add(sun,sun.target);
  // Keep the photograph's location while letting the author move its camera.
  const camera=new THREE.PerspectiveCamera(55,4/3,.05,250);camera.position.fromArray(preset.camera.position);camera.quaternion.fromArray(preset.camera.quaternion);camera.updateMatrixWorld(true);
  const sky=inside?null:(townData?.sky||createTownSky(scene)),cel=createCelPass({tint:0xffffff});cel.apply(scene);
  let lamps=0;scene.traverse(o=>{if(o.isPointLight&&++lamps>4)o.visible=false;});
  const meshes=[];scene.traverse(o=>{if(o.isMesh){let p=o,actor=false;while(p){if(p.userData.studioActor||!p.visible)actor=true;p=p.parent;}if(!actor)meshes.push(o);}});scene.updateMatrixWorld(true);
- return {scene,camera,origin,seats,floor,blocked,meshes,sky,sun,townData:inside?null:{scene,world,sun,sky},
+ return {scene,camera,origin,seats,floor,blocked,meshes,sky,sun,townData:inside?null:{scene,world,sun,sky,fill},
+  setClock(minutes,camera=this.camera){setClock({minutes,camera,inside,scene,world,sun,fill,sky});},
   settle(actors){const occupied=[];for(const a of actors){let p=this.place(a);if(!a.seat&&(blocked(p.x,p.z,.23*a.size)||occupied.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<.23*(q.size+a.size)))){const choices=[...candidates];for(let dx=-2;dx<=2;dx+=.6)for(let dz=-2;dz<=2;dz+=.6)choices.push([origin[0]+dx,0,origin[2]+dz]);const free=choices.find(q=>!blocked(q[0],q[2],.23*a.size)&&!occupied.some(o=>Math.hypot(o.x-q[0],o.z-q[2])<.23*(o.size+a.size)));if(free){a.x=free[0]-origin[0];a.z=free[2]-origin[2];p=this.place(a);}}occupied.push({...p,size:a.size});}},
   place(actor){if(actor.seat){const s=seats.find(s=>s.id===actor.seat);if(s)return {x:s.position[0],y:s.position[1],z:s.position[2],seat:s};actor.seat='';}
    let x=origin[0]+actor.x,z=origin[2]+actor.z;
