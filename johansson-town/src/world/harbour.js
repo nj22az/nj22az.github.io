@@ -9,7 +9,7 @@ import {buildIslandCoast} from './island-coast.js';
 import {buildBicycle} from './bicycle.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
-import {BOARDWALK} from './layout.js?snappy=1';
+import {BOARDWALK,BREAKWATER} from './layout.js?snappy=1';
 import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,SHOP_CROSSING_Z} from './main-road.js';
 import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts} from './road-standards.js';
 import {buildStreetLamps,STREET_LAMP_PLACEMENTS} from './street-lamps.js';
@@ -324,8 +324,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   const life=directMesh(new THREE.TorusGeometry(.32,.07,8,18),material(0xc55e44),boat,[1.17,1.05,.5],[0,Math.PI/2,0]);life.castShadow=false;
   directBox([.5,.14,.16],[-.65,2.05,-.88],0xd7b75f,boat);directBox([.5,.14,.16],[.65,2.05,-.88],0xd7b75f,boat);
 
-  // The supported breakwater and beacons leave open water for the island ferry.
-  box([68,2.1,4],[0,.18,-83],0x727f7e);for(const x of [-27,27]){cyl(1,7,[x,3.5,-83],0xc2c1b2);box([2.3,.7,2.3],[x,7,-83],x<0?0xa0493f:0xd1cdbb);}
+  // The breakwater and its beacons, 23 m further out since 2026-10 (it stood at z -83), so the basin
+  // inside is 54 m deep: room for the bigger Minato Maru to swing (docs/FERRY-AUDIT.md §6, batch 3).
+  box([68,2.1,4],[0,.18,BREAKWATER.z],0x727f7e);for(const x of [-27,27]){cyl(1,7,[x,3.5,BREAKWATER.z],0xc2c1b2);box([2.3,.7,2.3],[x,7,BREAKWATER.z],x<0?0xa0493f:0xd1cdbb);}
 
   // The harbour used to stand four placeholder residents here. The town replaces its
   // people with the street cast, so they are no longer built at all: removed from the

@@ -414,7 +414,7 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  solid({id:'fuel-pump',x:I.maxX-.4,z:Q.maxZ-.9,w:.6,d:.5,height:1.4});
  vending(S.minX-.9,S.maxZ-1.9,-Math.PI/2);
  inspect(24.6,1,Q.minZ+.9,'Look at the boats',"Daisan Minatomaru · Minato Maru No. 3",
-  'The Minato Maru is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
+  'The Daisan Minatomaru, the third fishing boat of the name (the town ferry is the Minato Maru), is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));
 }
 

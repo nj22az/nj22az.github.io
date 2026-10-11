@@ -24,7 +24,18 @@ import {GROUND_LAYER} from './ground-layers.js';
 const KITAHAMA_ROUTE=Object.freeze({id:'kitahama-lane',surface:'stone'});
 // Rendering, grounding and navigation use the same compact street network.
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
-export const OUTER_PIER=Object.freeze({x:0,z:-57.3,width:8.2,length:15.3,height:.098});
+/**
+ * The outer pier: from the quay's edge (z -49.65) out to z -88, lengthened from 15.3 m in 2026-10 for
+ * the bigger Minato Maru, which lies along its west face (docs/FERRY-AUDIT.md §6, batch 3). `open` is
+ * how far out you can walk: to the old end (z -64.95), just past the old end rail, which still stands
+ * across the pier with the pier-end props and the ferry's queue until they move to the new end (batch 4).
+ */
+export const OUTER_PIER=Object.freeze({x:0,z:-68.825,width:8.2,length:38.35,height:.098,open:-64.95});
+/**
+ * The harbour's breakwater: a 68 m wall across the mouth, 4 m thick, a beacon at x ±27; its centre at
+ * z -106 since 2026-10 (it stood at -83), so the basin inside is 54 m from the quay (batch 3).
+ */
+export const BREAKWATER=Object.freeze({minX:-34,maxX:34,z:-106,thickness:4});
 /** The seaward edge of the quay, where its slab gives way to the outer pier. */
 export const QUAY_SOUTH=-50;
 
@@ -32,7 +43,7 @@ const boardwalkRoute={id:'harbour-boardwalk',width:BOARDWALK.width,surface:'asph
 export const ROUTES = [
  {id:'shotengai',width:MAIN_ROAD.width,surface:'asphalt',points:[[MAIN_ROAD.x,MAIN_ROAD.maxZ],[MAIN_ROAD.x,MAIN_ROAD.minZ]]},
  {id:'quay',width:12,surface:'stone',points:[[-17,-44],[17,-44]]},
- {id:'outer-pier',width:8.2,surface:'wood',points:[[0,-44],[0,-64.5]]},
+ {id:'outer-pier',width:8.2,surface:'wood',points:[[0,-44],[0,OUTER_PIER.open+.45]]},
  ...BUS_STATION_ROUTES,
  {id:'shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,SHOP_CROSSING_Z],[MAIN_ROAD.pavementEast,SHOP_CROSSING_Z]]},
  {id:'south-shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,-18],[MAIN_ROAD.pavementEast,-18]]},
@@ -111,7 +122,7 @@ function regionAt(x,z,r=0){
  }
  if(docklandsAt(x,z,r))return DOCKLANDS;
  if(Math.abs(x)<=19-r&&z>=-49.7&&z<=-38)return ROUTES[1];
- if(Math.abs(x)<=OUTER_PIER.width/2-r&&z>=OUTER_PIER.z-OUTER_PIER.length/2+r&&z<=-49.7)return ROUTES[2];
+ if(Math.abs(x)<=OUTER_PIER.width/2-r&&z>=Math.max(OUTER_PIER.z-OUTER_PIER.length/2,OUTER_PIER.open)+r&&z<=-49.7)return ROUTES[2];
  const route=LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||activeRoutes().slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=(route.segmentWidths?.[i]??route.width)/2-r));
  if(route)return route;
  // The lawn is asked last, so the park's mound, its ramp and every authored path keep

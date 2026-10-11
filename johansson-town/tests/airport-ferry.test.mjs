@@ -4,9 +4,11 @@ import * as THREE from '../vendor/three.module.js';
 import {AIRPORT_JETTY,buildAirportIsland} from '../src/world/airport-island.js';
 import {airportWorld,airportLocal,airportSurface,AIRPORT_LANDING,AIRPORT_LANDING_HEIGHT,AIRPORT_PIER_HEIGHT} from '../src/world/airport-ground.js';
 import {buildAirportVehicleYard} from '../src/world/airport-vehicle-yard.js';
-import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,airportFerryPose} from '../src/world/airport-ferry.js';
-import {FERRY_DECKS} from '../src/world/ferry-ship.js';
-import {FERRY_RAMP} from '../src/world/ferry-model.js';
+import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,AIRPORT_PASSAGES,airportFerryPose} from '../src/world/airport-ferry.js';
+import {TURN_LIMITS} from '../src/world/ferry-paths.js';
+import {BREAKWATER,OUTER_PIER} from '../src/world/layout.js';
+import {airportShoreDistance} from '../src/world/airport-island.js';
+import {FERRY_RAMP,FERRY_DECKS} from '../src/world/ferry-model.js';
 import {createFerryRun,FERRY_BERTH} from '../src/world/ferry.js';
 import {createIslandPlay} from '../src/island/play.js';
 import {createTownTraffic} from '../src/world/town-traffic.js';
@@ -38,23 +40,67 @@ test('airport arrival feet match the drawn pier and connect to the public distri
  assert.ok(Math.abs(z-31)<1e-7);
 });
 
-test('the shared ferry crosses around the harbour wall and stays off reclaimed land',()=>{
+/** The harbour's solids a hull must keep off (layout.js, harbour.js, town.js): x0, x1, z0, z1. */
+const HARBOUR_SOLIDS=Object.freeze({
+ breakwater:[BREAKWATER.minX,BREAKWATER.maxX,BREAKWATER.z-BREAKWATER.thickness/2,BREAKWATER.z+BREAKWATER.thickness/2],outerPier:[-4.1,4.1,OUTER_PIER.z-OUTER_PIER.length/2,-49.65],quay:[-19,19,-49.65,-38],
+ secondPier:[-38.3,-33.7,-64.3,-44],secondPierArm:[-38.3,-23.7,-64.3,-59.7],houseboat:[-42.05,-38.95,-59.9,-53.1],
+});
+const rectGap=([x,z],[x0,x1,z0,z1])=>{const dx=Math.max(x0-x,0,x-x1),dz=Math.max(z0-z,0,z-z1);return dx||dz?Math.hypot(dx,dz):-Math.min(x-x0,x1-x,z-z0,z1-z);};
+/** Points round the hull's outline at a pose, every 0.4 m along her sides and across her ends. */
+const outline=(p,hb=AIRPORT_FERRY.beam/2,hl=AIRPORT_FERRY.length/2)=>{const c=Math.cos(p.yaw),s=Math.sin(p.yaw),out=[];
+ for(let dx=-hb;dx<=hb+1e-9;dx+=hb/4)for(let dz=-hl;dz<=hl+1e-9;dz+=.4)out.push([p.x+c*dx+s*dz,p.z-s*dx+c*dz]);return out;};
+
+test('the shared ferry crosses round the breakwater, a metre and more off every pier, wall and shore',()=>{
  const ports=AIRPORT_FERRY_PORTS;
  assert.deepEqual(ports.town.berth,[FERRY_BERTH.x,FERRY_BERTH.z]);
- for(const destination of ['airport','town'])for(let i=0;i<=1000;i++){
-  const p=airportFerryPose(destination,i/1000);assert.ok(Object.values(p).every(Number.isFinite));
-  const c=Math.cos(p.yaw),s=Math.sin(p.yaw),hb=AIRPORT_FERRY.beam/2,hl=AIRPORT_FERRY.length/2;
-  for(const dx of [-hb,0,hb])for(let dz=-hl;dz<=hl;dz+=.4){const x=p.x+c*dx+s*dz,z=p.z-s*dx+c*dz;
-   assert.ok(!(Math.abs(z+83)<2+1&&Math.abs(x)<34+1),'Hull within a metre of the breakwater at '+x+','+z);
-   assert.ok(!(Math.abs(x)<4.1+.1&&z> -64.95-.1&&z< -49.65),'Hull crosses outer pier at '+x+','+z);
-   // Off Kitano-jima's reclaimed land and its jetty, except the bow at the berth.
-   const [u,v]=airportLocal(x,z);assert.ok(!(u> -60&&u<178&&v>20&&v<132)||(u<AIRPORT_JETTY.minX&&v>27&&v<35),'Hull over airport land at local '+[u.toFixed(1),v.toFixed(1)]);}
-  const [u,v]=airportLocal(p.x,p.z);
-  assert.ok(!(u> -60&&u<178&&v>20&&v<132),'Hull sails over airport land');
- }
  for(const destination of ['airport','town']){
-  const p=airportFerryPose(destination,1);assert.ok(Math.hypot(p.x-ports[destination].berth[0],p.z-ports[destination].berth[1])<1e-7);
+  const plan=AIRPORT_PASSAGES[destination];
+  for(let t=0;t<=plan.duration;t+=.5){
+   const p=plan.pose(t);for(const k of ['x','z','yaw','speed','turn','exposure'])assert.ok(Number.isFinite(p[k]),k);
+   // Alongside at either end she lies where her berth is; between them, her hull keeps clear.
+   const atTown=destination==='airport'?t<1:t>plan.duration-1,atKitano=destination==='airport'?t>plan.duration-1:t<1;
+   for(const q of outline(p)){
+    for(const [name,r] of Object.entries(HARBOUR_SOLIDS)){
+     // Alongside the pier she backs off along its face, as close as she lies moored.
+     const need=name==='outerPier'?.1:name==='quay'?.5:1;
+     assert.ok(rectGap(q,r)>=need,`${destination} at ${t.toFixed(1)} s: hull ${rectGap(q,r).toFixed(2)} m off the ${name} at ${q.map(v=>v.toFixed(1))}`);
+    }
+    if(!atKitano)assert.ok(airportShoreDistance(...q)>2,`${destination} at ${t.toFixed(1)} s: hull within 2 m of Kitano-jima's shore at ${q.map(v=>v.toFixed(1))}`);
+    // Over the island's reclaimed side only where her bow comes in beside the jetty.
+    const [u,v]=airportLocal(...q);assert.ok(!(u> -60&&u<178&&v>20&&v<132)||(u<AIRPORT_JETTY.minX&&v>27&&v<35),'Hull over airport land at local '+[u.toFixed(1),v.toFixed(1)]);
+   }
+  }
+  for(const end of [0,1]){const p=airportFerryPose(destination,end),berth=end?ports[destination].berth:ports[destination==='airport'?'town':'airport'].berth;assert.ok(Math.hypot(p.x-berth[0],p.z-berth[1])<1e-6,'she starts and ends at the berths');}
  }
+});
+
+test('she moves like a ship: no snaps, her speed continuous, her turns within what she can make',()=>{
+ for(const destination of ['airport','town']){
+  const plan=AIRPORT_PASSAGES[destination];
+  // Eighteen minutes: four out, ten at sea, four in (briefs/ferry-audit.md §7.1).
+  assert.ok(Math.abs(plan.duration-AIRPORT_FERRY.duration*60)<1e-6);
+  const minutes=kind=>plan.legs.filter(l=>l.kind===kind).reduce((sum,l)=>sum+(l.until-l.from)/60,0);
+  assert.ok(minutes('sea')>9.4&&minutes('sea')<10.1,'ten minutes at sea, or nine and a half from Kitano-jima, whose jetty she leaves slowly');
+  let prev=plan.pose(0);
+  for(let t=.25;t<=plan.duration;t+=.25){
+   const p=plan.pose(t);
+   const limit=TURN_LIMITS[p.kind]*Math.PI/180;
+   assert.ok(Math.abs(p.turn)<=limit*1.001,`${destination} ${p.kind} at ${t} s turns ${(Math.abs(p.turn)*180/Math.PI).toFixed(2)}°/s (limit ${TURN_LIMITS[p.kind]})`);
+   // Heading and speed change smoothly: what she turns in a quarter second is what her rate of turn says.
+   let dy=p.yaw-prev.yaw;while(dy>Math.PI)dy-=2*Math.PI;while(dy<-Math.PI)dy+=2*Math.PI;
+   assert.ok(Math.abs(dy)<=limit*.25*1.05+1e-6,`${destination} snaps ${(dy*180/Math.PI).toFixed(2)}° at ${t} s`);
+   // A small ferry gathers way at a tenth of a metre a second each second or less (0 to 11 knots in a minute).
+   assert.ok(Math.abs(p.speed-prev.speed)<=.15*.25,`${destination} speed jumps at ${t} s`);
+   assert.ok(p.speed>=0&&p.speed<1.5,'never faster than three knots through the World (the sea is compressed)');
+   prev=p;
+  }
+  assert.equal(plan.pose(0).speed,0);assert.ok(plan.pose(plan.duration).speed<1e-9,'she comes to rest alongside');
+  // She sounds a prolonged blast and three short (going astern) as she leaves her berth.
+  assert.deepEqual(plan.signals.filter(s=>s.at===0).map(s=>s.kind),['prolonged','astern']);
+ }
+ // Passing the breakwater's end, each way: one prolonged blast (Rule 34(e)).
+ const out=AIRPORT_PASSAGES.airport,inn=AIRPORT_PASSAGES.town,end=([x,z])=>Math.hypot(x-BREAKWATER.minX,z-BREAKWATER.z);
+ for(const [plan,label] of [[out,'out'],[inn,'in']]){const s=plan.signals.find(s=>s.at>0);assert.ok(s&&s.kind==='prolonged',label);const p=plan.pose(s.at);assert.ok(end([p.x,p.z])<16,label+' blast is sounded at the breakwater’s end, not '+end([p.x,p.z]).toFixed(0)+' m away');}
 });
 
 function playerService(){

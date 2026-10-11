@@ -16,7 +16,7 @@ const SONGS=Object.freeze([
 const CALLS=Object.freeze([
  // The harbour office reads you the real timetable (commuter-schedule.js).
  ['Harbour office',minutes=>'“Harbour office.” The duty clerk reads it off the board:\n\n'+harbourTimetable(minutes)],
- ['Ferry desk','Ms Ganaha picks up on the fourth ring. “Port Terminal. The times are on the board in the hall, love. Are you at Minato? Say hello to Thao.”'],
+ ['Ferry desk','Ms Ganaha picks up on the fourth ring. “Port Terminal. She goes on request, love: come to the window, and she sails when the cars are aboard. The commuter boats are in at half past eight, half past two and ten. Are you at Minato? Say hello to Thao.”'],
  ['Sakura','“Sakura Shōten!” Thuan sounds out of breath. “We close at eight — oh, it’s you. Are you at Thao’s? Order the sardines. Don’t tell her I said so.”'],
 ]);
 
