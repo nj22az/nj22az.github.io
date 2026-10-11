@@ -38,6 +38,7 @@ import {buildPortHall} from './world/interiors/port-hall.js';
 import {PORT_BUILDING} from './world/port-building.js';
 import {chooseOpening} from './world/openings.js';
 import {createMotion,createAutoRun,swipeLook,steerYaw} from './input/touch-feel.js';
+import {createRecorder,createPlayer} from './input/replay.js';
 import {buildSatoRamenRoom} from './world/interiors/sato-ramen.js';
 import {SATO_ROOM,SATO_COLLIDERS,SATO_MENU,SATO_RAMEN,SATO_GUEST_SEATS,SATO_LUNCH_DRINK,satoRamenOpen} from './world/sato-ramen-layout.js';
 import {transitStop} from './world/transit.js';
@@ -1001,7 +1002,7 @@ async function crossThreshold(run){
 }
 
 let roomLoading=false;
-async function enterRoom(s){spawnScene?.cancel('room');
+async function enterRoom(s){replayInterrupted();spawnScene?.cancel('room');
  if(roomLoading)return;
  s=SITES.find(site=>site.id===businessId(s.id))||s;
  if(s.id==='market'){roomLoading=true;resetInput();let ready=false;try{ready=await sakuraShop.ready();}finally{roomLoading=false;}if(!ready){say('Could not open Sakura. Please try the door again.',5);return;}}
@@ -1028,7 +1029,7 @@ async function enterRoom(s){spawnScene?.cancel('room');
  // place: you walk in looking where you were looking, not where the room says.
  yaw=roomyHeading(streetToRoom(streetYaw,s,activeRoomLayout));player.quaternion.setFromAxisAngle(yAxis,yaw);
  pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title.toUpperCase();$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
-function leaveRoom(){if(!current)return;spawnScene?.cancel('room');if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}const leavingDungeon=current.id==='dungeon';wearSwim(false);showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;beerService?.clear();beerService=null;workplaceResidents.restore();bookshopCustomers.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');document.body.classList.remove('town-menu-open');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();onsenGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;current=null;if(s?.id===CITY_RESTAURANT.id)hands.firstPersonVisible=!thirdPerson;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);
+function leaveRoom(){if(!current)return;replayInterrupted();spawnScene?.cancel('room');if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}const leavingDungeon=current.id==='dungeon';wearSwim(false);showShopThroughWindow();izakayaTV?.dispose();izakayaTV=null;storeService?.cancel();ramenPlayerService?.dispose();ramenPlayerService=null;venueService?.dispose();venueService=null;beerService?.clear();beerService=null;workplaceResidents.restore();bookshopCustomers.restore();neighbourChats.cancel();chatBubble.hide();inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');document.body.classList.remove('town-menu-open');$('#exitRoomButton').classList.add('hidden');izakayaGuests.restore();onsenGuests.restore();hideRamen();homeGuests.restore();seated=false;parkSeat=null;active=null;const s=current;const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;current=null;if(s?.id===CITY_RESTAURANT.id)hands.firstPersonVisible=!thirdPerson;syncView();room.visible=false;town.visible=true;if(s)placeAtEntrance(s,true);
  // and back out again the same way, by the same rotation: you leave facing where you
  // were facing inside, which for somebody who walked at the door is the street.
  if(s){yaw=roomToStreet(roomYaw,s,roomLayout);pitch=THREE.MathUtils.clamp(roomPitch,-.55,.55);player.quaternion.setFromAxisAngle(yAxis,yaw);}
@@ -1059,7 +1060,7 @@ function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touc
   const facingDot=v.lengthSq()?fw.dot(v.normalize()):1;if(facingDot<.3&&d>.9)continue;
   const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d*(1+(1-facingDot)*1.4)+(o.userData.promptPenalty||0)-(/^Talk to /.test(h.label)?.6:0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();say(FORM3_NUDGE,6);}else say('You stand up.',2);}
-function doInteract(){spawnScene?.cancel();if(islandPlay?.active)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
+function doInteract(){if(replayPlayer)return;spawnScene?.cancel();if(islandPlay?.active)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
 // `who`: a room collider with `only` set stops only that walker.
 // `deckY`: standing on the ferry's deck at that height (ferry-walk.js): her own solids are tested there, not the town's
 // bounds (she lies over the water) nor the collider that keeps people on the pier off her hull.
@@ -1190,11 +1191,23 @@ function reachTheTunnelMouth(x,z){
 const pointWalk=createPointWalk({blocked:(x,z,r)=>environmentBlocked(x,z,r),heightAt:(x,z)=>current?0:groundHeight(x,z),radius:PLAYER_RADIUS});
 const walkMarker=new THREE.Mesh(new THREE.RingGeometry(.19,.25,24),new THREE.MeshBasicMaterial({color:0xfff4c9,transparent:true,opacity:.8,depthWrite:false,side:THREE.DoubleSide}));
 walkMarker.rotation.x=-Math.PI/2;walkMarker.visible=false;scene.add(walkMarker);
+// A walk recorded step by step, or played back (src/input/replay.js; the audit's replay controls).
+let replayRecorder=null,replayPlayer=null,replayNote='';
+let replayLast=null;
+function stopReplay(why=''){const report=replayPlayer?.report();if(report){replayLast=report;pointWalk.cancel();walkMarker.visible=false;}replayPlayer=null;if(why)replayNote=why;return report;}
+/** A door changes the room and its coordinates: recordings stay in one place for now, so both stop, and say why. */
+function replayInterrupted(){
+ if(replayPlayer)stopReplay('stopped: the room changed (a recording stays in one place)');
+ if(replayRecorder?.open){replayRecorder.cancel();replayNote='recording stopped: the room changed (a recording stays in one place)';}
+}
 function updatePlayer(dt){
  if(islandPlay?.active)return;
+ if(replayPlayer&&bicycleRide)stopReplay('stopped: the bicycle is not in recordings yet');
+ if(replayRecorder?.open&&bicycleRide){replayRecorder.cancel();replayNote='recording stopped: the bicycle is not in recordings yet';}
  // Drink wears off with town time, an hour a drink; sleep clears it.
  tipsy=soberUp(tipsy,minutes-(tipsyClock??minutes));tipsyClock=minutes;
  if(!seated&&!bicycleRide)unstuckPlayer();
+ if(replayPlayer){const frame=replayPlayer.next();if(frame)return replayStep(frame);stopReplay('played to the end');}
  const fromX=player.position.x,fromZ=player.position.z;
  const lookX=controllerFrame.look.x+touchSticks.look.x+(keys.KeyL?1:0)-(keys.KeyJ?1:0),lookY=controllerFrame.look.y+touchSticks.look.y+(keys.KeyK?1:0)-(keys.KeyI?1:0);
  ({yaw,pitch}=lookStep(yaw,pitch,THREE.MathUtils.clamp(lookX,-1,1),THREE.MathUtils.clamp(lookY,-1,1),dt,cameraControls.settings));
@@ -1232,18 +1245,41 @@ function updatePlayer(dt){
  // Eased, so walking starts and stops like a person rather than a switch.
  if(move2.set(s,f).lengthSq()>1)move2.normalize();
  const eased=walking?(walkMotion.reset(),{x:move2.x,y:move2.y}):walkMotion.update(move2.x,move2.y,dt);if(seated)walkMotion.reset();move2.set(eased.x,eased.y);
+ let wander=0,running=false;
  fwVec.set(-Math.sin(yaw),0,-Math.cos(yaw));rtVec.set(Math.cos(yaw),0,-Math.sin(yaw));moveVec.copy(fwVec).multiplyScalar(move2.y).addScaledVector(rtVec,move2.x);
  if(moveVec.lengthSq()>.0001){
   // Drunk, the feet do not quite go where they are pointed: the way home wanders.
-  const drunk=Math.min(1,tipsy/DRUNK);if(drunk>0)moveVec.applyAxisAngle(yAxis,(Math.sin(elapsed*1.3)*.32+Math.sin(elapsed*.47+1)*.22)*drunk);
-  const running=!!(keys.ShiftLeft||keys.ShiftRight||touchRunning||thumbRun||controllerFrame.held[4]||activities.state.sprintUntil>performance.now());
-  const speed=(running?5.2:3)*dt,nx=player.position.x+moveVec.x*speed,nz=player.position.z+moveVec.z*speed;
-  const stoppedX=collides(nx,player.position.z),stoppedZ=collides(player.position.x,nz);
-  if(!stoppedX)player.position.x=nx;
-  if(!stoppedZ)player.position.z=nz;
-  if(stoppedX||stoppedZ)reachTheTunnelMouth(nx,nz);
-  turnQ.setFromAxisAngle(yAxis,Math.atan2(-moveVec.x,-moveVec.z));player.quaternion.slerp(turnQ,1-Math.pow(.001,dt));playerRunning=running;
+  const drunk=Math.min(1,tipsy/DRUNK);wander=drunk>0?(Math.sin(elapsed*1.3)*.32+Math.sin(elapsed*.47+1)*.22)*drunk:0;
+  running=!!(keys.ShiftLeft||keys.ShiftRight||touchRunning||thumbRun||controllerFrame.held[4]||activities.state.sprintUntil>performance.now());
+  stepFeet(dt,wander,running);
  }
+ if(replayRecorder?.open)replayRecorder.add({f:move2.y,s:move2.x,yaw,pitch,running,walking:!!walking,x:player.position.x,z:player.position.z,dt,wander});
+ finishPlayerStep(dt,fromX,fromZ);
+}
+/** Moves the feet along moveVec for one step (wander: a drink's turn off the line), stopped by walls. */
+function stepFeet(dt,wander,running){
+ if(wander)moveVec.applyAxisAngle(yAxis,wander);
+ const speed=(running?5.2:3)*dt,nx=player.position.x+moveVec.x*speed,nz=player.position.z+moveVec.z*speed;
+ const stoppedX=collides(nx,player.position.z),stoppedZ=collides(player.position.x,nz);
+ if(!stoppedX)player.position.x=nx;
+ if(!stoppedZ)player.position.z=nz;
+ if(stoppedX||stoppedZ)reachTheTunnelMouth(nx,nz);
+ turnQ.setFromAxisAngle(yAxis,Math.atan2(-moveVec.x,-moveVec.z));player.quaternion.slerp(turnQ,1-Math.pow(.001,dt));playerRunning=running;
+}
+/** One step of a recording played back: its view and its move, with no live input; in poses mode, its place too. */
+function replayStep(frame){
+ const dt=frame.dt,fromX=player.position.x,fromZ=player.position.z;
+ yaw=frame.yaw;pitch=frame.pitch;walkMotion.reset();touchAutoRun.reset();
+ move2.set(frame.s,frame.f);
+ fwVec.set(-Math.sin(yaw),0,-Math.cos(yaw));rtVec.set(Math.cos(yaw),0,-Math.sin(yaw));moveVec.copy(fwVec).multiplyScalar(move2.y).addScaledVector(rtVec,move2.x);
+ if(moveVec.lengthSq()>.0001)stepFeet(dt,frame.wander,frame.running);
+ if(replayPlayer.mode==='poses'){
+  player.position.x=frame.x;player.position.z=frame.z;
+ }
+ replayPlayer.check(player.position.x,player.position.z);
+ finishPlayerStep(dt,fromX,fromZ);
+}
+function finishPlayerStep(dt,fromX,fromZ){
  playerSpeed=THREE.MathUtils.damp(playerSpeed,Math.hypot(player.position.x-fromX,player.position.z-fromZ)/Math.max(dt,1e-3),12,dt);
 
  player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):1.7+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';const sway=Math.min(1,tipsy/DRUNK);camera.rotation.set(pitch+Math.sin(elapsed*.9)*.012*sway,yaw+Math.sin(elapsed*.55)*.02*sway,Math.sin(elapsed*.7)*.025*sway);if(thirdPerson)placeThirdPerson(dt);else if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
@@ -1792,6 +1828,45 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  },
  enter(id){const s=id===CITY_RESTAURANT.id?NAHA_TRIP:id===NAHA_ARRIVALS.id?NAHA_ARRIVALS:SITES.find(site=>site.id===id)||world.landmarks?.find(site=>site.id===id);return s?enterRoom(s):null;},
  leave(){leaveRoom();},
+ /**
+  * Recording a walk and playing it back (src/input/replay.js). record(note) starts from here and now; stop() gives the
+  * recording (plain JSON); play(recording, {mode:'inputs'|'poses'}) puts the player back where it started (room,
+  * place, view, time, weather) and plays it, step by step, while step() or the game runs; status() says where it is.
+  */
+ replay:{
+  record(note=''){
+   if(bicycleRide)throw Error('The bicycle is not in recordings yet: get off first.');
+   stopReplay();spawnScene?.cancel('placement');pointWalk.cancel();walkMotion.reset();touchAutoRun.reset();
+   replayRecorder=createRecorder({room:current?.id||null,x:player.position.x,y:player.position.y,z:player.position.z,yaw,pitch,minutes,weather:weatherKind},{note});replayNote='recording';
+   return this.status();
+  },
+  stop(){
+   const report=stopReplay();
+   if(!replayRecorder)return report?{played:report}:null;
+   const open=replayRecorder.open,rec=replayRecorder.finish();replayRecorder=null;
+   if(!open)return null;replayNote='recorded '+rec.frames.length+' steps';return rec;
+  },
+  async play(rec,{mode='inputs'}={}){
+   const next=createPlayer(rec,{mode});
+   if(replayRecorder?.open)throw Error('A recording is running: stop() it first.');
+   if(islandPlay?.active||activities.state.island?.journey?.location==='naha')throw Error('Not during the island journey.');
+   if(bicycleRide)throw Error('The bicycle is not in recordings yet: get off first.');
+   replayRecorder=null;stopReplay();
+   const st=rec.start,room=st.room||null;
+   // The time first: a place may be shut at another hour.
+   if(Number.isFinite(st.minutes))this.root.setTime(st.minutes,{rain:st.weather==='rain'});
+   if(st.weather==='cloudy')weatherKind='cloudy';
+   if((current?.id||null)!==room){if(current)leaveRoom();if(room)await this.root.enter(room);}
+   if((current?.id||null)!==room)throw Error(`Could not go back to where the recording starts (${room||'the town'}).`);
+   this.root.teleport(st.x,st.z,st.yaw,st.pitch);if(Number.isFinite(st.y))player.position.y=st.y;
+   pointWalk.cancel();walkMotion.reset();touchAutoRun.reset();resetInput();
+   replayPlayer=next;replayNote='playing';return this.status();
+  },
+  status(){
+   return {recording:!!replayRecorder?.open,steps:replayRecorder?.length??0,playing:replayPlayer?replayPlayer.report():null,last:replayLast,note:replayNote};
+  },
+  root:null,
+ },
  // Film photographs (remotion/tools/capture-room.mjs): a shop door held open by an amount ("onsen", inside Umi-no-yu: its street door), a fridge door held open,
  // and how many of a product are on Sakura's shelves (each one is drawn, so a gap is a real gap).
  shopDoor(id,amount){if(id==='onsen'&&current?.id==='onsen'&&activeRoomLayout?.streetDoor){activeRoomLayout.streetDoor.set(amount);return activeRoomLayout.streetDoor.amount;}const s=SITES.find(site=>site.id===id);if(!s?.shopDoor)throw Error(`No shop door for ${id}`);s.shopDoor.set(amount);if(id==='market')sakuraShop.display.frontDoor?.set(amount);return s.shopDoor.amount;},
@@ -1818,6 +1893,7 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
 };
 window.__JOHANSSON_AGENT_CONTEXT__=()=>({destinations:Object.fromEntries([...SITES,...(world.landmarks||[])].map(s=>[s.id,s.title])),controlsAllowed:controlsAllowed()&&!catchingUp});
 if(window.__JOHANSSON_AUDIT__){
+ window.__JOHANSSON_AUDIT__.replay.root=window.__JOHANSSON_AUDIT__;
  window.__JOHANSSON_GRAPHICS__=createGraphicsInspector({canvas,renderer,canCapture:()=>!graphicsLifecycle?.lost&&started&&!document.hidden});
  window.advanceTime=ms=>window.__JOHANSSON_AUDIT__.step(ms);
  window.render_game_to_text=()=>JSON.stringify({coordinates:'x/z in metres; y is height; interiors use local coordinates',room:current?.id||null,home:activeRoomLayout?.snapshot?.()||null,calendar:activeRoomLayout?.calendar?.()||null,discoveries:activeRoomLayout?.discoveries?.()||null,minutes,player:player.position.toArray(),seat:seated&&parkSeat?{surfaceY:parkSeat.surfaceY,position:parkSeat.position,stand:parkSeat.stand}:null,customers:bookshopCustomers.snapshot(),island:islandPlay?.snapshot(),arrival:spawnScene?.snapshot()});
