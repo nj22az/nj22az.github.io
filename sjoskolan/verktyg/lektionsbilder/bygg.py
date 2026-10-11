@@ -452,8 +452,11 @@ def skriv_placeringar(lek, frageplacering):
 
 
 def pdf(fil):
-    subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', '--outdir', str(fil.parent), str(fil)],
-                   check=True, capture_output=True)
+    # En egen LibreOffice-profil per körning: flera byggen samtidigt låser annars samma profil och konverteringen stoppar.
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix='lo-profil-') as profil:
+        subprocess.run(['soffice', f'-env:UserInstallation=file://{profil}', '--headless', '--convert-to', 'pdf',
+                        '--outdir', str(fil.parent), str(fil)], check=True, capture_output=True)
 
 
 def main(argv):
