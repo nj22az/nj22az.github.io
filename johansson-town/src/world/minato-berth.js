@@ -66,3 +66,34 @@ export const MINATO_BERTH=Object.freeze({
  /** The quay bollard for her starboard bow line, moved off the landing (it stood at x −10). */
  quayBollard:Object.freeze([-12.3,-49.3]),
 });
+
+/**
+ * The island cargo boat's berth: the same pier's east face, from the quay out to z −72 (batch 4b). The
+ * boat (cargo-shipping.js, a 19-ton class island cargo boat, 20 × 5 m) lies starboard side to,
+ * bow to the quay 2 m off it, on five V-type fenders; four bitts on the east edge take her lines. She
+ * comes in from the open water east of the harbour, round the breakwater's east end, so she never
+ * crosses the ferry's water west of the pier. Her board, the staging bay and Riku's forklift stay on the
+ * west quay by the depot she supplies.
+ */
+const EAST=OUTER_PIER.x+OUTER_PIER.width/2,EAST_FACE=EAST+.09;
+export const CARGO_BERTH=Object.freeze({
+ face:EAST_FACE,
+ fenders:Object.freeze({...MINATO_BERTH.fenders,z:Object.freeze([-53,-57,-61,-65,-69])}),
+ line:EAST_FACE+.25,
+ boat:Object.freeze({length:20,beam:5}),
+ bitts:Object.freeze([
+  Object.freeze({z:-53,line:'head line'}),
+  Object.freeze({z:-60,line:'forward spring'}),
+  Object.freeze({z:-64,line:'after spring'}),
+  Object.freeze({z:-73,line:'stern line'}),
+ ].map(b=>Object.freeze({...b,x:EAST-.45}))),
+ x:EAST_FACE+.25+2.5,z:-52-10,yaw:0,
+});
+
+/**
+ * The fishing boat that lay off the pier's east face, now alongside the main quay east of the pier,
+ * next to the east quay's boats: on the quay wall's tyre fender at x 14, her lines to the quay's
+ * bollards at x 10 and 15, and 4 m clear of the cargo boat's side.
+ */
+export const QUAY_FISHING_BOAT=Object.freeze({x:16.65,z:-51.6,yaw:Math.PI/2,length:6.3,beam:2.9,bollards:Object.freeze([[10,-49.3],[15,-49.3]])});
+

@@ -10,7 +10,7 @@ import {buildBicycle} from './bicycle.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK,BREAKWATER} from './layout.js?snappy=1';
-import {MINATO_BERTH} from './minato-berth.js';
+import {MINATO_BERTH,QUAY_FISHING_BOAT} from './minato-berth.js';
 import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,SHOP_CROSSING_Z} from './main-road.js';
 import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts} from './road-standards.js';
 import {buildStreetLamps,STREET_LAMP_PLACEMENTS} from './street-lamps.js';
@@ -323,8 +323,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const x of [-17.8]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);const seat=anchor([x,1,-44.1],'Sit on the quay bench',()=>onAction('seat','Quay bench','A place to rest while the boats come and go.'));seat.userData.seat={id:'quay-bench',position:[x,0,-43.2],stand:[x,0,-44.1],surfaceY:.69,eyeY:1.39,yaw:0,pitch:0};}
 
 
-  // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights.
-  const boat=new THREE.Group();boat.position.set(9,-.18,-56);boat.rotation.y=-.07;group.add(boat);
+  // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights. She lay off the
+  // outer pier's east face; since the cargo boat berths there (batch 4b) she lies alongside the quay
+  // east of the pier, beside the east quay's boats, her lines to the quay bollards (minato-berth.js).
+  const QB=QUAY_FISHING_BOAT,boat=new THREE.Group();boat.position.set(QB.x,-.18,QB.z);boat.rotation.y=QB.yaw;group.add(boat);
+  {const ends=[QB.x-QB.length/2+.4,QB.x+QB.length/2-.4];for(const [i,[bx,bz]] of QB.bollards.entries())directBeam(group,[ends[i],.78,QB.z+QB.beam/2-.45],[bx,.6,bz],.022,0x6f6049);}
   directMesh(new THREE.CylinderGeometry(1.45,1.02,6.3,6,1,false),material(0x2f5360),boat,[0,0,0],[Math.PI/2,0,0],[1,1,.45],true);
   directBox([2.25,1.55,2.25],[0,1.05,.2],0xd4cfb8,boat,[0,0,0],true);directBox([2.3,.58,2.3],[0,1.48,.2],0x365b66,boat);directBox([2.45,.12,2.55],[0,1.86,.2],0x394b50,boat);
   directCyl(.06,3.0,[0,3.25,.55],0x454b49,boat);directBox([1.2,.06,.06],[0,4.05,.55],0x454b49,boat);directBeam(boat,[0,3.72,.56],[.72,4.45,.98],.018,0x30383a);

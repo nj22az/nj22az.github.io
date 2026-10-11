@@ -88,6 +88,36 @@ export function roundedTrack(points,radius,step=3){
 }
 
 /**
+ * A track of lines and arcs (roundedTrack) sailed bow first (or stern first, `astern`) at the speed a
+ * ship would carry on it: never more than `vMax`, slow enough on each arc that she turns at no more
+ * than `turnDeg` °/s, and changing speed by no more than `accel` m/s² (she carries her way in and
+ * takes it off well before she stops), from `startSpeed` to `endSpeed`. For the island cargo boat
+ * (cargo-shipping.js), whose calls are a few long, plain runs rather than the ferry's keyed legs.
+ * pose(seconds) gives {x, z, yaw, speed, turn} as passage() does.
+ */
+export function profiledTrack(points,radii,{vMax=3,turnDeg=2.4,accel=.05,startSpeed=0,endSpeed=0,astern=false}={}){
+ const track=roundedTrack(points,radii,.5),n=track.length,s=[0];
+ for(let i=1;i<n;i++)s.push(s[i-1]+Math.hypot(track[i][0]-track[i-1][0],track[i][1]-track[i-1][1]));
+ const dir=track.map((_,i)=>{const a=track[Math.max(0,i-1)],b=track[Math.min(n-1,i+1)];return Math.atan2(b[0]-a[0],b[1]-a[1]);});
+ const bend=dir.map((_,i)=>{const j=Math.min(n-1,i+1),k=Math.max(0,i-1);return Math.abs(wrap(dir[j]-dir[k]))/Math.max(1e-6,s[j]-s[k]);});
+ const omega=turnDeg*Math.PI/180,v=bend.map(b=>Math.min(vMax,b>1e-5?omega/b:vMax));
+ v[0]=Math.min(v[0],startSpeed);v[n-1]=Math.min(v[n-1],endSpeed);
+ for(let i=1;i<n;i++)v[i]=Math.min(v[i],Math.sqrt(v[i-1]**2+2*accel*(s[i]-s[i-1])));
+ for(let i=n-2;i>=0;i--)v[i]=Math.min(v[i],Math.sqrt(v[i+1]**2+2*accel*(s[i+1]-s[i])));
+ // Time to each sample: the speed changes evenly in time between samples, so dt = 2 ds / (v0 + v1).
+ const t=[0];for(let i=1;i<n;i++)t.push(t[i-1]+2*(s[i]-s[i-1])/Math.max(v[i]+v[i-1],1e-4));
+ const T=t.at(-1),flip=astern?Math.PI:0;
+ function pose(time){
+  time=Math.max(0,Math.min(T,time));let lo=0,hi=n-1;while(hi-lo>1){const m=(lo+hi)>>1;if(t[m]<=time)lo=m;else hi=m;}
+  const i=lo,h=(t[i+1]-t[i])||1,u=(time-t[i])/h,a=(v[i+1]-v[i])/h,ds=v[i]*(time-t[i])+a*(time-t[i])**2/2,f=Math.min(1,ds/((s[i+1]-s[i])||1));
+  const x=track[i][0]+(track[i+1][0]-track[i][0])*f,z=track[i][1]+(track[i+1][1]-track[i][1])*f,dy=wrap(dir[i+1]-dir[i]);
+  const speed=v[i]+(v[i+1]-v[i])*u;
+  return {x,z,yaw:wrap(dir[i]+dy*f+flip),speed:astern?-speed:speed,turn:dy/(s[i+1]-s[i]||1)*speed};
+ }
+ return {pose,duration:T,length:s.at(-1),start:pose(0),end:pose(T)};
+}
+
+/**
  * A passage: a keyed track sailed leg by leg, as a ship sails it. Each leg runs from where the last
  * one ended to the key `to`, in its own time (`minutes`), and is of a `kind` (TURN_LIMITS):
  * 'astern' off a berth, 'swing' (pivoting), 'manoeuvring' (slow ahead in a harbour), 'sea',
@@ -123,7 +153,15 @@ export function passage(keys,legs,under={from:false,to:false}){
   if(!(leg.to>from)||leg.to>=n)throw new RangeError('Legs must run forward along the keys');
   if(!(leg.kind in TURN_LIMITS))throw new RangeError('Unknown leg kind '+leg.kind);
   const span=leg.minutes*60,mean=(S[leg.to]-S[from])/span,rate=TURN_LIMITS[leg.kind]*.6*Math.PI/180,work=[];
-  for(let k=from;k<leg.to;k++)work.push(Math.max((S[k+1]-S[k])/mean,Math.abs(Y[k+1]-Y[k])/rate,1e-6));
+  // `ease` (metres): her speed changes from the one she ends the last leg at to this leg's own over that
+  // much of it, as a ship carries her way, rather than at its first key (for long legs at very different
+  // speeds). The leg's own speed is then the one that still takes its minutes.
+  const before=leg.ease&&kt.length>1?(ks.at(-1)-ks.at(-2))/(kt.at(-1)-kt.at(-2)):0;
+  const shape=k=>{const f=Math.min(1,((S[k]+S[k+1])/2-S[from])/leg.ease);return f*f*(3-2*f);};
+  const stretch=(k,v)=>Math.max((S[k+1]-S[k])/v,Math.abs(Y[k+1]-Y[k])/rate,1e-6);
+  let cruise=mean;
+  if(before>0){let lo=1e-4,hi=1e3;for(let i=0;i<80;i++){const V=(lo+hi)/2;let t=0;for(let k=from;k<leg.to;k++)t+=stretch(k,before+(V-before)*shape(k));if(t>span)lo=V;else hi=V;}cruise=(lo+hi)/2;}
+  for(let k=from;k<leg.to;k++)work.push(stretch(k,before>0?before+(cruise-before)*shape(k):mean));
   const total=work.reduce((a,b)=>a+b,0);
   for(let k=from;k<leg.to;k++){kt.push(kt.at(-1)+span*work[k-from]/total);ks.push(S[k+1]);}
   legEnd.push(kt.length-1);from=leg.to;

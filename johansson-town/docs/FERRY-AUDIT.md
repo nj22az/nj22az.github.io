@@ -328,3 +328,47 @@ and the crates beside the bait station, so the spawn's view of the lighthouse is
 are where they will stay; the drying nets north of the ramp move with her new centreline then too. The residents'
 'pier' place (`town-grid.js`, used by the cat and Sunday's ballgame) stays at z −62: that is a routine, not a prop.
 
+#### 4b: the island cargo boat's berth
+
+**Plan: what it touches.** The cargo boat lay "3.5 m off the west quay" with her bow inside the ferry, and came and
+went sideways through the breakwater (finding 5). The brief's first choice, the outer pier's east face for the 26 m
+ship, does not work once it is drawn: with the breakwater 16 m off the pier's end, a 26 m hull cannot be turned
+onto the face without her bow crossing the pier or her stern the breakwater (tried with the whole hull outline at
+every second: −0.3 to −4 m into one or the other). The west quay's pocket is a trap the ferry's bow closes. So she
+becomes what an island of this size is actually served by, a **19-ton class island cargo boat (19トン型貨物船), 20 × 5
+m** (the brief's own fallback length), and lies at the **pier's east face**, starboard side to, bow 2 m off the quay,
+on five V-fenders, her four lines on bitts on the east edge (z −53 head line, −60 forward spring, −64 after spring,
+−73 stern line). In: from beyond sight to the south, up the open water east of the harbour, round the breakwater's
+east end (9 m off it), across the eastern basin on a slant to the pier, the stern brought in last. Out: the stern
+sprung off, astern 22 m until her bow is past the pier's end, ahead hard to port across the eastern basin (her stern
+kicks to 2 m off the pier's end), past the breakwater's end and away south. Her speed is held to what she can carry
+(0.05 m/s² ahead, 0.03 astern, 2.4 °/s on her turns: `ferry-paths.js` `profiledTrack`). The fishing boat that lay off
+the east face goes alongside the main quay east of the pier, by the east quay's boats, on the quay wall's tyre at
+x 14, her lines to the quay bollards at x 10 and 15; the east face's rails and her two bollards go.
+
+| Touches | How | Checked by |
+|---|---|---|
+| The cargo boat (`cargo-shipping.js`) | 20 × 5 m (her old 26 m model drawn to scale), floats 0.7 m deep instead of 0.14, real passages in and out, four mooring lines drawn to the bitts while alongside, in place of the single rope to the west quay | `tests/cargo-shipping.test.mjs` (new): every half second of both passages, the whole hull outline against the pier, its fenders, the ferry's fenders, the quay, the breakwater, the moved fishing boat, the east quay's boats and Kitano-jima's shore; never west of the pier; speed, turn rate and acceleration; she lies on her fenders |
+| Her timetable (`CARGO_CALLS`) | alongside 07:30–08:55 and 15:00–16:30 (the morning boat used to leave at 08:40, in the ferry's 08:30 call); in and out take her passages' minutes (4.4 and 5.7) | the same test: her harbour minutes fall outside the ferry's timetable calls |
+| The pier's east face (`town.js`, `minato-berth.js` `CARGO_BERTH`) | five V-fenders, four bitts on the edge; the two bollards 2.75 m in, the rails on the east flank and the fishing boat's ropes go; the ladder stays between her fenders | `airport-dock-access`, `port-access`, `stability` (walking on the pier) |
+| The fishing boat (`harbour.js`) | alongside the main quay at x 13.5–19.8, lines to the quay's bollards | `cargo-shipping.test.mjs` (4 m off the cargo boat), photographs |
+| Her board (`cargo-shipping.js`, the west quay) | the real times, and which side she berths | `lived-in-island.test.mjs` |
+| Residents | none: Riku, Emi and the forklift keep their places and hours (`docklands-life.js`); the freight board's shifts are unchanged | `lived-in-island.test.mjs` |
+| The ferry | none: the two never share water (the cargo boat never comes west of the pier) | `cargo-shipping.test.mjs` |
+| The storyteller | the harbour camera (16:00) now has her alongside the east face in its view; rendered again with the new ship in batch 5 | batch 5 |
+| Films | `impact.py`: neither the east face, the fishing boat's new place nor her old place is in plain view of any shot | done |
+
+**Checked.** The related suites pass (115 tests, with the new `cargo-shipping.test.mjs`). Her clearances, whole
+hull, every quarter second: 0.70 m off the pier and its fenders while she slants in, 2.0 m off the pier's end as her
+stern kicks on the way out, 7.8 m off the breakwater, 3.6 m off the fishing boat, 10.6 m off the east quay's boats,
+2.0 m off the quay with her bow alongside; never west of the pier. Her passages: in 4.4 minutes, out 5.7; at most 3.2
+m/s (6 knots) at sea, 2.4 °/s on her turns, 0.05 m/s² changing speed. Walking on the pier and to the queue as before.
+Photographed from source (`docs/qa/ferry/b4b-01` to `b4b-07`): round the breakwater's east end, slanting in to the
+pier, alongside with her lines and fenders, swinging out across the eastern basin, the fishing boat on the quay, and
+the harbour from above at 08:00 with both ships at their berths.
+
+**Left for later.** Her hull is still the old box model drawn smaller (a flat-sided hull, the deck overhanging its
+bow); she deserves the ferry's lofting in her own batch. An on-request ferry crossing to Kitano-jima can meet her
+on her sea leg south-east of the breakwater (only the timetable calls are kept apart); the call batch should have the
+ferry wait for her, as a harbour master would.
+
