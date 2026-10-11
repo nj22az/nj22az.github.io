@@ -1,0 +1,32 @@
+{
+  "id": "EL-000713",
+  "titel": "Startfråga: v42_02",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Är samma regelverk automatiskt tillämpligt i en fabrik och ombord på ett fartyg?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx bild 2",
+        "revision": "8cabde3",
+        "roll": "startfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

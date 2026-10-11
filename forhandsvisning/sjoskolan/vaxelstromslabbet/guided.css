@@ -1,0 +1,26 @@
+.ac-app{padding-top:28px}.mode-picker{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}.mode-picker button[aria-pressed=true]{background:var(--lab-blue);color:#fff;border-color:var(--lab-blue)}.guide{max-width:1000px;background:white;border:1px solid var(--lab-line);border-radius:8px;padding:26px;margin-bottom:24px}.guide h2{font-size:28px;line-height:1.2;margin:10px 0}.guide p{margin:12px 0}.guide h3{margin:16px 0 8px}.guide-pickers{display:grid;grid-template-columns:1fr 1fr;gap:16px;border-bottom:1px solid var(--lab-line);padding-bottom:20px;margin-bottom:24px}.guide label{display:block;font-size:16px}.guide select,.guide input,.guide textarea{display:block;width:100%;font:inherit;min-height:44px;border:1px solid var(--lab-line);border-radius:5px;background:white;color:var(--lab-ink);padding:10px;margin-top:5px;max-width:100%}.guide textarea{resize:vertical}.guide .guide-label{font-size:14px;color:var(--lab-muted);margin:0}.guide-source{padding:14px;background:var(--lab-soft);font-size:16px}.guide-prompt{font-size:19px}.guide details{margin:18px 0}.guide summary{min-height:44px;align-content:center;cursor:pointer;color:var(--lab-blue);font-weight:bold}.guide-actions{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}.guide-visual{max-width:850px;min-width:0}.guide-visual svg{width:100%;height:auto;display:block}.guide-support{font-size:15px}.guide-record{border-top:1px solid var(--lab-line);padding:16px 0;break-inside:avoid}.guide-record dd{margin:4px 0}.guide #guide-error{color:#9a330f;font-weight:bold}.guide #guide-error:empty,.guide #guide-draft:empty,.guide #guide-saved:empty{margin:0}.station-intro{max-width:85ch;padding:20px;background:var(--lab-soft);margin:18px 0}.station-intro p{margin:8px 0}.station-intro details{margin-top:10px}.station-intro summary{cursor:pointer;min-height:44px;align-content:center}.guide-skicka{display:inline-flex;align-items:center;min-height:44px;padding:8px 18px;border-radius:5px;background:var(--lab-blue);color:#fff;font-weight:bold;text-decoration:none}
+/* Steg och arbetsgång: rubriken säger vilket steg eleven är på, raden under visar alla tre. */
+.guide .guide-steg{font-size:17px;font-weight:bold;color:var(--lab-blue);margin:20px 0 4px;scroll-margin-top:12px}
+.guide .guide-steg:focus{outline:none}.guide .guide-steg:focus-visible{outline:3px solid #163248;outline-offset:2px}
+/* Egen siffra och mätarens avläsning på samma rad (två spalter från 560 px). */
+.guide-inputs{display:grid;grid-template-columns:1fr;gap:16px;margin:20px 0}
+.guide-pair{display:grid;grid-template-columns:1fr;gap:12px;align-items:stretch}
+.guide .guide-pair-head{font-size:15px;font-weight:bold;margin:0 0 2px}
+.guide-reading{background:var(--lab-soft);border-radius:8px;padding:12px 14px}
+.guide .guide-reading p{margin:0 0 6px;font-size:15px}
+.guide .guide-reading p:last-child{margin-bottom:0}
+.guide .guide-lcd{display:flex;align-items:center;justify-content:flex-end;min-height:56px;margin:6px 0;padding:8px 12px;border-radius:4px;background:#d4dfbf;color:#152722;font:700 28px/1.2 monospace;font-variant-numeric:tabular-nums}
+.guide .guide-lock{font-size:14px;color:var(--lab-muted)}
+.guide .guide-reads{font-size:16px}
+.guide-measurements{display:grid;gap:16px;margin:16px 0}
+.guide-measurements>.guide-pair{padding:16px;background:var(--lab-soft);border-radius:8px}
+.guide-measurements dt{font-weight:bold}
+.guide-measurements dd{margin:0;display:grid;grid-template-columns:1fr;gap:10px}
+.guide-measurements .guide-reading{background:#fff}
+.guide-measurements dd span{display:block;font-size:15px}
+.guide-measurements .guide-dom{font-weight:bold;margin-top:6px}
+.guide button.primary{min-height:48px}
+@media(min-width:560px){.guide-inputs .guide-pair,.guide-measurements dd{grid-template-columns:1fr 1fr}}
+@media(max-width:767px){.guide{padding:18px}.guide-pickers{grid-template-columns:1fr}.ac-app{padding-top:22px}.guide h2{font-size:25px}.tabs{flex-wrap:wrap;overflow:visible}.tabs button{white-space:normal;text-align:left}.ac-heading{align-items:flex-start}.mode-picker{display:grid;grid-template-columns:1fr}.mode-picker button{min-height:48px;text-align:left}}
+@media print{.school-nav,.mode-picker,.guide-pickers,.guide-progress,.guide-support,.guide-actions,.guide>p,.guide>h2,.guide #guide-step,.guide summary,.ac-heading,.station-intro,.guide-steg,.guide-to-bench,#guide-draft,.guide-reading p:first-child{display:none!important}.guide{border:0;padding:0}.guide details{display:block}.guide-record{page-break-inside:avoid}body[data-print-mode=guide] #free-workspace,body[data-print-mode=guide] #station-workspace{display:none!important}body[data-print-mode=station] #guided-workspace{display:none!important}.guide label input{border:0;padding:0}.ac-app{padding:0}}
+.guide-verdict{font-size:18px;font-weight:bold;padding:12px 16px;border-left:5px solid}.guide-verdict.ok{color:#0b6b3a;border-color:#0b6b3a;background:#eaf6ef}.guide-verdict.fel{color:#9a330f;border-color:#9a330f;background:#fbefe9}.guide-dom.ok{color:#0b6b3a}.guide-dom.fel{color:#9a330f}

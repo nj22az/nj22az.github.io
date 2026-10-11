@@ -1,0 +1,85 @@
+{
+  "id": "EL-000403",
+  "titel": "Station A: DC-delare, fysisk station",
+  "sprak": "sv",
+  "typ": "laboration",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v41-03",
+      "T-labb-multimetersimulator"
+    ]
+  },
+  "uppgift": {
+    "fraga": "12 V DC matar 1 kΩ och 2 kΩ i serie. Förutsäg ström och spänningsfall före mätningen och mät sedan på riggen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 7; Simulerade_stationer.html",
+        "revision": "8cabde3",
+        "roll": "fysisk station vid träffen 9 oktober"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "fysisk",
+    "station": "Station A",
+    "utrustning": "SELV-källa märkt 12 V med strömgräns 100 mA. R_{1} = 1 kΩ och R_{2} = 2 kΩ, båda ±5 %, i serie. Länk P–A för strömmätning. Multimeter med V ⎓, Ω och mA.",
+    "sakerhet": [
+      {
+        "id": "rigg",
+        "text": "Instruktören kontrollerar rigg, strömgräns och instrument."
+      },
+      {
+        "id": "selv",
+        "text": "Elevpraktik sker på avsedd SELV-utrustning eller spänningslöst."
+      },
+      {
+        "id": "klar",
+        "text": "Klartecken före energisättning."
+      },
+      {
+        "id": "omk",
+        "text": "Omkoppling sker frånskilt. Avbryt vid skada, värme eller osäkerhet."
+      },
+      {
+        "id": "trefas",
+        "text": "Trefasmätning kräver en avsedd, dokumenterad rigg."
+      }
+    ],
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Beräkna I och U_{2} i övning 2 före mätningen. I = U/(R_{1} + R_{2})."
+      },
+      {
+        "id": "s2",
+        "text": "Instruktören granskar mätplan och anslutningar före start."
+      },
+      {
+        "id": "s3",
+        "text": "Mät och fyll i elevprotokollet: mätpunkt, driftläge, värde med enhet och jämförelse med förväntat."
+      }
+    ],
+    "simulerad_variant": "EL-000402",
+    "protokoll": {
+      "mall": "EL-000401",
+      "titel": "Elevprotokoll och riskmall"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Bedöms vid stationen enligt bedömningsraderna i elevprotokollet"
+  }
+}

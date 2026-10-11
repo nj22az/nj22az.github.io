@@ -1,0 +1,32 @@
+{
+  "id": "EL-000717",
+  "titel": "Startfråga: v43_01",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v43-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Kan en kontaktor ersätta både kortslutningsskydd och motorskydd?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-43/aktuell/v43_01_Komponenter_och_skydd_elev.pptx bild 2",
+        "revision": "8cabde3",
+        "roll": "startfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

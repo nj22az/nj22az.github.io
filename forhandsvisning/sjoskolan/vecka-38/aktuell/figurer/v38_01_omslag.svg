@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1000" viewBox="0 0 1500 1000" font-family="Arial, Helvetica, sans-serif"><defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#08141f"/><stop offset="0.45" stop-color="#10273a"/><stop offset="1" stop-color="#1b3a55"/></linearGradient>
+  <radialGradient id="ljus" cx="0.5" cy="0.72" r="0.55"><stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+  <linearGradient id="platt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfd7de"/><stop offset="1" stop-color="#9eabb6"/></linearGradient>
+  <linearGradient id="skena" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef1f4"/><stop offset="0.5" stop-color="#b9c3cc"/><stop offset="1" stop-color="#e2e7eb"/></linearGradient>
+  <linearGradient id="vit" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f4f6f8"/><stop offset="1" stop-color="#d9e0e6"/></linearGradient>
+  <linearGradient id="kropp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a5763"/><stop offset="1" stop-color="#2a343d"/></linearGradient>
+  <linearGradient id="front" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#56636f"/><stop offset="1" stop-color="#3b4751"/></linearGradient>
+  <linearGradient id="spak" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a2f35"/><stop offset="0.5" stop-color="#4b535c"/><stop offset="1" stop-color="#23282d"/></linearGradient>
+  <linearGradient id="las" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0443a"/><stop offset="1" stop-color="#a3241c"/></linearGradient>
+  <radialGradient id="skruv" cx="0.35" cy="0.35" r="0.8"><stop offset="0" stop-color="#f0f3f5"/><stop offset="1" stop-color="#8e9aa4"/></radialGradient>
+</defs>
+<rect width="1500" height="1000" fill="url(#bg)"/><rect x="170" y="350" width="1160" height="600" rx="16" fill="url(#platt)" stroke="#6f7c87" stroke-width="3"/><rect x="170" y="350" width="1160" height="600" fill="url(#ljus)"/><circle cx="200" cy="380" r="11" fill="url(#skruv)" stroke="#6b7883" stroke-width="1.5"/>
+  <path d="M193.4,380 H206.6 M200,373.4 V386.6" stroke="#56626d" stroke-width="2"/><circle cx="1300" cy="380" r="11" fill="url(#skruv)" stroke="#6b7883" stroke-width="1.5"/>
+  <path d="M1293.4,380 H1306.6 M1300,373.4 V386.6" stroke="#56626d" stroke-width="2"/><rect x="200" y="600" width="1100" height="36" rx="3" fill="url(#skena)" stroke="#8591a0" stroke-width="2"/><rect x="230" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="300" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="370" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="440" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="510" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="580" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="650" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="720" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="790" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="860" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="930" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="1000" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="1070" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="1140" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><rect x="1210" y="613" width="34" height="10" rx="5" fill="#7f8b96"/><g>
+  <rect x="230" y="500" width="70" height="230" rx="6" fill="url(#vit)" stroke="#8a97a3" stroke-width="2"/>
+  <rect x="238" y="514" width="54" height="18" rx="3" fill="#dfe5ea"/>
+  <text x="265" y="528" text-anchor="middle" font-size="13" font-weight="700" fill="#35495a">C16</text>
+  <rect x="250" y="570" width="30" height="90" rx="6" fill="#2c3945"/>
+  <rect x="254" y="574" width="22" height="40" rx="4" fill="#5b88b5"/>
+  <text x="265" y="560" text-anchor="middle" font-size="12" fill="#35495a">I</text>
+  <text x="265" y="680" text-anchor="middle" font-size="12" fill="#35495a">O</text>
+  <rect x="244" y="700" width="42" height="14" rx="3" fill="#c7cfd6"/>
+</g><g>
+  <rect x="306" y="500" width="70" height="230" rx="6" fill="url(#vit)" stroke="#8a97a3" stroke-width="2"/>
+  <rect x="314" y="514" width="54" height="18" rx="3" fill="#dfe5ea"/>
+  <text x="341" y="528" text-anchor="middle" font-size="13" font-weight="700" fill="#35495a">C10</text>
+  <rect x="326" y="570" width="30" height="90" rx="6" fill="#2c3945"/>
+  <rect x="330" y="574" width="22" height="40" rx="4" fill="#5b88b5"/>
+  <text x="341" y="560" text-anchor="middle" font-size="12" fill="#35495a">I</text>
+  <text x="341" y="680" text-anchor="middle" font-size="12" fill="#35495a">O</text>
+  <rect x="320" y="700" width="42" height="14" rx="3" fill="#c7cfd6"/>
+</g><g>
+  <rect x="382" y="500" width="70" height="230" rx="6" fill="url(#vit)" stroke="#8a97a3" stroke-width="2"/>
+  <rect x="390" y="514" width="54" height="18" rx="3" fill="#dfe5ea"/>
+  <text x="417" y="528" text-anchor="middle" font-size="13" font-weight="700" fill="#35495a">C10</text>
+  <rect x="402" y="570" width="30" height="90" rx="6" fill="#2c3945"/>
+  <rect x="406" y="574" width="22" height="40" rx="4" fill="#5b88b5"/>
+  <text x="417" y="560" text-anchor="middle" font-size="12" fill="#35495a">I</text>
+  <text x="417" y="680" text-anchor="middle" font-size="12" fill="#35495a">O</text>
+  <rect x="396" y="700" width="42" height="14" rx="3" fill="#c7cfd6"/>
+</g><g>
+  <rect x="1200" y="500" width="70" height="230" rx="6" fill="url(#vit)" stroke="#8a97a3" stroke-width="2"/>
+  <rect x="1208" y="514" width="54" height="18" rx="3" fill="#dfe5ea"/>
+  <text x="1235" y="528" text-anchor="middle" font-size="13" font-weight="700" fill="#35495a">C16</text>
+  <rect x="1220" y="570" width="30" height="90" rx="6" fill="#2c3945"/>
+  <rect x="1224" y="574" width="22" height="40" rx="4" fill="#5b88b5"/>
+  <text x="1235" y="560" text-anchor="middle" font-size="12" fill="#35495a">I</text>
+  <text x="1235" y="680" text-anchor="middle" font-size="12" fill="#35495a">O</text>
+  <rect x="1214" y="700" width="42" height="14" rx="3" fill="#c7cfd6"/>
+</g><g>
+  <rect x="1124" y="500" width="70" height="230" rx="6" fill="url(#vit)" stroke="#8a97a3" stroke-width="2"/>
+  <rect x="1132" y="514" width="54" height="18" rx="3" fill="#dfe5ea"/>
+  <text x="1159" y="528" text-anchor="middle" font-size="13" font-weight="700" fill="#35495a">C6</text>
+  <rect x="1144" y="570" width="30" height="90" rx="6" fill="#2c3945"/>
+  <rect x="1148" y="574" width="22" height="40" rx="4" fill="#5b88b5"/>
+  <text x="1159" y="560" text-anchor="middle" font-size="12" fill="#35495a">I</text>
+  <text x="1159" y="680" text-anchor="middle" font-size="12" fill="#35495a">O</text>
+  <rect x="1138" y="700" width="42" height="14" rx="3" fill="#c7cfd6"/>
+</g><g>
+  <rect x="1048" y="500" width="70" height="230" rx="6" fill="url(#vit)" stroke="#8a97a3" stroke-width="2"/>
+  <rect x="1056" y="514" width="54" height="18" rx="3" fill="#dfe5ea"/>
+  <text x="1083" y="528" text-anchor="middle" font-size="13" font-weight="700" fill="#35495a">C6</text>
+  <rect x="1068" y="570" width="30" height="90" rx="6" fill="#2c3945"/>
+  <rect x="1072" y="574" width="22" height="40" rx="4" fill="#5b88b5"/>
+  <text x="1083" y="560" text-anchor="middle" font-size="12" fill="#35495a">I</text>
+  <text x="1083" y="680" text-anchor="middle" font-size="12" fill="#35495a">O</text>
+  <rect x="1062" y="700" width="42" height="14" rx="3" fill="#c7cfd6"/>
+</g><rect x="510" y="394" width="380" height="470" rx="18" fill="#000" opacity="0.35"/><rect x="500" y="380" width="380" height="470" rx="18" fill="url(#kropp)" stroke="#1f2a33" stroke-width="3"/><rect x="522" y="392" width="336" height="70" rx="10" fill="#2e3943" stroke="#1b242c" stroke-width="2"/><circle cx="580" cy="427" r="13" fill="url(#skruv)" stroke="#6b7883" stroke-width="1.5"/>
+  <path d="M572.2,427 H587.8 M580,419.2 V434.8" stroke="#56626d" stroke-width="2"/><circle cx="690" cy="427" r="13" fill="url(#skruv)" stroke="#6b7883" stroke-width="1.5"/>
+  <path d="M682.2,427 H697.8 M690,419.2 V434.8" stroke="#56626d" stroke-width="2"/><circle cx="800" cy="427" r="13" fill="url(#skruv)" stroke="#6b7883" stroke-width="1.5"/>
+  <path d="M792.2,427 H807.8 M800,419.2 V434.8" stroke="#56626d" stroke-width="2"/><rect x="522" y="768" width="336" height="70" rx="10" fill="#2e3943" stroke="#1b242c" stroke-width="2"/><circle cx="580" cy="803" r="13" fill="url(#skruv)" stroke="#6b7883" stroke-width="1.5"/>
+  <path d="M572.2,803 H587.8 M580,795.2 V810.8" stroke="#56626d" stroke-width="2"/><circle cx="690" cy="803" r="13" fill="url(#skruv)" stroke="#6b7883" stroke-width="1.5"/>
+  <path d="M682.2,803 H697.8 M690,795.2 V810.8" stroke="#56626d" stroke-width="2"/><circle cx="800" cy="803" r="13" fill="url(#skruv)" stroke="#6b7883" stroke-width="1.5"/>
+  <path d="M792.2,803 H807.8 M800,795.2 V810.8" stroke="#56626d" stroke-width="2"/><rect x="540" y="480" width="300" height="270" rx="12" fill="url(#front)" stroke="#27323b" stroke-width="2"/><text x="562" y="514" font-size="18" font-weight="700" fill="#e6ecf1">3P · 160 A</text><text x="562" y="536" font-size="14" fill="#b8c4ce">Effektbrytare</text><rect x="736" y="520" width="48" height="190" rx="14" fill="#141b21" stroke="#0b1015" stroke-width="2"/><text x="802" y="546" font-size="22" font-weight="700" fill="#e6ecf1">I</text><text x="716" y="680" text-anchor="end" font-size="22" font-weight="700" fill="#e6ecf1">O</text><text x="716" y="700" text-anchor="end" font-size="13" fill="#b8c4ce">FRÅN</text><rect x="728" y="614" width="64" height="86" rx="10" fill="url(#spak)" stroke="#0e1419" stroke-width="2"/><rect x="728" y="672" width="64" height="10" fill="#0e1419" opacity="0.35"/><path d="M714,644 H806" stroke="#aab4bd" stroke-width="9" stroke-linecap="round"/><path d="M806,644 v70" stroke="#aab4bd" stroke-width="9" stroke-linecap="round"/><path d="M784,748 v-16 a22,22 0 0 1 44,0 v16" fill="none" stroke="#c9d1d8" stroke-width="10"/><rect x="768" y="744" width="76" height="66" rx="12" fill="url(#las)" stroke="#6e1a14" stroke-width="2"/><circle cx="806" cy="772" r="7" fill="#3a0d0a"/><rect x="803" y="774" width="6" height="16" fill="#3a0d0a"/><path d="M826,804 Q846,790 896,816" fill="none" stroke="#2b2b2b" stroke-width="3"/><g transform="rotate(-8 946 880)">
+    <rect x="836" y="810" width="220" height="130" rx="10" fill="#ffd43d" stroke="#8a6d00" stroke-width="2"/>
+    <circle cx="896" cy="826" r="7" fill="#fff" stroke="#8a6d00" stroke-width="2"/>
+    <rect x="836" y="840" width="220" height="20" fill="#1c1c1c"/>
+    <text x="946" y="855" text-anchor="middle" font-size="14" font-weight="700" fill="#ffd43d">FARA</text>
+    <text x="946" y="894" text-anchor="middle" font-size="24" font-weight="700" fill="#1c1c1c">FRÅNSKILD</text>
+    <text x="946" y="924" text-anchor="middle" font-size="18" font-weight="700" fill="#1c1c1c">MANÖVRERA EJ</text>
+  </g></svg>

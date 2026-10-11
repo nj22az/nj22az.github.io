@@ -1,0 +1,82 @@
+{
+  "id": "EL-000884",
+  "titel": "Koppling och överlastrelä",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "utkast",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Märkskylten anger Δ/Y 230/400 V och 5,9/3,4 A, 1,5 kW, 50 Hz. Motorn ska gå på landnätet 400 V i verkstaden. Vilken koppling ska den ha, och på vilken ström ställs överlastreläet?",
+    "samband": [
+      "Nätets U_{L} = märkvärdet för driftkopplingen",
+      "Överlastreläet ställs på märkströmmen för kopplingen"
+    ],
+    "givet": "Landnät 400 V, 50 Hz. Märkskylt Δ/Y 230/400 V, 5,9/3,4 A, 1,5 kW.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Skylten ger strömmen för varje koppling i samma ordning som spänningarna: Δ först, sedan Y.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Välj koppling från spänningarna och läs sedan strömmen för den kopplingen.",
+      "status": "utkast"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vilket märkvärde är lika med nätets linjespänning? 2) Strömmen står på samma plats efter snedstrecket. 3) Rimlighet: Δ-strömmen är √3 gånger Y-strömmen. Exempel med andra tal: ombord 440 V och skylten Δ/Y 440/760 V, 2,9/1,7 A ger Δ och 2,9 A.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Y, eftersom nätets 400 V är lika med det högre märkvärdet. Märkströmmen för Y är 3,4 A, så överlastreläet ställs på 3,4 A. Kontroll: 5,9/3,4 ≈ 1,73 = √3.",
+    "svar": [
+      {
+        "storhet": "I",
+        "varde": 3.4,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "utkast",
+    "kalla": "Kursens facit (publikt)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q8",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 29 och 30",
+        "roll": "presentationens stöd- och övningsbild"
+      },
+      {
+        "kalla": "sjoskolan/labbhandbok/vecka-41.html",
+        "roll": "labbpasset med motorn, startaren och strömtången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

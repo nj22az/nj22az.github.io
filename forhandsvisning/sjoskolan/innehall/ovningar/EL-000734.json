@@ -1,0 +1,33 @@
+{
+  "id": "EL-000734",
+  "titel": "Avslutsfråga: v45_03",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v45-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilket metodval kan du nu förklara bättre än vid lektionens start?",
+    "instruktion": "Repetera de uppgifter där metoden var osäker. Kontrollera lärarens besked om tentamensdatum, hjälpmedel och eventuella kompletteringar."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

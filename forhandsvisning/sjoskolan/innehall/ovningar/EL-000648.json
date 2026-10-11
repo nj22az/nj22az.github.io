@@ -1,0 +1,39 @@
+{
+  "id": "EL-000648",
+  "titel": "Nästa vakt behöver förstå mätningen",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-03",
+      "T-labb-multimetersimulator"
+    ]
+  },
+  "uppgift": {
+    "fraga": "“Spänningen är 11,8” Vilka minst fyra uppgifter saknas? Varför behövs en av dem för att bedöma resultatet? En siffra ensam räcker inte som mätprotokoll."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx bild 53",
+        "revision": "8cabde3",
+        "roll": "övning i presentationen Multimeter och mätfel"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Diskuteras på lektionen"
+  }
+}

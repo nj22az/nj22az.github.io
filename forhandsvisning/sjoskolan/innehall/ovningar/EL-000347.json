@@ -1,0 +1,67 @@
+{
+  "id": "EL-000347",
+  "titel": "Ström i serie",
+  "sprak": "sv",
+  "typ": "matning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v39-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Låt lampans ström gå genom multimetern."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "multimetersimulator/lessons.mjs LESSONS[2] (id current)",
+        "revision": "8cabde3",
+        "roll": "stegvis övning i multimeterlabbet"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Med matningen bruten: öppna länken K1–K2. Välj A ⎓ och A-uttaget. Anslut röd till K1 och svart till K2. Slå på och läs av.",
+        "ledtrad": "Kretsen måste öppnas. Mätaren ersätter länken, så samma ström går genom mätare och lampa. Cirka 0,100 A förväntas.",
+        "varfor": "Rätt: mätaren sitter i serie. I = 12 / (120 + 0,1) ≈ 0,100 A. Shunten ger ett litet extra spänningsfall.",
+        "kod": {
+          "test": "multimetersimulator.current.1"
+        }
+      },
+      {
+        "id": "s2",
+        "text": "Avsluta mätningen: bryt matningen, lossa båda mätspetsarna och flytta röd sladd tillbaka till V Ω.",
+        "ledtrad": "Ett kvarlämnat A-uttag kan orsaka kortslutning vid nästa spänningsmätning.",
+        "varfor": "Rätt avslut: matningen är bruten, spetsarna lossade och röd sladd tillbaka i V Ω.",
+        "kod": {
+          "test": "multimetersimulator.current.2"
+        }
+      }
+    ]
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "scenario": "lamp",
+    "validering": {
+      "typ": "steg"
+    },
+    "kallhanvisning": "Multimeter och mätfel, bild 17–23, 66",
+    "alias": "current"
+  }
+}

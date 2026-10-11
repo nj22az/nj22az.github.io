@@ -1,0 +1,85 @@
+{
+  "id": "EL-000409",
+  "titel": "Station C: hållkrets, fysisk station",
+  "sprak": "sv",
+  "typ": "laboration",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-5"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v41-03",
+      "T-labb-hallkretslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Jämför hållkretsens förväntade funktion med den observerade: vila, start, hållning och stopp. Felsök en förberedd felmodul."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 21; Simulerade_stationer.html",
+        "revision": "8cabde3",
+        "roll": "fysisk station vid träffen 9 oktober"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "fysisk",
+    "station": "Station C",
+    "utrustning": "Hållkrets med 12 V DC styrspänning: S0 STOPP (NC), S1 START (NO) parallellt med K1:s hjälpkontakt (NO), K1-spole och retur. Instruktören använder säkra förberedda felmoduler.",
+    "sakerhet": [
+      {
+        "id": "rigg",
+        "text": "Instruktören kontrollerar rigg, strömgräns och instrument."
+      },
+      {
+        "id": "selv",
+        "text": "Elevpraktik sker på avsedd SELV-utrustning eller spänningslöst."
+      },
+      {
+        "id": "klar",
+        "text": "Klartecken före energisättning."
+      },
+      {
+        "id": "omk",
+        "text": "Omkoppling sker frånskilt. Avbryt vid skada, värme eller osäkerhet."
+      },
+      {
+        "id": "trefas",
+        "text": "Trefasmätning kräver en avsedd, dokumenterad rigg."
+      }
+    ],
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Förutsäg spänningarna i punkterna i vila, start, hållning och stopp."
+      },
+      {
+        "id": "s2",
+        "text": "Håll isär observation och hypotes. ”K1 släpper efter START” är en observation. ”Avbrott i hållvägen” är en hypotes som behöver prövas."
+      },
+      {
+        "id": "s3",
+        "text": "Fyll i felsökningsraden i elevprotokollet: observation, hypotes, kontroll och förväntat resultat."
+      }
+    ],
+    "simulerad_variant": "EL-000408",
+    "protokoll": {
+      "mall": "EL-000401",
+      "titel": "Elevprotokoll och riskmall"
+    }
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Bedöms vid stationen enligt bedömningsraderna i elevprotokollet"
+  }
+}

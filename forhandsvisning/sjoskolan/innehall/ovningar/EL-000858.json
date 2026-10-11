@@ -1,0 +1,42 @@
+{
+  "id": "EL-000858",
+  "titel": "Riskbedömning före arbete",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En belysningsgrupp i maskinrummet ska felsökas. Arbetsplanen säger: ”Säkringen F12 är urtagen, börja arbeta.” Gruppen kan även matas från nödtavlan. Beskriv minst tre brister och vad som ska göras innan arbete utan spänning får börja."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 8",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "Ett bra svar tar upp: nödtavlan saknas i planen och måste frånskiljas också; urtagen säkring är inte skyddad mot återinsättning (lås och märkning behövs); spänningslöshet är inte kontrollerad med provare på arbetsstället; ingen ansvarig eller arbetsgräns anges. Arbetet börjar först när alla matningar är frånskilda, låsta, kontrollerade och ett tydligt startbesked givits.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning"
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v42"
+  }
+}

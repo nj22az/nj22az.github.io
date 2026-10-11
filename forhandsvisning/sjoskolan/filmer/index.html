@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Förklaringsfilmer · Sjöskolan</title>
+  <meta name="description" content="Korta animerade förklaringsfilmer i elteknik med måsen Måns och matrosen Sigge.">
+  <link rel="canonical" href="https://nj22az.github.io/sjoskolan/filmer/">
+  <link rel="icon" href="../../assets/images/apple-touch-icon.png">
+  <link rel="stylesheet" href="../../sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="../../sjoskolan/course.css?v=20260928"><link rel="stylesheet" href="filmer.css">
+<script src="../../sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="course">
+  <nav class="school-nav" aria-label="Sjöskolan"><a href="../../sjoskolan/index.html"><strong>SJÖSKOLAN</strong></a><a href="../../sjoskolan/index.html#veckor">Alla veckor</a><a href="../../sjoskolan/bildspel/index.html">Bildspel</a></nav>
+  <main id="main-content" class="course-main film-main">
+    <div class="course-breadcrumb"><a href="../index.html">← Alla veckor</a></div>
+    <header class="course-heading">
+      <p class="course-kicker">Sjöskolan · Elteknik</p>
+      <h1>Förklaringsfilmer</h1>
+      <p>Korta animerade filmer med måsen Måns och matrosen Sigge. Varje film förklarar ett samband från presentationerna, ett steg i taget. Filmerna har inget ljud. Repliken står i pratbubblan och finns också som undertext. Under varje film finns en textversion med replikerna och en beskrivning av bilderna.</p>
+    </header>
+    <div class="film-grid" id="films"></div>
+    <p>Vill du stega själv? Öppna den interaktiva spelaren under varje film. Där kan du pausa och dra i tidslinjen.</p>
+  </main>
+  <footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+  <script type="module">
+    import { FILMS } from './films/index.mjs';
+    import { duration } from './engine.mjs';
+    import { BILD } from './films/transkript.mjs';
+    import { markHtml } from '../gemensamt/markering.mjs';
+    const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+    const heads = (f) => f.scenes.map((sc) => (String(sc.draw).match(/heading\(ctx, '([^']*)'/) || [])[1] || f.title);
+    const transcript = (f) => { const h = heads(f); return f.scenes.map((sc, i) => `
+          <h3>${markHtml(h[i])}</h3><p class="film-bild"><em>Bilden:</em> ${markHtml((BILD[f.id] || [])[i] || '')}</p>
+          ${(sc.say || []).map(([, , who, t]) => `<p><strong>${esc(who)}:</strong> ${markHtml(t)}</p>`).join('')}`).join(''); };
+    document.getElementById('films').innerHTML = FILMS.map((f) => `
+      <article class="film-card" id="${f.id}">
+        <video controls preload="none" poster="video/${f.id}.png" width="1280" height="720">
+          <source src="video/${f.id}.mp4" type="video/mp4">
+          <track kind="captions" srclang="sv" label="Svenska" src="video/${f.id}.vtt">
+        </video>
+        <div><h2>${esc(f.title)}</h2><p>${esc(f.sub)}</p>
+        <p><small>${esc(f.week)} · ${esc(f.deck)} · ${mmss(duration(f))} · utan ljud, med text</small></p>
+        <p><a href="spela.html?film=${f.id}">Interaktiv spelare</a></p>
+        <details class="film-transcript"><summary>Textversion</summary>${transcript(f)}</details></div>
+      </article>`).join('');
+  </script>
+</body>
+</html>

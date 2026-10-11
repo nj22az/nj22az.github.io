@@ -1,0 +1,33 @@
+{
+  "id": "EL-000728",
+  "titel": "Avslutsfråga: v44_03",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v44-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilken del av en mätning måste dokumenteras utöver det visade talet?",
+    "instruktion": "Lämna v44-inlämningen senast söndag 1 november. Bifoga beräkningar, mätvillkor, felgränser och motiverade slutsatser."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-44/aktuell/v44_03_Fordjupad_matteknik_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

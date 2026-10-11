@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nj22az.github.io/sjoskolan/innehall/schema/teori.schema.json",
+  "title": "Sjöskolan · lärandemål och teori",
+  "type": "object",
+  "required": ["mal", "teori"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"type": "string"},
+    "mal": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object", "required": ["text"], "additionalProperties": false,
+        "properties": {"text": {"type": "string"}, "prov": {"enum": ["skriftligt", "praktiskt"]}, "kalla": {"type": "string"}}
+      }
+    },
+    "teori": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object", "required": ["titel", "kalla"], "additionalProperties": false,
+        "properties": {
+          "titel": {"type": "string"},
+          "kalla": {"enum": ["kurs", "bildspel", "bok", "labb", "formelblad"]},
+          "url": {"type": "string", "description": "Relativt sjoskolan/. Saknas för bokens avsnitt."},
+          "kapitel": {"type": "integer"},
+          "ankare": {"type": "string"},
+          "bild": {"type": "integer"}
+        }
+      }
+    }
+  }
+}

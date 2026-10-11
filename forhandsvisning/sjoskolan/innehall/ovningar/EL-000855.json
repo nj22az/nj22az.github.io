@@ -1,0 +1,61 @@
+{
+  "id": "EL-000855",
+  "titel": "RL-last",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En last består av R = 40 Ω i serie med en spole med X_{L} = 30 Ω vid 50 Hz. Den ansluts till 230 V. Beräkna |Z|, I, cos φ, P, Q och S."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 5",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "|Z| = √(40² + 30²) = 50 Ω. I = 230/50 = 4,6 A. cos φ = 40/50 = 0,80. P = I²R = 4,6² · 40 ≈ 846 W. Q = I²X_{L} ≈ 635 var. S = U · I ≈ 1 058 VA. Kontroll: √(846² + 635²) ≈ 1 058 VA.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning",
+    "svar": [
+      {
+        "storhet": "|Z|",
+        "varde": 50,
+        "enhet": "Ω",
+        "tolerans": {
+          "rel": 0.01
+        },
+        "berakning": "ac.z_serie"
+      }
+    ]
+  },
+  "parametrar": {
+    "R": {
+      "varde": 40
+    },
+    "XL": {
+      "varde": 30
+    }
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v40"
+  }
+}

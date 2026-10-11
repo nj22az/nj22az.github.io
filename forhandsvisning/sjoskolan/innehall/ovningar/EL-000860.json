@@ -1,0 +1,43 @@
+{
+  "id": "EL-000860",
+  "titel": "Hållkrets som inte startar",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-5",
+      "LM-8"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "12 V DC: +U → S0 STOPP (NC) → punkt a → S1 START (NO) parallellt med K1 NO → punkt b → K1-spole → punkt c → retur → 0 V. K1 drar inte när START hålls in. Mätt mot 0 V med START intryckt: a = 12 V, b = 0 V, c = 0 V. Var sitter felet och hur bekräftar du det?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 10",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "Spänningen finns före START (a) men inte efter (b). Felet ligger mellan a och b: START sluter inte eller en ledare där är av. Bekräfta genom att mäta över S1 med knappen intryckt: 12 V över en intryckt knapp visar att den inte sluter. Returen är inte felet eftersom spolen då skulle ha 12 V på b-sidan.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning"
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v43, v45"
+  }
+}

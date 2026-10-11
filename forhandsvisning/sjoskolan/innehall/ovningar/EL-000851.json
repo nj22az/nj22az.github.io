@@ -1,0 +1,61 @@
+{
+  "id": "EL-000851",
+  "titel": "Länspumpens energi",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En länspump på 24 V DC tar 4,5 A och går sammanlagt 6 h per dygn. Beräkna effekt, energi i kWh och laddning i Ah per dygn."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 1",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "P = 24 · 4,5 = 108 W. E = 0,108 kW · 6 h ≈ 0,65 kWh. Q = 4,5 A · 6 h = 27 Ah. Energi och laddning är olika storheter.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning",
+    "svar": [
+      {
+        "storhet": "P",
+        "varde": 108,
+        "enhet": "W",
+        "tolerans": {
+          "rel": 0.01
+        },
+        "berakning": "effekt.ui"
+      }
+    ]
+  },
+  "parametrar": {
+    "U": {
+      "varde": 24
+    },
+    "I": {
+      "varde": 4.5
+    }
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v37, v39"
+  }
+}

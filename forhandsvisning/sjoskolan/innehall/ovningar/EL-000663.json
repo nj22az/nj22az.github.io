@@ -1,0 +1,32 @@
+{
+  "id": "EL-000663",
+  "titel": "Kontrollfråga 3 efter seminariet",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vad betyder en negativ beräknad ström?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_04_Kirchhoff_seminarium_elev.pptx bild 41",
+        "revision": "8cabde3",
+        "roll": "avslutande kontrollfråga"
+      }
+    ],
+    "publik": "elev"
+  }
+}

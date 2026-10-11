@@ -1,0 +1,38 @@
+{
+  "id": "EL-000635",
+  "titel": "Fall B: Upplösning är inte noggrannhet",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-8"
+    ],
+    "niva": "fordjupning",
+    "teori": [
+      "T-bildspel-v38-01"
+    ]
+  },
+  "uppgift": {
+    "scenario": "M1 visar 12,00 V med specifikation ±(0,5 % av visat värde + 2 siffror), upplösning 0,01 V. Ett andra värde på samma instrument är 12,06 V. För övningen används separata konservativa felintervall.",
+    "fraga": "Beräkna båda intervallen. Kan man säkert hävda skillnad med bara denna information? Vad ytterligare behöver dokumenteras?",
+    "instruktion": "givna uppgifter, metod, resultat med enheter där det behövs, slutsats och begränsning."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-38/aktuell/Fordjupning_elev.html Fall B",
+        "revision": "8cabde3",
+        "roll": "fördjupning vecka 38"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas"
+  }
+}

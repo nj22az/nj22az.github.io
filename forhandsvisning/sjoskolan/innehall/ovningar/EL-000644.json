@@ -1,0 +1,60 @@
+{
+  "id": "EL-000644",
+  "titel": "Två möjliga mätvägar",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-03",
+      "T-labb-multimetersimulator"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Matningen frånkopplad. Båda resistorerna sitter kvar. Vad visar Ω-mätaren när båda vägarna är anslutna?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx bild 30 och facit bild 31",
+        "revision": "8cabde3",
+        "roll": "övning i presentationen Multimeter och mätfel"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "Mätaren ser båda vägarna. (1 000 Ω · 1 000 Ω) / (1 000 Ω + 1 000 Ω) = 500 Ω",
+    "status": "migrerad",
+    "kalla": "Facitbild 31",
+    "svar": [
+      {
+        "storhet": "R",
+        "varde": 500,
+        "enhet": "Ω",
+        "tolerans": {
+          "rel": 0.001
+        },
+        "berakning": "parallell.resistans"
+      }
+    ]
+  },
+  "parametrar": {
+    "R": {
+      "varde": [
+        1000,
+        1000
+      ]
+    }
+  }
+}

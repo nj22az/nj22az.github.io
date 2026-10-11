@@ -1,0 +1,115 @@
+{
+  "id": "EL-000308",
+  "titel": "Trefaseffekt",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-trefaslabbet",
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En symmetrisk last ombord: U_{L} = 440 V, I_{L} = 25 A och cos φ = 0,85. Beräkna aktiv effekt i kW."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "trefaslabbet/lessons.mjs CHALLENGES[7] (id p3)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "P = √3 · U_{L} · I_{L} · cos φ. Dela med 1 000 för kW.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "P = √3 · 440 · 25 · 0,85 ≈ 16 190 W ≈ 16,2 kW.",
+    "svar": [
+      {
+        "storhet": "P",
+        "varde": 16.1969,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "kW",
+        "berakning": "trefas.effekt_kw"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "UL": {
+      "varde": 440,
+      "enhet": "V"
+    },
+    "IL": {
+      "varde": 25,
+      "enhet": "A"
+    },
+    "PF": {
+      "varde": 0.85
+    }
+  },
+  "simulator": {
+    "labb": "trefaslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "trefaslabbet.forvantat",
+      "facit": 16.1969,
+      "tolerans": {
+        "rel": 0.02
+      }
+    },
+    "scenario": "ydelta",
+    "initial": {
+      "UL": 440,
+      "Z": 30.48,
+      "pf": 0.85,
+      "conn": "Δ",
+      "plate": "440/760"
+    },
+    "fraga": {
+      "storhet": "PkW",
+      "etikett": "P",
+      "enhet": "kW"
+    },
+    "dolj": [
+      "S",
+      "P",
+      "Q",
+      "PkW"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 9.35,
+          "text": "Faktorn √3 saknas. Den behövs när linjevärden används."
+        },
+        {
+          "varde": 28.05,
+          "text": "Med linjespänning används √3, inte 3. Faktorn 3 gäller fasvärden."
+        }
+      ]
+    },
+    "kallhanvisning": "v41_02 · bild 8 och övning 4",
+    "alias": "p3"
+  }
+}

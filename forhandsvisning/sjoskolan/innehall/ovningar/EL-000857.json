@@ -1,0 +1,41 @@
+{
+  "id": "EL-000857",
+  "titel": "Bruten neutralledare",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En 60 W-lampa sitter mellan L1 och N och en 15 W-lampa mellan L2 och N (båda märkta 230 V) i ett 400/230 V-nät. Neutralledaren bryts. Räkna med konstanta resistanser och beräkna spänningen över varje lampa. Vad händer i verkligheten?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 7",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "R = U²/P: 60 W ≈ 882 Ω, 15 W ≈ 3 527 Ω. Utan N ligger lamporna i serie över 400 V. I = 400/4 408 ≈ 0,091 A. 60 W-lampan får ≈ 80 V, 15 W-lampan ≈ 320 V. Den svaga lampan får långt över sin märkspänning och går sönder. Lasten med minst effekt drabbas hårdast.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning"
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v41"
+  }
+}

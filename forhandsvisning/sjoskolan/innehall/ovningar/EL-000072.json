@@ -1,0 +1,78 @@
+{
+  "id": "EL-000072",
+  "titel": "Kondensatorns reaktans",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 7,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bok-08",
+      "T-kurs-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "C = 100 µF och f = 50 Hz. Beräkna X_{C}.",
+    "samband": [
+      "X_{C} = 1/(2πfC)"
+    ],
+    "givet": "Ideal kondensator, C = 100 µF, f = 50 Hz."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "X_{C} är den kapacitiva reaktansen i Ω och C kapacitansen i F. 1 µF = 10^{−6} F.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Gör om µF till F. Räkna ut hela nämnaren innan du delar 1 med den.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) C i farad: µF · 10^{−6} (47 µF = 0,000047 F). 2) Räkna nämnaren 2 · π · f · C först och skriv ner den. 3) Tryck 1 ÷ nämnaren, så får du X_{C} i Ω. Exempel: 60 Hz och 47 µF ger nämnaren 2 · π · 60 · 0,000047 ≈ 0,0177 och X_{C} ≈ 56 Ω. Rimlighet: större C eller högre f ger mindre X_{C}.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Omvandla först: 100 µF = 100/1 000 000 = 0,000100 F.\n\nRäkna nämnaren inom parentes: 2π · 50 · 0,000100 ≈ 0,031416.\n\nDividera sist: X_{C} = 1/0,031416 ≈ 31,8 Ω.",
+    "svar": [
+      {
+        "storhet": "X_{C}",
+        "varde": 31.8,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch014.xhtml#ch8-q2 och ch041.xhtml#sol8-s2",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_02-q2",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

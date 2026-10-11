@@ -1,0 +1,50 @@
+{
+  "id": "EL-000876",
+  "titel": "Kontrollfråga 3.3",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 4,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Du mäter 95–96 på överlastreläet i den spänningslösa startaren. Vad ska multimetern visa när reläet inte har löst ut?",
+    "alternativ": [
+      "Nära 0 Ω, kontakten är sluten",
+      "Överområde, kontakten är öppen",
+      "Spolens resistans"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "95–96 är överlastreläets kontakt i styrkretsen. Är den normalt öppen eller normalt sluten?",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "95–96 är normalt sluten (NC). Den öppnar först när reläet löser ut och bryter då spolens matning.",
+    "status": "utkast",
+    "kommentar": "Nära 0 Ω, kontakten är sluten"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_3.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

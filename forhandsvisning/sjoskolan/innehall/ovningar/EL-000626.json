@@ -1,0 +1,33 @@
+{
+  "id": "EL-000626",
+  "titel": "Förberedelsefråga 1B: 3",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vad behöver du veta innan du tar en lampa ur bruk?",
+    "instruktion": "Fundera i 10–15 minuter och skriv några stödord. Du behöver inte kunna svaret ännu."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/v37_03_Forberedelsefragor_1B_elev.pptx bild 1, stycke 3",
+        "revision": "8cabde3",
+        "roll": "förberedelsefråga före genomgången"
+      }
+    ],
+    "publik": "elev"
+  }
+}

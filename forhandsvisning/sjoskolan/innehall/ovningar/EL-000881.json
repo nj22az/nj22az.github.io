@@ -1,0 +1,82 @@
+{
+  "id": "EL-000881",
+  "titel": "Kvoten mellan Y och Δ",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "utkast",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-8"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "I labbet mättes U1–V1 till 8,1 Ω i Y och 2,8 Ω i Δ (sladdarna avdragna). Beräkna kvoten R_{Y}/R_{Δ} och avvikelsen från 3 i procent. Låg blecken rätt?",
+    "samband": [
+      "Kvot = R_{Y}/R_{Δ}",
+      "Avvikelse i % = 100 · (kvot − 3)/3"
+    ],
+    "givet": "Samma motor, samma par U1–V1. Förväntad kvot 3.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Kvoten 3 gäller oavsett lindningens resistans, eftersom R_{Y} = 2R och R_{Δ} = (2/3)R.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Dela Y-värdet med Δ-värdet, jämför med 3 och räkna avvikelsen i procent.",
+      "status": "utkast"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Kvoten: dela Y-värdet med Δ-värdet. 2) Avvikelse: skillnaden mot 3, delad med 3, gånger 100. 3) Ett par procent kan komma från avläsning och sladdar. Ett helt annat tal tyder på ett fel. Exempel med andra tal: 10,2 Ω och 3,4 Ω ger kvoten 3,0 och avvikelsen 0 %.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Kvot = 8,1/2,8 ≈ 2,89. Avvikelse = 100 · (2,89 − 3)/3 ≈ −3,6 %. Kvoten ligger nära 3, så blecken låg rätt. Skillnaden kan komma från avläsningen och sladdarnas resistans, som påverkar det lilla Δ-värdet mest.",
+    "svar": [
+      {
+        "storhet": "R_{Y}/R_{Δ}",
+        "varde": 2.89,
+        "avrundning": "2 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": ""
+      }
+    ],
+    "status": "utkast",
+    "kalla": "Kursens facit (publikt)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q5",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 18 och 19",
+        "roll": "presentationens stöd- och övningsbild"
+      },
+      {
+        "kalla": "sjoskolan/labbhandbok/vecka-41.html",
+        "roll": "labbpasset med motorn, startaren och strömtången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

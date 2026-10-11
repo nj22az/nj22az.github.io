@@ -1,0 +1,111 @@
+{
+  "id": "EL-000303",
+  "titel": "Osymmetrisk last",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-trefaslabbet",
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "I_{1} = 12 A, I_{2} = I_{3} = 8 A, alla resistiva. Beräkna neutralströmmens belopp."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "trefaslabbet/lessons.mjs CHALLENGES[2] (id in3)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Den symmetriska delen (8 A i varje fas) ger noll. Det som blir kvar är överskottet i L1.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "8 A i alla tre faser tar ut varandra. Kvar blir 12 − 8 = 4 A i L1, alltså I_{N} = 4 A.",
+    "svar": [
+      {
+        "storhet": "|I_{N}|",
+        "varde": 4,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "A",
+        "berakning": "trefas.neutralstrom"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "I1": {
+      "varde": 12,
+      "enhet": "A"
+    },
+    "I2": {
+      "varde": 8,
+      "enhet": "A"
+    },
+    "I3": {
+      "varde": 8,
+      "enhet": "A"
+    }
+  },
+  "simulator": {
+    "labb": "trefaslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "trefaslabbet.forvantat",
+      "facit": 4,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "visare",
+    "initial": {
+      "UL": 400,
+      "f": 50,
+      "I1": 12,
+      "I2": 8,
+      "I3": 8,
+      "phi": 0
+    },
+    "fraga": {
+      "storhet": "IN",
+      "etikett": "|I_{N}|",
+      "enhet": "A"
+    },
+    "dolj": [
+      "IN",
+      "sumValues"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 28,
+          "text": "Du har adderat beloppen. Summan måste göras med visare."
+        }
+      ]
+    },
+    "kallhanvisning": "v41_01 · bild 22 och övning 6–8",
+    "alias": "in3"
+  }
+}

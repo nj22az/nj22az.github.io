@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multimetersimulator · Sjöskolan</title>
+<meta name="description" content="Öva multimetermätning på svenska. Koppla mätspetsar, välj uttag och mät spänning, ström, resistans och kontinuitet med direkt återkoppling.">
+<link rel="canonical" href="https://nj22az.github.io/sjoskolan/multimetersimulator/">
+<link rel="icon" href="../../assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260927">
+<link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926"><link rel="stylesheet" href="simulator.css?v=20260927-acceptance">
+<link rel="stylesheet" href="meter.css?v=20260925-loading">
+<script src="../../sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="multimeter-page">
+<nav class="school-nav" aria-label="Sjöskolan"><a href="../../sjoskolan/index.html"><strong>SJÖSKOLAN</strong></a><a href="../../sjoskolan/index.html#veckor">Alla veckor</a><a href="../../sjoskolan/bildspel/index.html">Bildspel</a><a href="../../sjoskolan/vecka-39/aktuell/index.html">Vecka 39</a></nav>
+<main id="main-content" class="sim-app">
+  <header class="sim-heading">
+    <div><p class="lab-kicker">Vecka 39 · labb</p><h1>Multimeterlabbet</h1><p>Välj funktion. Koppla mätspetsarna. Förklara resultatet.</p></div>
+    <a class="presentation-link" href="../multimeterfilm/index.html">Se den animerade genomgången (engelska) ↗</a>
+    <a class="presentation-link" href="../bildspel/index.html?d=v39_03_Multimeter_och_matfel">Bildspelet</a>
+  </header><section class="lab-start" aria-labelledby="lab-start-h"><h2 id="lab-start-h">Så gör du</h2><p class="before"><strong>Först:</strong> gå igenom <a href="../../sjoskolan/vecka-39/aktuell/index.html">veckans bildspel, genomgång och övningar</a>. Labben är veckans sista steg och bygger på det materialet.</p><ol><li>Välj en övning i listan. Börja med 01 och följ ordningen.</li><li><strong>Förutsäg.</strong> Läs uppgiften i rutan ”Övning” och skriv ned vilket värde du väntar dig innan du kopplar.</li><li><strong>Läs av och jämför.</strong> Vrid ratten till rätt funktion, välj uttag för röd sladd och tryck på Svart eller Röd och sedan på en mätpunkt. Slå på matningen om uppgiften säger det. Jämför visningen med din förutsägelse.</li><li><strong>Förklara.</strong> Tryck ”Kontrollera mätningen” och förklara skillnaden med egna ord. Fungerar det inte, öppna ledtråden.</li></ol><button type="button" onclick="document.querySelector('#lesson-select').value='0';document.querySelector('#lesson-select').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('#task-heading').scrollIntoView({behavior:'smooth',block:'center'})">Starta övning 01</button><p class="muted">Allt du gör sparas bara i den här webbläsaren.</p></section>
+  <div class="lesson-bar"><label for="lesson-select">Övning</label><select id="lesson-select"></select><button id="free-mode" aria-pressed="false">Fri övning</button><span id="progress">0 av 8 klara</span></div>
+  <div class="sim-layout">
+    <section class="work-area" aria-label="Mätplats">
+      <div id="workbench" class="workbench">
+        <div class="circuit-area">
+          <div class="bench-heading"><div><span class="eyebrow">Mätplats</span><h2 id="circuit-title">Hyttbelysning · 12 V DC</h2></div><span id="source-status">Matning bruten</span></div>
+          <div id="circuit" class="circuit" aria-label="Kopplingsschema">
+            <svg id="diagram" viewBox="0 0 600 340" role="img" aria-labelledby="diagram-title"></svg>
+            <div id="nodes"></div>
+            <button class="probe probe-black" id="probe-black" data-probe="black" aria-label="Välj eller dra svart mätspets">Svart</button>
+            <button class="probe probe-red" id="probe-red" data-probe="red" aria-label="Välj eller dra röd mätspets">Röd</button>
+          </div>
+          <p id="divider-key" class="input-help" hidden>S = källans pluspol · M = mittpunkten · G = minuspol och referens (0 V).</p>
+          <div id="loading-observation" class="loading-observation" hidden aria-live="polite"></div>
+          <div id="circuit-controls" class="circuit-controls"></div>
+          <p id="input-help" class="input-help" hidden>Undervisningsmodell: välj mellan två mätaringångar. Detta är inte en ratt på skolans instrument. R<sub>in</sub> betyder ingångsresistans.</p>
+          <div id="wiring-guide" class="wiring-guide" hidden><h3>Kopplingshjälp · en sak i taget</h3><ol id="wiring-checklist"></ol></div>
+          <p class="connection-help" id="connection-help">Välj en mätspets och tryck på en mätpunkt. Du kan också dra spetsen.</p>
+          <div class="probe-selects"><label>Svart spets<select id="black-node" aria-label="Mätpunkt för svart spets"></select></label><label>Röd spets<select id="red-node" aria-label="Mätpunkt för röd spets"></select></label><button id="disconnect">Lossa båda</button></div>
+        </div>
+        <section class="meter" aria-label="Virtuell multimeter">
+          <div class="meter-brand">SJÖSKOLAN <span>ÖVNINGSINSTRUMENT</span></div>
+          <div class="meter-screen" role="status" aria-live="polite" aria-atomic="true"><div class="screen-top"><span id="screen-mode">OFF</span><span id="screen-range">AUTO</span></div><div class="reading"><span id="reading">—</span><span id="unit"></span></div><div id="beep-status">&nbsp;</div></div>
+          <fieldset class="function-fieldset"><legend>1. Vrid till mätfunktionen</legend>
+            <div class="rotary-selector" id="functions">
+              <button class="dial-setting" data-mode="off" data-angle="-120" aria-pressed="true">OFF</button>
+              <button class="dial-setting" data-mode="dc" data-angle="-72" aria-pressed="false">V ⎓</button>
+              <button class="dial-setting" data-mode="ac" data-angle="-24" aria-pressed="false">V ~</button>
+              <button class="dial-setting" data-mode="ohm" data-angle="24" aria-pressed="false">Ω</button>
+              <button class="dial-setting" data-mode="continuity" data-angle="72" aria-pressed="false"><svg viewBox="0 0 28 20" aria-hidden="true"><path d="M 7 8 V 12 M 12 5 Q 18 10 12 15 M 17 2 Q 26 10 17 18"/></svg><span>Summer</span></button>
+              <button class="dial-setting" data-mode="current" data-angle="120" aria-pressed="false">A ⎓</button>
+              <div id="dial-knob" class="dial-knob" role="slider" tabindex="0" aria-label="Vridomkopplare" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" aria-valuetext="OFF, avstängd" aria-describedby="dial-help">
+                <div class="dial-rotor" aria-hidden="true"><div class="dial-grip"><span class="dial-pointer"></span></div></div>
+              </div>
+            </div>
+            <p class="dial-help" id="dial-help">Vrid ratten eller tryck på en symbol.<span>Piltangenter byter läge.</span></p>
+          </fieldset>
+          <label class="range-label">Spänningsområde<select id="range"><option value="auto">AUTO</option><option value="20">20 V</option><option value="200">200 V</option></select></label>
+          <fieldset class="jack-fieldset"><legend>2. Välj uttag för röd sladd</legend><div class="jacks">
+            <button class="jack" data-jack="a" aria-pressed="false"><i></i><strong>A</strong><small>10 A max</small></button>
+            <button class="jack" data-jack="ma" aria-pressed="false"><i></i><strong>mA</strong><small>200 mA</small></button>
+            <div class="com-jack"><i id="black-anchor"></i><strong>COM</strong><small>Svart sladd</small></div>
+            <button class="jack" data-jack="v" aria-pressed="true"><i></i><strong>V Ω</strong><small>Spänning / Ω</small></button>
+          </div></fieldset>
+          <label class="sound-label"><input id="sound" type="checkbox"> Ljud vid kontinuitet</label>
+          <button id="reset-protection" hidden>Återställ mätarskydd</button>
+        </section>
+        <svg class="leads" id="leads" aria-hidden="true"></svg>
+      </div>
+      <p id="meter-detail" class="meter-detail">Välj mätfunktion.</p>
+      <div id="measurement-actions" class="measurement-actions" hidden><span id="measurement-help"></span><button id="check-reading" class="primary">Kontrollera mätningen</button><button id="next-reading" class="primary" hidden>Nästa steg →</button></div>
+      <section id="category-area" class="category-area" hidden>
+        <p class="eyebrow">Instrumentval · teorimoment</p><h2>Kategori och spänning måste båda stämma.</h2>
+        <p>Kategorin beskriver mätmiljöns elektriska påfrestningar. Volt-talet anger märkspänningen för den kategorin. Läs hela märkningen på både mätare och tillbehör.</p>
+        <div class="cat-table-wrap"><table class="cat-table"><thead><tr><th>Mätmiljö</th><th>Typiska exempel</th></tr></thead><tbody><tr><th>CAT II</th><td>Stickproppsanslutna apparater och förbrukarkretsar vid anslutningspunkten.</td></tr><tr><th>CAT III</th><td>Fast installation: centraler, fast ledningsdragning och fast anslutna motorer. Gäller även enfas.</td></tr><tr><th>CAT IV</th><td>Lågspänningsinstallationens början: servisintag och primärt överströmsskydd.</td></tr></tbody></table></div>
+        <p class="cat-note">CAT I är en äldre beteckning för kretsar utan direkt anslutning till elnätet. För sådana kretsar måste instrumentets specificerade begränsningar ändå kontrolleras. Låg spänning innebär inte automatiskt låg energi.</p>
+        <div class="cat-question"><h3 id="cat-question"></h3><div id="cat-choices"></div></div>
+        <p class="cat-note">Detta moment tränar instrumentval. Ingen nätspänningsmätning utförs i simulatorn.</p>
+      </section>
+
+    </section>
+    <aside class="lesson-panel" aria-label="Handledd övning">
+      <div class="lesson-panel-top"><span id="lesson-number" class="eyebrow">Övning 01 / 08</span><span id="slide-ref">Bild 10–16</span></div>
+      <h2 id="lesson-title">Spänning</h2><p id="lesson-goal"></p>
+      <div class="step-marker" id="step-marker"></div><h3 id="task-heading">Din uppgift</h3><p id="task"></p>
+      <div id="lesson-answer" class="lesson-answer" hidden>
+        <label id="number-label" for="number-answer">Ditt svar i volt</label><input id="number-answer" type="text" inputmode="decimal" autocomplete="off" maxlength="16" aria-describedby="number-help"><p id="number-help">Skriv t.ex. 2,5. Komma och punkt fungerar.</p>
+        <div id="lesson-choices" role="group" aria-labelledby="task"></div>
+        <div id="comment-field" hidden><label for="lesson-comment">Min förklaring till 3,33 V</label><textarea id="lesson-comment" rows="3" maxlength="600" placeholder="Mätaren påverkar kretsen eftersom …" aria-describedby="comment-help"></textarea><p id="comment-help">Skriv en egen mening. Sparas i ditt protokoll för samtal med läraren.</p></div>
+      </div>
+      <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details>
+      <div id="feedback" class="feedback" role="status" aria-live="polite"><strong id="feedback-title">Börja med mätfunktionen</strong><p id="feedback-text">Följ uppgiften till höger. Mätvärdet ändras när du kopplar eller ändrar en inställning.</p></div>
+      <button id="check" class="primary">Kontrollera mätningen</button><button id="next" class="primary" hidden>Nästa steg →</button>
+      <button id="restart" class="plain-button">Börja om övningen</button>
+      <div id="free-settings" hidden><label>Övningskrets<select id="free-circuit"><option value="lamp">Hyttbelysning</option><option value="resistor">Två resistorer</option><option value="fuse">Säkring</option><option value="divider">Spänningsdelare</option><option value="station">Station A · DC-delare</option></select></label><p>Prova olika uttag, områden och kopplingar. Du får återkoppling, men inga övningsresultat sparas.</p></div>
+      <section id="loading-comparison" class="loading-comparison" hidden aria-label="Jämför spänningarna">
+        <h3>Jämför dina resultat</h3><table><thead><tr><th>Koppling</th><th>U mellan M och G</th></tr></thead><tbody id="loading-results"></tbody></table><p>Vi jämför belopp. Ett minustecken visar att spetsarna är omvända.</p>
+        <details id="loading-working"><summary>Visa beräkningen och Kirchhoffs lag</summary><p>R2 och mätaren är parallella:</p><p class="formula">Rnedre = (R2 × R<sub>in</sub>) / (R2 + R<sub>in</sub>)<br>UM = 10 × Rnedre / (R1 + Rnedre)</p><p>Med 10 MΩ: Rnedre ≈ 909 kΩ → UM ≈ 4,76 V.<br>Med 1 MΩ: Rnedre = 500 kΩ → UM ≈ 3,33 V.</p><p>Med mätaren kvar mellan M och G: UR1 = 10 − UM. Vid 1 MΩ blir det 6,67 + 3,33 = 10,00 V.</p><p><strong>Flytta inte mätaren för att kontrollera denna summa.</strong> Flyttas den till S–M belastar den R1 i stället. En ensam 1 MΩ-mätare visar då 3,33 V där också, eftersom kretsen har ändrats.</p></details>
+        <details><summary>Varför märktes det inte på hyttlampan?</summary><p>Hyttlampan är 120 Ω. En mätaringång på miljontals ohm tar mycket liten extra ström. Här är R2 hela 1 MΩ: mätarens extra gren får stor betydelse. I simulatorns lampkrets håller den ideala källan spänningen vid 12 V.</p></details>
+      </section>
+      <div class="principle"><h3 id="principle-title">V mäts parallellt</h3><p id="principle-text">Mätaren jämför två punkter. Kretsen behöver inte öppnas.</p></div>
+    </aside>
+  </div>
+  <section class="session-strip"><div><h2>Ditt mätprotokoll</h2><p id="record-count">Inga kontrollerade mätningar ännu. Framsteg sparas på denna enhet.</p></div><div><button id="download-log">Ladda ner CSV</button><button id="clear-progress" class="plain-button">Nollställ framsteg</button></div></section>
+  <details id="protocol-view" class="protocol-view"><summary>Visa sparade svar och mätningar</summary><div class="protocol-scroll"><table><thead><tr><th>Övning / steg</th><th>Moment</th><th>Resultat</th><th>Egen förklaring</th></tr></thead><tbody id="protocol-rows"></tbody></table></div></details>
+  <section id="labbprotokoll"></section>
+  <details class="teacher-notes"><summary>Simulatorn och verkligheten · säkerhet</summary><ul><li>I verkligheten kan en felkoppling i strömuttaget skada både instrument och person. Bryt och kontrollera spänningslöshet innan du kopplar om.</li><li>Hela mätutrustningen ska ha rätt CAT-klass och spänning, även sladdar och prober.</li><li>Följ det verkliga instrumentets manual och lärarens instruktioner.</li><li>Simulatorn räknar med ideala delar. Temperatur, toleranser och glapp ingår inte.</li></ul></details>
+  <noscript><p>Aktivera JavaScript för att använda simulatorn.</p></noscript>
+</main>
+<footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+<script type="module" src="app.mjs?v=20261011"></script>
+</body></html>

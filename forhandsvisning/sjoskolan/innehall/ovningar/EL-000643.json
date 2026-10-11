@@ -1,0 +1,40 @@
+{
+  "id": "EL-000643",
+  "titel": "Vad är fel före anslutning",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-03",
+      "T-labb-multimetersimulator"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Eleven vill mäta 12 V. Spetsarna är ännu inte anslutna. Vad måste ändras? Vilken risk finns?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx bild 22 och facit bild 23",
+        "revision": "8cabde3",
+        "roll": "övning i presentationen Multimeter och mätfel"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "Röd ledning ska sitta i VΩ. Kontrollera också V DC och mätområdet. Strömingången har en låg resistans. En strömingång över källan kan orsaka kortslutning.",
+    "status": "migrerad",
+    "kalla": "Facitbild 23"
+  }
+}

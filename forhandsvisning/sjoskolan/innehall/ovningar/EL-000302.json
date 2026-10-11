@@ -1,0 +1,115 @@
+{
+  "id": "EL-000302",
+  "titel": "Två lika faslaster",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-trefaslabbet",
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "I_{1} = I_{2} = 12 A med 120° emellan. I_{3} = 0. Beräkna neutralströmmens belopp."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "trefaslabbet/lessons.mjs CHALLENGES[1] (id in2)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "I_{N} = √(I_{1}² + I_{2}² + 2I_{1}I_{2} cos 120°) och cos 120° = −0,5.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I_{N} = √(12² + 12² + 2·12·12·(−0,5)) = √144 = 12 A. Två lika strömmar 120° isär ger en summa lika stor som var och en.",
+    "svar": [
+      {
+        "storhet": "|I_{N}|",
+        "varde": 12,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "A",
+        "berakning": "trefas.neutralstrom"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "I1": {
+      "varde": 12,
+      "enhet": "A"
+    },
+    "I2": {
+      "varde": 12,
+      "enhet": "A"
+    },
+    "I3": {
+      "varde": 0,
+      "enhet": "A"
+    }
+  },
+  "simulator": {
+    "labb": "trefaslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "trefaslabbet.forvantat",
+      "facit": 12,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "visare",
+    "initial": {
+      "UL": 400,
+      "f": 50,
+      "I1": 12,
+      "I2": 12,
+      "I3": 0,
+      "phi": 0
+    },
+    "fraga": {
+      "storhet": "IN",
+      "etikett": "|I_{N}|",
+      "enhet": "A"
+    },
+    "dolj": [
+      "IN",
+      "sumValues"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 24,
+          "text": "Du har adderat beloppen. Strömmarna är visare med 120° mellan sig."
+        },
+        {
+          "varde": 0,
+          "text": "Neutralströmmen blir noll bara när alla tre faser är lika belastade."
+        }
+      ]
+    },
+    "kallhanvisning": "v41_01 · bild 24 och övning 8",
+    "alias": "in2"
+  }
+}

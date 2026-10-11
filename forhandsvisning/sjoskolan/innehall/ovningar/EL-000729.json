@@ -1,0 +1,32 @@
+{
+  "id": "EL-000729",
+  "titel": "Startfråga: v45_01",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v45-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vad är skillnaden mellan att mäta många saker och att välja en mätning som besvarar en fråga?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-45/aktuell/v45_01_Systematisk_felsokning_elev.pptx bild 2",
+        "revision": "8cabde3",
+        "roll": "startfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

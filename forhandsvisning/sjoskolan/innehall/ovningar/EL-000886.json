@@ -1,0 +1,70 @@
+{
+  "id": "EL-000886",
+  "titel": "Tången runt motorkabeln",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6",
+      "LM-8"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En motorman lägger tången runt hela kabeln till en trefasmotor ombord medan den går, och läser 0,2 A. Förklara varför värdet är så litet, och hur fasströmmen ska mätas.",
+    "samband": [
+      "I_{1} + I_{2} + I_{3} = 0 vid symmetri utan neutralledare"
+    ],
+    "givet": "Ombord, 440 V, 60 Hz. Trefasmotor utan neutralledare. Tången är avsedd för mätningen och mätkategorin.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Tången visar summan av strömmarna genom käften. En hel kabel har alla tre fasledarna i käften.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Använd summan av fasströmmarna från Del 1 och det du såg med hårnålen på tångstationen.",
+      "status": "utkast"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad blir summan av tre fasströmmar till en motor utan neutralledare? 2) Varför är den inte exakt noll? 3) Var i kabeln kan en ledare mätas för sig? Samma sätt att resonera som med hårnålen: strömmar genom käften tar ut varandra.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Alla tre fasledarna går genom käften. Motorn har ingen neutralledare, så summan av fasströmmarna är nära noll. 0,2 A kan vara liten osymmetri eller läckström mot skyddsledaren. Fasströmmen mäts med tången runt en fasledare i taget, där ledarna går separat, och med instrumentet inom sin mätkategori.",
+    "status": "utkast",
+    "kalla": "Kursens facit (publikt)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q10",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 33 och 34",
+        "roll": "presentationens stöd- och övningsbild"
+      },
+      {
+        "kalla": "sjoskolan/labbhandbok/vecka-41.html",
+        "roll": "labbpasset med motorn, startaren och strömtången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

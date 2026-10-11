@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trefaslabbet · Sjöskolan</title>
+<meta name="description" content="Utforska trefas: fas- och linjespänning, neutralström, bruten neutralledare, Y- och Δ-koppling och motorns märkning.">
+<link rel="canonical" href="https://nj22az.github.io/sjoskolan/trefaslabbet/">
+<link rel="icon" href="../../assets/images/apple-touch-icon.png"><link rel="stylesheet" href="../gemensamt/skolnav.css?v=20260927">
+<link rel="stylesheet" href="../vaxelstromslabbet/lab.css?v=20260925"><link rel="stylesheet" href="../gemensamt/labbprotokoll.css?v=20260926"><link rel="stylesheet" href="../gemensamt/labbpekskarm.css?v=20260928">
+<script src="../../sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="ac-page">
+<nav class="school-nav" aria-label="Sjöskolan"><a href="../../sjoskolan/index.html"><strong>SJÖSKOLAN</strong></a><a href="../../sjoskolan/index.html#veckor">Alla veckor</a><a href="../../sjoskolan/bildspel/index.html">Bildspel</a><a href="../../sjoskolan/vecka-41/aktuell/index.html">Vecka 41</a></nav>
+<main id="main-content" class="ac-app">
+  <header class="ac-heading">
+    <div>
+      <p class="lab-kicker">Vecka 41 · labb</p>
+      <h1>Trefaslabbet</h1>
+      <p>Tre faser, en neutralledare och två sätt att koppla. Räkna först, kontrollera sedan.</p>
+    </div>
+    <ul class="deck-links" aria-label="Presentationer vecka 41"><li><a href="../bildspel/index.html?d=v41_01_Trefassystemets_grunder">v41_01 Grunder</a></li><li><a href="../bildspel/index.html?d=v41_02_Y_och_trefaseffekt">v41_02 Y, Δ och effekt</a></li><li><a href="../vaxelstromslabbet/index.html">Växelströmslabbet</a></li></ul>
+  </header><section class="lab-start" aria-labelledby="lab-start-h"><h2 id="lab-start-h">Så gör du</h2><p class="before"><strong>Först:</strong> gå igenom <a href="../../sjoskolan/vecka-41/aktuell/index.html">veckans bildspel, genomgång och övningar</a>. Labben är veckans sista steg och bygger på det materialet.</p><ol><li>Välj flik: 1 visare, 2 bruten neutralledare eller 3 Y och Δ.</li><li><strong>Förutsäg.</strong> Välj en uppgift under ”Räkna först”. Reglagen låses och svaret döljs. Räkna på papper och skriv ditt svar.</li><li><strong>Läs av och jämför.</strong> Tryck ”Kontrollera”. Värdena visas och du kan jämföra med din beräkning.</li><li><strong>Förklara.</strong> Ändra reglagen fritt och förklara vad som händer. För in mätningarna i labbprotokollet längst ned.</li></ol><button type="button" onclick="const s=document.getElementById('challenge-select');s.value=s.options[1].value;s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.challenge-card').scrollIntoView({behavior:'smooth',block:'start'})">Starta första uppgiften</button><p class="muted">Allt du gör sparas bara i den här webbläsaren.</p></section>
+
+  <div class="tabs" role="tablist" aria-label="Del av labbet">
+    <button role="tab" id="tab-visare" data-tab="visare" aria-controls="lab" aria-selected="true"><span>1</span>Visare och neutralström</button>
+    <button role="tab" id="tab-neutral" data-tab="neutral" aria-controls="lab" aria-selected="false" tabindex="-1"><span>2</span>Bruten neutralledare</button>
+    <button role="tab" id="tab-ydelta" data-tab="ydelta" aria-controls="lab" aria-selected="false" tabindex="-1"><span>3</span>Y, Δ och motorns märkning</button>
+  </div>
+
+  <div id="lab" class="lab" role="tabpanel" aria-labelledby="tab-visare">
+    <section class="challenge-card" aria-labelledby="challenge-title">
+      <div class="card-head"><h2 id="challenge-title">Räkna först</h2><span id="progress" class="progress"></span></div>
+      <label class="challenge-select">Uppgift<select id="challenge-select"></select></label>
+      <div id="challenge-body" hidden>
+        <p class="deck-ref" id="challenge-deck"></p>
+        <p id="challenge-task" class="task"></p>
+        <form id="answer-form" class="answer-form" autocomplete="off">
+          <label for="answer" id="answer-label">Svar</label>
+          <div class="answer-row"><input id="answer" inputmode="decimal" aria-describedby="answer-unit"><span id="answer-unit"></span><button class="primary" type="submit">Kontrollera</button></div>
+        </form>
+        <details id="hint"><summary>Visa ledtråd</summary><p id="hint-text"></p></details>
+        <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+        <div class="challenge-actions"><button id="show-answer" class="plain" hidden>Visa facit</button><button id="leave" class="plain">Utforska fritt</button></div>
+      </div>
+      <p id="challenge-intro" class="muted">Välj en uppgift. Värdena ställs in och svaret döljs tills du har räknat.</p>
+    </section>
+    <section class="stage" aria-label="Diagram">
+      <div id="figures" class="figures"></div>
+      <dl id="readouts" class="readouts" aria-live="polite"></dl>
+      <p id="principle" class="principle"></p>
+    </section>
+    <section class="controls-card" aria-labelledby="controls-title">
+      <div class="card-head"><h2 id="controls-title">Reglage</h2><button id="reset" class="plain">Återställ</button></div>
+      <p id="lock-note" class="lock-note" hidden>Värdena är låsta medan du löser uppgiften.</p>
+      <form id="controls" class="controls" autocomplete="off"></form>
+    </section>
+  </div>
+
+  <section id="labbprotokoll"></section>
+  <details class="teacher-notes"><summary>Simulatorn och verkligheten · säkerhet</summary><ul><li>Mät trefas bara på en avsedd tränare och enligt instruktörens plan.</li><li>En bruten neutralledare kan ge nästan full huvudspänning över enfaslaster.</li><li>Ombord är nätet ofta ett IT-nät utan neutralledare. Vid ett jordfel kan en fas ligga på full huvudspänning mot skrovet. På 440 V- och 690 V-nät krävs instrument och sladdar av lägst CAT III 1 000 V.</li><li>Simulatorn visar ideala värden. Övertoner, osymmetrisk källa och inkopplingsförlopp ingår inte.</li></ul></details>
+  <noscript><p>Aktivera JavaScript för att använda labbet.</p></noscript>
+</main>
+<footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+<script type="module" src="app.mjs?v=20261011"></script>
+</body></html>

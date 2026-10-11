@@ -1,0 +1,107 @@
+{
+  "id": "EL-000312",
+  "titel": "Fas från tidsavstånd",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Två 50 Hz-signaler är förskjutna 2,5 ms. Beräkna fasvinkelns belopp i grader."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[3] (id fas)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "φ = 360° · Δt / T och T = 20 ms vid 50 Hz.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "|φ|",
+        "varde": 45,
+        "tolerans": {
+          "abs": 0.6
+        },
+        "enhet": "°",
+        "berakning": "ac.fas_grader"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "dt": {
+      "varde": 0.0025,
+      "enhet": "s"
+    },
+    "f": {
+      "varde": 50,
+      "enhet": "Hz"
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 45,
+      "tolerans": {
+        "abs": 0.6
+      }
+    },
+    "scenario": "sinus",
+    "initial": {
+      "shape": "sinus",
+      "urms": 12,
+      "f": 50,
+      "t": 5,
+      "showB": true,
+      "dt": 2.5,
+      "window": "auto"
+    },
+    "fraga": {
+      "storhet": "phi",
+      "etikett": "|φ|",
+      "enhet": "°",
+      "belopp": true
+    },
+    "dolj": [
+      "phi"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 0.785398,
+          "text": "Svaret är i radianer. Frågan gäller grader: φ = 360° · Δt/T."
+        }
+      ]
+    },
+    "kallhanvisning": "Fördjupning: tid och fas",
+    "teoriavsnitt": "fas",
+    "alias": "fas"
+  }
+}

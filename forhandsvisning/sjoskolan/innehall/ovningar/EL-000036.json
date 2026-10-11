@@ -1,0 +1,80 @@
+{
+  "id": "EL-000036",
+  "titel": "Kabelns resistans",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bok-04",
+      "T-kurs-v39-01",
+      "T-bildspel-v39-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Två kopparledare, vardera 10 m, har arean 2,5 mm². Använd ρ = 0,0175 Ω·mm²/m. Beräkna slingresistansen.",
+    "samband": [
+      "R = ρ · ltotal/A; ltotal = 2 · lenkel"
+    ],
+    "givet": "Koppar vid 20 °C: ρ = 0,0175 Ω·mm²/m. Två ledare à 10 m. Kontaktresistans försummas.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "ρ är resistivitet i Ω·mm²/m, l längd i m och A ledararea i mm².",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Lägg ihop fram- och återledarens längd. Sätt in den totala längden och arean 2,5 mm².",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "R = 0,0175 · 20 m / 2,5 mm² = 0,14 Ω.",
+    "svar": [
+      {
+        "storhet": "R",
+        "varde": 0.14,
+        "avrundning": "3 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch009.xhtml#ch4-q6 och ch037.xhtml#sol4-s6",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_01-q6",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-39/aktuell/v39_01_Effekt_och_energi_elev.pptx bild 25 och 26",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

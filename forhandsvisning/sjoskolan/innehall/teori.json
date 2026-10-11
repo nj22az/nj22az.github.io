@@ -1,0 +1,436 @@
+{
+  "mal": {
+    "LM-1": {
+      "text": "Beskriva vanliga komponenter, skyddsutrustning och mätinstrument",
+      "prov": "skriftligt",
+      "kalla": "Kursens lärandemål, som i bokens inledning"
+    },
+    "LM-2": {
+      "text": "Redogöra för elsäkerhet, risker och säkra arbetsrutiner i låg- och högspänningssystem",
+      "prov": "skriftligt",
+      "kalla": "Kursens lärandemål, som i bokens inledning"
+    },
+    "LM-3": {
+      "text": "Tillämpa föreskrifter och standarder för mätteknik, skyddsutrustning och riskbedömning, med Transportstyrelsens föreskrifter i fokus",
+      "prov": "skriftligt",
+      "kalla": "Kursens lärandemål, som i bokens inledning"
+    },
+    "LM-4": {
+      "text": "Utföra mätningar i likströms-, växelströms- och trefassystem",
+      "prov": "skriftligt",
+      "kalla": "Kursens lärandemål, som i bokens inledning"
+    },
+    "LM-5": {
+      "text": "Genomföra felsökning med mätning och teknisk dokumentation",
+      "prov": "skriftligt",
+      "kalla": "Kursens lärandemål, som i bokens inledning"
+    },
+    "LM-6": {
+      "text": "Tillämpa elsäkerhetsrutiner vid mätning, kontroll och felsökning",
+      "prov": "praktiskt",
+      "kalla": "Kursens lärandemål, som i bokens inledning"
+    },
+    "LM-7": {
+      "text": "Ansvara för felsökning, riskbedömning och kvalitetssäkring enligt standarder och kontrollprotokoll",
+      "prov": "praktiskt",
+      "kalla": "Kursens lärandemål, som i bokens inledning"
+    },
+    "LM-8": {
+      "text": "Analysera mätresultat och felsökningsunderlag",
+      "prov": "praktiskt",
+      "kalla": "Kursens lärandemål, som i bokens inledning"
+    },
+    "LM-9": {
+      "text": "Ta ansvar för att arbetsmoment genomförs elsäkert, strukturerat och dokumenterat",
+      "prov": "praktiskt",
+      "kalla": "Kursens lärandemål, som i bokens inledning"
+    }
+  },
+  "teori": {
+    "T-bok-01": {
+      "titel": "Kapitel 1: Likström och Ohms lag",
+      "kalla": "bok",
+      "kapitel": 1
+    },
+    "T-bok-02": {
+      "titel": "Kapitel 2: Serie och parallell",
+      "kalla": "bok",
+      "kapitel": 2
+    },
+    "T-bok-03": {
+      "titel": "Kapitel 3: Blandade kretsar och repetition",
+      "kalla": "bok",
+      "kapitel": 3
+    },
+    "T-bok-04": {
+      "titel": "Kapitel 4: Effekt och energi",
+      "kalla": "bok",
+      "kapitel": 4
+    },
+    "T-bok-05": {
+      "titel": "Kapitel 5: Kirchhoffs lagar",
+      "kalla": "bok",
+      "kapitel": 5
+    },
+    "T-bok-06": {
+      "titel": "Kapitel 6: Multimeter och mätfel",
+      "kalla": "bok",
+      "kapitel": 6
+    },
+    "T-bok-07": {
+      "titel": "Kapitel 7: Sinusformad växelspänning",
+      "kalla": "bok",
+      "kapitel": 7
+    },
+    "T-bok-08": {
+      "titel": "Kapitel 8: Reaktans och impedans",
+      "kalla": "bok",
+      "kapitel": 8
+    },
+    "T-bok-09": {
+      "titel": "Kapitel 9: Effekt i växelströmskretsar",
+      "kalla": "bok",
+      "kapitel": 9
+    },
+    "T-bok-10": {
+      "titel": "Kapitel 10: Trefassystemets grunder",
+      "kalla": "bok",
+      "kapitel": 10
+    },
+    "T-bok-11": {
+      "titel": "Kapitel 11: Y, Δ och trefaseffekt",
+      "kalla": "bok",
+      "kapitel": 11
+    },
+    "T-bok-12": {
+      "titel": "Kapitel 12: Planerad mätning och praktisk tillämpning",
+      "kalla": "bok",
+      "kapitel": 12
+    },
+    "T-bok-13": {
+      "titel": "Kapitel 13: Elektriska risker",
+      "kalla": "bok",
+      "kapitel": 13
+    },
+    "T-bok-14": {
+      "titel": "Kapitel 14: Regler, ansvar och arbetsmetoder",
+      "kalla": "bok",
+      "kapitel": 14
+    },
+    "T-bok-15": {
+      "titel": "Kapitel 15: Riskbedömning och skydd",
+      "kalla": "bok",
+      "kapitel": 15
+    },
+    "T-bok-16": {
+      "titel": "Kapitel 16: Komponenter och skydd",
+      "kalla": "bok",
+      "kapitel": 16
+    },
+    "T-bok-17": {
+      "titel": "Kapitel 17: Transformatorer och motorer",
+      "kalla": "bok",
+      "kapitel": 17
+    },
+    "T-bok-18": {
+      "titel": "Kapitel 18: Elscheman och dokumentation",
+      "kalla": "bok",
+      "kapitel": 18
+    },
+    "T-bok-19": {
+      "titel": "Kapitel 19: Lågspänningssystem",
+      "kalla": "bok",
+      "kapitel": 19
+    },
+    "T-bok-20": {
+      "titel": "Kapitel 20: Högspänningssystem",
+      "kalla": "bok",
+      "kapitel": 20
+    },
+    "T-bok-21": {
+      "titel": "Kapitel 21: Fördjupad mätteknik",
+      "kalla": "bok",
+      "kapitel": 21
+    },
+    "T-bok-22": {
+      "titel": "Kapitel 22: Systematisk felsökning",
+      "kalla": "bok",
+      "kapitel": 22
+    },
+    "T-bok-23": {
+      "titel": "Kapitel 23: Analys av mätresultat",
+      "kalla": "bok",
+      "kapitel": 23
+    },
+    "T-bok-24": {
+      "titel": "Kapitel 24: Sammanhängande tillämpningar och repetition",
+      "kalla": "bok",
+      "kapitel": 24
+    },
+    "T-kurs-v39-01": {
+      "titel": "Effekt och energi",
+      "kalla": "kurs",
+      "url": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_01"
+    },
+    "T-kurs-v39-02": {
+      "titel": "Kirchhoffs lagar",
+      "kalla": "kurs",
+      "url": "vecka-39/aktuell/Formelstod_och_ovningar.html#v39_02"
+    },
+    "T-kurs-v40-01": {
+      "titel": "Sinusformad växelspänning",
+      "kalla": "kurs",
+      "url": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_01"
+    },
+    "T-kurs-v40-02": {
+      "titel": "Reaktans och impedans",
+      "kalla": "kurs",
+      "url": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_02"
+    },
+    "T-kurs-v40-03": {
+      "titel": "Effekt i växelströmskretsar",
+      "kalla": "kurs",
+      "url": "vecka-40/aktuell/Formelstod_och_ovningar.html#v40_03"
+    },
+    "T-kurs-v41-01": {
+      "titel": "Trefassystemets grunder",
+      "kalla": "kurs",
+      "url": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_01"
+    },
+    "T-kurs-v41-02": {
+      "titel": "Y, Δ och trefaseffekt",
+      "kalla": "kurs",
+      "url": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_02"
+    },
+    "T-kurs-v41-03": {
+      "titel": "Fysisk träff och mätning",
+      "kalla": "kurs",
+      "url": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03"
+    },
+    "T-kurs-v42-01": {
+      "titel": "Elektriska risker",
+      "kalla": "kurs",
+      "url": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_01"
+    },
+    "T-kurs-v42-02": {
+      "titel": "Regler, ansvar och arbetsmetoder",
+      "kalla": "kurs",
+      "url": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_02"
+    },
+    "T-kurs-v42-03": {
+      "titel": "Riskbedömning och skydd",
+      "kalla": "kurs",
+      "url": "vecka-42/aktuell/Formelstod_och_ovningar.html#v42_03"
+    },
+    "T-kurs-v43-01": {
+      "titel": "Komponenter och skydd",
+      "kalla": "kurs",
+      "url": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_01"
+    },
+    "T-kurs-v43-02": {
+      "titel": "Transformatorer och motorer",
+      "kalla": "kurs",
+      "url": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_02"
+    },
+    "T-kurs-v43-03": {
+      "titel": "Elscheman och dokumentation",
+      "kalla": "kurs",
+      "url": "vecka-43/aktuell/Formelstod_och_ovningar.html#v43_03"
+    },
+    "T-kurs-v44-01": {
+      "titel": "Lågspänningssystem",
+      "kalla": "kurs",
+      "url": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_01"
+    },
+    "T-kurs-v44-02": {
+      "titel": "Högspänningssystem",
+      "kalla": "kurs",
+      "url": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_02"
+    },
+    "T-kurs-v44-03": {
+      "titel": "Fördjupad mätteknik",
+      "kalla": "kurs",
+      "url": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_03"
+    },
+    "T-kurs-v45-01": {
+      "titel": "Systematisk felsökning",
+      "kalla": "kurs",
+      "url": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_01"
+    },
+    "T-kurs-v45-02": {
+      "titel": "Analys av mätresultat",
+      "kalla": "kurs",
+      "url": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_02"
+    },
+    "T-kurs-v45-03": {
+      "titel": "Repetition inför tentamen",
+      "kalla": "kurs",
+      "url": "vecka-45/aktuell/Formelstod_och_ovningar.html#v45_03"
+    },
+    "T-bildspel-v37-01": {
+      "titel": "Förberedelsefrågor 1A",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v37_01_Forberedelsefragor_1A"
+    },
+    "T-bildspel-v37-02": {
+      "titel": "Elens grunder ombord",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v37_02_Elens_grunder_ombord"
+    },
+    "T-bildspel-v37-03": {
+      "titel": "Förberedelsefrågor 1B",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v37_03_Forberedelsefragor_1B"
+    },
+    "T-bildspel-v37-04": {
+      "titel": "Elsäkerhet och riskbedömning",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v37_04_Elsakerhet_och_riskbedomning"
+    },
+    "T-bildspel-v38-01": {
+      "titel": "Frånskiljning och mätteknik",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v38_01_Franskiljning_och_matteknik"
+    },
+    "T-bildspel-v39-01": {
+      "titel": "Effekt och energi",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v39_01_Effekt_och_energi"
+    },
+    "T-bildspel-v39-02": {
+      "titel": "Kirchhoffs lagar",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v39_02_Kirchhoffs_lagar_med_nodforklaring_v2"
+    },
+    "T-bildspel-v39-03": {
+      "titel": "Multimeter och mätfel",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v39_03_Multimeter_och_matfel"
+    },
+    "T-bildspel-v39-04": {
+      "titel": "Kirchhoff – kompletterande seminarium",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v39_04_Kirchhoff_seminarium"
+    },
+    "T-bildspel-v40-01": {
+      "titel": "Sinus och mätvärden",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v40_01_Sinusformad_vaxelspanning"
+    },
+    "T-bildspel-v40-02": {
+      "titel": "Spole, motstånd och ström",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v40_02_Reaktans_och_impedans"
+    },
+    "T-bildspel-v40-03": {
+      "titel": "Effekt och effektfaktor",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v40_03_Effekt_i_vaxelstromskretsar"
+    },
+    "T-bildspel-v41-01": {
+      "titel": "Trefassystemets grunder",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v41_01_Trefassystemets_grunder"
+    },
+    "T-bildspel-v41-02": {
+      "titel": "Y, Δ och trefaseffekt",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v41_02_Y_och_trefaseffekt"
+    },
+    "T-bildspel-v41-03": {
+      "titel": "Fysisk träff och mätning",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v41_03_Fysisk_traff_och_matning"
+    },
+    "T-bildspel-v42-01": {
+      "titel": "Elektriska risker",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v42_01_Elektriska_risker"
+    },
+    "T-bildspel-v42-02": {
+      "titel": "Regler, ansvar och arbetsmetoder",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v42_02_Regler_ansvar_och_arbetsmetoder"
+    },
+    "T-bildspel-v42-03": {
+      "titel": "Riskbedömning och skydd",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v42_03_Riskbedomning_och_skydd"
+    },
+    "T-bildspel-v43-01": {
+      "titel": "Komponenter och skydd",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v43_01_Komponenter_och_skydd"
+    },
+    "T-bildspel-v43-02": {
+      "titel": "Transformatorer och motorer",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v43_02_Transformatorer_och_motorer"
+    },
+    "T-bildspel-v43-03": {
+      "titel": "Elscheman och dokumentation",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v43_03_Elscheman_och_dokumentation"
+    },
+    "T-bildspel-v44-01": {
+      "titel": "Lågspänningssystem",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v44_01_Lagspanningssystem"
+    },
+    "T-bildspel-v44-02": {
+      "titel": "Högspänningssystem",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v44_02_Hogspanningssystem"
+    },
+    "T-bildspel-v44-03": {
+      "titel": "Fördjupad mätteknik",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v44_03_Fordjupad_matteknik"
+    },
+    "T-bildspel-v45-01": {
+      "titel": "Systematisk felsökning",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v45_01_Systematisk_felsokning"
+    },
+    "T-bildspel-v45-02": {
+      "titel": "Analys av mätresultat",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v45_02_Analys_av_matresultat"
+    },
+    "T-bildspel-v45-03": {
+      "titel": "Repetition inför tentamen",
+      "kalla": "bildspel",
+      "url": "bildspel/?d=v45_03_Repetition_infor_tentamen"
+    },
+    "T-labb-multimetersimulator": {
+      "titel": "Multimeterlabbet",
+      "kalla": "labb",
+      "url": "multimetersimulator/"
+    },
+    "T-labb-vaxelstromslabbet": {
+      "titel": "Växelströmslabbet",
+      "kalla": "labb",
+      "url": "vaxelstromslabbet/"
+    },
+    "T-labb-trefaslabbet": {
+      "titel": "Trefaslabbet",
+      "kalla": "labb",
+      "url": "trefaslabbet/"
+    },
+    "T-labb-hallkretslabbet": {
+      "titel": "Hållkretslabbet",
+      "kalla": "labb",
+      "url": "hallkretslabbet/"
+    },
+    "T-labb-isolationslabbet": {
+      "titel": "Isolationslabbet",
+      "kalla": "labb",
+      "url": "isolationslabbet/"
+    },
+    "T-formelblad": {
+      "titel": "Formelblad och begrepp",
+      "kalla": "formelblad",
+      "url": "gemensamt/Formelblad_och_begrepp.html"
+    }
+  }
+}

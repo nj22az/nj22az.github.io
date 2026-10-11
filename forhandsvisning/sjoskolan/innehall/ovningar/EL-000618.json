@@ -1,0 +1,33 @@
+{
+  "id": "EL-000618",
+  "titel": "Förberedelsefråga 1A: 1",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v37-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilka delar behövs för att en batteridriven lampa ska lysa?",
+    "instruktion": "Fundera i 10–15 minuter och skriv några stödord. Du behöver inte kunna svaret ännu."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/v37_01_Forberedelsefragor_1A_elev.pptx bild 1, stycke 1",
+        "revision": "8cabde3",
+        "roll": "förberedelsefråga före genomgången"
+      }
+    ],
+    "publik": "elev"
+  }
+}

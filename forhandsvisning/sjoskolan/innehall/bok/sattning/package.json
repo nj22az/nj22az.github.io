@@ -1,0 +1,12 @@
+{
+  "name": "sjoskolan-bok-sattning",
+  "private": true,
+  "type": "module",
+  "description": "Sätter bokens PDF (7×10 tum) ur EPUB-arbetskopian i bok/.bok/epub med paged.js i Chromium.",
+  "scripts": { "satt": "node satt.mjs" },
+  "dependencies": {
+    "pagedjs": "0.4.3",
+    "@fontsource/source-serif-4": "5.1.1",
+    "@fontsource/source-sans-3": "5.1.1"
+  }
+}
