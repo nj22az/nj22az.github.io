@@ -70,8 +70,45 @@ const MOOD=Object.freeze({
  hope:{eyes:'open',brow:-.9,browLift:9,mouth:'small',blush:.2},
  focus:{eyes:'angry',brow:.5,browLift:-1,mouth:'flat',blush:0},
  relieved:{eyes:'content',brow:-.6,browLift:5,mouth:'soft',blush:.25},
+ // The funny faces (the creator, 2026-10-11: "add more poses and funny expressions"), each one a gag a panel can be built
+ // on, drawn in the town's own hand: symbol eyes, ink-line mouths and the cartoon marks (tears, sweat, the anger vein,
+ // gloom lines) laid on the face (FX). EXPRESSION_INFO says what each is for.
+ gobsmacked:{eyes:'shock',brow:0,browLift:26,mouth:'jawdrop',blush:0,mouthDY:-6},
+ smug:{eyes:'smug',brow:.35,browLift:1,oneBrow:7,mouth:'smirk',blush:.2,look:[.75,.1]},
+ bawling:{eyes:'bawl',brow:-1.4,browLift:9,mouth:'wail',blush:.3,fx:['waterfall']},
+ starstruck:{eyes:'star',brow:0,browLift:14,mouth:'grin',blush:.6},
+ sweatdrop:{eyes:'smiling',brow:-.8,browLift:6,mouth:'wobble',blush:0,fx:['sweat']},
+ blank:{eyes:'blank',brow:0,browLift:8,mouth:'flat',blush:0,fx:['gloom']},
+ pouting:{eyes:'open',brow:1.1,browLift:-1,mouth:'pucker',blush:.55,fx:['puff'],look:[-.5,0]},
+ bleh:{eyes:'happy',brow:-.3,browLift:5,mouth:'bleh',blush:.3},
+ drowsy:{eyes:'droop',brow:-.6,browLift:-2,mouth:'yawn',blush:0,look:[0,.6]},
+ lovestruck:{eyes:'heart',brow:-.5,browLift:8,mouth:'smile',blush:.9},
+ fuming:{eyes:'angry',brow:1.6,browLift:-6,mouth:'gritted',blush:0,fx:['flush','vein']},
+ drooling:{eyes:'dreamy',brow:-.4,browLift:7,mouth:'drool',blush:.35,fx:['drool'],look:[.3,-.9]},
+ wink:{eyes:'wink',brow:0,browLift:4,mouth:'grin',blush:.25},
 });
 export const EXPRESSION_NAMES=Object.freeze(Object.keys(MOOD));
+/** What each funny face is for, in a line: for the Studio's lists, the photo studio and whoever writes a panel. */
+export const EXPRESSION_INFO=Object.freeze({
+ gobsmacked:'Jaw on the floor: news too big to take in.',
+ smug:'Told you so: half-lidded, one brow up, a sideways look and a smirk.',
+ bawling:'Waterfall tears: heartbreak played for laughs.',
+ starstruck:'Stars for eyes: meeting a hero, seeing the prize.',
+ sweatdrop:'The big drop of sweat when a plan quietly goes wrong.',
+ blank:'White-eyed and speechless, gloom lines falling: the soul has left.',
+ pouting:'Puffed cheeks and a pucker: a sulk that wants to be noticed.',
+ bleh:'Tongue out, eyes squeezed: teasing, a raspberry.',
+ drowsy:'Lids at half mast and a yawn: the long afternoon, the slow lecture.',
+ lovestruck:'Heart eyes and a deep blush: smitten, or the perfect bowl of ramen.',
+ fuming:'Gritted teeth, a red face and the anger mark: the last straw.',
+ drooling:'Dreamy eyes and a drip at the corner of the mouth: the smell from the kitchen.',
+ wink:'One eye shut and a grin: a secret shared with the reader.',
+});
+/** A small face for each expression (the photo studio's chips), so every list shows the same faces. */
+export const EXPRESSION_GLYPHS=Object.freeze({neutral:'•ᴗ•',happy:'◠ᴗ◠',laugh:'≧▽≦',smile:'•◡•',sad:'•︵•',angry:'>︿<',shy:'˶ᴗ˶',surprised:'⊙o⊙',worried:'•﹏•',
+ thinking:'•_•',grumpy:'¬_¬',content:'˘ᴗ˘',sleep:'－ᴗ－',excited:'☆ᴗ☆',dizzy:'@_@',scheme:'¬ᴗ¬',embarrassed:'>﹏<;',pain:'>_<',bliss:'˘▽˘',shock:'°□°',
+ dismay:'•_•;',calm:'•‿•',daze:'◔_◔',dry:'－_－',hope:'•̀ᴗ•́',focus:'•̀_•́',relieved:'˘◡˘',gobsmacked:'⊙Д⊙',smug:'¬‿¬',bawling:'ToT',starstruck:'★ᴗ★',
+ sweatdrop:'^^;',blank:'○_○',pouting:'(•3•)',bleh:'^ڡ^',drowsy:'＝o＝',lovestruck:'♥ᴗ♥',fuming:'>д<',drooling:'¯﹃¯',wink:'•ᴗ<'});
 
 /**
  * @param {CanvasRenderingContext2D} ctx
@@ -100,20 +137,26 @@ export function drawFace(ctx,recipe,state={}){
  const blush=Math.min(1,recipe.blush*.8+mood.blush);
  if(blush>.02){for(const s of [-1,1]){const x=128+s*(L.spread+8),y=L.noseY+2;const g=ctx.createRadialGradient(x,y,1,x,y,17);g.addColorStop(0,`rgba(236,110,120,${.55*blush})`);g.addColorStop(1,'rgba(236,110,120,0)');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y,18,12,0,0,TAU);ctx.fill();}
   if(mood.blush>=.9){ctx.strokeStyle='rgba(210,80,90,.7)';ctx.lineWidth=1.6;for(const s of [-1,1])for(let i=0;i<3;i++){const x=128+s*(L.spread+2+i*6);ctx.beginPath();ctx.moveTo(x-2,L.noseY+6);ctx.lineTo(x+2,L.noseY-2);ctx.stroke();}}}
- // Eyes.
+ // The cartoon marks that go under the parts: a face going red, gloom lines, puffed-out cheeks.
+ const fx=mood.fx||[];drawMarks(ctx,L,skin,fx.filter(f=>UNDER_MARKS.has(f)));
+ // Eyes. Symbol eyes (stars, hearts, a wink...) are a drawing, not a lid: a blink leaves them be.
  const blink=Math.max(0,Math.min(1,state.blink||0));
- const eyesState=blink>.5&&!['happy','spiral'].includes(mood.eyes)?'closed':mood.eyes;
- const look=state.look||[0,0];
+ const eyesState=blink>.5&&!['happy','spiral',...SYMBOL_EYES].includes(mood.eyes)?'closed':mood.eyes;
+ // A face that looks somewhere of its own (a sideways smirk, a drowsy look down) looks there.
+ const look=mood.look||state.look||[0,0];
  for(const s of [-1,1])drawEye(ctx,128+s*L.spread,L.eyeY,L.eyeS,s,recipe.eyes,eyesState,look,L.eyeTilt,L.eyeW);
- // Brows.
- if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift,L.browS,s,recipe.brows,L.browTilt,mood.brow);
+ // Brows (oneBrow: the viewer's right one goes up on its own, the smug brow).
+ if(recipe.brows.style!=='none')for(const s of [-1,1])drawBrow(ctx,128+s*L.browSpread,L.browY-mood.browLift-(s>0?mood.oneBrow||0:0),L.browS,s,recipe.brows,L.browTilt,mood.brow);
  drawNose(ctx,L.noseX,L.noseY,L.noseS,recipe.nose.style,skin,line);
  drawMouth(ctx,L.mouthX,L.mouthY+(mood.mouthDY||0),L.mouthS,recipe.mouth,mood.mouth,state.talk||0,line,L.mouthW);
+ drawMarks(ctx,L,skin,fx.filter(f=>!UNDER_MARKS.has(f)),mood.mouthDY||0);
  if(!state.objects){drawFacialHair(ctx,L,recipe.facial);drawGlasses(ctx,L,recipe.glasses);}
  ctx.restore();
 }
 
 function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
+ // The funny faces' eyes: the person's own eye under a lid or with a twinkle, or a symbol in its place.
+ if(FUNNY_EYES.has(state)){funnyEye(ctx,x,y,s,side,eyes,state,look,tilt,width);return;}
  const style=eyes.style,line='#2b2623';
  ctx.save();ctx.translate(x,y);ctx.rotate(side*tilt*-1);ctx.scale(s*width,s);
  ctx.strokeStyle=line;ctx.fillStyle=line;ctx.lineWidth=3.2;
@@ -255,6 +298,109 @@ function squintEye(ctx,side,state,look){
  if(state==='worry'){ctx.lineWidth=3.2;ctx.beginPath();ctx.moveTo(-side*-10,-ry-1);ctx.lineTo(-side*10,-ry-5);ctx.stroke();}
 }
 
+/** Symbol eyes (drawn instead of the eye, the same for every eye style, and kept through a blink), and the eyes that are
+ * the person's own under a lid or with a twinkle (smug, droop, dreamy, the open half of a wink). */
+const SYMBOL_EYES=Object.freeze(['star','heart','blank','bawl','wink']);
+const FUNNY_EYES=new Set([...SYMBOL_EYES,'smug','droop','dreamy']);
+const INK='#2b2623';
+/** Where a point in an eye's own drawing space (as drawEye lays it out) lands on the face. */
+const eyeSpace=(x,y,s,width,side,tilt)=>{const a=-side*tilt,c=Math.cos(a),n=Math.sin(a);return (px,py)=>[x+c*px*s*width-n*py*s,y+n*px*s*width+c*py*s];};
+/** A four-pointed sparkle of radius r at (x,y). */
+function sparkle(ctx,x,y,r,fill){ctx.fillStyle=fill;ctx.beginPath();for(let i=0;i<8;i++){const a=i/8*TAU-Math.PI/2,q=i%2?r*.3:r;ctx.lineTo(x+Math.cos(a)*q,y+Math.sin(a)*q);}ctx.closePath();ctx.fill();}
+function funnyEye(ctx,x,y,s,side,eyes,state,look,tilt,width){
+ const style=eyes.style,inSpace=fn=>{ctx.save();ctx.translate(x,y);ctx.rotate(side*tilt*-1);ctx.scale(s*width,s);ctx.strokeStyle=INK;ctx.fillStyle=INK;ctx.lineCap='round';ctx.lineJoin='round';fn();ctx.restore();};
+ if(state==='wink'){
+  // The viewer's right eye shut in a happy curve, a little sparkle beside it; the other one their own, open.
+  if(side>0){drawEye(ctx,x,y,s,side,eyes,'happy',look,tilt,width);inSpace(()=>sparkle(ctx,side*21,-13,5.5,'#f6c945'));}
+  else drawEye(ctx,x,y,s,side,eyes,'open',look,tilt,width);
+  return;
+ }
+ if(state==='dreamy'){
+  // Their own eye gazing up, brimming with two big sparkles (a squint stays a squint, smiling).
+  drawEye(ctx,x,y,s,side,eyes,style==='squint'?'smiling':'open',look,tilt,width);
+  if(style!=='squint')inSpace(()=>{sparkle(ctx,-3,-4,4.2,'#ffffff');ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(3.5,3.5,1.7,0,TAU);ctx.fill();});
+  return;
+ }
+ if(state==='smug'||state==='droop'){
+  // Their own eye under a heavy upper lid: level and half shut (smug), or lower and drooping to the outside (drowsy).
+  const smug=state==='smug',inner=smug?-2:1,outer=smug?-2.5:6;
+  if(style==='squint'){inSpace(()=>{ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-side*11,inner+3);ctx.lineTo(side*11,outer+3);ctx.stroke();});return;}
+  const P=eyeSpace(x,y,s,width,side,tilt);
+  ctx.save();ctx.beginPath();for(const [px,py] of [[-side*24,inner],[side*24,outer],[side*24,32],[-side*24,32]])ctx.lineTo(...P(px,py));ctx.closePath();ctx.clip();
+  drawEye(ctx,x,y,s,side,eyes,'open',look,tilt,width);ctx.restore();
+  inSpace(()=>{ctx.lineWidth=smug?3.2:3.6;ctx.beginPath();ctx.moveTo(-side*13,inner);ctx.quadraticCurveTo(0,(inner+outer)/2-1.5,side*13.5,outer+(smug?0:1));ctx.stroke();
+   if(!smug){ctx.strokeStyle='rgba(43,38,35,.4)';ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(0,4,11,Math.PI*.25,Math.PI*.75);ctx.stroke();}});
+  return;
+ }
+ inSpace(()=>{
+  if(state==='star'){
+   ctx.fillStyle='#f6c945';ctx.lineWidth=2.6;ctx.beginPath();for(let i=0;i<10;i++){const a=i/10*TAU-Math.PI/2,r=i%2?6:14;ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r+1);}ctx.closePath();ctx.fill();ctx.stroke();
+   ctx.fillStyle='#fffbe8';ctx.beginPath();ctx.arc(-3,-2,2.3,0,TAU);ctx.fill();
+  }else if(state==='heart'){
+   ctx.fillStyle='#e5484d';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(0,13);ctx.bezierCurveTo(-6,7,-15,1,-14,-6);ctx.bezierCurveTo(-13,-13,-3,-14,0,-6);ctx.bezierCurveTo(3,-14,13,-13,14,-6);ctx.bezierCurveTo(15,1,6,7,0,13);ctx.closePath();ctx.fill();ctx.stroke();
+   ctx.fillStyle='#ffe3e3';ctx.beginPath();ctx.ellipse(-7,-6,2.6,1.8,-.6,0,TAU);ctx.fill();
+  }else if(state==='blank'){
+   ctx.fillStyle='#fbfaf6';ctx.lineWidth=2.8;ctx.beginPath();ctx.ellipse(0,0,12,14,0,0,TAU);ctx.fill();ctx.stroke();
+  }else if(state==='bawl'){
+   // Squeezed shut, the tears welling along the lid.
+   ctx.lineWidth=4.6;ctx.beginPath();ctx.moveTo(-13,3);ctx.quadraticCurveTo(0,-8,13,3);ctx.stroke();
+   ctx.fillStyle='rgba(150,205,240,.9)';ctx.beginPath();ctx.ellipse(0,6,10,3,0,0,TAU);ctx.fill();
+   if(style==='lashes'){ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(side*12,1);ctx.lineTo(side*17,-2);ctx.stroke();}
+  }
+ });
+}
+
+/**
+ * The cartoon marks a funny face lays on the skin. Under the parts: 'flush' (the face going red from the top), 'gloom'
+ * (blue lines falling over the brow), 'puff' (cheeks blown out round the mouth). Over them: 'waterfall' (a stream of tears
+ * from each eye down the cheeks), 'sweat' (the big drop at the temple), 'vein' (the popping anger mark), 'drool' (a drip
+ * from the corner of the mouth). All in the face's 256-unit square, placed from the layout so they move with the parts.
+ */
+const UNDER_MARKS=new Set(['flush','gloom','puff']);
+function drawMarks(ctx,L,skin,marks,mouthDY=0){
+ if(!marks.length)return;
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ for(const mark of marks){
+  if(mark==='flush'){
+   const g=ctx.createRadialGradient(128,L.browY,8,128,L.browY,104);g.addColorStop(0,'rgba(214,58,48,.42)');g.addColorStop(.6,'rgba(214,58,48,.2)');g.addColorStop(1,'rgba(214,58,48,0)');
+   ctx.fillStyle=g;ctx.fillRect(0,0,256,256);
+  }else if(mark==='gloom'){
+   const g=ctx.createRadialGradient(128,-60,20,128,-60,L.eyeY+56);g.addColorStop(0,'rgba(84,92,170,.5)');g.addColorStop(1,'rgba(84,92,170,0)');ctx.fillStyle=g;ctx.fillRect(0,0,256,L.eyeY);
+   ctx.strokeStyle='rgba(70,78,160,.6)';ctx.lineWidth=2.4;
+   for(let i=0;i<7;i++){const x=89+i*13;ctx.beginPath();ctx.moveTo(x,6);ctx.lineTo(x,L.eyeY-20-(i%2)*8);ctx.stroke();}
+  }else if(mark==='puff'){
+   // Each cheek blown out round: a pale round with its edge drawn and a shine on it.
+   for(const s of [-1,1]){const x=L.mouthX+s*(16*L.mouthS*L.mouthW+2),y=L.mouthY-6;
+    ctx.fillStyle=shade(skin,1.04);ctx.beginPath();ctx.arc(x,y,15,0,TAU);ctx.fill();
+    ctx.strokeStyle=shade(skin,.66);ctx.lineWidth=2.8;ctx.beginPath();ctx.arc(x,y,15,s>0?-1.1:Math.PI-1.1,s>0?1.1:Math.PI+1.1);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.ellipse(x+s*4,y-7,4,2.4,s*.5,0,TAU);ctx.fill();}
+  }else if(mark==='waterfall'){
+   for(const s of [-1,1]){
+    const x=128+s*L.spread,y=L.eyeY+6*L.eyeS,w=4.5*L.eyeS;
+    ctx.fillStyle='rgba(150,205,240,.88)';ctx.strokeStyle='rgba(60,120,170,.75)';ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(x-w,y);ctx.bezierCurveTo(x-w-2,y+40,x-w+3,y+90,x-w-3,256);ctx.lineTo(x+w+3,256);ctx.bezierCurveTo(x+w-3,y+90,x+w+2,y+40,x+w,y);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(x-1,y+6);ctx.bezierCurveTo(x-2,y+40,x,y+90,x-2,250);ctx.stroke();
+   }
+  }else if(mark==='sweat'){
+   // The big drop, as tall as the eye, at the temple.
+   const x=Math.min(212,128+L.spread+22*L.eyeS),y=Math.max(60,L.browY+2),k=1.5;
+   ctx.fillStyle='#bfe6fb';ctx.strokeStyle='#4b86b0';ctx.lineWidth=2.4;
+   ctx.beginPath();ctx.moveTo(x,y-15*k);ctx.bezierCurveTo(x+4*k,y-7*k,x+9*k,y-2*k,x+9*k,y+4*k);ctx.arc(x,y+4*k,9*k,0,Math.PI);ctx.bezierCurveTo(x-9*k,y-2*k,x-4*k,y-7*k,x,y-15*k);ctx.closePath();ctx.fill();ctx.stroke();
+   ctx.fillStyle='#ffffff';ctx.beginPath();ctx.ellipse(x-3.5*k,y+3*k,2*k,3.4*k,.3,0,TAU);ctx.fill();
+  }else if(mark==='vein'){
+   const x=Math.max(46,128-L.spread-22*L.eyeS),y=Math.max(52,L.browY-12);
+   ctx.strokeStyle='#d8342c';ctx.lineWidth=4.2;
+   for(const [dx,dy,a] of [[-1,-1,0],[1,-1,.5],[1,1,1],[-1,1,1.5]]){ctx.beginPath();ctx.arc(x+dx*10,y+dy*10,8,a*Math.PI,(a+.5)*Math.PI);ctx.stroke();}
+  }else if(mark==='drool'){
+   const x=L.mouthX+12*L.mouthS*L.mouthW,y=L.mouthY+mouthDY+4;
+   ctx.fillStyle='rgba(200,232,248,.92)';ctx.strokeStyle='rgba(70,130,170,.8)';ctx.lineWidth=1.4;
+   ctx.beginPath();ctx.moveTo(x-2.2,y);ctx.quadraticCurveTo(x-3,y+18,x-4.6,y+25);ctx.arc(x,y+26,4.8,Math.PI*1.05,Math.PI*1.95,true);ctx.quadraticCurveTo(x+3,y+18,x+2.2,y);ctx.closePath();ctx.fill();ctx.stroke();
+   ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(x-1.5,y+25,1.4,0,TAU);ctx.fill();
+  }
+ }
+ ctx.restore();
+}
+
 function drawBrow(ctx,x,y,s,side,brows,tilt,mood){
  ctx.save();ctx.translate(x,y);ctx.scale(s,s);
  // Positive mood tilts the inner end down (cross), negative lifts it (worried, sad).
@@ -304,7 +450,7 @@ function drawMouth(ctx,x,y,s,mouth,moodMouth,talk,line,width=1){
  const shape=talk>.5?'talk':moodMouth||mouth.style;
  ctx.beginPath();
  switch(shape){
-  case 'talk':{const big=['grin','laugh','o'].includes(moodMouth);open(big?19:12,(big?13:7)+talk*3,big?6:2);break;}
+  case 'talk':{const big=['grin','laugh','o','jawdrop','wail'].includes(moodMouth);open(big?19:12,(big?13:7)+talk*3,big?6:2);break;}
   case 'grin':open(24,15,5);break;
   case 'laugh':open(28,23,7);break;
   case 'o':ctx.fillStyle=inside;ctx.ellipse(0,3,13,20,0,0,TAU);ctx.fill();ctx.stroke();break;
@@ -325,6 +471,18 @@ function drawMouth(ctx,x,y,s,mouth,moodMouth,talk,line,width=1){
   case 'tongue':ctx.moveTo(-15,-1);ctx.quadraticCurveTo(0,13,15,-1);ctx.stroke();ctx.fillStyle=tongue;ctx.beginPath();ctx.ellipse(4,8,5,5.5,0,0,Math.PI);ctx.fill();ctx.lineWidth=2;ctx.stroke();break;
   case 'buck':ctx.moveTo(-14,-1);ctx.quadraticCurveTo(0,10,14,-1);ctx.stroke();ctx.fillStyle=teeth;ctx.lineWidth=1.6;for(const x of [-4.5,0]){ctx.beginPath();ctx.rect(x,4,4.5,5.5);ctx.fill();ctx.stroke();}break;
   case 'soft':ctx.moveTo(-9,0);ctx.quadraticCurveTo(0,7,9,0);ctx.stroke();break;
+  // The funny faces' mouths.
+  case 'jawdrop':{const path=()=>{ctx.beginPath();ctx.moveTo(-15,-3);ctx.quadraticCurveTo(0,-8,15,-3);ctx.lineTo(17,22);ctx.quadraticCurveTo(0,36,-17,22);ctx.closePath();};
+   path();ctx.fillStyle=inside;ctx.fill();ctx.save();ctx.clip();ctx.fillStyle=teeth;ctx.fillRect(-18,-9,36,8);ctx.fillStyle=tongue;ctx.beginPath();ctx.ellipse(0,27,12,7,0,0,TAU);ctx.fill();ctx.restore();path();ctx.stroke();break;}
+  case 'wail':{const path=()=>{ctx.beginPath();ctx.moveTo(-10,-3);ctx.quadraticCurveTo(0,-7,10,-3);ctx.quadraticCurveTo(21,13,15,19);ctx.quadraticCurveTo(0,25,-15,19);ctx.quadraticCurveTo(-21,13,-10,-3);ctx.closePath();};
+   path();ctx.fillStyle=inside;ctx.fill();ctx.save();ctx.clip();ctx.fillStyle=teeth;ctx.fillRect(-12,-9,24,5.5);ctx.fillStyle=tongue;ctx.beginPath();ctx.ellipse(0,20,10,6,0,0,TAU);ctx.fill();ctx.restore();path();ctx.stroke();break;}
+  case 'pucker':ctx.lineWidth*=1.15;ctx.moveTo(-4,-9);ctx.quadraticCurveTo(8,-9,7,-2);ctx.quadraticCurveTo(1,0,7,2);ctx.quadraticCurveTo(8,9,-4,9);ctx.stroke();break;
+  case 'bleh':ctx.fillStyle=tongue;ctx.moveTo(-6.5,1);ctx.lineTo(6.5,1);ctx.lineTo(6.5,9);ctx.quadraticCurveTo(6.5,16,0,16);ctx.quadraticCurveTo(-6.5,16,-6.5,9);ctx.closePath();ctx.fill();
+   ctx.save();ctx.lineWidth=2;ctx.stroke();ctx.beginPath();ctx.moveTo(0,3.5);ctx.lineTo(0,10);ctx.stroke();ctx.restore();ctx.beginPath();ctx.moveTo(-14,-2);ctx.quadraticCurveTo(0,5,14,-2);ctx.stroke();break;
+  case 'yawn':ctx.fillStyle=inside;ctx.ellipse(0,4,7,10,0,0,TAU);ctx.fill();ctx.save();ctx.clip();ctx.fillStyle=tongue;ctx.beginPath();ctx.ellipse(0,13,6,4,0,0,TAU);ctx.fill();ctx.restore();ctx.beginPath();ctx.ellipse(0,4,7,10,0,0,TAU);ctx.stroke();break;
+  case 'gritted':{const path=()=>{ctx.beginPath();ctx.moveTo(-17,3);ctx.quadraticCurveTo(0,-9,17,3);ctx.quadraticCurveTo(0,12,-17,3);ctx.closePath();};
+   path();ctx.fillStyle=teeth;ctx.fill();ctx.save();ctx.clip();ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(-17,2);ctx.lineTo(17,2);for(let i=-2;i<=2;i++){ctx.moveTo(i*6,-8);ctx.lineTo(i*6,10);}ctx.stroke();ctx.restore();path();ctx.stroke();break;}
+  case 'drool':open(13,8,2);break;
   default:ctx.arc(0,-8,13,Math.PI*.2,Math.PI*.8);ctx.stroke();
  }
  // Lipstick is worn as a colour, not just a line.

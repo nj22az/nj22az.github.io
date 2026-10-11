@@ -1,6 +1,47 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
-import {FERRY_SHIP,FERRY_DECKS,FERRY_MACHINERY} from './ferry-ship.js';
+
+/**
+ * The hull as drawn: the 22 m Minato Maru the other session modelled on 2026-10-10. The ship as she
+ * is designed now (ferry-ship.js FERRY_SHIP, 34.5 m) is grown into this model in its own batch
+ * (docs/FERRY-AUDIT.md §6, batch 5); until then everything that puts something on her, or her
+ * against a pier (the paths, the berths, the cars' place, the passenger's place), reads these.
+ * Ship frame, metres: +z is forward (the bow ramp's hinge is at +length/2), +x is the port side, y up
+ * from the model's origin, which is `origin` above the waterline.
+ */
+export const FERRY_HULL=Object.freeze({
+ length:22,lengthBP:19.6,beam:6.4,depth:2.48,draft:1.35,
+ /** The car deck above the waterline: depth less draft. */
+ freeboard:1.13,
+ /** The model's origin is this far above the waterline (where the old hull sat, so the ramp meets the quay where it did). */
+ origin:.12,
+ /** Metacentric height loaded, metres (her roll period: ferry-ship.js rollPeriod). */
+ gm:1.2,
+ /** The screws she is drawn with: four-bladed, 1.05 m. */
+ screw:1.05,
+});
+/** Where things are on the hull as drawn, along her (z) and up (y). */
+export const FERRY_DECKS=Object.freeze({
+ /** The car deck: from the ramp hinge aft to the deckhouse front. */
+ car:Object.freeze({y:FERRY_HULL.freeboard-FERRY_HULL.origin,fore:11,aft:-1.2,
+  /** Two lanes of 2.6 m (a kei car is 1.48 m wide, a 4-tonne truck 2.2 m), each side of the centreline. */
+  lanes:Object.freeze([1.4,-1.4]),laneWidth:2.6,
+  /** The three car places: two in the starboard lane, one in the port lane, nose to the ramp. */
+  slots:Object.freeze([Object.freeze([-1.4,7.4]),Object.freeze([-1.4,2.6]),Object.freeze([1.4,6.2])]),
+  /** An open car deck: it breathes through its open top and needs no exhaust fans. */
+  open:true,
+  /** Walkways each side, inside the bulwark: 0.5 m clear, for the crew and the lashings. */
+  walkway:.5,bulwark:1.05}),
+ /** The deckhouse aft on the car deck: the passenger saloon, its toilets and vending corner, the purser's window. */
+ saloon:Object.freeze({fore:-1.2,aft:-9.6,width:5.6,height:2.25}),
+ /** The mooring deck at the stern, behind the saloon: the capstan and two pairs of bitts. */
+ stern:Object.freeze({fore:-9.6,aft:-11}),
+ /** The upper (passenger) deck on the saloon roof: open deck and benches aft, the wheelhouse forward. */
+ upper:Object.freeze({y:FERRY_HULL.freeboard-FERRY_HULL.origin+2.35,fore:-1.2,aft:-9.6}),
+ wheelhouse:Object.freeze({fore:-1.3,aft:-4.1,width:3.6,height:2.05}),
+ /** Where a passenger rides a crossing: the open upper deck aft, at the stern rail between the benches, behind the funnel. */
+ passenger:Object.freeze([0,FERRY_HULL.freeboard-FERRY_HULL.origin+2.35,-9.05]),
+});
 
 /**
  * The Minato Maru, modelled whole (docs/FERRY-AUDIT.md): the hull lofted from its sections, as a
@@ -14,7 +55,7 @@ import {FERRY_SHIP,FERRY_DECKS,FERRY_MACHINERY} from './ferry-ship.js';
  * 0.12 m above the waterline, where the old hull sat, so the ramp still meets the quay where it
  * did: the waterline is at y = WL. Static parts are merged by material into a handful of meshes.
  */
-const S=FERRY_SHIP,D=FERRY_DECKS;
+const S=FERRY_HULL,D=FERRY_DECKS;
 export const WL=-S.origin;
 const HALF=S.length/2,KEEL=WL-S.draft,DECK=D.car.y,BULWARK=D.car.bulwark;
 
@@ -198,7 +239,7 @@ export function buildFerryModel({shadows=false}={}){
  for(const side of [1,-1]){
   // Bilge keels at the turn of the bilge amidships.
   for(let z=-5;z<4;z+=1){const t=Math.PI/2*.42,[x,y]=sectionPoint(z,t),[x2,y2]=sectionPoint(z+1,t);kit.bar('paint',[side*(x+.1),y-.08,z],[side*(x2+.1),y2-.08,z+1],.05,ANTIFOULING,4);}
-  const sx=side*1.25,cy=-.975,P=FERRY_MACHINERY.propellers;
+  const sx=side*1.25,cy=-.975;
   kit.bar('metal',[sx,cy+.12,-5.6],[sx,cy,-8.3],.055,STEEL,8);                 // the shaft out of its stern tube
   kit.cyl('metal',.13,.13,.5,[sx,cy+.05,-5.75],STEEL,[Math.PI/2,0,0]);          // the stern-tube boss
   for(const k of [-1,1])kit.bar('paint',[sx,cy,-7.8],[sx+k*.55,keelY(-7.8)+.35+.15,-7.6],.04,ANTIFOULING,5); // the A-bracket
@@ -367,6 +408,16 @@ export function buildFerryModel({shadows=false}={}){
  ferry.userData.ramp=ramp;
  /** 0 raised and closed, 1 down on the quay. */
  ferry.userData.setRamp=(down,slope=.24)=>{ramp.rotation.x=-1.45*(1-down)+slope*down;placeRams();};
+ /**
+  * Down on its landing, the ramp's toe lies on the quay while she heaves, rolls and pitches: its
+  * angle is worked out from where the hinge is now, so the toe stays at the height it has with her
+  * at rest (`restY` is her origin's height at rest, `slope` the ramp's angle then).
+  */
+ ferry.userData.restRamp=(slope,restY)=>{
+  ferry.updateMatrixWorld(true);const e=ferry.matrixWorld.elements,L=RAMP.length,hy=ramp.position.y,hz=ramp.position.z;
+  const K=restY+hy-L*Math.sin(slope)-(e[5]*hy+e[9]*hz+e[13]),R=Math.hypot(e[5],e[9]);
+  ramp.rotation.x=Math.acos(Math.max(-1,Math.min(1,K/(L*R))))-Math.atan2(e[5],e[9]);placeRams();
+ };
  ferry.userData.setRamp(0);
  ferry.userData.deckY=DECK;
  ferry.userData.passengerDeck=D.passenger;
@@ -375,6 +426,12 @@ export function buildFerryModel({shadows=false}={}){
  {const k3=createKit(shadows);k3.box('paint',[1.7,.06,.9],[.85,0,0],DECKGREEN);for(const dz of [-.43,.43]){k3.box('metal',[1.7,.04,.04],[.85,.85,dz],WHITE);for(const x of [.1,.85,1.6])k3.box('metal',[.03,.85,.03],[x,.42,dz],WHITE);}k3.finish(gangway);}
  gangway.position.set(halfBreadth(GANGWAY_Z)-.05,DECK,GANGWAY_Z);gangway.rotation.z=-.3;
  ferry.userData.gangway=gangway;
+ /** Its foot rests on the pier as she moves, the way the ramp's toe rests on the quay (restRamp). */
+ ferry.userData.restGangway=(restY,rest=-.3,length=1.7)=>{
+  ferry.updateMatrixWorld(true);const e=ferry.matrixWorld.elements,g=gangway.position;
+  const K=restY+g.y+length*Math.sin(rest)-(e[1]*g.x+e[5]*g.y+e[9]*g.z+e[13]),R=Math.hypot(e[1],e[5]);
+  gangway.rotation.z=Math.atan2(e[5],e[1])-Math.acos(Math.max(-1,Math.min(1,K/(length*R))));
+ };
  // The gate leaf, hinged on its forward post: shut across the opening at sea; alongside it folds right
  // back against the inside of the bulwark, forward of the opening, and is hooked there.
  const gate=new THREE.Group();gate.name='Gangway gate';gate.position.set(halfBreadth(GATE.to)-.1,DECK,GATE.to);ferry.add(gate);
@@ -385,7 +442,11 @@ export function buildFerryModel({shadows=false}={}){
  // ---- Moving parts: screws turn and the radar sweeps while she is under way.
  ferry.userData.screws=screws;ferry.userData.radar=radar;
  ferry.userData.underway=(dt,speed)=>{for(const s of screws)s.rotation.z+=s.userData.hand*dt*speed*25;radar.rotation.y+=dt*(speed>0?2.6:0);};
- ferry.userData.lights=on=>{glassMat.emissiveIntensity=on?.55:0;for(const l of navLights)l.material.color.setHex(on?l.userData.on:0x333333);};
+ /** The masthead light, the sidelights and the stern light: on under way from sunset to sunrise (ferry.js). */
+ ferry.userData.setNavigationLights=on=>{for(const l of navLights)l.material.color.setHex(on?l.userData.on:0x333333);};
+ /** The saloon's and the wheelhouse's windows, lit from inside (0 dark, 1 every lamp on). */
+ ferry.userData.setCabinLights=level=>{glassMat.emissiveIntensity=.55*Math.max(0,Math.min(1,level));};
+ ferry.userData.lights=on=>{ferry.userData.setCabinLights(on?1:0);ferry.userData.setNavigationLights(on);};
  ferry.userData.model='Minato Maru';
  return ferry;
 }

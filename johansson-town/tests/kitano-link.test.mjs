@@ -11,7 +11,7 @@ import {FERRY,FERRY_BERTH} from '../src/world/ferry.js';
 installDOM();globalThis.self=globalThis;
 const {createTown}=await import('../src/world/town.js?kitano-link');
 const {createBusinesses}=await import('../src/world/businesses.js');
-const {routeAt,groundHeight}=await import('../src/world/layout.js');
+const {routeAt,groundHeight,BREAKWATER}=await import('../src/world/layout.js');
 let player=new THREE.Vector3(-30,0,30);
 const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:false,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>player});
 const traffic=world.traffic;
@@ -107,6 +107,6 @@ test('the removed bridge leaves no piers, girders, causeway colliders or airport
 test('open ferry water contains no unsupported legacy industrial silhouettes',()=>{
  world.group.updateMatrixWorld(true);const meshes=world.group.children.filter(o=>o.name.startsWith('harbour-instances:'));
  const ray=new THREE.Raycaster(new THREE.Vector3(),new THREE.Vector3(0,-1,0));
- for(const [x,z] of [[-31,-98],[32,-102],[-45,-111],[-24,-105],[20,-107],[-3,-114]]){ray.ray.origin.set(x,20,z);assert.equal(ray.intersectObjects(meshes,false).length,0,'Unsupported industrial geometry over ferry water at '+x+','+z);}
- ray.ray.origin.set(-27,20,-83);assert.ok(ray.intersectObjects(meshes,false).length,'The actual breakwater and its supported beacons remain');
+ for(const [x,z] of [[-31,-98],[32,-102],[-45,-111],[-24,-100],[20,-112],[-3,-114]]){ray.ray.origin.set(x,20,z);assert.equal(ray.intersectObjects(meshes,false).length,0,'Unsupported industrial geometry over ferry water at '+x+','+z);}
+ ray.ray.origin.set(-27,20,BREAKWATER.z);assert.ok(ray.intersectObjects(meshes,false).length,'The actual breakwater and its supported beacons remain');
 });

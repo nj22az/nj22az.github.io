@@ -83,7 +83,7 @@ function startScape(){
  const roarGain=ctx.createGain();roarGain.gain.value=1.6;
  rain.connect(hiss).connect(bus.rain);rain.connect(roar).connect(roarGain).connect(bus.rain);rain.start();
  const t=ctx.currentTime;
- return {bus,loops:{},next:{frogs:t,geckos:t+3,birds:t,higurashi:t+2,gulls:t+4},level:{},lastFerry:null};
+ return {bus,loops:{},next:{frogs:t,geckos:t+3,birds:t,higurashi:t+2,gulls:t+4},level:{},whistleFree:0};
 }
 function note(out,at,from,to,length,level,type='sine'){
  const osc=ctx.createOscillator(),env=ctx.createGain();osc.type=type;
@@ -103,12 +103,27 @@ const CALLS={
  // A herring gull's call over the water.
  gulls(out,t){for(let k=0;k<1+Math.floor(Math.random()*3);k++)note(out,t+k*.42,1250+Math.random()*200,640,.34,.35,'sawtooth');return 5+Math.random()*10;},
 };
-/** Two long blasts on leaving, one on coming in: the ferry's horn across the harbour. */
-function ferryHorn(blasts,distance){
- const level=.28*Math.max(.15,1-distance/220),t=ctx.currentTime+.05;
- const out=ctx.createGain();out.gain.value=level;const low=ctx.createBiquadFilter();low.type='lowpass';low.frequency.value=700;out.connect(low).connect(master);
- for(let b=0;b<blasts;b++){const at=t+b*3.2;for(const f of [110,138.6]){const osc=ctx.createOscillator(),env=ctx.createGain();osc.type='sawtooth';osc.frequency.value=f;env.gain.setValueAtTime(0,at);env.gain.linearRampToValueAtTime(.5,at+.25);env.gain.setValueAtTime(.5,at+2.2);env.gain.linearRampToValueAtTime(0,at+2.6);osc.connect(env).connect(out);osc.start(at);osc.stop(at+2.7);}}
+/**
+ * The Minato Maru's whistle: an air whistle of about 350 Hz, the pitch the collision rules give a
+ * ship of 20 to 75 metres (COLREGs Annex III: 250–700 Hz), not a liner's 110 Hz. A prolonged blast
+ * is five seconds (leaving the berth, passing the breakwater's end); 'astern' is three short blasts of
+ * a second each (Rule 34(a): my engines are going astern). `at` is when it starts (AudioContext time).
+ */
+const WHISTLE=Object.freeze({hz:350,prolonged:5,short:1,gap:1});
+function shipWhistle(kind,distance,pan,at){
+ const level=.3*Math.max(.12,1-distance/320),t=Math.max(ctx.currentTime+.05,at||0);
+ const out=ctx.createGain();out.gain.value=level;const band=ctx.createBiquadFilter();band.type='lowpass';band.frequency.value=2600;
+ const panner=ctx.createStereoPanner();panner.pan.value=pan;out.connect(band).connect(panner).connect(master);
+ const blasts=kind==='astern'?[0,1,2].map(i=>[i*(WHISTLE.short+WHISTLE.gap),WHISTLE.short]):[[0,WHISTLE.prolonged]];
+ for(const [start,length] of blasts){const a=t+start;
+  // Two reeds a few hertz apart, as an air whistle sounds: a slow beat under the note.
+  for(const [f,g] of [[WHISTLE.hz,.5],[WHISTLE.hz*1.008,.32],[WHISTLE.hz*2,.12]]){const osc=ctx.createOscillator(),env=ctx.createGain();osc.type='sawtooth';osc.frequency.value=f;
+   env.gain.setValueAtTime(0,a);env.gain.linearRampToValueAtTime(g,a+.12);env.gain.setValueAtTime(g,a+length-.18);env.gain.linearRampToValueAtTime(0,a+length);osc.connect(env).connect(out);osc.start(a);osc.stop(a+length+.05);}
+ }
+ const last=blasts.at(-1);return t+last[0]+last[1];
 }
+/** Her engines, by what she is doing (ferry.js audio): the loop's level and how fast it runs. */
+const ENGINE=Object.freeze({off:[0,.85],idle:[.12,.82],manoeuvring:[.2,.95],sea:[.27,1.12]});
 function updateScape(player,{minutes,rain,inside,paused,ferry}){
  // Gulls want the water: the harbour is to the south of the town, past z = -35.
  const harbour=Math.max(0,Math.min(1,(-player.z-25)/25));
@@ -129,12 +144,14 @@ function updateScape(player,{minutes,rain,inside,paused,ferry}){
   scape.bus[layer].gain.setTargetAtTime(level,t,layer==='rain'?2:4);
   if(CALLS[layer]&&level>.004&&t>=scape.next[layer])scape.next[layer]=t+CALLS[layer](scape.bus[layer],t+.02);
  }
- if(ferry&&!paused){
-  if(ferry.phase!==scape.lastFerry){
-   const d=Math.hypot(ferry.x-player.x,ferry.z-player.z);
-   if(scape.lastFerry==='waiting'&&ferry.phase==='reversing')ferryHorn(2,d);
-   else if(scape.lastFerry==='away'&&ferry.phase==='arriving')ferryHorn(1,d);
-   scape.lastFerry=ferry.phase;
+ // Her whistle: every signal she sounds, in order, from where she was when she sounded it. The
+ // first time the town hears her it only takes note of the count, so loading a game is quiet.
+ if(ferry?.whistle&&!paused){
+  const w=ferry.whistle;if(scape.whistleCount===undefined||w.count<scape.whistleCount)scape.whistleCount=w.count;
+  while(scape.whistleCount<w.count){
+   scape.whistleCount++;const signal=w.log?.find(e=>e.n===scape.whistleCount)||w;
+   const dx=signal.x-player.x,dz=signal.z-player.z,d=Math.hypot(dx,dz);
+   scape.whistleFree=shipWhistle(signal.kind,d,Math.max(-.8,Math.min(.8,dx/Math.max(d,1)*.6)),scape.whistleFree)+.8;
   }
  }
 }
@@ -155,7 +172,11 @@ export const townAudio={
   // level rather than sounding like a pavement.
   step(surface){this.play('steps-'+(surface==='asphalt'?'asphalt':surface==='wood'||surface==='timber'?'wood':'stone'),surface==='grass'?.13:.27);},
   update({player,yaw=0,minutes=1002,rain=false,inside=false,station=0,paused=false,relax=false,ferry=null}){if(!ctx)return;if(enabled)updateShore(player,{inside,paused,relax});const night=minutes%1440>=1140||minutes%1440<360;
-    void night;const sources=[['water',0,-54,.5,95],['engine',6,-42,.27,22],['radio-'+station,-4,-15,.36,22]];
+    void night;
+    // The engine is hers: it is where she is, idling alongside, louder and quicker under way, and quiet at night on shore power.
+    const [engineLevel,engineRate]=ENGINE[ferry?.engines]||ENGINE.off;
+    const sources=[['water',0,-54,.5,95],['engine',ferry?.x??6,ferry?.z??-42,engineLevel,40],['radio-'+station,-4,-15,.36,22]];
+    loops.get('engine')?.source.playbackRate.setTargetAtTime(engineRate,ctx.currentTime,1.5);
     if(enabled)updateScape(player,{minutes,rain,inside,paused,ferry});
     for(const name of ['radio-0','radio-1','radio-2'])if(name!=='radio-'+station&&loops.has(name))loops.get(name).gain.gain.setTargetAtTime(0,ctx.currentTime,.12);
     for(const [name,x,z,volume,range] of sources){if(!loops.has(name)&&!paused&&volume>0&&Math.hypot(x-player.x,z-player.z)<range){const v=voice(name,true);if(v)loops.set(name,v);}const v=loops.get(name);if(!v)continue;const dx=x-player.x,dz=z-player.z,d=Math.hypot(dx,dz),gain=paused?0:volume*Math.max(0,1-d/range)*(inside?.24:1);v.gain.gain.setTargetAtTime(gain,ctx.currentTime,.2);v.pan.pan.setTargetAtTime(Math.max(-.85,Math.min(.85,(dx*Math.cos(yaw)-dz*Math.sin(yaw))/Math.max(d,1))),ctx.currentTime,.2);}

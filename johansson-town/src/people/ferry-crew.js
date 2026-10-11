@@ -1,9 +1,11 @@
 /**
- * The Minato Maru's crew (src/world/ferry-ship.js; docs/FERRY-AUDIT.md §6): who they are, why
- * each of them has the job, and what each one does at every part of a call. The ship's safe
- * manning for a 95-ton smooth-water ferry is four: a master and a chief engineer with their
- * licences (海技士), an oiler and a deck hand. Three of the four are islanders already in the
- * town; the chief engineer is new, and lives aboard.
+ * The Minato Maru's crew (src/world/ferry-ship.js; docs/FERRY-AUDIT.md §3): who they are, why
+ * each of them has the job, and what each one does at every part of a call. Four posts are
+ * filled: a master and a chief engineer with their licences (海技士), an oiler and a deck hand,
+ * the safe manning of the 22 m ship she was first drawn as. Three of the four are islanders
+ * already in the town; the chief engineer is new, and lives aboard. The bigger Minato Maru's safe
+ * manning is eight (ferry-ship.js FERRY_MANNING): the chief officer, the bosun, the purser and the
+ * cook are signed on in the crew batch.
  *
  * Stories and the game ask the same questions of this file: who is on duty today (crewOnDuty),
  * what someone is doing during a phase (crewDoing), and who does a scenario's job (crewFor).

@@ -12,6 +12,11 @@ import {flowerBlock,roofTile,poster} from './okinawa/signs.js';
  * the corner the ferry comes in to. The waiting hall faces the pier under its canopy;
  * the Harbour Office keeps its own door on the town side. World frame, metres.
  */
+/**
+ * The timetable poster under the canopy: the service as the ferry runs it (the same words as the
+ * hall's departures board, the harbour office on the telephone and the boarding menu).
+ */
+export const PORT_TIMETABLE_POSTER=Object.freeze(['MINATO ⇄ KITANO-JIMA','Minato Maru · 18 min','Crossings on request','Commuter boats in:','8:30 · 14:30 · 22:00','Tickets inside']);
 export const PORT_BUILDING=Object.freeze({
  office:Object.freeze({minX:9.7,maxX:16.9,minZ:-48,maxZ:-38.4}),
  hall:Object.freeze({minX:5.6,maxX:9.7,minZ:-48,maxZ:-39.6}),
@@ -124,7 +129,7 @@ export function buildPortBuilding({parent,label=()=>{},shadows=false,register,on
  const waitingSeat=new THREE.Object3D();waitingSeat.position.set(C.minX+1.15,1,-44.0);waitingSeat.userData.seat={id:'port-canopy-bench',position:[C.minX+.3,0,-44.0],stand:[C.minX+1.15,0,-44.0],surfaceY:.5,eyeY:1.2,yaw:-Math.PI/2,pitch:0};group.add(waitingSeat);register?.(waitingSeat,'Sit under the ferry canopy',()=>onAction?.('seat','Ferry canopy bench','A dry bench beside the waiting hall, looking out across the quay.'));
 
  // The timetable, on the pier between the tower and the glass.
- kit.sign(poster({title:'Timetable',lines:['SHARED PASSENGER & CAR FERRY','MINATO ⇄ KITANO-JIMA','Crossings on request','Some trips carry cars','Tickets inside'],band:'#2b5a78',bg:'#f3ecd8'}),.62,.86,wx-.04,1.55,-44.98,{ry:-Math.PI/2,name:'Ferry timetable'});
+ kit.sign(poster({title:'Timetable',lines:PORT_TIMETABLE_POSTER,band:'#2b5a78',bg:'#f3ecd8'}),.62,.86,wx-.04,1.55,-44.98,{ry:-Math.PI/2,name:'Ferry timetable'});
  kit.finish(group,'Port building shell');
 
  // Names: the terminal over the canopy, to the pier; tickets over the doors.

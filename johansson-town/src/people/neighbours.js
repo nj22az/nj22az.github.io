@@ -93,10 +93,10 @@ const ALL_NEIGHBOURS=Object.freeze([
  {name:'Mrs Kinjō',look:'Emi',height:1.58,role:'arranging flowers at Rainflower Florist',at:FLOWER_SHOP.staffAt,face:[-1,0],pose:'Interact',hours:[[H(9),H(18)]],
   lines:['Welcome to Rainflower. Fresh stems, a small bouquet, or something green for your windowsill? I wrap everything by hand.',
    'My husband is the one fishing off the seawall. If you see him, tell him the rice is ready. The flowers finish work on time; he never does.']},
- // Vy, at the high school on the mainland: the school bus at twenty past seven, then after
+ // Vy, at the high school on the mainland: the ferry to school from twenty past seven, then after
  // school an ice cream at the Blue Coral counter on Rainflower Lane and her homework in the park.
- {name:'Vy',look:'Vy',height:1.56,role:'waiting for the school bus',at:[-2.4,-57],face:[0,-1],hours:[[H(7,20),H(8)],[H(15,40),H(18,40)]],
-  routine:[{from:0,at:[-2.4,-57],face:[0,-1],role:'waiting for the school bus'},{from:H(15,40),at:[7.1,48.6],face:[1,0],role:'eating a Blue Coral ice cream after school'},{from:H(16,20),at:[18.2,-21.8],face:[-1,0],role:'doing her homework in the park'},{from:H(18,10),at:[-2.4,-57],face:[0,-1],role:'waiting for the bus home'}],
+ {name:'Vy',look:'Vy',height:1.56,role:'waiting for the ferry to school',at:[-2.4,-57],face:[0,-1],hours:[[H(7,20),H(8)],[H(15,40),H(18,40)]],
+  routine:[{from:0,at:[-2.4,-57],face:[0,-1],role:'waiting for the ferry to school'},{from:H(15,40),at:[7.1,48.6],face:[1,0],role:'eating a Blue Coral ice cream after school'},{from:H(16,20),at:[18.2,-21.8],face:[-1,0],role:'doing her homework in the park'},{from:H(18,10),at:[-2.4,-57],face:[0,-1],role:'waiting for the ferry home'}],
   lines:[
    'Ice cream before homework. It is a rule. I made the rule, but it is still a rule.',
    'Kanji test tomorrow. Two hundred characters. I know one hundred and ninety. The other ten are probably not important.',
