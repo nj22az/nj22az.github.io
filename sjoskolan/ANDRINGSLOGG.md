@@ -217,6 +217,12 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 42: delsidorna Del_1–3 har rutan **Din del** överst (lärarens önskan: delsidorna ska vara
+  översikter som veckosidan). Dagens färg och tid, lektionens läge (I dag, Pågår nu, Om 2 dagar, Har varit), vad vi
+  pratar om, presentationen, läxorna efter lektionen med läge (samma lista som bilden ”Det här gör du nu”), övning
+  N.1–N.5 på lektionen och Hela veckan (texterna, quizet och inlämningen med sista dag och läge). Samma data och kod
+  som veckosidan: `dagsvy.delpanel_html` (anropas av `innehall/export/delsidor_veckor.py`) och `visaDel` i
+  `gemensamt/dagsvy.mjs`. Rutan räknar om när eleven bockar en övning eller trycker på läst-knappen.
 - **2026-10-11** Vecka 42, lärarens beslut: allt lämnas in senast fredag, inget på söndag. Inlämningen 1–3 har sista dag
   fredag 16 oktober (veckosidan, inlämningssidan, startsidans modul, bilderna, avslutsfrågorna EL-000714 och
   EL-000716, lärarmanusen). Quizet är kvar till torsdag 15 oktober. Sista dag skrivs nu med rätt veckodag ur datumet

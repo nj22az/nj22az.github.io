@@ -194,3 +194,92 @@ def dagsvy_html(nr, w, sjalvrattande=None):
               f'Siffrorna gäller den här webbläsaren.</p></section>'
             + f'<script type="application/json" id="dagsvy-data">{json.dumps(data, ensure_ascii=False)}</script>'
             + f'<script type="module" src="../../gemensamt/dagsvy.mjs?v={v}"></script>')
+
+
+# --- ”Din del” överst på delsidan (Del_N.html) ----------------------------------------------------------------
+# Samma data och färger som veckosidan: dagens färg och tid, vad vi pratar om, presentationen, läxorna efter lektionen
+# med läge, övningarna på lektionen och det som gäller hela veckan. innehall/export/delsidor_veckor.py anropar
+# delpanel_html för veckor i DAGSVY.
+
+def _vecka(nr):
+    """VECKOR[nr] ur verktyg/veckosidor/bygg.py. Hämtas först när en delsida byggs, eftersom bygg.py importerar den här
+    modulen. sys.path återställs efteråt, så att innehållsexportörerna inte hittar veckosidornas moduler."""
+    import sys
+    if 'veckosidor_bygg' not in sys.modules:
+        sokvag = list(sys.path)
+        spec = importlib.util.spec_from_file_location('veckosidor_bygg', ROOT / 'verktyg' / 'veckosidor' / 'bygg.py')
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules['veckosidor_bygg'] = mod
+        try:
+            spec.loader.exec_module(mod)
+        finally:
+            sys.path[:] = sokvag
+    return sys.modules['veckosidor_bygg'].VECKOR[nr]
+
+
+DEL_CSS = ('<style>'
+           '.dp{margin:10px 0 28px;padding:16px 18px;border:1px solid #cad8e2;border-left:8px solid var(--dag);border-radius:12px;background:#fff}'
+           '.dp-topp{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}'
+           '.dp .dag-chip{display:inline-block;padding:4px 12px;border-radius:999px;background:var(--dag);color:#fff;font-weight:700;font-size:15px}'
+           '.dp .dag-tid{color:#4d6579;font-size:15px}.dp-lage{font-weight:700;color:var(--dag);font-size:15px}'
+           '.dp h2.dp-rubrik{margin:14px 0 6px;padding:0;border:0;font-size:17px}.dp h2.dp-rubrik::before{content:none}'
+           '.dp-amnen{margin:8px 0 0;font-size:16px}'
+           '.dp-knappar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:12px 0 0}'
+           '.dp .laxor{list-style:none;margin:0;padding:0;border-top:1px solid #e3ecf2}'
+           '.dp .laxor li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 14px;padding:9px 0;border-bottom:1px solid #e3ecf2}'
+           '.dp .laxor p{margin:0 0 2px;font-size:16px}.dp .laxor a{font-size:16px}'
+           '.dp .laxa-lage{font-size:15px;color:#4d6579;text-align:right}.dp .laxa-lage.klar{color:#176844;font-weight:700}'
+           '.dp .vag-klar{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border:1px solid #cad8e2;border-radius:8px;font-size:16px;cursor:pointer;background:#fff}'
+           '.dp .vag-klar input{width:22px;height:22px;margin:0;accent-color:#176844}'
+           '.dp-lektion{margin:8px 0 0;font-size:15px;color:#4d6579}.dp-lektion b{color:#163248}'
+           '.dp-veckan{margin:14px 0 0;padding:12px 14px;border-radius:10px;border-top:4px solid #163248;background:#f3f6f9}'
+           '.dp-veckan h2.dp-rubrik{margin-top:0}.dp .dp-vk,.dp .laxor{list-style:none;margin:0;padding:0}'
+           '.dp-vk li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:7px 0;border-top:1px solid #dfe7ee;font-size:15px}'
+           '.dp-vk li:first-child{border-top:0}.dp-vk b{font-size:16px}.dp-vk .vk-kvar.bradskande{color:#8a2a00;font-weight:700}'
+           '.dp-vk .vk-lage{font-weight:700;text-align:right}.dp-vk .vk-lage.klar{color:#176844}'
+           '@media (max-width:640px){.dp{padding:14px}.dp .laxor li,.dp-vk li{grid-template-columns:1fr}.dp .laxa-lage,.dp-vk .vk-lage{text-align:left}}'
+           '</style>')
+
+
+def delpanel_html(nr, del_nr, sjalvrattande=None):
+    """Rutan ”Din del” för del del_nr i vecka nr, eller '' när veckan inte visas som dagar eller delen saknar lektion."""
+    if nr not in DAGSVY:
+        return ''
+    w = _vecka(nr)
+    lek = next((l for l in lektioner(nr, w) if l['del'] == del_nr), None)
+    if not lek:
+        return ''
+    veckan = [x for x in w['veckan'] if x.get('sista')]
+    data = {
+        'vecka': nr, 'sista': w['sista'], 'sista_text': _datumtext(dt.date.fromisoformat(w['sista'])),
+        'lektion': {k: lek[k] for k in ('id', 'del', 'dag', 'datum', 'datumtext', 'start', 'slut', 'tid', 'satt', 'farg', 'titel', 'bildspel')}
+                   | {'laxor': [x['id'] for x in lek['laxor']]},
+        'veckan': [{k: x[k] for k in ('id', 'titel', 'sista') if k in x} for x in veckan],
+        'ovningar': [[f'vecka-{nr}', [f'{lek["id"]}-q{i}' for i in range(1, 11)]]],
+    }
+    if sjalvrattande:
+        data['sjalvrattande'] = sjalvrattande
+        if quiz_plan(nr):
+            data['quiz_plan'] = quiz_plan(nr)
+    laxor = ''.join(_laxa_html(lek, x) for x in lek['laxor'])
+    amnen = ' · '.join(escape(a) for a in lek['amnen'])
+    texterna = '<a href="index.html#veckan">Ladda ner texterna</a>'
+    rader = ''.join(
+        f'<li data-vk="{x["id"]}" data-sista="{x["sista"]}"><span><b>{escape(x["titel"])}</b><br>Senast '
+        f'{escape(_datumtext(dt.date.fromisoformat(x["sista"])))} <span class="vk-kvar"></span></span>'
+        f'<span class="vk-lage" aria-live="polite">{"" if x.get("href") else texterna}</span></li>'
+        for x in veckan)
+    stil = f'--dag:{lek["farg"]};--dag-ton:{ton(lek["farg"], 0.10)}'
+    v = hashlib.sha1((ROOT / 'gemensamt' / 'dagsvy.mjs').read_bytes() + (ROOT / 'gemensamt' / 'veckopanel.mjs').read_bytes()).hexdigest()[:10]
+    return (DEL_CSS
+            + f'<section class="dp" id="din-del" aria-label="Din del: lektionen, läxorna och veckan" style="{stil}">'
+              f'<div class="dp-topp"><span class="dag-chip">{escape(lek["dag"])} {escape(lek["datumtext"].split(" ", 1)[1])}</span>'
+              f'<span class="dag-tid">{escape(lek["tid"])} · {escape(lek["satt"])}</span><span class="dp-lage" data-dp-lage></span></div>'
+              f'<p class="dp-amnen"><b>Vi pratar om:</b> {amnen}</p>'
+              f'<p class="dp-knappar"><a class="sj-btn" href="{lek["bildspel"]}">Öppna presentationen</a><a href="{lek["pdf"]}">Presentationen som PDF</a></p>'
+              f'<h2 class="dp-rubrik">Läxor efter lektionen</h2><ul class="laxor" data-lektion="{lek["id"]}">{laxor}</ul>'
+              f'<p class="dp-lektion"><b>På lektionen:</b> övning {del_nr}.1–{del_nr}.5 gör vi tillsammans. <span data-dp-lektion></span></p>'
+              f'<div class="dp-veckan"><h2 class="dp-rubrik">Hela veckan</h2><ul class="dp-vk">{rader}</ul>'
+              f'<p class="dp-lektion"><a href="index.html">Veckans översikt</a></p></div></section>'
+            + f'<script type="application/json" id="delpanel-data">{json.dumps(data, ensure_ascii=False)}</script>'
+            + f'<script type="module" src="../../gemensamt/dagsvy.mjs?v={v}"></script>')

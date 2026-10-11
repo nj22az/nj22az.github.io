@@ -147,6 +147,56 @@ function visaIdag(rot, data, lage, nu) {
   ruta.hidden = false;
 }
 
+/** Visar läget för lektionens läxor i en ruta (veckosidans dagruta eller delsidans Din del). Ger antalet klara. */
+function visaLaxor(kort, l, k) {
+  let klara = 0;
+  for (const laxa of l.laxor) {
+    const li = kort.querySelector(`[data-laxa="${laxa}"]`);
+    const s = laxLage(l, laxa, k);
+    klara += s.klar ? 1 : 0;
+    const el = li?.querySelector('[data-lage]');
+    if (el) { satt(el, s.text); el.classList.toggle('klar', s.klar); }
+    const ruta = li?.querySelector('input[data-klar]');
+    if (ruta) ruta.checked = s.klar;
+  }
+  return klara;
+}
+
+/** Lektionens läge sett från delsidan: I dag 09.00–11.00, Pågår nu, I morgon, Om 3 dagar eller Lektionen har varit. */
+export function lektionText(l, nu = new Date()) {
+  const idag = lokaltDatum(nu);
+  if (l.datum === idag) {
+    const m = nu.getHours() * 60 + nu.getMinutes();
+    return m < minuter(l.start) ? `I dag ${l.tid}` : m < minuter(l.slut) ? 'Pågår nu' : 'Lektionen har varit i dag';
+  }
+  if (l.datum > idag) {
+    const n = dagarKvar(l.datum, nu);
+    return n === 1 ? `I morgon ${l.tid}` : `Om ${n} dagar`;
+  }
+  return 'Lektionen har varit';
+}
+
+/** Rutan Din del överst på delsidan (verktyg/veckosidor/dagsvy.py delpanel_html). */
+export async function visaDel(rot = document) {
+  const dataEl = rot.querySelector('#delpanel-data');
+  if (!dataEl) return;
+  const data = JSON.parse(dataEl.textContent);
+  const nu = new Date(), l = data.lektion, k = lageNu(data);
+  const { inl, lasf } = await formularStatus(data);
+  const panel = rot.querySelector('#din-del');
+  satt(panel.querySelector('[data-dp-lage]'), lektionText(l, nu));
+  visaLaxor(panel.querySelector('.laxor'), l, k);
+  const paLektionen = [1, 2, 3, 4, 5].filter((i) => k.ovningar[`${l.id}-q${i}`]).length;
+  satt(panel.querySelector('[data-dp-lektion]'), paLektionen === 5 ? '✓ 5 av 5 klara' : `${paLektionen} av 5 klara`);
+  const lage = { inlamning: formularText(inl), quiz: formularText(lasf ? { ...lasf, uppgifter: lasf.dokument || lasf.uppgifter } : null) };
+  for (const x of panel.querySelectorAll('.dp-vk li[data-vk]')) {
+    const s = lage[x.dataset.vk];
+    if (s) { const el = x.querySelector('.vk-lage'); satt(el, s.text); el.classList.toggle('klar', !!s.klar); }
+    const kv = kvarText(x.dataset.sista, nu), el = x.querySelector('.vk-kvar');
+    satt(el, `· ${kv.text}`); el.classList.toggle('bradskande', kv.bradskande && !s?.klar);
+  }
+}
+
 let forstaGangen = true;
 
 export async function visa(rot = document) {
@@ -163,16 +213,7 @@ export async function visa(rot = document) {
   for (const l of data.lektioner) {
     const kort = rot.querySelector(`[data-lektion="${l.id}"]`);
     if (!kort) continue;
-    let klara = 0;
-    for (const laxa of l.laxor) {
-      const li = kort.querySelector(`[data-laxa="${laxa}"]`);
-      const s = laxLage(l, laxa, k);
-      klara += s.klar ? 1 : 0;
-      const el = li?.querySelector('[data-lage]');
-      if (el) { satt(el, s.text); el.classList.toggle('klar', s.klar); }
-      const ruta = li?.querySelector('input[data-klar]');
-      if (ruta) ruta.checked = s.klar;
-    }
+    const klara = visaLaxor(kort, l, k);
     const idag = lage.lektion?.id === l.id, nasta = fokus?.id === l.id;
     kort.classList.toggle('idag-kort', idag); kort.classList.toggle('nasta-kort', nasta);
     const status = kort.querySelector('.dag-lage');
@@ -214,23 +255,29 @@ export async function visa(rot = document) {
   }
 }
 
-if (typeof document !== 'undefined' && document.getElementById('dagsvy-data')) {
+if (typeof document !== 'undefined' && (document.getElementById('dagsvy-data') || document.getElementById('delpanel-data'))) {
+  const dataEl = document.getElementById('dagsvy-data') || document.getElementById('delpanel-data');
+  const rita = dataEl.id === 'dagsvy-data' ? () => visa() : () => visaDel();
+  let vantar = null;
+  const snart = () => { clearTimeout(vantar); vantar = setTimeout(rita, 150); };
   const start = () => {
-    visa();
+    rita();
     document.addEventListener('change', (e) => {
       const ruta = e.target.closest?.('input[data-klar]');
-      if (!ruta) return;
-      const data = JSON.parse(document.getElementById('dagsvy-data').textContent), nyckel = `sj-steg:vecka-${data.vecka}`;
-      const steg = las(nyckel, {});
-      if (ruta.checked) steg[ruta.dataset.klar] = true; else delete steg[ruta.dataset.klar];
-      skriv(nyckel, steg);
-      visa();
+      if (ruta) {
+        const nyckel = `sj-steg:vecka-${JSON.parse(dataEl.textContent).vecka}`;
+        const steg = las(nyckel, {});
+        if (ruta.checked) steg[ruta.dataset.klar] = true; else delete steg[ruta.dataset.klar];
+        skriv(nyckel, steg);
+      }
+      snart();  // också övningarnas bockar och läst-knappen på delsidan
     });
+    document.addEventListener('click', (e) => { if (e.target.closest?.('button')) snart(); });
     // Delsidan, övningarna och formulären sparar i andra flikar: räkna om när eleven kommer tillbaka.
-    addEventListener('pageshow', () => visa());
-    addEventListener('storage', () => visa());
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) visa(); });
-    setInterval(() => { if (!document.hidden) visa(); }, 60000);  // ”I dag” byter läge när lektionen börjar och slutar
+    addEventListener('pageshow', () => rita());
+    addEventListener('storage', () => rita());
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) rita(); });
+    setInterval(() => { if (!document.hidden) rita(); }, 60000);  // lektionens läge byter när lektionen börjar och slutar
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 }

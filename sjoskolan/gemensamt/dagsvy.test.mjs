@@ -1,7 +1,7 @@
 // Veckosidan som dagar (gemensamt/dagsvy.mjs): dagens läge, läxornas läge och formulärens text.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { idagLage, laxLage, formularText, kvarText, datumText, lmSumma } from './dagsvy.mjs';
+import { idagLage, laxLage, formularText, kvarText, datumText, lmSumma, lektionText } from './dagsvy.mjs';
 
 const lektioner = [
   { id: 'v42_01', datum: '2026-10-12', start: '09:00', slut: '11:00' },
@@ -59,4 +59,14 @@ test('kursplanens punkter: inlämningens och quizets svar läggs ihop, sidans to
   const quiz = { dokument: [{ ratt: 4, totalt: 10 }], lm: { 'LM-2': { ratt: 4, totalt: 30 }, 'LM-7': { ratt: 2, totalt: 20 } } };
   const inl = { uppgifter: [{ ratt: 3, totalt: 4 }], lm: { 'LM-2': { ratt: 3, totalt: 5 }, 'LM-3': { ratt: 1, totalt: 8 } } };
   assert.deepEqual(lmSumma(data, inl, quiz), { 'LM-2': { ratt: 7, totalt: 35 }, 'LM-3': { ratt: 1, totalt: 8 }, 'LM-7': { ratt: 2, totalt: 20 } });
+});
+
+test('delsidans lektionsläge: om några dagar, i morgon, i dag, pågår och har varit', () => {
+  const l = { datum: '2026-10-13', start: '15:00', slut: '17:00', tid: '15.00–17.00' };
+  assert.equal(lektionText(l, new Date('2026-10-11T18:00')), 'Om 2 dagar');
+  assert.equal(lektionText(l, new Date('2026-10-12T18:00')), 'I morgon 15.00–17.00');
+  assert.equal(lektionText(l, new Date('2026-10-13T14:00')), 'I dag 15.00–17.00');
+  assert.equal(lektionText(l, new Date('2026-10-13T15:30')), 'Pågår nu');
+  assert.equal(lektionText(l, new Date('2026-10-13T18:00')), 'Lektionen har varit i dag');
+  assert.equal(lektionText(l, new Date('2026-10-14T09:00')), 'Lektionen har varit');
 });

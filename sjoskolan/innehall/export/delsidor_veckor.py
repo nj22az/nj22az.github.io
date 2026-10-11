@@ -225,6 +225,10 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
 <article class="course-reading del-sida">
 <p class="course-kicker">{kicker}</p><h1>{e(titel)}</h1>{flyttnotis}
 <nav class="del-steg" aria-label="Delens ordning"><a href="#oversikt"><b>1</b>Översikt</a><a href="#teori"><b>2</b>Teori</a><a href="#exempel"><b>3</b>Exempel</a><a href="#ovningar"><b>4</b>Övningar</a><a href="#labb"><b>5</b>Labben</a></nav>''']
+    # Vecka som visas som dagar (verktyg/veckosidor/dagsvy.py): rutan Din del med dagens färg, presentationen, läxorna
+    # efter lektionen och det som gäller hela veckan, samma data som veckosidan.
+    if not flytt:
+        h.append(dagsvy().delpanel_html(int(v), dnr, sjalvrattning_modul()))
 
     # 1 Översikt
     malrader = [b for b in (mal[2] if mal else []) if b[0] != 'fig']
@@ -384,6 +388,33 @@ def sjalvrattning():
         spec.loader.exec_module(mod)
         _SJALV.append(mod)
     return _SJALV[0]
+
+
+_DAGSVY = []
+
+
+def dagsvy():
+    """verktyg/veckosidor/dagsvy.py: rutan Din del på delsidorna för veckorna i DAGSVY."""
+    if not _DAGSVY:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('dagsvy_delsidor', R.SJO / 'verktyg' / 'veckosidor' / 'dagsvy.py')
+        mod = importlib.util.module_from_spec(spec)
+        import sys
+        sokvag = list(sys.path)
+        sys.path.insert(0, str(R.SJO / 'verktyg' / 'veckosidor'))  # dagsvy.py importerar kursplan.py bredvid sig
+        try:
+            spec.loader.exec_module(mod)
+        finally:
+            sys.path[:] = sokvag
+        _DAGSVY.append(mod)
+    return _DAGSVY[0]
+
+
+def sjalvrattning_modul():
+    """Adressen till gemensamt/sjalvrattning.mjs relativt dagsvy.mjs, med innehållets hash (samma som veckosidan)."""
+    import hashlib
+    modul = R.SJO / 'gemensamt' / 'sjalvrattning.mjs'
+    return f'./sjalvrattning.mjs?v={hashlib.sha1(modul.read_bytes()).hexdigest()[:10]}' if modul.exists() else None
 
 
 def filer(a):
