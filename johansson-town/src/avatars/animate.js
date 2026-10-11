@@ -5,6 +5,8 @@ import {seeded} from './recipe.js';
 import {consumptionPhase,poseAvatarConsumption,drinkHeadTilt} from './consume.js';
 import {bodyLanguage,CONVERSATION_BIG} from './body-language.js';
 import {createFootGrounder,createLieGrounder,createSoleFinder} from './foot-ground.js';
+import {FUN_POSES,STILL_AT} from './fun-poses.js';
+export {FUN_POSES,STILL_AT};
 import {createSeatSupport} from './seat-support.js';
 import {gaitOf} from './gait.js';
 import {bodyVolume} from './build.js';
@@ -291,11 +293,15 @@ export const GESTURES=Object.freeze({
  // The carry like a plank (CarriedPlank, CarryFurniture, CarryLegs) and Mrs Higa's reach back for the contract breaker
  // (ReachBack: up to the lever and pushing it up, held; out over `REACH_BACK.out` when its time ends).
  CarriedPlank:Infinity,CarryLegs:Infinity,ReachBack:3.2,
+ // Funny poses for comics, memes and the scene builders (fun-poses.js: what each is for, and its face).
+ ...Object.fromEntries(Object.entries(FUN_POSES).map(([name,p])=>[name,p.d])),
 });
 /** The moves that ease in from wherever the body is and back to it (the story's: they lerp from the pose under them). */
 const EASED=new Set(['CupHands','CoinToCheek','BowDeep','BowWalk','KneelHug','PoleFlick','Peek','BannerUp','FanWild','HoldOn','FingerStop',
  'Tape','Offer','Reach','LieKnead','GrenadeCoin','Aim','HoldUp','HoldUpStraws','Call','WriteAbove',
- 'BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarriedPlank','CarryFurniture','CarryLegs','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff','ReachBack']);
+ 'BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarriedPlank','CarryFurniture','CarryLegs','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff','ReachBack',
+ // and the funny poses (fun-poses.js): from however the body stands (hands behind the back, in the pockets) and back to it
+ ...Object.keys(FUN_POSES)]);
 /** The body that goes with a feeling, played once when the feeling arrives. */
 export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump',angry:'Stomp',shy:'Fidget',surprised:'Gasp',worried:'Think'});
 
@@ -410,6 +416,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
      if(armBoxes.length){const b=inBox(p,armBoxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}}
     if(boxes.length)for(const q of TOUCH){const b=inBox(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W),boxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}
     const rm=headR(M),nearM=hairAt(M)+m.hand*.85/m.Rh;if(rm<nearM)c+=(nearM-rm)**2*300;
+    // (cover: the whole mitten outside the head and its hair, not only its middle, by `cover` metres (6 mm unless said): a
+    // mitten laid on the face or the crown)
+    if(want.cover){const gap=(want.cover===true?.006:want.cover)*k/m.Rh;for(const q of TOUCH){const p=_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W),r=headR(p),near=hairAt(p)+gap;if(r<near)c+=(near-r)**2*3000;}}
     const dm=torso(M),clear=want.touch?m.hand*.7:m.hand*.9;if(dm<clear)c+=((clear-dm)/k)**2*400;
     // laid on the body, the whole mitten stays on it, not in it: its tip and the backs of its sides
     if(want.touch)for(const q of TOUCH){const d=torso(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W));if(d<.009*k)c+=((.009*k-d)/k)**2*2000;}
@@ -423,7 +432,8 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   reached.set(name,out);return out;
  }
  /** How far the hair (and whatever else the head carries: ears, a bun) reaches out from the head's middle, by direction, in
-  *  the head's own radii (S: its half-axes): the outermost of the drawn body's head-bound points, at rest, in 5° bins (and
+  *  the head's own radii (S: its half-axes): the outermost of the drawn body's head-bound points and of the drawn head, at
+  *  rest, in 5° bins (and
   *  their neighbours, so the shell is never thinner than the hair between two of them). Kept for the body as it is dressed;
   *  a function of a point in those radii. */
  const hairShells=new Map();
@@ -436,6 +446,10 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   for(let i=0;i<P.count;i++){if(I.getX(i)!==head||Wt.getX(i)<.99)continue;const x=P.getX(i)/S[0],y=(P.getY(i)-m.headCentre)/S[1],z=P.getZ(i)/S[2],b=bin(x,y,z);R[b]=Math.max(R[b],Math.hypot(x,y,z));}
   const out=new Float32Array(A*E);
   for(let e=0;e<E;e++)for(let a=0;a<A;a++){let r=0;for(let de=-1;de<=1;de++){const f=e+de;if(f<0||f>=E)continue;for(let da=-1;da<=1;da++)r=Math.max(r,R[f*A+(a+da+A)%A]);}out[e*A+a]=r;}
+  // and the drawn head itself (its own mesh, about the head's middle), which bulges past the round head here and there
+  // (bin by bin: its points are close together, and a nose spread to its neighbours would hold a mitten off the face)
+  const F=avatar.face?.head?.geometry?.attributes.position;
+  if(F)for(let i=0;i<F.count;i++){const x=F.getX(i)/S[0],y=F.getY(i)/S[1],z=F.getZ(i)/S[2],b=bin(x,y,z);out[b]=Math.max(out[b],Math.hypot(x,y,z));}
   const shell=(x,y,z)=>out[bin(x,y,z)];hairShells.set(mesh.uuid,shell);return shell;
  }
  /**
@@ -863,7 +877,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // where the seat is under the body, in its own frame: what it sits on keeps its cloth (towel-fit.js) on it
    avatar.seatLevel=chairBlend<1?null:(Number.isFinite(s.seatHeight)?s.seatHeight:.45)-avatar.root.position.y;
   }else if(!s.riding&&!s.sleeping&&!lie){
-   groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)});
+   groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)||!!FUN_POSES[gesture?.name]?.airborne});
    // Kneeling rests on the knees as well as the toes: nothing on the body (a boot's leg, a knee in thick cloth) goes
    // below the floor; whichever is lowest touches it.
    if(kneel>0){const up=groundLying(s.floorHeight||0);if(up>0)avatar.root.position.y+=up;}
@@ -1100,7 +1114,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   // the moves for Fujita's Ten Minutes of Heaven come in smoothly over half a second (big ones slower); a pose the scene
   // names comes in and goes out on its own ramp
   const raw=g.ramp!==undefined?g.ramp:THREE.MathUtils.clamp(Math.min(t/.5,d===Infinity?1:(d-t)/.5),0,1);
-  const w=g.ramp!==undefined?smooth(g.ramp):inOut(t,d,RAMP_TIME[g.name]||.5),soak=s.seat==='Soak'||s.pose==='Soak';
+  const w=g.ramp!==undefined?smooth(g.ramp):inOut(t,d,...[RAMP_TIME[g.name]||FUN_POSES[g.name]?.ramp||.5].flat()),soak=s.seat==='Soak'||s.pose==='Soak';
   switch(g.name){
    case 'Wave':set('shoulderR',-.2,0,-2.55*q);set('elbowR',0,0,-.45+Math.sin(t*10)*.45*q);add('head',0,0,.08*q);break;
    case 'Bow':add('chest',.95*e*bowDepth);add('spine',.25*e*bowDepth);add('head',.2*e*bowDepth);set('shoulderL',.1,0,.05);set('shoulderR',.1,0,-.05);break;
@@ -1415,6 +1429,10 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // The torch (6f, 7a, 7d): the arm is torchArm's; the body stands easy and calm.
    case 'TorchUp':add('chest',.02*w);break;
    case 'TorchOff':add('head',.05*w);break;
+   // The funny poses (fun-poses.js): each writes its own body; a hand to the head is placed on this body's own head (REACH,
+   // the pose's `reach`). Seated, the seat keeps the legs and the bottom where they are (update()).
+   default:{const F=FUN_POSES[g.name];if(!F)break;
+    return F.play({t,d,w,q,e,m,seated,set,add,toward,armTo,reach:()=>reachFor('Fun:'+g.name,F.reach)})||null;}
   }
   return null;
  }

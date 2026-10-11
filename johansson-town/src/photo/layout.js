@@ -1,7 +1,9 @@
+import {FUN_POSES} from '../avatars/fun-poses.js';
 export const PHOTO_LIMIT=4;
 export const CAST_LIMIT=6;
 export const FORMATS=Object.freeze({landscape:4/3,square:1,portrait:3/4});
-export const POSES=Object.freeze(['Idle','Wave','Cheer','Point','Shrug','Laugh','Think','Bow','Clap','Kachashi','Crouch','Sit','Heart','Peace','Coy','Tada','HandsOnHips','HeelKick','CheekRest','DoubleCheek']);
+// (and every funny pose: avatars/fun-poses.js is their one list)
+export const POSES=Object.freeze(['Idle','Wave','Cheer','Point','Shrug','Laugh','Think','Bow','Clap','Kachashi','Crouch','Sit','Heart','Peace','Coy','Tada','HandsOnHips','HeelKick','CheekRest','DoubleCheek',...Object.keys(FUN_POSES)]);
 // Every face World's face painter knows (avatars/face.js is the one list): the photo studio offers them all.
 export {EXPRESSION_NAMES as EXPRESSIONS} from '../avatars/face.js';
 export const cleanCaption=text=>Array.from(String(text||'').replace(/[\u0000-\u001f]/g,' ')).slice(0,120).join('');

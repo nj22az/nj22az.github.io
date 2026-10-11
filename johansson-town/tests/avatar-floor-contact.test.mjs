@@ -4,7 +4,7 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildAvatar} from '../src/avatars/build.js';
 import {CAST_RECIPES} from '../src/avatars/cast.js';
-import {createAvatarAnimator,GESTURES} from '../src/avatars/animate.js';
+import {createAvatarAnimator,GESTURES,FUN_POSES} from '../src/avatars/animate.js';
 import {createAvatarJohansson} from '../src/avatars/actors.js';
 import {seatContactHeight} from './seating-contact.mjs';
 installDOM();
@@ -18,7 +18,7 @@ function soles(avatar){
 }
 
 test('Thuan keeps a supporting foot on the actual floor throughout every grounded gesture and outfit',()=>{
- const jumping=new Set(['Jump','Tackle','Hop','Cheer','Gasp']);   // a tackle leaves the floor: the dive itself
+ const jumping=new Set(['Jump','Tackle','Hop','Cheer','Gasp',...Object.entries(FUN_POSES).filter(([,p])=>p.airborne).map(([n])=>n)]);   // a tackle leaves the floor: the dive itself
  const carried=new Set(['CarriedPlank']);   // laid level and lifted by the people carrying him (fujitas-back-moves tests it)
  for(const outfit of ['clothes','nozomi','sailor','swim']){
   const avatar=buildAvatar(CAST_RECIPES.Thuan);avatar.wear(outfit);
