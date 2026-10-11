@@ -1,0 +1,190 @@
+TAP version 13
+# Subtest: both ferry landings have real, unobstructed walking routes to their passenger facilities
+ok 1 - both ferry landings have real, unobstructed walking routes to their passenger facilities
+  ---
+  duration_ms: 36805.769875
+  type: 'test'
+  ...
+# Subtest: Mr Fujita walks to his berth at 23:30 and returns at six without beer or a tilted walking body
+ok 2 - Mr Fujita walks to his berth at 23:30 and returns at six without beer or a tilted walking body
+  ---
+  duration_ms: 243.25825
+  type: 'test'
+  ...
+# Subtest: night boot is in the berth with the same resident
+ok 3 - night boot is in the berth with the same resident
+  ---
+  duration_ms: 55.359709
+  type: 'test'
+  ...
+# Subtest: pier, gangway and every walking segment are clear
+ok 4 - pier, gangway and every walking segment are clear
+  ---
+  duration_ms: 72.069709
+  type: 'test'
+  ...
+# Subtest: clock reversal reverses the current walk continuously
+ok 5 - clock reversal reverses the current walk continuously
+  ---
+  duration_ms: 107.14425
+  type: 'test'
+  ...
+# Subtest: cargo calls never overlap the houseboat or gangway
+ok 6 - cargo calls never overlap the houseboat or gangway
+  ---
+  duration_ms: 41.935958
+  type: 'test'
+  ...
+# Subtest: the open cabin approach clears a standing player beside the freshwater tank
+ok 7 - the open cabin approach clears a standing player beside the freshwater tank
+  ---
+  duration_ms: 29.924292
+  type: 'test'
+  ...
+# Subtest: the moves are on the body’s list, and the scene can name each as a pose; none is on the moves menu
+ok 8 - the moves are on the body’s list, and the scene can name each as a pose; none is on the moves menu
+  ---
+  duration_ms: 0.94625
+  type: 'test'
+  ...
+# Subtest: every move plays, holds and lets go: as a move and as a pose, smoothly, nothing lost, the same every time
+ok 9 - every move plays, holds and lets go: as a move and as a pose, smoothly, nothing lost, the same every time
+  ---
+  duration_ms: 61896.748875
+  type: 'test'
+  ...
+# Subtest: standing, a foot is on the floor and nothing goes through it; seated, the seat carries them as before; carried, the carriers
+ok 10 - standing, a foot is on the floor and nothing goes through it; seated, the seat carries them as before; carried, the carriers
+  ---
+  duration_ms: 18134.898625
+  type: 'test'
+  ...
+# Subtest: stuck (BentStuck): bent level at the hips over his feet, a mitten on the small of his back, the other arm hanging
+ok 11 - stuck (BentStuck): bent level at the hips over his feet, a mitten on the small of his back, the other arm hanging
+  ---
+  duration_ms: 396.719708
+  type: 'test'
+  ...
+# Subtest: headTo turns only the head to the lens while the body holds the shape
+ok 12 - headTo turns only the head to the lens while the body holds the shape
+  ---
+  duration_ms: 109.350917
+  type: 'test'
+  ...
+# Subtest: CrabWalk shuffles sideways the way he is moved: small steps out and in, the feet never crossing, both mittens on his back
+ok 13 - CrabWalk shuffles sideways the way he is moved: small steps out and in, the feet never crossing, both mittens on his back
+  ---
+  duration_ms: 406.415792
+  type: 'test'
+  ...
+# Subtest: in the massage chair: curled over his knees, uncurling slowly to half way and stopping, the mittens on his thighs
+ok 14 - in the massage chair: curled over his knees, uncurling slowly to half way and stopping, the mittens on his thighs
+  ---
+  duration_ms: 326.333417
+  type: 'test'
+  ...
+# Subtest: stuck in the chair in a new shape (FrozenAbsurd): an arm up clear of the head, a mitten on his back, a knee up on the seat
+ok 15 - stuck in the chair in a new shape (FrozenAbsurd): an arm up clear of the head, a mitten on his back, a knee up on the seat
+  ---
+  duration_ms: 282.036375
+  type: 'test'
+  ...
+# Subtest: carried bent (CarriedBent): the legs hang straight and stiff from the level back
+ok 16 - carried bent (CarriedBent): the legs hang straight and stiff from the level back
+  ---
+  duration_ms: 130.480584
+  type: 'test'
+  ...
+# Subtest: carried like a plank (CarriedPlank): level and rigid on the three women’s mittens, the face to the side, in no one
+ok 17 - carried like a plank (CarriedPlank): level and rigid on the three women’s mittens, the face to the side, in no one
+  ---
+  duration_ms: 4084.2895
+  type: 'test'
+  ...
+# Subtest: CordWrapped: the arms pinned, then the cord wound round her and them, close but in nothing, from the dryer’s handle
+ok 18 - CordWrapped: the arms pinned, then the cord wound round her and them, close but in nothing, from the dryer’s handle
+  ---
+  duration_ms: 1636.109542
+  type: 'test'
+  ...
+# Subtest: BasketHead: the locker basket upside down on her head, resting on the head towel, her arms out feeling the dark
+ok 19 - BasketHead: the locker basket upside down on her head, resting on the head towel, her arms out feeling the dark
+  ---
+  duration_ms: 995.905417
+  type: 'test'
+  ...
+# Subtest: SitRead: the paper held open by its edges low over his lap, the torch on his pocket showing over it; a Nod looks up
+ok 20 - SitRead: the paper held open by its edges low over his lap, the torch on his pocket showing over it; a Nod looks up
+  ---
+  duration_ms: 182.088834
+  type: 'test'
+  ...
+# Subtest: the torch: clipped on his pocket; TorchUp takes it, holds it up and clicks it on, its light on his face; TorchOff; back
+ok 21 - the torch: clipped on his pocket; TorchUp takes it, holds it up and clicks it on, its light on his face; TorchOff; back
+  ---
+  duration_ms: 114.848625
+  type: 'test'
+  ...
+# Subtest: ReachBack: from her stool, the left mitten back over her shoulder to the breaker, up under the lever and pushing it up, eyes on her book
+ok 22 - ReachBack: from her stool, the left mitten back over her shoulder to the breaker, up under the lever and pushing it up, eyes on her book
+  ---
+  duration_ms: 25559.696791
+  type: 'test'
+  ...
+# Subtest: Fujita’s squinting eyes follow his face (pained, surprised, laughing, relieved, sad, cross) and stay his
+ok 23 - Fujita’s squinting eyes follow his face (pained, surprised, laughing, relieved, sad, cross) and stay his
+  ---
+  duration_ms: 6.953458
+  type: 'test'
+  ...
+# Subtest: the arms keep out of the body, the clothes and the head as far as the town’s own moves do (the hands laid on him aside)
+ok 24 - the arms keep out of the body, the clothes and the head as far as the town’s own moves do (the hands laid on him aside)
+  ---
+  duration_ms: 6965.802708
+  type: 'test'
+  ...
+# Subtest: bent in the after-bath clothes, the head (turned to the lens or not) never comes down on the tenugui round his neck
+ok 25 - bent in the after-bath clothes, the head (turned to the lens or not) never comes down on the tenugui round his neck
+  ---
+  duration_ms: 5509.137416
+  type: 'test'
+  ...
+# Subtest: the ground layers are named rather than guessed
+ok 26 - the ground layers are named rather than guessed
+  ---
+  duration_ms: 0.459166
+  type: 'test'
+  ...
+# Subtest: no two outdoor surfaces share a plane
+ok 27 - no two outdoor surfaces share a plane
+  ---
+  duration_ms: 7873.919084
+  type: 'test'
+  ...
+# Subtest: Fujita landing connects to the quay while the discarded L-return is water
+ok 28 - Fujita landing connects to the quay while the discarded L-return is water
+  ---
+  duration_ms: 8.449666
+  type: 'test'
+  ...
+# Subtest: pier boards match walkable bounds with flush tops and a clear walking lane
+ok 29 - pier boards match walkable bounds with flush tops and a clear walking lane
+  ---
+  duration_ms: 14.007541
+  type: 'test'
+  ...
+# Subtest: truck collision covers the complete chassis and fork envelope throughout its lift
+ok 30 - truck collision covers the complete chassis and fork envelope throughout its lift
+  ---
+  duration_ms: 13.211083
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 126912.843125
