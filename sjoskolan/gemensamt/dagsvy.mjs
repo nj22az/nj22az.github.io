@@ -21,14 +21,17 @@ export const lokaltDatum = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1)
 const minuter = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
 export const datumText = (d) => `${VECKODAG[d.getDay()]} ${d.getDate()} ${MANAD[d.getMonth()]}`;
 
-/** Dagens läge. typ: lektion (fas före, pågår eller efter), ingen (ingen lektion i dag), före-veckan eller slut. */
+/** Dagens läge. typ: lektion (fas före, pågår eller efter), ingen (ingen lektion i dag), före-veckan eller slut.
+ *  Har dagen flera lektioner är lektion den som pågår eller kommer härnäst; senare är resten av dagens lektioner. */
 export function idagLage(lektioner, sista, nu = new Date()) {
   const idag = lokaltDatum(nu), klocka = nu.getHours() * 60 + nu.getMinutes();
-  const dagens = lektioner.find((l) => l.datum === idag) || null;
+  const dagens = lektioner.filter((l) => l.datum === idag);
   const nasta = lektioner.find((l) => l.datum > idag) || null;
-  if (dagens) {
-    const fas = klocka < minuter(dagens.start) ? 'före' : klocka < minuter(dagens.slut) ? 'pågår' : 'efter';
-    return { typ: 'lektion', fas, lektion: dagens, nasta };
+  if (dagens.length) {
+    const aktuell = dagens.find((l) => klocka < minuter(l.slut));
+    if (!aktuell) return { typ: 'lektion', fas: 'efter', lektion: dagens[dagens.length - 1], dagens, senare: [], nasta };
+    const fas = klocka < minuter(aktuell.start) ? 'före' : 'pågår';
+    return { typ: 'lektion', fas, lektion: aktuell, dagens, senare: dagens.slice(dagens.indexOf(aktuell) + 1), nasta };
   }
   if (lektioner.length && idag < lektioner[0].datum) return { typ: 'före-veckan', lektion: null, nasta: lektioner[0] };
   if (idag > sista) return { typ: 'slut', lektion: null, nasta: null };
@@ -37,7 +40,7 @@ export function idagLage(lektioner, sista, nu = new Date()) {
 
 /** Läget för en läxa: del-N (”Jag har läst del N”), ovn-N (övning N.6–N.10 avbockade), annars Klart-rutan. */
 export function laxLage(lektion, laxa, k) {
-  if (laxa.startsWith('del-')) {
+  if (laxa.startsWith('del-') && lektion.lasknapp !== false) {
     const t = k.lasning[laxa];
     return { klar: !!t, text: t ? '✓ Läst' : 'Inte läst än' };
   }
@@ -105,10 +108,14 @@ function visaIdag(rot, data, lage, nu) {
   const visaAmnen = (l) => { amnen.replaceChildren(...l.amnen.map((t) => Object.assign(document.createElement('li'), { textContent: t }))); amnen.hidden = !l.amnen.length; };
   const nastaText = (l) => (l ? `Nästa lektion: ${l.dag.toLowerCase()} ${l.datumtext.split(' ').slice(1).join(' ')} ${l.tid}, ${l.titel}.` : '');
   lank.hidden = false; amnen.hidden = true;
+  if ($('idag-sedan')) $('idag-sedan').hidden = true;
   if (lage.typ === 'lektion' && lage.fas !== 'efter') {
     const l = lage.lektion; farg(l);
     satt($('idag-nar'), `${lage.fas === 'pågår' ? 'Pågår nu' : 'I dag'} · ${l.datumtext} · ${l.tid} ${l.satt}`);
-    satt($('idag-rubrik'), l.titel); satt($('idag-text'), 'Det här pratar vi om i dag:'); visaAmnen(l);
+    satt($('idag-rubrik'), l.titel);
+    const sedan = (lage.senare || []).map((x) => `Sedan ${x.tid}: ${x.titel}.`).join(' ');
+    satt($('idag-text'), lage.senare?.length ? 'Det här pratar vi om först:' : 'Det här pratar vi om i dag:'); visaAmnen(l);
+    satt($('idag-sedan'), sedan); $('idag-sedan').hidden = !sedan;
     knapp.href = l.bildspel; satt(knapp, 'Öppna presentationen');
     lank.href = `#dag-${l.dag.toLowerCase()}`; satt(lank, 'Läxor efter lektionen');
   } else if (lage.typ === 'lektion') {
@@ -210,17 +217,20 @@ export async function visa(rot = document) {
   visaIdag(rot, data, lage, nu);
   // Nästa lektion lyfts fram när det inte är lektion i dag eller när dagens lektion är slut.
   const fokus = lage.typ === 'lektion' && lage.fas !== 'efter' ? null : lage.nasta;
-  for (const l of data.lektioner) {
-    const kort = rot.querySelector(`[data-lektion="${l.id}"]`);
-    if (!kort) continue;
-    const klara = visaLaxor(kort, l, k);
-    const idag = lage.lektion?.id === l.id, nasta = fokus?.id === l.id;
+  for (const kort of rot.querySelectorAll('details.dag[data-datum]')) {
+    const dagens = data.lektioner.filter((l) => l.datum === kort.dataset.datum);
+    let klara = 0, alla = 0;
+    for (const l of dagens) {
+      const block = kort.querySelector(`[data-lektion="${l.id}"]`);
+      if (block) { klara += visaLaxor(block, l, k); alla += l.laxor.length; }
+    }
+    const idag = lage.typ === 'lektion' && lage.lektion.datum === kort.dataset.datum, nasta = fokus?.datum === kort.dataset.datum;
     kort.classList.toggle('idag-kort', idag); kort.classList.toggle('nasta-kort', nasta);
     const status = kort.querySelector('.dag-lage');
     const etikett = idag ? 'I dag' : nasta ? 'Nästa lektion' : '';
-    status.replaceChildren(...(etikett ? [Object.assign(document.createElement('b'), { textContent: etikett }), ' · '] : []), `Läxor: ${klara} av ${l.laxor.length} klara`);
-    // En lektion som har varit och har läxor kvar syns i varningsfärg, också när rutan är stängd.
-    status.classList.toggle('kvar', l.datum < lokaltDatum(nu) && klara < l.laxor.length);
+    status.replaceChildren(...(etikett ? [Object.assign(document.createElement('b'), { textContent: etikett }), ' · '] : []), `Läxor: ${klara} av ${alla} klara`);
+    // En lektionsdag som har varit och har läxor kvar syns i varningsfärg, också när rutan är stängd.
+    status.classList.toggle('kvar', kort.dataset.datum < lokaltDatum(nu) && klara < alla);
     if (forstaGangen) kort.open = idag || nasta;  // de andra dagarna står kvar som en rad; eleven kan öppna dem
   }
   forstaGangen = false;

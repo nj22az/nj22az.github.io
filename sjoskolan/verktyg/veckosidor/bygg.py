@@ -271,7 +271,7 @@ VECKOR = {
         'fordjupning': [],
     },
     43: {
-        'titel': 'Komponenter, motorer, scheman och felsökning', 'datum': ('2026-10-19', '2026-10-23'), 'sista': '2026-10-25',
+        'titel': 'Komponenter, motorer, scheman och felsökning', 'datum': ('2026-10-19', '2026-10-23'), 'sista': '2026-10-23',  # allt senast fredag
         'mal': 'Du kan läsa skyddsdata och märkning, räkna på transformator och motor, följa en styrkrets i schemat och felsöka den systematiskt.',
         'distans': True,
         'delar': [
@@ -296,21 +296,21 @@ VECKOR = {
                 lank(V45 + 'Formelstod_och_ovningar.html#v45_01', 'Övningar: systematisk felsökning', 'övning', '10 övningar med facit'),
             ]},
         ],
-        'lektioner': {1: (0, 'Måndag', 'online 09.00–11.00'), 2: (1, 'Tisdag', 'online 15.00–17.00'), 3: (4, 'Fredag', 'online 09.00–11.00'), 4: (4, 'Fredag', 'online, andra timmen')},
+        'lektioner': {1: (0, 'Måndag', 'online 09.00–11.00'), 2: (1, 'Tisdag', 'online 15.00–17.00'), 3: (4, 'Fredag', 'online 09.00–10.00'), 4: (4, 'Fredag', 'online 10.00–11.00')},
         'plan': [
             (0, '09:00', 'Måndag', 'Online 09.00–11.00', 'Del 1 Komponenter och skydd. Övning 1.1–1.5 tillsammans.'),
             (0, '11:00', 'Måndag eftermiddag och tisdag förmiddag', 'Hemma', 'Övning 1.6–1.10. Börja på inlämning 1 och 2.'),
             (1, '15:00', 'Tisdag', 'Online 15.00–17.00', 'Del 2 Transformatorer och motorer. Övning 2.1–2.5 tillsammans.'),
             (1, '17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', 'Övning 2.6–2.10. Läs del 3 Elscheman själv och gör övning 3.1–3.5. Hållkretslabbet: de 8 räkna-först-uppgifterna.'),
             (4, '09:00', 'Fredag', 'Online 09.00–11.00', 'Första timmen: frågor från del 3. Andra timmen: del 4 Systematisk felsökning, övning 1.1–1.5 på delsidan tillsammans.'),
-            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Hållkretslabbet: felsök ett dolt fel med protokoll. Övning 1.6–1.10 i del 4 om du hinner. Inlämning med e-post senast söndag.'),
+            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Hållkretslabbet: felsök ett dolt fel med protokoll. Övning 1.6–1.10 i del 4 om du hinner. Inlämningen och felsökningsrapporten senast fredag.'),
         ],
         'redovisa_extra': [(V45 + 'Inlamning.html#uppgift-3', 'Felsökningsrapport')],
         'redovisa': ['Hållkretslabbet: de 8 räkna-först-uppgifterna och en felsökning med observation, hypotes, kontroll och slutsats.'],
         'fordjupning': [],
     },
     44: {
-        'titel': 'Elsystem, mätteknik och repetition', 'datum': ('2026-10-26', '2026-10-30'), 'sista': '2026-11-01',
+        'titel': 'Elsystem, mätteknik och repetition', 'datum': ('2026-10-26', '2026-10-30'), 'sista': '2026-10-30',  # allt senast fredag
         'mal': 'Du kan jämföra IT- och TN-system ombord, förklara första och andra jordfelet, bedöma isolationsresistans och mätresultat mot ett krav, och repetera inför tentamen.',
         'distans': True,
         'delar': [
@@ -341,15 +341,15 @@ VECKOR = {
                 lank('../../tentamen.html', 'Tentamen: innehåll och övningstenta', 'läs', 'med lösningar'),
             ]},
         ],
-        'lektioner': {1: (0, 'Måndag', 'online 09.00–11.00'), 2: (0, 'Måndag', 'online, andra timmen'), 3: (1, 'Tisdag', 'online 15.00–17.00'),
-                      4: (1, 'Tisdag', 'online, andra timmen'), 5: (4, 'Fredag', 'online 09.00–11.00')},
+        'lektioner': {1: (0, 'Måndag', 'online 09.00–10.00'), 2: (0, 'Måndag', 'online 10.00–11.00'), 3: (1, 'Tisdag', 'online 15.00–16.00'),
+                      4: (1, 'Tisdag', 'online 16.00–17.00'), 5: (4, 'Fredag', 'online 09.00–11.00')},
         'plan': [
             (0, '09:00', 'Måndag', 'Online 09.00–11.00', 'Första timmen: del 1 Lågspänningssystem. Andra timmen: del 2 Högspänningssystem. Övning 1.1–1.5 och 2.1–2.3 tillsammans.'),
             (0, '11:00', 'Måndag eftermiddag och tisdag förmiddag', 'Hemma', 'Isolationslabbet: räkna-först-uppgifterna och protokollet. Övning 1.6–1.10 och 2.4–2.6.'),
             (1, '15:00', 'Tisdag', 'Online 15.00–17.00', 'Första timmen: del 3 Fördjupad mätteknik. Andra timmen: del 4 Analys av mätresultat. Övning 3.1–3.3, och 2.1–2.3 på delsidan för del 4, tillsammans.'),
             (1, '17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', 'Övning 3.4–3.6, och 2.4–2.6 i del 4. Multimeterlabbet: Mätaren påverkar. Inlämning 1–4. Gör övningstentan utan att titta i lösningarna.'),
             (4, '09:00', 'Fredag', 'Online 09.00–11.00', 'Del 5 Repetition: vi går igenom de uppgifter i övningstentan som flest behöver. Tentamensveckan förklaras.'),
-            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Gör klart inlämningen och skicka den senast söndag. Rätta övningstentan och gör om övningarna i de veckor där du hade fel.'),
+            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Inlämningen och analysen av mätdata senast fredag. Rätta övningstentan och gör om övningarna i de veckor där du hade fel.'),
         ],
         'redovisa_extra': [(V45 + 'Inlamning.html#uppgift-1', 'Analys av mätdata')],
         'redovisa': ['Isolationslabbet: alla räkna-först-uppgifter och labbprotokollet sparat som PDF.'],

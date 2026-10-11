@@ -227,8 +227,9 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
 <nav class="del-steg" aria-label="Delens ordning"><a href="#oversikt"><b>1</b>Översikt</a><a href="#teori"><b>2</b>Teori</a><a href="#exempel"><b>3</b>Exempel</a><a href="#ovningar"><b>4</b>Övningar</a><a href="#labb"><b>5</b>Labben</a></nav>''']
     # Vecka som visas som dagar (verktyg/veckosidor/dagsvy.py): rutan Din del med dagens färg, presentationen, läxorna
     # efter lektionen och det som gäller hela veckan, samma data som veckosidan.
-    if not flytt:
-        h.append(dagsvy().delpanel_html(int(v), dnr, sjalvrattning_modul()))
+    # Delar som undervisas en annan vecka (FLYTTAD, vecka 45:s delar i vecka 43 och 44) visar den veckans lektion och läxor.
+    h.append(dagsvy().delpanel_html(flytt[0], flytt[1], sjalvrattning_modul(), f'vecka-{v}') if flytt
+             else dagsvy().delpanel_html(int(v), dnr, sjalvrattning_modul(), f'vecka-{v}'))
 
     # 1 Översikt
     malrader = [b for b in (mal[2] if mal else []) if b[0] != 'fig']

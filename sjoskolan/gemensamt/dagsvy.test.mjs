@@ -70,3 +70,21 @@ test('delsidans lektionsläge: om några dagar, i morgon, i dag, pågår och har
   assert.equal(lektionText(l, new Date('2026-10-13T18:00')), 'Lektionen har varit i dag');
   assert.equal(lektionText(l, new Date('2026-10-14T09:00')), 'Lektionen har varit');
 });
+
+test('två lektioner samma dag: den som pågår eller kommer härnäst, och resten av dagen', () => {
+  const vecka44 = [
+    { id: 'v44_01', datum: '2026-10-26', start: '09:00', slut: '10:00', tid: '09.00–10.00' },
+    { id: 'v44_02', datum: '2026-10-26', start: '10:00', slut: '11:00', tid: '10.00–11.00' },
+    { id: 'v44_03', datum: '2026-10-27', start: '15:00', slut: '16:00', tid: '15.00–16.00' },
+  ];
+  const l = (iso) => idagLage(vecka44, '2026-10-30', new Date(iso));
+  assert.deepEqual([l('2026-10-26T08:30').fas, l('2026-10-26T08:30').lektion.id, l('2026-10-26T08:30').senare.map((x) => x.id)], ['före', 'v44_01', ['v44_02']]);
+  assert.deepEqual([l('2026-10-26T10:15').fas, l('2026-10-26T10:15').lektion.id, l('2026-10-26T10:15').senare.length], ['pågår', 'v44_02', 0]);
+  assert.deepEqual([l('2026-10-26T12:00').fas, l('2026-10-26T12:00').lektion.id, l('2026-10-26T12:00').nasta.id], ['efter', 'v44_02', 'v44_03']);
+});
+
+test('utan läst-knapp på delsidan är läs-läxan en Klart-ruta', () => {
+  const k = { lasning: { 'del-1': '2026-10-19T12:00:00Z' }, ovningar: {}, steg: { 'v43_01-del-1': true } };
+  assert.deepEqual(laxLage({ id: 'v43_01', lasknapp: false }, 'del-1', k), { klar: true, text: '' });
+  assert.equal(laxLage({ id: 'v43_02', lasknapp: false }, 'del-2', k).klar, false);
+});

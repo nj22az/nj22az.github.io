@@ -18,7 +18,7 @@ import re
 from html import escape
 from pathlib import Path
 
-from kursplan import DAGFARG, kursplan_framsteg, quiz_plan, ton
+from kursplan import DAGFARG, _sjalvrattning, kursplan_framsteg, quiz_plan, ton
 
 ROOT = Path(__file__).resolve().parents[2]  # sjoskolan/
 DAGSVY = {42}
@@ -43,6 +43,8 @@ CSS = ('<style>'
        '.dag-titel{grid-column:1/-1;font-size:21px;font-weight:700;line-height:1.3;color:#163248}'
        '.dag-lage{grid-column:1/-1;font-size:15px;color:#4d6579}.dag-lage b{color:var(--dag)}.dag-lage.kvar{color:#8a2a00;font-weight:700}'
        '.dag-inne{padding:0 18px 16px}.dag-under{margin:0 0 10px;font-size:17px}'
+       '.dag-lektion+.dag-lektion{margin-top:18px;padding-top:16px;border-top:2px solid #e3ecf2}'
+       '.dag-lek-rubrik{margin:0 0 6px;font-size:19px}.dag-lek-rubrik span{font-weight:400;color:#4d6579;font-size:16px}'
        '.dag-kolumner{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:8px 24px}'
        '.dag h4{margin:12px 0 6px;font-size:17px}'
        '.dag-upplagg{list-style:none;margin:0;padding:0}.dag-upplagg li{display:grid;grid-template-columns:3.4rem 1fr;gap:8px;padding:3px 0;font-size:16px}'
@@ -87,13 +89,18 @@ def _datumtext(d, veckodag=True):
     return (f'{VECKODAG[d.weekday()]} ' if veckodag else '') + f'{d.day} {MANAD[d.month - 1]}'
 
 
-def lektioner(nr, w):
-    """Veckans lektioner i ordning, med det sidan och dagsvy.mjs behöver."""
+def lektioner(nr, w, sida_mapp=None):
+    """Veckans lektioner i tidsordning, med det sidan och dagsvy.mjs behöver. En lektion vars filer ligger i en annan veckas
+    mapp (vecka 45:s delar undervisas i vecka 43 och 44) anger 'vecka' och veckans 'del'. sida_mapp: mappen för sidan
+    som länkar (veckosidan vecka-NN eller en delsida), så att PDF-länken fungerar från båda."""
     mod = _lektionsmodul()
     mandag = dt.date.fromisoformat(w['datum'][0])
+    sida_mapp = sida_mapp or f'vecka-{nr}'
+    # ”Jag har läst del N” finns på delsidorna bara i veckor med självrättande inlämning; annars en Klart-ruta.
+    lasknapp = nr in _sjalvrattning().SJALVRATTANDE
     ut = []
     for lek in mod.LEKTIONER:
-        if not lek['id'].startswith(f'v{nr}_'):
+        if lek.get('vecka', int(lek['id'][1:3])) != nr:
             continue
         k, dag, tid = w['lektioner'][lek['del']]
         datum = mandag + dt.timedelta(days=k)
@@ -105,6 +112,7 @@ def lektioner(nr, w):
         pdf = Path(lek['fil']).with_suffix('.pdf')
         if not (ROOT / 'bildspel' / deck / 'data.json').exists() or not (ROOT / pdf).exists():
             raise SystemExit(f'dagsvy: presentationen {deck} saknar bildspel eller PDF. Kör verktyg/lektionsbilder/bygg.py.')
+        mapp = Path(lek['fil']).parts[0]
         ut.append({
             'id': lek['id'], 'del': lek['del'], 'dag': dag, 'datum': datum.isoformat(), 'datumtext': _datumtext(datum),
             'start': f'{m.group(1)}:{m.group(2)}', 'slut': f'{m.group(3)}:{m.group(4)}', 'tid': f'{m.group(1)}.{m.group(2)}–{m.group(3)}.{m.group(4)}',
@@ -112,36 +120,48 @@ def lektioner(nr, w):
             'titel': f'Del {lek["del"]}: {lek["titel"]}', 'under': lek['underrubrik'], 'upplagg': upplagg, 'efter': lek['efter'],
             # ”Pass 1: Hur el skadar (avsnitt 1–4) och ett exempel” → ämnet för dagens ruta.
             'amnen': [re.sub(r'^Pass \d+: ', '', t) for _, t in upplagg if t.startswith('Pass ')],
-            'bildspel': f'../../bildspel/?d={deck}', 'pdf': pdf.name,
+            'bildspel': f'../../bildspel/?d={deck}', 'pdf': pdf.name if mapp == sida_mapp else f'../../{mapp}/aktuell/{pdf.name}',
+            'mapp': mapp, 'lasknapp': lasknapp,
             'laxor': [{'id': i, 'text': t, 'href': h, 'knapp': kn} for i, t, h, kn in mod.HEMMA[lek['id']]],
         })
-    return ut
+    return sorted(ut, key=lambda l: (l['datum'], l['start']))
 
 
 def _laxa_html(lek, x):
-    if x['id'].startswith(('del-', 'ovn-')):
+    if x['id'].startswith('ovn-') or (x['id'].startswith('del-') and lek['lasknapp']):
         lage = '<span class="laxa-lage" data-lage></span>'  # läget kommer från delsidan och övningarna (dagsvy.mjs)
     else:
         lage = f'<label class="vag-klar"><input type="checkbox" data-klar="{lek["id"]}-{x["id"]}"> Klart</label>'
     return (f'<li data-laxa="{x["id"]}"><div><p>{escape(x["text"])}</p><a href="{escape(x["href"], quote=True)}">{escape(x["knapp"])}</a></div>{lage}</li>')
 
 
-def _dagkort(lek):
+def _lektionsblock(lek, flera):
+    """En lektion i dagens ruta. Har dagen två lektioner får varje lektion en egen rubrik med sin tid."""
     pass_ = ' class="pass"'
     upplagg = ''.join(f'<li{pass_ if t.startswith("Pass ") else ""}><time>{escape(k)}</time><span>{escape(t)}</span></li>' for k, t in lek['upplagg'])
     mal = ''.join(f'<li>{escape(e[0].upper() + e[1:])}</li>' for e in lek['efter'])
     laxor = ''.join(_laxa_html(lek, x) for x in lek['laxor'])
-    stil = f'--dag:{lek["farg"]};--dag-ton:{ton(lek["farg"], 0.10)}'
-    return (f'<details class="dag" id="dag-{lek["dag"].lower()}" data-lektion="{lek["id"]}" style="{stil}" open>'
-            f'<summary><span class="dag-chip">{escape(lek["dag"])} {escape(lek["datumtext"].split(" ", 1)[1])}</span>'
-            f'<span class="dag-tid">{escape(lek["tid"])} · {escape(lek["satt"])}</span>'
-            f'<span class="dag-titel">{escape(lek["titel"])}</span><span class="dag-lage" aria-live="polite"></span></summary>'
-            f'<div class="dag-inne"><p class="dag-under">{escape(lek["under"])}.</p>'
+    rubrik = (f'<h3 class="dag-lek-rubrik">{escape(lek["titel"])} <span>{escape(lek["tid"])}</span></h3>' if flera else '')
+    return (f'<div class="dag-lektion" data-lektion="{lek["id"]}">{rubrik}<p class="dag-under">{escape(lek["under"])}.</p>'
             f'<div class="dag-kolumner"><section><h4>Det här pratar vi om</h4><ol class="dag-upplagg">{upplagg}</ol></section>'
             f'<section><h4>Efter lektionen kan du</h4><ul class="dag-mal">{mal}</ul></section></div>'
             f'<p class="dag-knappar"><a class="sj-btn" href="{lek["bildspel"]}">Öppna presentationen</a>'
             f'<a href="{lek["pdf"]}">Presentationen som PDF</a></p>'
-            f'<h4>Läxor efter lektionen</h4><ul class="laxor">{laxor}</ul></div></details>')
+            f'<h4>Läxor efter lektionen</h4><ul class="laxor">{laxor}</ul></div>')
+
+
+def _dagkort(dag_lek):
+    """Dagens ruta: en eller två lektioner samma dag (vecka 44 har två entimmeslektioner måndag och tisdag)."""
+    forsta, sista = dag_lek[0], dag_lek[-1]
+    tid = f'{forsta["tid"].split("–")[0]}–{sista["tid"].split("–")[1]}'
+    titel = ' · '.join(l['titel'] for l in dag_lek)
+    stil = f'--dag:{forsta["farg"]};--dag-ton:{ton(forsta["farg"], 0.10)}'
+    block = ''.join(_lektionsblock(l, len(dag_lek) > 1) for l in dag_lek)
+    return (f'<details class="dag" id="dag-{forsta["dag"].lower()}" data-datum="{forsta["datum"]}" style="{stil}" open>'
+            f'<summary><span class="dag-chip">{escape(forsta["dag"])} {escape(forsta["datumtext"].split(" ", 1)[1])}</span>'
+            f'<span class="dag-tid">{escape(tid)} · {escape(forsta["satt"])}</span>'
+            f'<span class="dag-titel">{escape(titel)}</span><span class="dag-lage" aria-live="polite"></span></summary>'
+            f'<div class="dag-inne">{block}</div></details>')
 
 
 def _veckokort(x):
@@ -169,7 +189,8 @@ def dagsvy_html(nr, w, sjalvrattande=None):
     lek = lektioner(nr, w)
     data, lm_rader = kursplan_framsteg(nr, w, sjalvrattande)
     data |= {
-        'lektioner': [{k: l[k] for k in ('id', 'del', 'dag', 'datum', 'datumtext', 'start', 'slut', 'tid', 'satt', 'farg', 'titel', 'amnen', 'bildspel')}
+        'lektioner': [{k: l[k] for k in ('id', 'del', 'dag', 'datum', 'datumtext', 'start', 'slut', 'tid', 'satt', 'farg', 'titel', 'amnen',
+                                         'bildspel', 'mapp', 'lasknapp')}
                       | {'laxor': [x['id'] for x in l['laxor']]} for l in lek],
         'veckan': [{k: x[k] for k in ('id', 'titel', 'href', 'knapp', 'banner') if k in x} | ({'sista': x['sista']} if x.get('sista') else {}) for x in w['veckan']],
         'sista_text': _datumtext(dt.date.fromisoformat(w['sista'])),
@@ -177,11 +198,13 @@ def dagsvy_html(nr, w, sjalvrattande=None):
     if sjalvrattande and quiz_plan(nr):
         data['quiz_plan'] = quiz_plan(nr)  # quizStatus räknar med den innan eleven har öppnat quizet
     v = hashlib.sha1((ROOT / 'gemensamt' / 'dagsvy.mjs').read_bytes() + (ROOT / 'gemensamt' / 'veckopanel.mjs').read_bytes()).hexdigest()[:10]
-    dagar = ''.join(_dagkort(l) for l in lek)
+    from itertools import groupby
+    dagar = ''.join(_dagkort(list(g)) for _, g in groupby(lek, key=lambda l: l['datum']))
     veckan = ''.join(_veckokort(x) for x in w['veckan'])
     return (CSS
             + '<section class="idag" id="idag" aria-labelledby="idag-rubrik" hidden><p class="idag-nar" id="idag-nar"></p>'
               '<h2 id="idag-rubrik"></h2><p class="idag-text" id="idag-text"></p><ul class="idag-amnen" id="idag-amnen" hidden></ul>'
+              '<p class="idag-text" id="idag-sedan" hidden></p>'
               '<p class="idag-knappar"><a class="sj-btn primary large" id="idag-knapp" href="#dagar">Se veckans lektioner</a>'
               '<a id="idag-lank" href="#veckan" hidden></a></p></section>'
             + f'<section class="dagar" id="dagar" aria-labelledby="dagar-rubrik"><h2 id="dagar-rubrik">Veckans lektioner</h2>'
@@ -241,21 +264,22 @@ DEL_CSS = ('<style>'
            '</style>')
 
 
-def delpanel_html(nr, del_nr, sjalvrattande=None):
+def delpanel_html(nr, del_nr, sjalvrattande=None, sida_mapp=None):
     """Rutan ”Din del” för del del_nr i vecka nr, eller '' när veckan inte visas som dagar eller delen saknar lektion."""
     if nr not in DAGSVY:
         return ''
     w = _vecka(nr)
-    lek = next((l for l in lektioner(nr, w) if l['del'] == del_nr), None)
+    sida_mapp = sida_mapp or f'vecka-{nr}'
+    lek = next((l for l in lektioner(nr, w, sida_mapp) if l['del'] == del_nr), None)
     if not lek:
         return ''
     veckan = [x for x in w['veckan'] if x.get('sista')]
     data = {
         'vecka': nr, 'sista': w['sista'], 'sista_text': _datumtext(dt.date.fromisoformat(w['sista'])),
-        'lektion': {k: lek[k] for k in ('id', 'del', 'dag', 'datum', 'datumtext', 'start', 'slut', 'tid', 'satt', 'farg', 'titel', 'bildspel')}
+        'lektion': {k: lek[k] for k in ('id', 'del', 'dag', 'datum', 'datumtext', 'start', 'slut', 'tid', 'satt', 'farg', 'titel', 'bildspel', 'mapp', 'lasknapp')}
                    | {'laxor': [x['id'] for x in lek['laxor']]},
         'veckan': [{k: x[k] for k in ('id', 'titel', 'sista') if k in x} for x in veckan],
-        'ovningar': [[f'vecka-{nr}', [f'{lek["id"]}-q{i}' for i in range(1, 11)]]],
+        'ovningar': [[lek['mapp'], [f'{lek["id"]}-q{i}' for i in range(1, 11)]]],
     }
     if sjalvrattande:
         data['sjalvrattande'] = sjalvrattande
@@ -263,7 +287,8 @@ def delpanel_html(nr, del_nr, sjalvrattande=None):
             data['quiz_plan'] = quiz_plan(nr)
     laxor = ''.join(_laxa_html(lek, x) for x in lek['laxor'])
     amnen = ' · '.join(escape(a) for a in lek['amnen'])
-    texterna = '<a href="index.html#veckan">Ladda ner texterna</a>'
+    vecksida = 'index.html' if sida_mapp == f'vecka-{nr}' else f'../../vecka-{nr}/aktuell/index.html'
+    texterna = f'<a href="{vecksida}#veckan">Ladda ner texterna</a>'
     rader = ''.join(
         f'<li data-vk="{x["id"]}" data-sista="{x["sista"]}"><span><b>{escape(x["titel"])}</b><br>Senast '
         f'{escape(_datumtext(dt.date.fromisoformat(x["sista"])))} <span class="vk-kvar"></span></span>'
@@ -280,6 +305,6 @@ def delpanel_html(nr, del_nr, sjalvrattande=None):
               f'<h2 class="dp-rubrik">Läxor efter lektionen</h2><ul class="laxor" data-lektion="{lek["id"]}">{laxor}</ul>'
               f'<p class="dp-lektion"><b>På lektionen:</b> övning {del_nr}.1–{del_nr}.5 gör vi tillsammans. <span data-dp-lektion></span></p>'
               f'<div class="dp-veckan"><h2 class="dp-rubrik">Hela veckan</h2><ul class="dp-vk">{rader}</ul>'
-              f'<p class="dp-lektion"><a href="index.html">Veckans översikt</a></p></div></section>'
+              f'<p class="dp-lektion"><a href="{vecksida}">Veckans översikt</a></p></div></section>'
             + f'<script type="application/json" id="delpanel-data">{json.dumps(data, ensure_ascii=False)}</script>'
             + f'<script type="module" src="../../gemensamt/dagsvy.mjs?v={v}"></script>')
