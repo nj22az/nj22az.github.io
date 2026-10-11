@@ -201,9 +201,8 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // Room walls as colliders (the doorways are left open).
  for(const [x0,x1,z] of [[-5,-.9,R.hall.front],[.9,5,R.hall.front],[-5,-.8,R.hall.changing],[.8,5,R.hall.changing],[-5,-1,R.hall.bath],[1,5,R.hall.bath]])rect((x0+x1)/2,z,x1-x0,.2,2.8);
  rect(0,R.hall.front,PART,.2,2.8);rect(0,(R.hall.front+R.hall.changing)/2,PART,R.hall.front-R.hall.changing,2.8);
- // The player is a man (Johansson): the women's doorways are closed to him and to him only (`only`); the residents walk
- // through their own side's (indoor-residents.js, by ONSEN_DOORWAYS).
- for(const [x0,x1,z] of [[DW.women.x0,DW.women.x1,R.hall.front],[-.8,-.05,R.hall.changing]])rect((x0+x1)/2,z,x1-x0,.2,2.8).only='player';
+ // Both sides' doorways are open to everyone, the player too (the creator, 2026-10-11: Johansson goes anywhere; nobody in
+ // the game is ever unclothed). The residents still keep to their own side (indoor-residents.js, by ONSEN_DOORWAYS).
 
  // ---- Genkan and bandai.
  rect(-4.8,4.51,.4,1.05,1.4);
