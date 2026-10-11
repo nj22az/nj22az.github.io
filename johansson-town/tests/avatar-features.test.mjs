@@ -25,7 +25,9 @@ test('all hats and accessories remain in the two-draw skinned avatar through pos
  for(const hat of PARTS.hat)for(const earrings of PARTS.earrings){
   const a=buildAvatar({...CAST_RECIPES.Thuan,outfit:{...CAST_RECIPES.Thuan.outfit,hat},accessories:{earrings,neckwear:hat==='none'?'pendant':'scarf',pin:true}},{shadows:false});
   const anim=createAvatarAnimator(a);anim.play('Wave');anim.update(.1,{speed:1});a.root.updateMatrixWorld(true);
-  let draws=0,lines=0;a.root.traverse(o=>{if(o.isMesh&&o.visible)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
+  // (Glasses and facial hair are head-bound face objects with their own meshes, not hats or accessories: not counted.)
+  const faceObject=o=>{for(let p=o;p;p=p.parent)if(p.name==='Face objects')return true;return false;};
+  let draws=0,lines=0;a.root.traverse(o=>{if(o.isMesh&&o.visible&&!faceObject(o))(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
   for(const v of a.body.geometry.attributes.position.array)assert.ok(Number.isFinite(v));
   a.wear('swim');assert.equal(a.body.visible,false);a.wear('clothes');assert.equal(a.body.visible,true);a.dispose();
  }
