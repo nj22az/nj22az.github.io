@@ -1824,12 +1824,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 2.1",
      "ankare": "v42_02-q1"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
-     "nummer": "Övning 2.1",
-     "ankare": null
     }
    ]
   },
@@ -1846,12 +1840,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 2.2",
      "ankare": "v42_02-q2"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
-     "nummer": "Övning 2.2",
-     "ankare": null
     }
    ]
   },
@@ -1868,12 +1856,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 2.3",
      "ankare": "v42_02-q3"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
-     "nummer": "Övning 2.3",
-     "ankare": null
     }
    ]
   },
@@ -1890,12 +1872,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 2.4",
      "ankare": "v42_02-q4"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
-     "nummer": "Övning 2.4",
-     "ankare": null
     }
    ]
   },
@@ -1912,12 +1888,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 2.5",
      "ankare": "v42_02-q5"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
-     "nummer": "Övning 2.5",
-     "ankare": null
     }
    ]
   },
@@ -1934,12 +1904,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 2.6",
      "ankare": "v42_02-q6"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
-     "nummer": "Övning 2.6",
-     "ankare": null
     }
    ]
   },
@@ -1956,12 +1920,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 2.7",
      "ankare": "v42_02-q7"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
-     "nummer": "Övning 2.7",
-     "ankare": null
     }
    ]
   },
@@ -1978,12 +1936,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 2.8",
      "ankare": "v42_02-q8"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
-     "nummer": "Övning 2.8",
-     "ankare": null
     }
    ]
   },
@@ -2000,12 +1952,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 2.9",
      "ankare": "v42_02-q9"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
-     "nummer": "Övning 2.9",
-     "ankare": null
     }
    ]
   },
@@ -2022,12 +1968,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 2.10",
      "ankare": "v42_02-q10"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx",
-     "nummer": "Övning 2.10",
-     "ankare": null
     }
    ]
   },
@@ -6653,7 +6593,7 @@
   },
   {
    "id": "EL-000713",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Startfråga: v42_02",
@@ -6669,7 +6609,7 @@
   },
   {
    "id": "EL-000714",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Avslutsfråga: v42_02",
@@ -6685,7 +6625,7 @@
   },
   {
    "id": "EL-000715",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Startfråga: v42_03",
@@ -6701,7 +6641,7 @@
   },
   {
    "id": "EL-000716",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Avslutsfråga: v42_03",

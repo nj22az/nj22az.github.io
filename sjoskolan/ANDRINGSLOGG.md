@@ -186,6 +186,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 42 tisdag: ny presentation *Regler, ansvar och arbetsmetoder* i lektionsbildernas mall, 20 bilder i stället för 36.
+  Avsnitt 6 *Regler för fartyg* visar nu vilka regler som gäller vilka fartyg (LM-3): TSFS 2017:26 för nationell sjöfart, TSFS 2019:4 för
+  fartyg med internationella certifikat, TSFS 2019:56 för arbetsmiljön ombord (redaren räknas som arbetsgivare) och ISM-kodens SMS.
+  Start- och avslutsfrågorna för vecka 42 del 2 och 3 (EL-000713–716) var märkta LM-4 och är nu LM-3 respektive LM-6/LM-7.
+  Mallen ger långa rubriker två rader, tätare rader på kursplanbilden vid tre eller fler punkter och två rader åt långa källor.
 - **2026-10-11** Vecka 42: översikten ”Din vecka” överst på veckosidan (`verktyg/veckosidor/kursplan.py` `veckopanel_html`,
   `gemensamt/veckopanel.mjs`, test `gemensamt/veckopanel.test.mjs`): steg klara, delar lästa (”Jag har läst” på delsidorna),
   övningar klara, inlämningen (rätt svar eller inlämnad) och dagar kvar, och kursplanens punkter med stapel i områdets färg

@@ -3,13 +3,14 @@
   "titel": "Avslutsfråga: v42_03",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-6",
+      "LM-7"
     ],
     "niva": "grund",
     "teori": [
