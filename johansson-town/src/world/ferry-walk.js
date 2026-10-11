@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {FERRY_HULL,FERRY_DECKS,FERRY_RAMP,FERRY_CASINGS,GATE,GANGWAY_LENGTH,halfBreadth} from './ferry-model.js';
 import {FERRY_HEIGHTS,FERRY_SHIP} from './ferry-ship.js';
+import {FERRY_INTERIOR,underStair} from './ferry-interior.js';
 
 /**
  * Walking aboard the Minato Maru while she lies alongside (the creator, 2026-10-11: "I want to be able to board and
@@ -24,6 +25,7 @@ const C=FERRY_CASINGS,P=C.passage,BHS=C.bowHouses;
 /** The inside face of her bulwark, off her side plating (ferry-model.js deckAndBulwarks). */
 const bulwarkIn=z=>halfBreadth(z)-.07;
 
+/** A floor: `y` its height, or [at z0, at z1] for a stair or a ladder. */
 const floor=(id,part,x,z,y,inside=null)=>Object.freeze({id,part,x:Object.freeze(x),z:Object.freeze(z),y,inside});
 /**
  * The floors you can walk on alongside: `inside(x, z, r)` (the part's frame) says where on it a person of radius `r`
@@ -34,6 +36,8 @@ export const FERRY_FLOORS=Object.freeze([
  // port bulwark) and forward between the bow houses to the ramp.
  floor('car-deck','ship',[-HB,HB],[-HALF+.08,HALF],CAR,(x,z,r)=>{
   if(z<-HALF+.12+r)return false;
+  // Under the stairs' flights, in the casings, the deck is under the stair, not a place to stand.
+  if(underStair(x,z,r))return false;
   const atGate=x>0&&z>=GATE.from+r&&z<=GATE.to-r;
   return Math.abs(x)<=(atGate?halfBreadth(z):bulwarkIn(z)-r);
  }),
@@ -42,16 +46,17 @@ export const FERRY_FLOORS=Object.freeze([
  floor('flap','flap',[-FERRY_RAMP.flapWidth/2,FERRY_RAMP.flapWidth/2],[0,FERRY_RAMP.flap],.05),
  // The gangway: 2 m of plank, 0.9 m wide between hand rails 0.43 m out.
  floor('gangway','gangway',[0,GANGWAY_LENGTH],[-.45,.45],.03,(x,z,r)=>Math.abs(z)<=.41-r),
+ // The stairs, the lobby, the corridor, the carpet room, the saloon, the walkways, the open deck, the ladders, the
+ // bridge deck's aft platform, the wings and the wheelhouse (ferry-interior.js).
+ ...FERRY_INTERIOR.floors.map(f=>floor(f.id,'ship',f.x,f.z,f.y,f.inside)),
 ]);
 
-const solid=(id,x,y,z,part='ship')=>Object.freeze({id,part,x:Object.freeze(x),y:Object.freeze(y),z:Object.freeze(z)});
+/** `walk`: people walk round it; `camera`: the lens stays out of it. */
+const solid=(id,x,y,z,part='ship',walk=true,camera=true)=>Object.freeze({id,part,x:Object.freeze(x),y:Object.freeze(y),z:Object.freeze(z),walk,camera});
 /** What stands on her decks, in the same frames: what a person walks round and the camera stays out of. */
 export const FERRY_SOLIDS=Object.freeze([
- // The casings, the port one in two with the passage between them, its deckhead 2 m up.
- solid('casing-p-aft',[C.inner,HB],[CAR,C.top],[C.aft,P.from]),
- solid('casing-p-fore',[C.inner,HB],[CAR,C.top],[P.to,C.fore]),
- solid('passage-deckhead',[C.inner,HB],[CAR+P.height,C.top],[P.from,P.to]),
- solid('casing-s',[-HB,-C.inner],[CAR,C.top],[C.aft,C.fore]),
+ // The casings, the stairs' walls, the houses, their furniture (ferry-interior.js).
+ ...FERRY_INTERIOR.boxes.filter(b=>b.solid||b.camera).map(b=>solid(b.name||'interior',[b.a[0],b.b[0]],[b.a[1],b.b[1]],[b.a[2],b.b[2]],'ship',b.solid,b.camera)),
  // The passage's inboard door, hooked back against the casing's face.
  solid('walkway-door-leaf',[3.03,C.inner],[CAR,CAR+2],[P.from-.95,P.from-.05]),
  // The walkway's rail on the lane side (ferry-model.js), and the pillars under the passenger deck's open ends.
@@ -63,13 +68,19 @@ export const FERRY_SOLIDS=Object.freeze([
  // The bow houses either side of the ramp, and the ladders up their aft faces.
  ...[1,-1].map(s=>solid('bow-house',[s*BHS.inner,s*HB].sort((a,b)=>a-b),[CAR,BHS.top],[BHS.aft,HALF])),
  ...[1,-1].map(s=>solid('forecastle-ladder',[s*3.4-.3,s*3.4+.3].sort((a,b)=>a-b),[CAR,BHS.top+.95],[BHS.aft-.17,BHS.aft])),
- // The passenger deck over the car deck (its slab: the lens stays under it).
- solid('passenger-deck',[-HB,HB],[PASS-.25,PASS],[-HALF,FERRY_DECKS.upper.fore]),
  // The ramp's rams, from the bow houses to the leaf's edges: the outer edges of the leaf, near the hinge.
  ...[1,-1].map(s=>solid('ramp-ram',[s*1.98,s*2.4].sort((a,b)=>a-b),[0,2.6],[0,1.9],'ramp')),
  // The gangway's hand rails.
  ...[1,-1].map(s=>solid('gangway-rail',[0,GANGWAY_LENGTH],[0,1],[s*.41,s*.47].sort((a,b)=>a-b),'gangway')),
 ]);
+
+/** The solids filed by part and by metre of z, so a test looks only at what is near (a person, or the lens, ±1.5 m). */
+const EMPTY=Object.freeze([]),BIN0=-Math.ceil(HALF)-6,SOLID_PARTS=[...new Set(FERRY_SOLIDS.map(s=>s.part))];
+const BINS=Object.fromEntries(SOLID_PARTS.map(part=>{
+ const bins=[];for(let b=0;b<Math.ceil(HALF)*2+12;b++)bins.push([]);
+ for(const s of FERRY_SOLIDS.filter(s=>s.part===part)){const from=Math.max(0,Math.floor(s.z[0]-1.5)-BIN0),to=Math.min(bins.length-1,Math.floor(s.z[1]+1.5)-BIN0);for(let b=from;b<=to;b++)bins[b].push(s);}
+ return [part,bins];
+}));
 
 /**
  * The deck walk for one ship (ferry.js createFerryRun's `run`): which floors are out (the gangway only while it is
@@ -94,9 +105,9 @@ export function createFerryWalk(run){
   for(const [k,o] of Object.entries(parts))if(o)inverse[k].copy(o.matrixWorld).invert();
   FERRY_FLOORS.forEach((f,i)=>{
    if(!parts[f.part]||!partOpen(f.part))return;
-   const m=parts[f.part].matrixWorld,c=corners[i];
-   c[0].set(f.x[0],f.y,f.z[0]).applyMatrix4(m);c[1].set(f.x[1],f.y,f.z[0]).applyMatrix4(m);
-   c[2].set(f.x[1],f.y,f.z[1]).applyMatrix4(m);c[3].set(f.x[0],f.y,f.z[1]).applyMatrix4(m);
+   const m=parts[f.part].matrixWorld,c=corners[i],[y0,y1]=Array.isArray(f.y)?f.y:[f.y,f.y];
+   c[0].set(f.x[0],y0,f.z[0]).applyMatrix4(m);c[1].set(f.x[1],y0,f.z[0]).applyMatrix4(m);
+   c[2].set(f.x[1],y1,f.z[1]).applyMatrix4(m);c[3].set(f.x[0],y1,f.z[1]).applyMatrix4(m);
    open.push(i);
   });
  }
@@ -127,13 +138,17 @@ export function createFerryWalk(run){
  }
  /** A point in a part's frame. */
  const local=(part,x,y,z)=>v.set(x,y,z).applyMatrix4(inverse[part]);
+ /** The solids near a point in its part's frame (z in one-metre bins, with a margin of a metre and a half). */
+ const near=(part,lz)=>BINS[part]?.[Math.floor(lz)-BIN0]||EMPTY;
  /** Whether a person of radius `r` with their feet at world (x, y, z) runs into anything aboard; `height` 1.82 standing. */
  function blocked(x,y,z,r,height=TALL){
-  for(const s of FERRY_SOLIDS){
-   if(!partOpen(s.part)||!parts[s.part])continue;
-   const p=local(s.part,x,y,z);
-   if(s.y[0]>=p.y+height||s.y[1]<=p.y+.03)continue;
-   if(p.x>s.x[0]-r&&p.x<s.x[1]+r&&p.z>s.z[0]-r&&p.z<s.z[1]+r)return true;
+  for(const part of SOLID_PARTS){
+   if(!parts[part]||!partOpen(part))continue;
+   const p=local(part,x,y,z);
+   for(const s of near(part,p.z)){
+    if(!s.walk||s.y[0]>=p.y+height||s.y[1]<=p.y+.03)continue;
+    if(p.x>s.x[0]-r&&p.x<s.x[1]+r&&p.z>s.z[0]-r&&p.z<s.z[1]+r)return true;
+   }
   }
   return false;
  }
@@ -143,19 +158,28 @@ export function createFerryWalk(run){
   * else {ok, y, floor}: ok false where a bulwark, a rail or something standing on her deck is in the way.
   */
  function move(x,y,z,nx,nz,r){
-  const on=floorAt(nx,nz,y);if(!on)return null;
-  const f=on.floor,p=local(f.part,nx,on.y,nz);
-  if(f.inside&&!f.inside(p.x,p.z,r))return {ok:false,y:on.y,floor:f};
-  if(blocked(nx,on.y,nz,r))return {ok:false,y:on.y,floor:f};
-  return {ok:true,y:on.y,floor:f};
+  // Every floor there within a step, nearest first: where two meet (a ladder's foot on the deck), the one you can
+  // stand on.
+  const options=[];for(const i of open){const h=heightOn(i,nx,nz);if(h!==null&&Math.abs(h-y)<=FERRY_STEP)options.push({floor:FERRY_FLOORS[i],y:h});}
+  if(!options.length)return null;
+  options.sort((a,b)=>Math.abs(a.y-y)-Math.abs(b.y-y));
+  for(const on of options){
+   const f=on.floor,p=local(f.part,nx,on.y,nz);
+   if(f.inside&&!f.inside(p.x,p.z,r))continue;
+   if(blocked(nx,on.y,nz,r))continue;
+   return {ok:true,y:on.y,floor:f};
+  }
+  return {ok:false,y:options[0].y,floor:options[0].floor};
  }
  /** For the third-person lens: inside a solid aboard (a point, `r` its radius). */
  function cameraBlocked(x,z,y,r){
-  for(const s of FERRY_SOLIDS){
-   if(!partOpen(s.part)||!parts[s.part])continue;
-   const p=local(s.part,x,y,z);
-   if(p.y<s.y[0]-r||p.y>s.y[1]+r)continue;
-   if(p.x>s.x[0]-r&&p.x<s.x[1]+r&&p.z>s.z[0]-r&&p.z<s.z[1]+r)return true;
+  for(const part of SOLID_PARTS){
+   if(!parts[part]||!partOpen(part))continue;
+   const p=local(part,x,y,z);
+   for(const s of near(part,p.z)){
+    if(!s.camera||p.y<s.y[0]-r||p.y>s.y[1]+r)continue;
+    if(p.x>s.x[0]-r&&p.x<s.x[1]+r&&p.z>s.z[0]-r&&p.z<s.z[1]+r)return true;
+   }
   }
   return false;
  }

@@ -598,7 +598,7 @@ function cameraBlocked(x,z,y,r,ignore=null){
  // Aboard, the lens may hang out over the water beside her, but not inside her houses and casings (ferry-walk.js).
  const aboard=!current&&!!deckUnder();if(aboard&&ferryWalk.cameraBlocked(x,z,y,r))return true;
  const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):!aboard&&townBoundsBlocked(x,z,r);if(bounds)return true;
- const hit=c=>!c.only&&!(ignore&&ignore(c))&&!(aboard&&c.id==='ferry')&&(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c);
+ const hit=c=>!c.only&&!(ignore&&ignore(c))&&!(aboard&&(c.id==='ferry'||!c.moving))&&(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c);
  return current?roomColliders.some(hit):colliderGrid.some(x,z,r,hit);
 }
 const arrivalPerson=new THREE.Vector3();
@@ -1063,10 +1063,11 @@ function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.s
 function doInteract(){if(replayPlayer)return;spawnScene?.cancel();if(islandPlay?.active)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
 // `who`: a room collider with `only` set stops only that walker.
 // `deckY`: standing on the ferry's deck at that height (ferry-walk.js): her own solids are tested there, not the town's
-// bounds (she lies over the water) nor the collider that keeps people on the pier off her hull.
+// bounds (she lies over the water), its fixed colliders (the pier's bitts and fenders beside her) nor the collider that
+// keeps people on the pier off her hull; only what moves with her (the cars on her deck).
 function environmentBlocked(x,z,r=PLAYER_RADIUS,who='player',deckY=null){const aboard=Number.isFinite(deckY)&&!current;
  const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):!aboard&&townBoundsBlocked(x,z,r);if(bounds)return true;
- const y=current?0:aboard?deckY:groundHeight(x,z),hit=c=>(!c.only||c.only===who)&&!(aboard&&c.id==='ferry')&&standingHitsRect(x,z,r,y,c);
+ const y=current?0:aboard?deckY:groundHeight(x,z),hit=c=>(!c.only||c.only===who)&&!(aboard&&(c.id==='ferry'||!c.moving))&&standingHitsRect(x,z,r,y,c);
  return current?roomColliders.some(hit):colliderGrid.some(x,z,r,hit);}
 /**
  * Walking aboard the Minato Maru while she lies alongside (ferry-walk.js): her decks are floors that move with her.
@@ -1766,6 +1767,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  },
  /** Turn where he stands (aboard the ferry too, where teleport's ground would be the sea). */
  face(facing,tilt){if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
+ /** Stand him at a point with its height (on a deck aboard the ferry, where the town's ground is the sea). */
+ stand(x,y,z,facing){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,y,z);if(Number.isFinite(facing))yaw=facing;},
  teleport(x,z,facing,tilt){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
  get lensOcclusion(){return lensOcclusion;},
  get lens(){return {position:camera.position.toArray(),rotation:camera.rotation.toArray().slice(0,3),distance:thirdDistance,ceiling:current?indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y):null,blocked:cameraBlocked(camera.position.x,camera.position.z,camera.position.y,.16)};},

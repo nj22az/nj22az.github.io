@@ -531,3 +531,55 @@ prompt (`town.js`), the net of floats on the warehouse's corner (`okinawa/old-to
 beside the landing (`harbour.js`). The warehouse (`warehouse.js`) is 2.5 m shorter at its quay end (z −45.4 instead
 of −47.9): its east wall stood 0.4 m over the landing plate's west edge, so the ramp ran under it. Its street end,
 doors, signs and shutter are where they were. Open: whether any of the deleted things come back, and where.
+
+### Batch 6b: her houses walked inside (2026-10-11)
+
+The creator, 2026-10-11: *"The ferry needs to be explorable."* Her decks above the car deck are now walked, inside and
+out, while she lies alongside.
+
+**One list for what is built and what is walked.** `src/world/ferry-interior.js` holds her casings, stairwells, the
+passenger deck's slab, the deckhouse, its rooms and furniture, the walkways, the ladders and the wheelhouse as boxes,
+bars, panes and floors. `ferry-model.js` draws them; `ferry-walk.js` stands people on the floors (a stair's or a
+ladder's floor slopes, `y` given at each end) and stops them at the boxes marked solid; the third-person lens stays out
+of the boxes marked for it (the deckheads, the awning, the bridge deck's platform). So what you see and where you can go
+cannot disagree, and the tests check every floor against the surface the model draws.
+
+**The general arrangement corrected (`ferry-ship.js` FERRY_GA).**
+- *Stairs P and S:* in the casings, z 7.4–12.3, the door from the car deck at z 11.3–12.3 (P from the walkway), the flight
+  rising aft at 48° (22 risers of 0.2 m) to the lobby, the well open in the passenger deck from z 7.4 to 9.4 where the
+  stair passes under it with headroom. (As drawn before, z 10–13.5, a stair could not top out in the lobby.) The crew
+  changing room (P) and the bosun's store (S) are under the flights.
+- *The lobby* is the deckhouse's full breadth (z 6–9.5, x ±4.1), its wings the stair heads.
+- *The house forward of it is 6.8 m wide* (was 7.2): the side walkways are 0.7 m, wide enough to walk (0.5 m was not),
+  from z 9.5; their liferafts are in cradles outboard of the rail (they stood in the walkway).
+- *The saloon* has a cross passage at its aft end (z 16.5–17.6) to its side doors (moved from z 21.7 to 17.05), then
+  the seven rows of 42 seats.
+- *Each walkway ends in a ladder to its bridge wing* (z 17.6–19.5, 53°), and the wing's door opens into the wheelhouse.
+  (The open deck no longer opens onto the walkways: the lobby's wings stand between.)
+
+**What you can walk now.** From the walkway on the car deck, through stair P's door and up into the lobby (the
+purser's window, the drink machines, the toilets' doors, benches, the timetable board); aft through the double door to
+the open deck (benches under the awning, the funnels, the liferaft, the rescue boat) and up either ladder to the bridge
+deck's aft platform (the emergency-generator and CO₂ rooms' doors); forward along the corridor between the toilets, up
+two steps into the carpet room (carpet, cushions, the shoe shelves, the life-jacket lockers, the blanket rack, the
+television), down two into the saloon; out through a side door onto the walkway, up the ladder to the bridge wing (the
+dodger, the wing console) and in through the wing door to the wheelhouse (the console under the windows with the radar,
+the engine levers and the VHF, the steering stand and its wheel, the master's chair, the chart table). Stair S from the
+starboard lane the same way. The windows are glass now: you see out, and in from outside.
+
+**In the game.** While aboard, the town's fixed colliders (the pier's bitts and fenders alongside) no longer stop the
+player or the lens: only what moves with her (the cars on her deck) and her own solids.
+
+**Checked.** `tests/ferry-walk.test.mjs`: up stair P to the lobby, through the corridor, the carpet room's steps, the
+saloon, the side door, the walkway and the ladder to the wing and into the wheelhouse, and back down to the car deck,
+with no jump in height over 0.16 m; from the lobby to the open deck and up a ladder to the platform; the walls hold
+(the saloon's side, the toilets, the stair well, the wing's aft edge, the wheelhouse's front); every floor on the
+surface the model draws (stairs within half a riser of their treads). `ferry-ship.test.mjs` (the general arrangement,
+the open decks drawn with headroom, 33 meshes, about 33,000 triangles), `ferry`, `airport-ferry`. In the running game:
+photographed at the stair door, on the stair, in the lobby, the carpet room, the saloon, on the walkway, in the
+wheelhouse, on the wing, the open deck and the platform, and from outside; walked by the keyboard from the walkway up the
+stair, across the lobby and through the carpet room into the saloon.
+
+**Open.** The toilets, the crew's rooms (cabins, mess, galley), the emergency-generator and CO₂ rooms and the engine
+room are behind closed doors; the compass deck (no ladder yet); the forecastle tops (vertical ladders: a climb); the
+crew aboard; tapping to walk aboard. In small rooms the third-person lens comes in close behind him.
