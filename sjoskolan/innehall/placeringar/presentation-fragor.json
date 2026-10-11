@@ -1056,11 +1056,11 @@
       "del": "v44_01",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 36,
+      "bild": 17,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -1069,10 +1069,10 @@
       "del": "v44_01",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -1081,11 +1081,11 @@
       "del": "v44_02",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 36,
+      "bild": 16,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -1094,10 +1094,10 @@
       "del": "v44_02",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
