@@ -93,7 +93,9 @@ def _titles():
     for w in mod.VECKOR.values():
         for p in [x for d in w['delar'] for x in d.get('poster', []) + d.get('steg', []) + d.get('mer', [])] + w.get('fordjupning', []):
             if p.get('typ') == 'ppt':
-                t[p['fil']] = p['titel']
+                # Filnamnet: delar som undervisas en annan vecka står som ../../vecka-45/aktuell/<fil>. Lektionsbildernas
+                # titelbild börjar med dagens namn, så utan titeln här skulle bildspelet heta ”Fredag 23 oktober”.
+                t[Path(p['fil']).name] = p['titel']
     lek = ROOT / 'vecka-40' / 'aktuell' / 'lektioner.mjs'
     if lek.exists():
         for title, deck in re.findall(r"title:'([^']+)',deck:'([^']+)'", lek.read_text(encoding='utf-8')):
