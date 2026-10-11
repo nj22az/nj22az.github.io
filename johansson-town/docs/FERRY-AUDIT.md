@@ -162,3 +162,47 @@ The island households (`island-households.js`) and the resident guide (the maste
 6. **Kitano-jima:** cars there still do a half turn of 1.5 m radius on the plaza before backing aboard (the same
    shortcut Minato had); give it a real three-point turn too.
 7. **Dry dock** (later, the creator): the underwater body is modelled for it now.
+
+## 6. The bigger Minato Maru, batch by batch (from 2026-10-11)
+
+The creator chose the bigger ship and the bigger harbour (the banner at the top; `briefs/ferry-audit.md` has her
+particulars, electrics and crew). She is built in batches, each one kind, each planned before it is made (what it
+touches: colliders, standing spots, walking routes, residents' routines, cars, tests, the storyteller's backdrops,
+the films' shots via the studio's `remotion/tools/impact.py`), then changed, tested and looked at
+(`tools/ferry-look.mjs`, which now photographs the source tree with `--source`, so the runtime need not be rebuilt
+to look). Each batch is its own commit.
+
+### Batch 1: behaviour that was wrong (today's 22 m ship, today's harbour)
+
+**Plan: what it touches.**
+
+| Change | Touches | Checked by |
+|---|---|---|
+| Crossings sailed as *passages* (`ferry-paths.js` `passage`): each leg (astern, swing, out of harbour, sea, approach, berthing) in its minutes, speed continuous from rest to rest, the bow turning through its keyed headings at no more than 3°/s in harbour and 1°/s at sea, the sea's corners rounded on steady turns (`roundedTrack`). The 18 s ride is the 18-minute passage played sixty times faster until crossings are sailed in real time | `airport-ferry.js` (both crossings), the ride in `island/play.js` (the camera follows her as before), cars aboard (`town-traffic.js` `sitOnDeck` copies her pose, so they roll with her), the player on her upper deck | `tests/airport-ferry.test.mjs`: every hull point a metre and more off the breakwater, the second pier, its arm, the houseboat and Kitano-jima's real shore, 0.1 m off the outer pier, 0.5 m off the quay; turn rates within the limits for each leg; speed never jumping; 18 minutes, 10 at sea |
+| The harbour manoeuvres re-keyed (`TOWN_UNBERTHING`, `TOWN_BERTHING`): the old swing put her bow 2 m into the second pier's east arm (x −38.3…−23.7, z −64.3…−59.7) and her arrival touched it; no test looked at the arm | the same paths, and the timetable's arrival and departure (`ferry.js`, now passages too) | the tests above and `tests/ferry.test.mjs` (the arm and the houseboat added). Clearances now: breakwater 1.8 m, arm 1.27 m, second pier 4.2 m, houseboat 8 m |
+| Her motion (`ferry.js` `shipMotion`): heave with the swell, roll at her own period (IMO estimate, 5.5 s), ±0.35° alongside and in harbour, ±2° at sea, pitch to ±0.5°; one model for moored, crossing and timetable, so nothing jumps when she casts off. The ramp's toe and the gangway's foot now rest on the quay and the pier while she heaves (they bobbed ±0.1 m into and above the concrete) | the model's ramp and gangway (`ferry-model.js` `restRamp`, `restGangway`); the cars' lane onto the ramp is unchanged (the toe stays where it lay) | `tests/ferry.test.mjs`: roll and pitch amplitudes; toe and foot within 2 mm of where they always lay while she heaves |
+| Her lights: navigation lights under way from sunset to sunrise (none alongside), the saloon lit by the clock in service and only the night watch's light after the last boat; before, only the timetable mode (not used in play) lit her | `ferry-model.js` (`setNavigationLights`, `setCabinLights`), `ferry-ship.js` `FERRY_DAY` | `tests/ferry.test.mjs` (night crossing lit, red to port; dark alongside; none by day) |
+| Her sound: the whistle at 350 Hz (COLREGs Annex III for 20–75 m; it was a liner's 110 Hz), sounding Rule 34's signals from her passage (one prolonged and three short leaving the berth, one prolonged passing the breakwater's end), played where she is; her engines follow her (idle alongside, louder under way, off on shore power after the last boat) instead of a fixed point by the Port Building | `town-audio.js`, the ferry's state passed to it from `game.js` (`world.ferry.audio`) | `tests/ferry.test.mjs` (the signals and where they are sounded; engine states by phase and hour) |
+| One timetable: crossings on request, with the commuter boats in at 08:30, 14:30 and 22:00, on the poster under the canopy, the hall's board, the boarding menu, the harbour office and the ticket clerk on the izakaya telephone; Vy waits for the ferry to school, not a bus | `commuter-schedule.js`, `port-building.js` (poster), `island/play.js`, `izakaya-play.js`, `neighbours.js` (Vy's words only: her places and hours are unchanged) | `tests/ferry-timetable-words.test.mjs` |
+| The power house reads 60 cycles (Okinawa is 60 Hz) | `school.js` | the same test |
+| The fishing boat at the east quay called herself "the Minato Maru"; she is the Daisan Minatomaru, and the ferry has the name | `okinawa/quarters.js` (the inspect text) | read |
+| Seen from the pier she no longer vanishes at the harbour mouth: the town draws streets only within 54 m of the player and treated her as a point with a ±4 m box (`render/town-sections.js`), so she popped out of sight as she left; she is now drawn wherever she is in view, like the islands on the horizon | `ferry.js` (`userData.horizon`) | `tests/ferry.test.mjs`; photographs 03 and 04 |
+
+Not moved in this batch: **the cargo ship**. In today's 31 m basin there is nowhere a 26 m coaster can come in bow
+first and leave again: the pocket west of the ferry (between her and the second pier) is 23 × 10 m, so a ship lying
+there cannot turn to get out; the outer pier's east face needs a turn of 90° within 31 m of a breakwater, and her
+stern would hit it; the east quay is full with the fishing boats. Every one of them also crosses the ferry's swing.
+Its berth moves with the bigger basin, in batch 4 (to the outer pier's east face, in and out round the
+breakwater's east end), and its clipping and sideways arrival end there.
+
+**Looked at** (`node tools/ferry-look.mjs <dir> --source --jpg --set=crossing,night`, the reviewed set in
+`docs/qa/ferry/b1-*.webp`): the swing clear of the second pier's arm (01), the ramp's toe on the quay (02), the ship
+leaving and at sea seen from the pier (03, 04), at sea with the player aboard (05), her lights crossing at night (06:
+masthead, green sidelight, stern light, the saloon lit) and dark alongside after the last boat (07), the timetable
+poster (08), in at Kitano-jima (09). Two things the photographs taught the look tool: far from the player the game
+draws neither the sea nor (until this batch) the ship, so a crossing is photographed with the player carried aboard,
+as the ride does; and teleporting is not followed by a step, which would walk the player back to dry ground.
+
+Not affected: no film view sees the berth or the poster (`impact.py` over x −45…10, z −120…−48: the `cloud` view of
+`thuan-poster` sees 1 % of the berth's box, none of it in plain view); the storyteller's harbour, pier and ferry
+backdrops show her alongside, where she lies as before.

@@ -367,6 +367,16 @@ export function buildFerryModel({shadows=false}={}){
  ferry.userData.ramp=ramp;
  /** 0 raised and closed, 1 down on the quay. */
  ferry.userData.setRamp=(down,slope=.24)=>{ramp.rotation.x=-1.45*(1-down)+slope*down;placeRams();};
+ /**
+  * Down on its landing, the ramp's toe lies on the quay while she heaves, rolls and pitches: its
+  * angle is worked out from where the hinge is now, so the toe stays at the height it has with her
+  * at rest (`restY` is her origin's height at rest, `slope` the ramp's angle then).
+  */
+ ferry.userData.restRamp=(slope,restY)=>{
+  ferry.updateMatrixWorld(true);const e=ferry.matrixWorld.elements,L=RAMP.length,hy=ramp.position.y,hz=ramp.position.z;
+  const K=restY+hy-L*Math.sin(slope)-(e[5]*hy+e[9]*hz+e[13]),R=Math.hypot(e[5],e[9]);
+  ramp.rotation.x=Math.acos(Math.max(-1,Math.min(1,K/(L*R))))-Math.atan2(e[5],e[9]);placeRams();
+ };
  ferry.userData.setRamp(0);
  ferry.userData.deckY=DECK;
  ferry.userData.passengerDeck=D.passenger;
@@ -375,6 +385,12 @@ export function buildFerryModel({shadows=false}={}){
  {const k3=createKit(shadows);k3.box('paint',[1.7,.06,.9],[.85,0,0],DECKGREEN);for(const dz of [-.43,.43]){k3.box('metal',[1.7,.04,.04],[.85,.85,dz],WHITE);for(const x of [.1,.85,1.6])k3.box('metal',[.03,.85,.03],[x,.42,dz],WHITE);}k3.finish(gangway);}
  gangway.position.set(halfBreadth(GANGWAY_Z)-.05,DECK,GANGWAY_Z);gangway.rotation.z=-.3;
  ferry.userData.gangway=gangway;
+ /** Its foot rests on the pier as she moves, the way the ramp's toe rests on the quay (restRamp). */
+ ferry.userData.restGangway=(restY,rest=-.3,length=1.7)=>{
+  ferry.updateMatrixWorld(true);const e=ferry.matrixWorld.elements,g=gangway.position;
+  const K=restY+g.y+length*Math.sin(rest)-(e[1]*g.x+e[5]*g.y+e[9]*g.z+e[13]),R=Math.hypot(e[1],e[5]);
+  gangway.rotation.z=Math.atan2(e[5],e[1])-Math.acos(Math.max(-1,Math.min(1,K/(length*R))));
+ };
  // The gate leaf, hinged on its forward post: shut across the opening at sea; alongside it folds right
  // back against the inside of the bulwark, forward of the opening, and is hooked there.
  const gate=new THREE.Group();gate.name='Gangway gate';gate.position.set(halfBreadth(GATE.to)-.1,DECK,GATE.to);ferry.add(gate);
@@ -385,7 +401,11 @@ export function buildFerryModel({shadows=false}={}){
  // ---- Moving parts: screws turn and the radar sweeps while she is under way.
  ferry.userData.screws=screws;ferry.userData.radar=radar;
  ferry.userData.underway=(dt,speed)=>{for(const s of screws)s.rotation.z+=s.userData.hand*dt*speed*25;radar.rotation.y+=dt*(speed>0?2.6:0);};
- ferry.userData.lights=on=>{glassMat.emissiveIntensity=on?.55:0;for(const l of navLights)l.material.color.setHex(on?l.userData.on:0x333333);};
+ /** The masthead light, the sidelights and the stern light: on under way from sunset to sunrise (ferry.js). */
+ ferry.userData.setNavigationLights=on=>{for(const l of navLights)l.material.color.setHex(on?l.userData.on:0x333333);};
+ /** The saloon's and the wheelhouse's windows, lit from inside (0 dark, 1 every lamp on). */
+ ferry.userData.setCabinLights=level=>{glassMat.emissiveIntensity=.55*Math.max(0,Math.min(1,level));};
+ ferry.userData.lights=on=>{ferry.userData.setCabinLights(on?1:0);ferry.userData.setNavigationLights(on);};
  ferry.userData.model='Minato Maru';
  return ferry;
 }

@@ -25,7 +25,25 @@ export const FERRY_SHIP=Object.freeze({
  origin:.12,
  passengers:60,vehicles:3,crew:4,
  speed:Object.freeze({service:10.5,trial:11.8,manoeuvring:3}),
+ /** Metacentric height loaded, metres: how stiff she is, and so how quickly she rolls (rollPeriod). */
+ gm:1.2,
 });
+
+/**
+ * Her natural roll period in seconds, by the IMO Intact Stability Code's estimate
+ * T = 2·C·B/√GM with C = 0.373 + 0.023·B/d − 0.043·L/100: about 5.5 s for her, the quick, short roll
+ * of a small, stiff ferry. Her motion on the water (ferry.js shipMotion) rolls at this period.
+ */
+export function rollPeriod(ship=FERRY_SHIP){const C=.373+.023*ship.beam/ship.draft-.043*ship.lengthBP/100;return 2*C*ship.beam/Math.sqrt(ship.gm);}
+/** Her natural pitch period, seconds: about 2.4·√draft for a small hull (2.8 s for her). */
+export function pitchPeriod(ship=FERRY_SHIP){return 2.4*Math.sqrt(ship.draft);}
+/**
+ * Her day, town minutes past midnight (briefs/ferry-audit.md §5, §7): the chief engineer puts No.1
+ * generator on the board at 06:10 and takes the shore power off; she is in service from 06:25, when
+ * the engines are started, to the last boat; at 22:15 the generators stop and the shore power goes
+ * back on. Her engine sound and her lights follow it (ferry.js).
+ */
+export const FERRY_DAY=Object.freeze({generators:6*60+10,inService:6*60+25,shorePower:22*60+15});
 
 /** Where things are on board, along the ship (z) and up (y). */
 export const FERRY_DECKS=Object.freeze({
