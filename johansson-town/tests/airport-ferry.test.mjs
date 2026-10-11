@@ -70,7 +70,7 @@ test('the shared ferry crosses round the breakwater, a metre and more off every 
     }
     if(!atKitano)assert.ok(airportShoreDistance(...q)>2,`${destination} at ${t.toFixed(1)} s: hull within 2 m of Kitano-jima's shore at ${q.map(v=>v.toFixed(1))}`);
     // Over the island's reclaimed side only where her bow comes in beside the jetty.
-    const [u,v]=airportLocal(...q);assert.ok(!(u> -60&&u<178&&v>20&&v<132)||(u<AIRPORT_JETTY.minX&&v>27&&v<35),'Hull over airport land at local '+[u.toFixed(1),v.toFixed(1)]);
+    const [u,v]=airportLocal(...q);assert.ok(!(u> -60&&u<178&&v>20&&v<132)||(u<AIRPORT_JETTY.minX&&Math.abs(v-31)<=AIRPORT_FERRY.beam/2+.05),'Hull over airport land at local '+[u.toFixed(1),v.toFixed(1)]);
    }
   }
   for(const end of [0,1]){const p=airportFerryPose(destination,end),berth=end?ports[destination].berth:ports[destination==='airport'?'town':'airport'].berth;assert.ok(Math.hypot(p.x-berth[0],p.z-berth[1])<1e-6,'she starts and ends at the berths');}
@@ -80,10 +80,13 @@ test('the shared ferry crosses round the breakwater, a metre and more off every 
 test('she moves like a ship: no snaps, her speed continuous, her turns within what she can make',()=>{
  for(const destination of ['airport','town']){
   const plan=AIRPORT_PASSAGES[destination];
-  // Eighteen minutes: four out, ten at sea, four in (briefs/ferry-audit.md §7.1).
+  // Eighteen minutes (briefs/ferry-audit.md §7.1): the 34.5 m ship's harbour work at either end (astern, the
+  // pivot, out by the mouth; in, the pivot, alongside) takes about ten of them, the sea the rest.
   assert.ok(Math.abs(plan.duration-AIRPORT_FERRY.duration*60)<1e-6);
   const minutes=kind=>plan.legs.filter(l=>l.kind===kind).reduce((sum,l)=>sum+(l.until-l.from)/60,0);
-  assert.ok(minutes('sea')>9.4&&minutes('sea')<10.1,'ten minutes at sea, or nine and a half from Kitano-jima, whose jetty she leaves slowly');
+  assert.ok(minutes('sea')>6.9&&minutes('sea')<7.5,'seven minutes or so at sea');
+  const speed=kind=>{const l=plan.legs.find(l=>l.kind===kind);return (plan.pose(l.until).distance-plan.pose(l.from).distance)/(l.until-l.from);};
+  for(const kind of ['astern','swing','manoeuvring','berthing'])assert.ok(speed('sea')>speed(kind),'faster at sea than '+kind);
   let prev=plan.pose(0);
   for(let t=.25;t<=plan.duration;t+=.25){
    const p=plan.pose(t);

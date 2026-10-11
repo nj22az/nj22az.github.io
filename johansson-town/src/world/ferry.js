@@ -4,14 +4,17 @@ import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js
 import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,AIRPORT_PASSAGES,airportFerryPose} from './airport-ferry.js';
 import {PORT_BUILDING} from './port-building.js';
 import {FERRY_DAY,rollPeriod,pitchPeriod} from './ferry-ship.js';
-import {buildFerryModel,GANGWAY_Z,WL,FERRY_HULL} from './ferry-model.js';
+import {buildFerryModel,GANGWAY_Z,WL,FERRY_HULL,FERRY_RAMP} from './ferry-model.js';
+import {MINATO_BERTH} from './minato-berth.js';
+import {OUTER_PIER} from './layout.js';
 import {BERTH_X,BERTH_Z,townArrival,townDeparture} from './ferry-paths.js';
 import {lanternGlow,windowGlow} from '../render/dusk.js';
 
 /**
- * One Minato–Kitano-jima ferry, the town's Minato Maru (ferry-ship.js), carries passengers and up
- * to three cars. At Minato she lies port side to the outer pier with her bow ramp on the quay and
- * her gangway from the deckhouse door to the pier; at Kitano-jima she uses the bow ramp. The legacy
+ * One Minato–Kitano-jima ferry, the town's Minato Maru (ferry-ship.js, ferry-model.js), carries a hundred
+ * passengers and ten cars. At Minato she lies port side to the outer pier on its fenders with her bow
+ * ramp on the quay's landing plate and her gangway from the port casing's door to the pier; at
+ * Kitano-jima she lands her ramp on the pier. The legacy
  * commuter timetable interface remains available for residents and old saved games.
  * A player-requested crossing holds a safe berth until vehicles finish boarding.
  */
@@ -22,7 +25,7 @@ const PIER_WEST=-4.1;
 /** Where it lies: alongside the pier's open west flank, clear of the rails and bollards. */
 export const FERRY_BERTH=Object.freeze({
  x:BERTH_X,z:BERTH_Z,
- /** The gangway, from the deckhouse's port door to the pier, short of the pier's end. */
+ /** The gangway, from the port casing's door to the pier, short of the pier's end. */
  gangwayZ:BERTH_Z+GANGWAY_Z,
 });
 
@@ -48,13 +51,13 @@ export const FERRY_TERMINAL=Object.freeze({
 
 /**
  * Town minutes for each part of a call -- real minutes, since the clock is the one on your
- * wall (town-clock.js). A small ferry comes in off the sea, slows to a crawl inside the
- * breakwater and is alongside three and a half minutes later; it loads for a quarter of an
+ * wall (town-clock.js). She comes in off the sea, slows to a crawl inside the breakwater, pivots in
+ * the western basin and is alongside four and a half minutes later; it loads for a quarter of an
  * hour (BUS_DWELL); getting out of port takes five minutes -- astern off the berth, a slow
  * swing in the basin, dead slow to the breakwater -- and only then does it open up and
  * go. Each part is a leg of the passage (ferry-paths.js townArrival, townDeparture).
  */
-export const FERRY_TIMES=Object.freeze({sea:2,harbour:3.5,reverse:1.5,turn:1.5,leaveHarbour:2,leaveSea:2});
+export const FERRY_TIMES=Object.freeze({sea:2,harbour:4.5,reverse:1.5,turn:1.5,leaveHarbour:2,leaveSea:2});
 const ARRIVAL=townArrival(FERRY_TIMES),DEPARTURE=townDeparture(FERRY_TIMES);
 /** The timetable's passages in and out of Minato, for the tests and the sounds. */
 export const TOWN_PASSAGES=Object.freeze({arrival:ARRIVAL,departure:DEPARTURE});
@@ -68,6 +71,8 @@ export const TOWN_PASSAGES=Object.freeze({arrival:ARRIVAL,departure:DEPARTURE});
  */
 /** Her origin's height with her at rest in calm water (the waterline at sea level). */
 const REST_Y=SEA_LEVEL+FERRY_HULL.origin;
+/** The ramp's leaf, at rest on a landing at height `landing`: how far it drops from the car deck (radians below level). */
+const rampSlope=landing=>Math.asin(Math.max(-1,Math.min(1,(REST_Y+FERRY_HULL.freeboard-landing-.05)/FERRY_RAMP.leaf)));
 export function shipMotion(x,z,time,exposure=0){
  const e=Math.max(0,Math.min(1,exposure)),deg=Math.PI/180,Tr=rollPeriod(FERRY_HULL),Tp=pitchPeriod(FERRY_HULL),phase=x*.37+z*.21;
  const roll=(.35+1.65*e)*deg*(.85*Math.sin(2*Math.PI*time/Tr+phase)+.15*Math.sin(2*Math.PI*time/(Tr*1.61)+1.3*phase));
@@ -114,9 +119,10 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
   const moored=phase==='waiting';
   pose();
   ferry.userData.gangway.visible=moored&&berth==='town';ferry.userData.setGate?.(moored&&berth==='town');
-  const slope=berth==='airport'?-.008:.24,down=run.rampDown;
-  if(down>=1)ferry.userData.restRamp?.(slope,REST_Y);else ferry.userData.setRamp?.(down,slope);
-  if(moored&&berth==='town')ferry.userData.restGangway?.(REST_Y);
+  // Down, the ramp rests on its landing: the steel plate in Minato's quay, Kitano-jima's pier.
+  const landing=berth==='airport'?AIRPORT_FERRY_PORTS.airport.height:MINATO_BERTH.landing.top,down=run.rampDown;
+  if(down>=1)ferry.userData.restRamp?.(landing);else ferry.userData.setRamp?.(down,rampSlope(landing));
+  if(moored&&berth==='town')ferry.userData.restGangway?.(OUTER_PIER.height);
   // Her screws turn and the radar sweeps while she moves; alongside both are still.
   const moved=Math.hypot(x-last.x,z-last.z),dt=clock-last.t;last.x=x;last.z=z;last.t=clock;
   if(dt>0&&dt<1)ferry.userData.underway?.(dt,moored?0:Math.min(6,moved/dt));

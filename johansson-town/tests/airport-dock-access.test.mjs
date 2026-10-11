@@ -50,7 +50,7 @@ test('both ferry landings have real, unobstructed walking routes to their passen
   }
  }
  try{
-  const nav=createNavigation(blocked,{step:.35,radius:.32,bounds:{minX:-10,maxX:10,minZ:-65,maxZ:-34}});
+  const nav=createNavigation(blocked,{step:.35,radius:.32,bounds:{minX:-10,maxX:10,minZ:-80,maxZ:-34}});
   for(const target of [FERRY_TERMINAL.queue,AIRPORT_FERRY_PORTS.town.landing]){
    const route=nav.path({x:0,z:-36},{x:target[0],z:target[1]});
    assert.ok(route.length,'Main Street reaches the Minato boarding point');

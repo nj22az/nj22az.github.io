@@ -22,43 +22,46 @@ const BERTH_YAW=(AIRPORT_ISLAND.yaw+Math.PI/2)*180/Math.PI;
 /** On Kitano-jima's leading line, `d` metres short of her berth there: she comes in along it, bow first. */
 const onLeadingLine=d=>airportWorld(AIRPORT_BERTH_U-d,31);
 /**
- * The sea between: out of Minato round the breakwater's west end, south of it, and east along
- * Kitano-jima's leading line to the jetty. Each corner is a steady turn (ferry-paths.js
- * roundedTrack), wide enough that at her sea speed she turns less than a degree a second, and the
- * first one keeps her two metres and more off the breakwater's end.
+ * The sea between: out of Minato round the breakwater's west end, well south of it, east, and onto
+ * Kitano-jima's leading line east of the breakwater's head (so her 34.5 m hull never passes close
+ * under it), to the jetty. Each corner is a steady turn (ferry-paths.js roundedTrack), wide enough
+ * that at her sea speed she turns less than a degree a second.
  */
-const SEA_CORNERS=Object.freeze([HARBOUR_MOUTH,[-42,-124]]),SEA_RADII=Object.freeze([16,25,40]);
+const SEA_CORNERS=Object.freeze([HARBOUR_MOUTH,[-38,-134],[20,-134]]),SEA_RADII=Object.freeze([16,32,32,40]);
 /** To Kitano-jima: off the Minato berth as on any departure, the sea, and bow in to the jetty. */
 const outbound=(()=>{
  const harbour=TOWN_UNBERTHING.keys,swingEnd=harbour.at(-1);
- const track=roundedTrack([[swingEnd[0],swingEnd[1]],...SEA_CORNERS,onLeadingLine(55),onLeadingLine(30)],SEA_RADII);
+ const track=roundedTrack([[swingEnd[0],swingEnd[1]],...SEA_CORNERS,onLeadingLine(44),onLeadingLine(30)],SEA_RADII);
  // The harbour's last turn, round the breakwater's end, is hers on slow ahead; the sea begins as she steadies out of it.
  const keys=[...harbour,...track.slice(1,-1),[...onLeadingLine(30),BERTH_YAW],[...onLeadingLine(12),BERTH_YAW],[...AIRPORT_FERRY_PORTS.airport.berth,BERTH_YAW]];
  const clear=harbour.length-1+track.turns[1].from+1,line=keys.length-3;
  return passage(keys,[
-  {to:TOWN_UNBERTHING.astern,minutes:1,kind:'astern',signal:['prolonged','astern']},
-  {to:harbour.length-1,minutes:2,kind:'swing'},
-  {to:clear,minutes:1.25,kind:'manoeuvring'},
-  {to:line,minutes:9.75,kind:'sea',signal:'prolonged'},
-  {to:keys.length-2,minutes:2,kind:'approach'},
-  {to:keys.length-1,minutes:2,kind:'berthing'},
+  {to:TOWN_UNBERTHING.astern,minutes:2,kind:'astern',signal:['prolonged','astern']},
+  {to:harbour.length-1,minutes:2.5,kind:'swing',ease:2},
+  {to:clear,minutes:3,kind:'manoeuvring',ease:6},
+  {to:line,minutes:7.4,kind:'sea',signal:'prolonged',ease:12},
+  {to:keys.length-2,minutes:1.5,kind:'approach',ease:6},
+  {to:keys.length-1,minutes:1.6,kind:'berthing',ease:4},
  ]);
 })();
 /** To Minato: astern off the jetty, a swing on the thruster, the sea, and in to the Minato berth as on any arrival. */
 const inbound=(()=>{
  const arrival=TOWN_BERTHING.keys,first=arrival[0];
- const track=roundedTrack([onLeadingLine(26),onLeadingLine(55),...[...SEA_CORNERS].reverse(),[first[0],first[1]]],[...SEA_RADII].reverse());
+ const track=roundedTrack([onLeadingLine(26),onLeadingLine(44),...[...SEA_CORNERS].reverse(),[first[0],first[1]]],[...SEA_RADII].reverse());
  const head=[[...AIRPORT_FERRY_PORTS.airport.berth,BERTH_YAW],[...onLeadingLine(16),BERTH_YAW],[...onLeadingLine(26),BERTH_YAW+180]];
  const keys=[...head,...track.slice(1,-1),...arrival];
  // Out along the leading line to its first turn; at sea until she is into the turn round the breakwater's end.
  const out=head.length-1+track.turns[0].from,inside=head.length-1+track.turns.at(-1).from;
+ // In through the mouth, the pivot in the western basin (TOWN_BERTHING's first four keys), and across to the berth.
+ const pivot=head.length+track.length-2;
  return passage(keys,[
-  {to:1,minutes:1,kind:'astern',signal:['prolonged','astern']},
-  {to:2,minutes:2,kind:'swing'},
-  {to:out,minutes:1.5,kind:'manoeuvring'},
-  {to:inside,minutes:9.5,kind:'sea'},
-  {to:keys.length-3,minutes:2,kind:'approach',signal:'prolonged'},
-  {to:keys.length-1,minutes:2,kind:'berthing'},
+  {to:1,minutes:1.5,kind:'astern',signal:['prolonged','astern']},
+  {to:2,minutes:2,kind:'swing',ease:2},
+  {to:out,minutes:1.5,kind:'manoeuvring',ease:3},
+  {to:inside,minutes:7,kind:'sea',ease:12},
+  {to:pivot,minutes:1.5,kind:'approach',signal:'prolonged',ease:8},
+  {to:pivot+3,minutes:1.6,kind:'swing',ease:2},
+  {to:keys.length-1,minutes:2.9,kind:'berthing',ease:4},
  ]);
 })();
 /** Each way's passage (ferry-paths.js), for the game, its sounds and the tests. */
