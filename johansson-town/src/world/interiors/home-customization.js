@@ -8,7 +8,12 @@ export const HOME_CUSTOMIZATION_PLACEMENT=Object.freeze({
  anchor:Object.freeze([2.65,1.3,.85]),
 });
 
-export function createHomeCustomization({room,state,menu,save,close,reg,arrange=null}){
+/**
+ * Dresses the mayor's home in the chosen wall colour, cushions and quilt, and keepsake. With a `menu` (and `reg`) it
+ * also offers 'Decorate your home' in the room; World passes none, because decorating is done in Johansson Studio
+ * (src/studio-handoff.js). snapshot() re-reads state.homeDecor and redresses the room.
+ */
+export function createHomeCustomization({room,state,menu=null,save=()=>{},close=()=>{},reg=null,arrange=null}){
  const group=room.getObjectByName('Mayor’s home'),walls=[],textiles=[];
  if(!group)return null;
  group.traverse(o=>{
@@ -43,6 +48,6 @@ export function createHomeCustomization({room,state,menu,save,close,reg,arrange=
   ['Keepsake shelf',()=>choose('keepsake',unlockedHomeKeepsakes(state),'Keepsake shelf')],
   ['Done',close],
  ]);}
- const anchor=new THREE.Object3D();anchor.position.set(...HOME_CUSTOMIZATION_PLACEMENT.anchor);anchor.userData.npcInteraction=false;group.add(anchor);reg(anchor,'Decorate your home',open,true);
+ if(menu&&reg){const anchor=new THREE.Object3D();anchor.position.set(...HOME_CUSTOMIZATION_PLACEMENT.anchor);anchor.userData.npcInteraction=false;group.add(anchor);reg(anchor,'Decorate your home',open,true);}
  apply();return {snapshot:apply,open};
 }

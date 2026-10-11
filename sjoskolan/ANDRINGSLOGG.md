@@ -85,6 +85,13 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     skickar resultaten som QR-kod (`vecka-XX/aktuell/Resultat.html`); läraren läser dem i `larare/resultat.html`.
     Facit för resultatkoden finns bara i den krypterade lärarsidan, aldrig i elevens moduler. Vecka 37–39 räknar
     fortfarande D ur namnet (`RESULTATKOD` i `verktyg/inlamning/bygg.py` och `verktyg/veckosidor/bygg.py`).
+    Undantag (lärarens beslut 2026-10-11): från vecka 42 rättar inlämningssidan sig själv (`SJALVRATTANDE` i
+    `verktyg/inlamning/bygg.py`). Elevens sida har då bara saltade SHA-256-hashar av godkända svar
+    (`vecka-XX/aktuell/inlamning-nyckel.mjs`, skrivs av `verktyg/inlamning/facit.py` ur en klartextfil utanför repot),
+    aldrig svaren i klartext, och beskedet visar aldrig svaret. Hasharna är inget säkert skydd, så läraren ser alltid
+    första svar och antal försök. Varje fält har tre försök per omgång (`MAX_FORSOK`); efter tre fel låses fältet tills
+    eleven har bekräftat del 1–3 och texten som lästa efter låsningen (`sj-last:vecka-NN`), och då börjar en ny omgång.
+    Ett rätt fält förblir rätt. Eleven lämnar in en PDF i Google Classroom, inte ett mejl med svaren.
 30. **Lärarmanuset och frågorna har var sin källa.** Manuset (Säg, Fråga, Klicka, Tänk på) står i `note` i
     `vecka-40/aktuell/lektioner.mjs`. Frågor och svar på bilderna, också Din tur, är poster i innehållsdatabasen
     (ytan `genomgang-v40`) och synkas till presentationerna av `bygg presentationer` (formerna check och svar).
@@ -184,8 +191,28 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     presentation ändras: inlämningens hänvisningar ”del N, avsnitt M” bygger på den. *Kontroll: `innehall.py bygg` stoppar när ett
     teorikort saknas; jämför delsidans text manuellt.*
 
+52. **Stöd som visas efter en fråga får inte ge svaret på en annan fråga.** En punkt i checklistan i inlämning 1 vecka 42
+    namngav svaret på flervalsfråga d, och listan visades så fort första versionen var låst. Punkten säger nu ”alla
+    energikällor som kan finnas kvar när gruppen är bortkopplad”, och listan visas först när fråga d är rätt eller låst
+    (`checklista_efter` i `verktyg/inlamning/sjalvrattning.py`). Läs varje lista, mall och exempel som visas under
+    inlämningen mot alla frågor som fortfarande är öppna. Skriv inte heller svaret här eller i ett test: testet tar fram
+    det godkända alternativet ur nyckeln. *Kontroll: `vecka-42/aktuell/inlamning.test.mjs`.*
+
 ## Ändringar
 
+- **2026-10-11** Vecka 42: ”Din vecka” räknar inlämningens fält per kursplanspunkt redan från sidan (`kursplan.py`
+  `_inlamningens_falt`, samma räkning som `veckoStatus`), så att totalerna är desamma före och efter att eleven har öppnat
+  formuläret. Utan sparad plan står rutan Inlämningen kvar som ”Inte påbörjad” i stället för ”0 av 0 rätt”. CI kör
+  `gemensamt/veckopanel.test.mjs`. Regel 51 i den självrättande inlämningens gren blev regel 52.
+- **2026-10-11** Vecka 42 fredag: ny presentation *Riskbedömning och skydd* i lektionsbildernas mall, 21 bilder i stället för 36, med
+  en bild för veckans labb (Multimeterlabbet, Välj CAT-klass; bildtypen `labb`, som delsidan hoppar över). Delsidan del 3 har samma
+  sex avsnitt, tre exempel och figurer. Läsuppgiftens begrepp ur Transportstyrelsens riktlinjer (ALARP, konsekvensgrader) står inte på
+  bilderna, så att läsförståelsen i inlämningen prövar läsningen.
+- **2026-10-11** Vecka 42 tisdag: ny presentation *Regler, ansvar och arbetsmetoder* i lektionsbildernas mall, 20 bilder i stället för 36.
+  Avsnitt 6 *Regler för fartyg* visar nu vilka regler som gäller vilka fartyg (LM-3): TSFS 2017:26 för nationell sjöfart, TSFS 2019:4 för
+  fartyg med internationella certifikat, TSFS 2019:56 för arbetsmiljön ombord (redaren räknas som arbetsgivare) och ISM-kodens SMS.
+  Start- och avslutsfrågorna för vecka 42 del 2 och 3 (EL-000713–716) var märkta LM-4 och är nu LM-3 respektive LM-6/LM-7.
+  Mallen ger långa rubriker två rader, tätare rader på kursplanbilden vid tre eller fler punkter och två rader åt långa källor.
 - **2026-10-11** Vecka 42: översikten ”Din vecka” överst på veckosidan (`verktyg/veckosidor/kursplan.py` `veckopanel_html`,
   `gemensamt/veckopanel.mjs`, test `gemensamt/veckopanel.test.mjs`): steg klara, delar lästa (”Jag har läst” på delsidorna),
   övningar klara, inlämningen (rätt svar eller inlämnad) och dagar kvar, och kursplanens punkter med stapel i områdets färg
@@ -203,7 +230,38 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   källor. Övningstexterna står inte längre på bilderna (övningarna görs på delsidan med ledtrådar och facit), presentationens
   övningsplaceringar är borttagna och start- och avslutsfrågan har nya bild- och formnummer. Delsidan del 1 har samma avsnitt,
   rubriker och figurer; texten följer bilderna. Start- och avslutsfrågan (EL-000711, EL-000712) var märkta LM-4 men tränar LM-2.
+- **2026-10-11** Inlämningen vecka 42, lärarens nya krav inför måndag 12 oktober (regel 29 och 52). Varje fält som
+  rättas har tre försök per omgång och visar ”Försök kvar: N”; efter tredje felet låses fältet (”Låst – läs om veckan”),
+  och rutan Låsta frågor överst i formuläret ber eleven läsa om del 1–3 och Transportstyrelsens text (länk och status
+  för varje). När alla fyra är bekräftade efter låsningen får de låsta fälten tre nya försök (omgången sparas per fält). Delsidorna
+  Del_1–3 har sist rutan ”Har du läst hela del N?” (`innehall/export/delsidor_veckor.py`, bara veckor i
+  `SJALVRATTANDE`); knappen öppnas när slutet av sidan har varit i bild och sidan har varit synlig minst 3 minuter
+  (`gemensamt/lasbekraftelse.mjs`). Bekräftelserna sparas i localStorage `sj-last:vecka-42` som `{"del-1": ISO, "del-2":
+  ISO, "del-3": ISO, "text": ISO}`. Ny uppgift Inlämning 4, Läsförståelse (EL-000887, LM-3, LM-7, LM-2) om
+  Transportstyrelsens riktlinjer för riskanalysarbete (TSG 2020-3130; ingen officiell webbadress hittades, så PDF:en
+  ligger i `vecka-42/aktuell/` med källan angiven); hänvisningen vid fel är avsnittet, aldrig svaret, och fråga f är ett
+  heltalsfält 1–5. Schemat tillåter flerval med `delfragor` i stället för `alternativ`. Flervalsfrågorna har fyra
+  alternativ i en fast blandad ordning. Lämna in kontrollerar allt och visar resultatet; sedan laddar eleven ner en
+  riktig PDF (`gemensamt/pdf.mjs`, Helvetica WinAnsi utan bibliotek, `Vecka42_Inlamning_Fornamn_Efternamn.pdf`) och
+  lämnar in den i Google Classroom under Vecka 42. Mejl (bara ämnesrad) finns kvar som reserv; den långa mejltexten och
+  kopieringen är borta. Checklistan nämner inte längre svaret på fråga d och visas först när d är rätt eller låst (regel
+  52). Ett av valen i inlämning 3 godkänner två alternativ, enligt lärarens facit; facit.py tar en lista med id när flera
+  alternativ godkänns, men aldrig alla. `veckoStatus(vecka)` i
+  `gemensamt/sjalvrattning.mjs` ger veckosidan namn, inlämningstid, rätt per uppgift och kursplanens mål, låsta fält och
+  läsningen. Tester: `gemensamt/sjalvrattning.test.mjs`, `gemensamt/pdf.test.mjs` (pdfinfo, pdftotext),
+  `vecka-42/aktuell/inlamning.test.mjs`; CI installerar poppler-utils för PDF-testet.
 
+- **2026-10-11** Inlämningen vecka 42 rättar sig själv (lärarens beslut, regel 29). Under varje uppgift finns svarsfält:
+  tal (U_{beröring} i V, strömmen i mA), flerval, rullistor för kategori och märkspänning på de tre mätplatserna (samma
+  logik som Multimeterlabbet, Välj CAT-klass) och textrutor för riskbedömningen, som låses som första version innan en
+  checklista visas. Rätta ger Rätt! eller Skiljer sig med en hänvisning till delsidans avsnitt, aldrig svaret; tal godkänns
+  inom 2 % med komma eller punkt (regel 6). Sidan sparar första svar, sista svar, antal försök och tid (regel 25), och
+  Lämna in visar resultatet, öppnar ett mejl till läraren (högst 1 800 tecken, annars bifogas PDF:en) och sparar en PDF.
+  Rätta svar finns bara som saltade SHA-256-hashar i `vecka-42/aktuell/inlamning-nyckel.mjs` (`verktyg/inlamning/facit.py`
+  ur klartext utanför repot). Fälten står i `verktyg/inlamning/sjalvrattning.py`, logiken i `gemensamt/sjalvrattning*.mjs`.
+  Rutan Så lämnar du in (inlämningssidan och veckosidan) följer flödet; foton av uträkningar behövs bara om läraren ber om
+  det. Tester: `gemensamt/sjalvrattning.test.mjs`, `vecka-42/aktuell/inlamning.test.mjs` (stoppar när EL-000817–819 får ny
+  revision: kontrollera svaren och kör facit.py igen). Lärarguidens skyddade facit för EL-000817–819 är inte jämfört (kräver LARARLOSEN).
 - **2026-10-11** Inlämningsuppgifterna EL-000801–828 har kursplanens punkter som de faktiskt tränar. Tidigare var de satta
   mekaniskt (beräkning = LM-4, resonemang = LM-2 + LM-7), så veckornas översikt visade fel punkter.
 

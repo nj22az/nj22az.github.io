@@ -10,7 +10,13 @@ import {townDate,townDay,okinawaSeason} from '../town-clock.js';
  * nothing much happened still gets a page, from a pool of quiet-day entries that are never
  * used twice, so no two pages read alike.
  *
- * state.diary = {moments:{[day]:[{text,weight,kind}]}, pages:{[day]:string}, quiet:[used]}
+ * state.diary = {moments:{[day]:[{text,weight,kind,who?,news?,id?}]}, pages:{[day]:string}, quiet:[used]}
+ *
+ * The moments are also the town's shared memory (docs/ANIMAL-CROSSING-STUDY.md): the diary
+ * is one retelling, the evening news and the residents' letters are others. A moment can
+ * say who it is about (`who`) and carry the news's own sentence (`news`), so each retelling
+ * keeps its own voice: the diary in Johansson's first person, the news in the third. An
+ * `id` lets a story step be recorded once even when its words change.
  */
 export const MOMENT_WEIGHT=Object.freeze({happening:5,friend:4,gift:3,discovery:3,work:2,meal:2,note:1});
 const QUIET=Object.freeze({
@@ -31,12 +37,26 @@ const QUIET=Object.freeze({
 });
 const ensure=state=>{state.diary||={moments:{},pages:{},quiet:[]};state.diary.moments||={};state.diary.pages||={};state.diary.quiet||=[];return state.diary;};
 
+/** A moment as it is kept: bounded strings, at most four names. */
+function cleanMoment(m){
+ const out={text:String(m.text).slice(0,280),kind:String(m.kind||'note').slice(0,24),weight:Number(m.weight)||1};
+ const who=Array.isArray(m.who)?m.who.filter(n=>typeof n==='string'&&n).slice(0,4).map(n=>n.slice(0,60)):[];
+ if(who.length)out.who=who;
+ if(typeof m.news==='string'&&m.news)out.news=m.news.slice(0,280);
+ if(typeof m.id==='string'&&m.id)out.id=m.id.slice(0,120);
+ return out;
+}
+/** The moments of one town day, heaviest first (a copy: readers cannot change the record). */
+export function momentsOn(state,day){
+ return [...(state?.diary?.moments?.[day]||[])].sort((a,b)=>b.weight-a.weight).map(m=>({...m,...(m.who?{who:[...m.who]}:{})}));
+}
+
 /** Offer something to today's page. A repeat of the same text the same day is ignored. */
-export function recordMoment(state,minutes,{text,kind='note',weight}={}){
+export function recordMoment(state,minutes,{text,kind='note',weight,who,news,id}={}){
  if(!text)return;
  const diary=ensure(state),day=townDay(minutes),list=diary.moments[day]||=[];
- if(list.some(m=>m.text===text))return;
- list.push({text:String(text).slice(0,280),kind,weight:Number.isFinite(weight)?weight:MOMENT_WEIGHT[kind]??1});
+ if(list.some(m=>m.text===text||(id&&m.id===id)))return;
+ list.push(cleanMoment({text,kind,weight:Number.isFinite(weight)?weight:MOMENT_WEIGHT[kind]??1,who,news,id}));
  // Keep the record small: a fortnight of moments, the best dozen of each day.
  list.sort((a,b)=>b.weight-a.weight).splice(12);
  for(const d of Object.keys(diary.moments))if(+d<day-14)delete diary.moments[d];
@@ -78,7 +98,7 @@ export function diaryDays(state,minutes){
 /** A diary from a save, cleaned: only sane records survive. */
 export function restoreDiary(saved){
  const out={moments:{},pages:{},quiet:[]};if(!saved||typeof saved!=='object')return out;
- for(const [d,list] of Object.entries(saved.moments||{}))if(/^\d+$/.test(d)&&Array.isArray(list))out.moments[d]=list.filter(m=>m&&typeof m.text==='string').slice(0,12).map(m=>({text:m.text.slice(0,280),kind:String(m.kind||'note'),weight:Number(m.weight)||1}));
+ for(const [d,list] of Object.entries(saved.moments||{}))if(/^\d+$/.test(d)&&Array.isArray(list))out.moments[d]=list.filter(m=>m&&typeof m.text==='string').slice(0,12).map(cleanMoment);
  for(const [d,page] of Object.entries(saved.pages||{}))if(/^\d+$/.test(d)&&typeof page==='string')out.pages[d]=page.slice(0,1200);
  if(Array.isArray(saved.quiet))out.quiet=saved.quiet.filter(t=>typeof t==='string').slice(-60);
  return out;

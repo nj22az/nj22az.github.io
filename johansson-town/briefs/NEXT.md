@@ -146,3 +146,37 @@ What Ghidra showed in Mario Artist Talent Studio (64DD) and the Game Boy Camera 
 (Studio's Shuffle a moment, World's Pocket camera film), the ranked proposals (a carried pocket camera in first
 person, a photo-sticker booth, a movie mode on Talent Studio's track model, more wardrobe slots) and a set reference
 for remodelling World: `briefs/retro-study.md`.
+
+## 8. All customisation is in Johansson Studio (the creator, 2026-10-11)
+
+> "The build and decorate still shows first when loading Johansson world. Why is that I want all customisation be in
+> Johansson Studio"
+
+Done 2026-10-11. World has no BUILD on the title screen (it was in the page's HTML and only removed by a script after
+loading, and only on the live site, which is why it showed first), no "Decorate your home", no "Arrange furniture", no
+"Make your islander" or "Resident wardrobes" in the Town book, no maker in the wardrobe mirror and no "Thuan's
+wardrobe" menus. The old maker address (`creator/`) forwards to Studio. Studio sends, World shows
+(`src/studio-handoff.js`):
+- **Edit character → Johansson World:** your islander's look (per saved game), any resident's look, Thuận's outfit;
+  "Load their look from World" fetches the look World has now, to refine it.
+- **Decorate home** (`avatar-creator/home.js`): World's own room, colours, keepsakes (only those earned in World) and
+  furniture tool; nothing reaches World until "Use in Johansson World". World applies a change at once if it is open.
+
+Open:
+- The ?build town builder still runs inside World's page for the Town Studio desktop app (no button, off online). It
+  moves into Studio with section 6.
+- The browser QA scripts written for the old in-World maker (`tests/braids-skirt.browser.mjs`,
+  `tests/thuan-original.browser.mjs`, `tests/harbour-visitor.browser.mjs`) still open `creator/`, which now forwards
+  to Studio; port them to Studio's own browser test (`avatar-creator/tests/studio.browser.mjs`).
+- On an iPhone or iPad, World installed on the Home Screen keeps its own storage, apart from Safari's, so a change made
+  in Studio in Safari only reaches World played in Safari (Studio says so). A hand-off that crosses that (a link
+  carrying the change) is not built.
+- Still in World, for the creator to decide: the Photo studio's per-photo wardrobe ("Dress the selected character for
+  the shoot. Their own clothes come back in town."), and `?avatar=` links that set the islander's look from a shared
+  code. Neither changes anything Studio owns, but both are dressing done in World.
+- In first person, the hands keep the old skin and sleeve colours until World is reloaded (fists.js cannot recolour).
+- Placing furniture needs a mouse or touch; there is no keyboard way yet (World's build-mode.js).
+- The festivals' things are not built: Haarii boats, Tanabata bamboo, eisa drums, the tug-of-war rope. The news names
+  the residents who turn out (happenings.js `news`); when these are built, the news can name them too.
+- `jojo/town-studio/evidence/home-decorating.mjs` drove World's old "Arrange furniture"; it is evidence of that check,
+  not a tool to run again.

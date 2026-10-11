@@ -1,0 +1,142 @@
+{
+  "id": "EL-000887",
+  "titel": "Läsförståelse: Transportstyrelsens riktlinjer för riskanalys",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 2,
+  "granskning": {
+    "status": "utkast",
+    "kommentar": "Svaren kontrollerade mot PDF:en (avsnitt 2.1.1, 2.1.7, tabell 1, 2.2, 2.4.1, figur 12, 3.3.3, bilaga 4). Facit finns bara hashat, klartexten utanför repot."
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v42-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Läs avsnitt 2.1, 2.2, 2.4, 3.3.3 och bilaga 4 i Transportstyrelsens riktlinjer för riskanalysarbete. Varje fråga säger var i texten svaret står.",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Avsnitt 2.1.1. Hur definierar riktlinjen en risk?",
+        "alternativ": [
+          "Den skada som uppstår när en olycka har hänt.",
+          "Kombinationen av sannolikheten för att en händelse inträffar och konsekvensen av att den inträffar.",
+          "Allt som kan gå sönder ombord.",
+          "Hur många olyckor som har hänt på fartyget."
+        ],
+        "ledtrad": "avsnitt 2.1.1 Risk"
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Avsnitt 2.1.7. Vad ingår i en riskbedömning?",
+        "alternativ": [
+          "Bara att uppskatta hur ofta en olycka inträffar.",
+          "Att identifiera risker och riskkällor, analysera riskerna och värdera dem.",
+          "Att skriva en rapport efter en olycka.",
+          "Att köpa in skyddsutrustning."
+        ],
+        "ledtrad": "avsnitt 2.1.7 Riskbedömning"
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Tabell 1 i avsnitt 2.1.11 och definitionerna under den. En person får en elchock och kan inte fungera normalt på fyra dygn. Hen är inte inlagd på sjukhus. Vilken sorts olycka är det enligt definitionerna?",
+        "alternativ": [
+          "Olycka",
+          "Lindrig olycka",
+          "Allvarlig olycka",
+          "Dödsolycka"
+        ],
+        "ledtrad": "tabell 1 och definitionerna under den i avsnitt 2.1.11"
+      },
+      {
+        "id": "d",
+        "typ": "flerval",
+        "text": "Avsnitt 2.2. Riktlinjen ger exempel på när det är krav att kontakta Transportstyrelsen om riskanalysarbetet. Vilket exempel nämns?",
+        "alternativ": [
+          "Bara efter att en olycka har inträffat.",
+          "Vid ombyggnad och nybyggnad av gasdrivna eller eldrivna fartyg och vid bunkring eller landanslutning av dem.",
+          "När fartyget ska säljas.",
+          "Aldrig, redaren bestämmer alltid själv."
+        ],
+        "ledtrad": "avsnitt 2.2 Sammansättning av konstruktionsgruppen"
+      },
+      {
+        "id": "e",
+        "typ": "flerval",
+        "text": "Avsnitt 2.4 och 2.4.1. Vad betyder ALARP?",
+        "alternativ": [
+          "Risken är så liten att ingen åtgärd behövs.",
+          "Risken kan tolereras om alla praktiskt genomförbara riskreducerande åtgärder har införts.",
+          "Risken är alltid oacceptabel.",
+          "Risken gäller bara miljön."
+        ],
+        "ledtrad": "avsnitt 2.4 Riskkriterier och 2.4.1 ALARP"
+      },
+      {
+        "id": "f",
+        "typ": "berakning",
+        "text": "Avsnitt 3.3.3, figur 12. En händelse bedöms inträffa ungefär en gång på 50 år. Vilken sannolikhetsgrad (1–5) får den i riskmatrisen?",
+        "tolerans": {
+          "abs": 0
+        },
+        "ledtrad": "figur 12 i avsnitt 3.3.3 Riskmatris"
+      },
+      {
+        "id": "g",
+        "typ": "flerval",
+        "text": "Avsnitt 3.3.3. En risk hamnar på den oacceptabla nivån. Vad ska man göra enligt riktlinjen?",
+        "alternativ": [
+          "Acceptera risken och skriva upp den i listan.",
+          "Minska risken genom ytterligare analys eller riskreducerande åtgärder och sedan värdera risken igen.",
+          "Vänta och se om en olycka inträffar.",
+          "Flytta risken till nästa års analys."
+        ],
+        "ledtrad": "avsnitt 3.3.3 Riskmatris, stycket efter figur 12"
+      },
+      {
+        "id": "h",
+        "typ": "flerval",
+        "text": "Bilaga 4 (Risker ombord). Vilken grupp står med som riskkällor i bilagan?",
+        "alternativ": [
+          "Kablar, ljuskällor, batterier och elchock.",
+          "Åska, jordbävning och solstormar.",
+          "Datavirus, elpriser och nätavgifter.",
+          "Radon, pollen och solljus."
+        ],
+        "ledtrad": "bilaga 4 Risker ombord"
+      }
+    ],
+    "svarsformat": "Svara i rutorna på inlämningssidan."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "Transportstyrelsen, TSG 2020-3130 (2019-12-03)",
+        "roll": "inlämningsuppgift vecka 42, läsförståelse"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "Transportstyrelsen, ”Transportstyrelsens riktlinjer för riskanalysarbete – för fartyg i nationell fart (TSFS 2017:26)”, TSG 2020-3130, 2019-12-03.",
+    "resurser": [
+      {
+        "url": "vecka-42/aktuell/Transportstyrelsen_riktlinjer_riskanalysarbete.pdf",
+        "titel": "Transportstyrelsens riktlinjer för riskanalysarbete (PDF)"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Saltade hashar i vecka-42/aktuell/inlamning-nyckel.mjs; klartexten finns utanför repot (verktyg/inlamning/facit.py)."
+  }
+}

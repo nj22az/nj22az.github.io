@@ -16,7 +16,7 @@ test('repeated frozen draws refresh lighting and late materials without advancin
  const renderSource=source.slice(renderStart,source.indexOf('\n setTime(value',renderStart));
  let hours=0,shutterY=0,skyUpdates=0,celSweeps=0,outdoor=0,interior=0,market=0;
  const context={THREE,duskClock,world:{updateHours(){hours++;shutterY+=.02;}},minutes:1260,weather:false,weatherKind:'sunny',
-  current:null,graphicsLifecycle:null,activeRoomLayout:null,creatorOpen:false,photoStudio:null,spawnScene:null,player:new THREE.Group(),tabletLike:false,
+  current:null,graphicsLifecycle:null,activeRoomLayout:null,photoStudio:null,spawnScene:null,player:new THREE.Group(),tabletLike:false,
   lightBudget:{update(){}},colliderGrid:{refresh(){}},
   sun:new THREE.DirectionalLight(),ambient:new THREE.HemisphereLight(),bounce:new THREE.PointLight(),uplight:new THREE.DirectionalLight(),UPLIGHT:.35,
   scene:new THREE.Scene(),camera:new THREE.PerspectiveCamera(),town:{},room:{},renderer:{render(){interior++;}},
@@ -36,7 +36,6 @@ test('repeated frozen draws refresh lighting and late materials without advancin
  assert.deepEqual(context.camera.position.toArray(),audit.camera.pos);
  context.current={id:'mayor-home'};audit.render();assert.equal(interior,1);
  context.current={id:'market'};audit.render();assert.equal(market,1);
- context.creatorOpen=true;assert.equal(audit.render(),false);assert.equal(market,1,'Editor owns its canvas; a frozen town draw cannot overwrite it');context.creatorOpen=false;
  context.setTime();assert.equal(hours,2,'Normal lighting calls retain their hourly update');
  context.graphicsLifecycle={lost:true};assert.equal(audit.render(),false);assert.equal(hours,2);assert.equal(celSweeps,12);
 });

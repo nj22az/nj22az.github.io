@@ -49,6 +49,14 @@ test('inlämningens status per punkt läggs till övningarna', () => {
   assert.equal(rakna(data, lagring({}), { ...status, inlamnad: '2026-10-17T20:00:00Z' }).inlamning.text, 'Inlämnad');
 });
 
+test('formuläret inte öppnat: rutan står kvar, punkterna räknar inlämningens fält från sidan', () => {
+  const medFalt = { ...data, mal: [{ ...data.mal[0], inlamning: 13 }, data.mal[1]] };
+  const tom = { namn: '', inlamnad: null, uppgifter: [], lm: {}, last: false, lasning: { 'del-1': null, 'del-2': null, 'del-3': null, text: null } };
+  const r = rakna(medFalt, lagring({}), tom);
+  assert.equal(r.inlamning, null, 'ingen ”0 av 0 rätt”');
+  assert.deepEqual(r.mal.map(m => [m.id, m.gjort, m.totalt]), [['LM-2', 0, 15], ['LM-4', 0, 0]]);
+});
+
 test('dagar kvar räknas i kalenderdagar till sista dagen', () => {
   assert.equal(dagarKvar('2026-10-18', new Date(2026, 9, 11, 23, 30)), 7);
   assert.equal(dagarKvar('2026-10-18', new Date(2026, 9, 17, 8, 0)), 1);

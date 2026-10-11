@@ -2,8 +2,11 @@ import {openCreator} from '../johansson-town/src/avatars/creator.js';
 import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {createSceneWorkspace} from './scene.js?v=20261011-2';
+import {createWorldPanel} from './world-panel.js?v=20261011-1';
+import {createHomeWorkspace} from './home.js?v=20261011-1';
 
-// Independent of the town's player and all game save keys.
+// Studio's own working copy of the character. What goes into Johansson World is sent with "Use in Johansson World",
+// which writes World's own keys (../johansson-town/src/studio-handoff.js): all customisation is Studio's.
 const SAVE_KEY='nj-avatar-studio-v1';
 // Two starting points, then every resident of World as World draws them (with any look published from Studio).
 const templates=[['Johansson',CAST_RECIPES.Johansson],['Thuận',ORIGINAL_THUAN_RECIPE]],residents=RESIDENT_NAMES.map(n=>[n,recipeFor(n)]),choices=[...templates,...residents];
@@ -18,15 +21,16 @@ function save(recipe){
  catch{status.textContent='Browser storage is unavailable. Use Download design to save your character.';}
 }
 
-let currentRecipe=shared||restored||CAST_RECIPES.Johansson,editor=null,workspace=null,switching=false,editingId=null;
+let currentRecipe=shared||restored||CAST_RECIPES.Johansson,editor=null,workspace=null,home=null,switching=false,editingId=null;
 const modes=document.createElement('nav');modes.className='studio-modes';modes.setAttribute('aria-label','Johansson Studio modes');
-for(const [id,label] of [['character','Edit character'],['scene','Build scene'],['comic','Make comic']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
+for(const [id,label] of [['character','Edit character'],['home','Decorate home'],['scene','Build scene'],['comic','Make comic']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
 document.body.prepend(modes);
 function switchMode(mode,{focus=true}={}){
  if(editor&&mode==='character'){editor.creator.goTo('look');return;}
  if(editor){currentRecipe=editor.creator.recipe;switching=true;editor.cleanup();editor.creator.close();editor=null;switching=false;}
- if(mode==='character'){workspace?.hide();editor=createCharacterEditor();}
- else{workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode);}
+ if(mode==='character'){workspace?.hide();home?.hide();editor=createCharacterEditor();}
+ else if(mode==='home'){workspace?.hide();home??=createHomeWorkspace();home.show();}
+ else{home?.hide();workspace??=createSceneWorkspace({getCharacter:()=>currentRecipe,onMode:switchMode,onEdit:(recipe,id)=>{currentRecipe=recipe;editingId=id;switchMode('character');}});if(editingId){workspace.useCharacter(currentRecipe,editingId);editingId=null;}workspace.show(mode);}
  for(const b of modes.children)b.setAttribute('aria-pressed',String(b.dataset.mode===mode));
  if(focus)modes.querySelector(`[data-mode="${mode}"]`)?.focus({preventScroll:true});
 }
@@ -64,10 +68,10 @@ input.onchange=async()=>{
 };
 const openDesign=button('Open design',()=>input.click());
 const shareCharacter=creator.root.querySelector('.shm-top button');if(shareCharacter){shareCharacter.textContent='Share character link';fileMenu.append(shareCharacter);}
-label.className='studio-template';fileMenu.append(label,downloadDesign,openDesign);toolbar.append(status,files,input);
+label.className='studio-template';fileMenu.append(label,downloadDesign,openDesign);const world=createWorldPanel({creator,status});toolbar.append(status,world,files,input);
 fileMenu.addEventListener('click',event=>{if(event.target.closest('button'))files.open=false;});
 select.addEventListener('change',()=>{files.open=false;});
-const closeFiles=event=>{if(!files.contains(event.target))files.open=false;};document.addEventListener('click',closeFiles);
+const closeFiles=event=>{if(!files.contains(event.target))files.open=false;if(!world.contains(event.target))world.open=false;};document.addEventListener('click',closeFiles);
 files.addEventListener('keydown',event=>{if(event.key==='Escape'){files.open=false;fileLabel.focus();}});
 let noticeTimer;
 const noticeObserver=new MutationObserver(()=>{clearTimeout(noticeTimer);if(status.textContent)noticeTimer=setTimeout(()=>{status.textContent='';},8000);});
@@ -118,4 +122,4 @@ switchMode('character',{focus:false});
 if(new URLSearchParams(location.search).has('agent'))import('./studio-api.js?v=20261011-1').catch(e=>console.warn('Johansson Studio: agent API',e));
 // The maker focuses its close button on open; on first load nothing should wear a focus ring until the user acts.
 requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=document.activeElement;if(a&&a!==document.body&&a.closest('.shm'))a.blur();}));
-window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();},{once:true});
+window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();home?.dispose();},{once:true});

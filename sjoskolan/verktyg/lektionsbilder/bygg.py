@@ -4,7 +4,7 @@
 Mallen, i samma ordning varje gång, så att eleverna känner igen lektionen:
   titel · kursplanen i dag · startfråga · så går lektionen till · teori (en bild per avsnitt, i delsidans ordning och
   med delsidans rubriker, märkt ”Del N · avsnitt M”) · exempel ur delsidan · övningar tillsammans · paus ·
-  avslutsfråga · sammanfattning · det här gör du nu · källor.
+  (veckans labb) · avslutsfråga · sammanfattning · det här gör du nu · källor.
 
 Bilderna visar inga övningstexter: övningarna görs på delsidan, där ledtrådar och facit finns. Start- och
 avslutsfrågan och övningarnas titlar hämtas ur posterna. Placeringarna (innehall/placeringar/presentation-fragor.json)
@@ -221,9 +221,12 @@ def b_titel(prs, lek, nr):
     s = ny_bild(prs)
     s.shapes.add_picture(str(MALL / lek['omslag']), 0, 0, Inches(10), Inches(6.67))
     gradient(s, 0, 0, 10, 6.67)
-    ruta(s, 0.6, 1.1, 6.6, 1.0, [lek['titel']], size=44, bold=True, color=VIT, efter=0)
-    ruta(s, 0.6, 2.15, 6.2, 1.0, [lek['underrubrik']], size=22, color=VIT, efter=0)
-    ruta(s, 0.6, 3.25, 6.4, 0.45, [lek['kicker']], size=16, color=VIT, efter=0)
+    # En lång rubrik får två rader (Calibri 44 pt ryms med ungefär 20 tecken per rad i 6,6 tum); resten flyttas ned.
+    rader = 1 if len(lek['titel']) <= 20 else 2
+    ruta(s, 0.6, 1.1, 6.6, 0.8 * rader + 0.2, [lek['titel']], size=44, bold=True, color=VIT, efter=0, rad=0.95)
+    y = 1.1 + 0.8 * rader + 0.25
+    ruta(s, 0.6, y, 6.2, 1.0, [lek['underrubrik']], size=22, color=VIT, efter=0)
+    ruta(s, 0.6, y + 1.1, 6.4, 0.45, [lek['kicker']], size=16, color=VIT, efter=0)
     ruta(s, 0.6, 5.7, 6.4, 0.4, [f'Del {lek["del"]} av {lek["delar"]} · Elteknik och ellära'], size=14, color=VIT, efter=0)
     sidfot(s, nr, lek['etikett'])
 
@@ -232,6 +235,9 @@ def b_kursplan(prs, lek, nr, accent):
     s = ny_bild(prs)
     rubrik(s, 'Kursplanen i dag', accent)
     y = Y0 + 0.05
+    # Med tre eller fler punkter blir raderna tätare och områdets namn utelämnas (färgen visar området).
+    tat = len(lek['mal']) >= 3
+    sedda = set()
     for lm in lek['mal']:
         namn, hexa = omrade(lm)
         chip = platta(s, X0, y + 0.04, 1.05, 0.46, farg(hexa), rundad=True)
@@ -241,8 +247,10 @@ def b_kursplan(prs, lek, nr, accent):
         p = tf.paragraphs[0]
         p.alignment = PP_ALIGN.CENTER
         skriv(p, lm, 16, bold=True, color=INK)
-        ruta(s, X0 + 1.3, y, BREDD - 1.3, 0.95, [K.ENKEL[lm], {'text': namn, 'size': 14, 'color': DAMPAD}], size=22, efter=2)
-        y += 1.05
+        stycken = [K.ENKEL[lm]] + ([] if tat else [{'text': namn, 'size': 14, 'color': DAMPAD}])
+        sedda.add(namn)
+        ruta(s, X0 + 1.3, y, BREDD - 1.3, 0.95, stycken, size=20 if tat else 22, efter=2)
+        y += 0.78 if tat else 1.05
     y += 0.15
     ruta(s, X0, y, BREDD, 0.45, ['Efter lektionen kan du'], size=22, bold=True, color=BLA, efter=0)
     y += 0.5
@@ -335,6 +343,16 @@ def b_ovningar(prs, lek, nr, accent, b):
     sidfot(s, nr, lek['etikett'], f'Del {lek["del"]} · 4 Övningar')
 
 
+def b_labb(prs, lek, nr, accent, b):
+    """Veckans labb: vilken labb, vad eleven gör (i ordning) och adressen. Inga svar."""
+    s = ny_bild(prs)
+    rubrik(s, 'Veckans labb', accent)
+    ruta(s, X0, Y0 + 0.05, BREDD, 0.55, [b['namn']], size=23, bold=True, color=BLA, efter=0)
+    ruta(s, X0, Y0 + 0.75, BREDD, Y1 - Y0 - 1.3, [{'text': f'{i}. {t}', 'efter': 12} for i, t in enumerate(b['steg'], 1)], size=20)
+    ruta(s, X0, Y1 - 0.45, BREDD, 0.4, [b['url']], size=14, color=DAMPAD, efter=0)
+    sidfot(s, nr, lek['etikett'])
+
+
 def b_paus(prs, lek, nr, accent, b):
     s = ny_bild(prs)
     platta(s, 0, 0, 10, 6.67, YTA)
@@ -357,9 +375,12 @@ def b_lista(prs, lek, nr, accent, b):
 def b_kallor(prs, lek, nr, accent, b):
     s = ny_bild(prs)
     rubrik(s, 'Källor och fortsatt läsning', accent)
-    # En textruta per källa: delsidan slår annars ihop rader utan slutpunkt till ett stycke.
-    for i, (t, url) in enumerate(b['kallor']):
-        tb = ruta(s, X0, Y0 + 0.1 + i * 0.5, BREDD, 0.45, [t], size=17, efter=0)
+    # En textruta per källa: delsidan slår annars ihop rader utan slutpunkt till ett stycke. Långa källor får två rader.
+    y = Y0 + 0.1
+    for t, url in b['kallor']:
+        rader = 1 if len(t) <= 88 else 2
+        tb = ruta(s, X0, y, BREDD, 0.32 * rader + 0.1, [t], size=17, efter=0)
+        y += 0.32 * rader + 0.18
         if url:
             for r in tb.text_frame.paragraphs[0].runs:
                 r.hyperlink.address = url
@@ -390,6 +411,8 @@ def bygg_deck(lek):
             b_ovningar(prs, lek, nr, accent, b)
         elif typ == 'paus':
             b_paus(prs, lek, nr, accent, b)
+        elif typ == 'labb':
+            b_labb(prs, lek, nr, accent, b)
         elif typ == 'lista':
             b_lista(prs, lek, nr, accent, b)
         elif typ == 'kallor':

@@ -15,7 +15,9 @@ def _mall():
     return mod
 
 
-def uppgift(pl, p):
+def uppgift(pl, p, svar='', fragelista=True):
+    """En uppgift. svar: svarsfälten för en självrättande vecka (verktyg/inlamning/sjalvrattning.py); de ersätter raden Redovisa.
+    fragelista=False: frågorna står i svarsfälten (läsförståelsen) och listas inte en gång till."""
     u = p['uppgift']
     anv = ' · '.join(f'<a href="{R.attr(x["url"].replace("vecka-", "../../vecka-") if x["url"].startswith("vecka-") else "../../" + x["url"])}">{R.h(x["titel"])}</a>'
                      for x in p['referenser'].get('resurser', []))
@@ -26,9 +28,10 @@ def uppgift(pl, p):
         del_ = ' · '.join(f'<a href="Del_{k}.html">Del {k}: teori och övningar</a>' for k in kap)
         anv = f'{del_} · {anv}' if del_ and anv else (del_ or anv)
     delar = ''.join(f'<li>{R.h(d["text"])}</li>' for d in u.get('delfragor', []))
+    lista = f'<ol type="a">{delar}</ol>' if fragelista else ''
     return (f'<section class="task sj-panel" id="{pl["ankare"]}" data-ovning="{p["id"]}"><h2>{R.h(pl["nummer"])}. {R.h(p["titel"])}</h2>'
-            f'<p class="use"><strong>Använd:</strong> {anv}</p><p>{R.h(u["fraga"])}</p><ol type="a">{delar}</ol>'
-            f'<p class="hand-in"><strong>Redovisa:</strong> {R.h(u.get("svarsformat", ""))}</p></section>')
+            f'<p class="use"><strong>Använd:</strong> {anv}</p><p>{R.h(u["fraga"])}</p>{lista}'
+            + (svar or f'<p class="hand-in"><strong>Redovisa:</strong> {R.h(u.get("svarsformat", ""))}</p>') + '</section>')
 
 
 def filer(a):
@@ -36,6 +39,6 @@ def filer(a):
     ut = {}
     for plats in a.platser(YTA):
         nr = int(plats.split('-')[1].split('/')[0])
-        items = ''.join(uppgift(pl, p) for pl, p in a.placeringar(YTA, plats))
+        items = ''.join(uppgift(pl, p, mall.svarsfalt(nr, pl, p), not mall.utan_fragelista(nr, p)) for pl, p in a.placeringar(YTA, plats))
         ut[plats] = mall.page(nr, mall.VECKOR[nr], items)
     return ut

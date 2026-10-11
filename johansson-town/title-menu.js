@@ -1,10 +1,10 @@
 import {readPlayers,switchPlayer,addPlayer,slotKey,SAVE_KEY,LEGACY_KEYS,PREV_SUFFIX} from './src/save.js';
 import {heartsFor} from './src/people/friendship.js';
-import {decoratorEnabled} from './src/features.js';
 
 /**
- * The title screen's choices: EXPLORE or BUILD with the active save, LOAD another save, start a NEW GAME, or import a
- * save file. The game reads the chosen mode from window.__JOHANSSON_MODE__ when it starts.
+ * The title screen's choices: EXPLORE with the active save, LOAD another save, start a NEW GAME, or import a save file.
+ * There is no BUILD here: looks, wardrobes and the home are made in Johansson Studio (the link beside Install app; see
+ * src/studio-handoff.js). The game reads the chosen mode from window.__JOHANSSON_MODE__ when it starts.
  */
 const storage=globalThis.localStorage;
 const $=id=>document.getElementById(id);
@@ -27,7 +27,7 @@ export function describeSave(state,lastPlayed){
 }
 
 export function createTitleMenu({launch}){
- const enter=$('enter'),build=$('enterBuild'),dialog=$('titleSlots'),list=$('titleSlotList'),form=$('titleNewForm'),name=$('titleNewName');
+ const enter=$('enter'),dialog=$('titleSlots'),list=$('titleSlotList'),form=$('titleNewForm'),name=$('titleNewName');
  let opener=null;
 
  function refresh(){
@@ -54,11 +54,8 @@ export function createTitleMenu({launch}){
   else list.querySelector('button')?.focus();
  }
 
- // EXPLORE is the original START button; BUILD sets the mode first and starts the same way.
+ // EXPLORE is the original START button.
  enter.addEventListener('click',()=>{if(!window.__JOHANSSON_MODE__)window.__JOHANSSON_MODE__='explore';},{capture:true});
- // The decorator is off on the live site (src/features.js): no BUILD button there.
- if(!decoratorEnabled())build.remove();
- else build.addEventListener('click',()=>{window.__JOHANSSON_MODE__='build';launch();});
  $('titleLoad').addEventListener('click',()=>open(false));
  $('titleNew').addEventListener('click',()=>{if(savedState(readPlayers(storage).active)&&!confirm('Begin a new story in a separate player slot? Your existing progress will stay saved.'))return;open(true);});
  $('titleSlotsClose').addEventListener('click',close);

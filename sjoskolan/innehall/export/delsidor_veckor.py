@@ -24,7 +24,7 @@ EMU = 914400
 HOPPA = ('Dagens två pass', 'Pass 2')
 # Lektionsbilderna (verktyg/lektionsbilder, från vecka 42) har egna bilder för lektionens upplägg. De är inte teori.
 LEKTIONSBILDER = ('Kursplanen i dag', 'Startfråga', 'Så går lektionen till', 'Övningar tillsammans', 'Paus', 'Sammanfattning',
-                  'Det här gör du nu')
+                  'Det här gör du nu', 'Veckans labb')
 # Lektionsbilderna har ingen bild med lösningsmallen; delsidan visar samma mall som de äldre presentationerna.
 METOD = [('formel', '1. Givet och sökt'), ('p', 'Skriv av värden, enheter och vad du ska bestämma.'),
          ('formel', '2. Samband och villkor'), ('p', 'Välj formel eller princip. Kontrollera koppling, driftfall och antaganden.'),
@@ -339,6 +339,9 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
         return f'<a href="../../vecka-{fv}/aktuell/Del_{d}.html">{"← " + text if pil == "<" else text + " →"}</a>'
     fore = lank(plats - 1, '<') if plats > 0 else f'<a href="{idx}">← Vecka {vv}</a>'
     efter = lank(plats + 1, '>') if plats + 1 < antal else f'<a href="{idx}#labb">Labben →</a>'
+    # Vecka med självrättande inlämning: sist på sidan bekräftar eleven att hen har läst delen (sj-last:vecka-NN).
+    if not flytt:
+        h.append(sjalvrattning().lasbekraftelse_html(int(v), dnr))
     h.append(f'''<nav class="art-nav" aria-label="Delar"><span>{fore}</span><span><a href="{idx}">Veckans översikt</a></span><span>{efter}</span></nav>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script>
@@ -366,6 +369,20 @@ for(const b of document.querySelectorAll('.del-alla'))b.addEventListener('click'
 </script></body></html>
 ''')
     return ''.join(h)
+
+
+_SJALV = []
+
+
+def sjalvrattning():
+    """verktyg/inlamning/sjalvrattning.py (veckorna med självrättande inlämning och rutan Har du läst hela del N?)."""
+    if not _SJALV:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('sjalvrattning_delsidor', R.SJO / 'verktyg' / 'inlamning' / 'sjalvrattning.py')
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _SJALV.append(mod)
+    return _SJALV[0]
 
 
 def filer(a):

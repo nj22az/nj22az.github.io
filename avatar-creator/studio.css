@@ -188,3 +188,17 @@ body.standalone-studio .shm[data-step] :is(.shm-chips button,.shm-toggle,.shm-ta
 .studio-file-menu .studio-template select{width:100%;max-width:none}
 /* iOS zooms the page when a field under 16px takes focus; keep every text field and picker at 16px on touch. */
 @media(pointer:coarse){body.standalone-studio :is(input:not([type=range]):not([type=checkbox]):not([type=file]),select,textarea){font-size:16px!important}}
+/* "Johansson World" in Edit character: send this look into the game (world-panel.js). */
+.studio-world{margin-left:auto}
+.studio-world+.studio-files{margin-left:0}
+.studio-world-menu{width:260px}
+.studio-tools .studio-world-menu label{display:grid;gap:4px;font-size:12px;font-weight:600;color:var(--line-secondary)}
+.studio-world-menu select{max-width:100%;width:100%}
+.studio-world-outfit{display:grid;gap:6px;padding-top:6px;border-top:1px solid var(--line-border)}
+.studio-world-outfit[hidden]{display:none}
+.studio-world-play{display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid var(--line-border);border-radius:9px;color:var(--line-text);font-size:13px;text-decoration:none}
+/* Decorate home (home.js): World's own room, seen from above. */
+.home-canvas{aspect-ratio:4/3;cursor:grab}
+.home-workspace .home-note{font-size:13px;margin:6px 0 8px}
+.home-workspace .home-save{font-weight:600;color:var(--line-text)}
+.home-workspace .scene-choice button:disabled{opacity:.4}

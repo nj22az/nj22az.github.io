@@ -110,6 +110,27 @@ Bokens PDF sätts därefter ur EPUB-arbetskopian till `bok/.bok/bok.ny.pdf` och 
 Den rättade septemberutgåvan i `462f9d8cf88f9b8d5a37217c2325828b998c2696` har 223 PDF-sidor och ett 18-sidigt
 provkapitel enligt `elteknik/files/manifest.json`. Klartext i `bok/.bok/` och `.skyddat/` får aldrig checkas in.
 
+## Självrättande inlämning (vecka 42)
+
+Inlämningssidan vecka 42 rättar elevens svar direkt (beslut 11 oktober 2026). Uppgifternas text kommer som vanligt ur
+posterna EL-000817–819 och EL-000887 (läsförståelsen). Svarsfälten, alternativen, läshänvisningarna och checklistan för
+EL-000817–819 står i `verktyg/inlamning/sjalvrattning.py` och följer postens delfrågor; bygget stoppar om de inte gör det.
+EL-000887 får sina fält direkt ur posten (`fran_posten`): delfrågornas `alternativ` och `ledtrad` (avsnittet som visas vid
+fel). Rätta svar finns bara som saltade SHA-256-hashar i `vecka-42/aktuell/inlamning-nyckel.mjs`, som
+`verktyg/inlamning/facit.py` skriver ur lärarens klartextfil utanför repot. Varje fält har tre försök per omgång; låsta
+fält får nya försök när eleven har bekräftat del 1–3 och texten som lästa (`sj-last:vecka-42`). Ändras en av posterna:
+kontrollera fälten och svaren och kör
+
+```sh
+python3 sjoskolan/innehall/innehall.py revidera EL-000818                          # posten först (nyckeln anger revisionen)
+python3 sjoskolan/verktyg/inlamning/facit.py 42 --svar /utanför/repot/facit-v42.json
+python3 sjoskolan/innehall/innehall.py bygg inlamning                              # sidan läser nyckelns version
+node --test sjoskolan/gemensamt/sjalvrattning.test.mjs sjoskolan/gemensamt/pdf.test.mjs sjoskolan/vecka-42/aktuell/inlamning.test.mjs
+```
+
+Testet stoppar när en post har en annan revision än den nyckeln är skriven för. Med `INLAMNING_FACIT=<klartextfilen>`
+prövar det också att lärarens svar ger Rätt!.
+
 ## Migreringen
 
 `migrering/` innehåller engångsskripten (`extrahera.py` med `kallor.py`, `familjer.py`, `familjer_sidor.py`, `labbar.mjs`),
