@@ -3,7 +3,7 @@
 // Med INLAMNING_FACIT=/utanför/repot/facit-v42.json prövas också lärarens klartext mot nyckeln (finns inte i CI).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, mkdtempSync, writeFileSync, rmSync, existsSync } from 'node:fs';
+import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -44,15 +44,15 @@ test('nyckeln innehåller bara saltade hashar, inga svar i klartext', () => {
   }
 });
 
-test('nyckeln och sidan har samma 20 fält som rättas', () => {
-  assert.equal(RATTAS.length, 20);
+test('nyckeln och sidan har samma 12 fält som rättas', () => {
+  assert.equal(RATTAS.length, 12);
   assert.deepEqual(Object.keys(NYCKEL.falt).sort(), RATTAS);
   for (const id of RATTAS) assert.equal(NYCKEL.falt[id].typ, FALT[id].typ, id);
 });
 
 test('nyckeln är skriven för posternas nuvarande revision', () => {
   const pasidan = [...SIDA.matchAll(/<div class="ri-svar" data-ovning="(EL-\d{6})"/g)].map((m) => m[1]).sort();
-  assert.deepEqual(pasidan, ['EL-000817', 'EL-000818', 'EL-000819', 'EL-000887']);
+  assert.deepEqual(pasidan, ['EL-000817', 'EL-000818', 'EL-000819'], 'quizen (EL-000887) har en egen sida');
   assert.deepEqual(Object.keys(NYCKEL.poster).sort(), pasidan);
   for (const [id, rev] of Object.entries(NYCKEL.poster)) {
     assert.equal(post(id).revision, rev, `${id} har revision ${post(id).revision}, men nyckeln är skriven för revision ${rev}. Kontrollera svaren, kör `
@@ -73,7 +73,7 @@ test('varje flervalsfråga har fyra alternativ och minst ett men inte alla godk�
 test('radioknapparnas ordning är fast och blandad som i sjalvrattning.py', () => {
   const fro = readFileSync(join(SJO, 'verktyg', 'inlamning', 'sjalvrattning.py'), 'utf8').match(/ORDNINGSFRO = '([^']+)'/)[1];
   const radio = RATTAS.filter((i) => FALT[i].radio);
-  assert.equal(radio.length, 11);
+  assert.equal(radio.length, 4);
   for (const id of radio) {
     const vantad = [...FALT[id].alternativ].sort((a, b) => {
       const ha = createHash('sha256').update(`${fro}|${id}|${a}`).digest('hex'), hb = createHash('sha256').update(`${fro}|${id}|${b}`).digest('hex');
@@ -127,31 +127,13 @@ test('checklistan är dold i sidan, nämner inte svaret på fråga d och visas e
   assert.ok(LISTA.some((p) => p.text.includes('energikällor som kan finnas kvar när gruppen är bortkopplad')));
 });
 
-test('läsförståelsen (EL-000887): posten har frågorna och alternativen, sidan har fälten, inga svar i posten', () => {
-  const p = post('EL-000887');
-  assert.equal(p.typ, 'flerval');
-  assert.deepEqual([...p.larande.mal].sort(), ['LM-2', 'LM-3', 'LM-7']);
-  assert.deepEqual(p.uppgift.delfragor.map((d) => d.id), ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
-  for (const d of p.uppgift.delfragor) {
-    assert.ok(!('ratt' in d) && !('svar' in d), `${d.id}: inga svar i posten`);
-    assert.ok(d.ledtrad && !/^\d/.test(d.ledtrad), `${d.id}: läshänvisning till ett avsnitt`);
-    if (d.alternativ) assert.deepEqual([...FALT[`887${d.id}`].alternativ].sort(), ['1', '2', '3', '4'], d.id);
-  }
-  assert.deepEqual(FALT['887f'].heltal, [1, 5]);
-  assert.ok(!SIDA.includes('<li>Avsnitt 2.1.1. Hur definierar'), 'frågorna listas inte två gånger');
-  assert.match(p.referenser.rattigheter, /TSG 2020-3130, 2019-12-03/);
-  const pdf = join(SJO, p.referenser.resurser[0].url);
-  assert.ok(existsSync(pdf) && readFileSync(pdf).subarray(0, 5).toString() === '%PDF-', 'källan finns som PDF');
-  assert.match(SIDA, /data-ri-last="text"/);
-  assert.match(SIDA, /Läs <a href="Transportstyrelsen_riktlinjer_riskanalysarbete.pdf">avsnitt 2\.1\.1 Risk<\/a> i Transportstyrelsens riktlinjer\./);
-});
-
-test('rutan Läs om veckan har delarna och texten, och delsidorna har bekräftelsen sist', () => {
+test('rutan Låsta frågor har del 1–3, och delsidorna har bekräftelsen sist', () => {
   const ruta = SIDA.match(/<section class="sj-panel warn ri-lasom" id="ri-lasom" data-ri-delar="([^"]+)" hidden>([\s\S]*?)<\/section>/);
   assert.ok(ruta, 'rutan finns och är dold tills en fråga är låst');
-  assert.equal(ruta[1], 'del-1 del-2 del-3 text');
-  assert.match(ruta[2], /Läs om vecka 42: del 1, del 2, del 3 och Transportstyrelsens text\. Sedan får du tre nya försök på de låsta frågorna\./);
-  for (const h of ['Del_1.html', 'Del_2.html', 'Del_3.html', 'Transportstyrelsen_riktlinjer_riskanalysarbete.pdf']) assert.ok(ruta[2].includes(`href="${h}"`), h);
+  assert.equal(ruta[1], 'del-1 del-2 del-3');
+  assert.match(ruta[2], /Läs om vecka 42: del 1, del 2 och del 3\. Sedan får du tre nya försök på de låsta frågorna\./);
+  for (const h of ['Del_1.html', 'Del_2.html', 'Del_3.html']) assert.ok(ruta[2].includes(`href="${h}"`), h);
+  assert.ok(!SIDA.includes('Transportstyrelsen_riktlinjer') && !SIDA.includes('data-ri-last="text"'), 'texten läses på quizsidan');
   for (const n of [1, 2, 3]) {
     const del = readFileSync(join(HAR, `Del_${n}.html`), 'utf8');
     assert.equal((del.match(/data-ri-las-del="/g) || []).length, 1, `Del_${n}.html`);
@@ -211,8 +193,8 @@ test('facit.py hashar likadant som sidan och vägrar läsa klartext i repot', as
     const { [RATTAS[0]]: _bort, ...ofullstandig } = svar;
     writeFileSync(join(dir, 'fel.json'), JSON.stringify({ falt: ofullstandig }));
     assert.notEqual(spawnSync('python3', [FACIT, '42', '--svar', join(dir, 'fel.json'), '--ut', ut]).status, 0, 'ett fält utan svar stoppar');
-    writeFileSync(join(dir, 'utanfor.json'), JSON.stringify({ falt: { ...svar, '887f': '7' } }));
-    assert.notEqual(spawnSync('python3', [FACIT, '42', '--svar', join(dir, 'utanfor.json'), '--ut', ut]).status, 0, 'heltal utanför 1–5 stoppar');
+    writeFileSync(join(dir, 'okant-falt.json'), JSON.stringify({ falt: { ...svar, '887f': '4' } }));
+    assert.notEqual(spawnSync('python3', [FACIT, '42', '--svar', join(dir, 'okant-falt.json'), '--ut', ut]).status, 0, 'ett fält som inte finns på sidan stoppar');
     writeFileSync(join(dir, 'alla.json'), JSON.stringify({ falt: { ...svar, [flera]: FALT[flera].alternativ } }));
     assert.notEqual(spawnSync('python3', [FACIT, '42', '--svar', join(dir, 'alla.json'), '--ut', ut]).status, 0, 'alla alternativ godkända stoppar');
     writeFileSync(join(dir, 'okant.json'), JSON.stringify({ falt: { ...svar, [flera]: [FALT[flera].alternativ[0], '9'] } }));

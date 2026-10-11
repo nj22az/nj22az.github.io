@@ -110,16 +110,14 @@ Bokens PDF sätts därefter ur EPUB-arbetskopian till `bok/.bok/bok.ny.pdf` och 
 Den rättade septemberutgåvan i `462f9d8cf88f9b8d5a37217c2325828b998c2696` har 223 PDF-sidor och ett 18-sidigt
 provkapitel enligt `elteknik/files/manifest.json`. Klartext i `bok/.bok/` och `.skyddat/` får aldrig checkas in.
 
-## Självrättande inlämning (vecka 42)
+## Självrättande inlämning och quiz (vecka 42)
 
 Inlämningssidan vecka 42 rättar elevens svar direkt (beslut 11 oktober 2026). Uppgifternas text kommer som vanligt ur
-posterna EL-000817–819 och EL-000887 (läsförståelsen). Svarsfälten, alternativen, läshänvisningarna och checklistan för
-EL-000817–819 står i `verktyg/inlamning/sjalvrattning.py` och följer postens delfrågor; bygget stoppar om de inte gör det.
-EL-000887 får sina fält direkt ur posten (`fran_posten`): delfrågornas `alternativ` och `ledtrad` (avsnittet som visas vid
-fel). Rätta svar finns bara som saltade SHA-256-hashar i `vecka-42/aktuell/inlamning-nyckel.mjs`, som
-`verktyg/inlamning/facit.py` skriver ur lärarens klartextfil utanför repot. Varje fält har tre försök per omgång; låsta
-fält får nya försök när eleven har bekräftat del 1–3 och texten som lästa (`sj-last:vecka-42`). Ändras en av posterna:
-kontrollera fälten och svaren och kör
+posterna EL-000817–819. Svarsfälten, alternativen, läshänvisningarna och checklistan står i
+`verktyg/inlamning/sjalvrattning.py` och följer postens delfrågor; bygget stoppar om de inte gör det. Rätta svar finns bara
+som saltade SHA-256-hashar i `vecka-42/aktuell/inlamning-nyckel.mjs`, som `verktyg/inlamning/facit.py` skriver ur lärarens
+klartextfil utanför repot. Varje fält har tre försök per omgång; låsta fält får nya försök när eleven har bekräftat del 1–3
+som lästa (`sj-last:vecka-42`). Ändras en av posterna: kontrollera fälten och svaren och kör
 
 ```sh
 python3 sjoskolan/innehall/innehall.py revidera EL-000818                          # posten först (nyckeln anger revisionen)
@@ -130,6 +128,28 @@ node --test sjoskolan/gemensamt/sjalvrattning.test.mjs sjoskolan/gemensamt/pdf.t
 
 Testet stoppar när en post har en annan revision än den nyckeln är skriven för. Med `INLAMNING_FACIT=<klartextfilen>`
 prövar det också att lärarens svar ger Rätt!.
+
+**Quiz** (`vecka-42/aktuell/Quiz.html`, beslut 12 oktober 2026): texter som eleven läser hemma, med flervalsfrågor.
+Varje text är en post med `uppgift.fraga` = läsanvisningen, `delfragor` = `{id, typ: "flerval", text, alternativ (4–5),
+ledtrad}` och `referenser.resurser[0]` = `{url: "vecka-42/aktuell/<fil>.pdf", titel, kortnamn}` (kortnamnet står i
+hänvisningen ”Läs <ledtrad> i <kortnamn>.”), samt `referenser.rattigheter` = källan. Facit står aldrig i posten (`ratt`,
+`svar` och `forklaring` stoppar bygget). Sidan visar alternativen i postens ordning med bokstäverna A–E, och bokstaven är
+alternativets id (regel 55). Texterna och deras ordning: `placeringar/quiz.json` (plats `vecka-42/aktuell/Quiz.html`,
+nummer Text 1, 2 …). En ny text:
+
+```sh
+# 1. posten innehall/ovningar/EL-000888.json, PDF:en i vecka-42/aktuell/, och en placering i placeringar/quiz.json
+python3 sjoskolan/innehall/innehall.py validera
+python3 sjoskolan/innehall/innehall.py revidera EL-000888
+python3 sjoskolan/innehall/numrering.py --skriv                                     # Text N efter ordningen
+# 2. facit i bokstäver per post, utanför repot (påhittat exempel): {"EL-000123": {"a": "C", …}, "EL-000124": {"a": "D", "b": ["A", "C"], …}}
+python3 sjoskolan/verktyg/inlamning/facit.py 42 --sida quiz --svar /utanför/repot/quiz-v42.json
+python3 sjoskolan/innehall/innehall.py bygg quiz
+QUIZ_FACIT=/utanför/repot/quiz-v42.json node --test sjoskolan/vecka-42/aktuell/quiz.test.mjs
+```
+
+Alla texter på sidan och alla deras frågor ska ha ett svar i klartextfilen; en lista godkänner flera bokstäver (aldrig
+alla). En fråga utan alternativ är ett heltal och behöver ett intervall i `sjalvrattning.py` `QUIZ[vecka]['heltal']`.
 
 ## Migreringen
 

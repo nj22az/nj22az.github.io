@@ -69,7 +69,7 @@ body.course button.sj-btn.large{min-height:56px;padding:14px 28px}
 .ri-stangd input[readonly],.ri-stangd select:disabled{background:var(--sj-soft,#edf4f9);color:var(--sj-ink,#163248);opacity:1}
 .ri-stangd .ri-val{cursor:default}
 .ri-stangd .ri-val:not(:has(input:checked)){opacity:.7}
-/* Läs om veckan (överst när en fråga är låst) och läsförståelsens text. */
+/* Läs om veckan (överst när en fråga är låst) och quizens text. */
 .ri-lasom{margin:24px 0}
 .course-main .ri-lasom h2{margin-top:0}
 .course-main .ri-lasom-lista{list-style:none;margin:8px 0 12px;padding:0}
@@ -89,3 +89,7 @@ body.course button.sj-btn.large{min-height:56px;padding:14px 28px}
 .sj-btn.ri-lasdel-knapp:disabled{opacity:.55;cursor:not-allowed;background:var(--sj-paper,#fff)}
 @media(max-width:767px){.ri-svar{padding:14px 12px 16px;margin-left:-4px;margin-right:-4px}.ri-plats{padding:0 12px 14px}.ri-knappar .sj-btn{flex:1 1 100%}}
 @media print{.ri-svar{background:none;border:1px solid #999}.ri-lamna,.ri-lasom,.ri-knappar{display:none!important}}
+/* Quizen (Quiz.html): bokstaven före alternativet är samma bokstav som i lärarens facit. */
+.ri-bokstav{flex:none;min-width:1.1em;font-weight:700}
+.ri-dok-oppna{margin:4px 0 12px!important}
+.ri-lasanvisning{font-weight:700}

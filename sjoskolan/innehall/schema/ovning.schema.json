@@ -375,6 +375,10 @@
               },
               "titel": {
                 "type": "string"
+              },
+              "kortnamn": {
+                "type": "string",
+                "description": "Kort namn i hänvisningar, till exempel ”Läs avsnitt 2.1 i <kortnamn>.” (quizen). Utan kortnamn används titeln utan (PDF)."
               }
             }
           }

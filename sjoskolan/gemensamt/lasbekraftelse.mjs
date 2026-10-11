@@ -4,7 +4,7 @@
 // 3 minuter sammanlagt under besöket. Bekräftelsen sparas i localStorage sj-last:vecka-NN som {"del-1": ISO, …};
 // den senaste tiden per del behålls (sjalvrattning.mjs: bekraftaLasning). Inlämningssidan ger låsta frågor nya försök
 // när alla delar och texten är bekräftade efter låsningen.
-import { lasklocka, bekraftaLasning, lasLasning, tidText, LASTID_MS } from './sjalvrattning.mjs?v=20261012';
+import { lasklocka, bekraftaLasning, lasLasning, tidText, LASTID_MS } from './sjalvrattning.mjs?v=20261013';
 
 const minSek = (ms) => {
   const s = Math.ceil(ms / 1000), m = Math.floor(s / 60);

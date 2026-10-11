@@ -203,6 +203,18 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     lokala och kontrollen stoppade (”INAKTUELL vecka-42/aktuell/Inlamning.html”). Skriv inga f-strängar med samma
     citattecken eller bakåtsnedstreck i uttrycket. *Kontroll: `python3.11 -m py_compile` på ändrade filer före push.*
 
+54. **En exportör och en modul under `verktyg/` får inte heta likadant.** `innehall.py bygg` hämtar exportörerna med namnet
+    (`importlib.import_module`), och flera mallar lägger `verktyg/…` först i `sys.path`. Sidmallen
+    `verktyg/inlamning/lasforstaelse.py` skuggade exportören med samma namn, och bygget stannade (”has no attribute
+    PUBLIK”). Mallen för en exportör heter `<namn>_mall.py` (`verktyg/inlamning/quiz_mall.py`). *Kontroll: `innehall.py bygg`.*
+
+55. **Bokstaven i quizens facit är alternativets plats i posten.** Quiz.html visar alternativen i postens ordning med
+    bokstäverna A–E, och lärarens facit och nyckeln (`quiz-nyckel.mjs`) använder samma bokstäver. Flyttas, läggs till eller
+    tas ett alternativ bort i posten pekar facit annars på fel svar utan att något syns. Ändra facit samtidigt, kör
+    `innehall.py revidera`, `facit.py 42 --sida quiz` och `innehall.py bygg quiz`. Skriv aldrig facit (ratt, svar,
+    forklaring) i posten. *Kontroll: `vecka-42/aktuell/quiz.test.mjs` stoppar när posten har ny revision; bygget stoppar
+    på facitfält i posten.*
+
 ## Ändringar
 
 - **2026-10-11** Vecka 42: läsuppgiften heter **Quiz** (lärarens beslut). Fyra texter från Transportstyrelsen läses hemma och
@@ -218,6 +230,22 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   gör du nu” och på sidan. Måndagens och tisdagens bilder säger nu quizet senast torsdag; tisdagens hänvisning
   till ”uppgift 4” är borta. Delsidan hoppar över dagens namn på titelbilden (`Dag: …`). `verktyg/veckosidor/dagsvy.py`,
   `gemensamt/dagsvy.mjs`, test `gemensamt/dagsvy.test.mjs`.
+- **2026-10-11** Vecka 42: läsningen av texterna blir en egen sida, **Quiz** (`vecka-42/aktuell/Quiz.html`, lärarens beslut
+  11 oktober). Eleven läser texterna (PDF) hemma och svarar senast torsdag 15 oktober på flervalsfrågor med bokstäverna
+  A–E i postens ordning (ingen blandning). Varje text är en post: `uppgift.fraga` är läsanvisningen, delfrågorna har
+  `alternativ` (4–5) och `ledtrad`, `referenser.resurser[0]` är PDF:en (nytt valfritt `kortnamn` i schemat) och
+  `rattigheter` källan. Texterna och deras ordning står i den nya ytan `innehall/placeringar/quiz.json` (exportören
+  `innehall/export/quiz.py`, mallen `verktyg/inlamning/quiz_mall.py`, sidans skript `gemensamt/quiz-sida.mjs`); `numrering.py`
+  numrerar dem Text 1, 2 … Tre försök per fråga; en låst fråga får tre nya försök när eleven har tryckt ”Jag har läst om
+  texten” för just den texten efter låsningen (rutan Låsta frågor visar bara texter med låsta frågor). Hänvisningen vid
+  fel är ”Läs <ledtrad> i <textens korta namn>.” Lämna in visar x av y rätt per text, och eleven laddar ner
+  `Vecka42_Quiz_<Namn>.pdf` och lämnar in den i Google Classroom. Egen lagring (`sj-v42-quiz`, `sj-omlasning:vecka-42`)
+  och egen nyckel (`quiz-nyckel.mjs`, `facit.py 42 --sida quiz` med facit i bokstäver per post). EL-000887 flyttade från
+  inlämningen till quizen; inlämningen är uppgift 1–3 igen, dess ruta Låsta frågor kräver bara del 1–3, och gamla svar
+  på flyttade fält tas bort när inlämningen öppnas. För veckosidan: `quizStatus(vecka, plan)` i
+  `gemensamt/sjalvrattning.mjs` och `falt_per_lm(vecka, sida)`/`quiz_plan(vecka)` i `verktyg/inlamning/sjalvrattning.py`.
+  Tester: `verktyg/inlamning/test_quiz.py` (motorn med påhittade texter), `vecka-42/aktuell/quiz.test.mjs` och
+  `gemensamt/sjalvrattning.test.mjs`; CI kör båda.
 - **2026-10-11** CI var röd efter sammanslagningen av den självrättande inlämningen: `kursplan.py` gick inte att läsa med
   Python 3.11 (regel 53). Rättat; `kursplan_framsteg` bryter ut kursplanens punkter ur `veckopanel_html` (samma utdata).
 - **2026-10-11** Vecka 42: ”Din vecka” räknar inlämningens fält per kursplanspunkt redan från sidan (`kursplan.py`
