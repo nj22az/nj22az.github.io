@@ -144,7 +144,9 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,
   o.userData.seat={...seat,izakaya:seat,pitch:0};
  }
  for(const z of [4.15,5.0]){const o=anchor([-3.9,.85,z],'Sit in the cosy bar corner',()=>action('seat','Minato lounge corner','A worn upholstered bench, a small wooden table and a warm globe light.'));o.userData.seat={position:[-5.52,0,z],stand:[-3.9,0,z],surfaceY:FURNITURE_HEIGHTS.seat,eyeY:1.12,yaw:-Math.PI/2,pitch:0};}
- anchor([4.1,1,-3.8],'Inspect the shared kitchen',()=>action('inspect','Minato and Sato shared kitchen','The ramen stock pots, sink, prep board and range share a working aisle. Walk around the counter through the open passage. Please keep clear while Thao and Mrs Sato are carrying hot bowls.'));
+ // The kitchen's own note is scenery; Thao stands in that same passage, and someone you can
+ // talk to comes before a thing you can look at (the harbour cat does the same, harbour.js).
+ anchor([4.1,1,-3.8],'Inspect the shared kitchen',()=>action('inspect','Minato and Sato shared kitchen','The ramen stock pots, sink, prep board and range share a working aisle. Walk around the counter through the open passage. Please keep clear while Thao and Mrs Sato are carrying hot bowls.')).userData.promptPenalty=.8;
  if(!exploration)anchor([-.4,2.5,-5.6],'Choose the evening music',()=>action('radio','Minato radio','Thao turns it down when a good story begins.'));
  hangIzakayaPosters({room,reg,action});
  buildIzakayaDressing(room,{collider});

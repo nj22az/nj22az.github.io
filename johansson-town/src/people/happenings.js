@@ -19,6 +19,11 @@ import {PARK_BENCH} from '../world/park-layout.js';
  *   dry      called off in the rain (outdoor things)
  *   cast     name -> {place, target, activity}, or a function (profile) -> that
  *   lines    name -> what they say about it, all that day
+ *   news     {held, off}: the evening news (and the diary): how it went, and for a dry one how the rain called it
+ *            off. Written for each, because "New Year’s Day was called off" is not news, and about what the town
+ *            shows: the residents and where they are (boats, festival bamboo, drums and the rope are not built yet,
+ *            briefs/NEXT.md section 8).
+ *   name     the happening in running text, when the title does not read in a sentence ("Tomorrow: …")
  *
  * The lunar dates (Haarii, Obon, the old New Year) are 1997's: the lunar calendar moves
  * every year, and the town lives in that one.
@@ -48,6 +53,8 @@ export const HAPPENINGS=Object.freeze([
 
  // ---- The year -----------------------------------------------------------------
  {id:'new-year',title:'New Year’s Day',on:{date:'01-01'},hours:[540,630],dry:true,
+  name:'New Year’s morning on the shopping street',
+  news:{held:'Thao, Nhung and Chin were out on the shopping street for New Year’s morning.',off:'A wet New Year’s Day: the greetings stayed indoors this morning.'},
   cast:{Thao:at('stroll',street(1.6,1.2),'wishing the street a happy new year'),Nhung:at('stroll',street(1.6,-.4),'out in her new year clothes with her sisters'),Chin:at('stroll',street(2.8,.5),'handing out mikan for the new year')},
   lines:{Thao:'Akemashite omedetō. Eat something. It is the first day, it counts double.',Nhung:'New year, and Thuan has already lost her new hair ribbon.',Chin:'Happy new year, bro! First repair of the year: my own bicycle.'}},
  {id:'kyu-shogatsu',title:'The old New Year',on:{date:'02-07'},hours:[0,0],
@@ -59,26 +66,33 @@ export const HAPPENINGS=Object.freeze([
  {id:'kodomo-no-hi',title:'Children’s Day',on:{date:'05-05'},hours:[0,0],
   lines:{Chin:'Carp streamers on the workshop roof. Tetsuo says they make it look like a fish shop. That is the point, bro.'}},
  {id:'haarii',title:'Haarii, the dragon-boat races',on:{date:'06-09'},hours:[600,780],dry:true,
+  news:{held:'Chin, Tetsuo and Reiko were on the quay for the Haarii dragon-boat races today.',off:'The Haarii dragon-boat races were called off for the rain.'},
   cast:{Chin:at('stroll',quay[1],'cheering the Haarii boats from the quay'),Tetsuo:at('stroll',quay[3],'timing the Haarii boats with his watch'),Reiko:at('stroll',quay[4],'photographing the Haarii boats for the paper'),'Harbour master':at('stroll',quay[2],'clearing the harbour for the Haarii races')},
   lines:{Chin:'Haarii, bro! The boat that tips over on purpose gets the biggest cheer.',Tetsuo:'Fourth of the fifth moon. They race for the fishing year. I race for a seat in the shade.','Harbour master':'Every boat off the slipway by ten. The dragons have the harbour until one.'}},
  {id:'irei-no-hi',title:'Irei no Hi',on:{date:'06-23'},hours:[0,0],
   lines:{'Officer Mori':'Irei no Hi. At noon the island stops for a minute of silence. You will hear it: even the gulls seem to.','Mrs Sato':'The rainy season usually ends about now. My mother said the dead take the rain with them.'}},
  {id:'tanabata',title:'Tanabata',on:{date:'07-07'},hours:[1140,1260],dry:true,
+  news:{held:'Tanabata: Nhung was outside Sakura this evening with her wish.',off:'Tanabata was rained off this evening.'},
   cast:{Nhung:at('stroll',street(1.4,-1.1),'tying a wish to the bamboo outside Sakura')},
   lines:{Nhung:'Tanabata. I wished for a quiet bookshop. Thuan wished I would stop reading her wish.',Thao:'Wishes on paper strips. Mine says “more staff”. Every year.'}},
  {id:'obon',title:'Obon',on:{dates:['08-15','08-16']},hours:[0,0],
   lines:{Thao:'Obon. The ancestors come home for three days, and they expect to be fed. So do I.',Nhung:'Our grandmother’s photograph gets the best seat at Obon. She would have liked that.'}},
  {id:'eisa',title:'Ukui: the last night of Obon, and the eisa',on:{date:'08-17'},hours:[1170,1290],dry:true,
+  name:'the eisa for Ukui, the last night of Obon',
+  news:{held:'Thao, Nhung and Chin were out on the street for the eisa on Ukui, the last night of Obon.',off:'The eisa for Ukui, the last night of Obon, was called off for the rain.'},
   cast:{Thao:at('stroll',street(1.8,1.6),'watching the eisa drummers from Minato’s doorway'),Nhung:at('stroll',street(1.8,-1.6),'clapping along to the eisa drummers'),Chin:at('stroll',street(3,.6),'following the eisa drummers down the street'),Tetsuo:at('stroll',street(3,-1.2),'covering his ears at the eisa, smiling'),Reiko:at('stroll',street(1.2,0),'photographing the eisa for the paper')},
   lines:{Thao:'Ukui, the last night of Obon. The drums walk the ancestors home. Stand back, they do not stop for anyone.',Chin:'Eisa, bro! The big drum is in my chest, not my ears.',Tetsuo:'Too loud. Every year, too loud. Every year I come anyway.'}},
  {id:'keiro-no-hi',title:'Respect for the Aged Day',on:{date:'09-15'},hours:[0,0],
   lines:{Tetsuo:'Respect for the Aged Day. Chin bought me a cushion. I am choosing to find this respectful.','Mrs Sato':'At my age the whole town is respectful for one day. The other three hundred and sixty-four I manage by myself.'}},
  {id:'tsunahiki',title:'The town tug-of-war',on:{date:'10-12'},hours:[900,990],dry:true,
+  news:{held:'The town tug-of-war was pulled in the park this afternoon: Chin and Tetsuo on the east rope, Reiko and Nhung on the west.',off:'The town tug-of-war was called off for the rain.'},
   cast:{Chin:at('park',park(-1.4,1.2),'pulling the east rope in the town tug-of-war'),Tetsuo:at('park',park(-1.4,-1.2),'pulling the east rope, mostly with his voice'),Reiko:at('park',park(1.4,1.2),'pulling the west rope in the town tug-of-war'),Nhung:at('park',park(1.4,-1.2),'pulling the west rope with her whole weight'),'Harbour master':at('park',park(0,2.2),'refereeing the town tug-of-war')},
   lines:{Chin:'Naha has the giant rope today. We have a small one and the same amount of shouting.',Nhung:'West wins the tug-of-war, and the harvest is good. I am on west. So, you are welcome.','Harbour master':'The rope is a mooring line from the ferry. Nobody tell the ferry.'}},
  {id:'christmas',title:'Christmas Eve',on:{date:'12-24'},hours:[0,0],
   lines:{Nhung:'Christmas cake from Sakura: strawberries, cream, and Thuan’s handwriting on the box saying “do not shake”.',Chin:'Christmas Eve, bro. I fixed the lights on the workshop tree. Half of them. The festive half.'}},
  {id:'omisoka',title:'Ōmisoka',on:{date:'12-31'},hours:[1080,1230],
+  name:'toshikoshi soba at Minato for Ōmisoka',
+  news:{held:'Ōmisoka: Thao served toshikoshi soba at Minato for the last night of the year.'},
   cast:{Thao:at('izakaya',IZAKAYA_DOOR,'serving toshikoshi soba for the last night of the year')},
   lines:{Thao:'Toshikoshi soba: long noodles for a long life. Do not bite them in half. I am watching.',Tetsuo:'Last night of the year. I will be asleep by the bells, as tradition demands. My tradition.'}},
 ].map(Object.freeze));
@@ -105,8 +119,27 @@ export function happeningPlan(profile,minutes,rain=false){
  }
  return null;
 }
-/** What a resident has to say about today, all day: {id, title, text, key} or null. */
-export function happeningLine(name,minutes){
- const h=happeningsOn(minutes).find(h=>h.lines?.[name]);
+/**
+ * How a dated happening went, by what the town showed in its hours ('held', 'off', or null while that is not known).
+ * One that is not an outdoor thing is held once its hours begin. An outdoor (dry) one is held if any check in its
+ * hours was dry, because then its cast went out (happeningPlan), and called off if every check was wet; it is known
+ * when its hours end, and not at all if no check fell in them. Rain from a typhoon's warning that covers all its hours
+ * calls it off from the start. `seen`: true once a check in its hours was dry, false while all were wet, undefined if none.
+ */
+export function happeningOutcome(h,minute,{seen,typhoonAllHours=false}={}){
+ if(minute<h.hours[0])return null;
+ if(!h.dry)return 'held';
+ if(typhoonAllHours)return 'off';
+ if(minute<h.hours[1]||seen===undefined)return null;
+ return seen?'held':'off';
+}
+
+/**
+ * What a resident has to say about today, all day: {id, title, text, key} or null. While it rains nobody talks up an
+ * outdoor happening the rain is calling off (the same rule as happeningPlan's): on a typhoon's eisa night Chin does
+ * not say the drums are coming.
+ */
+export function happeningLine(name,minutes,{rain=false}={}){
+ const h=happeningsOn(minutes).find(h=>h.lines?.[name]&&!(h.dry&&rain));
  return h?{id:h.id,title:h.title,text:h.lines[name],key:h.id+'@'+townDay(minutes)}:null;
 }

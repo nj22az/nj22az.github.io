@@ -54,16 +54,16 @@ try{
    assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),s.id);
    await snapshot(s.id);
    if(s.id==='mayor-home'){
-    assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.use('Decorate your home')),true);
-    await page.getByRole('button',{name:'Wall colour',exact:true}).click();await page.getByRole('button',{name:'Harbour blue',exact:true}).click();await page.getByRole('button',{name:'Back',exact:true}).click();
-    await page.getByRole('button',{name:'Cushions and quilt',exact:true}).click();await page.getByRole('button',{name:'Leaf green',exact:true}).click();await page.getByRole('button',{name:'Back',exact:true}).click();await page.getByRole('button',{name:'Done',exact:true}).click();
+    // Decorating is Johansson Studio's (src/studio-handoff.js): what Studio sends, World shows at once.
+    await page.evaluate(()=>{const studio=home=>{const key='johansson-town-studio',value=JSON.stringify({home});localStorage.setItem(key,value);dispatchEvent(new StorageEvent('storage',{key,newValue:value,storageArea:localStorage}));};studio({wall:'harbour',textile:'leaf',keepsake:'postcard'});});
+    assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.use('Decorate your home')),false,'World has no Decorate your home');
     assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.layout.snapshot().decor.wall),'harbour');await snapshot('decorated-home');
    }
    await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;a.leave();});await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.room.visible);
   }
   await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;await a.enter('mayor-home');a.activities.state.quest=3;a.activities.state.fish=1;a.activities.state.kenjiEscort='done';a.activities.save();});
   await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);
-  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.use('Decorate your home'));await page.getByRole('button',{name:'Keepsake shelf',exact:true}).click();await page.getByRole('button',{name:'Tama thank-you cat',exact:true}).click();await page.getByRole('button',{name:'Back',exact:true}).click();await page.getByRole('button',{name:'Done',exact:true}).click();
+  await page.evaluate(()=>{const studio=home=>{const key='johansson-town-studio',value=JSON.stringify({home});localStorage.setItem(key,value);dispatchEvent(new StorageEvent('storage',{key,newValue:value,storageArea:localStorage}));};studio({...window.__JOHANSSON_AUDIT__.activities.state.homeDecor,keepsake:'cat'});});
   await snapshot('earned-keepsake');
   const before=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;window.__auditRetained=a;return {room:JSON.parse(window.render_game_to_text()).room,decor:a.activities.state.homeDecor,player:JSON.parse(window.render_game_to_text()).player};});
   await page.evaluate(()=>(window.__auditLoseExt=window.__JOHANSSON_AUDIT__.renderer.getContext().getExtension('WEBGL_lose_context')).loseContext());

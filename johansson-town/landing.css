@@ -949,9 +949,6 @@
 #start .title-modes>.title-mode:only-child{grid-column:1/-1}
 #start .title-menu .title-mode{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:96px;padding:12px;border-radius:8px;font:700 16px/1.3 var(--gothic);letter-spacing:.02em}
 #start .title-menu .title-mode small{display:block;font:400 12px/1.35 var(--gothic);letter-spacing:normal;opacity:.92;font-family:var(--gothic)}
-#start .title-menu .title-mode-build{background:#fff;color:#000;border:2px solid #06c755}
-#start .title-menu .title-mode-build:hover{background:#f2fbf5}
-#start .title-menu .title-mode-build .title-action-icon{color:#06c755}
 #start .title-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 #start .title-row .title-guide{padding:10px 8px!important;font-size:14px!important;gap:6px!important}
 #start .title-row .title-action-icon{width:18px;height:18px;flex-basis:18px}

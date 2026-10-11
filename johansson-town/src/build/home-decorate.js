@@ -5,12 +5,24 @@ import {HOME_CATALOGUE,homeFurnitureFactory,restoreHomeItems} from './home-furni
 
 /**
  * Arranging furniture in Johansson's own rooms: the builder's rules and mouse, inside the home, saved with this player
- * (state.homeDecor.items). The room is seen from above like a dollhouse, the ceiling lifted off while you work.
+ * (state.homeDecor.items). The room is seen from above like a dollhouse, the ceiling lifted off while you work. This
+ * runs in Johansson Studio (avatar-creator/home.js), which hands the result to World (src/studio-handoff.js).
  *
  * floor(x,z): true on the open floor of the main room (not the WC or the bath); keepClear: [[x,z,size]] squares kept
  * free (the genkan, and in front of the wardrobe, the bookshelf, the futon and the doors).
  */
 const lookup=id=>HOME_CATALOGUE.find(f=>f.id===id)||null;
+
+/**
+ * The furniture as it was arranged in Johansson Studio, standing in World's copy of the home. World only shows it:
+ * arranging is Studio's (src/studio-handoff.js). reload() puts it back after Studio changes it while World is open.
+ */
+export function showHomeFurniture({group,colliders,state,floor,keepClear}){
+ const placements=createPlacements({group,colliders,factory:homeFurnitureFactory(),walkable:floor,heightAt:()=>0,doors:keepClear,lookup,needWhy:false});
+ const load=()=>placements.load(restoreHomeItems(state.homeDecor?.items).map(p=>({...p,note:''})));
+ let skipped=load();
+ return {placements,get skipped(){return skipped;},reload(){for(const p of [...placements.list(),...placements.held()])placements.remove(p.id);skipped=load();return skipped;}};
+}
 
 export function createHomeDecorating({group,colliders,state,save,canvas,camera,floor,keepClear,stage,ceilingAbove=2.5,onClose=()=>{}}){
  const factory=homeFurnitureFactory();

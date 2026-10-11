@@ -4,39 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#06c755">
-<title>Shimanchu Maker · Johansson World</title>
-<meta name="description" content="Make an islander for Johansson World, a 1997 Okinawan harbour town. Share them with a link.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LINE+Seed+JP:wght@400;700;800&display=swap">
+<title>Johansson Studio</title>
+<meta name="description" content="Islanders for Johansson World are made in Johansson Studio.">
+<link rel="canonical" href="https://nj22az.github.io/avatar-creator/">
 <link rel="stylesheet" href="./creator.css?h=8c337527">
 <link rel="stylesheet" href="../line-ui.css?h=5aa283d2">
 </head>
 <body class="creator-page">
-<noscript>The islander maker needs JavaScript.</noscript>
+<main style="max-width:32rem;margin:15vh auto;padding:0 16px;font:400 16px/1.5 system-ui,-apple-system,sans-serif">
+<h1 style="font-size:1.4rem">Islanders are made in Johansson Studio</h1>
+<p>The maker has moved. <a id="studio" href="/avatar-creator/">Open Johansson Studio</a>.</p>
+</main>
 <script type="module">
-// A shared islander (?r=code) opens here; saving it walks you into the town as them.
-import {openCreator} from '../src/avatars/creator.js';
-import {playerRecipe,savePlayerRecipe} from '../src/avatars/actors.js';
+// The old maker's address. A shared islander (?r=code, or ?preset=harbour-visitor) opens in Johansson Studio, which
+// is where every look is made now (src/studio-handoff.js).
 import {CAST_RECIPES} from '../src/avatars/cast.js';
-import {decodeRecipe} from '../src/avatars/recipe.js';
-import {installIconControls} from '../src/ui/icon-controls.js';
-// This shared page uses the same semantic controls as the in-town maker.
-const disposeIcons=installIconControls(document.body);
-window.addEventListener('pagehide',disposeIcons,{once:true});
-const params=new URLSearchParams(location.search),code=params.get('r'),preset=params.get('preset')==='harbour-visitor'?CAST_RECIPES['Harbour visitor']:null,shared=(code?decodeRecipe(code):null)||preset;
-// Voice blips for the maker's own page; in the town they go through the town's audio.
-let audio=null;
-const voice=(freq,type)=>{try{audio??=new (window.AudioContext||window.webkitAudioContext)();const t=audio.currentTime,o=audio.createOscillator(),g=audio.createGain();
- o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+.09);o.connect(g).connect(audio.destination);o.start(t);o.stop(t+.1);}catch{}};
-openCreator({
- recipe:shared||playerRecipe(),
- startAt:shared?'hello':'start',voice,
- saveLabel:'Walk the town as them',
- shareLink:c=>new URL('./?r='+c,location.href).href,
- onSave:recipe=>{savePlayerRecipe(recipe);},
- onClose:()=>{location.href='../';},
-});
+import {encodeRecipe} from '../src/avatars/recipe.js';
+const params=new URLSearchParams(location.search),to=new URL('/avatar-creator/',location.href);
+const code=params.get('r')||(params.get('preset')==='harbour-visitor'?encodeRecipe(CAST_RECIPES['Harbour visitor']):null);
+if(code)to.searchParams.set('r',code);
+document.getElementById('studio').href=to.href;
+location.replace(to.href);
 </script>
 </body>
 </html>
