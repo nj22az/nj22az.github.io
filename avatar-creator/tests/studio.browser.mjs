@@ -1,5 +1,6 @@
 // Run against the repository root served over HTTP; optional CHROMIUM_EXECUTABLE, STUDIO_TEST_URL (a server of your own)
 // and STUDIO_VIEWPORTS (e.g. 1280x800,820x1180; 820 wide is an iPad with a touch screen and a share sheet).
+// STUDIO_SNAP_ONLY=1 runs only the snap-into-place checks; STUDIO_SNAP_SHOTS=<folder> keeps small pictures of them.
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
@@ -19,7 +20,7 @@ const base=process.env.STUDIO_TEST_URL||`http://127.0.0.1:${server.address().por
 const errors=[];
 const wrap=d=>{const w=((d%360)+540)%360-180;return w===-180?180:Math.round(w*10)/10;};
 try{
- const sizes=process.env.STUDIO_VIEWPORTS?process.env.STUDIO_VIEWPORTS.split(',').map(v=>v.split('x').map(Number)):[[1280,800],[820,1180],[768,1024],[844,390],[390,844],[320,568]];
+ const sizes=process.env.STUDIO_SNAP_ONLY?[]:process.env.STUDIO_VIEWPORTS?process.env.STUDIO_VIEWPORTS.split(',').map(v=>v.split('x').map(Number)):[[1280,800],[820,1180],[768,1024],[844,390],[390,844],[320,568]];
  for(const [width,height] of sizes){
   const touch=width===820,detailed=width===1280||width===820;
   const context=await browser.newContext({viewport:{width,height},acceptDownloads:true,hasTouch:touch});
@@ -27,14 +28,16 @@ try{
   if(touch)await context.addInitScript(()=>{window.__shared=[];
    Object.defineProperty(Navigator.prototype,'canShare',{configurable:true,value(data){return !!data?.files?.length;}});
    Object.defineProperty(Navigator.prototype,'share',{configurable:true,value(data){window.__shared.push({files:data.files.map(f=>({name:f.name,type:f.type,size:f.size})),active:navigator.userActivation?.isActive??null});return Promise.resolve();}});});
-  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  // Software rendering (swiftshader) needs time: World's maker and a location can keep the page busy for a minute.
+  const page=await context.newPage();page.setDefaultTimeout(180000);page.on('pageerror',e=>errors.push(e.message));
   try{
   await page.goto(base+'/avatar-creator/');
   await page.locator('.studio-tools').waitFor();
   await page.evaluate(()=>localStorage.setItem('johansson-player-recipe','game-sentinel'));
   // Templates live in the Files menu (a "new from template" action), keeping the phone toolbar to one row.
   await page.locator('.studio-files summary').click();
-  await page.getByLabel('Starting template').selectOption('1');
+  // Templates by name: the picker lists the original Thuận design, then World's residents (studio.js).
+  await page.getByLabel('Starting template').selectOption({label:'Thuận · original'});
   assert.equal(await page.locator('.studio-files').evaluate(e=>e.open),false,'choosing a template closes the menu');
   await page.getByRole('textbox',{name:'Name',exact:true}).fill('My character');
   await page.locator('.studio-tools').getByRole('button',{name:'Save character',exact:true}).click();
@@ -77,7 +80,7 @@ try{
   const [design]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Download design',exact:true}).click()]);
   const designPath=await design.path();const json=JSON.parse(await readFile(designPath,'utf8'));assert.equal(json.recipe.hair.style,'braids');
   await page.locator('.studio-files summary').click();
-  await page.getByLabel('Starting template').selectOption('0');assert.equal(await page.getByRole('textbox',{name:'Name',exact:true}).inputValue(),'Johansson');
+  await page.getByLabel('Starting template').selectOption({label:'Johansson'});assert.equal(await page.getByRole('textbox',{name:'Name',exact:true}).inputValue(),'Johansson');
   await page.locator('input[type=file]').setInputFiles(designPath);await page.waitForFunction(()=>document.querySelector('.shm-name').value==='My character');
   assert.equal(await page.evaluate(()=>localStorage.getItem('johansson-player-recipe')),'game-sentinel');
   assert.ok(await page.locator('.studio-tools').evaluate(el=>[...el.querySelectorAll('button,select,summary')].filter(b=>b.getClientRects().length).every(b=>{const r=b.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.height>=44;})),'Toolbar fits and keeps touch targets');
@@ -121,24 +124,33 @@ try{
    await page.locator('.scene-toolbar').waitFor();
    const bar=await page.locator('.scene-toolbar').boundingBox();
    assert.ok(bar.x>=frame.x&&bar.y>=frame.y&&bar.x+bar.width<=frame.x+frame.width+.5&&bar.y+bar.height<=frame.y+frame.height+.5,'toolbar stays inside the picture');
-   // Turn: E and ] (15° right), the toolbar's turn left (30°), face the camera.
-   const t0=await turnOf(0);await page.keyboard.press('e');assert.equal(await turnOf(0),wrap(t0-15));
-   await page.keyboard.press(']');assert.equal(await turnOf(0),wrap(t0-30));
-   await page.locator('.scene-toolbar [data-tool="turn-left"]').click();assert.equal(await turnOf(0),wrap(t0));
-   await page.keyboard.press('q');assert.equal(await turnOf(0),wrap(t0+15));
+   // Turn in stops around facing the camera: E and ] 15° right, the toolbar's turn left to the next 45° stop, Q 15° left.
    await idle();await page.locator('.scene-toolbar [data-tool="face-camera"]').click();
-   assert.match(await page.locator('.scene-status').innerText(),/faces the camera/);assert.ok(Number.isFinite(await turnOf(0)));
-   // A two-finger twist, clockwise by 30°, turns them 30° clockwise seen from above.
-   await idle();const before=await turnOf(0);
-   await page.evaluate(()=>{const c=document.querySelector('.scene-picture canvas'),r=c.getBoundingClientRect(),x=r.right-220,y=r.top+30;
+   assert.match(await page.locator('.scene-status').innerText(),/faces the camera/);const z0=await turnOf(0);assert.ok(Number.isFinite(z0));
+   await page.keyboard.press('e');assert.equal(await turnOf(0),wrap(z0-15));
+   await page.keyboard.press(']');assert.equal(await turnOf(0),wrap(z0-30));
+   await page.locator('.scene-toolbar [data-tool="turn-left"]').click();assert.equal(await turnOf(0),wrap(z0),'the turn button goes to the next 45° stop');
+   await page.keyboard.press('q');assert.equal(await turnOf(0),wrap(z0+15));
+   // A two-finger twist, clockwise by 30°: on a 15° stop around the camera (or facing Thuận); without snapping exactly 30°.
+   const twist=()=>page.evaluate(()=>{const c=document.querySelector('.scene-picture canvas'),r=c.getBoundingClientRect(),x=r.right-220,y=r.top+30;
     const ev=(type,id,px,py)=>c.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:id===41,clientX:px,clientY:py,bubbles:true}));
     ev('pointerdown',41,x,y);ev('pointerdown',42,x+120,y);ev('pointermove',42,x+120*Math.cos(Math.PI/12),y+120*Math.sin(Math.PI/12));ev('pointermove',42,x+120*Math.cos(Math.PI/6),y+120*Math.sin(Math.PI/6));ev('pointerup',42,x+120*Math.cos(Math.PI/6),y+120*Math.sin(Math.PI/6));ev('pointerup',41,x,y);});
-   assert.ok(Math.abs(wrap((await turnOf(0))-(before-30)))<.6,'twist turned '+before+' → '+(await turnOf(0)));
-   // Drag moves the character (stopped by walls and furniture as before); a tap on empty space deselects.
-   await idle();const box=await page.locator('.scene-selection').boundingBox(),start=await scene();
-   await page.mouse.move(box.x+box.width/2,box.y+box.height*.6);await page.mouse.down();await page.mouse.move(box.x+box.width/2+60,box.y+box.height*.6+25,{steps:6});await page.mouse.up();await idle();
-   const moved=await scene(),who=await page.locator('.scene-chip[data-selected]').getAttribute('data-id'),i=moved.actors.findIndex(a=>a.id===who);
-   assert.ok(i>=0&&Math.hypot(moved.actors[i].x-start.actors[i].x,moved.actors[i].z-start.actors[i].z)>.05,'dragging moved the character');
+   await idle();let before=await turnOf(0);await twist();const snapped=await turnOf(0);
+   const towardThuan=await page.evaluate(()=>{const ids=JSON.parse(localStorage.getItem('nj-studio-scene-v1')).actors.map(a=>a.id),[a,b]=ids.map(id=>window.__studioSnap.feet(id)?.world);return a&&b?Math.atan2(b[0]-a[0],b[2]-a[2])*180/Math.PI:NaN;});
+   const offStop=Math.abs(wrap(snapped-z0))%15;assert.ok(Math.min(offStop,15-offStop)<.15||Math.abs(wrap(snapped-towardThuan))<.15,'twist '+before+' → '+snapped+' lands on a stop');
+   await page.getByLabel('Snap into place',{exact:true}).uncheck();await idle();before=await turnOf(0);await twist();
+   assert.ok(Math.abs(wrap((await turnOf(0))-(before-30)))<.6,'without snapping the twist turned '+before+' → '+(await turnOf(0)));
+   await page.getByLabel('Snap into place',{exact:true}).check();await page.evaluate(()=>scrollTo(0,0));   // the switch is lower down the page
+   // Drag with Alt (Option): placed freely, exactly where dropped; a tap on empty space deselects.
+   // Aimed through the test hook at open floor 0.6 m away, so the drop lands exactly there (to the centimetre).
+   await idle();const start=await scene(),who=await page.locator('.scene-chip[data-selected]').getAttribute('data-id'),i=start.actors.findIndex(a=>a.id===who);
+   const open=await page.evaluate(()=>{const s=window.__studioSnap,f=s.feet().world;for(const [dx,dz] of [[.6,0],[-.6,0],[0,.6],[0,-.6],[.45,.45],[-.45,.45],[.45,-.45],[-.45,-.45]]){const c=s.check(f[0]+dx,f[2]+dz);if(c.free&&c.seen)return [f[0]+dx,f[1],f[2]+dz];}return null;});
+   assert.ok(i>=0&&open,'open floor beside them');const grip=await page.evaluate(()=>window.__studioSnap.grip());
+   await page.keyboard.down('Alt');await page.mouse.move(grip.x,grip.y);await page.mouse.down();const end=await page.evaluate(p=>window.__studioSnap.aim(p),open);
+   await page.mouse.move(end.x,end.y,{steps:6});await page.mouse.up();await page.keyboard.up('Alt');await idle();
+   const moved=await scene(),o=await page.evaluate(()=>window.__studioSnap.origin()),m=moved.actors[i];
+   assert.ok(Math.hypot(m.x-start.actors[i].x,m.z-start.actors[i].z)>=.25,'dragging moved the character');
+   assert.ok(Math.hypot(o[0]+m.x-open[0],o[2]+m.z-open[2])<=.02,'with Alt they land where dropped');
    const empty=await page.evaluate(()=>{const r=document.querySelector('.scene-frame').getBoundingClientRect();return [[r.right-15,r.top+15],[r.left+15,r.top+15],[r.left+r.width/2,r.top+15],[r.right-15,r.top+60]].find(([x,y])=>document.elementFromPoint(x,y)?.tagName==='CANVAS');});
    await page.mouse.click(empty[0],empty[1]);
    assert.equal(await page.locator('.scene-chip[data-selected]').count(),0,'a tap on empty space deselects');assert.ok(await page.locator('.scene-toolbar').isHidden());
@@ -232,6 +244,86 @@ try{
   assert.ok(await page.evaluate(()=>document.body.scrollWidth<=innerWidth),'Scene workspace fits the viewport');
   }catch(error){if(process.env.STUDIO_FAIL_SHOT)await page.screenshot({path:process.env.STUDIO_FAIL_SHOT,type:'jpeg',quality:50}).catch(()=>{});error.message+=` (at ${width}×${height}; page errors: ${errors.join(' | ')||'none'})`;throw error;}
   await context.close();console.log(`PASS ${width}×${height}${touch?' (touch, share sheet)':''}: templates, PNG pixels, design import, scene controls${detailed?' (select, turn, twist, drag, sit, remove and undo)':''}, saving, preview, layout`);
+ }
+
+ // ---- Snap into place (scene-snap.mjs): seats, counters and people catch a dragged character; at the iPad's size with
+ // touch and at 1280 with a mouse. The page's test hook (window.__studioSnap, only under webdriver) gives the targets. ----
+ const shots=process.env.STUDIO_SNAP_SHOTS||'';
+ for(const [width,height,touch] of [[1180,820,true],[1280,800,false]]){
+  const context=await browser.newContext({viewport:{width,height},hasTouch:touch});const page=await context.newPage();page.setDefaultTimeout(180000);page.on('pageerror',e=>errors.push(e.message));
+  const pointerType=touch?'touch':'mouse',tag=`${width}x${height}`;
+  const scene=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('nj-studio-scene-v1')));
+  const idle=()=>page.waitForFunction(()=>document.querySelector('.scene-picture canvas').getAttribute('aria-busy')==='false',{},{timeout:180000});
+  const hook=(name,...args)=>page.evaluate(([name,args])=>window.__studioSnap[name](...args),[name,args]);
+  const shot=async name=>{if(shots)await page.locator('.scene-frame').screenshot({path:`${shots}/${tag}-${name}.jpg`,type:'jpeg',quality:50,scale:'css'});};
+  const stage=async(location,people,camera={orbit:0,elevation:0,zoom:1})=>{
+   await page.evaluate(async({location,people,camera})=>{const {CAST_RECIPES,ORIGINAL_THUAN_RECIPE}=await import('/johansson-town/src/avatars/cast.js');
+    localStorage.setItem('nj-studio-scene-v1',JSON.stringify({version:2,location,format:'landscape',style:'photo',top:'',bottom:'',camera,actors:people.map(([name,x,z,extra],i)=>({id:'actor-'+i,name,recipe:name==='Thuận'?ORIGINAL_THUAN_RECIPE:CAST_RECIPES.Johansson,x,z,size:1,seat:'',turn:0,pose:'Idle',expression:'smile',speech:'',...extra}))}));},{location,people,camera});
+   await page.reload();await page.locator('.studio-tools').waitFor();await page.getByRole('button',{name:'Build scene',exact:true}).click();
+   await page.getByRole('button',{name:'3. Pose & position',exact:true}).click();await idle();};
+  const pick=async i=>{await page.locator('.scene-chip').nth(i).locator('.scene-chip-pick').click();await idle();};
+  // Press the selected character's own body, move so the feet go to `to` ([x,y,z] in the town), optionally wiggle, let go.
+  const drag=async(to,{hold=false,wiggle=0}={})=>{const r=await page.evaluate(({to,pointerType,hold,wiggle})=>{const c=document.querySelector('.scene-picture canvas'),s=window.__studioSnap,start=s.grip();
+    const ev=(type,x,y)=>c.dispatchEvent(new PointerEvent(type,{pointerId:9,pointerType,isPrimary:true,clientX:x,clientY:y,bubbles:true,button:0,buttons:type==='pointerup'?0:1}));
+    ev('pointerdown',start.x,start.y);const r=c.getBoundingClientRect(),end=Array.isArray(to)?s.aim(to):{x:r.left+to.fx*r.width,y:r.top+to.fy*r.height};for(let i=1;i<=14;i++)ev('pointermove',start.x+(end.x-start.x)*i/14,start.y+(end.y-start.y)*i/14);
+    const locked=document.querySelector('.scene-selection').hasAttribute('data-locked'),draws=s.draws;
+    for(const [dx,dy] of wiggle?[[wiggle,0],[-wiggle,0],[0,wiggle],[0,-wiggle],[0,0]]:[])ev('pointermove',end.x+dx,end.y+dy);
+    const wiggled=s.draws-draws;window.__end=end;if(!hold)ev('pointerup',end.x,end.y);return {locked,wiggled};},{to,pointerType,hold,wiggle});if(!hold)await idle();return r;};
+  const release=async()=>{await page.evaluate(pointerType=>{const e=window.__end;document.querySelector('.scene-picture canvas').dispatchEvent(new PointerEvent('pointerup',{pointerId:9,pointerType,isPrimary:true,clientX:e.x,clientY:e.y,bubbles:true}));},pointerType);await idle();};
+  const where=async i=>{const a=(await scene()).actors[i],o=await hook('origin');return {...a,wx:o[0]+a.x,wz:o[2]+a.z};};
+  try{
+   await page.goto(base+'/avatar-creator/');await page.locator('.studio-tools').waitFor();
+   // Sato Ramen: onto stool 3 (caught while dragging, nothing redrawn by a wiggle), sits facing the counter.
+   await stage('sato-ramen',[['Johansson',0,0],['Thuận',-1.3,.5]]);await pick(0);
+   const stools=(await hook('targets')).filter(t=>t.kind==='seat'&&/ramen counter/.test(t.label)&&t.ok);assert.ok(stools.length>=2,'stools on the picture');
+   const third=stools.find(t=>t.label.endsWith(' 3'))||stools[0];
+   const caught=await drag(third.point,{hold:true,wiggle:10});assert.ok(caught.locked,'the outline is solid while a stool has them');assert.equal(caught.wiggled,0,'a wiggle while caught redraws nothing');
+   assert.ok(await page.locator('.scene-selection[data-locked]').evaluate(e=>getComputedStyle(e).borderTopStyle==='solid'));await release();
+   let a=await where(0);assert.equal(a.seat,third.id);assert.ok(!/^seat-\d/.test(a.seat),'saved by its key');assert.equal(a.pose,'Sit');assert.equal(a.turn,third.turn);
+   assert.match(await page.locator('.scene-toast').innerText(),/Johansson sits at the ramen counter/);await shot('sato-stool');
+   // A seated pose goes with them to the next stool; dragged off, they stand as they stood before, facing the way they sat.
+   await page.locator('[data-picker="pose"] [data-value="SitDrink"]').click();await idle();
+   const next=(await hook('targets')).find(t=>t.kind==='seat'&&/ramen counter/.test(t.label)&&t.ok&&t.id!==third.id);await drag(next.point);
+   a=await where(0);assert.deepEqual([a.seat,a.pose,a.turn],[next.id,'SitDrink',next.turn],'SitDrink on the next stool');
+   const feet=(await hook('feet')).world;await drag([feet[0],feet[1],feet[2]+1]);
+   a=await where(0);assert.deepEqual([a.seat,a.pose,a.turn],['','Idle',next.turn],'off the stool: standing, facing as they sat');assert.match(await page.locator('.scene-toast').innerText(),/stands up/);
+   // Someone else's stool is never taken, and nobody ends up inside anybody.
+   await pick(1);await page.getByLabel('Use furniture',{exact:true}).selectOption(third.id);await idle();await pick(0);
+   assert.ok(await page.locator(`[data-field="seat"] option[value="${third.id}"]`).evaluate(o=>o.disabled&&/\(Thuận\)/.test(o.textContent)),'the menu shows whose seat it is');
+   await drag(third.point);a=await where(0);const thuan=await where(1);assert.equal(thuan.seat,third.id);assert.notEqual(a.seat,third.id);
+   assert.ok(Math.hypot(a.wx-third.point[0],a.wz-third.point[2])>=.46-1e-6,'not inside the seated Thuận');
+   // Reloading keeps every place, seat, turn and pose.
+   const saved=(await scene()).actors.map(x=>[x.x,x.z,x.seat,x.turn,x.pose]);await page.reload();await page.locator('.studio-tools').waitFor();
+   await page.getByRole('button',{name:'Build scene',exact:true}).click();await idle();assert.deepEqual((await scene()).actors.map(x=>[x.x,x.z,x.seat,x.turn,x.pose]),saved,'a reload changes nothing');
+   // Sakura Shōten, the camera turned to the till: Thuận steps up to it from both sides, 0.26 m off its face, facing it.
+   await stage('sakura',[['Thuận',6.208,1.198]],{orbit:180,elevation:8,zoom:.75});await pick(0);
+   const till=(await hook('targets')).filter(t=>t.kind==='edge'&&Math.abs(Math.abs(t.line.b[1]-t.line.a[1])-3.32)<.01);assert.equal(till.length,2,'both long faces of the till');
+   for(const e of till){const zs=[];for(let z=e.line.a[1];z<=e.line.b[1]+1e-9;z+=.1){const c=await hook('check',e.line.a[0],z);if(c.free&&c.seen)zs.push(z);}
+    assert.ok(zs.length,e.id+' can be seen somewhere');const before=await where(0),z=zs[Math.floor(zs.length/2)];
+    await drag([e.line.a[0]+e.normal[0]*.12,0,z]);a=await where(0);
+    assert.ok(Math.abs(a.wx-e.line.a[0])<=.01,e.id+': on the standing line ('+a.wx.toFixed(3)+')');assert.ok(Math.abs(wrap(a.turn-e.turn))<=1,e.id+': facing the till');
+    assert.match(await page.locator('.scene-status').innerText(),/stands at the counter/);await shot('till-'+(e.normal[0]>0?'staff':'customer'));
+    await page.keyboard.press('Control+z');await idle();a=await where(0);assert.deepEqual([a.x,a.z,a.turn],[before.x,before.z,before.turn],'Ctrl+Z puts them back');}
+   // In front of Thuận, facing her; beside her, facing the way she faces.
+   await stage('sakura',[['Johansson',0,0],['Thuận',0,-.8]]);await pick(0);
+   const marks=(await hook('targets')).filter(t=>t.kind==='person'&&t.other==='actor-1'&&t.ok);
+   for(const kind of ['talk','beside']){const m=marks.find(t=>kind==='talk'?t.mark==='talk':t.mark!=='talk');assert.ok(m,kind+' is offered');
+    await drag(m.point);a=await where(0);assert.ok(Math.hypot(a.wx-m.point[0],a.wz-m.point[2])<.011,kind+': on the mark');assert.equal(a.turn,m.turn);
+    assert.match(await page.locator('.scene-status').innerText(),kind==='talk'?/Johansson faces Thuận/:/Johansson stands beside Thuận/);await shot('sakura-'+kind);}
+   // Town Hall: a scene saved with an old walk-order seat id loads seated and is saved again with the key; drags over the
+   // walls never leave anyone where the camera cannot see their head.
+   await stage('town-hall',[['Johansson',0,0,{seat:'seat-0',pose:'Sit'}],['Thuận',.8,.4]]);a=await where(0);
+   assert.ok(a.seat&&a.seat!=='seat-0','seat-0 became '+a.seat);assert.equal(a.pose,'Sit');await shot('town-hall-old-save');
+   await pick(1);
+   for(let k=0;k<12;k++){await drag({fx:.08+.84*((k*5)%12)/11,fy:k%3===0?.35:k%3===1?.6:.92});a=await where(1);
+    const c=await hook('check',a.wx,a.wz);assert.ok(c.free&&c.seen,'drag '+k+' landed free and seen at '+a.wx.toFixed(2)+','+a.wz.toFixed(2));}
+   // The switch: labelled, at least 44 px tall; the toolbar stays in the picture; no sideways scrolling.
+   const sw=await page.getByLabel('Snap into place',{exact:true}).evaluate(i=>i.closest('label').getBoundingClientRect().height);assert.ok(sw>=44,'switch '+sw+' px tall');
+   const frame=await page.locator('.scene-frame').boundingBox(),bar=await page.locator('.scene-toolbar').boundingBox();
+   if(bar)assert.ok(bar.x>=frame.x-.5&&bar.y>=frame.y-.5&&bar.x+bar.width<=frame.x+frame.width+.5&&bar.y+bar.height<=frame.y+frame.height+.5,'toolbar inside the picture');
+   assert.ok(await page.evaluate(()=>document.body.scrollWidth<=innerWidth),'no sideways scrolling');
+  }catch(error){if(process.env.STUDIO_FAIL_SHOT)await page.screenshot({path:process.env.STUDIO_FAIL_SHOT,type:'jpeg',quality:50}).catch(()=>{});error.message+=` (snap, at ${width}×${height}; page errors: ${errors.join(' | ')||'none'})`;throw error;}
+  await context.close();console.log(`PASS ${width}×${height}${touch?' (touch)':' (mouse)'}: snap into place (stools, seated pose, standing up, taken seat, reload, both sides of the till, talk and beside, old seat ids, no unseen drops, switch)`);
  }
  assert.deepEqual(errors,[]);
 }finally{await browser.close();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}

@@ -2,6 +2,10 @@ import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
+import {CHAIR} from './onsen-chair.js';
+
+// The coin massage chair's right arm pad (onsen-chair.js, the card's right-arm-top anchor): its flat top, at 0.71.
+const ARM=CHAIR.anchor('right-arm-top');
 
 /**
  * Umi-no-yu's small things, each with a person who uses it and a reason it is where it is:
@@ -99,10 +103,10 @@ export const ONSEN_PROPS=Object.freeze({
   period:'White two-core cords, 5 m each, with a moulded two-pin plug and a single socket on the end, rated 15 A 125 V on a paper tag: the cord every 1980s hardware shop sold. Each one carries one dryer (12 A) well inside its 15 A; a three-way reel with all three dryers on it would carry 36 A, which is why there are three.'}),
 
  offering:plain({id:'milk-offering',name:'Coffee milk offering',jp:'コーヒー牛乳',
-  on:'Massage chair arm',z:3.17,top:.71,xs:Object.freeze([4.33,4.45,4.57]),states:Object.freeze(['none','full','empty']),
+  on:'Coin massage chair',z:ARM[2],top:ARM[1],xs:Object.freeze([4.33,4.45,4.57]),states:Object.freeze(['none','full','empty']),
   bottle:plain({r:.028,h:.133,neck:.021}),
   for:'Mr Fujita: three coffee milks lined up on the chair’s arm as an offering before his ten minutes (page 1); on page 10 Mrs Higa pays his ¥300 back in three coffee milks, and in the last panel the three stand there empty, lined up like offerings.',
-  why:'On the right arm’s flat top, behind the coin box and in a row towards the backrest, so a sitter’s elbow does not knock them over and the coin slot stays free. Only there when a story puts them there (stage): nobody leaves milk on the chair otherwise.',
+  why:'On the right arm’s flat vinyl pad, behind the coin box and in a row towards the backrest, so a sitter’s elbow does not knock them over and the coin slot stays free. Only there when a story puts them there (stage): nobody leaves milk on the chair otherwise.',
   period:'Glass 180 ml bottles of coffee milk (コーヒー牛乳) with paper caps, ¥100 each from the lobby cooler: drunk standing, hand on hip, after the bath. Empty, they keep a brown film at the bottom until they go back in the crate.'}),
 
  accountBook:plain({id:'account-book',name:'Account book',jp:ONSEN_SIGNS.ledger.jp,
@@ -229,7 +233,7 @@ export function paperWarTexture(kind){
  * Builds the props into the room. `rect` adds a collider (only for what really blocks a walker), `anchor` a prompt.
  * Returns the group and, by id, the parts the film and the room switch.
  */
-export function buildOnsenProps({room,rect,anchor=null,action=()=>{},chair=null}){
+export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
  const group=new THREE.Group();group.name='Umi-no-yu props';room.add(group);
  const add=(geometry,material,x,y,z,name,parent=group)=>{const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.name=name;m.castShadow=m.receiveShadow=true;m.userData.staticProp=true;parent.add(m);return m;};
  const node=(name,x,y,z,parent=group)=>{const g=new THREE.Group();g.name=name;g.position.set(x,y,z);parent.add(g);return g;};
@@ -388,12 +392,11 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{},chair=null}
    const end=add(new THREE.BoxGeometry(.034,.022,.05),grey,ex,top+.011,ez,c.name+' socket',g);end.rotation.y=-(a+Math.PI*.8);end.userData.restsOn=c.name+' coil';});}
 
  // ---- Fujita's offering: three coffee milks on the massage chair's right arm (stage({offering})).
- // On Studio's chair (studio-assets.js) the row stands on its right arm's top, at the anchor the chair names for it.
- const O=ONSEN_PROPS.offering,armTop=chair?.anchors?.['right-arm-top'],offering=node(O.name,0,armTop?armTop[1]:O.top,armTop?armTop[2]:O.z);offering.userData.prop=O.id;offering.visible=false;
+ const O=ONSEN_PROPS.offering,offering=node(O.name,0,O.top,O.z);offering.userData.prop=O.id;offering.visible=false;
  const Bt=O.bottle,profile=[[0,0],[Bt.r-.002,0],[Bt.r,.004],[Bt.r,.082],[Bt.r-.003,.098],[Bt.neck+.001,.114],[Bt.neck,.126],[Bt.neck+.0025,.128],[Bt.neck+.0025,Bt.h],[Bt.neck-.0015,Bt.h],[Bt.neck-.0015,Bt.h-.012]].map(([x,y])=>new THREE.Vector2(x,y));
  const full=std(0x9b6a3c,.28),empty=std(0xe6efee,.12,{transparent:true,opacity:.38,depthWrite:false,side:THREE.DoubleSide}),film=std(0x8a5a32,.5),capMat=std(0xd88a2a,.6);
  const bottleGeo=new THREE.LatheGeometry(profile,8),milks=O.xs.map((x,i)=>{const g=node('Coffee milk '+(i+1),x-0,0,0,offering);
-  const body=add(bottleGeo,full,0,0,0,'Coffee milk '+(i+1)+' bottle',g);body.userData.restsOn=chair?chair.object.name:O.on;
+  const body=add(bottleGeo,full,0,0,0,'Coffee milk '+(i+1)+' bottle',g);body.userData.restsOn=O.on;
   const cap=add(new THREE.CylinderGeometry(Bt.neck+.003,Bt.neck+.003,.006,8),capMat,0,Bt.h+.003,0,'Coffee milk '+(i+1)+' cap',g);cap.userData.on='Coffee milk '+(i+1)+' bottle';// pressed into the mouth, over the lip
   const dregs=add(new THREE.CylinderGeometry(Bt.r-.003,Bt.r-.003,.004,8),film,0,.004,0,'Coffee milk '+(i+1)+' dregs',g);dregs.visible=false;dregs.castShadow=false;
   return {g,body,cap,dregs};});

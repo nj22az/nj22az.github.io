@@ -34,8 +34,13 @@ try{
   const turnStart=await page.evaluate(()=>studio.snapshot());const pt=turnStart.actors[0].screen;
   await page.mouse.move(frame.x+pt[0]*frame.width,frame.y+pt[1]*frame.height);await page.mouse.down();await page.mouse.move(frame.x+pt[0]*frame.width+45,frame.y+pt[1]*frame.height,{steps:5});await page.mouse.up();
   const turned=await page.evaluate(()=>studio.snapshot());assert.ok(Math.abs(turned.actors[0].turn-turnStart.actors[0].turn)>10);assert.equal(turned.actors[0].x,turnStart.actors[0].x);assert.equal(turned.camera.azimuth,turnStart.camera.azimuth);
-  await page.locator('summary',{hasText:'Wardrobe'}).click();await page.getByLabel('Outfit',{exact:true}).selectOption({label:'Harbour Sunday jacket'});
-  const changed=await page.evaluate(()=>studio.snapshot().actors[0]);assert.equal(changed.outfit.top,'jacket');assert.equal(await page.getByLabel('Outfit',{exact:true}).inputValue(),'3');assert.equal(changed.turn,turned.actors[0].turn);assert.equal(changed.x,turned.actors[0].x);
+  // The set is found by its name (its place in the menu moves as sets are added), and shown by its catalogue label.
+  const sunday=await page.evaluate(async()=>{const {ISLAND_OUTFITS,ISLAND_COSTUMES}=await import('/src/avatars/outfits.js'),sets=[...ISLAND_OUTFITS,...ISLAND_COSTUMES],i=sets.findIndex(s=>s.name==='Harbour Sunday jacket');return {value:String(i),label:sets[i].label};});
+  await page.locator('summary',{hasText:'Wardrobe'}).click();await page.getByLabel('Outfit',{exact:true}).selectOption({label:sunday.label});
+  const changed=await page.evaluate(()=>studio.snapshot().actors[0]);assert.equal(changed.outfit.top,'jacket');assert.equal(await page.getByLabel('Outfit',{exact:true}).inputValue(),sunday.value);
+  // Grouped by category, labelled from the catalogue: the police jacket and the police cap read apart.
+  assert.deepEqual(await page.locator('select[name=wearSet] optgroup').evaluateAll(g=>g.map(x=>x.label)),['Everyday','Work','School & sport','Festival','Costume']);
+  assert.equal(await page.locator('select[name=wearTop] option[value=police]').textContent(),'Police jacket');assert.equal(await page.locator('select[name=wearHat] option[value=police]').textContent(),'Police cap');assert.equal(changed.turn,turned.actors[0].turn);assert.equal(changed.x,turned.actors[0].x);
   await page.getByRole('button',{name:'Face camera',exact:true}).click();await page.getByRole('button',{name:'Move character',exact:true}).click();
   await page.locator('summary',{hasText:'Wardrobe'}).click();
   await page.locator('[data-tab="place"]').click();await page.getByRole('button',{name:'Aoba pond garden',exact:true}).click();await page.waitForFunction(()=>!studio.snapshot().busy);assert.deepEqual(await page.evaluate(()=>placeVisits),['garden']);assert.equal(await page.evaluate(()=>studio.snapshot().actors.length),2);

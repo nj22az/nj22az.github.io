@@ -110,6 +110,37 @@ test('the comic sets the cast at the step by scene, and the way in stays clear w
  b.layout.genkan.stage(null);assert.deepEqual(b.layout.genkan.shown,[]);
 });
 
+test('the agarikamachi turns at x 3.0 towards the street wall: the shoes stay west of it, and the massage chair’s corner is hinoki',()=>{
+ const {room}=build();room.updateMatrixWorld(true);
+ const T=GENKAN_STEP.turn,h=GENKAN_STEP.width/2;assert.equal(T,3);
+ // Every shoe spot and the umbrella stand are on the stone, clear of the turn.
+ for(const s of [...Object.values(GENKAN_SPOTS),...GENKAN_SPARE])assert.ok(s.x+.2<T-h,'a shoe spot at x '+s.x+' is on the stone');
+ assert.ok(ONSEN_UMBRELLA.stand.x+ONSEN_UMBRELLA.stand.r<T-h,'the umbrella stand is on the stone');
+ // The step is one L: along z 3.6 from the west wall to the turn, then from there to the street wainscot, with no gap.
+ const steps=[];room.traverse(o=>{if(o.isMesh&&o.name==='Genkan step')steps.push(new THREE.Box3().setFromObject(o));});
+ assert.equal(steps.length,2);
+ const along=steps.find(b=>b.max.x-b.min.x>1),across=steps.find(b=>b!==along);
+ assert.ok(Math.abs(along.min.x+5)<1e-6&&Math.abs(along.max.x-(T+h))<1e-6&&Math.abs(along.min.z-(GENKAN_STEP.z-h))<1e-6);
+ assert.ok(Math.abs(across.min.x-(T-h))<1e-6&&Math.abs(across.max.x-(T+h))<1e-6&&Math.abs(across.min.z-along.max.z)<1e-6,'the turn meets the long side');
+ const wainscot=new THREE.Box3().setFromObject(room.getObjectByName('Lobby wainscot street east'));
+ assert.ok(Math.abs(across.max.z-wainscot.min.z)<1e-6,'and runs to the street wainscot');
+ for(const b of steps)assert.ok(Math.abs(b.min.y)<1e-6&&Math.abs(b.max.y-.05)<1e-6);
+ // Nothing of the chair's corner (the body and its leg rest, x 4.08–4.81, z 3.10–4.00) or of its stand spot (r 0.28) is on the step.
+ const corner=new THREE.Box3(new THREE.Vector3(4.08,0,3.1),new THREE.Vector3(4.81,.05,4));
+ for(const b of steps)assert.ok(!b.intersectsBox(corner),'the chair’s corner is off the step');
+ const [sx,,sz]=ONSEN_SEATS.massage.stand;
+ for(const b of steps){const dx=Math.max(b.min.x-sx,0,sx-b.max.x),dz=Math.max(b.min.z-sz,0,sz-b.max.z);assert.ok(Math.hypot(dx,dz)>.28,'the chair’s stand spot is off the step');}
+ // What is underfoot: hinoki east of the turn, the lobby's own boards carried on; the stone genkan west of it.
+ const floors=[];room.traverse(o=>{if(o.isMesh&&/^(Umi-no-yu floor|Genkan arai-dashi)$/.test(o.name))floors.push(o);});
+ const under=(x,z)=>new THREE.Raycaster(new THREE.Vector3(x,.5,z),new THREE.Vector3(0,-1,0)).intersectObjects(floors,false)[0];
+ const lobbyBoards=under(0,2.5).object.material;
+ for(const [x,z] of [[3.2,4.8],[4.45,3.8],[4.8,4.8],[3.4,3.7]]){const hit=under(x,z);assert.equal(hit.object.material,lobbyBoards,`hinoki at ${x}, ${z}`);
+  // the boards carry straight on: the same texture coordinate as the lobby's plane would give there
+  assert.ok(Math.abs(hit.uv.x-(x+5)/10)<1e-6&&Math.abs(hit.uv.y-(3.6-z)/4.8)<1e-6,'the boards carry on from the lobby’s');}
+ // (the pebbles are a painted texture, so without a page the stone under them is what is hit)
+ for(const [x,z] of [[2.8,4.4],[-4,4],[0,4.5]])assert.notEqual(under(x,z).object.material,lobbyBoards,`stone at ${x}, ${z}`);
+});
+
 test('Mr Fujita’s umbrella waits in the stand by the door, out of everybody’s way',()=>{
  const {room,layout,hits}=build(),U=ONSEN_UMBRELLA.stand;
  assert.ok(room.getObjectByName('Forgotten umbrella')&&room.getObjectByName('Lost-property tag'));

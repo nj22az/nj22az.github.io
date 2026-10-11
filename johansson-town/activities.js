@@ -75,7 +75,7 @@ import {closingStockPending,shelvesNeedRestock,consumeStorageWonHandshake,applyS
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
  checkoutQuote,checkout,receiptText,CARD_STAMPS,SAKURA_AWAY_MESSAGE,sakuraHoursOpen,HOT_SNACKS,buyHotSnack,thuanRecommends} from './src/commerce/konbini.js';
 
-export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{},onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false}) {
+export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{},onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false,getMassageChair=()=>null}) {
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'peninsula',homeDecor:restoreHomeDecor()};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
@@ -935,6 +935,20 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       ['Buy one · ¥100',()=>{if(!spend(100))return;onTime(1);addItem('Coffee milk');onMove('Drink');receipt('Umi-no-yu','The cap pops off with your thumbnail. It is gone in five swallows. The bottle goes back in the crate.');}],
       ['Back',close]]);
   }
+  // Seated in Umi-no-yu's coin massage chair (onsen.js ONSEN_MASSAGE): a ¥100 coin buys ten minutes on its timer. With no
+  // power the coin comes back and nothing is charged; while it runs there is no second coin, and standing up leaves it
+  // running to 0:00 (the coin is spent).
+  function massageChair(){
+    const chair=getMassageChair();if(!chair){close();return;}
+    const keep=['Keep sitting',close],stand=['Stand up',()=>{close();onStand();}],t=chair.state();
+    if(t.running){show('Massage chair',chair.texts.running+' The LED reads '+t.reads+'.',[keep,stand]);return;}
+    show('Massage chair',chair.texts.about,[
+      ['Put in a ¥'+chair.coin+' coin',()=>{
+        const no=chair.refusal();if(no){show('Massage chair',no,[keep,stand]);return;}
+        if(!spend(chair.coin))return;
+        chair.start();note('Ten minutes in the massage chair at Umi-no-yu.');show('Massage chair',chair.texts.started,[keep,stand]);}],
+      keep,stand]);
+  }
   function onsenChange(){
     const swimming=getOutfit();
     show('Baskets',swimming?'Your clothes are folded in a rattan basket on the men’s shelf; your wallet is with Higa-san at the bandai.':'A rattan basket on the men’s shelf for your clothes, and your wallet to Higa-san at the bandai. The notice says: a bath wrap in here (children wear swimwear), swimwear past the bath doors, where everybody bathes together, and something decent in the lobby.',[
@@ -1247,6 +1261,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       case 'onsen-pay':onsenPay();break;
       case 'onsen-milk':onsenMilk();break;
       case 'onsen-change':onsenChange();break;
+      case 'massage-chair':massageChair();break;
       case 'sakura-medicine':sakuraMedicine();break;
       case 'sakura-counter-goods':sakuraCounterGoods();break;
       case 'kyushoku':kyushoku(name,detail);break;

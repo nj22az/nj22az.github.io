@@ -25,11 +25,15 @@ body.standalone-studio .studio-file-menu button{width:100%}
 .scene-picture{position:sticky;top:calc(var(--studio-mode-height) + 16px);min-width:0}
 .scene-picture canvas{display:block;width:100%;height:auto;background:var(--line-border);border:1px solid var(--line-border);border-radius:12px;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .scene-selection{position:absolute;border:2px dashed #ffcc54;border-radius:10px;pointer-events:none;box-shadow:0 0 0 1px #263a3644}
+/* Caught by a seat, a person or a counter while dragging: the same outline, solid. Nothing else is drawn. */
+.scene-selection{box-sizing:border-box}.scene-selection[data-locked]{border-style:solid;border-width:3px}
 .scene-picture .scene-hint{margin-top:10px}.scene-status{min-height:24px;color:var(--line-text)!important}
 .scene-controls{background:#fff;border:1px solid var(--line-border);border-radius:14px;padding:20px;min-width:0}
 .scene-locations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.scene-locations button{display:grid;gap:6px;padding:5px;text-align:left;font-size:12px}.scene-locations img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px}.scene-locations span{padding:3px}.scene-locations [aria-pressed=true]{border:2px solid var(--line-green);background:#e6f9ee}
 .scene-workspace .scene-primary{background:var(--line-green);border-color:var(--line-green);color:#fff}
 .scene-actor-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.scene-actor-controls label{margin:4px 0}.scene-actor-controls button{font-size:13px}
+.scene-workspace .scene-snap{grid-column:1/-1;display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer}
+.scene-workspace .scene-snap input{flex:none;width:22px;height:22px;min-height:0;margin:0;padding:0;accent-color:var(--line-green)}
 .scene-next{display:flex;justify-content:space-between;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line-border)}
 .scene-comic{margin-top:20px;padding:20px;background:#fff;border:1px solid var(--line-border);border-radius:14px}.scene-comic>button{margin:4px}
 .scene-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}.scene-panels figure{margin:0}.scene-panels img{width:100%;border:1px solid var(--line-border);border-radius:10px}.scene-panels figure>div{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.scene-panels :is(button,.scene-save){font-size:12px}
