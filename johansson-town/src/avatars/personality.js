@@ -126,7 +126,9 @@ export const TOWN_DIALS=Object.freeze(Object.fromEntries(Object.entries({
  Fumiko:[.7,.85,.4,.3],            // Straight shooter: fearless neighbourhood aunt
  Kenta:[.4,.25,.6,.65],            // Cloud watcher: sweetly awkward inventor
  Thao:[.7,.85,.4,.45],              // Straight shooter: stubborn but friendly; will not be talked out of it
- Barfly:[.15,.65,.35,.8],          // Easy neighbour: unhurried, permanently thirsty
+ Barfly:[.15,.65,.35,.8],
+ 'Grandmother Tokashiki':[.45,.6,.35,.55], // Timekeeper: the hamlet's ledger, kind and exact
+ 'Old Mr Zukeran':[.2,.55,.75,.8],   // Porch sitter: slow, sly, sings at the drop of a hat          // Easy neighbour: unhurried, permanently thirsty
 }).map(([name,[pace,talk,show,outlook]])=>[name,Object.freeze({pace,talk,show,outlook})])));
 
 const DIAL_KEYS=['pace','talk','show','outlook'];
