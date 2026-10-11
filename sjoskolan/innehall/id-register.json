@@ -2624,40 +2624,40 @@
       "hash_publik": "3b19ab14824cd289"
     },
     "EL-000852": {
-      "revision": 2,
-      "skydd": "elev",
-      "hash": "7a725fe537bfaa4e",
-      "hash_publik": "7a725fe537bfaa4e"
-    },
-    "EL-000853": {
-      "revision": 1,
-      "skydd": "elev",
-      "hash": "5ed6e48dab0ba8c2",
-      "hash_publik": "5ed6e48dab0ba8c2"
-    },
-    "EL-000854": {
-      "revision": 1,
-      "skydd": "elev",
-      "hash": "56b16670cabbe134",
-      "hash_publik": "56b16670cabbe134"
-    },
-    "EL-000855": {
-      "revision": 1,
-      "skydd": "elev",
-      "hash": "ddbfd7f582f9cf14",
-      "hash_publik": "ddbfd7f582f9cf14"
-    },
-    "EL-000856": {
       "revision": 3,
       "skydd": "elev",
+      "hash": "7a725fe537bfaa4e",
+      "hash_publik": "7e925c14660349fd"
+    },
+    "EL-000853": {
+      "revision": 2,
+      "skydd": "elev",
+      "hash": "5ed6e48dab0ba8c2",
+      "hash_publik": "190125de7d5d5032"
+    },
+    "EL-000854": {
+      "revision": 2,
+      "skydd": "elev",
+      "hash": "56b16670cabbe134",
+      "hash_publik": "de48c75bf3d0e3a9"
+    },
+    "EL-000855": {
+      "revision": 2,
+      "skydd": "elev",
+      "hash": "ddbfd7f582f9cf14",
+      "hash_publik": "27d77e2ca13ca838"
+    },
+    "EL-000856": {
+      "revision": 4,
+      "skydd": "elev",
       "hash": "f6413c858e2eb01b",
-      "hash_publik": "f6413c858e2eb01b"
+      "hash_publik": "303eabaefff773f3"
     },
     "EL-000857": {
-      "revision": 1,
+      "revision": 2,
       "skydd": "elev",
       "hash": "db814f332835e27a",
-      "hash_publik": "db814f332835e27a"
+      "hash_publik": "09b13e20ff9e32ea"
     },
     "EL-000858": {
       "revision": 1,
@@ -2666,10 +2666,10 @@
       "hash_publik": "adbe475745fdb6c4"
     },
     "EL-000859": {
-      "revision": 1,
+      "revision": 2,
       "skydd": "elev",
       "hash": "6210e3040321ce2c",
-      "hash_publik": "6210e3040321ce2c"
+      "hash_publik": "83b020710282d6e9"
     },
     "EL-000860": {
       "revision": 1,
@@ -2678,10 +2678,10 @@
       "hash_publik": "354f5abc861a44c2"
     },
     "EL-000861": {
-      "revision": 1,
+      "revision": 2,
       "skydd": "elev",
       "hash": "45396331f6187400",
-      "hash_publik": "45396331f6187400"
+      "hash_publik": "f13608a05ad59e3f"
     },
     "EL-000862": {
       "revision": 1,

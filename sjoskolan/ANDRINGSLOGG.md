@@ -232,6 +232,14 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     `../../vecka-45/aktuell/<fil>`. Bildspelet slog upp titeln på hela sökvägen, hittade den inte och tog titelbildens
     första text, så *Analys av mätresultat* fick titeln ”Tisdag 27 oktober” (`verktyg/bildspel/bygg.py`, `_titles`).
     *Manuell kontroll: läs titlarna i `bildspel/lista.json` efter bygget.*
+59. **Hjälpmedlens exempel får inte vara en uppgift i kursen.** Formelsamlingen och formelbladet används vid övningar,
+    inlämningar och tentamen. 25 av formelsamlingens räknade exempel räknade en övnings uppgift med samma tal (24 V över
+    12 Ω, R = 30 Ω och X = 40 Ω, strömtransformatorn 200/5 A vid 120 A …), gav en övnings svar eller räknade som
+    övningstentan, och formelbladet gav kopplingen och eftersläpningen i inlämning 1 vecka 43. Övningstentan i sin tur
+    räknade på genomgångens 230 V över 50 Ω. Nätets fasta värden (T och T/3 vid 50 och 60 Hz, U_{F} vid 400 och 440 V,
+    n_{s} för fyra poler) är referensvärden och får stå. Ändra ett exempel i `verktyg/formelsamling/bygg.py` och kör
+    skriptet; jämför nya tal med alla svar i databasen och med övningstentan. *Kontroll:
+    `innehall/tests/test_formelsamling_exempel.py` (formelsamlingen); formelbladet och övningstentan manuellt.*
 
 ## Ändringar
 
@@ -314,6 +322,34 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   LM-2, LM-1 och LM-2/LM-3; avslutsfrågornas instruktioner pekar på inlämningens uppgifter i stället för ett
   ”v44-underlag” som inte finns. Övningsfigurerna till 1.6, 1.7 och 2.4 står kvar på delsidorna, nu ur övningarnas placeringar (regel 57).
   Lärarkopiorna av v44_01–02 är inte omgjorda (kräver LARARLOSEN).
+- **2026-10-11** Granskning av tentamensveckan: övningstentan (EL-000851–862). Alla uppgifter, lösningssteg, enheter och
+  avrundningar är omräknade och stämmer. Rättat: uppgift 5 räknade R = 40 Ω och X_{L} = 30 Ω, alltså övning 3.3–3.6 vecka 40
+  med R och X bytta (|Z| = 50 Ω) och genomgångens 230/50 = 4,6 A, fast sidan säger att värdena är nya. Nu R = 20 Ω och
+  X_{L} = 15 Ω: |Z| = 25 Ω, I = 9,2 A, cos φ = 0,80, P ≈ 1 693 W, Q ≈ 1 270 var och S = 2 116 VA (kontrollerat mot alla svar i
+  databasen). Uppgift 4–7 och 9 använde 230/400 V och 50 Hz utan sammanhang; nu vägguttaget hemma eller nätet i land
+  (regeln från 2026-09-29). Notation: R_{p} (uppgift 2), R_{slinga} och P_{förlust} (uppgift 3), R_{iso} (uppgift 11), och
+  uppgift 4 säger stigande nollpassage som resten av kursen. EL-000852–857, 859 och 861 reviderade (inga skyddade fält).
+- **2026-10-11** Formelsamlingen (`verktyg/formelsamling/bygg.py`, HTML och PDF) och formelbladet (regel 59). 25 exempel som
+  var övningar eller gav deras svar har nya tal, kontrollerade mot alla svar i databasen: F1–F2 (övning 1.5 vecka 39), F8, F11,
+  F13 och F16 (övning 2.4, 2.8 och 2.9 vecka 39), F19 (övningstentans 230 V vid 50 Hz; nu filmens 440 V, 60 Hz och 2,0 ms),
+  F20, F22–F26, F28 och F30 (övning 2.8, 3.2–3.6 och 4.6 vecka 40, 3.5 vecka 45, övningstentans uppgift 5), F36 (2.10 vecka 41),
+  F38 (övning 2.6 och 3.8 och kontrollfråga 2.3 vecka 41, övning 2.7 vecka 43; nu Δ/Y 690/1 200 V på 690 V), F42 (övning 3.8
+  vecka 42; nu kursens 5 · 3 och 2 · 3), F47 (övning 1.3 och 1.9 vecka 43), F51 (övning 2.4 vecka 44; nu kursens
+  k_{I} = I_{1,märk}/I_{2,märk}, I_{2} = I_{1}/k_{I} och 400/5 A vid 320 A), F52 och F58 (övning 3.3 och 3.6 vecka 44), F56
+  (övning 2.2 i Analys av mätresultat), F59 (övning 1.9 vecka 41) och F60 (övning 1.7 i Systematisk felsökning). Bilagan med
+  beteckningar följer nu `beteckningar.json` (Z_{s}, U_{0}, I_{Δ}, R_{p} med flera saknades). PDF:en byggs som förut med
+  reservtypsnitten (Carlito och Liberation Sans); med Google Fonts blir den dubbelt så stor (Type 3). Nytt test:
+  `innehall/tests/test_formelsamling_exempel.py` stoppar 15 av de gamla exemplen (F60 var också övning 2.10 i Analys av
+  mätresultat, EL-000230).
+  Formelbladet: 12 V RMS (övning 2.3 vecka 40) är nu 440 V RMS ≈ 622 V, motorns märkning Δ/Y 690/1 200 V på 690 V
+  (Δ/Y 400/690 V på 400 V var övningstentans uppgift 9 och inlämning 1 vecka 43), eftersläpningen 1 750 r/min på 1 800
+  (1 440 r/min på 1 500 var inlämningens svar), toleransen 470 Ω ±10 % och R_{iso} i isolationsraden.
+- **2026-10-11** Praktiskt prov och Motorlabbet. Station 3 beskriver nu det Isolationslabbets protokoll faktiskt har:
+  isolationsövervakningen och jordfelet (mätning 1–5) och provningen av motor M3 med 500 V DC (mätning 6–8); läckströmmen
+  visas av provaren och skrivs i kommentaren (protokollet har ingen egen ruta för den eller för provspänningen).
+  Motorlabbets protokoll hade kolumnen ”Förväntat” och har nu ”Din förutsägelse” (regel 6), som de andra labbarna.
+  README säger att alla har D = 12, samma lindningar (5,20, 5,16 och 5,24 Ω) och samma fel (lös mutter på V1–U2).
+  Datum, tider och inlämning stämmer med `veckosidor/bygg.py` VECKOR[45]; regler, bedömning och inlämningssätt är oförändrade.
 - **2026-10-11** Vecka 42: delsidorna Del_1–3 har rutan **Din del** överst (lärarens önskan: delsidorna ska vara
   översikter som veckosidan). Dagens färg och tid, lektionens läge (I dag, Pågår nu, Om 2 dagar, Har varit), vad vi
   pratar om, presentationen, läxorna efter lektionen med läge (samma lista som bilden ”Det här gör du nu”), övning

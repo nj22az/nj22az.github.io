@@ -3,7 +3,7 @@
   "titel": "Samma värmare i Y och Δ",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Tre värmeelement på 23 Ω vardera ansluts till ett 400 V-nät. Beräkna grenspänning, linjeström och total effekt i Y och i Δ."
+    "fraga": "Tre värmeelement på 23 Ω vardera ansluts till ett 400 V-nät i land. Beräkna grenspänning, linjeström och total effekt i Y och i Δ."
   },
   "referenser": {
     "ursprung": [
