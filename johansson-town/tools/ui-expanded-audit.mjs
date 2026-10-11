@@ -1,5 +1,5 @@
 // Presentation fixtures use the real activity UI; this is not an on-foot world tour.
-// Camera, photo and creator panels are opened through the normal Town book controls.
+// Camera and photo panels are opened through the normal Town book controls (the maker is Johansson Studio's now).
 // node tools/ui-expanded-audit.mjs [desktop|phone|landscape|compact] [--url URL]
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
@@ -101,21 +101,8 @@ try{
  check('Photo capture creates a real saved panel',await page.locator('.photo-film a').count()>0);
  await click(page.getByRole('button',{name:'Return to town',exact:true}));check('Photo dismissal restores the town',!await page.locator('#photoStudio').isVisible());
  await directory();if(!await page.locator('.menu-places').evaluate(e=>e.open))await click('.menu-places>summary');
- await click(page.getByRole('button',{name:/Make your islander/}));await page.locator('body>.shm').waitFor({state:'visible'});await capture('creator-appearance');
- await page.getByRole('combobox',{name:'Preview angle',exact:true}).selectOption('back');check('Creator preview angle selector remains functional',(await page.getByRole('combobox',{name:'Preview angle',exact:true}).inputValue())==='back');
- await click(page.getByRole('button',{name:'Share',exact:true}));await capture('creator-share');
- check('Creator share keeps generated code and its initial heading fully visible',(await page.getByLabel('Share link or code').inputValue()).length>20&&await page.locator('.shm-share h3').first().evaluate(e=>{const r=e.getBoundingClientRect(),card=e.closest('.shm-share>div').getBoundingClientRect();return r.y>=Math.max(0,card.y)&&r.bottom<=Math.min(innerHeight,card.bottom)&&r.x>=Math.max(0,card.x)&&r.right<=Math.min(innerWidth,card.right);}));await page.keyboard.press('Escape');
- await click(page.getByRole('button',{name:'Step 3: Who are they?',exact:true}));await capture('creator-profile');
- await click(page.getByRole('button',{name:'Pace 8 of 8',exact:true}));await capture('creator-personality-selected');
- check('Chosen personality marker retains visible selection',await page.getByRole('button',{name:'Pace 8 of 8',exact:true}).evaluate(e=>e.getAttribute('aria-pressed')==='true'&&getComputedStyle(e).backgroundColor==='rgb(6, 199, 85)'));
- check('Personality choices and dial labels fit without sideways scrolling',await page.locator('.shm-body').evaluate(e=>{const clearLabels=[...e.querySelectorAll('.shm-dial>div:first-child')].every(row=>{const labels=[...row.children].map(label=>{const range=document.createRange();range.selectNodeContents(label);return range.getBoundingClientRect();});return labels.every((a,i)=>labels.slice(i+1).every(b=>Math.min(a.right,b.right)-Math.max(a.x,b.x)<=1||Math.min(a.bottom,b.bottom)-Math.max(a.y,b.y)<=1));});return clearLabels&&e.scrollWidth<=e.clientWidth+1&&Math.abs(e.scrollLeft)<1;}));
- await page.getByLabel('Catchphrase').fill('Haisai!');
- const pitchBefore=await page.locator('.shm-meter[data-at="profile.pitch"] i.on').count();await click(page.getByRole('button',{name:'Higher voice',exact:true}));
- check('Creator profile and voice controls remain editable and visibly usable',(await page.getByLabel('Catchphrase').inputValue())==='Haisai!'&&await page.locator('.shm-meter[data-at="profile.pitch"] i.on').count()>pitchBefore&&await page.locator('.shm-body').evaluate(e=>{const rows=[...e.querySelectorAll('.shm-step')];return rows.length===2&&rows.every(row=>{const buttons=[...row.querySelectorAll('button')],segments=[...row.querySelectorAll('.shm-meter i')];return buttons.length===2&&buttons.every(b=>{const r=b.getBoundingClientRect();return r.width>=43.9&&r.height>=43.9;})&&segments.length===16&&segments.every(s=>{const r=s.getBoundingClientRect();return r.width>0&&r.height>0;});});}));
- await capture('creator-profile-edited');
- await click(page.getByRole('button',{name:'Step 4: Say hello',exact:true}));await capture('creator-save-step');
- check('Final creator save label and footer fit without hiding a step',await page.locator('.shm-save').evaluate(e=>{const r=e.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(e);const text=range.getBoundingClientRect();const siblings=[...e.closest('.shm-foot').querySelectorAll('button')].filter(b=>b!==e&&b.checkVisibility({checkVisibilityCSS:true}));const clear=siblings.every(b=>{const q=b.getBoundingClientRect();return Math.min(r.right,q.right)-Math.max(r.x,q.x)<=1||Math.min(r.bottom,q.bottom)-Math.max(r.y,q.y)<=1;});return clear&&/Save (and play|appearance)/.test(e.textContent)&&r.x>=0&&r.right<=innerWidth&&r.y>=0&&r.bottom<=innerHeight&&text.x>=r.x-1&&text.right<=r.right+1&&text.y>=r.y-1&&text.bottom<=r.bottom+1&&e.scrollWidth<=e.clientWidth+1;}));
- await click(page.locator('.shm-top button[aria-label="Close"]'));check('Creator closes without saving the fixture',await page.locator('body>.shm').count()===0);
+ // Looks, wardrobes and the home are made in Johansson Studio; the Town book only links there (src/studio-handoff.js).
+ check('The Town book sends you to Johansson Studio and has no maker of its own',await page.getByRole('button',{name:/Johansson Studio/}).count()===1&&await page.getByRole('button',{name:/Make your islander|Resident wardrobes/}).count()===0);
  check('No JavaScript or resource errors',report.errors.length===0,report.errors);report.passed=true;await save();
 }catch(error){report.failure=error.message;await save();throw error;}
 finally{closing=true;await browser.close();await save();}

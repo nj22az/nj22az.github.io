@@ -48,9 +48,8 @@ export class TownAuditSession{
  async controlState(){return this.requirePage().evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;return {game:JSON.parse(window.render_game_to_text()),view:a.mouse,blocked:a.blocked,paused:a.paused,seated:a.seated,ui:{activity:!document.querySelector('#activity').classList.contains('hidden')}};});}
  async input({control,durationMs=300,run=false,_compact=false}){
   const page=this.requirePage(),before=await (_compact?this.controlState():this.observe());
-  const b=before.blocked,locked=before.paused||b.catchingUp||b.roomLoading||b.camera||b.inspector||b.viewer||b.creator||b.photo||b.directory||b.hidden||!!before.game.island.crossing;
+  const b=before.blocked,locked=before.paused||b.catchingUp||b.roomLoading||b.camera||b.inspector||b.viewer||b.photo||b.directory||b.hidden||!!before.game.island.crossing;
   if(locked&&!['interact','close','directory'].includes(control))return {accepted:false,reason:'Controls are blocked by the current game view or activity.',before};
-  if(control==='close'&&b.creator){await page.locator('.shm button[aria-label="Close"]').click();return {accepted:true,before,after:await this.observe()};}
   if(control==='close'&&b.viewer){await page.locator('.iv-close').click();return {accepted:true,before,after:await this.observe()};}
   if(control==='close'&&b.photo&&await page.locator('#photoStudio [data-close]').isVisible()){await page.locator('#photoStudio [data-close]').click();return {accepted:true,before,after:await this.observe()};}
   if(control==='close'&&before.ui.activity){await page.locator('#closeActivity').click();return {accepted:true,before,after:await this.observe()};}
@@ -65,7 +64,7 @@ export class TownAuditSession{
  }
  async look({degrees=45,verticalDegrees=0,_compact=false}){
   const page=this.requirePage(),before=await (_compact?this.controlState():this.observe()),b=before.blocked;
-  if(before.paused||b.catchingUp||b.roomLoading||b.camera||b.inspector||b.viewer||b.creator||b.photo||b.directory||b.hidden||before.game.island.crossing)return {accepted:false,reason:'Camera controls are blocked.',before};
+  if(before.paused||b.catchingUp||b.roomLoading||b.camera||b.inspector||b.viewer||b.photo||b.directory||b.hidden||before.game.island.crossing)return {accepted:false,reason:'Camera controls are blocked.',before};
   const box=await page.locator('#game').boundingBox(),x=box.x+box.width/2,y=box.y+box.height/2;
   let dx=-degrees*Math.PI/180/.0023,dy=verticalDegrees*Math.PI/180/.0018;
   for(let i=0;i<20&&(Math.abs(dx)>.1||Math.abs(dy)>.1);i++){

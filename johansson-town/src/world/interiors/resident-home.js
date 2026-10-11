@@ -84,7 +84,7 @@ function buildSharedHome({site,profile,room,box,reg,collider,action,exit}){
   part([1.1,.055,1.62],[x,.48,-.77],style.top);part([.92,.16,.48],[x,.57,-1.57],0xf3e8d2);
   part([.6,.1,.6],[routine.table[0],.36,routine.table[2]],style.top);
   part([.9,1.7,.5],[-side*2.85,.85,-2.95],0x876b50,true);
-  if(name==='Thuan'){const wardrobe=new THREE.Object3D();wardrobe.position.set(-side*2.85,1,-2.3);room.add(wardrobe);reg(wardrobe,'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'),true);}
+  if(name==='Thuan'){const wardrobe=new THREE.Object3D();wardrobe.position.set(-side*2.85,1,-2.3);room.add(wardrobe);reg(wardrobe,'Look at Thuan’s wardrobe',()=>action('inspect','Thuan’s wardrobe','Her everyday clothes, the navy harbour academy sailor set she wears to evening classes, and the outfit she wears on Rainflower Lane.'),true);}
   for(let b=0;b<4;b++)part([.11,.26,.22],[-side*2.85-.2+b*.13,1.14,-2.64],b%2?style.top:0xc6b78d);
   const notes=new THREE.Object3D();notes.position.set(routine.table[0],.8,1.35);notes.name=name+' personal notes';room.add(notes);
   const detail=householdDetails([{name,role:p.role}])[0];addPersonalObject(detailBox,{x:routine.table[0],y:.745,z:1.3,detail,scale:.7});
