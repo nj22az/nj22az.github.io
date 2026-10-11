@@ -87,6 +87,8 @@ export function createBuildMode({canvas,camera,group,placements,factory,heightAt
  // Pointer: a press that does not travel is a click; one that does orbits (or pans with shift).
  let press=null,last=null;
  const down=e=>{if(!active||e.button!==0)return;press={x:e.clientX,y:e.clientY,moved:false};last=press;canvas.setPointerCapture?.(e.pointerId);e.preventDefault();e.stopImmediatePropagation();};
+ let hoverAt=null,hoverFrame=0;
+ const nextFrame=globalThis.requestAnimationFrame?f=>globalThis.requestAnimationFrame(f):f=>setTimeout(f,16);
  const move=e=>{
   if(!active)return;
   if(press){
@@ -99,7 +101,10 @@ export function createBuildMode({canvas,camera,group,placements,factory,heightAt
    }
    e.stopPropagation();return;
   }
-  showGhost(groundAt(e.clientX,e.clientY));applyView();
+  // The ghost's check (with the walkway's) runs once a frame at most, for where the pointer is now: a pointer reports
+  // up to 120 moves a second on an iPad, and a frame shows only the last one.
+  hoverAt={x:e.clientX,y:e.clientY};
+  if(!hoverFrame)hoverFrame=nextFrame(()=>{hoverFrame=0;if(!active||press||!hoverAt)return;showGhost(groundAt(hoverAt.x,hoverAt.y));applyView();});
  };
  const up=e=>{
   if(!active||!press)return;const click=!press.moved;press=null;e.stopPropagation();
