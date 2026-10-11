@@ -219,7 +219,7 @@ VECKOR = {
         'distans': True,
         'delar': [
             {'titel': 'Elektriska risker', 'mal': 'Strömgenomgång, ljusbåge och beröringsspänning.', 'poster': [
-                ppt('v42_01_Elektriska_risker_elev.pptx', 'Elektriska risker', 36),
+                ppt('v42_01_Elektriska_risker_elev.pptx', 'Elektriska risker', 20),
                 lank('Formelstod_och_ovningar.html#v42_01', 'Övningar: elektriska risker', 'övning', '10 övningar med facit'),
                 lank('../../filmer/#fem-steg', 'Film: Fem steg', 'film', 'repetition från vecka 40'),
             ]},

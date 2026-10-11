@@ -906,11 +906,11 @@
       "del": "v42_01",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 35,
+      "bild": 17,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -919,10 +919,10 @@
       "del": "v42_01",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {

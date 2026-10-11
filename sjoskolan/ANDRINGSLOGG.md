@@ -177,7 +177,21 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     driva 10 mA genom 50 kΩ vid 500 V, vilket en verklig isolationsprovare inte orkar. Kontrollera upplösning, felgräns och instrumentets
     största ström, och att ett beräknat resultat är klart större än sin osäkerhet. *Manuell kontroll.*
 
+51. **Delsidan läses ur presentationen.** Vecka 41–45:s delsidor (teori, exempel, figurer, ”Det här ska du kunna”) genereras ur
+    veckans pptx (`innehall/export/delsidor_veckor.py`). En ny bildmall med en etikett ovanför rubriken gav delsidan fel rubrik, och en
+    figur som flyttade till en annan bild hittades inte (filnamnet bygger på bildnumret). Lektionsbilderna har rubriken som bildens
+    första text och avsnittets nummer i sidfoten, och delsidan hittar figuren på innehållet. Jämför delsidans text före och efter när en
+    presentation ändras: inlämningens hänvisningar ”del N, avsnitt M” bygger på den. *Kontroll: `innehall.py bygg` stoppar när ett
+    teorikort saknas; jämför delsidans text manuellt.*
+
 ## Ändringar
+
+- **2026-10-11** Vecka 42 måndag: ny presentation *Elektriska risker* i lektionsbildernas fasta mall (`verktyg/lektionsbilder/`),
+  20 bilder i stället för 36: titel, kursplanen i dag (LM-2), startfråga, upplägg, delsidans sju teoriavsnitt och två exempel i
+  samma ordning, övningar tillsammans på delsidan (1.2–1.4 och 1.1, 1.5), paus, avslutsfråga, sammanfattning, det här gör du nu och
+  källor. Övningstexterna står inte längre på bilderna (övningarna görs på delsidan med ledtrådar och facit), presentationens
+  övningsplaceringar är borttagna och start- och avslutsfrågan har nya bild- och formnummer. Delsidan del 1 har samma avsnitt,
+  rubriker och figurer; texten följer bilderna. Start- och avslutsfrågan (EL-000711, EL-000712) var märkta LM-4 men tränar LM-2.
 
 - **2026-10-11** Inlämningsuppgifterna EL-000801–828 har kursplanens punkter som de faktiskt tränar. Tidigare var de satta
   mekaniskt (beräkning = LM-4, resonemang = LM-2 + LM-7), så veckornas översikt visade fel punkter.

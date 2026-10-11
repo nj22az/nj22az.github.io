@@ -22,6 +22,25 @@ VECKOR = range(41, 46)
 FLYTTAD = {(45, 1): (43, 4, 4), (45, 2): (44, 4, 5), (45, 3): (44, 5, 5)}
 EMU = 914400
 HOPPA = ('Dagens två pass', 'Pass 2')
+# Lektionsbilderna (verktyg/lektionsbilder, från vecka 42) har egna bilder för lektionens upplägg. De är inte teori.
+LEKTIONSBILDER = ('Kursplanen i dag', 'Startfråga', 'Så går lektionen till', 'Övningar tillsammans', 'Paus', 'Sammanfattning',
+                  'Det här gör du nu')
+# Lektionsbilderna har ingen bild med lösningsmallen; delsidan visar samma mall som de äldre presentationerna.
+METOD = [('formel', '1. Givet och sökt'), ('p', 'Skriv av värden, enheter och vad du ska bestämma.'),
+         ('formel', '2. Samband och villkor'), ('p', 'Välj formel eller princip. Kontrollera koppling, driftfall och antaganden.'),
+         ('formel', '3. Uträkning och kontroll'), ('p', 'Omvandla enheter, sätt in värden och tolka resultatet.'),
+         ('p', 'I resonemangsfall: koppla observation till en motiverad slutsats.')]
+_FIGURHASH = {}
+
+
+def figur_med_samma_innehall(figmapp, kap, blob):
+    """Figurfilen i vecka-NN/aktuell/figurer med exakt samma innehåll som bilden i presentationen. Används när filnamnet
+    (kap-bNN-k) inte finns, till exempel när lektionsbilderna har flyttat figuren till en annan bild."""
+    import hashlib
+    nyckel = (str(figmapp), kap)
+    if nyckel not in _FIGURHASH:
+        _FIGURHASH[nyckel] = {hashlib.sha256(f.read_bytes()).hexdigest(): f.name for f in sorted(figmapp.glob(f'{kap}-b*'))}
+    return _FIGURHASH[nyckel].get(hashlib.sha256(blob).hexdigest())
 CSS = CSS40.replace('/* Vecka 40, en sida per del: Översikt, Teori, Exempel, Övningar, Labben (genereras av innehall/export/delsidor.py) */',
                     '/* En sida per del: Översikt, Teori, Exempel, Övningar, Labben (innehall/export/delsidor_veckor.py; vecka 40 har egen kopia) */') + '''
 /* Läsbarhet (Zenn): löptext med radavstånd 1,8. */
@@ -85,6 +104,8 @@ def las_bild(bild, deck, nr, figmapp):
                 continue
             k += 1
             fil = f'{deck[:6]}-b{nr:02d}-{k}.{sh.image.ext}'
+            if not (figmapp / fil).exists():
+                fil = figur_med_samma_innehall(figmapp, deck[:6], sh.image.blob) or fil
             if (figmapp / fil).exists():
                 alt = sh._element.nvPicPr.cNvPr.get('descr') or re.sub(r'^Figur:\s*', '', sh.name).rstrip(';').strip() or 'Figur'
                 block.append(('fig', fil, alt))
@@ -175,7 +196,10 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     avslut = next((b for b in bilder if b[1].startswith('Avslut')), None)
     kallor = next((b for b in bilder if b[1].startswith('Källor')), None)
     exempel = [b for b in bilder if b[1].startswith('Exempel')]
-    teori = [b for b in bilder[1:] if b not in (mal, metod, avslut, kallor) and b not in exempel and not b[1].startswith(HOPPA)
+    lektionsbilder = any(b[1] == 'Kursplanen i dag' for b in bilder)
+    if lektionsbilder and not metod:
+        metod = (0, 'En lösning som går att följa', METOD)
+    teori = [b for b in bilder[1:] if b not in (mal, metod, avslut, kallor) and b not in exempel and not b[1].startswith(HOPPA + LEKTIONSBILDER)
              and not re.match(r'^(Stöd till övning|Övning) \d', b[1])]
     ovn = sorted(pl_ovn.get(kap, []), key=lambda x: x[0]['ordning'])
     poster = [(pl, p) for pl, p in ovn]
@@ -206,6 +230,13 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     start = next((i for i, b in enumerate(malrader) if b[1].lower().startswith('startfråga')), None)
     kunna = malrader[:start] if start is not None else malrader
     fraga = malrader[start + 1:] if start is not None else []
+    if lektionsbilder and not mal:
+        # ”Efter lektionen kan du” på bilden Kursplanen i dag och frågan på bilden Startfråga.
+        kp = next(b[2] for b in bilder if b[1] == 'Kursplanen i dag')
+        efter = next((i for i, b in enumerate(kp) if b[1] == 'Efter lektionen kan du'), None)
+        kunna = [('p', re.sub(r'^\d+\.\s*', '', b[1])) for b in kp[efter + 1:] if b[0] != 'fig'] if efter is not None else []
+        sf = next((b[2] for b in bilder if b[1] == 'Startfråga'), [])
+        fraga = [b for b in sf if b[0] != 'fig'][:1]
     h.append(f'''<section id="oversikt" class="del-block"><h2><span>1</span> Översikt</h2>
 <div class="sj-panel soft"><h3>Det här ska du kunna</h3><ul>{''.join(f'<li>{R.h(b[1])}</li>' for b in kunna)}</ul></div>
 {f'<p class="del-start"><strong>Fundera först:</strong> {" ".join(R.h(b[1]) for b in fraga)} Svaret finns i teorin nedan.</p>' if fraga else ''}
