@@ -3,7 +3,7 @@
 - **Task** (the creator, 2026-10-11, "Yes proceed" to the chief-designer plan): build one day in Minato Machi worth
   coming back for, on the branch `claude/animal-crossing-lessons`, checked in the real game step by step.
 - **Output**: World code under `johansson-town/` (src, activities.js, game.js, tests), this folder's progress.md and
-  checks.md, screenshots under `output/one-day-slice/` (not committed).
+  checks.md, a chosen set of screenshots in `shots/` (the raw captures are working files, not kept).
 - **Checks**: `checks.md` here; the town's `npm test`; the real game driven through `tools/mcp/session.mjs`
   (TownAuditSession, headless Chromium), because the `johansson-town-audit` MCP server is not connected in this session.
 - **Sources**: `docs/ANIMAL-CROSSING-STUDY.md` (what the games teach); the town's own data: `src/people/profiles.json`
