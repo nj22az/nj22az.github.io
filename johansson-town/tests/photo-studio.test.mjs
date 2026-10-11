@@ -25,6 +25,11 @@ test('captions are bounded and Unicode wrapping handles long unbroken text',()=>
  for(const text of ['Johansson at the harbour','こんにちは沖縄の友達','A'.repeat(120),'😀'.repeat(20)]){
   const lines=wrapCaption(ctx,text,100,3);assert.ok(lines.length<=3);assert.ok(lines.every(s=>ctx.measureText(s).width<=100));
  }
+ // English breaks between words, never inside one; the words all come back in order.
+ const words=wrapCaption(ctx,'and then the cat ate the ramen!',100,3);
+ assert.deepEqual(words,['and then','the cat','ate th…'],'a cut-off last line ends in an ellipsis');assert.ok(words.every(s=>ctx.measureText(s).width<=100));
+ assert.deepEqual(wrapCaption(ctx,'the cat ate the ramen!',100,4),['the cat','ate the','ramen!']);
+ assert.deepEqual(wrapCaption(ctx,'Go on',100,3),['Go on']);
 });
 test('every studio pose stays finite and all expressions use independent disposable avatars',()=>{
  installDOM();const recipeBefore=JSON.stringify(CAST_RECIPES.Thuan),avatar=buildAvatar(CAST_RECIPES.Thuan),original=buildAvatar(CAST_RECIPES.Thuan);

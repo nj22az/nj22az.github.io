@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {coconutPalm,rainforestTree,pandanus,bananaPlant,fern,shrub,grassTuft,rock,driftwood,shell} from './vegetation-kit.js';
 
 /**
  * Kitano-jima as a tropical island: white beaches, clear shallows, a jungle hill and the
@@ -49,6 +49,10 @@ export const TROPIC_PLACES=Object.freeze({
  kiosks:Object.freeze([[3.5,31.6],[12,31.6],[20.5,31.6]].map(Object.freeze)),
  lounge:Object.freeze([29.5,26.5]),
  coralBay:Object.freeze([-14,80]),
+ /** The beach bar at the top of Coral Bay's sand, where the trail comes out of the palms. */
+ beachBar:Object.freeze([-25,74]),
+ /** Parasols and towels the bar rents out, on the dry sand below it. */
+ parasols:Object.freeze([[-30,82],[-22,84.5],[-6,82.5]].map(Object.freeze)),
  lookout:Object.freeze([54,68]),
  turtleCove:Object.freeze([92,64]),
  quayU:-53,
@@ -144,7 +148,7 @@ function mulberry(seed){return ()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.im
 let plantings=null;
 export function tropicalPlantings(){
  if(plantings)return plantings;
- grid();const rand=mulberry(19970710),palms=[],trees=[],bushes=[];
+ grid();const rand=mulberry(19970710),palms=[],trees=[],bushes=[],pandanus=[],bananas=[],ferns=[],grass=[],rocks=[],driftwood=[],shells=[];
  const P=TROPIC_PLACES,clearOfPlaces=(u,v,r)=>{
   if(u>P.plaza.minX-r&&u<P.plaza.maxX+r&&v>P.plaza.minZ-r-6&&v<P.plaza.maxZ+r)return false;
   if(u<-36&&v>14&&v<42)return false;
@@ -152,33 +156,75 @@ export function tropicalPlantings(){
   // and none on the west slope below it, where the view runs across the strait to Minato.
   if(Math.hypot(u-P.lookout[0],v-P.lookout[1])<(r>1?(u<P.lookout[0]+6?26:14):5)+r)return false;
   if(Math.hypot(u-P.coralBay[0],v-P.coralBay[1])<5+r)return false;
+  if(Math.hypot(u-P.beachBar[0],v-P.beachBar[1])<6+r)return false;
+  if(P.parasols.some(([x,z])=>Math.hypot(u-x,v-z)<3+r))return false;
   return trailDistance(u,v)>1.6+r;
  };
  const airside=(u,v)=>v<P.fence+1.5&&v>-16;
- for(let n=0;n<4000&&palms.length<120;n++){
-  const u=TROPIC_GRID.minX+rand()*(TROPIC_GRID.maxX-TROPIC_GRID.minX),v=TROPIC_GRID.minZ+rand()*(TROPIC_GRID.maxZ-TROPIC_GRID.minZ),d=shoreAt(u,v);
-  if(d<2.6||d>13||airside(u,v)||!clearOfPlaces(u,v,.8)||plateauWeight(u,v)>.4)continue;
-  if(palms.some(p=>Math.hypot(p.u-u,p.v-v)<4.2))continue;
-  // Lean toward the water, as palms on a beach do.
-  const e=.7,gx=shoreAt(u+e,v)-shoreAt(u-e,v),gz=shoreAt(u,v+e)-shoreAt(u,v-e);
-  palms.push({u,v,y:tropicHeight(u,v),lean:Math.atan2(-gz,-gx),scale:.85+rand()*.4,turn:rand()*Math.PI*2});
+ const pick=()=>[TROPIC_GRID.minX+rand()*(TROPIC_GRID.maxX-TROPIC_GRID.minX),TROPIC_GRID.minZ+rand()*(TROPIC_GRID.maxZ-TROPIC_GRID.minZ)];
+ const apart=(list,u,v,r)=>!list.some(p=>Math.hypot(p.u-u,p.v-v)<r);
+ const seaward=(u,v)=>{const e=.7,gx=shoreAt(u+e,v)-shoreAt(u-e,v),gz=shoreAt(u,v+e)-shoreAt(u,v-e);return Math.atan2(-gz,-gx);};
+ // Coconut palms on the sand above the tide line, leaning out to sea as beach palms do.
+ for(let n=0;n<4000&&palms.length<110;n++){
+  const [u,v]=pick(),d=shoreAt(u,v);
+  if(d<2.6||d>13||airside(u,v)||!clearOfPlaces(u,v,.8)||plateauWeight(u,v)>.4||!apart(palms,u,v,4.4))continue;
+  palms.push({u,v,y:tropicHeight(u,v),lean:seaward(u,v),scale:.8+rand()*.35,turn:rand()*Math.PI*2,kind:Math.floor(rand()*3)});
  }
- for(let n=0;n<9000&&trees.length<240;n++){
-  const u=TROPIC_GRID.minX+rand()*(TROPIC_GRID.maxX-TROPIC_GRID.minX),v=TROPIC_GRID.minZ+rand()*(TROPIC_GRID.maxZ-TROPIC_GRID.minZ),d=shoreAt(u,v);
-  if(d<12||airside(u,v)||v<P.fence+3||!clearOfPlaces(u,v,1.6)||plateauWeight(u,v)>.25)continue;
-  if(trees.some(p=>Math.hypot(p.u-u,p.v-v)<4.6))continue;
-  trees.push({u,v,y:tropicHeight(u,v),scale:.8+rand()*.8,turn:rand()*Math.PI*2,tone:Math.floor(rand()*4)});
+ // Rainforest on the hill and the inland flats.
+ for(let n=0;n<9000&&trees.length<170;n++){
+  const [u,v]=pick(),d=shoreAt(u,v);
+  if(d<12||airside(u,v)||v<P.fence+3||!clearOfPlaces(u,v,1.6)||plateauWeight(u,v)>.25||!apart(trees,u,v,4.6))continue;
+  trees.push({u,v,y:tropicHeight(u,v),scale:.8+rand()*.5,turn:rand()*Math.PI*2,kind:Math.floor(rand()*3)});
  }
- for(let n=0;n<9000&&bushes.length<420;n++){
-  const u=TROPIC_GRID.minX+rand()*(TROPIC_GRID.maxX-TROPIC_GRID.minX),v=TROPIC_GRID.minZ+rand()*(TROPIC_GRID.maxZ-TROPIC_GRID.minZ),d=shoreAt(u,v);
+ // Adan (pandanus) behind the beaches and on the headlands, where the salt wind is.
+ for(let n=0;n<4000&&pandanus.length<36;n++){
+  const [u,v]=pick(),d=shoreAt(u,v);
+  if(d<4||d>15||airside(u,v)||!clearOfPlaces(u,v,1)||plateauWeight(u,v)>.3||!apart(pandanus,u,v,6)||!apart(palms,u,v,2.4)||!apart(trees,u,v,3))continue;
+  pandanus.push({u,v,y:tropicHeight(u,v),scale:.9+rand()*.4,turn:rand()*Math.PI*2});
+ }
+ // Banana plants in the clearings by the trail, and a stand behind the beach bar.
+ for(let n=0;n<4000&&bananas.length<34;n++){
+  const [u,v]=pick(),d=shoreAt(u,v),t=trailDistance(u,v),bar=Math.hypot(u-P.beachBar[0]+1,v-P.beachBar[1]+7);
+  if(!(t>2.6&&t<7&&d>10||bar<6)||airside(u,v)||!clearOfPlaces(u,v,.9)||!apart(bananas,u,v,2.4)||!apart(trees,u,v,2.6)||!apart(palms,u,v,2))continue;
+  bananas.push({u,v,y:tropicHeight(u,v),scale:.85+rand()*.35,turn:rand()*Math.PI*2});
+ }
+ // Shrubs; bougainvillea where people pass, along the trail and round the plaza.
+ for(let n=0;n<9000&&bushes.length<150;n++){
+  const [u,v]=pick(),d=shoreAt(u,v);
   if(d<5||airside(u,v)||v<P.fence+1||!clearOfPlaces(u,v,.6))continue;
   if(plateauWeight(u,v)>.5&&!(u>P.plaza.minX-4&&u<P.plaza.maxX+4&&v>P.plaza.maxZ&&v<P.plaza.maxZ+4))continue;
-  if(bushes.some(p=>Math.hypot(p.u-u,p.v-v)<1.8)||trees.some(p=>Math.hypot(p.u-u,p.v-v)<1.6)||palms.some(p=>Math.hypot(p.u-u,p.v-v)<1.4))continue;
-  // Bougainvillea where people walk by: along the trail and the plaza; ferns in the shade.
+  if(!apart(bushes,u,v,2.2)||!apart(trees,u,v,1.8)||!apart(palms,u,v,1.4)||!apart(pandanus,u,v,1.8)||!apart(bananas,u,v,1.5))continue;
   const near=trailDistance(u,v)<5||v<P.plaza.maxZ+5;
-  const flower=near&&rand()<.55;bushes.push({u,v,y:tropicHeight(u,v),scale:(flower?.55:.7)+rand()*(flower?.35:.7),turn:rand()*Math.PI*2,flower});
+  const flower=near&&rand()<.4;bushes.push({u,v,y:tropicHeight(u,v),scale:(flower?.7:.75)+rand()*.5,turn:rand()*Math.PI*2,flower,kind:flower?(rand()<.6?1:2):0});
  }
- plantings={palms,trees,bushes};
+ // Ferns on the forest floor, in the trees' shade.
+ for(let n=0;n<9000&&ferns.length<170;n++){
+  const [u,v]=pick(),d=shoreAt(u,v);
+  if(d<12||airside(u,v)||!clearOfPlaces(u,v,.3)||apart(trees,u,v,4.5)||!apart(trees,u,v,.9)||!apart(ferns,u,v,1.2))continue;
+  ferns.push({u,v,y:tropicHeight(u,v),scale:.8+rand()*.6,turn:rand()*Math.PI*2});
+ }
+ // Grass tufts on the lawns and where the dune grass holds the back of the beach.
+ for(let n=0;n<12000&&grass.length<900;n++){
+  const [u,v]=pick(),d=shoreAt(u,v);
+  // Only on ground that is earth: never the quay, the cargo court, the walks or the plaza.
+  if(v<P.plaza.minZ+.5&&u<P.plaza.maxX+2||u<-44&&v<40||u>-54&&u<-9&&v>19&&v<37)continue;
+  if(d<3.5||airside(u,v)||trailDistance(u,v)<1.2||(u>P.plaza.minX-1&&u<P.plaza.maxX+1&&v>P.plaza.minZ-1&&v<P.plaza.maxZ+1)||Math.hypot(u-P.beachBar[0],v-P.beachBar[1])<3.5)continue;
+  if(d>9&&d<12&&rand()<.5)continue;
+  grass.push({u,v,y:tropicHeight(u,v),scale:.7+rand()*.8,turn:rand()*Math.PI*2});
+ }
+ // Coral-limestone rocks along the waterline of the headlands (the bays keep their sand),
+ // and a few weathered boulders up on the hill.
+ for(let n=0;n<9000&&rocks.length<90;n++){
+  const [u,v]=pick(),d=shoreAt(u,v),bay=Math.hypot(u-P.coralBay[0],v-P.coralBay[1])<26;
+  const coast=d>-2&&d<1.4&&!bay&&u>P.quayU+3,hill=d>18&&plateauWeight(u,v)<.1&&tropicHeight(u,v)>2.5&&rand()<.2;
+  if(!(coast||hill)||!apart(rocks,u,v,1.6))continue;
+  if(hill&&(!clearOfPlaces(u,v,1.2)||airside(u,v)||!apart(trees,u,v,2.5)))continue;
+  rocks.push({u,v,y:tropicHeight(u,v)-(hill?.25:.15),scale:hill?1+rand()*.6:.55+rand()*.9,turn:rand()*Math.PI*2,kind:Math.floor(rand()*3),hill});
+ }
+ // What the tide leaves: bleached driftwood and shells on the sand.
+ for(let n=0;n<3000&&driftwood.length<9;n++){const [u,v]=pick(),d=shoreAt(u,v);if(d<1.2||d>4||airside(u,v)||plateauWeight(u,v)>.3||!clearOfPlaces(u,v,1)||!apart(driftwood,u,v,10))continue;driftwood.push({u,v,y:tropicHeight(u,v),scale:.7+rand()*.5,turn:rand()*Math.PI*2});}
+ for(let n=0;n<5000&&shells.length<80;n++){const [u,v]=pick(),d=shoreAt(u,v);if(d<.8||d>5||airside(u,v)||plateauWeight(u,v)>.3||!apart(shells,u,v,.8))continue;shells.push({u,v,y:tropicHeight(u,v),scale:.8+rand()*.6,turn:rand()*Math.PI*2,kind:Math.floor(rand()*2)});}
+ plantings={palms,trees,bushes,pandanus,bananas,ferns,grass,rocks,driftwood,shells};
  return plantings;
 }
 
@@ -207,46 +253,36 @@ function terrainGeometry(){
  return g;
 }
 
-function palmParts(){
- // A trunk bending over toward +x, ringed, and a crown of drooping fronds at its tip.
- const curve=new THREE.QuadraticBezierCurve3(new THREE.Vector3(0,-.3,0),new THREE.Vector3(.4,3.6,0),new THREE.Vector3(1.9,6.6,0));
- const trunk=new THREE.TubeGeometry(curve,8,.2,6,false);
- const tip=curve.getPoint(1),fronds=[];
- for(let f=0;f<8;f++){
-  const a=f/8*Math.PI*2+.2,pts=[],w=[.05,.32,.36,.26,.04],len=3.3;
-  const g=new THREE.BufferGeometry(),p=[];
-  for(let s=0;s<5;s++){const t=s/4,r=len*t,y=.5*t-1.7*t*t;pts.push([r,y,w[s]]);}
-  for(let s=0;s<4;s++){const [r0,y0,w0]=pts[s],[r1,y1,w1]=pts[s+1];p.push(r0,y0,-w0,r1,y1,-w1,r0,y0,w0,r0,y0,w0,r1,y1,-w1,r1,y1,w1);}
-  g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.rotateZ(.05);g.rotateY(a);g.translate(tip.x,tip.y,tip.z);g.computeVertexNormals();fronds.push(g);
- }
- const nuts=[0,1,2].map(n=>new THREE.IcosahedronGeometry(.17,0).translate(tip.x+Math.cos(n*2.1)*.25,tip.y-.25,Math.sin(n*2.1)*.25));
- return {trunk,crown:mergeGeometries(fronds),nuts:mergeGeometries(nuts)};
-}
-function treeParts(){
- const trunk=new THREE.CylinderGeometry(.22,.38,5,7).translate(0,2.2,0);
- const crown=mergeGeometries([[0,5.6,0,2.5],[1.4,5,.6,1.8],[-1.2,5.2,-.7,1.9],[.2,6.6,-.3,1.7]].map(([x,y,z,r])=>new THREE.IcosahedronGeometry(r,1).scale(1,.8,1).translate(x,y,z)));
- return {trunk,crown};
-}
-
 /** Draws the island into `group` (the airport island's own frame). */
 export function buildTropicalIsland(group){
  const mat=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.95,...extra});
  const terrain=new THREE.Mesh(terrainGeometry(),new THREE.MeshStandardMaterial({vertexColors:true,roughness:1}));
  terrain.name='Kitano-jima island ground';terrain.receiveShadow=true;group.add(terrain);
  // The ferry quay's face, where the cargo court meets deep water.
- const quay=new THREE.Mesh(new THREE.BoxGeometry(1.2,4,19),mat(0xa8a396));quay.name='Kitano-jima ferry quay wall';quay.position.set(TROPIC_PLACES.quayU-.2,-.92,28);group.add(quay);
- const {palms,trees,bushes}=tropicalPlantings(),m=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),p=new THREE.Vector3(),up=new THREE.Vector3(0,1,0),col=new THREE.Color();
- const instanced=(name,geometry,material,list,place)=>{const im=new THREE.InstancedMesh(geometry,material,list.length);im.name=name;list.forEach((it,k)=>{place(it,k,im);im.setMatrixAt(k,m);});im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;im.computeBoundingSphere();im.computeBoundingBox?.();group.add(im);return im;};
- const palmM=(it)=>{q.setFromAxisAngle(up,-it.lean);m.compose(p.set(it.u,it.y,it.v),q,s.setScalar(it.scale));};
- const pp=palmParts();
- instanced('Coconut palm trunks',pp.trunk,mat(0x8a6a4a),palms,palmM);
- instanced('Coconut palm fronds',pp.crown,mat(0x3f8f3a,{side:THREE.DoubleSide}),palms,(it,k,im)=>{palmM(it);im.setColorAt(k,col.set(k%3?0x4c9a3e:0x5aa648));});
- instanced('Coconuts',pp.nuts,mat(0x6b5a2e),palms,palmM);
- const tp=treeParts();
- const treeM=(it)=>{q.setFromAxisAngle(up,it.turn);m.compose(p.set(it.u,it.y,it.v),q,s.setScalar(it.scale));};
- instanced('Jungle tree trunks',tp.trunk,mat(0x6d5843),trees,treeM);
- const greens=[0x2f7a3a,0x3f8d3c,0x4f9b42,0x2c6b45];
- instanced('Jungle canopy',tp.crown,mat(0xffffff),trees,(it,k,im)=>{treeM(it);im.setColorAt(k,col.set(greens[it.tone]));});
- instanced('Island shrubs',new THREE.IcosahedronGeometry(.9,0).scale(1,.75,1).translate(0,.45,0),mat(0xffffff),bushes,(it,k,im)=>{q.setFromAxisAngle(up,it.turn);m.compose(p.set(it.u,it.y,it.v),q,s.setScalar(it.scale));im.setColorAt(k,col.set(it.flower?(k%2?0xc8648e:0xd88270):(k%3?0x3e8a40:0x5a9e46)));});
- return {terrain,plantings:{palms,trees,bushes}};
+ const quay=new THREE.Mesh(new THREE.BoxGeometry(1.2,4,19),mat(0xa8a396));quay.name='Kitano-jima ferry quay wall';quay.position.set(TROPIC_PLACES.quayU-.2,-.92,28);quay.userData.staticProp=true;group.add(quay);
+ const P=tropicalPlantings(),m=new THREE.Matrix4(),q=new THREE.Quaternion(),s=new THREE.Vector3(),p=new THREE.Vector3(),up=new THREE.Vector3(0,1,0);
+ // One material for every plant: the colours are painted into each plant's vertices.
+ const foliage=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9,side:THREE.DoubleSide});
+ const solid=new THREE.MeshStandardMaterial({vertexColors:true,roughness:1});
+ const detail=[];
+ /** One instanced draw per plant model; `angle` turns it, `variant` picks which model of a kind. */
+ const plant=(name,models,list,{material=foliage,angle=it=>it.turn,small=false}={})=>models.forEach((geometry,variant)=>{
+  const items=list.filter(it=>(it.kind??0)%models.length===variant);if(!items.length)return;
+  const im=new THREE.InstancedMesh(geometry,material,items.length);im.name=name;
+  items.forEach((it,k)=>{q.setFromAxisAngle(up,angle(it));m.compose(p.set(it.u,it.y,it.v),q,s.setScalar(it.scale));im.setMatrixAt(k,m);});
+  im.instanceMatrix.needsUpdate=true;im.computeBoundingSphere();im.computeBoundingBox?.();group.add(im);if(small)detail.push(im);
+ });
+ plant('Coconut palms',[coconutPalm({seed:3,height:8.5,bow:1.8}),coconutPalm({seed:8,height:10,bow:3}),coconutPalm({seed:13,height:7,bow:1})],P.palms,{angle:it=>-it.lean});
+ plant('Rainforest trees',[rainforestTree({seed:2,height:8,spread:3.4}),rainforestTree({seed:5,height:10,spread:4,light:0x7cbd58,dark:0x285c31}),rainforestTree({seed:9,height:7,spread:3,light:0x8ab858,dark:0x33652f,mid:0x56913f})],P.trees);
+ plant('Adan (pandanus)',[pandanus({seed:4})],P.pandanus);
+ plant('Banana plants',[bananaPlant({seed:6})],P.bananas);
+ plant('Island shrubs',[shrub({seed:3}),shrub({seed:7,flowers:0xb83a78}),shrub({seed:11,flowers:0xd8423a})],P.bushes);
+ plant('Forest ferns',[fern({seed:2})],P.ferns,{small:true});
+ plant('Grass tufts',[grassTuft({seed:1}),grassTuft({seed:4,height:.6,blades:11})],P.grass.map((g,k)=>({...g,kind:k%2})),{small:true});
+ plant('Coral-limestone rocks',[rock({seed:1,size:.9}),rock({seed:2,size:.8,flat:.55}),rock({seed:5,size:1,flat:.8,light:0xcfc6b0,dark:0x7f7a70})],P.rocks,{material:solid});
+ plant('Driftwood',[driftwood({seed:3})],P.driftwood,{material:solid,small:true});
+ plant('Shells',[shell({seed:1}),shell({seed:2})],P.shells,{small:true});
+ /** Ferns, grass and shells are only worth drawing within a stroll of them. */
+ const lod=at=>{if(!at)return;const far=group.position.distanceTo(new THREE.Vector3(at.x,group.position.y,at.z))>150;for(const d of detail)d.visible=!far;};
+ return {terrain,plantings:P,lod};
 }

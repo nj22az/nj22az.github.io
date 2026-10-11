@@ -10,7 +10,8 @@
  *  {A.job} {A.trait} {A.habit} {A.ambition}   facts from the resident catalogue
  *  {place} {place.short} {thing} {doing}      the real place, one of its objects, an activity there
  *  {food} {drink} {snack} {weather} {hour}    from the lists below
- *  {$name}            a story variable bound once from `bind`
+ *  {$name}            a story variable bound once from `bind`; a genre with belonging:true also
+ *                     binds one of A's own things: {$lost}, {$tale}, {$keeps} (src/people/belongings.js)
  *  [one|two|three]    pick one inline
  * Beat: {say:'A'|'B'|null, line, a:[pose,expression], b:[pose,expression]}, optionally
  * tag (a name for this option), after (only follows an option with one of these tags) and kinds
@@ -106,18 +107,21 @@ export const GENRES=Object.freeze([
     {say:'A',line:'Wrong today. Right tomorrow. Probably.',a:['Shrug','smile'],b:['Laugh','laugh']}],
   ]},
  {id:'lost',title:['The case of the missing {$lost}','{A} loses something','Lost at {place.short}'],cast:2,
-  bind:{lost:['reading glasses','spare key','lucky pen','bottle tag','left sandal','shopping list'],
-   found:['{thing}','a bowl of {food}','{B}’s pocket','the fridge, for some reason','the lost-property box, labelled “not mine”']},
+  // The thing lost is one of A's own (src/people/belongings.js): {$lost}, {$tale}, {$keeps}.
+  belonging:true,
+  bind:{found:['{thing}','a bowl of {food}','{B}’s pocket','the fridge, for some reason','the lost-property box, labelled “not mine”']},
   beats:[
    [{say:'A',line:'Has anybody seen my {$lost}?',a:['Think','worried'],b:['Idle','neutral']},
     {say:null,line:'{A} had lost the {$lost} while {doing}.',a:['Shrug','worried'],b:['Idle','neutral']}],
    [{say:'B',line:'When did you last have it?',a:['Think','worried'],b:['Think','thinking']},
-    {say:'B',line:'Retrace your steps. Calmly.',a:['Shrug','sad'],b:['Point','content']}],
+    {say:'B',line:'Retrace your steps. Calmly.',a:['Shrug','sad'],b:['Point','content']},
+    {say:null,line:'{$tale}',shot:'medium',focus:'A',a:['Think','sad'],b:['Think','thinking']}],
    [{say:'A',line:'I was {doing}, and then {weather} happened.',a:['Point','thinking'],b:['Think','thinking']},
     {say:null,line:'The search covered all of {place}.',a:['Crouch','worried'],b:['Crouch','thinking']}],
    [{say:'B',line:'Found it. In {$found}.',a:['Cheer','happy'],b:['Tada','content']},
     {say:'A',line:'Never mind. I will just buy {snack} instead.',a:['Shrug','content'],b:['Laugh','laugh']},
-    {say:null,line:'It was in {$found}. It always is.',a:['Laugh','laugh'],b:['Shrug','smile']}],
+    {say:null,line:'It was in {$found}. It always is.',a:['Laugh','laugh'],b:['Shrug','smile']},
+    {say:null,line:'It was {$keeps}, where it always is.',a:['Shrug','shy'],b:['Laugh','laugh']}],
   ]},
  {id:'contest',title:['The great {$contest}','{A} versus {B}','Rematch at {place.short}'],cast:2,
   bind:{contest:['staring contest','jan-ken-pon final','quiet contest','{food}-eating contest','longest-bow contest'],

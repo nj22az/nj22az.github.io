@@ -6,6 +6,7 @@ import {CAST_RECIPES,recipeFor} from '../avatars/cast.js';
 import {playerRecipe} from '../avatars/actors.js';
 import {CAST_LIMIT,PHOTO_LIMIT,FORMATS,POSES,EXPRESSIONS,cleanCaption,frameSize,comicLayout,drawCaptions} from './layout.js';
 import {BACKDROPS,FILMS,WARDROBE_COLOURS,filmCSS,applyFilm,createStudioSet,arrange} from './sets.js';
+import {pocketFilm} from './pocket-camera.js';
 import {PARTS,normalizeRecipe} from '../avatars/recipe.js';
 import {EXPRESSION_GLYPHS} from '../avatars/face.js';
 import {ISLAND_OUTFITS,ISLAND_COSTUMES,THUAN_SAILOR_OUTFIT,outfitAllowedFor} from '../avatars/outfits.js';
@@ -42,7 +43,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  const swatches=name=>`<div class="photo-swatches" data-swatches="${name}" role="group" aria-label="${name==='topColour'?'Top colour':'Bottom colour'}">${WARDROBE_COLOURS.map(c=>`<button type="button" class="photo-swatch" data-colour="${c}" style="background:${c}" aria-label="Colour ${c}"></button>`).join('')}</div>`;
  const range=(name,label,min,max,step,value)=>`<label>${label}<input name="${name}" aria-label="${label}" type="range" min="${min}" max="${max}" step="${step}" value="${value}"></label>`;
  ui.innerHTML=`<header><div><h2 id="photoTitle">Photo studio</h2><p>Move or turn a character · drag the background to look around</p></div><button data-close aria-label="Return to town" title="Return to town">${svg("exit")}<span>Return to town</span></button></header>
- <div class="photo-stage"><div class="photo-frame"><canvas class="photo-captions" aria-hidden="true"></canvas></div></div>
+ <div class="photo-stage"><div class="photo-frame"><canvas class="photo-pocket" aria-hidden="true" hidden></canvas><canvas class="photo-captions" aria-hidden="true"></canvas></div></div>
  <aside class="photo-tools" aria-label="Photo controls"><nav class="photo-tabs" aria-label="Studio tools"><button type="button" data-tab="cast" aria-pressed="true">${svg("stand")}<span>Cast</span></button><button type="button" data-tab="place" aria-pressed="false">${svg("map")}<span>Places</span></button><button type="button" data-tab="camera" aria-pressed="false">${svg("camera")}<span>Camera</span></button><button type="button" data-tab="text" aria-pressed="false">${svg("talk")}<span>Text</span></button><button type="button" data-tab="film" aria-pressed="false">${svg("book")}<span>Panels</span></button></nav><section class="photo-locations" data-pane="place" hidden><label class="photo-search">Find a place<input name="locationSearch" type="search" placeholder="Shop, home, garden…"></label><div class="photo-place-grid"></div></section>
  <div class="photo-row"><label>Format<select aria-label="Format" name="format"><option value="landscape">Landscape</option><option value="square">Square</option><option value="portrait">Portrait</option></select></label><label>Style<select aria-label="Style" name="style"><option value="photo">Photograph</option><option value="meme">Meme</option><option value="comic">Comic panel</option></select></label></div>
  <button class="primary" data-capture aria-label="Capture panel">${svg("camera")}<span>Capture</span></button><p class="photo-status" role="status" aria-live="polite"></p>
@@ -64,7 +65,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  <details open data-pane="text" hidden><summary>${svg("talk")} Captions</summary><label>Top text · meme<input name="top" type="text" maxlength="120" placeholder="WHEN THE BOAT IS LATE"></label><label>Bottom text · meme or comic<input name="bottom" type="text" maxlength="120" placeholder="Write your punchline…"></label></details>
  <details open data-pane="film" hidden><summary>${svg("book")} Panels · <span data-count>0</span> / 4 panels</summary><div class="photo-film"></div><label>Comic layout<select aria-label="Comic layout" name="layout"><option value="grid">Comic page</option><option value="strip">Horizontal strip</option></select></label><button data-comic>Save comic PNG</button><div data-comic-link></div></details>
  </aside>`;
- document.body.append(ui);const $=s=>ui.querySelector(s),field=n=>$(`[name="${n}"]`),frame=$('.photo-frame'),stage=$('.photo-stage'),overlay=$('.photo-captions'),status=$('.photo-status');
+ document.body.append(ui);const $=s=>ui.querySelector(s),field=n=>$(`[name="${n}"]`),frame=$('.photo-frame'),stage=$('.photo-stage'),overlay=$('.photo-captions'),pocketView=$('.photo-pocket'),status=$('.photo-status');
  let comicURL=null;
  const selection=new THREE.Mesh(new THREE.RingGeometry(.24,.28,40),new THREE.MeshBasicMaterial({color:0xffc93c,side:THREE.DoubleSide,depthWrite:false}));selection.rotation.x=-Math.PI/2;selection.position.y=.012;selection.name='Selected studio character';stageGroup.add(selection);
  function syncSelection(){const a=selectedActor();selection.visible=!!a;if(a)selection.position.set(a.x,a.y+.012,a.z);}
@@ -130,7 +131,10 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  function setBackdrop(name){
   const studio=set.set(name);(studio?set.scene:scene).add(stageGroup);if(studio)set.place(stageGroup);dirty=true;
  }
- function render(){if(!opened||document.hidden)return;const resized=size();if(!dirty&&!resized)return;dirty=false;updateView();drawView();drawCaptions(overlay.getContext('2d'),overlay.width,overlay.height,captions());}
+ // The Pocket camera film cannot be a CSS filter: the frame is shrunk and dithered on its own canvas, over the view.
+ const pocketOf=()=>FILMS[field('film').value]?.pocket;
+ function showPocket(){const palette=pocketOf();pocketView.hidden=!palette;if(palette)pocketFilm(canvas,{palette,into:pocketView});}
+ function render(){if(!opened||document.hidden)return;const resized=size();if(!dirty&&!resized)return;dirty=false;updateView();drawView();showPocket();drawCaptions(overlay.getContext('2d'),overlay.width,overlay.height,captions());}
  function resetCamera(){azimuth=0;elevation=.1;distance=2.4;targetHeight=1.05;panX=0;panZ=0;for(const [n,v] of Object.entries({azimuth:0,elevation:6,distance,targetHeight,panX,panZ,fov:50}))field(n).value=String(v);}
  function invalidateComic(){if(comicURL)URL.revokeObjectURL(comicURL);comicURL=null;$('[data-comic-link]').replaceChildren();}
  function film(){
@@ -151,7 +155,8 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
    updateView();const w=1200,h=Math.round(w/FORMATS[field('format').value]);image=document.createElement('canvas');image.width=w;image.height=h;const ctx=image.getContext('2d');
    renderer.setPixelRatio(1);renderer.setSize(w,h,false);drawView();ctx.drawImage(canvas,0,0,w,h);
    // The film goes into the pixels themselves, so the PNG is what the preview showed.
-   if(field('film').value!=='none'){const px=ctx.getImageData(0,0,w,h);applyFilm(px.data,field('film').value);ctx.putImageData(px,0,0);}
+   if(pocketOf()){const small=pocketFilm(image,{palette:pocketOf()});ctx.imageSmoothingEnabled=false;ctx.drawImage(small,0,0,w,h);small.width=0;}
+   else if(field('film').value!=='none'){const px=ctx.getImageData(0,0,w,h);applyFilm(px.data,field('film').value);ctx.putImageData(px,0,0);}
    const text=document.createElement('canvas');text.width=w;text.height=h;drawCaptions(text.getContext('2d'),w,h,captions());ctx.drawImage(text,0,0);text.width=0;
   }catch(e){announce('Could not capture this view. Try again.');console.warn('Photo capture failed',e);}
   finally{syncSelection();renderer.setPixelRatio(ratioBefore);renderer.setSize(sizeBefore.x,sizeBefore.y,false);dirty=true;}
@@ -198,7 +203,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  field('speech').oninput=()=>{const a=selectedActor();if(a)a.speech=cleanCaption(field('speech').value);};
  for(const n of ['azimuth','elevation','distance','targetHeight','panX','panZ'])field(n).oninput=()=>{const v=Number(field(n).value);if(n==='azimuth')azimuth=v*Math.PI/180;if(n==='elevation')elevation=v*Math.PI/180;if(n==='distance')distance=v;if(n==='targetHeight')targetHeight=v;if(n==='panX')panX=v;if(n==='panZ')panZ=v;};
  field('backdrop').onchange=()=>{setBackdrop(field('backdrop').value);announce(BACKDROPS[field('backdrop').value].label+'.');};
- field('film').onchange=()=>{canvas.style.filter=filmCSS(field('film').value);};
+ field('film').onchange=()=>{canvas.style.filter=filmCSS(field('film').value);dirty=true;};
  field('actorScale').oninput=()=>{const a=selectedActor();if(a){a.scale=Number(field('actorScale').value);placeActor(a);}};
  field('wearSet').onchange=()=>{const a=selectedActor(),value=field('wearSet').value;if(a&&value!=='')dress(a,outfitSets[Number(value)].outfit);};
  for(const n of WARDROBE)field(wear(n)).onchange=()=>{const a=selectedActor();if(a)dress(a,{[n]:field(wear(n)).value});};

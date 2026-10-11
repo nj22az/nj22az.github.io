@@ -106,6 +106,8 @@ export function buildStreetFurniture({parent,colliders=[],heightAt=()=>0,shadows
   const earth=new THREE.Mesh(bed,soil);earth.rotation.x=-Math.PI/2;earth.position.y=.48;planter.add(earth);
   for(let i=0;i<7;i++){const a=i*2.4+n,r=i?.36:0;const g=new THREE.Mesh(bush,leaf);g.position.set(Math.cos(a)*r,.6,Math.sin(a)*r);g.scale.setScalar(i?1:1.2);planter.add(g);}
   for(let i=0;i<11;i++){const a=i*1.9+n*.7,r=.12+(i%3)*.15;const f=new THREE.Mesh(bloom,petals[(i+n)%petals.length]);f.position.set(Math.cos(a)*r,.72+(i%2)*.06,Math.sin(a)*r);planter.add(f);}
+  // Twenty-one pieces a planter, none of them moving: drawn in batches (static-props.js).
+  planter.traverse(o=>{if(o.isMesh)o.userData.staticProp=true;});
   colliders.push({id:'brick-planter',x,z,w:1.3,d:1.3,height:y+.8});
  });
  return {group};

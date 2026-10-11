@@ -13,11 +13,13 @@ import {TROPIC_OUTLINE,buildTropicalIsland,shoreSigned} from './tropical-island.
  */
 export const AIRPORT_ISLAND=Object.freeze({
  id:'kitano-jima',title:'Kitano-jima Airport',jp:"Kitanoshima Airport",
- x:165,z:-118,yaw:-.22,
+ // Far across the strait: from the quay it is a low green island on the horizon, palms and a
+ // control tower just made out, 360 m off. The car ferry takes half an hour of game time over it.
+ x:270,z:-290,yaw:-.22,
  /** The airport's half-extents along and across the runway (the flat north side). */
  halfLength:62,halfWidth:20,
  /** Passenger pier's shoreward landing, in world metres. */
- dock:Object.freeze([165+Math.cos(-.22)*-51+Math.sin(-.22)*33,-118-Math.sin(-.22)*-51+Math.cos(-.22)*33]),
+ dock:Object.freeze([270+Math.cos(-.22)*-51+Math.sin(-.22)*33,-290-Math.sin(-.22)*-51+Math.cos(-.22)*33]),
  /** The runway's ends in the island's own frame: planes take off toward +x. */
  runway:Object.freeze({from:-50,to:50,width:8}),
 });
@@ -56,7 +58,9 @@ export function buildAirportIsland({parent,shadows=false}={}){
  const group=new THREE.Group();group.name='Kitano-jima airport island';
  group.position.set(A.x,SEA_LEVEL,A.z);group.rotation.y=A.yaw;group.userData.horizon=true;parent.add(group);
  const mat=color=>new THREE.MeshStandardMaterial({color,roughness:.95});
- const add=(geometry,material,x,y,z)=>{const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.castShadow=false;m.receiveShadow=false;group.add(m);return m;};
+ // Everything on the island stands still except the plane and the tower beacon, so it is
+ // drawn in a handful of batches (static-props.js).
+ const add=(geometry,material,x,y,z)=>{const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.castShadow=false;m.receiveShadow=false;m.userData.staticProp=true;group.add(m);return m;};
  // The island: beaches, the jungle hill and the flat airport side, one terrain.
  const tropic=buildTropicalIsland(group);
  // The runway, its centreline and the threshold bars.
@@ -76,7 +80,7 @@ export function buildAirportIsland({parent,shadows=false}={}){
  add(new THREE.CylinderGeometry(1.3,1.7,13,10),mat(0xe8e2d2),6,7.6,14);
  add(new THREE.CylinderGeometry(2.6,2.2,2.4,10),new THREE.MeshStandardMaterial({color:0x2d4a55,roughness:.2,emissive:0xa9dcef,emissiveIntensity:.12}),6,15.2,14);
  add(new THREE.CylinderGeometry(2.9,2.9,.4,10),mat(0x2b5a78),6,16.6,14);
- const beacon=add(new THREE.SphereGeometry(.45,8,6),new THREE.MeshStandardMaterial({color:0xd8342c,emissive:0xd8342c,emissiveIntensity:.3}),6,17.3,14);
+ const beacon=add(new THREE.SphereGeometry(.45,8,6),new THREE.MeshStandardMaterial({color:0xd8342c,emissive:0xd8342c,emissiveIntensity:.3}),6,17.3,14);beacon.userData.staticProp=false;
  // The windsock at the runway's east end.
  add(new THREE.CylinderGeometry(.15,.15,6,6),mat(0xd8d8d0),R.to-6,4,4);
  const sock=add(new THREE.ConeGeometry(.7,3.2,8,1,true),new THREE.MeshStandardMaterial({color:0xe46a2a,roughness:.7,side:THREE.DoubleSide}),R.to-4.4,6.6,4);
@@ -99,8 +103,10 @@ export function buildAirportIsland({parent,shadows=false}={}){
   * @param {number} dt seconds
   * @param {number} minutes the town clock
   * @param {number} day 0 at night, 1 at noon
+  * @param {{x:number,z:number}} [player] where the player is, for the island's close-up detail
   */
- const update=(dt,minutes=0,day=1)=>{
+ const update=(dt,minutes=0,day=1,player=null)=>{
+  tropic.lod(player);
   beacon.material.emissiveIntensity=day<.4?1.4:(Math.sin(minutes*6)>0?.6:.1);
   const m=((minutes%1440)+1440)%1440;
   if(!flight){

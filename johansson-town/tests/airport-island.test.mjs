@@ -7,7 +7,7 @@ import {onIslandLand} from '../src/world/coastal-ground.js';
 test('the airport island is on the horizon, inside the far plane, and not on the town',()=>{
  const parent=new THREE.Group(),island=buildAirportIsland({parent});
  const A=AIRPORT_ISLAND,fromQuay=Math.hypot(A.x,A.z+45),fromBeach=Math.hypot(A.x-40,A.z);
- assert.ok(fromQuay<200&&fromBeach<200,'It is beyond the camera’s 220 m far plane from the harbour and the beach');
+ assert.ok(fromQuay>300&&fromQuay<420&&fromBeach>300&&fromBeach<420,'It is far across the strait, inside the 640 m far plane');
  assert.equal(onIslandLand(A.x,A.z),false,'The airport stays across the strait');
  for(const dx of [-A.halfLength,0,A.halfLength])assert.equal(onIslandLand(A.x+dx,A.z),false,'The airport shore is separate');
  // The section renderer must not cull it for being far from every street.

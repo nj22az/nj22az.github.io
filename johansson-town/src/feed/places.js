@@ -75,5 +75,15 @@ export const FEED_PLACES=Object.freeze([
   doing:['choosing flowers','queueing for ice cream','admiring a wreath','strolling the lane'],
   activity:{hold:['can','coffee'],chance:.5,sit:0},
   shot:{lane:{at:[90,112],cam:[91,125],look:[90,99],height:2.2}}},
+ {id:'coral-bay',name:'Coral Bay on Kitano-jima',short:'Coral Bay',kind:'outdoor',regulars:['Jun'],
+  things:['the beach bar','a rented parasol','the leaning coconut palms','the turquoise shallows','a bottle of Umineko on ice','the Coral Bay notice'],
+  doing:['dozing under a rented parasol','paddling in the shallows','queueing at the beach bar','reading on the bench','watching the commuter plane climb away','burying someone’s feet in the sand'],
+  activity:{hold:['can','bottle'],chance:.7,sit:.35},
+  shot:{at:[133.9,-43],camera:{pos:[140.8,1.6,-37.3],at:[127.2,1,-49.6]},time:780}},
+ {id:'aoba-utaki',name:'the utaki on Mount Aoba',short:'the utaki',kind:'outdoor',regulars:['Haru'],
+  things:['the stone incense burner','the old banyans','the coral-stone wall','the altar stone','a thread of incense smoke'],
+  doing:['lighting a stick of incense','sitting under the banyans','asking the sea for a good catch','getting their breath back after the climb'],
+  activity:{hold:['coffee'],chance:.2,sit:0},
+  shot:{at:[65,198],camera:{pos:[58.5,14.6,192.5],at:[66,13.3,199]},time:420}},
 ]);
 export const feedPlace=id=>FEED_PLACES.find(p=>p.id===id);

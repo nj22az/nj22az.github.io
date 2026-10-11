@@ -8,6 +8,7 @@ import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layo
 import {buildSceneWorld} from './scene-world.js';
 import {poseSceneAvatar,placeSceneAvatar} from './scene-avatar.js?v=20261011-1';
 import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text} from './scene-model.mjs?v=20261011-1';
+import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
 import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs';
 import {wrapTurn,turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs';
 import {touchFirst,dataURLToBlob,canvasToBlob,createReadyFile,bindSaveLink,createPreview} from './studio-share.mjs';
@@ -26,7 +27,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  let state=emptyScene();try{state=normalizeScene(JSON.parse(localStorage.getItem(SCENE_KEY)),normalizeRecipe);}catch{}
  let selected=state.actors[0]?.id??null,step='location',mode='scene',generation=0,pending=Promise.resolve(),valid=false,renderer;
  const panels=[],avatars=new Map(),portraits=new Map();
- let world=null,worldId='',views=null,townData=null,capturing=false,queue=Promise.resolve(),boxes=[],layoutStyle='grid',overlayStep='';
+ let lastMoment='',world=null,worldId='',views=null,townData=null,capturing=false,queue=Promise.resolve(),boxes=[],layoutStyle='grid',overlayStep='';
  const touch=touchFirst();
  const root=document.createElement('main');root.className='scene-workspace';root.hidden=true;
  root.innerHTML=`<div class="scene-heading"><div><h1>Build a scene</h1><p>Choose a place, add characters, then pose them and write your dialogue.</p></div><a class="scene-button" data-save="project">Download project</a><button type="button" data-action="open-project">Open project</button><input type="file" data-project-input accept=".json,application/json" hidden></div>
@@ -41,6 +42,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  <section data-pane="location"><h2>Choose a location</h2><p>These are the real 3D locations in Johansson World. Move the camera to compose your scene.</p><div class="scene-locations"></div></section>
  <section data-pane="characters" hidden><h2>Add characters</h2><p>Use your own character or choose a town resident. Up to six characters can share a scene.</p><button class="scene-primary" data-action="add-current">Add my character</button><label>Town resident<select data-field="resident" aria-label="Town resident"></select></label><button data-action="add-resident">Add resident</button></section>
  <section data-pane="pose" hidden><h2>Pose & position</h2><p class="scene-pane-note" data-note="pose"></p>
+ <div class="scene-moment"><button type="button" data-action="shuffle-moment">Shuffle a moment</button><p class="scene-moment-note">Turns everyone on stage into a little scene: poses, faces, lines and a caption.</p></div>
  <h3 class="scene-picker-title" id="scene-pose-title">Pose</h3><div class="scene-picker" data-picker="pose" role="group" aria-labelledby="scene-pose-title"></div>
  <h3 class="scene-picker-title" id="scene-face-title">Expression</h3><div class="scene-picker" data-picker="expression" role="group" aria-labelledby="scene-face-title"></div>
  <div class="scene-actor-controls"><label>Turn<input data-field="turn" type="range" min="-180" max="180" step="5"></label><label>Size<input data-field="size" type="range" min=".6" max="1.4" step=".01"></label>
@@ -141,6 +143,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   for(const [box,value] of [[posePicker,a?.pose],[facePicker,a?.expression]])for(const b of box.querySelectorAll('button')){b.disabled=!a;b.setAttribute('aria-pressed',String(b.dataset.value===value));}
   if(a&&step==='pose')paintFaces(a.recipe);
   $('[data-note="pose"]').textContent=!state.actors.length?'Add a character first (step 2).':a?'Posing '+a.name+'. Drag them in the picture to move them.':'Select a character in the picture or in the strip below it.';
+  $('[data-action="shuffle-moment"]').disabled=!state.actors.length;
   for(const b of root.querySelectorAll('[data-action="add-current"],[data-action="add-resident"],[data-action="duplicate"]'))b.disabled=state.actors.length>=MAX_ACTORS||(b.dataset.action==='duplicate'&&!a);
   for(const b of root.querySelectorAll('[data-action="remove"],[data-action="edit-character"]'))b.disabled=!a;
   for(const b of root.querySelectorAll('[data-action="capture"]'))b.disabled=panels.length>=MAX_PANELS;
@@ -320,6 +323,19 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  function hideToast(){clearTimeout(toastTimer);toast.hidden=true;undoAction=null;}
  function undo(){const action=undoAction;hideToast();action?.();}
  toast.querySelector('[data-undo]').onclick=undo;
+ function shuffleMoment(){
+  const moment=pickMoment(state.actors.length,{last:lastMoment});if(!moment){announce('Add a character first, then shuffle a moment.');return;}
+  const before={actors:structuredClone(state.actors),bottom:state.bottom},camera=world&&worldId===state.location?{x:world.camera.position.x-world.origin[0],z:world.camera.position.z-world.origin[2]}:null;
+  const open=(x,z,r=.3)=>!world.blocked(world.origin[0]+x,world.origin[2]+z,r);
+  // Open floor that the camera can see: nothing solid on the line from the spot to the camera (a shelf in front hides them).
+  // …and well inside the picture: chest and head project inside the frame, at least 1.6 m from the lens.
+  const v=new THREE.Vector3(),inView=(x,z)=>{if(!camera)return true;world.camera.updateMatrixWorld(true);for(const h of [.8,1.4]){v.set(world.origin[0]+x,world.origin[1]+h,world.origin[2]+z);if(v.distanceTo(world.camera.position)<1.6)return false;v.project(world.camera);if(!(Math.abs(v.x)<.75&&Math.abs(v.y)<.85&&v.z<1))return false;}return true;};
+  const free=world&&worldId===state.location?(x,z)=>{if(!open(x,z)||!inView(x,z))return false;if(!camera)return true;const d=Math.hypot(camera.x-x,camera.z-z);for(let t=.35;t<d-.6;t+=.25){const k=t/d;if(!open(x+(camera.x-x)*k,z+(camera.z-z)*k,.08))return false;}return true;}:null;
+  applyMoment(state,moment,{camera,free:free&&[free,(x,z)=>open(x,z)&&inView(x,z)]});
+  if(free){world.settle(state.actors);aim(state.actors,moment.layout,camera).forEach((t,i)=>{state.actors[i].turn=t;});}
+  lastMoment=moment.id;changed();sync();
+  offerUndo('Shuffled “'+moment.title+'”. Poses, faces, lines and caption changed.',()=>{state.actors=before.actors;state.bottom=before.bottom;changed();sync();});
+ }
  function removeActor(id){
   const removed=removeCharacter(state,id);if(!removed)return;if(selected===id)selected=null;
   changed();sync();announce(removed.actor.name+' removed from the scene.');
@@ -344,6 +360,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   const loaded=await Promise.all(urls.map(async dataURL=>{const blob=dataURLToBlob(dataURL),url=URL.createObjectURL(blob);return {dataURL,url,file:new File([blob],'johansson-studio-panel.png',{type:'image/png'}),image:await loadImage(url)};}));
   state=scene;selected=state.actors[0]?.id??null;for(const p of panels)URL.revokeObjectURL(p.url);panels.splice(0,panels.length,...loaded);changed();renderPanels();sync();announce('Project opened.');}catch(e){console.warn('Johansson Studio: open project',e);announce('Unable to open this project. Choose a Johansson Studio project JSON file.');}finally{projectInput.value='';}};
  const actions={
+  'shuffle-moment':shuffleMoment,
   'reset-camera':()=>{state.camera={orbit:0,elevation:0,zoom:1};for(const c of root.querySelectorAll('[data-camera]'))c.value=state.camera[c.dataset.camera];changed();},
   'add-current':()=>add(getCharacter()),'add-resident':()=>{const n=resident.value;add(n==='Thuan'?ORIGINAL_THUAN_RECIPE:recipeFor(n),nameOf(n));},
   'edit-character':()=>{const a=current();if(a)onEdit(a.recipe,a.id);},'duplicate':()=>{const a=current();if(a)add(a.recipe,a.name);},

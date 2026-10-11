@@ -77,7 +77,8 @@ export const linesFor=name=>Object.entries(MERCHANDISING).filter(([,m])=>m.for.i
  *   sakura        Sakura Shōten, from its depot in the Quay Warehouse (Sakura Trading): the
  *                 everyday goods — drinks, food, washing, paper goods, batteries.
  *   higa-saketen  Higa Liquor in Nishi-machi: all the alcohol. Sakura's beer comes from the Higas,
- *                 and so do Minato's bottle keep and tap and Sato Ramen's bottles.
+ *                 and so do Minato's bottle keep and tap, Sato Ramen's bottles and the Coral Bay
+ *                 Bar's ice boxes on Kitano-jima.
  *   frontrow      Front-Row Books & Stationery: paper, ledgers, pens and envelopes for the town's
  *                 offices, the school and the police box.
  *
@@ -125,6 +126,9 @@ export const ACCOUNTS=Object.freeze({
   'mayor-office':{name:'the mayor’s office',owner:'Johansson',lines:['tea','crackers','tissues'],
    why:'Tea and rice crackers for visitors, and tissues for difficult meetings.',
    delivery:'Mondays, carried up the Community Hall stairs.'},
+  'coral-bay-bar':{name:'the Coral Bay Bar on Kitano-jima',contact:'the beach bar keeper',lines:['orange','water'],
+   why:'Mandarin and shikuwasa juice for the children and the drivers, and water for anyone who fell asleep under a parasol.',
+   delivery:'On the morning car ferry, in the Sakura Trading crate that goes over with the Higa ice boxes.'},
   'community-kitchen':{name:'the community kitchen',owner:'Mrs Nakamura',lines:['curry','soy','tuna','rice'],
    why:'The Saturday curry for the whole street, and onigiri for the volunteers.',
    delivery:'Friday evening, so the pot can start early.'},
@@ -145,6 +149,9 @@ export const ACCOUNTS=Object.freeze({
   ramen:{name:'Sato Ramen',owner:'Mrs Sato',lines:['Umineko lager, large bottles'],
    why:'A bottle with the gyōza, for the lunch crowd who are not going back to work.',
    delivery:'With the Minato order, one crate left at the back door.'},
+  'coral-bay-bar':{name:'the Coral Bay Bar on Kitano-jima',contact:'the beach bar keeper',lines:['Umineko lager, bottles on ice'],
+   why:'Cold beer for the day-trippers on Coral Bay, the reason half the morning ferry carries towels.',
+   delivery:'Ice boxes on the morning car ferry; the empties come back on the evening sailing.'},
   'fujita-shed':{name:'Mr Fujita’s shed on the pier',contact:'Mr Fujita',lines:['Umineko lager, large bottles'],
    why:'Twenty-four to forty-nine large bottles a day, three small glasses a bottle, poured from the armchair in front of the television.',
    delivery:'Six every morning at the pier root: the day’s crates down, yesterday’s empties up off his floor. Returnable bottles, counted by Grandmother Higa.'},

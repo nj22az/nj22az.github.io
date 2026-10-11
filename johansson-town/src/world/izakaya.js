@@ -14,7 +14,7 @@ import {buildIzakayaInteractive} from './interiors/izakaya-interactive.js';
 import {restaurantCollider,restaurantApproach,izakayaPlot,SATO_RAMEN_DOOR} from './dining-layout.js';
 import {SATO_RAMEN,satoRamenOpen} from './sato-ramen-layout.js';
 import {prepareIzakayaGlass} from './shop-glass.js';
-import {buildMinatoFacade} from './minato-facade.js';
+import {buildMinatoFacade,MINATO} from './minato-facade.js';
 import {registerDetail} from './detail-stream.js';
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
@@ -43,6 +43,11 @@ export function buildIzakaya(world,options){
  const facadeColliders=[];
  const approach=restaurantApproach('izakaya');site.exitPosition=[...site.door];site.approachPosition=[approach[0],0,approach[1]];site.entryFacing=plot.yaw;
  options.sites.push(site);const exterior=new THREE.Group();exterior.position.set(plot.x,0,plot.z);exterior.rotation.y=plot.yaw;world.group.add(exterior);
+ // Inside, the street is the real street: the room's front wall stands on the door plane,
+ // so the doorway looks out past the recess, the noren and the lantern, and the window
+ // through the bay's own koshi slats (shop-street-view.js). Room x runs along the frontage.
+ {const doorPlane=MINATO.front-MINATO.recess,c=Math.cos(plot.yaw),s=Math.sin(plot.yaw);
+  site.streetFrontage={position:[plot.x+s*doorPlane,0,plot.z+c*doorPlane],yaw:plot.yaw,interiorZ:6.27,span:{minX:-5.05,maxX:1.95,minY:.03,maxY:2.75},hideGlazing:true};}
  // The supplied exterior was a flat glazed box with no eave, no lantern and nothing to
  // say what was behind it — an office frontage with a bar's name on it. See
  // minato-facade.js for what stands there now.
@@ -110,7 +115,7 @@ export function buildIzakaya(world,options){
  }});
  return site;
 }
-export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,getMinutes=()=>1200,windowView=null,exploration}){
+export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,getMinutes=()=>1200,exploration}){
  const furnished=asset('interior',room);
  if(!furnished){
   box([13,.2,13],[0,-.1,0],0x965332,room,false);box([13,3.8,.2],[0,1.9,-6.4],0xe8c894,room,false);box([8,FURNITURE_HEIGHTS.serviceCounter,1],[-.8,FURNITURE_HEIGHTS.serviceCounter/2,-2.6],0x965332,room,false);
@@ -120,7 +125,10 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,
  box([.2,1.02,13],[-6.4,3.3,0],0xe8c894,room,false);
  // The east wall stops at the counter: behind it the kitchen runs on into Sato Ramen.
  box([.2,3.15,9.75],[6.4,2.225,1.525],0xe8c894,room,false);
- for(const x of [-4.15,4.15])box([4.7,3.8,.2],[x,1.9,6.4],0xe8c894,room,false);
+ // The entry wall, with the street window (x -4.99…-2.81, sill 1.18, head 2.26) left open.
+ box([4.7,3.8,.2],[4.15,1.9,6.4],0xe8c894,room,false);
+ box([.6,3.8,.2],[-6.2,1.9,6.4],0xe8c894,room,false);box([1,3.8,.2],[-2.3,1.9,6.4],0xe8c894,room,false);
+ box([2.2,1.18,.2],[-3.9,.59,6.4],0xe8c894,room,false);box([2.2,1.54,.2],[-3.9,3.03,6.4],0xe8c894,room,false);
  box([3.6,1.1,.2],[0,3.25,6.4],0xe8c894,room,false);
  const anchor=(position,label,fn)=>{const o=new THREE.Object3D();o.position.set(...position);room.add(o);reg(o,label,fn,true);return o;};
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(3.1,.68),new THREE.MeshStandardMaterial({map:signTexture("Welcome back",'WELCOME BACK · MINATO','#b55049')}));sign.position.set(.5,3.1,-6.05);room.add(sign);
@@ -145,7 +153,7 @@ export function buildIzakayaRoom({room,box,reg,collider,action,exit,signTexture,
  const calendar=createFutureCalendar();calendar.group.position.set(-5.55,2.03,6.255);calendar.group.rotation.y=Math.PI;room.add(calendar.group);
  anchor([-5.55,2.03,6.21],'Read Future Calendar',()=>{calendar.update();action('inspect','Future Calendar',calendar.mesh.userData.dateLabel+'\nToday’s real date · Europe/Stockholm. This calendar turns a page every real day.');});
  const play=buildIzakayaInteractive(room,{anchor,action,collider});
- const discovery=buildIzakayaExploration(room,{anchor,windowView,exploration});
+ const discovery=buildIzakayaExploration(room,{anchor,exploration});
  // Imported American beer advertising: Barfly is a countertop mascot, not another resident.
  box([.58,.08,.45],[-4.4,FURNITURE_HEIGHTS.serviceCounter+.04,-2.6],0x244b46,room,false);
  const barfly=addOwnedCharacter({parent:room,kind:'barfly',position:[-4.4,FURNITURE_HEIGHTS.serviceCounter+.08,-2.6],height:.48,staticDisplay:true,yaw:.15});

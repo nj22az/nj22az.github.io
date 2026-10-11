@@ -139,3 +139,10 @@ town). Grow it into a builder with zoom levels, all made of the asset catalogue 
   conversion must look and play the same (photographs before and after).
 - **Order:** section 5's asset format and modeller first; then the room view (smallest, proves the idea, e.g. the
   onsen's lobby); then the building view; then the island view; then converting existing places.
+
+## 7. Retro study: Talent Studio and the Game Boy Camera (the creator, 2026-10-11)
+
+What Ghidra showed in Mario Artist Talent Studio (64DD) and the Game Boy Camera cartridges, what was built from it
+(Studio's Shuffle a moment, World's Pocket camera film), the ranked proposals (a carried pocket camera in first
+person, a photo-sticker booth, a movie mode on Talent Studio's track model, more wardrobe slots) and a set reference
+for remodelling World: `briefs/retro-study.md`.

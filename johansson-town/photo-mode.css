@@ -10,6 +10,7 @@
 .photo-stage{background:#263a36;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:12px}
 .photo-frame{position:relative;flex:none;overflow:hidden;touch-action:none;box-shadow:0 3px 20px #0004}
 #photoStudio .photo-frame canvas{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block;visibility:visible!important;max-width:none}
+#photoStudio .photo-frame canvas.photo-pocket{image-rendering:pixelated;pointer-events:none}#photoStudio .photo-frame canvas.photo-pocket[hidden]{display:none!important}
 .photo-captions{pointer-events:none;z-index:1}.photo-tools{padding:12px;overflow:auto;min-height:0;border-left:1px solid #bbb5a3;overscroll-behavior:contain}
 #photoStudio details{border-bottom:1px solid #c6c1b0;padding:8px 0}#photoStudio summary{font-weight:750;cursor:pointer;min-height:34px}
 #photoStudio label{display:grid;gap:4px;margin:8px 0;font-size:12px}#photoStudio input,#photoStudio select{width:100%;min-width:0}#photoStudio input[type=range]{min-height:28px;accent-color:#385b4a;margin:0}

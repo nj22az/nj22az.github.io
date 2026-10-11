@@ -14,7 +14,12 @@ export function comicLayout(count,style='grid',width=1200){
 }
 // Unicode-safe wrapping, including a long word or Japanese text without spaces.
 export function wrapCaption(ctx,text,maxWidth,maxLines=3){
- const lines=[];let line='';for(const character of Array.from(cleanCaption(text))){if(ctx.measureText(line+character).width>maxWidth&&line){lines.push(line.trim());line='';if(lines.length===maxLines)return [...lines.slice(0,-1),lines.at(-1).slice(0,-1)+'…'];}line+=character;}if(line)lines.push(line.trim());return lines;
+ // A line breaks at its last space, so English words stay whole ("ramen", not "ram / en"); a word too long for a line,
+ // or Japanese without spaces, breaks where it must.
+ const lines=[];let line='';for(const character of Array.from(cleanCaption(text))){if(ctx.measureText(line+character).width>maxWidth&&line){
+  const cut=character===' '?line.length:line.lastIndexOf(' '),rest=cut>0?line.slice(cut+1):'';
+  if(cut>0)line=line.slice(0,cut);lines.push(line.trim());line=rest;if(lines.length===maxLines)return [...lines.slice(0,-1),lines.at(-1).slice(0,-1)+'…'];}
+  line+=character;}if(line.trim())lines.push(line.trim());return lines;
 }
 export function drawCaptions(ctx,w,h,{style='photo',top='',bottom='',bubbles=[],vignette=false}={}){
  ctx.clearRect(0,0,w,h);ctx.textAlign='center';ctx.textBaseline='middle';

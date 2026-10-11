@@ -45,13 +45,47 @@ Kitano-jima's terrain, outline, trails and plantings are `src/world/tropical-isl
 - The third-person lens stops at drawn surfaces (awnings, canopies, shop glass) and never sits inside the avatar's
   head (`src/render/lens-occlusion.js`).
 
-## Next phases
+## Built on 11 October 2026
 
-1. **Fill the uplands.** The countryside is reachable but mostly empty grass: a hamlet at the foot of Mount Aoba,
-   a summit path and shrine, a roadside stall on the coastal loop, each with residents and routines.
-2. **One sea, one horizon.** The haze turns the far strait into a flat pale band; tune it by view height so both
-   islands sit in the same water from every viewpoint.
-3. **Smoothness on iPad.** The town draws roughly 900–1,300 objects a frame. Batching the shop streets and the
-   quarter's small props, as the harbour already is, is the largest frame-rate gain left.
-4. **Life on Kitano-jima.** A Coral Bay beach bar supplied by Higa Liquor, Jun's lunch on the beach, ferry
-   day-trippers.
+1. **The uplands.** Mount Aoba's summit has an utaki, the island's sacred grove: a dry coral-stone wall, an altar
+   stone with an incense bowl, and four gajumaru banyans. A gravel path spirals up from Aoba Radio (`SUMMIT_PATH`,
+   under 25 % grade). Haru from Hoshizaki climbs to it before dawn to pray for the catch. The Ōshiro family's
+   honesty stand on the coastal loop sells gōya, sweet potatoes and shima-rakkyō. Aoba's woods use the vegetation
+   kit's evergreen broadleaf trees.
+2. **One sea, one horizon.** The surrounding sea is marked as horizon scenery, so the section streamer no longer cuts
+   it into the 24 m cells near the player. That was the square of sea round the player, with bare sky beyond it,
+   seen from every hill. The sea keeps its colour past Kitano-jima and hazes only near the true horizon. It hazes
+   further out from higher ground, and now reaches the distant southern ridge.
+3. **Smoothness.** Static groups are batched by `static-props.js`: the airport island, Kitano-jima's plaza and
+   stands, the island landscape, the countryside, the brick planters, Blue Coral, the Rainflower lane and the
+   izakaya frontage. Glowing or rain-darkened materials stay live. This saves 5–8 % of draw calls in every view
+   measured. The rest of the cost is the outline and shadow passes, which a later phase should target.
+4. **Life on Kitano-jima.** The Coral Bay Bar is supplied by Higa Liquor (Umineko lager) and Sakura Trading
+   (juice). It rents out parasols. Jun eats his lunch on the sand. Coral Bay and the utaki are storyteller places
+   with captured backdrops.
+5. **Detail.** `vegetation-kit.js` grows plants from their anatomy in the cel-shaded style:
+   - coconut palms with ringed trunks and feathered fronds;
+   - buttressed rainforest trees and banyans with aerial roots;
+   - pandanus, banana plants, ferns, flowering shrubs and grass;
+   - coral rocks, driftwood and shells.
+
+   `island-architecture.js` builds layered thatch, bamboo, corrugated iron, striped awnings, planks and stocked
+   shelves. Small detail (ferns, grass, shells) is hidden beyond 150 m.
+
+## 11 October 2026, later
+
+- **Kitano-jima is far across the strait.** The island moved from 150 m to 360 m off the quay (centre (270, −290)):
+  from the port it is a low green island on the horizon. The camera's far plane is 640 m, the sea's haze starts at
+  300 m, navigation and the shore map reach it, and the car ferry takes 34 s instead of 18.
+- **Minato Izakaya's street front.** The front wall stands on the door plane, behind the recessed doorway, and the
+  street through the door and window is the live town (`streetFrontage`, the same renderer as Sakura's glass), not
+  a picture pasted into the opening. Four sliding koshi-do (kick boards, kumiko-barred glass) fill the opening, with
+  the middle pair slid open for a 1.8 m entrance, a granite step and a two-groove track. The window looks out
+  through the frontage's own koshi slats.
+
+## Next
+
+- Day-trippers: ferry arrivals that bring visitors with towels to Coral Bay. This needs new residents with portraits
+  in the resident guide.
+- A hamlet at the foot of Mount Aoba, with households and routines.
+- Outline and shadow pass budgets on iPad: the largest remaining frame cost.
