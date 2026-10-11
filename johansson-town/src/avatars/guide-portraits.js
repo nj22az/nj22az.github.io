@@ -2,6 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from './build.js';
 import {recipeFor} from './cast.js';
 import {readSave} from '../save.js';
+import {readStudioChoices} from '../studio-handoff.js';
 import {playerRecipe} from './actors.js';
 
 /** One shared renderer, only visible cards, using the game's current saved recipes. */
@@ -20,7 +21,7 @@ export function mountResidentPortraits(){
    if(!renderer){renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(480,480);renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.setClearColor('#faf7ef',1);}
    const name=img.closest('[data-resident]').dataset.resident,recipe=name==='Johansson'?playerRecipe():recipeFor(name),avatar=buildAvatar(recipe,{shadows:false,faceSize:512});
    try{scene.add(avatar.root);if(name==='Thuan'){
-    try{const outfit=readSave(localStorage)?.thuanOutfit;if(['nozomi','sailor'].includes(outfit))avatar.wear(outfit);}catch{}
+    try{const outfit=readStudioChoices(localStorage).thuanOutfit||readSave(localStorage)?.thuanOutfit;if(['nozomi','sailor'].includes(outfit))avatar.wear(outfit);}catch{}
    }
    const h=avatar.height,view=img.dataset.portraitView,close=!!view,frame=h*(close?.42:1.12),camera=new THREE.OrthographicCamera(-frame/2,frame/2,frame/2,-frame/2,.1,20);const targetY=h*(close?.83:.51);const angle=view==='side'?Math.PI/2:view==='three-quarter'?.7:0;camera.position.set(Math.sin(angle)*4,targetY+.03,-Math.cos(angle)*4);camera.lookAt(0,targetY,0);scene.updateMatrixWorld(true);avatar.body.skeleton.update();renderer.render(scene,camera);img.src=renderer.domElement.toDataURL('image/webp',.9);img.dataset.liveRecipe=JSON.stringify(recipe);img.dataset.livePortrait='true';
    }finally{scene.remove(avatar.root);avatar.body.skeleton.dispose();avatar.dispose();renderer.renderLists.dispose();}

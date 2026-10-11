@@ -193,9 +193,9 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  * 町長宅, the mayor's home in the east wing: Johansson's own rooms. Tatami, a low table
  * with cushions, the futon folded in the corner by day, a kitchenette, a television on a
  * cabinet, the bookshelf of sea charts and Swedish paperbacks, and the wardrobe with the
- * mirror on its door where you choose what to wear.
+ * mirror on its door (what he wears is chosen in Johansson Studio).
  */
-export function buildMayorHome({room,reg,action,collider=()=>{},exit,openMaker=null,sleep=null}){
+export function buildMayorHome({room,reg,action,collider=()=>{},exit,sleep=null,television=null,post=null}){
  const group=new THREE.Group();group.name='Mayor’s home';room.add(group);
  const box=shell(group,{wall:0xf1e9d6,dado:0xb89c78,tatami:true});
  const {w,d}=SHELL,hw=w/2,hd=d/2;
@@ -239,11 +239,30 @@ export function buildMayorHome({room,reg,action,collider=()=>{},exit,openMaker=n
  }
  for(const [x,z,yaw] of [[-.6,.25,0],[-.6,-1.05,Math.PI],[-1.35,-.4,-Math.PI/2],[.15,-.4,Math.PI/2]]){const cushion=anchor([x,.8,z],'Sit at the low table',()=>action('seat','Low table','Tea from the thermos, still warm. The ferry horn comes across the field.'));cushion.userData.seat={position:[x,0,z],stand:[x+Math.sin(yaw)*.75,0,z+Math.cos(yaw)*.75],surfaceY:.09,eyeY:.82,yaw,pitch:0};}
  anchor([hw-.75,.6,-hd+1.15],'Lie down on the futon',()=>sleep?sleep():action('inspect','Futon','Folded square every morning, the way the harbour master taught you.'));
- anchor([-hw+.8,1.3,hd-.85],'Look in the wardrobe mirror',()=>openMaker?openMaker():action('inspect','Wardrobe','Three kariyushi shirts, a suit for assembly days and a straw hat.'));
- anchor([1.2,1,-hd+.7],'Watch the television',()=>action('inspect','Television','NHK Okinawa: the weather map with a typhoon symbol far to the south, then sumo highlights. You leave it on low for company.'));
+ anchor([-hw+.8,1.3,hd-.85],'Look in the wardrobe mirror',()=>action('inspect','Wardrobe','Three kariyushi shirts, a suit for assembly days and a straw hat.'));
+ // From six the set has the Minato Evening News (feed/evening-news.js); before that, NHK.
+ anchor([1.2,1,-hd+.7],'Watch the television',()=>{const news=television?.();if(news)action('watch',news.title,news.text);else action('inspect','Television','NHK Okinawa: the weather map with a typhoon symbol far to the south, then sumo highlights. You leave it on low for company.');});
  anchor([-1.45,1.2,hd-.7],'Look at the bookshelf',()=>action('read','Bookshelf','Sea charts of the Ryūkyū arc. A Swedish–Japanese dictionary with a cracked spine. Three Wallander paperbacks. The town budget for 1997, with coffee rings.'));
  anchor([0,1.7,-hd+.4],'Look at the photograph',()=>action('inspect','Photograph','Two pictures in one frame: a red wooden boathouse on a grey Swedish shore, and this harbour in 1979, the year you stepped off the ferry and did not get back on.'));
- return {...layoutFor(),home:true};
+ // The letter box inside the front door (郵便受け): the post comes through the slot in
+ // the door and drops into this steel box on the wall beside it, east of the frame and
+ // clear of the dado rail. When something unread is inside, the tops of the envelopes show
+ // over its lip, and that is the only signal (src/mail/post.js).
+ const lx=.85,ly=1.1,lz=hd-.07;
+ // Open at the top, as the inside box is: a back and sides, a floor, and a rolled front lip.
+ box([.34,.26,.012],[lx,ly,lz+.054],0xd9d4c3,'Letter box back');
+ for(const sx of [-1,1])box([.012,.26,.12],[lx+sx*.164,ly,lz],0xd9d4c3,'Letter box side');
+ box([.34,.012,.12],[lx,ly-.124,lz],0xd9d4c3,'Letter box floor');
+ box([.34,.2,.012],[lx,ly-.03,lz-.054],0xd9d4c3,'Letter box front');
+ box([.35,.02,.022],[lx,ly+.075,lz-.056],0xbfb9a8,'Letter box lip');
+ // It stands 12 cm off the wall at hip height: walking into it stops you, as it would.
+ collider(lx,lz,.36,.14,ly+.13);
+ plate(group,'JOHANSSON',{w:.24,h:.05,at:[lx,ly-.05,lz-.0615],ry:Math.PI,bg:'#f3efe2',fg:'#2f3a36',size:.62});
+ const envelopes=[[-.06,.02,0xf6f2e6],[.05,-.01,0xe9dcc3]].map(([dx,tilt,c])=>{const e=box([.17,.12,.008],[lx+dx,ly+.06,lz+.012+dx*.1],c,'Envelope in the letter box');e.rotation.z=tilt;e.visible=false;return e;});
+ const refreshPost=()=>{const n=post?.unread?.()||0;envelopes.forEach((e,i)=>{e.visible=n>i;});};
+ refreshPost();
+ anchor([lx,1.1,hd-.35],'Check the post',()=>{post?.open?.();refreshPost();});
+ return {...layoutFor(),home:true,refreshPost};
 }
 
 /**

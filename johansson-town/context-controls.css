@@ -155,3 +155,7 @@
 :is(#exitRoomButton,#enterBuildingButton).hidden{display:none!important}
 @media(pointer:coarse){:is(#exitRoomButton,#enterBuildingButton){top:max(158px,calc(env(safe-area-inset-top) + 148px));bottom:auto;max-width:calc(100vw - 88px)}}
 body.inspecting :is(#exitRoomButton,#enterBuildingButton),body.conversation-open :is(#exitRoomButton,#enterBuildingButton){visibility:hidden}
+/* A letter (src/mail/post.js) reads on its sender's own writing paper, in their ink. */
+#activity.letter-view #activityBody{background:var(--letter-paper) center top/cover no-repeat;border-radius:10px;padding:22px 22px 18px;color:var(--letter-ink,#2f3a36);box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+#activity.letter-view #activityBody p{white-space:pre-line;line-height:1.55;margin:0}
+#activity.letter-view:not(.conversation) .activity-card{max-height:calc(100dvh - 48px)}

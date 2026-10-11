@@ -4,20 +4,19 @@
 // no timers, so the town can drive it from the existing conversation modal and the
 // rules can be tested on their own. The data format and its semantics are kept.
 
+import {renderLine} from './markup.js';
+
 export const END_DIALOG_ID='end';
-const PAUSE_CHAR='|';   // Stripped from the line; each one is a beat of silence.
-const NAME_CHAR='&';    // Replaced with the player's name.
+// `|` is a beat of silence and `&` the player's name (read by dialogue/markup.js).
 
 // Strips the special characters and records where the pauses were. The original counts
 // pause positions against Godot's bbcode-stripped text; building the printable string
-// as we walk it gives the same indices without needing a rich-text label.
+// as we walk it gives the same indices without needing a rich-text label. The town's line
+// cues (dialogue/markup.js: {p}, {face:…}, {big}…) are read the same way, so a scripted
+// line can be directed like any other; `|` and `&` keep their meaning.
 export function printable(text,playerName=''){
- const pauses={};let out='';
- for(const char of String(text)){
-  if(char===PAUSE_CHAR){pauses[out.length]=(pauses[out.length]||0)+1;continue;}
-  out+=char===NAME_CHAR?playerName:char;
- }
- return {text:out,pauses};
+ const r=renderLine(text,{name:playerName});
+ return r.faces.length?{text:r.text,pauses:r.pauses,faces:r.faces}:{text:r.text,pauses:r.pauses};
 }
 
 // "equal"/"is"/"==", "not"/"!=", "less"/"<", "greater"/">". Ordered comparisons cast to
@@ -73,11 +72,11 @@ export function createDialogue({script,variables=()=>({}),execute=()=>{},playerN
 
  function view(){
   if(ended||!node)return {done:true,id:lastId,speaker:'',mood:null,text:'',pauses:{},choices:[],page:0,pages:0,atLastPage:true,endsHere:true};
-  const {text,pauses}=printable(node.texts[page],playerName);
+  const {text,pauses,faces}=printable(node.texts[page],playerName);
   const atLastPage=page===node.texts.length-1;
   // mood: how the speaker's face should look for this node (the town maps it to a face).
   return {done:false,id:node.id,speaker:node.speaker,icon:node.icon,voice:node.voice,mood:node.mood,
-   text,pauses,page,pages:node.texts.length,atLastPage,
+   text,pauses,faces,page,pages:node.texts.length,atLastPage,
    // Whether reading on closes the conversation, so a caller can label its own button
    // honestly instead of promising a goodbye that leads into another node.
    endsHere:atLastPage&&!node.choices.length&&node.next===END_DIALOG_ID,
