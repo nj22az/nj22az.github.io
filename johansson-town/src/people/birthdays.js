@@ -10,7 +10,9 @@ import {townDate} from '../town-clock.js';
  *   - they greet Johansson with their birthday line (people/greetings.js),
  *   - the evening before, the news says it is their birthday tomorrow (feed/evening-news.js),
  *   - and the day's moments, so the diary and the news, record it (activities.js).
- * Thuan is the town's own character: her birthday is the creator's to choose as well.
+ * Thuan is the town's own character: her birthday is the creator's to choose as well. Her
+ * conversations are her own (thuanConversation), so she does not use the shared birthday
+ * greeting; her birthday line would be written with her script when the date is set.
  */
 export const BIRTHDAYS=Object.freeze({
 });

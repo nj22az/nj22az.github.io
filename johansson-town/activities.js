@@ -68,7 +68,7 @@ import {greetingFor,daysBetween} from './src/people/greetings.js';
 import {happeningsOn} from './src/people/happenings.js';
 import {typhoonAt,typhoonPostDay,clockWords} from './src/world/typhoons.js';
 import {townDate as townDateOf} from './src/town-clock.js';
-import {planFavours,favourWaiting,favourLine,askFavour,replyFavour,favourExpire,favourVisit,restoreFavours,restoreFavourErrand,favourById} from './src/people/favours.js';
+import {planFavours,favourWaiting,clueFor,favourLine,askFavour,replyFavour,favourExpire,favourVisit,restoreFavours,restoreFavourErrand,favourById} from './src/people/favours.js';
 import {recipeFor} from './src/avatars/cast.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
 import {closingStockPending,shelvesNeedRestock,consumeStorageWonHandshake,applyStorageOutcome,acknowledgeStorageOutcome,closingDay} from './src/commerce/shop-stock.js';
@@ -173,7 +173,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   function senderOf(name){
     const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name),recipe=recipeFor(name);
     if(!profile&&!recipe)return null;
-    return {name,temper:temperamentOf(recipe?.profile||{}),favourite:favouriteOf(name),clue:profile?.clue||null};
+    return {name,temper:temperamentOf(recipe?.profile||{}),favourite:favouriteOf(name),clue:profile?.clue?clueFor(name,profile.clue,state):null};
   }
   function deliverPost(){
     const m=getMinutes();
@@ -245,11 +245,13 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
    */
   function favourTalk(name){
     const m=getMinutes();endLateFavour(m);
-    let e=state.errand;const waiting=!e&&favourWaiting(state,name,m);
+    let e=state.errand;const waiting=favourWaiting(state,name,m);
     if(waiting||(e?.status==='offered'&&e.from===name)){
-      e||=askFavour(state,waiting,{minutes:m,temper:temperOf(name)});save();
+      // A favour that ended late and was never given back: its thing goes back with it now.
+      if(waiting&&e?.status==='late'&&!e.lateSaid)takeOne(e.item);
+      if(waiting)e=askFavour(state,waiting,{minutes:m,temper:temperOf(name)});save();
       const f=favourById(e.favour),ask=joinLines([openingGreeting(name),favourLine(f,e,'ask',{speaker:name,playerName:playerName()})]);
-      const reply=yes=>{const r=replyFavour(state,yes);if(!r)return;if(yes)addItem(f.item);recordMoment(state,getMinutes(),r.moment);save();
+      const reply=yes=>{const r=replyFavour(state,yes);if(!r)return;if(yes&&f.kind==='deliver')addItem(f.item);recordMoment(state,getMinutes(),r.moment);save();
         const l=favourLine(f,e,r.step,{speaker:name,temper:temperOf(name),playerName:playerName()});show(talkTitle(name),l.text,[['See you soon',close]],cue(l));showHearts(name);};
       show(talkTitle(name),ask.text,[['Of course',()=>reply(true),false,'Of course. Leave it to me.'],['Not today',()=>reply(false),false,'Sorry, not today.']],{pauses:ask.pauses,face:ask.face});showHearts(name);
       return {handled:true};
@@ -261,7 +263,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     // grow, and the asker writes the next morning.
     const finish=r=>{takeOne(f.item);recordMoment(state,getMinutes(),r.moment);for(const [who,points] of Object.entries(f.friendship))helped(state,who,points);
       sendLetter(state,{id:'helped:'+f.id,day:Math.floor(getMinutes()/1440)+1,occasion:'helped',from:f.from,body:f.thanks||null});};
-    if(name===e.from){const r=favourVisit(state,name,{minutes:m});if(r){if(r.step==='late')takeOne(r.item);if(r.moment)finish(r);line=favourLine(f,e,r.step,{speaker:name,temper:temperOf(name),playerName:playerName()});save();}}
+    if(name===e.from){const r=favourVisit(state,name,{minutes:m});if(r){if(r.step==='late')takeOne(r.item);if(r.moment)finish(r);line=favourLine(f,e,r.step,{speaker:name,temper:temperOf(name),playerName:playerName(),minutes:m});save();}}
     const thing=f.item[0].toLowerCase()+f.item.slice(1);
     if(e.status==='accepted'&&e.kind==='deliver'&&e.carrying&&name!==e.from)buttons.push([`Hand over the ${thing}`,()=>{
       const r=favourVisit(state,name,{minutes:getMinutes()});if(!r)return;
@@ -677,8 +679,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     }else today=null;
     // What they make of him (people/impressions.js), said once when it changes, when nothing else comes first.
     const impression=favour.line||today?null:impressionLine(state,name,getMinutes(),{temper:temperOf(name),playerName:playerName()});
-    if(impression){state.impressions={...(state.impressions||{}),[name]:impression.id};save();}
     const all=DIALOGUE[name];if(!all){legacyResident(name);return;}
+    if(impression){state.impressions={...(state.impressions||{}),[name]:impression.id};save();}
     const history=histories.get(name)||[];
     // The home topic keeps its place in the rotation while commuting. Dropping it
     // left the thinner residents three usable lines against a three-deep history,
@@ -690,7 +692,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     if(today)text=today.text;
     if(favour.line||impression)text='';
     const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);
-    const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
+    const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{const clue=clueFor(name,profile.clue,state);note(clue);show(name,clue,[['I will have a look',close]]);}]]:[])];
     const home=residentHomeDescription(name);
     buttons.push([home?'Where do you live?':'How do you travel?',()=>show(name+' · '+(home?'Home':'Harbour Line'),home||commuterDescription(name),[['Tell me more',()=>resident(name)],['See you soon',close]])]);
     if(name==='Thao'&&getSocialContext().inside!=='ramen')buttons.push(['What is cooking?',()=>izakayaMenu()],['What have I missed?',()=>izakayaGossip()]);

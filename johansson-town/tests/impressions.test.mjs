@@ -41,3 +41,8 @@ test('every impression is written for every temperament, in the house style',()=
  }
  assert.deepEqual(restoreImpressions({Nhung:'kept-word',Thao:'nonsense',['x'.repeat(80)]:'generous'}),{Nhung:'kept-word'});
 });
+
+test('getting something back is known to the one who asked, not to the one who handed it over',()=>{
+ const state={};favour(state,50,'nhung-rain-book','done',['Nhung','Harbour master']);
+ assert.equal(deedsWith(state,'Nhung',at(50)).kept,1);assert.equal(deedsWith(state,'Harbour master',at(50)).kept,0);
+});

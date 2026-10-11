@@ -8,7 +8,8 @@
  * else counts, so a resident never thanks him for something that did not happen.
  *
  * A favour he turned down or let run late is only known to the one who asked: the friend
- * it was for never heard about it. A kept favour is known to both.
+ * it was for never heard about it. A kept delivery is known to both; a thing fetched back,
+ * only to the one who asked for it.
  *
  * The impression is said once, the next time they talk and nothing else comes first (a
  * favour, today's happening), and again only when it changes. Pure: activities.js says it.
@@ -56,7 +57,9 @@ export function deedsWith(state,name,minutes){
   for(const m of list){
    if(!m?.who?.includes(name))continue;
    const fav=/^favour:(.+):(done|late|declined)$/.exec(m.id||'');
-   if(fav){const f=favourById(fav[1]);if(fav[2]==='done')d.kept++;else if(f?.from===name)d[fav[2]==='late'?'late':'declined']++;continue;}
+   // A delivery is known to both ends; getting something back only to the one who asked (the holder handed it over
+   // and never saw it arrive); a refusal or a lapse only to the one who asked.
+   if(fav){const f=favourById(fav[1]);if(fav[2]==='done'){if(f?.kind!=='return'||f.from===name)d.kept++;}else if(f?.from===name)d[fav[2]==='late'?'late':'declined']++;continue;}
    if(m.kind==='gift')d.gifts++;else if(/^Bought .+ a drink/.test(m.text))d.drinks++;
   }
  }

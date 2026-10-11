@@ -28,6 +28,8 @@ export const FAVOURS=Object.freeze([
   // Nhung works until 18:30 and Minato opens at 16:00 (profiles.json): it is asked by day,
   // handed over in the evening, and done by midnight.
   askBy:15*60,
+  // Asked while Nhung is at the counter (until 18:30); Minato is open into the night, so it can be done today.
+  askUntil:18*60,
   letter:'I have found something for my sister Thao, and it cannot come from me. Could you call in at Front-Row Books today? I am at the counter until half past six.',
   thanks:'Thank you for yesterday. Thao has not said a word about the book, which means she has read it. Not a word to her, please.',
   lines:Object.freeze({
@@ -57,12 +59,15 @@ export const FAVOURS=Object.freeze([
   ],
   // Asked before the harbour master goes off at two; handed over at the terminal before six.
   askBy:12*60+30,
+  // Asked while the harbour master is in (until 14:00), leaving time to reach the terminal before the driver's last run at six.
+  askUntil:13*60+45,doneBy:18*60,
   letter:'A small matter of time. The bus driver left his morning timetable on my desk. Call in at the harbour office before two, if you would.',
   thanks:'Thank you for taking the timetable back. He came by this morning with the next one, and a story to make up for yesterday. I have checked the timetable. I have not checked the story.',
   lines:Object.freeze({
    ask:'{face:dry}Every morning the bus driver brings me his timetable and a story.{p} I check the timetable.{p:2} Today he left it behind.{p} {face:smile}Would you take it to him at the terminal?{p} I do not leave the quay.',
    accepted:'{face:smile}Thank you.{p} Tell him the harbour clock agrees with him.{p} Today.',
    checkIn:'{face:dry}The terminal,{p} at the end of the line.{p} He will be telling somebody a story.',
+   checkInAfter:'{face:dry}His last run has gone by now.{p} Never mind.{p} The timetable can wait for the morning.',
    handOver:'{face:surprised}My timetable!{p} I wondered why the morning felt short.{p:2} {face:smile}Did he check it?{p} Of course he checked it.{p} Tell him the story was true.{p} Mostly.',
    done:'{face:smile}He has it back?{p} Good.{p} Tomorrow he will bring me two stories to make up for it.{p} Thank you,{p} {name}.',
    late:'{face:dry}The day ran out,{p} and so did the timetable.{p} Never mind.{p} I will give it to him in the morning,{p} with a story of my own for once.',
@@ -86,12 +91,17 @@ export const FAVOURS=Object.freeze([
   ],
   // The book is with the harbour master, who goes off at two: asked in the morning.
   askBy:12*60,
+  // Asked in time to reach the harbour office before the harbour master goes off at two.
+  askUntil:13*60,doneBy:14*60,
   letter:'A book of ours went out in the rain and ended up drying at the harbour office instead of coming home. Could you call in at Front-Row Books today? I will explain at the counter.',
-  thanks:'Thank you for bringing the book home. It is drying on the window shelf, a little wavy and very proud of itself. I have put a card in it: reserved for the harbour master.',
+  thanks:'Thank you for bringing the book home. It is back on the window shelf, a little wavy and very proud of itself. I have put a card in it: reserved for the harbour master.',
+  // Her clue said the book was drying at the harbour office; once it is home, that is no longer true.
+  clueAfter:'The book that went out in the rain is back on our window shelf. Wavy, but readable.',
   lines:Object.freeze({
    ask:'{face:sweatdrop}A customer read one of our books on the quay.{p} In the rain.{p:2} The harbour master took it in to dry.{p} {face:smile}Could you fetch it back for me?{p} He is at the office until two,{p} and I cannot leave the counter.',
    accepted:'{face:happy}Thank you.{p} Carry it flat.{p} It has been through enough.',
    checkIn:'{face:smile}The harbour office,{p} before two.{p} Ask nicely.{p} I think he has grown fond of it.',
+   checkInAfter:'{face:smile}He will have gone off by now.{p} The book can have one more night at the office.',
    handBack:'{face:smile}The book?{p} Dry as a biscuit.{p} I turned the pages every hour.{p:2} {face:dry}Chapter six is very good.{p} Tell her I have not finished it.',
    done:'{face:happy}It is dry!{p} Wavy,{p} but dry.{p:2} {face:scheme}And somebody has bookmarked chapter six.{p} I will lend it to him properly.{p} Thank you,{p} {name}.',
    late:'{face:smile}The day ran out?{p} Never mind.{p} The book has been patient.{p} So can I.',
@@ -147,12 +157,20 @@ export function planFavours(state,minutes){
 
 /** The favour waiting to be asked by `name` today, once its letter has come: the "!" card's reason. */
 export function favourWaiting(state,name,minutes){
- const f=FAVOURS.find(f=>{const r=state.favours?.[f.id];return f.from===name&&r?.status==='planned'&&r.day===dayOf(minutes)&&state.post?.sent?.includes(letterId(f,r.day));});
- return f&&!state.errand?f:null;
+ const f=FAVOURS.find(f=>{const r=state.favours?.[f.id];return f.from===name&&r?.status==='planned'&&r.day===dayOf(minutes)&&minuteOf(minutes)<f.askUntil&&state.post?.sent?.includes(letterId(f,r.day));});
+ return f&&!errandUnderWay(state)?f:null;
+}
+/** An errand still being done (offered or accepted). A finished one (done, declined, late) does not stop the next ask. */
+export function errandUnderWay(state){return ['offered','accepted'].includes(state.errand?.status);}
+/** A resident's clue, true to what has happened: a favour that changes what it says replaces it. */
+export function clueFor(name,clue,state){
+ const f=FAVOURS.find(f=>f.from===name&&f.clueAfter&&state.favours?.[f.id]?.status==='done');return f?f.clueAfter:clue;
 }
 
 /** A favour's line at a step, rendered: its own words, or the shared errand line. */
-export function favourLine(f,errand,step,{speaker,temper,playerName='Johansson'}={}){
+export function favourLine(f,errand,step,{speaker,temper,playerName='Johansson',minutes=null}={}){
+ // Past the hour it can be done by, the check-in says so instead of sending him off.
+ if(step==='checkIn'&&f?.doneBy&&f.lines?.checkInAfter&&Number.isFinite(minutes)&&minuteOf(minutes)>=f.doneBy)step='checkInAfter';
  const own=f?.lines?.[step];
  if(own&&(!speaker||speaker===(['handOver','handBack'].includes(step)?f.to:f.from)))return renderLine(own,{name:playerName,speaker:speaker||f.from,seed:seedOf(f.id,step)});
  return errandLine(errand,step,{playerName,speaker,temper});
@@ -179,7 +197,8 @@ export function replyFavour(state,yes){
  */
 export function favourExpire(state,minutes){
  const e=state.errand,f=favourById(e?.favour);if(!e||!f||!state.favours?.[f.id])return null;
- if(e.status==='offered'&&dayOf(minutes)>e.day){state.errand=null;state.favours[f.id].status='asked';return null;}
+ // An ask not answered by the time it could still be done goes back to be offered another day.
+ if(e.status==='offered'&&(dayOf(minutes)>e.day||minuteOf(minutes)>=f.askUntil)){state.errand=null;state.favours[f.id].status='asked';return null;}
  if(!expire(e,minutes))return null;
  state.favours[f.id].status='late';
  return {moment:{...f.moments.late,who:[f.from,f.to],id:`favour:${f.id}:late`}};
