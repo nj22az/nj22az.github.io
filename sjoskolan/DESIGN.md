@@ -211,7 +211,7 @@ Text minst 18 pt, nyckelmeningen 21–25 pt.
 | `verktyg/larare/las.mjs` | lösenordssidan för lärarstöd (`wrapper()`, byts med `omslag`) |
 | `verktyg/veckosidor/bygg.py` | veckosidorna 37–39 och 41–45 (mål, delar, redovisning) |
 | `verktyg/inlamning/bygg.py` | veckans inlämningsuppgifter, `vecka-XX/aktuell/Inlamning.html` |
-| `verktyg/inlamning/sjalvrattning.py`, `facit.py` | självrättande inlämning (vecka 42): svarsfält, alternativ, läshänvisningar och checklista; nyckeln med hashade svar |
+| `verktyg/inlamning/sjalvrattning.py`, `facit.py` | självrättande inlämning (vecka 42–44): svarsfält, alternativ, läshänvisningar och checklista; nyckeln med hashade svar |
 | `gemensamt/sjalvrattning.css`, `sjalvrattning*.mjs` | svarsfälten, Rätta (Rätt!/Skiljer sig, tre försök, låsning), rutan Låsta frågor (läs om veckan för nya försök), Lämna in och PDF:en på en självrättande inlämningssida |
 | `verktyg/inlamning/quiz_mall.py` | quizen (vecka 42): texterna med flervalsfrågor A–E, rutan Låsta frågor per text och Lämna in |
 | `gemensamt/quiz-sida.mjs` | quizens Rätta (tre försök per fråga), Jag har läst om texten (nya försök för den texten), Lämna in och PDF:en |

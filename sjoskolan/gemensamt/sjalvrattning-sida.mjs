@@ -3,9 +3,9 @@
 // läsning), Jag har läst texten, låsningen av första versionen och checklistan, Lämna in och PDF-filen.
 // Rättning, försök, veckostatus och PDF:ens innehåll finns i sjalvrattning.mjs, PDF-skrivaren i pdf.mjs.
 import { ratta, kanon, registrera, registreraText, lasForstaVersion, avkodaLista, resultat, tidText, lasLage, sparaLage,
-  BESKED, MAX_FORSOK, forsokKvar, kanLasasUpp, nyOmgang, lasLasning, bekraftaLasning, listanVisas, sparadPlan, pdfBlock,
-  pdfFilnamn, kontrollkod, mailtoAmne, faltNamn } from './sjalvrattning.mjs?v=20261013';
-import { skapaPdf } from './pdf.mjs?v=20261013';
+  BESKED, MAX_FORSOK, forsokKvar, kanLasasUpp, nyOmgang, lasLasning, bekraftaLasning, listanVisas, listanEfter, sparadPlan, pdfBlock,
+  pdfFilnamn, kontrollkod, mailtoAmne, faltNamn, SKRIVEN } from './sjalvrattning.mjs?v=20261014';
+import { skapaPdf } from './pdf.mjs?v=20261014';
 import { fulltNamn, sparatNamn, sparaNamn } from './elevtal.mjs?v=20260930';
 
 const esc = (s) => String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -48,11 +48,14 @@ export function starta(nyckel, dok = document) {
     lagringsrad.textContent = 'Rättningen fungerar inte just nu. Du kan ändå lämna in: läraren rättar dina svar.';
   }
 
+  // delar: veckans delar i rutan Låsta frågor (vecka 43: del-1–del-4); planen sparas med dem för veckoStatus.
   const plan = { vecka: VECKA, titel: rot.dataset.riTitel, epost: rot.dataset.riEpost,
+    delar: (dok.getElementById('ri-lasom')?.dataset.riDelar || '').split(/\s+/).filter(Boolean),
     uppgifter: [...dok.querySelectorAll('.ri-svar')].map((s) => {
       const lasEl = s.querySelector('[data-lista]');
       return { nr: s.dataset.nr, ovning: s.dataset.ovning, titel: s.dataset.titel, lm: (s.dataset.lm || '').split(/\s+/).filter(Boolean), el: s, lasEl,
         checklista: lasEl ? avkodaLista(lasEl.dataset.lista) : null, checklistaEfter: lasEl?.dataset.listaEfter || null,
+        lasText: lasEl?.dataset.lasText || 'a–c',
         falt: [...s.querySelectorAll('[data-falt]')].map(byggFalt) };
     }) };
   // Planen sparas med svaren, så att veckosidan kan visa läget (sjalvrattning.mjs: veckoStatus).
@@ -133,13 +136,14 @@ export function starta(nyckel, dok = document) {
   function summera(u) {
     const r = resultat(plan, lage).uppgifter.find((x) => x.ovning === u.ovning);
     const fel = r.antal - r.ratt - r.tomma - r.lasta, nasta = plan.uppgifter[plan.uppgifter.indexOf(u) + 1];
-    let t = `${r.ratt} av ${r.antal} rätt. `;
-    if (!nyckel) t = 'Sidan kan inte rätta just nu. Dina svar är sparade. ';
+    // En uppgift utan fält som rättas (felsökningsrapporten) får bara besked om texten och checklistan.
+    let t = r.antal ? `${r.ratt} av ${r.antal} rätt. ` : '';
+    if (r.antal && !nyckel) t = 'Sidan kan inte rätta just nu. Dina svar är sparade. ';
     else if (fel) t += 'Läs där det står Skiljer sig. Ändra och tryck Rätta igen.';
     else if (r.tomma) t += 'Svara på resten och tryck Rätta igen.';
     else if (r.lasta) t += `${r.lasta === 1 ? 'En fråga är låst' : `${r.lasta} frågor är låsta`}. Läs om veckan, så får du ${MAX} nya försök.`;
-    else if (r.lista && !r.lista.last) t += 'Skriv a–c och tryck Jag är klar med texten.';
-    else if (r.lista && r.lista.med < r.lista.antal) t += `Checklistan: ${r.lista.med} av ${r.lista.antal} finns med. Skriv till det som saknas i a–c.`;
+    else if (r.lista && !r.lista.last) t += `Skriv ${u.lasText} och tryck Jag är klar med texten.`;
+    else if (r.lista && r.lista.med < r.lista.antal) t += `Checklistan: ${r.lista.med} av ${r.lista.antal} finns med. Skriv till det som saknas i ${u.lasText}.`;
     else t += nasta ? `Bra! Fortsätt med inlämning ${nasta.nr}.` : 'Bra! Gå till Lämna in längst ner.';
     u.el.querySelector('.ri-summa').textContent = t;
   }
@@ -182,7 +186,7 @@ export function starta(nyckel, dok = document) {
   addEventListener('pageshow', uppdateraLasom);
 
   for (const u of plan.uppgifter) {
-    u.el.querySelector('.ri-ratta').addEventListener('click', () => {
+    u.el.querySelector('.ri-ratta')?.addEventListener('click', () => {
       rattaUppgift(u, new Date().toISOString());
       spara();
       summera(u);
@@ -198,9 +202,11 @@ export function starta(nyckel, dok = document) {
     const lista = u.lasEl.querySelector('.ri-lista'), status = u.lasEl.querySelector('.ri-las-status');
     u.lasEl.querySelector('.ri-las-knapp').hidden = true;
     u.lasEl.querySelectorAll('.ri-las-intro').forEach((p) => { p.hidden = true; });
-    const efter = u.falt.find((f) => f.id === u.checklistaEfter);
+    const efter = listanEfter(u).map((id) => u.falt.find((f) => f.id === id)).filter(Boolean).map((f) => faltNamn(u.nr, f).slice(u.nr.length));
     if (!listanVisas(u, lage)) {
-      status.textContent = `Din första version är sparad ${tidText(l.tid)}. Läraren ser den. Checklistan visas när du har svarat rätt på fråga ${efter ? faltNamn(u.nr, efter).slice(u.nr.length) : 'd'}, eller när den frågan är låst.`;
+      const fragor = efter.length > 1 ? `frågorna ${efter.slice(0, -1).join(', ')} och ${efter.at(-1)}, eller när de är låsta`
+        : `fråga ${efter[0] || 'd'}, eller när den frågan är låst`;
+      status.textContent = `Din första version är sparad ${tidText(l.tid)}. Läraren ser den. Checklistan visas när du har svarat rätt på ${fragor}.`;
       lista.hidden = true;
       return;
     }
@@ -238,6 +244,7 @@ export function starta(nyckel, dok = document) {
       lage = lasForstaVersion(lage, u.ovning, Object.fromEntries(skrivna.map((f) => [f.id, varde(f).trim()])), new Date().toISOString());
       spara();
       visaLista(u);
+      if (u.el.querySelector('.ri-summa').textContent) summera(u);
       (u.lasEl.querySelector('.ri-lista h4') || status).focus?.();
       inaktuellt();
     });
@@ -268,7 +275,7 @@ export function starta(nyckel, dok = document) {
     const res = resultat(plan, lage);
     delete ut.dataset.inaktuellt;
     ut.innerHTML = `<p class="ri-stort">${nyckel ? `${res.ratt} av ${res.antal} rätt` : 'Inlämnad'}</p>`
-      + `<ul>${res.uppgifter.map((u) => `<li>Inlämning ${u.nr}: ${u.ratt} av ${u.antal} rätt${u.lasta ? `, ${u.lasta} låst` : ''}${u.lista ? (u.lista.last ? '' : ', texten är inte låst som första version') : ''}.</li>`).join('')}</ul>`
+      + `<ul>${res.uppgifter.map((u) => `<li>Inlämning ${u.nr}: ${u.antal ? `${u.ratt} av ${u.antal} rätt` : SKRIVEN}${u.lasta ? `, ${u.lasta} låst` : ''}${u.lista ? (u.lista.last ? '' : ', texten är inte låst som första version') : ''}.</li>`).join('')}</ul>`
       + `<p class="ri-knappar"><button type="button" class="sj-btn primary" id="ri-pdf">Ladda ner PDF</button></p>`
       + `<p><strong>Lämna in PDF-filen i Google Classroom under Vecka ${esc(VECKA)}.</strong></p>`
       + `<p class="ri-reserv">Kan du inte använda Classroom? <a href="${esc(mailtoAmne(plan.epost, `Inlämning vecka ${VECKA}: ${namn}`))}">Mejla PDF-filen till ${esc(plan.epost)}</a></p>`;

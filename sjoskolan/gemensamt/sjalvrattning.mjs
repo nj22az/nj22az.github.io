@@ -225,11 +225,14 @@ export function lasklocka(nu = () => Date.now()) {
 // ------------------------------------------------------------------ resultat och veckostatus
 const rattas = (f) => f.typ === 'tal' || f.typ === 'val';
 
-/** Checklistan visas när första versionen är låst och frågan före den (checklistaEfter) är rätt eller låst. */
+/** Frågorna som ska vara rätta eller låsta innan checklistan visas: checklistaEfter är ett fält-id eller flera med
+ * mellanslag ('817d', '822a 822b'). */
+export const listanEfter = (u) => String(u.checklistaEfter || '').split(/\s+/).filter(Boolean);
+
+/** Checklistan visas när första versionen är låst och frågorna före den (checklistaEfter) är rätta eller låsta. */
 export function listanVisas(u, lage) {
   if (!lage.las?.[u.ovning]) return false;
-  const efter = u.checklistaEfter ? lage.falt?.[u.checklistaEfter] : null;
-  return !u.checklistaEfter || !!(efter?.klar || efter?.last);
+  return listanEfter(u).every((id) => { const p = lage.falt?.[id]; return !!(p?.klar || p?.last); });
 }
 
 /** Antal rätt per uppgift och totalt. plan.uppgifter: [{nr, ovning, falt: [{id, typ}], checklista}]. */
@@ -264,13 +267,24 @@ export function lmResultat(uppgifter) {
 
 /** Planen som sparas med svaren, så att veckoStatus kan räkna utan sidan: uppgifter med fälten som rättas. */
 export const sparadPlan = (plan) => ({ vecka: plan.vecka, titel: plan.titel, uppgifter: plan.uppgifter.map((u) => (
-  { nr: u.nr, titel: u.titel, ovning: u.ovning, lm: u.lm || [], falt: u.falt.filter(rattas).map((f) => f.id) })) });
+  { nr: u.nr, titel: u.titel, ovning: u.ovning, lm: u.lm || [], falt: u.falt.filter(rattas).map((f) => f.id) })),
+  ...(plan.delar?.length ? { delar: [...plan.delar] } : {}) });
+
+/** Läsbekräftelserna för veckans delar: {"del-1": ISO|null, …, "del-N": …}. delar: planens delar (vecka 43: del-1–del-4,
+ * vecka 44: del-1–del-5, också delarna i vecka-45/), annars del 1–3. */
+export function veckansLasning(vecka, delar = null) {
+  const l = lasLasning(vecka);
+  return Object.fromEntries((delar?.length ? delar : LASDELAR).map((k) => [k, l[k] || null]));
+}
 
 /** Veckans läge för veckosidan (ren funktion, läser bara localStorage och tål att lagringen saknas):
- * {namn, inlamnad, uppgifter: [{nr, titel, ratt, totalt, last}], lm: {'LM-2': {ratt, totalt}, …}, last, lasning}. */
-export function veckoStatus(vecka) {
+ * {namn, inlamnad, uppgifter: [{nr, titel, ratt, totalt, last}], lm: {'LM-2': {ratt, totalt}, …}, last, lasning}.
+ * plan: inlämningens plan när den byggs (verktyg/inlamning/sjalvrattning.py inlamning_plan), så att totalerna stämmer innan
+ * eleven har öppnat sidan. Utan plan används planen som sidan sparar när den öppnas; utan någon av dem är uppgifter []. */
+export function veckoStatus(vecka, plan = null) {
   const { lage } = lasLage(lagringsnyckel(vecka));
-  const uppgifter = (lage.plan?.uppgifter || []).map((u) => {
+  const kalla = plan?.uppgifter?.length ? plan : lage.plan;
+  const uppgifter = (kalla?.uppgifter || []).map((u) => {
     const falt = Array.isArray(u.falt) ? u.falt : [];
     return { nr: String(u.nr), titel: u.titel || '', ratt: falt.filter((id) => lage.falt?.[id]?.ratt).length, totalt: falt.length,
       last: falt.some((id) => lage.falt?.[id]?.last), lm: Array.isArray(u.lm) ? u.lm : [] };
@@ -279,7 +293,7 @@ export function veckoStatus(vecka) {
   if (!namn) { try { namn = localStorage.getItem('sj-elevnamn') || ''; } catch { namn = ''; } }
   const inlamnad = Array.isArray(lage.inlamnad) && lage.inlamnad.length ? lage.inlamnad[lage.inlamnad.length - 1] : null;
   return { namn, inlamnad, uppgifter: uppgifter.map(({ lm, ...u }) => u), lm: lmResultat(uppgifter), last: uppgifter.some((u) => u.last),
-    lasning: lasLasning(vecka) };
+    lasning: veckansLasning(vecka, kalla?.delar) };
 }
 
 /** Quizens läge för veckosidan (ren funktion, läser bara localStorage och tål att lagringen saknas):
@@ -382,10 +396,13 @@ export function pdfBlock(plan, lage, { namn, tid, lmText = {}, kod = kontrollkod
   rad(`Datum och tid: ${tidText(tid)}`);
   rad(`Kontrollkod: ${kod}`);
   rubrik(`Resultat: ${res.ratt} av ${res.antal} rätt`);
-  for (const u of res.uppgifter) rad(`Inlämning ${u.nr}. ${u.titel}: ${u.ratt} av ${u.antal} rätt${u.lasta ? `, ${u.lasta} låst` : ''}.`);
+  for (const u of res.uppgifter) {
+    rad(u.antal ? `Inlämning ${u.nr}. ${u.titel}: ${u.ratt} av ${u.antal} rätt${u.lasta ? `, ${u.lasta} låst` : ''}.`
+      : `Inlämning ${u.nr}. ${u.titel}: ${SKRIVEN}.`);
+  }
   for (const u of plan.uppgifter) {
     const r = res.uppgifter.find((x) => x.ovning === u.ovning);
-    rubrik(`Inlämning ${u.nr}. ${u.titel} – ${r.ratt} av ${r.antal} rätt`);
+    rubrik(`Inlämning ${u.nr}. ${u.titel} – ${r.antal ? `${r.ratt} av ${r.antal} rätt` : SKRIVEN}`);
     for (const f of u.falt.filter(rattas)) {
       const p = lage.falt?.[f.id] || {};
       rad(f.etikett || faltNamn(u.nr, f), { fet: true });
@@ -414,8 +431,10 @@ export function pdfBlock(plan, lage, { namn, tid, lmText = {}, kod = kontrollkod
         rad(`Checklista: ${u.checklista.filter((_, i) => bock[i + 1]).length} av ${u.checklista.length} finns med i svaret.`, { fet: true, luft: 6 });
         u.checklista.forEach((x, i) => rad(`${bock[i + 1] ? 'Med' : 'Inte med'}: ${x.text}`, { indrag: 1 }));
       } else {
-        const efter = u.falt.find((f) => f.id === u.checklistaEfter);
-        rad(`Checklistan visades inte: texten är inte låst som första version${efter ? `, eller fråga ${faltNamn(u.nr, efter)} är inte rätt eller låst` : ''}.`, { luft: 6 });
+        const efter = listanEfter(u).map((id) => u.falt.find((f) => f.id === id)).filter(Boolean).map((f) => faltNamn(u.nr, f));
+        const villkor = !efter.length ? '' : efter.length === 1 ? `, eller fråga ${efter[0]} är inte rätt eller låst`
+          : `, eller frågorna ${efter.slice(0, -1).join(', ')} och ${efter.at(-1)} är inte rätta eller låsta`;
+        rad(`Checklistan visades inte: texten är inte låst som första version${villkor}.`, { luft: 6 });
       }
     }
   }
@@ -470,6 +489,9 @@ export function pdfBlockQuiz(plan, lage, { namn, tid, lmText = {}, kod = kontrol
   b.push({ typ: 'text', text: `Kontrollkoden ${kod} räknas ur namnet, tiden och alla svar.`, storlek: 9, luft: 10 });
   return b;
 }
+
+/** En uppgift utan fält som rättas (felsökningsrapporten): läraren bedömer texten. */
+export const SKRIVEN = 'skriven uppgift, läraren bedömer den';
 
 /** mailto-länk med bara ämnesrad (eleven bifogar PDF:en själv). */
 export const mailtoAmne = (epost, amne) => `mailto:${epost}?subject=${encodeURIComponent(amne)}`;

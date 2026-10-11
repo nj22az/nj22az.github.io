@@ -344,9 +344,9 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
         return f'<a href="../../vecka-{fv}/aktuell/Del_{d}.html">{"← " + text if pil == "<" else text + " →"}</a>'
     fore = lank(plats - 1, '<') if plats > 0 else f'<a href="{idx}">← Vecka {vv}</a>'
     efter = lank(plats + 1, '>') if plats + 1 < antal else f'<a href="{idx}#labb">Labben →</a>'
-    # Vecka med självrättande inlämning: sist på sidan bekräftar eleven att hen har läst delen (sj-last:vecka-NN).
-    if not flytt:
-        h.append(sjalvrattning().lasbekraftelse_html(int(v), dnr))
+    # Vecka med självrättande inlämning: sist på sidan bekräftar eleven att hen har läst delen (sj-last:vecka-NN). En flyttad
+    # del (vecka-45/Del_1 = vecka 43 del 4) skriver veckan och delen eleven läser och länkar till den veckans inlämning.
+    h.append(sjalvrattning().lasbekraftelse_html(flytt[0], flytt[1], inl) if flytt else sjalvrattning().lasbekraftelse_html(int(v), dnr))
     h.append(f'''<nav class="art-nav" aria-label="Delar"><span>{fore}</span><span><a href="{idx}">Veckans översikt</a></span><span>{efter}</span></nav>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script>

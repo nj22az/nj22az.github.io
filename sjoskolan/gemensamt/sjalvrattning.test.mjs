@@ -7,7 +7,7 @@ import { sha256Hex, hashSvar, tolkaTal, kanon, ratta, registrera, registreraText
   resultat, avkodaLista, medTillagg, visaSvar, faltNamn, tidText, TOLERANS_PROCENT, MAX_FORSOK, forsokKvar, kanLasasUpp, nyOmgang,
   lasLasning, bekraftaLasning, lasningsnyckel, lagringsnyckel, lasklocka, veckoStatus, sparadPlan, listanVisas, lmResultat,
   pdfBlock, pdfFilnamn, kontrollkod, lageText, mailtoAmne, LASDELAR, quizNyckel, omlasningsnyckel, lasOmlasning,
-  bekraftaOmlasning, quizStatus, pdfBlockQuiz, bokstavSvar } from './sjalvrattning.mjs';
+  bekraftaOmlasning, quizStatus, pdfBlockQuiz, bokstavSvar, listanEfter, SKRIVEN } from './sjalvrattning.mjs';
 
 const SALT = '0123456789abcdef0123456789abcdef';
 /** En nyckel byggd som facit.py gör: alla k = x · 10^dec inom tolerans % från värdet. Påhittade värden. */
@@ -374,4 +374,42 @@ test('quizens PDF: bokstäver, resultat per text, försök, omgång, läst om oc
   assert.equal(bokstavSvar(LPLAN.uppgifter[0].falt[1], ''), '');
   assert.equal(pdfFilnamn(42, 'Åsa Öberg', 'Quiz'), 'Vecka42_Quiz_Asa_Oberg.pdf');
   assert.equal(pdfFilnamn(42, 'Åsa Öberg'), 'Vecka42_Inlamning_Asa_Oberg.pdf');
+});
+
+// ------------------------------------------------------------------ vecka 43–44: flera frågor före checklistan, skrivna uppgifter
+test('checklistan kan vänta på flera frågor, och en uppgift utan rättade fält är en skriven uppgift', () => {
+  const u = { ovning: 'EL-X', nr: '3', checklistaEfter: 'fa fb', falt: [{ id: 'fa', typ: 'val', kort: 'a' }, { id: 'fb', typ: 'val', kort: 'b' }] };
+  assert.deepEqual(listanEfter(u), ['fa', 'fb']);
+  assert.deepEqual(listanEfter({ checklistaEfter: '817d' }), ['817d']);
+  assert.deepEqual(listanEfter({}), []);
+  const l = { ...nyttLage(), las: { 'EL-X': { tid: 't', texter: {} } }, falt: { fa: { klar: true } } };
+  assert.equal(listanVisas(u, l), false, 'b är inte klar');
+  assert.equal(listanVisas(u, { ...l, falt: { fa: { klar: true }, fb: { last: true } } }), true);
+  assert.equal(listanVisas({ ovning: 'EL-X' }, l), true, 'utan villkor räcker den låsta texten');
+  const plan = { vecka: '43', titel: 'T', uppgifter: [
+    { nr: '1', ovning: 'EL-A', titel: 'Räkna', lm: ['LM-4'], checklista: null, falt: [{ id: 'xa', typ: 'tal', kort: 'a', enhet: 'A', etikett: 'a) Ström (A)' }] },
+    { nr: '4', ovning: 'EL-B', titel: 'Rapport', lm: ['LM-5'], checklistaEfter: '', checklista: [{ text: 'Punkt', las: '' }],
+      falt: [{ id: 'yb', typ: 'lastext', kort: 'b', etikett: 'Observation' }] }] };
+  const lage = { ...nyttLage(), falt: { xa: { nu: '2', ratt: true, forsok: 1, omgang: 1 }, yb: { nu: 'Lampan lyser inte.' } },
+    las: { 'EL-B': { tid: '2026-10-20T10:00:00Z', texter: { yb: 'Lampan lyser inte.' } } } };
+  const t = pdfBlock(plan, lage, { namn: 'Åsa Öberg', tid: '2026-10-22T10:00:00Z' }).map((x) => x.text).join('\n');
+  for (const rad of ['Resultat: 1 av 1 rätt', `Inlämning 4. Rapport: ${SKRIVEN}.`, `Inlämning 4. Rapport – ${SKRIVEN}`, 'Observation: Lampan lyser inte.',
+    'Checklista: 0 av 1 finns med i svaret.']) assert.ok(t.includes(rad), `PDF:en saknar: ${rad}\n${t}`);
+});
+
+test('veckoStatus med byggets plan: totalerna stämmer innan sidan har öppnats', () => {
+  saved.clear();
+  const byggd = { vecka: '43', titel: '', delar: ['del-1', 'del-2', 'del-3', 'del-4'],
+    uppgifter: [{ nr: '1', titel: 'Motorns märkskylt', ovning: 'EL-000820', lm: ['LM-1', 'LM-4'], falt: ['820a', '820b-ns'] },
+    { nr: '4', titel: 'Felsökningsrapport', ovning: 'EL-000828', lm: ['LM-5'], falt: [] }] };
+  assert.deepEqual(veckoStatus(43, byggd), { namn: '', inlamnad: null, last: false,
+    uppgifter: [{ nr: '1', titel: 'Motorns märkskylt', ratt: 0, totalt: 2, last: false }, { nr: '4', titel: 'Felsökningsrapport', ratt: 0, totalt: 0, last: false }],
+    lm: { 'LM-1': { ratt: 0, totalt: 2 }, 'LM-4': { ratt: 0, totalt: 2 }, 'LM-5': { ratt: 0, totalt: 0 } },
+    lasning: { 'del-1': null, 'del-2': null, 'del-3': null, 'del-4': null } });
+  saved.set('sj-v43-inlamning', JSON.stringify({ ...nyttLage(), falt: { '820a': { nu: '1', ratt: true } } }));
+  bekraftaLasning(43, 'del-4', '2026-10-20T10:00:00.000Z');
+  const s = veckoStatus(43, byggd);
+  assert.equal(s.uppgifter[0].ratt, 1);
+  assert.equal(s.lasning['del-4'], '2026-10-20T10:00:00.000Z', 'del 4 (vecka-45/Del_1) räknas i vecka 43');
+  assert.deepEqual(veckoStatus(43).uppgifter, [], 'utan plan och utan sparad plan: tomt');
 });

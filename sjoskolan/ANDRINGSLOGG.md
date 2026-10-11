@@ -175,9 +175,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     sambandsraden ”Utgåvans grund: SS-EN 50110-1 utgåva 4:2024” stod direkt ovanför på sidan och på stödbilden. Samband,
     givet och stödbildens text räknas som ledtrådar (regel 1). *Manuell kontroll.*
 
-49. **En ja/nej-fråga ska ha ett säkert svar.** Inlämning 2 b i vecka 43 frågade ”Löser jordfelsbrytaren?” vid 22 mA.
-    En 30 mA-jordfelsbrytare måste lösa vid 30 mA men får lösa redan över 15 mA, så frågan saknade svar. Fråga efter det som
-    gäller säkert (”Måste den lösa?”) och räkna igenom kursens D (D = 12) och gränsfallen innan frågan publiceras. *Manuell kontroll.*
+49. **En ja/nej-fråga ska ha ett säkert svar.** Inlämning 2 b i vecka 43 frågade ”Löser jordfelsbrytaren?”, och med kursens D
+    fanns inget säkert svar. Fråga efter det som gäller säkert (”Måste den lösa?”) och räkna igenom kursens D (D = 12) och
+    gränsfallen innan frågan publiceras. Skriv inte uppgiftens tal eller svar här: inlämningen rättar sig själv. *Manuell kontroll.*
 
 50. **Ett mätvärde i en uppgift ska gå att mäta med det angivna instrumentet.** Analysuppgiften i vecka 44 gav pumpen 20,12 V på en
     voltmeter med upplösningen 0,1 V, och R_{efter} = 0,10 Ω var mindre än sin egen osäkerhet (±0,11 Ω). Isolationslabbet lät provaren
@@ -215,7 +215,29 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     forklaring) i posten. *Kontroll: `vecka-42/aktuell/quiz.test.mjs` stoppar när posten har ny revision; bygget stoppar
     på facitfält i posten.*
 
+56. **Ett facit i fritext räknas om när uppgiftens tal ändras.** Lärarfacit för EL-000826 (analys av mätdata) räknade
+    felgränsen med pumpspänningar från en äldre version av uppgiften, och räkna-först-facit för Isolationslabbet
+    (EL-000825) har två värden från en äldre version av labbet. Räkna om `larare.facit_rader` när talen i posten eller
+    labbet ändras, eller använd en beräkningsfunktion (`lib/berakningar.py`, `lararfacit`) i stället för fasta tal. Skriv
+    aldrig lärarens facit här (det är skyddat). *Manuell kontroll; den självrättande nyckeln räknas ur uppgiftens text och
+    prövas av `vecka-XX/aktuell/inlamning.test.mjs`.*
+
 ## Ändringar
+
+- **2026-10-11** Vecka 43 och 44 rättar sig själva som vecka 42 (lärarens beslut 12 oktober): svarsfält med tre försök,
+  rutan Låsta frågor med veckans alla delar, Lämna in och en PDF till Google Classroom under Vecka 43 och Vecka 44. Allt
+  lämnas in senast fredag (23 och 30 oktober), aldrig söndag. Fälten står i `verktyg/inlamning/sjalvrattning.py`
+  (`FORMULAR[43]`, `FORMULAR[44]`): tal där svaret är ett tal (D = 12), val med fyra alternativ där eleven ska välja, och
+  skrivna delar med första version och checklista (hållkretsen i inlämning 3 och felsökningsrapporten i vecka 43, slutsatsen
+  i analysen av mätdata i vecka 44). Felsökningsrapporten (EL-000828) och analysen av mätdata (EL-000826) hör till del 4 i
+  vecka 43 och 44, som ligger bland vecka 45:s sidor; de står nu som inlämning 4 i sin vecka, och vecka 45:s sida behåller
+  ankarna med en hänvisning dit. Vecka 45 har bara den frivilliga övningstentan. Delsidorna i vecka-45/ bekräftar läsningen
+  för veckan eleven läser dem i (`sj-last:vecka-43` `del-4`, `sj-last:vecka-44` `del-4` och `del-5`) och länkar tillbaka
+  till den veckans inlämning; delarna hittas ur sidornas rubrikrad (`delsidor`). Hänvisningarna går till delens avsnitt med
+  rubriken, också i en annan veckas mapp. `veckoStatus(vecka, plan)` tar byggets plan (`inlamning_plan`) och veckans delar;
+  `falt_per_lm(vecka, 'inlamning')` räknar vecka 43 och 44. Nycklarna (`vecka-43/44/aktuell/inlamning-nyckel.mjs`) är
+  skrivna ur klartext utanför repot och jämförda med lärarens skyddade facit (regel 56). Tester:
+  `verktyg/inlamning/provvecka.mjs` (gemensamma), `vecka-43/44/45/aktuell/inlamning.test.mjs`.
 
 - **2026-10-11** Vecka 42: delsidorna Del_1–3 har rutan **Din del** överst (lärarens önskan: delsidorna ska vara
   översikter som veckosidan). Dagens färg och tid, lektionens läge (I dag, Pågår nu, Om 2 dagar, Har varit), vad vi

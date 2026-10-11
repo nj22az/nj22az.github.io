@@ -4,7 +4,7 @@
 // 3 minuter sammanlagt under besöket. Bekräftelsen sparas i localStorage sj-last:vecka-NN som {"del-1": ISO, …};
 // den senaste tiden per del behålls (sjalvrattning.mjs: bekraftaLasning). Inlämningssidan ger låsta frågor nya försök
 // när alla delar och texten är bekräftade efter låsningen.
-import { lasklocka, bekraftaLasning, lasLasning, tidText, LASTID_MS } from './sjalvrattning.mjs?v=20261013';
+import { lasklocka, bekraftaLasning, lasLasning, tidText, LASTID_MS } from './sjalvrattning.mjs?v=20261014';
 
 const minSek = (ms) => {
   const s = Math.ceil(ms / 1000), m = Math.floor(s / 60);
@@ -44,7 +44,9 @@ export function startaLasning(dok = document, { kravMs = LASTID_MS, nu } = {}) {
     const t = bekraftaLasning(vecka, del)[del];
     klar = true;
     clearInterval(timer);
-    status.innerHTML = `Bra! Del ${n} är bekräftad ${tidText(t)}. <a href="Inlamning.html">Tillbaka till inlämningen</a>`;
+    // En del som ligger i en annan veckas mapp länkar till den veckans inlämning (data-ri-las-inlamning).
+    const inl = (ruta.dataset.riLasInlamning || 'Inlamning.html').replace(/["<>]/g, '');
+    status.innerHTML = `Bra! Del ${n} är bekräftad ${tidText(t)}. <a href="${inl}">Tillbaka till inlämningen</a>`;
   });
   kolla();
   return { kolla, klocka, sett };

@@ -129,6 +129,15 @@ node --test sjoskolan/gemensamt/sjalvrattning.test.mjs sjoskolan/gemensamt/pdf.t
 Testet stoppar när en post har en annan revision än den nyckeln är skriven för. Med `INLAMNING_FACIT=<klartextfilen>`
 prövar det också att lärarens svar ger Rätt!.
 
+Vecka 43 och 44 fungerar likadant (`FORMULAR[43]`, `FORMULAR[44]`, `facit.py 43` och `facit.py 44`). Felsökningsrapporten
+(EL-000828) och analysen av mätdata (EL-000826) står som inlämning 4 i vecka 43 och 44 och har dessutom en placering på
+vecka 45:s sida, som visar en hänvisning (`lamnas_med` i `verktyg/inlamning/bygg.py`). Testerna för veckorna:
+
+```sh
+node --test sjoskolan/vecka-43/aktuell/inlamning.test.mjs sjoskolan/vecka-44/aktuell/inlamning.test.mjs sjoskolan/vecka-45/aktuell/inlamning.test.mjs
+INLAMNING_FACIT_DIR=/utanför/repot node --test sjoskolan/vecka-43/aktuell/inlamning.test.mjs   # facit-v43.json där
+```
+
 **Quiz** (`vecka-42/aktuell/Quiz.html`, beslut 12 oktober 2026): texter som eleven läser hemma, med flervalsfrågor.
 Varje text är en post med `uppgift.fraga` = läsanvisningen, `delfragor` = `{id, typ: "flerval", text, alternativ (4–5),
 ledtrad}` och `referenser.resurser[0]` = `{url: "vecka-42/aktuell/<fil>.pdf", titel, kortnamn}` (kortnamnet står i
