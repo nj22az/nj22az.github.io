@@ -9,7 +9,7 @@ const authorX=99.3,authorZ=SHOPPING_LANE_ROWS[2];
 export function buildBlueCoralShop({world,group,register,onAction,authored=false}){
  const colliderStart=world.colliders.length,root=new THREE.Group();root.name='Blue Coral ice-cream shop';root.position.set(authorX,0,authorZ);group.add(root);
  const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.75});
- const box=(name,size,p,c,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material(c));m.name=name;m.position.set(...p);root.add(m);if(solid)world.colliders.push({id:name,x:authorX+p[0],z:authorZ+p[2],w:size[0],d:size[2],height:p[1]+size[1]/2});return m;};
+ const box=(name,size,p,c,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material(c));m.name=name;m.position.set(...p);m.userData.staticProp=true;root.add(m);if(solid)world.colliders.push({id:name,x:authorX+p[0],z:authorZ+p[2],w:size[0],d:size[2],height:p[1]+size[1]/2});return m;};
  box('Blue Coral tiled shop floor',[7,.06,8.5],[0,.03,0],0xcfc6a7);
  const tileY=GROUND_LAYER.apron+GROUND_LAYER.grass;
  for(let x=-3;x<3.4;x+=.6)for(let z=-4;z<4;z+=.6)if(Math.round((x+3)/.6+(z+4)/.6)%2===0)box('Cream and teal floor tiles',[.58,.008,.58],[x,tileY-.004,z],0x9baaa0);

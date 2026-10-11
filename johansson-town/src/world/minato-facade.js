@@ -436,5 +436,9 @@ export function buildMinatoFacade({parent,shadows=false,anisotropy=4,colliders=[
   ramenNoren.visible=open;
  };
  ramenLit(false,1);
+ // The frontage's timber, plaster and fittings stand still and are drawn in batches. The noren
+ // come and go with opening hours and the lanterns and signs glow, so those stay live.
+ {const live=new Set();for(const o of [noren,ramenNoren,...lanterns])o?.traverse?.(c=>live.add(c));
+  group.traverse(o=>{if(o.isMesh&&!live.has(o)&&!o.userData.minatoGlow&&!o.userData.ramenGlow)o.userData.staticProp=true;});}
  return {group,noren,lanterns,lit,ramen:{group:ramen,noren:ramenNoren,lit:ramenLit}};
 }

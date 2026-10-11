@@ -195,8 +195,11 @@ void main() {
   float spec = step(0.5, pow(saturate(dot(n, halfDir)), 120.0));
   col += spec * 0.6 * uGlint * vec3(1.0, 0.98, 0.92) * (1.0 - foam);
 
-  // Holds its colour out to a thin haze where the sea meets the sky.
-  float fog = smoothstep(uFogNear, uFogFar, dist);
+  // Holds its colour out to a thin haze where the sea meets the sky. The land has no haze,
+  // so the sea must not either until well past Kitano-jima: otherwise the island stood on a
+  // pale band of its own. From higher up (the lookouts, the hill) the horizon is further away.
+  float reach = 1.0 + max(0.0, cameraPosition.y - 2.0) / 30.0;
+  float fog = smoothstep(uFogNear * reach, uFogFar * reach, dist);
   col = mix(col, uHorizon, fog * fog);
   gl_FragColor = vec4(col, 1.0);
   #include <tonemapping_fragment>
@@ -266,9 +269,10 @@ export function oceanMaterial() {
       uShallow: {value: new THREE.Color(SEA.day.shallow)},
       uFoam: {value: new THREE.Color(SEA.day.foam)},
       uHorizon: {value: new THREE.Color(SEA.day.horizon)},
-      // The camera sees 220 m; the haze closes in over the last stretch of that.
-      uFogNear: {value: 95},
-      uFogFar: {value: 218},
+      // The camera sees 480 m. The water keeps its colour past the airport island (about
+      // 180 m from the quay) and closes into the horizon haze over the last stretch.
+      uFogNear: {value: 190},
+      uFogFar: {value: 460},
       uWaveDir: {value: WAVES.map(w => new THREE.Vector2(w.dx, w.dz))},
       uWaveLen: {value: WAVES.map(w => w.wavelength)},
       uWaveAmp: {value: WAVES.map(w => w.amplitude)},
@@ -283,11 +287,17 @@ export function oceanMaterial() {
 }
 
 export function createSurroundingOcean() {
-  const geo = new THREE.PlaneGeometry(1400, 1400, 96, 96);
+  // Out to the distant ridge in the south (horizon.js, from z 500) as well as the open sea
+  // north: when it stopped at z 400, the hilltops looked across a gap of bare sky to the ridge.
+  const geo = new THREE.PlaneGeometry(1600, 1700, 104, 112);
   geo.rotateX(-Math.PI / 2);
   const sea = new THREE.Mesh(geo, oceanMaterial());
   sea.name = 'Island surrounding sea';
-  sea.position.set(0, SEA_LEVEL, -300);
+  sea.position.set(0, SEA_LEVEL, -150);
+  // Drawn whole from anywhere. The town's section streamer cuts big meshes into 24 m cells
+  // and draws only those near the player: the sea used to end in a square round you, with
+  // bare sky beyond it from every hill, lookout and boat.
+  sea.userData.horizon = true;
   sea.frustumCulled = false;
   sea.receiveShadow = false;
   sea.castShadow = false;

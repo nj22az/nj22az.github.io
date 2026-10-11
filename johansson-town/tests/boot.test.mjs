@@ -110,7 +110,7 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const {SAKURA_SHOP}=await import('../src/world/sakura-bench.js');
     const {circleHitsRect}=await import('../physics.js?snappy=1');
     assert.deepEqual(api.SITES.map(s=>s.id).sort(),['clinic','community-kitchen','form3d','frontrow','home-kitahama-10','home-kitahama-11','home-kitahama-12','home-kitahama-3','home-kitahama-4','home-kitahama-5','home-kitahama-6','home-kitahama-7','home-kitahama-8','home-kitahama-9','izakaya','koban','market','mayor-home','mayor-office','office','onsen','ramen','resident-home-aya','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school']);
-    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','aoba-garden','aoba-viewpoint','ferry-terminal','hoshizaki','rainflower-lane','warehouse','west-lighthouse']);
+    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','aoba-garden','aoba-utaki','aoba-viewpoint','ferry-terminal','hoshizaki','rainflower-lane','warehouse','west-lighthouse']);
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
     assert.equal(api.world.group.getObjectByName('west-shop:form3d'),undefined,'Only one bookshop/workshop exterior');
