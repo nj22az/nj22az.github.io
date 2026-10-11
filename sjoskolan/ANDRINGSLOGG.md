@@ -205,6 +205,15 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 42: veckosidan visar dagen (lärarens önskan: eleven ser vad lektionen i dag handlar om, läraren
+  visar bara presentationen, och alla läxor går att förstå från sidan). Rutan I dag överst (tid, rubrik, passen ur
+  presentationens upplägg och Öppna presentationen; utan lektion närmaste sista dag och nästa lektion), en ruta per
+  lektionsdag i egen färg (måndag grön, tisdag blå, fredag magenta; också på presentationens titelbild) med upplägg, mål och
+  läxor efter lektionen, och Hela veckan utan dagfärg: läsförståelsen (senast torsdag 15 oktober), inlämningen (senast
+  söndag 18 oktober) och övningarna. Läxorna skrivs en gång i `lektioner.py HEMMA` och står både på bilden ”Det här
+  gör du nu” och på sidan. Måndagens och tisdagens bilder säger nu läsförståelsen senast torsdag; tisdagens hänvisning
+  till ”uppgift 4” är borta. Delsidan hoppar över dagens namn på titelbilden (`Dag: …`). `verktyg/veckosidor/dagsvy.py`,
+  `gemensamt/dagsvy.mjs`, test `gemensamt/dagsvy.test.mjs`.
 - **2026-10-11** CI var röd efter sammanslagningen av den självrättande inlämningen: `kursplan.py` gick inte att läsa med
   Python 3.11 (regel 53). Rättat; `kursplan_framsteg` bryter ut kursplanens punkter ur `veckopanel_html` (samma utdata).
 - **2026-10-11** Vecka 42: ”Din vecka” räknar inlämningens fält per kursplanspunkt redan från sidan (`kursplan.py`

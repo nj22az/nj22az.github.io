@@ -33,6 +33,7 @@ _spec.loader.exec_module(_inl)
 EPOST, epost_knapp = _inl.EPOST, _inl.epost_knapp
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
+from dagsvy import DAGSVY, dagsvy_html  # vecka 42: I dag, lektionsdagarna i egna färger och det som gäller hela veckan
 from kursplan import PANEL, kursplan_html, vecko_band, veckopanel_html  # veckans översikt efter kursplanens punkter LM-1–9 och områdenas färgkod
 V = '20261011a'
 DAGPLAN_V = '20260927a'
@@ -241,9 +242,22 @@ VECKOR = {
             (1, '15:00', 'Tisdag', 'Online 15.00–17.00', 'Del 2 Regler, ansvar och arbetsmetoder. Övning 2.1–2.5 tillsammans.'),
             (1, '17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', 'Övning 2.6–2.10 på del 2. Börja på inlämning 1 och 2.'),
             (4, '09:00', 'Fredag', 'Online 09.00–11.00', 'Del 3 Riskbedömning och skydd. Övning 3.1–3.5 tillsammans.'),
-            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Övning 3.6–3.10. Labb: Multimeterlabbet, Välj CAT-klass. Inlämning 1–4 senast söndag: ladda ner PDF:en och lämna in den i Google Classroom.'),
+            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Övning 3.6–3.10. Labb: Multimeterlabbet, Välj CAT-klass. Inlämning 1–3 senast söndag: ladda ner PDF:en och lämna in den i Google Classroom.'),
         ],
         'redovisa': ['Multimeterlabbet, Välj CAT-klass: ditt val av instrument och mätsladdar med skriftlig motivering.', 'En riskbedömning i mallen för ett av fallen i del 3.'],
+        # Det som gäller hela veckan (dagsvy.py, rutorna under ”Hela veckan”). Läxorna efter varje lektion står i
+        # verktyg/lektionsbilder/lektioner.py HEMMA, så att bilden ”Det här gör du nu” och sidan säger samma sak.
+        'veckan': [
+            {'id': 'lasforstaelse', 'titel': 'Läsförståelse', 'sista': '2026-10-15', 'href': 'Lasforstaelse.html', 'knapp': 'Öppna läsförståelsen',
+             'text': 'Läs fyra texter från Transportstyrelsen hemma. Svara på frågorna om varje text med A, B, C eller D.',
+             'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Lämna in PDF-filen i Google Classroom under Vecka 42 – Läsförståelse.'},
+            {'id': 'inlamning', 'titel': 'Inlämningen', 'sista': '2026-10-18', 'href': 'Inlamning.html', 'knapp': 'Öppna inlämningen',
+             'text': 'Tre uppgifter: riskbedömning före arbete, beröringsspänning i en modell och rätt mätutrustning.',
+             'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Tryck Lämna in, ladda ner PDF-filen och lämna in den i Google Classroom under Vecka 42.'},
+            {'id': 'ovningar', 'titel': 'Övningarna', 'href': 'Formelstod_och_ovningar.html', 'knapp': 'Alla övningar',
+             'text': 'Tio övningar till varje del, med ledtrådar och facit. Övning 1–5 gör vi tillsammans på lektionen, övning 6–10 gör du hemma.',
+             'hur': 'Bocka av en övning när du är klar. Övningarna lämnas inte in.'},
+        ],
         'fordjupning': [],
     },
     43: {
@@ -659,6 +673,13 @@ def enkel_vecka(nr, w, week_dir, delar_, delsida, labbar, redovisa, skicka, kick
     stod = ('<p class="vecka-stod"><strong>Att slå upp:</strong> <a href="../../gemensamt/Formelsamling.pdf">Formelsamling</a>'
             '<a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp</a>'
             '<a href="../../tentamen.html">Tentamen</a></p>' + mer('Mer att läsa (frivilligt)', extra))
+    if nr in DAGSVY:
+        # Veckan som dagar: I dag, lektionerna (en färg per dag) och hela veckan. Ersätter Nästa steg, vägen och översikten.
+        modul = ROOT / 'gemensamt' / 'sjalvrattning.mjs'
+        sjalv = f'./sjalvrattning.mjs?v={hashlib.sha1(modul.read_bytes()).hexdigest()[:10]}' if modul.exists() else None
+        return (ENKEL_CSS + f'<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>'
+                f'<p class="course-lead">{escape(w["mal"])}</p>{vecko_band(nr, w)}</header>{dagsvy_html(nr, w, sjalv)}'
+                f'{kursplan_html(nr, w, med_tal=False)}{stod}')
     panel = ''
     if nr in PANEL:
         # Översikten ”Din vecka”: stegen med Klart-ruta, veckans egna delsidor (läst-knapparna) och den självrättande inlämningen.

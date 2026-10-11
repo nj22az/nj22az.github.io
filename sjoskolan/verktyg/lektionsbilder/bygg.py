@@ -228,6 +228,17 @@ def b_titel(prs, lek, nr):
     ruta(s, 0.6, y, 6.2, 1.0, [lek['underrubrik']], size=22, color=VIT, efter=0)
     ruta(s, 0.6, y + 1.1, 6.4, 0.45, [lek['kicker']], size=16, color=VIT, efter=0)
     ruta(s, 0.6, 5.7, 6.4, 0.4, [f'Del {lek["del"]} av {lek["delar"]} · Elteknik och ellära'], size=14, color=VIT, efter=0)
+    # Dagens namn i dagens färg, samma som dagens ruta på veckosidan (kursplan.DAGFARG).
+    dag = lek['kicker'].split(' · ')[1]
+    if dag.split()[0] in K.DAGFARG:
+        chip = platta(s, 0.6, 0.45, 0.16 * len(dag) + 0.5, 0.48, farg(K.DAGFARG[dag.split()[0]]), rundad=True)
+        tf = chip.text_frame
+        tf.margin_left = tf.margin_right = Inches(0.12)
+        tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        p = tf.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        skriv(p, dag, 18, bold=True, color=VIT)
+        chip.name = f'Dag: {dag}'
     sidfot(s, nr, lek['etikett'])
 
 

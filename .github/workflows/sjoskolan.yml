@@ -48,7 +48,7 @@ jobs:
         run: |
           # pdfinfo och pdftotext (poppler-utils) öppnar elevens PDF i testet; saknas de hoppar just den delen över.
           command -v pdftotext >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils) || echo "poppler-utils saknas"
-          node --test sjoskolan/gemensamt/sjalvrattning.test.mjs sjoskolan/gemensamt/pdf.test.mjs sjoskolan/vecka-42/aktuell/inlamning.test.mjs sjoskolan/gemensamt/veckopanel.test.mjs
+          node --test sjoskolan/gemensamt/sjalvrattning.test.mjs sjoskolan/gemensamt/pdf.test.mjs sjoskolan/vecka-42/aktuell/inlamning.test.mjs sjoskolan/gemensamt/veckopanel.test.mjs sjoskolan/gemensamt/dagsvy.test.mjs
       - name: Multimeterlabbets gränssnittstest
         working-directory: sjoskolan/multimetersimulator
         run: npm ci --ignore-scripts --no-audit --no-fund && npm test

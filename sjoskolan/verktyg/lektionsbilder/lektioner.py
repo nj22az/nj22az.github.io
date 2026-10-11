@@ -11,6 +11,34 @@ Regler för texten:
 
 DELSIDA = 'nj22az.github.io/sjoskolan/vecka-{v}/aktuell/Del_{d}.html'
 
+# Läxorna efter varje lektion: (id, text, adress relativt veckosidan, knapptext). Samma lista står på bilden ”Det här gör
+# du nu” och i dagens ruta på veckosidan (verktyg/veckosidor/dagsvy.py), så att presentationen och sidan säger samma sak.
+# id styr hur sidan visar läget: del-N (”Jag har läst del N” på delsidan), ovn-N (övning N.6–N.10 avbockade),
+# inl (inlämningen påbörjad); övriga har en Klart-ruta.
+HEMMA = {
+    'v42_01': [
+        ('del-1', 'Läs del 1. Tryck på ”Jag har läst del 1” längst ned på sidan.', 'Del_1.html', 'Öppna del 1'),
+        ('ovn-1', 'Gör övning 1.6–1.10 på delsidan. Ledtrådar och facit finns där.', 'Del_1.html#v42_01-q6', 'Öppna övning 1.6'),
+        ('film', 'Titta på filmen Fem steg (repetition från vecka 40).', '../../filmer/#fem-steg', 'Öppna filmen'),
+    ],
+    'v42_02': [
+        ('del-2', 'Läs del 2. Tryck på ”Jag har läst del 2” längst ned på sidan.', 'Del_2.html', 'Öppna del 2'),
+        ('ovn-2', 'Gör övning 2.6–2.10 på delsidan. Ledtrådar och facit finns där.', 'Del_2.html#v42_02-q6', 'Öppna övning 2.6'),
+        ('inl', 'Börja på inlämningen: uppgift 1 och 2.', 'Inlamning.html', 'Öppna inlämningen'),
+    ],
+    'v42_03': [
+        ('del-3', 'Läs del 3. Tryck på ”Jag har läst del 3” längst ned på sidan.', 'Del_3.html', 'Öppna del 3'),
+        ('ovn-3', 'Gör övning 3.6–3.10 på delsidan. Ledtrådar och facit finns där.', 'Del_3.html#v42_03-q6', 'Öppna övning 3.6'),
+        ('labb', 'Gör labben Välj CAT-klass i Multimeterlabbet.', '../../multimetersimulator/?ovning=category', 'Öppna labben'),
+    ],
+}
+# Det som gäller hela veckan (står på bilden som not och på veckosidan under ”Hela veckan”).
+VECKAN = {42: 'Läsförståelsen senast torsdag 15 oktober, inlämningen senast söndag 18 oktober. Båda öppnar du från veckosidan.'}
+
+
+def hemma(lek_id):
+    return [h[1] for h in HEMMA[lek_id]]
+
 V42_01 = {
     'id': 'v42_01',
     'fil': 'vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx',
@@ -169,13 +197,11 @@ V42_01 = {
         }),
         ('lista', {
             'rubrik': 'Det här gör du nu',
-            'punkter': [
-                'Läs del 1 på webben. Tryck på ”Jag har läst del 1” längst ned på sidan.',
-                'Gör övning 1.6–1.10 på delsidan. Ledtrådar och facit finns där.',
-                'Titta på filmen Fem steg (repetition från vecka 40).',
+            'punkter': hemma('v42_01') + [
+                'Börja läsa de fyra texterna till Läsförståelse.',
                 'I morgon tisdag 15.00: del 2, Regler, ansvar och arbetsmetoder.',
             ],
-            'not': 'Inlämningen för vecka 42 öppnar du från veckosidan. Sista dag: söndag 18 oktober.',
+            'not': VECKAN[42],
             'size': 20,
         }),
         ('kallor', {
@@ -349,13 +375,10 @@ V42_02 = {
         }),
         ('lista', {
             'rubrik': 'Det här gör du nu',
-            'punkter': [
-                'Läs del 2 på webben. Tryck på ”Jag har läst del 2” längst ned på sidan.',
-                'Gör övning 2.6–2.10 på delsidan. Ledtrådar och facit finns där.',
-                'Börja på inlämningen: uppgift 1 och 2. Läs Transportstyrelsens riktlinjer för riskanalysarbete till fredag (uppgift 4).',
+            'punkter': hemma('v42_02') + [
                 'Fredag 09.00: del 3, Riskbedömning och skydd.',
             ],
-            'not': 'Inlämningen för vecka 42 öppnar du från veckosidan. Sista dag: söndag 18 oktober.',
+            'not': VECKAN[42],
             'size': 20,
         }),
         ('kallor', {
@@ -540,12 +563,10 @@ V42_03 = {
         }),
         ('lista', {
             'rubrik': 'Det här gör du nu',
-            'punkter': [
-                'Läs del 3 på webben. Tryck på ”Jag har läst del 3” längst ned på sidan.',
-                'Gör övning 3.6–3.10 på delsidan och labben Välj CAT-klass.',
-                'Gör klart inlämningen i formuläret. Ladda ner PDF-filen och lämna in den i Google Classroom.',
+            'punkter': hemma('v42_03') + [
+                'Gör klart inlämningen. Ladda ner PDF-filen och lämna in den i Google Classroom.',
             ],
-            'not': 'Sista dag: söndag 18 oktober. Nästa vecka: vecka 43, Komponenter och skydd.',
+            'not': 'Inlämningen senast söndag 18 oktober. Nästa vecka: vecka 43, Komponenter och skydd.',
             'size': 20,
         }),
         ('kallor', {

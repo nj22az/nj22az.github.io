@@ -59,6 +59,9 @@ OMRADEN = [
     ('felsokning', 'Felsökning och dokumentation', '#e87ba4', ['LM-5', 'LM-7']),
 ]
 OMRADE_AV = {m: o for o in OMRADEN for m in o[3]}
+# Lektionsdagarnas färger (veckosidan från vecka 42 och presentationernas titelbild). Validerade för färgblindhet mot vit
+# yta (alla par), och vit text på färgen klarar 4,5:1. Står alltid tillsammans med dagens namn. Inte samma kulörer som områdena.
+DAGFARG = {'Måndag': '#008300', 'Tisdag': '#2468c0', 'Fredag': '#b5179e'}
 
 
 def ton(hexfarg, andel=0.14):

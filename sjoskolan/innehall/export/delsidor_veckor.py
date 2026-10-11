@@ -110,7 +110,8 @@ def las_bild(bild, deck, nr, figmapp):
                 alt = sh._element.nvPicPr.cNvPr.get('descr') or re.sub(r'^Figur:\s*', '', sh.name).rstrip(';').strip() or 'Figur'
                 block.append(('fig', fil, alt))
             continue
-        if not sh.has_text_frame or sh.top > 6.9 * EMU:
+        # Dagens namn på titelbilden (lektionsbilder ”Dag: Måndag 12 oktober”) är ingen rubrik.
+        if not sh.has_text_frame or sh.top > 6.9 * EMU or sh.name.startswith('Dag: '):
             continue
         for para in sh.text_frame.paragraphs:
             t = ''.join(run_text(r) for r in para.runs).replace('\xa0', ' ').strip()

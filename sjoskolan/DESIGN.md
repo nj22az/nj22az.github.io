@@ -150,6 +150,21 @@ bockat och som har börjat; bara dess första knapp är blå (en huvudknapp per 
 inlämningen) med en tunn stapel, sista dagen och dagar kvar, och kursplanens punkter med stapel i områdets färg och ”x av y”.
 Siffran står alltid i text; stapeln är bara stöd. Inga nya knappar: den enda blå knappen är fortfarande ”Nästa steg”.
 
+**Veckan som dagar (vecka 42, `verktyg/veckosidor/dagsvy.py`, `gemensamt/dagsvy.mjs`).** Eleven ska se på sidan vad dagens
+lektion handlar om, så att läraren bara visar presentationen. Ordning: rubrik → **I dag** → **Veckans lektioner** → **Hela
+veckan** → **Kursplanen den här veckan**. Ersätter ”Nästa steg”, den numrerade vägen och rutorna i ”Din vecka” för veckorna i `DAGSVY`.
+
+- **I dag** är sidans mest framträdande del och enda blå huvudknapp. På en lektionsdag: tid, rubrik, ”Det här pratar vi om i
+  dag” (passen i presentationens upplägg) och Öppna presentationen; efter lektionen: läxorna. Utan lektion: närmaste sista dag
+  och nästa lektion. Före veckan: första lektionen. Utan JavaScript visas inte rutan.
+- **Lektionsdagarna har var sin färg**, alltid med dagens namn: måndag `#008300`, tisdag `#2468c0`, fredag `#b5179e`
+  (`kursplan.DAGFARG`, validerade för färgblindhet, vit text 4,5:1; inte samma kulörer som kursplanens områden). Färgen står på
+  dagens ruta (vänsterkant och etikett), på I dag samma dag och på presentationens titelbild. Dagens och nästa lektions ruta är
+  öppna, de andra en rad; har en passerad lektion läxor kvar står ”Läxor: x av y klara” i varningsfärg.
+- **Hela veckan** (läsförståelse, inlämning, övningar) har ingen dagfärg: grå yta, mörk överkant, sista dag och dagar kvar.
+- Läxorna efter en lektion skrivs en gång, i `verktyg/lektionsbilder/lektioner.py` `HEMMA`. Bilden ”Det här gör du nu” och
+  dagens ruta byggs ur samma lista. Läst del och övning 6–10 visar läget själva; övriga läxor har en Klart-ruta.
+
 ### Genomgång (Zenn)
 
 Varje del följer samma mönster:
