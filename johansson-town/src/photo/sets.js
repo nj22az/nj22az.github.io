@@ -26,6 +26,9 @@ export const FILMS=Object.freeze({
  film:{label:'Old film',ops:[['sepia',.18],['saturate',.82],['contrast',.9],['brightness',1.06]]},
  mono:{label:'Black & white',ops:[['grayscale',1],['contrast',1.12]]},
  sepia:{label:'Sepia',ops:[['sepia',.9],['contrast',.95]]},
+ // Not a colour matrix: chunky pixels and an ordered dither in four shades (pocket-camera.js), shown live and baked the same.
+ pocket:{label:'Pocket camera',ops:[],pocket:'green'},
+ pocketGrey:{label:'Pocket camera, grey',ops:[],pocket:'grey'},
 });
 
 /** A friendly palette for clothes, like the maker's colour board. */
