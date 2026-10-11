@@ -2,8 +2,9 @@
 // Angles are degrees. A character's turn is its root's rotation about the vertical axis: at 0 it faces +z, and a larger
 // turn turns it to its own left (anticlockwise seen from above).
 
-/** An angle in (-180, 180]. */
-export function wrapTurn(degrees){const d=((Number(degrees)%360)+540)%360-180;return d===-180?180:Math.round(d*10)/10;}
+/** An angle in (-180, 180]: World's, with the snapping rules (johansson-town/src/scene/scene-snap.mjs). */
+import {wrapTurn} from '../johansson-town/src/scene/scene-snap.mjs';
+export {wrapTurn};
 
 /** The turn that makes a character at `from` look at `to` (both {x,z} on the ground). */
 export function turnToward(from,to){return wrapTurn(Math.atan2(to.x-from.x,to.z-from.z)*180/Math.PI);}

@@ -6,6 +6,9 @@ import {buildOnsenInterior} from '../src/world/interiors/onsen.js';
 import {ONSEN_CIRCUITS,ONSEN_REWIRING,ONSEN_RACEWAY,stageScenario,assess,
  circuitOf,isOn,isWorking,isRunning} from '../src/world/interiors/onsen-electrics.js';
 import {circleHitsRect} from '../physics.js';
+import {provideCatalog} from './catalog-fixture.mjs';
+// The massage chair's model in hand (World's catalogue): its back is what the rollers knead behind.
+await provideCatalog('massage-chair');
 
 const build=()=>{const room=new THREE.Group(),hits=[],actions=[];const layout=buildOnsenInterior({room,reg:(o,label,fn)=>hits.push({o,label,fn}),action:(...a)=>actions.push(a),exit(){}});room.updateMatrixWorld(true);return {room,hits,actions,layout};};
 const BUSY=['dryer-1','dryer-2','dryer-3','massage-chair'];
@@ -101,6 +104,18 @@ test('dryers, the chair and the pot look on when they run and dead when they do 
  const step=Math.max(...before.map((p,i)=>Math.hypot(p[0]-after[i][0],p[1]-after[i][1],p[2]-after[i][2])));assert.ok(step>0&&step<.02,'roller step '+step.toFixed(4));
  const back=new THREE.Box3().setFromObject(first.room.getObjectByName('Massage chair back'));
  for(const p of after)assert.ok(p[1]>back.min.y+.1&&p[1]<back.max.y-.1&&p[2]>back.min.z&&p[2]<back.max.z,'roller inside the backrest’s face');
+ // Over a whole travel up and down the back (9 s), each lump stays on the roller track (y 0.485–0.975: under the headrest
+ // pillow) and on the cushions: straight behind it, past the lump, is the back's own face (x 4.625 or more), never the
+ // pillow or a shoulder wing.
+ {const chairMeshes=[];first.layout.chair.object.traverse(o=>{if(o.isMesh)chairMeshes.push(o);});
+  const lumps=meshes(first.room).filter(m=>m.name==='Massage chair roller'),ray=new THREE.Raycaster(),east=new THREE.Vector3(1,0,0);
+  let low=Infinity,high=-Infinity;
+  for(let t=0;t<9;t+=.25){ticks(first.layout,.25,.25);
+   for(const l of lumps){const b=new THREE.Box3().setFromObject(l),c=b.getCenter(new THREE.Vector3());low=Math.min(low,b.min.y);high=Math.max(high,b.max.y);
+    ray.set(new THREE.Vector3(4.3,c.y,c.z),east);ray.far=1;const hit=ray.intersectObjects(chairMeshes,false)[0];
+    assert.ok(hit&&hit.object.name==='Massage chair back'&&hit.point.x>=4.625&&Math.abs(hit.point.z-3.55)<.224,'a lump on the back’s face: '+(hit?hit.object.name+' '+hit.point.toArray().map(v=>v.toFixed(3)):'nothing'));
+    assert.ok(b.min.x<hit.point.x&&b.max.x>hit.point.x,'half in the cushion, half out: '+b.min.x.toFixed(3)+'–'+b.max.x.toFixed(3));}}
+  assert.ok(low>=.485-1e-3&&high<=.975+1e-3,'the lumps between '+low.toFixed(3)+' and '+high.toFixed(3));}
  first.layout.dispose();
  const second=sample();
  assert.deepEqual(second.yaw,first.yaw,'the same hum at the same moment');assert.deepEqual(second.rollers,first.rollers);

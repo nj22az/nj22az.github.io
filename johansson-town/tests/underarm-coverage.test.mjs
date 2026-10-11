@@ -13,7 +13,7 @@ function upperArmSkinCount(a){
  return {skinCount,samples};
 }
 test('sleeved tops cover the shoulder and underarm instead of exposing the base arm',()=>{
- for(const base of [ORIGINAL_THUAN_RECIPE,recipeFor('Johansson')])for(const top of ['kariyushi','tee','contrastpolo','hoodie']){
+ for(const base of [ORIGINAL_THUAN_RECIPE,recipeFor('Johansson')])for(const top of ['kariyushi','tee','contrastpolo','hoodie','shirt','vest','knitvest','gymtee','baseball','festival']){
   const r=structuredClone(base);r.outfit.top=top;const a=buildAvatar(r,{shadows:false});
   const {skinCount,samples}=upperArmSkinCount(a);assert.ok(samples>100);assert.equal(skinCount,0,top+' has cloth lining under the sleeve');
   for(const raised of [1.6,2.55,3]){

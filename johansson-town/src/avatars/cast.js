@@ -182,8 +182,12 @@ export function recipeFor(name='',{looks=LOOKS}={}){
  return look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
 }
 
-/** Who has a published Studio look: the residents World draws, by how they are drawn. */
-export const RESIDENT_GROUPS=Object.freeze({cast:Object.freeze(Object.keys(CAST_RECIPES)),neighbour:Object.freeze(Object.keys(NEIGHBOUR_RECIPES)),
+/**
+ * Who may have a published Studio look: the residents World draws, by how they are drawn. Harbour visitor is in
+ * CAST_RECIPES only as a starting template for the maker (creator.js), not as a resident, so it is not among them.
+ */
+const TEMPLATES=new Set(['Harbour visitor']);
+export const RESIDENT_GROUPS=Object.freeze({cast:Object.freeze(Object.keys(CAST_RECIPES).filter(n=>!TEMPLATES.has(n))),neighbour:Object.freeze(Object.keys(NEIGHBOUR_RECIPES)),
  townsfolk:Object.freeze(PROFILES.map(p=>p.name).filter(n=>!CAST_RECIPES[n]&&!NEIGHBOUR_RECIPES[n]))});
 export const RESIDENT_NAMES=Object.freeze(Object.values(RESIDENT_GROUPS).flat());
 

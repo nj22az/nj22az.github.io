@@ -3,20 +3,24 @@ import {buildAvatar} from '../johansson-town/src/avatars/build.js';
 import {drawFace} from '../johansson-town/src/avatars/face.js';
 import {svg} from '../johansson-town/src/ui/icons.js';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
+import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
-import {buildSceneWorld} from './scene-world.js';
+import {buildSceneWorld} from './scene-world.js?v=20261011-2';
 import {poseSceneAvatar,placeSceneAvatar} from './scene-avatar.js?v=20261011-1';
-import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text} from './scene-model.mjs?v=20261011-1';
+import {SCENE_KEY,MAX_ACTORS,MAX_PANELS,LOCATIONS,emptyScene,normalizeScene,addCharacter,removeCharacter,restoreCharacter,panelOrder,text,placementOf,applyPlacement,samePlacement} from './scene-model.mjs?v=20261011-2';
 import {pickMoment,applyMoment,aim} from './scene-moments.mjs?v=20261011-2';
 import {POSE_GROUPS,EXPRESSION_GROUPS,seatedPose} from './scene-catalogue.mjs';
-import {wrapTurn,turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs';
+import {turnToward,touchAngle,twistTurn,nudgeStep,placeToolbar,pickBox,nearestSeat} from './scene-controls.mjs?v=20261011-2';
+import {SNAP,resolveSnap,snapTurn,stepTurn,edgeLine,lineDistance} from './scene-snap.mjs?v=20261011-2';
 import {touchFirst,dataURLToBlob,canvasToBlob,createReadyFile,bindSaveLink,createPreview} from './studio-share.mjs';
 
 const nameOf=n=>n==='Thuan'?'Thuận':n;
 const loadImage=url=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error('The image could not be loaded.'));img.src=url;});
-/** Degrees for one tap on a turn button, and for one Q/E key press. */
-const TURN_TAP=30,TURN_KEY=15,UNDO_MS=7000,PORTRAIT=96;
+/** Turns step to stops around facing the camera: a turn button to the next 45° (front, three-quarter, profile, …), Q/E 15°. */
+const TURN_TAP=SNAP.turn.tap,TURN_KEY=SNAP.turn.step,UNDO_MS=7000,PORTRAIT=96,SNAP_KEY='nj-studio-snap',KEY_BURST=600;
+/** "Sit at the ramen counter 3" → "sits at the ramen counter 3"; any other seat label → "sits down: <label>". */
+const sits=label=>/^Sit\b/.test(label)?'sits'+label.slice(3):'sits down: '+label;
 // Sit down and stand up as a seated and a standing figure (World's icon set has no seated one).
 const figure=body=>`<svg class="ui-icon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
 const sitIcon=figure('<circle cx="9" cy="4.5" r="2.5"/><path d="M9 8v6h6v6M9 10.5l4.5 2M4 21h16"/>'),standIcon=figure('<circle cx="12" cy="4.5" r="2.5"/><path d="M12 8v7M8.5 11.5h7M9.5 21l2.5-6 2.5 6"/>');
@@ -29,6 +33,9 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  const panels=[],avatars=new Map(),portraits=new Map();
  let lastMoment='',world=null,worldId='',views=null,townData=null,capturing=false,queue=Promise.resolve(),boxes=[],layoutStyle='grid',overlayStep='';
  const touch=touchFirst();
+ // Snap into place (scene-snap.mjs): on unless this viewer turned it off. Placement history for Undo, kept in memory.
+ let snapOn=true;try{snapOn=localStorage.getItem(SNAP_KEY)!=='0';}catch{}
+ const history=[],standingPose=new Map();let draws=0,sliding=null,burst={id:null,at:0};
  const root=document.createElement('main');root.className='scene-workspace';root.hidden=true;
  root.innerHTML=`<div class="scene-heading"><div><h1>Build a scene</h1><p>Choose a place, add characters, then pose them and write your dialogue.</p></div><a class="scene-button" data-save="project">Download project</a><button type="button" data-action="open-project">Open project</button><input type="file" data-project-input accept=".json,application/json" hidden></div>
  <nav class="scene-steps" aria-label="Scene building steps">
@@ -45,8 +52,8 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  <div class="scene-moment"><button type="button" data-action="shuffle-moment">Shuffle a moment</button><p class="scene-moment-note">Turns everyone on stage into a little scene: poses, faces, lines and a caption.</p></div>
  <h3 class="scene-picker-title" id="scene-pose-title">Pose</h3><div class="scene-picker" data-picker="pose" role="group" aria-labelledby="scene-pose-title"></div>
  <h3 class="scene-picker-title" id="scene-face-title">Expression</h3><div class="scene-picker" data-picker="expression" role="group" aria-labelledby="scene-face-title"></div>
- <div class="scene-actor-controls"><label>Turn<input data-field="turn" type="range" min="-180" max="180" step="5"></label><label>Size<input data-field="size" type="range" min=".6" max="1.4" step=".01"></label>
- <label>Left / right<input data-field="x" type="range" min="-8" max="8" step=".01"></label><label>Near / far<input data-field="z" type="range" min="-8" max="8" step=".01"></label>
+ <div class="scene-actor-controls"><label class="scene-snap"><input type="checkbox" role="switch" data-setting="snap"> Snap into place</label><label>Turn<input data-field="turn" type="range" min="-180" max="180" step="5"></label><label>Size<input data-field="size" type="range" min=".6" max="1.4" step=".01"></label>
+ <label>Left / right<input data-field="x" type="range" min="-12" max="12" step=".01"></label><label>Near / far<input data-field="z" type="range" min="-12" max="12" step=".01"></label>
  <label>Use furniture<select data-field="seat" aria-label="Use furniture"><option value="">Stand on ground</option></select></label><button data-action="edit-character">Edit appearance</button><button data-action="duplicate">Duplicate character</button><button data-action="remove">Remove character</button></div></section>
  <section data-pane="text" hidden><h2>Add text</h2><label>Picture style<select data-field="style" aria-label="Picture style"><option value="photo">Photograph with speech bubbles</option><option value="meme">Meme with top and bottom text</option><option value="comic">Comic panel with caption</option></select></label>
  <label>Selected character’s speech<input data-field="speech" maxlength="120" placeholder="What are they saying?" aria-label="Selected character’s speech"></label>
@@ -65,10 +72,16 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  const announce=s=>{status.textContent=s;};
  const current=()=>state.actors.find(a=>a.id===selected);
  const keys=['location','characters','pose','text','export'];
- // Every resident of World, as World draws them (with any look published from Studio).
- const resident=field('resident');resident.append(...RESIDENT_NAMES.map(n=>new Option(nameOf(n),n)));
- for(const [id,name] of LOCATIONS){const b=document.createElement('button');b.type='button';b.dataset.location=id;b.setAttribute('aria-label',name);const img=document.createElement('img');img.src=`../johansson-town/assets/images/feed/${id}.webp`;img.alt='';img.loading='lazy';const label=document.createElement('span');label.textContent=name;b.append(img,label);b.onclick=()=>{state.location=id;state.camera={orbit:0,elevation:0,zoom:1};for(const a of state.actors){a.seat='';a.x=0;a.z=0;}changed();sync();announce(name+' selected. Continue to Add characters.');};$('.scene-locations').append(b);}
- $('.scene-hint').textContent=touch?'Tap a character to select them. Drag to move, twist two fingers to turn.':'Click a character to select them. Drag to move. Q and E turn, the arrow keys nudge, Delete removes.';
+ // Every resident of World as World draws them (with any look published from Studio; World's Thuan among them), the
+ // characters made in Studio, and the original Thuận design.
+ const resident=field('resident'),optgroup=(label,options)=>{const g=document.createElement('optgroup');g.label=label;g.append(...options);return g;};
+ resident.append(optgroup('Residents of Johansson World',RESIDENT_NAMES.map(n=>new Option(nameOf(n),n))),
+  ...Object.keys(STUDIO_CHARACTERS).length?[optgroup('Studio characters',Object.entries(STUDIO_CHARACTERS).map(([id,c])=>new Option(c.name,'studio:'+id)))]:[],
+  optgroup('Other designs',[new Option('Thuận · original','design:thuan-original')]));
+ for(const [id,name] of LOCATIONS){const b=document.createElement('button');b.type='button';b.dataset.location=id;b.setAttribute('aria-label',name);const img=document.createElement('img');img.src=`../johansson-town/assets/images/feed/${id}.webp`;img.alt='';img.loading='lazy';const label=document.createElement('span');label.textContent=name;b.append(img,label);b.onclick=()=>{state.location=id;state.camera={orbit:0,elevation:0,zoom:1};for(const a of state.actors){a.seat='';a.x=0;a.z=0;}forget();changed();sync();announce(name+' selected. Continue to Add characters.');};$('.scene-locations').append(b);}
+ $('.scene-hint').textContent=touch?'Tap a character to select them. Drag to move: they snap onto seats, counters and beside people. Twist two fingers to turn.':'Click a character to select them. Drag to move: they snap onto seats, counters and beside people. Hold Alt (Option) while dragging to place freely. Q and E turn, the arrow keys nudge, Delete removes.';
+ const snapSwitch=$('[data-setting="snap"]');snapSwitch.checked=snapOn;
+ snapSwitch.addEventListener('change',()=>{snapOn=snapSwitch.checked;try{localStorage.setItem(SNAP_KEY,snapOn?'1':'0');}catch{}announce(snapOn?'Characters snap onto seats, counters and beside people.':'Characters go exactly where you drop them.');});
  for(const note of root.querySelectorAll('.scene-save-note'))note.textContent=touch?'Save opens the share sheet: choose Save Image to put it in Photos.':'';
 
  // ---- Saving: every file is made ahead of time so a tap only hands it over (studio-share.mjs). ----
@@ -112,7 +125,9 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  function paintFaces(recipe){const key=JSON.stringify(recipe);if(key===facesFor)return;facesFor=key;
   for(const c of facePicker.querySelectorAll('canvas')){const g=c.getContext('2d');try{drawFace(g,recipe,{expression:c.parentElement.dataset.value,size:64});}catch(e){console.warn('Johansson Studio: face preview',e);}}}
  function standUp(a){const seat=world?.seats.find(s=>s.id===a.seat);if(seat?.stand){a.x=seat.stand[0]-world.origin[0];a.z=seat.stand[2]-world.origin[2];}a.seat='';}
- function setPose(name){const a=current();if(!a)return;if(!seatedPose(name)&&a.seat)standUp(a);a.pose=name;changed();sync();}
+ /** Sit `a` on `seat` (the menu, the toolbar and a drop): facing the way the seat faces, a seated pose kept, else Sit. */
+ function sitOn(a,seat,pose=seatedPose(a.pose)?a.pose:'Sit'){if(!a.seat&&!seatedPose(a.pose))standingPose.set(a.id,a.pose);world.put(a,{x:seat.position[0],z:seat.position[2],seat:seat.id});a.turn=seat.turn;a.pose=pose;}
+ function setPose(name){const a=current();if(!a)return;const before=placementOf(a);if(!seatedPose(name)&&a.seat)standUp(a);a.pose=name;changed();sync();remember({kind:'place',id:a.id,before},a);}
  function setExpression(name){const a=current();if(!a)return;a.expression=name;changed();sync();}
 
  // ---- The cast strip: one chip per character (face and name), tap to select, ✕ to remove. ----
@@ -138,6 +153,8 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   for(const c of root.querySelectorAll('[data-camera]'))c.value=state.camera[c.dataset.camera];
   const a=current();for(const n of ['turn','size','x','z','speech','seat']){field(n).disabled=!a;field(n).value=a?.[n]??'';}
   for(const n of ['style','top','bottom'])field(n).value=state[n];
+  for(const o of field('seat').options){if(!o.value)continue;const user=state.actors.find(x=>x.id!==a?.id&&x.seat===o.value);o.disabled=!!user;o.textContent=o.dataset.label+(user?' ('+user.name+')':'');}
+  snapSwitch.checked=snapOn;
   for(const [name,value] of [['format',state.format],['layout',layoutStyle]])for(const b of root.querySelectorAll(`[data-choice="${name}"] button`))b.setAttribute('aria-pressed',String(b.dataset.value===value));
   for(const b of root.querySelectorAll('[data-location]'))b.setAttribute('aria-pressed',String(b.dataset.location===state.location));
   for(const [box,value] of [[posePicker,a?.pose],[facePicker,a?.expression]])for(const b of box.querySelectorAll('button')){b.disabled=!a;b.setAttribute('aria-pressed',String(b.dataset.value===value));}
@@ -160,6 +177,10 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   selection.hidden=!show;toolbar.hidden=!show||gesture?.kind==='twist'||!!gesture?.moved;if(!show)return;
   const w=frame.clientWidth,h=frame.clientHeight;
   Object.assign(selection.style,{left:b.left*100+'%',top:b.top*100+'%',width:(b.right-b.left)*100+'%',height:(b.bottom-b.top)*100+'%'});
+  // While dragging, the outline goes where they will land at once (the picture follows when it is drawn), solid when caught.
+  const drag=gesture?.kind==='drag'&&gesture.moved&&gesture.id===a.id?gesture:null,landed=drag?.landing&&b.feet&&onPicture([drag.landing.x,drag.landing.y,drag.landing.z]);
+  selection.toggleAttribute('data-locked',!!drag?.landing?.target);
+  selection.style.transform=landed?`translate(${((landed.x-b.feet.x)*w).toFixed(1)}px,${((landed.y-b.feet.y)*h).toFixed(1)}px)`:'';
   const seated=!!a.seat;
   for(const t of ['turn-left','turn-right','face-camera']){const button=toolbar.querySelector(`[data-tool="${t}"]`);button.disabled=seated;button.title=seated?'Seated characters face the way their seat faces':button.getAttribute('aria-label');}
   const sit=toolbar.querySelector('[data-tool="sit"]'),sitting=seated||seatedPose(a.pose),label=sitting?'Stand up':'Sit down';
@@ -172,10 +193,15 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  }
  for(const control of root.querySelectorAll('[data-camera]'))control.addEventListener('input',()=>{state.camera[control.dataset.camera]=Number(control.value);changed();});
  for(const n of ['turn','size','x','z','speech','seat'])field(n).addEventListener('input',()=>{const a=current();if(!a)return;
+  if(['turn','size','x','z'].includes(n)&&sliding?.id!==a.id)sliding={id:a.id,before:placementOf(a)};
   if(n==='x'||n==='z'){if(world&&worldId===state.location){const x=world.origin[0]+(n==='x'?Number(field(n).value):a.x),z=world.origin[2]+(n==='z'?Number(field(n).value):a.z);if(!world.move(a,x,z,state.actors))announce('Movement stopped by furniture, another character or the ground boundary.');}}
-  else if(n==='seat'){const id=field(n).value;if(state.actors.some(other=>other.id!==a.id&&other.seat===id&&id)){announce('That seat is occupied.');sync();return;}if(!id&&a.seat){standUp(a);a.pose='Idle';}else if(id){a.seat=id;if(!seatedPose(a.pose))a.pose='Sit';a.size=1;}}
+  else if(n==='seat'){const id=field(n).value;if(state.actors.some(other=>other.id!==a.id&&other.seat===id&&id)){announce('That seat is occupied.');sync();return;}const before=placementOf(a);
+   if(!id&&a.seat){standUp(a);a.pose=standingPose.get(a.id)||'Idle';}else if(id){const seat=world?.seats.find(s=>s.id===id);if(seat)sitOn(a,seat);}
+   changed();sync();remember({kind:'place',id:a.id,before},a);return;}
   else a[n]=['turn','size'].includes(n)?Number(field(n).value):text(field(n).value);
   changed();sync();});
+ // One Undo step per slider gesture: the place before the first 'input', remembered on 'change'.
+ for(const n of ['turn','size','x','z'])field(n).addEventListener('change',()=>{const a=current();if(a&&sliding?.id===a.id)remember({kind:'place',id:a.id,before:sliding.before},a);sliding=null;});
  for(const n of ['style','top','bottom'])field(n).addEventListener('input',()=>{state[n]=text(field(n).value);changed();});
  for(const b of root.querySelectorAll('[data-choice] button'))b.addEventListener('click',()=>{const name=b.parentElement.dataset.choice;if(name==='format'){state.format=b.dataset.value;changed();}else{layoutStyle=b.dataset.value;comicFile.schedule(0);}sync();});
 
@@ -183,7 +209,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   if(world&&worldId===id)return world;
   views??=await fetch(new URL('../johansson-town/assets/images/feed/views.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('Locations unavailable');return r.json();});
   const next=await buildSceneWorld(id,views,townData);townData=next.townData||townData;world?.dispose();world=next;worldId=id;renderer?.renderLists.dispose();
-  field('seat').replaceChildren(new Option('Stand on ground',''),...world.seats.filter(s=>Math.hypot(s.position[0]-world.origin[0],s.position[2]-world.origin[2])<12).map(s=>new Option(s.label,s.id)));
+  field('seat').replaceChildren(new Option('Stand on ground',''),...world.seats.filter(s=>Math.hypot(s.position[0]-world.origin[0],s.position[2]-world.origin[2])<SNAP.reach).map(s=>{const o=new Option(s.label,s.id);o.dataset.label=s.label;return o;}));
   return world;
  }
  function clearAvatar(entry){entry.avatar.body?.skeleton?.dispose();entry.avatar.dispose();entry.avatar.root.removeFromParent();}
@@ -203,7 +229,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
    finally{avatar.root.removeFromParent();avatar.body?.skeleton?.dispose();avatar.dispose();}}
   renderer.setScissorTest(false);return true;
  }
- function draw(){const token=++generation;valid=false;canvas.setAttribute('aria-busy','true');const snapshot=structuredClone(state);
+ function draw(){const token=++generation;draws++;valid=false;canvas.setAttribute('aria-busy','true');const snapshot=structuredClone(state);
   queue=queue.catch(()=>{}).then(async()=>{
    if(token!==generation)return;
    try{
@@ -219,9 +245,12 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
     }
     camera.updateMatrixWorld(true);environment.settle(snapshot.actors);const bubbles=[],placed=[];
     const solid=(from,to)=>{const direction=to.clone().sub(from),distance=direction.length();return new THREE.Raycaster(from,direction.normalize(),.05,distance-.08).intersectObjects(environment.meshes,false).some(h=>h.object.visible&&h.object.material?.depthWrite!==false);};
-    for(const actor of snapshot.actors){const key=JSON.stringify([actor.recipe,actor.pose,actor.expression,actor.turn,actor.size,actor.seat]);let entry=avatars.get(actor.id);
+    for(const actor of snapshot.actors){
+     // A posed avatar is kept while only its place changes: moving between stools of one height and facing reuses it.
+     const position=environment.place(actor),seatShape=position.seat?[Math.round((position.seat.surfaceY-position.y)*100)/100,position.seat.yaw||0]:0;
+     const key=JSON.stringify([actor.recipe,actor.pose,actor.expression,actor.turn,actor.size,seatShape]);let entry=avatars.get(actor.id);
      if(!entry||entry.key!==key){if(entry)clearAvatar(entry);entry={key,avatar:buildAvatar(actor.recipe,{shadows:true,faceSize:256})};entry.avatar.root.userData.studioActor=true;avatars.set(actor.id,entry);}
-     const position=environment.place(actor),avatar=entry.avatar;
+     const avatar=entry.avatar;
      // Each avatar is a mesh in the same scene graph as the counter and walls.
      environment.scene.add(avatar.root);avatar.root.position.set(0,0,0);avatar.root.scale.setScalar(actor.size);
      poseSceneAvatar(avatar,{...actor,seatHeight:position.seat?(position.seat.surfaceY-position.y)/actor.size:0});
@@ -230,7 +259,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
      const box=new THREE.Box3().setFromObject(avatar.root),head=new THREE.Vector3(position.x,box.max.y,position.z),projected=head.clone().project(camera);
      const visible=projected.z<1&&projected.z>-1&&!solid(camera.position,head);
      bubbles.push({text:actor.speech,x:(projected.x+1)/2,y:(1-projected.y)/2,visible});
-     placed.push({id:actor.id,box,face:headCentre(avatar),radius:avatar.measure.Rh*Math.max(avatar.measure.headSX,avatar.measure.headSY)*actor.size,visible});
+     placed.push({id:actor.id,box,face:headCentre(avatar),radius:avatar.measure.Rh*Math.max(avatar.measure.headSX,avatar.measure.headSY)*actor.size,visible,feet:new THREE.Vector3(position.x,position.y,position.z)});
      const live=state.actors.find(a=>a.id===actor.id);if(live){live.x=actor.x;live.z=actor.z;live.seat=actor.seat;}
     }
     environment.sky?.update(camera,1,false,false);renderer.render(environment.scene,camera);
@@ -238,15 +267,16 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
     // Where each character is on the picture (fractions of it), for picking, the outline and the toolbar.
     const right=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0);
     boxes=placed.map(p=>{const corners=[];for(const x of [p.box.min.x,p.box.max.x])for(const y of [p.box.min.y,p.box.max.y])for(const z of [p.box.min.z,p.box.max.z])corners.push(new THREE.Vector3(x,y,z).project(camera));
-     const behind=corners.some(c=>c.z>1||c.z<-1),xs=corners.map(c=>(c.x+1)/2),ys=corners.map(c=>(1-c.y)/2),f=p.face.clone().project(camera),edge=p.face.clone().addScaledVector(right,p.radius).project(camera);
-     return {id:p.id,visible:p.visible&&!behind,left:Math.max(0,Math.min(...xs)),right:Math.min(1,Math.max(...xs)),top:Math.max(0,Math.min(...ys)),bottom:Math.min(1,Math.max(...ys)),face:{x:(f.x+1)/2,y:(1-f.y)/2,r:Math.abs(edge.x-f.x)/2}};}).filter(b=>b.right>b.left&&b.bottom>b.top);
+     const behind=corners.some(c=>c.z>1||c.z<-1),xs=corners.map(c=>(c.x+1)/2),ys=corners.map(c=>(1-c.y)/2),f=p.face.clone().project(camera),edge=p.face.clone().addScaledVector(right,p.radius).project(camera),feet=p.feet.project(camera);
+     return {id:p.id,visible:p.visible&&!behind,left:Math.max(0,Math.min(...xs)),right:Math.min(1,Math.max(...xs)),top:Math.max(0,Math.min(...ys)),bottom:Math.min(1,Math.max(...ys)),face:{x:(f.x+1)/2,y:(1-f.y)/2,r:Math.abs(edge.x-f.x)/2},feet:{x:(feet.x+1)/2,y:(1-feet.y)/2}};}).filter(b=>b.right>b.left&&b.bottom>b.top);
     drawPortraits(h);renderer.setViewport(0,0,w,h);
     valid=true;canvas.setAttribute('aria-busy','false');sync();save();if(token===generation)sceneFile.schedule();
    }catch(e){canvas.setAttribute('aria-busy','false');announce('The 3D location could not load. Select the location again to retry.');console.error('Johansson Studio 3D scene',e);}
   });return queue;
  }
 
- // ---- Direct control in the picture: tap selects, drag moves (stopped by walls and furniture), two fingers turn. ----
+ // ---- Direct control in the picture: tap selects, drag lifts a character and drops them where they snap into place
+ // (scene-snap.mjs: a free seat, beside someone, at a counter; else exactly there), two fingers turn. ----
  const pointers=new Map();
  function rayAt(e){const r=canvas.getBoundingClientRect(),ray=new THREE.Raycaster();ray.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),world.camera);return ray;}
  function actorAt(e){
@@ -257,70 +287,127 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   return pickBox({x:e.clientX-r.left,y:e.clientY-r.top},boxes.map(b=>({...b,left:b.left*r.width,right:b.right*r.width,top:b.top*r.height,bottom:b.bottom*r.height})),touch?16:6);
  }
  const groundAt=(e,y)=>{const point=new THREE.Vector3();return rayAt(e).ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-y),point)?point:null;};
+ /** Where a point in the town is on the picture, as fractions of it (null behind the camera). */
+ function onPicture(p){if(!world)return null;const v=new THREE.Vector3(p[0],p[1],p[2]).project(world.camera);return v.z>1||v.z<-1?null:{x:(v.x+1)/2,y:(1-v.y)/2};}
+ /** CSS px on the picture for a point in the town; null behind the camera or, with `clip`, off the picture (8 px in). */
+ function projector(){const r=canvas.getBoundingClientRect();
+  return (p,clip=true)=>{const f=onPicture(p);if(!f)return null;const x=f.x*r.width,y=f.y*r.height;return clip&&(x<8||y<8||x>r.width-8||y>r.height-8)?null:{x,y};};}
+ /** Everything a drag of `a` can snap to, worked out once (the camera and the others stay put during a drag). */
+ function snapContext(a){const project=projector();return {...world.snapTargets(a,state.actors,{project,seen:world.seeing(renderer),seated:seatedPose}),project,floor:world.floor};}
+ /**
+  * The feet under the finger: they stay where they were on the picture relative to the finger (the same pixels below and
+  * beside it), and their own ray is met with the floor where they will stand (settled three times). Rays to the feet meet
+  * the floor steeply; a ray through the grabbed body point meets any level plane almost edge-on when the camera is at eye
+  * height, and there a few pixels would throw the character metres away.
+  */
+ function wantedFeet(e,g){const at={clientX:e.clientX-g.offX,clientY:e.clientY-g.offY};let y=g.y0,point=groundAt(at,y);
+  for(let i=0;i<3&&point;i++){const f=world.floor(point.x,point.z);if(!Number.isFinite(f)||Math.abs(f-y)<1e-4)break;y=f;point=groundAt(at,y)||point;}
+  return point&&{x:point.x,y,z:point.z};}
+ /** A landing, worked out from where the drag began so it never drifts: seated on a seat, else standing as they were. */
+ function applyLanding(a,g,landing){
+  if(landing.kind==='seat'){sitOn(a,landing.seat,seatedPose(g.start.pose)?g.start.pose:'Sit');return;}
+  world.put(a,landing);a.size=g.start.size;
+  a.pose=g.startSeat?(standingPose.get(a.id)||'Idle'):g.start.pose;
+  a.turn=landing.turn??(g.startSeat?g.startSeat.turn:g.start.turn);
+ }
  canvas.addEventListener('pointerdown',e=>{
   if(mode!=='scene'||!world)return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(pointers.size===2){const a=current();if(gesture?.kind==='drag')gesture=null;
-   if(a&&!a.seat){const [p,q]=[...pointers.values()];gesture={kind:'twist',id:a.id,turn:a.turn,angle:touchAngle(p,q)};syncSelection();}
+  if(pointers.size===2){if(gesture?.kind==='drag')finishDrag();const a=current();
+   if(a&&!a.seat){const [p,q]=[...pointers.values()];startTwist(a,p,q);}
    else if(a)announce('Seated characters face the way their seat faces. Stand them up to turn them.');return;}
   if(pointers.size>2)return;
   const id=actorAt(e);
   if(!id){gesture={kind:'tap',x:e.clientX,y:e.clientY,pointer:e.pointerId};return;}
-  selected=id;overlayStep=step;const a=current(),p=world.place(a),ground=groundAt(e,p.y);
-  gesture={kind:'drag',id,pointer:e.pointerId,x:e.clientX,y:e.clientY,moved:false,dx:ground?p.x-ground.x:0,dz:ground?p.z-ground.z:0,y0:p.y,stopped:false};
+  selected=id;overlayStep=step;const a=current(),p=world.place(a),r=canvas.getBoundingClientRect(),feet=onPicture([p.x,p.y,p.z]);
+  if(!a.seat&&!seatedPose(a.pose))standingPose.set(a.id,a.pose);
+  gesture={kind:'drag',id,pointer:e.pointerId,x:e.clientX,y:e.clientY,moved:false,y0:p.y,offX:feet?e.clientX-r.left-feet.x*r.width:0,offY:feet?e.clientY-r.top-feet.y*r.height:0,
+   start:placementOf(a),startSeat:p.seat||null,capturePx:e.pointerType==='touch'?SNAP.capturePx.touch:SNAP.capturePx.mouse,ctx:null,landing:null};
   try{canvas.setPointerCapture(e.pointerId);}catch{}sync();
  });
  canvas.addEventListener('pointermove',e=>{
   if(!pointers.has(e.pointerId)||!world)return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(gesture?.kind==='twist'&&pointers.size>=2){const a=state.actors.find(a=>a.id===gesture.id);if(!a)return;const [p,q]=[...pointers.values()];a.turn=twistTurn(gesture.turn,gesture.angle,touchAngle(p,q));sceneFile.invalidate();pending=draw();return;}
-  if(gesture?.kind!=='drag'||e.pointerId!==gesture.pointer)return;
-  if(!gesture.moved&&Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)<4)return;
-  if(!gesture.moved){gesture.moved=true;syncSelection();}
-  const a=state.actors.find(a=>a.id===gesture.id),point=a&&groundAt(e,gesture.y0);if(!point)return;
-  if(!world.move(a,point.x+gesture.dx,point.z+gesture.dz,state.actors)&&!gesture.stopped){gesture.stopped=true;announce('Stopped by a wall, furniture, another character or the edge of the ground.');}
-  sceneFile.invalidate();pending=draw();
+  if(gesture?.kind==='twist'&&pointers.size>=2){twistTo(e);return;}
+  const g=gesture;if(g?.kind!=='drag'||e.pointerId!==g.pointer)return;
+  if(!g.moved&&Math.hypot(e.clientX-g.x,e.clientY-g.y)<4)return;
+  const a=state.actors.find(a=>a.id===g.id);if(!a)return;
+  if(!g.moved){g.moved=true;g.ctx=snapContext(a);}
+  const want=g.want=wantedFeet(e,g),landing=want&&resolveSnap(want,{...g.ctx,capturePx:g.capturePx,snapping:snapOn&&!e.altKey,lock:g.landing?.target?.id||null,previous:g.landing});
+  // Nowhere free and seen under the finger: they stay where they last landed.
+  if(landing&&landing.key!==g.landing?.key){g.landing=landing;applyLanding(a,g,landing);sceneFile.invalidate();pending=draw();}
+  syncSelection();
  });
  function endPointer(e){
   if(!pointers.delete(e.pointerId))return;
-  if(gesture?.kind==='twist'){if(pointers.size<2){gesture=null;changed();sync();}return;}
-  if(gesture?.kind==='drag'&&e.pointerId===gesture.pointer){const moved=gesture.moved;gesture=null;if(moved){changed();}sync();return;}
+  if(gesture?.kind==='twist'){if(pointers.size<2)finishTwist();return;}
+  if(gesture?.kind==='drag'&&e.pointerId===gesture.pointer){if(e.type==='pointercancel')cancelDrag();else finishDrag();return;}
   if(gesture?.kind==='tap'&&e.pointerId===gesture.pointer){const tap=Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)<8&&e.type==='pointerup';gesture=null;if(tap&&selected){selected=null;sync();}}
+ }
+ /** Letting go keeps exactly what is showing; one Undo step, and a sentence for what caught them. */
+ function finishDrag(){const g=gesture;gesture=null;const a=state.actors.find(x=>x.id===g.id);
+  if(!g.moved||!a){sync();return;}
+  const placed=remember({kind:'place',id:a.id,before:g.start},a);changed();sync();if(placed)tell(a,g);}
+ function cancelDrag(){const g=gesture;gesture=null;if(g.moved){applyPlacement(state,g.id,g.start);changed();}sync();}
+ function tell(a,g){
+  const seat=a.seat&&world.seats.find(s=>s.id===a.seat),seated=g.start.seat!==a.seat?a.name+(seat?' '+sits(seat.label):' stands up')+'.':'',L=g.landing;
+  const caught=!a.seat&&L?.kind==='edge'?a.name+' stands at the counter.':!a.seat&&L?.kind==='person'?a.name+(L.target.mark==='talk'?' faces ':' stands beside ')+L.target.other.name+'.':'';
+  announce(caught||seated);if(seated)offerUndo(seated,undoLast);
  }
  for(const type of ['pointerup','pointercancel'])canvas.addEventListener(type,endPointer);
  // Safari's own pinch and rotate gestures would zoom the page while two fingers turn a character.
  canvas.addEventListener('gesturestart',e=>e.preventDefault());
  canvas.addEventListener('lostpointercapture',e=>{if(gesture?.kind==='drag'&&e.pointerId===gesture.pointer)endPointer(e);});
 
- // ---- The toolbar and the keys: turn, face the camera, sit or stand, remove. ----
- function turnBy(degrees){const a=current();if(!a)return;if(a.seat){announce('Seated characters face the way their seat faces. Stand them up to turn them.');return;}a.turn=wrapTurn(a.turn+degrees);changed();sync();}
- function faceCamera(){const a=current();if(!a||!world||a.seat)return;const p=world.place(a);a.turn=turnToward({x:p.x,z:p.z},{x:world.camera.position.x,z:world.camera.position.z});changed();sync();announce(a.name+' faces the camera.');}
- function sitOrStand(){const a=current();if(!a||!world)return;
-  if(a.seat||seatedPose(a.pose)){if(a.seat)standUp(a);a.pose='Idle';changed();sync();announce(a.name+' stands up.');return;}
+ // ---- Turning: stops of 15° from facing the camera (keys, twist) and 45° (toolbar); a twist also catches on facing the
+ // nearest neighbour within 2.5 m and, at a counter, on facing it. The Turn slider (5°) and a twist without snapping are free. ----
+ const cameraXZ=()=>({x:world.camera.position.x,z:world.camera.position.z});
+ function startTwist(a,p,q){const at=world.place(a),detents=[];let nearest=null,reach=SNAP.turn.detentReach;
+  for(const o of state.actors){if(o.id===a.id)continue;const op=world.place(o),d=Math.hypot(op.x-at.x,op.z-at.z);if(d>.01&&d<=reach){reach=d;nearest=op;}}
+  if(nearest)detents.push(turnToward(at,nearest));
+  for(const edge of world.edges){const line=edgeLine(edge,a.size);if(line&&lineDistance(at,line)<=.05)detents.push(edge.turn);}
+  gesture={kind:'twist',id:a.id,turn:a.turn,angle:touchAngle(p,q),zero:turnToward(at,cameraXZ()),detents,snap:null,before:placementOf(a)};syncSelection();}
+ function twistTo(e){const g=gesture,a=state.actors.find(a=>a.id===g.id);if(!a)return;const [p,q]=[...pointers.values()],raw=twistTurn(g.turn,g.angle,touchAngle(p,q));
+  let turn=raw;if(snapOn&&!e.altKey){g.snap=snapTurn(raw,{zero:g.zero,previous:g.snap,detents:g.detents});turn=g.snap.turn;}else g.snap=null;
+  if(turn===a.turn)return;a.turn=turn;sceneFile.invalidate();pending=draw();}
+ function finishTwist(){const g=gesture;gesture=null;const a=state.actors.find(x=>x.id===g.id);if(a)remember({kind:'place',id:a.id,before:g.before},a);changed();sync();}
+ /** To the next stop (`step` degrees) to the left (dir +1) or right around facing the camera. → the place before, or null. */
+ function turnBy(dir,step){const a=current();if(!a||!world)return null;if(a.seat){announce('Seated characters face the way their seat faces. Stand them up to turn them.');return null;}
+  const before=placementOf(a),p=world.place(a);a.turn=stepTurn(a.turn,dir,{zero:turnToward({x:p.x,z:p.z},cameraXZ()),step});changed();sync();return before;}
+ function faceCamera(){const a=current();if(!a||!world||a.seat)return;const before=placementOf(a),p=world.place(a);a.turn=turnToward({x:p.x,z:p.z},cameraXZ());changed();sync();remember({kind:'place',id:a.id,before},a);announce(a.name+' faces the camera.');}
+ function sitOrStand(){const a=current();if(!a||!world)return;const before=placementOf(a);
+  if(a.seat||seatedPose(a.pose)){if(a.seat)standUp(a);a.pose=standingPose.get(a.id)||'Idle';changed();sync();remember({kind:'place',id:a.id,before},a);announce(a.name+' stands up.');return;}
   const p=world.place(a),seat=nearestSeat(world.seats,{x:p.x,z:p.z},new Set(state.actors.filter(o=>o.id!==a.id&&o.seat).map(o=>o.seat)));
-  if(seat){a.seat=seat.id;a.size=1;a.pose='Sit';announce(a.name+' sits down on the nearest free seat.');}else{a.pose='Sit';announce('No free seat nearby, so '+a.name+' sits on the ground.');}
-  changed();sync();
+  if(seat){sitOn(a,seat);announce(a.name+' '+sits(seat.label)+'.');}else{standingPose.set(a.id,a.pose);a.pose='Sit';announce('No free seat nearby, so '+a.name+' sits on the ground.');}
+  changed();sync();remember({kind:'place',id:a.id,before},a);
  }
- const tools={'turn-left':()=>turnBy(TURN_TAP),'turn-right':()=>turnBy(-TURN_TAP),'face-camera':faceCamera,'sit':sitOrStand,'remove':()=>{const a=current();if(a)removeActor(a.id);}};
+ const turnTool=dir=>()=>{const before=turnBy(dir,TURN_TAP),a=current();if(before&&a)remember({kind:'place',id:a.id,before},a);};
+ const tools={'turn-left':turnTool(1),'turn-right':turnTool(-1),'face-camera':faceCamera,'sit':sitOrStand,'remove':()=>{const a=current();if(a)removeActor(a.id);}};
  for(const b of toolbar.querySelectorAll('[data-tool]'))b.addEventListener('click',()=>tools[b.dataset.tool]());
  toolbar.addEventListener('pointerdown',e=>e.stopPropagation());
  document.addEventListener('keydown',onKey);
+ /** Key presses for one character less than 600 ms apart are one Undo step. */
+ function rememberKey(a,before){const now=performance.now(),last=history.at(-1),same=burst.id===a.id&&now-burst.at<KEY_BURST&&last?.kind==='place'&&last.id===a.id;burst={id:a.id,at:now};if(!same)remember({kind:'place',id:a.id,before},a);}
  function onKey(e){
   if(root.hidden||mode!=='scene'||!preview.element.hidden||e.defaultPrevented)return;
-  if((e.metaKey||e.ctrlKey)&&!e.altKey&&e.key.toLowerCase()==='z'&&!toast.hidden&&!e.target.closest?.('input,textarea,select')){e.preventDefault();undo();return;}
+  if((e.metaKey||e.ctrlKey)&&!e.altKey&&!e.shiftKey&&e.key.toLowerCase()==='z'&&!e.target.closest?.('input,textarea,select')){e.preventDefault();if(!toast.hidden&&undoAction&&undoAction!==undoLast)undo();else undoLast();return;}
   if(e.metaKey||e.ctrlKey||e.altKey)return;
   const inPicture=e.target===document.body||e.target.closest?.('.scene-picture');if(!inPicture||e.target.closest('input,textarea,select'))return;
   const a=current();if(!a||!world)return;
   const step=nudgeStep(e.key,world.camera.getWorldDirection(new THREE.Vector3()),e.shiftKey?.5:.15);
-  if(step){e.preventDefault();const p=world.place(a);if(!world.move(a,p.x+step.dx,p.z+step.dz,state.actors))announce('Stopped by a wall, furniture, another character or the edge of the ground.');changed();sync();return;}
-  if(['q','Q','['].includes(e.key)){e.preventDefault();turnBy(TURN_KEY);}
-  else if(['e','E',']'].includes(e.key)){e.preventDefault();turnBy(-TURN_KEY);}
+  if(step){e.preventDefault();const before=placementOf(a),p=world.place(a);if(!world.move(a,p.x+step.dx,p.z+step.dz,state.actors))announce('Stopped by a wall, furniture, another character or the edge of the ground.');changed();sync();rememberKey(a,before);return;}
+  if(['q','Q','['].includes(e.key)){e.preventDefault();const before=turnBy(1,TURN_KEY);if(before)rememberKey(a,before);}
+  else if(['e','E',']'].includes(e.key)){e.preventDefault();const before=turnBy(-1,TURN_KEY);if(before)rememberKey(a,before);}
   else if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();removeActor(a.id);}
   else if(e.key==='Escape'){selected=null;sync();}
  }
 
- // ---- Removing a character, with Undo for a few seconds. ----
+ // ---- Undo: every placement change and removal (up to 20, this location only); the toast offers it for a removal or a
+ // drag that sits someone down or stands them up. Ctrl/Cmd+Z takes back the last one at any time. ----
  const toast=$('.scene-toast');let toastTimer=0,undoAction=null;
- function offerUndo(message,action){clearTimeout(toastTimer);undoAction=action;toast.querySelector('.scene-toast-text').textContent=message;toast.hidden=false;toastTimer=setTimeout(hideToast,UNDO_MS);}
- function hideToast(){clearTimeout(toastTimer);toast.hidden=true;undoAction=null;}
+ // Seven seconds of a page that can be used: while a slow device is busy redrawing or making a file, at most half a
+ // second of each stall counts, so the Undo is never gone before it could be tapped.
+ function offerUndo(message,action){clearInterval(toastTimer);undoAction=action;toast.querySelector('.scene-toast-text').textContent=message;toast.hidden=false;
+  let left=UNDO_MS,last=performance.now();toastTimer=setInterval(()=>{const now=performance.now();left-=Math.min(now-last,500);last=now;if(left<=0)hideToast();},250);}
+ function hideToast(){clearInterval(toastTimer);toast.hidden=true;undoAction=null;}
  function undo(){const action=undoAction;hideToast();action?.();}
  toast.querySelector('[data-undo]').onclick=undo;
  function shuffleMoment(){
@@ -336,11 +423,42 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   lastMoment=moment.id;changed();sync();
   offerUndo('Shuffled “'+moment.title+'”. Poses, faces, lines and caption changed.',()=>{state.actors=before.actors;state.bottom=before.bottom;changed();sync();});
  }
+ /** Keep an Undo step (a placement only when something changed); any new step hides the toast. → whether it was kept. */
+ function remember(entry,a){if(entry.kind==='place'&&samePlacement(entry.before,placementOf(a)))return false;history.push(entry);if(history.length>SNAP.history)history.shift();hideToast();return true;}
+ function forget(){history.length=0;standingPose.clear();sliding=null;hideToast();}
+ function undoLast(){hideToast();
+  while(history.length){const entry=history.pop();
+   if(entry.kind==='remove'){const actor=restoreCharacter(state,entry.removed);if(!actor){history.push(entry);announce('The scene is full: remove someone first to bring '+entry.removed.actor.name+' back.');return;}selected=actor.id;overlayStep=step;changed();sync();announce(actor.name+' is back.');return;}
+   const a=applyPlacement(state,entry.id,entry.before);if(a){selected=a.id;overlayStep=step;changed();sync();announce('Undone: '+a.name+' is back as before.');return;}
+  }
+  announce('Nothing to undo.');}
  function removeActor(id){
   const removed=removeCharacter(state,id);if(!removed)return;if(selected===id)selected=null;
-  changed();sync();announce(removed.actor.name+' removed from the scene.');
-  offerUndo(removed.actor.name+' removed.',()=>{const actor=restoreCharacter(state,removed);if(!actor){announce('The scene is full: remove someone first to bring '+removed.actor.name+' back.');return;}selected=actor.id;overlayStep=step;changed();sync();announce(actor.name+' is back.');});
+  remember({kind:'remove',removed});changed();sync();announce(removed.actor.name+' removed from the scene.');
+  offerUndo(removed.actor.name+' removed.',undoLast);
  }
+ // For the browser tests only (navigator.webdriver): the snap targets and feet in client px, and how often it drew.
+ if(navigator.webdriver)window.__studioSnap={
+  targets(id=selected){const a=state.actors.find(x=>x.id===id);if(!a||!world)return [];const ctx=snapContext(a),r=canvas.getBoundingClientRect(),at=p=>{const q=ctx.project(p,false);return q&&{x:r.left+q.x,y:r.top+q.y};};
+   return ctx.targets.map(t=>t.line?{id:t.id,kind:t.kind,turn:t.turn,line:t.line,normal:t.edge.n,a:at([t.line.a[0],world.floor(...t.line.a),t.line.a[1]]),b:at([t.line.b[0],world.floor(...t.line.b),t.line.b[1]])}
+    :{id:t.id,kind:t.kind,label:t.label||'',turn:t.turn,mark:t.mark||'',other:t.other?.id||'',point:t.point,ok:t.ok?t.ok(t.point[0],t.point[2]):true,...at(t.point)});},
+  feet(id=selected){const a=state.actors.find(x=>x.id===id);if(!a||!world)return null;const p=world.place(a),q=projector()([p.x,p.y,p.z],false),r=canvas.getBoundingClientRect();return q&&{x:r.left+q.x,y:r.top+q.y,world:[p.x,p.y,p.z]};},
+  /** A client point on the picture that picks this character (their own body, not someone in front of them). */
+  grip(id=selected){const b=boxes.find(x=>x.id===id),r=canvas.getBoundingClientRect();if(!b)return null;
+   for(const fy of [.45,.3,.6,.2,.75,.12,.88])for(const fx of [.5,.35,.65]){const p={clientX:r.left+(b.left+(b.right-b.left)*fx)*r.width,clientY:r.top+(b.top+(b.bottom-b.top)*fy)*r.height};if(actorAt(p)===id)return {x:p.clientX,y:p.clientY};}
+   return null;},
+  /** Could the selected character stand at (x,z) (town metres): free, and seen by the camera? */
+  check(x,z,id=selected){const a=state.actors.find(o=>o.id===id);if(!a||!world)return null;const c=snapContext(a);return {free:c.free(x,z),seen:c.seen(x,z)};},
+  /** During a drag: the client point where the finger must be for the feet to land on `point` [x,y,z]. */
+  aim(point){const g=gesture;if(g?.kind!=='drag'||!world)return null;const q=projector()(point,false),r=canvas.getBoundingClientRect();return q&&{x:r.left+q.x+g.offX,y:r.top+q.y+g.offY};},
+  get draws(){return draws;},
+  drag(){const g=gesture;return g?.kind==='drag'?{offX:g.offX,offY:g.offY,y0:g.y0,want:g.want&&[+g.want.x.toFixed(2),+g.want.z.toFixed(2)],free:g.want&&g.ctx?[g.ctx.free(g.want.x,g.want.z),g.ctx.seen(g.want.x,g.want.z)]:null,landing:g.landing&&{x:g.landing.x,z:g.landing.z,kind:g.landing.kind,key:g.landing.key}}:null;},
+  origin(){return world?.origin.slice(0,3)||null;},
+  /** The depth picture against rays at `n` points over the floor: how often they agree. */
+  agreement(n=200){if(!world||!renderer)return null;const see=world.seeing(renderer),o=world.origin,project=projector();let agree=0,seen=0,shown=0;const differ=[];
+   for(let i=0;i<n;i++){const x=o[0]+(Math.sin(i*12.9898)*43758.5453%1)*12,z=o[2]+(Math.sin(i*78.233)*12543.21%1)*12,y=world.floor(x,z)+1.45;if(!Number.isFinite(y)||!project([x,y,z]))continue;shown++;const ray=world.seen(x,y,z),depth=see(x,y,z);if(ray===depth)agree++;else differ.push([+x.toFixed(2),+y.toFixed(2),+z.toFixed(2),ray,depth]);if(ray)seen++;}
+   return {agree,shown,seen,differ:differ.slice(0,12)};},
+ };
 
  function add(recipe,name){const a=addCharacter(state,normalizeRecipe(recipe),name);if(!a){announce('The scene already has six characters.');return;}selected=a.id;changed();sync();announce(a.name+' added. Select Pose & position to arrange them.');}
  async function ready(){let task;do{task=pending;await task;}while(task!==pending);if(!valid){announce('Wait for the scene to finish loading, then try again.');return false;}return true;}
@@ -358,11 +476,14 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  function removePanel(i){const [panel]=panels.splice(i,1);renderPanels();offerUndo('Panel '+(i+1)+' removed.',()=>{if(panels.length>=MAX_PANELS)return;panels.splice(Math.min(i,panels.length),0,panel);renderPanels();});}
  const projectInput=$('[data-project-input]');projectInput.onchange=async()=>{try{const file=projectInput.files[0];if(!file)return;if(file.size>34000000)throw Error('Project too large');const project=JSON.parse(await file.text());if(project.format!=='johansson-studio-project'||project.version!==1||![1,2].includes(project.scene?.version))throw Error('Invalid project');const scene=normalizeScene(project.scene,normalizeRecipe),urls=(Array.isArray(project.panels)?project.panels:[]).slice(0,MAX_PANELS);if(urls.some(url=>typeof url!=='string'||!/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(url)||url.length>8000000))throw Error('Invalid panel');
   const loaded=await Promise.all(urls.map(async dataURL=>{const blob=dataURLToBlob(dataURL),url=URL.createObjectURL(blob);return {dataURL,url,file:new File([blob],'johansson-studio-panel.png',{type:'image/png'}),image:await loadImage(url)};}));
-  state=scene;selected=state.actors[0]?.id??null;for(const p of panels)URL.revokeObjectURL(p.url);panels.splice(0,panels.length,...loaded);changed();renderPanels();sync();announce('Project opened.');}catch(e){console.warn('Johansson Studio: open project',e);announce('Unable to open this project. Choose a Johansson Studio project JSON file.');}finally{projectInput.value='';}};
+  state=scene;selected=state.actors[0]?.id??null;forget();for(const p of panels)URL.revokeObjectURL(p.url);panels.splice(0,panels.length,...loaded);changed();renderPanels();sync();announce('Project opened.');}catch(e){console.warn('Johansson Studio: open project',e);announce('Unable to open this project. Choose a Johansson Studio project JSON file.');}finally{projectInput.value='';}};
  const actions={
   'shuffle-moment':shuffleMoment,
   'reset-camera':()=>{state.camera={orbit:0,elevation:0,zoom:1};for(const c of root.querySelectorAll('[data-camera]'))c.value=state.camera[c.dataset.camera];changed();},
-  'add-current':()=>add(getCharacter()),'add-resident':()=>{const n=resident.value;add(n==='Thuan'?ORIGINAL_THUAN_RECIPE:recipeFor(n),nameOf(n));},
+  'add-current':()=>add(getCharacter()),'add-resident':()=>{const n=resident.value,id=n.startsWith('studio:')?n.slice(7):null;
+   if(id&&Object.hasOwn(STUDIO_CHARACTERS,id))add(STUDIO_CHARACTERS[id].recipe,STUDIO_CHARACTERS[id].name);
+   else if(n==='design:thuan-original')add(ORIGINAL_THUAN_RECIPE,'Thuận');
+   else add(recipeFor(n),nameOf(n));},
   'edit-character':()=>{const a=current();if(a)onEdit(a.recipe,a.id);},'duplicate':()=>{const a=current();if(a)add(a.recipe,a.name);},
   'remove':()=>{const a=current();if(a)removeActor(a.id);},
   'previous':()=>setStep(keys[Math.max(0,keys.indexOf(step)-1)]),'next':()=>setStep(keys[Math.min(4,keys.indexOf(step)+1)]),

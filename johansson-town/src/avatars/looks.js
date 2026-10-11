@@ -1,4 +1,4 @@
-import {DEFAULT_RECIPE,normalizeRecipe,PARTS,AGES} from './recipe.js';
+import {DEFAULT_RECIPE,normalizeRecipe,PARTS,AGES,PATTERNS} from './recipe.js';
 
 /**
  * Looks: what Johansson Studio may change about a resident, as a short list of fields laid over the recipe World
@@ -20,13 +20,15 @@ export const LOOK_PATHS=Object.freeze(DEFAULTS.map(([path])=>path));
 const WORDS={age:AGES,'body.proportion':['classic','rounded'],'body.silhouette':PARTS.silhouette,'head.form':PARTS.head,
  'hair.style':PARTS.hair,'eyes.style':PARTS.eyes,'brows.style':PARTS.brows,'nose.style':PARTS.nose,'mouth.style':PARTS.mouth,
  'glasses.style':PARTS.glasses,'facial.moustache':PARTS.moustache,'facial.beard':PARTS.beard,'outfit.top':PARTS.top,
- 'outfit.pattern':['none','flowers','stripes','dots'],'outfit.bottom':PARTS.bottom,'outfit.bottomPattern':['none','plaid'],
+ 'outfit.pattern':PATTERNS,'outfit.bottom':PARTS.bottom,'outfit.bottomPattern':['none','plaid'],
  'outfit.footwear':PARTS.footwear,'outfit.hat':PARTS.hat,'accessories.earrings':PARTS.earrings,'accessories.neckwear':PARTS.neckwear,
  'swim.bath':['towel','swimwear']};
 const COLOUR=/^#[0-9a-f]{6}$/;
+/** Numbers that are not 0 to 1: whole numbers in their own range (a shirt number, 0 for none). */
+const RANGES={'outfit.number':{min:0,max:99,whole:true}};
 /** What kind of value each field holds: {kind:'word',words}, {kind:'colour'}, {kind:'number',min:0,max:1} or {kind:'yes/no'}. */
 export const LOOK_FIELDS=Object.freeze(Object.fromEntries(DEFAULTS.map(([path,value])=>[path,Object.freeze(
- typeof value==='boolean'?{kind:'yes/no'}:typeof value==='number'?{kind:'number',min:0,max:1}:
+ typeof value==='boolean'?{kind:'yes/no'}:typeof value==='number'?{kind:'number',min:0,max:1,...RANGES[path]}:
  WORDS[path]?{kind:'word',words:Object.freeze([...WORDS[path]])}:COLOUR.test(value)?{kind:'colour'}:{kind:'unknown'})])));
 
 /** The value at a path ("outfit.hat") in a recipe. */

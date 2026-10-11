@@ -1,11 +1,11 @@
 import {SWEPT_PONYTAIL} from './swept-ponytail-mesh.js';
 import {POLO_COLLAR} from './contrast-polo-mesh.js';
-import {THUAN_SAILOR_OUTFIT,AFTERBATH,houseDressColour} from './outfits.js';
+import {THUAN_SAILOR_OUTFIT,AFTERBATH,houseDressColour} from './outfit-constants.js';
 import {SPRING_BONES,SPRING_PARENT,springRest,chainShare,quarterShare,hemSpec,createSprings} from './springs.js';
 import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries,mergeVertices} from '../../vendor/BufferGeometryUtils.js';
-import {normalizeRecipe} from './recipe.js';
+import {normalizeRecipe,DRESS_BOTTOMS} from './recipe.js';
 import {drawFace,faceLayout} from './face.js';
 import {buildFaceObjects} from './face-objects.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
@@ -13,7 +13,7 @@ import {longBraidPoints} from './braid-path.js';
 import {pleatedSkirtGeometry} from './pleated-skirt.js';
 import {celFrom} from '../render/cel.js';
 import {createTowelFit} from './towel-fit.js';
-import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG,CAMP_COLLAR} from './garment.js';
+import {GARMENT,PLAIN_UV,torsoUV,sleeveUV,paintGarment,SLEEVED_LONG,CAMP_COLLAR,SHIRT_SLEEVES,UNDERSHIRT_ARMS,SLEEVE_END} from './garment.js';
 
 /**
  * Builds a Shimanchu from a recipe.
@@ -443,7 +443,11 @@ function addHat(list,recipe,m){
   part(list,new THREE.RingGeometry(R*.98,R*2.1,32),'head',c,M(0,y-.012*m.k,0,Math.PI/2,0,0,m.headSX,1,1));
   part(list,new THREE.CylinderGeometry(R*.78,R*1.08,fit.crownHeight,24,1,true),'head',c,M(0,y+fit.crownHeight/2,0,0,0,0,m.headSX,1,1));
   part(list,new THREE.CircleGeometry(R*.78,24),'head',c,M(0,y+fit.crownHeight,0,-Math.PI/2,0,0,m.headSX,1,1));
-  part(list,new THREE.CylinderGeometry(R*1.045,R*1.09,R*.12*m.headSY,24,1,true),'head','#d8342c',M(0,y+R*.06*m.headSY,0,0,0,0,m.headSX,1,1));
+  // The band in the island palette's bingata red (character-style.md section 6).
+  part(list,new THREE.CylinderGeometry(R*1.045,R*1.09,R*.12*m.headSY,24,1,true),'head','#c8473a',M(0,y+R*.06*m.headSY,0,0,0,0,m.headSX,1,1));
+  // A rolled edge round the brim: seen edge-on (at eye level, the maker's view and most comic shots) the brim reads as a
+  // line of straw with its ink, not a broken hairline floating round the crown.
+  part(list,new THREE.TorusGeometry(R*2.08,.009*m.k,6,48),'head',c,M(0,y-.006*m.k,0,Math.PI/2,0,0,m.headSX,1,1));
  }else if(hat==='beanie'){
   part(list,new THREE.SphereGeometry(1.17,20,12,0,Math.PI*2,0,Math.PI*.49),'head',c,M(0,m.headCentre+R*.12,0,0,0,0,...S));
   part(list,new THREE.TorusGeometry(1.14,.09,6,24),'head',c,M(0,m.headCentre+R*.18,0,Math.PI/2,0,0,S[0],S[2],S[1]));
@@ -573,7 +577,8 @@ function addAccessories(list,recipe,m){
  */
 export const NECKLACE=Object.freeze({clear:.012,radius:.0026,gap:.0012,front:.86,pendant:.015,anchor:1.25,
  under:Object.freeze({blouse:Object.freeze([.01,.85,.795]),smock:Object.freeze([.01,.85,.795]),apron:Object.freeze([.01,.85,.795]),
-  polo:Object.freeze([.012,.95,.86]),contrastpolo:Object.freeze([.012,.95,.86]),jacket:Object.freeze([.009,.97,.84]),cardigan:Object.freeze([.009,.97,.84])}),
+  polo:Object.freeze([.012,.95,.86]),contrastpolo:Object.freeze([.012,.95,.86]),jacket:Object.freeze([.009,.97,.84]),cardigan:Object.freeze([.009,.97,.84]),
+  shirt:Object.freeze([.012,.95,.86]),vest:Object.freeze([.012,.95,.87]),knitvest:Object.freeze([.012,.96,.89])}),
  hidden:Object.freeze(['police','sailor','sailorlong','festival'])});
 /**
  * Where the necklace lies on this body in its rest pose: its chain (one closed loop round the neck, or the two short drops
@@ -675,7 +680,8 @@ function addBody(list,recipe,m,swim=false){
   if(p.y<waist)return bottom;
   // Under a tank top the body is bare; the vest is its own garment, added below.
   if(tank||running)return skin;
-  if(['jacket','cardigan','festival'].includes(o.top)&&p.z>D*.18&&Math.abs(p.x)<W*.13)return o.accent;
+  // An open front shows the shirt under it (the accent colour); the happi coat's front is painted (garment.js).
+  if(['jacket','cardigan'].includes(o.top)&&p.z>D*.18&&Math.abs(p.x)<W*.13)return o.accent;
   if(o.top==='sundress'&&(p.y-hipY)/m.torso>.78)return skin;
   return top;
  };
@@ -776,27 +782,32 @@ function addBody(list,recipe,m,swim=false){
   // A long sleeve is the arm itself, in the shirt, with the print and the cuff painted on.
   // The shirt lining covers the upper arm underneath the sleeve, so a
   // raised arm cannot reveal a bare patch between the cap and sleeve shell.
-  const armColour=coveredSleeve?(longSleeve?top:p=>p.y>=sh[1]-m.upper*.58?top:skin):skin;
+  // Over a shirt (a vest), the sleeves, the shoulder and the underarm are the shirt's (the accent colour); under a
+  // jersey's short sleeve the arm is the undershirt's to the wrist; a three-quarter sleeve (SLEEVE_END) stops on the
+  // forearm.
+  const sleeve=coveredSleeve&&SHIRT_SLEEVES.includes(o.top)?o.accent:top,below=coveredSleeve&&UNDERSHIRT_ARMS.includes(o.top)?o.accent:skin;
+  const ends=longSleeve&&SLEEVE_END[o.top]?sh[1]-(m.upper+m.fore)*SLEEVE_END[o.top]:null;
+  const armColour=coveredSleeve?(longSleeve?(ends===null?sleeve:p=>p.y>=ends?sleeve:skin):p=>p.y>=sh[1]-m.upper*.58?sleeve:below):skin;
   limb(list,sh,hd,m.armR*1.04,m.armR*.86,armColour,longSleeve?{...arm,uvAt:p=>sleeveUV(p,sh,hd,sx)}:arm);
   // The shoulder: a rounded cap over the joint, in the shirt, that joins the arm to the
   // torso. Its inner side stays with the chest and its outer side goes with the arm, so
   // it stretches over a raised arm rather than coming apart from the body.
   const capShare=p=>{const w=THREE.MathUtils.smoothstep(Math.abs(p.x),m.shoulderX-m.armR*1.1,m.shoulderX+m.armR*.3);return [['chest',1-w],['shoulder'+s,w]];};
   // Flattened on top so the shoulder slopes from the neck rather than standing up in a pad.
-  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||running||o.top==='sundress'?skin:top,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.62,Math.min(1.1,D/W*1.6)));
+  part(list,new THREE.SphereGeometry(m.armR*1.18,16,12),capShare,swim||tank||running||o.top==='sundress'?skin:sleeve,M(sh[0]-sx*m.armR*.12,sh[1]-m.armR*.05,0,0,0,0,1,.62,Math.min(1.1,D/W*1.6)));
   // A short sleeve: one closed, rounded sleeve over the top of the arm, starting inside the
   // shoulder cap and lent to the chest at its top, so the shirt runs from the neck to the
   // hem without a seam. A kariyushi's is a little roomier and boxier, as real ones are.
   // Its print and its hem band are painted (garment.js), not separate pieces.
   if(!swim&&!longSleeve&&!tank&&!running&&o.top!=='sundress'){
    const roomy=o.top==='kariyushi',a0=[sh[0]-sx*m.armR*.05,sh[1]+m.armR*.08,0],a1=[sh[0]+sx*.008,sh[1]-m.upper*(roomy?.52:.56),0];
-   limb(list,a0,a1,m.armR*(roomy?1.20:1.16),m.armR*(roomy?1.16:1.12),top,{...arm,joints:[],root:['chest',.55,.3],uvAt:p=>sleeveUV(p,a0,a1,sx)});
+   limb(list,a0,a1,m.armR*(roomy?1.20:1.16),m.armR*(roomy?1.16:1.12),sleeve,{...arm,joints:[],root:['chest',.55,.3],uvAt:p=>sleeveUV(p,a0,a1,sx)});
   }
   if(coveredSleeve){
    // A closed underarm gusset shared by every sleeved top. The chest end
    // stays inside the torso while the outer end follows the upper arm.
    const a=[sx*(m.shoulderX-m.armR*.72),sh[1]-m.armR*.78,0],b=[sh[0],sh[1]-m.upper*.30,0];
-   limb(list,a,b,m.armR*1.05,m.armR*1.12,top,{...arm,joints:[],root:['chest',.9,.15],uvAt:p=>sleeveUV(p,a,b,sx)});
+   limb(list,a,b,m.armR*1.05,m.armR*1.12,sleeve,{...arm,joints:[],root:['chest',.9,.15],uvAt:p=>sleeveUV(p,a,b,sx)});
   }
   // A mitten hand: the palm, a little flattened, and a thumb on its front inner side,
   // so a wave or a point reads as a hand rather than a ball on a stick.
@@ -818,7 +829,9 @@ function addBody(list,recipe,m,swim=false){
   const sx=s==='L'?1:-1,hp=[sx*m.hipX,hipY,0],kn=[sx*m.hipX,hipY-m.thigh,0],an=[sx*m.hipX,m.foot,0];
   const leg={bone:'thigh'+s,joints:[[m.thigh/(hipY-m.foot),'thigh'+s,'knee'+s]]};
   const trousers=b==='trousers'||b==='widepants';
-  limb(list,hp,an,m.legR*(b==='widepants'?1.32:1.02),m.legR*(b==='widepants'?1.28:.86),trousers?bottom:skin,leg);
+  // Wide trousers are gathered at the ankle, as monpe are, so their rounded end stays inside the shoe or the sandal's sole
+  // when the feet are up (a floor sit), instead of showing through it.
+  limb(list,hp,an,m.legR*(b==='widepants'?1.32:1.02),m.legR*.86,trousers?bottom:skin,leg);
   if(b==='cropped'||b==='culottes'){const end=b==='cropped'?m.foot+m.shin*.35:hipY-m.thigh*1.12;limb(list,hp,[hp[0],end,0],m.legR*(b==='culottes'?1.55:1.12),m.legR*(b==='culottes'?1.7:1.16),bottom,leg);}
   // Shorts and trunks: a wider piece over the top of the thigh.
   if(b==='shorts'||b==='swim'&&!bare)limb(list,[hp[0],hp[1]+m.legR*.3,0],[hp[0]*1.04,hipY-m.thigh*(b==='swim'?(onePiece?SWIMSUIT.legs:SWIMSUIT.trunks):.55),0],m.legR*1.2,m.legR*1.26,bottom,{...leg,joints:[]});
@@ -833,7 +846,8 @@ function addBody(list,recipe,m,swim=false){
    ball(list,m.legR*1.12,[sx*m.hipX,m.foot*.55,m.legR*.5],'foot'+s,skin,[1,.55,1.7],12,8);
    if(wear==='sandals'){
     // Setta: a flat sole and a thong strap over the top of the foot.
-    ball(list,m.legR*1.24,[sx*m.hipX,m.foot*.12,m.legR*.55],'foot'+s,recipe.age==='elder'?'#6b4a32':'#c8a878',[1,.18,1.8],12,6);
+    // Deep enough that the bare foot above never shows through its underside (a broad adult's foot reaches 0.9 cm down).
+    ball(list,m.legR*1.24,[sx*m.hipX,m.foot*.12,m.legR*.55],'foot'+s,recipe.age==='elder'?'#6b4a32':'#c8a878',[1,.24,1.8],12,6);
     ball(list,m.legR*.42,[sx*m.hipX,m.foot*.55+m.legR*.55,m.legR*.95],'foot'+s,o.shoes,[2.3,.5,.8],10,6);
    }
   }else addShoe(list,recipe,m,s,wear);
@@ -841,7 +855,7 @@ function addBody(list,recipe,m,swim=false){
  // The house dress's skirt and an older woman's swimsuit's little skirt are cloth round the legs (addHullSkirt).
  if(b==='housedress')addHullSkirt(list,recipe,m,'housedress',bottom);
  if(b==='swim'&&!bare&&wearsSwimSkirt(recipe))addHullSkirt(list,recipe,m,'swim',bottom);
- if(b==='skirt'||b==='longskirt'||b==='pleatedskirt'){
+ if(DRESS_BOTTOMS.includes(b)){
   const len=b==='skirt'||b==='pleatedskirt'?m.thigh*.9:m.thigh+m.shin*.85;
   // The skirt hangs from the hips and, lower down, goes with the legs: seated, it lies on the lap; and a long skirt,
   // below the knee, goes with the shins, so seated it falls over them instead of sticking out past the knees like a tube.
