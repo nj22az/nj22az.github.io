@@ -45,7 +45,7 @@
         "mall",
         "fall"
       ],
-      "description": "berakning: räknas fram. resonemang: skriftlig motivering. reflektion: förberedelse- eller diskussionsfråga utan facit. flerval: val bland alternativ. matning: mätning med instrument (fysisk eller simulerad). simulator: räkna-först-uppgift i en simulator. laboration: stationsprotokoll med flera mätningar. felsokning: felsökning med hypotes och kontroll. mall: ifyllnadsmall utan eget facit. fall: gemensamt underlag (scenario) som flera uppgifter bygger på."
+      "description": "berakning: räknas fram. resonemang: skriftlig motivering. reflektion: förberedelse- eller diskussionsfråga utan facit. flerval: val bland alternativ (uppgift.alternativ, eller delfrågor med egna alternativ). matning: mätning med instrument (fysisk eller simulerad). simulator: räkna-först-uppgift i en simulator. laboration: stationsprotokoll med flera mätningar. felsokning: felsökning med hypotes och kontroll. mall: ifyllnadsmall utan eget facit. fall: gemensamt underlag (scenario) som flera uppgifter bygger på."
     },
     "revision": {
       "type": "integer",
@@ -553,8 +553,9 @@
       "then": {
         "properties": {
           "uppgift": {
-            "required": [
-              "alternativ"
+            "anyRequired": [
+              "alternativ",
+              "delfragor"
             ]
           }
         }

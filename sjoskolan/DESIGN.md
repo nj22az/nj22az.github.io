@@ -193,6 +193,10 @@ Text minst 18 pt, nyckelmeningen 21–25 pt.
 | `verktyg/larare/las.mjs` | lösenordssidan för lärarstöd (`wrapper()`, byts med `omslag`) |
 | `verktyg/veckosidor/bygg.py` | veckosidorna 37–39 och 41–45 (mål, delar, redovisning) |
 | `verktyg/inlamning/bygg.py` | veckans inlämningsuppgifter, `vecka-XX/aktuell/Inlamning.html` |
+| `verktyg/inlamning/sjalvrattning.py`, `facit.py` | självrättande inlämning (vecka 42): svarsfält, alternativ, läshänvisningar och checklista; nyckeln med hashade svar |
+| `gemensamt/sjalvrattning.css`, `sjalvrattning*.mjs` | svarsfälten, Rätta (Rätt!/Skiljer sig, tre försök, låsning), rutan Låsta frågor (läs om veckan för nya försök), Lämna in och PDF:en på en självrättande inlämningssida |
+| `gemensamt/pdf.mjs` | elevens PDF (A4, Helvetica WinAnsi, utan bibliotek) |
+| `gemensamt/lasbekraftelse.mjs` | rutan Har du läst hela del N? sist på delsidorna i en vecka med självrättande inlämning |
 | `innehall/` | innehållsdatabasen: övningar, ledtrådar, lösningar, labbuppgifter och lärarfacit (`innehall/README.md`). `innehall.py bygg` skriver kurssidornas övningar, `*/uppgifter.gen.mjs`, arbetsblad, inlämning, tenta, presentationer, lärarguiden och boken |
 | `verktyg/bildspel/bygg.py` | webbildspel av presentationerna: `bildspel/<id>/` med bilder och text, visaren `bildspel/index.html` |
 

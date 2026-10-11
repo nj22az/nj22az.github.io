@@ -344,6 +344,22 @@ PANEL_CSS = ('<style>'
              '</style>')
 
 
+def _inlamningens_falt(nr):
+    """Fälten som rättas i veckans självrättande inlämning, per kursplanspunkt. veckoStatus (gemensamt/sjalvrattning.mjs)
+    räknar likadant: varje uppgift räknas under alla sina punkter. Ger rätt totaler innan eleven har öppnat formuläret."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('sjalvrattning_panel', ROOT / 'verktyg' / 'inlamning' / 'sjalvrattning.py')
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    per_mal = defaultdict(int)
+    for ovning in mod.FORMULAR.get(nr, {}):
+        p = mod.post(ovning)
+        n = sum(1 for f in mod.uppgiftens_falt(nr, ovning, p) if f['typ'] in ('tal', 'val'))
+        for m in p['larande'].get('mal', []):
+            per_mal[m] += n
+    return per_mal
+
+
 def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
     """Översikten överst på veckosidan. steg_ids: stegen med Klart-ruta. delnummer: veckans egna delsidor (läst-knapparna).
     sjalvrattande: adressen till gemensamt/sjalvrattning.mjs när veckans inlämning rättar sig själv, annars None."""
@@ -364,7 +380,9 @@ def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
                if x['plats'] == f'{mapp}/aktuell/Inlamning.html' and x['ankare'] == ankare for m in _MAL_AV.get(x['ovning'], [])}
     labb_mal = {m for p in _labbar(w) for i in labbuppgifter(p['href']) for m in _MAL_AV.get(i, [])}
     annat = {m: ' och '.join(x for x, ja in (('Inlämningen', m in inl_mal), ('labben', m in labb_mal)) if ja).capitalize() for m in aktiva}
-    mal = [{'id': m, 'ovningar': [[k, v] for k, v in framsteg[m].items()], 'annat': annat[m]} for m in aktiva]
+    inl_falt = _inlamningens_falt(nr) if sjalvrattande else {}
+    mal = [{'id': m, 'ovningar': [[k, v] for k, v in framsteg[m].items()], 'annat': annat[m]}
+           | ({'inlamning': inl_falt[m]} if inl_falt.get(m) else {}) for m in aktiva]
     data = {'vecka': nr, 'sista': w['sista'], 'steg': steg_ids, 'delar': delnummer,
             'ovningar': [[k, v] for k, v in alla.items()], 'mal': mal}
     if sjalvrattande:
@@ -373,7 +391,7 @@ def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
     rader = []
     for m in aktiva:
         omr = OMRADE_AV[m]
-        n = sum(len(v) for v in framsteg[m].values())
+        n = sum(len(v) for v in framsteg[m].values()) + inl_falt.get(m, 0)
         rader.append(f'<li data-lm="{m}"><span class="vp-lm-kod" style="border-color:{omr[2]};background:{ton(omr[2])}" title="{escape(omr[1])}">{m}</span>'
                      f'<span class="vp-lm-text">{escape(ENKEL[m])}</span><span class="vp-stapel" aria-hidden="true"><i style="background:{omr[2]}"></i></span>'
                      f'<span class="vp-lm-tal">{f"0 av {n}" if n else escape(annat[m])}</span></li>')

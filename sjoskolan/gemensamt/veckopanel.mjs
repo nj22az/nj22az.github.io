@@ -29,7 +29,8 @@ export function rakna(data, lagring = las, status = null) {
     steg: [stegKlara, data.steg.length],
     delar: [delarLasta, data.delar.length],
     ovningar: [raknaOvn(data.ovningar), totOvn(data.ovningar)],
-    inlamning: status ? inlamningText(status) : null,
+    // Utan sparad plan (eleven har inte öppnat formuläret) står rutan kvar som på sidan: Inte påbörjad.
+    inlamning: status?.uppgifter?.length ? inlamningText(status) : null,
     mal,
   };
 }

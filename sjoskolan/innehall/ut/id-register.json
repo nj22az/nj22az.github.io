@@ -7966,6 +7966,22 @@
      "ankare": null
     }
    ]
+  },
+  {
+   "id": "EL-000887",
+   "revision": 2,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Läsförståelse: Transportstyrelsens riktlinjer för riskanalys",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-42/aktuell/Inlamning.html",
+     "nummer": "Inlämning 4",
+     "ankare": "uppgift-4"
+    }
+   ]
   }
  ]
 }
