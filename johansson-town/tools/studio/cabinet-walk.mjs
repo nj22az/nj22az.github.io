@@ -46,13 +46,19 @@ try{
  };
  await shoot('cold-cabinet',.4,-2.35,[.4,-3.48],8);
  await shoot('beer-column',2.39,-2.62,[2.39,-3.48],14);
+ // The can is behind the cabinet's sliding door: slide it open (it stays open a few seconds), then look up at the can
+ // until the game offers to examine it, and pick it up, as a player does.
  const examine=client.state.targets.find(t=>/^Examine .*Umineko lager/.test(t.label));
- if(examine){
+ const door=client.state.targets.filter(t=>t.label==='Open refrigerated drinks and dairy').sort((a,b)=>Math.abs(a.position[0]-2.39)-Math.abs(b.position[0]-2.39))[0];
+ if(examine&&door){
+  await client.face(door.position[0],door.position[2]);await client.call('press_control',{control:'interact',durationMs:16});await client.call('wait',{durationMs:400});
   await client.face(examine.position[0],examine.position[2]);
+  for(let i=0;i<8&&!/Umineko lager/.test(client.state.ui?.nearbyAction||'');i++)await client.call('look',{degrees:0,verticalDegrees:-6});
+  const offered=client.state.ui?.nearbyAction||'';
   await client.call('press_control',{control:'interact',durationMs:16});await client.call('wait',{durationMs:1500});
-  const state=await client.shot('beer-close-up');report.shots.push({name:'beer-close-up',viewer:state.blocked?.viewer??null,errors:state.errors});
+  const state=await client.shot('beer-close-up');report.shots.push({name:'beer-close-up',offered,viewer:state.blocked?.viewer??null,errors:state.errors});
   await client.call('press_control',{control:'close',durationMs:34});
- }else report.shots.push({name:'beer-close-up',missing:'No "Examine … Umineko lager" target in reach.'});
+ }else report.shots.push({name:'beer-close-up',missing:'No cabinet door or "Examine … Umineko lager" target here.'});
  report.passed=true;
  console.log(JSON.stringify(report,null,1));
 }catch(error){report.failure=error.message;console.error(error.message);process.exitCode=1;}

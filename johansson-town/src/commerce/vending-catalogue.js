@@ -1,4 +1,4 @@
-import {PRODUCTS} from './products-data.js';
+import {PRODUCTS,RETIRED} from './products-data.js';
 // What the town's drinks machines sell: a 1997 Okinawan line-up, under the town's own
 // placeholder brands. inventoryName is what goes in the bag and stays stable for saved
 // games (Green tea and Canned coffee were the first two). `container` decides what is
@@ -15,9 +15,10 @@ export const VENDING_AD=Object.freeze({brand:'MINATO DRINKS',tagline:'A break at
 
 /**
  * Everything you can drink from your bag, and what it leaves you holding: the machines' cans, and Sakura's products
- * that are drinks of their own (`drink` in data/studio/products.json: Sakura's beer).
+ * that are drinks of their own (`drink` in data/studio/products.json: Sakura's beer), and the drinks of lines retired
+ * since, so a can bought before still drinks.
  */
-const SHOP_DRINKS=PRODUCTS.filter(p=>p.drink);
+const SHOP_DRINKS=[...PRODUCTS,...RETIRED].filter(p=>p.drink);
 const shopDrink=name=>SHOP_DRINKS.find(p=>p.inventoryName===name);
 export const EMPTY_CAN='Empty can';
 export const DRINKABLE=Object.freeze(new Set([...VENDING_PRODUCTS.map(p=>p.inventoryName),...SHOP_DRINKS.map(p=>p.inventoryName)]));

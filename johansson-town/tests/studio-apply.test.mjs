@@ -122,7 +122,8 @@ test('refuses unknown keys and steps, names that are nobody, ages, real brands, 
   [change([create({name:'thao'})]),/Thao already lives in World/],
   [change([create({name:'harbour visitor'})]),/Harbour visitor is a name World already uses/],
   [change([create({name:'Sora'},'constructor')]),/"constructor" is a word Studio keeps for itself/],
-  [change([{op:'product.update',id:'beer',set:{price:300},was:{price:220}}]),/not switched on yet/],
+  // Products are switched on in stage 2; this throwaway root has no products.json, so there is nothing to change.
+  [change([{op:'product.update',id:'beer',set:{price:300},was:{price:220}}]),/no products to change here/],
   [change(Array.from({length:51},()=>captain)),/at most 50/],
   [change([captain],{note:'ok'}),/at least 4 words/],
   [change([captain],{note:'A <script> in the note here'}),/may not contain "<"/],
@@ -306,4 +307,120 @@ test('the data root moves only inside a test run, and real brands are refused in
  const rules={brands:['orion','coca-cola','orion beer'],kana:['オリオン']};
  for(const bad of ['Orion lager','ORION','Ｏｒｉｏｎ draught','オリオンビール','Coca-Cola'])assert.ok(brandProblems(bad,'product.name',rules).length,bad);
  for(const ok of ['Umineko lager','Morioka soba','Asahi Street','Lorionne'])assert.deepEqual(brandProblems(ok,'product.name',rules),[],ok);
+});
+
+// ─── Products (stage 2) ───────────────────────────────────────────────────────────────────────────────────────────
+const {productsModule}=await import('../tools/studio/build-data.mjs');
+const {validateProducts}=await import('../src/studio/rules.js');
+/** A throwaway root that also holds Sakura's products, as they are published today. */
+async function makeShop(prefix){
+ const at=await makeRoot(prefix),text=await readFile(resolve(town,'data/studio/products.json'),'utf8');
+ await mkdir(resolve(at,'johansson-town/src/commerce'),{recursive:true});
+ await writeFile(resolve(at,PATHS.products),text);await writeFile(resolve(at,PATHS.productsModule),productsModule(text));
+ return {at,repo:openRepo(at),text};
+}
+const shopData=async at=>JSON.parse(await read(PATHS.products,at));
+const product=(file,id)=>file.products.find(p=>p.id===id);
+const png1=()=>{const b=new Uint8Array(33);b.set([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0,0,0,13,0x49,0x48,0x44,0x52]);new DataView(b.buffer).setUint32(16,2);new DataView(b.buffer).setUint32(20,1);return b;};
+
+test('products: a price goes to the draft, publishes into products.json and its module, and back again is byte-identical',async()=>{
+ const {at,repo:shopRepo,text}=await makeShop('studio-shop-');
+ try{
+  const up=await applyChange(change([{op:'product.update',id:'beer',set:{price:240},was:{price:220},note:'The new excise on beer this autumn.'}]),{repo:shopRepo,dryRun:false});
+  assert.equal(up.applied,true,sentences(up));
+  assert.equal(await read(PATHS.products,at),text,'a yes goes to the draft, not to World\'s data');
+  assert.equal(product((await readData(shopRepo)).products,'beer').price,240,'the tools see the draft');
+  const preview=await publishDraft({repo:shopRepo});
+  assert.deepEqual(preview.products,[{id:'beer',name:'Umineko lager',what:'changed',fields:['price']}]);
+  assert.deepEqual(preview.writes,[PATHS.productsModule,PATHS.products,PATHS.log,PATHS.draft]);
+  assert.equal((await publishDraft({repo:shopRepo,dryRun:false})).applied,true);
+  const published=await read(PATHS.products,at);
+  assert.equal(product(JSON.parse(published),'beer').price,240);assert.equal(await read(PATHS.productsModule,at),productsModule(published));
+  const log=JSON.parse(await read(PATHS.log,at));assert.ok(log.changes[0].before.products&&log.changes[0].after.products);
+  assert.deepEqual(log.changes[0].inverse,[{op:'product.update',id:'beer',set:{price:220},was:{price:240}}]);
+  const back=await applyChange(change([{op:'product.update',id:'beer',set:{price:220},was:{price:240}}]),{repo:shopRepo,dryRun:false});
+  assert.equal(back.applied,true,sentences(back));assert.equal((await publishDraft({repo:shopRepo,dryRun:false})).applied,true);
+  assert.equal(await read(PATHS.products,at),text,'apply then undo gives back the same bytes');
+  assert.equal(await read(PATHS.productsModule,at),productsModule(text));
+ }finally{await rm(at,{recursive:true,force:true});}
+});
+
+test('products: refused in plain words, and nothing written: real brands, an empty purpose, a double-booked shelf, the locked fields, the beer\'s retirement, bad pictures',async()=>{
+ const {at,repo:shopRepo}=await makeShop('studio-shop-refused-');
+ try{
+  const beer=product(await shopData(at),'beer'),one=png1(),b64=bytes=>Buffer.from(bytes).toString('base64');
+  const update=(set,was=Object.fromEntries(Object.keys(set).map(k=>[k,k.split('.').reduce((v,x)=>v?.[x],beer)??null])))=>({op:'product.update',id:'beer',set,was});
+  const designed=(spec,picture='beer.label.png')=>({label:{source:'designed',spec,picture,bakedOn:'Chromium'}});
+  const words=text=>({v:1,base:'paper',layers:[{type:'text',text,font:'gothic',x:.5,y:.5,size:.2,colour:'ink'}]});
+  const before=await snapshot(at);
+  const cases=[
+   [change([update({'brand.line':'Orion lager'})]),/"orion" is a real brand/],
+   [change([update({'pack.flash':'オリオン'})]),/"オリオン" is a real brand/],
+   [change([update(designed(words('Orion lager')))],{files:{'beer.label.png':{sha256:sha256(one),data:b64(one)}}}),/"orion" is a real brand/],
+   [change([update(designed({v:1,base:'paper',layers:[{type:'picture',file:'beer.photo.png',x:.5,y:.5,w:1,h:1,words:['オリオン 生']}]}))],
+    {files:{'beer.label.png':{sha256:sha256(one),data:b64(one)},'beer.photo.png':{sha256:sha256(one),data:b64(one)}}}),/"オリオン" is a real brand/],
+   [change([update({'purpose.for':[]})]),/at least one resident/],
+   [change([update({'purpose.why':''})]),/is empty/],
+   [change([update({'purpose.for':['Mr Nobody']})]),/"Mr Nobody" is not a resident/],
+   [change([update({'purpose.placed':'By the till.'})]),/why beer stands where it does, in at least 4 words/],
+   [change([update({shelf:{fitting:'fridge',column:3,levels:[1,2,3,4]}})]),/Shelf 1 of the cold cabinet's column 3 is booked twice: milk and beer/],
+   [change([update({shelf:{fitting:'fridge',column:3,levels:[3,4]}})]),/Shelf 2 of the cold cabinet's column 3 would stand empty/],
+   [change([update({capacity:25})]),/beer's 25 do not share out evenly over its 3 shelves/],
+   [change([update({capacity:48})]),/beer would stand 4 deep .*at most 2 deep fits the cold cabinet/],
+   [change([update({price:9})]),/from ¥10 to ¥5000/],[change([update({price:220.5})]),/from ¥10 to ¥5000/],
+   [change([update({supplier:'sakura'})]),/All the alcohol in town comes from Higa Liquor/],
+   [change([update({name:'Umineko Gold'})]),/cannot be renamed yet/],
+   [change([update({id:'lager'},{id:'beer'})]),/save key/],
+   [change([update({inventoryName:'Lager'},{inventoryName:'Umineko lager'})]),/what old saves keep in the bag/],
+   [change([update({'cells.brand':71},{'cells.brand':10})]),/atlas cells are its own/],
+   [change([update({'brand.colour':'#ffffff'},{'brand.colour':null})]),/not a field Studio can change/],
+   [change([update({brand:{...beer.brand,ink:'#000000'},'brand.ink':'#000000'})]),/Set brand or a part of it, not both/],
+   [change([{op:'product.retire',id:'beer',why:'The creator wants a new beer instead.',shelfTo:'milk',was:recordSha256(beer)}]),/Umineko lager cannot be retired yet.*game\.js:\d+.*friendship\.js:22/],
+   [change([update(designed(words('UMINEKO')))],{files:{'beer.label.png':{sha256:sha256(one),data:b64(Buffer.from('#!/bin/sh\nrm -rf /'))}}}),/not a PNG, JPEG or WebP picture/],
+   [change([update(designed(words('UMINEKO')))],{files:{'beer.label.png':{sha256:'0'.repeat(64),data:b64(one)}}}),/does not match its checksum/],
+   [change([update(designed(words('UMINEKO')))]),/uses the picture beer\.label\.png, which is not in the change's files/],
+   [change([{op:'product.add',product:{name:'Lemon',hue:3},place:{mode:'flavour',target:'beer'}}]),/at least 10 degrees/],
+   [change([{op:'product.add',product:{name:'Orion Dry',hue:40},place:{mode:'flavour',target:'beer'}}]),/"orion" is a real brand/],
+   [change([{op:'product.add',product:{name:'Dry',hue:40},place:{mode:'flavour',target:'beer'}}]),/already has a flavour called Dry/],
+   [change([{op:'product.update',id:'nothing',set:{price:200},was:{price:100}}]),/There is no product "nothing"/],
+  ];
+  for(const [file,expected] of cases){const r=await applyChange(file,{repo:shopRepo,dryRun:false});assert.equal(r.ok,false,String(expected));assert.match(sentences(r),expected);}
+  assert.deepEqual(await snapshot(at),before,'a refused change writes nothing');
+ }finally{await rm(at,{recursive:true,force:true});}
+});
+
+test('products: a flavour gets its own cell, a new line shares a bay and gets cells off the painted sheets, and a line nothing names can retire',async()=>{
+ const {at,repo:shopRepo}=await makeShop('studio-shop-add-');
+ try{
+  const lemon=await applyChange(change([{op:'product.add',product:{name:'Lemon',hue:60},place:{mode:'flavour',target:'beer'}}]),{repo:shopRepo,dryRun:false});
+  assert.equal(lemon.applied,true,sentences(lemon));
+  const used=new Set((await shopData(at)).products.flatMap(p=>p.cells.flavours.map(f=>f.cell)));
+  const beer=product((await readData(shopRepo)).products,'beer');
+  assert.deepEqual(beer.cells.flavours.at(-1),{name:'Lemon',hue:60,cell:Math.min(...Array.from({length:80},(_,c)=>c).filter(c=>!used.has(c)))});
+  // A new line beside the batteries, with a designed label whose picture is already baked (the tools bake it in Chromium).
+  const spec={v:1,base:'paper',layers:[{type:'text',text:'KAZEMARU',font:'gothic',x:.5,y:.5,size:.2,colour:'ink'}]};
+  const mints={id:'mints',inventoryName:'Harbour mints',shop:'sakura',name:'Harbour mints',jp:'Mints',price:100,text:'KAZEMARU · Harbour mints',bagColour:'#d9eef0',
+   brand:{name:'KAZEMARU',jp:'Kazemaru',line:'Peppermints',paper:'#d9eef0',ink:'#1f4f6b',accent:'#5fa8c4',symbol:'wave'},
+   pack:{shape:'box',size:[.06,.09,.02],net:'30g',flash:'Strong',tag:'For the ferry',art:'candy',back:{ingredients:'Sugar, peppermint oil',unit:'pack',recycle:'PLA',food:true}},
+   label:{source:'designed',spec,image:'labels/mints.r1.webp',sha256:'a'.repeat(64),bakedOn:'Chromium'},
+   purpose:{zone:'daily',for:['Bus driver','Harbour master'],why:'Peppermints for a long shift at the wheel or on the quay.',placed:'Beside the batteries, by the till, where a driver pays.'},
+   capacity:24,supplier:'sakura'};
+  const added=await applyChange(change([{op:'product.add',product:mints,place:{mode:'share',target:'battery'}}]),{repo:shopRepo,dryRun:false});
+  assert.equal(added.applied,true,sentences(added));
+  let data=(await readData(shopRepo)).products;
+  const m=product(data,'mints');assert.deepEqual([m.cells.brand,m.cells.price],[71,72],'a new line never gets a cell under the painted sheets (0 to 31)');
+  assert.deepEqual(m.shelf,{fitting:'east',bay:'east-back-1',order:1});assert.equal(product(data,'notebook').shelf.order,2,'the line above moves up a board');
+  assert.ok(data.products.findIndex(p=>p.id==='mints')>data.products.findIndex(p=>p.id==='postcard')-1,'in the floor walk with the daily goods');
+  assert.equal(validateProducts(data,{brands:JSON.parse(await read(PATHS.brands,at))}).ok,true);
+  // Its label picture is not baked here, so publishing it is refused, in words, until it is.
+  const blocked=await publishDraft({repo:shopRepo,dryRun:false});assert.equal(blocked.ok,false);assert.match(sentences(blocked),/mints's label needs .*labels\/mints\.r1\.webp/);
+  // Nothing in World names the new line: it can retire, and its board goes back to the line beside it.
+  const retired=await applyChange(change([{op:'product.retire',id:'mints',why:'The trial of peppermints is over now.',was:recordSha256(m)}]),{repo:shopRepo,dryRun:false});
+  assert.equal(retired.applied,true,sentences(retired));
+  data=(await readData(shopRepo)).products;
+  assert.equal(product(data,'mints'),undefined);assert.equal(product(data,'notebook').shelf.order,1);
+  assert.deepEqual(data.retired.map(r=>[r.id,r.inventoryName,r.why]),[['mints','Harbour mints','The trial of peppermints is over now.']]);
+  const again=await applyChange(change([{op:'product.add',product:mints,place:{mode:'share',target:'battery'}}]),{repo:shopRepo,dryRun:false});
+  assert.equal(again.ok,false);assert.match(sentences(again),/retired id is never used again/);
+ }finally{await rm(at,{recursive:true,force:true});}
 });

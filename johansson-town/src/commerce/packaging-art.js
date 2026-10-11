@@ -14,7 +14,7 @@ import {drawJagabo} from '../world/interiors/sakura-life.js';
  * and every brand is fictional (brands.js).
  */
 export const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","Noto Sans CJK JP",sans-serif';
-const GOTHIC='"Hiragino Kaku Gothic ProN","Noto Sans CJK JP","Yu Gothic",sans-serif';
+export const GOTHIC='"Hiragino Kaku Gothic ProN","Noto Sans CJK JP","Yu Gothic",sans-serif';
 
 /**
  * What each line is, as a pack: its shape and size in metres, its weight, its flash and what the illustration shows
@@ -211,10 +211,13 @@ function illustrate(ctx,art,x,y,s,brand,id){
  }
  ctx.restore();
 }
+/** One of the packs' illustrations in a square of side s centred on x,y (label-art.js draws them in a designed label). */
+export function drawArt(ctx,art,x,y,s,brand){illustrate(ctx,art,x,y,s,brand,art);}
 function drawGull(ctx,x,y,s,colour){ctx.save();ctx.strokeStyle=colour;ctx.lineWidth=s*.09;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x-s*.5,y);ctx.quadraticCurveTo(x-s*.25,y-s*.3,x,y);ctx.quadraticCurveTo(x+s*.25,y-s*.3,x+s*.5,y);ctx.stroke();ctx.restore();}
 function drawWave(ctx,x,y,w,colour){ctx.save();ctx.strokeStyle=colour;ctx.lineWidth=w*.05;ctx.lineCap='round';for(let r=0;r<2;r++){ctx.beginPath();for(let i=0;i<=24;i++){const t=i/24;ctx.lineTo(x-w/2+t*w,y+r*w*.1+Math.sin(t*Math.PI*4)*w*.05);}ctx.stroke();}ctx.restore();}
 function drawFlower(ctx,x,y,r,colour){for(let k=0;k<5;k++){const a=k/5*Math.PI*2-Math.PI/2;ellipse(ctx,x+Math.cos(a)*r*.5,y+Math.sin(a)*r*.5,r*.42,r*.3,a,colour);}circle(ctx,x,y,r*.2,'#f6d24a');}
-function drawSymbol(ctx,symbol,x,y,s,colour){
+/** A brand's emblem (gull, wave, flower, star, leaf, rice or the sun), size s, centred on x,y. */
+export function drawSymbol(ctx,symbol,x,y,s,colour){
  if(symbol==='gull')return drawGull(ctx,x,y,s,colour);
  if(symbol==='wave')return drawWave(ctx,x,y,s,colour);
  if(symbol==='flower')return drawFlower(ctx,x,y,s*.5,colour);
@@ -285,9 +288,13 @@ export function backPanel(id){
  return back?{food:back.food,unit:back.unit,recycle:back.recycle,ingredients:back.ingredients??undefined}:{food:false,unit:'pack',recycle:'PLA',ingredients:undefined};
 }
 
-/** The back: ingredients, nutrition, maker, barcode, recycling mark. */
-export function drawBack(id,w=1024,h=1024){
- const brand=brandFor(id),pack=PACKS[id]||{net:''};
+/**
+ * The back: ingredients, nutrition, maker, barcode, recycling mark. `target` is a product's id, or a product record
+ * (Johansson Studio's draft of a new line, which World's data does not have yet).
+ */
+export function drawBack(target,w=1024,h=1024){
+ const draft=target&&typeof target==='object'?target:null,id=draft?draft.id:target;
+ const brand=draft?draft.brand:brandFor(id),pack=draft?draft.pack:PACKS[id]||{net:''};
  const c=canvas(w,h),ctx=c.getContext('2d'),m=Math.min(w,h),pad=w*.07;
  ctx.fillStyle=brand.paper;ctx.fillRect(0,0,w,h);ctx.fillStyle=brand.ink;ctx.fillRect(0,0,w,h*.1);
  text(ctx,brand.name+' · '+brand.line,w/2,h*.05,Math.round(m*.042),brand.paper,{maxWidth:w*.9});
@@ -295,7 +302,7 @@ export function drawBack(id,w=1024,h=1024){
  const bx=pad,by=h*.14,bw=w-pad*2,bh=h*.5;
  text(ctx,'一括表示',bx,by-h*.018,Math.round(m*.026),brand.ink,{align:'left',font:GOTHIC});
  ctx.fillStyle='#fffdf7';ctx.fillRect(bx,by,bw,bh);ctx.strokeStyle='#2a2a2a';ctx.lineWidth=m*.004;ctx.strokeRect(bx,by,bw,bh);
- const back=backPanel(id),food=back.food,rows=[['名称|Product',brand.line],[food?'原材料名|Ingredients':'品名|Contents',back.ingredients||'—'],['内容量|Net',pack.net],[food?'賞味期限|Best before':'製造|Made',food?'See base':'1997'],['保存方法|Storage',food?'Keep cool, dry and out of the sun':'Keep out of reach of children'],['製造者|Maker',brand.name+' Co. · 1-'+(seedOf(id)%40+1)+' Harbour Town, Okinawa']];
+ const back=draft?{...draft.pack.back,ingredients:draft.pack.back.ingredients??undefined}:backPanel(id),food=back.food,rows=[['名称|Product',brand.line],[food?'原材料名|Ingredients':'品名|Contents',back.ingredients||'—'],['内容量|Net',pack.net],[food?'賞味期限|Best before':'製造|Made',food?'See base':'1997'],['保存方法|Storage',food?'Keep cool, dry and out of the sun':'Keep out of reach of children'],['製造者|Maker',brand.name+' Co. · 1-'+(seedOf(id)%40+1)+' Harbour Town, Okinawa']];
  const rh=bh/rows.length,col=bw*.24,fs=Math.round(m*.032);
  rows.forEach(([k,v],i)=>{const y=by+i*rh;if(i){ctx.beginPath();ctx.moveTo(bx,y);ctx.lineTo(bx+bw,y);ctx.stroke();}
   // The key in Japanese as printed, with the English under it in small type.

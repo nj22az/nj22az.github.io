@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 import {Client} from '@modelcontextprotocol/client';
 import {StdioClientTransport} from '@modelcontextprotocol/client/stdio';
 import {PATHS,jsonText} from '../tools/studio/repo.mjs';
-import {looksModule,charactersModule} from '../tools/studio/build-data.mjs';
+import {looksModule,charactersModule,productsModule} from '../tools/studio/build-data.mjs';
 import {TOOLS} from '../tools/studio/tools.mjs';
 import {serveGame} from '../tools/mcp/static-server.mjs';
 import {normalizeRecipe,DEFAULT_RECIPE} from '../src/avatars/recipe.js';
@@ -20,7 +20,7 @@ if(!process.env.NODE_TEST_CONTEXT)throw Error('Run this with node --test: outsid
 // Every tool is called except render_portrait, which needs Chromium (tools/studio/smoke.mjs covers it).
 const town=fileURLToPath(new URL('../',import.meta.url));
 const SENTINEL={name:'Sentinel',recipe:normalizeRecipe({...DEFAULT_RECIPE,name:'Sentinel'}),card:{role:'Test sentinel',why:'Proves the server reads the throwaway copy of the data.'},made:'2026-10-12T09:14:00Z'};
-let root,client,original,startup;
+let root,client,original,startup,productsText;
 before(async()=>{
  root=await mkdtemp(join(tmpdir(),'studio-mcp-'));
  for(const folder of ['data/studio','src/avatars','src/studio'])await mkdir(resolve(root,'johansson-town',folder),{recursive:true});
@@ -28,6 +28,9 @@ before(async()=>{
  await writeFile(resolve(root,PATHS.looks),original);await writeFile(resolve(root,PATHS.looksModule),looksModule(original));await writeFile(resolve(root,PATHS.charactersModule),charactersModule(original));
  await writeFile(resolve(root,PATHS.log),jsonText({format:'johansson-studio-log',version:1,changes:[]}));
  await copyFile(resolve(town,'data/studio/brand-rules.json'),resolve(root,PATHS.brands));
+ // Sakura's products as published today, so the product tools work on the copy too.
+ productsText=await readFile(resolve(town,'data/studio/products.json'),'utf8');await mkdir(resolve(root,'johansson-town/src/commerce'),{recursive:true});
+ await writeFile(resolve(root,PATHS.products),productsText);await writeFile(resolve(root,PATHS.productsModule),productsModule(productsText));
  client=new Client({name:'studio-mcp-test',version:'1'});
  const transport=new StdioClientTransport({command:process.execPath,args:[resolve(town,'tools/studio/server.mjs')],cwd:resolve(town,'..'),env:{...process.env,JOHANSSON_STUDIO_ROOT:root},stderr:'pipe'});
  const t=performance.now();await client.connect(transport);startup=performance.now()-t;
@@ -44,10 +47,10 @@ test('the server answers initialize quickly, reads the throwaway copy, and lists
  const {tools}=await client.listTools(),hints=Object.fromEntries(tools.map(t=>[t.name,t.annotations]));
  assert.deepEqual(tools.map(t=>t.name).sort(),TOOLS.map(t=>t.name).sort());
  for(const t of tools){assert.equal(t.inputSchema.type,'object',t.name);assert.ok(t.description.length>40,t.name);}
- for(const name of ['character_list','character_get','validate','publish_check'])assert.equal(hints[name].readOnlyHint,true,name);
- for(const name of ['character_update','character_reset','character_delete','publish_draft','discard_draft'])assert.deepEqual([hints[name].readOnlyHint,hints[name].destructiveHint],[false,true],name);
- assert.deepEqual([hints.character_create.readOnlyHint,hints.character_create.destructiveHint],[false,false],'adding a character only adds');
- assert.deepEqual([hints.render_portrait.readOnlyHint,hints.render_portrait.idempotentHint],[false,true],'a render saves a file');
+ for(const name of ['character_list','character_get','validate','publish_check','product_list','product_get'])assert.equal(hints[name].readOnlyHint,true,name);
+ for(const name of ['character_update','character_reset','character_delete','publish_draft','discard_draft','product_update','product_label_picture','product_retire'])assert.deepEqual([hints[name].readOnlyHint,hints[name].destructiveHint],[false,true],name);
+ for(const name of ['character_create','product_add'])assert.deepEqual([hints[name].readOnlyHint,hints[name].destructiveHint],[false,false],`${name} only adds`);
+ for(const name of ['render_portrait','render_product'])assert.deepEqual([hints[name].readOnlyHint,hints[name].idempotentHint],[false,true],`${name} saves a file`);
 });
 
 test('look, change with a dry run, say yes (the draft), publish, then reset and publish: looks.json is byte-identical again',async()=>{
@@ -151,4 +154,45 @@ test('the headless page\'s server serves only World and Studio, never a path tha
   for(const path of ['johansson-town/%2e%2e%2f.mcp.json','avatar-creator/..%2f.git/config','johansson-town/%2e%2e%2f%2e%2e%2fetc/passwd'])assert.equal(await status(path),403,path);
   for(const path of ['.mcp.json','johansson-town-x/index.html','.git/config'])assert.equal(await status(path),404,path);
  }finally{await server.close();}
+});
+
+test('products: list, get with its references, change a price (dry run, draft, publish, and back), add a flavour, and refusals in words',async()=>{
+ const products=()=>readFile(resolve(root,PATHS.products),'utf8');
+ const list=await call('product_list',{zone:'drinks'});
+ assert.equal(list.data.count,8);assert.match(list.data.room,/^4 more products and 30 more flavours fit/);
+ const beerRow=list.data.products.find(p=>p.id==='beer');
+ assert.deepEqual([beerRow.brand,beerRow.label,beerRow.flavours,beerRow.unpublished],['UMINEKO · Beer','painted',['Dry','Black'],false]);
+ assert.match(beerRow.where,/cold cabinet, column 3 .*nearest the till.*shelves 2, 3, 4/);
+ assert.equal((await call('product_list',{query:'umineko'})).data.products[0].id,'beer');
+ const got=await call('product_get',{id:'Umineko lager'});
+ assert.equal(got.data.id,'beer','a product is found by its name too');
+ assert.ok(got.data.references.code.some(r=>/^src\/game\.js:\d+ /.test(r))&&got.data.references.code.some(r=>/^src\/people\/friendship\.js:22 /.test(r)),'the literals the plan names');
+ assert.ok(got.data.references.accounts.some(a=>/^Sato Ramen \(from higa-saketen\)/.test(a)));
+ assert.ok(got.data.references.drawings.some(r=>/sakura-backroom\.js/.test(r)),'the backroom crates its label does not reach');
+ assert.match(got.data.retire,/^Refused while \d+ code lines/);assert.ok(got.data.findings.some(f=>/blue/.test(f)));
+ const dry=await call('product_update',{id:'beer',set:{price:240},note:'The new excise on beer this autumn.'});
+ assert.equal(dry.data.ok,true,JSON.stringify(dry.data.problems));assert.equal(dry.data.applied,false);assert.equal(dry.data.product.price,240);
+ assert.equal(await products(),productsText,'a dry run writes nothing');
+ assert.equal((await call('product_update',{id:'beer',set:{price:240},note:'The new excise on beer this autumn.',dryRun:false})).data.applied,true);
+ assert.equal((await call('product_get',{id:'beer'})).data.unpublished,true);assert.equal(await products(),productsText,'yes goes to the draft');
+ const preview=await call('publish_draft');assert.deepEqual(preview.data.products,[{id:'beer',name:'Umineko lager',what:'changed',fields:['price']}]);
+ assert.equal((await call('publish_draft',{dryRun:false})).data.applied,true);
+ assert.equal(JSON.parse(await products()).products.find(p=>p.id==='beer').price,240);
+ assert.equal((await call('product_update',{id:'beer',set:{price:220},note:'Back to the old price again.',dryRun:false})).data.applied,true);
+ assert.equal((await call('publish_draft',{dryRun:false})).data.applied,true);assert.equal(await products(),productsText);
+ const lemon=await call('product_add',{as:'flavour',from:'beer',product:{name:'Lemon',hue:60},place:{mode:'flavour'},note:'A lemon shandy for the summer festival.',dryRun:false});
+ assert.equal(lemon.data.applied,true,JSON.stringify(lemon.data.problems));assert.deepEqual(lemon.data.product.cells.flavours.map(f=>f.name),['Dry','Black','Lemon']);
+ assert.deepEqual((await call('product_get',{id:'beer'})).data.cells.flavours.at(-1),'Lemon: cell 50 of the right half, hue +60°','the lowest free cell of the right half');
+ const retire=await call('product_retire',{id:'beer',why:'The creator wants a different beer.',shelfTo:'milk'});
+ assert.equal(retire.data.ok,false);assert.match(retire.data.problems.join(' '),/cannot be retired yet.*friendship\.js:22/);
+ const brand=await call('product_update',{id:'beer',set:{'brand.line':'Orion lager'},note:'Trying a real brand on the can.'});
+ assert.match(brand.data.problems.join(' '),/"orion" is a real brand/);
+ const locked=await call('product_update',{id:'beer',set:{inventoryName:'Lager'},note:'Trying to rename the save key.'});
+ assert.match(locked.data.problems.join(' '),/what old saves keep in the bag/);
+ // The tools that draw are refused in words before any browser starts (tools/studio/smoke.mjs draws with them).
+ assert.match((await call('render_product',{})).data.error,/either an id or a draft/);
+ const notPicture=await call('product_label_picture',{id:'beer',image:Buffer.from('#!/bin/sh\nrm -rf /').toString('base64'),words:[],note:'A picture that is not one.'});
+ assert.match(notPicture.data.problems.join(' '),/not a PNG, JPEG or WebP/);
+ const v=await call('validate',{target:'products'});assert.equal(v.data.products.ok,true,JSON.stringify(v.data.products));
+ assert.equal((await call('discard_draft',{all:true,dryRun:false})).data.applied,true);assert.equal(await products(),productsText);
 });

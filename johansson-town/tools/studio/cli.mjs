@@ -24,7 +24,7 @@ if(!parsed.success){console.error(JSON.stringify({error:'These arguments do not 
 const ctx=await context();
 try{
  const result=await callTool(name,parsed.data,ctx);
- const shown=tool.image&&!result.error?result.data:result;
+ const shown=result?.image&&result?.mimeType?result.data:result;
  console.log(JSON.stringify(shown,null,1));
  if(result.error||result.ok===false)process.exitCode=1;
 }finally{await ctx.close();}

@@ -24,7 +24,8 @@ test('World\'s generated modules match Studio\'s data (build-data --check)',asyn
 test('Studio\'s draft and its write lock never reach git, so only "update World" publishes a change',async()=>{
  const ignored=path=>promisify(execFile)('git',['check-ignore','-q',path],{cwd:CODE_ROOT}).then(()=>true,()=>false);
  for(const path of [PATHS.draft,PATHS.lock,'output/studio-mcp/portraits/x.png'])assert.ok(await ignored(path),`${path} must be git-ignored`);
- for(const path of [PATHS.looks,PATHS.log,PATHS.looksModule,PATHS.charactersModule])assert.equal(await ignored(path),false,`${path} is World's data`);
+ for(const path of [PATHS.looks,PATHS.log,PATHS.looksModule,PATHS.charactersModule,PATHS.products,PATHS.productsModule,'johansson-town/assets/graphics/labels/beer.r1.webp'])
+  assert.equal(await ignored(path),false,`${path} is World's data`);
 });
 
 test('Studio\'s data is valid and written the way the tools write it',async()=>{

@@ -4,7 +4,9 @@
 // - without ?agent there is no agent API;
 // - the template picker and Build scene's resident picker list every resident of World, drawn by recipeFor, and the
 //   characters made in Studio (served here from a seeded copy of the generated characters-data.js);
-// - Build scene's Thuan is World's Thuan (recipeFor), and the original Thuận design is its own entry.
+// - Build scene's Thuan is World's Thuan (recipeFor), and the original Thuận design is its own entry;
+// - products (stage 2): every view of the beer drawn by World's own code, a label baked the same twice at 1024x512 and
+//   shown on the can, and a picture cut to the label's 2:1.
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
@@ -32,12 +34,25 @@ try{
   await page.goto(server.url+'avatar-creator/?agent');await page.locator('.studio-tools').waitFor();
   await page.waitForFunction(()=>window.__JOHANSSON_STUDIO__?.ready===true,null,{timeout:120000});
   const api=await page.evaluate(()=>({version:window.__JOHANSSON_STUDIO__.version,views:window.__JOHANSSON_STUDIO__.views,frozen:Object.isFrozen(window.__JOHANSSON_STUDIO__)}));
-  assert.deepEqual(api,{version:1,views:['front','quarter','left','right','back'],frozen:true});
+  assert.deepEqual(api,{version:2,views:['front','quarter','left','right','back'],frozen:true});
   const shots=await page.evaluate(async()=>{const {recipeFor}=await import('/johansson-town/src/avatars/cast.js');const s=window.__JOHANSSON_STUDIO__,r=recipeFor('Mr Fujita');
    return [s.renderPortrait(r,{size:256}),s.renderPortrait(r,{size:256}),s.renderPortrait(r,{view:'back',framing:'face',size:200,background:'transparent'})];});
   assert.deepEqual(pngSize(shots[0]),[256,256]);assert.equal(shots[0],shots[1],'the same portrait twice is the same pixels');
   assert.deepEqual(pngSize(shots[2]),[200,200]);assert.notEqual(shots[0],shots[2]);
   assert.match(await page.evaluate(()=>{try{window.__JOHANSSON_STUDIO__.renderPortrait({}, {pose:'Moonwalk'});}catch(e){return e.message;}}),/Unknown pose/);
+  // Products: World's own beer can, its label baked from a design, and a picture cut to 2:1.
+  const goods=await page.evaluate(async()=>{
+   const [{PRODUCT_BY_ID},{brandSpec}]=await Promise.all([import('/johansson-town/src/commerce/products-data.js'),import('/johansson-town/src/studio/label-spec.js')]);
+   const s=window.__JOHANSSON_STUDIO__,beer=PRODUCT_BY_ID.beer,out={views:s.productViews};
+   for(const view of s.productViews)out[view]=await s.renderProduct(beer,{view,size:256});
+   const spec=brandSpec(beer);out.baked=await s.bakeLabel(beer,spec);out.again=await s.bakeLabel(beer,spec);
+   out.designed=await s.renderProduct(beer,{view:'front',size:256,labelImage:out.baked});
+   const c=document.createElement('canvas');c.width=900;c.height=900;const g=c.getContext('2d');g.fillStyle='#2f6f9f';g.fillRect(0,0,900,900);
+   out.cut=await s.cropPicture(c.toDataURL('image/png'));return out;});
+  assert.deepEqual(goods.views,['front','back','turn','shelf','flat','cell']);
+  assert.deepEqual([pngSize(goods.front),pngSize(goods.back),pngSize(goods.turn),pngSize(goods.shelf),pngSize(goods.flat),pngSize(goods.cell)],[[256,256],[256,256],[1024,256],[256,256],[1024,512],[768,128]]);
+  assert.notEqual(goods.front,goods.back);assert.deepEqual(pngSize(goods.baked),[1024,512]);assert.equal(goods.baked,goods.again,'a design bakes to the same pixels every time');
+  assert.notEqual(goods.designed,goods.front,'the can shows the baked label');assert.deepEqual(pngSize(goods.cut),[900,450]);
   // Templates: the original Thuận design, every resident of World (Johansson once), then the Studio characters.
   await page.locator('.studio-files summary').click();
   const templates=page.locator('select[aria-label="Starting template"]'),group=templates.locator('optgroup[label="Residents of Johansson World"] option');
@@ -72,7 +87,7 @@ try{
   assert.equal(JSON.stringify(thuan),await page.evaluate(async()=>{const [{recipeFor},{normalizeRecipe}]=await Promise.all([import('/johansson-town/src/avatars/cast.js'),import('/johansson-town/src/avatars/recipe.js')]);return JSON.stringify(normalizeRecipe(recipeFor('Thuan')));}),
    'Build scene\'s Thuan is World\'s Thuan, with any published look');
   assert.deepEqual(errors,[],`page errors at ${width}x${height}`);
-  console.log(`ok ${width}x${height}: agent API, ${RESIDENT_NAMES.length} residents and a Studio character in both pickers, World's Thuan in Build scene`);
+  console.log(`ok ${width}x${height}: agent API, ${RESIDENT_NAMES.length} residents and a Studio character in both pickers, World's Thuan in Build scene, the beer in every view and a baked label`);
   await context.close();
  }
 }finally{await browser.close();await server.close();}

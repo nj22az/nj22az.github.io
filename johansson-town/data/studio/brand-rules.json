@@ -128,7 +128,7 @@
     "product.brand.jp",
     "product.brand.line",
     "product.pack.flash",
-    "product.pack.tag",
+    "product.pack.tag","product.pack.net","product.pack.back.ingredients","product.cells.flavours (each flavour's name)",
     "product.label (every text layer, and every word printed on a picture)",
     "character.name",
     "character.card.role"

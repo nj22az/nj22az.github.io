@@ -67,6 +67,26 @@ export class StudioPage{
   if(out.subarray(0,4).toString()!=='RIFF'||out.subarray(8,12).toString()!=='WEBP')throw Error('Chromium did not make a WebP picture.');
   return {bytes:out,width,height};
  }
+ /** A data URL's bytes. */
+ static bytes(url){return Buffer.from(url.slice(url.indexOf(',')+1),'base64');}
+ /** Pictures for the page: file → data URL. */
+ static urls(pictures={}){return Object.fromEntries(Object.entries(pictures).map(([file,bytes])=>[file,`data:${/\.webp$/.test(file)?'image/webp':/\.jpe?g$/.test(file)?'image/jpeg':'image/png'};base64,${Buffer.from(bytes).toString('base64')}`]));}
+ /** A designed label baked by label-art.js in the page, 1024×512, as PNG bytes. `pictures`: a picture layer's file → its bytes. */
+ async bakeLabel(product,spec,{pictures}={}){
+  return StudioPage.bytes(await this.evaluate(([p,s,o])=>window.__JOHANSSON_STUDIO__.bakeLabel(p,s,o),[product,spec,{pictures:StudioPage.urls(pictures)}]));
+ }
+ /** A picture cut to a shape (2:1 by default) as PNG bytes; its size is checked before anything decodes it. */
+ async cropPicture(bytes,{crop=null,aspect=2,maxSide=2048}={}){
+  const input=Uint8Array.from(bytes),problems=pictureKind(input)?sizeProblems('The picture',pictureSize(input)):[{sentence:'The picture is not a PNG, JPEG or WebP picture.'}];
+  if(problems.length)throw Error(problems[0].sentence);
+  const kind=pictureKind(input),url=`data:image/${kind};base64,${Buffer.from(bytes).toString('base64')}`;
+  return StudioPage.bytes(await this.evaluate(([u,o])=>window.__JOHANSSON_STUDIO__.cropPicture(u,o),[url,{crop,aspect,maxSide}]));
+ }
+ /** A product drawn by World's own code (studio-api.js renderProduct), as PNG bytes. `labelImage`: a draft's baked label (bytes). */
+ async renderProduct(product,{view='front',size=512,background='#f3ede2',labelImage=null}={}){
+  const label=labelImage?`data:image/${pictureKind(Uint8Array.from(labelImage))||'png'};base64,${Buffer.from(labelImage).toString('base64')}`:null;
+  return StudioPage.bytes(await this.evaluate(([p,o])=>window.__JOHANSSON_STUDIO__.renderProduct(p,o),[product,{view,size,background,labelImage:label}]));
+ }
  async close(){
   this.closed=true;const started=this.starting;this.starting=null;
   if(!started)return;

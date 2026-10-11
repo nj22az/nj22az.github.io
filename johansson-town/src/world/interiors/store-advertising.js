@@ -32,7 +32,8 @@ const variantCells=new Map();
 for(const {id,cells} of [...PRODUCTS].filter(p=>p.cells.flavours.length).sort((a,b)=>a.cells.flavours[0].cell-b.cells.flavours[0].cell))
  cells.flavours.forEach(({name,hue,cell},i)=>variantCells.set(id+':'+(i+1),{index:cell,id,name,hue}));
 if([...slots.values(),...STORE_ITEMS.map(i=>priceSlot(i.id))].some(c=>c>=COLS*ROWS)||[...variantCells.values()].some(c=>c.index>=COLS*ROWS))throw Error('A Sakura label is outside the atlas');
-const cellOrigin=(slot,right=false)=>[(slot%COLS+(right?COLS:0))*TW,Math.floor(slot/COLS)*TH];
+/** Where a cell starts in the atlas, in pixels: the left half (labels, prints, price tags) or the right (flavours). */
+export const cellOrigin=(slot,right=false)=>[(slot%COLS+(right?COLS:0))*TW,Math.floor(slot/COLS)*TH];
 /**
  * How far a pack's printed UVs move to show flavour k instead of the original: added to
  * the label's UVs per instance on the shelf (sakura-interior.js). [0,0] for the original.
@@ -48,19 +49,34 @@ function hueRotate(data,degrees){
  const m=[.213+c*.787-s*.213,.715-c*.715-s*.715,.072-c*.072+s*.928,.213-c*.213+s*.143,.715+c*.285+s*.140,.072-c*.072-s*.283,.213-c*.213-s*.787,.715-c*.715+s*.715,.072+c*.928+s*.072];
  for(let i=0;i<data.length;i+=4){const r=data[i],g=data[i+1],b=data[i+2];data[i]=m[0]*r+m[1]*g+m[2]*b;data[i+1]=m[3]*r+m[4]*g+m[5]*b;data[i+2]=m[6]*r+m[7]*g+m[8]*b;}
 }
-/** Paints every flavour from its original pack: the same print, turned in hue, with its flavour named on a ribbon. */
+/**
+ * Paints one flavour from its original pack's cell (at `from`) into its own cell (at `to`): the same print, turned in
+ * hue, with its flavour named on a ribbon. False when the canvas cannot be read back (a test's stand-in canvas).
+ */
+export function paintFlavourCell(ctx,[bx,by],[vx,vy],{name,hue}){
+ let block;try{block=ctx.getImageData(bx,by,TW,TH);}catch{return false;}
+ if(!block?.data)return false;
+ hueRotate(block.data,hue);ctx.putImageData(block,vx,vy);
+ ctx.save();ctx.translate(vx,vy);
+ ctx.font='bold 19px sans-serif';const w=Math.min(TW-24,(ctx.measureText(name).width||name.length*10)+22);
+ ctx.fillStyle='rgba(255,250,236,.94)';ctx.fillRect(TW-12-w,TH-40,w,26);ctx.fillStyle='#b63831';ctx.fillRect(TW-12-w,TH-40,5,26);
+ ctx.fillStyle='#2f2a24';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(name,TW-12-w/2+2,TH-27,w-10);
+ ctx.restore();return true;
+}
+/** Paints every flavour from its original pack (paintFlavourCell), after the cells they come from are drawn. */
 function paintFlavours(ctx){
  if(typeof ctx.getImageData!=='function')return;
- for(const cell of variantCells.values()){
-  const [bx,by]=cellOrigin(packagingSlot(cell.id)),[vx,vy]=cellOrigin(cell.index,true);
-  let block;try{block=ctx.getImageData(bx,by,TW,TH);}catch{return;}
-  if(!block?.data)return;
-  hueRotate(block.data,cell.hue);ctx.putImageData(block,vx,vy);
-  ctx.save();ctx.translate(vx,vy);
-  ctx.font='bold 19px sans-serif';const w=Math.min(TW-24,(ctx.measureText(cell.name).width||cell.name.length*10)+22);
-  ctx.fillStyle='rgba(255,250,236,.94)';ctx.fillRect(TW-12-w,TH-40,w,26);ctx.fillStyle='#b63831';ctx.fillRect(TW-12-w,TH-40,5,26);
-  ctx.fillStyle='#2f2a24';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(cell.name,TW-12-w/2+2,TH-27,w-10);
-  ctx.restore();
+ for(const cell of variantCells.values())if(!paintFlavourCell(ctx,cellOrigin(packagingSlot(cell.id)),cellOrigin(cell.index,true),cell))return;
+}
+/**
+ * Labels designed in Johansson Studio: the picture each was baked as (labels/<id>.r<n>.webp, 1024×512), laid over
+ * its product's own cell at shelf size once it has loaded. World never draws a design itself, so every device shows
+ * exactly the label the creator approved.
+ */
+const DESIGNED=PRODUCTS.filter(p=>p.label.source==='designed');
+function paintDesigned(ctx,loaded){
+ for(const [cell,image] of loaded){
+  const [x,y]=cellOrigin(cell);ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(image,x,y,TW,TH);ctx.restore();
  }
 }
 const posterGeometry=new THREE.PlaneGeometry(1.06,1.59);
@@ -112,10 +128,18 @@ export function createLabelAtlas(){
  paintFlavours(ctx);
  return canvas;
 }
+/**
+ * The shelf's one label material. Its atlas is drawn at once (createLabelAtlas); then, as each picture arrives, the
+ * painted sheets are laid in whole over their cells, every designed label that has arrived is laid over its own cell
+ * (so a sheet arriving later never covers one), and the flavours are painted again from the cells they come from, so a
+ * new label's flavours follow it. A cell beyond the painted sheets shows its drawn label until its picture arrives.
+ */
 export function getLabelMaterial(){
  if(!labelMaterial){const texture=new THREE.CanvasTexture(createLabelAtlas());texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=2;
   labelMaterial=new THREE.MeshBasicMaterial({map:texture,toneMapped:false});labelMaterial.name='Sakura fictional packaging atlas';
-  for(const [row,file] of [[0,'packaging-atlas.webp'],[1,'packaging-groceries.webp']])new THREE.ImageLoader().load(assetURL('graphics/konbini/'+file),image=>{const canvas=texture.image,ctx=canvas.getContext('2d');ctx.drawImage(image,0,row*512,COLS*TW,512);paintFlavours(ctx);texture.needsUpdate=true;},undefined,()=>{});}
+  const designed=new Map(),repaint=ctx=>{paintDesigned(ctx,designed);paintFlavours(ctx);texture.needsUpdate=true;};
+  for(const [row,file] of [[0,'packaging-atlas.webp'],[1,'packaging-groceries.webp']])new THREE.ImageLoader().load(assetURL('graphics/konbini/'+file),image=>{const canvas=texture.image,ctx=canvas.getContext('2d');ctx.drawImage(image,0,row*512,COLS*TW,512);repaint(ctx);},undefined,()=>{});
+  for(const p of DESIGNED)new THREE.ImageLoader().load(assetURL('graphics/'+p.label.image),image=>{designed.set(p.cells.brand,image);repaint(texture.image.getContext('2d'));},undefined,()=>{console.warn('Sakura label unavailable: '+p.label.image+'; the shelf keeps its drawn label.');});}
  return labelMaterial;
 }
 function fallbackPoster(id){

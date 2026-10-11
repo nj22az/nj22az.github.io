@@ -19,8 +19,8 @@ let core;
 /** World's code and Studio's core, loaded on the first call. */
 async function load(){
  core??=Promise.all([import('../../src/avatars/cast.js'),import('../../src/avatars/looks.js'),import('../../src/avatars/recipe.js'),import('../../src/avatars/personality.js'),
-  import('../../src/studio/change.js'),import('../../src/studio/rules.js'),import('../../src/studio/sha256.js'),import('./apply.mjs'),import('./repo.mjs')])
-  .then(([cast,looks,recipe,personality,change,rules,sha,apply,repo])=>({cast,looks,recipe,personality,change,rules,sha,apply,repo}));
+  import('../../src/studio/change.js'),import('../../src/studio/rules.js'),import('../../src/studio/sha256.js'),import('./apply.mjs'),import('./repo.mjs'),import('../../src/studio/label-spec.js')])
+  .then(([cast,looks,recipe,personality,change,rules,sha,apply,repo,label])=>({cast,looks,recipe,personality,change,rules,sha,apply,repo,label}));
  return core;
 }
 
@@ -65,13 +65,18 @@ async function people(ctx){
  return {c,data,looks,published,find,unknown,roles,groupOf,resident,studio};
 }
 
-/** Make a change file for some steps (its id from the time, what it is about and the steps), then dry-run or apply it. */
-async function change(ctx,{ops,note,dryRun,what}){
+/**
+ * Make a change file for some steps (its id from the time, what it is about and the steps), then dry-run or apply it.
+ * `files` are its pictures ({name: bytes}); they are redrawn as WebP in headless Studio before anything keeps them.
+ */
+async function change(ctx,{ops,note,dryRun,what,files={}}){
  const c=await load(),made=new Date().toISOString(),{fingerprint}=await c.apply.readData(ctx.repo);
- const id=`${stamp(made,what)}-${c.sha.recordSha256(ops).slice(0,6)}`;
- const file={format:'johansson-studio-change',version:1,id,made,by:'claude',note,base:{looks:fingerprint.looks},ops};
- const r=await c.apply.applyChange(file,{dryRun,repo:ctx.repo,uniqueId:true});
- return {...r,change:{...file,id:r.id||id}};
+ const id=`${stamp(made,what)}-${c.sha.recordSha256(ops).slice(0,6)}`,names=Object.keys(files);
+ const carried=Object.fromEntries(names.map(n=>[n,{sha256:c.sha.sha256(files[n]),data:Buffer.from(files[n]).toString('base64')}]));
+ const file={format:'johansson-studio-change',version:1,id,made,by:'claude',note,base:{looks:fingerprint.looks,...fingerprint.products?{products:fingerprint.products}:{}},ops,...names.length?{files:carried}:{}};
+ const r=await c.apply.applyChange(file,{dryRun,repo:ctx.repo,uniqueId:true,page:names.length?await ctx.page():null});
+ // The change as it was sent, its pictures named by checksum only (their bytes are in the draft once applied).
+ return {...r,change:{...file,id:r.id||id,...names.length?{files:Object.fromEntries(names.map(n=>[n,{sha256:carried[n].sha256}]))}:{}}};
 }
 function report(r,extra={}){
  return {ok:r.ok,applied:r.applied,dryRun:r.dryRun,...extra,results:r.results,problems:sentenceList(r.problems),conflicts:sentenceList(r.conflicts),
@@ -79,6 +84,193 @@ function report(r,extra={}){
   next:!r.ok?REFUSED:r.dryRun?'A dry run: nothing was written. Show the creator, and call again with dryRun:false when they say yes.':
    r.applied?'Added to Studio\'s draft (data/studio/draft, outside git): the tools and portraits show it now. World and Studio on the iPad show it once the creator says "update World" (publish_draft).':undefined};
 }
+
+// ─── Products and labels (stage 2): Sakura Shōten's lines, data/studio/products.json ─────────────────────────────
+const PRODUCT_ID={type:'string',minLength:1,maxLength:40,description:'A product\'s id, its save key (e.g. "beer"), or its name ("Umineko lager"); product_list lists them.'};
+const PRODUCT_SET={type:'object',minProperties:1,maxProperties:20,propertyNames:{pattern:'^[a-z][a-zA-Z]*(\\.[a-z][a-zA-Z]*){0,2}$'},
+ description:'Fields to change, by path: {"price":240}, {"brand.ink":"#2a4a38"}, {"purpose.why":"…"}, {"label":{"source":"designed","spec":{"v":1,"base":"paper","layers":[…]}}}. null takes an optional field away. A designed label with no picture is baked in headless Studio and returned to look at. product_get lists the fields; avatar-creator/docs/STUDIO-MCP.md describes a label design.'};
+const SPEC={type:'object',description:'A label design: {"v":1,"base":"paper"|"painted","layers":[…]} (src/studio/label-spec.js).'};
+const VIEW={enum:['front','back','turn','shelf','flat','cell'],default:'front',description:'front or back (the pack picked up), turn (four sides), shelf (the line and its flavours on a shelf), flat (the label unrolled, the part facing you marked), cell (its 256×128 shelf cell and its flavours).'};
+/** The known findings about a product that wait for the creator (avatar-creator/docs/STUDIO-MCP.md, "Findings"). */
+const FINDINGS={
+ beer:['The can in the hand is blue (drink.handColour #2d6b9a) while the can on the shelf is gold: fixing it is a visible batch of its own.',
+  'Its back panel says "Nutrition (per bottle)" (pack.back.unit "bottle") on a can, as the coffee\'s does.',
+  'The 350 ml can is 94 × 135 mm in World; a real one is 66 × 122 mm (decision 6: game scale on purpose?).',
+  'Who supplies alcohol contradicts itself: economy/goods.js and town-economy.js have Sakura supplying Higa; merchandising.js and the data have Higa supplying Sakura.',
+  'Retiring it waits for the creator: friendship.js (gift likes), game.js (drinking it), the Higa trade lines and more name it (product_get references).'],
+ tea:['The poster beside the tea advertises GOLDEN MILK TEA, not NAGI (store-advertising.js POSTER_SPECS).'],
+ coffee:['The poster beside the coffee advertises NIGHT SHIFT, not PORT 88 (store-advertising.js POSTER_SPECS).'],
+ biscuit:['The poster beside the biscuits advertises STICK BITES, not KOMOREBI (store-advertising.js POSTER_SPECS).'],
+};
+const ZONE_WORDS={west:'pantry',middle:'sweets',east:'daily goods'};
+/** Where a line stands, in words. */
+function whereWords(p){
+ const s=p.shelf;
+ if(s.fitting==='fridge')return `the cold cabinet, column ${s.column} (${['the first, by the door side','the second','the third','the last, nearest the till'][s.column]}), shelves ${s.levels.join(', ')} counted from 0 at the bottom`;
+ if(s.fitting==='chiller')return `the open chiller, bay ${s.bay}, ${s.deck} deck`;
+ if(s.fitting==='steamer')return 'the bun steamer on the counter';
+ return `the ${ZONE_WORDS[s.fitting]} gondola, bay ${s.bay}, line ${s.order+1} from the lowest board`;
+}
+/** Sakura's products as the tools see them: the published data with the draft laid over it, read fresh each call. */
+async function shop(ctx){
+ const c=await load(),data=await c.apply.readData(ctx.repo);
+ if(!data.products)throw Error('There is no data/studio/products.json in this checkout.');
+ const list=data.products.products,brands=await ctx.repo.readJSON(c.repo.PATHS.brands);
+ const find=id=>{const f=c.rules.foldName(id);return list.find(p=>p.id===id)||list.find(p=>c.rules.foldName(p.name)===f||c.rules.foldName(p.inventoryName)===f)||null;};
+ const unknown=id=>{const r=data.products.retired.find(x=>x.id===id||x.name===id);return Error(r?`${r.name} was retired (${r.why}); a retired line is not changed.`:`There is no product ${JSON.stringify(id)} in Sakura. product_list lists them.`);};
+ const published=new Map((data.publishedProducts?.products||[]).map(p=>[p.id,p]));
+ const unpublished=p=>!published.has(p.id)||c.sha.recordSha256(published.get(p.id))!==c.sha.recordSha256(p);
+ return {c,data,list,find,unknown,brands,published,unpublished};
+}
+/** The bytes of the pictures a label's layers show: kept in assets/graphics/labels/, or held in the draft. */
+async function layerBytes(ctx,spec,data){
+ const c=await load(),out={},held=new Map(data.draft.flatMap(r=>Object.entries(r.files||{})));
+ for(const file of c.label.labelPictures(spec)){
+  if(out[file])continue;const path=c.apply.labelPath('labels/'+file);
+  out[file]=await ctx.repo.read(path,null).catch(()=>held.has(path)?Buffer.from(held.get(path).data,'base64'):null);
+  if(!out[file])throw Error(`The label uses the picture ${file}, which is neither kept nor in the draft.`);
+ }
+ return out;
+}
+/** A designed label's baked picture as it stands now: kept in the repository, or held in the draft (null if neither). */
+async function labelBytes(ctx,product,data){
+ if(product.label.source!=='designed')return null;
+ const c=await load(),path=c.apply.labelPath(product.label.image),held=data.draft.flatMap(r=>Object.entries(r.files||{})).find(([p])=>p===path);
+ return await ctx.repo.read(path,null).catch(()=>held?Buffer.from(held[1].data,'base64'):null);
+}
+/** Bake a label design for a product in headless Studio: {spec, png} or {problems}. */
+async function bake(ctx,product,spec,data,{pictures={}}={}){
+ const c=await load(),known=new Set(Object.keys(pictures));
+ const r=c.label.normalizeLabelSpec(spec,{pictures:f=>c.label.PICTURE_FILE.test(f)||known.has(f)});
+ if(r.problems.length)return {problems:sentenceList(r.problems)};
+ const kept=await layerBytes(ctx,{layers:r.spec.layers.filter(l=>l.type!=='picture'||!known.has(l.file))},data);
+ const png=await (await ctx.page()).bakeLabel(product,r.spec,{pictures:{...kept,...pictures}});
+ return {spec:r.spec,png,clamped:r.clamped.map(x=>`${x.where.split('.').slice(-1)[0]} was ${x.given}; ${x.used} is used.`)};
+}
+/** A picture for the creator to look at, kept under output/studio-mcp/ (git ignores it). */
+async function keepPicture(ctx,folder,name,png){const c=await load(),path=`${c.repo.PATHS.output}/${folder}/${slug(name)}-${Date.now().toString(36)}.png`;await ctx.repo.write(path,png);return path;}
+function reportProduct(r,extra={},picture=null){
+ const out={ok:r.ok,applied:r.applied,dryRun:r.dryRun,...extra,results:r.results,problems:sentenceList(r.problems),conflicts:sentenceList(r.conflicts),warnings:sentenceList(r.warnings),
+  writes:r.writes,pictures:r.pictures?.map(p=>`${p.path} (${p.width} × ${p.height}, from ${p.from})`),nothing:r.nothing,change:r.change,
+  next:!r.ok?REFUSED:r.dryRun?'A dry run: nothing was written. Show the creator (render_product draws it), and call again with dryRun:false when they say yes.':
+   r.applied?'Added to Studio\'s draft (data/studio/draft, outside git): product_get, product_list and render_product show it now. World shows it once the creator says "update World" (publish_draft).':undefined};
+ return picture?{image:picture.toString('base64'),mimeType:'image/png',data:out}:out;
+}
+
+const PRODUCT_TOOLS=[
+ {name:'product_list',readOnly:true,description:'List Sakura Shōten\'s products: id, name, brand and line, price, zone, where it stands, its label (painted, fresh or designed), its flavours, and whether a change to it is still only in Studio\'s draft. Filter by zone or by part of a name. Also says how many more products and flavours fit in the label atlas.',
+  input:object({shop:{enum:['sakura'],default:'sakura'},zone:{enum:['drinks','fresh','pantry','sweets','daily','counter']},query:{type:'string',maxLength:40,description:'Part of an id, a name or a brand (accents and capitals may be left out).'},includeRetired:{type:'boolean',default:false}}),
+  async run({zone,query,includeRetired=false},ctx){
+   const {c,data,list,brands,unpublished}=await shop(ctx),q=query==null?null:c.rules.foldName(query);
+   const rows=list.filter(p=>(!zone||p.purpose.zone===zone)&&(!q||c.rules.foldName([p.id,p.name,p.brand.name,p.brand.jp,p.brand.line].join(' ')).includes(q)))
+    .map(p=>({id:p.id,name:p.name,brand:`${p.brand.name} · ${p.brand.line}`,price:p.price,zone:p.purpose.zone,where:whereWords(p),label:p.label.source,flavours:p.cells.flavours.map(f=>f.name),unpublished:unpublished(p)}));
+   const {room}=c.rules.validateProducts(data.products,{brands});
+   return {count:rows.length,products:rows,...includeRetired?{retired:data.products.retired.map(r=>({id:r.id,name:r.name,why:r.why,retired:r.retired}))}:{},
+    room:`${room?.products??0} more products and ${room?.flavours??0} more flavours fit in the label atlas.`};
+  }},
+ {name:'product_get',readOnly:true,description:'One product: its whole record (brand, pack, label, cells, purpose, shelf, supplier, drink), where it stands in words, what is published and what is only in the draft, the fields a change may set, the known findings about it, and where World still names it: code as file:line, tests, trade accounts, and other drawings its label does not reach (backroom crates, posters, the can in the hand). Retiring it is refused while code, tests or accounts name it.',
+  input:object({id:PRODUCT_ID},['id']),
+  async run({id},ctx){
+   const {c,find,unknown,published,unpublished}=await shop(ctx),p=find(id);if(!p)throw unknown(id);
+   const {productReferences}=await import('./references.mjs'),refs=await productReferences(p),at=r=>`${r.file}:${r.line} ${r.text}`;
+   return {id:p.id,name:p.name,where:whereWords(p),product:p,unpublished:unpublished(p),published:unpublished(p)?published.get(p.id)??null:undefined,
+    cells:{label:p.cells.brand,priceTag:p.cells.price,flavours:p.cells.flavours.map(f=>`${f.name}: cell ${f.cell} of the right half, hue ${f.hue>0?'+':''}${f.hue}°`)},
+    fields:c.rules.PRODUCT_FIELDS,findings:FINDINGS[p.id]||[],
+    references:{code:refs.code.map(at),tests:refs.tests.map(at),accounts:refs.accounts.map(a=>`${a.name} (from ${a.supplier}): ${a.lines.join('; ')}`),drawings:refs.drawings.map(at)},
+    retire:refs.blocking?`Refused while ${refs.code.length} code lines, ${refs.tests.length} test lines and ${refs.accounts.length} trade accounts name it; each needs the creator's choice first.`:'Possible: nothing in World\'s code names it. Its shelf must go to a line beside it (shelfTo).'};
+  }},
+ {name:'product_update',destructive:true,description:'Change fields of a product by path: its label, price, words, brand colours, purpose or shelf (never its id, its inventoryName or its atlas cells). A designed label (label.source "designed" with a spec) is baked in headless Studio and the picture is returned to show the creator; changing a brand colour bakes a designed label again so it follows. Dry run by default; with dryRun:false the change goes into Studio\'s draft, and World shows it once the creator says "update World".',
+  input:object({id:PRODUCT_ID,set:PRODUCT_SET,note:NOTE,dryRun:DRY},['id','set','note']),
+  async run({id,set,note,dryRun=true},ctx){
+   const {c,data,find,unknown}=await shop(ctx),p=find(id);if(!p)throw unknown(id);
+   let label=set.label,png=null,clamped=[];
+   if(!label&&p.label.source==='designed'&&Object.keys(set).some(k=>k==='brand'||k.startsWith('brand.')))label={source:'designed',spec:p.label.spec};
+   const files={};
+   if(label?.source==='designed'&&label.picture===undefined&&label.image===undefined){
+    // Baked with the other fields of this change already in place, so new brand colours are in the picture.
+    const draft=structuredClone(p);for(const [path,value] of Object.entries(set))if(path!=='label'){const keys=path.split('.'),last=keys.pop();let at=draft;for(const k of keys)at=at[k]??={};at[last]=value;}
+    const baked=await bake(ctx,draft,label.spec,data);
+    if(baked.problems)return {ok:false,applied:false,dryRun,id:p.id,problems:baked.problems,next:REFUSED};
+    png=baked.png;clamped=baked.clamped;files[`${p.id}.label.png`]=png;
+    label={source:'designed',spec:baked.spec,picture:`${p.id}.label.png`,bakedOn:'Chromium'};
+   }
+   const finalSet=label?{...set,label}:set;
+   const was=Object.fromEntries(Object.keys(finalSet).map(k=>[k,c.rules.readField(p,k)??null]));
+   const r=await change(ctx,{ops:[{op:'product.update',id:p.id,set:finalSet,was,note}],note,dryRun,what:`${p.id} product`,files});
+   const path=png?await keepPicture(ctx,'labels',`${p.id}-label`,png):undefined;
+   return reportProduct(r,{id:p.id,name:p.name,product:r.products?.products.find(x=>x.id===p.id),diff:r.results?.flatMap(x=>x.diff)||[],clamped,baked:path},png);
+  }},
+ {name:'product_label_picture',destructive:true,description:'Make a product\'s label from a picture (a photo or a drawing from the creator): it is cut to the label\'s 2:1 (the centre, or crop {x,y,w,h} as fractions), redrawn in headless Studio (only its pixels are kept: no EXIF, no location) and baked as a designed label. words lists every word printed on the picture, which the real-brand check reads. Returns the baked label. Dry run by default.',
+  input:object({id:PRODUCT_ID,image:{type:'string',minLength:8,maxLength:2900000,pattern:'^[A-Za-z0-9+/]*={0,2}$',description:'The picture as base64 (PNG, JPEG or WebP, at most 2 MB).'},
+   words:{type:'array',maxItems:40,items:{type:'string',minLength:1,maxLength:60},description:'Every word printed on the picture (an empty list if none).'},
+   crop:object({x:{type:'number',minimum:0,maximum:1},y:{type:'number',minimum:0,maximum:1},w:{type:'number',minimum:.01,maximum:1},h:{type:'number',minimum:.01,maximum:1}},['x','y','w','h']),
+   note:NOTE,dryRun:DRY},['id','image','words','note']),
+  async run({id,image,words,crop,note,dryRun=true},ctx){
+   const {c,data,find,unknown}=await shop(ctx),p=find(id);if(!p)throw unknown(id);
+   const bytes=Buffer.from(image,'base64'),checked=c.rules.pictureProblems('the picture',{data:image,sha256:c.sha.sha256(bytes)}).filter(x=>!/must end in/.test(x.sentence));
+   if(checked.length)return {ok:false,applied:false,dryRun,id:p.id,problems:sentenceList(checked),next:REFUSED};
+   if(crop&&(crop.x+crop.w>1.0001||crop.y+crop.h>1.0001))return {ok:false,applied:false,dryRun,id:p.id,problems:['The crop runs off the picture: x + w and y + h must be at most 1.'],next:REFUSED};
+   const cut=await (await ctx.page()).cropPicture(bytes,{crop:crop||null,aspect:2}),photo=`${p.id}.photo.png`;
+   const spec={v:1,base:'paper',layers:[{type:'picture',file:photo,x:.5,y:.5,w:1,h:1,words}]};
+   const baked=await bake(ctx,p,spec,data,{pictures:{[photo]:cut}});
+   if(baked.problems)return {ok:false,applied:false,dryRun,id:p.id,problems:baked.problems,next:REFUSED};
+   const label={source:'designed',spec:baked.spec,picture:`${p.id}.label.png`,bakedOn:'Chromium'};
+   const r=await change(ctx,{ops:[{op:'product.update',id:p.id,set:{label},was:{label:p.label},note}],note,dryRun,what:`${p.id} picture`,files:{[photo]:cut,[`${p.id}.label.png`]:baked.png}});
+   const path=await keepPicture(ctx,'labels',`${p.id}-picture-label`,baked.png);
+   return reportProduct(r,{id:p.id,name:p.name,baked:path},baked.png);
+  }},
+ {name:'product_add',description:'Add to Sakura: a flavour of a line (as "flavour": product {name, hue}; one more cell in the label atlas, the cheapest), or a new line (as "product": the record, started from another product with from) that shares a line\'s shelf (place.mode "share"), takes the place of a line it retires (replace) or stands on free shelf (free, with product.shelf). A new line needs its purpose (who it is for, why, why there) and gets a designed label: its own, or one redrawn from its brand, baked and returned. Dry run by default.',
+  input:object({from:PRODUCT_ID,as:{enum:['flavour','product']},product:{type:'object',description:'A flavour: {name, hue}. A line: {id, name, jp, price, text, brand, purpose, …} (anything left out comes from `from`; label is a design {v:1,…} or left out to redraw from the brand).'},
+   place:object({mode:{enum:['flavour','share','replace','free']},target:{type:'string',pattern:'^[a-z][a-z0-9-]{1,39}$'},why:{type:'string',maxLength:300,description:'For replace: why the old line goes.'}},['mode']),note:NOTE,dryRun:DRY},['as','product','place','note']),
+  async run({from,as,product,place,note,dryRun=true},ctx){
+   const {c,data,find,unknown}=await shop(ctx),source=from?find(from):null;if(from&&!source)throw unknown(from);
+   if(as==='flavour'){
+    const line=find(place.target||from||'');if(!line)throw Error('Say which line the flavour belongs to (place.target or from).');
+    const r=await change(ctx,{ops:[{op:'product.add',product:{name:product.name,hue:product.hue},place:{mode:'flavour',target:line.id}}],note,dryRun,what:`${line.id} flavour`});
+    return reportProduct(r,{line:line.id,flavour:product.name,product:r.products?.products.find(x=>x.id===line.id)});
+   }
+   if(place.mode==='flavour')throw Error('A new line is placed by sharing a shelf (share), replacing a line (replace) or on free shelf (free).');
+   const target=place.target?find(place.target):null;if(place.target&&!target)throw unknown(place.target);
+   const base=structuredClone(source||target||{});
+   const record={id:product.id,inventoryName:product.name,shop:'sakura',name:product.name,jp:product.jp??base.jp,price:product.price??base.price,
+    text:product.text??'',bagColour:product.bagColour??product.brand?.paper??base.bagColour??null,brand:{...base.brand,...product.brand},
+    pack:{...base.pack,...product.pack,back:{...base.pack?.back,...product.pack?.back}},purpose:product.purpose,
+    ...place.mode==='free'?{shelf:product.shelf}:{},capacity:product.capacity??(place.mode==='share'&&target?.shelf.fitting==='fridge'?target.capacity/target.shelf.levels.length:base.capacity??24),
+    supplier:product.supplier??base.supplier??'sakura',...product.drink?{drink:product.drink}:{}};
+   if(record.pack){delete record.pack.declared;}
+   const files={},designed=product.label?.layers?product.label:product.label?.spec;
+   const spec=designed||c.label.brandSpec({...record,pack:record.pack||{}});
+   const baked=await bake(ctx,{...record,cells:{brand:-1,flavours:[]}},spec,data);
+   if(baked.problems)return {ok:false,applied:false,dryRun,problems:baked.problems,next:REFUSED};
+   files[`${record.id}.label.png`]=baked.png;record.label={source:'designed',spec:baked.spec,picture:`${record.id}.label.png`,bakedOn:'Chromium'};
+   const r=await change(ctx,{ops:[{op:'product.add',product:record,place:{mode:place.mode,...target?{target:target.id}:{},...place.why?{why:place.why}:{}}}],note,dryRun,what:`${record.id||'new'} add`,files});
+   const path=await keepPicture(ctx,'labels',`${record.id||'new'}-label`,baked.png);
+   return reportProduct(r,{id:record.id,name:record.name,product:r.products?.products.find(x=>x.id===record.id),baked:path},baked.png);
+  }},
+ {name:'product_retire',destructive:true,description:'Take a product off sale: its record moves to the retired list (old saves still know it, its id is never used again) and its shelf goes to shelfTo, a line beside it (the other line in its cold-cabinet column, or a line in its gondola bay). Refused, with every reference listed, while World\'s code, tests or trade accounts still name it: "delete the beer" waits for the creator\'s choices about its stories. Dry run by default.',
+  input:object({id:PRODUCT_ID,why:{type:'string',minLength:1,maxLength:300,description:'Why it goes, in at least four words.'},shelfTo:{type:'string',pattern:'^[a-z][a-z0-9-]{1,39}$'},dryRun:DRY},['id','why']),
+  async run({id,why,shelfTo,dryRun=true},ctx){
+   const {c,find,unknown}=await shop(ctx),p=find(id);if(!p)throw unknown(id);
+   const r=await change(ctx,{ops:[{op:'product.retire',id:p.id,why,...shelfTo?{shelfTo}:{},was:c.sha.recordSha256(p)}],note:why,dryRun,what:`${p.id} retire`});
+   return reportProduct(r,{id:p.id,name:p.name});
+  }},
+ {name:'render_product',idempotent:true,image:true,description:'A PNG of a product drawn in headless Johansson Studio by World\'s own code (the iPad\'s, at its viewport): a product by id (as Studio has it now, draft included) or a draft record. Views: front, back, turn, shelf, flat, cell. Also saved under output/studio-mcp/products/ (git ignores it).',
+  input:object({id:PRODUCT_ID,draft:{type:'object',description:'A whole product record (e.g. product_get\'s product with changes); a designed label in it with a spec and no picture is baked first.'},view:VIEW,
+   size:{type:'integer',minimum:128,maximum:1024,default:512},background:{type:'string',pattern:'^(#[0-9a-fA-F]{6}|transparent)$',default:'#f3ede2'}}),
+  async run({id,draft,view='front',size=512,background='#f3ede2'},ctx){
+   if(!id===!draft)throw Error('Give either an id or a draft.');
+   const {data,find,unknown}=await shop(ctx);let product=id?find(id):draft,label=null;if(!product)throw unknown(id);
+   if(draft){
+    const c=await load(),problems=c.rules.validateProduct({...draft,label:draft.label?.source==='designed'&&!draft.label.image?{...draft.label,image:`labels/${draft.id}.r1.webp`,sha256:'0'.repeat(64),bakedOn:'Chromium'}:draft.label},{brands:await ctx.repo.readJSON(c.repo.PATHS.brands)});
+    if(problems.length)return {error:'This draft is not a product World could draw.',problems:sentenceList(problems)};
+    if(draft.label?.source==='designed'&&!draft.label.image){const baked=await bake(ctx,draft,draft.label.spec,data);if(baked.problems)return {error:'The label design cannot be drawn.',problems:baked.problems};label=baked.png;}
+   }
+   label??=await labelBytes(ctx,product,data);
+   const png=await (await ctx.page()).renderProduct(product,{view,size,background,labelImage:label});
+   const path=await keepPicture(ctx,'products',`${product.id}-${view}-${size}`,png);
+   return {image:png.toString('base64'),mimeType:'image/png',data:{id:product.id,name:product.name,view,size,path}};
+  }},
+];
 
 export const TOOLS=[
  {name:'character_list',readOnly:true,description:'List the people Studio can draw: World\'s cast, its neighbours, the townsfolk (drawn from their name and personality), and Studio-only characters. Says whose look Studio has changed, and which changes are still only in Studio\'s draft (unpublished).',
@@ -166,8 +358,8 @@ export const TOOLS=[
    await ctx.repo.write(path,png);
    return {image:png.toString('base64'),mimeType:'image/png',data:{name:who?.name||drawn.name||'(recipe)',view,expression,pose,framing,size,path}};
   }},
- {name:'validate',readOnly:true,description:'Check Studio\'s published data (looks), the draft, the brand rules and the known real-brand uses in World, or a change file, and say in plain words what is wrong.',
-  input:object({target:{enum:['all','looks','draft','brands','change'],default:'all'},change:{type:'object',description:'A change file to check (target change).'}}),
+ {name:'validate',readOnly:true,description:'Check Studio\'s published data (looks, products and their label pictures), the draft, the brand rules and the known real-brand uses in World, or a change file, and say in plain words what is wrong.',
+  input:object({target:{enum:['all','looks','products','draft','brands','change'],default:'all'},change:{type:'object',description:'A change file to check (target change).'}}),
   async run({target='all',change:file},ctx){
    const c=await load(),out={},brands=await ctx.repo.readJSON(c.repo.PATHS.brands);
    if(target==='change'){if(!file)throw Error('Give the change file as change.');const r=c.rules.validateChange(file,{brands});return {ok:r.ok,problems:sentenceList(r.problems),warnings:sentenceList(r.warnings)};}
@@ -175,9 +367,18 @@ export const TOOLS=[
     const looks=c.rules.validateLooks(await ctx.repo.readJSON(c.repo.PATHS.looks),{brands}),{check}=await import('./build-data.mjs'),fresh=await check(ctx.repo);
     out.looks={ok:looks.ok&&fresh.ok,problems:[...sentenceList(looks.problems),...fresh.stale.map(p=>`${p} does not match its data: run node johansson-town/tools/studio/build-data.mjs.`)]};
    }
+   if(target==='all'||target==='products'){
+    const products=await ctx.repo.readJSON(c.repo.PATHS.products).catch(()=>null);
+    if(products){
+     const v=c.rules.validateProducts(products,{brands}),missing=[];
+     for(const f of c.apply.labelFiles(products)){const bytes=await ctx.repo.read(c.apply.labelPath(f.image),null).catch(()=>null);
+      if(!bytes)missing.push(`${f.id}'s label needs ${f.image}, which is not in assets/graphics/.`);else if(f.sha256&&c.sha.sha256(bytes)!==f.sha256)missing.push(`${f.image} is not the picture ${f.id}'s label was baked as.`);}
+     out.products={ok:v.ok&&!missing.length,problems:[...sentenceList(v.problems),...missing],warnings:sentenceList(v.warnings),room:v.room};
+    }
+   }
    if(target==='all'||target==='draft'){
-    const d=await c.apply.readData(ctx.repo),whole=c.rules.validateLooks(d.looks,{brands});
-    out.draft={ok:!d.stale.length&&whole.ok,changes:d.draft.length,problems:[...d.stale.map(s=>`The drafted change ${s.id} ("${s.note}") no longer fits: ${s.sentences.join(' ')}`),...sentenceList(whole.problems)]};
+    const d=await c.apply.readData(ctx.repo),whole=c.rules.validateLooks(d.looks,{brands}),goods=d.products?c.rules.validateProducts(d.products,{brands}):{problems:[]};
+    out.draft={ok:!d.stale.length&&whole.ok&&!goods.problems.length,changes:d.draft.length,problems:[...d.stale.map(s=>`The drafted change ${s.id} ("${s.note}") no longer fits: ${s.sentences.join(' ')}`),...sentenceList(whole.problems),...sentenceList(goods.problems)]};
    }
    if(target==='all'||target==='brands')out.brands=await brandReport(ctx);
    return {ok:Object.values(out).every(r=>r.ok),...out};
@@ -200,6 +401,7 @@ export const TOOLS=[
  {name:'publish_check',readOnly:true,description:'Is Studio\'s work ready to publish to World? Reports: generated modules fresh, data valid, the draft published, the Studio tests, the runtime build current, the guide portraits current, main merged into the branch, and the files to commit. It never commits or pushes; publishing happens only when the creator says "update World".',
   input:object({tests:{type:'boolean',default:true,description:'Run the Studio tests (about a minute).'}}),
   async run({tests=true},ctx,{signal}={}){return publishCheck(ctx,{tests,signal});}},
+ ...PRODUCT_TOOLS,
 ];
 export const TOOL_BY_NAME=Object.freeze(Object.fromEntries(TOOLS.map(t=>[t.name,t])));
 
@@ -242,15 +444,17 @@ async function publishCheck(ctx,{tests,signal}){
  const git=async(...args)=>(await run('git',args,{cwd:code,maxBuffer:4e6,signal})).stdout;
  const items=[],add=(check,ok,detail)=>items.push({check,ok,detail});
  const {check}=await import('./build-data.mjs'),fresh=await check(ctx.repo);
- add('generated modules',fresh.ok,fresh.ok?'looks-data.js and characters-data.js match data/studio/looks.json.':`Out of date: ${fresh.stale.join(', ')}. Run node johansson-town/tools/studio/build-data.mjs.`);
+ add('generated modules',fresh.ok,fresh.ok?'looks-data.js, characters-data.js and products-data.js match their data.':`Out of date: ${fresh.stale.join(', ')}. Run node johansson-town/tools/studio/build-data.mjs.`);
  const brandRules=await ctx.repo.readJSON(c.repo.PATHS.brands);
  const looks=c.rules.validateLooks(await ctx.repo.readJSON(c.repo.PATHS.looks),{brands:brandRules}),brands=await brandReport(ctx);
- add('data',looks.ok&&brands.ok,[...sentenceList(looks.problems),...brands.problems].join(' ')||`looks.json is valid. ${brands.warnings.length} known real-brand uses in World wait for the creator (validate target:"brands").`);
+ const goods=(await TOOL_BY_NAME.validate.run({target:'products'},ctx)).products||{ok:true,problems:[]};
+ add('data',looks.ok&&brands.ok&&goods.ok,[...sentenceList(looks.problems),...goods.problems,...brands.problems].join(' ')||`looks.json and products.json are valid, with every label picture in place. ${brands.warnings.length} known real-brand uses in World wait for the creator (validate target:"brands").`);
  const d=await c.apply.readData(ctx.repo),n=d.draft.length;
  add('draft',!n,!n?'Studio\'s draft is empty: everything the creator said yes to is in World\'s data.':
   `${n} change${n===1?'':'s'} the creator said yes to ${n===1?'is':'are'} still only in Studio's draft${d.stale.length?` (${d.stale.length} no longer fit: discard_draft)`:''}; publish_draft writes ${n===1?'it':'them'} into World's data.`);
  if(tests){
-  const files=['tests/looks-data.test.mjs','tests/studio-apply.test.mjs','tests/studio-data.test.mjs','tests/studio-mcp.test.mjs','tests/resident-guide.test.mjs'];
+  const files=['tests/looks-data.test.mjs','tests/studio-apply.test.mjs','tests/studio-data.test.mjs','tests/studio-mcp.test.mjs','tests/resident-guide.test.mjs',
+   'tests/products-data.test.mjs','tests/products-move.test.mjs','tests/label-spec.test.mjs','tests/sakura-merchandising.test.mjs','tests/shop-display.test.mjs'];
   const {NODE_TEST_CONTEXT,...env}=process.env;
   const r=await run(process.execPath,['--test',...files],{cwd:town,env,timeout:180000,maxBuffer:2e7,signal}).then(x=>({out:x.stdout,ok:true}),e=>({out:String(e.stdout||e.message),ok:false}));
   const count=k=>Number(r.out.match(new RegExp(`^# ${k} (\\d+)`,'m'))?.[1]??NaN);
@@ -272,5 +476,5 @@ async function publishCheck(ctx,{tests,signal}){
  const own=dirty.filter(p=>PUBLISHED.test(p));
  add('uncommitted',!own.length,own.length?`To commit with Studio's change: ${own.join(', ')}.`:'Studio\'s data and what is built from it are committed.');
  return {ready:items.every(i=>i.ok),items,otherUncommitted:dirty.filter(p=>!own.includes(p)),
-  next:'Only when the creator says "update World": (1) publish_draft, a dry run to show them, then dryRun:false; (2) if it wrote src/avatars/looks-data.js, node johansson-town/tools/render-resident-guide.mjs; (3) (cd johansson-town && npm run build:runtime); (4) publish_check again; (5) commit the files "uncommitted" lists (git add those paths only, never -A); (6) git fetch origin main and merge it into the branch; (7) push the branch and check the johansson-town-live.yml run (gh api repos/nj22az/nj22az.github.io/actions/workflows/johansson-town-live.yml/runs?per_page=3). It is live only after that run succeeds.'};
+  next:'Only when the creator says "update World": (1) publish_draft, a dry run to show them, then dryRun:false; (2) if it wrote src/avatars/looks-data.js, node johansson-town/tools/render-resident-guide.mjs; (3) if it wrote src/commerce/products-data.js, walk to the shelf it changed (node johansson-town/tools/studio/cabinet-walk.mjs <label> --source for the cold cabinet) and look; (4) (cd johansson-town && npm run build:runtime); (5) publish_check again; (6) commit the files "uncommitted" lists (git add those paths only, never -A); (7) git fetch origin main and merge it into the branch; (8) push the branch and check the johansson-town-live.yml run (gh api repos/nj22az/nj22az.github.io/actions/workflows/johansson-town-live.yml/runs?per_page=3). It is live only after that run succeeds.'};
 }

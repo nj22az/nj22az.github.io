@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * The johansson-studio MCP server (.mcp.json): Claude's way into Johansson Studio, to look at and change the town's
- * characters (and, from stage 2, its products and labels). Every tool is also on the command line (cli.mjs), for when
+ * characters, and Sakura Shōten's products and their labels. Every tool is also on the command line (cli.mjs), for when
  * the host times the connection out. Startup loads only the SDK, zod and the tool table; World's code loads on the
  * first call and Chromium only for a render. Write tools are dry runs unless dryRun:false; what the creator says yes to
  * goes into Studio's draft (outside git), and nothing commits.
@@ -12,7 +12,7 @@ import {StdioServerTransport} from '@modelcontextprotocol/server/stdio';
 import * as z from 'zod';
 import {TOOLS,context,callTool} from './tools.mjs';
 
-const server=new McpServer({name:'johansson-studio',version:'1.1.0'},{instructions:'Johansson Studio: the town\'s characters (and, from stage 2, its products and labels). Look first (character_list, character_get, render_portrait), then change with a dry run, show the creator, and apply with dryRun:false only when they agree: that puts the change in Studio\'s draft, outside git. World changes only when the creator says "update World" (publish_draft, the guide portraits and runtime build, publish_check, then commit, merge main, push, check the live workflow).'});
+const server=new McpServer({name:'johansson-studio',version:'1.2.0'},{instructions:'Johansson Studio: the town\'s characters, and Sakura Shōten\'s products and their labels. Look first (character_list, character_get, render_portrait; product_list, product_get, render_product), then change with a dry run, show the creator (a baked label comes back as a picture), and apply with dryRun:false only when they agree: that puts the change in Studio\'s draft, outside git. World changes only when the creator says "update World" (publish_draft, the guide portraits and runtime build, publish_check, then commit, merge main, push, check the live workflow).'});
 const ctx=await context();
 // Tools that write (a change, the draft, a render's file, the one headless page) take turns; tools that only read run
 // at once, so a long publish_check never holds up a look at somebody. Writes across processes take Studio's lock too.
@@ -26,7 +26,8 @@ for(const tool of TOOLS){
    const work=async()=>{
     const result=await callTool(tool.name,args,ctx,{signal:extra?.mcpReq?.signal??extra?.signal});
     if(result?.error)return {...text(result),isError:true};
-    if(tool.image)return {content:[{type:'image',data:result.image,mimeType:result.mimeType},{type:'text',text:JSON.stringify(result.data)}]};
+    // A tool that draws (a portrait, a pack, a baked label) answers with the picture and its words.
+    if(result?.image&&result?.mimeType)return {content:[{type:'image',data:result.image,mimeType:result.mimeType},{type:'text',text:JSON.stringify(result.data,null,1)}]};
     return text(result);
    };
    return tool.readOnly?work():serial(work);

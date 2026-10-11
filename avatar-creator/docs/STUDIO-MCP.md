@@ -1,7 +1,9 @@
 # Johansson Studio and Claude (the `johansson-studio` tools)
 
-Claude can look at the town's characters, change how they look, and add Studio characters of its own. It does this
-through the `johansson-studio` tools, which use the same data and drawing code as Johansson Studio on the iPad.
+Claude can look at the town's characters, change how they look, and add Studio characters of its own. It can also open
+Sakura Shōten's products, change their labels, words, prices, purpose and shelf, add flavours and new lines, and retire a
+line. It does this through the `johansson-studio` tools, which use the same data and drawing code as Johansson Studio on
+the iPad.
 
 ## For the creator
 
@@ -41,7 +43,48 @@ Some rules hold for every change:
 - Real brand names are refused: already now in a new character's name and role (an "Orion beer promoter" is refused),
   and from stage 2 in every product and label field. World still uses "Orion" in nine places, listed in
   `johansson-town/data/studio/brand-rules.json`; these wait for you to choose a made-up name.
-- Products and labels (the Umineko beer can) arrive in the next stages.
+
+### Products and their labels (Sakura Shōten)
+
+Ask in plain words:
+- "Open the Umineko beer can." Claude draws it the way World does: the front, the back, all four sides, the can on its
+  shelf with its Dry and Black flavours beside it, or the label unrolled flat.
+- "Give the beer an autumn label: a navy band and the word Autumn in a flash." Claude designs the label, bakes it into a
+  picture and shows you the picture before anything is kept.
+- "Use this photo as the label." Send the picture; say which words are printed on it.
+- "Add a lemon flavour of the beer." "Add peppermints by the batteries, for the bus driver and the harbour master."
+- "Make the beer ¥240." "Say the milk is for the bathhouse too."
+- "Delete the beer."
+
+Every change goes the same way as a look: a dry run with a picture, your yes (into Studio's draft), and only on
+**"update World"** into World. Then the shelf, the price tag, the can you pick up and its flavours all show it.
+
+What to know about labels:
+- The labels on Sakura's shelves today are **paintings**. A painted word cannot be changed letter by letter. A label can
+  either be **redrawn** in the drawn style from the brand's own colours, emblem, words and illustration, or **keep the
+  painting and have layers added on top** (a band, a flash, words, a shape, an emblem, an illustration, a picture).
+  Which way a label goes is your choice each time (decision 2).
+- A label is baked into a picture when you say yes, and World shows exactly that picture on every device, whatever
+  fonts it has. The flavours on the shelf follow the new label by themselves (Dry and Black are the beer's own label,
+  turned in colour, with their names on a ribbon).
+- A new flavour costs nothing on the floor: it shares its line's shelf. A new line needs a place: it shares a shelf
+  with a line beside it, or takes the place of a line it replaces. Only **four more lines** fit in the shelf's label
+  sheet; after that it must grow, which is a change to World's code, not a Studio change.
+
+The rules every product change keeps:
+- **Nothing is random.** Every line says who in town buys it (real residents, by name), why they want it, and why it
+  stands where it does, each in at least four words.
+- **No real brands**, in any name, line, flash, flavour, label word or word printed on a picture ("Orion lager",
+  "オリオン" are refused).
+- Prices are whole yen from ¥10 to ¥5000. All alcohol comes from Higa Liquor.
+- Every shelf stays full and no shelf is booked twice; a line stands at most two deep in the cold cabinet and the
+  chiller, three on a gondola board.
+- A product's id and the name old saves keep in the bag never change. **Renaming a product is not switched on yet**,
+  because World still finds a bag's things by their names (an open item).
+- **"Delete" means retire**: the line leaves the shelf, its shelf goes to the line beside it, and old saves still know
+  what is in their bags. A retire is refused, with every place listed, while World's code still names the line. The
+  beer is named in its stories (Mr Fujita's routine, gift likes, the drunk walk, Higa's trade lines and more), so
+  retiring it waits for your choices about those stories (decision 4).
 
 ## For Claude
 
@@ -73,6 +116,13 @@ other's changes.
 | `publish_draft` | Only when the creator says "update World": writes the draft into World's data. A dry run lists the drafted changes and who they change. |
 | `discard_draft` | Takes drafted changes out, by `ids` or `all`. |
 | `publish_check` | Reports whether everything is ready to publish: the generated modules, the data, the draft, the Studio tests, `runtime/`, the guide portraits, main merged, and the files to commit. It never commits or pushes. |
+| `product_list` | Lists Sakura's products by `zone` or `query`: brand and line, price, where it stands in words, its label (`painted`, `fresh` or `designed`), its flavours, whether a change is still only in the draft, and how many more products and flavours fit in the label atlas. |
+| `product_get` | One product by id or name: the whole record, where it stands, its cells, what is published, the fields a change may set, the known findings, and its references: code as `file:line`, tests, trade accounts, and drawings its label does not reach (the backroom crates, the stockroom bottle, the posters). |
+| `product_update` | Changes fields by path (`price`, `brand.ink`, `purpose.why`, `shelf`, `label` …). A designed `label` is baked in headless Studio and returned as a picture; changing a brand colour bakes a designed label again. Dry run unless `dryRun:false`. |
+| `product_label_picture` | Makes a label from a picture (base64): cut to 2:1 (the centre, or `crop`), redrawn so only its pixels are kept, and baked. `words` lists every word printed on it, for the real-brand check. |
+| `product_add` | `as:"flavour"` adds a flavour `{name, hue}` to a line. `as:"product"` adds a line (`from` a product to start from), placed with `place.mode` `share` (a line's shelf), `replace` (retires that line) or `free`. Its label is its own design, or redrawn from its brand and baked. |
+| `product_retire` | Retires a line, giving its shelf to `shelfTo` (the other line in its cold-cabinet column, or a line in its gondola bay). Refused, with every reference, while World's code, tests or trade accounts name it. |
+| `render_product` | A PNG of a product by `id` (draft included) or a `draft` record: `front`, `back`, `turn`, `shelf`, `flat` or `cell`. Saved under `output/studio-mcp/products/`. |
 
 **How a change is made.** Each write builds one change file. The same file comes from the iPad and from the page's
 agent API in stage 4:
@@ -104,6 +154,55 @@ agent API in stage 4:
   change file gives, and its header must say it is at most 8192 pixels a side and 40 million pixels in all (read before
   anything decodes it). It is redrawn as WebP in Chromium (`page.mjs` `reencodeWebp`), so only its pixels are kept and
   no EXIF or GPS location from the iPad reaches the repository. Until then any picture in a change is refused.
+
+**Products: how World reads them.**
+- Sakura's products live in `johansson-town/data/studio/products.json` (format `johansson-products`, version 1):
+  `products` in the order Thuan walks the floor, `prints` (printed matter in the label atlas that is not stock: the
+  delivery carton, the shop's mark, the magazines, the paper) and `retired`. `tools/studio/build-data.mjs` makes
+  `src/commerce/products-data.js` from it (`PRODUCTS`, `PRODUCT_BY_ID`, `PRINTS`, `RETIRED`, `FINGERPRINT`); CI refuses
+  a copy that does not match (`tests/products-data.test.mjs`).
+- The modules World always read are views over it, with every export's name, shape and order kept: `brands.js`,
+  `catalogue.js` (the catalogue is in the order of the price tags), `packaging-art.js` (`PACKS`, `INGREDIENTS`,
+  `backPanel`), `flavours.js`, `merchandising.js` (`MERCHANDISING`, `SOURCED_FROM`; the trade `ACCOUNTS` stay in code),
+  `shop-stock.js`, `vending-catalogue.js` (`DRINKABLE`, `canColour`), `shop-product.js` (a pack is built from
+  `pack.shape` and `pack.size`), `item-viewer.js` (`ROUND` and `TOP_PRINTED` from the shape) and `sakura-layout.js`
+  (each line's `shelf`: a cold-cabinet column and shelves, a chiller bay and deck, a gondola bay and order, the steamer).
+- One record (abbreviated): `{"id":"beer","inventoryName":"Umineko lager","shop":"sakura","name":"Umineko lager",
+  "jp":"Beer","price":220,"text":"…","bagColour":"#c9ab59","brand":{name, jp, line, paper, ink, accent, symbol},
+  "pack":{shape, size, net, flash, tag, art, back:{ingredients, unit, recycle, food}},"label":{"source":"painted",
+  "sheet":0,"cell":10},"cells":{"brand":10,"price":49,"flavours":[{"name":"Dry","hue":-30,"cell":27},…]},
+  "purpose":{zone, for, why, placed},"shelf":{"fitting":"fridge","column":3,"levels":[2,3,4]},"capacity":24,
+  "supplier":"higa-saketen","drink":{"alcohol":true,"container":"can","handColour":"#2d6b9a"}}`. `pack.declared`
+  keeps a shape or size the old `PACKS` listed that the shelf never built (orange, sandwich, pudding, chocolate, soap,
+  notebook, postcard), until the creator decides.
+- **Every product has its own cells** in the shelf's label atlas (`store-advertising.js`, 4 × 20 cells a half): its label
+  and its price tag in the left half, each flavour in the right half. Adding or retiring a product never moves another
+  one's cells. The left half's first 32 cells lie under the two painted sheets and are never given to a new line.
+- **A label** is `{"source":"painted","sheet","cell"}` (a cell of `assets/graphics/konbini/packaging-*.webp`),
+  `{"source":"fresh"}` (bento, sandwich, pudding: `fresh-labels.js`), or `{"source":"designed","spec",
+  "image":"labels/beer.r1.webp","sha256","bakedOn":"Chromium"|"iPad Safari"}`. `getLabelMaterial` still lays each
+  painted sheet in whole, then lays every designed label's picture over its own cell (256 × 128), then paints the
+  flavours from the cells, so the flavours follow a new label by themselves. The close-up (`buildPack`) shows the
+  1024 × 512 picture. World never draws a design itself; `src/commerce/label-art.js` `drawLabel` is the one renderer,
+  used to bake and to preview.
+- **A label design** (`src/studio/label-spec.js`): `{"v":1,"base":"paper"|"painted","layers":[…]}`, at most 24 layers,
+  coordinates from 0 to 1 across the wrap (x 0.5 is the middle of the front; on a can the front is about x 0.3–0.7).
+  Layers: `band {y,h,colour}`, `stripe {x,w,colour}`, `shape {shape: circle|ring|roundel|diamond|rounded, x,y,w,h,colour,
+  line?, angle?}`, `symbol {symbol, x,y,size,colour}`, `text {text, font: gothic|maru|mincho, x,y,size,colour, weight?,
+  align?, outline?, maxWidth?}`, `art {art, x,y,size}` (the packs' illustrations) and `picture {file, x,y,w,h, words}`.
+  A colour is `paper`, `ink`, `accent` or `#rrggbb`; any layer may have `opacity`. `brandSpec(product)` is "Redraw from
+  brand".
+- **Applying a product change** checks the step, refuses a retire (or a replace) while `tools/studio/references.mjs`
+  finds the line named in World's code, tests or trade accounts, redraws its pictures as WebP in Chromium and gives
+  each the next free `labels/<id>.r<n>.webp` (or `<id>-picture.r<n>.webp`), checks every `was`, and checks the whole
+  products file afterwards (`rules.js` `validateProducts`). The draft holds the pictures until `publish_draft` writes
+  them with `products.json` and `products-data.js`.
+- **Checking a product change by eye.** `tools/studio/baselines.mjs` fingerprints the atlas, the cold cabinet, the beer
+  column and the can picked up (front and back) in Chromium (`--save <name>`, then `--compare <name>`).
+  `tools/studio/cabinet-walk.mjs <label> --source` walks into Sakura through the `johansson-town-audit` server (its
+  `start_session` takes `source:true` to run the game from `src/` before `runtime/` is rebuilt), stops at the cold
+  cabinet and picks up a can. `tests/products-move.test.mjs` holds every legacy export to the fixture taken before the
+  move (`tests/fixtures/products-legacy.json`, from `tools/studio/products-snapshot.mjs`).
 
 **How World reads it.**
 - `cast.js` `recipeFor(name)` works in this order:
@@ -137,8 +236,9 @@ Never call a change live before that run has succeeded.
 
 | Test | Where it runs |
 |---|---|
-| `tests/looks-data.test.mjs`, `tests/studio-apply.test.mjs` (including eight writers in eight processes at once), `tests/studio-data.test.mjs`, `tests/studio-mcp.test.mjs` | `npm test` and CI |
-| `npm run studio:smoke` | Not CI, because it needs a real MCP client and Chromium |
+| `tests/looks-data.test.mjs`, `tests/studio-apply.test.mjs` (including eight writers in eight processes at once, and every product refusal), `tests/studio-data.test.mjs`, `tests/studio-mcp.test.mjs` (every tool), `tests/products-data.test.mjs`, `tests/products-move.test.mjs`, `tests/label-spec.test.mjs` | `npm test` and CI |
+| `npm run studio:smoke` | Not CI, because it needs a real MCP client and Chromium. It renders every product view, bakes a designed label for the beer on a throwaway copy, publishes it, and checks that World's atlas differs only in the beer's cell and its flavours' cells |
+| `node johansson-town/tools/studio/baselines.mjs --compare <name>` and `cabinet-walk.mjs` | Not CI: pixel baselines and a live walk, for every batch that moves or changes products |
 | `node avatar-creator/tests/studio-agent.browser.mjs` | Not CI. It covers the agent page and both pickers (with a Studio character served from a seeded module) at iPad size (1024×1366) and phone size (390×844) |
 
 `tests/studio-mcp.test.mjs` refuses to run outside `node --test`: outside it the server ignores
@@ -147,3 +247,24 @@ Never call a change live before that run has succeeded.
 **If the MCP server does not connect.** `initialize` itself answers in well under a second (the smoke test asserts
 less than 2 s). A 30 s `CONNECT_TIMEOUT` comes from the host while a session starts or resumes, so use `cli.mjs`.
 Whether to raise the host's MCP timeout is the creator's decision, and no repository file changes it.
+
+## Decisions and findings for the creator (products)
+
+**Decisions**
+1. A painted wordmark cannot be edited letter by letter: a label is redrawn in the drawn style, or keeps the painting
+   with layers on top (decision 2 of the plan). Is that acceptable?
+2. "Delete the beer" means retire, and its story references (Mr Fujita's routine, gift likes, the drunk walk, the trade
+   lines) need your choice first (decision 4).
+3. The 350 ml can is 94 × 135 mm in World; a real one is 66 × 122 mm. Is that game scale on purpose (decision 6)?
+
+**Findings** (each fix is its own visible batch; none is made yet)
+- The can in the hand is blue (`drink.handColour` `#2d6b9a`) while the can on the shelf is gold.
+- The posters advertise GOLDEN MILK TEA, NIGHT SHIFT and STICK BITES, which are not the shelf's NAGI, PORT 88 and
+  KOMOREBI (`store-advertising.js` `POSTER_SPECS`).
+- Who supplies alcohol contradicts itself: `economy/goods.js` and `economy/town-economy.js` have Sakura supplying Higa,
+  while `merchandising.js`, CLAUDE.md and the products data have Higa supplying Sakura.
+- A real brand, Orion, is still used in World (`data/studio/brand-rules.json` `knownIssues` lists every place).
+- The beer's and the coffee's backs say "Nutrition (per bottle)" on a can (`pack.back.unit`).
+- The old `PACKS` listed a few shapes and sizes the shelf never built (`pack.declared`: orange as a carton, the sandwich
+  as a box, the pudding as a plain cup, the chocolate, notebook and postcard as flat packs, and the soap smaller).
+- Renaming a product waits for World to find the bag's things by product id instead of by name.
