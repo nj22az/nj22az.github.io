@@ -24,7 +24,7 @@ EMU = 914400
 HOPPA = ('Dagens två pass', 'Pass 2')
 # Lektionsbilderna (verktyg/lektionsbilder, från vecka 42) har egna bilder för lektionens upplägg. De är inte teori.
 LEKTIONSBILDER = ('Kursplanen i dag', 'Startfråga', 'Så går lektionen till', 'Övningar tillsammans', 'Paus', 'Sammanfattning',
-                  'Det här gör du nu')
+                  'Det här gör du nu', 'Veckans labb')
 # Lektionsbilderna har ingen bild med lösningsmallen; delsidan visar samma mall som de äldre presentationerna.
 METOD = [('formel', '1. Givet och sökt'), ('p', 'Skriv av värden, enheter och vad du ska bestämma.'),
          ('formel', '2. Samband och villkor'), ('p', 'Välj formel eller princip. Kontrollera koppling, driftfall och antaganden.'),
@@ -33,14 +33,18 @@ METOD = [('formel', '1. Givet och sökt'), ('p', 'Skriv av värden, enheter och 
 _FIGURHASH = {}
 
 
-def figur_med_samma_innehall(figmapp, kap, blob):
-    """Figurfilen i vecka-NN/aktuell/figurer med exakt samma innehåll som bilden i presentationen. Används när filnamnet
-    (kap-bNN-k) inte finns, till exempel när lektionsbilderna har flyttat figuren till en annan bild."""
+def figur_med_samma_innehall(figmapp, kap, blob, namn=None):
+    """Figurfilen i vecka-NN/aktuell/figurer med exakt samma innehåll som bilden i presentationen. Innehållet avgör, inte
+    bildnumret: lektionsbilderna flyttar figurer, och en gammal fil kap-bNN-k kan då höra till en annan bild. Har flera
+    filer samma innehåll väljs namn (kap-bNN-k) om det är en av dem."""
     import hashlib
     nyckel = (str(figmapp), kap)
     if nyckel not in _FIGURHASH:
-        _FIGURHASH[nyckel] = {hashlib.sha256(f.read_bytes()).hexdigest(): f.name for f in sorted(figmapp.glob(f'{kap}-b*'))}
-    return _FIGURHASH[nyckel].get(hashlib.sha256(blob).hexdigest())
+        _FIGURHASH[nyckel] = {}
+        for f in sorted(figmapp.glob(f'{kap}-b*')):
+            _FIGURHASH[nyckel].setdefault(hashlib.sha256(f.read_bytes()).hexdigest(), []).append(f.name)
+    traff = _FIGURHASH[nyckel].get(hashlib.sha256(blob).hexdigest(), [])
+    return namn if namn in traff else (traff[-1] if traff else None)
 CSS = CSS40.replace('/* Vecka 40, en sida per del: Översikt, Teori, Exempel, Övningar, Labben (genereras av innehall/export/delsidor.py) */',
                     '/* En sida per del: Översikt, Teori, Exempel, Övningar, Labben (innehall/export/delsidor_veckor.py; vecka 40 har egen kopia) */') + '''
 /* Läsbarhet (Zenn): löptext med radavstånd 1,8. */
@@ -103,14 +107,17 @@ def las_bild(bild, deck, nr, figmapp):
             if sh.top > 6.4 * EMU and sh.width > 9 * EMU:
                 continue
             k += 1
-            fil = f'{deck[:6]}-b{nr:02d}-{k}.{sh.image.ext}'
-            if not (figmapp / fil).exists():
-                fil = figur_med_samma_innehall(figmapp, deck[:6], sh.image.blob) or fil
-            if (figmapp / fil).exists():
+            namn = f'{deck[:6]}-b{nr:02d}-{k}.{sh.image.ext}'
+            fil = figur_med_samma_innehall(figmapp, deck[:6], sh.image.blob, namn)
+            if fil is None and (figmapp / namn).exists():
+                raise ValueError(f'{deck} bild {nr}: figurer/{namn} är en annan bild än den på bilden. Spara bildens figur i figurer/ '
+                                 'eller flytta bilden, annars visar delsidan fel figur.')
+            if fil:
                 alt = sh._element.nvPicPr.cNvPr.get('descr') or re.sub(r'^Figur:\s*', '', sh.name).rstrip(';').strip() or 'Figur'
                 block.append(('fig', fil, alt))
             continue
-        if not sh.has_text_frame or sh.top > 6.9 * EMU:
+        # Dagens namn på titelbilden (lektionsbilder ”Dag: Måndag 12 oktober”) är ingen rubrik.
+        if not sh.has_text_frame or sh.top > 6.9 * EMU or sh.name.startswith('Dag: '):
             continue
         for para in sh.text_frame.paragraphs:
             t = ''.join(run_text(r) for r in para.runs).replace('\xa0', ' ').strip()
@@ -224,6 +231,11 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
 <article class="course-reading del-sida">
 <p class="course-kicker">{kicker}</p><h1>{e(titel)}</h1>{flyttnotis}
 <nav class="del-steg" aria-label="Delens ordning"><a href="#oversikt"><b>1</b>Översikt</a><a href="#teori"><b>2</b>Teori</a><a href="#exempel"><b>3</b>Exempel</a><a href="#ovningar"><b>4</b>Övningar</a><a href="#labb"><b>5</b>Labben</a></nav>''']
+    # Vecka som visas som dagar (verktyg/veckosidor/dagsvy.py): rutan Din del med dagens färg, presentationen, läxorna
+    # efter lektionen och det som gäller hela veckan, samma data som veckosidan.
+    # Delar som undervisas en annan vecka (FLYTTAD, vecka 45:s delar i vecka 43 och 44) visar den veckans lektion och läxor.
+    h.append(dagsvy().delpanel_html(flytt[0], flytt[1], sjalvrattning_modul(), f'vecka-{v}') if flytt
+             else dagsvy().delpanel_html(int(v), dnr, sjalvrattning_modul(), f'vecka-{v}'))
 
     # 1 Översikt
     malrader = [b for b in (mal[2] if mal else []) if b[0] != 'fig']
@@ -286,9 +298,13 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
         u, los = p['uppgift'], p.get('losning') or {}
         pass_ = pl['ordning'] > 5
         ref = teorireferenser[pl['ankare']]
-        formel = ' och '.join(f'<span class="formula">{R.h(x)}</span>' for x in u.get('samband', []))
+        # Ett samband som är en hel mening (”Vilken väg ska hålla K1 efter START-släpp?”) står som en mening, inte efter
+        # ”Utgå från”; formler står i formelstil.
+        meningar = [x for x in u.get('samband', []) if re.search(r'[.?!]$', x.strip())]
+        formel = ' och '.join(f'<span class="formula">{R.h(x)}</span>' for x in u.get('samband', []) if x not in meningar)
         resonemang = p.get('typ') == 'resonemang'
-        led1 = ((f'Utgå från {formel}. ' if resonemang else f'Använd {formel}. ') if formel else '') + (f'Läs <a href="#teori-{ref[0]}">Teori {ref[0]}: {R.h(ref[1])}</a>.' if ref else '')
+        led1 = (((f'Utgå från {formel}. ' if resonemang else f'Använd {formel}. ') if formel else '') + ''.join(f'{R.h(x)} ' for x in meningar)
+                + (f'Läs <a href="#teori-{ref[0]}">Teori {ref[0]}: {R.h(ref[1])}</a>.' if ref else ''))
         led2 = ' '.join(R.h(x['text']) for x in p.get('ledtradar', []) if x.get('niva') in ('begrepp', 'metod'))
         ex = exempel[1 if pass_ and len(exempel) > 1 else 0] if exempel else None
         led3 = ((f'Samma sätt att resonera: <a href="#exempel-{exempel.index(ex) + 1}">{R.h(ex[1])}</a>. Gör likadant med fallet i den här uppgiften och motivera varje steg.' if resonemang
@@ -296,7 +312,11 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
         steg = ' '.join(R.h(x['text']) for x in p.get('ledtradar', []) if x.get('niva') == 'nasta-steg')
         if steg:  # ledtråd 3 ur databasen: metoden steg för steg med andra tal
             led3 = steg
-        figs = [x for x in (pres_bild.get(p['id']) or []) if x[0] == 'fig']
+        # Övningens figur: placeringens figurer (lektionsbilderna visar inte övningarna), annars bilden där övningen står.
+        figs = [('fig', f['fil'], f['alt']) for f in pl.get('figurer') or []] or [x for x in (pres_bild.get(p['id']) or []) if x[0] == 'fig']
+        for f in pl.get('figurer') or []:
+            if not (R.SJO / f'vecka-{v}' / 'aktuell' / 'figurer' / f['fil']).exists():
+                raise ValueError(f'{pl["ankare"]}: figuren {f["fil"]} saknas i vecka-{v}/aktuell/figurer/ (placeringar/kurs-formelstod.json)')
         facit = ''.join(f'<p>{R.h(x)}</p>' for x in str(los.get('text', 'Facit saknas.')).split('\n\n') if x.strip())
         svar = ' · '.join(f'{R.h(sv["storhet"])} ≈ {e(R.svarsvarde(sv))} {e(sv.get("enhet", ""))}' for sv in los.get('svar', []) if isinstance(sv.get('varde'), (int, float)))
         h.append(f'''<article class="del-ovning" id="{pl["ankare"]}"><h3>{e(pl["nummer"])}: {R.h(p["titel"])}</h3>
@@ -323,8 +343,13 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     h.append('</section>')
 
     # 5 Labben
-    h.append(f'<section id="labb" class="del-block"><h2><span>5</span> Labben</h2><p>Labben kommer sist i veckan, när du har gått igenom del 1–{antal}. Du använder samma metod som i övningarna: <strong>räkna först, läs av, jämför och förklara</strong>.</p>'
-             f'<p><a class="sj-btn" href="{idx}#labb">Veckans labbar</a> <a class="sj-btn" href="{inl}">Veckans inlämning</a></p>')
+    # Veckor som visas som dagar (dagsvy.DAGSVY) har labben i läxorna efter lektionerna och under Hela veckan, och
+    # veckosidan har ingen ruta #labb.
+    dagar = int(vv) in dagsvy().DAGSVY
+    nar = ('Veckans labb står i läxorna efter lektionerna och under Hela veckan på veckosidan.' if dagar
+           else f'Labben kommer sist i veckan, när du har gått igenom del 1–{antal}.')
+    h.append(f'<section id="labb" class="del-block"><h2><span>5</span> Labben</h2><p>{nar} Du använder samma metod som i övningarna: <strong>räkna först, läs av, jämför och förklara</strong>.</p>'
+             f'<p><a class="sj-btn" href="{idx}#{"veckan" if dagar else "labb"}">{"Hela veckan" if dagar else "Veckans labbar"}</a> <a class="sj-btn" href="{inl}">Veckans inlämning</a></p>')
     if kallor:
         h.append(f'<details class="del-mer"><summary>Källor och fortsatt läsning</summary>{block_html(kallor[2])}</details>')
     h.append('</section>')
@@ -338,7 +363,10 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
         text = f'Del {n}: {e(deltitel_for(fv, d))}'
         return f'<a href="../../vecka-{fv}/aktuell/Del_{d}.html">{"← " + text if pil == "<" else text + " →"}</a>'
     fore = lank(plats - 1, '<') if plats > 0 else f'<a href="{idx}">← Vecka {vv}</a>'
-    efter = lank(plats + 1, '>') if plats + 1 < antal else f'<a href="{idx}#labb">Labben →</a>'
+    efter = lank(plats + 1, '>') if plats + 1 < antal else (f'<a href="{idx}#veckan">Hela veckan →</a>' if dagar else f'<a href="{idx}#labb">Labben →</a>')
+    # Vecka med självrättande inlämning: sist på sidan bekräftar eleven att hen har läst delen (sj-last:vecka-NN). En flyttad
+    # del (vecka-45/Del_1 = vecka 43 del 4) skriver veckan och delen eleven läser och länkar till den veckans inlämning.
+    h.append(sjalvrattning().lasbekraftelse_html(flytt[0], flytt[1], inl) if flytt else sjalvrattning().lasbekraftelse_html(int(v), dnr))
     h.append(f'''<nav class="art-nav" aria-label="Delar"><span>{fore}</span><span><a href="{idx}">Veckans översikt</a></span><span>{efter}</span></nav>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script>
@@ -366,6 +394,47 @@ for(const b of document.querySelectorAll('.del-alla'))b.addEventListener('click'
 </script></body></html>
 ''')
     return ''.join(h)
+
+
+_SJALV = []
+
+
+def sjalvrattning():
+    """verktyg/inlamning/sjalvrattning.py (veckorna med självrättande inlämning och rutan Har du läst hela del N?)."""
+    if not _SJALV:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('sjalvrattning_delsidor', R.SJO / 'verktyg' / 'inlamning' / 'sjalvrattning.py')
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _SJALV.append(mod)
+    return _SJALV[0]
+
+
+_DAGSVY = []
+
+
+def dagsvy():
+    """verktyg/veckosidor/dagsvy.py: rutan Din del på delsidorna för veckorna i DAGSVY."""
+    if not _DAGSVY:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('dagsvy_delsidor', R.SJO / 'verktyg' / 'veckosidor' / 'dagsvy.py')
+        mod = importlib.util.module_from_spec(spec)
+        import sys
+        sokvag = list(sys.path)
+        sys.path.insert(0, str(R.SJO / 'verktyg' / 'veckosidor'))  # dagsvy.py importerar kursplan.py bredvid sig
+        try:
+            spec.loader.exec_module(mod)
+        finally:
+            sys.path[:] = sokvag
+        _DAGSVY.append(mod)
+    return _DAGSVY[0]
+
+
+def sjalvrattning_modul():
+    """Adressen till gemensamt/sjalvrattning.mjs relativt dagsvy.mjs, med innehållets hash (samma som veckosidan)."""
+    import hashlib
+    modul = R.SJO / 'gemensamt' / 'sjalvrattning.mjs'
+    return f'./sjalvrattning.mjs?v={hashlib.sha1(modul.read_bytes()).hexdigest()[:10]}' if modul.exists() else None
 
 
 def filer(a):

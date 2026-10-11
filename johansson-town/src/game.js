@@ -1418,13 +1418,26 @@ function startArrivalScene(opening){
  if(params.has('visual-audit')||params.has('audit')&&!params.has('spawn')||params.get('cinematic')==='off')return;
  spawnScene.start({id:opening?.id||'sakura-bench',inside:!!current,yaw:parkSeat?.yaw??yaw});
 }
-// Compile every shader the town uses now, behind the loading screen, rather than one at a
-// time as each kind of thing first comes into view (each was a hitch while walking on a
-// phone). Async where the browser compiles in parallel; never holds the start up for long.
-lightBudget.update();try{await Promise.race([renderer.compileAsync(scene,camera),new Promise(r=>setTimeout(r,8000))]);}catch{}
+// Queue shared shaders once. This renderer's async poll can outlive materials replaced
+// by the detail stream; compile queues GPU work without retaining disposed materials.
+lightBudget.update();try{renderer.compile(scene,camera);}catch{}
+function enterWorld(){
+ if(started)return;
+ window.__JOHANSSON_TITLE_PREVIEW__=false;
+ townSky.mesh.rotation.y=0;
+ startWeather();
 const opening=beginAtOpening();
 started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
 if(opening?.room)openInside(opening);else startArrivalScene(opening);
+}
+window.__JOHANSSON_ENTER_WORLD__=enterWorld;
+if(!window.__JOHANSSON_TITLE_PREVIEW__)enterWorld();
+else {
+ startWeather();
+ $('#title').dataset.scene='ready';
+ $('#bootStatus').textContent='Island ready';
+}
+addEventListener('johansson-title-weather',()=>{if(!started)startWeather();});
 let mouseLooking=false,mouseLast=null;
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 canvas.addEventListener('pointerdown',e=>{
@@ -1475,6 +1488,7 @@ canvas.addEventListener('click',event=>{
 });
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement!==canvas||!controlsAllowed())return;spawnScene?.cancel();const c=cameraControls.settings;yaw-=e.movementX*.0023*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0018*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);});
 document.addEventListener('keydown',e=>{
+ if(!started)return;
  if(photoLoading||photoStudio?.active||cameraControls.active||inspector?.active||itemViewer?.active||activities.paused)return;
  spawnScene?.cancel();
  if(e.code==='Escape'){toggleDir(false);return;}

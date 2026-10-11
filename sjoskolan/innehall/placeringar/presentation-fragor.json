@@ -931,11 +931,11 @@
       "del": "v42_02",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 35,
+      "bild": 17,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -944,10 +944,10 @@
       "del": "v42_02",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -956,11 +956,11 @@
       "del": "v42_03",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 35,
+      "bild": 18,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -969,10 +969,10 @@
       "del": "v42_03",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -981,11 +981,11 @@
       "del": "v43_01",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 35,
+      "bild": 17,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -994,10 +994,10 @@
       "del": "v43_01",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -1006,11 +1006,11 @@
       "del": "v43_02",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 35,
+      "bild": 18,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -1019,10 +1019,10 @@
       "del": "v43_02",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -1031,11 +1031,11 @@
       "del": "v43_03",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 35,
+      "bild": 15,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -1044,10 +1044,10 @@
       "del": "v43_03",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -1056,11 +1056,11 @@
       "del": "v44_01",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 36,
+      "bild": 17,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -1069,10 +1069,10 @@
       "del": "v44_01",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -1081,11 +1081,11 @@
       "del": "v44_02",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 36,
+      "bild": 16,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -1094,10 +1094,10 @@
       "del": "v44_02",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -1106,11 +1106,11 @@
       "del": "v44_03",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 35,
+      "bild": 15,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -1119,10 +1119,10 @@
       "del": "v44_03",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -1131,11 +1131,11 @@
       "del": "v45_01",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 35,
+      "bild": 16,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -1144,10 +1144,10 @@
       "del": "v45_01",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -1156,11 +1156,11 @@
       "del": "v45_02",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 35,
+      "bild": 15,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -1169,10 +1169,10 @@
       "del": "v45_02",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     },
     {
@@ -1181,11 +1181,11 @@
       "del": "v45_03",
       "ordning": 1,
       "nummer": "Avslutsfråga",
-      "bild": 35,
+      "bild": 19,
       "roll": "avslut",
       "former": {
-        "fraga": "3",
-        "instruktion": "4"
+        "fraga": "4",
+        "instruktion": "5"
       }
     },
     {
@@ -1194,10 +1194,10 @@
       "del": "v45_03",
       "ordning": 1,
       "nummer": "Startfråga",
-      "bild": 2,
+      "bild": 3,
       "roll": "start",
       "former": {
-        "fraga": "6"
+        "fraga": "4"
       }
     }
   ]

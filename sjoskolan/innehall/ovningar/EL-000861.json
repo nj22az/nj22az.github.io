@@ -3,7 +3,7 @@
   "titel": "IT-nätet ombord",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -33,12 +33,12 @@
     "losning_publik": true
   },
   "losning": {
-    "text": "a) R = 500/0,00080 = 625 kΩ = 0,625 MΩ, under 1 MΩ. Gruppen ska utredas. b) Omkring 440 V, huvudspänningen, i stället för normalt cirka 254 V. c) Ett andra fel på en annan fas blir en kortslutning mellan L1 och L2 via skrovet. Skydden ska lösa, och stor felström kan ge ljusbåge och brand.",
+    "text": "a) R_{iso} = 500/0,00080 = 625 kΩ = 0,625 MΩ, under 1 MΩ. Gruppen ska utredas. b) Omkring 440 V, huvudspänningen, i stället för normalt cirka 254 V. c) Ett andra fel på en annan fas blir en kortslutning mellan L1 och L2 via skrovet. Skydden ska lösa, och stor felström kan ge ljusbåge och brand.",
     "status": "migrerad",
     "kalla": "Övningstentans lösning",
     "svar": [
       {
-        "storhet": "R",
+        "storhet": "R_{iso}",
         "varde": 0.625,
         "enhet": "MΩ",
         "tolerans": {

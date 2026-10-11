@@ -3,7 +3,7 @@
   "titel": "Bruten neutralledare",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -17,7 +17,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En 60 W-lampa sitter mellan L1 och N och en 15 W-lampa mellan L2 och N (båda märkta 230 V) i ett 400/230 V-nät. Neutralledaren bryts. Räkna med konstanta resistanser och beräkna spänningen över varje lampa. Vad händer i verkligheten?"
+    "fraga": "En 60 W-lampa sitter mellan L1 och N och en 15 W-lampa mellan L2 och N (båda märkta 230 V) i ett 400/230 V-nät i land. Neutralledaren bryts. Räkna med konstanta resistanser och beräkna spänningen över varje lampa. Vad händer i verkligheten?"
   },
   "referenser": {
     "ursprung": [

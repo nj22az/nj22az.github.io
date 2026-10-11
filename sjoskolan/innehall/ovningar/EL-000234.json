@@ -3,7 +3,7 @@
   "titel": "Sinus och period",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -48,6 +48,15 @@
   "losning": {
     "text": "û ≈ 33,9 V. T ≈ 16,7 ms.",
     "svar": [
+      {
+        "storhet": "û",
+        "varde": 33.9,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "V"
+      },
       {
         "storhet": "T",
         "varde": 16.7,

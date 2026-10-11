@@ -11,7 +11,7 @@ const $=id=>document.getElementById(id);
 
 function savedState(id){
  for(const key of slotKey(id)===SAVE_KEY?[SAVE_KEY,SAVE_KEY+PREV_SUFFIX,...LEGACY_KEYS]:[slotKey(id),slotKey(id)+PREV_SUFFIX]){   // the previous copy when the save does not read (save.js)
-  try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object')return value;}catch{}
+  try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object'&&!Array.isArray(value))return value;}catch{}
  }
  return null;
 }
@@ -32,8 +32,11 @@ export function createTitleMenu({launch}){
  let opener=null;
 
  function refresh(){
-  const roster=readPlayers(storage),me=roster.players.find(p=>p.id===roster.active),text=describeSave(savedState(me.id),me.lastPlayed);
-  summary.textContent=text?`${me.name} · ${text}`:`${me.name} · a new game: you arrive on the island today`;
+  const roster=readPlayers(storage),me=roster.players.find(p=>p.id===roster.active),saved=savedState(me.id);
+  $('titlePlayerName').textContent=me.name;
+  $('titlePlayerSummary').textContent=saved?`¥${Number(saved.yen??1200).toLocaleString('en-GB')} · Continue your story`:'Your island story awaits';
+  enter.querySelector('b').textContent=saved?'Continue':'Start Exploring';
+  $('titleActionHint').textContent=saved?'Return to the island':'Welcome to the island';
  }
  function close(){dialog.classList.add('hidden');form.classList.add('hidden');(opener||enter).focus();}
  function open(newGame=false){
@@ -44,7 +47,7 @@ export function createTitleMenu({launch}){
    const text=describeSave(savedState(p.id),p.lastPlayed);
    b.innerHTML='<b></b><span></span>';b.querySelector('b').textContent=p.name+(p.id===roster.active?' · current':'');
    b.querySelector('span').textContent=text||'Not played yet';
-   b.onclick=()=>{switchPlayer(storage,p.id);refresh();close();};
+   b.onclick=()=>{const previous=readPlayers(storage).active;if(!switchPlayer(storage,p.id))return;if(previous!==p.id)location.reload();else{refresh();close();}};
    li.append(b);return li;
   }));
   dialog.classList.remove('hidden');
@@ -55,10 +58,10 @@ export function createTitleMenu({launch}){
  // EXPLORE is the original START button.
  enter.addEventListener('click',()=>{if(!window.__JOHANSSON_MODE__)window.__JOHANSSON_MODE__='explore';},{capture:true});
  $('titleLoad').addEventListener('click',()=>open(false));
- $('titleNew').addEventListener('click',()=>open(true));
+ $('titleNew').addEventListener('click',()=>{if(savedState(readPlayers(storage).active)&&!confirm('Begin a new story in a separate player slot? Your existing progress will stay saved.'))return;open(true);});
  $('titleSlotsClose').addEventListener('click',close);
- form.addEventListener('submit',e=>{e.preventDefault();addPlayer(storage,name.value||'Visitor');refresh();close();});
- dialog.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close();}});
+ form.addEventListener('submit',e=>{e.preventDefault();const id=addPlayer(storage,name.value||'Visitor');if(readPlayers(storage).active!==id){$('titlePlayerSummary').textContent='Saving unavailable. Please check site storage.';return;}location.reload();});
+ dialog.addEventListener('keydown',e=>{if(e.key==='Tab'){const controls=[...dialog.querySelectorAll('button,input')].filter(el=>!el.hidden&&!el.closest('.hidden'));const first=controls[0],last=controls.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}if(e.key==='Escape'){e.stopPropagation();close();}});
  dialog.addEventListener('click',e=>{if(e.target===dialog)close();});
  const file=$('titleImportFile');
  $('titleImport').addEventListener('click',()=>file.click());
@@ -68,8 +71,8 @@ export function createTitleMenu({launch}){
    const data=JSON.parse(await f.text());
    if(!['johansson-town','johansson-world'].includes(data?.game)||!data.state||typeof data.state!=='object')throw Error('not a save');
    const id=addPlayer(storage,data.player||f.name.replace(/\.json$/,''));storage.setItem(slotKey(id),JSON.stringify(data.state));
-   refresh();open(false);
-  }catch{summary.textContent='That file is not a Johansson World save.';}
+   location.reload();
+  }catch{$('titlePlayerSummary').textContent='That file is not a Johansson World save.';}
   file.value='';
  });
  refresh();

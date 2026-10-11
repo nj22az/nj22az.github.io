@@ -3,7 +3,7 @@
 
 Varje vecka har delar i den ordning de görs. Övningarna numreras inom sin del (Övning 2.3 = del 2, övning 3), och
 samma nummer står på webben, i presentationen, i facit och i QR-koden. Inlämningsuppgifterna numreras i en lista
-per vecka. Vecka 40 börjar med frånskiljningen (del 1), växelströmmen är del 2–4, och inlämningen är 1–3
+per vecka, och quizens texter som Text 1, 2, 3 … per sida. Vecka 40 börjar med frånskiljningen (del 1), växelströmmen är del 2–4, och inlämningen är 1–3
 (frånskiljning) och 4–7 (växelström).
 
 Registret är fältet ”nummer” i placeringarna (innehall/placeringar/*.json). Ankare och id ändras aldrig, så länkar,
@@ -59,7 +59,7 @@ def kapiteldel(del_):
 def onskat():
     """Önskat nummer per (yta, index i placeringslistan). None = lämna som det är."""
     ut = {}
-    data = {y: las(y) for y in ('kurs-formelstod', 'presentation', 'arbetsblad', 'presentation-fragor', 'inlamning')}
+    data = {y: las(y) for y in ('kurs-formelstod', 'presentation', 'arbetsblad', 'presentation-fragor', 'inlamning', 'quiz')}
     for yta in ('kurs-formelstod', 'presentation'):
         pl = data[yta]['placeringar']
         lop = i_ordning(pl)
@@ -91,6 +91,11 @@ def onskat():
     for i, p in enumerate(inl):
         sida = sorted([x for x in inl if x['plats'] == p['plats']], key=lambda x: x.get('ordning', 0))
         ut[('inlamning', i)] = f'Inlämning {INLAMNING_START.get(p["plats"], 1) + sida.index(p)}'
+    # Quizen: Text 1, 2, 3 … per sida i placeringens ordning.
+    las_ = data['quiz']['placeringar']
+    for i, p in enumerate(las_):
+        sida = sorted([x for x in las_ if x['plats'] == p['plats']], key=lambda x: x.get('ordning', 0))
+        ut[('quiz', i)] = f'Text {sida.index(p) + 1}'
     return data, ut
 
 

@@ -48,31 +48,31 @@ MODULER = [
          labb=('trefaslabbet/', 'Trefaslabbet och Motorlabbet'), inl='vecka-41/aktuell/Inlamning.html',
          ovningar=[('vecka-41', 'v41_01-q'), ('vecka-41', 'v41_02-q'), ('vecka-41', 'v41_03-q')]),
     dict(nr=6, titel='Elektriska risker och skydd', mal='Hur el skadar, regler och ansvar, och en riskbedömning som går att följa upp.',
-         vecka='Vecka 42', start='2026-10-12', sista='2026-10-18', sida='vecka-42/aktuell/',
+         vecka='Vecka 42', start='2026-10-12', sista='2026-10-16', sida='vecka-42/aktuell/',
          delar=[('vecka-42/aktuell/Del_1.html', 'Elektriska risker'), ('vecka-42/aktuell/Del_2.html', 'Regler, ansvar och arbetsmetoder'),
                 ('vecka-42/aktuell/Del_3.html', 'Riskbedömning och skydd')],
          labb=('multimetersimulator/?ovning=category', 'Multimeterlabbet: Välj CAT-klass'), inl='vecka-42/aktuell/Inlamning.html',
          ovningar=[('vecka-42', 'v42_01-q'), ('vecka-42', 'v42_02-q'), ('vecka-42', 'v42_03-q')]),
     dict(nr=7, titel='Komponenter, motorer och scheman', mal='Skyddsdata, transformator och motor, och hållkretsen i schemat.',
-         vecka='Vecka 43', start='2026-10-19', sista='2026-10-25', sida='vecka-43/aktuell/',
+         vecka='Vecka 43', start='2026-10-19', sista='2026-10-23', sida='vecka-43/aktuell/',
          delar=[('vecka-43/aktuell/Del_1.html', 'Komponenter och skydd'), ('vecka-43/aktuell/Del_2.html', 'Transformatorer och motorer'),
                 ('vecka-43/aktuell/Del_3.html', 'Elscheman och dokumentation')],
          labb=('hallkretslabbet/', 'Hållkretslabbet'), inl='vecka-43/aktuell/Inlamning.html',
          ovningar=[('vecka-43', 'v43_01-q'), ('vecka-43', 'v43_02-q'), ('vecka-43', 'v43_03-q')]),
     dict(nr=8, titel='Systematisk felsökning', mal='Observation, prövbar hypotes och en kontroll som skiljer mellan orsakerna.',
-         vecka='Vecka 43', start='2026-10-19', sista='2026-10-25', sida='vecka-43/aktuell/',
+         vecka='Vecka 43', start='2026-10-19', sista='2026-10-23', sida='vecka-43/aktuell/',
          delar=[('vecka-45/aktuell/Del_1.html', 'Systematisk felsökning')],
-         labb=('hallkretslabbet/', 'Hållkretslabbet: dolt fel'), inl='vecka-45/aktuell/Inlamning.html#uppgift-3',
+         labb=('hallkretslabbet/', 'Hållkretslabbet: dolt fel'), inl='vecka-43/aktuell/Inlamning.html#uppgift-4',
          ovningar=[('vecka-45', 'v45_01-q')]),
     dict(nr=9, titel='Elsystem ombord', mal='IT- och TN-system, första och andra jordfelet, och högspänning ombord.',
-         vecka='Vecka 44', start='2026-10-26', sista='2026-11-01', sida='vecka-44/aktuell/',
+         vecka='Vecka 44', start='2026-10-26', sista='2026-10-30', sida='vecka-44/aktuell/',
          delar=[('vecka-44/aktuell/Del_1.html', 'Lågspänningssystem'), ('vecka-44/aktuell/Del_2.html', 'Högspänningssystem')],
          labb=('isolationslabbet/', 'Isolationslabbet'), inl='vecka-44/aktuell/Inlamning.html',
          ovningar=[('vecka-44', 'v44_01-q'), ('vecka-44', 'v44_02-q')]),
     dict(nr=10, titel='Mätteknik och analys', mal='Mätkedjan, isolationsmätning och en slutsats mot ett krav med hänsyn till osäkerhet.',
-         vecka='Vecka 44', start='2026-10-26', sista='2026-11-01', sida='vecka-44/aktuell/',
+         vecka='Vecka 44', start='2026-10-26', sista='2026-10-30', sida='vecka-44/aktuell/',
          delar=[('vecka-44/aktuell/Del_3.html', 'Fördjupad mätteknik'), ('vecka-45/aktuell/Del_2.html', 'Analys av mätresultat')],
-         labb=('isolationslabbet/?del=matning', 'Isolationsmätning och Mätaren påverkar'), inl='vecka-45/aktuell/Inlamning.html#uppgift-1',
+         labb=('isolationslabbet/?del=matning', 'Isolationsmätning och Mätaren påverkar'), inl='vecka-44/aktuell/Inlamning.html#uppgift-4',
          ovningar=[('vecka-44', 'v44_03-q'), ('vecka-45', 'v45_02-q')]),
     dict(nr=11, titel='Repetition och tentamen', mal='Välj formel efter storhet och metod efter frågan. Övningstentan med lösningar.',
          vecka='Vecka 44–45', start='2026-10-26', sista='2026-11-06', sida='vecka-45/aktuell/',
@@ -108,10 +108,15 @@ def kort_datum(iso):
     return f'{d} {MANAD[m - 1]}'
 
 
+def veckodag(iso):
+    import datetime as _dt
+    return ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag'][_dt.date.fromisoformat(iso).weekday()]
+
+
 def modulkort(m):
     delar = ''.join(f'<li><a href="{h}">{escape(t)}</a></li>' for h, t in m['delar'])
     labb = f'<p class="mod-rad"><span class="mod-etikett">Labb</span><a href="{m["labb"][0]}">{escape(m["labb"][1])}</a></p>' if m['labb'] else ''
-    inl = (f'<p class="mod-rad"><span class="mod-etikett">Inlämning</span><a href="{m["inl"]}">Senast söndag {kort_datum(m["sista"])}</a></p>'
+    inl = (f'<p class="mod-rad"><span class="mod-etikett">Inlämning</span><a href="{m["inl"]}">Senast {veckodag(m["sista"])} {kort_datum(m["sista"])}</a></p>'
            if m['inl'] else '')
     ovn = json.dumps(m['ovningar'])
     framsteg = (f'<div class="mod-framsteg" data-ovningar=\'{ovn}\'><div class="mod-bar"><span></span></div><p class="mod-antal">'
