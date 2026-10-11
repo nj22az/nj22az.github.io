@@ -20,7 +20,8 @@ import {createTownCatchup,MAX_ABSENCE_MINUTES} from './people/town-absence.js';
 import {createTownCleanup} from './world/town-cleanup.js';
 import {streetToRoom,roomToStreet} from './world/doorway.js';
 import {buildClassroom} from './world/interiors/classroom.js';
-import {buildOnsenInterior,ONSEN_ROOM} from './world/interiors/onsen.js';
+import {buildOnsenInterior,ONSEN_ROOM,ONSEN_ASSETS} from './world/interiors/onsen.js';
+import {loadAsset,assetLoaded} from './catalog/catalog.js';
 import {realTownMinutes,clockCatchUp,townClockLineAt,readClockSetting,writeClockSetting,startingMinutes,createClock} from './town-clock.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
 import {hasRamenTicket,useRamenTicket} from './people/ramen-ticket.js';
@@ -965,6 +966,15 @@ async function crossThreshold(run){
 }
 
 let roomLoading=false;
+/**
+ * What a room is built of from World's catalogue (src/catalog: Johansson Studio's assets), by the room's site. Fetched once
+ * the room's door comes within reach (updateContextControls), and waited for at the door if it has not come yet, so a room
+ * never opens with a seat over nothing.
+ */
+const ROOM_ASSETS={onsen:ONSEN_ASSETS};
+const roomAssetsReady=s=>(ROOM_ASSETS[s.id]||[]).every(assetLoaded);
+const loadRoomAssets=s=>Promise.all((ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id))).then(all=>all.every(Boolean));
+let roomAssetsTry=0;
 async function enterRoom(s){spawnScene?.cancel('room');
  if(roomLoading)return;
  s=SITES.find(site=>site.id===businessId(s.id))||s;
@@ -974,6 +984,11 @@ async function enterRoom(s){spawnScene?.cancel('room');
   roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
   try{await preloadIzakaya(['interior']);}finally{roomLoading=false;}
   if(!izakayaReady('interior')){say('Could not open '+s.title+'. Please try the door again.',5);return;}
+ }
+ if(!roomAssetsReady(s)){
+  roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
+  let ready=false;try{ready=await loadRoomAssets(s);}finally{roomLoading=false;}
+  if(!ready){say('Could not open '+s.title+'. Please try the door again.',5);return;}
  }
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
@@ -1575,6 +1590,9 @@ function updateContextControls(){
  const door=roomExitVisible({playing:started,inside:!current,paused:blocked||!!bicycleRide,seated})?doorNearby():null;
  doorSite=door;
  const now=performance.now();
+ // A room's catalogue assets start loading as its door comes within reach, so walking in seldom waits (at most a try
+ // every ten seconds while a door is near: a failed fetch is not hammered).
+ if(door&&!roomAssetsReady(door)&&now>roomAssetsTry){roomAssetsTry=now+10000;void loadRoomAssets(door);}
  if(!blocked&&(move2.lengthSq()>.02||Math.hypot(touchSticks.move.x,touchSticks.move.y)>.05)){controlsMovingUntil=now+1400;controlsTouchedAt=now;}
  // Hold the action button for a moment after its target is lost. Walking past scenery
  // otherwise blinks it in and out, and a tap can land where the button just was.

@@ -135,7 +135,8 @@ export function nearestFree(want,free,opt=SNAP.search,prefer=null){
  *  free(x,z): no wall, furniture, person, edge or step (bound to this character); seen(x,z): the camera sees them there;
  *  lock: the target caught last; capturePx; snapping; grid ({size,origin,yaw}, builders only); floor(x,z); previous landing.
  * A target catches within R = capturePx clamped to its kind's metres; the one caught keeps them until 1.5 R and wins ties
- * (score × 0.75); a seat beats a person, a person a counter, by 0.1 R. Without a target: the point itself if free and seen,
+ * (score × 0.75); a seat beats a person, a person a counter, by 0.1 R. Without a target: the point itself (to the nearest free
+ * centimetre) if free and seen,
  * else the nearest free one within 0.6 m, else null (keep the last landing).
  * → {x,z,y,kind:'seat'|'person'|'edge'|'grid'|'free',target,turn,seat,key}|null; `key` changes only when the result does.
  */
@@ -172,8 +173,10 @@ export function resolveSnap(want,ctx={}){
  }
  const landing=(x,z,kind)=>({x,y:floor?floor(x,z):y0,z,kind,target:null,turn:null,seat:null,key:kind+':'+x.toFixed(2)+','+z.toFixed(2)});
  if(snapping&&grid){const g=gridPoint(want,grid);if(free(g.x,g.z)&&seen(g.x,g.z))return landing(g.x,g.z,'grid');}
- const x=fixed(round(want.x)),z=fixed(round(want.z));
- if(free(x,z)&&seen(x,z))return landing(x,z,'free');
+ // The centimetre points around the wanted one, nearest first: rounding alone can step 5 mm into whatever they stand against.
+ const q=SNAP.quantum,around=[];for(const fx of [Math.floor,Math.ceil])for(const fz of [Math.floor,Math.ceil])around.push({x:fixed(fx(want.x/q)*q),z:fixed(fz(want.z/q)*q)});
+ around.sort((a,b)=>Math.hypot(a.x-want.x,a.z-want.z)-Math.hypot(b.x-want.x,b.z-want.z));
+ for(const p of around)if(free(p.x,p.z)&&seen(p.x,p.z))return landing(p.x,p.z,'free');
  const near=nearestFree({x:want.x,z:want.z},free,SNAP.search,previous);
  return near&&seen(near.x,near.z)?landing(near.x,near.z,'free'):null;
 }

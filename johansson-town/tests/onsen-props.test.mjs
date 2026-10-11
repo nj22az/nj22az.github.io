@@ -8,6 +8,9 @@ import {MASSAGE_CHAIR} from '../src/world/interiors/onsen-electrics.js';
 import {LOBBY} from '../src/world/interiors/onsen-lobby.js';
 import {FEED_PLACES} from '../src/feed/places.js';
 import {circleHitsRect} from '../physics.js';
+import {provideCatalog} from './catalog-fixture.mjs';
+// The massage chair's model in hand (World's catalogue), so the offering finds the arm pad it stands on.
+await provideCatalog('massage-chair');
 
 // The props "Fujita's Ten Minutes of Heaven" needs: the straw jar, the uchiwa rack, Mrs Higa's rubber plant, her account book.
 const build=()=>{const room=new THREE.Group(),hits=[];const layout=buildOnsenInterior({room,reg:(o,label)=>hits.push({o,label}),action(){},exit(){}});room.updateMatrixWorld(true);return {room,hits,layout};};

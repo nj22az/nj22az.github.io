@@ -52,7 +52,7 @@ const PART_ENTRIES={
   blouse:{label:'Blouse',category:'Everyday',tags:['shop','shrine','summer'],who:'Thuan in her yellow one; Mrs Higa, Naoko, Emi and Yoshiko',why:'Light cotton with a round collar, as right at the shop counter as at the shrine.'},
   jacket:{label:'Jacket',category:'Everyday',tags:['ferry','evening','wind','harbour office'],who:'Nhung, Tetsuo, the harbour master and Mr Tamaki',why:'For the ferry deck and the wind off the sea after dark.'},
   apron:{label:'Apron',category:'Work & uniform',tags:['apron dress','stall','kitchen','fish counter','Sato Ramen'],who:'Mrs Sato, Mr Toguchi at his cart, Mina, Mrs Nakamura, Mrs Yonamine and Hiroshi',why:'An apron dress that keeps the stall and the kitchen off their clothes.'},
-  smock:{label:'Smock',category:'Work & uniform',tags:['school lunch','ink','newspaper','generators','sleeves'],who:'Reiko at the paper, Mr Shimabukuro at the generators, and the Years 5–6 lunch squad',why:'Long sleeves and a pocket against ink, oil and school lunch.'},
+  smock:{label:'Smock',category:'Work & uniform',tags:['school lunch','ink','newspaper','generators','sleeves','kitchen','shop'],who:'Reiko at the paper, Mr Shimabukuro at the generators, Mrs Sato at her stove, Grandmother Sakurai at the shop and the Years 5–6 lunch squad',why:'Long sleeves and a pocket against ink, oil, broth and school lunch.'},
   sailor:{label:'Sailor shirt',category:'School & sport',tags:['school uniform','high school','ferry'],who:'Vy and Hana, on the ferry to the high school',why:'The high school’s summer uniform.'},
   sailorlong:{label:'Long-sleeved sailor',category:'School & sport',tags:['sailor','Thuan’s wardrobe','navy'],who:'Thuan, from her own wardrobe',why:'Her navy sailor top with long sleeves and a red necktie, for the cooler days.'},
   police:{label:'Police jacket',category:'Work & uniform',tags:['police','officer','patrol','uniform'],who:'Officer Mori',why:'The island police officer’s uniform, so anyone can find him at the desk or on night patrol.'},
@@ -84,9 +84,9 @@ const PART_ENTRIES={
   boots:{label:'Boots',category:'Work',tags:['quay','fish market','wet','work'],who:'Mr Toguchi at his cart; the harbour day shift',why:'For the wet quay and the fish market floor.'},
  },
  hat:{
-  none:{label:'None',category:'Sun & everyday',tags:['bare head'],who:'most people, most of the time',why:'Hair out.'},
+  none:{label:'No hat',category:'Sun & everyday',tags:['bare head'],who:'most people, most of the time',why:'Hair out.'},
   cap:{label:'Cap',category:'Sun & everyday',tags:['baseball cap','sun','post','bus'],who:'Postman Tōma, the bus driver, Mr Nakasone, Mr Arakaki, Chin and Uncle Kinjō',why:'A peak to keep the sun out of the eyes.'},
-  captain:{label:'Captain',category:'Work',tags:['harbour master','ferry','harbour office'],who:'the harbour master',why:'His cap, so the ferry knows who gives the berth.'},
+  captain:{label:'Captain’s cap',category:'Work',tags:['harbour master','ferry','harbour office'],who:'the harbour master',why:'His cap, so the ferry knows who gives the berth.'},
   police:{label:'Police cap',category:'Work',tags:['police','officer','uniform'],who:'Officer Mori',why:'Part of the police uniform.'},
   helmet:{label:'Helmet',category:'Work',tags:['hard hat','safety','cargo yard','ice plant'],who:'Riku in the cargo yard; Masaru and the Cold-storage kid under the ice chute',why:'A hard hat where crates and blocks of ice swing overhead.'},
   straw:{label:'Straw hat',category:'Sun & everyday',tags:['sun','sabani','gateball','garden'],who:'Mr Ōshiro on his sabani; Mrs Kamiya at gateball',why:'Wide shade for the open water and the court at noon.'},
@@ -103,17 +103,17 @@ const PART_ENTRIES={
   mountain:{label:'Mount Aoba hat',category:'Fun',tags:['costume','parade','Port Festival','Mount Aoba','silly'],who:PROPOSED_PARADE,why:'Mount Aoba, the island’s peak, worn on the head.'},
  },
  earrings:{
-  none:{label:'None',category:'Jewellery',tags:[],who:'most islanders',why:'No earrings.'},
+  none:{label:'No earrings',category:'Jewellery',tags:[],who:'most islanders',why:'Nothing in the ears.'},
   studs:{label:'Studs',category:'Jewellery',tags:['gold','small'],who:'Thuan and Thao',why:'Small enough to forget at work.'},
   hoops:{label:'Hoops',category:'Jewellery',tags:['bold'],who:'Nhung',why:'Her one bold piece.'},
  },
  neckwear:{
-  none:{label:'None',category:'Jewellery',tags:[],who:'most islanders',why:'Nothing at the neck in the heat.'},
+  none:{label:'Nothing at the neck',category:'Jewellery',tags:[],who:'most islanders',why:'Nothing at the neck in the heat.'},
   pendant:{label:'Pendant',category:'Jewellery',tags:['necklace','gold','chain'],who:'Thuan',why:'A small gold pendant she always wears.'},
   scarf:{label:'Scarf',category:'Scarves',tags:['air-conditioning','newspaper','winter'],who:'Reiko',why:'A light scarf against the air-conditioning at the paper.'},
  },
  glasses:{
-  none:{label:'None',category:'Everyday',tags:[],who:'most islanders',why:'No glasses.'},
+  none:{label:'No glasses',category:'Everyday',tags:[],who:'most islanders',why:'Nothing on the nose.'},
   round:{label:'Round',category:'Everyday',tags:['spectacles','reading'],who:'Thuan in rose frames; Mrs Sato, the harbour master and Mr Arakaki',why:'Round frames, for reading and for seeing.'},
   square:{label:'Square',category:'Everyday',tags:['spectacles','reading'],who:'Mr Nakasone, Mr Fujita, Mr Tanabe and Fumiko',why:'Square frames that sit firm through gateball and fishing.'},
   sun:{label:'Shades',category:'Sun',tags:['sunglasses','glare','sea','boat'],who:'Mr Ōshiro out on the water at noon',why:'Against the glare off the sea.'},
@@ -151,12 +151,32 @@ export function wornSet(outfit){
  return null;
 }
 
+/**
+ * What `outfit` becomes with `set` put on (`colours`: one of its colourways' fields). A field the set leaves out stays as it
+ * was, except the hat that came with the set being worn now: it comes off with that set (no kitchen kerchief on a Sunday
+ * dress). A hat of one's own stays (Nhung keeps her beret for a bookshop afternoon).
+ */
+export function putOnSet(outfit,set,colours={}){
+ const was=wornSet(outfit)?.set,next={...outfit,...set.outfit,...colours};
+ if(!('hat' in set.outfit)&&was&&was.id!==set.id&&'hat' in was.outfit&&outfit.hat===was.outfit.hat)next.hat='none';
+ return next;
+}
+
+/**
+ * The name a reader hears for an item's picture: its full name, which holds the short label under the picture, or the
+ * label and then the name when it does not ("Reef explorer: Reef ribbon explorer"), so saying what is on screen works
+ * (WCAG 2.5.3, label in name).
+ */
+export const accessibleName=entry=>!entry.name?entry.label:entry.name.toLowerCase().includes(entry.label.toLowerCase())?entry.name:entry.label+': '+entry.name;
+
 /** Text folded for searching: lower case, without accents or macrons (Kōji → koji, zōri → zori). */
 export const fold=text=>String(text??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const haystack=new Map(CATALOGUE.map(e=>[e,' '+fold([e.label,e.name,e.id,e.category,SLOTS[e.slot].name,...e.tags,e.who,e.supplier,e.wornIn].filter(Boolean).join(' ')).replace(/[^a-z0-9]+/g,' ')+' ']));
+// Not the category: the chips browse by category, and a chip's name is no word about the item ("school" found the
+// gateball set by its 'School & sport' chip).
+const haystack=new Map(CATALOGUE.map(e=>[e,' '+fold([e.label,e.name,e.id,SLOTS[e.slot].name,...e.tags,e.who,e.supplier,e.wornIn].filter(Boolean).join(' ')).replace(/[^a-z0-9]+/g,' ')+' ']));
 /**
  * Every item a search finds, grouped by slot in SLOTS order: [{slot, name, entries}]. Each word of the query must begin a
- * word of the item's label, tags, category, the names in `who`, or its places and occasions; accents are ignored.
+ * word of the item's label, its name, tags, the names in `who`, or its places and occasions; accents are ignored.
  */
 export function searchWardrobe(query){
  const words=fold(query).split(/[^a-z0-9]+/).filter(Boolean);

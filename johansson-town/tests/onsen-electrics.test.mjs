@@ -7,6 +7,10 @@ import {ONSEN_TOWELS,TOWEL_PRICE} from '../src/world/interiors/onsen-towels.js';
 import {FEED_PLACES} from '../src/feed/places.js';
 import {measure} from '../src/avatars/build.js';
 import {recipeFor} from '../src/avatars/cast.js';
+import {provideCatalog} from './catalog-fixture.mjs';
+// The massage chair's model in hand (World's catalogue), as the game has it before it opens the door: Fujita's offering
+// stands on its arm, and the room's own parts on it (the coin timer, the rollers, the cord, the plate) are on its anchors.
+await provideCatalog('massage-chair');
 
 const build=()=>{const room=new THREE.Group(),hits=[],actions=[];const layout=buildOnsenInterior({room,reg:(o,label,fn)=>hits.push({o,label,fn}),action:(...a)=>actions.push(a),exit(){}});room.updateMatrixWorld(true);return {room,hits,actions,layout};};
 const circuit=id=>ONSEN_CIRCUITS.find(c=>c.id===id);

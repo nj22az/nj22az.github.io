@@ -1,5 +1,5 @@
 import {outfitAllowedFor,appropriateOutfit} from './outfits.js';
-import {SETS,SLOTS,SLOT_AT,ISLAND_PALETTE,ISLAND_HEX,entryFor,labelFor,wornSet,wornLine,searchWardrobe} from './wardrobe-catalogue.js';
+import {SETS,SLOTS,SLOT_AT,ISLAND_PALETTE,ISLAND_HEX,entryFor,labelFor,wornSet,wornLine,searchWardrobe,putOnSet,accessibleName} from './wardrobe-catalogue.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
@@ -351,20 +351,40 @@ const CSS=`
  .shm[data-step=look] .shm-grid{gap:6px}.shm[data-step=look] .shm-grid button{min-height:82px}.shm[data-step=look] .shm-grid button canvas{width:52px;height:52px}
  .shm[data-step=look] .shm-swatches{gap:7px}.shm[data-step=look] .shm-swatches button{width:36px;height:36px}
 }
+/* A short phone held upright (an iPhone SE, 320×568): a smaller figure and no heading over the colour tray, so the
+   choices keep a panel to work in. */
+@media(max-width:760px) and (max-height:640px){.shm[data-step=look] .shm-main{grid-template-rows:minmax(150px,36%) minmax(0,1fr)}.shm[data-step=look] .shm-palette h4{display:none}}
 @media(max-height:500px) and (min-width:761px){.shm[data-step=look] .shm-main{grid-template-columns:60px minmax(0,1fr) 300px}.shm[data-step=look] .shm-tabs button{min-height:54px}.shm[data-step=look] .shm-part-title{font-size:22px;margin:4px 12px 0}.shm[data-step=look] .shm-palette:not([hidden]){padding:6px 12px}}
-/* The wardrobe: one search across its tabs, a row of category chips per grid, who wears the chosen item, and its colourways. */
-.shm-search{margin:0 0 12px}
-.shm-categories{flex-wrap:nowrap;overflow-x:auto;margin:0 0 10px;padding-bottom:2px;scrollbar-width:none}
-.shm-categories::-webkit-scrollbar{display:none}
+/* The wardrobe: one header row (the search and taking it all off), a row of category chips per grid, and who wears the
+   chosen item and why, with its colourways, right under the row of the picture tapped. The pictures keep the room. */
+.shm-wardrobe-head{display:flex;align-items:center;gap:8px;margin:0 0 8px}
+.shm-wardrobe-head .shm-search{flex:1 1 auto;width:auto;margin:0}
+.shm-wardrobe-head .shm-undress{flex:0 0 auto;margin:0;padding:8px 12px;white-space:nowrap}
+.shm-found{margin:0 0 8px;font-size:12px;line-height:1.45;color:#6b5d44}
+.shm-found:empty{margin:0}
+.shm-categories{flex-wrap:nowrap;overflow-x:auto;margin:0 0 10px;padding-bottom:2px}
 .shm-categories button{flex:0 0 auto;white-space:nowrap}
-.shm-worn{margin:10px 0 4px;font-size:12px;line-height:1.45;color:#6b5d44}
+/* A row that scrolls sideways (the chips, the colour tray) fades out at an edge with more behind it: nothing is hidden
+   without a sign, also on an iPad, which draws no scroll bar; a mouse has a thin one. */
+.shm-scrolls{position:relative;scrollbar-width:thin;padding-bottom:6px}
+.shm-scrolls[data-more=end]{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),#0000);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),#0000)}
+.shm-scrolls[data-more=start]{-webkit-mask-image:linear-gradient(90deg,#0000,#000 44px);mask-image:linear-gradient(90deg,#0000,#000 44px)}
+.shm-scrolls[data-more=both]{-webkit-mask-image:linear-gradient(90deg,#0000,#000 44px,#000 calc(100% - 44px),#0000);mask-image:linear-gradient(90deg,#0000,#000 44px,#000 calc(100% - 44px),#0000)}
+.shm-grid>.shm-worn-box{grid-column:1/-1;margin:0 2px 4px}
+.shm-worn{margin:2px 0 4px;font-size:12px;line-height:1.45;color:#6b5d44}
 .shm-worn:empty{display:none}
 .shm-ways{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
-.shm-ways button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px 6px 8px;border:2px solid #f0dcb0;border-radius:22px;background:#fff;color:inherit;font-size:13px;font-weight:800}
-.shm-ways button[aria-pressed=true]{background:#fff4e2;border-color:#ff9d3c}
+.shm-ways label{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px 6px 8px;border:2px solid #f0dcb0;border-radius:22px;background:#fff;color:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.shm-ways input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.shm-ways label.on{background:#fff4e2;border-color:#ff9d3c}
+.shm-ways label:has(input:focus-visible){outline:3px solid #2a8fcc;outline-offset:2px}
 .shm-ways i{display:block;width:26px;height:26px;border-radius:50%;box-shadow:0 0 0 1px #0003}
-.shm-swatches .shm-swatch-label{flex-basis:100%;margin:2px 0 -2px;font-size:11px;font-weight:800;color:#8a7a5a}
-.shm[data-step=look] .shm-ways button[aria-pressed=true]{border-color:#498579;background:#e6f1ee}
+.shm-swatches .shm-swatch-label{flex-basis:100%;margin:2px 0 -2px;font-size:11px;font-weight:800;color:#6b5d44}
+.shm[data-step=look] .shm-ways label.on{border-color:#498579;background:#e6f1ee}
+/* The colour tray under the pictures is one row that scrolls sideways: the island palette, and the colour worn when it is
+   not one of them. The Colour page has every colour, with its labels. */
+.shm[data-step=look] .shm-palette .shm-swatches{flex-wrap:nowrap;overflow-x:auto;padding:3px 3px 6px}
+.shm-palette .shm-swatches button{flex:0 0 auto}
 
 `;
 
@@ -430,7 +450,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const swallow=e=>{
   if(!root.isConnected)return;e.stopPropagation();
   if(e.type!=='keydown')return;
-  if(e.key==='Escape'&&e.target===search&&search.value){e.preventDefault();search.value='';wardrobeQuery='';fillWardrobe();return;}
+  // Escape in the wardrobe search clears it, and an empty search keeps it: it never closes the maker (in Johansson Studio
+  // closing leaves the page, and its unsaved edits).
+  if(e.key==='Escape'&&e.target===search){e.preventDefault();if(search.value){clearTimeout(searchDue);search.value='';wardrobeQuery='';fillWardrobe();}return;}
   if(e.key==='Escape'){e.preventDefault();shareLayer?closeShare():finish(false);}
   if(e.key==='Tab'){const scope=shareLayer||root,items=[...scope.querySelectorAll('button:not(:disabled),input,select,textarea,[tabindex="0"]')].filter(x=>x.getClientRects().length);
    const first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}
@@ -548,12 +570,18 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;observer?.observe(canvas);resize();
 
  // ----- The wardrobe's state -----
- // One search across the wardrobe tabs (wardrobe-catalogue.js searchWardrobe), the category chip each grid shows, and
- // the box the wardrobe tab draws into under the search.
+ // One header row over the wardrobe tabs: the search across them (wardrobe-catalogue.js searchWardrobe) and taking it all
+ // off; under it what the search found (a live status), the category chip each grid shows, and the box the tab draws in.
  let wardrobeQuery='',wardrobeArea=null,searchDue=0;const chipFor=new Map();
- const search=el('input',{type:'search',className:'shm-text shm-search',placeholder:'Search: name, place, occasion',ariaLabel:'Search the wardrobe',autocomplete:'off',spellcheck:false});
+ const search=el('input',{type:'search',className:'shm-text shm-search',placeholder:'Search',ariaLabel:'Search the wardrobe',title:'A name, a place or an occasion: Kōji, Sato Ramen, school, rain',autocomplete:'off',spellcheck:false});
  search.setAttribute('autocapitalize','off');search.setAttribute('enterkeyhint','search');
  search.oninput=()=>{clearTimeout(searchDue);searchDue=setTimeout(()=>{const q=search.value.trim();if(q===wardrobeQuery)return;wardrobeQuery=q;fillWardrobe();},140);};
+ const found=el('p',{className:'shm-found',role:'status'});
+ const undress=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all off',title:'Down to what is underneath it all: a tank top, underwear and bare feet. The first picture of each grid takes that one thing off.'});
+ undress.onclick=()=>{
+  remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});
+  recipe=normalizeRecipe(recipe);dirty=true;const focused=document.activeElement===undress;renderBody();if(focused)undress.focus({preventScroll:true});
+ };
 
  // ----- Part pictures -----
  // Face parts are drawn flat, one feature at a time, by the face painter. Hair, hats and
@@ -639,20 +667,23 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  tabs.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const i=TABS.findIndex(t=>t.id===tab),n=e.key==='Home'?0:e.key==='End'?TABS.length-1:(i+(e.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;chooseTab(TABS[n].id);tabs.children[n].focus();tabs.children[n].scrollIntoView({block:'nearest',inline:'nearest'});};
  // Pictures are drawn a few a frame, and only as their tiles scroll into view, so a page opens at once and fills in
  // from the top, and a long wardrobe never renders the pictures nobody looks at (the iPad in Safari).
+ // A queued picture is drawn only if its tile is still on the page: a search keystroke or a chip replaces the tiles, and
+ // the pictures already queued for the old ones are skipped, not drawn into canvases nobody sees.
  let pictureQueue=[],pictureJobs=new Map(),pictureFrame=0,picturesDue=0;
+ const ifShown=(canvas,job)=>()=>{if(canvas.isConnected)job();};
  const inView=typeof IntersectionObserver==='function'?new IntersectionObserver(seen=>{
-  for(const e of seen)if(e.isIntersecting){inView.unobserve(e.target);const job=pictureJobs.get(e.target);if(job)pictureQueue.push(job);}
+  for(const e of seen)if(e.isIntersecting){inView.unobserve(e.target);const job=pictureJobs.get(e.target);if(job)pictureQueue.push(ifShown(e.target,job));}
   if(pictureQueue.length)paintQueued();
  },{root:body,rootMargin:'160px 0px'}):null;
  /** A tile's picture, drawn when the tile comes into view. */
- function picture(canvas,job){pictureJobs.set(canvas,job);if(inView)inView.observe(canvas);else{pictureQueue.push(job);paintQueued();}}
+ function picture(canvas,job){pictureJobs.set(canvas,job);if(inView)inView.observe(canvas);else{pictureQueue.push(ifShown(canvas,job));paintQueued();}}
  function paintQueued(){if(pictureFrame)return;pictureFrame=requestAnimationFrame(()=>{pictureFrame=0;const t0=performance.now();while(pictureQueue.length&&performance.now()-t0<12)pictureQueue.shift()();if(pictureQueue.length)paintQueued();});}
  /** Forget the pictures of tiles no longer on the page. */
  function prunePictures(){for(const c of [...pictureJobs.keys()])if(!c.isConnected){pictureJobs.delete(c);inView?.unobserve(c);}}
  function stopPictures(){cancelAnimationFrame(pictureFrame);pictureFrame=0;clearTimeout(picturesDue);pictureQueue=[];}
  /** Every picture again (the recipe changed under them): those in view first, the rest as they scroll in. */
  function renderPictures(){clearTimeout(picturesDue);picturesDue=setTimeout(()=>{stopPictures();
-  if(inView){inView.disconnect();for(const c of pictureJobs.keys())if(c.isConnected)inView.observe(c);}else{pictureQueue=[...pictureJobs.values()];paintQueued();}},180);}
+  if(inView){inView.disconnect();for(const c of pictureJobs.keys())if(c.isConnected)inView.observe(c);}else{pictureQueue=[...pictureJobs].map(([c,job])=>ifShown(c,job));paintQueued();}},180);}
  const pressed=(row,b)=>{for(const x of row.querySelectorAll(':scope>button'))x.setAttribute('aria-pressed',String(x===b));};
  /** A meter of sixteen notches and the two buttons either side of it. */
  function stepper(label,at,less,more,after=()=>{}){
@@ -674,100 +705,149 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
    body.append(views,el('p',{className:'shm-note',textContent:'Compare the fringe and the back. Choose a style, then set its colour and parting independently.'}));
   }
   if(t.wardrobe&&page==='style'){
-   // One search for the whole wardrobe, kept as the tabs change; under it, the tab or what the search finds.
-   wardrobeArea=el('div',{className:'shm-wardrobe'});body.append(search,wardrobeArea);fillWardrobe();return;
+   // One header row for the whole wardrobe (the search, kept as the tabs change, and taking it all off); under it what
+   // the search found, then the tab or the search's results.
+   wardrobeArea=el('div',{className:'shm-wardrobe'});body.append(el('div',{className:'shm-wardrobe-head'},search,undress),found,wardrobeArea);fillWardrobe();return;
   }
   controlsInto(body,t);
  }
- /** The wardrobe tab under the search: its own grids, or everything the search finds. */
+ /** The wardrobe tab under the header: its own grids, or everything the search finds. */
  function fillWardrobe(){
   if(!wardrobeArea)return;
   const t=TABS.find(x=>x.id===tab),host=wardrobeArea;host.replaceChildren();
   prunePictures();
   if(wardrobeQuery){searchResults(host);return;}
-  const off=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all clothes off'});
-  off.onclick=()=>{remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});recipe=normalizeRecipe(recipe);dirty=true;renderBody();};
-  host.append(el('p',{className:'shm-note',textContent:t.id==='outfits'?'Underneath it all: a tank top, underwear and bare feet. Tap an outfit to put it all on at once.':'Underneath it all: a tank top, underwear and bare feet. Tap something to put it on; the first picture takes it off.'}),off);
-  controlsInto(host,t);
+  found.textContent='';controlsInto(host,t);
  }
- /** A picture tile for a wardrobe part or an outfit set: its picture, its short label, the full name for a reader. */
+ /** A picture tile for a wardrobe part or an outfit set: its picture, its short label, and a name that holds the label. */
  function wardrobeTile(entry,draw,onPick){
   const c=el('canvas',{width:136,height:136}),b=el('button',{type:'button',title:entry.name||entry.label},c,entry.label);
-  if(entry.name)b.ariaLabel=entry.name;b.onclick=onPick;picture(c,()=>draw(c));return b;
+  if(entry.name)b.ariaLabel=accessibleName(entry);b.dataset.slot=entry.slot||'';b.dataset.id=entry.id||'';b.onclick=onPick;picture(c,()=>draw(c));return b;
  }
- /** Who wears the chosen item and why, with its colourways as named two-tone chips. */
- function wornInfo(entry,pickWay){
-  const box=el('div',{className:'shm-worn-box'}),line=el('p',{className:'shm-worn',textContent:wornLine(entry)});box.append(line);
-  if(entry?.colourways.length){
-   const ways=el('div',{className:'shm-ways',role:'group',ariaLabel:entry.label+' colourways'});
-   const now=entry.slot==='set'?wornSet(recipe.outfit)?.colourway:entry.colourways.findIndex(w=>Object.entries(w.colours).every(([at,hex])=>get(recipe,at)===hex));
-   entry.colourways.forEach((way,i)=>{const hex=Object.values(way.colours),swatch=el('i',{ariaHidden:'true'});swatch.style.background=`linear-gradient(135deg,${hex[0]} 50%,${hex[1]||hex[0]} 50%)`;
-    const b=el('button',{type:'button',title:way.name},swatch,way.name);b.setAttribute('aria-pressed',String(i===now));b.onclick=()=>{pickWay(way);pressed(ways,b);};ways.append(b);});
-   box.append(ways);
-  }
-  return box;
+ /** Fill `box` with who wears `entry` and why, and its colourways as named two-tone choices (`pickWay` puts one on). */
+ function fillInfo(box,entry,pickWay){
+  box.replaceChildren(el('p',{className:'shm-worn',textContent:wornLine(entry)}));
+  if(!entry?.colourways.length)return;
+  const worn=wornSet(recipe.outfit),now=entry.slot==='set'?(worn?.set===entry?worn.colourway:-1):entry.colourways.findIndex(w=>Object.entries(w.colours).every(([at,hex])=>get(recipe,at)===hex));
+  const ways=el('div',{className:'shm-ways',role:'radiogroup',ariaLabel:entry.label+' colourways'});
+  entry.colourways.forEach((way,i)=>{
+   const hex=Object.values(way.colours),swatch=el('i',{ariaHidden:'true'});swatch.style.background=`linear-gradient(135deg,${hex[0]} 50%,${hex[1]||hex[0]} 50%)`;
+   const input=el('input',{type:'radio',name:'shm-way-'+entry.slot+'-'+entry.id,checked:i===now}),label=el('label',{title:way.name},input,swatch,way.name);label.classList.toggle('on',i===now);
+   input.onchange=()=>{pickWay(way);for(const x of ways.children)x.classList.toggle('on',x===label);};ways.append(label);
+  });
+  box.append(ways);
+ }
+ /** Move `box` to just after the row of the tile `b` in `grid` (the columns as laid out now). */
+ function underRow(grid,box,b){
+  const tiles=[...grid.children].filter(x=>x.tagName==='BUTTON'),i=tiles.indexOf(b);if(i<0)return;
+  const cols=Math.max(1,getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length);
+  const last=tiles[Math.min(tiles.length-1,Math.floor(i/cols)*cols+cols-1)];if(last.nextSibling!==box)last.after(box);
+ }
+ /**
+  * Who wears what was tapped, and why (`fill` writes it into `box`), right under the row of its tile `b`, where the eye
+  * already is: never below a long grid, out of sight. The tapped tile stays where it is on screen while the box moves,
+  * and the box is then brought into view under it.
+  */
+ function showInfo(grid,box,b,fill){
+  const before=b.getBoundingClientRect().top;fill();
+  if(!grid.isConnected||!b.isConnected)return;
+  underRow(grid,box,b);body.scrollTop+=b.getBoundingClientRect().top-before;
+  const view=body.getBoundingClientRect(),under=box.getBoundingClientRect().bottom-view.bottom;
+  if(under>0)body.scrollTop+=Math.min(under,b.getBoundingClientRect().top-view.top);
+ }
+ /**
+  * A grid opened on an item worn that comes in colourways: its box (with the colourway choice) under that tile's row, once
+  * the grid is laid out (still before it is painted). Any other item's who-and-why waits for a tap, so a grid opens with
+  * its pictures.
+  */
+ function openOn(grid,box,b,entry,pickWay){if(!b||!entry?.colourways.length)return;fillInfo(box,entry,pickWay);grid.append(box);requestAnimationFrame(()=>{if(grid.isConnected)underRow(grid,box,b);});}
+ /**
+  * A row that scrolls sideways: once laid out, `centre()` (the chip or swatch chosen) is brought to the middle of it, and an
+  * edge with more behind it fades (.shm-scrolls[data-more]).
+  */
+ function scrolls(row,centre){
+  row.classList.add('shm-scrolls');
+  const edges=()=>{const start=row.scrollLeft>2,end=row.scrollLeft+row.clientWidth<row.scrollWidth-2;if(start||end)row.dataset.more=start&&end?'both':start?'start':'end';else delete row.dataset.more;};
+  row.addEventListener('scroll',edges,{passive:true});
+  requestAnimationFrame(()=>{if(!row.isConnected)return;const b=centre?.();if(b)row.scrollLeft=b.offsetLeft-(row.clientWidth-b.offsetWidth)/2;edges();});
  }
  /**
   * The category chips over a grid: All, then each category its items are filed under. Only over a grid longer than a
-  * screenful (CHIPS_FROM) with two categories or more: a short grid needs no filing.
+  * screenful (CHIPS_FROM) with two categories or more: a short grid needs no filing. The chip chosen is always in view.
   */
  const CHIPS_FROM=9;
  function categoryChips(at,categories,chosen,choose){
   const row=el('div',{className:'shm-chips shm-categories',role:'group',ariaLabel:'Categories'});
-  for(const name of ['All',...categories]){const b=el('button',{type:'button',textContent:name});b.setAttribute('aria-pressed',String(name===chosen));b.onclick=()=>choose(name);row.append(b);}
+  for(const name of ['All',...categories]){const b=el('button',{type:'button',textContent:name});b.setAttribute('aria-pressed',String(name===chosen));b.onclick=()=>choose(name,document.activeElement===b);row.append(b);}
+  scrolls(row,()=>row.querySelector('[aria-pressed=true]'));
   return row;
  }
  /** The chip a grid opens on: the category of what is worn (the first tile, taking it off, is in every category). */
  function openChip(at,category,bare){if(!chipFor.has(at))chipFor.set(at,bare?'All':category||'All');return chipFor.get(at);}
- /** A wardrobe part's grid (a top, a hat, an earring…): chips, pictures, and who wears the chosen one. */
+ /** A grid's section again, on another chip: focus stays on the chips (the old ones are gone), the pictures follow. */
+ function rechip(section,next,focused){section.replaceWith(next);prunePictures();if(focused)next.querySelector('.shm-categories [aria-pressed=true]')?.focus({preventScroll:true});}
+ /** A wardrobe part's grid (a top, a hat, an earring…): chips, pictures, and who wears the one tapped. */
  function partsSection(control){
   const slot=SLOT_AT[control.at],list=control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}));
   const section=el('div',{className:'shm-section'}),current=get(recipe,control.at),category=v=>entryFor(slot,v)?.category;
   const categories=list.length>=CHIPS_FROM?SLOTS[slot].categories.filter(c=>list.slice(1).some(v=>category(v)===c)):[];
   let chosen=openChip(control.at,category(current),current===control.list[0]);if(categories.length<2||!categories.includes(chosen))chosen='All';
-  const chips=categories.length<2?null:categoryChips(control.at,categories,chosen,name=>{chipFor.set(control.at,name);section.replaceWith(partsSection(control));prunePictures();});
-  const grid=el('div',{className:'shm-grid'}),info=el('div');
-  const show=v=>{info.replaceChildren(wornInfo(entryFor(slot,v),way=>wearColours(way.colours)));};
+  const chips=categories.length<2?null:categoryChips(control.at,categories,chosen,(name,focused)=>{chipFor.set(control.at,name);rechip(section,partsSection(control),focused);});
+  const grid=el('div',{className:'shm-grid'}),box=el('div',{className:'shm-worn-box'});
+  let on=null;
   for(const value of list.filter((v,i)=>!i||chosen==='All'||category(v)===chosen)){
-   const b=wardrobeTile(entryFor(slot,value)||{label:value},c=>drawThumb(control,value,c),()=>{putOn(control.at,value);pressed(grid,b);show(value);});
-   b.setAttribute('aria-pressed',String(current===value));grid.append(b);
+   const entry=entryFor(slot,value)||{slot,id:value,label:value,colourways:[]};
+   const b=wardrobeTile(entry,c=>drawThumb(control,value,c),()=>{putOn(control.at,value);pressed(grid,b);showInfo(grid,box,b,()=>fillInfo(box,entry,way=>wearColours(way.colours)));});
+   b.setAttribute('aria-pressed',String(current===value));if(current===value)on=b;grid.append(b);
   }
-  show(current);section.append(...[chips,grid,info].filter(Boolean));return section;
+  openOn(grid,box,on,entryFor(slot,current),way=>wearColours(way.colours));
+  section.append(...[chips,grid].filter(Boolean));return section;
  }
+ /** Put a set on (or one of its colourways) over what is worn, and redraw the set pictures, which show what each would give. */
+ function wearSet(set,colours){change('outfit',putOnSet(recipe.outfit,set,colours));renderPictures();}
  /** The Outfits tab: the island's sets and costumes, filed under their chips, each put on in one tap. */
  function setsSection(){
   const section=el('div',{className:'shm-section'}),worn=wornSet(recipe.outfit),sets=SETS.filter(s=>outfitAllowedFor(wardrobeOwner,s.outfit));
   const categories=sets.length>=CHIPS_FROM?SLOTS.set.categories.filter(c=>sets.some(s=>s.category===c)):[];
   let chosen=openChip('outfit',worn?.set.category,!worn);if(categories.length<2||!categories.includes(chosen))chosen='All';
-  const chips=categories.length<2?null:categoryChips('outfit',categories,chosen,name=>{chipFor.set('outfit',name);section.replaceWith(setsSection());prunePictures();});
-  const grid=el('div',{className:'shm-grid',role:'group',ariaLabel:'Island outfits'}),info=el('div');
-  const show=set=>{info.replaceChildren(set?wornInfo(set,way=>change('outfit',{...recipe.outfit,...set.outfit,...way.colours})):el('p',{className:'shm-worn',textContent:'Tap an outfit to put it on over what they wear; hair, face and anything it leaves out stay their own.'}));};
+  const chips=categories.length<2?null:categoryChips('outfit',categories,chosen,(name,focused)=>{chipFor.set('outfit',name);rechip(section,setsSection(),focused);});
+  const grid=el('div',{className:'shm-grid',role:'group',ariaLabel:'Island outfits'}),box=el('div',{className:'shm-worn-box'});
+  let on=null;
   for(const set of sets.filter(s=>chosen==='All'||s.category===chosen)){
-   const b=wardrobeTile(set,c=>{const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...set.outfit}});cached('set|'+set.id+'|'+pictureKey(r,'outfit'),c,()=>figureThumb(r,c,'outfit'));},
-    ()=>{change('outfit',{...recipe.outfit,...set.outfit});pressed(grid,b);show(set);});
-   b.setAttribute('aria-pressed',String(worn?.set===set));grid.append(b);
+   const b=wardrobeTile(set,c=>{const r=normalizeRecipe({...recipe,outfit:putOnSet(recipe.outfit,set)});cached('set|'+set.id+'|'+pictureKey(r,'outfit'),c,()=>figureThumb(r,c,'outfit'));},
+    // The set already worn is not put on again: that would turn its colourway back to the first.
+    ()=>{if(wornSet(recipe.outfit)?.set!==set)wearSet(set);pressed(grid,b);showInfo(grid,box,b,()=>fillInfo(box,set,way=>wearSet(set,way.colours)));});
+   b.setAttribute('aria-pressed',String(worn?.set===set));if(worn?.set===set)on=b;grid.append(b);
   }
-  show(worn?.set);section.append(...[chips,grid,info].filter(Boolean));return section;
+  if(on)openOn(grid,box,on,worn.set,way=>wearSet(worn.set,way.colours));
+  else if(!worn){box.append(el('p',{className:'shm-worn',textContent:'Tap an outfit to put it on over what they wear; hair, face and anything it leaves out stay their own.'}));grid.append(box);}
+  section.append(...[chips,grid].filter(Boolean));return section;
  }
- /** What the wardrobe search finds, grouped by slot as the tabs are; a tap puts it on as in its own tab. */
+ /**
+  * What the wardrobe search finds, grouped by slot as the tabs are; a tap puts it on as in its own tab. The count is said
+  * in the status line under the search, and after a tap every result shows whether it is worn now (a set puts on parts).
+  */
  function searchResults(host){
-  const groups=searchWardrobe(wardrobeQuery),info=el('p',{className:'shm-worn'});
-  if(!groups.length){host.append(el('p',{className:'shm-note',textContent:`Nothing in the wardrobe matches “${wardrobeQuery}”. Try a name, a place or an occasion: Kōji, Sato Ramen, school, rain.`}));return;}
-  const count=groups.reduce((n,g)=>n+g.entries.length,0);info.textContent=`${count} found.`;
+  const groups=searchWardrobe(wardrobeQuery);
+  if(!groups.length){found.textContent=`Nothing in the wardrobe matches “${wardrobeQuery}”. Try a name, a place or an occasion: Kōji, Sato Ramen, school, rain.`;return;}
+  const count=groups.reduce((n,g)=>n+g.entries.length,0);found.textContent=count===1?'1 found.':`${count} found.`;
+  const box=el('div',{className:'shm-worn-box'});
+  const sync=()=>{const worn=wornSet(recipe.outfit)?.set.id;for(const t of host.querySelectorAll('.shm-grid>button[data-slot]'))t.setAttribute('aria-pressed',String(t.dataset.slot==='set'?worn===t.dataset.id:String(get(recipe,SLOTS[t.dataset.slot].at))===t.dataset.id));};
   for(const group of groups){
    const grid=el('div',{className:'shm-grid',role:'group',ariaLabel:group.name});host.append(el('h4',{textContent:group.name}),grid);
    for(const entry of group.entries){
+    let b;
     if(entry.slot==='set'){
-     const b=wardrobeTile(entry,c=>{const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...entry.outfit}});cached('set|'+entry.id+'|'+pictureKey(r,'outfit'),c,()=>figureThumb(r,c,'outfit'));},
-      ()=>{change('outfit',{...recipe.outfit,...entry.outfit});pressed(grid,b);info.textContent=wornLine(entry);});
-     b.setAttribute('aria-pressed',String(wornSet(recipe.outfit)?.set===entry));grid.append(b);continue;
+     b=wardrobeTile(entry,c=>{const r=normalizeRecipe({...recipe,outfit:putOnSet(recipe.outfit,entry)});cached('set|'+entry.id+'|'+pictureKey(r,'outfit'),c,()=>figureThumb(r,c,'outfit'));},
+      ()=>{if(wornSet(recipe.outfit)?.set!==entry)wearSet(entry);sync();showInfo(grid,box,b,()=>fillInfo(box,entry,way=>{wearSet(entry,way.colours);sync();}));});
+    }else{
+     const control=TABS.flatMap(x=>x.controls).find(c=>c.kind==='parts'&&c.at===SLOTS[entry.slot].at);
+     b=wardrobeTile(entry,c=>drawThumb(control,entry.id,c),()=>{putOn(control.at,entry.id);sync();showInfo(grid,box,b,()=>fillInfo(box,entry,way=>{wearColours(way.colours);sync();}));});
     }
-    const control=TABS.flatMap(x=>x.controls).find(c=>c.kind==='parts'&&c.at===SLOTS[entry.slot].at);
-    const b=wardrobeTile(entry,c=>drawThumb(control,entry.id,c),()=>{putOn(control.at,entry.id);pressed(grid,b);info.textContent=wornLine(entry);});
-    b.setAttribute('aria-pressed',String(get(recipe,control.at)===entry.id));grid.append(b);
+    grid.append(b);
    }
   }
-  host.append(info);
+  sync();
  }
  /** Put a wardrobe part on; an item that comes in colourways goes on in its first. */
  function putOn(at,value){
@@ -779,15 +859,21 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   if(Object.entries(colours).every(([at,hex])=>get(recipe,at)===hex))return;
   if(keep)remember();for(const [at,hex] of Object.entries(colours))set(recipe,at,hex);recipe=normalizeRecipe(recipe);dirty=true;
  }
- /** The swatches a colour control offers: the island palette first for cloth, then the rest of its palette. */
- function swatchRow(control,onPick,prefix=''){
+ /**
+  * The swatches a colour control offers. Cloth (`cloth`) on the Colour page: the island palette, then the rest of its
+  * palette, each under its label. In the tray under the pictures (`tray`): one row of the island palette, and the colour
+  * worn when it is not one of them; the Colour page has the rest.
+  */
+ function swatchRow(control,onPick,prefix='',{tray=false}={}){
   const row=el('div',{className:'shm-swatches'}),now=get(recipe,control.at);
   const add=(hex,name)=>{const b=el('button',{type:'button',ariaLabel:name?control.label+' '+name:prefix+hex,title:name||hex});b.style.background=hex;b.setAttribute('aria-pressed',String(now===hex));b.onclick=()=>{onPick(hex);pressed(row,b);};row.append(b);};
   if(control.cloth){
-   row.append(el('span',{className:'shm-swatch-label',textContent:'Island palette'}));for(const c of ISLAND_PALETTE)add(c.hex,c.name);
+   if(!tray)row.append(el('span',{className:'shm-swatch-label',textContent:'Island palette'}));for(const c of ISLAND_PALETTE)add(c.hex,c.name);
    const rest=control.palette.filter(hex=>!ISLAND_HEX.has(hex));
-   if(rest.length){row.append(el('span',{className:'shm-swatch-label',textContent:'More colours'}));for(const hex of rest)add(hex);}
+   if(tray){if(now&&!ISLAND_HEX.has(now))add(now);}
+   else if(rest.length){row.append(el('span',{className:'shm-swatch-label',textContent:'More colours'}));for(const hex of rest)add(hex);}
   }else for(const hex of control.palette)add(hex);
+  if(tray)scrolls(row,()=>row.querySelector('[aria-pressed=true]'));
   return row;
  }
  /** The controls of a tab's page, into `host`. */
@@ -905,7 +991,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   body.replaceChildren();paletteTray.replaceChildren();paletteTray.hidden=true;
   if(step==='start')renderStart();else if(step==='profile')renderProfile();else if(step==='look'){renderLook();
    const colour=TABS.find(t=>t.id===tab).controls.find(c=>c.kind==='colours'&&(!c.when||c.when(recipe)));
-   if(page==='style'&&colour){paletteTray.hidden=false;paletteTray.append(el('h4',{textContent:colour.label}),swatchRow(colour,hex=>{change(colour.at,hex);renderPictures();},colour.label+' '));}
+   if(page==='style'&&colour){paletteTray.hidden=false;paletteTray.append(el('h4',{textContent:colour.label}),swatchRow(colour,hex=>{change(colour.at,hex);renderPictures();},colour.label+' ',{tray:true}));}
   }
   paintQueued();
  }

@@ -7,7 +7,9 @@ import {daylight} from '../../render/dusk.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildOnsenLobby,hinokiTexture,LOBBY,ONSEN_DOORWAYS} from './onsen-lobby.js';
 import {buildWashArea,WASH_SEATS} from './onsen-wash.js';
-import {buildOnsenElectrics,isPowered,isWorking,isLive,MASSAGE_CHAIR} from './onsen-electrics.js';
+import {buildOnsenElectrics,isPowered,isWorking,isLive} from './onsen-electrics.js';
+import {ONSEN_CHAIR,CHAIR} from './onsen-chair.js';
+import {placeAsset} from '../../catalog/catalog.js';
 import {buildOnsenTowels} from './onsen-towels.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
 import {buildOnsenFront} from './onsen-front.js';
@@ -77,7 +79,10 @@ const fanYaw=t=>Math.sin(t*ONSEN_FAN.rate)*ONSEN_FAN.sweep;
 export const ONSEN_SEATS=Object.freeze({
  bench:{id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.46},
  tatami:{id:'tatami',label:'Sit on the tatami',position:[LOBBY.koagari.x-.25,0,LOBBY.koagari.z+.5],stand:[LOBBY.koagari.x,0,3.55],eyeY:LOBBY.koagari.h+.8,yaw:Math.PI,surfaceY:LOBBY.koagari.h+.07},
- massage:{id:'massage',label:'Sit in the massage chair',position:[4.25,0,3.55],stand:[3.4,0,3.55],eyeY:1.12,yaw:Math.PI/2,surfaceY:.5},
+ // The coin massage chair's seat, from its card (onsen-chair.js): the mark 5 cm behind the seat's front edge, facing the lobby.
+ // World's id stays 'massage' (saved scenes and the films know it by that); the label promises no coin until a coin buys
+ // ten minutes in play (the card's own label says ¥100).
+ massage:(({position,stand,eyeY,yaw,surfaceY})=>({id:'massage',label:'Sit in the massage chair',position,stand,eyeY,yaw,surfaceY}))(CHAIR.seat('seat')),
  ...WASH_SEATS,
  indoor:{id:'indoor',label:'Get into the indoor bath',position:[3.1,0,-3.35],stand:[3.1,0,-1.66],eyeY:R.tub.floor+.78,yaw:Math.PI,surfaceY:R.tub.floor+.04,soak:true},
  rock:{id:'rock',label:'Get into the rock bath',position:[.75,0,-6.45],stand:[.75,0,-4.75],eyeY:R.pool.floor+.82,yaw:0,surfaceY:R.pool.floor+.04,soak:true},
@@ -93,6 +98,8 @@ export const ONSEN_SEATS=Object.freeze({
   // Facing the middle of the ring (the camera's yaw: forward is (-sin, -cos)).
   yaw:Math.atan2(-(-.05-x),-(-7-z)),surfaceY:R.pool.floor+.04,soak:true}]))
 });
+/** What the room is built of from World's catalogue (src/catalog): the game fetches these before it opens the door. */
+export const ONSEN_ASSETS=Object.freeze([ONSEN_CHAIR.asset]);
 /** The six places round the rock bath, for a scene with everybody in the water (the story's last night). */
 export const ROCK_RING=Object.freeze(['rock','rockEast','rockSeaEast','rockSeaWest','rockWest','rockBeside']);
 
@@ -138,6 +145,13 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const anchor=(pos,label,fn)=>{const o=new THREE.Object3D();o.position.set(...pos);room.add(o);reg(o,label,fn,true);
   if(pos[0]<-.05&&pos[2]<R.hall.front&&pos[2]>R.hall.changing-.05){o.userData.side='women';womenSide.push(o);}return o;};
  const seat=(spec,title,text)=>{const o=anchor([spec.position[0],.9,spec.position[2]],spec.label,()=>action('seat',title,typeof text==='function'?text():text));o.userData.seat={...spec,onsen:spec.id,pitch:spec.soak?-.05:0};return o;};
+ // Its lamps stop at its walls (render/cel.js lampsStopAtWalls): the lobby's bulb does not shine on the women's side of
+ // the noren wall, nor the bath lamps on the changing rooms' mirrors, nor the porch lamp on the inside of the street wall.
+ // The noren is cloth and lets the lamp behind it glow through, and Mrs Higa is the town's like everyone else: they keep
+ // the town's light.
+ const stopLamps=root=>{const keep=new Set();room.getObjectByName('Umi-no-yu attendant')?.traverse(o=>keep.add(o));
+  root.traverse(o=>{if(!o.isMesh||keep.has(o)||o.name==='Noren'||o.userData.sharedAsset)return;
+   for(const m of Array.isArray(o.material)?o.material:[o.material])if(m?.isMeshStandardMaterial)m.userData.lampsStopAtWalls=true;});};
 
  const wood=mat(0xc79f6e,.7),darkWood=mat(0x6b4a2e,.75),plaster=mat(0xeee6d3,.95),stone=mat(0x8c877c,.95);
  const tiles=new THREE.MeshStandardMaterial({map:tileTexture(120,150,160),roughness:.35});tiles.map.repeat.set(6,4);
@@ -225,13 +239,17 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // Coffee milk in the glass-fronted fridge, drunk standing, hand on hip.
  rect(4.6,2.3,.64,.62,1.6);
  anchor([4.2,1.1,2.3],'Buy coffee milk · ¥100',()=>action('onsen-milk'));
- // The massage chair, ¥100 for ten minutes.
- // The seat is 0.53 m deep (MASSAGE_CHAIR.front): a sitter's knees, a child's too, reach past its front edge, so the lower legs hang
- // in front of it, never inside it (tests/onsen-seats.test.mjs).
- const MC=MASSAGE_CHAIR,depth=4.725-MC.front;
- box([depth,.5,.8],[MC.front+depth/2,.25,3.55],mat(0x5a2c24,.55),'Massage chair seat');box([.18,.95,.8],[4.72,.8,3.55],mat(0x5a2c24,.55),'Massage chair back');
- for(const z of [3.17,3.93])box([depth-.05,.22,.12],[MC.front+(depth+.05)/2,.6,z],mat(0x4a241e,.55),'Massage chair arm');
- rect(MC.front+(4.81-MC.front)/2,3.55,4.81-MC.front,.9,1);seat(ONSEN_SEATS.massage,'Massage chair',()=>isPowered('massage-chair')?'You feed it a hundred-yen coin. It grinds up your back like a slow, well-meaning truck. Ten minutes later you feel two centimetres taller.':(isLive('main')?'You feed it a hundred-yen coin and nothing happens. Its socket is on the changing-room circuit, and that breaker is down. Higa-san hands the coin back.':'You feed it a hundred-yen coin and nothing happens: the whole house is dark. The contract breaker by the bandai has let go. Higa-san hands the coin back.'));
+ // The coin massage chair, ¥100 for ten minutes: Johansson Studio's 'massage-chair' from World's catalogue, placed by id
+ // (onsen-chair.js), its colliders from its card (the body over the old chair's footprint, and the leg rest in front of
+ // it). Its seat is 0.44 m deep, from its front edge (MASSAGE_CHAIR.front, x 4.20) to the backrest's cushions (x 4.63): a
+ // sitter's knees, a child's too, reach past the front edge, so the lower legs hang down in front of it, by the leg rest
+ // (tests/onsen-seats.test.mjs). What lights, moves or is wired on it is the room's own (onsen-electrics.js).
+ const chair=placeAsset(ONSEN_CHAIR.asset,{parent:room,x:ONSEN_CHAIR.x,z:ONSEN_CHAIR.z,yaw:ONSEN_CHAIR.yaw,omit:ONSEN_CHAIR.omit,
+  // A model that arrives after the room was built (a host that does not wait for it: Johansson Studio) takes the room's
+  // lamps-stop-at-walls like the rest of it (stopLamps), before anything draws it.
+  onModel:copy=>stopLamps(copy)});
+ for(const c of chair.colliders)colliders.push({...c});
+ seat(ONSEN_SEATS.massage,'Massage chair',()=>isPowered('massage-chair')?'You feed it a hundred-yen coin. It grinds up your back like a slow, well-meaning truck. Ten minutes later you feel two centimetres taller.':(isLive('main')?'You feed it a hundred-yen coin and nothing happens. Its socket is on the changing-room circuit, and that breaker is down. Higa-san hands the coin back.':'You feed it a hundred-yen coin and nothing happens: the whole house is dark. The contract breaker by the bandai has let go. Higa-san hands the coin back.'));
  const clock=new THREE.Group();clock.position.set(0,2.45,R.hall.front+.08);room.add(clock);
  clock.add(new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.04,24).rotateX(Math.PI/2),mat(0xf6f1e6,.5)));
  const hands=[new THREE.Mesh(new THREE.BoxGeometry(.012,.13,.01),mat(0x222222)),new THREE.Mesh(new THREE.BoxGeometry(.008,.17,.01),mat(0x222222))];
@@ -354,13 +372,8 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  const steam=buildOnsenSteam({room,R});
 
  anchor([0,1.1,4.75],'Step outside',exit);
- // Its lamps stop at its walls (render/cel.js lampsStopAtWalls): the lobby's bulb does not shine on the women's side of
- // the noren wall, nor the bath lamps on the changing rooms' mirrors, nor the porch lamp on the inside of the street wall.
- // The noren is cloth and lets the lamp behind it glow through, and Mrs Higa is the town's like everyone else: they keep
- // the town's light.
- {const keep=new Set();room.getObjectByName('Umi-no-yu attendant')?.traverse(o=>keep.add(o));
-  room.traverse(o=>{if(!o.isMesh||keep.has(o)||o.name==='Noren'||o.userData.sharedAsset)return;
-   for(const m of Array.isArray(o.material)?o.material:[o.material])if(m?.isMeshStandardMaterial)m.userData.lampsStopAtWalls=true;});}
+ // Every lamp in the house stops at its walls, the chair's materials with the rest (stopLamps).
+ stopLamps(room);
  let time=0,fanTime=0;
  function tick(dt,minutes=720){
   time+=dt;
@@ -405,8 +418,12 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  if(audit)audit.onsenProps=propsApi;
  return {...ONSEN_ROOM,colliders,tick,seats:ONSEN_SEATS,doorways:ONSEN_DOORWAYS,power,townFill:power.townFill,tv:lobby.tv,streetDoor:front.door,genkan:front.genkan,
   noren:lobby.noren,props:propsApi,
+  // The catalogue's things in the room (the chair): `ready` resolves true once their models are in place and take the
+  // room's light, false if one cannot be had. The game fetches them before it opens the door (ONSEN_ASSETS); a host that
+  // builds without waiting (Johansson Studio's Build scene) waits for this before it shades the room.
+  chair,ready:chair.ready,
   // Every frame, and for a frozen photograph (game.js audit render): what shows the room's state without time passing.
   realUpdate(){lobby.refresh(people());power.refresh();steam.refresh();},
   steam,
-  dispose(){power.dispose();front.dispose();steam.dispose();if(audit&&audit.onsenProps===propsApi)delete audit.onsenProps;}};
+  dispose(){power.dispose();front.dispose();steam.dispose();chair.dispose();if(audit&&audit.onsenProps===propsApi)delete audit.onsenProps;}};
 }

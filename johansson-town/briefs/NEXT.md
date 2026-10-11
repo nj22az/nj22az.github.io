@@ -56,6 +56,10 @@ sea, a fouled propeller, a broken ramp…). The engine room's electrics should b
   bit blurry we don't see what Fujita is wanting to sit on"). Build a recognisable 1990s coin massage chair in the game
   (a props batch: a padded seat with a back and headrest, armrests with the coin box and a control panel, lighter
   upholstery than the walls), then rephotograph 2c, 4b, 4d, 5b, 6i, 7c with the chair large and sharp.
+  **Status (2026-10-11):** the chair in Umi-no-yu is now Studio's coin massage chair (sky-blue vinyl, ivory shell, coin
+  box, remote, calf and foot massager), placed through World's catalogue (§5) where the old one stood, with the same seat
+  and marks. Next, the film's agent re-photographs the plates that show it (2c, 4b, 4d, 5a, 5b, 6i, 7c, 7f, film 8a,
+  comic 6f and 8a), regenerates `onsen-set/colliders.json` (the leg rest is new) and the chair's box in the storyboard.
 - Game characters batch: the carry (Fujita level like a plank, hands under him), Mrs Higa reaching back for the breaker
   without looking, Tetsuo's paper lower so his pocket torch shows, Nhung's half-dried hair stronger. Then draft 5.
 - The studio's rule: simple panels, one subject, no grey blurs or foreground masses (`.claude/agents/cinematographer.md`).
@@ -114,6 +118,29 @@ it, using World's own vendored three.js and toon look, so what you model is exac
 - **First batch:** the asset format + the code mode + publishing one asset end to end: the 1990s coin massage chair
   (section 2), shown in the onsen and as the comic's insert. Then the drawing mode. Then the ferry's parts (section 1)
   are built in Studio this way.
+- **Status (2026-10-11), World's side, first piece:** `assets/catalog/` holds what Studio publishes (the massage chair,
+  v1); `tools/catalog/build-catalog.mjs` compiles the cards into `src/catalog/catalog-data.js` (`--check` runs in
+  `tests/catalog.test.mjs`); `src/catalog/catalog.js` places an asset by id (`placeAsset`: the model, its card's colliders,
+  seats, spots and anchors in the place's frame, parts the place draws itself left out), loads its model once
+  (`loadAsset`, the model's hash in its URL) and fills a place in late for a host that does not wait (Studio's Build
+  scene). The onsen's chair is the first (`src/world/interiors/onsen-chair.js`); the game fetches a room's assets as its
+  door comes near and waits at the door if they have not come. Open:
+  - *Ground (a decision for the creator):* the agarikamachi (the 5 cm 'Genkan step', z 3.54–3.66) runs under the chair,
+    as it ran under the old one, so the chair stands half on the stone genkan. Proposed: a ground batch of its own that
+    turns the step before the chair (x 3.0) and lays the boards to the street wall at the lobby's east end
+    (`tests/onsen-chair.test.mjs` has it as a todo). Moving the chair instead would move every film mark round it.
+  - *Play (next small batch):* the ¥100 coin from the seat (a menu as at the izakaya table; no power, no charge; the LED
+    counts down, the rollers knead), and then the card's label "Sit in the massage chair (¥100)".
+  - *People (later):* a regular in after-bath clothes takes the chair after the bath (a routine, a reservation, the
+    load on circuit 1, a storyteller line).
+  - *Characters:* in KneelHug Fujita's right hand goes 4.5 cm into the chair's left arm (`tests/story-gestures.test.mjs`
+    todo).
+  - *Studio:* run World's build-catalog.mjs from its publish step; put a rating-plate anchor and the roller track's extent
+    on the card (World still draws the plate itself); measure keepClear again without the retired cloud of hair; check a
+    card's spots against the room it is placed in (the coin spot is 0.17 m from the koagari's corner, so World keeps it as
+    a film mark); a band hint per colour if the vinyl washes out under the lobby lamp at night.
+  - *Next pieces of the loader:* placing by id from a layout file and from the Build page (§6), moving hand-coded props
+    over, regenerating the building survey (docs/building-plans still lists the old boxes).
 
 ## 6. Studio as "Mario Maker for Johansson World": the island builder (the creator, 2026-10-10)
 

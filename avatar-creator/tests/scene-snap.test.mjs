@@ -93,6 +93,7 @@ test('a wall slides the character to the nearest free place within 0.6 m, else n
  const along=resolveSnap({x:1.2,y:0,z:.3},{free,project:top(),previous:{x:.9,z:.3}});assert.ok(near(along.x,.95,.001)&&near(along.z,.3,.001),'straight off the wall, towards the last landing: '+JSON.stringify(along));
  const prefer=nearestFree({x:1.02,z:0},x=>x<1,SNAP.search,{x:.9,z:1});assert.ok(prefer.z>0,'on the ring, the point nearest the last landing');
  assert.equal(nearestFree({x:3,z:0},free),null,'too deep in the wall');
+ const hugging=resolveSnap({x:-3.208,y:0,z:1.5096},{free:x=>x>=-3.208,project:top(),snapping:false});assert.deepEqual([hugging.x,hugging.z,hugging.kind],[-3.2,1.51,'free'],'against a shelf: the free centimetre, not a 5 cm jump');
  assert.equal(resolveSnap({x:0,y:0,z:0},{free:()=>false,project:top()}),null,'boxed in: keep the last landing');
  assert.equal(resolveSnap({x:0,y:0,z:0},{free:()=>true,seen:(x,z)=>z>.2,project:top()}),null,'the camera must see them: else keep the last landing');
  const off=resolveSnap({x:2,y:0,z:0},{free:x=>x<1.97,seen:()=>true,project:top()});assert.ok(off.x<1.97&&off.x>1.94&&Math.hypot(off.x-2,off.z)<=.06,'the first ring, 5 cm out (to 1 cm)');
