@@ -190,4 +190,4 @@ export function planHeight(x,z){
  }
  return 0;
 }
-export const MAP_BOUNDS={minX:COAST_BOUNDS.minX-3,maxX:380,minZ:-185,maxZ:COAST_BOUNDS.maxZ+3};
+export const MAP_BOUNDS={minX:COAST_BOUNDS.minX-3,maxX:420,minZ:-460,maxZ:COAST_BOUNDS.maxZ+3};

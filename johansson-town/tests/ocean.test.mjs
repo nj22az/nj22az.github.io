@@ -1,4 +1,5 @@
 import {test} from 'node:test';
+import {AIRPORT_ISLAND} from '../src/world/airport-island.js';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {addHorizon} from '../src/world/horizon.js';
@@ -36,7 +37,7 @@ test('the sea knows how far it is from land: shallows at the beach, open water f
   assert.ok(shoreDistance(46,0)<2,'the water off the beach is shallow');
   assert.ok(shoreDistance(60,0)>10&&shoreDistance(60,0)<20,'the buoy floats in the azure');
   assert.equal(shoreDistance(0,400),SHORE_FIELD.range,'open sea to the north');
-  assert.ok(shoreDistance(165,-118)===0,'the airport island is land too');
+  assert.ok(shoreDistance(AIRPORT_ISLAND.x,AIRPORT_ISLAND.z)===0,'the airport island is land too');
   const tex=shoreDistanceTexture();
   assert.equal(tex.image.width,SHORE_FIELD.size);
   assert.equal(oceanMaterial().uniforms.uShore.value,tex);

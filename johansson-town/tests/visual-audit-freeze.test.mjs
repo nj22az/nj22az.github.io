@@ -24,7 +24,7 @@ test('repeated frozen draws refresh lighting and late materials without advancin
   pipeline:{setExposure(){},tune(){}},CEL_FILL:1,CEL_EXPOSURE:1,NIGHT_TINT:{light:0xffffff,shadow:0xffffff},
   INK_OPTIONS:{gradeOptions:{lift:.04}},GRADE_DEFAULTS:{lift:.04},DUNGEON_FOG:null,$:()=>({}),
   celPass:{apply(){celSweeps++;}},renderOutdoor(){outdoor++;},present:draw=>draw(),
-  shopStreetView:{render(){market++;}},sakuraShop:{layout:{frontZ:0}}};
+  shopStreetView:{render(){market++;}},sakuraShop:{layout:{frontZ:0}},streetFrontageOf:site=>site?.id==='market'||site?.id==='izakaya'?{}:null};
  context.scene.background=new THREE.Color();
  vm.runInNewContext(lightSource+'\nglobalThis.auditRender=({'+renderSource+'}).render;',context);
  context.setTime();assert.equal(hours,1);const initialShutter=shutterY;
