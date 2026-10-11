@@ -475,3 +475,51 @@ outer pier's root (x −4.1 to 4.1), so everyone walking onto the pier walks thr
 x 0 stands in it. A props batch cuts them there; the pier's deck then stands 11 cm over the quay at its root, which
 wants a short ramp (`layout.js` steps the walking height there from 0 to 0.098).
 
+
+### Batch 6a: walking aboard alongside (2026-10-11)
+
+The creator, 2026-10-11 (a phone screenshot at the gangway): *"I want to be able to board and explore the ferry,
+whenever it's in port."* Until now "Board" opened the ticket menu and the crossing was a ride; nobody set foot on her.
+
+**What changed.** `src/world/ferry-walk.js`: her decks are floors in her own frame (the ship, the ramp's leaf, its flap,
+the gangway), so they heave and roll with her and can stack (the car deck under the passenger deck); the floor under
+you is the highest one no more than a step above your feet. Her casings, bow houses, the walkway's rail, the pillars,
+the capstan and bitts, the forecastle ladders, the ramp's rams and the gangway's rails are solids in the same frames.
+Where a floor ends you step ashore only where the shore is there: off the gangway's foot onto the pier, off the
+ramp's flap onto the quay's landing plate (Minato) or the pier (Kitano-jima). The gangway is a floor only while it is
+run out, the ramp only while it is down, and nothing is a floor while she is under way: **only in port**.
+`game.js` walks the player on them (`deckUnder`, `playerGround`; her own solids instead of the town's bounds and the
+hull collider while aboard; the third-person lens kept out of her casings and from under the passenger deck's slab).
+A vehicle's crossing (`island/play.js`) waits while the player is aboard, so she never sails off with a visitor; the
+player's own crossing is still bought on the pier and ridden on the open deck as before.
+
+**The model.** The gangway door was painted on a solid casing. The port casing now has the passage the general
+arrangement gives it (shipyard z 13.5–14.5): the gangway door in her side, hooked back against the passage's aft wall
+alongside; the gate leaf hooked back against its forward wall (it used to swing into the casing); a 2 m deckhead with
+its light; the shore-power box (440 V) on the forward wall; and the inboard door onto the walkway, hooked back against
+the casing's face.
+
+**What you can walk now.** The pier → the gangway → the passage → the walkway (its rail keeps you off the lane until
+its ends) → the whole car deck from the aft mooring station to the bow houses → the ramp → the quay, and back; at
+Kitano-jima the ramp from the pier.
+
+**Checked.** `tests/ferry-walk.test.mjs`: the walk from the pier up the gangway, through the casing to the walkway and
+the lane with no jump in height; the bulwark, the casings and the gangway's rails stop you; down the ramp to the quay
+and back; at sea, nothing; up the ramp at Kitano-jima; every floor 4 cm or less from the surface the model draws.
+In the running game (source tree, headless): the same walk by the keyboard, photographed on the pier, in the passage,
+on the walkway, down the lane, on the ramp and on the quay. The whole suite (`npm test`).
+
+**Open, next batches (in this order).**
+1. **Stair P and the lobby** (6b). The general arrangement's passenger stair P (casing P, z 10–13.5) cannot top out in
+   the lobby (z 6–9.5) as drawn: rising aft from the walkway's door at z 11.8 at 48°, it needs its well open from
+   z 7.4 to 9.4, under the 0.5 m side walkway. The lobby is made full breadth (to her sides, z 6–9.5) with the stair
+   heads P and S in its wings, and the side walkways start at its forward doors (z 9.5).
+2. **The side walkways are 0.5 m wide** (x 3.6–4.1), too narrow to walk (a person needs 0.56 m, and the walkways'
+   liferafts stand in them). The deckhouse goes to 6.8 m (walkways 0.7 m clear), the liferafts onto cradles outboard
+   of the rail.
+3. The lobby's furniture (purser's window, kiosk, vending corner, boards), the toilets, the carpet room, the saloon;
+   the open deck aft and its ladders up to the bridge deck; the wheelhouse and the crew's rooms; the engine room
+   (from the casing's door at z 7). Each with its floors and solids in `ferry-walk.js`.
+4. The forecastle tops (a vertical ladder each): a climb, not a walk.
+5. Tapping to walk (point-walk) plans over the town's ground only, so it does not route aboard yet; walking with the
+   stick or the keys does.
