@@ -31,6 +31,8 @@ export const FIELDS=Object.freeze([
  // East, inland of the coast road.
  [98,148,128,176,'cane'],
  [62,100,84,122,'vegetables'],
+ // Fumoto's kitchen gardens, across the lower lane from the houses.
+ [6,217,32,224,'vegetables'],
 ].map(Object.freeze));
 /** Buildings and things that stand alone: [x,z,kind,yaw]. */
 export const STEADS=Object.freeze([

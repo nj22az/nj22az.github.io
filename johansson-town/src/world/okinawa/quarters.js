@@ -15,6 +15,8 @@ import {buildKitahamaQuarter} from './kitahama-quarter.js';
 import {plotGate} from './layout.js';
 import {residentsLine} from '../../people/island-households.js';
 import {dressOldTown} from './old-town.js';
+import {buildFumoto} from './fumoto.js';
+import {FUMOTO} from '../fumoto-layout.js';
 import {MAIN_ROAD} from '../main-road.js';
 import {WEST_YARD} from '../west-yard.js';
 import {createVendingMachine,vendingReady,hydrateVending} from '../vending.js';
@@ -60,6 +62,8 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,KITAHAMA.y)}),KITAHAMA.y);
+ // Fumoto, the hamlet at the foot of Mount Aoba, on the same island ground.
+ kit.at(0,0,0,()=>buildFumoto(kit,solid,{anchor,inspect,onAction,walledHouse,vending:(x,z,ry)=>vending(x,z,ry,FUMOTO.y)}),FUMOTO.y);
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
@@ -557,6 +561,10 @@ const NAMEPLATES=Object.freeze({
  'kitahama-4':'Tōma. The postman lives here: his red Super Cub stands in the yard at night with its box padlocked, and he grows goya over the gate.',
  'kitahama-5':'An empty concrete house, swept and waiting, with the water off at the main.',
  'kitahama-6':'The Tairas\' house, the oldest on the lane: red tile, a hinpun with a crack the grandfather says the 1959 typhoon put there, and a loom on the verandah under a sheet. The cane knives hang inside the gate, oiled, from January to January.',
+ 'fumoto-1':'The Kuniyoshis, the oldest house in Fumoto. Mr Kuniyoshi is the kuchō, the hamlet’s head: the cane-cut list, the well rota and the key to the co-op’s safe all live inside this gate. The hinpun has a bucket of cane knives behind it from New Year to the end of the cut.',
+ 'fumoto-2':'The Tokashikis. Grandmother Tokashiki keeps the co-op store; her son drives the cane lorry and the store’s van to the ferry. The shisa on the gate are the ones her husband carved the year the store opened.',
+ 'fumoto-3':'The Ishimines rebuilt in concrete after Typhoon Della in 1977. The lights in the back kitchen go on at four: that is the tofu, soaked overnight, ground, boiled in seawater from the beach below the cane, pressed, and on the co-op’s counter by seven.',
+ 'fumoto-4':'Old Mr Zukeran’s house: red tile, a hinpun, three goats in a pen behind the house and a sanshin with a snakeskin he says is older than the house. In the evenings he takes it down to the bench under the gajumaru.',
  'kitahama-7':'The Chinens. The water lorry is parked at the end of Fukugi Lane because it will not fit through the gate. A nurse\'s bicycle with a basket, and a rota for the clinic\'s night calls taped inside the kitchen window.',
  'kitahama-8':'Ms Uezu\'s house: a week of washing on the line when she is home, and the shutters down the week she is on the ferry. A neighbour waters the bougainvillea.',
  'kitahama-9':'Grandmother Gushiken\'s house. On Saturday mornings the verandah is full of children with sanshin and the lane is full of the same three notes, getting better.',

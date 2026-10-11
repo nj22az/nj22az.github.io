@@ -85,5 +85,10 @@ export const FEED_PLACES=Object.freeze([
   doing:['lighting a stick of incense','sitting under the banyans','asking the sea for a good catch','getting their breath back after the climb'],
   activity:{hold:['coffee'],chance:.2,sit:0},
   shot:{at:[65,198],camera:{pos:[58.5,14.6,192.5],at:[66,13.3,199]},time:420}},
+ {id:'fumoto-square',name:'the square in Fumoto',short:'Fumoto',kind:'outdoor',regulars:['Old Mr Zukeran','Grandmother Tokashiki'],
+  things:['the old gajumaru','the village well','the stone bench','the co-op store’s telephone','the hamlet notice board','Old Mr Zukeran’s sanshin','the goats behind the Zukeran house','warm island tofu'],
+  doing:['sitting on the stone bench','drawing water at the well','reading the cane-cut rota','queueing for the co-op telephone','listening to the sanshin','chasing a goat back to its pen'],
+  activity:{hold:['can','coffee'],chance:.4,sit:0},
+  shot:{at:[40.5,216.6],camera:{pos:[35.6,1.7,222.6],at:[41.2,1.2,212.5]},time:1050}},
 ]);
 export const feedPlace=id=>FEED_PLACES.find(p=>p.id===id);

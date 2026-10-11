@@ -59,11 +59,14 @@ test('the new streets are batched into a handful of meshes and light up at night
  const merged=q.meshes.filter(m=>!/sign|nameplate|fascia|upright|flag|poster|prices/.test(m.name));
  // 80 before Kitahama; the new lane, its five houses and the cane field add their own cells,
  // and the residential quarter west of it (seven houses, the flats, the park) about twenty more.
- assert.ok(merged.length<140,'The quarters are '+merged.length+' draw calls');
+ // Fumoto at the foot of Mount Aoba (four houses, the co-op store, the square, its pole
+ // line) adds its own cells.
+ assert.ok(merged.length<160,'The quarters are '+merged.length+' draw calls');
  let triangles=0;for(const m of q.meshes)triangles+=m.geometry.attributes.position.count/3;
  // 120k before Kitahama and the detailed distribution poles; the residential quarter's
  // seven walled houses, flats and park add about 45k.
- assert.ok(triangles<210000,'The quarters are '+Math.round(triangles)+' triangles');
+ // Fumoto's four walled houses, store, square, windbreak and seven poles add about 40k.
+ assert.ok(triangles<240000,'The quarters are '+Math.round(triangles)+' triangles');
  world.updateHours(13*60);
  const day=q.materials.glow.emissiveIntensity;
  world.updateHours(21*60);

@@ -40,6 +40,11 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'kitahama-12',address:'12 Kitahama',members:[['Mrs Kohagura','cuts hair in her front room, Tuesday to Saturday']]},
  {home:'kitahama-flats',address:'Kitahama Heights, Fukugi Lane',members:[['Ms Ganaha','sells the Minato Maru’s tickets at the Port Terminal window (flat 1)'],['Mr Higa Jr','the Nishi-machi Higas’ eldest; oiler on the Minato Maru, after his time at Mr Ōshiro’s boatyard (flat 2)'],['Mr Fujita','retired fisherman (flat 3); found most days in his shed on the pier, and takes the ferry’s bow line at every call']]},
  // Nishi-machi, inside the seawall.
+ // Fumoto, the farming hamlet at the foot of Mount Aoba (fumoto-layout.js).
+ {home:'fumoto-1',address:'1 Fumoto',members:[['Mr Kuniyoshi','cane farmer and the hamlet’s kuchō: keeps the cane-cut list and the well rota'],['Mrs Kuniyoshi','grows the vegetables in the kitchen gardens below the lane and runs the hamlet’s moai']]},
+ {home:'fumoto-2',address:'2 Fumoto',members:[['Grandmother Tokashiki','keeps the Fumoto co-op store, from seven till the evening'],['Mr Tokashiki','drives the cane lorry in the season and the co-op’s van to the ferry']]},
+ {home:'fumoto-3',address:'3 Fumoto',members:[['Mrs Ishimine','makes the island tofu at dawn, for the co-op store’s counter'],['Mr Ishimine','cane farmer; keeps the hamlet’s water pump running']]},
+ {home:'fumoto-4',address:'4 Fumoto',members:[['Old Mr Zukeran','retired cane farmer; keeps three goats and plays the sanshin under the gajumaru in the evening']]},
  {home:'higa',address:'Higa house, Nishi-machi',members:[['Grandmother Higa','retired; keeps the verandah and knows every ferry by its horn'],['Mrs Higa','the bandai at Umi-no-yu'],["Higa Kenta","pupil, Years 5–6"]]},
  {home:'kinjo',address:'Kinjō house, Nishi-machi',members:[['Uncle Kinjō','retired fisherman; fishes off the seawall'],['Mrs Kinjō','runs the florist on Rainflower Lane and keeps the family accounts'],["Kinjo Yui","pupil, Years 5–6"]]},
  {home:'oshiro',address:'Ōshiro house, Nishi-machi',members:[['Mr Ōshiro','fisherman; builds and mends sabani'],["Oshiro Sakura","pupil, Years 5–6"]]},
