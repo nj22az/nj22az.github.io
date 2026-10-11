@@ -4,6 +4,8 @@ import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
 import {PROFILES} from '../people/profiles.js';
 import {residentPersonality} from '../people/resident-personalities.js';
 import {withTownDials} from './personality.js';
+import {applyLook} from './looks.js';
+import {LOOKS} from './looks-data.js';
 
 /**
  * Who everybody is, as recipes. Johansson and Thuan are drawn from the photographs the
@@ -167,8 +169,24 @@ const AGE_OF=new Map(PROFILES.map(p=>[p.name,p.age]));
 // A recipe always carries its resident's name: the body's own ways (its gait, its seeded
 // habits) are keyed by it.
 const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name)),named=name&&!recipe.name?{...recipe,name}:recipe;return AGE_OF.has(name)&&named.age!==age?normalizeRecipe({...named,age}):named;};
-export function recipeFor(name=''){
+/**
+ * Everybody's look, in the order World asks for it: the look this device's maker saved for them (wardrobe.js), then
+ * the look published from Johansson Studio (data/studio/looks.json, laid over the drawn recipe by looks.js), then the
+ * recipe drawn here. With no published looks it is exactly baseRecipe.
+ */
+export function recipeFor(name='',{looks=LOOKS}={}){
  const saved=residentRecipe(name);if(saved)return saved;
+ const look=Object.hasOwn(looks,name)?looks[name]:null;
+ return look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
+}
+
+/** Who has a published Studio look: the residents World draws, by how they are drawn. */
+export const RESIDENT_GROUPS=Object.freeze({cast:Object.freeze(Object.keys(CAST_RECIPES)),neighbour:Object.freeze(Object.keys(NEIGHBOUR_RECIPES)),
+ townsfolk:Object.freeze(PROFILES.map(p=>p.name).filter(n=>!CAST_RECIPES[n]&&!NEIGHBOUR_RECIPES[n]))});
+export const RESIDENT_NAMES=Object.freeze(Object.values(RESIDENT_GROUPS).flat());
+
+/** The recipe World draws somebody with, before any saved or published look. */
+export function baseRecipe(name=''){
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
  if(NEIGHBOUR_RECIPES[name])return aged(normalizeRecipe(withTownDials(NEIGHBOUR_RECIPES[name],name)),name);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];

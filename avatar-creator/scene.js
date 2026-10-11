@@ -2,7 +2,7 @@ import * as THREE from '../johansson-town/vendor/three.module.js';
 import {buildAvatar} from '../johansson-town/src/avatars/build.js';
 import {drawFace} from '../johansson-town/src/avatars/face.js';
 import {svg} from '../johansson-town/src/ui/icons.js';
-import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from '../johansson-town/src/avatars/cast.js';
+import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
 import {buildSceneWorld} from './scene-world.js';
@@ -63,7 +63,8 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  const announce=s=>{status.textContent=s;};
  const current=()=>state.actors.find(a=>a.id===selected);
  const keys=['location','characters','pose','text','export'];
- const resident=field('resident');resident.append(...Object.keys(CAST_RECIPES).map(n=>new Option(nameOf(n),n)));
+ // Every resident of World, as World draws them (with any look published from Studio).
+ const resident=field('resident');resident.append(...RESIDENT_NAMES.map(n=>new Option(nameOf(n),n)));
  for(const [id,name] of LOCATIONS){const b=document.createElement('button');b.type='button';b.dataset.location=id;b.setAttribute('aria-label',name);const img=document.createElement('img');img.src=`../johansson-town/assets/images/feed/${id}.webp`;img.alt='';img.loading='lazy';const label=document.createElement('span');label.textContent=name;b.append(img,label);b.onclick=()=>{state.location=id;state.camera={orbit:0,elevation:0,zoom:1};for(const a of state.actors){a.seat='';a.x=0;a.z=0;}changed();sync();announce(name+' selected. Continue to Add characters.');};$('.scene-locations').append(b);}
  $('.scene-hint').textContent=touch?'Tap a character to select them. Drag to move, twist two fingers to turn.':'Click a character to select them. Drag to move. Q and E turn, the arrow keys nudge, Delete removes.';
  for(const note of root.querySelectorAll('.scene-save-note'))note.textContent=touch?'Save opens the share sheet: choose Save Image to put it in Photos.':'';
@@ -344,7 +345,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   state=scene;selected=state.actors[0]?.id??null;for(const p of panels)URL.revokeObjectURL(p.url);panels.splice(0,panels.length,...loaded);changed();renderPanels();sync();announce('Project opened.');}catch(e){console.warn('Johansson Studio: open project',e);announce('Unable to open this project. Choose a Johansson Studio project JSON file.');}finally{projectInput.value='';}};
  const actions={
   'reset-camera':()=>{state.camera={orbit:0,elevation:0,zoom:1};for(const c of root.querySelectorAll('[data-camera]'))c.value=state.camera[c.dataset.camera];changed();},
-  'add-current':()=>add(getCharacter()),'add-resident':()=>{const n=resident.value;add(n==='Thuan'?ORIGINAL_THUAN_RECIPE:CAST_RECIPES[n],nameOf(n));},
+  'add-current':()=>add(getCharacter()),'add-resident':()=>{const n=resident.value;add(n==='Thuan'?ORIGINAL_THUAN_RECIPE:recipeFor(n),nameOf(n));},
   'edit-character':()=>{const a=current();if(a)onEdit(a.recipe,a.id);},'duplicate':()=>{const a=current();if(a)add(a.recipe,a.name);},
   'remove':()=>{const a=current();if(a)removeActor(a.id);},
   'previous':()=>setStep(keys[Math.max(0,keys.indexOf(step)-1)]),'next':()=>setStep(keys[Math.min(4,keys.indexOf(step)+1)]),
