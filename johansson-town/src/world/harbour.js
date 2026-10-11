@@ -281,7 +281,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   }
   // On the coping, as on any quay, not 1.2 m back from it where they closed the lane in front of the sheds.
   // (The one at x -10 moved 2.3 m west in 2026-10: the ferry's ramp landing is there now.)
-  [-15,MINATO_BERTH.quayBollard[0],-5,5,10,15].forEach(x=>bollard(x,-49.3));
+  // (The one at x -5, beside the ramp's landing, went with the rest of what stood in the ramp's way: the creator, 2026-10-11.)
+  [-15,MINATO_BERTH.quayBollard[0],5,10,15].forEach(x=>bollard(x,-49.3));
 
   function ropeCoil(x,z,scale=1){
     const rm=material(0xa38a62);for(let i=0;i<3;i++){const t=directMesh(new THREE.TorusGeometry(.35*scale+i*.07,.045*scale,6,20),rm,group,[x,.18+i*.035,z],[Math.PI/2,0,(i%2)*.25],[1,1,1],false);t.castShadow=false;}
@@ -298,15 +299,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // On the island the ferry terminal stands where the second stack was.
 
 
-  // Nets dry on the apron by the water, where the boats land them: east of the warehouse, end-on
-  // to the quay so the lane along the edge stays open. (They stood behind the warehouse, in the one
-  // passage from the main street to the west quay, and cut it to a metre.)
-  // Against the warehouse's loading frontage (kept clear to x -9.2), north of the ferry's ramp head:
-  // cars boarding the Minato Maru back round on a 3 m arc onto her centreline (town-traffic.js), and
-  // the ramp head between the bollards is theirs.
-  // (Moved 1.3 m north in 2026-10: the cars backing round onto the bigger ship's centreline sweep the old place.)
-  {const rz=-41.6;for(const z of [rz-1.15,rz+1.15])cyl(.06,2.4,[-8.9,1.3,z],0x655747);beam([-8.9,2.45,rz-1.15],[-8.9,2.45,rz+1.15],.055,0x655747);
-  for(let z=rz-.9;z<rz+.95;z+=.22)beam([-8.88,.5,z],[-8.88,2.32,z],.012,0x65736f);obstacle(-8.9,rz,.5,2.5);}
+  // The nets' drying frame that stood against the warehouse here was removed (the creator, 2026-10-11): it stood in the
+  // drive up the ferry's ramp. Whether nets dry on this apron again is open.
 
 
   // Harbour office details: ice cabinet, drums, hand trolley and lamps.
