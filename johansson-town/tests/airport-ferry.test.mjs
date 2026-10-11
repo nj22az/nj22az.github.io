@@ -7,6 +7,7 @@ import {buildAirportVehicleYard} from '../src/world/airport-vehicle-yard.js';
 import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,AIRPORT_PASSAGES,airportFerryPose} from '../src/world/airport-ferry.js';
 import {TURN_LIMITS} from '../src/world/ferry-paths.js';
 import {BREAKWATER,OUTER_PIER} from '../src/world/layout.js';
+import {MINATO_BERTH} from '../src/world/minato-berth.js';
 import {airportShoreDistance} from '../src/world/airport-island.js';
 import {FERRY_RAMP,FERRY_DECKS} from '../src/world/ferry-model.js';
 import {createFerryRun,FERRY_BERTH} from '../src/world/ferry.js';
@@ -44,6 +45,8 @@ test('airport arrival feet match the drawn pier and connect to the public distri
 const HARBOUR_SOLIDS=Object.freeze({
  breakwater:[BREAKWATER.minX,BREAKWATER.maxX,BREAKWATER.z-BREAKWATER.thickness/2,BREAKWATER.z+BREAKWATER.thickness/2],outerPier:[-4.1,4.1,OUTER_PIER.z-OUTER_PIER.length/2,-49.65],quay:[-19,19,-49.65,-38],
  secondPier:[-38.3,-33.7,-64.3,-44],secondPierArm:[-38.3,-23.7,-64.3,-59.7],houseboat:[-42.05,-38.95,-59.9,-53.1],
+ // The berth's fenders on the pier's west face (minato-berth.js): she lies on their faces, and slides off them.
+ fenders:[MINATO_BERTH.line,-4.1,MINATO_BERTH.fenders.z.at(-1)-MINATO_BERTH.fenders.base/2,MINATO_BERTH.fenders.z[0]+MINATO_BERTH.fenders.base/2],
 });
 const rectGap=([x,z],[x0,x1,z0,z1])=>{const dx=Math.max(x0-x,0,x-x1),dz=Math.max(z0-z,0,z-z1);return dx||dz?Math.hypot(dx,dz):-Math.min(x-x0,x1-x,z-z0,z1-z);};
 /** Points round the hull's outline at a pose, every 0.4 m along her sides and across her ends. */
@@ -62,12 +65,12 @@ test('the shared ferry crosses round the breakwater, a metre and more off every 
    for(const q of outline(p)){
     for(const [name,r] of Object.entries(HARBOUR_SOLIDS)){
      // Alongside the pier she backs off along its face, as close as she lies moored.
-     const need=name==='outerPier'?.1:name==='quay'?.5:1;
+     const need=name==='fenders'?-.005:name==='outerPier'?.1:name==='quay'?.5:1;
      assert.ok(rectGap(q,r)>=need,`${destination} at ${t.toFixed(1)} s: hull ${rectGap(q,r).toFixed(2)} m off the ${name} at ${q.map(v=>v.toFixed(1))}`);
     }
     if(!atKitano)assert.ok(airportShoreDistance(...q)>2,`${destination} at ${t.toFixed(1)} s: hull within 2 m of Kitano-jima's shore at ${q.map(v=>v.toFixed(1))}`);
     // Over the island's reclaimed side only where her bow comes in beside the jetty.
-    const [u,v]=airportLocal(...q);assert.ok(!(u> -60&&u<178&&v>20&&v<132)||(u<AIRPORT_JETTY.minX&&v>27&&v<35),'Hull over airport land at local '+[u.toFixed(1),v.toFixed(1)]);
+    const [u,v]=airportLocal(...q);assert.ok(!(u> -60&&u<178&&v>20&&v<132)||(u<AIRPORT_JETTY.minX&&Math.abs(v-31)<=AIRPORT_FERRY.beam/2+.05),'Hull over airport land at local '+[u.toFixed(1),v.toFixed(1)]);
    }
   }
   for(const end of [0,1]){const p=airportFerryPose(destination,end),berth=end?ports[destination].berth:ports[destination==='airport'?'town':'airport'].berth;assert.ok(Math.hypot(p.x-berth[0],p.z-berth[1])<1e-6,'she starts and ends at the berths');}
@@ -77,12 +80,15 @@ test('the shared ferry crosses round the breakwater, a metre and more off every 
 test('she moves like a ship: no snaps, her speed continuous, her turns within what she can make',()=>{
  for(const destination of ['airport','town']){
   const plan=AIRPORT_PASSAGES[destination];
-  // Four minutes out and four in as in Minato's own harbour; the rest is the sea, which since
-  // Kitano-jima moved far across the strait is most of the crossing.
+  // The 34.5 m ship's harbour work at either end (astern, the pivot, out by the mouth; in, the pivot,
+  // alongside) keeps its own minutes; the rest is the sea, which since Kitano-jima moved far across the
+  // strait is most of the crossing, at her steady sea pace.
   assert.ok(Math.abs(plan.duration-AIRPORT_FERRY.duration*60)<1e-6);
   const minutes=kind=>plan.legs.filter(l=>l.kind===kind).reduce((sum,l)=>sum+(l.until-l.from)/60,0);
   for(const kind of ['astern','swing','approach','berthing'])assert.ok(minutes(kind)>=1,'the harbour legs keep their own times');
   assert.ok(minutes('sea')>8&&minutes('sea')<14,'the long strait is the sea leg, at her steady sea pace');
+  const speed=kind=>{const l=plan.legs.find(l=>l.kind===kind);return (plan.pose(l.until).distance-plan.pose(l.from).distance)/(l.until-l.from);};
+  for(const kind of ['astern','swing','manoeuvring','berthing'])assert.ok(speed('sea')>speed(kind),'faster at sea than '+kind);
   let prev=plan.pose(0);
   for(let t=.25;t<=plan.duration;t+=.25){
    const p=plan.pose(t);

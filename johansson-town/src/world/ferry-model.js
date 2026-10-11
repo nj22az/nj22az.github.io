@@ -1,79 +1,102 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_CAR_PLACES,FERRY_MACHINERY} from './ferry-ship.js';
 
 /**
- * The hull as drawn: the 22 m Minato Maru the other session modelled on 2026-10-10. The ship as she
- * is designed now (ferry-ship.js FERRY_SHIP, 34.5 m) is grown into this model in its own batch
- * (docs/FERRY-AUDIT.md §6, batch 5); until then everything that puts something on her, or her
- * against a pier (the paths, the berths, the cars' place, the passenger's place), reads these.
- * Ship frame, metres: +z is forward (the bow ramp's hinge is at +length/2), +x is the port side, y up
- * from the model's origin, which is `origin` above the waterline.
- */
-export const FERRY_HULL=Object.freeze({
- length:22,lengthBP:19.6,beam:6.4,depth:2.48,draft:1.35,
- /** The car deck above the waterline: depth less draft. */
- freeboard:1.13,
- /** The model's origin is this far above the waterline (where the old hull sat, so the ramp meets the quay where it did). */
- origin:.12,
- /** Metacentric height loaded, metres (her roll period: ferry-ship.js rollPeriod). */
- gm:1.2,
- /** The screws she is drawn with: four-bladed, 1.05 m. */
- screw:1.05,
-});
-/** Where things are on the hull as drawn, along her (z) and up (y). */
-export const FERRY_DECKS=Object.freeze({
- /** The car deck: from the ramp hinge aft to the deckhouse front. */
- car:Object.freeze({y:FERRY_HULL.freeboard-FERRY_HULL.origin,fore:11,aft:-1.2,
-  /** Two lanes of 2.6 m (a kei car is 1.48 m wide, a 4-tonne truck 2.2 m), each side of the centreline. */
-  lanes:Object.freeze([1.4,-1.4]),laneWidth:2.6,
-  /** The three car places: two in the starboard lane, one in the port lane, nose to the ramp. */
-  slots:Object.freeze([Object.freeze([-1.4,7.4]),Object.freeze([-1.4,2.6]),Object.freeze([1.4,6.2])]),
-  /** An open car deck: it breathes through its open top and needs no exhaust fans. */
-  open:true,
-  /** Walkways each side, inside the bulwark: 0.5 m clear, for the crew and the lashings. */
-  walkway:.5,bulwark:1.05}),
- /** The deckhouse aft on the car deck: the passenger saloon, its toilets and vending corner, the purser's window. */
- saloon:Object.freeze({fore:-1.2,aft:-9.6,width:5.6,height:2.25}),
- /** The mooring deck at the stern, behind the saloon: the capstan and two pairs of bitts. */
- stern:Object.freeze({fore:-9.6,aft:-11}),
- /** The upper (passenger) deck on the saloon roof: open deck and benches aft, the wheelhouse forward. */
- upper:Object.freeze({y:FERRY_HULL.freeboard-FERRY_HULL.origin+2.35,fore:-1.2,aft:-9.6}),
- wheelhouse:Object.freeze({fore:-1.3,aft:-4.1,width:3.6,height:2.05}),
- /** Where a passenger rides a crossing: the open upper deck aft, at the stern rail between the benches, behind the funnel. */
- passenger:Object.freeze([0,FERRY_HULL.freeboard-FERRY_HULL.origin+2.35,-9.05]),
-});
-
-/**
- * The Minato Maru, modelled whole (docs/FERRY-AUDIT.md): the hull lofted from its sections, as a
- * shipyard draws it, with the underwater body a dry dock will show (keel and skeg, two shafts on
- * their brackets, two four-bladed screws, two spade rudders, the bow-thruster tunnel, bilge keels,
- * sea chests and zinc anodes), the draft marks and load line, the car deck with its lanes, lashing
- * points, scuppers and the hydraulic bow ramp, the deckhouse, the upper deck and the wheelhouse
- * with its mast, radar, lights and whistle.
+ * The Minato Maru (みなと丸) as she is built: drawn from her data (ferry-ship.js FERRY_SHIP, FERRY_HEIGHTS,
+ * FERRY_GA), 34.5 × 8.4 m, floating at her laden draft of 1.9 m (docs/FERRY-AUDIT.md §6, batch 5).
  *
- * Ship frame: +z forward (bow ramp hinge at +11), +x the port side, y up. The model's origin is
- * 0.12 m above the waterline, where the old hull sat, so the ramp still meets the quay where it
- * did: the waterline is at y = WL. Static parts are merged by material into a handful of meshes.
+ * Model frame, metres: +z forward, origin amidships (17.25 m from the transom), +x the port side, y up from
+ * the laden waterline. A shipyard point (z from the transom, y above the keel) is at z − 17.25, y − 1.9:
+ * ferry-ship.js toShip(). Static parts are merged by material into a handful of meshes.
  */
-const S=FERRY_HULL,D=FERRY_DECKS;
-export const WL=-S.origin;
-const HALF=S.length/2,KEEL=WL-S.draft,DECK=D.car.y,BULWARK=D.car.bulwark;
+const SH=FERRY_SHIP,H=FERRY_HEIGHTS;
+const L=SH.length,HALF=L/2,BEAM=SH.beam,HB=BEAM/2,DRAFT=SH.draft;
+/** Shipyard z (from the transom) and height above the keel, to the model's frame. */
+const Z=zy=>zy-HALF,Y=yk=>yk-DRAFT;
+
+export const FERRY_HULL=Object.freeze({
+ length:L,lengthBP:SH.lengthBP,beam:BEAM,depth:SH.depth,draft:DRAFT,
+ /** The car deck above the waterline, laden: depth less draft. */
+ freeboard:SH.freeboard,
+ /** The model's origin is on her laden waterline. */
+ origin:0,
+ /** Metacentric height loaded (her roll period: ferry-ship.js rollPeriod). */
+ gm:SH.gm,
+ /** Her screws: four-bladed, 1.45 m. */
+ screw:FERRY_MACHINERY.propellers.diameter,
+});
+export const WL=0;
+const KEEL=-DRAFT,CAR=Y(H.carDeck),PASS=Y(H.passengerDeck),BRIDGE=Y(H.bridgeDeck),COMPASS=Y(H.compassDeck),BULWARK=1.05;
+
+/** The bow ramp: a 4 m leaf, 4.6 m over its girders and 4.4 m clear, and a 2 m flap, 3.6 m wide, that lies flat on the landing. */
+export const FERRY_RAMP=Object.freeze({width:4.6,clear:4.4,leaf:4,flap:2,flapWidth:3.6,length:6});
+/** The gangway gate in the port bulwark, in front of the gangway door in the port casing (shipyard z 13.5–15). */
+export const GATE=Object.freeze({z:-3.25,from:-3.75,to:-2.75});
+/** The gangway door, where the gangway runs out to the pier. */
+export const GANGWAY_Z=GATE.z;
+/** The gangway: 2 m of aluminium plank with hand rails. */
+export const GANGWAY_LENGTH=2;
+
+/** Where things are on her, along her (z) and up (y), model frame. */
+export const FERRY_DECKS=Object.freeze({
+ /** The car deck: from the aft mooring station to the bow houses, two lanes of 3.1 m between the casings. */
+ car:Object.freeze({y:CAR,fore:Z(30),aft:Z(2.5),lanes:Object.freeze([1.55,-1.55]),laneWidth:3.1,
+  /** The ten car places (ferry-ship.js FERRY_CAR_PLACES), nose to the ramp: [x, z]. */
+  slots:Object.freeze(FERRY_CAR_PLACES.map(p=>Object.freeze([p.x,Z(p.z)]))),
+  /** Covered by the passenger deck from the transom to 23 m; open forward of it. */
+  open:false,
+  /** The casings either side, 1 m wide: the lanes stop at them. */
+  walkway:1,bulwark:BULWARK}),
+ /** The passenger deckhouse on the passenger deck: lobby, toilets, carpet room, saloon. */
+ saloon:Object.freeze({fore:Z(23),aft:Z(6),width:7.2,height:BRIDGE-PASS}),
+ /** The aft mooring station on the car deck. */
+ stern:Object.freeze({fore:Z(2.5),aft:-HALF}),
+ /** The passenger deck: the open deck aft, the side walkways, over the car deck from the transom to 23 m. */
+ upper:Object.freeze({y:PASS,fore:Z(23),aft:-HALF}),
+ wheelhouse:Object.freeze({fore:Z(23),aft:Z(19.5),width:6,height:COMPASS-BRIDGE}),
+ bridge:Object.freeze({y:BRIDGE}),compass:Object.freeze({y:COMPASS}),
+ /** Where a passenger rides a crossing: the open deck aft, between the benches. */
+ passenger:Object.freeze([0,PASS,Z(1.8)]),
+});
+
+/**
+ * The decks a person walks on outside (model frame): a rectangle each and its floor. The walking batch
+ * makes them a moving room; the interiors (lobby, carpet room, saloon, the crew's rooms) come with theirs.
+ */
+export const FERRY_WALK=Object.freeze([
+ ['car-deck-walkway',[2.25,3.05],[Z(10.1),Z(14.9)],CAR],
+ ['car-deck-port-lane',[.1,3.0],[Z(20.5),Z(29.5)],CAR],
+ ['car-deck-starboard-lane',[-3.0,-.1],[Z(20.5),Z(29.5)],CAR],
+ ['aft-mooring',[-3.6,3.6],[Z(.5),Z(2.4)],CAR],
+ ['open-deck',[-3.7,3.7],[Z(.4),Z(4)],PASS],
+ ['bridge-deck-aft',[-2.5,2.5],[Z(4.85),Z(5.95)],BRIDGE],
+ ['walkway-p',[3.65,4.0],[Z(6.1),Z(22.9)],PASS],
+ ['walkway-s',[-4.0,-3.65],[Z(6.1),Z(22.9)],PASS],
+ ['bridge-deck-p',[3.05,3.55],[Z(6.2),Z(19.4)],BRIDGE],
+ ['bridge-deck-s',[-3.55,-3.05],[Z(6.2),Z(19.4)],BRIDGE],
+ ['wing-p',[3.05,4.0],[Z(19.6),Z(22.9)],BRIDGE],
+ ['wing-s',[-4.0,-3.05],[Z(19.6),Z(22.9)],BRIDGE],
+ ['compass-deck',[-2.9,2.9],[Z(19.6),Z(22.9)],COMPASS],
+].map(([id,x,z,y])=>Object.freeze({id,x:Object.freeze(x),z:Object.freeze(z),y})));
 
 /** The sheer: the deck edge rises toward the bow, a little toward the stern. */
-export const sheer=z=>z>0?.28*(z/HALF)**2:.08*(z/HALF)**2;
-export const deckEdge=z=>DECK-.06+sheer(z);
+export const sheer=z=>z>0?.3*(z/HALF)**2:.1*(z/HALF)**2;
+export const deckEdge=z=>CAR-.06+sheer(z);
 export const bulwarkTop=z=>deckEdge(z)+BULWARK;
-/** Half-breadth at the deck: parallel midbody, drawn in toward the ramp, a touch at the transom. */
-export const halfBreadth=z=>z>7?S.beam/2-.55*((z-7)/4)**2:z< -9?S.beam/2-.12*((-9-z)/2)**2:S.beam/2;
-/** The keel line: a spoon forefoot under the ramp, and a counter rising aft over the screws. */
+/** Half-breadth at the deck: a long parallel body, drawn in a little toward the blunt bow and the transom. */
+const FWD=Z(28.5),AFT=Z(1.5);
+export const halfBreadth=z=>z>FWD?HB-.32*((z-FWD)/(HALF-FWD))**2:z<AFT?HB-.12*((AFT-z)/(HALF+AFT))**2:HB;
+/** The keel line: a spoon forefoot under the bow, and a counter rising aft over the screws. */
+const FOREFOOT=Z(25.5),COUNTER=Z(10.5),COUNTER_TOP=Z(4);
 export function keelY(z){
- if(z>5)return KEEL+1.12*((z-5)/6)**2;
- if(z< -4){const t=Math.min(1,(-4-z)/4),s=t*t*(3-2*t);let y=KEEL+1.17*s;if(z< -8)y+=.06*((-8-z)/3);return y;}
+ if(z>FOREFOOT)return KEEL+1.75*((z-FOREFOOT)/(HALF-FOREFOOT))**2;
+ if(z<COUNTER){const t=Math.min(1,(COUNTER-z)/(COUNTER-COUNTER_TOP)),s=t*t*(3-2*t);let y=KEEL+1.85*s;if(z<COUNTER_TOP)y+=.1*((COUNTER_TOP-z)/(COUNTER_TOP+HALF));return y;}
  return KEEL;
 }
 /** How full the section is: boxy amidships (a small bilge radius), rounder at the ends. */
-const fullness=z=>z>4?7-4*((z-4)/7):z< -6?7-2*((-6-z)/5):7;
-const narrowing=z=>z>5?.12*((z-5)/6)**2:0;
+const fullness=z=>z>Z(24)?7-4.2*((z-Z(24))/(HALF-Z(24))):z<Z(9)?7-2.5*((Z(9)-z)/(Z(9)+HALF)):7;
+const narrowing=z=>z>Z(26)?.12*((z-Z(26))/(HALF-Z(26)))**2:0;
 /** A point on the section at z, for θ from 0 (the keel, on the centreline) to π/2 (the deck edge). */
 function sectionPoint(z,theta){
  const n=fullness(z),k=keelY(z),top=deckEdge(z),hb=halfBreadth(z);
@@ -89,11 +112,12 @@ export function hullX(y,z){
  return sectionPoint(z,(a+b)/2)[0];
 }
 
-const ANTIFOULING=0x8e3a30,BOOT=0x26292b,HULL=0x2f5f6a,WHITE=0xeeeae0,DECKGREEN=0x6f7d6c,BULWARK_IN=0xd9d6cb,
- STEEL=0x7d8586,DARK=0x2a2f31,BRONZE=0xb08a4a,ORANGE=0xe0702a,RED=0xc2412f,YELLOW=0xe0b93a,ZINC=0xb9bcb8,TEAK=0x8d6f4c;
-/** Paint bands on the hull, by height: antifouling, the black boot-top, the company teal, white bulwarks. */
-const BANDS=[WL-.02,WL+.22,null];
-const bandColour=(y,z)=>y<WL-.02?ANTIFOULING:y<WL+.22?BOOT:y<deckEdge(z)-.02?HULL:WHITE;
+const ANTIFOULING=0x8e3a30,TEAL=0x2f6f74,WHITE=0xeeeae0,DECKGREEN=0x6f7d6c,BULWARK_IN=0xdedbd0,DECKHEAD=0xc9c7bd,
+ STEEL=0x7d8586,DARK=0x2a2f31,BRONZE=0xb08a4a,ORANGE=0xe0702a,RED=0xc2412f,YELLOW=0xe0b93a,ZINC=0xb9bcb8,TEAK=0x8d6f4c,
+ DOOR=0x5d6b6a,CANVAS=0xe9e4d4;
+/** Paint on the hull, by height: red-brown antifouling up to the boot line, white topsides, the teal sheer band, white bulwarks. */
+const BOOT=WL+.1,BAND=.42;
+const bandColour=(y,z)=>y<BOOT?ANTIFOULING:y<deckEdge(z)-BAND?WHITE:y<deckEdge(z)-.02?TEAL:WHITE;
 
 /** The hull shell: an indexed loft of sections, each split exactly at the paint lines. */
 function hullShell(){
@@ -101,7 +125,7 @@ function hullShell(){
  const thetas=[];for(let i=0;i<=24;i++){const u=i/24;thetas.push(Math.PI/2*(u<.5?2*u*u:1-2*(1-u)*(1-u)));}
  const sectionRows=z=>{
   const solve=y=>{let a=0,b=Math.PI/2;for(let i=0;i<40;i++){const m=(a+b)/2;if(sectionPoint(z,m)[1]<y)a=m;else b=m;}return (a+b)/2;};
-  const marks=[WL-.02,WL+.22,deckEdge(z)-.02].map(y=>({t:solve(y),dup:true}));
+  const marks=[BOOT,deckEdge(z)-BAND,deckEdge(z)-.02].filter(y=>y>keelY(z)+.01).map(y=>({t:solve(y),dup:true}));
   const rows=[...thetas.map(t=>({t})),...marks].sort((a,b)=>a.t-b.t);
   const out=[];for(const r of rows){const [x,y]=sectionPoint(z,r.t);out.push({x,y,c:bandColour(y-.001,z)});if(r.dup)out.push({x,y,c:bandColour(y+.001,z)});}
   out.push({x:halfBreadth(z),y:bulwarkTop(z),c:WHITE});
@@ -110,28 +134,25 @@ function hullShell(){
  const pos=[],col=[],idx=[],c=new THREE.Color();let per=0;
  for(const z of stations){
   const rows=sectionRows(z);per=rows.length*2;
-  // Port side top-down to the keel, then starboard keel-up to the top.
   for(const side of [1,-1]){const list=side===1?[...rows].reverse():rows;for(const r of list){pos.push(r.x*side,r.y,z);c.setHex(r.c);col.push(c.r,c.g,c.b);}}
  }
- // The port bulwark is open at the gangway gate (GATE): no plating between those two stations.
+ // The port bulwark is open at the gangway gate: no plating between those two stations.
  for(let i=0;i<stations.length-1;i++)for(let j=0;j<per-1;j++){if(j===0&&stations[i]>=GATE.from-1e-6&&stations[i+1]<=GATE.to+1e-6)continue;const a=i*per+j,b=a+1,d=a+per,e=d+1;idx.push(a,d,b,b,d,e);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- // Normals must face out: a port-side vertex amidships points to +x.
  const mid=Math.floor(stations.length/2)*per+Math.floor(per/4),n=g.getAttribute('normal');
  if(n.getX(mid)<0){for(let k=0;k<idx.length;k+=3){const t=idx[k];idx[k]=idx[k+1];idx[k+1]=t;}g.setIndex(idx);g.computeVertexNormals();}
- // The ends: the transom full height, the bow up to the deck (the ramp closes the rest). Each is
- // plated in strips between the port and starboard rows, so the paint lines stay sharp across it.
+ // The ends: the transom full height; the bow plated up to the car deck only, where the ramp closes it.
  const ends=[];
  for(const [z,full,facing] of [[-HALF,true,-1],[HALF,false,1]]){
-  const rows=sectionRows(z).filter(r=>full||r.y<=deckEdge(z)+1e-6),p=[],cc=[];
+  const rows=sectionRows(z).filter(r=>full||r.y<=CAR-.02+1e-6),p=[],cc=[];
   const put=(q,hex)=>{p.push(q[0],q[1],z);c.setHex(hex);cc.push(c.r,c.g,c.b);};
   for(let k=0;k<rows.length-1;k++){
    const a=rows[k],b=rows[k+1];if(Math.abs(a.y-b.y)<1e-6&&Math.abs(a.x-b.x)<1e-6)continue;
    const hex=a.c===b.c?a.c:b.c,quad=[[a.x,a.y],[-a.x,a.y],[b.x,b.y],[-a.x,a.y],[-b.x,b.y],[b.x,b.y]];
    for(let t=0;t<6;t+=3){
     const tri=quad.slice(t,t+3),[[x0,y0],[x1,y1],[x2,y2]]=tri,cz=(x1-x0)*(y2-y0)-(y1-y0)*(x2-x0);
-    if(Math.abs(cz)<1e-10)continue;                       // a sliver where two rows meet at the keel
-    if(Math.sign(cz)!==facing)tri.reverse();              // wound to face out: aft for the transom, forward for the bow
+    if(Math.abs(cz)<1e-10)continue;
+    if(Math.sign(cz)!==facing)tri.reverse();
     for(const q of tri)put(q,hex);
    }
   }
@@ -141,18 +162,17 @@ function hullShell(){
  return [g.toNonIndexed(),...ends];
 }
 
-/** The inside of the bulwarks and the car deck plating, following the hull's breadth. */
+/** The car deck's plating and the inside of the bulwarks, following the hull's breadth. */
 function deckAndBulwarks(){
  const p=[],cc=[],c=new THREE.Color(),A=new THREE.Vector3(),B=new THREE.Vector3(),C=new THREE.Vector3();
- /** A triangle, wound so that it faces `toward` (its normal points that way). */
  const tri=(a,b,d,toward,hex)=>{A.set(...a);B.set(...b).sub(A);C.set(...d).sub(A);const n=B.cross(C);const list=n.dot(toward)>=0?[a,b,d]:[a,d,b];c.setHex(hex);for(const q of list){p.push(...q);cc.push(c.r,c.g,c.b);}};
  const up=new THREE.Vector3(0,1,0);
  for(let z=-HALF;z<HALF-1e-6;z+=.5){
   const z2=z+.5,w1=halfBreadth(z)-.07,w2=halfBreadth(z2)-.07;
-  tri([-w1,DECK,z],[w1,DECK,z],[-w2,DECK,z2],up,DECKGREEN);tri([w1,DECK,z],[w2,DECK,z2],[-w2,DECK,z2],up,DECKGREEN);
+  tri([-w1,CAR,z],[w1,CAR,z],[-w2,CAR,z2],up,DECKGREEN);tri([w1,CAR,z],[w2,CAR,z2],[-w2,CAR,z2],up,DECKGREEN);
   for(const side of [1,-1]){
-   if(side===1&&z>=GATE.from-1e-6&&z2<=GATE.to+1e-6)continue;     // the gangway gate's opening
-   const inward=new THREE.Vector3(-side,0,0),a=[side*w1,DECK,z],b=[side*w1,bulwarkTop(z)-.02,z],d=[side*w2,DECK,z2],e=[side*w2,bulwarkTop(z2)-.02,z2];
+   if(side===1&&z>=GATE.from-1e-6&&z2<=GATE.to+1e-6)continue;
+   const inward=new THREE.Vector3(-side,0,0),a=[side*w1,CAR,z],b=[side*w1,bulwarkTop(z)-.02,z],d=[side*w2,CAR,z2],e=[side*w2,bulwarkTop(z2)-.02,z2];
    tri(a,b,d,inward,BULWARK_IN);tri(b,e,d,inward,BULWARK_IN);
   }
  }
@@ -169,8 +189,9 @@ function createKit(shadows){
   const m=new THREE.Matrix4().compose(new THREE.Vector3(...pos),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot,'YXZ')),new THREE.Vector3(...scale));
   const g=prep(geo,hex);g.applyMatrix4(m);(groups.get(cls)||groups.set(cls,[]).get(cls)).push(g);return g;};
  const box=(cls,size,pos,hex,rot)=>add(cls,new THREE.BoxGeometry(...size),hex,pos,rot);
+ /** A box between two corners [x0,y0,z0]–[x1,y1,z1]. */
+ const block=(cls,a,b,hex)=>box(cls,[Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1]),Math.abs(b[2]-a[2])],[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],hex);
  const cyl=(cls,rt,rb,h,pos,hex,rot,seg=12)=>add(cls,new THREE.CylinderGeometry(rt,rb,h,seg),hex,pos,rot);
- /** A round bar from a to b. */
  const bar=(cls,a,b,r,hex,seg=6)=>{const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),len=A.distanceTo(B);const g=new THREE.CylinderGeometry(r,r,len,seg);g.translate(0,len/2,0);
   g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),B.clone().sub(A).normalize()));g.translate(...a);return add(cls,g,hex);};
  const materials={
@@ -181,34 +202,37 @@ function createKit(shadows){
  const finish=parent=>{
   for(const [cls,list] of groups){const mesh=new THREE.Mesh(mergeGeometries(list,false),materials[cls]||materials.paint);mesh.name='Minato Maru '+cls;mesh.castShadow=mesh.receiveShadow=!!shadows;parent.add(mesh);}
  };
- return {add,box,cyl,bar,finish,materials};
+ return {add,box,block,cyl,bar,finish,materials};
 }
 
-/** Painted words and marks: name, port of registry, draft marks, load line, signs. */
+/** Painted words and marks: name, port of registry, draft marks, load line, signs, the funnels' anchor. */
 function markings(){
- const W=1024,H=512,canvas=typeof document!=='undefined'?document.createElement('canvas'):null;
+ const W=1024,H2=512,canvas=typeof document!=='undefined'?document.createElement('canvas'):null;
  if(!canvas)return null;
- canvas.width=W;canvas.height=H;const x=canvas.getContext('2d');x.clearRect(0,0,W,H);
- const cell=(i,j,w,h)=>[i*W/4,j*H/4,w*W/4,h*H/4];
- // Row 0: the name on the bow (white on teal hull).
- x.fillStyle='#f4f1e8';x.textAlign='center';x.textBaseline='middle';
- x.font='bold 66px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText('みなと丸',W*.25,H*.09);
- x.font='bold 40px sans-serif';x.fillText('MINATO MARU',W*.25,H*.19);
+ canvas.width=W;canvas.height=H2;const x=canvas.getContext('2d');x.clearRect(0,0,W,H2);
+ const cell=(i,j,w,h)=>[i*W/4,j*H2/4,w*W/4,h*H2/4];
+ // Row 0 left: the name on the bow, teal on the white topsides.
+ x.fillStyle='#24585c';x.textAlign='center';x.textBaseline='middle';
+ x.font='bold 66px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText('みなと丸',W*.25,H2*.09);
+ x.font='bold 40px sans-serif';x.fillText('MINATO MARU',W*.25,H2*.19);
  // Row 0 right: the transom: name and port of registry.
- x.font='bold 54px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText('みなと丸',W*.75,H*.08);
- x.font='bold 34px sans-serif';x.fillText('MINATO',W*.75,H*.19);
- // Row 2: draft marks, metric: every 0.2 m, numerals 0.1 m tall, the bottom of a figure on its mark.
- x.fillStyle='#f4f1e8';x.textAlign='left';x.textBaseline='bottom';x.font='bold 30px sans-serif';
- const [dx,dy,dw,dh]=cell(0,2,1,2);
- for(let k=0;k<=7;k++){const v=(k*.2).toFixed(1).replace('0.','.').replace('1.','1.');const y=dy+dh-k*dh/7.5;x.fillText(k%5===0?(k*.2).toFixed(0)+'M':((k*2)%10)+'',dx+8,y);}
- // Row 2: the load line mark (満載喫水線標): a ring with a bar through it, J G either side.
- const [lx,ly]=cell(1,2,1,2);x.strokeStyle='#f4f1e8';x.lineWidth=7;x.beginPath();x.arc(lx+128,ly+120,58,0,Math.PI*2);x.stroke();
- x.fillStyle='#f4f1e8';x.fillRect(lx+40,ly+116,176,9);x.font='bold 38px sans-serif';x.textBaseline='middle';x.fillText('J',lx+70,ly+72);x.fillText('G',lx+166,ly+72);
- // Row 2: the bow-thruster and "no tugs" mark and the ship's number.
- const [tx,ty]=cell(2,2,1,2);x.lineWidth=6;x.strokeRect(tx+40,ty+70,90,90);x.beginPath();x.moveTo(tx+60,ty+115);x.lineTo(tx+110,ty+115);x.moveTo(tx+60,ty+115);x.lineTo(tx+74,ty+100);x.moveTo(tx+60,ty+115);x.lineTo(tx+74,ty+130);x.moveTo(tx+110,ty+115);x.lineTo(tx+96,ty+100);x.moveTo(tx+110,ty+115);x.lineTo(tx+96,ty+130);x.stroke();
- // Row 2 last cell: the muster and life-jacket signs.
- const [sx,sy]=cell(3,2,1,2);x.fillStyle='#1f7a4a';x.fillRect(sx+10,sy+20,236,90);x.fillStyle='#fff';x.font='bold 36px "Hiragino Sans","Noto Sans JP",sans-serif';x.textAlign='center';x.fillText('救命胴衣',sx+128,sy+52);x.font='bold 22px sans-serif';x.fillText('LIFE JACKETS',sx+128,sy+90);
- x.fillStyle='#e0702a';x.fillRect(sx+10,sy+140,236,90);x.fillStyle='#fff';x.font='bold 36px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText('集合場所',sx+128,sy+172);x.font='bold 22px sans-serif';x.fillText('MUSTER STATION',sx+128,sy+210);
+ x.font='bold 54px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText('みなと丸',W*.75,H2*.08);
+ x.font='bold 34px sans-serif';x.fillText('MINATO',W*.75,H2*.19);
+ // Rows 2–3, first cell: the draft marks, every 0.2 m from 1.2 to 2.4 m; white on the antifouling, teal above the boot line.
+ {const [dx,dy,dw,dh]=cell(0,2,1,2);x.textAlign='left';x.textBaseline='bottom';x.font='bold 30px sans-serif';
+  for(let k=0;k<=6;k++){const m=1.2+k*.2,y=dy+dh-(k/6.4)*dh;x.fillStyle=m-DRAFT<BOOT-WL-1e-6?'#f4f1e8':'#24585c';x.fillText(Math.abs(m-Math.round(m))<1e-6?m.toFixed(0)+'M':String(Math.round(m*10)%10),dx+8,y);}}
+ // The load line mark (満載喫水線標): a ring with a bar through it, J G either side, teal on white.
+ {const [lx,ly]=cell(1,2,1,2);x.strokeStyle='#24585c';x.lineWidth=7;x.beginPath();x.arc(lx+128,ly+120,58,0,Math.PI*2);x.stroke();
+  x.fillStyle='#24585c';x.fillRect(lx+40,ly+116,176,9);x.font='bold 38px sans-serif';x.textBaseline='middle';x.textAlign='left';x.fillText('J',lx+70,ly+72);x.fillText('G',lx+166,ly+72);}
+ // The bow-thruster mark.
+ {const [tx,ty]=cell(2,2,1,2);x.strokeStyle='#24585c';x.lineWidth=6;x.strokeRect(tx+40,ty+70,90,90);x.beginPath();x.moveTo(tx+60,ty+115);x.lineTo(tx+110,ty+115);x.moveTo(tx+60,ty+115);x.lineTo(tx+74,ty+100);x.moveTo(tx+60,ty+115);x.lineTo(tx+74,ty+130);x.moveTo(tx+110,ty+115);x.lineTo(tx+96,ty+100);x.moveTo(tx+110,ty+115);x.lineTo(tx+96,ty+130);x.stroke();}
+ // The life-jacket and muster signs.
+ {const [sx,sy]=cell(3,2,1,2);x.textAlign='center';x.textBaseline='alphabetic';x.fillStyle='#1f7a4a';x.fillRect(sx+10,sy+20,236,90);x.fillStyle='#fff';x.font='bold 36px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText('救命胴衣',sx+128,sy+62);x.font='bold 22px sans-serif';x.fillText('LIFE JACKETS',sx+128,sy+96);
+  x.fillStyle='#e0702a';x.fillRect(sx+10,sy+140,236,90);x.fillStyle='#fff';x.font='bold 36px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText('集合場所',sx+128,sy+182);x.font='bold 22px sans-serif';x.fillText('MUSTER STATION',sx+128,sy+216);}
+ // Row 1, first cell: the town's anchor, white, for the funnels.
+ {const [ax,ay]=cell(0,1,1,1),cx=ax+128,cy=ay+66;x.strokeStyle='#f4f1e8';x.fillStyle='#f4f1e8';x.lineWidth=9;x.lineCap='round';
+  x.beginPath();x.arc(cx,cy-38,11,0,Math.PI*2);x.stroke();x.beginPath();x.moveTo(cx,cy-27);x.lineTo(cx,cy+40);x.moveTo(cx-24,cy-14);x.lineTo(cx+24,cy-14);x.stroke();
+  x.beginPath();x.arc(cx,cy+8,34,Math.PI*.15,Math.PI*.85);x.stroke();}
  const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
  return {tex,cell:(i,j,w,h)=>[i/4,1-(j+h)/4,w/4,h/4]};
 }
@@ -216,156 +240,209 @@ function markings(){
 /** The ferry, whole. Returns the group with its moving parts in userData. */
 export function buildFerryModel({shadows=false}={}){
  const ferry=new THREE.Group();ferry.name='Minato Maru';
- const kit=createKit(shadows);
- // ---- The hull and the deck.
+ const kit=createKit(shadows),glass=[];
+ /** A guard rail from a to b ([x, z]) on a deck at height y: two rails and a stanchion every 1.2 m or less. */
+ const rail=(a,b,y=PASS,hex=WHITE)=>{for(const h of [.5,1.05])kit.bar('paint',[a[0],y+h,a[1]],[b[0],y+h,b[1]],.025,hex,5);
+  const len=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.round(len/1.2));for(let i=0;i<=n;i++){const f=i/n;kit.bar('paint',[a[0]+(b[0]-a[0])*f,y,a[1]+(b[1]-a[1])*f],[a[0]+(b[0]-a[0])*f,y+1.05,a[1]+(b[1]-a[1])*f],.025,hex,5);}};
+ const win=(size,pos,rot)=>glass.push([size,pos,rot]);
+ // ---- The hull and the car deck.
  for(const g of hullShell())kit.add('paint',g);
  kit.add('paint',deckAndBulwarks());
- // The rubbing strake (fender belt): a half-round steel bar along the sheer, and the bulwark cap rail.
+ // The rubbing strake (fender belt) along the sheer, and the bulwark's cap rail.
  for(const side of [1,-1]){
   for(let z=-HALF+.25;z<HALF-.2;z+=1){const z2=Math.min(HALF-.2,z+1);
-   kit.bar('rubber',[side*(halfBreadth(z)+.05),deckEdge(z)-.12,z],[side*(halfBreadth(z2)+.05),deckEdge(z2)-.12,z2],.09,DARK,6);
-   if(side===1&&z2>GATE.from&&z<GATE.to){for(const [a,b] of [[z,GATE.from],[GATE.to,z2]])if(b-a>.05)kit.bar('paint',[side*(halfBreadth(a)-.03),bulwarkTop(a)+.02,a],[side*(halfBreadth(b)-.03),bulwarkTop(b)+.02,b],.045,HULL,5);}
-   else kit.bar('paint',[side*(halfBreadth(z)-.03),bulwarkTop(z)+.02,z],[side*(halfBreadth(z2)-.03),bulwarkTop(z2)+.02,z2],.045,HULL,5);}
-  // Bulwark stiffeners on the inside, every 1.2 m, and the scuppers (freeing ports) at the deck.
-  for(let z=-8.4;z<10.2;z+=1.2){if(side===1&&z>GATE.from-.1&&z<GATE.to+.1)continue;const hb=halfBreadth(z)-.1;kit.box('paint',[.06,BULWARK-.08,.08],[side*hb,DECK+BULWARK/2-.04+sheer(z),z],BULWARK_IN);}
-  for(let z=-.6;z<10;z+=2.2)kit.box('paint',[.03,.12,.42],[side*(halfBreadth(z)+.005),DECK+.07,z],DARK);
+   kit.bar('rubber',[side*(halfBreadth(z)+.06),deckEdge(z)-.14,z],[side*(halfBreadth(z2)+.06),deckEdge(z2)-.14,z2],.1,DARK,6);
+   if(side===1&&z2>GATE.from&&z<GATE.to){for(const [a,b] of [[z,GATE.from],[GATE.to,z2]])if(b-a>.05)kit.bar('paint',[side*(halfBreadth(a)-.03),bulwarkTop(a)+.02,a],[side*(halfBreadth(b)-.03),bulwarkTop(b)+.02,b],.05,TEAL,5);}
+   else kit.bar('paint',[side*(halfBreadth(z)-.03),bulwarkTop(z)+.02,z],[side*(halfBreadth(z2)-.03),bulwarkTop(z2)+.02,z2],.05,TEAL,5);}
+  // Freeing ports in the bulwark of the open car deck forward, and the scuppers along the casings.
+  for(let zy=21;zy<29.6;zy+=1.7){const z=Z(zy);kit.box('paint',[.03,.22,.6],[side*(halfBreadth(z)-.06),CAR+.13,z],DARK);}
  }
- // The gangway gate's posts: the opening's edges, plated and capped.
- for(const z of [GATE.from,GATE.to]){kit.box('paint',[.12,BULWARK+.04,.08],[halfBreadth(z)-.05,DECK+BULWARK/2,z],WHITE);}
- // ---- Under the water: keel bar, skeg, bilge keels, shafts, brackets, screws, rudders, thruster, anodes, sea chests.
- kit.box('paint',[.16,.12,17],[0,KEEL+.02,-1.5],ANTIFOULING);
- {const skeg=new THREE.Shape();skeg.moveTo(-2,KEEL+.05);skeg.lineTo(-8.2,KEEL-.04);skeg.lineTo(-8.2,keelY(-8.2)+.02);skeg.lineTo(-4,keelY(-4)+.1);skeg.closePath();
-  const g=new THREE.ExtrudeGeometry(skeg,{depth:.14,bevelEnabled:false});g.rotateY(-Math.PI/2);g.translate(.07,0,0);kit.add('paint',g,ANTIFOULING);}
+ for(const z of [GATE.from,GATE.to])kit.box('paint',[.12,BULWARK+.04,.08],[halfBreadth(z)-.05,CAR+BULWARK/2,z],WHITE);
+ // ---- Under the water: keel bar, skeg, bilge keels, shafts, brackets, screws, rudders, thruster tunnel, anodes, sea chests.
+ kit.box('paint',[.2,.14,Z(25)-Z(9)],[0,KEEL+.03,(Z(25)+Z(9))/2],ANTIFOULING);
+ {const skeg=new THREE.Shape();skeg.moveTo(Z(10.5),KEEL+.05);skeg.lineTo(Z(3.6),KEEL+.02);skeg.lineTo(Z(3.6),keelY(Z(3.6))+.02);skeg.lineTo(Z(8),keelY(Z(8))+.1);skeg.closePath();
+  const g=new THREE.ExtrudeGeometry(skeg,{depth:.18,bevelEnabled:false});g.rotateY(-Math.PI/2);g.translate(.09,0,0);kit.add('paint',g,ANTIFOULING);}
+ const SX=1.6,SY=-1.0,SZ=Z(3.2),R=FERRY_HULL.screw/2;
  for(const side of [1,-1]){
-  // Bilge keels at the turn of the bilge amidships.
-  for(let z=-5;z<4;z+=1){const t=Math.PI/2*.42,[x,y]=sectionPoint(z,t),[x2,y2]=sectionPoint(z+1,t);kit.bar('paint',[side*(x+.1),y-.08,z],[side*(x2+.1),y2-.08,z+1],.05,ANTIFOULING,4);}
-  const sx=side*1.25,cy=-.975;
-  kit.bar('metal',[sx,cy+.12,-5.6],[sx,cy,-8.3],.055,STEEL,8);                 // the shaft out of its stern tube
-  kit.cyl('metal',.13,.13,.5,[sx,cy+.05,-5.75],STEEL,[Math.PI/2,0,0]);          // the stern-tube boss
-  for(const k of [-1,1])kit.bar('paint',[sx,cy,-7.8],[sx+k*.55,keelY(-7.8)+.35+.15,-7.6],.04,ANTIFOULING,5); // the A-bracket
-  kit.cyl('metal',.1,.1,.32,[sx,cy,-7.8],STEEL,[Math.PI/2,0,0]);
-  // The rudder, a spade behind the screw, on its stock up into the counter.
-  kit.box('paint',[.09,.98,.72],[sx,-.86,-9.75],ANTIFOULING);kit.cyl('metal',.05,.05,.4,[sx,-.2,-9.62],STEEL);
-  for(const z of [-9.55,-10])kit.box('metal',[.12,.08,.16],[sx,-.62,z],ZINC);               // anodes on the rudder
-  kit.box('metal',[.06,.1,.3],[side*(hullX(-.75,-6.5)+.03),-.75,-6.5],ZINC);                  // and on the hull
-  kit.box('paint',[.03,.22,.5],[side*(hullX(-1.2,-3.2)+.012),-1.2,-3.2],DARK);              // sea-chest grating
+  for(let zy=11;zy<23;zy+=1.5){const t=Math.PI/2*.4,[x,y]=sectionPoint(Z(zy),t),[x2,y2]=sectionPoint(Z(zy+1.5),t);kit.bar('paint',[side*(x+.12),y-.1,Z(zy)],[side*(x2+.12),y2-.1,Z(zy+1.5)],.06,ANTIFOULING,4);}
+  const sx=side*SX;
+  kit.bar('metal',[sx,SY+.18,Z(7.5)],[sx,SY,SZ+.25],.075,STEEL,8);
+  kit.cyl('metal',.18,.18,.6,[sx,SY+.14,Z(7.3)],STEEL,[Math.PI/2,0,0]);
+  for(const k of [-1,1])kit.bar('paint',[sx,SY,SZ+.7],[sx+k*.7,keelY(SZ+.9)+.25,SZ+.95],.05,ANTIFOULING,5);
+  kit.cyl('metal',.13,.13,.4,[sx,SY,SZ+.7],STEEL,[Math.PI/2,0,0]);
+  kit.box('paint',[.11,1.25,.95],[sx,SY+.05,Z(1.7)],ANTIFOULING);kit.cyl('metal',.07,.07,.6,[sx,keelY(Z(1.7))-.1,Z(1.6)],STEEL);
+  for(const zz of [Z(1.9),Z(1.4)])kit.box('metal',[.14,.09,.18],[sx,SY+.25,zz],ZINC);
+  kit.box('metal',[.07,.12,.36],[side*(hullX(-.8,Z(8))+.03),-.8,Z(8)],ZINC);
+  kit.box('paint',[.03,.3,.7],[side*(hullX(-1.4,Z(13))+.012),-1.4,Z(13)],DARK);
  }
- // The screws: a hub and four blades, which turn when she is under way.
  const screws=[];
  for(const side of [1,-1]){
-  const screw=new THREE.Group();screw.position.set(side*1.25,-.975,-8.55);screw.name='Minato Maru '+(side>0?'port':'starboard')+' screw';
-  const bronze=new THREE.MeshStandardMaterial({color:BRONZE,roughness:.32,metalness:.85});
-  const hub=new THREE.Mesh(new THREE.CylinderGeometry(.08,.12,.34,10),bronze);hub.rotation.x=Math.PI/2;screw.add(hub);
-  const blade=new THREE.Shape();blade.moveTo(0,0);blade.quadraticCurveTo(.2,.18,.12,.5);blade.quadraticCurveTo(-.05,.53,-.12,.4);blade.quadraticCurveTo(-.14,.15,0,0);
+  const screw=new THREE.Group();screw.position.set(side*SX,SY,SZ);screw.name='Minato Maru '+(side>0?'port':'starboard')+' screw';
+  const bronze=new THREE.MeshStandardMaterial({color:BRONZE,roughness:.32,metalness:.85,side:THREE.DoubleSide});
+  const hub=new THREE.Mesh(new THREE.CylinderGeometry(.11,.16,.45,10),bronze);hub.rotation.x=Math.PI/2;screw.add(hub);
+  const s=R/.53,blade=new THREE.Shape();blade.moveTo(0,0);blade.quadraticCurveTo(.2*s,.18*s,.12*s,.5*s);blade.quadraticCurveTo(-.05*s,.53*s,-.12*s,.4*s);blade.quadraticCurveTo(-.14*s,.15*s,0,0);
   const bladeGeo=new THREE.ShapeGeometry(blade,6);
-  for(let b=0;b<4;b++){const m=new THREE.Mesh(bladeGeo,bronze);m.material.side=THREE.DoubleSide;m.rotation.set(0,side*.5,b*Math.PI/2);const holder=new THREE.Group();holder.rotation.z=b*Math.PI/2;m.rotation.set(0,side*.5,0);m.position.y=.06;holder.add(m);screw.add(holder);}
+  for(let b=0;b<4;b++){const holder=new THREE.Group();holder.rotation.z=b*Math.PI/2;const m=new THREE.Mesh(bladeGeo,bronze);m.rotation.set(0,side*.5,0);m.position.y=.1;holder.add(m);screw.add(holder);}
   screw.userData.hand=side;ferry.add(screw);screws.push(screw);
  }
- // The bow-thruster tunnel, through the forefoot.
- {const r=.28,y=-.75,z=8,w=hullX(y,z);const tube=new THREE.CylinderGeometry(r,r,2*w,16,1,true);tube.rotateZ(Math.PI/2);kit.add('paint',tube,DARK,[0,y,z]);
-  for(const side of [1,-1])for(let k=-1;k<=1;k++)kit.box('metal',[.02,.04,.5],[side*(w-.01),y+k*.15,z],STEEL);}
- // ---- The car deck: lanes, lashing points, hydrant, the ladder up, the fans.
- for(const x of [0,2.7,-2.7].map(v=>v))kit.box('paint',[.1,.012,11.8],[x,DECK+.007,5],x?WHITE:YELLOW);
- for(let z=-.6;z<10.4;z+=1.2)for(const x of [-2.55,-.25,.25,2.55])kit.cyl('metal',.05,.05,.02,[x,DECK+.01,z],DARK,[0,0,0],8);
- kit.box('paint',[.18,.5,.18],[2.85,DECK+.25,-.4],RED);kit.box('paint',[.3,.32,.14],[-2.85,DECK+.45,-.6],RED);
- // Ladders from the car deck up to the upper deck at the deckhouse front, both sides.
+ // The bow-thruster tunnel, 0.9 m, through the forefoot.
+ {const r=.45,y=-.95,z=Z(29),w=hullX(y,z);const tube=new THREE.CylinderGeometry(r,r,2*w,16,1,true);tube.rotateZ(Math.PI/2);kit.add('paint',tube,DARK,[0,y,z]);
+  for(const side of [1,-1])for(let k=-1;k<=1;k++)kit.box('metal',[.02,.05,.8],[side*(w-.01),y+k*.22,z],STEEL);}
+
+ // ---- The car deck: lanes and their numbers' bars, lashing sockets, the casings, the walkway.
+ const deckFore=Z(30),deckAft=Z(2.5);
+ kit.box('paint',[.12,.012,deckFore-deckAft],[0,CAR+.007,(deckFore+deckAft)/2],YELLOW);
+ for(const x of [3.05,-3.05])kit.box('paint',[.1,.012,Z(30)-Z(20.2)],[x,CAR+.007,(Z(30)+Z(20.2))/2],WHITE);
+ for(const p of FERRY_DECKS.car.slots)kit.box('paint',[1.4,.012,.1],[p[0],CAR+.007,p[1]+2.6],WHITE);   // each place's stop bar, at the nose
+ for(let zy=4;zy<29.9;zy+=2.3)for(const x of [-2.5,-1.25,1.25,2.5])kit.cyl('metal',.06,.06,.02,[x,CAR+.01,Z(zy)],DARK,[0,0,0],8);
+ // The casings, port and starboard, from the car deck up to the passenger deck: plated, white, with their doors.
+ const CAS0=Z(3),CAS1=Z(20),casTop=PASS-.25;
  for(const side of [1,-1]){
-  const x=side*2.35,top=D.upper.y,base=[x,DECK,-.15],up=[x,top,D.saloon.fore];
-  for(const k of [-.3,.3])kit.bar('metal',[base[0]+k,base[1],base[2]],[up[0]+k,up[1],up[2]],.03,STEEL);
-  for(let s=1;s<9;s++){const f=s/9;kit.box('metal',[.6,.03,.14],[x,DECK+(top-DECK)*f,-.15+(D.saloon.fore+.15)*f],STEEL);}
-  for(const k of [-.3,.3])kit.bar('paint',[x+k,DECK+.9,-.15],[x+k,top+.9,D.saloon.fore],.02,YELLOW);
+  kit.block('paint',[side*3.1,CAR,CAS0],[side*(HB-.03),casTop,CAS1],WHITE);
+  // Doors onto the car deck: the engine room's (port) or its escape (starboard), the stair, the store.
+  for(const [zy,w] of side>0?[[7,.8],[11.8,.9]]:[[6.5,.7],[8.5,.9],[11.8,.9]])kit.box('paint',[.04,2,w],[side*3.08,CAR+1,Z(zy)],DOOR);
  }
- // An open car deck breathes on its own: no exhaust fans. The engine room's supply fans are on the upper deck aft.
- // ---- Forward: mooring bitts and fairleads each side of the ramp, the windlass and the anchor.
+ // The gangway door in the port casing's side, behind the gate in the bulwark.
+ kit.box('paint',[.04,2,.9],[HB-.01,CAR+1,GATE.z],DOOR);kit.box('metal',[.06,.06,.95],[HB,CAR+2.03,GATE.z],STEEL);
+ // The walkway beside the port casing, hatched yellow, its rail on the lane's side.
+ kit.box('paint',[.85,.012,Z(15)-Z(10)],[2.65,CAR+.009,(Z(10)+Z(15))/2],YELLOW);
+ for(let zy=10.3;zy<15;zy+=.9)kit.box('paint',[.85,.013,.18],[2.65,CAR+.011,Z(zy)],DARK);
+ for(let zy=10;zy<=15.01;zy+=1.25)kit.bar('paint',[2.2,CAR,Z(zy)],[2.2,CAR+1.05,Z(zy)],.03,YELLOW,6);
+ for(const h of [.55,1.05])kit.bar('paint',[2.2,CAR+h,Z(10)],[2.2,CAR+h,Z(15)],.025,YELLOW,6);
+ // The aft mooring station: capstan, two pairs of bitts, closed fairleads at the quarters.
+ kit.cyl('metal',.26,.3,.5,[0,CAR+.25,Z(1.2)],DARK);kit.cyl('metal',.2,.2,.1,[0,CAR+.55,Z(1.2)],STEEL);
+ for(const side of [1,-1]){const x=side*2.9;for(const dz of [-.26,.26])kit.cyl('metal',.13,.13,.5,[x,CAR+.25,Z(1.6)+dz],DARK);
+  kit.box('metal',[.5,.28,.14],[side*1.9,bulwarkTop(-HALF)-.35,-HALF+.08],DARK);}
+ // The bow houses either side of the ramp: windlass, ramp power pack, paint store; on their tops the
+ // forward mooring station: a windlass drum and bitts each side, fairleads at the bow.
+ const BH0=Z(30),BH1=HALF-.05,bhTop=CAR+2.4;
  for(const side of [1,-1]){
-  const x=side*(halfBreadth(9.6)-.55);kit.box('paint',[.8,.25,1.4],[x,DECK+.12,9.6],HULL);
-  for(const dz of [-.25,.25])kit.cyl('metal',.11,.11,.42,[x,DECK+.45,9.6+dz],DARK);
-  kit.box('metal',[.12,.24,.46],[side*(halfBreadth(10.4)-.06),bulwarkTop(10.4)-.3,10.4],DARK);
+  kit.block('paint',[side*2.25,CAR,BH0],[side*(halfBreadth(BH1)-.04),bhTop,BH1],WHITE);
+  kit.block('paint',[side*2.22,bhTop,BH0],[side*(halfBreadth(BH1)-.02),bhTop+.06,BH1],DECKGREEN);
+  kit.box('paint',[.04,1.9,.8],[side*2.23,CAR+.95,Z(31)],DOOR);
+  kit.cyl('metal',.26,.26,.5,[side*3.0,bhTop+.35,Z(32.4)],DARK,[0,0,Math.PI/2]);
+  for(const dz of [-.25,.25])kit.cyl('metal',.12,.12,.45,[side*3.1,bhTop+.25,Z(33.6)+dz],DARK);
+  kit.box('metal',[.5,.26,.14],[side*3.0,bhTop+.2,HALF-.1],DARK);
+  // Rails round the forecastle top, and a ladder up its aft face from the car deck (the gap in the aft rail).
+  {const xo=side*(halfBreadth(BH1)-.1),xi=side*2.3,za=BH0+.05,zf=BH1-.05,xl=side*3.4;
+   rail([xo,za],[xo,zf],bhTop+.06);rail([xi,za],[xi,zf],bhTop+.06);rail([xi,zf],[xo,zf],bhTop+.06);
+   rail([xi,za],[xl-side*.35,za],bhTop+.06);
+   for(const k of [-.25,.25])kit.bar('metal',[xl+k,CAR,BH0-.12],[xl+k,bhTop+.95,BH0-.12],.025,STEEL);
+   for(let y=CAR+.3;y<bhTop;y+=.3)kit.bar('metal',[xl-.25,y,BH0-.12],[xl+.25,y,BH0-.12],.02,STEEL);}
  }
- kit.cyl('metal',.22,.22,.36,[-(halfBreadth(10)-.5),DECK+.5,10.2],DARK,[0,0,Math.PI/2]);   // the windlass drum, starboard
- // The anchor, a stockless (Hall) anchor housed in its pocket on the starboard bow: shank up the
- // hawse, crown and two flukes against the plating, the cable down from the windlass through the hawse pipe.
- {const z=9.9,y=.55,ax=-(hullX(y,z)+.06);
-  kit.box('paint',[.06,.66,.6],[ax+.04,y,z],DARK);                                                  // the pocket's recess
-  kit.box('metal',[.08,.62,.09],[ax-.03,y+.06,z],DARK);                                             // shank
-  kit.box('metal',[.12,.12,.34],[ax-.04,y-.26,z],DARK);                                             // crown
-  for(const k of [-1,1])kit.add('metal',new THREE.ConeGeometry(.07,.32,4),DARK,[ax-.04,y-.16,z+k*.17],[0,0,0]); // flukes
-  kit.cyl('metal',.05,.05,.2,[ax+.02,y+.42,z],DARK);}                                               // the hawse pipe's lip
- // ---- The hydraulic ramp posts, which carry the rams.
- for(const side of [1,-1])kit.box('paint',[.42,2.2,.42],[side*2.25,DECK+1.1,10.55],HULL);
- // ---- The deckhouse (saloon), its windows, doors and the safety signs.
- const SAL=D.saloon,salZ=(SAL.fore+SAL.aft)/2,salL=SAL.fore-SAL.aft,salTop=DECK+SAL.height;
- kit.box('paint',[SAL.width,SAL.height,salL],[0,DECK+SAL.height/2,salZ],WHITE);
- kit.box('paint',[SAL.width+.1,.1,salL+.1],[0,salTop+.05,salZ],HULL);
- kit.box('paint',[SAL.width-.1,.012,salL-.1],[0,salTop+.106,salZ],DECKGREEN);                       // the upper deck's deck paint
- const glass=[];
+ // The ramp's rams pivot on the bow houses' inner faces.
+ for(const side of [1,-1])kit.box('paint',[.3,.5,.5],[side*2.38,CAR+2.15,Z(32.8)],TEAL);
+ // An anchor in its pocket on each bow, the cable up through the hawse to the windlass.
+ for(const side of [1,-1]){const z=Z(33),y=.45,ax=side*(hullX(y,z)+.06);
+  kit.box('paint',[.06,.8,.75],[ax-side*.04,y,z],DARK);kit.box('metal',[.1,.75,.12],[ax+side*.03,y+.06,z],DARK);
+  kit.box('metal',[.14,.14,.42],[ax+side*.04,y-.32,z],DARK);for(const k of [-1,1])kit.add('metal',new THREE.ConeGeometry(.08,.38,4),DARK,[ax+side*.04,y-.2,z+k*.2]);}
+
+ // ---- The passenger deck over the car deck: its slab, the deckhead under it, pillars at its open ends.
+ const PD0=-HALF,PD1=Z(23);
+ kit.block('paint',[-(HB-.02),PASS-.25,PD0],[HB-.02,PASS,PD1],WHITE);
+ kit.block('paint',[-(HB-.08),PASS-.255,PD0+.05],[HB-.08,PASS-.25,PD1-.05],DECKHEAD);
+ kit.block('paint',[-(HB-.1),PASS+.001,PD0+.05],[HB-.1,PASS+.006,PD1-.05],DECKGREEN);
+ kit.box('paint',[BEAM-.02,.08,.06],[0,PASS-.04,PD1+.02],TEAL);
+ for(const side of [1,-1])for(const z of [Z(.3),Z(22.7)])kit.cyl('paint',.11,.11,casTop-CAR,[side*3.75,(CAR+casTop)/2,z],WHITE);
+ // Lights under the deckhead over the lanes.
+ for(let zy=5;zy<22;zy+=4)for(const x of [-1.55,1.55])kit.box('paint',[.2,.05,1.2],[x,PASS-.28,Z(zy)],0xf3efe2);
+ // Rails round the passenger deck: the stern, the open deck's sides, the walkways and their forward ends.
+ const rw=HB-.08;
+ rail([rw,PD0+.1],[-rw,PD0+.1]);rail([rw,PD0+.1],[rw,PD1-.05]);rail([-rw,PD0+.1],[-rw,PD1-.05]);
+ rail([rw,PD1-.05],[3.62,PD1-.05]);rail([-3.62,PD1-.05],[-rw,PD1-.05]);
+
+ // ---- The passenger deckhouse: lobby, toilets, carpet room and saloon, windows all along, its doors.
+ const SAL=FERRY_DECKS.saloon,DH0=SAL.aft,DH1=SAL.fore,dw=SAL.width/2,dhTop=BRIDGE-.25;
+ kit.block('paint',[-dw,PASS,DH0],[dw,dhTop,DH1],WHITE);
+ kit.block('paint',[-(dw+.05),dhTop,DH0-.05],[dw+.05,BRIDGE,DH1+.05],WHITE);
+ kit.block('paint',[-(dw+.06),dhTop-.1,DH1+.04],[dw+.06,dhTop+.02,DH1+.08],TEAL);
  for(const side of [1,-1]){
-  for(let z=SAL.fore-1.95;z>SAL.aft+.6;z-=1.15)glass.push([[.04,.62,.9],[side*(SAL.width/2+.01),DECK+1.45,z]]);
-  kit.box('paint',[.04,1.9,.8],[side*(SAL.width/2+.02),DECK+.95,GATE.z],0x5d6b6a);                   // the side door, at the gangway gate
-  kit.box('metal',[.05,.06,.82],[side*(SAL.width/2+.03),DECK+1.92,GATE.z],STEEL);
+  for(let z=DH0+1.3;z<DH1-.6;z+=1.15){if(Math.abs(z-Z(7.6))<.6||Math.abs(z-Z(21.7))<.6)continue;win([.04,.75,.92],[side*(dw+.01),PASS+1.55,z]);}
+  for(const zy of [7.6,21.7])kit.box('paint',[.04,1.95,.85],[side*(dw+.02),PASS+.98,Z(zy)],DOOR);
  }
- for(const x of [-1.6,1.6])glass.push([[.9,.62,.04],[x,DECK+1.45,SAL.fore+.01]]);
- kit.box('paint',[.9,1.9,.04],[0,DECK+.95,SAL.fore+.02],0x5d6b6a);                                 // the front door
- kit.box('paint',[.9,1.9,.04],[0,DECK+.95,SAL.aft-.02],0x5d6b6a);                                  // the aft door to the mooring deck
- // ---- The stern mooring deck: capstan, bitts, fairleads, the flagstaff.
- kit.cyl('metal',.2,.24,.42,[0,DECK+.21,-10.35],DARK);kit.cyl('metal',.16,.16,.08,[0,DECK+.46,-10.35],STEEL);
- for(const side of [1,-1]){const x=side*2.3;for(const dz of [-.22,.22])kit.cyl('metal',.11,.11,.42,[x,DECK+.21,-10.2+dz],DARK);
-  kit.box('metal',[.46,.24,.12],[side*1.5,bulwarkTop(-HALF)-.3,-HALF+.06],DARK);}
- kit.bar('paint',[0,bulwarkTop(-HALF),-HALF+.1],[0,bulwarkTop(-HALF)+2.1,-HALF-.05],.025,WHITE);
- // ---- The upper deck: rails, benches, life floats, lifebuoys, the funnel and the vents.
- const UP=D.upper,uy=UP.y,uw=SAL.width/2-.08;
- const railLine=(a,b)=>{for(const h of [.5,1])kit.bar('paint',[a[0],uy+h,a[1]],[b[0],uy+h,b[1]],.022,WHITE,5);
-  const len=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.round(len/1.1));for(let i=0;i<=n;i++){const f=i/n;kit.bar('paint',[a[0]+(b[0]-a[0])*f,uy,a[1]+(b[1]-a[1])*f],[a[0]+(b[0]-a[0])*f,uy+1,a[1]+(b[1]-a[1])*f],.022,WHITE,5);}};
- railLine([uw,SAL.fore-.05],[uw,SAL.aft+.05]);railLine([-uw,SAL.fore-.05],[-uw,SAL.aft+.05]);railLine([uw,SAL.aft+.05],[-uw,SAL.aft+.05]);
- railLine([uw,SAL.fore-.05],[1.95,SAL.fore-.05]);railLine([-1.95,SAL.fore-.05],[-uw,SAL.fore-.05]);
- for(const x of [1.75,-1.75]){kit.box('paint',[.45,.06,2.4],[x,uy+.44,-8],TEAK);kit.box('paint',[.06,.4,2.4],[x+Math.sign(x)*.22,uy+.66,-8],TEAK);for(const dz of [-1,1])kit.box('metal',[.4,.42,.06],[x,uy+.21,-8+dz],STEEL);}
+ for(let i=0;i<6;i++)win([.95,.85,.04],[-2.85+i*1.14,PASS+1.5,DH1+.01]);
+ for(const x of [-2.4,2.4])win([.85,.75,.04],[x,PASS+1.55,DH0-.01]);
+ kit.box('paint',[1.2,1.95,.04],[0,PASS+.98,DH0-.02],DOOR);
+
+ // ---- The open deck aft: benches under an awning, the funnels at its forward corners, the liferaft (port) and
+ // the rescue boat under its davit (starboard), the flagstaff; forward of the benches a platform and two ladders
+ // up to the bridge deck's aft end, where the emergency-generator and CO₂ rooms open.
+ for(const zy of [1,2.6])for(const x of [-1.45,1.45]){
+  kit.box('paint',[2.4,.06,.45],[x,PASS+.45,Z(zy)],TEAK);kit.box('paint',[2.4,.4,.06],[x,PASS+.68,Z(zy)-.21],TEAK);
+  for(const dx of [-1.05,1.05])kit.box('metal',[.06,.42,.42],[x+dx,PASS+.21,Z(zy)],STEEL);}
+ kit.box('paint',[.45,.06,1.2],[3.45,PASS+.45,Z(2.7)],TEAK);for(const dz of [-.5,.5])kit.box('metal',[.4,.42,.06],[3.45,PASS+.21,Z(2.7)+dz],STEEL);
+ {const a0=Z(.4),a1=Z(3.4),ay=PASS+2.35;for(const x of [-2.35,2.35])for(const z of [a0,a1])kit.bar('metal',[x,PASS,z],[x,ay,z],.035,STEEL,6);
+  kit.block('paint',[-2.5,ay,a0-.1],[2.5,ay+.04,a1+.1],CANVAS);kit.box('paint',[5,.18,.02],[0,ay-.08,a0-.11],TEAL);}
+ const FZ=Z(4.9),FY0=PASS,FY1=Y(H.funnelTop);
  for(const side of [1,-1]){
-  kit.box('paint',[.42,.36,1.9],[side*(uw-.35),uy+.62,-5.6],ORANGE);                                  // a rigid life float (救命浮器)
-  for(const dz of [-.7,.7])kit.box('metal',[.4,.42,.06],[side*(uw-.35),uy+.21,-5.6+dz],STEEL);
-  kit.add('paint',new THREE.TorusGeometry(.3,.06,8,18),ORANGE,[side*(uw+.04),uy+.75,-7.1],[0,Math.PI/2,0]);
-  kit.box('paint',[.5,.55,.5],[side*(uw-.3),uy+.28,-9.1],ORANGE);                                     // life-jacket locker
+  const f=new THREE.CylinderGeometry(.44,.5,FY1-FY0,16);f.scale(1,1,2);kit.add('paint',f,TEAL,[side*3.35,(FY0+FY1)/2,FZ]);
+  const cap=new THREE.CylinderGeometry(.46,.46,.25,16);cap.scale(1,1,2);kit.add('paint',cap,DARK,[side*3.35,FY1-.12,FZ]);
+  for(const dz of [-.35,.35])kit.cyl('metal',.11,.11,.5,[side*3.35,FY1+.15,FZ+dz],DARK);
  }
- kit.add('paint',new THREE.TorusGeometry(.3,.06,8,18),ORANGE,[1.2,bulwarkTop(-HALF)-.2,-HALF-.04]);
- kit.add('paint',new THREE.TorusGeometry(.3,.06,8,18),ORANGE,[-1.2,bulwarkTop(-HALF)-.2,-HALF-.04]);
- // The funnel: one casing round both engines' exhausts, in the town's teal with a white band.
- {const fz=-6.9,f=new THREE.CylinderGeometry(.5,.62,2.4,14);f.scale(1,1,1.5);kit.add('paint',f,WHITE,[0,uy+1.2,fz]);
-  const band=new THREE.CylinderGeometry(.505,.53,.42,14);band.scale(1,1,1.5);kit.add('paint',band,HULL,[0,uy+1.9,fz]);
-  for(const x of [-.2,.2])kit.cyl('metal',.09,.09,.5,[x,uy+2.55,fz-.15],DARK);}
- for(const side of [1,-1]){kit.cyl('paint',.16,.16,.7,[side*1.5,uy+.35,-8.95],WHITE);kit.cyl('paint',.28,.2,.16,[side*1.5,uy+.78,-8.95],WHITE);}
- // ---- The wheelhouse, its wings, the mast and everything on it.
- const WH=D.wheelhouse,whZ=(WH.fore+WH.aft)/2,whL=WH.fore-WH.aft,whTop=uy+WH.height;
- kit.box('paint',[WH.width,WH.height,whL],[0,uy+WH.height/2,whZ],WHITE);
- kit.box('paint',[WH.width+.3,.1,whL+.35],[0,whTop+.05,whZ+.05],WHITE);
- kit.box('paint',[WH.width+.32,.12,.05],[0,whTop-.02,WH.fore+.22],HULL);                             // the visor over the windows
- for(let i=0;i<4;i++)glass.push([[.82,.62,.04],[-1.29+i*.86,uy+1.35,WH.fore+.02],[-.12,0,0]]);
- for(const side of [1,-1]){glass.push([[.04,.55,1.6],[side*(WH.width/2+.01),uy+1.35,whZ+.1]]);
-  // The wing: the open upper deck beside the wheelhouse, out to the ship's side, with a steel
-  // dodger on the rail and the wing console on its pedestal, where the master berths her.
-  kit.box('paint',[.05,1.1,1.1],[side*uw,uy+.55,WH.fore-.55],WHITE);
-  kit.box('metal',[.12,.95,.12],[side*(uw-.35),uy+.48,WH.fore-.35],STEEL);
-  kit.box('metal',[.3,.18,.26],[side*(uw-.35),uy+1.02,WH.fore-.35],DARK);                           // throttles and thruster lever
+ kit.cyl('paint',.3,.3,1.1,[3.55,PASS+.55,Z(1.1)],WHITE,[Math.PI/2,0,0]);kit.box('metal',[.5,.25,1.1],[3.55,PASS+.15,Z(1.1)],STEEL);
+ {const boat=new THREE.SphereGeometry(1,12,8);boat.scale(.6,.35,1.8);kit.add('paint',boat,ORANGE,[-3.17,PASS+.72,Z(2.4)]);
+  kit.box('paint',[.95,.08,2.9],[-3.17,PASS+1.0,Z(2.4)],0xf2efe6);for(const dz of [-1.1,1.1])kit.box('metal',[.85,.42,.15],[-3.17,PASS+.21,Z(2.4)+dz],STEEL);
+  kit.bar('metal',[-3.9,PASS,Z(.45)],[-3.9,PASS+3.2,Z(.45)],.08,STEEL,8);kit.bar('metal',[-3.9,PASS+3.2,Z(.45)],[-3.3,PASS+3.35,Z(1.5)],.06,STEEL,8);}
+ kit.bar('paint',[0,PASS,-HALF+.15],[0,PASS+3.4,-HALF+.05],.03,WHITE);
+ for(const x of [1.3,-1.3])kit.add('paint',new THREE.TorusGeometry(.32,.07,8,18),ORANGE,[x,PASS+.78,-HALF+.04]);
+ for(const side of [1,-1])for(const zy of [12,17.5])kit.cyl('paint',.28,.28,1,[side*3.85,PASS+.5,Z(zy)],WHITE,[Math.PI/2,0,0]);   // the walkways' liferafts
+ for(const side of [1,-1])kit.add('paint',new THREE.TorusGeometry(.32,.07,8,18),ORANGE,[side*(rw+.04),PASS+.8,Z(9.5)],[0,Math.PI/2,0]);
+ const PF0=DH0-1.2;
+ kit.block('paint',[-2.6,BRIDGE-.12,PF0],[2.6,BRIDGE,DH0],WHITE);kit.block('paint',[-2.55,BRIDGE+.001,PF0+.05],[2.55,BRIDGE+.006,DH0],DECKGREEN);
+ for(const x of [-2.5,2.5])kit.cyl('paint',.07,.07,BRIDGE-PASS,[x,(PASS+BRIDGE)/2,PF0+.1],WHITE);
+ for(const side of [1,-1]){const x=side*1.15,z0=PF0-1.5,z1=PF0+.02;
+  for(const k of [-.28,.28])kit.bar('metal',[x+k,PASS,z0],[x+k,BRIDGE,z1],.03,STEEL);
+  for(let s2=1;s2<10;s2++){const f=s2/10;kit.box('metal',[.56,.03,.16],[x,PASS+(BRIDGE-PASS)*f,z0+(z1-z0)*f],STEEL);}
+  for(const k of [-.28,.28])kit.bar('paint',[x+k,PASS+.9,z0],[x+k,BRIDGE+.9,z1],.02,YELLOW);}
+ rail([2.55,PF0+.05],[1.5,PF0+.05],BRIDGE);rail([-1.5,PF0+.05],[-2.55,PF0+.05],BRIDGE);rail([.8,PF0+.05],[-.8,PF0+.05],BRIDGE);
+ rail([2.55,PF0+.05],[2.55,DH0],BRIDGE);rail([-2.55,PF0+.05],[-2.55,DH0],BRIDGE);
+
+ // ---- The bridge deck: the house (crew's rooms, the corridor, the wheelhouse forward), its ledges and wings.
+ const BH=3,WH=FERRY_DECKS.wheelhouse,hTop=COMPASS-.2;
+ kit.block('paint',[-BH,BRIDGE,DH0],[BH,hTop,DH1],WHITE);
+ kit.block('paint',[-(BH+.08),hTop,DH0-.05],[BH+.08,COMPASS,DH1+.12],WHITE);
+ kit.block('paint',[-(BH+.1),hTop-.12,DH1+.08],[BH+.1,hTop+.02,DH1+.16],TEAL);                    // the visor over the windows
+ kit.block('paint',[-(HB-.06),BRIDGE-.12,WH.aft],[HB-.06,BRIDGE,DH1],WHITE);                       // the wings' floor out to her sides
+ kit.block('paint',[-(HB-.1),BRIDGE+.001,WH.aft+.05],[HB-.1,BRIDGE+.006,DH1-.05],DECKGREEN);
+ kit.block('paint',[-(dw+.04),BRIDGE+.001,DH0],[dw+.04,BRIDGE+.005,DH1],DECKGREEN);
+ for(const side of [1,-1]){
+  // Cabin windows (portholes, square) down the house's side; the wheelhouse's side windows forward.
+  for(const zy of [10.2,12.7,15.2,17.9])win([.04,.5,.5],[side*(BH+.01),BRIDGE+1.45,Z(zy)]);
+  for(const zy of [20.2,21.6])win([.04,.85,1.1],[side*(BH+.01),BRIDGE+1.4,Z(zy)]);
+  kit.box('paint',[.04,1.9,.8],[side*(BH+.02),BRIDGE+.95,Z(19.9)],DOOR);                           // the wing door
+  // The wing: a solid dodger at her side, its console where the master berths her.
+  kit.block('paint',[side*(HB-.1),BRIDGE,WH.aft],[side*(HB-.04),BRIDGE+1.1,DH1],WHITE);
+  kit.block('paint',[side*(BH+.05),BRIDGE+1.05,DH1-.04],[side*(HB-.04),BRIDGE+1.1,DH1],WHITE);
+  kit.box('metal',[.14,1,.14],[side*(HB-.45),BRIDGE+.5,DH1-.5],STEEL);kit.box('metal',[.34,.2,.3],[side*(HB-.45),BRIDGE+1.08,DH1-.5],DARK);
+  // Rails on the bridge deck's ledges beside the house.
+  rail([side*(dw-.02),DH0+.05],[side*(dw-.02),WH.aft-.05],BRIDGE);
  }
- // The mast on the wheelhouse top: radar platform, horn, VHF whips, GPS, the halyard yard.
- const mastZ=whZ-.3;
- kit.bar('paint',[0,whTop,mastZ],[0,whTop+3,mastZ],.06,WHITE,8);
- kit.box('paint',[.9,.06,.7],[0,whTop+1.1,mastZ],WHITE);
- kit.bar('paint',[-1,whTop+2.3,mastZ],[1,whTop+2.3,mastZ],.03,WHITE,5);
- kit.cyl('metal',.05,.11,.32,[.26,whTop+1.75,mastZ+.15],STEEL,[Math.PI/2.4,0,0]);                    // the whistle
- for(const x of [-.9,.9])kit.bar('paint',[x,whTop+.1,mastZ-.8],[x,whTop+2.6,mastZ-.8],.012,WHITE,4);
- kit.cyl('paint',.12,.12,.12,[.6,whTop+.16,mastZ-.6],WHITE);kit.add('paint',new THREE.SphereGeometry(.12,10,6,0,Math.PI*2,0,Math.PI/2),WHITE,[.6,whTop+.22,mastZ-.6]);
- kit.cyl('metal',.14,.18,.24,[-.7,whTop+.25,whZ+.7],STEEL);kit.cyl('metal',.12,.12,.18,[-.7,whTop+.45,whZ+.7],0xdedad0,[Math.PI/2,0,0]); // the searchlight
- const radar=new THREE.Group();radar.name='Radar scanner';radar.position.set(0,whTop+1.32,mastZ);
- {const m=new THREE.Mesh(new THREE.BoxGeometry(1.4,.12,.16),new THREE.MeshStandardMaterial({color:0xeeeae0,roughness:.5}));radar.add(m);const p=new THREE.Mesh(new THREE.CylinderGeometry(.09,.11,.16,8),new THREE.MeshStandardMaterial({color:DARK,roughness:.6}));p.position.y=-.13;radar.add(p);}
+ for(const x of [1.6,-1.6])kit.box('paint',[.8,1.9,.04],[x,BRIDGE+.95,DH0-.02],DOOR);                 // the EG room's and the CO₂ room's doors
+ for(let i=0;i<5;i++)win([1.05,.95,.04],[-2.36+i*1.18,BRIDGE+1.45,DH1+.01],[-.12,0,0]);
+ // ---- The compass deck on the wheelhouse top: rails, the standard compass, the mast and what it carries.
+ rail([BH-.05,WH.aft],[BH-.05,DH1],COMPASS);rail([-(BH-.05),WH.aft],[-(BH-.05),DH1],COMPASS);rail([BH-.05,DH1],[-(BH-.05),DH1],COMPASS);
+ kit.cyl('paint',.22,.28,1.0,[0,COMPASS+.5,Z(22.2)],WHITE);kit.add('paint',new THREE.SphereGeometry(.22,10,6,0,Math.PI*2,0,Math.PI/2),0x9fb3b6,[0,COMPASS+1,Z(22.2)]);
+ const mastZ=Z(20.8),mastTop=Y(H.mastTop),masthead=Y(H.mastheadLight);
+ kit.bar('paint',[0,COMPASS,mastZ],[0,mastTop,mastZ],.09,WHITE,8);
+ kit.box('paint',[1.3,.07,1.0],[0,COMPASS+2.1,mastZ],WHITE);for(const k of [-.6,.6])kit.bar('paint',[k,COMPASS+2.1,mastZ-.45],[k,COMPASS+2.8,mastZ-.45],.02,WHITE,4);
+ kit.bar('paint',[-1.4,masthead-.6,mastZ],[1.4,masthead-.6,mastZ],.035,WHITE,5);
+ kit.cyl('metal',.06,.13,.4,[.3,COMPASS+3.1,mastZ+.15],STEEL,[Math.PI/2.4,0,0]);                     // the whistle
+ for(const x of [-1.2,1.2])kit.bar('paint',[x,COMPASS+.05,mastZ-1.2],[x,COMPASS+3.2,mastZ-1.2],.014,WHITE,4);   // VHF whips
+ kit.cyl('paint',.13,.13,.14,[.8,COMPASS+.17,mastZ-.9],WHITE);kit.add('paint',new THREE.SphereGeometry(.13,10,6,0,Math.PI*2,0,Math.PI/2),WHITE,[.8,COMPASS+.24,mastZ-.9]); // GPS
+ kit.cyl('metal',.16,.2,.28,[-1.6,COMPASS+.3,Z(22)],STEEL);kit.cyl('metal',.14,.14,.2,[-1.6,COMPASS+.52,Z(22)],0xdedad0,[Math.PI/2,0,0]); // searchlight
+ const radar=new THREE.Group();radar.name='Radar scanner';radar.position.set(0,COMPASS+2.32,mastZ);
+ {const m=new THREE.Mesh(new THREE.BoxGeometry(1.8,.14,.18),new THREE.MeshStandardMaterial({color:0xeeeae0,roughness:.5}));radar.add(m);const p=new THREE.Mesh(new THREE.CylinderGeometry(.1,.13,.18,8),new THREE.MeshStandardMaterial({color:DARK,roughness:.6}));p.position.y=-.15;radar.add(p);}
  ferry.add(radar);
- // The glass: one mesh, lit from inside at night.
+ // ---- The glass: one mesh, lit from inside at night.
  const glassMat=new THREE.MeshStandardMaterial({color:0x2d4a55,roughness:.15,metalness:.2,emissive:0xf0d8a0,emissiveIntensity:0});
  {const parts=glass.map(([size,pos,rot=[0,0,0]])=>{const g=new THREE.BoxGeometry(...size).toNonIndexed();g.deleteAttribute('uv');g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(...pos),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),new THREE.Vector3(1,1,1)));return g;});
   const mesh=new THREE.Mesh(mergeGeometries(parts,false),glassMat);mesh.name='Minato Maru windows';ferry.add(mesh);}
- // ---- Navigation lights (COLREG): masthead white, sidelights red to port and green to starboard, stern light, anchor light.
- const lamp=(colour,pos,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.11,.14,.11),new THREE.MeshBasicMaterial({color:0x333333}));m.position.set(...pos);m.name=name;m.userData.on=colour;ferry.add(m);return m;};
- const navLights=[lamp(0xfff6d8,[0,whTop+2.95,mastZ+.08],'Masthead light'),lamp(0xff3a2a,[WH.width/2+.08,uy+1.95,WH.fore-.2],'Port sidelight'),lamp(0x2aff70,[-WH.width/2-.08,uy+1.95,WH.fore-.2],'Starboard sidelight'),lamp(0xfff6d8,[0,bulwarkTop(-HALF)+.25,-HALF+.05],'Stern light')];
- for(const side of [1,-1])kit.box('paint',[.03,.25,.6],[side*(WH.width/2+.15),uy+1.95,WH.fore-.42],0x111111); // sidelight screens
- // ---- Painted words and marks on the hull.
+ // ---- Navigation lights (COLREG): masthead white at 15 m above the keel, sidelights at the wings' ends (red to
+ // port, green to starboard), the stern light on the stern rail.
+ const lamp=(colour,pos,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.13,.16,.13),new THREE.MeshBasicMaterial({color:0x333333}));m.position.set(...pos);m.name=name;m.userData.on=colour;ferry.add(m);return m;};
+ const navLights=[lamp(0xfff6d8,[0,masthead,mastZ+.12],'Masthead light'),lamp(0xff3a2a,[HB-.02,BRIDGE+1.3,DH1-.25],'Port sidelight'),lamp(0x2aff70,[-(HB-.02),BRIDGE+1.3,DH1-.25],'Starboard sidelight'),lamp(0xfff6d8,[0,PASS+1.2,-HALF+.08],'Stern light')];
+ for(const side of [1,-1])kit.box('paint',[.03,.3,.7],[side*(HB-.12),BRIDGE+1.3,DH1-.55],0x111111);
+ // ---- Painted words and marks.
  const marks=markings();
  if(marks){
   const mat=new THREE.MeshBasicMaterial({map:marks.tex,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2});
@@ -373,87 +450,80 @@ export function buildFerryModel({shadows=false}={}){
   const pieces=[];
   for(const side of [1,-1]){
    const rot=side>0?Math.PI/2:-Math.PI/2;
-   pieces.push(decal([0,0,2,1],2.4,.6,[side*(hullX(.55,5.4)+.012),.55,5.4],rot));                  // name forward, on the parallel side
-   // Draft marks fore and aft, where the side is upright: the marks read the draft at that station.
-   for(const z of [6.8,-8.8]){const x=Math.max(hullX(WL-.36,z),hullX(WL+.46,z),halfBreadth(z)*0)+.015;pieces.push(decal([0,2,1,2],.32,.82,[side*x,WL+.06,z],rot));}
-   pieces.push(decal([1,2,1,2],.55,.55,[side*(hullX(WL+.35,-.5)+.012),WL+.38,-.5],rot));              // the load line, amidships
-   pieces.push(decal([2,2,1,2],.4,.4,[side*(hullX(.15,8)+.012),.18,8],rot));                         // the thruster mark
-   pieces.push(decal([3,2,1,1],.7,.35,[side*(SAL.width/2+.03),DECK+1.95,SAL.fore-1.95],rot));        // life jackets, over the first window
+   pieces.push(decal([0,0,2,1],3.6,.9,[side*(hullX(.55,Z(27))+.015),.55,Z(27)],rot));
+   for(const z of [Z(31.5),Z(2.8)]){const x=Math.max(hullX(-.75,z),hullX(.55,z))+.015;pieces.push(decal([0,2,1,2],.34,1.35,[side*x,-.1,z],rot));}
+   pieces.push(decal([1,2,1,2],.62,.62,[side*(hullX(.42,0)+.014),.42,0],rot));
+   pieces.push(decal([2,2,1,2],.45,.45,[side*(hullX(.2,Z(29))+.014),.2,Z(29)],rot));
+   pieces.push(decal([3,2,1,1],.8,.4,[side*(dw+.03),PASS+2.2,DH0+1.9],rot));
+   pieces.push(decal([0,1,1,1],.7,.7,[side*3.35+side*.46,Y(H.funnelTop)-1.3,FZ],rot));             // the anchor on each funnel
   }
-  pieces.push(decal([2,0,2,1],1.9,.55,[0,.42,-HALF-.012],Math.PI));                                  // name and port on the transom
-  pieces.push(decal([3,3,1,1],.7,.35,[.9,DECK+1.95,SAL.fore+.04],0));                                // muster station, saloon front
+  pieces.push(decal([2,0,2,1],2.6,.75,[0,.55,-HALF-.013],Math.PI));
+  pieces.push(decal([3,3,1,1],.8,.4,[2.2,PASS+2.0,DH0-.03],Math.PI));
   const mesh=new THREE.Mesh(mergeGeometries(pieces,false),mat);mesh.name='Minato Maru markings';mesh.renderOrder=2;ferry.add(mesh);
  }
  kit.finish(ferry);
 
- // ---- The bow ramp on its hinge, with its two hydraulic rams.
- const RAMP=FERRY_RAMP;
- const ramp=new THREE.Group();ramp.name='Ferry bow ramp';ramp.position.set(0,DECK-.01,HALF);ferry.add(ramp);
- {const k2=createKit(shadows);k2.box('paint',[RAMP.width,.12,RAMP.length],[0,0,RAMP.length/2],DECKGREEN);
-  for(let i=0;i<7;i++)k2.box('metal',[RAMP.width-.1,.04,.05],[0,.07,.25+i*.33],STEEL);
-  k2.box('paint',[RAMP.width,.14,.12],[0,.04,RAMP.length+.02],YELLOW);                              // the toe, painted
-  for(const side of [1,-1])k2.box('paint',[.12,.42,RAMP.length],[side*(RAMP.width/2-.06),-.12,RAMP.length/2],HULL); // side girders
-  k2.cyl('metal',.08,.08,RAMP.width,[0,0,0],STEEL,[0,0,Math.PI/2]);                                // the hinge pin
-  k2.finish(ramp);}
+ // ---- The bow ramp on its hinge at the stem: the 4 m leaf and the 2 m flap, and the two rams.
+ const RAMP=FERRY_RAMP,ramp=new THREE.Group();ramp.name='Ferry bow ramp';ramp.position.set(0,CAR-.01,HALF-.05);ferry.add(ramp);
+ const flap=new THREE.Group();flap.name='Ferry ramp flap';flap.position.set(0,0,RAMP.leaf);ramp.add(flap);
+ {const k2=createKit(shadows);k2.box('paint',[RAMP.width,.14,RAMP.leaf],[0,0,RAMP.leaf/2],DECKGREEN);
+  for(let i=0;i<11;i++)k2.box('metal',[RAMP.clear-.1,.04,.05],[0,.08,.25+i*.35],STEEL);
+  for(const side of [1,-1])k2.box('paint',[.1,.5,RAMP.leaf],[side*(RAMP.width/2-.05),-.16,RAMP.leaf/2],TEAL);
+  k2.cyl('metal',.1,.1,RAMP.width,[0,0,0],STEEL,[0,0,Math.PI/2]);k2.finish(ramp);}
+ {const k3=createKit(shadows),FW=RAMP.flapWidth;k3.box('paint',[FW,.1,RAMP.flap],[0,0,RAMP.flap/2],DECKGREEN);
+  for(let i=0;i<5;i++)k3.box('metal',[FW-.2,.04,.05],[0,.06,.2+i*.38],STEEL);
+  k3.box('paint',[FW,.12,.14],[0,.02,RAMP.flap-.05],YELLOW);k3.cyl('metal',.07,.07,FW,[0,0,0],STEEL,[0,0,Math.PI/2]);k3.finish(flap);}
  const rams=[];
  const ramMat=new THREE.MeshStandardMaterial({color:0x58646a,roughness:.4,metalness:.6}),rodMat=new THREE.MeshStandardMaterial({color:0xd8dcdc,roughness:.18,metalness:.9});
  for(const side of [1,-1]){
-  const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,1,10),ramMat),rod=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,1,8),rodMat);
-  barrel.name=rod.name='Ramp ram';ferry.add(barrel,rod);rams.push({side,barrel,rod,pivot:new THREE.Vector3(side*2.25,DECK+2.15,10.55),pin:new THREE.Vector3(side*(RAMP.width/2-.06),.1,1.5)});
+  const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,1,10),ramMat),rod=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,1,8),rodMat);
+  barrel.name=rod.name='Ramp ram';ferry.add(barrel,rod);rams.push({side,barrel,rod,pivot:new THREE.Vector3(side*2.38,CAR+2.15,Z(32.8)),pin:new THREE.Vector3(side*(RAMP.width/2-.1),.12,1.6)});
  }
  const up=new THREE.Vector3(0,1,0),tmp=new THREE.Vector3(),q=new THREE.Quaternion();
  const placeRams=()=>{ramp.updateMatrix();for(const r of rams){const pin=r.pin.clone().applyMatrix4(ramp.matrix),dir=tmp.copy(pin).sub(r.pivot),len=dir.length();dir.normalize();q.setFromUnitVectors(up,dir);
-  const bl=Math.min(1.25,len*.6);r.barrel.scale.set(1,bl,1);r.barrel.quaternion.copy(q);r.barrel.position.copy(r.pivot).addScaledVector(dir,bl/2);
+  const bl=Math.min(1.5,len*.6);r.barrel.scale.set(1,bl,1);r.barrel.quaternion.copy(q);r.barrel.position.copy(r.pivot).addScaledVector(dir,bl/2);
   const rl=len-bl*.55;r.rod.scale.set(1,rl,1);r.rod.quaternion.copy(q);r.rod.position.copy(pin).addScaledVector(dir,-rl/2);}};
- ferry.userData.ramp=ramp;
- /** 0 raised and closed, 1 down on the quay. */
- ferry.userData.setRamp=(down,slope=.24)=>{ramp.rotation.x=-1.45*(1-down)+slope*down;placeRams();};
+ ferry.userData.ramp=ramp;ferry.userData.flap=flap;
+ /** 0 raised (the leaf closes the bow, the flap folded back against it), 1 down at `slope` (radians below level), the flap in line. */
+ ferry.userData.setRamp=(down,slope=.13)=>{ramp.rotation.x=-1.52*(1-down)+slope*down;flap.rotation.x=(1-down)*3.0;placeRams();};
  /**
-  * Down on its landing, the ramp's toe lies on the quay while she heaves, rolls and pitches: its
-  * angle is worked out from where the hinge is now, so the toe stays at the height it has with her
-  * at rest (`restY` is her origin's height at rest, `slope` the ramp's angle then).
+  * Down on its landing: the leaf's end rests on the landing (`landingY`, world) and the flap lies flat
+  * on it, worked out from where the hinge is now, so the ramp stays on the quay as she heaves, rolls
+  * and pitches.
   */
- ferry.userData.restRamp=(slope,restY)=>{
-  ferry.updateMatrixWorld(true);const e=ferry.matrixWorld.elements,L=RAMP.length,hy=ramp.position.y,hz=ramp.position.z;
-  const K=restY+hy-L*Math.sin(slope)-(e[5]*hy+e[9]*hz+e[13]),R=Math.hypot(e[5],e[9]);
-  ramp.rotation.x=Math.acos(Math.max(-1,Math.min(1,K/(L*R))))-Math.atan2(e[5],e[9]);placeRams();
+ ferry.userData.restRamp=landingY=>{
+  ferry.updateMatrixWorld(true);const e=ferry.matrixWorld.elements,Lf=RAMP.leaf,hy=ramp.position.y,hz=ramp.position.z;
+  const K=landingY+.05-(e[5]*hy+e[9]*hz+e[13]),Rr=Math.hypot(e[5],e[9]);
+  const a=Math.acos(Math.max(-1,Math.min(1,K/(Lf*Rr))))-Math.atan2(e[5],e[9]);
+  ramp.rotation.x=a;flap.rotation.x=Math.atan2(e[9],e[5])-a;placeRams();
  };
  ferry.userData.setRamp(0);
- ferry.userData.deckY=DECK;
- ferry.userData.passengerDeck=D.passenger;
- // ---- The gangway, run out from the port side door to the pier while she is boarding.
+ ferry.userData.deckY=CAR;
+ ferry.userData.passengerDeck=FERRY_DECKS.passenger;
+ // ---- The gangway, run out from the port casing's door to the pier while she is boarding.
  const gangway=new THREE.Group();gangway.name='Ferry gangway';gangway.visible=false;ferry.add(gangway);
- {const k3=createKit(shadows);k3.box('paint',[1.7,.06,.9],[.85,0,0],DECKGREEN);for(const dz of [-.43,.43]){k3.box('metal',[1.7,.04,.04],[.85,.85,dz],WHITE);for(const x of [.1,.85,1.6])k3.box('metal',[.03,.85,.03],[x,.42,dz],WHITE);}k3.finish(gangway);}
- gangway.position.set(halfBreadth(GANGWAY_Z)-.05,DECK,GANGWAY_Z);gangway.rotation.z=-.3;
+ {const k4=createKit(shadows),G=GANGWAY_LENGTH;k4.box('paint',[G,.06,.9],[G/2,0,0],0x9aa3a2);for(let i=0;i<8;i++)k4.box('metal',[.04,.03,.86],[.15+i*.25,.045,0],STEEL);
+  for(const dz of [-.43,.43]){k4.box('metal',[G,.04,.04],[G/2,.9,dz],WHITE);for(const x of [.1,G/2,G-.1])k4.box('metal',[.03,.9,.03],[x,.45,dz],WHITE);}k4.finish(gangway);}
+ gangway.position.set(halfBreadth(GANGWAY_Z)-.05,CAR,GANGWAY_Z);gangway.rotation.z=-.2;
  ferry.userData.gangway=gangway;
- /** Its foot rests on the pier as she moves, the way the ramp's toe rests on the quay (restRamp). */
- ferry.userData.restGangway=(restY,rest=-.3,length=1.7)=>{
+ /** Its foot rests on the pier (`pierY`, world) as she moves, the way the ramp rests on the quay. */
+ ferry.userData.restGangway=(pierY,length=GANGWAY_LENGTH)=>{
   ferry.updateMatrixWorld(true);const e=ferry.matrixWorld.elements,g=gangway.position;
-  const K=restY+g.y+length*Math.sin(rest)-(e[1]*g.x+e[5]*g.y+e[9]*g.z+e[13]),R=Math.hypot(e[1],e[5]);
-  gangway.rotation.z=Math.atan2(e[5],e[1])-Math.acos(Math.max(-1,Math.min(1,K/(length*R))));
+  const K=pierY+.03-(e[1]*g.x+e[5]*g.y+e[9]*g.z+e[13]),Rg=Math.hypot(e[1],e[5]);
+  gangway.rotation.z=Math.atan2(e[5],e[1])-Math.acos(Math.max(-1,Math.min(1,K/(length*Rg))));
  };
- // The gate leaf, hinged on its forward post: shut across the opening at sea; alongside it folds right
- // back against the inside of the bulwark, forward of the opening, and is hooked there.
- const gate=new THREE.Group();gate.name='Gangway gate';gate.position.set(halfBreadth(GATE.to)-.1,DECK,GATE.to);ferry.add(gate);
- {const k4=createKit(shadows);k4.box('paint',[.04,BULWARK-.06,GATE.to-GATE.from-.06],[0,BULWARK/2,-(GATE.to-GATE.from)/2],WHITE);k4.box('paint',[.05,.06,GATE.to-GATE.from-.06],[0,BULWARK-.05,-(GATE.to-GATE.from)/2],HULL);k4.finish(gate);}
+ // The gate leaf, hinged on its forward post: shut across the opening at sea; alongside it folds back inside the bulwark.
+ const gate=new THREE.Group();gate.name='Gangway gate';gate.position.set(halfBreadth(GATE.to)-.1,CAR,GATE.to);ferry.add(gate);
+ {const k5=createKit(shadows);k5.box('paint',[.04,BULWARK-.06,GATE.to-GATE.from-.06],[0,BULWARK/2,-(GATE.to-GATE.from)/2],WHITE);k5.box('paint',[.05,.06,GATE.to-GATE.from-.06],[0,BULWARK-.05,-(GATE.to-GATE.from)/2],TEAL);k5.finish(gate);}
  ferry.userData.gate=gate;
- ferry.userData.setGate=open=>{gate.rotation.y=open?Math.PI:0;};
+ ferry.userData.setGate=open=>{gate.rotation.y=open?Math.PI*.98:0;};
  ferry.userData.setGate(false);
  // ---- Moving parts: screws turn and the radar sweeps while she is under way.
  ferry.userData.screws=screws;ferry.userData.radar=radar;
- ferry.userData.underway=(dt,speed)=>{for(const s of screws)s.rotation.z+=s.userData.hand*dt*speed*25;radar.rotation.y+=dt*(speed>0?2.6:0);};
- /** The masthead light, the sidelights and the stern light: on under way from sunset to sunrise (ferry.js). */
+ ferry.userData.underway=(dt,speed)=>{for(const s of screws)s.rotation.z+=s.userData.hand*dt*speed*18;radar.rotation.y+=dt*(speed>0?2.6:0);};
  ferry.userData.setNavigationLights=on=>{for(const l of navLights)l.material.color.setHex(on?l.userData.on:0x333333);};
- /** The saloon's and the wheelhouse's windows, lit from inside (0 dark, 1 every lamp on). */
  ferry.userData.setCabinLights=level=>{glassMat.emissiveIntensity=.55*Math.max(0,Math.min(1,level));};
  ferry.userData.lights=on=>{ferry.userData.setCabinLights(on?1:0);ferry.userData.setNavigationLights(on);};
  ferry.userData.model='Minato Maru';
  return ferry;
 }
-
-/** The gangway gate in the port bulwark, beside the deckhouse's port door: a 1 m opening between two loft stations. */
-export const GATE=Object.freeze({z:-2,from:-2.5,to:-1.5});
-/** The bow ramp: 3.8 m wide (a 4-tonne truck is 2.2 m), 2.4 m long from its hinge to its toe. */
-export const FERRY_RAMP=Object.freeze({width:3.8,length:2.4});
-/** The port side door, where the gangway lands on the pier: 1.6 m aft of the deckhouse front. */
-export const GANGWAY_Z=GATE.z;

@@ -233,7 +233,7 @@ test('swimwear for the story’s six is modest: one-piece costumes (Mrs Higa’s
 const hairOf=(mesh,recipe)=>{const P=mesh.geometry.attributes.position,I=mesh.geometry.attributes.skinIndex,C=mesh.geometry.attributes.color,c=new THREE.Color(recipe.hair.colour),out=[];
  for(let i=0;i<P.count;i++){if(I.getX(i)!==BONES.indexOf('head'))continue;const k=C.getX(i)/c.r;if(Math.abs(C.getY(i)-c.g*k)<2e-3&&Math.abs(C.getZ(i)-c.b*k)<2e-3&&k>.5&&k<1.01)out.push(i);}return out;};
 
-test('hair states: half-dried on one side, slicked flat with water, Nhung’s half-dried bob (the cloud is retired)',()=>{
+test('hair states: half-dried (one side dry and blown out, the other wet and flat), slicked flat with water, Nhung’s half-dried bob (the cloud is retired)',()=>{
  assert.deepEqual(HAIR_STATES,[null,'halfDry','wetFlat']);
  const fujita=recipeFor('Mr Fujita'),a=buildAvatar(fujita,{shadows:false});a.wear('afterbath');
  const body=after(a),m=a.measure,P=body.geometry.attributes.position,hair=hairOf(body,fujita),rest=hair.map(i=>new THREE.Vector3().fromBufferAttribute(P,i));
@@ -267,13 +267,23 @@ test('hair states: half-dried on one side, slicked flat with water, Nhung’s ha
  a.setHairState(null);hair.forEach((i,k)=>assert.ok(new THREE.Vector3().fromBufferAttribute(P,i).equals(rest[k])));assert.ok(near(C.getX(hair[0]),colour.r,1e-6));
  a.dispose();
 
- // Nhung at the mirror, in her wrap with the towel off her head: one side of her bob blown out, the other as it was.
+ // Nhung at the mirror, in her wrap with the towel off her head, caught half way through drying: her bob dry and blown out in
+ // a big puff on her right (the dryer was in her right hand), still wet on her left, flat to her head and darker; lopsided
+ // enough to read at comic size, the face clear.
  const nhung=recipeFor('Nhung'),n=buildAvatar(nhung,{shadows:false});n.wear('towel',{headTowel:false});
  const wrap=towelOf(n),NP=wrap.geometry.attributes.position,nh=hairOf(wrap,nhung),nm=n.measure,before=nh.map(i=>new THREE.Vector3().fromBufferAttribute(NP,i));
  n.setHairState('halfDry');const dried=nh.map(i=>new THREE.Vector3().fromBufferAttribute(NP,i));
- const out=(list,side)=>Math.max(...list.filter(p=>p.x*side>nm.Rh*.3).map(p=>Math.hypot(p.x,p.y-nm.headCentre,p.z)));
- assert.ok(out(dried,-1)>out(before,-1)*1.2,'the right side puffs out');
- assert.ok(Math.abs(out(dried,1)-out(before,1))<.002,'the left side as it was');
+ // how far the hair reaches to each side (her left is +x), in half-widths of her head
+ const half=nm.Rh*nm.headSX,reach=(list,side)=>Math.max(...list.map(p=>p.x*side))/half;
+ assert.ok(reach(dried,-1)>1.8,'the dry side blown out well past her head: '+reach(dried,-1).toFixed(2)+' half-widths');
+ assert.ok(reach(dried,1)<1.07&&reach(dried,1)<reach(before,1)-.05,'the wet side flat to her head: '+reach(dried,1).toFixed(2));
+ assert.ok(reach(dried,-1)-reach(dried,1)>.7,'lopsided');
+ const NC=wrap.geometry.attributes.color,hue=new THREE.Color(nhung.hair.colour),shade=k=>NC.getX(nh[k])/hue.r;
+ const wetSide=nh.map((i,k)=>k).filter(k=>dried[k].x>half*.5),drySide=nh.map((i,k)=>k).filter(k=>dried[k].x<-half*.5);
+ assert.ok(wetSide.length>100&&wetSide.every(k=>shade(k)<.7),'darker with water on the wet side');assert.ok(drySide.length>100&&drySide.every(k=>shade(k)>.95),'its own colour on the dry side');
+ // no more hair over the face (outside the head, below the brows, before the cheeks) than her bob has as it is
+ const face=list=>list.filter(p=>Math.hypot(p.x/half,(p.y-nm.headCentre)/(nm.Rh*nm.headSY),p.z/(nm.Rh*.98))>1&&p.y<nm.headCentre+nm.Rh*nm.headSY*.25&&p.y>nm.headCentre-nm.Rh*nm.headSY&&p.z>nm.Rh*.5&&Math.abs(p.x)<half*.75).length;
+ assert.ok(face(dried)<=face(before),'the face clear: '+face(dried)+' points of hair over it, '+face(before)+' before');
  // With the towel on her head the hair under it stays as it lies.
  n.wear('towel');nh.forEach((i,k)=>assert.ok(new THREE.Vector3().fromBufferAttribute(NP,i).equals(before[k]),'covered hair is left alone'));
  n.wear('towel',{headTowel:false});assert.ok(new THREE.Vector3().fromBufferAttribute(NP,nh[0]).distanceTo(dried[0])<1e-6,'and back to the state uncovered');

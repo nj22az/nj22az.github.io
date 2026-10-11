@@ -21,7 +21,9 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # The game's tests grew past 20 minutes with the body checks (floor sit, the funny poses, Fujita's Back's
+    # moves on every body); a single stuck test is stopped after 15 minutes by npm test's --test-timeout.
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: johansson-town

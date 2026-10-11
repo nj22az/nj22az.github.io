@@ -1409,7 +1409,9 @@ function addNose(parts,recipe,m){
 /**
  * Hair states (avatar.setHairState): the hair a body already has (its cap and its pieces) reshaped, so they work with any
  * hairstyle and in any outfit where the hair shows (under a turban or a towel on the head it does not, and nothing changes):
- * - 'halfDry': one side (the right unless told: the dryer is in the right hand) blown out in a frizzy puff, the other as it was;
+ * - 'halfDry': caught half way through drying: one side (the right unless told: the dryer is in the right hand) dry and
+ *   blown out sideways in a big frizzy puff (HAIR_HALF), the hairline where it was and the face clear; the other side still
+ *   wet, slicked flat to the scalp and darker with water (HAIR_WET), so the head reads lopsided even at comic size;
  * - 'wetFlat': slicked flat to the scalp and darker with water; what hangs (a ponytail, braids) keeps its shape.
  * Each is a pure function of the hair at rest, so the same state always looks the same, and a blend from one to another
  * (amount, from) moves every point in a straight line between the two, so nothing pops.
@@ -1418,6 +1420,13 @@ function addNose(parts,recipe,m){
 // blown up like that".)
 export const HAIR_STATES=Object.freeze([null,'halfDry','wetFlat']);
 export const HAIR_WET=Object.freeze({darken:.6,lie:1.02});
+// The half-dried head (halfDry): the dry side's puff is a sphere `size` head widths across... in head half-widths: its middle
+// `out` of them to that side, `lift` head radii up and `back` behind; the hair on that side is blown out to its surface
+// (more the further into the hair, reaching full size `ramp` into it: the cap's own field, how far a point is into the hair,
+// is at most 0.1), lumpy and frizzy (`frizz`, with `tufts` sticking out), less where the face is (`face`) and low behind the
+// head (`tuck`). `parting`: how wide the change from wet to dry is, across the crown; `cling`: how far down (in head radii)
+// the wet side's hair lies flat.
+export const HAIR_HALF=Object.freeze({out:.7,lift:.14,back:.1,size:1.12,ramp:.08,frizz:.08,tufts:.06,face:.92,tuck:.55,parting:.22,cling:1.9});
 /** Where, in one body's merged geometry, its hair is, and how much of each vertex is hair (hairCap's own field). */
 function hairSpan(parts,from,to){
  let start=0;for(let i=0;i<from;i++)start+=parts[i].attributes.position.count;
@@ -1503,17 +1512,32 @@ export function buildAvatar(input,{shadows=true,faceSize=256}={}){
  const headSurface=d=>{hw.copy(d);for(let k=0;k<6;k++){hsd.copy(shapeHeadPoint(hsd.copy(hw),m.profile)).normalize();hw.add(hsd.subVectors(d,hsd)).normalize();}return shapeHeadPoint(hsd.copy(hw),m.profile).length();};
  // Frizz: soft tufts, not spikes.
  const frizz=d=>Math.sin(7*d.x+2.1)*Math.sin(6*d.y+.7)*Math.sin(7*d.z+1.3)+.35*Math.sin(13*d.x-9*d.z+.4)*Math.sin(11*d.y+1.2);
+ // Blown-dry ends: small tufts standing out of the puff, everywhere on it (a fixed pattern, not a dice roll).
+ const tufts=d=>Math.max(0,Math.sin(12*d.x+.3)*Math.sin(11*d.y+1.7)*Math.sin(13*d.z+.9))*1.6-.3;
  function hairShape(rec,state,side){
   const key=state+'|'+side;if(rec.cache.has(key))return rec.cache.get(key);
   if(!state){const out={position:rec.base.position,normal:rec.base.normal,colour:rec.colour};rec.cache.set(key,out);return out;}
   const B=rec.base.position,n=B.length/3,position=new Float32Array(B.length),colour=rec.colour.slice(),p=new THREE.Vector3(),u=new THREE.Vector3(),d=new THREE.Vector3(),q=new THREE.Vector3(),s=new THREE.Vector3();
   const sideSign=side==='L'?1:-1;
+  // the half-dried head's puff, on the dry side
+  const halfDelta=new THREE.Vector3(sideSign*HAIR_HALF.out*m.Rh*m.headSX,HAIR_HALF.lift*m.Rh,-HAIR_HALF.back*m.Rh),halfR=HAIR_HALF.size*m.Rh*m.headSX;
   for(let i=0;i<n;i++){
    p.fromArray(B,i*3);u.set(p.x/HS[0],(p.y-headC.y)/HS[1],p.z/HS[2]);const ru=u.length()||1e-6;d.copy(u).divideScalar(ru);
    const hs=headSurface(d),rel=ru/hs,k=rec.keep[i]>=0?rec.keep[i]:THREE.MathUtils.smoothstep(rel,.98,1.03);
    if(state==='halfDry'){
-    const w=k*THREE.MathUtils.smoothstep(d.x*sideSign,-.2,.3),puff=w*(.16+Math.max(0,ru-hs)*1.5)*(1+.4*frizz(d));
-    u.multiplyScalar((ru+puff)/ru);p.set(u.x*HS[0],headC.y+u.y*HS[1],u.z*HS[2]);
+    // how much of this point is on the dry side (the change from wet to dry runs across the crown)
+    const dry=THREE.MathUtils.smoothstep(d.x*sideSign,-HAIR_HALF.parting,HAIR_HALF.parting);
+    // the wet side flat to the scalp and darker, as wetFlat
+    const lie=hs*HAIR_WET.lie,wf=k*(1-dry)*(1-THREE.MathUtils.smoothstep(rel,HAIR_HALF.cling-.25,HAIR_HALF.cling));
+    if(ru>lie)u.multiplyScalar((ru+(lie-ru)*wf)/ru);
+    p.set(u.x*HS[0],headC.y+u.y*HS[1],u.z*HS[2]);
+    for(let c=0;c<3;c++)colour[i*3+c]*=1-(1-HAIR_WET.darken)*(1-dry);
+    // the dry side out along the line from the head's middle to where it meets the puff's sphere, lumpy and frizzy
+    s.copy(p).sub(headC);const r=s.length()||1e-6;s.divideScalar(r);
+    const b=s.dot(halfDelta),t=(b+Math.sqrt(Math.max(0,b*b-halfDelta.lengthSq()+halfR*halfR)))*(1+HAIR_HALF.frizz*frizz(s)+HAIR_HALF.tufts*tufts(s));
+    const e=1-(1-THREE.MathUtils.smoothstep(rec.field[i],0,HAIR_HALF.ramp))**2;
+    const w=k*e*dry*(1-HAIR_HALF.face*THREE.MathUtils.smoothstep(s.z,.3,.72))*(1-HAIR_HALF.tuck*THREE.MathUtils.smoothstep(-s.z,.3,.9)*THREE.MathUtils.smoothstep(-s.y,-.35,.3));
+    if(t>r)p.addScaledVector(s,(t-r)*w);
    }else if(state==='wetFlat'){
     const lie=hs*HAIR_WET.lie,w=k*(1-THREE.MathUtils.smoothstep(rel,1.22,1.4));
     if(ru>lie){u.multiplyScalar((ru+(lie-ru)*w)/ru);p.set(u.x*HS[0],headC.y+u.y*HS[1],u.z*HS[2]);}

@@ -3,6 +3,8 @@
     "guide/residents.json",
     "src/avatars/build.js",
     "src/avatars/cast.js",
+    "src/avatars/looks.js",
+    "src/avatars/looks-data.js",
     "src/avatars/recipe.js",
     "src/avatars/face.js",
     "src/avatars/head-profile.js",
@@ -10,6 +12,6 @@
     "src/people/resident-personalities.js",
     "src/render/cel.js"
   ],
-  "sha256": "2e37e8d35a99f617e0d8de716c4974bd7b7b7a82c5cd8c92cc86bd07964681ad",
+  "sha256": "62380b396d4bea48594891418a44b6002b8ecdf283ffb2c55ba0e57e13bbdea9",
   "count": 33
 }
