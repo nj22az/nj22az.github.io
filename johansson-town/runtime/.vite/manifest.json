@@ -99,7 +99,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-C_IG4ZA0.js",
+    "file": "boot-DD0apK8c.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -115,7 +115,7 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-M3k7P_yd.js",
+    "file": "feed-CDHagN_o.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
@@ -128,7 +128,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-DbnHF0p1.js",
+    "file": "game-BJUH7gsb.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
@@ -151,7 +151,7 @@
     ]
   },
   "src/scene/scene-world.js": {
-    "file": "scene-world-A-WyFuwk.js",
+    "file": "scene-world-BUhmno13.js",
     "name": "scene-world",
     "src": "src/scene/scene-world.js",
     "isDynamicEntry": true,

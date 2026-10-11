@@ -340,6 +340,8 @@ export function createTown(options){
     await preloadPark()&&world.eastLawn.useParkGreenery(parkFoliage())});
   const factory=createPropFactory({shadows:options.shadows,maxAnisotropy:options.maxAnisotropy});
   const cableSegments=replaceCableLines(world.group,options.mobile),pier=addWalkablePier(world,options,factory),street=addStreetLife(world,options,factory),sea=findSea(world.group);
+  // The street's lamp lights, for a renderer that sets the hour once (src/scene/scene-world.js) rather than ticking the town.
+  world.streetLights=street.lights;
   world.bicycle=street.bicycle;
   world.docklandsLife=buildDocklandsLife(world,options);
   buildSakuraBench(world,{shadows:options.shadows,register:options.register,onAction:options.onAction,factory});
