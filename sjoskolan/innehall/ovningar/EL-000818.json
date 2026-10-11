@@ -3,12 +3,13 @@
   "titel": "Beröringsspänning i en modell",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
+      "LM-2",
       "LM-4"
     ],
     "niva": "tillampning",

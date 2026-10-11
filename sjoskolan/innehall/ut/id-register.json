@@ -7065,7 +7065,7 @@
   },
   {
    "id": "EL-000801",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Arbetslampans strömväg",
@@ -7081,7 +7081,7 @@
   },
   {
    "id": "EL-000802",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Två lampor parallellt",
@@ -7097,7 +7097,7 @@
   },
   {
    "id": "EL-000803",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Riskbedömning av en länspump",
@@ -7113,7 +7113,7 @@
   },
   {
    "id": "EL-000804",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "De fem stegen för ett verkligt fall",
@@ -7129,7 +7129,7 @@
   },
   {
    "id": "EL-000805",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Välj instrument och funktion",
@@ -7145,7 +7145,7 @@
   },
   {
    "id": "EL-000806",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Instrumentets felgräns",
@@ -7161,7 +7161,7 @@
   },
   {
    "id": "EL-000807",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Energibudget för ett 24 V-system",
@@ -7177,7 +7177,7 @@
   },
   {
    "id": "EL-000808",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Mätaren påverkar kretsen",
@@ -7193,7 +7193,7 @@
   },
   {
    "id": "EL-000809",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Multimeterlabbets protokoll",
@@ -7209,7 +7209,7 @@
   },
   {
    "id": "EL-000810",
-   "revision": 6,
+   "revision": 7,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Egen sinusspänning",
@@ -7225,7 +7225,7 @@
   },
   {
    "id": "EL-000811",
-   "revision": 6,
+   "revision": 7,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Egen RL-last",
@@ -7241,7 +7241,7 @@
   },
   {
    "id": "EL-000812",
-   "revision": 6,
+   "revision": 7,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Effekt och kompensering",
@@ -7257,7 +7257,7 @@
   },
   {
    "id": "EL-000813",
-   "revision": 7,
+   "revision": 8,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Grundprotokollet från den guidade labben",
@@ -7273,7 +7273,7 @@
   },
   {
    "id": "EL-000814",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samma värmare i Y och Δ",
@@ -7289,7 +7289,7 @@
   },
   {
    "id": "EL-000815",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Neutralström med egna laster",
@@ -7305,7 +7305,7 @@
   },
   {
    "id": "EL-000816",
-   "revision": 6,
+   "revision": 7,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Labbet: motorn, startaren och tången",
@@ -7321,7 +7321,7 @@
   },
   {
    "id": "EL-000817",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Riskbedömning före arbete",
@@ -7337,7 +7337,7 @@
   },
   {
    "id": "EL-000818",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beröringsspänning i en modell",
@@ -7353,7 +7353,7 @@
   },
   {
    "id": "EL-000819",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Rätt mätutrustning",
@@ -7369,7 +7369,7 @@
   },
   {
    "id": "EL-000820",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorns märkskylt",
@@ -7385,7 +7385,7 @@
   },
   {
    "id": "EL-000821",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Skyddsdata",
@@ -7401,7 +7401,7 @@
   },
   {
    "id": "EL-000822",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Hållkretsen med nödstopp",
@@ -7417,7 +7417,7 @@
   },
   {
    "id": "EL-000823",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Jämför jordningssystemen",
@@ -7433,7 +7433,7 @@
   },
   {
    "id": "EL-000824",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Högspänning och strömtransformator",
@@ -7449,7 +7449,7 @@
   },
   {
    "id": "EL-000825",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Isolationslabbet",
@@ -7465,7 +7465,7 @@
   },
   {
    "id": "EL-000826",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Analys av mätdata",
@@ -7481,7 +7481,7 @@
   },
   {
    "id": "EL-000827",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Övningstentan",
@@ -7497,7 +7497,7 @@
   },
   {
    "id": "EL-000828",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Felsökningsrapport",

@@ -3,13 +3,14 @@
   "titel": "Två lampor parallellt",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-4",
+      "LM-5"
     ],
     "niva": "tillampning",
     "teori": [

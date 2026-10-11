@@ -3,14 +3,18 @@
   "titel": "Labbet: motorn, startaren och tången",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 6,
+  "revision": 7,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-2",
-      "LM-7"
+      "LM-4",
+      "LM-5",
+      "LM-6",
+      "LM-7",
+      "LM-8",
+      "LM-9"
     ],
     "niva": "tillampning",
     "teori": [

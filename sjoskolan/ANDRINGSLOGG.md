@@ -179,6 +179,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Inlämningsuppgifterna EL-000801–828 har kursplanens punkter som de faktiskt tränar. Tidigare var de satta
+  mekaniskt (beräkning = LM-4, resonemang = LM-2 + LM-7), så veckornas översikt visade fel punkter.
+
 - **2026-10-11** Färgkod efter kursplanens fyra områden (komponenter, elsäkerhet och regler, mätning och analys,
   felsökning och dokumentation) på veckosidorna och startsidans moduler; startsidan byggs nu av
   `verktyg/startsida/bygg.py`. Veckosidorna 42–45: ”Klart” på varje steg styr vilket steg som är nu, och bara det

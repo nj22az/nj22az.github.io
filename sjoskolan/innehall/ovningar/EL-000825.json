@@ -3,14 +3,16 @@
   "titel": "Isolationslabbet",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-2",
-      "LM-7"
+      "LM-4",
+      "LM-6",
+      "LM-8",
+      "LM-9"
     ],
     "niva": "tillampning",
     "teori": [
