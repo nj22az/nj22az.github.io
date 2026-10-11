@@ -2,10 +2,11 @@ import * as THREE from '../../../vendor/three.module.js';
 import {assetURL} from '../../assets.js';
 import {shopProductTemplate} from '../../commerce/shop-product.js';
 import {drawBack} from '../../commerce/packaging-art.js';
-import {FRESH_LABELS,drawFreshLabel} from '../../commerce/fresh-labels.js';
+import {drawFreshLabel} from '../../commerce/fresh-labels.js';
 import {getLabelMaterial,packagingSlot,ATLAS_COLS,ATLAS_ROWS,ATLAS_SPAN} from './store-advertising.js';
 import {STORE_BRANDS} from '../../commerce/brands.js';
 import {stockSpec} from '../../commerce/shop-stock.js';
+import {PRODUCTS,PRODUCT_BY_ID,PRINTS} from '../../commerce/products-data.js';
 
 /**
  * Picking something off the shelf to look at it.
@@ -48,8 +49,12 @@ const CSS=`
 
 
 /** The painted labels at the resolution they were painted (store-advertising.js draws them into the shelf atlas at 256×128). */
-// Round packs wrap their label most of the way round; the back panel fills the gap.
-const ROUND=new Set(['tea','water','cola','orange','soy','soda','coffee','beer','tuna','peaches','noodles','yogurt','pudding']),TOP_PRINTED=new Set(['bento','newspaper']);
+// Round packs wrap their label most of the way round; the back panel fills the gap. Lidded packs are printed on top.
+const ROUND_SHAPES=new Set(['bottle','can','cup','foil-cup']),TOP_SHAPES=new Set(['tray','newspaper']);
+const shapeOf=id=>(PRODUCT_BY_ID[id]?.pack||PRINTS.find(p=>p.key===id)?.pack)?.shape;
+export const ROUND=Object.freeze(new Set([...PRODUCTS.map(p=>p.id),...PRINTS.map(p=>p.key)].filter(id=>ROUND_SHAPES.has(shapeOf(id)))));
+export const TOP_PRINTED=Object.freeze(new Set([...PRODUCTS.map(p=>p.id),...PRINTS.map(p=>p.key)].filter(id=>TOP_SHAPES.has(shapeOf(id)))));
+/** The painted sheets, in order: a painted label is a cell of one of them (its label.sheet and label.cell). */
 const SOURCES=['packaging-atlas.webp','packaging-groceries.webp'],sourceImages=new Map();
 function sourceImage(file){
  if(!sourceImages.has(file))sourceImages.set(file,new Promise(resolve=>new THREE.ImageLoader().load(assetURL('graphics/konbini/'+file),resolve,undefined,()=>resolve(null))));
@@ -62,6 +67,7 @@ function sourceImage(file){
  */
 export function buildPack(id,renderer){
  const t=shopProductTemplate(id,{sides:64}),slot=packagingSlot(id),col=slot%ATLAS_COLS,row=Math.floor(slot/ATLAS_COLS);
+ const printed=PRODUCT_BY_ID[id]?.label,painted=printed?.source==='painted'?printed:null;
  const art=t.art.clone(),uv=art.attributes.uv;
  for(let i=0;i<uv.count;i++){
   const u=(uv.getX(i)*ATLAS_SPAN-col-.025)/.95,v=1-((1-uv.getY(i))*ATLAS_ROWS-row-.025)/.95;
@@ -73,10 +79,10 @@ export function buildPack(id,renderer){
  const atlas=getLabelMaterial().map.image,TW=atlas.width/ATLAS_SPAN,TH=atlas.height/ATLAS_ROWS;
  if(!drawFreshLabel(ctx,id,label.width,label.height))ctx.drawImage(atlas,col*TW,row*TH,TW,TH,0,0,label.width,label.height);
  const map=new THREE.CanvasTexture(label);map.colorSpace=THREE.SRGBColorSpace;map.anisotropy=renderer?.capabilities?.getMaxAnisotropy?.()||4;
- const file=SOURCES[Math.floor(row/4)];
- if(file&&!FRESH_LABELS.includes(id))sourceImage(file).then(image=>{
+ // The original painting, cut from its sheet at full size (a painted label says which sheet and which cell).
+ if(painted)sourceImage(SOURCES[painted.sheet]).then(image=>{
   if(!image)return;const cw=image.width/ATLAS_COLS,ch=image.height/4;
-  ctx.drawImage(image,col*cw,(row%4)*ch,cw,ch,0,0,label.width,label.height);map.needsUpdate=true;
+  ctx.drawImage(image,painted.cell%ATLAS_COLS*cw,Math.floor(painted.cell/ATLAS_COLS)*ch,cw,ch,0,0,label.width,label.height);map.needsUpdate=true;
  });
  const body=t.body.clone(),group=new THREE.Group(),inner=new THREE.Group();
  inner.add(new THREE.Mesh(body,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55})));
@@ -99,7 +105,7 @@ export function buildPack(id,renderer){
  if(panel)inner.add(panel);
  inner.position.copy(centre).multiplyScalar(-1);group.add(inner);
  // Lidded packs are printed on top: held up and tilted to you, so the lid is what you read.
- if(['bento','newspaper'].includes(id))group.rotation.x=Math.PI*.38;
+ if(TOP_PRINTED.has(id))group.rotation.x=Math.PI*.38;
  group.userData.radius=size.length()/2;
  group.userData.dispose=()=>{body.dispose();art.dispose();map.dispose();backMap.dispose();panel?.geometry.dispose();backMaterial.dispose();inner.traverse(o=>{if(o.isMesh)o.material.dispose();});};
  return group;

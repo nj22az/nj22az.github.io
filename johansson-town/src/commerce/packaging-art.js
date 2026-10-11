@@ -1,4 +1,5 @@
 import {STORE_BRANDS} from './brands.js';
+import {PRODUCTS,PRODUCT_BY_ID} from './products-data.js';
 import {drawJagabo} from '../world/interiors/sakura-life.js';
 
 /**
@@ -16,44 +17,12 @@ export const MARU='"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Yu Gothic","
 const GOTHIC='"Hiragino Kaku Gothic ProN","Noto Sans CJK JP","Yu Gothic",sans-serif';
 
 /**
- * What each line is, as a pack: its shape and size in metres (the same as on the shelf,
- * shop-product.js), its weight, its flash and what the illustration shows.
+ * What each line is, as a pack: its shape and size in metres, its weight, its flash and what the illustration shows
+ * (data/studio/products.json; a few packs list a shape or size here that the shelf does not build, kept as they were
+ * in pack.declared until the creator decides: see avatar-creator/docs/STUDIO-MCP.md).
  */
-export const PACKS=Object.freeze({
- tea:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'Fragrant',art:'tea',tag:'Clean and easy'},
- coffee:{shape:'can',size:[.094,.135,.094],net:'190g',flash:'Less sugar',art:'coffee',tag:'One for the harbour morning'},
- rice:{shape:'bag',size:[.15,.12,.09],net:'1 piece',flash:'Hand-pressed',art:'rice',tag:'Kishu plum inside'},
- biscuit:{shape:'box',size:[.18,.22,.075],net:'12 pieces',flash:'Real butter',art:'biscuit',tag:'Baked crisp'},
- soap:{shape:'box',size:[.1,.065,.04],net:'100g',flash:'Gentle',art:'soap',tag:'Flower scent'},
- notebook:{shape:'flat',size:[.18,.252,.006],net:'30 sheets',flash:'7mm ruled',art:'notebook',tag:'Semi-B5'},
- postcard:{shape:'flat',size:[.148,.1,.004],net:'1 card',flash:'Harbour town',art:'postcard',tag:'Harbour morning'},
- battery:{shape:'box',size:[.105,.15,.03],net:'4 pack',flash:'Long life',art:'battery',tag:'Alkaline AA'},
- cola:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'Extra fizz',art:'cola',tag:'Crisp and cold'},
- water:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'Natural',art:'water',tag:'Island spring water'},
- beer:{shape:'can',size:[.094,.135,.094],net:'350ml',flash:'Draft',art:'beer',tag:'The harbour town lager'},
- noodles:{shape:'cup',size:[.136,.13,.136],net:'78g',flash:'Soy sauce',art:'noodles',tag:'Ready in 3 minutes'},
- milk:{shape:'carton',size:[.093,.2,.093],net:'500ml',flash:'Whole milk',art:'milk',tag:'Asamori Dairy'},
- chips:{shape:'bag',size:[.16,.22,.07],net:'60g',flash:'Lightly salted',art:'chips',tag:'Crunchy and good'},
- crackers:{shape:'bag',size:[.16,.22,.07],net:'12 pieces',flash:'Soy sauce',art:'crackers',tag:'Toasted soy glaze'},
- chocolate:{shape:'flat',size:[.17,.1,.018],net:'50g',flash:'Milk',art:'chocolate',tag:'Melts smoothly'},
- candy:{shape:'bag',size:[.16,.22,.07],net:'90g',flash:'5 flavours',art:'candy',tag:'Made with fruit juice'},
- curry:{shape:'box',size:[.16,.13,.045],net:'200g',flash:'Medium hot',art:'curry',tag:'Serves 10'},
- soy:{shape:'bottle',size:[.092,.26,.092],net:'500ml',flash:'Brewed',art:'soy',tag:'Dark soy'},
- soup:{shape:'box',size:[.14,.17,.05],net:'8 servings',flash:'Mixed miso',art:'soup',tag:'Just add hot water'},
- peaches:{shape:'can',size:[.106,.095,.106],net:'425g',flash:'White peach',art:'peaches',tag:'In light syrup'},
- tuna:{shape:'can',size:[.102,.046,.102],net:'80g',flash:'In oil',art:'tuna',tag:'Tuna flakes'},
- detergent:{shape:'box',size:[.18,.255,.095],net:'1.0kg',flash:'Whiter whites',art:'detergent',tag:'Laundry powder'},
- tissues:{shape:'box',size:[.22,.075,.11],net:'160 pairs',flash:'Soft',art:'tissues',tag:'2-ply'},
- toothpaste:{shape:'box',size:[.205,.05,.045],net:'120g',flash:'Medicated',art:'toothpaste',tag:'Mint flavour'},
- orange:{shape:'carton',size:[.093,.2,.093],net:'500ml',flash:'100% juice',art:'orange',tag:'Mandarin'},
- soda:{shape:'bottle',size:[.074,.26,.074],net:'200ml',flash:'Ramune',art:'soda',tag:'Marble inside'},
- yogurt:{shape:'cup',size:[.096,.078,.096],net:'400g',flash:'Plain',art:'yogurt',tag:'100% fresh milk'},
- bread:{shape:'bag',size:[.19,.235,.12],net:'6 slices',flash:'Milk',art:'bread',tag:'Soft white loaf'},
- bento:{shape:'tray',size:[.19,.052,.135],net:'1 meal',flash:'Makunouchi',art:'bento',tag:'Made by hand today'},
- sandwich:{shape:'box',size:[.12,.12,.052],net:'2 halves',flash:'Egg',art:'sandwich',tag:'Fluffy egg salad'},
- pudding:{shape:'cup',size:[.076,.062,.076],net:'85g',flash:'Custard',art:'pudding',tag:'Melt-in-the-mouth'},
- bun:{shape:'bag',size:[.15,.12,.09],net:'1 piece',flash:'Piping hot',art:'bun',tag:'Pork bun'},
-});
+export const PACKS=Object.freeze(Object.fromEntries(PRODUCTS.filter(p=>p.cells.price!=null).sort((a,b)=>a.cells.price-b.cells.price).concat(PRODUCTS.filter(p=>p.cells.price==null))
+ .map(({id,pack:k})=>[id,{shape:k.declared?.shape??k.shape,size:[...(k.declared?.size??k.size)],net:k.net,flash:k.flash,art:k.art,tag:k.tag}])));
 
 const brandFor=id=>STORE_BRANDS[id==='bun'?'buns':id]||STORE_BRANDS.stock;
 
@@ -305,42 +274,16 @@ export function drawFront(id,w=1024,h=1024){
  return c;
 }
 
-const INGREDIENTS={
- chips:'Potatoes, vegetable oil, salt',
- crackers:'Rice, soy sauce, sugar, nori',
- biscuit:'Wheat flour, butter, sugar, egg, salt',
- chocolate:'Sugar, cocoa mass, whole milk powder, cocoa butter, flavouring',
- candy:'Sugar, glucose syrup, fruit juice, acidulant, flavouring, colour',
- curry:'Wheat flour, beef fat, curry powder, salt, sugar, spices',
- noodles:'Fried noodles (wheat flour, vegetable oil, salt), soup (soy sauce, salt, spices), toppings (naruto, spring onion)',
- soup:'Miso, wakame, spring onion, tofu, bonito extract',
- tuna:'Tuna, soybean oil, salt, vegetable extract',
- peaches:'White peaches, sugar, acidulant',
- soy:'Soybeans, wheat, salt',
- rice:'Rice, pickled plum, nori, salt',
- bun:'Wheat flour, pork, onion, soy sauce, sugar',
- bread:'Wheat flour, milk, sugar, butter, yeast, salt',
- tea:'Green tea, vitamin C',
- coffee:'Milk, coffee, sugar, emulsifier',
- cola:'Sugars, carbonation, caramel colour, acidulant, flavouring, caffeine',
- water:'Water (mineral water)',
- beer:'Malt, hops',
- milk:'100% fresh milk',
- orange:'100% mandarin juice',
- soda:'Sugar, carbonation, acidulant, flavouring',
- yogurt:'Fresh milk, dairy products',
- pudding:'Milk, sugar, egg, caramel sauce',
- bento:'Rice, grilled salmon, rolled omelette, fried chicken, simmered vegetables, pickles',
- sandwich:'Bread, egg, mayonnaise, salt, pepper',
- soap:'Soap base, fragrance, glycerin',
- detergent:'Surfactants, carbonates, optical brightener, enzymes',
- tissues:'100% pulp',
- toothpaste:'Calcium carbonate, glycerin, flavouring, sodium fluoride',
- battery:'Alkaline battery LR6 1.5V',
- notebook:'Fine paper · 30 sheets · 7mm ruled · sewn binding',
- postcard:'Postcard · a morning on the harbour',
-};
-const FOOD=new Set(['chips','crackers','biscuit','chocolate','candy','curry','noodles','soup','tuna','peaches','rice','bun','bread','tea','coffee','cola','water','beer','milk','orange','soda','yogurt','pudding','bento','sandwich','soy']);
+/** What the back panel lists as the ingredients (or the contents, for what is not food). */
+export const INGREDIENTS=Object.freeze(Object.fromEntries(PRODUCTS.filter(p=>p.pack.back.ingredients!=null).map(p=>[p.id,p.pack.back.ingredients])));
+/**
+ * What a pack's back panel prints: whether it is food (ingredients, nutrition, a best-before date), the unit its
+ * nutrition is given per, its recycling mark, and its ingredients. Anything that is not a product prints as packaging.
+ */
+export function backPanel(id){
+ const back=PRODUCT_BY_ID[id]?.pack.back;
+ return back?{food:back.food,unit:back.unit,recycle:back.recycle,ingredients:back.ingredients??undefined}:{food:false,unit:'pack',recycle:'PLA',ingredients:undefined};
+}
 
 /** The back: ingredients, nutrition, maker, barcode, recycling mark. */
 export function drawBack(id,w=1024,h=1024){
@@ -352,7 +295,7 @@ export function drawBack(id,w=1024,h=1024){
  const bx=pad,by=h*.14,bw=w-pad*2,bh=h*.5;
  text(ctx,'一括表示',bx,by-h*.018,Math.round(m*.026),brand.ink,{align:'left',font:GOTHIC});
  ctx.fillStyle='#fffdf7';ctx.fillRect(bx,by,bw,bh);ctx.strokeStyle='#2a2a2a';ctx.lineWidth=m*.004;ctx.strokeRect(bx,by,bw,bh);
- const food=FOOD.has(id),rows=[['名称|Product',brand.line],[food?'原材料名|Ingredients':'品名|Contents',INGREDIENTS[id]||'—'],['内容量|Net',pack.net],[food?'賞味期限|Best before':'製造|Made',food?'See base':'1997'],['保存方法|Storage',food?'Keep cool, dry and out of the sun':'Keep out of reach of children'],['製造者|Maker',brand.name+' Co. · 1-'+(seedOf(id)%40+1)+' Harbour Town, Okinawa']];
+ const back=backPanel(id),food=back.food,rows=[['名称|Product',brand.line],[food?'原材料名|Ingredients':'品名|Contents',back.ingredients||'—'],['内容量|Net',pack.net],[food?'賞味期限|Best before':'製造|Made',food?'See base':'1997'],['保存方法|Storage',food?'Keep cool, dry and out of the sun':'Keep out of reach of children'],['製造者|Maker',brand.name+' Co. · 1-'+(seedOf(id)%40+1)+' Harbour Town, Okinawa']];
  const rh=bh/rows.length,col=bw*.24,fs=Math.round(m*.032);
  rows.forEach(([k,v],i)=>{const y=by+i*rh;if(i){ctx.beginPath();ctx.moveTo(bx,y);ctx.lineTo(bx+bw,y);ctx.stroke();}
   // The key in Japanese as printed, with the English under it in small type.
@@ -369,13 +312,13 @@ export function drawBack(id,w=1024,h=1024){
  const ny=by+bh+h*.04;
  if(food){
   const R=rng(seedOf(id)+3),kcal=Math.round(40+R()*480);
-  text(ctx,'Nutrition (per '+(['tea','coffee','cola','water','beer','milk','orange','soda'].includes(id)?'bottle':'pack')+')',bx,ny,Math.round(m*.03),brand.ink,{align:'left',font:GOTHIC});
+  text(ctx,'Nutrition (per '+back.unit+')',bx,ny,Math.round(m*.03),brand.ink,{align:'left',font:GOTHIC});
   text(ctx,`Energy ${kcal}kcal · Protein ${(R()*12).toFixed(1)}g · Fat ${(R()*25).toFixed(1)}g · Carbohydrate ${(R()*60).toFixed(1)}g · Sodium ${Math.round(R()*900)}mg`,bx,ny+h*.045,Math.round(m*.026),'#2a2a2a',{align:'left',font:GOTHIC,weight:'normal',maxWidth:bw});
  }else text(ctx,'Read the directions carefully before use.',bx,ny,Math.round(m*.03),brand.ink,{align:'left',font:GOTHIC});
  // The barcode, the recycling mark and the customer line.
  barcode(ctx,w-pad-w*.36,h*.78,w*.36,h*.12,id);
  const rx=pad+m*.07,ry=h*.86;ctx.strokeStyle=brand.ink;ctx.lineWidth=m*.008;ctx.beginPath();ctx.moveTo(rx,ry-m*.06);ctx.lineTo(rx+m*.06,ry+m*.04);ctx.lineTo(rx-m*.06,ry+m*.04);ctx.closePath();ctx.stroke();
- text(ctx,['tea','cola','water','soy','soda'].includes(id)?'PET':['coffee','beer','tuna','peaches'].includes(id)?'CAN':'PLA',rx,ry+m*.012,Math.round(m*.03),brand.ink,{font:GOTHIC});
+ text(ctx,back.recycle,rx,ry+m*.012,Math.round(m*.03),brand.ink,{font:GOTHIC});
  text(ctx,'Customer line 0120-'+String(100+seedOf(id)%900)+'-'+String(1000+seedOf(id)%9000),pad,h*.95,Math.round(m*.026),'#2a2a2a',{align:'left',font:GOTHIC,weight:'normal'});
  return c;
 }

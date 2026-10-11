@@ -1,8 +1,8 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {assetURL} from '../../assets.js';
-import {STORE_BRANDS,BRAND_ATLAS_KEYS} from '../../commerce/brands.js';
+import {STORE_BRANDS,BRAND_ATLAS_KEYS,ATLAS_CELLS} from '../../commerce/brands.js';
 import {GROCERY_ITEMS as STORE_ITEMS} from '../../commerce/catalogue.js';
-import {FLAVOURS} from '../../commerce/flavours.js';
+import {PRODUCTS,PRODUCT_BY_ID} from '../../commerce/products-data.js';
 import {FRESH_LABELS,drawFreshLabel} from '../../commerce/fresh-labels.js';
 
 export const POSTER_SPECS=Object.freeze([
@@ -19,15 +19,19 @@ export const ATLAS_COLS=4,ATLAS_ROWS=20;
  */
 export const ATLAS_SPAN=ATLAS_COLS*2;
 const COLS=ATLAS_COLS,ROWS=ATLAS_ROWS,TW=256,TH=128;
-const slots=new Map(BRAND_ATLAS_KEYS.map((id,i)=>[id,i]));
+// Every label, price tag and flavour has its own cell (data/studio/products.json), so adding or retiring a product
+// never moves another one's cells.
+const slots=new Map(BRAND_ATLAS_KEYS.map(key=>[key,ATLAS_CELLS[key]]));
 export const packagingSlot=id=>slots.get(id==='bun'?'buns':id);
 // Packaging takes the first rows, shelf prices the rest. The two printed overlays
 // only cover the first eight rows, so anything added after them is drawn here.
-const priceSlot=id=>BRAND_ATLAS_KEYS.length+STORE_ITEMS.findIndex(item=>item.id===id);
-/** Flavour k (1 = the first flavour) of a line: its cell in the right half, in order. */
+/** The cell of a line's shelf price tag (null for what has none, like the bun in the steamer). */
+export const priceSlot=id=>PRODUCT_BY_ID[id]?.cells.price??null;
+/** Flavour k (1 = the first flavour) of a line: its cell in the right half. */
 const variantCells=new Map();
-for(const [id,list] of Object.entries(FLAVOURS))list.forEach(([name,hue],i)=>variantCells.set(id+':'+(i+1),{index:variantCells.size,id,name,hue}));
-if(variantCells.size>COLS*ROWS)throw Error('Too many Sakura flavours for the atlas');
+for(const {id,cells} of [...PRODUCTS].filter(p=>p.cells.flavours.length).sort((a,b)=>a.cells.flavours[0].cell-b.cells.flavours[0].cell))
+ cells.flavours.forEach(({name,hue,cell},i)=>variantCells.set(id+':'+(i+1),{index:cell,id,name,hue}));
+if([...slots.values(),...STORE_ITEMS.map(i=>priceSlot(i.id))].some(c=>c>=COLS*ROWS)||[...variantCells.values()].some(c=>c.index>=COLS*ROWS))throw Error('A Sakura label is outside the atlas');
 const cellOrigin=(slot,right=false)=>[(slot%COLS+(right?COLS:0))*TW,Math.floor(slot/COLS)*TH];
 /**
  * How far a pack's printed UVs move to show flavour k instead of the original: added to

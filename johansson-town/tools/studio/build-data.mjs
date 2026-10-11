@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
  * Makes World's modules from Studio's published data, so World reads the data synchronously like any other module:
- *   data/studio/looks.json → src/avatars/looks-data.js        each resident's published look: only its fields (cast.js)
- *                          → src/studio/characters-data.js    the Studio-only characters (Johansson Studio's pickers)
- * (products.json → src/commerce/products-data.js arrives in stage 2.)
+ *   data/studio/looks.json    → src/avatars/looks-data.js        each resident's published look: only its fields (cast.js)
+ *                             → src/studio/characters-data.js    the Studio-only characters (Johansson Studio's pickers)
+ *   data/studio/products.json → src/commerce/products-data.js    Sakura's products, their prints and the retired lines
+ *                                                                (brands.js, catalogue.js and the other views read it)
  * The notes and dates stay in looks.json, and the characters have a module of their own that World's avatar code does
  * not import, so a new Studio character or a note never makes the resident guide's portraits (which hash
  * looks-data.js) out of date.
@@ -49,12 +50,38 @@ export const STUDIO_CHARACTERS=freeze(${value(characters)});
 `;
 }
 
+/**
+ * products-data.js for a products.json: the products as World reads them, frozen, and found by id with PRODUCT_BY_ID
+ * (an object with no prototype, so an id like "constructor" is no product). The JSON's own description stays there.
+ */
+export function productsModule(jsonText){
+ const {products,prints,retired}=JSON.parse(jsonText);
+ return `// Generated from data/studio/products.json by tools/studio/build-data.mjs. Do not edit it: change a product in Johansson
+// Studio or with the johansson-studio tools (avatar-creator/docs/STUDIO-MCP.md). CI refuses a copy that does not match the data.
+${FREEZE}
+/** The sha256 of the products, prints and retired lines (their canonical JSON). */
+export const FINGERPRINT='${recordSha256({products,prints,retired})}';
+/** Sakura Shōten's products, in the order Thuan walks the floor (data/studio/products.json says what every field is). */
+export const PRODUCTS=freeze(${value(products)});
+/** A product by its id (its save key). */
+export const PRODUCT_BY_ID=freeze(Object.assign(Object.create(null),Object.fromEntries(PRODUCTS.map(p=>[p.id,p]))));
+/** Printed matter in the label atlas that is not stock: the delivery carton, the shop's mark, the magazines, the paper. */
+export const PRINTS=freeze(${value(prints)});
+/** Lines taken off sale: kept so old saves still know them; their ids are never used again. */
+export const RETIRED=freeze(${value(retired)});
+`;
+}
+
 /** Each generated module and whether it matches its data: [{path, from, fresh, text}]. */
 export async function plan(repo=openRepo()){
  const looks=await repo.read(PATHS.looks),items=[];
  for(const [path,make] of [[PATHS.looksModule,looksModule],[PATHS.charactersModule,charactersModule]]){
   const text=make(looks),now=await repo.read(path).catch(()=>null);
   items.push({path,from:PATHS.looks,fresh:now===text,text});
+ }
+ if(await repo.exists(PATHS.products)){
+  const text=productsModule(await repo.read(PATHS.products)),now=await repo.read(PATHS.productsModule).catch(()=>null);
+  items.push({path:PATHS.productsModule,from:PATHS.products,fresh:now===text,text});
  }
  return items;
 }

@@ -1,3 +1,4 @@
+import {PRODUCTS} from './products-data.js';
 // What the town's drinks machines sell: a 1997 Okinawan line-up, under the town's own
 // placeholder brands. inventoryName is what goes in the bag and stays stable for saved
 // games (Green tea and Canned coffee were the first two). `container` decides what is
@@ -12,11 +13,16 @@ export const VENDING_PRODUCTS=Object.freeze([
 ].map(p=>Object.freeze({...p,label:p.buttonLabel||`${p.brand[0]+p.brand.slice(1).toLowerCase()} · ${p.subtitle}${p.hot?' (hot)':''} · ¥${p.price}`})));
 export const VENDING_AD=Object.freeze({brand:'MINATO DRINKS',tagline:'A break at the port',background:'#244b4a',foreground:'#f4e8cb'});
 
-/** Everything you can drink from your bag, and what it leaves you holding. */
+/**
+ * Everything you can drink from your bag, and what it leaves you holding: the machines' cans, and Sakura's products
+ * that are drinks of their own (`drink` in data/studio/products.json: Sakura's beer).
+ */
+const SHOP_DRINKS=PRODUCTS.filter(p=>p.drink);
+const shopDrink=name=>SHOP_DRINKS.find(p=>p.inventoryName===name);
 export const EMPTY_CAN='Empty can';
-export const DRINKABLE=Object.freeze(new Set([...VENDING_PRODUCTS.map(p=>p.inventoryName),'Umineko lager']));
-export const emptyFor=name=>{const p=VENDING_PRODUCTS.find(x=>x.inventoryName===name);return p?.container==='bottle'?'Returnable glass bottle':EMPTY_CAN;};
+export const DRINKABLE=Object.freeze(new Set([...VENDING_PRODUCTS.map(p=>p.inventoryName),...SHOP_DRINKS.map(p=>p.inventoryName)]));
+export const emptyFor=name=>{const p=VENDING_PRODUCTS.find(x=>x.inventoryName===name)||shopDrink(name)?.drink;return p?.container==='bottle'?'Returnable glass bottle':EMPTY_CAN;};
 /** The can's colour in your hand. */
-export const canColour=name=>{const p=VENDING_PRODUCTS.find(x=>x.inventoryName===name);return p?parseInt(p.color.slice(1),16):name==='Umineko lager'?0x2d6b9a:0x91734e;};
+export const canColour=name=>{const p=VENDING_PRODUCTS.find(x=>x.inventoryName===name),own=shopDrink(name);return p?parseInt(p.color.slice(1),16):own?parseInt(own.drink.handColour.slice(1),16):0x91734e;};
 /** What Thuan gives back for each empty can in the recycling box by the door. */
 export const CAN_REFUND=10;
