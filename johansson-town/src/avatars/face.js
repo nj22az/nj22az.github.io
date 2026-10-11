@@ -108,7 +108,7 @@ export const EXPRESSION_INFO=Object.freeze({
 export const EXPRESSION_GLYPHS=Object.freeze({neutral:'•ᴗ•',happy:'◠ᴗ◠',laugh:'≧▽≦',smile:'•◡•',sad:'•︵•',angry:'>︿<',shy:'˶ᴗ˶',surprised:'⊙o⊙',worried:'•﹏•',
  thinking:'•_•',grumpy:'¬_¬',content:'˘ᴗ˘',sleep:'－ᴗ－',excited:'☆ᴗ☆',dizzy:'@_@',scheme:'¬ᴗ¬',embarrassed:'>﹏<;',pain:'>_<',bliss:'˘▽˘',shock:'°□°',
  dismay:'•_•;',calm:'•‿•',daze:'◔_◔',dry:'－_－',hope:'•̀ᴗ•́',focus:'•̀_•́',relieved:'˘◡˘',gobsmacked:'⊙Д⊙',smug:'¬‿¬',bawling:'ToT',starstruck:'★ᴗ★',
- sweatdrop:'^^;',blank:'○_○',pouting:'(•3•)',bleh:'^ڡ^',drowsy:'＝o＝',lovestruck:'♥ᴗ♥',fuming:'>皿<',drooling:'¯﹃¯',wink:'•ᴗ<'});
+ sweatdrop:'^^;',blank:'○_○',pouting:'(•3•)',bleh:'^ڡ^',drowsy:'＝o＝',lovestruck:'♥ᴗ♥',fuming:'>д<',drooling:'¯﹃¯',wink:'•ᴗ<'});
 
 /**
  * @param {CanvasRenderingContext2D} ctx

@@ -1,17 +1,17 @@
 {
-  "_actors-DxCLY9tS.js": {
-    "file": "actors-DxCLY9tS.js",
+  "_actors-dK1IJT6b.js": {
+    "file": "actors-dK1IJT6b.js",
     "name": "actors",
     "imports": [
-      "_izakaya-serving-visuals-CXFLpERN.js"
+      "_izakaya-serving-visuals-epwaWKGg.js"
     ]
   },
   "_icons-BJJ0w3BS.js": {
     "file": "icons-BJJ0w3BS.js",
     "name": "icons"
   },
-  "_izakaya-serving-visuals-CXFLpERN.js": {
-    "file": "izakaya-serving-visuals-CXFLpERN.js",
+  "_izakaya-serving-visuals-epwaWKGg.js": {
+    "file": "izakaya-serving-visuals-epwaWKGg.js",
     "name": "izakaya-serving-visuals"
   },
   "_spector.bundle-_JPoFEkN.js": {
@@ -33,26 +33,26 @@
     ]
   },
   "src/avatars/export.js": {
-    "file": "export-CnAVTRCv.js",
+    "file": "export-DrgXozSA.js",
     "name": "export",
     "src": "src/avatars/export.js",
     "isDynamicEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-CXFLpERN.js"
+      "_izakaya-serving-visuals-epwaWKGg.js"
     ]
   },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-CgMXYBCX.js",
+    "file": "portraits-Cjv5pHqo.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-CXFLpERN.js",
-      "_actors-DxCLY9tS.js"
+      "_izakaya-serving-visuals-epwaWKGg.js",
+      "_actors-dK1IJT6b.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-YMaf3eDa.js",
+    "file": "boot-DjMU4lgO.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -67,22 +67,22 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-BpTLzLyV.js",
+    "file": "feed-Dkp8WslT.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-CXFLpERN.js"
+      "_izakaya-serving-visuals-epwaWKGg.js"
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-CDj85nAg.js",
+    "file": "game-CniSmbOk.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-CXFLpERN.js",
-      "_actors-DxCLY9tS.js",
+      "_izakaya-serving-visuals-epwaWKGg.js",
+      "_actors-dK1IJT6b.js",
       "_town-audio-DW-GV35O.js",
       "_icons-BJJ0w3BS.js"
     ],
