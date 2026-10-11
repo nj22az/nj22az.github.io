@@ -55,3 +55,22 @@ test('surprise raises both hands once and leaves walking and seated actions in c
  anim.stop();anim.update(.1,{expression:'neutral'});anim.update(.1,{expression:'surprised',speed:1});assert.equal(anim.gesture,null,'walking keeps its stride');
  anim.update(.1,{expression:'neutral'});anim.update(.1,{expression:'surprised',seated:true});assert.equal(anim.gesture,null,'seated activities keep their pose');a.dispose();
 });
+
+test('the funny faces: each has its purpose, keeps its marks with every eye style, and is in every expression list',async()=>{
+ const {EXPRESSION_INFO,EXPRESSION_GLYPHS}=await import('../src/avatars/face.js');
+ const {EXPRESSIONS:PHOTO}=await import('../src/photo/layout.js');
+ const funny=['gobsmacked','smug','bawling','starstruck','sweatdrop','blank','pouting','bleh','drowsy','lovestruck','fuming','drooling','wink'];
+ for(const name of funny){assert.ok(EXPRESSION_NAMES.includes(name),name);assert.ok(EXPRESSION_INFO[name]?.length>20,name+' says what it is for');}
+ for(const name of EXPRESSION_NAMES)assert.ok(EXPRESSION_GLYPHS[name],name+' has a face for the chips');
+ assert.deepEqual([...PHOTO],[...EXPRESSION_NAMES],'the photo studio offers World’s one list');
+ // The mark that makes each gag, whatever the eyes are like.
+ const marks={starstruck:'#f6c945',lovestruck:'#e5484d',sweatdrop:'#bfe6fb',fuming:'#d8342c',bawling:'rgba(150,205,240,.88)',drooling:'rgba(200,232,248,.92)',blank:'rgba(70,78,160,.6)'};
+ for(const style of PARTS.eyes){
+  const recipe=normalizeRecipe({eyes:{style}});
+  for(const [name,colour] of Object.entries(marks))assert.ok(drawing(recipe,{expression:name}).includes(JSON.stringify(colour)),style+' '+name);
+  // Symbol eyes and a wink are drawings, not lids: a blink leaves them as they are.
+  for(const name of ['starstruck','lovestruck','blank','bawling','wink'])assert.equal(drawing(recipe,{expression:name,blink:1}),drawing(recipe,{expression:name}),style+' '+name+' through a blink');
+  // A face with its own look (the smug sideways glance) keeps it whatever the gaze would be.
+  assert.equal(drawing(recipe,{expression:'smug',look:[-1,1]}),drawing(recipe,{expression:'smug'}),style+' smug looks its own way');
+ }
+});

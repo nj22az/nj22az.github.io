@@ -1,3 +1,4 @@
+import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs';
 export const SCENE_KEY='nj-studio-scene-v1';
 export const MAX_ACTORS=6;
 export const MAX_PANELS=4;
@@ -7,8 +8,8 @@ export const LOCATIONS=Object.freeze([
  ['town-hall','Mayor’s office'],['harbour','Harbour'],['pier','Outer pier'],
  ['park','Harbour Park'],['garden','Japanese garden'],['rainflower','Rainflower Lane']
 ]);
-export const POSES=Object.freeze(['Idle','Wave','Cheer','Point','Shrug','Laugh','Think','Bow','Clap','Kachashi','Crouch','Sit','Heart','Peace','Coy','Tada','HandsOnHips','HeelKick','CheekRest','DoubleCheek']);
-export const EXPRESSIONS=Object.freeze(['neutral','happy','laugh','smile','sad','angry','shy','surprised','worried','thinking','grumpy','content','sleep']);
+// Poses and faces are World's own lists (scene-catalogue.mjs); a saved scene keeps any pose or face World knows.
+export {POSES,EXPRESSIONS} from './scene-catalogue.mjs';
 const clamp=(v,lo,hi,fallback)=>Number.isFinite(Number(v))?Math.min(hi,Math.max(lo,Number(v))):fallback;
 export const text=v=>Array.from(String(v??'').replace(/[\u0000-\u001f]/g,' ')).slice(0,120).join('');
 export function emptyScene(){return {version:2,location:'harbour',format:'landscape',style:'photo',top:'',bottom:'',camera:{orbit:0,elevation:0,zoom:1},actors:[]};}
@@ -22,14 +23,25 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  out.actors=(Array.isArray(raw.actors)?raw.actors:[]).slice(0,MAX_ACTORS).filter(a=>a&&a.recipe&&typeof a.recipe==='object'&&!Array.isArray(a.recipe)).map((a,i)=>({
   id:'actor-'+i,name:text(a.name)||'Character',recipe:normalizeRecipe(a.recipe),
   x:raw.version===2?clamp(a.x,-8,8,0):i*.65,z:raw.version===2?clamp(a.z,-8,8,0):0,size:raw.version===2?clamp(a.size,.6,1.4,1):1,seat:raw.version===2?text(a.seat):'',
-  turn:clamp(a.turn,-180,180,0),pose:POSES.includes(a.pose)?a.pose:'Idle',
-  expression:EXPRESSIONS.includes(a.expression)?a.expression:'smile',speech:text(a.speech)
+  turn:clamp(a.turn,-180,180,0),pose:KNOWN_POSES.has(a.pose)?a.pose:'Idle',
+  expression:KNOWN_EXPRESSIONS.has(a.expression)?a.expression:'smile',speech:text(a.speech)
  }));return out;
 }
 export function addCharacter(state,recipe,name=recipe.name||'Character'){
  if(state.actors.length>=MAX_ACTORS)return null;
- const n=state.actors.length,actor={id:'actor-'+Date.now()+'-'+n,name:text(name),recipe:structuredClone(recipe),x:(n%3)*.7,z:Math.floor(n/3)*.8,size:1,seat:'',turn:0,pose:'Idle',expression:'smile',speech:''};
+ const n=state.actors.length,actor={id:'actor-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),name:text(name),recipe:structuredClone(recipe),x:(n%3)*.7,z:Math.floor(n/3)*.8,size:1,seat:'',turn:0,pose:'Idle',expression:'smile',speech:''};
  state.actors.push(actor);return actor;
+}
+/** Take a character out of the scene; returns what Undo needs ({actor,index}), or null. */
+export function removeCharacter(state,id){
+ const index=state.actors.findIndex(a=>a.id===id);if(index<0)return null;
+ const [actor]=state.actors.splice(index,1);return {actor,index};
+}
+/** Undo a removal: the same character back in its place in the cast (its seat only if still free). */
+export function restoreCharacter(state,removed){
+ if(!removed?.actor||state.actors.length>=MAX_ACTORS||state.actors.some(a=>a.id===removed.actor.id))return null;
+ const actor=removed.actor;if(actor.seat&&state.actors.some(a=>a.seat===actor.seat)){actor.seat='';if(actor.pose==='Sit')actor.pose='Idle';}
+ state.actors.splice(Math.min(removed.index,state.actors.length),0,actor);return actor;
 }
 export function moveCharacter(actor,x,z){actor.x=clamp(x,-8,8,actor.x);actor.z=clamp(z,-8,8,actor.z);}
 export function panelOrder(panels,index,delta){const to=index+delta;if(to<0||to>=panels.length)return;[panels[index],panels[to]]=[panels[to],panels[index]];}

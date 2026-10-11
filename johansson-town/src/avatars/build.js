@@ -555,14 +555,61 @@ function addAccessories(list,recipe,m){
   if(a.earrings==='studs')ball(list,R*.085,[x,y,z],'head',c,[1,1,.65],8,6);
   else part(list,new THREE.TorusGeometry(R*.16,R*.035,6,14),'head',c,M(x,y-R*.1,z,0,sign*.5));
  }
- if(a.neckwear==='pendant'){
-  part(list,new THREE.TorusGeometry(m.width*.3,m.k*.007,5,18),'chest',nc,M(0,m.neckY-.035,m.depth*.05,Math.PI/2-.5));
-  ball(list,m.k*.025,[0,m.neckY-.12,m.depth*.53],'chest',nc,[.7,1,.35],8,6);
- }else if(a.neckwear==='scarf'){
+ if(a.neckwear==='pendant')addNecklace(list,recipe,m,nc);
+ else if(a.neckwear==='scarf'){
   part(list,new THREE.TorusGeometry(m.armR*1.7,m.armR*.55,6,18),'chest',c,M(0,m.neckY-.035,0,Math.PI/2));
   part(list,new THREE.BoxGeometry(m.width*.22,m.torso*.5,.025),'chest',c,M(m.width*.14,m.neckY-m.torso*.28,m.depth*.53,0,0,-.15));
  }
  if(a.pin)ball(list,m.k*.024,[m.width*.22,m.neckY-m.torso*.28,m.depth*.52],'chest',c,[1,1,.3],8,6);
+}
+/**
+ * A pendant necklace, worn the way people wear one: a fine chain laid on the body round the base of the neck (bodyVolume,
+ * so it rests on the shoulders, never in the air and never inside them), dipping at the front to the pendant, which hangs
+ * from its lowest point. Never over a collar: with a collared top the chain goes round the neck under the collar, out of
+ * sight, and only its last drop and the pendant show, coming out from where the collar meets at the front (`under`: for
+ * each such top, [half the gap there, its height up the torso, the pendant's height], as garment.js draws the collar);
+ * under a uniform's tie, a sailor collar's scarf or a happi coat's crossed bands it does not show at all (`hidden`).
+ * The chain itself is a fine line, so it carries only a hair of ink. Sizes are metres for a body of 1.6 m.
+ */
+export const NECKLACE=Object.freeze({clear:.012,radius:.0026,gap:.0012,front:.86,pendant:.015,anchor:1.25,
+ under:Object.freeze({blouse:Object.freeze([.01,.85,.795]),smock:Object.freeze([.01,.85,.795]),apron:Object.freeze([.01,.85,.795]),
+  polo:Object.freeze([.012,.95,.86]),contrastpolo:Object.freeze([.012,.95,.86]),jacket:Object.freeze([.009,.97,.84]),cardigan:Object.freeze([.009,.97,.84])}),
+ hidden:Object.freeze(['police','sailor','sailorlong','festival'])});
+/**
+ * Where the necklace lies on this body in its rest pose: its chain (one closed loop round the neck, or the two short drops
+ * that come out from under a collar) as points on the chain's centre line, and the pendant (its middle, the way it faces
+ * and its size). Null when it does not show. Pure, for tests and addNecklace.
+ */
+export function necklaceShape(input,m=measure(input)){
+ const recipe=normalizeRecipe(input),N=NECKLACE,top=recipe.outfit.top;
+ if(N.hidden.includes(top))return null;
+ const vol=bodyVolume(recipe,m),W=m.width,D=m.depth,k=m.k,under=N.under[top],low=under?under[2]:N.front;
+ // A point on the front of the body, x across from the middle, at the height t up the torso.
+ const front=(x,t)=>vol.surf(Math.asin(THREE.MathUtils.clamp(x/(W/2*latheRadius(vol.prof,t)),-1,1)),t);
+ // Laid on the body, then lifted so the chain rests on it.
+ const lay=points=>laidFrames(vol,points).map(f=>f.c.clone().addScaledVector(f.n,(N.gap+N.radius)*k));
+ const strands=[];
+ if(under)for(const s of [-1,1])strands.push({closed:false,points:lay([0,.25,.5,.75,1].map(f=>front(s*under[0]*k*(1-f),under[1]+(low-under[1])*f)))});
+ else{
+  // Round the back of the neck on the shoulders' slope, `clear` off the neck, then down the front to the pendant.
+  const rho=m.armR*1.08+N.clear*k,ringT=a=>vol.tAt(Math.min(1,rho*Math.hypot(Math.sin(a)/(W/2),Math.cos(a)/(D/2))));
+  const A=N.anchor,tA=ringT(A),path=[];
+  for(let i=0;i<24;i++){const a=A+(Math.PI*2-2*A)*i/24;path.push(vol.surf(a,ringT(a)));}
+  for(let i=0;i<24;i++){const a=-A+2*A*i/24;path.push(vol.surf(a,low+(tA-low)*Math.abs(a/A)**1.5));}
+  strands.push({closed:true,points:lay(new THREE.CatmullRomCurve3(path,true,'centripetal').getSpacedPoints(96).slice(0,-1))});
+ }
+ // The pendant: a small drop hanging from the chain's lowest point, lying on the chest.
+ const size=N.pendant*k,[f]=laidFrames(vol,[front(0,low-size*1.1/m.torso)]);
+ return {strands,radius:N.radius*k,pendant:{at:f.c.clone().addScaledVector(f.n,N.gap*k+size*.38),normal:f.n,size},low};
+}
+function addNecklace(list,recipe,m,colour){
+ const shape=necklaceShape(recipe,m);if(!shape)return;
+ for(const {points,closed} of shape.strands){
+  const piece=part(list,new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points,closed,'centripetal'),closed?120:16,shape.radius,5,closed),'chest',colour);
+  piece.attributes.ink.array.fill(.1);
+ }
+ const {at,normal,size}=shape.pendant,q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),normal);
+ part(list,new THREE.SphereGeometry(1,12,8),'chest',colour,new THREE.Matrix4().compose(at,q,new THREE.Vector3(size*.72,size,size*.38))).attributes.ink.array.fill(.3);
 }
 
 /** Long hair, a lipstick or no beard and a slight build: a swimming costume, not trunks. */

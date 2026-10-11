@@ -93,9 +93,10 @@ function addWalkablePier(world,options,factory){
   // deck plainly wins, and let the deck and the two rails cover its top between them,
   // so the face underneath is never the one you see.
   factory.box(group,[OUTER_PIER.width,.38,OUTER_PIER.length],[OUTER_PIER.x,OUTER_PIER.height-.025-.19,OUTER_PIER.z],concrete,null,options.shadows);
-  factory.box(group,[.34,.56,15.45],[-4.02,OUTER_PIER.height+.02-.28,-57.3],dark,null,options.shadows);
-  factory.box(group,[.34,.56,15.45],[4.02,OUTER_PIER.height+.02-.28,-57.3],dark,null,options.shadows);
-  factory.box(group,[8.2,.58,.42],[0,OUTER_PIER.height+.02-.29,-64.84],dark,null,options.shadows);
+  // The coping along both flanks and across the end, the pier's whole length (to z -88 since it was lengthened).
+  factory.box(group,[.34,.56,OUTER_PIER.length+.15],[-4.02,OUTER_PIER.height+.02-.28,OUTER_PIER.z],dark,null,options.shadows);
+  factory.box(group,[.34,.56,OUTER_PIER.length+.15],[4.02,OUTER_PIER.height+.02-.28,OUTER_PIER.z],dark,null,options.shadows);
+  factory.box(group,[8.2,.58,.42],[0,OUTER_PIER.height+.02-.29,OUTER_PIER.z-OUTER_PIER.length/2+.11],dark,null,options.shadows);
   const posts=[];
   // Rails on the east flank only. The west flank is the ferry's berth: a berthing face carries
   // fenders and bollards, and a rail there would foul her lines and stand across her gangway.

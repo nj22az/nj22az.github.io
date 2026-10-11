@@ -7,6 +7,7 @@ import {playerRecipe} from '../avatars/actors.js';
 import {CAST_LIMIT,PHOTO_LIMIT,FORMATS,POSES,EXPRESSIONS,cleanCaption,frameSize,comicLayout,drawCaptions} from './layout.js';
 import {BACKDROPS,FILMS,WARDROBE_COLOURS,filmCSS,applyFilm,createStudioSet,arrange} from './sets.js';
 import {PARTS,normalizeRecipe} from '../avatars/recipe.js';
+import {EXPRESSION_GLYPHS} from '../avatars/face.js';
 import {ISLAND_OUTFITS,ISLAND_COSTUMES,THUAN_SAILOR_OUTFIT,outfitAllowedFor} from '../avatars/outfits.js';
 import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 
@@ -186,7 +187,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
   for(const [n,list] of [['pose',POSES],['expression',EXPRESSIONS]]){
    const box=document.createElement('div');box.className='photo-chips';box.dataset.chips=n;box.setAttribute('role','group');box.setAttribute('aria-label',n==='pose'?'Pose choices':'Expression choices');
    const title=document.createElement('span');title.className='photo-chips-title';title.textContent=n==='pose'?'Pose':'Expression';box.append(title);
-   for(const value of list){const b=document.createElement('button');b.type='button';b.className='photo-chip';b.dataset.value=value;const label=POSE_LABELS[value]||value[0].toUpperCase()+value.slice(1);b.title=label;b.setAttribute('aria-label',label);const faces={neutral:'•ᴗ•',happy:'◠ᴗ◠',laugh:'≧▽≦',smile:'•◡•',sad:'•︵•',angry:'>︿<',shy:'˶ᴗ˶',surprised:'⊙o⊙',worried:'•﹏•',thinking:'•_•',grumpy:'¬_¬',content:'˘ᴗ˘',sleep:'－ᴗ－'};b.innerHTML=n==='expression'?'<span class="photo-face" aria-hidden="true">'+faces[value]+'</span>':svg(({Wave:'hand',Cheer:'star',Point:'hand',Shrug:'stand',Laugh:'talk',Think:'eye',Bow:'person',Clap:'hand',Kachashi:'moves',Crouch:'person',Sit:'chair',Heart:'heart',Peace:'hand',Coy:'heart',Tada:'star',HandsOnHips:'person',HeelKick:'run'})[value]||'person');const text=document.createElement('span');text.textContent=label;b.append(text);
+   for(const value of list){const b=document.createElement('button');b.type='button';b.className='photo-chip';b.dataset.value=value;const label=POSE_LABELS[value]||value[0].toUpperCase()+value.slice(1);b.title=label;b.setAttribute('aria-label',label);b.innerHTML=n==='expression'?'<span class="photo-face" aria-hidden="true">'+(EXPRESSION_GLYPHS[value]||'•ᴗ•')+'</span>':svg(({Wave:'hand',Cheer:'star',Point:'hand',Shrug:'stand',Laugh:'talk',Think:'eye',Bow:'person',Clap:'hand',Kachashi:'moves',Crouch:'person',Sit:'chair',Heart:'heart',Peace:'hand',Coy:'heart',Tada:'star',HandsOnHips:'person',HeelKick:'run'})[value]||'person');const text=document.createElement('span');text.textContent=label;b.append(text);
     b.onclick=()=>{if(field(n).disabled)return;field(n).value=value;field(n).onchange();};box.append(b);}
    chipRows[n]=box;row.after(box);
   }
