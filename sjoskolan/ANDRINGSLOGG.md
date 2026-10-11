@@ -186,6 +186,17 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 42: översikten ”Din vecka” överst på veckosidan (`verktyg/veckosidor/kursplan.py` `veckopanel_html`,
+  `gemensamt/veckopanel.mjs`, test `gemensamt/veckopanel.test.mjs`): steg klara, delar lästa (”Jag har läst” på delsidorna),
+  övningar klara, inlämningen (rätt svar eller inlämnad) och dagar kvar, och kursplanens punkter med stapel i områdets färg
+  (övningar plus inlämningens svar per punkt). Siffrorna räknas i elevens webbläsare. Rutorna längst ned i ”Det här lär du dig”
+  visas inte längre på veckor med översikten, så att varje siffra står en gång. Gäller vecka 42 (`PANEL`).
+- **2026-10-11** Övning 2.8 (EL-000138), facit: TSFS 2014:1 upphävdes den 1 mars 2019 genom TSFS 2019:4 *om maskininstallation,
+  elektrisk installation och periodvis obemannat maskinrum* (övergångsbestämmelserna i TSFS 2019:4, punkt 2; konsoliderad utgåva
+  t.o.m. TSFS 2021:101). Facit sade att TSFS 2017:26 ”om konstruktion och utrustning av fartyg” ersatte den, men TSFS 2017:26 heter
+  *om fartyg i nationell sjöfart* och upphäver inte TSFS 2014:1. Facit nämner nu båda: 2019:4 upphävde, 2017:26 gäller fartyg i
+  nationell sjöfart. Rättelsen 2026-09-29 nedan är därmed ändrad. Bokens skyddade lösning (bok.enc) behöver samma rättelse
+  (kräver BOKLOSEN). Regel: en uppgift om att en föreskrift har upphävts kontrolleras i den nya föreskriftens övergångsbestämmelser.
 - **2026-10-11** Vecka 42 måndag: ny presentation *Elektriska risker* i lektionsbildernas fasta mall (`verktyg/lektionsbilder/`),
   20 bilder i stället för 36: titel, kursplanen i dag (LM-2), startfråga, upplägg, delsidans sju teoriavsnitt och två exempel i
   samma ordning, övningar tillsammans på delsidan (1.2–1.4 och 1.1, 1.5), paus, avslutsfråga, sammanfattning, det här gör du nu och

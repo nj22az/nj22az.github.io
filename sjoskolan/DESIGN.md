@@ -146,6 +146,10 @@ Från vecka 42 är veckan en enda numrerad väg (”Så gör du den här veckan�
 bockas av med ”Klart” (sparas i webbläsaren, som en checklista i Notion). Steget att göra nu är det första som inte är
 bockat och som har börjat; bara dess första knapp är blå (en huvudknapp per vy). Rubriken har veckans områdesband.
 
+Översikten ”Din vecka” (från vecka 42) står direkt under rubriken: fyra rutor (steg klara, delar lästa, övningar klara,
+inlämningen) med en tunn stapel, sista dagen och dagar kvar, och kursplanens punkter med stapel i områdets färg och ”x av y”.
+Siffran står alltid i text; stapeln är bara stöd. Inga nya knappar: den enda blå knappen är fortfarande ”Nästa steg”.
+
 ### Genomgång (Zenn)
 
 Varje del följer samma mönster:

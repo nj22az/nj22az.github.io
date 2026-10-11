@@ -11,6 +11,7 @@ mätteknik) ingår i vecka 40, måndag ('flyttad'). Vecka 40 har en plan dag fö
 
     python3 sjoskolan/verktyg/veckosidor/bygg.py
 """
+import hashlib
 import re
 from html import escape
 from pathlib import Path
@@ -32,7 +33,7 @@ _spec.loader.exec_module(_inl)
 EPOST, epost_knapp = _inl.EPOST, _inl.epost_knapp
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
-from kursplan import kursplan_html, vecko_band  # veckans översikt efter kursplanens punkter LM-1–9 och områdenas färgkod
+from kursplan import PANEL, kursplan_html, vecko_band, veckopanel_html  # veckans översikt efter kursplanens punkter LM-1–9 och områdenas färgkod
 V = '20261011a'
 DAGPLAN_V = '20260927a'
 # Lektionerna från vecka 42 är online; samma text i varje veckas presentationsruta.
@@ -658,10 +659,18 @@ def enkel_vecka(nr, w, week_dir, delar_, delsida, labbar, redovisa, skicka, kick
     stod = ('<p class="vecka-stod"><strong>Att slå upp:</strong> <a href="../../gemensamt/Formelsamling.pdf">Formelsamling</a>'
             '<a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp</a>'
             '<a href="../../tentamen.html">Tentamen</a></p>' + mer('Mer att läsa (frivilligt)', extra))
+    panel = ''
+    if nr in PANEL:
+        # Översikten ”Din vecka”: stegen med Klart-ruta, veckans egna delsidor (läst-knapparna) och den självrättande inlämningen.
+        steg_ids = [m.group(1) for m in re.finditer(r'<li id="(steg-\d+)"[^>]*>', ''.join(steg)) if 'vag-klar' in steg[int(m.group(1).split('-')[1]) - 1]]
+        egna = [i for i in range(1, len(delar_) + 1) if (delsida(i) or '').startswith('Del_')]
+        modul = ROOT / 'gemensamt' / 'sjalvrattning.mjs'
+        sjalv = f'./sjalvrattning.mjs?v={hashlib.sha1(modul.read_bytes()).hexdigest()[:10]}' if modul.exists() else None
+        panel = veckopanel_html(nr, w, steg_ids, egna, sjalv)
     return (ENKEL_CSS + f'<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>'
-            f'<p class="course-lead">{escape(w["mal"])}</p>{vecko_band(nr, w)}</header>{nasta}'
+            f'<p class="course-lead">{escape(w["mal"])}</p>{vecko_band(nr, w)}</header>{panel}{nasta}'
             f'<section aria-labelledby="vag-rubrik"><h2 id="vag-rubrik">Så gör du den här veckan</h2>{lektionstext}'
-            f'<p class="vag-status" id="vag-status" aria-live="polite"></p><ol class="vag">{"".join(steg)}</ol></section>{kursplan_html(nr, w)}{stod}{nu_script}')
+            f'<p class="vag-status" id="vag-status" aria-live="polite"></p><ol class="vag">{"".join(steg)}</ol></section>{kursplan_html(nr, w, med_tal=nr not in PANEL)}{stod}{nu_script}')
 
 
 def page(nr, w):
