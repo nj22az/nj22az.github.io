@@ -274,6 +274,17 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   (EL-000728, EL-000732). Start- och avslutsfrågan för del 4 (EL-000731, EL-000732) var märkta LM-4 men tränar LM-8 och LM-7;
   EL-000728 har LM-4 och LM-8. Bildspelet slår upp titeln på filnamnet (regel 58). Lärarkopiorna är inte ombyggda (kräver
   LARARLOSEN).
+- **2026-10-11** Vecka 43 fredag: de två entimmeslektionerna i lektionsbildernas mall (`verktyg/lektionsbilder/lektion_v43_03.py`
+  och `lektion_v45_01.py`). *Elscheman och dokumentation*, del 3, 09.00–10.00: 18 bilder i stället för 36, en genomgång med
+  elevernas frågor (de har läst delen och gjort övning 3.1–3.5 hemma) och övning 3.6 och 3.7 tillsammans. *Systematisk
+  felsökning*, del 4 av 4, 10.00–11.00 (filerna kvar i `vecka-45/`, `'vecka': 43`): 19 bilder i stället för 36, övning
+  1.1–1.3 efter avsnitt 4 och 1.4–1.5 efter avsnitt 7 (fem övningar ryms inte på en bild). Delsidorna har samma sju avsnitt
+  med samma rubriker, samma två exempel och samma teorifigurer; texten följer bilderna. Start- och avslutsfrågorna
+  EL-000721, 722, 729 och 730 är märkta LM-5 (730 också LM-8) i stället för LM-4, och avslutsfrågorna säger senast i dag,
+  fredag 23 oktober (inte söndag 25 oktober eller ”på tisdag”). Bildspelet hämtar titeln för en del i en annan veckas mapp
+  med filnamnet (`verktyg/bildspel/bygg.py`, regel 58); annars hette felsökningens bildspel ”Fredag 23 oktober”. Övningsfigurerna till
+  3.6–3.8 och 1.4, 1.7 står kvar på delsidorna, nu ur övningarnas placeringar (regel 57). Lärarkopiorna av
+  v43_03 och v45_01 är inte ombyggda (kräver LARARLOSEN).
 
 - **2026-10-11** Vecka 42: delsidorna Del_1–3 har rutan **Din del** överst (lärarens önskan: delsidorna ska vara
   översikter som veckosidan). Dagens färg och tid, lektionens läge (I dag, Pågår nu, Om 2 dagar, Har varit), vad vi

@@ -8,20 +8,10 @@
     "v45_01_s08_halvering",
     "Matningskedja med mätpunkterna A till E mellan källa och last; den första mätningen görs i mitten vid C och avgör vilken halva som undersöks"
    ],
-   "17": [
-    "ovn",
-    "v45_01_s17_ovn4",
-    "24 V matar en resistor via en öppen kontakt; ström och spänning över kontakten okända"
-   ],
-   "24": [
+   "14": [
     "th",
     "v45_01_s24_exempel",
     "12 V-källa, extra serieresistans 1 ohm och last med 10 V vid 2 A"
-   ],
-   "28": [
-    "ovn",
-    "v45_01_s28_ovn7",
-    "Källan håller 24 V, lasten får 18 V vid 3 A; den extra serieresistansen okänd"
    ]
   }
  },
