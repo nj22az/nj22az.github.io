@@ -3,7 +3,7 @@
   "titel": "Skydd som löser för mycket",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Ett fel på ett ställe gör att två felfria fördelningar slocknar. Vad bör utredas?",
+    "fraga": "Det blir ett fel på ett ställe. Ändå blir två andra fördelningar strömlösa, fast de är hela. Vilka uppgifter behöver du för att ta reda på varför?",
     "samband": [
       "Skyddszon och selektivitet prövas mot händelseförlopp"
     ],
@@ -30,7 +30,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Reläinställningar, mätvärden och i vilken ordning brytarna löste visar vad som hände.",
+      "text": "Selektivitet betyder att bara skyddet närmast felet ska lösa ut. Här löste fler skydd.",
       "status": "migrerad"
     },
     {
@@ -40,7 +40,7 @@
     },
     {
       "niva": "nasta-steg",
-      "text": "1) Vilket skydd borde ha löst? 2) Varför kan fler löst: fel inställning, fel signal eller en brytare som inte bröt i tid? 3) Vilka data visar vad som hände: inställningar, mätdata, händelselogg och i vilken ordning brytarna löste?",
+      "text": "1) Vilket skydd borde ha löst? 2) Varför kan fler skydd ha löst: fel inställning, fel signal eller en brytare som inte bröt i tid? 3) Vilka uppgifter behöver du för att skilja de tre orsakerna åt? Tänk på vad skydden och brytarna sparar när de löser ut.",
       "status": "utkast"
     }
   ],

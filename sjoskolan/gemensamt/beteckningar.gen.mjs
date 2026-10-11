@@ -538,7 +538,7 @@ export const BETECKNINGAR = [
   ],
   "namn": "isolerat nät",
   "utlasning": "franska: isolé–terre",
-  "forklaring": "Nät utan direkt förbindelse mellan systemet och jord eller skrov. Vanligt ombord. Behandlas i vecka 44."
+  "forklaring": "Nät där ingen aktiv ledare är direkt förbunden med jord eller skrov. Systemet är isolerat, eller jordat via en hög impedans. Utsatta delar, till exempel apparaternas metallhöljen, är skyddsjordade. Vanligt ombord. Behandlas i vecka 44."
  },
  {
   "id": "ul-linje",

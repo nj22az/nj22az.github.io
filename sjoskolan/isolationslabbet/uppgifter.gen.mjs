@@ -5,7 +5,7 @@ export const UPPGIFTER = [
   "id": "riso",
   "ovning": "EL-000329",
   "title": "Vad mäter isolationsövervakningen?",
-  "deck": "v44_03 · övning 4",
+  "deck": "Del 3, övning 3.4",
   "set": {
    "C": 0,
    "R": [
@@ -41,7 +41,7 @@ export const UPPGIFTER = [
   "id": "larm",
   "ovning": "EL-000330",
   "title": "Larmar övervakningen?",
-  "deck": "v44_01 · övning 3 och 4",
+  "deck": "Del 1, övning 1.3 och 1.4",
   "set": {
    "C": 0,
    "R": [
@@ -74,7 +74,7 @@ export const UPPGIFTER = [
   "id": "symmetri",
   "ovning": "EL-000331",
   "title": "Fas mot skrov i friskt nät",
-  "deck": "v44_01 · bild om IT-nät",
+  "deck": "Genomgång del 1, avsnitt 5: IT-system och övervakning",
   "set": {
    "C": 1e-06,
    "R": [
@@ -110,7 +110,7 @@ export const UPPGIFTER = [
   "id": "forsta",
   "ovning": "EL-000332",
   "title": "Första jordfelet",
-  "deck": "v44_01 · film IT-nätet ombord",
+  "deck": "Del 1, film: IT-nätet ombord",
   "set": {
    "C": 1e-06,
    "R": [
@@ -142,7 +142,7 @@ export const UPPGIFTER = [
   "id": "kapstrom",
   "ovning": "EL-000333",
   "title": "Ström i jordfelet",
-  "deck": "v44_01 · film IT-nätet ombord",
+  "deck": "Del 1, film: IT-nätet ombord",
   "set": {
    "C": 1e-06,
    "R": [
@@ -150,9 +150,9 @@ export const UPPGIFTER = [
     10000000,
     10000000
    ],
-   "f": 50
+   "f": 60
   },
-  "task": "Samma fel på L1. Varje fas har 1,0 µF kapacitans mot skrovet (kablar och filter). f = 50 Hz. Hur stor ström går i jordfelet? Svara i mA.",
+  "task": "Samma fel på L1. Varje fas har 1,0 µF kapacitans mot skrovet (kablar och filter). f = 60 Hz. Hur stor ström går i jordfelet? Svara i mA.",
   "ask": {
    "key": "Ifault",
    "label": "I_{fel}",
@@ -163,15 +163,19 @@ export const UPPGIFTER = [
    "net"
   ],
   "hint": "Strömmen går tillbaka genom de friska fasernas kapacitans. I ≈ 3 · ωC · U_{F}, med ω = 2πf och U_{F} = 440/√3.",
-  "solution": "I = 3 · 2π · 50 · 1,0 · 10⁻⁶ · 254 ≈ 0,239 A ≈ 239 mA. Strömmen är för liten för att säkringar ska lösa men tillräckligt stor för att ge stöt och gnistor.",
+  "solution": "I = 3 · 2π · 60 · 1,0 · 10⁻⁶ · 254 ≈ 0,287 A ≈ 287 mA. Strömmen är för liten för att säkringar ska lösa men tillräckligt stor för att ge stöt och gnistor.",
   "mistakes": [
    {
     "v": 0,
     "msg": "Utan kapacitans vore strömmen nästan noll. Men kablarna har kapacitans mot skrovet."
    },
    {
-    "v": 79.8,
-    "msg": "Det är bidraget från en fas. Strömmen kommer tillbaka via båda friska faserna, och resultatet blir tre gånger så stort."
+    "v": 95.8,
+    "msg": "Det är ωC · U_{F}: laddningsströmmen i en fas före felet. Efter felet har de två friska faserna huvudspänning mot skrovet och ger var och en √3 gånger mer ström. Strömmarna läggs ihop som visare med 60° mellan sig. Summan blir tre gånger ditt värde."
+   },
+   {
+    "v": 239.4,
+    "msg": "Det är strömmen vid 50 Hz. Fartygets nät har 60 Hz."
    }
   ]
  },
@@ -179,7 +183,7 @@ export const UPPGIFTER = [
   "id": "andra",
   "ovning": "EL-000334",
   "title": "Andra jordfelet",
-  "deck": "v44_01 · övning 4",
+  "deck": "Del 1, övning 1.4",
   "set": {
    "C": 1e-06,
    "R": [
@@ -192,7 +196,7 @@ export const UPPGIFTER = [
   "task": "L1 har kvar sitt jordfel. Nu får L2 också ett fullständigt jordfel. Slingan L1–skrov–L2 har 0,08 Ω. Beräkna felströmmen i kA.",
   "ask": {
    "key": "second",
-   "label": "Ik",
+   "label": "I_{k}",
    "unit": "kA",
    "scale": 1000
   },
@@ -212,7 +216,7 @@ export const UPPGIFTER = [
   "id": "prov",
   "ovning": "EL-000335",
   "title": "Isolationsprovning: resistans",
-  "deck": "v44_03 · övning 3",
+  "deck": "Del 3, övning 3.3",
   "set": {
    "Uprov": 500,
    "del": "prov",
@@ -241,14 +245,14 @@ export const UPPGIFTER = [
   "id": "kabel",
   "ovning": "EL-000336",
   "title": "Isolationsprovning: skadad kabel",
-  "deck": "v44_03 · övning 3",
+  "deck": "Del 3, övning 3.3",
   "set": {
    "Uprov": 500,
    "del": "prov",
    "obj": "kabel-skadad",
    "par": "L2-PE"
   },
-  "task": "En kabel med skadad mantel har 50 kΩ mellan L2 och PE. Vilken läckström visar provaren vid 500 V? Svara i mA.",
+  "task": "En kabel med skadad mantel har 0,5 MΩ mellan L2 och PE. Vilken läckström visar provaren vid 500 V? Svara i mA.",
   "ask": {
    "key": "prov",
    "label": "I_{läck}",
@@ -257,12 +261,16 @@ export const UPPGIFTER = [
   "mask": [
    "prov"
   ],
-  "hint": "I = U_{prov}/R. 50 kΩ = 50 000 Ω.",
-  "solution": "I = 500/50 000 = 0,010 A = 10 mA. Mycket över det en frisk kabel läcker. L2 ligger långt under en gräns på 1 MΩ.",
+  "hint": "I = U_{prov}/R. 0,5 MΩ = 500 000 Ω.",
+  "solution": "I = 500/500 000 = 0,001 A = 1,0 mA. Det är mycket mer än en frisk kabel läcker, och L2 ligger under gränsen 1 MΩ. En verklig provare ger bara några mA. Vid mycket lägre resistans orkar den inte hålla 500 V.",
   "mistakes": [
    {
-    "v": 0.01,
-    "msg": "Svaret ska vara i mA. 0,01 A = 10 mA."
+    "v": 0.001,
+    "msg": "Svaret ska vara i mA. 0,001 A = 1,0 mA."
+   },
+   {
+    "v": 1000,
+    "msg": "Räkna om 0,5 MΩ till 500 000 Ω innan du delar."
    }
   ]
  }

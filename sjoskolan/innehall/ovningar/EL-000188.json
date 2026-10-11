@@ -3,7 +3,7 @@
   "titel": "Ändrad slingimpedans",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -21,9 +21,9 @@
     ]
   },
   "uppgift": {
-    "fraga": "Zs ökar från 0,46 till 0,92 Ω vid oförändrade 230 V. Hur ändras felströmmen?",
+    "fraga": "Z_{s} ökar från 0,46 till 0,92 Ω vid oförändrade 230 V. Hur ändras felströmmen?",
     "samband": [
-      "I_{1} = U_{0}/Zs_{1}; I_{2} = U_{0}/Zs_{2}"
+      "I_{1} = U_{0}/Z_{s,1}; I_{2} = U_{0}/Z_{s,2}"
     ],
     "givet": "U_{0} = 230 V. Impedansen ökar från 0,46 till 0,92 Ω.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -31,7 +31,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "1 och 2 står för de två fallen. Vid samma U_{0} blir strömmen hälften så stor när Zs blir dubbelt så stor.",
+      "text": "1 och 2 står för de två fallen, före och efter ändringen. U_{0} är samma i båda fallen.",
       "status": "migrerad"
     },
     {

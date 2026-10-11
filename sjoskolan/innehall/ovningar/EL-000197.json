@@ -3,7 +3,7 @@
   "titel": "Förregling",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -35,7 +35,7 @@
     },
     {
       "niva": "metod",
-      "text": "Svara att orsaken ska utredas enligt instruktionen. Beskriv inte hur förreglingen kan förbikopplas.",
+      "text": "Tänk på vad en förregling är till för. Vad gör du innan du försöker igen? Beskriv inte hur förreglingen kan förbikopplas.",
       "status": "migrerad"
     },
     {

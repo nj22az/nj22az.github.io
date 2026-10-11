@@ -3,7 +3,7 @@ import { solve, meter, fmt, parseAnswer, isClose } from './model.mjs';
 import { FAULTS } from './model.mjs';
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { POINTS, FAULT_TEXT, DEFAULTS, CHALLENGES, run, expected } from './lessons.mjs?v=20261011';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260928-pek';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20261011';
 import { STATION_C_PROTOKOLL } from './stationC-protokoll.mjs?v=20261011';
 
 const $ = (id) => document.getElementById(id);

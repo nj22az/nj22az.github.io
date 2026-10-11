@@ -172,7 +172,28 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     En 30 mA-jordfelsbrytare måste lösa vid 30 mA men får lösa redan över 15 mA, så frågan saknade svar. Fråga efter det som
     gäller säkert (”Måste den lösa?”) och räkna igenom kursens D (D = 12) och gränsfallen innan frågan publiceras. *Manuell kontroll.*
 
+50. **Ett mätvärde i en uppgift ska gå att mäta med det angivna instrumentet.** Analysuppgiften i vecka 44 gav pumpen 20,12 V på en
+    voltmeter med upplösningen 0,1 V, och R_{efter} = 0,10 Ω var mindre än sin egen osäkerhet (±0,11 Ω). Isolationslabbet lät provaren
+    driva 10 mA genom 50 kΩ vid 500 V, vilket en verklig isolationsprovare inte orkar. Kontrollera upplösning, felgräns och instrumentets
+    största ström, och att ett beräknat resultat är klart större än sin osäkerhet. *Manuell kontroll.*
+
 ## Ändringar
+
+- **2026-10-11** Granskningen av vecka 44 (och del 4 Analys av mätresultat) rättad. Formelstöd-sidorna i `vecka-44/` och `vecka-45/` följer
+  nu presentationerna och delsidorna (de gamla exemplen gav svaren på övning 1.8 och 2.4 och på 2.5 i del 4; regel 2 och 12), och
+  strömtransformatorexemplet är 400/5 A vid 320 A = 4,0 A överallt (bild 24, figur, delsida, bildspel, Formelstöd), så att det inte är
+  ledtrådens räkning i övning 2.4. Tolv ledtrådar och samband som gav svaret är omskrivna (regel 1 och 48), också Ledtråd 3 i 2.10, 3.10
+  och 2.8 (del 4) som räknade upp facit. Nedsänkta index i posterna och nya beteckningar Z_{s}, U_{0}, k_{I}, R_{p}, R_{fram}/R_{retur},
+  ΔU_{fram} med flera, x_{max}/x_{min} och û_{visad}, med de ihopskrivna formerna i `avradda`; IT-nät har en exakt definition och
+  ström–tidskurva ett stavsätt. Isolationslabbet räknar fartygets nät med 60 Hz (I_{fel} = 287 mA i uppgiften och protokollet), felsvaret
+  95,8 mA förklaras med rätt fysik, den skadade kabeln har 0,5 MΩ (1,0 mA, som en verklig provare klarar) och hänvisningarna säger
+  ”Del 1, övning 1.4” i stället för v44_01-koder. Labbprotokollet (alla labbar) har kolumnen ”Din förutsägelse” (regel 6) och säger att
+  protokollet ingår i bedömningen och lämnas in som PDF; ny cacheversion i alla labbar som använder det. Analysuppgiften (inlämningen)
+  har mätbara värden: pumpen (20,0 + D/10) V före och 22,5 V efter, strömmen 6,0 och 6,4 A (regel 50). Formelbladet gav svaren på 1.8,
+  2.4 och 3.3 och har nya exempel. Lärarkopiorna (v44_01–03, v45_02, lärarguiden) och boken är inte uppdaterade (kräver
+  LARARLOSEN/BOKLOSEN): revidera EL-000181–184, 187–190, 194, 195, 197, 199–201, 204, 207–210, 221, 223, 225, 226, 228–230, 329–336,
+  410 och 826 igen med de skyddade filerna öppna, och kontrollera lärarfacit för EL-000825 (protokollets I_{fel} = 287 mA vid 60 Hz) och
+  EL-000826.
 
 - **2026-10-11** Granskningen av vecka 43 (och del 4 Systematisk felsökning) rättad. Delsidorna räknar de flyttade delarna
   (`veckans_delar` ur `FLYTTAD` i delsidor_veckor.py): vecka 43 har del 1–4 och vecka 44 del 1–5, och del 3 leder vidare till

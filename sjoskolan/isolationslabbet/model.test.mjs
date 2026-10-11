@@ -37,7 +37,7 @@ test('isolationsprovning kräver frånskilt objekt och ger R = U/I', () => {
   assert.ok(isClose(t.I, 0.4e-3)); assert.ok(isClose(t.R, 1.25e6));
 });
 test('uppgifternas facit', () => {
-  const want = { riso: 0.75, larm: 117.6, symmetri: 254, forsta: 440, kapstrom: 239.4, andra: 5.5, prov: 1.25, kabel: 10 };
+  const want = { riso: 0.75, larm: 117.6, symmetri: 254, forsta: 440, kapstrom: 287.3, andra: 5.5, prov: 1.25, kabel: 1 };
   for (const c of CHALLENGES) assert.ok(isClose(expected(c), want[c.id], { rel: 0.01 }), `${c.id}: ${expected(c)}`);
   for (const c of CHALLENGES) for (const m of c.mistakes) assert.ok(!isClose(m.v, expected(c), { rel: 0.02 }), `${c.id} misstag ${m.v} är rätt svar`);
 });

@@ -3,7 +3,7 @@
   "titel": "Första jordfelet",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -94,7 +94,7 @@
         }
       ]
     },
-    "kallhanvisning": "v44_01 · film IT-nätet ombord",
+    "kallhanvisning": "Del 1, film: IT-nätet ombord",
     "alias": "forsta"
   }
 }

@@ -3,7 +3,7 @@
   "titel": "Upprepade mätningar",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -26,7 +26,7 @@
     "fraga": "Tre mätningar ger 9,8, 10,0 och 10,2 V. Beräkna medelvärde och variationsbredd.",
     "samband": [
       "Medel = (x_{1} + x_{2} + x_{3})/3",
-      "Variationsbredd = xmax − xmin"
+      "Variationsbredd = x_{max} − x_{min}"
     ],
     "givet": "Mätvärdena 9,8, 10,0 och 10,2 V. Ingen statistisk analys behövs.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."

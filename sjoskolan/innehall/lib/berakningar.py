@@ -274,5 +274,6 @@ def _f443(D):
 
 @lararfacit('45-2')
 def _f452(D):
-    u = 20 + D / 100
-    return f'Före: (24,1 − {n(u, 2)})/6 = {n((24.1 - u) / 6, 3)} Ω. Efter: (24,1 − 23,5)/6 = 0,100 Ω'
+    # Pumpen visas med voltmeterns upplösning 0,1 V (20,0 + D/10). Strömmen mäts båda gångerna: 6,0 A före och 6,4 A efter.
+    u = 20 + D / 10
+    return f'Före: (24,1 − {n(u, 1)})/6,0 = {n((24.1 - u) / 6, 2)} Ω. Efter: (24,1 − 22,5)/6,4 = 0,25 Ω'

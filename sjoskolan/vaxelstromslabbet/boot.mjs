@@ -7,7 +7,7 @@ async function choose(next){mode=next;document.querySelectorAll('[data-mode]').f
  const st=document.getElementById('station-workspace'),ws=document.querySelector('.ac-workspace'),fw=document.getElementById('free-workspace');if(mode==='station'){if(st.nextElementSibling!==ws)ws.before(st);}else if(fw.nextElementSibling!==st)fw.after(st);
  const url=new URL(location.href);url.searchParams.set('lage',mode);history.replaceState(null,'',url);
  if(mode==='guidad'){if(!guide)guide=mountGuide(document.getElementById('guided-workspace'));else guide.refresh();}
- else {if(!freeModule)freeModule=await import('./app.mjs?v=20260928-ux2');if(mode===next)freeModule.refreshEquipment();else if(mode==='guidad')guide?.refresh();}
+ else {if(!freeModule)freeModule=await import('./app.mjs?v=20261011');if(mode===next)freeModule.refreshEquipment();else if(mode==='guidad')guide?.refresh();}
 }
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>choose(b.dataset.mode)));choose(mode);
 

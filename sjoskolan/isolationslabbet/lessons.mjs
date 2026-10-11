@@ -1,8 +1,8 @@
 // Isolationslabbet · räkna-först-uppgifter. Värdena skiljer sig från övningarna i vecka 44 så att svaren inte kan skrivas av.
-import { itNet, insulationTest } from './model.mjs';
+import { itNet, insulationTest } from './model.mjs?v=20261011';
 
 export const DEFAULTS = {
-  del: 'overvakning', UL: 440, f: 50, R: [5e6, 5e6, 5e6], C: 1e-6, larm: 100e3, Rloop: 0.08,
+  del: 'overvakning', UL: 440, f: 60, R: [5e6, 5e6, 5e6], C: 1e-6, larm: 100e3, Rloop: 0.08,
   obj: 'motor-m3', par: 'L1-PE', Uprov: 500, frans: true,
 };
 
@@ -15,5 +15,5 @@ export function expected(ch) {
 }
 
 // Uppgifterna genereras ur innehållsdatabasen (innehall/ovningar). Redigera aldrig uppgifter.gen.mjs.
-import { UPPGIFTER } from './uppgifter.gen.mjs';
+import { UPPGIFTER } from './uppgifter.gen.mjs?v=20261011';
 export const CHALLENGES = UPPGIFTER;
