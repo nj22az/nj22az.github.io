@@ -152,7 +152,8 @@ test('a favour he never took up is asked again, its old letter replaced, and in 
  assert.deepEqual(post.pending.map(p=>p.id),['favour:nhung-cookbook:14'],'the stale letter is replaced');
  assert.equal(state.favours['nhung-cookbook'].tries,2);
  postFavourLetter(state,DAY*15+9*60);assert.equal(state.favours['nhung-cookbook'].tries,3);
- postFavourLetter(state,DAY*16+9*60);assert.equal(state.favours['nhung-cookbook'].status,'lapsed');assert.deepEqual(planFavours(state,DAY*17+9*60),[]);
+ postFavourLetter(state,DAY*16+9*60);assert.equal(state.favours['nhung-cookbook'].status,'lapsed');
+ assert.deepEqual(post.pending.map(p=>p.id),['favour:harbour-timetable:16'],'when one lets go, the next in the calendar comes');
  // An ask he closed without answering goes back to be asked another day.
  const asked={};postFavourLetter(asked,DAY*30+9*60);askFavour(asked,FAVOURS[0],{minutes:DAY*30+11*60,temper:'easy'});
  assert.equal(favourExpire(asked,DAY*31+9*60),null);assert.equal(asked.errand,null);
@@ -241,4 +242,42 @@ test('a friend’s typhoon letter comes with the first morning post the warning 
  // Tina's warning began at three in the afternoon, after the round: her letter comes the next morning.
  assert.deepEqual(byNumber,{4:'05-29',8:'06-27',11:'08-07',13:'08-17'});
  assert.equal(typhoonPostDay({from:'09-01 12:00',to:'09-01 20:00'},round),null,'a warning between two rounds brings no letter');
+});
+
+test('the favour calendar: one a day, in order, one on at a time, and only between people who are there',()=>{
+ const state={},m=d=>DAY*d+9*60;
+ assert.deepEqual(planFavours(state,m(200)).map(l=>l.id),['favour:nhung-cookbook:200']);
+ assert.deepEqual(planFavours(state,m(200)+30),[],'one on at a time');
+ askFavour(state,FAVOURS[0],{minutes:m(200)+120,temper:'easy'});replyFavour(state,false);
+ assert.equal(state.favours['nhung-cookbook'].status,'declined');state.errand=null;
+ assert.deepEqual(planFavours(state,m(200)+180).map(l=>l.id),['favour:harbour-timetable:201'],'never two on the same day: the next is for tomorrow');
+ assert.deepEqual(planFavours(state,m(201)),[],'and is not planned twice');
+ state.favours['harbour-timetable'].status='done';
+ assert.deepEqual(planFavours(state,DAY*202+13*60).map(l=>[l.id,l.day]),[['favour:nhung-rain-book:203',203]],'after noon: the book is asked for tomorrow morning');
+ state.favours['nhung-rain-book'].status='done';assert.deepEqual(planFavours(state,m(204)),[],'the calendar has run out');
+ // Each favour is a real errand between active residents, asked while the asker is at work and done before the
+ // other has gone home (profiles.json hours), with the words for every step it uses.
+ const hours=Object.fromEntries(PROFILES.map(p=>[p.name,[p.start,p.close]]));
+ for(const f of FAVOURS){
+  for(const who of [f.from,f.to])assert.ok(RESIDENTS.some(r=>r.name===who),f.id+': '+who+' walks the town');
+  assert.ok(f.askBy>=ROUND&&f.askBy<hours[f.from][1],f.id+': asked after the post and before '+f.from+' goes off');
+  for(const step of ['ask','accepted','checkIn',f.kind==='return'?'handBack':'handOver','done','late'])assert.ok(f.lines[step],f.id+' says '+step);
+  for(const step of ['accepted','declined','done','late'])assert.ok(f.moments[step]?.text,f.id+' remembers '+step);
+  assert.ok(f.moments.done.news&&f.thanks&&f.letter&&f.why.length>=2,f.id+' is news, has a thank-you, a letter and its reasons');
+ }
+});
+
+test('a favour to get something back: the holder hands it over, the asker gets it, the town remembers',()=>{
+ const state={},m=DAY*300+9*60,f=FAVOURS.find(x=>x.kind==='return');
+ state.favours={'nhung-cookbook':{day:298,status:'done',tries:1},'harbour-timetable':{day:299,status:'done',tries:1}};
+ assert.deepEqual(planFavours(state,m).map(l=>l.id),['favour:'+f.id+':300']);
+ const e=askFavour(state,f,{minutes:m+90,temper:'easy'});replyFavour(state,true);
+ assert.equal(e.carrying,false,'nothing in his hands yet');
+ assert.equal(favourVisit(state,f.from,{minutes:m+100}).step,'checkIn');
+ assert.equal(favourVisit(state,f.to,{minutes:m+120,bagFull:true}).step,'pocketsFull');
+ const back=favourVisit(state,f.to,{minutes:m+130});assert.equal(back.step,'handBack');assert.equal(e.carrying,true);
+ assert.match(favourLine(f,e,'handBack',{speaker:f.to}).text,/Chapter six/);
+ const done=favourVisit(state,f.from,{minutes:m+300});
+ assert.equal(done.step,'done');assert.equal(done.done,true);assert.match(done.moment.news,/Front-Row Books/);
+ assert.equal(state.favours[f.id].status,'done');
 });

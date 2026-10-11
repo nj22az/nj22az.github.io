@@ -252,17 +252,23 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     }
     if(!e)return {};
     const f=favourById(e.favour);let line=null;const buttons=[];
-    if(name===e.from){const r=favourVisit(state,name,{minutes:m});if(r){if(r.step==='late')takeOne(r.item);line=favourLine(f,e,r.step,{speaker:name,temper:temperOf(name),playerName:playerName()});save();}}
-    if(e.status==='accepted'&&e.carrying&&name!==e.from)buttons.push([`Hand over the ${f.item[0].toLowerCase()+f.item.slice(1)}`,()=>{
+    const speak=(r,speaker)=>{const l=favourLine(f,e,r.step,{speaker,temper:temperOf(speaker),playerName:playerName()});show(talkTitle(speaker),l.text,[['See you soon',close]],cue(l));showHearts(speaker);};
+    // The favour is done (a delivery handed over, or a return brought back): the town remembers it, the friendships
+    // grow, and the asker writes the next morning.
+    const finish=r=>{takeOne(f.item);recordMoment(state,getMinutes(),r.moment);for(const [who,points] of Object.entries(f.friendship))helped(state,who,points);
+      sendLetter(state,{id:'helped:'+f.id,day:Math.floor(getMinutes()/1440)+1,occasion:'helped',from:f.from,body:f.thanks||null});};
+    if(name===e.from){const r=favourVisit(state,name,{minutes:m});if(r){if(r.step==='late')takeOne(r.item);if(r.moment)finish(r);line=favourLine(f,e,r.step,{speaker:name,temper:temperOf(name),playerName:playerName()});save();}}
+    const thing=f.item[0].toLowerCase()+f.item.slice(1);
+    if(e.status==='accepted'&&e.kind==='deliver'&&e.carrying&&name!==e.from)buttons.push([`Hand over the ${thing}`,()=>{
       const r=favourVisit(state,name,{minutes:getMinutes()});if(!r)return;
-      if(r.step==='handOver'){
-        takeOne(f.item);recordMoment(state,getMinutes(),r.moment);
-        for(const [who,points] of Object.entries(f.friendship))helped(state,who,points);
-        const day=Math.floor(getMinutes()/1440);sendLetter(state,{id:'helped:'+f.id,day:day+1,occasion:'helped',from:f.from,body:f.thanks||null});
-      }
-      save();const l=favourLine(f,e,r.step,{speaker:name,temper:temperOf(name),playerName:playerName()});
-      show(talkTitle(name),l.text,[['See you soon',close]],cue(l));showHearts(name);
+      if(r.step==='handOver')finish(r);
+      save();speak(r,name);
     },false,'I have something for you.']);
+    if(e.status==='accepted'&&e.kind==='return'&&!e.carrying&&name===e.to)buttons.push([`Ask for the ${thing}`,()=>{
+      const r=favourVisit(state,name,{minutes:getMinutes(),bagFull:state.inventory.length>=100});if(!r)return;
+      if(r.step==='handBack')addItem(f.item);
+      save();speak(r,name);
+    },false,`${f.from} sent me for the ${thing}.`]);
     return {line,buttons};
   }
   /** What can be given as a present: never the thing a favour has him carrying. */
