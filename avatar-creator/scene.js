@@ -3,6 +3,7 @@ import {buildAvatar} from '../johansson-town/src/avatars/build.js';
 import {drawFace} from '../johansson-town/src/avatars/face.js';
 import {svg} from '../johansson-town/src/ui/icons.js';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
+import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {drawCaptions,comicLayout,FORMATS} from '../johansson-town/src/photo/layout.js';
 import {buildSceneWorld} from './scene-world.js';
@@ -63,8 +64,12 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  const announce=s=>{status.textContent=s;};
  const current=()=>state.actors.find(a=>a.id===selected);
  const keys=['location','characters','pose','text','export'];
- // Every resident of World, as World draws them (with any look published from Studio).
- const resident=field('resident');resident.append(...RESIDENT_NAMES.map(n=>new Option(nameOf(n),n)));
+ // Every resident of World as World draws them (with any look published from Studio; World's Thuan among them), the
+ // characters made in Studio, and the original Thuận design.
+ const resident=field('resident'),optgroup=(label,options)=>{const g=document.createElement('optgroup');g.label=label;g.append(...options);return g;};
+ resident.append(optgroup('Residents of Johansson World',RESIDENT_NAMES.map(n=>new Option(nameOf(n),n))),
+  ...Object.keys(STUDIO_CHARACTERS).length?[optgroup('Studio characters',Object.entries(STUDIO_CHARACTERS).map(([id,c])=>new Option(c.name,'studio:'+id)))]:[],
+  optgroup('Other designs',[new Option('Thuận · original','design:thuan-original')]));
  for(const [id,name] of LOCATIONS){const b=document.createElement('button');b.type='button';b.dataset.location=id;b.setAttribute('aria-label',name);const img=document.createElement('img');img.src=`../johansson-town/assets/images/feed/${id}.webp`;img.alt='';img.loading='lazy';const label=document.createElement('span');label.textContent=name;b.append(img,label);b.onclick=()=>{state.location=id;state.camera={orbit:0,elevation:0,zoom:1};for(const a of state.actors){a.seat='';a.x=0;a.z=0;}changed();sync();announce(name+' selected. Continue to Add characters.');};$('.scene-locations').append(b);}
  $('.scene-hint').textContent=touch?'Tap a character to select them. Drag to move, twist two fingers to turn.':'Click a character to select them. Drag to move. Q and E turn, the arrow keys nudge, Delete removes.';
  for(const note of root.querySelectorAll('.scene-save-note'))note.textContent=touch?'Save opens the share sheet: choose Save Image to put it in Photos.':'';
@@ -345,7 +350,10 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   state=scene;selected=state.actors[0]?.id??null;for(const p of panels)URL.revokeObjectURL(p.url);panels.splice(0,panels.length,...loaded);changed();renderPanels();sync();announce('Project opened.');}catch(e){console.warn('Johansson Studio: open project',e);announce('Unable to open this project. Choose a Johansson Studio project JSON file.');}finally{projectInput.value='';}};
  const actions={
   'reset-camera':()=>{state.camera={orbit:0,elevation:0,zoom:1};for(const c of root.querySelectorAll('[data-camera]'))c.value=state.camera[c.dataset.camera];changed();},
-  'add-current':()=>add(getCharacter()),'add-resident':()=>{const n=resident.value;add(n==='Thuan'?ORIGINAL_THUAN_RECIPE:recipeFor(n),nameOf(n));},
+  'add-current':()=>add(getCharacter()),'add-resident':()=>{const n=resident.value,id=n.startsWith('studio:')?n.slice(7):null;
+   if(id&&Object.hasOwn(STUDIO_CHARACTERS,id))add(STUDIO_CHARACTERS[id].recipe,STUDIO_CHARACTERS[id].name);
+   else if(n==='design:thuan-original')add(ORIGINAL_THUAN_RECIPE,'Thuận');
+   else add(recipeFor(n),nameOf(n));},
   'edit-character':()=>{const a=current();if(a)onEdit(a.recipe,a.id);},'duplicate':()=>{const a=current();if(a)add(a.recipe,a.name);},
   'remove':()=>{const a=current();if(a)removeActor(a.id);},
   'previous':()=>setStep(keys[Math.max(0,keys.indexOf(step)-1)]),'next':()=>setStep(keys[Math.min(4,keys.indexOf(step)+1)]),
