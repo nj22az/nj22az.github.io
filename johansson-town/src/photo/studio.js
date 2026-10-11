@@ -9,11 +9,11 @@ import {BACKDROPS,FILMS,WARDROBE_COLOURS,filmCSS,applyFilm,createStudioSet,arran
 import {PARTS,normalizeRecipe} from '../avatars/recipe.js';
 import {EXPRESSION_GLYPHS} from '../avatars/face.js';
 import {ISLAND_OUTFITS,ISLAND_COSTUMES,THUAN_SAILOR_OUTFIT,outfitAllowedFor} from '../avatars/outfits.js';
+import {SLOTS,labelFor,wornSet} from '../avatars/wardrobe-catalogue.js';
 import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 
-const PART_LABELS={tank:'Vest',tee:'T-shirt',kariyushi:'Kariyushi shirt',polo:'Polo shirt',hoodie:'Hoodie',festival:'Happi coat',sailor:'Sailor top',lighthouse:'Lighthouse costume',lantern:'Lantern costume',reef:'Reef costume',
- underwear:'Underwear',widepants:'Wide trousers',cropped:'Cropped trousers',longskirt:'Long skirt',pleatedskirt:'Pleated skirt',barefoot:'Bare feet',none:'None',captain:'Captain\'s cap',police:'Police cap',straw:'Straw hat',teapot:'Teapot hat',paperboat:'Paper boat',sunflower:'Sunflower',mountain:'Mountain hat',squid:'Squid hat'};
-const label=v=>PART_LABELS[v]||v[0].toUpperCase()+v.slice(1);
+// The wardrobe's words come from the catalogue, by slot, as in the maker (a police top and a police cap read apart).
+const label=v=>v[0].toUpperCase()+v.slice(1),part=slot=>v=>labelFor(slot,v);
 const PATTERNS=['none','stripes','dots','flowers'];
 
 // Wardrobe fields are named wear* so they never collide with the caption fields.
@@ -52,10 +52,10 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  <details class="photo-precise"><summary>Fine adjustments</summary>${range('actorX','Left / right',-5,5,.01,0)}${range('actorZ','Forward / back',-5,5,.01,0)}${range('actorY','Height',-1,3,.01,0)}</details>
  ${range('actorScale','Size',.6,1.6,.05,1)}<div class="photo-row"><button data-face>Face camera</button><button data-arrange="line">Line up</button><button data-arrange="huddle">Huddle</button><button data-arrange="rows">Rows</button></div><label>Speech bubble<input name="speech" type="text" maxlength="120" placeholder="What are they saying?"></label>${range('bubbleLift','Bubble height',-.25,.4,.01,.12)}<button data-remove aria-label="Remove character" title="Remove selected character">${svg("trash")}<span>Remove</span></button></details>
  <details data-pane="cast"><summary>Wardrobe</summary><p>Dress the selected character for the shoot. Their own clothes come back in town.</p>
- <label>Outfit<select aria-label="Outfit" name="wearSet"><option value="">Custom clothes</option>${outfitSets.map((o,i)=>`<option value="${i}">${o.name}</option>`).join('')}</select></label>
- <div class="photo-row"><label>Top<select aria-label="Top" name="wearTop">${choices(PARTS.top)}</select></label><label>Pattern<select aria-label="Pattern" name="wearPattern">${choices(PATTERNS)}</select></label></div>${swatches('topColour')}
- <div class="photo-row"><label>Bottoms<select aria-label="Bottoms" name="wearBottom">${choices(PARTS.bottom)}</select></label><label>Shoes<select aria-label="Shoes" name="wearFootwear">${choices(PARTS.footwear)}</select></label></div>${swatches('bottomColour')}
- <label>Hat<select aria-label="Hat" name="wearHat">${choices(PARTS.hat)}</select></label><button data-own-clothes>Own clothes</button></details>
+ <label>Outfit<select aria-label="Outfit" name="wearSet"><option value="">Custom clothes</option>${SLOTS.set.categories.map(c=>`<optgroup label="${c}">${outfitSets.map((o,i)=>o.category===c?`<option value="${i}" title="${o.name}">${o.label}</option>`:'').join('')}</optgroup>`).join('')}</select></label>
+ <div class="photo-row"><label>Top<select aria-label="Top" name="wearTop">${choices(PARTS.top,part('top'))}</select></label><label>Pattern<select aria-label="Pattern" name="wearPattern">${choices(PATTERNS)}</select></label></div>${swatches('topColour')}
+ <div class="photo-row"><label>Bottoms<select aria-label="Bottoms" name="wearBottom">${choices(PARTS.bottom,part('bottom'))}</select></label><label>Shoes<select aria-label="Shoes" name="wearFootwear">${choices(PARTS.footwear,part('footwear'))}</select></label></div>${swatches('bottomColour')}
+ <label>Hat<select aria-label="Hat" name="wearHat">${choices(PARTS.hat,part('hat'))}</select></label><button data-own-clothes>Own clothes</button></details>
 
  <details data-pane="camera" hidden><summary>Set & film</summary><label>Backdrop<select aria-label="Backdrop" name="backdrop">${choices(Object.keys(BACKDROPS),v=>BACKDROPS[v].label)}</select></label>
  <div class="photo-row"><label>Film<select aria-label="Film" name="film">${choices(Object.keys(FILMS),v=>FILMS[v].label)}</select></label><label class="photo-check"><input type="checkbox" name="vignette"> Vignette</label></div></details>
@@ -86,14 +86,12 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  function actorList(){syncSelection();field('actor').replaceChildren(...actors.map((a,i)=>new Option(`${i+1}. ${a.name}`,String(i))));field('actor').value=String(selected);syncActor();updateButtons();}
  function syncActor(){const a=selectedActor();if(!a)return;queueMicrotask?.(()=>typeof syncChips==='function'&&syncChips());for(const [name,value] of Object.entries({pose:a.pose,expression:a.expression,actorX:a.x,actorY:a.y,actorZ:a.z,actorTurn:a.turn,actorScale:a.scale,speech:a.speech,bubbleLift:a.lift}))field(name).value=String(value);
   field('wearSet').disabled=busy;field('wearSet').value='';for(const option of field('wearSet').options)if(option.value!=='')option.disabled=!outfitAllowedFor(a.name,outfitSets[Number(option.value)].outfit);
-  const o=a.avatar.recipe.outfit,matched=outfitSets.findIndex(set=>Object.entries(set.outfit).every(([key,value])=>o[key]===value));field('wearSet').value=matched<0?'':String(matched);for(const option of field('wearTop').options)option.disabled=a.name==='Johansson'&&option.value==='sundress';for(const option of field('wearBottom').options)option.disabled=a.name==='Johansson'&&['skirt','longskirt','pleatedskirt'].includes(option.value);for(const n of WARDROBE)field(wear(n)).value=o[n];
+  const o=a.avatar.recipe.outfit,matched=outfitSets.findIndex(set=>set.id===wornSet(o)?.set.id);field('wearSet').value=matched<0?'':String(matched);for(const n of WARDROBE)field(wear(n)).value=o[n];
   for(const box of ui.querySelectorAll('[data-swatches]'))for(const b of box.children)b.classList.toggle('on',b.dataset.colour===o[box.dataset.swatches]);}
  function placeActor(a){a.holder.position.set(a.x,a.y,a.z);a.holder.rotation.y=Math.PI+a.turn*Math.PI/180;a.holder.scale.setScalar(a.scale);syncSelection();dirty=true;}
  // A change of clothes is a new body in the same place, in the same pose.
  function dress(a,outfit){
   if(busy)return;
-  if(a.name==='Johansson'&&['sundress'].includes(outfit.top))return;
-  if(a.name==='Johansson'&&['skirt','longskirt','pleatedskirt'].includes(outfit.bottom))return;
   const recipe=normalizeRecipe({...a.avatar.recipe,outfit:{...a.avatar.recipe.outfit,...outfit}});
   a.avatar.root.removeFromParent();a.avatar.dispose();a.avatar=buildAvatar(recipe,{shadows:false,faceSize:256});a.holder.add(a.avatar.root);poseStudioActor(a);syncActor();dirty=true;
  }

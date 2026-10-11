@@ -16,21 +16,22 @@ try{
   await page.route('**/creator-review.html',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/tomodachi-ui.css"></head><body><button id="opener">Open</button></body></html>'}));
   await page.goto('http://127.0.0.1:5173/creator-review.html');
   await page.evaluate(async()=>{document.querySelector('#opener').focus();const {openCreator}=await import('/src/avatars/creator.js');window.maker=openCreator({onSave:r=>window.saved=r});});
-  const mobile=width<=760||height<=500;
+  // The category menu stands in for the tab rail only where the rail is hidden (the rail now shows at every size).
+  const mobile=await page.getByRole('combobox',{name:'Appearance category',exact:true}).isVisible();
   const original=await page.evaluate(()=>JSON.stringify(window.maker.recipe));
   await page.getByRole('combobox',{name:'Preview angle',exact:true}).selectOption('back');
   assert.equal(await page.getByRole('combobox',{name:'Preview angle',exact:true}).inputValue(),'back');
   await page.getByRole('combobox',{name:'Preview angle',exact:true}).selectOption('front');
   assert.equal(await page.evaluate(()=>JSON.stringify(window.maker.recipe)),original);
-  for(const id of ['body','head','hair','eyes','brows','nose','mouth','extras','top','bottom','shoes','hat','accessories']){
-   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption(id);else await page.getByRole('tab',{name:({body:'Body',head:'Face',hair:'Hair',eyes:'Eyes',brows:'Brows',nose:'Nose',mouth:'Mouth',extras:'Glasses & beard',top:'Top',bottom:'Bottoms',shoes:'Shoes',accessories:'Accessories',hat:'Hats & bows'})[id],exact:true}).click();
+  for(const id of ['body','head','hair','eyes','brows','nose','mouth','extras','outfits','top','bottom','shoes','hat','accessories']){
+   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption(id);else await page.getByRole('tab',{name:({body:'Body',head:'Face',hair:'Hair',eyes:'Eyes',brows:'Brows',nose:'Nose',mouth:'Mouth',extras:'Glasses & beard',outfits:'Outfits',top:'Top',bottom:'Bottoms',shoes:'Shoes',accessories:'Accessories',hat:'Hats & bows'})[id],exact:true}).click();
    const bounds=await page.evaluate(()=>{const root=document.querySelector('.shm'),body=document.querySelector('.shm-body'),save=document.querySelector('.shm-foot button:last-child');return {overflow:root.scrollWidth>innerWidth,body:body.clientHeight,bottom:save.getBoundingClientRect().bottom};});
-   assert.equal(bounds.overflow,false);assert.ok(bounds.body>=90,JSON.stringify(bounds));assert.ok(bounds.bottom<=height);
+   assert.equal(bounds.overflow,false);assert.ok(bounds.body>=90,id+" "+width+"x"+height+" "+JSON.stringify(bounds));assert.ok(bounds.bottom<=height);
   }
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('head');else await page.getByRole('tab',{name:'Face',exact:true}).click();
   await page.getByRole('tab',{name:'Style',exact:true}).click();assert.equal(await page.locator('.shm-face-forms button').count(),12);
   await page.getByRole('button',{name:'Pear',exact:true}).click();assert.equal(await page.evaluate(()=>maker.recipe.head.form),'pear');assert.equal(await page.getByRole('button',{name:'Pear',exact:true}).getAttribute('aria-pressed'),'true');
-  const skinBefore=await page.evaluate(()=>maker.recipe.body.skin);await page.locator('.shm-face-skin button').last().click();assert.notEqual(await page.evaluate(()=>maker.recipe.body.skin),skinBefore);await page.getByRole('button',{name:'Undo',exact:true}).click();assert.equal(await page.evaluate(()=>maker.recipe.body.skin),skinBefore);assert.equal(await page.evaluate(()=>maker.recipe.head.form),'pear');
+  const skinBefore=await page.evaluate(()=>maker.recipe.body.skin);await page.locator('.shm-palette:not([hidden]) button').last().click();assert.notEqual(await page.evaluate(()=>maker.recipe.body.skin),skinBefore);await page.getByRole('button',{name:'Undo',exact:true}).click();assert.equal(await page.evaluate(()=>maker.recipe.body.skin),skinBefore);assert.equal(await page.evaluate(()=>maker.recipe.head.form),'pear');
   await page.screenshot({path:'/tmp/face-form-creator-'+width+'x'+height+'.png'});
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('eyes');else await page.getByRole('tab',{name:'Eyes',exact:true}).click();
   await page.getByRole('tab',{name:'Adjust',exact:true}).click();
@@ -46,14 +47,33 @@ try{
   assert.deepEqual(await page.evaluate(()=>{const o=window.maker.recipe.outfit;return [o.top,o.bottom,o.footwear,window.maker.recipe.accessories.earrings];}),['tank','underwear','barefoot','none']);
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('shoes');else await page.getByRole('tab',{name:'Shoes',exact:true}).click();
   await page.getByRole('button',{name:'Sandals',exact:true}).click();assert.equal(await page.evaluate(()=>window.maker.recipe.outfit.footwear),'sandals');
-  if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('top');else await page.getByRole('tab',{name:'Top',exact:true}).click();
+  // The island's sets and costumes have their own tab.
+  if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('outfits');else await page.getByRole('tab',{name:'Outfits',exact:true}).click();
   const preset=page.getByRole('button',{name:'Harbour Sunday jacket',exact:true});await preset.click();
   assert.deepEqual(await page.evaluate(()=>[maker.recipe.outfit.top,maker.recipe.outfit.bottom]),['jacket','trousers']);
   await page.waitForTimeout(1800);assert.equal(await preset.locator('canvas').count(),1);
   const painted=await preset.locator('canvas').evaluate(c=>{const p=c.getContext('2d').getImageData(0,0,c.width,c.height).data;return p.some((v,i)=>i%4===3&&v>0);});assert.ok(painted,'Outfit preview must contain rendered pixels');
   await page.screenshot({path:'/tmp/island-wardrobe-creator-'+width+'x'+height+'.png'});
+  // The wardrobe at scale: one search across its tabs (accents ignored), who wears the chosen item and why, its colourways.
+  await page.getByLabel('Search the wardrobe',{exact:true}).fill('Koji');
+  await page.getByRole('button',{name:'Morning boats',exact:true}).waitFor();await page.getByRole('button',{name:'Haarii crew',exact:true}).click();
+  assert.deepEqual(await page.evaluate(()=>[maker.recipe.outfit.top,maker.recipe.outfit.footwear,maker.recipe.outfit.hat]),['tee','barefoot','headband']);
+  assert.match(await page.locator('.shm-worn').last().textContent(),/^Worn by Kōji, Daichi and Kenta rowing for Minato/);
+  await page.getByLabel('Search the wardrobe',{exact:true}).fill('');await page.getByRole('button',{name:'Kitahama',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Kitahama',exact:true}).click();assert.equal(await page.evaluate(()=>maker.recipe.outfit.topColour),'#4f7a4f');
+  assert.equal(await page.getByRole('button',{name:'Haarii crew',exact:true}).getAttribute('aria-pressed'),'true','a set in its second colourway is still that set');
+  // Category chips: the Outfits tab opens on the category of the set being worn.
+  if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('top');else await page.getByRole('tab',{name:'Top',exact:true}).click();
+  if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('outfits');else await page.getByRole('tab',{name:'Outfits',exact:true}).click();
+  assert.equal(await page.getByRole('button',{name:'Festival',exact:true}).getAttribute('aria-pressed'),'true');
+  assert.equal(await page.getByRole('button',{name:'Harbour Sunday jacket',exact:true}).count(),0,'an Everyday set is not under Festival');
+  await page.getByRole('button',{name:'All',exact:true}).click();assert.equal(await page.getByRole('button',{name:'Harbour Sunday jacket',exact:true}).count(),1);
+  // The top's colour page offers the island palette, so the colourway's green shows pressed.
+  if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('top');else await page.getByRole('tab',{name:'Top',exact:true}).click();
+  await page.getByRole('tab',{name:'Colour',exact:true}).click();assert.equal(await page.getByRole('button',{name:'Colour Fukugi green',exact:true}).getAttribute('aria-pressed'),'true');
+  await page.getByRole('tab',{name:'Style',exact:true}).click();
   // The figure stays in its frame, clear of the menus.
-  const frame=await page.evaluate(()=>{const s=document.querySelector('.shm-stage').getBoundingClientRect(),c=document.querySelector('.shm-stage canvas').getBoundingClientRect(),p=document.querySelector('.shm-panel').getBoundingClientRect();return {inside:c.width<=s.width+1&&c.height<=s.height+1,clear:s.left>=p.right-1||s.top>=p.bottom-1};});
+  const frame=await page.evaluate(()=>{const s=document.querySelector('.shm-stage').getBoundingClientRect(),c=document.querySelector('.shm-stage canvas').getBoundingClientRect(),p=document.querySelector('.shm-panel').getBoundingClientRect();return {inside:c.width<=s.width+1&&c.height<=s.height+1,clear:s.left>=p.right-1||s.right<=p.left+1||s.top>=p.bottom-1||s.bottom<=p.top+1};});
   assert.deepEqual(frame,{inside:true,clear:true});
   await page.getByLabel('Name',{exact:true}).fill('Test islander');
   const before=await page.evaluate(()=>JSON.stringify(window.maker.recipe));
