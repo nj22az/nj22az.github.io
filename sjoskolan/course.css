@@ -59,6 +59,7 @@ body.course code{font-family:Menlo,Consolas,monospace;font-size:.92em;background
 
 /* Läsmaterial, övningar och protokoll */
 .course-reading{max-width:1000px}
+.course-reading p,.course-reading li,.course-reading dd{line-height:1.8}
 .course-reading>p,.course-reading>ul,.course-reading>ol,.course-reading .chapter>p{max-width:72ch}
 .course-reading h1{font-size:clamp(32px,3.6vw,40px)}
 .course-reading img{max-width:100%;height:auto}

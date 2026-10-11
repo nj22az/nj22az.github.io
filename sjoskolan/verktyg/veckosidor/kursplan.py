@@ -48,6 +48,25 @@ ENKEL = {
 }
 assert set(ENKEL) == set(MAL)
 
+# Kursplanens fyra områden: färgkoden för veckorna och modulerna. Varje skriftlig punkt har sin praktiska motsvarighet
+# (LM-2/6 elsäkerhet, LM-4/8 mätning, LM-5/7 felsökning; LM-3/9 regler och ansvar hör till elsäkerheten).
+# Färgerna är validerade för färgblindhet (dataviz validate_palette.js, alla par, vit yta) och visas alltid med namnet
+# bredvid. Röd och orange används inte: i Sjöskolan betyder de fel och fara (DESIGN.md).
+OMRADEN = [
+    ('komponenter', 'Komponenter och system', '#1baf7a', ['LM-1']),
+    ('sakerhet', 'Elsäkerhet och regler', '#eda100', ['LM-2', 'LM-3', 'LM-6', 'LM-9']),
+    ('matning', 'Mätning och analys', '#6250d6', ['LM-4', 'LM-8']),
+    ('felsokning', 'Felsökning och dokumentation', '#e87ba4', ['LM-5', 'LM-7']),
+]
+OMRADE_AV = {m: o for o in OMRADEN for m in o[3]}
+
+
+def ton(hexfarg, andel=0.14):
+    """Ljus ton av färgen mot vitt, för bakgrunder (text står alltid i mörk färg)."""
+    r, g, b = (int(hexfarg[i:i + 2], 16) for i in (1, 3, 5))
+    return '#' + ''.join(f'{round(255 - (255 - c) * andel):02x}' for c in (r, g, b))
+assert set(OMRADE_AV) == set(MAL)
+
 # Det praktiska provet vecka 45 (praktiskt-prov.html): stationerna och målen de visar.
 PRAKTISKT_PROV = [('Station 1: motorn i plinten', ['LM-4', 'LM-5', 'LM-6', 'LM-8']),
                   ('Station 2: hållkretsen med dolt fel', ['LM-5', 'LM-7', 'LM-8', 'LM-9']),
@@ -70,7 +89,8 @@ CSS = ('<style>'
        '.kp-tal{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:12px;margin:0 0 16px}'
        '.kp-tal div{padding:12px 14px;border-radius:10px;background:#edf4f9}.kp-tal b{display:block;font-size:24px;line-height:1.2}'
        '.kp-tal small{font-size:15px;color:#4d6579}'
-       '.kp-lista{list-style:none;margin:0;padding:0}.kp-lista li{display:grid;grid-template-columns:4.2em 1fr;gap:4px 12px;padding:12px 0;border-top:1px solid #e3ecf2}'
+       '.kp-lista{list-style:none;margin:0;padding:0}.kp-lista li{display:grid;grid-template-columns:4.2em 1fr;gap:4px 12px;padding:12px 0 12px 10px;border-top:1px solid #e3ecf2;margin:6px 0 0}'
+       '.kp-omr{display:inline-block;margin:0 8px 2px 0;padding:1px 8px;border-radius:6px;font-weight:700;color:#163248}'
        '.kp-lista .kp-id{font-weight:700;color:#064f91;padding-top:2px}.kp-enkel{margin:0;font-size:18px;font-weight:700;line-height:1.4}'
        '.kp-var{margin:4px 0 0;font-size:15px;color:#4d6579}'
        '.kp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr));gap:12px}'
@@ -139,6 +159,65 @@ def _inlamning(nr, w):
     return ut
 
 
+def veckans_uppgifter(nr, w):
+    """Alla övningar, labbuppgifter och inlämningar veckan har (post-id), och målen för det praktiska provet."""
+    ids = set()
+    for mapp, del_, *_ in _ovningsgrupper(nr, w):
+        ids |= {pl['ovning'] for pl in FORMELSTOD if pl['plats'] == f'{mapp}/aktuell/Formelstod_och_ovningar.html' and pl['del'] == del_}
+    ids |= {pl['ovning'] for pl in ARBETSBLAD if any(pl['plats'].startswith(f'vecka-{x}/') for x in _mappar(nr))}
+    for p in _labbar(w):
+        ids |= labbuppgifter(p['href'])
+    for mapp, ankare, *_ in _inlamning(nr, w):
+        ids |= {x['ovning'] for x in INLAMNING if x['plats'] == f'{mapp}/aktuell/Inlamning.html' and x['ankare'] == ankare}
+    extra = []
+    if w.get('tenta'):
+        ids |= {pl['ovning'] for pl in TENTAMEN}
+        extra = [mal for _, mal in PRAKTISKT_PROV]
+    return ids, extra
+
+
+def labbuppgifter(href):
+    """Labbens uppgifter (post-id) för en länk som ../../hallkretslabbet/ eller ../../multimetersimulator/?ovning=category."""
+    mapp = href.split('../../')[-1].split('/')[0].split('?')[0]
+    filt = re.search(r'ovning=([a-z]+)', href)
+    return {pl['ovning'] for pl in SIMULATOR if pl['plats'].startswith(mapp + '/') and (not filt or pl['ankare'] == filt.group(1))}
+
+
+def fordelning(ids, extra=()):
+    """Antal uppgifter per område (en uppgift räknas en gång per område den tränar), i områdenas fasta ordning."""
+    antal = defaultdict(int)
+    for malen in [_MAL_AV.get(i, []) for i in ids] + list(extra):
+        for o in {OMRADE_AV[m][0] for m in malen}:
+            antal[o] += 1
+    return [(o, antal[o[0]]) for o in OMRADEN if antal[o[0]]]
+
+
+OMR_CSS = ('<style>.omr{margin:10px 0 18px}.omr-bar{display:flex;gap:2px;height:10px;max-width:640px}'
+           '.omr-bar span{display:block;height:100%;border-radius:3px}'
+           '.omr-text{margin:6px 0 0;font-size:15px;color:#4d6579;display:flex;flex-wrap:wrap;gap:4px 14px}'
+           '.omr-text b{color:#163248}.omr-namn{display:inline-flex;align-items:center;gap:6px}'
+           '.omr-namn i{display:inline-block;width:12px;height:12px;border-radius:3px}</style>')
+
+
+def omrade_band(fordeln, rubrik='Kursplanen', kompakt=False):
+    """Färgkoden: ett band med områdenas andelar och namnen bredvid (färgen är aldrig ensam bärare av informationen)."""
+    tot = sum(n for _, n in fordeln) or 1
+    storst = max(fordeln, key=lambda x: x[1])[0][0] if fordeln else None
+    etikett = ', '.join(f'{o[1]} {round(100 * n / tot)} %' for o, n in fordeln)
+    band = ''.join(f'<span style="flex:{n} 1 0;background:{o[2]}"></span>' for o, n in fordeln)
+    namn = ''.join(f'<span class="omr-namn"><i style="background:{o[2]}"></i>' + (f'<b>{escape(o[1])}</b>' if o[0] == storst else escape(o[1])) + '</span>'
+                   for o, _ in fordeln)
+    if kompakt:  # modulkorten: bara största området; förklaringen över korten namnger alla färger
+        o = next(o for o, _ in fordeln if o[0] == storst)
+        namn, rubrik = f'<span class="omr-namn"><i style="background:{o[2]}"></i><b>{escape(o[1])}</b></span>', 'Mest'
+    return (f'<div class="omr" data-omrade="{storst or ""}"><div class="omr-bar" role="img" aria-label="{escape(rubrik)}: {escape(etikett)}" title="{escape(etikett)}">{band}</div>'
+            f'<p class="omr-text"><span>{escape(rubrik)}:</span>{namn}</p></div>')
+
+
+def vecko_band(nr, w):
+    return OMR_CSS + omrade_band(fordelning(*veckans_uppgifter(nr, w)))
+
+
 def kursplan_html(nr, w):
     per_mal = defaultdict(list)  # mål -> [(ordning, typ, titel, länk, text, framsteg)]
     framsteg = defaultdict(lambda: defaultdict(list))  # mål -> mapp -> [ankare]
@@ -167,12 +246,9 @@ def kursplan_html(nr, w):
 
     # Labbarna.
     for o, p in enumerate(_labbar(w), 20):
-        mapp = p['href'].split('../../')[-1].split('/')[0].split('?')[0]
-        filt = re.search(r'ovning=([a-z]+)', p['href'])
-        rader = [pl for pl in SIMULATOR if pl['plats'].startswith(mapp + '/') and (not filt or pl['ankare'] == filt.group(1))]
         antal = defaultdict(int)
-        for pl in rader:
-            for m in _MAL_AV.get(pl['ovning'], []):
+        for i in labbuppgifter(p['href']):
+            for m in _MAL_AV.get(i, []):
                 antal[m] += 1
         for m, n in antal.items():
             per_mal[m].append((o, 'Labb', p['titel'], p['href'], f'{n} {"uppgift" if n == 1 else "uppgifter"}'))
@@ -211,8 +287,9 @@ def kursplan_html(nr, w):
             if etikett not in sett:
                 sett.add(etikett)
                 var.append(f'<a href="{lank}">{escape(etikett)}</a>')
-        rader.append(f'<li id="kp-{m}"><span class="kp-id" title="{escape(MAL[m]["text"])}">{m}</span>'
-                     f'<div><p class="kp-enkel">{escape(ENKEL[m])}</p><p class="kp-var">Här tränar du: {" · ".join(var)}</p></div></li>')
+        omr = OMRADE_AV[m]
+        rader.append(f'<li id="kp-{m}" style="border-left:6px solid {omr[2]}"><span class="kp-id" title="{escape(MAL[m]["text"])}">{m}</span>'
+                     f'<div><p class="kp-enkel">{escape(ENKEL[m])}</p><p class="kp-var"><span class="kp-omr" style="background:{ton(omr[2])}">{escape(omr[1])}</span> Här tränar du: {" · ".join(var)}</p></div></li>')
     grupper = defaultdict(list)
     for m in aktiva:
         for mapp, a in framsteg[m].items():

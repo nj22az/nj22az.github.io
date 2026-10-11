@@ -174,6 +174,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Färgkod efter kursplanens fyra områden (komponenter, elsäkerhet och regler, mätning och analys,
+  felsökning och dokumentation) på veckosidorna och startsidans moduler; startsidan byggs nu av
+  `verktyg/startsida/bygg.py`. Veckosidorna 42–45: ”Klart” på varje steg styr vilket steg som är nu, och bara det
+  stegets knapp är blå. Löptext på delsidor och genomgångar har radavstånd 1,8 (Zenn). Se DESIGN.md.
+
 - **2026-10-11** Granskningen av vecka 43 (och del 4 Systematisk felsökning) rättad. Delsidorna räknar de flyttade delarna
   (`veckans_delar` ur `FLYTTAD` i delsidor_veckor.py): vecka 43 har del 1–4 och vecka 44 del 1–5, och del 3 leder vidare till
   del 4 i `vecka-45/`. Övning 2.3 (tvåpolig, 3 000 r/min), 2.5 (1 430 r/min, 4,7 %) och 2.7 (440 V ombord, Δ/Y 254/440 och

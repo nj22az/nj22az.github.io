@@ -32,8 +32,8 @@ _spec.loader.exec_module(_inl)
 EPOST, epost_knapp = _inl.EPOST, _inl.epost_knapp
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
-from kursplan import kursplan_html  # veckans översikt efter kursplanens punkter LM-1–9
-V = '20260930d'
+from kursplan import kursplan_html, vecko_band  # veckans översikt efter kursplanens punkter LM-1–9 och områdenas färgkod
+V = '20261011a'
 DAGPLAN_V = '20260927a'
 # Lektionerna från vecka 42 är online; samma text i varje veckas presentationsruta.
 DISTANS_INTRO = ('<p>Lektionerna är <strong>online</strong> måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Länken till mötet får du av läraren. '
@@ -527,7 +527,13 @@ ENKEL_CSS = ('<style>'
     '.vag>li::before{counter-increment:steg;content:counter(steg);position:absolute;left:18px;top:18px;width:32px;height:32px;border-radius:50%;'
     'background:#edf4f9;color:#064f91;font-weight:700;display:grid;place-items:center}'
     '.vag>li.lektion::before{background:#064f91;color:#fff}'
-    '.vag>li.nu{border:2px solid #064f91;box-shadow:0 0 0 4px #edf4f9}.vag>li.nu .vag-nar::after{content:" · nu";color:#064f91;font-weight:700}'
+    '.vag>li.nu,.vag>li.nasta{border:2px solid #064f91;box-shadow:0 0 0 4px #edf4f9}'
+    '.vag>li.nu .vag-nar::after{content:" · nu";color:#064f91;font-weight:700}.vag>li.nasta .vag-nar::after{content:" · nästa";color:#064f91;font-weight:700}'
+    '.vag>li.klar{background:#f7fafc}.vag>li.klar::before{content:"✓";background:#e3f1ea;color:#176844}'
+    '.vag>li.klar h3::after{content:" · klart";font-size:15px;font-weight:700;color:#176844}'
+    '.vag-klar{display:inline-flex;align-items:center;gap:10px;min-height:44px;margin-top:10px;padding:0 14px;border:1px solid #cad8e2;border-radius:8px;font-size:16px;cursor:pointer;background:#fff}'
+    '.vag-klar input{width:22px;height:22px;margin:0;accent-color:#176844}'
+    '.vag-status{font-weight:700;color:#176844;min-height:1em}'
     '.vag-nar{margin:0;font-size:15px;font-weight:700;color:#4d6579}.vag h3{margin:2px 0 6px;font-size:21px;line-height:1.3}'
     '.vag p{margin:6px 0}.vag-del{margin:10px 0 0;padding:12px 0 0;border-top:1px solid #e3ecf2}'
     '.vag-del h4{margin:0 0 8px;font-size:18px}.vag-knappar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}'
@@ -550,7 +556,7 @@ def enkel_vecka(nr, w, week_dir, delar_, delsida, labbar, redovisa, skicka, kick
         knappar = []
         href = delsida(i)
         if href:
-            knappar.append(f'<a class="sj-btn primary" href="{href}">Teori, exempel och övningar</a>')
+            knappar.append(f'<a class="sj-btn" data-huvud href="{href}">Teori, exempel och övningar</a>')
         if ppt_:
             stem = ppt_['fil'][:-5]
             did = Path(stem).name.removesuffix('_elev')
@@ -565,6 +571,7 @@ def enkel_vecka(nr, w, week_dir, delar_, delsida, labbar, redovisa, skicka, kick
                 f'<p class="vag-knappar">{"".join(knappar)}{fram}</p>{ovr}</div>')
 
     steg = []
+    klar_ruta = '<label class="vag-klar"><input type="checkbox"> Klart</label>'
     for rad in w['plan']:
         k, hh, dag, typ, text = rad[:5]
         start = f'{(mandag + _dt.timedelta(days=k)).isoformat()}T{hh}'
@@ -573,31 +580,45 @@ def enkel_vecka(nr, w, week_dir, delar_, delsida, labbar, redovisa, skicka, kick
         delar_har = [i for i, v in sorted(lektion.items()) if ar_lektion and v[0] == k and i <= len(delar_)] if not w.get('tenta') else []
         rubrik_ = rad[5] if len(rad) > 5 else ('Lektion online' if ar_lektion else ('Hemma' if typ == 'Hemma' else typ))
         innehall = ''.join(delkort(i) for i in delar_har)
-        steg.append(f'<li class="{"lektion" if ar_lektion else "hemma"}" data-start="{start}"><p class="vag-nar">{escape(datumtext)} · {escape(typ)}</p>'
-                    f'<h3>{escape(rubrik_)}</h3><p>{escape(text)}</p>{innehall}</li>')
+        steg.append(f'<li id="steg-{len(steg) + 1}" class="{"lektion" if ar_lektion else "hemma"}" data-start="{start}"><p class="vag-nar">{escape(datumtext)} · {escape(typ)}</p>'
+                    f'<h3>{escape(rubrik_)}</h3><p>{escape(text)}</p>{innehall}{klar_ruta}</li>')
+        sista_start = start
     if w.get('tenta'):
         material = ''.join(f'<div class="vag-del"><h4>{escape(d["titel"])}</h4><p>{escape(d["mal"])}</p><ul class="vag-lankar">'
                            + ''.join(f'<li><a href="{q["href"]}">{escape(q["titel"])}</a>{(" · " + escape(q["text"])) if q.get("text") else ""}</li>' for q in items)
                            + '</ul></div>' for d, items in delar_)
-        steg.append(f'<li><p class="vag-nar">Allt du behöver</p><h3>Material till tentamen och provet</h3>{material}</li>')
+        steg.append(f'<li id="steg-{len(steg) + 1}"><p class="vag-nar">Allt du behöver</p><h3>Material till tentamen och provet</h3>{material}</li>')
     else:
         if labbar:
             lankar = ''.join(f'<li><a href="{q["href"]}">{escape(q["titel"])}</a>{(" · " + escape(q["text"])) if q.get("text") else ""}</li>' for q in labbar)
-            steg.append(f'<li><p class="vag-nar">När delarna är klara</p><h3>Labben</h3><p>Labben gör du i webbläsaren. Den bygger på veckans delar.</p><ul class="vag-lankar">{lankar}</ul></li>')
-        steg.append(f'<li><p class="vag-nar">Senast söndag {datum(w["sista"])}</p><h3>Inlämningen</h3>'
-                    f'<p><a class="sj-btn primary" href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul class="vag-lankar">{redovisa}</ul>{skicka}</li>')
-    nu_script = ('<script>(function(){var t=new Date(),r=[].slice.call(document.querySelectorAll(".vag>li[data-start]")),nu=null;'
-                 'r.forEach(function(x){if(new Date(x.dataset.start)<=t)nu=x;});if(nu&&r.length){var s=new Date(r[r.length-1].dataset.start);s.setDate(s.getDate()+3);if(t<s)nu.classList.add("nu");}'
-                 'document.querySelectorAll(".vag-framsteg").forEach(function(e){var k={};try{k=JSON.parse(localStorage.getItem("sj-ovningar:/sjoskolan/"+e.dataset.mapp+"/aktuell/Formelstod_och_ovningar.html")||"{}")||{};}catch(x){}'
-                 'var n=Object.keys(k).filter(function(a){return k[a]&&a.indexOf(e.dataset.prefix)===0;}).length;e.textContent=n>=10?"✓ Alla 10 övningar klara":n+" av 10 övningar klara";e.classList.toggle("klar",n>=10);});})();</script>')
-    lektionstext = ('<p>Lektionerna är online. Länken till mötet får du av läraren.</p>' if not w.get('tenta') else '')
+            steg.append(f'<li id="steg-{len(steg) + 1}" data-start="{sista_start}"><p class="vag-nar">När delarna är klara</p><h3>Labben</h3><p>Labben gör du i webbläsaren. Den bygger på veckans delar.</p><ul class="vag-lankar">{lankar}</ul>{klar_ruta}</li>')
+        skicka_ = skicka.replace('class="sj-btn primary"', 'class="sj-btn"')
+        steg.append(f'<li id="steg-{len(steg) + 1}" data-start="{sista_start}"><p class="vag-nar">Senast söndag {datum(w["sista"])}</p><h3>Inlämningen</h3>'
+                    f'<p><a class="sj-btn" data-huvud href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul class="vag-lankar">{redovisa}</ul>{skicka_}{klar_ruta}</li>')
+    # Steget att göra nu: det första som inte är bockat och som har börjat (annars nästa som inte är bockat). Bara det
+    # stegets första knapp är blå (en huvudknapp per vy, DESIGN.md). Avbockningen sparas i webbläsaren.
+    nu_script = ('<script>(function(){var t=new Date(),key="sj-steg:vecka-' + str(nr) + '",k={};try{k=JSON.parse(localStorage.getItem(key)||"{}")||{};}catch(e){}'
+                 'var r=[].slice.call(document.querySelectorAll(".vag>li[id]")),st=document.getElementById("vag-status");'
+                 'function spara(){try{localStorage.setItem(key,JSON.stringify(k));}catch(e){}}'
+                 'function rita(){r.forEach(function(x){var c=x.querySelector(".vag-klar input");if(c)c.checked=!!k[x.id];x.classList.toggle("klar",!!k[x.id]);x.classList.remove("nu","nasta");'
+                 '[].forEach.call(x.querySelectorAll("[data-huvud]"),function(b){b.classList.remove("primary");});});'
+                 'var kvar=r.filter(function(x){return x.querySelector(".vag-klar")&&!k[x.id];}),'
+                 'nu=kvar.filter(function(x){return x.dataset.start&&new Date(x.dataset.start)<=t;})[0]||null,n=nu||kvar[0]||null;'
+                 'if(n){n.classList.add(nu?"nu":"nasta");var b=n.querySelector("[data-huvud]");if(b)b.classList.add("primary");}'
+                 'if(st)st.textContent=(r.length&&!kvar.length&&r.some(function(x){return x.querySelector(".vag-klar");}))?"✓ Alla steg är klara.":"";}'
+                 'r.forEach(function(x){var c=x.querySelector(".vag-klar input");if(c)c.addEventListener("change",function(){k[x.id]=c.checked;spara();rita();});});rita();'
+                 'document.querySelectorAll(".vag-framsteg").forEach(function(e){var o={};try{o=JSON.parse(localStorage.getItem("sj-ovningar:/sjoskolan/"+e.dataset.mapp+"/aktuell/Formelstod_och_ovningar.html")||"{}")||{};}catch(x){}'
+                 'var n=Object.keys(o).filter(function(a){return o[a]&&a.indexOf(e.dataset.prefix)===0;}).length;e.textContent=n>=10?"✓ Alla 10 övningar klara":n+" av 10 övningar klara";e.classList.toggle("klar",n>=10);});})();</script>')
+    lektionstext = ('<p>Lektionerna är online. Länken till mötet får du av läraren. Bocka av varje steg när du är klar, så visar sidan nästa steg.</p>'
+                    if not w.get('tenta') else '<p>Bocka av varje steg när du är klar, så visar sidan nästa steg.</p>')
+    vag = ''.join(steg).replace('class="sj-btn" data-huvud', 'class="sj-btn primary" data-huvud', 1)  # utan skript: första stegets knapp
     stod = ('<p class="vecka-stod"><strong>Att slå upp:</strong> <a href="../../gemensamt/Formelsamling.pdf">Formelsamling</a>'
             '<a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp</a>'
             '<a href="../../gemensamt/Underlagskort.html">Instrumentkort</a><a href="../../tentamen.html">Tentamen</a></p>')
     return (ENKEL_CSS + f'<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>'
-            f'<p class="course-lead">{escape(w["mal"])}</p></header>'
+            f'<p class="course-lead">{escape(w["mal"])}</p>{vecko_band(nr, w)}</header>'
             f'<section aria-labelledby="vag-rubrik"><h2 id="vag-rubrik">Så gör du den här veckan</h2>{lektionstext}'
-            f'<ol class="vag">{"".join(steg)}</ol></section>{kursplan_html(nr, w)}{stod}{nu_script}')
+            f'<p class="vag-status" id="vag-status" aria-live="polite"></p><ol class="vag">{vag}</ol></section>{kursplan_html(nr, w)}{stod}{nu_script}')
 
 
 def page(nr, w):
@@ -605,6 +626,8 @@ def page(nr, w):
         from arbetsvecka40 import page as workspace_page
         html = workspace_page(w, dagplan(nr))
         assert html.count('<section id="idag"') == 1
+        assert html.count('<h1>Frånskiljning och växelström</h1>') == 1
+        html = html.replace('<h1>Frånskiljning och växelström</h1>', '<h1>Frånskiljning och växelström</h1>' + vecko_band(nr, w))
         return html.replace('<section id="idag"', kursplan_html(nr, w) + '<section id="idag"')
     week_dir = ROOT / f'vecka-{nr}' / 'aktuell'
     start, end = w['datum']
@@ -771,7 +794,7 @@ def page(nr, w):
 </main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>
 '''
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(rubrik)} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script>{script}</head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav><main id="main-content" class="course-main">
-<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>{intro if flytt else ''}<p class="course-lead">{escape(w["mal"])}</p>{'' if flytt or pres else f'<p>{intro}</p>'}{'' if flytt else kursplan_html(nr, w)}{pres}{actions}{due}</header>
+<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>{intro if flytt else ''}<p class="course-lead">{escape(w["mal"])}</p>{'' if flytt else vecko_band(nr, w)}{'' if flytt or pres else f'<p>{intro}</p>'}{'' if flytt else kursplan_html(nr, w)}{pres}{actions}{due}</header>
 {notis}{plan}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">{rubrik_ordning}</h2>{sjalv}<ol class="lesson-list">{forst}{delar}</ol></section>
 <aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3 id="inlamning">Du redovisar</h3><p><a class="sj-btn primary" href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul>{redovisa}</ul>{skicka}<p>Övningarna är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>{w.get("sista_text") or f'Senast söndag {datum(w["sista"])}'}.</strong> {lamna}</p>{fordj}<h3>Att slå upp</h3><ul class="plain">{slaupp}{formelsamling}<li><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp: RAD eller DEG, mH och µF</a></li><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
 <p class="course-download-note">Bildspelen öppnas direkt i webbläsaren, också i telefonen. Presentationerna finns även som PowerPoint och PDF. Nedladdade filer får datum och klockslag i filnamnet.</p>
