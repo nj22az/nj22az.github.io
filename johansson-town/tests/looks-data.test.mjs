@@ -55,7 +55,16 @@ test('look fields are worked out from the recipe and stay in step with the maker
 
 test('the resident groups cover everybody once, and the Studio pickers can name them all',()=>{
  assert.equal(new Set(RESIDENT_NAMES).size,RESIDENT_NAMES.length);
- assert.deepEqual([...RESIDENT_GROUPS.cast],Object.keys(CAST_RECIPES));
+ // Harbour visitor is the maker's starting template (creator.js), not a resident: it has no look to change.
+ assert.deepEqual([...RESIDENT_GROUPS.cast],Object.keys(CAST_RECIPES).filter(n=>n!=='Harbour visitor'));
+ assert.ok(!RESIDENT_NAMES.includes('Harbour visitor'));
  for(const p of PROFILES)assert.ok(RESIDENT_NAMES.includes(p.name),p.name);
  for(const n of Object.keys(NEIGHBOUR_RECIPES))assert.ok(RESIDENT_NAMES.includes(n),n);
+});
+
+test('the player without a saved look is Johansson as World draws him, so a published look reaches the player too',async()=>{
+ const {playerRecipe}=await import('../src/avatars/actors.js');
+ const empty={getItem:()=>null,setItem(){},removeItem(){}};
+ assert.equal(json(playerRecipe(empty)),json(recipeFor('Johansson')));
+ if(!Object.hasOwn(LOOKS,'Johansson'))assert.equal(json(playerRecipe(empty)),json(CAST_RECIPES.Johansson),'with no published look, exactly as before');
 });

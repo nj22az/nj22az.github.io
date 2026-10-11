@@ -3,7 +3,7 @@ import {appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,measure} from './build.js';
 import {createAvatarAnimator,GESTURES} from './animate.js';
-import {recipeFor,CAST_RECIPES} from './cast.js';
+import {recipeFor} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
 import {fitAvatarHeldProp,gripWheel} from './consume.js';
 import {DEFAULT_PLAYER,readPlayers,readSave} from '../save.js';
@@ -22,7 +22,8 @@ import {createDrinkProp,createDishProp,createBiteProp,setPropPortion,updatePropP
  *
  */
 
-/** The player's own recipe, as the creator saved it; Johansson's until then. */
+/** The player's own recipe, as the creator saved it; until then Johansson as World draws him (recipeFor: with any look
+ * published from Johansson Studio, so the player, the guide and the photo studio match the comics). */
 export const PLAYER_RECIPE_KEY='johansson-town-avatar';
 export function playerRecipeKey(storage=globalThis.localStorage){
  const id=readPlayers(storage).active;
@@ -35,7 +36,7 @@ export function playerRecipe(storage=globalThis.localStorage){
   const r=decodeRecipe(storage?.getItem(playerRecipeKey(storage)))||decodeRecipe(readSave(storage)?.avatarRecipe);
   if(r)return {...r,outfit:appropriateOutfit(r.name||'Johansson',r.outfit)};
  }catch{}
- return CAST_RECIPES.Johansson;
+ return recipeFor('Johansson');
 }
 export function savePlayerRecipe(recipe,storage=globalThis.localStorage){
  const code=encodeRecipe({...recipe,outfit:appropriateOutfit(recipe.name||'Johansson',recipe.outfit)});try{storage?.setItem(playerRecipeKey(storage),code);}catch{}return code;

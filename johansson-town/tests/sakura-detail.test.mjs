@@ -6,6 +6,7 @@ import * as T from '../vendor/three.module.js';
 import {sakuraProductTemplate} from '../src/world/interiors/sakura-food-products.js';
 import {shopProductTemplate} from '../src/commerce/shop-product.js';
 import {SHOP_STOCK,restoreShopStock} from '../src/commerce/shop-stock.js';
+import {PRODUCTS} from '../src/commerce/products-data.js';
 import {HOT_SNACKS} from '../src/commerce/konbini.js';
 import {packagingSlot,ATLAS_COLS,ATLAS_ROWS,ATLAS_SPAN} from '../src/world/interiors/store-advertising.js';
 import {SAKURA_LAYOUT,SAKURA_TILL_CABINET,COPY_MACHINE} from '../src/world/interiors/sakura-layout.js';
@@ -26,8 +27,9 @@ function nearColour(actual,hex,message){const wanted=new T.Color(hex);assert.ok(
 function faceCentre(geometry,i){const p=geometry.attributes.position;return new T.Vector3().fromBufferAttribute(p,i).add(new T.Vector3().fromBufferAttribute(p,i+1)).add(new T.Vector3().fromBufferAttribute(p,i+2)).multiplyScalar(1/3);}
 function worldVertices(object){const result=[];object.updateMatrixWorld(true);object.traverse(o=>{if(o.isMesh){const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++)result.push(new T.Vector3().fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld));}});return result;}
 
-test('all 33 stock identities keep their exact placement envelope while food, wrappers and can tops stay inside it',()=>{
- assert.equal(SHOP_STOCK.length,33);
+test('every stock identity keeps its exact placement envelope while food, wrappers and can tops stay inside it',()=>{
+ // As many as Sakura's products (data/studio/products.json): Johansson Studio can add and retire lines.
+ assert.equal(SHOP_STOCK.length,PRODUCTS.length);
  for(const {id} of SHOP_STOCK){
   const original=shopProductTemplate(id),next=sakuraProductTemplate(id);
   assert.equal(sakuraProductTemplate(id),next,id+' should reuse its template');

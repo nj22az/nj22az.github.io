@@ -1,12 +1,12 @@
 import * as THREE from '../../../vendor/three.module.js';
-import {travelAlong} from '../studio-assets.js';
 import {pinLobbyChannel,lobbyChannelPin,LOBBY_CHANNELS,ONSEN_DOORWAYS} from './onsen-lobby.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
 import {createLightPools} from '../light-pools.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
+import {ONSEN_CHAIR,CHAIR as CHAIR_AT,MASSAGE_CHAIR} from './onsen-chair.js';
 
-/** The massage chair's seat front (room x, metres): the seat runs from here back to its backrest at 4.725. */
-export const MASSAGE_CHAIR=Object.freeze({front:4.2});
+/** The massage chair's seat front (room x, metres; onsen-chair.js, from the chair's card), for everything that read it here. */
+export {MASSAGE_CHAIR};
 
 /**
  * The chair's coin timer (コインタイマー) on the front of its right arm: ¥100 buys ten minutes, counted down on a red LED
@@ -18,7 +18,7 @@ export const MASSAGE_CHAIR=Object.freeze({front:4.2});
 export const CHAIR_TIMER=Object.freeze({coin:100,seconds:600,name:'Massage chair timer display',
  for:'Whoever sits in the chair, to see how much of their hundred yen is left; and Mrs Higa, who can read it from the bandai when somebody says the chair cheated them.',
  why:'On the coin box at the front of the right arm, at the sitter’s right hand and facing the lobby, so the sitter and the people waiting both see it.',
- period:'A 1994 coin-operated chair: a cream steel coin box with a coin slot, a red 運転中 lamp and a four-digit red seven-segment LED, the cheap readout of every coin-op machine of the late eighties (coin TVs in inns, game machines). A dial cannot show seconds; the LED can, which is why the story can say 9:58.'});
+ period:'A 1994 coin-operated chair: a grey steel coin box with a coin slot, a red 運転中 lamp and a four-digit red seven-segment LED, the cheap readout of every coin-op machine of the late eighties (coin TVs in inns, game machines). A dial cannot show seconds; the LED can, which is why the story can say 9:58.'});
 
 /** A hair dryer's cord (all three, ~1.7 m from the handle to the plug): how far a bather can take it from its socket. */
 export const DRYER_CORD=Object.freeze({length:1.7,
@@ -143,7 +143,7 @@ export const ONSEN_CIRCUITS=Object.freeze([
    plain({id:'dryer-1',en:'Hair dryer 1, cream, at the left mirror',watts:1200,atRest:'off',by:'a bather at the left mirror',meshes:['Hair dryer 1','Hair dryer 1 pilot'],socket:'Vanity socket 1',
     shows:plain({lamp:'Hair dryer 1 pilot',air:'Hair dryer 1 air',hum:'Hair dryer 1'}),
     purpose:'The oldest dryer, kept at the end mirror by the lockers for regulars who dry their hair before they dress.'}),
-   plain({id:'massage-chair',en:'Massage chair',watts:200,atRest:'off',by:'a ¥100 coin: ten minutes',meshes:['Massage chair seat','Massage chair lamp'],socket:'Massage chair socket',raceway:'Massage chair raceway',
+   plain({id:'massage-chair',en:'Massage chair',watts:200,atRest:'off',by:'a ¥100 coin: ten minutes',meshes:['Massage chair lamp'],socket:'Massage chair socket',raceway:'Massage chair raceway',
     shows:plain({lamp:'Massage chair lamp',motion:'Massage chair rollers'}),
     purpose:'Ten minutes for ¥100 in the lobby after the bath; the coins pay for itself and the coffee-milk habit.'}),
   ])}),
@@ -622,7 +622,7 @@ function sticker(text,sub,{w=256,h=96,bg='#f6f4ee',fg='#1d2422'}={}){
  * wires the room to the circuit state. `sun` is onsen.js's daylight, which the board shares
  * out the way it shares the lamps' bounce (fill).
  */
-export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=1.6,hall={front:1.6,changing:-1.2},chair:studioChair=null}){
+export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=1.6,hall={front:1.6,changing:-1.2}}){
  const group=new THREE.Group();group.name='Umi-no-yu electrics';room.add(group);
  const steel=new THREE.MeshStandardMaterial({color:0x9aa09c,roughness:.45,metalness:.55});
  const darkPlastic=new THREE.MeshStandardMaterial({color:0x2f3331,roughness:.55});
@@ -848,36 +848,27 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
   add(new THREE.BoxGeometry(X.w,X.h,X.d),rwMat,0,0,X.d/2,'Massage chair socket box',g);
   add(new THREE.BoxGeometry(.05,.07,.004),whitePlastic,0,-.01,X.d+.002,'Massage chair socket plate',g);
   add(new THREE.BoxGeometry(.035,.04,.022),greyPlastic,0,-.01,X.d+.004+.011,'Massage chair socket plug',g);}
- // The plug hangs its cord down the wall, in front of the wainscot rail, and across the floor to the chair.
- // On Studio's chair (studio-assets.js) the cord leaves the back of the chair at its `cord` anchor, low on the plinth.
- {const tail=[[4.84,.004,2.93],[4.872,.03,2.905],[4.877,.3,2.9],[4.879,.9,2.9],[4.882,1.03,2.9],[4.884,1.075,2.9]],from=studioChair?.anchors?.cord;
-  cord(from?[from,[from[0]+.02,.008,from[2]-.07],...tail]:[[4.6,.012,3.146],[4.72,.004,3.02],...tail],'Massage chair cord');}
- // The rating plate: low on the old chair's front; on Studio's chair, on the back of its shell, where makers put it.
- const chairPlate=studioChair?add(new THREE.PlaneGeometry(.11,.05),printed(sticker('200W  100V','MASSAGE CHAIR'),0xf6f4ee),4.812,.6,3.55,'Massage chair rating plate')
-  :add(new THREE.PlaneGeometry(.11,.05),printed(sticker('200W  100V','MASSAGE CHAIR'),0xf6f4ee),MASSAGE_CHAIR.front-.003,.3,3.75,'Massage chair rating plate');
- chairPlate.rotation.y=studioChair?Math.PI/2:-Math.PI/2;chairPlate.castShadow=false;
- // The coin timer on the front of the chair's right arm: ¥100 for ten minutes, and the red
- // 運転中 lamp that says it is running.
- // 運転中 lamp that says it is running, the coin slot, and the LED readout of the time left (CHAIR_TIMER).
- // The box stands against the arm's front face (x = MASSAGE_CHAIR.front + 0.05) and under its top (y 0.71).
- const timer=new THREE.Group();timer.name='Massage chair coin timer';timer.position.set(MASSAGE_CHAIR.front+.0325,.6,3.17);group.add(timer);
- const BOXD=.035,faceX=-BOXD/2;
- add(new THREE.BoxGeometry(BOXD,.15,.08),new THREE.MeshStandardMaterial({color:0xd9d3c4,roughness:.5}),0,0,0,'Massage chair coin box',timer);
+ // The 1994 socket's cord (ONSEN_CHAIR.cord): from the chair's cord anchor, straight out of the back of its plinth, along
+ // the floor behind its right corner to the wall by the milk cooler, and up the wall in front of the wainscot rail into the plug.
+ cord(ONSEN_CHAIR.cord,'Massage chair cord');
+ // Its rating plate, on the right arm unit's outer face, low and near the back where the cord leaves it (ONSEN_CHAIR.plate).
+ {const P=ONSEN_CHAIR.plate,plate=add(new THREE.PlaneGeometry(P.w,P.h),printed(sticker('200W  100V','MASSAGE CHAIR'),0xf6f4ee),...P.at,'Massage chair rating plate');plate.rotation.y=P.yaw;plate.castShadow=false;}
+ // The coin timer (CHAIR_TIMER) on the coin box at the front of the chair's right arm: ¥100 for ten minutes. The box, its
+ // coin slot, its start and stop buttons and its price label are the chair's own (Studio's model); the room keeps the two
+ // parts that light and count: the red LED readout of the time left in the box's window (the timer-display anchor, 0.5 mm
+ // proud of the face plate, as the model's own printed window was) and the 運転中 lamp over it, a red lens on the face plate
+ // whose front is the running-lamp anchor. Both face the lobby, as the chair does.
+ const timer=new THREE.Group();timer.name='Massage chair coin timer';group.add(timer);
  // The readout: a smoked window with four red seven-segment digits; dark glass when the chair has no power.
  const ledCanvas=typeof document!=='undefined'&&document.createElement?document.createElement('canvas'):null;let ledCtx=null,ledTex=null;
  if(ledCanvas){ledCanvas.width=128;ledCanvas.height=56;ledCtx=ledCanvas.getContext?.('2d')||null;if(ledCtx?.fillRect){ledTex=new THREE.CanvasTexture(ledCanvas);ledTex.colorSpace=THREE.SRGBColorSpace;}else ledCtx=null;}
- add(new THREE.BoxGeometry(.004,.034,.068),darkPlastic,faceX-.002,.044,0,'Massage chair timer bezel',timer).castShadow=false;
- const led=add(new THREE.PlaneGeometry(.062,.028),new THREE.MeshBasicMaterial(ledTex?{map:ledTex,toneMapped:false}:{color:0x1a0c0a}),faceX-.0042,.044,0,CHAIR_TIMER.name,timer);led.rotation.y=-Math.PI/2;led.castShadow=false;
- const chairLamp=add(new THREE.SphereGeometry(.007,12,8),new THREE.MeshStandardMaterial({color:0x6a2018,emissive:0xff4a2a,emissiveIntensity:2,roughness:.3}),faceX-.002,.012,-.024,'Massage chair lamp',timer);chairLamp.castShadow=false;
- add(new THREE.BoxGeometry(.004,.026,.004),darkPlastic,faceX-.0015,.012,.012,'Massage chair coin slot',timer).castShadow=false;
- const coin=add(new THREE.PlaneGeometry(.066,.036),printed(sticker('100円 10分','¥100 · 10 MIN'),0xf6f4ee),faceX-.0005,-.04,0,'Massage chair timer label',timer);coin.rotation.y=-Math.PI/2;coin.castShadow=false;
- // Studio's chair has its own coin box: slot, buttons, price and running lamp (parts with the roles coin-slot and lamp;
- // electrics lights the lamp by its name). World keeps what changes: the readout, drawn on the chair's own display.
- if(studioChair){
-  timer.removeFromParent();
-  const display=studioChair.object.getObjectByName(CHAIR_TIMER.name);
-  if(display&&ledTex){display.material=new THREE.MeshBasicMaterial({map:ledTex,toneMapped:false});display.castShadow=false;}
- }
+ // A polygon offset as well as the half millimetre, so no depth buffer ever lets the face plate flicker through it.
+ const onFace={polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1};
+ const led=add(new THREE.PlaneGeometry(ONSEN_CHAIR.led.w,ONSEN_CHAIR.led.h),new THREE.MeshBasicMaterial(ledTex?{map:ledTex,toneMapped:false,...onFace}:{color:0x1a0c0a,...onFace}),...CHAIR_AT.anchor('timer-display'),CHAIR_TIMER.name,timer);
+ led.rotation.y=CHAIR_AT.yaw;led.castShadow=false;
+ {const L=ONSEN_CHAIR.lamp,[lx,ly,lz]=CHAIR_AT.anchor('running-lamp'),[fx,,fz]=CHAIR_AT.facing;
+  const chairLamp=add(new THREE.SphereGeometry(L.r,12,8),new THREE.MeshStandardMaterial({color:0x6a2018,emissive:0xff4a2a,emissiveIntensity:2,roughness:.3}),lx-fx*L.depth,ly,lz-fz*L.depth,'Massage chair lamp',timer);
+  chairLamp.rotation.y=CHAIR_AT.yaw;chairLamp.scale.z=L.depth/L.r;chairLamp.castShadow=false;}
  // Seven segments a digit (a b c d e f g), drawn lit or as the faint unlit bars an LED shows behind its smoked glass.
  const SEG={0:'abcdef',1:'bc',2:'abged',3:'abgcd',4:'fgbc',5:'afgcd',6:'afgedc',7:'abc',8:'abcdefg',9:'abcdfg'};
  let ledShown=null;
@@ -887,20 +878,19 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
   let x=10;for(const ch of digits){if(ch===':'){c.fillStyle=lit?on:off;c.fillRect(x+1,20,4,4);c.fillRect(x+1,32,4,4);x+=10;continue;}
    for(const k of 'abcdefg')seg(x,8,k,ch!==' '&&SEG[ch]?.includes(k)?on:off);x+=W+6;}
   ledTex.needsUpdate=true;};
- // The kneading rollers behind the backrest's cover: two soft lumps that knead and travel
- // up and down the back while it runs, and stop where they are when the power goes.
- // Measured in the room's own frame from the backrest onsen.js built (its parent is the room).
- const back=room.getObjectByName('Massage chair back'),backBox=back?.geometry?.parameters?new THREE.Box3().setFromCenterAndSize(back.position.clone(),new THREE.Vector3(back.geometry.parameters.width,back.geometry.parameters.height,back.geometry.parameters.depth)):null;
- const rollers=new THREE.Group();rollers.name='Massage chair rollers';if(!studioChair)group.add(rollers);// Studio's chair brings its own
- const lumps=backBox?[-1,1].map(sd=>{const l=add(new THREE.SphereGeometry(.05,16,10),back.material,backBox.min.x,0,0,'Massage chair roller',rollers);l.scale.set(.28,1,.8);l.userData.side=sd;l.castShadow=false;return l;}):[];
+ // The kneading rollers behind the backrest's cover, on its roller track (ONSEN_CHAIR.rollers): two soft lumps that knead and
+ // travel up and down the back while it runs, and stop where they are when the power goes. They are the chair's vinyl:
+ // white under its vertex colour (the card's upholstery), as the model's own vinyl is, so the cel ramp bands them alike.
+ const RL=ONSEN_CHAIR.rollers,track=CHAIR_AT.anchor('roller-track'),[fx,,fz]=CHAIR_AT.facing,across=[fz,0,-fx];// the chair’s own x (from the sitter’s right to left), in the room
+ const rollerGeometry=new THREE.SphereGeometry(RL.r,16,10),vinyl=new THREE.Color(CHAIR_AT.card.colours.upholstery);
+ rollerGeometry.setAttribute('color',new THREE.Float32BufferAttribute(Array.from({length:rollerGeometry.attributes.position.count},()=>[vinyl.r,vinyl.g,vinyl.b]).flat(),3));
+ const rollerVinyl=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.9,metalness:0});
+ const rollers=new THREE.Group();rollers.name='Massage chair rollers';group.add(rollers);
+ const lumps=[-1,1].map(sd=>{const l=add(rollerGeometry,rollerVinyl,...track,'Massage chair roller',rollers);l.rotation.y=CHAIR_AT.yaw;l.scale.set(.8,1,.28);l.userData.side=sd;l.castShadow=false;return l;});
  const chair={time:0,id:'massage-chair'};
- // On Studio's chair the rollers are its motor part: they travel the card's `roller-track` box (studio-assets.js
- // travelAlong), their whole height kept a centimetre inside both ends of the track.
- const motor=studioChair?.parts('motor')[0]||null,motorRest=motor?motor.position.y:0,track=studioChair?.card?.anchors?.['roller-track']||null;
- let motorMid=0,motorTravel=null;if(motor&&track?.min){const b=new THREE.Box3();motor.traverse(o=>{if(o.isMesh){o.geometry.computeBoundingBox();b.union(o.geometry.boundingBox);}});
-  motorMid=(b.min.y+b.max.y)/2+motorRest;motorTravel=travelAlong(track,(b.max.y-b.min.y)/2);}
- const placeRollers=()=>{if(motorTravel){motor.position.y=motorRest+(motorTravel.centre-motorMid)+motorTravel.amplitude*Math.sin(chair.time*2*Math.PI/9);return;}if(!backBox)return;const t=chair.time,cz=(backBox.min.z+backBox.max.z)/2,y=.86+.24*Math.sin(t*2*Math.PI/9);
-  for(const l of lumps){const k=Math.sin(t*2*Math.PI*.7+(l.userData.side>0?Math.PI:0));l.position.set(backBox.min.x,y+.015*k,cz+l.userData.side*(.095+.012*k));l.scale.x=.24+.06*(k+1)/2;}};
+ const placeRollers=()=>{const t=chair.time,y=RL.mid+RL.travel*Math.sin(t*2*Math.PI/RL.period);
+  for(const l of lumps){const k=Math.sin(t*2*Math.PI*.7+(l.userData.side>0?Math.PI:0)),off=l.userData.side*(RL.spread+RL.wobble*k);
+   l.position.set(track[0]+across[0]*off,y+RL.knead*k,track[2]+across[2]*off);l.scale.z=.24+.06*(k+1)/2;}};
  placeRollers();
  // The fan's socket, back to back with the television's on the lobby side of the wall.
  socket(3.62,.3,hall.front-.06,Math.PI,'Fan socket');

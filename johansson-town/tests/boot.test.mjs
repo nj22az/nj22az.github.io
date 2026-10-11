@@ -29,6 +29,7 @@ import {STREET_CAST_NAMES} from '../src/people/residents.js';
 }
 const root=resolve(new URL('..',import.meta.url).pathname);
 const fixtures=await import(pathToFileURL(resolve(root,'tests/fixtures.mjs')).href);
+import {provideCatalog} from './catalog-fixture.mjs';
 const dataModule=source=>'data:text/javascript;base64,'+Buffer.from(source).toString('base64');
 
 function assertFiniteTransforms(api,label){
@@ -104,6 +105,11 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     assert.deepEqual(await preloadIzakaya(),{ready:2,total:2},'New izakaya exterior and existing dining room preloaded');
     const {preloadSakuraBench}=await import('../src/world/sakura-bench.js');
     assert.equal(await preloadSakuraBench(),true,'Sakura viewing bench preloaded');
+    // World's catalogue (src/catalog): Umi-no-yu is built with Studio's massage chair, and the game opens its door only
+    // once the chair's model is in hand (enterRoom, ONSEN_ASSETS). This DOM has no page for the catalogue to fetch in
+    // (window.document), so the model is read from disk and handed over, as the room tests do (catalog-fixture.mjs).
+    const {ONSEN_ASSETS}=await import('../src/world/interiors/onsen.js');
+    await provideCatalog(...ONSEN_ASSETS);
     const api=await import(dataModule(source));
     const {Vector3}=await import(threeUrl);
     const {BOOKSHOP_WORKSHOP_ROOM}=await import('../src/world/bookshop-workshop-layout.js');

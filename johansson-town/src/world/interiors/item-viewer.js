@@ -2,10 +2,11 @@ import * as THREE from '../../../vendor/three.module.js';
 import {assetURL} from '../../assets.js';
 import {shopProductTemplate} from '../../commerce/shop-product.js';
 import {drawBack} from '../../commerce/packaging-art.js';
-import {FRESH_LABELS,drawFreshLabel} from '../../commerce/fresh-labels.js';
+import {drawFreshLabel} from '../../commerce/fresh-labels.js';
 import {getLabelMaterial,packagingSlot,ATLAS_COLS,ATLAS_ROWS,ATLAS_SPAN} from './store-advertising.js';
 import {STORE_BRANDS} from '../../commerce/brands.js';
 import {stockSpec} from '../../commerce/shop-stock.js';
+import {PRODUCTS,PRODUCT_BY_ID,PRINTS} from '../../commerce/products-data.js';
 
 /**
  * Picking something off the shelf to look at it.
@@ -48,20 +49,33 @@ const CSS=`
 
 
 /** The painted labels at the resolution they were painted (store-advertising.js draws them into the shelf atlas at 256×128). */
-// Round packs wrap their label most of the way round; the back panel fills the gap.
-const ROUND=new Set(['tea','water','cola','orange','soy','soda','coffee','beer','tuna','peaches','noodles','yogurt','pudding']),TOP_PRINTED=new Set(['bento','newspaper']);
+// Round packs wrap their label most of the way round; the back panel fills the gap. Lidded packs are printed on top.
+const ROUND_SHAPES=new Set(['bottle','can','cup','foil-cup']),TOP_SHAPES=new Set(['tray','newspaper']);
+const shapeOf=id=>(PRODUCT_BY_ID[id]?.pack||PRINTS.find(p=>p.key===id)?.pack)?.shape;
+export const ROUND=Object.freeze(new Set([...PRODUCTS.map(p=>p.id),...PRINTS.map(p=>p.key)].filter(id=>ROUND_SHAPES.has(shapeOf(id)))));
+export const TOP_PRINTED=Object.freeze(new Set([...PRODUCTS.map(p=>p.id),...PRINTS.map(p=>p.key)].filter(id=>TOP_SHAPES.has(shapeOf(id)))));
+/** The painted sheets, in order: a painted label is a cell of one of them (its label.sheet and label.cell). */
 const SOURCES=['packaging-atlas.webp','packaging-groceries.webp'],sourceImages=new Map();
-function sourceImage(file){
- if(!sourceImages.has(file))sourceImages.set(file,new Promise(resolve=>new THREE.ImageLoader().load(assetURL('graphics/konbini/'+file),resolve,undefined,()=>resolve(null))));
- return sourceImages.get(file);
+/** A picture under assets/graphics, loaded once: a painted sheet, or a label designed in Studio (labels/<id>.r<n>.webp). */
+function sourceImage(path){
+ if(!sourceImages.has(path))sourceImages.set(path,new Promise(resolve=>new THREE.ImageLoader().load(assetURL('graphics/'+path),resolve,undefined,()=>resolve(null))));
+ return sourceImages.get(path);
 }
 /**
  * The pack in your hand is the pack on the shelf: the same shape (shop-product.js, with
  * more segments for the round ones) and the same painted label, cut from the painting at
  * full size instead of the shelf's small copy, so nothing changes but the sharpness.
  */
-export function buildPack(id,renderer){
- const t=shopProductTemplate(id,{sides:64}),slot=packagingSlot(id),col=slot%ATLAS_COLS,row=Math.floor(slot/ATLAS_COLS);
+/**
+ * buildPack(target, options): `target` is a product's id or, for Johansson Studio, a product record (a draft World's
+ * data does not have yet). options: {renderer, labelCanvas} (a renderer alone is accepted too); labelCanvas is a
+ * 1024×512 label to show instead of the product's own (Studio's preview of a design).
+ */
+export function buildPack(target,options={}){
+ const draft=target&&typeof target==='object'?target:null,id=draft?draft.id:target,product=draft||PRODUCT_BY_ID[id]||null;
+ const {renderer=null,labelCanvas=null}=options?.isWebGLRenderer?{renderer:options}:options||{};
+ const t=shopProductTemplate(draft||id,{sides:64}),slot=draft?draft.cells.brand:packagingSlot(id),col=slot%ATLAS_COLS,row=Math.floor(slot/ATLAS_COLS);
+ const printed=product?.label,painted=printed?.source==='painted'?printed:null,designed=printed?.source==='designed'?printed:null;
  const art=t.art.clone(),uv=art.attributes.uv;
  for(let i=0;i<uv.count;i++){
   const u=(uv.getX(i)*ATLAS_SPAN-col-.025)/.95,v=1-((1-uv.getY(i))*ATLAS_ROWS-row-.025)/.95;
@@ -71,35 +85,38 @@ export function buildPack(id,renderer){
  const label=document.createElement('canvas');label.width=1024;label.height=512;const ctx=label.getContext('2d');
  // At once: the shelf's own copy, scaled up; then the original painting when it has loaded.
  const atlas=getLabelMaterial().map.image,TW=atlas.width/ATLAS_SPAN,TH=atlas.height/ATLAS_ROWS;
- if(!drawFreshLabel(ctx,id,label.width,label.height))ctx.drawImage(atlas,col*TW,row*TH,TW,TH,0,0,label.width,label.height);
+ if(labelCanvas)ctx.drawImage(labelCanvas,0,0,label.width,label.height);
+ else if(!drawFreshLabel(ctx,id,label.width,label.height))ctx.drawImage(atlas,col*TW,row*TH,TW,TH,0,0,label.width,label.height);
  const map=new THREE.CanvasTexture(label);map.colorSpace=THREE.SRGBColorSpace;map.anisotropy=renderer?.capabilities?.getMaxAnisotropy?.()||4;
- const file=SOURCES[Math.floor(row/4)];
- if(file&&!FRESH_LABELS.includes(id))sourceImage(file).then(image=>{
+ // The original painting, cut from its sheet at full size (a painted label says which sheet and which cell).
+ if(painted&&!labelCanvas)sourceImage('konbini/'+SOURCES[painted.sheet]).then(image=>{
   if(!image)return;const cw=image.width/ATLAS_COLS,ch=image.height/4;
-  ctx.drawImage(image,col*cw,(row%4)*ch,cw,ch,0,0,label.width,label.height);map.needsUpdate=true;
+  ctx.drawImage(image,painted.cell%ATLAS_COLS*cw,Math.floor(painted.cell/ATLAS_COLS)*ch,cw,ch,0,0,label.width,label.height);map.needsUpdate=true;
  });
+ // A label designed in Studio: the picture it was baked as, at full size.
+ if(designed&&!labelCanvas)sourceImage(designed.image).then(image=>{if(!image)return;ctx.drawImage(image,0,0,label.width,label.height);map.needsUpdate=true;});
  const body=t.body.clone(),group=new THREE.Group(),inner=new THREE.Group();
  inner.add(new THREE.Mesh(body,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55})));
  inner.add(new THREE.Mesh(art,new THREE.MeshStandardMaterial({map,roughness:.42,emissive:0xffffff,emissiveMap:map,emissiveIntensity:.35})));
  const box=t.bounds,centre=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());
  // Turned over: the 一括表示 panel every pack carries, ingredients, contents, maker and
  // barcode, printed from the item's own data (packaging-art.js drawBack).
- art.computeBoundingBox();const a=art.boundingBox,round=ROUND.has(id);
+ art.computeBoundingBox();const a=art.boundingBox,round=draft?ROUND_SHAPES.has(draft.pack.shape):ROUND.has(id);
  const faceW=round?Math.PI*.38*Math.max(Math.abs(a.min.x),Math.abs(a.max.x)):a.max.x-a.min.x,faceH=a.max.y-a.min.y;
- const backMap=new THREE.CanvasTexture(drawBack(id,768,Math.round(THREE.MathUtils.clamp(768*faceH/Math.max(faceW,.01),512,1536))));backMap.colorSpace=THREE.SRGBColorSpace;backMap.anisotropy=map.anisotropy;
+ const backMap=new THREE.CanvasTexture(drawBack(draft||id,768,Math.round(THREE.MathUtils.clamp(768*faceH/Math.max(faceW,.01),512,1536))));backMap.colorSpace=THREE.SRGBColorSpace;backMap.anisotropy=map.anisotropy;
  const backMaterial=new THREE.MeshStandardMaterial({map:backMap,roughness:.5,emissive:0xffffff,emissiveMap:backMap,emissiveIntensity:.3});
  let panel=null;
  if(round){
   const r=Math.max(Math.abs(a.min.x),Math.abs(a.max.x))+.0006,hgt=(a.max.y-a.min.y)*.96,arc=Math.PI*.38;
   panel=new THREE.Mesh(new THREE.CylinderGeometry(r,r,hgt,24,1,true,Math.PI-arc/2,arc),backMaterial);panel.position.y=(a.min.y+a.max.y)/2;
- }else if(a.min.z<-.002&&!TOP_PRINTED.has(id)){
+ }else if(a.min.z<-.002&&!(draft?TOP_SHAPES.has(draft.pack.shape):TOP_PRINTED.has(id))){
   const pw=faceW+.001,ph=faceH+.001;
   panel=new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),backMaterial);panel.rotation.y=Math.PI;panel.position.set((a.min.x+a.max.x)/2,(a.min.y+a.max.y)/2,a.min.z-.0008);
  }
  if(panel)inner.add(panel);
  inner.position.copy(centre).multiplyScalar(-1);group.add(inner);
  // Lidded packs are printed on top: held up and tilted to you, so the lid is what you read.
- if(['bento','newspaper'].includes(id))group.rotation.x=Math.PI*.38;
+ if(draft?TOP_SHAPES.has(draft.pack.shape):TOP_PRINTED.has(id))group.rotation.x=Math.PI*.38;
  group.userData.radius=size.length()/2;
  group.userData.dispose=()=>{body.dispose();art.dispose();map.dispose();backMap.dispose();panel?.geometry.dispose();backMaterial.dispose();inner.traverse(o=>{if(o.isMesh)o.material.dispose();});};
  return group;
