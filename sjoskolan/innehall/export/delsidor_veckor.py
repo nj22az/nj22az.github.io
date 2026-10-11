@@ -17,6 +17,9 @@ from delsidor import CSS as CSS40, hjalp
 PUBLIK = 'elev'
 V = '20260929k'
 VECKOR = range(41, 46)
+# Kursen på distans från vecka 42: vecka 45:s delar undervisas i vecka 43 och 44 (verktyg/veckosidor/bygg.py).
+# Filerna ligger kvar i vecka-45/; sidan visar veckan och delen eleven ser. Övningarna behåller sina nummer.
+FLYTTAD = {(45, 1): (43, 4, 4), (45, 2): (44, 4, 5), (45, 3): (44, 5, 5)}
 EMU = 914400
 HOPPA = ('Dagens två pass', 'Pass 2')
 CSS = CSS40.replace('/* Vecka 40, en sida per del: Översikt, Teori, Exempel, Övningar, Labben (genereras av innehall/export/delsidor.py) */',
@@ -164,11 +167,17 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     teorireferenser = {pl['ankare']: teori_for(pl, teori) for pl, _ in poster}
 
     titel = f'Del {dnr}: {deltitel}'
-    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(titel)} · Vecka {v} · Sjöskolan</title><meta name="description" content="{R.attr(veckotitel)}: {R.attr(deltitel)}. Teori, exempel och övningar med ledtrådar och facit."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{v}/aktuell/Del_{dnr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/delsida.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
-<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="index.html">Vecka {v}</a><a href="Inlamning.html">Inlämning</a></nav>
-<main id="main-content" class="course-main del-main"><div class="course-breadcrumb"><a href="index.html">← Vecka {v}</a></div>
+    flytt = FLYTTAD.get((int(v), dnr))
+    vv, idx, inl = (flytt[0], f'../../vecka-{flytt[0]}/aktuell/index.html', f'../../vecka-{flytt[0]}/aktuell/Inlamning.html') if flytt else (v, 'index.html', 'Inlamning.html')
+    if flytt:
+        titel = deltitel
+    kicker = (f'Vecka {vv} · Del {flytt[1]} av {flytt[2]} · flyttad från vecka 45' if flytt else f'Vecka {v} · Del {dnr} av {antal}')
+    flyttnotis = (f'<p class="sj-panel warn">Den här delen är flyttad från vecka 45 och ingår nu i vecka {vv}. Övningarna behåller sina nummer, {dnr}.1–{dnr}.10.</p>' if flytt else '')
+    h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(titel)} · Vecka {vv} · Sjöskolan</title><meta name="description" content="{R.attr(veckotitel)}: {R.attr(deltitel)}. Teori, exempel och övningar med ledtrådar och facit."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{v}/aktuell/Del_{dnr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/delsida.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="{idx}">Vecka {vv}</a><a href="{inl}">Inlämning</a></nav>
+<main id="main-content" class="course-main del-main"><div class="course-breadcrumb"><a href="{idx}">← Vecka {vv}</a></div>
 <article class="course-reading del-sida">
-<p class="course-kicker">Vecka {v} · Del {dnr} av {antal}</p><h1>{e(titel)}</h1>
+<p class="course-kicker">{kicker}</p><h1>{e(titel)}</h1>{flyttnotis}
 <nav class="del-steg" aria-label="Delens ordning"><a href="#oversikt"><b>1</b>Översikt</a><a href="#teori"><b>2</b>Teori</a><a href="#exempel"><b>3</b>Exempel</a><a href="#ovningar"><b>4</b>Övningar</a><a href="#labb"><b>5</b>Labben</a></nav>''']
 
     # 1 Översikt
@@ -263,7 +272,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
 
     # 5 Labben
     h.append(f'<section id="labb" class="del-block"><h2><span>5</span> Labben</h2><p>Labben kommer sist i veckan, när du har gått igenom del 1–{antal}. Du använder samma metod som i övningarna: <strong>räkna först, läs av, jämför och förklara</strong>.</p>'
-             f'<p><a class="sj-btn" href="index.html#labb">Veckans labbar</a> <a class="sj-btn" href="Inlamning.html">Veckans inlämning</a></p>')
+             f'<p><a class="sj-btn" href="{idx}#labb">Veckans labbar</a> <a class="sj-btn" href="{inl}">Veckans inlämning</a></p>')
     if kallor:
         h.append(f'<details class="del-mer"><summary>Källor och fortsatt läsning</summary>{block_html(kallor[2])}</details>')
     h.append('</section>')
@@ -271,7 +280,10 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     kf_nyckel = f'sj-kontroll:vecka-{v}'
     fore = f'<a href="Del_{dnr - 1}.html">← Del {dnr - 1}</a>' if dnr > 1 else '<a href="index.html">← Vecka ' + str(v) + '</a>'
     efter = f'<a href="Del_{dnr + 1}.html">Del {dnr + 1} →</a>' if dnr < antal else '<a href="index.html#labb">Labben →</a>'
-    h.append(f'''<nav class="art-nav" aria-label="Delar"><span>{fore}</span><span><a href="index.html">Veckans översikt</a></span><span>{efter}</span></nav>
+    if flytt:  # flyttade delar: tillbaka till veckan där de ingår nu
+        fore = f'<a href="{idx}">← Vecka {vv}</a>'
+        efter = f'<a href="Del_{dnr + 1}.html">Del 5 →</a>' if flytt == (44, 4, 5) else f'<a href="{idx}#labb">Labben →</a>'
+    h.append(f'''<nav class="art-nav" aria-label="Delar"><span>{fore}</span><span><a href="{idx}">Veckans översikt</a></span><span>{efter}</span></nav>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script>
 // Avbockade övningar sparas per vecka i den här webbläsaren.
