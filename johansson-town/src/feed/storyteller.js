@@ -1,5 +1,6 @@
 import {FEED_PLACES,feedPlace} from './places.js';
 import {choosePanelFx} from './manga-fx.js';
+import {belongingsOf} from '../people/belongings.js';
 import {GENRES,ENDINGS,OPENINGS,REACTIONS,FOODS,DRINKS,SNACKS,WEATHER,HOURS,RECIPE,COURSE,OVERHEARD} from './stories.js';
 
 /**
@@ -31,7 +32,8 @@ export function castMember(r){
  if(!r)return null;
  const p=r.islandPersonality||{};
  return {name:r.name,job:job(r.role),ajob:article(job(r.role)),place:r.place,friend:r.friend||null,trait:String(p.traits?.[0]||'kind').toLowerCase(),
-  habit:clip(p.habit)||'Keep a spare umbrella',ambition:clip(p.ambition)||'See the whole island in one day'};
+  habit:clip(p.habit)||'Keep a spare umbrella',ambition:clip(p.ambition)||'See the whole island in one day',
+  belongings:belongingsOf(r.name)};
 }
 
 /** Expands the story grammar. Unknown symbols throw, so a typo in the database fails a test. */
@@ -91,6 +93,8 @@ export function tellComic(rng,catalogue,opts={}){
  const genre=opts.genre?GENRES.find(g=>g.id===opts.genre):rng.pick(GENRES.filter(fits));
  const place=opts.place||(genre.places?feedPlace(rng.pick(genre.places)):null);
  const ctx={...stage(rng,catalogue,{need:genre.cast,...opts,place}),vars:{}};
+ // A story about one of A's own things (belongings.js) binds it, its tale and where it is kept.
+ if(genre.belonging){const b=rng.pick(ctx.A.belongings);if(!b)throw Error(ctx.A.name+' owns nothing for a '+genre.id+' story');Object.assign(ctx.vars,{lost:b.what,tale:b.tale,keeps:b.keeps});}
  for(const [k,options] of Object.entries(genre.bind||{}))ctx.vars[k]=expand(rng.pick(options),ctx,rng);
  let previous=null;const panels=[];
  // A third resident, in case the ending wants someone to walk in.
