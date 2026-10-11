@@ -2255,6 +2255,30 @@
     "why": "Tea and rice crackers for visitors, and tissues for difficult meetings.",
     "delivery": "Mondays, carried up the Community Hall stairs."
    },
+   "coral-bay-bar": {
+    "name": "the Coral Bay Bar on Kitano-jima",
+    "contact": "the beach bar keeper",
+    "lines": [
+     "orange",
+     "water"
+    ],
+    "why": "Mandarin and shikuwasa juice for the children and the drivers, and water for anyone who fell asleep under a parasol.",
+    "delivery": "On the morning car ferry, in the Sakura Trading crate that goes over with the Higa ice boxes."
+   },
+   "fumoto-co-op": {
+    "name": "the Fumoto co-op store",
+    "owner": "Grandmother Tokashiki",
+    "lines": [
+     "rice",
+     "soy",
+     "tuna",
+     "soap",
+     "battery",
+     "tea"
+    ],
+    "why": "What a farming hamlet runs out of: rice and soy, tinned tuna for the cane-cut lunches, soap, batteries for the radios in the fields, and tea for the bench.",
+    "delivery": "Wednesdays: Mr Tokashiki brings the Sakura Trading crate up from the morning ferry in the co-op’s van."
+   },
    "community-kitchen": {
     "name": "the community kitchen",
     "owner": "Mrs Nakamura",
@@ -2320,6 +2344,25 @@
     ],
     "why": "A bottle with the gyōza, for the lunch crowd who are not going back to work.",
     "delivery": "With the Minato order, one crate left at the back door."
+   },
+   "coral-bay-bar": {
+    "name": "the Coral Bay Bar on Kitano-jima",
+    "contact": "the beach bar keeper",
+    "lines": [
+     "Umineko lager, bottles on ice"
+    ],
+    "why": "Cold beer for the day-trippers on Coral Bay, the reason half the morning ferry carries towels.",
+    "delivery": "Ice boxes on the morning car ferry; the empties come back on the evening sailing."
+   },
+   "fumoto-co-op": {
+    "name": "the Fumoto co-op store",
+    "owner": "Grandmother Tokashiki",
+    "lines": [
+     "awamori, by the cup and the 180 ml bottle",
+     "Umineko lager, cases of bottles"
+    ],
+    "why": "A cup of awamori for the farmers on the way home, and the beer for the cane-cut party, which the store pays for.",
+    "delivery": "With the Wednesday van: Mr Tokashiki collects the Higa crates at the quay and takes back the empties from the porch."
    },
    "fujita-shed": {
     "name": "Mr Fujita’s shed on the pier",
