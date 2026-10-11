@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>29 Styles – Johansson</title>
+  <meta name="description" content="The Johansson logo in 29 animated styles, each after a Japanese design system and choreographed with Disney's 12 principles of animation.">
+  <link rel="canonical" href="https://nj22az.github.io/brand/styles/">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/brand/johansson-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="/theme-bootstrap.js?v=random-2"></script>
+  <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
+  <style>
+    .st-wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px 56px; }
+    .st-hero { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+    @media (min-width: 900px) { .st-hero { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+    #logo-root { border-radius: 16px; overflow: hidden; cursor: pointer; aspect-ratio: 16 / 9; display: grid; place-items: center; border: 1px solid rgba(139, 119, 101, .18); }
+    #logo-root svg { width: 100%; height: 100%; display: block; }
+    .st-panel { display: flex; flex-direction: column; gap: 12px; }
+    .st-panel h2 { margin: 0; font-size: 1.4rem; }
+    .st-meta { margin: 0; font-size: .92rem; line-height: 1.55; }
+    .st-meta b { font-weight: 700; }
+    .st-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .st-pill { font-size: .78rem; padding: 4px 10px; border-radius: 999px; border: 1px solid currentColor; opacity: .85; }
+    .st-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-size: .9rem; }
+    .st-controls button { font: inherit; padding: 7px 14px; border-radius: 999px; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
+    .st-controls button[aria-pressed="true"] { background: currentColor; }
+    .st-controls button[aria-pressed="true"] span { filter: invert(1); }
+    .st-controls label { display: flex; align-items: center; gap: 8px; }
+    .st-links { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .88rem; }
+    .st-links a { color: inherit; }
+    .st-atoms { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 8px; }
+    .st-atom { border-radius: 10px; overflow: hidden; aspect-ratio: 16 / 9; position: relative; }
+    .st-atom svg { width: 100%; height: 100%; display: block; }
+    .st-atom-label { display: block; font-size: .74rem; margin-top: 5px; opacity: .8; }
+    .st-atom.lift { transition: transform .2s cubic-bezier(0,0,.2,1), box-shadow .2s cubic-bezier(0,0,.2,1); }
+    .st-atom.lift:hover, .st-atom.lift:focus-visible { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.14); }
+    .st-atom.breathe svg { animation: st-breathe 3600ms cubic-bezier(.42,0,.58,1) infinite; }
+    @keyframes st-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+    @media (prefers-reduced-motion: reduce) { .st-atom.breathe svg { animation: none; } }
+    .st-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); margin-top: 18px; }
+    .st-card { border: 0; padding: 0; background: none; text-align: left; cursor: pointer; color: inherit; font: inherit; }
+    .st-card .st-plate { border-radius: 12px; overflow: hidden; aspect-ratio: 16 / 9; border: 1px solid rgba(139, 119, 101, .18); }
+    .st-card .st-plate svg { width: 100%; height: 100%; display: block; }
+    /* Replays swap the SVG under the pointer; keep it out of hit-testing so clicks land on the card. */
+    #logo-root svg, .st-plate svg, .st-atom svg { pointer-events: none; }
+    .st-card[aria-current="true"] .st-plate { outline: 3px solid currentColor; outline-offset: 2px; }
+    .st-card .st-name { display: block; font-size: .88rem; margin-top: 6px; font-weight: 700; }
+    .st-card .st-src { display: block; font-size: .78rem; opacity: .7; }
+    .st-note { font-size: .82rem; opacity: .75; margin-top: 28px; line-height: 1.6; }
+    .qa .site-nav, .qa .site-footer, .qa .page-hero, .qa .st-panel, .qa .st-grid, .qa .st-atoms, .qa h2.st-h, .qa .st-note { display: none !important; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <nav id="site-nav" class="site-nav"></nav>
+
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="page-eyebrow">Brand</div>
+      <h1>Johansson in 29 styles</h1>
+      <p>One name, 29 design voices. Each takes its colours, type and mood from a Japanese design system, and its motion from that mood: the timing, easing and reveal follow Disney's 12 principles of animation. Pick one below, tap the stage to play it again.</p>
+    </section>
+
+    <div class="st-wrap">
+      <div class="st-hero">
+        <div>
+          <div id="logo-root" role="button" tabindex="0" aria-label="Play the logo again"></div>
+          <div class="st-atoms" aria-label="Motion studies">
+            <div><div class="st-atom lift" id="atom-lift" tabindex="0"></div><span class="st-atom-label">Hover: lift</span></div>
+            <div><div class="st-atom breathe" id="atom-breathe"></div><span class="st-atom-label">Idle: breathing</span></div>
+            <div><div class="st-atom" id="atom-redraw" tabindex="0"></div><span class="st-atom-label">Hover: replay at 2×</span></div>
+          </div>
+        </div>
+        <div class="st-panel">
+          <h2 id="st-title"></h2>
+          <p class="st-meta" id="st-meta"></p>
+          <div class="st-pills" id="st-pills"></div>
+          <div class="st-controls">
+            <button type="button" id="st-replay"><span>Replay</span></button>
+            <button type="button" id="st-slow" aria-pressed="false"><span>Slow motion</span></button>
+            <label>Speed <input type="range" id="st-speed" min="0.1" max="2" step="0.05" value="1"> <output id="st-speed-out">1×</output></label>
+          </div>
+          <div class="st-links" id="st-links"></div>
+        </div>
+      </div>
+
+      <h2 class="st-h" style="margin-top:40px">All 29</h2>
+      <div class="st-grid" id="st-grid"></div>
+
+      <p class="st-note">Each style is after the design system written up in <a href="https://github.com/kzhrknt/awesome-design-md-jp">awesome-design-md-jp</a>; the brands named are the sources of those write-ups, not partners or endorsers. Motion follows the <a href="https://github.com/nolangz/pixel2motion">pixel2motion</a> method. Letter shapes come from open-licence fonts, converted to outlines. The whole set downloads as a <a href="/assets/brand/styles/export/johansson-29-styles-reel.mp4" download>reel (MP4)</a>.</p>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+  <script src="/config.js"></script>
+  <script src="/shared.js"></script>
+  <script>
+  (function () {
+    var BASE = "/assets/brand/styles/";
+    var params = new URLSearchParams(location.search);
+    var QA_T = params.has("t") ? Number(params.get("t")) : null;
+    var QA_STATIC = params.get("static") === "1";
+    if (QA_T != null || QA_STATIC) document.documentElement.classList.add("qa");
+    var rate = 1, slow = false, count = 0, list = [], current = null, cache = {};
+
+    // Every copy gets its own ids, classes and keyframe names, so copies never share a mask or a clock.
+    function svgFor(s) {
+      cache[s.file] = cache[s.file] || fetch(BASE + s.file).then(function (r) { return r.text(); });
+      return cache[s.file].then(function (text) {
+        var n = ++count;
+        return text.replace(new RegExp("\\b" + s.key + "-", "g"), s.key + "x" + n + "-");
+      });
+    }
+    // The logo's own (finite) animations; the breathing study's endless loop is left alone.
+    function anims(el) {
+      var svg = el.querySelector("svg");
+      return svg ? svg.getAnimations({ subtree: true }).filter(function (a) { return a.effect && a.effect.getComputedTiming().endTime !== Infinity; }) : [];
+    }
+    // Put a logo into an element. Finished animations drop out of getAnimations(), so a replay
+    // mounts the same markup again and it plays from the start.
+    function mount(el, markup, r) {
+      el.innerHTML = markup;
+      el._markup = markup;
+      anims(el).forEach(function (a) { a.playbackRate = r; });
+    }
+    function restart(el, r) { if (el._markup) mount(el, el._markup, r); }
+    function liveRate() { return slow ? 0.25 : rate; }
+
+    function select(s, push) {
+      current = s;
+      var root = document.getElementById("logo-root");
+      root.style.background = s.bg;
+      return svgFor(s).then(function (svg) {
+        mount(root, svg, liveRate());
+        document.getElementById("st-title").textContent = s.n + ". " + s.title;
+        document.getElementById("st-meta").innerHTML =
+          "<b>After:</b> " + s.source + " · <b>Mood:</b> " + s.words + "<br><b>Personality:</b> " + s.preset +
+          " · <b>Reveal:</b> " + s.pattern + " · <b>Length:</b> " + (s.duration / 1000).toFixed(2) + " s";
+        document.getElementById("st-pills").innerHTML = s.principles.map(function (p) { return '<span class="st-pill">' + p + "</span>"; }).join("");
+        var name = s.file.replace(/\.svg$/, "");
+        document.getElementById("st-links").innerHTML =
+          '<a href="' + BASE + s.file + '" download>SVG animated</a><a href="' + BASE + s.still + '" download>SVG still</a>' +
+          '<a href="' + BASE + "export/" + name + '.mp4" download>MP4 1080p</a><a href="' + BASE + "export/" + name + '.png" download>PNG 1080p</a>' +
+          '<a href="https://github.com/kzhrknt/awesome-design-md-jp/blob/main/design-md/' + s.source + '/DESIGN.md">Source DESIGN.md</a>';
+        document.querySelectorAll(".st-card").forEach(function (c) { c.setAttribute("aria-current", c.dataset.slug === s.slug ? "true" : "false"); });
+        ["atom-lift", "atom-breathe", "atom-redraw"].forEach(function (id) {
+          var el = document.getElementById(id);
+          el.style.background = s.bg;
+          svgFor(s).then(function (copy) {
+            mount(el, copy, 1);
+            anims(el).forEach(function (a) { a.finish(); });
+          });
+        });
+        if (push) history.replaceState(null, "", "?v=" + s.slug);
+        if (QA_STATIC) anims(root).forEach(function (a) { a.finish(); });
+        if (QA_T != null) anims(root).forEach(function (a) { a.pause(); a.currentTime = QA_T; });
+        window.__p2mReady = true;
+      });
+    }
+
+    fetch(BASE + "styles.json").then(function (r) { return r.json(); }).then(function (m) {
+      list = m;
+      var grid = document.getElementById("st-grid");
+      var io = "IntersectionObserver" in window ? new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { restart(e.target, 1); io.unobserve(e.target); } });
+      }, { threshold: 0.5 }) : null;
+      m.forEach(function (s) {
+        var card = document.createElement("button");
+        card.type = "button"; card.className = "st-card"; card.dataset.slug = s.slug;
+        card.innerHTML = '<div class="st-plate" style="background:' + s.bg + '"></div><span class="st-name">' + s.n + ". " + s.title + '</span><span class="st-src">after ' + s.source + "</span>";
+        grid.appendChild(card);
+        var plate = card.querySelector(".st-plate");
+        svgFor(s).then(function (svg) {
+          mount(plate, svg, 1);
+          anims(plate).forEach(function (a) { a.pause(); a.currentTime = 0; });
+          if (io) io.observe(plate); else restart(plate, 1);
+        });
+        card.addEventListener("mouseenter", function () { restart(plate, 1); });
+        card.addEventListener("click", function () { select(s, true); document.getElementById("logo-root").scrollIntoView({ behavior: "smooth", block: "center" }); });
+      });
+      var want = params.get("v");
+      select(m.find(function (s) { return s.slug === want; }) || m[0], false);
+    });
+
+    var root = document.getElementById("logo-root");
+    root.addEventListener("click", function () { restart(root, liveRate()); });
+    root.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); restart(root, liveRate()); } });
+    document.getElementById("st-replay").addEventListener("click", function () { restart(root, liveRate()); });
+    document.getElementById("st-slow").addEventListener("click", function () {
+      slow = !slow; this.setAttribute("aria-pressed", String(slow));
+      anims(root).forEach(function (a) { a.updatePlaybackRate(liveRate()); });
+    });
+    document.getElementById("st-speed").addEventListener("input", function () {
+      rate = Number(this.value);
+      document.getElementById("st-speed-out").textContent = rate.toFixed(2).replace(/\.?0+$/, "") + "×";
+      anims(root).forEach(function (a) { a.updatePlaybackRate(liveRate()); });
+    });
+    var redraw = document.getElementById("atom-redraw");
+    redraw.addEventListener("mouseenter", function () { restart(redraw, 2); });
+    redraw.addEventListener("focus", function () { restart(redraw, 2); });
+  })();
+  </script>
+</body>
+</html>

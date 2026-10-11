@@ -1,0 +1,590 @@
+[
+  {
+    "n": 1,
+    "key": "j01",
+    "file": "01-muji.svg",
+    "still": "01-muji-still.svg",
+    "slug": "muji",
+    "title": "Kinari",
+    "source": "muji",
+    "words": "quiet, plain, unhurried",
+    "preset": "Calm",
+    "pattern": "Staggered fade with a growing rule",
+    "principles": [
+      "Staging",
+      "Slow in/out",
+      "Timing",
+      "Appeal"
+    ],
+    "bg": "#f4eede",
+    "duration": 2200
+  },
+  {
+    "n": 2,
+    "key": "j02",
+    "file": "02-aesop.svg",
+    "still": "02-aesop-still.svg",
+    "slug": "aesop",
+    "title": "Apothecary",
+    "source": "aesop",
+    "words": "literary, ascetic, measured",
+    "preset": "Elegant",
+    "pattern": "Letter cascade, reading order, no deformation",
+    "principles": [
+      "Timing",
+      "Staging",
+      "Follow through",
+      "Appeal"
+    ],
+    "bg": "#fffef2",
+    "duration": 2400
+  },
+  {
+    "n": 3,
+    "key": "j03",
+    "file": "03-aman.svg",
+    "still": "03-aman-still.svg",
+    "slug": "aman",
+    "title": "Serene",
+    "source": "aman-tokyo",
+    "words": "serene, understated, silent",
+    "preset": "Elegant",
+    "pattern": "Slow mask wipe upward, kana first",
+    "principles": [
+      "Staging",
+      "Timing",
+      "Slow in/out",
+      "Appeal"
+    ],
+    "bg": "#f3eee7",
+    "duration": 2500
+  },
+  {
+    "n": 4,
+    "key": "j04",
+    "file": "04-yohji.svg",
+    "still": "04-yohji-still.svg",
+    "slug": "yohji",
+    "title": "Black poetics",
+    "source": "yohjiyamamoto",
+    "words": "dark, poetic, anti-commercial",
+    "preset": "Elegant",
+    "pattern": "A falling hairline, then a curtain reveal",
+    "principles": [
+      "Anticipation",
+      "Staging",
+      "Timing",
+      "Appeal"
+    ],
+    "bg": "#000000",
+    "duration": 2650
+  },
+  {
+    "n": 5,
+    "key": "j05",
+    "file": "05-toraya.svg",
+    "still": "05-toraya-still.svg",
+    "slug": "toraya",
+    "title": "Seasonal sweets",
+    "source": "toraya",
+    "words": "refined, seasonal, gentle",
+    "preset": "Elegant",
+    "pattern": "Two pastel circles bloom, then a wipe",
+    "principles": [
+      "Follow through",
+      "Staging",
+      "Slow in/out",
+      "Appeal"
+    ],
+    "bg": "#ffffff",
+    "duration": 2400
+  },
+  {
+    "n": 6,
+    "key": "j06",
+    "file": "06-ippodo.svg",
+    "still": "06-ippodo-still.svg",
+    "slug": "ippodo",
+    "title": "Tea steam",
+    "source": "ippodo",
+    "words": "quiet, ma, tea-room calm",
+    "preset": "Calm",
+    "pattern": "Kana rise like steam, blur clearing",
+    "principles": [
+      "Slow in/out",
+      "Arcs",
+      "Overlapping action",
+      "Timing"
+    ],
+    "bg": "#ffffff",
+    "duration": 2400
+  },
+  {
+    "n": 7,
+    "key": "j07",
+    "file": "07-nintendo.svg",
+    "still": "07-nintendo-still.svg",
+    "slug": "nintendo",
+    "title": "Play red",
+    "source": "nintendo",
+    "words": "friendly, iconic, joyful",
+    "preset": "Playful",
+    "pattern": "Scale-pop with anticipation, letters hop in",
+    "principles": [
+      "Anticipation",
+      "Squash & stretch",
+      "Exaggeration",
+      "Follow through",
+      "Appeal"
+    ],
+    "bg": "#ffffff",
+    "duration": 1450
+  },
+  {
+    "n": 8,
+    "key": "j08",
+    "file": "08-ghibli.svg",
+    "still": "08-ghibli-still.svg",
+    "slug": "ghibli",
+    "title": "Wind and leaf",
+    "source": "ghibli",
+    "words": "warm, handmade, classic",
+    "preset": "Friendly",
+    "pattern": "A gust draws on, a leaf rides it, letters lift as it passes",
+    "principles": [
+      "Arcs",
+      "Secondary action",
+      "Overlapping action",
+      "Slow in/out",
+      "Appeal"
+    ],
+    "bg": "#fafafa",
+    "duration": 2400
+  },
+  {
+    "n": 9,
+    "key": "j09",
+    "file": "09-sanrio.svg",
+    "still": "09-sanrio-still.svg",
+    "slug": "sanrio",
+    "title": "Pastel pop",
+    "source": "sanrio",
+    "words": "pastel, round, character-led",
+    "preset": "Playful",
+    "pattern": "Letters drop with squash and stretch, two stars twinkle",
+    "principles": [
+      "Squash & stretch",
+      "Exaggeration",
+      "Secondary action",
+      "Follow through",
+      "Appeal"
+    ],
+    "bg": "#ffffff",
+    "duration": 1850
+  },
+  {
+    "n": 10,
+    "key": "j10",
+    "file": "10-teamlab.svg",
+    "still": "10-teamlab-still.svg",
+    "slug": "teamlab",
+    "title": "Particles",
+    "source": "teamlab",
+    "words": "immersive, art-first, luminous",
+    "preset": "Energetic",
+    "pattern": "Particles converge onto the outlines, then the letters light",
+    "principles": [
+      "Staging",
+      "Overlapping action",
+      "Arcs",
+      "Secondary action",
+      "Appeal"
+    ],
+    "bg": "#0e0f0e",
+    "duration": 2500
+  },
+  {
+    "n": 11,
+    "key": "j11",
+    "file": "11-rhizomatiks.svg",
+    "still": "11-rhizomatiks-still.svg",
+    "slug": "rhizomatiks",
+    "title": "Signal",
+    "source": "rhizomatiks",
+    "words": "technical, greyscale, exact",
+    "preset": "Professional",
+    "pattern": "Horizontal slices snap into register, a scan line passes",
+    "principles": [
+      "Timing",
+      "Staging",
+      "Overlapping action",
+      "Solid drawing"
+    ],
+    "bg": "#f0f0f0",
+    "duration": 1900
+  },
+  {
+    "n": 12,
+    "key": "j12",
+    "file": "12-kurashi.svg",
+    "still": "12-kurashi-still.svg",
+    "slug": "kurashi",
+    "title": "Vertical print",
+    "source": "kurashi-no-techo",
+    "words": "print, mincho, handwork",
+    "preset": "Calm",
+    "pattern": "Brush-down reveal in writing order, then the seal stamps",
+    "principles": [
+      "Staging",
+      "Timing",
+      "Squash & stretch",
+      "Follow through"
+    ],
+    "bg": "#efefe2",
+    "duration": 2300
+  },
+  {
+    "n": 13,
+    "key": "j13",
+    "file": "13-hobonichi.svg",
+    "still": "13-hobonichi-still.svg",
+    "slug": "hobonichi",
+    "title": "Letter stickers",
+    "source": "hobonichi",
+    "words": "intimate, colourful, round",
+    "preset": "Playful",
+    "pattern": "Each letter pops on like a sticker, tilts, then sits straight",
+    "principles": [
+      "Exaggeration",
+      "Overlapping action",
+      "Squash & stretch",
+      "Appeal"
+    ],
+    "bg": "#f3fff4",
+    "duration": 1400
+  },
+  {
+    "n": 14,
+    "key": "j14",
+    "file": "14-metro.svg",
+    "still": "14-metro-still.svg",
+    "slug": "metro",
+    "title": "Route line",
+    "source": "tokyometro",
+    "words": "reliable, functional, legible",
+    "preset": "Professional",
+    "pattern": "The line draws, stations light as it reaches them",
+    "principles": [
+      "Staging",
+      "Slow in/out",
+      "Timing",
+      "Solid drawing"
+    ],
+    "bg": "#ffffff",
+    "duration": 1750
+  },
+  {
+    "n": 15,
+    "key": "j15",
+    "file": "15-wired.svg",
+    "still": "15-wired-still.svg",
+    "slug": "wired",
+    "title": "Redaction",
+    "source": "wired",
+    "words": "editorial, typographic, sharp",
+    "preset": "Energetic",
+    "pattern": "A black block sweeps across and leaves the name behind",
+    "principles": [
+      "Timing",
+      "Anticipation",
+      "Staging",
+      "Exaggeration"
+    ],
+    "bg": "#ffffff",
+    "duration": 1400
+  },
+  {
+    "n": 16,
+    "key": "j16",
+    "file": "16-popeye.svg",
+    "still": "16-popeye-still.svg",
+    "slug": "popeye",
+    "title": "Retro magazine",
+    "source": "popeye",
+    "words": "pop, young, retro-modern",
+    "preset": "Energetic",
+    "pattern": "The name slides in skewed, its cyan print shadow lags and lands",
+    "principles": [
+      "Exaggeration",
+      "Overlapping action",
+      "Follow through",
+      "Arcs"
+    ],
+    "bg": "#343ec9",
+    "duration": 1300
+  },
+  {
+    "n": 17,
+    "key": "j17",
+    "file": "17-casio.svg",
+    "still": "17-casio-still.svg",
+    "slug": "casio",
+    "title": "Display",
+    "source": "casio",
+    "words": "precise, solid, angular",
+    "preset": "Professional",
+    "pattern": "Unlit segments glow first, then each letter switches on in steps",
+    "principles": [
+      "Timing",
+      "Staging",
+      "Solid drawing"
+    ],
+    "bg": "#f4f5f8",
+    "duration": 2050
+  },
+  {
+    "n": 18,
+    "key": "j18",
+    "file": "18-grandseiko.svg",
+    "still": "18-grandseiko-still.svg",
+    "slug": "grandseiko",
+    "title": "Gliding seconds",
+    "source": "grand-seiko",
+    "words": "heritage, exacting, deep navy",
+    "preset": "Elegant",
+    "pattern": "A seconds hand glides one full turn and draws the ring",
+    "principles": [
+      "Timing",
+      "Slow in/out",
+      "Staging",
+      "Solid drawing",
+      "Appeal"
+    ],
+    "bg": "#000040",
+    "duration": 3000
+  },
+  {
+    "n": 19,
+    "key": "j19",
+    "file": "19-sony.svg",
+    "still": "19-sony-still.svg",
+    "slug": "sony",
+    "title": "Cinematic",
+    "source": "sony",
+    "words": "cinematic, advanced, dark",
+    "preset": "Elegant",
+    "pattern": "Letters converge out of blur, a light line opens beneath",
+    "principles": [
+      "Staging",
+      "Slow in/out",
+      "Exaggeration",
+      "Secondary action"
+    ],
+    "bg": "#000000",
+    "duration": 2300
+  },
+  {
+    "n": 20,
+    "key": "j20",
+    "file": "20-snowpeak.svg",
+    "still": "20-snowpeak-still.svg",
+    "slug": "snowpeak",
+    "title": "Ridge",
+    "source": "snowpeak",
+    "words": "cultural, outdoor, deep red",
+    "preset": "Calm",
+    "pattern": "The mountain ridge draws on, the name settles under it",
+    "principles": [
+      "Staging",
+      "Slow in/out",
+      "Arcs",
+      "Timing"
+    ],
+    "bg": "#ffffff",
+    "duration": 2300
+  },
+  {
+    "n": 21,
+    "key": "j21",
+    "file": "21-humanmade.svg",
+    "still": "21-humanmade-still.svg",
+    "slug": "humanmade",
+    "title": "Vintage badge",
+    "source": "humanmade",
+    "words": "streetwear, vintage, colourful",
+    "preset": "Energetic",
+    "pattern": "The badge slaps down, squashes, and settles at its tilt",
+    "principles": [
+      "Anticipation",
+      "Squash & stretch",
+      "Exaggeration",
+      "Follow through",
+      "Appeal"
+    ],
+    "bg": "#ffffff",
+    "duration": 1150
+  },
+  {
+    "n": 22,
+    "key": "j22",
+    "file": "22-groovisions.svg",
+    "still": "22-groovisions-still.svg",
+    "slug": "groovisions",
+    "title": "System",
+    "source": "groovisions",
+    "words": "anonymous, systematic, hairline",
+    "preset": "Professional",
+    "pattern": "A hairline extends, the name rises from behind it",
+    "principles": [
+      "Staging",
+      "Slow in/out",
+      "Timing",
+      "Solid drawing"
+    ],
+    "bg": "#ffffff",
+    "duration": 1750
+  },
+  {
+    "n": 23,
+    "key": "j23",
+    "file": "23-kigi.svg",
+    "still": "23-kigi-still.svg",
+    "slug": "kigi",
+    "title": "Giant J",
+    "source": "kigi",
+    "words": "bold scale, acid teal, quiet type",
+    "preset": "Energetic",
+    "pattern": "A teal block wipes in, the giant J rises through it",
+    "principles": [
+      "Staging",
+      "Exaggeration",
+      "Timing",
+      "Overlapping action"
+    ],
+    "bg": "#e6e6e6",
+    "duration": 1600
+  },
+  {
+    "n": 24,
+    "key": "j24",
+    "file": "24-pentel.svg",
+    "still": "24-pentel-still.svg",
+    "slug": "pentel",
+    "title": "Marker swipe",
+    "source": "pentel",
+    "words": "pure red, pen, cheerful",
+    "preset": "Playful",
+    "pattern": "A red marker swipes the pill, the letters pop out of it",
+    "principles": [
+      "Arcs",
+      "Timing",
+      "Overlapping action",
+      "Squash & stretch",
+      "Appeal"
+    ],
+    "bg": "#ffffff",
+    "duration": 1450
+  },
+  {
+    "n": 25,
+    "key": "j25",
+    "file": "25-kinto.svg",
+    "still": "25-kinto-still.svg",
+    "slug": "kinto",
+    "title": "Fine frame",
+    "source": "kinto",
+    "words": "light, considered, everyday",
+    "preset": "Calm",
+    "pattern": "A fine frame draws round, the name eases in, an orange line underlines",
+    "principles": [
+      "Staging",
+      "Slow in/out",
+      "Follow through",
+      "Appeal"
+    ],
+    "bg": "#ffffff",
+    "duration": 2100
+  },
+  {
+    "n": 26,
+    "key": "j26",
+    "file": "26-kapital.svg",
+    "still": "26-kapital-still.svg",
+    "slug": "kapital",
+    "title": "Workshop label",
+    "source": "kapital",
+    "words": "craft, vintage, folklore",
+    "preset": "Friendly",
+    "pattern": "The label border stitches round, letters press in, the date types out",
+    "principles": [
+      "Timing",
+      "Staging",
+      "Squash & stretch",
+      "Appeal"
+    ],
+    "bg": "#261107",
+    "duration": 2500
+  },
+  {
+    "n": 27,
+    "key": "j27",
+    "file": "27-calpis.svg",
+    "still": "27-calpis-still.svg",
+    "slug": "calpis",
+    "title": "Polka dots",
+    "source": "calpis",
+    "words": "fresh, clean, blue and white",
+    "preset": "Friendly",
+    "pattern": "Dots pop in a wave, the name bobs up",
+    "principles": [
+      "Overlapping action",
+      "Follow through",
+      "Squash & stretch",
+      "Appeal"
+    ],
+    "bg": "#0033ff",
+    "duration": 1550
+  },
+  {
+    "n": 28,
+    "key": "j28",
+    "file": "28-dassai.svg",
+    "still": "28-dassai-still.svg",
+    "slug": "dassai",
+    "title": "One drop",
+    "source": "dassai",
+    "words": "pure, wide, deep indigo",
+    "preset": "Elegant",
+    "pattern": "A drop falls, its ripple opens, the name appears from the centre out",
+    "principles": [
+      "Anticipation",
+      "Arcs",
+      "Secondary action",
+      "Staging",
+      "Timing"
+    ],
+    "bg": "#ffffff",
+    "duration": 2900
+  },
+  {
+    "n": 29,
+    "key": "j29",
+    "file": "29-kaikado.svg",
+    "still": "29-kaikado-still.svg",
+    "slug": "kaikado",
+    "title": "Copper caddy",
+    "source": "kaikado",
+    "words": "craft, hairline, copper",
+    "preset": "Elegant",
+    "pattern": "Draw-on: the caddy and the letter outlines are drawn, then the ink fills",
+    "principles": [
+      "Staging",
+      "Slow in/out",
+      "Timing",
+      "Solid drawing",
+      "Appeal"
+    ],
+    "bg": "#f2efe9",
+    "duration": 2800
+  }
+]
