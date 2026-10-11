@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_CAR_PLACES,FERRY_MACHINERY} from './ferry-ship.js';
+import {FERRY_INTERIOR,FERRY_HOUSE} from './ferry-interior.js';
 
 /**
  * The Minato Maru (みなと丸) as she is built: drawn from her data (ferry-ship.js FERRY_SHIP, FERRY_HEIGHTS,
@@ -61,7 +62,7 @@ export const FERRY_DECKS=Object.freeze({
   /** The casings either side, 1 m wide: the lanes stop at them. */
   walkway:1,bulwark:BULWARK}),
  /** The passenger deckhouse on the passenger deck: lobby, toilets, carpet room, saloon. */
- saloon:Object.freeze({fore:Z(23),aft:Z(6),width:7.2,height:BRIDGE-PASS}),
+ saloon:Object.freeze({fore:Z(23),aft:Z(6),width:6.8,lobbyWidth:8.2,height:BRIDGE-PASS}),
  /** The aft mooring station on the car deck. */
  stern:Object.freeze({fore:Z(2.5),aft:-HALF}),
  /** The passenger deck: the open deck aft, the side walkways, over the car deck from the transom to 23 m. */
@@ -73,8 +74,8 @@ export const FERRY_DECKS=Object.freeze({
 });
 
 /**
- * The decks a person walks on outside (model frame): a rectangle each and its floor. The walking batch
- * makes them a moving room; the interiors (lobby, carpet room, saloon, the crew's rooms) come with theirs.
+ * The decks a person walks on outside (model frame): a rectangle each and its floor. Every floor a person walks on,
+ * inside and out, with its edges, is in ferry-interior.js and ferry-walk.js; these are the open decks under the sky.
  */
 export const FERRY_WALK=Object.freeze([
  ['car-deck-walkway',[2.25,3.05],[Z(10.1),Z(14.9)],CAR],
@@ -83,10 +84,10 @@ export const FERRY_WALK=Object.freeze([
  ['aft-mooring',[-3.6,3.6],[Z(.5),Z(2.4)],CAR],
  ['open-deck',[-3.7,3.7],[Z(.4),Z(4)],PASS],
  ['bridge-deck-aft',[-2.5,2.5],[Z(4.85),Z(5.95)],BRIDGE],
- ['walkway-p',[3.65,4.0],[Z(6.1),Z(22.9)],PASS],
- ['walkway-s',[-4.0,-3.65],[Z(6.1),Z(22.9)],PASS],
- ['bridge-deck-p',[3.05,3.55],[Z(6.2),Z(19.4)],BRIDGE],
- ['bridge-deck-s',[-3.55,-3.05],[Z(6.2),Z(19.4)],BRIDGE],
+ ['walkway-p',[3.5,4.05],[Z(9.6),Z(17.5)],PASS],
+ ['walkway-s',[-4.05,-3.5],[Z(9.6),Z(17.5)],PASS],
+ ['bridge-deck-p',[3.05,4.0],[Z(6.2),Z(9.4)],BRIDGE],
+ ['bridge-deck-s',[-4.0,-3.05],[Z(6.2),Z(9.4)],BRIDGE],
  ['wing-p',[3.05,4.0],[Z(19.6),Z(22.9)],BRIDGE],
  ['wing-s',[-4.0,-3.05],[Z(19.6),Z(22.9)],BRIDGE],
  ['compass-deck',[-2.9,2.9],[Z(19.6),Z(22.9)],COMPASS],
@@ -311,8 +312,8 @@ export function buildFerryModel({shadows=false}={}){
  const casTop=CAS_TOP,PSG=FERRY_CASINGS.passage;
  for(const side of [1,-1]){
   // The port casing is cut through at the gate: the passage from the gangway door to the walkway, its deckhead 2 m up.
-  if(side>0){kit.block('paint',[3.1,CAR,CAS0],[HB-.03,casTop,PSG.from],WHITE);kit.block('paint',[3.1,CAR,PSG.to],[HB-.03,casTop,CAS1],WHITE);
-   kit.block('paint',[3.1,CAR+PSG.height,PSG.from],[HB-.03,casTop,PSG.to],WHITE);
+  // (The casings' blocks, their stairwells and the passage's deckhead are in ferry-interior.js, which the walk reads too.)
+  if(side>0){
    kit.block('paint',[3.12,CAR+PSG.height-.004,PSG.from],[HB-.05,CAR+PSG.height,PSG.to],DECKHEAD);
    // The inboard door's frame onto the walkway, and its leaf hooked back against the casing's face, aft.
    for(const z of [PSG.from,PSG.to])kit.block('paint',[3.06,CAR,z-.04],[3.12,CAR+PSG.height,z+.04],TEAL);
@@ -323,9 +324,8 @@ export function buildFerryModel({shadows=false}={}){
    kit.block('paint',[3.45,CAR+1.2,PSG.to-.18],[3.95,CAR+1.8,PSG.to],0x8d9a98);kit.block('metal',[3.57,CAR+1.25,PSG.to-.24],[3.83,CAR+1.45,PSG.to-.18],DARK);
    // A deckhead light over the passage.
    kit.block('paint',[3.5,CAR+PSG.height-.06,GATE.z-.25],[3.8,CAR+PSG.height-.01,GATE.z+.25],0xf3efe2);}
-  else kit.block('paint',[side*3.1,CAR,CAS0],[side*(HB-.03),casTop,CAS1],WHITE);
-  // Doors onto the car deck: the engine room's (port) or its escape (starboard), the stair, the store.
-  for(const [zy,w] of side>0?[[7,.8],[11.8,.9]]:[[6.5,.7],[8.5,.9],[11.8,.9]])kit.box('paint',[.04,2,w],[side*3.08,CAR+1,Z(zy)],DOOR);
+  // Doors onto the car deck: the engine room's (port) or its escape (starboard), the store. (The stairs' doors stand open.)
+  for(const [zy,w] of side>0?[[7,.8]]:[[6.5,.7],[8.5,.9]])kit.box('paint',[.04,2,w],[side*3.08,CAR+1,Z(zy)],DOOR);
  }
  // The gangway door's frame in the port casing's side, behind the gate in the bulwark (its leaf moves: below).
  kit.box('metal',[.06,.06,1.02],[HB,CAR+2.03,GATE.z],STEEL);
@@ -362,11 +362,9 @@ export function buildFerryModel({shadows=false}={}){
   kit.box('paint',[.06,.8,.75],[ax-side*.04,y,z],DARK);kit.box('metal',[.1,.75,.12],[ax+side*.03,y+.06,z],DARK);
   kit.box('metal',[.14,.14,.42],[ax+side*.04,y-.32,z],DARK);for(const k of [-1,1])kit.add('metal',new THREE.ConeGeometry(.08,.38,4),DARK,[ax+side*.04,y-.2,z+k*.2]);}
 
- // ---- The passenger deck over the car deck: its slab, the deckhead under it, pillars at its open ends.
+ // ---- The passenger deck over the car deck (its slab, cut open over the stairs, is in ferry-interior.js), pillars at
+ // its open ends.
  const PD0=-HALF,PD1=Z(23);
- kit.block('paint',[-(HB-.02),PASS-.25,PD0],[HB-.02,PASS,PD1],WHITE);
- kit.block('paint',[-(HB-.08),PASS-.255,PD0+.05],[HB-.08,PASS-.25,PD1-.05],DECKHEAD);
- kit.block('paint',[-(HB-.1),PASS+.001,PD0+.05],[HB-.1,PASS+.006,PD1-.05],DECKGREEN);
  kit.box('paint',[BEAM-.02,.08,.06],[0,PASS-.04,PD1+.02],TEAL);
  for(const side of [1,-1])for(const z of [Z(.3),Z(22.7)])kit.cyl('paint',.11,.11,casTop-CAR,[side*3.75,(CAR+casTop)/2,z],WHITE);
  // Lights under the deckhead over the lanes.
@@ -374,20 +372,15 @@ export function buildFerryModel({shadows=false}={}){
  // Rails round the passenger deck: the stern, the open deck's sides, the walkways and their forward ends.
  const rw=HB-.08;
  rail([rw,PD0+.1],[-rw,PD0+.1]);rail([rw,PD0+.1],[rw,PD1-.05]);rail([-rw,PD0+.1],[-rw,PD1-.05]);
- rail([rw,PD1-.05],[3.62,PD1-.05]);rail([-3.62,PD1-.05],[-rw,PD1-.05]);
+ rail([rw,PD1-.05],[FERRY_HOUSE.half+.02,PD1-.05]);rail([-(FERRY_HOUSE.half+.02),PD1-.05],[-rw,PD1-.05]);
 
- // ---- The passenger deckhouse: lobby, toilets, carpet room and saloon, windows all along, its doors.
+ // ---- The houses, casings, stairs, ladders and everything inside them: ferry-interior.js, drawn here as it is walked.
  const SAL=FERRY_DECKS.saloon,DH0=SAL.aft,DH1=SAL.fore,dw=SAL.width/2,dhTop=BRIDGE-.25;
- kit.block('paint',[-dw,PASS,DH0],[dw,dhTop,DH1],WHITE);
- kit.block('paint',[-(dw+.05),dhTop,DH0-.05],[dw+.05,BRIDGE,DH1+.05],WHITE);
+ for(const b of FERRY_INTERIOR.boxes)if(b.draw!==false)kit.block(b.cls,b.a,b.b,b.hex);
+ for(const r of FERRY_INTERIOR.bars)kit.bar(r.cls,r.a,r.b,r.r,r.hex,r.r>.2?14:6);
+ for(const g of FERRY_INTERIOR.glass)win(g.size,g.pos,g.rot);
+ // The teal band under the deckhouse's forward eave.
  kit.block('paint',[-(dw+.06),dhTop-.1,DH1+.04],[dw+.06,dhTop+.02,DH1+.08],TEAL);
- for(const side of [1,-1]){
-  for(let z=DH0+1.3;z<DH1-.6;z+=1.15){if(Math.abs(z-Z(7.6))<.6||Math.abs(z-Z(21.7))<.6)continue;win([.04,.75,.92],[side*(dw+.01),PASS+1.55,z]);}
-  for(const zy of [7.6,21.7])kit.box('paint',[.04,1.95,.85],[side*(dw+.02),PASS+.98,Z(zy)],DOOR);
- }
- for(let i=0;i<6;i++)win([.95,.85,.04],[-2.85+i*1.14,PASS+1.5,DH1+.01]);
- for(const x of [-2.4,2.4])win([.85,.75,.04],[x,PASS+1.55,DH0-.01]);
- kit.box('paint',[1.2,1.95,.04],[0,PASS+.98,DH0-.02],DOOR);
 
  // ---- The open deck aft: benches under an awning, the funnels at its forward corners, the liferaft (port) and
  // the rescue boat under its davit (starboard), the flagstaff; forward of the benches a platform and two ladders
@@ -410,7 +403,6 @@ export function buildFerryModel({shadows=false}={}){
   kit.bar('metal',[-3.9,PASS,Z(.45)],[-3.9,PASS+3.2,Z(.45)],.08,STEEL,8);kit.bar('metal',[-3.9,PASS+3.2,Z(.45)],[-3.3,PASS+3.35,Z(1.5)],.06,STEEL,8);}
  kit.bar('paint',[0,PASS,-HALF+.15],[0,PASS+3.4,-HALF+.05],.03,WHITE);
  for(const x of [1.3,-1.3])kit.add('paint',new THREE.TorusGeometry(.32,.07,8,18),ORANGE,[x,PASS+.78,-HALF+.04]);
- for(const side of [1,-1])for(const zy of [12,17.5])kit.cyl('paint',.28,.28,1,[side*3.85,PASS+.5,Z(zy)],WHITE,[Math.PI/2,0,0]);   // the walkways' liferafts
  for(const side of [1,-1])kit.add('paint',new THREE.TorusGeometry(.32,.07,8,18),ORANGE,[side*(rw+.04),PASS+.8,Z(9.5)],[0,Math.PI/2,0]);
  const PF0=DH0-1.2;
  kit.block('paint',[-2.6,BRIDGE-.12,PF0],[2.6,BRIDGE,DH0],WHITE);kit.block('paint',[-2.55,BRIDGE+.001,PF0+.05],[2.55,BRIDGE+.006,DH0],DECKGREEN);
@@ -424,26 +416,24 @@ export function buildFerryModel({shadows=false}={}){
 
  // ---- The bridge deck: the house (crew's rooms, the corridor, the wheelhouse forward), its ledges and wings.
  const BH=3,WH=FERRY_DECKS.wheelhouse,hTop=COMPASS-.2;
- kit.block('paint',[-BH,BRIDGE,DH0],[BH,hTop,DH1],WHITE);
  kit.block('paint',[-(BH+.08),hTop,DH0-.05],[BH+.08,COMPASS,DH1+.12],WHITE);
  kit.block('paint',[-(BH+.1),hTop-.12,DH1+.08],[BH+.1,hTop+.02,DH1+.16],TEAL);                    // the visor over the windows
  kit.block('paint',[-(HB-.06),BRIDGE-.12,WH.aft],[HB-.06,BRIDGE,DH1],WHITE);                       // the wings' floor out to her sides
  kit.block('paint',[-(HB-.1),BRIDGE+.001,WH.aft+.05],[HB-.1,BRIDGE+.006,DH1-.05],DECKGREEN);
- kit.block('paint',[-(dw+.04),BRIDGE+.001,DH0],[dw+.04,BRIDGE+.005,DH1],DECKGREEN);
+ {const LW=FERRY_HOUSE.lobbyHalf,LB1=FERRY_HOUSE.lobbyFore;
+  kit.block('paint',[-(LW+.04),BRIDGE+.001,DH0],[LW+.04,BRIDGE+.005,LB1],DECKGREEN);kit.block('paint',[-(dw+.04),BRIDGE+.001,LB1],[dw+.04,BRIDGE+.005,DH1],DECKGREEN);}
  for(const side of [1,-1]){
-  // Cabin windows (portholes, square) down the house's side; the wheelhouse's side windows forward.
-  for(const zy of [10.2,12.7,15.2,17.9])win([.04,.5,.5],[side*(BH+.01),BRIDGE+1.45,Z(zy)]);
-  for(const zy of [20.2,21.6])win([.04,.85,1.1],[side*(BH+.01),BRIDGE+1.4,Z(zy)]);
-  kit.box('paint',[.04,1.9,.8],[side*(BH+.02),BRIDGE+.95,Z(19.9)],DOOR);                           // the wing door
+  // (The house's windows, the wheelhouse and its wing doors: ferry-interior.js.)
   // The wing: a solid dodger at her side, its console where the master berths her.
   kit.block('paint',[side*(HB-.1),BRIDGE,WH.aft],[side*(HB-.04),BRIDGE+1.1,DH1],WHITE);
   kit.block('paint',[side*(BH+.05),BRIDGE+1.05,DH1-.04],[side*(HB-.04),BRIDGE+1.1,DH1],WHITE);
   kit.box('metal',[.14,1,.14],[side*(HB-.45),BRIDGE+.5,DH1-.5],STEEL);kit.box('metal',[.34,.2,.3],[side*(HB-.45),BRIDGE+1.08,DH1-.5],DARK);
   // Rails on the bridge deck's ledges beside the house.
-  rail([side*(dw-.02),DH0+.05],[side*(dw-.02),WH.aft-.05],BRIDGE);
+  // Over the lobby (full breadth) they run at her sides, and step in where the house narrows.
+  {const lw=FERRY_HOUSE.lobbyHalf-.02,LB1=FERRY_HOUSE.lobbyFore;
+   rail([side*lw,DH0+.05],[side*lw,LB1],BRIDGE);rail([side*lw,LB1],[side*(dw-.02),LB1],BRIDGE);rail([side*(dw-.02),LB1],[side*(dw-.02),WH.aft-.05],BRIDGE);}
  }
  for(const x of [1.6,-1.6])kit.box('paint',[.8,1.9,.04],[x,BRIDGE+.95,DH0-.02],DOOR);                 // the EG room's and the CO₂ room's doors
- for(let i=0;i<5;i++)win([1.05,.95,.04],[-2.36+i*1.18,BRIDGE+1.45,DH1+.01],[-.12,0,0]);
  // ---- The compass deck on the wheelhouse top: rails, the standard compass, the mast and what it carries.
  rail([BH-.05,WH.aft],[BH-.05,DH1],COMPASS);rail([-(BH-.05),WH.aft],[-(BH-.05),DH1],COMPASS);rail([BH-.05,DH1],[-(BH-.05),DH1],COMPASS);
  kit.cyl('paint',.22,.28,1.0,[0,COMPASS+.5,Z(22.2)],WHITE);kit.add('paint',new THREE.SphereGeometry(.22,10,6,0,Math.PI*2,0,Math.PI/2),0x9fb3b6,[0,COMPASS+1,Z(22.2)]);
@@ -459,7 +449,8 @@ export function buildFerryModel({shadows=false}={}){
  {const m=new THREE.Mesh(new THREE.BoxGeometry(1.8,.14,.18),new THREE.MeshStandardMaterial({color:0xeeeae0,roughness:.5}));radar.add(m);const p=new THREE.Mesh(new THREE.CylinderGeometry(.1,.13,.18,8),new THREE.MeshStandardMaterial({color:DARK,roughness:.6}));p.position.y=-.15;radar.add(p);}
  ferry.add(radar);
  // ---- The glass: one mesh, lit from inside at night.
- const glassMat=new THREE.MeshStandardMaterial({color:0x2d4a55,roughness:.15,metalness:.2,emissive:0xf0d8a0,emissiveIntensity:0});
+ // See-through, so the saloon's windows look out over the bow and the harbour shows in the wheelhouse's.
+ const glassMat=new THREE.MeshStandardMaterial({color:0x2d4a55,roughness:.15,metalness:.2,emissive:0xf0d8a0,emissiveIntensity:0,transparent:true,opacity:.38,depthWrite:false});
  {const parts=glass.map(([size,pos,rot=[0,0,0]])=>{const g=new THREE.BoxGeometry(...size).toNonIndexed();g.deleteAttribute('uv');g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(...pos),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),new THREE.Vector3(1,1,1)));return g;});
   const mesh=new THREE.Mesh(mergeGeometries(parts,false),glassMat);mesh.name='Minato Maru windows';ferry.add(mesh);}
  // ---- Navigation lights (COLREG): masthead white at 15 m above the keel, sidelights at the wings' ends (red to

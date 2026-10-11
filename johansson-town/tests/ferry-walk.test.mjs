@@ -99,12 +99,55 @@ test('every floor lies where the model draws it',()=>{
  const {run}=alongside();const ray=new THREE.Raycaster(),meshes=[];
  run.ferry.traverse(o=>{if(o.isMesh&&o.visible!==false&&!/windows|markings/.test(o.name))meshes.push(o);});
  const parts={ship:run.ferry,ramp:run.ferry.userData.ramp,flap:run.ferry.userData.flap,gangway:run.ferry.userData.gangway};
- for(const f of FERRY_FLOORS){const m=parts[f.part].matrixWorld;
+ for(const f of FERRY_FLOORS){const m=parts[f.part].matrixWorld,sloped=Array.isArray(f.y);
+  // A ladder is open between its treads: only that its treads are where its floor is.
+  const ladder=/ladder/.test(f.id);
   for(const fx of [.25,.5,.75])for(const fz of [.25,.5,.75]){
    const lx=f.x[0]+(f.x[1]-f.x[0])*fx,lz=f.z[0]+(f.z[1]-f.z[0])*fz;if(f.inside&&!f.inside(lx,lz,.3))continue;
-   const p=new THREE.Vector3(lx,f.y,lz).applyMatrix4(m);ray.set(new THREE.Vector3(p.x,p.y+.5,p.z),new THREE.Vector3(0,-1,0));ray.far=1;
+   const y=sloped?f.y[0]+(f.y[1]-f.y[0])*fz:f.y;
+   const p=new THREE.Vector3(lx,y,lz).applyMatrix4(m);ray.set(new THREE.Vector3(p.x,p.y+.5,p.z),new THREE.Vector3(0,-1,0));ray.far=1;
    const hit=ray.intersectObjects(meshes,true).find(h=>h.object.visible);
+   if(ladder&&!hit)continue;
    assert.ok(hit,f.id+' has a surface at '+lx.toFixed(2)+','+lz.toFixed(2));
-   assert.ok(Math.abs(hit.point.y-p.y)<.04,`${f.id}: the drawn surface ${(hit.point.y-p.y).toFixed(3)} m off at ${lx.toFixed(2)},${lz.toFixed(2)} (${hit.object.name})`);
+   // A stair's walking line runs over the nosings of its treads: within half a riser of them.
+   assert.ok(Math.abs(hit.point.y-p.y)<(sloped?.2:.04),`${f.id}: the drawn surface ${(hit.point.y-p.y).toFixed(3)} m off at ${lx.toFixed(2)},${lz.toFixed(2)} (${hit.object.name})`);
   }}
+});
+
+test('up stair P to the lobby, through the carpet room and the saloon, out and up the ladder to the wheelhouse',()=>{
+ const {run,walk,colliders}=alongside();const Zs=zy=>zy-HALF,car=FERRY_DECKS.car.y;
+ const W=(x,zy)=>{const p=world(run,x,car,Zs(zy));return [p.x,p.z];};
+ const start=world(run,2.65,car,Zs(11.8));
+ const r=stroll(walk,colliders,[start.x,start.z,start.y],[W(3.63,11.8),W(3.63,7.0),W(1,7.0),W(0,9),W(0,10.5),W(0,12.5),W(0,16),W(0,17),W(3.0,17.05),W(3.75,17.05),W(3.75,17.65),W(3.75,19.95),W(3.0,20.0),W(2.0,20.0),W(0,20.9)]);
+ assert.equal(r.stopped,null,'stopped at '+r.stopped+' '+[r.x,r.y,r.z].map(n=>n.toFixed(2))+' local '+walk.local('ship',r.x,r.y,r.z).map(n=>n.toFixed(2)));
+ const ids=[...new Set(r.trail.map(t=>t[3]))];
+ for(const id of ['stair-p','lobby','corridor','carpet-room','saloon','walkway-p','wing-ladder-p','wing-p','wheelhouse'])assert.ok(ids.includes(id),id+' in '+ids);
+ for(let i=1;i<r.trail.length;i++)assert.ok(Math.abs(r.trail[i][1]-r.trail[i-1][1])<.16,'no jump at step '+i+' ('+r.trail[i-1][3]+' to '+r.trail[i][3]+')');
+ // And back down the same way to the car deck.
+ const back=stroll(walk,colliders,[r.x,r.z,r.y],[W(2.0,20.0),W(3.0,20.0),W(3.75,19.95),W(3.75,17.65),W(3.75,17.05),W(3.0,17.05),W(0,17),W(0,12.5),W(0,10.5),W(0,9),W(1,7.0),W(3.63,7.0),W(3.63,11.8),W(2.65,11.8)]);
+ assert.equal(back.stopped,null,'back: stopped at '+back.stopped+' local '+walk.local('ship',back.x,back.y,back.z).map(n=>n.toFixed(2)));
+ assert.ok(Math.abs(back.y-start.y)<.02,'on the car deck again');
+});
+
+test('from the lobby out onto the open deck and up a ladder to the bridge deck\'s aft platform',()=>{
+ const {run,walk,colliders}=alongside();const Zs=zy=>zy-HALF,pass=FERRY_DECKS.upper.y;
+ const W=(x,zy)=>{const p=world(run,x,pass,Zs(zy));return [p.x,p.z];};
+ const start=world(run,0,pass,Zs(7.0));
+ const r=stroll(walk,colliders,[start.x,start.z,start.y],[W(0,5.5),W(0,3.2),W(1.15,3.2),W(1.15,5.3),W(0,5.5)]);
+ assert.equal(r.stopped,null,'stopped at '+r.stopped+' local '+walk.local('ship',r.x,r.y,r.z).map(n=>n.toFixed(2)));
+ const ids=[...new Set(r.trail.map(t=>t[3]))];
+ for(const id of ['lobby','open-deck','platform-ladder-p','bridge-deck-aft'])assert.ok(ids.includes(id),id+' in '+ids);
+});
+
+test('the walls keep you in: no walking through the house\'s side, into the toilets, over the stair well, or off the wing',()=>{
+ const {run,walk,colliders}=alongside();const Zs=zy=>zy-HALF;
+ const at=(x,y,zy)=>world(run,x,y,Zs(zy));
+ const tries=[
+  ['saloon to the walkway through the wall',at(2.8,FERRY_DECKS.upper.y,19),at(3.9,FERRY_DECKS.upper.y,19)],
+  ['lobby into the men’s toilet',at(1.4,FERRY_DECKS.upper.y,9),at(1.4,FERRY_DECKS.upper.y,10.5)],
+  ['lobby into the stair well',at(2.5,FERRY_DECKS.upper.y,8.5),at(3.6,FERRY_DECKS.upper.y,8.5)],
+  ['off the wing\'s aft edge onto the ledge',at(3.3,FERRY_DECKS.bridge.y,20.2),at(3.3,FERRY_DECKS.bridge.y,18.8)],
+  ['through the wheelhouse\'s front',at(0,FERRY_DECKS.bridge.y,21),at(0,FERRY_DECKS.bridge.y,23.5)],
+ ];
+ for(const [what,a,b] of tries){const r=stroll(walk,colliders,[a.x,a.z,a.y],[[b.x,b.z]]);assert.notEqual(r.stopped,null,what);}
 });
