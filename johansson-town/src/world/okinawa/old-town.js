@@ -207,9 +207,8 @@ function dressWarehouse(kit,solid,{inspect}){
  const x=-10.52;
  kit.sign(fascia({jp:"Port warehouse",en:'Minato harbour warehouse · stores & ice',bg:'#e9e4d6',accent:'#314d51',ink:'#1f3336'}),3.8,.9,x+.5,4.55,-43.1,{ry:Math.PI/2,depth:.06,name:'warehouse sign'});
  kit.sign(enamel({jp:"Fisheries cooperative",en:'fisheries co-op',bg:'#1f5f94',ink:'#f4f0e4'}),.6,.9,x+.04,2,-40.2,{ry:Math.PI/2,depth:.02,name:'enamel sign'});
- // Floats in a net hung from the wall, over the ferry's apron.
- buoys(kit,x+.25,1.75,-46.5,{count:5,seed:4});
- for(const z of [-46.85,-46.5,-46.15])kit.rod([x+.25,2.45,z],[x+.25,1.65,z],.012,0x796e52);
+ // (The floats in a net that hung here, over the ferry's apron, are gone: the creator, 2026-10-11, cleared the
+ // ramp head of everything in the way.)
 
  // No crates at its foot any more (2026-10): the bigger ferry's ramp flap lies where they stood, and the cars
  // coming off her sweep the corner up to the forklift's shutter. A ferry's apron is kept clear; the co-op

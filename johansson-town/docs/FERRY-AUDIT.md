@@ -523,3 +523,11 @@ on the walkway, down the lane, on the ramp and on the quay. The whole suite (`np
 4. The forecastle tops (a vertical ladder each): a climb, not a walk.
 5. Tapping to walk (point-walk) plans over the town's ground only, so it does not route aboard yet; walking with the
    stick or the keys does.
+
+**The ramp head cleared (the creator, 2026-10-11, with a marked-up phone screenshot: "remove anything that blocks the
+drive up the ramp, just delete them, we will decide later if we need any of them"; "the ramp shouldn't poke under the
+warehouse").** Deleted: the nets' drying frame against the warehouse (`harbour.js`), the harbour hand pump and its
+prompt (`town.js`), the net of floats on the warehouse's corner (`okinawa/old-town.js`) and the quay bollard at x −5
+beside the landing (`harbour.js`). The warehouse (`warehouse.js`) is 2.5 m shorter at its quay end (z −45.4 instead
+of −47.9): its east wall stood 0.4 m over the landing plate's west edge, so the ramp ran under it. Its street end,
+doors, signs and shutter are where they were. Open: whether any of the deleted things come back, and where.

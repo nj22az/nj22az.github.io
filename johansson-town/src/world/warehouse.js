@@ -4,7 +4,10 @@ import {buildShopDoor} from './shop-door.js';
 
 // Replaces the western fishing-gear shed. Source frontage is -Z; rotate it
 // towards the main street (+X), with its roof clear of the west service lane.
-export const WAREHOUSE=Object.freeze({x:-13.6,z:-42.4,scale:.55,yaw:-Math.PI/2,groundY:.095,sourceMinY:-.022709667682647705});
+// Its quay (south) end stood at z -47.9, over the west edge of the ferry's ramp landing (x -10.95, z -50 to -45.6); in
+// 2026-10 it was shortened by 2.5 m at that end (the creator: "the ramp shouldn't poke under the warehouse"), its
+// street end, doors and signs where they were. `halfDepth` is half its length along the quay's road (z).
+export const WAREHOUSE=Object.freeze({x:-13.6,z:-41.15,halfDepth:4.26,scale:.55,yaw:-Math.PI/2,groundY:.095,sourceMinY:-.022709667682647705});
 export const WAREHOUSE_PLACE=Object.freeze({
  id:'warehouse',title:'Harbour Warehouse',jp:"港倉庫",sub:'WESTERN QUAY',
  x:WAREHOUSE.x,z:WAREHOUSE.z,color:0x9a9588,accent:'#314d51',
@@ -17,7 +20,7 @@ export function warehouseColliders(){
  // and western service lane clear. The old imported loose props are gone;
  // their invisible colliders must not remain in front of the new kit shell.
  return [
-  {x:-13.64,z:-42.44,w:6.14,d:11.03,height:5.9},
+  {x:-13.64,z:WAREHOUSE.z,w:6.14,d:WAREHOUSE.halfDepth*2+.01,height:5.9},
  ].map(c=>({...c,warehouse:true}));
 }
 /**
@@ -30,7 +33,7 @@ export function warehouseColliders(){
 export function buildWarehouseShell({shadows=false}={}){
  const holder=new THREE.Group();holder.name='Harbour Warehouse kit exterior';
  const kit=createKit({shadows});
- const cx=WAREHOUSE.x,cz=WAREHOUSE.z,hw=3.07,hd=5.51,front=cx+hw,back=cx-hw,eave=4.2,rise=1.5;
+ const cx=WAREHOUSE.x,cz=WAREHOUSE.z,hw=3.07,hd=WAREHOUSE.halfDepth,front=cx+hw,back=cx-hw,eave=4.2,rise=1.5;
  const tin=0x86a0aa,tinDark=0x6f8893,block=0xb9b5a8,rust=0x9a5a3a,trim=0x314d51,steel=0x8e979a;
  kit.block(back,front,0,1.0,cz-hd,cz+hd,block);
  kit.block(back+.06,front-.06,1.0,eave,cz-hd+.06,cz+hd-.06,tin);
@@ -43,7 +46,8 @@ export function buildWarehouseShell({shadows=false}={}){
  for(let z=cz-hd;z<=cz+hd;z+=.9)for(const s of [-1,1])kit.rod([cx,eave+rise+.02,z],[cx+s*(hw+.3),eave-.1,z],.025,tinDark);
  kit.box(.2,.12,hd*2+.4,cx,eave+rise+.04,cz,trim);
  // The roller shutter for the forklift, its box, and a person door's frame.
- const sz=cz-.6;
+ // The shutter stays where it was before the quay end was shortened (z -43), its lamp 2.3 m north of it.
+ const sz=-43;
  kit.box(.06,3.3,3.64,front+.04,1.65,sz,0xa9b2b4,{finish:'metal'});
  for(let y=.15;y<3.3;y+=.12)kit.box(.02,.02,3.6,front+.08,y,sz,0x8e9699,{finish:'metal'});
  kit.box(.4,.4,3.9,front+.2,3.5,sz,0x8e9699,{finish:'metal'});
@@ -51,7 +55,7 @@ export function buildWarehouseShell({shadows=false}={}){
  for(const z of [WAREHOUSE_PLACE.door[2]-.62,WAREHOUSE_PLACE.door[2]+.62])kit.box(.12,2.2,.1,front+.04,1.1,z,trim);
  kit.box(.12,.12,1.34,front+.04,2.24,WAREHOUSE_PLACE.door[2],trim);
  // Rust where sheets overlap and fixings bleed, and a wall lamp over the shutter.
- for(const z of [cz-4.4,cz-2.9,cz+.9,cz+3.6])kit.box(.02,1.3+(Math.abs(z)%1)*.6,.12,front+.05,eave-.8,z,rust);
+ for(const z of [cz-3.15,cz-1.65,cz+.9,cz+3.6])kit.box(.02,1.3+(Math.abs(z)%1)*.6,.12,front+.05,eave-.8,z,rust);
  kit.box(.3,.18,.3,front+.2,3.95,sz+2.3,steel,{finish:'metal'});
  kit.box(.22,.12,.22,front+.24,3.82,sz+2.3,0xffe2a8,{finish:'lamp'});
  kit.finish(holder,'Harbour Warehouse shell');
@@ -66,7 +70,7 @@ function addStreetDoor(group){
 export function buildWarehouse(world,options={}){
  const group=new THREE.Group();group.name='Harbour Warehouse';world.group.add(group);
  world.colliders.push(...warehouseColliders());
- const footing=new THREE.Mesh(new THREE.BoxGeometry(6.4,.6,11.35),new THREE.MeshStandardMaterial({color:0x999b94,roughness:.95}));
+ const footing=new THREE.Mesh(new THREE.BoxGeometry(6.4,.6,WAREHOUSE.halfDepth*2+.33),new THREE.MeshStandardMaterial({color:0x999b94,roughness:.95}));
  // A centimetre and a half over the quay was not enough to keep the two apart on a
  // phone; three makes the plinth read as a plinth and settles the depth test with it.
  footing.name='Warehouse concrete footing';footing.position.set(WAREHOUSE.x,-.175,WAREHOUSE.z);footing.receiveShadow=true;group.add(footing);
