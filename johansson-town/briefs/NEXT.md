@@ -178,5 +178,7 @@ Open:
 - Placing furniture needs a mouse or touch; there is no keyboard way yet (World's build-mode.js).
 - The festivals' things are not built: Haarii boats, Tanabata bamboo, eisa drums, the tug-of-war rope. The news names
   the residents who turn out (happenings.js `news`); when these are built, the news can name them too.
+- Birthdays: none of the residents has a real one yet (all show the maker's 1 July). The creator sets them in
+  `johansson-town/src/people/birthdays.js`; setting them in Studio (the maker already has the fields) is not built.
 - `jojo/town-studio/evidence/home-decorating.mjs` drove World's old "Arrange furniture"; it is evidence of that check,
   not a tool to run again.
