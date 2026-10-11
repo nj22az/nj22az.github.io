@@ -43,9 +43,27 @@ Implementeras i `gemensamt/sjoskolan.css`.
 
 Röd används bara för det som söks eller är fel. Orange för fara och felström. Färg är aldrig enda bäraren av information: skriv också ut läget i text.
 
+### Kursplanens områden (färgkod)
+
+Veckor och moduler färgkodas efter kursplanens fyra områden. Varje skriftlig punkt har sin praktiska motsvarighet i samma
+område. Färgerna är validerade för färgblindhet mot vit yta (alla par) och visas alltid med namnet bredvid. Stark färg bara
+i smala markeringar (rand, band, liten ruta); stora ytor får en ljus ton (DADS 50-steg) och texten står alltid i `--sj-ink`.
+Källan är `OMRADEN` i `verktyg/veckosidor/kursplan.py`.
+
+| Område | Punkter | Färg |
+|---|---|---|
+| Komponenter och system | LM-1 | `#1baf7a` |
+| Elsäkerhet och regler | LM-2, LM-3, LM-6, LM-9 | `#eda100` |
+| Mätning och analys | LM-4, LM-8 | `#6250d6` |
+| Felsökning och dokumentation | LM-5, LM-7 | `#e87ba4` |
+
+Andelarna räknas ur veckans eller modulens övningar, labbuppgifter och inlämningar (en uppgift räknas en gång per område).
+Röd och orange används inte som områdesfärg.
+
 ### Typografi
 
-Arial, Helvetica, sans-serif. Brödtext 17 px med radavstånd 1,65. Minsta textstorlek 14 px. Ingen spärrning i brödtext.
+Arial, Helvetica, sans-serif. Brödtext 17 px med radavstånd 1,65 i gränssnitt och 1,8 i löptext som eleven läser länge
+(genomgångar, delsidor; Zenn). Läsbredd högst 72–76 tecken (cirka 720 px). Minsta textstorlek 14 px. Ingen spärrning i brödtext.
 
 | Nivå | Storlek | Vikt | Radavstånd |
 |---|---|---|---|
@@ -114,13 +132,19 @@ Uppgiftens läge skrivs ut: ”Inte påbörjad”, ”Förutsagd”, ”Avläst�
 
 ### Startsida (DADS)
 
-1. Aktuell vecka överst: vecka, titel, en mening om vad eleven ska kunna, en huvudknapp.
-2. Kursens veckor i ordning, med veckans praktiska mål i en rad.
+1. Överst: modulen att göra nu med en huvudknapp, nästa inlämning och elevens övningar.
+2. Kursens moduler i ordning, var och en med rand och band i kursplanens områdesfärger och förklaringen ovanför.
 3. Stödmaterial i en lugnare sektion: labbar, filmer, formelblad, protokoll.
+
+Startsidan byggs av `verktyg/startsida/bygg.py`.
 
 ### Veckosida (DADS)
 
 ”Börja här” med numrerade delar. Varje del: genomgång, film, labb. Skilj grunddel från fördjupning i text, inte bara med färg. Vad som lämnas in och när står i en egen panel.
+
+Från vecka 42 är veckan en enda numrerad väg (”Så gör du den här veckan”): lektion → hemma → labb → inlämning. Varje steg
+bockas av med ”Klart” (sparas i webbläsaren, som en checklista i Notion). Steget att göra nu är det första som inte är
+bockat och som har börjat; bara dess första knapp är blå (en huvudknapp per vy). Rubriken har veckans områdesband.
 
 ### Genomgång (Zenn)
 

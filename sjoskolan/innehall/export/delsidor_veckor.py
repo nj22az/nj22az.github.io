@@ -15,7 +15,7 @@ import rendera as R
 from delsidor import CSS as CSS40, hjalp
 
 PUBLIK = 'elev'
-V = '20260929k'
+V = '20261011a'
 VECKOR = range(41, 46)
 # Vecka 45:s delar undervisas i vecka 43 och 44 (verktyg/veckosidor/bygg.py).
 # Filerna ligger kvar i vecka-45/; sidan visar veckan och delen eleven ser. Övningarna behåller sina nummer.
@@ -24,6 +24,8 @@ EMU = 914400
 HOPPA = ('Dagens två pass', 'Pass 2')
 CSS = CSS40.replace('/* Vecka 40, en sida per del: Översikt, Teori, Exempel, Övningar, Labben (genereras av innehall/export/delsidor.py) */',
                     '/* En sida per del: Översikt, Teori, Exempel, Övningar, Labben (innehall/export/delsidor_veckor.py; vecka 40 har egen kopia) */') + '''
+/* Läsbarhet (Zenn): löptext med radavstånd 1,8. */
+.del-sida p,.del-sida li,.del-sida dd{line-height:1.8}
 .del-figur{margin:14px 0 18px}.del-figur img{display:block;width:100%;max-width:460px;height:auto;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff}
 .del-figur figcaption{font-size:14px;color:var(--sj-muted,#4d6579);margin-top:4px}
 .del-formel{font-size:21px;font-weight:700;color:var(--sj-accent,#064f91);margin:14px 0}

@@ -179,6 +179,14 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Färgkod efter kursplanens fyra områden (komponenter, elsäkerhet och regler, mätning och analys,
+  felsökning och dokumentation) på veckosidorna och startsidans moduler; startsidan byggs nu av
+  `verktyg/startsida/bygg.py`. Veckosidorna 42–45: ”Klart” på varje steg styr vilket steg som är nu, och bara det
+  stegets knapp är blå. Löptext på delsidor och genomgångar har radavstånd 1,8 (Zenn). Se DESIGN.md.
+- **2026-10-11** Färre dokument och en tydlig handling: alla veckor utom vecka 40 är en numrerad väg med en knapp per
+  del (”Öppna del N”; delsidan har teori, exempel, övningar och bildspelet), labben och ”Gör inlämningen”. Rutan
+  ”Nästa steg” överst visar steget att göra nu. Film, extra läsning och fördjupning ligger under ”Mer”. Kursplanens
+  punkter fälls ut på begäran.
 - **2026-10-11** Granskningen av vecka 44 (och del 4 Analys av mätresultat) rättad. Formelstöd-sidorna i `vecka-44/` och `vecka-45/` följer
   nu presentationerna och delsidorna (de gamla exemplen gav svaren på övning 1.8 och 2.4 och på 2.5 i del 4; regel 2 och 12), och
   strömtransformatorexemplet är 400/5 A vid 320 A = 4,0 A överallt (bild 24, figur, delsida, bildspel, Formelstöd), så att det inte är
