@@ -23,6 +23,7 @@ the software used to make and play them.
 | [kokoro-onnx — thewh1teagle and contributors](https://github.com/thewh1teagle/kokoro-onnx) | Version 0.4.9 generates British English narration locally. It is an authoring dependency. | MIT. [Licence](sjoskolan/multimeterfilm/vendor/KOKORO-ONNX-LICENSE.txt) and [multimeter voice record](sjoskolan/multimeterfilm/vendor/VOICE-NOTICE.md). |
 | [Kokoro-82M — hexgrad and contributors](https://huggingface.co/hexgrad/Kokoro-82M) | The `bf_emma` voice supplies synthetic narration. The model and voice archive are not distributed with the website. | Model documentation states Apache-2.0. Model versions, hashes and the distinction between generated audio and model files are recorded in the voice notices above. |
 | [DejaVu Fonts](https://dejavu-fonts.github.io/) / Bitstream and DejaVu contributors | Local fonts for Swedish letters and technical symbols in the films. | [Font licence](sjoskolan/multimeterfilm/vendor/DEJAVU-LICENSE.txt). |
+| [Satisfy — Sideshow](https://fonts.google.com/specimen/Satisfy) | The letter shapes of the Johansson signature logo (`assets/brand/`), converted to outlines by `tools/brand/build-logo.mjs`. | Apache-2.0. [Licence](tools/brand/fonts/Satisfy-LICENSE.txt). |
 
 Build and rendering tools include [esbuild](https://github.com/evanw/esbuild),
 [@napi-rs/canvas](https://github.com/Brooooooklyn/canvas) and

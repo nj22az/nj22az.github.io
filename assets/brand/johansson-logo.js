@@ -1,18 +1,19 @@
-// <johansson-logo> — the animated Johansson logo, inlined so the page can colour it.
+// <johansson-logo> — the animated Johansson signature, inlined so the page can colour it.
 //
 //   <script src="/assets/brand/johansson-logo.js" defer></script>
-//   <johansson-logo layout="horizontal" style="width:240px"></johansson-logo>
+//   <johansson-logo layout="signature" style="width:280px"></johansson-logo>
 //
 // Attributes:
-//   layout   horizontal (default) | stacked | mark | wordmark
+//   layout   signature (default) | mark   · dark   white version for dark backgrounds
 //   static   show the finished logo without drawing it
 //   replay   draw it again on hover and on tap
-// Colours follow CSS: --jl-ink (letters) and --jl-accent (mark). Set them to
-// currentColor to match the surrounding text.
+// Colours follow CSS: --jl-ink (name and arc), --jl-star and --jl-glow (the spark).
+// Set --jl-ink to currentColor to match the surrounding text.
 
 (function () {
   var base = (document.currentScript && document.currentScript.src.replace(/[^/]*$/, "")) || "/assets/brand/";
   var cache = {};
+  var count = 0;
 
   function load(layout) {
     if (!cache[layout]) {
@@ -25,7 +26,7 @@
   }
 
   class JohanssonLogo extends HTMLElement {
-    static get observedAttributes() { return ["layout"]; }
+    static get observedAttributes() { return ["layout", "dark"]; }
     connectedCallback() {
       this.style.display = this.style.display || "inline-block";
       if (!this._bound) {
@@ -39,8 +40,12 @@
     attributeChangedCallback() { if (this.isConnected) this.render(); }
     render() {
       var self = this;
-      load(this.getAttribute("layout") || "horizontal").then(function (svg) {
-        self.innerHTML = svg.replace("<svg ", '<svg style="width:100%;height:auto;display:block" ');
+      load((this.getAttribute("layout") || "signature") + (this.hasAttribute("dark") ? "-on-dark" : "")).then(function (svg) {
+        // Each copy gets its own ids, so two logos on one page never share a mask.
+        var n = ++count;
+        self.innerHTML = svg
+          .replace(/\bjl([a-z]{3})/g, "jl$1x" + n)
+          .replace("<svg ", '<svg style="width:100%;height:auto;display:block" ');
         if (self.hasAttribute("static")) self.finish();
       });
     }

@@ -17,13 +17,14 @@ const LEAD = 0.4; // empty frames before the first stroke
 const HOLD = 1.6; // finished logo held at the end
 const { duration } = JSON.parse(fs.readFileSync(path.join(BRAND, "timeline.json"), "utf8"));
 
+const NIGHT = "radial-gradient(ellipse at 50% 40%, #1f3f7a 0%, #0d1b3a 70%)";
 const JOBS = [
-  // name, svg, width, height, logo width share, background (null = transparent)
-  ["johansson-intro-1080p", "johansson-stacked-animated.svg", 1920, 1080, 0.36, "#f5f0e8"],
-  ["johansson-intro-1080p-on-dark", "johansson-stacked-on-dark-animated.svg", 1920, 1080, 0.36, "#1f1d1b"],
-  ["johansson-intro-1080p-alpha", "johansson-stacked-animated.svg", 1920, 1080, 0.36, null],
-  ["johansson-lower-third-alpha", "johansson-horizontal-on-dark-animated.svg", 1920, 1080, 0.3, null, "lower"],
-  ["johansson-mark-square", "johansson-mark-animated.svg", 1080, 1080, 0.5, "#f5f0e8"],
+  // name, svg, width, height, logo width share, background (null = transparent), placement
+  ["johansson-intro-1080p", "johansson-signature-on-dark-animated.svg", 1920, 1080, 0.5, NIGHT],
+  ["johansson-intro-1080p-cream", "johansson-signature-animated.svg", 1920, 1080, 0.5, "#f5f0e8"],
+  ["johansson-intro-1080p-alpha", "johansson-signature-on-dark-animated.svg", 1920, 1080, 0.5, null],
+  ["johansson-lower-third-alpha", "johansson-signature-on-dark-animated.svg", 1920, 1080, 0.24, null, "lower"],
+  ["johansson-mark-square", "johansson-mark-on-dark-animated.svg", 1080, 1080, 0.55, NIGHT],
 ];
 
 async function frames(page, job, dir) {
@@ -59,10 +60,11 @@ const ff = (...args) => execFileSync(process.env.FFMPEG || "ffmpeg", ["-loglevel
       if (process.env.PRORES) ff(...seq, "-c:v", "prores_ks", "-profile:v", "4444", "-pix_fmt", "yuva444p10le", path.join(OUT, `${name}.mov`));
     }
     if (name === "johansson-intro-1080p" || name === "johansson-mark-square") {
-      ff(...seq, "-vf", "scale=720:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=64[p];[b][p]paletteuse", path.join(OUT, `${name}.gif`));
+      ff(...seq, "-vf", "scale=720:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse", path.join(OUT, `${name}.gif`));
     }
     const last = fs.readdirSync(dir).sort().pop();
-    if (name.endsWith("alpha") && !name.includes("lower")) fs.copyFileSync(path.join(dir, last), path.join(OUT, "johansson-stacked-transparent.png"));
+    if (name === "johansson-intro-1080p-alpha") fs.copyFileSync(path.join(dir, last), path.join(OUT, "johansson-signature-transparent.png"));
+    if (name === "johansson-intro-1080p") fs.copyFileSync(path.join(dir, last), path.join(OUT, "johansson-signature-1080p.png"));
     if (name === "johansson-mark-square") fs.copyFileSync(path.join(dir, last), path.join(OUT, "johansson-mark-1080.png"));
     fs.rmSync(dir, { recursive: true });
     console.log("done", name);
