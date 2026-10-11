@@ -256,13 +256,18 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Its top sits just under the street (layout.js groundHeight 0 on the quay), 16 mm below
   // the road slab that crosses it so the two never share a plane. It stood 9.5 cm proud,
   // so everybody on the quay walked ankle-deep in the concrete.
-  box([38,.4,12],[0,-.216,-44],GROUND.concrete,[0,0,0],'wall');
-  // The raised coping and kerb along the edge, cut away where the ferry's ramp lands (minato-berth.js).
-  {const L=MINATO_BERTH.landing;
-   for(const [a,b] of [[-19,L.minX],[L.maxX,19]]){box([b-a,.6,.65],[(a+b)/2,-.12,-49.65],0x596568);box([b-a,.18,.55],[(a+b)/2,.19,-49.28],0x343f41);}
-   // The landing plate, laid flush: its top 4 mm above the concrete, a steel angle along the water's edge.
-   box([L.maxX-L.minX,.024,L.maxZ-L.minZ],[(L.minX+L.maxX)/2,-.024,(L.minZ+L.maxZ)/2],0x5e6566);
-   box([L.maxX-L.minX,.03,.08],[(L.minX+L.maxX)/2,-.02,L.minZ+.04],0x7d8584);}
+  // The ferry's ramp lands on a steel plate let into it (minato-berth.js): the slab is cast round the
+  // plate and recessed under it, so plate and concrete meet edge to edge, never one lying over the other.
+  {const L=MINATO_BERTH.landing,Q={minX:-19,maxX:19,minZ:-50,maxZ:-38},top=-.016,foot=top-.4;
+   const slab=(x0,x1,z0,z1,t=top)=>box([x1-x0,t-foot,z1-z0],[(x0+x1)/2,(t+foot)/2,(z0+z1)/2],GROUND.concrete,[0,0,0],'wall');
+   slab(Q.minX,L.minX,Q.minZ,Q.maxZ);slab(L.maxX,Q.maxX,Q.minZ,Q.maxZ);slab(L.minX,L.maxX,L.maxZ,Q.maxZ);
+   slab(L.minX,L.flapMinX,L.flapFromZ,L.maxZ);slab(L.minX,L.maxX,Q.minZ,L.maxZ,L.top-L.thickness);
+   // The raised coping and kerb along the edge, cut away where the ramp lands.
+   for(const [a,b] of [[Q.minX,L.minX],[L.maxX,Q.maxX]]){box([b-a,.6,.65],[(a+b)/2,-.12,-49.65],0x596568);box([b-a,.18,.55],[(a+b)/2,.19,-49.28],0x343f41);}
+   // The plate, its top flush with the concrete: full width where the leaf touches down, narrower
+   // under the flap, and a steel angle armouring the quay's edge in front of it.
+   const plate=(x0,x1,z0,z1,c=0x5e6566)=>box([x1-x0,L.thickness,z1-z0],[(x0+x1)/2,L.top-L.thickness/2,(z0+z1)/2],c);
+   plate(L.minX,L.maxX,L.minZ,L.minZ+L.angle,0x7d8584);plate(L.minX,L.maxX,L.minZ+L.angle,L.flapFromZ);plate(L.flapMinX,L.maxX,L.flapFromZ,L.maxZ);}
 
   const sea=createHarbourBasin();sea.receiveShadow=false;group.add(sea);water.push(sea);
 
@@ -299,7 +304,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // Against the warehouse's loading frontage (kept clear to x -9.2), north of the ferry's ramp head:
   // cars boarding the Minato Maru back round on a 3 m arc onto her centreline (town-traffic.js), and
   // the ramp head between the bollards is theirs.
-  {const rz=-42.9;for(const z of [rz-1.15,rz+1.15])cyl(.06,2.4,[-8.9,1.3,z],0x655747);beam([-8.9,2.45,rz-1.15],[-8.9,2.45,rz+1.15],.055,0x655747);
+  // (Moved 1.3 m north in 2026-10: the cars backing round onto the bigger ship's centreline sweep the old place.)
+  {const rz=-41.6;for(const z of [rz-1.15,rz+1.15])cyl(.06,2.4,[-8.9,1.3,z],0x655747);beam([-8.9,2.45,rz-1.15],[-8.9,2.45,rz+1.15],.055,0x655747);
   for(let z=rz-.9;z<rz+.95;z+=.22)beam([-8.88,.5,z],[-8.88,2.32,z],.012,0x65736f);obstacle(-8.9,rz,.5,2.5);}
 
 
@@ -309,8 +315,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
 
   for(const [x,z] of [[-17.1,-48],[17.6,-47.6]]){cyl(.11,4,[x,2.1,z],0x4b5655);box([1.1,.1,.18],[x,3.8,z],0x4b5655);lantern(x,z);}
 
-  // Tyre fenders on the quay wall — broad black shapes, not thin white lines.
-  for(const x of [-14,-7,0,7,14]){const tire=directMesh(new THREE.TorusGeometry(.42,.1,8,20),material(0x262d2e),group,[x,-.05,-49.76],[0,0,0]);tire.scale.set(1,.78,1);}
+  // Tyre fenders on the quay wall — broad black shapes, not thin white lines. None at x −7 since 2026-10:
+  // the ferry's ramp lands there (minato-berth.js), and her stem lies 2.2 m off the quay.
+  for(const x of [-14,0,7,14]){const tire=directMesh(new THREE.TorusGeometry(.42,.1,8,20),material(0x262d2e),group,[x,-.05,-49.76],[0,0,0]);tire.scale.set(1,.78,1);}
 
   // Rail only on far sides so the fishing position remains open and readable.
   // The west one stops short of the bollard by the ramp's landing.

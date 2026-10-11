@@ -57,12 +57,16 @@ export const MINATO_BERTH=Object.freeze({
   lifebuoy:Object.freeze([-.45,PIER_END+.53]),
  }),
  /**
-  * The ramp's landing on the quay: a steel plate laid flush in the quay's edge where the raised
-  * coping and kerb are cut away, wide enough for the 4.4 m ramp of the 34.5 m ship (x −10.84 to −6.44)
-  * and today's 3.8 m one (−9.54 to −5.74), so the ramp's toe rests on steel and the cars drive off
-  * level, not over a kerb. Nothing stands on it.
+  * The ramp's landing on the quay: a 24 mm steel plate let into the quay's edge, its top flush with
+  * the concrete, where the raised coping and kerb are cut away; wide enough for the 4.4 m ramp of the
+  * 34.5 m ship (x −10.84 to −6.44) and the 22 m ship's 3.8 m one (−9.54 to −5.74), and long enough for
+  * the leaf's end (at z −48.2) and its 2 m flap, so the ramp rests on steel and the cars drive off
+  * level, not over a kerb. A steel angle 8 cm wide armours the quay's edge in front of it (harbour.js
+  * casts the slab round both). Nothing stands on it.
   */
- landing:Object.freeze({minX:-10.95,maxX:-5.55,minZ:-49.975,maxZ:-46.9}),
+ landing:Object.freeze({minX:-10.95,maxX:-5.55,minZ:-50,maxZ:-45.6,top:-.016,thickness:.024,angle:.08,
+  /** Where the warehouse's corner stands (x −10.57 from z −47.96): north of the leaf's touchdown the plate is narrower, under the flap. */
+  flapMinX:-10.5,flapFromZ:-48.1}),
  /** The quay bollard for her starboard bow line, moved off the landing (it stood at x −10). */
  quayBollard:Object.freeze([-12.3,-49.3]),
 });

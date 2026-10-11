@@ -372,3 +372,106 @@ bow); she deserves the ferry's lofting in her own batch. An on-request ferry cro
 on her sea leg south-east of the breakwater (only the timetable calls are kept apart); the call batch should have the
 ferry wait for her, as a harbour master would.
 
+#### 4c: Kitano-jima's berth
+
+Waits for the merge of main's island work (Kitano-jima and Mount Aoba grown in detail, another session, 2026-10-11)
+into this working copy, which another session's unfinished files hold up; it is done on the merged island.
+
+### Batch 5: the hull and decks at the new size
+
+**Plan.** `ferry-model.js` is drawn again from the data (`ferry-ship.js`), not scaled: the hull lofted by the same
+method at 34.5 × 8.4 m, 3.0 m deep, floating at her laden draft of 1.9 m (car deck 1.1 m above the water: the ramp
+lies at 5° on the quay), a blunt island-ferry bow with the ramp's opening and the two bow houses, the spoon forefoot,
+the counter over twin 1.45 m screws, two spade rudders, the 0.9 m thruster tunnel; white topsides over red-brown
+antifouling with the teal sheer band; the car deck (2.5–30 m from the transom) with two lanes, ten numbered places,
+48 lashing sockets, the casings either side (3–20 m) and the railed walkway to the gangway door; the passenger deck
+over it (0–23 m: the open deck aft with its benches and twin funnels, the deckhouse with windows the length of the
+lobby, carpet room and saloon, the side walkways); the bridge deck (the crew house, the wheelhouse and its open
+wings); the compass deck and the mast with its lights at their heights (masthead 15 m above the keel); the 4 m ramp
+and 2 m flap on their rams; the lifesaving gear where the GA puts it. Every deck a person uses is a floor at its GA
+height with the headroom and the stairs between, listed in ship coordinates for the walking batch (`FERRY_WALK`).
+One correction to the data: the gangway door and the walkway to it go to the **port** casing, the side she lies to
+at Minato (the brief put them to starboard, which would face the open water there).
+
+| Touches | How | Checked by |
+|---|---|---|
+| The model and its parts (`ferry-model.js`: hull, decks, ramp, gangway, gate, lights, screws, radar) | drawn from `FERRY_SHIP`, `FERRY_HEIGHTS`, `FERRY_GA`; the same parts and controls (`setRamp`, `restRamp`, `restGangway`, `setGate`, lights) | `ferry-ship.test.mjs` (the model's sizes and decks against the data, the screws in their apertures, the ramp's width and reach), draw calls |
+| Her berth at Minato (`ferry-paths.js`) | on the fenders (x −8.64), the stem 2.2 m off the quay (centre z −69.45), the gangway door at z −72.7 | `ferry.test.mjs`, `airport-ferry.test.mjs` (whole hull) |
+| Her passages in and out of Minato and to Kitano-jima | laid again for 34.5 m: astern off the berth, the swing in the western basin round (−24, −84), out by the mouth; the sea route joining Kitano-jima's leading line clear of the breakwater's head | the same tests; turn rates, speed, acceleration |
+| The gangway, the queue, the arrival point | follow her door (`FERRY_BERTH.gangwayZ`) to z −72, on the new pier length | `ferry.test.mjs` (queue on the pier), `airport-dock-access.test.mjs` (the walk to it) |
+| Cars (`town-traffic.js`) | the ramp's landing and the deck place from `FERRY_CAR_PLACES` (the first car to the aft end of the starboard lane, as a loader fills her); the drying nets out of her ramp's line | `owned-vehicles`, `kitano-link`, `bus-boarding` |
+| The passenger's place on a crossing (`play.js` via `FERRY_DECKS.passenger`) | the open deck aft, between the benches | `airport-ferry.test.mjs` |
+| Kitano-jima's berth | her ramp on its landing (after 4c) | `airport-ferry.test.mjs`, `airport-dock-access.test.mjs` |
+| The storyteller | the harbour, pier and ferry pictures rendered again (`tools/render-feed-backdrops.mjs`, from source) | `feed-storyteller.test.mjs`, looked at |
+| Films | `impact.py` for her new footprint | below |
+
+**What changed from the plan, once it was drawn.** (1) Her ramp, centred on her centreline at x −8.64, would have
+landed 0.37 m inside the warehouse's south-east corner (x −10.57 from z −47.96), as would the brief's (x −10.8): the
+quay between the pier and the warehouse is 6.4 m wide. So her stem lies 2.2 m off the quay, the 4.6 m leaf lands
+0.33 m short of the corner, and the 2 m flap that lies on the quay is 3.6 m wide, 0.13 m clear of the wall; the
+landing plate is narrower under the flap. (2) The row of three fish crates under the floats on the warehouse's wall
+(`okinawa/old-town.js`) stood where the flap lies now, and the corner from there to the forklift's shutter is swept
+by the cars coming off her (`kitano-link` found a car's tail in the one stack first kept there): the crates are gone,
+as a ferry's apron is kept clear, and the floats stay hung on the wall above it. The quay wall's tyre fender at x −7,
+which had stood in the coping and was left standing on the plate when 4a cut the coping away, is gone too (her stem
+lies 2.2 m off the quay). The drying nets move 1.3 m north: the cars
+backing round onto her centreline, a metre further west than the 22 m ship's, sweep their old place. (3) Her harbour work takes longer than the small ship's: in, four and a half minutes (the timetable's
+`FERRY_TIMES.harbour`, 3.5 before), with a pivot leg of its own; to Kitano-jima the harbour work at both ends takes
+about ten minutes of the eighteen and the sea seven. (4) The sea route to Kitano-jima now runs 28 m south of the
+breakwater and joins the leading line east of its head (the 34.5 m ship's berth there is 6 m further out along it);
+her hull passes the head 3.4 m off going and 3.2 m coming back (3.8 m for the 22 m ship): the leading line itself runs
+that close, and 4c, which lays Kitano-jima's berth for her, is the place to move it out. (5) The passage planner can now ease a
+leg's speed in from the last one's over a given distance (`ease`), so the slow pivots and the brisk legs either side
+join without a jump. (6) The landing plate of 4a lay on the quay's slab, its top 4 mm over the concrete across 21 m²,
+which a phone draws as two flickering surfaces (`ground-clearance.test.mjs` found it). The slab (`harbour.js`) is now
+cast round the plate and recessed under it: the plate and the steel angle in front of it are let in, their tops flush
+with the concrete (`MINATO_BERTH.landing.top`, −0.016), and plate and concrete meet edge to edge.
+
+**Checked.** `ferry-ship.test.mjs`: her particulars from the data, her decks at their heights, the mast top and the
+masthead light where the GA puts them, ten car places in two lanes stopping at the casings, the screws under the
+counter, the lights and the ramp's rams, and every deck a person walks on outside (`FERRY_WALK`: the car-deck walkway
+and lanes, the aft mooring station, the open deck, the side walkways, the bridge deck's ledges and aft platform, the
+wings, the compass deck) is a drawn floor with two metres over it; 31 meshes, about 25,000 triangles.
+`ferry.test.mjs`, `airport-ferry.test.mjs`: the whole 34.5 × 8.4 m hull against the pier, its fenders, the second
+pier's arm (1.9 m in the pivot), the breakwater (2.1 m), the houseboat (10.6 m), the quay and Kitano-jima's shore
+(4.1 m), every half second of every passage; turn rates within their limits and no speed jumps; the ramp's leaf on
+the landing plate and its flap flat, the gangway's foot on the pier, as she heaves and rolls. `owned-vehicles`,
+`kitano-link`: the crossing car backs aboard to the aft place in the starboard lane, its whole body clear of every
+solid on the quay. `airport-dock-access`: Main Street to the queue at her new door. `ground-clearance`: no two surfaces in one plane
+(the plate let into the slab), with `boot`, `collider-grid`, `consolidation`, `warehouse` and the rest of the harbour's
+suites. Films: `impact.py` finds nothing of
+her, her ramp or the plate in any shot; the moved nets and the crates' empty place are in plain view of `thuan-poster`'s cloud shot
+(beat 5, down Main Street): its plates `main-street` and `main-street-2` must be photographed again before that film
+is rendered again (the published film is unchanged). Photographed from source (`docs/qa/ferry/b5-01` to `b5-16`): at
+the berth from the quay, the ramp on the plate by the warehouse's corner, the gangway from the pier, broadside, the
+stern quarter, along the car deck from the ramp, the open deck aft, the bridge and mast, from above, in dry dock,
+pivoting in the western basin, out round the breakwater, bow-in at Kitano-jima, alongside at night, the landing
+plate flush with the quay (b5-15), and the quay's kerb across the pier's root (b5-16, found; below). The storyteller's
+harbour, pier and ferry pictures are rendered again from source (`tools/render-feed-backdrops.mjs --source`).
+
+**The Kitano-jima passages on the merged island.** This batch was built on the island as it stood in this working
+copy, Kitano-jima 150 m east of the harbour. On the branch Kitano-jima had moved far across the strait (main,
+`48431b8b`, to x 270, z −290) and the crossing had been re-timed from its legs' lengths (`8ebecf2c`). In the merge,
+`airport-ferry.js` keeps `8ebecf2c`'s paces (28 m a town minute at sea, 24 out of the harbour) and its crossing timed
+from the legs' lengths, with this batch's harbour keys, eased legs and harbour minutes for the 34.5 m ship
+(`FIXED_MINUTES`: 7.6 to Kitano-jima, 9.5 back; out of each harbour at least 3 and 1.5 minutes). Her sea route is laid
+again for her: from the mouth south to (−42, −132), a 60 m turn there to the south-east across the strait, and a 60 m
+turn onto the leading line 65 m short of her berth (which lies 6.25 m further out along it than the 22 m ship's). The
+22 m ship's 40 m turns took her to 1.03°/s where a turn meets a straight; on 60 m turns she turns at most 0.62°/s going
+and 0.69°/s coming back. The crossing is 22 minutes (19 for the 22 m ship; the ride 13 seconds): out, 2 astern, 2.5
+the pivot, 3 out by the mouth, 11.4 at sea, 1.5 the approach and 1.6 alongside; back, 1.5 astern, 2 her swing, 1.5
+out along the leading line, 11 at sea, 1.5 in through the mouth, 1.6 the pivot and 2.9 alongside. Her hull keeps 2.1 m
+off the breakwater (in the pivot) and 3.95 m coming in, 1.88 m off the second pier's arm, 10.6 m off the houseboat and
+4.1 m off Kitano-jima's shore at the jetty. Checked on the merged tree: `airport-ferry`, `airport-dock-access`,
+`ferry-timetable-words`, `ferry`, `ferry-ship`, `kitano-link`, `owned-vehicles`, `cargo-shipping`, `airport-island`,
+`ocean`, `ground-clearance`; photographed on the merged island (`docs/qa/ferry/b5-17` to `b5-24`: the pivot in the western basin, out past
+the breakwater, at sea with Kitano-jima ahead, on its leading line, alongside, and bow-in at its jetty with the ramp
+on the landing). Kitano-jima's berth itself is still 4c: the jetty has no fenders or bollards for the bigger ship.
+
+**Left for later.** Her mooring lines to the bitts (the call batch); Kitano-jima's berth for her (4c); the interiors,
+the engine room and the bridge to walk in; the timetable's real-time crossings.
+Found while photographing the plate, not changed here: the quay's coping and kerb (`harbour.js`) run on across the
+outer pier's root (x −4.1 to 4.1), so everyone walking onto the pier walks through a 28 cm kerb, and the tyre fender at
+x 0 stands in it. A props batch cuts them there; the pier's deck then stands 11 cm over the quay at its root, which
+wants a short ramp (`layout.js` steps the walking height there from 0 to 0.098).
+
