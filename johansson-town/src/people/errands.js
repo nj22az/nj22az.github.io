@@ -109,10 +109,14 @@ export function expire(errand,minutes){
  * for what they would hand him. Returns which step happens, or null for an ordinary chat.
  */
 export function visit(errand,who,{minutes,bagFull=false,bought=false}={}){
+ // After a delivery, the asker's thanks, once.
+ if(errand?.status==='done'&&errand.kind==='deliver'&&who===errand.from&&!errand.thanked){errand.thanked=true;return {step:'done',speaker:who};}
  if(errand?.status!=='accepted')return null;
  const late=expire(errand,minutes);if(late)return who===errand.from?late:null;
  const {kind}=errand;
- if(kind==='deliver'&&errand.carrying&&who===errand.to){errand.carrying=false;errand.handed=true;return {step:'handOver',speaker:who};}
+ // A delivery is done when it is in the right hands: nothing has to go back, so the asker
+ // says thank you the next time they see him (and by letter), not as a step he must make.
+ if(kind==='deliver'&&errand.carrying&&who===errand.to){errand.carrying=false;errand.handed=true;errand.status='done';return {step:'handOver',speaker:who,done:true,reward:errand.reward,moment:moment(errand,'done')};}
  if(kind==='return'&&!errand.carrying&&who===errand.to){if(bagFull)return {step:'pocketsFull',speaker:who};errand.carrying=true;return {step:'handBack',speaker:who};}
  if(kind==='fetch'&&!errand.carrying&&bought){errand.carrying=true;}
  if(who===errand.from){
@@ -133,5 +137,5 @@ export function restoreErrand(saved){
  const str=v=>typeof v==='string'?v.slice(0,80):null;
  return {id:String(saved.id).slice(0,200),kind:saved.kind,from:saved.from.slice(0,60),temper:['sunny','dramatic','easy','dry'].includes(saved.temper)?saved.temper:'easy',
   item:saved.item.slice(0,80),to:str(saved.to),place:str(saved.place),day:saved.day,reward:Math.max(0,Math.min(5000,Math.round(Number(saved.reward)||0))),
-  status:saved.status,carrying:saved.carrying===true,handed:saved.handed===true};
+  status:saved.status,carrying:saved.carrying===true,handed:saved.handed===true,thanked:saved.thanked===true};
 }

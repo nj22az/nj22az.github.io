@@ -75,6 +75,7 @@ import {shelfAimScore} from './interact/aim.js';
 import {atmosphere} from './render/atmosphere.js?dusk-1';
 import {clock as duskClock, daylight} from './render/dusk.js';
 import {setOceanLight} from './world/ocean.js';
+import {eveningNews,newsOn} from './feed/evening-news.js';
 import {buildMayorOffice,buildMayorHome,buildCommunityKitchen,buildClinic,MAYOR_HOME_FLOOR} from './world/interiors/town-hall.js';
 import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
@@ -154,11 +155,23 @@ function wantCard(){
  ctx.fillStyle='#e2563f';ctx.font='900 72px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('!',64,58);
  wantCardTexture=new THREE.CanvasTexture(c);wantCardTexture.colorSpace=THREE.SRGBColorSpace;return wantCardTexture;
 }
+/**
+ * Postman Tōma's round (src/mail/post.js), checked every couple of town seconds as part of
+ * the simulation: what came is said once, and the box inside the mayor's door shows it.
+ */
+let postTimer=0;
+function updatePost(dt){
+ if((postTimer-=dt)>0||!activities?.state)return;postTimer=2;
+ const delivered=activities.deliverPost?.()||[];
+ if(delivered.length)say(delivered.length===1?`The post has come: a letter from ${delivered[0].from}.`:`The post has come: ${delivered.length} letters.`,5);
+ activeRoomLayout?.refreshPost?.();
+}
 function updateWantCards(dt){
  if((wantCardTimer-=dt)>0||!activities?.state)return;wantCardTimer=2;
  const names=wantPool();
  for(const p of world.people){
-  const g=p.g,name=g.userData.name,want=!current&&openWant(activities.state,minutes,names,name);
+  // Today's want shows in town; a favour to ask shows wherever they are (people/favours.js).
+  const g=p.g,name=g.userData.name,want=activities.favourCard?.(name)||(!current&&openWant(activities.state,minutes,names,name));
   let card=g.userData.wantCard;
   if(!want){if(card)card.visible=false;continue;}
   if(!card){card=new THREE.Sprite(new THREE.SpriteMaterial({map:wantCard(),depthTest:true,transparent:true}));card.scale.set(.42,.42,1);card.name='Want card';card.raycast=()=>{};card.userData.dynamicProp=true;g.add(card);g.userData.wantCard=card;}
@@ -907,7 +920,7 @@ function roomShell(s){
   setTimeout(()=>{if(!photoStudio?.active&&current?.id===CITY_RESTAURANT.id&&activeRoomLayout?.dinner===dinner)activities.action('city-dinner',CITY_RESTAURANT.title,dinner);},1400);
   return;}
  if(s.familyHome){activeRoomLayout=buildFamilyHome({...shared,household:s.familyHome,title:s.title,kind:s.houseKind});return;}
- if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,openMaker:()=>{leaveRoomIfModal();openAvatarMaker();},sleep:sleepUntilMorning});
+ if(s.id==='mayor-home'){activeRoomLayout=buildMayorHome({...shared,openMaker:()=>{leaveRoomIfModal();openAvatarMaker();},sleep:sleepUntilMorning,post:{unread:()=>activities.unreadPost,open:()=>activities.post()},television:()=>{if(!newsOn(minutes))return null;const news=eveningNews(activities.state,minutes);activities.save();return news;}});
   // Furniture he has arranged himself (src/build/home-decorate.js), saved with this player.
   const arranging=createHomeDecorating({group:room.getObjectByName('Mayor’s home'),colliders:roomColliders,state:activities.state,save:activities.save,canvas:renderer.domElement,camera,
    floor:MAYOR_HOME_FLOOR.walkable,keepClear:MAYOR_HOME_FLOOR.keepClear,stage:decorStage});
@@ -1481,7 +1494,7 @@ function followClock(){
  if(gap>5)advanceAbsentTown(gap);
  else if(gap>.05||gap<-.05)minutes=real;
 }
-function simulate(frameDt,playerPaused=false){advanceWeather();
+function simulate(frameDt,playerPaused=false){advanceWeather();updatePost(frameDt);
  followClock();
  accumulator+=Math.min(frameDt,MAX_FRAME_DT);
  while(accumulator>=SIM_STEP){advanceTown(SIM_STEP,playerPaused);accumulator-=SIM_STEP;}

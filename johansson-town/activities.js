@@ -49,7 +49,7 @@ import {readSave,readPlayers,activePlayer,addPlayer,switchPlayer,renamePlayer,to
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
 import {createDialogueBox} from './src/dialogue/dialogue-box.js';
 import {giftableItems,takeGift,giftReaction} from './src/people/thuan-gifts.js';
-import {restoreFriendship,talked,gave,giftLine,wantLine,openWant,heartLine,levelName,wantPool,withArticle} from './src/people/friendship.js';
+import {restoreFriendship,talked,gave,giftLine,wantLine,openWant,heartLine,levelName,wantPool,withArticle,favouriteOf,helped} from './src/people/friendship.js';
 import {NEIGHBOUR_TALK} from './src/people/neighbours.js';
 import {svg,itemIcon} from './src/ui/icons.js';
 import {TOWN_FINDS} from './src/commerce/sakura-economy.js';
@@ -57,6 +57,13 @@ import {SAKURA_SCRIPT,sakuraEntry} from './src/dialogue/sakura-script.js';
 import {sharedMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
 import {createThuanChat} from './src/people/thuan-chat.js';
+import {restoreNews} from './src/feed/evening-news.js';
+import {restorePost,ensurePost,postRound,sendLetter} from './src/mail/post.js';
+import {letterText,openLetter,unreadCount,STATIONERY,stationerySvg} from './src/mail/letters.js';
+import {temperamentOf} from './src/people/chat-lines.js';
+import {greetingFor,daysBetween} from './src/people/greetings.js';
+import {planFavours,favourWaiting,favourLine,askFavour,replyFavour,favourExpire,favourVisit,restoreFavours,restoreFavourErrand,favourById} from './src/people/favours.js';
+import {recipeFor} from './src/avatars/cast.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
 import {closingStockPending,shelvesNeedRestock,consumeStorageWonHandshake,applyStorageOutcome,acknowledgeStorageOutcome,closingDay} from './src/commerce/shop-stock.js';
 import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warmableInBasket,
@@ -66,13 +73,14 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   const $=s=>document.querySelector(s);
   const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'peninsula',homeDecor:restoreHomeDecor()};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
+  let awaySince=0,returnDay=null;
   let pendingAbsence=0,ledgerView=null,magazineView=null,yearTurned=false;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
 
   try {
     // A new real year starts the island's 1997 over, keeping friendships, the bag, money and decorating (year-loop.js).
     const {saved,turned}=openYear(readSave(localStorage));yearTurned=turned;
     if(saved&&typeof saved==='object'){state.loopYear=saved.loopYear;state.loops=saved.loops|0;pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
-      state.homeDecor=restoreHomeDecor(saved.homeDecor);state.diary=restoreDiary(saved.diary);
+      state.homeDecor=restoreHomeDecor(saved.homeDecor);state.diary=restoreDiary(saved.diary);state.news=restoreNews(saved.news);state.post=restorePost(saved.post);awaySince=Number.isFinite(saved.savedAt)?saved.savedAt:0;state.favours=restoreFavours(saved.favours);state.errand=restoreFavourErrand(saved.errand);state.greeted=saved.greeted&&typeof saved.greeted==='object'?Object.fromEntries(Object.entries(saved.greeted).filter(([k,v])=>typeof k==='string'&&Number.isSafeInteger(v)).slice(-60)):{};
       state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
       state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
@@ -120,10 +128,10 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
     return saved;
   }
-  function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
+  function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
   function show(title,text,buttons=[],options={}){
-    modal.classList.remove('bag-view','flyer-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
+    modal.classList.remove('bag-view','flyer-view','letter-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
     modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen){onOpen();previousFocus=document.activeElement;}modalOpen=true;document.exitPointerLock?.();
@@ -135,8 +143,101 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     modal.classList.toggle('conversation',conversation);document.body.classList.toggle('conversation-open',conversation);
     modal.classList.remove('hidden');onConversation(conversation?speaker:null,text);
     if(speaker==='Thuan')characterControl()?.setExpression?.('Thuan',options.mood||null);
-    dialogueBox.present({title,text,conversation});
+    // A marked-up line's beats hold the typing; its first face shows on the speaker (dialogue/markup.js).
+    if(options.face&&speaker!=='Thuan')characterControl()?.feel?.(speaker,options.face,6);
+    dialogueBox.present({title,text,conversation,pauses:options.pauses||null});
     if(!conversation)$('#closeActivity').focus();
+  }
+  /**
+   * The post (src/mail/post.js): who the mayor is, as a letter-writer sees him, and who
+   * each sender is. The roster's default "Visitor" is still the mayor, Johansson.
+   */
+  const playerName=()=>{const n=activePlayer(localStorage)?.name;return n&&n!=='Visitor'?n:'Johansson';};
+  function senderOf(name){
+    const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name),recipe=recipeFor(name);
+    if(!profile&&!recipe)return null;
+    return {name,temper:temperamentOf(recipe?.profile||{}),favourite:favouriteOf(name),clue:profile?.clue||null};
+  }
+  function deliverPost(){
+    const m=getMinutes();
+    endLateFavour(m);
+    // A favour offered again replaces the letter that was never acted on, if it is still in the post.
+    for(const {replaces,...letter} of planFavours(state,m)){const post=ensurePost(state);post.pending=post.pending.filter(p=>!p.id.startsWith(replaces));sendLetter(state,letter);}
+    const delivered=postRound(state,m,{senderOf,playerName:playerName()});if(delivered.length)save();return delivered;
+  }
+  /**
+   * Favours (src/people/favours.js). A day that runs out ends the favour kindly: the thing
+   * goes back to whoever asked, and that is a moment too.
+   */
+  const temperOf=name=>temperamentOf(recipeFor(name)?.profile||{});
+  const talkTitle=name=>{const p=PROFILES.find(p=>p.name===name);return p?name+' · '+p.personality:name;};
+  const cue=line=>({pauses:line.pauses,face:line.faces[0]?.face});
+  function takeOne(item){const i=state.inventory.indexOf(item);if(i>=0)state.inventory.splice(i,1);}
+  function endLateFavour(m){const late=favourExpire(state,m);if(late){recordMoment(state,m,late.moment);save();}}
+  /** Joins rendered lines into one, keeping each one's beats where they were written. */
+  function joinLines(parts){
+    let text='';const pauses={};let face=null;
+    for(const part of parts.filter(Boolean)){
+      const r=typeof part==='string'?{text:part,pauses:{},faces:[]}:part;
+      if(text)text+='\n\n';
+      for(const [i,n] of Object.entries(r.pauses||{}))pauses[text.length+Number(i)]=(pauses[text.length+Number(i)]||0)+n;
+      face??=r.faces?.[0]?.face||null;text+=r.text;
+    }
+    return {text,pauses,face};
+  }
+  /**
+   * What a favour adds to talking with `name`: the ask takes the conversation over (it
+   * returns {handled:true}); otherwise a line to say first (the asker's check-in, thanks,
+   * or the late line) and the hand-over button while the thing is in the bag.
+   */
+  function favourTalk(name){
+    const m=getMinutes();endLateFavour(m);
+    let e=state.errand;const waiting=!e&&favourWaiting(state,name,m);
+    if(waiting||(e?.status==='offered'&&e.from===name)){
+      e||=askFavour(state,waiting,{minutes:m,temper:temperOf(name)});save();
+      const f=favourById(e.favour),ask=joinLines([openingGreeting(name),favourLine(f,e,'ask',{speaker:name,playerName:playerName()})]);
+      const reply=yes=>{const r=replyFavour(state,yes);if(!r)return;if(yes)addItem(f.item);recordMoment(state,getMinutes(),r.moment);save();
+        const l=favourLine(f,e,r.step,{speaker:name,temper:temperOf(name),playerName:playerName()});show(talkTitle(name),l.text,[['See you soon',close]],cue(l));showHearts(name);};
+      show(talkTitle(name),ask.text,[['Of course',()=>reply(true),false,'Of course. Leave it to me.'],['Not today',()=>reply(false),false,'Sorry, not today.']],{pauses:ask.pauses,face:ask.face});showHearts(name);
+      return {handled:true};
+    }
+    if(!e)return {};
+    const f=favourById(e.favour);let line=null;const buttons=[];
+    if(name===e.from){const r=favourVisit(state,name,{minutes:m});if(r){if(r.step==='late')takeOne(r.item);line=favourLine(f,e,r.step,{speaker:name,temper:temperOf(name),playerName:playerName()});save();}}
+    if(e.status==='accepted'&&e.carrying&&name!==e.from)buttons.push([`Hand over the ${f.item[0].toLowerCase()+f.item.slice(1)}`,()=>{
+      const r=favourVisit(state,name,{minutes:getMinutes()});if(!r)return;
+      if(r.step==='handOver'){
+        takeOne(f.item);recordMoment(state,getMinutes(),r.moment);
+        for(const [who,points] of Object.entries(f.friendship))helped(state,who,points);
+        const day=Math.floor(getMinutes()/1440);sendLetter(state,{id:'helped:'+f.id,day:day+1,occasion:'helped',from:f.from,body:f.thanks||null});
+      }
+      save();const l=favourLine(f,e,r.step,{speaker:name,temper:temperOf(name),playerName:playerName()});
+      show(talkTitle(name),l.text,[['See you soon',close]],cue(l));showHearts(name);
+    },false,'I have something for you.']);
+    return {line,buttons};
+  }
+  /** What can be given as a present: never the thing a favour has him carrying. */
+  function giftsNow(){const e=state.errand,f=e?.carrying&&favourById(e.favour);return giftableItems(state.inventory).filter(i=>!f||i!==f.item);}
+  /** Whether someone has a favour to ask: the "!" card's other reason. */
+  const favourCard=name=>!!favourWaiting(state,name,getMinutes())||(state.errand?.status==='offered'&&state.errand.from===name);
+  /** The box inside the mayor's door: the letters, newest first. */
+  function post(){
+    const box=ensurePost(state).box,unread=unreadCount(box);
+    if(!box.length){show('The post','The box inside the door is empty. Postman Tōma comes round at half past ten.',[['Close',close]]);return;}
+    show('The post',unread?`${unread} new letter${unread===1?'':'s'} in the box inside the door.`:'Nothing new. The letters you have read are kept here.',[
+      ...[...box].reverse().map(l=>[`From ${l.from}${l.read?'':' · new'}`,()=>readLetter(l.id)]),['Close',close]]);
+  }
+  /** One letter, on the paper its sender chose. A present inside goes into the bag, once. */
+  function readLetter(id){
+    const opened=openLetter(ensurePost(state).box,id);if(!opened){post();return;}
+    const {letter,present}=opened;
+    if(present){addItem(present);note(`A letter from ${letter.from}, with ${withArticle(present.toLowerCase())} inside.`);}
+    save();
+    show('Letter from '+letter.from,letterText(letter)+(letter.gift?`\n\nEnclosed: ${letter.gift}.${present?' It is in your bag now.':''}`:''),[['Back to the post',post],['Close',close]]);
+    const paper=STATIONERY[letter.stationery];
+    modal.classList.add('letter-view');
+    modal.style.setProperty('--letter-paper',`url("data:image/svg+xml,${encodeURIComponent(stationerySvg(letter.stationery,360,480))}")`);
+    modal.style.setProperty('--letter-ink',paper.ink);
   }
   // The bag: what you are carrying, as a tray of icons. Tap one to use it or look at it.
   function bag(){
@@ -427,7 +528,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
      show(title,(tonight?"A bath? Like!\nYes — tonight, straight after I lock up. ":"It's already late tonight… See you tomorrow!\nTonight it is too late for me, but tomorrow, straight after I lock up. ")+'I will be in the rock bath by the sea wall. Bring your swimsuit — they are strict about that at Umi-no-yu. Pay Higa-san at the bandai.',[['See you at the bath',close]]);
     };
     // A present from your bag. She is delighted; a second the same day makes her shy.
-    const gifts=giftableItems(state.inventory);
+    const gifts=giftsNow();
     const giveGift=(page=0)=>show(title,"What, can you give me something?\nFor me? What have you brought?",[
       ...gifts.slice(page*8,(page+1)*8).map(item=>[item,()=>{
         if(!takeGift(state.inventory,item)){thuanConversation();return;}
@@ -462,15 +563,32 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
    'Kōji':['I’ll take the tuna head',0,'Tuna head','He wraps it in two newspapers and a plastic bag, and it is still looking at you. “Soup,” he says. “Trust me.”'],
    'Mrs Kinjō':null,
   });
+  /**
+   * The first talk of the day with anyone opens with a greeting that notices the moment
+   * (src/people/greetings.js): rain, the hour, or how long the mayor was away. Being away
+   * counts on the day he came back, not for the rest of the session. Later talks that day
+   * go straight to what they have to say. Returns the rendered greeting, or null.
+   */
+  function openingGreeting(name){
+    const nowM=getMinutes(),dayNow=Math.floor(nowM/1440);returnDay??=dayNow;
+    if((state.greeted||={})[name]===dayNow)return null;
+    state.greeted[name]=dayNow;
+    const names=Object.keys(state.greeted);if(names.length>60)delete state.greeted[names[0]];
+    const recipe=recipeFor(name);
+    return greetingFor({speaker:name,temper:temperamentOf(recipe?.profile||{}),playerName:playerName(),catchphrase:recipe?.profile?.catchphrase||'',day:dayNow,
+     situation:{daysAway:dayNow===returnDay?daysBetween(awaySince):0,weather:state.weather?'rain':'sunny',hour:Math.floor(((nowM%1440)+1440)%1440/60)}});
+  }
   function neighbour(name){
     const spec=NEIGHBOUR_TALK[name];if(!spec){close();return;}
     const turn=neighbourTurns.get(name)||0;neighbourTurns.set(name,turn+1);
-    const line=spec.lines[turn%spec.lines.length],buttons=[];
+    const favour=favourTalk(name);if(favour.handled)return;
+    const greeting=openingGreeting(name);
+    const said=joinLines([greeting,favour.line,spec.lines[turn%spec.lines.length]]),line=said.text,buttons=[...(favour.buttons||[])];
     const sale=NEIGHBOUR_SALES[name];
     if(sale)buttons.push([sale[0],()=>{if(sale[1]&&!spend(sale[1]))return;onTime(2);addItem(sale[2]);tone(700,.12);show(name+' · '+spec.role,sale[3],[['Thank you',close]]);}]);
     if(spec.lines.length>1)buttons.push(['Tell me more',()=>neighbour(name)]);
     buttons.push(['See you later',close]);
-    show(name+' · '+spec.role,line,buttons);
+    show(name+' · '+spec.role,line,buttons,{pauses:said.pauses,face:said.face});
   }
   function resident(name){
     if(name==='Thuan'){
@@ -485,9 +603,13 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       thuanConversation();return;
     }
 
+    // A favour comes first (people/favours.js): the ask takes the conversation; the asker's
+    // check-in or thanks takes the place of today's topic, which keeps for the next talk.
+    const favour=favourTalk(name);if(favour.handled)return;
+    const greeting=openingGreeting(name);
     // What today is (happenings.js) is what they say first, once a day; everything else
     // they offer (a drink at Minato, the Tama errand) stays on the buttons.
-    let today=happeningLine(name,getMinutes());
+    let today=favour.line?null:happeningLine(name,getMinutes());
     if(today&&!(state.heardHappenings||=[]).includes(today.key)){
      state.heardHappenings=[...state.heardHappenings,today.key].slice(-40);
      recordMoment(state,getMinutes(),{kind:'happening',text:today.title+'. '+name+' said: “'+today.text+'”'});
@@ -499,9 +621,10 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     // so their opening line came round again every fourth time they were asked.
     const available=all.filter(([id,line,requires])=>(!requires||state.inspectedIds.includes(requires))&&!history.includes(id));
     // Newly discovered callbacks take precedence, then cycle through authored topics.
-    const row=available.find(r=>r[2])||available[0]||all[0];history.push(row[0]);histories.set(name,history.slice(-3));
+    const row=available.find(r=>r[2])||available[0]||all[0];if(!favour.line){history.push(row[0]);histories.set(name,history.slice(-3));}
     let text=row[0]==='home'?(residentHomeDescription(name)||commuterDescription(name)):row[1];
     if(today)text=today.text;
+    if(favour.line)text='';
     const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);
     const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
     const home=residentHomeDescription(name);
@@ -520,10 +643,11 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const minutesNow=getMinutes(),pool=wantPool();
     talked(state,name,minutesNow);save();
     const want=openWant(state,minutesNow,pool,name);
-    if(want)text+='\n\n'+wantLine(want);
-    const gifts=giftableItems(state.inventory);
+    if(want)text=text?text+'\n\n'+wantLine(want):wantLine(want);
+    const gifts=giftsNow();
     if(gifts.length)buttons.splice(buttons.length,0,['Give a present…',()=>residentGift(name)]);
-    buttons.push(['See you soon',close]);show(profile?name+' · '+profile.personality:name,text,buttons);showHearts(name);if(text===row[1]&&row[3])townAudio.speak(row[3]);
+    const voiced=text===row[1]&&row[3];const said=joinLines([greeting,favour.line,text]);
+    buttons.push(...(favour.buttons||[]));buttons.push(['See you soon',close]);show(profile?name+' · '+profile.personality:name,said.text,buttons,{pauses:said.pauses,face:said.face});showHearts(name);if(voiced)townAudio.speak(row[3]);
   }
 
   /**
@@ -534,13 +658,15 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   function showHearts(name){const h=heading;if(!h)return;const r=state.friendship?.[name];h.dataset.hearts=heartLine(r?.points||0);h.dataset.level=levelName(r?.points||0);}
   /** Giving a resident something from the bag. */
   function residentGift(name,page=0){
-    const gifts=giftableItems(state.inventory);
+    const gifts=giftsNow();
     if(!gifts.length){receipt(name,'Your bag has nothing to give just now.');return;}
     const pool=wantPool(),want=openWant(state,getMinutes(),pool,name);
     show(name+' · A present','What will you give '+name+'?'+(want?'\n(They mentioned '+withArticle(want.item.toLowerCase())+'.)':''),[
       ...gifts.slice(page*8,(page+1)*8).map(item=>[item,()=>{
         if(!takeGift(state.inventory,item))return;
         const result=gave(state,name,item,getMinutes(),pool);
+        // The next morning they write to say thank you (src/mail/post.js), once a day at most.
+        {const day=Math.floor(getMinutes()/1440);sendLetter(state,{id:`thanks:${name}:${day}`,day:day+1,occasion:'thanks',from:name});}
         if(result.yen)state.yen+=result.yen;
         note('Gave '+name+' '+item.toLowerCase()+'.');save();
         const extra=(result.yen?`\n\n+¥${result.yen}`:'')+(result.up?`\n\n${name} and you are closer now: ${levelName(state.friendship[name].points)}.`:'');
@@ -1072,6 +1198,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       case 'arcade':arcade();break;
       case 'sakura-flyer':sakuraFlyer(name);break;
       case 'inspect':inspect(name,detail);break;
+      // A broadcast is watched, not filed: the set is switched off, nothing goes in the archive.
+      case 'watch':show(name,String(detail||''),[['Switch it off',close]]);break;
       case 'motor-bench':motorBench(name,detail);break;
       case 'read':if(typeof detail==='string')fileDocument(state,{type:'Notice',title:name,text:detail,source:'notice:'+name,organisation:'Community Hall'},getMinutes());save();read(name,detail);break;
       case 'machine':operate(name,detail);break;
@@ -1101,5 +1229,5 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   // Storage restock handshake may arrive while the tab was on thuans-storage.
   consumeStorageRestock();$('#soundButton').textContent=state.sound?'On':'Off';radioStation=state.radioStation||0;save();{const label=onWeather?.('start');if(typeof label==='string')$('#weatherButton').textContent=label;}
-  return {action,documentArchive,inventory,bag,close,save,spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,documentArchive,inventory,bag,close,save,post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

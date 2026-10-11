@@ -33,8 +33,8 @@ const sender=(temper,extra={})=>({name:'Emi',temper,favourite:'Ramune soda',...e
 
 test('letters: every temperament and occasion composes, the same way every time',()=>{
  for(const occasion of Object.keys(OCCASIONS))for(const temper of TEMPERS){
-  const a=composeLetter({occasion,sender:sender(temper),day:40,playerName:'Johansson'});
-  const b=composeLetter({occasion,sender:sender(temper),day:40,playerName:'Johansson'});
+  const a=composeLetter({occasion,sender:sender(temper),day:40,playerName:'Johansson',place:'the tailor’s'});
+  const b=composeLetter({occasion,sender:sender(temper),day:40,playerName:'Johansson',place:'the tailor’s'});
   assert.deepEqual(a,b);
   const text=letterText(a);
   assert.ok(!/[{}|&]/.test(text),`stray markup in ${occasion}/${temper}: ${text}`);
@@ -44,8 +44,19 @@ test('letters: every temperament and occasion composes, the same way every time'
  }
 });
 
+test('letters fit the fiction: nobody writes to the mayor as a newcomer',()=>{
+ const all=JSON.stringify(OCCASIONS);
+ for(const word of ['newcomer','newly of','new face','someone new','Welcome to'])assert.ok(!all.includes(word),word);
+ // A favour needs somewhere to call, or its own words; a thank-you for help may come empty-handed.
+ assert.equal(composeLetter({occasion:'favour',sender:sender('easy'),day:1}),null);
+ assert.match(letterText(composeLetter({occasion:'favour',sender:sender('easy'),day:1,place:'the tailor’s'})),/the tailor’s/);
+ const own=composeLetter({occasion:'favour',sender:sender('easy'),day:1,body:'I finished {me}’s thing. Come by?',id:'favour:x'});
+ assert.equal(own.body,'I finished Emi’s thing. Come by?');assert.equal(own.id,'favour:x');
+ assert.equal(composeLetter({occasion:'helped',sender:{name:'X',temper:'dry'},day:2}).gift,null);
+});
+
 test('letters: a P.S. points somewhere real when the sender has a clue; a thank-you needs a present',()=>{
- const l=composeLetter({occasion:'welcome',sender:sender('dry',{clue:'Yoshiko knows how to save wet pages.'}),day:3});
+ const l=composeLetter({occasion:'missed',sender:sender('dry',{clue:'Yoshiko knows how to save wet pages.'}),day:3});
  assert.equal(l.ps,'P.S. Yoshiko knows how to save wet pages.');
  assert.equal(composeLetter({occasion:'thanks',sender:{name:'X',temper:'easy'},day:1}),null);
  assert.equal(composeLetter({occasion:'nope',sender:sender('easy'),day:1}),null);
@@ -53,11 +64,11 @@ test('letters: a P.S. points somewhere real when the sender has a clue; a thank-
 
 test('mailbox: ten letters, never twice, read ones make way, unread ones are kept',()=>{
  const box=[];
- for(let d=0;d<MAILBOX_SIZE;d++)assert.ok(deliver(box,composeLetter({occasion:'welcome',sender:sender('sunny'),day:d})));
- assert.equal(deliver(box,composeLetter({occasion:'welcome',sender:sender('sunny'),day:0})),false,'the same letter twice');
- assert.equal(deliver(box,composeLetter({occasion:'welcome',sender:sender('sunny'),day:99})),false,'a full box of unread letters');
+ for(let d=0;d<MAILBOX_SIZE;d++)assert.ok(deliver(box,composeLetter({occasion:'missed',sender:sender('sunny'),day:d})));
+ assert.equal(deliver(box,composeLetter({occasion:'missed',sender:sender('sunny'),day:0})),false,'the same letter twice');
+ assert.equal(deliver(box,composeLetter({occasion:'missed',sender:sender('sunny'),day:99})),false,'a full box of unread letters');
  const first=box[0].id;openLetter(box,first);
- assert.ok(deliver(box,composeLetter({occasion:'welcome',sender:sender('sunny'),day:99})));
+ assert.ok(deliver(box,composeLetter({occasion:'missed',sender:sender('sunny'),day:99})));
  assert.ok(!box.some(l=>l.id===first));assert.equal(box.length,MAILBOX_SIZE);
  const t=composeLetter({occasion:'thanks',sender:sender('easy'),day:5});const b2=[];deliver(b2,t);
  assert.equal(openLetter(b2,t.id).present,'Ramune soda');assert.equal(openLetter(b2,t.id).present,null,'the present comes once');
@@ -85,8 +96,9 @@ test('greetings: the most specific true situation wins, and every face is one th
  assert.equal(g({}),'usual');
  assert.equal(g({weather:'rain'}),'rain');
  assert.equal(g({weather:'rain',daysAway:8}),'away7');
- assert.equal(g({daysAway:40,firstMeeting:true}),'first');
- assert.equal(g({theirBirthday:true,firstMeeting:true}),'birthday');
+ assert.equal(g({daysAway:40}),'away30');
+ assert.equal(g({theirBirthday:true,daysAway:40}),'birthday');
+ assert.ok(!SITUATIONS.some(x=>x.id==='first'),'nobody meets the mayor for the first time');
  assert.equal(g({hour:23}),'late');
  assert.equal(daysBetween(Date.UTC(2026,0,1),Date.UTC(2026,0,8,5)),7);
  for(const s of SITUATIONS)for(const t of ['sunny','dramatic','easy','dry'])for(const line of s.lines[t]){
@@ -105,9 +117,11 @@ test('errands: a delivery from ask to thank-you, with the wrong neighbour on the
  assert.equal(answer(e,true).moment,'Emi asked Johansson to take a sanshin string to Kenta.');
  assert.equal(visit(e,'Yui',{minutes:m+5}).step,'wrongPerson');
  assert.equal(visit(e,'Emi',{minutes:m+6}).step,'checkIn');
- assert.equal(visit(e,'Kenta',{minutes:m+20}).step,'handOver');
- const done=visit(e,'Emi',{minutes:m+40});
- assert.equal(done.step,'done');assert.equal(done.reward,200);assert.equal(e.status,'done');
+ const handed=visit(e,'Kenta',{minutes:m+20});
+ assert.equal(handed.step,'handOver');assert.equal(handed.done,true);assert.equal(handed.reward,200);assert.equal(e.status,'done');
+ assert.match(handed.moment,/Johansson helped Emi/);
+ assert.equal(visit(e,'Emi',{minutes:m+40}).step,'done','the asker says thank you');
+ assert.equal(visit(e,'Emi',{minutes:m+50}),null,'and only once');
  assert.equal(errandLine(e,'handOver',{speaker:'Kenta'}).text.includes('Emi'),true);
 });
 
@@ -121,7 +135,7 @@ test('errands: a return waits for room in the bag, and a missed day ends it kind
  assert.equal(expire(f,m+10),null);
  const late=visit(f,'Yui',{minutes:m+DAY});
  assert.equal(late.step,'late');assert.match(late.moment,/the day ran out/);
- assert.deepEqual(restoreErrand(JSON.parse(JSON.stringify(f))),{...f,handed:false});
+ assert.deepEqual(restoreErrand(JSON.parse(JSON.stringify(f))),{...f,handed:false,thanked:false});
  assert.equal(restoreErrand({kind:'steal'}),null);
  assert.equal(offerErrand({kind:'deliver',from:'A',item:'x',minutes:0}),null,'a delivery needs someone to deliver to');
 });

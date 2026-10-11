@@ -9,8 +9,10 @@
  *
  * Here the parts are written for the town's four temperaments (people/chat-lines.js):
  * sunny, dramatic, easy and dry. Nothing is random:
- *  - the occasion is why the letter was sent (a welcome, a thank-you, a long absence, a
- *    typhoon warning), and the town decides when that happened;
+ *  - the occasion is why the letter was sent (a favour to ask, a thank-you for a present or
+ *    for help, a long absence, a typhoon warning), and the town decides when that happened.
+ *    Johansson has lived here since 1979 (the photograph in his home): nobody writes to him
+ *    as a newcomer;
  *  - the present, when there is one, is the sender's own favourite thing (their tastes
  *    in resident-personalities.js), because people share what they love;
  *  - the P.S. is the sender's own clue when they have one (profiles.json), so a letter
@@ -35,16 +37,22 @@ const L=(sunny,dramatic,easy,dry)=>Object.freeze({sunny:Object.freeze(sunny),dra
  * letter one person could have written. {name} is Johansson.
  */
 export const OCCASIONS=Object.freeze({
- welcome:Object.freeze({why:'Sent in Johansson’s first days in town, once per resident who has met him.',gift:false,
-  greeting:L(['Dear {name}!','Hello hello, {name}!'],['To {name}, newly of {town},','{name},'],['Hey {name},','Hi there, {name}.'],['Dear {name},','{name}, good day.']),
-  body:L(['Welcome to {town}! The ferry brings us someone new about once a year, so you are big news. Come and say hello whenever you like!','I saw you on the quay with your bag and thought: there goes a new neighbour! I hope the island is kind to you. It mostly is!'],
-   ['Few people choose an island this small. Fewer stay. I shall be watching to see which kind you are, and I hope it is the second.','When I first came here I cried on the pier for an hour. Then the sunset happened. You will understand when you see it.'],
-   ['Welcome. There is no rush here, so don’t bring one. The shops open when they open and the sea is always there.','Glad you made it over. Find a shady bench first. Everything else can wait until after.'],
-   ['Welcome to {town}. The bus is roughly on time, the ferry is not, and Sakura opens at nine. That is most of what you need.','I have added you to my list of neighbours. It was a short list. It is now slightly longer.']),
-  ps:L(['P.S. Try the sata andagi at Sakura. Try two!','P.S. Wave at the ferry. The crew always waves back!'],
-   ['P.S. Beware the cat called Tama. He knows things.','P.S. If you hear a sanshin at night, follow it. Just once.'],
-   ['P.S. The hot bath at Umi-no-yu fixes nearly everything.','P.S. I nap from two to three. Knock quietly.'],
-   ['P.S. Sakura closes at eight. Do not arrive at five to eight.','P.S. The ferry timetable is on the pier. Read it, then add forty minutes.'])}),
+ favour:Object.freeze({why:'A resident asks the mayor to call in: the start of a favour (people/favours.js). The favour can bring its own body.',gift:false,place:true,
+  greeting:L(['Dear Mayor!','Hi, {name}!'],['My dear Mayor,','{name}, I need you.'],['Hi {name},','Morning, Mayor,'],['Dear Mayor,','{name},']),
+  body:L(['Could you come by {place} today? I have a favour to ask, and you are the only one I trust with it! It is a small one. Mostly.','Are you free today? Pop in at {place}! I need a hand with something, and I will explain when you get here!'],
+   ['I must ask something of you, and it cannot be put in a letter. Come to {place} today. You will understand.','A small matter has become a large one. Come to {place} when you can. Today, ideally.'],
+   ['If you’re passing {place} today, come in for a minute? I have a little favour to ask. No rush. Well, today.','Could you stop by {place} when you get a chance? Nothing serious, just a small favour.'],
+   ['I have a favour to ask. It is best explained at {place}. Today, during opening hours.','Please call at {place} today. The matter is small and the explanation is short.'])}),
+ helped:Object.freeze({why:'Sent the morning after the mayor did a favour for this resident. It encloses their favourite thing when they have one; the words never promise it.',gift:'optional',
+  greeting:L(['Mayor!!','Dear {name}!'],['My dear {name},','Mayor,'],['Hi {name},','Hey Mayor,'],['Dear Mayor,','{name},']),
+  body:L(['Thank you SO much for helping yesterday! I told everyone. Well, three people. But they were very impressed!','You did it! I knew you would! Thank you for helping me out yesterday. Best mayor this island has ever had. I have not met the others, but still!'],
+   ['Yesterday you did me a kindness, and I have not stopped thinking about it. A town is only as good as the people who help. Thank you.','I asked, and you came. Do you know how rare that is? I do. Thank you, from the bottom of everything.'],
+   ['Thanks for helping out yesterday. It made things a lot easier. I owe you one.','Just wanted to say thanks for yesterday. Really. You didn’t have to, and you did.'],
+   ['Thank you for your help yesterday. It was done promptly and correctly. I have made a note of it.','Your help yesterday was appreciated. I am writing to say so, so that it is on paper.']),
+  ps:L(['P.S. Come by any time!','P.S. I am still smiling about it!'],
+   ['P.S. I shall remember this.','P.S. Do not let anyone tell you small kindnesses are small.'],
+   ['P.S. Tea’s on me next time.','P.S. No need to reply.'],
+   ['P.S. No reply is required.','P.S. I have kept a copy.'])}),
  thanks:Object.freeze({why:'Sent the morning after Johansson gave this resident a present.',gift:true,
   greeting:L(['{name}! Guess what!','Dearest {name},'],['My dear {name},','{name}, I must write to you at once.'],['Hey {name},','Hi {name},'],['Dear {name},','{name},']),
   body:L(['Thank you SO much for the present! I put it right where I can see it every morning. I have enclosed something I love too, so now we are even. Or not even, but happy!','You remembered what I like! Nobody remembers! I am sending you some of mine, because a good thing is better shared.'],
@@ -107,27 +115,32 @@ export function stationerySvg(id,width=360,height=480){
 }
 
 const pick=(list,seed,salt)=>list[seedOf(seed,salt)%list.length];
+/** A table's own key only: a save cannot name `toString` and reach Object's methods. */
+export const own=(table,key)=>typeof key==='string'&&Object.hasOwn(table,key);
 
 /**
  * Writes one letter. `sender` is {name, temper, favourite?, clue?}; `day` is the town
  * day it was sent. Returns the letter as data, ready for the mailbox, or null if the
  * occasion is not one the town writes.
  */
-export function composeLetter({occasion,sender,day,playerName='Johansson',gift=null}){
- const o=OCCASIONS[occasion];
+export function composeLetter({occasion,sender,day,playerName='Johansson',gift=null,place=null,body=null,id=null}){
+ const o=own(OCCASIONS,occasion)?OCCASIONS[occasion]:null;
  if(!o||!sender?.name)return null;
  const present=o.gift?(gift||sender.favourite||null):null;
- // A thank-you says something is enclosed, so it is only written when something is.
- if(o.gift&&!present)return null;
+ // A thank-you for a present says something is enclosed, so it is only written when
+ // something is; a thank-you for help encloses one when they have one to give.
+ if(o.gift===true&&!present)return null;
+ if(o.place&&!place&&!body)return null;
  const temper=TEMPERS.includes(sender.temper)?sender.temper:'easy';
  const seed=seedOf(sender.name,occasion,day);
- const fill=line=>renderLine(line,{name:playerName,speaker:sender.name,seed}).text;
+ const fill=line=>renderLine(String(line).replace(/\{place\}/g,place||''),{name:playerName,speaker:sender.name,seed}).text;
  const greeting=fill(pick(o.greeting[temper],seed,'g'));
- const body=fill(pick(o.body[temper],seed,'b'));
+ // A favour can bring its own words: the story is the favour's, the voice the sender's.
+ const text=fill(body||pick(o.body[temper],seed,'b'));
  // Their own clue first: it points at somewhere real. Otherwise their temperament's P.S.
  const ps=sender.clue?'P.S. '+sender.clue:fill(pick((o.ps||PS_FALLBACK)[temper],seed,'p'));
- return Object.freeze({id:`${occasion}:${sender.name}:${day}`,occasion,from:sender.name,temper,day,
-  greeting,body,ps,signoff:sender.name,gift:present,stationery:stationeryFor(temper),read:false});
+ return Object.freeze({id:id||`${occasion}:${sender.name}:${day}`,occasion,from:sender.name,temper,day,
+  greeting,body:text,ps,signoff:sender.name,gift:present,stationery:stationeryFor(temper),read:false});
 }
 
 /** The whole letter as plain text, as the reading screen and the tests see it. */
@@ -137,10 +150,10 @@ export const letterText=l=>`${l.greeting}\n\n${l.body}\n\n${l.signoff}\n\n${l.ps
 export function restoreMail(saved){
  if(!Array.isArray(saved))return [];
  const str=(v,n)=>typeof v==='string'?v.slice(0,n):'';
- return saved.filter(l=>l&&typeof l.id==='string'&&OCCASIONS[l.occasion]&&typeof l.from==='string'&&Number.isSafeInteger(l.day))
+ return saved.filter(l=>l&&typeof l.id==='string'&&own(OCCASIONS,l.occasion)&&typeof l.from==='string'&&Number.isSafeInteger(l.day))
   .slice(-MAILBOX_SIZE).map(l=>({id:str(l.id,200),occasion:l.occasion,from:str(l.from,60),temper:TEMPERS.includes(l.temper)?l.temper:'easy',day:l.day,
    greeting:str(l.greeting,200),body:str(l.body,600),ps:str(l.ps,300),signoff:str(l.signoff||l.from,60),
-   gift:typeof l.gift==='string'?l.gift.slice(0,80):null,stationery:STATIONERY[l.stationery]?l.stationery:'quay-blue',read:l.read===true}));
+   gift:typeof l.gift==='string'?l.gift.slice(0,80):null,stationery:own(STATIONERY,l.stationery)?l.stationery:'quay-blue',read:l.read===true}));
 }
 
 /**

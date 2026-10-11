@@ -175,8 +175,8 @@ These are new modules in World, with tests. All the words are our own and set in
 | File | What it is | What it learned from |
 |---|---|---|
 | `src/dialogue/markup.js` | Inline cues for a line: `{p}` / `{p:3}` beats, `{face:happy}` mid-line faces, `{big}…{/big}` emphasis, `{name}` `{me}` `{catch}` `{town}`, `{pool:food}` and `{any:a/b}` picks fixed by a seed, and a linter that uses the numbers above. Its output has the shape the existing dialogue box already takes (`pauses`). | control codes, word pools |
-| `src/mail/letters.js` | Letters assembled from a greeting, a body and a P.S., for 4 temperaments and 4 occasions (welcome, thank-you, missed you, typhoon). See the rules below the table. | the letter system, letter grading |
-| `src/people/greetings.js` | The opening line chosen by the most specific true situation: their birthday, first meeting, away 30 or more real days, away 7 or more, typhoon, rain, late night, early morning, or usual. Two lines per temperament for each, rotated by the day. | `ai_*` greetings |
+| `src/mail/letters.js` | Letters assembled from a greeting, a body and a P.S., for 4 temperaments and 5 occasions: a favour to ask, a thank-you for a present, a thank-you for help, missed you, and typhoon. Nobody writes to the mayor as a newcomer: he has lived here since 1979. See the rules below the table. | the letter system, letter grading |
+| `src/people/greetings.js` | The opening line chosen by the most specific true situation: their birthday (only once residents have real birthdays), away 30 or more real days, away 7 or more, typhoon, rain, late night, early morning, or usual. Two lines per temperament for each, rotated by the day. | `ai_*` greetings |
 | `src/people/errands.js` | One shared shape for errands: deliver, fetch or return. The steps are ask, yes or no, check-in, hand-over or hand-back, done, late, pockets full, and wrong person. Each step has lines per temperament, and each ending records a **moment** the storyteller can use ("Johansson promised Emi he would take a sanshin string to Kenta, and the day ran out."). | `q01–q12` |
 | `tests/animal-crossing-lessons.test.mjs` | 11 tests. They cover every combination of temperament and occasion, the mailbox rules, the greeting priority, every errand step, and checks that no markup is left over and no face is unknown. | |
 
@@ -187,11 +187,21 @@ The rules in `letters.js`:
 - The mailbox holds 10 letters, never delivers the same letter twice, and keeps unread letters.
 - `rateLetter` grades a letter Johansson writes the way a reader would. Did he greet them, use their name, say something, and sign it? Was he shouting or mashing keys?
 
-**Not wired into the game yet.** The modules are pure and tested, and switching them on is the next batch. Each step must be checked in the live game (audit server) before the next:
-1. When you talk to a resident for the first time that town day, `greetingFor` opens the conversation. The temperament comes from `chat-lines.js` `temperamentOf`, and the days away from the player roster's `lastPlayed` (`save.js`).
-2. A mailbox screen in the Town book: the postbox prop opens it, and `letterText` is shown on the sender's stationery. Letters are delivered by the existing events: the first meeting, `friendship.gave` (the thank-you arrives the next morning), the return after 7 or more days, and the typhoon days from `weather.js`.
-3. Errands offered from the daily wants. `moment` goes to the diary (`progression/diary.js`) and to the storyteller (`src/feed/`).
-4. Moving the Sakura script and the resident lines over to `markup.js` cues, starting with Thuan.
+**Switched on by the one-day slice** (2026-10-11, `briefs/one-day-slice/`, each batch checked in the game):
+1. **Greetings.** The first talk of the day with anyone, resident or neighbour, opens with the greeting for the moment (`activities.js` `openingGreeting`). Its beats hold the typewriter (`dialogue-box.js`), and its first face shows on the speaker.
+2. **The post.** Postman Tōma's 10:30 round brings letters to the box inside the mayor's door (`src/mail/post.js`, `buildMayorHome`). They read on the sender's own paper, and a present inside goes into the bag once. A present given today brings a thank-you letter tomorrow.
+3. **One favour** (`src/people/favours.js`). Nhung writes asking the mayor to call in. At the bookshop she asks him to take a Ryūkyū cookery book, bookmarked at the small-fish page, to her stubborn sister Thao at Minato. The steps:
+   - Anyone else shown it says it is for Thao.
+   - Thao sees straight through it.
+   - The diary and the Minato Evening News on the mayor's television retell it.
+   - Nhung writes to say thank you the next morning.
+
+**Still to switch on:**
+- the long-absence letter;
+- typhoon days (there is no typhoon weather yet);
+- real birthdays;
+- more favours;
+- moving the Sakura script and the residents' lines over to the line cues.
 
 ## 6. Recommendations, in order of how many stories they make
 

@@ -117,6 +117,17 @@ export function gave(state,name,item,minutes,names){
  return {points,yen,kind,hearts,up:hearts>before};
 }
 
+/**
+ * A favour done (people/favours.js): it counts as much as bringing what they wanted
+ * today, once per favour. Returns {points, hearts, up}.
+ */
+export function helped(state,name,points=POINTS.want){
+ const r=record(state,name),before=heartsFor(r.points);
+ r.points=Math.min(999,r.points+Math.max(0,points|0));
+ const hearts=heartsFor(r.points);
+ return {points,hearts,up:hearts>before};
+}
+
 /** What they say when given something. */
 export function giftLine(name,item,result){
  const thing=item.toLowerCase();

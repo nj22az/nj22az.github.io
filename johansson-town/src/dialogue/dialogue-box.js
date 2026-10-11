@@ -23,6 +23,8 @@ export const SPEAKER_COLOURS=Object.freeze({
  Johansson:'#ffffff',Thuan:'#ffd56b',Thao:'#ffa585',Nhung:'#cdb0ff','Mrs Sato':'#ff9ec0',Yoshiko:'#b9e59a',
  Chin:'#8fd3ff',Reiko:'#ffb3c7',Emi:'#ffc9a8','Harbour master':'#9fd8ff',Masaru:'#ffbf80'
 });
+/** One beat of a line's timing, in 22 ms typing ticks (about a fifth of a second). */
+export const BEAT_TICKS=8;
 const PALETTE=['#8fd3ff','#a8f0b8','#ffbe7a','#e3aaff','#ffe08a','#86e3d3','#ffa7b8','#bccaff'];
 export function speakerColour(name=''){
  if(SPEAKER_COLOURS[name])return SPEAKER_COLOURS[name];
@@ -141,7 +143,7 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
   * Called by the modal each time it is filled. Conversations become the scene; anything
   * else is left exactly as it was.
   */
- function present({title,text,conversation}){
+ function present({title,text,conversation,pauses=null}){
   clear();listening=false;speakingOwn=false;afterLine=null;active=!!conversation;
   modal.classList.toggle('rpg',active);
   modal.classList.remove('listening');modal.classList.remove('player-speaking');
@@ -174,10 +176,13 @@ export function createDialogueBox({modal,heading,body,actions,isOpen,leave,onPha
   if(!reduced()&&fullLine.length>1){
    line.textContent='';
    const chars=[...fullLine],step=Math.max(1,Math.round(chars.length/90));
-   let ticks=0;
-   typing=win.setInterval(()=>{typed=Math.min(chars.length,typed+step);line.textContent=chars.slice(0,typed).join('');if(++ticks%3===1&&/\S/.test(chars[typed-1]||''))blip(speaker,ticks);if(typed>=chars.length){win.clearInterval(typing);typing=null;}},22);
+   // Beats written into the line (dialogue/markup.js {p}, or the engine's |) hold the
+   // typing where they fall: BEAT_TICKS of the 22 ms tick for each beat.
+   let ticks=0,hold=0;
+   typing=win.setInterval(()=>{if(hold>0){hold--;return;}const from=typed;typed=Math.min(chars.length,typed+step);for(let i=from+1;i<=typed;i++)hold+=(pauses?.[i]||0)*BEAT_TICKS;line.textContent=chars.slice(0,typed).join('');if(++ticks%3===1&&/\S/.test(chars[typed-1]||''))blip(speaker,ticks);if(typed>=chars.length){win.clearInterval(typing);typing=null;}},22);
   }
-  const typeTime=typing?Math.ceil([...fullLine].length/Math.max(1,Math.round([...fullLine].length/90)))*22:0;
+  const beats=Object.values(pauses||{}).reduce((a,b)=>a+(Number(b)||0),0);
+  const typeTime=typing?(Math.ceil([...fullLine].length/Math.max(1,Math.round([...fullLine].length/90)))+beats*BEAT_TICKS)*22:0;
   beat=win.setTimeout(endBeat,typing?typeTime+Math.min(650,readingBeat(text)):readingBeat(text));
  }
 

@@ -8,7 +8,9 @@
  * the moment ("you're soaked!", "where have you been?") makes a resident feel alive
  * before the conversation has started, and it costs one line.
  *
- * The situations here are the town's: Okinawa has typhoons, not snow. The lines are
+ * The situations here are the town's: Okinawa has typhoons, not snow. There is no "first
+ * meeting": Johansson has lived here since 1979 and everybody knows him. The birthday
+ * line is only used when a resident has a real birthday (pass `theirBirthday` for those). The lines are
  * written for the four temperaments (people/chat-lines.js) and use the cues of
  * dialogue/markup.js, so each one has its own timing and face.
  *
@@ -29,11 +31,6 @@ export const SITUATIONS=Object.freeze([
    ['{face:smug}Today,{p} {name},{p} I was born.{p:2} The sea was calm that day, they say.','{face:smug}My birthday.{p:2} Another year braved.'],
    ['{face:smile}Oh,{p} it’s my birthday.{p} Nearly forgot myself.','{face:smile}Birthday today.{p} Taking it easy.{p} More than usual.'],
    ['{face:neutral}It is my birthday.{p} I am telling you so it is on record.','{face:neutral}Another birthday.{p} The count is correct,{p} I checked.'])},
- {id:'first',why:'They have never spoken with Johansson.',when:s=>s.firstMeeting,
-  lines:G(['{face:happy}Oh!{p} You’re the new one!{p} I’m {me}!{p} Hi!','{face:happy}A new face!{p} I’m {me}.{p} Welcome to {town}!'],
-   ['{face:surprised}So.{p:2} The newcomer.{p} I am {me}.{p} Remember it.','{face:surprised}You must be the one from the ferry.{p} {me}.{p} Charmed.'],
-   ['{face:smile}Hey.{p} You’re new.{p} I’m {me}.{p} Nice to meet you.','{face:smile}Oh,{p} hi.{p} {me}.{p} You settling in OK?'],
-   ['{face:neutral}Good day.{p} {me}.{p} You are the new resident.{p} Noted.','{face:neutral}{me}.{p} I have heard about you.{p} Mostly neutral things.'])},
  {id:'away30',why:'Johansson has not played for thirty days or more (by the real calendar).',when:s=>s.daysAway>=30,
   lines:G(['{face:surprised}{big}{name}!{/big}{p} A whole month!{p} I thought you’d moved away!','{face:surprised}You’re back!{p} You’re really back!{p:2} Don’t do that again!'],
    ['{face:sad}A month,{p} {name}.{p:2} A whole month.{p} The tide came in and out sixty times.','{face:sad}I had given you up for lost at sea.{p:2} And yet,{p} here you are.'],
@@ -78,7 +75,7 @@ export function daysBetween(then,now=Date.now()){
 
 /**
  * The greeting for this moment. `situation` is
- * {theirBirthday, firstMeeting, daysAway, weather:'sunny'|'cloudy'|'rain'|'typhoon', hour}.
+ * {theirBirthday, daysAway, weather:'sunny'|'cloudy'|'rain'|'typhoon', hour}.
  * Returns {id, why, source, ...rendered line} (see markup.js renderLine).
  */
 export function greetingFor({speaker,temper='easy',situation={},playerName='Johansson',catchphrase='',day=0}){
