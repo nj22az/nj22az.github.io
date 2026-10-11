@@ -219,7 +219,7 @@ def vecko_band(nr, w):
     return OMR_CSS + omrade_band(fordelning(*veckans_uppgifter(nr, w)))
 
 
-def kursplan_html(nr, w):
+def kursplan_html(nr, w, med_tal=True):
     per_mal = defaultdict(list)  # mål -> [(ordning, typ, titel, länk, text, framsteg)]
     framsteg = defaultdict(lambda: defaultdict(list))  # mål -> mapp -> [ankare]
 
@@ -303,7 +303,7 @@ def kursplan_html(nr, w):
     ingress = ('Tentamen och det praktiska provet prövar de här punkterna i kursplanen.' if w.get('tenta')
                else 'Punkterna kommer från kursplanen. Under varje punkt står var du tränar den.')
     return (CSS + f'<section class="kp" aria-labelledby="kp-rubrik"{data}><h2 id="kp-rubrik">Det här lär du dig</h2>'
-            f'<p class="kp-ingress">{ingress}</p><div class="kp-tal">{tal}</div>'
+            f'<p class="kp-ingress">{ingress}</p>{f'<div class="kp-tal">{tal}</div>' if med_tal else ''}'
             f'<details class="kp-detaljer"><summary>Visa veckans {len(aktiva)} punkter i kursplanen</summary><ul class="kp-lista">{"".join(rader)}</ul></details></section>' + SCRIPT)
 
 
@@ -315,3 +315,80 @@ def _sista(w):
         return 'onsdag 4 november'
     _, m, d = map(int, w['sista'].split('-'))
     return f'söndag {d} {MANAD[m - 1]}'
+
+
+# --- Veckans översikt (”Din vecka”) överst på veckosidan --------------------------------------------------------
+# Börjar med vecka 42. Panelen visar elevens egna framsteg (steg, lästa delar, övningar, inlämningen) och kursplanens
+# punkter med stapel i områdets färg. Siffrorna räknas av gemensamt/veckopanel.mjs ur webbläsarens lagring.
+PANEL = {42}
+
+PANEL_CSS = ('<style>'
+             '.vp{margin:6px 0 26px;padding:20px 22px;border:1px solid #cad8e2;border-radius:12px;background:#fff}'
+             '.vp-topp{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;margin:0 0 14px}'
+             '.vp h2{margin:0;font-size:24px}.vp-sista{margin:0;color:#4d6579}.vp-kvar.bradskande{color:#8a2a00;font-weight:700}'
+             '.vp-rutor{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 18px}'
+             '.vp-ruta{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:10px;background:#f3f6f9;min-width:0}'
+             '.vp-etikett{font-size:14px;color:#4d6579}.vp-tal{font-size:22px;font-weight:700;line-height:1.25}'
+             '.vp-not{font-size:14px;color:#4d6579}.vp-ruta a{font-size:15px}'
+             '.vp-stapel{display:block;height:6px;margin-top:6px;border-radius:3px;background:#dfe7ee;overflow:hidden}'
+             '.vp-stapel i{display:block;height:100%;width:0;border-radius:3px;background:#064f91;transition:width .3s}'
+             '.vp-ruta.klar .vp-tal::before{content:"✓ ";color:#1a7f37}'
+             '.vp h3{margin:0 0 8px;font-size:18px}'
+             '.vp-lm{margin:0;padding:0;list-style:none}'
+             '.vp-lm li{display:grid;grid-template-columns:4.2rem minmax(0,1fr) 9rem 4.6rem;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #e6edf2}'
+             '.vp-lm-kod{display:inline-block;padding:2px 8px;border-left:5px solid;border-radius:4px;font-weight:700;font-size:15px}'
+             '.vp-lm-text{font-size:15px;line-height:1.45}.vp-lm .vp-stapel{margin:0}.vp-lm-tal{font-size:15px;text-align:right;color:#24384a}'
+             '.vp-fot{margin:12px 0 0;font-size:13px;color:#4d6579}'
+             '@media (max-width:760px){.vp-rutor{grid-template-columns:repeat(2,minmax(0,1fr))}'
+             '.vp-lm li{grid-template-columns:4.2rem minmax(0,1fr) 4.2rem}.vp-lm .vp-stapel{grid-column:2/4;grid-row:2}}'
+             '</style>')
+
+
+def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
+    """Översikten överst på veckosidan. steg_ids: stegen med Klart-ruta. delnummer: veckans egna delsidor (läst-knapparna).
+    sjalvrattande: adressen till gemensamt/sjalvrattning.mjs när veckans inlämning rättar sig själv, annars None."""
+    import hashlib
+    framsteg = defaultdict(lambda: defaultdict(list))
+    alla = defaultdict(list)
+    for mapp, del_, *_ in _ovningsgrupper(nr, w):
+        for pl in FORMELSTOD:
+            if pl['plats'] == f'{mapp}/aktuell/Formelstod_och_ovningar.html' and pl['del'] == del_:
+                if pl['ankare'] not in alla[mapp]:
+                    alla[mapp].append(pl['ankare'])
+                for m in _MAL_AV.get(pl['ovning'], []):
+                    framsteg[m][mapp].append(pl['ankare'])
+    ids, extra = veckans_uppgifter(nr, w)
+    aktiva = [m for m in sorted(MAL, key=lambda x: int(x.split('-')[1])) if any(m in _MAL_AV.get(i, []) for i in ids)]
+    # Var målet tränas utöver övningarna (visas när det inte finns något att räkna ännu).
+    inl_mal = {m for mapp, ankare, *_ in _inlamning(nr, w) for x in INLAMNING
+               if x['plats'] == f'{mapp}/aktuell/Inlamning.html' and x['ankare'] == ankare for m in _MAL_AV.get(x['ovning'], [])}
+    labb_mal = {m for p in _labbar(w) for i in labbuppgifter(p['href']) for m in _MAL_AV.get(i, [])}
+    annat = {m: ' och '.join(x for x, ja in (('Inlämningen', m in inl_mal), ('labben', m in labb_mal)) if ja).capitalize() for m in aktiva}
+    mal = [{'id': m, 'ovningar': [[k, v] for k, v in framsteg[m].items()], 'annat': annat[m]} for m in aktiva]
+    data = {'vecka': nr, 'sista': w['sista'], 'steg': steg_ids, 'delar': delnummer,
+            'ovningar': [[k, v] for k, v in alla.items()], 'mal': mal}
+    if sjalvrattande:
+        data['sjalvrattande'] = sjalvrattande
+    n_ovn = sum(len(v) for v in alla.values())
+    rader = []
+    for m in aktiva:
+        omr = OMRADE_AV[m]
+        n = sum(len(v) for v in framsteg[m].values())
+        rader.append(f'<li data-lm="{m}"><span class="vp-lm-kod" style="border-color:{omr[2]};background:{ton(omr[2])}" title="{escape(omr[1])}">{m}</span>'
+                     f'<span class="vp-lm-text">{escape(ENKEL[m])}</span><span class="vp-stapel" aria-hidden="true"><i style="background:{omr[2]}"></i></span>'
+                     f'<span class="vp-lm-tal">{f"0 av {n}" if n else escape(annat[m])}</span></li>')
+    sista = _sista(w)
+    inl = (f'<div class="vp-ruta" data-vp="inlamning"><span class="vp-etikett">Inlämningen</span><span class="vp-tal">Inte påbörjad</span>'
+           f'<span class="vp-not">Senast {escape(sista)}</span><span class="vp-stapel" aria-hidden="true"><i></i></span>'
+           f'<a href="Inlamning.html">Öppna inlämningen</a></div>')
+    ruta = lambda nyckel, etikett, tot: (f'<div class="vp-ruta" data-vp="{nyckel}"><span class="vp-etikett">{etikett}</span>'
+                                         f'<span class="vp-tal">0 av {tot}</span><span class="vp-stapel" aria-hidden="true"><i></i></span></div>')
+    v = hashlib.sha1((ROOT / 'gemensamt' / 'veckopanel.mjs').read_bytes()).hexdigest()[:10]
+    return (PANEL_CSS + f'<section class="vp" id="veckopanel" aria-labelledby="vp-rubrik"><div class="vp-topp"><h2 id="vp-rubrik">Din vecka</h2>'
+            f'<p class="vp-sista">Inlämningen senast <strong>{escape(sista)}</strong> · <span class="vp-kvar"></span></p></div>'
+            f'<div class="vp-rutor">{ruta("steg", "Steg klara", len(steg_ids))}{ruta("delar", "Delar lästa", len(delnummer))}'
+            f'{ruta("ovningar", "Övningar klara", n_ovn)}{inl}</div>'
+            f'<h3>Kursplanen den här veckan</h3><ul class="vp-lm">{"".join(rader)}</ul>'
+            f'<p class="vp-fot">Siffrorna gäller den här webbläsaren. Delarna räknas som lästa när du har tryckt på ”Jag har läst” längst ned på delsidan.</p></section>'
+            f'<script type="application/json" id="veckopanel-data">{json.dumps(data, ensure_ascii=False)}</script>'
+            f'<script type="module" src="../../gemensamt/veckopanel.mjs?v={v}"></script>')

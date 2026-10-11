@@ -3,7 +3,7 @@
   "titel": "Gammal föreskrift",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad"
   },
@@ -46,7 +46,7 @@
     }
   ],
   "losning": {
-    "text": "TSFS 2014:1 är inte längre gällande. Den ersattes av TSFS 2017:26 om konstruktion och utrustning av fartyg. För internationell fart gäller också SOLAS kapitel II-1 del D. Kontrollera att ersättningsföreskriften gäller för just detta fartyg och arbete.",
+    "text": "TSFS 2014:1 gäller inte längre. Den upphävdes den 1 mars 2019 genom TSFS 2019:4 om maskininstallation, elektrisk installation och periodvis obemannat maskinrum. För fartyg i nationell sjöfart finns kraven i TSFS 2017:26 om fartyg i nationell sjöfart, och för internationell fart gäller också SOLAS kapitel II-1 del D. Kontrollera i regellistan vilken föreskrift som gäller för just detta fartyg och arbete innan du hänvisar till den.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },
