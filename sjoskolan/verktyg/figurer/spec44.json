@@ -95,30 +95,20 @@
     "v44_03_s07_isolation",
     "Isolationsprovare mellan kabelns ledare och skrovet; provspänning och läckström genom isolationsresistansen"
    ],
-   "17": [
-    "ovn",
-    "v44_03_s17_ovn4",
-    "Två isolationsvägar på 20 megaohm parallellt mellan en aktiv ledare och jord; ekvivalent resistans okänd"
-   ],
-   "21": [
+   "11": [
     "th",
     "v44_03_s21_osc",
     "Oscilloskopets probjord är förbunden med skyddsjorden; kopplas den till en spänningssatt ledare blir det kortslutning via skyddsjorden"
    ],
-   "22": [
+   "12": [
     "th",
     "v44_03_s22_intervall",
     "Visning 50,00 V med felgränsen ±0,53 V ger intervallet 49,47 till 50,53 V"
    ],
-   "24": [
+   "14": [
     "th",
     "v44_03_s24_exempel",
     "Oscilloskopskärm med sinus: en period på fem rutor vid 2 ms per ruta, 10:1-prob"
-   ],
-   "26": [
-    "ovn",
-    "v44_03_s26_ovn6",
-    "Oscilloskopskärm där en period täcker fyra rutor vid 5 ms per ruta; period och frekvens okända"
    ]
   }
  }

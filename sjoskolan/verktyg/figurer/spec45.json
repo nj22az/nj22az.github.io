@@ -39,12 +39,7 @@
     "v45_02_s09_exempel",
     "Kravintervall 19,60–20,40 V och mätintervall 19,65–19,95 V som ligger helt inom kravet"
    ],
-   "17": [
-    "ovn",
-    "v45_02_s17_ovn4",
-    "Seriekrets: källa 24 V, last 20 V, ström 2 A och 1 V fall i returen; fallet i framledningen okänt"
-   ],
-   "24": [
+   "14": [
     "th",
     "v45_02_s24_exempel",
     "Seriekrets: källa 12 V, last 9 V, ström 1,5 A; framledningen tappar 2,1 V och returen 0,9 V"
