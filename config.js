@@ -98,16 +98,6 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "Johansson World",
-      description:
-        "A living 1997 Okinawan island in Three.js: explore the harbour town and get to know its residents, decorate homes in Build mode, and watch the town's own stories happen. The calendar follows the real date.",
-      url: "/johansson-world/",
-      icon: "home",
-      tags: ["Three.js", "Playable Demo", "3D Web"],
-      bento: "wide",
-      featured: true,
-    },
-    {
       title: "GitHub",
       description:
         "Open-source tools, working prototypes, and engineering experiments with an emphasis on practical use.",

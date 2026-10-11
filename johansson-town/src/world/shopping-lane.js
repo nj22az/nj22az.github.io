@@ -11,12 +11,13 @@ import * as THREE from '../../vendor/three.module.js';
 export function buildShoppingLane({world,register,onAction}){
  const group=new THREE.Group();group.name='Rainflower shopping lane';world.group.add(group);const colliderStart=world.colliders.length;
  const mats=new Map(),mat=(c,roughness=.9)=>{const key=c+':'+roughness;if(!mats.has(key))mats.set(key,new THREE.MeshStandardMaterial({color:c,roughness}));return mats.get(key);};
- const box=(name,size,pos,c,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.name=name;m.position.set(...pos);group.add(m);if(solid)world.colliders.push({id:name,x:pos[0],z:pos[2],w:size[0],d:size[2],height:pos[1]+size[1]/2});return m;};
+ // The lane's shop-houses stand still and are drawn in batches; the roadway darkens in the rain, so it opts out.
+ const box=(name,size,pos,c,solid=false)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(...size),mat(c));m.name=name;m.position.set(...pos);m.userData.staticProp=true;group.add(m);if(solid)world.colliders.push({id:name,x:pos[0],z:pos[2],w:size[0],d:size[2],height:pos[1]+size[1]/2});return m;};
  const sign=(title,x,y,z,w=5)=>{const c=document.createElement('canvas');c.width=512;c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#e1d5b8';ctx.fillRect(0,0,512,128);ctx.fillStyle='#355947';ctx.font='bold 36px sans-serif';ctx.textAlign='center';signText(ctx,japaneseSign(title),256,53,476,42);ctx.font='bold 17px sans-serif';signText(ctx,title,256,101,476,17);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const m=new THREE.Mesh(new THREE.PlaneGeometry(w,1),new THREE.MeshBasicMaterial({map:t,side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=x<90?Math.PI/2:-Math.PI/2;group.add(m);};
  const anchor=(x,z,label,kind,title,data)=>{const a=new THREE.Object3D();a.position.set(x,1,z);group.add(a);register(a,label,()=>onAction(kind,title,data));};
  const roadwayY=GROUND_LAYER.apron+GROUND_LAYER.grass,sidewalkY=roadwayY+GROUND_LAYER.grass;
  const laneEnd=113+(SHOPPING_LANE.maxZ-SHOPPING_LANE.z)/SHOPPING_LANE_SCALE,laneDepth=laneEnd-94,laneMiddle=(94+laneEnd)/2;
- const pavement=box('Rainflower worn stone roadway',[12,.08,laneDepth],[90,roadwayY-.04,laneMiddle],0x777d79);pavement.material=mat(0x777d79,.87);const asphalt=paintedAsphalt().clone();asphalt.repeat.set(3,10);asphalt.needsUpdate=true;pavement.material.map=asphalt;
+ const pavement=box('Rainflower worn stone roadway',[12,.08,laneDepth],[90,roadwayY-.04,laneMiddle],0x777d79);pavement.userData.staticProp=false;pavement.material=mat(0x777d79,.87);const asphalt=paintedAsphalt().clone();asphalt.repeat.set(3,10);asphalt.needsUpdate=true;pavement.material.map=asphalt;
  for(const x of [84.6,95.4]){const walk=box('Lane stone pavement',[1.2,.08,laneDepth],[x,sidewalkY-.04,laneMiddle],0xc1bdad);walk.material=mat(0xc1bdad);const paving=paintedPaving().clone();paving.repeat.set(1,13);paving.needsUpdate=true;walk.material.map=paving;}
  // Open both kerbs at the two cross streets, and the shop side at each entrance.
  const crossings=[105.5,118.5];
