@@ -3,8 +3,8 @@ import {waveHeight,SEA_LEVEL} from './ocean.js';
 import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js';
 import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,AIRPORT_PASSAGES,airportFerryPose} from './airport-ferry.js';
 import {PORT_BUILDING} from './port-building.js';
-import {FERRY_SHIP,FERRY_DAY,rollPeriod,pitchPeriod} from './ferry-ship.js';
-import {buildFerryModel,GANGWAY_Z,WL} from './ferry-model.js';
+import {FERRY_DAY,rollPeriod,pitchPeriod} from './ferry-ship.js';
+import {buildFerryModel,GANGWAY_Z,WL,FERRY_HULL} from './ferry-model.js';
 import {BERTH_X,BERTH_Z,townArrival,townDeparture} from './ferry-paths.js';
 import {lanternGlow,windowGlow} from '../render/dusk.js';
 
@@ -15,7 +15,7 @@ import {lanternGlow,windowGlow} from '../render/dusk.js';
  * commuter timetable interface remains available for residents and old saved games.
  * A player-requested crossing holds a safe berth until vehicles finish boarding.
  */
-export const FERRY=Object.freeze({length:FERRY_SHIP.length,beam:FERRY_SHIP.beam,freeboard:FERRY_SHIP.freeboard,draft:FERRY_SHIP.draft,waterline:WL});
+export const FERRY=Object.freeze({length:FERRY_HULL.length,beam:FERRY_HULL.beam,freeboard:FERRY_HULL.freeboard,draft:FERRY_HULL.draft,waterline:WL});
 /** The outer pier's west flank (layout.js OUTER_PIER: x 0, 8.2 m wide). */
 const PIER_WEST=-4.1;
 
@@ -67,9 +67,9 @@ export const TOWN_PASSAGES=Object.freeze({arrival:ARRIVAL,departure:DEPARTURE});
  * game's clock in seconds, so she rolls at her real period even when a crossing is shown faster.
  */
 /** Her origin's height with her at rest in calm water (the waterline at sea level). */
-const REST_Y=SEA_LEVEL+FERRY_SHIP.origin;
+const REST_Y=SEA_LEVEL+FERRY_HULL.origin;
 export function shipMotion(x,z,time,exposure=0){
- const e=Math.max(0,Math.min(1,exposure)),deg=Math.PI/180,Tr=rollPeriod(),Tp=pitchPeriod(),phase=x*.37+z*.21;
+ const e=Math.max(0,Math.min(1,exposure)),deg=Math.PI/180,Tr=rollPeriod(FERRY_HULL),Tp=pitchPeriod(FERRY_HULL),phase=x*.37+z*.21;
  const roll=(.35+1.65*e)*deg*(.85*Math.sin(2*Math.PI*time/Tr+phase)+.15*Math.sin(2*Math.PI*time/(Tr*1.61)+1.3*phase));
  const pitch=(.1+.4*e)*deg*Math.sin(2*Math.PI*time/Tp+.7*phase);
  const heave=(waveHeight(x,z,time)-SEA_LEVEL)*(.25+.55*e);

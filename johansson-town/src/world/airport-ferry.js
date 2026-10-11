@@ -2,8 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {AIRPORT_ISLAND,AIRPORT_JETTY} from './airport-island.js';
 import {AIRPORT_LANDING,AIRPORT_LANDING_HEIGHT,airportWorld} from './airport-ground.js';
 import {SEA_LEVEL} from './ocean.js';
-import {FERRY_SHIP,FERRY_DECKS} from './ferry-ship.js';
-import {GANGWAY_Z} from './ferry-model.js';
+import {GANGWAY_Z,FERRY_HULL,FERRY_DECKS} from './ferry-model.js';
 import {BERTH_X,BERTH_Z,TOWN_UNBERTHING,TOWN_BERTHING,HARBOUR_MOUTH,passage,roundedTrack} from './ferry-paths.js';
 
 /**
@@ -12,9 +11,9 @@ import {BERTH_X,BERTH_Z,TOWN_UNBERTHING,TOWN_BERTHING,HARBOUR_MOUTH,passage,roun
  * `ride` is how long the game shows it in seconds, a time-lapse of those minutes, until crossings
  * are sailed in real time.
  */
-export const AIRPORT_FERRY=Object.freeze({length:FERRY_SHIP.length,beam:FERRY_SHIP.beam,deck:FERRY_DECKS.car.y,duration:18,ride:18});
+export const AIRPORT_FERRY=Object.freeze({length:FERRY_HULL.length,beam:FERRY_HULL.beam,deck:FERRY_DECKS.car.y,duration:18,ride:18});
 /** At Kitano-jima she lies bow to the jetty's west face, 1.9 m off it, with her ramp down on it. */
-const AIRPORT_BERTH_U=AIRPORT_JETTY.minX-1.9-FERRY_SHIP.length/2;
+const AIRPORT_BERTH_U=AIRPORT_JETTY.minX-1.9-FERRY_HULL.length/2;
 export const AIRPORT_FERRY_PORTS=Object.freeze({
  town:Object.freeze({title:'Minato–Kitano-jima shared ferry',landing:Object.freeze([-3.2,BERTH_Z+GANGWAY_Z-.7]),height:.098,berth:Object.freeze([BERTH_X,BERTH_Z]),yaw:0}),
  airport:Object.freeze({title:'Kitano-jima shared ferry pier',landing:AIRPORT_LANDING,height:AIRPORT_LANDING_HEIGHT,berth:Object.freeze(airportWorld(AIRPORT_BERTH_U,31)),yaw:AIRPORT_ISLAND.yaw+Math.PI/2}),
@@ -72,7 +71,7 @@ export const AIRPORT_PASSAGES=Object.freeze({airport:outbound,town:inbound});
 export function airportFerryPose(destination,progress){
  if(!['town','airport'].includes(destination))throw new RangeError('Unknown airport ferry destination');
  const t=Math.max(0,Math.min(1,Number.isFinite(progress)?progress:0)),plan=AIRPORT_PASSAGES[destination],p=plan.pose(t*plan.duration);
- return {x:p.x,y:SEA_LEVEL+FERRY_SHIP.origin,z:p.z,yaw:p.yaw,deckY:SEA_LEVEL+FERRY_SHIP.origin+AIRPORT_FERRY.deck,progress:t,speed:p.speed,turn:p.turn,kind:p.kind,exposure:p.exposure,seconds:t*plan.duration};
+ return {x:p.x,y:SEA_LEVEL+FERRY_HULL.origin,z:p.z,yaw:p.yaw,deckY:SEA_LEVEL+FERRY_HULL.origin+AIRPORT_FERRY.deck,progress:t,speed:p.speed,turn:p.turn,kind:p.kind,exposure:p.exposure,seconds:t*plan.duration};
 }
 
 /** A boarding anchor on the public pier, clear of its bollards and winch. */

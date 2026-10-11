@@ -1,6 +1,47 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
-import {FERRY_SHIP,FERRY_DECKS,FERRY_MACHINERY} from './ferry-ship.js';
+
+/**
+ * The hull as drawn: the 22 m Minato Maru the other session modelled on 2026-10-10. The ship as she
+ * is designed now (ferry-ship.js FERRY_SHIP, 34.5 m) is grown into this model in its own batch
+ * (docs/FERRY-AUDIT.md §6, batch 5); until then everything that puts something on her, or her
+ * against a pier (the paths, the berths, the cars' place, the passenger's place), reads these.
+ * Ship frame, metres: +z is forward (the bow ramp's hinge is at +length/2), +x is the port side, y up
+ * from the model's origin, which is `origin` above the waterline.
+ */
+export const FERRY_HULL=Object.freeze({
+ length:22,lengthBP:19.6,beam:6.4,depth:2.48,draft:1.35,
+ /** The car deck above the waterline: depth less draft. */
+ freeboard:1.13,
+ /** The model's origin is this far above the waterline (where the old hull sat, so the ramp meets the quay where it did). */
+ origin:.12,
+ /** Metacentric height loaded, metres (her roll period: ferry-ship.js rollPeriod). */
+ gm:1.2,
+ /** The screws she is drawn with: four-bladed, 1.05 m. */
+ screw:1.05,
+});
+/** Where things are on the hull as drawn, along her (z) and up (y). */
+export const FERRY_DECKS=Object.freeze({
+ /** The car deck: from the ramp hinge aft to the deckhouse front. */
+ car:Object.freeze({y:FERRY_HULL.freeboard-FERRY_HULL.origin,fore:11,aft:-1.2,
+  /** Two lanes of 2.6 m (a kei car is 1.48 m wide, a 4-tonne truck 2.2 m), each side of the centreline. */
+  lanes:Object.freeze([1.4,-1.4]),laneWidth:2.6,
+  /** The three car places: two in the starboard lane, one in the port lane, nose to the ramp. */
+  slots:Object.freeze([Object.freeze([-1.4,7.4]),Object.freeze([-1.4,2.6]),Object.freeze([1.4,6.2])]),
+  /** An open car deck: it breathes through its open top and needs no exhaust fans. */
+  open:true,
+  /** Walkways each side, inside the bulwark: 0.5 m clear, for the crew and the lashings. */
+  walkway:.5,bulwark:1.05}),
+ /** The deckhouse aft on the car deck: the passenger saloon, its toilets and vending corner, the purser's window. */
+ saloon:Object.freeze({fore:-1.2,aft:-9.6,width:5.6,height:2.25}),
+ /** The mooring deck at the stern, behind the saloon: the capstan and two pairs of bitts. */
+ stern:Object.freeze({fore:-9.6,aft:-11}),
+ /** The upper (passenger) deck on the saloon roof: open deck and benches aft, the wheelhouse forward. */
+ upper:Object.freeze({y:FERRY_HULL.freeboard-FERRY_HULL.origin+2.35,fore:-1.2,aft:-9.6}),
+ wheelhouse:Object.freeze({fore:-1.3,aft:-4.1,width:3.6,height:2.05}),
+ /** Where a passenger rides a crossing: the open upper deck aft, at the stern rail between the benches, behind the funnel. */
+ passenger:Object.freeze([0,FERRY_HULL.freeboard-FERRY_HULL.origin+2.35,-9.05]),
+});
 
 /**
  * The Minato Maru, modelled whole (docs/FERRY-AUDIT.md): the hull lofted from its sections, as a
@@ -14,7 +55,7 @@ import {FERRY_SHIP,FERRY_DECKS,FERRY_MACHINERY} from './ferry-ship.js';
  * 0.12 m above the waterline, where the old hull sat, so the ramp still meets the quay where it
  * did: the waterline is at y = WL. Static parts are merged by material into a handful of meshes.
  */
-const S=FERRY_SHIP,D=FERRY_DECKS;
+const S=FERRY_HULL,D=FERRY_DECKS;
 export const WL=-S.origin;
 const HALF=S.length/2,KEEL=WL-S.draft,DECK=D.car.y,BULWARK=D.car.bulwark;
 
@@ -198,7 +239,7 @@ export function buildFerryModel({shadows=false}={}){
  for(const side of [1,-1]){
   // Bilge keels at the turn of the bilge amidships.
   for(let z=-5;z<4;z+=1){const t=Math.PI/2*.42,[x,y]=sectionPoint(z,t),[x2,y2]=sectionPoint(z+1,t);kit.bar('paint',[side*(x+.1),y-.08,z],[side*(x2+.1),y2-.08,z+1],.05,ANTIFOULING,4);}
-  const sx=side*1.25,cy=-.975,P=FERRY_MACHINERY.propellers;
+  const sx=side*1.25,cy=-.975;
   kit.bar('metal',[sx,cy+.12,-5.6],[sx,cy,-8.3],.055,STEEL,8);                 // the shaft out of its stern tube
   kit.cyl('metal',.13,.13,.5,[sx,cy+.05,-5.75],STEEL,[Math.PI/2,0,0]);          // the stern-tube boss
   for(const k of [-1,1])kit.bar('paint',[sx,cy,-7.8],[sx+k*.55,keelY(-7.8)+.35+.15,-7.6],.04,ANTIFOULING,5); // the A-bracket

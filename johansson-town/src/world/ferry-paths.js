@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {FERRY_SHIP} from './ferry-ship.js';
+import {FERRY_HULL} from './ferry-model.js';
 
 /**
  * How the Minato Maru moves in Minato harbour: where her centre goes, and which way her bow
@@ -19,7 +19,7 @@ import {FERRY_SHIP} from './ferry-ship.js';
  */
 const PIER_WEST=-4.1;
 /** Moored: port side to the outer pier's west flank, the bow 0.5 m off the quay wall at z -50. */
-export const BERTH_X=PIER_WEST-FERRY_SHIP.beam/2-.15,BERTH_Z=-50.5-FERRY_SHIP.length/2;
+export const BERTH_X=PIER_WEST-FERRY_HULL.beam/2-.15,BERTH_Z=-50.5-FERRY_HULL.length/2;
 const freeze=keys=>Object.freeze(keys.map(k=>Object.freeze(k)));
 /**
  * Off the berth: astern, straight, until her bow is clear of the quay (to key `astern`); then the

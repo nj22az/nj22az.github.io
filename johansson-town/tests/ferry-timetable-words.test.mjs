@@ -28,6 +28,6 @@ test('nobody waits for a bus that does not run: Vy waits for the ferry',()=>{
 
 test('Okinawa runs at 60 hertz: the power house’s needles and the ferry’s shore supply agree',async()=>{
  assert.doesNotMatch(source('src/world/school.js'),/50 cycles/);assert.match(source('src/world/school.js'),/60 cycles/);
- const {FERRY_MACHINERY}=await import('../src/world/ferry-ship.js');
- assert.equal(FERRY_MACHINERY.shore.hz,60);assert.equal(FERRY_MACHINERY.generators.hz,60);
+ const {FERRY_ELECTRICS}=await import('../src/world/ferry-ship.js');
+ for(const part of [FERRY_ELECTRICS,FERRY_ELECTRICS.generators,FERRY_ELECTRICS.emergency,FERRY_ELECTRICS.shore])assert.equal(part.hz,60);
 });

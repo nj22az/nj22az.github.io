@@ -206,3 +206,36 @@ as the ride does; and teleporting is not followed by a step, which would walk th
 Not affected: no film view sees the berth or the poster (`impact.py` over x −45…10, z −120…−48: the `cloud` view of
 `thuan-poster` sees 1 % of the berth's box, none of it in plain view); the storyteller's harbour, pier and ferry
 backdrops show her alongside, where she lies as before.
+
+### Batch 2: the ship as data at the new size (no visual change)
+
+**Plan: what it touches.** `ferry-ship.js` becomes the 34.5 m Minato Maru as designed (`briefs/ferry-audit.md`
+§2–§5): her particulars, heights, the general arrangement deck by deck (every space with where it is, what is in it,
+why, and its ways out), the ten car places and the trucks' loading plan, the machinery and its systems, the electrics
+(generators, emergency generator, shore power, boards, the preference trip) and the load table in five conditions
+(at sea, arriving and leaving, loading, at night on shore power, blackout), the lifesaving and fire appliances, the
+safe manning of eight, and the scenarios grown to her equipment. Nothing is drawn differently: the model and
+everything that places things on her keep the 22 m hull's numbers, which move to the model
+(`ferry-model.js` `FERRY_HULL`, `FERRY_DECKS`, the hull as drawn) until batch 5 grows her.
+
+| Touches | How | Checked by |
+|---|---|---|
+| The model, the paths and berths, the crossing, the cars' deck place and the passenger's place (`ferry-model.js`, `ferry-paths.js`, `ferry.js`, `airport-ferry.js`, `town-traffic.js`) | read `FERRY_HULL`/`FERRY_DECKS` from the model instead of `FERRY_SHIP`/`FERRY_DECKS` from the data; the same numbers | every ferry test unchanged and passing; the model's triangle count and bounding box the same |
+| Her roll period | `shipMotion` rolls at the drawn hull's period (`rollPeriod(FERRY_HULL)`), 5.5 s | `tests/ferry.test.mjs` |
+| The crew (`people/ferry-crew.js`) | its four posts are four of the eight in `FERRY_MANNING`; who fills the other four is the crew batch's (the brief and the earlier plan cast them differently: an open decision) | `tests/ferry-ship.test.mjs` |
+| The stories (`FERRY_SCENARIOS`) | the four kept and grown: the blackout now comes at the breakwater and the emergency generator takes the load; the net is round the starboard screw; the ramp hose; the shore power plugged in with two phases crossed (at 50 kVA the rice cooker no longer trips it) | every step's post is in the manning and its place in the general arrangement |
+| Residents, routines, colliders, walking routes, cars, backdrops, films | none: data only | — |
+
+**Checked.** `tests/ferry-ship.test.mjs` holds the data to the brief and the rules: displacement from her block
+coefficient (within 2 %), depth = draft + freeboard, the masthead light six metres and a breadth above the hull, 4.2 m
+clear under the passenger deck; every space inside her hull, none overlapping another unless it is inside it, every
+manned space with two ways out (or one into a space with two), a hundred passenger places (36 + 42 + 22), the engine
+room's ways out through the casings and the emergency-generator and CO₂ rooms opening to the open deck only; ten car
+places and the trucks' plan sized for the town's longest and widest vehicle, half a metre apart, clear of the casings,
+the walkway and the bow houses; the bilge main and the CO₂ by their rules; the load table's totals within 0.15 kW of
+the brief (39.9, 109.8, 45.7, 10.3, 10.0 kW against its rounded 39.8, 109.7, 45.6, 10.3, 9.9), the generators at 40 %,
+55 % on two, 46 %, shore power at 26 %, the emergency generator at 31 %, the preference trip shedding 14.4 kW at
+stage 1, the thruster's 122 A and its star-delta start within two generators, the lighting transformer at 44–54 %;
+rafts, jackets and lifebuoys for 108; the scenarios' posts and places. The model is unchanged: built from batch 1's
+code and from this one, its 47,158 vertices give the same checksum, so there is nothing new to photograph; the 79
+ferry, harbour, traffic and storyteller tests pass.
