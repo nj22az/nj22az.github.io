@@ -166,6 +166,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** EL-000213 (Mittpunkt, felsökning) hade fel facit: B har 0 V, så felet ligger mellan källan och B, inte
+  efter B. Rättat i posten och på delsidan och övningssidan. Boken (bok.enc) och lärarkopian av v45_01 är inte
+  uppdaterade (kräver BOKLOSEN/LARARLOSEN); revidera posten igen med de skyddade filerna öppna.
+
 - **2026-10-11** Varje veckosida har en översikt efter kursplanens punkter LM-1–9 (`verktyg/veckosidor/kursplan.py`):
   vilka punkter veckan tränar, och för varje punkt delarna, labben och inlämningsuppgifterna, med elevens avbockade
   övningar. Kopplingen kommer ur övningsposternas `larande.mal` och placeringarna. Vecka 40 är upplåst (beslut: kurswebben

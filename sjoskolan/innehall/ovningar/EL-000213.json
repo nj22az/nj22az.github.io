@@ -3,7 +3,7 @@
   "titel": "Mittpunkt",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -47,7 +47,7 @@
     }
   ],
   "losning": {
-    "text": "Sträckan mellan B och lastens pluspunkt. Före B finns rätt spänning.",
+    "text": "Sträckan mellan källan och B. Källan har 24 V men B har 0 V, så spänningen försvinner före B.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },
