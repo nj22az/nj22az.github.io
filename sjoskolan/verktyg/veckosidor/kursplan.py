@@ -303,7 +303,7 @@ def kursplan_html(nr, w, med_tal=True):
     ingress = ('Tentamen och det praktiska provet prövar de här punkterna i kursplanen.' if w.get('tenta')
                else 'Punkterna kommer från kursplanen. Under varje punkt står var du tränar den.')
     return (CSS + f'<section class="kp" aria-labelledby="kp-rubrik"{data}><h2 id="kp-rubrik">Det här lär du dig</h2>'
-            f'<p class="kp-ingress">{ingress}</p>{f'<div class="kp-tal">{tal}</div>' if med_tal else ''}'
+            f'<p class="kp-ingress">{ingress}</p>' + (f'<div class="kp-tal">{tal}</div>' if med_tal else '') +
             f'<details class="kp-detaljer"><summary>Visa veckans {len(aktiva)} punkter i kursplanen</summary><ul class="kp-lista">{"".join(rader)}</ul></details></section>' + SCRIPT)
 
 
@@ -360,10 +360,10 @@ def _inlamningens_falt(nr):
     return per_mal
 
 
-def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
-    """Översikten överst på veckosidan. steg_ids: stegen med Klart-ruta. delnummer: veckans egna delsidor (läst-knapparna).
-    sjalvrattande: adressen till gemensamt/sjalvrattning.mjs när veckans inlämning rättar sig själv, annars None."""
-    import hashlib
+def kursplan_framsteg(nr, w, sjalvrattande=None):
+    """Kursplanens punkter för veckan med elevens framsteg: (data, rader). data har veckans övningar och per punkt
+    övningarna, inlämningens fält och var punkten tränas annars; rader är listans HTML (siffrorna fylls i av
+    gemensamt/veckopanel.mjs rakna)."""
     framsteg = defaultdict(lambda: defaultdict(list))
     alla = defaultdict(list)
     for mapp, del_, *_ in _ovningsgrupper(nr, w):
@@ -383,11 +383,9 @@ def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
     inl_falt = _inlamningens_falt(nr) if sjalvrattande else {}
     mal = [{'id': m, 'ovningar': [[k, v] for k, v in framsteg[m].items()], 'annat': annat[m]}
            | ({'inlamning': inl_falt[m]} if inl_falt.get(m) else {}) for m in aktiva]
-    data = {'vecka': nr, 'sista': w['sista'], 'steg': steg_ids, 'delar': delnummer,
-            'ovningar': [[k, v] for k, v in alla.items()], 'mal': mal}
+    data = {'vecka': nr, 'sista': w['sista'], 'ovningar': [[k, v] for k, v in alla.items()], 'mal': mal}
     if sjalvrattande:
         data['sjalvrattande'] = sjalvrattande
-    n_ovn = sum(len(v) for v in alla.values())
     rader = []
     for m in aktiva:
         omr = OMRADE_AV[m]
@@ -395,6 +393,17 @@ def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
         rader.append(f'<li data-lm="{m}"><span class="vp-lm-kod" style="border-color:{omr[2]};background:{ton(omr[2])}" title="{escape(omr[1])}">{m}</span>'
                      f'<span class="vp-lm-text">{escape(ENKEL[m])}</span><span class="vp-stapel" aria-hidden="true"><i style="background:{omr[2]}"></i></span>'
                      f'<span class="vp-lm-tal">{f"0 av {n}" if n else escape(annat[m])}</span></li>')
+    return data, ''.join(rader)
+
+
+def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
+    """Översikten överst på veckosidan. steg_ids: stegen med Klart-ruta. delnummer: veckans egna delsidor (läst-knapparna).
+    sjalvrattande: adressen till gemensamt/sjalvrattning.mjs när veckans inlämning rättar sig själv, annars None."""
+    import hashlib
+    data, rader = kursplan_framsteg(nr, w, sjalvrattande)
+    data = {'vecka': nr, 'sista': w['sista'], 'steg': steg_ids, 'delar': delnummer} | {k: v for k, v in data.items() if k not in ('vecka', 'sista')}
+    n_ovn = sum(len(v) for _, v in data['ovningar'])
+    rader = [rader]
     sista = _sista(w)
     inl = (f'<div class="vp-ruta" data-vp="inlamning"><span class="vp-etikett">Inlämningen</span><span class="vp-tal">Inte påbörjad</span>'
            f'<span class="vp-not">Senast {escape(sista)}</span><span class="vp-stapel" aria-hidden="true"><i></i></span>'

@@ -198,8 +198,15 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     inlämningen mot alla frågor som fortfarande är öppna. Skriv inte heller svaret här eller i ett test: testet tar fram
     det godkända alternativet ur nyckeln. *Kontroll: `vecka-42/aktuell/inlamning.test.mjs`.*
 
+53. **Generatorerna ska gå att köra med Python 3.11 (CI).** `verktyg/veckosidor/kursplan.py` hade en f-sträng med samma
+    citattecken inuti (kräver 3.12). CI kunde då inte läsa kursplanens enkla texter, inlämningssidan blev en annan än den
+    lokala och kontrollen stoppade (”INAKTUELL vecka-42/aktuell/Inlamning.html”). Skriv inga f-strängar med samma
+    citattecken eller bakåtsnedstreck i uttrycket. *Kontroll: `python3.11 -m py_compile` på ändrade filer före push.*
+
 ## Ändringar
 
+- **2026-10-11** CI var röd efter sammanslagningen av den självrättande inlämningen: `kursplan.py` gick inte att läsa med
+  Python 3.11 (regel 53). Rättat; `kursplan_framsteg` bryter ut kursplanens punkter ur `veckopanel_html` (samma utdata).
 - **2026-10-11** Vecka 42: ”Din vecka” räknar inlämningens fält per kursplanspunkt redan från sidan (`kursplan.py`
   `_inlamningens_falt`, samma räkning som `veckoStatus`), så att totalerna är desamma före och efter att eleven har öppnat
   formuläret. Utan sparad plan står rutan Inlämningen kvar som ”Inte påbörjad” i stället för ”0 av 0 rätt”. CI kör
