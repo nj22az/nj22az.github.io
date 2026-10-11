@@ -57,7 +57,15 @@ Build one day in Minato Machi worth coming back for (sources/task.md), on `claud
   Minato in real play is the existing conversation and was not re-walked here.
 - Pre-existing browser error in every audit session: `assets/figurines/thuan/thuan-display.glb` request aborted.
 
+## Round 2 state (2026-10-11)
+- Done and checked in the game (checks.md 13–16, 18): Thao on foot, the long-absence letter, Thuan's beats, typhoon
+  days from 1997's real typhoons, the news covering the calendar (tomorrow's happening; a festival as it went).
+- Interrupted by the creator's "I want all customisation be in Johansson Studio" (checks.md 22, NEXT.md section 8):
+  done, reviewed separately, fixed, published with round 2 (2/3) through the live workflow.
+- Not done yet: more favours with a calendar (17), impressions (19), birthdays (20).
+- Test-tool note: the audit's setTime fixes the weather while the button still reads "Random"; press the weather
+  button to Random after setting the time, or typhoons and random rain never run.
+
 ## Next action
-The creator plays the day (on the branch) and chooses whether it goes live; publishing means merging into
-`claude/sjoskolan-youtube-strategy-gofi3o` after `git fetch origin main` and merging main (CLAUDE.md). Then: more
-favours from other residents' real facts, the long-absence letter, typhoon days.
+More favours from residents' real facts with a one-a-day calendar (checks 17), then impressions (19) and birthdays
+(20), each checked in the game; publish the same way (fetch and merge main into the live branch first).
