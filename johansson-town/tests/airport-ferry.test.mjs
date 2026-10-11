@@ -77,10 +77,12 @@ test('the shared ferry crosses round the breakwater, a metre and more off every 
 test('she moves like a ship: no snaps, her speed continuous, her turns within what she can make',()=>{
  for(const destination of ['airport','town']){
   const plan=AIRPORT_PASSAGES[destination];
-  // Eighteen minutes: four out, ten at sea, four in (briefs/ferry-audit.md §7.1).
+  // Four minutes out and four in as in Minato's own harbour; the rest is the sea, which since
+  // Kitano-jima moved far across the strait is most of the crossing.
   assert.ok(Math.abs(plan.duration-AIRPORT_FERRY.duration*60)<1e-6);
   const minutes=kind=>plan.legs.filter(l=>l.kind===kind).reduce((sum,l)=>sum+(l.until-l.from)/60,0);
-  assert.ok(minutes('sea')>9.4&&minutes('sea')<10.1,'ten minutes at sea, or nine and a half from Kitano-jima, whose jetty she leaves slowly');
+  for(const kind of ['astern','swing','approach','berthing'])assert.ok(minutes(kind)>=1,'the harbour legs keep their own times');
+  assert.ok(minutes('sea')>8&&minutes('sea')<14,'the long strait is the sea leg, at her steady sea pace');
   let prev=plan.pose(0);
   for(let t=.25;t<=plan.duration;t+=.25){
    const p=plan.pose(t);

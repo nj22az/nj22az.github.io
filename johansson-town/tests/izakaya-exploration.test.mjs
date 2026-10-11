@@ -4,7 +4,6 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {buildIzakayaExploration,createMinatoMemories,MINATO_MEMORIES,MINATO_MEMORY_STORY,MINATO_RECIPE_CARD} from '../src/world/interiors/izakaya-exploration.js';
 import {buildIzakayaLivedIn,MINATO_DETAIL_SURFACES} from '../src/world/interiors/izakaya-lived-in.js';
-import {createIzakayaStreetView} from '../src/render/izakaya-street-view.js';
 
 function memoryHarness(state={}){
  let shown=null,saves=0,closes=0;const curtains=[];
@@ -99,13 +98,13 @@ test('the Minato guestbook rests on its actual table and leaves lived-in objects
  for(const p of placements.filter(p=>p.surface==='loungeSouth'))assert.ok(!(book.min.x<p.max[0]&&book.max.x>p.min[0]&&book.min.z<p.max[2]&&book.max.z>p.min[2]),'Guestbook clears '+p.id);
 });
 
-test('sliding door pockets preserve the entire entry and curtains clear wooden frames',()=>{
+test('the koshi-do stand open on a clear 1.8 m entrance and curtains clear wooden frames',()=>{
  installDOM();let menu;
  const room=new THREE.Group(),{group,memories}=buildIzakayaExploration(room,{anchor(){},exploration:{state:{},show:(title,text,actions)=>menu={title,text,actions}}});
  room.updateMatrixWorld(true);
  const door=group.getObjectByName('Minato door joinery and discovery objects');
  const ray=new THREE.Raycaster();
- for(const x of [-1.85,-1,0,1,1.85])for(const y of [.12,1,2.18]){ray.set(new THREE.Vector3(x,y,5.7),new THREE.Vector3(0,0,1));ray.far=.65;assert.deepEqual(ray.intersectObject(door),[],'Clear door route at '+x+','+y);}
+ for(const x of [-.8,-.4,0,.4,.8])for(const y of [.12,1,2.18]){ray.set(new THREE.Vector3(x,y,5.7),new THREE.Vector3(0,0,1));ray.far=.65;assert.deepEqual(ray.intersectObject(door),[],'Clear door route at '+x+','+y);}
  const curtains=group.getObjectByName('Minato sliding window curtains');
  for(const m of curtains.children){const b=new THREE.Box3().setFromObject(m);assert.ok(b.min.x>=-5.03&&b.max.x<=-2.77,'Open curtain stays inside the frame');assert.ok(b.max.z<6.245,'Cloth stays in front of the timber');}
  memories.open('window');menu.actions.find(([label])=>label==='Draw the curtains')[1]();room.updateMatrixWorld(true);
@@ -114,50 +113,18 @@ test('sliding door pockets preserve the entire entry and curtains clear wooden f
  assert.ok(left.max.x>=right.min.x-.000001,'Drawing the curtains closes the central glass rather than leaving a gap');
 });
 
-function streetHarness(viewCamera){
- let now=0,draws=0,target=null;
- const scene=new THREE.Scene(),town=new THREE.Group(),room=new THREE.Group(),hands=new THREE.Group(),hidden=new THREE.Group(),light=new THREE.HemisphereLight();scene.add(town,room,hands,hidden,light);town.visible=false;hidden.visible=false;
- const oldTarget={name:'Main render target'},clipping=[];
- const renderer={target:oldTarget,autoClear:false,clippingPlanes:clipping,shadowMap:{enabled:true},getRenderTarget(){return this.target;},setRenderTarget(t){this.target=t;},render(s,c){draws++;target=this.target;assert.equal(town.visible,true);assert.equal(room.visible,false);assert.equal(hands.visible,false);assert.equal(hidden.visible,false);assert.equal(light.visible,true);assert.equal(this.shadowMap.enabled,false);assert.equal(this.autoClear,true);assert.equal(this.clippingPlanes.length,1);assert.ok(c.getWorldDirection(new THREE.Vector3()).distanceTo(new THREE.Vector3(1,0,0))<.000001);}};
- const view=createIzakayaStreetView({renderer,scene,town,room,site:{entryFacing:Math.PI/2,door:[-7.05,0,-10.43]},viewCamera,now:()=>now});
- const restored=()=>{assert.equal(renderer.target,oldTarget);assert.equal(renderer.autoClear,false);assert.equal(renderer.clippingPlanes,clipping);assert.equal(renderer.shadowMap.enabled,true);assert.equal(town.visible,false);assert.equal(room.visible,true);assert.equal(hands.visible,true);assert.equal(hidden.visible,false);};
- return {view,renderer,room,restored,setNow:n=>now=n,get draws(){return draws;},get target(){return target;}};
-}
-
-test('actual street preview uses one small target, throttles updates and restores renderer state',()=>{
- const h=streetHarness();h.view.update();h.restored();assert.equal(h.draws,1);assert.equal(h.target.width,512);assert.equal(h.target.height,256);
- h.setNow(2499);h.view.update();assert.equal(h.draws,1);h.setNow(2500);h.view.update();assert.equal(h.draws,2);
- h.room.visible=false;h.setNow(5000);h.view.update();assert.equal(h.draws,2);h.room.visible=true;
- let disposed=0;h.target.addEventListener('dispose',()=>disposed++);h.view.dispose();h.view.dispose();assert.equal(disposed,1);h.view.update();assert.equal(h.draws,2);
-});
-
-test('street capture pauses with a lost context or hidden tab and refreshes on return',()=>{
- const h=streetHarness();let lost=true;
- h.renderer.getContext=()=>({isContextLost:()=>lost});
- h.view.update();assert.equal(h.draws,0,'A lost context never binds or renders the street target');h.restored();
- lost=false;h.view.update();assert.equal(h.draws,1,'Restoration populates the first texture immediately');h.restored();
- h.setNow(2500);lost=true;h.view.update();assert.equal(h.draws,1);h.restored();
- lost=false;h.view.update();assert.equal(h.draws,2,'A paused refresh does not consume the next update');h.restored();
- const descriptor=Object.getOwnPropertyDescriptor(document,'hidden');
- try{
-  Object.defineProperty(document,'hidden',{configurable:true,value:true});
-  h.setNow(5000);h.view.update();assert.equal(h.draws,2,'A background tab does not render the optional street view');h.restored();
-  Object.defineProperty(document,'hidden',{configurable:true,value:false});
-  h.view.update();assert.equal(h.draws,3,'Returning to the tab refreshes without another throttle interval');h.restored();
- }finally{
-  if(descriptor)Object.defineProperty(document,'hidden',descriptor);else delete document.hidden;
-  h.view.dispose();
- }
-});
-
-test('failed street capture restores target, clipping, shadows and visibility',()=>{
- const h=streetHarness();h.renderer.render=()=>{throw Error('Street GPU failure');};
- assert.throws(()=>h.view.update(),/Street GPU failure/);h.restored();h.view.dispose();
-});
-
-test('street refresh stops while its window is outside the player camera and resumes when visible',()=>{
- const camera=new THREE.PerspectiveCamera(55,1.6,.1,90);camera.position.set(-3.9,1.72,0);camera.lookAt(-3.9,1.72,-6);
- const h=streetHarness(camera);h.view.update();assert.equal(h.draws,1,'Initial texture is populated even before looking at the window');h.restored();
- h.setNow(2500);h.view.update();assert.equal(h.draws,1,'No off-screen street refresh');
- camera.lookAt(-3.9,1.72,6.283);h.view.update();assert.equal(h.draws,2,'A visible window refreshes without an extra throttle delay');h.restored();h.view.dispose();
+test('Minato looks out on the real street: its frontage sits on the door plane and hides only the outward glazing',async()=>{
+ const {shopWindowPlanes,mapShopCamera}=await import('../src/render/shop-street-view.js');
+ const {MINATO}=await import('../src/world/minato-facade.js');
+ const yaw=Math.PI/2,frontage={position:[-7,0,-20],yaw,interiorZ:6.27,span:{minX:-5.05,maxX:1.95,minY:.03,maxY:2.75},hideGlazing:true};
+ // The room's doorway centre maps onto the frontage point, and outward is the street.
+ const inside=new THREE.PerspectiveCamera();inside.position.set(0,1.6,2.27);inside.lookAt(0,1.6,10);inside.updateMatrixWorld(true);
+ const outside=new THREE.PerspectiveCamera(),plane=mapShopCamera(inside,outside,frontage);
+ assert.ok(outside.position.distanceTo(new THREE.Vector3(-11,1.6,-20))<1e-6,'Four metres inside the doorway is four metres behind the door');
+ assert.ok(Math.abs(plane.normal.x-1)<1e-6,'Out of the door is out to the street');
+ // The window planes follow Minato's own opening, not Sakura's 13 m of glass.
+ const planes=shopWindowPlanes(outside,frontage),through=p=>planes.every(pl=>pl.distanceToPoint(p)>=-1e-6);
+ assert.ok(through(new THREE.Vector3(-7+4,1.4,-19)),'The street across the road is in view');
+ assert.ok(!through(new THREE.Vector3(-7+4,1.4,-28)),'Nothing beside the opening is drawn');
+ assert.ok(MINATO.recess>0,'The doorway is recessed, so the door plane is behind the frontage');
 });

@@ -1,7 +1,7 @@
 import {openCreator} from '../johansson-town/src/avatars/creator.js';
 import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from '../johansson-town/src/avatars/cast.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261011-1';
+import {createSceneWorkspace} from './scene.js?v=20261011-2';
 
 // Independent of the town's player and all game save keys.
 const SAVE_KEY='nj-avatar-studio-v1';
