@@ -115,7 +115,7 @@ export const GENRES=Object.freeze([
     {say:null,line:'{A} had lost the {$lost} while {doing}.',a:['Shrug','worried'],b:['Idle','neutral']}],
    [{say:'B',line:'When did you last have it?',a:['Think','worried'],b:['Think','thinking']},
     {say:'B',line:'Retrace your steps. Calmly.',a:['Shrug','sad'],b:['Point','content']},
-    {say:null,line:'{$tale}',shot:'close',focus:'A',a:['Think','sad'],b:['Think','thinking']}],
+    {say:null,line:'{$tale}',shot:'medium',focus:'A',a:['Think','sad'],b:['Think','thinking']}],
    [{say:'A',line:'I was {doing}, and then {weather} happened.',a:['Point','thinking'],b:['Think','thinking']},
     {say:null,line:'The search covered all of {place}.',a:['Crouch','worried'],b:['Crouch','thinking']}],
    [{say:'B',line:'Found it. In {$found}.',a:['Cheer','happy'],b:['Tada','content']},

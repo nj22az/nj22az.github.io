@@ -23,6 +23,7 @@ test('every thing has a purpose, a real source and a home',()=>{
    assert.ok(b.from in SUPPLIERS||BELONGING_SOURCES.includes(b.from)||(names.has(b.from)&&b.from!==name),what+' comes from nowhere real: '+b.from);
    assert.match(b.keeps,/^(in|on|under|behind|beside|against|over|by)\s/,what+' is kept somewhere, as a place phrase');
    assert.match(b.tale,/^[A-Z“].{10,}[.!?]$/,what+' has a whole sentence of a tale');
+   assert.ok(b.tale.length<=60,what+'’s tale fits a comic caption without covering faces: '+b.tale.length+' characters');
    assert.equal(typeof b.canon,'boolean',what+' says whether the guide names it');
   }
  }
