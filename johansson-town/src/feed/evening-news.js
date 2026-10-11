@@ -2,6 +2,7 @@ import {townDate,townDay} from '../town-clock.js';
 import {momentsOn} from '../progression/diary.js';
 import {happeningsOn} from '../people/happenings.js';
 import {typhoonTomorrow,typhoonAt} from '../world/typhoons.js';
+import {birthdaysOn} from '../people/birthdays.js';
 
 /**
  * The Minato Evening News, on the mayor's television from six in the evening.
@@ -60,6 +61,7 @@ export function tomorrowItems(minutes,{weather=true}={}){
   const storm=weather&&h.dry&&timed&&typhoonAt(start+h.hours[0])&&typhoonAt(start+h.hours[1]-1);
   items.push(storm?`Tomorrow: ${title}, though with Typhoon No. ${storm.number} near it is likely to be called off.`:timed?`Tomorrow: ${title}, from ${atWords(h.hours[0])}.`:`Tomorrow: ${title}.`);
  }
+ for(const who of birthdaysOn(next))items.push(`Tomorrow is ${who}’s birthday.`);
  return items;
 }
 

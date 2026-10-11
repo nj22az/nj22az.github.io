@@ -25,6 +25,9 @@ export function openYear(saved,now=new Date()){
  if(!newYearDue(saved,now))return {saved,turned:false};
  const next={loopYear:realYear(now),loops:(saved.loops|0)+1};
  for(const key of YEAR_KEEPS)if(saved[key]!==undefined)next[key]=structuredClone(saved[key]);
+ // A favour's thing goes with the favour: the errand is not kept, so neither is what he was carrying for it.
+ const carried=saved.errand?.favour&&typeof saved.errand.item==='string'?saved.errand.item:null;
+ if(carried&&Array.isArray(next.inventory)){const i=next.inventory.indexOf(carried);if(i>=0)next.inventory.splice(i,1);}
  if(next.friendship&&typeof next.friendship==='object')for(const f of Object.values(next.friendship))if(f&&typeof f==='object')for(const k of DAY_MARKS)delete f[k];
  next.notes=[`1 January 1997, again. The year on the island has started over (${ordinal(next.loops+1)} time round): the town does not remember last year, but the people you know still know you.`];
  return {saved:next,turned:true};
