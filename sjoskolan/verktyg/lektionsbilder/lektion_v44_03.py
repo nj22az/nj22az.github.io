@@ -7,7 +7,7 @@ hänvisningar (”Del 3, övning 3.3”) stämmer. Inga övningstexter eller sva
 """
 
 HEMMA = [
-    ('del-3', 'Läs del 3: alla sju avsnitt och de två exemplen.', 'Del_3.html', 'Öppna del 3'),
+    ('del-3', 'Läs del 3: alla sju avsnitt och de två exemplen. Tryck på ”Jag har läst del 3” längst ned på sidan.', 'Del_3.html', 'Öppna del 3'),
     ('ovn-3', 'Gör övning 3.4–3.6 på delsidan. Ledtrådar och facit finns där.', 'Del_3.html#v44_03-q4', 'Öppna övning 3.4'),
     ('labb', 'Gör labben Mätaren påverkar i Multimeterlabbet.', '../../multimetersimulator/?ovning=loading', 'Öppna labben'),
     ('isolation', 'Gör isolationsmätningen i Isolationslabbet. Den hör till inlämning 3.', '../../isolationslabbet/?del=matning',

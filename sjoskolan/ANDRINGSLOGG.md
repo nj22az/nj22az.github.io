@@ -235,6 +235,17 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 43 och 44 visas som dagar, som vecka 42 (`DAGSVY = {42, 43, 44}`): I dag, en ruta per lektionsdag i
+  dagens färg (vecka 44 har två entimmeslektioner måndag och tisdag i samma ruta), Hela veckan (inlämningen med fyra uppgifter,
+  Hållkretslabbet respektive Isolationslabbet och övningstentan, övningarna) och rutan Din del på alla delsidor, också delarna
+  i vecka-45/ som undervisas i vecka 43 och 44. Övningarnas läge räknas nu per lektion: en läxa räknar övningarna i sin text och
+  länk (”Gör övning 2.4–2.6”, `#v44_02-q4`), också i en annan del (del 3:s övning 3.1–3.5 efter tisdagen i vecka 43), och ”På
+  lektionen” räknar övningarna på bilderna Övningar tillsammans (vecka 43 fredag: 3.6 och 3.7). Läxan ”Läs del N” i vecka
+  43–45 säger att eleven ska trycka på ”Jag har läst del N” (delsidorna har knappen sedan inlämningen blev självrättande), del 4
+  i vecka 43 har fått sin läsläxa, och felsökningsrapporten och analysen av mätdata länkar till inlämning 4 i vecka 43 och
+  44. Åtta presentationer är ombyggda för bilden ”Det här gör du nu”. Veckosidornas bildantal stämmer med de nya
+  presentationerna, och sista dagen skrivs med veckodagen ur datumet (`sista_dag`), inte alltid ”söndag” (vecka 44:s sida
+  sa ”söndag 30 oktober”, som är en fredag). Test: `innehall/tests/test_lektionernas_ovningar.py` och `gemensamt/dagsvy.test.mjs`.
 - **2026-10-11** Övningsfigurerna på delsidorna i vecka 43–45 (17 stycken) står nu som `figurer` på övningens placering i
   `kurs-formelstod.json` och följer inte längre med presentationen (regel 57). Schemat och databasen har fältet,
   `figurkontroll.py` jämför alt-textens tal med övningsposten, och figurer hittas på innehållet före bildnumret. Delsidorna

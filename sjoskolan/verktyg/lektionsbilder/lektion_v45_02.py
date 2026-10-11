@@ -10,10 +10,10 @@ tillsammans och ingen paus. Inga övningstexter eller svar på bilderna och inga
 V45 = '../../vecka-45/aktuell/'
 
 HEMMA = [
-    ('del-4', 'Läs del 4: alla sju avsnitt och de två exemplen.', V45 + 'Del_2.html', 'Öppna del 4'),
+    ('del-4', 'Läs del 4: alla sju avsnitt och de två exemplen. Tryck på ”Jag har läst del 4” längst ned på sidan.', V45 + 'Del_2.html', 'Öppna del 4'),
     ('ovn-4', 'Gör övning 2.4–2.6 på delsidan för del 4. Ledtrådar och facit finns där.', V45 + 'Del_2.html#v45_02-q4', 'Öppna övning 2.4'),
     ('inl', 'Gör inlämning 1–3 på veckans inlämningssida.', '../../vecka-44/aktuell/Inlamning.html', 'Öppna inlämningen'),
-    ('analys', 'Gör analysen av mätdata. Den bygger på del 3 och 4.', V45 + 'Inlamning.html#uppgift-1', 'Öppna analysen'),
+    ('analys', 'Gör analysen av mätdata, inlämning 4. Den bygger på del 3 och 4.', '../../vecka-44/aktuell/Inlamning.html#uppgift-4', 'Öppna analysen'),
     ('tenta', 'Gör övningstentan utan att titta i lösningarna.', '../../tentamen.html#ovningstenta', 'Öppna övningstentan'),
 ]
 

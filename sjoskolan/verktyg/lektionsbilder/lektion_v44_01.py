@@ -11,7 +11,7 @@ DELSIDA_URL = 'nj22az.github.io/sjoskolan/vecka-44/aktuell/Del_1.html'
 # Läxorna efter lektionen (samma lista på bilden ”Det här gör du nu” och i dagens ruta på veckosidan).
 # Adresserna gäller relativt veckosidan vecka-44/aktuell/.
 HEMMA = [
-    ('del-1', 'Läs del 1 på delsidan: teorin och de två exemplen.', 'Del_1.html', 'Öppna del 1'),
+    ('del-1', 'Läs del 1 på delsidan: teorin och de två exemplen. Tryck på ”Jag har läst del 1” längst ned på sidan.', 'Del_1.html', 'Öppna del 1'),
     ('ovn-1', 'Gör övning 1.6–1.10 på delsidan. Ledtrådar och facit finns där.', 'Del_1.html#v44_01-q6', 'Öppna övning 1.6'),
     ('film', 'Titta på filmen IT-nätet ombord: första och andra jordfelet.', '../../filmer/#it-nat', 'Öppna filmen'),
     ('labb', 'Gör Isolationslabbet: räkna-först-uppgifterna och protokollet. Spara protokollet som PDF.',

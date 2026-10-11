@@ -19,9 +19,9 @@ DELSIDA = 'nj22az.github.io/sjoskolan/vecka-43/aktuell/Del_2.html'
 # ”Det här gör du nu” och i dagens ruta på veckosidan (verktyg/veckosidor/dagsvy.py). Id som börjar med ovn- räknas som
 # övning N.6–N.10 i lektionens egen del, därför heter övningarna i del 3 del3-ovn.
 HEMMA = [
-    ('del-2', 'Läs del 2: teorin och de två exemplen.', 'Del_2.html', 'Öppna del 2'),
+    ('del-2', 'Läs del 2: teorin och de två exemplen. Tryck på ”Jag har läst del 2” längst ned på sidan.', 'Del_2.html', 'Öppna del 2'),
     ('ovn-2', 'Gör övning 2.6–2.10 på delsidan. Ledtrådar och facit finns där.', 'Del_2.html#v43_02-q6', 'Öppna övning 2.6'),
-    ('del-3', 'Läs del 3, Elscheman och dokumentation, på egen hand.', 'Del_3.html', 'Öppna del 3'),
+    ('del-3', 'Läs del 3, Elscheman och dokumentation, på egen hand. Tryck på ”Jag har läst del 3” längst ned på sidan.', 'Del_3.html', 'Öppna del 3'),
     ('del3-ovn', 'Gör övning 3.1–3.5 i del 3.', 'Del_3.html#v43_03-q1', 'Öppna övning 3.1'),
     ('labb', 'Hållkretslabbet: gör de 8 räkna-först-uppgifterna.', '../../hallkretslabbet/', 'Öppna labben'),
 ]

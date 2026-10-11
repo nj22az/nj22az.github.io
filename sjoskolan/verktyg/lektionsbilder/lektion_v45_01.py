@@ -12,10 +12,11 @@ V45 = '../../vecka-45/aktuell/'
 
 # Läxorna efter lektionen (samma lista på bilden ”Det här gör du nu” och på veckosidan).
 HEMMA = [
+    ('del-4', 'Läs del 4: teorin och de två exemplen. Tryck på ”Jag har läst del 4” längst ned på sidan.', V45 + 'Del_1.html', 'Öppna del 4'),
     ('ovn-4', 'Gör övning 1.6–1.10 på delsidan för del 4. Ledtrådar och facit finns där.', V45 + 'Del_1.html#v45_01-q6',
      'Öppna övning 1.6'),
-    ('rapport', 'Skriv felsökningsrapporten: felsök två felmoduler i Hållkretslabbet, en i taget. Lämna in de två '
-                'felsökningsraderna ur protokollet.', V45 + 'Inlamning.html#uppgift-3', 'Öppna felsökningsrapporten'),
+    ('rapport', 'Skriv felsökningsrapporten, inlämning 4: felsök två felmoduler i Hållkretslabbet, en i taget. Lämna in de två '
+                'felsökningsraderna ur protokollet.', '../../vecka-43/aktuell/Inlamning.html#uppgift-4', 'Öppna felsökningsrapporten'),
 ]
 VECKAN = 'Inlämningen och felsökningsrapporten senast i dag, fredag 23 oktober. Allt finns på veckosidan.'
 

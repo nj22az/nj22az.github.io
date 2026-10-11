@@ -14,7 +14,7 @@ DELSIDA = 'nj22az.github.io/sjoskolan/vecka-43/aktuell/Del_1.html'
 # Läxorna efter lektionen: (id, text, adress relativt veckosidan vecka-43/aktuell/, knapptext). Samma lista på bilden
 # ”Det här gör du nu” och i dagens ruta på veckosidan (verktyg/veckosidor/dagsvy.py).
 HEMMA = [
-    ('del-1', 'Läs del 1: teorin och de två exemplen.', 'Del_1.html', 'Öppna del 1'),
+    ('del-1', 'Läs del 1: teorin och de två exemplen. Tryck på ”Jag har läst del 1” längst ned på sidan.', 'Del_1.html', 'Öppna del 1'),
     ('ovn-1', 'Gör övning 1.6–1.10 på delsidan. Ledtrådar och facit finns där.', 'Del_1.html#v43_01-q6', 'Öppna övning 1.6'),
     ('inl', 'Börja på inlämningen: uppgift 1 och 2.', 'Inlamning.html', 'Öppna inlämningen'),
 ]

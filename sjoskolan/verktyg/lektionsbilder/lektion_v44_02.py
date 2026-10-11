@@ -10,7 +10,7 @@ DELSIDA_URL = 'nj22az.github.io/sjoskolan/vecka-44/aktuell/Del_2.html'
 # Läxorna efter lektionen (samma lista på bilden ”Det här gör du nu” och i dagens ruta på veckosidan).
 # Adresserna gäller relativt veckosidan vecka-44/aktuell/.
 HEMMA = [
-    ('del-2', 'Läs del 2 på delsidan: teorin och de två exemplen.', 'Del_2.html', 'Öppna del 2'),
+    ('del-2', 'Läs del 2 på delsidan: teorin och de två exemplen. Tryck på ”Jag har läst del 2” längst ned på sidan.', 'Del_2.html', 'Öppna del 2'),
     ('ovn-2', 'Gör övning 2.4–2.6 på delsidan. Övning 2.7–2.10 är extra. Ledtrådar och facit finns där.',
      'Del_2.html#v44_02-q4', 'Öppna övning 2.4'),
 ]

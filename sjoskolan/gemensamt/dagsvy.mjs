@@ -38,11 +38,17 @@ export function idagLage(lektioner, sista, nu = new Date()) {
   return { typ: 'ingen', lektion: null, nasta };
 }
 
-/** Läget för en läxa: del-N (”Jag har läst del N”), ovn-N (övning N.6–N.10 avbockade), annars Klart-rutan. */
+/** Läget för en läxa: del-N (”Jag har läst del N”), övningar (läxans övningar avbockade, lektion.laxovn; utan lista
+ *  övning N.6–N.10), annars Klart-rutan. */
 export function laxLage(lektion, laxa, k) {
   if (laxa.startsWith('del-') && lektion.lasknapp !== false) {
     const t = k.lasning[laxa];
     return { klar: !!t, text: t ? '✓ Läst' : 'Inte läst än' };
+  }
+  const ovn = lektion.laxovn?.[laxa];
+  if (ovn?.length) {
+    const klara = ovn.filter((a) => k.ovningar[a]).length;
+    return { klar: klara === ovn.length, text: `${klara === ovn.length ? '✓ ' : ''}${klara} av ${ovn.length} klara` };
   }
   if (laxa.startsWith('ovn-')) {
     const klara = [6, 7, 8, 9, 10].filter((i) => k.ovningar[`${lektion.id}-q${i}`]).length;
@@ -193,8 +199,9 @@ export async function visaDel(rot = document) {
   const panel = rot.querySelector('#din-del');
   satt(panel.querySelector('[data-dp-lage]'), lektionText(l, nu));
   visaLaxor(panel.querySelector('.laxor'), l, k);
-  const paLektionen = [1, 2, 3, 4, 5].filter((i) => k.ovningar[`${l.id}-q${i}`]).length;
-  satt(panel.querySelector('[data-dp-lektion]'), paLektionen === 5 ? '✓ 5 av 5 klara' : `${paLektionen} av 5 klara`);
+  // Övningarna på lektionen (bilderna Övningar tillsammans); utan lista övning N.1–N.5.
+  const pa = l.pa_lektionen || [1, 2, 3, 4, 5].map((i) => `${l.id}-q${i}`), paKlara = pa.filter((a) => k.ovningar[a]).length;
+  satt(panel.querySelector('[data-dp-lektion]'), `${paKlara === pa.length ? '✓ ' : ''}${paKlara} av ${pa.length} klara`);
   const lage = { inlamning: formularText(inl), quiz: formularText(lasf ? { ...lasf, uppgifter: lasf.dokument || lasf.uppgifter } : null) };
   for (const x of panel.querySelectorAll('.dp-vk li[data-vk]')) {
     const s = lage[x.dataset.vk];

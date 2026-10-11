@@ -21,7 +21,7 @@ from pathlib import Path
 from kursplan import DAGFARG, _sjalvrattning, kursplan_framsteg, quiz_plan, ton
 
 ROOT = Path(__file__).resolve().parents[2]  # sjoskolan/
-DAGSVY = {42}
+DAGSVY = {42, 43, 44}
 # Lektionsdagarnas färger: kursplan.DAGFARG. Det som gäller hela veckan har mörk text och grå kant.
 VECKODAG = ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag']
 MANAD = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
@@ -89,6 +89,32 @@ def _datumtext(d, veckodag=True):
     return (f'{VECKODAG[d.weekday()]} ' if veckodag else '') + f'{d.day} {MANAD[d.month - 1]}'
 
 
+_OVNING = re.compile(r'[Öö]vning (\d+)\.(\d+)(?:–(\d+)\.(\d+))?')
+
+
+def _laxans_ovningar(text, href):
+    """Övningarna en läxa gäller, som ankare: talen i texten (”Gör övning 2.4–2.6 …”) i presentationen som länken pekar
+    på (”Del_2.html#v44_02-q4”). Vecka 43 och 44 har olika många övningar hemma, så läget räknas ur läxan, inte 6–10."""
+    m, a = _OVNING.search(text), re.search(r'#(v\d\d_\d\d)-q\d+$', href)
+    if not (m and a):
+        return None
+    fran, till = int(m.group(2)), int(m.group(4) or m.group(2))
+    return [f'{a.group(1)}-q{i}' for i in range(fran, till + 1)]
+
+
+def _nummertext(nummer):
+    """['1.2', '1.3', '1.4', '1.5', '1.1'] → ”1.1–1.5”, ['3.6', '3.7'] → ”3.6 och 3.7”."""
+    tal = sorted({tuple(int(x) for x in n.split('.')) for n in nummer})
+    foljder = []
+    for d, i in tal:
+        if foljder and foljder[-1][0] == d and foljder[-1][2] == i - 1:
+            foljder[-1][2] = i
+        else:
+            foljder.append([d, i, i])
+    delar = [f'{d}.{a}' if a == b else f'{d}.{a} och {d}.{b}' if b == a + 1 else f'{d}.{a}–{d}.{b}' for d, a, b in foljder]
+    return delar[0] if len(delar) == 1 else ', '.join(delar[:-1]) + ' och ' + delar[-1]
+
+
 def lektioner(nr, w, sida_mapp=None):
     """Veckans lektioner i tidsordning, med det sidan och dagsvy.mjs behöver. En lektion vars filer ligger i en annan veckas
     mapp (vecka 45:s delar undervisas i vecka 43 och 44) anger 'vecka' och veckans 'del'. sida_mapp: mappen för sidan
@@ -113,6 +139,8 @@ def lektioner(nr, w, sida_mapp=None):
         if not (ROOT / 'bildspel' / deck / 'data.json').exists() or not (ROOT / pdf).exists():
             raise SystemExit(f'dagsvy: presentationen {deck} saknar bildspel eller PDF. Kör verktyg/lektionsbilder/bygg.py.')
         mapp = Path(lek['fil']).parts[0]
+        # Övningarna på lektionen: bilderna ”Övningar tillsammans” (övning N.x i presentationens egen numrering).
+        pa_lektionen = [n for b in lek['bilder'] if b[0] == 'ovningar' for n in b[1]['nummer']]
         ut.append({
             'id': lek['id'], 'del': lek['del'], 'dag': dag, 'datum': datum.isoformat(), 'datumtext': _datumtext(datum),
             'start': f'{m.group(1)}:{m.group(2)}', 'slut': f'{m.group(3)}:{m.group(4)}', 'tid': f'{m.group(1)}.{m.group(2)}–{m.group(3)}.{m.group(4)}',
@@ -122,13 +150,22 @@ def lektioner(nr, w, sida_mapp=None):
             'amnen': [re.sub(r'^Pass \d+: ', '', t) for _, t in upplagg if t.startswith('Pass ')],
             'bildspel': f'../../bildspel/?d={deck}', 'pdf': pdf.name if mapp == sida_mapp else f'../../{mapp}/aktuell/{pdf.name}',
             'mapp': mapp, 'lasknapp': lasknapp,
-            'laxor': [{'id': i, 'text': t, 'href': h, 'knapp': kn} for i, t, h, kn in mod.HEMMA[lek['id']]],
+            'pa_lektionen': [f'{lek["id"]}-q{n.split(".")[1]}' for n in pa_lektionen],
+            'pa_lektionen_text': _nummertext(pa_lektionen) if pa_lektionen else '',
+            'laxor': [{'id': i, 'text': t, 'href': h, 'knapp': kn, 'ovningar': _laxans_ovningar(t, h)} for i, t, h, kn in mod.HEMMA[lek['id']]],
         })
     return sorted(ut, key=lambda l: (l['datum'], l['start']))
 
 
+def _lektion_data(l):
+    """Lektionen som dagsvy.mjs behöver den: läxorna som id, övningarna på lektionen och i varje läxa som ankare."""
+    return ({k: l[k] for k in ('id', 'del', 'dag', 'datum', 'datumtext', 'start', 'slut', 'tid', 'satt', 'farg', 'titel', 'amnen',
+                                'bildspel', 'mapp', 'lasknapp', 'pa_lektionen')}
+            | {'laxor': [x['id'] for x in l['laxor']], 'laxovn': {x['id']: x['ovningar'] for x in l['laxor'] if x['ovningar']}})
+
+
 def _laxa_html(lek, x):
-    if x['id'].startswith('ovn-') or (x['id'].startswith('del-') and lek['lasknapp']):
+    if x.get('ovningar') or x['id'].startswith('ovn-') or (x['id'].startswith('del-') and lek['lasknapp']):
         lage = '<span class="laxa-lage" data-lage></span>'  # läget kommer från delsidan och övningarna (dagsvy.mjs)
     else:
         lage = f'<label class="vag-klar"><input type="checkbox" data-klar="{lek["id"]}-{x["id"]}"> Klart</label>'
@@ -189,9 +226,7 @@ def dagsvy_html(nr, w, sjalvrattande=None):
     lek = lektioner(nr, w)
     data, lm_rader = kursplan_framsteg(nr, w, sjalvrattande)
     data |= {
-        'lektioner': [{k: l[k] for k in ('id', 'del', 'dag', 'datum', 'datumtext', 'start', 'slut', 'tid', 'satt', 'farg', 'titel', 'amnen',
-                                         'bildspel', 'mapp', 'lasknapp')}
-                      | {'laxor': [x['id'] for x in l['laxor']]} for l in lek],
+        'lektioner': [_lektion_data(l) for l in lek],
         'veckan': [{k: x[k] for k in ('id', 'titel', 'href', 'knapp', 'banner') if k in x} | ({'sista': x['sista']} if x.get('sista') else {}) for x in w['veckan']],
         'sista_text': _datumtext(dt.date.fromisoformat(w['sista'])),
     }
@@ -278,11 +313,18 @@ def delpanel_html(nr, del_nr, sjalvrattande=None, sida_mapp=None):
     veckan = [x for x in w['veckan'] if x.get('sista')]
     data = {
         'vecka': nr, 'sista': w['sista'], 'sista_text': _datumtext(dt.date.fromisoformat(w['sista'])),
-        'lektion': {k: lek[k] for k in ('id', 'del', 'dag', 'datum', 'datumtext', 'start', 'slut', 'tid', 'satt', 'farg', 'titel', 'bildspel', 'mapp', 'lasknapp')}
-                   | {'laxor': [x['id'] for x in lek['laxor']]},
+        'lektion': _lektion_data(lek),
         'veckan': [{k: x[k] for k in ('id', 'titel', 'sista') if k in x} for x in veckan],
-        'ovningar': [[lek['mapp'], [f'{lek["id"]}-q{i}' for i in range(1, 11)]]],
+        'ovningar': [],
     }
+    # Delens tio övningar och övningarna i läxorna (också i en annan del eller veckas mapp), per mapp.
+    for a in [f'{lek["id"]}-q{i}' for i in range(1, 11)] + [a for x in lek['laxor'] for a in x['ovningar'] or []]:
+        mapp = f'vecka-{a[1:3]}'
+        grupp = next((g for m, g in data['ovningar'] if m == mapp), None)
+        if grupp is None:
+            data['ovningar'].append([mapp, grupp := []])
+        if a not in grupp:
+            grupp.append(a)
     if sjalvrattande:
         data['sjalvrattande'] = sjalvrattande
         if quiz_plan(nr):
@@ -307,7 +349,8 @@ def delpanel_html(nr, del_nr, sjalvrattande=None, sida_mapp=None):
               f'<p class="dp-amnen"><b>Vi pratar om:</b> {amnen}</p>'
               f'<p class="dp-knappar"><a class="sj-btn" href="{lek["bildspel"]}">Öppna presentationen</a><a href="{lek["pdf"]}">Presentationen som PDF</a></p>'
               f'<h2 class="dp-rubrik">Läxor efter lektionen</h2><ul class="laxor" data-lektion="{lek["id"]}">{laxor}</ul>'
-              f'<p class="dp-lektion"><b>På lektionen:</b> övning {del_nr}.1–{del_nr}.5 gör vi tillsammans. <span data-dp-lektion></span></p>'
+              + (f'<p class="dp-lektion"><b>På lektionen:</b> övning {lek["pa_lektionen_text"]} gör vi tillsammans. <span data-dp-lektion></span></p>'
+                 if lek['pa_lektionen'] else '') +
               f'<div class="dp-veckan"><h2 class="dp-rubrik">Hela veckan</h2><ul class="dp-vk">{rader}</ul>'
               f'<p class="dp-lektion"><a href="{vecksida}">Veckans översikt</a></p></div></section>'
             + f'<script type="application/json" id="delpanel-data">{json.dumps(data, ensure_ascii=False)}</script>'

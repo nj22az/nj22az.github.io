@@ -150,7 +150,7 @@ bockat och som har börjat; bara dess första knapp är blå (en huvudknapp per 
 inlämningen) med en tunn stapel, sista dagen och dagar kvar, och kursplanens punkter med stapel i områdets färg och ”x av y”.
 Siffran står alltid i text; stapeln är bara stöd. Inga nya knappar: den enda blå knappen är fortfarande ”Nästa steg”.
 
-**Veckan som dagar (vecka 42, `verktyg/veckosidor/dagsvy.py`, `gemensamt/dagsvy.mjs`).** Eleven ska se på sidan vad dagens
+**Veckan som dagar (vecka 42–44, `verktyg/veckosidor/dagsvy.py`, `gemensamt/dagsvy.mjs`).** Eleven ska se på sidan vad dagens
 lektion handlar om, så att läraren bara visar presentationen. Ordning: rubrik → **I dag** → **Veckans lektioner** → **Hela
 veckan** → **Kursplanen den här veckan**. Ersätter ”Nästa steg”, den numrerade vägen och rutorna i ”Din vecka” för veckorna i `DAGSVY`.
 
@@ -160,13 +160,18 @@ veckan** → **Kursplanen den här veckan**. Ersätter ”Nästa steg”, den nu
 - **Lektionsdagarna har var sin färg**, alltid med dagens namn: måndag `#008300`, tisdag `#2468c0`, fredag `#b5179e`
   (`kursplan.DAGFARG`, validerade för färgblindhet, vit text 4,5:1; inte samma kulörer som kursplanens områden). Färgen står på
   dagens ruta (vänsterkant och etikett), på I dag samma dag och på presentationens titelbild. Dagens och nästa lektions ruta är
-  öppna, de andra en rad; har en passerad lektion läxor kvar står ”Läxor: x av y klara” i varningsfärg.
+  öppna, de andra en rad; har en passerad lektion läxor kvar står ”Läxor: x av y klara” i varningsfärg. Två lektioner
+  samma dag (vecka 44: två entimmeslektioner måndag och tisdag) står i samma dagruta, var och en med rubrik och tid.
 - **Hela veckan** (veckans läxa med texterna att ladda ner, quiz, inlämning, övningar) har ingen dagfärg: grå yta, mörk
-  överkant, sista dag och dagar kvar. Sista dagen skrivs med sin veckodag (vecka 42: allt senast fredag).
-- **Delsidorna** (Del_1–3) har rutan **Din del** överst: dagens färg och tid, lektionens läge, vad vi pratar om,
-  presentationen, läxorna efter lektionen med läge, övningarna på lektionen och Hela veckan i neutral färg.
-- Läxorna efter en lektion skrivs en gång, i `verktyg/lektionsbilder/lektioner.py` `HEMMA`. Bilden ”Det här gör du nu” och
-  dagens ruta byggs ur samma lista. Läst del och övning 6–10 visar läget själva; övriga läxor har en Klart-ruta.
+  överkant, sista dag och dagar kvar. Sista dagen skrivs med sin veckodag (från vecka 42: allt senast fredag). Labbar
+  och övningstentan kan stå här utan sista dag.
+- **Delsidorna** har rutan **Din del** överst: dagens färg och tid, lektionens läge, vad vi pratar om,
+  presentationen, läxorna efter lektionen med läge, övningarna på lektionen och Hela veckan i neutral färg. Delar som
+  undervisas en annan vecka (vecka-45/Del_1–3 i vecka 43 och 44) visar den veckans lektion och länkar till den veckan.
+- Läxorna efter en lektion skrivs en gång, i `HEMMA` (`verktyg/lektionsbilder/lektioner.py` för vecka 42, en fil
+  `lektion_<id>.py` per presentation från vecka 43). Bilden ”Det här gör du nu” och dagens ruta byggs ur samma lista. Läst
+  del och övningar visar läget själva: en läxa med ”övning 2.4–2.6” och en länk till `#v44_02-q4` räknar just de
+  övningarna, och ”På lektionen” räknar övningarna på bilderna Övningar tillsammans. Övriga läxor har en Klart-ruta.
 
 ### Genomgång (Zenn)
 

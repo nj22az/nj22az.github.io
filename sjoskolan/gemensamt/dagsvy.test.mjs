@@ -88,3 +88,13 @@ test('utan läst-knapp på delsidan är läs-läxan en Klart-ruta', () => {
   assert.deepEqual(laxLage({ id: 'v43_01', lasknapp: false }, 'del-1', k), { klar: true, text: '' });
   assert.equal(laxLage({ id: 'v43_02', lasknapp: false }, 'del-2', k).klar, false);
 });
+
+test('läxans egna övningar: vecka 44 gör 2.4–2.6 hemma, och läxan kan gälla en annan del', () => {
+  const k = { lasning: {}, steg: {}, ovningar: { 'v44_02-q4': true, 'v44_02-q5': true, 'v44_02-q7': true, 'v43_03-q1': true } };
+  const v44 = { id: 'v44_02', lasknapp: false, laxovn: { 'ovn-2': ['v44_02-q4', 'v44_02-q5', 'v44_02-q6'] } };
+  assert.deepEqual(laxLage(v44, 'ovn-2', k), { klar: false, text: '2 av 3 klara' }, 'övning 2.7 är extra och räknas inte');
+  k.ovningar['v44_02-q6'] = true;
+  assert.deepEqual(laxLage(v44, 'ovn-2', k), { klar: true, text: '✓ 3 av 3 klara' });
+  const v43 = { id: 'v43_02', lasknapp: false, laxovn: { 'del3-ovn': ['v43_03-q1', 'v43_03-q2', 'v43_03-q3', 'v43_03-q4', 'v43_03-q5'] } };
+  assert.deepEqual(laxLage(v43, 'del3-ovn', k), { klar: false, text: '1 av 5 klara' }, 'övning 3.1–3.5 i del 3 räknas från del 2:s läxa');
+});
