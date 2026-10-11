@@ -61,17 +61,22 @@ export function seatTurn(seat){return wrapTurn(180+(seat.yaw||0)*180/Math.PI);}
  * The faces of counters near `origin`: box colliders whose top stands edgeTop above the floor in front of the face (where
  * someone stands: under the box itself a plinth or a raised step can lift the walk surface, as under Sakura's till), that
  * start on that floor and whose face is at least edgeMinLength long. Rotation (yaw, three.js rotation.y) follows World's
- * footprint(). Each face: {id, a:[x,z], b:[x,z], n:[nx,nz] (outward), turn (facing the face), top, floor}.
+ * footprint(). Furniture someone sits on is not a counter: not a box holding one of `seats` ([x,z,turn] each), nor a
+ * face with one in front of it, within 0.6 m, that has its back to it (a booth's tall back).
+ * Each face: {id, a:[x,z], b:[x,z], n:[nx,nz] (outward), turn (facing the face), top, floor}.
  */
-export function counterEdges(solids,floor,{reach=SNAP.reach,origin=[0,0,0]}={}){
+export function counterEdges(solids,floor,{reach=SNAP.reach,origin=[0,0,0],seats=[]}={}){
  const out=[],faces=new Set(),[low,high]=SNAP.edgeTop,ox=origin[0],oz=origin.length>2?origin[2]:origin[1];
  solids.forEach((c,i)=>{
   if(c.r!=null||!(c.w>0)||!(c.d>0)||!Number.isFinite(c.height)||!Number.isFinite(c.x)||!Number.isFinite(c.z))return;
   if(Math.hypot(c.x-ox,c.z-oz)>reach)return;
   const co=Math.cos(c.yaw||0),si=Math.sin(c.yaw||0),hw=c.w/2,hd=c.d/2;
+  const local=seats.map(([x,z,turn])=>{const dx=x-c.x,dz=z-c.z,t=turn*Math.PI/180,fx=Math.sin(t),fz=Math.cos(t);return {u:co*dx-si*dz,v:si*dx+co*dz,fu:co*fx-si*fz,fv:si*fx+co*fz,turned:Number.isFinite(turn)};});
+  if(local.some(p=>Math.abs(p.u)<=hw+.05&&Math.abs(p.v)<=hd+.05))return;
+  const backTo=(nu,nv)=>local.some(p=>{if(!p.turned)return false;const out=nu?nu*p.u-hw:nv*p.v-hd,along=nu?Math.abs(p.v)<=hd:Math.abs(p.u)<=hw;return along&&out>0&&out<=.6&&(nu*p.fu+nv*p.fv)>.3;});
   const at=(u,v)=>[fixed(c.x+u*co+v*si),fixed(c.z-u*si+v*co)],dir=(u,v)=>[fixed(u*co+v*si),fixed(-u*si+v*co)];
   for(const [face,nu,nv,length] of [['+u',1,0,c.d],['-u',-1,0,c.d],['+v',0,1,c.w],['-v',0,-1,c.w]]){
-   if(length<SNAP.edgeMinLength)continue;
+   if(length<SNAP.edgeMinLength||backTo(nu,nv))continue;
    const [a,b]=nu?[at(nu*hw,-hd),at(nu*hw,hd)]:[at(-hw,nv*hd),at(hw,nv*hd)],n=dir(nu,nv),out1=SNAP.body+SNAP.edgeGap;
    const f=floor((a[0]+b[0])/2+n[0]*out1,(a[1]+b[1])/2+n[1]*out1);
    if(!Number.isFinite(f)||c.height-f<low||c.height-f>high||(c.minY!=null&&c.minY>f+.12))continue;
@@ -135,7 +140,8 @@ export function nearestFree(want,free,opt=SNAP.search,prefer=null){
  *  free(x,z): no wall, furniture, person, edge or step (bound to this character); seen(x,z): the camera sees them there;
  *  lock: the target caught last; capturePx; snapping; grid ({size,origin,yaw}, builders only); floor(x,z); previous landing.
  * A target catches within R = capturePx clamped to its kind's metres; the one caught keeps them until 1.5 R and wins ties
- * (score × 0.75); a seat beats a person, a person a counter, by 0.1 R. Without a target: the point itself if free and seen,
+ * (score × 0.75); a seat beats a person, a person a counter, by 0.1 R. Without a target: the point itself (to the nearest free
+ * centimetre) if free and seen,
  * else the nearest free one within 0.6 m, else null (keep the last landing).
  * → {x,z,y,kind:'seat'|'person'|'edge'|'grid'|'free',target,turn,seat,key}|null; `key` changes only when the result does.
  */
@@ -172,8 +178,10 @@ export function resolveSnap(want,ctx={}){
  }
  const landing=(x,z,kind)=>({x,y:floor?floor(x,z):y0,z,kind,target:null,turn:null,seat:null,key:kind+':'+x.toFixed(2)+','+z.toFixed(2)});
  if(snapping&&grid){const g=gridPoint(want,grid);if(free(g.x,g.z)&&seen(g.x,g.z))return landing(g.x,g.z,'grid');}
- const x=fixed(round(want.x)),z=fixed(round(want.z));
- if(free(x,z)&&seen(x,z))return landing(x,z,'free');
+ // The centimetre points around the wanted one, nearest first: rounding alone can step 5 mm into whatever they stand against.
+ const q=SNAP.quantum,around=[];for(const fx of [Math.floor,Math.ceil])for(const fz of [Math.floor,Math.ceil])around.push({x:fixed(fx(want.x/q)*q),z:fixed(fz(want.z/q)*q)});
+ around.sort((a,b)=>Math.hypot(a.x-want.x,a.z-want.z)-Math.hypot(b.x-want.x,b.z-want.z));
+ for(const p of around)if(free(p.x,p.z)&&seen(p.x,p.z))return landing(p.x,p.z,'free');
  const near=nearestFree({x:want.x,z:want.z},free,SNAP.search,previous);
  return near&&seen(near.x,near.z)?landing(near.x,near.z,'free'):null;
 }

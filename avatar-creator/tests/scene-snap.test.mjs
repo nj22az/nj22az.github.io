@@ -40,6 +40,7 @@ test('counter faces: height window, length, rotation, outward normal and facing'
  assert.equal(counterEdges([{...box,x:20}],flat,{reach:12,origin:[0,0,0]}).length,0,'too far away');
  const plinth=(x,z)=>Math.abs(x)<1.1&&Math.abs(z)<.4?.12:0;assert.equal(counterEdges([box],plinth).length,4,'the floor is measured where people stand, not on the plinth');
  assert.equal(counterEdges([box,{...box}],flat).length,4,'a counter registered twice gives its faces once');
+ assert.equal(counterEdges([box],flat,{seats:[[.3,0]]}).length,0,'furniture with a seat in it (a booth and its back) is not a counter');assert.equal(counterEdges([box],flat,{seats:[[0,.7,180]]}).length,4,'a stool in front of it, facing it: still a counter');assert.deepEqual(counterEdges([box],flat,{seats:[[0,.7,0]]}).map(f=>f.id),['edge:0:+u','edge:0:-u','edge:0:-v'],'not the face a seat has its back to (a booth back)');
  const turned=counterEdges([{...box,yaw:Math.PI/2}],flat),side=turned.find(f=>f.id.endsWith(':+u'));
  assert.ok(near(side.a[1],-1)&&near(side.b[1],-1),'+u of a box turned 90° lies at z −1 (World footprint())');assert.deepEqual(side.n,[0,-1]);assert.equal(side.turn,0);
  const line=edgeLine(front,1);assert.ok(near(line.a[1],.3+.23+.03)&&near(line.a[0],-1+.23)&&near(line.b[0],1-.23),'standoff 0.23·size + 0.03, inset 0.23·size');
@@ -93,6 +94,7 @@ test('a wall slides the character to the nearest free place within 0.6 m, else n
  const along=resolveSnap({x:1.2,y:0,z:.3},{free,project:top(),previous:{x:.9,z:.3}});assert.ok(near(along.x,.95,.001)&&near(along.z,.3,.001),'straight off the wall, towards the last landing: '+JSON.stringify(along));
  const prefer=nearestFree({x:1.02,z:0},x=>x<1,SNAP.search,{x:.9,z:1});assert.ok(prefer.z>0,'on the ring, the point nearest the last landing');
  assert.equal(nearestFree({x:3,z:0},free),null,'too deep in the wall');
+ const hugging=resolveSnap({x:-3.208,y:0,z:1.5096},{free:x=>x>=-3.208,project:top(),snapping:false});assert.deepEqual([hugging.x,hugging.z,hugging.kind],[-3.2,1.51,'free'],'against a shelf: the free centimetre, not a 5 cm jump');
  assert.equal(resolveSnap({x:0,y:0,z:0},{free:()=>false,project:top()}),null,'boxed in: keep the last landing');
  assert.equal(resolveSnap({x:0,y:0,z:0},{free:()=>true,seen:(x,z)=>z>.2,project:top()}),null,'the camera must see them: else keep the last landing');
  const off=resolveSnap({x:2,y:0,z:0},{free:x=>x<1.97,seen:()=>true,project:top()});assert.ok(off.x<1.97&&off.x>1.94&&Math.hypot(off.x-2,off.z)<=.06,'the first ring, 5 cm out (to 1 cm)');

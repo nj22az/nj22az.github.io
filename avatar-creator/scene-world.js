@@ -52,7 +52,7 @@ export async function buildSceneWorld(id,views,townData=null){
  // Repeated labels in the furniture menu are numbered left to right as the preset wide camera sees them.
  const menuSeats=seats.filter(s=>Math.hypot(s.position[0]-origin[0],s.position[2]-origin[2])<SNAP.reach),screen=new THREE.Vector3();
  numberLabels(menuSeats,s=>screen.fromArray(s.position).project(camera).x).forEach((label,i)=>{menuSeats[i].label=label;});
- const edges=counterEdges(near,floor,{reach:SNAP.reach,origin});
+ const edges=counterEdges(near,floor,{reach:SNAP.reach,origin,seats:seats.map(s=>[s.position[0],s.position[2],s.turn])});
  const sky=inside?null:(townData?.sky||createTownSky(scene)),cel=createCelPass({tint:0xffffff});cel.apply(scene);
  let lamps=0;scene.traverse(o=>{if(o.isPointLight&&++lamps>4)o.visible=false;});
  const meshes=[];scene.traverse(o=>{if(o.isMesh){let p=o,actor=false;while(p){if(p.userData.studioActor||!p.visible)actor=true;p=p.parent;}if(!actor)meshes.push(o);}});scene.updateMatrixWorld(true);
@@ -125,10 +125,12 @@ export async function buildSceneWorld(id,views,townData=null){
     if(Math.hypot(x-origin[0],z-origin[2])>SNAP.reach||taken.has(s.id)||!shown(x,y,z,top-y+SNAP.seenSeat*size)||!free.people(x,z))continue;let sees;
     targets.push({id:s.id,kind:'seat',rank:SNAP.rank.seat,point:[x,y,z],turn:s.turn,seat:s,label:s.label,ok:()=>sees??=seen(x,top+SNAP.seenSeat*size,z)});
    }
+   // Nothing between two people who talk or stand side by side (no shelf or counter between them): every 5 cm.
+   const clear=(p,m)=>{const n=Math.ceil(Math.hypot(m.x-p.x,m.z-p.z)/.05);for(let i=1;i<n;i++){const x=p.x+(m.x-p.x)*i/n,z=p.z+(m.z-p.z)*i/n;if(blocked(x,z,.02))return false;}return true;};
    for(const other of others){
     if(other.seat||seated(other.pose))continue;const q=this.place(other);if(!shown(q.x,q.y,q.z,SNAP.seenHead*other.size))continue;let sees;
     for(const m of personMarks({x:q.x,z:q.z,turn:other.turn,size:other.size},size)){
-     const y=floor(m.x,m.z);if(!Number.isFinite(y)||!shown(m.x,y,m.z,SNAP.seenHead*size)||!free(m.x,m.z))continue;
+     const y=floor(m.x,m.z);if(!Number.isFinite(y)||!shown(m.x,y,m.z,SNAP.seenHead*size)||!free(m.x,m.z)||!clear(q,m))continue;
      targets.push({id:'person:'+other.id+':'+m.mark,kind:'person',rank:SNAP.rank.person,point:[m.x,y,m.z],turn:m.turn,other,mark:m.mark,ok:()=>(sees??=seen(q.x,q.y+SNAP.seenHead*other.size,q.z))&&view(m.x,m.z)});
     }
    }
