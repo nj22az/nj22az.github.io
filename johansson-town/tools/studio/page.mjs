@@ -36,6 +36,26 @@ export class StudioPage{
   const url=await this.page.evaluate(([r,o])=>window.__JOHANSSON_STUDIO__.renderPortrait(r,o),[recipe,options]);
   return Buffer.from(url.slice(url.indexOf(',')+1),'base64');
  }
+ /**
+  * A picture made safe to keep: decoded in Chromium and drawn again as WebP, so only its pixels survive (no EXIF,
+  * so no camera or GPS location, and nothing else hidden in the file). Orientation is applied first; the longest
+  * side is at most maxSide. Returns {bytes, width, height}. Used by apply.mjs for label pictures (stage 2).
+  */
+ async reencodeWebp(bytes,{maxSide=2048,quality=.92}={}){
+  await this.start();
+  const [data,width,height]=await this.page.evaluate(async([b64,maxSide,quality])=>{
+   const raw=atob(b64),input=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)input[i]=raw.charCodeAt(i);
+   const bitmap=await createImageBitmap(new Blob([input]),{imageOrientation:'from-image'});
+   const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height)),canvas=new OffscreenCanvas(Math.max(1,Math.round(bitmap.width*scale)),Math.max(1,Math.round(bitmap.height*scale)));
+   canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
+   const out=new Uint8Array(await (await canvas.convertToBlob({type:'image/webp',quality})).arrayBuffer());
+   let text='';for(let i=0;i<out.length;i+=0x8000)text+=String.fromCharCode(...out.subarray(i,i+0x8000));
+   return [btoa(text),canvas.width,canvas.height];
+  },[Buffer.from(bytes).toString('base64'),maxSide,quality]);
+  const out=Buffer.from(data,'base64');
+  if(out.subarray(0,4).toString()!=='RIFF'||out.subarray(8,12).toString()!=='WEBP')throw Error('Chromium did not make a WebP picture.');
+  return {bytes:out,width,height};
+ }
  async close(){
   this.closed=true;const started=this.starting;this.starting=null;
   if(!started)return;

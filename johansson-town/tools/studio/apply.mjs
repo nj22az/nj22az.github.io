@@ -48,7 +48,8 @@ export function applyChange(change,{dryRun=true,repo=openRepo(),bytes}={}){
   const base={ok:true,dryRun,id:ready.id,problems:[],conflicts:[],warnings,results:diff,writes,
    nothing:!changed?'Nothing to change: World already has all of this.':undefined};
   if(dryRun||!changed)return {...base,applied:false};
-  // (3) Pictures: none in stage 1 (rules.js refuses a picture no step uses).
+  // (3) Pictures: no stage-1 step uses one, so rules.js refuses any picture in a change. When label pictures arrive
+  // (stage 2) each is re-encoded by page.mjs reencodeWebp before it is written, so no EXIF or GPS ever reaches the repo.
   // Every target is checked before the first byte is written, so a refused one never leaves half a change behind.
   for(const path of writes)await repo.guard(path);
   const looksText=jsonText(data.looks);

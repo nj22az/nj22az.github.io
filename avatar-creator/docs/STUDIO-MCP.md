@@ -69,6 +69,9 @@ agent API in stage 4:
   `src/avatars/looks-data.js`, and it appends to `data/studio/log.json`.
 - **Safety checks.** Every write goes through the allowlist, realpath and symlink checks in `tools/studio/repo.mjs`.
   Nothing writes `.mcp.json`, settings, workflows, code or git.
+- **Pictures (labels, from stage 2).** A picture must really be a PNG, JPEG or WebP of at most 2 MB, with the sha256 the
+  change file gives. It is redrawn as WebP in Chromium (`page.mjs` `reencodeWebp`), so only its pixels are kept and
+  no EXIF or GPS location from the iPad reaches the repository. Until then any picture in a change is refused.
 
 **How World reads it.**
 - `cast.js` `recipeFor(name)` works in this order:

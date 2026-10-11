@@ -5,7 +5,8 @@
  * 1. Against this checkout: initialize in under 2 s, every tool listed, the read tools and dry runs called (the data
  *    files must not change by a byte), and three portraits rendered in headless Studio (the same recipe twice gives
  *    the same pixels). The renders are deleted afterwards.
- * 2. Against a throwaway copy of the data (only under node --test): apply a look, reset it, and looks.json is
+ * 2. A picture with a location hidden in it comes back from Chromium as a WebP with only its pixels.
+ * 3. Against a throwaway copy of the data (only under node --test): apply a look, reset it, and looks.json is
  *    byte-identical again.
  */
 import {test,after} from 'node:test';
@@ -55,6 +56,20 @@ test('this checkout: fast start, every tool, nothing written, portraits from hea
  assert.ok(portraits[0].equals(portraits[2]),'the same recipe and options give the same pixels');
  assert.ok(!portraits[0].equals(portraits[1]));
  assert.deepEqual(await files(),before,'reading, dry runs and renders never change Studio\'s data');
+});
+
+test('a picture is re-encoded to WebP in Chromium, and what was hidden in it (a GPS note) is gone',async()=>{
+ const {StudioPage}=await import('./page.mjs'),{crc32}=await import('node:zlib'),page=new StudioPage();
+ try{
+  const png=await page.renderPortrait({name:'Smoke'},{size:128});
+  // A tEXt chunk after IHDR, the way a phone or an editor leaves a location in a PNG.
+  const chunk=(type,data)=>{const body=Buffer.concat([Buffer.from(type),data]),out=Buffer.alloc(body.length+8);out.writeUInt32BE(data.length,0);body.copy(out,4);out.writeUInt32BE(crc32(body)>>>0,body.length+4);return out;};
+  const hidden=Buffer.concat([png.subarray(0,33),chunk('tEXt',Buffer.from('GPSLatitude\u000026.2124 N, 127.6792 E')),png.subarray(33)]);
+  assert.ok(hidden.includes('GPSLatitude'));
+  const {bytes,width,height}=await page.reencodeWebp(hidden,{maxSide:64});
+  assert.equal(bytes.subarray(8,12).toString(),'WEBP');assert.deepEqual([width,height],[64,64]);
+  assert.ok(!bytes.includes('GPSLatitude'),'only the pixels survive');
+ }finally{await page.close();}
 });
 
 test('a throwaway copy: apply a look, reset it, and looks.json is byte-identical',{skip:!process.env.NODE_TEST_CONTEXT&&'run with node --test to point the server at a throwaway copy'},async()=>{
