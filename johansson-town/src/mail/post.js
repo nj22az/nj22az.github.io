@@ -62,6 +62,19 @@ export function postRound(state,minutes,{senderOf,playerName='Johansson'}){
  return delivered;
 }
 
+/**
+ * After a long absence (seven or more real days), the friends who know him best write to
+ * say so: only friends (a heart or more of friendship), the closest first, at most `max`.
+ * Nobody writes "where have you been?" to a stranger. Returns the letters to send.
+ */
+export const MISSED_AFTER_DAYS=7,MISSED_FRIEND_POINTS=10;
+export function lettersForReturn({friendship={},daysAway=0,day,max=2}){
+ if(!(daysAway>=MISSED_AFTER_DAYS)||!Number.isSafeInteger(day))return [];
+ return Object.entries(friendship||{}).filter(([,r])=>Number(r?.points)>=MISSED_FRIEND_POINTS)
+  .sort((a,b)=>b[1].points-a[1].points||a[0].localeCompare(b[0])).slice(0,max)
+  .map(([from])=>({id:`missed:${from}:${day}`,day,occasion:'missed',from}));
+}
+
 /** The saved post, cleaned. */
 export function restorePost(saved){
  const out={box:[],pending:[],sent:[]};if(!saved||typeof saved!=='object')return out;

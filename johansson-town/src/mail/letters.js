@@ -37,13 +37,13 @@ const L=(sunny,dramatic,easy,dry)=>Object.freeze({sunny:Object.freeze(sunny),dra
  * letter one person could have written. {name} is Johansson.
  */
 export const OCCASIONS=Object.freeze({
- favour:Object.freeze({why:'A resident asks the mayor to call in: the start of a favour (people/favours.js). The favour can bring its own body.',gift:false,place:true,
+ favour:Object.freeze({subject:'a favour to ask',why:'A resident asks the mayor to call in: the start of a favour (people/favours.js). The favour can bring its own body.',gift:false,place:true,
   greeting:L(['Dear Mayor!','Hi, {name}!'],['My dear Mayor,','{name}, I need you.'],['Hi {name},','Morning, Mayor,'],['Dear Mayor,','{name},']),
   body:L(['Could you come by {place} today? I have a favour to ask, and you are the only one I trust with it! It is a small one. Mostly.','Are you free today? Pop in at {place}! I need a hand with something, and I will explain when you get here!'],
    ['I must ask something of you, and it cannot be put in a letter. Come to {place} today. You will understand.','A small matter has become a large one. Come to {place} when you can. Today, ideally.'],
    ['If you’re passing {place} today, come in for a minute? I have a little favour to ask. No rush. Well, today.','Could you stop by {place} when you get a chance? Nothing serious, just a small favour.'],
    ['I have a favour to ask. It is best explained at {place}. Today, during opening hours.','Please call at {place} today. The matter is small and the explanation is short.'])}),
- helped:Object.freeze({why:'Sent the morning after the mayor did a favour for this resident. It encloses their favourite thing when they have one; the words never promise it.',gift:'optional',
+ helped:Object.freeze({subject:'thank you',why:'Sent the morning after the mayor did a favour for this resident. It encloses their favourite thing when they have one; the words never promise it.',gift:'optional',
   greeting:L(['Mayor!!','Dear {name}!'],['My dear {name},','Mayor,'],['Hi {name},','Hey Mayor,'],['Dear Mayor,','{name},']),
   body:L(['Thank you SO much for helping yesterday! I told everyone. Well, three people. But they were very impressed!','You did it! I knew you would! Thank you for helping me out yesterday. Best mayor this island has ever had. I have not met the others, but still!'],
    ['Yesterday you did me a kindness, and I have not stopped thinking about it. A town is only as good as the people who help. Thank you.','I asked, and you came. Do you know how rare that is? I do. Thank you, from the bottom of everything.'],
@@ -53,7 +53,7 @@ export const OCCASIONS=Object.freeze({
    ['P.S. I shall remember this.','P.S. Do not let anyone tell you small kindnesses are small.'],
    ['P.S. Tea’s on me next time.','P.S. No need to reply.'],
    ['P.S. No reply is required.','P.S. I have kept a copy.'])}),
- thanks:Object.freeze({why:'Sent the morning after Johansson gave this resident a present.',gift:true,
+ thanks:Object.freeze({subject:'thank you for the present',why:'Sent the morning after Johansson gave this resident a present.',gift:true,
   greeting:L(['{name}! Guess what!','Dearest {name},'],['My dear {name},','{name}, I must write to you at once.'],['Hey {name},','Hi {name},'],['Dear {name},','{name},']),
   body:L(['Thank you SO much for the present! I put it right where I can see it every morning. I have enclosed something I love too, so now we are even. Or not even, but happy!','You remembered what I like! Nobody remembers! I am sending you some of mine, because a good thing is better shared.'],
    ['Your gift arrived at the end of a very hard week, and it changed the whole week. I am not exaggerating. Well, a little. Please take this in return.','I have kept your present on the windowsill, in the good light. In return, the best thing I have. Do not argue.'],
@@ -63,13 +63,13 @@ export const OCCASIONS=Object.freeze({
    ['P.S. I may have wept a little. Do not mention it.','P.S. Nobody has given me a present since the typhoon of ’93.'],
    ['P.S. The enclosed tastes best on the sea wall at sunset.','P.S. No need to write back. But you can.'],
    ['P.S. Please do not feel obliged to reply. Though a reply would be correct.','P.S. Roughly equal. I checked the prices.'])}),
- missed:Object.freeze({why:'Sent when Johansson comes back after a week or more away (by the real calendar).',gift:false,
+ missed:Object.freeze({subject:'where have you been?',why:'Sent when Johansson comes back after a week or more away (by the real calendar).',gift:false,
   greeting:L(['{name}!!! You’re back!','Oh, {name}!'],['{name}, at last.','{name}! Where have you been?'],['Hey {name}, long time.','Hi {name},'],['Dear {name},','{name},']),
   body:L(['The street felt quiet without you! I kept looking for you at the bus stop. Come by and tell me everything you did!','I nearly sent a search party! Then I remembered I am the only member. Anyway, welcome home!'],
    ['Days passed. The ferry came and went. I looked at the horizon and wondered. Next time, leave a note.','I had begun to compose your farewell song. Three verses in. I am almost sorry to stop.'],
    ['You were away a while. That’s fine. The town kept your bench warm. More or less.','Didn’t see you around for a bit. Hope it was a good trip. The sea didn’t go anywhere.'],
    ['You have been absent for some time. I assumed you were busy, and did not worry more than was reasonable.','I noticed your absence on day three and have kept a tally since. It was getting long.'])}),
- typhoon:Object.freeze({why:'Sent on a day the town has a typhoon warning: a neighbour checking on him.',gift:false,
+ typhoon:Object.freeze({subject:'storm warning',why:'Sent on a day the town has a typhoon warning: a neighbour checking on him.',gift:false,
   greeting:L(['{name}! Storm day!','Hi {name}!'],['{name}, the sky is turning.','{name}! Brace yourself!'],['Hey {name},','{name},'],['Dear {name},','{name}, a notice.']),
   body:L(['The radio says a typhoon is on the way! Shutters closed, candles out, snacks ready. If you get bored, knock. We can play cards!','Big wind coming! I tied down my plants and my bicycle, and nearly myself. Stay safe inside!'],
    ['They say this one is strong. Fill a bucket with water, tape your windows, and keep this letter as proof that someone cared.','I have seen the sea go grey like this before. Stay in. Promise me. The quay is no place for heroes today.'],
@@ -142,6 +142,9 @@ export function composeLetter({occasion,sender,day,playerName='Johansson',gift=n
  return Object.freeze({id:id||`${occasion}:${sender.name}:${day}`,occasion,from:sender.name,temper,day,
   greeting,body:text,ps,signoff:sender.name,gift:present,stationery:stationeryFor(temper),read:false});
 }
+
+/** What the envelope says in the list: who, and what about. */
+export const letterLabel=l=>`${l.from} · ${OCCASIONS[l.occasion]?.subject||'a letter'}${l.read?'':' · new'}`;
 
 /** The whole letter as plain text, as the reading screen and the tests see it. */
 export const letterText=l=>`${l.greeting}\n\n${l.body}\n\n${l.signoff}\n\n${l.ps}`;

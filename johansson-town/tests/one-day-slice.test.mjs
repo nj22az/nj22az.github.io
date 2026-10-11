@@ -174,3 +174,36 @@ test('crafted saves cannot reach Object’s own methods through a letter or a fa
  assert.equal(sendLetter({},{id:'z',day:1,occasion:'toString',from:'Emi'}),false);
  assert.deepEqual(restoreFavours(JSON.parse('{"__proto__":{"day":1,"status":"done"}}')),{});
 });
+
+import {lettersForReturn} from '../src/mail/post.js';
+test('back after a week or more: the closest friends write, at most two, never strangers',()=>{
+ const friendship={Nhung:{points:40},'Mrs Sato':{points:12},Chin:{points:9},Thao:{points:60}};
+ assert.deepEqual(lettersForReturn({friendship,daysAway:6,day:9}),[],'six days is not long');
+ const letters=lettersForReturn({friendship,daysAway:8,day:9});
+ assert.deepEqual(letters.map(l=>l.from),['Thao','Nhung'],'the closest two');
+ assert.deepEqual(letters[0],{id:'missed:Thao:9',day:9,occasion:'missed',from:'Thao'});
+ assert.deepEqual(lettersForReturn({friendship:{Chin:{points:9}},daysAway:30,day:9}),[],'no friends, no letters');
+ const state={};for(const l of letters)sendLetter(state,l);
+ const delivered=postRound(state,DAY*9+ROUND,{senderOf:n=>({name:n,temper:'dramatic'})});
+ assert.deepEqual(delivered.map(l=>l.occasion),['missed','missed']);
+});
+
+import {letterLabel,OCCASIONS as OCC} from '../src/mail/letters.js';
+test('every letter says what it is about on its envelope',()=>{
+ for(const [k,o] of Object.entries(OCC))assert.ok(o.subject,k);
+ assert.equal(letterLabel({from:'Nhung',occasion:'favour',read:false}),'Nhung · a favour to ask · new');
+ assert.equal(letterLabel({from:'Thao',occasion:'missed',read:true}),'Thao · where have you been?');
+});
+
+import {printable as enginePrintable,createDialogue} from '../src/dialogue/dialogue-engine.js';
+import {SAKURA_SCRIPT} from '../src/dialogue/sakura-script.js';
+test('Thuan’s scripted beats reach the box, and her script can use the line cues',()=>{
+ // A line from her real script: three beats where the ||| is.
+ const line=Object.values(SAKURA_SCRIPT).flatMap(n=>Array.isArray(n.text)?n.text:[n.text]).find(t=>/\|\|\|/.test(t));
+ assert.ok(line,'her script has a long beat');
+ const r=enginePrintable(line,'Johansson');assert.ok(!r.text.includes('|'));assert.deepEqual(Object.values(r.pauses),[3]);
+ assert.ok(!/  /.test(r.text),'a beat between spaces leaves one space: '+r.text);
+ const d=createDialogue({script:{a:{name:'Thuan',text:['{face:shy}Oh.{p:2} It is you, &.']}},playerName:'Johansson'});
+ const v=d.start('a');
+ assert.equal(v.text,'Oh. It is you, Johansson.');assert.deepEqual(v.pauses,{3:2});assert.deepEqual(v.faces,[{at:0,face:'shy'}]);
+});

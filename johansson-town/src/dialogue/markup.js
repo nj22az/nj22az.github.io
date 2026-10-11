@@ -58,11 +58,17 @@ export function renderLine(source,{name='',speaker='',catchphrase='',seed=0,pool
  const s=String(source??'');
  const addPause=n=>{pauses[text.length]=(pauses[text.length]||0)+n;};
  // `|` and `&` are the engine's own marks; keep them working inside marked-up lines.
- const plain=chunk=>{for(const ch of chunk){if(ch==='|')addPause(1);else text+=ch==='&'?name:ch;}};
+ // A beat written between two spaces ("It takes ||| longer") must not leave two spaces behind.
+ let afterBeat=false;
+ const plain=chunk=>{for(const ch of chunk){
+  if(ch==='|'){addPause(1);afterBeat=true;continue;}
+  if(ch===' '&&afterBeat&&text.endsWith(' '))continue;
+  afterBeat=false;text+=ch==='&'?name:ch;
+ }};
  for(const m of s.matchAll(TAG)){
   plain(s.slice(i,m.index));i=m.index+m[0].length;
   const [,close,tag,arg]=m;
-  if(tag==='p'){const n=arg==null?1:Math.max(1,Math.min(9,Math.trunc(Number(arg))||1));addPause(n);}
+  if(tag==='p'){const n=arg==null?1:Math.max(1,Math.min(9,Math.trunc(Number(arg))||1));addPause(n);afterBeat=true;}
   else if(tag==='face'&&arg)faces.push({at:text.length,face:arg});
   else if(tag==='big'&&!close)open.push(text.length);
   else if(tag==='big'&&close&&open.length)spans.push({from:open.pop(),to:text.length,style:'big'});

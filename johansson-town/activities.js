@@ -58,8 +58,8 @@ import {sharedMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
 import {createThuanChat} from './src/people/thuan-chat.js';
 import {restoreNews} from './src/feed/evening-news.js';
-import {restorePost,ensurePost,postRound,sendLetter} from './src/mail/post.js';
-import {letterText,openLetter,unreadCount,STATIONERY,stationerySvg} from './src/mail/letters.js';
+import {restorePost,ensurePost,postRound,sendLetter,lettersForReturn} from './src/mail/post.js';
+import {letterText,letterLabel,openLetter,unreadCount,STATIONERY,stationerySvg} from './src/mail/letters.js';
 import {temperamentOf} from './src/people/chat-lines.js';
 import {greetingFor,daysBetween} from './src/people/greetings.js';
 import {planFavours,favourWaiting,favourLine,askFavour,replyFavour,favourExpire,favourVisit,restoreFavours,restoreFavourErrand,favourById} from './src/people/favours.js';
@@ -95,6 +95,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   if(yearTurned)setTimeout(()=>say('1 January 1997, again. The year has started over; your friends still know you.',8),6000);
   state.story=restoreStory(state.story);
   ensureDailyQuests(state);
+  // Back after a week or more: the closest friends write to say so, with today's post (src/mail/post.js).
+  for(const letter of lettersForReturn({friendship:state.friendship,daysAway:daysBetween(awaySince),day:Math.floor(getMinutes()/1440)}))sendLetter(state,letter);
   state.konbini=restoreKonbini(state.konbini);
   state.sakura=restoreSakura(state.sakura);
   state.townCleanup=restoreTownCleanup(state.townCleanup);
@@ -225,7 +227,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const box=ensurePost(state).box,unread=unreadCount(box);
     if(!box.length){show('The post','The box inside the door is empty. Postman Tōma comes round at half past ten.',[['Close',close]]);return;}
     show('The post',unread?`${unread} new letter${unread===1?'':'s'} in the box inside the door.`:'Nothing new. The letters you have read are kept here.',[
-      ...[...box].reverse().map(l=>[`From ${l.from}${l.read?'':' · new'}`,()=>readLetter(l.id)]),['Close',close]]);
+      ...[...box].reverse().map(l=>[letterLabel(l),()=>readLetter(l.id)]),['Close',close]]);
   }
   /** One letter, on the paper its sender chose. A present inside goes into the bag, once. */
   function readLetter(id){
@@ -389,7 +391,9 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
         ? frame.choices.map(choice=>[choice.text,()=>render(dialogue.choose(choice.index))])
         : [[frame.endsHere?'See you soon, Thuan':'Go on',()=>render(dialogue.advance())]];
       // Each of her lines carries a mood (happy, sad, angry, shy...), and her face follows.
-      show(title||frame.speaker||'',frame.text,buttons,{mood:frame.speaker==='Thuan'?frame.mood:null});
+      // Her beats (`|`, {p}) hold the typing where they are written; a {face:…} cue in the line
+      // sets her face when the node gives no mood of its own.
+      show(title||frame.speaker||'',frame.text,buttons,{mood:frame.speaker==='Thuan'?(frame.mood||frame.faces?.[0]?.face||null):null,pauses:frame.pauses});
     };
     render(dialogue.start(startId));
     return dialogue;
