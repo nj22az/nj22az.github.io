@@ -4,7 +4,7 @@
 Mallen, i samma ordning varje gång, så att eleverna känner igen lektionen:
   titel · kursplanen i dag · startfråga · så går lektionen till · teori (en bild per avsnitt, i delsidans ordning och
   med delsidans rubriker, märkt ”Del N · avsnitt M”) · exempel ur delsidan · övningar tillsammans · paus ·
-  avslutsfråga · sammanfattning · det här gör du nu · källor.
+  (veckans labb) · avslutsfråga · sammanfattning · det här gör du nu · källor.
 
 Bilderna visar inga övningstexter: övningarna görs på delsidan, där ledtrådar och facit finns. Start- och
 avslutsfrågan och övningarnas titlar hämtas ur posterna. Placeringarna (innehall/placeringar/presentation-fragor.json)
@@ -343,6 +343,16 @@ def b_ovningar(prs, lek, nr, accent, b):
     sidfot(s, nr, lek['etikett'], f'Del {lek["del"]} · 4 Övningar')
 
 
+def b_labb(prs, lek, nr, accent, b):
+    """Veckans labb: vilken labb, vad eleven gör (i ordning) och adressen. Inga svar."""
+    s = ny_bild(prs)
+    rubrik(s, 'Veckans labb', accent)
+    ruta(s, X0, Y0 + 0.05, BREDD, 0.55, [b['namn']], size=23, bold=True, color=BLA, efter=0)
+    ruta(s, X0, Y0 + 0.75, BREDD, Y1 - Y0 - 1.3, [{'text': f'{i}. {t}', 'efter': 12} for i, t in enumerate(b['steg'], 1)], size=20)
+    ruta(s, X0, Y1 - 0.45, BREDD, 0.4, [b['url']], size=14, color=DAMPAD, efter=0)
+    sidfot(s, nr, lek['etikett'])
+
+
 def b_paus(prs, lek, nr, accent, b):
     s = ny_bild(prs)
     platta(s, 0, 0, 10, 6.67, YTA)
@@ -401,6 +411,8 @@ def bygg_deck(lek):
             b_ovningar(prs, lek, nr, accent, b)
         elif typ == 'paus':
             b_paus(prs, lek, nr, accent, b)
+        elif typ == 'labb':
+            b_labb(prs, lek, nr, accent, b)
         elif typ == 'lista':
             b_lista(prs, lek, nr, accent, b)
         elif typ == 'kallor':

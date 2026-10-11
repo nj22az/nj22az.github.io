@@ -186,6 +186,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 42 fredag: ny presentation *Riskbedömning och skydd* i lektionsbildernas mall, 21 bilder i stället för 36, med
+  en bild för veckans labb (Multimeterlabbet, Välj CAT-klass; bildtypen `labb`, som delsidan hoppar över). Delsidan del 3 har samma
+  sex avsnitt, tre exempel och figurer. Läsuppgiftens begrepp ur Transportstyrelsens riktlinjer (ALARP, konsekvensgrader) står inte på
+  bilderna, så att läsförståelsen i inlämningen prövar läsningen.
 - **2026-10-11** Vecka 42 tisdag: ny presentation *Regler, ansvar och arbetsmetoder* i lektionsbildernas mall, 20 bilder i stället för 36.
   Avsnitt 6 *Regler för fartyg* visar nu vilka regler som gäller vilka fartyg (LM-3): TSFS 2017:26 för nationell sjöfart, TSFS 2019:4 för
   fartyg med internationella certifikat, TSFS 2019:56 för arbetsmiljön ombord (redaren räknas som arbetsgivare) och ISM-kodens SMS.

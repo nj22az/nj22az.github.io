@@ -229,7 +229,7 @@ VECKOR = {
                 lank('Formelstod_och_ovningar.html#v42_02', 'Övningar: regler och arbetsmetoder', 'övning', '10 övningar med facit'),
             ]},
             {'titel': 'Riskbedömning och skydd', 'mal': 'Från identifierad fara till beslut och verifierad åtgärd.', 'poster': [
-                ppt('v42_03_Riskbedomning_och_skydd_elev.pptx', 'Riskbedömning och skydd', 36),
+                ppt('v42_03_Riskbedomning_och_skydd_elev.pptx', 'Riskbedömning och skydd', 21),
                 lank('Formelstod_och_ovningar.html#v42_03', 'Övningar: riskbedömning och skydd', 'övning', '10 övningar med facit'),
                 lank(LABB['multimeter'] + '?ovning=category', 'Multimeterlabbet: Välj CAT-klass', 'labb', 'motivera valet skriftligt'),
             ]},

@@ -24,7 +24,7 @@ EMU = 914400
 HOPPA = ('Dagens två pass', 'Pass 2')
 # Lektionsbilderna (verktyg/lektionsbilder, från vecka 42) har egna bilder för lektionens upplägg. De är inte teori.
 LEKTIONSBILDER = ('Kursplanen i dag', 'Startfråga', 'Så går lektionen till', 'Övningar tillsammans', 'Paus', 'Sammanfattning',
-                  'Det här gör du nu')
+                  'Det här gör du nu', 'Veckans labb')
 # Lektionsbilderna har ingen bild med lösningsmallen; delsidan visar samma mall som de äldre presentationerna.
 METOD = [('formel', '1. Givet och sökt'), ('p', 'Skriv av värden, enheter och vad du ska bestämma.'),
          ('formel', '2. Samband och villkor'), ('p', 'Välj formel eller princip. Kontrollera koppling, driftfall och antaganden.'),

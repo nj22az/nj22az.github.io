@@ -372,4 +372,193 @@ V42_02 = {
     ],
 }
 
-LEKTIONER = [V42_01, V42_02]
+V42_03 = {
+    'id': 'v42_03',
+    'fil': 'vecka-42/aktuell/v42_03_Riskbedomning_och_skydd_elev.pptx',
+    'omslag': 'omslag_v42_03.jpg',
+    'figurmapp': 'vecka-42/aktuell/figurer',
+    'kicker': 'Vecka 42 · Fredag 16 oktober · 09.00–11.00',
+    'titel': 'Riskbedömning och skydd',
+    'underrubrik': 'Från identifierad fara till beslut och verifierad åtgärd',
+    'etikett': 'Vecka 42 · Fredag · Riskbedömning och skydd',
+    'del': 3, 'delar': 3,
+    'delsida_url': DELSIDA.format(v=42, d=3),
+    'omrade': 'sakerhet',
+    'mal': ['LM-7', 'LM-6', 'LM-1'],
+    'efter': [
+        'skriva en riskrad med fara, händelse, konsekvens och en åtgärd som går att verifiera.',
+        'välja skydd i rätt ordning: minska faran först, skyddsutrustning sist.',
+        'ange villkor för start, avbrott och återlämning.',
+    ],
+    'bilder': [
+        ('start', {'instruktion': 'Skriv ett ord i chatten om vad som saknas.'}),
+        ('upplagg', [
+            ('09.00', 'Start och startfråga'),
+            ('09.05', 'Pass 1: Från fara till beslut (avsnitt 1–3) och två exempel'),
+            ('09.30', 'Övning 3.1, 3.2 och 3.3 tillsammans'),
+            ('09.50', 'Paus'),
+            ('10.00', 'Pass 2: Provare, jordning och stoppvillkor (avsnitt 4–6) och ett exempel'),
+            ('10.25', 'Övning 3.4 och 3.5 tillsammans'),
+            ('10.35', 'Veckans labb: Välj CAT-klass'),
+            ('10.45', 'Avslutsfråga, sammanfattning och det här gör du nu'),
+        ]),
+        ('teori', {
+            'avsnitt': 1, 'rubrik': 'Från identifierad fara till beslut',
+            'nyckel': 'Från observation till startbeslut i fyra steg.',
+            'punkter': [
+                '**Observation:** det vi vet om arbetsplatsen eller utrustningen.',
+                '**Riskbedömning:** möjliga händelser och konsekvenser.',
+                '**Åtgärd:** en ansvarig och ett sätt att verifiera effekten.',
+                '**Startbeslut:** villkoren för det avgränsade arbetet är uppfyllda.',
+            ],
+        }),
+        ('teori', {
+            'avsnitt': 2, 'rubrik': 'Arbetsmomentets gränser',
+            'nyckel': 'Fara, händelse, konsekvens, åtgärd.',
+            'punkter': [
+                'Riskbedömningen börjar med en konkret uppgift och arbetsplats.',
+                'Ange vad som ingår och vad som ligger utanför uppdraget.',
+                'Exempel: en skadad kabel kan ge ett spänningsförande hölje.',
+                'Åtgärden behöver hindra både exponering och återanvändning.',
+            ],
+        }),
+        ('teori', {
+            'avsnitt': 3, 'rubrik': 'Prioritering av skydd',
+            'nyckel': 'Skyddsutrustning väljs mot den bedömda risken.',
+            'punkter': [
+                'Planeringen ska i första hand minska eller avlägsna faran.',
+                'Personlig skyddsutrustning kompletterar övriga åtgärder.',
+                'Vanliga arbetshandskar är inte automatiskt elektriskt isolerande.',
+                'Skydd mot ljusbåge behöver rätt klassning och användning.',
+            ],
+            'size': 19,
+            'figur': 'v42_03-b07-1.png',
+            'alt': 'Skyddsåtgärder i prioritetsordning, mest effektivt först: ta bort faran (arbete utan spänning), ersätt '
+                   '(lägre spänning, säkrare utrustning), tekniska skydd (avskärmning, isolering), organisatoriska åtgärder '
+                   '(beredning, instruktion, behörighet) och sist personlig skyddsutrustning, som kompletterar.',
+        }),
+        ('teori', {
+            'etikett': 'Del 3 · exempel 1', 'rubrik': 'Exempel: en användbar riskrad',
+            'scenario': 'Moment: undersöka den frånskilda kopplingslådan K4. En möjlig reservmatning är ännu inte identifierad.',
+            'nyckel': 'Fara, händelse, konsekvens och verifierbar åtgärd.',
+            'punkter': [
+                '1. **Fara:** möjlig kvarvarande energitillförsel till K4.',
+                '2. **Händelse och följd:** beröring kan ge strömgenomgång.',
+                '3. **Åtgärd:** en utsedd ansvarig kartlägger matningen enligt aktuell plan.',
+            ],
+            'slutsats': 'Startvillkor: alla berörda källor och skyddsåtgärder är verifierade. Oklar matning ger stopp.',
+        }),
+        ('teori', {
+            'etikett': 'Del 3 · exempel 2', 'rubrik': 'Exempel på riskrad',
+            'scenario': 'Moment: inspektion av en frånskild kopplingslåda i fuktig miljö.',
+            'nyckel': 'Åtgärd: kartläggning, säkring och verifiering enligt plan.',
+            'punkter': [
+                '1. **Fara:** alternativ matning och skadad isolering.',
+                '2. Ansvarig och kontrollresultat anges före startbesked.',
+            ],
+            'slutsats': 'Kvarstående osäkerhet om matningen innebär att arbetet väntar.',
+        }),
+        ('ovningar', {
+            'nummer': ['3.1', '3.2', '3.3'],
+            'instruktion': 'Fem minuter per övning. Skriv ditt svar i chatten. Ledtrådar och facit finns på delsidan.',
+        }),
+        ('paus', {'text': 'Vi fortsätter 10.00'}),
+        ('teori', {
+            'avsnitt': 4, 'rubrik': 'Provare, låsning och märkning',
+            'nyckel': 'Instrumentets funktion måste vara tillförlitlig.',
+            'punkter': [
+                'En tvåpolig spänningsprovare väljs för systemets spänning och kategori.',
+                'Låsning och märkning stöder skyddet mot återinkoppling.',
+                'Kontrollmetod, instrumentkontroll och arbetsgräns står i den lokala arbetsinstruktionen.',
+            ],
+            'size': 19, 'mellan': 6,
+            'figur_under': True, 'texthojd': 2.2,
+            'figur': 'v42_03-b08-1.png',
+            'alt': 'Frånskiljare i läge 0 med hänglås och skylt (namn, datum, telefon). En tvåpolig spänningsprovare mot de utgående '
+                   'plintarna L1, L2, L3 och PE. Provaren kontrolleras före och efter mätningen: prova, mät, prova.',
+        }),
+        ('teori', {
+            'avsnitt': 5, 'rubrik': 'Jordning och kortslutning',
+            'nyckel': 'Behov och utförande styrs av anläggning och metod.',
+            'punkter': [
+                'Åtgärden kan skydda mot oavsiktlig återspänningssättning och andra elektriska risker i arbetsområdet.',
+                'Högspänning kräver särskild utrustning, kompetens och plan.',
+                'Kursfallet är en dokumentationsövning utan verkligt handhavande.',
+            ],
+            'size': 19, 'mellan': 6,
+            'figur_under': True, 'texthojd': 2.2,
+            'figur': 'v42_03-b21-1.png',
+            'alt': 'Frånskiljare med synligt brytställe. Vid arbetsstället ett jordnings- och kortslutningsdon med klämmor på L1, L2 och L3 '
+                   'och jordledaren till jordskenan. Jordledaren ansluts först och tas bort sist.',
+        }),
+        ('teori', {
+            'avsnitt': 6, 'rubrik': 'Kvarstående risk och stoppvillkor',
+            'nyckel': 'Villkor för start, avbrott och återlämning.',
+            'punkter': [
+                'En åtgärd behöver en ansvarig person och en verifiering.',
+                'En osäker arbetsgräns eller ändrade förutsättningar kräver ett nytt beslut.',
+                '”Klart” ska betyda att de angivna kontrollerna är utförda.',
+                'Skriv hur avvikelser hanteras och kommuniceras.',
+            ],
+        }),
+        ('teori', {
+            'etikett': 'Del 3 · exempel 3', 'rubrik': 'Exempel: riskpoäng med begränsning',
+            'scenario': 'En övningsmatris anger sannolikhet 5 och konsekvens 3. Efter åtgärd bedöms sannolikheten till 2.',
+            'nyckel': 'Riskpoäng = sannolikhet · konsekvens',
+            'punkter': [
+                '1. Före: 5 · 3 = 15.',
+                '2. Efter: 2 · 3 = 6.',
+            ],
+            'slutsats': 'Poängen sjunker i den här matrisen, men det säger inte hur mycket säkrare arbetet har blivit. '
+                        'Ingen tillåten gräns är given, så poängtalet visar inte att arbetet får starta.',
+            'size': 19, 'nyckelstorlek': 22,
+            'figur': 'v42_03-b24-1.png',
+            'alt': 'Riskmatris fem gånger fem med poäng sannolikhet gånger konsekvens. Före åtgärd sannolikhet 5 och konsekvens 3 (15), '
+                   'efter åtgärd sannolikhet 2 och konsekvens 3 (6). Ingen tillåten gräns är given.',
+        }),
+        ('ovningar', {
+            'nummer': ['3.4', '3.5'],
+            'instruktion': 'Fem minuter per övning. Skriv ditt svar i chatten. Övning 3.6–3.10 gör du själv efter lektionen.',
+        }),
+        ('labb', {
+            'namn': 'Multimeterlabbet: Välj CAT-klass',
+            'steg': [
+                'Öppna Multimeterlabbet och välj övningen Välj CAT-klass.',
+                'Gör uppgifterna i ordning. Skriv en motivering till varje val.',
+                'Labben förbereder dig för inlämningsuppgift 3.',
+            ],
+            'url': 'nj22az.github.io/sjoskolan/multimetersimulator/?ovning=category',
+        }),
+        ('avslut', None),
+        ('lista', {
+            'rubrik': 'Sammanfattning',
+            'punkter': [
+                'En riskrad har fara, händelse, konsekvens och en åtgärd med ansvarig och verifiering.',
+                'Skydd i rätt ordning: minska eller ta bort faran först. Skyddsutrustning kompletterar.',
+                'Arbetet startar när villkoren är verifierade. Oklar matning eller ändrade förutsättningar ger stopp och nytt beslut.',
+            ],
+        }),
+        ('lista', {
+            'rubrik': 'Det här gör du nu',
+            'punkter': [
+                'Läs del 3 på webben. Tryck på ”Jag har läst del 3” längst ned på sidan.',
+                'Gör övning 3.6–3.10 på delsidan och labben Välj CAT-klass.',
+                'Gör klart inlämningen i formuläret. Ladda ner PDF-filen och lämna in den i Google Classroom.',
+            ],
+            'not': 'Sista dag: söndag 18 oktober. Nästa vecka: vecka 43, Komponenter och skydd.',
+            'size': 20,
+        }),
+        ('kallor', {
+            'kallor': [
+                ('Sjöskolan: vecka 42, del 3 Riskbedömning och skydd', 'https://nj22az.github.io/sjoskolan/vecka-42/aktuell/Del_3.html'),
+                ('Transportstyrelsen: Riktlinjer för riskanalysarbete, fartyg i nationell fart (2019)',
+                 'https://nj22az.github.io/sjoskolan/vecka-42/aktuell/Transportstyrelsen_riktlinjer_riskanalysarbete.pdf'),
+                ('Transportstyrelsen: elektrisk utrustning och elinstallationer på fartyg',
+                 'https://www.transportstyrelsen.se/sv/om-oss/dina-rattigheter-lagar-och-regler/lagar-och-regler/regler-for-sjofart/regler-for-nationell-sjofart/regler-kompletterade-upplysningar/elektrisk-utrustning-och-elinstallationer/'),
+                ('SS-EN 50110-1 utgåva 4:2024, Skötsel av elektriska anläggningar (SEK Svensk Elstandard)', 'https://elstandard.se/documents/preview/3246401'),
+            ],
+        }),
+    ],
+}
+
+LEKTIONER = [V42_01, V42_02, V42_03]
