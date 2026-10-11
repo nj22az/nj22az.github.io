@@ -66,7 +66,8 @@ export function buildCountryside({world,register=()=>{},onAction=()=>{},mobile=f
   if(!open(x,z,pad))continue;
   footprints.push([x,z,size[0]/2,size[1]/2]);
   const g=new THREE.Group();g.position.set(x,groundHeight(x,z),z);g.rotation.y=yaw;g.name='Countryside '+kind;group.add(g);
-  const add=(geo,c,px,py,pz,name)=>{const m=new THREE.Mesh(geo,typeof c==='number'?mat(c):c);m.position.set(px,py,pz);if(name)m.name=name;m.castShadow=true;m.receiveShadow=true;g.add(m);return m;};
+  // Farm buildings, tombs and fences stand still (the cows are built apart): batched draws.
+  const add=(geo,c,px,py,pz,name)=>{const m=new THREE.Mesh(geo,typeof c==='number'?mat(c):c);m.position.set(px,py,pz);if(name)m.name=name;m.castShadow=true;m.receiveShadow=true;m.userData.staticProp=true;g.add(m);return m;};
   const B=(w,h,d)=>new THREE.BoxGeometry(w,h,d);
   if(kind==='farmhouse'){
    add(B(6.4,2.6,5.2),0xe8dcc0,0,1.3,0,'Farmhouse');

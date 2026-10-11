@@ -133,7 +133,7 @@ that makes more or better stories.
   tested and so stories can use it.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten is a konbini *and* the
   town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading). Higa Liquor supplies
-  all alcohol (to Sakura, Minato and Sato Ramen); Front-Row Books & Stationery supplies office supplies; Rainflower
+  all alcohol (to Sakura, Minato, Sato Ramen and the Coral Bay Bar on Kitano-jima); Front-Row Books & Stationery supplies office supplies; Rainflower
   Florist supplies decorations. Blue Coral on Rainflower Lane is the town's only ice-cream shop.
 
 ## Sjöskolan
