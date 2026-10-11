@@ -90,6 +90,7 @@ CSS = ('<style>'
        '.kp-tal div{padding:12px 14px;border-radius:10px;background:#edf4f9}.kp-tal b{display:block;font-size:24px;line-height:1.2}'
        '.kp-tal small{font-size:15px;color:#4d6579}'
        '.kp-lista{list-style:none;margin:0;padding:0}.kp-lista li{display:grid;grid-template-columns:4.2em 1fr;gap:4px 12px;padding:12px 0 12px 10px;border-top:1px solid #e3ecf2;margin:6px 0 0}'
+       '.kp-detaljer summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:#064f91;font-weight:700;font-size:17px}'
        '.kp-omr{display:inline-block;margin:0 8px 2px 0;padding:1px 8px;border-radius:6px;font-weight:700;color:#163248}'
        '.kp-lista .kp-id{font-weight:700;color:#064f91;padding-top:2px}.kp-enkel{margin:0;font-size:18px;font-weight:700;line-height:1.4}'
        '.kp-var{margin:4px 0 0;font-size:15px;color:#4d6579}'
@@ -302,7 +303,8 @@ def kursplan_html(nr, w):
     ingress = ('Tentamen och det praktiska provet prövar de här punkterna i kursplanen.' if w.get('tenta')
                else 'Punkterna kommer från kursplanen. Under varje punkt står var du tränar den.')
     return (CSS + f'<section class="kp" aria-labelledby="kp-rubrik"{data}><h2 id="kp-rubrik">Det här lär du dig</h2>'
-            f'<p class="kp-ingress">{ingress}</p><div class="kp-tal">{tal}</div><ul class="kp-lista">{"".join(rader)}</ul></section>' + SCRIPT)
+            f'<p class="kp-ingress">{ingress}</p><div class="kp-tal">{tal}</div>'
+            f'<details class="kp-detaljer"><summary>Visa veckans {len(aktiva)} punkter i kursplanen</summary><ul class="kp-lista">{"".join(rader)}</ul></details></section>' + SCRIPT)
 
 
 MANAD = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']

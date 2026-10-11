@@ -178,6 +178,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   felsökning och dokumentation) på veckosidorna och startsidans moduler; startsidan byggs nu av
   `verktyg/startsida/bygg.py`. Veckosidorna 42–45: ”Klart” på varje steg styr vilket steg som är nu, och bara det
   stegets knapp är blå. Löptext på delsidor och genomgångar har radavstånd 1,8 (Zenn). Se DESIGN.md.
+- **2026-10-11** Färre dokument och en tydlig handling: alla veckor utom vecka 40 är en numrerad väg med en knapp per
+  del (”Öppna del N”; delsidan har teori, exempel, övningar och bildspelet), labben och ”Gör inlämningen”. Rutan
+  ”Nästa steg” överst visar steget att göra nu. Film, extra läsning och fördjupning ligger under ”Mer”. Kursplanens
+  punkter fälls ut på begäran.
 
 - **2026-10-11** Granskningen av vecka 43 (och del 4 Systematisk felsökning) rättad. Delsidorna räknar de flyttade delarna
   (`veckans_delar` ur `FLYTTAD` i delsidor_veckor.py): vecka 43 har del 1–4 och vecka 44 del 1–5, och del 3 leder vidare till
