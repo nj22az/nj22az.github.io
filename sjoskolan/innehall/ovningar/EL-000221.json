@@ -3,7 +3,7 @@
   "titel": "Mätningens räckvidd",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Vid en källa utan last mäts 24,0 V. Vilken slutsats kan du dra direkt, och vilken kräver mer data?",
+    "fraga": "Du mäter 24,0 V på en källa. Ingen last är inkopplad. a) Vad vet du nu? b) Vad vet du inte än, och vad behöver du mäta för att veta det?",
     "samband": [
       "Slutsatsen begränsas av mätvillkoret"
     ],
@@ -32,7 +32,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Spänningen utan last visar källans tomgångsspänning. Om källan klarar lasten kan du bara avgöra med ström och spänning under last.",
+      "text": "Utan last går nästan ingen ström. Tänk på vad som kan ändras när lasten kopplas in.",
       "status": "migrerad"
     },
     {

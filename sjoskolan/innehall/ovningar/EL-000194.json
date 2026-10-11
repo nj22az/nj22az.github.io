@@ -3,7 +3,7 @@
   "titel": "Strömtransformator",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -23,7 +23,7 @@
   "uppgift": {
     "fraga": "En ideal strömtransformator har omsättningen 200/5 A. Primärströmmen är 120 A. Beräkna sekundärströmmen.",
     "samband": [
-      "kI = I_{1},märk/I_{2},märk; I_{2} = I_{1}/kI"
+      "k_{I} = I_{1,märk}/I_{2,märk}; I_{2} = I_{1}/k_{I}"
     ],
     "givet": "Ideal strömtransformator 200/5 A. Primärströmmen I_{1} = 120 A. Uppgiften gäller bara beräkningen.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -31,7 +31,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "kI är omsättningen och saknar enhet; 1 är primärsidan och 2 sekundärsidan.",
+      "text": "k_{I} är omsättningen och saknar enhet; 1 är primärsidan och 2 sekundärsidan.",
       "status": "migrerad"
     },
     {
@@ -41,12 +41,12 @@
     },
     {
       "niva": "nasta-steg",
-      "text": "1) Räkna omsättningen: märkström primär delat med märkström sekundär. 2) Dela den verkliga primärströmmen med omsättningen. Exempel: en strömtransformator 300/5 A har kI = 60, och 150 A i primärledaren ger I_{2} = 150/60 = 2,5 A.",
+      "text": "1) Räkna omsättningen: märkström primär delat med märkström sekundär. 2) Dela den verkliga primärströmmen med omsättningen. Exempel: en strömtransformator 300/5 A har k_{I} = 60, och 150 A i primärledaren ger I_{2} = 150/60 = 2,5 A.",
       "status": "utkast"
     }
   ],
   "losning": {
-    "text": "kI = 200/5 = 40. I_{2} = 120/40 = 3,0 A.",
+    "text": "k_{I} = 200/5 = 40. I_{2} = 120/40 = 3,0 A.",
     "svar": [
       {
         "storhet": "I_{2}",

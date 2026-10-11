@@ -3,7 +3,7 @@
   "titel": "Mittpunkt",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Källan visar 24 V men punkt B i mitten har 0 V mot hel retur. Vilken del prioriteras?",
+    "fraga": "Källan visar 24 V. Punkt B, mitt i kedjan, visar 0 V mot returen. Returen är hel. Var letar du först: före B eller efter B?",
     "samband": [
       "Mätpunkter delar upp en matningskedja"
     ],
@@ -47,7 +47,7 @@
     }
   ],
   "losning": {
-    "text": "Sträckan mellan B och lastens pluspunkt. Före B finns rätt spänning.",
+    "text": "Sträckan mellan källan och B. Källan har 24 V men B har 0 V, så spänningen försvinner före B.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

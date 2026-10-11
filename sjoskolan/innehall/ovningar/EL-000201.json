@@ -3,7 +3,7 @@
   "titel": "Två ledare i tången",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -33,7 +33,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Strömmarna fram och tillbaka går åt olika håll, så deras magnetfält tar ut varandra när tången omsluter båda ledarna.",
+      "text": "Tången känner magnetfältet från alla strömmar som går genom den. Ström åt ena hållet räknas plus, åt andra hållet minus.",
       "status": "migrerad"
     },
     {

@@ -3,13 +3,15 @@
   "titel": "Analys av mätdata",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-4",
+      "LM-5",
+      "LM-8"
     ],
     "niva": "tillampning",
     "teori": [
@@ -17,15 +19,15 @@
     ]
   },
   "uppgift": {
-    "fraga": "En 24 V-pump tar 6,0 A. Före åtgärd: källan 24,1 V och pumpen (20,0 + D/100) V. Efter åtgärd: källan 24,1 V och pumpen 23,5 V. Instrumentet har ±(0,5 % + 2 siffror) och upplösningen 0,1 V.",
+    "fraga": "En 24 V-pump matas genom en kabel. Före åtgärd mäts källan till 24,1 V, pumpen till (20,0 + D/10) V och strömmen till 6,0 A. Efter åtgärd mäts källan till 24,1 V, pumpen till 22,5 V och strömmen till 6,4 A. Strömmen har ökat eftersom pumpen får högre spänning och går fortare. Voltmetern har ±(0,5 % + 2 siffror) och upplösningen 0,1 V.",
     "delfragor": [
       {
         "id": "a",
-        "text": "Beräkna slingresistansen före och efter."
+        "text": "Beräkna slingresistansen före och efter. Använd strömmen som mättes samtidigt."
       },
       {
         "id": "b",
-        "text": "Beräkna instrumentets felgräns för pumpens spänning efter åtgärden. Är förbättringen säkert större än mätosäkerheten?"
+        "text": "Beräkna voltmeterns felgräns för pumpens spänning före och efter åtgärden. Är förbättringen säkert större än mätosäkerheten?"
       },
       {
         "id": "c",
@@ -58,7 +60,7 @@
   "parametrar": {
     "D": {
       "varde": "D",
-      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+      "beskrivning": "Kursens tal: alla elever räknar med D = 12 från vecka 42 (KURS_D i gemensamt/elevtal.mjs)"
     }
   },
   "losning": {

@@ -3,7 +3,7 @@
   "titel": "Probens dämpning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -25,7 +25,7 @@
   "uppgift": {
     "fraga": "En prob med dämpningen 10:1 används. Skärmen visar toppvärdet 2,0 V, och oscilloskopet räknar inte om automatiskt. Bestäm signalens verkliga toppvärde.",
     "samband": [
-      "ûverklig = probfaktor · ûvisad"
+      "û_{verklig} = probfaktor · û_{visad}"
     ],
     "givet": "Probfaktor 10, visat toppvärde 2,0 V. Den automatiska omräkningen är avstängd.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."

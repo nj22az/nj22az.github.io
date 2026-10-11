@@ -165,7 +165,8 @@ def ct(name, ratio, i1, i2):
     ax.text(2.15, 0.2, "Sekundärkretsen får inte brytas under drift", ha="center", fontsize=11.5, color=ORANGE)
     save(F, name)
 ct("v44_02_s17_ovn4", "200/5 A", S("I", "1") + " = 120 A", S("I", "2") + " = ?")
-ct("v44_02_s24_exempel", "300/5 A", S("I", "1") + " = 150 A", S("I", "2") + " = 2,5 A")
+# Exemplet får inte vara övning 2.4:s svar (3,0 A) eller ledtrådens räkning (300/5 A, 150 A): granskning 2026-10-11
+ct("v44_02_s24_exempel", "400/5 A", S("I", "1") + " = 320 A", S("I", "2") + " = 4,0 A")
 
 # ================= v44_03 Fördjupad mätteknik =================
 # s6 strömtång: vad tången omsluter avgör vad den visar

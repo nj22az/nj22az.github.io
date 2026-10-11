@@ -3,7 +3,7 @@
   "titel": "Säkerhetsåtgärder",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -25,7 +25,7 @@
     "samband": [
       "Frånskiljning är en del av flera åtgärder"
     ],
-    "givet": "Jordning och kortslutning görs när anläggningen, arbetsmetoden och gällande krav kräver det.",
+    "givet": "Ibland ska anläggningen också jordas och kortslutas. Det beror på anläggningen och arbetet.",
     "instruktion": "Motivera ditt beslut."
   },
   "ledtradar": [

@@ -3,7 +3,7 @@
   "titel": "Hållning: över hjälpkontakten",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -91,7 +91,7 @@
         }
       ]
     },
-    "kallhanvisning": "v43_03 · övning 3",
+    "kallhanvisning": "Del 3, övning 3.3",
     "alias": "hallning"
   }
 }

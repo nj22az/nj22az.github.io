@@ -3,7 +3,7 @@
   "titel": "Nödmatning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En enda fördelning matar både ordinarie utrustning och nödutrustning. Vilken fråga måste dokumentationen svara på innan systemet kan bedömas?",
+    "fraga": "Samma fördelning matar både vanlig utrustning och nödutrustning. Vad måste du ta reda på i ritningar och dokument innan du kan säga om det är säkert?",
     "samband": [
       "Nödlastens behov styr frågor om matningsoberoende"
     ],
@@ -35,7 +35,7 @@
     },
     {
       "niva": "metod",
-      "text": "Ta reda på vilka nödlaster som finns, hur de reservmatas och vilka fel som kan slå ut både ordinarie utrustning och nödutrustning samtidigt.",
+      "text": "Tänk på vad som händer med nödutrustningen om just den här fördelningen slutar fungera.",
       "status": "migrerad"
     },
     {

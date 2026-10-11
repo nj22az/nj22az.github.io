@@ -3,7 +3,7 @@
   "titel": "Transformatorström",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -45,8 +45,17 @@
     }
   ],
   "losning": {
-    "text": "I_{1} = 24 · 3/230 ≈ 0,31 A.",
+    "text": "P = U_{2} · I_{2} = 24 · 3 = 72 W (72 VA). I_{1} = 72/230 ≈ 0,31 A.",
     "svar": [
+      {
+        "storhet": "P",
+        "varde": 72.0,
+        "avrundning": "heltal",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "W"
+      },
       {
         "storhet": "I_{1}",
         "varde": 0.313,

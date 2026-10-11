@@ -3,14 +3,15 @@
   "titel": "Rätt mätutrustning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-2",
-      "LM-7"
+      "LM-1",
+      "LM-3",
+      "LM-6"
     ],
     "niva": "tillampning",
     "teori": [
@@ -23,7 +24,7 @@
     "delfragor": [
       {
         "id": "a",
-        "text": "Välj kategori och spänning för hela mätutrustningen på tre mätplatser: huvudtavlan 440 V, ett eluttag 230 V i en hytt och batteriet 24 V i en livbåt."
+        "text": "Välj kategori och spänning för hela mätutrustningen på tre mätplatser: plintarna för en utgående grupp i huvudtavlan 440 V, ett eluttag 230 V i en hytt och batteriet 24 V i en livbåt."
       },
       {
         "id": "b",

@@ -3,7 +3,7 @@
   "titel": "Utan last och med last",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -48,10 +48,10 @@
     }
   ],
   "losning": {
-    "text": "ΔU = 6 V. Rextra = 6/3 = 2,0 Ω.",
+    "text": "ΔU = 6 V. R_{extra} = 6/3 = 2,0 Ω.",
     "svar": [
       {
-        "storhet": "R",
+        "storhet": "R_{extra}",
         "varde": 2.0,
         "avrundning": "1 decimaler",
         "tolerans": {

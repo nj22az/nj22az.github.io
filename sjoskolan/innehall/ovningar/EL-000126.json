@@ -3,7 +3,7 @@
   "titel": "Batteriets risk",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -19,7 +19,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Ett 24 V-batteri har stor kortslutningsförmåga. Ange en viktig risk som inte avgörs av spänningstalet ensamt.",
+    "fraga": "Ett 24 V-batteri kan ge en mycket stor ström om polerna kortsluts. Vilken risk finns, fast spänningen är låg?",
     "samband": [
       "I_{fel} ≈ U/R_{slinga} i en enkel modell"
     ],

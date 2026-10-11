@@ -3,7 +3,7 @@
   "titel": "Spänning över avbrott",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -25,8 +25,8 @@
   "uppgift": {
     "fraga": "24 V matar en resistor genom en enda kontakt, som står öppen. Returen är hel. Vilken ström går, och vilken spänning ligger över kontakten (idealt)?",
     "samband": [
-      "Öppen seriegren: I = 0",
-      "U_{resistor} = R · I; Ukontakt = U_{källa} − U_{resistor}"
+      "I = U/R_{total}",
+      "U_{resistor} = R · I; U_{kontakt} = U_{källa} − U_{resistor}"
     ],
     "givet": "Ideal 24 V-källa, en resistor, en öppen kontakt och hel retur.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -34,7 +34,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "En öppen kontakt stoppar strömmen, och utan ström blir det ingen spänning över resistorn.",
+      "text": "Hur stor är resistansen i en öppen kontakt? Vad betyder det för strömmen i en seriekrets?",
       "status": "migrerad"
     },
     {
@@ -61,7 +61,7 @@
         "enhet": "A"
       },
       {
-        "storhet": "kontaktspänning",
+        "storhet": "U_{kontakt}",
         "varde": 24.0,
         "avrundning": "heltal",
         "tolerans": {

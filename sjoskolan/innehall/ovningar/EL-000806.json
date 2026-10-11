@@ -3,13 +3,14 @@
   "titel": "Instrumentets felgräns",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-4",
+      "LM-8"
     ],
     "niva": "tillampning",
     "teori": [

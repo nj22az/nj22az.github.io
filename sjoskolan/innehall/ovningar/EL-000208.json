@@ -3,7 +3,7 @@
   "titel": "Instrumentgräns",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -23,7 +23,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Instrumentet visar 100,0 V. Specifikationen är ±(0,5 % + 2 siffror) och upplösningen 0,1 V. Beräkna felgränsen och intervallet.",
+    "fraga": "Instrumentet visar 100,0 V. Det kan visa fel med högst ±(0,5 % + 2 siffror). ”2 siffror” betyder 2 steg i sista siffran. Ett steg är 0,1 V. Hur stort kan felet bli? Mellan vilka värden ligger den rätta spänningen?",
     "samband": [
       "δ = (a/100) · visning + n · steg",
       "Intervall: visning − δ till visning + δ"

@@ -17,6 +17,8 @@
 @media(max-width:700px){.del-steg{position:static;gap:6px}.del-steg a{min-height:40px;padding:2px 10px 2px 4px;font-size:15px}.del-steg b{width:26px;height:26px}}
 @media print{.del-steg,.del-klar,.art-nav,.school-nav{display:none}.del-ovning{break-inside:avoid}}
 
+/* Läsbarhet (Zenn): löptext med radavstånd 1,8. */
+.del-sida p,.del-sida li,.del-sida dd{line-height:1.8}
 .del-figur{margin:14px 0 18px}.del-figur img{display:block;width:100%;max-width:460px;height:auto;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff}
 .del-figur figcaption{font-size:14px;color:var(--sj-muted,#4d6579);margin-top:4px}
 .del-formel{font-size:21px;font-weight:700;color:var(--sj-accent,#064f91);margin:14px 0}

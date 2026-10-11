@@ -85,17 +85,28 @@ ax.text(0, 1.62, "Skada utan ström genom kroppen", ha="center", fontsize=13)
 ax.text(0, -1.68, "även giftiga gaser och buller", ha="center", fontsize=12, color=GRAY)
 save(F, "v42_01_s08_ljusbage")
 
-# s9: exempel skadad skarvkabel i vatten
+# s9: exempel vinkelslip med klämd kabel (sedd ovanifrån på arbetsbänken)
 F = fig(4.3, 3.2); ax = cax(F, (0, 4.3), (0, 3.2))
-ax.add_patch(Rectangle((0, 0), 4.3, 0.5, fc=STEEL, ec="none"))
-ax.add_patch(matplotlib.patches.Ellipse((2.4, 0.55), 2.4, 0.35, fc=WATER, ec="#6FA8D6", lw=1.2, zorder=2)); ax.text(3.2, 1.0, "vatten på däck", ha="center", fontsize=13, color="#2F6E9E")
-xs = np.linspace(0.2, 4.1, 60); ys = 0.62 + 0.08 * np.sin(xs * 2.2)
-ax.plot(xs[xs < 2.2], ys[xs < 2.2], color=INK, lw=6, solid_capstyle="round", zorder=3); ax.plot(xs[xs > 2.5], ys[xs > 2.5], color=INK, lw=6, solid_capstyle="round", zorder=3)
-ax.plot([2.2, 2.5], [0.66, 0.6], color="#B87333", lw=2.2, zorder=3); ax.plot([2.22, 2.48], [0.6, 0.66], color="#B87333", lw=2.2, zorder=3)
-harrow(ax, (1.7, 1.75), (2.3, 0.85), color=ORANGE); ax.text(1.65, 1.95, "synlig skada på isolationen", ha="center", fontsize=13, color=ORANGE)
-ax.plot([0.3, 0.3], [0.5, 2.6], color=GRAY, lw=2); ax.plot([4.0, 4.0], [0.5, 2.6], color=GRAY, lw=2)
-for k in range(6): ax.add_patch(Rectangle((0.3 + k * 0.62, 2.45), 0.31, 0.15, fc="#E2B400", ec="none"))
-ax.text(2.15, 2.85, "Avspärrat tills vidare beslut", ha="center", fontsize=13)
+ax.add_patch(FancyBboxPatch((0.1, 0.25), 4.1, 2.25, boxstyle="round,pad=0,rounding_size=0.06", fc=PALE, ec=STEEL, lw=1.5, zorder=1))
+ax.text(0.2, 2.32, "arbetsbänk", fontsize=11, color=GRAY, va="center", zorder=2)
+xs = np.linspace(0.1, 2.55, 80); ys = 1.35 + 0.05 * np.sin((xs - 0.1) * 2.4)
+ax.plot(xs, ys, color=INK, lw=6, solid_capstyle="butt", zorder=3)
+ax.plot([1.7, 2.02], [1.35 + 0.05 * np.sin(1.6 * 2.4), 1.35 + 0.05 * np.sin(1.92 * 2.4)], color="#3A3A3A", lw=10, solid_capstyle="butt", zorder=4)
+ax.plot([1.8, 1.86, 1.82, 1.89], [1.47, 1.38, 1.33, 1.24], color=ORANGE, lw=2, zorder=5)
+ax.add_patch(Rectangle((0.55, 0.8), 1.15, 1.1, fc=STEEL, ec=INK, lw=1.6, zorder=6))
+ax.text(1.125, 1.35, "tung låda", ha="center", va="center", fontsize=13, color="white", weight="bold", zorder=7)
+harrow(ax, (1.55, 0.62), (1.82, 1.18), color=ORANGE)
+ax.text(1.3, 0.45, "tillplattad, spricka i manteln", ha="center", va="center", fontsize=12, color=ORANGE, zorder=7)
+ax.add_patch(Rectangle((2.5, 1.29), 0.1, 0.12, fc=INK, ec=INK, zorder=4))
+ax.add_patch(FancyBboxPatch((2.6, 1.13), 0.95, 0.44, boxstyle="round,pad=0,rounding_size=0.12", fc="#5B6B7A", ec=INK, lw=1.6, zorder=4))
+for k in range(4): ax.plot([2.78 + 0.08 * k] * 2, [1.22, 1.48], color="#2B3440", lw=1.4, zorder=5)
+ax.add_patch(Rectangle((3.55, 1.08), 0.3, 0.54, fc=STEEL, ec=INK, lw=1.6, zorder=4))
+ax.plot([3.7, 3.7], [1.62, 2.12], color=INK, lw=7, solid_capstyle="round", zorder=3)
+ax.add_patch(Circle((3.7, 1.35), 0.4, fc="#C7D2DC", ec=INK, lw=1.6, zorder=5))
+ax.add_patch(matplotlib.patches.Wedge((3.7, 1.35), 0.46, 90, 270, width=0.12, fc=STEEL, ec=INK, lw=1.4, zorder=6))  # skyddskåpan
+ax.add_patch(Circle((3.7, 1.35), 0.07, fc=INK, ec=INK, zorder=6))
+ax.text(3.2, 0.62, "vinkelslip", ha="center", va="center", fontsize=13, zorder=7)
+ax.text(2.15, 2.85, "Används inte tills vidare beslut", ha="center", fontsize=13)
 save(F, "v42_01_s09_exempel")
 
 # s14 stöd 3: beröringspunkter
@@ -116,7 +127,7 @@ ax.add_patch(Circle((0.9, 0.65), 0.22, fc="white", ec=INK, lw=LW)); ax.text(0.9,
 ax.text(0.6, 0.65, "24 V", ha="right", va="center", fontsize=14)
 rresistor(ax, (3.5, 1.5), (3.5, -0.2), None); ax.text(3.3, 0.8, "R = 2 000 Ω", ha="right", fontsize=14); ax.text(3.3, 0.5, "(antagande)", ha="right", fontsize=12, color=GRAY)
 meter(ax, 2.2, 1.5, "A"); ax.text(2.2, 1.82, "I = ?", ha="center", fontsize=15, color=RED)
-ax.text(2.0, -0.65, "Räknemodell: en verklig kropp är ingen fast resistans", ha="center", fontsize=13)
+ax.text(1.95, -0.65, "Räknemodell: kroppen är ingen fast resistans", ha="center", fontsize=12.5)
 save(F, "v42_01_s16_stod4")
 
 # s18 stöd 5: STOPP och frånskiljning
@@ -271,15 +282,16 @@ ax.text(2.0, -0.12, "Jordledaren ansluts först och tas bort sist", ha="center",
 save(F, "v42_03_s21_jordning")
 
 # s24: riskmatris utan godkännandegräns
-F = fig(4.3, 4.3); ax = cax(F, (-1.0, 5.6), (-1.2, 5.4))
+F = fig(4.3, 4.5); ax = cax(F, (-1.0, 5.6), (-1.2, 5.7))  # luft över rubriken, så att bokstäverna inte klipps
 for i in range(5):
     for j in range(5):
         ax.add_patch(Rectangle((i, j), 1, 1, fc="white", ec="#B9C6D2", lw=1)); ax.text(i + 0.5, j + 0.42, str((i + 1) * (j + 1)), ha="center", va="center", fontsize=11, color=GRAY)
 for k in range(5): ax.text(k + 0.5, -0.25, str(k + 1), ha="center", va="top", fontsize=12); ax.text(-0.2, k + 0.5, str(k + 1), ha="right", va="center", fontsize=12)
 ax.text(2.5, -0.7, "sannolikhet", ha="center", va="top", fontsize=13); ax.text(-0.75, 2.5, "konsekvens", rotation=90, ha="center", va="center", fontsize=13)
-for (i, j, t, col) in ((4, 2, "före", ORANGE), (2, 2, "efter", BLUE)):
+# Samma exempel som bilden och övningssidan: före 5 · 3 = 15, efter 2 · 3 = 6 (inget av svaren i vecka 42)
+for (i, j, t, col) in ((5, 3, "före", ORANGE), (2, 3, "efter", BLUE)):
     ax.add_patch(Rectangle((i - 1 + 0.08, j - 1 + 0.08), 0.84, 0.84, fc="none", ec=col, lw=3, zorder=5))
     ax.text(i - 0.5, j - 1 + 0.78, t, ha="center", va="center", fontsize=9.5, color=col, weight="bold", zorder=6)
-harrow(ax, (3.1, 1.2), (2.0, 1.2), color=GRAY)
+harrow(ax, (4.1, 2.2), (2.0, 2.2), color=GRAY)
 ax.text(2.5, 5.1, "Ingen tillåten gräns given", ha="center", va="bottom", fontsize=12, color=GRAY)
 save(F, "v42_03_s24_matris")

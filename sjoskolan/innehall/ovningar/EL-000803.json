@@ -3,14 +3,15 @@
   "titel": "Riskbedömning av en länspump",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
       "LM-2",
-      "LM-7"
+      "LM-7",
+      "LM-9"
     ],
     "niva": "tillampning",
     "teori": [

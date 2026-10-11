@@ -3,7 +3,7 @@
   "titel": "TN-S",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
   "uppgift": {
     "fraga": "Vad skiljer PE och N i ett TN-S-system?",
     "samband": [
-      "N leder normal returström, PE har skyddsfunktion"
+      "Jämför N och PE i normal drift och vid fel"
     ],
     "givet": "Frågan gäller TN-S. Andra system kan vara uppbyggda på annat sätt.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -30,12 +30,12 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "I TN-S är neutralledare N och skyddsledare PE separata längs den berörda delen av systemet.",
+      "text": "N är neutralledare och PE skyddsledare. Läs genomgången del 1, avsnitt 3: TN-system.",
       "status": "migrerad"
     },
     {
       "niva": "metod",
-      "text": "Jämför ledarnas uppgift i normaldrift och vid fel. Skilj funktion från ett tillfälligt lika potentialvärde.",
+      "text": "Jämför vad ledarna gör i normal drift och vid fel. Titta på vad de gör, inte på vilken spänning de har.",
       "status": "migrerad"
     },
     {

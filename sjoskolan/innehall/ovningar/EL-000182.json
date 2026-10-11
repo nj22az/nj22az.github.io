@@ -3,7 +3,7 @@
   "titel": "TT-princip",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -30,7 +30,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Hög impedans i felslingan begränsar strömmen, så den kanske inte räcker för att ett överströmsskydd ska lösa ut.",
+      "text": "I TT går felströmmen genom jorden mellan två jordtag. Jordtagen har resistans. Tänk på vad det gör med strömmens storlek.",
       "status": "migrerad"
     },
     {

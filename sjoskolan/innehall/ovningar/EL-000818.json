@@ -3,12 +3,13 @@
   "titel": "Beröringsspänning i en modell",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
+      "LM-2",
       "LM-4"
     ],
     "niva": "tillampning",
@@ -17,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Skyddsledaren till en maskin är av och ett isolationsfel har gjort höljet spänningssatt: 230 V mot det jordade däcket. Räkna i en modell av ett TN-system med jordad neutralpunkt, som i land eller i ett jordat delnät ombord. I ett isolerat IT-nät blir bilden en annan (vecka 44).",
+    "fraga": "En maskin har ett isolationsfel. Skyddsledaren har gått av. Höljet har nu 230 V mot det jordade däcket. Räkna som i ett jordat nät (TN-nät). Ett isolerat nät (IT-nät) kommer vecka 44.",
     "delfragor": [
       {
         "id": "a",
@@ -33,7 +34,7 @@
       },
       {
         "id": "d",
-        "text": "Vilket skydd borde ha löst, och varför gjorde det kanske inte det när skyddsledaren är av?"
+        "text": "Säkringen eller dvärgbrytaren ska koppla bort matningen vid ett fel till höljet. Varför gjorde den kanske inte det när skyddsledaren har gått av?"
       }
     ],
     "svarsformat": "Beräkning och resonemang."
@@ -62,7 +63,7 @@
   "parametrar": {
     "D": {
       "varde": "D",
-      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+      "beskrivning": "Kursens tal: alla elever räknar med D = 12 från vecka 42 (KURS_D i gemensamt/elevtal.mjs)"
     }
   },
   "losning": {

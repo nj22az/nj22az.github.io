@@ -1,7 +1,7 @@
 import {createSession} from './session.mjs?v=20261003-erik-a';
 import {RIGS,MODES} from './multimeter/model.mjs';
 import {STATION_A_PROTOKOLL} from './multimeter/stationA-protokoll.mjs';
-import {mountProtocol} from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
+import {mountProtocol} from '../gemensamt/labbprotokoll.mjs?v=20261011';
 import {markHtml} from '../gemensamt/markering.mjs';
 import {ERIK_STATION_A} from './stationA-manus.mjs?v=20261003-erik-a';
 const $=s=>document.querySelector(s);

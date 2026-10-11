@@ -7,7 +7,8 @@ from pptxtext import shape, set_paras, drop_notes_line, subscript_tokens, replac
 SUBS = {'Zfel': ('Z', 'fel'), 'Ifel': ('I', 'fel'), 'Rslinga': ('R', 'slinga'), 'Ulast': ('U', 'last'), 'Ukälla': ('U', 'källa'),
         'Ilåg': ('I', 'låg'), 'Ihög': ('I', 'hög'), 'Uhög': ('U', 'hög'), 'Ulåg': ('U', 'låg'), 'Utång': ('U', 'tång'),
         'Uprov': ('U', 'prov'), 'Iläck': ('I', 'läck'), 'ûverklig': ('û', 'verklig'), 'ûvisad': ('û', 'visad'),
-        'xmax': ('x', 'max'), 'xmin': ('x', 'min'), 'kI': ('k', 'I'), 'Zs': ('Z', 's')}
+        'xmax': ('x', 'max'), 'xmin': ('x', 'min'), 'kI': ('k', 'I'), 'Zs': ('Z', 's'),
+        'U₀': ('U', '0')}  # U₀ skrivs U_{0} (beteckningar.json, granskning 2026-10-11)
 OLD_TS = "https://www.transportstyrelsen.se/sv/sjofart/Fartyg/Fartygskonstruktion/Elinstallationer/Lagar-foreskrifter-och-standarder/"
 NEW_TS = "https://www.transportstyrelsen.se/sv/om-oss/dina-rattigheter-lagar-och-regler/lagar-och-regler/regler-for-sjofart/regler-for-nationell-sjofart/regler-kompletterade-upplysningar/elektrisk-utrustning-och-elinstallationer/"  # den gamla adressen ger 404
 src, dst = sys.argv[1], sys.argv[2]
@@ -32,10 +33,13 @@ set_paras(shape(n, 2), ["Neutralpunktsjordning i HV-nät"])
 set_paras(shape(n, 3), ["Fartygens 6,6 och 11 kV-nät har ofta neutralpunkten jordad via ett motstånd (NER).", "Motståndet begränsar jordfelsströmmen till en bestämd nivå."])
 set_paras(shape(n, 4), ["Jordfelsskyddet larmar eller löser ut"])
 set_paras(shape(n, 5), ["Jordfelsreläet larmar eller löser ut enligt skyddsplanen.", "Hur många generatorer som har jordad neutralpunkt samtidigt styrs så att felströmmen blir den avsedda."])
-set_paras(shape(p.slides[18], 4), ["Ordna dessa funktioner i en signalväg: brytare, mättransformator, skyddsrelä. Vad händer om skyddsreläet saknar hjälpspänning?"])
+# Övningens fråga kommer ur posten EL-000195 (innehall.py bygg presentationer); samma text här
+set_paras(shape(p.slides[18], 4), ["a) Sätt delarna i rätt ordning, från mätning till bortkoppling: brytare, mättransformator, skyddsrelä. b) Skyddsreläet behöver egen matning (hjälpspänning). Vad händer om den försvinner?"])
 replace_words(p, [('UᴸPF', 'Uᴸ · PF')])
-set_paras(shape(p.slides[23], 10), ["En ideal strömtransformator är märkt 300/5 A. Primärströmmen är 150 A. Endast beräkning på data."])
-set_paras(shape(p.slides[23], 12), ["1. kI = 300/5 = 60.", "2. I₂ = 150/60 = 2,5 A.", "3. Kontroll: 2,5/5 = 150/300 = 0,50 av märkström på båda sidor."])
+# 300/5 A och 150 A är ledtrådens räkning i övning 2.4; exemplet får inte heller ge övningens 3,0 A (granskning 2026-10-11).
+# Figuren: figs44.py (v44_02_s24_exempel) och spec44.json.
+set_paras(shape(p.slides[23], 10), ["En ideal strömtransformator är märkt 400/5 A. Primärströmmen är 320 A. Endast beräkning på data."])
+set_paras(shape(p.slides[23], 12), ["1. kI = 400/5 = 80.", "2. I₂ = 320/80 = 4,0 A.", "3. Kontroll: 4,0/5 = 320/400 = 0,80 av märkström på båda sidor."])
 subscript_tokens(p, SUBS); replace_links(p, OLD_TS, NEW_TS); drop_notes_line(p); p.save(f"{dst}/{f}")
 
 f = "v44_03_Fordjupad_matteknik_elev.pptx"; p = Presentation(f"{src}/{f}")

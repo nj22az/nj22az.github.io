@@ -3,7 +3,7 @@
   "titel": "Reservkraft",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Med normal matning kan felströmmen bli 1 000 A, men vid reservdrift bara 200 A. Vad behöver kontrolleras när skydden planeras?",
+    "fraga": "Vid ett fel blir strömmen 1 000 A med vanlig matning. På reservkraft blir den bara 200 A. Vad måste du kontrollera hos skyddet?",
     "samband": [
       "Skydd måste ge avsedd bortkoppling i varje driftfall"
     ],
@@ -30,7 +30,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Hur snabbt ett överströmsskydd löser beror på strömmen och skyddets ström–tidkurva.",
+      "text": "Ett skydd löser snabbare när strömmen är stor. Hur snabbt står i skyddets ström–tidskurva, ett diagram från tillverkaren.",
       "status": "migrerad"
     },
     {

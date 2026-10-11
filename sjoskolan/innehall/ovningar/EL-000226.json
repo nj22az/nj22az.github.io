@@ -3,7 +3,7 @@
   "titel": "Två felhypoteser",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -24,7 +24,7 @@
   "uppgift": {
     "fraga": "En pump går långsamt. Källan håller 24 V, motorn får 18 V och i kabeln faller 6 V under last. Vilket stämmer bäst: en svag källa eller för hög resistans i kabeln?",
     "samband": [
-      "U_{källa} = U_{last} + ΔUkabel"
+      "U_{källa} = U_{last} + ΔU_{kabel}"
     ],
     "givet": "Källan håller 24 V, motorn får 18 V och i kabeln faller 6 V under last.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."

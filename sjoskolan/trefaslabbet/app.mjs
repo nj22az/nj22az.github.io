@@ -2,7 +2,7 @@
 import { fmt, parseAnswer, isClose, C as Cx, PHASE } from './model.mjs';
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { DEFAULTS, CHALLENGES, PLATES, readouts, expected } from './lessons.mjs';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260928-pek';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20261011';
 import { STATION_B_3F_PROTOKOLL, RIG_3F } from './stationB-protokoll.mjs?v=20260928-flik';
 
 const $ = (id) => document.getElementById(id);

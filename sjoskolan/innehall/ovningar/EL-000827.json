@@ -3,14 +3,17 @@
   "titel": "Övningstentan",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
+      "LM-1",
       "LM-2",
-      "LM-7"
+      "LM-3",
+      "LM-4",
+      "LM-5"
     ],
     "niva": "tillampning",
     "teori": [

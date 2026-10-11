@@ -3,7 +3,7 @@
   "titel": "Spolspänning under start",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -24,7 +24,7 @@
   "uppgift": {
     "fraga": "Samma krets. START sluts, och STOPP och returen är hela. Vilken spänning ligger över K1-spolen (idealt)?",
     "samband": [
-      "Uspole = Vmatningssida − Vretur"
+      "U_{spole} = V_{matning} − V_{retur}"
     ],
     "givet": "12 V, START och STOPP slutna, hel retur.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -50,7 +50,7 @@
     "text": "12 V. Hela källspänningen ligger över spolen när vägen är sluten.",
     "svar": [
       {
-        "storhet": "UK1",
+        "storhet": "U_{spole}",
         "varde": 12.0,
         "avrundning": "heltal",
         "tolerans": {

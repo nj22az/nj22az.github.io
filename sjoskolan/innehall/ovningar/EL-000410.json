@@ -3,7 +3,7 @@
   "titel": "Labbprotokoll, isolation och jordfel i IT-nät",
   "sprak": "sv",
   "typ": "laboration",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad"
   },
@@ -19,7 +19,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Fyll i medan du använder labbet. Ställ in läget med knapparna, skriv förväntat värde och tryck ”Hämta avläsning”. Del 1 gäller isolationsövervakningen i fartygets 440 V IT-nät. Del 2 gäller isolationsprovning av motor M3."
+    "fraga": "Fyll i medan du använder labbet. Ställ in läget med knapparna, skriv din förutsägelse och tryck ”Hämta avläsning”. Del 1 gäller isolationsövervakningen i fartygets 440 V IT-nät. Del 2 gäller isolationsprovning av motor M3."
   },
   "referenser": {
     "ursprung": [
@@ -35,7 +35,7 @@
   "labb": {
     "variant": "simulerad",
     "station": "Isolationslabbet · vecka 44 · simulerad",
-    "utrustning": "IT-nät 440 V, 50 Hz, utan neutralledare. Isolationsövervakning (IMD) med larmgräns 100 kΩ. Nätkapacitans 1 µF per fas mot skrovet. Isolationsprovare med provspänning 250, 500 eller 1 000 V DC. Motor M3 med kabel, gräns enligt fartygets instruktion: minst 1 MΩ mot PE. I simulatorn är instrumenten ideala.",
+    "utrustning": "IT-nät 440 V, 60 Hz, utan neutralledare. Isolationsövervakning (IMD) med larmgräns 100 kΩ. Nätkapacitans 1 µF per fas mot skrovet. Isolationsprovare med provspänning 250, 500 eller 1 000 V DC. Motor M3 med kabel, gräns enligt fartygets instruktion: minst 1 MΩ mot PE. I simulatorn är instrumenten ideala.",
     "sakerhet": [
       {
         "id": "instr",
@@ -222,7 +222,7 @@
               5000000
             ],
             "C": 1e-06,
-            "f": 50,
+            "f": 60,
             "larm": 100000
           },
           "text": "friskt nät, 5 MΩ och 1 µF per fas"
@@ -237,7 +237,7 @@
               5000000
             ],
             "C": 1e-06,
-            "f": 50,
+            "f": 60,
             "larm": 100000
           },
           "text": "L1 80 kΩ mot skrov, övriga 5 MΩ"
@@ -252,7 +252,7 @@
               5000000
             ],
             "C": 1e-06,
-            "f": 50,
+            "f": 60,
             "larm": 100000
           },
           "text": "fullständigt jordfel L1, 1 µF per fas"
