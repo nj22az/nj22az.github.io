@@ -16,8 +16,9 @@ const nameOf=n=>n==='Thuan'?'Thuận':n;
 const loadImage=url=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error('The image could not be loaded.'));img.src=url;});
 /** Degrees for one tap on a turn button, and for one Q/E key press. */
 const TURN_TAP=30,TURN_KEY=15,UNDO_MS=7000,PORTRAIT=96;
-// A chair in profile (back, seat, two legs): at toolbar size it reads better than a chair seen from the front.
-const chairIcon='<svg class="ui-icon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v10M5 13h13M7 13v8M16 13v8"/></svg>';
+// Sit down and stand up as a seated and a standing figure (World's icon set has no seated one).
+const figure=body=>`<svg class="ui-icon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+const sitIcon=figure('<circle cx="9" cy="4.5" r="2.5"/><path d="M9 8v6h6v6M9 10.5l4.5 2M4 21h16"/>'),standIcon=figure('<circle cx="12" cy="4.5" r="2.5"/><path d="M12 8v7M8.5 11.5h7M9.5 21l2.5-6 2.5 6"/>');
 const choice=(name,label,options)=>`<div class="scene-choice" role="group" aria-label="${label}" data-choice="${name}">${options.map(([value,text])=>`<button type="button" data-value="${value}" aria-pressed="false">${text}</button>`).join('')}</div>`;
 
 /** 3D scene editor: shared town geometry, ground, furniture and avatar models. */
@@ -33,7 +34,7 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
  <button type="button" data-step="location">1. Choose location</button><button type="button" data-step="characters">2. Add characters</button><button type="button" data-step="pose">3. Pose & position</button><button type="button" data-step="text">4. Add text</button><button type="button" data-step="export">5. Export</button></nav>
  <div class="scene-layout"><section class="scene-picture" aria-label="Scene preview"><div class="scene-frame"><canvas width="1200" height="900" tabindex="0" aria-label="Scene. Tap a character to select them and drag to move them."></canvas><div class="scene-selection" hidden></div>
  <div class="scene-toolbar" role="group" aria-label="Selected character" hidden>
- <button type="button" data-tool="turn-left" aria-label="Turn left" title="Turn left">${svg('reset')}</button><button type="button" data-tool="turn-right" aria-label="Turn right" title="Turn right">${svg('reset')}</button><button type="button" data-tool="face-camera" aria-label="Face the camera" title="Face the camera">${svg('camera')}</button><button type="button" data-tool="sit" aria-label="Sit down" title="Sit down">${chairIcon}</button><button type="button" data-tool="remove" aria-label="Remove from the scene" title="Remove from the scene">${svg('trash')}</button></div></div>
+ <button type="button" data-tool="turn-left" aria-label="Turn left" title="Turn left">${svg('reset')}</button><button type="button" data-tool="turn-right" aria-label="Turn right" title="Turn right">${svg('reset')}</button><button type="button" data-tool="face-camera" aria-label="Face the camera" title="Face the camera">${svg('camera')}</button><button type="button" data-tool="sit" aria-label="Sit down" title="Sit down">${sitIcon}</button><button type="button" data-tool="remove" aria-label="Remove from the scene" title="Remove from the scene">${svg('trash')}</button></div></div>
  <div class="scene-strip" role="group" aria-label="Characters in this scene"></div>
  <p class="scene-hint"></p><details class="scene-camera-box" open><summary>Camera</summary><div class="scene-camera"><label>Camera turn<input data-camera="orbit" type="range" min="-180" max="180" step="2" value="0"></label><label>Camera height<input data-camera="elevation" type="range" min="-25" max="40" step="1" value="0"></label><label>Camera distance<input data-camera="zoom" type="range" min=".55" max="1.8" step=".05" value="1"></label><button data-action="reset-camera">Reset camera</button></div></details><p class="scene-status" role="status" aria-live="polite"></p></section>
  <aside class="scene-controls" aria-label="Scene controls">
@@ -158,9 +159,10 @@ export function createSceneWorkspace({getCharacter,onEdit,onMode}){
   const seated=!!a.seat;
   for(const t of ['turn-left','turn-right','face-camera']){const button=toolbar.querySelector(`[data-tool="${t}"]`);button.disabled=seated;button.title=seated?'Seated characters face the way their seat faces':button.getAttribute('aria-label');}
   const sit=toolbar.querySelector('[data-tool="sit"]'),sitting=seated||seatedPose(a.pose),label=sitting?'Stand up':'Sit down';
-  if(sit.dataset.state!==String(sitting)){sit.dataset.state=String(sitting);sit.innerHTML=sitting?svg('stand'):chairIcon;}sit.setAttribute('aria-label',label);sit.title=label;
+  if(sit.dataset.state!==String(sitting)){sit.dataset.state=String(sitting);sit.innerHTML=sitting?standIcon:sitIcon;}sit.setAttribute('aria-label',label);sit.title=label;
   if(toolbar.hidden)return;
-  const spot=placeToolbar({frame:{w,h},box:{left:b.left*w,top:b.top*h,right:b.right*w,bottom:b.bottom*h},face:{x:b.face.x*w,y:b.face.y*h,r:b.face.r*w},bar:{w:toolbar.offsetWidth,h:toolbar.offsetHeight}});
+  const spot=placeToolbar({frame:{w,h},box:{left:b.left*w,top:b.top*h,right:b.right*w,bottom:b.bottom*h},face:{x:b.face.x*w,y:b.face.y*h,r:b.face.r*w},bar:{w:toolbar.offsetWidth,h:toolbar.offsetHeight},
+   others:boxes.filter(o=>o!==b&&o.visible).map(o=>({x:o.face.x*w,y:o.face.y*h,r:o.face.r*w}))});
   if(!spot){toolbar.hidden=true;return;}
   toolbar.style.left=spot.x+'px';toolbar.style.top=spot.y+'px';toolbar.dataset.where=spot.where;
  }

@@ -29,9 +29,10 @@ const overlaps=(r,c,margin)=>{const x=Math.max(r.x,Math.min(c.x,r.x+r.w)),y=Math
  * Where the selected character's toolbar goes, in pixels inside a frame of `frame` {w,h}: below the feet, else above the
  * head, else beside the body, else over the legs, else along the frame's bottom or top edge. Never over the face
  * (`face` {x,y,r}) and always inside the frame. `box` is the character's {left,top,right,bottom}; `bar` the toolbar's {w,h}.
+ * It keeps clear of the other characters' faces (`others`) too when some place allows it.
  * Returns {x,y,where} (the toolbar's top-left corner), or null when the frame is too small to hold it anywhere.
  */
-export function placeToolbar({frame,box,face,bar,gap=8,edge=4}){
+export function placeToolbar({frame,box,face,bar,others=[],gap=8,edge=4}){
  const clampX=x=>Math.max(edge,Math.min(frame.w-bar.w-edge,x)),clampY=y=>Math.max(edge,Math.min(frame.h-bar.h-edge,y));
  const cx=(box.left+box.right)/2,bodyY=Math.max(face.y+face.r+gap,(box.top+box.bottom)/2);
  const candidates=[
@@ -43,10 +44,10 @@ export function placeToolbar({frame,box,face,bar,gap=8,edge=4}){
   ['bottom',clampX(cx-bar.w/2),frame.h-bar.h-edge],
   ['top',clampX(cx-bar.w/2),edge],
  ];
- for(const [where,x,y] of candidates){
+ for(const avoid of [[face,...others],[face]])for(const [where,x,y] of candidates){
   const rect={x,y,w:bar.w,h:bar.h};
-  if(x<edge-.5||y<edge-.5||x+bar.w>frame.w-edge+.5||y+bar.h>frame.h-edge+.5)continue;
-  if(overlaps(rect,face,6))continue;
+  if(x<edge-1e-6||y<edge-1e-6||x+bar.w>frame.w-edge+1e-6||y+bar.h>frame.h-edge+1e-6)continue;
+  if(avoid.some(f=>overlaps(rect,f,6)))continue;
   return {x,y,where};
  }
  return null;

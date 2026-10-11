@@ -30,6 +30,9 @@ test('the toolbar sits beside the character, inside the picture and never over t
  p=placeToolbar({frame,bar,...huge});assert.ok(['legs','bottom'].includes(p.where));assert.ok(inside(p)&&clearOf(p,huge.face));
  for(let i=0;i<400;i++){const l=Math.random()*560,t=Math.random()*400,box={left:l,top:t,right:l+20+Math.random()*300,bottom:t+20+Math.random()*300},face={x:(box.left+box.right)/2,y:box.top+30,r:10+Math.random()*60};
   const q=placeToolbar({frame,bar,box,face});if(q)assert.ok(inside(q)&&clearOf(q,face),JSON.stringify({box,face,q}));}
+ const neighbour={x:290,y:150,r:30},beside=placeToolbar({frame,bar,box:{left:250,top:150,right:330,bottom:440},face:{x:290,y:200,r:35},others:[{x:280,y:110,r:30}]});
+ assert.notEqual(beside.where,'above','not over a neighbour\'s face when another place is free');assert.ok(inside(beside)&&clearOf(beside,{x:280,y:110,r:30}));
+ const crowded=placeToolbar({frame,bar,...standing,others:[{x:300,y:330,r:200}]});assert.ok(crowded&&clearOf(crowded,standing.face),'the selected face still wins when everything is crowded');void neighbour;
  assert.equal(placeToolbar({frame:{w:200,h:40},bar,box:{left:0,top:0,right:10,bottom:10},face:{x:5,y:5,r:2}}),null,'too small to hold it');
 });
 test('a fingertip picks the character it lands on, or the nearest box within reach',()=>{
