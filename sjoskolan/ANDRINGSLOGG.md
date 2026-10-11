@@ -239,7 +239,6 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   `kurs-formelstod.json` och följer inte längre med presentationen (regel 57). Schemat och databasen har fältet,
   `figurkontroll.py` jämför alt-textens tal med övningsposten, och figurer hittas på innehållet före bildnumret. Delsidorna
   blev byte för byte desamma.
-
 - **2026-10-11** Vecka 43 och 44 rättar sig själva som vecka 42 (lärarens beslut 12 oktober): svarsfält med tre försök,
   rutan Låsta frågor med veckans alla delar, Lämna in och en PDF till Google Classroom under Vecka 43 och Vecka 44. Allt
   lämnas in senast fredag (23 och 30 oktober), aldrig söndag. Fälten står i `verktyg/inlamning/sjalvrattning.py`
@@ -285,7 +284,15 @@ Målet för allt material: **det ska vara lätt att lära sig.**
   med filnamnet (`verktyg/bildspel/bygg.py`, regel 58); annars hette felsökningens bildspel ”Fredag 23 oktober”. Övningsfigurerna till
   3.6–3.8 och 1.4, 1.7 står kvar på delsidorna, nu ur övningarnas placeringar (regel 57). Lärarkopiorna av
   v43_03 och v45_01 är inte ombyggda (kräver LARARLOSEN).
-
+- **2026-10-11** Vecka 43 måndag och tisdag: nya presentationer i lektionsbildernas mall, *Komponenter och skydd* (20 bilder i
+  stället för 36) och *Transformatorer och motorer* (21 bilder i stället för 36, med veckans labb: Hållkretslabbet, Räkna först).
+  Innehållet står i `verktyg/lektionsbilder/lektion_v43_01.py` och `lektion_v43_02.py` (LEKTION och HEMMA), omslagen är de
+  tidigare titelbilderna. Delsidorna del 1 och 2 har samma sju avsnitt med samma rubriker och ordning, samma två exempel och
+  samma figurer; texten följer bilderna, och tal och enhet hålls ihop med hårda mellanslag som i `verktyg/figurer/insert.py`.
+  Övning 1.2–1.5 och 1.1 respektive 2.1–2.5 görs på lektionen, var och en efter sitt avsnitt (teorikorten). Start- och
+  avslutsfrågorna EL-000717–720 var märkta LM-4 och är nu LM-1 (EL-000720 LM-1 och LM-2). `verktyg/figurer/spec43.json` följer
+  de nya bildnumren. Övning 2.1 och 2.2 visar
+  sina figurer ur övningarnas placeringar (regel 57).
 - **2026-10-11** Vecka 42: delsidorna Del_1–3 har rutan **Din del** överst (lärarens önskan: delsidorna ska vara
   översikter som veckosidan). Dagens färg och tid, lektionens läge (I dag, Pågår nu, Om 2 dagar, Har varit), vad vi
   pratar om, presentationen, läxorna efter lektionen med läge (samma lista som bilden ”Det här gör du nu”), övning
