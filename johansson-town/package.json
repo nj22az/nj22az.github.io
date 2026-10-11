@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "node scripts/build-runtime.mjs && vite build",
-    "test": "node --test --test-concurrency=4 tests/*.test.mjs",
+    "test": "node --test --test-concurrency=4 --test-timeout=900000 tests/*.test.mjs",
     "audit:serve": "python3 tools/serve-audit.py",
     "audit:visual": "node tools/visual-audit.mjs",
     "audit:visual:update": "node tools/visual-audit.mjs --update-baselines",
