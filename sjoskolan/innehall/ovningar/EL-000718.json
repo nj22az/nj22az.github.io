@@ -3,13 +3,13 @@
   "titel": "Avslutsfråga: v43_01",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-1"
     ],
     "niva": "grund",
     "teori": [
@@ -18,7 +18,7 @@
   },
   "uppgift": {
     "fraga": "Varför bevisar olika märkströmmar inte att två skydd är selektiva?",
-    "instruktion": "Identifiera skydd och manöverkomponenter inför veckans motorstyrningsschema. Dokumentera funktion och vilken data som behövs."
+    "instruktion": "Uppgiften Skyddsdata i inlämningen bygger på del 1. Inlämningen senast fredag 23 oktober."
   },
   "referenser": {
     "ursprung": [

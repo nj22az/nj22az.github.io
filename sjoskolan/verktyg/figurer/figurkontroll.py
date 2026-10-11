@@ -2,6 +2,8 @@
 """Talen i en övningsfigur ska stå i övningen. En figur som ritades till en äldre version av uppgiften (övning 1.4 i
 vecka 41 visade U_F = 120 V när uppgiften sa 230 V) fångas här: varje tal i figurens beskrivning (spec4N.json)
 ska finnas i texten på övningens bild. Övningar som bygger på föregående övning undantas.
+Lektionsbilderna i mallen visar inga övningar; där står figuren på övningens placering (kurs-formelstod.json, figurer)
+och talen i alt-texten jämförs med övningsposten.
 
     python3 sjoskolan/verktyg/figurer/figurkontroll.py        skriver avvikelserna, slutkod 1 om någon finns
 """
@@ -38,6 +40,18 @@ def avvikelser():
                 saknas = sorted(x for x in tal(beskrivning) - tal(text) if not re.fullmatch(r'[0-3]', x))
                 if saknas:
                     ut.append(f'{deck} bild {n} ({namn}): talen {", ".join(saknas)} i figuren står inte i övningen')
+    innehall = SJO / 'innehall'
+    for pl in json.loads((innehall / 'placeringar' / 'kurs-formelstod.json').read_text(encoding='utf-8'))['placeringar']:
+        if not pl.get('figurer'):
+            continue
+        u = json.loads((innehall / 'ovningar' / f'{pl["ovning"]}.json').read_text(encoding='utf-8'))['uppgift']
+        text = ' '.join(str(u.get(k, '')) for k in ('scenario', 'fraga', 'givet'))
+        if 'föregående' in text:
+            continue
+        for f in pl['figurer']:
+            saknas = sorted(x for x in tal(f['alt']) - tal(text) if not re.fullmatch(r'[0-3]', x))
+            if saknas:
+                ut.append(f'{pl["ankare"]} ({f["fil"]}): talen {", ".join(saknas)} i figuren står inte i övningen {pl["ovning"]}')
     return ut
 
 

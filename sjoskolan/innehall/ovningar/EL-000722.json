@@ -3,13 +3,13 @@
   "titel": "Avslutsfråga: v43_03",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-5"
     ],
     "niva": "grund",
     "teori": [
@@ -18,7 +18,7 @@
   },
   "uppgift": {
     "fraga": "Vilka två punkter och vilket driftläge hör till ditt förväntade mätvärde?",
-    "instruktion": "Lämna schemauppgiften senast söndag 25 oktober. Använd hållkretsen som underlag och redovisa funktion, komponenter, mätpunkter och dokumentrevision."
+    "instruktion": "Inlämning 3 bygger på hållkretsen: nödstoppet S2, lampan H1, kretsens fem lägen och en felsökningsrad. Inlämningen senast i dag, fredag 23 oktober."
   },
   "referenser": {
     "ursprung": [

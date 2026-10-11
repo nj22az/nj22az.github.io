@@ -3,13 +3,14 @@
   "titel": "Avslutsfråga: v42_03",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-6",
+      "LM-7"
     ],
     "niva": "grund",
     "teori": [
@@ -18,7 +19,7 @@
   },
   "uppgift": {
     "fraga": "Vilken kontroll visar att din viktigaste skyddsåtgärd faktiskt fungerar?",
-    "instruktion": "Lämna riskbedömningen senast söndag 18 oktober. Ange arbetsgräns, faror, åtgärder, ansvar, kvarstående risk och kontrollerad regelhänvisning."
+    "instruktion": "Lämna riskbedömningen i inlämningen senast i dag, fredag 16 oktober. Ange arbetsgräns, faror, åtgärder, ansvar, kvarstående risk och kontrollerad regelhänvisning."
   },
   "referenser": {
     "ursprung": [

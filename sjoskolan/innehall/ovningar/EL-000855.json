@@ -3,7 +3,7 @@
   "titel": "RL-last",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -18,7 +18,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En last består av R = 40 Ω i serie med en spole med X_{L} = 30 Ω vid 50 Hz. Den ansluts till 230 V. Beräkna |Z|, I, cos φ, P, Q och S."
+    "fraga": "En last består av R = 20 Ω i serie med en spole med X_{L} = 15 Ω vid 50 Hz. Den ansluts till 230 V i ett vägguttag i land. Beräkna |Z|, I, cos φ, P, Q och S."
   },
   "referenser": {
     "ursprung": [
@@ -32,13 +32,13 @@
     "losning_publik": true
   },
   "losning": {
-    "text": "|Z| = √(40² + 30²) = 50 Ω. I = 230/50 = 4,6 A. cos φ = 40/50 = 0,80. P = I²R = 4,6² · 40 ≈ 846 W. Q = I²X_{L} ≈ 635 var. S = U · I ≈ 1 058 VA. Kontroll: √(846² + 635²) ≈ 1 058 VA.",
+    "text": "|Z| = √(20² + 15²) = 25 Ω. I = 230/25 = 9,2 A. cos φ = 20/25 = 0,80. P = I²R = 9,2² · 20 ≈ 1 693 W. Q = I²X_{L} = 9,2² · 15 ≈ 1 270 var. S = U · I = 230 · 9,2 = 2 116 VA. Kontroll: √(1 693² + 1 270²) ≈ 2 116 VA.",
     "status": "migrerad",
     "kalla": "Övningstentans lösning",
     "svar": [
       {
         "storhet": "|Z|",
-        "varde": 50,
+        "varde": 25,
         "enhet": "Ω",
         "tolerans": {
           "rel": 0.01
@@ -49,10 +49,10 @@
   },
   "parametrar": {
     "R": {
-      "varde": 40
+      "varde": 20
     },
     "XL": {
-      "varde": 30
+      "varde": 15
     }
   },
   "bedomning": {

@@ -45,6 +45,14 @@ jobs:
         env:
           LARARLOSEN: ${{ secrets.LARARLOSEN }}
         run: node --test sjoskolan/vecka-41/aktuell/resultat*.test.mjs
+      - name: Vecka 42 – självrättande inlämning och quiz (rättning, försök, läsning, PDF, nycklar och sidor) och översikten Din vecka
+        run: |
+          # pdfinfo och pdftotext (poppler-utils) öppnar elevens PDF i testet; saknas de hoppar just den delen över.
+          command -v pdftotext >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils) || echo "poppler-utils saknas"
+          python3 -m unittest discover -s sjoskolan/verktyg/inlamning -p 'test_*.py'
+          node --test sjoskolan/gemensamt/sjalvrattning.test.mjs sjoskolan/gemensamt/pdf.test.mjs sjoskolan/vecka-42/aktuell/inlamning.test.mjs sjoskolan/vecka-42/aktuell/quiz.test.mjs sjoskolan/gemensamt/veckopanel.test.mjs sjoskolan/gemensamt/dagsvy.test.mjs
+      - name: Vecka 43–45 – självrättande inlämningar (fält, nycklar, delsidornas läsbekräftelser och vecka 45:s hänvisningar)
+        run: node --test sjoskolan/vecka-43/aktuell/inlamning.test.mjs sjoskolan/vecka-44/aktuell/inlamning.test.mjs sjoskolan/vecka-45/aktuell/inlamning.test.mjs
       - name: Multimeterlabbets gränssnittstest
         working-directory: sjoskolan/multimetersimulator
         run: npm ci --ignore-scripts --no-audit --no-fund && npm test

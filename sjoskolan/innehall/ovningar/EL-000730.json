@@ -3,13 +3,14 @@
   "titel": "Avslutsfråga: v45_01",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-8",
+      "LM-5"
     ],
     "niva": "grund",
     "teori": [
@@ -18,7 +19,7 @@
   },
   "uppgift": {
     "fraga": "Vilket resultat skulle få dig att överge din första felhypotes?",
-    "instruktion": "Skriv en felsökningsrapport med minst två hypoteser och en kontroll som skiljer dem. Underlaget används på tisdag."
+    "instruktion": "Skriv felsökningsrapporten med minst två hypoteser och en kontroll som skiljer dem. Felsök två felmoduler i Hållkretslabbet, en i taget. Senast i dag, fredag 23 oktober."
   },
   "referenser": {
     "ursprung": [

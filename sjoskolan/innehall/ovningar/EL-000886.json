@@ -3,7 +3,7 @@
   "titel": "Tången runt motorkabeln",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "utkast"
   },
@@ -22,7 +22,7 @@
   "uppgift": {
     "fraga": "En motorman lägger tången runt hela kabeln till en trefasmotor ombord medan den går, och läser 0,2 A. Förklara varför värdet är så litet, och hur fasströmmen ska mätas.",
     "samband": [
-      "I_{1} + I_{2} + I_{3} = 0 vid symmetri utan neutralledare"
+      "I_{1} + I_{2} + I_{3} = 0 utan neutralledare"
     ],
     "givet": "Ombord, 440 V, 60 Hz. Trefasmotor utan neutralledare. Tången är avsedd för mätningen och mätkategorin.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -45,7 +45,7 @@
     }
   ],
   "losning": {
-    "text": "Alla tre fasledarna går genom käften. Motorn har ingen neutralledare, så summan av fasströmmarna är nära noll. 0,2 A kan vara liten osymmetri eller läckström mot skyddsledaren. Fasströmmen mäts med tången runt en fasledare i taget, där ledarna går separat, och med instrumentet inom sin mätkategori.",
+    "text": "Alla tre fasledarna går genom käften. Motorn har ingen neutralledare, så summan av fasströmmarna är noll, också när faserna är olika belastade: strömmen som går ut i en fas kommer tillbaka i de andra. 0,2 A är därför ström som tar en annan väg, till exempel en läckström som går tillbaka via skrovet i stället för genom kabeln, eller tångens eget fel när ledarna ligger olika i käften. Fasströmmen mäts med tången runt en fasledare i taget, där ledarna går separat, och med instrumentet inom sin mätkategori.",
     "status": "utkast",
     "kalla": "Kursens facit (publikt)"
   },

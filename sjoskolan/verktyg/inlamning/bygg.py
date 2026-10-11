@@ -3,9 +3,15 @@
 
 Uppgifterna ligger i innehållsdatabasen (sjoskolan/innehall, ytan inlamning) och skrivs av
     python3 sjoskolan/innehall/innehall.py bygg inlamning
-Här finns bara veckornas rubrik och sista inlämningsdag samt HTML-mallen.
+Här finns bara veckornas rubrik och sista inlämningsdag samt HTML-mallen. Veckor i SJALVRATTANDE får svarsfält,
+Rätta och Lämna in (sjalvrattning.py); nyckeln med hashade svar skrivs av facit.py.
 """
+import sys
 from html import escape
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import sjalvrattning as S  # noqa: E402  självrättande inlämning (vecka 42 och framåt)
 
 V = '20260930'
 MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
@@ -19,12 +25,16 @@ VECKOR = {
     40: {'titel': 'Växelström', 'sista': '2026-10-04',
          'notis': 'Veckans inlämning 1–3 (Frånskiljning och mätteknik) lämnar du på en egen sida. Här finns inlämning 4–7.', 'notis_lank': ('/sjoskolan/vecka-38/aktuell/Inlamning.html', 'Inlämning: Frånskiljning och mätteknik')},
     41: {'titel': 'Trefas och laboration', 'sista': '2026-10-11'},
-    42: {'titel': 'Elektriska risker och skydd', 'sista': '2026-10-18'},
-    # Vecka 45:s inlämning är fördelad på vecka 43 och 44 (verktyg/veckosidor/bygg.py).
-    43: {'titel': 'Komponenter, motorer, scheman och felsökning', 'sista': '2026-10-25'},
-    44: {'titel': 'Elsystem, mätteknik och repetition', 'sista': '2026-11-01'},
-    45: {'titel': 'Felsökning, analys och övningstenta', 'sista': '2026-11-01',
-         'notis': 'Inlämning 3 (felsökningsrapporten) lämnar du med vecka 43, senast söndag 25 oktober. Inlämning 1 (analys av mätdata) lämnar du med vecka 44, senast söndag 1 november. Inlämning 2, övningstentan, gör du inför tentamen; den betygsätts inte.'},
+    42: {'titel': 'Elektriska risker och skydd', 'sista': '2026-10-16'},  # lärarens beslut 11 okt: allt lämnas in senast fredag
+    # Lärarens beslut 12 oktober: vecka 43 och 44 rättar sig själva som vecka 42, och allt lämnas in senast fredag.
+    # Vecka 45:s felsökningsrapport (EL-000828) och analys av mätdata (EL-000826) lämnas in med vecka 43 och 44: de står
+    # med svarsrutor som inlämning 4 där, och på vecka 45:s sida finns en hänvisning (lamnas_med).
+    43: {'titel': 'Komponenter, motorer, scheman och felsökning', 'sista': '2026-10-23',
+         'notis': 'Inlämning 4, felsökningsrapporten, bygger på del 4 (Systematisk felsökning). Den lämnas in med vecka 43.'},
+    44: {'titel': 'Elsystem, mätteknik och repetition', 'sista': '2026-10-30',
+         'notis': 'Inlämning 4, analysen av mätdata, bygger på del 4 (Analys av mätresultat). Den lämnas in med vecka 44.'},
+    45: {'titel': 'Felsökning, analys och övningstenta', 'sista': None, 'frivillig': True, 'lamnas_med': S.LAMNAS_MED,
+         'notis': 'Vecka 45 har ingen inlämning som betygsätts. Felsökningsrapporten lämnar du med vecka 43, senast fredag 23 oktober, och analysen av mätdata med vecka 44, senast fredag 30 oktober. Övningstentan är frivillig och betygsätts inte.'},
 }
 
 
@@ -37,7 +47,10 @@ NAMNRUTA = '''<div class="sj-panel soft dbox"><h2>Ditt namn ger dina egna värde
 EPOST = 'nils@sjoskolan.se'
 
 
-def epost_knapp(nr, vn):
+def epost_knapp(nr, vn, pa_sidan=False):
+    """Rutan Så lämnar du in. pa_sidan: rutan står på inlämningssidan (annars på veckosidan)."""
+    if nr in SJALVRATTANDE:
+        return S.epost_ruta(EPOST, vn, pa_sidan)
     from urllib.parse import quote
     amne = quote(f'Inlämning vecka {vn}: Förnamn Efternamn')
     kropp = quote(f'Hej!\n\nHär är min inlämning för vecka {vn}.\n\nNamn: \nBifogat: uträkningar (foto eller PDF) och labbprotokoll (PDF).\n')
@@ -54,12 +67,32 @@ def datum(iso):
     return f'{d} {MONTHS[m - 1]}'
 
 
+def veckodag(iso):
+    import datetime as _dt
+    return ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag'][_dt.date.fromisoformat(iso).weekday()]
+
+
 # Veckor med resultatkod: D slumpas på enheten, svaren skrivs i rutor och skickas med QR-koden (vecka-XX/aktuell/resultat.mjs).
 RESULTATKOD = {40}
 
 
 # Veckor med svarsrutor och resultatkod där D räknas ur namnet (vecka-XX/aktuell/inlamning-svar.mjs och Resultat.html).
 SVARSRUTOR = {41}
+
+
+# Veckor där inlämningssidan rättar sig själv (beslut 11 oktober 2026): svarsfält, Rätta med tre försök, Lämna in och PDF.
+# Fälten står i sjalvrattning.py, nyckeln (saltade hashar) skrivs av facit.py ur en klartextfil utanför repot.
+SJALVRATTANDE = S.SJALVRATTANDE
+
+
+def svarsfalt(nr, pl, p):
+    """Svarsfälten under en uppgift (innehall/export/inlamning.py). Tom sträng för andra veckor."""
+    return S.svarsfalt(nr, pl, p) if nr in SJALVRATTANDE else ''
+
+
+def utan_fragelista(nr, p):
+    """Sant när uppgiftens frågor står i svarsfälten (läsförståelsen), så att listan a–h inte upprepas."""
+    return nr in SJALVRATTANDE and S.utan_fragelista(nr, p)
 
 
 # Från vecka 42 har alla samma D (gemensamt/elevtal.mjs KURS_D). Bara den slutliga tentamen får individuella värden.
@@ -87,6 +120,12 @@ def dbox(nr):
             f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v={V}-d"></script>\n')
 
 
+REDOVISAR = ('<h2>Så redovisar du</h2><ul><li>Skriv givna värden, samband, insättning och svar med enhet.</li><li>Skriv förutsägelsen innan du tittar i labbet, och skriv sedan ditt avlästa värde.</li>'
+             '<li>Förklara med egna ord och egna siffror. Skilj på vad du har observerat och vad du drar för slutsats.</li><li>Bifoga labbprotokoll som PDF när uppgiften säger det.</li></ul>')
+BEDOMNING = ('<h2>Bedömning</h2><ul><li>Metoden syns och går att följa, och enheterna stämmer.</li><li>Labbvärdena är dina egna och jämförs med din beräkning.</li>'
+             '<li>Förklaringarna använder begreppen från genomgången.</li><li>Säkerhetsresonemang skiljer på observation och antagande och hittar inte på uppgifter som saknas.</li></ul>\n')
+
+
 def page(nr, w, items):
     """items: uppgifternas HTML (från innehall/export/inlamning.py)."""
     vn = w.get('vecka', nr)
@@ -96,16 +135,26 @@ def page(nr, w, items):
         lank = f' <a href="{w["notis_lank"][0]}">{escape(w["notis_lank"][1])}</a>' if w.get('notis_lank') else ''
         notis = f'<p class="sj-panel week-note"><strong>{escape(w["notis"])}</strong>{lank}</p>\n'
     kanal = f'med e-post till <a href="mailto:{EPOST}">{EPOST}</a>' if nr >= 41 else 'via den inlämningskanal läraren har anvisat'
-    mejl = epost_knapp(nr, vn) + '\n' if nr >= 41 else ''
-    return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inlämning vecka {vn}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="Inlämningsuppgifter för vecka {vn} som löses med veckans genomgångar och labbar."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/Inlamning.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}">
+    mejl = epost_knapp(nr, vn, pa_sidan=True) + '\n' if nr >= 41 and not w.get('frivillig') else ''
+    sjalv = nr in SJALVRATTANDE
+    if sjalv:  # Inlämningen är en PDF som eleven laddar ner från sidan och lämnar in i Google Classroom.
+        kanal = 'i Google Classroom'
+    css = f'<link rel="stylesheet" href="/sjoskolan/gemensamt/sjalvrattning.css?v={S.VERSION}">' if sjalv else ''
+    # Vecka 45 har ingen inlämning med sista dag: övningstentan är frivillig, och de andra uppgifterna lämnas in med vecka 43 och 44.
+    lead = ('Övningstentan gör du inför tentamen. Den är frivillig och betygsätts inte.' if w.get('frivillig') else
+            f'Uppgifterna löses med veckans genomgångar och labbar. Lämna in senast {veckodag(w["sista"])} {datum(w["sista"])} {kanal}.')
+    redovisar = '' if sjalv or w.get('frivillig') else REDOVISAR
+    slut = (S.lamna_in(nr, vn, w['titel'], EPOST) + S.bedomning(nr)) if sjalv else ('' if w.get('frivillig') else BEDOMNING)
+    lasom = S.lasom_ruta(nr, vn) if sjalv else ''
+    skript = S.skript(nr) if sjalv else ''
+    return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inlämning vecka {vn}: {escape(w["titel"])} · Sjöskolan</title><meta name="description" content="Inlämningsuppgifter för vecka {vn} som löses med veckans genomgångar och labbar."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/Inlamning.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}">{css}
 <style>.task{{margin:24px 0}}.course-main .task h2{{margin-top:0;font-size:23px}}.task .use{{font-size:15px;color:var(--sj-muted)}}.task ol{{padding-left:26px}}.task li{{margin:6px 0}}.task .hand-in{{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--sj-line)}}.dbox{{max-width:72ch}}.dbox input{{min-height:44px;font:inherit;padding:4px 10px;width:22em;max-width:100%;border:1px solid var(--sj-field);border-radius:8px}}.course-main .dbox h2{{margin-top:0}}@media print{{.task{{break-inside:avoid;border:1px solid #999}}.dbox{{border:1px solid #999}}}}</style><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="{veckosida}">Vecka {vn}</a></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="{veckosida}">← Vecka {vn}</a></div><article class="course-reading">
 <p class="course-kicker">Vecka {vn} · inlämning</p><h1>Inlämningsuppgifter: {escape(w["titel"])}</h1>
-<p class="course-lead">Uppgifterna löses med veckans genomgångar och labbar. Lämna in senast söndag {datum(w["sista"])} {kanal}.</p>
-{notis}{mejl}{dbox(nr)}<h2>Så redovisar du</h2><ul><li>Skriv givna värden, samband, insättning och svar med enhet.</li><li>Skriv förutsägelsen innan du tittar i labbet, och skriv sedan ditt avlästa värde.</li><li>Förklara med egna ord och egna siffror. Skilj på vad du har observerat och vad du drar för slutsats.</li><li>Bifoga labbprotokoll som PDF när uppgiften säger det.</li></ul>
+<p class="course-lead">{lead}</p>
+{notis}{mejl}{dbox(nr)}{redovisar}{lasom}
 {items}
-<h2>Bedömning</h2><ul><li>Metoden syns och går att följa, och enheterna stämmer.</li><li>Labbvärdena är dina egna och jämförs med din beräkning.</li><li>Förklaringarna använder begreppen från genomgången.</li><li>Säkerhetsresonemang skiljer på observation och antagande och hittar inte på uppgifter som saknas.</li></ul>
-</article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>
+{slut}</article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>{skript}</body></html>
 '''
 
 
