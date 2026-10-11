@@ -696,7 +696,8 @@ function placeThirdPerson(dt){
  }
  camera.position.y=Math.max(camera.position.y,player.position.y+.3);
  // On a hillside the boom can swing into the slope behind: keep the lens above the ground.
- if(!current)camera.position.y=Math.max(camera.position.y,groundHeight(camera.position.x,camera.position.z)+.35);
+ // (Aboard the ferry her decks are the ground, and below her waterline the town's is far above: her engine room.)
+ if(!current&&!deckUnder())camera.position.y=Math.max(camera.position.y,groundHeight(camera.position.x,camera.position.z)+.35);
  if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
  if(crampedEase>.001){
   // His head low in the frame, not in the middle of it: the view still looks ahead, past him.
@@ -1056,7 +1057,7 @@ function welcomeAtCounter(forward){
   if(towards.length()>3||forward.dot(towards.normalize())<.65)return;
   storeWelcomed=true;characters.gesture(storeClerk);
 }
-function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touch?'ACTION · dismount':'E · dismount Thuan’s bicycle';$('#prompt').classList.add('on');return;}if(seated){active=null;$('#prompt').textContent=Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;const inside=h.inside||!!(o.userData.inMarket&&current?.id==='market');if(o.userData.visualReady===false||!o.visible||current&&!inside||!current&&inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;
+function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touch?'ACTION · dismount':'E · dismount Thuan’s bicycle';$('#prompt').classList.add('on');return;}if(seated){active=null;$('#prompt').textContent=Number.isInteger(parkSeat?.ramenSeatId)?(ramenPlayerService?.order?.delivered?'Eat / drink · Stand':ramenPlayerService?.order?'Order on its way · Stand':'Order food · Stand'):'Stand';$('#prompt').classList.add('on');return;}active=null;let best=null,dmax=3.1,bestScore=Infinity;const p=player.position.clone();p.y+=1;const fw=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));welcomeAtCounter(fw);for(const o of interactables){const h=o.userData.hit;const inside=h.inside||!!(o.userData.inMarket&&current?.id==='market');if(o.userData.visualReady===false||!o.visible||current&&!inside||!current&&inside)continue;let visible=true;for(let a=o.parent;a;a=a.parent)if(!a.visible)visible=false;if(!visible)continue;const q=new THREE.Vector3();o.getWorldPosition(q);if(o.userData.sameLevel&&Math.abs(q.y-p.y)>1.2)continue;const target=q.clone(),v=q.sub(p),d=v.length();if(d>dmax)continue;v.y=0;
   // What you are facing, not merely what is nearest: things behind you or well off to the
   // side are out (unless you are all but touching them), and people come before things.
   const facingDot=v.lengthSq()?fw.dot(v.normalize()):1;if(facingDot<.3&&d>.9)continue;

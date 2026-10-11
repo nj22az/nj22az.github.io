@@ -273,7 +273,7 @@ export function createTown(options){
    // the west is the working one, with the shop and the warehouse standing on it.
    world.westYard=buildWestYard({parent:world.group,colliders:world.colliders,shadows:options.shadows});
    // Nobody drives onto an island: the ferry calls at the outer pier. See ferry.js.
-   world.ferry=createFerryRun({parent:world.group,colliders:world.colliders,shadows:options.shadows});
+   world.ferry=createFerryRun({parent:world.group,colliders:world.colliders,shadows:options.shadows,register:options.register,onAction:options.onAction});
    // Kitano Road and Kitano Bridge to the airport island, and the traffic on them: the car
    // ferry's vehicles and the island's own cars. See kitano-link.js and town-traffic.js.
    world.kitanoLink=buildKitanoLink({parent:world.group,colliders:world.colliders,shadows:options.shadows});

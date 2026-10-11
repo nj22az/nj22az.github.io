@@ -167,7 +167,8 @@ test('the scenarios: real posts of her manning, in real places on board',()=>{
 test('the hull as drawn is the ship as designed: 34.5 × 8.4 m, closed, faired, her decks at their heights, and light enough for a phone',()=>{
  const ferry=buildFerryModel();let tris=0,meshes=0;
  ferry.traverse(o=>{if(o.isMesh){meshes++;const g=o.geometry;tris+=(g.index?g.index.count:g.getAttribute('position').count)/3;}});
- assert.ok(meshes<40,meshes+' meshes');assert.ok(tris<40000,tris+' triangles');
+ // With her interiors walked (batches 6b, 6c): the lobby, the saloon, the crew's rooms, the engine room.
+ assert.ok(meshes<40,meshes+' meshes');assert.ok(tris<60000,tris+' triangles');
  // Her particulars, from the data.
  for(const k of ['length','beam','depth','draft','freeboard'])assert.equal(FERRY_HULL[k],FERRY_SHIP[k],k);
  assert.ok(Math.abs(FERRY_HULL.depth-(FERRY_HULL.draft+FERRY_HULL.freeboard))<.05,'depth is draft plus freeboard');

@@ -51,6 +51,19 @@ export const FERRY_STAIRS=Object.freeze({
  opening:Object.freeze([Z(7.4),Z(9.4)]),
 });
 const S=FERRY_STAIRS;
+/**
+ * The engine room (ferry batch 6c): shipyard z 8.5–14, floor plates 0.9 m over the keel, 1.9 m clear under the car deck.
+ * (The general arrangement gave it z 5–14; the hull's counter rises aft of z 10.5, and at z 8 the bottom is already
+ * above the floor plates' level, so its after end is at 8.5, the shafts running aft from there under the fresh-water
+ * tanks.) Its way in is the casing P door at z 6.6–7.4 and a ladder down through a hatch in the car deck.
+ */
+export const FERRY_ENGINE_ROOM=Object.freeze({aft:Z(8.5),fore:Z(14),floor:Y(.9),deckhead:CAR-.2,side:3.98,
+ entrance:Object.freeze([Z(6.55),Z(7.4)]),door:Object.freeze([Z(6.6),Z(7.4)]),
+ /** The ladder: its head on the car deck at z 7.0, its foot on the floor plates at z 8.6; the hatch it goes down. */
+ ladder:Object.freeze({x:Object.freeze([3.2,3.95]),head:Z(7),foot:Z(8.6)}),hatch:Object.freeze({x:Object.freeze([3.15,HB-.07]),z:Object.freeze([Z(7),Z(9)])}),
+});
+const ER=FERRY_ENGINE_ROOM;
+
 /** The gangway passage through casing P (ferry-model.js GATE). */
 const GATE_FROM=Z(13.5),GATE_TO=Z(14.5);
 /** The ladder from each walkway up to its bridge wing: its foot on the walkway, its head on the wing's aft edge. */
@@ -87,11 +100,13 @@ export const FERRY_INTERIOR=(()=>{
  const win=(c,w=.92,y=PASS+1.55,h=.75)=>({s0:c-w/2,s1:c+w/2,y0:y-h/2,y1:y+h/2,glass:true});
  /** A doorway `w` wide centred at `c`, from below the floor at `y` to `h` over it. */
  const doorAt=(c,w,y,h=2)=>({s0:c-w/2,s1:c+w/2,y0:y-1,y1:y+h});
+ /** x0 to x1 from the centreline on side `s` (+1 port, −1 starboard), smaller first. */
+ const S2=(s,x0,x1)=>sorted(s*x0,s*x1);
 
  // ---- The casings, car deck to the passenger deck's underside: stair P and S hollow in them, the gangway passage
  // through P. The rest is solid (uptakes, the engine-room entrances, stores, the changing room).
  for(const s of [1,-1]){
-  const X=sorted(s*CAS_IN,s*CAS_OUT),pieces=s>0?[[CAS0,S.head],[S.wellFore,GATE_FROM],[GATE_TO,CAS1]]:[[CAS0,S.head],[S.wellFore,CAS1]];
+  const X=sorted(s*CAS_IN,s*CAS_OUT),pieces=s>0?[[CAS0,ER.entrance[0]],[S.wellFore,GATE_FROM],[GATE_TO,CAS1]]:[[CAS0,S.head],[S.wellFore,CAS1]];
   for(const [z0,z1] of pieces)box([X[0],CAR,z0],[X[1],CAS_TOP,z1],WHITE,{name:'casing'});
   // The stairwell's walls: inboard, with the stair's door; outboard against her side.
   wall('z',S.head,S.wellFore,...sorted(s*CAS_IN,s*(CAS_IN+.06)),CAR,CAS_TOP,[doorAt((S.door[0]+S.door[1])/2,S.door[1]-S.door[0],CAR)]);
@@ -171,12 +186,40 @@ export const FERRY_INTERIOR=(()=>{
   return true;
  });
 
- // The toilets either side of the corridor: men's to port, women's to starboard, closed. Their doors on the lobby.
+ // The toilets either side of the corridor: men's to port (a WC, two urinals, a basin), women's to starboard (two
+ // WCs, a basin), tiled, sea-water flushing; their doors from the lobby, hooked open.
  for(const s of [1,-1]){
-  const X=sorted(s*F.corridor,s*(DW-T));
-  box([X[0],PASS,LB1-T/2],[X[1],top,TB1+T/2],CREAM,{name:s>0?'men’s toilet':'women’s toilet'});
-  const dx=sorted(s*1.05,s*1.8);deco([dx[0],PASS+.02,LB1-T/2-.02],[dx[1],PASS+1.95,LB1-T/2],DOOR);
+  const sd=s>0?'p':'s',X=sorted(s*F.corridor,s*(DW-T)),D=sorted(s*1.05,s*1.8);
+  // Walls: on the lobby (with the door), on the corridor, on the carpet room.
+  wall('x',X[0],X[1],LB1-T/2,LB1+T/2,PASS,top,[{s0:D[0],s1:D[1],y0:PASS-1,y1:PASS+1.95}],CREAM);
+  wall('z',LB1,TB1,...sorted(s*F.corridor,s*(F.corridor+T)),PASS,top,[],CREAM);
+  wall('x',X[0],X[1],TB1-T/2,TB1+T/2,PASS,top,[],CREAM);
   deco([s*1.425-.12,PASS+2.05,LB1-T/2-.03],[s*1.425+.12,PASS+2.29,LB1-T/2],s>0?0x2f5e9a:RED);
+  // The door, hooked back flat against the wall inside, outboard of its jamb.
+  deco([Math.min(s*1.8,s*2.55),PASS+.02,LB1+T/2],[Math.max(s*1.8,s*2.55),PASS+1.93,LB1+T/2+.04],DOOR);
+  deco([X[0],PASS+.003,LB1+T/2],[X[1],PASS+.008,TB1-T/2],0xd9dfe0);
+  deco([Math.min(s*(DW-T-.01),s*(DW-T)),PASS,LB1+T/2],[Math.max(s*(DW-T-.01),s*(DW-T)),PASS+1.4,TB1-T/2],0xe6eef0);
+  // The basin on the corridor's wall, its mirror over it.
+  box([Math.min(s*(F.corridor+T),s*(F.corridor+T+.45)),PASS+.7,Z(10.6)-.25],[Math.max(s*(F.corridor+T),s*(F.corridor+T+.45)),PASS+.85,Z(10.6)+.25],0xf4f4f0,{name:'basin'});
+  deco([Math.min(s*(F.corridor+T),s*(F.corridor+T+.02)),PASS+1.2,Z(10.6)-.25],[Math.max(s*(F.corridor+T),s*(F.corridor+T+.02)),PASS+1.75,Z(10.6)+.25],0xbfd6dc);
+  // WC cubicles against her side: one (men's), two (women's); their partitions and doors.
+  const cub=s>0?[[Z(10.2),TB1-T/2]]:[[LB1+T/2+.05,Z(10.5)],[Z(10.5),TB1-T/2]];
+  for(const [z0,z1] of cub){
+   const P=sorted(s*2.2,s*(DW-T));
+   box([P[0],PASS,z0],[P[1],PASS+2.0,z0+.04],0x9fb5b8,{name:'cubicle partition'});
+   box([Math.min(s*2.2,s*2.24),PASS,z0],[Math.max(s*2.2,s*2.24),PASS+2.0,z0+.25],0x9fb5b8,{name:'cubicle partition'});
+   box([Math.min(s*2.2,s*2.24),PASS+.15,z0+.3],[Math.max(s*2.2,s*2.24),PASS+1.95,z1-.05],0x7e9fa4,{name:'cubicle door'});
+   const w=(z0+z1)/2;box([Math.min(s*(DW-T-.6),s*(DW-T-.15)),PASS,w-.2],[Math.max(s*(DW-T-.6),s*(DW-T-.15)),PASS+.42,w+.2],0xf4f4f0,{name:'WC'});
+   box([Math.min(s*(DW-T-.2),s*(DW-T)),PASS+.4,w-.22],[Math.max(s*(DW-T-.2),s*(DW-T)),PASS+.85,w+.22],0xf4f4f0,{name:'cistern'});
+  }
+  if(s>0)for(const x of [1.2,1.75])box([x-.18,PASS+.45,TB1-T/2-.3],[x+.18,PASS+1.1,TB1-T/2],0xf4f4f0,{name:'urinal'});
+  // The floor inside, from the doorway: round the basin and up to the cubicles' doors.
+  floor('toilet-'+sd,sorted(s*(F.corridor+T),s*(DW-T)),[LB1-.4,TB1-T/2],PASS,(x,z,r)=>{
+   const a=Math.abs(x);if(a<F.corridor+T+r||a>2.2-r)return false;
+   if(z<LB1+T/2+r)return Math.abs(a-1.425)<=.375-r+.06;
+   if(z>TB1-T/2-r)return false;
+   return true;
+  });
  }
  deco([-F.corridor,PASS+.003,LB1-T/2],[F.corridor,PASS+.008,TB1+T/2],VINYL);
  floor('corridor',[-F.corridor,F.corridor],[LB1-.5,TB1+.16],PASS,(x,z,r)=>Math.abs(x)<=F.corridor-r+.08);
@@ -271,11 +314,9 @@ export const FERRY_INTERIOR=(()=>{
   });
  }
 
- // ---- The bridge deck: the crew's rooms (closed this batch) aft, the wheelhouse forward, the wings.
- box([-BH,BRIDGE,DH0],[BH,F.houseTop,WH0],WHITE,{name:'crew house'});
+ // ---- The bridge deck: the crew's rooms aft (ferry batch 6c, below), the wheelhouse forward, the wings.
  for(const s of [1,-1]){
   const X=sorted(s*(BH-T),s*BH);
-  for(const zy of [10.2,12.7,15.2,17.9])pane([.04,.5,.5],[s*(BH+.01),BRIDGE+1.45,Z(zy)]);
   // The wheelhouse's sides: the wing door (open, hooked back forward of it, inside) and two windows.
   wall('z',WH0,DH1,...X,BRIDGE,F.houseTop,[{s0:Z(19.6),s1:Z(20.4),y0:BRIDGE-1,y1:BRIDGE+1.95},win(Z(21.1),1.0,BRIDGE+1.4,.85),win(Z(22.2),.9,BRIDGE+1.4,.85)]);
   box([Math.min(s*(BH-T-.04),s*(BH-T)),BRIDGE+.02,Z(20.45)],[Math.max(s*(BH-T-.04),s*(BH-T)),BRIDGE+1.92,Z(21.2)],DOOR,{name:'wing door'});
@@ -293,7 +334,7 @@ export const FERRY_INTERIOR=(()=>{
  }
  // The wheelhouse's aft wall (the crew house's face) and forward wall with five raked windows.
  wall('x',-BH,BH,DH1-T,DH1,BRIDGE,F.houseTop,[...[0,1,2,3,4].map(i=>win(-2.36+i*1.18,1.05,BRIDGE+1.45,.95))]);
- deco([-(BH-T),BRIDGE+.003,WH0],[BH-T,BRIDGE+.008,DH1-T],0x8a6f55);
+ deco([-(BH-T),BRIDGE+.007,WH0+T/2],[BH-T,BRIDGE+.012,DH1-T],0x8a6f55);
  // Inside: the console under the windows (radar, the engine and thruster levers, VHF, the telephone), the steering
  // stand, the master's chair, the chart table aft to starboard, the door to the crew's corridor (closed).
  box([-2.75,BRIDGE,DH1-.7],[2.75,BRIDGE+1.0,DH1-T],0x5c6466,{name:'wheelhouse console'});
@@ -304,14 +345,220 @@ export const FERRY_INTERIOR=(()=>{
  bar([0,BRIDGE+1.05,DH1-1.5],[0,BRIDGE+1.05,DH1-1.62],.32,TEAK);
  box([.75,BRIDGE,DH1-1.75],[1.25,BRIDGE+1.15,DH1-1.25],0x4a3f36,{name:'master’s chair'});
  box([-2.9,BRIDGE,WH0+T/2],[-1.7,BRIDGE+.95,WH0+.85],TEAK,{name:'chart table'});deco([-2.85,BRIDGE+.95,WH0+.1],[-1.75,BRIDGE+.96,WH0+.8],0xe8e2cc);
- deco([-.45,BRIDGE+.02,WH0],[.45,BRIDGE+1.92,WH0+.02],DOOR);
+ // (The door aft to the crew's corridor stands open: the crew house, below.)
  floor('wheelhouse',[-(BH-T),BH-T],[WH0,DH1-T],BRIDGE,(x,z,r)=>Math.abs(x)<=BH-T-r&&z>=WH0+T/2+r&&z<=DH1-T-r);
  floor('wing-door-p',[BH-T-.5,BH+.3],[Z(19.6),Z(20.4)],BRIDGE,(x,z,r)=>z>=Z(19.6)+r-.06&&z<=Z(20.4)-r+.06);
  floor('wing-door-s',[-(BH+.3),-(BH-T-.5)],[Z(19.6),Z(20.4)],BRIDGE,(x,z,r)=>z>=Z(19.6)+r-.06&&z<=Z(20.4)-r+.06);
 
+
+ // ---- The crew house on the bridge deck (shipyard z 6–19.5, 6 m wide): aft, the emergency-generator room (port)
+ // and the CO₂ room (starboard), each opening only aft onto the bridge deck's platform; between them the crew's own
+ // door from the platform (they come up the open deck's ladders) into the corridor down the middle to the wheelhouse,
+ // the crew's rooms either side of it. (The general arrangement had a crew stair down to the lobby; there is no room
+ // for one there that a passenger would not walk into, so the crew's way is outside, as on many small ferries.)
+ {const HT=F.houseTop,ceil=HT-.08,CW=.45;
+  const rooms=[
+   // [side, from, to, id, name]
+   [1,Z(9),Z(11.5),'crew-cabin','Crew cabin'],[-1,Z(9),Z(11.5),'mate-cabin','Chief officer’s cabin'],
+   [1,Z(11.5),Z(14),'deckhand-cabin','Deckhand’s cabin'],[-1,Z(11.5),Z(14),'crew-wc','Crew WC and shower'],
+   [1,Z(14),Z(16.5),'mess','Mess room'],[-1,Z(14),Z(16.5),'galley','Galley'],
+   [1,Z(16.5),WH0,'chief-cabin','Chief engineer’s cabin'],[-1,Z(16.5),WH0,'master-cabin','Master’s cabin'],
+  ];
+  const doorZ=(a,b)=>a+.55;
+  // The house's outer walls: aft (the two rooms' doors), the sides with a square port in each room.
+  wall('x',-BH,BH,DH0,DH0+T,BRIDGE,HT,[doorAt(1.6,.8,BRIDGE,1.92),doorAt(-1.6,.8,BRIDGE,1.92),doorAt(0,.8,BRIDGE,1.92)]);
+  deco([-.4,BRIDGE+1.95,DH0-.02],[.4,BRIDGE+2.1,DH0],0xb03a2a);
+  for(const s of [1,-1])wall('z',DH0,WH0,...sorted(s*(BH-T),s*BH),BRIDGE,HT,[10.2,12.7,15.2,17.9].map(zy=>win(Z(zy),.5,BRIDGE+1.45,.5)));
+  // The wheelhouse's aft wall, with the door to the corridor (open, hooked back against it in the wheelhouse).
+  wall('x',-BH,BH,WH0-T/2,WH0+T/2,BRIDGE,HT,[doorAt(0,.8,BRIDGE,1.92)]);
+  deco([.42,BRIDGE+.02,WH0+T/2],[1.2,BRIDGE+1.92,WH0+T/2+.04],DOOR);
+  // The EG and CO₂ rooms' forward walls and inner walls; the corridor's walls with a door into each room.
+  wall('x',-BH,-CW,Z(9)-T/2,Z(9)+T/2,BRIDGE,HT);wall('x',CW,BH,Z(9)-T/2,Z(9)+T/2,BRIDGE,HT);
+  for(const s of [1,-1]){
+   wall('z',DH0+T,Z(9),...sorted(s*CW,s*(CW+T)),BRIDGE,HT);
+   const doors=rooms.filter(r=>r[0]===s).map(r=>doorAt(doorZ(r[1],r[2]),.7,BRIDGE,1.92));
+   wall('z',Z(9),WH0,...sorted(s*CW,s*(CW+T)),BRIDGE,HT,doors,CREAM);
+   for(const r of rooms.filter(r=>r[0]===s).slice(1))wall('x',...sorted(s*(CW+T),s*(BH-T)),r[1]-T/2,r[1]+T/2,BRIDGE,HT,[],CREAM);
+  }
+  // Floors: the corridor, linoleum; the rooms.
+  deco([-CW,BRIDGE+.003,DH0+T],[CW,BRIDGE+.008,WH0],0x8a6f55);
+  floor('crew-corridor',[-CW,CW],[DH0-.45,WH0+.4],BRIDGE,(x,z,r)=>Math.abs(x)<=CW-r+.1&&(z<WH0-T/2-r||Math.abs(x)<=.4-r+.08));
+  const room=(s,z0,z1,id,doorAt0)=>{
+   const X=sorted(s*(CW+T),s*(BH-T));deco([X[0],BRIDGE+.003,z0+T/2],[X[1],BRIDGE+.008,z1-T/2],id==='crew-wc'?0xd9dfe0:id==='galley'?0xc9c2ae:0x9a8466);
+   floor(id,sorted(s*(CW-.35),s*(BH-T)),[z0,z1],BRIDGE,(x,z,r)=>{const a=Math.abs(x);
+    if(a<CW+T+r)return a>CW-.35&&Math.abs(z-doorAt0)<=.35-r+.06;
+    return a<=BH-T-r&&z>=z0+T/2+r&&z<=z1-T/2-r;});
+  };
+  for(const [s,z0,z1,id] of rooms)room(s,z0,z1,id,doorZ(z0,z1));
+  // The emergency-generator and CO₂ rooms, from the platform aft.
+  for(const s of [1,-1]){const id=s>0?'eg-room':'co2-room',X=sorted(s*(CW+T),s*(BH-T));
+   deco([X[0],BRIDGE+.003,DH0+T],[X[1],BRIDGE+.008,Z(9)-T/2],0x8c9193);
+   floor(id,X,[DH0-.45,Z(9)],BRIDGE,(x,z,r)=>{const a=Math.abs(x);if(z<DH0+T+r)return Math.abs(a-1.6)<=.4-r+.06;return a>=CW+T+r&&a<=BH-T-r&&z<=Z(9)-T/2-r;});}
+
+  // Emergency-generator room: the 40 kVA set on its bed (engine, radiator forward, alternator aft), the emergency
+  // switchboard on the forward wall, the 24 V batteries in their box, the 60 L day tank, louvres in the aft wall.
+  {box([1.25,BRIDGE,Z(6.9)],[2.55,BRIDGE+.95,Z(8.3)],0x5f7f6a,{name:'emergency generator'});
+   deco([1.4,BRIDGE+.95,Z(7.2)],[2.4,BRIDGE+1.05,Z(8.0)],0x3f5a4a);bar([1.9,BRIDGE+.6,Z(8.3)],[1.9,BRIDGE+.6,Z(8.6)],.28,0x2f4f8f);
+   box([.6,BRIDGE,Z(8.6)],[2.9,BRIDGE+1.9,Z(9)-T/2],0x9aa3a2,{name:'emergency switchboard'});for(let i=0;i<5;i++)deco([.7+i*.45,BRIDGE+1.0,Z(8.6)-.02],[1.0+i*.45,BRIDGE+1.6,Z(8.6)],0x3a4244);
+   box([2.4,BRIDGE,Z(6.15)],[2.9,BRIDGE+.6,Z(6.8)],0x3a4244,{name:'battery box'});box([.6,BRIDGE+1.3,Z(6.15)],[1.0,BRIDGE+1.9,Z(6.6)],0x8a6a3a,{name:'day tank'});
+   for(let i=0;i<4;i++)deco([2.1,BRIDGE+1.2+i*.12,DH0-.01],[2.8,BRIDGE+1.25+i*.12,DH0],DARK);}
+  // CO₂ room and fire-control station: four 45 kg bottles in their rack, the release cabinet, the remote fan stops and
+  // quick-closing valves, two firemen's outfits in their locker.
+  {for(let i=0;i<4;i++)bar([-2.6+i*.3,BRIDGE,Z(8.6)],[-2.6+i*.3,BRIDGE+1.45,Z(8.6)],.12,RED);
+   box([-2.8,BRIDGE,Z(8.4)],[-1.55,BRIDGE+1.5,Z(9)-T/2],RED,{draw:false,name:'CO₂ bottles'});deco([-2.8,BRIDGE+1.1,Z(8.85)],[-1.55,BRIDGE+1.15,Z(8.9)],DARK);
+   box([-1.2,BRIDGE+.9,Z(9)-T/2-.2],[-.6,BRIDGE+1.7,Z(9)-T/2],RED,{name:'CO₂ release cabinet'});
+   box([-2.95,BRIDGE,Z(6.2)],[-2.35,BRIDGE+1.9,Z(7.2)],0x9aa3a2,{name:'firemen’s outfit locker'});
+   box([-1.1,BRIDGE+1.0,DH0+T],[-.6,BRIDGE+1.6,DH0+T+.15],0xd8d2c0,{name:'fan stops'});}
+
+  // The cabins: a bunk (two in the crew cabin), a locker, a fold-down desk or a desk; the master's safe and papers.
+  const bunk=(s,z0,z1,y=BRIDGE,two=false)=>{const X=S2(s,BH-T-.85,BH-T);box([X[0],y,z0],[X[1],y+(two?1.7:.5),z1],TEAK,{name:'bunk'});
+   deco([X[0]+.04,y+.45,z0+.05],[X[1]-.04,y+.55,z1-.05],0xe8e4d8);if(two)deco([X[0]+.04,y+1.3,z0+.05],[X[1]-.04,y+1.4,z1-.05],0xe8e4d8);};
+  const locker=(s,z0,x0=CW+T,w=.55)=>box([S2(s,x0,x0+w)[0],BRIDGE,z0],[S2(s,x0,x0+w)[1],BRIDGE+1.9,z0+.5],0xb9b3a0,{name:'locker'});
+  const desk=(s,z0,z1)=>{const X=S2(s,BH-T-.55,BH-T);box([X[0],BRIDGE+.72,z0],[X[1],BRIDGE+.77,z1],TEAK,{name:'desk'});box([X[0],BRIDGE,z0],[X[1],BRIDGE+.72,z0+.4],TEAK,{name:'desk'});};
+  bunk(1,Z(9)+T/2+.05,Z(9)+2.0,BRIDGE,true);locker(1,Z(11.5)-T/2-.55);
+  bunk(-1,Z(9)+T/2+.05,Z(9)+2.0);desk(-1,Z(11.5)-.75,Z(11.5)-T/2-.05);locker(-1,Z(11.5)-T/2-.52,CW+T,.5);
+  bunk(1,Z(11.5)+T/2+.05,Z(11.5)+2.0);locker(1,Z(14)-T/2-.52);
+  // Crew WC and shower: the WC, the basin, the shower tray and its curtain.
+  deco([-(BH-T),BRIDGE+.009,Z(11.5)+.1],[-(BH-T-.9),BRIDGE+.02,Z(11.5)+1.0],0xe6eef0);deco([-(BH-T-.9),BRIDGE+1.95,Z(11.5)+.1],[-(BH-T-.92),BRIDGE+1.97,Z(11.5)+1.0],STEEL);
+  box([-(BH-T),BRIDGE,Z(13.4)-.2],[-(BH-T-.55),BRIDGE+.42,Z(13.4)+.2],0xf4f4f0,{name:'WC'});box([-(CW+T+.45),BRIDGE+.7,Z(12.9)-.25],[-(CW+T),BRIDGE+.85,Z(12.9)+.25],0xf4f4f0,{name:'basin'});
+  // Mess room: a table for six with benches, the television, the kettle, the duty board and the muster list.
+  box([1.35,BRIDGE,Z(15.0)],[2.35,BRIDGE+.72,Z(16.2)],TEAK,{name:'mess table'});
+  for(const x of [[1.08,1.28],[2.42,2.62]])box([x[0],BRIDGE,Z(15.0)],[x[1],BRIDGE+.42,Z(16.2)],0x8a7356,{name:'mess bench'});
+  box([BH-T-.45,BRIDGE+1.3,Z(16.5)-.6],[BH-T,BRIDGE+1.7,Z(16.5)-T/2-.05],DARK,{camera:false,name:'mess television'});
+  box([BH-T-.5,BRIDGE,Z(14)+T/2+.05],[BH-T,BRIDGE+.9,Z(14)+.7],0xd8d2c0,{name:'sideboard'});bar([2.55,BRIDGE+.9,Z(14.35)],[2.55,BRIDGE+1.1,Z(14.35)],.07,STEEL);
+  deco([.6,BRIDGE+1.2,Z(16.5)-T/2-.02],[1.6,BRIDGE+1.8,Z(16.5)-T/2],0xf4f0e2);
+  // Galley: the three-plate range and its hood, the rice cooker, the fridge-freezer, the sink, the provision locker.
+  box([-(BH-T),BRIDGE,Z(14.2)],[-(BH-T-.6),BRIDGE+.9,Z(15.0)],0x9aa3a2,{name:'range'});box([-(BH-T),BRIDGE+1.55,Z(14.2)],[-(BH-T-.6),BRIDGE+1.9,Z(15.0)],STEEL,{camera:false,name:'hood'});
+  box([-(BH-T),BRIDGE,Z(15.0)],[-(BH-T-.6),BRIDGE+.9,Z(15.9)],0xc8c8c0,{name:'sink'});bar([-(BH-T-.3),BRIDGE+.9,Z(15.45)],[-(BH-T-.3),BRIDGE+1.1,Z(15.45)],.09,0xf0ece0);
+  box([-(BH-T),BRIDGE,Z(15.9)],[-(BH-T-.65),BRIDGE+1.75,Z(16.5)-T/2],0xe8e6dc,{name:'fridge-freezer'});
+  box([-(CW+T+.6),BRIDGE,Z(14)+T/2+.05],[-(CW+T),BRIDGE+1.9,Z(14)+.55],0xb9b3a0,{name:'provision locker'});
+  // Chief engineer's and master's cabins.
+  bunk(1,WH0-T/2-2.0,WH0-T/2-.05);desk(1,Z(16.5)+.1,Z(16.5)+.9);locker(1,Z(16.5)+T/2+.02);
+  bunk(-1,WH0-T/2-2.0,WH0-T/2-.05);desk(-1,Z(16.5)+.1,Z(16.5)+1.1);locker(-1,Z(16.5)+T/2+.02);
+  box([-(CW+T+.5),BRIDGE,Z(18.4)],[-(CW+T),BRIDGE+.6,Z(18.9)],DARK,{name:'safe'});
+  for(const [s,z0,z1] of rooms)deco([Math.min(s*(CW+T),s*(CW+T+.01)),BRIDGE+2.0,doorZ(z0,z1)-.15],[Math.max(s*(CW+T),s*(CW+T+.01)),BRIDGE+2.12,doorZ(z0,z1)+.15],0xf4f0e2);
+  // Ceiling lights down the corridor.
+  for(let z=Z(10);z<WH0-.5;z+=2)deco([-.2,ceil-.04,z-.15],[.2,ceil,z+.15],0xf6f1e2);
+ }
+
+ // ---- The engine room (FERRY_ENGINE_ROOM): in by the casing P door and down the ladder through the car deck; the
+ // two main engines with their reverse-reduction gearboxes aft and turbochargers forward, the shafts aft through the
+ // bulkhead; the two generators forward, athwartships; the control booth aft to starboard with the main switchboard;
+ // pumps, the air compressor and its bottles, the purifier, the service tank, the workbench, the escape ladder.
+ {const y0=ER.floor,y1=ER.deckhead,a=ER.aft,f=ER.fore,W=ER.side,G=0x8fa39a,GD=0x5f7f6a;
+  // The entrance in casing P: its walls, the door frame and the door hooked back aft along the casing's face.
+  box([CAS_OUT-.06,CAR,ER.entrance[0]],[CAS_OUT,CAS_TOP,S.head],WHITE,{name:'casing'});
+  wall('z',ER.entrance[0],S.head,CAS_IN,CAS_IN+.06,CAR,CAS_TOP,[doorAt((ER.door[0]+ER.door[1])/2,ER.door[1]-ER.door[0],CAR)]);
+  for(const z of ER.door)deco([CAS_IN-.04,CAR,z-.04],[CAS_IN+.02,CAR+2,z+.04],TEAL);
+  box([CAS_IN-.06,CAR+.02,ER.door[0]-.85],[CAS_IN-.02,CAR+1.98,ER.door[0]-.05],DOOR,{name:'engine room door'});
+  deco([CAS_IN-.03,CAR+2.12,ER.door[0]+.05],[CAS_IN-.01,CAR+2.4,ER.door[1]-.05],0xb03a2a);
+  // The hatch's coaming round the opening in the car deck, and the ladder's rails over it.
+  const L=ER.ladder;
+  for(const x of [L.x[0]-.05,L.x[1]+.03])deco([x,CAR,ER.hatch.z[0]+.4],[x+.02,CAR+.15,ER.hatch.z[1]],0x3a4244);
+  bar([L.x[0]-.03,CAR,ER.hatch.z[0]+.35],[L.x[0]-.03,CAR+1.0,ER.hatch.z[0]+.35],.025,YELLOW,'paint');
+  bar([L.x[0]-.03,CAR+1.0,ER.hatch.z[0]+.35],[L.x[0]-.03,CAR+1.0,ER.hatch.z[1]-.1],.025,YELLOW,'paint');
+  // The ladder trunk under the car deck, from the hatch to the engine room's aft bulkhead.
+  for(const x of [L.x[0]-.06,L.x[1]+.03])box([x,y0,L.head],[x+.04,y1,a],WHITE,{name:'ladder trunk'});
+  box([L.x[0]-.06,y1,L.head],[L.x[1]+.07,CAR-.02,L.head+.04],WHITE,{solid:false,camera:true,name:'ladder trunk'});
+  {const n=10,rise=CAR-y0,run=L.foot-L.head;for(let i=1;i<n;i++){const fr=i/n;deco([L.x[0]+.03,CAR-rise*fr-.03,L.head+run*fr-.07],[L.x[1]-.03,CAR-rise*fr,L.head+run*fr+.07],STEEL,{cls:'metal'});}
+   for(const x of [L.x[0]+.02,L.x[1]-.02]){bar([x,CAR,L.head],[x,y0,L.foot],.03,STEEL);bar([x,CAR+.9,L.head],[x,y0+.9,L.foot],.02,YELLOW,'paint');}}
+  floor('er-ladder',[L.x[0],L.x[1]],[L.head,L.foot],[CAR,y0],(x,z,r)=>Math.abs(x-(L.x[0]+L.x[1])/2)<=.12);
+  floor('er-ladder-foot',[L.x[0],L.x[1]],[L.foot-.05,L.foot+.4],y0,(x,z,r)=>Math.abs(x-(L.x[0]+L.x[1])/2)<=.2);
+  floor('er-entrance',[CAS_IN-.4,L.x[1]],[ER.entrance[0],L.head+.05],CAR,(x,z,r)=>x>=CAS_IN-.4&&x<=CAS_OUT-.06-r&&z>=ER.entrance[0]+r&&(x>=CAS_IN+.06+r||(z>=ER.door[0]+r-.06&&z<=ER.door[1]-r+.06)||x<CAS_IN-.05));
+  // The space: lining along her sides, the bulkheads fore and aft (the ladder comes through the aft one), the deckhead
+  // under the car deck, the chequered floor plates.
+  for(const s of [1,-1])box([Math.min(s*W,s*(W+.06)),y0-.1,a],[Math.max(s*W,s*(W+.06)),y1,f],0xe8e6dc,{name:'engine room side'});
+  wall('x',-W,W,a-.06,a,y0-.1,y1,[{s0:L.x[0]-.06,s1:L.x[1]+.07,y0:y0-1,y1:y1+1}],0xe8e6dc);
+  box([-W,y0-.1,f],[W,y1,f+.06],0xe8e6dc,{name:'engine room forward bulkhead'});
+  box([-W,y1,a],[W,CAR-.02,f],0xd8d6cc,{solid:false,camera:true,name:'engine room deckhead'});
+  box([-W,y0-.06,a],[W,y0,f],0x8c9193,{solid:false,camera:false,name:'floor plates'});
+  for(let z=a+.6;z<f;z+=.6)deco([-W,y0,z-.01],[W,y0+.003,z+.01],0x6f7476);
+  // Lights in their guards, and the fire main's hydrant.
+  for(const [x,z] of [[0,Z(9.5)],[0,Z(12.5)],[2.9,Z(11)],[-2.9,Z(12.6)]])deco([x-.15,y1-.08,z-.15],[x+.15,y1,z+.15],0xf6f1e2);
+  box([W-.25,y0,Z(13.6)],[W,y0+.9,Z(13.8)],RED,{name:'hydrant'});
+
+  // The main engines: six cylinders in line, 160 mm bore, 460 kW at 1350 rpm; bedplate, block, rocker covers,
+  // the turbocharger forward, the exhaust lagged and led up aft to the casing's uptake; the gearbox aft.
+  for(const s of [1,-1]){const cx=s*1.55,X=S2(s,1.05,2.05);
+   box([X[0]-.05,y0,Z(9.6)],[X[1]+.05,y0+.25,Z(12.0)],GD,{name:'main engine bedplate'});
+   box([X[0],y0+.25,Z(9.7)],[X[1],y0+1.1,Z(11.95)],G,{name:'main engine'});
+   for(let i=0;i<6;i++)deco([cx-.32,y0+1.1,Z(9.8)+i*.35],[cx+.32,y0+1.28,Z(9.8)+i*.35+.3],0x6f8a7f);
+   box([cx-.32,y0+.4,Z(12.0)],[cx+.32,y0+1.25,Z(12.35)],0x9aa3a2,{name:'turbocharger'});
+   bar([cx,y0+1.25,Z(12.2)],[cx,y1-.15,Z(12.2)],.14,0xe8e4d8,'paint');bar([cx,y1-.15,Z(12.2)],[cx,y1-.15,a+.05],.14,0xe8e4d8,'paint');
+   box([X[0]+.1,y0+.15,Z(9.0)],[X[1]-.1,y0+.95,Z(9.6)],0x6f8a7f,{name:'gearbox'});
+   bar([cx,y0+.45,a],[cx,y0+.45,Z(9.0)],.055,0xb0b4b4);
+   for(let i=0;i<6;i++)bar([cx+s*.5,y0+.8,Z(9.8)+i*.35+.15],[cx+s*.62,y0+.8,Z(9.8)+i*.35+.15],.03,0x8a6a3a);
+   // Its gauge board on the engine's aft end.
+   deco([cx-.3,y0+.95,Z(9.68)],[cx+.3,y0+1.25,Z(9.7)],0xf0ece0);
+  }
+  // The generators: two 125 kVA sets athwartships forward of the mains, their engines inboard, alternators outboard.
+  for(const s of [1,-1]){const X=S2(s,.55,2.4);
+   box([X[0],y0,Z(12.6)],[X[1],y0+.2,Z(13.35)],GD,{name:'generator bed'});
+   {const E=S2(s,.6,1.75);box([E[0],y0+.2,Z(12.65)],[E[1],y0+1.0,Z(13.3)],G,{name:'generator engine'});}
+   bar([s*1.75,y0+.6,Z(12.975)],[s*2.35,y0+.6,Z(12.975)],.32,0x2f4f8f);
+  }
+  // Port, along her side: the air compressor and the two 150 L starting-air bottles by the ladder's foot, the
+  // workbench with its vice, the fuel purifier, the oily-water separator.
+  // (The bottles stand against the aft bulkhead, side by side, so the way forward from the ladder's foot is clear.)
+  bar([2.3,y0,Z(8.75)],[2.3,y0+1.3,Z(8.75)],.2,0x4f8fb0);bar([2.75,y0,Z(8.75)],[2.75,y0+1.3,Z(8.75)],.2,0x4f8fb0);
+  box([2.08,y0,a],[2.97,y0+1.3,Z(8.97)],0x4f8fb0,{draw:false,name:'air bottles'});
+  box([2.1,y0,Z(8.97)],[2.5,y0+.6,Z(9.3)],0x5f6a6c,{name:'air compressor'});
+  box([W-.35,y0,Z(10.0)],[W,y0+.9,Z(11.5)],0x8a7356,{name:'workbench'});deco([W-.32,y0+.9,Z(10.2)],[W-.2,y0+1.05,Z(10.45)],STEEL);
+  box([W-.5,y0,Z(11.7)],[W,y0+1.1,Z(12.3)],0x9aa3a2,{name:'fuel purifier'});
+  box([W-.55,y0,Z(12.6)],[W,y0+1.0,Z(13.5)],0x6f8a7f,{name:'oily-water separator'});
+  // Starboard: the control booth aft (2.4 × 2.0 m, glazed towards the engines), the pumps along her side (two fire
+  // pumps, the general-service pump, the bilge pump, the sanitary pump, the hydrophore set), the fuel service tank
+  // in the forward corner.
+  {const B0=Z(8.6),B1=Z(10.9),BI=-2.35;
+   wall('x',-W,BI,B1-T/2,B1+T/2,y0,y1,[doorAt(-2.95,.7,y0,1.85)],0xd8d2c0);
+   wall('z',a,B1,BI-T/2,BI+T/2,y0,y1,[{s0:Z(9.2),s1:Z(10.5),y0:y0+1.0,y1:y0+1.7,glass:true}],0xd8d2c0);
+   deco([-W,y0+.003,a],[BI,y0+.008,B1],0x7d7a6c);
+   box([-W+.02,y0,a+.02],[BI-.1,y0+1.85,a+.4],0x9aa3a2,{name:'main switchboard'});
+   for(let i=0;i<5;i++){deco([-W+.1+i*.3,y0+1.1,a+.39],[-W+.35+i*.3,y0+1.6,a+.41],0x3a4244);deco([-W+.15+i*.3,y0+1.35,a+.41],[-W+.3+i*.3,y0+1.5,a+.42],0xf0ece0);}
+   box([-W+.02,y0,Z(9.6)],[-W+.5,y0+.8,Z(10.6)],0x9aa3a2,{name:'engine panel and log desk'});deco([-W+.05,y0+.8,Z(9.65)],[-W+.45,y0+.82,Z(10.55)],0xe8e2cc);
+   bar([-3.1,y0,Z(10.0)],[-3.1,y0+.45,Z(10.0)],.2,0x3a4244);box([-3.3,y0,Z(10.0)-.2],[-2.9,y0+.45,Z(10.0)+.2],0x3a4244,{draw:false,name:'booth chair'});
+   floor('control-booth',[-W,BI],[a,B1+.4],y0,(x,z,r)=>{if(z>B1-T/2-r)return Math.abs(x+2.95)<=.35-r+.06;return x>=-W+.5+r&&x<=BI-T/2-r&&z>=a+.4+r;});
+  }
+  for(let i=0;i<6;i++){const z=Z(11.0)+i*.27;box([-W,y0,z],[-W+.5,y0+.55,z+.25],i<2?RED:i===3?0x3f8a5a:0x4f7fb0,{name:'pump'});bar([-W+.25,y0+.55,z+.125],[-W+.25,y0+.85,z+.125],.1,0x5f6a6c);}
+  // The fuel service tank (1.6 m³) in the forward starboard corner, its gauge glass and quick-closing valve.
+  box([-W,y0,Z(12.62)],[-(W-.65),y0+1.8,f],0x8a6a3a,{name:'fuel service tank'});deco([-(W-.66),y0+.2,Z(13.0)],[-(W-.67),y0+1.6,Z(13.05)],0xdfe8ee);
+  // Pipes along her sides overhead: fuel (brown), sea water (green), fresh water (blue), fire main (red).
+  for(const s of [1,-1])for(const [k,hex] of [[0,0x8a6a3a],[1,0x3f8a5a],[2,0x4f7fb0],[3,RED]])bar([s*(W-.12-k*.12),y1-.1,a+.1],[s*(W-.12-k*.12),y1-.1,f-.1],.035,hex,'paint');
+  // The escape ladder in the aft starboard corner, up the trunk into casing S (its hatch closed above).
+  for(const x of [-W+.15,-W+.55])bar([x,y0,a+.12],[x,y1,a+.12],.025,STEEL);for(let yy=y0+.3;yy<y1;yy+=.3)bar([-W+.15,yy,a+.12],[-W+.55,yy,a+.12],.018,STEEL);
+  // What a watchkeeper works with. The sea chests, low against her sides forward, their suction valves and strainers
+  // (the cooling and fire pumps draw through them); each main engine's local control stand at its gearbox, for
+  // when the bridge control fails; the fuel lines from the service tank to the engines; the shaft seals where the
+  // shafts leave through the aft bulkhead; two 200 L lubricating-oil drums; the tool board; the extinguishers; the
+  // CO₂ nozzles overhead; the sounding pipes to the double bottom's tanks; the telephone to the bridge in the booth.
+  for(const s of [1,-1]){
+   const x=s*(W-.35);box([Math.min(x-.25,x+.25),y0,Z(13.0)],[Math.max(x-.25,x+.25),y0+.35,Z(13.3)],0x3f8a5a,{draw:s>0?false:true,name:'sea chest'});
+   bar([x,y0+.35,Z(13.15)],[x,y0+.7,Z(13.15)],.09,0x3f8a5a,'paint');bar([x-.12,y0+.72,Z(13.15)],[x+.12,y0+.72,Z(13.15)],.012,RED);
+   const cx=s*1.55;box([cx+s*.55-.15,y0,Z(9.15)],[cx+s*.55+.15,y0+1.05,Z(9.45)],0x9aa3a2,{name:'local control stand'});
+   bar([cx+s*.55,y0+1.05,Z(9.3)],[cx+s*.55,y0+1.3,Z(9.4)],.015,RED);
+   bar([cx,y0+.45,a+.02],[cx,y0+.45,a+.12],.11,0x6f7476);
+   bar([s*-.4,y1-.25,Z(13.6)],[cx,y1-.25,Z(13.6)],.015,0x8a6a3a,'paint');bar([cx,y1-.25,Z(13.6)],[cx,y0+.9,Z(12.4)],.015,0x8a6a3a,'paint');
+   for(const z of [Z(9.5),Z(12.4)])bar([s*.9,y1-.02,z],[s*.9,y1-.15,z],.03,0xb03a2a);
+   bar([s*(W-.08),y0,Z(10.8)],[s*(W-.08),y1,Z(10.8)],.025,0x7d8586);bar([s*(W-.08),y0,Z(12.0)],[s*(W-.08),y1,Z(12.0)],.025,0x7d8586);
+  }
+  bar([-(W-.8),y1-.25,Z(13.6)],[.4,y1-.25,Z(13.6)],.02,0x8a6a3a,'paint');
+  for(const z of [Z(13.55),Z(13.85)])bar([3.55,y0,z],[3.55,y0+.88,z],.29,0x2f5e9a,'paint');
+  box([3.25,y0,Z(13.35)],[3.85,y0+.88,f],0x2f5e9a,{draw:false,name:'lubricating-oil drums'});
+  deco([1.0,y0+.9,f-.02],[2.2,y0+1.6,f],0xd8d2c0);for(let i=0;i<6;i++)deco([1.1+i*.18,y0+1.1,f-.04],[1.14+i*.18,y0+1.45,f-.02],STEEL);
+  for(const [x,z] of [[3.0,Z(9.6)],[-2.2,Z(11.2)],[.75,Z(13.8)]]){bar([x,y0,z],[x,y0+.55,z],.08,RED,'paint');}
+  for(let z=a+.8;z<f-.4;z+=1.1)for(const x of [-.9,.9])bar([x,y1,z],[x,y1-.1,z],.02,0xb8b8b8);
+  for(const x of [-1.0,1.0])bar([x,y0,Z(8.75)],[x,y0+.5,Z(8.75)],.025,0x6f7476);
+  deco([-2.75,y0+1.2,a+.4],[-2.6,y0+1.45,a+.48],DARK);
+  // The floor: the plates, round the engines, the generators and what stands on them.
+  floor('engine-room',[-W,W],[a,f],y0,(x,z,r)=>Math.abs(x)<=W-r&&z>=a+r&&z<=f-r&&!(x<-2.35+r&&z<Z(10.9)+r));
+ }
  return Object.freeze({boxes:Object.freeze(boxes),bars:Object.freeze(bars),glass:Object.freeze(glass),floors:Object.freeze(floors)});
 })();
 
 /** Where the car deck is no floor: under the flights of stair P and S, inside the casings (up to the foot, where the stair takes over). */
-export function underStair(x,z,r=0){return Math.abs(x)>CAS_IN-r&&z>S.head-r&&z<S.foot;}
+export function underStair(x,z,r=0){
+ if(Math.abs(x)>CAS_IN-r&&z>S.head-r&&z<S.foot)return true;
+ // The engine room's hatch in casing P, where its ladder goes down.
+ return x>ER.hatch.x[0]-r&&z>ER.hatch.z[0]-r+.05&&z<ER.hatch.z[1];
+}
 export const FERRY_CASING_LIMITS=Object.freeze({aft:CAS0,fore:CAS1,inner:CAS_IN,outer:CAS_OUT,top:CAS_TOP});
