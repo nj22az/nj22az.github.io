@@ -36,7 +36,7 @@ import {createHomeResidents} from './people/home-residents.js';
 import {buildKobanInterior} from './world/interiors/koban.js';
 import {buildPortHall} from './world/interiors/port-hall.js';
 import {PORT_BUILDING} from './world/port-building.js';
-import {chooseOpening} from './world/openings.js';
+import {chooseOpening,OPENINGS} from './world/openings.js';
 import {createMotion,createAutoRun,swipeLook,steerYaw} from './input/touch-feel.js';
 import {createRecorder,createPlayer} from './input/replay.js';
 import {buildSatoRamenRoom} from './world/interiors/sato-ramen.js';
@@ -119,7 +119,7 @@ import {BUILD_CATALOGUE} from './build/catalogue.js';
 import {DOOR_KEEP_CLEAR} from './world/street-lamps.js';
 import {SERVICE_BAYS} from './world/town-traffic.js';
 import {AIRPORT_VEHICLE_YARD,airportVehicleBay} from './world/airport-vehicle-yard.js';
-import {createPlacements,readPlacementsFile,PLACEMENTS_FILE} from './build/placements.js';
+import {createPlacements,readPlacementsFile,PLACEMENTS_FILE,PASSAGE} from './build/placements.js';
 import {createBuildMode} from './build/build-mode.js';
 import {showHomeFurniture} from './build/home-decorate.js';
 import {cleanStudioChoices,applyStudioChoices,studioKey} from './studio-handoff.js';
@@ -455,8 +455,10 @@ function advanceWeather(){
  const colliderGrid=createColliderGrid(world.colliders);
  // What the creator placed with the builder (src/build), published with the town in data/world-placements.json.
  const placements=createPlacements({group:world.group,colliders:world.colliders,factory:world.propFactory,walkable:(x,z)=>{const r=routeAt(x,z,0);return !!r&&r.surface!=='asphalt';},heightAt:groundHeight,
-  // Kept clear: every door (shops, homes, the warehouse and the bus station) and the bays where cars park.
-  doors:[...DOOR_KEEP_CLEAR.map(d=>[d.x,d.z]),...[...SITES,...(world.landmarks||[])].filter(s=>s.exitPosition).map(s=>[s.exitPosition[0],s.exitPosition[2]]),
+  // Kept clear: every door (shops, homes, the warehouse and the bus station), the bays where cars park, and the spots
+  // where a game can start standing (openings.js): nobody arrives inside a bench.
+  passage:PASSAGE,
+  doors:[...DOOR_KEEP_CLEAR.map(d=>[d.x,d.z]),...OPENINGS.filter(o=>o.stand).map(o=>[o.stand[0],o.stand[1]]),...[...SITES,...(world.landmarks||[])].filter(s=>s.exitPosition).map(s=>[s.exitPosition[0],s.exitPosition[2]]),
    ...SERVICE_BAYS.map(([x,z])=>[x,z,4.8]),...AIRPORT_VEHICLE_YARD.bays.map((_,i)=>{const b=airportVehicleBay(i);return [b.x,b.z,4.8];})]});
  // The builder must know whether the file was read: saving after a failed read would overwrite it with nothing.
  const placementsLoad={done:false,error:null};

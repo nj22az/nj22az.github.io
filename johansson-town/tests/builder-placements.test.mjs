@@ -185,3 +185,57 @@ test('a refusal names the piece in the way when somebody placed it',()=>{
  const u=town({colliders:[{x:0,z:0,w:1,d:1}]});
  assert.match(u.builder.check({kind:'postbox',x:0,z:0,note:'Letters'}).join(' '),/overlaps something that is already there/);
 });
+
+test('a piece must leave a 1.4 m way to walk past it, where there was one',()=>{
+ // A pavement 3 m wide (z 0..3) between a shop wall and the road.
+ const pavement=(x,z)=>z>=0&&z<=3&&Math.abs(x)<30,size={w:1.95,d:.78},note='For people waiting for the bus.';
+ const world={colliders:[],doors:[],walkable:pavement,passage:1.4};
+ // In the middle it leaves 1.1 m each side: nobody can pass at 1.4 m.
+ assert.match(placementProblems({kind:'bench',x:0,z:1.5,yaw:0,note},size,world)[0],/less than 1.4 m to walk past it/);
+ // At the kerb it leaves 2.2 m: fine.
+ assert.deepEqual(placementProblems({kind:'bench',x:0,z:2.6,yaw:0,note},size,world),[]);
+ // Turned across the pavement it takes 1.95 m of the 3 m, leaving 1.05 m in all: it never fits, wherever it stands.
+ for(const z of [1,1.5,2])assert.match(placementProblems({kind:'bench',x:0,z,yaw:Math.PI/2,note},size,world)[0],/walk past/);
+ // A pavement already narrower than the passage has no way through to close.
+ const narrow=(x,z)=>z>=0&&z<=1.2&&Math.abs(x)<30;
+ assert.deepEqual(placementProblems({kind:'bench',x:0,z:.6,yaw:0,note},{w:1.95,d:.5},{...world,walkable:narrow}),[]);
+ // Without a passage rule (inside a home), the old rules alone.
+ assert.deepEqual(placementProblems({kind:'bench',x:0,z:1.5,yaw:0,note},size,{...world,passage:null}),[]);
+});
+
+test('the walkway counts what already stands there, and a nook off the way is nobody\'s way',()=>{
+ const pavement=(x,z)=>z>=0&&z<=3&&Math.abs(x)<30,size={w:1.95,d:.78},note='x';
+ // A cabinet at the kerb at x=0 leaves 2.2 m; a bench beside it at the shop wall would leave 3-.8-.78 = 1.42 m between them.
+ const cabinet={x:0,z:2.6,w:1.2,d:.8};
+ assert.deepEqual(placementProblems({kind:'bench',x:0,z:.39,yaw:0,note},size,{colliders:[cabinet],doors:[],walkable:pavement,passage:1.4}),[]);
+ // Moved 0.4 m out from the wall, it leaves 1.02 m: refused.
+ assert.match(placementProblems({kind:'bench',x:0,z:.8,yaw:0,note},size,{colliders:[cabinet],doors:[],walkable:pavement,passage:1.4})[0],/walk past/);
+ // A nook 2 m deep and 2.4 m wide off the pavement (z -2..0, x -1.2..1.2): a bench at its back closes nothing.
+ const withNook=(x,z)=>pavement(x,z)||(z>=-2&&z<0&&Math.abs(x)<=1.2);
+ assert.deepEqual(placementProblems({kind:'bench',x:0,z:-1.6,yaw:0,note},size,{colliders:[],doors:[],walkable:withNook,passage:1.4}),[]);
+ // The piece's own collider never counts against it when it is moved.
+ const own={x:0,z:.39,w:1.95,d:.78,placementId:'p1'};
+ assert.deepEqual(placementProblems({id:'p1',kind:'bench',x:.2,z:.39,yaw:0,note},size,{colliders:[own],doors:[],walkable:pavement,passage:1.4}),[]);
+});
+
+test('the live builder refuses a bench across the walkway, and the town holds a fixed most of pieces',()=>{
+ const pavement=(x,z)=>z>=0&&z<=3&&Math.abs(x)<300;
+ const group=new THREE.Group(),list=[],b=createPlacements({group,colliders:list,factory,walkable:pavement,passage:1.4});
+ const r=b.place({kind:'bench',x:0,z:1.5,note:'In the way'});
+ assert.equal(r.ok,false);assert.match(r.problems[0],/walk past/);assert.equal(list.length,0);
+ assert.equal(b.place({kind:'bench',x:0,z:2.6,note:'At the kerb, for the bus'}).ok,true);
+ assert.throws(()=>readPlacementsFile({version:1,placements:Array.from({length:501},(_,i)=>({id:'p'+i,kind:'bench',x:0,z:0}))}),/at most 500/);
+});
+
+test('an alley that ends at a door is somebody\'s way, and a thin fence counts',()=>{
+ // A pavement (z 0..3) with an alley 1.6 m wide going back from it (x -0.8..0.8, z -6..0) to a door at its end.
+ const ground=(x,z)=>(z>=0&&z<=3&&Math.abs(x)<30)||(z>=-6&&z<0&&Math.abs(x)<=.8);
+ const box={w:.5,d:.5},note='x',world={colliders:[],doors:[[0,-6]],walkable:ground,passage:1.4};
+ assert.match(placementProblems({kind:'crate-stack',x:0,z:-3,yaw:0,note},box,world)[0],/walk past/,'a box in the alley shuts the door off');
+ // Without the door it is a nook, and nobody's way.
+ assert.deepEqual(placementProblems({kind:'crate-stack',x:0,z:-3,yaw:0,note},box,{...world,doors:[]}),[]);
+ // A fence 0.08 m thick (thinner than the 0.2 m squares) across a 4 m area leaves 2 m; a bench 0.78 m deep against
+ // the edge leaves 1.2 m between it and the fence, and that is too narrow.
+ const area=(x,z)=>z>=0&&z<=4&&Math.abs(x)<30,fence={x:0,z:2.05,w:60,d:.08};
+ assert.match(placementProblems({kind:'bench',x:0,z:.39,yaw:0,note},{w:1.95,d:.78},{colliders:[fence],doors:[],walkable:area,passage:1.4})[0],/walk past/);
+});

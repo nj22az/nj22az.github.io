@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {catalogueEntry} from './catalogue.js';
+import {circleHitsRect} from '../../physics.js';
 
 /**
  * Things the creator placed with the builder, kept in data/world-placements.json and published with the town:
@@ -11,6 +12,9 @@ import {catalogueEntry} from './catalogue.js';
 export const PLACEMENTS_FILE='data/world-placements.json';
 export const DOOR_CLEARANCE=1.6;   // metres square kept free in front of every door
 export const LEVEL=.04;            // the most the ground may rise under one piece (a kerb is 0.12–0.15 m)
+export const PASSAGE=1.4;          // metres of walking width a placement must not take away (briefs/NEXT.md §6)
+export const MAX_PLACEMENTS=500;   // a placements file holds at most this many: every one is checked when it loads
+const GRID=.1;                     // the walkway check looks at the ground in squares this size
 
 /** The four corners of a footprint, in town coordinates (yaw as three.js rotation.y). */
 export function footprint({x,z,w,d,yaw=0}){
@@ -31,7 +35,7 @@ export function footprintsOverlap(a,b){
 
 /**
  * What is wrong with a placement, as sentences (an empty list means it can go there).
- * world: {colliders:[{x,z,w,d,yaw}], doors:[[x,z]], walkable(x,z), heightAt(x,z)?}; size: the prop's footprint {w,d}. Overhead colliders
+ * world: {colliders:[{x,z,w,d,yaw}], doors:[[x,z]], walkable(x,z), heightAt(x,z)?, passage?}; size: the prop's footprint {w,d}. Overhead colliders
  * (awnings, signs: starting above 2 m) and parked ones (far away) do not count.
  */
 export function placementProblems(p,size,world){
@@ -48,13 +52,73 @@ export function placementProblems(p,size,world){
  const other=hit?.placementKind&&(world.lookup||catalogueEntry)(hit.placementKind);
  if(hit)out.push(other?`It overlaps the ${other.name.toLowerCase()} that is already there.`:'It overlaps something that is already there.');
  if(!entry.flat&&world.doors.some(([x,z,size=DOOR_CLEARANCE])=>footprintsOverlap(box,{x,z,w:size,d:size})))out.push('It blocks a doorway or the way to something you use.');
+ if(!out.length&&!entry.flat&&world.passage&&closesPassage(box,p.id,world))
+  out.push(`It would leave less than ${world.passage} m to walk past it: stand it at the edge, or leave ${world.passage} m beside it.`);
  return out;
+}
+
+/**
+ * Does a piece close a way through? Around the piece, the ground is looked at in 0.1 m squares: a square is open when
+ * a person needing `world.passage` metres of width could stand there (walkable ground and nothing standing within
+ * half that width). Open squares that joined up across the area before the piece must still join up after it. So a
+ * bench against a wall or at a kerb is fine, one in the middle of a pavement is not; a pavement already narrower than
+ * the passage has no way through to close, and a nook off the way is nobody's way unless a door opens onto it.
+ * Ground is sampled at the squares; colliders are tested whole (as people bump into them), so a thin fence counts.
+ */
+export function closesPassage(box,ownId,world){
+ // A person needs half the passage on either side of the line they walk; the squares are GRID apart, so half a square
+ // is given back: a way of the full passage is never missed, and one narrower by more than a square is never passed.
+ const half=world.passage/2-GRID/2,reach=Math.ceil(half/GRID),pts=footprint(box);
+ const xs=pts.map(q=>q[0]),zs=pts.map(q=>q[1]),pad=world.passage+1+half;
+ const x0=Math.min(...xs)-pad,z0=Math.min(...zs)-pad,nx=Math.ceil((Math.max(...xs)+pad-x0)/GRID)+1,nz=Math.ceil((Math.max(...zs)+pad-z0)/GRID)+1;
+ if(nx*nz>60000)return false;   // a piece this big is not a street prop; the other rules still apply
+ const minX=x0,maxX=x0+nx*GRID,minZ=z0,maxZ=z0+nz*GRID;
+ const solid=world.colliders.filter(c=>!c.moving&&(c.minY||0)<2&&!(ownId&&c.placementId===ownId)&&Math.abs(c.x)<1e5&&
+  c.x+Math.hypot(c.w,c.d)/2>minX&&c.x-Math.hypot(c.w,c.d)/2<maxX&&c.z+Math.hypot(c.w,c.d)/2>minZ&&c.z-Math.hypot(c.w,c.d)/2<maxZ);
+ // Which ground points are off the walkable ground (the road, the water, a wall's footprint).
+ const off=new Uint8Array(nx*nz);
+ for(let i=0;i<nx;i++)for(let k=0;k<nz;k++)off[i*nz+k]=world.walkable(x0+i*GRID,z0+k*GRID)?0:1;
+ // A square is open when the ground within half the passage is walkable and nothing standing is within half of it
+ // (only squares a whole half from the area's edge, so the ground around them is known).
+ const offsets=[];for(let a=-reach;a<=reach;a++)for(let b=-reach;b<=reach;b++)if(Math.hypot(a,b)*GRID<=half+1e-9)offsets.push(a*nz+b);
+ const clear=new Uint8Array(nx*nz);
+ for(let i=reach;i<nx-reach;i++)for(let k=reach;k<nz-reach;k++){const j=i*nz+k,x=x0+i*GRID,z=z0+k*GRID;
+  clear[j]=offsets.every(d=>!off[j+d])&&!solid.some(c=>circleHitsRect(x,z,half,c))?1:0;}
+ const open=withPiece=>{if(!withPiece)return clear;const o=new Uint8Array(nx*nz);
+  for(let i=reach;i<nx-reach;i++)for(let k=reach;k<nz-reach;k++){const j=i*nz+k;o[j]=clear[j]&&!circleHitsRect(x0+i*GRID,z0+k*GRID,half,box)?1:0;}
+  return o;};
+ const parts=o=>{const label=new Int32Array(nx*nz).fill(-1);let n=0;
+  for(let j=0;j<o.length;j++){if(!o[j]||label[j]>=0)continue;const stack=[j];label[j]=n;
+   while(stack.length){const q=stack.pop(),i=Math.floor(q/nz),k=q%nz;
+    for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const ii=i+a,kk=k+b;if(ii<0||kk<0||ii>=nx||kk>=nz)continue;const r=ii*nz+kk;if(o[r]&&label[r]<0){label[r]=n;stack.push(r);}}}
+   n++;}
+  return label;};
+ const before=open(false),after=open(true),was=parts(before),now=parts(after);
+ // The ways in and out: the area's edge squares, and the open squares in front of every door in it (an alley that
+ // ends at a door is somebody's way). Those joined before must be joined after, and a door's way must stay open.
+ const ends=[];
+ for(let i=reach;i<nx-reach;i++)for(let k=reach;k<nz-reach;k++)if(i===reach||i===nx-reach-1||k===reach||k===nz-reach-1)ends.push(i*nz+k);
+ for(const [dx,dz,size=DOOR_CLEARANCE] of world.doors||[]){
+  const di=Math.round((dx-x0)/GRID),dk=Math.round((dz-z0)/GRID),r=Math.ceil(size/2/GRID);
+  if(di<reach-r||dk<reach-r||di>nx-reach-1+r||dk>nz-reach-1+r)continue;
+  const near=[];
+  for(let i=Math.max(reach,di-r);i<=Math.min(nx-reach-1,di+r);i++)for(let k=Math.max(reach,dk-r);k<=Math.min(nz-reach-1,dk+r);k++)if(before[i*nz+k])near.push(i*nz+k);
+  if(near.length&&!near.some(j=>after[j]))return true;
+  ends.push(...near);
+ }
+ const joined=new Map();
+ for(const j of ends){
+  if(!before[j]||!after[j])continue;
+  const set=joined.get(was[j])||new Set();set.add(now[j]);joined.set(was[j],set);if(set.size>1)return true;
+ }
+ return false;
 }
 
 /** A file's placements, checked for shape only (the world rules run when they are placed). */
 export function readPlacementsFile(json){
  const data=typeof json==='string'?JSON.parse(json):json;
  if(!data||data.version!==1||!Array.isArray(data.placements))throw new Error('Not a placements file (version 1).');
+ if(data.placements.length>MAX_PLACEMENTS)throw new Error(`A placements file holds at most ${MAX_PLACEMENTS} pieces; this one has ${data.placements.length}.`);
  const ids=new Set();
  return data.placements.map(p=>{
   if(!p||typeof p.id!=='string'||ids.has(p.id))throw new Error('Every placement needs its own id.');
@@ -72,7 +136,7 @@ export const placementsFile=list=>JSON.stringify({version:1,placements:list.map(
  * The live builder for the town outdoors. group/colliders are the world's own (colliders are picked up by the collider
  * grid on its next refresh); factory is the prop factory; walkable and doors describe the ground.
  */
-export function createPlacements({group,colliders,factory,walkable,heightAt=null,doors=[],lookup=catalogueEntry,needWhy=true,offGround=null,onChange=()=>{}}){
+export function createPlacements({group,colliders,factory,walkable,heightAt=null,doors=[],lookup=catalogueEntry,needWhy=true,offGround=null,passage=null,onChange=()=>{}}){
  const placed=new Map(),held=new Map();let next=1;   // held: entries from the file that cannot stand where they are
  // Undo and redo (Mario Artist keeps Undo beside the way out in every mode: research/mario-artist/report.md §5). Each
  // step is what was done with the entry before and after; loading a file is not a step, nor is undoing.
@@ -89,7 +153,7 @@ export function createPlacements({group,colliders,factory,walkable,heightAt=null
  const nameOf=e=>(lookup(e.kind)?.name||e.kind).toLowerCase();
  // A copy of an entry that keeps a broken number exactly as the file wrote it (readPlacementsFile), as load() does.
  const copy=e=>{const c={...e};if(e.written)Object.defineProperty(c,'written',{value:e.written});return c;};
- const world={colliders,doors,walkable,heightAt,lookup,needWhy,offGround};
+ const world={colliders,doors,walkable,heightAt,lookup,needWhy,offGround,passage};
  function build(p){
   const entry=lookup(p.kind),made=factory[entry.make](p.x,p.z,p.yaw);
   made.object.position.y=heightAt?heightAt(p.x,p.z):0;   // on the ground, not floating over it or sunk into it
@@ -107,6 +171,7 @@ export function createPlacements({group,colliders,factory,walkable,heightAt=null
   const entry={id:p.id||`p${next++}`,kind:p.kind,x:+p.x,z:+p.z,yaw:+(p.yaw||0),note:String(p.note||'')};
   while(placed.has(entry.id)||held.has(entry.id))entry.id=`p${next++}`;
   const problems=check(entry);if(problems.length)return {ok:false,problems};
+  if(placed.size+held.size>=MAX_PLACEMENTS)return {ok:false,problems:[`The town holds at most ${MAX_PLACEMENTS} placed pieces; remove one first.`]};
   const made=build(entry);group.add(made.object);if(made.collider)colliders.push(made.collider);
   placed.set(entry.id,{entry,...made});remember({do:'place',after:{...entry}});onChange();return {ok:true,id:entry.id};
  }
