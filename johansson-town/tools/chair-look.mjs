@@ -66,6 +66,7 @@ const SHOTS=[
  {name:'08b-fumiko',minutes:NIGHT,power:'quiet',cam:LEFT,people:[{who:'Fumiko',outfit:'afterbath',pose:'Sit',...sitAt}]},
  {name:'08c-fumiko-side',minutes:NIGHT,power:'quiet',cam:RIGHT,people:[{who:'Fumiko',outfit:'afterbath',pose:'Sit',...sitAt}]},
  {name:'09-player-seated',minutes:NIGHT,power:'quiet',player:true},
+ {name:'09b-player-coin',minutes:NIGHT,power:'rest',player:true,coin:true},
  {name:'10-colliders-top',minutes:NOON,power:'rest',cam:[[3.9,5.5,3.0],[3.9,0,3.01]],hide:['Lobby ceiling'],overlay:true},
  {name:'11-floor-at-chair',minutes:NOON,power:'rest',cam:[[3.2,.14,3.62],[4.6,.03,3.6]]},
  {name:'12a-offering-full',minutes:NIGHT,power:'quiet',props:{offering:'full'},cam:RIGHT},
@@ -132,7 +133,9 @@ try{
    for(const c of window.__chairCast||[]){c.holder.removeFromParent();c.avatar.dispose?.();}window.__chairCast=[];
    window.__chairOverlay?.removeFromParent();window.__chairOverlay=null;
    for(const o of window.__chairHidden||[])o.visible=true;window.__chairHidden=[];
-   if(a.seated)a.interact();
+   // Standing up: from the massage chair the action opens its coin menu, whose Stand up button stands.
+   const standUp=()=>{if(!a.seated)return;a.interact();[...document.querySelectorAll('#activityActions button')].find(b=>b.textContent==='Stand up')?.click();};
+   standUp();
    a.setTime(s.minutes);a.layout.power.stage(s.power);a.layout.power.chairTimer(s.timer??null);
    if(s.timer)a.layout.power.chairTimer(s.timer);
    a.layout.props.stage({offering:'none',...(s.props||{})});
@@ -160,10 +163,16 @@ try{
    // The player sits in it by the room's own prompt (the game's own seating), and is looked at from in front and to the
    // side as tools/seating-audit.mjs looks at a seated player.
    if(s.player){
-    const used=a.use('Sit in the massage chair');a.step(600);
+    const used=a.use('Sit in the massage chair (¥100)');a.step(600);
+    // The coin from the seat (batch D): the action opens the chair's menu, a ¥100 coin goes in, and the LED counts down.
+    let coin=null;
+    if(s.coin){const press=label=>[...document.querySelectorAll('#activityActions button')].find(b=>b.textContent===label)?.click();
+     const before=a.layout.power.chairTimer().reads;a.interact();const menu=[...document.querySelectorAll('#activityActions button')].map(b=>b.textContent);
+     press('Put in a ¥100 coin');const said=document.querySelector('#activityBody')?.textContent;press('Keep sitting');a.step(3000);
+     coin={before,menu,said,after:a.layout.power.chairTimer(),prompt:document.querySelector('#prompt')?.textContent};}
     if(a.johansson?.root){a.johansson.root.visible=true;window.__chairHidden=window.__chairHidden.filter(o=>o!==a.johansson.root);}
-    a.camera={pos:[2.55,1.3,4.15],at:[4.25,.8,3.55]};a.renderer.info.reset();a.render();
-    return {used,seat:a.seat,info:a.renderInfo,chair:chairCost()};
+    a.camera=s.coin?{pos:[3.45,1.05,2.85],at:[4.2,.75,3.4]}:{pos:[2.55,1.3,4.15],at:[4.25,.8,3.55]};a.renderer.info.reset();a.render();
+    return {used,seat:a.seat,coin,info:a.renderInfo,chair:chairCost()};
    }
    // The colliders from above: the old chair's rectangle red, the chair's own (from its card) cyan, the rest of the room's
    // yellow; the sit mark green, the stand spot (the player's 0.28 m) blue, the film's coin mark magenta; and walking
@@ -192,7 +201,7 @@ try{
   },{...s,OLD_RECT,MARKS});
   await save(s.name);
   console.log(s.name,JSON.stringify(info));report.shots.push({name:s.name,...info});
-  if(s.player)await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;if(a.seated)a.interact();});
+  if(s.player)await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;if(a.seated){a.interact();[...document.querySelectorAll('#activityActions button')].find(b=>b.textContent==='Stand up')?.click();}});
  }
  // The colliders the room ends up with near the chair, and what the card put there.
  if(town)report.colliders=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.layout.colliders.filter(c=>c.x>3.6&&c.z>2.6&&c.z<4.3).map(c=>({...c})));

@@ -129,8 +129,10 @@ it, using World's own vendored three.js and toon look, so what you model is exac
     (`GENKAN_STEP.turn`), and the lobby's hinoki runs to the street wall at the east end, so the chair stands wholly on
     the boards and a bather reaches it barefoot (`tests/onsen-front.test.mjs`, `tests/onsen-chair.test.mjs`). The film's
     plates of the genkan's east end are re-photographed with the chair's.
-  - *Play (next small batch):* the ¥100 coin from the seat (a menu as at the izakaya table; no power, no charge; the LED
-    counts down, the rollers knead), and then the card's label "Sit in the massage chair (¥100)".
+  - *Play (done):* seated in the chair the prompt reads "Massage ¥100 · Stand"; the action opens its menu (put in a ¥100
+    coin, keep sitting, stand up). A coin starts the LED at 10:00, lights the lamp and the rollers knead; with no power
+    Higa-san hands it back and nothing is charged; standing up early leaves it running to 0:00. The seat carries the
+    card's label "Sit in the massage chair (¥100)" (`tests/onsen-massage-coin.test.mjs`).
   - *People (later):* a regular in after-bath clothes takes the chair after the bath (a routine, a reservation, the
     load on circuit 1, a storyteller line).
   - *Characters:* in KneelHug Fujita's right hand goes 4.5 cm into the chair's left arm (`tests/story-gestures.test.mjs`

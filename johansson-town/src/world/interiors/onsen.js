@@ -7,7 +7,7 @@ import {daylight} from '../../render/dusk.js';
 import {townCalendarAt} from '../../town-clock.js';
 import {buildOnsenLobby,hinokiTexture,LOBBY,ONSEN_DOORWAYS} from './onsen-lobby.js';
 import {buildWashArea,WASH_SEATS} from './onsen-wash.js';
-import {buildOnsenElectrics,isPowered,isWorking,isLive} from './onsen-electrics.js';
+import {buildOnsenElectrics,isPowered,isWorking,isLive,CHAIR_TIMER} from './onsen-electrics.js';
 import {ONSEN_CHAIR,CHAIR} from './onsen-chair.js';
 import {placeAsset} from '../../catalog/catalog.js';
 import {buildOnsenTowels} from './onsen-towels.js';
@@ -79,10 +79,10 @@ const fanYaw=t=>Math.sin(t*ONSEN_FAN.rate)*ONSEN_FAN.sweep;
 export const ONSEN_SEATS=Object.freeze({
  bench:{id:'bench',label:'Sit on the changing-room bench',position:[2.1,0,.25],stand:[2.1,0,.95],eyeY:1.16,yaw:0,surfaceY:.46},
  tatami:{id:'tatami',label:'Sit on the tatami',position:[LOBBY.koagari.x-.25,0,LOBBY.koagari.z+.5],stand:[LOBBY.koagari.x,0,3.55],eyeY:LOBBY.koagari.h+.8,yaw:Math.PI,surfaceY:LOBBY.koagari.h+.07},
- // The coin massage chair's seat, from its card (onsen-chair.js): the mark 5 cm behind the seat's front edge, facing the lobby.
- // World's id stays 'massage' (saved scenes and the films know it by that); the label promises no coin until a coin buys
- // ten minutes in play (the card's own label says ¥100).
- massage:(({position,stand,eyeY,yaw,surfaceY})=>({id:'massage',label:'Sit in the massage chair',position,stand,eyeY,yaw,surfaceY}))(CHAIR.seat('seat')),
+ // The coin massage chair's seat, from its card (onsen-chair.js): the mark 5 cm behind the seat's front edge, facing the lobby,
+ // and the card's label: a ¥100 coin buys ten minutes from the seat (ONSEN_MASSAGE). World's id stays 'massage' (saved
+ // scenes and the films know it by that).
+ massage:(({position,stand,eyeY,yaw,surfaceY,label})=>({id:'massage',label,position,stand,eyeY,yaw,surfaceY}))(CHAIR.seat('seat')),
  ...WASH_SEATS,
  indoor:{id:'indoor',label:'Get into the indoor bath',position:[3.1,0,-3.35],stand:[3.1,0,-1.66],eyeY:R.tub.floor+.78,yaw:Math.PI,surfaceY:R.tub.floor+.04,soak:true},
  rock:{id:'rock',label:'Get into the rock bath',position:[.75,0,-6.45],stand:[.75,0,-4.75],eyeY:R.pool.floor+.82,yaw:0,surfaceY:R.pool.floor+.04,soak:true},
@@ -97,6 +97,18 @@ export const ONSEN_SEATS=Object.freeze({
  ].map(([id,label,[x,z],[sx,sz]])=>[id,{id,label,position:[x,0,z],stand:[sx,0,sz],eyeY:R.pool.floor+.82,
   // Facing the middle of the ring (the camera's yaw: forward is (-sin, -cos)).
   yaw:Math.atan2(-(-.05-x),-(-7-z)),surfaceY:R.pool.floor+.04,soak:true}]))
+});
+/**
+ * The coin massage chair in play: seated in it, a ¥100 coin (CHAIR_TIMER.coin) buys ten minutes on its coin timer, and the
+ * LED counts them down while the rollers knead. With no power the coin does nothing and Higa-san hands it back, so nothing
+ * is charged. A coin is spent once it is in: standing up early leaves the chair running to 0:00, as a real coin timer does.
+ */
+export const ONSEN_MASSAGE=Object.freeze({
+ about:'A grey steel coin box on the right arm: ¥100 for ten minutes, a red 運転中 lamp and a four-digit red LED.',
+ started:'You feed it a hundred-yen coin. The red lamp comes on and the rollers start up your back like a slow, well-meaning truck.',
+ running:'The LED counts down the coin’s ten minutes while the rollers work slowly up and down your back.',
+ circuitDown:'You feed it a hundred-yen coin and nothing happens. Its socket is on the changing-room circuit, and that breaker is down. Higa-san hands the coin back.',
+ houseDark:'You feed it a hundred-yen coin and nothing happens: the whole house is dark. The contract breaker by the bandai has let go. Higa-san hands the coin back.',
 });
 /** What the room is built of from World's catalogue (src/catalog): the game fetches these before it opens the door. */
 export const ONSEN_ASSETS=Object.freeze([ONSEN_CHAIR.asset]);
@@ -257,7 +269,13 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   // lamps-stop-at-walls like the rest of it (stopLamps), before anything draws it.
   onModel:copy=>stopLamps(copy)});
  for(const c of chair.colliders)colliders.push({...c});
- seat(ONSEN_SEATS.massage,'Massage chair',()=>isPowered('massage-chair')?'You feed it a hundred-yen coin. It grinds up your back like a slow, well-meaning truck. Ten minutes later you feel two centimetres taller.':(isLive('main')?'You feed it a hundred-yen coin and nothing happens. Its socket is on the changing-room circuit, and that breaker is down. Higa-san hands the coin back.':'You feed it a hundred-yen coin and nothing happens: the whole house is dark. The contract breaker by the bandai has let go. Higa-san hands the coin back.'));
+ seat(ONSEN_SEATS.massage,'Massage chair',ONSEN_MASSAGE.about);
+ // The coin from the seat (the game's seated menu, activities.js massageChair): what the timer shows, why a coin would come
+ // back, and the coin going in.
+ const CHAIR_LOAD='massage-chair',massage={coin:CHAIR_TIMER.coin,texts:ONSEN_MASSAGE,
+  state:()=>({...power.chairTimer(),powered:isPowered(CHAIR_LOAD)}),
+  refusal:()=>isPowered(CHAIR_LOAD)?null:isLive('main')?ONSEN_MASSAGE.circuitDown:ONSEN_MASSAGE.houseDark,
+  start:()=>isPowered(CHAIR_LOAD)&&!power.isRunning(CHAIR_LOAD)&&power.switchOn(CHAIR_LOAD)};
  const clock=new THREE.Group();clock.position.set(0,2.45,R.hall.front+.08);room.add(clock);
  clock.add(new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.04,24).rotateX(Math.PI/2),mat(0xf6f1e6,.5)));
  const hands=[new THREE.Mesh(new THREE.BoxGeometry(.012,.13,.01),mat(0x222222)),new THREE.Mesh(new THREE.BoxGeometry(.008,.17,.01),mat(0x222222))];
@@ -429,7 +447,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
   // The catalogue's things in the room (the chair): `ready` resolves true once their models are in place and take the
   // room's light, false if one cannot be had. The game fetches them before it opens the door (ONSEN_ASSETS); a host that
   // builds without waiting (Johansson Studio's Build scene) waits for this before it shades the room.
-  chair,ready:chair.ready,
+  chair,ready:chair.ready,massage,
   // Every frame, and for a frozen photograph (game.js audit render): what shows the room's state without time passing.
   realUpdate(){lobby.refresh(people());power.refresh();steam.refresh();},
   steam,
