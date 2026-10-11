@@ -3,14 +3,15 @@
   "titel": "Mätaren påverkar kretsen",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-2",
-      "LM-7"
+      "LM-1",
+      "LM-4",
+      "LM-8"
     ],
     "niva": "tillampning",
     "teori": [

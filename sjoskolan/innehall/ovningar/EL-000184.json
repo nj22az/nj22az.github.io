@@ -3,7 +3,7 @@
   "titel": "Larm utan stopp",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Isolationslarmet går i ett IT-system men lasten fortsätter. Varför är detta ingen grund för att ignorera larmet?",
+    "fraga": "Isolationsvakten i ett IT-nät larmar. Lasten går ändå som vanligt. Varför får du inte strunta i larmet?",
     "samband": [
       "Första fel och andra fel har olika konsekvenser"
     ],

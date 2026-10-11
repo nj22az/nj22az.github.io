@@ -3,7 +3,7 @@
   "titel": "Förändrade driftvillkor",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En funktion är kontrollerad i normal drift men inte på reservmatning. Hur ska slutsatsen skrivas?",
+    "fraga": "En funktion är provad med vanlig matning. Den är inte provad på reservmatning. Skriv slutsatsen i en eller två meningar: vad är kontrollerat, och vad är inte kontrollerat?",
     "samband": [
       "Verifierat driftfall ska anges i slutsatsen"
     ],

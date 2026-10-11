@@ -3,7 +3,7 @@
   "titel": "IT-princip",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -20,9 +20,9 @@
     ]
   },
   "uppgift": {
-    "fraga": "Vad övervakar isolationsvakten i ett IT-system, i princip?",
+    "fraga": "Ett IT-nät har en isolationsvakt. Vad mäter den?",
     "samband": [
-      "IT-systemets isolation övervakas mot jord"
+      "Isolationsövervakning i IT-nät"
     ],
     "givet": "En principfråga. Ingen larmgräns anges.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -30,7 +30,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Fasledarna är isolerade från jord eller anslutna via en hög impedans, och utsatta delar är skyddsjordade.",
+      "text": "I ett IT-nät är faserna inte direkt kopplade till skrovet. Metallhöljen på apparaterna är kopplade till skrovet.",
       "status": "migrerad"
     },
     {

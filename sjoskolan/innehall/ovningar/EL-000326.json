@@ -3,7 +3,7 @@
   "titel": "Fel: bruten retur",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -90,7 +90,7 @@
         }
       ]
     },
-    "kallhanvisning": "v43_03 · bild 22",
+    "kallhanvisning": "Genomgång del 3, avsnitt 6",
     "alias": "retur"
   }
 }

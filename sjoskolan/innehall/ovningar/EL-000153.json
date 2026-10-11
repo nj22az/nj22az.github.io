@@ -3,7 +3,7 @@
   "titel": "Två märkdata",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -23,7 +23,7 @@
     "samband": [
       "Märkström och brytförmåga är olika apparatdata"
     ],
-    "givet": "Dvärgbrytaren är märkt 16 A och 6 kA. Brytförmågan gäller under de villkor som anges i märkningen.",
+    "givet": "Dvärgbrytaren är märkt 16 A och 6 kA.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [

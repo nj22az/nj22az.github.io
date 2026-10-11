@@ -3,7 +3,7 @@
   "titel": "Reläskyddets kedja",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Ordna dessa funktioner i en signalväg: brytare, mättransformator, skyddsrelä. Vad händer om skyddsreläet saknar hjälpspänning?",
+    "fraga": "a) Sätt delarna i rätt ordning, från mätning till bortkoppling: brytare, mättransformator, skyddsrelä. b) Skyddsreläet behöver egen matning (hjälpspänning). Vad händer om den försvinner?",
     "samband": [
       "Mätning, beslut och bortkoppling"
     ],

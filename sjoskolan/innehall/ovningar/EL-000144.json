@@ -3,7 +3,7 @@
   "titel": "Lås och skylt",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -27,7 +27,7 @@
     "samband": [
       "Märkning informerar, skydd mot återinkoppling ska fungera"
     ],
-    "givet": "Skyddet mot återinkoppling i arbetsplanen är inte genomfört. Det finns bara en skylt.",
+    "givet": "Planen säger att brytaren ska låsas. Den är inte låst. Det sitter bara en skylt.",
     "instruktion": "Motivera ditt beslut."
   },
   "ledtradar": [

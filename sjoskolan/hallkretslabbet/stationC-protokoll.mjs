@@ -2,7 +2,7 @@
 // Eleven mäter på stationsriggen med 12 V. Exemplet använder labbets 24 V och en felmodul som övning 8 inte handlar om,
 // så att exemplets värden och resonemang inte kan skrivas av. Siffrorna räknas fram ur modellen.
 import { meter, fmt } from './model.mjs';
-import { run } from './lessons.mjs';
+import { run } from './lessons.mjs?v=20261011';
 
 const U = 24;
 const volt = (steps, red, black) => { const { r } = run([{ U, red, black }, ...steps]); const v = meter(r.V, red, black); return Number.isFinite(v) ? `${fmt(v)} V` : 'flytande'; };

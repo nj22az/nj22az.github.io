@@ -20,9 +20,11 @@ VECKOR = {
          'notis': 'Veckans inlämning 1–3 (Frånskiljning och mätteknik) lämnar du på en egen sida. Här finns inlämning 4–7.', 'notis_lank': ('/sjoskolan/vecka-38/aktuell/Inlamning.html', 'Inlämning: Frånskiljning och mätteknik')},
     41: {'titel': 'Trefas och laboration', 'sista': '2026-10-11'},
     42: {'titel': 'Elektriska risker och skydd', 'sista': '2026-10-18'},
-    43: {'titel': 'Komponenter, motorer och scheman', 'sista': '2026-10-25'},
-    44: {'titel': 'Elsystem och fördjupad mätteknik', 'sista': '2026-11-01'},
-    45: {'titel': 'Felsökning och repetition', 'sista': '2026-11-08'},
+    # Vecka 45:s inlämning är fördelad på vecka 43 och 44 (verktyg/veckosidor/bygg.py).
+    43: {'titel': 'Komponenter, motorer, scheman och felsökning', 'sista': '2026-10-25'},
+    44: {'titel': 'Elsystem, mätteknik och repetition', 'sista': '2026-11-01'},
+    45: {'titel': 'Felsökning, analys och övningstenta', 'sista': '2026-11-01',
+         'notis': 'Inlämning 3 (felsökningsrapporten) lämnar du med vecka 43, senast söndag 25 oktober. Inlämning 1 (analys av mätdata) lämnar du med vecka 44, senast söndag 1 november. Inlämning 2, övningstentan, gör du inför tentamen; den betygsätts inte.'},
 }
 
 
@@ -60,7 +62,16 @@ RESULTATKOD = {40}
 SVARSRUTOR = {41}
 
 
+# Från vecka 42 har alla samma D (gemensamt/elevtal.mjs KURS_D). Bara den slutliga tentamen får individuella värden.
+KURS_D = 12
+KURSD_RUTA = (f'<div class="sj-panel soft dbox"><h2>Talet D</h2><p>Flera uppgifter använder talet <strong>D</strong>. '
+              f'Alla i klassen räknar med <strong>D = {KURS_D}</strong>. Sätt in {KURS_D} där det står D i uppgiften och räkna '
+              f'sedan som vanligt. Står det (10 + D) V är spänningen 10 + {KURS_D} = {10 + KURS_D} V.</p></div>\n')
+
+
 def dbox(nr):
+    if nr >= 42:
+        return KURSD_RUTA
     if nr in SVARSRUTOR:
         return (NAMNRUTA.replace('</p></div>\n<script', '</p><p>Skriv dina svar i rutorna under inlämning 1 och 2. De sparas i webbläsaren och följer med i QR-koden på sidan <a href="Resultat.html">Skicka resultat</a>. Uträkningar, visardiagram och protokoll lämnar du i mejlet.</p></div>\n<script', 1)
                 + f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v=20260929"></script>\n')

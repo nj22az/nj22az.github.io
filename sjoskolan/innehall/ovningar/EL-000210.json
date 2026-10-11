@@ -3,7 +3,7 @@
   "titel": "Spårbar slutsats",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En isolationsmätning ändras från 100 MΩ till 10 MΩ. Varför räcker det inte att direkt säga att isoleringen har skadats?",
+    "fraga": "Förra gången visade isolationsmätningen 100 MΩ. Nu visar den 10 MΩ. Varför kan du inte direkt säga att isoleringen är skadad?",
     "samband": [
       "Jämförbara mätvillkor krävs för en trend"
     ],
@@ -32,7 +32,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Provspänning, mättid, temperatur, fukt och inkopplad utrustning påverkar värdet.",
+      "text": "Ett isolationsvärde beror inte bara på isoleringen. Det beror också på hur och när du mätte.",
       "status": "migrerad"
     },
     {
@@ -42,7 +42,7 @@
     },
     {
       "niva": "nasta-steg",
-      "text": "1) Vilka förhållanden påverkar ett isolationsvärde: provspänning, mättid, temperatur, fukt och vad som var inkopplat? 2) Var de lika vid de två mätningarna? 3) Skriv slutsatsen så att den skiljer mellan ”lägre värde” och ”skadad isolation”.",
+      "text": "1) Vad kan ha varit olika när de två mätningarna gjordes? Tänk på instrumentet, tiden, omgivningen och objektet. 2) Står det i uppgiften att förhållandena var lika? 3) Skriv slutsatsen så att den skiljer mellan ”lägre värde” och ”skadad isolation”.",
       "status": "utkast"
     }
   ],

@@ -3,7 +3,7 @@
   "titel": "Rätt hänvisning i riskbedömning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -21,7 +21,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Skriv ett exempel på en hänvisning till en regel som går att kontrollera i efterhand, utan att du gissar en paragraf.",
+    "fraga": "Skriv en hänvisning till en regel. Ta med dokumentets namn, utgåva, avsnitt och varför den gäller. Hitta inte på ett paragrafnummer.",
     "samband": [
       "Spårbar hänvisning = dokument, version och tillämpning"
     ],

@@ -453,8 +453,10 @@ export const BETECKNINGAR = [
   "id": "va",
   "visa": "VA, kVA",
   "former": [
-   "VA",
    "kVA"
+  ],
+  "efter_tal": [
+   "VA"
   ],
   "namn": "voltampere",
   "forklaring": "Enheten för skenbar effekt S. 1 kVA = 1 000 VA."
@@ -463,10 +465,11 @@ export const BETECKNINGAR = [
   "id": "var",
   "visa": "var, kvar",
   "former": [
-   "kvar"
+   "kVA och kvar"
   ],
   "efter_tal": [
-   "var"
+   "var",
+   "kvar"
   ],
   "namn": "voltampere reaktiv",
   "forklaring": "Enheten för reaktiv effekt Q. 1 kvar = 1 000 var. Skrivs med små bokstäver."
@@ -535,7 +538,7 @@ export const BETECKNINGAR = [
   ],
   "namn": "isolerat nät",
   "utlasning": "franska: isolé–terre",
-  "forklaring": "Nät utan direkt förbindelse mellan systemet och jord eller skrov. Vanligt ombord. Behandlas i vecka 44."
+  "forklaring": "Nät där ingen aktiv ledare är direkt förbunden med jord eller skrov. Systemet är isolerat, eller jordat via en hög impedans. Utsatta delar, till exempel apparaternas metallhöljen, är skyddsjordade. Vanligt ombord. Behandlas i vecka 44."
  },
  {
   "id": "ul-linje",

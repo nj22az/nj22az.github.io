@@ -3,7 +3,7 @@
   "titel": "Dokumentation",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -37,12 +37,12 @@
     },
     {
       "niva": "metod",
-      "text": "Föreslå tre konkreta tillägg, till exempel exakt vilken kabel, vad som gjordes och ett mätprotokoll.",
+      "text": "Tänk dig att en kollega läser rapporten om ett år. Vad behöver hen veta om kabeln, om arbetet och om provet efteråt?",
       "status": "migrerad"
     },
     {
       "niva": "nasta-steg",
-      "text": "1) Vilken kabel exakt (ID)? 2) Varför byttes den, och vad gjordes? 3) Vilken kontroll gjordes efteråt, med värden, datum och namn? Skriv tre konkreta tillägg.",
+      "text": "1) Kabeln: hur ska en kollega hitta exakt samma kabel? 2) Arbetet: varför byttes kabeln, och vad gjordes? 3) Provet efteråt: vad behöver en kollega veta för att kunna lita på provet? Skriv ett konkret tillägg för varje punkt.",
       "status": "utkast"
     }
   ],

@@ -4,7 +4,7 @@ import { waveform, instant, instantPower, seriesCircuit, fmt, parseAnswer, isClo
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
 import { hjalpHtml } from '../gemensamt/raknehjalp.mjs?v=20260929c';
 import { DEFAULTS, CHALLENGES, readouts, expected } from './lessons.mjs?v=20260925-ac2';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20261011';
 import { STATION_B_AC_PROTOKOLL, RIG_AC, CAL_AC } from './stationB-protokoll.mjs?v=20260925-ac2';
 
 const $ = (id) => document.getElementById(id);

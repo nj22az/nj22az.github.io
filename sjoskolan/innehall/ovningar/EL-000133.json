@@ -3,7 +3,7 @@
   "titel": "Arbetsmetoder",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad"
   },
@@ -46,7 +46,7 @@
     }
   ],
   "losning": {
-    "text": "Arbete utan spänning, arbete med spänning (AMS), arbete inom närområde (arbete nära spänning) och arbete utanför närområde. Medan SS-EN 50110-1 har tre metoder, definierar ESA även arbete utanför närområde som en egen metod med specifika krav på riskhantering gentemot intilliggande anläggningsdelar.",
+    "text": "Arbete utan spänning, arbete med spänning (AMS), arbete nära spänning (inom närområdet) och arbete utanför närområdet. SS-EN 50110-1 har bara de tre första. ESA lägger till den fjärde.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

@@ -3,7 +3,7 @@
   "titel": "Brist i en ritning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -46,7 +46,7 @@
     }
   ],
   "losning": {
-    "text": "Ritningen kan inte anses gälla. Avvikelsen rapporteras till ansvarig, som klarlägger giltig version och uppdaterar ritningen före vidare arbete.",
+    "text": "Du kan inte lita på ritningen. Säg till den ansvariga. Den ansvariga tar reda på vilken ritning som gäller och uppdaterar den. Arbeta inte vidare förrän det är gjort.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

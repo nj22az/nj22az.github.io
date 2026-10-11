@@ -3,7 +3,7 @@
   "titel": "Spolens ström",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -44,7 +44,7 @@
     "text": "I = 24/480 = 0,050 A = 50 mA.",
     "svar": [
       {
-        "storhet": "Ispole",
+        "storhet": "I_{spole}",
         "varde": 50,
         "tolerans": {
           "rel": 0.02
@@ -86,7 +86,7 @@
     },
     "fraga": {
       "storhet": "I",
-      "etikett": "Ispole",
+      "etikett": "I_{spole}",
       "enhet": "mA"
     },
     "dolj": [
@@ -106,7 +106,7 @@
         }
       ]
     },
-    "kallhanvisning": "v43_03 · övning 7 och formelbladet",
+    "kallhanvisning": "Del 3, övning 3.7 och formelbladet",
     "alias": "strom"
   }
 }

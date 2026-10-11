@@ -3,7 +3,7 @@
   "titel": "Vila: efter STOPP",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -35,7 +35,7 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "S0 är sluten, så a har samma potential som +U. Returen håller 0 V-sidan på 0 V.",
+      "text": "Vilka kontakter ligger mellan +U och a? Är de öppna eller slutna? Ingen ström betyder inte automatiskt ingen spänning.",
       "status": "migrerad"
     }
   ],
@@ -86,7 +86,7 @@
         }
       ]
     },
-    "kallhanvisning": "v43_03 · bild 8 och 22",
+    "kallhanvisning": "Genomgång del 3, avsnitt 4 och 6",
     "alias": "vila"
   }
 }

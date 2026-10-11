@@ -3,7 +3,7 @@
   "titel": "Fel: K1 håller inte",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -95,7 +95,7 @@
         }
       ]
     },
-    "kallhanvisning": "v43_03 · bild 8",
+    "kallhanvisning": "Genomgång del 3, avsnitt 4",
     "alias": "hall"
   }
 }

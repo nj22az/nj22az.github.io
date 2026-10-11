@@ -1,5 +1,5 @@
 import { initialState, network, measure, lampCurrent, MODES, RIGS, rigOf } from './model.mjs';
-import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260929-not';
+import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20261011';
 import { STATION_A_PROTOKOLL } from './stationA-protokoll.mjs?v=20260926';
 import { LESSONS, acceptsAnswer } from './lessons.mjs?v=20260930-station-ohm';
 import { protocolCSV } from './protocol.mjs';

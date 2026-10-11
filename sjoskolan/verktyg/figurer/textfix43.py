@@ -35,7 +35,8 @@ set_paras(shape(p.slides[28], 11), ["Varje del ändrar energins form. En av dela
 set_paras(shape(p.slides[5], 5), ["440 V till 110 V ger omsättningen 4:1.", "2 A på sekundären motsvarar idealt 0,50 A på primären."])
 set_paras(shape(p.slides[6], 5), ["Ombord: 60 Hz och fyra poler ger nₛ = 1 800 r/min.", "Här är p antalet poler, inte antalet polpar."])
 set_paras(shape(p.slides[7], 5), ["nₛ = 1 800 och n = 1 746 r/min ger s = 0,03 = 3 %.", "Eftersläpningen varierar med belastningen."])
-set_paras(shape(p.slides[20], 5), ["Ombord: en 440/760 V Δ/Y-motor kan vara kandidat vid 440 V.", "Y-start minskar också tillgängligt startmoment."])
+# 440 V med Δ/Y 440/760 V är nu övning 2.7:s fall (granskning 2026-10-11), 400/690 V vid 400 V är inlämningens
+set_paras(shape(p.slides[20], 5), ["Ombord: en 690/1 200 V Δ/Y-motor kan vara kandidat vid 690 V.", "Y-start minskar också tillgängligt startmoment."])
 set_paras(shape(p.slides[23], 10), ["En åttapolig motor matas med 60 Hz. Rotorn går med 873 r/min."])
 set_paras(shape(p.slides[23], 12), ["1. nₛ = 120 · 60/8 = 900 r/min.", "2. Skillnad = 900 − 873 = 27 r/min.", "3. s% = 100 · 27/900 = 3 %."])
 set_paras(shape(p.slides[23], 13), ["Rotorn går långsammare än fältet vid den angivna motordriften. p är åtta poler, inte fyra polpar."])

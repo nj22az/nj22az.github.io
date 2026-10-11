@@ -42,7 +42,7 @@ export const OBJECTS = {
   'motor-m3': { name: 'Motor M3 med kabel (stationens objekt)', R: { 'L1-PE': 45e6, 'L2-PE': 38e6, 'L3-PE': 0.6e6, 'L1-L2': 120e6, 'L2-L3': 2.5e6, 'L3-L1': 2.8e6 } },
   'motor-torr': { name: 'Motor, torr och hel', R: { 'L1-PE': 200e6, 'L2-PE': 180e6, 'L3-PE': 220e6, 'L1-L2': 500e6, 'L2-L3': 480e6, 'L3-L1': 510e6 } },
   'motor-fukt': { name: 'Motor som stått i fukt', R: { 'L1-PE': 1.25e6, 'L2-PE': 1.1e6, 'L3-PE': 1.3e6, 'L1-L2': 6e6, 'L2-L3': 5.5e6, 'L3-L1': 6.2e6 } },
-  'kabel-skadad': { name: 'Kabel med skadad mantel', R: { 'L1-PE': 150e6, 'L2-PE': 0.05e6, 'L3-PE': 140e6, 'L1-L2': 300e6, 'L2-L3': 0.4e6, 'L3-L1': 290e6 } },
+  'kabel-skadad': { name: 'Kabel med skadad mantel', R: { 'L1-PE': 150e6, 'L2-PE': 0.5e6, 'L3-PE': 140e6, 'L1-L2': 300e6, 'L2-L3': 0.4e6, 'L3-L1': 290e6 } },
 };
 export const PAIRS = ['L1-PE', 'L2-PE', 'L3-PE', 'L1-L2', 'L2-L3', 'L3-L1'];
 export const METER_MAX = 999e6; // instrumentets största visning

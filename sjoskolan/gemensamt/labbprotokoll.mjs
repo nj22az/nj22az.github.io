@@ -1,5 +1,5 @@
 // Sjöskolan · labbprotokoll som fylls i medan simulatorn används.
-// Samma protokoll för alla simulerade stationer: kontroller före start, mätningar med förväntat och uppmätt värde,
+// Samma protokoll för alla simulerade stationer: kontroller före start, mätningar med elevens förutsägelse och uppmätt värde,
 // felsökning (observation → hypotes → kontroll), analys, utskrift, CSV och ett ifyllt exempel.
 // Beräkningsdelarna saknar DOM-beroenden och testas i labbprotokoll.test.mjs.
 // Texter kan ha innehållsmarkering (U_{L}) och visas med riktiga index. Ett index kan inte visas i ett inmatningsfält,
@@ -18,7 +18,7 @@ export function unitOf(text) {
   return m ? m[3].replace('u', 'µ') : '';
 }
 
-/** Avvikelse = uppmätt − förväntat, även i procent av förväntat värde. Olika enheter jämförs inte. */
+/** Avvikelse = uppmätt − förutsägelse, även i procent av förutsägelsen. Olika enheter jämförs inte. */
 export function deviation(expected, measured) {
   const e = parseNum(expected), u = parseNum(measured);
   if (!Number.isFinite(e) || !Number.isFinite(u)) return null;
@@ -35,7 +35,7 @@ export function fmtNum(v, digits = 3) {
   return v.toLocaleString('sv-SE', { minimumFractionDigits: d, maximumFractionDigits: d }).replace('-', '−');
 }
 
-/** Rimlighetskontroll av elevens egen avvikelse: stämmer den med uppmätt − förväntat? */
+/** Rimlighetskontroll av elevens egen avvikelse: stämmer den med uppmätt − förutsägelse? */
 export function deviationMatches(own, expected, measured) {
   const d = deviation(expected, measured), o = parseNum(own);
   if (d?.mismatch) return 'enhet';
@@ -46,7 +46,7 @@ export function deviationMatches(own, expected, measured) {
 
 export const ROW_FIELDS = [
   ['storhet', 'Mätstorhet'], ['punkter', 'Mätpunkter (röd / svart)'], ['drift', 'Driftläge och instrument'],
-  ['forv', 'Förväntat värde'], ['uppm', 'Uppmätt värde'], ['avv', 'Avvikelse (uppmätt − förväntat)'],
+  ['forv', 'Din förutsägelse'], ['uppm', 'Uppmätt värde'], ['avv', 'Avvikelse (uppmätt − förutsägelse)'],
   ['tol', 'Tolerans / gräns'], ['bed', 'Bedömning'], ['komm', 'Kommentar'],
 ];
 export const FAULT_FIELDS = [
@@ -56,7 +56,7 @@ export const FAULT_FIELDS = [
 export const BED = ['', 'Inom tolerans', 'Utanför tolerans', 'Kan inte avgöras'];
 export const HEAD = [['namn', 'Namn'], ['datum', 'Datum'], ['rigg', 'Rigg / simulatorläge']];
 
-// Storhet, mätpunkter och tolerans kommer från stationens mätplan och kan ändras. Förväntat värde skriver eleven själv.
+// Storhet, mätpunkter och tolerans kommer från stationens mätplan och kan ändras. Förutsägelsen skriver eleven själv.
 const SEEDED = ['storhet', 'punkter', 'tol'];
 const seedRow = (plan, row = {}) => { const r = { ...row }; for (const k of SEEDED) if (r[k] === undefined && plan[k]) r[k] = plan[k]; return r; };
 export function emptyData(def) {
@@ -80,8 +80,8 @@ export function missing(def, data) {
     if (['forv', 'uppm', 'avv', 'tol', 'bed'].some((k) => !String(r[k] || '').trim())) open.push(i + 1);
     else if (!/\d/.test(r.forv)) noNum.push(i + 1);
   });
-  if (open.length) out.push(`förväntat, uppmätt, avvikelse, tolerans och bedömning i mätning ${open.join(', ')}`);
-  if (noNum.length) out.push(`ett förväntat värde med siffror i mätning ${noNum.join(', ')}`);
+  if (open.length) out.push(`din förutsägelse, uppmätt värde, avvikelse, tolerans och bedömning i mätning ${open.join(', ')}`);
+  if (noNum.length) out.push(`ett tal i din förutsägelse i mätning ${noNum.join(', ')}`);
   if (def.faults) {
     const done = (data.faults || []).filter((f) => FAULT_FIELDS.every(([k]) => String(f[k] || '').trim())).length;
     if (done < (def.faultsRequired ?? 1)) out.push(`felsökning: minst ${def.faultsRequired ?? 1} helt ifylld rad`);
@@ -126,7 +126,7 @@ function formHTML(def, data, ro, idp) {
     h += def.checks.map((c) => (ro ? `<li><span class="lp-val">${data.checks?.[c.k] ? 'Klar' : 'Inte gjord'}</span> <span>${markHtml(c.text)}</span></li>` : `<li><label><input type="checkbox" data-p="checks.${c.k}"${data.checks?.[c.k] ? ' checked' : ''}> <span>${markHtml(c.text)}</span></label></li>`)).join('') + '</ul>';
   }
   if (def.rows?.length) {
-    h += `<h3>2. Mätningar</h3><p class="lp-help">${esc(def.rowsIntro || 'Skriv förväntat värde innan du mäter. Mät sedan i simulatorn och tryck ”Hämta avläsning”. Avvikelse = uppmätt − förväntat.')}</p><ol class="lp-rows">`;
+    h += `<h3>2. Mätningar</h3><p class="lp-help">${esc(def.rowsIntro || 'Skriv din förutsägelse innan du mäter. Mät sedan i simulatorn och tryck ”Hämta avläsning”. Avvikelse = uppmätt − förutsägelse.')}</p><ol class="lp-rows">`;
     def.rows.forEach((plan, i) => {
       const r = data.rows?.[i] || {};
       h += `<li class="lp-row" data-row="${i}"><div class="lp-row-head"><strong>Mätning ${i + 1}${plan.title ? ` · ${markHtml(plan.title)}` : ''}</strong>${plan.optional ? '<span class="lp-opt">frivillig</span>' : ''}`;
@@ -194,7 +194,7 @@ export function mountProtocol(root, def) {
     <form class="lp-form" autocomplete="off">${formHTML(def, data, false, def.key)}</form>
     <p class="lp-status"></p>
     ${def.example ? `<details class="lp-example"><summary>Visa ifyllt exempel</summary><p class="lp-help">${markHtml(def.example.note || 'Exemplet visar hur ett fullständigt protokoll kan se ut. Dina egna värden och formuleringar ska komma från din egen mätning.')}</p><div class="lp-form lp-ro">${formHTML(def, def.example, true, def.key + 'ex')}</div></details>` : ''}
-    <p class="lp-foot">${storageOK ? 'Det du skriver sparas bara i den här webbläsaren. Skriv ut eller spara som PDF för att lämna in.' : 'Webbläsaren tillåter inte lagring här. Skriv ut innan du stänger sidan.'} Ett simulerat protokoll är övning och underlag. Praktisk bedömning sker på en verklig rigg enligt lärarens plan.</p>`;
+    <p class="lp-foot">${storageOK ? 'Det du skriver sparas bara i den här webbläsaren. Skriv ut eller spara som PDF för att lämna in.' : 'Webbläsaren tillåter inte lagring här. Skriv ut innan du stänger sidan.'} Protokollet är en del av bedömningen. Spara det som PDF och lämna in det när inlämningen eller det praktiska provet ber om det.</p>`;
   root.setAttribute('aria-labelledby', `${def.key}-title`);
   const $ = (s) => root.querySelector(s);
   const msg = (t, warn = false) => { const el = $('.lp-msg'); el.textContent = t; el.classList.toggle('warn', warn); };
@@ -211,7 +211,7 @@ export function mountProtocol(root, def) {
     (def.rows || []).forEach((_, i) => {
       const r = data.rows[i] || {}, el = root.querySelector(`#${def.key}calc${i}`); if (!el) return;
       const d = deviation(r.forv, r.uppm), ok = deviationMatches(r.avv, r.forv, r.uppm);
-      el.textContent = ok === 'enhet' ? `Skriv förväntat och uppmätt med samma enhet (${d.mismatch.join(' och ')}).` : d && ok === false ? `Kontrollera: uppmätt − förväntat blir ${fmtNum(d.abs)}${d.rel === null ? '' : ` (${fmtNum(d.rel, 2)} %)`}.` : d && ok ? 'Stämmer med uppmätt − förväntat.' : '';
+      el.textContent = ok === 'enhet' ? `Skriv förutsägelse och uppmätt värde med samma enhet (${d.mismatch.join(' och ')}).` : d && ok === false ? `Kontrollera: uppmätt − förutsägelse blir ${fmtNum(d.abs)}${d.rel === null ? '' : ` (${fmtNum(d.rel, 2)} %)`}.` : d && ok ? 'Stämmer med uppmätt − förutsägelse.' : '';
       el.classList.toggle('warn', ok === false || ok === 'enhet');
     });
     const m = missing(def, data);
@@ -229,7 +229,7 @@ export function mountProtocol(root, def) {
   form.addEventListener('click', (e) => {
     const b = e.target.closest('.lp-fetch'); if (!b) return;
     const i = Number(b.dataset.row), r = data.rows[i];
-    if (!String(r.forv || '').trim()) { rowMsg(i, `Räkna först: skriv förväntat värde i mätning ${i + 1} innan du hämtar avläsningen.`, true); root.querySelector(`[data-p="rows.${i}.forv"]`).focus(); return; }
+    if (!String(r.forv || '').trim()) { rowMsg(i, `Räkna först: skriv din förutsägelse i mätning ${i + 1} innan du hämtar avläsningen.`, true); root.querySelector(`[data-p="rows.${i}.forv"]`).focus(); return; }
     const s = def.snapshot?.(def.rows[i], i);
     if (!s || s.error) { rowMsg(i, s?.error || 'Det finns ingen avläsning att hämta just nu.', true); return; }
     const t = new Date().toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });

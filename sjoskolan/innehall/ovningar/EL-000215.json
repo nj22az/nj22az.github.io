@@ -3,7 +3,7 @@
   "titel": "Felström i en förenklad beräkning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -23,7 +23,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En ideal 24 V-källa kortsluts av misstag genom en väg med den totala resistansen R = 0,10 Ω. Beräkna strömmen och ange varför svaret bara är en uppskattning.",
+    "fraga": "En 24 V-källa kortsluts av misstag. Kortslutningen har resistansen 0,10 Ω. a) Beräkna strömmen. b) Varför blir den verkliga strömmen mindre än din uträkning?",
     "samband": [
       "I = U/R_{total}"
     ],

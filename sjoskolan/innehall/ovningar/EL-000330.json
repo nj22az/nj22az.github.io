@@ -3,7 +3,7 @@
   "titel": "Larmar övervakningen?",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -98,7 +98,7 @@
         }
       ]
     },
-    "kallhanvisning": "v44_01 · övning 3 och 4",
+    "kallhanvisning": "Del 1, övning 1.3 och 1.4",
     "alias": "larm"
   }
 }

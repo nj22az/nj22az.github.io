@@ -3,7 +3,7 @@
   "titel": "Larm efter överlast",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -19,7 +19,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Överlastskyddet för en motor löser ut gång på gång. Föreslå två olika möjliga orsaker och vilken information som kan skilja dem åt.",
+    "fraga": "Motorns överlastskydd löser ut gång på gång. a) Ge två möjliga orsaker. b) Vad kan du mäta för att se vilken orsak det är?",
     "samband": [
       "Överlastlarm är ett symtom som kräver orsakssökning"
     ],

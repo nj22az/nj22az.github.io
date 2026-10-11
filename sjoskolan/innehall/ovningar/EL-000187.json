@@ -3,7 +3,7 @@
   "titel": "Förenklad felström",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -21,17 +21,17 @@
     ]
   },
   "uppgift": {
-    "fraga": "I en förenklad beräkning är U_{0} = 230 V och Zs = 0,46 Ω. Beräkna I_{k}.",
+    "fraga": "I en förenklad beräkning är U_{0} = 230 V och Z_{s} = 0,46 Ω. Beräkna I_{k}.",
     "samband": [
-      "I_{k} ≈ U_{0}/Zs"
+      "I_{k} ≈ U_{0}/Z_{s}"
     ],
-    "givet": "TN-system i land. Förenklad beräkning med U_{0} = 230 V och Zs = 0,46 Ω.",
+    "givet": "TN-system i land. Förenklad beräkning med U_{0} = 230 V och Z_{s} = 0,46 Ω.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "I_{k} är felströmmen, U_{0} den drivande spänningen och Zs impedansen i hela felslingan.",
+      "text": "I_{k} är felströmmen, U_{0} den drivande spänningen och Z_{s} impedansen i hela felslingan.",
       "status": "migrerad"
     },
     {

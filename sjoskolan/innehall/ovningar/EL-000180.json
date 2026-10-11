@@ -3,7 +3,7 @@
   "titel": "Kort funktionsbeskrivning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -25,7 +25,7 @@
     "samband": [
       "Tillstånd: vila, start, hållning och stopp"
     ],
-    "givet": "STOPP-knappen S0 (NC) ligger i serie med START-knappen S1, som i sin tur ligger parallellt med K1:s hållkontakt (NO). Returen är hel.",
+    "givet": "STOPP-knappen S0 är NC. START-knappen S1 är NO. K1:s hållkontakt (NO) ligger parallellt med S1. S0 ligger i serie före båda. Returen är hel.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
   },
   "ledtradar": [

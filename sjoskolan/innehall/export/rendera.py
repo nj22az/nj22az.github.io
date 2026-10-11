@@ -28,11 +28,25 @@ def svarsvarde(sv):
     elif a.split()[:1] and a.split()[0].isdigit():
         d = int(a.split()[0])
     elif round(v, 4) == v:                                   # redan ett kort tal: visa som det står
-        return (str(int(v)) if v == int(v) else str(v)).replace('-', '−').replace('.', ',')
+        return tusental((str(int(v)) if v == int(v) else str(v)).replace('-', '−').replace('.', ','))
     else:
         d = max(0, 2 - math.floor(math.log10(abs(v))))
     s = f'{round(v, d):.{d}f}'
-    return s.replace('-', '−').replace('.', ',')
+    return tusental(s.replace('-', '−').replace('.', ','))
+
+
+def tusental(s):
+    """Tusentalsmellanrum som i facittexten (1 500, 12 000), hårt mellanslag så att talet inte bryts."""
+    import re
+    m = re.fullmatch(r'(−?)(\d+)(,\d+)?', s)
+    if not m or len(m.group(2)) < 4:
+        return s
+    heltal = m.group(2)
+    grupper = []
+    while heltal:
+        grupper.insert(0, heltal[-3:])
+        heltal = heltal[:-3]
+    return m.group(1) + ' '.join(grupper) + (m.group(3) or '')
 
 
 def attr(text):

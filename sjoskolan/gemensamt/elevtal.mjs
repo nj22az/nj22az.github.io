@@ -43,4 +43,8 @@ export function sattMittD(d) {
   try { localStorage.setItem(DNYCKEL, String(d)); } catch { /* privat läge */ }
   return true;
 }
+// Från vecka 42 (beslut 11 oktober 2026): alla elever räknar med samma D i övningar, labbar och inlämningar.
+// Bara den slutliga tentamen får individuella värden. Samma tal i verktyg/inlamning/bygg.py och innehall/lib/berakningar.py.
+export const KURS_D = 12;
+export const kursD = () => KURS_D;
 export function harMittD() { try { return giltigt(Number(localStorage.getItem(DNYCKEL))); } catch { return false; } }

@@ -3,7 +3,7 @@
   "titel": "NO och NC",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -23,7 +23,7 @@
   "uppgift": {
     "fraga": "Vad betyder NO och NC när en apparat är ritad i opåverkat läge?",
     "samband": [
-      "NO = normalt öppen; NC = normalt sluten"
+      "Kontakter ritas i opåverkat läge (ingen trycker, spolen strömlös)"
     ],
     "givet": "Ingen har tryckt på något och spolen är strömlös.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."

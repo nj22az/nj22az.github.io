@@ -3,7 +3,7 @@
   "titel": "Hållningen uteblir",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "K1 drar när START hålls inne och släpper när knappen släpps. Vilken kontroll kan visa om felet sitter i hållvägen eller om det är matningen som inte räcker?",
+    "fraga": "K1 drar när du håller in START. K1 släpper när du släpper START. Felet kan sitta i hållvägen eller i matningen. Vilken mätning visar vilket det är?",
     "samband": [
       "Olika hypoteser ska ge olika kontrollresultat"
     ],
@@ -47,7 +47,7 @@
     }
   ],
   "losning": {
-    "text": "Mät källspänningen och spolspänningen medan START hålls in. Är båda rätt räcker matningen. Pröva sedan hållvägen spänningslöst: resistansen över K1:s NO-kontakt och dess ledare medan K1 påverkas enligt instruktionen. Nära 0 Ω betyder att hållvägen är hel, mycket hög resistans att den är bruten. Spänning över hållkontakten under START visar alltid ungefär 0 V, eftersom START ligger parallellt.",
+    "text": "1) Håll in START. Mät spänningen vid källan och över spolen. Är båda rätt, så räcker matningen.\n\n2) Gör kretsen spänningslös. Mät resistansen över K1:s hållkontakt och dess ledare medan K1 är påverkad.\n\n3) Nära 0 Ω: hållvägen är hel. Mycket hög resistans: hållvägen är bruten.\n\nObs: att mäta spänning över hållkontakten medan START är intryckt ger alltid ungefär 0 V, eftersom START ligger parallellt.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

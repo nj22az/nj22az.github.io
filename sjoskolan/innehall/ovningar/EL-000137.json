@@ -3,7 +3,7 @@
   "titel": "Regelval ombord",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -21,7 +21,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Du får ett fall om en elektrisk installation på ett fartyg. Vilka uppgifter behöver du innan du kan hänvisa till rätt TSFS?",
+    "fraga": "Du ska ta reda på vilka regler för el som gäller på ett fartyg. Vilka uppgifter om fartyget behöver du först?",
     "samband": [
       "Regelval bygger på fartygsdata"
     ],
@@ -31,7 +31,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Fartygstyp, storlek, trafik, byggnadsdata och vilket system det gäller påverkar vilka föreskrifter som gäller.",
+      "text": "En föreskrift gäller bara för vissa fartyg och viss utrustning. Det står i föreskriftens tillämpningsområde.",
       "status": "migrerad"
     },
     {
@@ -41,7 +41,7 @@
     },
     {
       "niva": "nasta-steg",
-      "text": "1) Tänk på vad som skiljer fartyg åt i regelverket: typ, storlek, fartområde, byggår. 2) Vilket system gäller fallet? 3) Förklara hur du med de uppgifterna kontrollerar tillämpningsområdet i föreskriften. Gissa ingen paragraf.",
+      "text": "1) Läs tillämpningsområdet i en föreskrift: vad står det om fartyget? 2) Vilket system gäller fallet? 3) Förklara hur du med de uppgifterna kontrollerar tillämpningsområdet i föreskriften. Gissa ingen paragraf.",
       "status": "utkast"
     }
   ],

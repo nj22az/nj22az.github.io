@@ -3,7 +3,7 @@
   "titel": "Selektivitetsfall",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -19,7 +19,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Ett fel i en undercentral gör att både gruppskyddet och huvudskyddet löser ut. Vad behöver utredas?",
+    "fraga": "Ett fel i en undercentral (en mindre elcentral längre ut i nätet) gör att två skydd löser: gruppskyddet och huvudskyddet. Bara gruppskyddet borde ha löst. Vad behöver du ta reda på?",
     "samband": [
       "Vilket skydd borde ha löst?"
     ],
@@ -44,7 +44,7 @@
     }
   ],
   "losning": {
-    "text": "Selektiviteten mellan gruppskydd och huvudskydd. Det krävs tillverkarens ström–tidskurvor och den möjliga felströmmen.",
+    "text": "Om skydden är selektiva, det vill säga om bara det närmaste skyddet löser. Du behöver tillverkarens kurvor för hur snabbt varje skydd löser och hur stor felströmmen kan bli.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

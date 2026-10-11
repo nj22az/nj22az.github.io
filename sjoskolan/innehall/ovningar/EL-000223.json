@@ -3,7 +3,7 @@
   "titel": "Skillnad mellan instrument",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Instrument A visar 10,00 ±0,10 V och B visar 10,12 ±0,10 V. Bevisar skillnaden i sig att ett av instrumenten är fel?",
+    "fraga": "Två instrument mäter samma spänning. A visar 10,00 V ±0,10 V. B visar 10,12 V ±0,10 V. Måste ett av instrumenten vara fel?",
     "samband": [
       "Intervall = visning ± angiven gräns"
     ],
@@ -47,7 +47,7 @@
     }
   ],
   "losning": {
-    "text": "A: 9,90–10,10 V. B: 10,02–10,22 V. Intervallen överlappar mellan 10,02 och 10,10 V, så skillnaden bevisar inte att något instrument är fel.",
+    "text": "Nej. A: 9,90–10,10 V. B: 10,02–10,22 V. Intervallen överlappar mellan 10,02 och 10,10 V, så skillnaden bevisar inte att något instrument är fel.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

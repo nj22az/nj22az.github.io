@@ -3,7 +3,7 @@
   "titel": "Samma relä",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -21,7 +21,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "K1 står vid en spole och vid en kontakt på en annan schemasida. Vad ska beteckningen hjälpa dig att förstå?",
+    "fraga": "K1 står vid en spole på en sida och vid en kontakt på en annan sida i schemat. Vad betyder det att båda heter K1? Hur hittar du den andra delen?",
     "samband": [
       "Objektbeteckningen kopplar samman apparatens delar"
     ],

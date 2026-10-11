@@ -164,7 +164,95 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     Samma rubrik styr Öva nu och Ledtråd 1; saknad eller tvetydig rubrik stoppar exporten.
     *Kontroll: `innehall/tests/test_delsidor_veckor.py`.*
 
+48. **Sambandet under frågan får inte innehålla svaret.** Övning 2.2 i vecka 42 frågade vilken utgåva som gäller, och
+    sambandsraden ”Utgåvans grund: SS-EN 50110-1 utgåva 4:2024” stod direkt ovanför på sidan och på stödbilden. Samband,
+    givet och stödbildens text räknas som ledtrådar (regel 1). *Manuell kontroll.*
+
+49. **En ja/nej-fråga ska ha ett säkert svar.** Inlämning 2 b i vecka 43 frågade ”Löser jordfelsbrytaren?” vid 22 mA.
+    En 30 mA-jordfelsbrytare måste lösa vid 30 mA men får lösa redan över 15 mA, så frågan saknade svar. Fråga efter det som
+    gäller säkert (”Måste den lösa?”) och räkna igenom kursens D (D = 12) och gränsfallen innan frågan publiceras. *Manuell kontroll.*
+
+50. **Ett mätvärde i en uppgift ska gå att mäta med det angivna instrumentet.** Analysuppgiften i vecka 44 gav pumpen 20,12 V på en
+    voltmeter med upplösningen 0,1 V, och R_{efter} = 0,10 Ω var mindre än sin egen osäkerhet (±0,11 Ω). Isolationslabbet lät provaren
+    driva 10 mA genom 50 kΩ vid 500 V, vilket en verklig isolationsprovare inte orkar. Kontrollera upplösning, felgräns och instrumentets
+    största ström, och att ett beräknat resultat är klart större än sin osäkerhet. *Manuell kontroll.*
+
 ## Ändringar
+
+- **2026-10-11** Inlämningsuppgifterna EL-000801–828 har kursplanens punkter som de faktiskt tränar. Tidigare var de satta
+  mekaniskt (beräkning = LM-4, resonemang = LM-2 + LM-7), så veckornas översikt visade fel punkter.
+
+- **2026-10-11** Färgkod efter kursplanens fyra områden (komponenter, elsäkerhet och regler, mätning och analys,
+  felsökning och dokumentation) på veckosidorna och startsidans moduler; startsidan byggs nu av
+  `verktyg/startsida/bygg.py`. Veckosidorna 42–45: ”Klart” på varje steg styr vilket steg som är nu, och bara det
+  stegets knapp är blå. Löptext på delsidor och genomgångar har radavstånd 1,8 (Zenn). Se DESIGN.md.
+- **2026-10-11** Färre dokument och en tydlig handling: alla veckor utom vecka 40 är en numrerad väg med en knapp per
+  del (”Öppna del N”; delsidan har teori, exempel, övningar och bildspelet), labben och ”Gör inlämningen”. Rutan
+  ”Nästa steg” överst visar steget att göra nu. Film, extra läsning och fördjupning ligger under ”Mer”. Kursplanens
+  punkter fälls ut på begäran.
+- **2026-10-11** Granskningen av vecka 44 (och del 4 Analys av mätresultat) rättad. Formelstöd-sidorna i `vecka-44/` och `vecka-45/` följer
+  nu presentationerna och delsidorna (de gamla exemplen gav svaren på övning 1.8 och 2.4 och på 2.5 i del 4; regel 2 och 12), och
+  strömtransformatorexemplet är 400/5 A vid 320 A = 4,0 A överallt (bild 24, figur, delsida, bildspel, Formelstöd), så att det inte är
+  ledtrådens räkning i övning 2.4. Tolv ledtrådar och samband som gav svaret är omskrivna (regel 1 och 48), också Ledtråd 3 i 2.10, 3.10
+  och 2.8 (del 4) som räknade upp facit. Nedsänkta index i posterna och nya beteckningar Z_{s}, U_{0}, k_{I}, R_{p}, R_{fram}/R_{retur},
+  ΔU_{fram} med flera, x_{max}/x_{min} och û_{visad}, med de ihopskrivna formerna i `avradda`; IT-nät har en exakt definition och
+  ström–tidskurva ett stavsätt. Isolationslabbet räknar fartygets nät med 60 Hz (I_{fel} = 287 mA i uppgiften och protokollet), felsvaret
+  95,8 mA förklaras med rätt fysik, den skadade kabeln har 0,5 MΩ (1,0 mA, som en verklig provare klarar) och hänvisningarna säger
+  ”Del 1, övning 1.4” i stället för v44_01-koder. Labbprotokollet (alla labbar) har kolumnen ”Din förutsägelse” (regel 6) och säger att
+  protokollet ingår i bedömningen och lämnas in som PDF; ny cacheversion i alla labbar som använder det. Analysuppgiften (inlämningen)
+  har mätbara värden: pumpen (20,0 + D/10) V före och 22,5 V efter, strömmen 6,0 och 6,4 A (regel 50). Formelbladet gav svaren på 1.8,
+  2.4 och 3.3 och har nya exempel. Lärarkopiorna (v44_01–03, v45_02, lärarguiden) och boken är inte uppdaterade (kräver
+  LARARLOSEN/BOKLOSEN): revidera EL-000181–184, 187–190, 194, 195, 197, 199–201, 204, 207–210, 221, 223, 225, 226, 228–230, 329–336,
+  410 och 826 igen med de skyddade filerna öppna, och kontrollera lärarfacit för EL-000825 (protokollets I_{fel} = 287 mA vid 60 Hz) och
+  EL-000826.
+
+- **2026-10-11** Granskningen av vecka 43 (och del 4 Systematisk felsökning) rättad. Delsidorna räknar de flyttade delarna
+  (`veckans_delar` ur `FLYTTAD` i delsidor_veckor.py): vecka 43 har del 1–4 och vecka 44 del 1–5, och del 3 leder vidare till
+  del 4 i `vecka-45/`. Övning 2.3 (tvåpolig, 3 000 r/min), 2.5 (1 430 r/min, 4,7 %) och 2.7 (440 V ombord, Δ/Y 254/440 och
+  440/760 V) gav inte längre inlämning 1:s svar (regel 2); Y/Δ-bilden i v43_02 räknar på 690/1 200 V. Facit i 1.5 och 2.2 svarar
+  på hela frågan, sju ledtrådar och samband gav svaret (regel 1, 48), index i U_{spole}, U_{kontakt}, R_{extra} och I_{Δ}
+  (ny i beteckningar.json), Hållkretslabbet hänvisar till ”Genomgång del 3, avsnitt …” och ”Del 3, övning 3.7” i stället för
+  v43_03-koder. Inlämning 2 b frågar ”Måste jordfelsbrytaren lösa?” (regel 49), D = 12 i postens parameter (vecka 43 inlämning 1–2, vecka 44 inlämning 2, analysuppgiften i vecka-45/).
+  Övning 1.2 i felsökningen och teoribilden nämner fem funktioner (minst fyra efterfrågas), ”lågimpediv” är borta, facit visar
+  tusental med mellanrum (1 500) och förlusten i 2.9 med en decimal. Sjutton frågor och lösningar med enklare svenska.
+  Lärarkopiorna (v43_01–03, v45_01, lärarguiden) och boken är inte uppdaterade (kräver LARARLOSEN/BOKLOSEN): revidera
+  EL-000153–155, 157–159, 162, 163, 165, 167, 169–174, 176–180, 212–215, 217–220, 321–328, 820, 821, 824 och 826 igen
+  med de skyddade filerna öppna.
+
+- **2026-10-11** Granskningen av vecka 42 rättad. Exemplen gav övningarnas svar (regel 2): riskpoängen är nu 5 · 3 = 15 och
+  2 · 3 = 6 överallt (övningssidan hade en äldre version), Del 1 E1 en vinkelslip med klämd kabel (ny figur), E2 ett böjt
+  låsbleck och Del 2 E1 en landanslutning. Övning 2.2 har nytt samband (regel 48), 1.3 skriver V_{A} och V_{B} (potential)
+  och 2.7:s ledtrådar listar inte längre svaret. Femton övningar och inlämning 2 med enklare svenska; inlämning 2 d nämner
+  säkringen eller dvärgbrytaren, inlämning 3 mäter på en utgående grupp i huvudtavlan, D = 12 i postens parameter.
+  Nya förkortningar (UPS, TSFS, SEK, SS-EN, IEC, ESA, AMS, HLR, TMAS, SOLAS, TN, C/E, ETO, SMS, V_{A}); VA och kvar räknas bara
+  efter ett tal, så att ”finns kvar” och V_{A} inte ger enhetskort. Avklippt text i figurerna till 1.4 och riskmatrisen
+  rättad (`figs42.py`). Lärarkopiorna (v42_01–03, lärarguiden) och boken är inte uppdaterade (kräver LARARLOSEN/BOKLOSEN):
+  revidera EL-000123, 126, 131–134, 137–140, 142, 144, 145, 148–150, 818 och 819 igen med de skyddade filerna öppna.
+
+- **2026-10-11** Enklare veckosidor. Vecka 42–45 är en enda numrerad väg (lektion online → hemma → labb → inlämning,
+  `enkel_vecka` i bygg.py) i stället för fyra listor med samma delar. Kursplanens punkter visas med enkla ord (`ENKEL` i
+  `kursplan.py`; den formella texten när man pekar på koden) och med var punkten tränas. Vecka 45 har egna rubriker per steg.
+
+- **2026-10-11** Från vecka 42 räknar alla elever med samma D = 12 (`KURS_D` i `gemensamt/elevtal.mjs`,
+  `verktyg/inlamning/bygg.py` och `innehall/lib/berakningar.py`): inlämningssidorna 42–45 visar D = 12 i stället för
+  namnrutan och Motorlabbet använder `kursD()`. Bara den slutliga tentamen får individuella värden. Vecka 38–41 är
+  oförändrade (redan inlämnade med eget D). Lärarguidens facit: räkna med D = 12.
+
+- **2026-10-11** EL-000213 (Mittpunkt, felsökning) hade fel facit: B har 0 V, så felet ligger mellan källan och B, inte
+  efter B. Rättat i posten och på delsidan och övningssidan. Boken (bok.enc) och lärarkopian av v45_01 är inte
+  uppdaterade (kräver BOKLOSEN/LARARLOSEN); revidera posten igen med de skyddade filerna öppna.
+
+- **2026-10-11** Varje veckosida har en översikt efter kursplanens punkter LM-1–9 (`verktyg/veckosidor/kursplan.py`):
+  vilka punkter veckan tränar, och för varje punkt delarna, labben och inlämningsuppgifterna, med elevens avbockade
+  övningar. Kopplingen kommer ur övningsposternas `larande.mal` och placeringarna. Vecka 40 är upplåst (beslut: kurswebben
+  görs om); låstestet hoppar över när låset saknas. Vecka 41:s e-posttext (protokoll som foton) ligger nu i generatorn.
+
+- **2026-10-11** Vecka 45:s delar flyttade: felsökning till vecka 43 (del 4), analys och repetition till vecka 44
+  (del 4–5); filerna ligger kvar i `vecka-45/` och veckorna länkar dit (`'delsida'`, `FLYTTAD` i delsidor_veckor.py).
+  Vecka 45 är tentamensvecka med skriftlig tentamen online och praktiskt prov i simulatorerna (`praktiskt-prov.html`)
+  med muntlig avstämning. Lektionerna från vecka 42 står som online. Inga notiser om distans eller flyttat innehåll:
+  hela kursen ges på distans och inlämningarna visar vad som ska göras. Startsidan är en översikt över elva moduler.
+  Tentamens veckotabell visar veckorna eleven ser (38–44), inte mappnumren.
 
 - **2026-10-06** PR #115 återapplicerad på aktuell main: explicita teorikort för alla 150 övningar vecka 41–45,
   bevarade kontrollfrågor och senare innehåll. Delsidorna ombyggda från källan; aktuell CI kompletterad med

@@ -3,7 +3,7 @@
   "titel": "Efter åtgärd",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En ledningsanslutning har åtgärdats. Vilka kontroller behövs innan rapporten säger ”klart”?",
+    "fraga": "En anslutning är lagad. Vad måste du kontrollera innan du skriver ”klart” i rapporten?",
     "samband": [
       "Återgång kräver verifiering efter åtgärd"
     ],
@@ -32,7 +32,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "För att säga ”klart” behövs en funktionskontroll under de förhållanden då felet uppstod, de föreskrivna säkerhetskontrollerna och en dokumenterad överlämning.",
+      "text": "Tänk på tre saker: fungerar det nu? Är det säkert? Vet nästa person vad som är gjort?",
       "status": "migrerad"
     },
     {
@@ -47,7 +47,7 @@
     }
   ],
   "losning": {
-    "text": "Funktion i rätt driftfall, föreskrivna säkerhetskontroller (till exempel anslutning och skyddsledare) och dokumenterad återlämning. Det som inte provats skrivs som oprövat.",
+    "text": "1) Prova att funktionen fungerar när det är som felet brukade synas. 2) Gör de säkerhetskontroller som föreskrivs, till exempel att anslutningen och skyddsledaren är hela. 3) Skriv vad du har gjort och lämna tillbaka anläggningen. Skriv också vad du inte har provat.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

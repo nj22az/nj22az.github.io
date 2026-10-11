@@ -3,7 +3,7 @@
   "titel": "Hållning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -31,7 +31,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "När K1 drar sluter dess NO-kontakt, och den kan hålla kvar matningen när START går tillbaka till öppet läge.",
+      "text": "Vad händer med strömvägen till spolen när du släpper START? Vilken kontakt ändrar läge när K1 drar?",
       "status": "migrerad"
     },
     {

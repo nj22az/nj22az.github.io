@@ -3,7 +3,7 @@
   "titel": "Saknade uppgifter",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Till ett arbete i en högspänningsanläggning finns varken enlinjeschema eller uppgift om reservmatning. Vilka två osäkerheter uppstår?",
+    "fraga": "Du ska arbeta i en högspänningsanläggning. Det finns inget enlinjeschema. Ingen vet om det finns reservmatning. Vilka två saker kan du då inte veta säkert?",
     "samband": [
       "Enlinjeschema och matningsdata behövs för avgränsning"
     ],
@@ -30,7 +30,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Utan schema över matningar och källor vet du inte hur anläggningen är kopplad eller om spänningen kan komma tillbaka.",
+      "text": "Ett enlinjeschema visar hur anläggningen matas. Uppgiften om reservmatning visar om det finns fler källor.",
       "status": "migrerad"
     },
     {

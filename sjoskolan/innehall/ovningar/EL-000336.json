@@ -3,7 +3,7 @@
   "titel": "Isolationsprovning: skadad kabel",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En kabel med skadad mantel har 50 kΩ mellan L2 och PE. Vilken läckström visar provaren vid 500 V? Svara i mA."
+    "fraga": "En kabel med skadad mantel har 0,5 MΩ mellan L2 och PE. Vilken läckström visar provaren vid 500 V? Svara i mA."
   },
   "referenser": {
     "ursprung": [
@@ -36,16 +36,16 @@
   "ledtradar": [
     {
       "niva": "metod",
-      "text": "I = U_{prov}/R. 50 kΩ = 50 000 Ω.",
+      "text": "I = U_{prov}/R. 0,5 MΩ = 500 000 Ω.",
       "status": "migrerad"
     }
   ],
   "losning": {
-    "text": "I = 500/50 000 = 0,010 A = 10 mA. Mycket över det en frisk kabel läcker. L2 ligger långt under en gräns på 1 MΩ.",
+    "text": "I = 500/500 000 = 0,001 A = 1,0 mA. Det är mycket mer än en frisk kabel läcker, och L2 ligger under gränsen 1 MΩ. En verklig provare ger bara några mA. Vid mycket lägre resistans orkar den inte hålla 500 V.",
     "svar": [
       {
         "storhet": "I_{läck}",
-        "varde": 10,
+        "varde": 1.0,
         "tolerans": {
           "rel": 0.02
         },
@@ -62,7 +62,7 @@
       "enhet": "V"
     },
     "R": {
-      "varde": 50000,
+      "varde": 500000,
       "enhet": "Ω"
     }
   },
@@ -71,7 +71,7 @@
     "validering": {
       "typ": "numerisk",
       "funktion": "isolationslabbet.forvantat",
-      "facit": 10
+      "facit": 1.0
     },
     "initial": {
       "del": "prov",
@@ -90,12 +90,16 @@
     "aterkoppling": {
       "vanliga_fel": [
         {
-          "varde": 0.01,
-          "text": "Svaret ska vara i mA. 0,01 A = 10 mA."
+          "varde": 0.001,
+          "text": "Svaret ska vara i mA. 0,001 A = 1,0 mA."
+        },
+        {
+          "varde": 1000,
+          "text": "Räkna om 0,5 MΩ till 500 000 Ω innan du delar."
         }
       ]
     },
-    "kallhanvisning": "v44_03 · övning 3",
+    "kallhanvisning": "Del 3, övning 3.3",
     "alias": "kabel"
   }
 }

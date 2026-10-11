@@ -5,7 +5,7 @@ export const UPPGIFTER = [
   "id": "vila",
   "ovning": "EL-000321",
   "title": "Vila: efter STOPP",
-  "deck": "v43_03 · bild 8 och 22",
+  "deck": "Genomgång del 3, avsnitt 4 och 6",
   "steps": [
    {
     "black": "N",
@@ -22,7 +22,7 @@ export const UPPGIFTER = [
    "meter",
    "nodes"
   ],
-  "hint": "S0 är sluten, så a har samma potential som +U. Returen håller 0 V-sidan på 0 V.",
+  "hint": "Vilka kontakter ligger mellan +U och a? Är de öppna eller slutna? Ingen ström betyder inte automatiskt ingen spänning.",
   "solution": "a är förbunden med +24 V genom den slutna S0. U = 24 − 0 = 24 V, trots att ingen ström går.",
   "mistakes": [
    {
@@ -35,7 +35,7 @@ export const UPPGIFTER = [
   "id": "start",
   "ovning": "EL-000322",
   "title": "Start: över spolen",
-  "deck": "v43_03 · övning 7",
+  "deck": "Del 3, övning 3.7",
   "steps": [
    {},
    {
@@ -53,7 +53,7 @@ export const UPPGIFTER = [
    "nodes"
   ],
   "hint": "Vilka punkter är förbundna med +U, och vilka med 0 V? Spolen är kretsens enda resistans.",
-  "solution": "b har +24 V via S0 och S1, c har 0 V via returen. Uspole = 24 − 0 = 24 V.",
+  "solution": "b har +24 V via S0 och S1, c har 0 V via returen. U_{spole} = 24 − 0 = 24 V.",
   "mistakes": [
    {
     "v": 12,
@@ -69,7 +69,7 @@ export const UPPGIFTER = [
   "id": "strom",
   "ovning": "EL-000323",
   "title": "Spolens ström",
-  "deck": "v43_03 · övning 7 och formelbladet",
+  "deck": "Del 3, övning 3.7 och formelbladet",
   "steps": [
    {},
    {
@@ -82,7 +82,7 @@ export const UPPGIFTER = [
   "task": "K1 håller efter start. Spolen har resistansen 480 Ω och matningen är 24 V. Beräkna spolströmmen i mA.",
   "ask": {
    "key": "I",
-   "label": "Ispole",
+   "label": "I_{spole}",
    "unit": "mA"
   },
   "mask": [
@@ -107,7 +107,7 @@ export const UPPGIFTER = [
   "id": "stopp",
   "ovning": "EL-000324",
   "title": "Över den öppna STOPP",
-  "deck": "v43_03 · övning 8",
+  "deck": "Del 3, övning 3.8",
   "steps": [
    {},
    {
@@ -142,7 +142,7 @@ export const UPPGIFTER = [
   "id": "hall",
   "ovning": "EL-000325",
   "title": "Fel: K1 håller inte",
-  "deck": "v43_03 · bild 8",
+  "deck": "Genomgång del 3, avsnitt 4",
   "steps": [
    {
     "fault": "hall"
@@ -181,7 +181,7 @@ export const UPPGIFTER = [
   "id": "retur",
   "ovning": "EL-000326",
   "title": "Fel: bruten retur",
-  "deck": "v43_03 · bild 22",
+  "deck": "Genomgång del 3, avsnitt 6",
   "steps": [
    {
     "fault": "retur"
@@ -215,7 +215,7 @@ export const UPPGIFTER = [
   "id": "hallning",
   "ovning": "EL-000327",
   "title": "Hållning: över hjälpkontakten",
-  "deck": "v43_03 · övning 3",
+  "deck": "Del 3, övning 3.3",
   "steps": [
    {},
    {
@@ -250,7 +250,7 @@ export const UPPGIFTER = [
   "id": "avbrott",
   "ovning": "EL-000328",
   "title": "Efter strömavbrott",
-  "deck": "v43_03 · bild 9",
+  "deck": "Del 3, exempel 1: Hållkretsens start",
   "steps": [
    {},
    {

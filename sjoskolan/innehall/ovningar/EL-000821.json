@@ -3,12 +3,14 @@
   "titel": "Skyddsdata",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 1,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
+      "LM-1",
+      "LM-2",
       "LM-4"
     ],
     "niva": "tillampning",
@@ -25,7 +27,7 @@
       },
       {
         "id": "b",
-        "text": "Utgående ström är 8,000 A och returströmmen (7,990 − D/1 000) A. Beräkna differensströmmen. Löser jordfelsbrytaren?"
+        "text": "Utgående ström är 8,000 A och returströmmen (7,990 − D/1 000) A. Beräkna differensströmmen och jämför med märkvärdet 30 mA. Måste jordfelsbrytaren lösa?"
       },
       {
         "id": "c",
@@ -54,7 +56,7 @@
   "parametrar": {
     "D": {
       "varde": "D",
-      "beskrivning": "Elevens tal: dagen i månaden eleven är född, 1–31"
+      "beskrivning": "Kursens tal: alla elever räknar med D = 12 från vecka 42 (KURS_D i gemensamt/elevtal.mjs)"
     }
   },
   "losning": {
