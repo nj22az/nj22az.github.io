@@ -9,6 +9,17 @@ came with it: *"don't take or make shortcuts when making the world"* (CLAUDE.md)
 The audit is written as a 1990s Japanese ship-construction surveyor would write it for a small island car ferry
 (小型カーフェリー) inspected by the government (JG) for smooth-water service (平水区域).
 
+
+> **Decision, the creator, 2026-10-11 (supersedes the size in sections 2 and 4):** asked to choose between keeping this
+> 22 m, three-car Minato Maru in today's harbour and a bigger ship with a bigger harbour, the creator chose **"Bigger
+> ship, bigger harbour"**, keeping the name **Minato Maru (みなと丸)**; and answered yes to **crossings in real time
+> with a doze option** and to **walking freely into the bridge and the engine room**. The bigger ship's particulars,
+> machinery, electrics and harbour changes are in `briefs/ferry-audit.md` (about 34.5 × 8.4 m, 10 cars or 2 trucks and
+> 5 cars, 100 passengers, the breakwater moved seaward and the outer pier lengthened). The work below (the model's
+> construction, the crew, the paths, the look tool and the checks) carries over and is grown to that size, not thrown
+> away. **One session builds the ferry at a time:** before ferry work, fetch the branch and read the latest commits on
+> `src/world/ferry*` and this file.
+
 ## 1. Findings on the old ferry (ferry.js before this change)
 
 | # | Finding | Severity |

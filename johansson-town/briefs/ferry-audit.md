@@ -1,5 +1,11 @@
 # The Minato–Kitano-jima ferry: a shipbuilder's audit
 
+> **Read with `docs/FERRY-AUDIT.md`** (the plan another session built the Minato Maru from, 22 m, on 2026-10-10). This
+> audit looked at the older 15 m launch. The creator's decisions of 2026-10-11 (bigger ship and harbour, the name Minato
+> Maru, real-time crossings with a doze option, the bridge and engine room open to walk in) are recorded at the top of
+> that file; this file supplies the bigger ship's particulars, electrics, crew additions and batch plan.
+
+
 Written 2026-10-10 for NEXT.md §1, as a 1990s Japanese ship-construction engineer would audit a small island car-and-passenger
 ferry (フェリー) built to JG / NK rules. Read only: no code was changed. The evidence is the World code, measurements taken
 in the running game (the `johansson-town-audit` MCP server and a Playwright run of the same build), and ten small
