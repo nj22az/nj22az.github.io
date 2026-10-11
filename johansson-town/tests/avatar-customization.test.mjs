@@ -16,9 +16,11 @@ test('new controls clamp, survive saving and preserve older recipes',()=>{
  const old=normalizeRecipe({hair:{style:'longbraids'},accessories:{colour:'#112233'}});
  assert.equal(old.hair.length,0);assert.equal(old.hair.volume,.5);assert.equal(old.glasses.enabled,true);assert.equal(old.accessories.necklaceColour,'#112233');
 });
+// (Thuan's own hair is her classic braids again; the long braids are built here on purpose.)
+const LONG_BRAIDS={...CAST_RECIPES.Thuan.hair,style:'longbraids',length:.92,volume:.7};
 test('braid length moves mesh and spring endpoints together at all body sizes',()=>{
  for(const age of ['child','teen','adult','elder'])for(const length of [0,.5,1]){
-  const r=normalizeRecipe({...CAST_RECIPES.Thuan,age,hair:{...CAST_RECIPES.Thuan.hair,length}}),m=measure(r),a=buildAvatar(r,{shadows:false});
+  const r=normalizeRecipe({...CAST_RECIPES.Thuan,age,hair:{...LONG_BRAIDS,length}}),m=measure(r),a=buildAvatar(r,{shadows:false});
   for(const side of [-1,1]){
    const points=longBraidPoints(m,side,r.hair),chain=a.springSetup.chains.find(c=>c.bones[0]==='braid'+(side===1?'L':'R')+'1');
    assert.deepEqual(chain.tip,points[2]);
@@ -29,7 +31,7 @@ test('braid length moves mesh and spring endpoints together at all body sizes',(
  }
 });
 test('braid volume changes visible geometry with a fixed vertex budget',()=>{
- const avatars=[0,1].map(volume=>buildAvatar({...CAST_RECIPES.Thuan,hair:{...CAST_RECIPES.Thuan.hair,volume}},{shadows:false}));
+ const avatars=[0,1].map(volume=>buildAvatar({...CAST_RECIPES.Thuan,hair:{...LONG_BRAIDS,volume}},{shadows:false}));
  const [fine,full]=avatars.map(a=>a.body.geometry.attributes.position);
  assert.equal(fine.count,full.count);let moved=0;for(let i=0;i<fine.array.length;i++)if(Math.abs(fine.array[i]-full.array[i])>.0001)moved++;
  assert.ok(moved>1000);avatars.forEach(a=>a.dispose());
