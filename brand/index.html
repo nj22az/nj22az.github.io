@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logo – Johansson</title>
+  <meta name="description" content="The Johansson logo: animated and still versions for the web, video, print and social.">
+  <link rel="canonical" href="https://nj22az.github.io/brand/">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/brand/johansson-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="/theme-bootstrap.js?v=random-2"></script>
+  <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
+  <script src="/assets/brand/johansson-logo.js" defer></script>
+  <style>
+    .brand-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); margin: 24px 0 48px; }
+    .brand-card { border-radius: 16px; padding: 28px 24px 20px; display: flex; flex-direction: column; gap: 18px; border: 1px solid rgba(139, 119, 101, 0.15); }
+    .brand-card.on-light { background: #f5f0e8; color: #3d3a37; }
+    .brand-card.on-dark { background: #1f1d1b; color: #f5f0e8; }
+    .brand-stage { min-height: 160px; display: grid; place-items: center; cursor: pointer; }
+    .brand-card h3 { margin: 0; font-size: 1rem; }
+    .brand-card p { margin: 0; font-size: .9rem; opacity: .75; }
+    .brand-links { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: .85rem; }
+    .brand-links a { color: inherit; }
+    .brand-section { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+    .brand-section video, .brand-section img.preview { width: 100%; height: auto; border-radius: 12px; display: block; }
+    .brand-code { background: #edeae2; color: #3d3a37; border-radius: 12px; padding: 16px; overflow-x: auto; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <nav id="site-nav" class="site-nav"></nav>
+
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="page-eyebrow">Brand</div>
+      <h1>The Johansson logo</h1>
+      <p>A stamped ring, a J and the name, drawn as one pen line. It writes itself in two seconds and then holds still. Tap any logo to play it again.</p>
+    </section>
+
+    <div class="brand-section">
+      <h2>Logo files</h2>
+      <div class="brand-grid" id="brand-grid"></div>
+
+      <h2>Video</h2>
+      <div class="brand-grid">
+        <div class="brand-card on-light">
+          <video src="/assets/brand/export/johansson-intro-1080p.mp4" muted playsinline autoplay loop></video>
+          <h3>Intro, 1080p</h3>
+          <p>For the start or end of a video, a slide or a social post.</p>
+          <div class="brand-links">
+            <a href="/assets/brand/export/johansson-intro-1080p.mp4" download>MP4 cream</a>
+            <a href="/assets/brand/export/johansson-intro-1080p-on-dark.mp4" download>MP4 dark</a>
+            <a href="/assets/brand/export/johansson-intro-1080p-alpha.webm" download>WebM transparent</a>
+            <a href="/assets/brand/export/johansson-intro-1080p.gif" download>GIF</a>
+          </div>
+        </div>
+        <div class="brand-card on-dark">
+          <video src="/assets/brand/export/johansson-lower-third-alpha.webm" muted playsinline autoplay loop></video>
+          <h3>Lower third, transparent</h3>
+          <p>Lay it over footage in the bottom-left corner.</p>
+          <div class="brand-links">
+            <a href="/assets/brand/export/johansson-lower-third-alpha.webm" download>WebM transparent</a>
+          </div>
+        </div>
+        <div class="brand-card on-light">
+          <video src="/assets/brand/export/johansson-mark-square.mp4" muted playsinline autoplay loop></video>
+          <h3>Mark, square</h3>
+          <p>Profile pictures, app icons and stories.</p>
+          <div class="brand-links">
+            <a href="/assets/brand/export/johansson-mark-square.mp4" download>MP4</a>
+            <a href="/assets/brand/export/johansson-mark-square.gif" download>GIF</a>
+            <a href="/assets/brand/export/johansson-mark-1080.png" download>PNG 1080</a>
+            <a href="/assets/brand/export/johansson-stacked-transparent.png" download>PNG stacked, transparent</a>
+          </div>
+        </div>
+      </div>
+
+      <h2>On a web page</h2>
+      <p>Add the script once, then place the logo anywhere. It takes its colours from the page.</p>
+<pre class="brand-code"><code>&lt;script src="https://nj22az.github.io/assets/brand/johansson-logo.js" defer&gt;&lt;/script&gt;
+
+&lt;johansson-logo layout="horizontal" replay style="width:240px"&gt;&lt;/johansson-logo&gt;
+
+&lt;!-- layout: horizontal | stacked | mark | wordmark · static: no drawing --&gt;
+&lt;style&gt; johansson-logo { --jl-ink: currentColor; --jl-accent: #3ea88c; } &lt;/style&gt;</code></pre>
+      <p>Or use a file directly: <code>&lt;img src="/assets/brand/johansson-horizontal-animated.svg" alt="Johansson"&gt;</code>.</p>
+
+      <h2>Colours</h2>
+      <p>Teal <code>#3ea88c</code> for the mark, warm ink <code>#3d3a37</code> for the name, on cream <code>#f5f0e8</code>. On dark: teal <code>#5cc4a6</code> and cream <code>#f5f0e8</code>. Keep clear space of half the ring's width on every side.</p>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+  <script src="/config.js"></script>
+  <script src="/shared.js"></script>
+  <script>
+    var LAYOUTS = [
+      ["horizontal", "Horizontal", "Headers, letterheads, email signatures."],
+      ["stacked", "Stacked", "Title cards, posters, the end of a video."],
+      ["mark", "Mark", "Avatars, favicons, watermarks, stamps."],
+      ["wordmark", "Wordmark", "Tight spaces where the mark is shown elsewhere."],
+    ];
+    var grid = document.getElementById("brand-grid");
+    LAYOUTS.forEach(function (l) {
+      ["", "-on-dark"].forEach(function (scheme) {
+        var f = "/assets/brand/johansson-" + l[0] + scheme;
+        var width = l[0] === "mark" ? "120px" : l[0] === "stacked" ? "240px" : "85%";
+        var card = document.createElement("div");
+        card.className = "brand-card " + (scheme ? "on-dark" : "on-light");
+        card.innerHTML =
+          '<div class="brand-stage"><johansson-logo replay layout="' + l[0] + '" style="width:' + width + (scheme ? ';--jl-ink:#f5f0e8;--jl-accent:#5cc4a6' : '') + '"></johansson-logo></div>' +
+          "<h3>" + l[1] + (scheme ? " on dark" : "") + "</h3><p>" + l[2] + "</p>" +
+          '<div class="brand-links"><a href="' + f + '-animated.svg" download>SVG animated</a><a href="' + f + '.svg" download>SVG still</a></div>';
+        grid.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>
