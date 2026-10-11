@@ -22,8 +22,10 @@ test('published page uses one compiled audio/boot graph with local hashed depend
   const code=await readFile(new URL(entry.file,base),'utf8');assert.doesNotMatch(code,/(?:from\s*|import\()['"][^'"]*\/src\//,'No raw source imports in published chunks');
  }
  // Guide rendering, the town feed's comics and opt-in Spector are lazy; Vite shares a preload
- // helper and the avatar code the guide and the feed both use.
- assert.ok(Object.keys(manifest).length<=15,'Bound the compiled graph including optional diagnostics');
+ // helper and the avatar code the guide and the feed both use. The comics are shot in the real
+ // 3D places (src/scene/scene-world.js), so the room builders the game and the comics share are
+ // split out as their own lazy chunks.
+ assert.ok(Object.keys(manifest).length<=22,'Bound the compiled graph including optional diagnostics');
  const portraits=manifest['src/avatars/guide-portraits.js'];assert.ok(portraits&&html.includes(portraits.file));assert.ok(!html.includes('data-town-runtime href="./runtime/'+portraits.file+'"'),'guide rendering stays lazy');
  const audioCode=await readFile(new URL(audio.file,base),'utf8');assert.match(audioCode,/unlockTownAudio/,'Title screen retains its audio unlock export');
  const game=Object.values(manifest).find(entry=>entry.src?.startsWith('src/game.js'));

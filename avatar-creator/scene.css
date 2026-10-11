@@ -84,6 +84,8 @@ body.standalone-studio .studio-file-menu button{width:100%}
 .scene-workspace [data-picker=expression] .scene-picker-grid [aria-pressed=true]{padding:5px 3px}
 .scene-face{width:32px;height:32px;border-radius:50%}
 .scene-workspace .scene-pane-note{margin:0 0 4px}
+.scene-workspace .scene-moment{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 12px}
+.scene-workspace .scene-moment-note{margin:0;font-size:.9em;opacity:.8;flex:1 1 14em}
 
 /* Undo after removing a character or a panel. */
 .scene-toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20001;display:flex;align-items:center;gap:6px;max-width:calc(100vw - 32px);padding:4px 4px 4px 16px;border-radius:12px;background:#1f2a2e;color:#fff;font:500 14px var(--line-font);box-shadow:0 10px 30px #0004}

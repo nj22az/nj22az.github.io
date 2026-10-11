@@ -22,17 +22,24 @@
 <link rel="stylesheet" href="./landing.css?h=cfea2daa">
 <link rel="stylesheet" href="./dual-controls.css?h=396f3a7b">
 <link rel="stylesheet" href="./tomodachi-ui.css?h=b2ca78f4">
-<link rel="stylesheet" href="./photo-mode.css?h=17316f51">
+<link rel="stylesheet" href="./photo-mode.css?h=db29d8e4">
 <link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
 <link rel="stylesheet" href="./context-rail.css?h=a4e11923">
 <link rel="stylesheet" href="./line-ui.css?h=5aa283d2">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-DF59uMSo.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/icons-BJJ0w3BS.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-BI3J5XJQ.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/icons-RrRr0WaS.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-CnvvV_le.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-DsgujZVD.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-D_W472D7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-DW-GV35O.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-A0XSv5dP.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-D4iG-fkK.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/quarters-CLk-qja_.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-Bu0SJIE7.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-C7h9kSBZ.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/onsen-EhStJlQ7.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-n9M1QTOl.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/compact-shops-BK4Uo8bo.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-R8VX26oe.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-FWANYQzb.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson World three-dimensional game"></canvas>
@@ -380,8 +387,8 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON WORLD</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON WORLD</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=7d385000"></script>
-<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-Dp3dlUNh.js";</script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-CH6G-kYJ.js";</script>
+<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-BxFHRui9.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-BpyuspqI.js";</script>
 <script src="./landing.js?h=7591566d"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -506,7 +513,7 @@
 <script type="module">
 import {createLoadingFacts} from './loading-facts.js';
 import {createTitleMenu} from './title-menu.js';
-import {unlockTownAudio} from './runtime/audio-DQtJit21.js';
+import {unlockTownAudio} from './runtime/audio-C1fq9cK7.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
@@ -550,7 +557,7 @@ import {unlockTownAudio} from './runtime/audio-DQtJit21.js';
     try{
       // Let the browser paint the first fact before constructing the town.
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      try { await import('./runtime/boot-DF59uMSo.js'); } catch (error) {
+      try { await import('./runtime/boot-BI3J5XJQ.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

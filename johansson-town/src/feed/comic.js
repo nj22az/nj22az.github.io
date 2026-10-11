@@ -8,11 +8,14 @@ import {fitAvatarHeldProp,poseAvatarConsumption} from '../avatars/consume.js';
 
 /**
  * Draws the storyteller's comics in the browser, as a Sunday funny page: rounded panels in a
- * grid. Every panel is shot inside a real place. tools/render-feed-backdrops.mjs captured each
- * place from the game with its camera, a depth map and the spots a resident can stand, sit or
- * lean at; here the same camera is rebuilt, the room's depth is written first and the residents
- * (live avatar recipes, posed by the photo studio's animator) are drawn into it, so counters,
- * tables and doorways hide them as the room would. Bubbles, marks and sound effects go on top.
+ * grid. Every panel is shot inside the real place, in 3D: the room or street is built from the
+ * game's own builders (src/scene/scene-world.js, the same 3D locations Johansson Studio uses),
+ * the residents (live avatar recipes, posed by the photo studio's animator) stand on its floor,
+ * clear of its furniture by its own colliders, and one render draws them together, with the
+ * room's light and real shadows, so a counter in front hides them and nothing passes through
+ * them. The camera views captured by tools/render-feed-backdrops.mjs (views.json) frame each
+ * shot. If a place cannot be built, the panel falls back to the captured picture and its depth.
+ * Bubbles, marks and sound effects go on top.
  */
 const PAGE=1080,GAP=18,RADIUS=22,INK='#111';
 const FONT='"LINE Seed JP","Noto Sans JP","Hiragino Sans",system-ui,sans-serif';
@@ -20,8 +23,35 @@ const VIEW_W=1600,VIEW_H=1200;
 let renderer=null,views=null;const images=new Map();
 
 export function releaseComicRenderer(){renderer?.dispose();renderer?.forceContextLoss();renderer=null;}
+
+/**
+ * The real place in 3D. The island (every street) is built once and kept, as Studio keeps it;
+ * a room is built for its strip and disposed after.
+ */
+let townData=null;
+async function buildPlace(place,base){
+ const views=await placeViews(base);if(!views[place])return null;
+ const {buildSceneWorld}=await import('../scene/scene-world.js');
+ const world=await buildSceneWorld(place,views,townData);townData=world.townData||townData;
+ // The Minato Maru lies alongside the town berth, as she was when the views were captured (a
+ // fresh island has her out at sea): the ferry's own panels, the pier and the harbour show her.
+ if(world.townData)world.townData.world?.ferry?.parkAt?.('town');
+ // The room's floor takes the residents' shadows (a street's already does).
+ if(!world.townData)for(const m of world.meshes)m.receiveShadow=true;
+ await texturesLoaded(world.scene);return world;
+}
+
+/**
+ * Waits for the place's textures: a prop whose picture is still on its way draws black. Each
+ * map that has no image yet is waited for (it gets one when it loads), at most `limit` ms.
+ */
+async function texturesLoaded(scene,limit=20000){
+ const end=performance.now()+limit,waiting=()=>{let n=0;scene.traverse(o=>{if(!o.isMesh||!o.visible)return;for(const m of [].concat(o.material||[]))for(const k of ['map','emissiveMap','alphaMap'])if(m?.[k]&&!m[k].image)n++;});return n;};
+ while(waiting()&&performance.now()<end)await new Promise(r=>setTimeout(r,100));
+ if(waiting())console.warn('Comic set: some textures did not load in time');
+}
 function context(w,h){
- if(!renderer){renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.autoClear=false;}
+ if(!renderer){renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.autoClear=false;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;}
  renderer.setSize(w,h,false);return renderer;
 }
 const load=url=>{if(!images.has(url))images.set(url,new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error('Missing comic set: '+url));img.src=url;}));return images.get(url);};
@@ -99,21 +129,21 @@ function depthPass(r,camera,depthTex,data){
  * camera from, two a conversation apart; with one seat free the other resident stands by.
  * A seated mark is the seat's floor point with {height, yaw}; a standing one has seat null.
  */
-export function blocking(set,count,seed,sitting=false){
+export function blocking(set,count,seed,sitting=false,clear=null){
  // Seated, the reference is the wide view, which the seats are captured from; standing, the
  // pushed-in view most panels use. A panel whose own view loses someone falls back to a view
  // that has everyone (drawSetPanel).
- if(sitting&&set.wide){const marks=arrange(set,set.wide,count,seed,true);if(marks.length>=count&&marks.some(m=>m.seat))return marks;}
- return arrange(set,set.push||set.wide,count,seed,false);
+ if(sitting&&set.wide){const marks=arrange(set,set.wide,count,seed,true,clear);if(marks.length>=count&&marks.some(m=>m.seat))return marks;}
+ return arrange(set,set.push||set.wide,count,seed,false,clear);
 }
 
-function arrange(set,view,count,seed,sitting){
+function arrange(set,view,count,seed,sitting,clear){
  let s=seed;const rand=()=>{s=(s*16807)%2147483647;return s/2147483647;};
  const camera=sceneCamera(view),cam=camera.position;
  const onScreen=(x,y,z)=>{const q=new THREE.Vector3(x,y,z).project(camera);return q.z<1&&Math.abs(q.x)<.8&&q.y>-1&&q.y<.6?q:null;};
  const stands=[],keys=new Set();
  for(const v of Object.values(set))for(const a of v.spots?.stand||[]){const key=Math.round(a[0]/.4)+','+Math.round(a[2]/.4);if(keys.has(key))continue;keys.add(key);
-  const q=onScreen(a[0],a[1],a[2]),d=Math.hypot(a[0]-cam.x,a[2]-cam.z);if(q&&d>2&&d<6)stands.push({x:a[0],y:a[1],z:a[2],sx:(q.x+1)/2,d});}
+  const q=onScreen(a[0],a[1],a[2]),d=Math.hypot(a[0]-cam.x,a[2]-cam.z);if(q&&d>2&&d<6&&(!clear||clear(a[0],a[1],a[2])))stands.push({x:a[0],y:a[1],z:a[2],sx:(q.x+1)/2,d});}
  const seats=[];keys.clear();
  if(sitting)for(const v of Object.values(set))for(const t of v.seats||[]){
   const [x,y,z]=t.position,key=x.toFixed(2)+','+z.toFixed(2),height=t.surfaceY-y;if(keys.has(key))continue;keys.add(key);
@@ -162,38 +192,76 @@ export async function renderComic({panels,place,props={},sitting=false},{base='.
  const page=document.createElement('canvas');page.width=layout.width;page.height=layout.height;
  const out=page.getContext('2d');out.fillStyle='#fff';out.fillRect(0,0,page.width,page.height);
  const names=[...new Set(panels.flatMap(p=>p.actors.map(a=>a.name)))];
- const cast=new Map(names.map(name=>{const avatar=buildAvatar(recipeFor(name),{shadows:false,faceSize:512}),holder=new THREE.Group();holder.add(avatar.root);avatar.root.rotation.y=0;return [name,{avatar,holder}];}));
+ const cast=new Map(names.map(name=>{const avatar=buildAvatar(recipeFor(name),{shadows:true,faceSize:512}),holder=new THREE.Group();holder.add(avatar.root);avatar.root.rotation.y=0;return [name,{avatar,holder}];}));
  const seed=[...place+names.join()].reduce((a,c)=>(a*31+c.charCodeAt(0))%2147483647,7)||7;
  // Everyone keeps their spot for the whole strip; a resident who walks in late gets one of their own.
- const marks=set?blocking(set,names.length,seed,sitting):null,markOf=new Map(names.map((n,j)=>[n,marks?.[j]??null]));
+ let world=null;
+ if(set)try{world=await buildPlace(place,base);}catch(error){console.warn('Comic set',place,'drawn from its picture:',error.message);}
+ // Standing spots only where a whole person fits: the place's own colliders when it is built
+ // (arms out, so a little wider than a body), else every captured view's depth.
+ const clear=world?(x,y,z)=>!world.blocked(x,z,.32):roomToStand(set?await Promise.all(Object.entries(set).map(async([name,view])=>({view,px:pixelsOf(await load(`${base}assets/images/feed/${place}-${name}-depth.webp`))}))):[]);
+ const marks=set?blocking(set,names.length,seed,sitting,clear)?.map(m=>world&&!m.seat?{...m,y:world.floor(m.x,m.z)}:m):null,markOf=new Map(names.map((n,j)=>[n,marks?.[j]??null]));
  try{
   for(const [i,p] of panels.entries()){
    const cell=layout.cells[i],w=cell.w,h=cell.h;
    const panel=document.createElement('canvas');panel.width=w;panel.height=h;const ctx=panel.getContext('2d');
    const shot=p.shot||'medium',scene=new THREE.Scene();
    const actors=p.actors.map(a=>({...a,...cast.get(a.name),mark:markOf.get(a.name),drink:props[a.name]||null}));
-   if(set&&shot!=='eyes'&&actors.every(a=>a.mark))await drawSetPanel({ctx,w,h,set,p,shot,actors,scene,base,place,i});
+   if(world&&shot!=='eyes'&&actors.every(a=>a.mark))drawWorldPanel({ctx,w,h,set,world,p,shot,actors,i});
+   else if(set&&shot!=='eyes'&&actors.every(a=>a.mark))await drawSetPanel({ctx,w,h,set,p,shot,actors,scene,base,place,i});
    else await drawStudioPanel({ctx,w,h,p,shot,actors,scene,base,place,i});
    // A rounded panel with an ink border, set into the page.
    out.save();out.beginPath();out.roundRect(cell.x,cell.y,w,h,RADIUS);out.clip();out.drawImage(panel,cell.x,cell.y);out.restore();
    out.lineWidth=4;out.strokeStyle=INK;out.beginPath();out.roundRect(cell.x+2,cell.y+2,w-4,h-4,RADIUS-2);out.stroke();
   }
  }finally{
-  for(const c of cast.values()){c.avatar.body.skeleton.dispose();c.avatar.dispose();}
+  for(const c of cast.values()){c.holder.removeFromParent();c.avatar.body.skeleton.dispose();c.avatar.dispose();}
+  if(world&&!world.townData)world.dispose();
   renderer?.renderLists.dispose();
  }
  return page.toDataURL('image/webp',quality);
 }
 
 const depthPixels=new WeakMap();
+function pixelsOf(depthImg){
+ let px=depthPixels.get(depthImg);
+ if(!px){const c=document.createElement('canvas');c.width=depthImg.width;c.height=depthImg.height;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(depthImg,0,0);px={w:c.width,h:c.height,data:g.getImageData(0,0,c.width,c.height).data};depthPixels.set(depthImg,px);}
+ return px;
+}
+
+/**
+ * Room for a whole person at a standing spot: nothing in the room (a table edge, a sofa, a
+ * shelf, a hull) passes through the body or its reach. Every captured view of the place is
+ * asked: points round a body-sized column (BODY m across the shoulders, from the knees to the
+ * crown) are projected into the view, and if the room's surface at that pixel lies inside the
+ * column's depth there, something is where the person would be. Above knee height, so the
+ * floor behind the feet never counts.
+ */
+const BODY=.36,REACH=.12;
+export function roomToStand(depths){
+ return (x,y,z)=>{
+  for(const {view,px} of depths){
+   const camera=sceneCamera(view),far=view.camera.depthFar,c=new THREE.Vector3(x,y+.9,z);
+   const centre=-c.clone().applyMatrix4(camera.matrixWorldInverse).z;
+   for(const up of [.45,.75,1.05,1.35,1.6])for(let k=0;k<12;k++){
+    const a=k/12*Math.PI*2,r=BODY+REACH,v=new THREE.Vector3(x+Math.cos(a)*r*(k%2?.6:1),y+up,z+Math.sin(a)*r*(k%2?.6:1)),q=v.clone().project(camera);
+    if(!(q.z<1&&Math.abs(q.x)<1&&Math.abs(q.y)<1))continue;
+    const i=(Math.min(px.h-1,Math.round((1-q.y)/2*px.h))*px.w+Math.min(px.w-1,Math.round((q.x+1)/2*px.w)))*4,scene=(px.data[i]*256+px.data[i+1])/65535*far;
+    if(scene>=far*.999)continue;
+    // The room's surface sits inside the column (between its near and far side, with the reach).
+    if(scene>centre-r&&scene<centre+r)return false;
+   }
+  }
+  return true;
+ };
+}
 /**
  * Whether a view shows everyone: each resident inside the picture, head and body not hidden
  * behind the room (a quay block, a counter, a tabletop seen from below). Read from the view's
  * captured depth: a point is in sight when nothing in the room is nearer the camera.
  */
 async function inSight(view,depthImg,actors){
- let px=depthPixels.get(depthImg);
- if(!px){const c=document.createElement('canvas');c.width=depthImg.width;c.height=depthImg.height;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(depthImg,0,0);px={w:c.width,h:c.height,data:g.getImageData(0,0,c.width,c.height).data};depthPixels.set(depthImg,px);}
+ const px=pixelsOf(depthImg);
  const camera=sceneCamera(view),far=view.camera.depthFar;
  const seen=v=>{const q=v.clone().project(camera);if(!(q.z<1&&Math.abs(q.x)<.92&&q.y>-1.02&&q.y<.95))return null;
   const x=Math.min(px.w-1,Math.round((q.x+1)/2*px.w)),y=Math.min(px.h-1,Math.round((1-q.y)/2*px.h)),i=(y*px.w+x)*4;
@@ -290,6 +358,100 @@ async function drawSetPanel({ctx,w,h,set,p,shot,actors,scene,base,place,i}){
  const tipped=v=>{if(!tilt)return v;const dx=(v.x-w/2)*1.3,dy=(v.y-h/2)*1.3,c=Math.cos(tilt),s=Math.sin(tilt);return {x:w/2+dx*c-dy*s,y:h/2+dx*s+dy*c,s:v.s*1.3};};
  letter(ctx,w,h,p,actors,tops.map(tipped),i);
  scene.clear();
+}
+
+/** Whether every resident is in this view and in sight of its camera, asked of the 3D place itself. */
+function inSightOf(view,world,actors){
+ const camera=sceneCamera(view),ray=new THREE.Raycaster();
+ const seen=v=>{const q=v.clone().project(camera);if(!(q.z<1&&Math.abs(q.x)<.92&&q.y>-1.02&&q.y<.95))return false;
+  const to=v.clone().sub(camera.position),d=to.length();ray.set(camera.position,to.normalize());ray.near=.05;ray.far=d-.12;
+  return !ray.intersectObjects(world.meshes,false).some(h=>h.object.visible&&h.object.material?.depthWrite!==false);};
+ return actors.every(a=>{
+  // As inSight: the crown and feet in the picture, the face and chest (and standing, the knees) in sight.
+  const m=a.mark,[crown,...shown]=m.seat?[1.25,1.05,m.seat.height+.38]:[1.55,1.4,1,.5];
+  const v=up=>new THREE.Vector3(m.x,m.y+up,m.z),inFrame=up=>{const q=v(up).project(camera);return q.z<1&&Math.abs(q.x)<.92&&q.y>-1.02&&q.y<.95;};
+  return inFrame(0)&&inFrame(crown)&&shown.every(up=>seen(v(up)));
+ });
+}
+
+/** Turns and poses the residents on their marks, facing each other and opened to the camera. */
+function stage(actors,camera,p){
+ for(const a of actors){a.at=a.mark;a.seated=!!a.mark.seat;}
+ for(const a of actors){
+  const at=a.at;a.holder.position.set(at.x,at.y,at.z);
+  const others=actors.filter(b=>b!==a),toCam=Math.atan2(camera.position.x-at.x,camera.position.z-at.z);
+  const toOther=others.length?Math.atan2(others.reduce((t,b)=>t+b.at.x,0)/others.length-at.x,others.reduce((t,b)=>t+b.at.z,0)/others.length-at.z):toCam;
+  const wrap=v=>Math.atan2(Math.sin(v),Math.cos(v)),clamp=(v,m)=>Math.max(-m,Math.min(m,v));
+  if(a.seated){
+   const ahead=a.mark.seat.yaw+Math.PI,want=p.shot==='close'&&a.name===p.focus||!others.length?toCam:toOther;
+   a.holder.rotation.y=ahead+clamp(wrap(want-ahead),.35);
+   pose(a.avatar,a.pose&&a.pose!=='Idle'?a.pose:'Sit',a.expression,a.mark.seat.height);
+  }else{
+   const turn=others.length?wrap(toOther-toCam):0,facing=p.shot==='close'&&a.name===p.focus?.3:.78;
+   a.holder.rotation.y=others.length?toCam+clamp(turn*facing,1.15):toCam;
+   pose(a.avatar,a.pose,a.expression);
+  }
+ }
+}
+
+/** Where the panel looks inside the view: each shot wants the people a certain size in the panel. */
+function frame({camera,actors,p,shot,w,h,i}){
+ const heads=actors.map(headOf),focus=heads[Math.max(0,actors.findIndex(a=>a.name===p.focus))];
+ const px=v=>{const q=v.clone().project(camera);return [(q.x+1)/2*VIEW_W,(1-q.y)/2*VIEW_H];};
+ const feet=actors.map(a=>px(new THREE.Vector3(a.at.x,a.at.y,a.at.z))),crowns=heads.map(hd=>px(hd.top));
+ const tall=Math.max(40,...actors.map((a,j)=>feet[j][1]-crowns[j][1])),faceH=Math.max(20,px(focus.top.clone().setY(focus.top.y-focus.size))[1]-px(focus.top)[1]);
+ let ch={wide:tall/.38,medium:tall/.72,low:tall/.66,high:tall/.62,dutch:tall/.72,close:faceH/.48,'close-thing':VIEW_H/2.6}[shot]||tall/.7;
+ ch=Math.min(VIEW_H,Math.max(VIEW_H/4.2,ch));let cw=ch*w/h;if(cw>VIEW_W){cw=VIEW_W;ch=cw*h/w;}
+ const left=Math.min(...crowns.map(c=>c[0])),right=Math.max(...crowns.map(c=>c[0]));
+ let cx=VIEW_W*(.3+((i*37)%40)/100),cy=VIEW_H*.5;
+ if(shot==='close'){const c=px(focus.centre);cx=c[0];cy=c[1]+ch*.12;}
+ else if(shot!=='close-thing'){cx=(left+right)/2;const top=Math.min(...crowns.map(c=>c[1])),bottom=Math.max(...feet.map(f=>f[1]));cy=shot==='wide'?(top+bottom)/2+ch*.05:top+ch*.5-ch*.2;}
+ const ox=Math.max(0,Math.min(VIEW_W-cw,cx-cw/2)),oy=Math.max(0,Math.min(VIEW_H-ch,cy-ch/2));
+ camera.setViewOffset(VIEW_W,VIEW_H,ox,oy,cw,ch);camera.updateProjectionMatrix();
+ return heads;
+}
+
+/**
+ * A panel shot in the real place in 3D: the residents added to the room's own scene on their
+ * marks, one render with the room's light and shadows, then the lettering.
+ */
+function drawWorldPanel({ctx,w,h,set,world,p,shot,actors,i}){
+ const wanted=set[VIEWS[shot]]?VIEWS[shot]:set.push?'push':'wide';
+ let viewName=wanted;
+ for(const name of [...new Set([wanted,'push','wide','high','low'])])if(set[name]&&inSightOf(set[name],world,actors)){viewName=name;break;}
+ const camera=sceneCamera(set[viewName]),show=shot!=='close-thing';camera.near=.05;camera.updateProjectionMatrix();
+ stage(actors,camera,{...p,shot});
+ for(const a of actors){a.holder.removeFromParent();if(show)world.scene.add(a.holder);}
+ world.scene.updateMatrixWorld(true);actors.forEach(a=>a.avatar.body.skeleton.update());
+ holdDrinks(actors,i);
+ world.scene.updateMatrixWorld(true);actors.forEach(a=>a.avatar.body.skeleton.update());
+ const heads=frame({camera,actors,p,shot,w,h,i});
+ // The sun (or the room's key light) over the residents, so their shadows fall on this floor.
+ const mid=new THREE.Vector3(actors.reduce((t,a)=>t+a.at.x,0)/actors.length,actors.reduce((t,a)=>t+a.at.y,0)/actors.length,actors.reduce((t,a)=>t+a.at.z,0)/actors.length);
+ if(world.sun){world.sun.position.set(mid.x+5,mid.y+10,mid.z+6);world.sun.target.position.copy(mid);world.sun.target.updateMatrixWorld();world.sun.shadow.needsUpdate=true;}
+ const r=context(w,h);r.setClearColor(0,1);r.clear();world.sky?.update(camera,1,false,false);r.render(world.scene,camera);
+ const layer=document.createElement('canvas');layer.width=w;layer.height=h;const lc=layer.getContext('2d');lc.drawImage(r.domElement,0,0,w,h);
+ const tops=show?heads.map(hd=>toPanel(hd,camera,w,h)):[];
+ if(p.bg){
+  // Background marks (speed lines, a mood) go behind the residents: draw them on the picture,
+  // then the residents again on top, hidden where the room's own depth is in front of them.
+  drawBackground(lc,p.bg,w,h,[tops.reduce((t,v)=>t+v.x,0)/(tops.length||1)||w/2,(tops[0]?.y??h*.3)+(tops[0]?.s??60)*.6],i*7919+31);
+  if(show){
+   const background=world.scene.background,depthOnly=new THREE.MeshBasicMaterial({colorWrite:false});
+   r.setClearColor(0,0);r.clear();world.scene.background=null;
+   for(const a of actors)a.holder.visible=false;world.scene.overrideMaterial=depthOnly;r.render(world.scene,camera);world.scene.overrideMaterial=null;
+   for(const a of actors)a.holder.visible=true;const room=world.meshes.filter(m=>m.visible);for(const m of room)m.visible=false;
+   r.render(world.scene,camera);for(const m of room)m.visible=true;world.scene.background=background;depthOnly.dispose();
+   lc.drawImage(r.domElement,0,0,w,h);
+  }
+ }
+ for(const a of actors)a.holder.removeFromParent();
+ // A Dutch angle tips the whole picture; the lettering stays level.
+ const tilt=shot==='dutch'?(i%2?1:-1)*.16:0;
+ if(tilt){ctx.save();ctx.translate(w/2,h/2);ctx.rotate(tilt);ctx.scale(1.3,1.3);ctx.drawImage(layer,-w/2,-h/2);ctx.restore();}
+ else ctx.drawImage(layer,0,0);
+ const tipped=v=>{if(!tilt)return v;const dx=(v.x-w/2)*1.3,dy=(v.y-h/2)*1.3,c=Math.cos(tilt),s=Math.sin(tilt);return {x:w/2+dx*c-dy*s,y:h/2+dx*s+dy*c,s:v.s*1.3};};
+ letter(ctx,w,h,p,actors,tops.map(tipped),i);
 }
 
 /** The stare, and any place without a captured set: the residents alone, the room blurred behind. */

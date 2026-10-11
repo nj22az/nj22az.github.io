@@ -1,63 +1,111 @@
 {
-  "_actors-D_W472D7.js": {
-    "file": "actors-D_W472D7.js",
+  "_actors-Bu0SJIE7.js": {
+    "file": "actors-Bu0SJIE7.js",
     "name": "actors",
     "imports": [
-      "_izakaya-serving-visuals-DsgujZVD.js"
+      "_izakaya-serving-visuals-D4iG-fkK.js"
     ]
   },
-  "_icons-BJJ0w3BS.js": {
-    "file": "icons-BJJ0w3BS.js",
+  "_compact-shops-BK4Uo8bo.js": {
+    "file": "compact-shops-BK4Uo8bo.js",
+    "name": "compact-shops",
+    "isDynamicEntry": true,
+    "imports": [
+      "_actors-Bu0SJIE7.js",
+      "_quarters-CLk-qja_.js",
+      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_town-audio-C7h9kSBZ.js"
+    ]
+  },
+  "_icons-RrRr0WaS.js": {
+    "file": "icons-RrRr0WaS.js",
     "name": "icons"
   },
-  "_izakaya-serving-visuals-DsgujZVD.js": {
-    "file": "izakaya-serving-visuals-DsgujZVD.js",
+  "_izakaya-serving-visuals-D4iG-fkK.js": {
+    "file": "izakaya-serving-visuals-D4iG-fkK.js",
     "name": "izakaya-serving-visuals"
+  },
+  "_onsen-EhStJlQ7.js": {
+    "file": "onsen-EhStJlQ7.js",
+    "name": "onsen",
+    "isDynamicEntry": true,
+    "imports": [
+      "_actors-Bu0SJIE7.js",
+      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_quarters-CLk-qja_.js",
+      "_town-audio-C7h9kSBZ.js"
+    ]
+  },
+  "_preload-helper-PPVm8Dsz.js": {
+    "file": "preload-helper-PPVm8Dsz.js",
+    "name": "preload-helper"
+  },
+  "_quarters-CLk-qja_.js": {
+    "file": "quarters-CLk-qja_.js",
+    "name": "quarters",
+    "isDynamicEntry": true,
+    "imports": [
+      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_actors-Bu0SJIE7.js",
+      "_town-audio-C7h9kSBZ.js"
+    ]
+  },
+  "_sakura-interior-n9M1QTOl.js": {
+    "file": "sakura-interior-n9M1QTOl.js",
+    "name": "sakura-interior",
+    "isDynamicEntry": true,
+    "imports": [
+      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_town-audio-C7h9kSBZ.js",
+      "_actors-Bu0SJIE7.js",
+      "_quarters-CLk-qja_.js"
+    ]
   },
   "_spector.bundle-_JPoFEkN.js": {
     "file": "spector.bundle-_JPoFEkN.js",
     "name": "spector.bundle",
     "isDynamicEntry": true
   },
-  "_town-audio-DW-GV35O.js": {
-    "file": "town-audio-DW-GV35O.js",
+  "_town-audio-C7h9kSBZ.js": {
+    "file": "town-audio-C7h9kSBZ.js",
     "name": "town-audio"
   },
   "src/audio/town-audio.js?snappy=1": {
-    "file": "audio-DQtJit21.js",
+    "file": "audio-C1fq9cK7.js",
     "name": "audio",
     "src": "src/audio/town-audio.js?snappy=1",
     "isEntry": true,
     "imports": [
-      "_town-audio-DW-GV35O.js"
+      "_town-audio-C7h9kSBZ.js"
     ]
   },
   "src/avatars/export.js": {
-    "file": "export-BNA3uuND.js",
+    "file": "export-Ck4aqdSk.js",
     "name": "export",
     "src": "src/avatars/export.js",
     "isDynamicEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-DsgujZVD.js"
+      "_izakaya-serving-visuals-D4iG-fkK.js"
     ]
   },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-CH6G-kYJ.js",
+    "file": "portraits-BpyuspqI.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-DsgujZVD.js",
-      "_actors-D_W472D7.js"
+      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_actors-Bu0SJIE7.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-DF59uMSo.js",
+    "file": "boot-BI3J5XJQ.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
     "imports": [
-      "_icons-BJJ0w3BS.js"
+      "_preload-helper-PPVm8Dsz.js",
+      "_icons-RrRr0WaS.js"
     ],
     "dynamicImports": [
       "touch-ui.js?ui=controls-3",
@@ -67,28 +115,85 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-Dp3dlUNh.js",
+    "file": "feed-BxFHRui9.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-DsgujZVD.js"
+      "_preload-helper-PPVm8Dsz.js",
+      "_izakaya-serving-visuals-D4iG-fkK.js"
+    ],
+    "dynamicImports": [
+      "src/scene/scene-world.js"
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-CnvvV_le.js",
+    "file": "game-A0XSv5dP.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-DsgujZVD.js",
-      "_actors-D_W472D7.js",
-      "_town-audio-DW-GV35O.js",
-      "_icons-BJJ0w3BS.js"
+      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_quarters-CLk-qja_.js",
+      "_actors-Bu0SJIE7.js",
+      "_icons-RrRr0WaS.js",
+      "_town-audio-C7h9kSBZ.js",
+      "_onsen-EhStJlQ7.js",
+      "_sakura-interior-n9M1QTOl.js",
+      "_compact-shops-BK4Uo8bo.js",
+      "src/world/interiors/sato-ramen.js",
+      "src/world/interiors/town-hall.js",
+      "_preload-helper-PPVm8Dsz.js"
     ],
     "dynamicImports": [
       "src/avatars/export.js",
       "_spector.bundle-_JPoFEkN.js"
+    ]
+  },
+  "src/scene/scene-world.js": {
+    "file": "scene-world-hGk5uzf9.js",
+    "name": "scene-world",
+    "src": "src/scene/scene-world.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_preload-helper-PPVm8Dsz.js",
+      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_quarters-CLk-qja_.js",
+      "_actors-Bu0SJIE7.js",
+      "_town-audio-C7h9kSBZ.js"
+    ],
+    "dynamicImports": [
+      "_sakura-interior-n9M1QTOl.js",
+      "_quarters-CLk-qja_.js",
+      "src/world/interiors/sato-ramen.js",
+      "_quarters-CLk-qja_.js",
+      "_compact-shops-BK4Uo8bo.js",
+      "_onsen-EhStJlQ7.js",
+      "src/world/interiors/town-hall.js"
+    ]
+  },
+  "src/world/interiors/sato-ramen.js": {
+    "file": "sato-ramen-R8VX26oe.js",
+    "name": "sato-ramen",
+    "src": "src/world/interiors/sato-ramen.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_quarters-CLk-qja_.js",
+      "_actors-Bu0SJIE7.js",
+      "_town-audio-C7h9kSBZ.js"
+    ]
+  },
+  "src/world/interiors/town-hall.js": {
+    "file": "town-hall-FWANYQzb.js",
+    "name": "town-hall",
+    "src": "src/world/interiors/town-hall.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_actors-Bu0SJIE7.js",
+      "_quarters-CLk-qja_.js",
+      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_town-audio-C7h9kSBZ.js"
     ]
   },
   "touch-ui.js?ui=controls-3": {
