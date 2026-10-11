@@ -26,13 +26,20 @@
 <link rel="stylesheet" href="./quiet-ui.css?h=31d36302">
 <link rel="stylesheet" href="./context-rail.css?h=a4e11923">
 <link rel="stylesheet" href="./line-ui.css?h=5aa283d2">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-DMRSs_5y.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/icons-BJJ0w3BS.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-CdeuCFoa.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/icons-RrRr0WaS.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-BTHCnbnc.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-Dj8IrW8g.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-DlPfFMu0.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-ygTjb9SR.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-UacgrIHP.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-BC4d0jsl.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/quarters-Bj4cjjHt.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-DEYgqymP.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-audio-DueJ66-T.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/onsen-RscAZClU.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-BtQv-HAt.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/compact-shops-Bfkk6LdH.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-eVW8PJDS.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-C6z8YDgh.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson World three-dimensional game"></canvas>
@@ -380,8 +387,8 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON WORLD</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON WORLD</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=7d385000"></script>
-<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-B47AfDFR.js";</script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-CJOX5oJK.js";</script>
+<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-BTXdfJuq.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-rKyiC2wl.js";</script>
 <script src="./landing.js?h=7591566d"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -506,7 +513,7 @@
 <script type="module">
 import {createLoadingFacts} from './loading-facts.js';
 import {createTitleMenu} from './title-menu.js';
-import {unlockTownAudio} from './runtime/audio-83dQfoLt.js';
+import {unlockTownAudio} from './runtime/audio-DAn8wvY2.js';
 (() => {
   const enter=document.getElementById('enter');
   const status=document.getElementById('bootStatus');
@@ -550,7 +557,7 @@ import {unlockTownAudio} from './runtime/audio-83dQfoLt.js';
     try{
       // Let the browser paint the first fact before constructing the town.
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      try { await import('./runtime/boot-DMRSs_5y.js'); } catch (error) {
+      try { await import('./runtime/boot-CdeuCFoa.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;
