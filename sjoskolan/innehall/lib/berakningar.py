@@ -139,6 +139,10 @@ registrera('ac.strom_rl')(lambda p: p['U'] / math.hypot(p['R'], 2 * math.pi * p[
 LARARFACIT = {}
 
 
+# Från vecka 42 räknar alla elever med samma D (gemensamt/elevtal.mjs KURS_D, verktyg/inlamning/bygg.py).
+KURS_D = 12
+
+
 def elevtal(namn):
     """Elevens tal D (1–31) ur namnet: FNV-1a över UTF-8, samma som gemensamt/elevtal.mjs."""
     import unicodedata

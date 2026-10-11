@@ -1,9 +1,9 @@
 // Motorlabbet: samma stationer som den fysiska labben vecka 41, för den som inte kan komma.
 // Knapparna styr allt. 3D-bänken (scen.js) visar samma läge och går också att klicka i.
 import { resistans, lindningar, avlasning, Y, DELTA, BLECK, PLINT, STARTARE, startareResistans, tang, felFor, helDelta } from './model.mjs?v=20260929';
-import { mittD } from '../gemensamt/elevtal.mjs?v=20260930';
+import { kursD } from '../gemensamt/elevtal.mjs?v=20261011';
 
-const D = mittD();
+const D = kursD(); // samma värden för alla elever
 const R = lindningar(D);
 const FEL = felFor(D);
 const S = {

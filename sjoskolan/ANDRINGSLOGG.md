@@ -166,6 +166,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Från vecka 42 räknar alla elever med samma D = 12 (`KURS_D` i `gemensamt/elevtal.mjs`,
+  `verktyg/inlamning/bygg.py` och `innehall/lib/berakningar.py`): inlämningssidorna 42–45 visar D = 12 i stället för
+  namnrutan och Motorlabbet använder `kursD()`. Bara den slutliga tentamen får individuella värden. Vecka 38–41 är
+  oförändrade (redan inlämnade med eget D). Lärarguidens facit: räkna med D = 12.
+
 - **2026-10-11** EL-000213 (Mittpunkt, felsökning) hade fel facit: B har 0 V, så felet ligger mellan källan och B, inte
   efter B. Rättat i posten och på delsidan och övningssidan. Boken (bok.enc) och lärarkopian av v45_01 är inte
   uppdaterade (kräver BOKLOSEN/LARARLOSEN); revidera posten igen med de skyddade filerna öppna.

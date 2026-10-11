@@ -62,7 +62,16 @@ RESULTATKOD = {40}
 SVARSRUTOR = {41}
 
 
+# Från vecka 42 har alla samma D (gemensamt/elevtal.mjs KURS_D). Bara den slutliga tentamen får individuella värden.
+KURS_D = 12
+KURSD_RUTA = (f'<div class="sj-panel soft dbox"><h2>Talet D</h2><p>Flera uppgifter använder talet <strong>D</strong>. '
+              f'Alla i klassen räknar med <strong>D = {KURS_D}</strong>. Sätt in {KURS_D} där det står D i uppgiften och räkna '
+              f'sedan som vanligt. Står det (10 + D) V är spänningen 10 + {KURS_D} = {10 + KURS_D} V.</p></div>\n')
+
+
 def dbox(nr):
+    if nr >= 42:
+        return KURSD_RUTA
     if nr in SVARSRUTOR:
         return (NAMNRUTA.replace('</p></div>\n<script', '</p><p>Skriv dina svar i rutorna under inlämning 1 och 2. De sparas i webbläsaren och följer med i QR-koden på sidan <a href="Resultat.html">Skicka resultat</a>. Uträkningar, visardiagram och protokoll lämnar du i mejlet.</p></div>\n<script', 1)
                 + f'<script type="module" src="/sjoskolan/vecka-{nr}/aktuell/inlamning-svar.mjs?v=20260929"></script>\n')
