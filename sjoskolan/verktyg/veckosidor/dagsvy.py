@@ -2,7 +2,7 @@
 
 Beslut 11 oktober 2026 (Nils): eleven ska se på sidan vad lektionen i dag handlar om, så att läraren bara behöver visa
 presentationen. Alla läxor ska gå att förstå från sidan. Varje lektionsdag har en egen färg (måndag, tisdag, fredag),
-och det som gäller hela veckan (läsförståelse, inlämning, övningar) har ingen dagfärg.
+och det som gäller hela veckan (quiz, inlämning, övningar) har ingen dagfärg.
 
 - Lektionsrutorna hämtar tid, rubrik, upplägg (”Det här pratar vi om”) och läxorna ur presentationernas innehåll
   (verktyg/lektionsbilder/lektioner.py: LEKTIONER och HEMMA). Bilden ”Det här gör du nu” byggs ur samma lista, så
@@ -59,6 +59,7 @@ CSS = ('<style>'
        '.vk{display:flex;flex-direction:column;gap:6px;padding:16px 18px;border:1px solid #cad8e2;border-top:4px solid #163248;border-radius:12px;background:#f7f9fb}'
        '.vk-sista{margin:0;font-size:15px;font-weight:700;color:#163248}.vk-kvar{font-weight:400;color:#4d6579}.vk-kvar.bradskande{color:#8a2a00;font-weight:700}'
        '.vk h3{margin:0;font-size:20px}.vk p{margin:0;font-size:16px}.vk-hur{color:#4d6579}'
+       '.vk-filer-rubrik{font-weight:700;margin-top:4px!important}.vk-filer{margin:0;padding-left:20px;font-size:16px}.vk-filer li{margin:4px 0}'
        '.vk-lage{font-weight:700}.vk-lage.klar{color:#176844}.vk .vp-stapel{margin:2px 0 6px}.vk .sj-btn{align-self:flex-start;margin-top:auto}'
        '.vp-stapel{display:block;height:6px;border-radius:3px;background:#dfe7ee;overflow:hidden}'
        '.vp-stapel i{display:block;height:100%;width:0;border-radius:3px;background:#163248;transition:width .3s}'
@@ -150,8 +151,13 @@ def _veckokort(x):
         sista = f'<p class="vk-sista">Senast {escape(_datumtext(d))} <span class="vk-kvar"></span></p>'
     else:
         sista = '<p class="vk-sista">Hela veckan</p>'
-    return (f'<article class="vk" data-vk="{x["id"]}"' + (f' data-sista="{x["sista"]}"' if x.get('sista') else '') + '>'
-            f'{sista}<h3>{escape(x["titel"])}</h3><p>{escape(x["text"])}</p><p class="vk-hur">{escape(x["hur"])}</p>'
+    filer = ''
+    if x.get('filer'):
+        filer = ('<p class="vk-filer-rubrik">Texterna (PDF att ladda ner)</p><ul class="vk-filer">'
+                 + ''.join(f'<li><a href="{escape(h, quote=True)}" download>{escape(t)}</a></li>' for t, h in x['filer']) + '</ul>')
+    attr = f' data-sista="{x["sista"]}"' if x.get('sista') else ''
+    return (f'<article class="vk" data-vk="{x["id"]}"{attr}>{sista}<h3>{escape(x["titel"])}</h3><p>{escape(x["text"])}</p>'
+            f'<p class="vk-hur">{escape(x["hur"])}</p>{filer}'
             f'<p class="vk-lage" aria-live="polite"></p><span class="vp-stapel" aria-hidden="true"><i></i></span>'
             f'<a class="sj-btn" href="{escape(x["href"], quote=True)}">{escape(x["knapp"])}</a></article>')
 

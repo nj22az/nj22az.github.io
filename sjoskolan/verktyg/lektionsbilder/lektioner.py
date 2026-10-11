@@ -33,7 +33,7 @@ HEMMA = {
     ],
 }
 # Det som gäller hela veckan (står på bilden som not och på veckosidan under ”Hela veckan”).
-VECKAN = {42: 'Läsförståelsen senast torsdag 15 oktober, inlämningen senast söndag 18 oktober. Båda öppnar du från veckosidan.'}
+VECKAN = {42: 'Quizet senast torsdag 15 oktober, inlämningen senast söndag 18 oktober. Båda öppnar du från veckosidan.'}
 
 
 def hemma(lek_id):
@@ -198,7 +198,7 @@ V42_01 = {
         ('lista', {
             'rubrik': 'Det här gör du nu',
             'punkter': hemma('v42_01') + [
-                'Börja läsa de fyra texterna till Läsförståelse.',
+                'Börja läsa de fyra texterna till veckans quiz.',
                 'I morgon tisdag 15.00: del 2, Regler, ansvar och arbetsmetoder.',
             ],
             'not': VECKAN[42],

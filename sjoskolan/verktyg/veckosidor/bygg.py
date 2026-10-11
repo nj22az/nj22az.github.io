@@ -248,9 +248,16 @@ VECKOR = {
         # Det som gäller hela veckan (dagsvy.py, rutorna under ”Hela veckan”). Läxorna efter varje lektion står i
         # verktyg/lektionsbilder/lektioner.py HEMMA, så att bilden ”Det här gör du nu” och sidan säger samma sak.
         'veckan': [
-            {'id': 'lasforstaelse', 'titel': 'Läsförståelse', 'sista': '2026-10-15', 'href': 'Lasforstaelse.html', 'knapp': 'Öppna läsförståelsen',
-             'text': 'Läs fyra texter från Transportstyrelsen hemma. Svara på frågorna om varje text med A, B, C eller D.',
-             'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Lämna in PDF-filen i Google Classroom under Vecka 42 – Läsförståelse.'},
+            {'id': 'quiz', 'titel': 'Quiz', 'sista': '2026-10-15', 'href': 'Quiz.html', 'knapp': 'Öppna quizet',
+             'text': 'Läs fyra texter från Transportstyrelsen hemma. Svara på tio frågor om varje text med A, B, C eller D.',
+             'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Lämna in PDF-filen i Google Classroom under Vecka 42 – Quiz.',
+             # Texterna att läsa (PDF i veckans mapp, från Transportstyrelsen). Samma filer som quizets frågor hänvisar till.
+             'filer': [
+                 ('Riktlinjer för riskanalysarbete (2019)', 'Transportstyrelsen_riktlinjer_riskanalysarbete.pdf'),
+                 ('Riktlinjer för elektrifiering av fartyg (2023)', 'Transportstyrelsen_riktlinjer_elektrifiering_fartyg_2023.pdf'),
+                 ('Anslutning av fartyg till landbaserat elnät (2015)', 'Transportstyrelsen_landanslutning_fartyg_2015.pdf'),
+                 ('Vägledning: strukturellt brandskydd i fartyg av annat material än stål (2024)', 'Transportstyrelsen_vagledning_strukturellt_brandskydd_2024.pdf'),
+             ]},
             {'id': 'inlamning', 'titel': 'Inlämningen', 'sista': '2026-10-18', 'href': 'Inlamning.html', 'knapp': 'Öppna inlämningen',
              'text': 'Tre uppgifter: riskbedömning före arbete, beröringsspänning i en modell och rätt mätutrustning.',
              'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Tryck Lämna in, ladda ner PDF-filen och lämna in den i Google Classroom under Vecka 42.'},

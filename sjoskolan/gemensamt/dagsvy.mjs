@@ -4,7 +4,7 @@
 //   sj-steg:vecka-NN        Klart-rutorna för läxor utan eget läge ({"v42_01-film": true, …})
 //   sj-last:vecka-NN        ”Jag har läst del N” på delsidorna ({"del-1": ISO, …})
 //   sj-ovningar:/sjoskolan/<mapp>/aktuell/Formelstod_och_ovningar.html   avbockade övningar (ankare → true)
-//   inlämningen och läsförståelsen: gemensamt/sjalvrattning.mjs (veckoStatus och läsförståelsens status)
+//   inlämningen och quizet: gemensamt/sjalvrattning.mjs (veckoStatus och quizStatus)
 import { rakna, dagarKvar } from './veckopanel.mjs';
 
 const VECKODAG = ['söndag', 'måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag'];
@@ -74,7 +74,7 @@ async function formularStatus(data) {
   try {
     const mod = await import(data.sjalvrattande);
     const inl = typeof mod.veckoStatus === 'function' ? mod.veckoStatus(data.vecka) : null;
-    const lasf = typeof mod.lasforstaelseStatus === 'function' ? mod.lasforstaelseStatus(data.vecka) : null;
+    const lasf = typeof mod.quizStatus === 'function' ? mod.quizStatus(data.vecka) : null;
     return { inl, lasf };
   } catch { return {}; }
 }
@@ -172,7 +172,7 @@ export async function visa(rot = document) {
   const vecka = {
     ovningar: { text: klaraOvn >= allaOvn ? `✓ Alla ${allaOvn} klara` : `${klaraOvn} av ${allaOvn} klara`, andel: allaOvn ? klaraOvn / allaOvn : 0, klar: klaraOvn >= allaOvn },
     inlamning: formularText(inl),
-    lasforstaelse: formularText(lasf ? { ...lasf, uppgifter: lasf.dokument || lasf.uppgifter } : null),
+    quiz: formularText(lasf ? { ...lasf, uppgifter: lasf.dokument || lasf.uppgifter } : null),
   };
   for (const x of rot.querySelectorAll('.vk[data-vk]')) {
     const s = vecka[x.dataset.vk];
