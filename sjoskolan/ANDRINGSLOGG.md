@@ -243,6 +243,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Lektionsbildernas titelbild mäter rubrikens bredd (Carlito Bold, samma mått som Calibri) i stället för att
+  räkna tecken (`rubrikrader` i `verktyg/lektionsbilder/bygg.py`). ”Komponenter och skydd”, ”Systematisk felsökning” och
+  ”Analys av mätresultat” ryms på en rad men fick plats för två, så underrubriken hamnade för långt ned.
 - **2026-10-11** Vecka 41 övning 3.10 (EL-000886, tången runt motorkabeln): facit sa att 0,2 A kunde vara ”liten osymmetri”.
   Utan neutralledare är summan av fasströmmarna noll också när faserna är olika belastade; 0,2 A är ström som tar en annan
   väg (läckström tillbaka via skrovet) eller tångens eget fel. Sambandet heter nu I_{1} + I_{2} + I_{3} = 0 utan

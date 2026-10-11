@@ -216,13 +216,25 @@ def ovningar_for(lek, nummer):
     return ut
 
 
+def rubrikrader(text, storlek=44, bredd=6.54):
+    """Rader för titelbildens rubrik i rutan (6,6 tum minus marginalerna). Bredden mäts med Carlito Bold, som har samma
+    mått som Calibri: ”Komponenter och skydd” ryms på en rad, ”Riskbedömning och skydd” inte, fast båda har 21–23 tecken.
+    Utan typsnittet: ungefär 20 tecken per rad."""
+    try:
+        from PIL import ImageFont
+        typsnitt = ImageFont.truetype('/usr/share/fonts/truetype/crosextra/Carlito-Bold.ttf', storlek)
+    except (ImportError, OSError):
+        return 1 if len(text) <= 20 else 2
+    return 1 if typsnitt.getlength(text) <= bredd * 72 - 6 else 2
+
+
 # --- bildtyper --------------------------------------------------------------------------------------------------
 def b_titel(prs, lek, nr):
     s = ny_bild(prs)
     s.shapes.add_picture(str(MALL / lek['omslag']), 0, 0, Inches(10), Inches(6.67))
     gradient(s, 0, 0, 10, 6.67)
-    # En lång rubrik får två rader (Calibri 44 pt ryms med ungefär 20 tecken per rad i 6,6 tum); resten flyttas ned.
-    rader = 1 if len(lek['titel']) <= 20 else 2
+    # En lång rubrik får två rader; resten flyttas ned. Bredden mäts (se rubrikrader), inte teckenantalet.
+    rader = rubrikrader(lek['titel'])
     ruta(s, 0.6, 1.1, 6.6, 0.8 * rader + 0.2, [lek['titel']], size=44, bold=True, color=VIT, efter=0, rad=0.95)
     y = 1.1 + 0.8 * rader + 0.25
     ruta(s, 0.6, y, 6.2, 1.0, [lek['underrubrik']], size=22, color=VIT, efter=0)
