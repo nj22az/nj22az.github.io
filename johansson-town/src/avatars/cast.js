@@ -4,6 +4,8 @@ import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
 import {PROFILES} from '../people/profiles.js';
 import {residentPersonality} from '../people/resident-personalities.js';
 import {withTownDials} from './personality.js';
+import {applyLook} from './looks.js';
+import {LOOKS} from './looks-data.js';
 
 /**
  * Who everybody is, as recipes. Johansson and Thuan are drawn from the photographs the
@@ -23,7 +25,7 @@ export const ORIGINAL_THUAN_RECIPE=R({name:'Thuan',
  nose:{style:'dot',size:.35,height:.5},mouth:{style:'smile',colour:'#cc3d52',size:.42,height:.5},
  glasses:{style:'round',colour:'#e06a7a'},blush:.65,
  outfit:HARBOUR_POLO_OUTFIT,swim:{colour:'#e98aa6'}});
-const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō']);
+const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō','Grandmother Tokashiki']);
 const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).map(([name,r])=>{
  const female=PROFILES.find(p=>p.name===name)?.female??FEMALE_NEIGHBOURS.has(name);
  return [name,normalizeRecipe({...r,body:{...r.body,silhouette:r.body.silhouette==='neutral'?(female?'feminine':'masculine'):r.body.silhouette}})];
@@ -144,6 +146,8 @@ export const NEIGHBOUR_RECIPES=castSet({
  'Mrs Nakamura':R({head:{size:.48,shape:.5,form:'round',jaw:0.55,cheeks:0.8},body:{height:.25,build:.6,skin:'#e8bf98'},hair:{style:'bun',colour:'#5a3a22'},eyes:{style:'round',size:.55},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'grin',colour:'#cc3d52'},blush:.5,wrinkles:.4,outfit:{top:'apron',topColour:'#3fa0c8',bottom:'skirt',bottomColour:'#27304d',shoes:'#f4f1ea',hat:'kerchief',hatColour:'#f4f1ea',accent:'#f4f1ea'}}),
  'Mr Shimabukuro':R({head:{size:.48,shape:.5,form:'narrow',jaw:0.5,cheeks:0.35},body:{height:.5,build:.45,skin:'#dca97e'},hair:{style:'sidepart',colour:'#1c1714'},eyes:{style:'almond'},brows:{style:'straight'},nose:{style:'line'},mouth:{style:'smirk'},facial:{style:'moustache',colour:'#1c1714'},wrinkles:.3,outfit:{top:'smock',topColour:'#f4f1ea',bottom:'trousers',bottomColour:'#2b2b2b',shoes:'#2b2b2b'}}),
  'Mrs Yonamine':R({head:{size:.48,shape:.5,form:'heart',jaw:0.3,cheeks:0.65},body:{height:.3,build:.55,skin:'#c98d62'},hair:{style:'ponytail',colour:'#3a2618'},eyes:{style:'sparkle'},brows:{style:'thick'},nose:{style:'button'},mouth:{style:'wide'},blush:.3,outfit:{top:'apron',topColour:'#2f5f9e',bottom:'trousers',bottomColour:'#27304d',shoes:'#f4f1ea',hat:'headband',hatColour:'#d8342c',accent:'#f4f1ea'}}),
+ 'Grandmother Tokashiki':R({head:{size:.48,shape:.5,form:'round',jaw:.55,cheeks:.75},body:{height:.18,build:.55,skin:'#c9915f'},hair:{style:'bun',colour:'#a9a59c'},eyes:{style:'almond',size:.42},brows:{style:'thin',colour:'#7d7a74'},nose:{style:'button',size:.5},mouth:{style:'smile',size:.42},glasses:{style:'round',colour:'#4a3a2c'},wrinkles:.85,blush:.3,outfit:{top:'apron',topColour:'#3f7f86',bottom:'longskirt',bottomColour:'#5a4f45',shoes:'#2b2b2b'}}),
+ 'Old Mr Zukeran':R({head:{size:.47,shape:.55,form:'narrow',jaw:.6,cheeks:.35},body:{height:.42,build:.38,skin:'#a8714a'},hair:{style:'horseshoe',colour:'#e6e3dc'},eyes:{style:'sleepy'},brows:{style:'bushy',colour:'#e0ddd6'},nose:{style:'hook'},mouth:{style:'grin'},facial:{style:'moustache',colour:'#dedbd4'},wrinkles:1,outfit:{top:'kariyushi',topColour:'#d9c79a',bottom:'trousers',bottomColour:'#4a4f55',shoes:'#3a2a1c',hat:'straw',hatColour:'#d8b864'}}),
  'Mrs Miyagi':R({head:{size:.48,shape:.5,form:'oval',jaw:0.35,cheeks:0.4},body:{height:.1,build:.4,skin:'#c98d62'},hair:{style:'bun',colour:'#f4f1ea'},eyes:{style:'sleepy'},brows:{style:'thin',colour:'#d8d6d0'},nose:{style:'button'},mouth:{style:'small'},wrinkles:1,outfit:{top:'blouse',topColour:'#f4f1ea',bottom:'longskirt',bottomColour:'#2f5f9e',shoes:'#2b2b2b'}}),
  'Mr Tamaki':R({head:{size:.48,shape:.5,form:'square',jaw:0.7,cheeks:0.4},body:{height:.6,build:.7,skin:'#c98d62'},hair:{style:'spiky',colour:'#1c1714'},eyes:{style:'round'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'grin'},outfit:{top:'jacket',topColour:'#e8742a',bottom:'trousers',bottomColour:'#27304d',shoes:'#2b2b2b',hat:'headband',hatColour:'#f4f1ea'}}),
  'Kōji':R({head:{size:.48,shape:.5,form:'oval',jaw:0.65,cheeks:0.4},body:{height:.58,build:.5,skin:'#b27449'},hair:{style:'crop',colour:'#3a2618'},eyes:{style:'dot'},brows:{style:'straight'},nose:{style:'button'},mouth:{style:'grin'},outfit:{top:'tee',topColour:'#d8342c',bottom:'shorts',bottomColour:'#2f5f9e',shoes:'#f4f1ea',hat:'kerchief',hatColour:'#2f5f9e'}}),
@@ -167,8 +171,24 @@ const AGE_OF=new Map(PROFILES.map(p=>[p.name,p.age]));
 // A recipe always carries its resident's name: the body's own ways (its gait, its seeded
 // habits) are keyed by it.
 const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name)),named=name&&!recipe.name?{...recipe,name}:recipe;return AGE_OF.has(name)&&named.age!==age?normalizeRecipe({...named,age}):named;};
-export function recipeFor(name=''){
+/**
+ * Everybody's look, in the order World asks for it: the look this device's maker saved for them (wardrobe.js), then
+ * the look published from Johansson Studio (data/studio/looks.json, laid over the drawn recipe by looks.js), then the
+ * recipe drawn here. With no published looks it is exactly baseRecipe.
+ */
+export function recipeFor(name='',{looks=LOOKS}={}){
  const saved=residentRecipe(name);if(saved)return saved;
+ const look=Object.hasOwn(looks,name)?looks[name]:null;
+ return look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
+}
+
+/** Who has a published Studio look: the residents World draws, by how they are drawn. */
+export const RESIDENT_GROUPS=Object.freeze({cast:Object.freeze(Object.keys(CAST_RECIPES)),neighbour:Object.freeze(Object.keys(NEIGHBOUR_RECIPES)),
+ townsfolk:Object.freeze(PROFILES.map(p=>p.name).filter(n=>!CAST_RECIPES[n]&&!NEIGHBOUR_RECIPES[n]))});
+export const RESIDENT_NAMES=Object.freeze(Object.values(RESIDENT_GROUPS).flat());
+
+/** The recipe World draws somebody with, before any saved or published look. */
+export function baseRecipe(name=''){
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
  if(NEIGHBOUR_RECIPES[name])return aged(normalizeRecipe(withTownDials(NEIGHBOUR_RECIPES[name],name)),name);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];

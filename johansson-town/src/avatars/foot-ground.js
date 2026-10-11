@@ -1,12 +1,13 @@
 import * as THREE from '../../vendor/three.module.js';
 
-/** Keep the actual shoe/foot surface on its support, including changed outfits. */
-export function createFootGrounder(avatar){
- const inverse=new THREE.Matrix4(),matrix=new THREE.Matrix4(),point=new THREE.Vector3();
+/** The points of the shoes (or bare feet) each foot bone carries rigidly, in the bone's own frame, from the meshes drawn now
+ *  (worked out again when the outfit changes): a function giving [{bone, samples}]. */
+function footSupports(avatar){
+ const point=new THREE.Vector3();
  let signature='',supports=[];
- function refresh(){
+ return ()=>{
   const meshes=avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible),key=meshes.map(o=>o.uuid).join('/');
-  if(key===signature)return;signature=key;supports=[];
+  if(key===signature)return supports;signature=key;supports=[];
   const seen=new Set();
   for(const mesh of meshes){
    const g=mesh.geometry;if(seen.has(g))continue;seen.add(g);
@@ -23,9 +24,15 @@ export function createFootGrounder(avatar){
     if(samples.length)supports.push({bone,samples});
    }
   }
- }
+  return supports;
+ };
+}
+
+/** Keep the actual shoe/foot surface on its support, including changed outfits. */
+export function createFootGrounder(avatar){
+ const inverse=new THREE.Matrix4(),matrix=new THREE.Matrix4(),point=new THREE.Vector3(),supportsNow=footSupports(avatar);
  return (floor=0,{airborne=false}={})=>{
-  refresh();if(!supports.length)return;
+  const supports=supportsNow();if(!supports.length)return;
   avatar.root.updateWorldMatrix(true,false);inverse.copy(avatar.root.matrixWorld).invert();
   let lowest=Infinity;
   for(const {bone,samples} of supports){
@@ -36,6 +43,24 @@ export function createFootGrounder(avatar){
   // Deliberate jumps keep their lift, but landing/preparation never crosses
   // the floor. Other poses retain a planted supporting foot.
   avatar.root.position.y+=airborne?Math.max(0,correction):correction;
+ };
+}
+
+/**
+ * Each foot's lowest point (the sole standing; the back of the heel with the toes up, sat on the floor), in the body's own
+ * frame (the root's, as the foot grounder measures: add the root's height for the holder's): {L, R}, each {y, z} (z: how far
+ * ahead of the body's middle it is, for the lever a thigh lifts it by).
+ */
+export function createSoleFinder(avatar){
+ const inverse=new THREE.Matrix4(),matrix=new THREE.Matrix4(),point=new THREE.Vector3(),supportsNow=footSupports(avatar);
+ return ()=>{
+  const out={L:{y:Infinity,z:0},R:{y:Infinity,z:0}};
+  avatar.root.updateWorldMatrix(true,false);inverse.copy(avatar.root.matrixWorld).invert();
+  for(const {bone,samples} of supportsNow()){
+   bone.updateWorldMatrix(true,false);matrix.multiplyMatrices(inverse,bone.matrixWorld);const o=out[bone.name==='footL'?'L':'R'];
+   for(const sample of samples){point.copy(sample).applyMatrix4(matrix);if(point.y<o.y){o.y=point.y;o.z=point.z;}}
+  }
+  return out;
  };
 }
 

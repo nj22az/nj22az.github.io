@@ -8,6 +8,7 @@ import {townCalendarAt} from '../../town-clock.js';
 import {buildOnsenLobby,hinokiTexture,LOBBY,ONSEN_DOORWAYS} from './onsen-lobby.js';
 import {buildWashArea,WASH_SEATS} from './onsen-wash.js';
 import {buildOnsenElectrics,isPowered,isWorking,isLive,MASSAGE_CHAIR} from './onsen-electrics.js';
+import {studioAssetsEnabled,placeStudioAsset} from '../studio-assets.js';
 import {buildOnsenTowels} from './onsen-towels.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
 import {buildOnsenFront} from './onsen-front.js';
@@ -200,9 +201,8 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // Room walls as colliders (the doorways are left open).
  for(const [x0,x1,z] of [[-5,-.9,R.hall.front],[.9,5,R.hall.front],[-5,-.8,R.hall.changing],[.8,5,R.hall.changing],[-5,-1,R.hall.bath],[1,5,R.hall.bath]])rect((x0+x1)/2,z,x1-x0,.2,2.8);
  rect(0,R.hall.front,PART,.2,2.8);rect(0,(R.hall.front+R.hall.changing)/2,PART,R.hall.front-R.hall.changing,2.8);
- // The player is a man (Johansson): the women's doorways are closed to him and to him only (`only`); the residents walk
- // through their own side's (indoor-residents.js, by ONSEN_DOORWAYS).
- for(const [x0,x1,z] of [[DW.women.x0,DW.women.x1,R.hall.front],[-.8,-.05,R.hall.changing]])rect((x0+x1)/2,z,x1-x0,.2,2.8).only='player';
+ // Both sides' doorways are open to everyone, the player too (the creator, 2026-10-11: Johansson goes anywhere; nobody in
+ // the game is ever unclothed). The residents still keep to their own side (indoor-residents.js, by ONSEN_DOORWAYS).
 
  // ---- Genkan and bandai.
  rect(-4.8,4.51,.4,1.05,1.4);
@@ -229,9 +229,17 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // The seat is 0.53 m deep (MASSAGE_CHAIR.front): a sitter's knees, a child's too, reach past its front edge, so the lower legs hang
  // in front of it, never inside it (tests/onsen-seats.test.mjs).
  const MC=MASSAGE_CHAIR,depth=4.725-MC.front;
- box([depth,.5,.8],[MC.front+depth/2,.25,3.55],mat(0x5a2c24,.55),'Massage chair seat');box([.18,.95,.8],[4.72,.8,3.55],mat(0x5a2c24,.55),'Massage chair back');
- for(const z of [3.17,3.93])box([depth-.05,.22,.12],[MC.front+(depth+.05)/2,.6,z],mat(0x4a241e,.55),'Massage chair arm');
- rect(MC.front+(4.81-MC.front)/2,3.55,4.81-MC.front,.9,1);seat(ONSEN_SEATS.massage,'Massage chair',()=>isPowered('massage-chair')?'You feed it a hundred-yen coin. It grinds up your back like a slow, well-meaning truck. Ten minutes later you feel two centimetres taller.':(isLive('main')?'You feed it a hundred-yen coin and nothing happens. Its socket is on the changing-room circuit, and that breaker is down. Higa-san hands the coin back.':'You feed it a hundred-yen coin and nothing happens: the whole house is dark. The contract breaker by the bandai has let go. Higa-san hands the coin back.'));
+ // With Studio's assets switched on (studio-assets.js), the chair is Studio's coin massage chair, placed where these
+ // boxes stand (its card's `replaces`): its own colliders, and its seat is ONSEN_SEATS.massage (tests/studio-assets.test.mjs
+ // checks they agree). The room draws the chair's cord, lamp light and rollers itself (onsen-electrics.js).
+ const chair=studioAssetsEnabled()?placeStudioAsset('massage-chair',room,null,{roomDraws:['cord'],squareOnly:true}):null;
+ if(chair)for(const c of chair.colliders)rect(c.x,c.z,c.w,c.d,c.height).minY=c.minY;
+ else{
+  box([depth,.5,.8],[MC.front+depth/2,.25,3.55],mat(0x5a2c24,.55),'Massage chair seat');box([.18,.95,.8],[4.72,.8,3.55],mat(0x5a2c24,.55),'Massage chair back');
+  for(const z of [3.17,3.93])box([depth-.05,.22,.12],[MC.front+(depth+.05)/2,.6,z],mat(0x4a241e,.55),'Massage chair arm');
+  rect(MC.front+(4.81-MC.front)/2,3.55,4.81-MC.front,.9,1);
+ }
+ seat(ONSEN_SEATS.massage,'Massage chair',()=>isPowered('massage-chair')?'You feed it a hundred-yen coin. It grinds up your back like a slow, well-meaning truck. Ten minutes later you feel two centimetres taller.':(isLive('main')?'You feed it a hundred-yen coin and nothing happens. Its socket is on the changing-room circuit, and that breaker is down. Higa-san hands the coin back.':'You feed it a hundred-yen coin and nothing happens: the whole house is dark. The contract breaker by the bandai has let go. Higa-san hands the coin back.'));
  const clock=new THREE.Group();clock.position.set(0,2.45,R.hall.front+.08);room.add(clock);
  clock.add(new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.04,24).rotateX(Math.PI/2),mat(0xf6f1e6,.5)));
  const hands=[new THREE.Mesh(new THREE.BoxGeometry(.012,.13,.01),mat(0x222222)),new THREE.Mesh(new THREE.BoxGeometry(.008,.17,.01),mat(0x222222))];
@@ -242,7 +250,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // The street doors, the porch beyond them, the shoes at the step and the umbrella stand.
  const front=buildOnsenFront({room,rect,anchor,action});
  // The straw jar on the milk cooler, the uchiwa rack by the tatami, the rubber plant by the bath door, the account book.
- const props=buildOnsenProps({room,rect,anchor,action});
+ const props=buildOnsenProps({room,rect,anchor,action,chair});
 
  // ---- Changing room.
  for(let i=0;i<6;i++)for(let r=0;r<2;r++){const z=1.25-i*.42;box([.45,.9,.4],[-4.75,.45+r*.95,z],mat(0xb9b2a0,.45),'Locker');box([.02,.12,.08],[-4.52,.55+r*.95,z+.12],mat(0xc9a13c,.3),'Locker key');}
@@ -349,7 +357,7 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // The breaker board and what hangs off it (the lamp fixtures and their lights, the dryers), and the towels.
  // The board also sets the sun (day × 1.6), so a dead house keeps only the daylight's share of it.
  const harbour=buildOnsenNight({room});
- const power=buildOnsenElectrics({room,rect,anchor,action,sun,sunAtNoon:1.6,hall:R.hall});buildOnsenTowels({room,rect});
+ const power=buildOnsenElectrics({room,rect,anchor,action,sun,sunAtNoon:1.6,hall:R.hall,chair});buildOnsenTowels({room,rect});
  // The steam off both baths and the evening haze at the street door (onsen-steam.js), lit by the lamps above.
  const steam=buildOnsenSteam({room,R});
 

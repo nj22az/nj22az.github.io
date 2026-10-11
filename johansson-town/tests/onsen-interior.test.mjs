@@ -5,7 +5,7 @@ import {buildOnsenInterior,ONSEN_ROOM,ONSEN_SEATS} from '../src/world/interiors/
 import {circleHitsRect} from '../physics.js';
 
 const build=()=>{const room=new THREE.Group(),hits=[],actions=[];const layout=buildOnsenInterior({room,reg:(o,label,fn)=>hits.push({o,label,fn}),action:(...a)=>actions.push(a),exit(){}});return {room,hits,actions,layout};};
-// Who walks: the player (a man) is kept out of the women's side by colliders only he meets; residents are not.
+// Who walks: everyone, the player too, through either side (the creator, 2026-10-11: Johansson goes anywhere).
 const blocked=(layout,x,z,r=.3,who='player')=>layout.colliders.some(c=>(!c.only||c.only===who)&&circleHitsRect(x,z,r,c));
 
 test('Umi-no-yu is a room you walk through: bandai, lockers, washing places, two baths, the door',()=>{
@@ -17,7 +17,7 @@ test('Umi-no-yu is a room you walk through: bandai, lockers, washing places, two
  assert.ok(!blocked(layout,0,4.2,.25),'in through the middle metre of the genkan step');
  for(const z of [3,1.6,0,-1.2,-2.5,-4.4,-4.75])assert.ok(!blocked(layout,.45,z,.25),'the men\'s way through is open at z='+z);
  for(const z of [3,1.6,0,-1.2,-2.5,-4.4,-4.75])assert.ok(!blocked(layout,-.45,z,.25,'resident'),'the women\'s way through is open at z='+z);
- for(const z of [1.6,-1.2])assert.ok(blocked(layout,-.45,z,.25),'the player is kept out of the women\'s side at z='+z);
+ for(const z of [3,1.6,0,-1.2,-2.5,-4.4,-4.75])assert.ok(!blocked(layout,-.45,z,.25),'the player may walk the women\'s side too at z='+z);
 });
 
 test('every seat can be reached, and the baths put you in the water up to the chest',()=>{

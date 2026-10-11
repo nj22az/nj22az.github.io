@@ -8,7 +8,7 @@
 // view (stools, benches, sofas: where the seat is, its height and which way a sitter faces).
 // The comic renderer rebuilds that camera and draws the residents with the depth, so they stand
 // and sit inside the room.
-// node tools/render-feed-backdrops.mjs [--seats-only] [id …]   (serves the repository itself; needs the built runtime)
+// node tools/render-feed-backdrops.mjs [--seats-only] [--source] [id …]   (serves the repository itself; the built runtime, or the source with --source)
 // --seats-only keeps the pictures and depth and refreshes only the seats in views.json.
 import {chromium} from 'playwright';
 import {createServer} from 'node:http';
@@ -23,12 +23,29 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),site=resolve(ro
 const args=process.argv.slice(2),seatsOnly=args.includes('--seats-only'),only=new Set(args.filter(a=>!a.startsWith('--')));
 const W=1600,H=1200,DEPTH_FAR=60;
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.svg':'image/svg+xml','.ogg':'audio/ogg','.mp3':'audio/mpeg','.wasm':'application/wasm','.ktx2':'image/ktx2','.woff2':'font/woff2'};
+/**
+ * --source: draw the game from its source modules rather than the built runtime (tools/ferry-look.mjs does
+ * the same), so a change can be photographed before the runtime is rebuilt.
+ */
+const SOURCE=args.includes('--source');
+const sourcePage=html=>html.replace(/<link rel="modulepreload" data-town-runtime[^>]*>\n?/g,'')
+ .replace(/import\(['"]\.\/runtime\/boot-[^'"]+['"]\)/g,"import('./src/boot.js')")
+ .replace(/from ['"]\.\/runtime\/audio-[^'"]+['"]/g,"from './src/audio/town-audio.js?snappy=1'")
+ .replace(/window\.JOHANSSON_FEED_MODULE="[^"]+"/,'window.JOHANSSON_FEED_MODULE="./src/feed/mount.js"')
+ .replace(/window\.JOHANSSON_PORTRAIT_MODULE="[^"]+"/,'window.JOHANSSON_PORTRAIT_MODULE="./src/avatars/guide-portraits.js"');
 const server=createServer(async(req,res)=>{
  try{const path=decodeURIComponent(new URL(req.url,'http://x').pathname);const file=resolve(site,'.'+(path.endsWith('/')?path+'index.html':path));
-  if(!file.startsWith(site))throw Error('outside');res.writeHead(200,{'content-type':TYPES[extname(file)]||'application/octet-stream'});res.end(await readFile(file));}
+  if(!file.startsWith(site))throw Error('outside');let body=await readFile(file);if(SOURCE&&file===resolve(root,'index.html'))body=sourcePage(body.toString());
+  res.writeHead(200,{'content-type':TYPES[extname(file)]||'application/octet-stream'});res.end(body);}
  catch{res.writeHead(404);res.end();}
 });
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
+/** PNG to WebP with ImageMagick, or with Python's Pillow where ImageMagick is not installed (the same settings). */
+function webp(src,dst,{quality=80,lossless=false,resize=null}={}){
+ try{execFileSync('convert',[src,...(resize?['-resize',resize.join('x')]:[]),...(lossless?['-define','webp:lossless=true']:['-quality',String(quality)]),'-define','webp:method=6',dst]);}
+ catch(e){if(e.code!=='ENOENT')throw e;
+  execFileSync('python3',['-I','-c','import sys,json\nfrom PIL import Image\nsrc,dst,o=sys.argv[1],sys.argv[2],json.loads(sys.argv[3])\nim=Image.open(src)\nif o.get("resize"):im=im.resize(tuple(o["resize"]),Image.LANCZOS)\nim.save(dst,"WEBP",method=6,**({"lossless":True} if o.get("lossless") else {"quality":o["quality"]}))',src,dst,JSON.stringify({quality,lossless,resize})]);}
+}
 const out=resolve(root,'assets/images/feed');await mkdir(out,{recursive:true});
 const viewsPath=resolve(out,'views.json');
 const views=existsSync(viewsPath)?JSON.parse(await readFile(viewsPath,'utf8')):{};
@@ -128,11 +145,11 @@ try{
   await page.evaluate(()=>window.__JOHANSSON_AUDIT__.render());
   if(seatsOnly){const seats=await page.evaluate(seatScan);const view=views[place.id]?.[name];if(view){view.seats=seats;delete view.spots.seat;}console.log('Seats:',place.id,name,seats.length);return;}
   const png=resolve(out,'.capture.png');await page.locator('#game').screenshot({path:png});
-  execFileSync('convert',[png,'-quality','80','-define','webp:method=6',resolve(out,`${place.id}-${name}.webp`)]);
-  if(name==='wide')execFileSync('convert',[png,'-resize','960x720','-quality','78','-define','webp:method=6',resolve(out,place.id+'.webp')]);
+  webp(png,resolve(out,`${place.id}-${name}.webp`),{quality:80});
+  if(name==='wide')webp(png,resolve(out,place.id+'.webp'),{quality:78,resize:[960,720]});
   await unlink(png);
   const m=await measure(),seats=await page.evaluate(seatScan),depthPng=resolve(out,'.depth.png');await writeFile(depthPng,Buffer.from(m.depth,'base64'));
-  execFileSync('convert',[depthPng,'-define','webp:lossless=true','-define','webp:method=6',resolve(out,`${place.id}-${name}-depth.webp`)]);await unlink(depthPng);
+  webp(depthPng,resolve(out,`${place.id}-${name}-depth.webp`),{lossless:true});await unlink(depthPng);
   (views[place.id]??={})[name]={camera:m.camera,floor:m.floor,spots:m.spots,seats};
   console.log('View:',place.id,name,'stand',m.spots.stand.length,'seats',seats.length,'counter',m.spots.counter.length);
  };

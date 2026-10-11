@@ -75,7 +75,7 @@ test('the women’s side’s prompts are not offered through the partition to a 
  layout.dispose();
 });
 
-test('everyone reaches their own changing room and the baths; the player (a man) never the women’s side',()=>{
+test('everyone reaches their own changing room and the baths; the player may go anywhere, the women’s side too',()=>{
  const {layout}=build();
  const B=ONSEN_ROOM.bounds,resident=blockedFor(layout,'resident'),player=blockedFor(layout,'player');
  const nav=blocked=>createNavigation(blocked,{step:.2,heightAt:()=>0,bounds:B});
@@ -93,12 +93,12 @@ test('everyone reaches their own changing room and the baths; the player (a man)
   // residents' 0.32 m raster, as they were before the split; nobody is routed there yet. The island's east face is open.)
   for(const id of ['wash6','wash7'])assert.ok(r.path({x:cx,z:cz},{x:ONSEN_SEATS[id].stand[0],z:ONSEN_SEATS[id].stand[2]}).length,side+' reaches '+id);
  }
- // The player gets to the men's side and the baths, and finds no way into the women's.
+ // The player gets to the men's side, the baths and the women's side too (the creator, 2026-10-11: Johansson goes anywhere).
  const p=nav(player);
  assert.ok(p.path(spawn,{x:ONSEN_DOORWAYS.men.changeAt[0],z:ONSEN_DOORWAYS.men.changeAt[2]}).length,'the player reaches the baskets');
  assert.ok(p.path(spawn,{x:ONSEN_SEATS.rock.stand[0],z:ONSEN_SEATS.rock.stand[2]}).length,'and the rock bath');
- assert.deepEqual(p.path(spawn,{x:ONSEN_DOORWAYS.women.changeAt[0],z:ONSEN_DOORWAYS.women.changeAt[2]}),[],'and not the women’s lockers');
- assert.deepEqual(p.path({x:ONSEN_SEATS.rock.stand[0],z:ONSEN_SEATS.rock.stand[2]},{x:-3,z:.2}),[],'not even from the bath hall');
+ assert.ok(p.path(spawn,{x:ONSEN_DOORWAYS.women.changeAt[0],z:ONSEN_DOORWAYS.women.changeAt[2]}).length,'and the women’s lockers');
+ assert.ok(p.path({x:ONSEN_SEATS.rock.stand[0],z:ONSEN_SEATS.rock.stand[2]},{x:-3,z:.2}).length,'and from the bath hall');
  layout.dispose();
 });
 

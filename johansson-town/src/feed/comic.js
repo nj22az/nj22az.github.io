@@ -3,6 +3,7 @@ import {buildAvatar} from '../avatars/build.js';
 import {createAvatarAnimator,GESTURES} from '../avatars/animate.js';
 import {recipeFor} from '../avatars/cast.js';
 import {drawBackground,drawFaceFx,drawSfx} from './manga-fx.js';
+import {feedPlace} from './places.js';
 import {buildServingDrink} from '../people/izakaya-serving-visuals.js';
 import {fitAvatarHeldProp,poseAvatarConsumption} from '../avatars/consume.js';
 
@@ -172,7 +173,11 @@ function arrange(set,view,count,seed,sitting,clear){
  const near=pick.length?1.8:2.4;
  const fits=(spot,min)=>pick.every(p=>{const d=Math.hypot(p.x-spot.x,p.z-spot.z);return d>min&&d<near&&Math.abs(p.sx-spot.sx)>.13&&Math.abs(p.d-spot.d)<1.2;});
  for(const min of [1,.8,.6])for(const spot of stands){if(pick.length>=count)break;if(fits(spot,min))pick.push(spot);}
- for(const spot of stands){if(pick.length>=count)break;if(apart(spot))pick.push(spot);}
+ // No spot a conversation apart in the ideal band: the nearest open spot to the people already
+ // placed, about an arm's length beyond a person's width, not the best-framed spot anywhere.
+ // Side by side on screen first (one behind the other hides a face), then the nearest.
+ const gap=spot=>pick.length?Math.min(...pick.map(p=>Math.abs(Math.hypot(p.x-spot.x,p.z-spot.z)-1.2)+(Math.abs(p.sx-spot.sx)<.12?10:0))):0;
+ for(const spot of [...stands].sort((a,b)=>gap(a)-gap(b))){if(pick.length>=count)break;if(apart(spot))pick.push(spot);}
  return pick.map(p=>({x:p.x,y:p.y,z:p.z,seat:p.seat||null}));
 }
 
@@ -199,7 +204,10 @@ export async function renderComic({panels,place,props={},sitting=false},{base='.
  if(set)try{world=await buildPlace(place,base);}catch(error){console.warn('Comic set',place,'drawn from its picture:',error.message);}
  // Standing spots only where a whole person fits: the place's own colliders when it is built
  // (arms out, so a little wider than a body), else every captured view's depth.
- const clear=world?(x,y,z)=>!world.blocked(x,z,.32):roomToStand(set?await Promise.all(Object.entries(set).map(async([name,view])=>({view,px:pixelsOf(await load(`${base}assets/images/feed/${place}-${name}-depth.webp`))}))):[]);
+ // and, in the 3D place, where the main view sees them whole: not behind a ring of stones or a
+ // quay block from the knees down.
+ const seenAt=world&&set?(x,y,z)=>{const view=set.push||set.wide;return inSightOf(view,world,[{mark:{x,y:world.floor(x,z),z,seat:null}}]);}:null;
+ const clear=world?(x,y,z)=>!world.blocked(x,z,.32)&&seenAt(x,y,z):roomToStand(set?await Promise.all(Object.entries(set).map(async([name,view])=>({view,px:pixelsOf(await load(`${base}assets/images/feed/${place}-${name}-depth.webp`))}))):[]);
  const marks=set?blocking(set,names.length,seed,sitting,clear)?.map(m=>world&&!m.seat?{...m,y:world.floor(m.x,m.z)}:m):null,markOf=new Map(names.map((n,j)=>[n,marks?.[j]??null]));
  try{
   for(const [i,p] of panels.entries()){
@@ -207,7 +215,7 @@ export async function renderComic({panels,place,props={},sitting=false},{base='.
    const panel=document.createElement('canvas');panel.width=w;panel.height=h;const ctx=panel.getContext('2d');
    const shot=p.shot||'medium',scene=new THREE.Scene();
    const actors=p.actors.map(a=>({...a,...cast.get(a.name),mark:markOf.get(a.name),drink:props[a.name]||null}));
-   if(world&&shot!=='eyes'&&actors.every(a=>a.mark))drawWorldPanel({ctx,w,h,set,world,p,shot,actors,i});
+   if(world&&shot!=='eyes'&&actors.every(a=>a.mark))drawWorldPanel({ctx,w,h,set,world,p,shot,actors,i,minutes:feedPlace(place)?.shot?.time??720});
    else if(set&&shot!=='eyes'&&actors.every(a=>a.mark))await drawSetPanel({ctx,w,h,set,p,shot,actors,scene,base,place,i});
    else await drawStudioPanel({ctx,w,h,p,shot,actors,scene,base,place,i});
    // A rounded panel with an ink border, set into the page.
@@ -322,8 +330,11 @@ async function drawSetPanel({ctx,w,h,set,p,shot,actors,scene,base,place,i}){
  const feet=actors.map(a=>px(new THREE.Vector3(a.at.x,a.at.y,a.at.z))),crowns=heads.map(hd=>px(hd.top));
  const tall=Math.max(40,...actors.map((a,j)=>feet[j][1]-crowns[j][1])),faceH=Math.max(20,px(focus.top.clone().setY(focus.top.y-focus.size))[1]-px(focus.top)[1]);
  let ch={wide:tall/.38,medium:tall/.72,low:tall/.66,high:tall/.62,dutch:tall/.72,close:faceH/.48,'close-thing':VIEW_H/2.6}[shot]||tall/.7;
- ch=Math.min(VIEW_H,Math.max(VIEW_H/4.2,ch));let cw=ch*w/h;if(cw>VIEW_W){cw=VIEW_W;ch=cw*h/w;}
  const left=Math.min(...crowns.map(c=>c[0])),right=Math.max(...crowns.map(c=>c[0]));
+ // Everyone in the picture: a shot of two people standing apart widens until both fit, a
+ // shoulder's width either side, rather than cutting one of them off at the panel's edge.
+ if(shot!=='close'&&shot!=='close-thing'&&actors.length>1)ch=Math.max(ch,(right-left+tall*.7)*h/w);
+ ch=Math.min(VIEW_H,Math.max(VIEW_H/4.2,ch));let cw=ch*w/h;if(cw>VIEW_W){cw=VIEW_W;ch=cw*h/w;}
  let cx=VIEW_W*(.3+((i*37)%40)/100),cy=VIEW_H*.5;
  if(shot==='close'){const c=px(focus.centre);cx=c[0];cy=c[1]+ch*.12;}
  else if(shot!=='close-thing'){cx=(left+right)/2;const top=Math.min(...crowns.map(c=>c[1])),bottom=Math.max(...feet.map(f=>f[1]));cy=shot==='wide'?(top+bottom)/2+ch*.05:top+ch*.5-ch*.2;}
@@ -401,8 +412,11 @@ function frame({camera,actors,p,shot,w,h,i}){
  const feet=actors.map(a=>px(new THREE.Vector3(a.at.x,a.at.y,a.at.z))),crowns=heads.map(hd=>px(hd.top));
  const tall=Math.max(40,...actors.map((a,j)=>feet[j][1]-crowns[j][1])),faceH=Math.max(20,px(focus.top.clone().setY(focus.top.y-focus.size))[1]-px(focus.top)[1]);
  let ch={wide:tall/.38,medium:tall/.72,low:tall/.66,high:tall/.62,dutch:tall/.72,close:faceH/.48,'close-thing':VIEW_H/2.6}[shot]||tall/.7;
- ch=Math.min(VIEW_H,Math.max(VIEW_H/4.2,ch));let cw=ch*w/h;if(cw>VIEW_W){cw=VIEW_W;ch=cw*h/w;}
  const left=Math.min(...crowns.map(c=>c[0])),right=Math.max(...crowns.map(c=>c[0]));
+ // Everyone in the picture: a shot of two people standing apart widens until both fit, a
+ // shoulder's width either side, rather than cutting one of them off at the panel's edge.
+ if(shot!=='close'&&shot!=='close-thing'&&actors.length>1)ch=Math.max(ch,(right-left+tall*.7)*h/w);
+ ch=Math.min(VIEW_H,Math.max(VIEW_H/4.2,ch));let cw=ch*w/h;if(cw>VIEW_W){cw=VIEW_W;ch=cw*h/w;}
  let cx=VIEW_W*(.3+((i*37)%40)/100),cy=VIEW_H*.5;
  if(shot==='close'){const c=px(focus.centre);cx=c[0];cy=c[1]+ch*.12;}
  else if(shot!=='close-thing'){cx=(left+right)/2;const top=Math.min(...crowns.map(c=>c[1])),bottom=Math.max(...feet.map(f=>f[1]));cy=shot==='wide'?(top+bottom)/2+ch*.05:top+ch*.5-ch*.2;}
@@ -415,7 +429,7 @@ function frame({camera,actors,p,shot,w,h,i}){
  * A panel shot in the real place in 3D: the residents added to the room's own scene on their
  * marks, one render with the room's light and shadows, then the lettering.
  */
-function drawWorldPanel({ctx,w,h,set,world,p,shot,actors,i}){
+function drawWorldPanel({ctx,w,h,set,world,p,shot,actors,i,minutes}){
  const wanted=set[VIEWS[shot]]?VIEWS[shot]:set.push?'push':'wide';
  let viewName=wanted;
  for(const name of [...new Set([wanted,'push','wide','high','low'])])if(set[name]&&inSightOf(set[name],world,actors)){viewName=name;break;}
@@ -429,7 +443,9 @@ function drawWorldPanel({ctx,w,h,set,world,p,shot,actors,i}){
  // The sun (or the room's key light) over the residents, so their shadows fall on this floor.
  const mid=new THREE.Vector3(actors.reduce((t,a)=>t+a.at.x,0)/actors.length,actors.reduce((t,a)=>t+a.at.y,0)/actors.length,actors.reduce((t,a)=>t+a.at.z,0)/actors.length);
  if(world.sun){world.sun.position.set(mid.x+5,mid.y+10,mid.z+6);world.sun.target.position.copy(mid);world.sun.target.updateMatrixWorld();world.sun.shadow.needsUpdate=true;}
- const r=context(w,h);r.setClearColor(0,1);r.clear();world.sky?.update(camera,1,false,false);r.render(world.scene,camera);
+ // The place's hour (places.js shot.time): the pier at six in the evening, the harbour at four.
+ world.setClock?.(minutes,camera);
+ const r=context(w,h);r.setClearColor(0,1);r.clear();r.render(world.scene,camera);
  const layer=document.createElement('canvas');layer.width=w;layer.height=h;const lc=layer.getContext('2d');lc.drawImage(r.domElement,0,0,w,h);
  const tops=show?heads.map(hd=>toPanel(hd,camera,w,h)):[];
  if(p.bg){

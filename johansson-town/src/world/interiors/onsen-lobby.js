@@ -354,9 +354,9 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
    const tex=paperWarTexture(kind),m=new THREE.Mesh(new THREE.PlaneGeometry(...size),new THREE.MeshStandardMaterial(tex?{map:tex,roughness:.9}:{color:0xf6f3ea,roughness:.9}));
    m.position.set(slitX-pivot.position.x,y-NOREN.top,face*.004);if(face<0)m.rotation.y=Math.PI;m.name=kind==='reserved'?'Reserved sign':'Hair rights sign';m.userData.paperWar=kind;m.visible=false;pivot.add(m);paper[kind]=m;}}
  const cloth=createNorenMotion(noren.map(p=>({side:p.userData.side,panel:p.userData.panel,x:p.position.x,half:(ONSEN_DOORWAYS.women.x1-ONSEN_DOORWAYS.women.x0-NOREN.slit)/4})),R.hall.front);
- // A man at the crimson noren: Mrs Higa sends him to the indigo one without looking up.
+ // A man at the crimson noren: Mrs Higa points him to the indigo one without looking up, and lets him go on if he must.
  {const W=ONSEN_DOORWAYS.women;anchor([(W.x0+W.x1)/2,1.4,R.hall.front+.35],'Women’s side',()=>action('inspect','The women’s side',
-  'The crimson noren with the kanji for woman on it is the women’s side: their lockers, the mirrors and the hair dryers. Higa-san, without looking up from her account book: “Gentlemen through the indigo one, dear. Man is the kanji with the rice field and the strength in it.”'));}
+  'The crimson noren with the kanji for woman on it is the women’s side: their lockers, the mirrors and the hair dryers. Higa-san, without looking up from her account book: “That’s the ladies’ curtain, dear. Man is the kanji with the rice field and the strength in it. Go on, then, if you must, but call out before you go through.”'));}
 
  // ---- 本日の湯 board and a travel poster on the changing-room wall.
  const bathCanvas=typeof document!=='undefined'&&document.createElement?document.createElement('canvas'):null;

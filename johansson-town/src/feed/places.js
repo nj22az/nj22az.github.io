@@ -54,7 +54,7 @@ export const FEED_PLACES=Object.freeze([
   things:['the end of the pier','a fishing rod','the warning light','a bucket of bait','the sea'],
   doing:['fishing off the pier','watching the sunset','reading the night warning sign','feeding a gull'],
   activity:{hold:['can','draft'],chance:.6,sit:0},
-  shot:{at:[-1.6,-56],camera:{pos:[-1.2,1.8,-50],at:[-1.6,1,-64]},time:1080}},
+  shot:{at:[-.6,-83.2],camera:{pos:[-1.2,1.8,-80.2],at:[-1.6,1,-94.2]},time:1080}},
  {id:'ferry',name:'the Minato Maru',short:'the ferry',kind:'work',regulars:['Bus driver','Harbour master'],
   things:['the gangway','the bow ramp','the bow line on its bollard','the wheelhouse wing','the orange life floats','the funnel','the name on her bow','the draft marks','the stern capstan','the car lashings'],
   doing:['waiting for the gangway','watching the ramp come down','backing a kei truck aboard','reading the name on her bow','reading the draft marks','coiling the bow line','waving from the wheelhouse wing','counting the cars aboard'],
@@ -85,5 +85,10 @@ export const FEED_PLACES=Object.freeze([
   doing:['lighting a stick of incense','sitting under the banyans','asking the sea for a good catch','getting their breath back after the climb'],
   activity:{hold:['coffee'],chance:.2,sit:0},
   shot:{at:[65,198],camera:{pos:[58.5,14.6,192.5],at:[66,13.3,199]},time:420}},
+ {id:'fumoto-square',name:'the square in Fumoto',short:'Fumoto',kind:'outdoor',regulars:['Old Mr Zukeran','Grandmother Tokashiki'],
+  things:['the old gajumaru','the village well','the stone bench','the co-op store’s telephone','the hamlet notice board','Old Mr Zukeran’s sanshin','the goats behind the Zukeran house','warm island tofu'],
+  doing:['sitting on the stone bench','drawing water at the well','reading the cane-cut rota','queueing for the co-op telephone','listening to the sanshin','chasing a goat back to its pen'],
+  activity:{hold:['can','coffee'],chance:.4,sit:0},
+  shot:{at:[40.5,216.6],camera:{pos:[35.6,1.7,222.6],at:[41.2,1.2,212.5]},time:1050}},
 ]);
 export const feedPlace=id=>FEED_PLACES.find(p=>p.id===id);

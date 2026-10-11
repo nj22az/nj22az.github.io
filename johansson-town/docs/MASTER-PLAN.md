@@ -29,6 +29,7 @@ purpose. Re-run the survey after any change to ground, colliders or doors.
 | Minato harbour town | Daily life: Sakura Shōten, Front-Row Books, the harbour office, Harbour Park, izakaya and ramen | On foot |
 | Rainflower Lane, Aoba Garden | Second shopping street, Umi-no-yu, the pond garden | Short walk south of Main Street |
 | The uplands | Cane fields, the Ōshiro farmstead, tombs, Aoba Radio, the coastal road loop | Walk or cycle; coastal bus |
+| Fumoto | The farming hamlet at the foot of Mount Aoba: four houses, the co-op store, the well and the square | Main lane from the coastal road; on the way up the summit path |
 | Mount Aoba | The island's landmark hill, 14 m, south-east of Aoba Radio (`ISLAND.mountain`) | Walk up any side; slopes stay climbable |
 | Hoshizaki, West Cape | Fishing village, store, guesthouse; the lighthouse | Coastal road; village bus |
 | Kitano-jima | Coral Bay, the jungle trail to the Hinata lookout, Turtle Cove; the airport plaza, three kiosks, the departure lounge | Car ferry from the town quay; Naha commuter from Gate 1 |
@@ -83,9 +84,31 @@ Kitano-jima's terrain, outline, trails and plantings are `src/world/tropical-isl
   the middle pair slid open for a 1.8 m entrance, a granite step and a two-groove track. The window looks out
   through the frontage's own koshi slats.
 
+## Fumoto, 11 October 2026
+
+Fumoto (麓, "the foot of the mountain") is the farming hamlet at the south-west foot of Mount Aoba, built as an
+Okinawan buraku of the seventies to nineties (`fumoto-layout.js`, `okinawa/fumoto.js`).
+
+- **Plan.** A main lane of white coral sand runs from the coastal road, through the gap between the two south cane
+  fields, past the hamlet and up to the summit path below Aoba Radio, so the hamlet is on the way up the mountain.
+  Two cross lanes run west from it. Four walled houses face south onto them, as Okinawan houses do: three red-tile
+  houses with coral-stone walls and a hinpun, and one concrete house with a block wall, rebuilt after a typhoon.
+  The mountain's foot is eased back from the hamlet so that its ground is level, at Kitahama's height.
+- **Village things.** The kyōdō baiten (co-op store), which the hamlet owns in shares, has its post box, telephone,
+  bench and drinks machine. The asagi square has an old gajumaru, the village well and a stone bench. There are
+  ishiganto stones at both T-junctions, a fukugi windbreak behind the houses, kitchen gardens across the lower lane,
+  Old Mr Zukeran's goat pen, and a pole line up the lane from the coast road.
+- **People.** The Kuniyoshi (the kuchō), Tokashiki, Ishimine (tofu at dawn) and Zukeran households have family homes
+  with lit windows that follow farmers' hours. Grandmother Tokashiki keeps the co-op store; Old Mr Zukeran feeds his
+  goats, weeds the garden and plays the sanshin under the gajumaru in the evening. Both are in the resident guide
+  with portraits and photographs.
+- **Trade.** The co-op buys its everyday goods from Sakura Trading and its awamori and beer from Higa Liquor
+  (`merchandising.js`), collected on Wednesdays by the store's van. The Ishimines' tofu is made for its counter.
+- **Stories.** The square is a storyteller place (`fumoto-square`) with captured backdrops.
+- **Survey.** No door is unreachable. The goat pen is closed on purpose, like the Ōshiro cattle pen.
+
 ## Next
 
 - Day-trippers: ferry arrivals that bring visitors with towels to Coral Bay. This needs new residents with portraits
   in the resident guide.
-- A hamlet at the foot of Mount Aoba, with households and routines.
 - Outline and shadow pass budgets on iPad: the largest remaining frame cost.
