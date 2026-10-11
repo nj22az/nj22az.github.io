@@ -47,8 +47,31 @@ export function addPlayer(storage,name,now=Date.now()){
 export function switchPlayer(storage,id){const roster=readPlayers(storage);if(!roster.players.some(p=>p.id===id))return false;roster.active=id;return writePlayers(storage,roster);}
 export function renamePlayer(storage,name){const roster=readPlayers(storage),p=roster.players.find(p=>p.id===roster.active);if(!p||!cleanName(name))return false;p.name=cleanName(name);return writePlayers(storage,roster);}
 export function touchPlayer(storage,now=Date.now()){const roster=readPlayers(storage),p=roster.players.find(p=>p.id===roster.active);if(p){p.lastPlayed=now;writePlayers(storage,roster);}}
+/**
+ * Never destroy the only good copy (Mario Artist's file system writes a temporary file, then renames: research/mario-artist
+ * report.md §2.5). localStorage writes a key whole, so the dangers here are different: a save that no longer reads (a bug,
+ * an extension), a full storage quota, and a load that half-fails and is then saved over with defaults.
+ *   writeSave  keeps the last save that reads as the previous copy (<key>~prev) before writing the new one; when the
+ *              storage is full it gives up the previous copy first, never the save itself
+ *   readSave   falls back to the previous copy when the save does not read
+ *   rescueSave keeps the raw save once (<key>~rescue, never overwritten) when loading it failed part-way, so the next
+ *              auto-save cannot destroy the only good copy; the game says so
+ */
+export const PREV_SUFFIX='~prev',RESCUE_SUFFIX='~rescue';
+const readsAsSave=text=>{try{const v=JSON.parse(text);return !!v&&typeof v==='object'&&!Array.isArray(v);}catch{return false;}};
+export function writeSave(storage,key,json){
+  const now=storage.getItem(key);
+  if(now!=null&&now!==json&&readsAsSave(now))try{storage.setItem(key+PREV_SUFFIX,now);}catch{try{storage.removeItem(key+PREV_SUFFIX);}catch{}}
+  try{storage.setItem(key,json);return true;}
+  catch{try{storage.removeItem(key+PREV_SUFFIX);storage.setItem(key,json);return true;}catch{return false;}}
+}
+export function rescueSave(storage,key){
+  try{if(storage.getItem(key+RESCUE_SUFFIX)!=null)return false;const raw=storage.getItem(key);if(raw==null)return false;storage.setItem(key+RESCUE_SUFFIX,raw);return true;}catch{return false;}
+}
+/** The key the active player's save lives under. */
+export const activeSlot=storage=>slotKey(readPlayers(storage).active);
 export function readSave(storage){
   const slot=slotKey(readPlayers(storage).active);
-  for(const key of slot===SAVE_KEY?[SAVE_KEY,...LEGACY_KEYS]:[slot])try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object'&&!Array.isArray(value)){if(Array.isArray(value.visited))value.visited=migratedVisits(value.visited.filter(id=>typeof id==='string'));return migrateThuan(value);}}catch{}
+  for(const key of slot===SAVE_KEY?[SAVE_KEY,SAVE_KEY+PREV_SUFFIX,...LEGACY_KEYS]:[slot,slot+PREV_SUFFIX])try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object'&&!Array.isArray(value)){if(Array.isArray(value.visited))value.visited=migratedVisits(value.visited.filter(id=>typeof id==='string'));return migrateThuan(value);}}catch{}
   return null;
 }

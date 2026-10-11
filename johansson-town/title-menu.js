@@ -1,4 +1,4 @@
-import {readPlayers,switchPlayer,addPlayer,slotKey,SAVE_KEY,LEGACY_KEYS} from './src/save.js';
+import {readPlayers,switchPlayer,addPlayer,slotKey,SAVE_KEY,LEGACY_KEYS,PREV_SUFFIX} from './src/save.js';
 import {heartsFor} from './src/people/friendship.js';
 import {decoratorEnabled} from './src/features.js';
 
@@ -10,7 +10,7 @@ const storage=globalThis.localStorage;
 const $=id=>document.getElementById(id);
 
 function savedState(id){
- for(const key of slotKey(id)===SAVE_KEY?[SAVE_KEY,...LEGACY_KEYS]:[slotKey(id)]){
+ for(const key of slotKey(id)===SAVE_KEY?[SAVE_KEY,SAVE_KEY+PREV_SUFFIX,...LEGACY_KEYS]:[slotKey(id),slotKey(id)+PREV_SUFFIX]){   // the previous copy when the save does not read (save.js)
   try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object')return value;}catch{}
  }
  return null;
