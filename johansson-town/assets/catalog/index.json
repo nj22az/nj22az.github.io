@@ -1,0 +1,25 @@
+{
+ "format": 1,
+ "assets": [
+  {
+   "id": "massage-chair",
+   "name": "Coin massage chair",
+   "kind": "furniture",
+   "version": 2,
+   "model": "massage-chair/model.glb",
+   "card": "massage-chair/asset.json",
+   "hero": "massage-chair/hero.png",
+   "tags": [
+    "onsen",
+    "lobby",
+    "1990s",
+    "coin-operated",
+    "seat",
+    "massage",
+    "Fujita's Back"
+   ],
+   "from": "johansson-studio",
+   "published": "2026-10-11"
+  }
+ ]
+}
