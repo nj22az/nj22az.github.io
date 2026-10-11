@@ -13,9 +13,10 @@ test('reproduces first-floor entrance-strip failure, then covers the complete on
  const meshes=[];room.traverse(o=>{if(o.isMesh&&o.name==='Umi-no-yu floor')meshes.push(o);});
  const hit=new T.Raycaster(new T.Vector3(0,.1,4.2),new T.Vector3(0,-1,0)).intersectObjects(meshes,false)[0];
  assert.equal(hit.object.name,'Umi-no-yu floor');const size=new T.Box3().setFromObject(hit.object).getSize(new T.Vector3());
- assert.ok(Math.abs(size.x-10)<1e-6&&Math.abs(size.z-1.4)<1e-6);
+ // The genkan's stone runs from the west wall to where the agarikamachi turns (x 3.0); the lobby's hinoki runs on east of it.
+ assert.ok(Math.abs(size.x-8)<1e-6&&Math.abs(size.z-1.4)<1e-6);
  const s=surveyInterior(room,layout);assert.equal(s.w,9.7);assert.equal(s.h,13.65);assert.equal(s.domainArea,132.405);
- assert.equal(s.floorMeshes.filter(n=>n==='Umi-no-yu floor').length,5);assert.ok(s.floorMeshes.includes('Rock bath paving'));
+ assert.equal(s.floorMeshes.filter(n=>n==='Umi-no-yu floor').length,6);assert.ok(s.floorMeshes.includes('Rock bath paving'));
  assert.ok(s.floorArea>105&&s.floorArea<120,'holes remain excluded');
  for(const name of ['Locker','Indoor bath water','Rock bath water'])assert.ok(s.features.includes(name));
  assert.ok(s.features.some(n=>/Karan spout|Wash stool/i.test(n)),'washing area retained');

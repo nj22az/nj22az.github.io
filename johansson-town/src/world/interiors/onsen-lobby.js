@@ -2,6 +2,7 @@ import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
 import {paperWarTexture} from './onsen-props.js';
+import {GENKAN_STEP} from './onsen-front.js';
 
 /**
  * The front of Umi-no-yu: genkan, getabako, bandai, the lobby and the noren into the
@@ -207,8 +208,10 @@ export function buildOnsenLobby({room,R,box,cyl,rect,mat,anchor,seat,action,seat
  panel(3.9,-2.95,4.92,0,'street west');panel(3.9,2.95,4.92,0,'street east');
  panel(3.95,-2.95,R.hall.front+.12,0,'noren west');panel(3.95,2.95,R.hall.front+.12,0,'noren east');
  for(const [x,side] of [[-4.92,'west'],[4.92,'east']])panel(3.3,x,3.25,Math.PI/2,side);
- const pebbles=paint(256,256,(ctx,w,h)=>{ctx.fillStyle='#8f8a80';ctx.fillRect(0,0,w,h);for(let i=0;i<1400;i++){const c=110+Math.floor(hash(i,8)*90);ctx.fillStyle=`rgb(${c},${c-4},${c-10})`;ctx.beginPath();ctx.ellipse(hash(i,1)*w,hash(i,2)*h,2+hash(i,3)*4,2+hash(i,4)*3,hash(i,5)*3,0,Math.PI*2);ctx.fill();}},{repeat:[5,1]});
- if(pebbles){const g=add(new THREE.PlaneGeometry(10,1.36),new THREE.MeshStandardMaterial({map:pebbles,roughness:.95,polygonOffset:true,polygonOffsetFactor:-2}),0,.003,4.3,'Genkan arai-dashi');g.rotation.x=-Math.PI/2;g.castShadow=false;}
+ const pebbles=paint(256,256,(ctx,w,h)=>{ctx.fillStyle='#8f8a80';ctx.fillRect(0,0,w,h);for(let i=0;i<1400;i++){const c=110+Math.floor(hash(i,8)*90);ctx.fillStyle=`rgb(${c},${c-4},${c-10})`;ctx.beginPath();ctx.ellipse(hash(i,1)*w,hash(i,2)*h,2+hash(i,3)*4,2+hash(i,4)*3,hash(i,5)*3,0,Math.PI*2);ctx.fill();}},{repeat:[(GENKAN_STEP.turn+5)/2,1]});
+ // The pebbled genkan runs from the west wall to where the agarikamachi turns (GENKAN_STEP.turn); east of it is hinoki.
+ if(pebbles){const w=GENKAN_STEP.turn+5;
+  const g=add(new THREE.PlaneGeometry(w,1.36),new THREE.MeshStandardMaterial({map:pebbles,roughness:.95,polygonOffset:true,polygonOffsetFactor:-2}),-5+w/2,.003,4.3,'Genkan arai-dashi');g.rotation.x=-Math.PI/2;g.castShadow=false;}
 
  // ---- Shoji windows either side of the street door, lit by the day outside.
  const shojiTex=paint(256,256,(ctx,w,h)=>{ctx.fillStyle='#f6f0e2';ctx.fillRect(0,0,w,h);ctx.fillStyle='rgba(170,150,120,.15)';for(let i=0;i<300;i++)ctx.fillRect(hash(i,3)*w,hash(i,4)*h,4,1);

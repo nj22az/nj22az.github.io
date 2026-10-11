@@ -10,7 +10,7 @@ import {buildWashArea,WASH_SEATS} from './onsen-wash.js';
 import {buildOnsenElectrics,isPowered,isWorking,isLive,MASSAGE_CHAIR} from './onsen-electrics.js';
 import {buildOnsenTowels} from './onsen-towels.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
-import {buildOnsenFront} from './onsen-front.js';
+import {buildOnsenFront,GENKAN_STEP} from './onsen-front.js';
 import {buildOnsenProps} from './onsen-props.js';
 import {buildOnsenNight,seaViewGeometry} from './onsen-night.js';
 import {rockGeometry} from './onsen-rocks.js';
@@ -148,13 +148,21 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // ---- Floors: wood indoors, tiles in the bath hall, flags outside; holes where the baths are.
  const floorRect=(x0,x1,z0,z1,m,y=0)=>{const f=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0),m);f.rotation.x=-Math.PI/2;f.position.set((x0+x1)/2,y,(z0+z1)/2);f.receiveShadow=true;f.name='Umi-no-yu floor';room.add(f);return f;};
  const hinoki=hinokiTexture([5,3]),floorWood=hinoki?new THREE.MeshStandardMaterial({map:hinoki,roughness:.55}):wood;
- floorRect(-5,5,3.6,5,stone);floorRect(-5,5,R.hall.changing,3.6,floorWood);
+ // The genkan's stone ends where the agarikamachi turns (GENKAN_STEP.turn); east of it the lobby's hinoki runs on to the
+ // street wall, its boards carrying straight on from the lobby's (the same texture coordinates), so the chair's corner is wood.
+ const G=GENKAN_STEP.turn;
+ floorRect(-5,G,3.6,5,stone);floorRect(-5,5,R.hall.changing,3.6,floorWood);
+ {const f=floorRect(G,5,3.6,5,floorWood),uv=f.geometry.attributes.uv,p=f.geometry.attributes.position;
+  for(let i=0;i<uv.count;i++){const x=f.position.x+p.getX(i),z=f.position.z-p.getY(i);uv.setXY(i,(x+5)/10,(3.6-z)/(3.6-R.hall.changing));}}
  floorRect(-5,R.tub.minX,R.hall.bath,R.hall.changing,tiles);floorRect(R.tub.minX,5,R.tub.maxZ,R.hall.changing,tiles);floorRect(R.tub.minX,5,R.hall.bath,R.tub.minZ,tiles);
  {const shape=new THREE.Shape();shape.moveTo(-5,-R.hall.bath);shape.lineTo(5,-R.hall.bath);shape.lineTo(5,-R.walls.minZ);shape.lineTo(-5,-R.walls.minZ);shape.closePath();
   const hole=new THREE.Path();hole.absellipse(R.pool.x,-R.pool.z,R.pool.rx,R.pool.rz,0,Math.PI*2,false);shape.holes.push(hole);
   const paving=new THREE.Mesh(new THREE.ShapeGeometry(shape,48),flags);paving.rotation.x=-Math.PI/2;paving.receiveShadow=true;paving.name='Rock bath paving';room.add(paving);}
- // The agarikamachi: the polished edge where the genkan stops and the wood floor starts.
- box([10,.05,.12],[0,.025,3.6],darkWood,'Genkan step');
+ // The agarikamachi: the polished edge where the genkan stops and the wood floor starts. It runs from the west wall to
+ // GENKAN_STEP.turn and turns there towards the street wall (GENKAN_STEP.turnWhy), in one L.
+ {const S=GENKAN_STEP,h=S.width/2,street=4.905;// the street wainscot's face
+  box([G+h+5,.05,S.width],[(G+h-5)/2,.025,S.z],darkWood,'Genkan step');
+  box([S.width,.05,street-(S.z+h)],[G,.025,(S.z+h+street)/2],darkWood,'Genkan step');}
  // ---- Walls and ceilings. Every piece has its own name (ONSEN_WALLS), so a film can lift one wall or one room's ceiling at a
  // time (capture-room.mjs HIDE) for a shot that stands where the wall is, or looks down into the room from above.
  const wall=(name,x0,z0,x1,z1,h=R.walls.height,m=plaster,y=0)=>{const w=box([Math.max(.12,Math.abs(x1-x0)),h,Math.max(.12,Math.abs(z1-z0))],[(x0+x1)/2,y+h/2,(z0+z1)/2],m,name);w.userData.wall=true;return w;};
