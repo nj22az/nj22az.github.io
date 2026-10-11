@@ -71,9 +71,12 @@ try{
  }
  // The harbour from above and from the quay: basin, breakwater, piers, the ferry's berth.
  if(SETS.includes('harbour')){
-  await view('h1-harbour-plan',14*60+20,[-4,120,-64.5],[-4,0,-64.6]);
-  await view('h2-basin-from-quay',14*60+20,[-12,7,-40],[-14,0,-75]);
-  await view('h3-breakwater-west-end',14*60+20,[-62,12,-60],[-30,0,-85]);
+  // (The player is put at the pier's end first: the game draws only what is near the player.)
+  const pierEnd=`a=>a.teleport(0,-63)`;
+  await view('h1-harbour-plan',14*60+20,[-4,140,-76],[-4,0,-76.1],pierEnd);
+  await view('h2-basin-from-quay',14*60+20,[-12,7,-40],[-14,0,-80]);
+  await view('h3-breakwater-west-end',14*60+20,[-62,12,-80],[-30,0,-106],pierEnd);
+  await view('h4-outer-pier-from-quay',14*60+20,[3.5,4,-46],[0,0,-88],pierEnd);
  }
  // The island cargo ship: arriving round the breakwater, alongside, leaving; and against the ferry's berth.
  if(SETS.includes('cargo')){

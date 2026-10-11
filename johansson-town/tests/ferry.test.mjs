@@ -6,7 +6,7 @@ import {FERRY_DAY,rollPeriod} from '../src/world/ferry-ship.js';
 import {FERRY_RAMP} from '../src/world/ferry-model.js';
 import {SEA_LEVEL} from '../src/world/ocean.js';
 import {HARBOUR_LINE,BUS_DWELL} from '../src/people/commuter-schedule.js';
-import {OUTER_PIER,routeAt} from '../src/world/layout.js';
+import {OUTER_PIER,BREAKWATER,routeAt} from '../src/world/layout.js';
 import {transitStop} from '../src/world/transit.js';
 import {BUS_STATION} from '../src/world/bus-station.js';
 import {chooseOpening} from '../src/world/openings.js';
@@ -47,8 +47,8 @@ test('it comes in round the breakwater, never through it, and keeps every part o
  const {seen}=run(HARBOUR_LINE[1]-80,HARBOUR_LINE[1]+BUS_DWELL+80,1/20);
  const pierW=OUTER_PIER.x-OUTER_PIER.width/2,pierE=OUTER_PIER.x+OUTER_PIER.width/2,pierS=OUTER_PIER.z-OUTER_PIER.length/2,pierN=OUTER_PIER.z+OUTER_PIER.length/2;
  for(const s of seen.filter(s=>s.visible))for(const p of hullPoints(s)){
-  // The breakwater: a 68 m wall across the harbour mouth at z -83, 4 m thick; a metre of water kept off it.
-  assert.ok(!inRect(p,-34,34,-85,-81,1),'Hull within a metre of the breakwater at '+p.map(v=>v.toFixed(1)));
+  // The breakwater: a 68 m wall across the harbour mouth, 4 m thick (at z -106 since batch 3); a metre of water kept off it.
+  assert.ok(!inRect(p,BREAKWATER.minX,BREAKWATER.maxX,BREAKWATER.z-2,BREAKWATER.z+2,1),'Hull within a metre of the breakwater at '+p.map(v=>v.toFixed(1)));
   // The outer pier and the second pier, its arm and Mr Fujita's houseboat beside it.
   assert.ok(!inRect(p,pierW,pierE,pierS,pierN,.1),'Hull touches the outer pier at '+p.map(v=>v.toFixed(1)));
   assert.ok(!inRect(p,-38.3,-33.7,-64.3,-44,1),'Hull touches the second pier at '+p.map(v=>v.toFixed(1)));
@@ -86,8 +86,8 @@ test('the ferry keeps real time: in slowly, fifteen minutes alongside, five to c
  at.arriving=go(HARBOUR_LINE[0]-1);assert.equal(at.arriving.phase,'arriving');
  at.alongside=go(HARBOUR_LINE[0]+BUS_DWELL-.5);assert.equal(at.alongside.phase,'waiting','loading for a quarter of an hour');
  at.backing=go(HARBOUR_LINE[0]+BUS_DWELL+1);assert.equal(at.backing.phase,'reversing');
- at.inPort=go(HARBOUR_LINE[0]+BUS_DWELL+4);assert.equal(at.inPort.phase,'leaving');assert.ok(at.inPort.z>-80,'still inside the breakwater four minutes after letting go');
- at.clear=go(HARBOUR_LINE[0]+BUS_DWELL+5.2);assert.ok(at.clear.z<-79,'clear of the port in five minutes');
+ at.inPort=go(HARBOUR_LINE[0]+BUS_DWELL+4);assert.equal(at.inPort.phase,'leaving');assert.equal(TOWN_PASSAGES.departure.pose(4*60).kind,'manoeuvring','still working out of the harbour four minutes after letting go');
+ at.clear=go(HARBOUR_LINE[0]+BUS_DWELL+5.2);assert.equal(TOWN_PASSAGES.departure.pose(5.2*60).kind,'sea','clear of the port in five minutes');assert.ok(at.clear.x<BREAKWATER.minX,'out past the breakwater’s west end');
  at.gone=go(HARBOUR_LINE[0]+BUS_DWELL+T.reverse+T.turn+T.leaveHarbour+T.leaveSea+.2);assert.equal(at.gone.phase,'away');assert.equal(at.gone.visible,false);
  // Each way is a passage: in from sea making way and to rest alongside; out from rest, making way as she goes.
  // Faster at sea than in the harbour, her turns within what she can make, and no jumps.
@@ -126,7 +126,7 @@ test('her lights, engines and whistle: lit under way after dark, quiet on shore 
  r.update(.1,21*60,.3);r.beginCrossing('airport');for(let i=1;i<=20;i++){r.update(.1,21*60,.3+i*.1);r.setCrossingProgress(i/40);}
  assert.equal(nav(),true,'navigation lights on under way at night');assert.equal(r.ferry.getObjectByName('Port sidelight').material.color.getHex(),0xff3a2a,'red to port');
  const w=r.audio.whistle;assert.deepEqual(w.log.map(s=>s.kind),['prolonged','astern','prolonged'],'a prolonged blast and three short leaving the berth, a prolonged blast at the breakwater');
- assert.ok(Math.hypot(w.log[2].x+34,w.log[2].z+83)<16,'the breakwater signal is sounded at its end');
+ assert.ok(Math.hypot(w.log[2].x-BREAKWATER.minX,w.log[2].z-BREAKWATER.z)<16,'the breakwater signal is sounded at its end');
  assert.ok(['manoeuvring','sea'].includes(r.audio.engines));
  r.update(.1,12*60,5);r.setCrossingProgress(.5);assert.equal(nav(),false,'no navigation lights by day');assert.equal(r.audio.engines,'sea');
  // Her day: generators on before the first boat, shore power after the last.

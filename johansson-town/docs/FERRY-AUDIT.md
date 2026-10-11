@@ -239,3 +239,41 @@ stage 1, the thruster's 122 A and its star-delta start within two generators, th
 rafts, jackets and lifebuoys for 108; the scenarios' posts and places. The model is unchanged: built from batch 1's
 code and from this one, its 47,158 vertices give the same checksum, so there is nothing new to photograph; the 79
 ferry, harbour, traffic and storyteller tests pass.
+
+### Batch 3: the harbour, ground only (the breakwater out, the outer pier longer)
+
+**Plan: what it touches.** The basin is made big enough for her: the breakwater moves 23 m seaward (its centre from
+z −83 to −106, the same 68 × 4 m wall, its two beacons with it), so the basin is 54 m from the quay instead of 31;
+the outer pier is lengthened from 15.3 m to 38.35 m (to z −88), slab, coping and edge beams, so the 34.5 m ship
+will lie along its west face with her stern line on it. No prop moves in this batch: the old end rail at z −64.18,
+the bollards, the bait station, the winch, the crates, the lamp and the fenders stay where they are, and the
+extension stays shut behind the rail until batch 4 moves the rail and the pier-end props to the new end.
+
+| Touches | How | Checked by |
+|---|---|---|
+| The breakwater and its beacons (`harbour.js`) | moved to z −106 | the tests that pin it (`ferry.test.mjs`, `airport-ferry.test.mjs`, `kitano-link.test.mjs`: its beacon is there, the open water inside and outside is clear) |
+| The outer pier (`layout.js` `OUTER_PIER`, `town.js`) | slab, deck surface, coping and edge beams to z −88 | `routeAt`, `groundHeight` on the new slab; `open-street.test.mjs` |
+| Walking on the pier | unchanged: the walkable pier still ends where it did (z −64.95, `OUTER_PIER.open`), so the extension beyond the old end rail is not walkable yet. (Stopping it at the rail itself was tried and undone: two of today's queue spots, z −63.85 and −64.15, stand in the rail; they move with the gangway in batch 4) | `port-access`, `airport-dock-access`, `bus-boarding`, `open-street` |
+| Today's 22 m ship's passages (`ferry-paths.js`, `airport-ferry.js`) | her old swing put her stern where the longer pier now is (x −2.7, z −76.6 as she turned); she now backs out south-west, clear of the pier, and swings in the western basin the breakwater has opened. The mouth's corner moves out with the breakwater's west end (to −47, −86; the sea corner to −42, −124), her way in starts its swing a little further south (−29, −73.5), and the minutes are shared again (in from the mouth 1.5 min, the sea 9.5; out unchanged); the breakwater's prolonged blast is sounded at its new end | `tests/airport-ferry.test.mjs`, `tests/ferry.test.mjs` against the new pier and breakwater (whole hull outline, turn rates, speed and acceleration) |
+| Standing spots and routines | none move: the pier-end spot (`openings.js` 'pier'), the fishing, bait and winch prompts, Vy's place and the queue are all north of the rail | the same tests |
+| Cars and traffic | none: the cars' lanes are on the quay and the ship | `kitano-link.test.mjs` |
+| The storyteller's harbour, pier and ferry backdrops | the breakwater and the extension are in their background | looked at from the same cameras (below); rendered again with the new ship in batch 5, so the pictures are not committed three times |
+| Films | `impact.py` for the old and new breakwater and the extension | below |
+
+**Checked.** The related suites pass (85 tests: `ferry`, `ferry-ship`, `ferry-timetable-words`, `airport-ferry`,
+`airport-island`, `airport-dock-access`, `kitano-link`, `port-access`, `open-street`, `bus-boarding`,
+`lived-in-island`, `fujita-houseboat`, `owned-vehicles`, `harbour-instances`, `feed-storyteller`, `spawn-scene`).
+`kitano-link.test.mjs` now finds the breakwater at its new place and keeps the open water clear inside and outside it.
+The whole hull outline, every second of both timetables: 3.84 m off the breakwater (its south-east head, on the way to
+Kitano-jima; 1.8 m before), 3.75 m off the second pier arm going out and 1.78 m coming in, 6.65 m off its north face,
+12.6 m off Fujita's houseboat; she lies 0.15 m off the outer pier only at the berth, on her fenders. Photographed from
+source (`tools/ferry-look.mjs --source --set=harbour`, its harbour views moved out with the basin): the plan, the
+extension from the quay, the swing in the western basin, out round the breakwater, the way in, and the storyteller's
+pier camera with the extension and the breakwater behind the rail (`docs/qa/ferry/b3-01` to `b3-06`). Films:
+`impact.py` finds no view that sees the old or new breakwater or the extension, in either episode.
+
+**Still open after batch 3.** The cargo ship still comes in sideways along x −20.5 and now passes through the
+breakwater at its new place (it passed through the old one too); batch 4 gives her a berth and a way in. The sea leg
+to Kitano-jima joins its leading line 3.8 m off the breakwater's south-east head: good enough for today's ship at
+the time-lapse's speed, not for a 34.5 m ship; batch 5 lays her passages again (the east gap, or the leading line
+joined further east).

@@ -27,7 +27,7 @@ const onLeadingLine=d=>airportWorld(AIRPORT_BERTH_U-d,31);
  * roundedTrack), wide enough that at her sea speed she turns less than a degree a second, and the
  * first one keeps her two metres and more off the breakwater's end.
  */
-const SEA_CORNERS=Object.freeze([HARBOUR_MOUTH,[-43,-117]]),SEA_RADII=Object.freeze([16,25,40]);
+const SEA_CORNERS=Object.freeze([HARBOUR_MOUTH,[-42,-124]]),SEA_RADII=Object.freeze([16,25,40]);
 /** To Kitano-jima: off the Minato berth as on any departure, the sea, and bow in to the jetty. */
 const outbound=(()=>{
  const harbour=TOWN_UNBERTHING.keys,swingEnd=harbour.at(-1);
@@ -55,8 +55,8 @@ const inbound=(()=>{
  return passage(keys,[
   {to:1,minutes:1,kind:'astern',signal:['prolonged','astern']},
   {to:2,minutes:2,kind:'swing'},
-  {to:out,minutes:1,kind:'manoeuvring'},
-  {to:inside,minutes:10,kind:'sea'},
+  {to:out,minutes:1.5,kind:'manoeuvring'},
+  {to:inside,minutes:9.5,kind:'sea'},
   {to:keys.length-3,minutes:2,kind:'approach',signal:'prolonged'},
   {to:keys.length-1,minutes:2,kind:'berthing'},
  ]);
