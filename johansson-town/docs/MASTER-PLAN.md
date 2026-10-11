@@ -72,6 +72,17 @@ Kitano-jima's terrain, outline, trails and plantings are `src/world/tropical-isl
    `island-architecture.js` builds layered thatch, bamboo, corrugated iron, striped awnings, planks and stocked
    shelves. Small detail (ferns, grass, shells) is hidden beyond 150 m.
 
+## 11 October 2026, later
+
+- **Kitano-jima is far across the strait.** The island moved from 150 m to 360 m off the quay (centre (270, −290)):
+  from the port it is a low green island on the horizon. The camera's far plane is 640 m, the sea's haze starts at
+  300 m, navigation and the shore map reach it, and the car ferry takes 34 s instead of 18.
+- **Minato Izakaya's street front.** The front wall stands on the door plane, behind the recessed doorway, and the
+  street through the door and window is the live town (`streetFrontage`, the same renderer as Sakura's glass), not
+  a picture pasted into the opening. Four sliding koshi-do (kick boards, kumiko-barred glass) fill the opening, with
+  the middle pair slid open for a 1.8 m entrance, a granite step and a two-groove track. The window looks out
+  through the frontage's own koshi slats.
+
 ## Next
 
 - Day-trippers: ferry arrivals that bring visitors with towels to Coral Bay. This needs new residents with portraits

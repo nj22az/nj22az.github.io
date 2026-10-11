@@ -212,7 +212,7 @@ void main() {
  * of the island (island-coast.js) and the tropical airport island offshore. Zero on land, rising
  * to `range` metres out, which counts as open water.
  */
-export const SHORE_FIELD=Object.freeze({minX:-150,maxX:390,minZ:-200,maxZ:410,size:384,range:80});
+export const SHORE_FIELD=Object.freeze({minX:-150,maxX:430,minZ:-460,maxZ:410,size:448,range:80});
 
 function segmentDistance(px,pz,ax,az,bx,bz){
   const dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((px-ax)*dx+(pz-az)*dz)/(dx*dx+dz*dz||1)));
@@ -269,10 +269,10 @@ export function oceanMaterial() {
       uShallow: {value: new THREE.Color(SEA.day.shallow)},
       uFoam: {value: new THREE.Color(SEA.day.foam)},
       uHorizon: {value: new THREE.Color(SEA.day.horizon)},
-      // The camera sees 480 m. The water keeps its colour past the airport island (about
-      // 180 m from the quay) and closes into the horizon haze over the last stretch.
-      uFogNear: {value: 190},
-      uFogFar: {value: 460},
+      // The camera sees 640 m. The water keeps its colour out to Kitano-jima (about 250 m to
+      // its near shore from the quay) and closes into the horizon haze over the last stretch.
+      uFogNear: {value: 300},
+      uFogFar: {value: 620},
       uWaveDir: {value: WAVES.map(w => new THREE.Vector2(w.dx, w.dz))},
       uWaveLen: {value: WAVES.map(w => w.wavelength)},
       uWaveAmp: {value: WAVES.map(w => w.amplitude)},

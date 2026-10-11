@@ -20,7 +20,7 @@ export const DISTANT_ISLANDS=Object.freeze([
  // x, z, length, height, depth, turn
  // A ring beyond both coasts: the island grew south and the airport island east, and
  // four of the old ones ended up standing on land as blue hills (tests/horizon.test.mjs).
- [400,-30,48,15,16,.15],[300,-280,30,8,12,-.3],[40,-330,42,11,14,.05],[-210,-230,34,9,12,.8],
+ [400,-30,48,15,16,.15],[-120,-420,30,8,12,-.3],[40,-330,42,11,14,.05],[-210,-230,34,9,12,.8],
  [-260,60,46,13,16,1.4],[-220,300,40,11,14,-.1],[320,250,40,12,16,.7],
 ].map(Object.freeze));
 function addDistantIslands(parent){

@@ -7,7 +7,7 @@ import {GANGWAY_Z} from './ferry-model.js';
 import {BERTH_X,BERTH_Z,TOWN_ARRIVAL_KEYS,TOWN_DEPARTURE_KEYS,keyedPath} from './ferry-paths.js';
 
 /** Shared passenger and car crossing on the town ferry, the Minato Maru (ferry-ship.js). */
-export const AIRPORT_FERRY=Object.freeze({length:FERRY_SHIP.length,beam:FERRY_SHIP.beam,deck:FERRY_DECKS.car.y,duration:18});
+export const AIRPORT_FERRY=Object.freeze({length:FERRY_SHIP.length,beam:FERRY_SHIP.beam,deck:FERRY_DECKS.car.y,duration:34});
 /** At Kitano-jima she lies bow to the jetty's west face, 1.9 m off it, with her ramp down on the jetty. */
 const AIRPORT_BERTH_U=AIRPORT_JETTY.minX-1.9-FERRY_SHIP.length/2;
 export const AIRPORT_FERRY_PORTS=Object.freeze({

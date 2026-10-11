@@ -50,29 +50,34 @@ export function createMinatoMemories({state,show,save=()=>{},close=()=>{},onCurt
  return {open,seen,snapshot:()=>({found:MINATO_MEMORIES.filter(m=>seen(m.id)).map(m=>m.id),complete:seen('complete')})};
 }
 
-export function buildIzakayaExploration(room,{anchor,windowView,exploration}){
+export function buildIzakayaExploration(room,{anchor,exploration}){
  const group=new THREE.Group();group.name='Minato windows door and discoveries';room.add(group);
  const parts=[],print=[];const colour=(g,hex)=>{const c=new THREE.Color(hex).toArray(),a=new Float32Array(g.attributes.position.count*3);for(let i=0;i<a.length;i+=3)a.set(c,i);g.setAttribute('color',new THREE.BufferAttribute(a,3));g.deleteAttribute('uv');return g;};
  const box=(w,h,d,x,y,z,c)=>parts.push(colour(new THREE.BoxGeometry(w,h,d).translate(x,y,z),c));
  const steel=0xa8a193,wood=0x654b35;
- // Open sliding-door leaves sit in their pockets: joinery, pulls and tracks.
- // The original 3.7m doorway and its automatic exit remain completely unobstructed.
- for(const side of [-1,1]){
-  const x=side*1.975;
-  box(.18,2.18,.055,x,1.16,6.17,0x654832);
-  box(.07,1.04,.01,x,1.55,6.137,0x526054);
-  for(const dx of [-.06,.06])box(.026,2.18,.036,x+dx,1.16,6.12,wood);
-  for(const y of [.11,1.04,2.23])box(.18,.055,.036,x,y,6.12,wood);
-  box(.032,.18,.025,x-side*.046,1.2,6.086,steel);
- }
- box(3.67,.022,.05,0,.052,6.15,0x8d8e82);box(3.67,.06,.075,0,2.3,6.15,wood);
- // The street window is a framed actual-town view behind subtle glass and curtains.
- const street=new THREE.Mesh(new THREE.PlaneGeometry(2.18,1.08),new THREE.MeshBasicMaterial({map:windowView?.texture||null,color:windowView?0xffffff:0x8eaa9d}));
- street.name='Minato actual street window';street.position.set(-3.9,1.72,6.283);street.rotation.y=Math.PI;group.add(street);
- if(windowView){
-  const doorway=new THREE.Mesh(new THREE.PlaneGeometry(3.64,2.17),new THREE.MeshBasicMaterial({map:windowView.texture}));
-  doorway.name='Minato street beyond the open doorway';doorway.position.set(0,1.15,6.283);doorway.rotation.y=Math.PI;group.add(doorway);
- }
+ // The front, as a 1970s izakaya had it: four sliding koshi-do across the 3.64 m opening,
+ // each a timber frame with a waist-high kick board and glass above, the glass crossed by
+ // fine vertical kumiko so the street shows through in strips. In the evening the middle
+ // pair stand slid behind the outer pair, leaving a 1.8 m entrance under the noren; the
+ // street beyond is the real street (shop-street-view.js), not a picture of it.
+ const glass=new THREE.MeshBasicMaterial({color:0xd8e5db,transparent:true,opacity:.07,depthWrite:false,side:THREE.DoubleSide,forceSinglePass:true});
+ const leaf=(x,z)=>{
+  const w=.91,h=2.2,t=.035;
+  for(const dx of [-w/2+.025,w/2-.025])box(.05,h,t,x+dx,.06+h/2,z,wood);
+  box(w,.05,t,x,.085,z,wood);box(w,.06,t,x,.06+h-.03,z,wood);
+  // Kick board, then the glazing rail, then kumiko at 7.5 cm centres up to the head.
+  box(w-.1,.42,.018,x,.31,z,0x5a4230);box(w-.1,.045,t,x,.545,z,wood);
+  for(let i=1;i<12;i++)box(.012,h-.6,.02,x-w/2+.05+i*(w-.1)/12,.57+(h-.6)/2,z+.006,0x4a3626);
+  box(w-.1,.025,.02,x,1.42,z+.006,0x4a3626);
+  const pane=new THREE.Mesh(new THREE.PlaneGeometry(w-.1,h-.62),glass);pane.position.set(x,.57+(h-.62)/2,z);group.add(pane);
+  box(.03,.14,.02,x+(x<0?.38:-.38),1.05,z-.03,steel);
+ };
+ // Outer leaves in their own track, the slid-open middle pair just inside them.
+ for(const side of [-1,1]){leaf(side*1.365,6.2);leaf(side*1.365,6.145);}
+ // Two-groove sill and head track, and a granite step down to the tataki outside.
+ box(3.67,.035,.13,0,.0175,6.175,0x8d8e82);box(3.67,.07,.13,0,2.295,6.175,wood);
+ box(3.7,.08,.32,0,.04,6.36,0x9a958a);
+ // The window needs no lattice of its own: the street front's koshi stands outside the glass.
  const pane=new THREE.Mesh(new THREE.PlaneGeometry(2.15,1.055),new THREE.MeshBasicMaterial({color:0xd8e5db,transparent:true,opacity:.065,depthWrite:false,side:THREE.DoubleSide,forceSinglePass:true}));pane.position.set(-3.9,1.72,6.259);group.add(pane);
  box(2.33,.045,.15,-3.9,1.125,6.21,wood);box(.038,.09,.026,-3.84,1.67,6.218,steel);
  const curtains=new THREE.Group();curtains.name='Minato sliding window curtains';group.add(curtains);
@@ -100,5 +105,5 @@ export function buildIzakayaExploration(room,{anchor,windowView,exploration}){
  let memories=null;
  if(exploration){memories=createMinatoMemories({...exploration,onCurtain:curtainOpen});for(const m of MINATO_MEMORIES)anchor(m.position,m.label,()=>memories.open(m.id));}
  group.userData.discoveryIds=MINATO_MEMORIES.map(m=>m.id);
- return {group,memories,update:()=>windowView?.update(),dispose:()=>windowView?.dispose()};
+ return {group,memories,update:()=>{},dispose:()=>{}};
 }
