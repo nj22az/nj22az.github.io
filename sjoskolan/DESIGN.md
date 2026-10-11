@@ -150,6 +150,29 @@ bockat och som har börjat; bara dess första knapp är blå (en huvudknapp per 
 inlämningen) med en tunn stapel, sista dagen och dagar kvar, och kursplanens punkter med stapel i områdets färg och ”x av y”.
 Siffran står alltid i text; stapeln är bara stöd. Inga nya knappar: den enda blå knappen är fortfarande ”Nästa steg”.
 
+**Veckan som dagar (vecka 42–44, `verktyg/veckosidor/dagsvy.py`, `gemensamt/dagsvy.mjs`).** Eleven ska se på sidan vad dagens
+lektion handlar om, så att läraren bara visar presentationen. Ordning: rubrik → **I dag** → **Veckans lektioner** → **Hela
+veckan** → **Kursplanen den här veckan**. Ersätter ”Nästa steg”, den numrerade vägen och rutorna i ”Din vecka” för veckorna i `DAGSVY`.
+
+- **I dag** är sidans mest framträdande del och enda blå huvudknapp. På en lektionsdag: tid, rubrik, ”Det här pratar vi om i
+  dag” (passen i presentationens upplägg) och Öppna presentationen; efter lektionen: läxorna. Utan lektion: närmaste sista dag
+  och nästa lektion. Före veckan: första lektionen. Utan JavaScript visas inte rutan.
+- **Lektionsdagarna har var sin färg**, alltid med dagens namn: måndag `#008300`, tisdag `#2468c0`, fredag `#b5179e`
+  (`kursplan.DAGFARG`, validerade för färgblindhet, vit text 4,5:1; inte samma kulörer som kursplanens områden). Färgen står på
+  dagens ruta (vänsterkant och etikett), på I dag samma dag och på presentationens titelbild. Dagens och nästa lektions ruta är
+  öppna, de andra en rad; har en passerad lektion läxor kvar står ”Läxor: x av y klara” i varningsfärg. Två lektioner
+  samma dag (vecka 44: två entimmeslektioner måndag och tisdag) står i samma dagruta, var och en med rubrik och tid.
+- **Hela veckan** (veckans läxa med texterna att ladda ner, quiz, inlämning, övningar) har ingen dagfärg: grå yta, mörk
+  överkant, sista dag och dagar kvar. Sista dagen skrivs med sin veckodag (från vecka 42: allt senast fredag). Labbar
+  och övningstentan kan stå här utan sista dag.
+- **Delsidorna** har rutan **Din del** överst: dagens färg och tid, lektionens läge, vad vi pratar om,
+  presentationen, läxorna efter lektionen med läge, övningarna på lektionen och Hela veckan i neutral färg. Delar som
+  undervisas en annan vecka (vecka-45/Del_1–3 i vecka 43 och 44) visar den veckans lektion och länkar till den veckan.
+- Läxorna efter en lektion skrivs en gång, i `HEMMA` (`verktyg/lektionsbilder/lektioner.py` för vecka 42, en fil
+  `lektion_<id>.py` per presentation från vecka 43). Bilden ”Det här gör du nu” och dagens ruta byggs ur samma lista. Läst
+  del och övningar visar läget själva: en läxa med ”övning 2.4–2.6” och en länk till `#v44_02-q4` räknar just de
+  övningarna, och ”På lektionen” räknar övningarna på bilderna Övningar tillsammans. Övriga läxor har en Klart-ruta.
+
 ### Genomgång (Zenn)
 
 Varje del följer samma mönster:
@@ -193,6 +216,12 @@ Text minst 18 pt, nyckelmeningen 21–25 pt.
 | `verktyg/larare/las.mjs` | lösenordssidan för lärarstöd (`wrapper()`, byts med `omslag`) |
 | `verktyg/veckosidor/bygg.py` | veckosidorna 37–39 och 41–45 (mål, delar, redovisning) |
 | `verktyg/inlamning/bygg.py` | veckans inlämningsuppgifter, `vecka-XX/aktuell/Inlamning.html` |
+| `verktyg/inlamning/sjalvrattning.py`, `facit.py` | självrättande inlämning (vecka 42–44): svarsfält, alternativ, läshänvisningar och checklista; nyckeln med hashade svar |
+| `gemensamt/sjalvrattning.css`, `sjalvrattning*.mjs` | svarsfälten, Rätta (Rätt!/Skiljer sig, tre försök, låsning), rutan Låsta frågor (läs om veckan för nya försök), Lämna in och PDF:en på en självrättande inlämningssida |
+| `verktyg/inlamning/quiz_mall.py` | quizen (vecka 42): texterna med flervalsfrågor A–E, rutan Låsta frågor per text och Lämna in |
+| `gemensamt/quiz-sida.mjs` | quizens Rätta (tre försök per fråga), Jag har läst om texten (nya försök för den texten), Lämna in och PDF:en |
+| `gemensamt/pdf.mjs` | elevens PDF (A4, Helvetica WinAnsi, utan bibliotek) |
+| `gemensamt/lasbekraftelse.mjs` | rutan Har du läst hela del N? sist på delsidorna i en vecka med självrättande inlämning |
 | `innehall/` | innehållsdatabasen: övningar, ledtrådar, lösningar, labbuppgifter och lärarfacit (`innehall/README.md`). `innehall.py bygg` skriver kurssidornas övningar, `*/uppgifter.gen.mjs`, arbetsblad, inlämning, tenta, presentationer, lärarguiden och boken |
 | `verktyg/bildspel/bygg.py` | webbildspel av presentationerna: `bildspel/<id>/` med bilder och text, visaren `bildspel/index.html` |
 

@@ -59,6 +59,9 @@ OMRADEN = [
     ('felsokning', 'Felsökning och dokumentation', '#e87ba4', ['LM-5', 'LM-7']),
 ]
 OMRADE_AV = {m: o for o in OMRADEN for m in o[3]}
+# Lektionsdagarnas färger (veckosidan från vecka 42 och presentationernas titelbild). Validerade för färgblindhet mot vit
+# yta (alla par), och vit text på färgen klarar 4,5:1. Står alltid tillsammans med dagens namn. Inte samma kulörer som områdena.
+DAGFARG = {'Måndag': '#008300', 'Tisdag': '#2468c0', 'Fredag': '#b5179e'}
 
 
 def ton(hexfarg, andel=0.14):
@@ -303,7 +306,7 @@ def kursplan_html(nr, w, med_tal=True):
     ingress = ('Tentamen och det praktiska provet prövar de här punkterna i kursplanen.' if w.get('tenta')
                else 'Punkterna kommer från kursplanen. Under varje punkt står var du tränar den.')
     return (CSS + f'<section class="kp" aria-labelledby="kp-rubrik"{data}><h2 id="kp-rubrik">Det här lär du dig</h2>'
-            f'<p class="kp-ingress">{ingress}</p>{f'<div class="kp-tal">{tal}</div>' if med_tal else ''}'
+            f'<p class="kp-ingress">{ingress}</p>' + (f'<div class="kp-tal">{tal}</div>' if med_tal else '') +
             f'<details class="kp-detaljer"><summary>Visa veckans {len(aktiva)} punkter i kursplanen</summary><ul class="kp-lista">{"".join(rader)}</ul></details></section>' + SCRIPT)
 
 
@@ -313,8 +316,10 @@ MANAD = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti
 def _sista(w):
     if w.get('tenta'):
         return 'onsdag 4 november'
-    _, m, d = map(int, w['sista'].split('-'))
-    return f'söndag {d} {MANAD[m - 1]}'
+    import datetime as _dt
+    y, m, d = map(int, w['sista'].split('-'))
+    dag = ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag'][_dt.date(y, m, d).weekday()]
+    return f'{dag} {d} {MANAD[m - 1]}'
 
 
 # --- Veckans översikt (”Din vecka”) överst på veckosidan --------------------------------------------------------
@@ -344,10 +349,32 @@ PANEL_CSS = ('<style>'
              '</style>')
 
 
-def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
-    """Översikten överst på veckosidan. steg_ids: stegen med Klart-ruta. delnummer: veckans egna delsidor (läst-knapparna).
-    sjalvrattande: adressen till gemensamt/sjalvrattning.mjs när veckans inlämning rättar sig själv, annars None."""
-    import hashlib
+def _sjalvrattning():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('sjalvrattning_panel', ROOT / 'verktyg' / 'inlamning' / 'sjalvrattning.py')
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _inlamningens_falt(nr):
+    """Fälten som rättas i veckans självrättande inlämning och quiz, per kursplanspunkt: {'inlamning': {...}, 'quiz': {...}}.
+    veckoStatus och quizStatus (gemensamt/sjalvrattning.mjs) räknar likadant: varje uppgift räknas under alla sina punkter.
+    Ger rätt totaler innan eleven har öppnat formulären."""
+    mod = _sjalvrattning()
+    return {'inlamning': mod.falt_per_lm(nr, 'inlamning'), 'quiz': mod.falt_per_lm(nr, 'quiz')}
+
+
+def quiz_plan(nr):
+    """Quizets plan när sidan byggs (quizStatus räknar med den innan eleven har öppnat quizet), eller None."""
+    mod = _sjalvrattning()
+    return mod.quiz_plan(nr) if nr in mod.QUIZ else None
+
+
+def kursplan_framsteg(nr, w, sjalvrattande=None):
+    """Kursplanens punkter för veckan med elevens framsteg: (data, rader). data har veckans övningar och per punkt
+    övningarna, inlämningens fält och var punkten tränas annars; rader är listans HTML (siffrorna fylls i av
+    gemensamt/veckopanel.mjs rakna)."""
     framsteg = defaultdict(lambda: defaultdict(list))
     alla = defaultdict(list)
     for mapp, del_, *_ in _ovningsgrupper(nr, w):
@@ -364,19 +391,32 @@ def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
                if x['plats'] == f'{mapp}/aktuell/Inlamning.html' and x['ankare'] == ankare for m in _MAL_AV.get(x['ovning'], [])}
     labb_mal = {m for p in _labbar(w) for i in labbuppgifter(p['href']) for m in _MAL_AV.get(i, [])}
     annat = {m: ' och '.join(x for x, ja in (('Inlämningen', m in inl_mal), ('labben', m in labb_mal)) if ja).capitalize() for m in aktiva}
-    mal = [{'id': m, 'ovningar': [[k, v] for k, v in framsteg[m].items()], 'annat': annat[m]} for m in aktiva]
-    data = {'vecka': nr, 'sista': w['sista'], 'steg': steg_ids, 'delar': delnummer,
-            'ovningar': [[k, v] for k, v in alla.items()], 'mal': mal}
+    sidor = _inlamningens_falt(nr) if sjalvrattande else {'inlamning': {}, 'quiz': {}}
+    inl_falt = {m: sidor['inlamning'].get(m, 0) + sidor['quiz'].get(m, 0) for m in aktiva}
+    mal = [{'id': m, 'ovningar': [[k, v] for k, v in framsteg[m].items()], 'annat': annat[m]}
+           | ({'inlamning': inl_falt[m]} if inl_falt.get(m) else {}) for m in aktiva]
+    data = {'vecka': nr, 'sista': w['sista'], 'ovningar': [[k, v] for k, v in alla.items()], 'mal': mal}
     if sjalvrattande:
         data['sjalvrattande'] = sjalvrattande
-    n_ovn = sum(len(v) for v in alla.values())
+        data['falt_lm'] = sidor  # per sida, för veckosidan innan formulären har öppnats
     rader = []
     for m in aktiva:
         omr = OMRADE_AV[m]
-        n = sum(len(v) for v in framsteg[m].values())
+        n = sum(len(v) for v in framsteg[m].values()) + inl_falt.get(m, 0)
         rader.append(f'<li data-lm="{m}"><span class="vp-lm-kod" style="border-color:{omr[2]};background:{ton(omr[2])}" title="{escape(omr[1])}">{m}</span>'
                      f'<span class="vp-lm-text">{escape(ENKEL[m])}</span><span class="vp-stapel" aria-hidden="true"><i style="background:{omr[2]}"></i></span>'
                      f'<span class="vp-lm-tal">{f"0 av {n}" if n else escape(annat[m])}</span></li>')
+    return data, ''.join(rader)
+
+
+def veckopanel_html(nr, w, steg_ids, delnummer, sjalvrattande=None):
+    """Översikten överst på veckosidan. steg_ids: stegen med Klart-ruta. delnummer: veckans egna delsidor (läst-knapparna).
+    sjalvrattande: adressen till gemensamt/sjalvrattning.mjs när veckans inlämning rättar sig själv, annars None."""
+    import hashlib
+    data, rader = kursplan_framsteg(nr, w, sjalvrattande)
+    data = {'vecka': nr, 'sista': w['sista'], 'steg': steg_ids, 'delar': delnummer} | {k: v for k, v in data.items() if k not in ('vecka', 'sista')}
+    n_ovn = sum(len(v) for _, v in data['ovningar'])
+    rader = [rader]
     sista = _sista(w)
     inl = (f'<div class="vp-ruta" data-vp="inlamning"><span class="vp-etikett">Inlämningen</span><span class="vp-tal">Inte påbörjad</span>'
            f'<span class="vp-not">Senast {escape(sista)}</span><span class="vp-stapel" aria-hidden="true"><i></i></span>'

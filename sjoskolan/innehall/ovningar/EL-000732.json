@@ -3,13 +3,14 @@
   "titel": "Avslutsfråga: v45_02",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-8",
+      "LM-7"
     ],
     "niva": "grund",
     "teori": [
@@ -18,7 +19,7 @@
   },
   "uppgift": {
     "fraga": "När behöver du skriva ”underlaget räcker inte” i stället för ”godkänt”?",
-    "instruktion": "Färdigställ felsökningsrapporten och markera minst en osäkerhet. Förbered fredagens blandade repetitionsuppgifter."
+    "instruktion": "Färdigställ analysen av mätdata och markera minst en osäkerhet. Gör övningstentan inför fredagens repetition."
   },
   "referenser": {
     "ursprung": [

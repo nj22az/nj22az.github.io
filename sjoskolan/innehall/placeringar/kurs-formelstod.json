@@ -1042,7 +1042,13 @@
       "ordning": 1,
       "nummer": "Övning 2.1",
       "ankare": "v43_02-q1",
-      "teorikort": "Transformatorns omsättning"
+      "teorikort": "Transformatorns omsättning",
+      "figurer": [
+        {
+          "fil": "v43_02-b11-1.png",
+          "alt": "Ideal transformator med N1 = 1 000 och N2 = 100 varv, U1 = 230 V; U2 okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000162",
@@ -1051,7 +1057,13 @@
       "ordning": 2,
       "nummer": "Övning 2.2",
       "ankare": "v43_02-q2",
-      "teorikort": "Transformatorns omsättning"
+      "teorikort": "Transformatorns omsättning",
+      "figurer": [
+        {
+          "fil": "v43_02-b13-1.png",
+          "alt": "Ideal transformator med last: U1 = 230 V, U2 = 24 V och I2 = 3 A; I1 okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000163",
@@ -1177,7 +1189,13 @@
       "ordning": 6,
       "nummer": "Övning 3.6",
       "ankare": "v43_03-q6",
-      "teorikort": "Mätpunkter och referens"
+      "teorikort": "Mätpunkter och referens",
+      "figurer": [
+        {
+          "fil": "v43_03-b26-1.png",
+          "alt": "Hållkrets i vila med S0 sluten och S1 öppen; spänningen över K1-spolen okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000177",
@@ -1186,7 +1204,13 @@
       "ordning": 7,
       "nummer": "Övning 3.7",
       "ankare": "v43_03-q7",
-      "teorikort": "Mätpunkter och referens"
+      "teorikort": "Mätpunkter och referens",
+      "figurer": [
+        {
+          "fil": "v43_03-b28-1.png",
+          "alt": "Hållkrets där S1 hålls sluten; spänningen över K1-spolen okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000178",
@@ -1195,7 +1219,13 @@
       "ordning": 8,
       "nummer": "Övning 3.8",
       "ankare": "v43_03-q8",
-      "teorikort": "Mätpunkter och referens"
+      "teorikort": "Mätpunkter och referens",
+      "figurer": [
+        {
+          "fil": "v43_03-b30-1.png",
+          "alt": "Hållkrets där S1 hålls sluten och S0 öppnas; spänningen över S0 okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000179",
@@ -1267,7 +1297,13 @@
       "ordning": 6,
       "nummer": "Övning 1.6",
       "ankare": "v44_01-q6",
-      "teorikort": "Beräkning som stöd"
+      "teorikort": "Beräkning som stöd",
+      "figurer": [
+        {
+          "fil": "v44_01-b26-1.png",
+          "alt": "24 V-matning till en last som tar 6 A via ledningar med slingresistansen 0,15 ohm; spänningsfall och lastspänning okända"
+        }
+      ]
     },
     {
       "ovning": "EL-000187",
@@ -1276,7 +1312,13 @@
       "ordning": 7,
       "nummer": "Övning 1.7",
       "ankare": "v44_01-q7",
-      "teorikort": "Beräkning som stöd"
+      "teorikort": "Beräkning som stöd",
+      "figurer": [
+        {
+          "fil": "v44_01-b28-1.png",
+          "alt": "Förenklad felströmsslinga med U0 = 230 V och Zs = 0,46 ohm; felströmmen okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000188",
@@ -1339,7 +1381,13 @@
       "ordning": 4,
       "nummer": "Övning 2.4",
       "ankare": "v44_02-q4",
-      "teorikort": "Mättransformatorer och reläskydd"
+      "teorikort": "Mättransformatorer och reläskydd",
+      "figurer": [
+        {
+          "fil": "v44_02-b17-1.png",
+          "alt": "Strömtransformator 200/5 A med primärström 120 A; sekundärströmmen okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000195",
@@ -1429,7 +1477,13 @@
       "ordning": 4,
       "nummer": "Övning 3.4",
       "ankare": "v44_03-q4",
-      "teorikort": "Isolationsmätning"
+      "teorikort": "Isolationsmätning",
+      "figurer": [
+        {
+          "fil": "v44_03-b17-1.png",
+          "alt": "Två isolationsvägar på 20 megaohm parallellt mellan en aktiv ledare och jord; ekvivalent resistans okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000205",
@@ -1447,7 +1501,13 @@
       "ordning": 6,
       "nummer": "Övning 3.6",
       "ankare": "v44_03-q6",
-      "teorikort": "Oscilloskopets referens"
+      "teorikort": "Oscilloskopets referens",
+      "figurer": [
+        {
+          "fil": "v44_03-b26-1.png",
+          "alt": "Oscilloskopskärm där en period täcker fyra rutor vid 5 ms per ruta; period och frekvens okända"
+        }
+      ]
     },
     {
       "ovning": "EL-000207",
@@ -1519,7 +1579,13 @@
       "ordning": 4,
       "nummer": "Övning 1.4",
       "ankare": "v45_01-q4",
-      "teorikort": "Avbrott och kortslutning"
+      "teorikort": "Avbrott och kortslutning",
+      "figurer": [
+        {
+          "fil": "v45_01-b17-1.png",
+          "alt": "24 V matar en resistor via en öppen kontakt; ström och spänning över kontakten okända"
+        }
+      ]
     },
     {
       "ovning": "EL-000215",
@@ -1546,7 +1612,13 @@
       "ordning": 7,
       "nummer": "Övning 1.7",
       "ankare": "v45_01-q7",
-      "teorikort": "Glapp och förhöjd resistans"
+      "teorikort": "Glapp och förhöjd resistans",
+      "figurer": [
+        {
+          "fil": "v45_01-b28-1.png",
+          "alt": "Källan håller 24 V, lasten får 18 V vid 3 A; den extra serieresistansen okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000218",
@@ -1609,7 +1681,13 @@
       "ordning": 4,
       "nummer": "Övning 2.4",
       "ankare": "v45_02-q4",
-      "teorikort": "Flera observationer tillsammans"
+      "teorikort": "Flera observationer tillsammans",
+      "figurer": [
+        {
+          "fil": "v45_02-b17-1.png",
+          "alt": "Seriekrets: källa 24 V, last 20 V, ström 2 A och 1 V fall i returen; fallet i framledningen okänt"
+        }
+      ]
     },
     {
       "ovning": "EL-000225",
@@ -1681,7 +1759,13 @@
       "ordning": 2,
       "nummer": "Övning 3.2",
       "ankare": "v45_03-q2",
-      "teorikort": "Kirchhoff och delare"
+      "teorikort": "Kirchhoff och delare",
+      "figurer": [
+        {
+          "fil": "v45_03-b13-1.png",
+          "alt": "Nod med 4,0 A och 1,5 A in samt 2,0 A och Ix ut; Ix okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000233",
@@ -1690,7 +1774,13 @@
       "ordning": 3,
       "nummer": "Övning 3.3",
       "ankare": "v45_03-q3",
-      "teorikort": "Kirchhoff och delare"
+      "teorikort": "Kirchhoff och delare",
+      "figurer": [
+        {
+          "fil": "v45_03-b15-1.png",
+          "alt": "Spänningsdelare: 24 V över R1 = 2 kilohm och R2 = 4 kilohm med en last på 4 kilohm; utspänningen okänd"
+        }
+      ]
     },
     {
       "ovning": "EL-000234",
@@ -1708,7 +1798,13 @@
       "ordning": 5,
       "nummer": "Övning 3.5",
       "ankare": "v45_03-q5",
-      "teorikort": "AC och trefas"
+      "teorikort": "AC och trefas",
+      "figurer": [
+        {
+          "fil": "v45_03-b19-1.png",
+          "alt": "Serie-RL med R = 30 ohm och XL = 40 ohm vid 100 V RMS; ström och effektfaktor okända"
+        }
+      ]
     },
     {
       "ovning": "EL-000236",
@@ -1753,7 +1849,13 @@
       "ordning": 10,
       "nummer": "Övning 3.10",
       "ankare": "v45_03-q10",
-      "teorikort": "Mätning och felsökning"
+      "teorikort": "Mätning och felsökning",
+      "figurer": [
+        {
+          "fil": "v45_03-b34-1.png",
+          "alt": "24 V-källa matar en last med 4 A; 20 V vid lasten före och 23,6 V efter åtgärd; slingresistansen okänd"
+        }
+      ]
     }
   ]
 }

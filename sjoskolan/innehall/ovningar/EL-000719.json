@@ -3,13 +3,13 @@
   "titel": "Startfråga: v43_02",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-1"
     ],
     "niva": "forberedelse",
     "teori": [

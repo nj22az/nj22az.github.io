@@ -3,13 +3,14 @@
   "titel": "Avslutsfråga: v44_02",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
   "larande": {
     "mal": [
-      "LM-4"
+      "LM-2",
+      "LM-3"
     ],
     "niva": "grund",
     "teori": [
@@ -18,7 +19,7 @@
   },
   "uppgift": {
     "fraga": "Vilka anläggningsuppgifter behövs innan ett arbetsavstånd kan bestämmas?",
-    "instruktion": "Komplettera v44-underlaget med ett enlinjeschema och markerade skyddsfunktioner. Inga praktiska HV-manövrer ingår i distanspasset."
+    "instruktion": "Uppgiften Högspänning och strömtransformator i inlämningen bygger på del 2. Inga praktiska HV-manövrer ingår i distanspasset."
   },
   "referenser": {
     "ursprung": [
