@@ -7,6 +7,7 @@ import {catalogueEntry} from './catalogue.js';
  *   drag            orbit            shift + drag   pan            wheel   zoom
  *   click           place the chosen piece (or pick one already placed)
  *   R / shift + R   turn by 15°      Delete         remove the picked piece      Esc   stop placing / let go
+ *   Ctrl/⌘ + Z      undo             Shift + Ctrl/⌘ + Z, Ctrl + Y   redo
  *
  * A see-through preview of the piece follows the mouse: green where it can stand, red where it cannot, with the
  * reasons in status(). Runs with ?audit&build; the Town Studio app drives it through window.__JOHANSSON_BUILDER__.
@@ -74,6 +75,8 @@ export function createBuildMode({canvas,camera,group,placements,factory,heightAt
   if(o){box=new THREE.BoxHelper(o,PICKED);box.name='build-picked';group.add(box);}
  }
  const entryOf=id=>placements.list().find(p=>p.id===id)||placements.held().find(p=>p.id===id);
+ /** After an undo or redo the picked piece may be gone or somewhere else: let go of it or follow it. */
+ function afterHistory(){if(picked&&!entryOf(picked))pick(null);else if(picked)pick(picked);if(hover)showGhost(hover);applyView();}
  function pick(id){
   picked=id;outline();
   const p=id&&entryOf(id);
@@ -112,6 +115,10 @@ export function createBuildMode({canvas,camera,group,placements,factory,heightAt
   if(!active||e.target?.tagName==='INPUT')return;
   e.stopPropagation();
   if(e.type!=='keydown'||e.repeat)return;   // one press, one turn: the release and the key's auto-repeat do nothing
+  const mod=e.ctrlKey||e.metaKey,k=String(e.key).toLowerCase();
+  if(mod&&k==='z'){(e.shiftKey?api.redo:api.undo)();e.preventDefault();return;}
+  if(mod&&k==='y'){api.redo();e.preventDefault();return;}
+  if(mod)return;   // other shortcuts (copy, reload) are the browser's
   if(e.key==='r'||e.key==='R'){api.turn(e.shiftKey?-1:1);e.preventDefault();}
   else if(e.key==='Delete'&&picked){api.remove(picked);e.preventDefault();}
   else if(e.key==='Escape')api.choose(null);
@@ -156,10 +163,14 @@ export function createBuildMode({canvas,camera,group,placements,factory,heightAt
   },
   pick,
   remove(id){const ok=placements.remove(id);if(picked===id)pick(null);applyView();return ok;},
+  /** Takes back the last place, move or remove (placements.undo); says why when it cannot. */
+  undo(){result={...placements.undo(),undo:true,at:Date.now()};afterHistory();return api.status();},
+  /** Does again what undo took back. */
+  redo(){result={...placements.redo(),undo:true,at:Date.now()};afterHistory();return api.status();},
   /** Fly to a point (or a placed piece). */
   look(x,z,distance){view.x=x;view.z=z;if(distance)view.distance=distance;applyView();},
   orbit(dAzimuth=0,dElevation=0,zoom=1){view.azimuth+=dAzimuth;view.elevation=Math.min(1.45,Math.max(.12,view.elevation+dElevation));view.distance=Math.min(limits.max,Math.max(limits.min,view.distance*zoom));applyView();},
-  status(){return {active,kind,why:note,yaw:+yaw.toFixed(4),picked,hover,result,view:{...view},count:placements.list().length,held:placements.held().length};},
+  status(){const h=placements.history?.()||{undo:0,redo:0};return {active,kind,why:note,yaw:+yaw.toFixed(4),picked,hover,result,view:{...view},count:placements.list().length,held:placements.held().length,undo:h.undo,redo:h.redo};},
  };
  return api;
 }

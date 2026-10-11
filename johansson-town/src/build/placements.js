@@ -43,7 +43,10 @@ export function placementProblems(p,size,world){
  if(!points.every(([x,z])=>world.walkable(x,z)))out.push(world.offGround||'Part of it is off the ground people walk on (the road, a wall or the water).');
  else if(world.heightAt){const h=points.map(([x,z])=>world.heightAt(x,z));if(Math.max(...h)-Math.min(...h)>LEVEL)out.push('It would stand across a step or a kerb; move it onto level ground.');}
  // A rug may lie under a table or a cushion, never under a wardrobe or a counter standing on it.
- if(world.colliders.some(c=>!c.moving&&(!entry.flat||(c.height??2)>.6)&&!(p.id&&c.placementId===p.id)&&(c.minY||0)<2&&Math.abs(c.x)<1e5&&footprintsOverlap(box,{x:c.x,z:c.z,w:c.w,d:c.d,yaw:c.yaw||0})))out.push('It overlaps something that is already there.');
+ const hit=world.colliders.find(c=>!c.moving&&(!entry.flat||(c.height??2)>.6)&&!(p.id&&c.placementId===p.id)&&(c.minY||0)<2&&Math.abs(c.x)<1e5&&footprintsOverlap(box,{x:c.x,z:c.z,w:c.w,d:c.d,yaw:c.yaw||0}));
+ // Name what is in the way when it is a piece somebody placed (the town's own colliders have no names a person knows).
+ const other=hit?.placementKind&&(world.lookup||catalogueEntry)(hit.placementKind);
+ if(hit)out.push(other?`It overlaps the ${other.name.toLowerCase()} that is already there.`:'It overlaps something that is already there.');
  if(!entry.flat&&world.doors.some(([x,z,size=DOOR_CLEARANCE])=>footprintsOverlap(box,{x,z,w:size,d:size})))out.push('It blocks a doorway or the way to something you use.');
  return out;
 }
@@ -71,13 +74,19 @@ export const placementsFile=list=>JSON.stringify({version:1,placements:list.map(
  */
 export function createPlacements({group,colliders,factory,walkable,heightAt=null,doors=[],lookup=catalogueEntry,needWhy=true,offGround=null,onChange=()=>{}}){
  const placed=new Map(),held=new Map();let next=1;   // held: entries from the file that cannot stand where they are
+ // Undo and redo (Mario Artist keeps Undo beside the way out in every mode: research/mario-artist/report.md §5). Each
+ // step is what was done with the entry before and after; loading a file is not a step, nor is undoing.
+ const done=[],undone=[],HISTORY=50;let recording=true;
+ const remember=step=>{if(!recording)return;done.push(step);if(done.length>HISTORY)done.shift();undone.length=0;};
+ const quietly=fn=>{const was=recording;recording=false;try{return fn();}finally{recording=was;}};
+ const nameOf=e=>(lookup(e.kind)?.name||e.kind).toLowerCase();
  const world={colliders,doors,walkable,heightAt,lookup,needWhy,offGround};
  function build(p){
   const entry=lookup(p.kind),made=factory[entry.make](p.x,p.z,p.yaw);
   made.object.position.y=heightAt?heightAt(p.x,p.z):0;   // on the ground, not floating over it or sunk into it
   made.object.updateMatrixWorld(true);
   const box=new THREE.Box3().setFromObject(made.object);
-  const collider=made.collider&&{...made.collider,x:p.x,z:p.z,yaw:p.yaw,height:box.max.y-box.min.y,minY:box.min.y,placementId:p.id};
+  const collider=made.collider&&{...made.collider,x:p.x,z:p.z,yaw:p.yaw,height:box.max.y-box.min.y,minY:box.min.y,placementId:p.id,placementKind:p.kind};
   made.object.name=`placed:${p.kind}:${p.id}`;made.object.userData.placement=p.id;
   return {object:made.object,collider};
  }
@@ -90,29 +99,63 @@ export function createPlacements({group,colliders,factory,walkable,heightAt=null
   while(placed.has(entry.id)||held.has(entry.id))entry.id=`p${next++}`;
   const problems=check(entry);if(problems.length)return {ok:false,problems};
   const made=build(entry);group.add(made.object);if(made.collider)colliders.push(made.collider);
-  placed.set(entry.id,{entry,...made});onChange();return {ok:true,id:entry.id};
+  placed.set(entry.id,{entry,...made});remember({do:'place',after:{...entry}});onChange();return {ok:true,id:entry.id};
  }
  function remove(id){
-  if(held.delete(id)){onChange();return true;}
+  if(held.has(id)){remember({do:'remove',before:{...held.get(id)},held:true});held.delete(id);onChange();return true;}
   const p=placed.get(id);if(!p)return false;
   p.object.removeFromParent();const i=colliders.indexOf(p.collider);if(i>=0)colliders.splice(i,1);
-  placed.delete(id);onChange();return true;
+  placed.delete(id);remember({do:'remove',before:{...p.entry}});onChange();return true;
  }
  function move(id,changes){
   const p=placed.get(id)||(held.has(id)&&{entry:held.get(id)});if(!p)return {ok:false,problems:[`Nothing placed as ${id}.`]};
   const entry={...p.entry,...changes,id};
   const problems=check(entry);if(problems.length)return {ok:false,problems};
-  remove(id);return place(entry);   // a held entry moved to a good spot is built
+  const before={...p.entry},wasHeld=held.has(id);
+  const r=quietly(()=>{remove(id);return place(entry);});   // a held entry moved to a good spot is built
+  if(r.ok)remember({do:'move',before,after:{...entry,id:r.id},held:wasHeld});
+  return r;
+ }
+ /** Puts an entry back exactly as it was (its own id), or says why it cannot stand there now. */
+ function restore(e,wasHeld){
+  if(wasHeld){held.set(e.id,{...e});onChange();return {ok:true};}
+  return place(e);
+ }
+ /** Takes back the last change: a placed piece goes, a removed one comes back, a moved one returns. */
+ function undo(){
+  const step=done.at(-1);if(!step)return {ok:false,problems:['There is nothing to undo.']};
+  const r=quietly(()=>step.do==='place'?(remove(step.after.id)?{ok:true}:{ok:false,problems:[`The ${nameOf(step.after)} is no longer there.`]})
+   :step.do==='remove'?restore(step.before,step.held)
+   :(remove(step.after.id),restore(step.before,step.held)));
+  if(!r.ok){
+   // A move that cannot go back leaves the piece where it was moved to, never lost.
+   if(step.do==='move')quietly(()=>place(step.after));
+   return {ok:false,problems:[`The ${nameOf(step.before||step.after)} cannot go back: ${(r.problems||[]).join(' ')}`.trim()]};
+  }
+  done.pop();undone.push(step);
+  return {ok:true,undid:step.do==='place'?`Took away the ${nameOf(step.after)}.`:step.do==='remove'?`Put back the ${nameOf(step.before)}.`:`Moved the ${nameOf(step.before)} back.`};
+ }
+ /** Does again what the last undo took back. */
+ function redo(){
+  const step=undone.at(-1);if(!step)return {ok:false,problems:['There is nothing to redo.']};
+  const r=quietly(()=>step.do==='place'?place(step.after)
+   :step.do==='remove'?(remove(step.before.id)?{ok:true}:{ok:false,problems:[`The ${nameOf(step.before)} is no longer there.`]})
+   :(remove(step.before.id),restore(step.after,false)));
+  if(!r.ok){if(step.do==='move')quietly(()=>restore(step.before,step.held));return {ok:false,problems:[`The ${nameOf(step.after||step.before)} cannot go there again: ${(r.problems||[]).join(' ')}`.trim()]};}
+  undone.pop();done.push(step);
+  return {ok:true,undid:step.do==='place'?`Placed the ${nameOf(step.after)} again.`:step.do==='remove'?`Took away the ${nameOf(step.before)} again.`:`Moved the ${nameOf(step.after)} again.`};
  }
  function load(list){
   // Ids continue after every id in the file, built or not, so a new piece never takes a held one's id.
   for(const p of list){const n=+String(p.id).replace(/^p/,'');if(Number.isInteger(n)&&n>=next)next=n+1;}
-  const skipped=[];
-  for(const p of list){const r=place(p);if(!r.ok){const kept={...p};if(p.written)Object.defineProperty(kept,'written',{value:p.written});held.set(p.id,kept);skipped.push({id:p.id,problems:r.problems});}}
+  const skipped=[];recording=false;   // loading a file is not a step to undo
+  try{for(const p of list){const r=place(p);if(!r.ok){const kept={...p};if(p.written)Object.defineProperty(kept,'written',{value:p.written});held.set(p.id,kept);skipped.push({id:p.id,problems:r.problems});}}}finally{recording=true;}
   return skipped;
  }
  return {
-  check:p=>check({...p,yaw:+(p.yaw||0)}),place,move,remove,load,
+  check:p=>check({...p,yaw:+(p.yaw||0)}),place,move,remove,load,undo,redo,
+  /** How many steps can be undone and redone. */
+  history:()=>({undo:done.length,redo:undone.length}),
   list:()=>[...placed.values()].map(p=>({...p.entry})),
   /** Entries from the file that could not be built where they are; kept in the file until moved or removed. */
   held:()=>[...held.values()].map(e=>({...e,problems:check(e)})),

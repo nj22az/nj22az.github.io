@@ -116,3 +116,46 @@ test('the published placements file is valid, and every placement in it stands o
   assert.ok(p.note.trim(),p.id+' says why it is there');
  }
 });
+
+// Undo beside the way out (research/mario-artist/report.md §5): every place, move and remove can be taken back, in
+// order, and done again; a step that cannot go back says why and loses nothing.
+test('undo takes back a place, a move and a remove, in order, and redo does them again',()=>{
+ const t=town(),b=t.builder,{id}=b.place({kind:'bench',x:0,z:0,note:'A seat by the quay for anglers.'});
+ b.move(id,{x:2});b.remove(id);
+ assert.deepEqual(b.history(),{undo:3,redo:0});
+ assert.match(b.undo().undid,/Put back the bench/);assert.deepEqual(b.list().map(p=>[p.id,p.x]),[[id,2]],'back where it was removed from, with its own id');
+ assert.match(b.undo().undid,/Moved the bench back/);assert.deepEqual(b.list().map(p=>[p.id,p.x]),[[id,0]]);
+ assert.equal(t.colliders.filter(c=>c.placementId===id).length,1,'one collider, at the old spot');assert.equal(t.colliders[0].x,0);
+ assert.match(b.undo().undid,/Took away the bench/);assert.equal(b.list().length,0);assert.equal(t.colliders.length,0);assert.equal(t.group.children.length,0);
+ assert.equal(b.undo().ok,false,'nothing more to undo');
+ assert.deepEqual(b.history(),{undo:0,redo:3});
+ b.redo();b.redo();b.redo();assert.equal(b.list().length,0,'placed, moved and removed again');
+ assert.deepEqual(b.history(),{undo:3,redo:0});
+});
+
+test('a new change clears what could be redone; loading a file is not a step',()=>{
+ const t=town(),b=t.builder;
+ b.load([{id:'p1',kind:'postbox',x:0,z:0,note:'Letters'}]);assert.deepEqual(b.history(),{undo:0,redo:0});
+ const {id}=b.place({kind:'bench',x:4,z:0,note:'A seat by the quay for anglers.'});b.undo();
+ assert.equal(b.history().redo,1);b.place({kind:'bench',x:-4,z:0,note:'A seat by the quay for anglers.'});
+ assert.deepEqual(b.history(),{undo:1,redo:0});void id;
+});
+
+test('an undo that cannot be done says why and keeps the piece where it is',()=>{
+ const t=town(),b=t.builder,{id}=b.place({kind:'postbox',x:0,z:0,note:'Letters'});
+ b.remove(id);
+ t.colliders.push({x:0,z:0,w:1,d:1});   // something now stands where the postbox was
+ const r=b.undo();assert.equal(r.ok,false);assert.match(r.problems[0],/postbox cannot go back: It overlaps/);
+ assert.equal(b.history().undo,2,'the removal is still there to undo once the spot is clear');
+ t.colliders.pop();
+ const {id:m}=b.place({kind:'postbox',x:3,z:0,note:'Letters'});b.move(m,{x:5});
+ t.colliders.push({x:3,z:0,w:1,d:1});
+ assert.equal(b.undo().ok,false);assert.deepEqual(b.list().filter(p=>p.id===m).map(p=>p.x),[5],'left where it was moved to, never lost');
+});
+
+test('a refusal names the piece in the way when somebody placed it',()=>{
+ const t=town(),b=t.builder;b.place({kind:'bench',x:0,z:0,note:'A seat by the quay for anglers.'});
+ assert.match(b.check({kind:'postbox',x:0,z:0,note:'Letters'}).join(' '),/overlaps the bench that is already there/);
+ const u=town({colliders:[{x:0,z:0,w:1,d:1}]});
+ assert.match(u.builder.check({kind:'postbox',x:0,z:0,note:'Letters'}).join(' '),/overlaps something that is already there/);
+});
