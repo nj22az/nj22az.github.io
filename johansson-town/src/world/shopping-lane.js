@@ -52,7 +52,6 @@ export function buildShoppingLane({world,register,onAction}){
  box('Red drinks vending machine',[.8,1.9,1.1],[85.8,.95,112.8],0x963c39,true);box('Vending machine selection panel',[.04,1,.85],[86.23,1.25,112.8],0xd4d6c7);anchor(87,112.8,'Buy a cold drink on Rainflower Lane','rainflower-shop','Lane drinks machine',{item:'Cold island soda',price:100});
  sign('RAINFLOWER LANE',84.35,2,95,5);
  anchor(88,96,'Read the Rainflower Lane guide','read','Rainflower Lane','A neighbourhood shopping street between Main Street, Aoba Garden and Kitahama. The two cross streets lead toward the garden; the north walk joins the residential lane. Browse the flower stand, walk into Blue Coral for an island ice cream and buy a cold drink. Rain darkens the paving; overhead wires lead toward the old upper floor windows.');
- anchor(94,110,'Choose Thuan’s alternative outfit','thuan-wardrobe');
  const florist=buildFlowerShop({world,group,register,onAction,authored:true});
  const blueCoral=buildBlueCoralShop({world,group,register,onAction,authored:true});
  placeShoppingLaneGroup(group);placeShoppingLaneColliders(world.colliders,colliderStart);

@@ -1,5 +1,7 @@
 import {townDate,townDay} from '../town-clock.js';
 import {momentsOn} from '../progression/diary.js';
+import {happeningsOn} from '../people/happenings.js';
+import {typhoonTomorrow,typhoonAt} from '../world/typhoons.js';
 
 /**
  * The Minato Evening News, on the mayor's television from six in the evening.
@@ -39,8 +41,34 @@ function ensure(state){
  state.news||={days:{},quiet:[]};state.news.days||={};state.news.quiet||=[];return state.news;
 }
 
-/** Today's bulletin: {title, items:[string], quiet:boolean, text}. */
-export function eveningNews(state,minutes){
+/** The town's calendar: the festivals and days of the year (not the weekly ones), by date. */
+const annual=h=>!!(h.on.date||h.on.dates);
+const atWords=minute=>{const h=Math.floor(minute/60),m=minute%60,hour=h%12===0?12:h%12;return `${m?hour+':'+String(m).padStart(2,'0'):hour+' o’clock'} ${h<12?'in the morning':h<18?'in the afternoon':'in the evening'}`;};
+/**
+ * What is coming tomorrow, so a festival has a build-up: the calendar's day, and a
+ * typhoon on its way (when the weather follows the town; a weather the player fixed is
+ * the weather, and the news does not contradict it).
+ */
+export function tomorrowItems(minutes,{weather=true}={}){
+ const items=[],next=minutes+1440,start=Math.floor(next/1440)*1440;
+ // The storm first, so a festival it will call off can refer to it.
+ const t=weather&&typhoonTomorrow(minutes);
+ if(t)items.push(`The weather: Typhoon No. ${t.number} is expected to come near Okinawa tomorrow.`);
+ for(const h of happeningsOn(next).filter(annual)){
+  const title=(h.name||h.title).replace(/^The /,'the '),timed=h.hours[1]>h.hours[0];
+  // A typhoon's rain over all of an outdoor happening's hours will very likely call it off: say so, not "from 7:30".
+  const storm=weather&&h.dry&&timed&&typhoonAt(start+h.hours[0])&&typhoonAt(start+h.hours[1]-1);
+  items.push(storm?`Tomorrow: ${title}, though with Typhoon No. ${storm.number} near it is likely to be called off.`:timed?`Tomorrow: ${title}, from ${atWords(h.hours[0])}.`:`Tomorrow: ${title}.`);
+ }
+ return items;
+}
+
+/**
+ * Today's bulletin: {title, items:[string], quiet:boolean, text}. What happened today
+ * comes from the day's moments, which is where the town records its festivals and its
+ * typhoons as well as what Johansson did; what is coming comes from the calendar.
+ */
+export function eveningNews(state,minutes,{weather=true}={}){
  const day=townDay(minutes),{month,day:date,weekday}=townDate(minutes);
  const items=momentsOn(state,day).filter(m=>m.news).slice(0,NEWS_ITEMS).map(m=>m.news);
  let quiet=false;
@@ -56,6 +84,7 @@ export function eveningNews(state,minutes){
   }
   items.push(pick);
  }
+ items.push(...tomorrowItems(minutes,{weather}));
  const title='Minato Evening News';
  const opening=`Good evening. This is the Minato Evening News for ${WEEKDAYS[weekday]} ${date} ${MONTHS[month-1]}.`;
  const text=[opening,...items,'That was the news. Goodnight from Minato.'].join('\n\n');

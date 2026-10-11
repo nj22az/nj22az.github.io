@@ -16,7 +16,7 @@ import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {createMagazineReader} from './src/ui/magazine-reader.js';
 import {townCalendarAt} from './src/town-clock.js';
-import {happeningLine} from './src/people/happenings.js';
+import {happeningLine,happeningOutcome} from './src/people/happenings.js';
 import {recordMoment,diaryPage,diaryDays,restoreDiary} from './src/progression/diary.js';
 import {wantsAnother} from './src/people/drunk.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
@@ -30,6 +30,7 @@ import {STORE_MENU} from './src/commerce/store-menu.js';
 import {restoreResidentLife} from './src/people/resident-personalities.js';
 import {travelProgress,travelStatusText} from './src/progression/travel.js';
 import {restoreHomeDecor} from './src/progression/home-decor.js';
+import {readStudioChoices,applyStudioChoices} from './src/studio-handoff.js';
 import {ensureDailyQuests,markDailyDone,hasDailyQuest,isDailyDone,NOTICE_NUDGE,RADIO_821} from './src/progression/soft-quests.js';
 import {PROFILES} from './src/people/profiles.js';
 import {RESIDENTS,residentHomeDescription} from './src/people/residents.js';
@@ -58,10 +59,13 @@ import {sharedMind} from './src/people/thuan-mind.js';
 import {createThuanVoice} from './src/people/thuan-voice.js';
 import {createThuanChat} from './src/people/thuan-chat.js';
 import {restoreNews} from './src/feed/evening-news.js';
-import {restorePost,ensurePost,postRound,sendLetter,lettersForReturn} from './src/mail/post.js';
+import {restorePost,ensurePost,postRound,sendLetter,lettersForReturn,ROUND} from './src/mail/post.js';
 import {letterText,letterLabel,openLetter,unreadCount,STATIONERY,stationerySvg} from './src/mail/letters.js';
 import {temperamentOf} from './src/people/chat-lines.js';
 import {greetingFor,daysBetween} from './src/people/greetings.js';
+import {happeningsOn} from './src/people/happenings.js';
+import {typhoonAt,typhoonPostDay,clockWords} from './src/world/typhoons.js';
+import {townDate as townDateOf} from './src/town-clock.js';
 import {planFavours,favourWaiting,favourLine,askFavour,replyFavour,favourExpire,favourVisit,restoreFavours,restoreFavourErrand,favourById} from './src/people/favours.js';
 import {recipeFor} from './src/avatars/cast.js';
 import {GROCERY_ITEMS} from './src/commerce/catalogue.js';
@@ -102,6 +106,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   state.townCleanup=restoreTownCleanup(state.townCleanup);
   state.workshop=restoreWorkshop(state.workshop,state.inventory);
   state.homeDecor=restoreHomeDecor(state.homeDecor);
+  // The home and Thuan's outfit are chosen in Johansson Studio (src/studio-handoff.js); the save carries a copy.
+  applyStudioChoices(state,readStudioChoices(localStorage));
   // Retain the old save field while all live directions describe the island.
   state.townMode='peninsula';
   seedArchive(state,getMinutes());
@@ -162,11 +168,45 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   }
   function deliverPost(){
     const m=getMinutes();
+    noteTheDay(m);
     endLateFavour(m);
     // A favour offered again replaces the letter that was never acted on, if it is still in the post.
     for(const {replaces,...letter} of planFavours(state,m)){const post=ensurePost(state);post.pending=post.pending.filter(p=>!p.id.startsWith(replaces));sendLetter(state,letter);}
     const delivered=postRound(state,m,{senderOf,playerName:playerName()});if(delivered.length)save();return delivered;
   }
+  /**
+   * What happens in town is recorded as moments (progression/diary.js), so the diary and the
+   * evening news retell it: a festival from the calendar as it went (people/happenings.js
+   * happeningOutcome: held, or called off when the rain kept its cast in), and a typhoon when its warning
+   * starts and when it comes closest (world/typhoons.js, only while the weather follows the
+   * town: game.js sets state.typhoon). A friend writes on the first day of a warning.
+   */
+  // Whether each of today's outdoor happenings had a dry moment in its hours, as this session saw it (not saved: a
+  // happening nobody watched is not reported).
+  const happeningSeenDry=new Map();
+  function noteTheDay(m){
+    const day=Math.floor(m/1440),minute=((m%1440)+1440)%1440;
+    for(const h of happeningsOn(m)){
+      if(!(h.on.date||h.on.dates)||h.hours[1]<=h.hours[0])continue;
+      const key=`${h.id}:${day}`;
+      if(minute>=h.hours[0]&&minute<h.hours[1])happeningSeenDry.set(key,!!happeningSeenDry.get(key)||state.weather!==true);
+      const typhoonAllHours=!!state.typhoon&&!!typhoonAt(day*1440+h.hours[0])&&!!typhoonAt(day*1440+h.hours[1]-1);
+      const outcome=happeningOutcome(h,minute,{seen:happeningSeenDry.get(key),typhoonAllHours}),said=outcome&&h.news?.[outcome];if(!said)continue;
+      recordMoment(state,m,{id:`happening:${h.id}:${day}`,kind:'happening',who:outcome==='held'?Object.keys(h.cast||{}).slice(0,4):[],text:said,news:said});
+    }
+    const t=state.typhoon&&typhoonAt(m);
+    if(t){
+      recordMoment(state,m,{id:`typhoon:${t.number}:warning`,kind:'happening',text:`A typhoon warning: No. ${t.number}.`,
+        news:`A storm warning for Typhoon No. ${t.number} was in force in Okinawa today.`});
+      const closest=t.closest.at,today=closest.slice(0,5)===typhoonDayKey(m),past=minute>=Number(closest.slice(6,8))*60;
+      if(today&&past)recordMoment(state,m,{id:`typhoon:${t.number}:closest`,kind:'happening',weight:6,text:`Typhoon No. ${t.number} came closest today, about ${t.closest.km} kilometres from Naha.`,
+        news:`Typhoon No. ${t.number} came closest to Okinawa at ${clockWords(closest)}, about ${t.closest.km} kilometres from Naha, with a central pressure of ${t.closest.hPa} hectopascals.`});
+      const friend=Object.entries(state.friendship||{}).filter(([,r])=>r?.points>=10).sort((a,b)=>b[1].points-a[1].points||a[0].localeCompare(b[0]))[0]?.[0];
+      // Written for the first morning round the warning covers, so it comes with the post, not in the afternoon.
+      if(friend&&typhoonPostDay(t,ROUND)===typhoonDayKey(m))sendLetter(state,{id:`typhoon:${t.number}:${friend}`,day,occasion:'typhoon',from:friend});
+    }
+  }
+  const typhoonDayKey=m=>{const {key}=townDateOf(m);return key;};
   /**
    * Favours (src/people/favours.js). A day that runs out ends the favour kindly: the thing
    * goes back to whoever asked, and that is a moment too.
@@ -580,7 +620,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const names=Object.keys(state.greeted);if(names.length>60)delete state.greeted[names[0]];
     const recipe=recipeFor(name);
     return greetingFor({speaker:name,temper:temperamentOf(recipe?.profile||{}),playerName:playerName(),catchphrase:recipe?.profile?.catchphrase||'',day:dayNow,
-     situation:{daysAway:dayNow===returnDay?daysBetween(awaySince):0,weather:state.weather?'rain':'sunny',hour:Math.floor(((nowM%1440)+1440)%1440/60)}});
+     situation:{daysAway:dayNow===returnDay?daysBetween(awaySince):0,weather:state.typhoon?'typhoon':state.weather?'rain':'sunny',hour:Math.floor(((nowM%1440)+1440)%1440/60)}});
   }
   function neighbour(name){
     const spec=NEIGHBOUR_TALK[name];if(!spec){close();return;}
@@ -613,7 +653,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const greeting=openingGreeting(name);
     // What today is (happenings.js) is what they say first, once a day; everything else
     // they offer (a drink at Minato, the Tama errand) stays on the buttons.
-    let today=favour.line?null:happeningLine(name,getMinutes());
+    let today=favour.line?null:happeningLine(name,getMinutes(),{rain:state.weather===true});
     if(today&&!(state.heardHappenings||=[]).includes(today.key)){
      state.heardHappenings=[...state.heardHappenings,today.key].slice(-40);
      recordMoment(state,getMinutes(),{kind:'happening',text:today.title+'. '+name+' said: “'+today.text+'”'});

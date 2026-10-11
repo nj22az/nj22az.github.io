@@ -207,3 +207,38 @@ test('Thuan’s scripted beats reach the box, and her script can use the line cu
  const v=d.start('a');
  assert.equal(v.text,'Oh. It is you, Johansson.');assert.deepEqual(v.pauses,{3:2});assert.deepEqual(v.faces,[{at:0,face:'shy'}]);
 });
+
+import {TYPHOONS_1997,typhoonAt,typhoonOnDay,typhoonTomorrow,typhoonBulletin,typhoonPostDay} from '../src/world/typhoons.js';
+import {townDate} from '../src/town-clock.js';
+import {tomorrowItems} from '../src/feed/evening-news.js';
+// A town minute on a given 1997 date and time (the town's calendar is the real date in 1997).
+const onDate=(key,hhmm)=>{const [h,mi]=hhmm.split(':').map(Number);let m=Math.floor(Date.now()/60000);m=Math.floor(m/1440)*1440;for(let k=0;k<800;k++){const t=m-k*1440;if(townDate(t).key===key)return t+h*60+mi;}throw Error('no date '+key);};
+
+test('typhoon days are 1997’s real approaches to Okinawa, with their own hours',()=>{
+ assert.deepEqual(TYPHOONS_1997.map(t=>t.number),[4,8,11,13]);
+ for(const t of TYPHOONS_1997){assert.ok(t.from<=t.closest.at&&t.closest.at<=t.to,`${t.number}: closest inside its window`);assert.ok(t.closest.km<=300);}
+ assert.equal(typhoonAt(onDate('08-17','02:59')),null,'before the warning');
+ assert.equal(typhoonAt(onDate('08-17','15:00')).number,13);
+ assert.equal(typhoonAt(onDate('08-18','03:30')),null,'lifted after the last fix');
+ assert.equal(typhoonOnDay(onDate('08-06','09:00')).number,11);
+ assert.equal(typhoonTomorrow(onDate('08-16','19:00')).number,13);
+ assert.match(typhoonBulletin(TYPHOONS_1997[3],onDate('08-17','10:00')).text,/expected to come closest at 3 in the afternoon on 17 August/);
+ assert.match(typhoonBulletin(TYPHOONS_1997[3],onDate('08-17','17:00')).text,/came closest at 3 in the afternoon on 17 August.*moving away/s);
+ assert.doesNotMatch(JSON.stringify(TYPHOONS_1997)+typhoonBulletin(TYPHOONS_1997[0],onDate('05-29','10:00')).text,/ferry/i,'nothing about the ferry: the town does not stop it');
+});
+
+test('the news looks ahead: tomorrow’s festival, and a typhoon on its way when the weather follows the town',()=>{
+ assert.deepEqual(tomorrowItems(onDate('10-11','19:00')),['Tomorrow: the town tug-of-war, from 3 o’clock in the afternoon.']);
+ assert.ok(tomorrowItems(onDate('08-16','19:00')).includes('The weather: Typhoon No. 13 is expected to come near Okinawa tomorrow.'));
+ assert.ok(!tomorrowItems(onDate('08-16','19:00'),{weather:false}).some(t=>/Typhoon/.test(t)),'a fixed weather is not contradicted');
+ assert.ok(tomorrowItems(onDate('08-16','19:00')).some(t=>/Ukui/.test(t)),'the eisa night is announced');
+ const state={},n=eveningNews(state,onDate('10-11','19:00'));
+ assert.equal(n.quiet,true);assert.equal(n.items.at(-1),'Tomorrow: the town tug-of-war, from 3 o’clock in the afternoon.');
+});
+
+test('a friend’s typhoon letter comes with the first morning post the warning covers',()=>{
+ const round=10*60+30,byNumber=Object.fromEntries(TYPHOONS_1997.map(t=>[t.number,typhoonPostDay(t,round)]));
+ // Tina's warning began at three in the afternoon, after the round: her letter comes the next morning.
+ assert.deepEqual(byNumber,{4:'05-29',8:'06-27',11:'08-07',13:'08-17'});
+ assert.equal(typhoonPostDay({from:'09-01 12:00',to:'09-01 20:00'},round),null,'a warning between two rounds brings no letter');
+});

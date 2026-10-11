@@ -141,7 +141,7 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
   });
   // Thuan's wardrobe: against the nibanza's back wall (where a family keeps its altar), or
   // in the 2DK's west tatami room.
-  if(residents.includes('Thuan')){const [x,z]=redTile?[-2.4,-.12]:[-hw+.45,-hd+.65];box([.85,1.8,.5],[x,.9,z],0x765343,'Thuan’s wardrobe');collider(x,z,.85,.5,1.8);anchor([x,1.1,z+.55],'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'));}
+  if(residents.includes('Thuan')){const [x,z]=redTile?[-2.4,-.12]:[-hw+.45,-hd+.65];box([.85,1.8,.5],[x,.9,z],0x765343,'Thuan’s wardrobe');collider(x,z,.85,.5,1.8);anchor([x,1.1,z+.55],'Look at Thuan’s wardrobe',()=>action('inspect','Thuan’s wardrobe','Her everyday clothes, the navy harbour academy sailor set she wears to evening classes, and the outfit she wears on Rainflower Lane.'));}
   registerHomeSeats({parent:group,reg,action,layouts:homeLayouts,extra:visitorSeats});
   return {...FAMILY_HOME_LAYOUT,home:true,homeLayouts};
  }
@@ -153,7 +153,7 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  {const g=new THREE.Group();g.position.set(board.x,1.5,board.z);g.rotation.y=board.ry;group.add(g);const m=new THREE.Mesh(new THREE.BoxGeometry(.5,.7,.03),mat(0xf4ecd6));m.name='Household board';g.add(m);}
  anchor([board.x+(board.ry?-.35:0),1.4,board.z-(board.ry?0:.35)],'Read the household board',()=>action('read',title,household.members.map(m=>m.name+' — '+m.purpose).join('\n')));
  anchor([altar.x,1.1,altar.z+.7],'Look at the family altar',()=>action('inspect','Tōtōmē · the family altar','The ancestors\' tablets in their lacquer case, a bowl of incense ash, an orange and a box of sweets. On the first and fifteenth of the month somebody lights three sticks and says the family\'s news out loud.'));
- if(household?.members?.some(m=>m.name==='Thuan')){box([.85,1.8,.5],[-hw+.45,.9,-hd+.65],0x765343,'Thuan’s wardrobe');collider(-hw+.45,-hd+.65,.85,.5,1.8);anchor([-hw+.7,1.1,-hd+1.15],'Open Thuan’s wardrobe',()=>action('thuan-wardrobe'));}
+ if(household?.members?.some(m=>m.name==='Thuan')){box([.85,1.8,.5],[-hw+.45,.9,-hd+.65],0x765343,'Thuan’s wardrobe');collider(-hw+.45,-hd+.65,.85,.5,1.8);anchor([-hw+.7,1.1,-hd+1.15],'Look at Thuan’s wardrobe',()=>action('inspect','Thuan’s wardrobe','Her everyday clothes, the navy harbour academy sailor set she wears to evening classes, and the outfit she wears on Rainflower Lane.'));}
  registerHomeSeats({parent:group,reg,action,extra:visitorSeats});
  return {...FAMILY_HOME_LAYOUT,home:true};
 }

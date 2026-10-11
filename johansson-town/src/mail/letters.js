@@ -74,7 +74,7 @@ export const OCCASIONS=Object.freeze({
   body:L(['The radio says a typhoon is on the way! Shutters closed, candles out, snacks ready. If you get bored, knock. We can play cards!','Big wind coming! I tied down my plants and my bicycle, and nearly myself. Stay safe inside!'],
    ['They say this one is strong. Fill a bucket with water, tape your windows, and keep this letter as proof that someone cared.','I have seen the sea go grey like this before. Stay in. Promise me. The quay is no place for heroes today.'],
    ['There’s a storm coming. Shutters down, kettle on, and don’t go out unless you have to. It’ll pass. They always pass.','Typhoon day. Good excuse to stay in. Got rice? Got water? Then you’re fine.'],
-   ['A typhoon warning has been issued. Close the shutters, fill the bath, charge the torch. The ferry will not run. Do not try the ferry.','Checklist: shutters, water, torch, radio, rice. Tick each one. I have enclosed no checklist, but this letter will do.'])}),
+   ['A typhoon warning has been issued. Close the shutters, fill the bath, charge the torch. Stay off the quay until it has passed.','Checklist: shutters, water, torch, radio, rice. Tick each one. I have enclosed no checklist, but this letter will do.'])}),
 });
 
 /** P.S. lines for occasions without their own (the missed and typhoon letters). */

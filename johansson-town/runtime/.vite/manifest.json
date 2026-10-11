@@ -1,19 +1,19 @@
 {
-  "_actors-Bu0SJIE7.js": {
-    "file": "actors-Bu0SJIE7.js",
+  "_actors-BHirEbzE.js": {
+    "file": "actors-BHirEbzE.js",
     "name": "actors",
     "imports": [
-      "_izakaya-serving-visuals-D4iG-fkK.js"
+      "_izakaya-serving-visuals-CUGjqszU.js"
     ]
   },
-  "_compact-shops-CyzeIP9y.js": {
-    "file": "compact-shops-CyzeIP9y.js",
+  "_compact-shops-DTQnDU6T.js": {
+    "file": "compact-shops-DTQnDU6T.js",
     "name": "compact-shops",
     "isDynamicEntry": true,
     "imports": [
-      "_actors-Bu0SJIE7.js",
-      "_quarters-naXk9q3l.js",
-      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_actors-BHirEbzE.js",
+      "_quarters-B_jxx6wy.js",
+      "_izakaya-serving-visuals-CUGjqszU.js",
       "_town-audio-BMag7ZFd.js"
     ]
   },
@@ -21,18 +21,18 @@
     "file": "icons-RrRr0WaS.js",
     "name": "icons"
   },
-  "_izakaya-serving-visuals-D4iG-fkK.js": {
-    "file": "izakaya-serving-visuals-D4iG-fkK.js",
+  "_izakaya-serving-visuals-CUGjqszU.js": {
+    "file": "izakaya-serving-visuals-CUGjqszU.js",
     "name": "izakaya-serving-visuals"
   },
-  "_onsen-CfKnKx8V.js": {
-    "file": "onsen-CfKnKx8V.js",
+  "_onsen-B1Ky8AzJ.js": {
+    "file": "onsen-B1Ky8AzJ.js",
     "name": "onsen",
     "isDynamicEntry": true,
     "imports": [
-      "_actors-Bu0SJIE7.js",
-      "_izakaya-serving-visuals-D4iG-fkK.js",
-      "_quarters-naXk9q3l.js",
+      "_actors-BHirEbzE.js",
+      "_izakaya-serving-visuals-CUGjqszU.js",
+      "_quarters-B_jxx6wy.js",
       "_town-audio-BMag7ZFd.js"
     ]
   },
@@ -40,31 +40,39 @@
     "file": "preload-helper-PPVm8Dsz.js",
     "name": "preload-helper"
   },
-  "_quarters-naXk9q3l.js": {
-    "file": "quarters-naXk9q3l.js",
+  "_quarters-B_jxx6wy.js": {
+    "file": "quarters-B_jxx6wy.js",
     "name": "quarters",
     "isDynamicEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-D4iG-fkK.js",
-      "_actors-Bu0SJIE7.js",
+      "_izakaya-serving-visuals-CUGjqszU.js",
+      "_actors-BHirEbzE.js",
       "_town-audio-BMag7ZFd.js"
     ]
   },
-  "_sakura-interior-CKRvP2RN.js": {
-    "file": "sakura-interior-CKRvP2RN.js",
+  "_sakura-interior-BWdIzyWm.js": {
+    "file": "sakura-interior-BWdIzyWm.js",
     "name": "sakura-interior",
     "isDynamicEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_izakaya-serving-visuals-CUGjqszU.js",
       "_town-audio-BMag7ZFd.js",
-      "_actors-Bu0SJIE7.js",
-      "_quarters-naXk9q3l.js"
+      "_actors-BHirEbzE.js",
+      "_quarters-B_jxx6wy.js"
     ]
   },
   "_spector.bundle-_JPoFEkN.js": {
     "file": "spector.bundle-_JPoFEkN.js",
     "name": "spector.bundle",
     "isDynamicEntry": true
+  },
+  "_studio-handoff-DNrhwRaS.js": {
+    "file": "studio-handoff-DNrhwRaS.js",
+    "name": "studio-handoff",
+    "imports": [
+      "_actors-BHirEbzE.js",
+      "_izakaya-serving-visuals-CUGjqszU.js"
+    ]
   },
   "_town-audio-BMag7ZFd.js": {
     "file": "town-audio-BMag7ZFd.js",
@@ -79,27 +87,19 @@
       "_town-audio-BMag7ZFd.js"
     ]
   },
-  "src/avatars/export.js": {
-    "file": "export-Ck4aqdSk.js",
-    "name": "export",
-    "src": "src/avatars/export.js",
-    "isDynamicEntry": true,
-    "imports": [
-      "_izakaya-serving-visuals-D4iG-fkK.js"
-    ]
-  },
   "src/avatars/guide-portraits.js": {
-    "file": "portraits-BpyuspqI.js",
+    "file": "portraits-BizdsaH-.js",
     "name": "portraits",
     "src": "src/avatars/guide-portraits.js",
     "isEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-D4iG-fkK.js",
-      "_actors-Bu0SJIE7.js"
+      "_izakaya-serving-visuals-CUGjqszU.js",
+      "_actors-BHirEbzE.js",
+      "_studio-handoff-DNrhwRaS.js"
     ]
   },
   "src/boot.js": {
-    "file": "boot-CGipIK6p.js",
+    "file": "boot-KEnUZ0IB.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -115,84 +115,84 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-Csbh8jHz.js",
+    "file": "feed-Uz649vIR.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
     "imports": [
       "_preload-helper-PPVm8Dsz.js",
-      "_izakaya-serving-visuals-D4iG-fkK.js"
+      "_izakaya-serving-visuals-CUGjqszU.js"
     ],
     "dynamicImports": [
       "src/scene/scene-world.js"
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-TiqtSzvY.js",
+    "file": "game-ls7HlaOw.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-D4iG-fkK.js",
-      "_quarters-naXk9q3l.js",
-      "_actors-Bu0SJIE7.js",
+      "_izakaya-serving-visuals-CUGjqszU.js",
+      "_quarters-B_jxx6wy.js",
+      "_actors-BHirEbzE.js",
       "_icons-RrRr0WaS.js",
       "_town-audio-BMag7ZFd.js",
-      "_onsen-CfKnKx8V.js",
-      "_sakura-interior-CKRvP2RN.js",
-      "_compact-shops-CyzeIP9y.js",
+      "_onsen-B1Ky8AzJ.js",
+      "_sakura-interior-BWdIzyWm.js",
+      "_compact-shops-DTQnDU6T.js",
       "src/world/interiors/sato-ramen.js",
       "src/world/interiors/town-hall.js",
+      "_studio-handoff-DNrhwRaS.js",
       "_preload-helper-PPVm8Dsz.js"
     ],
     "dynamicImports": [
-      "src/avatars/export.js",
       "_spector.bundle-_JPoFEkN.js"
     ]
   },
   "src/scene/scene-world.js": {
-    "file": "scene-world-BYXqu_uJ.js",
+    "file": "scene-world-pmjoHF3E.js",
     "name": "scene-world",
     "src": "src/scene/scene-world.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-PPVm8Dsz.js",
-      "_izakaya-serving-visuals-D4iG-fkK.js",
-      "_quarters-naXk9q3l.js",
-      "_actors-Bu0SJIE7.js",
+      "_izakaya-serving-visuals-CUGjqszU.js",
+      "_quarters-B_jxx6wy.js",
+      "_actors-BHirEbzE.js",
       "_town-audio-BMag7ZFd.js"
     ],
     "dynamicImports": [
-      "_sakura-interior-CKRvP2RN.js",
-      "_quarters-naXk9q3l.js",
+      "_sakura-interior-BWdIzyWm.js",
+      "_quarters-B_jxx6wy.js",
       "src/world/interiors/sato-ramen.js",
-      "_quarters-naXk9q3l.js",
-      "_compact-shops-CyzeIP9y.js",
-      "_onsen-CfKnKx8V.js",
+      "_quarters-B_jxx6wy.js",
+      "_compact-shops-DTQnDU6T.js",
+      "_onsen-B1Ky8AzJ.js",
       "src/world/interiors/town-hall.js"
     ]
   },
   "src/world/interiors/sato-ramen.js": {
-    "file": "sato-ramen-Dq_15ss1.js",
+    "file": "sato-ramen-B6FCiPSQ.js",
     "name": "sato-ramen",
     "src": "src/world/interiors/sato-ramen.js",
     "isDynamicEntry": true,
     "imports": [
-      "_izakaya-serving-visuals-D4iG-fkK.js",
-      "_quarters-naXk9q3l.js",
-      "_actors-Bu0SJIE7.js",
+      "_izakaya-serving-visuals-CUGjqszU.js",
+      "_quarters-B_jxx6wy.js",
+      "_actors-BHirEbzE.js",
       "_town-audio-BMag7ZFd.js"
     ]
   },
   "src/world/interiors/town-hall.js": {
-    "file": "town-hall-BP50-Qhk.js",
+    "file": "town-hall-C16z0ijV.js",
     "name": "town-hall",
     "src": "src/world/interiors/town-hall.js",
     "isDynamicEntry": true,
     "imports": [
-      "_actors-Bu0SJIE7.js",
-      "_quarters-naXk9q3l.js",
-      "_izakaya-serving-visuals-D4iG-fkK.js",
+      "_actors-BHirEbzE.js",
+      "_quarters-B_jxx6wy.js",
+      "_izakaya-serving-visuals-CUGjqszU.js",
       "_town-audio-BMag7ZFd.js"
     ]
   },

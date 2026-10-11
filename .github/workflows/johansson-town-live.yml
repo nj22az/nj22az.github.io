@@ -3,8 +3,8 @@ name: Johansson Town live
 # Keeps the online game and its web Studio (GitHub Pages, served from main) up to date while they are built on the
 # work branch: every push there that touches johansson-town/ (World) or avatar-creator/ (Johansson Studio, which
 # imports World's code) is tested, then those two folders (only those) are copied onto main.
-# The decorator (title-screen BUILD, "Arrange furniture", ?build) stays off online: src/features.js turns it off on
-# the live host, and the tests below check that guard before anything is published.
+# World has no customisation (looks, wardrobes and the home are made in Johansson Studio), and the ?build town builder
+# stays off online (src/features.js): the tests below check both before anything is published.
 on:
   push:
     branches: ['claude/sjoskolan-youtube-strategy-gofi3o']
@@ -32,7 +32,7 @@ jobs:
           node-version: '24'
           package-manager-cache: false
       - run: npm ci --ignore-scripts --no-audit --no-fund
-      - name: The decorator is off on the live site
+      - name: World has no customisation, and the town builder is off on the live site
         run: node --test tests/live-features.test.mjs
       - name: Game tests (including a fresh runtime build and portraits)
         run: npm test

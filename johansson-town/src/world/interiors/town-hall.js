@@ -193,9 +193,9 @@ export function buildMayorOffice({room,reg,action,collider=()=>{},exit,petitions
  * 町長宅, the mayor's home in the east wing: Johansson's own rooms. Tatami, a low table
  * with cushions, the futon folded in the corner by day, a kitchenette, a television on a
  * cabinet, the bookshelf of sea charts and Swedish paperbacks, and the wardrobe with the
- * mirror on its door where you choose what to wear.
+ * mirror on its door (what he wears is chosen in Johansson Studio).
  */
-export function buildMayorHome({room,reg,action,collider=()=>{},exit,openMaker=null,sleep=null,television=null,post=null}){
+export function buildMayorHome({room,reg,action,collider=()=>{},exit,sleep=null,television=null,post=null}){
  const group=new THREE.Group();group.name='Mayor’s home';room.add(group);
  const box=shell(group,{wall:0xf1e9d6,dado:0xb89c78,tatami:true});
  const {w,d}=SHELL,hw=w/2,hd=d/2;
@@ -239,7 +239,7 @@ export function buildMayorHome({room,reg,action,collider=()=>{},exit,openMaker=n
  }
  for(const [x,z,yaw] of [[-.6,.25,0],[-.6,-1.05,Math.PI],[-1.35,-.4,-Math.PI/2],[.15,-.4,Math.PI/2]]){const cushion=anchor([x,.8,z],'Sit at the low table',()=>action('seat','Low table','Tea from the thermos, still warm. The ferry horn comes across the field.'));cushion.userData.seat={position:[x,0,z],stand:[x+Math.sin(yaw)*.75,0,z+Math.cos(yaw)*.75],surfaceY:.09,eyeY:.82,yaw,pitch:0};}
  anchor([hw-.75,.6,-hd+1.15],'Lie down on the futon',()=>sleep?sleep():action('inspect','Futon','Folded square every morning, the way the harbour master taught you.'));
- anchor([-hw+.8,1.3,hd-.85],'Look in the wardrobe mirror',()=>openMaker?openMaker():action('inspect','Wardrobe','Three kariyushi shirts, a suit for assembly days and a straw hat.'));
+ anchor([-hw+.8,1.3,hd-.85],'Look in the wardrobe mirror',()=>action('inspect','Wardrobe','Three kariyushi shirts, a suit for assembly days and a straw hat.'));
  // From six the set has the Minato Evening News (feed/evening-news.js); before that, NHK.
  anchor([1.2,1,-hd+.7],'Watch the television',()=>{const news=television?.();if(news)action('watch',news.title,news.text);else action('inspect','Television','NHK Okinawa: the weather map with a typhoon symbol far to the south, then sumo highlights. You leave it on low for company.');});
  anchor([-1.45,1.2,hd-.7],'Look at the bookshelf',()=>action('read','Bookshelf','Sea charts of the Ryūkyū arc. A Swedish–Japanese dictionary with a cracked spine. Three Wallander paperbacks. The town budget for 1997, with coffee rings.'));
