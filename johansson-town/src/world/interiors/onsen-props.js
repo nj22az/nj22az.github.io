@@ -229,7 +229,7 @@ export function paperWarTexture(kind){
  * Builds the props into the room. `rect` adds a collider (only for what really blocks a walker), `anchor` a prompt.
  * Returns the group and, by id, the parts the film and the room switch.
  */
-export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
+export function buildOnsenProps({room,rect,anchor=null,action=()=>{},chair=null}){
  const group=new THREE.Group();group.name='Umi-no-yu props';room.add(group);
  const add=(geometry,material,x,y,z,name,parent=group)=>{const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.name=name;m.castShadow=m.receiveShadow=true;m.userData.staticProp=true;parent.add(m);return m;};
  const node=(name,x,y,z,parent=group)=>{const g=new THREE.Group();g.name=name;g.position.set(x,y,z);parent.add(g);return g;};
@@ -388,11 +388,12 @@ export function buildOnsenProps({room,rect,anchor=null,action=()=>{}}){
    const end=add(new THREE.BoxGeometry(.034,.022,.05),grey,ex,top+.011,ez,c.name+' socket',g);end.rotation.y=-(a+Math.PI*.8);end.userData.restsOn=c.name+' coil';});}
 
  // ---- Fujita's offering: three coffee milks on the massage chair's right arm (stage({offering})).
- const O=ONSEN_PROPS.offering,offering=node(O.name,0,O.top,O.z);offering.userData.prop=O.id;offering.visible=false;
+ // On Studio's chair (studio-assets.js) the row stands on its right arm's top, at the anchor the chair names for it.
+ const O=ONSEN_PROPS.offering,armTop=chair?.anchors?.['right-arm-top'],offering=node(O.name,0,armTop?armTop[1]:O.top,armTop?armTop[2]:O.z);offering.userData.prop=O.id;offering.visible=false;
  const Bt=O.bottle,profile=[[0,0],[Bt.r-.002,0],[Bt.r,.004],[Bt.r,.082],[Bt.r-.003,.098],[Bt.neck+.001,.114],[Bt.neck,.126],[Bt.neck+.0025,.128],[Bt.neck+.0025,Bt.h],[Bt.neck-.0015,Bt.h],[Bt.neck-.0015,Bt.h-.012]].map(([x,y])=>new THREE.Vector2(x,y));
  const full=std(0x9b6a3c,.28),empty=std(0xe6efee,.12,{transparent:true,opacity:.38,depthWrite:false,side:THREE.DoubleSide}),film=std(0x8a5a32,.5),capMat=std(0xd88a2a,.6);
  const bottleGeo=new THREE.LatheGeometry(profile,8),milks=O.xs.map((x,i)=>{const g=node('Coffee milk '+(i+1),x-0,0,0,offering);
-  const body=add(bottleGeo,full,0,0,0,'Coffee milk '+(i+1)+' bottle',g);body.userData.restsOn=O.on;
+  const body=add(bottleGeo,full,0,0,0,'Coffee milk '+(i+1)+' bottle',g);body.userData.restsOn=chair?chair.object.name:O.on;
   const cap=add(new THREE.CylinderGeometry(Bt.neck+.003,Bt.neck+.003,.006,8),capMat,0,Bt.h+.003,0,'Coffee milk '+(i+1)+' cap',g);cap.userData.on='Coffee milk '+(i+1)+' bottle';// pressed into the mouth, over the lip
   const dregs=add(new THREE.CylinderGeometry(Bt.r-.003,Bt.r-.003,.004,8),film,0,.004,0,'Coffee milk '+(i+1)+' dregs',g);dregs.visible=false;dregs.castShadow=false;
   return {g,body,cap,dregs};});

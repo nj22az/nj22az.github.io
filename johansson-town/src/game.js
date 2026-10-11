@@ -20,6 +20,7 @@ import {createTownCleanup} from './world/town-cleanup.js';
 import {streetToRoom,roomToStreet} from './world/doorway.js';
 import {buildClassroom} from './world/interiors/classroom.js';
 import {buildOnsenInterior,ONSEN_ROOM} from './world/interiors/onsen.js';
+import {studioAssetsEnabled,studioAsset,preloadStudioAsset} from './world/studio-assets.js';
 import {realTownMinutes,clockCatchUp,townClockLineAt,readClockSetting,writeClockSetting,startingMinutes,createClock} from './town-clock.js';
 import {createRamenPlayerService} from './people/ramen-player-service.js';
 import {hasRamenTicket,useRamenTicket} from './people/ramen-ticket.js';
@@ -976,6 +977,9 @@ async function enterRoom(s){spawnScene?.cancel('room');
   try{await preloadIzakaya(['interior']);}finally{roomLoading=false;}
   if(!izakayaReady('interior')){say('Could not open '+s.title+'. Please try the door again.',5);return;}
  }
+ // Studio's assets a room uses (studio-assets.js, when switched on): loaded before the room is built. If one cannot be
+ // loaded the room builds its own instead.
+ if(s.id==='onsen'&&studioAssetsEnabled()&&!studioAsset('massage-chair')){roomLoading=true;resetInput();say('Opening '+s.title+'…',20);try{await preloadStudioAsset('massage-chair');}finally{roomLoading=false;}}
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
  current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});indoorCeilings=createIndoorCeilings(room);const spawn=activeRoomLayout?.spawn||[0,0,4.3];
