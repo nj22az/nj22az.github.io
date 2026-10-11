@@ -243,6 +243,10 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 41 övning 3.10 (EL-000886, tången runt motorkabeln): facit sa att 0,2 A kunde vara ”liten osymmetri”.
+  Utan neutralledare är summan av fasströmmarna noll också när faserna är olika belastade; 0,2 A är ström som tar en annan
+  väg (läckström tillbaka via skrovet) eller tångens eget fel. Sambandet heter nu I_{1} + I_{2} + I_{3} = 0 utan
+  neutralledare (”vid symmetri” stryks). Revision 2; delsidan och Formelstöd vecka 41 är ombyggda.
 - **2026-10-11** Vecka 43 och 44 visas som dagar, som vecka 42 (`DAGSVY = {42, 43, 44}`): I dag, en ruta per lektionsdag i
   dagens färg (vecka 44 har två entimmeslektioner måndag och tisdag i samma ruta), Hela veckan (inlämningen med fyra uppgifter,
   Hållkretslabbet respektive Isolationslabbet och övningstentan, övningarna) och rutan Din del på alla delsidor, också delarna
