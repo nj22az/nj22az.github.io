@@ -3,7 +3,7 @@
   "titel": "Avslutsfråga: v42_02",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,7 @@
   },
   "uppgift": {
     "fraga": "Hur visar du att en regelhänvisning verkligen gäller ditt arbetsfall?",
-    "instruktion": "Komplettera riskbedömningen med ansvar, vald arbetsmetod och motiverad regelhänvisning. Inlämning senast 18 oktober."
+    "instruktion": "Komplettera riskbedömningen med ansvar, vald arbetsmetod och motiverad regelhänvisning. Inlämningen senast fredag 16 oktober."
   },
   "referenser": {
     "ursprung": [

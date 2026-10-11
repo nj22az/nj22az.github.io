@@ -18,7 +18,7 @@ import re
 from html import escape
 from pathlib import Path
 
-from kursplan import DAGFARG, kursplan_framsteg, ton
+from kursplan import DAGFARG, kursplan_framsteg, quiz_plan, ton
 
 ROOT = Path(__file__).resolve().parents[2]  # sjoskolan/
 DAGSVY = {42}
@@ -55,7 +55,7 @@ CSS = ('<style>'
        '.laxa-lage{font-size:15px;color:#4d6579;text-align:right}.laxa-lage.klar{color:#176844;font-weight:700}'
        '.vag-klar{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border:1px solid #cad8e2;border-radius:8px;font-size:16px;cursor:pointer;background:#fff}'
        '.vag-klar input{width:22px;height:22px;margin:0;accent-color:#176844}'
-       '.veckan{margin:30px 0 26px}.veckan-lista{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}'
+       '.veckan{margin:30px 0 26px}.veckan-lista{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}'
        '.vk{display:flex;flex-direction:column;gap:6px;padding:16px 18px;border:1px solid #cad8e2;border-top:4px solid #163248;border-radius:12px;background:#f7f9fb}'
        '.vk-sista{margin:0;font-size:15px;font-weight:700;color:#163248}.vk-kvar{font-weight:400;color:#4d6579}.vk-kvar.bradskande{color:#8a2a00;font-weight:700}'
        '.vk h3{margin:0;font-size:20px}.vk p{margin:0;font-size:16px}.vk-hur{color:#4d6579}'
@@ -156,10 +156,12 @@ def _veckokort(x):
         filer = ('<p class="vk-filer-rubrik">Texterna (PDF att ladda ner)</p><ul class="vk-filer">'
                  + ''.join(f'<li><a href="{escape(h, quote=True)}" download>{escape(t)}</a></li>' for t, h in x['filer']) + '</ul>')
     attr = f' data-sista="{x["sista"]}"' if x.get('sista') else ''
+    # Läge (x av y) och knapp bara för det som har ett formulär eller en sida; texterna att läsa har bara filerna.
+    lage = ('<p class="vk-lage" aria-live="polite"></p><span class="vp-stapel" aria-hidden="true"><i></i></span>'
+            if x['id'] in ('quiz', 'inlamning', 'ovningar') else '')
+    knapp = f'<a class="sj-btn" href="{escape(x["href"], quote=True)}">{escape(x["knapp"])}</a>' if x.get('href') else ''
     return (f'<article class="vk" data-vk="{x["id"]}"{attr}>{sista}<h3>{escape(x["titel"])}</h3><p>{escape(x["text"])}</p>'
-            f'<p class="vk-hur">{escape(x["hur"])}</p>{filer}'
-            f'<p class="vk-lage" aria-live="polite"></p><span class="vp-stapel" aria-hidden="true"><i></i></span>'
-            f'<a class="sj-btn" href="{escape(x["href"], quote=True)}">{escape(x["knapp"])}</a></article>')
+            f'<p class="vk-hur">{escape(x["hur"])}</p>{filer}{lage}{knapp}</article>')
 
 
 def dagsvy_html(nr, w, sjalvrattande=None):
@@ -169,9 +171,11 @@ def dagsvy_html(nr, w, sjalvrattande=None):
     data |= {
         'lektioner': [{k: l[k] for k in ('id', 'del', 'dag', 'datum', 'datumtext', 'start', 'slut', 'tid', 'satt', 'farg', 'titel', 'amnen', 'bildspel')}
                       | {'laxor': [x['id'] for x in l['laxor']]} for l in lek],
-        'veckan': [{k: x[k] for k in ('id', 'titel', 'href', 'knapp') if k in x} | ({'sista': x['sista']} if x.get('sista') else {}) for x in w['veckan']],
+        'veckan': [{k: x[k] for k in ('id', 'titel', 'href', 'knapp', 'banner') if k in x} | ({'sista': x['sista']} if x.get('sista') else {}) for x in w['veckan']],
         'sista_text': _datumtext(dt.date.fromisoformat(w['sista'])),
     }
+    if sjalvrattande and quiz_plan(nr):
+        data['quiz_plan'] = quiz_plan(nr)  # quizStatus räknar med den innan eleven har öppnat quizet
     v = hashlib.sha1((ROOT / 'gemensamt' / 'dagsvy.mjs').read_bytes() + (ROOT / 'gemensamt' / 'veckopanel.mjs').read_bytes()).hexdigest()[:10]
     dagar = ''.join(_dagkort(l) for l in lek)
     veckan = ''.join(_veckokort(x) for x in w['veckan'])

@@ -216,7 +216,7 @@ VECKOR = {
     # Vecka 45:s tre delar (felsökning, analys, repetition) undervisas i vecka 43 och 44. Filerna ligger kvar i
     # vecka-45/ (mappnamn ändras aldrig) och veckorna länkar dit.
     42: {
-        'titel': 'Elektriska risker och skydd', 'datum': ('2026-10-12', '2026-10-16'), 'sista': '2026-10-18',
+        'titel': 'Elektriska risker och skydd', 'datum': ('2026-10-12', '2026-10-16'), 'sista': '2026-10-16',  # allt lämnas in senast fredag (beslut 11 okt)
         'mal': 'Du kan beskriva hur el skadar, välja regelverk och arbetsmetod utifrån fallet och skriva en riskbedömning som går att följa upp.',
         'distans': True,
         'delar': [
@@ -242,23 +242,26 @@ VECKOR = {
             (1, '15:00', 'Tisdag', 'Online 15.00–17.00', 'Del 2 Regler, ansvar och arbetsmetoder. Övning 2.1–2.5 tillsammans.'),
             (1, '17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', 'Övning 2.6–2.10 på del 2. Börja på inlämning 1 och 2.'),
             (4, '09:00', 'Fredag', 'Online 09.00–11.00', 'Del 3 Riskbedömning och skydd. Övning 3.1–3.5 tillsammans.'),
-            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Övning 3.6–3.10. Labb: Multimeterlabbet, Välj CAT-klass. Inlämning 1–3 senast söndag: ladda ner PDF:en och lämna in den i Google Classroom.'),
+            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Övning 3.6–3.10. Labb: Multimeterlabbet, Välj CAT-klass. Inlämning 1–3 senast fredag: ladda ner PDF:en och lämna in den i Google Classroom.'),
         ],
         'redovisa': ['Multimeterlabbet, Välj CAT-klass: ditt val av instrument och mätsladdar med skriftlig motivering.', 'En riskbedömning i mallen för ett av fallen i del 3.'],
         # Det som gäller hela veckan (dagsvy.py, rutorna under ”Hela veckan”). Läxorna efter varje lektion står i
         # verktyg/lektionsbilder/lektioner.py HEMMA, så att bilden ”Det här gör du nu” och sidan säger samma sak.
         'veckan': [
-            {'id': 'quiz', 'titel': 'Quiz', 'sista': '2026-10-15', 'href': 'Quiz.html', 'knapp': 'Öppna quizet',
-             'text': 'Läs fyra texter från Transportstyrelsen hemma. Svara på tio frågor om varje text med A, B, C eller D.',
-             'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Lämna in PDF-filen i Google Classroom under Vecka 42 – Quiz.',
-             # Texterna att läsa (PDF i veckans mapp, från Transportstyrelsen). Samma filer som quizets frågor hänvisar till.
+            # Veckans läxa: texterna att läsa (PDF i veckans mapp, från Transportstyrelsen). Quizet frågar om dem.
+            {'id': 'texter', 'titel': 'Veckans läxa: läs texterna', 'sista': '2026-10-15', 'banner': False,
+             'text': 'Läs de fyra texterna från Transportstyrelsen hemma under veckan. Quizet frågar om dem, och varje fråga säger vilket avsnitt du ska läsa.',
+             'hur': 'Ladda ner texterna här. De finns också i quizet.',
              'filer': [
                  ('Riktlinjer för riskanalysarbete (2019)', 'Transportstyrelsen_riktlinjer_riskanalysarbete.pdf'),
                  ('Riktlinjer för elektrifiering av fartyg (2023)', 'Transportstyrelsen_riktlinjer_elektrifiering_fartyg_2023.pdf'),
                  ('Anslutning av fartyg till landbaserat elnät (2015)', 'Transportstyrelsen_landanslutning_fartyg_2015.pdf'),
                  ('Vägledning: strukturellt brandskydd i fartyg av annat material än stål (2024)', 'Transportstyrelsen_vagledning_strukturellt_brandskydd_2024.pdf'),
              ]},
-            {'id': 'inlamning', 'titel': 'Inlämningen', 'sista': '2026-10-18', 'href': 'Inlamning.html', 'knapp': 'Öppna inlämningen',
+            {'id': 'quiz', 'titel': 'Quiz', 'sista': '2026-10-15', 'href': 'Quiz.html', 'knapp': 'Öppna quizet',
+             'text': 'Tio frågor om varje text. Svara med A, B, C eller D.',
+             'hur': 'Quizet rättar svaren, och du har tre försök per fråga. Lämna in PDF-filen i Google Classroom under Vecka 42 – Quiz.'},
+            {'id': 'inlamning', 'titel': 'Inlämningen', 'sista': '2026-10-16', 'href': 'Inlamning.html', 'knapp': 'Öppna inlämningen',
              'text': 'Tre uppgifter: riskbedömning före arbete, beröringsspänning i en modell och rätt mätutrustning.',
              'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Tryck Lämna in, ladda ner PDF-filen och lämna in den i Google Classroom under Vecka 42.'},
             {'id': 'ovningar', 'titel': 'Övningarna', 'href': 'Formelstod_och_ovningar.html', 'knapp': 'Alla övningar',

@@ -223,7 +223,7 @@ def rattade_falt(nr):
 # Alternativen visas i postens ordning med bokstäverna A–E, och bokstaven är alternativets id. Lärarens facit i bokstäver
 # och nyckeln stämmer därför ett till ett; flyttas ett alternativ i posten måste facit ändras (regel 55).
 # heltal: frågor utan alternativ (ett heltal i intervallet) per fält-id. Ett fält som inte längre är ett tal stoppar bygget.
-QUIZ = {42: {'sista': '2026-10-15', 'heltal': {'887f': (1, 5)}}}
+QUIZ = {42: {'sista': '2026-10-15', 'heltal': {}}}
 QUIZ_SIDA = 'Quiz.html'
 BOKSTAVER = 'ABCDE'
 # Facit hör inte hemma i posten: delfrågornas ratt, svar och forklaring används inte i quizen.

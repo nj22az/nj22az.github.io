@@ -217,6 +217,20 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 42, lärarens beslut: allt lämnas in senast fredag, inget på söndag. Inlämningen 1–3 har sista dag
+  fredag 16 oktober (veckosidan, inlämningssidan, startsidans modul, bilderna, avslutsfrågorna EL-000714 och
+  EL-000716, lärarmanusen). Quizet är kvar till torsdag 15 oktober. Sista dag skrivs nu med rätt veckodag ur datumet
+  (`kursplan._sista`, `inlamning/bygg.py`, `startsida/bygg.py`), inte alltid ”söndag”. Veckans läxa, de fyra texterna
+  från Transportstyrelsen, har en egen ruta först under Hela veckan med texterna att ladda ner.
+- **2026-10-11** Quiz vecka 42 har fyra texter med tio frågor var (A–D, två frågor A–E): EL-000887 (riktlinjer för
+  riskanalysarbete, omskriven, revision 4), EL-000888 (elektrifiering av fartyg 2023), EL-000889 (anslutning till
+  landbaserat elnät 2015) och EL-000890 (strukturellt brandskydd 2024). Lärarens krav: frågorna och svaren står med
+  egna, enklare ord än texten (inga fyra ord i följd ur PDF:en), rätt svar betyder samma sak som texten, felaktiga
+  alternativ motsägs av texten, och rätt bokstav är jämnt fördelad och olika mönster i de fyra texterna. Varje svar är
+  kontrollerat ordagrant mot PDF:en (citat och sida i lärarens facit på Drive). Undvikna delar: inaktuella
+  regelhänvisningar och fel i 2015-texten (selektivitet, kontaktlinser, jordens magnetfält), figur 5 och de
+  överlappande intervallen i riskanalysriktlinjen. Måndagens källbild länkar Transportstyrelsens nya adress (den gamla
+  gav 404).
 - **2026-10-11** Vecka 42: läsuppgiften heter **Quiz** (lärarens beslut). Fyra texter från Transportstyrelsen läses hemma och
   besvaras senast torsdag 15 oktober: riktlinjer för riskanalysarbete (2019), elektrifiering av fartyg (2023), anslutning av
   fartyg till landbaserat elnät (2015) och vägledningen om strukturellt brandskydd (2024). Alla fyra ligger som PDF i

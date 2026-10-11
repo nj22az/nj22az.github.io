@@ -33,7 +33,7 @@ HEMMA = {
     ],
 }
 # Det som gäller hela veckan (står på bilden som not och på veckosidan under ”Hela veckan”).
-VECKAN = {42: 'Quizet senast torsdag 15 oktober, inlämningen senast söndag 18 oktober. Båda öppnar du från veckosidan.'}
+VECKAN = {42: 'Läs texterna och gör quizet senast torsdag 15 oktober. Inlämningen senast fredag 16 oktober. Allt finns på veckosidan.'}
 
 
 def hemma(lek_id):
@@ -198,7 +198,7 @@ V42_01 = {
         ('lista', {
             'rubrik': 'Det här gör du nu',
             'punkter': hemma('v42_01') + [
-                'Börja läsa de fyra texterna till veckans quiz.',
+                'Veckans läxa: läs de fyra texterna från Transportstyrelsen.',
                 'I morgon tisdag 15.00: del 2, Regler, ansvar och arbetsmetoder.',
             ],
             'not': VECKAN[42],
@@ -213,7 +213,7 @@ V42_01 = {
                 ('Elsäkerhetsverket: Vad gör jag vid en elolycka?',
                  'https://www.elsakerhetsverket.se/privatpersoner/om-du-drabbas-av-en-elolycka/vad-gor-jag-vid-en-elolycka/'),
                 ('Transportstyrelsen: Elinstallationer på fartyg – lagar, föreskrifter och standarder',
-                 'https://www.transportstyrelsen.se/sv/sjofart/Fartyg/Fartygskonstruktion/Elinstallationer/Lagar-foreskrifter-och-standarder/'),
+                 'https://www.transportstyrelsen.se/sv/sjofart/fartyg/utrustning-pa-fartyg/elinstallationer/lagar-foreskrifter-och-standarder/'),
             ],
         }),
     ],
@@ -564,9 +564,9 @@ V42_03 = {
         ('lista', {
             'rubrik': 'Det här gör du nu',
             'punkter': hemma('v42_03') + [
-                'Gör klart inlämningen. Ladda ner PDF-filen och lämna in den i Google Classroom.',
+                'Gör klart inlämningen i dag. Ladda ner PDF-filen och lämna in den i Google Classroom.',
             ],
-            'not': 'Inlämningen senast söndag 18 oktober. Nästa vecka: vecka 43, Komponenter och skydd.',
+            'not': 'Inlämningen senast i dag, fredag 16 oktober. Nästa vecka: vecka 43, Komponenter och skydd.',
             'size': 20,
         }),
         ('kallor', {

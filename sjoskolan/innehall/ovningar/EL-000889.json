@@ -1,0 +1,170 @@
+{
+  "id": "EL-000889",
+  "titel": "Anslutning av fartyg till landbaserat elnät (2015)",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 1,
+  "granskning": {
+    "status": "utkast",
+    "kommentar": "Quiz vecka 42 (lärarens beslut 11 okt 2026: tio frågor per text, A–E, egna ord). Varje svar kontrollerat ordagrant mot PDF:en (citat och sida i lärarens facit). Facit finns bara hashat, klartexten utanför repot."
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3",
+      "LM-7"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Läs avsnitt 1 och 3 (sidorna 4–5 och 9–11), 4.9 (sidan 16), 6.8–6.11 (sidorna 31–34), 7.1 (sidan 37) och 9.2 (sidan 41). Svara på varje fråga med en bokstav. Frågorna säger var i texten du ska läsa.",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Avsnitt 1. Vad är huvudsyftet med de här riktlinjerna?",
+        "alternativ": [
+          "Att visa hur mycket pengar ett rederi kan spara på att ta ström från land.",
+          "Att ersätta klassreglerna, så att fartyg bara behöver följa de här riktlinjerna.",
+          "Att bestämma vilka svenska hamnar som måste kunna ge fartyg ström från land.",
+          "Att göra jobbet vid högspänning ombord säkrare och öka kunskapen om landström och dess risker."
+        ],
+        "ledtrad": "avsnitt 1 Inledning"
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Avsnitt 3.1. Vilken vana skulle enligt texten kunna förhindra ungefär varannan elolycka?",
+        "alternativ": [
+          "Att alltid kontrollera att ingen spänning finns kvar innan arbetet börjar.",
+          "Att alltid skärma av de delar i närheten som fortfarande har spänning.",
+          "Att alltid vara minst två personer när man arbetar med el ombord.",
+          "Att alltid använda verktyg som är gjorda och godkända för elarbete."
+        ],
+        "ledtrad": "avsnitt 3.1 Säkert elarbete minskar olycksrisken"
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Avsnitt 3.1. Du arbetar efter de fem stegen och har just kontrollerat att delen saknar spänning. Vilket steg kommer nu?",
+        "alternativ": [
+          "Koppla bort delen helt från matningen (frånskilja).",
+          "Koppla ledarna till jord och till varandra (jorda och kortsluta).",
+          "Låsa så att ingen kan slå på strömmen igen (blockera).",
+          "Sätta skydd mot delar i närheten som har spänning (avskärma)."
+        ],
+        "ledtrad": "avsnitt 3.1 Säkert elarbete minskar olycksrisken"
+      },
+      {
+        "id": "d",
+        "typ": "flerval",
+        "text": "Avsnitt 3.3. En ljusbåge uppstår en bit bort och når inte fram till dig. Vilken skada kan du ändå få?",
+        "alternativ": [
+          "Skador på hörseln, men aldrig några skador på synen.",
+          "Ingen skada, eftersom bara den som träffas av bågen kan skadas.",
+          "En elchock, eftersom strömmen kan hoppa till dig genom luften.",
+          "Det starka ljuset kan blända dig så att synen skadas."
+        ],
+        "ledtrad": "avsnitt 3.3 Ljusbågsskador"
+      },
+      {
+        "id": "e",
+        "typ": "flerval",
+        "text": "Avsnitt 3.5. Om du får ström genom kroppen, vilka fyra saker avgör då hur svårt du skadas?",
+        "alternativ": [
+          "Hur stor strömmen är, vilken väg den tar, hur länge den går och hur stor kontaktytan är.",
+          "Hur stor strömmen är, vilken väg den tar, hur länge den går och hur gammal kabeln är.",
+          "Hur hög spänningen är, vilken väg strömmen tar, hur länge den går och hur stor kontaktytan är.",
+          "Hur stor strömmen är, vilken säkring kretsen har, hur länge den går och hur stor kontaktytan är."
+        ],
+        "ledtrad": "avsnitt 3.5 Ström genom kroppen"
+      },
+      {
+        "id": "f",
+        "typ": "flerval",
+        "text": "Avsnitt 4.9. Större fartyg har oftast jordfelsövervakning med larm, för att undvika driftstopp. Vad rekommenderar texten för vägguttagen ombord?",
+        "alternativ": [
+          "En jordfelsbrytare som löser ut vid högst 300 mA.",
+          "Inget extra skydd, eftersom larmet från övervakningen räcker.",
+          "En jordfelsbrytare som löser ut vid högst 30 mA.",
+          "Lampor som lyser upp när det blir jordfel i uttaget."
+        ],
+        "ledtrad": "avsnitt 4.9 Jordfelsövervakning och jordfelsbrytare"
+      },
+      {
+        "id": "g",
+        "typ": "flerval",
+        "text": "Avsnitt 6.10. Högspänningsanslutningen ska kontrolleras en gång om året. Vad gäller för den kontrollen?",
+        "alternativ": [
+          "Den görs bara i land, eftersom hamnen äger kabeln och uttaget.",
+          "Den görs på fartyget och på land, och resultatet skrivs ner.",
+          "Den görs bara ombord, och det räcker att berätta resultatet muntligt.",
+          "Den behöver bara skrivas ner om man har hittat något fel."
+        ],
+        "ledtrad": "avsnitt 6.10 Dokumentation"
+      },
+      {
+        "id": "h",
+        "typ": "flerval",
+        "text": "Avsnitt 6.11. En ny högspänningsanslutning ska provas innan den används första gången. Vilket alternativ nämner bara kontroller som finns i textens lista?",
+        "alternativ": [
+          "Mäta isolationen, mäta magnetfältet i hytterna och prova nödbelysningen.",
+          "Titta noga på utrustningen, prova brandlarmet och mäta bullret vid kajen.",
+          "Titta noga på utrustningen, mäta isolationen och kontrollera fasföljden.",
+          "Kontrollera fasföljden, mäta övertonerna och mäta temperaturen i transformatorn."
+        ],
+        "ledtrad": "avsnitt 6.11 Förstagångstest"
+      },
+      {
+        "id": "i",
+        "typ": "flerval",
+        "text": "Avsnitt 7.1. Fartyget har ett driftrum där högspänningskabeln från land ansluts. Hur ska det rummet vara?",
+        "alternativ": [
+          "Låst, och bara behörig personal får gå in, till exempel den ansvariga (PIC).",
+          "Öppet för hela maskinbesättningen, men bara den ansvariga (PIC) får röra brytarna.",
+          "Olåst, så att brandpersonal snabbt kan ta sig in vid larm.",
+          "Låst, men målare och städare får gå in där på egen hand."
+        ],
+        "ledtrad": "avsnitt 7.1 Driftrum på fartyg"
+      },
+      {
+        "id": "j",
+        "typ": "flerval",
+        "text": "Avsnitt 9.2. Ett fartyg ligger vid kaj och får ström från land. Vem har ansvaret för elanläggningen ombord?",
+        "alternativ": [
+          "Hamnens elansvarige",
+          "Klassningssällskapet",
+          "Transportstyrelsen",
+          "Befälhavaren"
+        ],
+        "ledtrad": "avsnitt 9.2 Ansvar och befogenheter för elanläggningen på fartyg"
+      }
+    ],
+    "svarsformat": "Svara med A, B, C, D eller E i quizet."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "Transportstyrelsen (2015-04-20)",
+        "roll": "quiz vecka 42, läses hemma"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "Transportstyrelsen, ”Riktlinjer och rekommendationer för anslutningar av fartyg och fritidsbåtar till landbaserat elnät”, 2015-04-20.",
+    "resurser": [
+      {
+        "url": "vecka-42/aktuell/Transportstyrelsen_landanslutning_fartyg_2015.pdf",
+        "titel": "Riktlinjer för anslutning av fartyg till landbaserat elnät (PDF)",
+        "kortnamn": "texten om landanslutning"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Saltade hashar i vecka-42/aktuell/quiz-nyckel.mjs; klartexten finns utanför repot (verktyg/inlamning/facit.py)."
+  }
+}

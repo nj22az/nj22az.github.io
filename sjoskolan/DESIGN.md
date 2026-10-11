@@ -161,7 +161,8 @@ veckan** → **Kursplanen den här veckan**. Ersätter ”Nästa steg”, den nu
   (`kursplan.DAGFARG`, validerade för färgblindhet, vit text 4,5:1; inte samma kulörer som kursplanens områden). Färgen står på
   dagens ruta (vänsterkant och etikett), på I dag samma dag och på presentationens titelbild. Dagens och nästa lektions ruta är
   öppna, de andra en rad; har en passerad lektion läxor kvar står ”Läxor: x av y klara” i varningsfärg.
-- **Hela veckan** (quiz, inlämning, övningar) har ingen dagfärg: grå yta, mörk överkant, sista dag och dagar kvar.
+- **Hela veckan** (veckans läxa med texterna att ladda ner, quiz, inlämning, övningar) har ingen dagfärg: grå yta, mörk
+  överkant, sista dag och dagar kvar. Sista dagen skrivs med sin veckodag (vecka 42: allt senast fredag).
 - Läxorna efter en lektion skrivs en gång, i `verktyg/lektionsbilder/lektioner.py` `HEMMA`. Bilden ”Det här gör du nu” och
   dagens ruta byggs ur samma lista. Läst del och övning 6–10 visar läget själva; övriga läxor har en Klart-ruta.
 

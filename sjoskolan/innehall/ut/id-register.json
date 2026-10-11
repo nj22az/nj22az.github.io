@@ -6549,7 +6549,7 @@
   },
   {
    "id": "EL-000714",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Avslutsfråga: v42_02",
@@ -6581,7 +6581,7 @@
   },
   {
    "id": "EL-000716",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Avslutsfråga: v42_03",
@@ -7969,10 +7969,10 @@
   },
   {
    "id": "EL-000887",
-   "revision": 3,
+   "revision": 4,
    "status": "utkast",
    "publik": "elev",
-   "titel": "Transportstyrelsens riktlinjer för riskanalysarbete",
+   "titel": "Transportstyrelsens riktlinjer för riskanalysarbete (2019)",
    "typ": "flerval",
    "placeringar": [
     {
@@ -7980,6 +7980,54 @@
      "plats": "vecka-42/aktuell/Quiz.html",
      "nummer": "Text 1",
      "ankare": "text-1"
+    }
+   ]
+  },
+  {
+   "id": "EL-000888",
+   "revision": 1,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Transportstyrelsens riktlinjer för elektrifiering av fartyg (2023)",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "quiz",
+     "plats": "vecka-42/aktuell/Quiz.html",
+     "nummer": "Text 2",
+     "ankare": "text-2"
+    }
+   ]
+  },
+  {
+   "id": "EL-000889",
+   "revision": 1,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Anslutning av fartyg till landbaserat elnät (2015)",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "quiz",
+     "plats": "vecka-42/aktuell/Quiz.html",
+     "nummer": "Text 3",
+     "ankare": "text-3"
+    }
+   ]
+  },
+  {
+   "id": "EL-000890",
+   "revision": 1,
+   "status": "utkast",
+   "publik": "elev",
+   "titel": "Vägledning om strukturellt brandskydd (2024)",
+   "typ": "flerval",
+   "placeringar": [
+    {
+     "yta": "quiz",
+     "plats": "vecka-42/aktuell/Quiz.html",
+     "nummer": "Text 4",
+     "ankare": "text-4"
     }
    ]
   }

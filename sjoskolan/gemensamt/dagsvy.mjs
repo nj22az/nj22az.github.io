@@ -74,12 +74,27 @@ async function formularStatus(data) {
   try {
     const mod = await import(data.sjalvrattande);
     const inl = typeof mod.veckoStatus === 'function' ? mod.veckoStatus(data.vecka) : null;
-    const lasf = typeof mod.quizStatus === 'function' ? mod.quizStatus(data.vecka) : null;
+    const lasf = typeof mod.quizStatus === 'function' ? mod.quizStatus(data.vecka, data.quiz_plan || null) : null;
     return { inl, lasf };
   } catch { return {}; }
 }
 
 function satt(el, text) { if (el && el.textContent !== text) el.textContent = text; }
+
+/** Inlämningens och quizets rätta svar per kursplanspunkt. Ett formulär utan sparad plan räknas med sidans totaler och 0 rätt. */
+export function lmSumma(data, inl, quiz) {
+  const lm = {};
+  const lagg = (kalla) => {
+    for (const [m, v] of Object.entries(kalla || {})) {
+      lm[m] ??= { ratt: 0, totalt: 0 };
+      lm[m].ratt += (typeof v === 'number' ? 0 : v.ratt || 0);
+      lm[m].totalt += (typeof v === 'number' ? v : v.totalt || 0);
+    }
+  };
+  lagg(inl?.uppgifter?.length ? inl.lm : data.falt_lm?.inlamning);
+  lagg(quiz?.dokument?.length ? quiz.lm : data.falt_lm?.quiz);
+  return lm;
+}
 
 function visaIdag(rot, data, lage, nu) {
   const ruta = rot.querySelector('#idag');
@@ -100,7 +115,8 @@ function visaIdag(rot, data, lage, nu) {
     const l = lage.lektion; farg(l);
     satt($('idag-nar'), `I dag · ${l.datumtext} · lektionen är slut`);
     satt($('idag-rubrik'), 'Gör läxorna efter lektionen');
-    satt($('idag-text'), `${l.titel}. ${nastaText(lage.nasta) || `Det var veckans sista lektion. Inlämningen senast ${data.sista_text}.`}`);
+    const sistaText = data.sista === lokaltDatum(nu) ? 'i dag' : data.sista_text;
+    satt($('idag-text'), `${l.titel}. ${nastaText(lage.nasta) || `Det var veckans sista lektion. Inlämningen senast ${sistaText}.`}`);
     knapp.href = `#dag-${l.dag.toLowerCase()}`; satt(knapp, 'Läxor efter lektionen');
     lank.href = l.bildspel; satt(lank, 'Presentationen igen');
   } else if (lage.typ === 'före-veckan') {
@@ -112,7 +128,8 @@ function visaIdag(rot, data, lage, nu) {
   } else if (lage.typ === 'ingen') {
     farg(null);
     const idag = lokaltDatum(nu);
-    const nastaVk = data.veckan.filter((x) => x.sista && x.sista >= idag).sort((a, b) => (a.sista < b.sista ? -1 : 1))[0];
+    // Närmaste sista dag bland det som lämnas in (texterna att läsa har ingen egen knapp i rutan I dag).
+    const nastaVk = data.veckan.filter((x) => x.sista && x.href && x.banner !== false && x.sista >= idag).sort((a, b) => (a.sista < b.sista ? -1 : 1))[0];
     satt($('idag-nar'), `I dag · ${datumText(nu)} · ingen lektion`);
     satt($('idag-rubrik'), 'Gör läxorna');
     const kvar = nastaVk ? kvarText(nastaVk.sista, nu).text : '';
@@ -176,7 +193,7 @@ export async function visa(rot = document) {
   };
   for (const x of rot.querySelectorAll('.vk[data-vk]')) {
     const s = vecka[x.dataset.vk];
-    if (s) {
+    if (s && x.querySelector('.vk-lage')) {
       const el = x.querySelector('.vk-lage');
       satt(el, s.text); el.classList.toggle('klar', !!s.klar);
       x.querySelector('.vp-stapel i').style.width = `${Math.round(100 * s.andel)}%`;
@@ -187,8 +204,8 @@ export async function visa(rot = document) {
     }
   }
 
-  // Kursplanens punkter: övningar plus inlämningens rätta svar per punkt (samma räkning som översikten).
-  const r = rakna({ ...data, steg: [], delar: [] }, las, inl && inl.uppgifter?.length ? inl : null);
+  // Kursplanens punkter: övningar plus inlämningens och quizets rätta svar per punkt (samma räkning som översikten).
+  const r = rakna({ ...data, steg: [], delar: [] }, las, { lm: lmSumma(data, inl, lasf) });
   for (const m of r.mal) {
     const rad = rot.querySelector(`[data-lm="${m.id}"]`);
     if (!rad) continue;

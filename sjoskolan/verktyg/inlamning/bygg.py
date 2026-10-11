@@ -25,7 +25,7 @@ VECKOR = {
     40: {'titel': 'Växelström', 'sista': '2026-10-04',
          'notis': 'Veckans inlämning 1–3 (Frånskiljning och mätteknik) lämnar du på en egen sida. Här finns inlämning 4–7.', 'notis_lank': ('/sjoskolan/vecka-38/aktuell/Inlamning.html', 'Inlämning: Frånskiljning och mätteknik')},
     41: {'titel': 'Trefas och laboration', 'sista': '2026-10-11'},
-    42: {'titel': 'Elektriska risker och skydd', 'sista': '2026-10-18'},
+    42: {'titel': 'Elektriska risker och skydd', 'sista': '2026-10-16'},  # lärarens beslut 11 okt: allt lämnas in senast fredag
     # Vecka 45:s inlämning är fördelad på vecka 43 och 44 (verktyg/veckosidor/bygg.py).
     43: {'titel': 'Komponenter, motorer, scheman och felsökning', 'sista': '2026-10-25'},
     44: {'titel': 'Elsystem, mätteknik och repetition', 'sista': '2026-11-01'},
@@ -61,6 +61,11 @@ def epost_knapp(nr, vn, pa_sidan=False):
 def datum(iso):
     y, m, d = map(int, iso.split('-'))
     return f'{d} {MONTHS[m - 1]}'
+
+
+def veckodag(iso):
+    import datetime as _dt
+    return ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag'][_dt.date.fromisoformat(iso).weekday()]
 
 
 # Veckor med resultatkod: D slumpas på enheten, svaren skrivs i rutor och skickas med QR-koden (vecka-XX/aktuell/resultat.mjs).
@@ -139,7 +144,7 @@ def page(nr, w, items):
 <style>.task{{margin:24px 0}}.course-main .task h2{{margin-top:0;font-size:23px}}.task .use{{font-size:15px;color:var(--sj-muted)}}.task ol{{padding-left:26px}}.task li{{margin:6px 0}}.task .hand-in{{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--sj-line)}}.dbox{{max-width:72ch}}.dbox input{{min-height:44px;font:inherit;padding:4px 10px;width:22em;max-width:100%;border:1px solid var(--sj-field);border-radius:8px}}.course-main .dbox h2{{margin-top:0}}@media print{{.task{{break-inside:avoid;border:1px solid #999}}.dbox{{border:1px solid #999}}}}</style><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a><a href="{veckosida}">Vecka {vn}</a></nav><main id="main-content" class="course-main"><div class="course-breadcrumb"><a href="{veckosida}">← Vecka {vn}</a></div><article class="course-reading">
 <p class="course-kicker">Vecka {vn} · inlämning</p><h1>Inlämningsuppgifter: {escape(w["titel"])}</h1>
-<p class="course-lead">Uppgifterna löses med veckans genomgångar och labbar. Lämna in senast söndag {datum(w["sista"])} {kanal}.</p>
+<p class="course-lead">Uppgifterna löses med veckans genomgångar och labbar. Lämna in senast {veckodag(w["sista"])} {datum(w["sista"])} {kanal}.</p>
 {notis}{mejl}{dbox(nr)}{redovisar}{lasom}
 {items}
 {slut}</article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>{skript}</body></html>

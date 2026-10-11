@@ -1,14 +1,14 @@
 // Veckosidan som dagar (gemensamt/dagsvy.mjs): dagens läge, läxornas läge och formulärens text.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { idagLage, laxLage, formularText, kvarText, datumText } from './dagsvy.mjs';
+import { idagLage, laxLage, formularText, kvarText, datumText, lmSumma } from './dagsvy.mjs';
 
 const lektioner = [
   { id: 'v42_01', datum: '2026-10-12', start: '09:00', slut: '11:00' },
   { id: 'v42_02', datum: '2026-10-13', start: '15:00', slut: '17:00' },
   { id: 'v42_03', datum: '2026-10-16', start: '09:00', slut: '11:00' },
 ];
-const lage = (iso) => idagLage(lektioner, '2026-10-18', new Date(iso));
+const lage = (iso) => idagLage(lektioner, '2026-10-16', new Date(iso));  // allt lämnas in senast fredag
 
 test('dagens läge följer datum och klockslag', () => {
   assert.deepEqual([lage('2026-10-11T18:00').typ, lage('2026-10-11T18:00').nasta.id], ['före-veckan', 'v42_01']);
@@ -18,9 +18,9 @@ test('dagens läge följer datum och klockslag', () => {
   assert.deepEqual([efter.fas, efter.lektion.id, efter.nasta.id], ['efter', 'v42_01', 'v42_02']);
   const onsdag = lage('2026-10-14T12:00');
   assert.deepEqual([onsdag.typ, onsdag.nasta.id], ['ingen', 'v42_03']);
-  const lordag = lage('2026-10-17T10:00');
-  assert.deepEqual([lordag.typ, lordag.nasta], ['ingen', null]);
-  assert.equal(lage('2026-10-19T10:00').typ, 'slut');
+  const torsdag = lage('2026-10-15T20:00');
+  assert.deepEqual([torsdag.typ, torsdag.nasta.id], ['ingen', 'v42_03']);
+  assert.equal(lage('2026-10-17T10:00').typ, 'slut', 'inget lämnas in efter fredag');
 });
 
 test('läxornas läge: läst del, övning 6–10 och Klart-rutan', () => {
@@ -51,4 +51,12 @@ test('kvar till sista dagen och datum i text', () => {
   assert.deepEqual(kvarText('2026-10-15', new Date('2026-10-14T10:00')), { text: 'i morgon', bradskande: true });
   assert.equal(kvarText('2026-10-15', new Date('2026-10-16T10:00')).text, 'passerad');
   assert.equal(datumText(new Date('2026-10-15T12:00')), 'torsdag 15 oktober');
+});
+
+test('kursplanens punkter: inlämningens och quizets svar läggs ihop, sidans totaler utan sparad plan', () => {
+  const data = { falt_lm: { inlamning: { 'LM-2': 5, 'LM-3': 8 }, quiz: { 'LM-2': 30, 'LM-7': 20 } } };
+  assert.deepEqual(lmSumma(data, null, null), { 'LM-2': { ratt: 0, totalt: 35 }, 'LM-3': { ratt: 0, totalt: 8 }, 'LM-7': { ratt: 0, totalt: 20 } });
+  const quiz = { dokument: [{ ratt: 4, totalt: 10 }], lm: { 'LM-2': { ratt: 4, totalt: 30 }, 'LM-7': { ratt: 2, totalt: 20 } } };
+  const inl = { uppgifter: [{ ratt: 3, totalt: 4 }], lm: { 'LM-2': { ratt: 3, totalt: 5 }, 'LM-3': { ratt: 1, totalt: 8 } } };
+  assert.deepEqual(lmSumma(data, inl, quiz), { 'LM-2': { ratt: 7, totalt: 35 }, 'LM-3': { ratt: 1, totalt: 8 }, 'LM-7': { ratt: 2, totalt: 20 } });
 });

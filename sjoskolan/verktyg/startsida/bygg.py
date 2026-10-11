@@ -48,7 +48,7 @@ MODULER = [
          labb=('trefaslabbet/', 'Trefaslabbet och Motorlabbet'), inl='vecka-41/aktuell/Inlamning.html',
          ovningar=[('vecka-41', 'v41_01-q'), ('vecka-41', 'v41_02-q'), ('vecka-41', 'v41_03-q')]),
     dict(nr=6, titel='Elektriska risker och skydd', mal='Hur el skadar, regler och ansvar, och en riskbedömning som går att följa upp.',
-         vecka='Vecka 42', start='2026-10-12', sista='2026-10-18', sida='vecka-42/aktuell/',
+         vecka='Vecka 42', start='2026-10-12', sista='2026-10-16', sida='vecka-42/aktuell/',
          delar=[('vecka-42/aktuell/Del_1.html', 'Elektriska risker'), ('vecka-42/aktuell/Del_2.html', 'Regler, ansvar och arbetsmetoder'),
                 ('vecka-42/aktuell/Del_3.html', 'Riskbedömning och skydd')],
          labb=('multimetersimulator/?ovning=category', 'Multimeterlabbet: Välj CAT-klass'), inl='vecka-42/aktuell/Inlamning.html',
@@ -108,10 +108,15 @@ def kort_datum(iso):
     return f'{d} {MANAD[m - 1]}'
 
 
+def veckodag(iso):
+    import datetime as _dt
+    return ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag'][_dt.date.fromisoformat(iso).weekday()]
+
+
 def modulkort(m):
     delar = ''.join(f'<li><a href="{h}">{escape(t)}</a></li>' for h, t in m['delar'])
     labb = f'<p class="mod-rad"><span class="mod-etikett">Labb</span><a href="{m["labb"][0]}">{escape(m["labb"][1])}</a></p>' if m['labb'] else ''
-    inl = (f'<p class="mod-rad"><span class="mod-etikett">Inlämning</span><a href="{m["inl"]}">Senast söndag {kort_datum(m["sista"])}</a></p>'
+    inl = (f'<p class="mod-rad"><span class="mod-etikett">Inlämning</span><a href="{m["inl"]}">Senast {veckodag(m["sista"])} {kort_datum(m["sista"])}</a></p>'
            if m['inl'] else '')
     ovn = json.dumps(m['ovningar'])
     framsteg = (f'<div class="mod-framsteg" data-ovningar=\'{ovn}\'><div class="mod-bar"><span></span></div><p class="mod-antal">'

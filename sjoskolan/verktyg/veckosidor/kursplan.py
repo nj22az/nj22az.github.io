@@ -316,8 +316,10 @@ MANAD = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti
 def _sista(w):
     if w.get('tenta'):
         return 'onsdag 4 november'
-    _, m, d = map(int, w['sista'].split('-'))
-    return f'söndag {d} {MANAD[m - 1]}'
+    import datetime as _dt
+    y, m, d = map(int, w['sista'].split('-'))
+    dag = ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag'][_dt.date(y, m, d).weekday()]
+    return f'{dag} {d} {MANAD[m - 1]}'
 
 
 # --- Veckans översikt (”Din vecka”) överst på veckosidan --------------------------------------------------------
@@ -347,20 +349,26 @@ PANEL_CSS = ('<style>'
              '</style>')
 
 
-def _inlamningens_falt(nr):
-    """Fälten som rättas i veckans självrättande inlämning, per kursplanspunkt. veckoStatus (gemensamt/sjalvrattning.mjs)
-    räknar likadant: varje uppgift räknas under alla sina punkter. Ger rätt totaler innan eleven har öppnat formuläret."""
+def _sjalvrattning():
     import importlib.util
     spec = importlib.util.spec_from_file_location('sjalvrattning_panel', ROOT / 'verktyg' / 'inlamning' / 'sjalvrattning.py')
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    per_mal = defaultdict(int)
-    for ovning in mod.FORMULAR.get(nr, {}):
-        p = mod.post(ovning)
-        n = sum(1 for f in mod.uppgiftens_falt(nr, ovning, p) if f['typ'] in ('tal', 'val'))
-        for m in p['larande'].get('mal', []):
-            per_mal[m] += n
-    return per_mal
+    return mod
+
+
+def _inlamningens_falt(nr):
+    """Fälten som rättas i veckans självrättande inlämning och quiz, per kursplanspunkt: {'inlamning': {...}, 'quiz': {...}}.
+    veckoStatus och quizStatus (gemensamt/sjalvrattning.mjs) räknar likadant: varje uppgift räknas under alla sina punkter.
+    Ger rätt totaler innan eleven har öppnat formulären."""
+    mod = _sjalvrattning()
+    return {'inlamning': mod.falt_per_lm(nr, 'inlamning'), 'quiz': mod.falt_per_lm(nr, 'quiz')}
+
+
+def quiz_plan(nr):
+    """Quizets plan när sidan byggs (quizStatus räknar med den innan eleven har öppnat quizet), eller None."""
+    mod = _sjalvrattning()
+    return mod.quiz_plan(nr) if nr in mod.QUIZ else None
 
 
 def kursplan_framsteg(nr, w, sjalvrattande=None):
@@ -383,12 +391,14 @@ def kursplan_framsteg(nr, w, sjalvrattande=None):
                if x['plats'] == f'{mapp}/aktuell/Inlamning.html' and x['ankare'] == ankare for m in _MAL_AV.get(x['ovning'], [])}
     labb_mal = {m for p in _labbar(w) for i in labbuppgifter(p['href']) for m in _MAL_AV.get(i, [])}
     annat = {m: ' och '.join(x for x, ja in (('Inlämningen', m in inl_mal), ('labben', m in labb_mal)) if ja).capitalize() for m in aktiva}
-    inl_falt = _inlamningens_falt(nr) if sjalvrattande else {}
+    sidor = _inlamningens_falt(nr) if sjalvrattande else {'inlamning': {}, 'quiz': {}}
+    inl_falt = {m: sidor['inlamning'].get(m, 0) + sidor['quiz'].get(m, 0) for m in aktiva}
     mal = [{'id': m, 'ovningar': [[k, v] for k, v in framsteg[m].items()], 'annat': annat[m]}
            | ({'inlamning': inl_falt[m]} if inl_falt.get(m) else {}) for m in aktiva]
     data = {'vecka': nr, 'sista': w['sista'], 'ovningar': [[k, v] for k, v in alla.items()], 'mal': mal}
     if sjalvrattande:
         data['sjalvrattande'] = sjalvrattande
+        data['falt_lm'] = sidor  # per sida, för veckosidan innan formulären har öppnats
     rader = []
     for m in aktiva:
         omr = OMRADE_AV[m]
