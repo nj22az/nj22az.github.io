@@ -3,7 +3,7 @@
   "titel": "Beröringspunkter",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 4,
+  "revision": 5,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -22,7 +22,7 @@
   "uppgift": {
     "fraga": "Ett metallhölje ligger 60 V högre än en ledande konstruktion alldeles bredvid. En person kan röra vid båda samtidigt. Vilken spänning är det som gäller för beröringen?",
     "samband": [
-      "U_{beröring} = |VA − VB|"
+      "U_{beröring} = |V_{A} − V_{B}|"
     ],
     "givet": "Det är 60 V mellan höljet och konstruktionen. Båda kan röras samtidigt.",
     "instruktion": "Motivera ditt beslut."
@@ -30,7 +30,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "VA och VB är spänningen i de två punkter som kan röras samtidigt.",
+      "text": "V_{A} och V_{B} är potentialen i punkterna A och B, mätt mot samma referens, till exempel skrovet.",
       "status": "migrerad"
     },
     {

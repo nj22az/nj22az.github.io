@@ -3,7 +3,7 @@
   "titel": "Rätt mätutrustning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -23,7 +23,7 @@
     "delfragor": [
       {
         "id": "a",
-        "text": "Välj kategori och spänning för hela mätutrustningen på tre mätplatser: huvudtavlan 440 V, ett eluttag 230 V i en hytt och batteriet 24 V i en livbåt."
+        "text": "Välj kategori och spänning för hela mätutrustningen på tre mätplatser: plintarna för en utgående grupp i huvudtavlan 440 V, ett eluttag 230 V i en hytt och batteriet 24 V i en livbåt."
       },
       {
         "id": "b",

@@ -3,7 +3,7 @@
   "titel": "Riskpoäng",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -24,7 +24,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "I en riskmatris för övningen är sannolikheten 3 och konsekvensen 4. Riskpoängen är produkten av de två. Efter en åtgärd bedöms värdena till 1 och 4. Beräkna poängen och förklara vad den inte säger.",
+    "fraga": "I en riskmatris är sannolikheten 3 och konsekvensen 4. Riskpoäng = sannolikhet · konsekvens. Efter en åtgärd är sannolikheten 1 och konsekvensen 4. a) Räkna poängen före och efter. b) Vad säger poängen inte?",
     "samband": [
       "Riskpoäng = sannolikhet · konsekvens"
     ],

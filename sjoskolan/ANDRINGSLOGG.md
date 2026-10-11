@@ -164,7 +164,21 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     Samma rubrik styr Öva nu och Ledtråd 1; saknad eller tvetydig rubrik stoppar exporten.
     *Kontroll: `innehall/tests/test_delsidor_veckor.py`.*
 
+48. **Sambandet under frågan får inte innehålla svaret.** Övning 2.2 i vecka 42 frågade vilken utgåva som gäller, och
+    sambandsraden ”Utgåvans grund: SS-EN 50110-1 utgåva 4:2024” stod direkt ovanför på sidan och på stödbilden. Samband,
+    givet och stödbildens text räknas som ledtrådar (regel 1). *Manuell kontroll.*
+
 ## Ändringar
+
+- **2026-10-11** Granskningen av vecka 42 rättad. Exemplen gav övningarnas svar (regel 2): riskpoängen är nu 5 · 3 = 15 och
+  2 · 3 = 6 överallt (övningssidan hade en äldre version), Del 1 E1 en vinkelslip med klämd kabel (ny figur), E2 ett böjt
+  låsbleck och Del 2 E1 en landanslutning. Övning 2.2 har nytt samband (regel 48), 1.3 skriver V_{A} och V_{B} (potential)
+  och 2.7:s ledtrådar listar inte längre svaret. Femton övningar och inlämning 2 med enklare svenska; inlämning 2 d nämner
+  säkringen eller dvärgbrytaren, inlämning 3 mäter på en utgående grupp i huvudtavlan, D = 12 i postens parameter.
+  Nya förkortningar (UPS, TSFS, SEK, SS-EN, IEC, ESA, AMS, HLR, TMAS, SOLAS, TN, C/E, ETO, SMS, V_{A}); VA och kvar räknas bara
+  efter ett tal, så att ”finns kvar” och V_{A} inte ger enhetskort. Avklippt text i figurerna till 1.4 och riskmatrisen
+  rättad (`figs42.py`). Lärarkopiorna (v42_01–03, lärarguiden) och boken är inte uppdaterade (kräver LARARLOSEN/BOKLOSEN):
+  revidera EL-000123, 126, 131–134, 137–140, 142, 144, 145, 148–150, 818 och 819 igen med de skyddade filerna öppna.
 
 - **2026-10-11** Enklare veckosidor. Vecka 42–45 är en enda numrerad väg (lektion online → hemma → labb → inlämning,
   `enkel_vecka` i bygg.py) i stället för fyra listor med samma delar. Kursplanens punkter visas med enkla ord (`ENKEL` i

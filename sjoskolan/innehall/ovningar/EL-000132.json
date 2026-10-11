@@ -3,7 +3,7 @@
   "titel": "Aktuell utgåva",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -22,11 +22,11 @@
     ]
   },
   "uppgift": {
-    "fraga": "En äldre pärm hänvisar till SS-EN 50110-1 utgåva 3:2013. Vilken utgåva bygger den här boken på?",
+    "fraga": "En äldre pärm hänvisar till SS-EN 50110-1 utgåva 3:2013. Kan du följa pärmen? Vad gör du?",
     "samband": [
-      "Utgåvans grund: SS-EN 50110-1 utgåva 4:2024"
+      "Kontrollera utgåva och övergångstid"
     ],
-    "givet": "Enligt SEK löpte övergångstiden för utgåva 3 ut den 29 maj 2026.",
+    "givet": "Kursen bygger på SS-EN 50110-1 utgåva 4:2024. Enligt SEK löpte övergångstiden för utgåva 3 ut den 29 maj 2026.",
     "instruktion": "Motivera ditt beslut."
   },
   "ledtradar": [
@@ -47,7 +47,7 @@
     }
   ],
   "losning": {
-    "text": "SS-EN 50110-1 utgåva 4:2024. Utgåva 3:2013 är inaktuell efter 29 maj 2026. Kontrollera också lokala anvisningar.",
+    "text": "Nej. Utgåva 3:2013 gäller inte efter 29 maj 2026. Använd utgåva 4:2024 och kontrollera också de lokala anvisningarna.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

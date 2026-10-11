@@ -3,7 +3,7 @@
   "titel": "Gammal föreskrift",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 3,
+  "revision": 4,
   "granskning": {
     "status": "migrerad"
   },
@@ -21,7 +21,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Ett dokument anger att TSFS 2014:1 gäller. Vad säger Transportstyrelsens regellista?",
+    "fraga": "Ett dokument säger att TSFS 2014:1 gäller. Slå upp numret i Transportstyrelsens regellista. Gäller det fortfarande?",
     "samband": [
       "Kontrollera föreskriftens status i regellistan"
     ],
@@ -36,7 +36,7 @@
     },
     {
       "niva": "metod",
-      "text": "Ange vilken hänvisning som är inaktuell och vad som behöver verifieras i ersättningsregelverket.",
+      "text": "Skriv om föreskriften gäller eller inte. Om den har ersatts: vad måste du kolla i den nya?",
       "status": "migrerad"
     },
     {

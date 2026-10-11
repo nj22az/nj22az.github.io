@@ -3,7 +3,7 @@
   "titel": "Föreskrift eller standard",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -21,7 +21,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Vad är skillnaden mellan en myndighetsföreskrift och en teknisk standard när du ska ta reda på vilka regler som gäller?",
+    "fraga": "Vad är skillnaden mellan en föreskrift från en myndighet och en teknisk standard?",
     "samband": [
       "Föreskrift, standard och lokal anvisning"
     ],

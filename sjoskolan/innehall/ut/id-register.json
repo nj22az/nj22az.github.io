@@ -1697,7 +1697,7 @@
   },
   {
    "id": "EL-000123",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beröringspunkter",
@@ -1763,7 +1763,7 @@
   },
   {
    "id": "EL-000126",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Batteriets risk",
@@ -1873,7 +1873,7 @@
   },
   {
    "id": "EL-000131",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Föreskrift eller standard",
@@ -1895,7 +1895,7 @@
   },
   {
    "id": "EL-000132",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Aktuell utgåva",
@@ -1917,7 +1917,7 @@
   },
   {
    "id": "EL-000133",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Arbetsmetoder",
@@ -1939,7 +1939,7 @@
   },
   {
    "id": "EL-000134",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Säkerhetsåtgärder",
@@ -2005,7 +2005,7 @@
   },
   {
    "id": "EL-000137",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Regelval ombord",
@@ -2027,7 +2027,7 @@
   },
   {
    "id": "EL-000138",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Gammal föreskrift",
@@ -2049,7 +2049,7 @@
   },
   {
    "id": "EL-000139",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Två matningar",
@@ -2071,7 +2071,7 @@
   },
   {
    "id": "EL-000140",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Rätt hänvisning i riskbedömning",
@@ -2115,7 +2115,7 @@
   },
   {
    "id": "EL-000142",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Fara och konsekvens",
@@ -2159,7 +2159,7 @@
   },
   {
    "id": "EL-000144",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Lås och skylt",
@@ -2181,7 +2181,7 @@
   },
   {
    "id": "EL-000145",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Provare med skada",
@@ -2247,7 +2247,7 @@
   },
   {
    "id": "EL-000148",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Riskpoäng",
@@ -2269,7 +2269,7 @@
   },
   {
    "id": "EL-000149",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Kontroll av åtgärden",
@@ -2291,7 +2291,7 @@
   },
   {
    "id": "EL-000150",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samlad bedömning",
@@ -7337,7 +7337,7 @@
   },
   {
    "id": "EL-000818",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Beröringsspänning i en modell",
@@ -7353,7 +7353,7 @@
   },
   {
    "id": "EL-000819",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Rätt mätutrustning",

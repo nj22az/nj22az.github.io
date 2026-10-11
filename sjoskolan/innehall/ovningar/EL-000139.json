@@ -3,7 +3,7 @@
   "titel": "Två matningar",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -31,7 +31,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Normal matning, reservmatning och risken att spänningen kommer tillbaka påverkar samma arbetsområde.",
+      "text": "Fördelningen kan få el från mer än ett håll. Planen måste ta med varje väg som kan ge el.",
       "status": "migrerad"
     },
     {

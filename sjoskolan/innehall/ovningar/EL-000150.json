@@ -3,7 +3,7 @@
   "titel": "Samlad bedömning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -33,12 +33,12 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Jämför det som är verifierat med det som den valda arbetsmetoden kräver.",
+      "text": "Arbete utan spänning kräver att alla matningar är brutna och kontrollerade.",
       "status": "migrerad"
     },
     {
       "niva": "metod",
-      "text": "Jämför kända kontroller med arbetsmetodens förutsättningar. Ange vad som måste klarläggas före start.",
+      "text": "Hur många av matningarna är kontrollerade? Vad kan skyddsutrustning göra, och vad kan den inte göra?",
       "status": "migrerad"
     },
     {
