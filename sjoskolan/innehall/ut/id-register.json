@@ -2357,7 +2357,7 @@
   },
   {
    "id": "EL-000153",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Två märkdata",
@@ -2379,7 +2379,7 @@
   },
   {
    "id": "EL-000154",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Differensström",
@@ -2401,7 +2401,7 @@
   },
   {
    "id": "EL-000155",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Överlast utan jordfel",
@@ -2445,7 +2445,7 @@
   },
   {
    "id": "EL-000157",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolspänning",
@@ -2467,7 +2467,7 @@
   },
   {
    "id": "EL-000158",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Selektivitetsfall",
@@ -2489,7 +2489,7 @@
   },
   {
    "id": "EL-000159",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Brytförmåga",
@@ -2555,7 +2555,7 @@
   },
   {
    "id": "EL-000162",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Transformatorström",
@@ -2577,7 +2577,7 @@
   },
   {
    "id": "EL-000163",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Synkront varvtal",
@@ -2621,7 +2621,7 @@
   },
   {
    "id": "EL-000165",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Eftersläpning",
@@ -2665,7 +2665,7 @@
   },
   {
    "id": "EL-000167",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Rätt motor för Δ-drift",
@@ -2709,7 +2709,7 @@
   },
   {
    "id": "EL-000169",
-   "revision": 5,
+   "revision": 6,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorförluster",
@@ -2731,7 +2731,7 @@
   },
   {
    "id": "EL-000170",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Larm efter överlast",
@@ -2753,7 +2753,7 @@
   },
   {
    "id": "EL-000171",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "NO och NC",
@@ -2775,7 +2775,7 @@
   },
   {
    "id": "EL-000172",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samma relä",
@@ -2797,7 +2797,7 @@
   },
   {
    "id": "EL-000173",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Hållning",
@@ -2819,7 +2819,7 @@
   },
   {
    "id": "EL-000174",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "STOPP-funktionen",
@@ -2863,7 +2863,7 @@
   },
   {
    "id": "EL-000176",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolspänning i vila",
@@ -2885,7 +2885,7 @@
   },
   {
    "id": "EL-000177",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolspänning under start",
@@ -2907,7 +2907,7 @@
   },
   {
    "id": "EL-000178",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänning över STOPP",
@@ -2929,7 +2929,7 @@
   },
   {
    "id": "EL-000179",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Brist i en ritning",
@@ -2951,7 +2951,7 @@
   },
   {
    "id": "EL-000180",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Kort funktionsbeskrivning",
@@ -3655,7 +3655,7 @@
   },
   {
    "id": "EL-000212",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Uppdelning",
@@ -3677,7 +3677,7 @@
   },
   {
    "id": "EL-000213",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Mittpunkt",
@@ -3699,7 +3699,7 @@
   },
   {
    "id": "EL-000214",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänning över avbrott",
@@ -3721,7 +3721,7 @@
   },
   {
    "id": "EL-000215",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Felström i en förenklad beräkning",
@@ -3765,7 +3765,7 @@
   },
   {
    "id": "EL-000217",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Utan last och med last",
@@ -3787,7 +3787,7 @@
   },
   {
    "id": "EL-000218",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Hållningen uteblir",
@@ -3809,7 +3809,7 @@
   },
   {
    "id": "EL-000219",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Intermittent fel",
@@ -3831,7 +3831,7 @@
   },
   {
    "id": "EL-000220",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Efter åtgärd",
@@ -4613,7 +4613,7 @@
   },
   {
    "id": "EL-000321",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Vila: efter STOPP",
@@ -4629,7 +4629,7 @@
   },
   {
    "id": "EL-000322",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Start: över spolen",
@@ -4645,7 +4645,7 @@
   },
   {
    "id": "EL-000323",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolens ström",
@@ -4661,7 +4661,7 @@
   },
   {
    "id": "EL-000324",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Över den öppna STOPP",
@@ -4677,7 +4677,7 @@
   },
   {
    "id": "EL-000325",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Fel: K1 håller inte",
@@ -4693,7 +4693,7 @@
   },
   {
    "id": "EL-000326",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Fel: bruten retur",
@@ -4709,7 +4709,7 @@
   },
   {
    "id": "EL-000327",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Hållning: över hjälpkontakten",
@@ -4725,7 +4725,7 @@
   },
   {
    "id": "EL-000328",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Efter strömavbrott",
@@ -7369,7 +7369,7 @@
   },
   {
    "id": "EL-000820",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorns märkskylt",
@@ -7385,7 +7385,7 @@
   },
   {
    "id": "EL-000821",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Skyddsdata",
@@ -7433,7 +7433,7 @@
   },
   {
    "id": "EL-000824",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Högspänning och strömtransformator",
@@ -7465,7 +7465,7 @@
   },
   {
    "id": "EL-000826",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Analys av mätdata",

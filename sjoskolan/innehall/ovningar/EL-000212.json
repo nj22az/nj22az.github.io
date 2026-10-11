@@ -3,7 +3,7 @@
   "titel": "Uppdelning",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,9 +22,9 @@
     ]
   },
   "uppgift": {
-    "fraga": "En pump startar inte. Nämn fyra funktioner du behöver kontrollera innan du dömer ut någon komponent.",
+    "fraga": "En pump startar inte. Nämn minst fyra funktioner du behöver kontrollera innan du dömer ut någon komponent.",
     "samband": [
-      "Källa, kraftväg, styrning, skydd och last"
+      "Följ energin från nätet till pumpen och styrsignalen från knappen till kontaktorn."
     ],
     "givet": "Pumpen startar inte. Mer än så vet du inte.",
     "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
@@ -47,7 +47,7 @@
     }
   ],
   "losning": {
-    "text": "Källa, kraftväg, styrning, skydd och last. Exempel: finns rätt spänning före och efter pumpens skydd?",
+    "text": "Källa, matningsväg, skydd, styrning och last. Fyra av dem räcker. Exempel: finns rätt spänning före och efter pumpens skydd?",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

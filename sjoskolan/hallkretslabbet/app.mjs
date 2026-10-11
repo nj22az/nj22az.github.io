@@ -2,9 +2,9 @@
 import { solve, meter, fmt, parseAnswer, isClose } from './model.mjs';
 import { FAULTS } from './model.mjs';
 import { markHtml } from '../gemensamt/markering.mjs?v=20260928';
-import { POINTS, FAULT_TEXT, DEFAULTS, CHALLENGES, run, expected } from './lessons.mjs';
+import { POINTS, FAULT_TEXT, DEFAULTS, CHALLENGES, run, expected } from './lessons.mjs?v=20261011';
 import { mountProtocol } from '../gemensamt/labbprotokoll.mjs?v=20260928-pek';
-import { STATION_C_PROTOKOLL } from './stationC-protokoll.mjs?v=20260926';
+import { STATION_C_PROTOKOLL } from './stationC-protokoll.mjs?v=20261011';
 
 const $ = (id) => document.getElementById(id);
 const K = { blue: '#064f91', orange: '#c8641e', green: '#0e7c5a', red: '#b8323c', ink: '#163248', muted: '#6b7f90', grid: '#dfe7ee' };

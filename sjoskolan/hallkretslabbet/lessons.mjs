@@ -17,5 +17,5 @@ export function expected(c) {
 }
 
 // Uppgifterna genereras ur innehållsdatabasen (innehall/ovningar). Redigera aldrig uppgifter.gen.mjs.
-import { UPPGIFTER } from './uppgifter.gen.mjs';
+import { UPPGIFTER } from './uppgifter.gen.mjs?v=20261011';
 export const CHALLENGES = UPPGIFTER;

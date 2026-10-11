@@ -18,6 +18,9 @@ set_paras(shape(p.slides[22], 5), ["Välj en mätpunkt och ett driftläge där d
 set_paras(shape(p.slides[13], 12), ["Förutsättningar: Källan har 24 V. B har 0 V mot hel retur. En enkel kedja och samma referens antas."])
 set_paras(shape(p.slides[14], 4), ["Källan visar 24 V men punkt B i mitten har 0 V mot hel retur. Vilken del prioriteras?"])
 replace_words(p, [('I²Rextra', 'I² · Rextra')])
+# Granskning 2026-10-11: övning 1.2 frågar efter minst fyra funktioner och facit nämner skydd; ”lågimpediv” är inget vanligt ord
+set_paras(shape(p.slides[6], 3), ["Dela systemet i källa, matningsväg, skydd, styrning och last.", "Avgör vilka delar som redan har stöd av observationerna."])
+set_paras(shape(p.slides[20], 3), ["Ett avbrott hindrar ström i den berörda vägen.", "En kortslutning är en oavsiktlig väg med låg impedans."])
 set_paras(shape(p.slides[28], 11), ["Vad förutsäger varje hypotes för källspänningen och spolspänningen, under START och efter släpp?"])
 subscript_tokens(p, SUBS); drop_notes_line(p); p.save(f"{dst}/{f}")
 

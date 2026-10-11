@@ -3,7 +3,7 @@
   "titel": "Överlast utan jordfel",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -19,7 +19,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En jordfelsbrytare utan överströmsskydd matar en last som drar för stor ström, men all ström kommer tillbaka. Varför behövs ändå ett överströmsskydd?",
+    "fraga": "En jordfelsbrytare har inget överströmsskydd. Lasten drar för mycket ström, men all ström kommer tillbaka. Varför behövs ett överströmsskydd också?",
     "samband": [
       "Vad mäter jordfelsfunktionen?"
     ],
@@ -44,7 +44,7 @@
     }
   ],
   "losning": {
-    "text": "Jordfelsbrytaren mäter bara skillnaden mellan ut- och returström. Vid överlast återkommer all ström och skillnaden är noll, så den löser inte.",
+    "text": "Jordfelsbrytaren mäter bara skillnaden mellan ut- och returström. Vid överlast kommer all ström tillbaka, så skillnaden är noll och den löser inte. Därför behövs ett överströmsskydd (säkring eller dvärgbrytare) som löser på strömmens storlek.",
     "status": "migrerad",
     "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
   },

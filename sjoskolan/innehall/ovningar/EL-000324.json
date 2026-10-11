@@ -3,7 +3,7 @@
   "titel": "Över den öppna STOPP",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -91,7 +91,7 @@
         }
       ]
     },
-    "kallhanvisning": "v43_03 · övning 8",
+    "kallhanvisning": "Del 3, övning 3.8",
     "alias": "stopp"
   }
 }

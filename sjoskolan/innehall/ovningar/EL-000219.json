@@ -3,7 +3,7 @@
   "titel": "Intermittent fel",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -22,7 +22,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Ett fel visar sig bara vid hög belastning. Vilken information behöver du samla in, utöver ett enstaka värde utan last?",
+    "fraga": "Ett fel syns bara när lasten är stor. En mätning utan last räcker inte. Vad ska du mäta, och när?",
     "samband": [
       "Felvillkoret behöver finnas med i datainsamlingen"
     ],

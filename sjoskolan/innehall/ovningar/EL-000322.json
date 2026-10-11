@@ -3,7 +3,7 @@
   "titel": "Start: över spolen",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -40,7 +40,7 @@
     }
   ],
   "losning": {
-    "text": "b har +24 V via S0 och S1, c har 0 V via returen. Uspole = 24 − 0 = 24 V.",
+    "text": "b har +24 V via S0 och S1, c har 0 V via returen. U_{spole} = 24 − 0 = 24 V.",
     "svar": [
       {
         "storhet": "U(spole)",
@@ -90,7 +90,7 @@
         }
       ]
     },
-    "kallhanvisning": "v43_03 · övning 7",
+    "kallhanvisning": "Del 3, övning 3.7",
     "alias": "start"
   }
 }

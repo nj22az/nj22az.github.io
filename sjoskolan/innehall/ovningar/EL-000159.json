@@ -3,7 +3,7 @@
   "titel": "Brytförmåga",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -19,7 +19,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "Den beräknade kortslutningsströmmen är 8 kA. Det föreslagna skyddet har brytförmågan 6 kA, och det finns inget dokumenterat backupskydd. Kan valet godkännas?",
+    "fraga": "Kortslutningsströmmen kan bli 8 kA. Skyddet klarar att bryta 6 kA. Det finns inget annat skydd som hjälper till (backupskydd). Får du använda skyddet?",
     "samband": [
       "Brytförmåga måste täcka möjlig felström"
     ],

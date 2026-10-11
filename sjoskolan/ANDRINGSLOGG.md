@@ -168,7 +168,24 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     sambandsraden ”Utgåvans grund: SS-EN 50110-1 utgåva 4:2024” stod direkt ovanför på sidan och på stödbilden. Samband,
     givet och stödbildens text räknas som ledtrådar (regel 1). *Manuell kontroll.*
 
+49. **En ja/nej-fråga ska ha ett säkert svar.** Inlämning 2 b i vecka 43 frågade ”Löser jordfelsbrytaren?” vid 22 mA.
+    En 30 mA-jordfelsbrytare måste lösa vid 30 mA men får lösa redan över 15 mA, så frågan saknade svar. Fråga efter det som
+    gäller säkert (”Måste den lösa?”) och räkna igenom kursens D (D = 12) och gränsfallen innan frågan publiceras. *Manuell kontroll.*
+
 ## Ändringar
+
+- **2026-10-11** Granskningen av vecka 43 (och del 4 Systematisk felsökning) rättad. Delsidorna räknar de flyttade delarna
+  (`veckans_delar` ur `FLYTTAD` i delsidor_veckor.py): vecka 43 har del 1–4 och vecka 44 del 1–5, och del 3 leder vidare till
+  del 4 i `vecka-45/`. Övning 2.3 (tvåpolig, 3 000 r/min), 2.5 (1 430 r/min, 4,7 %) och 2.7 (440 V ombord, Δ/Y 254/440 och
+  440/760 V) gav inte längre inlämning 1:s svar (regel 2); Y/Δ-bilden i v43_02 räknar på 690/1 200 V. Facit i 1.5 och 2.2 svarar
+  på hela frågan, sju ledtrådar och samband gav svaret (regel 1, 48), index i U_{spole}, U_{kontakt}, R_{extra} och I_{Δ}
+  (ny i beteckningar.json), Hållkretslabbet hänvisar till ”Genomgång del 3, avsnitt …” och ”Del 3, övning 3.7” i stället för
+  v43_03-koder. Inlämning 2 b frågar ”Måste jordfelsbrytaren lösa?” (regel 49), D = 12 i postens parameter (vecka 43 inlämning 1–2, vecka 44 inlämning 2, analysuppgiften i vecka-45/).
+  Övning 1.2 i felsökningen och teoribilden nämner fem funktioner (minst fyra efterfrågas), ”lågimpediv” är borta, facit visar
+  tusental med mellanrum (1 500) och förlusten i 2.9 med en decimal. Sjutton frågor och lösningar med enklare svenska.
+  Lärarkopiorna (v43_01–03, v45_01, lärarguiden) och boken är inte uppdaterade (kräver LARARLOSEN/BOKLOSEN): revidera
+  EL-000153–155, 157–159, 162, 163, 165, 167, 169–174, 176–180, 212–215, 217–220, 321–328, 820, 821, 824 och 826 igen
+  med de skyddade filerna öppna.
 
 - **2026-10-11** Granskningen av vecka 42 rättad. Exemplen gav övningarnas svar (regel 2): riskpoängen är nu 5 · 3 = 15 och
   2 · 3 = 6 överallt (övningssidan hade en äldre version), Del 1 E1 en vinkelslip med klämd kabel (ny figur), E2 ett böjt

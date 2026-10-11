@@ -3,7 +3,7 @@
   "titel": "Efter strömavbrott",
   "sprak": "sv",
   "typ": "simulator",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -98,7 +98,7 @@
         }
       ]
     },
-    "kallhanvisning": "v43_03 · bild 9",
+    "kallhanvisning": "Del 3, exempel 1: Hållkretsens start",
     "alias": "avbrott"
   }
 }

@@ -3,7 +3,7 @@
   "titel": "Spolspänning",
   "sprak": "sv",
   "typ": "berakning",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad",
     "numeriskt_kontrollerad": true
@@ -20,7 +20,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En kontaktor har huvudkontakter för 440 V men en spole märkt 24 V DC. Vilken uppgift styr spolens matning?",
+    "fraga": "Kontaktorns huvudkontakter är märkta 440 V. Spolen är märkt 24 V DC. Vilken spänning ska spolen matas med?",
     "samband": [
       "Vilken del av apparaten gäller varje märkvärde?"
     ],
@@ -35,7 +35,7 @@
     },
     {
       "niva": "metod",
-      "text": "Ta spolens spänning och strömart (AC eller DC) från dess märkning, inte huvudkontakternas värde.",
+      "text": "Huvudkontakterna och spolen har var sin märkning. Vilken del av kontaktorn är det som matas från manöverkretsen?",
       "status": "migrerad"
     },
     {

@@ -144,12 +144,27 @@ def teori_for(pl, teori):
     return match[0]
 
 
+def veckans_delar(vv):
+    """Delarna eleven ser i vecka vv, i ordning: [(mappvecka, filens delnummer, delnummer i veckan)].
+    Veckans egna presentationer först, sedan delarna som flyttats dit från en annan veckas mapp (FLYTTAD)."""
+    egna = [(vv, d, d) for d in sorted(int(x.name[5]) for x in (R.SJO / f'vecka-{vv}' / 'aktuell').glob('v*_elev.pptx'))
+            if (vv, d) not in FLYTTAD]
+    flyttade = sorted(((fv, d, t[1]) for (fv, d), t in FLYTTAD.items() if t[0] == vv), key=lambda x: x[2])
+    return egna + flyttade
+
+
+def deltitel_for(fv, d):
+    """Rubriken på första bilden i delens presentation (samma som delsidans rubrik)."""
+    mapp = R.SJO / f'vecka-{fv}' / 'aktuell'
+    deck = next(mapp.glob(f'v{fv}_0{d}_*_elev.pptx'))
+    return las_bild(Presentation(deck).slides[0], deck.name, 1, mapp / 'figurer')[0]
+
+
 def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     mapp = R.SJO / f'vecka-{v}' / 'aktuell'
     figmapp = mapp / 'figurer'
     kap = deck[:6]
     dnr = int(kap[-1])
-    antal = len(alla_decks)
     prs = Presentation(mapp / deck)
     bilder = [(nr, *las_bild(b, deck, nr, figmapp)) for nr, b in enumerate(prs.slides, 1)]
     deltitel = bilder[0][1]
@@ -171,7 +186,11 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     vv, idx, inl = (flytt[0], f'../../vecka-{flytt[0]}/aktuell/index.html', f'../../vecka-{flytt[0]}/aktuell/Inlamning.html') if flytt else (v, 'index.html', 'Inlamning.html')
     if flytt:
         titel = deltitel
-    kicker = (f'Vecka {vv} · Del {flytt[1]} av {flytt[2]}' if flytt else f'Vecka {v} · Del {dnr} av {antal}')
+    # Delarna eleven ser i veckan, också de som ligger i en annan veckas mapp (vecka 43: del 1–4, vecka 44: del 1–5).
+    delar = veckans_delar(int(vv))
+    antal = len(delar)
+    plats = next(i for i, (fv, d, _) in enumerate(delar) if (fv, d) == (int(v), dnr))
+    kicker = f'Vecka {vv} · Del {delar[plats][2]} av {antal}'
     flyttnotis = (f'<p class="sj-muted">Övningarna i den här delen är numrerade {dnr}.1–{dnr}.10.</p>' if flytt else '')
     h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(titel)} · Vecka {vv} · Sjöskolan</title><meta name="description" content="{R.attr(veckotitel)}: {R.attr(deltitel)}. Teori, exempel och övningar med ledtrådar och facit."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{v}/aktuell/Del_{dnr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/delsida.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="{idx}">Vecka {vv}</a><a href="{inl}">Inlämning</a></nav>
@@ -278,11 +297,15 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     h.append('</section>')
 
     kf_nyckel = f'sj-kontroll:vecka-{v}'
-    fore = f'<a href="Del_{dnr - 1}.html">← Del {dnr - 1}</a>' if dnr > 1 else '<a href="index.html">← Vecka ' + str(v) + '</a>'
-    efter = f'<a href="Del_{dnr + 1}.html">Del {dnr + 1} →</a>' if dnr < antal else '<a href="index.html#labb">Labben →</a>'
-    if flytt:  # flyttade delar: tillbaka till veckan där de ingår nu
-        fore = f'<a href="{idx}">← Vecka {vv}</a>'
-        efter = f'<a href="Del_{dnr + 1}.html">Del 5 →</a>' if flytt == (44, 4, 5) else f'<a href="{idx}#labb">Labben →</a>'
+    def lank(i, pil):
+        # Länk till del nummer i (0-baserat) i veckans ordning. En del i en annan mapp får också sin rubrik.
+        fv, d, n = delar[i]
+        if fv == int(v):
+            return f'<a href="Del_{d}.html">{"← " if pil == "<" else ""}Del {n}{" →" if pil == ">" else ""}</a>'
+        text = f'Del {n}: {e(deltitel_for(fv, d))}'
+        return f'<a href="../../vecka-{fv}/aktuell/Del_{d}.html">{"← " + text if pil == "<" else text + " →"}</a>'
+    fore = lank(plats - 1, '<') if plats > 0 else f'<a href="{idx}">← Vecka {vv}</a>'
+    efter = lank(plats + 1, '>') if plats + 1 < antal else f'<a href="{idx}#labb">Labben →</a>'
     h.append(f'''<nav class="art-nav" aria-label="Delar"><span>{fore}</span><span><a href="{idx}">Veckans översikt</a></span><span>{efter}</span></nav>
 </article></main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
 <script>

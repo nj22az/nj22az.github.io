@@ -3,7 +3,7 @@
   "titel": "STOPP-funktionen",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -31,7 +31,7 @@
   "ledtradar": [
     {
       "niva": "begrepp",
-      "text": "Om S0 ligger före förgreningen måste både START-vägen och hållvägen gå genom S0.",
+      "text": "Rita de två vägarna till spolen. Vilka kontakter passerar varje väg?",
       "status": "migrerad"
     },
     {
