@@ -9,7 +9,7 @@ import {BACKDROPS,FILMS,WARDROBE_COLOURS,filmCSS,applyFilm,createStudioSet,arran
 import {PARTS,normalizeRecipe} from '../avatars/recipe.js';
 import {EXPRESSION_GLYPHS} from '../avatars/face.js';
 import {ISLAND_OUTFITS,ISLAND_COSTUMES,THUAN_SAILOR_OUTFIT,outfitAllowedFor} from '../avatars/outfits.js';
-import {SLOTS,labelFor,wornSet} from '../avatars/wardrobe-catalogue.js';
+import {SLOTS,labelFor,wornSet,putOnSet} from '../avatars/wardrobe-catalogue.js';
 import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 
 // The wardrobe's words come from the catalogue, by slot, as in the maker (a police top and a police cap read apart).
@@ -198,7 +198,8 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  field('backdrop').onchange=()=>{setBackdrop(field('backdrop').value);announce(BACKDROPS[field('backdrop').value].label+'.');};
  field('film').onchange=()=>{canvas.style.filter=filmCSS(field('film').value);};
  field('actorScale').oninput=()=>{const a=selectedActor();if(a){a.scale=Number(field('actorScale').value);placeActor(a);}};
- field('wearSet').onchange=()=>{const a=selectedActor(),value=field('wearSet').value;if(a&&value!=='')dress(a,outfitSets[Number(value)].outfit);};
+ // A set goes on as in the maker (putOnSet): the hat that came with the last set comes off with it.
+ field('wearSet').onchange=()=>{const a=selectedActor(),value=field('wearSet').value;if(a&&value!=='')dress(a,putOnSet(a.avatar.recipe.outfit,outfitSets[Number(value)]));};
  for(const n of WARDROBE)field(wear(n)).onchange=()=>{const a=selectedActor();if(a)dress(a,{[n]:field(wear(n)).value});};
  for(const box of ui.querySelectorAll('[data-swatches]'))for(const b of box.children)b.onclick=()=>{const a=selectedActor();if(a&&!b.disabled)dress(a,{[box.dataset.swatches]:b.dataset.colour});};
  $('[data-own-clothes]').onclick=()=>{const a=selectedActor();if(a)dress(a,a.own.outfit||{});};

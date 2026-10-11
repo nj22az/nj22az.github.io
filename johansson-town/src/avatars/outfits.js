@@ -1,13 +1,14 @@
-/** Thuan’s own long-sleeved island sailor set. */
-export const THUAN_SAILOR_OUTFIT=Object.freeze({top:'sailorlong',topColour:'#283760',bottom:'pleatedskirt',bottomColour:'#283760',footwear:'boots',shoes:'#30292b',accent:'#c64951',pattern:'none',hat:'none'});
-/** Photo-inspired clothing, shared independently of the character's appearance. */
-export const HARBOUR_POLO_OUTFIT=Object.freeze({top:'contrastpolo',topColour:'#202d50',accent:'#f2eee5',bottom:'pleatedskirt',bottomColour:'#d9cfba',footwear:'shoes',shoes:'#eee9df',pattern:'none',hat:'none'});
+import {THUAN_SAILOR_OUTFIT,HARBOUR_POLO_OUTFIT} from './outfit-constants.js';
+// The outfits residents' own looks and the engine are built from live in outfit-constants.js (in the portrait hash).
+export {THUAN_SAILOR_OUTFIT,HARBOUR_POLO_OUTFIT,AFTERBATH,houseDressColour} from './outfit-constants.js';
 /**
- * Original island wardrobe sets; faces, body proportions, hair and hats stay independent. A set is put on over what someone
- * wears ({...outfit,...set.outfit}), so a field it leaves out stays as it was. Every set has a purpose (CLAUDE.md: "Nothing
- * is random"): `who` on the island wears it and `why`; `category` files it in the maker's Outfits tab, `label` is the
- * short name under its picture (wardrobe-catalogue.js), `tags` are the places and occasions a search finds it by, and
- * `colourways` are its real colour variants (the first is the one in `outfit`). Ids are appended, never renamed.
+ * Original island wardrobe sets; faces, body proportions and hair stay independent. A set is put on over what someone
+ * wears (wardrobe-catalogue.js putOnSet), so a field it leaves out stays as it was, except the hat that came with the set
+ * being taken off: it comes off with that set (no kitchen kerchief on a Sunday dress), while a hat of one's own stays.
+ * Every set has a purpose (CLAUDE.md: "Nothing is random"): `who` on the island wears it and `why`; `category` files it in
+ * the maker's Outfits tab, `label` is the short name under its picture (wardrobe-catalogue.js), `tags` are the places and
+ * occasions a search finds it by, and `colourways` are its real colour variants (the first is the one in `outfit`). Ids
+ * are appended, never renamed.
  */
 export const ISLAND_OUTFITS=Object.freeze([
  {id:'harbour-polo',name:'Harbour polo and cream pleats',label:'Harbour polo',category:'Everyday',tags:['ferry','harbour','polo','pleats'],
@@ -44,23 +45,25 @@ export const ISLAND_OUTFITS=Object.freeze([
  // Boots for now: the set moves to the market gumboots when they are made (the plan's batch 5).
  {id:'morning-boats',name:'Morning boats',label:'Morning boats',category:'Work',tags:['fish auction','auction','quay','dawn','boats','fishing','sabani'],
   who:'Kōji at the auction, Mr Ōshiro and Masaru',why:'Boots and a cap for the hosed-down quay at dawn.',
-  outfit:{top:'tee',topColour:'#8cc4b4',bottom:'trousers',bottomColour:'#2f4f7f',footwear:'boots',shoes:'#f4f1ea',hat:'cap',hatColour:'#27304d',accent:'#e8b83e',pattern:'none'}},
+  outfit:{top:'tee',topColour:'#8cc4b4',bottom:'trousers',bottomColour:'#2f4f7f',footwear:'boots',shoes:'#f4f1ea',hat:'cap',hatColour:'#2f4f7f',accent:'#e8b83e',pattern:'none'}},
  // Our own plain uniform: no postal mark.
  {id:'post-round',name:'Post round',label:'Post round',category:'Work',tags:['post office','post','mail','letters','round','uniform'],
   who:'Postman Tōma (collections at 10:30 and 16:30) and Naoko',why:'A light summer uniform for a round on foot.',
   outfit:{top:'polo',topColour:'#8fbfe0',bottom:'trousers',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',hat:'cap',hatColour:'#27304d',accent:'#f4f1ea',pattern:'none'}},
- {id:'ramen-kitchen',name:'Ramen kitchen',label:'Ramen kitchen',category:'Work',tags:['Sato Ramen','ramen','kitchen','cook','stove','noodles'],
-  who:'Mrs Sato at Sato Ramen',why:'Hair covered and a white apron at the stove.',
-  outfit:{top:'apron',topColour:'#f4f1ea',bottom:'trousers',bottomColour:'#2b2b2b',footwear:'shoes',shoes:'#2b2b2b',hat:'kerchief',hatColour:'#2f4f7f',accent:'#c8473a',pattern:'none'}},
+ // The kitchen smock, not the apron: the apron tears in every move until it is rebuilt (character-style.md section 8,
+ // batch 5). The kerchief is the red of the shop's noren (minato-facade.js); the accent only ties back long hair.
+ {id:'ramen-kitchen',name:'Ramen kitchen',label:'Ramen kitchen',category:'Work',tags:['Sato Ramen','ramen','kitchen','cook','stove','noodles','noren','smock'],
+  who:'Mrs Sato at Sato Ramen',why:'Hair covered and a white kitchen smock at the stove; the kerchief is the red of the shop’s noren.',
+  outfit:{top:'smock',topColour:'#f4f1ea',bottom:'trousers',bottomColour:'#2b2b2b',footwear:'shoes',shoes:'#2b2b2b',hat:'kerchief',hatColour:'#c8473a',accent:'#c8473a',pattern:'none'}},
  // Boots for now, like Morning boats: gumboots in the plan's batch 5.
  {id:'cold-store',name:'Cold store in August',label:'Cold store',category:'Work',tags:['ice plant','ice','cold room','east quay','August','beanie'],
   who:'Mr Tamaki and the Cold-storage kid',why:'The ice plant’s cold room is far below freezing, so they are the only two islanders in a beanie in August.',
   outfit:{top:'hoodie',topColour:'#6d7478',bottom:'trousers',bottomColour:'#27304d',footwear:'boots',shoes:'#f4f1ea',hat:'beanie',hatColour:'#27304d',accent:'#8cc4b4',pattern:'none'}},
  {id:'gateball-afternoon',name:'Gateball afternoon',label:'Gateball afternoon',category:'School & sport',tags:['gateball','court','seawall','elders','afternoon','sport'],
-  who:'Mr Nakasone and Mrs Kamiya; Mr Arakaki referees',why:'Every afternoon on the court by the seawall.',
+  who:'Mr Nakasone and Mrs Kamiya; Mr Arakaki referees',why:'A white polo and a wide straw hat for two hours in the afternoon sun on the open court; soft soles for the sand.',
   outfit:{top:'polo',topColour:'#f4f1ea',bottom:'trousers',bottomColour:'#c9b68c',footwear:'sneakers',shoes:'#f4f1ea',hat:'straw',hatColour:'#e3d4b0',accent:'#c8473a',pattern:'none'}},
  // The three crews of the Haarii races (9 June 1997), one colourway each; the headband is white for all of them.
- {id:'haarii-crew',name:'Haarii crew',label:'Haarii crew',category:'Festival',tags:['haarii','boat race','sabani','rowing','June','Minato','Kitahama','Nishi-machi'],
+ {id:'haarii-crew',name:'Haarii crew',label:'Haarii crew',category:'Festival',tags:['haarii','boat race','festival','sabani','rowing','June','Minato','Kitahama','Nishi-machi'],
   who:'Kōji, Daichi and Kenta rowing for Minato on 9 June (the crew is proposed)',why:'Bare feet on the sabani, a headband for the sweat.',
   outfit:{top:'tee',topColour:'#c8473a',bottom:'shorts',bottomColour:'#27304d',footwear:'barefoot',hat:'headband',hatColour:'#f4f1ea',pattern:'none'},
   colourways:[{name:'Minato',colours:{topColour:'#c8473a',bottomColour:'#27304d'}},{name:'Kitahama',colours:{topColour:'#4f7a4f',bottomColour:'#e3d4b0'}},{name:'Nishi-machi',colours:{topColour:'#3a9cb8',bottomColour:'#f4f1ea'}}]},
@@ -83,33 +86,3 @@ export const DRESS_BOTTOMS=Object.freeze(['skirt','longskirt','pleatedskirt']);
 /** Every character uses the same wardrobe; identity never filters shared parts. */
 export function outfitAllowedFor(_name,_outfit){return true;}
 export function appropriateOutfit(_name,outfit){return {...outfit};}
-
-/**
- * After the bath (build.js wear('afterbath')): what a town bath's regulars wore in its shared lobby in the 1980s and 90s,
- * cooling off with a coffee milk, in the massage chair or in front of the night game. Grown-ups only: children keep their
- * clothes, as they do behind the noren (wearsBathTowel). Bare feet: the shoes are in the getabako at the genkan.
- * - men: a white cotton running vest (ランニングシャツ), long light-beige cotton drawers to below the knee (ステテコ), and
- *   one of the bath's tenugui round the neck, both ends on the chest (Umi-no-yu sells them at the bandai, printed with
- *   the navy band its towels carry, so they come back);
- * - women: her own house dress (アッパッパ), loose, short-sleeved, to the knee, in a pastel of what she likes to wear
- *   (houseDressColour), and the bath's towel wound into a turban over the hair while it dries.
- */
-export const AFTERBATH=Object.freeze({
- men:Object.freeze({top:'running',topColour:'#f7f4ec',bottom:'suteteko',bottomColour:'#e4d8bd',footwear:'barefoot',hat:'none',pattern:'none'}),
- women:Object.freeze({top:'housedress',bottom:'housedress',footwear:'barefoot',hat:'none',pattern:'none'}),
-});
-const mixHex=(a,b,f)=>'#'+[1,3,5].map(i=>Math.round(parseInt(a.slice(i,i+2),16)*(1-f)+parseInt(b.slice(i,i+2),16)*f).toString(16).padStart(2,'0')).join('');
-/** Near-white tops (a white tee) give no colour of her own: then the accent she wears with it does. */
-const pale=hex=>[1,3,5].every(i=>parseInt(hex.slice(i,i+2),16)>215);
-/**
- * Her house dress: a pastel of the top she usually wears (Thuan's yellow, Nhung's sage, Mrs Higa's green), or of its
- * accent when that top is white (Thao's tee, with her blue shorts and ties), washed out as a much-laundered cotton is.
- */
-export function houseDressColour(recipe){
- const o=recipe.outfit,base=pale(o.topColour)?o.accent:o.topColour,cloth='#fbf8f1';
- // At least 55% of the way to the cloth's white, further for a dark top (Thuan's navy), so it always reads as a pastel.
- const mean=hex=>[1,3,5].reduce((sum,i)=>sum+parseInt(hex.slice(i,i+2),16),0)/3;
- const wash=Math.min(.85,Math.max(.55,(190-mean(base))/(mean(cloth)-mean(base))));
- return mixHex(base,cloth,wash);
-}
-

@@ -170,7 +170,11 @@ Severity: **A** wrong on screen now; **B** off-model or inconsistent; **C** poli
 | B | Accessories vanish in alternative outfits (sailor, shopping lane, swim, towel) | build.js wear() |
 | B | Generated residents and the dice wear one-colour blouses, polos and tees | cast.js recipeFor, recipe.js randomRecipe |
 | C | Happi coat: the crossed bands read as a big X | garment.js festival |
-| C | Mr Toguchi's apron is a flat slab | build.js apron |
+| A | The apron tears in every move: walking shears its lower panel into a jagged flap between the legs, in profile it stands off the trousers as a plank with a gap (the bib about 1 cm off the chest), on a chair it curls out of the lap with its grey underside showing, on the floor it folds through the lap. Seen on every body and on everyone who wears it (Mrs Sato, Mr Toguchi, Mina, Mrs Nakamura, Mrs Yonamine, Hiroshi); the bib cuts through a scarf. Its colour is the top's × 1.12 in linear light, so paper white turns `#fffdf6`. The wardrobe's Ramen kitchen set wears the smock until it is rebuilt (batch 5). | build.js addBody apron |
+| A | Big hair (afro, perm) under a full hat is cut flat at one height, a slab sticking out below the hat (Mrs Kamiya's perm under her straw hat; every afro or perm in a set with a hat) | build.js addHair, the hat tuck |
+| B | The headband over a perm breaks into white pieces (the curls sit outside the radius it follows); over an afro its front floats before the forehead; white on white hair hardly reads | build.js headband() |
+| C | The bucket hat sits high, its brim at the hairline instead of over the brow | build.js addHat bucket |
+| B | In a floor sit (feet up) a dark spot shows in the middle of a pale sole: on broad bodies the shoe's upper reaches below its sole (−0.17 cm on a broad adult, −0.13 cm on a broad child; slim bodies are clear), and a boot's shaft is bound to the shin, so its end cap swings out through the sole when the ankle bends. Hidden when the shoe and its sole are alike (white sneakers and boots, dark shoes); seen on Harbour day shift's dark boots and on any dark sneaker. Not the trousers: it shows with shorts too. (Wide trousers' cuffs and the setta's sole were fixed in the wardrobe's engine batch, 2026-10-11.) | build.js addShoe |
 | C | Small mittens for a chunky toy | build.js hands |
 | C | The outline is a fixed 1.1 cm: relatively heavier on children; thin parts need their own ink | build.js OUTLINE_WIDTH, ink |
 | C | Cloth palette of saturated primaries, close to Mii's favourite colours; garish dice outfits | recipe.js PALETTE |
@@ -184,8 +188,14 @@ people listed first (`remotion/tools/impact.py`), never with ground or lighting 
 2. Neck, ears, nose (affects hat fit, the collars' stand radius, tenugui and necklace rings, seats, head-top heights in
    tests and the noren, every film close-up).
 3. Head jaw and face layout (affects glasses and whiskers, the creator's drag targets and thumbnails, portraits).
-4. Hair locks, horseshoe, beret, scarf (affects hat tuck, headband, turban, hair states).
-5. Skirts, sleeves, jacket fronts, apron, accessories in every outfit (affects springs, towel fit, seating).
+4. Hair locks, horseshoe, beret, scarf (affects hat tuck, headband, turban, hair states). With them: hair eased in under a
+   hat instead of cut flat (render-checked in the wardrobe batch-1 review: big hair tapers into the hat, ponytails,
+   braids and long hair unchanged; it changes every resident in a hat), and the headband fitted over perm curls and kept
+   off the face.
+5. Skirts, sleeves, jacket fronts, apron, accessories in every outfit (affects springs, towel fit, seating). The apron
+   rebuilt below the waist as the front of the knee skirt's own cloth, with its drape, and the bib as its own panel (a
+   scratch prototype fixed the tear in the stride, but still curls when seated); its colour capped at a warm white. And the shoe's
+   upper kept above its sole, the boot's shaft kept inside the boot when the ankle bends.
 6. The island palette for the dice and the generated residents.
 7. Words: comments, `tomodachi-ui.css` renamed, the stale credit, the Mii-format research doc retired.
 

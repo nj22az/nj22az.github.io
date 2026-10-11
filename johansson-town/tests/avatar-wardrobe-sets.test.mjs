@@ -90,3 +90,19 @@ test('each batch-1 set walks, runs, sits, bows, waves, raises both arms and ride
   }
  }
 });
+
+test('every set still changes into the bath and the lobby clothes, one body at a time',()=>{
+ // Whatever set they come in wearing, the bath and the lobby draw one body. The after-bath clothes are made from the set
+ // (her house dress is a washed pastel of her top, never paper-white #ffffff), so every set is tried in them, on a woman
+ // and a man; swimwear and the towel do not use the set's clothes (and cost seconds each), so batch 1's sets try those.
+ const shown=a=>{let n=0;a.root.traverse(o=>{if(o.isSkinnedMesh&&o.visible&&!o.userData.outline)n++;});return n;};
+ for(const s of SETS)for(const who of ['Thuan','Tetsuo']){
+  const a=buildAvatar(dressed(CAST_RECIPES[who],s.outfit),{shadows:false,faceSize:64});
+  for(const m of [...(BATCH_1.includes(s.id)&&who==='Thuan'?['swim','towel']:[]),'afterbath','clothes']){
+   assert.equal(a.wear(m),m,`${s.id} on ${who}: ${m}`);assert.equal(shown(a),1,`${s.id} on ${who} in ${m}: one body`);
+   const dress=a.root.getObjectByProperty('name','Shimanchu after the bath · house dress')?.userData.afterbath.dress;
+   if(m==='afterbath'&&who==='Thuan')assert.ok(dress&&dress!=='#ffffff',`${s.id}: house dress ${dress}`);
+  }
+  a.dispose();
+ }
+});
