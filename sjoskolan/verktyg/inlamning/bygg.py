@@ -20,11 +20,11 @@ VECKOR = {
          'notis': 'Veckans inlämning 1–3 (Frånskiljning och mätteknik) lämnar du på en egen sida. Här finns inlämning 4–7.', 'notis_lank': ('/sjoskolan/vecka-38/aktuell/Inlamning.html', 'Inlämning: Frånskiljning och mätteknik')},
     41: {'titel': 'Trefas och laboration', 'sista': '2026-10-11'},
     42: {'titel': 'Elektriska risker och skydd', 'sista': '2026-10-18'},
-    # Från vecka 42 på distans: vecka 45:s inlämning är fördelad på vecka 43 och 44 (verktyg/veckosidor/bygg.py, sjoskolan/distans.html).
+    # Vecka 45:s inlämning är fördelad på vecka 43 och 44 (verktyg/veckosidor/bygg.py).
     43: {'titel': 'Komponenter, motorer, scheman och felsökning', 'sista': '2026-10-25'},
     44: {'titel': 'Elsystem, mätteknik och repetition', 'sista': '2026-11-01'},
     45: {'titel': 'Felsökning, analys och övningstenta', 'sista': '2026-11-01',
-         'notis': 'Uppgifterna är flyttade eftersom kursen slutar undervisningen vecka 44. Inlämning 3 (felsökningsrapporten) lämnar du med vecka 43, senast söndag 25 oktober. Inlämning 1 (analys av mätdata) lämnar du med vecka 44, senast söndag 1 november. Inlämning 2, övningstentan, gör du inför tentamen; den betygsätts inte.'},
+         'notis': 'Inlämning 3 (felsökningsrapporten) lämnar du med vecka 43, senast söndag 25 oktober. Inlämning 1 (analys av mätdata) lämnar du med vecka 44, senast söndag 1 november. Inlämning 2, övningstentan, gör du inför tentamen; den betygsätts inte.'},
 }
 
 

@@ -17,7 +17,7 @@ from delsidor import CSS as CSS40, hjalp
 PUBLIK = 'elev'
 V = '20260929k'
 VECKOR = range(41, 46)
-# Kursen på distans från vecka 42: vecka 45:s delar undervisas i vecka 43 och 44 (verktyg/veckosidor/bygg.py).
+# Vecka 45:s delar undervisas i vecka 43 och 44 (verktyg/veckosidor/bygg.py).
 # Filerna ligger kvar i vecka-45/; sidan visar veckan och delen eleven ser. Övningarna behåller sina nummer.
 FLYTTAD = {(45, 1): (43, 4, 4), (45, 2): (44, 4, 5), (45, 3): (44, 5, 5)}
 EMU = 914400
@@ -171,8 +171,8 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     vv, idx, inl = (flytt[0], f'../../vecka-{flytt[0]}/aktuell/index.html', f'../../vecka-{flytt[0]}/aktuell/Inlamning.html') if flytt else (v, 'index.html', 'Inlamning.html')
     if flytt:
         titel = deltitel
-    kicker = (f'Vecka {vv} · Del {flytt[1]} av {flytt[2]} · flyttad från vecka 45' if flytt else f'Vecka {v} · Del {dnr} av {antal}')
-    flyttnotis = (f'<p class="sj-panel warn">Den här delen är flyttad från vecka 45 och ingår nu i vecka {vv}. Övningarna behåller sina nummer, {dnr}.1–{dnr}.10.</p>' if flytt else '')
+    kicker = (f'Vecka {vv} · Del {flytt[1]} av {flytt[2]}' if flytt else f'Vecka {v} · Del {dnr} av {antal}')
+    flyttnotis = (f'<p class="sj-muted">Övningarna i den här delen är numrerade {dnr}.1–{dnr}.10.</p>' if flytt else '')
     h = [f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(titel)} · Vecka {vv} · Sjöskolan</title><meta name="description" content="{R.attr(veckotitel)}: {R.attr(deltitel)}. Teori, exempel och övningar med ledtrådar och facit."><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{v}/aktuell/Del_{dnr}.html"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/delsida.css?v={V}"><link rel="stylesheet" href="../../gemensamt/beteckningar.css?v=20260928"><link rel="stylesheet" href="../../gemensamt/raknehjalp.css?v=20260929"><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
 <body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="{idx}">Vecka {vv}</a><a href="{inl}">Inlämning</a></nav>
 <main id="main-content" class="course-main del-main"><div class="course-breadcrumb"><a href="{idx}">← Vecka {vv}</a></div>

@@ -166,11 +166,12 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
-- **2026-10-11** Kursen på distans från vecka 42. Vecka 45:s delar flyttade: felsökning till vecka 43 (del 4), analys och
-  repetition till vecka 44 (del 4–5); filerna ligger kvar i `vecka-45/` och veckorna länkar dit (`'delsida'`). Vecka 45 är
-  tentamensvecka med skriftlig tentamen online och praktiskt prov i simulatorerna (`praktiskt-prov.html`) med muntlig
-  avstämning. Ny översikt `distans.html`, lektioner online på samma tider, inlämningarna från vecka 45 fördelade på 43 och 44.
-  Tentamens veckotabell visar nu veckorna eleven ser (38–44), inte mappnumren.
+- **2026-10-11** Vecka 45:s delar flyttade: felsökning till vecka 43 (del 4), analys och repetition till vecka 44
+  (del 4–5); filerna ligger kvar i `vecka-45/` och veckorna länkar dit (`'delsida'`, `FLYTTAD` i delsidor_veckor.py).
+  Vecka 45 är tentamensvecka med skriftlig tentamen online och praktiskt prov i simulatorerna (`praktiskt-prov.html`)
+  med muntlig avstämning. Lektionerna från vecka 42 står som online. Inga notiser om distans eller flyttat innehåll:
+  hela kursen ges på distans och inlämningarna visar vad som ska göras. Startsidan är en översikt över elva moduler.
+  Tentamens veckotabell visar veckorna eleven ser (38–44), inte mappnumren.
 
 - **2026-10-06** PR #115 återapplicerad på aktuell main: explicita teorikort för alla 150 övningar vecka 41–45,
   bevarade kontrollfrågor och senare innehåll. Delsidorna ombyggda från källan; aktuell CI kompletterad med

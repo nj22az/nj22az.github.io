@@ -32,9 +32,7 @@ _spec.loader.exec_module(_inl)
 EPOST, epost_knapp = _inl.EPOST, _inl.epost_knapp
 V = '20260930d'
 DAGPLAN_V = '20260927a'
-# Från vecka 42 är kursen på distans (sjoskolan/distans.html). Rutan står överst på varje distansvecka.
-DISTANS_NOTIS = ('<p class="sj-panel week-note distans"><strong>Kursen går på distans från vecka 42.</strong> Lektionerna är online på samma tider, '
-                 'labbarna gör du i simulatorerna och vecka 45 är tentamensvecka. <a href="../../distans.html">Så fungerar de sista veckorna</a></p>')
+# Lektionerna från vecka 42 är online; samma text i varje veckas presentationsruta.
 DISTANS_INTRO = ('<p>Lektionerna är <strong>online</strong> måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Länken till mötet får du av läraren. '
                  'Läraren visar dagens presentation; öppna den själv också, eller ladda ner PowerPoint.</p>')
 MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
@@ -209,9 +207,9 @@ VECKOR = {
         'notis': 'Del 3 läser du själv efter del 2, senast torsdag, och gör övning 3.1–3.5. Labbet är på plats fredag 9 oktober 11.00–16.00 med lunch 12.00–13.00. Motorn och startaren är övningsobjekt som aldrig ansluts.',
         'fordjupning': [lank('Simulerade_stationer.html', 'Simulerade stationer A, B och C', 'övning', 'extra övning i simulatorerna'), lank(LABB['hallkrets'], 'Hållkretslabbet', 'övning', 'inför vecka 43')],
     },
-    # Från vecka 42 går kursen på distans: lektionerna är online på samma tider, labbarna görs i simulatorerna och
-    # vecka 45 är tentamensvecka. Vecka 45:s tre delar (felsökning, analys, repetition) är flyttade till vecka 43 och 44.
-    # Filerna ligger kvar i vecka-45/ (mappnamn ändras aldrig) och veckorna länkar dit. Översikt: sjoskolan/distans.html.
+    # Från vecka 42: lektionerna är online, labbarna görs i simulatorerna och vecka 45 är tentamensvecka.
+    # Vecka 45:s tre delar (felsökning, analys, repetition) undervisas i vecka 43 och 44. Filerna ligger kvar i
+    # vecka-45/ (mappnamn ändras aldrig) och veckorna länkar dit.
     42: {
         'titel': 'Elektriska risker och skydd', 'datum': ('2026-10-12', '2026-10-16'), 'sista': '2026-10-18',
         'mal': 'Du kan beskriva hur el skadar, välja regelverk och arbetsmetod utifrån fallet och skriva en riskbedömning som går att följa upp.',
@@ -279,8 +277,7 @@ VECKOR = {
             (4, '09:00', 'Fredag', 'Online 09.00–11.00', 'Första timmen: frågor från del 3. Andra timmen: del 4 Systematisk felsökning, övning 1.1–1.5 på delsidan tillsammans.'),
             (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Hållkretslabbet: felsök ett dolt fel med protokoll. Övning 1.6–1.10 i del 4 om du hinner. Inlämning med e-post senast söndag.'),
         ],
-        'redovisa_extra': [(V45 + 'Inlamning.html#uppgift-3', 'Felsökningsrapport (flyttad från vecka 45)')],
-        'notis_html': '<strong>Den här veckan har fyra delar.</strong> Systematisk felsökning är flyttad hit från vecka 45, eftersom den hör ihop med hållkretsen. Del 3 läser du själv, och del 4 går vi igenom på fredagen.',
+        'redovisa_extra': [(V45 + 'Inlamning.html#uppgift-3', 'Felsökningsrapport')],
         'redovisa': ['Hållkretslabbet: de 8 räkna-först-uppgifterna och en felsökning med observation, hypotes, kontroll och slutsats.'],
         'fordjupning': [],
     },
@@ -326,8 +323,7 @@ VECKOR = {
             (4, '09:00', 'Fredag', 'Online 09.00–11.00', 'Del 5 Repetition: vi går igenom de uppgifter i övningstentan som flest behöver. Tentamensveckan förklaras.'),
             (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Gör klart inlämningen och skicka den senast söndag. Rätta övningstentan och gör om övningarna i de veckor där du hade fel.'),
         ],
-        'redovisa_extra': [(V45 + 'Inlamning.html#uppgift-1', 'Analys av mätdata (flyttad från vecka 45)')],
-        'notis_html': '<strong>Den här veckan har fem delar och är kursens sista undervisningsvecka.</strong> Analys av mätresultat och repetitionen är flyttade hit från vecka 45. I del 2–4 räcker de första sex övningarna; resten är extra.',
+        'redovisa_extra': [(V45 + 'Inlamning.html#uppgift-1', 'Analys av mätdata')],
         'redovisa': ['Isolationslabbet: alla räkna-först-uppgifter och labbprotokollet sparat som PDF.'],
         'fordjupning': [],
     },
@@ -507,7 +503,7 @@ def veckoplan(nr, w, n, delsidor):
         (f'{dag(4).isoformat()}T00:00', f'Fredag {fmt(dag(4))}', 'Labb på plats 11.00–16.00' if nr == 41 else 'Lektion 09.00–11.00', ('Labbet 11.00–16.00, lunch 12.00–13.00: <a href="Labbet.html">motorn, startaren och strömtången</a>. Ta med protokollet med dina förutsägelser.' if nr == 41 else f'Presentationen för {del_(n)}, sedan <a href="#labb">labben</a>.')),
         (f'{dag(4).isoformat()}T{"16:00" if nr == 41 else "11:00"}', 'Fredag kväll och helgen' if nr == 41 else 'Fredag eftermiddag och helgen', 'Hemma', f'Övning {n}.6–{n}.10 på {del_(n)}{kontroll(n)}. Gör klart labbprotokollet och inlämningen. Skicka mejlet senast söndag {datum(w["sista"])}.{skicka}'),
     ]
-    if w.get('plan'):  # distansveckorna: planen står i VECKOR (dag, starttid, rubrik, typ, vad)
+    if w.get('plan'):  # vecka 42–45: planen står i VECKOR (dag, starttid, rubrik, typ, vad)
         steg = [(f'{dag(k).isoformat()}T{hh}', f'{d} {fmt(dag(k))}' if d in ('Måndag', 'Tisdag', 'Fredag') else d, t, escape(x))
                 for k, hh, d, t, x in w['plan']]
     rader = ''.join(f'<li data-start="{s0}"><span class="plan-nar"><b>{escape(d)}</b> {escape(t)}</span><span class="plan-vad">{x}</span></li>' for s0, d, t, x in steg)
@@ -583,7 +579,6 @@ def page(nr, w):
     notis = f'<p class="sj-panel warn week-note">{escape(w["notis"])}</p>' if w.get('notis') else ''
     if w.get('notis_html'):
         notis = f'<p class="sj-panel warn week-note">{w["notis_html"]}</p>'
-    topp = DISTANS_NOTIS if w.get('distans') else ''  # distansrutan överst i rubriken
     vag = bool(w['delar'][0].get('steg'))
     intro = ('Varje del har tre steg: genomgång, film och övningar. Gör dem i ordning. Labben kommer sist, när du har gått igenom del 1–%d.' % n
              if vag else 'Gå igenom delarna i ordning: bildspel och genomgång, film och övningar med facit. Labben kommer sist, när du har materialet klart för dig.')
@@ -683,7 +678,7 @@ def page(nr, w):
         due = ('<p class="week-due"><strong>Protokollen från det praktiska provet senast onsdag 4 november kl. 20.</strong> '
                '<a href="../../praktiskt-prov.html">Se det praktiska provet</a></p>')
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(rubrik)} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script>{script}</head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav><main id="main-content" class="course-main">
-<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>{topp}{intro if flytt else ''}<p class="course-lead">{escape(w["mal"])}</p>{'' if flytt or pres else f'<p>{intro}</p>'}{pres}{actions}{due}</header>
+<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>{intro if flytt else ''}<p class="course-lead">{escape(w["mal"])}</p>{'' if flytt or pres else f'<p>{intro}</p>'}{pres}{actions}{due}</header>
 {notis}{plan}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">{rubrik_ordning}</h2>{sjalv}<ol class="lesson-list">{forst}{delar}</ol></section>
 <aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3 id="inlamning">Du redovisar</h3><p><a class="sj-btn primary" href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul>{redovisa}</ul>{skicka}<p>Övningarna är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>{w.get("sista_text") or f'Senast söndag {datum(w["sista"])}'}.</strong> {lamna}</p>{fordj}<h3>Att slå upp</h3><ul class="plain">{slaupp}{formelsamling}<li><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp: RAD eller DEG, mH och µF</a></li><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
 <p class="course-download-note">Bildspelen öppnas direkt i webbläsaren, också i telefonen. Presentationerna finns även som PowerPoint och PDF. Nedladdade filer får datum och klockslag i filnamnet.</p>
