@@ -583,3 +583,22 @@ V42_03 = {
 }
 
 LEKTIONER = [V42_01, V42_02, V42_03]
+
+
+def _las_lektionsfiler():
+    """Lektionerna från vecka 43 står i en fil per presentation, lektion_<id>.py (LEKTION och HEMMA), så att flera kan
+    arbeta samtidigt utan att ändra den här filen. Ordningen följer filnamnet. En lektion som undervisas en annan vecka än
+    den mapp filerna ligger i (vecka 45:s delar undervisas i vecka 43 och 44) anger 'vecka' och veckans 'del'."""
+    import importlib.util
+    from pathlib import Path
+    for fil in sorted(Path(__file__).resolve().parent.glob('lektion_v*.py')):
+        spec = importlib.util.spec_from_file_location(f'lektionsfil_{fil.stem}', fil)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        if any(lek['id'] == mod.LEKTION['id'] for lek in LEKTIONER):
+            raise SystemExit(f'{fil.name}: lektionen {mod.LEKTION["id"]} finns redan')
+        LEKTIONER.append(mod.LEKTION)
+        HEMMA[mod.LEKTION['id']] = mod.HEMMA
+
+
+_las_lektionsfiler()
