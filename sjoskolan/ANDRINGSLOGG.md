@@ -166,6 +166,11 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Varje veckosida har en översikt efter kursplanens punkter LM-1–9 (`verktyg/veckosidor/kursplan.py`):
+  vilka punkter veckan tränar, och för varje punkt delarna, labben och inlämningsuppgifterna, med elevens avbockade
+  övningar. Kopplingen kommer ur övningsposternas `larande.mal` och placeringarna. Vecka 40 är upplåst (beslut: kurswebben
+  görs om); låstestet hoppar över när låset saknas. Vecka 41:s e-posttext (protokoll som foton) ligger nu i generatorn.
+
 - **2026-10-11** Vecka 45:s delar flyttade: felsökning till vecka 43 (del 4), analys och repetition till vecka 44
   (del 4–5); filerna ligger kvar i `vecka-45/` och veckorna länkar dit (`'delsida'`, `FLYTTAD` i delsidor_veckor.py).
   Vecka 45 är tentamensvecka med skriftlig tentamen online och praktiskt prov i simulatorerna (`praktiskt-prov.html`)

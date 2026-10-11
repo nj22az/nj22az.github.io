@@ -30,6 +30,9 @@ _spec = importlib.util.spec_from_file_location('inlamning_bygg', ROOT / 'verktyg
 _inl = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_inl)
 EPOST, epost_knapp = _inl.EPOST, _inl.epost_knapp
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from kursplan import kursplan_html  # veckans översikt efter kursplanens punkter LM-1–9
 V = '20260930d'
 DAGPLAN_V = '20260927a'
 # Lektionerna från vecka 42 är online; samma text i varje veckas presentationsruta.
@@ -521,7 +524,9 @@ def veckoplan(nr, w, n, delsidor):
 def page(nr, w):
     if nr == 40:
         from arbetsvecka40 import page as workspace_page
-        return workspace_page(w, dagplan(nr))
+        html = workspace_page(w, dagplan(nr))
+        assert html.count('<section id="idag"') == 1
+        return html.replace('<section id="idag"', kursplan_html(nr, w) + '<section id="idag"')
     week_dir = ROOT / f'vecka-{nr}' / 'aktuell'
     start, end = w['datum']
     labbar, sedda, delar_ = list(w.get('labbar', [])), set(), []
@@ -571,6 +576,9 @@ def page(nr, w):
     formelsamling = '<li><a href="../../gemensamt/Formelsamling.pdf">Formelsamling för hela kursen (PDF)</a></li>' if nr >= 41 else ''
     if nr >= 41:  # från vecka 41: inlämning med e-post till läraren (verktyg/inlamning/bygg.py har samma adress)
         skicka = epost_knapp(nr, w.get('vecka', nr))
+        if nr == 41:  # labbet på plats 9 oktober: protokollet får lämnas som foton (samma text som läraren gav i vecka 41)
+            skicka = (skicka.replace('<li>Bifoga labbprotokollet som PDF.</li>', '<li>Bifoga labbprotokollet separat som PDF eller tydliga foton.</li>')
+                      .replace('labbprotokoll%20%28PDF%29', 'labbprotokoll%20%28PDF%20eller%20tydliga%20foton%29'))
         lamna = f'Skicka allt i ett mejl till <a href="mailto:{EPOST}">{EPOST}</a>.'
     fordj = ''
     if w['fordjupning']:
@@ -678,7 +686,7 @@ def page(nr, w):
         due = ('<p class="week-due"><strong>Protokollen från det praktiska provet senast onsdag 4 november kl. 20.</strong> '
                '<a href="../../praktiskt-prov.html">Se det praktiska provet</a></p>')
     return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(rubrik)} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script>{script}</head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav><main id="main-content" class="course-main">
-<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>{intro if flytt else ''}<p class="course-lead">{escape(w["mal"])}</p>{'' if flytt or pres else f'<p>{intro}</p>'}{pres}{actions}{due}</header>
+<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>{intro if flytt else ''}<p class="course-lead">{escape(w["mal"])}</p>{'' if flytt or pres else f'<p>{intro}</p>'}{'' if flytt else kursplan_html(nr, w)}{pres}{actions}{due}</header>
 {notis}{plan}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">{rubrik_ordning}</h2>{sjalv}<ol class="lesson-list">{forst}{delar}</ol></section>
 <aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3 id="inlamning">Du redovisar</h3><p><a class="sj-btn primary" href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul>{redovisa}</ul>{skicka}<p>Övningarna är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>{w.get("sista_text") or f'Senast söndag {datum(w["sista"])}'}.</strong> {lamna}</p>{fordj}<h3>Att slå upp</h3><ul class="plain">{slaupp}{formelsamling}<li><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp: RAD eller DEG, mH och µF</a></li><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
 <p class="course-download-note">Bildspelen öppnas direkt i webbläsaren, också i telefonen. Presentationerna finns även som PowerPoint och PDF. Nedladdade filer får datum och klockslag i filnamnet.</p>

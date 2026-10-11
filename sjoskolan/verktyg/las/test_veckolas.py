@@ -169,6 +169,8 @@ class VeckolasTest(unittest.TestCase):
 
 class PublishedWeek40Test(unittest.TestCase):
     def test_current_runtime_dependencies_and_narrow_boundary(self):
+        if not (veckolas.HAR / 'vecka-40.json').exists():
+            self.skipTest('vecka 40 är upplåst (beslut 11 oktober 2026: kurswebben görs om); lås igen med veckolas.py las 40')
         files = {p.relative_to(veckolas.SJO).as_posix() for p in veckolas.filer('40')}
         for name in ['index.html', 'boot.mjs', 'app.mjs', 'guided.mjs', 'guided-lessons.mjs',
                      'lessons.mjs', 'model.mjs', 'uppgifter.gen.mjs', 'equipment.js',
