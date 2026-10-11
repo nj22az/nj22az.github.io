@@ -1,7 +1,10 @@
 const install=document.getElementById('installTown'),help=document.getElementById('iosFullscreen');
 let prompt;
-addEventListener('beforeinstallprompt',event=>{event.preventDefault();prompt=event;});
-install?.addEventListener('click',async()=>{if(prompt){await prompt.prompt();prompt=null;}else help?.classList.remove('hidden');});
+const installed=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+if(install)install.hidden=installed()||!ios;
+addEventListener('beforeinstallprompt',event=>{event.preventDefault();prompt=event;if(install&&!installed())install.hidden=false;});
+install?.addEventListener('click',async()=>{if(prompt){await prompt.prompt();prompt=null;install.hidden=true;}else help?.classList.remove('hidden');});
 if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
  const hadController=!!navigator.serviceWorker.controller;
  navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).then(reg=>{

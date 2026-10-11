@@ -1387,13 +1387,26 @@ function startArrivalScene(opening){
  if(params.has('visual-audit')||params.has('audit')&&!params.has('spawn')||params.get('cinematic')==='off')return;
  spawnScene.start({id:opening?.id||'sakura-bench',inside:!!current,yaw:parkSeat?.yaw??yaw});
 }
-// Compile every shader the town uses now, behind the loading screen, rather than one at a
-// time as each kind of thing first comes into view (each was a hitch while walking on a
-// phone). Async where the browser compiles in parallel; never holds the start up for long.
-lightBudget.update();try{await Promise.race([renderer.compileAsync(scene,camera),new Promise(r=>setTimeout(r,8000))]);}catch{}
+// Queue shared shaders once. This renderer's async poll can outlive materials replaced
+// by the detail stream; compile queues GPU work without retaining disposed materials.
+lightBudget.update();try{renderer.compile(scene,camera);}catch{}
+function enterWorld(){
+ if(started)return;
+ window.__JOHANSSON_TITLE_PREVIEW__=false;
+ townSky.mesh.rotation.y=0;
+ startWeather();
 const opening=beginAtOpening();
 started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||(seated?'Stand — Sakura is across the street.':'Sakura — step up to meet Thuan.'),5);runStabilityChecks();
 if(opening?.room)openInside(opening);else startArrivalScene(opening);
+}
+window.__JOHANSSON_ENTER_WORLD__=enterWorld;
+if(!window.__JOHANSSON_TITLE_PREVIEW__)enterWorld();
+else {
+ startWeather();
+ $('#title').dataset.scene='ready';
+ $('#bootStatus').textContent='Island ready';
+}
+addEventListener('johansson-title-weather',()=>{if(!started)startWeather();});
 let mouseLooking=false,mouseLast=null;
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 canvas.addEventListener('pointerdown',e=>{
@@ -1444,6 +1457,7 @@ canvas.addEventListener('click',event=>{
 });
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement!==canvas||!controlsAllowed())return;spawnScene?.cancel();const c=cameraControls.settings;yaw-=e.movementX*.0023*c.sensitivity;pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0018*c.sensitivity*(c.invertY?-1:1),-1.25,1.15);});
 document.addEventListener('keydown',e=>{
+ if(!started)return;
  if(photoLoading||photoStudio?.active||cameraControls.active||inspector?.active||itemViewer?.active||activities.paused)return;
  spawnScene?.cancel();
  if(e.code==='Escape'){toggleDir(false);return;}
@@ -1918,7 +1932,34 @@ detailStream.add({id:'warehouse',priority:1,x:WAREHOUSE.x,z:WAREHOUSE.z,radius:3
 }
 let detailsStarted=false;
 
-function loop(){requestAnimationFrame(loop);if(graphicsLifecycle?.lost){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(window.__JOHANSSON_AUDIT__?.frozen){clock.getDelta();if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});if(window.__JOHANSSON_AUDIT__.renderFrozen!==false)window.__JOHANSSON_AUDIT__.render();return;}renderer.info.reset?.();lightBudget.update();colliderGrid.refresh();if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}if(creatorOpen){clock.getDelta();return;}izakayaTV?.update({camera,active:current?.id==='izakaya'&&izakayaOpen(minutes),paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);governResolution(frameDt);updateWantCards(frameDt);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden&&!activities.paused)activeRoomLayout?.ownedUpdate?.(frameDt);activeRoomLayout?.keep?.setPlayerBottle(!!activities.state.izakayaBottle);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson&&!spawnScene?.active&&!decorating;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=decorating||catchingUp||cameraControls.active||roomLoading||inspector?.active||itemViewer?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused,relax:!!(seated&&!current),ferry:world.ferry?.audio??null});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine){chatBubble.render(conversationLine?null:(neighbourChats.current||residentSpeech()));updateConversationLift(frameDt);}if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}else if(current&&decorView){camera.position.set(...decorView.pos);camera.lookAt(...decorView.at);camera.updateMatrixWorld();}spawnScene?.update(frameDt,{paused,unavailable:!!(islandPlay?.active||window.__JOHANSSON_AUDIT__?.camera)});if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(streetFrontageOf(current))present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:streetFrontageOf(current)}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();}}renderOutdoor();loop();
+let titleElapsed=0,titleFrame=0;
+const titleReduced=matchMedia('(prefers-reduced-motion: reduce)');
+function loop(){requestAnimationFrame(loop);if(graphicsLifecycle?.lost){clock.getDelta();return;}activeRoomLayout?.realUpdate?.();if(window.__JOHANSSON_AUDIT__?.frozen){clock.getDelta();if(detailsStarted&&!document.hidden)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});if(window.__JOHANSSON_AUDIT__.renderFrozen!==false)window.__JOHANSSON_AUDIT__.render();return;}renderer.info.reset?.();lightBudget.update();colliderGrid.refresh();if(photoStudio?.active){clock.getDelta();photoStudio.render();return;}if(creatorOpen){clock.getDelta();return;}izakayaTV?.update({camera,active:current?.id==='izakaya'&&izakayaOpen(minutes),paused:!started||document.hidden||roomLoading||!!inspector?.active||!!activities?.paused});if(detailsStarted&&!document.hidden&&!catchingUp)detailStream.update(current?doors.get(current.id)||player.position:player.position,current?null:{x:-Math.sin(yaw),z:-Math.cos(yaw)});updateContextControls();const frameDt=Math.min(clock.getDelta(),MAX_FRAME_DT);governResolution(frameDt);updateWantCards(frameDt);sweepCel(frameDt);updateController(frameDt);activeRoomLayout?.workshop?.update(activities.state,activities.paused?0:frameDt);if(started&&!document.hidden&&!activities.paused)activeRoomLayout?.ownedUpdate?.(frameDt);activeRoomLayout?.keep?.setPlayerBottle(!!activities.state.izakayaBottle);if(started&&!activities.paused&&!document.hidden)activeRoomLayout?.dungeon?.update(frameDt,player.position);if(fists){fists.visible=!thirdPerson&&!spawnScene?.active&&!decorating;fists.guard(current?.id==='dungeon'&&!!activeRoomLayout?.dungeon?.nearFoe(player.position));fists.update(frameDt);}if(started&&!document.hidden){const paused=decorating||catchingUp||cameraControls.active||roomLoading||inspector?.active||itemViewer?.active||activities.paused||!$('#directory').classList.contains('hidden');const before=player.position.clone();if(catchingUp)catchUpFrame();else simulate(frameDt,!!paused);if(!paused){if(player.position.distanceTo(before)>.01&&(stepTick+=frameDt)>.42){activities.footstep(current?'wood':routeAt(player.position.x,player.position.z)?.surface||'stone');stepTick=0;}interaction();}else{neighbourChats.cancel();chatBubble.hide();resetInput();$('#prompt').classList.remove('on');}townAudio.update({player:player.position,yaw,minutes,rain:weather,inside:!!current,station:activities.state.radioStation||0,paused,relax:!!(seated&&!current),ferry:world.ferry?.audio??null});$('#clock').textContent=fmt(minutes);setTime();hands?.update(paused?0:frameDt);updateJohansson(paused?0:frameDt);if(!inspector?.active){characters?.update(frameDt);castAI?.pose(frameDt);if(!paused||conversationLine)facing.update(frameDt);}if(!paused||conversationLine){chatBubble.render(conversationLine?null:(neighbourChats.current||residentSpeech()));updateConversationLift(frameDt);}if((mapTick+=frameDt)>.15){drawMap();mapTick=0;}if(subtitleTimer>0&&(subtitleTimer-=frameDt)<=0)$('#subtitle').classList.remove('on');if(current&&activeRoomLayout?.fixedCamera&&!window.__JOHANSSON_AUDIT__?.camera){const f=activeRoomLayout.fixedCamera;camera.position.set(...f.pos);camera.lookAt(...f.at);camera.updateMatrixWorld();}if(current&&window.__JOHANSSON_AUDIT__?.camera){const a=window.__JOHANSSON_AUDIT__.camera;camera.position.set(...a.pos);camera.lookAt(...a.at);camera.updateMatrixWorld();}else if(current&&decorView){camera.position.set(...decorView.pos);camera.lookAt(...decorView.at);camera.updateMatrixWorld();}spawnScene?.update(frameDt,{paused,unavailable:!!(islandPlay?.active||window.__JOHANSSON_AUDIT__?.camera)});if(inspector?.active)present(()=>inspector.render(frameDt),inspector.camera);else if(streetFrontageOf(current))present(()=>shopStreetView.render({renderer,scene,camera,town,room,frontage:streetFrontageOf(current)}));else if(!current)renderOutdoor();else present(()=>renderer.render(scene,camera))}else{neighbourChats.cancel();chatBubble.hide();renderTitle(frameDt);}}renderOutdoor();loop();
+
+// The title shares the live world, assets, camera and render budget with play.
+// Never advance activities, player input, catch-up or saves while previewing.
+function renderTitle(dt){
+ if(document.hidden)return;
+ titleFrame+=dt;if(titleFrame<1/24)return;const titleDt=titleFrame;titleFrame=0;
+ if(!titleReduced.matches)titleElapsed+=titleDt;
+ const shop=SITES.find(s=>s.id==='market');
+ const x=shop?.door?.[0]??-5.5,z=shop?.door?.[2]??-26.8;
+ const portrait=camera.aspect<1;
+ const drift=Math.sin(titleElapsed*.08)*.45;
+ camera.position.set(x+(portrait?18:24)+drift,portrait?17:20,z+24);
+ camera.lookAt(x-3,2.5,z-7);
+ camera.updateMatrixWorld();
+ // Existing scenery animation without simulation or storage side effects.
+ world.update(titleReduced.matches?0:titleDt,titleElapsed,daylight(minutes),minutes);
+ characters?.update(titleReduced.matches?0:titleDt);
+ const actor=ensureJohansson();
+ actor.root.position.set(x+2,groundHeight(x+2,z-1),z-1);
+ actor.root.rotation.set(0,Math.atan2(camera.position.x-actor.root.position.x,camera.position.z-actor.root.position.z),0);
+ actor.update(titleReduced.matches?0:titleDt,{speed:0,visible:true,seated:false});
+ townSky.mesh.rotation.y=titleElapsed*.002;
+ setTime();
+ present(()=>townSections.render({renderer,scene,camera,town,position:{x:x+3,z:z-7}}));
+}
 
 function renderOutdoor(){
   const audit=window.__JOHANSSON_AUDIT__?.camera;
@@ -1927,7 +1968,7 @@ function renderOutdoor(){
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
   // The title screen's BUILD: straight into Johansson's own rooms with the furniture out (src/build/home-decorate.js).
   // Not on the live site, where the decorator stays off (src/features.js).
-  if(window.__JOHANSSON_MODE__==='build'&&decoratorEnabled()&&!buildModeStarted){buildModeStarted=true;startBuildMode();}
+  if(started&&window.__JOHANSSON_MODE__==='build'&&decoratorEnabled()&&!buildModeStarted){buildModeStarted=true;startBuildMode();}
 }
 // Open on the device's clock: a save from earlier today is fast-forwarded to now so the
 // town is where it would be; anything older, or from the old fast clock, opens at now.
