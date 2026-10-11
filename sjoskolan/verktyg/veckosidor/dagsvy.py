@@ -14,6 +14,7 @@ import datetime as dt
 import hashlib
 import importlib.util
 import json
+import posixpath
 import re
 from html import escape
 from pathlib import Path
@@ -164,12 +165,25 @@ def _lektion_data(l):
             | {'laxor': [x['id'] for x in l['laxor']], 'laxovn': {x['id']: x['ovningar'] for x in l['laxor'] if x['ovningar']}})
 
 
+def _lank_fran(href, nr, mapp, sida):
+    """En läxas länk (relativ till veckosidan vecka-nr/aktuell/) sedd från delsidan sida i mapp/aktuell/. En länk till
+    sidan själv blir ett ankare på sidan, eller ingen länk alls."""
+    if re.match(r'[a-z]+:|/', href):
+        return href
+    sokvag, _, ankare = href.partition('#')
+    mal = posixpath.normpath(f'vecka-{nr}/aktuell/{sokvag}') + ('/' if sokvag.endswith('/') else '')
+    if mal == sida:
+        return f'#{ankare}' if ankare else ''
+    return posixpath.relpath(mal, f'{mapp}/aktuell') + ('/' if sokvag.endswith('/') else '') + (f'#{ankare}' if ankare else '')
+
+
 def _laxa_html(lek, x):
     if x.get('ovningar') or x['id'].startswith('ovn-') or (x['id'].startswith('del-') and lek['lasknapp']):
         lage = '<span class="laxa-lage" data-lage></span>'  # läget kommer från delsidan och övningarna (dagsvy.mjs)
     else:
         lage = f'<label class="vag-klar"><input type="checkbox" data-klar="{lek["id"]}-{x["id"]}"> Klart</label>'
-    return (f'<li data-laxa="{x["id"]}"><div><p>{escape(x["text"])}</p><a href="{escape(x["href"], quote=True)}">{escape(x["knapp"])}</a></div>{lage}</li>')
+    lank = f'<a href="{escape(x["href"], quote=True)}">{escape(x["knapp"])}</a>' if x['href'] else ''
+    return f'<li data-laxa="{x["id"]}"><div><p>{escape(x["text"])}</p>{lank}</div>{lage}</li>'
 
 
 def _lektionsblock(lek, flera):
@@ -292,6 +306,7 @@ DEL_CSS = ('<style>'
            '.dp .vag-klar{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border:1px solid #cad8e2;border-radius:8px;font-size:16px;cursor:pointer;background:#fff}'
            '.dp .vag-klar input{width:22px;height:22px;margin:0;accent-color:#176844}'
            '.dp-lektion{margin:8px 0 0;font-size:15px;color:#4d6579}.dp-lektion b{color:#163248}'
+           '.dp h2.dp-rubrik .dp-fran{font-weight:400;font-size:15px;color:#4d6579}'
            '.dp-veckan{margin:14px 0 0;padding:12px 14px;border-radius:10px;border-top:4px solid #163248;background:#f3f6f9}'
            '.dp-veckan h2.dp-rubrik{margin-top:0}.dp .dp-vk,.dp .laxor{list-style:none;margin:0;padding:0}'
            '.dp-vk li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:7px 0;border-top:1px solid #dfe7ee;font-size:15px}'
@@ -307,18 +322,29 @@ def delpanel_html(nr, del_nr, sjalvrattande=None, sida_mapp=None):
         return ''
     w = _vecka(nr)
     sida_mapp = sida_mapp or f'vecka-{nr}'
-    lek = next((l for l in lektioner(nr, w, sida_mapp) if l['del'] == del_nr), None)
+    alla = lektioner(nr, w, sida_mapp)
+    lek = next((l for l in alla if l['del'] == del_nr), None)
     if not lek:
         return ''
+    # Före lektionen: läxor från en annan lektion som gäller den här delsidan (vecka 43: del 3 läses och övning 3.1–3.5
+    # görs efter tisdagens lektion, före fredagens genomgång). Läxornas länkar är relativa till veckosidan vecka-NN.
+    sida = f'{lek["mapp"]}/aktuell/Del_{int(lek["id"][5])}.html'
+    fore = []
+    for l in alla:
+        mina = [x for x in l['laxor'] if l['id'] != lek['id']
+                and posixpath.normpath(f'vecka-{nr}/aktuell/' + x['href'].split('#')[0]) == sida]
+        if mina:
+            fore.append(l | {'laxor': mina})
     veckan = [x for x in w['veckan'] if x.get('sista')]
     data = {
         'vecka': nr, 'sista': w['sista'], 'sista_text': _datumtext(dt.date.fromisoformat(w['sista'])),
-        'lektion': _lektion_data(lek),
+        'lektion': _lektion_data(lek), 'fore': [_lektion_data(l) for l in fore],
         'veckan': [{k: x[k] for k in ('id', 'titel', 'sista') if k in x} for x in veckan],
         'ovningar': [],
     }
     # Delens tio övningar och övningarna i läxorna (också i en annan del eller veckas mapp), per mapp.
-    for a in [f'{lek["id"]}-q{i}' for i in range(1, 11)] + [a for x in lek['laxor'] for a in x['ovningar'] or []]:
+    for a in ([f'{lek["id"]}-q{i}' for i in range(1, 11)]
+              + [a for l in [lek] + fore for x in l['laxor'] for a in x['ovningar'] or []]):
         mapp = f'vecka-{a[1:3]}'
         grupp = next((g for m, g in data['ovningar'] if m == mapp), None)
         if grupp is None:
@@ -331,7 +357,14 @@ def delpanel_html(nr, del_nr, sjalvrattande=None, sida_mapp=None):
             data['quiz_plan'] = quiz_plan(nr)
         if nr in _sjalvrattning().SJALVRATTANDE:
             data['inl_plan'] = _sjalvrattning().inlamning_plan(nr)
+    # Länkarna sedda från delsidan (den kan ligga i en annan veckas mapp), och en länk till delsidan själv blir ett ankare.
+    for l in [lek] + fore:
+        l['laxor'] = [x | {'href': _lank_fran(x['href'], nr, sida_mapp, sida)} for x in l['laxor']]
     laxor = ''.join(_laxa_html(lek, x) for x in lek['laxor'])
+    fore_html = ''.join(
+        f'<h2 class="dp-rubrik">Före lektionen <span class="dp-fran">läxa efter lektionen {escape(l["dag"].lower())} '
+        f'{escape(l["datumtext"].split(" ", 1)[1])}</span></h2><ul class="laxor" data-lektion="{l["id"]}">'
+        + ''.join(_laxa_html(l, x) for x in l['laxor']) + '</ul>' for l in fore)
     amnen = ' · '.join(escape(a) for a in lek['amnen'])
     vecksida = 'index.html' if sida_mapp == f'vecka-{nr}' else f'../../vecka-{nr}/aktuell/index.html'
     texterna = f'<a href="{vecksida}#veckan">Ladda ner texterna</a>'
@@ -348,7 +381,7 @@ def delpanel_html(nr, del_nr, sjalvrattande=None, sida_mapp=None):
               f'<span class="dag-tid">{escape(lek["tid"])} · {escape(lek["satt"])}</span><span class="dp-lage" data-dp-lage></span></div>'
               f'<p class="dp-amnen"><b>Vi pratar om:</b> {amnen}</p>'
               f'<p class="dp-knappar"><a class="sj-btn" href="{lek["bildspel"]}">Öppna presentationen</a><a href="{lek["pdf"]}">Presentationen som PDF</a></p>'
-              f'<h2 class="dp-rubrik">Läxor efter lektionen</h2><ul class="laxor" data-lektion="{lek["id"]}">{laxor}</ul>'
+              f'{fore_html}<h2 class="dp-rubrik">Läxor efter lektionen</h2><ul class="laxor" data-lektion="{lek["id"]}">{laxor}</ul>'
               + (f'<p class="dp-lektion"><b>På lektionen:</b> övning {lek["pa_lektionen_text"]} gör vi tillsammans. <span data-dp-lektion></span></p>'
                  if lek['pa_lektionen'] else '') +
               f'<div class="dp-veckan"><h2 class="dp-rubrik">Hela veckan</h2><ul class="dp-vk">{rader}</ul>'

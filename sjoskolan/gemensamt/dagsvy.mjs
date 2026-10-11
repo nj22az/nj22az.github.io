@@ -198,7 +198,11 @@ export async function visaDel(rot = document) {
   const { inl, lasf } = await formularStatus(data);
   const panel = rot.querySelector('#din-del');
   satt(panel.querySelector('[data-dp-lage]'), lektionText(l, nu));
-  visaLaxor(panel.querySelector('.laxor'), l, k);
+  // Läxorna efter lektionen och, före lektionen, läxor från en annan lektion som gäller delen (data.fore).
+  for (const x of [l, ...(data.fore || [])]) {
+    const lista = panel.querySelector(`.laxor[data-lektion="${x.id}"]`);
+    if (lista) visaLaxor(lista, x, k);
+  }
   // Övningarna på lektionen (bilderna Övningar tillsammans); utan lista övning N.1–N.5.
   const pa = l.pa_lektionen || [1, 2, 3, 4, 5].map((i) => `${l.id}-q${i}`), paKlara = pa.filter((a) => k.ovningar[a]).length;
   satt(panel.querySelector('[data-dp-lektion]'), `${paKlara === pa.length ? '✓ ' : ''}${paKlara} av ${pa.length} klara`);

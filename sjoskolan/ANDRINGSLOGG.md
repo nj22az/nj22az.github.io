@@ -243,6 +243,9 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Rutan Din del visar **Före lektionen**: läxor från en annan lektion som gäller delen. Vecka 43 del 3 läses och
+  övning 3.1–3.5 görs efter tisdagens lektion, före fredagens genomgång; det stod bara i tisdagens ruta. Läxornas länkar
+  räknas om från delsidans mapp (delarna i vecka-45/), och en länk till delsidan själv blir ett ankare på sidan.
 - **2026-10-11** Lektionsbildernas titelbild mäter rubrikens bredd (Carlito Bold, samma mått som Calibri) i stället för att
   räkna tecken (`rubrikrader` i `verktyg/lektionsbilder/bygg.py`). ”Komponenter och skydd”, ”Systematisk felsökning” och
   ”Analys av mätresultat” ryms på en rad men fick plats för två, så underrubriken hamnade för långt ned.
