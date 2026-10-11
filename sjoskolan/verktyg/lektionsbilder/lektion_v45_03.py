@@ -21,7 +21,7 @@ def bunden(text):
 # Läxorna efter lektionen (samma lista på bilden ”Det här gör du nu” och i dagens ruta på veckosidan).
 HEMMA = [
     ('del-5', 'Läs del 5: teorin och de två exemplen. Tryck på ”Jag har läst del 5” längst ned på sidan.', DELSIDA, 'Öppna del 5'),
-    ('ovn-5', 'Gör övning 3.6–3.10 på delsidan. Ledtrådar och facit finns där.', DELSIDA + '#v45_03-q6', 'Öppna övning 3.6'),
+    ('ovn-5', 'Gör övning 3.6–3.10 på delsidan för del 5. Ledtrådar och facit finns där.', DELSIDA + '#v45_03-q6', 'Öppna övning 3.6'),
     ('tenta', 'Rätta övningstentan och gör om övningarna i de veckor där du hade fel.', '../../tentamen.html#ovningstenta',
      'Öppna övningstentan'),
 ]
@@ -196,7 +196,7 @@ LEKTION = {
             'punkter': [h[1] for h in HEMMA] + [
                 'Nästa vecka: tentamensveckan. Måndag 2 november 09.00: frågestund och instruktion till det praktiska provet.',
             ],
-            'not': 'Inlämningen och analysen av mätdata senast i dag, fredag 30 oktober.',
+            'not': 'Inlämningen, uppgift 1–4, senast i dag, fredag 30 oktober. Allt finns på veckosidan.',
             'size': 20,
         }),
         ('kallor', {

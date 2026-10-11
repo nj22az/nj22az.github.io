@@ -3,7 +3,7 @@
   "titel": "Avslutsfråga: v44_03",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -19,7 +19,7 @@
   },
   "uppgift": {
     "fraga": "Vilken del av en mätning måste dokumenteras utöver det visade talet?",
-    "instruktion": "Bifoga beräkningar, mätvillkor, felgränser och motiverade slutsatser. Inlämningen senast fredag 30 oktober."
+    "instruktion": "Inlämning 3 (Isolationslabbet) och 4 (analysen av mätdata) bygger på det här: mätvillkor och felgräns hör till resultatet. Inlämningen senast fredag 30 oktober."
   },
   "referenser": {
     "ursprung": [

@@ -298,9 +298,13 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
         u, los = p['uppgift'], p.get('losning') or {}
         pass_ = pl['ordning'] > 5
         ref = teorireferenser[pl['ankare']]
-        formel = ' och '.join(f'<span class="formula">{R.h(x)}</span>' for x in u.get('samband', []))
+        # Ett samband som är en hel mening (”Vilken väg ska hålla K1 efter START-släpp?”) står som en mening, inte efter
+        # ”Utgå från”; formler står i formelstil.
+        meningar = [x for x in u.get('samband', []) if re.search(r'[.?!]$', x.strip())]
+        formel = ' och '.join(f'<span class="formula">{R.h(x)}</span>' for x in u.get('samband', []) if x not in meningar)
         resonemang = p.get('typ') == 'resonemang'
-        led1 = ((f'Utgå från {formel}. ' if resonemang else f'Använd {formel}. ') if formel else '') + (f'Läs <a href="#teori-{ref[0]}">Teori {ref[0]}: {R.h(ref[1])}</a>.' if ref else '')
+        led1 = (((f'Utgå från {formel}. ' if resonemang else f'Använd {formel}. ') if formel else '') + ''.join(f'{R.h(x)} ' for x in meningar)
+                + (f'Läs <a href="#teori-{ref[0]}">Teori {ref[0]}: {R.h(ref[1])}</a>.' if ref else ''))
         led2 = ' '.join(R.h(x['text']) for x in p.get('ledtradar', []) if x.get('niva') in ('begrepp', 'metod'))
         ex = exempel[1 if pass_ and len(exempel) > 1 else 0] if exempel else None
         led3 = ((f'Samma sätt att resonera: <a href="#exempel-{exempel.index(ex) + 1}">{R.h(ex[1])}</a>. Gör likadant med fallet i den här uppgiften och motivera varje steg.' if resonemang

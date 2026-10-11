@@ -2549,7 +2549,7 @@
   },
   {
    "id": "EL-000177",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spolspänning under start",
@@ -2565,7 +2565,7 @@
   },
   {
    "id": "EL-000178",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänning över STOPP",
@@ -2773,7 +2773,7 @@
   },
   {
    "id": "EL-000191",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänningsbegrepp",
@@ -3445,7 +3445,7 @@
   },
   {
    "id": "EL-000233",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Spänningsdelare med last",
@@ -3461,7 +3461,7 @@
   },
   {
    "id": "EL-000234",
-   "revision": 4,
+   "revision": 5,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Sinus och period",
@@ -6137,7 +6137,7 @@
   },
   {
    "id": "EL-000722",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Avslutsfråga: v43_03",
@@ -6233,7 +6233,7 @@
   },
   {
    "id": "EL-000728",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Avslutsfråga: v44_03",

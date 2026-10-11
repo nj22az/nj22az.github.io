@@ -1058,16 +1058,16 @@
       "hash_publik": "b96f12e789b9ccd1"
     },
     "EL-000177": {
-      "revision": 3,
+      "revision": 4,
       "skydd": "elev",
       "hash": "78c648f1c5081496",
-      "hash_publik": "5d966e08ca897f3c"
+      "hash_publik": "4779d4a0bae191e7"
     },
     "EL-000178": {
-      "revision": 3,
+      "revision": 4,
       "skydd": "elev",
       "hash": "721b3ab9d463a12d",
-      "hash_publik": "9147da494f27233f"
+      "hash_publik": "6d00e2f08c7a656f"
     },
     "EL-000179": {
       "revision": 3,
@@ -1142,10 +1142,10 @@
       "hash_publik": "7db00f79e641e698"
     },
     "EL-000191": {
-      "revision": 2,
+      "revision": 3,
       "skydd": "elev",
       "hash": "b152e341eb94a9bd",
-      "hash_publik": "a997b884ab62eaca"
+      "hash_publik": "7a3d389d3c6d7ba7"
     },
     "EL-000192": {
       "revision": 2,
@@ -1394,16 +1394,16 @@
       "hash_publik": "c8f8275bb000f21a"
     },
     "EL-000233": {
-      "revision": 3,
-      "skydd": "elev",
-      "hash": "ec27817f048e3699",
-      "hash_publik": "ddd204413ba5be99"
-    },
-    "EL-000234": {
       "revision": 4,
       "skydd": "elev",
+      "hash": "ec27817f048e3699",
+      "hash_publik": "9e49bfdbf39e7afd"
+    },
+    "EL-000234": {
+      "revision": 5,
+      "skydd": "elev",
       "hash": "d1edac77e82a9a3f",
-      "hash_publik": "283bddaa3d99898d"
+      "hash_publik": "80c77c833322a5a3"
     },
     "EL-000235": {
       "revision": 5,
@@ -2372,10 +2372,10 @@
       "hash_publik": "bf9e53eb4e400892"
     },
     "EL-000722": {
-      "revision": 2,
+      "revision": 3,
       "skydd": "elev",
       "hash": "6c2fcae887f2d43b",
-      "hash_publik": "af8bcdb0f4a8577d"
+      "hash_publik": "81bd5ca2da731535"
     },
     "EL-000723": {
       "revision": 2,
@@ -2408,10 +2408,10 @@
       "hash_publik": "270bbf24e8beace0"
     },
     "EL-000728": {
-      "revision": 2,
+      "revision": 3,
       "skydd": "elev",
       "hash": "84250137c9d5956b",
-      "hash_publik": "df34ba0162d84b47"
+      "hash_publik": "3a22b02c78c20a36"
     },
     "EL-000729": {
       "revision": 2,

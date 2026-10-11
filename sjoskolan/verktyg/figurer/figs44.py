@@ -262,5 +262,6 @@ ax.add_patch(Rectangle((-0.1, -0.2), 4.5, 0.3, fc=HULL, ec="none")); ax.text(3.3
 ax.plot([0.55, 0.55], [0.49, 0.1], color=INK, lw=LW)
 ax.plot([3.2, 3.2], [ys[0], 1.1], color=INK, lw=LW); dot(ax, 3.2, ys[0], 0.05); fault(ax, 3.2, 0.9); ax.plot([3.2, 3.2], [0.72, 0.1], color=INK, lw=LW)
 glow(ax, [(1.0, 2.8), (3.2, 2.8), (3.2, -0.05), (0.55, -0.05), (0.55, 2.1)])
-ax.text(2.15, 1.75, "felströmmen begränsas av motståndet", ha="center", fontsize=12, color=ORANGE, weight="bold")
+# Texten står inom slingan, på två rader, så att den inte korsar skyddsledaren eller felets ledare.
+ax.text(1.88, 1.55, "felströmmen begränsas\nav motståndet", ha="center", va="center", fontsize=12, color=ORANGE, weight="bold", linespacing=1.3)
 save(F, "v44_02_s35_ner")

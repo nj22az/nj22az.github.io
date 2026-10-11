@@ -243,6 +243,18 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 43 fredag och vecka 44 efter genomgången av lärarmanusen. Ledtråd 3 i övning 3.7 och 3.8 (EL-000177,
+  EL-000178) räknade med 24 V och gav därmed svaren på Hållkretslabbets räkna-först-uppgifter (labbet använder 24 V just för att
+  inte sammanfalla med kursens 12 V-övningar, regel 22–23); exemplen använder nu 48 V. Isolationslabbet delas på två läxor:
+  uppgifterna om jordfel i IT-nätet och mätning 1–5 efter måndagen, isolationsresistans, isolationsprovning och mätning 6–8
+  efter tisdagen (del 3). Upplägget för del 4 i vecka 43 visar avsnitt 1–4 och 5–7 där de kommer i presentationen. Två
+  entimmeslektioner i rad har ingen paus (”Klockan 10.00”, inte ”Efter pausen”). Avslutsfrågorna EL-000722 och EL-000728
+  beskriver det inlämningen faktiskt frågar efter. Veckans rad säger ”Inlämningen, uppgift 1–4” också i vecka 44, och
+  extraövningarna står i läxorna. Övning 2.1 vecka 44 (EL-000191) säger kursens gränser, inte bokens. Facit i övning 3.3
+  skriver R_{p}, och övning 3.4 har svaret û med. Ledtråd 1 skriver ett samband som är en hel mening som en mening (förut
+  ”Utgå från Vilken väg …?.”). Figuren till neutralpunktsjordning (v44_02) har texten inne i slingan, så att den inte korsar
+  ledarna. Kvar för läraren: övning 1.4 i felsökningen (EL-000214) ger samma 24 V som labbets uppgift om öppen STOPP, men
+  posten delas med boken.
 - **2026-10-11** Vecka 43 måndag och tisdag efter genomgången av lärarmanusen. Måndagens läxa är inlämningens uppgift 2
   (skyddsdata, del 1) och tisdagens uppgift 1 (motorns märkskylt, som behöver del 2); förut sa måndagen ”uppgift 1 och 2”.
   Tisdagens upplägg följer bildernas ordning: avsnitt 1–3 och ett exempel, övning 2.1–2.4, eftersläpningen (avsnitt 4) och

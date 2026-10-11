@@ -8,9 +8,10 @@ hänvisningar (”Del 3, övning 3.3”) stämmer. Inga övningstexter eller sva
 
 HEMMA = [
     ('del-3', 'Läs del 3: alla sju avsnitt och de två exemplen. Tryck på ”Jag har läst del 3” längst ned på sidan.', 'Del_3.html', 'Öppna del 3'),
-    ('ovn-3', 'Gör övning 3.4–3.6 på delsidan. Ledtrådar och facit finns där.', 'Del_3.html#v44_03-q4', 'Öppna övning 3.4'),
+    ('ovn-3', 'Gör övning 3.4–3.6 på delsidan. Övning 3.7–3.10 är extra. Ledtrådar och facit finns där.', 'Del_3.html#v44_03-q4', 'Öppna övning 3.4'),
     ('labb', 'Gör labben Mätaren påverkar i Multimeterlabbet.', '../../multimetersimulator/?ovning=loading', 'Öppna labben'),
-    ('isolation', 'Gör isolationsmätningen i Isolationslabbet. Den hör till inlämning 3.', '../../isolationslabbet/?del=matning',
+    ('isolation', 'Isolationslabbet: gör räkna-först-uppgifterna om isolationsresistans och isolationsprovning och mätning 6–8. '
+                  'Spara protokollet som PDF. Det hör till inlämning 3.', '../../isolationslabbet/?del=matning',
      'Öppna isolationsmätningen'),
 ]
 
@@ -169,9 +170,9 @@ LEKTION = {
         ('lista', {
             'rubrik': 'Det här gör du nu',
             'punkter': [h[1] for h in HEMMA] + [
-                'Efter pausen 16.00: del 4, Analys av mätresultat.',
+                'Klockan 16.00: del 4, Analys av mätresultat.',
             ],
-            'not': 'Inlämningen och analysen av mätdata senast fredag 30 oktober. Allt finns på veckosidan.',
+            'not': 'Inlämningen, uppgift 1–4, senast fredag 30 oktober. Allt finns på veckosidan.',
             'size': 20,
         }),
         ('kallor', {

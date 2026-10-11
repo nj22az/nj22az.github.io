@@ -3,7 +3,7 @@
   "titel": "Avslutsfråga: v43_03",
   "sprak": "sv",
   "typ": "reflektion",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "migrerad"
   },
@@ -18,7 +18,7 @@
   },
   "uppgift": {
     "fraga": "Vilka två punkter och vilket driftläge hör till ditt förväntade mätvärde?",
-    "instruktion": "Inlämning 3 bygger på hållkretsen: redovisa funktion, komponenter och förväntade mätvärden vid definierade mätpunkter. Inlämningen senast i dag, fredag 23 oktober."
+    "instruktion": "Inlämning 3 bygger på hållkretsen: nödstoppet S2, lampan H1, kretsens fem lägen och en felsökningsrad. Inlämningen senast i dag, fredag 23 oktober."
   },
   "referenser": {
     "ursprung": [

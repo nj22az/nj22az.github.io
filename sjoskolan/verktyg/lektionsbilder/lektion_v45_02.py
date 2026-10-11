@@ -11,9 +11,9 @@ V45 = '../../vecka-45/aktuell/'
 
 HEMMA = [
     ('del-4', 'Läs del 4: alla sju avsnitt och de två exemplen. Tryck på ”Jag har läst del 4” längst ned på sidan.', V45 + 'Del_2.html', 'Öppna del 4'),
-    ('ovn-4', 'Gör övning 2.4–2.6 på delsidan för del 4. Ledtrådar och facit finns där.', V45 + 'Del_2.html#v45_02-q4', 'Öppna övning 2.4'),
+    ('ovn-4', 'Gör övning 2.4–2.6 på delsidan för del 4. Övning 2.7–2.10 är extra. Ledtrådar och facit finns där.', V45 + 'Del_2.html#v45_02-q4', 'Öppna övning 2.4'),
     ('inl', 'Gör inlämning 1–3 på veckans inlämningssida.', '../../vecka-44/aktuell/Inlamning.html', 'Öppna inlämningen'),
-    ('analys', 'Gör analysen av mätdata, inlämning 4. Den bygger på del 3 och 4.', '../../vecka-44/aktuell/Inlamning.html#uppgift-4', 'Öppna analysen'),
+    ('analys', 'Gör analysen av mätdata, inlämning 4.', '../../vecka-44/aktuell/Inlamning.html#uppgift-4', 'Öppna analysen'),
     ('tenta', 'Gör övningstentan utan att titta i lösningarna.', '../../tentamen.html#ovningstenta', 'Öppna övningstentan'),
 ]
 
@@ -160,7 +160,7 @@ LEKTION = {
             'punkter': [h[1] for h in HEMMA] + [
                 'Fredag 09.00: del 5, Repetition inför tentamen.',
             ],
-            'not': 'Inlämningen och analysen av mätdata senast fredag 30 oktober. Allt finns på veckosidan.',
+            'not': 'Inlämningen, uppgift 1–4, senast fredag 30 oktober. Allt finns på veckosidan.',
             'size': 20,
         }),
         ('kallor', {

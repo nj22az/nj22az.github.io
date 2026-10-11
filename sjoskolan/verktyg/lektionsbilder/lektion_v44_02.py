@@ -15,7 +15,7 @@ HEMMA = [
      'Del_2.html#v44_02-q4', 'Öppna övning 2.4'),
 ]
 
-VECKAN = 'Inlämningen och analysen av mätdata senast fredag 30 oktober. Allt finns på veckosidan.'
+VECKAN = 'Inlämningen, uppgift 1–4, senast fredag 30 oktober. Allt finns på veckosidan.'
 
 LEKTION = {
     'id': 'v44_02',
@@ -178,7 +178,7 @@ LEKTION = {
         ('kallor', {
             'kallor': [
                 ('Sjöskolan: vecka 44, del 2 Högspänningssystem', 'https://nj22az.github.io/sjoskolan/vecka-44/aktuell/Del_2.html'),
-                ('Studieplanen YH03151, 18 september 2026: Elteknik och ellära, lärandemål 1, 2 och 3', None),
+                ('Kursplanen för Elteknik och ellära, lärandemål 1, 2 och 3', None),
                 ('Elsäkerhetsverket: Vad är en elolycka och vad betyder de olika begreppen?',
                  'https://www.elsakerhetsverket.se/elolyckor-i-arbetslivet/vad-ar-en-elolycka/'),
                 ('SS-EN 50110-1 utgåva 4:2024, Skötsel av elektriska anläggningar (SEK Svensk Elstandard)',

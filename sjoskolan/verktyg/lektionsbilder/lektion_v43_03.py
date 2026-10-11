@@ -15,7 +15,7 @@ HEMMA = [
     ('labb', 'Hållkretslabbet: välj ”Ny felmodul”, felsök det dolda felet och fyll i labbprotokollet. '
              'Protokollet är underlaget till felsökningsrapporten.', '../../hallkretslabbet/#labbprotokoll', 'Öppna labben'),
 ]
-VECKAN = 'Inlämningen och felsökningsrapporten senast i dag, fredag 23 oktober. Allt finns på veckosidan.'
+VECKAN = 'Inlämningen, uppgift 1–4, senast i dag, fredag 23 oktober. Allt finns på veckosidan.'
 
 LEKTION = {
     'id': 'v43_03',
@@ -129,7 +129,7 @@ LEKTION = {
             'punkter': [
                 'Ritningsnummer, revision och datum visar vilket underlag som används.',
                 'Ändringar behöver kunna följas från beslut till verifierad funktion.',
-                'I inlämningen ingår funktion, komponenter och förväntade mätvärden vid definierade mätpunkter.',
+                'Inlämning 3 bygger på hållkretsen: nödstoppet, lampan, kretsens fem lägen och en felsökningsrad.',
             ],
         }),
         ('teori', {

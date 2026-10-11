@@ -15,10 +15,10 @@ HEMMA = [
     ('del-4', 'Läs del 4: teorin och de två exemplen. Tryck på ”Jag har läst del 4” längst ned på sidan.', V45 + 'Del_1.html', 'Öppna del 4'),
     ('ovn-4', 'Gör övning 1.6–1.10 på delsidan för del 4. Ledtrådar och facit finns där.', V45 + 'Del_1.html#v45_01-q6',
      'Öppna övning 1.6'),
-    ('rapport', 'Skriv felsökningsrapporten, inlämning 4: felsök två felmoduler i Hållkretslabbet, en i taget. Lämna in de två '
-                'felsökningsraderna ur protokollet.', '../../vecka-43/aktuell/Inlamning.html#uppgift-4', 'Öppna felsökningsrapporten'),
+    ('rapport', 'Skriv felsökningsrapporten, inlämning 4: felsök två felmoduler i Hållkretslabbet, en i taget, och fyll i '
+                'rapportens fält för båda.', '../../vecka-43/aktuell/Inlamning.html#uppgift-4', 'Öppna felsökningsrapporten'),
 ]
-VECKAN = 'Inlämningen och felsökningsrapporten senast i dag, fredag 23 oktober. Allt finns på veckosidan.'
+VECKAN = 'Inlämningen, uppgift 1–4, senast i dag, fredag 23 oktober. Allt finns på veckosidan.'
 
 LEKTION = {
     'id': 'v45_01',
@@ -43,9 +43,10 @@ LEKTION = {
         ('start', {'instruktion': 'Skriv ett kort svar i chatten.'}),
         ('upplagg', [
             ('10.00', 'Start och startfråga'),
-            ('10.05', 'Pass 2: Felsökningens metod och vanliga fel (avsnitt 1–7)'),
-            ('10.20', 'Övning 1.1, 1.2 och 1.3 tillsammans, efter avsnitt 4'),
-            ('10.40', 'Övning 1.4 och 1.5 tillsammans, efter avsnitt 7'),
+            ('10.05', 'Pass 2: Observation, arbetsgång och halvering (avsnitt 1–4) och ett exempel'),
+            ('10.20', 'Övning 1.1, 1.2 och 1.3 tillsammans'),
+            ('10.30', 'Avbrott, glapp och en skiljande kontroll (avsnitt 5–7) och ett exempel'),
+            ('10.40', 'Övning 1.4 och 1.5 tillsammans'),
             ('10.50', 'Avslutsfråga, sammanfattning och det här gör du nu'),
         ]),
         ('teori', {
@@ -165,7 +166,7 @@ LEKTION = {
         }),
         ('lista', {
             'rubrik': 'Det här gör du nu',
-            'punkter': [h[1] for h in HEMMA] + ['Nästa vecka: vecka 44, Elsystem och mätteknik. Måndag 26 oktober 09.00.'],
+            'punkter': [h[1] for h in HEMMA] + ['Nästa vecka: vecka 44, Elsystem, mätteknik och repetition. Måndag 26 oktober 09.00.'],
             'not': VECKAN,
             'size': 20,
         }),

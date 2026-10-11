@@ -14,11 +14,12 @@ HEMMA = [
     ('del-1', 'Läs del 1 på delsidan: teorin och de två exemplen. Tryck på ”Jag har läst del 1” längst ned på sidan.', 'Del_1.html', 'Öppna del 1'),
     ('ovn-1', 'Gör övning 1.6–1.10 på delsidan. Ledtrådar och facit finns där.', 'Del_1.html#v44_01-q6', 'Öppna övning 1.6'),
     ('film', 'Titta på filmen IT-nätet ombord: första och andra jordfelet.', '../../filmer/#it-nat', 'Öppna filmen'),
-    ('labb', 'Gör Isolationslabbet: räkna-först-uppgifterna och protokollet. Spara protokollet som PDF.',
+    ('labb', 'Isolationslabbet: gör räkna-först-uppgifterna om jordfel i IT-nätet och mätning 1–5 i protokollet. '
+             'Uppgifterna om isolationsprovning gör du efter tisdagens lektion.',
      '../../isolationslabbet/', 'Öppna labben'),
 ]
 
-VECKAN = 'Inlämningen och analysen av mätdata senast fredag 30 oktober. Allt finns på veckosidan.'
+VECKAN = 'Inlämningen, uppgift 1–4, senast fredag 30 oktober. Allt finns på veckosidan.'
 
 LEKTION = {
     'id': 'v44_01',
@@ -194,14 +195,14 @@ LEKTION = {
         }),
         ('lista', {
             'rubrik': 'Det här gör du nu',
-            'punkter': [h[1] for h in HEMMA] + ['Efter pausen 10.00: del 2, Högspänningssystem.'],
+            'punkter': [h[1] for h in HEMMA] + ['Klockan 10.00: del 2, Högspänningssystem.'],
             'not': VECKAN,
             'size': 20,
         }),
         ('kallor', {
             'kallor': [
                 ('Sjöskolan: vecka 44, del 1 Lågspänningssystem', 'https://nj22az.github.io/sjoskolan/vecka-44/aktuell/Del_1.html'),
-                ('Studieplanen YH03151, 18 september 2026: Elteknik och ellära, lärandemål 1 och 2', None),
+                ('Kursplanen för Elteknik och ellära, lärandemål 1 och 2', None),
                 ('Schneider Electric: TN, TT och IT', 'https://www.electrical-installation.org/enwiki/Characteristics_of_TT%2C_TN_and_IT_systems'),
                 ('Schneider Electric: IT-systemets princip', 'https://www.electrical-installation.org/enwiki/IT_system_-_Principle'),
                 ('Transportstyrelsen: Elinstallationer på fartyg – lagar, föreskrifter och standarder',
