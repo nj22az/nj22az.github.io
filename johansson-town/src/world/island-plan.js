@@ -1,5 +1,6 @@
 import {SHOPPING_LANE,SHOPPING_LANE_ROUTES} from './shopping-lane-plan.js';
 import {GARDEN,GARDEN_PATHS,gardenHeight} from './garden-layout.js';
+import {FUMOTO,FUMOTO_ROUTES} from './fumoto-layout.js';
 /**
  * Shared fictional island masterplan. Existing harbour addresses stay fixed.
  * Mount Aoba stands in the open uplands south-east of Aoba Radio, clear of the radio
@@ -28,12 +29,14 @@ export const MOUNTAIN_TRAIL=[[23.5,94],[23.5,112],[24,134],[28,151],[40,158],[40
  */
 export const AOBA_SUMMIT=Object.freeze({x:66,z:198});
 export const SUMMIT_PATH=[[40,167],[48.6,177.3],[54.9,174.1],[61.5,172.7],[68.2,173],[74.4,175],[79.7,178.5],[83.8,183.1],[86.4,188.5],[87.6,194.2],[87.2,199.9],[85.4,205.1],[82.4,209.5],[78.4,212.8],[73.9,214.9],[69.1,215.8],[64.5,215.4],[60.3,213.8],[56.7,211.2],[54.1,208],[52.5,204.3],[52,200.5],[52.5,196.8],[53.8,193.6],[55.9,190.9],[58.5,189.1],[61.3,188],[64.2,187.8],[66.9,188.3],[69.1,189.4],[70.9,191.1],[72,193],[72.5,195],[72.5,196.9],[71.9,198.5],[71,199.8],[69.8,200.7],[68.6,201.1]];
-export const ISLAND_ROUTES=[...GARDEN_PATHS,...SHOPPING_LANE_ROUTES,{id:'island-coastal-road',peninsula:true,width:5,segmentWidths:[2.6],surface:'asphalt',points:COAST_ROAD},{id:'island-mountain-trail',peninsula:true,width:2.3,surface:'gravel',points:MOUNTAIN_TRAIL},{id:'aoba-summit-path',peninsula:true,width:1.8,surface:'gravel',points:SUMMIT_PATH}].map(r=>({...r,terrain:true}));
+export const ISLAND_ROUTES=[...GARDEN_PATHS,...SHOPPING_LANE_ROUTES,{id:'island-coastal-road',peninsula:true,width:5,segmentWidths:[2.6],surface:'asphalt',points:COAST_ROAD},{id:'island-mountain-trail',peninsula:true,width:2.3,surface:'gravel',points:MOUNTAIN_TRAIL},{id:'aoba-summit-path',peninsula:true,width:1.8,surface:'gravel',points:SUMMIT_PATH},...FUMOTO_ROUTES].map(r=>({...r,terrain:true}));
 export function nearestSegment(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
 export function islandRouteAt(x,z){return ISLAND_ROUTES.find(r=>r.points.slice(1).some((b,i)=>nearestSegment(x,z,r.points[i],b)<=(r.segmentWidths?.[i]??r.width)/2))||null;}
 const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 export const TERRAIN_GRID=Object.freeze({minX:-53,maxX:118,minZ:97,maxZ:268,step:3});
 function authoredHeight(x,z){const m=ISLAND.mountain,r=Math.hypot((x-m.x)/m.radiusX,(z-m.z)/m.radiusZ);let h=-.4+m.height*(1-smooth(r));
+ // Fumoto stands on level ground: the mountain's foot is eased back from the hamlet.
+ {const b=FUMOTO.bounds,fx=Math.max(b.minX-x,0,x-b.maxX),fz=Math.max(b.minZ-z,0,z-b.maxZ);h=FUMOTO.y+(h-FUMOTO.y)*smooth(Math.hypot(fx,fz)/6);}
  const lane=SHOPPING_LANE,ldx=Math.max(lane.minX-x,0,x-lane.maxX),ldz=Math.max(lane.minZ-z,0,z-lane.maxZ);h*=smooth(Math.hypot(ldx,ldz)/5);
  const dx=Math.max(GARDEN.minX-3-x,0,x-GARDEN.maxX-3),dz=Math.max(GARDEN.minZ-3-z,0,z-GARDEN.maxZ-3),blend=1-smooth(Math.hypot(dx,dz)/8);h=h*(1-blend)+(gardenHeight(x,z)??0)*blend;
  return h;
@@ -45,6 +48,7 @@ export function islandTerrainHeight(x,z){if(x<G.minX||x>G.maxX||z<G.minZ||z>G.ma
 export const ISLAND_LANDMARKS=[
  {id:'aoba-viewpoint',title:'Aoba Radio Station & Lookout',x:40,z:158,line:'Island radio, a roof lookout and the coastal weather broadcast.'},
  {id:'aoba-utaki',title:'Mount Aoba Utaki',x:69,z:201,line:'The sacred grove on the summit, at the top of the spiral path from Aoba Radio.'},
+ {id:'fumoto',title:'Fumoto',x:34,z:203,line:'The farming hamlet at the foot of Mount Aoba: four walled houses, the co-op store and the well under the gajumaru.'},
  {id:'hoshizaki',title:'Hoshizaki Fishing Village',x:132,z:190,line:'Fishing families, a small general store and the far-coast pier.'},
  {id:'west-lighthouse',title:'West Cape Lighthouse',x:-54,z:204,line:'A quiet headland above the coastal road.'},
  {id:'rainflower-lane',title:'Rainflower Shopping Lane',x:SHOPPING_LANE.entry[0],z:SHOPPING_LANE.entry[1],line:'Weathered shop-houses on the walking grid between town, Aoba Garden and Kitahama.'},

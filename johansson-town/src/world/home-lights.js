@@ -1,8 +1,9 @@
 import {KITAHAMA,KITAHAMA_RESIDENT_HOMES} from './kitahama-layout.js';
+import {FUMOTO} from './fumoto-layout.js';
 import {registerHomeLight,setHomeLight,clearHomeLights} from '../render/window-interior.js';
 
 /**
- * The lights in Kitahama's windows follow the people who live behind them
+ * The lights in Kitahama's and Fumoto's windows follow the people who live behind them
  * (docs/RESIDENTIAL-PLAN.md: "a home's lights follow its residents").
  *
  * - Thuan and Thao's house and Mrs Sato's follow the walking residents themselves: lit
@@ -28,6 +29,11 @@ export const HOME_ROUTINES=Object.freeze({
  'kitahama-10':{wake:H(5,30),bed:H(21,30)},
  'kitahama-11':{wake:H(6,30),bed:H(23,30)},
  'kitahama-12':{wake:H(7),bed:H(23)},
+ // Fumoto: farmers' hours. The Ishimines' kitchen is lit from a quarter to four, for the tofu.
+ 'fumoto-1':{wake:H(5,30),bed:H(21,30)},
+ 'fumoto-2':{wake:H(6),bed:H(22)},
+ 'fumoto-3':{wake:H(3,45),bed:H(21)},
+ 'fumoto-4':{wake:H(5,45),bed:H(22)},
  'flat-1':{wake:H(6),bed:H(23)},
  'flat-2':{wake:H(6,30),bed:H(24,30)},
  // Mr Fujita sleeps in his shed more often than not; he comes back to wash at dawn.
@@ -70,6 +76,7 @@ export function createHomeLights({people=()=>[]}={}){
   const slot=registerHomeLight([p.minX,KITAHAMA.y,p.minZ],[p.maxX,KITAHAMA.y+8,p.maxZ]);
   homes.push({id:p.id,slot,residents:KITAHAMA_RESIDENT_HOMES[p.id]||null,routine:HOME_ROUTINES[p.id]||null});
  }
+ for(const p of FUMOTO.plots)homes.push({id:p.id,slot:registerHomeLight([p.minX,FUMOTO.y,p.minZ],[p.maxX,FUMOTO.y+8,p.maxZ]),residents:null,routine:HOME_ROUTINES[p.id]});
  for(const [id,lo,hi] of flatBoxes())homes.push({id,slot:registerHomeLight(lo,hi),residents:null,routine:HOME_ROUTINES[id]});
  const state=new Map();
  return {

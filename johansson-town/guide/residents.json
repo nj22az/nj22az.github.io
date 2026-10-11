@@ -1496,5 +1496,100 @@
     }
    ]
   }
+ },
+ {
+  "name": "Grandmother Tokashiki",
+  "role": "Co-op storekeeper",
+  "place": "Fumoto Co-op Store, at the foot of Mount Aoba",
+  "bio": "Grandmother Tokashiki has kept Fumoto’s co-operative store since the hamlet built it together in 1968.",
+  "backstory": "Every family in Fumoto owns one share of the kyōdō baiten, and Grandmother Tokashiki has kept it for all of them since the day it opened. She opens the sliding doors at seven, when the Ishimines’ tofu arrives still warm, and closes them at seven in the evening, when the last farmer has bought his cup of awamori. She does the accounts on a soroban faster than the till can add them, keeps the hamlet’s only telephone by the door, and knows whose turn it is to clean the well. Her husband carved the shisa on their gate the year the store opened. Her son drives the store’s van to the ferry for the Sakura Trading crates and the Higa awamori. She says a store owned by everybody is a store everybody tells you how to run, and she listens to all of them and does it her way.",
+  "portrait": "assets/images/residents/grandmother-tokashiki.webp",
+  "islandPersonality": {
+   "title": "The hamlet’s ledger",
+   "traits": [
+    "Exact",
+    "kind",
+    "unhurried"
+   ],
+   "habit": "Clicks the soroban beads back to zero before she says hello.",
+   "ambition": "Pay for a second well pump out of the store’s profit.",
+   "favourite": "The first warm tofu of the morning"
+  },
+  "article": {
+   "headline": "The store that everybody owns, and the grandmother who runs it",
+   "standfirst": "Grandmother Tokashiki has kept Fumoto’s co-operative store since the hamlet built it together in 1968.",
+   "body": [
+    "Every family in Fumoto owns one share of the kyōdō baiten. The profit pays for the street lights, the well and the party after the cane cut.",
+    "She opens at seven, when the Ishimines’ tofu arrives still warm, and does the accounts on a soroban faster than the till can add them.",
+    "The telephone by the door is the hamlet’s only one. She will tell you how much a call to Naha costs before you have picked it up."
+   ],
+   "quote": "A store owned by everybody is a store everybody tells you how to run.",
+   "photos": [
+    {
+     "pose": "Think",
+     "expression": "content",
+     "backdrop": "sky",
+     "film": "film",
+     "caption": "Counting the day on the soroban.",
+     "file": "assets/images/residents/shoot/grandmother-tokashiki-1.webp"
+    },
+    {
+     "pose": "Laugh",
+     "expression": "laugh",
+     "backdrop": "mint",
+     "film": "vivid",
+     "caption": "Old Mr Zukeran pays for his awamori in songs again.",
+     "with": "Old Mr Zukeran",
+     "file": "assets/images/residents/shoot/grandmother-tokashiki-2.webp"
+    }
+   ]
+  }
+ },
+ {
+  "name": "Old Mr Zukeran",
+  "role": "Retired cane farmer and sanshin player",
+  "place": "The asagi square in Fumoto",
+  "bio": "Old Mr Zukeran cut cane at the foot of Mount Aoba for fifty years and now keeps three goats and a sanshin.",
+  "backstory": "He was born in the red-tile house he still lives in, and he cut cane in the fields below it for fifty years, until his son took the fields and moved to Naha and let them back to the Kuniyoshis. Now he keeps three goats in a pen behind the house, weeds the kitchen garden across the lane in the mornings, and sleeps through the hot afternoon. In the evening, when it is too hot indoors and too quiet outside, he takes his sanshin down to the stone bench under the gajumaru and plays until the street lights come on. The snakeskin on the sanshin is older than he is, he says, and the songs are older than that. Children from the hamlet sit on the well curb to listen, and Grandmother Tokashiki pretends not to.",
+  "portrait": "assets/images/residents/old-mr-zukeran.webp",
+  "islandPersonality": {
+   "title": "The evening singer",
+   "traits": [
+    "Sly",
+    "slow",
+    "musical"
+   ],
+   "habit": "Tunes the sanshin for longer than he plays it.",
+   "ambition": "Teach one child in Fumoto the whole of Tanchamē.",
+   "favourite": "The bench under the gajumaru at sunset"
+  },
+  "article": {
+   "headline": "Under the gajumaru, the sanshin comes out at sunset",
+   "standfirst": "Old Mr Zukeran cut cane at the foot of Mount Aoba for fifty years and now keeps three goats and a sanshin.",
+   "body": [
+    "He was born in the red-tile house he still lives in, and cut cane in the fields below it until his son moved to Naha.",
+    "Mornings are for the goats and the kitchen garden across the lane; afternoons are for sleeping through the heat.",
+    "In the evening he plays the sanshin on the stone bench under the gajumaru, and the children sit on the well curb to listen."
+   ],
+   "quote": "The snake was older than me. The songs are older than the snake.",
+   "photos": [
+    {
+     "pose": "Idle",
+     "expression": "content",
+     "backdrop": "sunset",
+     "film": "film",
+     "caption": "The bench under the gajumaru, at the hour it is for.",
+     "file": "assets/images/residents/shoot/old-mr-zukeran-1.webp"
+    },
+    {
+     "pose": "Laugh",
+     "expression": "laugh",
+     "backdrop": "sky",
+     "film": "vivid",
+     "caption": "The brown goat has eaten the hibiscus again.",
+     "file": "assets/images/residents/shoot/old-mr-zukeran-2.webp"
+    }
+   ]
+  }
  }
 ]
