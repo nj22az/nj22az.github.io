@@ -11,7 +11,10 @@ export const MINATO_WORN_SURFACES=Object.freeze([
  ...[.5,3.1].map(z=>({name:'Koagari table',kind:'wood',size:[.70,1.15],position:[5.3,.772,z],floor:true,color:0x795236})),
  {name:'West plaster',kind:'plaster',size:[12.6,2.54],position:[-6.297,2.32,0],yaw:Math.PI/2,color:0xb18d68},
  {name:'East plaster',kind:'plaster',size:[9.65,2.54],position:[6.297,2.32,1.525],yaw:-Math.PI/2,color:0xb18d68},
- ...[-4.08,4.08].map(x=>({name:'Entry plaster',kind:'plaster',size:[4.37,2.54],position:[x,2.32,6.297],yaw:Math.PI,color:0xb18d68})),
+ // The entry wall's plaster stops at the street window (x -4.99…-2.81, 1.18…2.26 high),
+ // which looks out on the real street.
+ {name:'Entry plaster',kind:'plaster',size:[4.37,2.54],position:[4.08,2.32,6.297],yaw:Math.PI,color:0xb18d68},
+ ...[[1.275,2.54,-5.6275,2.32],[.915,2.54,-2.3525,2.32],[2.18,1.33,-3.9,2.925],[2.18,.13,-3.9,1.115]].map(([w,h,x,y])=>({name:'Entry plaster',kind:'plaster',size:[w,h],position:[x,y,6.297],yaw:Math.PI,color:0xb18d68})),
  ...[4.15,5].flatMap(z=>[
   {name:'Lounge cushion',kind:'fabric',size:[.62,.68],position:[-5.62,FURNITURE_HEIGHTS.seat+.002,z],floor:true,color:0x7b7057},
   {name:'Lounge back',kind:'fabric',size:[.68,.59*FURNITURE_HEIGHTS.seat/.56],position:[-5.858,.88*FURNITURE_HEIGHTS.seat/.56,z],yaw:Math.PI/2,color:0x7b7057}

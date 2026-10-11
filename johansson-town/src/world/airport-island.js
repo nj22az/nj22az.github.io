@@ -13,11 +13,13 @@ import {TROPIC_OUTLINE,buildTropicalIsland,shoreSigned} from './tropical-island.
  */
 export const AIRPORT_ISLAND=Object.freeze({
  id:'kitano-jima',title:'Kitano-jima Airport',jp:"Kitanoshima Airport",
- x:165,z:-118,yaw:-.22,
+ // Far across the strait: from the quay it is a low green island on the horizon, palms and a
+ // control tower just made out, 360 m off. The car ferry takes half an hour of game time over it.
+ x:270,z:-290,yaw:-.22,
  /** The airport's half-extents along and across the runway (the flat north side). */
  halfLength:62,halfWidth:20,
  /** Passenger pier's shoreward landing, in world metres. */
- dock:Object.freeze([165+Math.cos(-.22)*-51+Math.sin(-.22)*33,-118-Math.sin(-.22)*-51+Math.cos(-.22)*33]),
+ dock:Object.freeze([270+Math.cos(-.22)*-51+Math.sin(-.22)*33,-290-Math.sin(-.22)*-51+Math.cos(-.22)*33]),
  /** The runway's ends in the island's own frame: planes take off toward +x. */
  runway:Object.freeze({from:-50,to:50,width:8}),
 });

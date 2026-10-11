@@ -20,10 +20,13 @@ export function mapShopCamera(source,target,frontage){
 // frustum would otherwise draw behind opaque interior walls.
 export function shopWindowPlanes(camera,frontage){
  const rotation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),frontage.yaw),origin=new THREE.Vector3(...frontage.position);
- const corners=[[-6.65,.05,0],[6.65,.05,0],[6.65,3.1,0],[-6.65,3.1,0]].map(p=>new THREE.Vector3(...p).applyQuaternion(rotation).add(origin));
+ const S=frontage.span||SAKURA_SPAN;
+ const corners=[[S.minX,S.minY,0],[S.maxX,S.minY,0],[S.maxX,S.maxY,0],[S.minX,S.maxY,0]].map(p=>new THREE.Vector3(...p).applyQuaternion(rotation).add(origin));
  const centre=origin.clone().add(new THREE.Vector3(0,1.5,1).applyQuaternion(rotation));
  return corners.map((p,i)=>{const plane=new THREE.Plane().setFromCoplanarPoints(camera.position,p,corners[(i+1)%4]);if(plane.distanceToPoint(centre)<0)plane.negate();return plane;});
 }
+/** Sakura's glazing, in its room's frame; other frontages give their own `span`. */
+const SAKURA_SPAN=Object.freeze({minX:-6.65,maxX:6.65,minY:.05,maxY:3.1});
 export function boxThroughWindow(bounds,planes,frustum){
  return frustum.intersectsBox(bounds)&&planes.every(plane=>{
   const n=plane.normal;
@@ -49,7 +52,7 @@ export function createShopStreetView(){
   });cachedTown=town;stats.total=entries.length;
  }
  return {stats,invalidate(){cachedTown=null;},render({renderer,scene,camera,town,room,frontage}){
-  const frontZ=frontage?.interiorZ??6.3;glazing.min.z=frontZ-.05;glazing.max.z=frontZ+.05;
+  const frontZ=frontage?.interiorZ??6.3,S=frontage?.span||SAKURA_SPAN;glazing.min.set(S.minX,S.minY,frontZ-.05);glazing.max.set(S.maxX,S.maxY,frontZ+.05);
   camera.updateMatrixWorld(true);frustum.setFromProjectionMatrix(matrix.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
   if(!frontage||!frustum.intersectsBox(glazing)){stats.visible=0;stats.culled=stats.total;stats.passes=0;renderer.render(scene,camera);return;}
   const plane=mapShopCamera(camera,exteriorCamera,frontage);
@@ -65,6 +68,9 @@ export function createShopStreetView(){
    for(const o of scene.children)if(o!==town&&!o.isLight)o.visible=false;
    for(const entry of entries){
     const o=entry.object;if(!o.visible)continue;
+    // Seen from inside, a frontage's own outward glazing (painted warm, to read as a lit
+    // room from the pavement) would stand between the room and the street.
+    if(frontage.hideGlazing&&o.userData.clearWindow){hidden.push(o);o.visible=false;continue;}
     if(entry.batch)stats.batchTriangles+=entry.batch.totalTriangles;
     if(entry.dynamic){o.updateWorldMatrix(true,false);entry.bounds.setFromObject(o);}
     let visible=boxThroughWindow(entry.bounds,planes,frustum);
