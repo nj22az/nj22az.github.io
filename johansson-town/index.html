@@ -27,21 +27,21 @@
 <link rel="stylesheet" href="./context-rail.css?h=a4e11923">
 <link rel="stylesheet" href="./line-ui.css?h=5aa283d2">
 <link rel="stylesheet" href="./title-screen.css?h=46324785">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-PkLLQpLV.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-Qid52UTx.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-RrRr0WaS.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-Bdm4vD13.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-C61PluIQ.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/quarters-DpbXha3m.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-DxcN_Wbl.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-BcP3somx.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/izakaya-serving-visuals-ouxeC8Dw.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/quarters-Bvs5p8c0.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-NU91u4RD.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/town-audio-BMag7ZFd.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/onsen-C7YLrx-i.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-rKiljgsz.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/compact-shops-D2qQkD69.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-QTaGOxjf.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-Br1YbrQI.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/studio-handoff-Bt6IaiBb.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/onsen-B41y_iuK.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-DQsNufzW.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/compact-shops-BbU5bjwK.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-CqN9-BlA.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-Detx2aqu.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/studio-handoff-BN50pq6z.js">
 </head>
 <body>
 <canvas id="game" aria-label="Johansson World three-dimensional game"></canvas>
@@ -377,8 +377,8 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON WORLD</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON WORLD</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=9004522f"></script>
-<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-BC0HE7mC.js";</script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-DZ_aG27m.js";</script>
+<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-2W9GGuR9.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-Bs5OA-MO.js";</script>
 <script src="./landing.js?h=7591566d"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -571,7 +571,7 @@ import {unlockTownAudio} from './runtime/audio-BH6bwR0n.js';
 
   window.__JOHANSSON_TITLE_PREVIEW__=true;
   async function loadPreview(){
-    try { await import('./runtime/boot-PkLLQpLV.js'); } catch (error) {
+    try { await import('./runtime/boot-Qid52UTx.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;
