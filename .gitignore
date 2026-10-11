@@ -18,3 +18,7 @@ sjoskolan/vaxelstromslabbet-utkast/node_modules
 
 # Johansson Studio tool output (renders, scratch): never committed
 /output/studio-mcp/
+
+# Studio writes files through a temporary .<name>.<random>.tmp beside them (jojo town-studio/townstudio/safefile.py);
+# one left by a hard kill is never published.
+.*.tmp

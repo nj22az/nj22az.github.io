@@ -36,14 +36,15 @@ export function createHomeDecorating({group,colliders,state,save,canvas,camera,f
   btn(tools,'Turn ⟲',()=>mode.turn(-1),'R');btn(tools,'Turn ⟳',()=>mode.turn(1),'Shift R');
   btn(tools,'Remove',()=>{const id=mode.status().picked;if(id)mode.remove(id);},'Delete');
   const undoBtn=btn(tools,'Undo',()=>mode.undo(),'Ctrl Z');
+  const redoBtn=btn(tools,'Redo',()=>mode.redo(),'Shift Ctrl Z');
   btn(tools,'Stop',()=>{mode.choose(null);mark();},'Esc');
   const spacer=document.createElement('span');spacer.style.flex='1';tools.append(spacer);
   const done=btn(tools,'Done',close);
   const status=document.createElement('div');status.style.cssText='font-weight:400;color:#666;min-height:1.4em';el.append(status);done.style.background='#06c755';done.style.color='#fff';done.style.borderColor='#06c755';
   function mark(){const k=mode.status().kind;for(const b of buttons){const on=b.dataset.id===k;b.style.background=on?'#06c755':'#f7f8f9';b.style.borderColor=on?'#06c755':'#e5e5e5';b.style.color=on?'#fff':'inherit';}}
   const tick=()=>{if(!bar)return;const s=mode.status();
-   undoBtn.disabled=!s.undo;undoBtn.style.opacity=s.undo?'1':'.45';
-   const said=s.result?.undo&&Date.now()-s.result.at<3000?(s.result.ok?s.result.undid:s.result.problems[0]):null;   // for three seconds
+   undoBtn.disabled=!s.undo;undoBtn.style.opacity=s.undo?'1':'.45';redoBtn.disabled=!s.redo;redoBtn.style.opacity=s.redo?'1':'.45';
+   const said=(s.result?.undo||s.result?.redo)&&Date.now()-s.result.at<3000?(s.result.ok?s.result.undid:s.result.problems[0]):null;   // for three seconds
    status.textContent=said?said:s.picked?'Click to move it · R turns it · Remove takes it away':s.hover&&!s.hover.ok?s.hover.problems[0]:s.kind?'Click on the floor to place it':'Choose a piece, or click one in the room to move it';
    mark();requestAnimationFrame(tick);};
   requestAnimationFrame(tick);

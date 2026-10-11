@@ -77,9 +77,18 @@ export function createPlacements({group,colliders,factory,walkable,heightAt=null
  // Undo and redo (Mario Artist keeps Undo beside the way out in every mode: research/mario-artist/report.md §5). Each
  // step is what was done with the entry before and after; loading a file is not a step, nor is undoing.
  const done=[],undone=[],HISTORY=50;let recording=true;
- const remember=step=>{if(!recording)return;done.push(step);if(done.length>HISTORY)done.shift();undone.length=0;};
+ const remember=step=>{
+  if(!recording)return;
+  // Turning one piece 15° at a time is one step: the turns since it was last placed or moved add up, so a full turn
+  // is not 24 undos and does not push real changes out of the history.
+  const last=done.at(-1);
+  if(step.merge&&last?.merge===step.merge&&last.do==='move'&&last.after.id===step.before.id){last.after=step.after;undone.length=0;return;}
+  done.push(step);if(done.length>HISTORY)done.shift();undone.length=0;
+ };
  const quietly=fn=>{const was=recording;recording=false;try{return fn();}finally{recording=was;}};
  const nameOf=e=>(lookup(e.kind)?.name||e.kind).toLowerCase();
+ // A copy of an entry that keeps a broken number exactly as the file wrote it (readPlacementsFile), as load() does.
+ const copy=e=>{const c={...e};if(e.written)Object.defineProperty(c,'written',{value:e.written});return c;};
  const world={colliders,doors,walkable,heightAt,lookup,needWhy,offGround};
  function build(p){
   const entry=lookup(p.kind),made=factory[entry.make](p.x,p.z,p.yaw);
@@ -102,46 +111,54 @@ export function createPlacements({group,colliders,factory,walkable,heightAt=null
   placed.set(entry.id,{entry,...made});remember({do:'place',after:{...entry}});onChange();return {ok:true,id:entry.id};
  }
  function remove(id){
-  if(held.has(id)){remember({do:'remove',before:{...held.get(id)},held:true});held.delete(id);onChange();return true;}
+  if(held.has(id)){remember({do:'remove',before:copy(held.get(id)),held:true});held.delete(id);onChange();return true;}
   const p=placed.get(id);if(!p)return false;
   p.object.removeFromParent();const i=colliders.indexOf(p.collider);if(i>=0)colliders.splice(i,1);
-  placed.delete(id);remember({do:'remove',before:{...p.entry}});onChange();return true;
+  placed.delete(id);remember({do:'remove',before:copy(p.entry)});onChange();return true;
  }
- function move(id,changes){
+ function move(id,changes,{merge=null}={}){
   const p=placed.get(id)||(held.has(id)&&{entry:held.get(id)});if(!p)return {ok:false,problems:[`Nothing placed as ${id}.`]};
   const entry={...p.entry,...changes,id};
   const problems=check(entry);if(problems.length)return {ok:false,problems};
-  const before={...p.entry},wasHeld=held.has(id);
+  const before=copy(p.entry),wasHeld=held.has(id);
   const r=quietly(()=>{remove(id);return place(entry);});   // a held entry moved to a good spot is built
-  if(r.ok)remember({do:'move',before,after:{...entry,id:r.id},held:wasHeld});
+  if(r.ok)remember({do:'move',before,after:{...entry,id:r.id},held:wasHeld,merge});
   return r;
  }
  /** Puts an entry back exactly as it was (its own id), or says why it cannot stand there now. */
  function restore(e,wasHeld){
-  if(wasHeld){held.set(e.id,{...e});onChange();return {ok:true};}
+  if(wasHeld){held.set(e.id,copy(e));onChange();return {ok:true};}
   return place(e);
  }
- /** Takes back the last change: a placed piece goes, a removed one comes back, a moved one returns. */
+ /** Can this entry stand at its spot now (ignoring its own collider)? The problems, or none. */
+ const fits=e=>check(e);
+ /** Takes back the last change: a placed piece goes, a removed one comes back, a moved one returns. Nothing is touched
+  * unless it can be done: a piece is never taken away before it is known it can go back. */
  function undo(){
   const step=done.at(-1);if(!step)return {ok:false,problems:['There is nothing to undo.']};
-  const r=quietly(()=>step.do==='place'?(remove(step.after.id)?{ok:true}:{ok:false,problems:[`The ${nameOf(step.after)} is no longer there.`]})
-   :step.do==='remove'?restore(step.before,step.held)
-   :(remove(step.after.id),restore(step.before,step.held)));
-  if(!r.ok){
-   // A move that cannot go back leaves the piece where it was moved to, never lost.
-   if(step.do==='move')quietly(()=>place(step.after));
-   return {ok:false,problems:[`The ${nameOf(step.before||step.after)} cannot go back: ${(r.problems||[]).join(' ')}`.trim()]};
-  }
+  const why=step.do==='move'&&!step.held?fits(step.before):step.do==='remove'&&!step.held?fits(step.before):[];
+  if(why.length)return {ok:false,problems:[`The ${nameOf(step.before)} cannot go back: ${why.join(' ')}`]};
+  if((step.do==='place'||step.do==='move')&&!placed.has(step.after.id))return {ok:false,problems:[`The ${nameOf(step.after)} is no longer there.`]};
+  quietly(()=>{
+   if(step.do==='place')remove(step.after.id);
+   else if(step.do==='remove')restore(step.before,step.held);
+   else{remove(step.after.id);restore(step.before,step.held);}
+  });
   done.pop();undone.push(step);
   return {ok:true,undid:step.do==='place'?`Took away the ${nameOf(step.after)}.`:step.do==='remove'?`Put back the ${nameOf(step.before)}.`:`Moved the ${nameOf(step.before)} back.`};
  }
- /** Does again what the last undo took back. */
+ /** Does again what the last undo took back, under the same rule. */
  function redo(){
   const step=undone.at(-1);if(!step)return {ok:false,problems:['There is nothing to redo.']};
-  const r=quietly(()=>step.do==='place'?place(step.after)
-   :step.do==='remove'?(remove(step.before.id)?{ok:true}:{ok:false,problems:[`The ${nameOf(step.before)} is no longer there.`]})
-   :(remove(step.before.id),restore(step.after,false)));
-  if(!r.ok){if(step.do==='move')quietly(()=>restore(step.before,step.held));return {ok:false,problems:[`The ${nameOf(step.after||step.before)} cannot go there again: ${(r.problems||[]).join(' ')}`.trim()]};}
+  const why=step.do==='place'||step.do==='move'?fits(step.after):[];
+  if(why.length)return {ok:false,problems:[`The ${nameOf(step.after)} cannot go there again: ${why.join(' ')}`]};
+  const here=step.do==='move'?step.before.id:step.do==='remove'?step.before.id:null;
+  if(here&&!placed.has(here)&&!held.has(here))return {ok:false,problems:[`The ${nameOf(step.before)} is no longer there.`]};
+  quietly(()=>{
+   if(step.do==='place')place(step.after);
+   else if(step.do==='remove')remove(step.before.id);
+   else{remove(step.before.id);place(step.after);}
+  });
   undone.pop();done.push(step);
   return {ok:true,undid:step.do==='place'?`Placed the ${nameOf(step.after)} again.`:step.do==='remove'?`Took away the ${nameOf(step.before)} again.`:`Moved the ${nameOf(step.after)} again.`};
  }

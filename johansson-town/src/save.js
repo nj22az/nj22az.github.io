@@ -62,8 +62,14 @@ const readsAsSave=text=>{try{const v=JSON.parse(text);return !!v&&typeof v==='ob
 export function writeSave(storage,key,json){
   const now=storage.getItem(key);
   if(now!=null&&now!==json&&readsAsSave(now))try{storage.setItem(key+PREV_SUFFIX,now);}catch{try{storage.removeItem(key+PREV_SUFFIX);}catch{}}
-  try{storage.setItem(key,json);return true;}
-  catch{try{storage.removeItem(key+PREV_SUFFIX);storage.setItem(key,json);return true;}catch{return false;}}
+  try{storage.setItem(key,json);return true;}catch{}
+  // Full: give up the previous copies (every player's: they are the least needed things here), then try again. A
+  // rescued save is the player's own progress and is never dropped to make room.
+  try{
+   const prevs=[];for(let i=0;i<storage.length;i++){const k=storage.key(i);if(k?.endsWith(PREV_SUFFIX))prevs.push(k);}
+   for(const k of prevs.length?prevs:[key+PREV_SUFFIX])storage.removeItem(k);
+   storage.setItem(key,json);return true;
+  }catch{return false;}
 }
 export function rescueSave(storage,key){
   try{if(storage.getItem(key+RESCUE_SUFFIX)!=null)return false;const raw=storage.getItem(key);if(raw==null)return false;storage.setItem(key+RESCUE_SUFFIX,raw);return true;}catch{return false;}
@@ -72,6 +78,6 @@ export function rescueSave(storage,key){
 export const activeSlot=storage=>slotKey(readPlayers(storage).active);
 export function readSave(storage){
   const slot=slotKey(readPlayers(storage).active);
-  for(const key of slot===SAVE_KEY?[SAVE_KEY,SAVE_KEY+PREV_SUFFIX,...LEGACY_KEYS]:[slot,slot+PREV_SUFFIX])try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object'&&!Array.isArray(value)){if(Array.isArray(value.visited))value.visited=migratedVisits(value.visited.filter(id=>typeof id==='string'));return migrateThuan(value);}}catch{}
+  for(const key of slot===SAVE_KEY?[SAVE_KEY,SAVE_KEY+PREV_SUFFIX,...LEGACY_KEYS]:[slot,slot+PREV_SUFFIX])try{const value=JSON.parse(storage.getItem(key));if(value&&typeof value==='object'&&!Array.isArray(value)){if(Array.isArray(value.visited))value.visited=migratedVisits(value.visited.filter(id=>typeof id==='string'));const out=migrateThuan(value);Object.defineProperty(out,'readFrom',{value:key,enumerable:false});return out;}}catch{}
   return null;
 }

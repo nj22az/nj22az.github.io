@@ -141,16 +141,42 @@ test('a new change clears what could be redone; loading a file is not a step',()
  assert.deepEqual(b.history(),{undo:1,redo:0});void id;
 });
 
-test('an undo that cannot be done says why and keeps the piece where it is',()=>{
+test('an undo that cannot be done says why and changes nothing',()=>{
  const t=town(),b=t.builder,{id}=b.place({kind:'postbox',x:0,z:0,note:'Letters'});
  b.remove(id);
  t.colliders.push({x:0,z:0,w:1,d:1});   // something now stands where the postbox was
  const r=b.undo();assert.equal(r.ok,false);assert.match(r.problems[0],/postbox cannot go back: It overlaps/);
  assert.equal(b.history().undo,2,'the removal is still there to undo once the spot is clear');
- t.colliders.pop();
- const {id:m}=b.place({kind:'postbox',x:3,z:0,note:'Letters'});b.move(m,{x:5});
- t.colliders.push({x:3,z:0,w:1,d:1});
- assert.equal(b.undo().ok,false);assert.deepEqual(b.list().filter(p=>p.id===m).map(p=>p.x),[5],'left where it was moved to, never lost');
+ t.colliders.pop();assert.equal(b.undo().ok,true,'and then it can');
+});
+
+test('a moved piece is never lost: undo and redo refuse before touching it when its other spot is taken',()=>{
+ const t=town(),b=t.builder,{id}=b.place({kind:'postbox',x:3,z:0,note:'Letters'});b.move(id,{x:5});
+ t.colliders.push({x:3,z:0,w:1,d:1});   // the old spot is taken now
+ const before=JSON.stringify(b.list()),groups=t.group.children.length;
+ const r=b.undo();assert.equal(r.ok,false);assert.match(r.problems[0],/cannot go back/);
+ assert.equal(JSON.stringify(b.list()),before,'still where it was moved to');assert.equal(t.group.children.length,groups);
+ assert.equal(t.colliders.filter(c=>c.placementId===id).length,1);
+ t.colliders.pop();assert.equal(b.undo().ok,true);assert.deepEqual(b.list().map(p=>p.x),[3]);
+ t.colliders.push({x:5,z:0,w:1,d:1});   // now the new spot is taken: redo refuses the same way
+ assert.equal(b.redo().ok,false);assert.deepEqual(b.list().map(p=>p.x),[3],'still at the old spot');
+ assert.match(b.file(),new RegExp('"id": "'+id+'"'),'and in the file');
+});
+
+test('undoing the removal of a piece the file could not place keeps its numbers exactly as written',()=>{
+ const t=town(),b=t.builder;
+ const list=readPlacementsFile({version:1,placements:[{id:'p1',kind:'bench',x:'abc',z:0,yaw:0,note:'A seat by the quay for anglers.'}]});
+ b.load(list);assert.equal(b.held().length,1);
+ b.remove('p1');assert.equal(b.undo().ok,true);
+ assert.equal(JSON.parse(b.file()).placements[0].x,'abc','the broken number comes back as the file had it, never as 0');
+});
+
+test('turning a piece 15° at a time is one step to undo',()=>{
+ const t=town(),b=t.builder,{id}=b.place({kind:'bench',x:0,z:0,note:'A seat by the quay for anglers.'});
+ for(let i=1;i<=6;i++)b.move(id,{yaw:i*Math.PI/12},{merge:'turn'});
+ assert.equal(b.history().undo,2,'placed, then turned');
+ b.undo();assert.equal(b.list()[0].yaw,0,'one undo turns it all the way back');
+ b.move(id,{x:1});b.move(id,{yaw:.2},{merge:'turn'});assert.equal(b.history().undo,3,'a move between starts a new turn step');
 });
 
 test('a refusal names the piece in the way when somebody placed it',()=>{

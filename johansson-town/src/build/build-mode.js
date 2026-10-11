@@ -157,7 +157,7 @@ export function createBuildMode({canvas,camera,group,placements,factory,heightAt
   why(text){note=String(text||'');return api.status();},
   turn(dir=1){
    yaw=((yaw+dir*STEP)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
-   if(picked){const r=placements.move(picked,{yaw});if(!r.ok)yaw=((yaw-dir*STEP)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);else pick(r.id);}
+   if(picked){const r=placements.move(picked,{yaw},{merge:'turn'});if(!r.ok)yaw=((yaw-dir*STEP)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);else pick(r.id);}
    if(ghost){ghost.rotation.y=yaw;if(hover)showGhost(hover);}
    applyView();return api.status();
   },
@@ -166,7 +166,7 @@ export function createBuildMode({canvas,camera,group,placements,factory,heightAt
   /** Takes back the last place, move or remove (placements.undo); says why when it cannot. */
   undo(){result={...placements.undo(),undo:true,at:Date.now()};afterHistory();return api.status();},
   /** Does again what undo took back. */
-  redo(){result={...placements.redo(),undo:true,at:Date.now()};afterHistory();return api.status();},
+  redo(){result={...placements.redo(),redo:true,at:Date.now()};afterHistory();return api.status();},
   /** Fly to a point (or a placed piece). */
   look(x,z,distance){view.x=x;view.z=z;if(distance)view.distance=distance;applyView();},
   orbit(dAzimuth=0,dElevation=0,zoom=1){view.azimuth+=dAzimuth;view.elevation=Math.min(1.45,Math.max(.12,view.elevation+dElevation));view.distance=Math.min(limits.max,Math.max(limits.min,view.distance*zoom));applyView();},

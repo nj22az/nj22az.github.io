@@ -45,7 +45,7 @@ import {townAudio} from './src/audio/town-audio.js?snappy=1';
 import {DIALOGUE} from './src/people/schedules.js?snappy=1';
 import {JOURNAL} from './content-data.js';
 import {CITY_RESTAURANT,DINNER_MENU} from './src/world/interiors/city-dinner.js';
-import {readSave,readPlayers,activePlayer,addPlayer,switchPlayer,renamePlayer,touchPlayer,slotKey,writeSave,rescueSave,activeSlot} from './src/save.js';
+import {readSave,readPlayers,activePlayer,addPlayer,switchPlayer,renamePlayer,touchPlayer,slotKey,writeSave,rescueSave,activeSlot,PREV_SUFFIX} from './src/save.js';
 import {createTownDialogue,restoreStory,countTalk,dialogueVariables} from './src/dialogue/town-dialogue.js';
 import {createDialogueBox} from './src/dialogue/dialogue-box.js';
 import {giftableItems,takeGift,giftReaction} from './src/people/thuan-gifts.js';
@@ -70,7 +70,10 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
 
   try {
     // A new real year starts the island's 1997 over, keeping friendships, the bag, money and decorating (year-loop.js).
-    const {saved,turned}=openYear(readSave(localStorage));yearTurned=turned;
+    const read=readSave(localStorage);
+    // The save did not read and the previous copy was loaded: keep the unreadable one as it is, and say so.
+    if(read?.readFrom?.endsWith(PREV_SUFFIX))try{rescueSave(localStorage,activeSlot(localStorage));setTimeout(()=>say('Your last save could not be read, so the one before it is loaded. The unreadable one is kept on this device.',9),4000);}catch{}
+    const {saved,turned}=openYear(read);yearTurned=turned;
     if(saved&&typeof saved==='object'){state.loopYear=saved.loopYear;state.loops=saved.loops|0;pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
       state.homeDecor=restoreHomeDecor(saved.homeDecor);state.diary=restoreDiary(saved.diary);
       state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
@@ -84,7 +87,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   } catch(error){
     // Part of the save could not be read. Keep it as it was, once, before the next auto-save writes over it, and say so.
     console.warn('Save not fully read:',error);
-    if(rescueSave(localStorage,activeSlot(localStorage)))setTimeout(()=>say('Part of your save could not be read. A copy of it is kept on this device, so nothing is lost.',9),4000);
+    try{if(rescueSave(localStorage,activeSlot(localStorage)))setTimeout(()=>say('Part of your save could not be read. A copy of it is kept on this device, so nothing is lost.',9),4000);}catch{}
   }
 
   if(!Number.isInteger(state.loopYear)){state.loopYear=realYear();state.loops=0;}
