@@ -215,7 +215,24 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     forklaring) i posten. *Kontroll: `vecka-42/aktuell/quiz.test.mjs` stoppar när posten har ny revision; bygget stoppar
     på facitfält i posten.*
 
+56. **Slå upp en fil på filnamnet, inte på sökvägen.** Delar som undervisas en annan vecka står på veckosidan som
+    `../../vecka-45/aktuell/<fil>`. Bildspelet slog upp titeln på hela sökvägen, hittade den inte och tog titelbildens
+    första text, så *Analys av mätresultat* fick titeln ”Tisdag 27 oktober” (`verktyg/bildspel/bygg.py`, `_titles`).
+    *Manuell kontroll: läs titlarna i `bildspel/lista.json` efter bygget.*
+
 ## Ändringar
+
+- **2026-10-11** Vecka 44 tisdag: *Fördjupad mätteknik* (del 3, 15.00–16.00) och *Analys av mätresultat* (del 4, 16.00–17.00,
+  filerna i `vecka-45/`) i lektionsbildernas mall, 18 bilder var i stället för 36 (`verktyg/lektionsbilder/lektion_v44_03.py`
+  och `lektion_v45_02.py`). Entimmeslektioner utan paus: alla sju teoriavsnitt och båda exemplen med samma rubriker och i samma
+  ordning, och övning 3.1–3.3 respektive 2.1–2.3 tillsammans. Delsidorna har samma teori, formler, exempel och figurer; ”Det här
+  ska du kunna” har de gamla målen och ett nytt. Övningsfigurerna till 3.4, 3.6 (del 3) och 2.4 (del 4) kom ur presentationernas
+  övningsbilder och syns inte längre på delsidan, eftersom mallen saknar en väg för övningsfigurer (filerna finns kvar i
+  `figurer/`). Figurspecen (`verktyg/figurer/spec44.json`, `spec45.json`) har de nya bildnumren och inga övningsbilder.
+  Avslutsfrågorna säger fredag 30 oktober och analysen av mätdata i stället för söndag 1 november och felsökningsrapporten
+  (EL-000728, EL-000732). Start- och avslutsfrågan för del 4 (EL-000731, EL-000732) var märkta LM-4 men tränar LM-8 och LM-7;
+  EL-000728 har LM-4 och LM-8. Bildspelet slår upp titeln på filnamnet (regel 56). Lärarkopiorna är inte ombyggda (kräver
+  LARARLOSEN).
 
 - **2026-10-11** Vecka 42: delsidorna Del_1–3 har rutan **Din del** överst (lärarens önskan: delsidorna ska vara
   översikter som veckosidan). Dagens färg och tid, lektionens läge (I dag, Pågår nu, Om 2 dagar, Har varit), vad vi
