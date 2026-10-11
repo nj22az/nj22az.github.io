@@ -170,6 +170,13 @@ Fördjupning märks ”Fördjupning” och kommer efter grunddelen. Beteckningar
 
 Eleverna möter presentationerna som bildspel på webben (`bildspel/?d=<id>`): bilden, bildens text under för läsning och skärmläsare, pilar, svep, översikt och helskärm. Bilder med ”övning N” i rubriken länkar till övningen med facit. PowerPoint och PDF finns kvar som nedladdning. Bygg om med `verktyg/bildspel/bygg.py` när en presentation ändras. Sjöskolans omslag behålls. Samma rubriker, begrepp och figurbeteckningar som i genomgång, simulator och protokoll. Räkneexempel och labbinstruktioner har egna, igenkännbara bildtyper. Fördjupning märks i rubriken.
 
+Från vecka 42 byggs lektionens presentation av `verktyg/lektionsbilder/bygg.py` (innehållet i `lektioner.py`) med en fast mall, i samma
+ordning varje lektion: titel, kursplanen i dag (punkterna i områdets färg), startfråga, så går lektionen till, teori (en bild per avsnitt i
+delsidans ordning och med delsidans rubrik; en blå nyckelmening och högst fyra korta rader, figuren till höger eller under), exempel,
+övningar tillsammans (övningarna görs på delsidan, inga övningstexter på bilderna), paus, avslutsfråga, sammanfattning, det här gör du nu och
+källor. Rubriken är bildens första text och avsnittet (”Del 1 · avsnitt 3”) står i sidfoten. Linjen under rubriken har lektionens områdesfärg.
+Text minst 18 pt, nyckelmeningen 21–25 pt.
+
 ## Filer
 
 | Fil | Används av |

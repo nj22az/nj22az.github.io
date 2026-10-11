@@ -1664,12 +1664,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 1.1",
      "ankare": "v42_01-q1"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
-     "nummer": "Övning 1.1",
-     "ankare": null
     }
    ]
   },
@@ -1686,12 +1680,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 1.2",
      "ankare": "v42_01-q2"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
-     "nummer": "Övning 1.2",
-     "ankare": null
     }
    ]
   },
@@ -1708,12 +1696,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 1.3",
      "ankare": "v42_01-q3"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
-     "nummer": "Övning 1.3",
-     "ankare": null
     }
    ]
   },
@@ -1730,12 +1712,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 1.4",
      "ankare": "v42_01-q4"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
-     "nummer": "Övning 1.4",
-     "ankare": null
     }
    ]
   },
@@ -1752,12 +1728,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 1.5",
      "ankare": "v42_01-q5"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
-     "nummer": "Övning 1.5",
-     "ankare": null
     }
    ]
   },
@@ -1774,12 +1744,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 1.6",
      "ankare": "v42_01-q6"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
-     "nummer": "Övning 1.6",
-     "ankare": null
     }
    ]
   },
@@ -1796,12 +1760,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 1.7",
      "ankare": "v42_01-q7"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
-     "nummer": "Övning 1.7",
-     "ankare": null
     }
    ]
   },
@@ -1818,12 +1776,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 1.8",
      "ankare": "v42_01-q8"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
-     "nummer": "Övning 1.8",
-     "ankare": null
     }
    ]
   },
@@ -1840,12 +1792,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 1.9",
      "ankare": "v42_01-q9"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
-     "nummer": "Övning 1.9",
-     "ankare": null
     }
    ]
   },
@@ -1862,12 +1808,6 @@
      "plats": "vecka-42/aktuell/Formelstod_och_ovningar.html",
      "nummer": "Övning 1.10",
      "ankare": "v42_01-q10"
-    },
-    {
-     "yta": "presentation",
-     "plats": "vecka-42/aktuell/v42_01_Elektriska_risker_elev.pptx",
-     "nummer": "Övning 1.10",
-     "ankare": null
     }
    ]
   },
@@ -6681,7 +6621,7 @@
   },
   {
    "id": "EL-000711",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Startfråga: v42_01",
@@ -6697,7 +6637,7 @@
   },
   {
    "id": "EL-000712",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Avslutsfråga: v42_01",
