@@ -215,7 +215,24 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     forklaring) i posten. *Kontroll: `vecka-42/aktuell/quiz.test.mjs` stoppar när posten har ny revision; bygget stoppar
     på facitfält i posten.*
 
+56. **En omgjord presentation får inte tappa delsidans figurer.** Delsidan hämtar en övnings figur ur övningens bild i
+    presentationen (`placeringar/presentation.json`), och lektionsbilderna har inga övningsbilder: i vecka 44 försvann
+    figurerna till övning 1.6, 1.7 och 2.4 från delsidorna (filerna finns kvar i `figurer/`). En teorifigur på bild N hittas
+    först på filnamnet `<deck>-bNN-k`, så en annan figur på en bild vars nummer redan har en fil visar fel figur. Jämför
+    delsidans figurer, också övningarnas, före och efter. *Manuell kontroll.*
+
 ## Ändringar
+
+- **2026-10-11** Vecka 44 måndag: del 1 *Lågspänningssystem* (09.00–10.00) och del 2 *Högspänningssystem* (10.00–11.00) i
+  lektionsbildernas mall (`verktyg/lektionsbilder/lektion_v44_01.py`, `lektion_v44_02.py`), 20 och 19 bilder i stället för 37.
+  Delsidorna har kvar sina åtta avsnitt med samma rubriker och ordning (”Läs genomgången del 1, avsnitt 3: TN-system” och
+  Isolationslabbets ”avsnitt 5” gäller), all teori, båda exemplen per del och alla teori- och exempelfigurer. Övning 1.1–1.5
+  görs tillsammans på två bilder (en övningsbild rymmer fyra övningar) och 2.1–2.3 på en; 2.4–2.6 är läxa och 2.7–2.10 extra.
+  Del 1 avsnitt 1 förklarar nu bokstäverna i TN, TT och IT (startfrågan), del 2 förklarar förkortningen HV, och I₂/I₁ i
+  strömtransformatorexemplet skrivs I_{2}/I_{1}. Start- och avslutsfrågorna EL-000723–726 var märkta LM-4 och är nu LM-2,
+  LM-2, LM-1 och LM-2/LM-3; avslutsfrågornas instruktioner pekar på inlämningens uppgifter i stället för ett
+  ”v44-underlag” som inte finns. Övningsfigurerna till 1.6, 1.7 och 2.4 syns inte längre på delsidorna (regel 56).
+  Lärarkopiorna av v44_01–02 är inte omgjorda (kräver LARARLOSEN).
 
 - **2026-10-11** Vecka 42: delsidorna Del_1–3 har rutan **Din del** överst (lärarens önskan: delsidorna ska vara
   översikter som veckosidan). Dagens färg och tid, lektionens läge (I dag, Pågår nu, Om 2 dagar, Har varit), vad vi
