@@ -18,3 +18,6 @@ sjoskolan/vaxelstromslabbet-utkast/node_modules
 
 # Johansson Studio tool output (renders, scratch): never committed
 /output/studio-mcp/
+# Johansson Studio's draft (changes the creator said yes to; only "update World" publishes them) and its write lock
+/johansson-town/data/studio/draft/
+/johansson-town/data/studio/.lock

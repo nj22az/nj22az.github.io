@@ -5,9 +5,10 @@
  * 1. Against this checkout: initialize in under 2 s, every tool listed, the read tools and dry runs called (the data
  *    files must not change by a byte), and three portraits rendered in headless Studio (the same recipe twice gives
  *    the same pixels). The renders are deleted afterwards.
- * 2. A picture with a location hidden in it comes back from Chromium as a WebP with only its pixels.
- * 3. Against a throwaway copy of the data (only under node --test): apply a look, reset it, and looks.json is
- *    byte-identical again.
+ * 2. A picture with a location hidden in it comes back from Chromium as a WebP with only its pixels; one that claims
+ *    to be 30000 pixels wide is refused before anything decodes it.
+ * 3. Against a throwaway copy of the data (only under node --test): apply a look (it goes to the draft only), publish
+ *    it, reset it, publish again, and looks.json is byte-identical again.
  */
 import {test,after} from 'node:test';
 import assert from 'node:assert/strict';
@@ -18,7 +19,7 @@ import {fileURLToPath} from 'node:url';
 import {Client} from '@modelcontextprotocol/client';
 import {StdioClientTransport} from '@modelcontextprotocol/client/stdio';
 import {CODE_ROOT,PATHS,jsonText} from './repo.mjs';
-import {looksModule} from './build-data.mjs';
+import {looksModule,charactersModule} from './build-data.mjs';
 
 const server=fileURLToPath(new URL('./server.mjs',import.meta.url));
 const clients=[],made=[];
@@ -31,21 +32,23 @@ async function connect(env={}){
 }
 const callWith=client=>async(name,args={})=>{const r=await client.callTool({name,arguments:args},{timeout:240000});return r;};
 const json=r=>JSON.parse(r.content.find(c=>c.type==='text').text);
-const files=()=>Promise.all([PATHS.looks,PATHS.log,PATHS.looksModule].map(p=>readFile(resolve(CODE_ROOT,p),'utf8')));
+const files=()=>Promise.all([PATHS.looks,PATHS.log,PATHS.looksModule,PATHS.charactersModule,PATHS.draft].map(p=>readFile(resolve(CODE_ROOT,p),'utf8').catch(()=>null)));
 
 test('this checkout: fast start, every tool, nothing written, portraits from headless Studio',async()=>{
  const before=await files(),{client,ms}=await connect();
  assert.ok(ms<2000,`initialize took ${Math.round(ms)} ms (must be under 2 s)`);
  const {tools}=await client.listTools();
- assert.deepEqual(tools.map(t=>t.name).sort(),['character_create','character_delete','character_get','character_list','character_reset','character_update','publish_check','render_portrait','validate']);
+ assert.deepEqual(tools.map(t=>t.name).sort(),['character_create','character_delete','character_get','character_list','character_reset','character_update','discard_draft','publish_check','publish_draft','render_portrait','validate']);
  const call=callWith(client);
- assert.ok(json(await call('character_list')).count>=47);
+ const {RESIDENT_NAMES}=await import('../../src/avatars/cast.js');
+ assert.ok(json(await call('character_list')).count>=RESIDENT_NAMES.length);
  assert.equal(json(await call('character_get',{name:'Mr Fujita'})).name,'Mr Fujita');
  assert.equal(json(await call('character_update',{name:'Mr Fujita',set:{'outfit.hat':'captain'},note:'A dry run from the smoke test.'})).dryRun,true);
  assert.equal(json(await call('character_create',{name:'Smoke',card:{role:'Test',why:'Only a dry run of the smoke test.'}})).dryRun,true);
  assert.equal((await call('character_delete',{id:'Mr Fujita'})).isError,true);
  assert.equal(json(await call('validate',{target:'looks'})).ok,true);
- assert.ok(json(await call('publish_check',{tests:false})).items.length>=6);
+ assert.ok(json(await call('publish_check',{tests:false})).items.length>=7);
+ assert.equal(json(await call('publish_draft')).dryRun,true);
  const portraits=[];
  for(const args of [{name:'Mr Fujita',size:256},{name:'Thuan',view:'quarter',framing:'face',size:256},{name:'Mr Fujita',size:256},{recipe:{name:'Draft',hair:{style:'afro'}},view:'left',pose:'Wave',expression:'happy',size:256}]){
   const r=await call('render_portrait',args);assert.notEqual(r.isError,true,JSON.stringify(r.content));
@@ -69,6 +72,8 @@ test('a picture is re-encoded to WebP in Chromium, and what was hidden in it (a 
   const {bytes,width,height}=await page.reencodeWebp(hidden,{maxSide:64});
   assert.equal(bytes.subarray(8,12).toString(),'WEBP');assert.deepEqual([width,height],[64,64]);
   assert.ok(!bytes.includes('GPSLatitude'),'only the pixels survive');
+  const huge=Buffer.from(png);huge.writeUInt32BE(30000,16);huge.writeUInt32BE(30000,20);
+  await assert.rejects(page.reencodeWebp(huge),/30000 × 30000 pixels/);
  }finally{await page.close();}
 });
 
@@ -77,14 +82,18 @@ test('a throwaway copy: apply a look, reset it, and looks.json is byte-identical
  try{
   await mkdir(resolve(root,'johansson-town/data/studio'),{recursive:true});await mkdir(resolve(root,'johansson-town/src/avatars'),{recursive:true});
   const original=await readFile(resolve(CODE_ROOT,PATHS.looks),'utf8');
-  await writeFile(resolve(root,PATHS.looks),original);await writeFile(resolve(root,PATHS.looksModule),looksModule(original));
+  await mkdir(resolve(root,'johansson-town/src/studio'),{recursive:true});
+  await writeFile(resolve(root,PATHS.looks),original);await writeFile(resolve(root,PATHS.looksModule),looksModule(original));await writeFile(resolve(root,PATHS.charactersModule),charactersModule(original));
   await writeFile(resolve(root,PATHS.log),jsonText({format:'johansson-studio-log',version:1,changes:[]}));await copyFile(resolve(CODE_ROOT,PATHS.brands),resolve(root,PATHS.brands));
   const {client}=await connect({JOHANSSON_STUDIO_ROOT:root}),call=callWith(client);
   const name=json(await call('character_list',{group:'townsfolk'})).characters.find(c=>!c.edited).name;
   const done=json(await call('character_update',{name,set:{'outfit.hat':'captain'},note:'Applied by the smoke test, then reset.',dryRun:false}));
   assert.equal(done.applied,true,JSON.stringify(done));
+  assert.equal(await readFile(resolve(root,PATHS.looks),'utf8'),original,'yes goes to the draft, not to World\'s data');
+  assert.equal(json(await call('publish_draft',{dryRun:false})).applied,true);
   assert.notEqual(await readFile(resolve(root,PATHS.looks),'utf8'),original);
   assert.equal(json(await call('character_reset',{name,dryRun:false})).applied,true);
+  assert.equal(json(await call('publish_draft',{dryRun:false})).applied,true);
   assert.equal(await readFile(resolve(root,PATHS.looks),'utf8'),original);
   assert.equal(JSON.parse(await readFile(resolve(root,PATHS.log),'utf8')).changes.length,2);
  }finally{await rm(root,{recursive:true,force:true});}

@@ -1,68 +1,90 @@
 import {test,before,after} from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp,mkdir,readFile,writeFile,rm,symlink,readdir,copyFile} from 'node:fs/promises';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
 import {tmpdir} from 'node:os';
 import {resolve,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {openRepo,writable,defaultRoot,CODE_ROOT,PATHS,jsonText} from '../tools/studio/repo.mjs';
-import {applyChange} from '../tools/studio/apply.mjs';
-import {looksModule} from '../tools/studio/build-data.mjs';
-import {validateChange,brandProblems,pictureProblems} from '../src/studio/rules.js';
+import {applyChange,publishDraft,discardDraft,readData} from '../tools/studio/apply.mjs';
+import {looksModule,charactersModule} from '../tools/studio/build-data.mjs';
+import {validateChange,validateLooks,brandProblems,pictureProblems,pictureSize,sizeProblems} from '../src/studio/rules.js';
 import {applyOps} from '../src/studio/change.js';
-import {baseRecipe} from '../src/avatars/cast.js';
+import {baseRecipe,RESIDENT_GROUPS} from '../src/avatars/cast.js';
 import {sha256,recordSha256} from '../src/studio/sha256.js';
 
 // Every write here goes to a throwaway copy of Studio's data, never to the checkout.
-const town=fileURLToPath(new URL('../',import.meta.url));
-let root,repo,original;
-before(async()=>{
- root=await mkdtemp(join(tmpdir(),'studio-apply-'));
- await mkdir(resolve(root,'johansson-town/data/studio'),{recursive:true});await mkdir(resolve(root,'johansson-town/src/avatars'),{recursive:true});
- original=jsonText({format:'johansson-looks',version:1,looks:{},characters:{}});
- await writeFile(resolve(root,PATHS.looks),original);
- await writeFile(resolve(root,PATHS.log),jsonText({format:'johansson-studio-log',version:1,changes:[]}));
+const town=fileURLToPath(new URL('../',import.meta.url)),run=promisify(execFile);
+const EMPTY={format:'johansson-looks',version:1,looks:{},characters:{}};
+const LOG={format:'johansson-studio-log',version:1,changes:[]};
+/** A throwaway data root: Studio's data, its brand rules and World's generated modules. */
+async function makeRoot(prefix,looks=EMPTY){
+ const root=await mkdtemp(join(tmpdir(),prefix)),text=jsonText(looks);
+ for(const folder of ['data/studio','src/avatars','src/studio'])await mkdir(resolve(root,'johansson-town',folder),{recursive:true});
+ await writeFile(resolve(root,PATHS.looks),text);await writeFile(resolve(root,PATHS.log),jsonText(LOG));
  await copyFile(resolve(town,'data/studio/brand-rules.json'),resolve(root,PATHS.brands));
- await writeFile(resolve(root,PATHS.looksModule),looksModule(original));
- repo=openRepo(root);
-});
+ await writeFile(resolve(root,PATHS.looksModule),looksModule(text));await writeFile(resolve(root,PATHS.charactersModule),charactersModule(text));
+ return root;
+}
+let root,repo,original;
+before(async()=>{root=await makeRoot('studio-apply-');repo=openRepo(root);original=jsonText(EMPTY);});
 after(()=>rm(root,{recursive:true,force:true}));
 
 let n=0;
 const change=(ops,extra={})=>({format:'johansson-studio-change',version:1,id:`2026-10-12T09-14Z-test-${++n}`,made:'2026-10-12T09:14:00Z',by:'claude',note:'A test of the Studio change file.',ops,...extra});
 const fujita=baseRecipe('Mr Fujita');
 const captain={op:'look.set',name:'Mr Fujita',set:{'outfit.hat':'captain'},was:{'outfit.hat':fujita.outfit.hat}};
-async function snapshot(){
+const card={role:'Visiting cousin',why:'Thao\'s cousin from Naha, for the summer festival stories.'};
+async function snapshot(at=root){
  const out={};
- async function scan(dir){for(const e of await readdir(dir,{withFileTypes:true})){const p=resolve(dir,e.name);if(e.isDirectory())await scan(p);else out[p.slice(root.length)]=e.isSymbolicLink()?'link':await readFile(p,'utf8');}}
- await scan(root);return out;
+ async function scan(dir){for(const e of await readdir(dir,{withFileTypes:true})){const p=resolve(dir,e.name);if(e.isDirectory())await scan(p);else out[p.slice(at.length)]=e.isSymbolicLink()?'link':await readFile(p,'utf8');}}
+ await scan(at);return out;
 }
+const read=(path,at=root)=>readFile(resolve(at,path),'utf8');
 const sentences=r=>[...(r.problems||[]),...(r.conflicts||[])].map(p=>p.sentence).join(' ');
+const draftChanges=async(at=root)=>JSON.parse(await read(PATHS.draft,at).catch(()=>'{"changes":[]}')).changes;
 
-test('a dry run writes nothing, then apply and reset leave looks.json byte-identical',async()=>{
+test('a dry run writes nothing; yes puts it in the draft only; publishing writes World\'s data; reset and publish give the same bytes back',async()=>{
  const before=await snapshot();
  const dry=await applyChange(change([captain]),{repo});
- assert.equal(dry.ok,true,sentences(dry));assert.equal(dry.applied,false);assert.deepEqual(dry.writes,[PATHS.looks,PATHS.looksModule,PATHS.log]);
+ assert.equal(dry.ok,true,sentences(dry));assert.equal(dry.applied,false);assert.deepEqual(dry.writes,[PATHS.draft]);
  assert.deepEqual(await snapshot(),before,'a dry run must not touch a file');
- const done=await applyChange(change([captain]),{repo,dryRun:false});
+ const done=await applyChange(change([captain],{note:'He skippered the old ferry once.'}),{repo,dryRun:false});
  assert.equal(done.applied,true,sentences(done));
- const looks=JSON.parse(await readFile(resolve(root,PATHS.looks),'utf8'));
- assert.deepEqual(looks.looks['Mr Fujita'].set,{'outfit.hat':'captain'});
- assert.equal(await readFile(resolve(root,PATHS.looksModule),'utf8'),looksModule(await readFile(resolve(root,PATHS.looks),'utf8')),'World\'s module is regenerated');
- // Applying the same change again changes nothing (World already has it).
+ assert.equal(await read(PATHS.looks),original,'a change the creator said yes to stays out of World\'s data (and out of git)');
+ assert.equal(await read(PATHS.looksModule),before['/'+PATHS.looksModule],'World\'s module is untouched until publishing');
+ assert.equal((await draftChanges()).length,1);
+ const seen=await readData(repo);
+ assert.deepEqual(seen.looks.looks['Mr Fujita'],{set:{'outfit.hat':'captain'},notes:{'outfit.hat':'He skippered the old ferry once.'},made:'2026-10-12T09:14:00Z'});
+ // The same steps again change nothing (Studio already has them).
  const again=await applyChange(change([captain]),{repo,dryRun:false});assert.equal(again.applied,false);assert.match(again.nothing,/already/);
+ const preview=await publishDraft({repo});
+ assert.equal(preview.ok,true,sentences(preview));assert.equal(preview.applied,false);
+ assert.deepEqual(preview.people,[{name:'Mr Fujita',kind:'resident',fields:[{path:'outfit.hat',from:'as World draws them',to:'captain'}]}]);
+ assert.deepEqual(preview.writes,[PATHS.looksModule,PATHS.looks,PATHS.log,PATHS.draft],'only the module that changes is written');
+ const published=await publishDraft({repo,dryRun:false});assert.equal(published.applied,true,sentences(published));
+ const looksText=await read(PATHS.looks),log=JSON.parse(await read(PATHS.log));
+ assert.deepEqual(JSON.parse(looksText).looks['Mr Fujita'].set,{'outfit.hat':'captain'});
+ assert.equal(await read(PATHS.looksModule),looksModule(looksText));assert.equal(await read(PATHS.charactersModule),charactersModule(looksText));
+ assert.equal(log.changes.length,1);assert.equal(log.changes[0].id,done.id);assert.ok(log.changes[0].published);
+ assert.deepEqual(log.changes[0].inverse,[{op:'look.set',name:'Mr Fujita',set:{'outfit.hat':fujita.outfit.hat},was:{'outfit.hat':'captain'}}]);
+ assert.deepEqual(await draftChanges(),[],'the draft is empty once published');
  const reset=await applyChange(change([{op:'look.reset',name:'Mr Fujita',was:{'outfit.hat':'captain'}}]),{repo,dryRun:false});
  assert.equal(reset.applied,true,sentences(reset));
- assert.equal(await readFile(resolve(root,PATHS.looks),'utf8'),original,'apply then reset gives back the same bytes');
- const log=JSON.parse(await readFile(resolve(root,PATHS.log),'utf8'));
- assert.equal(log.changes.length,2);assert.deepEqual(log.changes[0].inverse,[{op:'look.set',name:'Mr Fujita',set:{'outfit.hat':fujita.outfit.hat},was:{'outfit.hat':'captain'}}]);
- assert.equal(log.changes[1].after.looks,sha256(original));
+ assert.equal((await publishDraft({repo,dryRun:false})).applied,true);
+ assert.equal(await read(PATHS.looks),original,'apply then reset gives back the same bytes');
+ const after=JSON.parse(await read(PATHS.log));assert.equal(after.changes.length,2);assert.equal(after.changes[1].after.looks,sha256(original));
+ assert.equal((await publishDraft({repo})).nothing.includes('draft is empty'),true);
 });
 
-test('setting a field back to how World draws it removes it from the look',()=>{
- const data={looks:{format:'johansson-looks',version:1,looks:{},characters:{}}};
- const one=applyOps(data,[captain],{made:'m'}).data;
- const two=applyOps(one,[{op:'look.set',name:'Mr Fujita',set:{'outfit.hat':fujita.outfit.hat},was:{'outfit.hat':'captain'}}],{made:'m'}).data;
- assert.deepEqual(two.looks.looks,{});
+test('each field keeps the reason it was changed, and loses it when it goes back to how World draws it',()=>{
+ const data={looks:structuredClone(EMPTY)};
+ const one=applyOps(data,[captain],{made:'m1',note:'He skippered the old ferry once.'}).data;
+ const two=applyOps(one,[{op:'look.set',name:'Mr Fujita',set:{'hair.colour':'#9a9a96'},was:{'hair.colour':fujita.hair.colour},note:'Grey from forty years at sea.'}],{made:'m2',note:'Another change of his.'}).data;
+ assert.deepEqual(two.looks.looks['Mr Fujita'].notes,{'hair.colour':'Grey from forty years at sea.','outfit.hat':'He skippered the old ferry once.'});
+ const three=applyOps(two,[{op:'look.set',name:'Mr Fujita',set:{'outfit.hat':fujita.outfit.hat},was:{'outfit.hat':'captain'}}],{made:'m3',note:'The hat goes back again.'}).data;
+ assert.deepEqual(three.looks.looks['Mr Fujita'],{set:{'hair.colour':'#9a9a96'},notes:{'hair.colour':'Grey from forty years at sea.'},made:'m3'});
  assert.deepEqual(data.looks.looks,{},'applyOps never changes its input');
 });
 
@@ -74,19 +96,32 @@ test('a stale `was` is a conflict, reported field by field, and nothing is overw
  assert.deepEqual(await snapshot(),before);
 });
 
-test('refuses unknown keys, unknown steps, wrong names, steps not switched on yet and changes over the limits',async()=>{
- const before=await snapshot();
+test('refuses unknown keys and steps, names that are nobody, ages, real brands, and changes over the limits, in plain words',async()=>{
+ const before=await snapshot(),age=name=>({op:'look.set',name,set:{age:'child'},was:{age:baseRecipe(name).age}});
+ const create=(character,id='newcomer')=>({op:'character.create',id,character:{recipe:{},card,...character}});
  const cases=[
   [change([captain],{extra:1}),/field Studio does not know: "extra"/],
   [change([{...captain,colour:'red'}]),/field Studio does not know: "colour"/],
   [change([{op:'look.delete',name:'Mr Fujita'}]),/"look.delete" is not a Studio step/],
+  ...['constructor','__proto__','toString','hasOwnProperty'].map(op=>[change([{op,name:'Mr Fujita'}]),/is not a Studio step/]),
   [change([{...captain,name:'Mr Nobody'}]),/"Mr Nobody" is not a resident World knows/],
+  [change([{...captain,name:'Yuri'}]),/Yuri is now called Thuan/],
+  [change([{...captain,name:'Harbour visitor'}]),/starting template in the maker/],
   [change([{...captain,set:{'outfit.tophat':'x'},was:{'outfit.tophat':'none'}}]),/not a part of a look/],
+  ...['constructor','valueOf'].map(path=>[change([{...captain,set:{[path]:.5},was:{[path]:.5}}]),/not a part of a look/]),
   [change([{...captain,set:{'outfit.hat':'tophat'}}]),/"tophat" is not a choice for outfit.hat/],
   [change([{...captain,set:{'hair.colour':'red'},was:{'hair.colour':fujita.hair.colour}}]),/colour written #rrggbb/],
-  [change([{...captain,set:{age:'child'},was:{age:fujita.age}}]),/a look cannot make them a child/],
+  [change([age('Mr Fujita')]),/Mr Fujita is 73 in World, so is drawn as an elder; a look cannot make them a child/],
+  ...['Grandmother Higa','Thuan','Mina','Johansson'].map(name=>[change([age(name)]),new RegExp(`${name} is drawn as an adult in World; a look cannot make them a child`)]),
   [change([{...captain,was:{}}]),/was is empty/],
   [change([{...captain,was:{'hair.colour':fujita.hair.colour}}]),/was must give today's value/],
+  [change([{...captain,note:'hat'}]),/at least 4 words/],
+  [change([create({name:'Orion Girl'})]),/"orion" is a real brand/],
+  [change([create({name:'Sora',card:{role:'Orion beer rep',why:card.why}})]),/"orion" is a real brand/],
+  [change([create({name:'Aya'})]),/Aya is the name World used to give Nhung/],
+  [change([create({name:'thao'})]),/Thao already lives in World/],
+  [change([create({name:'harbour visitor'})]),/Harbour visitor is a name World already uses/],
+  [change([create({name:'Sora'},'constructor')]),/"constructor" is a word Studio keeps for itself/],
   [change([{op:'product.update',id:'beer',set:{price:300},was:{price:220}}]),/not switched on yet/],
   [change(Array.from({length:51},()=>captain)),/at most 50/],
   [change([captain],{note:'ok'}),/at least 4 words/],
@@ -96,27 +131,73 @@ test('refuses unknown keys, unknown steps, wrong names, steps not switched on ye
   [{...change([captain]),format:'something-else'},/format must be/],
  ];
  for(const [file,expected] of cases){const r=await applyChange(file,{repo,dryRun:false});assert.equal(r.ok,false,String(expected));assert.match(sentences(r),expected);}
+ // A step with a name every object has is plain "not a step", never a crash, also in validate (target change).
+ for(const op of ['constructor','__proto__','toString'])assert.match(validateChange(change([{op}])).problems[0].sentence,/is not a Studio step/);
  assert.deepEqual(await snapshot(),before,'a refused change writes nothing');
 });
 
-test('a picture must really be a picture, match its checksum and be used by a step',()=>{
- const png=new Uint8Array([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0,0,0,0]),b64=bytes=>Buffer.from(bytes).toString('base64');
- assert.deepEqual(pictureProblems('beer.label.png',{sha256:sha256(png),data:b64(png)}),[]);
- assert.match(pictureProblems('beer.label.png',{sha256:sha256(png),data:b64(Buffer.from('#!/bin/sh\nrm -rf /'))})[0].sentence,/not a PNG, JPEG or WebP/);
- assert.match(pictureProblems('beer.label.png',{sha256:'0'.repeat(64),data:b64(png)})[0].sentence,/does not match its checksum/);
- assert.match(pictureProblems('beer.label.jpg',{sha256:sha256(png),data:b64(png)})[0].sentence,/really a PNG/);
- const r=validateChange(change([captain],{files:{'beer.label.png':{sha256:sha256(png),data:b64(png)}}}));
- assert.match(r.problems.map(p=>p.sentence).join(' '),/No step in this change uses the picture/);
- assert.equal(validateChange(change([captain],{files:{'../beer.png':{sha256:sha256(png),data:b64(png)}}})).ok,false);
+test('an id is used once: a change file that reuses one is refused when applied (a dry run warns); the tools get the next free one',async()=>{
+ const hat=(to,from)=>({op:'look.set',name:'Mrs Sato',set:{'outfit.hat':to},was:{'outfit.hat':from}}),sato=baseRecipe('Mrs Sato').outfit.hat;
+ const first=await applyChange(change([hat('straw',sato)],{id:'2026-10-12T09-15Z-mrs-sato'}),{repo,dryRun:false});
+ assert.equal(first.applied,true,sentences(first));
+ const reused=change([hat('cap','straw')],{id:'2026-10-12T09-15Z-mrs-sato'});
+ const dry=await applyChange(reused,{repo});
+ assert.equal(dry.ok,true);assert.match(dry.warnings.map(w=>w.sentence).join(' '),/already used the id 2026-10-12T09-15Z-mrs-sato.*would be refused/);
+ const refused=await applyChange(reused,{repo,dryRun:false});assert.equal(refused.ok,false);assert.match(sentences(refused),/Give this change an id of its own/);
+ const next=await applyChange(reused,{repo,dryRun:false,uniqueId:true});
+ assert.equal(next.applied,true,sentences(next));assert.equal(next.id,'2026-10-12T09-15Z-mrs-sato-2');
+ assert.deepEqual((await draftChanges()).map(c=>c.id),['2026-10-12T09-15Z-mrs-sato','2026-10-12T09-15Z-mrs-sato-2']);
+ const back=await applyChange(change([hat(sato,'cap')]),{repo,dryRun:false});assert.equal(back.applied,true);
+ assert.equal((await publishDraft({repo,dryRun:false})).applied,true);
+ assert.equal(await read(PATHS.looks),original);
 });
 
-test('writes go only to Studio\'s own files, never through a path that climbs out',async()=>{
- for(const ok of [PATHS.looks,PATHS.log,PATHS.looksModule,PATHS.productsModule,'johansson-town/assets/graphics/labels/beer.r2.webp','output/studio-mcp/portraits/mr-fujita-front-full-512.png'])assert.ok(writable(ok),ok);
- for(const bad of ['.mcp.json','.claude/settings.json','.github/workflows/johansson-town-live.yml','johansson-town/src/avatars/cast.js','johansson-town/data/studio/../../src/game.js',
+test('names every object has are nobody: "constructor" is never a character, and deleting it changes nothing',async()=>{
+ const data={looks:structuredClone(EMPTY)};
+ const gone=applyOps(data,[{op:'character.delete',id:'constructor',was:sha256('null')}]);
+ assert.equal(gone.results[0].status,'unchanged');assert.deepEqual(gone.data,{looks:EMPTY});
+ assert.equal(applyOps(data,[{op:'character.set',id:'constructor',set:{'hair.style':'bob'},was:{'hair.style':'crop'}}]).results[0].status,'conflict');
+ assert.equal(applyOps(data,[{op:'look.reset',name:'constructor',was:{}}]).results[0].status,'unchanged');
+ assert.equal(applyOps(data,[{op:'hasOwnProperty'}]).results[0].status,'conflict');
+ const before=await snapshot();
+ const r=await applyChange(change([{op:'character.delete',id:'constructor',was:sha256('null')}]),{repo,dryRun:false});
+ assert.equal(r.ok,false);assert.match(sentences(r),/keeps for itself/);assert.deepEqual(await snapshot(),before);
+});
+
+test('a picture must really be a picture, of a sane size, match its checksum and be used by a step',()=>{
+ const png=(w=1,h=1)=>{const b=new Uint8Array(33);b.set([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0,0,0,13,0x49,0x48,0x44,0x52]);new DataView(b.buffer).setUint32(16,w);new DataView(b.buffer).setUint32(20,h);return b;};
+ const b64=bytes=>Buffer.from(bytes).toString('base64'),one=png();
+ assert.deepEqual(pictureProblems('beer.label.png',{sha256:sha256(one),data:b64(one)}),[]);
+ assert.match(pictureProblems('beer.label.png',{sha256:sha256(one),data:b64(Buffer.from('#!/bin/sh\nrm -rf /'))})[0].sentence,/not a PNG, JPEG or WebP/);
+ assert.match(pictureProblems('beer.label.png',{sha256:'0'.repeat(64),data:b64(one)})[0].sentence,/does not match its checksum/);
+ assert.match(pictureProblems('beer.label.jpg',{sha256:sha256(one),data:b64(one)})[0].sentence,/really a PNG/);
+ // A tiny file may claim to be enormous: the header is read before anything decodes it.
+ const huge=png(30000,30000);assert.match(pictureProblems('beer.label.png',{sha256:sha256(huge),data:b64(huge)}).map(p=>p.sentence).join(' '),/30000 × 30000 pixels; a picture may be at most 8192/);
+ assert.deepEqual(pictureSize(png(640,480)),{width:640,height:480});
+ const jpeg=Uint8Array.from([0xff,0xd8,0xff,0xe0,0,16,...Array(14).fill(0),0xff,0xc0,0,17,8,0x01,0xe0,0x02,0x80,3,...Array(9).fill(0)]);
+ assert.deepEqual(pictureSize(jpeg),{width:640,height:480});
+ const riff=(chunk,body)=>Uint8Array.from([...Buffer.from('RIFF'),0,0,0,0,...Buffer.from('WEBP'),...Buffer.from(chunk),0,0,0,0,...body]);
+ assert.deepEqual(pictureSize(riff('VP8X',[0,0,0,0,0x7f,0x02,0,0xdf,0x01,0])),{width:640,height:480});
+ assert.deepEqual(pictureSize(riff('VP8 ',[0,0,0,0x9d,0x01,0x2a,0x80,0x02,0xe0,0x01])),{width:640,height:480});
+ const bits=(639)|(479<<14);assert.deepEqual(pictureSize(riff('VP8L',[0x2f,bits&255,bits>>8&255,bits>>16&255,bits>>>24])),{width:640,height:480});
+ assert.match(sizeProblems('x.webp',{width:8000,height:8000})[0].sentence,/40 million pixels/);assert.match(sizeProblems('x.png',null)[0].sentence,/does not say how big/);
+ const r=validateChange(change([captain],{files:{'beer.label.png':{sha256:sha256(one),data:b64(one)}}}));
+ assert.match(r.problems.map(p=>p.sentence).join(' '),/No step in this change uses the picture/);
+ assert.equal(validateChange(change([captain],{files:{'../beer.png':{sha256:sha256(one),data:b64(one)}}})).ok,false);
+});
+
+test('writes go only to Studio\'s own files, never through a path that climbs out, and all of a step or none of it',async()=>{
+ for(const ok of [PATHS.looks,PATHS.log,PATHS.draft,PATHS.looksModule,PATHS.charactersModule,PATHS.productsModule,'johansson-town/assets/graphics/labels/beer.r2.webp','output/studio-mcp/portraits/mr-fujita-front-full-512.png'])assert.ok(writable(ok),ok);
+ for(const bad of ['.mcp.json','.claude/settings.json','.github/workflows/johansson-town-live.yml','johansson-town/src/avatars/cast.js','johansson-town/data/studio/../../src/game.js',PATHS.lock,'johansson-town/data/studio/draft/other.json',
   '../outside.json','/etc/passwd','output/studio-mcp/../../x.png','johansson-town/assets/graphics/labels/Beer.r1.webp','johansson-town/assets/graphics/labels/beer.webp','output/studio-mcp/.hidden/x.png','johansson-town\\data\\studio\\looks.json'])
   assert.equal(writable(bad),false,bad);
  await assert.rejects(repo.write('johansson-town/data/studio/../../../../outside.json','x'),/may not write/);
  await assert.rejects(repo.write('.mcp.json','{}'),/may not write/);
+ const before=await snapshot();
+ await assert.rejects(repo.writeAll([[PATHS.looks,'changed'],['.mcp.json','{}']]),/may not write/);
+ // The second file fails after the first is already written to its temporary file: neither target changes.
+ await assert.rejects(repo.writeAll([[PATHS.looks,'changed'],[PATHS.log,12345]]));
+ assert.deepEqual(await snapshot(),before,'no target changed and no temporary file is left');
 });
 
 test('a symbolic link anywhere on the way is refused, and nothing is written through it',async()=>{
@@ -128,32 +209,92 @@ test('a symbolic link anywhere on the way is refused, and nothing is written thr
   await assert.rejects(applyChange(change([captain]),{repo,dryRun:false}),/link/);
   assert.equal(await readFile(target,'utf8'),original,'the file behind the link is untouched');
   await rm(looks);await writeFile(looks,kept);
-  // A folder on the way (src/avatars) is a link: refused before looks.json is written, so no half change.
+  // A folder on the way (src/avatars) is a link: publishing is refused before any file is written, so no half change.
+  assert.equal((await applyChange(change([captain]),{repo,dryRun:false})).applied,true);
+  const draft=await read(PATHS.draft),log=await read(PATHS.log);
   const avatars=resolve(root,'johansson-town/src/avatars'),moved=resolve(outside,'avatars');
   await mkdir(moved);await copyFile(resolve(avatars,'looks-data.js'),resolve(moved,'looks-data.js'));await rm(avatars,{recursive:true});await symlink(moved,avatars);
-  await assert.rejects(applyChange(change([captain]),{repo,dryRun:false}),/link/);
+  await assert.rejects(publishDraft({repo,dryRun:false}),/link/);
   assert.equal(await readFile(looks,'utf8'),kept,'looks.json was not written either');
+  assert.equal(await read(PATHS.log),log);assert.equal(await read(PATHS.draft),draft,'the draft keeps the change');
   await rm(avatars);await mkdir(avatars);await copyFile(resolve(moved,'looks-data.js'),resolve(avatars,'looks-data.js'));
+  assert.equal((await discardDraft({all:true,repo,dryRun:false})).applied,true);
  }finally{await rm(outside,{recursive:true,force:true});}
 });
 
-test('Studio characters: created, changed and deleted; a resident is never deleted',async()=>{
- const card={role:'Visiting cousin',why:'Thao\'s cousin from Naha, for the summer festival stories.'};
- const created=await applyChange(change([{op:'character.create',id:'aya',character:{name:'Aya',recipe:{hair:{style:'bob'}},card}}]),{repo,dryRun:false});
+test('Studio characters: created, changed and deleted; names are their own; a resident is never deleted',async()=>{
+ const created=await applyChange(change([{op:'character.create',id:'sora',character:{name:'Sora',recipe:{hair:{style:'bob'}},card}}]),{repo,dryRun:false});
  assert.equal(created.applied,true,sentences(created));
- let looks=JSON.parse(await readFile(resolve(root,PATHS.looks),'utf8'));
- assert.equal(looks.characters.aya.recipe.hair.style,'bob');assert.equal(looks.characters.aya.recipe.name,'Aya');
- const changed=await applyChange(change([{op:'character.set',id:'aya',set:{'hair.style':'pigtails'},was:{'hair.style':'bob'}}]),{repo,dryRun:false});
+ const twin=await applyChange(change([{op:'character.create',id:'sora-two',character:{name:'sora',recipe:{},card}}]),{repo,dryRun:false});
+ assert.equal(twin.ok,false);assert.match(sentences(twin),/already called Sora \(id "sora"\)/);
+ let looks=(await readData(repo)).looks;
+ assert.equal(looks.characters.sora.recipe.hair.style,'bob');assert.equal(looks.characters.sora.recipe.name,'Sora');
+ const changed=await applyChange(change([{op:'character.set',id:'sora',set:{'hair.style':'pigtails'},was:{'hair.style':'bob'}}]),{repo,dryRun:false});
  assert.equal(changed.applied,true,sentences(changed));
- looks=JSON.parse(await readFile(resolve(root,PATHS.looks),'utf8'));
- const stale=await applyChange(change([{op:'character.delete',id:'aya',was:'0'.repeat(64)}]),{repo,dryRun:false});
- assert.equal(stale.ok,false);assert.match(sentences(stale),/Aya has changed since/);
- const gone=await applyChange(change([{op:'character.delete',id:'aya',was:recordSha256(looks.characters.aya)}]),{repo,dryRun:false});
+ assert.equal((await publishDraft({repo,dryRun:false})).applied,true);
+ const module=await read(PATHS.charactersModule);assert.match(module,/"name": "Sora"/);
+ assert.equal(await read(PATHS.looksModule),looksModule(original),'a Studio character never touches World\'s looks module (or the guide portraits)');
+ looks=(await readData(repo)).looks;
+ const stale=await applyChange(change([{op:'character.delete',id:'sora',was:'0'.repeat(64)}]),{repo,dryRun:false});
+ assert.equal(stale.ok,false);assert.match(sentences(stale),/Sora has changed since/);
+ const gone=await applyChange(change([{op:'character.delete',id:'sora',was:recordSha256(looks.characters.sora)}]),{repo,dryRun:false});
  assert.equal(gone.applied,true,sentences(gone));
- assert.equal(await readFile(resolve(root,PATHS.looks),'utf8'),original);
- for(const bad of [{op:'character.create',id:'fujita',character:{name:'Mr Fujita',recipe:{},card}},{op:'character.create',id:'aya',character:{name:'Aya',recipe:{},card:{role:'x',why:'too short'}}},{op:'character.delete',id:'Mr Fujita',was:'0'.repeat(64)}]){
+ assert.equal((await publishDraft({repo,dryRun:false})).applied,true);
+ assert.equal(await read(PATHS.looks),original);
+ for(const bad of [{op:'character.create',id:'fujita',character:{name:'Mr Fujita',recipe:{},card}},{op:'character.create',id:'sora',character:{name:'Sora',recipe:{},card:{role:'x',why:'too short'}}},{op:'character.delete',id:'Mr Fujita',was:'0'.repeat(64)}]){
   const r=await applyChange(change([bad]),{repo,dryRun:false});assert.equal(r.ok,false,JSON.stringify(bad));
  }
+});
+
+test('discarding: a drafted change can be taken out, and one that no longer fits stops publishing until it is',async()=>{
+ const sato=baseRecipe('Mrs Sato').outfit.hat;
+ await applyChange(change([{op:'look.set',name:'Mrs Sato',set:{'outfit.hat':'straw'},was:{'outfit.hat':sato}}]),{repo,dryRun:false});
+ await applyChange(change([{op:'look.set',name:'Mrs Sato',set:{'outfit.hat':'cap'},was:{'outfit.hat':'straw'}}]),{repo,dryRun:false});
+ const [first,second]=await draftChanges();
+ const dry=await discardDraft({ids:[first.id],repo});
+ assert.equal(dry.applied,false);assert.match(dry.warnings.join(' '),new RegExp(`${second.id}.*no longer fits`));
+ assert.equal((await discardDraft({ids:[first.id],repo,dryRun:false})).applied,true);
+ const blocked=await publishDraft({repo,dryRun:false});
+ assert.equal(blocked.ok,false);assert.deepEqual(blocked.stale,[second.id]);assert.match(sentences(blocked),/discard_draft/);
+ assert.equal(await read(PATHS.looks),original,'nothing was published');
+ assert.equal((await discardDraft({ids:['nobody'],repo})).ok,false);
+ assert.equal((await discardDraft({all:true,repo,dryRun:false})).applied,true);
+ assert.deepEqual(await draftChanges(),[]);
+});
+
+test('the published looks file is checked whole: notes for every field, dates, ages and names',()=>{
+ const look=(extra={})=>({format:'johansson-looks',version:1,characters:{},looks:{'Mr Fujita':{set:{'outfit.hat':'captain'},notes:{'outfit.hat':'He skippered the old ferry once.'},made:'2026-10-12T09:14:00Z',...extra}}});
+ assert.equal(validateLooks(look()).ok,true,validateLooks(look()).problems.map(p=>p.sentence).join(' '));
+ const words=extra=>validateLooks(look(extra)).problems.map(p=>p.sentence).join(' ');
+ assert.match(words({notes:{'outfit.hat':'<script>alert(1)</script>'}}),/may not contain "<"/);
+ assert.match(words({notes:{'outfit.hat':'Hat.'}}),/at least 4 words/);
+ assert.match(words({notes:{}}),/does not say why outfit\.hat was changed/);
+ assert.match(words({made:'yesterday'}),/made must be the time/);
+ assert.match(words({note:'The old single note.'}),/field Studio does not know: "note"/);
+ const thuan={format:'johansson-looks',version:1,characters:{},looks:{Thuan:{set:{age:'child'},notes:{age:'She looks younger in this one.'},made:'2026-10-12T09:14:00Z'}}};
+ assert.match(validateLooks(thuan).problems.map(p=>p.sentence).join(' '),/Thuan is drawn as an adult/);
+});
+
+test('eight writers in eight processes at once: every change and every log entry is kept (the write lock)',{timeout:240000},async()=>{
+ const at=await makeRoot('studio-lock-'),cli=resolve(town,'tools/studio/cli.mjs'),env={...process.env,JOHANSSON_STUDIO_ROOT:at};
+ try{
+  const names=RESIDENT_GROUPS.townsfolk.filter(name=>baseRecipe(name).outfit.hat!=='captain').slice(0,8);assert.equal(names.length,8);
+  // The command line's dry run writes nothing.
+  const before=await snapshot(at);
+  const dry=JSON.parse((await run(process.execPath,[cli,'character_update',JSON.stringify({name:names[0],set:{'outfit.hat':'captain'},note:'A dry run from the command line.'})],{env,cwd:CODE_ROOT})).stdout);
+  assert.equal(dry.ok,true);assert.equal(dry.dryRun,true);assert.deepEqual(await snapshot(at),before);
+  // A lock left behind by a process that has ended is taken over.
+  const ended=(await run(process.execPath,['-e','console.log(process.pid)'])).stdout.trim();
+  await writeFile(resolve(at,PATHS.lock),`${ended} ${Date.now()} left-behind\n`);
+  const outs=await Promise.all(names.map(name=>run(process.execPath,[cli,'character_update',JSON.stringify({name,set:{'outfit.hat':'captain'},note:`${name} wears a captain's hat for the regatta.`,dryRun:false})],{env,cwd:CODE_ROOT,timeout:200000})));
+  for(const out of outs){const r=JSON.parse(out.stdout);assert.equal(r.applied,true,out.stdout);}
+  const drafted=await draftChanges(at);
+  assert.equal(drafted.length,8,'every writer\'s change is in the draft');assert.equal(new Set(drafted.map(c=>c.id)).size,8);
+  const published=await publishDraft({repo:openRepo(at),dryRun:false});assert.equal(published.applied,true,sentences(published));
+  assert.deepEqual(Object.keys(JSON.parse(await read(PATHS.looks,at)).looks).sort(),[...names].sort());
+  assert.equal(JSON.parse(await read(PATHS.log,at)).changes.length,8);
+  assert.equal(await readFile(resolve(at,PATHS.lock)).catch(()=>null),null,'the lock is gone afterwards');
+ }finally{await rm(at,{recursive:true,force:true});}
 });
 
 test('the data root moves only inside a test run, and real brands are refused in product fields',()=>{

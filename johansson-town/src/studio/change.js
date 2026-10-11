@@ -2,6 +2,7 @@ import {applyLook,readPath,LOOK_PATHS} from '../avatars/looks.js';
 import {baseRecipe} from '../avatars/cast.js';
 import {normalizeRecipe} from '../avatars/recipe.js';
 import {recordSha256} from './sha256.js';
+import {foldName} from './rules.js';
 
 /**
  * Applying a change's steps to Studio's data, with no files, no DOM and no clock: the same function runs on the
@@ -18,6 +19,8 @@ const same=(a,b)=>Object.is(a,b)||(a!==null&&b!==null&&typeof a==='object'&&type
 const shown=v=>v===undefined?'not set':typeof v==='string'?`"${v}"`:JSON.stringify(v);
 const ordered=set=>Object.fromEntries(LOOK_PATHS.filter(p=>Object.hasOwn(set,p)).map(p=>[p,set[p]]));
 const sorted=map=>Object.fromEntries(Object.keys(map).sort().map(k=>[k,map[k]]));
+/** A map's own entry only: a name like "constructor" is nobody, not a function every object has. */
+const own=(map,key)=>map&&Object.hasOwn(map,key)?map[key]:undefined;
 
 /** A resident's look as World draws it with a published look laid over it (and no device wardrobe). */
 export function lookedRecipe(name,set){return set&&Object.keys(set).length?normalizeRecipe(applyLook(baseRecipe(name),set)):baseRecipe(name);}
@@ -37,20 +40,23 @@ function compare(current,set,was,{who,where}){
 
 const handlers={
  'look.set'(data,op,{made,note,where}){
-  const looks=data.looks.looks,entry=looks[op.name],current=lookedRecipe(op.name,entry?.set);
+  const looks=data.looks.looks,entry=own(looks,op.name),current=lookedRecipe(op.name,entry?.set);
   const {changes,conflicts,diff}=compare(current,op.set,op.was,{who:op.name,where});
   if(conflicts.length)return {status:'conflict',conflicts};
   if(!diff.length)return {status:'unchanged',diff};
-  // Fields that end up as World draws them anyway are left out, so a look holds only what Studio changed.
-  const base=baseRecipe(op.name),merged={...(entry?.set||{}),...changes};
+  // Fields that end up as World draws them anyway are left out, so a look holds only what Studio changed; each field
+  // keeps the reason it was changed, so a later change to another field never loses it.
+  const base=baseRecipe(op.name),merged={...(entry?.set||{}),...changes},reason=op.note||note;
+  const notes={...(entry?.notes||{}),...Object.fromEntries(Object.keys(changes).map(path=>[path,reason]))};
   for(const path of Object.keys(merged))if(same(merged[path],readPath(base,path)))delete merged[path];
-  if(Object.keys(merged).length)looks[op.name]={set:ordered(merged),note:op.note||note||entry?.note||'',made};else delete looks[op.name];
+  if(Object.keys(merged).length)looks[op.name]={set:ordered(merged),notes:ordered(Object.fromEntries(Object.keys(merged).map(path=>[path,notes[path]||reason]))),made};
+  else delete looks[op.name];
   data.looks.looks=sorted(looks);
   const back=Object.fromEntries(diff.map(d=>[d.path,d.from]));
   return {status:'applied',diff,inverse:{op:'look.set',name:op.name,set:back,was:ordered(changes)}};
  },
  'look.reset'(data,op,{where}){
-  const looks=data.looks.looks,entry=looks[op.name];
+  const looks=data.looks.looks,entry=own(looks,op.name);
   if(!entry)return {status:'unchanged',diff:[]};
   const have=entry.set||{},conflicts=[];
   for(const path of LOOK_PATHS.filter(p=>Object.hasOwn(have,p)||Object.hasOwn(op.was,p)))if(!same(have[path],op.was[path]))
@@ -63,17 +69,20 @@ const handlers={
  },
  'character.create'(data,op,{made,where}){
   const characters=data.looks.characters,c=op.character,record={name:c.name,recipe:normalizeRecipe({...c.recipe,name:c.name}),card:{role:c.card.role,why:c.card.why},made};
-  const existing=characters[op.id];
+  const existing=own(characters,op.id);
   if(existing){
    const {made:_,...had}=existing,{made:__,...wanted}=record;
    if(same(had,wanted))return {status:'unchanged',diff:[]};
    return {status:'conflict',conflicts:[{where:`${where}.id`,path:'id',expected:undefined,found:op.id,wanted:op.id,sentence:`A Studio character with the id "${op.id}" already exists (${existing.name}); choose another id.`}]};
   }
+  const namesake=Object.keys(characters).find(id=>foldName(characters[id].name)===foldName(c.name));
+  if(namesake)return {status:'conflict',conflicts:[{where:`${where}.character.name`,path:'name',expected:undefined,found:characters[namesake].name,wanted:c.name,
+   sentence:`A Studio character is already called ${characters[namesake].name} (id "${namesake}"); give the new one a name of their own.`}]};
   characters[op.id]=record;data.looks.characters=sorted(characters);
   return {status:'applied',diff:[{path:'character',from:undefined,to:c.name}],inverse:{op:'character.delete',id:op.id,was:recordSha256(record)}};
  },
  'character.set'(data,op,{made,where}){
-  const record=data.looks.characters[op.id];
+  const record=own(data.looks.characters,op.id);
   if(!record)return {status:'conflict',conflicts:[{where:`${where}.id`,path:'id',expected:op.id,found:undefined,wanted:op.id,sentence:`There is no Studio character with the id "${op.id}".`}]};
   const {changes,conflicts,diff}=compare(record.recipe,op.set,op.was,{who:record.name,where});
   if(conflicts.length)return {status:'conflict',conflicts};
@@ -82,7 +91,7 @@ const handlers={
   return {status:'applied',diff,inverse:{op:'character.set',id:op.id,set:Object.fromEntries(diff.map(d=>[d.path,d.from])),was:ordered(changes)}};
  },
  'character.delete'(data,op,{where}){
-  const record=data.looks.characters[op.id];
+  const record=own(data.looks.characters,op.id);
   if(!record)return {status:'unchanged',diff:[]};
   if(recordSha256(record)!==op.was)return {status:'conflict',conflicts:[{where:`${where}.was`,path:'record',expected:op.was,found:recordSha256(record),wanted:undefined,
    sentence:`${record.name} has changed since this change was made; nothing was deleted. Look at them again first.`}]};
@@ -95,7 +104,7 @@ export function applyOps(data,ops,{made='',note=''}={}){
  const next=structuredClone(data),inverse=[],conflicts=[],results=[];
  next.looks??={format:'johansson-looks',version:1,looks:{},characters:{}};next.looks.looks??={};next.looks.characters??={};
  ops.forEach((op,i)=>{
-  const where=`ops[${i}]`,handler=handlers[op?.op];
+  const where=`ops[${i}]`,handler=typeof op?.op==='string'&&Object.hasOwn(handlers,op.op)?handlers[op.op]:null;
   const r=handler?handler(next,op,{made,note,where}):{status:'conflict',conflicts:[{where:`${where}.op`,path:'op',sentence:`"${op?.op}" is not a step this Studio can apply.`}]};
   results.push({op:i,step:op?.op,status:r.status,diff:r.diff||[]});
   if(r.conflicts)conflicts.push(...r.conflicts.map(c=>({op:i,...c})));

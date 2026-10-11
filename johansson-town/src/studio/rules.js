@@ -1,8 +1,9 @@
 import {OPS,OP_NAMES,CHANGE_SCHEMA,ID_PATTERN} from './ops.js';
 import {LOOK_PATHS,LOOK_FIELDS} from '../avatars/looks.js';
-import {RESIDENT_NAMES} from '../avatars/cast.js';
-import {normalizeRecipe,ageClass} from '../avatars/recipe.js';
+import {RESIDENT_NAMES,baseRecipe} from '../avatars/cast.js';
+import {normalizeRecipe} from '../avatars/recipe.js';
 import {PROFILES} from '../people/profiles.js';
+import {RENAMED_RESIDENTS} from '../people/renamed.js';
 import {sha256} from './sha256.js';
 
 /**
@@ -11,13 +12,23 @@ import {sha256} from './sha256.js';
  * wrong and what to do. Nothing that arrives in a change is ever run as code: texts are cleaned, words come from fixed
  * lists, colours are #rrggbb, and pictures must really be pictures.
  */
-export const LIMITS=Object.freeze({bytes:8*1024*1024,ops:50,files:12,image:2*1024*1024,purposeWords:4,
+export const LIMITS=Object.freeze({bytes:8*1024*1024,ops:50,files:12,image:2*1024*1024,purposeWords:4,side:8192,pixels:40e6,
  text:Object.freeze({note:500,lookNote:300,name:24,role:60,why:300})});
 const ID=new RegExp(ID_PATTERN);
 const problem=(where,rule,sentence)=>({where,rule,sentence});
 const quote=v=>typeof v==='string'?`"${v}"`:JSON.stringify(v);
 export const result=(problems=[],warnings=[],extra={})=>({ok:!problems.length,problems,warnings,...extra});
 const words=s=>String(s).trim().split(/\s+/).filter(Boolean).length;
+const MADE=new RegExp(CHANGE_SCHEMA.properties.made.pattern);
+const a=stage=>stage==='adult'||stage==='elder'?'an':'a';
+
+/** A name as people type it: no accents, any case, single spaces ("koji" finds Kōji, "mr fujita" Mr Fujita). */
+export const foldName=s=>String(s).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+/** Names World draws that are not residents, so they have no look of their own to change. */
+export const NOT_RESIDENTS=new Map([['Harbour visitor','Harbour visitor is a starting template in the maker (creator.js), not a resident of World, so there is no look of theirs to change.']]);
+/** Names Studio keeps for itself: a character id may not be one of the names every JavaScript object already has. */
+const RESERVED=new Set([...Object.getOwnPropertyNames(Object.prototype),'__proto__']);
+const renamedTo=name=>Object.hasOwn(RENAMED_RESIDENTS,name)?` ${name} is now called ${RENAMED_RESIDENTS[name]} in World; move the look to ${RENAMED_RESIDENTS[name]}.`:'';
 
 /**
  * A text from outside, made safe: NFKC (so full-width letters and look-alikes become plain ones), trimmed, with no
@@ -80,7 +91,7 @@ export function checkSchema(value,schema,where='change'){
  * Returns {value, clamped?, problem?}.
  */
 export function lookValue(path,value,where=path){
- const field=LOOK_FIELDS[path];
+ const field=Object.hasOwn(LOOK_FIELDS,path)?LOOK_FIELDS[path]:null;
  if(!field)return {problem:problem(where,'unknown-field',`"${path}" is not a part of a look Studio can change. The parts are listed by character_get with options:true.`)};
  if(field.kind==='word'){
   if(typeof value==='string'&&field.words.includes(value))return {value};
@@ -110,16 +121,39 @@ export function validateLookSet(set,{where='set',allowEmpty=false}={}){
 }
 
 const AGE_OF=new Map(PROFILES.map(p=>[p.name,p.age]));
-/** A resident with an age in World keeps the life stage that age gives them: a look changes clothes, not years. */
+/**
+ * A look changes clothes, not years: every resident keeps the life stage World draws them at (from their age, where
+ * their profile has one, else from cast.js), because their walk and their voice stay those of that stage.
+ */
 function ageProblems(name,set,where){
- if(!Object.hasOwn(set,'age')||!AGE_OF.has(name))return [];
- const stage=ageClass(AGE_OF.get(name));
- return set.age===stage?[]:[problem(`${where}.age`,'age',`${name} is ${AGE_OF.get(name)} in World, so is drawn as ${stage==='adult'||stage==='elder'?'an':'a'} ${stage}; a look cannot make them ${set.age==='adult'||set.age==='elder'?'an':'a'} ${set.age}.`)];
+ if(!Object.hasOwn(set,'age')||!RESIDENT_NAMES.includes(name))return [];
+ const stage=baseRecipe(name).age;
+ if(set.age===stage)return [];
+ const drawn=AGE_OF.has(name)?`${name} is ${AGE_OF.get(name)} in World, so is drawn as ${a(stage)} ${stage}`:`${name} is drawn as ${a(stage)} ${stage} in World`;
+ return [problem(`${where}.age`,'age',`${drawn}; a look cannot make them ${a(set.age)} ${set.age}.`)];
+}
+
+/** A resident's name for a look: one World knows, and not a template. */
+function residentProblems(name,where){
+ if(NOT_RESIDENTS.has(name))return [problem(where,'name',NOT_RESIDENTS.get(name))];
+ if(!RESIDENT_NAMES.includes(name))return [problem(where,'unknown-name',`${quote(name)} is not a resident World knows.${renamedTo(name)} character_list lists them; Studio-only characters change with character.set.`)];
+ return [];
+}
+
+/** A Studio character's name: their own, not a resident's, not a name World used to have, and no real brand. */
+function characterNameProblems(name,where,brands){
+ const f=foldName(name),out=[];
+ const resident=RESIDENT_NAMES.find(n=>foldName(n)===f),template=[...NOT_RESIDENTS.keys()].find(n=>foldName(n)===f);
+ if(resident)out.push(problem(where,'name',`${resident} already lives in World; give a Studio character a name of their own, or change the resident's look instead.`));
+ if(template)out.push(problem(where,'name',`${template} is a name World already uses (a template in the maker); give a Studio character a name of their own.`));
+ const former=Object.keys(RENAMED_RESIDENTS).find(n=>foldName(n)===f);
+ if(former)out.push(problem(where,'name',`${former} is the name World used to give ${RENAMED_RESIDENTS[former]}, and old saves and stories still read it as ${RENAMED_RESIDENTS[former]}; choose another name.`));
+ return [...out,...brandProblems(name,where,brands)];
 }
 
 const sameKeys=(a,b)=>{const x=Object.keys(a).sort(),y=Object.keys(b).sort();return x.length===y.length&&x.every((k,i)=>k===y[i]);};
 
-/** Real brand names in a product, brand or label field. `rules` is data/studio/brand-rules.json. */
+/** Real brand names in a label: a product, brand or label field, or a character's name or role. `rules` is data/studio/brand-rules.json. */
 export function brandProblems(text,where,rules){
  if(!rules||typeof text!=='string')return [];
  const plain=text.normalize('NFKC').toLowerCase(),found=[];
@@ -141,7 +175,36 @@ export function pictureKind(bytes){
 }
 export function decodeBase64(data){const bin=atob(data);const out=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out;}
 
-/** A picture in a change file: really a PNG, JPEG or WebP, at most 2 MB, and the bytes its sha256 says. */
+/**
+ * The size a picture says it has, read from its header before anything decodes it: {width, height}, or null when the
+ * header cannot be read. PNG (IHDR), JPEG (the first SOF segment) and WebP (VP8, VP8L, VP8X).
+ */
+export function pictureSize(bytes){
+ const b=bytes,u16=i=>b[i]<<8|b[i+1],u16le=i=>b[i]|b[i+1]<<8,u24le=i=>b[i]|b[i+1]<<8|b[i+2]<<16,u32=i=>(b[i]<<24>>>0)+(b[i+1]<<16|b[i+2]<<8|b[i+3]);
+ const at=(i,text)=>[...text].every((c,j)=>b[i+j]===c.charCodeAt(0));
+ const kind=pictureKind(b);
+ if(kind==='png')return b.length>=24&&at(12,'IHDR')?{width:u32(16),height:u32(20)}:null;
+ if(kind==='jpeg'){
+  for(let i=2;i+9<b.length;){
+   if(b[i]!==0xff){i++;continue;}
+   const marker=b[i+1];
+   if(marker===0xff){i++;continue;}
+   if(marker===0xd8||marker===0x01||(marker>=0xd0&&marker<=0xd7)){i+=2;continue;}
+   if(marker===0xda||marker===0xd9)return null;
+   if(marker>=0xc0&&marker<=0xcf&&![0xc4,0xc8,0xcc].includes(marker))return {width:u16(i+7),height:u16(i+5)};
+   i+=2+u16(i+2);
+  }
+  return null;
+ }
+ if(kind==='webp'){
+  if(at(12,'VP8 ')&&b.length>=30)return {width:u16le(26)&0x3fff,height:u16le(28)&0x3fff};
+  if(at(12,'VP8L')&&b.length>=25){const bits=u16le(21)|u16le(23)<<16;return {width:(bits&0x3fff)+1,height:((bits>>>14)&0x3fff)+1};}
+  if(at(12,'VP8X')&&b.length>=30)return {width:u24le(24)+1,height:u24le(27)+1};
+ }
+ return null;
+}
+
+/** A picture in a change file: really a PNG, JPEG or WebP, at most 2 MB and 8192 pixels a side, and the bytes its sha256 says. */
 export function pictureProblems(name,file,where=`files.${name}`){
  let bytes;
  try{bytes=decodeBase64(file.data);}catch{return [problem(where,'picture',`${name} is not readable base64.`)];}
@@ -150,8 +213,17 @@ export function pictureProblems(name,file,where=`files.${name}`){
  const kind=pictureKind(bytes);
  if(!kind)out.push(problem(where,'picture',`${name} is not a PNG, JPEG or WebP picture.`));
  else if(!new RegExp(`\\.(${kind==='jpeg'?'jpe?g':kind})$`).test(name))out.push(problem(where,'picture',`${name} is really a ${kind.toUpperCase()} picture; its name must end in .${kind==='jpeg'?'jpg':kind}.`));
+ if(kind)out.push(...sizeProblems(name,pictureSize(bytes),where));
  if(sha256(bytes)!==file.sha256)out.push(problem(where,'picture',`${name} does not match its checksum: it changed on the way. Save the change file again.`));
  return out;
+}
+
+/** A picture's size, checked before it is decoded: a small file may still claim to be enormous. */
+export function sizeProblems(name,size,where=name){
+ if(!size||!size.width||!size.height)return [problem(where,'picture',`${name} does not say how big it is; save it again as an ordinary PNG, JPEG or WebP.`)];
+ if(Math.max(size.width,size.height)>LIMITS.side||size.width*size.height>LIMITS.pixels)
+  return [problem(where,'picture',`${name} is ${size.width} × ${size.height} pixels; a picture may be at most ${LIMITS.side} pixels a side and ${LIMITS.pixels/1e6} million pixels in all.`)];
+ return [];
 }
 
 /** The pictures a step uses. No step of stage 1 uses one; labels arrive with products in stage 2. */
@@ -161,7 +233,7 @@ export const picturesUsed=()=>new Set();
  * A change file, checked before anything is read or written. `bytes` is the size of the file as received.
  * Returns {ok, problems, warnings, change}: `change` has its texts cleaned and its values normalised.
  */
-export function validateChange(change,{bytes}={}){
+export function validateChange(change,{bytes,brands}={}){
  const problems=[],warnings=[];
  if(!change||typeof change!=='object'||Array.isArray(change))return result([problem('change','type','This is not a Johansson Studio change file.')]);
  const size=bytes??new TextEncoder().encode(JSON.stringify(change)).length;
@@ -173,7 +245,7 @@ export function validateChange(change,{bytes}={}){
   if(!note.problems.length&&words(note.text)<LIMITS.purposeWords)problems.push(problem('change.note','purpose',`Say why in at least ${LIMITS.purposeWords} words; the note is how World remembers the reason for a change.`));
  }
  const ops=Array.isArray(change.ops)?change.ops.slice(0,LIMITS.ops+1):[];
- out.ops=ops.map((op,i)=>{const r=validateOp(op,i);problems.push(...r.problems);warnings.push(...r.warnings);return r.op;});
+ out.ops=ops.map((op,i)=>{const r=validateOp(op,i,{brands});problems.push(...r.problems);warnings.push(...r.warnings);return r.op;});
  const used=picturesUsed(out.ops);
  for(const [name,file] of Object.entries(change.files&&typeof change.files==='object'?change.files:{})){
   if(!file||typeof file!=='object'||typeof file.data!=='string')continue;
@@ -183,19 +255,17 @@ export function validateChange(change,{bytes}={}){
  return result(problems,warnings,{change:out});
 }
 
-/** One step, checked against its schema and then for sense. Returns {op, problems, warnings}. */
-export function validateOp(op,i){
+/** One step, checked against its schema and then for sense. `brands` is data/studio/brand-rules.json. Returns {op, problems, warnings}. */
+export function validateOp(op,i,{brands}={}){
  const where=`ops[${i}]`,problems=[],warnings=[];
  if(!op||typeof op!=='object'||Array.isArray(op))return {op,problems:[problem(where,'type',`${where} is not a step.`)],warnings};
- const spec=OPS[op.op];
+ const spec=typeof op.op==='string'&&Object.hasOwn(OPS,op.op)?OPS[op.op]:null;
  if(!spec)return {op,problems:[problem(`${where}.op`,'unknown-op',`${quote(String(op.op).slice(0,40))} is not a Studio step. The steps are: ${OP_NAMES.join(', ')}.`)],warnings};
  problems.push(...checkSchema(op,spec.schema,where));
  if(!spec.ready)problems.push(problem(`${where}.op`,'not-yet',`"${op.op}" is not switched on yet: products move into Studio's data in stage 2.`));
  if(problems.length)return {op,problems,warnings};
  const out={...op};
- if(op.op.startsWith('look.')){
-  if(!RESIDENT_NAMES.includes(op.name))problems.push(problem(`${where}.name`,'unknown-name',`${quote(op.name)} is not a resident World knows. character_list lists them; Studio-only characters change with character.set.`));
- }
+ if(op.op.startsWith('look.'))problems.push(...residentProblems(op.name,`${where}.name`));
  if(op.op==='look.set'||op.op==='character.set'){
   const set=validateLookSet(op.set,{where:`${where}.set`}),was=validateLookSet(op.was,{where:`${where}.was`});
   problems.push(...set.problems,...was.problems);
@@ -205,38 +275,63 @@ export function validateOp(op,i){
   out.set=set.set;out.was=was.set;
  }
  if(op.op==='look.reset'){const was=validateLookSet(op.was,{where:`${where}.was`,allowEmpty:true});problems.push(...was.problems);out.was=was.set;}
- if(op.note!==undefined){const note=cleanText(op.note,{where:`${where}.note`,max:LIMITS.text.lookNote,min:0,label:'The note'});problems.push(...note.problems);out.note=note.text;}
- if(op.op.startsWith('character.')&&!ID.test(op.id))problems.push(problem(`${where}.id`,'id',`A character's id is 2 to 40 small letters, digits and hyphens, starting with a letter.`));
+ if(op.note!==undefined){
+  const note=cleanText(op.note,{where:`${where}.note`,max:LIMITS.text.lookNote,min:0,label:'The note'});problems.push(...note.problems);out.note=note.text;
+  if(!note.problems.length&&note.text&&words(note.text)<LIMITS.purposeWords)problems.push(problem(`${where}.note`,'purpose',`Say why in at least ${LIMITS.purposeWords} words (or leave the step's note out, and the change's note is used).`));
+ }
+ if(op.op.startsWith('character.')){
+  if(!ID.test(op.id))problems.push(problem(`${where}.id`,'id',`A character's id is 2 to 40 small letters, digits and hyphens, starting with a letter.`));
+  else if(RESERVED.has(op.id))problems.push(problem(`${where}.id`,'id',`"${op.id}" is a word Studio keeps for itself; give the character another id.`));
+ }
  if(op.op==='character.create'){
   const c=op.character,name=cleanText(c.name,{where:`${where}.character.name`,max:LIMITS.text.name,label:'The name'});
   const role=cleanText(c.card.role,{where:`${where}.character.card.role`,max:LIMITS.text.role,label:'The role'});
   const why=cleanText(c.card.why,{where:`${where}.character.card.why`,max:LIMITS.text.why,label:'Why they exist'});
   problems.push(...name.problems,...role.problems,...why.problems);
-  if(RESIDENT_NAMES.includes(name.text))problems.push(problem(`${where}.character.name`,'name',`${name.text} already lives in World; give a Studio character a name of their own, or change the resident's look instead.`));
+  if(!name.problems.length)problems.push(...characterNameProblems(name.text,`${where}.character.name`,brands));
+  if(!role.problems.length)problems.push(...brandProblems(role.text,`${where}.character.card.role`,brands));
   if(!why.problems.length&&words(why.text)<LIMITS.purposeWords)problems.push(problem(`${where}.character.card.why`,'purpose',`Say who they are for and why they exist in at least ${LIMITS.purposeWords} words; nobody in Johansson World is random.`));
   out.character={name:name.text,recipe:normalizeRecipe({...c.recipe,name:name.text}),card:{role:role.text,why:why.text}};
  }
  return {op:out,problems,warnings};
 }
 
-/** A whole looks file, checked (CI, build-data, publish_check). */
-export function validateLooks(file){
+/**
+ * A whole looks file, checked (CI, publish_check, and the draft before it is published). Each published look keeps,
+ * for every field it changes, the reason it was changed (`notes`) and when it last changed (`made`).
+ */
+export function validateLooks(file,{brands}={}){
  const problems=[],where='looks.json';
  if(!file||file.format!=='johansson-looks'||file.version!==1)return result([problem(where,'format','looks.json is not a Johansson looks file (format "johansson-looks", version 1).')]);
  for(const key of Object.keys(file))if(!['format','version','looks','characters'].includes(key))problems.push(problem(`${where}.${key}`,'unknown-key',`looks.json has a field Studio does not know: "${key}".`));
  for(const [name,look] of Object.entries(file.looks||{})){
   const at=`looks.${name}`;
-  if(!RESIDENT_NAMES.includes(name))problems.push(problem(at,'unknown-name',`${quote(name)} is not a resident World knows.`));
+  problems.push(...residentProblems(name,at));
   const set=validateLookSet(look?.set,{where:`${at}.set`});problems.push(...set.problems,...ageProblems(name,set.set,`${at}.set`));
   if(set.clamped.length)problems.push(problem(`${at}.set`,'range',`${at} has numbers outside 0 to 1.`));
-  for(const key of Object.keys(look||{}))if(!['set','note','made'].includes(key))problems.push(problem(`${at}.${key}`,'unknown-key',`${at} has a field Studio does not know: "${key}".`));
+  for(const key of Object.keys(look||{}))if(!['set','notes','made'].includes(key))problems.push(problem(`${at}.${key}`,'unknown-key',`${at} has a field Studio does not know: "${key}".`));
+  const notes=look?.notes;
+  if(!notes||typeof notes!=='object'||Array.isArray(notes))problems.push(problem(`${at}.notes`,'notes',`${at} must keep, for each field it changes, why it was changed (notes).`));
+  else{
+   for(const path of Object.keys(look?.set||{}))if(!Object.hasOwn(notes,path))problems.push(problem(`${at}.notes`,'notes',`${at} does not say why ${path} was changed.`));
+   for(const [path,text] of Object.entries(notes)){
+    if(!Object.hasOwn(look?.set||{},path)){problems.push(problem(`${at}.notes.${path}`,'notes',`${at} has a note for ${path}, which the look does not change.`));continue;}
+    const note=cleanText(text,{where:`${at}.notes.${path}`,max:LIMITS.text.lookNote,label:`The note for ${path}`});problems.push(...note.problems);
+    if(!note.problems.length&&words(note.text)<LIMITS.purposeWords)problems.push(problem(`${at}.notes.${path}`,'purpose',`The note for ${name}'s ${path} must say why in at least ${LIMITS.purposeWords} words.`));
+   }
+  }
+  if(typeof look?.made!=='string'||!MADE.test(look.made))problems.push(problem(`${at}.made`,'made',`${at}.made must be the time the look last changed, written like 2026-10-11T09:14:00Z.`));
  }
  for(const [id,character] of Object.entries(file.characters||{})){
   const at=`characters.${id}`;
-  if(!ID.test(id))problems.push(problem(at,'id',`${quote(id)} is not a character id (2 to 40 small letters, digits and hyphens).`));
+  if(!ID.test(id)||RESERVED.has(id))problems.push(problem(at,'id',`${quote(id)} is not a character id (2 to 40 small letters, digits and hyphens).`));
   for(const key of Object.keys(character||{}))if(!['name','recipe','card','made'].includes(key))problems.push(problem(`${at}.${key}`,'unknown-key',`${at} has a field Studio does not know: "${key}".`));
-  const r=validateOp({op:'character.create',id,character:{name:character?.name,recipe:character?.recipe,card:character?.card}},0);
+  if(typeof character?.made!=='string'||!MADE.test(character.made))problems.push(problem(`${at}.made`,'made',`${at}.made must be the time the character last changed, written like 2026-10-11T09:14:00Z.`));
+  const r=validateOp({op:'character.create',id:ID.test(id)&&!RESERVED.has(id)?id:'x-invalid',character:{name:character?.name,recipe:character?.recipe,card:character?.card}},0,{brands});
   problems.push(...r.problems.map(p=>({...p,where:p.where.replace('ops[0].character',at)})));
  }
+ const names=new Map();
+ for(const [id,character] of Object.entries(file.characters||{})){const f=foldName(character?.name??'');
+  if(names.has(f))problems.push(problem(`characters.${id}.name`,'name',`Two Studio characters are called ${character.name} (${names.get(f)} and ${id}); each needs a name of their own.`));else names.set(f,id);}
  return result(problems);
 }

@@ -4,134 +4,161 @@
  * turns it into the server's input), and its work loads only when it is first called: World's code and the core on
  * the first call, Chromium only for a render.
  *
- * Write tools are dry runs unless called with dryRun:false. None of them commits or pushes.
+ * Write tools are dry runs unless called with dryRun:false. A change the creator says yes to goes into Studio's draft
+ * (data/studio/draft, which git ignores); publish_draft writes the draft into World's data, and only when the creator
+ * says "update World". None of them commits or pushes.
  */
-const NAME={type:'string',minLength:1,maxLength:40,description:'A resident\'s name as World writes it (e.g. "Mr Fujita", "Kōji"), or a Studio character\'s id or name.'};
+const NAME={type:'string',minLength:1,maxLength:40,description:'A resident\'s name as World writes it (e.g. "Mr Fujita", "Kōji"; accents and capitals may be left out), or a Studio character\'s id or name.'};
 const SET={type:'object',minProperties:1,maxProperties:80,propertyNames:{pattern:'^[a-z][a-zA-Z]*(\\.[a-z][a-zA-Z]*)?$'},additionalProperties:{type:['string','number','boolean']},
  description:'Fields to change, by path: {"outfit.hat":"captain","hair.colour":"#9a9a96"}. character_get with options:true lists every path and its choices.'};
-const NOTE={type:'string',minLength:1,maxLength:500,description:'Why, in at least four words. It is kept with the look and in the change log.'};
-const DRY={type:'boolean',default:true,description:'true (the default) only reports what would change; false writes it (never commits).'};
+const NOTE={type:'string',minLength:1,maxLength:500,description:'Why, in at least four words. It is kept with each field it changes and in the change log.'};
+const DRY={type:'boolean',default:true,description:'true (the default) only reports what would change; false writes it (to Studio\'s draft, never to git).'};
 const object=(properties,required=[])=>({type:'object',additionalProperties:false,properties,required});
 
 let core;
 /** World's code and Studio's core, loaded on the first call. */
 async function load(){
- core??=Promise.all([import('../../src/avatars/cast.js'),import('../../src/avatars/looks.js'),import('../../src/avatars/recipe.js'),
+ core??=Promise.all([import('../../src/avatars/cast.js'),import('../../src/avatars/looks.js'),import('../../src/avatars/recipe.js'),import('../../src/avatars/personality.js'),
   import('../../src/studio/change.js'),import('../../src/studio/rules.js'),import('../../src/studio/sha256.js'),import('./apply.mjs'),import('./repo.mjs')])
-  .then(([cast,looks,recipe,change,rules,sha,apply,repo])=>({cast,looks,recipe,change,rules,sha,apply,repo}));
+  .then(([cast,looks,recipe,personality,change,rules,sha,apply,repo])=>({cast,looks,recipe,personality,change,rules,sha,apply,repo}));
  return core;
 }
 
 /** A file of World's code (always the real checkout, also when a test points the data elsewhere). */
 async function codeFile(path){const [{readFile},{resolve},c]=await Promise.all([import('node:fs/promises'),import('node:path'),load()]);return readFile(resolve(c.repo.CODE_ROOT,path),'utf8');}
-const slug=s=>String(s).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,30);
+const slug=s=>String(s).normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,30);
 const stamp=(made,what)=>`${made.slice(0,19).replace(/:/g,'-')}Z-${slug(what).replace(/^[^a-z0-9]+/,'')||'change'}`;
+const withoutProfile=({profile,...rest})=>rest;
+const own=(map,key)=>map&&Object.hasOwn(map,key)?map[key]:null;
+const sentenceList=list=>[...new Set((list||[]).map(p=>p?.sentence??p))];
+const clampSentence=c=>`${c.path} was ${c.given}; it runs from 0 to 1, so ${c.used} is used.`;
+const REFUSED='Nothing was written. Fix the problems above and call again.';
 
-/** Everything about the people Studio knows, read fresh from the data each call. */
+/** Everything about the people Studio knows: the published data with the draft laid over it, read fresh each call. */
 async function people(ctx){
- const c=await load(),{looks}=await c.apply.readData(ctx.repo);
+ const c=await load(),data=await c.apply.readData(ctx.repo),{looks,published}=data;
  let guide=[];try{guide=JSON.parse(await codeFile('johansson-town/guide/residents.json'));}catch{}
  const {PROFILES}=await import('../../src/people/profiles.js');
  const roles=new Map([...PROFILES.map(p=>[p.name,p.role]),...guide.map(g=>[g.name,g.role])]);
  const groupOf=name=>Object.entries(c.cast.RESIDENT_GROUPS).find(([,names])=>names.includes(name))?.[0];
- /** A resident by name, or a Studio character by id or name. */
+ const sha=v=>c.sha.recordSha256(v??null);
+ const resident=name=>{const look=own(looks.looks,name),was=own(published.looks,name);
+  return {kind:'resident',name,group:groupOf(name),look,publishedLook:was,unpublished:sha(look?.set)!==sha(was?.set),recipe:c.change.lookedRecipe(name,look?.set),role:roles.get(name)||''};};
+ const studio=id=>{const r=looks.characters[id],was=own(published.characters,id);
+  return {kind:'studio',id,name:r.name,group:'studio',record:r,unpublished:!was||sha(was)!==sha(r),recipe:r.recipe,role:r.card?.role||''};};
+ /** A resident by name, or a Studio character by id or name; failing that, the one person whose name matches without accents or capitals. */
  function find(name){
-  if(c.cast.RESIDENT_NAMES.includes(name)){const look=looks.looks[name]||null;
-   return {kind:'resident',name,group:groupOf(name),look,recipe:c.change.lookedRecipe(name,look?.set),role:roles.get(name)||''};}
-  const id=Object.hasOwn(looks.characters,name)?name:Object.keys(looks.characters).find(k=>looks.characters[k].name===name);
-  if(id){const r=looks.characters[id];return {kind:'studio',id,name:r.name,group:'studio',record:r,recipe:r.recipe,role:r.card?.role||''};}
-  return null;
+  if(c.cast.RESIDENT_NAMES.includes(name))return resident(name);
+  if(Object.hasOwn(looks.characters,name))return studio(name);
+  const named=Object.keys(looks.characters).find(k=>looks.characters[k].name===name);if(named)return studio(named);
+  const f=c.rules.foldName(name);
+  const matches=[...c.cast.RESIDENT_NAMES.filter(n=>c.rules.foldName(n)===f).map(resident),
+   ...Object.keys(looks.characters).filter(k=>k===f||c.rules.foldName(looks.characters[k].name)===f).map(studio)];
+  if(matches.length>1)throw Error(`Several people match ${JSON.stringify(name)}: ${matches.map(m=>m.id?`${m.name} (id ${m.id})`:m.name).join(', ')}. Give the exact name or id.`);
+  return matches[0]||null;
  }
- return {c,looks,find,roles,groupOf};
+ /** Nobody by that name: say so, and why when it is a name World uses for something else. */
+ function unknown(name){
+  const template=[...c.rules.NOT_RESIDENTS.keys()].find(n=>c.rules.foldName(n)===c.rules.foldName(name));
+  return Error(template?c.rules.NOT_RESIDENTS.get(template):`Nobody called ${JSON.stringify(name)} lives in World or in Studio. character_list lists everybody.`);
+ }
+ return {c,data,looks,published,find,unknown,roles,groupOf,resident,studio};
 }
-const unknown=name=>Object.assign(Error(`Nobody called ${JSON.stringify(name)} lives in World or in Studio. character_list lists everybody.`),{problems:[]});
 
-/** Make a change file for some steps, then dry-run or apply it. */
+/** Make a change file for some steps (its id from the time, what it is about and the steps), then dry-run or apply it. */
 async function change(ctx,{ops,note,dryRun,what}){
  const c=await load(),made=new Date().toISOString(),{fingerprint}=await c.apply.readData(ctx.repo);
- const file={format:'johansson-studio-change',version:1,id:stamp(made,what),made,by:'claude',note,base:{looks:fingerprint.looks},ops};
- const r=await c.apply.applyChange(file,{dryRun,repo:ctx.repo});
- return {...r,change:file};
+ const id=`${stamp(made,what)}-${c.sha.recordSha256(ops).slice(0,6)}`;
+ const file={format:'johansson-studio-change',version:1,id,made,by:'claude',note,base:{looks:fingerprint.looks},ops};
+ const r=await c.apply.applyChange(file,{dryRun,repo:ctx.repo,uniqueId:true});
+ return {...r,change:{...file,id:r.id||id}};
 }
-const sentenceList=list=>(list||[]).map(p=>p.sentence);
 function report(r,extra={}){
  return {ok:r.ok,applied:r.applied,dryRun:r.dryRun,...extra,results:r.results,problems:sentenceList(r.problems),conflicts:sentenceList(r.conflicts),
   warnings:sentenceList(r.warnings),writes:r.writes,nothing:r.nothing,change:r.change,
-  next:!r.ok?'Nothing was written. Fix the problems above and call again.':r.dryRun?'A dry run: nothing was written. Call again with dryRun:false to apply it.':r.applied?'Written to Studio\'s data (not committed). World shows it once the creator says "update World" and it is published.':undefined};
+  next:!r.ok?REFUSED:r.dryRun?'A dry run: nothing was written. Show the creator, and call again with dryRun:false when they say yes.':
+   r.applied?'Added to Studio\'s draft (data/studio/draft, outside git): the tools and portraits show it now. World and Studio on the iPad show it once the creator says "update World" (publish_draft).':undefined};
 }
 
 export const TOOLS=[
- {name:'character_list',readOnly:true,description:'List the people Studio can draw: World\'s cast, its neighbours, the townsfolk (drawn from their name and personality), and Studio-only characters. Says whose look has been changed in Studio.',
-  input:object({group:{enum:['cast','neighbour','townsfolk','studio']},query:{type:'string',maxLength:40,description:'Part of a name or role.'}}),
+ {name:'character_list',readOnly:true,description:'List the people Studio can draw: World\'s cast, its neighbours, the townsfolk (drawn from their name and personality), and Studio-only characters. Says whose look Studio has changed, and which changes are still only in Studio\'s draft (unpublished).',
+  input:object({group:{enum:['cast','neighbour','townsfolk','studio']},query:{type:'string',maxLength:40,description:'Part of a name or role (accents and capitals may be left out).'}}),
   async run({group,query},ctx){
-   const {c,looks,roles,groupOf}=await people(ctx),q=query?.normalize('NFKC').toLowerCase();
-   const all=[...c.cast.RESIDENT_NAMES.map(name=>({name,group:groupOf(name),edited:Object.hasOwn(looks.looks,name),role:roles.get(name)||''})),
-    ...Object.entries(looks.characters).map(([id,r])=>({name:r.name,id,group:'studio',edited:true,role:r.card?.role||''}))];
-   const list=all.filter(p=>(!group||p.group===group)&&(!q||(p.name+' '+p.role).normalize('NFKC').toLowerCase().includes(q)));
+   const {c,looks,resident,studio}=await people(ctx),q=query===undefined?null:c.rules.foldName(query);
+   const all=[...c.cast.RESIDENT_NAMES.map(resident),...Object.keys(looks.characters).map(studio)]
+    .map(p=>({name:p.name,...p.id?{id:p.id}:{},group:p.group,role:p.role,edited:p.kind==='studio'||!!p.look,unpublished:p.unpublished}));
+   const list=all.filter(p=>(!group||p.group===group)&&(!q||c.rules.foldName(p.name+' '+p.role).includes(q)));
    return {count:list.length,characters:list};
   }},
- {name:'character_get',readOnly:true,description:'One person\'s recipe as World draws them today (with any published Studio look; never this device\'s private wardrobe), their Studio look if any, where the look comes from, and their profile (gait and voice, which a look never changes). options:true adds every field a look may set, with its choices.',
+ {name:'character_get',readOnly:true,description:'One person\'s recipe as Studio draws them now (World\'s drawing with any Studio look, drafted or published; never this device\'s private wardrobe), their Studio look (fields and why), what is published, where the look comes from, and their profile (gait and voice, which a look never changes). options:true adds every field a look may set, with its choices.',
   input:object({name:NAME,options:{type:'boolean',default:false}},['name']),
   async run({name,options},ctx){
-   const {c,find}=await people(ctx),who=find(name);if(!who)throw unknown(name);
+   const {c,find,unknown}=await people(ctx),who=find(name);if(!who)throw unknown(name);
    const source=who.kind==='studio'?'a Studio-only character (data/studio/looks.json); World does not place them yet':
     {cast:'drawn in src/avatars/cast.js (CAST_RECIPES)',neighbour:'drawn in src/avatars/cast.js (NEIGHBOUR_RECIPES)',townsfolk:'made from their name and personality (cast.js baseRecipe)'}[who.group];
    const {profile,...recipe}=who.recipe;
-   return {name:who.name,id:who.id,group:who.group,role:who.role,source,override:who.kind==='resident'?who.look:null,card:who.record?.card,recipe,profile,
-    note:'profile (gait and voice) is read-only: a look changes how somebody looks, not who they are.',
+   return {name:who.name,id:who.id,group:who.group,role:who.role,source,look:who.kind==='resident'?who.look:null,
+    published:who.kind==='resident'?who.publishedLook:undefined,unpublished:who.unpublished,card:who.record?.card,recipe,profile,
+    note:'profile (gait and voice) is read-only: a look changes how somebody looks, not who they are. A resident keeps the life stage World draws them at.',
     options:options?c.looks.LOOK_FIELDS:undefined};
   }},
- {name:'character_update',description:'Change fields of a resident\'s look (published to World when the creator says "update World") or of a Studio-only character. Numbers outside 0..1 are clamped and reported. Dry run by default.',
+ {name:'character_update',destructive:true,description:'Change fields of a resident\'s look or of a Studio-only character. Numbers outside 0..1 are clamped and reported. Dry run by default; with dryRun:false the change goes into Studio\'s draft, and World shows it once the creator says "update World".',
   input:object({name:NAME,set:SET,note:NOTE,dryRun:DRY},['name','set','note']),
   async run({name,set,note,dryRun=true},ctx){
-   const {c,find}=await people(ctx),who=find(name);if(!who)throw unknown(name);
-   const was=Object.fromEntries(Object.keys(set).filter(p=>c.looks.LOOK_PATHS.includes(p)).map(p=>[p,c.looks.readPath(who.recipe,p)]));
-   const op=who.kind==='resident'?{op:'look.set',name:who.name,set,was,note}:{op:'character.set',id:who.id,set,was};
-   const r=await change(ctx,{ops:[op],note,dryRun,what:`${who.name} look`});
-   // The recipe as it is (or, in a dry run, would be) after the change: the steps again over today's data.
-   const after=r.ok?c.change.applyOps({looks:(await c.apply.readData(ctx.repo)).looks},c.rules.validateChange(r.change).change.ops,{made:r.change.made}).data.looks:null;
-   const now=after&&(who.kind==='resident'?c.change.lookedRecipe(who.name,after.looks[who.name]?.set):after.characters[who.id]?.recipe);
-   return report(r,{name:who.name,recipe:now?(({profile,...rest})=>rest)(now):undefined,diff:r.results?.flatMap(x=>x.diff)||[],
-    clamped:(r.warnings||[]).filter(w=>w.rule==='clamped').map(w=>w.sentence)});
+   const {c,find,unknown}=await people(ctx),who=find(name);if(!who)throw unknown(name);
+   const checked=c.rules.validateLookSet(set);
+   if(checked.problems.length)return {ok:false,applied:false,dryRun,name:who.name,problems:sentenceList(checked.problems),next:REFUSED};
+   const was=Object.fromEntries(Object.keys(checked.set).map(p=>[p,c.looks.readPath(who.recipe,p)]));
+   const op=who.kind==='resident'?{op:'look.set',name:who.name,set:checked.set,was,note}:{op:'character.set',id:who.id,set:checked.set,was};
+   const r=await change(ctx,{ops:[op],note,dryRun,what:`${who.id||who.name} look`});
+   const after=r.looks&&(who.kind==='resident'?c.change.lookedRecipe(who.name,own(r.looks.looks,who.name)?.set):own(r.looks.characters,who.id)?.recipe);
+   return report(r,{name:who.name,recipe:after?withoutProfile(after):undefined,diff:r.results?.flatMap(x=>x.diff)||[],clamped:checked.clamped.map(clampSentence)});
   }},
- {name:'character_create',description:'Add a Studio-only character, starting from a resident or Studio character (from) or from the plain default, with some fields set. World does not place them: a World resident needs a home, a routine and a personality (an open decision for the creator). Dry run by default.',
+ {name:'character_create',description:'Add a Studio-only character, starting from how a resident or Studio character looks (from) or from the plain default, with some fields set. They get a profile of their own (from their name), never the profile of the person they start from. World does not place them: a World resident needs a home, a routine and a personality (an open decision for the creator). Dry run by default.',
   input:object({name:{type:'string',minLength:1,maxLength:24},id:{type:'string',pattern:'^[a-z][a-z0-9-]{1,39}$'},from:NAME,set:{...SET,minProperties:0},
    card:object({role:{type:'string',minLength:1,maxLength:60},why:{type:'string',minLength:1,maxLength:300,description:'Who they are for and why they exist, in at least four words.'}},['role','why']),note:{...NOTE,description:'Why, in at least four words (defaults to the card\'s why).'},dryRun:DRY},['name','card']),
   async run({name,id,from,set={},card,note,dryRun=true},ctx){
-   const {c,find}=await people(ctx);let start=c.recipe.DEFAULT_RECIPE;
+   const {c,find,unknown}=await people(ctx);let start=c.recipe.DEFAULT_RECIPE;
    if(from){const who=find(from);if(!who)throw unknown(from);start=who.recipe;}
    const checked=c.rules.validateLookSet(set,{allowEmpty:true});
-   if(checked.problems.length)return {ok:false,applied:false,problems:sentenceList(checked.problems)};
-   const recipe=c.recipe.normalizeRecipe(c.looks.applyLook({...start,name},checked.set));
+   if(checked.problems.length)return {ok:false,applied:false,dryRun,problems:sentenceList(checked.problems),next:REFUSED};
+   // How `from` looks, with the fields set; a profile (dials, voice) of their own, from their name, until the creator
+   // decides how a new character gets a personality (decision 5).
+   const {profile:_,...look}=start;
+   const recipe=c.recipe.normalizeRecipe(c.personality.withTownDials(c.recipe.normalizeRecipe(c.looks.applyLook({...look,name},checked.set)),name));
    // A name in kana or kanji has no letters for an id: it gets one from its fingerprint.
    const cid=id||(/^[a-z][a-z0-9-]{1,39}$/.test(slug(name))?slug(name):'character-'+c.sha.sha256(name).slice(0,8));
    const r=await change(ctx,{ops:[{op:'character.create',id:cid,character:{name,recipe,card}}],note:note||card.why,dryRun,what:`${cid} new`});
-   return report(r,{id:cid,name});
+   return report(r,{id:cid,name,clamped:checked.clamped.map(clampSentence)});
   }},
- {name:'character_reset',description:'Take a resident\'s Studio look away, so World draws them as it did before. A resident can never be deleted. Dry run by default.',
+ {name:'character_reset',destructive:true,description:'Take a resident\'s Studio look away, so World draws them as it did before. A resident can never be deleted. Dry run by default; with dryRun:false the reset goes into Studio\'s draft.',
   input:object({name:NAME,note:{...NOTE,description:'Why, in at least four words (optional).'},dryRun:DRY},['name']),
   async run({name,note,dryRun=true},ctx){
-   const {find}=await people(ctx),who=find(name);if(!who)throw unknown(name);
+   const {find,unknown}=await people(ctx),who=find(name);if(!who)throw unknown(name);
    if(who.kind!=='resident')throw Error(`${who.name} is a Studio-only character; character_delete removes them.`);
    if(!who.look)return {ok:true,applied:false,dryRun,nothing:`${who.name} has no Studio look: World already draws them as cast.js does.`};
    const r=await change(ctx,{ops:[{op:'look.reset',name:who.name,was:who.look.set}],note:note||`Reset ${who.name}'s look to how World draws them.`,dryRun,what:`${who.name} reset`});
    return report(r,{name:who.name});
   }},
- {name:'character_delete',description:'Delete a Studio-only character. Residents of World are never deleted (character_reset gives back their World look). Dry run by default.',
+ {name:'character_delete',destructive:true,description:'Delete a Studio-only character. Residents of World are never deleted (character_reset gives back their World look). Dry run by default; with dryRun:false the deletion goes into Studio\'s draft.',
   input:object({id:{type:'string',minLength:1,maxLength:40,description:'The Studio character\'s id (or name).'},note:{...NOTE,description:'Why, in at least four words (optional).'},dryRun:DRY},['id']),
   async run({id,note,dryRun=true},ctx){
-   const {c,find}=await people(ctx),who=find(id);if(!who)throw unknown(id);
+   const {c,find,unknown}=await people(ctx),who=find(id);if(!who)throw unknown(id);
    if(who.kind==='resident')throw Error(`${who.name} lives in Johansson World and can never be deleted; character_reset takes away a Studio look.`);
    const r=await change(ctx,{ops:[{op:'character.delete',id:who.id,was:c.sha.recordSha256(who.record)}],note:note||`Delete the Studio character ${who.name}.`,dryRun,what:`${who.id} delete`});
    return report(r,{id:who.id,name:who.name});
   }},
- {name:'render_portrait',readOnly:true,image:true,description:'A PNG portrait drawn in headless Johansson Studio (the iPad\'s own code, at its 1024x1366 viewport): a person by name (with any Studio look) or a recipe. Also saved under output/studio-mcp/portraits/.',
+ {name:'render_portrait',idempotent:true,image:true,description:'A PNG portrait drawn in headless Johansson Studio (the iPad\'s own code, at its 1024x1366 viewport): a person by name (as Studio draws them now, draft included) or a recipe. Also saved under output/studio-mcp/portraits/ (git ignores it).',
   input:object({name:NAME,recipe:{type:'object',description:'A recipe instead of a name, e.g. a draft from character_get.'},view:{enum:['front','quarter','left','right','back'],default:'front'},
    expression:{type:'string',maxLength:30,default:'smile'},pose:{type:'string',maxLength:40,default:'Idle'},framing:{enum:['full','face'],default:'full'},
    size:{type:'integer',minimum:128,maximum:1024,default:512},background:{type:'string',pattern:'^(#[0-9a-fA-F]{6}|transparent)$',default:'#f3ede2'}}),
   async run({name,recipe,view='front',expression='smile',pose='Idle',framing='full',size=512,background='#f3ede2'},ctx){
    if(!name===!recipe)throw Error('Give either a name or a recipe.');
-   const {c,find}=await people(ctx);let who=null;
+   // The Build scene's own lists, checked before Chromium starts.
+   const {KNOWN_POSES,KNOWN_EXPRESSIONS}=await import('../../../avatar-creator/scene-catalogue.mjs');
+   if(!KNOWN_POSES.has(pose))throw Error(`Unknown pose "${pose}". Poses: ${[...KNOWN_POSES].join(', ')}.`);
+   if(!KNOWN_EXPRESSIONS.has(expression))throw Error(`Unknown expression "${expression}". Expressions: ${[...KNOWN_EXPRESSIONS].join(', ')}.`);
+   const {c,find,unknown}=await people(ctx);let who=null;
    if(name){who=find(name);if(!who)throw unknown(name);}
    const drawn=c.recipe.normalizeRecipe(who?who.recipe:recipe),page=await ctx.page();
    const png=await page.renderPortrait(drawn,{view,expression,pose,framing,size,background});
@@ -139,21 +166,40 @@ export const TOOLS=[
    await ctx.repo.write(path,png);
    return {image:png.toString('base64'),mimeType:'image/png',data:{name:who?.name||drawn.name||'(recipe)',view,expression,pose,framing,size,path}};
   }},
- {name:'validate',readOnly:true,description:'Check Studio\'s data (looks), the brand rules and the known real-brand uses in World, or a change file, and say in plain words what is wrong.',
-  input:object({target:{enum:['all','looks','brands','change'],default:'all'},change:{type:'object',description:'A change file to check (target change).'}}),
+ {name:'validate',readOnly:true,description:'Check Studio\'s published data (looks), the draft, the brand rules and the known real-brand uses in World, or a change file, and say in plain words what is wrong.',
+  input:object({target:{enum:['all','looks','draft','brands','change'],default:'all'},change:{type:'object',description:'A change file to check (target change).'}}),
   async run({target='all',change:file},ctx){
-   const c=await load(),out={};
-   if(target==='change'){if(!file)throw Error('Give the change file as change.');const r=c.rules.validateChange(file);return {ok:r.ok,problems:sentenceList(r.problems),warnings:sentenceList(r.warnings)};}
+   const c=await load(),out={},brands=await ctx.repo.readJSON(c.repo.PATHS.brands);
+   if(target==='change'){if(!file)throw Error('Give the change file as change.');const r=c.rules.validateChange(file,{brands});return {ok:r.ok,problems:sentenceList(r.problems),warnings:sentenceList(r.warnings)};}
    if(target==='all'||target==='looks'){
-    const looks=c.rules.validateLooks(await ctx.repo.readJSON(c.repo.PATHS.looks)),{check}=await import('./build-data.mjs'),fresh=await check(ctx.repo);
+    const looks=c.rules.validateLooks(await ctx.repo.readJSON(c.repo.PATHS.looks),{brands}),{check}=await import('./build-data.mjs'),fresh=await check(ctx.repo);
     out.looks={ok:looks.ok&&fresh.ok,problems:[...sentenceList(looks.problems),...fresh.stale.map(p=>`${p} does not match its data: run node johansson-town/tools/studio/build-data.mjs.`)]};
+   }
+   if(target==='all'||target==='draft'){
+    const d=await c.apply.readData(ctx.repo),whole=c.rules.validateLooks(d.looks,{brands});
+    out.draft={ok:!d.stale.length&&whole.ok,changes:d.draft.length,problems:[...d.stale.map(s=>`The drafted change ${s.id} ("${s.note}") no longer fits: ${s.sentences.join(' ')}`),...sentenceList(whole.problems)]};
    }
    if(target==='all'||target==='brands')out.brands=await brandReport(ctx);
    return {ok:Object.values(out).every(r=>r.ok),...out};
   }},
- {name:'publish_check',readOnly:true,description:'Is Studio\'s work ready to publish to World? Reports: generated modules fresh, data valid, the Studio tests, the runtime build current, the guide portraits current, main merged into the branch, and uncommitted files. It never commits or pushes; publishing happens only when the creator says "update World".',
-  input:object({tests:{type:'boolean',default:true,description:'Run the Studio tests (about 20 s).'}}),
-  async run({tests=true},ctx){return publishCheck(ctx,{tests});}},
+ {name:'publish_draft',destructive:true,description:'Publish Studio\'s draft into World\'s data, only when the creator says "update World": the changes they said yes to are written to data/studio/looks.json, World\'s generated modules and the change log (nothing is committed or pushed). Dry run by default: lists the drafted changes and who they change.',
+  input:object({dryRun:DRY}),
+  async run({dryRun=true},ctx){
+   const c=await load(),r=await c.apply.publishDraft({dryRun,repo:ctx.repo}),looksChanged=r.writes?.includes(c.repo.PATHS.looksModule);
+   return {...r,problems:sentenceList(r.problems),
+    next:!r.ok?'Nothing was written. Take out the drafted changes that no longer fit (discard_draft), then try again.':r.nothing?undefined:
+     r.dryRun?'A dry run: nothing was written. Show the creator; only when they say "update World", call again with dryRun:false.':
+     `Written to World's data (not committed). Next${looksChanged?': node johansson-town/tools/render-resident-guide.mjs (the guide portraits),':':'} (cd johansson-town && npm run build:runtime), then publish_check, and follow its next steps.`};
+  }},
+ {name:'discard_draft',destructive:true,description:'Take changes out of Studio\'s draft before they are published: by id (as publish_draft lists them) or all. Dry run by default.',
+  input:object({ids:{type:'array',minItems:1,maxItems:50,items:{type:'string',minLength:1,maxLength:64}},all:{type:'boolean',default:false},dryRun:DRY}),
+  async run({ids=[],all=false,dryRun=true},ctx){
+   const c=await load(),r=await c.apply.discardDraft({ids,all,dryRun,repo:ctx.repo});
+   return {...r,problems:sentenceList(r.problems),next:!r.ok?REFUSED:r.dryRun?'A dry run: nothing was written. Call again with dryRun:false to take them out.':undefined};
+  }},
+ {name:'publish_check',readOnly:true,description:'Is Studio\'s work ready to publish to World? Reports: generated modules fresh, data valid, the draft published, the Studio tests, the runtime build current, the guide portraits current, main merged into the branch, and the files to commit. It never commits or pushes; publishing happens only when the creator says "update World".',
+  input:object({tests:{type:'boolean',default:true,description:'Run the Studio tests (about a minute).'}}),
+  async run({tests=true},ctx,{signal}={}){return publishCheck(ctx,{tests,signal});}},
 ];
 export const TOOL_BY_NAME=Object.freeze(Object.fromEntries(TOOLS.map(t=>[t.name,t])));
 
@@ -163,21 +209,22 @@ export async function context(){
  return {repo:openRepo(),page:async()=>page??=new (await import('./page.mjs')).StudioPage(),close:async()=>{await page?.close();page=null;}};
 }
 
+/** An error's first line in plain words (a Playwright error carries the page's stack trace after it). */
+const plain=e=>String(e?.message??e).split('\n')[0].replace(/^page\.evaluate: (Error: )?/,'');
 /** Run a tool on arguments that already match its input. Errors come back as {error, problems}, never thrown. */
-export async function callTool(name,args,ctx){
- const tool=TOOL_BY_NAME[name];
+export async function callTool(name,args,ctx,{signal}={}){
+ const tool=Object.hasOwn(TOOL_BY_NAME,name)?TOOL_BY_NAME[name]:null;
  if(!tool)return {error:`There is no tool called ${JSON.stringify(name)}. Tools: ${TOOLS.map(t=>t.name).join(', ')}.`};
- try{return await tool.run(args,ctx);}catch(e){return {error:e.message,problems:e.problems?.map(p=>p.sentence??p)};}
+ try{return await tool.run(args,ctx,{signal});}catch(e){return {error:plain(e),problems:e.problems?.map(p=>p.sentence??p)};}
 }
 
-/** The known real-brand uses in World's code: each must still be where brand-rules.json says (else it moved). */
+/** The known real-brand uses in World's code: each is found by its words (`match`); `line` is only where it was. */
 async function brandReport(ctx){
  const c=await load(),rules=await ctx.repo.readJSON(c.repo.PATHS.brands),warnings=[];
  for(const issue of rules.knownIssues){
-  const lines=(await codeFile('johansson-town/'+issue.file).catch(()=>'')).split('\n'),line=lines[issue.line-1]||'';
-  const still=issue.term==='livery'?/beer/i.test(line):line.toLowerCase().includes(issue.term);
-  warnings.push(still?`Known: ${issue.file}:${issue.line} — ${issue.note} (waiting for the creator's choice of a fictional name).`
-   :`${issue.file}:${issue.line} no longer has "${issue.term}"; it was fixed or moved. Update knownIssues in data/studio/brand-rules.json.`);
+  const lines=(await codeFile('johansson-town/'+issue.file).catch(()=>'')).split('\n'),at=lines.findIndex(l=>l.includes(issue.match));
+  warnings.push(at>=0?`Known: ${issue.file}:${at+1} — ${issue.note} (waiting for the creator's choice of a fictional name).`
+   :`${issue.file} no longer has ${JSON.stringify(issue.match)}; it was fixed or rewritten. Update knownIssues in data/studio/brand-rules.json.`);
  }
  const problems=[];
  if(!rules.brands.includes('orion'))problems.push('brand-rules.json must list "orion".');
@@ -185,38 +232,45 @@ async function brandReport(ctx){
  return {ok:!problems.length,problems,warnings};
 }
 
+/** Files an "update World" commits: Studio's data and modules, and what is rebuilt from them (guide portraits, runtime). */
+const PUBLISHED=/^johansson-town\/(data\/studio\/|src\/avatars\/looks-data\.js|src\/studio\/characters-data\.js|src\/commerce\/products-data\.js|assets\/graphics\/labels\/|guide\/|resident-guide\.js|runtime\/|index\.html|creator\/index\.html|sw\.js)/;
+
 /** The publish_check report: every item {check, ok, detail}, and whether all of them pass. */
-async function publishCheck(ctx,{tests}){
+async function publishCheck(ctx,{tests,signal}){
  const c=await load(),{execFile}=await import('node:child_process'),{promisify}=await import('node:util'),run=promisify(execFile);
  const {resolve}=await import('node:path'),{readFile,stat}=await import('node:fs/promises'),code=c.repo.CODE_ROOT,town=resolve(code,'johansson-town');
- const git=async(...args)=>(await run('git',args,{cwd:code,maxBuffer:4e6})).stdout;
+ const git=async(...args)=>(await run('git',args,{cwd:code,maxBuffer:4e6,signal})).stdout;
  const items=[],add=(check,ok,detail)=>items.push({check,ok,detail});
  const {check}=await import('./build-data.mjs'),fresh=await check(ctx.repo);
- add('generated modules',fresh.ok,fresh.ok?'looks-data.js matches data/studio/looks.json.':`Out of date: ${fresh.stale.join(', ')}. Run node johansson-town/tools/studio/build-data.mjs.`);
- const looks=c.rules.validateLooks(await ctx.repo.readJSON(c.repo.PATHS.looks)),brands=await brandReport(ctx);
+ add('generated modules',fresh.ok,fresh.ok?'looks-data.js and characters-data.js match data/studio/looks.json.':`Out of date: ${fresh.stale.join(', ')}. Run node johansson-town/tools/studio/build-data.mjs.`);
+ const brandRules=await ctx.repo.readJSON(c.repo.PATHS.brands);
+ const looks=c.rules.validateLooks(await ctx.repo.readJSON(c.repo.PATHS.looks),{brands:brandRules}),brands=await brandReport(ctx);
  add('data',looks.ok&&brands.ok,[...sentenceList(looks.problems),...brands.problems].join(' ')||`looks.json is valid. ${brands.warnings.length} known real-brand uses in World wait for the creator (validate target:"brands").`);
+ const d=await c.apply.readData(ctx.repo),n=d.draft.length;
+ add('draft',!n,!n?'Studio\'s draft is empty: everything the creator said yes to is in World\'s data.':
+  `${n} change${n===1?'':'s'} the creator said yes to ${n===1?'is':'are'} still only in Studio's draft${d.stale.length?` (${d.stale.length} no longer fit: discard_draft)`:''}; publish_draft writes ${n===1?'it':'them'} into World's data.`);
  if(tests){
   const files=['tests/looks-data.test.mjs','tests/studio-apply.test.mjs','tests/studio-data.test.mjs','tests/studio-mcp.test.mjs','tests/resident-guide.test.mjs'];
   const {NODE_TEST_CONTEXT,...env}=process.env;
-  const r=await run(process.execPath,['--test',...files],{cwd:town,env,timeout:180000,maxBuffer:2e7}).then(x=>({out:x.stdout,ok:true}),e=>({out:String(e.stdout||e.message),ok:false}));
+  const r=await run(process.execPath,['--test',...files],{cwd:town,env,timeout:180000,maxBuffer:2e7,signal}).then(x=>({out:x.stdout,ok:true}),e=>({out:String(e.stdout||e.message),ok:false}));
   const count=k=>Number(r.out.match(new RegExp(`^# ${k} (\\d+)`,'m'))?.[1]??NaN);
   add('tests',r.ok&&count('fail')===0,`${count('pass')} passed, ${count('fail')} failed (${files.join(', ')}).`);
  }
  const {runtimeSourceHash}=await import('../../scripts/runtime-source.mjs');
  const recorded=JSON.parse(await readFile(resolve(town,'runtime/source.json'),'utf8')).sha256,current=await runtimeSourceHash(town);
- add('runtime build',recorded===current,recorded===current?'runtime/ matches the source.':'runtime/ is older than the source: run npm run build:runtime in johansson-town before publishing (the coordinator does this).');
+ add('runtime build',recorded===current,recorded===current?'runtime/ matches the source.':'runtime/ is older than the source: run (cd johansson-town && npm run build:runtime) before publishing.');
  const manifest=JSON.parse(await readFile(resolve(town,'guide/portraits.json'),'utf8')),{createHash}=await import('node:crypto'),hash=createHash('sha256');
  for(const path of manifest.sourceFiles)hash.update(path+'\0').update(await readFile(resolve(town,path))).update('\0');
  const portraits=hash.digest('hex')===manifest.sha256;
  add('guide portraits',portraits,portraits?'The resident guide\'s portraits match the avatar source.':'The guide portraits are older than the avatar source or the looks: run node johansson-town/tools/render-resident-guide.mjs.');
  try{
-  const main=(await git('rev-parse','--verify','origin/main')).trim(),merged=await run('git',['merge-base','--is-ancestor',main,'HEAD'],{cwd:code}).then(()=>true,()=>false);
+  const main=(await git('rev-parse','--verify','origin/main')).trim(),merged=await run('git',['merge-base','--is-ancestor',main,'HEAD'],{cwd:code,signal}).then(()=>true,()=>false);
   const fetched=await stat(resolve(code,'.git/FETCH_HEAD')).then(s=>s.mtime.toISOString(),()=>'never');
   add('main merged',merged,merged?`origin/main (as last fetched, ${fetched}) is merged into this branch.`:`origin/main (as last fetched, ${fetched}) has commits this branch does not: git fetch origin main, then merge it before pushing.`);
- }catch(e){add('main merged',false,`Could not read origin/main: ${e.message}`);}
+ }catch(e){add('main merged',false,`Could not read origin/main: ${plain(e)}`);}
  const dirty=(await git('status','--porcelain','--untracked-files=all','--','johansson-town','avatar-creator','.mcp.json')).split('\n').filter(Boolean).map(l=>l.slice(3));
- const own=dirty.filter(p=>/^johansson-town\/(data\/studio\/|src\/avatars\/looks-data\.js|src\/commerce\/products-data\.js|assets\/graphics\/labels\/)/.test(p));
- add('uncommitted',!own.length,own.length?`Studio's changes to commit: ${own.join(', ')}.`:'Studio\'s data is committed.');
+ const own=dirty.filter(p=>PUBLISHED.test(p));
+ add('uncommitted',!own.length,own.length?`To commit with Studio's change: ${own.join(', ')}.`:'Studio\'s data and what is built from it are committed.');
  return {ready:items.every(i=>i.ok),items,otherUncommitted:dirty.filter(p=>!own.includes(p)),
-  next:'Only when the creator says "update World": commit Studio\'s files, git fetch origin main and merge it, push the branch, then check the johansson-town-live.yml run (gh api repos/nj22az/nj22az.github.io/actions/workflows/johansson-town-live.yml/runs?per_page=3). It is live only after that run succeeds.'};
+  next:'Only when the creator says "update World": (1) publish_draft, a dry run to show them, then dryRun:false; (2) if it wrote src/avatars/looks-data.js, node johansson-town/tools/render-resident-guide.mjs; (3) (cd johansson-town && npm run build:runtime); (4) publish_check again; (5) commit the files "uncommitted" lists (git add those paths only, never -A); (6) git fetch origin main and merge it into the branch; (7) push the branch and check the johansson-town-live.yml run (gh api repos/nj22az/nj22az.github.io/actions/workflows/johansson-town-live.yml/runs?per_page=3). It is live only after that run succeeds.'};
 }
