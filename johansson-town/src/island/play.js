@@ -7,7 +7,7 @@ import {AIRPORT_LANDING,AIRPORT_HEIGHT,AIRPORT_COUNTER} from '../world/airport-g
 import {islandState,buyFerry,ferryArrival,buyFlight,checkIn,boardFlight,flightArrival,finishRepair,completeProject,DEVELOPMENT_PROJECTS,projectReady,stamp,flightTimes} from './services.js';
 export const NAHA_ARRIVALS={id:'naha-airport-arrivals',title:'Naha Commuter Arrivals',jp:'Naha Commuter Arrivals',sub:'RETURN CONNECTION · KITANO-JIMA',x:AIRPORT_COUNTER[0],z:AIRPORT_COUNTER[1],exitPosition:[AIRPORT_COUNTER[0],AIRPORT_HEIGHT,AIRPORT_COUNTER[1]],entryFacing:0,line:'A small domestic arrivals room. Your return ticket takes you back to Kitano-jima.'};
 /** Ticketing and physical ferry crossing. Mid-crossing saves retain the last safe shore. */
-export function createIslandPlay({world,player,camera,activities,getMinutes,getRain,passTime,place,enterNaha,leaveNaha,onWardrobe=()=>{},register=()=>{}}){
+export function createIslandPlay({world,player,camera,activities,holdFerry=()=>false,getMinutes,getRain,passTime,place,enterNaha,leaveNaha,onWardrobe=()=>{},register=()=>{}}){
  let ride=null;const a=activities,state=a.state,s=islandState(state);
  const thuan=world.people.find(p=>p.profile?.name==='Thuan'||p.g.userData.name==='Thuan')?.g;if(thuan)thuan.userData.alternativeOutfit=['nozomi','sailor'].includes(state.thuanOutfit)?state.thuanOutfit:'clothes';
  const ferryRun=world.ferry||(world.ferry=createFerryRun({parent:world.group,colliders:world.colliders})),boat=ferryRun.ferry;ferryRun.parkAt(s.journey.location==='airport'?'airport':'town');
@@ -19,6 +19,8 @@ export function createIslandPlay({world,player,camera,activities,getMinutes,getR
  function automaticFerry(dt){
   if(ferryRun.automaticCrossing){ferryRun.advanceAutomaticCrossing(dt);return;}
   if(ride||ferryRun.phase!=='waiting')return;
+  // Nobody sails off with a visitor walking her decks: a vehicle's crossing waits until he is ashore (game.js deckUnder).
+  if(holdFerry())return;
   const job=world.traffic?.pendingVehicleJourney?.();if(!job)return;
   if(!AIRPORT_FERRY_PORTS[job.origin]||!AIRPORT_FERRY_PORTS[job.destination])return;
   const destination=job.origin===ferryRun.berth?job.destination:job.origin;

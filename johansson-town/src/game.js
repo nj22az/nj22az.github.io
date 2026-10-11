@@ -9,6 +9,7 @@ import {japaneseSign,signText} from './world/okinawa/signs.js';
 import {recipeFor} from './avatars/cast.js';
 import {saveResidentRecipe} from './avatars/wardrobe.js';
 import {createIslandPlay,NAHA_ARRIVALS} from './island/play.js';
+import {createFerryWalk} from './world/ferry-walk.js';
 import {buildAirportArrivals} from './world/interiors/airport-arrivals.js';
 import {createBookshopCustomers} from './people/bookshop-customers.js';
 import {createPhotoStudio} from './photo/studio.js';
@@ -353,6 +354,7 @@ let neighbours=null,islandPlay=null;let photoOrigin=null,photoReturning=false;
 let conversationName=null,conversationCamera=null,navigationTarget=null,beerService=null,tipsy=0,tipsyClock=null;
 let activeRoomLayout=null;
 let photoStudio=null,photoLoading=false,spawnScene=null;
+let ferryWalk=null;
 let current=null,active=null,started=false,yaw=0,pitch=-.05,minutes=realTownMinutes(),subtitleTimer=0,weather=false,activities=null,timePreset=0,characters=null;
 const keys={},clock=new THREE.Clock();
 const gamepadInput=createGamepadInput(),menuRepeat=createMenuRepeat();
@@ -474,7 +476,7 @@ activities=createActivities({say,onOpen:()=>toggleDir(false),onOutfit:on=>wearSw
   else if(!followRealClock)minutes+=value;
   else if(Number.isFinite(value)&&value>0){minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;}
   evictIfClosed();}});
-islandPlay=createIslandPlay({world,player,camera,activities,register:reg,onWardrobe:(entity,outfit)=>characters?.wear(entity,outfit),getMinutes:()=>minutes,getRain:()=>weather,passTime:value=>{minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;activities.save();},place:(x,z)=>{if(current)leaveRoom();standUpAt(x,z,0);resetInput();},enterNaha:()=>crossThreshold(()=>enterRoom(NAHA_ARRIVALS)),leaveNaha:()=>leaveRoom()});
+islandPlay=createIslandPlay({world,player,camera,activities,register:reg,holdFerry:()=>!current&&!!deckUnder(),onWardrobe:(entity,outfit)=>characters?.wear(entity,outfit),getMinutes:()=>minutes,getRain:()=>weather,passTime:value=>{minutes+=value;townClock.pass(value);activities.state.clockAhead=townClock.ahead;activities.save();},place:(x,z)=>{if(current)leaveRoom();standUpAt(x,z,0);resetInput();},enterNaha:()=>crossThreshold(()=>enterRoom(NAHA_ARRIVALS)),leaveNaha:()=>leaveRoom()});
 syncView();
 fists=createFists({camera,skin:playerRecipe()?.body?.skin||'#d9a57c',sleeve:playerRecipe()?.outfit?.topColour||'#3f6a8a'});
 hands=createHands({scene,camera,say,consume:name=>{const i=activities.state.inventory.indexOf(name);if(i<0)return false;const lager=name==='Umineko lager';if(lager&&!wantsAnother(tipsy,LAGER_ALCOHOL)){say('Enough for tonight. The can goes back in your bag for tomorrow.',3);return false;}if(lager)tipsy=drinkUp(tipsy,LAGER_ALCOHOL);activities.state.inventory.splice(i,1);const left=SPECIAL_BY_NAME[name]?.cup?null:emptyFor(name);if(left)activities.state.inventory.push(left);activities.save();return true;},canColour,onDrink:()=>johansson?.play(seated?'SitDrink':'Drink')});
@@ -561,8 +563,10 @@ async function startBuildMode(){
 const decorStage={hold(){decorating=true;resetInput();},release(){decorating=false;decorView=null;},show(pos,at){decorView={pos,at};}};
 function cameraBlocked(x,z,y,r,ignore=null){
  if(current&&indoorCeilings&&y>indoorCeilings.limit(x,z,player.position.y,Math.max(.22,r)))return true;
- const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;
- const hit=c=>!c.only&&!(ignore&&ignore(c))&&(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c);
+ // Aboard, the lens may hang out over the water beside her, but not inside her houses and casings (ferry-walk.js).
+ const aboard=!current&&!!deckUnder();if(aboard&&ferryWalk.cameraBlocked(x,z,y,r))return true;
+ const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):!aboard&&townBoundsBlocked(x,z,r);if(bounds)return true;
+ const hit=c=>!c.only&&!(ignore&&ignore(c))&&!(aboard&&c.id==='ferry')&&(c.minY||0)<y+.12&&(!Number.isFinite(c.height)||(c.minY||0)+c.height>y-.12)&&circleHitsRect(x,z,r,c);
  return current?roomColliders.some(hit):colliderGrid.some(x,z,r,hit);
 }
 const arrivalPerson=new THREE.Vector3();
@@ -1026,11 +1030,21 @@ function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touc
   const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d*(1+(1-facingDot)*1.4)+(o.userData.promptPenalty||0)-(/^Talk to /.test(h.label)?.6:0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();say(FORM3_NUDGE,6);}else say('You stand up.',2);}
 function doInteract(){spawnScene?.cancel();if(islandPlay?.active)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
-// `who`: a room collider with `only` set stops only that walker (Umi-no-yu's women's doorways stop the player, a man,
-// and let the residents through to their own side).
-function environmentBlocked(x,z,r=PLAYER_RADIUS,who='player'){const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):townBoundsBlocked(x,z,r);if(bounds)return true;
- const y=current?0:groundHeight(x,z),hit=c=>(!c.only||c.only===who)&&standingHitsRect(x,z,r,y,c);
+// `who`: a room collider with `only` set stops only that walker.
+// `deckY`: standing on the ferry's deck at that height (ferry-walk.js): her own solids are tested there, not the town's
+// bounds (she lies over the water) nor the collider that keeps people on the pier off her hull.
+function environmentBlocked(x,z,r=PLAYER_RADIUS,who='player',deckY=null){const aboard=Number.isFinite(deckY)&&!current;
+ const bounds=current?(activeRoomLayout?suppliedRoomBoundsBlocked(activeRoomLayout,x,z,r):roomBoundsBlocked(x,z,r)):!aboard&&townBoundsBlocked(x,z,r);if(bounds)return true;
+ const y=current?0:aboard?deckY:groundHeight(x,z),hit=c=>(!c.only||c.only===who)&&!(aboard&&c.id==='ferry')&&standingHitsRect(x,z,r,y,c);
  return current?roomColliders.some(hit):colliderGrid.some(x,z,r,hit);}
+/**
+ * Walking aboard the Minato Maru while she lies alongside (ferry-walk.js): her decks are floors that move with her.
+ * `deckUnder` is the floor under the player's feet, or null on the town's ground.
+ */
+function shipWalk(){if(!ferryWalk&&world.ferry?.ferry)ferryWalk=createFerryWalk(world.ferry);return ferryWalk;}
+function deckUnder(x=player.position.x,z=player.position.z,y=player.position.y){return current?null:shipWalk()?.floorBelow(x,z,y)??null;}
+/** The ground under the player's feet: her deck aboard, the town's otherwise. */
+function playerGround(){if(current)return 0;const d=deckUnder();return d?d.y:groundHeight(player.position.x,player.position.z);}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
 function inEntrance(x,z,r=1.2){return entrancePoints().some(([dx,dz])=>Math.hypot(x-dx,z-dz)<r);}
 function indoorNpc(g){return g.userData.inBookshop||g.userData.inWorkplace||g.userData.inIzakaya||g.userData.inOnsen||g.userData.inRamen||g.userData.inHome||g.userData.inMarket;}
@@ -1041,6 +1055,13 @@ function residentsAt(x,z,radius=PLAYER_RADIUS){return residentEntities().filter(
 function overlapsResident(x,z){return residentsAt(x,z).length>0;}
 function residentBlocked(x,z){if(!current&&inEntrance(x,z))return false;return overlapsResident(x,z);}
 function collides(x,z){
+ if(!current&&shipWalk()){
+  // On her decks, or stepping onto them (the gangway's foot, the ramp's flap) or off them onto the shore.
+  const deck=deckUnder(),base=deck?deck.y:groundHeight(player.position.x,player.position.z);
+  const step=ferryWalk.move(player.position.x,base,player.position.z,x,z,PLAYER_RADIUS);
+  if(step)return !step.ok||environmentBlocked(x,z,PLAYER_RADIUS,'player',step.y)||residentBlocked(x,z);
+  if(deck)return !canStepBetween(base,groundHeight(x,z))||environmentBlocked(x,z,PLAYER_RADIUS)||residentBlocked(x,z);
+ }
  // Enter raised surfaces through their steps, rather than snapping up from the side.
  return (!current&&!canStepBetween(groundHeight(player.position.x,player.position.z),groundHeight(x,z)))||environmentBlocked(x,z,PLAYER_RADIUS)||residentBlocked(x,z);
 }
@@ -1057,6 +1078,13 @@ function findClear(x0,z0,maxR=6){
 function unstuckPlayer(forceStreet=false){
  if(seated&&!forceStreet)return;
  const x=player.position.x,z=player.position.z;
+ // Aboard: free unless something on her deck (a car rolling into its place) is on him; then the nearest clear spot on
+ // the same deck, never a jump ashore.
+ {const deck=forceStreet?null:deckUnder();if(deck){
+  const clear=(px,pz)=>{const m=ferryWalk.move(x,deck.y,z,px,pz,PLAYER_RADIUS);return m?.ok&&Math.abs(m.y-deck.y)<.3&&!environmentBlocked(px,pz,PLAYER_RADIUS,'player',m.y)&&!occupiedByPerson(px,pz);};
+  if(clear(x,z))return;
+  for(let r=.25;r<=4;r+=.25)for(let i=0,n=Math.max(8,Math.round(r*14));i<n;i++){const a=i/n*Math.PI*2,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;if(clear(px,pz)){player.position.set(px,ferryWalk.floorAt(px,pz,deck.y).y,pz);return;}}
+  return;}}
  if(!environmentBlocked(x,z)&&!occupiedByPerson(x,z))return;
  const [nx,nz]=findClear(x,z);
  player.position.set(nx,current?0:groundHeight(nx,nz),nz);
@@ -1464,7 +1492,7 @@ let elapsed=0,mapTick=0,stepTick=0,accumulator=0,saveTick=0;
 const townClock=createClock(readClockSetting(globalThis.localStorage),minutes);
 function advanceTown(dt,playerPaused,fastForward=false){
     minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;if(!fastForward)islandPlay?.tick(dt);activities.tick(dt);
-    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.active){characters?.physics?.(dt,current?0:groundHeight(player.position.x,player.position.z));updatePlayer(dt);}
+    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.active){shipWalk()?.update();characters?.physics?.(dt,playerGround());updatePlayer(dt);}
     evictIfClosed();
     if(current?.id==='izakaya')izakayaGuests.sync(minutes,dt);
     if(current?.id==='onsen')onsenGuests.sync(minutes,dt);
@@ -1656,6 +1684,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
   // Sample them once at a fixed phase after fixture sync, without changing live play.
   if(this.frozen)sakuraShop.display.tick(0);
  },
+ /** Turn where he stands (aboard the ferry too, where teleport's ground would be the sea). */
+ face(facing,tilt){if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
  teleport(x,z,facing,tilt){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
  get lensOcclusion(){return lensOcclusion;},
  get lens(){return {position:camera.position.toArray(),rotation:camera.rotation.toArray().slice(0,3),distance:thirdDistance,ceiling:current?indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y):null,blocked:cameraBlocked(camera.position.x,camera.position.z,camera.position.y,.16)};},
