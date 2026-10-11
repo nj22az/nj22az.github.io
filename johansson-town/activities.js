@@ -18,6 +18,7 @@ import {createMagazineReader} from './src/ui/magazine-reader.js';
 import {townCalendarAt} from './src/town-clock.js';
 import {happeningLine,happeningOutcome} from './src/people/happenings.js';
 import {impressionLine,restoreImpressions} from './src/people/impressions.js';
+import {birthdayOn,birthdaysOn} from './src/people/birthdays.js';
 import {recordMoment,diaryPage,diaryDays,restoreDiary} from './src/progression/diary.js';
 import {wantsAnother} from './src/people/drunk.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
@@ -202,6 +203,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       const outcome=happeningOutcome(h,minute,{seen:happeningSeenDry.get(key),typhoonAllHours}),said=outcome&&h.news?.[outcome];if(!said)continue;
       recordMoment(state,m,{id:`happening:${h.id}:${day}`,kind:'happening',who:outcome==='held'?Object.keys(h.cast||{}).slice(0,4):[],text:said,news:said});
     }
+    // A resident's birthday (people/birthdays.js: only the real ones the creator has set).
+    for(const who of birthdaysOn(m))recordMoment(state,m,{id:`birthday:${who}:${day}`,kind:'happening',who:[who],text:`It was ${who}’s birthday.`,news:`Happy birthday to ${who}, from everyone in Minato.`});
     const t=state.typhoon&&typhoonAt(m);
     if(t){
       recordMoment(state,m,{id:`typhoon:${t.number}:warning`,kind:'happening',text:`A typhoon warning: No. ${t.number}.`,
@@ -634,7 +637,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const names=Object.keys(state.greeted);if(names.length>60)delete state.greeted[names[0]];
     const recipe=recipeFor(name);
     return greetingFor({speaker:name,temper:temperamentOf(recipe?.profile||{}),playerName:playerName(),catchphrase:recipe?.profile?.catchphrase||'',day:dayNow,
-     situation:{daysAway:dayNow===returnDay?daysBetween(awaySince):0,weather:state.typhoon?'typhoon':state.weather?'rain':'sunny',hour:Math.floor(((nowM%1440)+1440)%1440/60)}});
+     situation:{theirBirthday:birthdayOn(name,nowM),daysAway:dayNow===returnDay?daysBetween(awaySince):0,weather:state.typhoon?'typhoon':state.weather?'rain':'sunny',hour:Math.floor(((nowM%1440)+1440)%1440/60)}});
   }
   function neighbour(name){
     const spec=NEIGHBOUR_TALK[name];if(!spec){close();return;}
