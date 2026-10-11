@@ -6,7 +6,8 @@ import { createHash } from 'node:crypto';
 import { sha256Hex, hashSvar, tolkaTal, kanon, ratta, registrera, registreraText, lasForstaVersion, lasLage, sparaLage, nyttLage,
   resultat, avkodaLista, medTillagg, visaSvar, faltNamn, tidText, TOLERANS_PROCENT, MAX_FORSOK, forsokKvar, kanLasasUpp, nyOmgang,
   lasLasning, bekraftaLasning, lasningsnyckel, lagringsnyckel, lasklocka, veckoStatus, sparadPlan, listanVisas, lmResultat,
-  pdfBlock, pdfFilnamn, kontrollkod, lageText, mailtoAmne, LASDELAR } from './sjalvrattning.mjs';
+  pdfBlock, pdfFilnamn, kontrollkod, lageText, mailtoAmne, LASDELAR, quizNyckel, omlasningsnyckel, lasOmlasning,
+  bekraftaOmlasning, quizStatus, pdfBlockQuiz, bokstavSvar } from './sjalvrattning.mjs';
 
 const SALT = '0123456789abcdef0123456789abcdef';
 /** En nyckel byggd som facit.py gör: alla k = x · 10^dec inom tolerans % från värdet. Påhittade värden. */
@@ -131,14 +132,15 @@ test('tre försök: efter tredje felet låses fältet, ett rätt svar stannar r�
   assert.equal(lageText({}), 'Inget svar');
 });
 
-test('ny omgång: låsta fält får tre nya försök först när alla delar och texten är lästa efter låsningen', () => {
+test('ny omgång: låsta fält får tre nya försök först när alla delar är lästa efter låsningen', () => {
   let p = steg(steg(steg(undefined, '1', '2026-10-12T10:00:00Z'), '2', '2026-10-12T10:01:00Z'), '3', '2026-10-12T10:02:00Z');
   assert.equal(p.last, true);
   const fore = '2026-10-12T09:00:00Z', efter = '2026-10-12T11:00:00Z';
-  assert.equal(kanLasasUpp(p, { 'del-1': efter, 'del-2': efter, 'del-3': efter, text: null }), false, 'texten saknas');
-  assert.equal(kanLasasUpp(p, { 'del-1': efter, 'del-2': fore, 'del-3': efter, text: efter }), false, 'del 2 lästes före låsningen');
-  assert.equal(kanLasasUpp(p, { 'del-1': efter, 'del-2': efter, 'del-3': efter, text: efter }), true);
-  assert.equal(kanLasasUpp({ ...p, last: false }, { 'del-1': efter, 'del-2': efter, 'del-3': efter, text: efter }), false);
+  assert.equal(kanLasasUpp(p, { 'del-1': efter, 'del-2': efter, 'del-3': null }), false, 'del 3 saknas');
+  assert.equal(kanLasasUpp(p, { 'del-1': efter, 'del-2': fore, 'del-3': efter }), false, 'del 2 lästes före låsningen');
+  assert.equal(kanLasasUpp(p, { 'del-1': efter, 'del-2': efter, 'del-3': efter }), true);
+  assert.equal(kanLasasUpp({ ...p, last: false }, { 'del-1': efter, 'del-2': efter, 'del-3': efter }), false);
+  assert.equal(kanLasasUpp(p, { 'EL-000887': efter }, ['EL-000887']), true, 'quizen: en text räcker för sina frågor');
   const ny = nyOmgang(p, efter);
   assert.deepEqual([ny.last, ny.omgang, ny.forsokOmgang, ny.forsok, ny.forsta, ny.lastTider.length, ny.upplastTider], [false, 2, 0, 3, '1', 1, [efter]]);
   assert.equal(forsokKvar(ny), 3);
@@ -146,21 +148,24 @@ test('ny omgång: låsta fält får tre nya försök först när alla delar och 
   q = steg(q, '5', '2026-10-12T12:01:00Z');
   q = steg(q, '6', '2026-10-12T12:02:00Z');
   assert.deepEqual([q.last, q.omgang, q.forsok, q.lastTid, q.lastTider.length], [true, 2, 6, '2026-10-12T12:02:00Z', 2]);
-  assert.equal(kanLasasUpp(q, { 'del-1': efter, 'del-2': efter, 'del-3': efter, text: efter }), false, 'nya låsningen kräver ny läsning');
+  assert.equal(kanLasasUpp(q, { 'del-1': efter, 'del-2': efter, 'del-3': efter }), false, 'nya låsningen kräver ny läsning');
 });
 
 test('läsbekräftelser: formatet sj-last:vecka-42 och den senaste tiden per del', () => {
   assert.equal(lasningsnyckel(42), 'sj-last:vecka-42');
   assert.equal(lagringsnyckel(42), 'sj-v42-inlamning');
-  assert.deepEqual(lasLasning(42), { 'del-1': null, 'del-2': null, 'del-3': null, text: null });
+  assert.deepEqual(lasLasning(42), { 'del-1': null, 'del-2': null, 'del-3': null });
   bekraftaLasning(42, 'del-1', '2026-10-12T10:00:00.000Z');
   bekraftaLasning(42, 'del-1', '2026-10-12T09:00:00.000Z');
-  bekraftaLasning(42, 'text', '2026-10-12T11:00:00.000Z');
-  assert.deepEqual(JSON.parse(saved.get('sj-last:vecka-42')), { 'del-1': '2026-10-12T10:00:00.000Z', text: '2026-10-12T11:00:00.000Z' });
-  assert.deepEqual(lasLasning(42), { 'del-1': '2026-10-12T10:00:00.000Z', 'del-2': null, 'del-3': null, text: '2026-10-12T11:00:00.000Z' });
-  assert.deepEqual(LASDELAR, ['del-1', 'del-2', 'del-3', 'text']);
+  bekraftaLasning(42, 'del-3', '2026-10-12T11:00:00.000Z');
+  assert.deepEqual(JSON.parse(saved.get('sj-last:vecka-42')), { 'del-1': '2026-10-12T10:00:00.000Z', 'del-3': '2026-10-12T11:00:00.000Z' });
+  assert.deepEqual(lasLasning(42), { 'del-1': '2026-10-12T10:00:00.000Z', 'del-2': null, 'del-3': '2026-10-12T11:00:00.000Z' });
+  assert.deepEqual(LASDELAR, ['del-1', 'del-2', 'del-3']);
+  saved.set('sj-last:vecka-42', JSON.stringify({ 'del-2': '2026-10-12T08:00:00.000Z', text: '2026-10-11T20:00:00.000Z' }));
+  assert.deepEqual(lasLasning(42), { 'del-1': null, 'del-2': '2026-10-12T08:00:00.000Z', 'del-3': null, text: '2026-10-11T20:00:00.000Z' },
+    'en äldre nyckel (text från vecka 42:s första version) finns kvar men räknas inte som en del');
   saved.set('sj-last:vecka-42', 'trasig');
-  assert.deepEqual(lasLasning(42), { 'del-1': null, 'del-2': null, 'del-3': null, text: null });
+  assert.deepEqual(lasLasning(42), { 'del-1': null, 'del-2': null, 'del-3': null });
 });
 
 test('synlig tid räknas bara när sidan är synlig', () => {
@@ -193,8 +198,10 @@ test('lagring: sparas och läses, och sidan fungerar när webbläsaren inte spar
   Object.defineProperty(globalThis, 'localStorage', { configurable: true, get() { throw new Error('blockerad'); } });
   assert.deepEqual(lasLage('k'), { lage: nyttLage(), ok: false });
   assert.equal(sparaLage('k', l), false);
-  assert.deepEqual(lasLasning(42), { 'del-1': null, 'del-2': null, 'del-3': null, text: null });
+  assert.deepEqual(lasLasning(42), { 'del-1': null, 'del-2': null, 'del-3': null });
   assert.equal(veckoStatus(42).inlamnad, null, 'veckoStatus tål blockerad lagring');
+  assert.deepEqual(lasOmlasning(42), {});
+  assert.deepEqual(quizStatus(42).dokument, [], 'quizStatus tål blockerad lagring');
 });
 
 // En liten plan som sidan bygger ur DOM:en (påhittade uppgifter).
@@ -247,11 +254,11 @@ test('veckoStatus läser lagringen och ger formatet för veckosidan', () => {
     namn: 'Test Elev', inlamnad: '2026-10-12T10:00:00.000Z',
     uppgifter: [{ nr: '1', titel: 'Riskbedömning', ratt: 1, totalt: 1, last: false }, { nr: '2', titel: 'Beräkning', ratt: 1, totalt: 2, last: true }],
     lm: { 'LM-2': { ratt: 2, totalt: 3 }, 'LM-4': { ratt: 1, totalt: 2 }, 'LM-7': { ratt: 1, totalt: 1 } },
-    last: true, lasning: { 'del-1': null, 'del-2': '2026-10-12T07:00:00.000Z', 'del-3': null, text: null } });
+    last: true, lasning: { 'del-1': null, 'del-2': '2026-10-12T07:00:00.000Z', 'del-3': null } });
   saved.clear();
   saved.set('sj-elevnamn', 'Namn Från Elevtal');
   assert.deepEqual(veckoStatus(99), { namn: 'Namn Från Elevtal', inlamnad: null, uppgifter: [], lm: {}, last: false,
-    lasning: { 'del-1': null, 'del-2': null, 'del-3': null, text: null } });
+    lasning: { 'del-1': null, 'del-2': null, 'del-3': null } });
 });
 
 test('PDF:ens innehåll: rubrik, resultat, fält med läge, försök, omgång, svar, texter, checklista och mål', () => {
@@ -292,4 +299,79 @@ test('checklistan avkodas ur base64 med svenska tecken', () => {
   const b64 = Buffer.from(JSON.stringify(data), 'utf8').toString('base64');
   assert.deepEqual(avkodaLista(b64), data);
   assert.deepEqual(avkodaLista('!!!'), []);
+});
+
+// ------------------------------------------------------------------ quizen (påhittade texter)
+const LPLAN = { vecka: '99', titel: 'Quiz vecka 99', uppgifter: [
+  { nr: '1', ovning: 'EL-999901', titel: 'Provtext om färger', lm: ['LM-2', 'LM-7'], falt: [
+    { id: '901a', typ: 'val', kort: 'a', etikett: 'a) Vilken färg?', alternativ: [{ id: 'A', text: 'Röd' }, { id: 'B', text: 'Grön' }, { id: 'C', text: 'Blå' }, { id: 'D', text: 'Gul' }] },
+    { id: '901b', typ: 'val', kort: 'b', etikett: 'b) Vilken nyans?', alternativ: [{ id: 'A', text: 'Ljus' }, { id: 'B', text: 'Mörk' }, { id: 'C', text: 'Matt' }, { id: 'D', text: 'Blank' }, { id: 'E', text: 'Klar' }] }] },
+  { nr: '2', ovning: 'EL-999902', titel: 'Provtext om tal', lm: ['LM-3'], falt: [
+    { id: '902a', typ: 'val', kort: 'a', etikett: 'a) Vilket tal?', alternativ: [{ id: 'A', text: 'Ett' }, { id: 'B', text: 'Två' }, { id: 'C', text: 'Tre' }, { id: 'D', text: 'Fyra' }] }] }] };
+
+test('quizen: egna nycklar, läst om per text, och delsidornas sj-last rörs inte', () => {
+  saved.clear();
+  assert.equal(quizNyckel(42), 'sj-v42-quiz');
+  assert.equal(omlasningsnyckel(42), 'sj-omlasning:vecka-42');
+  bekraftaLasning(42, 'del-1', '2026-10-12T08:00:00.000Z');
+  bekraftaOmlasning(42, 'EL-000887', '2026-10-13T10:00:00.000Z');
+  bekraftaOmlasning(42, 'EL-000887', '2026-10-13T09:00:00.000Z');
+  bekraftaOmlasning(42, 'EL-000888', '2026-10-13T11:00:00.000Z');
+  assert.deepEqual(JSON.parse(saved.get('sj-omlasning:vecka-42')), { 'EL-000887': '2026-10-13T10:00:00.000Z', 'EL-000888': '2026-10-13T11:00:00.000Z' });
+  assert.deepEqual(JSON.parse(saved.get('sj-last:vecka-42')), { 'del-1': '2026-10-12T08:00:00.000Z' }, 'delarnas bekräftelser oförändrade');
+  saved.set('sj-omlasning:vecka-42', 'trasig');
+  assert.deepEqual(lasOmlasning(42), {});
+});
+
+test('quizen: en låst fråga låses upp när just dess text är läst om efter låsningen', () => {
+  let p;
+  for (const [v, t] of [['A', '2026-10-13T10:00:00Z'], ['B', '2026-10-13T10:01:00Z'], ['D', '2026-10-13T10:02:00Z']]) p = registrera(p, v, 'fel', `v:${v}`, t);
+  assert.equal(p.last, true);
+  assert.equal(kanLasasUpp(p, { 'EL-999902': '2026-10-13T11:00:00Z' }, ['EL-999901']), false, 'en annan text räcker inte');
+  assert.equal(kanLasasUpp(p, { 'EL-999901': '2026-10-13T09:00:00Z' }, ['EL-999901']), false, 'läst före låsningen');
+  assert.equal(kanLasasUpp(p, { 'EL-999901': '2026-10-13T11:00:00Z' }, ['EL-999901']), true);
+});
+
+test('quizStatus: sidans plan, byggets plan och formatet för veckosidan', () => {
+  saved.clear();
+  const tom = quizStatus(99);
+  assert.deepEqual(tom, { namn: '', inlamnad: null, dokument: [], lm: {}, last: false, lasning: {} });
+  const byggd = { vecka: '99', uppgifter: LPLAN.uppgifter.map((u) => ({ nr: u.nr, titel: u.titel, ovning: u.ovning, lm: u.lm, falt: u.falt.map((f) => f.id) })) };
+  assert.deepEqual(quizStatus(99, byggd), { namn: '', inlamnad: null, last: false,
+    dokument: [{ ovning: 'EL-999901', titel: 'Provtext om färger', ratt: 0, totalt: 2, last: false }, { ovning: 'EL-999902', titel: 'Provtext om tal', ratt: 0, totalt: 1, last: false }],
+    lm: { 'LM-2': { ratt: 0, totalt: 2 }, 'LM-3': { ratt: 0, totalt: 1 }, 'LM-7': { ratt: 0, totalt: 2 } },
+    lasning: { 'EL-999901': null, 'EL-999902': null } }, 'byggets plan ger totalerna innan sidan har öppnats');
+  const l = { ...nyttLage(), namn: 'Test Elev', inlamnad: ['2026-10-14T18:00:00.000Z'], plan: sparadPlan(LPLAN),
+    falt: { '901a': { nu: 'C', ratt: true, klar: true }, '901b': { nu: 'E', last: true, lastTid: '2026-10-13T10:00:00Z' }, '902a': { nu: 'B', ratt: true } } };
+  saved.set('sj-v99-quiz', JSON.stringify(l));
+  bekraftaOmlasning(99, 'EL-999901', '2026-10-13T09:00:00.000Z');
+  bekraftaLasning(99, 'del-1', '2026-10-13T09:00:00.000Z');
+  assert.deepEqual(quizStatus(99), { namn: 'Test Elev', inlamnad: '2026-10-14T18:00:00.000Z', last: true,
+    dokument: [{ ovning: 'EL-999901', titel: 'Provtext om färger', ratt: 1, totalt: 2, last: true }, { ovning: 'EL-999902', titel: 'Provtext om tal', ratt: 1, totalt: 1, last: false }],
+    lm: { 'LM-2': { ratt: 1, totalt: 2 }, 'LM-3': { ratt: 1, totalt: 1 }, 'LM-7': { ratt: 1, totalt: 2 } },
+    lasning: { 'EL-999901': '2026-10-13T09:00:00.000Z', 'EL-999902': null } });
+  const fler = { ...byggd, uppgifter: [...byggd.uppgifter, { nr: '3', titel: 'Ny text', ovning: 'EL-999903', lm: ['LM-3'], falt: ['903a', '903b'] }] };
+  assert.deepEqual(quizStatus(99, fler).dokument.map((d) => [d.ovning, d.ratt, d.totalt]),
+    [['EL-999901', 1, 2], ['EL-999902', 1, 1], ['EL-999903', 0, 2]], 'en ny text i byggets plan räknas med innan sidan öppnas igen');
+  assert.deepEqual(veckoStatus(99).uppgifter, [], 'inlämningens status påverkas inte');
+});
+
+test('quizens PDF: bokstäver, resultat per text, försök, omgång, läst om och kontrollkod', () => {
+  const l = { ...nyttLage(), falt: {
+    '901a': registrera(registrera(undefined, 'A', 'fel', 'v:A', '2026-10-13T10:00:00Z'), 'C', 'ratt', 'v:C', '2026-10-13T10:01:00Z'),
+    '901b': nyOmgang([['A', 0], ['B', 1], ['C', 2]].reduce((p, [v, i]) => registrera(p, v, 'fel', `v:${v}`, `2026-10-13T10:0${i}:00Z`), undefined), '2026-10-13T12:00:00Z') } };
+  const b = pdfBlockQuiz(LPLAN, l, { namn: 'Åsa Öberg', tid: '2026-10-14T18:00:00Z', lmText: { 'LM-3': 'Regler ombord.' },
+    omlasning: { 'EL-999901': '2026-10-13T11:00:00Z' } });
+  const t = b.map((x) => x.text).join('\n');
+  for (const rad of ['Sjöskolan · Elteknik och ellära · Quiz vecka 99', 'Namn: Åsa Öberg', 'Kontrollkod: ', 'Resultat: 1 av 3 rätt',
+    'Text 1. Provtext om färger: 1 av 2 rätt.', 'Text 2. Provtext om tal: 0 av 1 rätt.', 'Text 1. Provtext om färger – 1 av 2 rätt',
+    'Rätt. 2 försök, omgång 1. Första svar: A – Röd', 'Sista svar: C – Blå.', 'Inte rätt. 3 försök, omgång 2. Första svar: A – Ljus',
+    'Sista svar: C – Matt.', 'Inget svar. 0 försök, omgång 1. Sista svar: –.', 'Läst om texten: ', 'LM-3: 0 av 1 rätt. Regler ombord.']) {
+    assert.ok(t.includes(rad), `PDF:en saknar: ${rad}\n${t}`);
+  }
+  assert.equal((t.match(/Läst om texten/g) || []).length, 1, 'bara texten som har varit låst eller lästs om');
+  assert.equal(bokstavSvar(LPLAN.uppgifter[0].falt[1], 'E'), 'E – Klar');
+  assert.equal(bokstavSvar(LPLAN.uppgifter[0].falt[1], ''), '');
+  assert.equal(pdfFilnamn(42, 'Åsa Öberg', 'Quiz'), 'Vecka42_Quiz_Asa_Oberg.pdf');
+  assert.equal(pdfFilnamn(42, 'Åsa Öberg'), 'Vecka42_Inlamning_Asa_Oberg.pdf');
 });

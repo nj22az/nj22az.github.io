@@ -1,9 +1,9 @@
 {
   "id": "EL-000887",
-  "titel": "Läsförståelse: Transportstyrelsens riktlinjer för riskanalys",
+  "titel": "Transportstyrelsens riktlinjer för riskanalysarbete",
   "sprak": "sv",
   "typ": "flerval",
-  "revision": 2,
+  "revision": 3,
   "granskning": {
     "status": "utkast",
     "kommentar": "Svaren kontrollerade mot PDF:en (avsnitt 2.1.1, 2.1.7, tabell 1, 2.2, 2.4.1, figur 12, 3.3.3, bilaga 4). Facit finns bara hashat, klartexten utanför repot."
@@ -130,7 +130,8 @@
     "resurser": [
       {
         "url": "vecka-42/aktuell/Transportstyrelsen_riktlinjer_riskanalysarbete.pdf",
-        "titel": "Transportstyrelsens riktlinjer för riskanalysarbete (PDF)"
+        "titel": "Transportstyrelsens riktlinjer för riskanalysarbete (PDF)",
+        "kortnamn": "Transportstyrelsens riktlinjer"
       }
     ],
     "losning_publik": false

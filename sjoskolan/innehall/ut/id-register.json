@@ -7969,17 +7969,17 @@
   },
   {
    "id": "EL-000887",
-   "revision": 2,
+   "revision": 3,
    "status": "utkast",
    "publik": "elev",
-   "titel": "Läsförståelse: Transportstyrelsens riktlinjer för riskanalys",
+   "titel": "Transportstyrelsens riktlinjer för riskanalysarbete",
    "typ": "flerval",
    "placeringar": [
     {
-     "yta": "inlamning",
-     "plats": "vecka-42/aktuell/Inlamning.html",
-     "nummer": "Inlämning 4",
-     "ankare": "uppgift-4"
+     "yta": "quiz",
+     "plats": "vecka-42/aktuell/Quiz.html",
+     "nummer": "Text 1",
+     "ankare": "text-1"
     }
    ]
   }

@@ -2,16 +2,20 @@
 
 Beslut 11 oktober 2026 (Nils): inlämningen i vecka 42 rättar sig själv. Eleven skriver sina svar, trycker Rätta och får
 Rätt! eller Skiljer sig med en hänvisning till var hen kan läsa (regel 5 och 6, tolerans 2 %). Varje fråga har tre
-försök. Efter tre fel låses frågan; när eleven har läst om veckans delar och Transportstyrelsens text (bekräftat på
-delsidorna och i formuläret) får de låsta frågorna tre nya försök. Sidan sparar första svar, sista svar, försök, omgång
-och tider (regel 25). Lämna in visar resultatet och ger en PDF som eleven lämnar in i Google Classroom.
+försök. Efter tre fel låses frågan; när eleven har läst om veckans delar (bekräftat på delsidorna) får de låsta frågorna
+tre nya försök. Sidan sparar första svar, sista svar, försök, omgång och tider (regel 25). Lämna in visar resultatet och
+ger en PDF som eleven lämnar in i Google Classroom.
 Logiken finns i gemensamt/sjalvrattning.mjs, sidan i gemensamt/sjalvrattning-sida.mjs och PDF:en i gemensamt/pdf.mjs.
 
+Beslut 12 oktober 2026 (Nils): veckans texter (PDF) läses hemma och besvaras på en egen sida, Quiz
+(vecka-XX/aktuell/Quiz.html, mallen i quiz_mall.py). Frågorna är flerval med bokstäverna A–E i postens
+ordning; en låst fråga får tre nya försök när eleven har läst om just den texten. Se QUIZ nedan.
+
 Här finns bara det publika: fälten, alternativen, hänvisningarna och checklistan. Rätta svar står aldrig här.
-De finns som saltade SHA-256-hashar i vecka-XX/aktuell/inlamning-nyckel.mjs, som facit.py skriver ur en klartextfil
-utanför repot. Uppgifternas text kommer ur innehållsdatabasen (EL-000817–819, 887). Fälten följer postens delfrågor
-(a, b, c …) och bygget stoppar om de inte gör det. Läsförståelsen (EL-000887) har frågor, alternativ och
-läshänvisningar i själva posten (delfrågor med alternativ och ledtrad); fälten byggs därifrån.
+De finns som saltade SHA-256-hashar i vecka-XX/aktuell/inlamning-nyckel.mjs och quiz-nyckel.mjs, som facit.py
+skriver ur klartextfiler utanför repot. Uppgifternas text kommer ur innehållsdatabasen (inlämningen: EL-000817–819).
+Fälten följer postens delfrågor (a, b, c …) och bygget stoppar om de inte gör det. Quizens poster har frågor,
+alternativ och läshänvisningar i själva posten (delfrågor med alternativ och ledtrad); fälten byggs därifrån.
 
 Hänvisningar till delsidorna anges med avsnittets rubrik. Numret räknas ur Del_N.html när sidan byggs (regel 5),
 så att hänvisningen stämmer när avsnitt flyttas. En rubrik som saknas stoppar bygget.
@@ -26,8 +30,9 @@ from pathlib import Path
 SJO = Path(__file__).resolve().parents[2]
 # Veckor där inlämningssidan rättar sig själv. verktyg/inlamning/bygg.py och innehall/export/delsidor_veckor.py läser den.
 SJALVRATTANDE = {42}
-# Cacheversion för gemensamt/sjalvrattning*.mjs, pdf.mjs, lasbekraftelse.mjs och sjalvrattning.css (regel 13).
-VERSION = '20261012'
+# Cacheversion för gemensamt/sjalvrattning*.mjs, quiz-sida.mjs, pdf.mjs, lasbekraftelse.mjs och
+# sjalvrattning.css (regel 13). Byt den när en av filerna ändras efter publicering; importerna i .mjs-filerna följer med.
+VERSION = '20261013'
 MAX_FORSOK = 3
 MULTIMETER_CAT = '../../multimetersimulator/?ovning=category'
 # Alternativen visas i en fast, blandad ordning (samma för alla elever), så att rätt svar inte står på samma plats.
@@ -149,8 +154,6 @@ FORMULAR = {42: {
                 ('4', 'Sladdarna har ingen egen märkning, så de behöver inte kontrolleras.')],
                 'b', lank(MULTIMETER_CAT, 'Multimeterlabbet: Välj CAT-klass', efter='Steg 3 handlar om mätare och sladdar.')),
             text('819-text', 'Motivera dina val med egna ord (frivilligt)', 'motivering', rad=3)]}]},
-    # Läsförståelsen: fälten byggs ur postens delfrågor (frågor, alternativ och ledtrad = läshänvisning).
-    'EL-000887': {'fran_posten': True, 'heltal': {'f': (1, 5)}},
 }}
 
 
@@ -159,18 +162,24 @@ def post(ovning):
 
 
 def textkalla(p):
-    """Läsförståelsens text: (adress relativt sidan, titel) ur postens första resurs."""
+    """Textens PDF: (adress relativt sidan, titel) ur postens första resurs."""
     r = p['referenser']['resurser'][0]
     return Path(r['url']).name, r['titel']
 
 
+def kortnamn(p):
+    """Textens korta namn i hänvisningarna (Läs avsnitt 2.1 i <kortnamn>): resursens kortnamn, annars titeln utan (PDF)."""
+    r = p['referenser']['resurser'][0]
+    return r.get('kortnamn') or re.sub(r'\s*\(PDF\)\s*$', '', r['titel'])
+
+
 def fran_posten(nr, p):
-    """Delarna för en post vars delfrågor själva har alternativ och läshänvisning (EL-000887)."""
+    """Delarna för en inlämningsuppgift vars delfrågor själva har alternativ och läshänvisning (FORMULAR: fran_posten)."""
     spec, kort = FORMULAR[nr][p['id']], p['id'][-3:]
     href, _ = textkalla(p)
     delar = []
     for d in p['uppgift']['delfragor']:
-        pekare = lank(href, d['ledtrad'], slut=' i Transportstyrelsens riktlinjer.')
+        pekare = lank(href, d['ledtrad'], slut=f' i {kortnamn(p)}.')
         fraga = f'{d["id"]}) {d["text"]}'
         if d.get('alternativ'):
             f = val(f'{kort}{d["id"]}', fraga, [(str(i), a) for i, a in enumerate(d['alternativ'], 1)], d['id'], pekare)
@@ -204,6 +213,103 @@ def alla_falt(nr):
 def rattade_falt(nr):
     """Fälten som rättas (tal och val), med typ, decimaler, tolerans och alternativens id. facit.py använder dem."""
     return {i: f for i, f in alla_falt(nr).items() if f['typ'] in ('tal', 'val')}
+
+
+# ------------------------------------------------------------------ quizen (vecka-XX/aktuell/Quiz.html)
+# Beslut 12 oktober 2026 (Nils): texterna läses hemma och alla frågor besvaras senast torsdag. Varje text är en post i
+# innehållsdatabasen: uppgift.fraga är läsanvisningen, delfrågorna är frågorna ({id, typ: flerval, text, alternativ (4–5),
+# ledtrad: var i texten svaret står}), referenser.resurser[0] är PDF:en ({url, titel, kortnamn}) och
+# referenser.rattigheter är källan. Vilka texter och i vilken ordning: innehall/placeringar/quiz.json.
+# Alternativen visas i postens ordning med bokstäverna A–E, och bokstaven är alternativets id. Lärarens facit i bokstäver
+# och nyckeln stämmer därför ett till ett; flyttas ett alternativ i posten måste facit ändras (regel 55).
+# heltal: frågor utan alternativ (ett heltal i intervallet) per fält-id. Ett fält som inte längre är ett tal stoppar bygget.
+QUIZ = {42: {'sista': '2026-10-15', 'heltal': {'887f': (1, 5)}}}
+QUIZ_SIDA = 'Quiz.html'
+BOKSTAVER = 'ABCDE'
+# Facit hör inte hemma i posten: delfrågornas ratt, svar och forklaring används inte i quizen.
+FACITFALT = ('ratt', 'svar', 'forklaring')
+
+
+def quiz_poster(nr, placeringar=None):
+    """Texterna på veckans quizsida i ordning: [(placering, post)] ur innehall/placeringar/quiz.json.
+    placeringar: en annan lista (testerna använder egna poster)."""
+    if placeringar is None:
+        fil = SJO / 'innehall' / 'placeringar' / 'quiz.json'
+        alla = json.loads(fil.read_text(encoding='utf-8'))['placeringar'] if fil.exists() else []
+        plats = f'vecka-{nr}/aktuell/{QUIZ_SIDA}'
+        return [(pl, post(pl['ovning'])) for pl in sorted((x for x in alla if x['plats'] == plats), key=lambda x: x['ordning'])]
+    return list(placeringar)
+
+
+def dokument_falt(nr, p):
+    """Quizens fält för en text: ett val per delfråga med bokstäverna A–E som id (postens ordning), eller ett
+    heltal när delfrågan saknar alternativ (QUIZ[nr]['heltal']). Stoppar om posten inte följer formatet."""
+    heltal = QUIZ.get(nr, {}).get('heltal', {})
+    kort, namn = p['id'][-3:], kortnamn(p)
+    href, _ = textkalla(p)
+    falt = []
+    for d in p['uppgift'].get('delfragor', []):
+        i = f'{kort}{d["id"]}'
+        if any(k in d for k in FACITFALT):
+            raise SystemExit(f'{p["id"]} {d["id"]}: {", ".join(k for k in FACITFALT if k in d)} står i posten. Facit hör inte hemma i '
+                             'repot; ta bort fältet och lägg svaret i klartextfilen till facit.py.')
+        if not d.get('ledtrad'):
+            raise SystemExit(f'{p["id"]} {d["id"]}: ledtrad saknas (var i texten svaret står, till exempel ”avsnitt 2.1”)')
+        pekare = lank(href, d['ledtrad'], slut=f' i {namn}.')
+        fraga = f'{d["id"]}) {d["text"]}'
+        if d.get('alternativ'):
+            if not 4 <= len(d['alternativ']) <= len(BOKSTAVER) or len(set(d['alternativ'])) != len(d['alternativ']):
+                raise SystemExit(f'{p["id"]} {d["id"]}: en fråga ska ha 4–5 olika alternativ (har {len(d["alternativ"])})')
+            if i in heltal:
+                raise SystemExit(f'sjalvrattning.py QUIZ[{nr}]: {i} har alternativ och är inget heltal. Ta bort raden i heltal.')
+            f = val(i, fraga, list(zip(BOKSTAVER, d['alternativ'])), d['id'], pekare)
+            f['bokstaver'] = True
+        else:
+            if i not in heltal:
+                raise SystemExit(f'{p["id"]} {d["id"]}: frågan saknar alternativ. Ge den alternativ, eller ett heltalsintervall i '
+                                 f'QUIZ[{nr}]["heltal"] i sjalvrattning.py.')
+            f = tal(i, fraga, d.get('enhet', ''), d['id'], pekare, dec=0, tolerans=0, heltal=heltal[i])
+        falt.append(f)
+    if not falt:
+        raise SystemExit(f'{p["id"]}: posten har inga delfrågor')
+    return falt
+
+
+def quiz_falt(nr, placeringar=None):
+    """Alla fält som rättas på quizsidan: {fält-id: fält}. facit.py använder dem."""
+    poster = quiz_poster(nr, placeringar)
+    kanda = {f['id']: f for _, p in poster for f in dokument_falt(nr, p)}
+    prefix = {p['id'][-3:] for _, p in poster}
+    for i in QUIZ.get(nr, {}).get('heltal', {}):
+        if i[:3] in prefix and i not in kanda:
+            raise SystemExit(f'sjalvrattning.py QUIZ[{nr}]: heltal {i} finns inte i texten. Ta bort raden.')
+    return kanda
+
+
+def quiz_plan(nr, placeringar=None):
+    """Sidans plan när den byggs, i samma form som sparadPlan i gemensamt/sjalvrattning.mjs:
+    {vecka, titel, uppgifter: [{nr, titel, ovning, lm, falt: [fält-id]}]}. quizStatus(vecka, plan) räknar med den
+    innan eleven har öppnat sidan."""
+    return {'vecka': str(nr), 'titel': f'Quiz vecka {nr}', 'uppgifter': [
+        {'nr': str(n), 'titel': p['titel'], 'ovning': p['id'], 'lm': p['larande'].get('mal', []),
+         'falt': [f['id'] for f in dokument_falt(nr, p)]} for n, (_, p) in enumerate(quiz_poster(nr, placeringar), 1)]}
+
+
+def falt_per_lm(nr, sida='inlamning'):
+    """Antal fält som rättas per kursplanspunkt på veckans inlämning (sida='inlamning') eller quiz
+    (sida='quiz'): {'LM-2': 12, …} i punkternas ordning. Varje fält räknas under alla sin posts punkter, som
+    veckoStatus och quizStatus i gemensamt/sjalvrattning.mjs. Tom när veckan inte har sidan."""
+    if sida == 'inlamning':
+        poster = [(post(o), [f for f in uppgiftens_falt(nr, o) if f['typ'] in ('tal', 'val')]) for o in FORMULAR.get(nr, {})]
+    elif sida == 'quiz':
+        poster = [(p, dokument_falt(nr, p)) for _, p in quiz_poster(nr)] if nr in QUIZ else []
+    else:
+        raise ValueError(f'okänd sida {sida} (inlamning eller quiz)')
+    per = {}
+    for p, falt in poster:
+        for m in p['larande'].get('mal', []):
+            per[m] = per.get(m, 0) + len(falt)
+    return dict(sorted(per.items(), key=lambda kv: int(kv[0].split('-')[1])))
 
 
 # ------------------------------------------------------------------ rendering
@@ -255,6 +361,12 @@ def falt_html(nr, f):
         alt = ''.join(f'<option value="{v}">{html.escape(t)}</option>' for v, t in f['alternativ'])
         return (f'<div class="ri-falt" data-falt="{i}" data-typ="val" data-kort="{k}"><label for="ri-{i}">{mark(f["fraga"])}</label>'
                 f'<select id="ri-{i}" aria-describedby="ri-{i}-besked"><option value="">Välj …</option>{alt}</select>{_besked(nr, f)}</div>')
+    if f['typ'] == 'val' and f.get('bokstaver'):
+        # Quizen: postens ordning, bokstaven synlig och lika med id:t (lärarens facit är bokstäver).
+        alt = ''.join(f'<label class="ri-val"><input type="radio" name="ri-{i}" value="{v}"><span class="ri-bokstav">{v}</span>'
+                      f'<span>{mark(t)}</span></label>' for v, t in f['alternativ'])
+        return (f'<fieldset class="ri-falt" data-falt="{i}" data-typ="val" data-kort="{k}" data-bokstaver aria-describedby="ri-{i}-besked">'
+                f'<legend>{mark(f["fraga"])}</legend>{alt}{_besked(nr, f)}</fieldset>')
     if f['typ'] == 'val':
         alt = ''.join(f'<label class="ri-val"><input type="radio" name="ri-{i}" value="{v}"><span>{mark(t)}</span></label>'
                       for v, t in visningsordning(i, f['alternativ']))
@@ -276,14 +388,14 @@ def lista_b64(nr, lista):
 
 
 def lasknapp(href, titel):
-    """Länken till läsförståelsens text och knappen Jag har läst texten (nyckeln text i sj-last:vecka-NN)."""
+    """Länken till quizens text och knappen Jag har läst texten (nyckeln text i sj-last:vecka-NN)."""
     return (f'<p class="ri-textlas"><a href="{html.escape(href)}" data-ri-text>{html.escape(titel)}</a> '
             '<button type="button" class="ri-textknapp" data-ri-last="text">Jag har läst texten</button> '
             '<span class="ri-lasstatus" data-ri-status="text"></span></p>')
 
 
 def utan_fragelista(nr, p):
-    """Läsförståelsens frågor står i svarsfälten; listan a–h i uppgiften skulle bara upprepa dem."""
+    """Quizens frågor står i svarsfälten; listan a–h i uppgiften skulle bara upprepa dem."""
     return bool(FORMULAR.get(nr, {}).get(p['id'], {}).get('fran_posten'))
 
 
@@ -346,7 +458,7 @@ def epost_ruta(epost, vn, pa_sidan):
 
 
 def lasdelar(nr):
-    """Det eleven läser om när en fråga är låst: veckans delar och läsförståelsens text. [(nyckel, titel, adress)]."""
+    """Det eleven läser om när en fråga är låst: veckans delar och quizens text. [(nyckel, titel, adress)]."""
     ut = []
     for f in sorted((SJO / f'vecka-{nr}' / 'aktuell').glob('Del_*.html')):
         titel = re.search(r'<title>(.*?) · ', f.read_text(encoding='utf-8')).group(1)

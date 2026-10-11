@@ -195,6 +195,8 @@ Text minst 18 pt, nyckelmeningen 21–25 pt.
 | `verktyg/inlamning/bygg.py` | veckans inlämningsuppgifter, `vecka-XX/aktuell/Inlamning.html` |
 | `verktyg/inlamning/sjalvrattning.py`, `facit.py` | självrättande inlämning (vecka 42): svarsfält, alternativ, läshänvisningar och checklista; nyckeln med hashade svar |
 | `gemensamt/sjalvrattning.css`, `sjalvrattning*.mjs` | svarsfälten, Rätta (Rätt!/Skiljer sig, tre försök, låsning), rutan Låsta frågor (läs om veckan för nya försök), Lämna in och PDF:en på en självrättande inlämningssida |
+| `verktyg/inlamning/quiz_mall.py` | quizen (vecka 42): texterna med flervalsfrågor A–E, rutan Låsta frågor per text och Lämna in |
+| `gemensamt/quiz-sida.mjs` | quizens Rätta (tre försök per fråga), Jag har läst om texten (nya försök för den texten), Lämna in och PDF:en |
 | `gemensamt/pdf.mjs` | elevens PDF (A4, Helvetica WinAnsi, utan bibliotek) |
 | `gemensamt/lasbekraftelse.mjs` | rutan Har du läst hela del N? sist på delsidorna i en vecka med självrättande inlämning |
 | `innehall/` | innehållsdatabasen: övningar, ledtrådar, lösningar, labbuppgifter och lärarfacit (`innehall/README.md`). `innehall.py bygg` skriver kurssidornas övningar, `*/uppgifter.gen.mjs`, arbetsblad, inlämning, tenta, presentationer, lärarguiden och boken |

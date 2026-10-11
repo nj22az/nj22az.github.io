@@ -4,8 +4,8 @@
 // Rättning, försök, veckostatus och PDF:ens innehåll finns i sjalvrattning.mjs, PDF-skrivaren i pdf.mjs.
 import { ratta, kanon, registrera, registreraText, lasForstaVersion, avkodaLista, resultat, tidText, lasLage, sparaLage,
   BESKED, MAX_FORSOK, forsokKvar, kanLasasUpp, nyOmgang, lasLasning, bekraftaLasning, listanVisas, sparadPlan, pdfBlock,
-  pdfFilnamn, kontrollkod, mailtoAmne, faltNamn } from './sjalvrattning.mjs?v=20261012';
-import { skapaPdf } from './pdf.mjs?v=20261012';
+  pdfFilnamn, kontrollkod, mailtoAmne, faltNamn } from './sjalvrattning.mjs?v=20261013';
+import { skapaPdf } from './pdf.mjs?v=20261013';
 import { fulltNamn, sparatNamn, sparaNamn } from './elevtal.mjs?v=20260930';
 
 const esc = (s) => String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -59,6 +59,11 @@ export function starta(nyckel, dok = document) {
   const ny = sparadPlan(plan);
   if (JSON.stringify(lage.plan) !== JSON.stringify(ny)) { lage = { ...lage, plan: ny }; spara(); }
   const allaFalt = plan.uppgifter.flatMap((u) => u.falt);
+  // Svar på fält som inte längre finns på sidan tas bort (quizen flyttade till en egen sida 12 oktober 2026),
+  // så att kontrollkoden och PDF:en bara gäller sidans frågor.
+  const pasidan = new Set(allaFalt.map((f) => f.id));
+  const gamla = Object.keys(lage.falt || {}).filter((id) => !pasidan.has(id));
+  if (gamla.length) { lage = { ...lage, falt: Object.fromEntries(Object.entries(lage.falt).filter(([id]) => pasidan.has(id))) }; spara(); }
 
   const varde = (f) => (f.radio.length ? (f.radio.find((r) => r.checked)?.value || '') : (f.input?.value ?? ''));
   const sattVarde = (f, v) => { if (f.radio.length) f.radio.forEach((r) => { r.checked = r.value === v; }); else if (f.input) f.input.value = v; };
@@ -142,7 +147,7 @@ export function starta(nyckel, dok = document) {
   // Läs om veckan: rutan överst när en fråga är låst. När alla delar och texten är bekräftade efter låsningen får de
   // låsta frågorna en ny omgång med tre försök (omgången sparas per fråga).
   const lasom = dok.getElementById('ri-lasom');
-  const delar = (lasom?.dataset.riDelar || 'del-1 del-2 del-3 text').split(/\s+/);
+  const delar = (lasom?.dataset.riDelar || 'del-1 del-2 del-3').split(/\s+/);
   let upplast = 0;
   function uppdateraLasom() {
     const lasning = lasLasning(VECKA), tid = new Date().toISOString();
@@ -170,7 +175,7 @@ export function starta(nyckel, dok = document) {
     plan.uppgifter.forEach((u) => { if (u.el.querySelector('.ri-summa').textContent) summera(u); });
     for (const u of plan.uppgifter.filter((x) => x.lasEl)) visaLista(u);
   }
-  // Jag har läst texten (läsförståelsens PDF): nyckeln text i sj-last:vecka-NN.
+  // Jag har läst texten (quizens PDF): nyckeln text i sj-last:vecka-NN.
   for (const b of dok.querySelectorAll('[data-ri-last="text"]')) b.addEventListener('click', () => { bekraftaLasning(VECKA, 'text'); uppdateraLasom(); });
   addEventListener('storage', (e) => { if (!e.key || e.key.startsWith('sj-last:')) uppdateraLasom(); });
   dok.addEventListener('visibilitychange', () => { if (dok.visibilityState === 'visible') uppdateraLasom(); });
@@ -245,7 +250,8 @@ export function starta(nyckel, dok = document) {
   namnInp.value = lage.namn || sparatNamn();
   function laddaNer(namn, tid) {
     const kod = kontrollkod(namn, tid, lage);
-    const block = pdfBlock(plan, lage, { namn, tid, lmText, kod, lasning: lasLasning(VECKA) });
+    const lasning = lasLasning(VECKA);
+    const block = pdfBlock(plan, lage, { namn, tid, lmText, kod, lasning: Object.fromEntries(delar.map((k) => [k, lasning[k] || null])) });
     const pdf = skapaPdf(block, { titel: `Inlämning vecka ${VECKA}: ${namn}`, forfattare: namn, amne: `Sjöskolan · ${plan.titel}`,
       sidfot: `Sjöskolan · Inlämning vecka ${VECKA} · ${namn} · ${kod}`, skapad: new Date(tid) });
     const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));

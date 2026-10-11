@@ -1,0 +1,17 @@
+{
+  "yta": "quiz",
+  "titel": "Quiz",
+  "beskrivning": "Texter som eleven läser hemma, med självrättande flervalsfrågor (bokstäverna A–E i postens ordning). Sidan vecka-XX/aktuell/Quiz.html; facit finns bara som saltade hashar i quiz-nyckel.mjs.",
+  "publik": "elev",
+  "exportor": "quiz",
+  "placeringar": [
+    {
+      "ovning": "EL-000887",
+      "plats": "vecka-42/aktuell/Quiz.html",
+      "del": "42",
+      "ordning": 1,
+      "nummer": "Text 1",
+      "ankare": "text-1"
+    }
+  ]
+}

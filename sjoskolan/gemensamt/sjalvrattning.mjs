@@ -1,6 +1,7 @@
-// Självrättande inlämning (vecka 42 och framåt): rättning, försök och låsning, läsbekräftelser, resultat, veckostatus
-// och innehållet i elevens PDF. Ingen DOM här, så att allt kan provas i node (sjalvrattning.test.mjs).
-// Sidan: sjalvrattning-sida.mjs. Delsidorna: lasbekraftelse.mjs. PDF-filen: pdf.mjs. Fälten: verktyg/inlamning/sjalvrattning.py.
+// Självrättande sidor (vecka 42 och framåt), inlämningen och quizen: rättning, försök och låsning,
+// läsbekräftelser, resultat, veckostatus och innehållet i elevens PDF. Ingen DOM här, så att allt kan provas i node
+// (sjalvrattning.test.mjs). Sidorna: sjalvrattning-sida.mjs (Inlamning.html) och quiz-sida.mjs
+// (Quiz.html). Delsidorna: lasbekraftelse.mjs. PDF-filen: pdf.mjs. Fälten: verktyg/inlamning/sjalvrattning.py.
 //
 // Rätta svar finns bara som saltade SHA-256-hashar i vecka-XX/aktuell/inlamning-nyckel.mjs (verktyg/inlamning/facit.py).
 // Ett tal avrundas till fältets decimaler och godkänns om hashen finns i nyckeln; nyckeln har varje tal inom 2 % från
@@ -9,16 +10,20 @@
 // antal försök och omgång (regel 25).
 //
 // Lagring (localStorage, allt i try/catch; sidan fungerar utan):
-//   sj-v<vecka>-inlamning  elevens svar: {v, falt, las, bock, inlamnad, namn, plan}   (lagringsnyckel)
-//   sj-last:vecka-<vecka>  läsbekräftelser: {"del-1": ISO, "del-2": ISO, "del-3": ISO, "text": ISO}   (lasningsnyckel)
-//   sj-elevnamn            namnet (gemensamt/elevtal.mjs), används när inlämningen saknar namn
+//   sj-v<vecka>-inlamning      inlämningens svar: {v, falt, las, bock, inlamnad, namn, plan}   (lagringsnyckel)
+//   sj-last:vecka-<vecka>      delsidornas läsbekräftelser: {"del-1": ISO, "del-2": ISO, "del-3": ISO}   (lasningsnyckel)
+//   sj-v<vecka>-quiz  quizens svar: {v, falt, inlamnad, namn, plan}   (quizNyckel)
+//   sj-omlasning:vecka-<vecka> quizen, Jag har läst om texten: {"EL-000887": ISO, …}   (omlasningsnyckel)
+//   sj-elevnamn                namnet (gemensamt/elevtal.mjs), används när sidan saknar namn
 
 export const TOLERANS_PROCENT = 2;
 export const MAX_FORSOK = 3;
-export const LASDELAR = ['del-1', 'del-2', 'del-3', 'text'];
+export const LASDELAR = ['del-1', 'del-2', 'del-3'];
 export const LASTID_MS = 3 * 60 * 1000;
 export const lagringsnyckel = (vecka) => `sj-v${vecka}-inlamning`;
 export const lasningsnyckel = (vecka) => `sj-last:vecka-${vecka}`;
+export const quizNyckel = (vecka) => `sj-v${vecka}-quiz`;
+export const omlasningsnyckel = (vecka) => `sj-omlasning:vecka-${vecka}`;
 
 // ------------------------------------------------------------------ SHA-256 (FIPS 180-4), utan crypto.subtle
 // Egen implementation: crypto.subtle finns bara på https och är asynkron. Testet jämför med node:crypto.
@@ -188,6 +193,22 @@ export function bekraftaLasning(vecka, del, tid = new Date().toISOString()) {
   return lasLasning(vecka);
 }
 
+/** Quizen: när eleven har läst om varje text efter en låsning, {"EL-000887": ISO, …}. Egen nyckel, så att
+ * delsidornas sj-last:vecka-NN och veckans räkning av lästa delar inte påverkas. Saknad eller trasig lagring ger {}. */
+export function lasOmlasning(vecka) {
+  let d = {};
+  try { d = JSON.parse(localStorage.getItem(omlasningsnyckel(vecka)) || '{}') || {}; } catch { d = {}; }
+  return Object.fromEntries(Object.entries(d).filter(([, v]) => typeof v === 'string'));
+}
+
+/** Eleven har läst om en text (Jag har läst om texten). Den senaste tiden per text behålls. Returnerar alla. */
+export function bekraftaOmlasning(vecka, ovning, tid = new Date().toISOString()) {
+  const d = lasOmlasning(vecka);
+  if (!d[ovning] || tidVarde(tid) > tidVarde(d[ovning])) d[ovning] = tid;
+  try { localStorage.setItem(omlasningsnyckel(vecka), JSON.stringify(d)); } catch { /* privat läge */ }
+  return d;
+}
+
 /** Synlig tid på en sida: summan av tiderna då sidan var synlig (document.visibilityState). nu() ger millisekunder. */
 export function lasklocka(nu = () => Date.now()) {
   let summa = 0, start = null;
@@ -261,6 +282,28 @@ export function veckoStatus(vecka) {
     lasning: lasLasning(vecka) };
 }
 
+/** Quizens läge för veckosidan (ren funktion, läser bara localStorage och tål att lagringen saknas):
+ * {namn, inlamnad, dokument: [{ovning, titel, ratt, totalt, last}], lm: {'LM-2': {ratt, totalt}, …}, last,
+ *  lasning: {'EL-000887': ISO|null, …}} där lasning är Jag har läst om texten per text.
+ * plan: sidans plan när den byggs (verktyg/inlamning/sjalvrattning.py quiz_plan), så att totalerna stämmer innan
+ * eleven har öppnat sidan. Utan plan används planen som sidan sparar när den öppnas; utan någon av dem är dokument [] och
+ * lm {}. Svaren hittas på fält-id, så en ny text på sidan räknas med direkt. */
+export function quizStatus(vecka, plan = null) {
+  const { lage } = lasLage(quizNyckel(vecka));
+  const kalla = plan?.uppgifter?.length ? plan : lage.plan;
+  const dokument = (kalla?.uppgifter || []).map((u) => {
+    const falt = Array.isArray(u.falt) ? u.falt : [];
+    return { ovning: String(u.ovning || ''), titel: u.titel || '', ratt: falt.filter((id) => lage.falt?.[id]?.ratt).length, totalt: falt.length,
+      last: falt.some((id) => lage.falt?.[id]?.last), lm: Array.isArray(u.lm) ? u.lm : [] };
+  });
+  let namn = typeof lage.namn === 'string' ? lage.namn : '';
+  if (!namn) { try { namn = localStorage.getItem('sj-elevnamn') || ''; } catch { namn = ''; } }
+  const inlamnad = Array.isArray(lage.inlamnad) && lage.inlamnad.length ? lage.inlamnad[lage.inlamnad.length - 1] : null;
+  const oml = lasOmlasning(vecka);
+  return { namn, inlamnad, dokument: dokument.map(({ lm, ...d }) => d), lm: lmResultat(dokument), last: dokument.some((d) => d.last),
+    lasning: Object.fromEntries(dokument.map((d) => [d.ovning, oml[d.ovning] || null])) };
+}
+
 // ------------------------------------------------------------------ visning, PDF:ens innehåll och filnamn
 const pad = (n) => String(n).padStart(2, '0');
 /** Tid som 2026-10-14 19:32 (enhetens lokala tid). */
@@ -285,6 +328,13 @@ export function visaSvar(f, varde) {
 }
 
 export const BESKED = { ratt: 'Rätt!', fel: 'Skiljer sig', last: 'Låst – läs om veckan' };
+
+/** Ett val i quizen: ”B – alternativets text”. Andra fält som visaSvar. */
+export function bokstavSvar(f, varde) {
+  const v = String(varde ?? '').trim();
+  const a = f.typ === 'val' ? (f.alternativ || []).find((x) => x.id === v) : null;
+  return a ? `${a.id} – ${a.text}` : visaSvar(f, v);
+}
 
 /** Fältets läge i PDF:en: Rätt, Låst, Inte rätt, Inget svar eller Inte rättat. */
 export function lageText(p) {
@@ -313,11 +363,11 @@ export function kontrollkod(namn, tid, lage) {
 }
 
 const TRANSLITTERERA = { ø: 'o', Ø: 'O', æ: 'ae', Æ: 'AE', ß: 'ss', đ: 'd', Đ: 'D', ł: 'l', Ł: 'L', þ: 'th', Þ: 'Th', ð: 'd', Ð: 'D' };
-/** Filnamnet: Vecka42_Inlamning_Fornamn_Efternamn.pdf (bara A–Z, a–z, 0–9 och _). */
-export function pdfFilnamn(vecka, namn) {
+/** Filnamnet: Vecka42_Inlamning_Fornamn_Efternamn.pdf, eller Vecka42_Quiz_… med typ (bara A–Z, a–z, 0–9 och _). */
+export function pdfFilnamn(vecka, namn, typ = 'Inlamning') {
   const ascii = String(namn ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[øØæÆßđĐłŁþÞðÐ]/g, (c) => TRANSLITTERERA[c]);
   const del = ascii.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'Elev';
-  return `Vecka${vecka}_Inlamning_${del}.pdf`;
+  return `Vecka${vecka}_${typ}_${del}.pdf`;
 }
 
 /** Innehållet i elevens PDF som block för pdf.mjs: rubrik, resultat, varje fält med läge, försök, omgång, första och
@@ -377,6 +427,45 @@ export function pdfBlock(plan, lage, { namn, tid, lmText = {}, kod = kontrollkod
   if (lasning && Object.values(lasning).some(Boolean)) {
     rubrik('Läst om veckan');
     rad(Object.entries(lasning).map(([k, v]) => `${k === 'text' ? 'texten' : k.replace('del-', 'del ')}: ${v ? tidText(v) : 'inte bekräftad'}`).join(' · '));
+  }
+  b.push({ typ: 'text', text: `Kontrollkoden ${kod} räknas ur namnet, tiden och alla svar.`, storlek: 9, luft: 10 });
+  return b;
+}
+
+/** Quizens PDF som block för pdf.mjs: rubrik, namn, tid och kontrollkod, resultat per text, varje fråga med läge,
+ * försök, omgång och första och sista svar som bokstav (”B – text”), kursplanens mål, när eleven läste om texterna och
+ * kontrollkoden. omlasning: lasOmlasning(vecka). */
+export function pdfBlockQuiz(plan, lage, { namn, tid, lmText = {}, kod = kontrollkod(namn, tid, lage), omlasning = {} }) {
+  const res = resultat(plan, lage), b = [];
+  const rubrik = (text) => b.push({ typ: 'underrubrik', text });
+  const rad = (text, ext = {}) => b.push({ typ: 'text', text, ...ext });
+  b.push({ typ: 'rubrik', text: `Sjöskolan · Elteknik och ellära · Quiz vecka ${plan.vecka}` });
+  rad(`Namn: ${namn}`);
+  rad(`Datum och tid: ${tidText(tid)}`);
+  rad(`Kontrollkod: ${kod}`);
+  rubrik(`Resultat: ${res.ratt} av ${res.antal} rätt`);
+  for (const u of res.uppgifter) rad(`Text ${u.nr}. ${u.titel}: ${u.ratt} av ${u.antal} rätt${u.lasta ? `, ${u.lasta} låst` : ''}.`);
+  for (const u of plan.uppgifter) {
+    const r = res.uppgifter.find((x) => x.ovning === u.ovning);
+    rubrik(`Text ${u.nr}. ${u.titel} – ${r.ratt} av ${r.antal} rätt`);
+    for (const f of u.falt.filter(rattas)) {
+      const p = lage.falt?.[f.id] || {};
+      rad(f.etikett || faltNamn(u.nr, f), { fet: true });
+      const forsta = bokstavSvar(f, p.forsta), sista = bokstavSvar(f, p.nu);
+      const nar = p.forstaTid ? ` (${tidText(p.forstaTid)})` : '';
+      const svar = p.forsta === undefined ? `Sista svar: ${punkt(sista || '–')}`
+        : forsta === sista ? `Första och sista svar: ${punkt(`${forsta}${nar}`)}` : `Första svar: ${punkt(`${forsta}${nar}`)} Sista svar: ${punkt(sista || '–')}`;
+      rad(`${lageText(p)}. ${p.forsok || 0} försök, omgång ${p.omgang || 1}. ${svar}`, { indrag: 1 });
+    }
+    // När eleven läste om texten: bara när det har hänt, eller när en fråga har varit låst.
+    const harLasts = u.falt.some((f) => (lage.falt?.[f.id]?.lastTider || []).length);
+    if (omlasning?.[u.ovning]) rad(`Läst om texten: ${tidText(omlasning[u.ovning])}.`, { luft: 6 });
+    else if (harLasts) rad('Läst om texten: inte bekräftat.', { luft: 6 });
+  }
+  const lm = lmResultat(res.uppgifter.map((u) => ({ ...u, totalt: u.antal })));
+  if (Object.keys(lm).length) {
+    rubrik('Kursplanens mål');
+    for (const [m, v] of Object.entries(lm)) rad(`${m}: ${v.ratt} av ${v.totalt} rätt.${lmText[m] ? ` ${lmText[m]}` : ''}`);
   }
   b.push({ typ: 'text', text: `Kontrollkoden ${kod} räknas ur namnet, tiden och alla svar.`, storlek: 9, luft: 10 });
   return b;
