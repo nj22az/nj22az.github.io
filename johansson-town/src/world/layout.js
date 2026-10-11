@@ -26,11 +26,11 @@ const KITAHAMA_ROUTE=Object.freeze({id:'kitahama-lane',surface:'stone'});
 export const BOARDWALK=Object.freeze({x:MAIN_ROAD.x,minZ:-38,maxZ:8,width:MAIN_ROAD.width});
 /**
  * The outer pier: from the quay's edge (z -49.65) out to z -88, lengthened from 15.3 m in 2026-10 for
- * the bigger Minato Maru, which lies along its west face (docs/FERRY-AUDIT.md §6, batch 3). `open` is
- * how far out you can walk: to the old end (z -64.95), just past the old end rail, which still stands
- * across the pier with the pier-end props and the ferry's queue until they move to the new end (batch 4).
+ * the bigger Minato Maru, which lies along its west face (docs/FERRY-AUDIT.md §6, batch 3; its fittings
+ * are in minato-berth.js). `open` is how far out you can walk: to the end rail at z -87.6, less the
+ * lifebuoy hung on it (batch 4a; before, to the old end at -64.95).
  */
-export const OUTER_PIER=Object.freeze({x:0,z:-68.825,width:8.2,length:38.35,height:.098,open:-64.95});
+export const OUTER_PIER=Object.freeze({x:0,z:-68.825,width:8.2,length:38.35,height:.098,open:-87.35});
 /**
  * The harbour's breakwater: a 68 m wall across the mouth, 4 m thick, a beacon at x ±27; its centre at
  * z -106 since 2026-10 (it stood at -83), so the basin inside is 54 m from the quay (batch 3).

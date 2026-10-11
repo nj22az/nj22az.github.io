@@ -7,6 +7,7 @@ import {buildAirportVehicleYard} from '../src/world/airport-vehicle-yard.js';
 import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,AIRPORT_PASSAGES,airportFerryPose} from '../src/world/airport-ferry.js';
 import {TURN_LIMITS} from '../src/world/ferry-paths.js';
 import {BREAKWATER,OUTER_PIER} from '../src/world/layout.js';
+import {MINATO_BERTH} from '../src/world/minato-berth.js';
 import {airportShoreDistance} from '../src/world/airport-island.js';
 import {FERRY_RAMP,FERRY_DECKS} from '../src/world/ferry-model.js';
 import {createFerryRun,FERRY_BERTH} from '../src/world/ferry.js';
@@ -44,6 +45,8 @@ test('airport arrival feet match the drawn pier and connect to the public distri
 const HARBOUR_SOLIDS=Object.freeze({
  breakwater:[BREAKWATER.minX,BREAKWATER.maxX,BREAKWATER.z-BREAKWATER.thickness/2,BREAKWATER.z+BREAKWATER.thickness/2],outerPier:[-4.1,4.1,OUTER_PIER.z-OUTER_PIER.length/2,-49.65],quay:[-19,19,-49.65,-38],
  secondPier:[-38.3,-33.7,-64.3,-44],secondPierArm:[-38.3,-23.7,-64.3,-59.7],houseboat:[-42.05,-38.95,-59.9,-53.1],
+ // The berth's fenders on the pier's west face (minato-berth.js): she lies on their faces, and slides off them.
+ fenders:[MINATO_BERTH.line,-4.1,MINATO_BERTH.fenders.z.at(-1)-MINATO_BERTH.fenders.base/2,MINATO_BERTH.fenders.z[0]+MINATO_BERTH.fenders.base/2],
 });
 const rectGap=([x,z],[x0,x1,z0,z1])=>{const dx=Math.max(x0-x,0,x-x1),dz=Math.max(z0-z,0,z-z1);return dx||dz?Math.hypot(dx,dz):-Math.min(x-x0,x1-x,z-z0,z1-z);};
 /** Points round the hull's outline at a pose, every 0.4 m along her sides and across her ends. */
@@ -62,7 +65,7 @@ test('the shared ferry crosses round the breakwater, a metre and more off every 
    for(const q of outline(p)){
     for(const [name,r] of Object.entries(HARBOUR_SOLIDS)){
      // Alongside the pier she backs off along its face, as close as she lies moored.
-     const need=name==='outerPier'?.1:name==='quay'?.5:1;
+     const need=name==='fenders'?-.005:name==='outerPier'?.1:name==='quay'?.5:1;
      assert.ok(rectGap(q,r)>=need,`${destination} at ${t.toFixed(1)} s: hull ${rectGap(q,r).toFixed(2)} m off the ${name} at ${q.map(v=>v.toFixed(1))}`);
     }
     if(!atKitano)assert.ok(airportShoreDistance(...q)>2,`${destination} at ${t.toFixed(1)} s: hull within 2 m of Kitano-jima's shore at ${q.map(v=>v.toFixed(1))}`);

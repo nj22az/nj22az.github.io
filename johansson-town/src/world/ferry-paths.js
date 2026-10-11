@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {FERRY_HULL} from './ferry-model.js';
+import {MINATO_BERTH} from './minato-berth.js';
 
 /**
  * How the Minato Maru moves in Minato harbour: where her centre goes, and which way her bow
@@ -9,17 +10,19 @@ import {FERRY_HULL} from './ferry-model.js';
  *
  * A path is a list of keys [x, z, yaw°|null]: the centre passes through every key; where a key
  * gives a yaw the bow points that way there (null: along the track, bow first), and between keys
- * it turns smoothly. The keys were chosen so that every point of the hull stays at least 0.15 m
- * off the outer pier (her moored clearance), a metre and more off the second pier's arm and the
+ * it turns smoothly. The keys were chosen so that every point of the hull stays off the outer pier's
+ * fenders (she lies on their faces only at the berth), a metre and more off the second pier's arm and the
  * breakwater, and off the quay (tests/ferry.test.mjs, tests/airport-ferry.test.mjs).
  *
  * Since the breakwater moved out (batch 3) the basin is 54 m from the quay, and the outer pier runs
  * 38 m out along her port side: she backs out and to the west until her stern is clear of it, then
  * swings in the western basin onto a heading for the mouth.
  */
-const PIER_WEST=-4.1;
-/** Moored: port side to the outer pier's west flank, the bow 0.5 m off the quay wall at z -50. */
-export const BERTH_X=PIER_WEST-FERRY_HULL.beam/2-.15,BERTH_Z=-50.5-FERRY_HULL.length/2;
+/**
+ * Moored: port side to the outer pier's west flank, lying on its fenders (minato-berth.js; until
+ * batch 4a she lay 0.15 m off the bare face), the bow 0.5 m off the quay wall at z -50.
+ */
+export const BERTH_X=MINATO_BERTH.line-FERRY_HULL.beam/2,BERTH_Z=-50.5-FERRY_HULL.length/2;
 const freeze=keys=>Object.freeze(keys.map(k=>Object.freeze(k)));
 /**
  * Off the berth: astern, straight, until her bow is clear of the quay (to key `astern`); then the
@@ -27,14 +30,14 @@ const freeze=keys=>Object.freeze(keys.map(k=>Object.freeze(k)));
  * the harbour mouth at the last key.
  */
 export const TOWN_UNBERTHING=Object.freeze({astern:2,keys:freeze([
- [BERTH_X,BERTH_Z,0],[BERTH_X-.1,-64,0],[-7.8,-67,0],
+ [BERTH_X,BERTH_Z,0],[BERTH_X-.3,-64,0],[-8.2,-67,0],
  // Astern and to the west, clear of the outer pier (38 m long since batch 3), the thruster turning her bow west...
  [-9.2,-70,-4],[-11.5,-73,-10],[-14,-76,-22],
  // ...and the swing in the western basin, which the breakwater's move opened, onto a heading for the mouth.
  [-16.5,-78,-42],[-18,-79,-62],[-19.5,-79.5,-82],[-24,-79.5,-100],[-30,-79.5,-108],
 ])});
-/** In from inside the breakwater's end: swinging her bow to the north as she crosses the basin, and alongside. */
-export const TOWN_BERTHING=Object.freeze({keys:freeze([[-29,-73.5,72],[-19,-68.5,45],[-12,-66.2,14],[-8.2,-64.4,2],[BERTH_X,BERTH_Z,0]])});
+/** In from inside the breakwater's end: swinging her bow to the north as she crosses the basin, and alongside, parallel to the fenders for her last metres. */
+export const TOWN_BERTHING=Object.freeze({keys:freeze([[-29,-73.5,72],[-19,-68.5,45],[-12,-66.2,14],[-8,-63.4,0],[BERTH_X,BERTH_Z,0]])});
 /** The harbour mouth, west of the breakwater's end, where her last turn in harbour is. */
 export const HARBOUR_MOUTH=Object.freeze([-47,-86]);
 /** The fairway from the open sea to the harbour mouth (the timetable's boats come and go by it). */

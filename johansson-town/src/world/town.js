@@ -21,6 +21,7 @@ import {WORLD_CAST} from '../people/residents.js';
 import {IZAKAYA_DOOR} from './dining-layout.js';
 import {izakayaOpen} from '../people/social.js';
 import {OUTER_PIER,QUAY_SOUTH,groundHeight} from './layout.js?snappy=1';
+import {MINATO_BERTH} from './minato-berth.js';
 import {buildStreetFurniture} from './street-furniture.js';
 import {ishiganto,stopMarking,roadSign,edgeLines} from './road-standards.js';
 import {KITAHAMA} from './kitahama-layout.js';
@@ -93,50 +94,78 @@ function addWalkablePier(world,options,factory){
   // deck plainly wins, and let the deck and the two rails cover its top between them,
   // so the face underneath is never the one you see.
   factory.box(group,[OUTER_PIER.width,.38,OUTER_PIER.length],[OUTER_PIER.x,OUTER_PIER.height-.025-.19,OUTER_PIER.z],concrete,null,options.shadows);
-  // The coping along both flanks and across the end, the pier's whole length (to z -88 since it was lengthened).
-  factory.box(group,[.34,.56,OUTER_PIER.length+.15],[-4.02,OUTER_PIER.height+.02-.28,OUTER_PIER.z],dark,null,options.shadows);
-  factory.box(group,[.34,.56,OUTER_PIER.length+.15],[4.02,OUTER_PIER.height+.02-.28,OUTER_PIER.z],dark,null,options.shadows);
-  factory.box(group,[8.2,.58,.42],[0,OUTER_PIER.height+.02-.29,OUTER_PIER.z-OUTER_PIER.length/2+.11],dark,null,options.shadows);
+  // The coping along both flanks and across the end, the pier's whole length (to z -88 since it was
+  // lengthened). On the west flank, the ferry's berthing face, it stops either side of the ladder's recess.
+  const B=MINATO_BERTH,copingY=OUTER_PIER.height+.02-.28,north=OUTER_PIER.z+OUTER_PIER.length/2+.075,south=OUTER_PIER.z-OUTER_PIER.length/2-.075;
+  const recess=[B.ladder.z+B.ladder.width/2+.05,B.ladder.z-B.ladder.width/2-.05];
+  for(const [a,b] of [[north,recess[0]],[recess[1],south]])factory.box(group,[.34,.56,a-b],[-4.02,copingY,(a+b)/2],dark,null,options.shadows);
+  factory.box(group,[.34,.56,OUTER_PIER.length+.15],[4.02,copingY,OUTER_PIER.z],dark,null,options.shadows);
+  factory.box(group,[8.2,.58,.42],[0,OUTER_PIER.height+.02-.29,B.end.z+.11],dark,null,options.shadows);
   const posts=[];
   // Rails on the east flank only. The west flank is the ferry's berth: a berthing face carries
-  // fenders and bollards, and a rail there would foul her lines and stand across her gangway.
+  // fenders and bitts, and a rail there would foul her lines and stand across her gangway.
   for(const side of [1]){
     for(const z of [-51.1,-53.7,-62.2,-64.1])posts.push(factory.cylinder(group,.065,1,[side*3.92,.62,z],steel,10));
     factory.beam(group,[side*3.92,1.06,-51.1],[side*3.92,1.06,-53.7],.045,steel);
     factory.beam(group,[side*3.92,1.06,-62.2],[side*3.92,1.06,-64.1],.045,steel);
   }
-  // Rubber fenders on the berthing face, where the Minato Maru's side lies 0.15 m off the coping:
-  // D-section fenders, hung from the coping down past her waterline.
-  for(const z of [-51.6,-55.2,-58.8,-62.4])factory.box(group,[.15,1.1,.42],[-4.1-.075,-.3,z],dark,null,options.shadows);
-  for(const x of [-3.92,-1.3,1.3,3.92])factory.cylinder(group,.065,1,[x,.62,-64.18],steel,10);
-  for(const x of [-3.92,-1.3,1.3])factory.beam(group,[x,1.06,-64.18],[x+2.62,1.06,-64.18],.045,steel);
-  for(const [x,z] of [[-2.75,-55],[2.75,-55],[-2.75,-61],[2.75,-61]]){
+  // The berthing face (minato-berth.js): V-type rubber fenders on steel backing plates, bolted upright to the
+  // coping face where her side lies; she lies on their faces.
+  {const F=B.fenders,shape=new THREE.Shape();shape.moveTo(0,-F.base/2);shape.lineTo(-F.depth,-F.front/2);shape.lineTo(-F.depth,F.front/2);shape.lineTo(0,F.base/2);shape.closePath();
+   const geometry=new THREE.ExtrudeGeometry(shape,{depth:F.length,bevelEnabled:false});geometry.rotateX(Math.PI/2);
+   const rubber=factory.material(null,0x1d2324,.95,0);
+   for(const z of F.z){
+    const fender=new THREE.Mesh(geometry,rubber);fender.position.set(B.face,F.top,z);fender.name='V-type fender';fender.castShadow=options.shadows;fender.receiveShadow=options.shadows;fender.userData.staticProp=true;group.add(fender);
+    factory.box(group,[.03,F.length+.06,F.base+.1],[B.face-.015,F.top-F.length/2,z],steel,null,false);
+   }}
+  // The bitts for her lines, on the edge: a cast post with a flared head and two horns along the face
+  // that keep a line from riding up, painted black.
+  for(const {x,z} of B.bitts){
+    factory.cylinder(group,.19,.46,[x,OUTER_PIER.height+.23,z],0x262c2e,14);factory.cylinder(group,.27,.08,[x,OUTER_PIER.height+.5,z],0x262c2e,14);
+    factory.box(group,[.13,.05,.62],[x,OUTER_PIER.height+.44,z],0x262c2e);colliders.push({x,z,w:.56,d:.64});
+  }
+  // The ladder in its recess in the face, from the deck's edge to below low water.
+  {const L=B.ladder,x=OUTER_PIER.x-OUTER_PIER.width/2-.03;
+   for(const dz of [-L.width/2+.04,L.width/2-.04])factory.beam(group,[x,OUTER_PIER.height,L.z+dz],[x,L.bottom,L.z+dz],.025,warning,8,null,false);
+   for(let y=OUTER_PIER.height-.2;y>L.bottom;y-=.3)factory.beam(group,[x,y,L.z-L.width/2+.04],[x,y,L.z+L.width/2-.04],.018,warning,8,null,false);}
+  // The end rail across the pier's new end.
+  for(const x of [-3.92,-1.3,1.3,3.92])factory.cylinder(group,.065,1,[x,.62,B.end.rail],steel,10);
+  for(const x of [-3.92,-1.3,1.3])factory.beam(group,[x,1.06,B.end.rail],[x+2.62,1.06,B.end.rail],.045,steel);
+  // The fishing boat's two bollards on the east flank, 2.75 m in.
+  for(const [x,z] of [[2.75,-55],[2.75,-61]]){
     factory.cylinder(group,.20,.43,[x,.32,z],dark,12);factory.cylinder(group,.29,.11,[x,.57,z],dark,12);colliders.push({x,z,w:.46,d:.46});
   }
   factory.beam(group,[3.86,.72,-58.1],[3.86,-.75,-58.1],.035,warning,8,null,false);
   factory.beam(group,[3.86,.72,-58.7],[3.86,-.75,-58.7],.035,warning,8,null,false);
   for(let y=.55;y>-.65;y-=.23)factory.beam(group,[3.86,y,-58.1],[3.86,y,-58.7],.028,warning,8,null,false);
 
-  addWithCollider(group,colliders,factory.baitStation(-2.45,-62.55,.03));
-  addWithCollider(group,colliders,factory.pierWinch(2.35,-61.25,-.08));
-  addWithCollider(group,colliders,factory.crateStack(-2.35,-58.8,.06));
+  // The anglers' corner at the end.
+  const A=B.anglers;
+  addWithCollider(group,colliders,factory.baitStation(A.bait[0],A.bait[1],.03));
+  addWithCollider(group,colliders,factory.pierWinch(A.winch[0],A.winch[1],-.08));
+  addWithCollider(group,colliders,factory.crateStack(A.crates[0],A.crates[1],.06));
 
   const ropeMat=factory.material(null,0x9b825e,.92,0);
   for(let i=0;i<3;i++){
-    const ring=new THREE.Mesh(new THREE.TorusGeometry(.34+i*.06,.04,6,18),ropeMat);ring.rotation.x=Math.PI/2;ring.rotation.z=i*.17;ring.position.set(2.45,.16+i*.03,-62.6);ring.castShadow=false;group.add(ring);
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(.34+i*.06,.04,6,18),ropeMat);ring.rotation.x=Math.PI/2;ring.rotation.z=i*.17;ring.position.set(A.rope[0],.16+i*.03,A.rope[1]);ring.castShadow=false;group.add(ring);
   }
+  // A lifebuoy hung on the end rail's inner side, where the anglers are.
+  {const buoy=new THREE.Group();buoy.position.set(A.lifebuoy[0],.78,A.lifebuoy[1]);group.add(buoy);
+   for(let i=0;i<4;i++){const arc=new THREE.Mesh(new THREE.TorusGeometry(.3,.07,8,10,Math.PI/2),factory.material(null,i%2?0xf1ece0:0xd9542e,.8,0));arc.rotation.z=i*Math.PI/2;arc.castShadow=false;arc.userData.staticProp=true;buoy.add(arc);}}
 
-  factory.cylinder(group,.07,3.1,[0,1.65,-63.25],steel,10);
-  factory.box(group,[.68,.12,.24],[0,3.05,-63.25],steel);
-  const lampMat=factory.material(null,0xd9ad68,.78,0,0xd9ad68,.32),lamp=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.20),lampMat);lamp.position.set(0,2.88,-63.25);lamp.castShadow=false;group.add(lamp);
+  for(const z of B.lamps){
+    factory.cylinder(group,.07,3.1,[0,1.65,z],steel,10);
+    factory.box(group,[.68,.12,.24],[0,3.05,z],steel);
+    const lampMat=factory.material(null,0xd9ad68,.78,0,0xd9ad68,.32),lamp=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.20),lampMat);lamp.position.set(0,2.88,z);lamp.castShadow=false;group.add(lamp);
+  }
   factory.beam(group,[3.55,.43,-55.1],[7.45,.12,-54.7],.022,0x6f6049,6,null,false);
   factory.beam(group,[3.55,.43,-60.8],[7.45,.12,-59.5],.022,0x6f6049,6,null,false);
 
-  anchor(group,[0,1,-62.4],'Fish from the outer pier',()=>options.onAction?.('fishing'),options.register);
-  anchor(group,[-2.45,1.1,-61.8],'Inspect bait station',()=>options.onAction?.('inspect','Harbour bait station','Ice, hooks, sinkers and bait tins are arranged for the evening fishermen. The counter is scarred by years of salt water.'),options.register);
-  anchor(group,[2.3,1,-60.6],'Operate pier winch',()=>options.onAction?.('machine','Pier winch','A compact electric winch used to haul baskets and light gear from the quay. The guarded drum turns slowly during a test cycle.'),options.register);
-  anchor(group,[2.45,.8,-62],'Inspect mooring rope',()=>options.onAction?.('inspect','Mooring rope','Heavy natural-fibre rope has been coiled neatly after the morning fishing boats departed.'),options.register);
-  return {posts:posts.length,collidersAdded:7};
+  anchor(group,[A.fishing[0],1,A.fishing[1]],'Fish from the outer pier',()=>options.onAction?.('fishing'),options.register);
+  anchor(group,[A.bait[0],1.1,A.bait[1]+.75],'Inspect bait station',()=>options.onAction?.('inspect','Harbour bait station','Ice, hooks, sinkers and bait tins are arranged for the evening fishermen. The counter is scarred by years of salt water.'),options.register);
+  anchor(group,[A.winch[0]-.05,1,A.winch[1]+.65],'Operate pier winch',()=>options.onAction?.('machine','Pier winch','A compact electric winch at the end of the pier, for hauling a basket of catch or a skiff up from the water. The guarded drum turns slowly during a test cycle.'),options.register);
+  anchor(group,[A.rope[0],.8,A.rope[1]+.6],'Inspect mooring rope',()=>options.onAction?.('inspect','Mooring rope','Heavy natural-fibre rope has been coiled neatly after the morning fishing boats departed.'),options.register);
+  return {posts:posts.length,collidersAdded:4+B.bitts.length+3};
 }
 
 function addSiteFrontage(world,options,factory,lights){

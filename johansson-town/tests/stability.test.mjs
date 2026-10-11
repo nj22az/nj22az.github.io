@@ -18,7 +18,8 @@ assert.equal(townBoundsBlocked(10,-42,.28),false,'harbour apron must remain acce
 assert.equal(townBoundsBlocked(0,-61,.28),false,'outer harbour pier must be walkable');
 assert.equal(townBoundsBlocked(3.7,-61,.28),false,'pier usable width must remain accessible');
 assert.equal(townBoundsBlocked(4.0,-61,.28),true,'pier side must stop the player before the water');
-assert.equal(townBoundsBlocked(0,-65,.28),true,'pier end must stop the player before open water');
+assert.equal(townBoundsBlocked(0,-80,.28),false,'the lengthened pier must be walkable to its new end');
+assert.equal(townBoundsBlocked(0,-87.2,.28),true,'pier end must stop the player before open water');
 const sweep=sweepFraction({x:0,z:0},{x:5,z:0},x=>x>=2,.1);
 assert.ok(sweep>.35&&sweep<.4,`camera sweep stopped at unexpected fraction ${sweep}`);
 
