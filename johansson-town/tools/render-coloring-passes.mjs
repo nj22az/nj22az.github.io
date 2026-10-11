@@ -50,30 +50,36 @@ try{
   const visible=o=>{for(let p=o;p;p=p.parent)if(!p.visible)return false;return true;};
   const head='#include <common>\n#include <batching_pars_vertex>\n#include <skinning_pars_vertex>\n';
   const body='#include <skinbase_vertex>\n#include <begin_vertex>\n#include <batching_vertex>\n#include <skinning_vertex>\n#include <project_vertex>\n';
-  const make=(frag,uniforms={})=>new THREE.ShaderMaterial({uniforms,side:THREE.DoubleSide,
-   vertexShader:head+'varying float vz;varying vec3 vpos;flat varying int inst;\nvoid main(){\n'+body+'vz=-mvPosition.z;vpos=mvPosition.xyz;\n#ifdef USE_INSTANCING\ninst=gl_InstanceID;\n#else\ninst=0;\n#endif\n}',
-   fragmentShader:'varying float vz;varying vec3 vpos;flat varying int inst;\n'+frag});
-  // Glass and see-through things are not outlined (the room behind them is).
-  const solid=o=>{const m=Array.isArray(o.material)?o.material[0]:o.material;return !(m&&m.transparent&&m.opacity<.5)&&!(m&&m.visible===false);};
+  // A cut-out (a leaf card, a fence, a hanging sign with alphaTest) keeps its shape: its texture's alpha still cuts.
+  const make=(frag,uniforms={},o=null)=>{
+   const m=o&&(Array.isArray(o.material)?o.material[0]:o.material),cut=!!(m&&m.alphaTest>0&&m.map);
+   if(cut){m.map.updateMatrix();Object.assign(uniforms,{cutMap:{value:m.map},cutLevel:{value:m.alphaTest},cutMatrix:{value:m.map.matrix.clone()}});}
+   // Each surface keeps its own sidedness: from inside a closed shape the game sees through its back faces, so must we.
+   return new THREE.ShaderMaterial({uniforms,side:m?m.side:THREE.DoubleSide,defines:cut?{CUT:''}:{},
+    vertexShader:head+'varying float vz;varying vec3 vpos;flat varying int inst;\n#ifdef CUT\nuniform mat3 cutMatrix;varying vec2 cutUv;\n#endif\nvoid main(){\n'+body+'vz=-mvPosition.z;vpos=mvPosition.xyz;\n#ifdef USE_INSTANCING\ninst=gl_InstanceID;\n#else\ninst=0;\n#endif\n#ifdef CUT\ncutUv=(cutMatrix*vec3(uv,1.)).xy;\n#endif\n}',
+    fragmentShader:'varying float vz;varying vec3 vpos;flat varying int inst;\n#ifdef CUT\nuniform sampler2D cutMap;uniform float cutLevel;varying vec2 cutUv;\n#endif\n'+frag.replace('void main(){','void main(){\n#ifdef CUT\nif(texture2D(cutMap,cutUv).a<cutLevel)discard;\n#endif\n')});
+  };
+  // Glass, see-through and depth-only surfaces are not outlined (the room behind them is).
+  const solid=o=>{const m=Array.isArray(o.material)?o.material[0]:o.material;return !(m&&m.transparent&&m.opacity<.5)&&!(m&&m.visible===false)&&!(m&&m.colorWrite===false);};
   const meshes=[];a.scene.traverse(o=>{if(o.isMesh&&!o.isSkinnedMesh&&visible(o))meshes.push(o);});
   const render=(materialFor)=>{
-   const saved=meshes.map(o=>[o,o.material,o.visible]),before={bg:a.scene.background,fog:a.scene.fog,tone:r.toneMapping,override:a.scene.overrideMaterial};
+   const saved=meshes.map(o=>[o,o.material,o.visible]),before={bg:a.scene.background,fog:a.scene.fog,tone:r.toneMapping,override:a.scene.overrideMaterial,clear:r.getClearColor(new THREE.Color()),clearAlpha:r.getClearAlpha()};
    for(const o of meshes){if(!solid(o)){o.visible=false;continue;}o.material=materialFor(o);}
    a.scene.background=new THREE.Color(0,0,0);a.scene.fog=null;a.scene.overrideMaterial=null;r.toneMapping=THREE.NoToneMapping;
    const target=new THREE.WebGLRenderTarget(W,H,{type:THREE.UnsignedByteType});
    r.setRenderTarget(target);r.setClearColor(0x000000,1);r.clear();r.render(a.scene,camera);
    const px=new Uint8Array(W*H*4);r.readRenderTargetPixels(target,0,0,W,H,px);r.setRenderTarget(null);target.dispose();
    for(const [o,m,v] of saved){if(o.material!==m)o.material.dispose?.();o.material=m;o.visible=v;}
-   a.scene.background=before.bg;a.scene.fog=before.fog;r.toneMapping=before.tone;a.scene.overrideMaterial=before.override;
+   a.scene.background=before.bg;a.scene.fog=before.fog;r.toneMapping=before.tone;a.scene.overrideMaterial=before.override;r.setClearColor(before.clear,before.clearAlpha);
    const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d'),img=ctx.createImageData(W,H);
    for(let y=0;y<H;y++)for(let x=0;x<W;x++){const s=((H-1-y)*W+x)*4,d=(y*W+x)*4;img.data[d]=px[s];img.data[d+1]=px[s+1];img.data[d+2]=px[s+2];img.data[d+3]=255;}
    ctx.putImageData(img,0,0);return canvas.toDataURL('image/png').split(',')[1];
   };
   // Id: 0 is the background; meshes count from 1, and an instance adds its index (a shelf of books is many books).
   let next=1;const ids=new Map();for(const o of meshes){ids.set(o,next);next+=o.isInstancedMesh?o.count:1;}
-  const id=render(o=>make('uniform float base;void main(){float n=base+float(inst);float r=mod(n,256.),g=mod(floor(n/256.),256.),b=floor(n/65536.);gl_FragColor=vec4(r/255.,g/255.,b/255.,1.);}',{base:{value:ids.get(o)}}));
-  const normal=render(()=>make('void main(){vec3 n=normalize(cross(dFdx(vpos),dFdy(vpos)));gl_FragColor=vec4(n*.5+.5,1.);}'));
-  const depth=render(()=>make('uniform float far;void main(){float d=floor(clamp(vz/far,0.,1.)*65535.+.5);float r=floor(d/256.);gl_FragColor=vec4(r/255.,(d-r*256.)/255.,0.,1.);}',{far:{value:FAR}}));
+  const id=render(o=>make('uniform float base;void main(){float n=base+float(inst);float r=mod(n,256.),g=mod(floor(n/256.),256.),b=floor(n/65536.);gl_FragColor=vec4(r/255.,g/255.,b/255.,1.);}',{base:{value:ids.get(o)}},o));
+  const normal=render(o=>make('void main(){vec3 n=normalize(cross(dFdx(vpos),dFdy(vpos)));gl_FragColor=vec4(n*.5+.5,1.);}',{},o));
+  const depth=render(o=>make('uniform float far;void main(){float d=floor(clamp(vz/far,0.,1.)*65535.+.5);float r=floor(d/256.);gl_FragColor=vec4(r/255.,(d-r*256.)/255.,0.,1.);}',{far:{value:FAR}},o));
   return {id,normal,depth,meshes:meshes.length,ids:next-1};
  },{W,H,FAR});
 
