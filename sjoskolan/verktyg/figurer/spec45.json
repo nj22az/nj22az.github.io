@@ -55,30 +55,10 @@
   "src": "sjoskolan/vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
   "dst": "sjoskolan/vecka-45/aktuell/v45_03_Repetition_infor_tentamen_elev.pptx",
   "slides": {
-   "9": [
+   "8": [
     "th",
     "v45_03_s09_exempel",
     "Spänningsdelare: 18 V över 2 kilohm och 2 kilohm med en last på 2 kilohm; utspänningen 6 V"
-   ],
-   "13": [
-    "ovn",
-    "v45_03_s13_ovn2",
-    "Nod med 4,0 A och 1,5 A in samt 2,0 A och Ix ut; Ix okänd"
-   ],
-   "15": [
-    "ovn",
-    "v45_03_s15_ovn3",
-    "Spänningsdelare: 24 V över R1 = 2 kilohm och R2 = 4 kilohm med en last på 4 kilohm; utspänningen okänd"
-   ],
-   "19": [
-    "ovn",
-    "v45_03_s19_ovn5",
-    "Serie-RL med R = 30 ohm och XL = 40 ohm vid 100 V RMS; ström och effektfaktor okända"
-   ],
-   "34": [
-    "ovn",
-    "v45_03_s34_ovn10",
-    "24 V-källa matar en last med 4 A; 20 V vid lasten före och 23,6 V efter åtgärd; slingresistansen okänd"
    ]
   }
  }

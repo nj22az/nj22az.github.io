@@ -51,6 +51,10 @@ def slide_text(slide):
     for sh in sorted(shapes_flat(slide.shapes), key=lambda s: ((s.top or 0) // 200000, s.left or 0)):
         if sh.is_placeholder and sh.placeholder_format.type in SKIP_PH:
             continue
+        # Lektionsbildernas dagchip på titelbilden (”Dag: Fredag 30 oktober”) är ingen rubrik; datumet står i raden under
+        # rubriken. Delsidan hoppar över det på samma sätt (innehall/export/delsidor_veckor.py).
+        if (sh.name or '').startswith('Dag: '):
+            continue
         if sh.has_text_frame:
             paras = [run_text(p.runs).strip() for p in sh.text_frame.paragraphs]
             paras = [p for p in paras if p and not re.fullmatch(r'\d{1,3}', p)]

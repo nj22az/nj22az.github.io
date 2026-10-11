@@ -217,6 +217,17 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 44 fredag, del 5 av 5 (filerna i `vecka-45/`): ny presentation *Repetition inför tentamen* i
+  lektionsbildernas mall (`verktyg/lektionsbilder/lektion_v45_03.py`), 22 bilder i stället för 36. Delsidan har kvar de sju
+  avsnitten med samma rubriker och alla meningar, formler och tal, och båda exemplen. Nytt avsnitt 8 *Så går tentamensveckan
+  till* (ur `tentamen.html`, `praktiskt-prov.html` och `VECKOR[45]`); avsnitt 7 säger att tentamen är i vecka 45 och att de
+  praktiska lärandemålen bedöms i det praktiska provet. Upplägget nämner tentans områden; övningstentan gås igenom på sidan
+  Tentamen, inga lösningar på bilderna. Kursens notation: P = √3 · U_{L} · I_{L} · PF (var P₃_{F}), R_{1}, R_{2} och I_{tot}.
+  EL-000733 och EL-000734 märkta LM-4, LM-3 och LM-8 (frågan nämner kretsar, AC/trefas, säkerhet och mätanalys). Bildspelet
+  tog dagchipet på titelbilden som presentationens titel när filen ligger i en annan veckas mapp; `verktyg/bildspel/bygg.py`
+  hoppar nu över det som delsidan gör. Övningsfigurerna till 3.2, 3.3, 3.5 och 3.10 syns inte längre på delsidan: de kom från
+  de borttagna övningsbilderna (`placeringar/presentation.json`), filerna finns kvar i `vecka-45/aktuell/figurer/`.
+
 - **2026-10-11** Vecka 42: delsidorna Del_1–3 har rutan **Din del** överst (lärarens önskan: delsidorna ska vara
   översikter som veckosidan). Dagens färg och tid, lektionens läge (I dag, Pågår nu, Om 2 dagar, Har varit), vad vi
   pratar om, presentationen, läxorna efter lektionen med läge (samma lista som bilden ”Det här gör du nu”), övning
