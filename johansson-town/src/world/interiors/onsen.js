@@ -104,7 +104,7 @@ export const ONSEN_SEATS=Object.freeze({
  * is charged. A coin is spent once it is in: standing up early leaves the chair running to 0:00, as a real coin timer does.
  */
 export const ONSEN_MASSAGE=Object.freeze({
- about:'A grey steel coin box on the right arm: ¥100 for ten minutes, a red 運転中 lamp and a four-digit red LED.',
+ about:'A grey steel coin box on the right arm: ¥100 for ten minutes, a red running lamp and a four-digit red LED.',
  started:'You feed it a hundred-yen coin. The red lamp comes on and the rollers start up your back like a slow, well-meaning truck.',
  running:'The LED counts down the coin’s ten minutes while the rollers work slowly up and down your back.',
  circuitDown:'You feed it a hundred-yen coin and nothing happens. Its socket is on the changing-room circuit, and that breaker is down. Higa-san hands the coin back.',
