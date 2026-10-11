@@ -4,7 +4,10 @@ import {createRoadNetwork,createTraffic,makeLane} from './road-network.js';
 import {buildVehicle,VEHICLE_SIZE} from './road-vehicles.js';
 import {MAIN_ROAD,MAIN_SERVICE_COURT} from './main-road.js';
 import {FERRY,FERRY_BERTH} from './ferry.js';
-import {FERRY_RAMP,FERRY_DECKS} from './ferry-model.js';
+import {FERRY_RAMP,FERRY_DECKS,FERRY_HULL} from './ferry-model.js';
+import {MINATO_BERTH} from './minato-berth.js';
+import {AIRPORT_FERRY_PORTS} from './airport-ferry.js';
+import {SEA_LEVEL} from './ocean.js';
 import {AIRPORT_ISLAND} from './airport-island.js';
 import {AIRPORT_HEIGHT,airportWorld} from './airport-ground.js';
 import {AIRPORT_VEHICLE_YARD as Y,airportVehiclePoint,airportVehicleBay} from './airport-vehicle-yard.js';
@@ -14,8 +17,20 @@ import {AIRPORT_VEHICLE_YARD as Y,airportVehiclePoint,airportVehicleBay} from '.
  */
 const MAIN_NORTH_X=MAIN_ROAD.x+1.1,MAIN_SOUTH_X=MAIN_ROAD.x-1.1;
 export const KITANO_STOP_S=5.2;
-/** The car place a crossing car takes: the forward place in the starboard lane (ferry-ship.js slot 0). */
-export const FERRY_VEHICLE_DECK_X=FERRY_DECKS.car.slots[0][0],FERRY_VEHICLE_DECK_Z=FERRY_DECKS.car.slots[0][1];
+/**
+ * The car place a crossing car takes: the aft place in the starboard lane, as a loader fills her (the far end of
+ * a lane first, the starboard lane before the port one, whose aft places are narrowed by the walkway).
+ */
+const FIRST_PLACE=FERRY_DECKS.car.slots.find(([x])=>x<0);
+export const FERRY_VEHICLE_DECK_X=FIRST_PLACE[0],FERRY_VEHICLE_DECK_Z=FIRST_PLACE[1];
+/**
+ * Her ramp's toe, in her frame, resting on a landing at `landing` (world): the leaf from the hinge at her stem down
+ * (or up) to the landing, the flap flat beyond it (ferry-model.js restRamp).
+ */
+const rampFoot=landing=>{const drop=Math.max(-3.5,Math.min(3.5,SEA_LEVEL+FERRY_HULL.origin+FERRY_DECKS.car.y-landing-.05));return [0,FERRY_DECKS.car.y-drop,FERRY.length/2-.05+Math.sqrt(FERRY_RAMP.leaf**2-drop**2)];};
+const rampToe=landing=>{const f=rampFoot(landing);return [0,f[1],f[2]+FERRY_RAMP.flap];};
+/** Where the ramp's toe lies on Minato's quay (she lies heading north, so her frame's z is the world's). */
+const MINATO_TOE_Z=FERRY_BERTH.z+rampToe(MINATO_BERTH.landing.top)[2];
 /**
  * The islanders' home bays: Tetsuo's kei truck on the quay by the ferry ramp, where he loads
  * the workshop's cargo, and the harbour master's car in the Main Street lay-by by the
@@ -32,6 +47,7 @@ export const SERVICE_BAYS=Object.freeze([[-5.8,10],[-5.8,4.5]].map(Object.freeze
  * (about a kei truck's lock) onto the berth's centreline, and straight back down the ramp, so the
  * car rides nose to the bow and drives off forwards at the other end.
  */
+// The backing arc from the stage ends on her ramp's flap, between its toe (MINATO_TOE_Z) and the leaf's foot.
 const STAGE_TURN_R=2.6,BACK_TURN_R=3,STAGE_Z=-44.2;
 export const TOWN_FERRY_STAGE=Object.freeze([MAIN_SOUTH_X+STAGE_TURN_R,0,STAGE_Z]);
 /** The reversing path from the stage to the foot of the ramp. */
@@ -82,15 +98,15 @@ export function buildTownNetwork(){
 export function ferryLanes(ferry,slot=0,berth='town'){
  ferry.updateMatrixWorld();const world=p=>new THREE.Vector3(...p).applyMatrix4(ferry.matrixWorld);
  const deck=world([FERRY_VEHICLE_DECK_X,ferry.userData.deckY,FERRY_VEHICLE_DECK_Z]),bow=world([0,ferry.userData.deckY,FERRY.length/2]);
- const slope=berth==='airport'?-.008:.24,ramp=world([0,ferry.userData.deckY-FERRY_RAMP.length*Math.sin(slope),FERRY.length/2+FERRY_RAMP.length*Math.cos(slope)]);
- const deckPts=[deck.toArray(),bow.toArray(),ramp.toArray()];
+ const landing=berth==='airport'?AIRPORT_FERRY_PORTS.airport.height:MINATO_BERTH.landing.top,ramp=world(rampToe(landing)),foot=world(rampFoot(landing));
+ const deckPts=[deck.toArray(),bow.toArray(),foot.toArray(),ramp.toArray()];
  if(berth==='airport'){
-  const lead=airportPts(smooth([Y.stage,[-50,29.5],[-52.5,31],[-54.5,31]]));
-  return {on:makeLane('airport-ferry-on',[...lead,ramp.toArray(),bow.toArray(),deck.toArray()],{speed:1}),off:makeLane('airport-ferry-off',[...deckPts,...airportPts([[-51,31],[-47,31]])],{speed:1.4}),deck,ramp,yaw:ferry.rotation.y};
+  const lead=airportPts(smooth([Y.stage,[-48.2,29.6],[-50.2,31]]));
+  return {on:makeLane('airport-ferry-on',[...lead,ramp.toArray(),foot.toArray(),bow.toArray(),deck.toArray()],{speed:1}),off:makeLane('airport-ferry-off',[...deckPts,...airportPts([[-51,31],[-47,31]])],{speed:1.4}),deck,ramp,yaw:ferry.rotation.y};
  }
  const x=FERRY_BERTH.x;
- const off=[...deckPts,[x,0,-47.9],...flat(smooth([[x,-47.4],[x,-45.6],[-5.2,-44.4],[-3,-44.3],[-2,-42.6],[MAIN_NORTH_X,-40.2]])),[MAIN_NORTH_X,0,-39]];
- return {on:makeLane('town-ferry-on',[...townBackingPath(),ramp.toArray(),bow.toArray(),deck.toArray()],{speed:1}),off:makeLane('town-ferry-off',off,{speed:1.5}),deck,ramp,yaw:ferry.rotation.y};
+ const t=MINATO_TOE_Z,off=[...deckPts,...flat(smooth([[x,t+.6],[x,t+1.6],[-5.6,t+2.4],[-3,t+2.5],[-2,-42.2],[MAIN_NORTH_X,-40.2]])),[MAIN_NORTH_X,0,-39]];
+ return {on:makeLane('town-ferry-on',[...townBackingPath(),foot.toArray(),bow.toArray(),deck.toArray()],{speed:1}),off:makeLane('town-ferry-off',off,{speed:1.5}),deck,ramp,yaw:ferry.rotation.y};
 }
 
 export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPosition=()=>null,people=()=>[],register=null,onAction=null}){

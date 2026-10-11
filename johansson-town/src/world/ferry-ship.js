@@ -8,9 +8,8 @@
  * ten cars (or two 8-tonne trucks and five cars) and a hundred passengers, with a crew of eight.
  * Built in 1994 at a small Seto Inland Sea yard; refitted for GMDSS in 1998.
  *
- * Everything is data first, so the model (ferry-model.js), the crew's routines (people/ferry-crew.js),
- * stories and tests read the same ship. The model is grown to these numbers in its own batch: until
- * then it draws the earlier 22 m hull (ferry-model.js FERRY_HULL).
+ * Everything is data first, so the model (ferry-model.js, drawn from these numbers since batch 5), the
+ * crew's routines (people/ferry-crew.js), stories and tests read the same ship.
  *
  * Frames, as a shipyard draws them: `z` metres forward of the transom (0 at the stern, 34.5 at the
  * stem), `y` metres above the keel (base line), `x` across the ship, + to port. toShip() gives the
@@ -72,12 +71,14 @@ export const FERRY_GA=Object.freeze([
  // ---- The car deck (3.0 m above the keel, 1.1 m above the water); covered by the passenger deck from z 0 to 23, open to the sky forward.
  space('aft-mooring','car',[0,2.5],[-4.1,4.1],[H.carDeck,H.passengerDeck],'Aft mooring station: the 5.5 kW capstan, two pairs of bitts, closed fairleads, the steering-gear hatch','Stern lines',{exits:['car-deck','casing-p']}),
  space('car-deck','car',[2.5,30],[-3.1,3.1],[H.carDeck,H.passengerDeck],'Vehicle lanes: two of 3.1 m, yellow lane lines and numbers, 48 cloverleaf lashing sockets on a 1.25 × 2.5 m grid, wheel-chock racks, six scuppers a side with flaps and freeing ports forward, waterproof tube lights, two exhaust fans, four hydrants, powder extinguishers; the signs “engine off” and “no entry to the car deck at sea”','Ten cars; trucks on the centreline forward by the loading plan',{exits:['ramp','casing-p','casing-s']}),
- space('casing-p','car',[3,20],[3.1,4.1],[H.carDeck,H.passengerDeck],'Casing, port: the engine uptake and engine-room supply-fan trunk (z 3–6), the engine-room entrance and stair (6–8), the crew changing room (8–10), passenger stair P (10–13.5), a fan and a hydrant','The engine room’s main way in, and a stair up for drivers',{exits:['car-deck','stair-p']}),
- space('casing-s','car',[3,20],[-4.1,-3.1],[H.carDeck,H.passengerDeck],'Casing, starboard: uptake trunk (z 3–6), the engine-room escape trunk (6–7), the bosun’s store (7–10: lashings, chocks, ropes, fenders), passenger stair S (10–13.5), the gangway door and the shore-power box (13.5–15), a fan and a hydrant','The engine room’s second way out, the deck stores, the way aboard from the pier',{exits:['walkway','stair-s']}),
- space('walkway','car',[10,15],[-3.1,-2.2],[H.carDeck,H.passengerDeck],'A railed, hatched walkway 0.9 m wide beside casing S, from the gangway door to the foot of stair S','Foot passengers never cross a car lane',{exits:['casing-s','stair-s'],within:'car-deck'}),
+ // The gangway door is in the port casing, the side she lies to at Minato (port side to the outer pier); the
+ // brief had it to starboard, which would have faced the open water there (batch 5).
+ space('casing-p','car',[3,20],[3.1,4.1],[H.carDeck,H.passengerDeck],'Casing, port: the engine uptake and engine-room supply-fan trunk (z 3–6), the engine-room entrance and stair (6–8), the crew changing room (8–10), passenger stair P (10–13.5), the gangway door and the shore-power box (13.5–15), a fan and a hydrant','The engine room’s main way in, a stair up for drivers, and the way aboard from the pier',{exits:['car-deck','walkway','stair-p']}),
+ space('casing-s','car',[3,20],[-4.1,-3.1],[H.carDeck,H.passengerDeck],'Casing, starboard: uptake trunk (z 3–6), the engine-room escape trunk (6–7), the bosun’s store (7–10: lashings, chocks, ropes, fenders), passenger stair S (10–13.5), a fan and a hydrant','The engine room’s second way out, the deck stores, the second stair up',{exits:['car-deck','stair-s']}),
+ space('walkway','car',[10,15],[2.2,3.1],[H.carDeck,H.passengerDeck],'A railed, hatched walkway 0.9 m wide beside casing P, from the gangway door to the foot of stair P','Foot passengers never cross a car lane',{exits:['casing-p','stair-p'],within:'car-deck'}),
  space('bow-house-p','car',[30,34],[2.2,4.1],[H.carDeck,H.carDeck+2.4],'Bow house, port: the windlass, the ramp’s hydraulic power pack and its control box, the thruster room’s hatch','Anchors and the ramp, worked by the bosun',{exits:['car-deck']}),
  space('bow-house-s','car',[30,34],[-4.1,-2.2],[H.carDeck,H.carDeck+2.4],'Bow house, starboard: the windlass and the paint store','Anchors, and paint kept away from the cabins',{exits:['car-deck']}),
- space('ramp','car',[33,39],[-2.2,2.2],[H.carDeck-.05,H.carDeck+.3],'The bow ramp: hinged at z 33, 4.0 m and a 2.0 m flap, 4.4 m clear; two 100 mm hydraulic cylinders at 14 MPa; two locking pins with limit switches to the “ramp closed and locked” lamp on the bridge; a hand pump','Lowered, 5° to the quay; raised, it closes the bow 4 m high',{opening:true}),
+ space('ramp','car',[34.3,40.3],[-2.2,2.2],[H.carDeck-.05,H.carDeck+.3],'The bow ramp: hinged at the stem (z 34.3), 4.0 m and a 2.0 m flap that lies flat on the landing, 4.4 m clear; two 100 mm hydraulic cylinders at 14 MPa; two locking pins with limit switches to the “ramp closed and locked” lamp on the bridge; a hand pump','Lowered, 5° to the quay; raised, it closes the bow 4 m high',{opening:true}),
  // ---- The passenger deck (7.4 m): the deckhouse z 6–23, 7.2 m wide, with 0.5 m walkways each side; the open deck aft.
  space('open-deck','passenger',[0,6],[-4.1,4.1],[H.passengerDeck,H.bridgeDeck],'Open deck: benches for 22 under an awning, one liferaft (port, aft), the rescue boat and its davit (starboard, aft), the stern flagstaff, two lifebuoys, the sign for muster station B','Fresh air, the view, and where people embark the liferafts',{exits:['lobby','walkway-p','walkway-s'],seats:22}),
  space('lobby','passenger',[6,9.5],[-3.6,3.6],[H.passengerDeck,H.bridgeDeck],'Lobby: the stair heads P and S; the purser’s window (S: ticket rack, cash box, punch, PA microphone, first-aid kit, lost property); the kiosk (P counter); the vending corner (two drink machines and a hot-water dispenser for cup noodles); timetable and fare boards; the capacity sign and the ship’s certificate; an ashtray stand by the aft door; the crew door to the bridge-deck stair','Tickets and snacks; everyone passes through',{exits:['open-deck','stair-p','stair-s']}),
@@ -117,13 +118,13 @@ export const FERRY_ACCESS=Object.freeze({
 /**
  * The car places: ten in two lanes of five, nose to the ramp, sized for the longest vehicle the town
  * runs (4.9 m) with half a metre between them to lash; x the place's centre (+ port), z its centre
- * forward of the transom. Where the railed walkway runs beside casing S (z 10–15) the starboard lane
+ * forward of the transom. Where the railed walkway runs beside casing P (z 10–15) the port lane
  * is 2.2 m wide, so its places there sit inboard.
  */
 export const FERRY_CAR_PLACES=Object.freeze((()=>{
  const places=[];
- for(const lane of ['port','starboard'])for(let i=0;i<5;i++){const z=5.7+i*5.45,narrow=lane==='starboard'&&z+2.45>10&&z-2.45<15;
-  places.push(Object.freeze({lane,x:lane==='port'?1.55:narrow?-1.2:-1.55,z,length:4.9,width:1.95}));}
+ for(const lane of ['port','starboard'])for(let i=0;i<5;i++){const z=5.7+i*5.45,narrow=lane==='port'&&z+2.45>10&&z-2.45<15;
+  places.push(Object.freeze({lane,x:lane==='starboard'?-1.55:narrow?1.2:1.55,z,length:4.9,width:1.95}));}
  return places;
 })());
 /**
@@ -133,7 +134,7 @@ export const FERRY_CAR_PLACES=Object.freeze((()=>{
  */
 export const FERRY_TRUCK_PLAN=Object.freeze({
  trucks:Object.freeze([Object.freeze({x:1.55,z:25.4,length:8.5,width:2.5}),Object.freeze({x:-1.55,z:25.4,length:8.5,width:2.5})]),
- cars:Object.freeze([[1.55,5.7],[-1.55,5.7],[1.55,11.15],[-1.2,11.15],[1.55,16.6]].map(([x,z])=>Object.freeze({x,z,length:4.9,width:1.95}))),
+ cars:Object.freeze([[-1.55,5.7],[1.55,5.7],[-1.55,11.15],[1.2,11.15],[-1.55,16.6]].map(([x,z])=>Object.freeze({x,z,length:4.9,width:1.95}))),
 });
 
 /** What drives her (briefs/ferry-audit.md §3.1, §3.3). Real numbers for a ship of her size and year. */
@@ -332,7 +333,7 @@ export const FERRY_SCENARIOS=Object.freeze([
   ])}),
  Object.freeze({id:'shore-power',title:'The shore power the wrong way round',cause:'At 22:15 the shore cable is plugged in at the quay kiosk with two phases crossed after a repair: the phase-sequence lamp in the shore box shows them reversed, and every pump on the board would run backwards',
   steps:Object.freeze([
-   ['oiler','casing-s','Sees the phase-sequence lamp lit the wrong way and does not close the shore breaker.'],
+   ['oiler','casing-p','Sees the phase-sequence lamp lit the wrong way and does not close the shore breaker.'],
    ['chief','quay','Swaps two phases at the kiosk’s plug, the way the manual says, and the lamp shows the right sequence.'],
    ['chief','control-booth','Stops No.1 generator only after the shore breaker has closed; the interlock lets one in as the other goes.'],
   ])}),

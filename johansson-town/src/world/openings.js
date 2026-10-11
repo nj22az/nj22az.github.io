@@ -18,8 +18,8 @@ export const OPENINGS=Object.freeze([
  {id:'pier',weight:2,hours:[300,1320],stand:[-.4,-86.4],facing:-.94,caption:'The end of the pier · the lighthouse, and the open sea.'},
  {id:'park-bench',weight:2,hours:[360,1260],dry:true,seat:'Sit and watch the town and harbour',caption:'Harbour Park · the rooftops and the port below.'},
  {id:'seawall',weight:1,hours:[330,1170],dry:true,stand:[32.1,-4],facing:-Math.PI/2,caption:'The seawall · the tide on the sand below.'},
- // Just off the ferry, at the gangway's foot on the outer pier, facing the town.
- {id:'ferry',weight:2,hours:[450,1350],stand:[-3.2,-56.2],facing:Math.PI,caption:'Off the ferry · the quay, and Main Street beyond it.'},
+ // Just off the ferry, at the gangway's foot on the outer pier (her port door, z −72.7 since the bigger ship), facing the town.
+ {id:'ferry',weight:2,hours:[450,1350],stand:[-3,-73.9],facing:Math.PI,caption:'Off the ferry · the quay, and Main Street beyond it.'},
 ]);
 
 const LAST_KEY='johansson-town-opening';

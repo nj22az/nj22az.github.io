@@ -3,7 +3,7 @@ import * as THREE from '../../../vendor/three.module.js';
 import {paint} from './kit.js';
 import {fascia,iceMural,enamel,catchFlag,poster,vertical} from './signs.js';
 import {potPlant,OKINAWA_COLOURS as C} from './houses.js';
-import {fishCrates,buoys,bicycle} from './props.js';
+import {buoys,bicycle} from './props.js';
 
 /**
  * The buildings that were here before the quarters went up, brought up to the street
@@ -14,7 +14,7 @@ import {fishCrates,buoys,bicycle} from './props.js';
  *   Sakura      the flat above the shop, its outside stair up the back, the rooftop sign,
  *               a Blue Coral mural on the side wall (an advert for the shop on Rainflower
  *               Lane) and enamel tins on the other.
- *   Warehouse   its name painted big on the street wall, floats and crates at its foot.
+ *   Warehouse   its name painted big on the street wall, floats hung on its wall over the ferry's apron.
  *   Office      big-catch flags on a pole by the door, a life ring and the tide board.
  *   Bookshop    a cart of cheap paperbacks out on the pavement.
  */
@@ -207,12 +207,13 @@ function dressWarehouse(kit,solid,{inspect}){
  const x=-10.52;
  kit.sign(fascia({jp:"Port warehouse",en:'Minato harbour warehouse · stores & ice',bg:'#e9e4d6',accent:'#314d51',ink:'#1f3336'}),3.8,.9,x+.5,4.55,-43.1,{ry:Math.PI/2,depth:.06,name:'warehouse sign'});
  kit.sign(enamel({jp:"Fisheries cooperative",en:'fisheries co-op',bg:'#1f5f94',ink:'#f4f0e4'}),.6,.9,x+.04,2,-40.2,{ry:Math.PI/2,depth:.02,name:'enamel sign'});
- // Floats in a net hung from the wall, and crates at its foot on the quay side.
+ // Floats in a net hung from the wall, over the ferry's apron.
  buoys(kit,x+.25,1.75,-46.5,{count:5,seed:4});
  for(const z of [-46.85,-46.5,-46.15])kit.rod([x+.25,2.45,z],[x+.25,1.65,z],.012,0x796e52);
 
- // Under the floats, along the wall: on the coping they shut the only lane along the quay.
- solid(fishCrates(kit,x+.29,-45.835,{ry:Math.PI/2,rows:1,cols:3,seed:12}));
+ // No crates at its foot any more (2026-10): the bigger ferry's ramp flap lies where they stood, and the cars
+ // coming off her sweep the corner up to the forklift's shutter. A ferry's apron is kept clear; the co-op
+ // keeps its crates inside.
 }
 
 function dressOffice(kit,solid,{inspect}){

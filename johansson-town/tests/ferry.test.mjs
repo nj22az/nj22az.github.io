@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {createFerryRun,FERRY,FERRY_BERTH,FERRY_TERMINAL,FERRY_TIMES,TOWN_PASSAGES,shipMotion} from '../src/world/ferry.js';
 import {FERRY_DAY,rollPeriod} from '../src/world/ferry-ship.js';
-import {FERRY_RAMP} from '../src/world/ferry-model.js';
+import {FERRY_RAMP,FERRY_HULL,GANGWAY_LENGTH} from '../src/world/ferry-model.js';
 import {SEA_LEVEL} from '../src/world/ocean.js';
 import {HARBOUR_LINE,BUS_DWELL} from '../src/people/commuter-schedule.js';
 import {OUTER_PIER,BREAKWATER,routeAt} from '../src/world/layout.js';
@@ -117,11 +117,13 @@ test('she rides the water: rolls at her period, a little alongside and more at s
  // Seen from the pier she does not vanish at the harbour mouth: she is drawn wherever she is in view.
  assert.equal(r.ferry.userData.horizon,true);
  r.parkAt('town');const toe=new THREE.Vector3(),foot=new THREE.Vector3();let low=Infinity,high=-Infinity,footLow=Infinity,footHigh=-Infinity,moved=0;
- for(let i=0;i<400;i++){r.update(.1,600,i*.1);r.ferry.userData.ramp.updateMatrixWorld(true);toe.set(0,0,FERRY_RAMP.length).applyMatrix4(r.ferry.userData.ramp.matrixWorld);
-  r.ferry.userData.gangway.updateMatrixWorld(true);foot.set(1.7,0,0).applyMatrix4(r.ferry.userData.gangway.matrixWorld);
-  low=Math.min(low,toe.y);high=Math.max(high,toe.y);footLow=Math.min(footLow,foot.y);footHigh=Math.max(footHigh,foot.y);moved=Math.max(moved,Math.abs(r.ferry.position.y-(SEA_LEVEL+.12)));}
+ const flapEnd=new THREE.Vector3();
+ for(let i=0;i<400;i++){r.update(.1,600,i*.1);r.ferry.userData.flap.updateMatrixWorld(true);toe.set(0,0,0).applyMatrix4(r.ferry.userData.flap.matrixWorld);flapEnd.set(0,0,FERRY_RAMP.flap).applyMatrix4(r.ferry.userData.flap.matrixWorld);
+  assert.ok(Math.abs(flapEnd.y-toe.y)<.01,'the flap lies flat on the landing');
+  r.ferry.userData.gangway.updateMatrixWorld(true);foot.set(GANGWAY_LENGTH,0,0).applyMatrix4(r.ferry.userData.gangway.matrixWorld);
+  low=Math.min(low,toe.y);high=Math.max(high,toe.y);footLow=Math.min(footLow,foot.y);footHigh=Math.max(footHigh,foot.y);moved=Math.max(moved,Math.abs(r.ferry.position.y-(SEA_LEVEL+FERRY_HULL.origin)));}
  assert.ok(moved>.005,'she does heave alongside');assert.ok(high-low<.002,'the ramp toe rides up and down on the quay ('+(high-low).toFixed(3)+' m)');assert.ok(footHigh-footLow<.002,'the gangway foot rides on the pier');
- assert.ok(Math.abs(low-(.56-FERRY_RAMP.length*Math.sin(.24)))<.01,'and where it always lay');
+ assert.ok(Math.abs(low-(MINATO_BERTH.landing.top+.05))<.01,'the leaf rests on the landing plate');assert.ok(Math.abs(footLow-(OUTER_PIER.height+.03))<.01,'the gangway rests on the pier');
 });
 
 test('her lights, engines and whistle: lit under way after dark, quiet on shore power at night, signals as she leaves and passes the breakwater',()=>{
