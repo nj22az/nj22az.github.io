@@ -221,8 +221,20 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     labbet ändras, eller använd en beräkningsfunktion (`lib/berakningar.py`, `lararfacit`) i stället för fasta tal. Skriv
     aldrig lärarens facit här (det är skyddat). *Manuell kontroll; den självrättande nyckeln räknas ur uppgiftens text och
     prövas av `vecka-XX/aktuell/inlamning.test.mjs`.*
+57. **Övningens figur står på placeringen, och en figur hittas på sitt innehåll.** När vecka 43–45:s presentationer
+    gjordes om till lektionsmallen försvann övningsbilderna, och med dem 17 övningsfigurer från delsidorna (till exempel
+    transformatorn i övning 2.1 i vecka 43). En ny bild 11 hade dessutom kunnat visa den gamla filen `v43_02-b11-1.png`,
+    som hörde till övning 2.1. Nu står övningens figur som `figurer` (fil och alt-text) på placeringen i
+    `placeringar/kurs-formelstod.json`, och delsidan letar upp en figur på bildens innehåll före bildnumret. En fil med
+    bildens nummer men annat innehåll stoppar bygget. *Automatisk kontroll: `delsidor_veckor.py` stoppar vid saknad fil
+    eller fel innehåll, och `figurkontroll.py` (i `innehall.py kontrollera`) prövar att talen i alt-texten står i övningen.*
 
 ## Ändringar
+
+- **2026-10-11** Övningsfigurerna på delsidorna i vecka 43–45 (17 stycken) står nu som `figurer` på övningens placering i
+  `kurs-formelstod.json` och följer inte längre med presentationen (regel 57). Schemat och databasen har fältet,
+  `figurkontroll.py` jämför alt-textens tal med övningsposten, och figurer hittas på innehållet före bildnumret. Delsidorna
+  blev byte för byte desamma.
 
 - **2026-10-11** Vecka 43 och 44 rättar sig själva som vecka 42 (lärarens beslut 12 oktober): svarsfält med tre försök,
   rutan Låsta frågor med veckans alla delar, Lämna in och en PDF till Google Classroom under Vecka 43 och Vecka 44. Allt

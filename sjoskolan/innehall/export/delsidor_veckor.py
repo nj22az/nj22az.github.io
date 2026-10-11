@@ -33,14 +33,18 @@ METOD = [('formel', '1. Givet och sökt'), ('p', 'Skriv av värden, enheter och 
 _FIGURHASH = {}
 
 
-def figur_med_samma_innehall(figmapp, kap, blob):
-    """Figurfilen i vecka-NN/aktuell/figurer med exakt samma innehåll som bilden i presentationen. Används när filnamnet
-    (kap-bNN-k) inte finns, till exempel när lektionsbilderna har flyttat figuren till en annan bild."""
+def figur_med_samma_innehall(figmapp, kap, blob, namn=None):
+    """Figurfilen i vecka-NN/aktuell/figurer med exakt samma innehåll som bilden i presentationen. Innehållet avgör, inte
+    bildnumret: lektionsbilderna flyttar figurer, och en gammal fil kap-bNN-k kan då höra till en annan bild. Har flera
+    filer samma innehåll väljs namn (kap-bNN-k) om det är en av dem."""
     import hashlib
     nyckel = (str(figmapp), kap)
     if nyckel not in _FIGURHASH:
-        _FIGURHASH[nyckel] = {hashlib.sha256(f.read_bytes()).hexdigest(): f.name for f in sorted(figmapp.glob(f'{kap}-b*'))}
-    return _FIGURHASH[nyckel].get(hashlib.sha256(blob).hexdigest())
+        _FIGURHASH[nyckel] = {}
+        for f in sorted(figmapp.glob(f'{kap}-b*')):
+            _FIGURHASH[nyckel].setdefault(hashlib.sha256(f.read_bytes()).hexdigest(), []).append(f.name)
+    traff = _FIGURHASH[nyckel].get(hashlib.sha256(blob).hexdigest(), [])
+    return namn if namn in traff else (traff[-1] if traff else None)
 CSS = CSS40.replace('/* Vecka 40, en sida per del: Översikt, Teori, Exempel, Övningar, Labben (genereras av innehall/export/delsidor.py) */',
                     '/* En sida per del: Översikt, Teori, Exempel, Övningar, Labben (innehall/export/delsidor_veckor.py; vecka 40 har egen kopia) */') + '''
 /* Läsbarhet (Zenn): löptext med radavstånd 1,8. */
@@ -103,10 +107,12 @@ def las_bild(bild, deck, nr, figmapp):
             if sh.top > 6.4 * EMU and sh.width > 9 * EMU:
                 continue
             k += 1
-            fil = f'{deck[:6]}-b{nr:02d}-{k}.{sh.image.ext}'
-            if not (figmapp / fil).exists():
-                fil = figur_med_samma_innehall(figmapp, deck[:6], sh.image.blob) or fil
-            if (figmapp / fil).exists():
+            namn = f'{deck[:6]}-b{nr:02d}-{k}.{sh.image.ext}'
+            fil = figur_med_samma_innehall(figmapp, deck[:6], sh.image.blob, namn)
+            if fil is None and (figmapp / namn).exists():
+                raise ValueError(f'{deck} bild {nr}: figurer/{namn} är en annan bild än den på bilden. Spara bildens figur i figurer/ '
+                                 'eller flytta bilden, annars visar delsidan fel figur.')
+            if fil:
                 alt = sh._element.nvPicPr.cNvPr.get('descr') or re.sub(r'^Figur:\s*', '', sh.name).rstrip(';').strip() or 'Figur'
                 block.append(('fig', fil, alt))
             continue
@@ -302,7 +308,11 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
         steg = ' '.join(R.h(x['text']) for x in p.get('ledtradar', []) if x.get('niva') == 'nasta-steg')
         if steg:  # ledtråd 3 ur databasen: metoden steg för steg med andra tal
             led3 = steg
-        figs = [x for x in (pres_bild.get(p['id']) or []) if x[0] == 'fig']
+        # Övningens figur: placeringens figurer (lektionsbilderna visar inte övningarna), annars bilden där övningen står.
+        figs = [('fig', f['fil'], f['alt']) for f in pl.get('figurer') or []] or [x for x in (pres_bild.get(p['id']) or []) if x[0] == 'fig']
+        for f in pl.get('figurer') or []:
+            if not (R.SJO / f'vecka-{v}' / 'aktuell' / 'figurer' / f['fil']).exists():
+                raise ValueError(f'{pl["ankare"]}: figuren {f["fil"]} saknas i vecka-{v}/aktuell/figurer/ (placeringar/kurs-formelstod.json)')
         facit = ''.join(f'<p>{R.h(x)}</p>' for x in str(los.get('text', 'Facit saknas.')).split('\n\n') if x.strip())
         svar = ' · '.join(f'{R.h(sv["storhet"])} ≈ {e(R.svarsvarde(sv))} {e(sv.get("enhet", ""))}' for sv in los.get('svar', []) if isinstance(sv.get('varde'), (int, float)))
         h.append(f'''<article class="del-ovning" id="{pl["ankare"]}"><h3>{e(pl["nummer"])}: {R.h(p["titel"])}</h3>
