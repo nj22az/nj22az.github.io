@@ -4,7 +4,9 @@ import {bicycleRiderFit} from '../world/bicycle-fit.js';
 import {seeded} from './recipe.js';
 import {consumptionPhase,poseAvatarConsumption,drinkHeadTilt} from './consume.js';
 import {bodyLanguage,CONVERSATION_BIG} from './body-language.js';
-import {createFootGrounder,createLieGrounder} from './foot-ground.js';
+import {createFootGrounder,createLieGrounder,createSoleFinder} from './foot-ground.js';
+import {FUN_POSES,STILL_AT} from './fun-poses.js';
+export {FUN_POSES,STILL_AT};
 import {createSeatSupport} from './seat-support.js';
 import {gaitOf} from './gait.js';
 import {bodyVolume} from './build.js';
@@ -43,6 +45,38 @@ const KNEAD=Object.freeze({thigh:-.7,knee:1.92,foot:.35});
 /** On the back, how far the neck and head bend forward (radians, together) so the back of the head (with its hair) and the
  *  back both rest on the floor: the head is far bigger than the body is deep. */
 const SUPINE_LIFT=m=>Math.asin(THREE.MathUtils.clamp((m.Rh*1.085-m.depth/2)/(m.headCentre-m.neckY),0,.9));
+/**
+ * Carried like a plank, the body rests on the carriers' mittens by its underside: the drawn skin and clothes of the torso
+ * (every point of them carried by the hips, spine and chest only: not the arms, the head or the legs), each point where its
+ * bones put it this frame. Returns the lowest of them in the frame of the root's parent.
+ */
+function createUndersideFinder(avatar){
+ const torso=new Set(['hips','spine','chest']),point=new THREE.Vector3(),sum=new THREE.Vector3(),inverse=new THREE.Matrix4();
+ let signature='',bones=[],samples=[];const placed=[];
+ function refresh(){
+  const meshes=avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible&&!o.name.includes('outline')),key=meshes.map(o=>o.uuid).join('/');
+  if(key===signature)return;signature=key;bones=[];samples=[];
+  const slot=new Map(),unique=new Set(),slotOf=bone=>{if(!slot.has(bone)){slot.set(bone,bones.length);bones.push(bone);}return slot.get(bone);};
+  for(const mesh of meshes){
+   const {position,skinIndex,skinWeight}=mesh.geometry.attributes;if(!skinIndex||!skinWeight)continue;
+   for(let i=0;i<position.count;i++){
+    const parts=[];let own=true;
+    for(let k=0;k<4;k++){const w=skinWeight.getComponent(i,k);if(w<1e-3)continue;const bone=mesh.skeleton.bones[skinIndex.getComponent(i,k)];if(!torso.has(bone.name)){own=false;break;}
+     parts.push([slotOf(bone),w,point.fromBufferAttribute(position,i).applyMatrix4(mesh.bindMatrix).applyMatrix4(mesh.skeleton.boneInverses[skinIndex.getComponent(i,k)]).clone()]);}
+    if(!own||!parts.length)continue;
+    const id=parts.map(([b,w,p])=>b+':'+w.toFixed(3)+':'+p.toArray().map(v=>v.toFixed(4)).join(',')).join('/');if(unique.has(id))continue;unique.add(id);samples.push(parts);
+   }
+  }
+ }
+ return ()=>{
+  refresh();const parent=avatar.root.parent;avatar.root.updateMatrixWorld(true);
+  if(parent)inverse.copy(parent.matrixWorld).invert();else inverse.identity();
+  bones.forEach((bone,i)=>{(placed[i]??=new THREE.Matrix4()).multiplyMatrices(inverse,bone.matrixWorld);});
+  let lowest=Infinity;
+  for(const parts of samples){sum.set(0,0,0);let total=0;for(const [b,w,p] of parts){sum.addScaledVector(point.copy(p).applyMatrix4(placed[b]),w);total+=w;}lowest=Math.min(lowest,sum.y/total);}
+  return lowest;
+ };
+}
 /** Nelder–Mead from a fixed start: the same answer every time. */
 function minimise(f,x0,step=.25,iterations=320){
  const n=x0.length;let S=[x0.slice()];for(let i=0;i<n;i++){const x=x0.slice();x[i]+=step;S.push(x);}let F=S.map(f);
@@ -90,10 +124,15 @@ const REACH=Object.freeze({
  // ...and the right arm flung up at the dark, the mitten above and out beside the head (clear of it).
  AbsurdUp:{neck:.05,head:[-.08,-.3,-.2],only:'R',R:{at:m=>[-(m.Rh*m.headSX+.16*m.k),m.headCentre+m.Rh*.75,.05*m.k],seed:[-2.6,.1,-.5,-.25,0]}},
  AbsurdBack:{pose:()=>absurdJoints(),only:'L',L:{touch:true,on:['hips',(m,v)=>onBack(m,v,1,.3)],seed:[.5,.35,.25,-1.75,0],hand:[.35,0,0]}},
- // Carrying furniture: the forearms forward under the load at the waist, the mittens a shoulder's width apart, palms up.
- CarryFurniture:{R:{at:m=>[-m.width*.42,m.hipY+.15*m.k,m.depth/2+.17*m.k],seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
- // Reading the paper held open before the chest at reading distance: the mittens at its outer edges (SitRead).
- SitRead:{R:{at:m=>[-PAPER.leaf*.92,m.chestY+.03*m.k,m.depth/2+.2*m.k],seed:[-1.05,.3,.05,-1.2,0],hand:[-.25,0,0]}},
+ // Carrying furniture (or a man stiff as a plank): the forearms forward under the load at the waist, the mittens a
+ // little under a shoulder's width apart, palms up, their tops at the load's underside (CARRY.under above the floor, in the
+ // move's own stance: the knees bent, the back straight and leaning in a little). CarryLegs: the same under his legs.
+ CarryFurniture:{pose:()=>carryJoints(),R:{under:m=>[-CARRY.spread*m.k,CARRY.under+CARRY.flank,m.depth/2+CARRY.reach*m.k],level:true,seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
+ CarryLegs:{pose:()=>carryJoints(),seedFrom:'CarryFurniture',R:{under:m=>[-CARRY.legSpread*m.k,CARRY.legs,m.depth/2+CARRY.reach*m.k],level:true,seed:[-.35,.1,.05,-1.4,0],hand:[-.7,0,0]}},
+ // Carried stiff as a plank, both mittens laid on his belly, side by side (CarriedPlank).
+ PlankHands:{pose:()=>({}),R:{touch:true,rest:true,on:['spine',(m,v)=>onFront(m,v,-1,PLANK.hands,.5)],elbow:m=>[-(m.width/2+m.armR*.4),m.hipY+m.torso*.42,m.depth*.25],seed:[-.35,.3,.1,-1.6,0],hand:[.2,-1.07,0]}},
+ // Reading the paper held open low over the lap, the mittens at its outer edges (SitRead: SIT_READ).
+ SitRead:{R:{at:m=>[-PAPER.leaf*SIT_READ.spread,m.hipY+SIT_READ.up*m.k,m.depth/2+SIT_READ.ahead*m.k],seed:[-.6,.3,.05,-1.3,0],hand:[-.25,0,0]}},
  // The torch: the right mitten on it at the left chest pocket; held up before the chest (beam forward and up, its light
  // under the chin); held low at the waist, pointing down (TorchUp, TorchOff).
  TorchPocket:{only:'R',R:{chest:a=>{const p=pocketSpot(a);return p.position.clone().addScaledVector(p.normal,a.measure.hand*.45);},seed:[-.9,.6,.35,-1.9,0],hand:[0,0,0]}},
@@ -103,6 +142,8 @@ const REACH=Object.freeze({
 /** A mitten on the small of the back, on the side `side` (+1 the left, -1 the right) at height t up the torso: on the body's
  *  surface (bodyVolume), its middle a little under half its own thickness off it. In the body's frame at rest. */
 const onBack=(m,vol,side,t)=>{const p=vol.surf(Math.PI-side*.38,t);return p.addScaledVector(vol.normal(p),m.hand*.95).toArray();};
+/** A mitten on the belly, on the side `side` of the middle (+1 the left, -1 the right) at height t up the torso, laid as onBack. */
+const onFront=(m,vol,side,t,off=.95)=>{const p=vol.surf(side*.3,t);return p.addScaledVector(vol.normal(p),m.hand*off).toArray();};
 /** Fujita's stuck back (ぎっくり腰): bent at the hips to a level back (with the spine and chest, about 90°), the knees bent and
  *  forward and the bottom out behind so he stands over his feet, the feet a little apart and flat; the head lifted a little
  *  (in the after-bath clothes no further: the back of the head would come down on the tenugui round his neck; without it, up
@@ -118,6 +159,91 @@ function bentJoints(mode,outfit='afterbath'){
  return {hips:[B.hips,0,0],spine:[B.spine,0,0],chest:[B.chest,0,0],neck:[up.neck,0,0],head:[up.head,0,0],
   thighL:[th-B.hips,0,sp],kneeL:[kn,0,0],footL:[ft,0,-sp],thighR:[th-B.hips,0,-sp],kneeR:[kn,0,0],footR:[ft,0,sp]};
 }
+/**
+ * The carry ("Fujita's Back", 8a–8d): three women carry him stiff and level like a plank, at the height of their lower chest
+ * (their forearms level under him: three short women, a man's width). CarriedPlank lays
+ * him on his back, rigid, the face turned to one side (to his right unless headTo turns it), the mittens on his belly, the
+ * legs straight and together, his underside (the back of his body, between the shoulders and the hips) at CARRY.under
+ * above the floor: the tops of the carriers' mittens. CarryFurniture puts a carrier's mittens there (`flank` higher: under
+ * his side, where his back curves up from its lowest line): the forearms forward and level under him, palms up, `spread`
+ * (each side of her middle) apart and `reach` ahead of her front, the knees bent and the back straight, leaning in
+ * (`lean`). CarryLegs is the same at CARRY.legs (`legSpread` apart), under his legs, which are thinner than his body. `stations`: where each carrier stands round him, from his hips along his length toward his head (`along`, metres),
+ * on his left (+1) or right (-1) side, `out` from his middle, facing him; two on one side (shoulders and knees) and one on
+ * the other (the waist), as two big heads cannot stand side by side over a short body.
+ */
+export const CARRY=Object.freeze({under:.755,flank:.017,legs:.818,spread:.12,legSpread:.07,reach:.2,lean:.08,
+ stations:Object.freeze([
+  Object.freeze({at:'shoulders',move:'CarryFurniture',side:1,along:.33,out:.42}),
+  Object.freeze({at:'waist',move:'CarryFurniture',side:-1,along:.16,out:.42}),
+  Object.freeze({at:'knees',move:'CarryLegs',side:1,along:-.2,out:.36}),
+ ])});
+function carryJoints(){const C=CARRY;
+ return {hips:[C.lean,0,0],chest:[-.04,0,0],thighL:[-.32-C.lean,0,.07],kneeL:[.64,0,0],footL:[-.32,0,-.07],thighR:[-.32-C.lean,0,-.07],kneeR:[.64,0,0],footR:[-.32,0,.07]};}
+/**
+ * Mrs Higa's reach back for the contract breaker without looking (ReachBack, "Fujita's Back" 6c and 7a): seated on her stool
+ * at the bandai, she reaches back over her left shoulder and puts the lever up with the end of her mitten, her head and eyes
+ * down on the account book in her right mitten. Where things are round her, in her frame as she sits (metres: to her left,
+ * up from the seat, ahead; onsen-electrics.js ONSEN_CONTRACT and ONSEN_BOARD, onsen.js's stool): the lever's pivot (`lever`),
+ * the breaker's box and the board beside it and the wall behind them (kept clear of). The chest turns `twist` toward the
+ * wall and leans `lean` forward over her book (her head goes with it, which leaves room behind her hair for her mitten);
+ * the head turns back as far (on the book) and bends `down`. The arm goes out to her side first, then back past her ear
+ * between her hair and the board, in behind her head and back to the box (`via`: where the mitten's end passes, from the
+ * lever; all within her reach), never across her face, never into the board: the mitten against the box with its end
+ * `below` the lever's pivot and `ahead` of it, over the lever (the mitten is thicker than the lever is long), in `reach`
+ * seconds; it pushes the lever up `push` (over the next 0.2 s) and holds it there; back to the book the same way
+ * over the last `out` seconds. `s.reachTo` (a world point) sends the mitten's end somewhere else.
+ */
+export const REACH_BACK=Object.freeze({lever:Object.freeze([.07,.768,-.358]),
+ box:Object.freeze({min:Object.freeze([.015,.715,-.44]),max:Object.freeze([.125,.905,-.365])}),
+ board:Object.freeze({min:Object.freeze([.19,.45,-.44]),max:Object.freeze([.71,1.07,-.265])}),
+ wall:-.44,twist:.38,lean:.1,down:.38,below:.05,ahead:.03,push:.05,out:1.15,reach:1.15,
+ via:Object.freeze([Object.freeze([.23,-.07,.26]),Object.freeze([.13,-.03,.16]),Object.freeze([.03,-.03,.14])]),
+ // the way there (the right arm's angles, mirrored for the left): first out to the side, a little bent
+ side:Object.freeze([-.15,0,-1.4,-.5,0])});
+const reachBackJoints=()=>({chest:[REACH_BACK.lean,REACH_BACK.twist,0],thighL:[-1.52,0,.06],kneeL:[1.45,0,0],thighR:[-1.52,0,-.06],kneeR:[1.45,0,0]});
+/** ReachBack's arm (the right arm's angles) `p` of the way from her lap (0) to the lever (1): out to the side first
+ *  (REACH_BACK.side), back past her ear between her hair and the board, in behind her head (A.via), then back to the box
+ *  (A.below), each stage eased. Her head is wider than her shoulders: an arm raised in front of her would go through her
+ *  face. */
+const REACH_BACK_STAGES=Object.freeze([0,.22,.54,.69,.85,1]);
+function reachBackPath(A,p){
+ const way=[[-.1,0,-.13,-.15,0],REACH_BACK.side,...A.via.map(v=>v.L),A.below.L],T=REACH_BACK_STAGES;
+ let i=T.findIndex((t,k)=>k<T.length-1&&p<T[k+1]);if(i<0)i=T.length-2;const u=smooth((p-T[i])/(T[i+1]-T[i]));
+ return way[i].map((v,j)=>v+((way[i+1][j]??0)-v)*u);
+}
+/**
+ * Tetsuo reading the evening paper on the koagari edge (SitRead): held open low, over his lap at belly height and tilted back
+ * (`tilt`, its top away from him) so he reads it looking down, the head bent `down` over it; his chest stays clear, and the
+ * torch clipped at his pocket shows over it. The mittens hold its outer edges, `spread` of a leaf from the fold, `up` above
+ * the hips and `ahead` of his front.
+ */
+const SIT_READ=Object.freeze({spread:.9,up:.2,ahead:.2,tilt:.6,down:.44});
+/** CarriedPlank's shape: the head turned `turn` (radians, to his right; the neck takes `neck` of it), the legs together, the
+ *  mittens laid side by side on his belly `hands` of the way up his torso (PlankHands), the elbows in at his sides: a man's
+ *  short arms hanging at his sides reach out past his hips, where the carriers stand and put their arms under him. */
+const PLANK=Object.freeze({turn:-1.15,neck:.3,spread:.015,hands:.3});
+/**
+ * Sitting on the floor (or on a cushion on it) the way a small child does: the bottom on the floor, the legs out in front
+ * and a little apart (`spread` each, the toes turned a little out by `roll`), the knees almost straight (`knee`), the heels
+ * on the floor and the toes up, so the soles face forward (`foot`: 0 is the foot square to the shin); the back upright,
+ * leaning back a little (`lean`), the mittens resting on the thighs `hands` of the way to the knee (or, for arms too short
+ * for that over a round body, on the floor beside the hips, `side` out from them and `behind` them). On a cushion, higher
+ * than the heels can reach with the thighs level, the thighs stay level on it and the knees bend to bring the heels down
+ * to the floor in front of it (`bend`: the most they bend). A chair, a bench or a
+ * stool is sat on as before (the shins down; on a low one stretched forward with the feet flat): the floor sit takes over as
+ * the seat gets so low that a flat foot would have to point more than `from` (radians) down, and is all there is by `to`.
+ * How far the thighs rise or fall so the heels rest on the floor is worked out for each body as it is dressed (a shoe's heel
+ * sticks out behind the ankle; a bare foot's does not). Getting down onto the floor goes through a squat (`squat`, the
+ * first `at` of the way: the feet planted, the body lowered on bent knees), then back onto the bottom with the legs going out
+ * in front; getting up is the same backwards. A scene that seats someone on the floor without easing them onto it
+ * (chairBlend) has it take `ease` seconds each way.
+ */
+export const FLOOR_SIT=Object.freeze({from:.55,to:.85,spread:.16,roll:.1,knee:.12,foot:.08,lean:-.06,hands:.5,side:.04,behind:.02,bend:1.4,ease:.7,
+ squat:Object.freeze({at:.55,thigh:-1.6,knee:2,foot:-.4,spread:.2})});
+/** The floor sit's joints, the thighs raised `a` (radians) above level and the knees bent `knee`. */
+function floorJoints(a,knee=FLOOR_SIT.knee){const F=FLOOR_SIT,x=-Math.PI/2-a;
+ return {chest:[F.lean,0,0],thighL:[x,F.roll,F.spread],thighR:[x,-F.roll,-F.spread],kneeL:[knee,0,0],kneeR:[knee,0,0],footL:[F.foot,0,0],footR:[F.foot,0,0]};}
+const LEG_JOINTS=['thighL','kneeL','footL','thighR','kneeR','footR'];
 /** In the massage chair (seat 0.5 m), curled forward over the knees (curl 1) and slowly uncurling: the rounded back is the
  *  spine and the chest (the hips stay on the seat), the head up to look ahead. UNCURL: how far he gets before the lights go
  *  (half), and how long it takes (2.4 s, the rollers' first pass). */
@@ -136,8 +262,10 @@ function absurdJoints(){const A=ABSURD;return {spine:A.spine,chest:A.chest,thigh
  *  leading foot swinging out over the first 35% of its cycle, the other a half cycle behind closing in. */
 const CRAB=Object.freeze({wide:.05,step:.15,swing:.35,lift:.3});
 /** The story's held moves that the scene can name as a pose (a mark's `pose`): played as that move for as long as it is
- *  named, eased in and out over half a second. */
-export const STORY_POSES=new Set(['BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarryFurniture','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff']);
+ *  named, eased in and out over half a second (or RAMP_TIME: lifted level by three people takes them longer, and the reach
+ *  back for the breaker goes back at its own pace). */
+const RAMP_TIME=Object.freeze({CarriedPlank:1.2,ReachBack:REACH_BACK.out});
+export const STORY_POSES=new Set(['BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarriedPlank','CarryFurniture','CarryLegs','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff','ReachBack']);
 
 /** How long each move lasts (loops run until something else happens). */
 export const GESTURES=Object.freeze({
@@ -162,11 +290,18 @@ export const GESTURES=Object.freeze({
  // Fujita's Back (story v7): held until the next move, or named by the scene as a pose (STORY_POSES).
  BentStuck:Infinity,CrabWalk:Infinity,ChairUncurl:Infinity,FrozenAbsurd:Infinity,CarriedBent:Infinity,CarryFurniture:Infinity,
  CordWrapped:Infinity,BasketHead:Infinity,SitRead:Infinity,TorchUp:Infinity,TorchOff:Infinity,
+ // The carry like a plank (CarriedPlank, CarryFurniture, CarryLegs) and Mrs Higa's reach back for the contract breaker
+ // (ReachBack: up to the lever and pushing it up, held; out over `REACH_BACK.out` when its time ends).
+ CarriedPlank:Infinity,CarryLegs:Infinity,ReachBack:3.2,
+ // Funny poses for comics, memes and the scene builders (fun-poses.js: what each is for, and its face).
+ ...Object.fromEntries(Object.entries(FUN_POSES).map(([name,p])=>[name,p.d])),
 });
 /** The moves that ease in from wherever the body is and back to it (the story's: they lerp from the pose under them). */
 const EASED=new Set(['CupHands','CoinToCheek','BowDeep','BowWalk','KneelHug','PoleFlick','Peek','BannerUp','FanWild','HoldOn','FingerStop',
  'Tape','Offer','Reach','LieKnead','GrenadeCoin','Aim','HoldUp','HoldUpStraws','Call','WriteAbove',
- 'BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarryFurniture','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff']);
+ 'BentStuck','CrabWalk','ChairUncurl','FrozenAbsurd','CarriedBent','CarriedPlank','CarryFurniture','CarryLegs','CordWrapped','BasketHead','SitRead','TorchUp','TorchOff','ReachBack',
+ // and the funny poses (fun-poses.js): from however the body stands (hands behind the back, in the pockets) and back to it
+ ...Object.keys(FUN_POSES)]);
 /** The body that goes with a feeling, played once when the feeling arrives. */
 export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump',angry:'Stomp',shy:'Fidget',surprised:'Gasp',worried:'Think'});
 
@@ -180,7 +315,7 @@ export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump
 export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bowDepth=1}={}){
  const {bones,measure:m}=avatar;
  const groundFeet=createFootGrounder(avatar),groundLying=createLieGrounder(avatar);
- const supportSeat=createSeatSupport(avatar);
+ const supportSeat=createSeatSupport(avatar),findUnderside=createUndersideFinder(avatar),findSoles=createSoleFinder(avatar);
  const style=bodyLanguage(avatar.recipe?.profile||{});
  const pick=list=>list[Math.floor(random()*list.length)];
  const idleWait=()=>style.idleEvery[0]+random()*(style.idleEvery[1]-style.idleEvery[0]);
@@ -201,7 +336,11 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  const target=Object.fromEntries(JOINTS.map(j=>[j,new THREE.Vector3()]));
  const gazeLocal=new THREE.Vector3();
  let phase=0,time=Math.random()*10,rootY=0,hipsY=0,lean=0;
- let lie=0,lyingTilt=false,prone=false;
+ let lie=0,lyingTilt=false,prone=false,floorSit=0,floorEase=0,floorSeat=null,firstUpdate=true;
+ /** How much a seat (a state's seatHeight over its floorHeight) is sat on as the floor (FLOOR_SIT): 0 a chair, 1 the floor. */
+ const floorWeight=st=>{if(st.seat==='Soak'||st.pose==='Soak')return 0;
+  const seatH=Number.isFinite(st.seatHeight)?st.seatHeight:.45,ankle=seatH+m.seatDrop-m.thigh*Math.cos(1.52)-(st.floorHeight||0)-m.foot-m.legR*.28;
+  return ankle<m.shin*Math.cos(.07)?THREE.MathUtils.smoothstep(Math.acos(THREE.MathUtils.clamp(ankle/m.shin,0,1)),FLOOR_SIT.from,FLOOR_SIT.to):0;};
  // KneelHug's kneel, 0..1: eased down and up over 0.8 s whatever ends the move (its time, another move, a stop).
  let kneelRamp=0,kneel=0,kneelT=0;
  let gesture=null,blinkIn=1+Math.random()*3,blinkT=-1,talkT=0,talkOpen=0,glance=[0,0],glanceIn=2,lastExpression='neutral';
@@ -209,15 +348,18 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  // ---- Hands on this body's own shape (REACH): worked out the first time each move is played, then kept.
  const reached=new Map();let volume=null;
  const _q=[0,1,2,3].map(()=>new THREE.Quaternion()),_eu=new THREE.Euler(),_p=[0,1,2,3,4].map(()=>new THREE.Vector3());
- function reachFor(name){
+ function reachFor(name,dynamic=null){
   if(reached.has(name))return reached.get(name);
-  const spec=REACH[name],k=m.k,S=[m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98],hc=m.headCentre-m.headY;volume??=bodyVolume(avatar.recipe,m);
+  const spec=dynamic||REACH[name],k=m.k,S=[m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98],hc=m.headCentre-m.headY;volume??=bodyVolume(avatar.recipe,m);
+  // (hair: the arm keeps out of the hair as well as the head, as far as it reaches that way: a reach past the head)
+  const shell=spec.hair?hairShell(S):null;
   // The head in the chest's frame, turned as the move turns it.
   const qNeck=new THREE.Quaternion().setFromEuler(_eu.set(spec.neck||0,0,0)),qHead=qNeck.clone().multiply(new THREE.Quaternion().setFromEuler(_eu.set(...(spec.head||[0,0,0])))),qInv=qHead.clone().invert();
   const headAt=bones.neck.position.clone().add(headRestPosition.clone().applyQuaternion(qNeck)),chestAt=new THREE.Vector3(0,m.chestY,0);
   const onHead=([dx,dy,dz,off])=>{const u=new THREE.Vector3(dx,dy,dz).normalize(),n=new THREE.Vector3(u.x/S[0],u.y/S[1],u.z/S[2]).normalize();
    return new THREE.Vector3(u.x*S[0],u.y*S[1]+hc,u.z*S[2]).addScaledVector(n,off*k).applyQuaternion(qHead).add(headAt);};
   const headR=p=>{const q=_p[4].copy(p).sub(headAt).applyQuaternion(qInv);return Math.hypot(q.x/S[0],(q.y-hc)/S[1],q.z/S[2]);};
+  const hairAt=p=>{if(!shell)return 1;const q=_p[4].copy(p).sub(headAt).applyQuaternion(qInv);return shell(q.x/S[0],(q.y-hc)/S[1],q.z/S[2]);};
   const out={};
   // A place carried by a bone, with the body in the move's pose: where it is in the chest's frame then.
   const posed=spec.pose?posedPlaces(spec.pose()):null,hipsM=spec.pose?chestToHips(spec.pose()):null,_h=new THREE.Vector3();
@@ -231,24 +373,52 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // a side without its own place is the mirror of the right
    const own=!!spec[side],want=spec[side]||spec.R,sg=side==='R'?1:-1,mirror=a=>a.map((v,i)=>i===1||i===2||i===4?v*sg:v);
    const flipX=v=>own?v:[-v[0],...v.slice(1)];
+   // (under: a place at a height above the floor in the move's own stance, where the mitten's top goes: under a load)
+   const under=want.under?flipX(want.under(m)):null;
    const target=want.head?onHead(flipX(want.head)):want.on?posed(own?want.on[0]:want.on[0].replace(/[RL]$/,c=>c==='R'?'L':'R'),flipX(want.on[1](m,volume)))
+    :under?posed('root',[under[0],under[1]+posed.rise,under[2]])
+    :want.root?posed('root',flipX(want.root))
     :want.chest?want.chest(avatar):new THREE.Vector3(...flipX(want.at(m))).sub(chestAt);
+   const upC=posed?posed.up:new THREE.Vector3(0,1,0),_d=new THREE.Vector3(),_top=new THREE.Vector3(),targetUp=target.dot(upC);
    const elbowAt=want.elbow?new THREE.Vector3(...flipX(want.elbow(m))).sub(chestAt):null;
    const hand=want.hand?mirror(want.hand):[0,0,0],seed=mirror(spec.seedFrom?reachFor(spec.seedFrom)[side]:[...want.seed,0].slice(0,5));
-   const sh=bones['shoulder'+side].position,el=bones['elbow'+side].position,wr=bones['hand'+side].position,mit=new THREE.Vector3(0,-m.hand*.55,0);
+   // (tip: the end of the mitten goes to the place, not its middle: a lever pushed with the fingers' end)
+   const sh=bones['shoulder'+side].position,el=bones['elbow'+side].position,wr=bones['hand'+side].position,mit=new THREE.Vector3(0,-m.hand*(want.tip?1.45:.55),0);
+   // things fixed round the body to keep clear of (a wall, a cabinet): boxes in the body's frame, each point of the forearm
+   // and the mitten at least `clear` outside them
+   const box=r=>(want.avoid||[]).map(b=>new THREE.Box3(new THREE.Vector3(...b.min),new THREE.Vector3(...b.max)).expandByScalar((b.clear??.012*k)+r)),_r=new THREE.Vector3();
+   const boxes=box(0),armBoxes=box(m.armR);
+   const inBox=(p,list)=>{if(!list.length)return 0;_r.copy(p).applyMatrix4(posed.toRoot);let d=0;
+    for(const b of list)if(b.containsPoint(_r))d=Math.max(d,Math.min(_r.x-b.min.x,b.max.x-_r.x,_r.y-b.min.y,b.max.y-_r.y,_r.z-b.min.z,b.max.z-_r.z));return d;};
    const qHand=new THREE.Quaternion().setFromEuler(_eu.set(...hand));
    const cost=x=>{
     _q[0].setFromEuler(_eu.set(x[0],x[1],x[2]));const E=_p[0].copy(el).applyQuaternion(_q[0]).add(sh);
     _q[1].copy(_q[0]).multiply(_q[2].setFromEuler(_eu.set(x[3],x[4],0)));const W=_p[1].copy(wr).applyQuaternion(_q[1]).add(E);
     _q[3].copy(_q[1]).multiply(qHand);const M=_p[2].copy(mit).applyQuaternion(_q[3]).add(W);
-    let c=M.distanceToSquared(target)*100/(k*k);
+    let c;
+    if(under){
+     // under a load: the mitten's middle over the place, and its top (the highest of its surface) at the place's height
+     let top=-Infinity;for(const q of TOUCH){const y=_top.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W).dot(upC);if(y>top)top=y;}
+     _d.copy(M).sub(target);_d.addScaledVector(upC,-_d.dot(upC));c=(_d.lengthSq()+(top-targetUp)**2)*100/(k*k);
+    }else c=M.distanceToSquared(target)*100/(k*k);
     if(elbowAt)c+=E.distanceToSquared(elbowAt)*10/(k*k);
+    // (level: the forearm level, from the elbow to the wrist: under a load, so it passes below what lies on the load's sides)
+    if(want.level){const u=_d.copy(W).sub(E).normalize().dot(upC);c+=u*u*8;}
+    // (upper: the upper arm out of the head and the things round the body too, for an arm raised beside the head)
+    if(want.upper)for(let i=1;i<=4;i++){const p=_p[3].copy(sh).lerp(E,i/4),r=headR(p),near=hairAt(p)+m.armR*1.2/m.Rh;if(r<near)c+=(near-r)**2*60;
+     if(armBoxes.length){const b=inBox(p,armBoxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}}
     // the forearm and the mitten out of the head and the chest
-    for(let i=0;i<=4;i++){const p=_p[3].copy(E).lerp(W,i/4),r=headR(p),near=1+m.armR*1.15/m.Rh;if(r<near)c+=(near-r)**2*40;
-     // (a mitten laid on the body (touch) brings its wrist to it: there only the forearm's upper part is kept off)
+    for(let i=0;i<=4;i++){const p=_p[3].copy(E).lerp(W,i/4),r=headR(p),near=hairAt(p)+m.armR*1.15/m.Rh;if(r<near)c+=(near-r)**2*40;
+     // (a mitten laid on the body (touch) brings its wrist to it: there only the forearm's upper part is kept off; a forearm
+     // that rests on the body too (rest) only out of it)
      if(want.touch&&i>2)continue;
-     const d=torso(p);if(d<m.armR*1.1&&(hipsM||p.y+chestAt.y>m.hipY+.1*k))c+=((m.armR*1.1-d)/k)**2*400;}
-    const rm=headR(M),nearM=1+m.hand*.85/m.Rh;if(rm<nearM)c+=(nearM-rm)**2*300;
+     const d=torso(p),fc=want.rest?m.armR*.95:m.armR*1.1;if(d<fc&&(hipsM||p.y+chestAt.y>m.hipY+.1*k))c+=((fc-d)/k)**2*400;
+     if(armBoxes.length){const b=inBox(p,armBoxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}}
+    if(boxes.length)for(const q of TOUCH){const b=inBox(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W),boxes);if(b>0)c+=((b+.004*k)/k)**2*2000;}
+    const rm=headR(M),nearM=hairAt(M)+m.hand*.85/m.Rh;if(rm<nearM)c+=(nearM-rm)**2*300;
+    // (cover: the whole mitten outside the head and its hair, not only its middle, by `cover` metres (6 mm unless said): a
+    // mitten laid on the face or the crown)
+    if(want.cover){const gap=(want.cover===true?.006:want.cover)*k/m.Rh;for(const q of TOUCH){const p=_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W),r=headR(p),near=hairAt(p)+gap;if(r<near)c+=(near-r)**2*3000;}}
     const dm=torso(M),clear=want.touch?m.hand*.7:m.hand*.9;if(dm<clear)c+=((clear-dm)/k)**2*400;
     // laid on the body, the whole mitten stays on it, not in it: its tip and the backs of its sides
     if(want.touch)for(const q of TOUCH){const d=torso(_t.set(q[0]*m.hand,q[1]*m.hand,q[2]*m.hand).applyQuaternion(_q[3]).add(W));if(d<.009*k)c+=((.009*k-d)/k)**2*2000;}
@@ -261,15 +431,66 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   }
   reached.set(name,out);return out;
  }
+ /** How far the hair (and whatever else the head carries: ears, a bun) reaches out from the head's middle, by direction, in
+  *  the head's own radii (S: its half-axes): the outermost of the drawn body's head-bound points and of the drawn head, at
+  *  rest, in 5° bins (and
+  *  their neighbours, so the shell is never thinner than the hair between two of them). Kept for the body as it is dressed;
+  *  a function of a point in those radii. */
+ const hairShells=new Map();
+ function hairShell(S){
+  const mesh=avatar.root.children.find(o=>o.isSkinnedMesh&&o.visible&&!o.name.includes('outline'));if(!mesh)return ()=>1;
+  if(hairShells.has(mesh.uuid))return hairShells.get(mesh.uuid);
+  const A=72,E=36,bin=(x,y,z)=>{const r=Math.hypot(x,y,z)||1;return Math.min(E-1,Math.floor((Math.asin(y/r)/Math.PI+.5)*E))*A+((Math.floor((Math.atan2(x,z)/Math.PI+1)/2*A))%A);};
+  const P=mesh.geometry.attributes.position,I=mesh.geometry.attributes.skinIndex,Wt=mesh.geometry.attributes.skinWeight,head=mesh.skeleton.bones.indexOf(bones.head);
+  const R=new Float32Array(A*E).fill(1);
+  for(let i=0;i<P.count;i++){if(I.getX(i)!==head||Wt.getX(i)<.99)continue;const x=P.getX(i)/S[0],y=(P.getY(i)-m.headCentre)/S[1],z=P.getZ(i)/S[2],b=bin(x,y,z);R[b]=Math.max(R[b],Math.hypot(x,y,z));}
+  const out=new Float32Array(A*E);
+  for(let e=0;e<E;e++)for(let a=0;a<A;a++){let r=0;for(let de=-1;de<=1;de++){const f=e+de;if(f<0||f>=E)continue;for(let da=-1;da<=1;da++)r=Math.max(r,R[f*A+(a+da+A)%A]);}out[e*A+a]=r;}
+  // and the drawn head itself (its own mesh, about the head's middle), which bulges past the round head here and there
+  // (bin by bin: its points are close together, and a nose spread to its neighbours would hold a mitten off the face)
+  const F=avatar.face?.head?.geometry?.attributes.position;
+  if(F)for(let i=0;i<F.count;i++){const x=F.getX(i)/S[0],y=F.getY(i)/S[1],z=F.getZ(i)/S[2],b=bin(x,y,z);out[b]=Math.max(out[b],Math.hypot(x,y,z));}
+  const shell=(x,y,z)=>out[bin(x,y,z)];hairShells.set(mesh.uuid,shell);return shell;
+ }
+ /**
+  * ReachBack's left arm, for where the lever is from where she sits (in the body's frame: worked out once the move begins, so
+  * the arm does not go looking for it as she settles): under the lever, and with it pushed up. By default the contract
+  * breaker's lever from Mrs Higa's stool (REACH_BACK, and the box, the board and the wall round it kept clear of); `s.reachTo`
+  * (a world point) is another place for the mitten's end.
+  */
+ function reachBack(g,s){
+  if(!g.reach){
+   const R=REACH_BACK,root=avatar.root,seat=Number.isFinite(s.seatHeight)?s.seatHeight:.45;
+   root.updateMatrixWorld(true);
+   // [to her left, up from the seat, ahead] in the body's frame (it faces +z, x to its left), from the seat under her hips
+   const here=v=>[v[0],seat+v[1]-root.position.y,v[2]];
+   const lever=s.reachTo?root.worldToLocal(new THREE.Vector3(...(s.reachTo.isVector3?s.reachTo.toArray():s.reachTo))).toArray():here(R.lever);
+   const avoid=s.reachTo?[]:[R.box,R.board,{min:[-1,-1,R.wall-1],max:[1,3,R.wall]}].map(b=>({min:here(b.min),max:here(b.max)}));
+   const key='ReachBack:'+lever.map(v=>v.toFixed(3)).join(',');
+   // (on the way, passing her hair, the arm keeps out of it as well as her head)
+   const ahead=s.reachTo?0:R.ahead,arm=([dx,dy,dz],hair=false)=>({pose:reachBackJoints,head:[R.down,-R.twist*.9,0],only:'L',hair,
+    L:{root:[lever[0]+dx,lever[1]+dy,lever[2]+dz],tip:true,upper:true,avoid,seed:[-2.4,.3,-.6,-1.5,0],hand:[0,0,0]}});
+   g.reach={via:R.via.map((v,i)=>reachFor(key+':via'+i,arm(v,true))),below:reachFor(key+':below',arm([0,-R.below,ahead])),up:reachFor(key+':up',arm([0,R.push-R.below,ahead]))};
+  }
+  return g.reach;
+ }
  /** With the body put in `pose` (joint: [x, y, z]; every other joint straight) for a moment: a function giving, for a place
   *  carried by a bone (in the body's frame at rest), where it is in the chest's frame. The body is put back as it was. */
  function posedPlaces(pose){
   const root=avatar.root,saved=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));
   const put=rot=>{JOINTS.forEach((j,i)=>bones[j].rotation.set(...rot(j,i)));root.updateMatrixWorld(true);};
-  return (bone,p)=>{
+  const at=(bone,p)=>{
    put(()=>[0,0,0]);const v=bones[bone].worldToLocal(root.localToWorld(new THREE.Vector3(...p)));
    put(j=>pose[j]||[0,0,0]);const out=bones.chest.worldToLocal(bones[bone].localToWorld(v));
    put((j,i)=>saved[i]);return out;};
+  // how far the pose lifts the feet in the body's frame (bent knees draw them up: the feet stay on the floor, so the body
+  // comes down by as much), and which way is up in the chest's frame then
+  const ankles=()=>(['footL','footR'].reduce((y,b)=>y+root.worldToLocal(bones[b].getWorldPosition(new THREE.Vector3())).y,0))/2;
+  put(()=>[0,0,0]);const rest=ankles();put(j=>pose[j]||[0,0,0]);at.rise=ankles()-rest;
+  // and the chest's frame carried back to the body's (for keeping clear of things fixed round the body)
+  at.toRoot=new THREE.Matrix4().copy(bones.root.matrixWorld).invert().multiply(bones.chest.matrixWorld);put((j,i)=>saved[i]);
+  at.up=at('root',[0,1,0]).sub(at('root',[0,0,0])).normalize();
+  return at;
  }
  /** In `pose`, the matrix from the chest's frame to the hips' frame placed at rest (the body's frame at rest, as bodyVolume
   *  has it), so a bent body's lower back is where the hips have taken it. */
@@ -285,7 +506,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  // ---- Fujita's Back: the pose the scene names (s.pose, one of STORY_POSES) and how far in it is (ramp 0..1); CrabWalk's step
  // (cycles) and which way he goes (+1 to his left, -1 to his right: the way he is moved); how far CordWrapped's cord is
  // wound; whether a move wants the paper or the basket this frame; the torch's arm (torchArm); the head's turn (headTo).
- let posed=null,crabPhase=0,crabSide=1,wrap=0,reading=0,basketWanted=false,headToW=0;const lastHolder=new THREE.Vector3();let holderSeen=false;
+ let posed=null,crabPhase=0,crabSide=1,wrap=0,reading=0,basketWanted=false,headToW=0,plankWanted=0,plankTilt=false;const lastHolder=new THREE.Vector3();let holderSeen=false;
  const lastHeadTo=new THREE.Vector3();
  const torch={at:'pocket',goal:null,t:0,d:0,from:null,to:null,fromW:0,toW:0,cur:[0,0,0,0,0],w:0,p0:new THREE.Vector3(),q0:new THREE.Quaternion()};
  let consumption=null,consumeTime=0,lastConsume=null,driftX=0;
@@ -337,6 +558,16 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   */
  function update(dt,s={}){
   time+=dt;
+  // Getting down onto the floor and up again take a moment, however the scene seats them (FLOOR_SIT.ease): seated on it
+  // without a blend of the scene's own (chairBlend), they are eased onto it, and off it again when they stand (still at that
+  // spot, on the way up). Already sitting there the first time they are seen, they are sat.
+  if(!s.riding&&!Number.isFinite(s.chairBlend)){
+   const onFloor=!!s.seated&&floorWeight(s)>0;
+   if(onFloor){floorSeat={seatHeight:s.seatHeight,floorHeight:s.floorHeight};floorEase=firstUpdate?1:Math.min(1,floorEase+dt/FLOOR_SIT.ease);}
+   else floorEase=Math.max(0,floorEase-dt/FLOOR_SIT.ease);
+   if(floorEase>0&&(!onFloor||floorEase<1))s={...s,seated:true,seatHeight:floorSeat.seatHeight,floorHeight:floorSeat.floorHeight,chairBlend:floorEase};
+  }else floorEase=0;
+  firstUpdate=false;
   const action=gesture?.name||s.pose||s.seat;avatar.setOpenHands?.(false);   // always mitten hands (the creator): never fingers, in any move
   const eating=['Eat','EatStanding','SitEat'].includes(action),drinking=['Drink','DrinkStanding','DrinkHip','SitDrink','SitDrinkHip','SitToast'].includes(action);
   if(eating||drinking){
@@ -347,7 +578,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   }else{consumption=null;consumeTime=0;}
   lastConsume=action;
   for(const j of JOINTS)target[j].set(0,0,0);
-  let targetRoot=0,targetHips=0,targetLean=0;
+  let targetRoot=0,targetHips=0,targetLean=0;floorSit=0;
   const chairBlend=Number.isFinite(s.chairBlend)?THREE.MathUtils.clamp(s.chairBlend,0,1):(s.seated?1:0);
   const onChair=chairBlend>0||s.seated;
   const speed=s.speed||0,moving=speed>.08&&!s.seated&&!s.riding;
@@ -364,18 +595,21 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    set('shoulderL',-1.15,0,.18);set('shoulderR',-1.15,0,-.18);set('elbowL',-.35);set('elbowR',-.35);
   }else if(onChair){
    const soak=s.seat==='Soak'||s.pose==='Soak';
-   targetRoot=(Number.isFinite(s.seatHeight)?s.seatHeight:.45)-m.hipY+m.seatDrop;
+   const seatH=Number.isFinite(s.seatHeight)?s.seatHeight:.45;
+   targetRoot=seatH-m.hipY+m.seatDrop;
    set('thighL',-1.52,0,.06);set('thighR',-1.52,0,-.06);set('kneeL',1.45);set('kneeR',1.45);
-   // On cushions and low benches, extend the shins instead of driving the
-   // shoes through the floor. Higher stools let the short legs hang naturally.
-   const ankle=(Number.isFinite(s.seatHeight)?s.seatHeight:.45)+m.seatDrop-m.thigh*Math.cos(1.52)-(s.floorHeight||0)-m.foot-m.legR*.28;
-   if(!soak&&ankle<m.shin*Math.cos(.07)){
-    const shinAngle=-Math.acos(THREE.MathUtils.clamp(ankle/m.shin,0,1));
-    set('kneeL',1.52+shinAngle);set('kneeR',1.52+shinAngle);
-    set('footL',-shinAngle);set('footR',-shinAngle);
-   }
-   // Rest beside the thighs; task poses lift only the arms they need.
+   // On low stools and benches, extend the shins instead of driving the shoes through the floor (the feet flat, pointing
+   // `flex` down); lower still, a cushion or the floor itself, sit the way a small child does (FLOOR_SIT). Higher stools
+   // let the short legs hang naturally.
+   const ankle=seatH+m.seatDrop-m.thigh*Math.cos(1.52)-(s.floorHeight||0)-m.foot-m.legR*.28;
+   const flex=!soak&&ankle<m.shin*Math.cos(.07)?Math.acos(THREE.MathUtils.clamp(ankle/m.shin,0,1)):0;
+   if(flex>0){set('kneeL',1.52-flex);set('kneeR',1.52-flex);set('footL',flex);set('footR',flex);}
+   floorSit=soak?0:floorWeight(s);
+   // Rest beside the thighs (on the floor, on them); task poses lift only the arms they need.
    set('shoulderL',-.10,0,.13);set('shoulderR',-.10,0,-.13);set('elbowL',-.15);set('elbowR',-.15);
+   if(floorSit>0){const F=floorShape(seatH-(s.floorHeight||0)),A=F.hands();
+    for(const j of LEG_JOINTS)target[j].lerp(_pose.set(...F.joints[j]),floorSit);add('chest',FLOOR_SIT.lean*floorSit);
+    if(A){armTo('R',A.R,floorSit,A.handR);armTo('L',A.L,floorSit,A.handL);}}
    add('chest',Math.sin(time*1.5)*.02);
    const pose=s.pose;
    if(s.driving){set('shoulderL',-.95,0,.12);set('shoulderR',-.95,0,-.12);set('elbowL',-.65);set('elbowR',-.65);set('head',-.06);}
@@ -509,9 +743,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   // a second, and out over half a second once it is not (a new one comes in when the old one is out).
   const named=STORY_POSES.has(s.pose)&&gesture?.name!==s.pose?s.pose:null;
   if(named&&!posed)posed={name:named,t:0,d:Infinity,ramp:0};
-  if(posed){const on=posed.name===named;posed.ramp=THREE.MathUtils.clamp(posed.ramp+(on?dt:-dt)/.5,0,1);posed.t+=dt;
+  if(posed){const on=posed.name===named;posed.ramp=THREE.MathUtils.clamp(posed.ramp+(on?dt:-dt)/(RAMP_TIME[posed.name]||.5),0,1);posed.t+=dt;
    if(!on&&posed.ramp===0)posed=named?{name:named,t:0,d:Infinity,ramp:0}:null;}
-  wrap=0;reading=0;basketWanted=false;
+  wrap=0;reading=0;basketWanted=false;plankWanted=0;
   const crabbing=gesture?.name==='CrabWalk'||posed?.name==='CrabWalk';
   if(crabbing){
    // which way he is moved (along his own left, the body's +x), unless the scene says (s.crab)
@@ -602,11 +836,19 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   }
   // Ease every joint toward where it is going.
   if(onChair&&chairBlend<1){
-   for(const j of ['thighL','kneeL','footL','thighR','kneeR','footR'])target[j].multiplyScalar(chairBlend);
+   if(floorSit>0){
+    // onto the floor: down through a squat, then back onto the bottom with the legs going out in front (and the same back up)
+    const Q=FLOOR_SIT.squat,down=smooth(chairBlend/Q.at),out=smooth((chairBlend-Q.at)/(1-Q.at));
+    for(const [j,x,z] of [['thighL',Q.thigh,Q.spread],['kneeL',Q.knee,0],['footL',Q.foot,0],['thighR',Q.thigh,-Q.spread],['kneeR',Q.knee,0],['footR',Q.foot,0]]){
+     const sat=target[j].clone();target[j].set(x*down,0,z*down).lerp(sat,out);}
+   }else for(const j of ['thighL','kneeL','footL','thighR','kneeR','footR'])target[j].multiplyScalar(chairBlend);
    targetRoot*=chairBlend;
   }
   const k=1-Math.exp(-dt*14);
-  for(const j of JOINTS){current[j].lerp(target[j],k);bones[j].rotation.set(current[j].x,current[j].y,current[j].z);}
+  // (getting down onto the floor or up from it, the legs keep exactly to the way down, which is eased already: so they are in
+  // their shape on the floor the moment the bottom is)
+  const legsOnTheWay=onChair&&chairBlend<1&&floorSit>0;
+  for(const j of JOINTS){if(legsOnTheWay&&LEG_JOINTS.includes(j))current[j].copy(target[j]);else current[j].lerp(target[j],k);bones[j].rotation.set(current[j].x,current[j].y,current[j].z);}
   rootY+=(targetRoot-rootY)*(s.seated||s.riding?1-Math.exp(-dt*9):k);hipsY+=(targetHips-hipsY)*k;lean+=(targetLean-lean)*k;
   if(s.riding)rootY=targetRoot;
   avatar.root.position.x=s.riding?0:driftX;
@@ -619,16 +861,23 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    bones.head.rotation.x+=drinkHeadTilt(s.heldProp,consumption.lift,consumption.food);
    poseAvatarConsumption(avatar,consumption.lift,consumption.food,s.heldProp);
   }
+  avatar.seatLevel=null;
   if(onChair&&!s.riding){
    // Keep sit/stand transitions continuous and use the actual clothing surface
    // as the contact point. Camera eye height never determines this support.
    if(chairBlend<1){
     groundFeet(s.floorHeight||0);const standingY=avatar.root.position.y;
     supportSeat(Number.isFinite(s.seatHeight)?s.seatHeight:.45);
-    avatar.root.position.y=THREE.MathUtils.lerp(standingY,avatar.root.position.y,chairBlend);
+    // (onto the floor, the body is as low as the planted feet let it be, through the squat and back onto the bottom: neither
+    // the feet nor the bottom ever below the floor)
+    avatar.root.position.y=floorSit>0?Math.max(standingY,avatar.root.position.y):THREE.MathUtils.lerp(standingY,avatar.root.position.y,chairBlend);
    }else supportSeat(Number.isFinite(s.seatHeight)?s.seatHeight:.45);
+   // Sat on the floor, the heels rest on it, and nothing of the feet goes through it on the way down or up.
+   if(floorSit>0)heelsOnFloor(Number.isFinite(s.seatHeight)?s.seatHeight:.45,s.floorHeight||0,smooth((chairBlend-.8)/.2),chairBlend>=1);
+   // where the seat is under the body, in its own frame: what it sits on keeps its cloth (towel-fit.js) on it
+   avatar.seatLevel=chairBlend<1?null:(Number.isFinite(s.seatHeight)?s.seatHeight:.45)-avatar.root.position.y;
   }else if(!s.riding&&!s.sleeping&&!lie){
-   groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)});
+   groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)||!!FUN_POSES[gesture?.name]?.airborne});
    // Kneeling rests on the knees as well as the toes: nothing on the body (a boot's leg, a knee in thick cloth) goes
    // below the floor; whichever is lowest touches it.
    if(kneel>0){const up=groundLying(s.floorHeight||0);if(up>0)avatar.root.position.y+=up;}
@@ -652,6 +901,15 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    }
    lyingTilt=l>0;
   }
+  // Carried like a plank (CarriedPlank): tipped back about the hips onto the back, level, the hips staying over the mark,
+  // and lifted until the underside of the body is at the carriers' mittens (CARRY.under above the floor), all of it eased in
+  // with the move. (Where the underside would be is found with the body laid fully down, then put back as it is now.)
+  if(plankWanted>0&&!lie){
+   const W=plankWanted,th=Math.PI/2*W,standY=avatar.root.position.y,h=bones.hips.position.y,R=avatar.root;
+   R.rotation.x=Math.PI/2;R.position.y=0;R.position.z=-h;const low=findUnderside();
+   const plankY=(s.floorHeight||0)+CARRY.under-low;
+   R.rotation.x=th;R.position.y=THREE.MathUtils.lerp(standY,plankY,W);R.position.z=-h*Math.sin(th);plankTilt=true;
+  }else if(plankTilt&&!lie){avatar.root.rotation.x=0;plankTilt=false;}
   storyAfter(dt,s);
   // The face: blinks, words, glances, and whatever it is feeling.
   blinkIn-=dt;if(blinkIn<=0&&blinkT<0){blinkT=0;blinkIn=1.8+Math.random()*3.8;}
@@ -662,6 +920,71 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   avatar.paintFace({expression:face,blink,talk:talkOpen,look:s.look||(headToW>.5?[0,0]:null)||eyes||gestureEyes||(face==='thinking'?[1,-1]:glance)});
  }
 
+ /**
+  * The floor sit's shape for this body as it is dressed, on a seat `h` above the floor (0: the floor itself): how far the
+  * thighs rise (`a`) so the heels rest on the floor while the bottom rests on the seat (found with the body put in the shape
+  * for a moment, then put back), its joints, and where the mittens lie on the thighs (worked out once, then kept).
+  */
+ const floorShapes=new Map();
+ function floorShape(h){
+  const key=avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible).map(o=>o.uuid).join('/')+'|'+h.toFixed(3);
+  if(floorShapes.has(key))return floorShapes.get(key);
+  const root=avatar.root,saved=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3)),y0=root.position.y;
+  // the heels' height over the floor with the bottom on the seat, for thighs raised by a and knees bent by k
+  const over=(a,k)=>{const J=floorJoints(a,k);JOINTS.forEach(j=>bones[j].rotation.set(...(J[j]||[0,0,0])));root.updateMatrixWorld(true);
+   supportSeat(0);const bottom=-root.position.y,S=findSoles();return Math.min(S.L.y,S.R.y)-bottom+h;};
+  // the thighs as high as the heels need (no lower than level: on a cushion they lie on it), then the knees bent to bring
+  // the heels down to the floor
+  let lo=0,hi=.9;for(let i=0;i<32;i++){const mid=(lo+hi)/2;if(over(mid,FLOOR_SIT.knee)<0)lo=mid;else hi=mid;}
+  const a=(lo+hi)/2;let knee=FLOOR_SIT.knee;
+  if(over(0,knee)>1e-4){let k0=knee,k1=FLOOR_SIT.bend;for(let i=0;i<32;i++){const mid=(k0+k1)/2;if(over(0,mid)>0)k0=mid;else k1=mid;}knee=(k0+k1)/2;}
+  const joints=floorJoints(a,knee);
+  // where the bottom rests (the seat, or the floor), in the body's frame with it sat there
+  JOINTS.forEach(j=>bones[j].rotation.set(...(joints[j]||[0,0,0])));root.updateMatrixWorld(true);supportSeat(0);const rest=-root.position.y;
+  // where on the thighs the mittens rest: as far toward the knees as `hands`, nearer the hips for arms too short for that
+  const place=f=>[-m.hipX,m.hipY-m.thigh*f,m.legR*1.15+m.hand*.85],reachArm=(m.upper+m.fore+m.hand*.55)*.97;
+  const put=J=>{JOINTS.forEach(j=>bones[j].rotation.set(...(J[j]||[0,0,0])));root.updateMatrixWorld(true);};
+  put({});const local=[1,.85,.7,.55,.4].map(u=>u*FLOOR_SIT.hands).map(f=>[f,bones.thighR.worldToLocal(root.localToWorld(new THREE.Vector3(...place(f))))]);
+  // (measured in the body's own frame: a scene may have scaled it)
+  put(joints);const inBody=p=>root.worldToLocal(p),shoulder=inBody(bones.shoulderR.getWorldPosition(new THREE.Vector3()));
+  const along=(local.find(([,v])=>inBody(bones.thighR.localToWorld(v.clone())).distanceTo(shoulder)<=reachArm)||local.at(-1))[0];
+  JOINTS.forEach((j,i)=>bones[j].rotation.set(...saved[i]));root.position.y=y0;root.updateMatrixWorld(true);
+  // (a body whose mittens cannot lie on its thighs, short arms over a round body, puts them down beside its hips instead,
+  // on what it sits on, the ends of the mittens on it)
+  let hands;
+  const shape={a,knee,joints,hands:()=>{if(hands!==undefined)return hands;
+   const A=reachFor('FloorSit:'+a.toFixed(3)+':'+knee.toFixed(3)+':'+along.toFixed(2),{pose:()=>joints,
+    R:{touch:true,on:['thighR',()=>place(along)],seed:[-.55,.1,-.1,-.5,0],hand:[-.3,0,0]}});
+   const was=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));put(joints);
+   bones.shoulderR.rotation.set(A.R[0],A.R[1],A.R[2]);bones.elbowR.rotation.set(A.R[3],A.R[4]||0,0);bones.handR.rotation.set(...(A.handR||[0,0,0]));root.updateMatrixWorld(true);
+   // how near the mitten's surface (TOUCH) comes to the thigh's
+   const q=new THREE.Vector3(),p=new THREE.Vector3(),thigh=new THREE.Line3(inBody(bones.thighR.getWorldPosition(new THREE.Vector3())),inBody(bones.kneeR.getWorldPosition(new THREE.Vector3())));
+   let off=Infinity;for(const t of TOUCH){inBody(bones.handR.localToWorld(p.set(t[0]*m.hand,t[1]*m.hand,t[2]*m.hand)));off=Math.min(off,thigh.closestPointToPoint(p,true,q).distanceTo(p)-m.legR*1.15);}
+   JOINTS.forEach((j,i)=>bones[j].rotation.set(...was[i]));root.updateMatrixWorld(true);
+   if(off<.012*m.k)return hands=A;
+   return hands=reachFor('FloorSitSide:'+a.toFixed(3)+':'+knee.toFixed(3),{pose:()=>joints,
+    R:{root:[-(m.hipX+m.legR*1.15+m.hand*.9+FLOOR_SIT.side*m.k),rest+m.hand*1.1,-FLOOR_SIT.behind*m.k],seed:[.1,0,-.2,-.15,0],hand:[0,0,0]}});}};
+  floorShapes.set(key,shape);return shape;
+ }
+ /**
+  * After the seat has the body: each foot's lowest point (the back of the heel) on the floor. Below it (sitting down onto
+  * it, or a move under way), the thigh turns up at the hip and lifts it out; above it, the knee bends and lowers it onto the
+  * floor, as far as `settle` (1 once sat), so a heel neither floats nor sinks and a thigh never dips into what it sits on.
+  * The seat is found again after (`reseat`: once sat, not while sitting down), as the thighs carry the bottom too.
+  */
+ function heelsOnFloor(seat,floor,settle,reseat){
+  const root=avatar.root,at=new THREE.Vector3();
+  for(let pass=0;pass<3;pass++){
+   const S=findSoles();let moved=false;
+   for(const side of ['L','R']){const o=S[side];if(!Number.isFinite(o.y))continue;
+    const gap=floor-(root.position.y+o.y),want=gap>0?gap:gap*settle;if(Math.abs(want)<1e-4)continue;
+    // (the joint turns it by its lever: how far ahead of the joint the heel is; a knee over a heel cannot lower it)
+    const joint=bones[(gap>0?'thigh':'knee')+side];root.worldToLocal(joint.getWorldPosition(at));const lever=o.z-at.z;
+    if(gap<0&&lever<m.shin*.5)continue;
+    joint.rotation.x-=THREE.MathUtils.clamp(want/Math.max(.05*m.k,lever),-.08,.08);joint.updateMatrixWorld(true);moved=true;}
+   if(!moved)break;if(reseat)supportSeat(seat);
+  }
+ }
  /**
   * Heartbreak at the dead chair (KneelHug, 3a): down on the knees (and the tucked toes) in front of the seat, leaning over
   * it from the hips, the head laid on its right cheek with the face turned to his left, the right forearm along the seat
@@ -743,6 +1066,8 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const across=_c.subVectors(mL,mR),dist=across.length();across.normalize();
    const a=paper.userData.paper.setSpread(Math.min(dist/2,PAPER.leaf)),away=new THREE.Vector3(0,0,1).addScaledVector(across,-across.z).normalize();
    const up=new THREE.Vector3().crossVectors(away,across);
+   // tilted back, its top away from him, the way a paper is read over the lap
+   const tilt=SIT_READ.tilt*reading,c0=Math.cos(tilt),s0=Math.sin(tilt),up2=up.clone().multiplyScalar(c0).addScaledVector(away,s0);away.multiplyScalar(c0).addScaledVector(up,-s0);up.copy(up2);
    paper.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(across,up,away));
    const edge=new THREE.Vector3(-PAPER.leaf*Math.cos(a),-.07*m.k,-PAPER.leaf*Math.sin(a)).applyQuaternion(paper.quaternion);
    paper.position.copy(mR).sub(edge);
@@ -763,6 +1088,8 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const at=_b.copy(lastHeadTo);if(Number.isNaN(at.y))at.y=centre.y;
    const dir=at.sub(centre).normalize().applyQuaternion(bones.neck.getWorldQuaternion(_qa).invert());
    const face=_c.set(0,0,1).applyQuaternion(head.quaternion);
+   // carried stiff as a plank, the head only turns, neither nodding nor going back (nothing of him bends: CarriedPlank)
+   if(plankWanted>0){const up=new THREE.Vector3(0,1,0).applyQuaternion(head.quaternion);dir.addScaledVector(up,face.dot(up)-dir.dot(up));if(dir.lengthSq()<1e-6)dir.copy(face);dir.normalize();}
    // with a tenugui round the neck the head turns but does not go back further (the back of the head would come down on it)
    if(TENUGUI_OUTFITS.has(avatar.outfit)){const up=new THREE.Vector3(0,1,0).applyQuaternion(head.quaternion),over=dir.dot(up)-face.dot(up);if(over>0)dir.addScaledVector(up,-over).normalize();}
    const turn=new THREE.Quaternion().setFromUnitVectors(face,dir);
@@ -787,7 +1114,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   // the moves for Fujita's Ten Minutes of Heaven come in smoothly over half a second (big ones slower); a pose the scene
   // names comes in and goes out on its own ramp
   const raw=g.ramp!==undefined?g.ramp:THREE.MathUtils.clamp(Math.min(t/.5,d===Infinity?1:(d-t)/.5),0,1);
-  const w=g.ramp!==undefined?smooth(g.ramp):inOut(t,d,.5),soak=s.seat==='Soak'||s.pose==='Soak';
+  const w=g.ramp!==undefined?smooth(g.ramp):inOut(t,d,...[RAMP_TIME[g.name]||FUN_POSES[g.name]?.ramp||.5].flat()),soak=s.seat==='Soak'||s.pose==='Soak';
   switch(g.name){
    case 'Wave':set('shoulderR',-.2,0,-2.55*q);set('elbowR',0,0,-.45+Math.sin(t*10)*.45*q);add('head',0,0,.08*q);break;
    case 'Bow':add('chest',.95*e*bowDepth);add('spine',.25*e*bowDepth);add('head',.2*e*bowDepth);set('shoulderL',.1,0,.05);set('shoulderR',.1,0,-.05);break;
@@ -1052,13 +1379,24 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     break;}
    // Carrying a person like a piece of furniture (8a–8d): both mittens forward under the load at the height of the hips,
    // palms up, the back straight and a little back, the knees bent ("Lift with your legs"); it walks.
-   case 'CarryFurniture':{const A=reachFor('CarryFurniture'),strain=Math.sin(t*17)*.008;
-    armTo('R',[A.R[0]+strain,...A.R.slice(1)],w,A.handR);armTo('L',[A.L[0]-strain,...A.L.slice(1)],w,A.handL);add('chest',-.04*w);add('head',-.04*w);
+   // Under a man carried like a plank (CarriedPlank), the mittens' tops at his underside: CarryFurniture under his body,
+   // CarryLegs under his legs (CARRY). It walks: the step goes on under the arms.
+   case 'CarryFurniture':case 'CarryLegs':{const A=reachFor(g.name),J=carryJoints(),strain=Math.sin(t*17)*.004;
+    armTo('R',[A.R[0]+strain,...A.R.slice(1)],w,A.handR);armTo('L',[A.L[0]-strain,...A.L.slice(1)],w,A.handL);toward('chest',...J.chest,w);add('head',.06*w);
     // leaning in a little from the hips with a straight back, the knees well bent (walking, the step goes on under it)
-    if(!seated){const lean=.1,walk=(s.speed||0)>.08;toward('hips',lean,0,0,w);
-     if(walk){add('thighL',-lean*w);add('thighR',-lean*w);}
-     else for(const [j,v] of [['thigh',-.32-lean],['knee',.64],['foot',-.32]]){toward(j+'L',v,0,j==='thigh'?.07:j==='foot'?-.07:0,w);toward(j+'R',v,0,j==='thigh'?-.07:j==='foot'?.07:0,w);}}
-    break;}
+    if(!seated){const walk=(s.speed||0)>.08;toward('hips',...J.hips,w);
+     if(walk){add('thighL',-CARRY.lean*w);add('thighR',-CARRY.lean*w);}
+     else for(const j of ['thighL','kneeL','footL','thighR','kneeR','footR'])toward(j,...J[j],w);}
+    return {eyes:[0,.45]};}
+   // Carried stiff as a plank (8a–8d): on his back and level at the carriers' waist (the body is laid down and lifted in
+   // update(), from `plank`), rigid: the back straight, the legs straight and together, the mittens folded on his belly, the
+   // head turned to one side so the face shows (headTo turns it elsewhere). Nothing moves but the face.
+   case 'CarriedPlank':{const P=PLANK,A=reachFor('PlankHands');
+    for(const j of ['hips','spine','chest'])toward(j,0,0,0,w);
+    toward('neck',0,P.turn*P.neck,0,w);toward('head',0,P.turn*(1-P.neck),0,w);
+    for(const [side,k] of [['L',1],['R',-1]]){toward('thigh'+side,0,0,k*P.spread,w);toward('knee'+side,0,0,0,w);toward('foot'+side,0,0,-k*P.spread,w);}
+    armTo('R',A.R,w,A.handR);armTo('L',A.L,w,A.handL);
+    plankWanted=Math.max(plankWanted,w);return {legs:true};}
    // Wound up in her dryer's cord like a parcel (6d, 7a, 7b, 7e): the arms pinned straight down her sides first, then the cord
    // round her and them (storyAfter); the body held still (a laugh moves only her head), the feet together.
    case 'CordWrapped':{const pin=smooth(Math.min(1,raw/.4));
@@ -1071,14 +1409,30 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    case 'BasketHead':{const p=Math.sin(t*1.5),r=Math.sin(t*2.1+1);
     armTo('R',[-1.28+p*.1,.12,-.12,-.32+r*.12],w);armTo('L',[-1.28-p*.1,.12,-.12,-.32-r*.12],w);
     add('chest',.05*w);add('head',(.06+Math.sin(t*.8)*.03)*w,Math.sin(t*.6)*.12*w,.14*w);basketWanted=true;break;}
-   // Reading the evening paper after his bath (3a, 3f, 4a, 5a; seated on the koagari edge): held open in both mittens before
-   // the chest (storyAfter places it), the head bent over it; a Nod lowers it to look over it, nods, and brings it back up.
-   case 'SitRead':{const nod=gesture?.name==='Nod'?env(gesture.t,gesture.d):0,A=reachFor('SitRead'),low=[.42,0,0,.3,0];
-    armTo('R',A.R.map((v,i)=>v+low[i]*nod),w,A.handR);armTo('L',A.L.map((v,i)=>v+low[i]*nod),w,A.handL);
-    add('head',(.24-.34*nod)*w);reading=Math.max(reading,w);return {eyes:[0,.7*(1-nod)]};}
+   // Reading the evening paper after his bath (3a, 3f, 4a, 5a; seated on the koagari edge): held open in both mittens low over
+   // his lap (SIT_READ; storyAfter places it), so the torch on his pocket shows, the head bent over it; a Nod lifts the head
+   // off it to look at someone, nods, and goes back to it.
+   case 'SitRead':{const nod=gesture?.name==='Nod'?env(gesture.t,gesture.d):0,A=reachFor('SitRead');
+    armTo('R',A.R,w,A.handR);armTo('L',A.L,w,A.handL);
+    // a Nod brings the head up off the paper to look at someone (the Nod's own dip goes on over it); the paper stays in the lap
+    add('head',(SIT_READ.down-(SIT_READ.down+.12)*nod)*w);reading=Math.max(reading,w);return {eyes:[0,.85*(1-nod)]};}
+   // Putting the contract breaker back up without looking (6c, 7a; seated on her stool at the bandai): the chest turns toward
+   // the wall and leans over her book, the left arm goes out to the side and up behind the head (reachBackPath), the end of
+   // the mitten comes to the lever from above and behind her hair and pushes it up (0.2 s, once it is there: REACH_BACK.reach),
+   // and holds it; the head turns back and stays down, the eyes on the account book in the right mitten. Back the same way:
+   // over REACH_BACK.out at the end, or as the pose is let go.
+   case 'ReachBack':{const R=REACH_BACK,A=reachBack(g,s),named=g.ramp!==undefined,r=named?w:inOut(t,d,.6,R.out);
+    const p=Math.min(t/R.reach,named?g.ramp:(d-t)/R.out,1),push=smooth((t-R.reach)/.2)*smooth((p-.8)/.2);
+    const a=mix(reachBackPath(A,Math.max(0,p)),A.up.L,push),wa=smooth(p/.22);
+    toward('shoulderL',a[0],-a[1],-a[2],wa);toward('elbowL',a[3],-(a[4]||0),0,wa);toward('handL',0,0,0,wa);
+    armTo('R',[-.42,.66,-.03,-1.49],w);toward('chest',R.lean,R.twist,0,r);add('head',R.down*w,-R.twist*.9*r,0);return {eyes:[0,.85]};}
    // The torch (6f, 7a, 7d): the arm is torchArm's; the body stands easy and calm.
    case 'TorchUp':add('chest',.02*w);break;
    case 'TorchOff':add('head',.05*w);break;
+   // The funny poses (fun-poses.js): each writes its own body; a hand to the head is placed on this body's own head (REACH,
+   // the pose's `reach`). Seated, the seat keeps the legs and the bottom where they are (update()).
+   default:{const F=FUN_POSES[g.name];if(!F)break;
+    return F.play({t,d,w,q,e,m,seated,set,add,toward,armTo,reach:()=>reachFor('Fun:'+g.name,F.reach)})||null;}
   }
   return null;
  }

@@ -1,7 +1,7 @@
 import {svg} from '../ui/icons.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar} from '../avatars/build.js';
-import {createAvatarAnimator,GESTURES} from '../avatars/animate.js';
+import {createAvatarAnimator,GESTURES,FUN_POSES} from '../avatars/animate.js';
 import {CAST_RECIPES,recipeFor} from '../avatars/cast.js';
 import {playerRecipe} from '../avatars/actors.js';
 import {CAST_LIMIT,PHOTO_LIMIT,FORMATS,POSES,EXPRESSIONS,cleanCaption,frameSize,comicLayout,drawCaptions} from './layout.js';
@@ -19,7 +19,8 @@ const PATTERNS=['none','stripes','dots','flowers'];
 
 // Wardrobe fields are named wear* so they never collide with the caption fields.
 const WARDROBE=['top','pattern','bottom','footwear','hat'],wear=n=>'wear'+n[0].toUpperCase()+n.slice(1);
-const POSE_LABELS={Kachashi:'Dance',Tada:'Ta-da!',HandsOnHips:'Hands on hips',HeelKick:'Heel kick',CheekRest:'Hand on cheek',DoubleCheek:'Both cheeks'};
+const POSE_LABELS={Kachashi:'Dance',Tada:'Ta-da!',HandsOnHips:'Hands on hips',HeelKick:'Heel kick',CheekRest:'Hand on cheek',DoubleCheek:'Both cheeks',
+ ...Object.fromEntries(Object.entries(FUN_POSES).map(([name,p])=>[name,p.label]))};
 
 export function poseStudioActor(actor){
  const animator=createAvatarAnimator(actor.avatar),duration=GESTURES[actor.pose],time=Number.isFinite(duration)?duration*.43:.7;

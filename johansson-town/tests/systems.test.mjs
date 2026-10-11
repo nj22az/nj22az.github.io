@@ -25,7 +25,7 @@ const sites=()=>['office','frontrow','form3d','stepwise','journal','electronics'
 const build=()=>{installDOM();const anchors=[],all=sites(),world=createTown({scene:new THREE.Scene(),sites:all,mobile:true,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});createContentItems({group:world.group,colliders:world.colliders,register:(o,label,fn)=>anchors.push({o,label,fn}),onInspect(){},onRead(){}});return {world,anchors,all};};
 
 test('ground, pier edges and A/D coordinate convention',()=>{
- assert.equal(townBoundsBlocked(0,-62,.28),false);assert.equal(townBoundsBlocked(4.1,-62,.28),true);assert.equal(townBoundsBlocked(0,-65.2,.28),true);
+ assert.equal(townBoundsBlocked(0,-62,.28),false);assert.equal(townBoundsBlocked(4.1,-62,.28),true);assert.equal(townBoundsBlocked(0,-86.9,.28),false);assert.equal(townBoundsBlocked(0,-87.2,.28),true);
  // activeRoutes rather than ROUTES: a route the current mode does not build has no
  // ground under it by design -- the staff path round the back of the shop exists only
  // where the west yard does. the island's own tests walk that one.

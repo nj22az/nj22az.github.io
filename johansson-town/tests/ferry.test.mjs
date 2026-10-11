@@ -7,6 +7,7 @@ import {FERRY_RAMP} from '../src/world/ferry-model.js';
 import {SEA_LEVEL} from '../src/world/ocean.js';
 import {HARBOUR_LINE,BUS_DWELL} from '../src/people/commuter-schedule.js';
 import {OUTER_PIER,BREAKWATER,routeAt} from '../src/world/layout.js';
+import {MINATO_BERTH} from '../src/world/minato-berth.js';
 import {transitStop} from '../src/world/transit.js';
 import {BUS_STATION} from '../src/world/bus-station.js';
 import {chooseOpening} from '../src/world/openings.js';
@@ -26,6 +27,9 @@ test('the ferry lies alongside the pier for each sailing, boarded from the pier 
  for(const s of alongside){assert.ok(Math.abs(s.x-FERRY_BERTH.x)<.01&&Math.abs(s.z-FERRY_BERTH.z)<.01);}
  // Beside the pier, not in it: the hull stops short of the pier's west flank and the quay.
  assert.ok(FERRY_BERTH.x+FERRY.beam/2<OUTER_PIER.x-OUTER_PIER.width/2);
+ // She lies on the berth's fenders (minato-berth.js), her side on their faces.
+ assert.ok(Math.abs(FERRY_BERTH.x+FERRY.beam/2-MINATO_BERTH.line)<.005,'She does not lie on the fenders');
+ const F=MINATO_BERTH.fenders;assert.ok(F.z.filter(z=>z<FERRY_BERTH.z+FERRY.length/2&&z>FERRY_BERTH.z-FERRY.length/2).length>=4,'Too few fenders along her side');
  assert.ok(FERRY_BERTH.z+FERRY.length/2< -50,'The bow runs into the quay wall');
  // Her gangway lands on the pier, short of its end.
  assert.ok(FERRY_BERTH.gangwayZ>OUTER_PIER.z-OUTER_PIER.length/2+.5);
@@ -45,12 +49,14 @@ const inRect=([px,pz],x0,x1,z0,z1,m=0)=>px>x0-m&&px<x1+m&&pz>z0-m&&pz<z1+m;
 
 test('it comes in round the breakwater, never through it, and keeps every part of the hull off the pier and the quay',()=>{
  const {seen}=run(HARBOUR_LINE[1]-80,HARBOUR_LINE[1]+BUS_DWELL+80,1/20);
- const pierW=OUTER_PIER.x-OUTER_PIER.width/2,pierE=OUTER_PIER.x+OUTER_PIER.width/2,pierS=OUTER_PIER.z-OUTER_PIER.length/2,pierN=OUTER_PIER.z+OUTER_PIER.length/2;
+ const pierW=OUTER_PIER.x-OUTER_PIER.width/2,pierE=OUTER_PIER.x+OUTER_PIER.width/2,pierS=OUTER_PIER.z-OUTER_PIER.length/2,pierN=OUTER_PIER.z+OUTER_PIER.length/2,F=MINATO_BERTH.fenders;
  for(const s of seen.filter(s=>s.visible))for(const p of hullPoints(s)){
   // The breakwater: a 68 m wall across the harbour mouth, 4 m thick (at z -106 since batch 3); a metre of water kept off it.
   assert.ok(!inRect(p,BREAKWATER.minX,BREAKWATER.maxX,BREAKWATER.z-2,BREAKWATER.z+2,1),'Hull within a metre of the breakwater at '+p.map(v=>v.toFixed(1)));
   // The outer pier and the second pier, its arm and Mr Fujita's houseboat beside it.
   assert.ok(!inRect(p,pierW,pierE,pierS,pierN,.1),'Hull touches the outer pier at '+p.map(v=>v.toFixed(1)));
+  // Nor into its fenders: she lies on their faces alongside, and comes off them as she backs out.
+  assert.ok(!inRect(p,MINATO_BERTH.line,pierW,F.z.at(-1)-F.base/2,F.z[0]+F.base/2,-.005),'Hull into the fenders at '+p.map(v=>v.toFixed(2)));
   assert.ok(!inRect(p,-38.3,-33.7,-64.3,-44,1),'Hull touches the second pier at '+p.map(v=>v.toFixed(1)));
   assert.ok(!inRect(p,-38.3,-23.7,-64.3,-59.7,1),'Hull touches the second pier’s arm at '+p.map(v=>v.toFixed(1)));
   assert.ok(!inRect(p,-42.05,-38.95,-59.9,-53.1,1),'Hull touches the houseboat at '+p.map(v=>v.toFixed(1)));

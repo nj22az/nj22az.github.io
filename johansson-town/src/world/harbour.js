@@ -10,6 +10,7 @@ import {buildBicycle} from './bicycle.js';
 import {buildBoardwalk} from './boardwalk.js?snappy=1';
 import {buildWarehouse} from './warehouse.js';
 import {BOARDWALK,BREAKWATER} from './layout.js?snappy=1';
+import {MINATO_BERTH,QUAY_FISHING_BOAT} from './minato-berth.js';
 import {MAIN_ROAD,MAIN_SERVICE_COURT,MAIN_LOADING_APRON,MAIN_PARKING_LAYBY,SHOP_CROSSING_Z} from './main-road.js';
 import {edgeLines,zebraCrossing,tactileStrip,roadSign,roadEndPosts} from './road-standards.js';
 import {buildStreetLamps,STREET_LAMP_PLACEMENTS} from './street-lamps.js';
@@ -256,8 +257,12 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // the road slab that crosses it so the two never share a plane. It stood 9.5 cm proud,
   // so everybody on the quay walked ankle-deep in the concrete.
   box([38,.4,12],[0,-.216,-44],GROUND.concrete,[0,0,0],'wall');
-  box([38,.6,.65],[0,-.12,-49.65],0x596568);
-  box([38,.18,.55],[0,.19,-49.28],0x343f41);
+  // The raised coping and kerb along the edge, cut away where the ferry's ramp lands (minato-berth.js).
+  {const L=MINATO_BERTH.landing;
+   for(const [a,b] of [[-19,L.minX],[L.maxX,19]]){box([b-a,.6,.65],[(a+b)/2,-.12,-49.65],0x596568);box([b-a,.18,.55],[(a+b)/2,.19,-49.28],0x343f41);}
+   // The landing plate, laid flush: its top 4 mm above the concrete, a steel angle along the water's edge.
+   box([L.maxX-L.minX,.024,L.maxZ-L.minZ],[(L.minX+L.maxX)/2,-.024,(L.minZ+L.maxZ)/2],0x5e6566);
+   box([L.maxX-L.minX,.03,.08],[(L.minX+L.maxX)/2,-.02,L.minZ+.04],0x7d8584);}
 
   const sea=createHarbourBasin();sea.receiveShadow=false;group.add(sea);water.push(sea);
 
@@ -270,13 +275,14 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
     directCyl(.22,.48,[x,.35,z],0x2f3c3f,group,[0,0,0],true,12);directCyl(.31,.12,[x,.61,z],0x2f3c3f);obstacle(x,z,.48,.48);
   }
   // On the coping, as on any quay, not 1.2 m back from it where they closed the lane in front of the sheds.
-  [-15,-10,-5,5,10,15].forEach(x=>bollard(x,-49.3));
+  // (The one at x -10 moved 2.3 m west in 2026-10: the ferry's ramp landing is there now.)
+  [-15,MINATO_BERTH.quayBollard[0],-5,5,10,15].forEach(x=>bollard(x,-49.3));
 
   function ropeCoil(x,z,scale=1){
     const rm=material(0xa38a62);for(let i=0;i<3;i++){const t=directMesh(new THREE.TorusGeometry(.35*scale+i*.07,.045*scale,6,20),rm,group,[x,.18+i*.035,z],[Math.PI/2,0,(i%2)*.25],[1,1,1],false);t.castShadow=false;}
   }
   // The bow line's coil, by the bollard the Minato Maru's starboard bow line goes to.
-  ropeCoil(-10.1,-48.55,.9);
+  ropeCoil(MINATO_BERTH.quayBollard[0]-.1,-48.55,.9);
 
   function crateStack(x,z,cols=2,rows=2){
     const colors=[0x4f6f76,0xa9854e,0x6f805e];
@@ -307,7 +313,8 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const x of [-14,-7,0,7,14]){const tire=directMesh(new THREE.TorusGeometry(.42,.1,8,20),material(0x262d2e),group,[x,-.05,-49.76],[0,0,0]);tire.scale.set(1,.78,1);}
 
   // Rail only on far sides so the fishing position remains open and readable.
-  for(const start of [-17,8])for(let x=start;x<start+9;x+=2.25){cyl(.06,1,[x,.63,-49.05],0x4b5c60);if(x<start+7)beam([x,1.02,-49.05],[x+2.25,1.02,-49.05],.045,0x4b5c60);}
+  // The west one stops short of the bollard by the ramp's landing.
+  for(const [start,step,count] of [[-17,1.8,3],[8,2.25,4]])for(let i=0;i<count;i++){const x=start+i*step;cyl(.06,1,[x,.63,-49.05],0x4b5c60);if(i<count-1||start>0)beam([x,1.02,-49.05],[x+step,1.02,-49.05],.045,0x4b5c60);}
   // The quay's own board is gone too: it stood two and a half metres up on nothing at
   // all, in the middle of the one open view the town has of the water.
   anchor([0,1,-47.1],'Cast a fishing line',()=>onAction('fishing'));
@@ -316,8 +323,11 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   for(const x of [-17.8]){box([1.8,.14,.6],[x,.62,-43.2],0x8d7652,[0,0,0],'wood');for(const dx of [-.65,.65])box([.12,.6,.4],[x+dx,.31,-43.2],0x465355);obstacle(x,-43.2,1.9,.7);const seat=anchor([x,1,-44.1],'Sit on the quay bench',()=>onAction('seat','Quay bench','A place to rest while the boats come and go.'));seat.userData.seat={id:'quay-bench',position:[x,0,-43.2],stand:[x,0,-44.1],surfaceY:.69,eyeY:1.39,yaw:0,pitch:0};}
 
 
-  // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights.
-  const boat=new THREE.Group();boat.position.set(9,-.18,-56);boat.rotation.y=-.07;group.add(boat);
+  // Fishing boat with a tapered toon hull, cabin, life-ring, mast and working lights. She lay off the
+  // outer pier's east face; since the cargo boat berths there (batch 4b) she lies alongside the quay
+  // east of the pier, beside the east quay's boats, her lines to the quay bollards (minato-berth.js).
+  const QB=QUAY_FISHING_BOAT,boat=new THREE.Group();boat.position.set(QB.x,-.18,QB.z);boat.rotation.y=QB.yaw;group.add(boat);
+  {const ends=[QB.x-QB.length/2+.4,QB.x+QB.length/2-.4];for(const [i,[bx,bz]] of QB.bollards.entries())directBeam(group,[ends[i],.78,QB.z+QB.beam/2-.45],[bx,.6,bz],.022,0x6f6049);}
   directMesh(new THREE.CylinderGeometry(1.45,1.02,6.3,6,1,false),material(0x2f5360),boat,[0,0,0],[Math.PI/2,0,0],[1,1,.45],true);
   directBox([2.25,1.55,2.25],[0,1.05,.2],0xd4cfb8,boat,[0,0,0],true);directBox([2.3,.58,2.3],[0,1.48,.2],0x365b66,boat);directBox([2.45,.12,2.55],[0,1.86,.2],0x394b50,boat);
   directCyl(.06,3.0,[0,3.25,.55],0x454b49,boat);directBox([1.2,.06,.06],[0,4.05,.55],0x454b49,boat);directBeam(boat,[0,3.72,.56],[.72,4.45,.98],.018,0x30383a);

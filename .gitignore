@@ -15,3 +15,6 @@ sjoskolan/innehall/.skyddat/
 sjoskolan/innehall/bok/.bok/
 __pycache__/
 sjoskolan/vaxelstromslabbet-utkast/node_modules
+
+# Johansson Studio tool output (renders, scratch): never committed
+/output/studio-mcp/

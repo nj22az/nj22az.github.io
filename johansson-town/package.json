@@ -11,6 +11,10 @@
     "audit:visual:update": "node tools/visual-audit.mjs --update-baselines",
     "mcp:audit": "node tools/mcp/server.mjs",
     "audit:mcp": "node tools/mcp/smoke.mjs",
+    "mcp:studio": "node tools/studio/server.mjs",
+    "studio": "node tools/studio/cli.mjs",
+    "studio:data": "node tools/studio/build-data.mjs",
+    "studio:smoke": "node --test tools/studio/smoke.mjs",
     "build:runtime": "node scripts/build-runtime.mjs"
   },
   "devDependencies": {

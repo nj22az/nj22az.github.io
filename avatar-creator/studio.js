@@ -1,11 +1,12 @@
 import {openCreator} from '../johansson-town/src/avatars/creator.js';
-import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from '../johansson-town/src/avatars/cast.js';
+import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
 import {createSceneWorkspace} from './scene.js?v=20261011-2';
 
 // Independent of the town's player and all game save keys.
 const SAVE_KEY='nj-avatar-studio-v1';
-const templates=[['Johansson',CAST_RECIPES.Johansson],['Thuận',ORIGINAL_THUAN_RECIPE]];
+// Two starting points, then every resident of World as World draws them (with any look published from Studio).
+const templates=[['Johansson',CAST_RECIPES.Johansson],['Thuận',ORIGINAL_THUAN_RECIPE]],residents=RESIDENT_NAMES.map(n=>[n,recipeFor(n)]),choices=[...templates,...residents];
 const initialNote='';
 const status=document.createElement('span');status.className='studio-status';status.setAttribute('role','status');status.textContent=initialNote;
 let restored=null;
@@ -41,8 +42,9 @@ const titleObserver=new MutationObserver(()=>{if(!heading.querySelector('.studio
 const toolbar=document.createElement('div');toolbar.className='studio-tools';toolbar.setAttribute('role','group');toolbar.setAttribute('aria-label','Character files and templates');
 const label=document.createElement('label');label.textContent='Template';
 const select=document.createElement('select');select.setAttribute('aria-label','Starting template');
-select.append(new Option('Choose…',''),...templates.map(([name],i)=>new Option(name,String(i))));
-select.onchange=()=>{if(select.value==='')return;creator.setRecipe(templates[Number(select.value)][1]);status.textContent='Template loaded. Edit it, then save your character.';select.value='';};label.append(select);toolbar.append(label);
+const group=(label,list,from)=>{const g=document.createElement('optgroup');g.label=label;g.append(...list.map(([name],i)=>new Option(name,String(from+i))));return g;};
+select.append(new Option('Choose…',''),...templates.map(([name],i)=>new Option(name,String(i))),group('Residents of Johansson World',residents,templates.length));
+select.onchange=()=>{if(select.value==='')return;creator.setRecipe(choices[Number(select.value)][1]);status.textContent='Template loaded. Edit it, then save your character.';select.value='';};label.append(select);toolbar.append(label);
 const files=document.createElement('details');files.className='studio-files';
 const fileLabel=document.createElement('summary');fileLabel.textContent='Files';files.append(fileLabel);
 const fileMenu=document.createElement('div');fileMenu.className='studio-file-menu';files.append(fileMenu);
@@ -112,6 +114,8 @@ return {creator,cleanup};
 }
 
 switchMode('character',{focus:false});
+// For agents only (the johansson-studio MCP server's page): ?agent adds window.__JOHANSSON_STUDIO__ (studio-api.js).
+if(new URLSearchParams(location.search).has('agent'))import('./studio-api.js?v=20261011-1').catch(e=>console.warn('Johansson Studio: agent API',e));
 // The maker focuses its close button on open; on first load nothing should wear a focus ring until the user acts.
 requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=document.activeElement;if(a&&a!==document.body&&a.closest('.shm'))a.blur();}));
 window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();},{once:true});
