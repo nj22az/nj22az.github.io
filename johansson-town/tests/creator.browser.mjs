@@ -55,8 +55,18 @@ try{
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('accessories');else await page.getByRole('tab',{name:'Accessories',exact:true}).click();
   await page.getByRole('button',{name:'Hoops',exact:true}).click();assert.equal(await page.evaluate(()=>window.maker.recipe.accessories.earrings),'hoops');
   // The wardrobe: clothes come off down to the base layer, and go back on one at a time.
+  // The shirt number shows only for a numbered top (the Seagulls jersey), steps and can be typed, and comes off with it all.
+  if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('top');else await page.getByRole('tab',{name:'Top',exact:true}).click();
+  assert.equal(await page.getByRole('spinbutton',{name:'Shirt number',exact:true}).isVisible(),false,'no number on a top that carries none');
+  await page.getByRole('button',{name:'All',exact:true}).click();await page.getByRole('button',{name:'Seagulls jersey',exact:true}).click();
+  assert.deepEqual(await page.evaluate(()=>[maker.recipe.outfit.top,maker.recipe.outfit.topColour,maker.recipe.outfit.accent]),['baseball','#f4f1ea','#27304d'],'it goes on in its own colours');
+  await page.getByRole('spinbutton',{name:'Shirt number',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Higher shirt number',exact:true}).click();assert.equal(await page.evaluate(()=>maker.recipe.outfit.number),1);
+  await page.getByRole('spinbutton',{name:'Shirt number',exact:true}).fill('18');await page.getByRole('spinbutton',{name:'Shirt number',exact:true}).press('Enter');
+  assert.equal(await page.evaluate(()=>maker.recipe.outfit.number),18);
   await page.getByRole('button',{name:'Take all off',exact:true}).click();
-  assert.deepEqual(await page.evaluate(()=>{const o=window.maker.recipe.outfit;return [o.top,o.bottom,o.footwear,window.maker.recipe.accessories.earrings];}),['tank','underwear','barefoot','none']);
+  assert.deepEqual(await page.evaluate(()=>{const o=window.maker.recipe.outfit;return [o.top,o.bottom,o.footwear,window.maker.recipe.accessories.earrings,o.number];}),['tank','underwear','barefoot','none',0]);
+  assert.equal(await page.getByRole('spinbutton',{name:'Shirt number',exact:true}).isVisible(),false,'the number goes with the jersey');
   if(mobile)await page.getByRole('combobox',{name:'Appearance category',exact:true}).selectOption('shoes');else await page.getByRole('tab',{name:'Shoes',exact:true}).click();
   await page.getByRole('button',{name:'Sandals',exact:true}).click();assert.equal(await page.evaluate(()=>window.maker.recipe.outfit.footwear),'sandals');
   // The island's sets and costumes have their own tab.

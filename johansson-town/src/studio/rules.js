@@ -92,7 +92,8 @@ export function checkSchema(value,schema,where='change'){
 
 /**
  * One look field's value, checked: words from the maker's own lists, colours as #rrggbb (any case, stored lower
- * case), yes/no as true or false, numbers clamped to 0..1 (the clamp is reported, not refused).
+ * case), yes/no as true or false, numbers clamped to their range: 0..1, or a whole number 0..99 for the shirt number
+ * (the clamp is reported, not refused).
  * Returns {value, clamped?, problem?}.
  */
 export function lookValue(path,value,where=path){
@@ -110,9 +111,9 @@ export function lookValue(path,value,where=path){
   if(typeof value==='boolean')return {value};
   return {problem:problem(where,'yes/no',`${path} is yes or no (true or false), not ${quote(value)}.`)};
  }
- if(typeof value!=='number'||!Number.isFinite(value))return {problem:problem(where,'number',`${path} is a number from 0 to 1, not ${quote(value)}.`)};
- const used=Math.min(field.max,Math.max(field.min,value));
- return used===value?{value}:{value:used,clamped:{path,given:value,used}};
+ if(typeof value!=='number'||!Number.isFinite(value))return {problem:problem(where,'number',`${path} is a${field.whole?' whole':''} number from ${field.min} to ${field.max}, not ${quote(value)}.`)};
+ const used=Math.min(field.max,Math.max(field.min,field.whole?Math.round(value):value));
+ return used===value?{value}:{value:used,clamped:{path,given:value,used,min:field.min,max:field.max}};
 }
 
 /** A look's `set` (or `was`), checked field by field and put in LOOK_PATHS order. Returns {set, clamped, problems}. */
@@ -286,7 +287,7 @@ export function validateOp(op,i,{brands}={}){
  if(op.op==='look.set'||op.op==='character.set'){
   const set=validateLookSet(op.set,{where:`${where}.set`}),was=validateLookSet(op.was,{where:`${where}.was`});
   problems.push(...set.problems,...was.problems);
-  if(set.clamped.length)warnings.push(...set.clamped.map(c=>problem(`${where}.set.${c.path}`,'clamped',`${c.path} was ${c.given}; it runs from 0 to 1, so ${c.used} is used.`)));
+  if(set.clamped.length)warnings.push(...set.clamped.map(c=>problem(`${where}.set.${c.path}`,'clamped',`${c.path} was ${c.given}; it runs from ${c.min??0} to ${c.max??1}, so ${c.used} is used.`)));
   if(!set.problems.length&&!was.problems.length&&!sameKeys(set.set,was.set))problems.push(problem(`${where}.was`,'was',`${where}.was must give today's value of every field the step changes, and only those.`));
   if(op.op==='look.set')problems.push(...ageProblems(op.name,set.set,`${where}.set`));
   out.set=set.set;out.was=was.set;
@@ -325,7 +326,7 @@ export function validateLooks(file,{brands}={}){
   const at=`looks.${name}`;
   problems.push(...residentProblems(name,at));
   const set=validateLookSet(look?.set,{where:`${at}.set`});problems.push(...set.problems,...ageProblems(name,set.set,`${at}.set`));
-  if(set.clamped.length)problems.push(problem(`${at}.set`,'range',`${at} has numbers outside 0 to 1.`));
+  if(set.clamped.length)problems.push(problem(`${at}.set`,'range',`${at} has numbers outside their range.`));
   for(const key of Object.keys(look||{}))if(!['set','notes','made'].includes(key))problems.push(problem(`${at}.${key}`,'unknown-key',`${at} has a field Studio does not know: "${key}".`));
   const notes=look?.notes;
   if(!notes||typeof notes!=='object'||Array.isArray(notes))problems.push(problem(`${at}.notes`,'notes',`${at} must keep, for each field it changes, why it was changed (notes).`));

@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {longBraidPoints} from './braid-path.js';
+import {DRESS_BOTTOMS} from './recipe.js';
 
 /**
  * Swing: hair, skirts and shirt hems that follow the body a moment late, the way
@@ -32,7 +33,7 @@ export const SWING=Object.freeze({
 /** The skirt or shirt hem: its waist, its hem's height and its radii there, or null. */
 export function hemSpec(recipe,m){
  const o=recipe.outfit,hipY=m.hipY,waist=hipY+m.torso*(o.bottom==='underwear'?.05:.13);
- if(['skirt','longskirt','pleatedskirt'].includes(o.bottom)){
+ if(DRESS_BOTTOMS.includes(o.bottom)){
   const len=o.bottom==='longskirt'?m.thigh+m.shin*.85:m.thigh*.9,r=m.hips*.66+len*.22;
   return {kind:'skirt',waist,length:len,rx:r,rz:r*m.depth/m.width};
  }

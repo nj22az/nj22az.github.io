@@ -6,7 +6,7 @@ import {CAST_RECIPES,recipeFor} from '../avatars/cast.js';
 import {playerRecipe} from '../avatars/actors.js';
 import {CAST_LIMIT,PHOTO_LIMIT,FORMATS,POSES,EXPRESSIONS,cleanCaption,frameSize,comicLayout,drawCaptions} from './layout.js';
 import {BACKDROPS,FILMS,WARDROBE_COLOURS,filmCSS,applyFilm,createStudioSet,arrange} from './sets.js';
-import {PARTS,normalizeRecipe} from '../avatars/recipe.js';
+import {PARTS,PATTERNS,normalizeRecipe} from '../avatars/recipe.js';
 import {EXPRESSION_GLYPHS} from '../avatars/face.js';
 import {ISLAND_OUTFITS,ISLAND_COSTUMES,THUAN_SAILOR_OUTFIT,outfitAllowedFor} from '../avatars/outfits.js';
 import {SLOTS,labelFor,wornSet,putOnSet} from '../avatars/wardrobe-catalogue.js';
@@ -14,7 +14,6 @@ import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 
 // The wardrobe's words come from the catalogue, by slot, as in the maker (a police top and a police cap read apart).
 const label=v=>v[0].toUpperCase()+v.slice(1),part=slot=>v=>labelFor(slot,v);
-const PATTERNS=['none','stripes','dots','flowers'];
 
 // Wardrobe fields are named wear* so they never collide with the caption fields.
 const WARDROBE=['top','pattern','bottom','footwear','hat'],wear=n=>'wear'+n[0].toUpperCase()+n.slice(1);

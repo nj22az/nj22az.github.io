@@ -31,7 +31,7 @@ const stamp=(made,what)=>`${made.slice(0,19).replace(/:/g,'-')}Z-${slug(what).re
 const withoutProfile=({profile,...rest})=>rest;
 const own=(map,key)=>map&&Object.hasOwn(map,key)?map[key]:null;
 const sentenceList=list=>[...new Set((list||[]).map(p=>p?.sentence??p))];
-const clampSentence=c=>`${c.path} was ${c.given}; it runs from 0 to 1, so ${c.used} is used.`;
+const clampSentence=c=>`${c.path} was ${c.given}; it runs from ${c.min??0} to ${c.max??1}, so ${c.used} is used.`;
 const REFUSED='Nothing was written. Fix the problems above and call again.';
 
 /** Everything about the people Studio knows: the published data with the draft laid over it, read fresh each call. */
@@ -294,7 +294,7 @@ export const TOOLS=[
     note:'profile (gait and voice) is read-only: a look changes how somebody looks, not who they are. A resident keeps the life stage World draws them at.',
     options:options?c.looks.LOOK_FIELDS:undefined};
   }},
- {name:'character_update',destructive:true,description:'Change fields of a resident\'s look or of a Studio-only character. Numbers outside 0..1 are clamped and reported. Dry run by default; with dryRun:false the change goes into Studio\'s draft, and World shows it once the creator says "update World".',
+ {name:'character_update',destructive:true,description:'Change fields of a resident\'s look or of a Studio-only character. Numbers outside their range (0..1; the shirt number 0..99) are clamped and reported. Dry run by default; with dryRun:false the change goes into Studio\'s draft, and World shows it once the creator says "update World".',
   input:object({name:NAME,set:SET,note:NOTE,dryRun:DRY},['name','set','note']),
   async run({name,set,note,dryRun=true},ctx){
    const {c,find,unknown}=await people(ctx),who=find(name);if(!who)throw unknown(name);

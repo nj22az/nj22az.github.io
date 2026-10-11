@@ -70,6 +70,13 @@ export const ISLAND_OUTFITS=Object.freeze([
  {id:'walk-to-school',name:'Walk to school',label:'Walk to school',category:'School & sport',tags:['school','pupils','children','Years 5–6','yellow hat','walk'],
   who:'the pupils of Yonamine-sensei’s Years 5–6 class',why:'The yellow hat lets drivers see small children.',
   outfit:{top:'tee',topColour:'#f4f1ea',bottom:'shorts',bottomColour:'#27304d',footwear:'sneakers',shoes:'#f4f1ea',hat:'bucket',hatColour:'#e8b83e',pattern:'none'}},
+ // Batch 2 of the wardrobe plan: sets the new painted tops make possible.
+ {id:'ticket-window',name:'Ticket window',label:'Ticket window',category:'Work',tags:['port terminal','tickets','ferry','Minato Maru','uniform','vest','waiting hall'],
+  who:'Ms Ganaha at the Port Terminal’s ticket window',why:'The terminal’s terracotta vest over a white shirt, so the passengers in the waiting hall know whom to ask.',
+  outfit:{top:'vest',topColour:'#b4583c',accent:'#f4f1ea',bottom:'skirt',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',pattern:'none'}},
+ {id:'harbour-summer',name:'Harbour master’s summer',label:'Harbour summer',category:'Work',tags:['harbour master','harbour office','ferry','berth','summer','captain','shirt'],
+  who:'the harbour master, from June to September',why:'Too hot for his jacket on the quay: a sky-blue shirt with a pen for the berth log, and the white cap the ferry looks for.',
+  outfit:{top:'shirt',topColour:'#8fbfe0',accent:'#2f4f7f',bottom:'trousers',bottomColour:'#27304d',footwear:'shoes',shoes:'#2b2b2b',hat:'captain',hatColour:'#f4f1ea',pattern:'none'}},
 ]);
 
 /** Town-made costumes for the Port Festival parade. Headwear is chosen separately so the face stays visible. */
@@ -82,7 +89,7 @@ export const ISLAND_COSTUMES=Object.freeze([
   who:'children in the Port Festival parade (proposed)',why:'The coral reef off Kitahama, in ribbons, so nobody forgets it is there.',outfit:{top:'reef',topColour:'#3fa0c8',bottom:'trousers',bottomColour:'#3fa0c8',footwear:'boots',shoes:'#2f5f9e',accent:'#e98aa6',pattern:'none'}},
 ]);
 
-export const DRESS_BOTTOMS=Object.freeze(['skirt','longskirt','pleatedskirt']);
+export {DRESS_BOTTOMS} from './recipe.js';
 /** Every character uses the same wardrobe; identity never filters shared parts. */
 export function outfitAllowedFor(_name,_outfit){return true;}
 export function appropriateOutfit(_name,outfit){return {...outfit};}

@@ -4,7 +4,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
 import {drawPart,drawFace,EXPRESSION_NAMES} from './face.js';
-import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
+import {PALETTE,PARTS,PATTERNS,NUMBERED_TOPS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
 import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
 import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from './cast.js';
 import {MOVES} from './moves.js';
@@ -164,7 +164,9 @@ export const TABS=[
   {kind:'sets',page:'style',at:'outfit',draw:'outfit'}]},
  {id:'top',name:'Top',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.top',list:PARTS.top,draw:'figure'},
-  {kind:'chips',page:'style',at:'outfit.pattern',list:['none','flowers','stripes','dots'],label:'Print'},
+  {kind:'chips',page:'style',at:'outfit.pattern',list:PATTERNS,label:'Print'},
+  // A shirt number, only for the tops that carry one (the Seagulls jersey's back); 0 is none.
+  {kind:'number',page:'style',at:'outfit.number',label:'Shirt number',short:'Number',min:0,max:99,shows:r=>NUMBERED_TOPS.includes(r.outfit.top)},
   {kind:'colours',page:'colour',at:'outfit.topColour',label:'Colour',palette:PALETTE.cloth,cloth:true},
   {kind:'colours',page:'colour',at:'outfit.accent',label:'Ribbons & print',palette:PALETTE.cloth,cloth:true}]},
  {id:'bottom',name:'Bottoms',wardrobe:true,controls:[
@@ -259,6 +261,8 @@ const CSS=`
 .shm-swatches button{width:44px;height:44px;border:4px solid #fff;border-radius:50%;box-shadow:0 0 0 2px #f0dcb0}
 .shm-swatches button[aria-pressed=true]{box-shadow:0 0 0 4px #ff9d3c}
 .shm-step{display:grid;grid-template-columns:96px 44px minmax(0,1fr) 44px;align-items:center;gap:8px;margin:8px 0}
+.shm-step[hidden]{display:none}
+.shm-number{height:44px;text-align:center;font-size:18px;font-weight:800}
 .shm-step>span{font-size:12px;font-weight:800}
 .shm-step button,.shm-pad button{display:grid;place-items:center;width:44px;height:44px;border:2px solid #f0dcb0;border-radius:50%;background:#fff;color:inherit;font-size:20px;font-weight:900;line-height:1}
 .shm-meter{display:flex;gap:3px;height:12px}
@@ -579,7 +583,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const found=el('p',{className:'shm-found',role:'status'});
  const undress=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all off',title:'Down to what is underneath it all: a tank top, underwear and bare feet. The first picture of each grid takes that one thing off.'});
  undress.onclick=()=>{
-  remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});
+  remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none',number:0});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});
   recipe=normalizeRecipe(recipe);dirty=true;const focused=document.activeElement===undress;renderBody();if(focused)undress.focus({preventScroll:true});
  };
 
@@ -624,7 +628,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const UNSEEN={figure:['outfit.hat','outfit.hatColour','outfit.footwear','outfit.shoes'],bottom:['outfit.hat','outfit.hatColour',...FACE_FIELDS],
   feet:['outfit.hat','outfit.hatColour','hair','accessories',...FACE_FIELDS],head:HEAD_UNSEEN,'hair-rear':HEAD_UNSEEN,outfit:[]};
  function pictureKey(r,framing){
-  const k=structuredClone({...r,name:0,profile:0,swim:0,__bottom:0});
+  // The name is unseen, except on a PE shirt's name patch.
+  const k=structuredClone({...r,name:r.outfit?.top==='gymtee'?r.name:0,profile:0,swim:0,__bottom:0});
   for(const at of UNSEEN[framing]||[]){const keys=at.split('.'),last=keys.pop();let o=k;for(const key of keys)o=o?.[key];if(o)delete o[last];}
   return JSON.stringify(k);
  }
@@ -650,6 +655,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   if(get(recipe,at)===value)return;
   if(keep)remember();
   set(recipe,at,value);if(at==='glasses.style')recipe.glasses.enabled=true;recipe=normalizeRecipe(recipe);dirty=true;
+  if(at.startsWith('outfit'))numberSync?.();
  }
  function chooseTab(id){endDrag();tab=id;category.value=id;const t=TABS.find(x=>x.id===id);if(!t.controls.some(c=>c.page===page))page='style';for(const c of t.controls)chipFor.delete(c.at);renderTabs();renderBody();body.scrollTop=0;syncFocus();}
  category.onchange=()=>chooseTab(category.value);
@@ -693,6 +699,21 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const minus=el('button',{type:'button',textContent:'−',ariaLabel:less,title:less}),plus=el('button',{type:'button',textContent:'+',ariaLabel:more,title:more});
   minus.onclick=()=>bump(-NOTCH);plus.onclick=()=>bump(NOTCH);paint();
   return el('div',{className:'shm-step'},el('span',{textContent:label}),minus,meter,plus);
+ }
+ /**
+  * A whole number (a shirt number): − and + either side of a field it can be typed into. Shown only while `shows`
+  * (a numbered top is worn), and kept in step when the top changes under it (numberSync, from change()).
+  */
+ let numberSync=null;
+ function numberControl(control){
+  const label=el('span',{textContent:control.short||control.label}),field=el('input',{type:'number',min:control.min,max:control.max,step:1,inputMode:'numeric',className:'shm-text shm-number',ariaLabel:control.label});
+  const minus=el('button',{type:'button',textContent:'−',ariaLabel:'Lower '+control.label.toLowerCase(),title:'Lower'}),plus=el('button',{type:'button',textContent:'+',ariaLabel:'Higher '+control.label.toLowerCase(),title:'Higher'});
+  const box=el('div',{className:'shm-step shm-number-step'},label,minus,field,plus);
+  const paint=()=>{const v=get(recipe,control.at);field.value=String(v);box.hidden=!control.shows(recipe);minus.disabled=v<=control.min;plus.disabled=v>=control.max;};
+  const put=v=>{change(control.at,Math.max(control.min,Math.min(control.max,Math.round(v)||0)));paint();renderPictures();};
+  minus.onclick=()=>put(get(recipe,control.at)-1);plus.onclick=()=>put(get(recipe,control.at)+1);
+  field.onchange=()=>put(Number(field.value));
+  numberSync=paint;paint();return box;
  }
  function renderLook(){
   const t=TABS.find(x=>x.id===tab);
@@ -804,7 +825,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   section.append(...[chips,grid].filter(Boolean));return section;
  }
  /** Put a set on (or one of its colourways) over what is worn, and redraw the set pictures, which show what each would give. */
- function wearSet(set,colours){change('outfit',putOnSet(recipe.outfit,set,colours));renderPictures();}
+ function wearSet(set,colours){change('outfit',putOnSet(recipe.outfit,set,colours));renderPictures();renderTray();}
  /** The Outfits tab: the island's sets and costumes, filed under their chips, each put on in one tap. */
  function setsSection(){
   const section=el('div',{className:'shm-section'}),worn=wornSet(recipe.outfit),sets=SETS.filter(s=>outfitAllowedFor(wardrobeOwner,s.outfit));
@@ -858,6 +879,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function wearColours(colours,keep=true){
   if(Object.entries(colours).every(([at,hex])=>get(recipe,at)===hex))return;
   if(keep)remember();for(const [at,hex] of Object.entries(colours))set(recipe,at,hex);recipe=normalizeRecipe(recipe);dirty=true;
+  renderTray();
  }
  /**
   * The swatches a colour control offers. Cloth (`cloth`) on the Colour page: the island palette, then the rest of its
@@ -880,7 +902,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  function controlsInto(host,t){
   const body=host;
   for(const control of t.controls.filter(c=>c.page===page&&(!c.when||c.when(recipe)))){
-   if(control.label&&control.kind!=='toggle'&&control.kind!=='stepper'&&control.kind!=='position')body.append(el('h4',{textContent:control.label}));
+   if(control.label&&!['toggle','stepper','position','number'].includes(control.kind))body.append(el('h4',{textContent:control.label}));
    if(control.kind==='face-forms'){
     const grid=el('div',{className:'shm-grid shm-face-forms',role:'group',ariaLabel:'Face shapes'}),skin=el('div',{className:'shm-swatches shm-face-skin',role:'group',ariaLabel:'Skin tone'});
     for(const form of control.list){const c=el('canvas',{width:136,height:136}),label=({'soft-square':'Soft square','soft-round':'Soft round',wide:'Broad'}[form]||form[0].toUpperCase()+form.slice(1)),b=el('button',{type:'button',ariaLabel:label,title:label},c,label);b.setAttribute('aria-pressed',String(recipe.head.form===form));b.onclick=()=>{change('head.form',form);pressed(grid,b);};drawFaceFormThumb(c,form,recipe.body.skin);grid.append(b);}
@@ -919,6 +941,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     body.append(el('label',{},control.low+' — '+control.high,slider,output));
    }else if(control.kind==='stepper'){
     body.append(stepper(control.label,control.at,control.less,control.more));
+   }else if(control.kind==='number'){
+    body.append(numberControl(control));
    }else if(control.kind==='toggle'){
     const b=el('button',{type:'button',className:'shm-toggle',textContent:control.label});b.setAttribute('aria-pressed',String(!!get(recipe,control.at)));
     b.onclick=()=>{change(control.at,!get(recipe,control.at));b.setAttribute('aria-pressed',String(!!get(recipe,control.at)));};
@@ -988,12 +1012,15 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  }
  function renderBody(){recipe.outfit=appropriateOutfit(wardrobeOwner,recipe.outfit);
   stopPictures();pictureJobs.clear();inView?.disconnect();wardrobeArea=null;
-  body.replaceChildren();paletteTray.replaceChildren();paletteTray.hidden=true;
-  if(step==='start')renderStart();else if(step==='profile')renderProfile();else if(step==='look'){renderLook();
-   const colour=TABS.find(t=>t.id===tab).controls.find(c=>c.kind==='colours'&&(!c.when||c.when(recipe)));
-   if(page==='style'&&colour){paletteTray.hidden=false;paletteTray.append(el('h4',{textContent:colour.label}),swatchRow(colour,hex=>{change(colour.at,hex);renderPictures();},colour.label+' ',{tray:true}));}
-  }
-  paintQueued();
+  body.replaceChildren();
+  if(step==='start')renderStart();else if(step==='profile')renderProfile();else if(step==='look')renderLook();
+  renderTray();paintQueued();
+ }
+ /** The colour tray under the pictures: the tab's first colour, as worn now (a colourway put on changes it). */
+ function renderTray(){
+  paletteTray.replaceChildren();paletteTray.hidden=true;if(step!=='look'||page!=='style')return;
+  const colour=TABS.find(t=>t.id===tab).controls.find(c=>c.kind==='colours'&&(!c.when||c.when(recipe)));
+  if(colour){paletteTray.hidden=false;paletteTray.append(el('h4',{textContent:colour.label}),swatchRow(colour,hex=>{change(colour.at,hex);renderPictures();},colour.label+' ',{tray:true}));}
  }
 
  // ----- Voice -----
