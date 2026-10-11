@@ -1,3 +1,4 @@
+import {fujitaPierAt} from './fujita-pier.js';
 import {houseboatSurface} from './fujita-houseboat.js';
 import {DOCKLANDS,docklandsAt} from './docklands-layout.js';
 import {ISLAND_ROUTES} from './island-plan.js';
@@ -48,7 +49,7 @@ export const ROUTES = [
  {id:'shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,SHOP_CROSSING_Z],[MAIN_ROAD.pavementEast,SHOP_CROSSING_Z]]},
  {id:'south-shop-crossing',width:3,surface:'stone',points:[[MAIN_ROAD.pavementWest,-18],[MAIN_ROAD.pavementEast,-18]]},
  {id:'east-alley',width:3,surface:'stone',points:[[0,18.4],[8.4,18.4]]},
- {id:'second-pier',width:4.6,surface:'wood',points:[[-36,-44],[-36,-62],[-26,-62]]},
+ {id:'second-pier',width:4.6,surface:'wood',customSurface:true,points:[[-36,-49.7],[-36,-64.3]]},
  {id:'izakaya-door',width:3,surface:'asphalt',points:IZAKAYA_LANE},
  {id:'ramen-door',width:2.8,surface:'stone',points:[[0,DINING.ramenDoor[1]],DINING.ramenDoor]},
  {id:'office-door',width:2.6,surface:'stone',points:[[13.3,-36],[13.3,-37.55]]},
@@ -120,10 +121,11 @@ function regionAt(x,z,r=0){
   if(x>=MAIN_ROAD.west&&x<=MAIN_ROAD.east)return z<=BOARDWALK.maxZ?boardwalkRoute:ROUTES[0];
   return {id:'main-street-pavement',surface:'stone'};
  }
+ if(fujitaPierAt(x,z,r))return {id:'second-pier',surface:'wood'};
  if(docklandsAt(x,z,r))return DOCKLANDS;
  if(Math.abs(x)<=19-r&&z>=-49.7&&z<=-38)return ROUTES[1];
  if(Math.abs(x)<=OUTER_PIER.width/2-r&&z>=Math.max(OUTER_PIER.z-OUTER_PIER.length/2,OUTER_PIER.open)+r&&z<=-49.7)return ROUTES[2];
- const route=LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||activeRoutes().slice(3).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=(route.segmentWidths?.[i]??route.width)/2-r));
+ const route=LANDINGS.find(p=>Math.abs(x-p.x)<=p.w/2-r&&Math.abs(z-p.z)<=p.d/2-r)||activeRoutes().slice(3).filter(route=>!route.customSurface).find(route=>route.points.slice(1).some((b,i)=>nearestOnSegment(x,z,route.points[i],b).d<=(route.segmentWidths?.[i]??route.width)/2-r));
  if(route)return route;
  // The lawn is asked last, so the park's mound, its ramp and every authored path keep
  // their own surface and the green is simply whatever is left over. Asking it earlier
