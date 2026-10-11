@@ -19,14 +19,15 @@ DELSIDA = 'nj22az.github.io/sjoskolan/vecka-43/aktuell/Del_2.html'
 # ”Det här gör du nu” och i dagens ruta på veckosidan (verktyg/veckosidor/dagsvy.py). Id som börjar med ovn- räknas som
 # övning N.6–N.10 i lektionens egen del, därför heter övningarna i del 3 del3-ovn.
 HEMMA = [
-    ('del-2', 'Läs del 2: teorin och de två exemplen. Tryck på ”Jag har läst del 2” längst ned på sidan.', 'Del_2.html', 'Öppna del 2'),
+    ('del-2', 'Läs del 2 och tryck på ”Jag har läst del 2” längst ned på sidan.', 'Del_2.html', 'Öppna del 2'),
     ('ovn-2', 'Gör övning 2.6–2.10 på delsidan. Ledtrådar och facit finns där.', 'Del_2.html#v43_02-q6', 'Öppna övning 2.6'),
-    ('del-3', 'Läs del 3, Elscheman och dokumentation, på egen hand. Tryck på ”Jag har läst del 3” längst ned på sidan.', 'Del_3.html', 'Öppna del 3'),
+    ('inl', 'Gör uppgift 1 i inlämningen, motorns märkskylt.', 'Inlamning.html#uppgift-1', 'Öppna uppgift 1'),
+    ('del-3', 'Läs del 3 på egen hand och tryck på ”Jag har läst del 3” längst ned på sidan.', 'Del_3.html', 'Öppna del 3'),
     ('del3-ovn', 'Gör övning 3.1–3.5 i del 3.', 'Del_3.html#v43_03-q1', 'Öppna övning 3.1'),
     ('labb', 'Hållkretslabbet: gör de 8 räkna-först-uppgifterna.', '../../hallkretslabbet/', 'Öppna labben'),
 ]
 # Det som gäller hela veckan (noten på bilden ”Det här gör du nu”).
-VECKAN = 'Inlämningen och felsökningsrapporten senast fredag 23 oktober. Allt finns på veckosidan.'
+VECKAN = 'Inlämningen, uppgift 1–4, senast fredag 23 oktober. Allt finns på veckosidan.'
 
 LEKTION = {
     'id': 'v43_02',
@@ -50,8 +51,9 @@ LEKTION = {
         ('start', {'instruktion': 'Skriv en gissning i chatten med några ord.'}),
         ('upplagg', [
             ('15.00', 'Start och startfråga'),
-            ('15.05', 'Pass 1: Transformatorn och motorns varvtal (avsnitt 1–4) och två exempel'),
-            ('15.25', 'Övning 2.1–2.4 tillsammans'),
+            ('15.05', 'Pass 1: Transformatorn och det roterande fältet (avsnitt 1–3) och ett exempel'),
+            ('15.20', 'Övning 2.1–2.4 tillsammans'),
+            ('15.40', 'Eftersläpning (avsnitt 4) och ett exempel'),
             ('15.50', 'Övning 2.5 tillsammans'),
             ('15.55', 'Paus'),
             ('16.05', 'Pass 2: Start, frekvensomriktare och felsökning (avsnitt 5–7)'),

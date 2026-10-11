@@ -339,8 +339,13 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
     h.append('</section>')
 
     # 5 Labben
-    h.append(f'<section id="labb" class="del-block"><h2><span>5</span> Labben</h2><p>Labben kommer sist i veckan, när du har gått igenom del 1–{antal}. Du använder samma metod som i övningarna: <strong>räkna först, läs av, jämför och förklara</strong>.</p>'
-             f'<p><a class="sj-btn" href="{idx}#labb">Veckans labbar</a> <a class="sj-btn" href="{inl}">Veckans inlämning</a></p>')
+    # Veckor som visas som dagar (dagsvy.DAGSVY) har labben i läxorna efter lektionerna och under Hela veckan, och
+    # veckosidan har ingen ruta #labb.
+    dagar = int(vv) in dagsvy().DAGSVY
+    nar = ('Veckans labb står i läxorna efter lektionerna och under Hela veckan på veckosidan.' if dagar
+           else f'Labben kommer sist i veckan, när du har gått igenom del 1–{antal}.')
+    h.append(f'<section id="labb" class="del-block"><h2><span>5</span> Labben</h2><p>{nar} Du använder samma metod som i övningarna: <strong>räkna först, läs av, jämför och förklara</strong>.</p>'
+             f'<p><a class="sj-btn" href="{idx}#{"veckan" if dagar else "labb"}">{"Hela veckan" if dagar else "Veckans labbar"}</a> <a class="sj-btn" href="{inl}">Veckans inlämning</a></p>')
     if kallor:
         h.append(f'<details class="del-mer"><summary>Källor och fortsatt läsning</summary>{block_html(kallor[2])}</details>')
     h.append('</section>')
@@ -354,7 +359,7 @@ def sida(a, v, deck, alla_decks, pl_ovn, pres_bild, veckotitel, kontroll=()):
         text = f'Del {n}: {e(deltitel_for(fv, d))}'
         return f'<a href="../../vecka-{fv}/aktuell/Del_{d}.html">{"← " + text if pil == "<" else text + " →"}</a>'
     fore = lank(plats - 1, '<') if plats > 0 else f'<a href="{idx}">← Vecka {vv}</a>'
-    efter = lank(plats + 1, '>') if plats + 1 < antal else f'<a href="{idx}#labb">Labben →</a>'
+    efter = lank(plats + 1, '>') if plats + 1 < antal else (f'<a href="{idx}#veckan">Hela veckan →</a>' if dagar else f'<a href="{idx}#labb">Labben →</a>')
     # Vecka med självrättande inlämning: sist på sidan bekräftar eleven att hen har läst delen (sj-last:vecka-NN). En flyttad
     # del (vecka-45/Del_1 = vecka 43 del 4) skriver veckan och delen eleven läser och länkar till den veckans inlämning.
     h.append(sjalvrattning().lasbekraftelse_html(flytt[0], flytt[1], inl) if flytt else sjalvrattning().lasbekraftelse_html(int(v), dnr))

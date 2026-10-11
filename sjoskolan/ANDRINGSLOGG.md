@@ -243,6 +243,15 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-10-11** Vecka 43 måndag och tisdag efter genomgången av lärarmanusen. Måndagens läxa är inlämningens uppgift 2
+  (skyddsdata, del 1) och tisdagens uppgift 1 (motorns märkskylt, som behöver del 2); förut sa måndagen ”uppgift 1 och 2”.
+  Tisdagens upplägg följer bildernas ordning: avsnitt 1–3 och ett exempel, övning 2.1–2.4, eftersläpningen (avsnitt 4) och
+  ett exempel, övning 2.5. En rad i upplägget som nämner avsnitt räknas som ämne på veckosidan. Avslutsfrågorna EL-000718 och
+  EL-000720 pekade på uppgifter som inte finns (”motorstyrningsschema”, ”funktionsbeskrivning av motorstartaren”) och pekar
+  nu på inlämningens uppgifter. Ledtråd 3 i övning 1.4 (EL-000154) räknade med inlämningens 8,000 A och använder nu 6,000 A.
+  Veckans rad på bilderna säger ”Inlämningen, uppgift 1–4” (felsökningsrapporten är uppgift 4, ingen egen inlämning).
+  Delsidornas avsnitt Labben säger i veckor med dagar att labben står i läxorna och under Hela veckan, och länkar dit
+  (veckosidan har ingen ruta #labb längre).
 - **2026-10-11** Rutan Din del visar **Före lektionen**: läxor från en annan lektion som gäller delen. Vecka 43 del 3 läses och
   övning 3.1–3.5 görs efter tisdagens lektion, före fredagens genomgång; det stod bara i tisdagens ruta. Läxornas länkar
   räknas om från delsidans mapp (delarna i vecka-45/), och en länk till delsidan själv blir ett ankare på sidan.

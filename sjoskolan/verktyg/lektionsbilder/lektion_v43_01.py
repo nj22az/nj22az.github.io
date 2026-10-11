@@ -16,10 +16,10 @@ DELSIDA = 'nj22az.github.io/sjoskolan/vecka-43/aktuell/Del_1.html'
 HEMMA = [
     ('del-1', 'Läs del 1: teorin och de två exemplen. Tryck på ”Jag har läst del 1” längst ned på sidan.', 'Del_1.html', 'Öppna del 1'),
     ('ovn-1', 'Gör övning 1.6–1.10 på delsidan. Ledtrådar och facit finns där.', 'Del_1.html#v43_01-q6', 'Öppna övning 1.6'),
-    ('inl', 'Börja på inlämningen: uppgift 1 och 2.', 'Inlamning.html', 'Öppna inlämningen'),
+    ('inl', 'Börja på inlämningen: uppgift 2, skyddsdata. Den bygger på del 1.', 'Inlamning.html#uppgift-2', 'Öppna uppgift 2'),
 ]
 # Det som gäller hela veckan (noten på bilden ”Det här gör du nu”).
-VECKAN = 'Inlämningen och felsökningsrapporten senast fredag 23 oktober. Allt finns på veckosidan.'
+VECKAN = 'Inlämningen, uppgift 1–4, senast fredag 23 oktober. Allt finns på veckosidan.'
 
 LEKTION = {
     'id': 'v43_01',

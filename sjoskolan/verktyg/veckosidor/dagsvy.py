@@ -90,6 +90,11 @@ def _datumtext(d, veckodag=True):
     return (f'{VECKODAG[d.weekday()]} ' if veckodag else '') + f'{d.day} {MANAD[d.month - 1]}'
 
 
+def _amne(rad):
+    """En rad i presentationens upplägg som är ett ämne: ett pass eller en rad som nämner teoriavsnitt."""
+    return rad.startswith('Pass ') or '(avsnitt ' in rad
+
+
 _OVNING = re.compile(r'[Öö]vning (\d+)\.(\d+)(?:–(\d+)\.(\d+))?')
 
 
@@ -147,8 +152,9 @@ def lektioner(nr, w, sida_mapp=None):
             'start': f'{m.group(1)}:{m.group(2)}', 'slut': f'{m.group(3)}:{m.group(4)}', 'tid': f'{m.group(1)}.{m.group(2)}–{m.group(3)}.{m.group(4)}',
             'satt': 'online' if 'online' in tid.lower() else tid.split()[0], 'farg': DAGFARG[dag],
             'titel': f'Del {lek["del"]}: {lek["titel"]}', 'under': lek['underrubrik'], 'upplagg': upplagg, 'efter': lek['efter'],
-            # ”Pass 1: Hur el skadar (avsnitt 1–4) och ett exempel” → ämnet för dagens ruta.
-            'amnen': [re.sub(r'^Pass \d+: ', '', t) for _, t in upplagg if t.startswith('Pass ')],
+            # ”Pass 1: Hur el skadar (avsnitt 1–4) och ett exempel” → ämnet för dagens ruta. En rad som nämner avsnitt är också
+            # ett ämne (vecka 43 tisdag: ”Eftersläpning (avsnitt 4) och ett exempel” mellan två övningsblock).
+            'amnen': [re.sub(r'^Pass \d+: ', '', t) for _, t in upplagg if _amne(t)],
             'bildspel': f'../../bildspel/?d={deck}', 'pdf': pdf.name if mapp == sida_mapp else f'../../{mapp}/aktuell/{pdf.name}',
             'mapp': mapp, 'lasknapp': lasknapp,
             'pa_lektionen': [f'{lek["id"]}-q{n.split(".")[1]}' for n in pa_lektionen],
@@ -189,7 +195,7 @@ def _laxa_html(lek, x):
 def _lektionsblock(lek, flera):
     """En lektion i dagens ruta. Har dagen två lektioner får varje lektion en egen rubrik med sin tid."""
     pass_ = ' class="pass"'
-    upplagg = ''.join(f'<li{pass_ if t.startswith("Pass ") else ""}><time>{escape(k)}</time><span>{escape(t)}</span></li>' for k, t in lek['upplagg'])
+    upplagg = ''.join(f'<li{pass_ if _amne(t) else ""}><time>{escape(k)}</time><span>{escape(t)}</span></li>' for k, t in lek['upplagg'])
     mal = ''.join(f'<li>{escape(e[0].upper() + e[1:])}</li>' for e in lek['efter'])
     laxor = ''.join(_laxa_html(lek, x) for x in lek['laxor'])
     rubrik = (f'<h3 class="dag-lek-rubrik">{escape(lek["titel"])} <span>{escape(lek["tid"])}</span></h3>' if flera else '')

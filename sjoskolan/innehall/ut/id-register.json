@@ -2181,7 +2181,7 @@
   },
   {
    "id": "EL-000154",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Differensström",
@@ -6073,7 +6073,7 @@
   },
   {
    "id": "EL-000718",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Avslutsfråga: v43_01",
@@ -6105,7 +6105,7 @@
   },
   {
    "id": "EL-000720",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Avslutsfråga: v43_02",
