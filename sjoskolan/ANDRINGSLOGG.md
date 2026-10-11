@@ -215,7 +215,25 @@ Målet för allt material: **det ska vara lätt att lära sig.**
     forklaring) i posten. *Kontroll: `vecka-42/aktuell/quiz.test.mjs` stoppar när posten har ny revision; bygget stoppar
     på facitfält i posten.*
 
+56. **En figurfil med bildens nummer måste ha bildens innehåll.** Delsidan (`las_bild` i `innehall/export/delsidor_veckor.py`)
+    tar filen `<deck>-bNN-k.png` med bildens nummer om den finns, och letar på innehållet bara när den saknas. Lektionsbilderna
+    för v43_02 lade först eftersläpningens figur på bild 11 och startströmmens på bild 13, och delsidan visade då de gamla
+    övningsfigurerna `v43_02-b11-1.png` och `b13-1.png` med rätt bildtext. Jämför efter varje ny presentation filnamnen på
+    delsidan med figurerna på bilderna, och lägg figurbilderna på bildnummer utan en gammal fil med annat innehåll.
+    *Manuell kontroll; generatorn bör jämföra innehållet först.*
+
 ## Ändringar
+
+- **2026-10-11** Vecka 43 måndag och tisdag: nya presentationer i lektionsbildernas mall, *Komponenter och skydd* (20 bilder i
+  stället för 36) och *Transformatorer och motorer* (21 bilder i stället för 36, med veckans labb: Hållkretslabbet, Räkna först).
+  Innehållet står i `verktyg/lektionsbilder/lektion_v43_01.py` och `lektion_v43_02.py` (LEKTION och HEMMA), omslagen är de
+  tidigare titelbilderna. Delsidorna del 1 och 2 har samma sju avsnitt med samma rubriker och ordning, samma två exempel och
+  samma figurer; texten följer bilderna, och tal och enhet hålls ihop med hårda mellanslag som i `verktyg/figurer/insert.py`.
+  Övning 1.2–1.5 och 1.1 respektive 2.1–2.5 görs på lektionen, var och en efter sitt avsnitt (teorikorten). Start- och
+  avslutsfrågorna EL-000717–720 var märkta LM-4 och är nu LM-1 (EL-000720 LM-1 och LM-2). `verktyg/figurer/spec43.json` följer
+  de nya bildnumren. Kvar att lösa: övning 2.1 och 2.2 visar inte längre sina figurer på delsidan (`v43_02-b11-1.png` och
+  `b13-1.png` finns kvar i figurmappen). Delsidan hämtar övningsfigurer bara ur presentationens övningsbilder, och mallen tar
+  bort dem.
 
 - **2026-10-11** Vecka 42: delsidorna Del_1–3 har rutan **Din del** överst (lärarens önskan: delsidorna ska vara
   översikter som veckosidan). Dagens färg och tid, lektionens läge (I dag, Pågår nu, Om 2 dagar, Har varit), vad vi
