@@ -3,7 +3,7 @@
   "titel": "Motorn",
   "sprak": "sv",
   "typ": "resonemang",
-  "revision": 1,
+  "revision": 2,
   "granskning": {
     "status": "migrerad"
   },
@@ -17,7 +17,7 @@
     ]
   },
   "uppgift": {
-    "fraga": "En fyrpolig motor är märkt 7,5 kW, Δ/Y 400/690 V, 1 455 r/min, η = 0,89 och cos φ = 0,84. Nätet är 400 V, 50 Hz. Vilken koppling används? Beräkna eftersläpning, elektrisk inmatning och linjeström vid märklast."
+    "fraga": "En fyrpolig motor är märkt 7,5 kW, Δ/Y 400/690 V, 1 455 r/min, η = 0,89 och cos φ = 0,84. Nätet i land är 400 V, 50 Hz. Vilken koppling används? Beräkna eftersläpning, elektrisk inmatning och linjeström vid märklast."
   },
   "referenser": {
     "ursprung": [

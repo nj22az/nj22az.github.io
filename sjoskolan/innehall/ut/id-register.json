@@ -7349,7 +7349,7 @@
   },
   {
    "id": "EL-000852",
-   "revision": 2,
+   "revision": 3,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Belastad spänningsdelare",
@@ -7365,7 +7365,7 @@
   },
   {
    "id": "EL-000853",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Kabelns spänningsfall",
@@ -7381,7 +7381,7 @@
   },
   {
    "id": "EL-000854",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Sinusspänning",
@@ -7397,7 +7397,7 @@
   },
   {
    "id": "EL-000855",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "RL-last",
@@ -7413,7 +7413,7 @@
   },
   {
    "id": "EL-000856",
-   "revision": 3,
+   "revision": 4,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Samma värmare i Y och Δ",
@@ -7429,7 +7429,7 @@
   },
   {
    "id": "EL-000857",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Bruten neutralledare",
@@ -7461,7 +7461,7 @@
   },
   {
    "id": "EL-000859",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "Motorn",
@@ -7493,7 +7493,7 @@
   },
   {
    "id": "EL-000861",
-   "revision": 1,
+   "revision": 2,
    "status": "migrerad",
    "publik": "elev",
    "titel": "IT-nätet ombord",
