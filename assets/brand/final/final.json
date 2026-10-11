@@ -1,0 +1,38 @@
+[
+  {
+    "n": 1,
+    "key": "f1",
+    "slug": "precision",
+    "title": "Precision",
+    "source": "grand-seiko",
+    "why": "The strongest system of the 29: a dial that works alone as an icon, a wordmark with real typographic poise, and a story (exactness, time, engineering) that is true of the founder. It reads at 16 px and on a building.",
+    "bg": "#000040",
+    "file": "1-precision.svg",
+    "still": "1-precision-still.svg",
+    "duration": 3800
+  },
+  {
+    "n": 2,
+    "key": "f2",
+    "slug": "monolith",
+    "title": "Monolith",
+    "source": "kigi",
+    "why": "The most ownable icon: one letter at monumental scale against an acid-teal slab. It survives as a favicon, an app icon, a stamp or a building sign, and the tiny lowercase name gives the confidence of a studio that does not need to shout.",
+    "bg": "#e6e6e6",
+    "file": "2-monolith.svg",
+    "still": "2-monolith-still.svg",
+    "duration": 3200
+  },
+  {
+    "n": 3,
+    "key": "f3",
+    "slug": "seal",
+    "title": "Seal",
+    "source": "kurashi-no-techo",
+    "why": "The one with a story no competitor can borrow: a Swedish name written in Japanese and signed with a hanko, as a port-town craftsman would. The red seal alone is a complete mark, and the vertical setting is unmistakable at any size.",
+    "bg": "#efefe2",
+    "file": "3-seal.svg",
+    "still": "3-seal-still.svg",
+    "duration": 4000
+  }
+]

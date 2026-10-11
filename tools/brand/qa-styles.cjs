@@ -1,5 +1,5 @@
 // Motion QA for the style variations (pixel2motion's Motion QA, steps 1 and 5).
-//   NODE_PATH=$(npm root -g) node tools/brand/qa-styles.cjs <out-dir> [slug ...]
+//   NODE_PATH=$(npm root -g) [SET=final] node tools/brand/qa-styles.cjs <out-dir> [slug ...]
 // For each variation: frames at 0, 25, 50, 75 % and the end, a contact sheet row, and the
 // Final Frame Contract: the animated file at its end must equal the still file exactly.
 
@@ -8,11 +8,13 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const DIR = path.join(__dirname, "..", "..", "assets", "brand", "styles");
+const SET = process.env.SET || "styles"; // styles (the 29) or final (the three)
+const DIR = path.join(__dirname, "..", "..", "assets", "brand", SET);
+const MANIFEST = SET === "final" ? "final.json" : "styles.json";
 const [out, ...only] = process.argv.slice(2);
 if (!out) throw new Error("usage: qa-styles.cjs <out-dir> [slug ...]");
 fs.mkdirSync(out, { recursive: true });
-const list = JSON.parse(fs.readFileSync(path.join(DIR, "styles.json"), "utf8")).filter((s) => !only.length || only.includes(s.slug));
+const list = JSON.parse(fs.readFileSync(path.join(DIR, MANIFEST), "utf8")).filter((s) => !only.length || only.includes(s.slug));
 
 (async () => {
   const browser = await chromium.launch();
@@ -32,7 +34,7 @@ const list = JSON.parse(fs.readFileSync(path.join(DIR, "styles.json"), "utf8")).
   for (const s of list) {
     const T = s.duration + 100;
     const frames = [];
-    for (const f of [0, 0.25, 0.5, 0.75]) {
+    for (const f of (process.env.FRAMES || "0,0.25,0.5,0.75").split(",").map(Number)) {
       const p = path.join(out, `${s.slug}-${Math.round(f * 100)}.png`);
       fs.writeFileSync(p, await shot(s.file, f * T));
       frames.push(p);

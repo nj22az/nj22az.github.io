@@ -40,3 +40,15 @@ NODE_PATH=$(npm root -g) node tools/brand/build-styles.mjs           # SVGs, sty
 NODE_PATH=$(npm root -g) node tools/brand/qa-styles.cjs <out-dir>    # frames + final frame == still check
 NODE_PATH=$(npm root -g) node tools/brand/export-styles.cjs          # MP4s, PNGs and the reel
 ```
+
+## The final three
+
+`final/` holds the three chosen logos (Precision, Monolith, Seal), each built letter by letter like a
+studio ident: letters cut into slices that lock in from alternating sides, kana written stroke by stroke,
+one passing light, a slow camera push and one impact beat. Preview: `/brand/final/`.
+
+```bash
+NODE_PATH=$(npm root -g) node tools/brand/build-final.mjs
+NODE_PATH=$(npm root -g) SET=final node tools/brand/qa-styles.cjs <out-dir>
+NODE_PATH=$(npm root -g) SET=final node tools/brand/export-styles.cjs
+```
