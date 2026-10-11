@@ -6,6 +6,10 @@ import {ONSEN_CIRCUITS,ONSEN_BOARD,ONSEN_SPILLS,ONSEN_FILL,ONSEN_VOLTS,stageScen
 import {ONSEN_HARBOUR} from '../src/world/interiors/onsen-night.js';
 import {ONSEN_DOORWAYS} from '../src/world/interiors/onsen-lobby.js';
 import {FEED_PLACES} from '../src/feed/places.js';
+import {placeAsset} from '../src/catalog/catalog.js';
+import {provideCatalog} from './catalog-fixture.mjs';
+// The massage chair's model in hand (World's catalogue), as the game has it before it opens the door.
+await provideCatalog('massage-chair');
 
 // The lighting batch (shot plan B4/B4b): two camps of light, the andon on the board, the dark house, the night outside.
 const build=()=>{const room=new THREE.Group(),hits=[];const layout=buildOnsenInterior({room,reg:(o,label,fn)=>hits.push({o,label,fn}),action(){},exit(){}});room.updateMatrixWorld(true);return {room,hits,layout};};
@@ -215,5 +219,17 @@ test('the house’s lamps stop at its walls: every surface of the room but the n
   if(o.name==='Noren'){cloth++;assert.notEqual(o.material.userData.lampsStopAtWalls,true,'the noren glows through');return;}
   if(o.userData.wall){walls++;assert.equal(o.material.userData.lampsStopAtWalls,true,o.name);}});
  assert.ok(walls>15&&cloth===4);
+ // The massage chair from the catalogue too: its own copies of the model's materials (no other room's) take the house's rule.
+ const chair=[];layout.chair.object.traverse(o=>{if(o.isMesh)chair.push(o);});assert.ok(chair.length>=8,'the chair is in the room');
+ for(const m of chair)if(m.material.isMeshStandardMaterial)assert.equal(m.material.userData.lampsStopAtWalls,true,m.name);
+ const elsewhere=placeAsset('massage-chair');elsewhere.object.traverse(o=>{if(o.isMesh)assert.notEqual(o.material.userData.lampsStopAtWalls,true,'not in another place: '+o.name);});elsewhere.dispose();
  layout.dispose();
+});
+
+test('the room says when its chair is in place (ready), and by then the chair takes the room’s light',async()=>{
+ // Johansson Studio's Build scene builds the room without waiting and shades it once `ready` resolves (scene-world.js).
+ resetAll();stageScenario('rest');const {room,layout}=build();
+ assert.equal(await layout.ready,true,'the chair is in place');
+ layout.chair.object.traverse(o=>{if(o.isMesh&&o.material.isMeshStandardMaterial)assert.equal(o.material.userData.lampsStopAtWalls,true,o.name);});
+ layout.dispose();assert.equal(room.getObjectByName('Catalogue asset massage-chair'),undefined,'and it goes with the room');
 });

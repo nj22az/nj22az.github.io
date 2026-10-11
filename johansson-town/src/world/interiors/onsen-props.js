@@ -2,6 +2,10 @@ import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
+import {CHAIR} from './onsen-chair.js';
+
+// The coin massage chair's right arm pad (onsen-chair.js, the card's right-arm-top anchor): its flat top, at 0.71.
+const ARM=CHAIR.anchor('right-arm-top');
 
 /**
  * Umi-no-yu's small things, each with a person who uses it and a reason it is where it is:
@@ -99,10 +103,10 @@ export const ONSEN_PROPS=Object.freeze({
   period:'White two-core cords, 5 m each, with a moulded two-pin plug and a single socket on the end, rated 15 A 125 V on a paper tag: the cord every 1980s hardware shop sold. Each one carries one dryer (12 A) well inside its 15 A; a three-way reel with all three dryers on it would carry 36 A, which is why there are three.'}),
 
  offering:plain({id:'milk-offering',name:'Coffee milk offering',jp:'コーヒー牛乳',
-  on:'Massage chair arm',z:3.17,top:.71,xs:Object.freeze([4.33,4.45,4.57]),states:Object.freeze(['none','full','empty']),
+  on:'Coin massage chair',z:ARM[2],top:ARM[1],xs:Object.freeze([4.33,4.45,4.57]),states:Object.freeze(['none','full','empty']),
   bottle:plain({r:.028,h:.133,neck:.021}),
   for:'Mr Fujita: three coffee milks lined up on the chair’s arm as an offering before his ten minutes (page 1); on page 10 Mrs Higa pays his ¥300 back in three coffee milks, and in the last panel the three stand there empty, lined up like offerings.',
-  why:'On the right arm’s flat top, behind the coin box and in a row towards the backrest, so a sitter’s elbow does not knock them over and the coin slot stays free. Only there when a story puts them there (stage): nobody leaves milk on the chair otherwise.',
+  why:'On the right arm’s flat vinyl pad, behind the coin box and in a row towards the backrest, so a sitter’s elbow does not knock them over and the coin slot stays free. Only there when a story puts them there (stage): nobody leaves milk on the chair otherwise.',
   period:'Glass 180 ml bottles of coffee milk (コーヒー牛乳) with paper caps, ¥100 each from the lobby cooler: drunk standing, hand on hip, after the bath. Empty, they keep a brown film at the bottom until they go back in the crate.'}),
 
  accountBook:plain({id:'account-book',name:'Account book',jp:ONSEN_SIGNS.ledger.jp,

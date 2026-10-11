@@ -25,7 +25,9 @@ export async function buildSceneWorld(id,views,townData=null){
   const signTexture=(a,b)=>{const c=document.createElement('canvas');c.width=512;c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#eee4cb';ctx.fillRect(0,0,512,128);ctx.fillStyle='#243442';ctx.font='28px sans-serif';ctx.fillText(a,20,45);ctx.fillText(b||'',20,95);return new THREE.CanvasTexture(c);};
   api=id==='minato'?m.buildIzakayaRoom({...options,box,signTexture}):(await import('../johansson-town/src/world/interiors/sato-ramen.js')).buildSatoRamenRoom(options);layout=api.layout||api;if(id==='sato-ramen'){const shared=await import('../johansson-town/src/world/interiors/shared-dining-layout.js');solids.push(...shared.SHARED_DINING_COLLIDERS);layout={...layout,bounds:shared.SHARED_DINING_BOUNDS,floorPolygon:shared.SHARED_DINING_FLOOR};}
  }else if(id==='books'){api=(await import('../johansson-town/src/world/interiors/compact-shops.js')).buildCompactShop({...options,site:createIslandBusinesses().find(s=>s.id==='frontrow')});layout=api;}
- else if(id==='onsen'){api=(await import('../johansson-town/src/world/interiors/onsen.js')).buildOnsenInterior(options);layout=api;solids.push(...(api.colliders||[]));}
+ // Umi-no-yu's massage chair is World's catalogue's (johansson-town/src/catalog): its model comes after the room is built,
+ // and the room says when it is in place and lit like the room (ready), before the cel pass below shades it.
+ else if(id==='onsen'){api=(await import('../johansson-town/src/world/interiors/onsen.js')).buildOnsenInterior(options);layout=api;solids.push(...(api.colliders||[]));await api.ready;}
  else{api=(await import('../johansson-town/src/world/interiors/town-hall.js')).buildMayorOffice(options);layout=api;}
  for(const actor of api?.owned||[])if(['barfly','Jonsson'].includes(actor.holder?.name))actor.holder.visible=false;
  const preset=views[id].wide,spots=[...preset.spots.stand];
