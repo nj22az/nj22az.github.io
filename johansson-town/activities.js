@@ -17,6 +17,7 @@ import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {createMagazineReader} from './src/ui/magazine-reader.js';
 import {townCalendarAt} from './src/town-clock.js';
 import {happeningLine,happeningOutcome} from './src/people/happenings.js';
+import {impressionLine,restoreImpressions} from './src/people/impressions.js';
 import {recordMoment,diaryPage,diaryDays,restoreDiary} from './src/progression/diary.js';
 import {wantsAnother} from './src/people/drunk.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
@@ -87,7 +88,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     if(read?.readFrom?.endsWith(PREV_SUFFIX))try{rescueSave(localStorage,activeSlot(localStorage));setTimeout(()=>say('Your last save could not be read, so the one before it is loaded. The unreadable one is kept on this device.',9),4000);}catch{}
     const {saved,turned}=openYear(read);yearTurned=turned;
     if(saved&&typeof saved==='object'){state.loopYear=saved.loopYear;state.loops=saved.loops|0;pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
-      state.homeDecor=restoreHomeDecor(saved.homeDecor);state.diary=restoreDiary(saved.diary);state.news=restoreNews(saved.news);state.post=restorePost(saved.post);awaySince=Number.isFinite(saved.savedAt)?saved.savedAt:0;state.favours=restoreFavours(saved.favours);state.errand=restoreFavourErrand(saved.errand);state.greeted=saved.greeted&&typeof saved.greeted==='object'?Object.fromEntries(Object.entries(saved.greeted).filter(([k,v])=>typeof k==='string'&&Number.isSafeInteger(v)).slice(-60)):{};
+      state.homeDecor=restoreHomeDecor(saved.homeDecor);state.diary=restoreDiary(saved.diary);state.news=restoreNews(saved.news);state.post=restorePost(saved.post);awaySince=Number.isFinite(saved.savedAt)?saved.savedAt:0;state.impressions=restoreImpressions(saved.impressions);state.favours=restoreFavours(saved.favours);state.errand=restoreFavourErrand(saved.errand);state.greeted=saved.greeted&&typeof saved.greeted==='object'?Object.fromEntries(Object.entries(saved.greeted).filter(([k,v])=>typeof k==='string'&&Number.isSafeInteger(v)).slice(-60)):{};
       state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
       state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
@@ -415,9 +416,9 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
        ['Back to the field book',inventory]]);
   }
 
-  function note(text){
-    // Everything noted is offered to today's diary page too, weighed by what it was.
-    recordMoment(state,getMinutes(),{text,kind:/^Gave /.test(text)?'gift':/^Bought .+ a drink/.test(text)?'friend':'note'});
+  function note(text,{who}={}){
+    // Everything noted is offered to today's diary page too, weighed by what it was, with whom it was.
+    recordMoment(state,getMinutes(),{text,kind:/^Gave /.test(text)?'gift':/^Bought .+ a drink/.test(text)?'friend':'note',...(who?{who:[who]}:{})});
     if(!state.notes.includes(text)){state.notes.push(text);state.notes=state.notes.slice(-100);save();}
   }
   // The diary (progression/diary.js): today's page first, then back through the days.
@@ -593,7 +594,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
         if(story.gift_day!==day){story.gift_day=day;story.gifts_today=0;}
         const reaction=giftReaction(item,{giftsToday:story.gifts_today});
         story.gifts_today=Math.min(999,story.gifts_today+1);story.gifts_given=Math.min(999,story.gifts_given+1);
-        note('Gave Thuan a present: '+item+'.');save();
+        note('Gave Thuan a present: '+item+'.',{who:'Thuan'});save();
         characterControl()?.feel?.('Thuan',reaction.mood,10);
         show(title,reaction.text,[['Back to Thuan',()=>thuanConversation()],['See you soon, Thuan',close]],{mood:reaction.mood});
       },false,'I brought you this — '+item.toLowerCase()+'.']),
@@ -671,6 +672,9 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
      state.heardHappenings=[...state.heardHappenings,today.key].slice(-40);
      recordMoment(state,getMinutes(),{kind:'happening',text:today.title+'. '+name+' said: “'+today.text+'”'});
     }else today=null;
+    // What they make of him (people/impressions.js), said once when it changes, when nothing else comes first.
+    const impression=favour.line||today?null:impressionLine(state,name,getMinutes(),{temper:temperOf(name),playerName:playerName()});
+    if(impression){state.impressions={...(state.impressions||{}),[name]:impression.id};save();}
     const all=DIALOGUE[name];if(!all){legacyResident(name);return;}
     const history=histories.get(name)||[];
     // The home topic keeps its place in the rotation while commuting. Dropping it
@@ -678,10 +682,10 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     // so their opening line came round again every fourth time they were asked.
     const available=all.filter(([id,line,requires])=>(!requires||state.inspectedIds.includes(requires))&&!history.includes(id));
     // Newly discovered callbacks take precedence, then cycle through authored topics.
-    const row=available.find(r=>r[2])||available[0]||all[0];if(!favour.line){history.push(row[0]);histories.set(name,history.slice(-3));}
+    const row=available.find(r=>r[2])||available[0]||all[0];if(!favour.line&&!impression){history.push(row[0]);histories.set(name,history.slice(-3));}
     let text=row[0]==='home'?(residentHomeDescription(name)||commuterDescription(name)):row[1];
     if(today)text=today.text;
-    if(favour.line)text='';
+    if(favour.line||impression)text='';
     const profile=RESIDENTS.find(p=>p.name===name)||PROFILES.find(p=>p.name===name);
     const buttons=[['Tell me more',()=>resident(name)],...(profile?[['How is '+profile.friend+'?',()=>show(name+' · '+profile.personality,profile.gossip,[['And around town?',()=>resident(name)],['See you soon',close]])],['Somewhere worth exploring?',()=>{note(profile.clue);show(name,profile.clue,[['I will have a look',close]]);}]]:[])];
     const home=residentHomeDescription(name);
@@ -703,7 +707,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     if(want)text=text?text+'\n\n'+wantLine(want):wantLine(want);
     const gifts=giftsNow();
     if(gifts.length)buttons.splice(buttons.length,0,['Give a present…',()=>residentGift(name)]);
-    const voiced=text===row[1]&&row[3];const said=joinLines([greeting,favour.line,text]);
+    const voiced=text===row[1]&&row[3];const said=joinLines([greeting,favour.line,impression,text]);
     buttons.push(...(favour.buttons||[]));buttons.push(['See you soon',close]);show(profile?name+' · '+profile.personality:name,said.text,buttons,{pauses:said.pauses,face:said.face});showHearts(name);if(voiced)townAudio.speak(row[3]);
   }
 
@@ -725,7 +729,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
         // The next morning they write to say thank you (src/mail/post.js), once a day at most.
         {const day=Math.floor(getMinutes()/1440);sendLetter(state,{id:`thanks:${name}:${day}`,day:day+1,occasion:'thanks',from:name});}
         if(result.yen)state.yen+=result.yen;
-        note('Gave '+name+' '+item.toLowerCase()+'.');save();
+        note('Gave '+name+' '+item.toLowerCase()+'.',{who:name});save();
         const extra=(result.yen?`\n\n+¥${result.yen}`:'')+(result.up?`\n\n${name} and you are closer now: ${levelName(state.friendship[name].points)}.`:'');
         show(name,giftLine(name,item,result)+extra,[['Thank you',close]]);showHearts(name);
         onTreat(name);
@@ -773,7 +777,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     if(state.yen<DRINKS.draft.price){receipt(name,'You check your pockets: ¥'+state.yen+'. '+name+' laughs -- next time, then.');return;}
     if(!spend(DRINKS.draft.price))return;
     state.treats??={};const times=state.treats[name]=(state.treats[name]||0)+1;save();
-    onTime(2);onTreat(name);note('Bought '+name+' a drink at Minato.');
+    onTime(2);onTreat(name);note('Bought '+name+' a drink at Minato.',{who:name});
     const lines=times===1?["Cheers! That is very kind. The next one is mine -- I will remember.",'Kanpai! Thao, did you see that? A gentleman.']:times<4?["Again? Then I owe you two. Cheers!",'You keep doing this. Sit down, then, and tell me about your day.']:['At this point you are a regular. Thao is going to put your name on a bottle.',"Cheers, my friend. To the harbour."];
     receipt(name,lines[(times+name.length)%lines.length]);
   }
