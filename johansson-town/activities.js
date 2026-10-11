@@ -134,6 +134,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   }
 
   function save(){
+    if(globalThis.__JOHANSSON_TITLE_PREVIEW__)return false;
     let saved=false;
     state.avatarRecipe=encodeRecipe(playerRecipe());
     retainArchive(state.documentArchive,getMinutes());
