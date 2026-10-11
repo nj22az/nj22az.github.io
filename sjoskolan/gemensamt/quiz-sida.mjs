@@ -8,8 +8,8 @@
 //   sj-v<vecka>-quiz   svaren: {v, falt, inlamnad, namn, plan}
 //   sj-omlasning:vecka-<vecka>  Jag har läst om texten: {"EL-000887": ISO, …} (rör inte delsidornas sj-last:vecka-NN)
 import { ratta, kanon, registrera, resultat, tidText, lasLage, sparaLage, BESKED, MAX_FORSOK, forsokKvar, kanLasasUpp, nyOmgang,
-  lasOmlasning, bekraftaOmlasning, sparadPlan, pdfBlockQuiz, pdfFilnamn, kontrollkod, mailtoAmne } from './sjalvrattning.mjs?v=20261013';
-import { skapaPdf } from './pdf.mjs?v=20261013';
+  lasOmlasning, bekraftaOmlasning, sparadPlan, pdfBlockQuiz, pdfFilnamn, kontrollkod, mailtoAmne } from './sjalvrattning.mjs?v=20261014';
+import { skapaPdf } from './pdf.mjs?v=20261014';
 import { fulltNamn, sparatNamn, sparaNamn } from './elevtal.mjs?v=20260930';
 
 const esc = (s) => String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');

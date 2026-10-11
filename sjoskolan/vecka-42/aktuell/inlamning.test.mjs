@@ -142,7 +142,7 @@ test('rutan Låsta frågor har del 1–3, och delsidorna har bekräftelsen sist'
     assert.ok(del.includes('Knappen öppnas när du har läst hela sidan (minst 3 minuter).'));
     assert.ok(del.indexOf('ri-lasdel') > del.indexOf('id="labb"'), 'rutan står sist på sidan');
   }
-  assert.ok(!readFileSync(join(SJO, 'vecka-43', 'aktuell', 'Del_1.html'), 'utf8').includes('ri-lasdel'), 'bara veckor som rättar sig själva');
+  assert.ok(!readFileSync(join(SJO, 'vecka-41', 'aktuell', 'Del_1.html'), 'utf8').includes('ri-lasdel'), 'bara veckor som rättar sig själva');
 });
 
 test('inlämningen är en PDF i Classroom: ingen lång mejltext, tre försök på sidan', () => {

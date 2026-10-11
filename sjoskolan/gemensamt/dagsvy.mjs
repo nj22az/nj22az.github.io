@@ -76,7 +76,7 @@ async function formularStatus(data) {
   if (!data.sjalvrattande) return {};
   try {
     const mod = await import(data.sjalvrattande);
-    const inl = typeof mod.veckoStatus === 'function' ? mod.veckoStatus(data.vecka) : null;
+    const inl = typeof mod.veckoStatus === 'function' ? mod.veckoStatus(data.vecka, data.inl_plan || null) : null;
     const lasf = typeof mod.quizStatus === 'function' ? mod.quizStatus(data.vecka, data.quiz_plan || null) : null;
     return { inl, lasf };
   } catch { return {}; }

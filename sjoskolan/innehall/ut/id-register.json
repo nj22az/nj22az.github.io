@@ -7293,6 +7293,12 @@
    "placeringar": [
     {
      "yta": "inlamning",
+     "plats": "vecka-44/aktuell/Inlamning.html",
+     "nummer": "Inlämning 4",
+     "ankare": "uppgift-4"
+    },
+    {
+     "yta": "inlamning",
      "plats": "vecka-45/aktuell/Inlamning.html",
      "nummer": "Inlämning 1",
      "ankare": "uppgift-1"
@@ -7323,6 +7329,12 @@
    "titel": "Felsökningsrapport",
    "typ": "resonemang",
    "placeringar": [
+    {
+     "yta": "inlamning",
+     "plats": "vecka-43/aktuell/Inlamning.html",
+     "nummer": "Inlämning 4",
+     "ankare": "uppgift-4"
+    },
     {
      "yta": "inlamning",
      "plats": "vecka-45/aktuell/Inlamning.html",

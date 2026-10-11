@@ -197,6 +197,8 @@ def dagsvy_html(nr, w, sjalvrattande=None):
     }
     if sjalvrattande and quiz_plan(nr):
         data['quiz_plan'] = quiz_plan(nr)  # quizStatus räknar med den innan eleven har öppnat quizet
+    if sjalvrattande and nr in _sjalvrattning().SJALVRATTANDE:
+        data['inl_plan'] = _sjalvrattning().inlamning_plan(nr)  # veckoStatus räknar med den innan formuläret har öppnats
     v = hashlib.sha1((ROOT / 'gemensamt' / 'dagsvy.mjs').read_bytes() + (ROOT / 'gemensamt' / 'veckopanel.mjs').read_bytes()).hexdigest()[:10]
     from itertools import groupby
     dagar = ''.join(_dagkort(list(g)) for _, g in groupby(lek, key=lambda l: l['datum']))
@@ -285,6 +287,8 @@ def delpanel_html(nr, del_nr, sjalvrattande=None, sida_mapp=None):
         data['sjalvrattande'] = sjalvrattande
         if quiz_plan(nr):
             data['quiz_plan'] = quiz_plan(nr)
+        if nr in _sjalvrattning().SJALVRATTANDE:
+            data['inl_plan'] = _sjalvrattning().inlamning_plan(nr)
     laxor = ''.join(_laxa_html(lek, x) for x in lek['laxor'])
     amnen = ' · '.join(escape(a) for a in lek['amnen'])
     vecksida = 'index.html' if sida_mapp == f'vecka-{nr}' else f'../../vecka-{nr}/aktuell/index.html'
