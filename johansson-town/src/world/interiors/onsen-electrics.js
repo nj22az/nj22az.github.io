@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {travelAlong} from '../studio-assets.js';
 import {pinLobbyChannel,lobbyChannelPin,LOBBY_CHANNELS,ONSEN_DOORWAYS} from './onsen-lobby.js';
 import {ONSEN_SIGNS} from './onsen-signs.js';
 import {createLightPools} from '../light-pools.js';
@@ -890,15 +891,15 @@ export function buildOnsenElectrics({room,rect,anchor,action,sun=null,sunAtNoon=
  // up and down the back while it runs, and stop where they are when the power goes.
  // Measured in the room's own frame from the backrest onsen.js built (its parent is the room).
  const back=room.getObjectByName('Massage chair back'),backBox=back?.geometry?.parameters?new THREE.Box3().setFromCenterAndSize(back.position.clone(),new THREE.Vector3(back.geometry.parameters.width,back.geometry.parameters.height,back.geometry.parameters.depth)):null;
- const rollers=new THREE.Group();rollers.name='Massage chair rollers';group.add(rollers);
+ const rollers=new THREE.Group();rollers.name='Massage chair rollers';if(!studioChair)group.add(rollers);// Studio's chair brings its own
  const lumps=backBox?[-1,1].map(sd=>{const l=add(new THREE.SphereGeometry(.05,16,10),back.material,backBox.min.x,0,0,'Massage chair roller',rollers);l.scale.set(.28,1,.8);l.userData.side=sd;l.castShadow=false;return l;}):[];
  const chair={time:0,id:'massage-chair'};
- // On Studio's chair the rollers are its motor part: they travel the roller track (the `roller-track` anchor is its
- // middle; the track is 0.51 m tall, so a roller's centre stays within ±0.2 m of it).
+ // On Studio's chair the rollers are its motor part: they travel the card's `roller-track` box (studio-assets.js
+ // travelAlong), their whole height kept a centimetre inside both ends of the track.
  const motor=studioChair?.parts('motor')[0]||null,motorRest=motor?motor.position.y:0,track=studioChair?.card?.anchors?.['roller-track']||null;
- // where the rollers rest on the track (the middle of their own meshes, in the chair's frame: y is up in both)
- let motorMid=0;if(motor){const b=new THREE.Box3();motor.traverse(o=>{if(o.isMesh){o.geometry.computeBoundingBox();b.union(o.geometry.boundingBox);}});motorMid=(b.min.y+b.max.y)/2+motorRest;}
- const placeRollers=()=>{if(motor&&track){motor.position.y=motorRest+(track[1]-motorMid)+.2*Math.sin(chair.time*2*Math.PI/9);return;}if(!backBox)return;const t=chair.time,cz=(backBox.min.z+backBox.max.z)/2,y=.86+.24*Math.sin(t*2*Math.PI/9);
+ let motorMid=0,motorTravel=null;if(motor&&track?.min){const b=new THREE.Box3();motor.traverse(o=>{if(o.isMesh){o.geometry.computeBoundingBox();b.union(o.geometry.boundingBox);}});
+  motorMid=(b.min.y+b.max.y)/2+motorRest;motorTravel=travelAlong(track,(b.max.y-b.min.y)/2);}
+ const placeRollers=()=>{if(motorTravel){motor.position.y=motorRest+(motorTravel.centre-motorMid)+motorTravel.amplitude*Math.sin(chair.time*2*Math.PI/9);return;}if(!backBox)return;const t=chair.time,cz=(backBox.min.z+backBox.max.z)/2,y=.86+.24*Math.sin(t*2*Math.PI/9);
   for(const l of lumps){const k=Math.sin(t*2*Math.PI*.7+(l.userData.side>0?Math.PI:0));l.position.set(backBox.min.x,y+.015*k,cz+l.userData.side*(.095+.012*k));l.scale.x=.24+.06*(k+1)/2;}};
  placeRollers();
  // The fan's socket, back to back with the television's on the lobby side of the wall.

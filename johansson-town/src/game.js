@@ -979,7 +979,7 @@ async function enterRoom(s){spawnScene?.cancel('room');
  }
  // Studio's assets a room uses (studio-assets.js, when switched on): loaded before the room is built. If one cannot be
  // loaded the room builds its own instead.
- if(s.id==='onsen'&&studioAssetsEnabled()&&!studioAsset('massage-chair')){roomLoading=true;resetInput();try{await preloadStudioAsset('massage-chair');}finally{roomLoading=false;}}
+ if(s.id==='onsen'&&studioAssetsEnabled()&&!studioAsset('massage-chair')){roomLoading=true;resetInput();say('Opening '+s.title+'…',20);try{await preloadStudioAsset('massage-chair');}finally{roomLoading=false;}}
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
  current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});indoorCeilings=createIndoorCeilings(room);const spawn=activeRoomLayout?.spawn||[0,0,4.3];

@@ -233,8 +233,8 @@ export function buildOnsenInterior({room,reg,action,exit,people=()=>[]}){
  // With Studio's assets switched on (studio-assets.js), the chair is Studio's coin massage chair, placed where these
  // boxes stand (its card's `replaces`): its own colliders, and its seat is ONSEN_SEATS.massage (tests/studio-assets.test.mjs
  // checks they agree). The room draws the chair's cord, lamp light and rollers itself (onsen-electrics.js).
- const chair=studioAssetsEnabled()?placeStudioAsset('massage-chair',room,null,{roomDraws:['cord']}):null;
- if(chair)for(const c of chair.colliders)rect(c.x,c.z,c.w,c.d,c.height);
+ const chair=studioAssetsEnabled()?placeStudioAsset('massage-chair',room,null,{roomDraws:['cord'],squareOnly:true}):null;
+ if(chair)for(const c of chair.colliders)rect(c.x,c.z,c.w,c.d,c.height).minY=c.minY;
  else{
   box([depth,.5,.8],[MC.front+depth/2,.25,3.55],mat(0x5a2c24,.55),'Massage chair seat');box([.18,.95,.8],[4.72,.8,3.55],mat(0x5a2c24,.55),'Massage chair back');
   for(const z of [3.17,3.93])box([depth-.05,.22,.12],[MC.front+(depth+.05)/2,.6,z],mat(0x4a241e,.55),'Massage chair arm');
