@@ -35,7 +35,10 @@ export function buildPumpkinLantern({r=.19}={}){
  mesh(g,new THREE.CylinderGeometry(r*.06,r*.09,r*.32,8),std(0x4f7a32),0,cy+r*.98,0);
  mesh(g,new THREE.CylinderGeometry(.004,.004,.06,6),std(0x2a2522),0,-.03,0);
  const f=mesh(g,pumpkinFace(r*1.05),face,0,cy-r*.04,r*.99,'Pumpkin lantern face');f.renderOrder=1;
- g.userData.lantern={paper,face,setGlow(v){const k=THREE.MathUtils.clamp(v,0,1),l=k>0?.22+.78*Math.pow(k,.6):.12;paper.color.setRGB(1*l,.55*l,.1*l,THREE.SRGBColorSpace);face.color.setRGB(1*l,.95*l,.6*l,THREE.SRGBColorSpace);}};
+ g.userData.lantern={paper,face,setGlow(v){const k=THREE.MathUtils.clamp(v,0,1);
+  // unlit (k=0): orange paper in the daylight and a dark cut face; lit: the paper and face glow with the bulb
+  if(k===0){paper.color.setRGB(.8,.43,.1,THREE.SRGBColorSpace);face.color.setRGB(.28,.16,.07,THREE.SRGBColorSpace);return;}
+  const l=.22+.78*Math.pow(k,.6);paper.color.setRGB(1*l,.55*l,.1*l,THREE.SRGBColorSpace);face.color.setRGB(1*l,.95*l,.6*l,THREE.SRGBColorSpace);}};
  g.userData.lantern.setGlow(0);
  return g;
 }
