@@ -82,6 +82,6 @@ export function buildKitanoHamlet(world,options){
 }
 const KITANO_PLATES=Object.freeze({
  'kitano-1':'Johansson and Thuan’s house: the red-tile house at the end of the lane, its back to the sea and its front to the pier, so he hears the Minato Maru’s whistle before he sees her. He moved out here from his rooms in the town hall’s east wing; the office is still in Minato, a crossing away, and the futon, the television and the letter box came with him. Thuan, his wife, keeps Sakura Shōten in town on weekdays from her room at 1 Kitahama and comes home on the Friday boat; her futon lies beside his.',
- 'kitano-2':'The Shiroma house: Jun, who checks the commuter tickets at the terminal and takes the ferry’s lines at the pier. Concrete, after the typhoon of 1987 took the roof off the old one; the bicycle is his way to work, ninety seconds along the lane.',
- 'kitano-3':'The Chinen house: Tetsuo, the radio repairer, who took it when the Nakamas moved to their daughter’s in Naha. Two rooms and a verandah, the hinpun in the yard, and a short-wave aerial on the ridge he put up the first week; his radio test is at the airport, and the morning boat takes him to the workshop in Minato.',
+ 'kitano-2':'The Shiroma house, to let: concrete, after the typhoon of 1987 took the roof off the old one; the Shiromas moved to their daughter’s in Naha. Enquire at the town hall.',
+ 'kitano-3':'The Chinen house: the old red-tile house, Tetsuo’s mother’s. Her son mends radios in Minato and comes over on the boat; the mayor and his wife are at the end of the lane.',
 });

@@ -161,6 +161,23 @@ husband."* So:
   player calls; today an island resident who is "away" has no body); the guide's portraits and backstories for the
   new relationships.
 
+### 7b-4, built: the creator's correction (2026-10-12)
+
+The creator: *"Only Johansson and Thuan live on the hamlet, the others live in the port"* and *"Tetsuo's mother lives on
+the Hamlet in an old house"*. So:
+
+- **kitano-1**: Johansson and Thuan, unchanged. **kitano-3**, the old red-tile Chinen house: **Mrs Chinen, Tetsuo's
+  mother**, a neighbour (`people/neighbours.js`: sweeps the lane in front of her gate from 06:30, sits at her gate for the
+  breeze from 15:00, home otherwise; three lines about the house, her son and the mayor's wife). **kitano-2**, the
+  concrete Shiroma house, is **to let** (its plate says so). `island-households.js` and the plates follow.
+- **Tetsuo lives in the port again**, alone at 2 Front-Row Yard (`households.js`, `YARD_RESIDENT_NAMES`): his old day
+  (lunch at Sato, the bench from five until midnight) and no boat; his line says his mother is across the water.
+- **Jun lives in the port**: off duty his home is the ferry terminal's exit in Minato (he is hidden there); his body
+  cannot yet walk the crossing, so he is hidden at the terminal until his shift (open: his ferry ride).
+- Tests: `kitano-residents` (Tetsuo in the yard, Mrs Chinen, Jun in Minato), `yard-homes` (Tetsuo's door),
+  `neighbourhood-access` (Tetsuo in the park at 13:00 again). Checked headless at 16:00: Mrs Chinen at her gate.
+- Open: an authored look for Mrs Chinen (she borrows Fumiko's); Jun's crossing on the boat.
+
 ## 4. Batch 7c: the crew at their posts (built 2026-10-12)
 
 The data is there (`people/ferry-crew.js`: the master, Mr Nakandakari the chief, Mr Higa Jr the oiler, Ms Uezu on deck,

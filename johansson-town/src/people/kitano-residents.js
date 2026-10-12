@@ -7,7 +7,9 @@ import {airportWorld} from '../world/airport-ground.js';
  * Thuan is Johansson's wife and lives with him at kitano-1 at the weekend; on weekdays she stays at 1 Kitahama, so
  * her weekday record stays Kitahama's (batch 7b-3 makes the weekend).
  */
-export const KITANO_RESIDENT_HOMES=Object.freeze({'kitano-3':Object.freeze(['Tetsuo'])});
+// Nobody from the town's walking cast lives here now (the creator, 2026-10-12: "Only Johansson and Thuan live on the hamlet, the
+// others live in the port"); Tetsuo's mother, a neighbour (people/neighbours.js), keeps the old Chinen house, kitano-3.
+export const KITANO_RESIDENT_HOMES=Object.freeze({});
 export const KITANO_RESIDENT_NAMES=Object.freeze(Object.values(KITANO_RESIDENT_HOMES).flat());
 export const KITANO_ADDRESS='Kitano hamlet, Kitano-jima';
 export function kitanoHomeFor(name){

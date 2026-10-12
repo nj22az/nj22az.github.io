@@ -51,7 +51,7 @@ export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
 export function residentHomeDescription(name){
  const profile=RESIDENTS.find(p=>p.name===name);
  if(!profile)return '';
- if(name==='Tetsuo')return 'I live at '+profile.homeAddress+', across the water. The morning boat brings me to the workshop and the evening one takes me home; the radio test is out there anyway.';
+ if(name==='Tetsuo')return 'I live at '+profile.homeAddress+', behind the shop. My mother is across the water in the old Chinen house in Kitano hamlet; I go over on the boat to see her.';
  if(name==='Thuan')return 'On weekdays I stay at '+profile.homeAddress+' with Thao and Chin, near the shop. At the weekend I am home on Kitano-jima with my husband, Johansson.';
  if(name==='Chin')return 'My place is at '+profile.homeAddress+', bro, with my wife Thao. Thuan has the other room on weekdays.';
  if(!householdFor(name))return profile.homeAddress?'I live at '+profile.homeAddress+'.':'Home? Minato, mostly. Thao says I pay rent in bottle caps.';
