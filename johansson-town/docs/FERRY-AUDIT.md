@@ -643,3 +643,39 @@ card read.
 
 **Open.** The steering-gear room and the bow-thruster room (hatches, not yet walked); the shaft space; the compass
 deck; the crew aboard at their posts; machinery that runs (the engines' sound and the switchboard as a live state).
+
+### Batch 6d: realism, and a lens for her rooms (2026-10-12)
+
+The creator, 2026-10-12: *"Make the ferry more realistic and improve the camera angle so it's easy to explore."*
+
+**The lens in her rooms (`game.js`).** Aboard, with a deckhead over him within 2.0–2.45 m (`shipRoom`: the walk's own
+camera solids), the third-person lens pivots at his chest (1.3 m, not 1.6), stands 2 m back at most (not 3.2), and
+rises sooner and higher (from 2.1 m in, up to 0.5 m) to look down over him; the deckhead stops it. Nearer than
+0.85 m (a wall at his back, a passage, the engine room's ladder foot) it becomes a **head camera**: he is hidden and
+the view keeps his own pitch, instead of a screen full of the back of his head (the engine room, the mess and the
+wheelhouse were that). Found and fixed on the way: in the engine room (1.9 m clear) a 1.82 m man's eye pivot stood in
+the deckhead's margin, so the boom was 0 m and the view was his skull; the crew house and wheelhouse had no deckhead for
+the lens (it rose out through the compass deck) and were never "a room". The audit page has `probe(x, y, z)` for the
+lens's tests at a point.
+
+**Realism (`ferry-model.js`, `ferry-interior.js`, `ferry.js`).**
+- **Mooring lines.** Alongside at Minato she is tied up: four vinylon lines (`FERRY_MOORING`), the head line and the
+  forward spring from the forward station on the port bow house out through a fairlead, the after spring and the stern
+  line from the aft station through a fairlead at the bulwark, each to its own bitt on the pier (`MINATO_BERTH.bitts`:
+  z −53, −62, −77, −87). Laid every frame from her pose, so they stay on her bitts as she heaves; gone the moment she
+  casts off; none yet at Kitano-jima (no bitts there until 4c).
+- **Window frames.** Every pane (51) in an anodised frame 5 cm wide, 1 cm proud of the plating: a window is a fitting,
+  not a hole in a flat wall.
+- **Her name boards** (みなと丸 · MINATO MARU, white with a teal border) on the wheelhouse front and both sides of the
+  bridge house; **the ship's flag** (日の丸) on the stern staff.
+- **Bulwark stiffeners**, a flat bar every 1.25 m inside the car deck's bulwark, as a plated bulwark has.
+- **Grab rails** at 1.0 m along the deckhouse's and the lobby's outer sides, and down both sides of the crew's corridor.
+- **Fire-hose boxes** (red, with their window) on the casings' faces by the car deck's hydrants.
+- **Engine room:** hand rails on stanchions round each main engine, 0.4 m off the block, yellow (you hold them in a
+  seaway and never step over them), and **cable trays** along the deckhead either side from the switchboard forward.
+
+**Checked.** `ferry.test.mjs`: moored alongside at Minato with one line to each of the pier's bitts, each run leaving
+her side and sloping down to the pier, none at sea and none at Kitano-jima; the ship's own tests (33 meshes, about
+43,000 triangles; the stern flag inside her length). `ferry-walk`: the engines' rails stand where the walk already kept
+clear. In the running game: the lobby, carpet room, saloon, corridor, mess, engine room (two views), wheelhouse and
+car deck photographed with the new lens; from outside, the frames, the name board, the flag and the lines.
