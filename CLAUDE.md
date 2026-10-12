@@ -188,6 +188,13 @@ that makes more or better stories.
   change the data, run the tool, commit the sheets (`tests/ferry-design-book.test.mjs` fails on stale sheets). Decide ship
   questions as a naval architect would (rules, weights, stability, structure) and record findings in the README rather
   than fudge a number.
+- **Every engineering part is Johansson Marine** (the creator, 2026-10-12: "I want them to look like real machines
+  similar to Volvo but brand every engineering part as a Johansson brand"). Engines, gears, generators, thrusters,
+  steering gear, switchboards, pumps, purifiers, compressors, windlasses, radar and radios aboard the Minato Maru (and
+  any machine built later in the town) are built like the real marine machines of their day, in the Johansson Marine
+  livery (`johansson-town/src/world/johansson-marine.js`: the green block, black covers, silver lagging, the aluminium
+  maker's plate) and carry a model from its catalogue, whose numbers are the ship's own data. No other maker's name
+  appears on a machine.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten is a konbini *and* the
   town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading). Higa Liquor supplies
   all alcohol (to Sakura, Minato, Sato Ramen and the Coral Bay Bar on Kitano-jima); Front-Row Books & Stationery supplies office supplies; Rainflower

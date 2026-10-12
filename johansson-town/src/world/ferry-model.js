@@ -195,6 +195,19 @@ function deckAndBulwarks(){
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('color',new THREE.Float32BufferAttribute(cc,3));g.computeVertexNormals();return g;
 }
 
+/** A maker's plate: lines of text on an aluminium plate, or a wordmark on a cover (ferry-interior.js plates). */
+function plateMesh(pl){
+ if(typeof document==='undefined')return null;
+ const W=512,H=Math.max(64,Math.round(512*pl.h/pl.w)),c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+ x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.strokeStyle=pl.fg;x.lineWidth=4;x.strokeRect(6,6,W-12,H-12);
+ x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';
+ const n=pl.lines.length,rowH=(H-20)/n;
+ pl.lines.forEach((line,i)=>{const big=i===0||n===1;x.font=(big?'bold ':'')+Math.round(Math.min(rowH*.72,W/(line.length*.62)))+'px sans-serif';x.fillText(line,W/2,10+rowH*(i+.5));});
+ const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(pl.w,pl.h),new THREE.MeshStandardMaterial({map:tex,roughness:.5,metalness:.3,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));
+ mesh.position.set(...pl.pos);mesh.rotation.y=pl.rotY;mesh.name=pl.name;return mesh;
+}
+
 /** Collects static parts by material and merges them. */
 function createKit(shadows){
  const groups=new Map();const c=new THREE.Color();
@@ -389,6 +402,9 @@ export function buildFerryModel({shadows=false}={}){
  const SAL=FERRY_DECKS.saloon,DH0=SAL.aft,DH1=SAL.fore,dw=SAL.width/2,dhTop=BRIDGE-.25;
  for(const b of FERRY_INTERIOR.boxes)if(b.draw!==false)kit.block(b.cls,b.a,b.b,b.hex);
  for(const r of FERRY_INTERIOR.bars)kit.bar(r.cls,r.a,r.b,r.r,r.hex,r.r>.2?14:6);
+ for(const c of FERRY_INTERIOR.cyls)kit.cyl(c.cls,c.rt,c.rb,c.h,c.pos,c.hex,c.rot,c.seg);
+ // Maker's plates and labels (johansson-marine.js): lettering on a plate, drawn as its own small textured plane.
+ for(const pl of FERRY_INTERIOR.plates){const m=plateMesh(pl);if(m)ferry.add(m);}
  for(const g of FERRY_INTERIOR.glass){win(g.size,g.pos,g.rot);
   // Each pane in an anodised frame, 5 cm, standing 1 cm proud of the plating: no window is a hole in a flat wall.
   const [sx,sy,sz]=g.size,alongX=sx>sz,w=alongX?sx:sz,t=.05,d=(alongX?sz:sx)+.02;

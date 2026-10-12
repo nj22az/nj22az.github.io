@@ -1,5 +1,6 @@
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_MACHINERY,FERRY_ELECTRICS} from './ferry-ship.js';
 import {FERRY_ENGINE_ROOM} from './ferry-interior.js';
+import {JOHANSSON_MARINE} from './johansson-marine.js';
 
 /**
  * What you can look at aboard the Minato Maru, and what it tells you (ferry batch 6c): each a point in her frame
@@ -18,12 +19,12 @@ export const FERRY_INSPECT=Object.freeze([
   'The lower lobby’s plan: the two sliding fire doors onto the lanes close by themselves on the alarm; the ways up are the stairs either side, the way below the engine room’s door under its red sign, and aft the crew’s door to the mooring station. Drivers wait here; nobody stays on the car deck at sea.'),
  at('crew-door',[0,BRIDGE+1.3,Z(5.7)],'Crew door: the corridor and the wheelhouse','Crew only',
   'The crew’s door from the bridge deck’s aft platform (up either ladder from the open deck). Their corridor runs forward between the cabins, the mess and the galley to the wheelhouse. The wheelhouse can also be reached from the walkways: a ladder at each walkway’s forward end climbs to the bridge wing and its door.'),
- at('main-engine',[1.55,FP+1.3,Z(10.8)],'Look at the port main engine','Main engine, port',
-  `One of two: ${M.mains.cylinders} cylinders in line, ${M.mains.bore} mm bore and ${M.mains.stroke} mm stroke, ${M.mains.kW} kW (${M.mains.ps} PS) at ${M.mains.rpm} rpm, turbocharged. ${M.mains.start}. ${M.mains.driven}. It burns ${M.mains.fuel}.`),
- at('gearbox',[1.55,FP+1.1,Z(9.2)],'Look at the port gearbox','Reverse-reduction gearbox',
-  `${M.gears.kind}. ${M.gears.ratio} : 1, so the screw turns at ${M.propellers.rpm} rpm. ${M.propellers.why}. The shaft runs aft through the bulkhead to a ${Math.round(M.propellers.diameter*100)/100} m, ${M.propellers.blades}-bladed ${M.propellers.material.toLowerCase()} screw.`),
- at('generator',[-1.4,FP+1.2,Z(12.6)],'Look at No.2 generator','Generator No.2',
-  `${E.generators.kVA} kVA (${E.generators.kW} kW at ${E.generators.pf} power factor), ${E.generators.volts} V three-phase ${E.hz} Hz at ${E.generators.rpm} rpm, ${E.generators.amps} A. Its breaker trips on ${E.generators.trips}. One carries her at sea; both are on the board in narrow water, because the ${M.bowThruster.kW} kW bow thruster ${M.bowThruster.interlock.toLowerCase()}.`),
+ at('main-engine',[1.55,FP+1.3,Z(10.8)],'Look at the port main engine','Main engine, port: Johansson Marine '+JOHANSSON_MARINE.catalogue.main.model,
+  `A Johansson Marine ${JOHANSSON_MARINE.catalogue.main.model}, one of two: ${M.mains.cylinders} cylinders in line, ${M.mains.bore} mm bore and ${M.mains.stroke} mm stroke, ${M.mains.kW} kW (${M.mains.ps} PS) at ${M.mains.rpm} rpm, turbocharged. ${M.mains.start}. ${M.mains.driven}. It burns ${M.mains.fuel}.`),
+ at('gearbox',[1.55,FP+1.1,Z(9.2)],'Look at the port gearbox','Johansson Marine '+JOHANSSON_MARINE.catalogue.gear.model+' reverse-reduction gear',
+  `A Johansson Marine ${JOHANSSON_MARINE.catalogue.gear.model}: ${M.gears.kind}. ${M.gears.ratio} : 1, so the screw turns at ${M.propellers.rpm} rpm. ${M.propellers.why}. The shaft runs aft through the bulkhead to a ${Math.round(M.propellers.diameter*100)/100} m, ${M.propellers.blades}-bladed ${M.propellers.material.toLowerCase()} screw.`),
+ at('generator',[-1.4,FP+1.2,Z(12.6)],'Look at No.2 generator','Generator No.2: Johansson Marine '+JOHANSSON_MARINE.catalogue.genset.model,
+  `A Johansson Marine ${JOHANSSON_MARINE.catalogue.genset.model} set: ${E.generators.kVA} kVA (${E.generators.kW} kW at ${E.generators.pf} power factor), ${E.generators.volts} V three-phase ${E.hz} Hz at ${E.generators.rpm} rpm, ${E.generators.amps} A. Its breaker trips on ${E.generators.trips}. One carries her at sea; both are on the board in narrow water, because the ${M.bowThruster.kW} kW bow thruster ${M.bowThruster.interlock.toLowerCase()}.`),
  at('switchboard',[-3.0,FP+1.3,Z(8.95)],'Read the main switchboard','Main switchboard',
   `${E.boards.MSB}. The system is ${E.distribution}. Lighting is ${E.lighting} V through ${E.transformers.lighting.count} × ${E.transformers.lighting.kVA} kVA transformers. ${E.preferenceTrip.why}.`),
  at('booth-desk',[-3.2,FP+1.0,Z(10.1)],'Read the engine-room log','Engine-room log',

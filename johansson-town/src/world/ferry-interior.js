@@ -1,4 +1,5 @@
 import {FERRY_SHIP,FERRY_HEIGHTS} from './ferry-ship.js';
+import {JOHANSSON_MARINE,makerPlate,WORDMARK} from './johansson-marine.js';
 
 /**
  * The Minato Maru's houses and casings as she is walked (ferry batch 6b; docs/FERRY-AUDIT.md): one list of what is
@@ -80,12 +81,16 @@ const sorted=(a,b)=>a<b?[a,b]:[b,a];
  * radius off a wall, the next floor (a doorway's sill) reaches back that far, so a doorway is never a gap.
  */
 export const FERRY_INTERIOR=(()=>{
- const boxes=[],bars=[],glass=[],floors=[];
+ const boxes=[],bars=[],glass=[],floors=[],cyls=[],plates=[];
  const box=(a,b,hex,o={})=>{boxes.push(Object.freeze({a:Object.freeze(a),b:Object.freeze(b),hex,cls:o.cls||'paint',solid:o.solid!==false,camera:o.camera??o.solid!==false,draw:o.draw!==false,name:o.name||null}));};
  const deco=(a,b,hex,o={})=>box(a,b,hex,{...o,solid:false,camera:false});
  const bar=(a,b,r,hex,cls='metal')=>bars.push(Object.freeze({a:Object.freeze(a),b:Object.freeze(b),r,hex,cls}));
  const pane=(size,pos,rot=[0,0,0])=>glass.push(Object.freeze({size:Object.freeze(size),pos:Object.freeze(pos),rot:Object.freeze(rot)}));
  const floor=(id,x,z,y,inside=null)=>floors.push(Object.freeze({id,x:Object.freeze(x),z:Object.freeze(z),y,inside}));
+ /** A cylinder (radius top, radius bottom, height) at pos, turned by rot (Euler YXZ): scenery only, never a solid. */
+ const cyl=(rt,rb,h,pos,hex,o={})=>cyls.push(Object.freeze({rt,rb,h,pos:Object.freeze(pos),rot:Object.freeze(o.rot||[0,0,0]),hex,cls:o.cls||'metal',seg:o.seg||14,name:o.name||null}));
+ /** A maker's plate or a label: lines of text on a plate w × h metres at pos, facing +z turned by rotY. */
+ const plate=(lines,w,h,pos,rotY,o={})=>plates.push(Object.freeze({lines:Object.freeze(lines),w,h,pos:Object.freeze(pos),rotY,bg:o.bg||'#dcd8c8',fg:o.fg||'#1d2326',name:o.name||'maker’s plate'}));
  /**
   * A wall along x (at z between t0 and t1) or along z (at x between t0 and t1), from s0 to s1 and y0 to y1, with
   * openings {s0, s1, y0, y1, glass}: doors and windows are holes in it, glazed where they are windows.
@@ -574,33 +579,67 @@ export const FERRY_INTERIOR=(()=>{
   bar([-W+.3,y1-.35,Z(9.1)],[-W+.3,y1-.2,Z(9.1)],.1,RED,'paint');bar([-W+.6,y1-.35,Z(9.1)],[-W+.6,y1-.2,Z(9.1)],.1,YELLOW,'paint');
   deco([W-.02,y0+1.4,Z(9.9)],[W,y0+1.7,Z(10.3)],0xf4f1e8);deco([W-.025,y0+1.5,Z(10.03)],[W-.02,y0+1.6,Z(10.17)],RED);deco([W-.025,y0+1.52,Z(9.95)],[W-.02,y0+1.58,Z(10.25)],RED);
   deco([-W+.1,y1-.3,a+.2],[-W+.6,y1-.15,a+.22],0x1f7a4a);
-  // The main engines: six cylinders in line, 160 mm bore, 460 kW at 1350 rpm; bedplate, block, rocker covers,
-  // the turbocharger forward, the exhaust lagged and led up aft to the casing's uptake; the gearbox aft.
-  for(const s of [1,-1]){const cx=s*1.55,X=S2(s,1.05,2.05);
-   box([X[0]-.05,y0,Z(9.6)],[X[1]+.05,y0+.25,Z(12.0)],GD,{name:'main engine bedplate'});
-   box([X[0],y0+.25,Z(9.7)],[X[1],y0+1.1,Z(11.95)],G,{name:'main engine'});
-   for(let i=0;i<6;i++)deco([cx-.32,y0+1.1,Z(9.8)+i*.35],[cx+.32,y0+1.28,Z(9.8)+i*.35+.3],0x6f8a7f);
-   box([cx-.32,y0+.4,Z(12.0)],[cx+.32,y0+1.25,Z(12.35)],0x9aa3a2,{name:'turbocharger'});
-   bar([cx,y0+1.25,Z(12.2)],[cx,y1-.15,Z(12.2)],.14,0xe8e4d8,'paint');bar([cx,y1-.15,Z(12.2)],[cx,y1-.15,a+.05],.14,0xe8e4d8,'paint');
-   box([X[0]+.1,y0+.15,Z(9.0)],[X[1]-.1,y0+.95,Z(9.6)],0x6f8a7f,{name:'gearbox'});
-   bar([cx,y0+.45,a],[cx,y0+.45,Z(9.0)],.055,0xb0b4b4);
-   for(let i=0;i<6;i++)bar([cx+s*.5,y0+.8,Z(9.8)+i*.35+.15],[cx+s*.62,y0+.8,Z(9.8)+i*.35+.15],.03,0x8a6a3a);
-   // Its gauge board on the engine's aft end, with its gauges; the maker's plate on the block.
-   deco([cx-.3,y0+.95,Z(9.68)],[cx+.3,y0+1.25,Z(9.7)],0xf0ece0);for(const k of [-.18,0,.18])bar([cx+k,y0+1.1,Z(9.66)],[cx+k,y0+1.1,Z(9.68)],.055,DARK);
-   deco([cx-.14,y0+.6,Z(10.6)],[cx+.14,y0+.72,Z(10.6)+.01],0xb08a4a);
-   // The exhaust manifold along the block's outboard top, lagged, to the turbocharger; the air filter on the turbo;
-   // the flywheel housing aft; the sump's oil filler; the fuel injection pumps' cover inboard.
-   bar([cx+s*.42,y0+1.3,Z(9.85)],[cx+s*.42,y0+1.3,Z(12.0)],.09,0xe8e4d8,'paint');
-   bar([cx,y0+1.0,Z(12.45)],[cx,y0+1.0,Z(12.8)],.16,0x9aa3a2);
-   bar([cx,y0+.6,Z(9.55)],[cx,y0+.6,Z(9.65)],.5,0x6f8a7f);
-   bar([cx-s*.3,y0+1.1,Z(10.2)],[cx-s*.3,y0+1.35,Z(10.2)],.03,0xe0b93a);
-   deco([cx-s*.5-.05,y0+.75,Z(9.9)],[cx-s*.5+.05,y0+.9,Z(11.9)],0x5f7f6a);
-  }
-  // The generators: two 125 kVA sets athwartships forward of the mains, their engines inboard, alternators outboard.
-  for(const s of [1,-1]){const X=S2(s,.55,2.4);
-   box([X[0],y0,Z(12.6)],[X[1],y0+.2,Z(13.35)],GD,{name:'generator bed'});
-   {const E=S2(s,.6,1.75);box([E[0],y0+.2,Z(12.65)],[E[1],y0+1.0,Z(13.3)],G,{name:'generator engine'});}
-   bar([s*1.75,y0+.6,Z(12.975)],[s*2.35,y0+.6,Z(12.975)],.32,0x2f4f8f);
+  // The main engines: Johansson Marine JM6-160 (johansson-marine.js), built like the marine diesels of their day
+  // (the creator, 2026-10-12: "real machines similar to Volvo", branded Johansson). Each: the bedplate; the block in
+  // the house green with the sump below and the crankcase doors along the inboard side; six cylinder heads under
+  // six black rocker covers with the oil filler on No.1; the fuel rail and injection pumps inboard with a line to
+  // each head; the exhaust manifold outboard in silver lagging with a branch from each head to the turbocharger
+  // forward (turbine and compressor housings, the air filter drum, the charge-air cooler), and the exhaust up to
+  // the casing; the flywheel housing aft, the coupling guard and the JR-30 gearbox with its output flange; the
+  // lube-oil filters and the cooling-water pumps on the forward end; the gauge board and local control stand aft;
+  // the maker's plate on the block. Numbers from FERRY_MACHINERY through the catalogue.
+  {const L=JOHANSSON_MARINE.livery,GRN=L.green,GRND=L.greenDark,COV=L.cover,LAG=L.lagging,CAST=L.cast;
+   const E0=Z(9.7),E1=Z(11.95),heads=6,pitch=(E1-E0-.5)/heads;
+   for(const s of [1,-1]){const cx=s*1.55,X=S2(s,1.1,2.0),out=s*.45,inb=-s*.45;
+    const name=s>0?'main engine, port':'main engine, starboard';
+    box([X[0]-.08,y0,Z(9.0)],[X[1]+.08,y0+.22,E1+.05],0x3a3f41,{name:'main engine bedplate'});
+    box([X[0]+.08,y0+.22,E0],[X[1]-.08,y0+.55,E1],GRND,{name:'main engine sump'});
+    box([X[0],y0+.55,E0],[X[1],y0+1.12,E1],GRN,{name:'main engine'});
+    for(let i=0;i<heads;i++)cyl(.09,.09,.015,[cx+inb*1.0,y0+.82,E0+.25+i*pitch+pitch/2],GRND,{rot:[0,0,Math.PI/2],seg:12,name:'crankcase door'});
+    for(let i=0;i<heads;i++){const z0=E0+.25+i*pitch+.03,z1=z0+pitch-.06;
+     deco([cx-.3,y0+1.12,z0],[cx+.3,y0+1.3,z1],GRN);
+     deco([cx-.24,y0+1.3,z0+.02],[cx+.24,y0+1.44,z1-.02],COV);cyl(.1,.1,z1-z0-.06,[cx,y0+1.44,(z0+z1)/2],COV,{rot:[Math.PI/2,0,0],seg:10});
+     bar([cx+inb*.6,y0+1.2,(z0+z1)/2],[cx+inb*.1,y0+1.36,(z0+z1)/2],.012,0xd8d4c4);
+     bar([cx+out*.5,y0+1.22,(z0+z1)/2],[cx+out*.95,y0+1.3,(z0+z1)/2],.045,LAG);}
+    cyl(.045,.045,.05,[cx+.1,y0+1.49,E0+.3],0xe0b93a,{seg:10,name:'oil filler'});
+    bar([cx+inb*.62,y0+1.2,E0+.2],[cx+inb*.62,y0+1.2,E1-.2],.02,0xd8d4c4);
+    deco([cx+inb*.75-.08,y0+.85,E0+.3],[cx+inb*.75+.08,y0+1.15,E1-.3],COV);
+    for(const k of [0,.2])cyl(.07,.07,.26,[cx+inb*.72,y0+.72,E0+.1+k],0xf0ece0,{seg:12,name:'fuel filter'});
+    bar([cx+out*.95,y0+1.3,E0+.2],[cx+out*.95,y0+1.3,E1+.1],.085,LAG,'paint');
+    bar([cx+out*.95,y0+1.3,E1+.1],[cx+out*.6,y0+1.45,E1+.35],.085,LAG,'paint');
+    cyl(.17,.17,.26,[cx+out*.6,y0+1.45,E1+.42],CAST,{rot:[Math.PI/2,0,0],seg:16,name:'turbocharger turbine'});
+    cyl(.2,.2,.2,[cx+out*.6,y0+1.45,E1+.64],CAST,{rot:[Math.PI/2,0,0],seg:16,name:'turbocharger compressor'});
+    cyl(.16,.16,.3,[cx+out*.6,y0+1.45,E1+.9],COV,{rot:[Math.PI/2,0,0],seg:16,name:'air filter'});cyl(.165,.165,.04,[cx+out*.6,y0+1.45,E1+.78],LAG,{rot:[Math.PI/2,0,0],seg:16});
+    deco([cx-.3,y0+.9,E1+.02],[cx+.3,y0+1.3,E1+.32],GRN);bar([cx+out*.6,y0+1.45,E1+.5],[cx+out*.2,y0+1.3,E1+.2],.06,CAST);
+    bar([cx+out*.6,y0+1.62,E1+.42],[cx+out*.6,y1-.15,E1+.42],.14,LAG,'paint');bar([cx+out*.6,y1-.15,E1+.42],[cx+out*.6,y1-.15,a+.05],.14,LAG,'paint');
+    cyl(.1,.1,.18,[cx-.25,y0+.75,E1+.12],CAST,{rot:[Math.PI/2,0,0],seg:12,name:'cooling-water pump'});cyl(.09,.09,.16,[cx+.25,y0+.7,E1+.12],CAST,{rot:[Math.PI/2,0,0],seg:12,name:'sea-water pump'});
+    for(const k of [-.14,.14])cyl(.075,.075,.3,[cx+k,y0+.45,E1+.1],0xf0ece0,{seg:12,name:'lube-oil filter'});
+    deco([cx-.32,y0+.3,E1+.2],[cx+.32,y0+.6,E1+.26],COV);
+    cyl(.42,.42,.22,[cx,y0+.6,E0-.11],COV,{rot:[Math.PI/2,0,0],seg:20,name:'flywheel housing'});
+    cyl(.2,.2,.14,[cx,y0+.6,E0-.29],0xe0b93a,{rot:[Math.PI/2,0,0],seg:14,name:'coupling guard'});
+    box([X[0]+.12,y0+.22,Z(9.0)],[X[1]-.12,y0+.98,E0-.36],GRN,{name:'gearbox'});cyl(.3,.3,.06,[cx,y0+.6,Z(9.0)-.03],GRND,{rot:[Math.PI/2,0,0],seg:20,name:'gearbox cover'});
+    deco([cx-.14,y0+.98,Z(9.15)],[cx+.14,y0+1.08,Z(9.45)],COV);cyl(.12,.12,.1,[cx,y0+.6,Z(9.0)-.1],CAST,{rot:[Math.PI/2,0,0],seg:12,name:'output flange'});
+    bar([cx,y0+.6,a],[cx,y0+.6,Z(9.0)-.14],.055,0xb0b4b4);
+    deco([cx+inb*1.1-.22,y0+.95,E0+.05],[cx+inb*1.1+.22,y0+1.3,E0+.08],0xf0ece0);for(const k of [-.14,0,.14])cyl(.05,.05,.02,[cx+inb*1.1+k,y0+1.13,E0+.045],DARK,{rot:[Math.PI/2,0,0],seg:12,name:'gauge'});
+    bar([cx+inb*1.1,y0+.22,E0+.06],[cx+inb*1.1,y0+.95,E0+.06],.02,DARK);
+    deco([cx+inb*1.2-.16,y0+.9,Z(9.1)],[cx+inb*1.2+.16,y0+1.05,Z(9.4)],COV);bar([cx+inb*1.2,y0+.22,Z(9.25)],[cx+inb*1.2,y0+.9,Z(9.25)],.04,COV);
+    cyl(.07,.07,.02,[cx+inb*1.2,y0+1.06,Z(9.25)],0xf0ece0,{seg:14,name:'tachometer'});cyl(.025,.025,.03,[cx+inb*1.2+.1,y0+1.07,Z(9.15)],L.red,{seg:10,name:'stop button'});bar([cx+inb*1.2-.1,y0+1.05,Z(9.35)],[cx+inb*1.2-.1,y0+1.25,Z(9.45)],.012,DARK);
+    plate(makerPlate('main',s>0?1:2),.36,.16,[cx+inb*.46,y0+.9,E0+.9],s>0?-Math.PI/2:Math.PI/2,{name:'maker’s plate: '+name});
+    plate([WORDMARK],.9,.08,[cx+out*.25,y0+1.38,(E0+E1)/2],s>0?Math.PI/2:-Math.PI/2,{bg:'#1f2224',fg:'#dcd8c8',name:'wordmark'});
+   }
+   // The generator sets: Johansson Marine JG-125, athwartships forward of the mains; a four-cylinder engine inboard
+   // (heads, covers, manifold and a small turbo), the alternator outboard in the works' blue with its cooling ribs
+   // and terminal box, on a common bed, and the maker's plate on the bed.
+   for(const s of [1,-1]){const X=S2(s,.55,2.4),zc=Z(12.975),ex=S2(s,.6,1.75);
+    box([X[0],y0,Z(12.55)],[X[1],y0+.2,Z(13.4)],0x3a3f41,{name:'generator bed'});
+    box([ex[0],y0+.2,Z(12.7)],[ex[1],y0+.52,Z(13.25)],GRND,{name:'generator sump'});box([ex[0],y0+.52,Z(12.65)],[ex[1],y0+.95,Z(13.3)],GRN,{name:'generator engine'});
+    for(let i=0;i<4;i++){const x0=Math.min(ex[0],ex[1])+.12+i*.26;deco([x0,y0+.95,zc-.2],[x0+.2,y0+1.08,zc+.2],GRN);deco([x0+.02,y0+1.08,zc-.16],[x0+.18,y0+1.18,zc+.16],COV);}
+    bar([ex[0],y0+1.05,zc+.28],[ex[1],y0+1.05,zc+.28],.05,LAG,'paint');cyl(.11,.11,.16,[s*1.7,y0+1.05,zc+.28],CAST,{rot:[0,0,Math.PI/2],seg:14,name:'generator turbocharger'});
+    bar([s*1.75,y0+1.1,zc+.28],[s*1.75,y1-.15,zc+.28],.09,LAG,'paint');
+    cyl(.32,.32,.6,[s*2.05,y0+.6,zc],L.alternator,{rot:[0,0,Math.PI/2],seg:18,name:'alternator'});for(const k of [-.2,-.1,0,.1,.2])cyl(.335,.335,.02,[s*(2.05+k),y0+.6,zc],0x1f2f52,{rot:[0,0,Math.PI/2],seg:18});
+    deco([s*2.05-.1,y0+.92,zc-.12],[s*2.05+.1,y0+1.08,zc+.12],COV);
+    plate(makerPlate('genset',s>0?1:2),.3,.14,[s*1.2,y0+.42,Z(12.55)-.005],Math.PI,{name:'maker’s plate: generator No.'+(s>0?1:2)});
+   }
   }
   // Port, along her side: the air compressor and the two 150 L starting-air bottles by the ladder's foot, the
   // workbench with its vice, the fuel purifier, the oily-water separator.
@@ -667,7 +706,7 @@ export const FERRY_INTERIOR=(()=>{
   // The floor: the plates, round the engines, the generators and what stands on them.
   floor('engine-room',[-W,W],[a,f],y0,(x,z,r)=>Math.abs(x)<=W-r&&z>=a+r&&z<=f-r&&!(x<-2.35+r&&z<Z(10.9)+r));
  }
- return Object.freeze({boxes:Object.freeze(boxes),bars:Object.freeze(bars),glass:Object.freeze(glass),floors:Object.freeze(floors)});
+ return Object.freeze({boxes:Object.freeze(boxes),bars:Object.freeze(bars),glass:Object.freeze(glass),floors:Object.freeze(floors),cyls:Object.freeze(cyls),plates:Object.freeze(plates)});
 })();
 
 /** Where the car deck is no floor: under the flights of stair P and S, inside the casings (up to the foot, where the stair takes over). */
