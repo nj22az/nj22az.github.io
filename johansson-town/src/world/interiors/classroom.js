@@ -454,7 +454,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
    chalk("Cleaning time",60,70,48,'rgba(240,214,90,.95)');chalk("Make something Behind　Broom/dishcloth",80,160,44);
   }else if(phase==='lesson-pm'){
    chalk("Society　Fishing industry in Okinawa",60,70,48,'rgba(240,214,90,.95)');
-   ["・Mozuku　（Aquaculture）","・Tuna　Longline","・Seika（Sodeika）","・Fisheries cooperative ＝ Sell together"].forEach((t,i)=>chalk(t,80,140+i*52,42));
+   ["・Mozuku　（Aquaculture）","・Tuna　Longline","・Sēika（Diamond squid）","・Fisheries cooperative ＝ Sell together"].forEach((t,i)=>chalk(t,80,140+i*52,42));
    ctx.strokeStyle='rgba(244,242,232,.9)';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(880,240,90,34,0,0,Math.PI*2);ctx.moveTo(970,240);ctx.lineTo(1010,212);ctx.lineTo(1010,268);ctx.closePath();ctx.stroke();
   }else if(phase==='club'||phase==='after'){
    chalk("Tomorrow Mochi",60,70,44,'rgba(240,214,90,.95)');chalk("・Swimsuit（Pool）　・Paint",80,140,40);

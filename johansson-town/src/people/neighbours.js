@@ -74,7 +74,7 @@ const ALL_NEIGHBOURS=Object.freeze([
    'When the tanker is in at the oil jetty I take the town truck down and bring the diesel up. Six trips. On typhoon days I sleep on a camp bed by the switchboard.']},
  {name:'Mrs Yonamine',look:'Naoko',height:1.56,role:'behind the fish counter',at:[-9.95,10.25],y:.08,face:[1,0],pose:'Interact',hours:[[H(7),H(15)]],
   lines:[
-   'Irabu-chā, fresh this morning — the blue one, parrotfish. Sashimi with vinegar miso. Don’t make that face, try it first.',
+   'Irabuchā, fresh this morning — the blue one, parrotfish. Sashimi with vinegar miso. Don’t make that face, try it first.',
    'Mozuku, ¥200 a tray. It is seaweed and it is good for everything. My mother lived to ninety-eight on it and on complaining.',
    'The auction is at six. By three I am sold out or the cat has it. Either way I go home.']},
  {name:'Mrs Miyagi',look:'Fumiko',height:1.44,role:'praying at the utaki',at:[-30.8,21.6],face:[0,1],pose:'Interact',hours:[[H(6),H(9,30)]],
@@ -121,7 +121,7 @@ const ALL_NEIGHBOURS=Object.freeze([
  {name:'Mr Toguchi',look:'Mr Toguchi',height:1.66,role:'selling the morning catch from his cart',walk:true,cart:true,speed:.45,hours:[[H(7),H(11)]],
   route:[[2.2,-13.8],[2.2,13.8]],
   lines:[
-   'Gurukun this morning, and a bigeye that fought me for half an hour. He lost. You can have him for six hundred yen.',
+   'Gurukun this morning, and a gāra off the breakwater that fought me for half an hour. He lost. You can have him for six hundred yen.',
    'Fish has to be sold before the sun gets over the roofs. After that I am just a man pushing ice up a hill.',
    'Thao at Minato takes whatever I have left at eleven. She pretends to haggle. I pretend to lose.']},
  {name:'Postman Tōma',look:'Kenta',height:1.7,role:'on his round',walk:true,speed:1.25,hours:[[H(9),H(13)],[H(14),H(17)]],

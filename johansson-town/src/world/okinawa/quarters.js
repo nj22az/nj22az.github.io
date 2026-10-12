@@ -4,6 +4,7 @@ import {GROUND} from '../../render/ground-palette.js';
 const EAST_LAWN_SOUTH=-38;
 import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
+import {fishAt} from './fish.js';
 import {createMaterials} from '../../render/materials.js';
 import {NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,iceFlag,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
@@ -288,7 +289,7 @@ const SHOPS=Object.freeze({
  arakaki:{interior:'sweets',awning:false,jp:"Aragaki Confectionery Store",en:'Arakaki sweets · closed',bg:'#efe6cf',accent:'#5f7d76',upright:"Sweets",uprightBg:'#8a9a94',
   inspect:{label:'Look at the old sweet shop',title:"Arakaki house · the old sweet shop",text:'The shutter has been down since Mr Arakaki retired; he plays gateball on the lawn now and the family lives behind the shop. His sata andagi recipe went next door: Mrs Nakamura fries it every morning.'}},
  yonamine:{interior:'fish',anchorDz:2.3,jp:"Yonamine Fresh Fish Store",en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:"Fish",upright:"Fresh fish",uprightBg:'#9a4a2a',
-  inspect:{label:'Look at the fish',title:"Yonamine Fish · Yonamine Fresh Fish Store",text:'Blue parrotfish, a red snapper, mackerel on ice and a tray of mozuku seaweed. Mrs Yonamine buys from the morning boats and sells out by three. Irabu-chā — the blue parrotfish — is best as sashimi, she says, with vinegared miso.'}},
+  inspect:{label:'Look at the fish',title:"Yonamine Fish · Yonamine Fresh Fish Store",text:'Irabuchā, the blue parrotfish; gurukun, red on the ice though they are blue in the sea; a taman from the night anglers; ēgwā with their stinging spines; and a tray of mozuku seaweed. Mrs Yonamine buys from the morning boats and sells out by three. Irabuchā is best as sashimi, she says, with vinegared miso.'}},
  'coin-laundry':{interior:'laundry',jp:"Coin laundry",en:'Coin laundry · open 24 hours',bg:'#e9f0f6',accent:'#3a6a9a',upright:"Laundry",uprightBg:'#3a6a9a',
   inspect:{label:'Look into the coin laundry',title:'Coin laundry',text:'Four washers, two dryers and a bench, with a stack of old manga and a sign about not leaving washing overnight that everybody ignores. One dryer is going round with somebody’s towels in it. It smells of warm cotton.'}},
 });
@@ -373,18 +374,21 @@ function buildEastQuay(kit,solid,{anchor,inspect,onAction,vending}){
  for(let x=S.minX-.6;x<S.maxX+.7;x+=.45)kit.box(.04,.04,S.maxZ-S.minZ+1.4,x,S.height+.46,(S.minZ+S.maxZ)/2,0x6c8088,{rx:0});
  kit.sign(fascia({jp:"Port Fisheries Association Auction market",en:'Minato fisheries co-op · fish auction',bg:'#eef3f1',accent:'#2f6f8a',mark:"Fish"}),6,.9,(S.minX+S.maxX)/2,S.height-.3,S.maxZ+.02,{name:'auction sign'});
  // Inside: rows of crates with the morning's catch, a scale and the price board.
- const r=rng(77),catchColours=[0x9fb4c0,0xc85a4a,0x5a8fb0,0xb0b8b8,0x6fa0c8];
+ // The crates are sorted by kind, as at a real auction: one fish to a crate, the auction's fish in turn (fish.js). What
+ // is left now is the fish nobody bid for: the tuna (laid out whole, never crated) and the squid went first.
+ const r=rng(77),crated=fishAt('auction').filter(f=>f.id!=='maguro'&&f.id!=='seika');
  for(let row=0;row<3;row++)for(let k=0;k<6;k++){
-  const x=S.minX+1.2+k*1.1,z=S.minZ+2+row*1.8;
+  const x=S.minX+1.2+k*1.1,z=S.minZ+2+row*1.8,fish=crated[(row*6+k)%crated.length];
   kit.box(.72,.26,.46,x,lane+.23,z,0x2f6fb8);
-  for(let f=0;f<3;f++)kit.sphere(.1,x-.2+f*.2,lane+.38,z+(r.next()-.5)*.2,r.pick(catchColours),{sx:2.2,sy:.7,finish:'gloss'});
+  // (two draws a fish, as before, so the crates' jitter and everything drawn after them stay where they were)
+  for(let f=0;f<3;f++){const dz=(r.next()-.5)*.2;r.next();kit.sphere(.1,x-.2+f*.2,lane+.38,z+dz,fish.colour,{sx:2.2,sy:.7,finish:'gloss'});}
  }
  solid({id:'auction-catch',x:S.minX+1.2+2.75,z:S.minZ+2+1.8,w:6.4,d:4.2,height:.5});
  kit.box(.6,.9,.6,S.maxX-1.2,.55,S.minZ+1.2,0xc9cdd0,{finish:'metal'});
  kit.box(1.6,1,.08,S.maxX-.3,1.7,(S.minZ+S.maxZ)/2,0x2c3a33,{ry:Math.PI/2});
- kit.sign(poster({title:"Today's auction",lines:["Tuna  ¥2,800","Gurukun ¥900","Irabuchar ¥1,200","Seika ¥1,500"],bg:'#2c3a33',ink:'#f2efe4',band:'#8a3b2e'}),1.1,1.5,S.maxX-.36,1.75,(S.minZ+S.maxZ)/2,{ry:-Math.PI/2,name:'auction prices'});
+ kit.sign(poster({title:"Today's auction",lines:["Maguro ¥2,800","Gurukun ¥900","Irabuchā ¥1,200","Sēika ¥1,500"],bg:'#2c3a33',ink:'#f2efe4',band:'#8a3b2e'}),1.1,1.5,S.maxX-.36,1.75,(S.minZ+S.maxZ)/2,{ry:-Math.PI/2,name:'auction prices'});
  inspect((S.minX+S.maxX)/2,1.2,S.maxZ+1,'Inspect the auction shed',"Minato fish auction · Auction market",
-  'The boats are in by five and the auction is at six: a bell, a man with a clipboard shouting numbers too fast for anyone but the buyers, and a floor hosed down by seven. What is left in the crates now went unsold, and will be somebody\'s supper. Tuna, gurukun, blue parrotfish, a cuttlefish the size of a cat.');
+  'The boats are in by five and the auction is at six: a bell, a man with a clipboard shouting numbers too fast for anyone but the buyers, and a floor hosed down by seven. What is left in the crates went unsold, and will be somebody\'s supper: gurukun, Okinawa\'s own red fish; irabuchā, the blue parrotfish; mībai and shichūmachi. The maguro went first, and so did the sēika, a diamond squid the size of a cat.');
  // The ice plant: a tall concrete block with its chute swung out over the quay.
  kit.block(I.minX,I.maxX,0,I.height,I.minZ,I.maxZ,0xd8d4ca);
  kit.block(I.minX-.05,I.maxX+.05,0,.4,I.minZ-.05,I.maxZ+.05,0xb3ad9f);

@@ -46,7 +46,7 @@ export const FEED_PLACES=Object.freeze([
   activity:{hold:['coffee'],chance:.5,sit:.35},
   shot:{room:'mayor-office'}},
  {id:'harbour',name:'the harbour',short:'the harbour',kind:'outdoor',regulars:['Harbour master','Johansson','Mr Toguchi','Riku','Emi Kado'],
-  things:['the ferry gangway','a bollard','the quay lamp','a coil of rope','the tide board','a crate of mackerel'],
+  things:['the ferry gangway','a bollard','the quay lamp','a coil of rope','the tide board','a crate of gurukun'],
   doing:['watching the ferry come in','checking the tide board','coiling rope','counting crates','waiting for the gangway'],
   activity:{hold:['can','coffee'],chance:.5,sit:0},
   shot:{at:[3,-48],camera:{pos:[6,1.8,-47],at:[-4,1,-58]},time:960}},
