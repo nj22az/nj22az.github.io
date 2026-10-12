@@ -625,6 +625,20 @@
 @keyframes logo-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 
+/* The game is not finished (the creator, 2026-10-12): a stamp under the tag line says so on every visit. */
+.title-wip {
+  display: inline-block;
+  margin: .55rem auto 0;
+  padding: .28rem .8rem .24rem;
+  border: 2px solid var(--ts-navy);
+  border-radius: .3rem;
+  font: 700 clamp(.62rem, 1.8vw, .74rem)/1 var(--ts-pop);
+  letter-spacing: .2em;
+  color: var(--ts-navy);
+  transform: rotate(-2.5deg);
+  opacity: .9;
+  animation: fade-in .6s ease-out 1.6s both;
+}
 .title-tag {
   margin: 1.1rem 0 0;
   font: 400 clamp(.85rem, 2.4vw, 1rem)/1.4 var(--ts-pop);
@@ -759,6 +773,7 @@
   .title-center { padding-top: 1.25rem; }
   .title-menu, .title-loading { margin-top: 1rem; }
   .title-tag { display: none; }
+  .title-wip { margin-top: .35rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

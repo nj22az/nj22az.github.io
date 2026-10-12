@@ -77,11 +77,15 @@ test('down the bow ramp onto the quay\'s landing plate, and back up',()=>{
  for(let i=1;i<r.trail.length;i++)assert.ok(Math.abs(r.trail[i][1]-r.trail[i-1][1])<.12,'no jump at step '+i+': '+r.trail[i-1][3]+' to '+r.trail[i][3]);
 });
 
-test('only in port: at sea, or with the gangway in and the ramp up, there is no way aboard',()=>{
- const {run,walk}=alongside();
+test('under way her decks are still walked (he sails aboard), but the gangway and the ramp are in: no way on or off',()=>{
+ const {run,walk,colliders}=alongside();
  run.beginCrossing('airport');run.setCrossingProgress(.5);walk.update();
  const p=world(run,0,FERRY_DECKS.car.y,0);
- assert.equal(walk.floorAt(p.x,p.z,p.y),null,'no floors while she is crossing');
+ assert.ok(walk.floorAt(p.x,p.z,p.y),'her car deck is a floor at sea');
+ assert.ok(!walk.partOpen('gangway')&&!walk.partOpen('ramp'),'no gangway, no ramp at sea');
+ // Off her side at the gate: the bulwark is open there, the gangway is not out, and the sea is no floor.
+ const gate=world(run,4.0,FERRY_DECKS.car.y,GATE.z),off=world(run,5.5,FERRY_DECKS.car.y,GATE.z);
+ const r=stroll(walk,colliders,[gate.x,gate.z,gate.y],[[off.x,off.z]]);assert.notEqual(r.stopped,null,'stopped at the gate, not into the sea');
  run.parkAt('town');walk.update();
  const q=world(run,0,FERRY_DECKS.car.y,0);assert.ok(walk.floorAt(q.x,q.z,q.y),'alongside again');
 });

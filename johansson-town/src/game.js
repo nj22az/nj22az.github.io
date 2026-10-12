@@ -377,7 +377,7 @@ const cameraControls=createCameraControls({onChange:()=>syncView(),onCentre:cent
 camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
 document.documentElement.classList.toggle('touch-controls',touch);
 function centreCamera(){spawnScene?.cancel();pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
-function controlsAllowed(){return !islandPlay?.active&&!photoStudio?.active&&!photoLoading&&!photoReturning&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!itemViewer?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
+function controlsAllowed(){return !islandPlay?.cinematic&&!photoStudio?.active&&!photoLoading&&!photoReturning&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!itemViewer?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
 // Swipes scale to the screen and barely tip the view when they are mostly sideways (input/touch-feel.js).
 function dragLook(dx,dy){spawnScene?.cancel();const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);yaw+=turn.yaw;pitch=THREE.MathUtils.clamp(pitch+turn.pitch,-1.25,1.15);}
 const walkMotion=createMotion(),touchAutoRun=createAutoRun();
@@ -753,8 +753,8 @@ function onsenWear(){if(!swimwear||current?.id!=='onsen')return null;const z=pla
 function wearSwim(on){if(swimwear===!!on)return;swimwear=!!on;if(on&&!johansson)ensureJohansson();bathWear=on?onsenWear()||'bath':'clothes';const worn=johansson?.wear(bathWear);if(on)say(worn==='towel'?'You change at the lockers into one of the bath\'s wraps, a folded towel on your head.':'You change into your swimwear at the lockers.',3);}
 function followOnsenWear(){const w=onsenWear();if(w&&w!==bathWear){bathWear=w;johansson?.wear(w);}}
 function updateJohansson(dt){
- const ferryView=islandPlay?.phase==='ferry';
- hands.firstPersonVisible=!thirdPerson&&!spawnScene?.active&&!islandPlay?.active&&current?.id!==CITY_RESTAURANT.id;
+ const ferryView=islandPlay?.phase==='ferry'&&islandPlay.cinematic;
+ hands.firstPersonVisible=!thirdPerson&&!spawnScene?.active&&!islandPlay?.cinematic&&current?.id!==CITY_RESTAURANT.id;
  if(ferryView&&!johansson)ensureJohansson();
  if(!johansson)return;
  followOnsenWear();
@@ -1056,9 +1056,11 @@ function leaveRoom(){if(!current)return;replayInterrupted();spawnScene?.cancel('
  say(syncExteriorPlace(),1.5);if(leavingDungeon)finishDungeon();}
 
 function syncExteriorPlace(){
- const phase=islandPlay?.phase,airport=islandPlay?.snapshot().location==='airport';
- const title=phase==='ferry'?'MINATO–KITANO-JIMA FERRY':phase==='flight'?'ISLAND COMMUTER FLIGHT':airport?'KITANO-JIMA AIRPORT':'MINATO MACHI';
- const detail=phase==='ferry'?'Minato–Kitano-jima · PASSENGER DECK':phase==='flight'?'Island commuter service · IN FLIGHT':airport?'Kitano-jima · PASSENGER TERMINAL':'Minato Machi · HARBOUR DISTRICT';
+ const phase=islandPlay?.phase,airport=islandPlay?.snapshot().location==='airport',aboard=!current&&!!deckUnder(),run=world.ferry;
+ // Aboard she is the place: her name, and where she is (alongside at which pier, or at sea and bound where).
+ const where=aboard?(run.phase==='crossing'?'AT SEA · BOUND FOR '+(run.destination==='airport'?'KITANO-JIMA':'MINATO'):run.berth==='airport'?'ALONGSIDE · KITANO-JIMA PIER':'ALONGSIDE · MINATO OUTER PIER'):null;
+ const title=aboard?'MINATO MARU':phase==='ferry'?'MINATO–KITANO-JIMA FERRY':phase==='flight'?'ISLAND COMMUTER FLIGHT':airport?'KITANO-JIMA AIRPORT':'MINATO MACHI';
+ const detail=aboard?'The Minato Maru · '+where:phase==='ferry'?'Minato–Kitano-jima · PASSENGER DECK':phase==='flight'?'Island commuter service · IN FLIGHT':airport?'Kitano-jima · PASSENGER TERMINAL':'Minato Machi · HARBOUR DISTRICT';
  const line=airport?'The passenger counter and promenade are open.':'Shops are open.';
  if($('#place').textContent!==title)$('#place').textContent=title;
  if($('#placeSub').textContent!==detail)$('#placeSub').textContent=detail;
@@ -1080,7 +1082,7 @@ function interaction(){if(bicycleRide){active=null;$('#prompt').textContent=touc
   const facingDot=v.lengthSq()?fw.dot(v.normalize()):1;if(facingDot<.3&&d>.9)continue;
   const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d*(1+(1-facingDot)*1.4)+(o.userData.promptPenalty||0)-(/^Talk to /.test(h.label)?.6:0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();say(FORM3_NUDGE,6);}else say('You stand up.',2);}
-function doInteract(){if(replayPlayer)return;spawnScene?.cancel();if(islandPlay?.active)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(massageChair())activities.action('massage-chair');else if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
+function doInteract(){if(replayPlayer)return;spawnScene?.cancel();if(islandPlay?.cinematic)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(massageChair())activities.action('massage-chair');else if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
 // `who`: a room collider with `only` set stops only that walker.
 // `deckY`: standing on the ferry's deck at that height (ferry-walk.js): her own solids are tested there, not the town's
 // bounds (she lies over the water), its fixed colliders (the pier's bitts and fenders beside her) nor the collider that
@@ -1229,7 +1231,7 @@ function replayInterrupted(){
  if(replayRecorder?.open){replayRecorder.cancel();replayNote='recording stopped: the room changed (a recording stays in one place)';}
 }
 function updatePlayer(dt){
- if(islandPlay?.active)return;
+ if(islandPlay?.cinematic)return;
  if(replayPlayer&&bicycleRide)stopReplay('stopped: the bicycle is not in recordings yet');
  if(replayRecorder?.open&&bicycleRide){replayRecorder.cancel();replayNote='recording stopped: the bicycle is not in recordings yet';}
  // Drink wears off with town time, an hour a drink; sleep clears it.
@@ -1599,8 +1601,15 @@ let elapsed=0,mapTick=0,stepTick=0,accumulator=0,saveTick=0;
 // menu, running at one, ten or sixty times real speed (see town-clock.js).
 const townClock=createClock(readClockSetting(globalThis.localStorage),minutes);
 function advanceTown(dt,playerPaused,fastForward=false){
-    minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;if(!fastForward)islandPlay?.tick(dt);activities.tick(dt);
-    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.active){shipWalk()?.update();characters?.physics?.(dt,playerGround());updatePlayer(dt);}
+    // Aboard, her pose moves under him in this step (the crossing in islandPlay.tick, the swell in world.update): his
+    // place in her frame is taken before each and put back after it, and his heading turns with her, so he stands
+    // where he stood on her deck, not where she was.
+    // Twice a step, round the two moves and never round his own walk (which would undo it): see hold() and carry().
+    const hold=()=>!current&&!catchingUp&&deckUnder()?{at:world.ferry.ferry.worldToLocal(player.position.clone()),yaw:world.ferry.ferry.rotation.y}:null;
+    const carry=held=>{if(!held)return;const f=world.ferry.ferry;f.updateMatrixWorld(true);player.position.copy(f.localToWorld(held.at));const turn=f.rotation.y-held.yaw;if(turn){yaw+=turn;player.rotation.y+=turn;}};
+    const crossing=hold();
+    minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;if(!fastForward)islandPlay?.tick(dt);carry(crossing);activities.tick(dt);
+    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.cinematic){shipWalk()?.update();characters?.physics?.(dt,playerGround());updatePlayer(dt);}
     evictIfClosed();
     if(current?.id==='izakaya')izakayaGuests.sync(minutes,dt);
     if(current?.id==='onsen')onsenGuests.sync(minutes,dt);
@@ -1611,7 +1620,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     workplaceResidents.update(dt,minutes,weather);bookshopCustomers.update(dt,minutes);
     castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);neighbourChats.update(dt,minutes,weather);
     if(current&&!catchingUp){world.ferry?.update(dt,minutes,elapsed);world.traffic?.update(dt,minutes);}
-    if(!current&&!catchingUp){world.update(dt,elapsed,daylight(minutes),minutes);neighbours?.update(dt,minutes,player.position);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
+    if(!current&&!catchingUp){const swell=hold();world.update(dt,elapsed,daylight(minutes),minutes);carry(swell);neighbours?.update(dt,minutes,player.position);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
 }
 /** Keeps the town on the device clock; a gap of more than a minute is caught up, not jumped. */
 function followClock(){
