@@ -887,3 +887,90 @@ the oiler is cloned, why"*.
   jacket and cropped trousers. Tests: `ferry-engine-room-access.test.mjs`.
 - Checked in the headless game at 12:06 alongside: the door prompt, the descent (he lands on `er-ladder-foot`, ear
   defenders on, the chief below wearing his), the climb back (defenders off).
+
+## 9. Audit: shipbuilder, game developer, marine engineer (2026-10-12)
+
+The creator: *"Audit the ferry as a ship builder, game developer and a marine engineer, it lacks polish and doesn't feel
+alive."* Evidence: the code (what her run animates, sounds and populates), eight photographs from the quay, aboard and at
+night (`/tmp/claude-0/shots/f1…f8`, taken at 12:06 and 21:30 alongside), and a trace of her run from 08:20 to 10:00.
+
+### 9.1 The one finding that explains "not alive"
+
+**She never sails on her own.** `island/play.js` parks her at boot (`run.parkAt`, which sets `localService`), and in
+that mode `ferry.js update()` does nothing but hold her alongside: the timetable (`HARBOUR_LINE`, `FERRY_TIMES`, the
+whistle signals, the lights under way, the crew's arriving and crossing watches) only runs when the player buys a
+crossing. Traced from 08:20 to 10:00 she stays `waiting/town` through the 08:30 service. So the harbour's clock has no
+ship in it: nobody sees her come in, blow for the breakwater, swing in the basin, lower the ramp, load, and leave; the
+crew never change watch; the lights never show her under way. Everything else below is polish; this is the life.
+
+### 9.2 As a shipbuilder (the hull, the fit-out, the finish)
+
+- **The finish is new-build paint with no sea on it.** No weathering at all (`ferry-model.js` has no rust streaks, no
+  scuffed bulwark tops, no boot-top scum line, no grime under the scuppers, no fender marks on the hull where she lies
+  port side to). A 1994 ship in 1997 has rust at every scupper and a dark line at the waterline.
+- **The pier side is bare.** No fenders on the pier taking her weight (photo f2: a flat pier and a bollard), no rubbing
+  marks, no tyre fenders on her side, no mooring-line chafe. The lines are drawn (`FERRY_MOORING`) but nothing between
+  ship and pier.
+- **Decks without their clutter**: the car deck has no lashing chains in use, no wheel chocks out, no oil stain under
+  the lanes, no "no smoking" and "stay in your vehicle" stencils in Japanese, no deck numbers; the open deck's benches
+  carry nobody and nothing (no bag, no bicycle lashed, no wet footprints).
+- **Flags**: no ensign at the stern, no house flag, no courtesy signal, nothing that moves in the wind.
+- **The hull is too full** (design book finding 1): block coefficient 0.71 against a stated 0.56. Her bow and stern are
+  box-like in the water. D3 fairs her; the wake and bow wave below depend on it.
+
+### 9.3 As a game developer (what moves, what sounds, who is there)
+
+- **Nothing on the water moves with her**: no bow wave, no wash at the screws, no wake astern, no foam at the quay when
+  she thrusts in (`ferry.js` has roll and pitch, turning screws and a sweeping radar, and that is all). A ship with no
+  wake reads as a model on a table.
+- **No exhaust.** Two diesels and two generators, and the funnels show nothing: no haze under way, no puff when she
+  starts, no shimmer.
+- **Nobody rides her.** The passenger saloon (photo f5), the carpet room, the open deck (f7) and the car deck (f4) are
+  empty at noon alongside. The town's commuters are "away" (hidden) when they should be seen boarding and standing at
+  the rail; the kei trucks and cars drive the roads but none wait in the lane or board.
+- **The crew are statues**: five bodies at five posts (batch 7c) with one prompt each; nobody walks the deck, lashes a
+  car, handles a line, climbs to the bridge. `FERRY_WATCH` names the actions; the bodies do not do them.
+- **Sound is one loop**: an engine loop by phase and the whistle. No ramp hydraulics, no chain and windlass, no PA
+  ("the ferry for Kitano-jima is now boarding"), no ticket-hall bell, no gulls, no slap of water on the hull alongside,
+  no door-closing thunk, nothing below with the ear defenders on (open from batch 6g).
+- **Night (photo f8)**: the saloon glows faintly; the pier and the ramp are unlit, no deck lights on the car deck, no
+  floodlight over the gangway, no reflection of her lights in the water. Night alongside should be the prettiest
+  picture in the harbour.
+- **The crossing is a cut**: a player's crossing is a camera pose and 60 seconds (`AFOOT_SECONDS`), not a sailing you
+  stand on deck for with the town going away behind you and the island coming up ahead.
+- **Loading is a prompt**: the player buys a ticket at a window and is placed aboard; nobody walks up the gangway with a
+  ticket torn by the oiler, nobody waits in the hall when she is late.
+
+### 9.4 As a marine engineer (does she work like a ship)
+
+- **The timetable and the watches exist as data and are not run** (9.1). `FERRY_SCENARIOS` (blackout, the net round
+  the screw, the ramp hose) exist for stories and never happen to her.
+- **The engine room is a diorama**: the engines never start (no vibration, no change of sound between idle and ahead),
+  the control booth's board shows nothing live (the generators' kW, the shore-power lamp, the earth lamps), the
+  tachometers do not turn, the bilge is dry and still. The chief stands and says one line.
+- **Shore power is a text**: at night she is "on shore power" in the data; no cable from the quay kiosk to her side,
+  no lamp, no generator stop at 22:15 you can hear.
+- **Nothing is ever done to her**: no bunkering (the fuel lorry), no water from Mr Chinen's lorry every fifth morning
+  (the data says so), no stores, no washing down the car deck, no ropes being coiled. Her day has no tasks.
+- **Berthing has no physics you can see**: she arrives in the pose the timetable says. No thruster wash at the bow, no
+  fenders compressing, no line thrown and made fast, no "all fast" moment.
+
+### 9.5 What is right (keep)
+
+Her general arrangement is coherent and walkable from the pier to the wheelhouse and down to the floor plates; the
+head camera works in her passages; the lower lobby, foyer, stairs and doors hold collision; the crew have posts and
+reasons; the lights follow the clock; her data would let a yard build her (design book D1). The bones are good. What
+is missing is the ship in motion and the people around her.
+
+### 9.6 The plan (in this order; each batch checked in the live game)
+
+| Batch | What | Why first |
+|---|---|---|
+| **6h** | **She sails her timetable.** Island play no longer parks her: the run keeps the timetable and a player's crossing becomes one sailing of it (you board the next boat, or ask the purser to call her early if the design wants that). Away at the island berth between calls; whistle, lights, crew watches and the ramp follow. Commuters, the vehicles' crossings and the afoot ride are retimed to the sailings. Impact: `island/play.js`, `town-traffic.js`, `commuter-schedule.js`, tests `airport-ferry`, `ferry`, `bus-boarding`, `thuan-commute-yield`. | It is the life. Without it nothing below is ever seen happening. |
+| 6i | **Wake, wash and exhaust**: bow wave and stern wake scaled to speed, thruster foam at the bow when berthing, prop wash astern when she backs off, funnel haze under way and a puff at the start. Water slap alongside. | The first thing a phone sees from the quay. |
+| 6j | **People aboard and on the pier**: the commuters who take her (Thuan on Friday evening and Monday morning, Tetsuo's visits to his mother, Jun) walk the gangway with tickets, stand at the rail, sit in the saloon, and walk off; a few townsfolk ride for errands; the cars queue in the lane and are waved aboard by the deck hand; the hall fills before a sailing. | A ship is alive because of who is on her. |
+| 6k | **The crew work**: between posts they walk (the deck hand from bow to car deck to gangway, the oiler to the capstan and down the ladder), lash a car, throw and make fast a line, blow the whistle from the wing; a watch change you can watch. | The data (`FERRY_WATCH`) already says what they do. |
+| 6l | **Sound**: ramp hydraulics and the thud on the landing, windlass and chain, the PA before sailing, the gangway's rattle, doors, gulls, water on the hull, the engine room loud with the ear defenders muffling it, shore power's silence at night. | Half of "alive" is heard. |
+| 6m | **Weathering and the pier**: rust at the scuppers and chain pipes, a scum line, fender marks, tyre fenders on the pier and her side, chafed lines, oil on the car deck, stencils; the ensign and house flag in the wind; night lights on the gangway, the car deck and the pier, reflected in the water. | The finish a shipbuilder would be ashamed of today. |
+| 6n | **The engine room runs**: engines start at 06:10 (sound, vibration, tachometers), the board shows the generators and shore power, the bilge pump runs, the chief's rounds; the scenarios can happen (a blackout halfway across, the net round the screw) as stories. | A marine engineer's ship works. |
+| D2–D3 | The weight estimate and the finer hull (design book). | The wake and the drawings depend on the real hull. |
