@@ -1,7 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_CAR_PLACES,FERRY_MACHINERY} from './ferry-ship.js';
-import {FERRY_INTERIOR,FERRY_HOUSE,FERRY_ENGINE_ROOM} from './ferry-interior.js';
+import {FERRY_INTERIOR,FERRY_HOUSE,FERRY_ENGINE_ROOM,FERRY_STAIRS} from './ferry-interior.js';
 
 /**
  * The Minato Maru (みなと丸) as she is built: drawn from her data (ferry-ship.js FERRY_SHIP, FERRY_HEIGHTS,
@@ -32,35 +32,35 @@ const KEEL=-DRAFT,CAR=Y(H.carDeck),PASS=Y(H.passengerDeck),BRIDGE=Y(H.bridgeDeck
 
 /**
  * The casings either side of the car deck, from the car deck up under the passenger deck (shipyard z 3–20),
- * 3.1 m out from the centreline to her side. The port one has a passage through it at the gangway gate: the
- * gangway door in her side, and a door on its inboard face onto the walkway (the way aboard from the pier).
+ * 2.75 m out from the centreline to her side (1.3 m wide: batch 6f). The port one has a passage through it at the
+ * gangway gate, the gangway door in her side, open aft into the foyer at the foot of stair P (the way aboard from the pier).
  */
 const CAS0=Z(3),CAS1=Z(20),CAS_TOP=PASS-.25;
 /** The bow houses either side of the ramp (shipyard z 30 to the stem), 2.4 m high. */
 const BH0=Z(30),BH1=HALF-.05,BH_TOP=CAR+2.4;
 /** The bow ramp: a 4 m leaf, 4.6 m over its girders and 4.4 m clear, and a 2 m flap, 3.6 m wide, that lies flat on the landing. */
 export const FERRY_RAMP=Object.freeze({width:4.6,clear:4.4,leaf:4,flap:2,flapWidth:3.6,length:6});
-/** The gangway gate in the port bulwark, in front of the gangway door in the port casing (shipyard z 13.5–15). */
-export const GATE=Object.freeze({z:-3.25,from:-3.75,to:-2.75});
+/** The gangway gate in the port bulwark, in front of the gangway door in the port casing (shipyard z 13.3–14.7, 1.4 m wide: batch 6f). */
+export const GATE=Object.freeze({z:-3.25,from:-3.95,to:-2.55});
 /** The gangway door, where the gangway runs out to the pier. */
 export const GANGWAY_Z=GATE.z;
-export const FERRY_CASINGS=Object.freeze({inner:3.1,aft:CAS0,fore:CAS1,top:CAS_TOP,
- /** The passage through the port casing behind the gate: 1 m wide (the gate's opening), 2 m high, and its two doors. */
- passage:Object.freeze({from:GATE.from,to:GATE.to,height:2}),
+export const FERRY_CASINGS=Object.freeze({inner:2.75,aft:CAS0,fore:CAS1,top:CAS_TOP,
+ /** The passage through the port casing behind the gate: 1.4 m wide (the gate's opening), 2.2 m high, open aft into the foyer at the foot of stair P. */
+ passage:Object.freeze({from:GATE.from,to:GATE.to,height:2.2}),
  bowHouses:Object.freeze({inner:2.25,aft:BH0,fore:BH1,top:BH_TOP})});
 /** The gangway: 2 m of aluminium plank with hand rails. */
 export const GANGWAY_LENGTH=2;
 
 /** Where things are on her, along her (z) and up (y), model frame. */
 export const FERRY_DECKS=Object.freeze({
- /** The car deck: from the aft mooring station to the bow houses, two lanes of 3.1 m between the casings. */
- car:Object.freeze({y:CAR,fore:Z(30),aft:Z(2.5),lanes:Object.freeze([1.55,-1.55]),laneWidth:3.1,
+ /** The car deck: from the aft mooring station to the bow houses, two lanes of 2.75 m between the casings. */
+ car:Object.freeze({y:CAR,fore:Z(30),aft:Z(2.5),lanes:Object.freeze([1.375,-1.375]),laneWidth:2.75,
   /** The ten car places (ferry-ship.js FERRY_CAR_PLACES), nose to the ramp: [x, z]. */
   slots:Object.freeze(FERRY_CAR_PLACES.map(p=>Object.freeze([p.x,Z(p.z)]))),
   /** Covered by the passenger deck from the transom to 23 m; open forward of it. */
   open:false,
   /** The casings either side, 1 m wide: the lanes stop at them. */
-  walkway:1,bulwark:BULWARK}),
+  walkway:HB-2.75,bulwark:BULWARK}),
  /** The passenger deckhouse on the passenger deck: lobby, toilets, carpet room, saloon. */
  saloon:Object.freeze({fore:Z(23),aft:Z(6),width:6.8,lobbyWidth:8.2,height:BRIDGE-PASS}),
  /** The aft mooring station on the car deck. */
@@ -78,9 +78,9 @@ export const FERRY_DECKS=Object.freeze({
  * inside and out, with its edges, is in ferry-interior.js and ferry-walk.js; these are the open decks under the sky.
  */
 export const FERRY_WALK=Object.freeze([
- ['car-deck-walkway',[2.25,3.05],[Z(10.1),Z(14.9)],CAR],
- ['car-deck-port-lane',[.1,3.0],[Z(20.5),Z(29.5)],CAR],
- ['car-deck-starboard-lane',[-3.0,-.1],[Z(20.5),Z(29.5)],CAR],
+ ['car-deck-foyer',[2.9,3.9],[Z(12.7),Z(14.6)],CAR],
+ ['car-deck-port-lane',[.1,2.6],[Z(20.5),Z(29.5)],CAR],
+ ['car-deck-starboard-lane',[-2.6,-.1],[Z(20.5),Z(29.5)],CAR],
  ['aft-mooring',[-3.6,3.6],[Z(.5),Z(2.4)],CAR],
  ['open-deck',[-3.7,3.7],[Z(.4),Z(4)],PASS],
  ['bridge-deck-aft',[-2.5,2.5],[Z(4.85),Z(5.95)],BRIDGE],
@@ -317,36 +317,28 @@ export function buildFerryModel({shadows=false}={}){
  // ---- The car deck: lanes and their numbers' bars, lashing sockets, the casings, the walkway.
  const deckFore=Z(30),deckAft=Z(2.5);
  kit.box('paint',[.12,.012,deckFore-deckAft],[0,CAR+.007,(deckFore+deckAft)/2],YELLOW);
- for(const x of [3.05,-3.05])kit.box('paint',[.1,.012,Z(30)-Z(20.2)],[x,CAR+.007,(Z(30)+Z(20.2))/2],WHITE);
+ for(const x of [2.7,-2.7])kit.box('paint',[.1,.012,Z(30)-Z(20.2)],[x,CAR+.007,(Z(30)+Z(20.2))/2],WHITE);
  for(const p of FERRY_DECKS.car.slots)kit.box('paint',[1.4,.012,.1],[p[0],CAR+.007,p[1]+2.6],WHITE);   // each place's stop bar, at the nose
- for(let zy=4;zy<29.9;zy+=2.3)for(const x of [-2.5,-1.25,1.25,2.5])kit.cyl('metal',.06,.06,.02,[x,CAR+.01,Z(zy)],DARK,[0,0,0],8);
+ for(let zy=4;zy<29.9;zy+=2.3)for(const x of [-2.3,-1.0,1.0,2.3])kit.cyl('metal',.06,.06,.02,[x,CAR+.01,Z(zy)],DARK,[0,0,0],8);
  // The casings, port and starboard, from the car deck up to the passenger deck: plated, white, with their doors.
  const casTop=CAS_TOP,PSG=FERRY_CASINGS.passage;
  for(const side of [1,-1]){
-  // The port casing is cut through at the gate: the passage from the gangway door to the walkway, its deckhead 2 m up.
-  // (The casings' blocks, their stairwells and the passage's deckhead are in ferry-interior.js, which the walk reads too.)
+  // The port casing is cut through at the gate: the passage from the gangway door, open aft into the foyer at the foot
+  // of stair P, its deckhead 2.2 m up. (The casings' blocks, their stairwells, the foyer and the passage's deckhead are in
+  // ferry-interior.js, which the walk reads too.)
   if(side>0){
-   kit.block('paint',[3.12,CAR+PSG.height-.004,PSG.from],[HB-.05,CAR+PSG.height,PSG.to],DECKHEAD);
-   // The inboard door's frame onto the walkway, and its leaf hooked back against the casing's face, aft.
-   for(const z of [PSG.from,PSG.to])kit.block('paint',[3.06,CAR,z-.04],[3.12,CAR+PSG.height,z+.04],TEAL);
-   kit.block('paint',[3.06,CAR+PSG.height-.06,PSG.from],[3.12,CAR+PSG.height,PSG.to],TEAL);
-   kit.block('paint',[3.04,CAR+.02,PSG.from-.94],[3.08,CAR+1.98,PSG.from-.06],DOOR);
-   // The shore-power box on the passage's forward wall, over the gate leaf when it is hooked back: the 440 V
-   // connection the cable from the pier plugs into.
-   kit.block('paint',[3.45,CAR+1.2,PSG.to-.18],[3.95,CAR+1.8,PSG.to],0x8d9a98);kit.block('metal',[3.57,CAR+1.25,PSG.to-.24],[3.83,CAR+1.45,PSG.to-.18],DARK);
+   kit.block('paint',[2.77,CAR+PSG.height-.004,FERRY_STAIRS.foot],[HB-.05,CAR+PSG.height,PSG.to],DECKHEAD);
+   // The shore-power box on the foyer's inboard wall (the gangway door hooks back along the passage's forward wall):
+   // the 440 V connection the cable from the pier plugs into.
+   kit.block('paint',[2.81,CAR+1.2,Z(12.7)],[2.99,CAR+1.8,Z(13.2)],0x8d9a98);kit.block('metal',[2.99,CAR+1.25,Z(12.82)],[3.05,CAR+1.45,Z(13.08)],DARK);
    // A deckhead light over the passage.
    kit.block('paint',[3.5,CAR+PSG.height-.06,GATE.z-.25],[3.8,CAR+PSG.height-.01,GATE.z+.25],0xf3efe2);}
   // Doors onto the car deck: the engine room's escape (starboard), the store. (The stairs' and the engine room's
   // doors stand open: ferry-interior.js.)
-  for(const [zy,w] of side>0?[]:[[6.5,.7],[8.5,.9]])kit.box('paint',[.04,2,w],[side*3.08,CAR+1,Z(zy)],DOOR);
+  for(const [zy,w] of side>0?[]:[[6.5,.7],[8.5,.9]])kit.box('paint',[.04,2,w],[side*2.73,CAR+1,Z(zy)],DOOR);
  }
  // The gangway door's frame in the port casing's side, behind the gate in the bulwark (its leaf moves: below).
- kit.box('metal',[.06,.06,1.02],[HB,CAR+2.03,GATE.z],STEEL);
- // The walkway beside the port casing, hatched yellow, its rail on the lane's side.
- kit.box('paint',[.85,.012,Z(15)-Z(10)],[2.65,CAR+.009,(Z(10)+Z(15))/2],YELLOW);
- for(let zy=10.3;zy<15;zy+=.9)kit.box('paint',[.85,.013,.18],[2.65,CAR+.011,Z(zy)],DARK);
- for(let zy=10;zy<=15.01;zy+=1.25)kit.bar('paint',[2.2,CAR,Z(zy)],[2.2,CAR+1.05,Z(zy)],.03,YELLOW,6);
- for(const h of [.55,1.05])kit.bar('paint',[2.2,CAR+h,Z(10)],[2.2,CAR+h,Z(15)],.025,YELLOW,6);
+ kit.box('metal',[.06,.06,GATE.to-GATE.from+.02],[HB,CAR+2.03,GATE.z],STEEL);
  // The aft mooring station: capstan, two pairs of bitts, closed fairleads at the quarters.
  kit.cyl('metal',.26,.3,.5,[0,CAR+.25,Z(1.2)],DARK);kit.cyl('metal',.2,.2,.1,[0,CAR+.55,Z(1.2)],STEEL);
  for(const side of [1,-1]){const x=side*2.9;for(const dz of [-.26,.26])kit.cyl('metal',.13,.13,.5,[x,CAR+.25,Z(1.6)+dz],DARK);
@@ -503,7 +495,7 @@ export function buildFerryModel({shadows=false}={}){
   pieces.push(decal([2,0,2,1],2.6,.75,[0,.55,-HALF-.013],Math.PI));
   pieces.push(decal([1,1,2,1],2.0,.5,[0,BRIDGE+2.3,DH1+.17],0));                                    // and over the wheelhouse windows
   // 機関室 ENGINE ROOM over the casing door on the car deck (the way down), 乗組員専用 CREW ONLY over the crew's door aft.
-  pieces.push(decal([3,1,1,.3],1.0,.3,[3.1-.035,CAR+2.3,Z(7.0)],-Math.PI/2));
+  pieces.push(decal([3,1,1,.3],1.0,.3,[2.75-.035,CAR+2.3,Z(6.85)],-Math.PI/2));
   pieces.push(decal([3,1.3,1,.3],.9,.28,[0,BRIDGE+2.12,DH0-.015],Math.PI));
   pieces.push(decal([3,3,1,1],.8,.4,[2.2,PASS+2.0,DH0-.03],Math.PI));
   const mesh=new THREE.Mesh(mergeGeometries(pieces,false),mat);mesh.name='Minato Maru markings';mesh.renderOrder=2;ferry.add(mesh);
@@ -549,8 +541,8 @@ export function buildFerryModel({shadows=false}={}){
  ferry.userData.passengerDeck=FERRY_DECKS.passenger;
  // ---- The gangway, run out from the port casing's door to the pier while she is boarding.
  const gangway=new THREE.Group();gangway.name='Ferry gangway';gangway.visible=false;ferry.add(gangway);
- {const k4=createKit(shadows),G=GANGWAY_LENGTH;k4.box('paint',[G,.06,.9],[G/2,0,0],0x9aa3a2);for(let i=0;i<8;i++)k4.box('metal',[.04,.03,.86],[.15+i*.25,.045,0],STEEL);
-  for(const dz of [-.43,.43]){k4.box('metal',[G,.04,.04],[G/2,.9,dz],WHITE);for(const x of [.1,G/2,G-.1])k4.box('metal',[.03,.9,.03],[x,.45,dz],WHITE);}k4.finish(gangway);}
+ {const k4=createKit(shadows),G=GANGWAY_LENGTH;k4.box('paint',[G,.06,1.4],[G/2,0,0],0x9aa3a2);for(let i=0;i<8;i++)k4.box('metal',[.04,.03,1.36],[.15+i*.25,.045,0],STEEL);
+  for(const dz of [-.68,.68]){k4.box('metal',[G,.04,.04],[G/2,.9,dz],WHITE);for(const x of [.1,G/2,G-.1])k4.box('metal',[.03,.9,.03],[x,.45,dz],WHITE);}k4.finish(gangway);}
  gangway.position.set(halfBreadth(GANGWAY_Z)-.05,CAR,GANGWAY_Z);gangway.rotation.z=-.2;
  ferry.userData.gangway=gangway;
  /** Its foot rests on the pier (`pierY`, world) as she moves, the way the ramp rests on the quay. */
@@ -559,16 +551,17 @@ export function buildFerryModel({shadows=false}={}){
   const K=pierY+.03-(e[1]*g.x+e[5]*g.y+e[9]*g.z+e[13]),Rg=Math.hypot(e[1],e[5]);
   gangway.rotation.z=Math.atan2(e[5],e[1])-Math.acos(Math.max(-1,Math.min(1,K/(length*Rg))));
  };
- // The gate leaf, hinged on its forward post: shut across the opening at sea; alongside it folds back inside the bulwark.
+ // The gate leaf, hinged on its forward post: shut across the opening at sea; alongside it swings out and lies hooked back
+ // flat against the bulwark's outside, forward of the gate (a 1.34 m leaf would not fit inside the passage).
  const gate=new THREE.Group();gate.name='Gangway gate';gate.position.set(halfBreadth(GATE.to)-.1,CAR,GATE.to-.025);ferry.add(gate);
  {const k5=createKit(shadows);k5.box('paint',[.04,BULWARK-.06,GATE.to-GATE.from-.06],[0,BULWARK/2,-(GATE.to-GATE.from)/2],WHITE);k5.box('paint',[.05,.06,GATE.to-GATE.from-.06],[0,BULWARK-.05,-(GATE.to-GATE.from)/2],TEAL);k5.finish(gate);}
  ferry.userData.gate=gate;
- // The gangway door, hinged at its aft jamb: shut flush with her side at sea; alongside it is hooked back against the
- // passage's aft wall, and the gate leaf against its forward wall, so the way from the gangway to the walkway is clear.
- const door=new THREE.Group();door.name='Gangway door';door.position.set(HB-.04,CAR,GATE.from+.03);ferry.add(door);
- {const k6=createKit(shadows);k6.box('paint',[.04,1.96,.9],[0,.99,.46],DOOR);k6.box('metal',[.05,.04,.14],[-.03,1.02,.82],STEEL);k6.finish(door);}
+ // The gangway door, hinged at its forward jamb: shut flush with her side at sea; alongside it is hooked back against the
+ // passage's forward wall (its aft side is open into the foyer), so the way from the gangway to the stair is clear.
+ const door=new THREE.Group();door.name='Gangway door';door.position.set(HB-.04,CAR,GATE.to-.03);ferry.add(door);
+ {const k6=createKit(shadows);k6.box('paint',[.04,1.96,1.3],[0,.99,-.66],DOOR);k6.box('metal',[.05,.04,.14],[-.03,1.02,-1.2],STEEL);k6.finish(door);}
  ferry.userData.gangwayDoor=door;
- ferry.userData.setGate=open=>{gate.rotation.y=open?Math.PI/2:0;door.rotation.y=open?-Math.PI/2:0;};
+ ferry.userData.setGate=open=>{gate.rotation.y=open?Math.PI:0;gate.position.x=halfBreadth(GATE.to)+(open?.04:-.1);door.rotation.y=open?Math.PI/2:0;};
  ferry.userData.setGate(false);
  // ---- Moving parts: screws turn and the radar sweeps while she is under way.
  ferry.userData.screws=screws;ferry.userData.radar=radar;

@@ -12,7 +12,7 @@ const M=FERRY_MACHINERY,E=FERRY_ELECTRICS;
 const at=(id,pos,label,title,text)=>Object.freeze({id,pos:Object.freeze(pos),label,title,text});
 
 export const FERRY_INSPECT=Object.freeze([
- at('er-door',[3.05,CAR+1.3,Z(7.0)],'Engine room: through the door and down the ladder','Engine room',
+ at('er-door',[2.7,CAR+1.3,Z(6.85)],'Engine room: through the door and down the ladder','Engine room',
   'The casing door on the car deck’s port side, under the red ENGINE ROOM sign. Inside, a ladder goes down through a hatch to the floor plates: two main engines, two generators, the control booth and the main switchboard. Watch your head, and hold the rails.'),
  at('crew-door',[0,BRIDGE+1.3,Z(5.7)],'Crew door: the corridor and the wheelhouse','Crew only',
   'The crew’s door from the bridge deck’s aft platform (up either ladder from the open deck). Their corridor runs forward between the cabins, the mess and the galley to the wheelhouse. The wheelhouse can also be reached from the walkways: a ladder at each walkway’s forward end climbs to the bridge wing and its door.'),

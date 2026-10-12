@@ -5,7 +5,7 @@
  *
  * The creator chose the bigger ship and the bigger harbour (2026-10-11): a 199-ton class island car
  * ferry of 34.5 m, the size that worked 15–30 minute crossings in Okinawa in the 1990s, carrying
- * ten cars (or two 8-tonne trucks and five cars) and a hundred passengers, with a crew of eight.
+ * ten cars (or an 8-tonne truck and five cars) and a hundred passengers, with a crew of eight.
  * Built in 1994 at a small Seto Inland Sea yard; refitted for GMDSS in 1998.
  *
  * Everything is data first, so the model (ferry-model.js, drawn from these numbers since batch 5), the
@@ -31,7 +31,7 @@ export const FERRY_SHIP=Object.freeze({
  /** Tonnes: displacement at full load (block coefficient 0.56), her empty weight, and what she can carry. */
  displacement:283,blockCoefficient:.56,lightship:210,deadweight:73,
  passengers:100,vehicles:10,crew:8,
- /** What the car deck takes: ten cars, or two 8-tonne trucks and five cars, or twelve kei trucks; 4.2 m clear under the passenger deck, 5 t an axle. */
+ /** What the car deck takes: ten cars, or an 8-tonne truck and five cars, or twelve kei trucks; 4.2 m clear under the passenger deck, 5 t an axle. */
  vehicleMix:Object.freeze({cars:10,trucksAndCars:Object.freeze([2,5]),keiTrucks:12,clearHeight:4.2,axleTonnes:5}),
  /** Knots. */
  speed:Object.freeze({service:11.5,trial:12.8,manoeuvring:3,breakwater:5}),
@@ -71,12 +71,12 @@ export const FERRY_GA=Object.freeze([
  space('fore-peak','hold',[30.5,34.5],[-2.5,2.5],[0,2.8],'Fore peak: 6 m³ of ballast, and the two chain lockers under the windlasses','Trim, and the anchors’ cables'),
  // ---- The car deck (3.0 m above the keel, 1.1 m above the water); covered by the passenger deck from z 0 to 23, open to the sky forward.
  space('aft-mooring','car',[0,2.5],[-4.1,4.1],[H.carDeck,H.passengerDeck],'Aft mooring station: the 5.5 kW capstan, two pairs of bitts, closed fairleads, the steering-gear hatch','Stern lines',{exits:['car-deck','casing-p']}),
- space('car-deck','car',[2.5,30],[-3.1,3.1],[H.carDeck,H.passengerDeck],'Vehicle lanes: two of 3.1 m, yellow lane lines and numbers, 48 cloverleaf lashing sockets on a 1.25 × 2.5 m grid, wheel-chock racks, six scuppers a side with flaps and freeing ports forward, waterproof tube lights, two exhaust fans, four hydrants, powder extinguishers; the signs “engine off” and “no entry to the car deck at sea”','Ten cars; trucks on the centreline forward by the loading plan',{exits:['ramp','casing-p','casing-s']}),
+ space('car-deck','car',[2.5,30],[-2.75,2.75],[H.carDeck,H.passengerDeck],'Vehicle lanes: two of 2.75 m, yellow lane lines and numbers, 48 cloverleaf lashing sockets on a 1.25 × 2.5 m grid, wheel-chock racks, six scuppers a side with flaps and freeing ports forward, waterproof tube lights, two exhaust fans, four hydrants, powder extinguishers; the signs “engine off” and “no entry to the car deck at sea”','Ten cars; trucks on the centreline forward by the loading plan',{exits:['ramp','casing-p','casing-s']}),
  // The gangway door is in the port casing, the side she lies to at Minato (port side to the outer pier); the
  // brief had it to starboard, which would have faced the open water there (batch 5).
- space('casing-p','car',[3,20],[3.1,4.1],[H.carDeck,H.passengerDeck],'Casing, port: the engine uptake and engine-room supply-fan trunk (z 3–6), the engine-room entrance and stair (6–7.4), passenger stair P (7.4–12.3: its door from the walkway at 11.3–12.3, the flight rising aft at 48° to the lobby, the crew changing room under it), the gangway door and the shore-power box (13.5–14.5), a fan and a hydrant','The engine room’s main way in, a stair up for drivers, and the way aboard from the pier',{exits:['car-deck','walkway','stair-p']}),
- space('casing-s','car',[3,20],[-4.1,-3.1],[H.carDeck,H.passengerDeck],'Casing, starboard: uptake trunk (z 3–6), the engine-room escape trunk (6–7), passenger stair S (7.4–12.3, the bosun’s store under its flight: lashings, chocks, ropes, fenders), a fan and a hydrant','The engine room’s second way out, the deck stores, the second stair up',{exits:['car-deck','stair-s']}),
- space('walkway','car',[10,15],[2.2,3.1],[H.carDeck,H.passengerDeck],'A railed, hatched walkway 0.9 m wide beside casing P, from the gangway door to the foot of stair P','Foot passengers never cross a car lane',{exits:['casing-p','stair-p'],within:'car-deck'}),
+ space('casing-p','car',[3,20],[2.75,4.1],[H.carDeck,H.passengerDeck],'Casing, port, 1.3 m wide: the engine uptake and engine-room supply-fan trunk (z 3–6.25), the engine-room entrance (6.3–7.4, a 1.1 m door) and ladder, passenger stair P (7.4–11.3, 1.2 m clear: its 1.2 m door onto the car deck at 11.35–12.55, the flight rising aft at 48° to the lobby, the crew changing room under it), the foyer at its foot (11.3–13.3) and the gangway passage (13.3–14.7, 1.4 m) with the gangway door and the shore-power box, a fan and a hydrant','The engine room’s main way in, a stair up for drivers, and the way aboard from the pier',{exits:['car-deck','foyer','stair-p']}),
+ space('casing-s','car',[3,20],[-4.1,-2.75],[H.carDeck,H.passengerDeck],'Casing, starboard, 1.3 m wide: uptake trunk (z 3–6), the engine-room escape trunk (6–7), passenger stair S (7.4–12.6, 1.2 m clear, its 1.2 m door at 11.35–12.55; the bosun’s store under its flight: lashings, chocks, ropes, fenders), a fan and a hydrant','The engine room’s second way out, the deck stores, the second stair up',{exits:['car-deck','stair-s']}),
+ space('foyer','car',[11.3,14.7],[2.75,4.1],[H.carDeck,H.passengerDeck],'The way aboard on foot, 1.4 m wide the whole way: the gangway, the gate, the passage through casing P and the foyer aft of it to the foot of stair P, 2.2 m under its deckhead','Foot passengers never step onto a car lane',{exits:['casing-p','stair-p','car-deck'],within:'casing-p'}),
  space('bow-house-p','car',[30,34],[2.2,4.1],[H.carDeck,H.carDeck+2.4],'Bow house, port: the windlass, the ramp’s hydraulic power pack and its control box, the thruster room’s hatch','Anchors and the ramp, worked by the bosun',{exits:['car-deck']}),
  space('bow-house-s','car',[30,34],[-4.1,-2.2],[H.carDeck,H.carDeck+2.4],'Bow house, starboard: the windlass and the paint store','Anchors, and paint kept away from the cabins',{exits:['car-deck']}),
  space('ramp','car',[34.3,40.3],[-2.2,2.2],[H.carDeck-.05,H.carDeck+.3],'The bow ramp: hinged at the stem (z 34.3), 4.0 m and a 2.0 m flap that lies flat on the landing, 4.4 m clear; two 100 mm hydraulic cylinders at 14 MPa; two locking pins with limit switches to the “ramp closed and locked” lamp on the bridge; a hand pump','Lowered, 5° to the quay; raised, it closes the bow 4 m high',{opening:true}),
@@ -120,23 +120,22 @@ export const FERRY_ACCESS=Object.freeze({
 /**
  * The car places: ten in two lanes of five, nose to the ramp, sized for the longest vehicle the town
  * runs (4.9 m) with half a metre between them to lash; x the place's centre (+ port), z its centre
- * forward of the transom. Where the railed walkway runs beside casing P (z 10–15) the port lane
- * is 2.2 m wide, so its places there sit inboard.
+ * forward of the transom, in lanes of 2.75 m between the casings (batch 6f).
  */
 export const FERRY_CAR_PLACES=Object.freeze((()=>{
  const places=[];
- for(const lane of ['port','starboard'])for(let i=0;i<5;i++){const z=5.7+i*5.45,narrow=lane==='port'&&z+2.45>10&&z-2.45<15;
-  places.push(Object.freeze({lane,x:lane==='starboard'?-1.55:narrow?1.2:1.55,z,length:4.9,width:1.95}));}
+ for(const lane of ['port','starboard'])for(let i=0;i<5;i++){const z=5.7+i*5.45;
+  places.push(Object.freeze({lane,x:lane==='starboard'?-1.375:1.375,z,length:4.9,width:1.95}));}
  return places;
 })());
 /**
- * The loading plan with trucks: two 8-tonne trucks side by side in the two lanes forward, where the
- * deck is clear of the casings and they trim her evenly instead of heeling her (a truck on one side
- * heels her 3°), and five cars aft of them.
+ * The loading plan with a truck: one 8-tonne truck on the centreline forward, where the deck is clear of the
+ * casings and it trims her evenly instead of heeling her (a truck on one side heels her 3°; two side by side
+ * would leave 0.25 m between them in lanes of 2.75 m: batch 6f), and five cars aft of it.
  */
 export const FERRY_TRUCK_PLAN=Object.freeze({
- trucks:Object.freeze([Object.freeze({x:1.55,z:25.4,length:8.5,width:2.5}),Object.freeze({x:-1.55,z:25.4,length:8.5,width:2.5})]),
- cars:Object.freeze([[-1.55,5.7],[1.55,5.7],[-1.55,11.15],[1.2,11.15],[-1.55,16.6]].map(([x,z])=>Object.freeze({x,z,length:4.9,width:1.95}))),
+ trucks:Object.freeze([Object.freeze({x:0,z:25.4,length:8.5,width:2.5})]),
+ cars:Object.freeze([[-1.375,5.7],[1.375,5.7],[-1.375,11.15],[1.375,11.15],[-1.375,16.6]].map(([x,z])=>Object.freeze({x,z,length:4.9,width:1.95}))),
 });
 
 /** What drives her (briefs/ferry-audit.md §3.1, §3.3). Real numbers for a ship of her size and year. */

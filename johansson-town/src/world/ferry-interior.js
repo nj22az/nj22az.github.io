@@ -41,12 +41,13 @@ export const FERRY_HOUSE=Object.freeze({
 const F=FERRY_HOUSE,LW=F.lobbyHalf,DW=F.half,DH0=F.aft,DH1=F.fore,LB1=F.lobbyFore,TB1=F.toiletsFore,CR1=F.carpetFore;
 const BH=F.bridgeHalf,WH0=F.wheelhouseAft,PF0=F.platformAft;
 /** The casings (car deck to the passenger deck), and stair P's and S's place in them. */
-const CAS0=Z(3),CAS1=Z(20),CAS_IN=3.1,CAS_OUT=HB-.03,CAS_TOP=PASS-.25;
+const CAS0=Z(3),CAS1=Z(20),CAS_IN=2.75,CAS_OUT=HB-.03,CAS_TOP=PASS-.25;
 export const FERRY_STAIRS=Object.freeze({
- /** The flight: its foot on the car deck at z 11.3, its head at the lobby floor at z 7.4; 22 risers of 0.2 m. */
- foot:Z(11.3),head:Z(7.4),x:Object.freeze([3.16,HB-.09]),risers:22,
- /** The door in the casing's inboard face, and the casing's end forward of the stair. */
- door:Object.freeze([Z(11.35),Z(12.25)]),wellFore:Z(12.3),
+ /** The flight: its foot on the car deck at z 11.3, its head at the lobby floor at z 7.4; 22 risers of 0.2 m; 1.2 m clear (batch 6f). */
+ foot:Z(11.3),head:Z(7.4),x:Object.freeze([CAS_IN+.06,HB-.09]),risers:22,
+ /** The door in the casing's inboard face (1.2 m), and the casing's end forward of the stair's foot (starboard; to port the
+  * foyer runs on to the gangway passage). */
+ door:Object.freeze([Z(11.35),Z(12.55)]),wellFore:Z(12.6),
  /** The well's opening in the passenger deck: the flight's head to where the stair passes under the deck with headroom. */
  opening:Object.freeze([Z(7.4),Z(9.4)]),
 });
@@ -58,14 +59,14 @@ const S=FERRY_STAIRS;
  * tanks.) Its way in is the casing P door at z 6.6–7.4 and a ladder down through a hatch in the car deck.
  */
 export const FERRY_ENGINE_ROOM=Object.freeze({aft:Z(8.5),fore:Z(14),floor:Y(.9),deckhead:CAR-.2,side:3.98,
- entrance:Object.freeze([Z(6.55),Z(7.4)]),door:Object.freeze([Z(6.6),Z(7.4)]),
+ entrance:Object.freeze([Z(6.25),Z(7.4)]),door:Object.freeze([Z(6.3),Z(7.4)]),
  /** The ladder: its head on the car deck at z 7.0, its foot on the floor plates at z 8.6; the hatch it goes down. */
  ladder:Object.freeze({x:Object.freeze([3.2,3.95]),head:Z(7),foot:Z(8.6)}),hatch:Object.freeze({x:Object.freeze([3.15,HB-.07]),z:Object.freeze([Z(7),Z(9)])}),
 });
 const ER=FERRY_ENGINE_ROOM;
 
-/** The gangway passage through casing P (ferry-model.js GATE). */
-const GATE_FROM=Z(13.5),GATE_TO=Z(14.5);
+/** The gangway passage through casing P (ferry-model.js GATE): 1.4 m wide, and the foyer from it aft to the foot of stair P. */
+const GATE_FROM=Z(13.3),GATE_TO=Z(14.7);
 /** The ladder from each walkway up to its bridge wing: its foot on the walkway, its head on the wing's aft edge. */
 export const FERRY_WING_LADDER=Object.freeze({x:3.75,foot:F.crossFore,head:WH0});
 
@@ -106,11 +107,11 @@ export const FERRY_INTERIOR=(()=>{
  // ---- The casings, car deck to the passenger deck's underside: stair P and S hollow in them, the gangway passage
  // through P. The rest is solid (uptakes, the engine-room entrances, stores, the changing room).
  for(const s of [1,-1]){
-  const X=sorted(s*CAS_IN,s*CAS_OUT),pieces=s>0?[[CAS0,ER.entrance[0]],[S.wellFore,GATE_FROM],[GATE_TO,CAS1]]:[[CAS0,S.head],[S.wellFore,CAS1]];
+  const X=sorted(s*CAS_IN,s*CAS_OUT),pieces=s>0?[[CAS0,ER.entrance[0]],[GATE_TO,CAS1]]:[[CAS0,S.head],[S.wellFore,CAS1]];
   for(const [z0,z1] of pieces)box([X[0],CAR,z0],[X[1],CAS_TOP,z1],WHITE,{name:'casing'});
   // The stairwell's walls: inboard, with the stair's door; outboard against her side.
-  wall('z',S.head,S.wellFore,...sorted(s*CAS_IN,s*(CAS_IN+.06)),CAR,CAS_TOP,[doorAt((S.door[0]+S.door[1])/2,S.door[1]-S.door[0],CAR)]);
-  box([Math.min(s*(CAS_OUT-.06),s*CAS_OUT),CAR,S.head],[Math.max(s*(CAS_OUT-.06),s*CAS_OUT),CAS_TOP,S.wellFore],WHITE);
+  wall('z',S.head,s>0?GATE_TO:S.wellFore,...sorted(s*CAS_IN,s*(CAS_IN+.06)),CAR,CAS_TOP,[doorAt((S.door[0]+S.door[1])/2,S.door[1]-S.door[0],CAR)]);
+  box([Math.min(s*(CAS_OUT-.06),s*CAS_OUT),CAR,S.head],[Math.max(s*(CAS_OUT-.06),s*CAS_OUT),CAS_TOP,s>0?GATE_FROM:S.wellFore],WHITE);
   // The door's frame in teal, and its leaf hooked back against the casing's face, aft of it.
   const fx=sorted(s*(CAS_IN-.04),s*(CAS_IN+.02));
   for(const z of S.door)deco([fx[0],CAR,z-.04],[fx[1],CAR+2,z+.04],TEAL);
@@ -124,10 +125,12 @@ export const FERRY_INTERIOR=(()=>{
   for(const x of [x0+.03,x1-.03]){bar([x,CAR,S.foot],[x,PASS,S.head],.05,DARK);bar([x,CAR+.9,S.foot+.1],[x,PASS+.9,S.head],.022,YELLOW,'paint');}
   // The walking line runs half a riser over the line of the nosings, so the feet are never more than half a riser
   // off a tread.
-  floor('stair-'+(s>0?'p':'s'),[x0,x1],[S.head,S.foot],[PASS+dy/2,CAR+dy/2],(x,z,r)=>Math.abs(x-(x0+x1)/2)<=(x1-x0)/2-r+.06);
+  floor('stair-'+(s>0?'p':'s'),[x0,x1],[S.head,S.foot],[PASS+dy/2,CAR+dy/2],(x,z,r)=>Math.abs(x-(x0+x1)/2)<=(x1-x0)/2-r+.02);
  }
- // The gangway passage's deckhead and its walls (casing P's two blocks either side are its walls: above).
- box([CAS_IN,CAR+2,GATE_FROM],[CAS_OUT,CAS_TOP,GATE_TO],WHITE,{name:'passage deckhead'});
+ // The gangway passage's and the foyer's deckhead, 2.2 m up, from forward of the stair's door to the passage's forward
+ // wall (casing P's block forward of it is that wall; the stairwell's walls are the foyer's; over the stair's foot the
+ // well is open to the casing's top).
+ box([CAS_IN,CAR+2.2,S.wellFore],[CAS_OUT,CAS_TOP,GATE_TO],WHITE,{name:'passage deckhead'});
 
  // ---- The passenger deck: its slab over the car deck, cut open over the two stairs.
  {const y0=PASS-.25,PD0=-HALF,PD1=DH1,O=S.opening,xin=CAS_IN,xo=HB-.02;

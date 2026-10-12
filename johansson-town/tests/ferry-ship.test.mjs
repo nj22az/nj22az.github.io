@@ -51,8 +51,8 @@ test('her general arrangement: every space inside her hull, none on top of anoth
  for(const id of ['eg-room','co2-room'])assert.deepEqual(gaSpace(id).exits,['open-deck']);
 });
 
-test('ten cars on her car deck, or two trucks and five cars, lashed half a metre apart, clear of the casings and the walkway',()=>{
- const deck=gaSpace('car-deck'),solids=['casing-p','casing-s','walkway','bow-house-p','bow-house-s','aft-mooring'].map(gaSpace);
+test('ten cars on her car deck, or a truck and five cars, lashed half a metre apart, clear of the casings and the walkway',()=>{
+ const deck=gaSpace('car-deck'),solids=['casing-p','casing-s','foyer','bow-house-p','bow-house-s','aft-mooring'].map(gaSpace);
  const longest=Math.max(...Object.values(VEHICLE_SIZE).map(v=>v.length)),widest=Math.max(...Object.values(VEHICLE_SIZE).map(v=>v.width));
  assert.equal(FERRY_CAR_PLACES.length,FERRY_SHIP.vehicles);
  const box=v=>({x:[v.x-v.width/2,v.x+v.width/2],z:[v.z-v.length/2,v.z+v.length/2]});
@@ -65,7 +65,7 @@ test('ten cars on her car deck, or two trucks and five cars, lashed half a metre
   }
   for(let i=0;i<plan.length;i++)for(let j=i+1;j<plan.length;j++)assert.ok(!hits(box(plan[i]),box(plan[j]),.5),`places ${i} and ${j} are less than half a metre apart`);
  }
- assert.equal(FERRY_TRUCK_PLAN.trucks.length,2);assert.equal(FERRY_TRUCK_PLAN.cars.length,5);
+ assert.equal(FERRY_TRUCK_PLAN.trucks.length,1);assert.equal(FERRY_TRUCK_PLAN.cars.length,5);
  // The ramp: 4.4 m clear between the bow houses, wide enough for an 8-tonne truck with room each side.
  const ramp=gaSpace('ramp');assert.ok(near(ramp.x[1]-ramp.x[0],4.4,1e-9));assert.ok(ramp.x[1]-ramp.x[0]>=FERRY_TRUCK_PLAN.trucks[0].width+1.5);
 });
