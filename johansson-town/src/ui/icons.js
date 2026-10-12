@@ -119,7 +119,8 @@ export function actionFor(label=''){
 const ITEMS=[
  [/zenzai|shaved ice|ice cream/i,'ice'],
  [/tea|coffee|cola|water|lager|beer|milk|juice|sake|ramune|awamori/i,'cup'],
- [/bream|fish|mackerel|squid|tuna/i,'fish'],
+ // The pier's catch by name (src/world/okinawa/fish.js; tests/okinawa-fish.test.mjs keeps them the same).
+ [/bream|fish|mackerel|squid|tuna|^(taman|mībai|kuchinaji|ēgwā|gāra|mijun|tachinuiyu)$/i,'fish'],
  [/^Ice$/i,'ice'],
  [/rice ball|onigiri|biscuit|bun|bread|cake|snack|mochi|noodle|bento|dango|andagi|nikuman|karaage|korokke|oden|sandwich|pudding|yogurt/i,'food'],
  [/soap|shampoo|towel/i,'soap'],

@@ -69,7 +69,7 @@ function star(ctx,x,y,size,fill,stroke){
  ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=stroke;ctx.stroke();
 }
 function lettered(ctx,text,x,y,size,{fill="#fff",stroke=INK,angle=0,weight=800}={}){
- ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.font=`${weight} ${size}px "LINE Seed JP","Arial Black","Noto Sans JP",system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.font=`${weight} ${size}px Figtree,"LINE Seed JP","Arial Black","Noto Sans JP",system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
  ctx.lineJoin='round';ctx.lineWidth=size*.18;ctx.strokeStyle=stroke;ctx.strokeText(text,0,0);ctx.fillStyle=fill;ctx.fillText(text,0,0);ctx.restore();
 }
 
@@ -123,7 +123,7 @@ export function drawFaceFx(ctx,kind,x,y,s,seed=1){
 export function drawSfx(ctx,text,w,h,seed=1,{avoid=null}={}){
  if(!text)return;
  // Sized to the panel and set in the open space beside the people, never over a face.
- ctx.save();ctx.font=`800 10px "LINE Seed JP","Arial Black",sans-serif`;const per=ctx.measureText(text).width/10;ctx.restore();
+ ctx.save();ctx.font=`800 10px Figtree,"LINE Seed JP","Arial Black",sans-serif`;const per=ctx.measureText(text).width/10;ctx.restore();
  const size=Math.min(46,w*.075,(w*.38)/Math.max(1,per));
  let left=seed%2===0;
  if(avoid){const [a,b]=avoid;left=a>w-b;}
