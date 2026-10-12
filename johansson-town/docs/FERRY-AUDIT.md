@@ -974,3 +974,124 @@ is missing is the ship in motion and the people around her.
 | 6m | **Weathering and the pier**: rust at the scuppers and chain pipes, a scum line, fender marks, tyre fenders on the pier and her side, chafed lines, oil on the car deck, stencils; the ensign and house flag in the wind; night lights on the gangway, the car deck and the pier, reflected in the water. | The finish a shipbuilder would be ashamed of today. |
 | 6n | **The engine room runs**: engines start at 06:10 (sound, vibration, tachometers), the board shows the generators and shore power, the bilge pump runs, the chief's rounds; the scenarios can happen (a blackout halfway across, the net round the screw) as stories. | A marine engineer's ship works. |
 | D2–D3 | The weight estimate and the finer hull (design book). | The wake and the drawings depend on the real hull. |
+
+## 10. Audit: the engine room and the bridge, as places to explore (2026-10-12)
+
+The creator: *"Audit the ferry again and the engine room and the bridge, it needs to feel like we are exploring a real
+ship … report back what needs to be added or have more details."* Method: the data (`FERRY_MACHINERY`, `FERRY_ELECTRICS`,
+`FERRY_GA`), the interior as built (`ferry-interior.js`, 29 named parts below, 12 on the bridge deck), every prompt
+aboard (20 in `ferry-inspect.js`), and 17 photographs at eye height (`/tmp/claude-0/shots/e1…e9, b1…b8`).
+
+### 10.1 The engine room: what is there
+
+Two main engines with gearboxes and turbochargers, two generators on beds, the main switchboard and the booth with its
+desk and chair, the air compressor and bottles, the fuel purifier and service tank, pumps, the oily-water separator,
+sea chests, the workbench, lube-oil drums, a hydrant, the escape ladder, hand rails round the engines, colour-coded
+pipes along the sides, cable trays, the hatch and ladder. Twelve prompts, each a paragraph of true data (the switchboard
+reads `FERRY_ELECTRICS`; the log reads the fuel figures). The arrangement is right and the data is right.
+
+### 10.2 The engine room: why it does not feel real (the photographs)
+
+- **Every machine is a plain box.** The main engines (e2, e3) are teal slabs with a white tube on top: no cylinder
+  heads and rocker covers in a row of six, no fuel pumps and injector lines, no exhaust manifold in lagging under
+  aluminium cladding, no turbocharger as a snail with its air filter, no flywheel housing, no coupling to the gearbox,
+  no gauge board with its round dials, no local control stand with the tachometer, the start lever and the stop
+  button, no nameplate with the maker's name and the serial. A visitor cannot tell the engine from the generator from
+  a box.
+- **The booth's switchboard is five grey squares** (e5, e7): no meters with needles, no synchroscope, no earth lamps,
+  no breaker handles, no mimic lines, no labels (DG1, DG2, SHORE, 440 V), nothing lit. The desk has no log book, no
+  telephone, no pen, no coffee cup, no chart of the day's temperatures.
+- **The pipes fan out from a point** (e8, e5, e1): several colour-coded runs converge on one spot by the booth like
+  spokes, because they are drawn as straight bars from source to destination. Real pipes run along bulkheads and
+  under the deckhead in parallel with 90° bends, hangers, flanges and valves with handwheels. This is a glitch, not
+  detail.
+- **The floor is a flat colour.** Floor plates are chequer plate with raised edging and lifting rings; there are
+  gratings over the bilge wells, sounding pipes with brass caps, drip trays under every pump, oil stains, a rag on the
+  rail. None of it is there.
+- **No light fittings and no shadow of them**: the room is lit from nowhere. A real engine room has caged fluorescent
+  tubes under the deckhead, one over the booth desk, the emergency lamp with its red stripe, and a torch on a hook.
+- **No small things a person works with**: fire extinguishers (CO₂ and foam) by the door, the fire blanket, the
+  ear-defender hooks (batch 6g puts the defenders on you but there is no hook they came from), the telephone to the
+  bridge with its sound-powered handset, the engine-room telegraph or its lamp, the oil cans, grease gun, spanner
+  rack over the bench, the vice, the parts bins, the rags bin, the bilge alarm's red lamp, the escape-route arrows
+  on the plates, the "No.1 MAIN ENGINE" stencils in Japanese and English.
+- **Nothing happens.** No sound below (batch 6g's open item), no vibration, no heat shimmer at the exhaust, no
+  needles moving, no running lamp on the generator, no bilge pump cycling, no chief on his rounds. At 22:00 (e9) it
+  is a dark version of the same room: shore power, the generators stopped, the night lamp over the booth should read
+  as a different room.
+
+### 10.3 The engine room: what to add (batch 6o, "a working space")
+
+1. **The engines as engines**: six rocker covers and the camshaft cover, the fuel pumps and injector lines, the
+   manifold in silver lagging, the turbo and air filter, the coupling guard, the gauge board (lube-oil pressure,
+   water temperature, exhaust temperature) with real dial faces, the local control stand, the maker's plate. Same
+   for the two generators at smaller scale. Data for every number is already in `FERRY_MACHINERY`.
+2. **Pipes routed like pipes**: along the sides and the deckhead in parallel, bends, hangers every 1.5 m, flanges,
+   valves with handwheels painted by service, labels on the pipes (JIS colours: fuel red-brown, lube oil yellow, sea
+   water green, fresh water blue, air white, fire main red, exhaust silver). The fan of cones goes.
+3. **The switchboard as a board**: panels with meters (V, A, kW, Hz), the synchroscope, three earth lamps, breaker
+   handles, labels, the shore-power lamp; read from `FERRY_ELECTRICS`, and **live**: which generator is on the board
+   follows the condition (`FERRY_SUPPLY`), the kW meter follows `FERRY_LOADS`, the shore lamp lights at night.
+4. **Floor and lighting**: chequer plate, edging, bilge gratings and wells, sounding pipes, drip trays, caged tubes
+   (lit at day, the night lamp alone after 22:15), escape arrows, stencils.
+5. **The watchkeeper's things**: extinguishers, the fire blanket, the ear-defender hooks (the ones you take), the
+   telephone, the bench with its vice and spanner rack, drums, the rag bin, the log book and pen on the desk, a mug.
+6. **It runs**: engine sound by state (stopped at shore power, idling alongside, ahead under way), vibration, needles
+   that read the data, the running lamps, the bilge pump that cycles, the chief's rounds between the booth, the
+   engines and the purifier; and the scenarios can happen (6n).
+
+### 10.4 The bridge: what is there
+
+The wheelhouse with five raked windows, the console, the steering stand, the magnetic compass, the radar under its
+hood, two engine levers and the thruster lever, the clock and barometer, the chart table aft, the wing doors and the
+wings with their consoles and dodgers; aft, the corridor with the crew's cabins, the mess, the galley, the emergency
+generator and CO₂ rooms. Five prompts on this deck. The master stands at the wheel.
+
+### 10.5 The bridge: why it does not feel real (the photographs)
+
+- **The console is a grey slab with four blobs** (b2): no instrument faces, no telegraph levers you can read AHEAD
+  and ASTERN on, no rudder-angle indicator, no tachometers for each engine, no clinometer, no nav-light switch
+  panel with its lamps, no VHF with a handset on its hook, no PA microphone, no echo sounder's paper, no GPS plotter,
+  no whistle button, no searchlight control, no window wiper switches. Nothing glows, by day or at night (b8).
+- **The chart table is a prompt**, not a table: no chart under perspex with the course pencilled from Minato to
+  Kitano-jima, no tide table, no log book, no dividers and parallel ruler, no desk lamp with a red filter for night.
+- **The deckhead is a radial pattern** (b1, b3, b5): the cel pass's dots converge on the deckhead's centre and read as
+  a sunburst in every room of the bridge deck. Glitch.
+- **The windows are plain glass**: no frames with handles, no wipers' arcs, no clear-view screen, no sun visors, no
+  handrail under the windows, no non-slip matting at the wheel, no pilot chair.
+- **Nothing on the walls**: the ship's licence in its frame, the muster list, the safety plan, the passenger count
+  slate, the fire-detection panel with its zone lamps, the bell, the binoculars on their hook, the ensign in its
+  locker, the "操舵室 WHEELHOUSE" sign on the door, the no-entry sign on its outside.
+- **The crew's rooms are empty boxes** (b6, b7): the mess has a table and nothing on it (no rice cooker, kettle,
+  television, duty board, muster list, the kettle's tea); the master's cabin has a desk and a bunk and no bedding, no
+  papers, no safe, no family photo, no uniform cap on the hook. The corridor has no doors with name plates, no fire
+  extinguisher, no deck-plan frame.
+- **Nothing happens**: the master is a statue; the radar does not sweep on its screen (the scanner outside does); no
+  VHF chatter, no clock tick, no whistle you can sound from the wing, no wipers in the rain, no instruments following
+  the ship (rudder angle, rpm, heading).
+
+### 10.6 The bridge: what to add (batch 6p, "a working bridge")
+
+1. **The console as instruments**: two telegraph levers with AHEAD / STOP / ASTERN faces, the thruster lever, two
+   tachometers, the rudder-angle indicator, the clinometer, the nav-light panel with lamps, the VHF with handset and
+   channel display, the PA microphone, the echo sounder, the GPS plotter, the whistle button, the wiper switches; and
+   **live**: rpm, rudder angle, heading and the radar screen's sweep follow her run; the nav-light lamps follow
+   `setNavigationLights`; everything lit red at night.
+2. **The chart table as a table**: the chart with the course, the tide table, the log book open at today, dividers,
+   parallel ruler, pencil, the red lamp.
+3. **Windows and handrails**: frames, wipers that run in the rain, a clear-view screen, the handrail, the matting, the
+   pilot chair, sun visors.
+4. **The walls**: the licence, the muster list, the safety plan, the fire panel with zone lamps, the bell, the
+   binoculars, the passenger count slate, the door sign, the no-entry sign.
+5. **The crew's rooms**: the mess dressed (rice cooker, kettle, television on a bracket, the duty board, cups, the
+   newspaper), the galley's range and pots, the cabins with bedding, lockers with names, a photo, a cap, the
+   corridor's name plates and extinguisher, the CO₂ room's release cabinet labelled.
+6. **It works**: the master's hands on the wheel under way and on the wing throttles berthing, the whistle you can
+   sound from the wing (through `ferry.js`'s signals), VHF calls at the breakwater, the bell at the change of watch.
+7. **Fix the deckhead sunburst** (the cel pass on flat deckheads: a pattern, not shading).
+
+### 10.7 Order
+
+6h (she sails) stays first, because the instruments and the engines are only alive when she moves. Then **6o** and
+**6p** before the wake and the people (6i, 6j): the creator wants to explore her, and these two rooms are where the
+exploring is. The crew's rooms (10.6 item 5) can ride with 6p.
