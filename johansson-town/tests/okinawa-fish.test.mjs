@@ -61,3 +61,13 @@ test('the catch story reads right with every pier fish', async () => {
  const {expand,seeded}=await import('../src/feed/storyteller.js');
  for(const f of fishAt('pier'))assert.equal(expand('I caught {a $fish} last night.',{vars:{fish:f.name}},seeded(f.id)),`I caught ${aFish(f)} last night.`);
 });
+
+test('the long vowels draw right: Figtree supplies ā ē ī ō ū, which LINE Seed JP draws with the bar beside the letter', () => {
+ const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+ const page=read('index.html'),subset=decodeURIComponent(page.match(/family=Figtree[^"]*text=([^&"]+)/)?.[1]||'');
+ for(const c of 'āēīōūĀĒĪŌŪ')assert.ok(subset.includes(c),'the Figtree subset has '+c);
+ assert.ok(page.indexOf('family=Figtree')>page.indexOf('family=LINE+Seed+JP'),'loaded beside LINE Seed JP');
+ assert.match(read('line-ui.css'),/--line-font:Figtree,"LINE Seed JP",/);
+ assert.match(read('src/feed/comic.js'),/const FONT='Figtree,"LINE Seed JP",/);
+ for(const f of FISH)for(const c of f.name.normalize('NFC'))if(c.charCodeAt(0)>0x7f)assert.ok(subset.includes(c),`${f.name}: ${c} is drawn by Figtree`);
+});

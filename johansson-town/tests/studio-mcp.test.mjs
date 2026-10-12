@@ -166,7 +166,7 @@ test('products: list, get with its references, change a price (dry run, draft, p
  assert.equal((await call('product_list',{query:'umineko'})).data.products[0].id,'beer');
  const got=await call('product_get',{id:'Umineko lager'});
  assert.equal(got.data.id,'beer','a product is found by its name too');
- assert.ok(got.data.references.code.some(r=>/^src\/game\.js:\d+ /.test(r))&&got.data.references.code.some(r=>/^src\/people\/friendship\.js:22 /.test(r)),'the literals the plan names');
+ assert.ok(got.data.references.code.some(r=>/^src\/game\.js:\d+ /.test(r))&&got.data.references.code.some(r=>/^src\/people\/friendship\.js:\d+ /.test(r)),'the literals the plan names');
  assert.ok(got.data.references.accounts.some(a=>/^Sato Ramen \(from higa-saketen\)/.test(a)));
  assert.ok(got.data.references.drawings.some(r=>/sakura-backroom\.js/.test(r)),'the backroom crates its label does not reach');
  assert.match(got.data.retire,/^Refused while \d+ code lines/);assert.ok(got.data.findings.some(f=>/blue/.test(f)));
@@ -184,7 +184,7 @@ test('products: list, get with its references, change a price (dry run, draft, p
  assert.equal(lemon.data.applied,true,JSON.stringify(lemon.data.problems));assert.deepEqual(lemon.data.product.cells.flavours.map(f=>f.name),['Dry','Black','Lemon']);
  assert.deepEqual((await call('product_get',{id:'beer'})).data.cells.flavours.at(-1),'Lemon: cell 50 of the right half, hue +60°','the lowest free cell of the right half');
  const retire=await call('product_retire',{id:'beer',why:'The creator wants a different beer.',shelfTo:'milk'});
- assert.equal(retire.data.ok,false);assert.match(retire.data.problems.join(' '),/cannot be retired yet.*friendship\.js:22/);
+ assert.equal(retire.data.ok,false);assert.match(retire.data.problems.join(' '),/cannot be retired yet.*friendship\.js:\d+/);
  const brand=await call('product_update',{id:'beer',set:{'brand.line':'Orion lager'},note:'Trying a real brand on the can.'});
  assert.match(brand.data.problems.join(' '),/"orion" is a real brand/);
  const locked=await call('product_update',{id:'beer',set:{inventoryName:'Lager'},note:'Trying to rename the save key.'});

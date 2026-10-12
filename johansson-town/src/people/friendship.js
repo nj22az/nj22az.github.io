@@ -10,6 +10,7 @@
  * Pure data and rules: no DOM, no three.js. activities.js asks it what to say and
  * game.js asks it who to put a card over.
  */
+import {pierFishOfItem,LEGACY_CATCH} from '../world/okinawa/fish.js';
 import {RESIDENT_PERSONALITIES} from './resident-personalities.js';
 import {STREET_CAST_NAMES} from './residents.js';
 
@@ -20,7 +21,7 @@ export const LEVEL_NAMES=Object.freeze(['Stranger','Acquaintance','Friend','Good
 /** What each taste in resident-personalities.js is, as a thing you can carry. */
 export const TASTE_ITEMS=Object.freeze({
  bun:'Steamed pork bun',tea:'Green tea',rice:'Plum rice ball',beer:'Umineko lager',soda:'Ramune soda',
- coffee:'Canned coffee',fish:'Sea bream',cola:'Sea breeze cola',milk:'Asamori milk',
+ coffee:'Canned coffee',fish:'Taman',cola:'Sea breeze cola',milk:'Asamori milk',
 });
 
 const POINTS=Object.freeze({talk:2,gift:3,favourite:6,want:10});
@@ -28,7 +29,7 @@ const WANTS_PER_DAY=3;
 
 const dayOf=minutes=>Math.floor(minutes/1440);
 /** "a mackerel", "an umineko lager". */
-export const withArticle=thing=>(/^[aeiou]/i.test(thing)?'an ':'a ')+thing;
+export const withArticle=thing=>(/^[aeiouāēīōū]/i.test(thing)?'an ':'a ')+thing;
 const clampName=name=>String(name||'').slice(0,60);
 
 /** The bounded friendship record for one resident, made on first use. */
@@ -103,8 +104,8 @@ export function talked(state,name,minutes){
  * @returns {{points:number,yen:number,kind:'want'|'favourite'|'gift'|'again',hearts:number,up:boolean}}
  */
 export function gave(state,name,item,minutes,names){
- // Old saves called the pier's catch mackerel; today's bag calls it sea bream.
- if(item==='Mackerel')item='Sea bream';
+ // Old saves called the pier's catch mackerel, then sea bream; both are a taman now (fish.js).
+ item=LEGACY_CATCH[item]||item;
  const r=record(state,name),day=dayOf(minutes),before=heartsFor(r.points);
  if(r.giftDay!==day){r.giftDay=day;r.giftsToday=0;}
  const want=openWant(state,minutes,names,name);
@@ -138,7 +139,8 @@ export function giftLine(name,item,result){
 }
 /** How they mention their want in conversation. */
 export function wantLine(want){
- const where=['Sea bream','Mackerel'].includes(want.item)?'If you are passing the fishing pier':'If you are passing Sakura';
+ const fish=pierFishOfItem(want.item);
+ const where=fish?(fish.id==='taman'?'If you are fishing off the pier tonight':'If you are passing the fishing pier'):'If you are passing Sakura';
  return `${where}, I could really do with ${withArticle(want.item.toLowerCase())} today.`;
 }
 /**

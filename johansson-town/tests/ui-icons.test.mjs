@@ -16,7 +16,7 @@ test('the action button shows the icon for what you are facing',()=>{
 
 test('things in the bag get an icon by what they are',()=>{
  assert.equal(itemIcon('Green tea'),'cup');assert.equal(itemIcon('Canned coffee'),'cup');
- assert.equal(itemIcon('Sea bream'),'fish');assert.equal(itemIcon('Ice'),'ice');
+ assert.equal(itemIcon('Sea bream'),'fish');for(const f of ['Taman','Ēgwā','Mībai','Tachinuiyu'])assert.equal(itemIcon(f),'fish',f);assert.equal(itemIcon('Ice'),'ice');
  assert.equal(itemIcon('Plum rice ball'),'food');assert.equal(itemIcon('Returnable glass bottle'),'recycle');
  assert.equal(itemIcon('Anything',{printed:true}),'cube');assert.equal(itemIcon('Mystery'),'box');
 });
