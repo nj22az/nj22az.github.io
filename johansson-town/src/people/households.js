@@ -3,7 +3,8 @@ export const HOUSEHOLDS=Object.freeze([
  // Thuan, Thao and Chin, Thao's husband (batch 7b): Thuan's weekday room; her home is Johansson's on Kitano-jima.
  {id:'yuri-home',entry:'one',number:'1',residents:['Thuan','Thao','Chin']},
  {id:'resident-home-aya',entry:'two',number:'2',residents:['Nhung','Reiko']},
- // 2 Front-Row Yard (resident-home-kenji) is to let: Chin lives with Thao, Tetsuo on Kitano-jima (kitano-residents.js).
+ // 2 Front-Row Yard: Tetsuo alone since Chin moved in with Thao (the creator, 2026-10-12: only Johansson and Thuan live in the hamlet; Tetsuo's mother keeps the old Chinen house there).
+ {id:'resident-home-kenji',entry:'three',number:'3',residents:['Tetsuo']},
  {id:'resident-home-mrs-sato',entry:'four',number:'4A',residents:['Mrs Sato']},
  {id:'resident-home-officer-mori',entry:'four',number:'4B',residents:['Officer Mori']},
  {id:'resident-home-harbour-master',entry:'five',number:'5A',residents:['Harbour master']},

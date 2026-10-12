@@ -15,8 +15,8 @@
 export const ISLAND_HOUSEHOLDS=Object.freeze([
  // The town hall and the harbour.
  {home:'kitano-1',address:'Kitano hamlet, Kitano-jima',members:[['Johansson','mayor of Minato-chō; lives across the water on Kitano-jima since batch 7a, a crossing from the office, and hears the ferry’s whistle before he sees her'],['Thuan','his wife; keeps Sakura Shōten on weekdays from her room at 1 Kitahama and comes home on the Friday boat']]},
- {home:'kitano-3',address:'Kitano hamlet, Kitano-jima',members:[['Tetsuo','radio repairer at the Chin & Tetsuo workshop; his radio test is at the airport, so he moved across from the Front-Row yard and takes the ferry to work']]},
- {home:'kitano-2',address:'Kitano hamlet, Kitano-jima',members:[['Jun','checks the commuter tickets at the Kitano-jima terminal and takes the ferry’s lines at the pier']]},
+ {home:'kitano-3',address:'Kitano hamlet, Kitano-jima',members:[['Grandmother Chinen','Tetsuo’s mother; keeps the old Chinen house, the red-tile one, and its garden; her son comes over on the boat']]},
+ // kitano-2, the Shiroma house, is to let: the creator (2026-10-12), only Johansson and Thuan live in the hamlet; the others live in the port.
  {home:'office',address:'Harbour office (the bed behind the screen)',members:[['Harbour master','runs the harbour office and the moorings']]},
  {home:'clinic',address:'The doctor’s flat behind the town hall clinic',members:[['Dr Kakazu','the island doctor: posted from Naha for two years, surgery at the town hall clinic, on call at night']]},
  // The town ferry: her chief engineer lives aboard (people/ferry-crew.js).
@@ -24,7 +24,7 @@ export const ISLAND_HOUSEHOLDS=Object.freeze([
  {home:'koban',address:'Minato police box',members:[['Officer Mori','the island’s police officer: desk from four, night patrol']]},
  // The Front-Row yard.
  {home:'resident-home-aya',address:'1 Front-Row Yard',members:[['Nhung','bookshop assistant'],['Reiko','edits the evening paper']]},
- {home:'resident-home-kenji',address:'2 Front-Row Yard',members:[],toLet:true},
+ {home:'resident-home-kenji',address:'2 Front-Row Yard',members:[['Tetsuo','radio repairer at the Chin & Tetsuo workshop; his mother keeps the old Chinen house on Kitano-jima']]},
  // Kitahama, the new lane on the north-east land.
  {home:'market',address:'The flat over Sakura Shōten',members:[['Grandmother Sakurai','owns Sakura Shōten, which her parents opened in 1963; does the books on Sundays and minds the shop when Thuan is at the auction']]},
  {home:'kitahama-1',address:'1 Kitahama',members:[['Thuan','keeps Sakura Shōten for the Sakurai family; her weekday room, her home being Johansson’s on Kitano-jima'],['Thao','runs Minato Izakaya'],['Chin','repairman at the workshop; Thao’s husband']]},

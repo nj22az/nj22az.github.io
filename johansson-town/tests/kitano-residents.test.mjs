@@ -35,16 +35,19 @@ test('Sakura’s rota: Thuan on weekdays, Nhung at the weekend, Chin every night
  assert.equal(residentPlan(profile('Chin'),at(1,1300)).place,'market');assert.equal(residentPlan(profile('Chin'),at(1,600)).place,'home','Chin sleeps after the night shift');
 });
 
-test('Tetsuo commutes from Kitano-jima by ferry and is never left in town overnight',()=>{
+test('Tetsuo lives in the Front-Row yard and never takes the boat; his mother keeps the old Chinen house',()=>{
  const tetsuo=profile('Tetsuo');
- assert.equal(residentPlan(tetsuo,at(1,520)).place,'bus');assert.equal(residentPlan(tetsuo,at(1,600)).place,'work');
- assert.equal(residentPlan(tetsuo,at(1,720)).place,'ramen');assert.equal(residentPlan(tetsuo,at(1,1000)).place,'work');
- for(const m of [0,120,240,1330,1420]){const plan=residentPlan(tetsuo,at(1,m));assert.equal(plan.place,'away',''+m);assert.match(plan.activity,/Kitano-jima/);}
+ assert.equal(tetsuo.homeAddress,'2 Front-Row Yard');
+ assert.equal(residentPlan(tetsuo,at(1,720)).place,'ramen');assert.equal(residentPlan(tetsuo,at(1,1100)).place,'work');
+ for(let m=0;m<1440;m+=15)assert.notEqual(residentPlan(tetsuo,at(1,m)).place,'away',''+m);
+ const mother=NEIGHBOURS.find(n=>n.name==='Grandmother Chinen'),plot=KITANO_HAMLET.plots.find(p=>p.id==='kitano-3'),gate=airportWorld(...hamletGate(plot).door);
+ assert.deepEqual(mother.home,gate);assert.ok(mother.routine.some(p=>/sweeping the lane/.test(p.role))&&mother.routine.some(p=>p.home));
+ assert.ok(mother.lines.some(l=>/Tetsuo/.test(l)));
 });
 
-test('Jun’s off-duty home is his own house in Kitano hamlet',()=>{
- const jun=NEIGHBOURS.find(n=>n.name==='Jun'),plot=KITANO_HAMLET.plots.find(p=>p.id==='kitano-2'),gate=airportWorld(...hamletGate(plot).door);
- assert.deepEqual(jun.home,gate);
- for(const phase of jun.routine.filter(p=>p.home)){assert.deepEqual(phase.at,gate);assert.match(phase.role,/at home in Kitano hamlet/);}
+test('Jun lives in the port: off duty he is home in Minato, not in the hamlet',()=>{
+ const jun=NEIGHBOURS.find(n=>n.name==='Jun');
+ assert.deepEqual(jun.home,[4.7,-44.3]);
+ for(const phase of jun.routine.filter(p=>p.home)){assert.deepEqual(phase.at,[4.7,-44.3]);assert.match(phase.role,/at home in Minato/);}
  assert.ok(jun.routine.some(p=>!p.home),'He still works at the terminal');
 });
