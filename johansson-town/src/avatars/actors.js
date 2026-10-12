@@ -42,17 +42,6 @@ export function savePlayerRecipe(recipe,storage=globalThis.localStorage){
  const code=encodeRecipe({...recipe,outfit:appropriateOutfit(recipe.name||'Johansson',recipe.outfit)});try{storage?.setItem(playerRecipeKey(storage),code);}catch{}return code;
 }
 
-/**
- * ?avatar=<code> in the address: somebody shared an islander. It becomes the player's,
- * and the code leaves the address so a reload does not undo a later change.
- */
-export function importRecipeFromURL(){
- try{
-  const url=new URL(location.href),code=url.searchParams.get('avatar');if(!code)return null;
-  const recipe=decodeRecipe(code);url.searchParams.delete('avatar');history.replaceState(history.state,'',url.href);
-  if(recipe)savePlayerRecipe(recipe);return recipe;
- }catch{return null;}
-}
 
 /** An actor for models.js: a body built from the resident's recipe. */
 export function createAvatarActor(entity,name,{shadows=false}={}){

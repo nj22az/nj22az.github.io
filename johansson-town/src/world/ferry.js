@@ -4,7 +4,7 @@ import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js
 import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,AIRPORT_PASSAGES,airportFerryPose} from './airport-ferry.js';
 import {PORT_BUILDING} from './port-building.js';
 import {FERRY_DAY,rollPeriod,pitchPeriod} from './ferry-ship.js';
-import {buildFerryModel,GANGWAY_Z,WL,FERRY_HULL,FERRY_RAMP} from './ferry-model.js';
+import {buildFerryModel,GANGWAY_Z,WL,FERRY_HULL,FERRY_RAMP,FERRY_DECKS,FERRY_CASINGS,halfBreadth} from './ferry-model.js';
 import {MINATO_BERTH} from './minato-berth.js';
 import {FERRY_INSPECT} from './ferry-inspect.js';
 import {OUTER_PIER} from './layout.js';
@@ -48,6 +48,20 @@ export const FERRY_TERMINAL=Object.freeze({
  arrival:Object.freeze([PIER_WEST+.9,FERRY_BERTH.gangwayZ-.7]),
  driver:PORT_BUILDING.driver,
  exit:PORT_BUILDING.platform,
+});
+
+/**
+ * Her mooring lines at Minato (docs/FERRY-AUDIT.md §6, batch 6d): four vinylon lines from her bitts, out through a
+ * fairlead at the bulwark, to the pier's bitts (minato-berth.js MINATO_BERTH.bitts): the head line and the forward
+ * spring from the forward mooring station on the port bow house, the after spring and the stern line from the aft
+ * station. Points in her frame (ferry-model.js); the pier's in the world.
+ */
+const CAR_Y=FERRY_DECKS.car.y,BH_TOP=FERRY_CASINGS.bowHouses.top,HALF_L=FERRY_HULL.length/2;
+export const FERRY_MOORING=Object.freeze({
+ bitts:Object.freeze({aft:Object.freeze([2.9,CAR_Y+.45,1.6-HALF_L]),fwd:Object.freeze([3.1,BH_TOP+.4,33.6-HALF_L])}),
+ fairleads:Object.freeze({aft:Object.freeze([halfBreadth(2.2-HALF_L)-.06,CAR_Y+1.0,2.2-HALF_L]),fwd:Object.freeze([3.78,BH_TOP+.3,34.3-HALF_L])}),
+ lines:Object.freeze(MINATO_BERTH.bitts.map(b=>Object.freeze({name:b.line,station:/head|forward/.test(b.line)?'fwd':'aft',pier:Object.freeze([b.x,OUTER_PIER.height+.5,b.z])}))),
+ radius:.025,
 });
 
 /**
@@ -101,9 +115,23 @@ export function buildFerry({shadows=false}={}){
  */
 export function createFerryRun({parent,shadows=false,colliders,register=null,onAction=()=>{}}={}){
  const ferry=buildFerry({shadows});parent.add(ferry);
+ // Her mooring lines (FERRY_MOORING): two straight runs each (bitt to fairlead, fairlead to the pier's bitt), laid
+ // each frame while she lies alongside at Minato, so they stay on her bitts as she heaves and rolls.
+ const lines=new THREE.Group();lines.name='Minato Maru mooring lines';lines.visible=false;lines.userData.walkSurface=false;lines.userData.dynamicProp=true;lines.userData.horizon=true;parent.add(lines);   // drawn wherever she is in view, like her (render/town-sections.js)
+ const ropeGeo=new THREE.CylinderGeometry(FERRY_MOORING.radius,FERRY_MOORING.radius,1,6);ropeGeo.translate(0,.5,0);
+ const ropeMat=new THREE.MeshStandardMaterial({color:0xd9cfa8,roughness:.92});
+ const segs=FERRY_MOORING.lines.flatMap(l=>[0,1].map(()=>{const m=new THREE.Mesh(ropeGeo,ropeMat);m.name='Mooring line: '+l.name;lines.add(m);return m;}));
+ const vA=new THREE.Vector3(),vB=new THREE.Vector3(),vD=new THREE.Vector3(),UP=new THREE.Vector3(0,1,0);
+ const lay=(m,a,b)=>{vD.subVectors(b,a);const L=vD.length();m.position.copy(a);m.scale.set(1,Math.max(.01,L),1);m.quaternion.setFromUnitVectors(UP,vD.normalize());};
+ const moor=on=>{lines.visible=on;if(!on)return;
+  FERRY_MOORING.lines.forEach((l,i)=>{const bitt=ferry.localToWorld(vA.set(...FERRY_MOORING.bitts[l.station])).clone(),lead=ferry.localToWorld(vB.set(...FERRY_MOORING.fairleads[l.station])).clone();
+   lay(segs[i*2],bitt,lead);lay(segs[i*2+1],lead,vB.set(...l.pier));});};
  // What you can look at aboard (ferry-inspect.js): prompts that move with her, offered only on the deck you stand on.
  if(register)for(const p of FERRY_INSPECT){const a=new THREE.Object3D();a.name='Ferry: '+p.title;a.position.set(...p.pos);a.userData.sameLevel=true;ferry.add(a);
   register(a,p.label,()=>onAction('inspect',p.title,p.text));}
+ // And the crossing itself, asked for at the purser's window: to Kitano-jima from Minato, home from Kitano-jima.
+ if(register){const a=new THREE.Object3D();a.name='Ferry: purser';a.position.set(-2.3,FERRY_DECKS.upper.y+1.2,FERRY_DECKS.saloon.aft+3.1);a.userData.sameLevel=true;ferry.add(a);
+  register(a,'Ask the purser for the crossing',()=>onAction(run.berth==='airport'?'airport-return':'airport-ferry'));}
  let phase='away',t=0,service=null,serviceAt=null,lastMinutes=null,clock=0,yaw=0,x=FERRY_BERTH.x,z=FERRY_BERTH.z,exposure=0,shipSeconds=null,plan=null;
  let berth='town',localService=false,crossing=null;
  const DOOR=[FERRY_TERMINAL.queue[0],FERRY_TERMINAL.queue[1]];
@@ -129,6 +157,7 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
   const landing=berth==='airport'?AIRPORT_FERRY_PORTS.airport.height:MINATO_BERTH.landing.top,down=run.rampDown;
   if(down>=1)ferry.userData.restRamp?.(landing);else ferry.userData.setRamp?.(down,rampSlope(landing));
   if(moored&&berth==='town')ferry.userData.restGangway?.(OUTER_PIER.height);
+  moor(moored&&berth==='town');
   // Her screws turn and the radar sweeps while she moves; alongside both are still.
   const moved=Math.hypot(x-last.x,z-last.z),dt=clock-last.t;last.x=x;last.z=z;last.t=clock;
   if(dt>0&&dt<1)ferry.userData.underway?.(dt,moored?0:Math.min(6,moved/dt));
@@ -166,8 +195,10 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
    serviceAt=lastMinutes??0;service=service??0;set(p.berth[0],p.berth[1],p.yaw);ferry.visible=true;place();trackSolid();
    if(lastMinutes!==null)lights(lastMinutes,false);
   },
+  get moored(){return lines.visible;},
   beginCrossing(destination,{automatic=false}={}){
    if(phase==='crossing'||!AIRPORT_FERRY_PORTS[destination]||destination===berth)return false;
+   moor(false);
    localService=true;phase='crossing';crossing={destination,progress:0,automatic:!!automatic,elapsed:0,seconds:null};ferry.userData.gangway.visible=false;ferry.userData.setGate?.(false);run.setCrossingProgress(0);trackSolid();return true;
   },
   /** The island simulation advances unaccompanied cargo runs without taking the camera. */

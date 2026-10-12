@@ -5,19 +5,15 @@ import {createAvatarAnimator,GESTURES,FUN_POSES} from '../avatars/animate.js';
 import {CAST_RECIPES,recipeFor} from '../avatars/cast.js';
 import {playerRecipe} from '../avatars/actors.js';
 import {CAST_LIMIT,PHOTO_LIMIT,FORMATS,POSES,EXPRESSIONS,cleanCaption,frameSize,comicLayout,drawCaptions} from './layout.js';
-import {BACKDROPS,FILMS,WARDROBE_COLOURS,filmCSS,applyFilm,createStudioSet,arrange} from './sets.js';
+import {BACKDROPS,FILMS,filmCSS,applyFilm,createStudioSet,arrange} from './sets.js';
 import {pocketFilm} from './pocket-camera.js';
 import {PARTS,PATTERNS,normalizeRecipe} from '../avatars/recipe.js';
 import {EXPRESSION_GLYPHS} from '../avatars/face.js';
-import {ISLAND_OUTFITS,ISLAND_COSTUMES,THUAN_SAILOR_OUTFIT,outfitAllowedFor} from '../avatars/outfits.js';
-import {SLOTS,labelFor,wornSet,putOnSet} from '../avatars/wardrobe-catalogue.js';
+import {THUAN_SAILOR_OUTFIT} from '../avatars/outfits.js';
 import {SHOPPING_LANE_OUTFIT} from '../world/shopping-lane-plan.js';
 
-// The wardrobe's words come from the catalogue, by slot, as in the maker (a police top and a police cap read apart).
-const label=v=>v[0].toUpperCase()+v.slice(1),part=slot=>v=>labelFor(slot,v);
+const label=v=>v[0].toUpperCase()+v.slice(1);
 
-// Wardrobe fields are named wear* so they never collide with the caption fields.
-const WARDROBE=['top','pattern','bottom','footwear','hat'],wear=n=>'wear'+n[0].toUpperCase()+n.slice(1);
 const POSE_LABELS={Kachashi:'Dance',Tada:'Ta-da!',HandsOnHips:'Hands on hips',HeelKick:'Heel kick',CheekRest:'Hand on cheek',DoubleCheek:'Both cheeks',
  ...Object.fromEntries(Object.entries(FUN_POSES).map(([name,p])=>[name,p.label]))};
 
@@ -33,13 +29,11 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  const canvas=renderer.domElement,view=gameCamera.clone(false),stageGroup=new THREE.Group();stageGroup.name='Photo studio cast';
  const panels=[],actors=[],hidden=new Map();let opened=false,busy=false,dirty=true,selected=0,context,canvasHome,focusBefore,originalStyle;
  let editMode='move';
- const outfitSets=[...ISLAND_OUTFITS,...ISLAND_COSTUMES];
  let azimuth=0,elevation=.1,distance=2.4,targetHeight=1.05,panX=0,panZ=0;
  const set=createStudioSet();
  const ui=document.createElement('section');ui.id='photoStudio';ui.hidden=true;ui.setAttribute('role','dialog');ui.setAttribute('aria-modal','true');ui.setAttribute('aria-labelledby','photoTitle');
  const options=values=>values.map(v=>`<option value="${v}">${POSE_LABELS[v]||v}</option>`).join('');
  const choices=(values,name=v=>label(v))=>values.map(v=>`<option value="${v}">${name(v)}</option>`).join('');
- const swatches=name=>`<div class="photo-swatches" data-swatches="${name}" role="group" aria-label="${name==='topColour'?'Top colour':'Bottom colour'}">${WARDROBE_COLOURS.map(c=>`<button type="button" class="photo-swatch" data-colour="${c}" style="background:${c}" aria-label="Colour ${c}"></button>`).join('')}</div>`;
  const range=(name,label,min,max,step,value)=>`<label>${label}<input name="${name}" aria-label="${label}" type="range" min="${min}" max="${max}" step="${step}" value="${value}"></label>`;
  ui.innerHTML=`<header><div><h2 id="photoTitle">Photo studio</h2><p>Move or turn a character · drag the background to look around</p></div><button data-close aria-label="Return to town" title="Return to town">${svg("exit")}<span>Return to town</span></button></header>
  <div class="photo-stage"><div class="photo-frame"><canvas class="photo-pocket" aria-hidden="true" hidden></canvas><canvas class="photo-captions" aria-hidden="true"></canvas></div></div>
@@ -51,11 +45,6 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  <div class="photo-row" role="group" aria-label="Character placement"><button type="button" data-edit-mode="move" aria-label="Move character" title="Drag to move" aria-pressed="true">${svg("moves")}<span>Move</span></button><button type="button" data-edit-mode="rotate" aria-label="Rotate character" title="Drag to turn" aria-pressed="false">${svg("undo")}<span>Turn</span></button></div>${range('actorTurn','Turn character',-180,180,1,0)}
  <details class="photo-precise"><summary>Fine adjustments</summary>${range('actorX','Left / right',-5,5,.01,0)}${range('actorZ','Forward / back',-5,5,.01,0)}${range('actorY','Height',-1,3,.01,0)}</details>
  ${range('actorScale','Size',.6,1.6,.05,1)}<div class="photo-row"><button data-face>Face camera</button><button data-arrange="line">Line up</button><button data-arrange="huddle">Huddle</button><button data-arrange="rows">Rows</button></div><label>Speech bubble<input name="speech" type="text" maxlength="120" placeholder="What are they saying?"></label>${range('bubbleLift','Bubble height',-.25,.4,.01,.12)}<button data-remove aria-label="Remove character" title="Remove selected character">${svg("trash")}<span>Remove</span></button></details>
- <details data-pane="cast"><summary>Wardrobe</summary><p>Dress the selected character for the shoot. Their own clothes come back in town.</p>
- <label>Outfit<select aria-label="Outfit" name="wearSet"><option value="">Custom clothes</option>${SLOTS.set.categories.map(c=>`<optgroup label="${c}">${outfitSets.map((o,i)=>o.category===c?`<option value="${i}" title="${o.name}">${o.label}</option>`:'').join('')}</optgroup>`).join('')}</select></label>
- <div class="photo-row"><label>Top<select aria-label="Top" name="wearTop">${choices(PARTS.top,part('top'))}</select></label><label>Pattern<select aria-label="Pattern" name="wearPattern">${choices(PATTERNS)}</select></label></div>${swatches('topColour')}
- <div class="photo-row"><label>Bottoms<select aria-label="Bottoms" name="wearBottom">${choices(PARTS.bottom,part('bottom'))}</select></label><label>Shoes<select aria-label="Shoes" name="wearFootwear">${choices(PARTS.footwear,part('footwear'))}</select></label></div>${swatches('bottomColour')}
- <label>Hat<select aria-label="Hat" name="wearHat">${choices(PARTS.hat,part('hat'))}</select></label><button data-own-clothes>Own clothes</button></details>
 
  <details data-pane="camera" hidden><summary>Set & film</summary><label>Backdrop<select aria-label="Backdrop" name="backdrop">${choices(Object.keys(BACKDROPS),v=>BACKDROPS[v].label)}</select></label>
  <div class="photo-row"><label>Film<select aria-label="Film" name="film">${choices(Object.keys(FILMS),v=>FILMS[v].label)}</select></label><label class="photo-check"><input type="checkbox" name="vignette"> Vignette</label></div></details>
@@ -82,19 +71,12 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
 
  const announce=text=>status.textContent=text;
  const selectedActor=()=>actors[selected];
- function updateButtons(){field('wearSet').disabled=busy||!actors.length;field('actor').disabled=busy||!actors.length;for(const name of ['pose','expression','actorX','actorY','actorZ','actorTurn','actorScale','speech','bubbleLift',...WARDROBE.map(wear)])field(name).disabled=busy||!actors.length;for(const b of ui.querySelectorAll('[data-face],[data-arrange],[data-own-clothes],.photo-swatch'))b.disabled=busy||!actors.length;$('[data-remove]').disabled=busy||!actors.length;$('[data-add]').disabled=actors.length>=CAST_LIMIT;$('[data-capture]').disabled=busy||panels.length>=PHOTO_LIMIT;$('[data-comic]').disabled=busy||!panels.length;}
+ function updateButtons(){field('actor').disabled=busy||!actors.length;for(const name of ['pose','expression','actorX','actorY','actorZ','actorTurn','actorScale','speech','bubbleLift'])field(name).disabled=busy||!actors.length;for(const b of ui.querySelectorAll('[data-face],[data-arrange]'))b.disabled=busy||!actors.length;$('[data-remove]').disabled=busy||!actors.length;$('[data-add]').disabled=actors.length>=CAST_LIMIT;$('[data-capture]').disabled=busy||panels.length>=PHOTO_LIMIT;$('[data-comic]').disabled=busy||!panels.length;}
  function actorList(){syncSelection();field('actor').replaceChildren(...actors.map((a,i)=>new Option(`${i+1}. ${a.name}`,String(i))));field('actor').value=String(selected);syncActor();updateButtons();}
  function syncActor(){const a=selectedActor();if(!a)return;queueMicrotask?.(()=>typeof syncChips==='function'&&syncChips());for(const [name,value] of Object.entries({pose:a.pose,expression:a.expression,actorX:a.x,actorY:a.y,actorZ:a.z,actorTurn:a.turn,actorScale:a.scale,speech:a.speech,bubbleLift:a.lift}))field(name).value=String(value);
-  field('wearSet').disabled=busy;field('wearSet').value='';for(const option of field('wearSet').options)if(option.value!=='')option.disabled=!outfitAllowedFor(a.name,outfitSets[Number(option.value)].outfit);
-  const o=a.avatar.recipe.outfit,matched=outfitSets.findIndex(set=>set.id===wornSet(o)?.set.id);field('wearSet').value=matched<0?'':String(matched);for(const n of WARDROBE)field(wear(n)).value=o[n];
-  for(const box of ui.querySelectorAll('[data-swatches]'))for(const b of box.children)b.classList.toggle('on',b.dataset.colour===o[box.dataset.swatches]);}
+}
  function placeActor(a){a.holder.position.set(a.x,a.y,a.z);a.holder.rotation.y=Math.PI+a.turn*Math.PI/180;a.holder.scale.setScalar(a.scale);syncSelection();dirty=true;}
- // A change of clothes is a new body in the same place, in the same pose.
- function dress(a,outfit){
-  if(busy)return;
-  const recipe=normalizeRecipe({...a.avatar.recipe,outfit:{...a.avatar.recipe.outfit,...outfit}});
-  a.avatar.root.removeFromParent();a.avatar.dispose();a.avatar=buildAvatar(recipe,{shadows:false,faceSize:256});a.holder.add(a.avatar.root);poseStudioActor(a);syncActor();dirty=true;
- }
+ // Everyone wears their own clothes, as Johansson Studio dressed them: dressing up is Studio's (src/studio-handoff.js).
  function addActor(name){
   if(busy||actors.length>=CAST_LIMIT)return;
   const source=context.cast.find(c=>c.name===name),base=name==='Johansson'?playerRecipe():source?.recipe||recipeFor(name);
@@ -202,11 +184,6 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  field('backdrop').onchange=()=>{setBackdrop(field('backdrop').value);announce(BACKDROPS[field('backdrop').value].label+'.');};
  field('film').onchange=()=>{canvas.style.filter=filmCSS(field('film').value);dirty=true;};
  field('actorScale').oninput=()=>{const a=selectedActor();if(a){a.scale=Number(field('actorScale').value);placeActor(a);}};
- // A set goes on as in the maker (putOnSet): the hat that came with the last set comes off with it.
- field('wearSet').onchange=()=>{const a=selectedActor(),value=field('wearSet').value;if(a&&value!=='')dress(a,putOnSet(a.avatar.recipe.outfit,outfitSets[Number(value)]));};
- for(const n of WARDROBE)field(wear(n)).onchange=()=>{const a=selectedActor();if(a)dress(a,{[n]:field(wear(n)).value});};
- for(const box of ui.querySelectorAll('[data-swatches]'))for(const b of box.children)b.onclick=()=>{const a=selectedActor();if(a&&!b.disabled)dress(a,{[box.dataset.swatches]:b.dataset.colour});};
- $('[data-own-clothes]').onclick=()=>{const a=selectedActor();if(a)dress(a,a.own.outfit||{});};
  $('[data-face]').onclick=()=>{const a=selectedActor();if(!a)return;updateView();const eye=stageGroup.worldToLocal(view.position.clone());a.turn=Math.round(Math.atan2(eye.x-a.x,eye.z-a.z)*180/Math.PI);placeActor(a);syncActor();};
  for(const b of ui.querySelectorAll('[data-arrange]'))b.onclick=()=>{arrange(b.dataset.arrange,actors.length).forEach(([x,z,turn],i)=>{Object.assign(actors[i],{x,z,turn,y:0});placeActor(actors[i]);});syncActor();announce('Cast arranged.');};
  $('[data-close]').onclick=close;$('[data-add]').onclick=()=>addActor(field('addCast').value);$('[data-remove]').onclick=()=>{const a=selectedActor();if(busy||!a)return;a.holder.removeFromParent();a.avatar.dispose();actors.splice(selected,1);selected=Math.max(0,selected-1);actorList();};$('[data-reset]').onclick=resetCamera;$('[data-capture]').onclick=capture;$('[data-comic]').onclick=saveComic;field('layout').onchange=invalidateComic;

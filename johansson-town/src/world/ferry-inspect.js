@@ -12,6 +12,10 @@ const M=FERRY_MACHINERY,E=FERRY_ELECTRICS;
 const at=(id,pos,label,title,text)=>Object.freeze({id,pos:Object.freeze(pos),label,title,text});
 
 export const FERRY_INSPECT=Object.freeze([
+ at('er-door',[3.05,CAR+1.3,Z(7.0)],'Engine room: through the door and down the ladder','Engine room',
+  'The casing door on the car deck’s port side, under the red ENGINE ROOM sign. Inside, a ladder goes down through a hatch to the floor plates: two main engines, two generators, the control booth and the main switchboard. Watch your head, and hold the rails.'),
+ at('crew-door',[0,BRIDGE+1.3,Z(5.7)],'Crew door: the corridor and the wheelhouse','Crew only',
+  'The crew’s door from the bridge deck’s aft platform (up either ladder from the open deck). Their corridor runs forward between the cabins, the mess and the galley to the wheelhouse. The wheelhouse can also be reached from the walkways: a ladder at each walkway’s forward end climbs to the bridge wing and its door.'),
  at('main-engine',[1.55,FP+1.3,Z(10.8)],'Look at the port main engine','Main engine, port',
   `One of two: ${M.mains.cylinders} cylinders in line, ${M.mains.bore} mm bore and ${M.mains.stroke} mm stroke, ${M.mains.kW} kW (${M.mains.ps} PS) at ${M.mains.rpm} rpm, turbocharged. ${M.mains.start}. ${M.mains.driven}. It burns ${M.mains.fuel}.`),
  at('gearbox',[1.55,FP+1.1,Z(9.2)],'Look at the port gearbox','Reverse-reduction gearbox',

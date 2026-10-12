@@ -207,7 +207,8 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       recordMoment(state,m,{id:`happening:${h.id}:${day}`,kind:'happening',who:outcome==='held'?Object.keys(h.cast||{}).slice(0,4):[],text:said,news:said});
     }
     // A resident's birthday (people/birthdays.js: only the real ones the creator has set).
-    for(const who of birthdaysOn(m))recordMoment(state,m,{id:`birthday:${who}:${day}`,kind:'happening',who:[who],text:`It was ${who}’s birthday.`,news:`Happy birthday to ${who}, from everyone in Minato.`});
+    for(const who of birthdaysOn(m))recordMoment(state,m,who==='Johansson'?{id:`birthday:${who}:${day}`,kind:'happening',text:'My birthday. Half the island wished me many happy returns.',news:'Happy birthday to the mayor, Johansson, from everyone in Minato.'}
+      :{id:`birthday:${who}:${day}`,kind:'happening',who:[who],text:`It was ${who}’s birthday.`,news:`Happy birthday to ${who}, from everyone in Minato.`});
     const t=state.typhoon&&typhoonAt(m);
     if(t){
       recordMoment(state,m,{id:`typhoon:${t.number}:warning`,kind:'happening',text:`A typhoon warning: No. ${t.number}.`,
@@ -541,6 +542,9 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       replies.radio='I leave the singing to the shop radio tonight. Here I am listening to the kitchen.';
     }
     const greeting=onsenBath?"Haa… It feels good.\nYou came! Sit, sit — the water is perfect tonight. Listen: you can hear the sea on the other side of the fence. This is the best part of my whole day.":ramenVisit?"Good work today!\nSakura is locked up for the evening. I stopped for a bowl of ramen before heading on. There is a stool at the counter if you would like to join me.":offDuty?"Good to see you!\nYou found me! Sakura is all locked up. Thao saved me some supper. Come keep me company — I want to hear about your day.":met?"Welcome back!\nYou are back! Welcome to Sakura. Looking for a snack, or shall we make the afternoon a little less ordinary?":"Welcome! I’m Thuan.\nWelcome! I am Thuan. I keep Sakura stocked, the plants alive, and the radio just loud enough to sing along. What brings you in?";
+    // Her birthday, and his: she says it first (people/birthdays.js).
+    const birthday=birthdayOn('Thuan',getMinutes())?"It’s my birthday!\nYou remembered! Or one of my sisters told you. Either way, you came, and that is the best present."
+      :birthdayOn('Johansson',getMinutes())?"Happy birthday, Johansson!\nDid you think I would forget? The whole island knows by now. I may have told them.":null;
     const title=onsenBath?'Thuan · Umi-no-yu':ramenVisit?'Thuan · Ramen break':offDuty?'Thuan · After hours':'Thuan · Heart of Sakura';
     const openHotCase=topic==='hot-case';if(openHotCase)topic=null;
     if(topic){show(title,replies[topic],[['Tell me something else',()=>thuanConversation()],['See you soon, Thuan',close]]);return;}
@@ -629,7 +633,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       ...(page>0?[['Previous presents',()=>giveGift(page-1)]]:[]),
       ...((page+1)*8<gifts.length?[['More presents',()=>giveGift(page+1)]]:[]),
       ['Never mind',()=>thuanConversation()]]);
-    show(title,greeting,[
+    show(title,birthday||greeting,[
       ...(basketTotal(state)?[[`Pay for ${basketLines(state).reduce((n,l)=>n+l.count,0)} item(s) · ¥${basketTotal(state)}`,konbiniCounter]]:[]),
       ['Talk with Thuan',thuanStory],
       ...(gifts.length?[['Give her a present',giveGift]]:[]),
@@ -662,7 +666,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const names=Object.keys(state.greeted);if(names.length>60)delete state.greeted[names[0]];
     const recipe=recipeFor(name);
     return greetingFor({speaker:name,temper:temperamentOf(recipe?.profile||{}),playerName:playerName(),catchphrase:recipe?.profile?.catchphrase||'',day:dayNow,
-     situation:{theirBirthday:birthdayOn(name,nowM),daysAway:dayNow===returnDay?daysBetween(awaySince):0,weather:state.typhoon?'typhoon':state.weather?'rain':'sunny',hour:Math.floor(((nowM%1440)+1440)%1440/60)}});
+     situation:{theirBirthday:birthdayOn(name,nowM),hisBirthday:birthdayOn('Johansson',nowM),daysAway:dayNow===returnDay?daysBetween(awaySince):0,weather:state.typhoon?'typhoon':state.weather?'rain':'sunny',hour:Math.floor(((nowM%1440)+1440)%1440/60)}});
   }
   function neighbour(name){
     const spec=NEIGHBOUR_TALK[name];if(!spec){close();return;}

@@ -91,7 +91,7 @@ import {lineFeeling} from './avatars/body-language.js';
 import {sharedMind,startMindIfChosen} from './people/thuan-mind.js';
 import {createNeighbourWriter} from './people/town-mind.js';
 import {MOVES} from './avatars/moves.js';
-import {createAvatarJohansson,playerRecipe,playerRecipeKey,importRecipeFromURL} from './avatars/actors.js';
+import {createAvatarJohansson,playerRecipe,playerRecipeKey} from './avatars/actors.js';
 import {setSwingFocus} from './avatars/springs.js';
 import {createBeerService,createDrinkProp,createBiteProp,setPropPortion,DRINKS} from './people/izakaya-beer.js';
 import {DRUNK,LAGER_ALCOHOL,soberUp,wantsAnother,drink as drinkUp} from './people/drunk.js';
@@ -380,7 +380,7 @@ const cameraControls=createCameraControls({onChange:()=>syncView(),onCentre:cent
 camera.fov=cameraControls.settings.fov;camera.updateProjectionMatrix();
 document.documentElement.classList.toggle('touch-controls',touch);
 function centreCamera(){spawnScene?.cancel();pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
-function controlsAllowed(){return !islandPlay?.active&&!photoStudio?.active&&!photoLoading&&!photoReturning&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!itemViewer?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
+function controlsAllowed(){return !islandPlay?.cinematic&&!photoStudio?.active&&!photoLoading&&!photoReturning&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!itemViewer?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
 // Swipes scale to the screen and barely tip the view when they are mostly sideways (input/touch-feel.js).
 function dragLook(dx,dy){spawnScene?.cancel();const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);yaw+=turn.yaw;pitch=THREE.MathUtils.clamp(pitch+turn.pitch,-1.25,1.15);}
 const walkMotion=createMotion(),touchAutoRun=createAutoRun();
@@ -415,7 +415,7 @@ function photoSpots(){const lane=shoppingLanePoint(90,99);return [{id:'photo-har
 // shades; the shutter keeps that frame in the album (activities.keepPhoto) with who and where it shows.
 let pocket=null,pocketWasThird=null;
 const pocketSight=new THREE.Vector3(),pocketBox=new THREE.Box3(),pocketUp=new THREE.Vector3(0,.1,0);
-function pocketCanRaise(){return !activeRoomLayout?.fixedCamera&&started&&!catchingUp&&!roomLoading&&!photoLoading&&!photoStudio?.active&&!inspector?.active&&!itemViewer?.active&&!activities?.paused&&!cameraControls.active&&!bicycleRide&&!islandPlay?.active&&$('#directory').classList.contains('hidden');}
+function pocketCanRaise(){return !activeRoomLayout?.fixedCamera&&started&&!catchingUp&&!roomLoading&&!photoLoading&&!photoStudio?.active&&!inspector?.active&&!itemViewer?.active&&!activities?.paused&&!cameraControls.active&&!bicycleRide&&!islandPlay?.cinematic&&$('#directory').classList.contains('hidden');}
 function raisePocket(){
  if(pocket?.raised)return true;
  if(!pocketCanRaise()){if(bicycleRide)say('Both hands are on the handlebars.',2);else if(activeRoomLayout?.fixedCamera)say('The pocket camera stays in his pocket at the table.',2);return false;}
@@ -567,8 +567,8 @@ const shopCarry=createShopCarry({holder:()=>johansson});
 // Third person unless you have asked for your own eyes: a life-sim is about seeing your
 // islander in the town (docs/AMPLIFY-AUDIT.md, decision 5). V switches.
 try{thirdPerson=globalThis.localStorage?.getItem(VIEW_KEY)!=='first';}catch{}
-// A shared link (?avatar=code) is somebody to walk the town as. Looks are made in Johansson Studio (src/studio-handoff.js).
-{const shared=importRecipeFromURL();if(shared)setTimeout(()=>say('Walking the town as '+(shared.name||'a new islander')+'.',4),4000);}
+// A shared link (?avatar=code) is forwarded to Johansson Studio by index.html: looks are made there (src/studio-handoff.js).
+
 // Johansson Studio saved a look, a wardrobe, Thuan's outfit or the home (src/studio-handoff.js): it shows here at once.
 // The keys are this saved game's, fixed when the town starts, so another tab switching player cannot dress this one.
 // A storage event reaches an open page; coming back to a page the browser kept (pageshow) or a hidden tab (iOS can
@@ -701,7 +701,10 @@ function placeThirdPerson(dt){
  // Seated, the lens rises a little so his head does not fill the view of the table. In a
  // bath he is down at the water, so it looks over his shoulder from standing height.
  const lens=johansson?.lens,tall=lens?lens.eye-1.6:0;
- const eye=(seated&&parkSeat?(parkSeat.soak?1.25:Math.min(1.45,parkSeat.eyeY-player.position.y)+.3):1.6)+tall;
+ // In the ferry's rooms (a 2 m deckhead, walls a metre or two off) the lens pivots at his chest, stands closer and
+ // rises sooner to look down over him: the room, not the back of his head.
+ const room=!current&&shipRoom();
+ const eye=(seated&&parkSeat?(parkSeat.soak?1.25:Math.min(1.45,parkSeat.eyeY-player.position.y)+.3):room?1.3:1.6)+tall;
  tpDir.set(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch));tpRight.set(Math.cos(yaw),0,-Math.sin(yaw));
  tpPivot.set(player.position.x,player.position.y+eye+(camera.aspect<1?.18:0),player.position.z);
  if(current)tpPivot.y=Math.min(tpPivot.y,indoorCeilings?.limit(tpPivot.x,tpPivot.z,player.position.y)??Infinity);
@@ -711,7 +714,7 @@ function placeThirdPerson(dt){
  const own=!current&&seated?c=>circleHitsRect(player.position.x,player.position.z,.3,c):null;
  // On a portrait screen (an iPad held upright) the frame is narrow and his big Shimanchu
  // head filled a third of it: the lens stands further back and a little higher there.
- const portrait=camera.aspect<1,want=(current?2.2:3.2)*(portrait?1.32:1);
+ const portrait=camera.aspect<1,want=(current?2.2:room?2.0:3.2)*(portrait?1.32:1);
  // The whole boom, from a pivot `side` metres to his right; indoors the ceiling too. -1: the pivot is in a wall.
  // Outdoors the boom also stops at what is drawn rather than walked into (an awning, a canopy,
  // a shop's glass): otherwise the lens slid under the valance or behind a window and looked out through it.
@@ -743,10 +746,10 @@ function placeThirdPerson(dt){
  // Close in, the lens rises over his shoulder and looks down at him, so a narrow alley or a
  // small room still shows him rather than the back of his head or nothing at all. Eased, so a
  // post passing behind him does not jerk the view; it rises only where there is room.
- const cramped=Math.min(1,Math.max(0,1.4-thirdDistance)/1.1);
+ const cramped=Math.min(1,Math.max(0,(room?2.1:1.4)-thirdDistance)/1.1);
  crampedEase=THREE.MathUtils.damp(crampedEase,cramped,8,dt);
  if(crampedEase>.001){
-  let lift=crampedEase*.3;if(!current)lift=Math.min(lift,lensOcclusion.clear(camera.position,lensUp,lift+.3)-.3);while(lift>.05&&cameraBlocked(camera.position.x,camera.position.z,camera.position.y+lift,.16,own))lift-=.1;
+  let lift=crampedEase*(room?.5:.3);if(!current)lift=Math.min(lift,lensOcclusion.clear(camera.position,lensUp,lift+.3)-.3);while(lift>.05&&cameraBlocked(camera.position.x,camera.position.z,camera.position.y+lift,.16,own))lift-=.1;
   camera.position.y+=Math.max(0,lift);
  }
  camera.position.y=Math.max(camera.position.y,player.position.y+.3);
@@ -754,8 +757,9 @@ function placeThirdPerson(dt){
  // (Aboard the ferry her decks are the ground, and below her waterline the town's is far above: her engine room.)
  if(!current&&!deckUnder())camera.position.y=Math.max(camera.position.y,groundHeight(camera.position.x,camera.position.z)+.35);
  if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
- if(crampedEase>.001){
-  // His head low in the frame, not in the middle of it: the view still looks ahead, past him.
+ if(crampedEase>.001&&!(room&&thirdDistance<HEAD_CAM)){
+  // His head low in the frame, not in the middle of it: the view still looks ahead, past him. (As a head camera in
+  // her rooms he is hidden, and the view keeps his own pitch.)
   const flat=Math.max(.25,Math.hypot(camera.position.x-player.position.x,camera.position.z-player.position.z)),down=Math.max(-.6,Math.atan2(player.position.y+eye-.1-camera.position.y,flat)+.35);
   camera.rotation.x=THREE.MathUtils.lerp(camera.rotation.x,Math.min(camera.rotation.x,down),crampedEase);
  }
@@ -804,8 +808,8 @@ function onsenWear(){if(!swimwear||current?.id!=='onsen')return null;const z=pla
 function wearSwim(on){if(swimwear===!!on)return;swimwear=!!on;if(on&&!johansson)ensureJohansson();bathWear=on?onsenWear()||'bath':'clothes';const worn=johansson?.wear(bathWear);if(on)say(worn==='towel'?'You change at the lockers into one of the bath\'s wraps, a folded towel on your head.':'You change into your swimwear at the lockers.',3);}
 function followOnsenWear(){const w=onsenWear();if(w&&w!==bathWear){bathWear=w;johansson?.wear(w);}}
 function updateJohansson(dt){
- const ferryView=islandPlay?.phase==='ferry';
- hands.firstPersonVisible=!thirdPerson&&!spawnScene?.active&&!islandPlay?.active&&current?.id!==CITY_RESTAURANT.id;
+ const ferryView=islandPlay?.phase==='ferry'&&islandPlay.cinematic;
+ hands.firstPersonVisible=!thirdPerson&&!spawnScene?.active&&!islandPlay?.cinematic&&current?.id!==CITY_RESTAURANT.id;
  if(ferryView&&!johansson)ensureJohansson();
  if(!johansson)return;
  followOnsenWear();
@@ -818,7 +822,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
+ johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -1107,9 +1111,11 @@ function leaveRoom(){if(!current)return;replayInterrupted();lowerPocket();spawnS
  say(syncExteriorPlace(),1.5);if(leavingDungeon)finishDungeon();}
 
 function syncExteriorPlace(){
- const phase=islandPlay?.phase,airport=islandPlay?.snapshot().location==='airport';
- const title=phase==='ferry'?'MINATO–KITANO-JIMA FERRY':phase==='flight'?'ISLAND COMMUTER FLIGHT':airport?'KITANO-JIMA AIRPORT':'MINATO MACHI';
- const detail=phase==='ferry'?'Minato–Kitano-jima · PASSENGER DECK':phase==='flight'?'Island commuter service · IN FLIGHT':airport?'Kitano-jima · PASSENGER TERMINAL':'Minato Machi · HARBOUR DISTRICT';
+ const phase=islandPlay?.phase,airport=islandPlay?.snapshot().location==='airport',aboard=!current&&!!deckUnder(),run=world.ferry;
+ // Aboard she is the place: her name, and where she is (alongside at which pier, or at sea and bound where).
+ const where=aboard?(run.phase==='crossing'?'AT SEA · BOUND FOR '+(run.destination==='airport'?'KITANO-JIMA':'MINATO'):run.berth==='airport'?'ALONGSIDE · KITANO-JIMA PIER':'ALONGSIDE · MINATO OUTER PIER'):null;
+ const title=aboard?'MINATO MARU':phase==='ferry'?'MINATO–KITANO-JIMA FERRY':phase==='flight'?'ISLAND COMMUTER FLIGHT':airport?'KITANO-JIMA AIRPORT':'MINATO MACHI';
+ const detail=aboard?'The Minato Maru · '+where:phase==='ferry'?'Minato–Kitano-jima · PASSENGER DECK':phase==='flight'?'Island commuter service · IN FLIGHT':airport?'Kitano-jima · PASSENGER TERMINAL':'Minato Machi · HARBOUR DISTRICT';
  const line=airport?'The passenger counter and promenade are open.':'Shops are open.';
  if($('#place').textContent!==title)$('#place').textContent=title;
  if($('#placeSub').textContent!==detail)$('#placeSub').textContent=detail;
@@ -1131,7 +1137,7 @@ function interaction(){if(pocket?.raised){active=null;$('#prompt').classList.rem
   const facingDot=v.lengthSq()?fw.dot(v.normalize()):1;if(facingDot<.3&&d>.9)continue;
   const score=o.userData.storeItem?shelfAimScore(camera.position,camera.getWorldDirection(new THREE.Vector3()),target):d*(1+(1-facingDot)*1.4)+(o.userData.promptPenalty||0)-(/^Talk to /.test(h.label)?.6:0);if(score>=bestScore)continue;bestScore=score;best={...h,object:o}}const e=$('#prompt');if(best){active=best;e.textContent=(touch?'':'E · ')+best.label;e.classList.add('on')}else e.classList.remove('on')}
 function standUp(){if(!seated)return;ramenPlayerService?.cancel();if(parkSeat?.stand)player.position.set(...parkSeat.stand);parkSeat=null;seated=false;unstuckPlayer();ensureDailyQuests(activities.state);if(form3NudgeAllowed(activities.state,minutes)){markDailyDone(activities.state,'form3_sell');activities.save();say(FORM3_NUDGE,6);}else say('You stand up.',2);}
-function doInteract(){if(replayPlayer||pocket?.raised)return;spawnScene?.cancel();if(islandPlay?.active)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(massageChair())activities.action('massage-chair');else if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
+function doInteract(){if(replayPlayer||pocket?.raised)return;spawnScene?.cancel();if(islandPlay?.cinematic)return;if(catchingUp||roomLoading||activities.paused)return;if(bicycleRide){stopBicycleRide();return;}if(seated){if(massageChair())activities.action('massage-chair');else if(Number.isInteger(parkSeat?.ramenSeatId))activities.action('store-table');else if(parkSeat?.izakaya)activities.action('izakaya-table');else standUp();return;}if(inspector?.active)return;if($('#directory').classList.contains('hidden')){interaction();if(active)active.fn?.();else if(current?.id==='dungeon')activeRoomLayout?.dungeon?.strike(null);}}
 // `who`: a room collider with `only` set stops only that walker.
 // `deckY`: standing on the ferry's deck at that height (ferry-walk.js): her own solids are tested there, not the town's
 // bounds (she lies over the water), its fixed colliders (the pier's bitts and fenders beside her) nor the collider that
@@ -1146,6 +1152,13 @@ function environmentBlocked(x,z,r=PLAYER_RADIUS,who='player',deckY=null){const a
  */
 function shipWalk(){if(!ferryWalk&&world.ferry?.ferry)ferryWalk=createFerryWalk(world.ferry);return ferryWalk;}
 function deckUnder(x=player.position.x,z=player.position.z,y=player.position.y){return current?null:shipWalk()?.floorBelow(x,z,y)??null;}
+/**
+ * In the ferry's rooms the lens comes in to 2 m; nearer than HEAD_CAM (a wall at his back, a passage) it becomes a
+ * head camera: he is hidden and the view keeps the way he looks, instead of a screen full of the back of his head.
+ */
+const HEAD_CAM=.85;
+/** In one of her rooms: aboard, with a deckhead over him within about 2–2.7 m (the lens keeps under it, and comes in closer). */
+function shipRoom(){const d=current?null:deckUnder();return !!d&&[1.95,2.2,2.45,2.65].some(h=>ferryWalk.cameraBlocked(player.position.x,player.position.z,d.y+h,.05));}
 /** The ground under the player's feet: her deck aboard, the town's otherwise. */
 function playerGround(){if(current)return 0;const d=deckUnder();return d?d.y:groundHeight(player.position.x,player.position.z);}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
@@ -1273,7 +1286,7 @@ function replayInterrupted(){
  if(replayRecorder?.open){replayRecorder.cancel();replayNote='recording stopped: the room changed (a recording stays in one place)';}
 }
 function updatePlayer(dt){
- if(islandPlay?.active)return;
+ if(islandPlay?.cinematic)return;
  if(replayPlayer&&bicycleRide)stopReplay('stopped: the bicycle is not in recordings yet');
  if(replayRecorder?.open&&bicycleRide){replayRecorder.cancel();replayNote='recording stopped: the bicycle is not in recordings yet';}
  // Drink wears off with town time, an hour a drink; sleep clears it.
@@ -1650,8 +1663,15 @@ let elapsed=0,mapTick=0,stepTick=0,accumulator=0,saveTick=0;
 // menu, running at one, ten or sixty times real speed (see town-clock.js).
 const townClock=createClock(readClockSetting(globalThis.localStorage),minutes);
 function advanceTown(dt,playerPaused,fastForward=false){
-    minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;if(!fastForward)islandPlay?.tick(dt);activities.tick(dt);
-    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.active){shipWalk()?.update();characters?.physics?.(dt,playerGround());updatePlayer(dt);}
+    // Aboard, her pose moves under him in this step (the crossing in islandPlay.tick, the swell in world.update): his
+    // place in her frame is taken before each and put back after it, and his heading turns with her, so he stands
+    // where he stood on her deck, not where she was.
+    // Twice a step, round the two moves and never round his own walk (which would undo it): see hold() and carry().
+    const hold=()=>!current&&!catchingUp&&deckUnder()?{at:world.ferry.ferry.worldToLocal(player.position.clone()),yaw:world.ferry.ferry.rotation.y}:null;
+    const carry=held=>{if(!held)return;const f=world.ferry.ferry;f.updateMatrixWorld(true);player.position.copy(f.localToWorld(held.at));const turn=f.rotation.y-held.yaw;if(turn){yaw+=turn;player.rotation.y+=turn;}};
+    const crossing=hold();
+    minutes+=fastForward?dt:dt*townClock.speed/60;elapsed+=dt;if(!fastForward)islandPlay?.tick(dt);carry(crossing);activities.tick(dt);
+    if(!catchingUp&&(saveTick+=dt)>=15){activities.save();saveTick=0;}if(!playerPaused&&!islandPlay?.cinematic){shipWalk()?.update();characters?.physics?.(dt,playerGround());updatePlayer(dt);}
     evictIfClosed();
     if(current?.id==='izakaya')izakayaGuests.sync(minutes,dt);
     if(current?.id==='onsen')onsenGuests.sync(minutes,dt);
@@ -1662,7 +1682,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     workplaceResidents.update(dt,minutes,weather);bookshopCustomers.update(dt,minutes);
     castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);neighbourChats.update(dt,minutes,weather);
     if(current&&!catchingUp){world.ferry?.update(dt,minutes,elapsed);world.traffic?.update(dt,minutes);}
-    if(!current&&!catchingUp){world.update(dt,elapsed,daylight(minutes),minutes);neighbours?.update(dt,minutes,player.position);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
+    if(!current&&!catchingUp){const swell=hold();world.update(dt,elapsed,daylight(minutes),minutes);carry(swell);neighbours?.update(dt,minutes,player.position);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
 }
 /** Keeps the town on the device clock; a gap of more than a minute is caught up, not jumped. */
 function followClock(){
@@ -1855,6 +1875,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  stand(x,y,z,facing){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,y,z);if(Number.isFinite(facing))yaw=facing;},
  teleport(x,z,facing,tilt){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
  get lensOcclusion(){return lensOcclusion;},
+ /** For the audit: the lens's own tests at a point (what stops the boom), and whether he is in one of the ferry's rooms. */
+ probe(x,y,z,r=.16){return {blocked:cameraBlocked(x,z,y,r),room:shipRoom(),deck:deckUnder()?.floor?.id??null,aboardSolid:!!deckUnder()&&ferryWalk.cameraBlocked(x,z,y,r)};},
  get lens(){return {position:camera.position.toArray(),rotation:camera.rotation.toArray().slice(0,3),distance:thirdDistance,ceiling:current?indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y):null,blocked:cameraBlocked(camera.position.x,camera.position.z,camera.position.y,.16)};},
  get mouse(){return {walking:pointWalk.active,destination:pointWalk.destination,yaw,pitch,thirdPerson};},
  camera:null,

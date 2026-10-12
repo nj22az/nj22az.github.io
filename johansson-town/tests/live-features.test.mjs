@@ -36,4 +36,9 @@ test('World has no maker, wardrobes, outfits, decorating or building: those are 
  assert.match(creatorPage,/location\.replace/,'the old maker address forwards to Studio');
  assert.doesNotMatch(creatorPage,/openCreator|savePlayerRecipe/,'the old maker address is not a maker any more');
  assert.doesNotMatch(html,/const items = /,'the title menu reads its buttons each time');
+ // The creator, 2026-10-12: the photo studio's wardrobe and ?avatar= links go to Studio as well.
+ const photo=await read('src/photo/studio.js');
+ assert.doesNotMatch(photo,/<summary>Wardrobe<\/summary>|name="wearSet"|data-own-clothes/,'no wardrobe in the photo studio');
+ assert.doesNotMatch(game,/importRecipeFromURL/,'World does not take a look from a link');
+ assert.match(html,/get\('avatar'\);if\(c\)location\.replace\('\/avatar-creator\/\?r='/,'a shared ?avatar= link opens in Studio');
 });

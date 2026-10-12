@@ -62,10 +62,11 @@ Build one day in Minato Machi worth coming back for (sources/task.md), on `claud
   days from 1997's real typhoons, the news covering the calendar (tomorrow's happening; a festival as it went).
 - Interrupted by the creator's "I want all customisation be in Johansson Studio" (checks.md 22, NEXT.md section 8):
   done, reviewed separately, fixed, published with round 2 (2/3) through the live workflow.
-- Not done yet: more favours with a calendar (17), impressions (19), birthdays (20).
+- Done since: the favour calendar and two favours (17), impressions (19), birthdays wired to a table the creator fills (20);
+  reviewed, fixed, published (21). Round 2 is complete.
 - Test-tool note: the audit's setTime fixes the weather while the button still reads "Random"; press the weather
   button to Random after setting the time, or typhoons and random rain never run.
 
 ## Next action
-More favours from residents' real facts with a one-a-day calendar (checks 17), then impressions (19) and birthdays
-(20), each checked in the game; publish the same way (fetch and merge main into the live branch first).
+The creator decides: real birthdays (`src/people/birthdays.js`), and whether the Photo studio's per-photo wardrobe and
+`?avatar=` links move to Studio (NEXT.md section 8). More favours need new facts between daytime residents.
