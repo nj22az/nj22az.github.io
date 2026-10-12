@@ -20,7 +20,7 @@ test('the Johansson Marine catalogue is the ship’s own data under the brand',(
 
 test('the main engines and generator sets are built as machines, in the livery, with their plates',()=>{
  const names=new Set(FERRY_INTERIOR.cyls.map(c=>c.name).filter(Boolean));
- for(const part of ['crankcase door','oil filler','fuel filter','turbocharger turbine','turbocharger compressor','air filter','cooling-water pump','sea-water pump','lube-oil filter','flywheel housing','coupling guard','gearbox cover','output flange','tachometer','stop button','start button','shutdown button','sensor box','lagging band','bulkhead lamp','generator turbocharger','alternator','alternator end bell','pump casing','pump motor','compressor cylinder','purifier bowl','separator vessel','earth lamp','synchronising lamp','fuel valve handwheel','flange'])assert.ok(names.has(part),'built: '+part);
+ for(const part of ['crankcase door','oil filler','fuel filter','turbocharger turbine','turbocharger compressor','air filter','cooling-water pump','sea-water pump','lube-oil filter','flywheel housing','coupling guard','gearbox cover','output flange','tachometer','stop button','start button','shutdown button','sensor box','lagging band','bulkhead lamp','generator turbocharger','alternator','alternator end bell','pump casing','pump motor','compressor cylinder','purifier bowl','separator vessel','earth lamp','synchronising lamp','fuel valve handwheel','flange','strainer housing','strainer cover','strainer stud','camshaft','cam lobe','crankcase opening','door bolt','telegraph lever','clock','clutch pack','clutch plate'])assert.ok(names.has(part),'built: '+part);
  const green=JOHANSSON_MARINE.livery.green;
  const blocks=FERRY_INTERIOR.boxes.filter(b=>b.name==='main engine');assert.equal(blocks.length,2);for(const b of blocks)assert.equal(b.hex,green,'the block is in Johansson green');
  const plates=FERRY_INTERIOR.plates;
@@ -35,6 +35,13 @@ test('the main engines and generator sets are built as machines, in the livery, 
  assert.equal(dials.filter(d=>d.lines[0]==='kW').length,2,'a kW meter per generator panel');
  assert.ok(plates.some(p=>p.kind==='chequer'&&p.rotX===-Math.PI/2&&p.w>6),'the floor is chequer plate');
  assert.equal(plates.filter(p=>p.name==='label: fuel filter').length,4,'the filters are dated');
+ assert.ok(plates.filter(p=>p.kind==='grating').length>=5,'gratings over the bilge in the aisle and beside the engines');
+ // The second photo set (6o-3): one crankcase door is off the starboard engine and lies on the plates; no two solid
+ // things of the engine room stand inside each other (the sea chests once stood inside the fuel tank and the separator).
+ const doors=FERRY_INTERIOR.cyls.filter(c=>c.name==='crankcase door');assert.equal(doors.length,12);assert.equal(doors.filter(d=>d.pos[1]<-.9).length,1,'one door on the plates');
+ const solids=FERRY_INTERIOR.boxes.filter(b=>b.solid&&b.name&&/sea chest|strainer|fuel service tank|oily-water separator|air compressor|local control stand|air bottles|workbench|pump$/.test(b.name));
+ const lo=(b,i)=>Math.min(b.a[i],b.b[i]),hi=(b,i)=>Math.max(b.a[i],b.b[i]);
+ for(let i=0;i<solids.length;i++)for(let j=i+1;j<solids.length;j++){const A=solids[i],B=solids[j];const overlap=[0,1,2].every(k=>lo(A,k)<hi(B,k)-.01&&lo(B,k)<hi(A,k)-.01);assert.ok(!overlap,A.name+' stands inside '+B.name);}
  // Every cylinder stands inside the engine room, below the car deck.
  for(const c of FERRY_INTERIOR.cyls)assert.ok(c.pos[1]<2.2&&c.pos[1]>-1.2&&Math.abs(c.pos[0])<4,'in the engine room: '+c.name+' '+JSON.stringify(c.pos));
 });

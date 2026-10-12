@@ -1180,6 +1180,49 @@ What each photograph gave, and where it now is:
 - Test (`ferry-johansson-marine.test.mjs`): 14 maker's plates, the badges, 24+ dials reading 0–1, the chequer floor,
   the dated filters, and every new part by name. 218 cylinders and 112 plates. Photographed with the audit's free
   camera (`/tmp/claude-0/shots/p1…p12`, `q1…q6`, `r1`).
-- Open: sound and vibration by state (the engines are silent in port and at sea alike); gratings over the bilge
-  wells (the texture kind exists, none is laid yet); the plate on the block still sits low; a cable tray from the
-  switchboard to the panels; the compressor's bottles' relief lines.
+- Open: sound and vibration by state (the engines are silent in port and at sea alike); the plate on the block still
+  sits low; a cable tray from the switchboard to the panels; the compressor's bottles' relief lines.
+
+### 10.10 6o-3 built: the second photo set, the action button, the yard's drawings, the safety plan
+
+The creator's second set (2026-10-12: "Upper grating", "Sea water filter, control panel, cams etc"): a big engine
+room's open grating walkway between the engines over the red bilge, a sea-water strainer full of mussels with its
+basket, a reduction gear opened, a clutch pack on a pallet, a camshaft seen through an open crankcase door, an engine
+control room's mint-green console, a wiped bearing. Built in code:
+- **Gratings over the bilge** (`floorPlate('grating', …)`): the aisle between the rails and the strips inside each
+  engine's rails, the bilge red under the bars.
+- **The sea chests and strainers**: the chests are under the floor plates against her sides (a hatch over each);
+  both strainers stand in the port forward corner, the starboard chest's suction crossing under the plates, each a
+  housing with a bolted cover on eight studs, the suction valve's handwheel, the drain cock and a label, with the
+  Monday-morning basket in the prompt. They had stood inside the fuel tank and the separator, and then in the
+  walkway along the forward bulkhead (`ferry-walk.test.mjs` walks it); a test now proves no two solid things of the
+  engine room overlap. The 200 L lubricating-oil drums are stowed in casing P's store, out of the walkway.
+- **The control console**: the booth desk is a mint-green console with a raised panel of six dials (shaft rpm port
+  and starboard, lube-oil pressures, water temperatures), a 4 × 8 alarm matrix with FUEL LEVEL lit amber, two
+  telegraph levers at STOP, the telephone, the grab rail, the log, the pen, the mug, the clock and the safety plan
+  over it.
+- **No.4 crankcase door off the starboard engine**: the red inside, the camshaft and a lobe, the crank web; the
+  door on a rag on the plates with its six bolts; a prompt tells why (the second engineer looked at the cams).
+- **A spare JR-30 clutch pack** on a pallet under the bench's aft end, tagged, with its story (the port gear
+  chattered in April); the oil drums side by side against the forward bulkhead (they stood inside the separator).
+- **The action button** (the creator: "The green action button doesn't make sense it seems buggy"): aboard, the
+  prompts were offered 3.1 m away whatever you faced, there was no prompt for the starboard engine or gearbox or
+  No.1 generator (so facing them offered "No.2 generator" or the port engine), and the labels were cut on the phone's
+  round button ("Look at No.2···"). Now every ferry prompt has a reach (2.2 m, 1.6 m for small things) and wants to be
+  faced (`userData.reach`, `userData.facing`, game.js interaction), there are prompts for the starboard engine and
+  gearbox, No.1 generator, the open crankcase, the strainer, the compressor and the spare clutch pack, and every
+  label is short enough for the button (the eye icon already says "look"). Probed at ten points and four headings
+  (`/tmp/claude-0/probe-prompts.mjs`).
+- **The yard's drawings** (the creator: "give me a schematic over what the engine room looks like a construction
+  drawing, from Johansson Shipyard"; "The drawings don't look real and text overflowing"): sheet 5, the engine room
+  arrangement (plan at the floor plates on the frame grid, centreline elevation, hatched section through the mains,
+  dimensions, equipment list), and every sheet reframed as a yard drawing with a zoned border, a title-block grid and
+  notes that wrap; labels shrink to their rooms. `docs/minato-maru/README.md` D9, D9a; the builder is Johansson
+  Shipyard, Innoshima, hull No. 127 (CLAUDE.md: Johansson is this universe's Acme).
+- **The safety plan** (the creator: "There needs to be a safety plan posted as well, on the vessel"): drawn from
+  the ship's data by `src/world/ferry-safety-plan.js` with a pen that writes to a canvas aboard and to SVG in the
+  book (sheet 6); posted in the lower lobby over the drink machine and in the control booth, each marked YOU ARE
+  HERE. Open: posting it in the saloon and the crew corridor too (the walls there are drawn by other code).
+- The hull's triangle budget rose from 60 000 to 66 000 for the machines (`ferry-ship.test.mjs`).
+- Open from the photographs: the gearbox opened for inspection (the gears), the bilge trough, the sludge tank's
+  sight glass, the wiped bearing as a spare on the bench.

@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_CAR_PLACES,FERRY_MACHINERY} from './ferry-ship.js';
+import {drawSafetyPlan,canvasPen} from './ferry-safety-plan.js';
 import {FERRY_INTERIOR,FERRY_HOUSE,FERRY_ENGINE_ROOM,FERRY_STAIRS} from './ferry-interior.js';
 
 /**
@@ -204,7 +205,7 @@ function deckAndBulwarks(){
 function plateMesh(pl){
  if(typeof document==='undefined')return null;
  const kind=pl.kind||'text',c=document.createElement('canvas');let W=512,H=Math.max(64,Math.round(512*pl.h/pl.w)),repeat=null;
- if(kind==='dial')W=H=256;if(kind==='chequer'||kind==='grating'){W=H=256;repeat=[pl.w/.6,pl.h/.6];}
+ if(kind==='dial')W=H=256;if(kind==='chequer'||kind==='grating'){W=H=256;repeat=[pl.w/.6,pl.h/.6];}if(kind==='safety-plan'){W=1024;H=Math.round(1024*pl.h/pl.w);}
  c.width=W;c.height=H;const x=c.getContext('2d');
  if(kind==='text'){
   x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.strokeStyle=pl.fg;x.lineWidth=4;x.strokeRect(6,6,W-12,H-12);
@@ -222,6 +223,8 @@ function plateMesh(pl){
   if(pl.lines[0])x.fillText(pl.lines[0],cx,cy+R*.42);x.font=Math.round(W*.085)+'px sans-serif';if(pl.lines[1])x.fillText(pl.lines[1],cx,cy-R*.4);
   const a=ang(pl.value??0);x.strokeStyle='#1c1f21';x.lineWidth=W*.02;x.beginPath();x.moveTo(cx-Math.cos(a)*R*.12,cy-Math.sin(a)*R*.12);x.lineTo(cx+Math.cos(a)*R*.86,cy+Math.sin(a)*R*.86);x.stroke();
   x.fillStyle='#1c1f21';x.beginPath();x.arc(cx,cy,W*.04,0,Math.PI*2);x.fill();
+ }else if(kind==='safety-plan'){
+  drawSafetyPlan(canvasPen(x),W,H,pl.here);x.strokeStyle='#1d2326';x.lineWidth=6;x.setLineDash([]);x.strokeRect(3,3,W-6,H-6);
  }else if(kind==='chequer'){
   x.fillStyle=pl.bg;x.fillRect(0,0,W,H);const n=8,s=W/n;
   for(let i=0;i<n;i++)for(let j=0;j<n;j++){const px=i*s+s/2,py=j*s+s/2,along=(i+j)%2===0;x.save();x.translate(px,py);x.rotate(along?Math.PI/4:-Math.PI/4);
