@@ -748,12 +748,17 @@ function placeThirdPerson(dt){
  if(sight<thirdDistance)thirdDistance=THREE.MathUtils.damp(thirdDistance,sight,14,dt);
  else thirdDistance=THREE.MathUtils.damp(thirdDistance,sight,4,dt);
  camera.position.copy(tpPivot).addScaledVector(tpDir,-thirdDistance);
+ // The head camera in her rooms (ferry batch 6f): with less than HEAD_CAM behind him the lens does not stand pressed
+ // against the wall at his back, where the near plane cut the wall in half across the frame (the gangway passage, the
+ // foyer, the stairs); it moves to his eyes, a hand's breadth back, and he is hidden.
+ const headCam=room&&thirdDistance<HEAD_CAM;
+ if(headCam)camera.position.set(player.position.x,player.position.y+1.6+tall,player.position.z).addScaledVector(tpDir,-.12);
  // Close in, the lens rises over his shoulder and looks down at him, so a narrow alley or a
  // small room still shows him rather than the back of his head or nothing at all. Eased, so a
  // post passing behind him does not jerk the view; it rises only where there is room.
  const cramped=Math.min(1,Math.max(0,(room?2.1:1.4)-thirdDistance)/1.1);
  crampedEase=THREE.MathUtils.damp(crampedEase,cramped,8,dt);
- if(crampedEase>.001){
+ if(crampedEase>.001&&!headCam){
   let lift=crampedEase*(room?.5:.3);if(!current)lift=Math.min(lift,lensOcclusion.clear(camera.position,lensUp,lift+.3)-.3);while(lift>.05&&cameraBlocked(camera.position.x,camera.position.z,camera.position.y+lift,.16,own))lift-=.1;
   camera.position.y+=Math.max(0,lift);
  }
@@ -762,7 +767,7 @@ function placeThirdPerson(dt){
  // (Aboard the ferry her decks are the ground, and below her waterline the town's is far above: her engine room.)
  if(!current&&!deckUnder())camera.position.y=Math.max(camera.position.y,groundHeight(camera.position.x,camera.position.z)+.35);
  if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
- if(crampedEase>.001&&!(room&&thirdDistance<HEAD_CAM)){
+ if(crampedEase>.001&&!headCam){
   // His head low in the frame, not in the middle of it: the view still looks ahead, past him. (As a head camera in
   // her rooms he is hidden, and the view keeps his own pitch.)
   const flat=Math.max(.25,Math.hypot(camera.position.x-player.position.x,camera.position.z-player.position.z)),down=Math.max(-.6,Math.atan2(player.position.y+eye-.1-camera.position.y,flat)+.35);

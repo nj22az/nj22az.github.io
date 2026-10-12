@@ -12,8 +12,12 @@ const M=FERRY_MACHINERY,E=FERRY_ELECTRICS;
 const at=(id,pos,label,title,text)=>Object.freeze({id,pos:Object.freeze(pos),label,title,text});
 
 export const FERRY_INSPECT=Object.freeze([
- at('er-door',[3.05,CAR+1.3,Z(7.0)],'Engine room: through the door and down the ladder','Engine room',
+ at('er-door',[2.7,CAR+1.3,Z(6.85)],'Engine room: through the door and down the ladder','Engine room',
   'The casing door on the car deck’s port side, under the red ENGINE ROOM sign. Inside, a ladder goes down through a hatch to the floor plates: two main engines, two generators, the control booth and the main switchboard. Watch your head, and hold the rails.'),
+ at('bicycles',[2.1,CAR+1.0,Z(3.3)],'Look at the bicycle rack','Bicycle rack',
+  'Two islanders’ bicycles, lashed in the rack: a bicycle rides free, and on Kitano-jima it is the way from the pier to the village. The baggage shelf opposite is for the shopping, and the orange lockers over it hold the lifejackets for this deck.'),
+ at('fire-doors',[0,CAR+1.2,Z(12.0)],'Read the safety plan','Safety plan',
+  'The lower lobby’s plan: the two sliding fire doors onto the lanes close by themselves on the alarm; the ways up are the stairs either side, the way below the engine room’s door under its red sign, and aft the crew’s door to the mooring station. Drivers wait here; nobody stays on the car deck at sea.'),
  at('crew-door',[0,BRIDGE+1.3,Z(5.7)],'Crew door: the corridor and the wheelhouse','Crew only',
   'The crew’s door from the bridge deck’s aft platform (up either ladder from the open deck). Their corridor runs forward between the cabins, the mess and the galley to the wheelhouse. The wheelhouse can also be reached from the walkways: a ladder at each walkway’s forward end climbs to the bridge wing and its door.'),
  at('main-engine',[1.55,FP+1.3,Z(10.8)],'Look at the port main engine','Main engine, port',

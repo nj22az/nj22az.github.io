@@ -41,12 +41,13 @@ export const FERRY_HOUSE=Object.freeze({
 const F=FERRY_HOUSE,LW=F.lobbyHalf,DW=F.half,DH0=F.aft,DH1=F.fore,LB1=F.lobbyFore,TB1=F.toiletsFore,CR1=F.carpetFore;
 const BH=F.bridgeHalf,WH0=F.wheelhouseAft,PF0=F.platformAft;
 /** The casings (car deck to the passenger deck), and stair P's and S's place in them. */
-const CAS0=Z(3),CAS1=Z(20),CAS_IN=3.1,CAS_OUT=HB-.03,CAS_TOP=PASS-.25;
+const CAS0=Z(3),CAS1=Z(20),CAS_IN=2.75,CAS_OUT=HB-.03,CAS_TOP=PASS-.25;
 export const FERRY_STAIRS=Object.freeze({
- /** The flight: its foot on the car deck at z 11.3, its head at the lobby floor at z 7.4; 22 risers of 0.2 m. */
- foot:Z(11.3),head:Z(7.4),x:Object.freeze([3.16,HB-.09]),risers:22,
- /** The door in the casing's inboard face, and the casing's end forward of the stair. */
- door:Object.freeze([Z(11.35),Z(12.25)]),wellFore:Z(12.3),
+ /** The flight: its foot on the car deck at z 11.3, its head at the lobby floor at z 7.4; 22 risers of 0.2 m; 1.2 m clear (batch 6f). */
+ foot:Z(11.3),head:Z(7.4),x:Object.freeze([CAS_IN+.06,HB-.09]),risers:22,
+ /** The door in the casing's inboard face (1.2 m), and the casing's end forward of the stair's foot (starboard; to port the
+  * foyer runs on to the gangway passage). */
+ door:Object.freeze([Z(11.35),Z(12.55)]),wellFore:Z(12.6),
  /** The well's opening in the passenger deck: the flight's head to where the stair passes under the deck with headroom. */
  opening:Object.freeze([Z(7.4),Z(9.4)]),
 });
@@ -58,14 +59,14 @@ const S=FERRY_STAIRS;
  * tanks.) Its way in is the casing P door at z 6.6–7.4 and a ladder down through a hatch in the car deck.
  */
 export const FERRY_ENGINE_ROOM=Object.freeze({aft:Z(8.5),fore:Z(14),floor:Y(.9),deckhead:CAR-.2,side:3.98,
- entrance:Object.freeze([Z(6.55),Z(7.4)]),door:Object.freeze([Z(6.6),Z(7.4)]),
+ entrance:Object.freeze([Z(6.25),Z(7.4)]),door:Object.freeze([Z(6.3),Z(7.4)]),
  /** The ladder: its head on the car deck at z 7.0, its foot on the floor plates at z 8.6; the hatch it goes down. */
  ladder:Object.freeze({x:Object.freeze([3.2,3.95]),head:Z(7),foot:Z(8.6)}),hatch:Object.freeze({x:Object.freeze([3.15,HB-.07]),z:Object.freeze([Z(7),Z(9)])}),
 });
 const ER=FERRY_ENGINE_ROOM;
 
-/** The gangway passage through casing P (ferry-model.js GATE). */
-const GATE_FROM=Z(13.5),GATE_TO=Z(14.5);
+/** The gangway passage through casing P (ferry-model.js GATE): 1.4 m wide, and the foyer from it aft to the foot of stair P. */
+const GATE_FROM=Z(13.3),GATE_TO=Z(14.7);
 /** The ladder from each walkway up to its bridge wing: its foot on the walkway, its head on the wing's aft edge. */
 export const FERRY_WING_LADDER=Object.freeze({x:3.75,foot:F.crossFore,head:WH0});
 
@@ -106,11 +107,11 @@ export const FERRY_INTERIOR=(()=>{
  // ---- The casings, car deck to the passenger deck's underside: stair P and S hollow in them, the gangway passage
  // through P. The rest is solid (uptakes, the engine-room entrances, stores, the changing room).
  for(const s of [1,-1]){
-  const X=sorted(s*CAS_IN,s*CAS_OUT),pieces=s>0?[[CAS0,ER.entrance[0]],[S.wellFore,GATE_FROM],[GATE_TO,CAS1]]:[[CAS0,S.head],[S.wellFore,CAS1]];
+  const X=sorted(s*CAS_IN,s*CAS_OUT),pieces=s>0?[[CAS0,ER.entrance[0]],[GATE_TO,CAS1]]:[[CAS0,S.head],[S.wellFore,CAS1]];
   for(const [z0,z1] of pieces)box([X[0],CAR,z0],[X[1],CAS_TOP,z1],WHITE,{name:'casing'});
   // The stairwell's walls: inboard, with the stair's door; outboard against her side.
-  wall('z',S.head,S.wellFore,...sorted(s*CAS_IN,s*(CAS_IN+.06)),CAR,CAS_TOP,[doorAt((S.door[0]+S.door[1])/2,S.door[1]-S.door[0],CAR)]);
-  box([Math.min(s*(CAS_OUT-.06),s*CAS_OUT),CAR,S.head],[Math.max(s*(CAS_OUT-.06),s*CAS_OUT),CAS_TOP,S.wellFore],WHITE);
+  wall('z',S.head,s>0?GATE_TO:S.wellFore,...sorted(s*CAS_IN,s*(CAS_IN+.06)),CAR,CAS_TOP,[doorAt((S.door[0]+S.door[1])/2,S.door[1]-S.door[0],CAR)]);
+  box([Math.min(s*(CAS_OUT-.06),s*CAS_OUT),CAR,S.head],[Math.max(s*(CAS_OUT-.06),s*CAS_OUT),CAS_TOP,s>0?GATE_FROM:S.wellFore],WHITE);
   // The door's frame in teal, and its leaf hooked back against the casing's face, aft of it.
   const fx=sorted(s*(CAS_IN-.04),s*(CAS_IN+.02));
   for(const z of S.door)deco([fx[0],CAR,z-.04],[fx[1],CAR+2,z+.04],TEAL);
@@ -124,11 +125,53 @@ export const FERRY_INTERIOR=(()=>{
   for(const x of [x0+.03,x1-.03]){bar([x,CAR,S.foot],[x,PASS,S.head],.05,DARK);bar([x,CAR+.9,S.foot+.1],[x,PASS+.9,S.head],.022,YELLOW,'paint');}
   // The walking line runs half a riser over the line of the nosings, so the feet are never more than half a riser
   // off a tread.
-  floor('stair-'+(s>0?'p':'s'),[x0,x1],[S.head,S.foot],[PASS+dy/2,CAR+dy/2],(x,z,r)=>Math.abs(x-(x0+x1)/2)<=(x1-x0)/2-r+.06);
+  floor('stair-'+(s>0?'p':'s'),[x0,x1],[S.head,S.foot],[PASS+dy/2,CAR+dy/2],(x,z,r)=>Math.abs(x-(x0+x1)/2)<=(x1-x0)/2-r+.02);
  }
- // The gangway passage's deckhead and its walls (casing P's two blocks either side are its walls: above).
- box([CAS_IN,CAR+2,GATE_FROM],[CAS_OUT,CAS_TOP,GATE_TO],WHITE,{name:'passage deckhead'});
+ // The gangway passage's and the foyer's deckhead, 2.2 m up, from forward of the stair's door to the passage's forward
+ // wall (casing P's block forward of it is that wall; the stairwell's walls are the foyer's; over the stair's foot the
+ // well is open to the casing's top).
+ box([CAS_IN,CAR+2.2,S.wellFore],[CAS_OUT,CAS_TOP,GATE_TO],WHITE,{name:'passage deckhead'});
 
+ // ---- The lower lobby (batch 6f): the car deck's level aft of the lanes, z 2.5–12.6 between the casings, under a
+ // 2.5 m deckhead hung from the passenger deck. Its aft bulkhead (full breadth, a crew door to the mooring station),
+ // its forward bulkhead (between the casings, two sliding fire doors onto the lanes, their leaves parked outboard),
+ // the drivers' benches along the casings between the doors, the bicycle rack and the baggage shelf aft, the drink
+ // machine and the safety plan forward, lifejacket lockers. The stairs' doors and the engine room's door open into it.
+ {const LL0=Z(2.5),LL1=Z(12.6),TOP=CAR+2.5;
+  wall('x',-(HB-.1),HB-.1,LL0-.04,LL0+.04,CAR,PASS-.02,[doorAt(0,1.0,CAR)]);
+  for(const x of [-.54,.54])deco([x-.04,CAR,LL0-.06],[x+.04,CAR+2.02,LL0+.06],TEAL);
+  box([.56,CAR+.02,LL0+.04],[1.5,CAR+1.98,LL0+.08],DOOR,{name:'mooring door leaf'});
+  wall('x',-CAS_IN,CAS_IN,LL1-.04,LL1+.04,CAR,PASS-.02,[doorAt(1.0,1.1,CAR),doorAt(-1.0,1.1,CAR)]);
+  for(const s of [1,-1]){
+   for(const x of [s*.41,s*1.59])deco([x-.04,CAR,LL1-.06],[x+.04,CAR+2.06,LL1+.06],TEAL);
+   deco([Math.min(s*.41,s*1.59),CAR+2.02,LL1-.06],[Math.max(s*.41,s*1.59),CAR+2.08,LL1+.06],TEAL);
+   // The sliding leaf, parked outboard of its opening on the lobby side, on its track.
+   box([Math.min(s*1.56,s*2.74),CAR+.03,LL1-.14],[Math.max(s*1.56,s*2.74),CAR+2.0,LL1-.08],DOOR,{name:'fire door leaf'});
+   deco([Math.min(s*.4,s*2.74),CAR+2.1,LL1-.16],[Math.max(s*.4,s*2.74),CAR+2.16,LL1-.06],STEEL);
+   // A bench along each casing between its doors (port: aft of the engine room's door and forward of it; starboard:
+   // aft of the escape door and forward of the store's).
+   for(const [z0,z1] of s>0?[[Z(3.2),Z(6.0)],[Z(7.7),Z(11.0)]]:[[Z(3.2),Z(6.0)],[Z(9.2),Z(11.0)]]){
+    box([Math.min(s*(CAS_IN-.5),s*(CAS_IN-.06)),CAR,z0],[Math.max(s*(CAS_IN-.5),s*(CAS_IN-.06)),CAR+.45,z1],TEAK,{name:'drivers’ bench'});
+    deco([Math.min(s*(CAS_IN-.14),s*(CAS_IN-.06)),CAR+.45,z0],[Math.max(s*(CAS_IN-.14),s*(CAS_IN-.06)),CAR+.95,z1],TEAK);
+    for(const z of [z0+.1,z1-.1])deco([Math.min(s*(CAS_IN-.46),s*(CAS_IN-.1)),CAR,z-.03],[Math.max(s*(CAS_IN-.46),s*(CAS_IN-.1)),CAR+.42,z+.03],STEEL);}
+  }
+  // The deckhead, hung 2.5 m up, its light panels; the floor's vinyl.
+  box([-CAS_IN,TOP,LL0],[CAS_IN,TOP+.2,LL1],0xd8d6cc,{solid:false,camera:true,name:'lower lobby deckhead'});
+  for(const z of [Z(4),Z(7),Z(10)])for(const x of [-1.3,1.3])deco([x-.35,TOP-.03,z-.2],[x+.35,TOP,z+.2],0xf6f1e2);
+  deco([-CAS_IN,CAR+.003,LL0+.06],[CAS_IN,CAR+.008,LL1-.06],VINYL);
+  // The bicycle rack at the aft bulkhead, port of the crew door: two islanders' bicycles ride free.
+  box([1.6,CAR,LL0+.1],[2.55,CAR+.05,LL0+.4],STEEL,{camera:false,name:'bicycle rack'});
+  for(const x of [1.85,2.3]){deco([x-.03,CAR+.05,LL0+.12],[x+.03,CAR+.95,LL0+.18],STEEL);deco([x-.2,CAR+.3,LL0+.1],[x+.2,CAR+.34,LL0+1.7],0x3a4a6a);
+   for(const z of [LL0+.4,LL0+1.4])bar([x,CAR+.3,z],[x,CAR+.3,z+.02],.3,DARK);}
+  // The baggage shelf at the aft bulkhead, starboard, and the lifejacket lockers over it.
+  box([-2.5,CAR,LL0+.1],[-.7,CAR+.9,LL0+.5],0x8a7356,{name:'baggage shelf'});deco([-2.5,CAR+1.4,LL0+.1],[-.7,CAR+2.0,LL0+.4],ORANGE);
+  deco([-2.4,CAR+1.6,LL0+.4],[-.8,CAR+1.8,LL0+.41],0xf6f1e2);
+  // The drink machine and the safety plan on the forward bulkhead, between the fire doors.
+  box([-.25,CAR,LL1-.75],[.3,CAR+1.8,LL1-.08],RED,{name:'drink machine'});deco([-.2,CAR+.9,LL1-.77],[.25,CAR+1.5,LL1-.75],0xdfe8ee);
+  deco([-.3,CAR+1.9,LL1-.1],[.3,CAR+2.3,LL1-.08],0xf4f0e2);deco([-.26,CAR+2.22,LL1-.11],[.26,CAR+2.28,LL1-.1],TEAL);
+  // Lights in the way down: the engine room's sign is lit from the lobby's deckhead too.
+  deco([CAS_IN-.5,TOP-.03,Z(6.85)-.2],[CAS_IN-.1,TOP,Z(6.85)+.2],0xf6f1e2);
+ }
  // ---- The passenger deck: its slab over the car deck, cut open over the two stairs.
  {const y0=PASS-.25,PD0=-HALF,PD1=DH1,O=S.opening,xin=CAS_IN,xo=HB-.02;
   const slab=(x0,x1,z0,z1)=>{box([x0,y0,z0],[x1,PASS,z1],WHITE,{solid:false,camera:true,name:'passenger deck'});deco([x0+.04,y0-.005,z0+.03],[x1-.04,y0,z1-.03],0xc9c7bd);};
@@ -505,6 +548,8 @@ export const FERRY_INTERIOR=(()=>{
   box([L.x[0]-.06,y1,L.head],[L.x[1]+.07,CAR-.02,L.head+.04],WHITE,{solid:false,camera:true,name:'ladder trunk'});
   {const n=10,rise=CAR-y0,run=L.foot-L.head;for(let i=1;i<n;i++){const fr=i/n;deco([L.x[0]+.03,CAR-rise*fr-.03,L.head+run*fr-.07],[L.x[1]-.03,CAR-rise*fr,L.head+run*fr+.07],STEEL,{cls:'metal'});}
    for(const x of [L.x[0]+.02,L.x[1]-.02]){bar([x,CAR,L.head],[x,y0,L.foot],.03,STEEL);bar([x,CAR+.9,L.head],[x,y0+.9,L.foot],.02,YELLOW,'paint');}}
+  // The ladder's own volume keeps the lens out (batch 6f): at its foot the camera stood under the rungs looking up through them.
+  box([L.x[0]-.06,y0,L.head-.1],[L.x[1]+.07,CAR,L.foot+.1],STEEL,{solid:false,camera:true,draw:false,name:'ladder volume'});
   floor('er-ladder',[L.x[0],L.x[1]],[L.head,L.foot],[CAR,y0],(x,z,r)=>Math.abs(x-(L.x[0]+L.x[1])/2)<=.12);
   floor('er-ladder-foot',[L.x[0],L.x[1]],[L.foot-.05,L.foot+.4],y0,(x,z,r)=>Math.abs(x-(L.x[0]+L.x[1])/2)<=.2);
   floor('er-entrance',[CAS_IN-.4,L.x[1]],[ER.entrance[0],L.head+.05],CAR,(x,z,r)=>x>=CAS_IN-.4&&x<=CAS_OUT-.06-r&&z>=ER.entrance[0]+r&&(x>=CAS_IN+.06+r||(z>=ER.door[0]+r-.06&&z<=ER.door[1]-r+.06)||x<CAS_IN-.05));
