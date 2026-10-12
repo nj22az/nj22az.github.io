@@ -11,7 +11,7 @@ export function sleepHours(profile){
  // after-work errands, then eight hours at home instead of the old day shift bedtimes.
  if(profile.name==='Reiko')return {sleep:170,wake:650};
  if(profile.name==='Tetsuo')return {sleep:140,wake:620};
- // Chin works Sakura's night shift (20:00–06:00) and sleeps through the morning (batch 7b).
+ // Chin works Sakura's night shift (20:30–06:00) and sleeps through the morning (batch 7b).
  if(profile.name==='Chin')return {sleep:390,wake:810};
  return {sleep:minute(profile.retire+20),wake:minute(profile.start-90)};
 }

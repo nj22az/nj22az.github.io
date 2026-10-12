@@ -119,6 +119,33 @@ husband."* So:
   weekend, Thuan's weekends on Kitano-jima, Jun's home life, the guide's portraits and backstories (Johansson's wife,
   Thao's husband) regenerated.
 
+### 7b-2, built: Sakura open 24 hours, the rota, the weekend (2026-10-12)
+
+- `commerce/sakura-rota.js` is the one place that says **who is at Sakura's counter**: Thuan 09:00–20:30 on weekdays,
+  **Nhung** the same hours on Saturday and Sunday (Thuan is home on Kitano-jima), **Chin** 20:30–06:00 every night,
+  and Grandmother Sakurai, who owns the shop and lives above it, 06:00–09:00 (she has no walking body yet; the counter
+  keeps the last clerk's binding). The day clerk hands over at 20:30 so her end-of-day restock (`shop-stock.js`
+  `closingDay`, from 20:00) is done with the night clerk already in the shop.
+- **Sakura never closes**: the konbini hours, the shopfront shutter (always up; a fixture can still set it), the strip
+  lights and the interior tubes (full strength all night), the shutter text, flyer, town papers and specials board
+  ("Open 24 hours, every day"; the hot case still runs 09:00–20:00), and the staff board's rota. Purchases no longer
+  wait for opening time; the till, the sold-out line, the restock entries and the recycling box name whoever is on shift.
+- **The clerk follows the rota**: `shop-retail`, `indoor-residents` and `sakura-shop` bind the counter's services to the
+  body on shift and re-bind when it changes (`followRota`).
+- **Plans**: Chin works the night shift, sleeps 06:30–13:30 at 1 Kitahama, keeps his afternoon at the bench and loses
+  his Sato lunch slot (he is asleep); Nhung minds Sakura at the weekend and has no bookshop day then; Thuan's weekday
+  market shift is gated by the rota; **Front Row Books is closed at the weekend** (`town.js isOpen`, no bookshop
+  visits). Tetsuo, who had fallen into the night-bus pattern after moving to Kitano-jima in 7b-1 (at the izakaya at
+  midnight, away all day), now takes the 08:30 boat over, works 09:00–18:30 with lunch at Sato and goes home on the
+  22:00 boat (`commuter-schedule.js`).
+- Checked in the headless game: at 23:00 the shop is lit, the shutter up and Chin at the counter; on Saturday at
+  10:00 Nhung is the clerk and Thuan is at home. Tests: the shutter, strip-light and tube tests say "always on";
+  `continuous-life` and `npc-seating` use Nhung's and Reiko's lunch visits; `sato-ramen` has no slot for Chin.
+- Open: Grandmother Sakurai's body for 06:00–09:00; Thuan's weekends on Kitano-jima (7b-3: at the weekend she is at
+  home at 1 Kitahama, not yet across the water); Reiko is held at the market room's origin with `place: market` at all
+  hours in the headless game, on main as well (an old resident-location record; not this batch's); the specials
+  text in `activities.js` still says Thuan in places that are hers anyway.
+
 ## 4. Batch 7c: the crew at their posts (built 2026-10-12)
 
 The data is there (`people/ferry-crew.js`: the master, Mr Nakandakari the chief, Mr Higa Jr the oiler, Ms Uezu on deck,

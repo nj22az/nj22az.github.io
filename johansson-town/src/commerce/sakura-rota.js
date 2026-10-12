@@ -6,8 +6,10 @@ import {townCalendarAt} from '../town-clock.js';
  * Sakurai, who owns the shop and lives above it, takes the till between the night shift and the day shift.
  */
 const minute=m=>((m%1440)+1440)%1440;
-export const SAKURA_DAY_SHIFT=Object.freeze([540,1200]);
-export const SAKURA_NIGHT_SHIFT=Object.freeze([1200,360]);
+// The day clerk hands over at 20:30: the last half hour is her end-of-day restock (shop-stock.js closingDay, from 20:00)
+// with the night clerk already in the shop.
+export const SAKURA_DAY_SHIFT=Object.freeze([540,1230]);
+export const SAKURA_NIGHT_SHIFT=Object.freeze([1230,360]);
 export const isWeekend=minutes=>{const w=townCalendarAt(minutes).weekday;return w===0||w===6;};
 export const sakuraNightShift=minutes=>{const m=minute(minutes);return m>=SAKURA_NIGHT_SHIFT[0]||m<SAKURA_NIGHT_SHIFT[1];};
 export const sakuraDayShift=minutes=>{const m=minute(minutes);return m>=SAKURA_DAY_SHIFT[0]&&m<SAKURA_DAY_SHIFT[1];};

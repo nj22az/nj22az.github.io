@@ -10,6 +10,7 @@ import {restoreArchive,seedArchive,fileDocument,retainArchive} from './src/offic
 import {createArchiveView} from './src/office/archive-ui.js';
 import {isWorkshopSite} from './src/world/businesses.js';
 import {harbourTimetable} from './src/people/commuter-schedule.js';
+import {sakuraClerkAt} from './src/commerce/sakura-rota.js';
 import {createRamenTicketMachine} from './src/people/ramen-ticket.js';
 import {createIzakayaPlay} from './src/people/izakaya-play.js';
 import {pendingTownAbsence} from './src/people/town-absence.js';
@@ -355,20 +356,20 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||DRINKABLE.has(item)||SPECIAL_BY_NAME[item]||['Sea bream','Ice',EMPTY_CAN].includes(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   /**
    * The recycling box by Sakura's door. Every empty can in your pockets goes in, and
-   * Thuan pays a small refund out of the shop's own till (she sells the aluminium on).
+   * whoever is at the till (sakura-rota.js) pays a small refund out of the shop's own till (the aluminium is sold on).
    */
   function recycleCans(){
-    const n=state.inventory.filter(i=>i===EMPTY_CAN).length;
-    if(!n){receipt('Recycling box','A blue box with a round hole in the lid, for empty cans. Thuan gives ¥'+CAN_REFUND+' a can, from the till.');return;}
+    const n=state.inventory.filter(i=>i===EMPTY_CAN).length,clerk=sakuraClerkAt(getMinutes());
+    if(!n){receipt('Recycling box','A blue box with a round hole in the lid, for empty cans. '+clerk+' gives ¥'+CAN_REFUND+' a can, from the till.');return;}
     state.inventory=state.inventory.filter(i=>i!==EMPTY_CAN);
     // From the till when it has it; a few coins from her own purse when it does not.
     const shop=state.sakura,pay=n*CAN_REFUND;if(shop)shop.cash=Math.max(0,shop.cash-pay);state.yen+=pay;
     onTime(1);onMove('Give');townAudio.play('clunk',.5);save();
-    receipt('Recycling box',`${n} empty can${n>1?'s':''} rattle${n>1?'':'s'} into the box.`+` Thuan counts ¥${pay} into your hand.`);
+    receipt('Recycling box',`${n} empty can${n>1?'s':''} rattle${n>1?'':'s'} into the box.`+` ${clerk} counts ¥${pay} into your hand.`);
   }
   /** The specials board behind the counter: order from Thuan while the hot case is on. */
   function specialsMenu(){
-    if(!specialsOpen(getMinutes())){receipt('Specials board','The hot case is off. Thuan serves the specials from 09:00 to 20:00.');return;}
+    if(!specialsOpen(getMinutes())){receipt('Specials board','The hot case is off. The specials are served from 09:00 to 20:00.');return;}
     show('Today’s specials','Chalked up behind the counter. Thuan wraps it or pours it while you wait.',[
       ...SAKURA_SPECIALS.map(sp=>[`${sp.name} · ¥${sp.price}`,()=>{if(!spend(sp.price))return;addItem(sp.name);recordSakuraSale(state,sp.price,null,{minute:getMinutes(),item:sp.name,buyer:'Johansson'});onTime(2);save();townAudio.play('click',.35);
         receipt('Thuan',sp.kind==='food'?`One ${sp.name.toLowerCase()}, wrapped in paper. It is in your bag. Eat it while it is warm.`:`One ${sp.name.toLowerCase()}, with a straw. It is in your bag.`);}]),

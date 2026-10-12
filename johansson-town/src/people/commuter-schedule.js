@@ -5,7 +5,7 @@ const shifts={
  // Work hours stay unchanged. Departure identifies the service's arrival time.
  Thuan:{arrival:510,start:540,finish:1200,departure:1320},
  Nhung:{arrival:510,start:540,finish:1110,departure:1320},
- // Chin: Sakura's night shift (20:00–06:00, sakura-rota.js), sleep till the early afternoon, then the workshop bench.
+ // Chin: Sakura's night shift (20:30–06:00, sakura-rota.js), sleep till the early afternoon, then the workshop bench.
  Chin:{arrival:510,start:840,finish:1140,departure:1320},
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
  Reiko:{arrival:870,start:900,finish:1470,departure:1950},
