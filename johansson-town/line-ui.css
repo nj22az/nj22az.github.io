@@ -87,7 +87,7 @@ body:has(#activity:not(.hidden),#directory:not(.hidden),#cameraPanel:not([hidden
 #activity:not(.conversation) #activityActions{gap:8px;max-height:24dvh;padding:0}
 #activity:not(.conversation) #activityActions button{flex:1 1 160px;padding:12px 16px;border:1px solid var(--line-border);border-radius:8px;background:var(--line-green);color:var(--line-white);font:700 16px/1.4 var(--line-font);box-shadow:none}
 #activity:not(.conversation) #activityActions button:hover:not(:disabled){background:var(--line-green-hover)}
-#activity:is(.office-records,.sakura-records,.workshop-tool,.magazine-view,.flyer-view) .activity-card{width:min(1060px,100%);max-height:calc(100dvh - 48px)}
+#activity:is(.office-records,.sakura-records,.workshop-tool,.magazine-view,.flyer-view,.pocket-album-view) .activity-card{width:min(1060px,100%);max-height:calc(100dvh - 48px)}
 .modal-card h2{margin:0 0 16px}.modal-card p{font:400 20px/1.5 var(--line-font);margin:0 0 24px}
 .modal-card button{background:var(--line-green);color:var(--line-white)}
 
