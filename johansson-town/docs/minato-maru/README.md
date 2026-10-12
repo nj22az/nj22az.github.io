@@ -19,7 +19,7 @@ her are in `docs/FERRY-AUDIT.md`.
 | Name, port of registry | Minato Maru (みなと丸), Minato |
 | Owner | Minato-chō (the town ferry, 町営フェリー) |
 | Type | Passenger ship and vehicle ferry, bow ramp only, twin screw (旅客船兼自動車渡船) |
-| Built, refit | 1994, a small Seto Inland Sea yard; 1998 GMDSS |
+| Built, refit | 1994, Johansson Shipyard, Innoshima (hull No. 127); 1998 GMDSS |
 | Rules, area | Ship Safety Act (船舶安全法) and regulations; NK class at the insurer's request; limited coastal (限定沿海) |
 | Length overall / between perpendiculars | 34.5 m / 31.0 m |
 | Breadth moulded / depth to car deck | 8.4 m / 3.0 m |
@@ -48,6 +48,8 @@ her are in `docs/FERRY-AUDIT.md`.
 | 3 | `electrical-one-line.svg` | Generation, main and emergency switchboards, transformers, feeders |
 | 3a | `electrical-load.md` | The electric load analysis (電力調査表): every consumer in the five conditions |
 | 4 | `tanks.md` | Tank plan and capacities |
+| 5 | `engine-room-arrangement.svg` | Machinery arrangement: plan at the floor plates with the frame grid, centreline elevation, hatched section through the mains, dimensions, equipment list keyed to the drawing (every rectangle a box of `FERRY_INTERIOR` as built) |
+| 6 | `safety-plan.svg` | Fire control and safety plan: profile and the four decks with every extinguisher, hydrant, fixed system, liferaft, lifebuoy, lifejacket locker, muster station, escape and control station (`FERRY_SAFETY_ITEMS`, `src/world/ferry-safety-plan.js`); the same drawing is posted aboard, marked YOU ARE HERE |
 
 The contents of each space, and why it is where it is, are the `what` and `why` of each `FERRY_GA` entry (read them in
 `src/world/ferry-ship.js`); the inside of each space as built, to the centimetre, is `src/world/ferry-interior.js`.
@@ -86,3 +88,24 @@ The contents of each space, and why it is where it is, are the `what` and `why` 
 | D6 | 8 machinery arrangement, 9 piping | The engine room drawn to the data; one diagram per system |
 | D7 | 10 fire-control and life-saving plans, 11 mooring | From `FERRY_SAFETY` and the mooring data |
 | D8 | 12 stability booklet | Intact and damage stability, the loading conditions the master actually uses |
+| D9 (built 2026-10-12) | 5, 6 | Engine room arrangement from the interior as built, with the equipment list; the fire control and safety plan, posted aboard |
+| D9a (built 2026-10-12) | all | Every sheet framed as a yard drawing: border with zones, title block (yard, ship, drawing number JS-127-nn, scale, sheet, date, drawn/checked/approved, revision), wrapped notes, labels that fit, dimension lines, hatched sections (the creator, 2026-10-12: "The drawings don't look real and text overflowing") |
+| D10 | 13 piping diagrams | Fuel (storage → settling → service → engines), lubricating oil, sea- and fresh-water cooling, bilge and ballast, fire main, starting air, exhaust: every pipe a run with its bore, valves and pumps, drawn from a data file the model also builds from |
+| D11 | 14 shafting and propeller | Shaft line, bearings, stern tube and seal, coupling, the propeller drawing (B-series section data), torsional check |
+| D12 | 15 midship section, scantlings | Frames, plating, longitudinals, deck beams, pillars and bulkheads to a class rule (the ANYstructure DNV plate and girder tool is the reference), the lightship weight it gives feeding D2 |
+| D13 | 16 ventilation, insulation, deck machinery | Engine-room air supply (the diesels' combustion air plus cooling), fire insulation classes, windlass and capstan foundations |
+
+**Buildability (the creator, 2026-10-12: "one should be able to build a ship from the drawings a real functional and
+floating ship").** Sheets 1–5 describe her form, her spaces, her electrics and her machinery arrangement; they are not
+yet a build set. A yard would also need D2 (the weights, so she floats at her marks), D3 (the hull faired to her
+displacement), D10–D13 and D8, and the class approval of each. Every one of them is to be generated from data by
+`tools/ferry-drawings.mjs`, as the sheets so far are, so the game, the book and the ship never disagree.
+
+References the creator pointed to (2026-10-12): [ShipD](https://github.com/noahbagz/ShipD), 30 000 parametric hulls
+(45 parameters, 49 feasibility constraints, hydrostatics at ten drafts, Michell wave drag) whose hull parameterisation
+and constraints are the model for D3's fairing; the GitHub
+[naval-architecture topic](https://github.com/topics/naval-architecture), where OpenHull and hullforge (parametric
+hulls with hydrostatics, GZ stability and Michell resistance), ANYstructure (DNV plate, girder and cylinder design, for
+D12) and the Wageningen B-series propeller tools (prop3d, propy_opt, for D11) are the tools to check our numbers
+against; the King's College Ship-Design-Project (Simulink models of a ship and its control, for the engine control
+later). ftShipBuilder is a Full Thrust tabletop ship builder, not naval architecture, and is not used.

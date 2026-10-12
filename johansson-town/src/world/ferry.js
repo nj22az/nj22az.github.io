@@ -127,7 +127,7 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
   FERRY_MOORING.lines.forEach((l,i)=>{const bitt=ferry.localToWorld(vA.set(...FERRY_MOORING.bitts[l.station])).clone(),lead=ferry.localToWorld(vB.set(...FERRY_MOORING.fairleads[l.station])).clone();
    lay(segs[i*2],bitt,lead);lay(segs[i*2+1],lead,vB.set(...l.pier));});};
  // What you can look at aboard (ferry-inspect.js): prompts that move with her, offered only on the deck you stand on.
- if(register)for(const p of FERRY_INSPECT){const a=new THREE.Object3D();a.name='Ferry: '+p.title;a.position.set(...p.pos);a.userData.sameLevel=true;ferry.add(a);
+ if(register)for(const p of FERRY_INSPECT){const a=new THREE.Object3D();a.name='Ferry: '+p.title;a.position.set(...p.pos);a.userData.sameLevel=true;a.userData.reach=p.reach??2.2;a.userData.facing=p.facing??.55;ferry.add(a);
   register(a,p.label,()=>onAction('inspect',p.title,p.text));}
  // The engine-room ladder: down from the casing door, up from the floor plates (game.js moves him; ferry-inspect.js).
  if(register)for(const [way,l] of Object.entries(FERRY_LADDER)){const a=new THREE.Object3D();a.name='Ferry: ladder '+way;a.position.set(...l.at);a.userData.sameLevel=true;ferry.add(a);

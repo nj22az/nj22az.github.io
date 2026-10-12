@@ -6,7 +6,7 @@
  * The creator chose the bigger ship and the bigger harbour (2026-10-11): a 199-ton class island car
  * ferry of 34.5 m, the size that worked 15–30 minute crossings in Okinawa in the 1990s, carrying
  * six cars (or an 8-tonne truck and two cars) and a hundred passengers, with a crew of eight.
- * Built in 1994 at a small Seto Inland Sea yard; refitted for GMDSS in 1998.
+ * Built in 1994 by Johansson Shipyard on Innoshima in the Seto Inland Sea (hull No. 127); refitted for GMDSS in 1998.
  *
  * Everything is data first, so the model (ferry-model.js, drawn from these numbers since batch 5), the
  * crew's routines (people/ferry-crew.js), stories and tests read the same ship.
@@ -17,7 +17,7 @@
  */
 export const FERRY_SHIP=Object.freeze({
  name:'Minato Maru',jp:'みなと丸',built:1994,refit:'1998: GMDSS (VHF with DSC, EPIRB, SART, NAVTEX)',
- yard:'A small Seto Inland Sea yard that built island ferries by the dozen',
+ yard:'Johansson Shipyard (ヨハンソン造船), Innoshima, Seto Inland Sea: hull No. 127, an island ferry like the dozens before her',
  owner:'Minato-chō (the town ferry, a chōei ferī)',registry:'Minato',
  type:'Passenger ship and vehicle ferry (ryokakusen ken jidōsha tosen), bow ramp only, twin screw',
  rules:'Ship Safety Act and its regulations; inspected by the Okinawa General Bureau’s transport department; classed with NK at the insurer’s request',

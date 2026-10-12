@@ -195,6 +195,11 @@ that makes more or better stories.
   livery (`johansson-town/src/world/johansson-marine.js`: the green block, black covers, silver lagging, the aluminium
   maker's plate) and carry a model from its catalogue, whose numbers are the ship's own data. No other maker's name
   appears on a machine.
+- **Johansson is this universe's Acme** (the creator, 2026-10-12: "in this universe Johansson is the equivalent of Acme
+  in Looney Toons"). Whatever is made, built or sold by a company carries the Johansson name: Johansson Shipyard
+  (Innoshima) built the Minato Maru (`ferry-ship.js` `yard`; her drawings in `docs/minato-maru/` are the yard's),
+  Johansson Marine made her machines, and any later maker (a bus, a radio, a vending machine) is a Johansson company
+  too, with its own works and model numbers that are the thing's own data.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten is a konbini *and* the
   town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading). Higa Liquor supplies
   all alcohol (to Sakura, Minato, Sato Ramen and the Coral Bay Bar on Kitano-jima); Front-Row Books & Stationery supplies office supplies; Rainflower
