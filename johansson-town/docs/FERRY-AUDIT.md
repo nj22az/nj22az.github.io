@@ -1095,3 +1095,33 @@ generator and CO₂ rooms. Five prompts on this deck. The master stands at the w
 6h (she sails) stays first, because the instruments and the engines are only alive when she moves. Then **6o** and
 **6p** before the wake and the people (6i, 6j): the creator wants to explore her, and these two rooms are where the
 exploring is. The crew's rooms (10.6 item 5) can ride with 6p.
+
+### 10.8 Batch 6o-1, built: the machines as Johansson Marine machines (2026-10-12)
+
+The creator: *"I want them to look like real machines similar to Volvo but brand every engineering part as a Johansson
+brand."* Built:
+
+- **The brand** (`world/johansson-marine.js`, and the rule in CLAUDE.md): Johansson Marine (ヨハンソン舶用機械),
+  Johansson Marine Works, Naha, 1961; the livery (the green block, black covers, silver lagging, the aluminium plate,
+  the works' blue for alternators); a catalogue of every machine aboard with a model number (JM6-160 mains, JR-30
+  gears, JG-125 sets, JG-40E emergency set, JT-75 thruster, JS-22 steering gear, JE-440 switchboard, JC-30 compressor,
+  JF-1 purifier, JP-40 and JP-25 pumps, JO-15 separator, JW-75 windlass, JW-55 capstan, JH-55 ramp pack, JN-1800
+  radar, JN-25 VHF, JN-AP2 autopilot), every spec read from the ship's own data so the catalogue can never contradict
+  it; `makerPlate(key)` gives the lines of a plate with a works number.
+- **The main engines, built like engines** (`ferry-interior.js`): bedplate, sump and crankcase with six crankcase
+  doors, the block in the green, six heads under six black rocker covers with the oil filler, the fuel rail and
+  injection-pump block with a line to each head and two fuel filters, the exhaust manifold in silver lagging with a
+  branch from each head to the turbocharger forward (turbine, compressor, the air-filter drum, the charge-air
+  cooler) and the exhaust up to the casing, cooling-water and sea-water pumps and two lube-oil filters on the forward
+  end, the flywheel housing and coupling guard aft, the JR-30 gearbox with its round cover and output flange, the
+  gauge board with three gauges on its stand, the local control stand with tachometer, stop button and start lever;
+  the maker's plate on the block and the JOHANSSON wordmark along the covers. 78 cylinders and 6 textured plates,
+  drawn by the model (`cyls`, `plates` in `FERRY_INTERIOR`; `plateMesh` in `ferry-model.js`).
+- **The generator sets**: four-cylinder engines with heads, covers, manifold and a small turbo, the alternator in the
+  works' blue with cooling ribs and terminal box, on a common bed, each with its plate.
+- The prompts name the models. Test: `ferry-johansson-marine.test.mjs`. Photographed from the aisle, the aft end, the
+  turbo end and the generators (`/tmp/claude-0/shots/m1…m7`).
+- Open for 6o-2: the switchboard as a board (meters, synchroscope, earth lamps, breakers, labels, live readings), the
+  pumps, purifier, compressor and separator as machines with their plates, pipes routed like pipes (the fan of cones),
+  chequer plate and gratings, caged lights, the watchkeeper's things, sound and vibration by state; the plate on the
+  block sits low and inboard and wants a better spot for the eye.
