@@ -38,6 +38,9 @@ const THUAN_APARTMENT_ROUTINES={
   cover:{position:[-4.15,.64,3.35],width:1.08,length:1.3,axis:'z'}},
  Thao:{bed:[-1.6,.58,3.95],bedside:[-2.65,0,3.3],table:[-3.98,0,.5],door:[-.45,0,.4],
   cover:{position:[-1.6,.64,3.35],width:1.08,length:1.3,axis:'z'}},
+ // Chin, Thao's husband (batch 7b), beside her.
+ Chin:{bed:[.95,.58,3.95],bedside:[.0,0,3.3],table:[-2.8,0,.5],door:[-.45,0,.4],
+  cover:{position:[.95,.64,3.35],width:1.08,length:1.3,axis:'z'}},
 };
 export function homeLayoutFor(name){
  if(name===TATAMI_HOME_OWNER)return TATAMI_HOME_LAYOUT;

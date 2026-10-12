@@ -95,6 +95,30 @@ husband."* So:
 - Tests: `yard-homes` (2 Front-Row Yard to let), `continuous-life` (home owners' sites), `home-interiors`,
   `thuan-*` unaffected, a new `kitano-hamlet` test (the commute's timetable, the island home life).
 
+### 7b-1, built: the households (2026-10-12)
+
+- `people/households.js`: `yuri-home` is Thuan, Thao and Chin; 2 Front-Row Yard (`resident-home-kenji`) has no
+  household and is **to let** (`yard-homes.js` now builds every yard house, the empty one with the agent's board, a
+  family-home interior and *Look round*). `kitahama-layout.js`: 1 Kitahama's residents and nameplate name the three.
+- `people/kitano-residents.js`: **Tetsuo lives at `kitano-3`** (the Chinen house, 知念); his profile's `home` is the
+  hamlet's gate (world coordinates), his address Kitano hamlet; with no household in town he is no longer a home
+  owner, so the timetable's commuter rules carry him: the 14:30 boat in, the workshop's afternoon-and-evening shift,
+  the morning boat home, and `awayPlace` says *at home on Kitano-jima*, not the mainland.
+- **Chin keeps the yard's day** (lunch at Sato, the workshop, the evening, then home) from 1 Kitahama: the commuter
+  rules sent him through the generic branches and lost his lunch (the `continuous-life` test found it).
+- Rooms: the family home lays **three futons** (red tile: Thuan's in the nibanza, Thao's and Chin's in the uraza; concrete:
+  three in the east room) and a third seat at the low table's west cushion; the shared Kitahama room gives a third
+  person the middle futon; Thuan's futon is in Johansson's house, folded by day in the corner by his pillow
+  (`town-hall.js`); `home-life.js` gives Chin a place in the Yuri apartment.
+- Texts: the household registry (Thuan his wife, Chin Thao's husband, Tetsuo at kitano-3), the hamlet's nameplates
+  (ヨハンソン: Johansson & Thuan; 知念: Chinen), the residents' *I live at…* lines.
+- Tests updated: `yard-homes` (to let), `resident-home-plan`, `visual-home-camera`, `seat-layouts`,
+  `neighbourhood-access` (Tetsuo no longer in the park at 13:00: he is on the island), `home-interiors`,
+  `continuous-life`, `town-hall-plan` pass with the rest of the household suite and `boot`.
+- Open for 7b-2 and 7b-3: Sakura 24/7 with Chin's night shift and Nhung's weekend cover, Front Row closed at the
+  weekend, Thuan's weekends on Kitano-jima, Jun's home life, the guide's portraits and backstories (Johansson's wife,
+  Thao's husband) regenerated.
+
 ## 4. Batch 7c: the crew at their posts (built 2026-10-12)
 
 The data is there (`people/ferry-crew.js`: the master, Mr Nakandakari the chief, Mr Higa Jr the oiler, Ms Uezu on deck,

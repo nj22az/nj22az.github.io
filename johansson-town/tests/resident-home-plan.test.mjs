@@ -12,9 +12,8 @@ import {createRoomWalk} from '../src/people/room-walk.js';
 // at the table and to their futon, and back.
 const homes=[
  {site:{id:'resident-home-aya',title:'Nhung & Reiko’s home',homeOwner:'Nhung',homeOwners:['Nhung','Reiko']},names:['Nhung','Reiko']},
- {site:{id:'resident-home-kenji',title:'Chin & Tetsuo’s home',homeOwner:'Chin',homeOwners:['Chin','Tetsuo']},names:['Chin','Tetsuo']},
- {site:{id:'resident-home-thuan',title:'Thuan & Thao’s home',homeOwner:'Thuan',homeOwners:['Thuan','Thao'],plot:'kitahama-1',houseKind:'red-tile'},names:['Thuan','Thao']},
- {site:{id:'resident-home-thuan',title:'Thuan & Thao’s home',homeOwner:'Thuan',homeOwners:['Thuan','Thao'],plot:'kitahama-1',houseKind:'concrete'},names:['Thuan','Thao']},
+ {site:{id:'resident-home-thuan',title:'Thuan, Thao & Chin’s home',homeOwner:'Thuan',homeOwners:['Thuan','Thao','Chin'],plot:'kitahama-1',houseKind:'red-tile'},names:['Thuan','Thao','Chin']},
+ {site:{id:'resident-home-thuan',title:'Thuan, Thao & Chin’s home',homeOwner:'Thuan',homeOwners:['Thuan','Thao','Chin'],plot:'kitahama-1',houseKind:'concrete'},names:['Thuan','Thao','Chin']},
 ];
 for(const {site,names} of homes){
  test(`${site.title} (${site.houseKind||'yard'}): a real plan, and its people walk to the table and to bed`,()=>{

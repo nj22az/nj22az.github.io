@@ -130,14 +130,17 @@ export function buildFamilyHome({room,reg,action,collider=()=>{},household,title
  // Walking residents (Thuan and Thao): futons laid out in the sleeping room, and where each
  // of them sleeps, sits and hangs a hat (home-residents.js). Low futons are walked onto.
  if(residents){
-  const homeLayouts={},beds=redTile?[[1.2,-1.7],[2.6,-1.7]]:[[.65,-1.68],[2.6,-1.68]];
+  // Three places (batch 7b: Thuan, Thao and Chin at 1 Kitahama): the third futon beside the others, the third seat at the table's end.
+  // Red tile: the uraza takes two futons (Thao and Chin, the couple); the first resident's (Thuan's) lies in the nibanza.
+  const homeLayouts={},beds=redTile?[[-1.3,1.2],[1.2,-1.7],[2.6,-1.7]]:[[.55,-1.68],[2.7,-1.68],[1.62,-1.68]];
   // Seats: either side of the low table in the ichibanza, or at the 2DK's dining table.
-  const seats=redTile?[[table.x,table.z+.62],[table.x,table.z-.62]]:[[-1.3,.95],[-.45,.35]];
+  const seats=redTile?[[table.x,table.z+.62],[table.x,table.z-.62],[table.x-.75,table.z]]:[[-1.3,.95],[-.45,.35],[-2.15,.35]];
   residents.forEach((name,i)=>{
-   const [x,zc]=beds[i%2],bed=futon(x,zc,[0xe06a7a,0x3f6a8a][i%2],'Futon '+name);
+   const [x,zc]=beds[i%3],bed=futon(x,zc,[0xe06a7a,0x3f6a8a,0x5a8a5a][i%3],'Futon '+name);
    const hatHook=redTile?{position:[.8+i*.25,1.6,hd-.04],yaw:Math.PI}:{position:[.7,1.6,2.15+i*.35],yaw:-Math.PI/2};
    addHatPeg(box,hatHook);
-   homeLayouts[name]={...FAMILY_HOME_LAYOUT,...bed,table:[seats[i%2][0],0,seats[i%2][1]],tableStand:redTile?(i%2?[1.05,0,.1]:[table.x,0,table.z+.95]):i%2?[.05,0,.35]:[-1.3,0,1.4],tableSeatHeight:redTile?.075:.445,tableSeatYaw:i%2?(redTile?Math.PI:Math.PI/2):0,door:[0,0,hd-.5],hatHook};
+   const k=i%3,stand=redTile?[[table.x,0,table.z+.95],[1.05,0,.1],[.5,0,1]][k]:[[-1.3,0,1.4],[.05,0,.35],[-2.15,0,1.2]][k];
+   homeLayouts[name]={...FAMILY_HOME_LAYOUT,...bed,table:[seats[k][0],0,seats[k][1]],tableStand:stand,tableSeatHeight:redTile?.075:.445,tableSeatYaw:[0,redTile?Math.PI:Math.PI/2,Math.PI/2][k],door:[0,0,hd-.5],hatHook};
   });
   // Thuan's wardrobe: against the nibanza's back wall (where a family keeps its altar), or
   // in the 2DK's west tatami room.

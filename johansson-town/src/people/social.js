@@ -319,10 +319,11 @@ function commuterPlanOn(profile,minutes,rain=false,state=null){
  // After last orders Thao stays an hour to wipe down and lock up (izakaya-hours.js).
  if(profile.name==='Thao'){const job=izakayaJob('Thao',minutes);if(job)return {place:'izakaya',target:IZAKAYA_DOOR,activity:job.activity};}
  if(livesAtWork(profile))return workplaceResidentPlan(profile,minutes,rain,state);
- if(livesInYard(profile))return yardResidentPlan(profile,minutes,rain,state);
+ // Chin keeps the yard's day (lunch at Sato, the workshop, the evening) from 1 Kitahama, where he lives with Thao (batch 7b).
+ if(livesInYard(profile)||profile.name==='Chin')return yardResidentPlan(profile,minutes,rain,state);
  const phase=commuterPhase(profile,minutes,rain),bus=(activity='waiting for the Harbour Line')=>({place:'bus',target:transitStop().queue,activity});
  // exit is the platform (clear of the tunnel mouth) — never roadEndZ/arch.
- if(phase==='away')return {place:'away',target:transitStop().exit,activity:awayPlace()};
+ if(phase==='away')return {place:'away',target:transitStop().exit,activity:awayPlace(profile.name)};
  if(phase==='arriving')return {place:'bus',target:transitStop().arrival,activity:'arriving on the Harbour Line'};
  // Thuan's own hour between locking up and the last bus. It has to be read before the
  // generic departing rule, which sends everybody straight to the queue — which is why

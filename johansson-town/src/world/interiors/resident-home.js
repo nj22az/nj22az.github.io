@@ -23,8 +23,9 @@ function residentShell(mesh,name='Resident shell wall'){
 // A shared Kitahama room has its own coordinates. The supplied Yuri apartment's
 // routines cannot be reused here: its table and Thuan's bed are outside this shell.
 export function sharedHomeLayouts(names){
- return Object.fromEntries(names.map((name,i)=>{const side=i===0?-1:1,x=side*2.1;
-  return [name,{...SHARED_HOME_LAYOUT,bed:[x,.58,-.3],bedside:[side*.95,0,-.4],table:[side*.72,0,2.15],
+ // A third person (batch 7b: Chin with Thuan and Thao) sleeps between the two, and stands at the foot of the bed.
+ return Object.fromEntries(names.map((name,i)=>{const side=i===0?-1:i===1?1:0,x=side*2.1;
+  return [name,{...SHARED_HOME_LAYOUT,bed:[x,.58,-.3],bedside:side?[side*.95,0,-.4]:[0,0,.5],table:[side*.72,0,2.15],
    cover:{position:[x,.64,-.9],width:1.1,length:1.3,axis:'z'},hatHook:{position:[side*1.4,1.6,3.33],yaw:Math.PI}}];
  }));
 }

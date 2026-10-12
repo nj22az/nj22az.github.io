@@ -211,6 +211,10 @@ export function buildMayorHome({room,reg,action,collider=()=>{},exit,sleep=null,
  const futon=box([1.0,.12,2.0],[hw-.75,.07,-hd+1.15],0xe9dfc8,'Futon');futon.userData.bed=true;
  box([.95,.06,1.4],[hw-.75,.16,-hd+1.35],0x2c3e5c,'Quilt');box([.7,.1,.35],[hw-.75,.18,-hd+.4],0xf3e8d2,'Pillow');
  collider(hw-.75,-hd+1.15,1.0,2.0,.25);
+ // Thuan's futon (batch 7b: she is home at the weekend), folded by day in the corner by his pillow.
+ const hers=box([.9,.42,.5],[hw-1.75,.21,-hd+.3],0xf1e6e0,'Futon Thuan');hers.userData.bed=true;
+ box([.86,.08,.46],[hw-1.75,.46,-hd+.3],0xb2453b,'Thuan’s quilt');box([.5,.1,.3],[hw-1.75,.55,-hd+.3],0xf3e8d2,'Thuan’s pillow');
+ collider(hw-1.75,-hd+.3,.9,.5,.6);
  // Kitchenette on the west wall: counter, sink, two-ring gas, a small fridge.
  box([.6,.9,1.8],[-hw+.32,.45,-1.6],0xd8d2c4,'Kitchen counter');box([.62,.04,1.82],[-hw+.32,.92,-1.6],0x9aa3a6);
  box([.4,.12,.4],[-hw+.32,.88,-1.2],0x8e979a,'Sink');box([.35,.04,.5],[-hw+.32,.95,-2.1],0x2b2b2b,'Gas rings');
