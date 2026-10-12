@@ -82,7 +82,8 @@ export const aFish=f=>(/^[aeiouāēīōū]/i.test(f.name)?'an ':'a ')+f.name;
 /** A caught fish as it is carried in the bag: "Taman", "Ēgwā". */
 export const fishItem=f=>f.name[0].toUpperCase()+f.name.slice(1);
 /** The pier fish a bag item is, or null. */
-export const pierFishOfItem=item=>fishAt('pier').find(f=>fishItem(f)===item)||null;
+const PIER_BY_ITEM=new Map(fishAt('pier').map(f=>[fishItem(f),f]));   // asked every frame (schedules.js): built once
+export const pierFishOfItem=item=>PIER_BY_ITEM.get(item)||null;
 /**
  * The pier's catch in old saves, before the town had its fish list: "Mackerel", then "Sea bream". Both become a taman,
  * the pier's prize, which Okinawans call the island's tai (sea bream), so nothing a player kept is lost or cheapened.

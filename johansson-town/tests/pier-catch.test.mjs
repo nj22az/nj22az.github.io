@@ -39,11 +39,11 @@ test('a bag item names its fish, old saves keep their catch, and Thuan and Sakur
 test('fishing at night lands a pier fish; the harbour master buys the best, Tama gets the least', () => {
  const dom=installDOM({});let minutes=22*60;
  const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>minutes});
- mock.timers.enable({apis:['setInterval']});
+ let first;mock.timers.enable({apis:['setInterval']});
  const random=mock.method(Math,'random',()=>0);   // the bite comes at 2 s; the fish is the first that bites at night
  try{
   acts.action('fishing');dom.button('Cast line');mock.timers.tick(2100);dom.button('Reel in');
-  const first=pierCatch(minutes,0);
+  first=pierCatch(minutes,0);
   assert.deepEqual(acts.state.inventory,[fishItem(first)],'the catch is in the bag');
   minutes=12*60;random.mock.mockImplementation(()=>.99);
   acts.action('fishing');dom.button('Cast line');mock.timers.tick(5000);   // a bite at 4.475 s
@@ -53,7 +53,7 @@ test('fishing at night lands a pier fish; the harbour master buys the best, Tama
  assert.equal(acts.state.inventory.length,2,'the second catch is still the waterlogged page');assert.match(acts.state.inventory[1],/^Waterlogged page/);
  acts.state.inventory.push('Taman','Mijun');
  const yen=acts.state.yen;acts.action('resident','Harbour master');dom.button('Sell a catch');
- assert.ok(dom.labels().includes('Sell your taman · +¥320'),dom.labels().join(' | '));
+ assert.deepEqual(dom.labels().filter(l=>/^Sell/.test(l)),['Sell your taman · +¥320',`Sell your ${first.name} · +¥${first.pierPrice}`,'Sell your mijun · +¥60'],'each kind offered, dearest first: the player chooses');
  dom.button('Sell your taman · +¥320');
  assert.equal(acts.state.yen,yen+320);assert.ok(!acts.state.inventory.includes('Taman'));
  acts.state.inventory.push('Taman');acts.state.quest=1;acts.action('cat');dom.button('Give Tama a fish');

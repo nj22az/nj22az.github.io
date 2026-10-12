@@ -100,7 +100,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       state.yen=Math.min(state.yen,999999);state.quest=Math.min(state.quest,3);
       for(const k of ['inventory','visited','operated','inspectedIds','notes'])if(Array.isArray(saved[k]))state[k]=saved[k].filter(x=>typeof x==='string').slice(0,100);
       state.inventory=state.inventory.map(x=>LEGACY_CATCH[x]||x);   // the old "Sea bream" is a taman now (fish.js)
-      state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.clockAhead=Number.isFinite(saved.clockAhead)?Math.max(0,Math.min(10080,saved.clockAhead)):0;state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.inventory=state.inventory.map(i=>i==='Mackerel'?'Sea bream':i);state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;if(Number.isInteger(saved.onsenDate)&&saved.onsenDate>=0)state.onsenDate=saved.onsenDate;state.quickTravelNotified=saved.quickTravelNotified===true;
+      state.notes=state.notes.filter(n=>!n.includes('Website is the town')&&!/https?:/.test(n));state.clockAhead=Number.isFinite(saved.clockAhead)?Math.max(0,Math.min(10080,saved.clockAhead)):0;state.minutes=Number.isFinite(saved.minutes)?saved.minutes:1002;state.sound=saved.sound!==false;state.bookRescue=saved.bookRescue||0;state.radioStation=Number.isInteger(saved.radioStation)?Math.max(0,Math.min(2,saved.radioStation)):0;state.weather=saved.weather===true;state.shrineIntent=['Book','Work','Home'].includes(saved.shrineIntent)?saved.shrineIntent:null;state.kenjiEscort=[true,'walking','done'].includes(saved.kenjiEscort)?saved.kenjiEscort:false;if(Number.isInteger(saved.onsenDate)&&saved.onsenDate>=0)state.onsenDate=saved.onsenDate;state.quickTravelNotified=saved.quickTravelNotified===true;
       if(typeof saved.lastDayKey==='string')state.lastDayKey=saved.lastDayKey;if(Array.isArray(saved.dailyQuests))state.dailyQuests=saved.dailyQuests;if(saved.dailyDone&&(typeof saved.dailyDone==='object'))state.dailyDone=saved.dailyDone;
     }
   } catch(error){
@@ -356,7 +356,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const hero=document.createElement('div');hero.className='bag-hero';hero.innerHTML=svg(itemIcon(item,{printed:!!model}),{size:56});if(foodArtForItem(item)){hero.innerHTML='';const image=document.createElement('img');image.src=foodArtForItem(item);image.alt=item;image.width=160;image.height=160;image.style.objectFit='contain';hero.append(image);}body.prepend(hero);
   }
   const withEnglish=f=>(/^[aeiou]/i.test(f.english)?'an ':'a ')+f.english;
-  const pierFishLine=f=>`${withEnglish(f).replace(/^a/,'A')}, fresh from the pier. How it is eaten here: ${f.eaten}. The harbour master pays ¥${f.pierPrice}; Tama would take it for nothing.`;
+  const pierFishLine=f=>`${withEnglish(f).replace(/^a/,'A')}, fresh from the pier. Eaten here: ${f.eaten}. The harbour master pays ¥${f.pierPrice}; Tama would take it for nothing.`;
   function addItem(item){if(STORE_ITEMS.some(p=>p.name===item)||DRINKABLE.has(item)||SPECIAL_BY_NAME[item]||['Ice',EMPTY_CAN].includes(item)||pierFishOfItem(item)||!state.inventory.includes(item))state.inventory.push(item);save();}
   /**
    * The recycling box by Sakura's door. Every empty can in your pockets goes in, and
@@ -1013,10 +1013,10 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     const lines={
       Chin:'The Star Port cabinet is outside the workshop. Stop the signal in the illuminated zone three times to win. It costs ¥100; a perfect round pays ¥250.',
       'Mrs Sato':'Ramen is ¥300 today. The payphone near the bookshop still works, and the Harbour Line timetable is at the northern terminal.',
-      'Harbour master':'Mībai and ēgwā off the pier by day, mijun when the shoals come in. Taman and tachinuiyu after dark: that is when the old men come out. Cast a line, wait for the float to dip, and reel in while the signal reads BITE. I buy what you land.'
+      'Harbour master':'Mībai bite at any hour; ēgwā by day, and mijun when the shoals come in. Taman and tachinuiyu after dark: that is when the old men come out. Cast a line, wait for the float to dip, and reel in while the signal reads BITE. I buy what you land.'
     };
     show(name,lines[name]||'The resident nods politely.',[
-      ...(name==='Harbour master'?(()=>{const f=bestPierFish();return [[f?`Sell your ${f.name} · +¥${f.pierPrice}`:'Sell a fish',()=>{const fish=bestPierFish();if(!fish){say('Catch a fish at the pier first.');return;}takeOne(fishItem(fish));state.yen+=fish.pierPrice;save();receipt('Harbour master',`${aFish(fish).replace(/^a/,'A')}. ${fish.pierPrice>=300?'Now that is a fish.':fish.pierPrice<100?'Bait, mostly, but I will take it.':'A fair fish.'} Here is ¥${fish.pierPrice}.`);},!f]];})():[]),
+      ...(name==='Harbour master'?[...(pierFishInBag().sort((a,b)=>b.pierPrice-a.pierPrice).map(f=>[`Sell your ${f.name} · +¥${f.pierPrice}`,()=>{if(!state.inventory.includes(fishItem(f))){say('That fish is no longer in your bag.');return;}takeOne(fishItem(f));state.yen+=f.pierPrice;save();receipt('Harbour master',`${aFish(f).replace(/^a/,'A')}. ${f.pierPrice>=300?'Now that is a fish.':f.pierPrice<100?'Bait, mostly, but I will take it.':'A fair fish.'} Here is ¥${f.pierPrice}.`);}])),...(pierFishInBag().length?[]:[['Sell a fish',()=>say('Catch a fish at the pier first.'),true]])]:[]),
       ['Goodbye',close]
     ]);
   }
@@ -1024,15 +1024,14 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   function cat(){
     note('Tama approved this route');
     if(state.quest===1){
-      if(cheapestPierFish())show('Tama','The ginger cat watches the fish in your bag.',[['Give Tama a fish',()=>{takeOne(fishItem(cheapestPierFish()));state.quest=2;save();receipt('Tama','Tama eats the fish and trots towards Nhung’s shop. Tell Nhung where he is.');}],['Leave',close]]);
+      if(cheapestPierFish())show('Tama','The ginger cat watches the fish in your bag.',[['Give Tama a fish',()=>{const fish=cheapestPierFish();if(!fish){close();return;}takeOne(fishItem(fish));state.quest=2;save();receipt('Tama','Tama eats the fish and trots towards Nhung’s shop. Tell Nhung where he is.');}],['Leave',close]]);
       else receipt('Tama','The ginger cat chirps, but keeps his distance. He seems hungry. Try fishing at the harbour.');
     } else receipt('Ginger cat',state.quest===3?'A neighbourhood cat stretches in the afternoon warmth.':'A ginger cat is warming himself beside the ramen stall.');
   }
 
-  // The pier's fish in the bag (src/world/okinawa/fish.js). The harbour master is offered the best of them; Tama is
-  // given the least (a cat is happy with a mijun, and the player keeps the taman).
+  // The pier's fish in the bag (src/world/okinawa/fish.js). The harbour master is offered each kind (the player
+  // chooses, so a taman a friend asked for is never sold by mistake); Tama is given the least (a cat is happy with a mijun, and the player keeps the taman).
   const pierFishInBag=()=>fishAt('pier').filter(f=>state.inventory.includes(fishItem(f)));
-  const bestPierFish=()=>pierFishInBag().sort((a,b)=>b.pierPrice-a.pierPrice)[0]||null;
   const cheapestPierFish=()=>pierFishInBag().sort((a,b)=>a.pierPrice-b.pierPrice)[0]||null;
   function fishing(){
     show('Harbour fishing','Cast a line. Wait for BITE, then reel in before the fish gets away.',[
