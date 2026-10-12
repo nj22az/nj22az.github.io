@@ -16,7 +16,11 @@ export function createEarDefenders(m){
   const pad=new THREE.Mesh(new THREE.CylinderGeometry(R*.3,R*.3,.012*k,16),band);pad.rotation.z=Math.PI/2;pad.position.set(s*(rx-.004*k),cy-ry*.08,0);g.add(pad);
  }
  // The band: a half ring from cup to cup over the crown, stretched to the head's width and height.
- const arc=new THREE.Mesh(new THREE.TorusGeometry(1,.012*k,8,28,Math.PI),band);arc.scale.set(rx+.018*k,ry*1.02,1);arc.position.set(0,cy-ry*.08,0);arc.name='Ear defender band';g.add(arc);
+ // The band clears the crown and the hair: its ends sit on the cups, its top a hand's width over the head (the
+ // creator, 2026-10-12: "cover his bald head, not clip into the head"), and it leans a little aft like a worn pair.
+ const arc=new THREE.Mesh(new THREE.TorusGeometry(1,.018*k,8,28,Math.PI),band);arc.scale.set(rx+.018*k,ry*1.3,1);arc.position.set(0,cy-ry*.08,-.02*k);arc.rotation.x=-.12;arc.name='Ear defender band';g.add(arc);
+ // Two short stems from the band down into each cup, so the band does not float off them.
+ for(const s of [-1,1]){const stem=new THREE.Mesh(new THREE.CylinderGeometry(.012*k,.012*k,ry*.3,8),band);stem.position.set(s*(rx+.018*k),cy-ry*.08+ry*.15,-.02*k);stem.name='Ear defender stem';g.add(stem);}
  g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=false;}});
  return g;
 }
