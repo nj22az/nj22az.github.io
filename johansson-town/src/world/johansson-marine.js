@@ -1,4 +1,4 @@
-import {FERRY_MACHINERY,FERRY_ELECTRICS} from './ferry-ship.js';
+import {FERRY_MACHINERY,FERRY_ELECTRICS,FERRY_LOADS} from './ferry-ship.js';
 /**
  * Johansson Marine (ヨハンソン舶用機械): the brand on every engineering part aboard the Minato Maru (the creator,
  * 2026-10-12: "I want them to look like real machines similar to Volvo but brand every engineering part as a Johansson
@@ -31,6 +31,9 @@ export const JOHANSSON_MARINE=Object.freeze({
   radar:Object.freeze({model:'JN-1800',kind:'Radar',spec:'X-band · 4 ft scanner · 24 nm',count:1}),
   vhf:Object.freeze({model:'JN-25',kind:'VHF radiotelephone',spec:'25 W · DSC (1998 refit)',count:1}),
   autopilot:Object.freeze({model:'JN-AP2',kind:'Autopilot',spec:'with the non-follow-up lever',count:1}),
+  gsPump:Object.freeze({model:'JP-32',kind:'General-service pump',spec:`${M.fireMain.pumpM3h} m³/h · ${M.fireMain.pumpKW} kW · sea water`,count:1}),
+  sanitaryPump:Object.freeze({model:'JP-15',kind:'Sanitary pump',spec:`${FERRY_LOADS.find(l=>l.id==='sanitary').kW} kW · sea-water flushing`,count:1}),
+  hydrophore:Object.freeze({model:'JQ-2',kind:'Hydrophore set',spec:`${M.freshWater.hydrophoreKW} kW · ${M.freshWater.pressureTank} L tank · ${M.freshWater.cutIn}–${M.freshWater.cutOut} MPa`,count:1}),
  }),
 });
 /** The lines on a maker's plate for a catalogue entry (the model's text on an aluminium plate). */

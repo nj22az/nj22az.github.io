@@ -20,20 +20,28 @@ test('the Johansson Marine catalogue is the ship’s own data under the brand',(
 
 test('the main engines and generator sets are built as machines, in the livery, with their plates',()=>{
  const names=new Set(FERRY_INTERIOR.cyls.map(c=>c.name).filter(Boolean));
- for(const part of ['crankcase door','oil filler','fuel filter','turbocharger turbine','turbocharger compressor','air filter','cooling-water pump','sea-water pump','lube-oil filter','flywheel housing','coupling guard','gearbox cover','output flange','gauge','tachometer','stop button','generator turbocharger','alternator'])assert.ok(names.has(part),'built: '+part);
+ for(const part of ['crankcase door','oil filler','fuel filter','turbocharger turbine','turbocharger compressor','air filter','cooling-water pump','sea-water pump','lube-oil filter','flywheel housing','coupling guard','gearbox cover','output flange','tachometer','stop button','start button','shutdown button','sensor box','lagging band','bulkhead lamp','generator turbocharger','alternator','alternator end bell','pump casing','pump motor','compressor cylinder','purifier bowl','separator vessel','earth lamp','synchronising lamp','fuel valve handwheel','flange'])assert.ok(names.has(part),'built: '+part);
  const green=JOHANSSON_MARINE.livery.green;
  const blocks=FERRY_INTERIOR.boxes.filter(b=>b.name==='main engine');assert.equal(blocks.length,2);for(const b of blocks)assert.equal(b.hex,green,'the block is in Johansson green');
  const plates=FERRY_INTERIOR.plates;
- assert.equal(plates.filter(p=>p.lines[0]==='JOHANSSON MARINE').length,4,'two mains and two gensets carry a maker’s plate');
- assert.equal(plates.filter(p=>p.lines[0]==='JOHANSSON').length,2,'the wordmark on each engine');
+ // Two mains, two gensets, the compressor, purifier, separator, the switchboard and the six pumps carry a maker's plate.
+ assert.equal(plates.filter(p=>p.lines[0]==='JOHANSSON MARINE').length,14,'every machine carries a maker’s plate');
+ assert.equal(plates.filter(p=>p.name==='wordmark').length,2,'the wordmark on each engine');assert.equal(plates.filter(p=>p.name==='badge').length,2,'the silver badge on each engine’s covers');
  for(const p of plates)assert.ok(p.w>0&&p.h>0&&p.pos.length===3&&Number.isFinite(p.rotY),p.name);
+ // The photographs' engine room (6o-2): round dials on the gauge boards and the switchboard, chequer plate on the floor.
+ const dials=plates.filter(p=>p.kind==='dial');assert.ok(dials.length>=24,'dials: '+dials.length);
+ for(const d of dials)assert.ok(d.value>=0&&d.value<=1&&d.w===d.h,'a dial reads 0–1 and is round: '+d.name);
+ for(const label of ['LO PRESS','WATER','EXHAUST','RPM','kW','Hz','SYNCHROSCOPE','INSULATION'])assert.ok(dials.some(d=>d.lines[0]===label),'a dial for '+label);
+ assert.equal(dials.filter(d=>d.lines[0]==='kW').length,2,'a kW meter per generator panel');
+ assert.ok(plates.some(p=>p.kind==='chequer'&&p.rotX===-Math.PI/2&&p.w>6),'the floor is chequer plate');
+ assert.equal(plates.filter(p=>p.name==='label: fuel filter').length,4,'the filters are dated');
  // Every cylinder stands inside the engine room, below the car deck.
  for(const c of FERRY_INTERIOR.cyls)assert.ok(c.pos[1]<2.2&&c.pos[1]>-1.2&&Math.abs(c.pos[0])<4,'in the engine room: '+c.name+' '+JSON.stringify(c.pos));
 });
 
 test('the model draws the cylinders and hangs the plates on her; the prompts name the brand',()=>{
  const parent=new THREE.Group(),run=createFerryRun({parent,colliders:[]});
- const plates=[];run.ferry.traverse(o=>{if(o.isMesh&&/maker’s plate|wordmark/.test(o.name))plates.push(o);});
+ const plates=[];run.ferry.traverse(o=>{if(o.isMesh&&o.userData.plate)plates.push(o);});
  assert.equal(plates.length,FERRY_INTERIOR.plates.length,'every plate is a textured plane on the ship');
  const metal=run.ferry.getObjectByName('Minato Maru metal');assert.ok(metal,'the metal class carries the machine parts');
  for(const id of ['main-engine','gearbox','generator']){const p=FERRY_INSPECT.find(p=>p.id===id);assert.match(p.title+' '+p.text,/Johansson Marine J[A-Z]/,id);}

@@ -1121,7 +1121,65 @@ brand."* Built:
   works' blue with cooling ribs and terminal box, on a common bed, each with its plate.
 - The prompts name the models. Test: `ferry-johansson-marine.test.mjs`. Photographed from the aisle, the aft end, the
   turbo end and the generators (`/tmp/claude-0/shots/m1…m7`).
-- Open for 6o-2: the switchboard as a board (meters, synchroscope, earth lamps, breakers, labels, live readings), the
-  pumps, purifier, compressor and separator as machines with their plates, pipes routed like pipes (the fan of cones),
-  chequer plate and gratings, caged lights, the watchkeeper's things, sound and vibration by state; the plate on the
-  block sits low and inboard and wants a better spot for the eye.
+- Open after 6o-1: the switchboard as a board, the pumps, purifier, compressor and separator as machines, pipes routed
+  like pipes, chequer plate, caged lights, the watchkeeper's things, sound and vibration by state (6o-2 below).
+
+### 10.9 6o-2 built: the engine room from the creator's photographs
+
+The creator sent sixteen photographs of real engine rooms (2026-10-12: "Here are some engine room photos can you use
+them to enhance the engine room? As inspiration? Model what we need in code or blender"): Volvo Penta mains with
+black valve covers and a silver badge on green blocks, chequer-plate floors, exhausts in quilted silver lagging held
+by stainless bands, gauge boards of round dials, gensets with louvred alternators, shutdown/reset boxes and start
+panels on the engines, braided hoses, filters with the change date written on them, a row of sensor boxes along a
+block, cable trays, a compressor, a burner, a MAN gauge panel. Everything is modelled in code, in the town's own
+procedural style (`ferry-interior.js`, drawn by `ferry-model.js`); nothing needed Blender.
+
+What each photograph gave, and where it now is:
+- **Round dials** (the gauge boards, the gensets' panels, the MAN panel): `plateMesh` draws a `dial` kind, a round
+  gauge with a bezel, ticks, a red zone, a needle at a value 0–1 and its label; `dial()` in the interior places one.
+  Each main engine's gauge board carries six (lube-oil pressure, water, fuel, exhaust, charge air, lube-oil
+  temperature) and the tachometer on the stand is a dial face-up; each genset's panel an rpm dial with start and
+  stop; the booth desk's panel the two shaft rpm dials and eight engine-alarm lamps with their legend.
+- **The main switchboard** (JE-440) is a board: five panels under a name strip (GENERATOR No.1, SYNCHRONISING,
+  GENERATOR No.2, 440 V FEEDERS, 105 V LIGHTING). A generator panel has kW, A, V and Hz meters, the breaker in its
+  frame with the handle up when closed, closed and open lamps, governor and ammeter switches with labels; the
+  synchronising panel the synchroscope (SLOW · FAST), bus and incoming voltmeters, three synchronising lamps, the
+  selector switch and the board's maker's plate; the feeder panel three earth lamps (IT system: all alight when
+  nothing is earthed), the insulation meter in MΩ with the test switch, and eight labelled breakers (steering, fire
+  pumps, thruster, ramp pack, galley, windlass, ER pumps); the lighting panel its V and A, the 440/105 V transformer
+  label, eight breakers and the shore-connected lamp. In port No.1 carries the ship (its meters read), No.2 stands
+  at zero.
+- **Black valve covers with the badge**: cast ribs along each cover, and a silver JOHANSSON badge on the inboard
+  face of No.3's cover; the wordmark stays along the outboard side.
+- **Quilted lagging with bands**: stainless bands every 0.36 m along each exhaust manifold and every 0.5 m along the
+  uptake, with a band at the elbow.
+- **Shutdown/reset box** on each block's inboard face aft (the red mushroom, the reset button, the amber alarm lamp,
+  the label) and the **start panel** on the local stand (green start, key switch, hour meter, LOCAL CONTROL label).
+- **Dated filters**: each fuel filter reads FUEL FILTER · CHG 12 MAR 94, each lube-oil filter LO FILTER · CHG 8 FEB
+  94, and **braided hoses** run from the filters to the pump block.
+- **The sensor row**: a sensor box on each head along the block's top inboard edge, cabled together.
+- **Louvred alternators**: an end bell outboard with five louvre slats.
+- **Chequer plate**: the floor is a repeating chequer texture (raised diamonds, a seam every 0.6 m) everywhere but
+  the booth, which keeps its own floor.
+- **Caged bulkhead lamps**: three a side, a lamp in a wire cage over the machines.
+- **The pumps are machines**: six on a drip tray, each a coloured pump casing (red fire, green general service,
+  blue bilge, sanitary and hydrophore), the yellow coupling guard, a motor in the works' blue with its terminal box,
+  the delivery rising with a flange to join its overhead run (the fire pumps the fire main, the hydrophore the fresh
+  water, the rest the sea-water run), a maker's plate and a label. The catalogue gained JP-32 (general service),
+  JP-15 (sanitary) and JQ-2 (hydrophore).
+- **Compressor, purifier, separator as machines**: the JC-30 a two-stage V compressor on its motor with the flywheel,
+  its air gauge and delivery lines to the bottles (each bottle with its gauge and STARTING AIR label); the JF-1 its
+  frame, bowl, hood and motor with a bowl-rpm dial; the JO-15 a vessel on legs with its sight glass and the 15 ppm
+  bilge monitor. Each with its plate. The compressor moved outboard (x 2.7–3.1): it had stood inside the port
+  engine's local control stand.
+- **Pipes routed like pipes**: the fuel line runs from the service tank's quick-closing valve up to the deckhead,
+  across at z 13.6, and to each engine drops by the turbo end inboard through a valve with a red handwheel to a run
+  along the block's inboard edge; the diagonal bars (the fan of cones) are gone. The overhead runs along her sides
+  carry hangers from the deckhead every 1.2 m and flange pairs.
+- **The watchkeeper's things**: the engine-room log open on the desk, a pen, a coffee mug.
+- Test (`ferry-johansson-marine.test.mjs`): 14 maker's plates, the badges, 24+ dials reading 0–1, the chequer floor,
+  the dated filters, and every new part by name. 218 cylinders and 112 plates. Photographed with the audit's free
+  camera (`/tmp/claude-0/shots/p1…p12`, `q1…q6`, `r1`).
+- Open: sound and vibration by state (the engines are silent in port and at sea alike); gratings over the bilge
+  wells (the texture kind exists, none is laid yet); the plate on the block still sits low; a cable tray from the
+  switchboard to the panels; the compressor's bottles' relief lines.
