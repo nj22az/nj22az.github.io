@@ -646,7 +646,10 @@ function placeThirdPerson(dt){
  // Seated, the lens rises a little so his head does not fill the view of the table. In a
  // bath he is down at the water, so it looks over his shoulder from standing height.
  const lens=johansson?.lens,tall=lens?lens.eye-1.6:0;
- const eye=(seated&&parkSeat?(parkSeat.soak?1.25:Math.min(1.45,parkSeat.eyeY-player.position.y)+.3):1.6)+tall;
+ // In the ferry's rooms (a 2 m deckhead, walls a metre or two off) the lens pivots at his chest, stands closer and
+ // rises sooner to look down over him: the room, not the back of his head.
+ const room=!current&&shipRoom();
+ const eye=(seated&&parkSeat?(parkSeat.soak?1.25:Math.min(1.45,parkSeat.eyeY-player.position.y)+.3):room?1.3:1.6)+tall;
  tpDir.set(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch));tpRight.set(Math.cos(yaw),0,-Math.sin(yaw));
  tpPivot.set(player.position.x,player.position.y+eye+(camera.aspect<1?.18:0),player.position.z);
  if(current)tpPivot.y=Math.min(tpPivot.y,indoorCeilings?.limit(tpPivot.x,tpPivot.z,player.position.y)??Infinity);
@@ -656,7 +659,7 @@ function placeThirdPerson(dt){
  const own=!current&&seated?c=>circleHitsRect(player.position.x,player.position.z,.3,c):null;
  // On a portrait screen (an iPad held upright) the frame is narrow and his big Shimanchu
  // head filled a third of it: the lens stands further back and a little higher there.
- const portrait=camera.aspect<1,want=(current?2.2:3.2)*(portrait?1.32:1);
+ const portrait=camera.aspect<1,want=(current?2.2:room?2.0:3.2)*(portrait?1.32:1);
  // The whole boom, from a pivot `side` metres to his right; indoors the ceiling too. -1: the pivot is in a wall.
  // Outdoors the boom also stops at what is drawn rather than walked into (an awning, a canopy,
  // a shop's glass): otherwise the lens slid under the valance or behind a window and looked out through it.
@@ -688,10 +691,10 @@ function placeThirdPerson(dt){
  // Close in, the lens rises over his shoulder and looks down at him, so a narrow alley or a
  // small room still shows him rather than the back of his head or nothing at all. Eased, so a
  // post passing behind him does not jerk the view; it rises only where there is room.
- const cramped=Math.min(1,Math.max(0,1.4-thirdDistance)/1.1);
+ const cramped=Math.min(1,Math.max(0,(room?2.1:1.4)-thirdDistance)/1.1);
  crampedEase=THREE.MathUtils.damp(crampedEase,cramped,8,dt);
  if(crampedEase>.001){
-  let lift=crampedEase*.3;if(!current)lift=Math.min(lift,lensOcclusion.clear(camera.position,lensUp,lift+.3)-.3);while(lift>.05&&cameraBlocked(camera.position.x,camera.position.z,camera.position.y+lift,.16,own))lift-=.1;
+  let lift=crampedEase*(room?.5:.3);if(!current)lift=Math.min(lift,lensOcclusion.clear(camera.position,lensUp,lift+.3)-.3);while(lift>.05&&cameraBlocked(camera.position.x,camera.position.z,camera.position.y+lift,.16,own))lift-=.1;
   camera.position.y+=Math.max(0,lift);
  }
  camera.position.y=Math.max(camera.position.y,player.position.y+.3);
@@ -699,8 +702,9 @@ function placeThirdPerson(dt){
  // (Aboard the ferry her decks are the ground, and below her waterline the town's is far above: her engine room.)
  if(!current&&!deckUnder())camera.position.y=Math.max(camera.position.y,groundHeight(camera.position.x,camera.position.z)+.35);
  if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
- if(crampedEase>.001){
-  // His head low in the frame, not in the middle of it: the view still looks ahead, past him.
+ if(crampedEase>.001&&!(room&&thirdDistance<HEAD_CAM)){
+  // His head low in the frame, not in the middle of it: the view still looks ahead, past him. (As a head camera in
+  // her rooms he is hidden, and the view keeps his own pitch.)
   const flat=Math.max(.25,Math.hypot(camera.position.x-player.position.x,camera.position.z-player.position.z)),down=Math.max(-.6,Math.atan2(player.position.y+eye-.1-camera.position.y,flat)+.35);
   camera.rotation.x=THREE.MathUtils.lerp(camera.rotation.x,Math.min(camera.rotation.x,down),crampedEase);
  }
@@ -763,7 +767,7 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
+ johansson.update(dt,{speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,visible:islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active&&!bicycleRide});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
@@ -1091,6 +1095,13 @@ function environmentBlocked(x,z,r=PLAYER_RADIUS,who='player',deckY=null){const a
  */
 function shipWalk(){if(!ferryWalk&&world.ferry?.ferry)ferryWalk=createFerryWalk(world.ferry);return ferryWalk;}
 function deckUnder(x=player.position.x,z=player.position.z,y=player.position.y){return current?null:shipWalk()?.floorBelow(x,z,y)??null;}
+/**
+ * In the ferry's rooms the lens comes in to 2 m; nearer than HEAD_CAM (a wall at his back, a passage) it becomes a
+ * head camera: he is hidden and the view keeps the way he looks, instead of a screen full of the back of his head.
+ */
+const HEAD_CAM=.85;
+/** In one of her rooms: aboard, with a deckhead over him within about 2–2.7 m (the lens keeps under it, and comes in closer). */
+function shipRoom(){const d=current?null:deckUnder();return !!d&&[1.95,2.2,2.45,2.65].some(h=>ferryWalk.cameraBlocked(player.position.x,player.position.z,d.y+h,.05));}
 /** The ground under the player's feet: her deck aboard, the town's otherwise. */
 function playerGround(){if(current)return 0;const d=deckUnder();return d?d.y:groundHeight(player.position.x,player.position.z);}
 function entrancePoints(){return SITES.filter(s=>s.door).map(s=>[s.door[0],s.door[2]??s.door[1]]);}
@@ -1790,6 +1801,8 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  stand(x,y,z,facing){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,y,z);if(Number.isFinite(facing))yaw=facing;},
  teleport(x,z,facing,tilt){spawnScene?.cancel('placement');if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
  get lensOcclusion(){return lensOcclusion;},
+ /** For the audit: the lens's own tests at a point (what stops the boom), and whether he is in one of the ferry's rooms. */
+ probe(x,y,z,r=.16){return {blocked:cameraBlocked(x,z,y,r),room:shipRoom(),deck:deckUnder()?.floor?.id??null,aboardSolid:!!deckUnder()&&ferryWalk.cameraBlocked(x,z,y,r)};},
  get lens(){return {position:camera.position.toArray(),rotation:camera.rotation.toArray().slice(0,3),distance:thirdDistance,ceiling:current?indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y):null,blocked:cameraBlocked(camera.position.x,camera.position.z,camera.position.y,.16)};},
  get mouse(){return {walking:pointWalk.active,destination:pointWalk.destination,yaw,pitch,thirdPerson};},
  camera:null,

@@ -140,3 +140,24 @@ test('her lights, engines and whistle: lit under way after dark, quiet on shore 
  // Her day: generators on before the first boat, shore power after the last.
  assert.ok(FERRY_DAY.generators<FERRY_DAY.inService&&FERRY_DAY.inService<FERRY_DAY.shorePower);
 });
+
+test('alongside at Minato she is moored: four lines from her bitts, through a fairlead at the bulwark, to the pier’s bitts; none at sea',async()=>{
+ const {createFerryRun,FERRY_MOORING}=await import('../src/world/ferry.js');
+ const {MINATO_BERTH}=await import('../src/world/minato-berth.js');
+ const parent=new THREE.Group(),colliders=[];const run=createFerryRun({parent,colliders});run.parkAt('town');run.update(1/60,600,0);
+ assert.equal(run.moored,true);
+ const lines=parent.getObjectByName('Minato Maru mooring lines');assert.ok(lines.visible);
+ assert.equal(FERRY_MOORING.lines.length,MINATO_BERTH.bitts.length);
+ const segs=lines.children;assert.equal(segs.length,FERRY_MOORING.lines.length*2);
+ lines.updateMatrixWorld(true);
+ for(const [i,l] of FERRY_MOORING.lines.entries()){
+  const outer=segs[i*2+1];const end=new THREE.Vector3(0,1,0).applyMatrix4(outer.matrixWorld);
+  assert.ok(end.distanceTo(new THREE.Vector3(...l.pier))<.02,l.name+' ends on the pier’s bitt');
+  // The run to the pier leaves her side and lands on the pier, never inside her hull.
+  const start=new THREE.Vector3(0,0,0).applyMatrix4(outer.matrixWorld),local=run.ferry.worldToLocal(start.clone());
+  assert.ok(Math.abs(local.x)>3.5,l.name+' leaves from her side ('+local.x.toFixed(2)+')');
+  assert.ok(start.y>end.y,l.name+' slopes down to the pier');
+ }
+ run.beginCrossing('airport');run.setCrossingProgress(.3);assert.equal(run.moored,false);assert.ok(!lines.visible,'no lines at sea');
+ run.parkAt('airport');run.update(1/60,601,1);assert.equal(run.moored,false,'no lines at Kitano-jima (no bitts there yet)');
+});
