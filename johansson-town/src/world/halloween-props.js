@@ -1,0 +1,124 @@
+import * as THREE from '../../vendor/three.module.js';
+
+/**
+ * The Halloween things of "The Haunted Vending Machine" (halloween.js puts them on Sakura Street), built of plain
+ * rounded shapes in the town's chunky-toy look, no textures, so the film and Studio can build them too: the paper
+ * pumpkin lantern, the plastic jack-o'-lantern pail, the obake (a cardboard cut-out or a plush, which can hold a
+ * coffee can), Kuro the dog and the cord reel.
+ */
+export const std=(c,o={})=>new THREE.MeshStandardMaterial({color:c,roughness:.7,...o});
+export function mesh(parent,geo,mat,x=0,y=0,z=0,name=''){const o=new THREE.Mesh(geo,mat);o.position.set(x,y,z);if(name)o.name=name;parent.add(o);return o;}
+
+/** A smiling jack-o'-lantern face (two triangle eyes, a nose, a grin with two teeth), facing +z, about `s` across. */
+function pumpkinFace(s){
+ const shapes=[];
+ const tri=(cx,cy,w,h)=>{const t=new THREE.Shape();t.moveTo(cx-w/2,cy-h/2);t.lineTo(cx+w/2,cy-h/2);t.lineTo(cx,cy+h/2);t.closePath();return t;};
+ shapes.push(tri(-.22*s,.12*s,.2*s,.17*s),tri(.22*s,.12*s,.2*s,.17*s),tri(0,-.02*s,.09*s,.08*s));
+ const m=new THREE.Shape();const w=.36*s;m.moveTo(-w,-.1*s);
+ m.quadraticCurveTo(0,-.42*s,w,-.1*s);m.lineTo(w*.62,-.17*s);m.lineTo(w*.45,-.11*s);m.lineTo(w*.15,-.2*s);m.lineTo(-w*.15,-.2*s);m.lineTo(-w*.45,-.11*s);m.lineTo(-w*.62,-.17*s);m.closePath();
+ shapes.push(m);
+ return new THREE.ShapeGeometry(shapes,6);
+}
+
+/**
+ * A paper pumpkin lantern (the 1990s party-shop kind: orange paper on a wire frame, a bulb inside): six lobes round a
+ * vertical axis, a black cap and a green stem, the face cut on one side. Glows with `glow` (0 dark … 1 at 100 V).
+ * Its origin is the hanging point at the top of its cord.
+ */
+export function buildPumpkinLantern({r=.15}={}){
+ const g=new THREE.Group();g.name='Pumpkin lantern';
+ const paper=new THREE.MeshBasicMaterial({color:0x8a4a1c}),face=new THREE.MeshBasicMaterial({color:0x3a2410,side:THREE.DoubleSide});
+ const cy=-.06-r*.85;
+ for(let i=0;i<6;i++){const a=i/6*Math.PI*2,lobe=mesh(g,new THREE.SphereGeometry(r*.62,14,10),paper,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,1.18,1);}
+ mesh(g,new THREE.CylinderGeometry(r*.32,r*.38,r*.16,12),std(0x2a2522),0,cy+r*.78,0,'Pumpkin lantern cap');
+ mesh(g,new THREE.CylinderGeometry(r*.06,r*.09,r*.32,8),std(0x4f7a32),0,cy+r*.98,0);
+ mesh(g,new THREE.CylinderGeometry(.004,.004,.06,6),std(0x2a2522),0,-.03,0);
+ const f=mesh(g,pumpkinFace(r*1.05),face,0,cy-r*.04,r*.99,'Pumpkin lantern face');f.renderOrder=1;
+ g.userData.lantern={paper,face,setGlow(v){const k=THREE.MathUtils.clamp(v,0,1);paper.color.setRGB(.3+.7*k,.13+.32*k,.05+.0*k);face.color.setRGB(.16+.84*k,.08+.84*k,.04+.46*k);}};
+ g.userData.lantern.setGlow(0);
+ return g;
+}
+
+/** A plastic jack-o'-lantern (a sweets pail, lit inside by a little torch): solid, ribbed, a carved face. Origin on the ground. */
+export function buildJackOLantern({r=.16}={}){
+ const g=new THREE.Group();g.name='Jack-o’-lantern';
+ const skin=new THREE.MeshBasicMaterial({color:0xe07a1e}),face=new THREE.MeshBasicMaterial({color:0xffe27a,side:THREE.DoubleSide});
+ for(let i=0;i<7;i++){const a=i/7*Math.PI*2,lobe=mesh(g,new THREE.SphereGeometry(r*.6,14,10),skin,Math.cos(a)*r*.42,r*.82,Math.sin(a)*r*.42);lobe.scale.set(1,.95,1);}
+ mesh(g,new THREE.CylinderGeometry(r*.07,r*.1,r*.35,8),std(0x4f7a32),0,r*1.62,0);
+ mesh(g,pumpkinFace(r*1.1),face,0,r*.82,r*.97,'Jack-o’-lantern face');
+ return g;
+}
+
+/**
+ * An obake (お化け), the cute paper-and-plush ghost of a Japanese Halloween: a round white head running into a
+ * wavy hem, two little arms, dot eyes, rosy cheeks and a small smile. `flat`: a cardboard cut-out (a single shape,
+ * for taping to a shutter); else a plush figure. `can`: holding a coffee can in its arms. Faces +z; origin at its
+ * base (the plush) or its middle (the cut-out).
+ */
+export function buildObake({h=.42,flat=false,can=false}={}){
+ const g=new THREE.Group();g.name=flat?'Cardboard ghost':'Plush ghost';
+ const white=std(0xfbfaf6,{roughness:.9,side:THREE.DoubleSide}),ink=new THREE.MeshBasicMaterial({color:0x1d1b1a,side:THREE.DoubleSide}),pink=new THREE.MeshBasicMaterial({color:0xf2a3a8,side:THREE.DoubleSide});
+ const w=h*.62,R=w/2;
+ if(flat){
+  const s=new THREE.Shape();s.moveTo(-R,0);s.absarc(0,0,R,Math.PI,0,true);s.lineTo(R,-h*.42);
+  for(let i=0;i<4;i++){const x0=R-i*w/4,x1=x0-w/4;s.quadraticCurveTo((x0+x1)/2,-h*.42-h*.12*(i%2?-1:1),x1,-h*.42);}
+  s.lineTo(-R,0);
+  const arm=(sx)=>{const a=new THREE.Shape();a.moveTo(sx*R*.9,-h*.08);a.quadraticCurveTo(sx*R*1.45,-h*.02,sx*R*1.42,-h*.2);a.quadraticCurveTo(sx*R*1.2,-h*.22,sx*R*.92,-h*.2);a.closePath();return a;};
+  mesh(g,new THREE.ShapeGeometry([s,arm(-1),arm(1)],10),white);
+  for(const sx of [-1,1]){mesh(g,new THREE.CircleGeometry(h*.045,12),ink,sx*R*.36,h*.02,.002);mesh(g,new THREE.CircleGeometry(h*.07,14),pink,sx*R*.62,-h*.09,.002);}
+  const smile=new THREE.Mesh(new THREE.TorusGeometry(h*.05,h*.012,6,12,Math.PI),ink);smile.rotation.z=Math.PI;smile.position.set(0,-h*.05,.003);g.add(smile);
+ }else{
+  mesh(g,new THREE.SphereGeometry(R,20,14),white,0,h-R,0);
+  const pts=[];for(let i=0;i<=8;i++){const t=i/8;pts.push(new THREE.Vector2(R*(.98+.18*t),(h-R)*(1-t)));}
+  const body=mesh(g,new THREE.LatheGeometry(pts,24),white,0,0,0);void body;
+  for(let i=0;i<8;i++){const a=(i+.5)/8*Math.PI*2;mesh(g,new THREE.SphereGeometry(R*.2,10,8),white,Math.cos(a)*R*1.08,R*.08,Math.sin(a)*R*1.08);}
+  for(const sx of [-1,1]){const arm=mesh(g,new THREE.SphereGeometry(R*.24,10,8),white,sx*R*.95,h*.42,R*.35);arm.scale.set(1.3,.8,.9);
+   mesh(g,new THREE.SphereGeometry(h*.032,10,8),ink,sx*R*.33,h-R*1.02,R*.93);
+   const cheek=mesh(g,new THREE.CircleGeometry(h*.05,14),pink,sx*R*.58,h-R*1.3,R*.83);cheek.lookAt(sx*R*2,h-R*1.3,R*3);}
+  const smile=new THREE.Mesh(new THREE.TorusGeometry(h*.045,h*.01,6,12,Math.PI),ink);smile.rotation.z=Math.PI;smile.position.set(0,h-R*1.22,R*.97);g.add(smile);
+  if(can){const c=mesh(g,new THREE.CylinderGeometry(R*.3,R*.3,R*.85,16),std(0x5a3b26,{roughness:.4,metalness:.4}),0,h*.4,R*.88,'Coffee can');
+   mesh(c,new THREE.CylinderGeometry(R*.305,R*.305,R*.3,16),std(0xf2e6cf),0,0,0);}
+ }
+ return g;
+}
+
+/**
+ * Kuro, the Tamashiros' black dog (a shiba-type with tan points, "who barks at the postman’s Super Cub and nothing
+ * else"): built of rounded shapes. pose 'sit' (head up), 'eat' (standing, head down to the ground), 'stand'. Origin
+ * on the ground under its chest; faces +z.
+ */
+export function buildDog({pose='sit'}={}){
+ const g=new THREE.Group();g.name='Kuro (dog)';
+ const black=std(0x26221f,{roughness:.85}),tan=std(0xc98f55,{roughness:.85}),white=std(0xf1ebe0,{roughness:.85}),nose=std(0x111111);
+ const sit=pose==='sit',eat=pose==='eat';
+ const body=mesh(g,new THREE.SphereGeometry(.13,16,12),black,0,sit?.2:.27,sit?-.08:-.1);body.scale.set(.9,sit?1.2:.9,sit?1.1:1.7);
+ mesh(g,new THREE.SphereGeometry(.085,14,10),white,0,sit?.23:.25,sit?.03:.08).scale.set(.95,1.1,.7);
+ const head=new THREE.Group();head.position.set(0,sit?.42:eat?.19:.38,sit?.04:eat?.22:.18);if(eat)head.rotation.x=.7;g.add(head);
+ mesh(head,new THREE.SphereGeometry(.085,16,12),black).scale.set(1.05,.95,1);
+ const snout=mesh(head,new THREE.SphereGeometry(.05,12,10),tan,0,-.025,.07);snout.scale.set(1,.8,1.1);
+ mesh(head,new THREE.SphereGeometry(.016,8,6),nose,0,-.01,.12);
+ for(const sx of [-1,1]){const ear=mesh(head,new THREE.ConeGeometry(.032,.07,10),black,sx*.05,.08,-.01);ear.rotation.z=-sx*.25;
+  mesh(head,new THREE.SphereGeometry(.012,8,6),nose,sx*.035,.02,.075);mesh(head,new THREE.SphereGeometry(.014,8,6),tan,sx*.04,.045,.065);}
+ const legs=sit?[[.06,.07,.08],[-.06,.07,.08]]:[[.06,.1,.08],[-.06,.1,.08],[.06,.1,-.26],[-.06,.1,-.26]];
+ for(const [x,y,z] of legs){mesh(g,new THREE.CylinderGeometry(.025,.022,sit?.12:.2,8),black,x,y,z);mesh(g,new THREE.SphereGeometry(.03,8,6),tan,x,.03,z+.01);}
+ if(sit)for(const sx of [-1,1])mesh(g,new THREE.SphereGeometry(.07,10,8),black,sx*.08,.07,-.13).scale.set(.8,.6,1.3);
+ const tail=mesh(g,new THREE.TorusGeometry(.05,.018,8,14,Math.PI*1.5),black,0,sit?.3:.36,sit?-.24:-.36);tail.rotation.y=Math.PI/2;
+ return g;
+}
+
+/** The cord reel (コードリール): an orange drum on a grey stand with a handle, four outlets on the hub, the cord half off
+ *  it. Origin on the ground under the drum; the drum's axis along x. */
+export function buildCordReel(){
+ const g=new THREE.Group();g.name='Cord reel';
+ const orange=std(0xe8742a,{roughness:.5}),grey=std(0x6d7276,{roughness:.5,metalness:.3}),cord=std(0x3d3f42,{roughness:.6}),hub=std(0xf1ede4,{roughness:.5});
+ for(const sx of [-1,1])mesh(g,new THREE.CylinderGeometry(.16,.16,.015,24).rotateZ(Math.PI/2),orange,sx*.075,.2,0);
+ mesh(g,new THREE.CylinderGeometry(.11,.11,.14,24).rotateZ(Math.PI/2),cord,0,.2,0,'Cord reel coil');   // the half coil still on it
+ const face=mesh(g,new THREE.CylinderGeometry(.075,.075,.03,20).rotateZ(Math.PI/2),hub,.093,.2,0,'Cord reel outlets');void face;
+ for(const [y,z] of [[.03,.03],[.03,-.03],[-.03,.03],[-.03,-.03]])mesh(g,new THREE.BoxGeometry(.004,.014,.004),std(0x222222),.11,.2+y,z);
+ for(const sx of [-1,1]){const leg=mesh(g,new THREE.BoxGeometry(.02,.28,.02),grey,sx*.1,.14,0);void leg;mesh(g,new THREE.BoxGeometry(.02,.02,.22),grey,sx*.1,.01,0);}
+ mesh(g,new THREE.CylinderGeometry(.012,.012,.22,8).rotateZ(Math.PI/2),grey,0,.38,0);
+ // the label a real reel carries: the coiled rating
+ mesh(g,new THREE.PlaneGeometry(.06,.035),std(0xf5e86a),-.084,.27,.01).rotation.y=-Math.PI/2;
+ return g;
+}
+

@@ -12,6 +12,7 @@ import {bodyVolume} from './build.js';
  *   storyProps(avatar).give('basketOnHead')   a locker basket upside down on the head, resting on the head (or its towel)
  *   storyProps(avatar).give('newspaper')      the evening paper, folded, held open between the two mittens while reading
  *   storyProps(avatar).give('paperback')      Mrs Higa's novel, open in her right mitten (the film turns it to her facing)
+ *   storyProps(avatar).give('pumpkinSuit')    a Halloween costume (also 'ghostSheet', 'witchHat'): buildCostume
  *   storyProps(avatar).give('dryerCord')      the vanity dryer's cord, wound round the body and its pinned arms
  *
  * The moves give what they need themselves (SitRead the paper, CordWrapped the cord, BasketHead the basket, TorchUp the
@@ -26,6 +27,12 @@ export const STORY_PROPS=Object.freeze({
   where:'Folded once down the middle and held open like a book in both mittens, at reading distance before the chest.'}),
  paperback:Object.freeze({who:'Mrs Higa',why:'Between customers at the bandai she reads: a paperback novel from Front-Row Books & Stationery’s reading copies, a 1990s edition with its paper band (obi) still on, which is why she never looks up from it.',
   where:'Held open in her right mitten at reading distance, the mitten under the foot of the spine, the pages turned up to her eyes and the cover with its band to the room.'}),
+ pumpkinSuit:Object.freeze({who:'Tetsuo (and a child on the Halloween walk)',why:'The children’s Halloween walk on Sakura Street: Tetsuo explains the haunted vending machine in the pumpkin costume the children talked him into.',
+  where:'A round orange pumpkin of eight lobes over the body from the hips to the shoulders, a jack-o’-lantern face on the front, a green leaf collar at the neck and a little stem cap on the head.'}),
+ ghostSheet:Object.freeze({who:'Officer Mori (and a child on the Halloween walk)',why:'After a night up the pole the children dress Officer Mori as the street’s ghost, and he keeps his post.',
+  where:'A white sheet from the shoulders to the knees, its hem wavy, and a hood round the head open at the face.'}),
+ witchHat:Object.freeze({who:'A child on the Halloween walk',why:'A witch for the children’s walk: a pointed black hat with a purple band.',
+  where:'On the crown of the head, tipped a little back.'}),
  dryerCord:Object.freeze({who:'Thao',why:'Spinning round in the dark with her dryer still in her hand, she winds herself up in its own cord, like a parcel.',
   where:'From the dryer’s handle in her right mitten, four turns round her and her arms from under the arms to the hips, then away to the socket.'}),
 });
@@ -149,6 +156,69 @@ export function buildPaperback(){
  return g;
 }
 
+/**
+ * The Halloween costumes ("The Haunted Vending Machine"), fitted to the body that wears them from its own measures:
+ *   pumpkinSuit  on the hips bone: eight orange lobes round the torso, a jack-o'-lantern face on the front, a leaf
+ *                collar; and a stem cap on the head bone
+ *   ghostSheet   on the hips bone: a white sheet from the shoulders to the knees with a wavy hem; and on the head
+ *                bone a hood round the head, open at the face
+ *   witchHat     on the head bone: a black cone hat with a brim and a purple band
+ * Each returns {parts: [[bone, object], ...]}; in the hips' and the head's bone frames the body's front is +z.
+ */
+export function buildCostume(avatar,kind){
+ const m=avatar.measure,parts=[],k=m.k||1;
+ const top=m.headCentre-m.headY+m.Rh*m.headSY;   // the crown, in the head bone's frame
+ if(kind==='pumpkinSuit'){
+  const g=new THREE.Group();g.name='Pumpkin suit';
+  const orange=mat(0xe8812a,{roughness:.75}),dark=mat(0x2a1f18,{roughness:.9,side:THREE.DoubleSide}),green=mat(0x4f7a32,{roughness:.8,side:THREE.DoubleSide});
+  const rx=m.width/2+.07*k,ry=(m.shoulderY-m.hipY)/2+.06*k,rz=m.depth/2+.1*k,cy=(m.shoulderY+m.hipY)/2-m.hipY-.02*k;
+  for(let i=0;i<8;i++){const a=i/8*Math.PI*2,l=add(g,new THREE.SphereGeometry(1,18,14),orange,Math.sin(a)*rx*.38,cy,Math.cos(a)*rz*.38);l.scale.set(rx*.66,ry,rz*.66);}
+  // the face, on the front (+z): two eyes, a nose and a grin, laid on the lobes' surface
+  const face=new THREE.Group();face.position.set(0,cy,rz*1.0);g.add(face);
+  const tri=(x,y,w,h)=>{const t=new THREE.Shape();t.moveTo(x-w/2,y-h/2);t.lineTo(x+w/2,y-h/2);t.lineTo(x,y+h/2);t.closePath();return t;};
+  const grin=new THREE.Shape(),gw=rx*.55;grin.moveTo(-gw,-ry*.12);grin.quadraticCurveTo(0,-ry*.62,gw,-ry*.12);grin.lineTo(gw*.5,-ry*.22);grin.lineTo(gw*.2,-ry*.14);grin.lineTo(-gw*.2,-ry*.14);grin.lineTo(-gw*.5,-ry*.22);grin.closePath();
+  add(face,new THREE.ShapeGeometry([tri(-rx*.35,ry*.28,rx*.3,ry*.25),tri(rx*.35,ry*.28,rx*.3,ry*.25),tri(0,ry*.06,rx*.13,ry*.12),grin],4),dark).castShadow=false;
+  // the leaf collar round the neck
+  for(let i=0;i<6;i++){const a=i/6*Math.PI*2,leaf=add(g,new THREE.CircleGeometry(.07*k,10),green,Math.sin(a)*m.width*.22,cy+ry*.97,Math.cos(a)*m.depth*.32);leaf.rotation.set(-Math.PI/2+.5*Math.cos(a),a,0);leaf.scale.set(1,1.6,1);}
+  parts.push(['hips',g]);
+  const cap=new THREE.Group();cap.name='Pumpkin stem cap';
+  add(cap,new THREE.CylinderGeometry(.025*k,.035*k,.09*k,10),green,0,top+.035*k,0);
+  const leaf=add(cap,new THREE.CircleGeometry(.05*k,10),green,.04*k,top+.01*k,0);leaf.rotation.set(-Math.PI/2+.3,0,.4);leaf.scale.set(1,1.7,1);
+  parts.push(['head',cap]);
+ }else if(kind==='ghostSheet'){
+  const white=mat(0xfbfaf6,{roughness:.9,side:THREE.DoubleSide});
+  const sheet=new THREE.Group();sheet.name='Ghost sheet';
+  // from the neck, over the shoulders and the arms hanging at the sides, down to the knees
+  const y0=m.shoulderY+.13*k-m.hipY,ys=m.shoulderY-.01*k-m.hipY,y1=Math.max(.18,m.hipY*.5)-m.hipY,rn=m.width*.24,rs=m.shoulderX+m.armR+.08*k,r1=Math.max(rs+.05*k,m.width*.82),pts=[];
+  for(let i=0;i<=4;i++){const t=i/4;pts.push(new THREE.Vector2(rn+(rs-rn)*Math.sin(t*Math.PI/2),y0+(ys-y0)*t));}
+  for(let i=1;i<=10;i++){const t=i/10;pts.push(new THREE.Vector2(rs+(r1-rs)*Math.sqrt(t),ys+(y1-ys)*t));}
+  const geo=new THREE.LatheGeometry(pts.reverse(),28);
+  const P=geo.attributes.position;for(let i=0;i<P.count;i++){const y=P.getY(i);if(y<y1+.02){const a=Math.atan2(P.getX(i),P.getZ(i));P.setY(i,y+Math.sin(a*7)*.025*k);}}
+  geo.computeVertexNormals();add(sheet,geo,white);
+  add(sheet,new THREE.CylinderGeometry(rn*.6,rn,.03*k,24,1,true),white,0,y0+.012*k,0);   // closed round the neck
+  parts.push(['hips',sheet]);
+  const hood=new THREE.Group();hood.name='Ghost hood';
+  // over a hat, if they wear one (Mori's police cap): the hood is cut wider and taller to go over it
+  const hatted=avatar.recipe?.outfit?.hat&&avatar.recipe.outfit.hat!=='none',grow=hatted?1.42:1;
+  const R=(m.Rh*Math.max(m.headSX,1)+.03*k)*grow,cy=m.headCentre-m.headY+(hatted?m.Rh*.18:0),hp=[];
+  for(let i=0;i<=10;i++){const a=i/10*Math.PI*.62;hp.push(new THREE.Vector2(Math.sin(a)*R*1.02+.0001,cy+Math.cos(a)*R*m.headSY*.95));}
+  for(let i=1;i<=3;i++)hp.push(new THREE.Vector2(R*1.02+.01*i,cy-R*.4-i*.05*k));
+  const front=hatted?.95:1.15;   // the face's opening, radians each side of the front
+  add(hood,new THREE.LatheGeometry(hp,24,front,Math.PI*2-front*2),white);
+  add(hood,new THREE.ConeGeometry(.05*k,.1*k,12),white,0,cy+R*m.headSY*.95+.03*k,-.02*k).rotation.x=-.4;   // the sheet's little peak
+  parts.push(['head',hood]);
+ }else if(kind==='witchHat'){
+  const hat=new THREE.Group();hat.name='Witch hat';
+  const black=mat(0x24222a,{roughness:.8,side:THREE.DoubleSide}),band=mat(0x7d4fa8,{roughness:.7});
+  const R=m.Rh*Math.max(m.headSX,1);
+  add(hat,new THREE.CylinderGeometry(R*1.45,R*1.45,.012*k,28),black,0,top-.03*k,0);
+  const cone=add(hat,new THREE.ConeGeometry(R*.78,R*2.2,24),black,0,top-.03*k+R*1.1,0);cone.rotation.x=.12;
+  add(hat,new THREE.CylinderGeometry(R*.76,R*.79,.05*k,24),band,0,top+.0*k,0);
+  hat.rotation.x=.12;parts.push(['head',hat]);
+ }else throw new Error('No costume "'+kind+'"');
+ return {parts};
+}
+
 const _v=new THREE.Vector3(),_w=new THREE.Vector3(),_m=new THREE.Matrix4();
 /** Every point of the drawn body (each skinned mesh as it stands this frame, the face's head), in `frame`'s space, through
  *  `keep(point in the root's space)`: what a prop round the body must clear. The outlines and hidden ranges are left out. */
@@ -265,10 +335,12 @@ export function storyProps(avatar){
    else if(kind==='newspaper'){o=buildPaper();o.visible=false;avatar.root.add(o);}
    else if(kind==='dryerCord'){o=buildCordWrap(avatar,options);avatar.bones.chest.add(o);}
    else if(kind==='paperback'){o=buildPaperback();avatar.bones.handR.add(o);o.userData.at='R';}
+   else if(kind==='pumpkinSuit'||kind==='ghostSheet'||kind==='witchHat'){o=new THREE.Group();o.name=kind;const c=buildCostume(avatar,kind);
+    for(const [bone,part] of c.parts){avatar.bones[bone].add(part);}o.userData.parts=c.parts;avatar.root.add(o);}
    else throw new Error('No story prop "'+kind+'" (story-props.js STORY_PROPS)');
    o.userData.storyProp=kind;held.set(kind,o);return o;
   },
-  take(kind){const o=held.get(kind);if(!o)return;o.removeFromParent();o.traverse(x=>{if(x.isMesh){x.geometry.dispose();}});held.delete(kind);},
+  take(kind){const o=held.get(kind);if(!o)return;for(const [,part] of o.userData.parts||[])part.removeFromParent();o.removeFromParent();o.traverse(x=>{if(x.isMesh){x.geometry.dispose();}});held.delete(kind);},
   /** The torch to the hand ('R') or back on the pocket; on or off. */
   torchTo(where){const o=held.get('torch');if(!o||o.userData.at===where)return;
    if(where==='pocket'){const p=pocketSpot(avatar);avatar.bones.chest.add(o);o.position.copy(p.position);o.quaternion.copy(p.quaternion);}
