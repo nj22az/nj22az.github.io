@@ -95,6 +95,10 @@ uniform sampler2D uShore;
 uniform vec4 uShoreRect;
 uniform float uShoreRange;
 uniform float uGlint;
+// A ship's hold, where the sea is outside her plating, not inside it (ferry.js setOceanHole): her centre and heading
+// (cos, sin), and the half-breadth and half-length of her parallel body at the waterline. Zero size: no hole.
+uniform vec4 uHole;
+uniform vec2 uHoleSize;
 float hash12(vec2 p) {
   vec3 p3 = fract(vec3(p.xyx) * 0.1031);
   p3 += dot(p3, p3.yzx + 33.33);
@@ -129,6 +133,11 @@ float caustic(vec2 p, float t) {
   return pow(abs(c), 8.0);
 }
 void main() {
+  if (uHoleSize.x > 0.0) {
+    vec2 d = vWorldPos.xz - uHole.xy;
+    vec2 l = vec2(uHole.z * d.x - uHole.w * d.y, uHole.w * d.x + uHole.z * d.y);
+    if (abs(l.x) < uHoleSize.x && abs(l.y) < uHoleSize.y) discard;
+  }
   vec3 n = normalize(vWorldNormal);
   if (!gl_FrontFacing) n = -n;
   vec3 viewDir = normalize(cameraPosition - vWorldPos);
@@ -262,6 +271,8 @@ export function oceanMaterial() {
       uShoreRect: {value: new THREE.Vector4(SHORE_FIELD.minX, SHORE_FIELD.minZ, SHORE_FIELD.maxX - SHORE_FIELD.minX, SHORE_FIELD.maxZ - SHORE_FIELD.minZ)},
       uShoreRange: {value: SHORE_FIELD.range},
       uGlint: {value: 1},
+      uHole: {value: new THREE.Vector4(0, 0, 1, 0)},
+      uHoleSize: {value: new THREE.Vector2(0, 0)},
       uSunDir: {value: new THREE.Vector3(.42, .74, .53).normalize()},
       uDeep: {value: new THREE.Color(SEA.day.deep)},
       uMid: {value: new THREE.Color(SEA.day.mid)},
@@ -330,6 +341,18 @@ export function waveHeight(x, z, time) {
     y += w.amplitude * Math.sin(k * ((w.dx * x + w.dz * z) / l - w.speed * time));
   }
   return y;
+}
+
+/**
+ * Where a ship floats, the sea is not drawn inside her: her engine room is below the waterline, and the water's
+ * surface would otherwise cut through it at waist height. `x, z, yaw` her place and heading; `halfX, halfZ` a
+ * rectangle inside her waterline about her centre (`offsetZ` along her). Size 0 clears it.
+ */
+export function setOceanHole(x, z, yaw, halfX = 0, halfZ = 0, offsetZ = 0) {
+  const u = oceanMaterial().uniforms, c = Math.cos(yaw), s = Math.sin(yaw);
+  // Her centre of the rectangle, moved along her by offsetZ (her +z is world (sin yaw, cos yaw)).
+  u.uHole.value.set(x + s * offsetZ, z + c * offsetZ, c, s);
+  u.uHoleSize.value.set(halfX, halfZ);
 }
 
 export function tickOcean(time) {

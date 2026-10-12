@@ -9,16 +9,23 @@ import {HOME_CATALOGUE,homeFurnitureFactory,restoreHomeItems} from './home-furni
  * runs in Johansson Studio (avatar-creator/home.js), which hands the result to World (src/studio-handoff.js).
  *
  * floor(x,z): true on the open floor of the main room (not the WC or the bath); keepClear: [[x,z,size]] squares kept
- * free (the genkan, and in front of the wardrobe, the bookshelf, the futon and the doors).
+ * free (the genkan, and in front of the wardrobe, the bookshelf, the futon and the doors). A piece must also leave a
+ * 0.78 m way between them (HOME_PASSAGE below); pieces already saved keep their spot.
  */
 const lookup=id=>HOME_CATALOGUE.find(f=>f.id===id)||null;
+/**
+ * The clear width a piece must leave on the ways of daily life at home: Japan's Housing Performance Indication Standard
+ * (住宅性能表示基準, elderly-care grade 3) asks 780 mm (750 mm past a pillar); a 3-shaku (910 mm) grid corridor gives it.
+ * Kept here, not imported, so Studio on an iPad never pairs this file with an older cached placements.js that lacks it.
+ */
+export const HOME_PASSAGE=.78;
 
 /**
  * The furniture as it was arranged in Johansson Studio, standing in World's copy of the home. World only shows it:
  * arranging is Studio's (src/studio-handoff.js). reload() puts it back after Studio changes it while World is open.
  */
 export function showHomeFurniture({group,colliders,state,floor,keepClear}){
- const placements=createPlacements({group,colliders,factory:homeFurnitureFactory(),walkable:floor,heightAt:()=>0,doors:keepClear,lookup,needWhy:false});
+ const placements=createPlacements({group,colliders,factory:homeFurnitureFactory(),walkable:floor,heightAt:()=>0,doors:keepClear,lookup,needWhy:false,passage:HOME_PASSAGE,passageOnLoad:false});
  const load=()=>placements.load(restoreHomeItems(state.homeDecor?.items).map(p=>({...p,note:''})));
  let skipped=load();
  return {placements,get skipped(){return skipped;},reload(){for(const p of [...placements.list(),...placements.held()])placements.remove(p.id);skipped=load();return skipped;}};
@@ -27,7 +34,7 @@ export function showHomeFurniture({group,colliders,state,floor,keepClear}){
 export function createHomeDecorating({group,colliders,state,save,canvas,camera,floor,keepClear,stage,ceilingAbove=2.5,onClose=()=>{}}){
  const factory=homeFurnitureFactory();
  let persist=false;
- const placements=createPlacements({group,colliders,factory,walkable:floor,heightAt:()=>0,doors:keepClear,lookup,needWhy:false,
+ const placements=createPlacements({group,colliders,factory,walkable:floor,heightAt:()=>0,doors:keepClear,lookup,needWhy:false,passage:HOME_PASSAGE,passageOnLoad:false,
   offGround:'Part of it is outside the open floor (a wall, the genkan step, the WC or the bath).',
   onChange:()=>{if(!persist)return;state.homeDecor={...(state.homeDecor||{}),items:placements.list().map(({id,kind,x,z,yaw})=>({id,kind,x:+x.toFixed(3),z:+z.toFixed(3),yaw:+yaw.toFixed(4)}))};save();}});
  const skipped=placements.load(restoreHomeItems(state.homeDecor?.items).map(p=>({...p,note:''})));persist=true;

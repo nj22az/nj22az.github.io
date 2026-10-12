@@ -13,8 +13,8 @@ export const PLACEMENTS_FILE='data/world-placements.json';
 export const DOOR_CLEARANCE=1.6;   // metres square kept free in front of every door
 export const LEVEL=.04;            // the most the ground may rise under one piece (a kerb is 0.12–0.15 m)
 export const PASSAGE=1.4;          // metres of walking width a placement must not take away (briefs/NEXT.md §6)
+// Indoors a home passes its own width (home-decorate.js HOME_PASSAGE, 0.78 m).
 export const MAX_PLACEMENTS=500;   // a placements file holds at most this many: every one is checked when it loads
-const GRID=.1;                     // the walkway check looks at the ground in squares this size
 
 /** The four corners of a footprint, in town coordinates (yaw as three.js rotation.y). */
 export function footprint({x,z,w,d,yaw=0}){
@@ -58,16 +58,18 @@ export function placementProblems(p,size,world){
 }
 
 /**
- * Does a piece close a way through? Around the piece, the ground is looked at in 0.1 m squares: a square is open when
+ * Does a piece close a way through? Around the piece, the ground is looked at in small squares (0.1 m, 0.05 m indoors): a square is open when
  * a person needing `world.passage` metres of width could stand there (walkable ground and nothing standing within
  * half that width). Open squares that joined up across the area before the piece must still join up after it. So a
  * bench against a wall or at a kerb is fine, one in the middle of a pavement is not; a pavement already narrower than
- * the passage has no way through to close, and a nook off the way is nobody's way unless a door opens onto it.
+ * the passage has no way through to close, and a nook off the way is nobody's way unless a door opens onto it. In a
+ * room the area's edges are walls, so the ways are between its keep-clear spots: the door, the wardrobe, the futon.
  * Ground is sampled at the squares; colliders are tested whole (as people bump into them), so a thin fence counts.
  */
 export function closesPassage(box,ownId,world){
  // A person needs half the passage on either side of the line they walk; the squares are GRID apart, so half a square
  // is given back: a way of the full passage is never missed, and one narrower by more than a square is never passed.
+ const GRID=world.passage>=1?.1:.05;   // squares: 0.1 m outdoors, 0.05 m for a home's narrower way
  const half=world.passage/2-GRID/2,reach=Math.ceil(half/GRID),pts=footprint(box);
  const xs=pts.map(q=>q[0]),zs=pts.map(q=>q[1]),pad=world.passage+1+half;
  const x0=Math.min(...xs)-pad,z0=Math.min(...zs)-pad,nx=Math.ceil((Math.max(...xs)+pad-x0)/GRID)+1,nz=Math.ceil((Math.max(...zs)+pad-z0)/GRID)+1;
@@ -136,7 +138,7 @@ export const placementsFile=list=>JSON.stringify({version:1,placements:list.map(
  * The live builder for the town outdoors. group/colliders are the world's own (colliders are picked up by the collider
  * grid on its next refresh); factory is the prop factory; walkable and doors describe the ground.
  */
-export function createPlacements({group,colliders,factory,walkable,heightAt=null,doors=[],lookup=catalogueEntry,needWhy=true,offGround=null,passage=null,onChange=()=>{}}){
+export function createPlacements({group,colliders,factory,walkable,heightAt=null,doors=[],lookup=catalogueEntry,needWhy=true,offGround=null,passage=null,passageOnLoad=true,onChange=()=>{}}){
  const placed=new Map(),held=new Map();let next=1;   // held: entries from the file that cannot stand where they are
  // Undo and redo (Mario Artist keeps Undo beside the way out in every mode: research/mario-artist/report.md §5). Each
  // step is what was done with the entry before and after; loading a file is not a step, nor is undoing.
@@ -166,7 +168,13 @@ export function createPlacements({group,colliders,factory,walkable,heightAt=null
  const sizeOf=kind=>{const e=lookup(kind);if(!e)return {w:0,d:0};if(e.size)return {w:e.size[0],d:e.size[1]};const c=factory[e.make](0,0,0).collider;return {w:c.w,d:c.d};};
  const sizes=new Map();
  const size=kind=>{if(!sizes.has(kind))sizes.set(kind,sizeOf(kind));return sizes.get(kind);};
- function check(p){return placementProblems(p,size(p.kind),world);}
+ // Pieces loaded where the walkway rule was not asked on load (a player's saved room) keep their own spot: there, and
+ // only there, the rule does not apply to them, so an older arrangement is never hidden and an Undo can put one back.
+ // Same spot within a millimetre and a tenth of a degree: turning a piece away and back is float arithmetic.
+ const turnedTo=(a,b)=>Math.abs(((a-b)%(2*Math.PI)+3*Math.PI)%(2*Math.PI)-Math.PI)<.002;
+ const ownSpot=new Map(),atOwnSpot=p=>{const s=ownSpot.get(p.id);return !!s&&s.kind===p.kind&&Math.abs(s.x-p.x)<.001&&Math.abs(s.z-p.z)<.001&&turnedTo(s.yaw,+(p.yaw||0));};
+ const exempt={...world,passage:null};
+ function check(p){return placementProblems(p,size(p.kind),world.passage&&atOwnSpot(p)?exempt:world);}
  function place(p){
   const entry={id:p.id||`p${next++}`,kind:p.kind,x:+p.x,z:+p.z,yaw:+(p.yaw||0),note:String(p.note||'')};
   while(placed.has(entry.id)||held.has(entry.id))entry.id=`p${next++}`;
@@ -231,6 +239,7 @@ export function createPlacements({group,colliders,factory,walkable,heightAt=null
   // Ids continue after every id in the file, built or not, so a new piece never takes a held one's id.
   for(const p of list){const n=+String(p.id).replace(/^p/,'');if(Number.isInteger(n)&&n>=next)next=n+1;}
   const skipped=[];recording=false;   // loading a file is not a step to undo
+  if(!passageOnLoad)for(const p of list)ownSpot.set(p.id,{kind:p.kind,x:+p.x,z:+p.z,yaw:+(p.yaw||0)});
   try{for(const p of list){const r=place(p);if(!r.ok){const kept={...p};if(p.written)Object.defineProperty(kept,'written',{value:p.written});held.set(p.id,kept);skipped.push({id:p.id,problems:r.problems});}}}finally{recording=true;}
   return skipped;
  }
