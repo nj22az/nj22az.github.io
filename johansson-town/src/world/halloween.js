@@ -151,10 +151,8 @@ export function buildHalloween(world,{shadows=false}={}){
  // the drinks machine's own lit window and brand (the town's machine at Sakura): dimmed with its compressor's start
  let machineLit=null;
  const findMachine=()=>{if(machineLit)return machineLit;machineLit=[];const w=new THREE.Vector3();
-  world.group.traverse(o=>{if(o.name==='Harbour vending machine'&&Math.hypot(o.position.x-M.x,o.position.z-M.z)<.3)o.traverse(m=>{if(m.isMesh&&m.material?.isMeshBasicMaterial&&m.material.map)machineLit.push({m:m.material,c:m.material.color.clone()});});
-   // the machine's own glow on the pavement (a light within a metre and a half of it) dims with it
-   if(o.isLight&&!o.isAmbientLight&&!o.isHemisphereLight&&!o.isDirectionalLight){o.getWorldPosition(w);if(Math.hypot(w.x-M.front,w.z-M.z)<1.5)machineLit.push({light:o,i:o.intensity});}});
-  return machineLit;};
+  world.group.traverse(o=>{if(o.name==='Harbour vending machine'&&Math.hypot(o.position.x-M.x,o.position.z-M.z)<.3)o.traverse(m=>{if(m.isMesh&&m.material?.isMeshBasicMaterial&&m.material.map)machineLit.push({m:m.material,c:m.material.color.clone()});});});
+  void w;return machineLit;};
  applyCelShading(group);
  group.traverse(o=>{if(o.isMesh){o.castShadow=shadows&&!o.material.transparent;o.receiveShadow=true;}});
  let pinned=false;
@@ -168,7 +166,7 @@ export function buildHalloween(world,{shadows=false}={}){
   riceBall.visible=state.riceBall==='plate';bucket.visible=!!state.bucket;
   if(dog){dog.removeFromParent();dog=null;}
   if(state.dog){const d=state.dog;dog=buildDog({pose:d.pose||'sit'});applyCelShading(dog);dog.position.set(d.at[0],0,d.at[1]);dog.rotation.y=d.yaw??0;group.add(dog);}
-  for(const e of findMachine()){const k=THREE.MathUtils.clamp(state.machine,0,1);if(e.light)e.light.intensity=e.i*k;else e.m.color.copy(e.c).multiplyScalar(k);}
+  for(const e of findMachine())e.m.color.copy(e.c).multiplyScalar(THREE.MathUtils.clamp(state.machine,0,1));
  };
  apply();
  const api={
