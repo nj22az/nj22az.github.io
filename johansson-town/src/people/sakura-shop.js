@@ -1,3 +1,4 @@
+import {sakuraClerkAt} from '../commerce/sakura-rota.js';
 import * as THREE from '../../vendor/three.module.js';
 import {circleHitsRect} from '../../physics.js?snappy=1';
 import {buildSakuraInterior} from '../world/interiors/sakura-interior.js';
@@ -26,7 +27,10 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
   const meal=account.meals?.market;if(meal?.stockClaim&&!meal.delivered){returnShopStock(state,meal.stockClaim);meal.stockClaim=null;}if(meal)meal.finished=true;
   if(account.day!==Math.floor(getMinutes()/1440)){const visit=account.shopping;if(visit?.picked&&!visit.paid){returnShopStock(state,{item:visit.item});visit.picked=false;}}
  }
- const layout=SAKURA_LAYOUT,colliders=layout.colliders,person=world.people.find(p=>p.profile.name==='Thuan');
+ // The clerk follows the rota (commerce/sakura-rota.js): Thuan, Nhung at the weekend, Chin at night. When the shift
+ // changes, the counter's services are bound to the new body; Grandmother Sakurai's early hours keep the last clerk's binding.
+ const layout=SAKURA_LAYOUT,colliders=layout.colliders,clerkFor=m=>world.people.find(p=>p.profile.name===sakuraClerkAt(m))||null;
+ let person=clerkFor(getMinutes())||world.people.find(p=>p.profile.name==='Thuan');
  const reg=(object,label,fn,inside=true)=>{object.userData.persistentShop=true;register(object,label,fn,inside);};
  const blocked=(x,z,r=.3)=>suppliedRoomBoundsBlocked(layout,x,z,r)||colliders.some(c=>circleHitsRect(x,z,r,c));
  const isOccupied=(x,z,r,excluded)=>{
@@ -35,14 +39,16 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
  };
  const display=buildSakuraInterior({room:group,reg,action,exit});display.updateStock(state.sakura.stock);
  const retail=createShopRetail({world,state,ledger,display,collides:blocked,getMinutes,isOccupied});
- const attention=createShopAttention({clerk:person.g,world,retail,colliders,isInside,getPlayerPosition});
+ let attention=createShopAttention({clerk:person.g,world,retail,colliders,isInside,getPlayerPosition});
  let service;
  const residents=createIndoorResidents({world,parent:group,layout,collides:blocked,place:'market',getState:()=>state,getRain,
   onBorrow:(p,time)=>{onBorrow(p,time);retail.arriving(p,time);},getStandingVisit:retail.standing,
   isOccupied,radiusFor:p=>p===person?layout.clearance:.35,validateSpawn:true,
   canLeave:p=>p!==person||service?.prepareToLeave()!==false});
- service=createRetailClerk({person,room:group,layout,collides:blocked,getWork:retail.work,completeWork:job=>{retail.complete(job);save();},cancelWork:retail.cancelWork,accessShelf:display.accessShelf,
+ const bindClerk=()=>createRetailClerk({person,room:group,layout,collides:blocked,getWork:retail.work,completeWork:job=>{retail.complete(job);save();},cancelWork:retail.cancelWork,accessShelf:display.accessShelf,
   isOccupied});
+ service=bindClerk();
+ const followRota=()=>{const next=clerkFor(getMinutes());if(!next||next===person)return;service?.prepareToLeave();person=next;attention=createShopAttention({clerk:person.g,world,retail,colliders,isInside,getPlayerPosition});service=bindClerk();};
  /**
   * The staff and customers, as distinct from the fittings. They are hidden while the
   * shop is only being looked at through its window: nothing drives their animation
@@ -166,7 +172,7 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    // hemisphere fill brightened the whole town and its tubes threw a 17 m halo over the
    // roof and the road. Outside, the shop shows through the window by its own glow.
    {const inside=!!isInside();lightCheck-=dt;if(inside!==lightsInside||lightCheck<=0)syncLightVisibility(inside);}
-   display.tick?.(performance.now()/1000);if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
+   display.tick?.(performance.now()/1000);followRota();if(!person.g.userData.playerControlled){residents.sync(getMinutes(),dt);retail.update(dt);service.update(dt);attention.update(dt);}display.refrigerator.update(dt);display.updateStock(state.sakura.stock);
    // The office door opens for whoever is in the shop and near it: the player, Thuan, anyone borrowed in.
    // The front door, from inside, opens the same way (the street side has its own).
    if(display.officeDoor){const points=[];if(isInside()){const p=getPlayerPosition();points.push([p.x,p.z]);}for(const other of world.people)if(other.g.parent===group)points.push([other.g.position.x,other.g.position.z]);display.officeDoor.update(dt,points);display.frontDoor?.update(dt,points);}},

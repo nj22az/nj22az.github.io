@@ -70,14 +70,14 @@ test('public seats respect reservations made by another seating controller',()=>
 });
 
 test('indoor visitors lower into chairs and finish standing before returning to navigation',()=>{
- const street=new THREE.Group(),room=new THREE.Group(),profile=RESIDENTS.find(p=>p.name==='Chin'),g=new THREE.Group();
- g.userData={name:'Chin',hit:{inside:false}};g.position.set(RAMEN_DOOR[0],0,RAMEN_DOOR[1]);street.add(g);
+ const street=new THREE.Group(),room=new THREE.Group(),profile=RESIDENTS.find(p=>p.name==='Reiko'),g=new THREE.Group();
+ g.userData={name:'Reiko',hit:{inside:false}};g.position.set(RAMEN_DOOR[0],0,RAMEN_DOOR[1]);street.add(g);
  const seat=SATO_GUEST_SEATS[0],visitors=createIndoorResidents({world:{people:[{g,profile}]},parent:room,place:'ramen',layout:{entrance:seat.stand},collides:()=>false});
- visitors.sync(700,0);visitors.sync(700,.1);
+ visitors.sync(740,0);visitors.sync(740,.1);
  assert.equal(g.userData.socialPose,'Sit');assert.equal(g.userData.chairBlend,.2);
  assert.equal(g.userData.seatHeight,seat.surfaceY??seat.height);
  assert.ok(g.position.z>seat.position[2]&&g.position.z<seat.stand[2]);
- visitors.sync(700,.4);visitors.sync(700,0);
+ visitors.sync(740,.4);visitors.sync(740,0);
  assert.equal(g.userData.chairBlend,undefined);assert.deepEqual(g.position.toArray(),seat.position);
  visitors.sync(850,.1);
  assert.equal(g.userData.chairBlend,.8);assert.ok(Number.isFinite(g.userData.seatHeight));
@@ -86,7 +86,7 @@ test('indoor visitors lower into chairs and finish standing before returning to 
  for(const key of ['seatHeight','chairBlend','socialPose','roomTransition'])assert.equal(g.userData[key],undefined,key);
  // A schedule change halfway into the chair must stand them clear too.
  delete g.userData.indoors;g.position.set(RAMEN_DOOR[0],0,RAMEN_DOOR[1]);
- visitors.sync(700,0);visitors.sync(700,.1);visitors.sync(850,.05);
+ visitors.sync(740,0);visitors.sync(740,.1);visitors.sync(850,.05);
  assert.equal(g.userData.chairBlend,.1);assert.ok(Number.isFinite(g.userData.seatHeight));
  visitors.sync(850,.05);
  assert.deepEqual(g.position.toArray(),seat.stand);

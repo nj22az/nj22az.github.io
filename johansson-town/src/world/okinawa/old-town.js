@@ -27,8 +27,8 @@ export function dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group}){
  return {shutter};
 }
 
-/** Sakura opens at nine and shuts at eight, the same hours the town keeps for her. */
-export const sakuraOpenAt=minutes=>{const h=((minutes%1440)+1440)%1440;return h>=540&&h<1200;};
+/** Sakura is open 24 hours, every day (commerce/sakura-rota.js): the shutter stays up. */
+export const sakuraOpenAt=minutes=>Number.isFinite(minutes)||true;
 
 /** The roller shutter's face: galvanised slats and the shop's hours painted across it. */
 function shutterTexture(){
@@ -38,7 +38,7 @@ function shutterTexture(){
   for(let y=0;y<h;y+=9){ctx.fillStyle='rgba(60,66,70,.35)';ctx.fillRect(0,y,w,2);ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(0,y+2,w,1);}
   ctx.fillStyle='#a6333c';ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.font='bold 64px "Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';ctx.fillText("Sakura Shop",w/2,h*.46);
-  ctx.font='bold 22px sans-serif';ctx.fillText("SAKURA · OPEN 9:00 – 20:00 · See you tomorrow",w/2,h*.72);
+  ctx.font='bold 22px sans-serif';ctx.fillText("SAKURA · OPEN 24 HOURS · 年中無休",w/2,h*.72);
   ctx.fillStyle='rgba(110,70,40,.25)';for(const x of [60,w-80])ctx.fillRect(x,h*.2,3,h*.7);
  });
 }
@@ -129,7 +129,7 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
  return {
   set:setShutter,
   get open(){return open;},
-  /** Follows the clock: rolls up at nine and down at eight, taking a few seconds. */
+  /** Follows the rota (always open, so always up), taking a few seconds to move when a fixture has set it. */
   update(minutes,dt=1/60,{snap=false}={}){const want=sakuraOpenAt(minutes)?1:0;if(snap){setShutter(want);return;}const step=dt/2.5;if(open!==want)setShutter(Math.abs(want-open)<=step?want:open+Math.sign(want-open)*step);},
  };
 }
