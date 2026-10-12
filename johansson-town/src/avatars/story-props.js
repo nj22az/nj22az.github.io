@@ -11,6 +11,7 @@ import {bodyVolume} from './build.js';
  *   storyProps(avatar).give('torch')          Tetsuo's pocket torch, clipped to his shirt (or vest) at the left chest
  *   storyProps(avatar).give('basketOnHead')   a locker basket upside down on the head, resting on the head (or its towel)
  *   storyProps(avatar).give('newspaper')      the evening paper, folded, held open between the two mittens while reading
+ *   storyProps(avatar).give('paperback')      Mrs Higa's novel, open in her right mitten (the film turns it to her facing)
  *   storyProps(avatar).give('dryerCord')      the vanity dryer's cord, wound round the body and its pinned arms
  *
  * The moves give what they need themselves (SitRead the paper, CordWrapped the cord, BasketHead the basket, TorchUp the
@@ -23,6 +24,8 @@ export const STORY_PROPS=Object.freeze({
   where:'The women’s room lockers’ basket (0.40 × 0.40 × 0.22 m, the men’s side’s size), upside down on the crown, askew, resting on her head towel.'}),
  newspaper:Object.freeze({who:'Tetsuo',why:'After his bath he reads the evening paper on the koagari edge, which is why nobody pays him any attention until the lights go.',
   where:'Folded once down the middle and held open like a book in both mittens, at reading distance before the chest.'}),
+ paperback:Object.freeze({who:'Mrs Higa',why:'Between customers at the bandai she reads: a paperback novel from Front-Row Books & Stationery’s reading copies, a 1990s edition with its paper band (obi) still on, which is why she never looks up from it.',
+  where:'Held open in her right mitten at reading distance, the mitten under the foot of the spine, the pages turned up to her eyes and the cover with its band to the room.'}),
  dryerCord:Object.freeze({who:'Thao',why:'Spinning round in the dark with her dryer still in her hand, she winds herself up in its own cord, like a parcel.',
   where:'From the dryer’s handle in her right mitten, four turns round her and her arms from under the arms to the hips, then away to the socket.'}),
 });
@@ -107,6 +110,42 @@ export function buildPaper(){
  }
  g.userData.paper={setSpread(half){const a=Math.acos(THREE.MathUtils.clamp(half/P.leaf,0,1));leaves[0].rotation.y=-a;leaves[1].rotation.y=a;return a;}};
  g.userData.paper.setSpread(P.leaf*.9);
+ return g;
+}
+
+/**
+ * Mrs Higa's paperback (STORY_PROPS.paperback): a bunko-sized novel open in one hand, its two halves in a shallow V (each
+ * turned PAPERBACK.open from flat) about the spine. Each half: the page block (cream, its edges the pages' colour), the
+ * reading face with its vertical columns of print, and the cover board a little larger than the block. The front cover
+ * (the reader's right half, as a book read right to left opens) is deep teal with a cream title panel and gold rule, and
+ * the 1990s paper band (obi) round its foot in vermilion with a cream stripe: no real title or maker. The spine joins
+ * the boards behind. Built with the reader at -z looking +z (a 'facing' hold puts +z where the holder faces), tilted
+ * back PAPERBACK.tilt so the pages face up to the eyes; its origin is the grip: the mitten under the foot of the spine.
+ */
+export const PAPERBACK=Object.freeze({w:.115,h:.165,block:.011,board:.0025,overhang:.003,open:.3,tilt:.88,lift:.012,ahead:.02,
+ colours:Object.freeze({cover:0x2f5f66,panel:0xf1e6c8,rule:0xb8913a,obi:0xc8462e,obiStripe:0xf3e7cc,pages:0xf3ead2,face:0xfaf5e8,print:0x8d8a84})});
+export function buildPaperback(){
+ const B=PAPERBACK,C=B.colours,g=new THREE.Group();g.name='Paperback';
+ const book=new THREE.Group();book.name='Paperback (open)';g.add(book);
+ const board=mat(C.cover,{roughness:.55}),pages=mat(C.pages,{roughness:.95}),face=mat(C.face,{roughness:.95,side:THREE.DoubleSide});
+ const print=mat(C.print,{roughness:1,side:THREE.DoubleSide}),panel=mat(C.panel,{roughness:.8,side:THREE.DoubleSide}),rule=mat(C.rule,{roughness:.4,metalness:.3,side:THREE.DoubleSide});
+ const obi=mat(C.obi,{roughness:.7,side:THREE.DoubleSide}),stripe=mat(C.obiStripe,{roughness:.8,side:THREE.DoubleSide});
+ const T=B.block,W=B.w,H=B.h,back=T+B.board;
+ for(const s of [-1,1]){
+  const half=new THREE.Group();half.name=s<0?'Paperback front half':'Paperback back half';half.rotation.y=s*B.open;book.add(half);
+  add(half,new THREE.BoxGeometry(W-.002,H-2*B.overhang,T),pages,s*(W/2+.001),H/2,T/2);                       // the page block
+  add(half,new THREE.BoxGeometry(W+B.overhang,H,B.board),board,s*(W+B.overhang)/2,H/2,T+B.board/2);         // the cover board
+  const f=add(half,new THREE.PlaneGeometry(W-.008,H-2*B.overhang-.004),face,s*(W/2+.001),H/2,-.0004);f.castShadow=false;   // the reading face
+  for(let c=0;c<7;c++){const col=add(half,new THREE.PlaneGeometry(.0045,H*.72),print,s*(.014+c*.0135),H*.5,-.0008);col.castShadow=false;}   // print in columns
+  // the outside of the board: the front cover with its title panel, rule and band; the back with its blurb panel
+  const out=T+B.board+.0006,x0=s*(W+B.overhang)/2,deco=(geo,m,x,y)=>{const o=add(half,geo,m,x,y,out);o.castShadow=false;return o;};
+  if(s<0){deco(new THREE.PlaneGeometry(W*.62,H*.3),panel,x0,H*.7);deco(new THREE.PlaneGeometry(W*.62,.0035),rule,x0,H*.52);
+   deco(new THREE.PlaneGeometry(W+B.overhang,H*.27),obi,x0,H*.135);deco(new THREE.PlaneGeometry(W+B.overhang,.008),stripe,x0,H*.2);}
+  else deco(new THREE.PlaneGeometry(W*.6,H*.22),panel,x0,H*.62);
+ }
+ add(book,new THREE.BoxGeometry(.016,H,.005),board,0,H/2,back+.0005);                                         // the spine
+ book.rotation.x=B.tilt;book.position.set(0,B.lift,B.ahead);
+ g.userData.hold='facing';
  return g;
 }
 
@@ -225,6 +264,7 @@ export function storyProps(avatar){
    else if(kind==='basketOnHead'){o=buildBasket();const f=fitBasket(avatar);o.position.copy(f.position);o.quaternion.copy(f.quaternion);avatar.bones.head.add(o);o.userData.fit=f;}
    else if(kind==='newspaper'){o=buildPaper();o.visible=false;avatar.root.add(o);}
    else if(kind==='dryerCord'){o=buildCordWrap(avatar,options);avatar.bones.chest.add(o);}
+   else if(kind==='paperback'){o=buildPaperback();avatar.bones.handR.add(o);o.userData.at='R';}
    else throw new Error('No story prop "'+kind+'" (story-props.js STORY_PROPS)');
    o.userData.storyProp=kind;held.set(kind,o);return o;
   },
