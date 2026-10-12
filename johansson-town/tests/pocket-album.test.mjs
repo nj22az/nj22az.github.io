@@ -61,18 +61,37 @@ test('a kept photo becomes a moment: the first of a resident is news, later ones
  const first=addPhoto([],photo()).photo;
  const m=photoMoment(first,{seen:[]});
  assert.equal(m.id,'photo:ph1');assert.equal(m.kind,'discovery');assert.deepEqual(m.who,['Mrs Sato','Thuan']);
- assert.equal(m.text,'Took a photo of Mrs Sato and Thuan at Sato Ramen with my pocket camera. My first photo of Mrs Sato and Thuan.');
- assert.equal(m.news,'Mrs Sato and Thuan were photographed by the mayor at Sato Ramen today. The mayor has a pocket camera.');
+ assert.equal(m.text,'Took a photo of Mrs Sato and Thuan at Sato Ramen with my Pocket Gentleman camera. My first photo of Mrs Sato and Thuan.');
+ assert.equal(m.news,'Mrs Sato and Thuan were photographed by the mayor at Sato Ramen today. The mayor has a Pocket Gentleman camera.');
  const seen=['Mrs Sato','Thuan'];
  const again=photoMoment({...first,id:'ph2',people:['Thuan']},{seen});
  assert.equal(again.kind,'note');assert.equal(again.news,undefined);
- assert.equal(again.text,'Took a photo of Thuan at Sato Ramen with my pocket camera.');
+ assert.equal(again.text,'Took a photo of Thuan at Sato Ramen with my Pocket Gentleman camera.');
  const place=photoMoment({...first,id:'ph3',people:[],place:{id:'pier',title:'The pier'}},{seen});
- assert.equal(place.text,'Took a photo at the pier with my pocket camera.');assert.equal(place.who,undefined);
+ assert.equal(place.text,'Took a photo at the pier with my Pocket Gentleman camera.');assert.equal(place.who,undefined);
  const street=photoMoment({...first,id:'ph6',people:['Tōma'],place:{id:'photo-main',title:'Main shopping street',at:'on the main shopping street'}},{seen});
- assert.equal(street.text,'Took a photo of Tōma on the main shopping street with my pocket camera. My first photo of Tōma.');
- assert.equal(street.news,'Tōma was photographed by the mayor on the main shopping street today. The mayor has a pocket camera.');
- assert.equal(photoMoment({...first,id:'ph4',people:[],place:null},{seen}).text,'Took a photo with my pocket camera.');
+ assert.equal(street.text,'Took a photo of Tōma on the main shopping street with my Pocket Gentleman camera. My first photo of Tōma.');
+ assert.equal(street.news,'Tōma was photographed by the mayor on the main shopping street today. The mayor has a Pocket Gentleman camera.');
+ assert.equal(photoMoment({...first,id:'ph4',people:[],place:null},{seen}).text,'Took a photo with my Pocket Gentleman camera.');
  const newcomer=photoMoment({...first,id:'ph5',people:['Thuan','Reiko']},{seen});
- assert.equal(newcomer.news,'Reiko was photographed by the mayor at Sato Ramen today. The mayor has a pocket camera.');
+ assert.equal(newcomer.news,'Reiko was photographed by the mayor at Sato Ramen today. The mayor has a Pocket Gentleman camera.');
+});
+
+test('the camera is a fictional model: the Pocket Gentleman, or the pink Pocket Lady for a feminine look',async()=>{
+ const {POCKET_MODELS,pocketModelFor,pocketModelOfPhoto}=await import('../src/photo/pocket-models.js');
+ const {POCKET_PALETTES}=await import('../src/photo/pocket-camera.js');
+ const {photoMoment}=await import('../src/photo/pocket-album.js');
+ assert.equal(pocketModelFor({body:{silhouette:'feminine'}}).name,'Pocket Lady');
+ assert.equal(pocketModelFor({body:{silhouette:'masculine'}}).name,'Pocket Gentleman');
+ assert.equal(pocketModelFor({body:{silhouette:'neutral'}}).name,'Pocket Gentleman');
+ assert.equal(pocketModelFor(null).name,'Pocket Gentleman','Johansson, before any look is chosen');
+ for(const m of Object.values(POCKET_MODELS))assert.ok(POCKET_PALETTES[m.palette],m.name+' has its screen shades');
+ // A photo says which camera took it, in the diary and the news.
+ const lady=addPhoto([],photo({palette:'rose'})).photo;
+ assert.equal(pocketModelOfPhoto(lady).name,'Pocket Lady');
+ const m=photoMoment(lady,{seen:[]});
+ assert.match(m.text,/with my Pocket Lady camera\./);assert.match(m.news,/The mayor has a Pocket Lady camera\.$/);
+ assert.equal(pocketModelOfPhoto({palette:'grey'}).name,'Pocket Gentleman');
+ // No real product is named anywhere a player reads.
+ for(const text of [m.text,m.news,...Object.values(POCKET_MODELS).map(x=>x.name)])assert.doesNotMatch(text,/game ?boy|nintendo|pocket camera/i);
 });

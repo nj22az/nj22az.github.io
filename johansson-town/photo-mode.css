@@ -70,7 +70,19 @@
 #pocketViewfinder{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;pointer-events:none;
  background:radial-gradient(ellipse at center,transparent 38%,#0006 100%);font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Arial Rounded MT Bold",system-ui,sans-serif}
 #pocketViewfinder[hidden]{display:none}
-.pocket-body{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 14px 10px;background:#fffaf0;border-radius:18px;box-shadow:0 6px 0 #0001,0 18px 40px #0004}
+/* The town's fictional hand-helds (src/photo/pocket-models.js), our own design: even corners, a round lens set into the
+   top corner like a monocle, the screen in a walnut bezel, the model's name in upright small capitals under it. The
+   Pocket Gentleman is cream with a burgundy name; the Pocket Lady is pink with a plum bezel and a raspberry name.
+   Text on both bodies keeps at least 4.5:1 contrast. */
+.pocket-body{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:30px 16px 10px;background:#efe8d8;border-radius:20px;box-shadow:inset 0 -4px 0 #0000001a,0 6px 0 #0001,0 18px 40px #0004}
+.pocket-bezel{padding:10px;background:#4f3a2e;border-radius:10px;box-shadow:inset 0 2px 0 #0003}
+.pocket-lens{position:absolute;top:7px;right:16px;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 36% 34%,#9aa6bb 0 12%,#2a3242 52%,#141922);box-shadow:0 0 0 3px #d6cdb8,0 0 0 4px #b3aa95}
+.pocket-mark{margin:0;font-family:Georgia,"Times New Roman",serif;font-variant:small-caps;font-weight:700;font-size:15px;line-height:1.2;letter-spacing:.08em;color:#6b2d2a}
+#pocketViewfinder[data-model="lady"] .pocket-body{background:#f7c6d4;box-shadow:inset 0 -4px 0 #b9567a26,0 6px 0 #0001,0 18px 40px #0004}
+#pocketViewfinder[data-model="lady"] .pocket-bezel{background:#5e2f47}
+#pocketViewfinder[data-model="lady"] .pocket-lens{box-shadow:0 0 0 3px #eeb0c3,0 0 0 4px #cf87a1}
+#pocketViewfinder[data-model="lady"] .pocket-mark{color:#7d2149}
+#pocketViewfinder[data-model="lady"] .pocket-said,#pocketViewfinder[data-model="lady"] .pocket-count{color:#4a3640}
 /* base.css makes every canvas the full-screen game view; these two are pictures in the page. */
 .pocket-screen{display:block;position:static;inset:auto;touch-action:auto;image-rendering:pixelated;border-radius:4px;box-shadow:inset 0 0 0 2px #0002}
 .pocket-controls{display:flex;align-items:center;gap:10px}
