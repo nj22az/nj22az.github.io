@@ -145,6 +145,8 @@ function mulberry(seed){return ()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.im
  * the hill; flowering shrubs where people pass. Nothing on the trail, the plaza, the quay or
  * the airside.
  */
+import {KITANO_HAMLET} from './kitano-hamlet-layout.js';
+const HAMLET=KITANO_HAMLET.clear;
 let plantings=null;
 export function tropicalPlantings(){
  if(plantings)return plantings;
@@ -152,6 +154,8 @@ export function tropicalPlantings(){
  const P=TROPIC_PLACES,clearOfPlaces=(u,v,r)=>{
   if(u>P.plaza.minX-r&&u<P.plaza.maxX+r&&v>P.plaza.minZ-r-6&&v<P.plaza.maxZ+r)return false;
   if(u<-36&&v>14&&v<42)return false;
+  // Kitano hamlet's lane and yards (kitano-hamlet-layout.js).
+  if(u>HAMLET.minX-r&&u<HAMLET.maxX+r&&v>HAMLET.minZ-r&&v<HAMLET.maxZ+r)return false;
   // The lookout keeps its view: no rainforest trees within fourteen metres of the deck,
   // and none on the west slope below it, where the view runs across the strait to Minato.
   if(Math.hypot(u-P.lookout[0],v-P.lookout[1])<(r>1?(u<P.lookout[0]+6?26:14):5)+r)return false;

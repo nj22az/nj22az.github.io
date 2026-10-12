@@ -50,7 +50,8 @@ test('published businesses have reachable real doors and a clear passage beside 
   assert.ok(world.group.getObjectByName('Consolidated harbour office'));
   assert.equal(sites.find(s=>s.id==='frontrow').bookshop,true);assert.equal(sites.find(s=>s.id==='form3d').industrialWorkshop,true);
   assert.equal(world.people.length,WORLD_CAST.length);assert.equal(new Set(world.people.map(p=>p.profile.name)).size,WORLD_CAST.length);
-  for(const site of [...sites,world.warehouse.place]){
+  // Kitano-jima's doors (kitano-hamlet.js) are reached by the ferry, not on foot from Minato.
+  for(const site of [...sites,world.warehouse.place].filter(s=>!s.plot?.startsWith('kitano-'))){
    const [x,,z]=site.door;assert.equal(blocked(x,z),false,site.id+' door');
    const path=nav.path({x:-3,z:-20},{x,z});assert.deepEqual(path.at(-1),[x,z],site.id+' reachable door');
   }
