@@ -1,4 +1,5 @@
 import {townDate} from '../town-clock.js';
+import {BIRTHDAYS} from './birthdays-data.js';
 
 /**
  * Birthdays, as 'MM-DD'. Only real ones go here: the creator sets them (2026-10-12: "Johansson is
@@ -14,11 +15,7 @@ import {townDate} from '../town-clock.js';
  *   - the evening before, the news says it is their birthday tomorrow (feed/evening-news.js),
  *   - and the day's moments, so the diary and the news, record it (activities.js).
  */
-export const BIRTHDAYS=Object.freeze({
- Johansson:'01-30',Thuan:'03-15',
- 'Officer Mori':'02-18',Reiko:'04-02',Nhung:'05-08','Harbour master':'06-14',Barfly:'07-19',
- 'Bus driver':'08-26',Chin:'09-03',Thao:'10-24','Mrs Sato':'11-22',Tetsuo:'12-04',
-});
+export {BIRTHDAYS};
 
 const VALID=/^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 /** Whether today (a town minute) is `name`'s birthday. False for anyone without a real one. */

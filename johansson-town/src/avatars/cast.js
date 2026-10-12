@@ -1,6 +1,6 @@
 import {HARBOUR_POLO_OUTFIT} from './outfits.js';
 import {residentRecipe} from './wardrobe.js';
-import {BIRTHDAYS} from '../people/birthdays.js';
+import {BIRTHDAYS} from '../people/birthdays-data.js';
 import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
 import {PROFILES} from '../people/profiles.js';
 import {residentPersonality} from '../people/resident-personalities.js';
@@ -27,9 +27,14 @@ export const ORIGINAL_THUAN_RECIPE=R({name:'Thuan',
  glasses:{style:'round',colour:'#e06a7a'},blush:.65,
  outfit:HARBOUR_POLO_OUTFIT,swim:{colour:'#e98aa6'}});
 const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō','Grandmother Tokashiki']);
+/** The birthday the town keeps (people/birthdays.js) is the one the profile shows, in World and in Studio. */
+function withBirthday(recipe,name){
+ const date=BIRTHDAYS[name];if(!recipe||!date)return recipe;
+ return {...recipe,profile:{...(recipe.profile||{}),month:Number(date.slice(0,2)),day:Number(date.slice(3,5))}};
+}
 const castSet=entries=>Object.freeze(Object.fromEntries(Object.entries(entries).map(([name,r])=>{
  const female=PROFILES.find(p=>p.name===name)?.female??FEMALE_NEIGHBOURS.has(name);
- return [name,normalizeRecipe({...r,body:{...r.body,silhouette:r.body.silhouette==='neutral'?(female?'feminine':'masculine'):r.body.silhouette}})];
+ return [name,normalizeRecipe(withBirthday({...r,body:{...r.body,silhouette:r.body.silhouette==='neutral'?(female?'feminine':'masculine'):r.body.silhouette}},name))];
 })));
 
 export const CAST_RECIPES=castSet({
@@ -178,14 +183,6 @@ const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name)),named=name&&!rec
  * recipe drawn here. With no published looks it is exactly baseRecipe.
  */
 export function recipeFor(name='',{looks=LOOKS}={}){
- return withBirthday(recipeFrom(name,looks),name);
-}
-/** The birthday the town keeps (people/birthdays.js) is the one the profile shows, in World and in Studio. */
-function withBirthday(recipe,name){
- const date=BIRTHDAYS[name];if(!recipe||!date)return recipe;
- return {...recipe,profile:{...(recipe.profile||{}),month:Number(date.slice(0,2)),day:Number(date.slice(3,5))}};
-}
-function recipeFrom(name,looks){
  const saved=residentRecipe(name);if(saved)return saved;
  const look=Object.hasOwn(looks,name)?looks[name]:null;
  return look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
@@ -201,7 +198,8 @@ export const RESIDENT_GROUPS=Object.freeze({cast:Object.freeze(Object.keys(CAST_
 export const RESIDENT_NAMES=Object.freeze(Object.values(RESIDENT_GROUPS).flat());
 
 /** The recipe World draws somebody with, before any saved or published look. */
-export function baseRecipe(name=''){
+export function baseRecipe(name=''){return withBirthday(drawnRecipe(name),name);}
+function drawnRecipe(name){
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
  if(NEIGHBOUR_RECIPES[name])return aged(normalizeRecipe(withTownDials(NEIGHBOUR_RECIPES[name],name)),name);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];
