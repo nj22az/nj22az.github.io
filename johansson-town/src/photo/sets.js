@@ -27,8 +27,10 @@ export const FILMS=Object.freeze({
  mono:{label:'Black & white',ops:[['grayscale',1],['contrast',1.12]]},
  sepia:{label:'Sepia',ops:[['sepia',.9],['contrast',.95]]},
  // Not a colour matrix: chunky pixels and an ordered dither in four shades (pocket-camera.js), shown live and baked the same.
- pocket:{label:'Pocket camera',ops:[],pocket:'green'},
- pocketGrey:{label:'Pocket camera, grey',ops:[],pocket:'grey'},
+ // The town's fictional hand-helds (pocket-models.js): the Pocket Gentleman's green and grey, the Pocket Lady's rose.
+ pocket:{label:'Pocket Gentleman',ops:[],pocket:'green'},
+ pocketGrey:{label:'Pocket Gentleman, grey',ops:[],pocket:'grey'},
+ pocketLady:{label:'Pocket Lady',ops:[],pocket:'rose'},
 });
 
 /** A friendly palette for clothes, like the maker's colour board. */

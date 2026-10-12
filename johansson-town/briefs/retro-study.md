@@ -79,6 +79,18 @@ flatten, inflate, shrink, wobbly, crash into a wall.
 3. **Caption wrapping** (`src/photo/layout.js`): bubbles and captions broke English words in the middle ("ram / en").
    They now break at spaces, and only a word too long for the line, or Japanese, breaks by character.
 
+## The town's pocket cameras: Pocket Gentleman and Pocket Lady (the creator, 2026-10-12)
+
+> "The Gameboy camera should be a fictional Pocket gentleman camera" · "And for girls the Gameboy is a Pocket Lady
+> that is pink"
+
+The game names no real product (the 1998 camera was sold in Japan as "Pocket Camera"). In the town there are two
+fictional hand-helds (`src/photo/pocket-models.js`): the **Pocket Gentleman** (a cream body, a round lens set in the
+top corner like a monocle, a green screen) and the **Pocket Lady** (pink, the same lens, a rose screen). The player
+carries the one that fits the look they chose (a feminine silhouette: the Pocket Lady). The photo studio's films are
+named after them. Built 2026-10-12 with the carried camera (the first proposal below). Open: a choice of model of
+its own in Studio; residents who own one (a story prop).
+
 ## Proposed next, ranked by stories
 
 1. **Pocket camera as a thing you carry in World.** In first person (World already has the view), raise a viewfinder

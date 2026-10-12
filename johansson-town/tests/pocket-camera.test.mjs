@@ -40,7 +40,7 @@ test('pictures keep their shape at camera size, and the films are offered',()=>{
  assert.deepEqual([...luma(new Uint8ClampedArray([255,255,255,255,0,0,0,255]))].map(Math.round),[255,0]);
  for(const p of Object.values(POCKET_PALETTES)){assert.equal(p.length,4);const y=p.map(([r,g,b])=>.299*r+.587*g+.114*b);assert.ok(y.every((v,i)=>!i||v>y[i-1]),'darkest first');}
  assert.deepEqual([...paint(Uint8Array.of(0,3),POCKET_PALETTES.grey)],[...POCKET_PALETTES.grey[0],255,...POCKET_PALETTES.grey[3],255]);
- for(const id of ['pocket','pocketGrey']){assert.ok(FILMS[id].pocket in POCKET_PALETTES);assert.equal(filmCSS(id),'none','no CSS filter: the preview canvas shows it');const px=Uint8ClampedArray.of(10,20,30,255);assert.deepEqual([...applyFilm(px,id)],[10,20,30,255]);}
+ for(const id of ['pocket','pocketGrey','pocketLady']){assert.ok(FILMS[id].pocket in POCKET_PALETTES);assert.equal(filmCSS(id),'none','no CSS filter: the preview canvas shows it');const px=Uint8ClampedArray.of(10,20,30,255);assert.deepEqual([...applyFilm(px,id)],[10,20,30,255]);}
 });
 test('automatic exposure spreads a pale or dim picture over the tones, but leaves a flat one calm',()=>{
  const pastel=Float32Array.from({length:1000},(_,i)=>200+(i%50));expose(pastel);

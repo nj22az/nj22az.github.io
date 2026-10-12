@@ -23,7 +23,7 @@ export function photoCanvas(photo,{scale=1,doc=globalThis.document}={}){
 /** The album page's grid. onLetGo(id) removes a photo (after asking); the page is rebuilt by the caller. */
 export function albumView(album,{onLetGo,doc=globalThis.document}={}){
  const box=doc.createElement('div');box.className='pocket-album';
- if(!album.length){const p=doc.createElement('p');p.className='pocket-album-empty';p.textContent='No photos yet. Raise the pocket camera with F, or from the Town book, and press Space or Take.';box.append(p);return box;}
+ if(!album.length){const p=doc.createElement('p');p.className='pocket-album-empty';p.textContent='No photos yet. Raise the camera with F, or from the Town book, and press Space or Take.';box.append(p);return box;}
  const grid=doc.createElement('div');grid.className='pocket-album-grid';box.append(grid);
  for(const photo of [...album].reverse()){
   const figure=doc.createElement('figure'),caption=photoCaption(photo),pic=photoCanvas(photo,{scale:2,doc});

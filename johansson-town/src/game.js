@@ -42,6 +42,8 @@ import {createRecorder,createPlayer} from './input/replay.js';
 import {createPocketViewfinder} from './photo/pocket-viewfinder.js';
 import {packShades,PHOTO_W,PHOTO_H} from './photo/pocket-album.js';
 import {peopleInPhoto,placeOfPhoto,explainPerson} from './photo/pocket-subjects.js';
+import {pocketModelFor} from './photo/pocket-models.js';
+import {decodeRecipe} from './avatars/recipe.js';
 import {buildSatoRamenRoom} from './world/interiors/sato-ramen.js';
 import {SATO_ROOM,SATO_COLLIDERS,SATO_MENU,SATO_RAMEN,SATO_GUEST_SEATS,SATO_LUNCH_DRINK,satoRamenOpen} from './world/sato-ramen-layout.js';
 import {transitStop} from './world/transit.js';
@@ -411,16 +413,19 @@ $('#photoButton').onclick=openPhotoStudio;
 function openCamera(){if(!started||inspector?.active||activities?.paused)return;cameraControls.open();}
 /** Named places that are not a building: the photo studio's locations, and where the pocket camera says a photo was taken. */
 function photoSpots(){const lane=shoppingLanePoint(90,99);return [{id:'photo-harbour',title:'Working harbour',at:'at the working harbour',x:-22,z:-39},{id:'photo-main',title:'Main shopping street',at:'on the main shopping street',x:-3,z:-20},{id:'photo-beach',title:'East beach',at:'on the east beach',x:38,z:-12},{id:'photo-garden',title:'Aoba pond garden',at:'in the Aoba pond garden',x:-23.4,z:40.6},{id:'photo-rainflower',title:'Rainflower Lane',at:'on Rainflower Lane',x:lane[0],z:lane[1]},{id:'photo-village',title:'Hoshizaki fishing village',at:'in Hoshizaki fishing village',x:132,z:190},{id:'photo-lighthouse',title:'West Cape lighthouse',at:'at the West Cape lighthouse',x:-54,z:204}];}
-// The pocket camera Johansson carries (src/photo/pocket-viewfinder.js): raised to the eye, it shows the view in its four
+// The pocket camera the player carries, a Pocket Gentleman or a Pocket Lady by the look they chose (pocket-models.js;
+// src/photo/pocket-viewfinder.js): raised to the eye, it shows the view in its four
 // shades; the shutter keeps that frame in the album (activities.keepPhoto) with who and where it shows.
 let pocket=null,pocketWasThird=null;
+// This game's own player (the key fixed when the town started, as the Studio hand-off uses), never another tab's.
+const pocketModel=()=>{let r=null;try{r=decodeRecipe(localStorage.getItem(studioKeys.player));}catch{}return pocketModelFor(r||decodeRecipe(activities?.state?.avatarRecipe));};
 const pocketSight=new THREE.Vector3(),pocketBox=new THREE.Box3(),pocketUp=new THREE.Vector3(0,.1,0);
 function pocketCanRaise(){return !activeRoomLayout?.fixedCamera&&started&&!catchingUp&&!roomLoading&&!photoLoading&&!photoStudio?.active&&!inspector?.active&&!itemViewer?.active&&!activities?.paused&&!cameraControls.active&&!bicycleRide&&!islandPlay?.cinematic&&$('#directory').classList.contains('hidden');}
 function raisePocket(){
  if(pocket?.raised)return true;
- if(!pocketCanRaise()){if(bicycleRide)say('Both hands are on the handlebars.',2);else if(activeRoomLayout?.fixedCamera)say('The pocket camera stays in his pocket at the table.',2);return false;}
+ if(!pocketCanRaise()){if(bicycleRide)say('Both hands are on the handlebars.',2);else if(activeRoomLayout?.fixedCamera)say('The camera stays in the pocket at the dinner table.',2);return false;}
  spawnScene?.cancel('camera');resetInput();
- pocket??=createPocketViewfinder({source:canvas,count:()=>activities.album.length,onShoot:keepPocketPhoto,onLower:()=>{
+ pocket??=createPocketViewfinder({source:canvas,count:()=>activities.album.length,model:pocketModel,onShoot:keepPocketPhoto,onLower:()=>{
   // Back to the view he had: behind him again if that is where he was.
   if(pocketWasThird){thirdPerson=true;ensureJohansson();hands.firstPersonVisible=false;}pocketWasThird=null;
  }});
@@ -449,12 +454,12 @@ function pocketBlocked(from,to){
 function pocketPlaces(){
  return [...SITES.map(s=>{const d=doors.get(s.id);return d?{id:s.id,title:s.title,x:d.x,z:d.z}:null;}),...(world.landmarks||[]).map(s=>({id:s.id,title:s.title,x:s.exitPosition?.[0]??s.x,z:s.exitPosition?.[2]??s.z})),...photoSpots()].filter(Boolean);
 }
-function keepPocketPhoto(shades){
+function keepPocketPhoto(shades,palette=pocketModel().palette){
  camera.updateMatrixWorld();
  const screenAspect=camera.aspect;
  const people=peopleInPhoto({camera,screenAspect,people:pocketPeople(),blocked:pocketBlocked});
  const place=placeOfPhoto({room:current?{id:current.id,title:current.title,at:current.at}:null,places:current?[]:pocketPlaces(),camera});
- const r=activities.keepPhoto({w:PHOTO_W,h:PHOTO_H,shades:packShades(shades),palette:'green',day:Math.floor(minutes/1440),minutes:Math.floor(((minutes%1440)+1440)%1440),place,people,note:''});
+ const r=activities.keepPhoto({w:PHOTO_W,h:PHOTO_H,shades:packShades(shades),palette,day:Math.floor(minutes/1440),minutes:Math.floor(((minutes%1440)+1440)%1440),place,people,note:''});
  // The shutter: two short beeps, as a digital pocket camera of the time made (town-audio.js blip, our own sound).
  if(r.ok){townAudio.blip(1760,'square',.05);setTimeout(()=>townAudio.blip(1320,'square',.05),70);}
  return r;
@@ -1432,6 +1437,8 @@ function visitPlace(s){
 function toggleDir(open){if(inspector?.active)return;if(open){updateDirectory();document.exitPointerLock?.();resetInput();}$('#directory').classList.toggle('hidden',!open);document.body.classList.toggle('town-menu-open',!!open);$('#directoryButton').setAttribute('aria-expanded',String(open));if(open)$('#closeDirectory').focus();else $('#directoryButton').focus();}
 $('#directoryButton').onclick=()=>toggleDir(true);$('#closeDirectory').onclick=()=>toggleDir(false);
 function updateDirectory(){
+ // The camera tile is named after the model the player carries.
+ {const m=pocketModel(),tile=$('#pocketButton');if(tile){tile.textContent=m.name;tile.setAttribute('aria-label',`Raise the ${m.name} camera (F)`);}}
  const grid=$('#directoryGrid');grid.replaceChildren();
  const section=t=>{const h=document.createElement('h3');h.className='directory-section';h.textContent=t;grid.append(h);};
  const row=(title,sub,fn,id)=>{const b=document.createElement('button');b.className='dir-item';if(id)b.dataset.id=id;const strong=document.createElement('b'),small=document.createElement('span');strong.textContent=title;small.textContent=sub;b.append(strong,small);b.onclick=fn;grid.append(b);};
@@ -1959,7 +1966,7 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  /** The pocket camera: raise() and lower() it, shoot() keeps what its screen shows; status() is what it holds. */
  pocket:{
   raise:()=>raisePocket(),lower:()=>lowerPocket(),shoot:()=>pocket?.shoot()??{ok:false,text:'The camera is put away.'},
-  status:()=>({raised:!!pocket?.raised,album:activities.album.map(p=>({id:p.id,people:[...p.people],place:p.place,day:p.day,minutes:p.minutes}))}),
+  status:()=>({raised:!!pocket?.raised,model:pocketModel().name,album:activities.album.map(p=>({id:p.id,people:[...p.people],place:p.place,palette:p.palette,day:p.day,minutes:p.minutes}))}),
   /** Who the lens sees now, and why each one would or would not be in a photo. */
   look:()=>{camera.updateMatrixWorld();return pocketPeople().map(person=>explainPerson({camera,person,screenAspect:camera.aspect,blocked:pocketBlocked})).filter(e=>e.distance!=null&&e.distance<25);},
  },

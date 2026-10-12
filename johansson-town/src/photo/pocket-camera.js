@@ -1,7 +1,8 @@
 /**
- * The Pocket camera film: a photo the way a 1998 hand-held camera on a four-shade screen made it, chunky pixels and an
- * ordered dither. The method is the one the Game Boy Camera cartridge uses (read with Ghidra from its camera driver,
- * bank 0x0A): four tone levels; three threshold planes, each a linear ramp from one level to the next in sixteen
+ * The pocket film: a photo the way the town's fictional hand-helds take it, the Pocket Gentleman and the Pocket Lady
+ * (src/photo/pocket-models.js), chunky pixels and an ordered dither on a four-shade screen. The method is the one the
+ * 1998 Game Boy Camera cartridge uses (read with Ghidra from its camera driver, bank 0x0A; research only, nothing of
+ * the cartridge is shipped): four tone levels; three threshold planes, each a linear ramp from one level to the next in sixteen
  * steps; and the steps dealt out over a 4x4 cell in the order of a Bayer matrix (transposed). A pixel's shade is how many
  * of its cell's three thresholds it is brighter than. The sensor also sharpened edges before the dither, which gives
  * the photos their crisp outlines (a small Laplacian here), and the camera set its exposure for each photo (`expose`). Palettes and levels are our own.
@@ -11,10 +12,11 @@
 /** The rank of each cell in the 4x4 dither cell, row by row: the order the cartridge fills the sensor's matrix. */
 export const POCKET_MATRIX=Object.freeze([0,12,3,15, 8,4,11,7, 2,14,1,13, 10,6,9,5]);
 
-/** Four shades, darkest first: the green of the first hand-held, and the grey of its pocket-sized successor. */
+/** Four shades, darkest first: the Pocket Gentleman's green (and its grey), and the Pocket Lady's rose. Our own. */
 export const POCKET_PALETTES=Object.freeze({
  green:Object.freeze([[24,48,32],[62,98,56],[130,158,76],[200,212,138]]),
  grey:Object.freeze([[34,33,31],[104,103,99],[170,169,163],[232,231,224]]),
+ rose:Object.freeze([[72,26,44],[146,62,94],[214,130,160],[251,216,228]]),
 });
 
 /** Tone levels (luminance 0-255): below the first is always the darkest shade, above the last always the lightest. */

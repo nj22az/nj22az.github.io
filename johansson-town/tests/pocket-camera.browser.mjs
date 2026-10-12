@@ -31,9 +31,16 @@ try{
   assert.ok(spot,'a resident to photograph');
   await page.evaluate(s=>{const a=window.__JOHANSSON_AUDIT__;a.teleport(s.x,s.z,s.yaw,-.08);a.step(120);},spot);
   assert.equal((await status()).third,true,'starts in third person');
+  // On the phone the player has chosen a feminine look: their camera is the pink Pocket Lady (pocket-models.js).
+  if(touch)await page.evaluate(async()=>{const r=await import('/johansson-town/src/avatars/recipe.js'),base=r.normalizeRecipe({});
+   localStorage.setItem('johansson-town-avatar',r.encodeRecipe(r.normalizeRecipe({...base,body:{...base.body,silhouette:'feminine'}})));});
+  const model=touch?'Pocket Lady':'Pocket Gentleman',palette=touch?'rose':'green';
+  assert.equal((await status()).model,model);
   if(touch){await page.locator('#directoryButton').tap();await page.locator('#pocketButton').tap();}else await page.keyboard.press('f');
   await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(100));await page.waitForTimeout(300);
   let s=await status();assert.equal(s.raised,true);assert.equal(s.third,false,'raised to his eye');
+  assert.equal(await page.locator('.pocket-mark').textContent(),model,'the body carries the model\'s name');
+  assert.equal(await page.locator('#pocketViewfinder').getAttribute('data-model'),touch?'lady':'gentleman');
   // The screen is a picture in the page at a whole-pixel scale, inside the window, not the full-screen game canvas.
   const screen=await box(page,'.pocket-screen'),scale=screen.width/128;
   assert.ok(Math.abs(scale-Math.round(scale))<.01&&scale>=1,`whole-pixel scale, got ${scale}`);
@@ -58,7 +65,7 @@ try{
   await page.waitForTimeout(150);
   // The message first (it stays 3.5 s, and a step here takes longer than that to draw), then the jump.
   assert.match(await page.locator('.pocket-said').textContent(),new RegExp('^Kept: '+spot.name));
-  s=await status();assert.equal(s.album.length,1);assert.ok(s.album[0].people.includes(spot.name),`${spot.name} is in the photo: ${JSON.stringify(s.album[0])}`);
+  s=await status();assert.equal(s.album.length,1);assert.equal(s.album[0].palette,palette,'the photo prints in its camera\'s shades');assert.ok(s.album[0].people.includes(spot.name),`${spot.name} is in the photo: ${JSON.stringify(s.album[0])}`);
   if(!touch){await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(200));assert.ok(Math.abs(await footY()-y0)<.02,'Space took the photo and did not make him jump');}
   await page.screenshot({path:`${out}/${width}-2-kept.png`});
   if(touch)await page.locator('[data-lower]').tap();else await page.keyboard.press('f');
