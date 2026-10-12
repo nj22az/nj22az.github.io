@@ -166,7 +166,7 @@ husband."* So:
 The creator: *"Only Johansson and Thuan live on the hamlet, the others live in the port"* and *"Tetsuo's mother lives on
 the Hamlet in an old house"*. So:
 
-- **kitano-1**: Johansson and Thuan, unchanged. **kitano-3**, the old red-tile Chinen house: **Mrs Chinen, Tetsuo's
+- **kitano-1**: Johansson and Thuan, unchanged. **kitano-3**, the old red-tile Chinen house: **Grandmother Chinen, Tetsuo's
   mother**, a neighbour (`people/neighbours.js`: sweeps the lane in front of her gate from 06:30, sits at her gate for the
   breeze from 15:00, home otherwise; three lines about the house, her son and the mayor's wife). **kitano-2**, the
   concrete Shiroma house, is **to let** (its plate says so). `island-households.js` and the plates follow.
@@ -175,8 +175,8 @@ the Hamlet in an old house"*. So:
 - **Jun lives in the port**: off duty his home is the ferry terminal's exit in Minato (he is hidden there); his body
   cannot yet walk the crossing, so he is hidden at the terminal until his shift (open: his ferry ride).
 - Tests: `kitano-residents` (Tetsuo in the yard, Mrs Chinen, Jun in Minato), `yard-homes` (Tetsuo's door),
-  `neighbourhood-access` (Tetsuo in the park at 13:00 again). Checked headless at 16:00: Mrs Chinen at her gate.
-- Open: an authored look for Mrs Chinen (she borrows Fumiko's); Jun's crossing on the boat.
+  `neighbourhood-access` (Tetsuo in the park at 13:00 again). Checked headless at 16:00: Grandmother Chinen at her gate.
+- Open: an authored look for Grandmother Chinen (she borrows Fumiko's); Jun's crossing on the boat.
 
 ## 4. Batch 7c: the crew at their posts (built 2026-10-12)
 

@@ -40,7 +40,7 @@ test('Tetsuo lives in the Front-Row yard and never takes the boat; his mother ke
  assert.equal(tetsuo.homeAddress,'2 Front-Row Yard');
  assert.equal(residentPlan(tetsuo,at(1,720)).place,'ramen');assert.equal(residentPlan(tetsuo,at(1,1100)).place,'work');
  for(let m=0;m<1440;m+=15)assert.notEqual(residentPlan(tetsuo,at(1,m)).place,'away',''+m);
- const mother=NEIGHBOURS.find(n=>n.name==='Mrs Chinen'),plot=KITANO_HAMLET.plots.find(p=>p.id==='kitano-3'),gate=airportWorld(...hamletGate(plot).door);
+ const mother=NEIGHBOURS.find(n=>n.name==='Grandmother Chinen'),plot=KITANO_HAMLET.plots.find(p=>p.id==='kitano-3'),gate=airportWorld(...hamletGate(plot).door);
  assert.deepEqual(mother.home,gate);assert.ok(mother.routine.some(p=>/sweeping the lane/.test(p.role))&&mother.routine.some(p=>p.home));
  assert.ok(mother.lines.some(l=>/Tetsuo/.test(l)));
 });
