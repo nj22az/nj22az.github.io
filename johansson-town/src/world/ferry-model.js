@@ -249,9 +249,11 @@ function markings(){
   x.fillStyle='#24585c';x.textAlign='center';x.textBaseline='middle';x.font='bold 54px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText('みなと丸',bx+bw*.3,by+bh*.5);
   x.font='bold 36px sans-serif';x.fillText('MINATO MARU',bx+bw*.72,by+bh*.5);}
  // Row 1, cell 3: the door signs, three strips (engine room, red; crew only, teal; wheelhouse, teal).
- {const [sx,sy,sw,sh]=cell(3,1,1,1),strip=(k,bg,jp,en)=>{const y=sy+8+k*40;x.fillStyle=bg;x.fillRect(sx+6,y,sw-12,34);x.fillStyle='#f4f1e8';x.textAlign='center';x.textBaseline='middle';
-   x.font='bold 19px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText(jp,sx+sw*.3,y+17);x.font='bold 13px sans-serif';x.fillText(en,sx+sw*.72,y+17);};
-  strip(0,'#b03a2a','機関室','ENGINE ROOM');strip(1,'#24585c','乗組員専用','CREW ONLY');strip(2,'#24585c','操舵室','WHEELHOUSE');}
+ {const [sx,sy,sw,sh]=cell(3,1,1,1),strip=(k,bg)=>{const y=sy+8+k*40;x.fillStyle=bg;x.fillRect(sx+6,y,sw-12,34);x.fillStyle='#f4f1e8';x.textAlign='center';x.textBaseline='middle';return y+17;};
+  const jp=()=>{x.font='bold 19px "Hiragino Sans","Noto Sans JP",sans-serif';return sx+sw*.3;},en=()=>{x.font='bold 13px sans-serif';return sx+sw*.72;};let y;
+  y=strip(0,'#b03a2a');x.fillText('機関室',jp(),y);x.fillText('ENGINE ROOM',en(),y);
+  y=strip(1,'#24585c');x.fillText('乗組員専用',jp(),y);x.fillText('CREW ONLY',en(),y);
+  y=strip(2,'#24585c');x.fillText('操舵室',jp(),y);x.fillText('WHEELHOUSE',en(),y);}
  // Row 1, first cell: the town's anchor, white, for the funnels.
  {const [ax,ay]=cell(0,1,1,1),cx=ax+128,cy=ay+66;x.strokeStyle='#f4f1e8';x.fillStyle='#f4f1e8';x.lineWidth=9;x.lineCap='round';
   x.beginPath();x.arc(cx,cy-38,11,0,Math.PI*2);x.stroke();x.beginPath();x.moveTo(cx,cy-27);x.lineTo(cx,cy+40);x.moveTo(cx-24,cy-14);x.lineTo(cx+24,cy-14);x.stroke();

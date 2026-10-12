@@ -763,3 +763,52 @@ order, each its own batch (never with ground or lighting):
 5. **Still open from before:** the steering-gear and bow-thruster rooms, the compass deck walked, mooring bitts at
    Kitano-jima, tap-to-walk aboard, the linkspan at Minato.
 
+### Batch 6f: the ways aboard widened, collision that holds, a smaller car deck (2026-10-12, planned)
+
+The creator, 2026-10-12: *"Collision onboard needs to be improved I don't want to clip through any ramp or door, the
+entrance through the gangway, and stairways needs to be widened, car deck doesn't have to be so big, eat in to the
+loading deck, and make it one or two lanes for the cars and trucks."*
+
+**What is wrong today.** Johansson is 0.28 m in radius for the walk but about 0.6 m across to look at, so in a 0.9 m
+door, on the 0.9 m gangway between its rails and on the 0.85 m stairs his shoulders pass through the jambs and the
+rails. The raised ramp and the shut gangway gate are no solids: the floors end there, which stops his centre, not his
+body, and at the bow he can stand half through the ramp. The car deck has two lanes of 3.1 m and ten places for a
+town whose longest vehicle is 3.9 m; the walkway along the port lane narrows it and keeps the passage, the walkway
+and the stair as three separate 0.9 m ways.
+
+**The design (a small Japanese ferry of 1991 would be built so).**
+- **The casings 1.3 m wide** (inner face at x ±2.75, not ±3.1): the car deck between them is 5.5 m, **two lanes of
+  2.75 m** (a car is 1.62 m wide, an 8-tonne truck 2.5 m; two trucks side by side still fit, 0.25 m to the casings).
+- **One way aboard, 1.4 m wide the whole way:** the gangway 1.4 m between its rails, the gate and the passage through
+  casing P 1.4 m (shipyard z 13.3–14.7), and from the passage the casing is **hollow aft to the stair's foot** (a foyer,
+  z 11.3–14.7): a foot passenger never steps onto the car deck. Stair P and stair S **1.2 m clear**, their doors onto
+  the car deck 1.2 m (z 11.35–12.55). The engine room's door 1.1 m (z 6.3–7.4). The railed walkway along the port
+  lane goes (its job is done inside the casing), so the port lane is full width.
+- **Solids that follow her moving parts:** the raised ramp is a wall across the bow while it is up (and while it moves);
+  the gate and the gangway door are a wall in her side while the gangway is in; the gate leaf and the gangway door
+  hooked back are solids against the passage's walls while it is out (the passage keeps 1.2 m between them).
+- **The car deck shortened** (6f-b): six places, three a lane, from z 11.3 to the bow houses; aft of the forward
+  bulkhead at z 11.3 the car deck's level becomes the **lower lobby** (z 2.5–11.3, between the casings, 2.5 m deckhead),
+  into which the passage, both stairs' feet, the engine room's door (easier to find: it faces the lobby under its sign)
+  and the aft mooring station's door all open: the drivers' waiting corner with benches, the bicycle and baggage bay,
+  a vending machine, the safety plan, and its two 1.2 m doors in the forward bulkhead onto the lanes.
+
+**Impact list (what each touches, checked one by one).**
+- `ferry-ship.js`: FERRY_SHIP.vehicles 10 → 6; the GA spaces car-deck, casing-p/s, walkway → foyer, a lower-lobby
+  space; FERRY_CAR_PLACES (x ±1.375, three a lane from z 16.6); FERRY_TRUCK_PLAN (two trucks, two cars).
+- `ferry-model.js`: GATE (−3.95 … −2.55), FERRY_CASINGS.inner 2.75, FERRY_DECKS.car (lanes ±1.375 of 2.75, walkway
+  1.35, slots), the lane lines and sockets, the walkway's hatching and rail gone, the passage's inboard door gone, the
+  gangway 1.4 m, FERRY_WALK's car-deck entries, the ENGINE ROOM decal at z 6.85.
+- `ferry-interior.js`: CAS_IN 2.75, FERRY_STAIRS (x, door, wellFore), FERRY_ENGINE_ROOM.door/entrance, the gate
+  passage, the foyer's deckhead, the lower lobby's bulkheads, doors, deckhead and fittings; `underStair`.
+- `ferry-walk.js`: pseudo-parts `bow` (ramp up), `gate` (gangway in) and `shore` (gangway out) in `partOpen`; their
+  solids; the gangway floor 1.4 m; the walkway rail and inboard door leaf gone.
+- `ferry-inspect.js`: er-door at z 6.85. `town-traffic.js`: FIRST_PLACE follows the slots (the aft starboard place is
+  now at z 16.6); the drive from the bow to it is shorter.
+- Tests: `ferry-walk` (the route from the pier now pier → gangway → passage → foyer → stair; the engine-room route's
+  start), `ferry-ship` (six places, two trucks and two cars, lanes against the casings, the foyer in the solids list),
+  `ferry` (hull unchanged). Residents' routines: none walk the car deck. Films: `remotion/tools/impact.py` on the
+  ferry's car deck shots (none photographed inside her yet).
+- Looked at in the game after each half: the gangway, the passage and foyer, both stairs, the ramp up and down from the
+  car deck and from the quay, the gate at sea and at Kitano-jima; the lanes with a car aboard.
+
