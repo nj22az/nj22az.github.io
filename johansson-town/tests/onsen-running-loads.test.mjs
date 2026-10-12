@@ -85,7 +85,7 @@ test('the board, lamps and screen follow switches as well as breakers',()=>{
 
 test('the film stages the story by name, and the TV can be pinned to the night game',()=>{
  for(const [name,s] of Object.entries(ONSEN_SCENARIOS)){assert.ok(s.en.length>30,name+' explains itself');for(const id of s.on)assert.ok(ONSEN_CIRCUITS.some(c=>c.loads.some(l=>l.id===id)),id);}
- assert.deepEqual(Object.keys(ONSEN_SCENARIOS),['rest','quiet','evening','last-straw','blackout','retrip','restored','isolated']);
+ assert.deepEqual(Object.keys(ONSEN_SCENARIOS),['rest','quiet','evening','last-straw','blackout','retrip','restored','isolated','locked-out','upgraded-locked-out','upgraded']);
  // "Fujita's Back": the evening (3–4), the last straw (4), the blackout and the dark twice (5–6), restored (7–9).
  for(const [name,pages] of [['evening',[3,4]],['last-straw',[4]],['blackout',[5,6]],['retrip',[6]],['restored',[7,8,9]]])assert.deepEqual(ONSEN_SCENARIOS[name].pages,pages,name);
  let a=stageScenario('evening');
