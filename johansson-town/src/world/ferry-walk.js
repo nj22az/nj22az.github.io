@@ -95,9 +95,10 @@ export function createFerryWalk(run){
  let open=[];
  /** Out, for walking: the ship visible and lying alongside; the gangway run out; the ramp down on its landing. */
  function partOpen(part){
-  if(!ferry.visible||run.phase!=='waiting')return false;
-  if(part==='gangway')return parts.gangway?.visible===true;
-  if(part==='ramp'||part==='flap')return (run.rampDown??0)>=1;
+  if(!ferry.visible)return false;
+  if(part==='gangway')return run.phase==='waiting'&&parts.gangway?.visible===true;
+  if(part==='ramp'||part==='flap')return run.phase==='waiting'&&(run.rampDown??0)>=1;
+  // Her own decks are walked whenever she is there: alongside, and under way with him aboard (batch 6e).
   return true;
  }
  function update(){

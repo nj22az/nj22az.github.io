@@ -129,6 +129,9 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
  // What you can look at aboard (ferry-inspect.js): prompts that move with her, offered only on the deck you stand on.
  if(register)for(const p of FERRY_INSPECT){const a=new THREE.Object3D();a.name='Ferry: '+p.title;a.position.set(...p.pos);a.userData.sameLevel=true;ferry.add(a);
   register(a,p.label,()=>onAction('inspect',p.title,p.text));}
+ // And the crossing itself, asked for at the purser's window: to Kitano-jima from Minato, home from Kitano-jima.
+ if(register){const a=new THREE.Object3D();a.name='Ferry: purser';a.position.set(-2.3,FERRY_DECKS.upper.y+1.2,FERRY_DECKS.saloon.aft+3.1);a.userData.sameLevel=true;ferry.add(a);
+  register(a,'Ask the purser for the crossing',()=>onAction(run.berth==='airport'?'airport-return':'airport-ferry'));}
  let phase='away',t=0,service=null,serviceAt=null,lastMinutes=null,clock=0,yaw=0,x=FERRY_BERTH.x,z=FERRY_BERTH.z,exposure=0,shipSeconds=null,plan=null;
  let berth='town',localService=false,crossing=null;
  const DOOR=[FERRY_TERMINAL.queue[0],FERRY_TERMINAL.queue[1]];

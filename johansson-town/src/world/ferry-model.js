@@ -248,6 +248,10 @@ function markings(){
  {const [bx,by,bw,bh]=cell(1,1,2,1);x.fillStyle='#f4f1e8';x.fillRect(bx+6,by+10,bw-12,bh-20);x.strokeStyle='#24585c';x.lineWidth=8;x.strokeRect(bx+12,by+16,bw-24,bh-32);
   x.fillStyle='#24585c';x.textAlign='center';x.textBaseline='middle';x.font='bold 54px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText('みなと丸',bx+bw*.3,by+bh*.5);
   x.font='bold 36px sans-serif';x.fillText('MINATO MARU',bx+bw*.72,by+bh*.5);}
+ // Row 1, cell 3: the door signs, three strips (engine room, red; crew only, teal; wheelhouse, teal).
+ {const [sx,sy,sw,sh]=cell(3,1,1,1),strip=(k,bg,jp,en)=>{const y=sy+8+k*40;x.fillStyle=bg;x.fillRect(sx+6,y,sw-12,34);x.fillStyle='#f4f1e8';x.textAlign='center';x.textBaseline='middle';
+   x.font='bold 19px "Hiragino Sans","Noto Sans JP",sans-serif';x.fillText(jp,sx+sw*.3,y+17);x.font='bold 13px sans-serif';x.fillText(en,sx+sw*.72,y+17);};
+  strip(0,'#b03a2a','機関室','ENGINE ROOM');strip(1,'#24585c','乗組員専用','CREW ONLY');strip(2,'#24585c','操舵室','WHEELHOUSE');}
  // Row 1, first cell: the town's anchor, white, for the funnels.
  {const [ax,ay]=cell(0,1,1,1),cx=ax+128,cy=ay+66;x.strokeStyle='#f4f1e8';x.fillStyle='#f4f1e8';x.lineWidth=9;x.lineCap='round';
   x.beginPath();x.arc(cx,cy-38,11,0,Math.PI*2);x.stroke();x.beginPath();x.moveTo(cx,cy-27);x.lineTo(cx,cy+40);x.moveTo(cx-24,cy-14);x.lineTo(cx+24,cy-14);x.stroke();
@@ -400,9 +404,10 @@ export function buildFerryModel({shadows=false}={}){
  // ---- The open deck aft: benches under an awning, the funnels at its forward corners, the liferaft (port) and
  // the rescue boat under its davit (starboard), the flagstaff; forward of the benches a platform and two ladders
  // up to the bridge deck's aft end, where the emergency-generator and CO₂ rooms open.
- for(const zy of [1,2.6])for(const x of [-1.45,1.45]){
-  kit.box('paint',[2.4,.06,.45],[x,PASS+.45,Z(zy)],TEAK);kit.box('paint',[2.4,.4,.06],[x,PASS+.68,Z(zy)-.21],TEAK);
-  for(const dx of [-1.05,1.05])kit.box('metal',[.06,.42,.42],[x+dx,PASS+.21,Z(zy)],STEEL);}
+ // Two benches a side, 2.1 m, with a 1.1 m aisle between them down the middle (a person needs 0.56 m).
+ for(const zy of [1,2.6])for(const x of [-1.6,1.6]){
+  kit.box('paint',[2.1,.06,.45],[x,PASS+.45,Z(zy)],TEAK);kit.box('paint',[2.1,.4,.06],[x,PASS+.68,Z(zy)-.21],TEAK);
+  for(const dx of [-.9,.9])kit.box('metal',[.06,.42,.42],[x+dx,PASS+.21,Z(zy)],STEEL);}
  kit.box('paint',[.45,.06,1.2],[3.45,PASS+.45,Z(2.7)],TEAK);for(const dz of [-.5,.5])kit.box('metal',[.4,.42,.06],[3.45,PASS+.21,Z(2.7)+dz],STEEL);
  {const a0=Z(.4),a1=Z(3.4),ay=PASS+2.35;for(const x of [-2.35,2.35])for(const z of [a0,a1])kit.bar('metal',[x,PASS,z],[x,ay,z],.035,STEEL,6);
   kit.block('paint',[-2.5,ay,a0-.1],[2.5,ay+.04,a1+.1],CANVAS);kit.box('paint',[5,.18,.02],[0,ay-.08,a0-.11],TEAL);}
@@ -488,11 +493,16 @@ export function buildFerryModel({shadows=false}={}){
    pieces.push(decal([1,2,1,2],.62,.62,[side*(hullX(.42,0)+.014),.42,0],rot));
    pieces.push(decal([2,2,1,2],.45,.45,[side*(hullX(.2,Z(29))+.014),.2,Z(29)],rot));
    pieces.push(decal([3,2,1,1],.8,.4,[side*(dw+.03),PASS+2.2,DH0+1.9],rot));
+   // The wheelhouse's wing doors: 操舵室 over each.
+   pieces.push(decal([3,1,1,.3],.9,.28,[side*(3+.045),BRIDGE+2.1,Z(20.0)],rot));
    pieces.push(decal([1,1,2,1],1.6,.4,[side*(3+.09),BRIDGE+2.25,DH0+3.2],rot));                      // her name board on each side of the bridge house
    pieces.push(decal([0,1,1,1],.7,.7,[side*3.35+side*.46,Y(H.funnelTop)-1.3,FZ],rot));             // the anchor on each funnel
   }
   pieces.push(decal([2,0,2,1],2.6,.75,[0,.55,-HALF-.013],Math.PI));
   pieces.push(decal([1,1,2,1],2.0,.5,[0,BRIDGE+2.3,DH1+.17],0));                                    // and over the wheelhouse windows
+  // 機関室 ENGINE ROOM over the casing door on the car deck (the way down), 乗組員専用 CREW ONLY over the crew's door aft.
+  pieces.push(decal([3,1,1,.3],1.0,.3,[3.1-.035,CAR+2.3,Z(7.0)],-Math.PI/2));
+  pieces.push(decal([3,1.3,1,.3],.9,.28,[0,BRIDGE+2.12,DH0-.015],Math.PI));
   pieces.push(decal([3,3,1,1],.8,.4,[2.2,PASS+2.0,DH0-.03],Math.PI));
   const mesh=new THREE.Mesh(mergeGeometries(pieces,false),mat);mesh.name='Minato Maru markings';mesh.renderOrder=2;ferry.add(mesh);
  }

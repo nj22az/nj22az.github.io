@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
+import {FERRY_FARE} from '../src/island/services.js';
 import {AIRPORT_JETTY,buildAirportIsland} from '../src/world/airport-island.js';
 import {airportWorld,airportLocal,airportSurface,AIRPORT_LANDING,AIRPORT_LANDING_HEIGHT,AIRPORT_PIER_HEIGHT} from '../src/world/airport-ground.js';
 import {buildAirportVehicleYard} from '../src/world/airport-vehicle-yard.js';
@@ -124,9 +125,9 @@ function playerService(){
 
 test('one hull carries the player both ways, preserves saves and returns at safe heights',()=>{
  const s=playerService();assert.equal(s.group.children.filter(o=>/ferry/i.test(o.name)&&o.isGroup).length,1);
- s.play.action('airport-ferry');s.choose('Buy return');s.choose('Board');s.play.tick(0);assert.equal(s.run.phase,'crossing');s.complete();
+ s.play.action('airport-ferry');s.choose('Board');s.play.tick(0);assert.equal(s.run.phase,'crossing');s.complete();
  assert.equal(s.run.berth,'airport');assert.equal(s.state.island.journey.location,'airport');assert.equal(s.state.island.visits,1);
- assert.equal(s.arrivals.at(-1).y,AIRPORT_LANDING_HEIGHT);assert.equal(s.state.yen,600);
+ assert.equal(s.arrivals.at(-1).y,AIRPORT_LANDING_HEIGHT);assert.equal(s.state.yen,1000-FERRY_FARE);
  s.state.yen=0;s.state.island.journey.roundTrip=false; // Old save with a missing fare flag must still get home.
  s.play.action('airport-return');s.choose('Board');s.complete();
  assert.equal(s.run.berth,'town');assert.equal(s.state.island.journey.location,'town');assert.equal(s.arrivals.at(-1).y,AIRPORT_FERRY_PORTS.town.height);
@@ -136,7 +137,7 @@ test('one hull carries the player both ways, preserves saves and returns at safe
 test('calling from the opposite shore brings the same empty hull before boarding',()=>{
  const s=playerService();s.run.parkAt('airport');s.player.position.set(...[AIRPORT_FERRY_PORTS.town.landing[0],.098,AIRPORT_FERRY_PORTS.town.landing[1]]);
  const before=s.run.ferry.position.clone(),playerBefore=s.player.position.clone();
- s.play.action('airport-ferry');s.choose('Buy return');s.choose('Board');s.play.tick(0);
+ s.play.action('airport-ferry');s.choose('Board');s.play.tick(0);
  assert.equal(s.run.destination,'town');assert.ok(s.run.ferry.position.distanceTo(before)<.04,'Hull teleported to the passenger');
  s.play.tick(1);assert.deepEqual(s.player.position.toArray(),playerBefore.toArray(),'Passenger moved during empty pickup');
  s.complete();assert.equal(s.state.island.journey.location,'airport');assert.equal(s.state.island.visits,1);assert.equal(s.arrivals.at(-1).y,AIRPORT_LANDING_HEIGHT);
@@ -145,7 +146,7 @@ test('calling from the opposite shore brings the same empty hull before boarding
 test('loading keeps passengers off vehicle lanes and waits for actual boarding readiness',()=>{
  const s=playerService(),shore=new THREE.Vector3(AIRPORT_FERRY_PORTS.town.landing[0],AIRPORT_FERRY_PORTS.town.height,AIRPORT_FERRY_PORTS.town.landing[1]);s.player.position.copy(shore);
  let preparation=0;s.world.traffic={prepareCrossing(){return ++preparation>=4;}};
- s.play.action('airport-ferry');s.choose('Buy return');s.choose('Board');
+ s.play.action('airport-ferry');s.choose('Board');
  for(let i=0;i<3;i++){s.play.tick(1);assert.equal(s.run.phase,'waiting');assert.deepEqual(s.player.position.toArray(),shore.toArray());}
  s.play.tick(1);assert.equal(s.run.phase,'crossing');s.run.ferry.updateMatrixWorld(true);
  const local=s.player.position.clone().applyMatrix4(s.run.ferry.matrixWorld.clone().invert());
@@ -195,7 +196,7 @@ test('automatic crossings wait for vehicle transfer, and passenger requests pres
  s.play.tick(5);const progress=s.run.crossingProgress,position=s.run.ferry.position.clone(),cameraBefore=s.camera.position.clone();
  s.run.update(4,600);assert.equal(s.run.crossingProgress,progress,'World update advanced the same crossing twice');
  assert.equal(s.run.beginCrossing('town'),false,'Another request restarted the hull mid-crossing');
- s.play.action('airport-ferry');s.choose('Buy return');s.choose('Board');
+ s.play.action('airport-ferry');s.choose('Board');
  assert.equal(s.play.phase,'awaiting-boat');assert.equal(s.run.crossingProgress,progress);assert.equal(s.run.ferry.position.distanceTo(position),0);
  const waiting=s.player.position.clone();s.play.tick(1);
  assert.ok(s.run.crossingProgress>progress);assert.deepEqual(s.player.position.toArray(),waiting.toArray());assert.deepEqual(s.camera.position.toArray(),cameraBefore.toArray());

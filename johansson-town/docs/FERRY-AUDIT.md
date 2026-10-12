@@ -679,3 +679,87 @@ her side and sloping down to the pier, none at sea and none at Kitano-jima; the 
 43,000 triangles; the stern flag inside her length). `ferry-walk`: the engines' rails stand where the walk already kept
 clear. In the running game: the lobby, carpet room, saloon, corridor, mess, engine room (two views), wheelhouse and
 car deck photographed with the new lens; from outside, the frames, the name board, the flag and the lines.
+
+### Batch 6e: a new world when you step aboard (2026-10-12)
+
+The creator, 2026-10-12: *"Audit the ship again, I want the ferry to be at least as detailed as the Sakura konbini but
+bigger and when we are on the ship offload the city we should still be able to see it live as from the door of the
+izakaya and Sakura but when we are on the ship we are basically on a new world even when it's moored or when it's
+sailing during development Johansson can sail for free to the tropical island so implement it pls, add to the title
+screen work in progress to signify the game is not 'ready'"*, and then: *"I think the entrance to the engine room
+should be easier to find, I want to be able to explore the engine room now, and the bridge, make the interior more
+realistic."* The audit against the konbini is section 7 below.
+
+**Aboard is a place (`game.js`).** With a deck under him the HUD says **MINATO MARU** and where on her he is (the car
+deck, the saloon, the engine room, the wheelhouse …), the way it says SAKURA at the konbini's door; the town stays live
+outside her windows and doors (the town already streams by distance, so nothing is unloaded: she is the place, the town
+the view from her, as the izakaya's door frames the street).
+
+**Sailing for free, on foot (`island/play.js`, `island/services.js`, `ferry-walk.js`).** `FERRY_FARE` is 0 while the
+game is in development: the purser's window and the ferry menu offer *Sail now* (*Board the local ferry* when she is
+not alongside), one press, no ticket. A crossing started aboard is **afoot**: Johansson is not put in a car and the
+cinematic camera is not taken; he stays where he stands (the open deck, the saloon, the engine room) and the ship
+carries him (`advanceTown` snapshots his position in her frame before the island tick and the world update, and puts
+him back in it after, turning him with her yaw). The ship's floors are open whenever she is visible, under way as
+alongside; only the ramp and the gangway are open while she waits. The crossing takes 60 s afoot (the cars' crossing is
+unchanged). At the far side he is on her deck alongside Kitano-jima, free to walk off down the ramp. The HUD follows:
+*at sea*, then *alongside Kitano-jima*. Crossing back is the same from her deck there.
+
+**The way down is found (`ferry-interior.js`, `ferry-model.js`, `ferry-inspect.js`).** The engine room's door on the
+casing's car-deck face carries a lit **機関室 ENGINE ROOM** sign with a light hood over it, yellow-and-black hazard
+stripes on the deck through the doorway, ear defenders on a hook inside and the green escape sign; a prompt at the door
+(*Engine room: through the door and down the ladder*) says what is behind it, and one at the crew's door on the bridge
+deck's aft platform (*Crew only*) says how the corridor leads to the wheelhouse and that the wings' ladders do too.
+**CREW ONLY** and **WHEELHOUSE** decals mark the crew's door and both wing doors.
+
+**Realism below and above.** Engine room: the mains have their gauge boards, maker's plates, red exhaust manifolds,
+air filters, flywheel housings, oil fillers and injection-pump covers; the general alarm bell, the first-aid box and the
+engine room's own sign. Wheelhouse: the magnetic-compass periscope down from the compass deck to the steering stand,
+the radar's hood, the telegraph's lever box, the VHF handset on its cradle, the PA microphone, the echo sounder, the
+navigation-lights panel with its lamps, the window sills with the binoculars and the log, the wipers, the clock and
+barometer, the fire-detection panel and the muster list, the deckhead lights, the chart-table lamp, drawers and
+instruments. Open deck: the benches are two a side with a 1.1 m aisle down the middle (they met in the middle before,
+so the open deck could not be walked fore and aft).
+
+**Title screen.** A **WORK IN PROGRESS** stamp under the title (`index.html`, `landing.css`), so no one takes the game
+for finished.
+
+**Found and fixed on the way.** The first carry took his place in her frame before his own walk and put it back
+after, so aboard he could not walk at all (every step undone the same frame). It is now taken and put back twice,
+round the two moves of hers only (the crossing in `islandPlay.tick`, the swell in `world.update`), never round his.
+
+**Checked.** Tests: `airport-ferry`, `island-growth` and `ferry-walk` follow the free fare and the open floors (a
+crossing under way keeps his place in her frame; 43 ferry tests). In the running game (`tools` harness): the title
+stamp; *Sail now* from her deck, his position in her frame constant for the whole 66 s crossing while the HUD went
+*at sea* → *alongside Kitano-jima*; the engine room's door and sign from the walkway and head on; the engines' detail
+and the view aft from the forward end; the wheelhouse console and its aft bulkhead; the crew's door and its sign; the
+open deck's aisle, walked.
+
+## 7. Audit: the Minato Maru against the Sakura konbini (2026-10-12)
+
+The creator's bar: *"at least as detailed as the Sakura konbini but bigger."* Measured honestly, by what each has:
+
+| | Sakura konbini | Minato Maru (after 6e) |
+|---|---|---|
+| Fabric | one room, a backroom, a restroom; shelves, counter, windows, signage, surfaces with patina | 872 boxes, 215 rails, 51 windows, 44 floors over three decks: car deck, lobby, carpet room, saloon, open deck, corridor, cabins, mess, galley, engine room, wheelhouse, wings; the hull with its underwater body |
+| Things to look at | every product with who it is for and why it is there (`commerce/merchandising.js`), the magazine rack, the specials board, flyers | 19 inspect prompts with her real numbers (engines, board, pumps, tanks, CO₂, radar, chart) |
+| People | staff on shift with routines, customers who browse, queue, pay and leave; dialogue (`sakura-script.js`) | the crew exist as data (`people/ferry-crew.js`) but **nobody is aboard**: no master on the bridge, no chief below, no purser at the window |
+| Life | opening hours, lights, the door's chime, cheer, the restroom used | she sails, moors and loads cars; **no engine sound, no whistle, no wake, no running engines to see** |
+| Trade | buy anything on the shelves; the flyer | the kiosk and the purser's window sell nothing; the fare is free |
+| Stories | the storyteller shoots in her rooms (backdrops) | **no backdrops captured** aboard yet |
+
+So the ship is bigger and, as fabric, at least as detailed; what the konbini has and she lacks is **life**. In this
+order, each its own batch (never with ground or lighting):
+
+1. **Crew at their posts (people batch):** the master in the wheelhouse, the chief in the booth, the purser at her
+   window, the bosun at the ramp, each with a look, a routine through the phases (waiting, loading, at sea) and a few
+   lines; guide entries and portraits so the storyteller can cast them.
+2. **Running engines:** the mains' sound and a turbocharger whine below when she is under way, the exhaust from the
+   funnel, the whistle on casting off, the wake; gauges that read differently stopped and running.
+3. **The kiosk and the purser sell:** canned coffee, the ferry's own senbei, the ticket as a keepsake, tied to the
+   town's trade (Sakura supplies the kiosk).
+4. **Backdrops aboard** for the storyteller (`tools/render-feed-backdrops.mjs`): the saloon, the open deck, the
+   wheelhouse, the engine room.
+5. **Still open from before:** the steering-gear and bow-thruster rooms, the compass deck walked, mooring bitts at
+   Kitano-jima, tap-to-walk aboard, the linkspan at Minato.
+
