@@ -1,9 +1,10 @@
-import {ISLAND_OUTFITS,ISLAND_COSTUMES,outfitAllowedFor,appropriateOutfit} from './outfits.js';
+import {outfitAllowedFor,appropriateOutfit} from './outfits.js';
+import {SETS,SLOTS,SLOT_AT,ISLAND_PALETTE,ISLAND_HEX,entryFor,labelFor,wornSet,wornLine,searchWardrobe,putOnSet,accessibleName} from './wardrobe-catalogue.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,wearsBathTowel} from './build.js';
 import {createAvatarAnimator} from './animate.js';
 import {drawPart,drawFace,EXPRESSION_NAMES} from './face.js';
-import {PALETTE,PARTS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
+import {PALETTE,PARTS,PATTERNS,NUMBERED_TOPS,normalizeRecipe,encodeRecipe,decodeRecipe,randomRecipe,AGES} from './recipe.js';
 import {POSITION_FEATURES,hitFaceFeature,draggedFaceFields} from './face-position.js';
 import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE} from './cast.js';
 import {MOVES} from './moves.js';
@@ -43,6 +44,7 @@ const FEATURE_PATHS={
  nose:'<path d="M10 3L8 13l-3 3q1 4 5 1h4q4 3 5-1l-3-3-2-10"/>',
  mouth:'<path d="M2 12q5-8 10-3 5-5 10 3-10 14-20 0zM2 12h20"/>',
  extras:'<circle cx="6" cy="12" r="5"/><circle cx="18" cy="12" r="5"/><path d="M11 11h2"/>',
+ outfits:'<path d="M9.5 5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4v.3L2.6 15.4c-1 .7-.5 2.1.7 2.1h17.4c1.2 0 1.7-1.4.7-2.1L12 9"/>',
  bottom:'<path d="M6 3h12l2 18h-7l-1-11-1 11H4z"/>',
  shoes:'<path d="M5 3h8v10l7 3v5H3v-8z"/>',
  hat:'<path d="M5 14V9a7 7 0 0114 0v5M1 14h22v4H1z"/>',
@@ -81,15 +83,11 @@ const LABEL={
  smile:'Smile',flat:'Flat',grin:'Grin',small:'Small',smirk:'Smirk',pout:'Pout',
  square:'Square',oval:'Oval',heart:'Heart',sun:'Shades',half:'Half-rim',
  moustache:'Moustache',walrus:'Walrus',stubble:'Stubble',beard:'Beard',goatee:'Goatee',
- lighthouse:'Lighthouse costume',lantern:'Lantern costume',reef:'Reef costume',sailorlong:'Long-sleeved sailor',police:'Police jacket',sailor:'Sailor shirt',hoodie:'Hooded sweater',cardigan:'Cardigan',overalls:'Work overalls',sundress:'Sundress bodice',festival:'Festival coat',widepants:'Wide trousers',cropped:'Cropped trousers',culottes:'Culottes',pleatedskirt:'Pleated skirt',squid:'Squid cap',teapot:'Teapot hat',sunflower:'Sunflower bonnet',paperboat:'Paper-boat hat',mountain:'Mount Aoba hat',
- tank:'Tank top',underwear:'Underwear',barefoot:'Bare feet',sneakers:'Sneakers',sandals:'Sandals',shoes:'Shoes',
- tee:'T-shirt',kariyushi:'Kariyushi',contrastpolo:'Contrast-collar polo',polo:'Polo',blouse:'Blouse',jacket:'Jacket',apron:'Apron',smock:'Smock',
- boots:'Boots',shorts:'Shorts',trousers:'Trousers',skirt:'Skirt',longskirt:'Long skirt',
- cap:'Cap',captain:'Captain',police:'Police',helmet:'Helmet',straw:'Straw hat',headband:'Headband',kerchief:'Kerchief',
- beanie:'Beanie',beret:'Beret',bucket:'Bucket hat',ribbon:'Hair bow',studs:'Studs',hoops:'Hoops',pendant:'Pendant',scarf:'Scarf',
  flowers:'Flowers',stripes:'Stripes',dots:'Dots',
  child:'Child',teen:'Teen',adult:'Adult',elder:'Elder',
 };
+/** The words under a part's picture: a wardrobe item's from the catalogue, by slot (a police top and a police cap read apart). */
+const partLabel=(at,value)=>SLOT_AT[at]?labelFor(SLOT_AT[at],value):LABEL[value]||value;
 
 /**
  * Every feature tab. Each control lives on one page of the tab: 'style', 'colour' or
@@ -121,7 +119,7 @@ export const TABS=[
   {kind:'parts',page:'style',at:'hair.style',list:PARTS.hair,draw:'head'},
   {kind:'toggle',page:'style',at:'hair.flip',label:'Part on the other side'},
   {kind:'colours',page:'colour',at:'hair.colour',label:'Colour',palette:PALETTE.hair},
-  {kind:'colours',page:'colour',at:'hair.tieColour',label:'Braid ties',palette:PALETTE.cloth,when:r=>['braids','longbraids'].includes(r.hair.style)},
+  {kind:'colours',page:'colour',at:'hair.tieColour',label:'Braid ties',palette:PALETTE.cloth,cloth:true,when:r=>['braids','longbraids'].includes(r.hair.style)},
   {kind:'slider',page:'adjust',at:'hair.length',label:'Braid length',low:'Upper chest',high:'Past waist',when:r=>r.hair.style==='longbraids'},
   {kind:'slider',page:'adjust',at:'hair.volume',label:'Braid volume',low:'Fine',high:'Full',when:r=>r.hair.style==='longbraids'}]},
  {id:'eyes',name:'Eyes',controls:[
@@ -160,25 +158,31 @@ export const TABS=[
   {kind:'stepper',page:'adjust',at:'facial.height',label:'Whiskers height',less:'Lower moustache',more:'Higher moustache'}]},
  // The wardrobe. Everyone has the base layer on (tank top, underwear, bare feet);
  // clothes are added over it, and the first tile of each grid takes them off again.
+ // Outfits: the island's sets and costumes (outfits.js), each put on in one tap over what is worn.
+ // Cloth colours (`cloth`) offer the island palette first (character-style.md §6), then the maker's free palette.
+ {id:'outfits',name:'Outfits',wardrobe:true,controls:[
+  {kind:'sets',page:'style',at:'outfit',draw:'outfit'}]},
  {id:'top',name:'Top',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.top',list:PARTS.top,draw:'figure'},
-  {kind:'chips',page:'style',at:'outfit.pattern',list:['none','flowers','stripes','dots'],label:'Print'},
-  {kind:'colours',page:'colour',at:'outfit.topColour',label:'Colour',palette:PALETTE.cloth},
-  {kind:'colours',page:'colour',at:'outfit.accent',label:'Ribbons & print',palette:PALETTE.cloth}]},
+  {kind:'chips',page:'style',at:'outfit.pattern',list:PATTERNS,label:'Print'},
+  // A shirt number, only for the tops that carry one (the Seagulls jersey's back); 0 is none.
+  {kind:'number',page:'style',at:'outfit.number',label:'Shirt number',short:'Number',min:0,max:99,shows:r=>NUMBERED_TOPS.includes(r.outfit.top)},
+  {kind:'colours',page:'colour',at:'outfit.topColour',label:'Colour',palette:PALETTE.cloth,cloth:true},
+  {kind:'colours',page:'colour',at:'outfit.accent',label:'Ribbons & print',palette:PALETTE.cloth,cloth:true}]},
  {id:'bottom',name:'Bottoms',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.bottom',list:PARTS.bottom,draw:'figure'},
-  {kind:'colours',page:'colour',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth},
-  {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth},
+  {kind:'colours',page:'colour',at:'outfit.bottomColour',label:'Colour',palette:PALETTE.cloth,cloth:true},
+  {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth,cloth:true},
   // What they wear behind Umi-no-yu's noren: grown-ups choose; children wear swimwear. (Past the bath doors, in the shared
   // bath, everybody wears swimwear.)
   {kind:'chips',page:'style',at:'swim.bath',list:['towel','swimwear'],label:'Behind the noren at Umi-no-yu',when:r=>wearsBathTowel(r)},
   {kind:'note',page:'style',text:BATH_CHILD_NOTE,when:r=>!wearsBathTowel(r)}]},
  {id:'shoes',name:'Shoes',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.footwear',list:PARTS.footwear,draw:'feet'},
-  {kind:'colours',page:'colour',at:'outfit.shoes',label:'Colour',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6']}]},
+  {kind:'colours',page:'colour',at:'outfit.shoes',label:'Colour',palette:['#6d4a32','#2b2b2b','#f4f1ea','#d8342c','#3fa0c8','#f4d23c','#8fbf4a','#e98aa6'],cloth:true}]},
  {id:'hat',name:'Hats & bows',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'outfit.hat',list:PARTS.hat,draw:'head'},
-  {kind:'colours',page:'colour',at:'outfit.hatColour',label:'Colour',palette:PALETTE.cloth}]},
+  {kind:'colours',page:'colour',at:'outfit.hatColour',label:'Colour',palette:PALETTE.cloth,cloth:true}]},
  {id:'accessories',name:'Accessories',wardrobe:true,controls:[
   {kind:'parts',page:'style',at:'accessories.earrings',label:'Earrings',list:PARTS.earrings,draw:'head'},
   {kind:'parts',page:'style',at:'accessories.neckwear',label:'Neckwear',list:PARTS.neckwear,draw:'figure'},
@@ -257,6 +261,8 @@ const CSS=`
 .shm-swatches button{width:44px;height:44px;border:4px solid #fff;border-radius:50%;box-shadow:0 0 0 2px #f0dcb0}
 .shm-swatches button[aria-pressed=true]{box-shadow:0 0 0 4px #ff9d3c}
 .shm-step{display:grid;grid-template-columns:96px 44px minmax(0,1fr) 44px;align-items:center;gap:8px;margin:8px 0}
+.shm-step[hidden]{display:none}
+.shm-number{height:44px;text-align:center;font-size:18px;font-weight:800}
 .shm-step>span{font-size:12px;font-weight:800}
 .shm-step button,.shm-pad button{display:grid;place-items:center;width:44px;height:44px;border:2px solid #f0dcb0;border-radius:50%;background:#fff;color:inherit;font-size:20px;font-weight:900;line-height:1}
 .shm-meter{display:flex;gap:3px;height:12px}
@@ -349,7 +355,40 @@ const CSS=`
  .shm[data-step=look] .shm-grid{gap:6px}.shm[data-step=look] .shm-grid button{min-height:82px}.shm[data-step=look] .shm-grid button canvas{width:52px;height:52px}
  .shm[data-step=look] .shm-swatches{gap:7px}.shm[data-step=look] .shm-swatches button{width:36px;height:36px}
 }
+/* A short phone held upright (an iPhone SE, 320×568): a smaller figure and no heading over the colour tray, so the
+   choices keep a panel to work in. */
+@media(max-width:760px) and (max-height:640px){.shm[data-step=look] .shm-main{grid-template-rows:minmax(150px,36%) minmax(0,1fr)}.shm[data-step=look] .shm-palette h4{display:none}}
 @media(max-height:500px) and (min-width:761px){.shm[data-step=look] .shm-main{grid-template-columns:60px minmax(0,1fr) 300px}.shm[data-step=look] .shm-tabs button{min-height:54px}.shm[data-step=look] .shm-part-title{font-size:22px;margin:4px 12px 0}.shm[data-step=look] .shm-palette:not([hidden]){padding:6px 12px}}
+/* The wardrobe: one header row (the search and taking it all off), a row of category chips per grid, and who wears the
+   chosen item and why, with its colourways, right under the row of the picture tapped. The pictures keep the room. */
+.shm-wardrobe-head{display:flex;align-items:center;gap:8px;margin:0 0 8px}
+.shm-wardrobe-head .shm-search{flex:1 1 auto;width:auto;margin:0}
+.shm-wardrobe-head .shm-undress{flex:0 0 auto;margin:0;padding:8px 12px;white-space:nowrap}
+.shm-found{margin:0 0 8px;font-size:12px;line-height:1.45;color:#6b5d44}
+.shm-found:empty{margin:0}
+.shm-categories{flex-wrap:nowrap;overflow-x:auto;margin:0 0 10px;padding-bottom:2px}
+.shm-categories button{flex:0 0 auto;white-space:nowrap}
+/* A row that scrolls sideways (the chips, the colour tray) fades out at an edge with more behind it: nothing is hidden
+   without a sign, also on an iPad, which draws no scroll bar; a mouse has a thin one. */
+.shm-scrolls{position:relative;scrollbar-width:thin;padding-bottom:6px}
+.shm-scrolls[data-more=end]{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),#0000);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),#0000)}
+.shm-scrolls[data-more=start]{-webkit-mask-image:linear-gradient(90deg,#0000,#000 44px);mask-image:linear-gradient(90deg,#0000,#000 44px)}
+.shm-scrolls[data-more=both]{-webkit-mask-image:linear-gradient(90deg,#0000,#000 44px,#000 calc(100% - 44px),#0000);mask-image:linear-gradient(90deg,#0000,#000 44px,#000 calc(100% - 44px),#0000)}
+.shm-grid>.shm-worn-box{grid-column:1/-1;margin:0 2px 4px}
+.shm-worn{margin:2px 0 4px;font-size:12px;line-height:1.45;color:#6b5d44}
+.shm-worn:empty{display:none}
+.shm-ways{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.shm-ways label{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px 6px 8px;border:2px solid #f0dcb0;border-radius:22px;background:#fff;color:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.shm-ways input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.shm-ways label.on{background:#fff4e2;border-color:#ff9d3c}
+.shm-ways label:has(input:focus-visible){outline:3px solid #2a8fcc;outline-offset:2px}
+.shm-ways i{display:block;width:26px;height:26px;border-radius:50%;box-shadow:0 0 0 1px #0003}
+.shm-swatches .shm-swatch-label{flex-basis:100%;margin:2px 0 -2px;font-size:11px;font-weight:800;color:#6b5d44}
+.shm[data-step=look] .shm-ways label.on{border-color:#498579;background:#e6f1ee}
+/* The colour tray under the pictures is one row that scrolls sideways: the island palette, and the colour worn when it is
+   not one of them. The Colour page has every colour, with its labels. */
+.shm[data-step=look] .shm-palette .shm-swatches{flex-wrap:nowrap;overflow-x:auto;padding:3px 3px 6px}
+.shm-palette .shm-swatches button{flex:0 0 auto}
 
 `;
 
@@ -415,6 +454,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  const swallow=e=>{
   if(!root.isConnected)return;e.stopPropagation();
   if(e.type!=='keydown')return;
+  // Escape in the wardrobe search clears it, and an empty search keeps it: it never closes the maker (in Johansson Studio
+  // closing leaves the page, and its unsaved edits).
+  if(e.key==='Escape'&&e.target===search){e.preventDefault();if(search.value){clearTimeout(searchDue);search.value='';wardrobeQuery='';fillWardrobe();}return;}
   if(e.key==='Escape'){e.preventDefault();shareLayer?closeShare():finish(false);}
   if(e.key==='Tab'){const scope=shareLayer||root,items=[...scope.querySelectorAll('button:not(:disabled),input,select,textarea,[tabindex="0"]')].filter(x=>x.getClientRects().length);
    const first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}
@@ -531,6 +573,20 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
  canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);
  const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):null;observer?.observe(canvas);resize();
 
+ // ----- The wardrobe's state -----
+ // One header row over the wardrobe tabs: the search across them (wardrobe-catalogue.js searchWardrobe) and taking it all
+ // off; under it what the search found (a live status), the category chip each grid shows, and the box the tab draws in.
+ let wardrobeQuery='',wardrobeArea=null,searchDue=0;const chipFor=new Map();
+ const search=el('input',{type:'search',className:'shm-text shm-search',placeholder:'Search',ariaLabel:'Search the wardrobe',title:'A name, a place or an occasion: Kōji, Sato Ramen, school, rain',autocomplete:'off',spellcheck:false});
+ search.setAttribute('autocapitalize','off');search.setAttribute('enterkeyhint','search');
+ search.oninput=()=>{clearTimeout(searchDue);searchDue=setTimeout(()=>{const q=search.value.trim();if(q===wardrobeQuery)return;wardrobeQuery=q;fillWardrobe();},140);};
+ const found=el('p',{className:'shm-found',role:'status'});
+ const undress=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all off',title:'Down to what is underneath it all: a tank top, underwear and bare feet. The first picture of each grid takes that one thing off.'});
+ undress.onclick=()=>{
+  remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none',number:0});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});
+  recipe=normalizeRecipe(recipe);dirty=true;const focused=document.activeElement===undress;renderBody();if(focused)undress.focus({preventScroll:true});
+ };
+
  // ----- Part pictures -----
  // Face parts are drawn flat, one feature at a time, by the face painter. Hair, hats and
  // clothes are the figure itself, rendered small and straight on.
@@ -555,9 +611,27 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   renderer.setRenderTarget(null);renderer.setClearColor(0x000000,0);
   a.root.removeFromParent();a.dispose();
  }
+ // Pictures are kept, the least recently used dropped past THUMB_CAP, so a big wardrobe stays light on an iPad.
+ const THUMB_CAP=120;
  function cached(key,c,draw){
-  if(thumbs.has(key)){c.getContext('2d').drawImage(thumbs.get(key),0,0);return;}
+  const hit=thumbs.get(key);
+  if(hit){thumbs.delete(key);thumbs.set(key,hit);c.getContext('2d').drawImage(hit,0,0);return;}
   draw();const copy=document.createElement('canvas');copy.width=c.width;copy.height=c.height;copy.getContext('2d').drawImage(c,0,0);thumbs.set(key,copy);
+  while(thumbs.size>THUMB_CAP)thumbs.delete(thumbs.keys().next().value);
+ }
+ /**
+  * What a figure tile's picture is kept under: the item plus only the recipe fields that show in that framing, so a new
+  * hat does not redraw every top, and new shoes do not redraw the hats.
+  */
+ const FACE_FIELDS=['eyes','brows','nose','mouth','glasses','facial','blush','freckles','mole','moleSpot','wrinkles'];
+ const HEAD_UNSEEN=['outfit.bottom','outfit.bottomColour','outfit.bottomPattern','outfit.footwear','outfit.shoes'];
+ const UNSEEN={figure:['outfit.hat','outfit.hatColour','outfit.footwear','outfit.shoes'],bottom:['outfit.hat','outfit.hatColour',...FACE_FIELDS],
+  feet:['outfit.hat','outfit.hatColour','hair','accessories',...FACE_FIELDS],head:HEAD_UNSEEN,'hair-rear':HEAD_UNSEEN,outfit:[]};
+ function pictureKey(r,framing){
+  // The name is unseen, except on a PE shirt's name patch.
+  const k=structuredClone({...r,name:r.outfit?.top==='gymtee'?r.name:0,profile:0,swim:0,__bottom:0});
+  for(const at of UNSEEN[framing]||[]){const keys=at.split('.'),last=keys.pop();let o=k;for(const key of keys)o=o?.[key];if(o)delete o[last];}
+  return JSON.stringify(k);
  }
  function drawThumb(control,value,c){
   const r=structuredClone(recipe);set(r,control.at,value);
@@ -569,7 +643,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const objects=['glasses','moustache','beard'].includes(control.draw);
   if(objects){r.hair.style='bald';if(control.draw==='moustache')r.facial.beard='none';if(control.draw==='beard')r.facial.moustache='none';if(control.draw!=='glasses')r.glasses.enabled=false;}
   const flat=!objects&&!['head','figure','feet'].includes(control.draw);
-  const key=control.at+'|'+framing+'|'+value+'|'+JSON.stringify(flat?{eyes:r.eyes,brows:r.brows,nose:r.nose,mouth:r.mouth,glasses:r.glasses,facial:r.facial,skin:r.body.skin}:{...r,name:0,profile:0});
+  const key=control.at+'|'+framing+'|'+value+'|'+(flat?JSON.stringify({eyes:r.eyes,brows:r.brows,nose:r.nose,mouth:r.mouth,glasses:r.glasses,facial:r.facial,skin:r.body.skin}):pictureKey(r,control.at==='outfit.bottom'?'bottom':framing));
   cached(key,c,()=>flat?drawPart(c.getContext('2d'),normalizeRecipe(r),control.draw,c.width):figureThumb(r,c,framing));
  }
 
@@ -581,8 +655,9 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   if(get(recipe,at)===value)return;
   if(keep)remember();
   set(recipe,at,value);if(at==='glasses.style')recipe.glasses.enabled=true;recipe=normalizeRecipe(recipe);dirty=true;
+  if(at.startsWith('outfit'))numberSync?.();
  }
- function chooseTab(id){endDrag();tab=id;category.value=id;const t=TABS.find(x=>x.id===id);if(!t.controls.some(c=>c.page===page))page='style';renderTabs();renderBody();body.scrollTop=0;syncFocus();}
+ function chooseTab(id){endDrag();tab=id;category.value=id;const t=TABS.find(x=>x.id===id);if(!t.controls.some(c=>c.page===page))page='style';for(const c of t.controls)chipFor.delete(c.at);renderTabs();renderBody();body.scrollTop=0;syncFocus();}
  category.onchange=()=>chooseTab(category.value);
  function renderTabs(){
   if(!tabs.children.length)tabs.append(...TABS.map(t=>{const b=el('button',{role:'tab',id:'shm-tab-'+t.id,ariaLabel:t.name,title:t.name});b.innerHTML=featureIcon(t.id);b.append(el('span',{textContent:t.name}));b.setAttribute('aria-controls','shm-body');b.onclick=()=>chooseTab(t.id);return b;}));
@@ -596,11 +671,26 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   canvas.ariaLabel=positioning?'Your islander. Drag '+tab+' to position; drag elsewhere to turn.':'Your islander. Drag to turn.';
  }
  tabs.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const i=TABS.findIndex(t=>t.id===tab),n=e.key==='Home'?0:e.key==='End'?TABS.length-1:(i+(e.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;chooseTab(TABS[n].id);tabs.children[n].focus();tabs.children[n].scrollIntoView({block:'nearest',inline:'nearest'});};
- let pictureQueue=[],pictureJobs=[],pictureFrame=0,picturesDue=0;
- // Pictures are drawn a few a frame, so a page opens at once and fills in.
- function paintQueued(){pictureFrame=requestAnimationFrame(()=>{const t0=performance.now();while(pictureQueue.length&&performance.now()-t0<12)pictureQueue.shift()();if(pictureQueue.length)paintQueued();});}
- function renderPictures(){clearTimeout(picturesDue);picturesDue=setTimeout(()=>{cancelAnimationFrame(pictureFrame);pictureQueue=[...pictureJobs];paintQueued();},180);}
- const pressed=(row,b)=>{for(const x of row.children)x.setAttribute('aria-pressed',String(x===b));};
+ // Pictures are drawn a few a frame, and only as their tiles scroll into view, so a page opens at once and fills in
+ // from the top, and a long wardrobe never renders the pictures nobody looks at (the iPad in Safari).
+ // A queued picture is drawn only if its tile is still on the page: a search keystroke or a chip replaces the tiles, and
+ // the pictures already queued for the old ones are skipped, not drawn into canvases nobody sees.
+ let pictureQueue=[],pictureJobs=new Map(),pictureFrame=0,picturesDue=0;
+ const ifShown=(canvas,job)=>()=>{if(canvas.isConnected)job();};
+ const inView=typeof IntersectionObserver==='function'?new IntersectionObserver(seen=>{
+  for(const e of seen)if(e.isIntersecting){inView.unobserve(e.target);const job=pictureJobs.get(e.target);if(job)pictureQueue.push(ifShown(e.target,job));}
+  if(pictureQueue.length)paintQueued();
+ },{root:body,rootMargin:'160px 0px'}):null;
+ /** A tile's picture, drawn when the tile comes into view. */
+ function picture(canvas,job){pictureJobs.set(canvas,job);if(inView)inView.observe(canvas);else{pictureQueue.push(ifShown(canvas,job));paintQueued();}}
+ function paintQueued(){if(pictureFrame)return;pictureFrame=requestAnimationFrame(()=>{pictureFrame=0;const t0=performance.now();while(pictureQueue.length&&performance.now()-t0<12)pictureQueue.shift()();if(pictureQueue.length)paintQueued();});}
+ /** Forget the pictures of tiles no longer on the page. */
+ function prunePictures(){for(const c of [...pictureJobs.keys()])if(!c.isConnected){pictureJobs.delete(c);inView?.unobserve(c);}}
+ function stopPictures(){cancelAnimationFrame(pictureFrame);pictureFrame=0;clearTimeout(picturesDue);pictureQueue=[];}
+ /** Every picture again (the recipe changed under them): those in view first, the rest as they scroll in. */
+ function renderPictures(){clearTimeout(picturesDue);picturesDue=setTimeout(()=>{stopPictures();
+  if(inView){inView.disconnect();for(const c of pictureJobs.keys())if(c.isConnected)inView.observe(c);}else{pictureQueue=[...pictureJobs].map(([c,job])=>ifShown(c,job));paintQueued();}},180);}
+ const pressed=(row,b)=>{for(const x of row.querySelectorAll(':scope>button'))x.setAttribute('aria-pressed',String(x===b));};
  /** A meter of sixteen notches and the two buttons either side of it. */
  function stepper(label,at,less,more,after=()=>{}){
   const meter=el('div',{className:'shm-meter',ariaHidden:'true'});meter.dataset.at=at;
@@ -609,6 +699,21 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   const minus=el('button',{type:'button',textContent:'−',ariaLabel:less,title:less}),plus=el('button',{type:'button',textContent:'+',ariaLabel:more,title:more});
   minus.onclick=()=>bump(-NOTCH);plus.onclick=()=>bump(NOTCH);paint();
   return el('div',{className:'shm-step'},el('span',{textContent:label}),minus,meter,plus);
+ }
+ /**
+  * A whole number (a shirt number): − and + either side of a field it can be typed into. Shown only while `shows`
+  * (a numbered top is worn), and kept in step when the top changes under it (numberSync, from change()).
+  */
+ let numberSync=null;
+ function numberControl(control){
+  const label=el('span',{textContent:control.short||control.label}),field=el('input',{type:'number',min:control.min,max:control.max,step:1,inputMode:'numeric',className:'shm-text shm-number',ariaLabel:control.label});
+  const minus=el('button',{type:'button',textContent:'−',ariaLabel:'Lower '+control.label.toLowerCase(),title:'Lower'}),plus=el('button',{type:'button',textContent:'+',ariaLabel:'Higher '+control.label.toLowerCase(),title:'Higher'});
+  const box=el('div',{className:'shm-step shm-number-step'},label,minus,field,plus);
+  const paint=()=>{const v=get(recipe,control.at);field.value=String(v);box.hidden=!control.shows(recipe);minus.disabled=v<=control.min;plus.disabled=v>=control.max;};
+  const put=v=>{change(control.at,Math.max(control.min,Math.min(control.max,Math.round(v)||0)));paint();renderPictures();};
+  minus.onclick=()=>put(get(recipe,control.at)-1);plus.onclick=()=>put(get(recipe,control.at)+1);
+  field.onchange=()=>put(Number(field.value));
+  numberSync=paint;paint();return box;
  }
  function renderLook(){
   const t=TABS.find(x=>x.id===tab);
@@ -620,33 +725,204 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
    }
    body.append(views,el('p',{className:'shm-note',textContent:'Compare the fringe and the back. Choose a style, then set its colour and parting independently.'}));
   }
-  if(t.id==='top'&&page==='style'){for(const [title,presets] of [['Island outfit sets',ISLAND_OUTFITS],['Island costumes',ISLAND_COSTUMES]]){const sets=el('div',{className:'shm-grid'});sets.setAttribute('aria-label',title);for(const preset of presets.filter(p=>outfitAllowedFor(wardrobeOwner,p.outfit))){const c=el('canvas',{width:136,height:136}),button=el('button',{type:'button',ariaLabel:preset.name,title:preset.name},c,preset.name);button.onclick=()=>change('outfit',{...recipe.outfit,...preset.outfit});sets.append(button);pictureJobs.push(()=>{const r=normalizeRecipe({...recipe,outfit:{...recipe.outfit,...preset.outfit}});cached('outfit|'+preset.name+'|'+JSON.stringify(r),c,()=>figureThumb(r,c,'outfit'));});}body.append(el('h3',{},title),sets);}}
   if(t.wardrobe&&page==='style'){
-   const off=el('button',{type:'button',className:'shm-pill shm-undress',textContent:'Take all clothes off'});
-   off.onclick=()=>{remember();Object.assign(recipe.outfit,{top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',hat:'none'});Object.assign(recipe.accessories,{earrings:'none',neckwear:'none',pin:false});recipe=normalizeRecipe(recipe);dirty=true;renderBody();};
-   body.append(el('p',{className:'shm-note',textContent:'Underneath it all: a tank top, underwear and bare feet. Tap something to put it on; the first picture takes it off.'}),off);
+   // One header row for the whole wardrobe (the search, kept as the tabs change, and taking it all off); under it what
+   // the search found, then the tab or the search's results.
+   wardrobeArea=el('div',{className:'shm-wardrobe'});body.append(el('div',{className:'shm-wardrobe-head'},search,undress),found,wardrobeArea);fillWardrobe();return;
   }
+  controlsInto(body,t);
+ }
+ /** The wardrobe tab under the header: its own grids, or everything the search finds. */
+ function fillWardrobe(){
+  if(!wardrobeArea)return;
+  const t=TABS.find(x=>x.id===tab),host=wardrobeArea;host.replaceChildren();
+  prunePictures();
+  if(wardrobeQuery){searchResults(host);return;}
+  found.textContent='';controlsInto(host,t);
+ }
+ /** A picture tile for a wardrobe part or an outfit set: its picture, its short label, and a name that holds the label. */
+ function wardrobeTile(entry,draw,onPick){
+  const c=el('canvas',{width:136,height:136}),b=el('button',{type:'button',title:entry.name||entry.label},c,entry.label);
+  if(entry.name)b.ariaLabel=accessibleName(entry);b.dataset.slot=entry.slot||'';b.dataset.id=entry.id||'';b.onclick=onPick;picture(c,()=>draw(c));return b;
+ }
+ /** Fill `box` with who wears `entry` and why, and its colourways as named two-tone choices (`pickWay` puts one on). */
+ function fillInfo(box,entry,pickWay){
+  box.replaceChildren(el('p',{className:'shm-worn',textContent:wornLine(entry)}));
+  if(!entry?.colourways.length)return;
+  const worn=wornSet(recipe.outfit),now=entry.slot==='set'?(worn?.set===entry?worn.colourway:-1):entry.colourways.findIndex(w=>Object.entries(w.colours).every(([at,hex])=>get(recipe,at)===hex));
+  const ways=el('div',{className:'shm-ways',role:'radiogroup',ariaLabel:entry.label+' colourways'});
+  entry.colourways.forEach((way,i)=>{
+   const hex=Object.values(way.colours),swatch=el('i',{ariaHidden:'true'});swatch.style.background=`linear-gradient(135deg,${hex[0]} 50%,${hex[1]||hex[0]} 50%)`;
+   const input=el('input',{type:'radio',name:'shm-way-'+entry.slot+'-'+entry.id,checked:i===now}),label=el('label',{title:way.name},input,swatch,way.name);label.classList.toggle('on',i===now);
+   input.onchange=()=>{pickWay(way);for(const x of ways.children)x.classList.toggle('on',x===label);};ways.append(label);
+  });
+  box.append(ways);
+ }
+ /** Move `box` to just after the row of the tile `b` in `grid` (the columns as laid out now). */
+ function underRow(grid,box,b){
+  const tiles=[...grid.children].filter(x=>x.tagName==='BUTTON'),i=tiles.indexOf(b);if(i<0)return;
+  const cols=Math.max(1,getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length);
+  const last=tiles[Math.min(tiles.length-1,Math.floor(i/cols)*cols+cols-1)];if(last.nextSibling!==box)last.after(box);
+ }
+ /**
+  * Who wears what was tapped, and why (`fill` writes it into `box`), right under the row of its tile `b`, where the eye
+  * already is: never below a long grid, out of sight. The tapped tile stays where it is on screen while the box moves,
+  * and the box is then brought into view under it.
+  */
+ function showInfo(grid,box,b,fill){
+  const before=b.getBoundingClientRect().top;fill();
+  if(!grid.isConnected||!b.isConnected)return;
+  underRow(grid,box,b);body.scrollTop+=b.getBoundingClientRect().top-before;
+  const view=body.getBoundingClientRect(),under=box.getBoundingClientRect().bottom-view.bottom;
+  if(under>0)body.scrollTop+=Math.min(under,b.getBoundingClientRect().top-view.top);
+ }
+ /**
+  * A grid opened on an item worn that comes in colourways: its box (with the colourway choice) under that tile's row, once
+  * the grid is laid out (still before it is painted). Any other item's who-and-why waits for a tap, so a grid opens with
+  * its pictures.
+  */
+ function openOn(grid,box,b,entry,pickWay){if(!b||!entry?.colourways.length)return;fillInfo(box,entry,pickWay);grid.append(box);requestAnimationFrame(()=>{if(grid.isConnected)underRow(grid,box,b);});}
+ /**
+  * A row that scrolls sideways: once laid out, `centre()` (the chip or swatch chosen) is brought to the middle of it, and an
+  * edge with more behind it fades (.shm-scrolls[data-more]).
+  */
+ function scrolls(row,centre){
+  row.classList.add('shm-scrolls');
+  const edges=()=>{const start=row.scrollLeft>2,end=row.scrollLeft+row.clientWidth<row.scrollWidth-2;if(start||end)row.dataset.more=start&&end?'both':start?'start':'end';else delete row.dataset.more;};
+  row.addEventListener('scroll',edges,{passive:true});
+  requestAnimationFrame(()=>{if(!row.isConnected)return;const b=centre?.();if(b)row.scrollLeft=b.offsetLeft-(row.clientWidth-b.offsetWidth)/2;edges();});
+ }
+ /**
+  * The category chips over a grid: All, then each category its items are filed under. Only over a grid longer than a
+  * screenful (CHIPS_FROM) with two categories or more: a short grid needs no filing. The chip chosen is always in view.
+  */
+ const CHIPS_FROM=9;
+ function categoryChips(at,categories,chosen,choose){
+  const row=el('div',{className:'shm-chips shm-categories',role:'group',ariaLabel:'Categories'});
+  for(const name of ['All',...categories]){const b=el('button',{type:'button',textContent:name});b.setAttribute('aria-pressed',String(name===chosen));b.onclick=()=>choose(name,document.activeElement===b);row.append(b);}
+  scrolls(row,()=>row.querySelector('[aria-pressed=true]'));
+  return row;
+ }
+ /** The chip a grid opens on: the category of what is worn (the first tile, taking it off, is in every category). */
+ function openChip(at,category,bare){if(!chipFor.has(at))chipFor.set(at,bare?'All':category||'All');return chipFor.get(at);}
+ /** A grid's section again, on another chip: focus stays on the chips (the old ones are gone), the pictures follow. */
+ function rechip(section,next,focused){section.replaceWith(next);prunePictures();if(focused)next.querySelector('.shm-categories [aria-pressed=true]')?.focus({preventScroll:true});}
+ /** A wardrobe part's grid (a top, a hat, an earring…): chips, pictures, and who wears the one tapped. */
+ function partsSection(control){
+  const slot=SLOT_AT[control.at],list=control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}));
+  const section=el('div',{className:'shm-section'}),current=get(recipe,control.at),category=v=>entryFor(slot,v)?.category;
+  const categories=list.length>=CHIPS_FROM?SLOTS[slot].categories.filter(c=>list.slice(1).some(v=>category(v)===c)):[];
+  let chosen=openChip(control.at,category(current),current===control.list[0]);if(categories.length<2||!categories.includes(chosen))chosen='All';
+  const chips=categories.length<2?null:categoryChips(control.at,categories,chosen,(name,focused)=>{chipFor.set(control.at,name);rechip(section,partsSection(control),focused);});
+  const grid=el('div',{className:'shm-grid'}),box=el('div',{className:'shm-worn-box'});
+  let on=null;
+  for(const value of list.filter((v,i)=>!i||chosen==='All'||category(v)===chosen)){
+   const entry=entryFor(slot,value)||{slot,id:value,label:value,colourways:[]};
+   const b=wardrobeTile(entry,c=>drawThumb(control,value,c),()=>{putOn(control.at,value);pressed(grid,b);showInfo(grid,box,b,()=>fillInfo(box,entry,way=>wearColours(way.colours)));});
+   b.setAttribute('aria-pressed',String(current===value));if(current===value)on=b;grid.append(b);
+  }
+  openOn(grid,box,on,entryFor(slot,current),way=>wearColours(way.colours));
+  section.append(...[chips,grid].filter(Boolean));return section;
+ }
+ /** Put a set on (or one of its colourways) over what is worn, and redraw the set pictures, which show what each would give. */
+ function wearSet(set,colours){change('outfit',putOnSet(recipe.outfit,set,colours));renderPictures();renderTray();}
+ /** The Outfits tab: the island's sets and costumes, filed under their chips, each put on in one tap. */
+ function setsSection(){
+  const section=el('div',{className:'shm-section'}),worn=wornSet(recipe.outfit),sets=SETS.filter(s=>outfitAllowedFor(wardrobeOwner,s.outfit));
+  const categories=sets.length>=CHIPS_FROM?SLOTS.set.categories.filter(c=>sets.some(s=>s.category===c)):[];
+  let chosen=openChip('outfit',worn?.set.category,!worn);if(categories.length<2||!categories.includes(chosen))chosen='All';
+  const chips=categories.length<2?null:categoryChips('outfit',categories,chosen,(name,focused)=>{chipFor.set('outfit',name);rechip(section,setsSection(),focused);});
+  const grid=el('div',{className:'shm-grid',role:'group',ariaLabel:'Island outfits'}),box=el('div',{className:'shm-worn-box'});
+  let on=null;
+  for(const set of sets.filter(s=>chosen==='All'||s.category===chosen)){
+   const b=wardrobeTile(set,c=>{const r=normalizeRecipe({...recipe,outfit:putOnSet(recipe.outfit,set)});cached('set|'+set.id+'|'+pictureKey(r,'outfit'),c,()=>figureThumb(r,c,'outfit'));},
+    // The set already worn is not put on again: that would turn its colourway back to the first.
+    ()=>{if(wornSet(recipe.outfit)?.set!==set)wearSet(set);pressed(grid,b);showInfo(grid,box,b,()=>fillInfo(box,set,way=>wearSet(set,way.colours)));});
+   b.setAttribute('aria-pressed',String(worn?.set===set));if(worn?.set===set)on=b;grid.append(b);
+  }
+  if(on)openOn(grid,box,on,worn.set,way=>wearSet(worn.set,way.colours));
+  else if(!worn){box.append(el('p',{className:'shm-worn',textContent:'Tap an outfit to put it on over what they wear; hair, face and anything it leaves out stay their own.'}));grid.append(box);}
+  section.append(...[chips,grid].filter(Boolean));return section;
+ }
+ /**
+  * What the wardrobe search finds, grouped by slot as the tabs are; a tap puts it on as in its own tab. The count is said
+  * in the status line under the search, and after a tap every result shows whether it is worn now (a set puts on parts).
+  */
+ function searchResults(host){
+  const groups=searchWardrobe(wardrobeQuery);
+  if(!groups.length){found.textContent=`Nothing in the wardrobe matches “${wardrobeQuery}”. Try a name, a place or an occasion: Kōji, Sato Ramen, school, rain.`;return;}
+  const count=groups.reduce((n,g)=>n+g.entries.length,0);found.textContent=count===1?'1 found.':`${count} found.`;
+  const box=el('div',{className:'shm-worn-box'});
+  const sync=()=>{const worn=wornSet(recipe.outfit)?.set.id;for(const t of host.querySelectorAll('.shm-grid>button[data-slot]'))t.setAttribute('aria-pressed',String(t.dataset.slot==='set'?worn===t.dataset.id:String(get(recipe,SLOTS[t.dataset.slot].at))===t.dataset.id));};
+  for(const group of groups){
+   const grid=el('div',{className:'shm-grid',role:'group',ariaLabel:group.name});host.append(el('h4',{textContent:group.name}),grid);
+   for(const entry of group.entries){
+    let b;
+    if(entry.slot==='set'){
+     b=wardrobeTile(entry,c=>{const r=normalizeRecipe({...recipe,outfit:putOnSet(recipe.outfit,entry)});cached('set|'+entry.id+'|'+pictureKey(r,'outfit'),c,()=>figureThumb(r,c,'outfit'));},
+      ()=>{if(wornSet(recipe.outfit)?.set!==entry)wearSet(entry);sync();showInfo(grid,box,b,()=>fillInfo(box,entry,way=>{wearSet(entry,way.colours);sync();}));});
+    }else{
+     const control=TABS.flatMap(x=>x.controls).find(c=>c.kind==='parts'&&c.at===SLOTS[entry.slot].at);
+     b=wardrobeTile(entry,c=>drawThumb(control,entry.id,c),()=>{putOn(control.at,entry.id);sync();showInfo(grid,box,b,()=>fillInfo(box,entry,way=>{wearColours(way.colours);sync();}));});
+    }
+    grid.append(b);
+   }
+  }
+  sync();
+ }
+ /** Put a wardrobe part on; an item that comes in colourways goes on in its first. */
+ function putOn(at,value){
+  if(get(recipe,at)===value)return;
+  change(at,value);const way=entryFor(SLOT_AT[at],value)?.colourways[0];if(way)wearColours(way.colours,false);
+ }
+ /** Lay a colourway's fields (full recipe paths) over the recipe, as one undoable change unless `keep` is false. */
+ function wearColours(colours,keep=true){
+  if(Object.entries(colours).every(([at,hex])=>get(recipe,at)===hex))return;
+  if(keep)remember();for(const [at,hex] of Object.entries(colours))set(recipe,at,hex);recipe=normalizeRecipe(recipe);dirty=true;
+  renderTray();
+ }
+ /**
+  * The swatches a colour control offers. Cloth (`cloth`) on the Colour page: the island palette, then the rest of its
+  * palette, each under its label. In the tray under the pictures (`tray`): one row of the island palette, and the colour
+  * worn when it is not one of them; the Colour page has the rest.
+  */
+ function swatchRow(control,onPick,prefix='',{tray=false}={}){
+  const row=el('div',{className:'shm-swatches'}),now=get(recipe,control.at);
+  const add=(hex,name)=>{const b=el('button',{type:'button',ariaLabel:name?control.label+' '+name:prefix+hex,title:name||hex});b.style.background=hex;b.setAttribute('aria-pressed',String(now===hex));b.onclick=()=>{onPick(hex);pressed(row,b);};row.append(b);};
+  if(control.cloth){
+   if(!tray)row.append(el('span',{className:'shm-swatch-label',textContent:'Island palette'}));for(const c of ISLAND_PALETTE)add(c.hex,c.name);
+   const rest=control.palette.filter(hex=>!ISLAND_HEX.has(hex));
+   if(tray){if(now&&!ISLAND_HEX.has(now))add(now);}
+   else if(rest.length){row.append(el('span',{className:'shm-swatch-label',textContent:'More colours'}));for(const hex of rest)add(hex);}
+  }else for(const hex of control.palette)add(hex);
+  if(tray)scrolls(row,()=>row.querySelector('[aria-pressed=true]'));
+  return row;
+ }
+ /** The controls of a tab's page, into `host`. */
+ function controlsInto(host,t){
+  const body=host;
   for(const control of t.controls.filter(c=>c.page===page&&(!c.when||c.when(recipe)))){
-   if(control.label&&control.kind!=='toggle'&&control.kind!=='stepper'&&control.kind!=='position')body.append(el('h4',{textContent:control.label}));
+   if(control.label&&!['toggle','stepper','position','number'].includes(control.kind))body.append(el('h4',{textContent:control.label}));
    if(control.kind==='face-forms'){
     const grid=el('div',{className:'shm-grid shm-face-forms',role:'group',ariaLabel:'Face shapes'}),skin=el('div',{className:'shm-swatches shm-face-skin',role:'group',ariaLabel:'Skin tone'});
     for(const form of control.list){const c=el('canvas',{width:136,height:136}),label=({'soft-square':'Soft square','soft-round':'Soft round',wide:'Broad'}[form]||form[0].toUpperCase()+form.slice(1)),b=el('button',{type:'button',ariaLabel:label,title:label},c,label);b.setAttribute('aria-pressed',String(recipe.head.form===form));b.onclick=()=>{change('head.form',form);pressed(grid,b);};drawFaceFormThumb(c,form,recipe.body.skin);grid.append(b);}
     for(const [i,hex] of PALETTE.skin.entries()){const b=el('button',{type:'button',ariaLabel:'Skin tone '+(i+1),title:'Skin tone '+(i+1)});b.style.background=hex;b.setAttribute('aria-pressed',String(recipe.body.skin===hex));b.onclick=()=>{change('body.skin',hex);renderBody();};skin.append(b);}
     body.append(el('div',{className:'shm-face-picker'},grid,skin));
+   }else if(control.kind==='sets'){
+    body.append(setsSection());
+   }else if(control.kind==='parts'&&t.wardrobe){
+    body.append(partsSection(control));
    }else if(control.kind==='parts'){
     const grid=el('div',{className:'shm-grid'});
     for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){
      const c=el('canvas',{width:136,height:136});
-     const b=el('button',{type:'button'},c,LABEL[value]||value);b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));
+     const b=el('button',{type:'button'},c,partLabel(control.at,value));b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));
      b.onclick=()=>{change(control.at,value);pressed(grid,b);};
-     grid.append(b);pictureJobs.push(()=>drawThumb(control,value,c));
+     grid.append(b);picture(c,()=>drawThumb(control,value,c));
     }
     body.append(grid);
    }else if(control.kind==='colours'){
-    const row=el('div',{className:'shm-swatches'});
-    for(const hex of control.palette){const b=el('button',{type:'button',ariaLabel:hex});b.style.background=hex;b.setAttribute('aria-pressed',String(get(recipe,control.at)===hex));
-     b.onclick=()=>{change(control.at,hex);pressed(row,b);};row.append(b);}
-    body.append(row);
+    body.append(swatchRow(control,hex=>change(control.at,hex)));
    }else if(control.kind==='position'){
     body.append(el('h4',{textContent:control.label||'Position'}));
     const pad=el('div',{className:'shm-pad',role:'group',ariaLabel:'Move '+(control.label||t.name).toLowerCase()});
@@ -665,6 +941,8 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     body.append(el('label',{},control.low+' — '+control.high,slider,output));
    }else if(control.kind==='stepper'){
     body.append(stepper(control.label,control.at,control.less,control.more));
+   }else if(control.kind==='number'){
+    body.append(numberControl(control));
    }else if(control.kind==='toggle'){
     const b=el('button',{type:'button',className:'shm-toggle',textContent:control.label});b.setAttribute('aria-pressed',String(!!get(recipe,control.at)));
     b.onclick=()=>{change(control.at,!get(recipe,control.at));b.setAttribute('aria-pressed',String(!!get(recipe,control.at)));};
@@ -692,7 +970,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
    const b=el('button',{type:'button',ariaLabel:i?'Face '+(i+1):'As they are'},c,i?'':'As they are');
    b.setAttribute('aria-pressed',String(JSON.stringify({...face,name:0,profile:0})===JSON.stringify({...recipe,name:0,profile:0})));
    b.onclick=()=>{remember();recipe=keepSelf(face,recipe);dirty=true;pressed(grid,b);};
-   grid.append(b);pictureJobs.push(()=>cached('face|'+JSON.stringify({...face,name:0,profile:0}),c,()=>figureThumb(face,c,'head')));
+   grid.append(b);picture(c,()=>cached('face|'+JSON.stringify({...face,name:0,profile:0}),c,()=>figureThumb(face,c,'head')));
   });
   const more=el('button',{type:'button',className:'shm-pill',textContent:'Different faces'});
   more.onclick=()=>{faces=[recipe];for(let i=0;i<11;i++)faces.push(keepSelf(randomRecipe('face-'+Date.now().toString(36)+'-'+(faceSeed++)),recipe));renderBody();};
@@ -733,15 +1011,16 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   body.append(phrase);
  }
  function renderBody(){recipe.outfit=appropriateOutfit(wardrobeOwner,recipe.outfit);
-  cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);pictureQueue=[];pictureJobs=[];
-  body.replaceChildren();paletteTray.replaceChildren();paletteTray.hidden=true;
-  if(step==='start')renderStart();else if(step==='profile')renderProfile();else if(step==='look'){renderLook();
-   const colour=TABS.find(t=>t.id===tab).controls.find(c=>c.kind==='colours'&&(!c.when||c.when(recipe)));
-   if(page==='style'&&colour){paletteTray.hidden=false;paletteTray.append(el('h4',{textContent:colour.label}),el('div',{className:'shm-swatches'}));const row=paletteTray.lastChild;
-    for(const hex of colour.palette){const b=el('button',{type:'button',ariaLabel:colour.label+' '+hex,title:hex});b.style.background=hex;b.setAttribute('aria-pressed',String(get(recipe,colour.at)===hex));b.onclick=()=>{change(colour.at,hex);pressed(row,b);renderPictures();};row.append(b);}
-   }
-  }
-  pictureQueue=[...pictureJobs];paintQueued();
+  stopPictures();pictureJobs.clear();inView?.disconnect();wardrobeArea=null;
+  body.replaceChildren();
+  if(step==='start')renderStart();else if(step==='profile')renderProfile();else if(step==='look')renderLook();
+  renderTray();paintQueued();
+ }
+ /** The colour tray under the pictures: the tab's first colour, as worn now (a colourway put on changes it). */
+ function renderTray(){
+  paletteTray.replaceChildren();paletteTray.hidden=true;if(step!=='look'||page!=='style')return;
+  const colour=TABS.find(t=>t.id===tab).controls.find(c=>c.kind==='colours'&&(!c.when||c.when(recipe)));
+  if(colour){paletteTray.hidden=false;paletteTray.append(el('h4',{textContent:colour.label}),swatchRow(colour,hex=>{change(colour.at,hex);renderPictures();},colour.label+' ',{tray:true}));}
  }
 
  // ----- Voice -----
@@ -827,7 +1106,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
   if(!root.isConnected)return;
   if(saving&&keepOpenOnSave){onSave(normalizeRecipe({...recipe,name:name.value}));return;}
   endDrag();
-  stopSpeech();cancelAnimationFrame(frame);cancelAnimationFrame(pictureFrame);clearTimeout(picturesDue);observer?.disconnect();viewport?.removeEventListener('resize',fitViewport);viewport?.removeEventListener('scroll',fitViewport);
+  stopSpeech();cancelAnimationFrame(frame);stopPictures();inView?.disconnect();clearTimeout(searchDue);observer?.disconnect();viewport?.removeEventListener('resize',fitViewport);viewport?.removeEventListener('scroll',fitViewport);
   root.removeEventListener('keydown',swallow);root.removeEventListener('keyup',swallow);
   const out=normalizeRecipe({...recipe,name:name.value});
   avatar?.dispose();thumbTarget.dispose();renderer.dispose();renderer.forceContextLoss?.();floor.geometry.dispose();floor.material.dispose();root.remove();previousFocus?.focus?.();

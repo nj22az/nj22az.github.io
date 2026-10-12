@@ -10,8 +10,11 @@ import {randomBytes} from 'node:crypto';
  *   moves it only inside `node --test` (NODE_TEST_CONTEXT), so a stray variable can never point the tools elsewhere.
  * - A write is allowed only to the paths below; anything else, a path that climbs out ("..") or a symbolic link
  *   anywhere on the way is refused. Every target is checked again with realpath and lstat just before writing.
- * - Writes go to a new temporary file beside the target and are renamed over it, one at a time (a serial queue), so a
- *   reader never sees half a file and two changes never interleave.
+ * - writeAll writes every new file to a temporary file beside its target first, and renames them over their targets
+ *   only once all of them are on disk: a reader never sees half a file, and a full disk or a refused path never leaves
+ *   half a change behind.
+ * - locked runs a read, its checks and its writes as one step for every process on this checkout (each Claude
+ *   session's johansson-studio server, cli.mjs, apply.mjs), with a lock file; serial orders the steps of one process.
  * - Nothing here writes .mcp.json, settings, workflows, code or git, and nothing commits.
  */
 export const CODE_ROOT=resolve(fileURLToPath(new URL('../../../',import.meta.url)));
@@ -21,15 +24,20 @@ export function defaultRoot(){
 }
 
 export const PATHS=Object.freeze({
+ // World's data (in git): written only by publishing the draft, when the creator says "update World".
  looks:'johansson-town/data/studio/looks.json',
  products:'johansson-town/data/studio/products.json',
  log:'johansson-town/data/studio/log.json',
- brands:'johansson-town/data/studio/brand-rules.json',
  looksModule:'johansson-town/src/avatars/looks-data.js',
+ charactersModule:'johansson-town/src/studio/characters-data.js',
  productsModule:'johansson-town/src/commerce/products-data.js',
+ // Studio's draft (git ignores it): the changes the creator said yes to, not yet published.
+ draft:'johansson-town/data/studio/draft/pending.json',
+ lock:'johansson-town/data/studio/.lock',
+ brands:'johansson-town/data/studio/brand-rules.json',
  output:'output/studio-mcp',
 });
-const WRITABLE=[PATHS.looks,PATHS.products,PATHS.log,PATHS.looksModule,PATHS.productsModule];
+const WRITABLE=[PATHS.looks,PATHS.products,PATHS.log,PATHS.draft,PATHS.looksModule,PATHS.charactersModule,PATHS.productsModule];
 const LABEL=/^johansson-town\/assets\/graphics\/labels\/[a-z][a-z0-9-]{1,39}\.r[1-9][0-9]{0,3}\.webp$/;
 const OUTPUT=/^output\/studio-mcp\/(?:[a-z0-9][a-z0-9._-]{0,80}\/){0,3}[a-z0-9][a-z0-9._-]{0,120}\.(png|webp|json|txt)$/;
 export const OUTPUT_CAP=50*1024*1024;
@@ -43,8 +51,12 @@ export function writable(path){
 }
 
 let queue=Promise.resolve();
-/** Run a task after every earlier one has finished (one writer at a time). */
+/** Run a task after every earlier one of this process has finished. */
 export function serial(task){const run=queue.then(task);queue=run.catch(()=>{});return run;}
+
+/** How long a writer waits for the lock, when a lock counts as left behind, and how often to look again (ms). */
+export const LOCK=Object.freeze({wait:20000,stale:60000,poll:50});
+const alive=pid=>{try{process.kill(pid,0);return true;}catch(e){return e.code==='EPERM';}};
 
 export function openRepo(root=defaultRoot()){
  root=resolve(root);
@@ -71,13 +83,57 @@ export function openRepo(root=defaultRoot()){
    else if(!info.isDirectory())throw Error(`Studio will not write inside ${relative(realRoot,at)}: it is ${info.isSymbolicLink()?'a link':'not a folder'}.`);
   }
  }
- async function write(path,content){
-  const target=await guard(path,{create:path.startsWith(PATHS.output+'/')||LABEL.test(path)});
-  const temporary=`${target}.${process.pid}.${randomBytes(6).toString('hex')}.tmp`;
-  await writeFile(temporary,content,{flag:'wx'});
-  try{await guard(path);await rename(temporary,target);}catch(e){await unlink(temporary).catch(()=>{});throw e;}
-  if(path.startsWith(PATHS.output+'/'))await capOutput();
-  return path;
+ /**
+  * Write several files as one step. Every target is checked, every new content goes to a temporary file beside its
+  * target, and only when all of them are on disk are they renamed over their targets, in the order given. A refused
+  * path or a full disk before the renames removes the temporary files and leaves every target as it was.
+  */
+ async function writeAll(entries){
+  const staged=[];
+  try{
+   for(const [path] of entries)await guard(path,{create:true});
+   for(const [path,content] of entries){
+    const target=abs(path),temporary=`${target}.${process.pid}.${randomBytes(6).toString('hex')}.tmp`;
+    staged.push({path,target,temporary});
+    await writeFile(temporary,content,{flag:'wx'});
+   }
+   for(const s of staged)await guard(s.path);
+  }catch(e){await Promise.all(staged.map(s=>unlink(s.temporary).catch(()=>{})));throw e;}
+  for(let i=0;i<staged.length;i++){
+   try{await rename(staged[i].temporary,staged[i].target);}
+   catch(e){await Promise.all(staged.slice(i).map(s=>unlink(s.temporary).catch(()=>{})));throw e;}
+  }
+  if(entries.some(([path])=>path.startsWith(PATHS.output+'/')))await capOutput();
+  return entries.map(([path])=>path);
+ }
+ const write=(path,content)=>writeAll([[path,content]]).then(()=>path);
+ /**
+  * Run a task holding Studio's write lock (data/studio/.lock), so its reads, checks and writes are one step for every
+  * process on this checkout. A lock whose process has ended, or that is over a minute old, was left behind and is
+  * taken over. Not re-entrant: a task never takes the lock again.
+  */
+ async function locked(task){
+  const lock=abs(PATHS.lock),mine=`${process.pid} ${Date.now()} ${randomBytes(6).toString('hex')}\n`,started=Date.now();
+  for(;;){
+   try{await writeFile(lock,mine,{flag:'wx'});break;}
+   catch(e){
+    if(e.code!=='EEXIST')throw e;
+    if(await leftBehind(lock))continue;
+    if(Date.now()-started>LOCK.wait)throw Error('Another Studio tool is writing Studio\'s data right now; call again in a moment.');
+    await new Promise(r=>setTimeout(r,LOCK.poll));
+   }
+  }
+  try{return await task();}
+  finally{if(await readFile(lock,'utf8').catch(()=>null)===mine)await unlink(lock).catch(()=>{});}
+ }
+ /** Removes a lock that was left behind (its process has ended, or it is too old). True when the lock is gone. */
+ async function leftBehind(lock){
+  const [text,info]=await Promise.all([readFile(lock,'utf8').catch(()=>null),lstat(lock).catch(()=>null)]);
+  if(text===null||!info)return true;
+  const pid=Number(text.split(' ')[0]);
+  if(Number.isInteger(pid)&&pid>0&&alive(pid)&&Date.now()-info.mtimeMs<LOCK.stale)return false;
+  if(await readFile(lock,'utf8').catch(()=>null)===text)await unlink(lock).catch(()=>{});
+  return true;
  }
  async function read(path,encoding='utf8'){
   const target=abs(path),info=await lstat(target);
@@ -95,7 +151,7 @@ export function openRepo(root=defaultRoot()){
   let total=files.reduce((a,f)=>a+f.size,0);
   for(const f of files.sort((a,b)=>a.time-b.time)){if(total<=OUTPUT_CAP)break;await unlink(f.p).catch(()=>{});total-=f.size;}
  }
- return {root,abs,guard,write,read,readJSON,exists,capOutput};
+ return {root,abs,guard,write,writeAll,locked,read,readJSON,exists,capOutput};
 }
 
 /** JSON as Studio writes it: two spaces and a newline at the end, so the same data is always the same bytes. */

@@ -1,15 +1,19 @@
 import {openCreator} from '../johansson-town/src/avatars/creator.js';
-import {CAST_RECIPES,ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
+import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
+import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261011-2';
+import {createSceneWorkspace} from './scene.js?v=20261011-5';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
 
 // Studio's own working copy of the character. What goes into Johansson World is sent with "Use in Johansson World",
 // which writes World's own keys (../johansson-town/src/studio-handoff.js): all customisation is Studio's.
 const SAVE_KEY='nj-avatar-studio-v1';
-// Two starting points, then every resident of World as World draws them (with any look published from Studio).
-const templates=[['Johansson',CAST_RECIPES.Johansson],['Thuận',ORIGINAL_THUAN_RECIPE]],residents=RESIDENT_NAMES.map(n=>[n,recipeFor(n)]),choices=[...templates,...residents];
+// The maker's two starting points (its Start step): Johansson as World draws him, and the original Thuận design.
+const templates=[['Johansson',recipeFor('Johansson')],['Thuận · original',ORIGINAL_THUAN_RECIPE]];
+// The Template picker: the original Thuận design, every resident of World as World draws them (Johansson and World's
+// Thuan among them, with any look published from Studio), then the characters made in Studio (World does not place them).
+const designs=templates.slice(1),residents=RESIDENT_NAMES.map(n=>[n,recipeFor(n)]),studioOnly=Object.values(STUDIO_CHARACTERS).map(c=>[c.name,normalizeRecipe(c.recipe)]),choices=[...designs,...residents,...studioOnly];
 const initialNote='';
 const status=document.createElement('span');status.className='studio-status';status.setAttribute('role','status');status.textContent=initialNote;
 let restored=null;
@@ -21,7 +25,7 @@ function save(recipe){
  catch{status.textContent='Browser storage is unavailable. Use Download design to save your character.';}
 }
 
-let currentRecipe=shared||restored||CAST_RECIPES.Johansson,editor=null,workspace=null,home=null,switching=false,editingId=null;
+let currentRecipe=shared||restored||recipeFor('Johansson'),editor=null,workspace=null,home=null,switching=false,editingId=null;
 const modes=document.createElement('nav');modes.className='studio-modes';modes.setAttribute('aria-label','Johansson Studio modes');
 for(const [id,label] of [['character','Edit character'],['home','Decorate home'],['scene','Build scene'],['comic','Make comic']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
 document.body.prepend(modes);
@@ -47,7 +51,7 @@ const toolbar=document.createElement('div');toolbar.className='studio-tools';too
 const label=document.createElement('label');label.textContent='Template';
 const select=document.createElement('select');select.setAttribute('aria-label','Starting template');
 const group=(label,list,from)=>{const g=document.createElement('optgroup');g.label=label;g.append(...list.map(([name],i)=>new Option(name,String(from+i))));return g;};
-select.append(new Option('Choose…',''),...templates.map(([name],i)=>new Option(name,String(i))),group('Residents of Johansson World',residents,templates.length));
+select.append(new Option('Choose…',''),...designs.map(([name],i)=>new Option(name,String(i))),group('Residents of Johansson World',residents,designs.length),...studioOnly.length?[group('Studio characters',studioOnly,designs.length+residents.length)]:[]);
 select.onchange=()=>{if(select.value==='')return;creator.setRecipe(choices[Number(select.value)][1]);status.textContent='Template loaded. Edit it, then save your character.';select.value='';};label.append(select);toolbar.append(label);
 const files=document.createElement('details');files.className='studio-files';
 const fileLabel=document.createElement('summary');fileLabel.textContent='Files';files.append(fileLabel);

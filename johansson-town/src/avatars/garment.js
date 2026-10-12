@@ -46,7 +46,37 @@ const lighten=(hex,f)=>'#'+new THREE.Color(hex).lerp(new THREE.Color('#ffffff'),
  * corner, its foot by the first button, the centre; it closes back up along the open V.
  */
 export const CAMP_COLLAR=Object.freeze([[.6,1.0],[.9,.83],[.7,.84],[.85,.79],[.16,.725],[.035,.73]].map(Object.freeze));
-const COLLARED=['contrastpolo','polo','blouse','kariyushi','jacket','smock','cardigan'];
+const COLLARED=['contrastpolo','polo','blouse','kariyushi','jacket','smock','cardigan','shirt','vest','knitvest','baseball'];
+/**
+ * Tops worn over a shirt (a vest, a knitted vest): the body is the top, and the shirt under it shows at the neck and is
+ * the sleeves, the shoulders and the underarms, in the accent colour (build.js addBody).
+ */
+export const SHIRT_SLEEVES=Object.freeze(['vest','knitvest']);
+/** Tops whose arm under a short sleeve is an undershirt in the accent colour, not skin (the Seagulls jersey). */
+export const UNDERSHIRT_ARMS=Object.freeze(['baseball']);
+/** Long-sleeved tops whose sleeve ends before the wrist, as a fraction of the arm from shoulder to wrist. */
+export const SLEEVE_END=Object.freeze({festival:.66});
+/** Lettering on cloth: a rounded gothic for a sewn name patch, a script for a team's name, a heavy face for a number. */
+const GOTHIC='"Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans CJK JP","Noto Sans",system-ui,sans-serif';
+const SCRIPT='Georgia,"Times New Roman","Noto Serif",serif';
+const NUMERALS='"Arial Black","Helvetica Neue",Arial,"Noto Sans",sans-serif';
+/** The team's name across the Seagulls jersey's chest: our own lettering, not any real club's. */
+export const JERSEY_LETTERING='Minato';
+/**
+ * The name on a PE shirt's patch: the wearer's name as it fits the patch. A long name is set smaller, down to 60%, and
+ * then cut: after its last whole word that fits ("Higa Kenta" → "Higa"), or, for one long word, at a character (never in
+ * the middle of one). Pure: `measure(text)` is the width at full size, in the patch's units, and `width` the room.
+ * Returns {text, scale}.
+ */
+export function patchName(name,measure,width,min=.6){
+ const text=String(name||'').trim(),w=text?measure(text):0;
+ if(!text||w<=width)return {text,scale:1};
+ if(w*min<=width)return {text,scale:width/w};
+ const chars=Array.from(text);while(chars.length>1&&measure(chars.join(''))*min>width)chars.pop();
+ const next=Array.from(text)[chars.length],space=chars.lastIndexOf(' ');
+ const kept=next!==' '&&space>0?chars.slice(0,space):chars;
+ return {text:kept.join('').trim(),scale:min};
+}
 
 /**
  * Paints a top's details onto ctx. Pure drawing from the recipe and the body's
@@ -77,6 +107,22 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=line*.8;ctx.stroke();}
  };
  const buttons=(ts,r,fill)=>{for(const t of ts)dotAt(0,t,r*m.k,fill,shade(fill,.6));marks.push('buttons:'+ts.length);};
+ /**
+  * Words on the cloth, centred at x,t (on the back when `back`), letters `h` metres tall and kept upright and in proportion
+  * on the curved cloth. `fit` (metres) is the room across: a patch's name is set smaller and then cut (patchName).
+  * `font` is [style and weight, family].
+  */
+ const words=(text,x,t,h,{fill,stroke=null,strokeW=0,font:[weight,family],back=false,fit=Infinity})=>{
+  ctx.save();ctx.font=`${weight} 100px ${family}`;
+  const unit=h/72,{text:shown,scale}=patchName(text,s=>ctx.measureText(s).width*unit,fit);
+  if(shown){
+   const a=theta(x,t),sx=pxPerX(a,t)*unit*scale,sy=pxPerY*unit*scale;
+   wrapped(back,()=>{ctx.save();ctx.translate(X(x,t,back),Y(t));ctx.scale(sx,sy);ctx.textAlign='center';ctx.textBaseline='middle';
+    if(stroke){ctx.strokeStyle=stroke;ctx.lineJoin='round';ctx.lineWidth=strokeW/(unit*scale);ctx.strokeText(shown,0,0);}
+    ctx.fillStyle=fill;ctx.fillText(shown,0,0);ctx.restore();});
+  }
+  ctx.restore();return shown;
+ };
  // An island shirt is worn out over the shorts, so its cloth (and print) runs down to its own hem (springs.js).
  const out=o.top==='kariyushi'?hemSpec(recipe,m):null;
  const k=m.k,neck=.92,hem=out?Math.max(GARMENT.T0+.02,(out.waist-out.length-m.hipY)/m.torso+.01):.15;
@@ -174,9 +220,16 @@ export function paintGarment(ctx,recipe,m,radiusAt){
    buttons([.62,.5,.38,.26],.008,shade(o.accent,.8));ctx.fillStyle=o.accent;ctx.fillRect(0,Y(hem+.05),TW,Y(hem)-Y(hem+.05));marks.push('bands');break;
   }
   case 'festival':{
-   // A happi coat: wide collar bands crossing, a sash.
-   for(const s of [-1,1])poly([[s*.13*k,1.0],[s*.07*k,1.0],[-s*.06*k,.45],[-s*.13*k,.45]],o.accent);
-   ctx.fillStyle=shade(o.accent,.85);ctx.fillRect(0,Y(.4),TW,Y(.3)-Y(.4));marks.push('bands','sash');break;
+   // A happi coat: its collar band runs round the back of the neck and straight down both fronts, the two bands side by
+   // side to the hem with the coat's opening a clean line between them; a little of the chest shows at the throat, where
+   // the bands part round the neck. A sash over it at the waist.
+   poly([[-.05*k,1.0],[.05*k,1.0],[0,.86]],recipe.body.skin,{stroke:null});
+   ctx.fillStyle=o.accent;ctx.fillRect(0,Y(1.035),TW,Y(.975)-Y(1.035));
+   for(const s of [-1,1])poly([[s*.05*k,1.0],[s*.1*k,1.0],[s*.048*k,.84],[s*.048*k,hem],[0,hem],[0,.86]],o.accent);
+   path([[0,.86],[0,hem]],ink,line);
+   ctx.fillStyle=shade(o.accent,.85);ctx.fillRect(0,Y(.4),TW,Y(.3)-Y(.4));
+   ctx.strokeStyle=ink;ctx.lineWidth=line*.8;ctx.beginPath();ctx.moveTo(0,Y(.4));ctx.lineTo(TW,Y(.4));ctx.moveTo(0,Y(.3));ctx.lineTo(TW,Y(.3));ctx.stroke();
+   marks.push('bands','sash');break;
   }
   case 'sailorlong':
   case 'sailor':{
@@ -209,6 +262,62 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   }
   case 'sundress':for(const s of [-1,1]){poly([[s*W*.3,.8],[s*W*.18,.8],[s*W*.16,1.02],[s*W*.28,1.02]],top,{width:line*.8});poly([[s*W*.3,.8],[s*W*.18,.8],[s*W*.16,1.02],[s*W*.28,1.02]],top,{back:true,width:line*.8});}ctx.fillStyle=shade(top,.7);ctx.fillRect(0,Y(.795),TW,line*.8);marks.push('straps');break;
   case 'apron':collar('#f8f6ef',{drop:.88,spread:.1,round:true});break;
+  // The island's office and school shirt: a point collar open at the throat, the placket starting under the collar where
+  // its points meet, and a breast pocket on the wearer's left with a pen in it, in the accent colour.
+  case 'shirt':{
+   poly([[-.042*k,1.0],[.042*k,1.0],[0,.835]],recipe.body.skin,{stroke:null});
+   collar(top,{drop:.83,spread:.12});placket(.835,hem+.03,.02);buttons([.76,.6,.44,.28],.0068,lighten(top,.55));
+   const px=W*.22,pt=.66,ph=.13;
+   poly([[px-.004*k,pt+ph/2+.06],[px+.004*k,pt+ph/2+.06],[px+.004*k,pt],[px-.004*k,pt]],o.accent,{width:line*.6});
+   pocket(px,pt,W*.2,ph,top);path([[px+.0015*k,pt+ph/2+.045],[px+.0015*k,pt+ph/2-.025]],shade(o.accent,.7),line*.9);
+   marks.push('pen');break;
+  }
+  // A vest over a shirt: the shirt (the accent colour) shows in the V, with its collar round the neck; four buttons, two
+  // welt pockets. The shirt's sleeves are the arms (SHIRT_SLEEVES).
+  case 'vest':{
+   const shirt=o.accent;
+   poly([[-.088*k,1.0],[.088*k,1.0],[0,.6]],shirt);path([[0,.84],[0,.6]],shade(shirt,.6),line*.7);
+   collar(lighten(shirt,.04),{drop:.86,spread:.095});
+   path([[0,.6],[0,hem]],ink,line*.8);buttons([.54,.43,.32,.21],.0085,lighten(top,.38));
+   for(const sx of [-1,1])path([[sx*W*.13,.3],[sx*W*.27,.3]],ink,line*.9);
+   marks.push('shirt V','welt pockets');hemRound();break;
+  }
+  // A knitted vest: the same V over the shirt, edged in rib, a ribbed hem, no buttons.
+  case 'knitvest':{
+   const shirt=o.accent,ribC=shade(top,.86),ribLine=shade(top,.74);
+   poly([[-.078*k,1.0],[.078*k,1.0],[0,.66]],shirt,{stroke:null});
+   collar(lighten(shirt,.04),{drop:.88,spread:.09});
+   for(const sx of [-1,1]){
+    poly([[sx*.078*k,1.0],[sx*.118*k,1.0],[0,.6],[0,.66]],ribC);
+    for(let i=1;i<12;i++){const f=i/12,t0=1.0-(1.0-.66)*f,t1=1.0-(1.0-.6)*f;path([[sx*.078*k*(1-f),t0],[sx*.118*k*(1-f),t1]],ribLine,line*.5);}
+   }
+   ctx.fillStyle=ribC;ctx.fillRect(0,Y(hem+.075),TW,Y(hem)-Y(hem+.075));
+   ctx.strokeStyle=ribLine;ctx.lineWidth=line*.5;for(let x=0;x<TW;x+=TW/96){ctx.beginPath();ctx.moveTo(x,Y(hem+.075));ctx.lineTo(x,Y(hem));ctx.stroke();}
+   ctx.strokeStyle=ink;ctx.lineWidth=line*.8;ctx.beginPath();ctx.moveTo(0,Y(hem+.075));ctx.lineTo(TW,Y(hem+.075));ctx.stroke();
+   marks.push('rib');break;
+  }
+  // The PE shirt: neck rib and sleeve hems in the class colour (the accent), and a white patch sewn on the chest with the
+  // wearer's name, how teachers tell the children apart. An empty name leaves the patch blank.
+  case 'gymtee':{
+   rib(o.accent);hemRound();
+   // About 18 by 9 cm on a grown-up, the chest's width, as a sewn-on zekken is.
+   const pw=W*.3,pt=.64,ph=.2;
+   poly([[-pw,pt+ph/2],[pw,pt+ph/2],[pw,pt-ph/2],[-pw,pt-ph/2]],'#fbf9f3',{width:line*.8});
+   const shown=words(recipe.name,0,pt,ph*m.torso*.42,{fill:'#2b2623',font:['800',GOTHIC],fit:pw*2*.9});
+   marks.push('name patch',shown?'name:'+shown:'blank patch');break;
+  }
+  // The Minato Seagulls' jersey: a V neck over the undershirt (the accent colour, which is also the piping), a piped
+  // placket with five buttons, our own "Minato" lettering across the chest and the number on the back.
+  case 'baseball':{
+   const pipe=o.accent;
+   poly([[-.062*k,1.0],[.062*k,1.0],[0,.8]],pipe);
+   for(const sx of [-1,1]){path([[sx*.062*k,1.0],[0,.8]],pipe,line*2.2);path([[sx*.02*k,.8],[sx*.02*k,hem]],pipe,line*1.4);}
+   for(const t of [.72,.6,.48,.36,.24])dotAt(0,t,.0065*k,shade(top,.82),shade(top,.55));
+   // The lettering is sewn on over the placket, edged in the cloth's white so the piping never cuts through a letter.
+   words(JERSEY_LETTERING,0,.6,.13*m.torso,{fill:pipe,stroke:'#f8f6ef',strokeW:.006*k,font:['italic 900',SCRIPT],fit:W*.66});
+   if(o.number>0)words(String(o.number),0,.56,.34*m.torso,{fill:pipe,stroke:shade(pipe,.6),strokeW:.004*k,font:['900',NUMERALS],back:true});
+   marks.push('V neck','piping','lettering',o.number>0?'number:'+o.number:'no number');break;
+  }
   // After the bath (outfits.js AFTERBATH): a house dress's round neck, bound in a paler bias tape; a running vest is
   // its own shell over the bare body (build.js runningShirt), so nothing is drawn for it.
   case 'housedress':rib(lighten(top,.45));break;
@@ -218,8 +327,13 @@ export function paintGarment(ctx,recipe,m,radiusAt){
  {const S=GARMENT.SLEEVE,yTop=(1-S.v1)*TH,yBot=(1-S.v0)*TH,h=yBot-yTop,col=o.top,long=SLEEVED_LONG.includes(col);
   const sleeveCirc=Math.PI*2*m.armR*(long?1.04:1.2),sleeveLen=long?m.upper+m.fore:m.upper*.6;
   const pxU=TW/sleeveCirc,pxV=h/sleeveLen;
-  if(o.pattern==='stripes'){ctx.fillStyle='#f4f1ea';const band=m.torso*.12*pxV;for(let y=yTop+band;y<yBot;y+=band*2)ctx.fillRect(0,y,TW,Math.min(band,yBot-y));}
-  if(o.pattern==='flowers'||o.pattern==='dots'){
+  // A sleeve that ends before the wrist (SLEEVE_END): its print and its cuff stop there, the arm below it is bare.
+  const end=long&&SLEEVE_END[col]?yTop+h*SLEEVE_END[col]:yBot;
+  // Over a shirt (SHIRT_SLEEVES) the sleeves are the shirt's: plain, in the accent colour, with the shirt's own hem.
+  const shirtSleeve=SHIRT_SLEEVES.includes(col),cloth=shirtSleeve?o.accent:o.topColour;
+  ctx.save();ctx.beginPath();ctx.rect(0,yTop,TW,end-yTop);ctx.clip();
+  if(o.pattern==='stripes'&&!shirtSleeve){ctx.fillStyle='#f4f1ea';const band=m.torso*.12*pxV;for(let y=yTop+band;y<end;y+=band*2)ctx.fillRect(0,y,TW,Math.min(band,end-y));}
+  if((o.pattern==='flowers'||o.pattern==='dots')&&!shirtSleeve){
    const flowers=o.pattern==='flowers',r=m.k*(flowers?(col==='kariyushi'?.05:.036):.016),petal=flowers?'#f8f6ef':o.accent;
    const cols=flowers?4:8,rows=Math.max(1,Math.round(sleeveLen/(r*4)));
    for(let row=0;row<rows;row++)for(let c=0;c<cols;c++){
@@ -230,11 +344,13 @@ export function paintGarment(ctx,recipe,m,radiusAt){
      ctx.restore();}
    }
   }
-  // The hem of a short sleeve, or the cuff of a long one: a band and a line above it.
+  ctx.restore();
+  // The hem of a short sleeve, or the cuff of a long one: a band and a line above it. A PE shirt's and a jersey's are
+  // in the accent colour (the class colour, the piping).
   if(!['tank','sundress','running'].includes(col)){
-   const bandH=Math.max(3,(long?.03:.018)*m.k*pxV),ink=shade(o.topColour,.5);
-   ctx.fillStyle=col==='contrastpolo'?o.accent:col==='kariyushi'?lighten(o.topColour,.22):shade(o.topColour,.86);ctx.fillRect(0,yBot-bandH,TW,bandH);
-   ctx.fillStyle=ink;ctx.fillRect(0,yBot-bandH-1.2,TW,1.2);
+   const bandH=Math.max(3,(long?.03:.018)*m.k*pxV),ink=shade(cloth,.5);
+   ctx.fillStyle=['contrastpolo','gymtee','baseball'].includes(col)?o.accent:col==='kariyushi'?lighten(cloth,.22):shade(cloth,.86);ctx.fillRect(0,end-bandH,TW,bandH);
+   ctx.fillStyle=ink;ctx.fillRect(0,end-bandH-1.2,TW,1.2);
    marks.push(long?'cuffs':'sleeve-hems');
   }
  }

@@ -1,7 +1,7 @@
 {
   "format": "johansson-brand-rules",
   "version": 1,
-  "about": "Real brand names that may not appear on anything sold, branded or labelled in Johansson World. Johansson Studio's checker (src/studio/rules.js) reads it for product, brand and label fields only: story text is not checked, because Orion is also a constellation and Asahi a street here.",
+  "about": "Real brand names that may not appear on anything sold, branded or labelled in Johansson World. Johansson Studio's checker (src/studio/rules.js) reads it for product, brand and label fields and for a Studio character's name and role, which are labels too: story text (a character's why, a note) is not checked, because Orion is also a constellation and Asahi a street here.",
   "copiedFrom": {
     "file": "jojo: town-studio/modeller/rules.json",
     "brands": 55,
@@ -128,64 +128,75 @@
     "product.brand.jp",
     "product.brand.line",
     "product.pack.flash",
-    "product.pack.tag",
-    "product.label (every text layer, and every word printed on a picture)"
+    "product.pack.tag","product.pack.net","product.pack.back.ingredients","product.cells.flavours (each flavour's name)",
+    "product.label (every text layer, and every word printed on a picture)",
+    "character.name",
+    "character.card.role"
   ],
   "knownIssues": [
     {
       "file": "src/people/izakaya-beer.js",
+      "match": "Okinawa in 1997 drinks Orion",
       "line": 9,
       "term": "orion",
       "note": "The comment says Okinawa in 1997 drinks Orion; it explains the three drinks below."
     },
     {
       "file": "src/people/izakaya-beer.js",
+      "match": "Orion draught, a frosted mug",
       "line": 14,
       "term": "orion",
       "note": "Minato's draught: \"Orion draught, a frosted mug\"."
     },
     {
       "file": "src/people/izakaya-beer.js",
+      "match": "Orion large bottle and a small glass",
       "line": 15,
       "term": "orion",
       "note": "Minato's large bottle: \"Orion large bottle and a small glass\"."
     },
     {
       "file": "src/people/izakaya-beer.js",
+      "match": "Orion can, 350 ml",
       "line": 16,
       "term": "orion",
       "note": "Minato's can: \"Orion can, 350 ml\"."
     },
     {
       "file": "src/people/ramen-kitchen.js",
+      "match": "opening a bottle of Orion",
       "line": 22,
       "term": "orion",
       "note": "Mrs Sato's kitchen line: \"opening a bottle of Orion\"."
     },
     {
       "file": "src/people/izakaya-serving-visuals.js",
+      "match": "'WARM SAKE':'ORION'",
       "line": 132,
       "term": "orion",
       "note": "The serving label texture prints ORION; buildBeerBottle (\"Umineko large bottle\") uses that cell, and Mr Fujita's crates use it (world/port-shed.js)."
     },
     {
       "file": "src/world/sato-ramen-layout.js",
+      "match": "name:'Orion, a bottle'",
       "line": 49,
       "term": "orion",
       "note": "Sato Ramen's menu: \"Orion, a bottle\"."
     },
     {
       "file": "src/world/interiors/izakaya-dressing.js",
+      "match": "c.fillStyle='#c8102e';c.fillRect(110,205,80,40)",
       "line": 66,
       "term": "livery",
       "note": "The beer poster already reads UMINEKO, but its red-and-white can recalls Orion's livery."
     },
     {
       "file": "src/world/interiors/sato-ramen-dressing.js",
+      "match": "at('beer',(c,w,h)=>{c.fillStyle='#c8102e'",
       "line": 40,
       "term": "livery",
       "note": "The red beer poster already reads UMINEKO, but its can recalls Orion's livery."
     }
   ],
-  "knownIssuesWhy": "World already uses a real brand, Orion. Each use is listed here with its file and line and is printed as a warning (validate, publish_check) until the creator chooses a fictional name; Studio's own fields are refused outright."
+  "knownIssuesWhy": "World already uses a real brand, Orion. Each use is listed here with its file and the words that find it (match; line is only where it was last seen) and is printed as a warning (validate, publish_check) until the creator chooses a fictional name; Studio's own fields are refused outright."
 }

@@ -7,7 +7,10 @@ import {recipeFor} from '../src/avatars/cast.js';
 import {createAvatarAnimator,GESTURES} from '../src/avatars/animate.js';
 import {MOVES} from '../src/avatars/moves.js';
 import {seatContactHeight} from './seating-contact.mjs';
+import {catalogCard,placeAsset} from '../src/catalog/catalog.js';
+import {provideCatalog} from './catalog-fixture.mjs';
 installDOM();
+await provideCatalog('massage-chair');
 
 /**
  * The moves Fujita's Ten Minutes of Heaven needs (the shot plan's batch C2), each on the person and in the clothes the story
@@ -140,6 +143,29 @@ test('standing, a foot is always on the floor and nothing goes through it; seate
  }
 });
 
+/**
+ * The massage chair as KneelHug meets it, in the chair's own frame (+z its front, y up, the floor 0): from its card (the
+ * seat's height and front edge) and its model, measured piece by piece from its meshes: the seat cushion; the back in
+ * four (the padded middle, whose face is the cushions', each side with its shoulder wing, and the headrest pillow on
+ * top, each its own depth); and the leg rest in two (the foot box on the floor and the calf massager over it). So the move
+ * is checked against the chair that stands in the room.
+ */
+function chairFrame(){
+ const card=catalogCard('massage-chair'),seat=card.seats[0],front=seat.position[2]+seat.front,chair=placeAsset('massage-chair');
+ chair.object.updateMatrixWorld(true);const part=name=>new THREE.Box3().setFromObject(chair.part(name));
+ const cushion=part('Massage chair seat'),back=part('Massage chair back'),mesh=name=>{let m=null;chair.object.traverse(o=>{if(o.isMesh&&o.name===name)m=o;});return m;};
+ const zones=(m,sort)=>{const P=m.geometry.attributes.position,v=new THREE.Vector3(),out={};for(let i=0;i<P.count;i++){v.fromBufferAttribute(P,i);const k=sort(v);if(k)(out[k]??=new THREE.Box3()).expandByPoint(v);}return out;};
+ const {foot,calf}=zones(mesh('Coin massage chair'),v=>Math.abs(v.x)>.3?null:v.y<.24&&v.z>.15?'foot':v.y>=.24&&v.y<.45&&v.z>.2?'calf':null);
+ const {middle,left,right,pillow}=zones(mesh('Massage chair back'),v=>v.y>=.975?'pillow':v.x<=-.24?'left':v.x>=.24?'right':'middle');
+ chair.dispose();
+ return {front,
+  // the seat, and everything under it down to the floor, from its front edge to the back
+  seat:new THREE.Box3(new THREE.Vector3(cushion.min.x,0,back.max.z),new THREE.Vector3(cushion.max.x,seat.surfaceY,front)),
+  back:[middle,left,right,pillow],foot,calf,
+  // the arms, either side of the seat: the pads' tops at 0.71 (the card's right-arm-top), from the back to the front edge
+  arms:[-1,1].map(s=>new THREE.Box3(new THREE.Vector3(s<0?-.45:.36,0,back.min.z),new THREE.Vector3(s<0?-.36:.45,card.anchors['right-arm-top'][1],front)))};
+}
+
 test('KneelHug kneels on the knees and the tucked toes, its cheek on the massage chair’s seat, and gets up at its own pace',()=>{
  // Fujita in the lobby clothes: the knees and the toes on the floor, nothing under it.
  const b=cast({...F}),m=b.m;b.step(20);b.animator.play('KneelHug',4);b.step(60);
@@ -148,9 +174,17 @@ test('KneelHug kneels on the knees and the tucked toes, its cheek on the massage
  assert.ok(lowest(b,['kneeL','kneeR'])<.01,'the knees are on the floor: '+lowest(b,['kneeL','kneeR']));
  assert.ok(lowest(b,['footL','footR'])<.005,'the toes are on the floor: '+lowest(b,['footL','footR']));
  assert.ok(b.avatar.root.position.y<half+1e-6,'it goes down, it does not pop');
- // The chair: its seat 0.5 m high, the front edge 0.38 m before the mark, the back 0.43 m further. Nothing of him goes in it,
- // the head rests on the seat (its lowest point within a centimetre above it), and the right forearm lies along it.
- const f=.38,p=new THREE.Vector3(),inSeat=q=>q.y<.5&&q.z>f&&q.z<f+.525&&Math.abs(q.x)<.4,inBack=q=>q.y<1.275&&q.z>f+.43&&q.z<f+.61&&Math.abs(q.x)<.4;
+ // The chair (Umi-no-yu's coin massage chair, World's catalogue: its card and its model), facing him, its seat's front edge
+ // 0.38 m before his mark: the seat (0.5 m high, 0.44 deep, and everything under it), the back (to 1.14 m, its cushions'
+ // face 0.43 m behind the front edge, the headrest pillow 2 cm proud of them) and the leg rest in front (the card's
+ // collider). Nothing of him goes in any of it, the head rests on the seat (its lowest point within a centimetre above it),
+ // and the right forearm lies along it. Measured in the chair's own frame (its front +z) and turned to face him: his z
+ // ahead is f + (front edge - the chair's z), his left the chair's -x.
+ const f=.38,p=new THREE.Vector3(),C=chairFrame(),toChair=q=>new THREE.Vector3(-q.x,q.y,C.front-(q.z-f));
+ assert.ok(C.foot.max.y>.2&&C.foot.max.y<.25&&C.calf.min.y>.23&&C.calf.max.y<.45,'the leg rest’s two pieces: '+[C.foot.max.y,C.calf.min.y,C.calf.max.y].map(v=>v.toFixed(3)));
+ const [mid,wingL,wingR,pil]=C.back;
+ assert.ok(mid.max.z<wingL.max.z&&Math.abs(wingL.max.z-wingR.max.z)<1e-6&&wingL.max.z<pil.max.z&&pil.max.y>1.13&&wingL.max.x<-.24&&wingR.min.x>.24,'the back: the middle, the wings a little proud either side, the pillow most');
+ const inSeat=q=>{const a=toChair(q);return C.seat.containsPoint(a);},inBack=q=>{const a=toChair(q);return C.back.some(b=>b.containsPoint(a))||C.foot.containsPoint(a)||C.calf.containsPoint(a);};
  const at=q=>{const l=local(b,q);return new THREE.Vector3(l.x,q.y,l.z);};
  let headLow=Infinity,forearm=Infinity;
  for(const mesh of b.avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible&&!o.name.includes('outline'))){
@@ -172,6 +206,10 @@ test('KneelHug kneels on the knees and the tucked toes, its cheek on the massage
   assert.ok(lowest(k)>-.002,`${who} in ${outfit} kneels through the floor: ${lowest(k)}`);k.avatar.dispose();
  }
 });
+
+// Fujita's right hand and elbow go 4 cm into the chair's left arm (the sitter's left, the remote's side) as he hugs the seat:
+// a characters batch (the hug a little narrower), not the chair's (briefs/NEXT.md §5).
+test.todo('KneelHug keeps its arms out of the massage chair’s arms');
 
 test('LieKnead lies on the back and kneads the air: the head, the back and the feet on the floor',()=>{
  const b=cast({...F,state:{lying:true}});b.step(20);b.animator.play('LieKnead');b.step(90);
