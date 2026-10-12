@@ -1,5 +1,6 @@
 import {HARBOUR_POLO_OUTFIT} from './outfits.js';
 import {residentRecipe} from './wardrobe.js';
+import {BIRTHDAYS} from '../people/birthdays.js';
 import {normalizeRecipe,seeded,PARTS,ageClass} from './recipe.js';
 import {PROFILES} from '../people/profiles.js';
 import {residentPersonality} from '../people/resident-personalities.js';
@@ -177,6 +178,14 @@ const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name)),named=name&&!rec
  * recipe drawn here. With no published looks it is exactly baseRecipe.
  */
 export function recipeFor(name='',{looks=LOOKS}={}){
+ return withBirthday(recipeFrom(name,looks),name);
+}
+/** The birthday the town keeps (people/birthdays.js) is the one the profile shows, in World and in Studio. */
+function withBirthday(recipe,name){
+ const date=BIRTHDAYS[name];if(!recipe||!date)return recipe;
+ return {...recipe,profile:{...(recipe.profile||{}),month:Number(date.slice(0,2)),day:Number(date.slice(3,5))}};
+}
+function recipeFrom(name,looks){
  const saved=residentRecipe(name);if(saved)return saved;
  const look=Object.hasOwn(looks,name)?looks[name]:null;
  return look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);

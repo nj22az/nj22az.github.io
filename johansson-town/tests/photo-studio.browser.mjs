@@ -34,15 +34,9 @@ try{
   const turnStart=await page.evaluate(()=>studio.snapshot());const pt=turnStart.actors[0].screen;
   await page.mouse.move(frame.x+pt[0]*frame.width,frame.y+pt[1]*frame.height);await page.mouse.down();await page.mouse.move(frame.x+pt[0]*frame.width+45,frame.y+pt[1]*frame.height,{steps:5});await page.mouse.up();
   const turned=await page.evaluate(()=>studio.snapshot());assert.ok(Math.abs(turned.actors[0].turn-turnStart.actors[0].turn)>10);assert.equal(turned.actors[0].x,turnStart.actors[0].x);assert.equal(turned.camera.azimuth,turnStart.camera.azimuth);
-  // The set is found by its name (its place in the menu moves as sets are added), and shown by its catalogue label.
-  const sunday=await page.evaluate(async()=>{const {ISLAND_OUTFITS,ISLAND_COSTUMES}=await import('/src/avatars/outfits.js'),sets=[...ISLAND_OUTFITS,...ISLAND_COSTUMES],i=sets.findIndex(s=>s.name==='Harbour Sunday jacket');return {value:String(i),label:sets[i].label};});
-  await page.locator('summary',{hasText:'Wardrobe'}).click();await page.getByLabel('Outfit',{exact:true}).selectOption({label:sunday.label});
-  const changed=await page.evaluate(()=>studio.snapshot().actors[0]);assert.equal(changed.outfit.top,'jacket');assert.equal(await page.getByLabel('Outfit',{exact:true}).inputValue(),sunday.value);
-  // Grouped by category, labelled from the catalogue: the police jacket and the police cap read apart.
-  assert.deepEqual(await page.locator('select[name=wearSet] optgroup').evaluateAll(g=>g.map(x=>x.label)),['Everyday','Work','School & sport','Festival','Costume']);
-  assert.equal(await page.locator('select[name=wearTop] option[value=police]').textContent(),'Police jacket');assert.equal(await page.locator('select[name=wearHat] option[value=police]').textContent(),'Police cap');assert.equal(changed.turn,turned.actors[0].turn);assert.equal(changed.x,turned.actors[0].x);
+  // Dressing up is Johansson Studio's: the photo studio has no wardrobe, and everyone wears their own clothes.
+  assert.equal(await page.locator('summary',{hasText:'Wardrobe'}).count(),0);assert.equal(await page.locator('select[name^=wear]').count(),0);
   await page.getByRole('button',{name:'Face camera',exact:true}).click();await page.getByRole('button',{name:'Move character',exact:true}).click();
-  await page.locator('summary',{hasText:'Wardrobe'}).click();
   await page.locator('[data-tab="place"]').click();await page.getByRole('button',{name:'Aoba pond garden',exact:true}).click();await page.waitForFunction(()=>!studio.snapshot().busy);assert.deepEqual(await page.evaluate(()=>placeVisits),['garden']);assert.equal(await page.evaluate(()=>studio.snapshot().actors.length),2);
   await page.locator('[data-tab="cast"]').click();
   await page.getByRole('button',{name:'Cheer',exact:true}).click();await page.getByRole('button',{name:'Surprised',exact:true}).click();
@@ -52,10 +46,8 @@ try{
   const captureButton=page.getByRole('button',{name:'Capture panel',exact:true});if(width<500)await captureButton.tap();else await captureButton.click();await page.waitForFunction(()=>studio.panelCount===1);
   await page.locator('[data-tab="film"]').click();const first=await page.locator('.photo-film a').first().getAttribute('href');
   const png=await page.evaluate(async url=>{const b=await(await fetch(url)).blob(),bitmap=await createImageBitmap(b),c=document.createElement('canvas');c.width=bitmap.width;c.height=bitmap.height;const x=c.getContext('2d');x.drawImage(bitmap,0,0);const p=x.getImageData(0,0,c.width,c.height).data;let varied=0;for(let i=0;i<p.length;i+=800)if(p[i]!==p[0]||p[i+1]!==p[1])varied++;return {w:bitmap.width,h:bitmap.height,bytes:b.size,varied};},first);assert.deepEqual([png.w,png.h],[1200,900]);assert.ok(png.bytes>20000&&png.varied>100,JSON.stringify(png));
-  // Dress, set and film: a sailor top on a sunset backdrop, in black and white.
-  await page.locator('[data-tab="cast"]').click();await page.getByRole('button',{name:'Line up',exact:true}).click();await page.locator('summary',{hasText:'Wardrobe'}).click();await page.getByLabel('Top',{exact:true}).selectOption('sailor');
-  await page.locator('[data-swatches="topColour"] .photo-swatch').nth(7).click();
-  assert.equal(await page.evaluate(()=>document.querySelector('select[name=wearTop]').value),'sailor');
+  // Set and film: a sunset backdrop, in black and white.
+  await page.locator('[data-tab="cast"]').click();await page.getByRole('button',{name:'Line up',exact:true}).click();
   await page.locator('[data-tab="camera"]').click();await page.locator('summary',{hasText:'Set & film'}).click();await page.getByLabel('Backdrop',{exact:true}).selectOption('sunset');await page.getByLabel('Film',{exact:true}).selectOption('mono');
   for(const format of ['square','portrait']){await page.getByLabel('Format',{exact:true}).selectOption(format);await page.getByRole('button',{name:'Capture panel',exact:true}).click();await page.waitForFunction(n=>studio.panelCount===n,format==='square'?2:3);}
   await page.locator('[data-tab="film"]').click();
