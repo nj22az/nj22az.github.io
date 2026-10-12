@@ -38,6 +38,7 @@ const P=Object.freeze({
  coin:'<circle cx="12" cy="12" r="9"/><path d="M8 7l4 5 4-5M12 12v6M9 13h6M9 16h6"/>',
  game:'<rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 11v4M5 13h4M15 12h.01M18 14h.01"/>',
  camera:'<path d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="4"/>',
+ pocket:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M9 5h6v5H9z"/><circle cx="12" cy="15.5" r="2.5"/>',
  person:'<circle cx="12" cy="5" r="2.5"/><path d="M12 8v7M8 11h8M9 22l3-7 3 7"/>',
  moves:'<circle cx="13" cy="4" r="2"/><path d="M7 9l5-2 3 3 4-1M12 7l-1 7 4 3v5M11 14l-4 3-2 5"/>',
  run:'<circle cx="15" cy="4" r="2"/><path d="M8 9l4-2 3 3 3 1M12 7l-2 6 4 3-1 6M10 13l-5 2"/>',

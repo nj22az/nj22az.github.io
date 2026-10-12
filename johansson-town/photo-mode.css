@@ -65,3 +65,28 @@
 #photoStudio .photo-check input{width:auto}
 
 #photoStudio [data-edit-mode][aria-pressed="true"]{background:#f8d86a;border-color:#c8a13d}
+/* The pocket camera raised to the eye (src/photo/pocket-viewfinder.js): the screen at a whole-pixel scale in a cream
+   body, the shutter beside it. Only the buttons take the pointer, so a drag anywhere still turns the view. */
+#pocketViewfinder{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;pointer-events:none;
+ background:radial-gradient(ellipse at center,transparent 38%,#0006 100%);font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Arial Rounded MT Bold",system-ui,sans-serif}
+#pocketViewfinder[hidden]{display:none}
+.pocket-body{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 14px 10px;background:#fffaf0;border-radius:18px;box-shadow:0 6px 0 #0001,0 18px 40px #0004}
+/* base.css makes every canvas the full-screen game view; these two are pictures in the page. */
+.pocket-screen{display:block;position:static;inset:auto;touch-action:auto;image-rendering:pixelated;border-radius:4px;box-shadow:inset 0 0 0 2px #0002}
+.pocket-controls{display:flex;align-items:center;gap:10px}
+.pocket-controls button{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 14px;border:2px solid #e6e1d6;border-radius:14px;background:#fff;color:#3b3f55;font-weight:700;font-size:15px;line-height:1.2;font-family:inherit;cursor:pointer}
+.pocket-controls .pocket-shutter{background:#7ccc4a;border-color:#fff;color:#fff;box-shadow:0 3px 0 #57a52f}
+.pocket-controls button:focus-visible{outline:3px solid #c06b41;outline-offset:2px}
+.pocket-controls svg{width:20px;height:20px}
+.pocket-count{margin:0;font-weight:700;font-size:13px;line-height:1.2;font-family:inherit;color:#3b3f55;min-width:7.5em;text-align:center}
+.pocket-said{margin:0;min-height:1.3em;font-weight:600;font-size:13px;line-height:1.3;font-family:inherit;color:#5b655c;text-align:center;max-width:32em}
+/* The pocket album, a page of the Field book (src/photo/pocket-album-view.js): photos at twice their size, square pixels. */
+#activity.pocket-album-view .activity-card{display:flex;flex-direction:column}
+#activity.pocket-album-view #activityBody{overflow:auto;min-height:0;white-space:normal;margin-bottom:12px}
+#activity.pocket-album-view #activityActions{flex-shrink:0}
+.pocket-album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:10px}
+.pocket-album figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.pocket-album-photo{display:block;position:static;inset:auto;touch-action:auto;width:100%;height:auto;aspect-ratio:128/112;image-rendering:pixelated;border-radius:6px;box-shadow:0 3px 0 #0001}
+.pocket-album figcaption{font-size:13px;line-height:1.35}
+.pocket-album-row{display:flex;gap:8px}.pocket-album-row button{flex:1;min-height:40px}
+.pocket-album-empty{margin:8px 0}

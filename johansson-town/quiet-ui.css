@@ -29,8 +29,8 @@
 #activity:not(.conversation) #activityActions{display:flex;flex-wrap:wrap;gap:6px;padding:0;overflow:auto;flex-shrink:0;max-height:18dvh}
 #activity:not(.conversation) #activityActions button{flex:1 1 130px;min-height:44px;padding:8px 12px;border:1px solid #bdcdbd;border-radius:10px;background:#e4eedf;color:#294539;box-shadow:none;font-size:13px}
 /* Documents and creation tools need legible pages, not a cramped quick-action tray. */
-#activity:is(.office-records,.workshop-tool,.magazine-view,.flyer-view){place-items:center}
-#activity:is(.office-records,.workshop-tool,.magazine-view,.flyer-view) .activity-card{width:min(900px,100%);max-height:82dvh}
+#activity:is(.office-records,.workshop-tool,.magazine-view,.flyer-view,.pocket-album-view){place-items:center}
+#activity:is(.office-records,.workshop-tool,.magazine-view,.flyer-view,.pocket-album-view) .activity-card{width:min(900px,100%);max-height:82dvh}
 #activity.conversation{background:transparent;backdrop-filter:none}
 @media(max-height:520px){#directory .directory-card{max-height:calc(100dvh - 80px)}#activity:not(.conversation) .activity-card{max-height:65dvh}#activity:not(.conversation) #activityActions{max-height:25dvh}}
 #hud #directoryButton{color:#33434c!important;filter:none}

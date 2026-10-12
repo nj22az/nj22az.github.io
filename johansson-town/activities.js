@@ -20,6 +20,8 @@ import {happeningLine,happeningOutcome} from './src/people/happenings.js';
 import {impressionLine,restoreImpressions} from './src/people/impressions.js';
 import {birthdayOn,birthdaysOn} from './src/people/birthdays.js';
 import {recordMoment,diaryPage,diaryDays,restoreDiary} from './src/progression/diary.js';
+import {restoreAlbum,addPhoto,removePhoto,photoMoment,photoCaption,nextPhotoId,restoreSeen} from './src/photo/pocket-album.js';
+import {albumView,albumLead} from './src/photo/pocket-album-view.js';
 import {wantsAnother} from './src/people/drunk.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
 import {restoreSakura,recordSakuraSale} from './src/commerce/sakura-economy.js';
@@ -77,7 +79,7 @@ import {restoreKonbini,addToBasket,removeFromBasket,basketLines,basketTotal,warm
 
 export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{},onConversation=()=>{},onDialoguePhase=()=>{},onWeather,onTime,getMinutes=()=>1002,getSocialContext=()=>({}),onPhone=()=>false,onEscort=()=>{},onPurchase=()=>false,onSeat=()=>false,onEat=()=>false,onTreat=()=>{},onDrink=()=>false,onSnack=()=>false,onMap=()=>null,getTableService=()=>null,onStand=()=>{},onInspectModel=()=>{},onInspectShopGood=null,onMove=()=>{},getBeerTable=()=>null,onOrderDrink=()=>false,getTipsy=()=>0,onSip=()=>false,onOutfit=()=>{},getOutfit=()=>false,getMassageChair=()=>null}) {
   const $=s=>document.querySelector(s);
-  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'peninsula',homeDecor:restoreHomeDecor()};
+  const defaults={yen:1200,inventory:[],visited:[],quest:0,fish:0,best:0,weather:false,sound:true,operated:[],inspectedIds:[],notes:['14 September 1997. Harbour Line: check the terminal timetable for day and night services.'],shrineIntent:null,kenjiEscort:false,quickTravelNotified:false,townMode:'peninsula',homeDecor:restoreHomeDecor(),pocketAlbum:[]};
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
   let awaySince=0,returnDay=null;
   let pendingAbsence=0,ledgerView=null,magazineView=null,yearTurned=false;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
@@ -89,7 +91,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     if(read?.readFrom?.endsWith(PREV_SUFFIX))try{rescueSave(localStorage,activeSlot(localStorage));setTimeout(()=>say('Your last save could not be read, so the one before it is loaded. The unreadable one is kept on this device.',9),4000);}catch{}
     const {saved,turned}=openYear(read);yearTurned=turned;
     if(saved&&typeof saved==='object'){state.loopYear=saved.loopYear;state.loops=saved.loops|0;pendingAbsence=pendingTownAbsence(saved);state.pendingTownMinutes=pendingAbsence;
-      state.homeDecor=restoreHomeDecor(saved.homeDecor);state.diary=restoreDiary(saved.diary);state.news=restoreNews(saved.news);state.post=restorePost(saved.post);awaySince=Number.isFinite(saved.savedAt)?saved.savedAt:0;state.impressions=restoreImpressions(saved.impressions);state.favours=restoreFavours(saved.favours);state.errand=restoreFavourErrand(saved.errand);state.greeted=saved.greeted&&typeof saved.greeted==='object'?Object.fromEntries(Object.entries(saved.greeted).filter(([k,v])=>typeof k==='string'&&Number.isSafeInteger(v)).slice(-60)):{};
+      state.homeDecor=restoreHomeDecor(saved.homeDecor);state.pocketAlbum=restoreAlbum(saved.pocketAlbum);state.pocketTaken=Number.isInteger(saved.pocketTaken)&&saved.pocketTaken>0?Math.min(saved.pocketTaken,999999):0;state.pocketSeen=restoreSeen(saved.pocketSeen,state.pocketAlbum);state.diary=restoreDiary(saved.diary);state.news=restoreNews(saved.news);state.post=restorePost(saved.post);awaySince=Number.isFinite(saved.savedAt)?saved.savedAt:0;state.impressions=restoreImpressions(saved.impressions);state.favours=restoreFavours(saved.favours);state.errand=restoreFavourErrand(saved.errand);state.greeted=saved.greeted&&typeof saved.greeted==='object'?Object.fromEntries(Object.entries(saved.greeted).filter(([k,v])=>typeof k==='string'&&Number.isSafeInteger(v)).slice(-60)):{};
       state.heardHappenings=Array.isArray(saved.heardHappenings)?saved.heardHappenings.filter(x=>typeof x==='string').slice(-40):[];
       state.thuanOutfit=['nozomi','sailor'].includes(saved.thuanOutfit)?saved.thuanOutfit:'clothes';state.island=restoreIsland(saved.island);state.documentArchive=restoreArchive(saved.documentArchive);state.sakura=saved.sakura;state.bookshop=saved.bookshop;state.townCleanup=saved.townCleanup;state.workshop=saved.workshop;state.story=saved.story;state.konbini=saved.konbini;state.residentLife=restoreResidentLife(saved.residentLife);state.friendship=restoreFriendship(saved.friendship);state.residentLocations=saved.residentLocations;
       for(const k of ['yen','quest','fish','best'])if(Number.isFinite(saved[k])&&saved[k]>=0)state[k]=saved[k];
@@ -146,10 +148,10 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
     $('#wallet').textContent=`¥${state.yen.toLocaleString()}`;
     return saved;
   }
-  function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
+  function close(){dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
   function show(title,text,buttons=[],options={}){
-    modal.classList.remove('bag-view','flyer-view','letter-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
+    modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
     magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
     modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen){onOpen();previousFocus=document.activeElement;}modalOpen=true;document.exitPointerLock?.();
@@ -397,7 +399,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   function receipt(title,text){show(title,text,[['Back',close]]);}
   function inventory(){
     const quest=['Speak to Nhung beside the bookshop.','Find Tama, Nhung’s cat, near the ramen stall. A fish might help.','Return to Nhung with news of Tama.','Tama is safely home. Nhung has paid you ¥500.'][state.quest];
-    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Diary',()=>diary()],['Konbini passport',konbiniPassport],['Back to town',close]]);
+    show('Field book',`${state.notes.join('\n')}\n\n${quest}\n\n${travelStatusText(state)}\n\nCash: ¥${state.yen} · Fish caught: ${state.fish}\nBag: ${state.inventory.length?state.inventory.join(', '):'Empty'}\nPlaces visited: ${state.visited.length}\nMachines tried: ${state.operated.length}\nStar Port best: ${state.best}`,[...['Canned coffee','Green tea'].filter(i=>state.inventory.includes(i)).map(i=>['Drink '+i,()=>{close();onDrink(i);}]),...printedModels(state.inventory).map(model=>['Inspect '+model.name,()=>previewPrint(model)]),['Diary',()=>diary()],['Pocket album',pocketAlbum],['Konbini passport',konbiniPassport],['Back to town',close]]);
     const map=onMap();if(map)body.append(map);
   }
 
@@ -422,6 +424,26 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
        ['Back to the field book',inventory]]);
   }
 
+  /**
+   * The pocket camera's album (src/photo/pocket-album.js): a photo kept goes into the save as its shades, and into the
+   * town's memory as a moment (the diary's words, and the Evening News's for a first photo of someone).
+   */
+  function keepPhoto(photo){
+    const before=state.pocketAlbum||[],seen=state.pocketSeen||[],r=addPhoto(before,{...photo,id:nextPhotoId(before,state.pocketTaken|0)});
+    if(!r.ok)return {ok:false,text:r.problems[0]};
+    state.pocketAlbum=r.album;state.pocketTaken=+r.photo.id.slice(2);
+    recordMoment(state,getMinutes(),photoMoment(r.photo,{seen}));
+    state.pocketSeen=[...seen,...r.photo.people.filter(n=>!seen.includes(n))].slice(-300);
+    // Said as it is: a save that could not be written keeps the photo only until the game is closed.
+    return save()?{ok:true,photo:r.photo,text:'Kept: '+photoCaption(r.photo)+'.'}:{ok:true,photo:r.photo,text:'In the album, but the save could not be written: this photo is lost when the game closes.'};
+  }
+  function letGoPhoto(id){const before=state.pocketAlbum||[];state.pocketAlbum=removePhoto(before,id);if(state.pocketAlbum.length!==before.length)save();return state.pocketAlbum.length!==before.length;}
+  function pocketAlbum(){
+    const album=state.pocketAlbum||[];
+    show('Pocket album',albumLead(album),[['Field book',inventory],['Back to town',close]]);
+    modal.classList.add('pocket-album-view');
+    body.append(albumView(album,{onLetGo:id=>{letGoPhoto(id);pocketAlbum();}}));
+  }
   function note(text,{who}={}){
     // Everything noted is offered to today's diary page too, weighed by what it was, with whom it was.
     recordMoment(state,getMinutes(),{text,kind:/^Gave /.test(text)?'gift':/^Bought .+ a drink/.test(text)?'friend':'note',...(who?{who:[who]}:{})});
@@ -1311,5 +1333,5 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   // Storage restock handshake may arrive while the tab was on thuans-storage.
   consumeStorageRestock();$('#soundButton').textContent=state.sound?'On':'Off';radioStation=state.radioStation||0;save();{const label=onWeather?.('start');if(typeof label==='string')$('#weatherButton').textContent=label;}
-  return {action,documentArchive,inventory,bag,close,save,post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,documentArchive,inventory,bag,close,save,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,consumeStorageRestock,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }
