@@ -31,16 +31,18 @@ export const HOURS=Object.freeze(['seven in the morning','half past eleven','thr
 export const GENRES=Object.freeze([
  // Harbour stories (places: only where they can happen).
  {id:'catch',places:['harbour','pier'],title:['The one that got away','{A}’s fish','A fish story'],cast:2,
-  bind:{fish:['gurukun','parrotfish','mackerel','bigeye tuna']},
+  // What the pier gives (src/world/okinawa/fish.js, fishAt('pier'); written out so the comics' chunk does not pull in
+  // the world's: tests/okinawa-fish.test.mjs keeps the two the same). The mijun is the punchline, so not bragged about.
+  bind:{fish:['mībai','taman','kuchinaji','ēgwā','gāra','tachinuiyu']},
   beats:[
-   [{say:'A',line:'I caught a {$fish} this morning. This big.',shot:'wide',a:['HandsOnHips','happy'],b:['Idle','neutral']},
-    {say:null,line:'At {place.short}, {A} was describing a {$fish}.',shot:'wide',a:['Point','happy'],b:['Idle','neutral']}],
+   [{say:'A',line:'I caught {a $fish} last night. This big.',shot:'wide',a:['HandsOnHips','happy'],b:['Idle','neutral']},
+    {say:null,line:'At {place.short}, {A} was describing {a $fish}.',shot:'wide',a:['Point','happy'],b:['Idle','neutral']}],
    [{say:'B',line:'That big?',tag:'doubt',a:['Tada','happy'],b:['Think','surprised']},
     {say:'B',line:'Last week it was smaller.',tag:'doubt',a:['HandsOnHips','content'],b:['Shrug','thinking']}],
    [{say:'A',line:'Bigger. The ferry had to wait for it to pass.',after:['doubt'],shot:'low',sfx:'SPLASH!',a:['Tada','laugh'],b:['Shrug','surprised']},
     {say:null,line:'By lunchtime the {$fish} was the size of the ferry.',shot:'wide',sfx:'SPLASH!',a:['Cheer','laugh'],b:['Think','grumpy']}],
-   [{say:null,line:'{C} walked past with a {$fish} the size of a thumb.',cast:'C',shot:'medium',sfx:'…',a:['Peace','happy']},
-    {say:'B',line:'I was there. It was a sardine.',shot:'close',a:['Shrug','shy'],b:['HandsOnHips','content']},
+   [{say:null,line:'{C} walked past with {a $fish} the size of a thumb.',cast:'C',shot:'medium',sfx:'…',a:['Peace','happy']},
+    {say:'B',line:'I was there. It was a mijun. A sardine.',shot:'close',a:['Shrug','shy'],b:['HandsOnHips','content']},
     {say:null,line:'The fish has since grown to the size of the island.',shot:'high',a:['Laugh','laugh'],b:['Laugh','laugh']}],
   ]},
  {id:'ferry',places:['harbour','pier','ferry'],title:['The last ferry','{A} and the timetable','Running for the boat'],cast:2,
