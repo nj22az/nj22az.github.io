@@ -20,8 +20,9 @@ export function buildYardHomes(world,options){
  const std=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.85,...extra});
  const mesh=(g,m,x,y,z,name)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.name=name;o.castShadow=!!options.shadows;o.receiveShadow=true;group.add(o);return o;};
  const glass=[],homes=world.homes instanceof Map?world.homes:new Map();
- for(const household of HOUSEHOLDS){
-  const spec=YARD_HOMES[household.id];if(!spec)continue;
+ // Every yard house is built; the one without a household (2 Front-Row Yard since batch 7b) is to let.
+ for(const [id,spec] of Object.entries(YARD_HOMES)){
+  const household=HOUSEHOLDS.find(h=>h.id===id)||null,title=household?.title||'House to let';
   const {x,z,w,d,height:h}=spec,front=Math.sign(spec.doorFace-z);
   // Walls: a block of painted concrete on a low grey plinth.
   mesh(new THREE.BoxGeometry(w+.1,.18,d+.1),std(0x9a968c),x,.09,z,'Yard home plinth');
@@ -56,34 +57,33 @@ export function buildYardHomes(world,options){
   }
   const plate=document.createElement('canvas');plate.width=256;plate.height=96;const ctx=plate.getContext('2d');
   ctx.fillStyle='#f4e4c8';ctx.fillRect(0,0,256,96);ctx.strokeStyle='#6b4a1c';ctx.lineWidth=6;ctx.strokeRect(3,3,250,90);
-  ctx.fillStyle='#3b3f55';ctx.font=`bold 30px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(household.residents.join(' · '),128,40);
+  ctx.fillStyle='#3b3f55';ctx.font=`bold 30px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(household?household.residents.join(' · '):'貸家 · To let',128,40);
   ctx.font=`18px ${MARU}`;ctx.fillText(spec.address,128,74);
   const tex=new THREE.CanvasTexture(plate);tex.colorSpace=THREE.SRGBColorSpace;
   mesh(new THREE.PlaneGeometry(.5,.19),new THREE.MeshStandardMaterial({map:tex,roughness:.8}),doorX+.75,1.55,face+front*.02,'Yard home nameplate').rotation.y=front>0?0:Math.PI;
   // A little of who lives there by the door.
-  if(household.id==='resident-home-aya'){
+  if(id==='resident-home-aya'){
    // Book crates and a sleeping cat on the step (Tama, from the shop window).
    for(let i=0;i<2;i++)mesh(new THREE.BoxGeometry(.45,.3,.35),std(0xb98a55),doorX-.95-i*.5,.33,face+front*.4,'Book crate');
    const cat=mesh(new THREE.SphereGeometry(.14,10,8),std(0xe8a050),doorX-.95,.62,face+front*.4,'Tama asleep on the crates');cat.scale.set(1.3,.7,1);
    mesh(new THREE.CylinderGeometry(.16,.12,.3,10),std(0xf06b9a),doorX+.9,.33,face+front*.45,'Geranium pot');
    mesh(new THREE.SphereGeometry(.2,8,6),std(0x3f8f46),doorX+.9,.62,face+front*.45,'Geranium');
   }else{
-   // A surfboard against the wall and a crate of radio parts.
-   const board=mesh(new THREE.CapsuleGeometry(.22,1.5,4,10),std(0xffc93c),x+w/2-.3,1.1,face+front*.25,'Chin surfboard');board.scale.z=.18;board.rotation.z=.12;
-   mesh(new THREE.BoxGeometry(.5,.32,.4),std(0x3b3f55),doorX-1.0,.34,face+front*.4,'Crate of radio parts');
-   mesh(new THREE.BoxGeometry(.18,.12,.12),std(0x7a7f7a),doorX-1.0,.56,face+front*.4,'Old radio chassis');
+   // To let: the agent's board by the door and a swept step; Chin's surfboard went to Kitahama, Tetsuo's crates to Kitano-jima.
+   mesh(new THREE.BoxGeometry(.4,.28,.03),std(0xf3efe2),doorX-1.0,1.3,face+front*.02,'To-let board');
+   mesh(new THREE.CylinderGeometry(.14,.11,.26,10),std(0x8a6a46),doorX-1.0,.31,face+front*.4,'Empty flower pot');
   }
   world.colliders.push({x,z,w:w+.1,d:d+.1,height:h+.4,id:'yard-home'});
   // The home site: its door, who lives there, and the heading you walk in with.
-  const profile={name:household.residents[0]};
-  let site=options.sites.find(s=>s.id===household.id);
-  if(!site){site={id:household.id,jp:"Home",sub:'FRONT-ROW YARD',color:0xd4c6ad,accent:'#776953'};options.sites.push(site);}
-  Object.assign(site,{title:household.title,line:spec.address,homeOwner:profile.name,homeOwners:[...household.residents],homeEntry:'yard-'+spec.number,
-   door:[spec.door[0],.02,spec.door[1]],entryFacing:spec.inward,x:spec.door[0],z:spec.door[1]});
+  let site=options.sites.find(s=>s.id===id);
+  if(!site){site={id,jp:"Home",sub:'FRONT-ROW YARD',color:0xd4c6ad,accent:'#776953'};options.sites.push(site);}
+  Object.assign(site,{title,line:spec.address,door:[spec.door[0],.02,spec.door[1]],entryFacing:spec.inward,x:spec.door[0],z:spec.door[1]});
+  if(household)Object.assign(site,{homeOwner:household.residents[0],homeOwners:[...household.residents],homeEntry:'yard-'+spec.number});
+  else Object.assign(site,{familyHome:{members:[],toLet:true},houseKind:'concrete',ownRoom:true});
   site.exitPosition=[...site.door];
-  for(const name of household.residents)homes.set(name,{owner:name,household:household.id,address:spec.address,door:[...spec.door],building:'front-row-yard',occupied:false});
-  const anchor=new THREE.Object3D();anchor.name='yard home entrance:'+household.id;anchor.position.set(spec.door[0],1.3,spec.door[1]);group.add(anchor);
-  options.register?.(anchor,'Visit '+household.title,()=>options.enter(site));
+  for(const name of household?.residents||[])homes.set(name,{owner:name,household:id,address:spec.address,door:[...spec.door],building:'front-row-yard',occupied:false});
+  const anchor=new THREE.Object3D();anchor.name='yard home entrance:'+id;anchor.position.set(spec.door[0],1.3,spec.door[1]);group.add(anchor);
+  options.register?.(anchor,(household?'Visit ':'Look round the ')+title,()=>options.enter(site));
  }
  world.homes=homes;
  const previous=world.updateHomes;

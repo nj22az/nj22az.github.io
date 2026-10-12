@@ -140,13 +140,10 @@ export function checkoutQuote(state,{warm=false,bag=true}={}){
  };
 }
 
-/** True while Sakura's posted hours say the till is open (09:00–20:00). */
-export function sakuraHoursOpen(minutes){
- const m=((minutes%1440)+1440)%1440;
- return m>=540&&m<1200;
-}
-/** Till message when Thuan is away mid-hours (afternoon walk / nap), not overnight closed. */
-export const SAKURA_AWAY_MESSAGE='Thuan is away from the counter for a bit. Try again when she is back.';
+/** Sakura is open 24 hours, every day (commerce/sakura-rota.js): the till is always open. */
+export function sakuraHoursOpen(minutes){return Number.isFinite(minutes)||true;}
+/** Till message when the clerk on shift is away from the counter for a bit (Thuan's afternoon walk and nap). */
+export const SAKURA_AWAY_MESSAGE='Whoever is on the till is away from the counter for a bit. Try again when they are back.';
 /**
  * Rings the basket through. Either the whole basket goes, or nothing does: a claim that
  * cannot be met puts every earlier claim back on the shelf.
@@ -158,7 +155,7 @@ export function checkout(state,{warm=false,bag=true}={},minutes=0,thuanAvailable
  const m=((minutes%1440)+1440)%1440;
  const lines=basketLines(state),total=basketTotal(state);
  if(!lines.length)return {ok:false,message:'Your basket is empty.'};
- if(!sakuraHoursOpen(minutes))return {ok:false,message:'The till is closed. Thuan returns at 09:00.'};
+ if(!sakuraHoursOpen(minutes))return {ok:false,message:'The till is closed.'};
  if(thuanAvailable===false)return {ok:false,message:SAKURA_AWAY_MESSAGE};
  if(state.yen<total)return {ok:false,message:'You do not have enough yen for all of that.'};
  if(state.inventory.length+konbini.basket.length>100)return {ok:false,message:'Your bag is full.'};
@@ -250,7 +247,7 @@ const HOT_BY_ID=new Map(HOT_SNACKS.map(s=>[s.id,s]));
 export function buyHotSnack(state,id,minutes=0,thuanAvailable=true){
  const snack=HOT_BY_ID.get(id);
  if(!snack)return {ok:false,message:'That is not in the hot case today.'};
- if(!sakuraHoursOpen(minutes))return {ok:false,message:'The hot case is switched off. Thuan returns at 09:00.'};
+ if(!sakuraHoursOpen(minutes))return {ok:false,message:'The hot case is switched off.'};
  if(thuanAvailable===false)return {ok:false,message:SAKURA_AWAY_MESSAGE};
  if(state.yen<snack.cost)return {ok:false,message:'You do not have enough yen for that.'};
  if(state.inventory.length>=100)return {ok:false,message:'Your bag is full.'};

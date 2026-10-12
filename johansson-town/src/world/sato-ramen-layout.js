@@ -56,8 +56,9 @@ export const SATO_MENU=Object.freeze([
  * visit is inside the lunch hours; the shift workers take it as their lunch break.
  */
 export const SATO_LUNCH=Object.freeze({
- Thuan:Object.freeze([780,830]),Chin:Object.freeze([690,735]),Reiko:Object.freeze([725,760]),Nhung:Object.freeze([745,790]),
+ // Chin sleeps through lunch after Sakura's night shift (sakura-rota.js) and has no slot.
+ Thuan:Object.freeze([780,830]),Reiko:Object.freeze([725,760]),Nhung:Object.freeze([745,790]),
  Tetsuo:Object.freeze([700,745]),'Harbour master':Object.freeze([720,765]),
 });
 /** What each regular drinks with lunch: a hot coffee or a glass of cold barley tea. */
-export const SATO_LUNCH_DRINK=Object.freeze({Thuan:'mugicha',Chin:'mugicha',Reiko:'coffee',Nhung:'mugicha',Tetsuo:'coffee','Harbour master':'coffee'});
+export const SATO_LUNCH_DRINK=Object.freeze({Thuan:'mugicha',Reiko:'coffee',Nhung:'mugicha',Tetsuo:'coffee','Harbour master':'coffee'});

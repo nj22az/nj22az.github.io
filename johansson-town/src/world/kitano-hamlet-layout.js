@@ -12,9 +12,9 @@ export const KITANO_HAMLET=Object.freeze({
  /** Plantings keep out of this rectangle (tropical-island.js). */
  clear:Object.freeze({minX:-48,maxX:-19,minZ:37,maxZ:63}),
  plots:Object.freeze([
-  {id:'kitano-1',family:'ヨハンソン',romaji:'Johansson',minX:-46,maxX:-36,minZ:51.5,maxZ:61.5,gate:'south',kind:'red-tile',wall:'coral'},
+  {id:'kitano-1',family:'ヨハンソン',romaji:'Johansson & Thuan',minX:-46,maxX:-36,minZ:51.5,maxZ:61.5,gate:'south',kind:'red-tile',wall:'coral'},
   {id:'kitano-2',family:'城間',romaji:'Jun',minX:-45,maxX:-35,minZ:38,maxZ:48,gate:'north',kind:'concrete',wall:'block'},
-  {id:'kitano-3',family:'貸家',romaji:'To let',minX:-33,maxX:-23,minZ:38,maxZ:48,gate:'north',kind:'red-tile',wall:'coral'},
+  {id:'kitano-3',family:'知念',romaji:'Chinen',minX:-33,maxX:-23,minZ:38,maxZ:48,gate:'north',kind:'red-tile',wall:'coral'},
  ].map(Object.freeze)),
 });
 /** The gate in the plot's wall, 0.7 m out on the lane, and the way in (0 faces −v, π faces +v), island frame. */

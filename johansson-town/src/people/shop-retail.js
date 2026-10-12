@@ -1,3 +1,4 @@
+import {sakuraClerkAt} from '../commerce/sakura-rota.js';
 import * as THREE from '../../vendor/three.module.js';
 
 import {SHOP_STOCK,stockSpec,takeShopStock,returnShopStock,restockItem,depletedShelf,closingDay,closingStockPending,closingPreparationPending,SOLD_OUT} from '../commerce/shop-stock.js';
@@ -20,7 +21,7 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
   return arrived;
  }
  function visit(person,minutes){
-  if(person.profile.name==='Thuan'||marketVisitPurpose(person.profile.name,minutes,state)!=='goods')return null;
+  if(sakuraClerkAt(minutes)===person.profile.name||marketVisitPurpose(person.profile.name,minutes,state)!=='goods')return null;
   const account=ledger.account(person.profile.name,minutes);
   const record=account.shopping??={phase:'browse',started:minutes,finished:false,item:null,picked:false,paid:false,timer:0,position:[...layout.entrance]};
   // Old saves can remember a spot occupied by a moved shelf or a person now in
@@ -49,11 +50,11 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
   if(preferred){const index=rotation.findIndex(item=>item.id===preferred);if(index>0)rotation.unshift(rotation.splice(index,1)[0]);}
   return rotation.filter(item=>ledger.account(person.profile.name,getMinutes()).yen>=item.cost);
  }
- function soldOut(person,record){finish(person,record);const clerk=world.people.find(p=>p.profile.name==='Thuan');if(clerk)clerk.g.userData.residentSpeech={text:SOLD_OUT,until:getMinutes()+5};}
+ function soldOut(person,record){finish(person,record);const clerk=world.people.find(p=>p.profile.name===sakuraClerkAt(getMinutes()));if(clerk)clerk.g.userData.residentSpeech={text:SOLD_OUT,until:getMinutes()+5};}
  function update(dt){
-  const minutes=getMinutes(),open=minutes%1440>=540&&minutes%1440<1200;advanceDeliveries(state,minutes);
+  const minutes=getMinutes(),open=true;advanceDeliveries(state,minutes);
   for(const person of world.people){
-   if(person.profile.name==='Thuan')continue;const account=ledger.account(person.profile.name,minutes),record=account.shopping,previous=customers.get(person);
+   if(person.profile.name===sakuraClerkAt(minutes))continue;const account=ledger.account(person.profile.name,minutes),record=account.shopping,previous=customers.get(person);
    if(previous&&previous!==record)finish(person,previous);
    if(!person.g.userData.inMarket||person.g.userData.roomTransition||!record||record.finished){if(customers.has(person))finish(person,record);continue;}
    customers.set(person,record);const g=person.g;g.userData.shopping=true;g.userData.floorHeight=0;
@@ -98,14 +99,14 @@ export function createShopRetail({world,state,ledger,display,collides,getMinutes
   if(job!==activeJob)return;const minutes=getMinutes();
   if(job.type==='checkout'){
    const {customer,record}=job,item=stockSpec(record.item);
-   if(!record.finished&&record.picked&&!record.paid&&customer.g.userData.inMarket&&minutes%1440<1200&&ledger.purchase(customer.profile.name,minutes,'shop-goods',item.id,item.cost)){
+   if(!record.finished&&record.picked&&!record.paid&&customer.g.userData.inMarket&&ledger.purchase(customer.profile.name,minutes,'shop-goods',item.id,item.cost)){
     record.paid=true;record.phase='paid';record.timer=2;
     recordSakuraSale(state,item.cost,'goods-'+Math.floor(minutes/1440)+'-'+customer.profile.name,{minute:minutes,item:item.name,buyer:customer.profile.name,unitCost:item.unitCost});
-    customer.g.userData.residentSpeech={text:'Thank you, Thuan.',until:minutes+3};
+    customer.g.userData.residentSpeech={text:'Thank you, '+sakuraClerkAt(minutes)+'.',until:minutes+3};
    }else if(!record.paid)finish(customer,record);
   }else if(closingStockPending(state,minutes)){
    const spec=stockSpec(job.item),stock=state.sakura.stock[job.item],quantity=spec&&stock?Math.min(spec.capacity-stock.shelf,stock.reserve):0;
-   const count=restockItem(state,job.item,quantity);if(count)shopEntry(state,{minute:minutes,kind:'Restocked',item:spec.name,buyer:'Thuan',quantity:count});
+   const count=restockItem(state,job.item,quantity);if(count)shopEntry(state,{minute:minutes,kind:'Restocked',item:spec.name,buyer:sakuraClerkAt(minutes),quantity:count});
   }
   activeJob=null;display.updateStock(state.sakura.stock);
  }

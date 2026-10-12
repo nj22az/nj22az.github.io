@@ -1,3 +1,4 @@
+import {sakuraClerkAt} from '../commerce/sakura-rota.js';
 import {FURNITURE_HEIGHTS} from '../world/furniture-standards.js';
 import {groundHeight} from '../world/layout.js?snappy=1';
 import {STORE_CLERK_POSITION,STORE_SEATS} from '../world/interiors/store-layout.js';
@@ -39,7 +40,7 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
  function seatFor(p){
   const name=p.profile.name;
   const standing=getStandingVisit(p,clock);if(standing)return {position:standing,stand:standing,yaw:0,managed:true};
-  if(place==='market'&&name==='Thuan')return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true};
+  if(place==='market'&&name===sakuraClerkAt(clock))return {position:layout?.staff||STORE_CLERK_POSITION,stand:layout?.staff||STORE_CLERK_POSITION,yaw:layout?.staffYaw??Math.PI,staff:true};
   if(place==='market'&&layout?.guestStands){
    // A finished errand can still be followed by an evening browse. These are
    // standing places in the actual shop, never the older store's removed chairs.

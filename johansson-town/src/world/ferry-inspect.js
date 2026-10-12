@@ -12,8 +12,6 @@ const M=FERRY_MACHINERY,E=FERRY_ELECTRICS;
 const at=(id,pos,label,title,text)=>Object.freeze({id,pos:Object.freeze(pos),label,title,text});
 
 export const FERRY_INSPECT=Object.freeze([
- at('er-door',[2.7,CAR+1.3,Z(6.85)],'Engine room: through the door and down the ladder','Engine room',
-  'The casing door on the car deck’s port side, under the red ENGINE ROOM sign. Inside, a ladder goes down through a hatch to the floor plates: two main engines, two generators, the control booth and the main switchboard. Watch your head, and hold the rails.'),
  at('bicycles',[2.1,CAR+1.0,Z(3.3)],'Look at the bicycle rack','Bicycle rack',
   'Two islanders’ bicycles, lashed in the rack: a bicycle rides free, and on Kitano-jima it is the way from the pier to the village. The baggage shelf opposite is for the shopping, and the orange lockers over it hold the lifejackets for this deck.'),
  at('fire-doors',[0,CAR+1.2,Z(12.0)],'Read the safety plan','Safety plan',
@@ -55,3 +53,15 @@ export const FERRY_INSPECT=Object.freeze([
  at('galley',[-2.0,BRIDGE+1.1,Z(14.6)],'Look at the galley','Galley',
   'A three-plate range under its hood, the rice cooker, the fridge-freezer, the sink and the provision locker. The kiosk’s hot water comes from here too.'),
 ]);
+
+/**
+ * The way below (the creator, 2026-10-12: "I want to be able to go down in the engine room"): at the casing door a
+ * prompt takes you down the ladder to the floor plates, and at its foot one brings you back up to the car deck. The
+ * ladder can still be walked. `to` is where you stand after, in her frame, `yaw` the way you face (π looks forward).
+ */
+export const FERRY_LADDER=Object.freeze({
+ down:Object.freeze({at:Object.freeze([2.7,CAR+1.3,Z(6.85)]),label:'Go down to the engine room',to:Object.freeze([3.575,FP,Z(8.9)]),yaw:Math.PI,
+  note:'Down the ladder to the floor plates. Ear defenders on: two diesels run here.'}),
+ up:Object.freeze({at:Object.freeze([3.575,FP+1.2,Z(9.1)]),label:'Climb up to the car deck',to:Object.freeze([2.9,CAR,Z(6.8)]),yaw:Math.PI/2,
+  note:'Up the ladder and out through the casing door. Ear defenders off.'}),
+});

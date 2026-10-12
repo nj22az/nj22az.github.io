@@ -1,5 +1,6 @@
 import {householdFor} from './households.js';
 import {ISLAND_RESIDENT_NAMES,kitahamaHomeFor} from '../world/kitahama-layout.js';
+import {KITANO_RESIDENT_NAMES,kitanoHomeFor} from './kitano-residents.js';
 import {HARBOUR_OFFICE} from '../world/business-layout.js';
 import {TOWN_DESTINATIONS} from '../world/town-grid.js';
 import {restaurantApproach,IZAKAYA_DOOR} from '../world/dining-layout.js';
@@ -40,8 +41,8 @@ export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
  if(shopFloor)Object.defineProperty(profile,'work',{get:()=>TOWN_DESTINATIONS[shopFloor],enumerable:true,configurable:true});
  // The same for home: on the island the shop's staff live in the yard houses behind
  // Front-Row (yard-homes-layout.js); elsewhere, the Main Street flats they always had.
- if(YARD_RESIDENT_NAMES.includes(name)||WORKPLACE_HOMES[name]||ISLAND_RESIDENT_NAMES.includes(name)){
-  const yard=()=>(WORKPLACE_HOMES[name]?.()||kitahamaHomeFor(name)||YARD_HOMES[householdFor(name)?.id]),street={home:profile.home,homeAddress:profile.homeAddress};
+ if(YARD_RESIDENT_NAMES.includes(name)||WORKPLACE_HOMES[name]||ISLAND_RESIDENT_NAMES.includes(name)||KITANO_RESIDENT_NAMES.includes(name)){
+  const yard=()=>(WORKPLACE_HOMES[name]?.()||kitahamaHomeFor(name)||kitanoHomeFor(name)||YARD_HOMES[householdFor(name)?.id]),street={home:profile.home,homeAddress:profile.homeAddress};
   Object.defineProperty(profile,'home',{get:()=>yard()?[...yard().door]:street.home,enumerable:true,configurable:true});
   Object.defineProperty(profile,'homeAddress',{get:()=>yard()?.address||street.homeAddress,enumerable:true,configurable:true});
  }
@@ -50,6 +51,9 @@ export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
 export function residentHomeDescription(name){
  const profile=RESIDENTS.find(p=>p.name===name);
  if(!profile)return '';
+ if(name==='Tetsuo')return 'I live at '+profile.homeAddress+', across the water. The morning boat brings me to the workshop and the evening one takes me home; the radio test is out there anyway.';
+ if(name==='Thuan')return 'On weekdays I stay at '+profile.homeAddress+' with Thao and Chin, near the shop. At the weekend I am home on Kitano-jima with my husband, Johansson.';
+ if(name==='Chin')return 'My place is at '+profile.homeAddress+', bro, with my wife Thao. Thuan has the other room on weekdays.';
  if(!householdFor(name))return profile.homeAddress?'I live at '+profile.homeAddress+'.':'Home? Minato, mostly. Thao says I pay rent in bottle caps.';
  // The shared Main Street entrances are not built on the island.
  const neighbour=null;

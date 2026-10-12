@@ -11,6 +11,8 @@ export function sleepHours(profile){
  // after-work errands, then eight hours at home instead of the old day shift bedtimes.
  if(profile.name==='Reiko')return {sleep:170,wake:650};
  if(profile.name==='Tetsuo')return {sleep:140,wake:620};
+ // Chin works Sakura's night shift (20:30–06:00) and sleeps through the morning (batch 7b).
+ if(profile.name==='Chin')return {sleep:390,wake:810};
  return {sleep:minute(profile.retire+20),wake:minute(profile.start-90)};
 }
 export function homeRoutine(profile,minutes){
@@ -38,6 +40,9 @@ const THUAN_APARTMENT_ROUTINES={
   cover:{position:[-4.15,.64,3.35],width:1.08,length:1.3,axis:'z'}},
  Thao:{bed:[-1.6,.58,3.95],bedside:[-2.65,0,3.3],table:[-3.98,0,.5],door:[-.45,0,.4],
   cover:{position:[-1.6,.64,3.35],width:1.08,length:1.3,axis:'z'}},
+ // Chin, Thao's husband (batch 7b), beside her.
+ Chin:{bed:[.95,.58,3.95],bedside:[.0,0,3.3],table:[-2.8,0,.5],door:[-.45,0,.4],
+  cover:{position:[.95,.64,3.35],width:1.08,length:1.3,axis:'z'}},
 };
 export function homeLayoutFor(name){
  if(name===TATAMI_HOME_OWNER)return TATAMI_HOME_LAYOUT;

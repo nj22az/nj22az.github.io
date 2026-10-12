@@ -47,8 +47,8 @@ test('Sakura fluorescent stays cold, on into the evening, and does not follow du
  assert.equal(fluorescent(at(12)),1);
  assert.equal(fluorescent(at(18,30)),1);
  assert.equal(fluorescent(at(20,43)),1,'still lit after closing while the till is cashed up');
- assert.equal(fluorescent(at(23)),0.6);
- assert.equal(fluorescent(at(2)),0.6);
+ assert.equal(fluorescent(at(23)),1,'open all night since the 24-hour change');
+ assert.equal(fluorescent(at(2)),1);
  assert.notEqual(PALETTE.sakuraTube,PALETTE.lanternPaper);
  assert.notEqual(PALETTE.sakuraTube,PALETTE.sunDusk);
 });

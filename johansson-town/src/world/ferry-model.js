@@ -112,7 +112,7 @@ export function keelY(z){
 const fullness=z=>z>Z(24)?7-4.2*((z-Z(24))/(HALF-Z(24))):z<Z(9)?7-2.5*((Z(9)-z)/(Z(9)+HALF)):7;
 const narrowing=z=>z>Z(26)?.12*((z-Z(26))/(HALF-Z(26)))**2:0;
 /** A point on the section at z, for θ from 0 (the keel, on the centreline) to π/2 (the deck edge). */
-function sectionPoint(z,theta){
+export function sectionPoint(z,theta){
  const n=fullness(z),k=keelY(z),top=deckEdge(z),hb=halfBreadth(z);
  const sn=Math.sin(theta),cs=Math.cos(theta);
  const y=k+(top-k)*(1-Math.pow(Math.max(0,cs),2/n));
@@ -206,7 +206,11 @@ function createKit(shadows){
   const g=prep(geo,hex);g.applyMatrix4(m);(groups.get(cls)||groups.set(cls,[]).get(cls)).push(g);return g;};
  const box=(cls,size,pos,hex,rot)=>add(cls,new THREE.BoxGeometry(...size),hex,pos,rot);
  /** A box between two corners [x0,y0,z0]–[x1,y1,z1]. */
- const block=(cls,a,b,hex)=>box(cls,[Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1]),Math.abs(b[2]-a[2])],[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],hex);
+ /** A box between two corners [x0,y0,z0]–[x1,y1,z1]. Paint thinner than 2 cm is a decal (a floor covering, a painted
+  * stripe, a sign) lying on another face: it is drawn with a depth offset so a phone, which cannot tell a few
+  * millimetres apart at a few metres, never flickers between the two (the creator, 2026-10-12: "I don't want flashing
+  * graphics like that"). */
+ const block=(cls,a,b,hex)=>{const size=[Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1]),Math.abs(b[2]-a[2])];return box(cls==='paint'&&Math.min(...size)<=.02?'decal':cls,size,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],hex);};
  const cyl=(cls,rt,rb,h,pos,hex,rot,seg=12)=>add(cls,new THREE.CylinderGeometry(rt,rb,h,seg),hex,pos,rot);
  const bar=(cls,a,b,r,hex,seg=6)=>{const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),len=A.distanceTo(B);const g=new THREE.CylinderGeometry(r,r,len,seg);g.translate(0,len/2,0);
   g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),B.clone().sub(A).normalize()));g.translate(...a);return add(cls,g,hex);};
@@ -214,6 +218,7 @@ function createKit(shadows){
   paint:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.58,metalness:.05}),
   metal:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.42,metalness:.55}),
   rubber:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95}),
+  decal:new THREE.MeshStandardMaterial({vertexColors:true,roughness:.58,metalness:.05,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4}),
  };
  const finish=parent=>{
   for(const [cls,list] of groups){const mesh=new THREE.Mesh(mergeGeometries(list,false),materials[cls]||materials.paint);mesh.name='Minato Maru '+cls;mesh.castShadow=mesh.receiveShadow=!!shadows;parent.add(mesh);}

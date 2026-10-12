@@ -12,19 +12,19 @@ const thuan=RESIDENTS.find(p=>p.name==='Thuan');
 const commuter={};
 
 test('asked along, Thuan goes from locking up to Umi-no-yu, and still makes her bus',()=>{
- // 20:15 on day 3, the evening she said yes to.
- const evening=3*1440+1215,state={...commuter,onsenDate:3};
+ // 20:15 on day 1 (a Thursday: day 3 is a Saturday, and at the weekend she is home on Kitano-jima), the evening she said yes to.
+ const evening=1*1440+1215,state={...commuter,onsenDate:1};
  assert.equal(residentPlan(thuan,evening,false,state).place,'onsen');
  assert.deepEqual(residentPlan(thuan,evening,false,state).target,ONSEN_DOOR);
  // Not asked, or asked for another evening: her usual hour.
  assert.notEqual(residentPlan(thuan,evening,false,commuter).place,'onsen');
- assert.notEqual(residentPlan(thuan,evening,false,{...commuter,onsenDate:2}).place,'onsen');
+ assert.notEqual(residentPlan(thuan,evening,false,{...commuter,onsenDate:0}).place,'onsen');
  // Never into her shift, and out in time for the last bus.
- assert.equal(thuanAtOnsen(thuan,3*1440+900,false,state),false);
- assert.equal(thuanAtOnsen(thuan,3*1440+1300,false,state),false);
+ assert.equal(thuanAtOnsen(thuan,1*1440+900,false,state),false);
+ assert.equal(thuanAtOnsen(thuan,1*1440+1300,false,state),false);
  // Asking after her window has gone means tomorrow.
- assert.equal(onsenInvitationDay(thuan,3*1440+700,false,commuter),3);
- assert.equal(onsenInvitationDay(thuan,3*1440+1300,false,commuter),4);
+ assert.equal(onsenInvitationDay(thuan,1*1440+700,false,commuter),1);
+ assert.equal(onsenInvitationDay(thuan,1*1440+1300,false,commuter),2);
 });
 
 test('the bath borrows Thuan into the rock pool in her swimwear (the shared bath is a swimwear zone) and gives her back dressed',()=>{

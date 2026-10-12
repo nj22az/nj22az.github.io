@@ -5,10 +5,12 @@ const shifts={
  // Work hours stay unchanged. Departure identifies the service's arrival time.
  Thuan:{arrival:510,start:540,finish:1200,departure:1320},
  Nhung:{arrival:510,start:540,finish:1110,departure:1320},
- Chin:{arrival:510,start:540,finish:1140,departure:1320},
+ // Chin: Sakura's night shift (20:30–06:00, sakura-rota.js), sleep till the early afternoon, then the workshop bench.
+ Chin:{arrival:510,start:840,finish:1140,departure:1320},
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
  Reiko:{arrival:870,start:900,finish:1470,departure:1950},
- Tetsuo:{arrival:870,start:1020,finish:1440,departure:1950},
+ // Tetsuo lives on Kitano-jima (batch 7b): over on the 08:30 ferry, the day at the bench with lunch at Sato, home on the 22:00.
+ Tetsuo:{arrival:510,start:540,finish:1110,departure:1320},
  // Thao takes the morning service so her Konbini errand and park walk happen before
  // Minato opens. Her return service is the next morning after the night shift.
  Thao:{arrival:510,start:960,finish:1620,departure:1950},

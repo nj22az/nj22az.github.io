@@ -55,12 +55,12 @@ test('Sakura tubes load at the current hour and glow, and the shelving does not'
   display.updateLighting(1400);assert.ok(await display.ready());applyCelShading(room);
   const tube=room.getObjectByName('sakura-light'),shelf=room.getObjectByName('sakura-shelf');
   assert.ok(tube&&shelf);assert.notEqual(tube.material,shelf.material);
-  assert.equal(tube.material.emissiveIntensity,.6);
+  assert.equal(tube.material.emissiveIntensity,1,'open 24 hours: the tubes burn at full strength all night');
   assert.equal(tube.material.type,'MeshStandardMaterial','the tubes keep the physical material that lets them glow');
   // The fittings join the town's toon shading like every other building.
   assert.equal(shelf.material.type,'MeshToonMaterial');
   assert.equal(shelf.material.emissive.getHex(),0);
-  for(const [minutes,level] of [[540,1],[1110,1],[1199,1],[1243,1],[1380,.6],[1440,.6]]){
+  for(const [minutes,level] of [[540,1],[1110,1],[1199,1],[1243,1],[1380,1],[1440,1]]){
    display.updateLighting(minutes);
    assert.equal(tube.material.emissive.getHex(),PALETTE.sakuraTube);
    assert.equal(tube.material.emissiveIntensity,level);

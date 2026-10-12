@@ -272,7 +272,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // tunnel until the next service, which is now as much as two and a half hours.
    if(transit&&phase==='away'&&!initialised.has(g))seenAtStop.add(g);
    const holdForBus=transit&&phase==='away'&&!boarded(g);
-   if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity=awayPlace();g.userData.commuterAwayDay=day;routes.delete(g);continue;}
+   if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity=awayPlace(v.profile?.name);g.userData.commuterAwayDay=day;routes.delete(g);continue;}
    // Coming back is the same in reverse: nobody is put down on the platform until the
    // bus they would have been on is at it.
    if(transit&&phase==='arriving'&&(!g.visible||g.userData.commuterAwayDay===day)){
