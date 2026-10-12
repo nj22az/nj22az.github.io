@@ -221,7 +221,9 @@ export function createTown({scene,sites,mobile,shadows=!mobile,maxAnisotropy=4,r
   // lay-by (main-road.js), where the harbour master's car stands by the kerb.
   for(const [px,pz] of [[-7.2,-32],[2.05,-32]]){
    cyl(.10,.85,[px,.425,pz],0x3b4848);box([.22,.10,.22],[px,.9,pz],0xe7c080);obstacle(px,pz,.25,.25);
-   const light=new THREE.PointLight(0xffd7a0,0,14,2);light.userData.nightIntensity=18;light.position.set(px,1,pz);group.add(light);lampLights.push(light);
+   // A 0.9 m deck light throws a pool round its foot, not a 14 m wash: at that reach the west one lit the whole of
+   // Sakura's shutter beige at night.
+   const light=new THREE.PointLight(0xffd7a0,0,5.5,2);light.userData.nightIntensity=18;light.position.set(px,1,pz);group.add(light);lampLights.push(light);
   }
   // The shopping street is fed from the Main Street line (okinawa/quarters.js): a second
   // and third row of poles a few metres from it was clutter.
