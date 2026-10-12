@@ -51,8 +51,8 @@ test('her general arrangement: every space inside her hull, none on top of anoth
  for(const id of ['eg-room','co2-room'])assert.deepEqual(gaSpace(id).exits,['open-deck']);
 });
 
-test('ten cars on her car deck, or a truck and five cars, lashed half a metre apart, clear of the casings and the walkway',()=>{
- const deck=gaSpace('car-deck'),solids=['casing-p','casing-s','foyer','bow-house-p','bow-house-s','aft-mooring'].map(gaSpace);
+test('six cars on her car deck, or a truck and two cars, lashed half a metre apart, clear of the casings and the walkway',()=>{
+ const deck=gaSpace('car-deck'),solids=['casing-p','casing-s','foyer','bow-house-p','bow-house-s','aft-mooring','lower-lobby'].map(gaSpace);
  const longest=Math.max(...Object.values(VEHICLE_SIZE).map(v=>v.length)),widest=Math.max(...Object.values(VEHICLE_SIZE).map(v=>v.width));
  assert.equal(FERRY_CAR_PLACES.length,FERRY_SHIP.vehicles);
  const box=v=>({x:[v.x-v.width/2,v.x+v.width/2],z:[v.z-v.length/2,v.z+v.length/2]});
@@ -60,12 +60,12 @@ test('ten cars on her car deck, or a truck and five cars, lashed half a metre ap
  for(const plan of [FERRY_CAR_PLACES,[...FERRY_TRUCK_PLAN.trucks,...FERRY_TRUCK_PLAN.cars]]){
   for(const v of plan){
    const b=box(v);if(plan===FERRY_CAR_PLACES)assert.ok(v.length>=longest&&v.width>=widest,'every place takes the town’s longest and widest vehicle');
-   assert.ok(b.z[0]>=3&&b.z[1]<=30&&b.x[0]>=deck.x[0]-1e-9&&b.x[1]<=deck.x[1]+1e-9,'a place on the car deck at '+v.z);
+   assert.ok(b.z[0]>=deck.z[0]&&b.z[1]<=30&&b.x[0]>=deck.x[0]-1e-9&&b.x[1]<=deck.x[1]+1e-9,'a place on the car deck at '+v.z);
    for(const s of solids)assert.ok(!hits(b,s),`a place at ${v.x},${v.z} runs into ${s.id}`);
   }
   for(let i=0;i<plan.length;i++)for(let j=i+1;j<plan.length;j++)assert.ok(!hits(box(plan[i]),box(plan[j]),.5),`places ${i} and ${j} are less than half a metre apart`);
  }
- assert.equal(FERRY_TRUCK_PLAN.trucks.length,1);assert.equal(FERRY_TRUCK_PLAN.cars.length,5);
+ assert.equal(FERRY_TRUCK_PLAN.trucks.length,1);assert.equal(FERRY_TRUCK_PLAN.cars.length,2);
  // The ramp: 4.4 m clear between the bow houses, wide enough for an 8-tonne truck with room each side.
  const ramp=gaSpace('ramp');assert.ok(near(ramp.x[1]-ramp.x[0],4.4,1e-9));assert.ok(ramp.x[1]-ramp.x[0]>=FERRY_TRUCK_PLAN.trucks[0].width+1.5);
 });
@@ -181,7 +181,7 @@ test('the hull as drawn is the ship as designed: 34.5 × 8.4 m, closed, faired, 
  const box=new THREE.Box3().setFromObject(ferry);
  assert.ok(Math.abs(box.max.y-at(FERRY_HEIGHTS.mastTop))<.3,'her mast top at '+box.max.y.toFixed(2));
  assert.ok(Math.abs(ferry.getObjectByName('Masthead light').position.y-at(FERRY_HEIGHTS.mastheadLight))<.05,'the masthead light 15 m above the keel');
- // Ten car places in two lanes between the casings, clear of the walkway.
+ // Six car places in two lanes between the casings, forward of the lower lobby.
  assert.equal(FERRY_DECKS.car.slots.length,FERRY_SHIP.vehicles);
  const laneEdge=Math.max(...FERRY_DECKS.car.lanes.map(Math.abs))+FERRY_DECKS.car.laneWidth/2;
  assert.ok(laneEdge<=FERRY_HULL.beam/2-FERRY_DECKS.car.walkway+1e-9,'lanes stop at the casings');

@@ -54,8 +54,8 @@ export const GANGWAY_LENGTH=2;
 /** Where things are on her, along her (z) and up (y), model frame. */
 export const FERRY_DECKS=Object.freeze({
  /** The car deck: from the aft mooring station to the bow houses, two lanes of 2.75 m between the casings. */
- car:Object.freeze({y:CAR,fore:Z(30),aft:Z(2.5),lanes:Object.freeze([1.375,-1.375]),laneWidth:2.75,
-  /** The ten car places (ferry-ship.js FERRY_CAR_PLACES), nose to the ramp: [x, z]. */
+ car:Object.freeze({y:CAR,fore:Z(30),aft:Z(12.6),lanes:Object.freeze([1.375,-1.375]),laneWidth:2.75,
+  /** The six car places (ferry-ship.js FERRY_CAR_PLACES), nose to the ramp: [x, z]. */
   slots:Object.freeze(FERRY_CAR_PLACES.map(p=>Object.freeze([p.x,Z(p.z)]))),
   /** Covered by the passenger deck from the transom to 23 m; open forward of it. */
   open:false,
@@ -79,6 +79,7 @@ export const FERRY_DECKS=Object.freeze({
  */
 export const FERRY_WALK=Object.freeze([
  ['car-deck-foyer',[2.9,3.9],[Z(12.7),Z(14.6)],CAR],
+ ['lower-lobby',[-1.6,1.6],[Z(4),Z(11.6)],CAR],
  ['car-deck-port-lane',[.1,2.6],[Z(20.5),Z(29.5)],CAR],
  ['car-deck-starboard-lane',[-2.6,-.1],[Z(20.5),Z(29.5)],CAR],
  ['aft-mooring',[-3.6,3.6],[Z(.5),Z(2.4)],CAR],
@@ -315,11 +316,11 @@ export function buildFerryModel({shadows=false}={}){
   for(const side of [1,-1])for(let k=-1;k<=1;k++)kit.box('metal',[.02,.05,.8],[side*(w-.01),y+k*.22,z],STEEL);}
 
  // ---- The car deck: lanes and their numbers' bars, lashing sockets, the casings, the walkway.
- const deckFore=Z(30),deckAft=Z(2.5);
+ const deckFore=Z(30),deckAft=Z(12.6);
  kit.box('paint',[.12,.012,deckFore-deckAft],[0,CAR+.007,(deckFore+deckAft)/2],YELLOW);
  for(const x of [2.7,-2.7])kit.box('paint',[.1,.012,Z(30)-Z(20.2)],[x,CAR+.007,(Z(30)+Z(20.2))/2],WHITE);
  for(const p of FERRY_DECKS.car.slots)kit.box('paint',[1.4,.012,.1],[p[0],CAR+.007,p[1]+2.6],WHITE);   // each place's stop bar, at the nose
- for(let zy=4;zy<29.9;zy+=2.3)for(const x of [-2.3,-1.0,1.0,2.3])kit.cyl('metal',.06,.06,.02,[x,CAR+.01,Z(zy)],DARK,[0,0,0],8);
+ for(let zy=13.8;zy<29.9;zy+=2.3)for(const x of [-2.3,-1.0,1.0,2.3])kit.cyl('metal',.06,.06,.02,[x,CAR+.01,Z(zy)],DARK,[0,0,0],8);
  // The casings, port and starboard, from the car deck up to the passenger deck: plated, white, with their doors.
  const casTop=CAS_TOP,PSG=FERRY_CASINGS.passage;
  for(const side of [1,-1]){

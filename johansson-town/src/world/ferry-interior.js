@@ -132,6 +132,46 @@ export const FERRY_INTERIOR=(()=>{
  // well is open to the casing's top).
  box([CAS_IN,CAR+2.2,S.wellFore],[CAS_OUT,CAS_TOP,GATE_TO],WHITE,{name:'passage deckhead'});
 
+ // ---- The lower lobby (batch 6f): the car deck's level aft of the lanes, z 2.5–12.6 between the casings, under a
+ // 2.5 m deckhead hung from the passenger deck. Its aft bulkhead (full breadth, a crew door to the mooring station),
+ // its forward bulkhead (between the casings, two sliding fire doors onto the lanes, their leaves parked outboard),
+ // the drivers' benches along the casings between the doors, the bicycle rack and the baggage shelf aft, the drink
+ // machine and the safety plan forward, lifejacket lockers. The stairs' doors and the engine room's door open into it.
+ {const LL0=Z(2.5),LL1=Z(12.6),TOP=CAR+2.5;
+  wall('x',-(HB-.1),HB-.1,LL0-.04,LL0+.04,CAR,PASS-.02,[doorAt(0,1.0,CAR)]);
+  for(const x of [-.54,.54])deco([x-.04,CAR,LL0-.06],[x+.04,CAR+2.02,LL0+.06],TEAL);
+  box([.56,CAR+.02,LL0+.04],[1.5,CAR+1.98,LL0+.08],DOOR,{name:'mooring door leaf'});
+  wall('x',-CAS_IN,CAS_IN,LL1-.04,LL1+.04,CAR,PASS-.02,[doorAt(1.0,1.1,CAR),doorAt(-1.0,1.1,CAR)]);
+  for(const s of [1,-1]){
+   for(const x of [s*.41,s*1.59])deco([x-.04,CAR,LL1-.06],[x+.04,CAR+2.06,LL1+.06],TEAL);
+   deco([Math.min(s*.41,s*1.59),CAR+2.02,LL1-.06],[Math.max(s*.41,s*1.59),CAR+2.08,LL1+.06],TEAL);
+   // The sliding leaf, parked outboard of its opening on the lobby side, on its track.
+   box([Math.min(s*1.56,s*2.74),CAR+.03,LL1-.14],[Math.max(s*1.56,s*2.74),CAR+2.0,LL1-.08],DOOR,{name:'fire door leaf'});
+   deco([Math.min(s*.4,s*2.74),CAR+2.1,LL1-.16],[Math.max(s*.4,s*2.74),CAR+2.16,LL1-.06],STEEL);
+   // A bench along each casing between its doors (port: aft of the engine room's door and forward of it; starboard:
+   // aft of the escape door and forward of the store's).
+   for(const [z0,z1] of s>0?[[Z(3.2),Z(6.0)],[Z(7.7),Z(11.0)]]:[[Z(3.2),Z(6.0)],[Z(9.2),Z(11.0)]]){
+    box([Math.min(s*(CAS_IN-.5),s*(CAS_IN-.06)),CAR,z0],[Math.max(s*(CAS_IN-.5),s*(CAS_IN-.06)),CAR+.45,z1],TEAK,{name:'drivers’ bench'});
+    deco([Math.min(s*(CAS_IN-.14),s*(CAS_IN-.06)),CAR+.45,z0],[Math.max(s*(CAS_IN-.14),s*(CAS_IN-.06)),CAR+.95,z1],TEAK);
+    for(const z of [z0+.1,z1-.1])deco([Math.min(s*(CAS_IN-.46),s*(CAS_IN-.1)),CAR,z-.03],[Math.max(s*(CAS_IN-.46),s*(CAS_IN-.1)),CAR+.42,z+.03],STEEL);}
+  }
+  // The deckhead, hung 2.5 m up, its light panels; the floor's vinyl.
+  box([-CAS_IN,TOP,LL0],[CAS_IN,TOP+.2,LL1],0xd8d6cc,{solid:false,camera:true,name:'lower lobby deckhead'});
+  for(const z of [Z(4),Z(7),Z(10)])for(const x of [-1.3,1.3])deco([x-.35,TOP-.03,z-.2],[x+.35,TOP,z+.2],0xf6f1e2);
+  deco([-CAS_IN,CAR+.003,LL0+.06],[CAS_IN,CAR+.008,LL1-.06],VINYL);
+  // The bicycle rack at the aft bulkhead, port of the crew door: two islanders' bicycles ride free.
+  box([1.6,CAR,LL0+.1],[2.55,CAR+.05,LL0+.4],STEEL,{camera:false,name:'bicycle rack'});
+  for(const x of [1.85,2.3]){deco([x-.03,CAR+.05,LL0+.12],[x+.03,CAR+.95,LL0+.18],STEEL);deco([x-.2,CAR+.3,LL0+.1],[x+.2,CAR+.34,LL0+1.7],0x3a4a6a);
+   for(const z of [LL0+.4,LL0+1.4])bar([x,CAR+.3,z],[x,CAR+.3,z+.02],.3,DARK);}
+  // The baggage shelf at the aft bulkhead, starboard, and the lifejacket lockers over it.
+  box([-2.5,CAR,LL0+.1],[-.7,CAR+.9,LL0+.5],0x8a7356,{name:'baggage shelf'});deco([-2.5,CAR+1.4,LL0+.1],[-.7,CAR+2.0,LL0+.4],ORANGE);
+  deco([-2.4,CAR+1.6,LL0+.4],[-.8,CAR+1.8,LL0+.41],0xf6f1e2);
+  // The drink machine and the safety plan on the forward bulkhead, between the fire doors.
+  box([-.25,CAR,LL1-.75],[.3,CAR+1.8,LL1-.08],RED,{name:'drink machine'});deco([-.2,CAR+.9,LL1-.77],[.25,CAR+1.5,LL1-.75],0xdfe8ee);
+  deco([-.3,CAR+1.9,LL1-.1],[.3,CAR+2.3,LL1-.08],0xf4f0e2);deco([-.26,CAR+2.22,LL1-.11],[.26,CAR+2.28,LL1-.1],TEAL);
+  // Lights in the way down: the engine room's sign is lit from the lobby's deckhead too.
+  deco([CAS_IN-.5,TOP-.03,Z(6.85)-.2],[CAS_IN-.1,TOP,Z(6.85)+.2],0xf6f1e2);
+ }
  // ---- The passenger deck: its slab over the car deck, cut open over the two stairs.
  {const y0=PASS-.25,PD0=-HALF,PD1=DH1,O=S.opening,xin=CAS_IN,xo=HB-.02;
   const slab=(x0,x1,z0,z1)=>{box([x0,y0,z0],[x1,PASS,z1],WHITE,{solid:false,camera:true,name:'passenger deck'});deco([x0+.04,y0-.005,z0+.03],[x1-.04,y0,z1-.03],0xc9c7bd);};

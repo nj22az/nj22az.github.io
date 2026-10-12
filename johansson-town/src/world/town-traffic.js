@@ -19,7 +19,7 @@ const MAIN_NORTH_X=MAIN_ROAD.x+1.1,MAIN_SOUTH_X=MAIN_ROAD.x-1.1;
 export const KITANO_STOP_S=5.2;
 /**
  * The car place a crossing car takes: the aft place in the starboard lane, as a loader fills her (the far end of
- * a lane first, the starboard lane before the port one, whose aft places are narrowed by the walkway).
+ * a lane first, the starboard lane before the port one).
  */
 const FIRST_PLACE=FERRY_DECKS.car.slots.find(([x])=>x<0);
 export const FERRY_VEHICLE_DECK_X=FIRST_PLACE[0],FERRY_VEHICLE_DECK_Z=FIRST_PLACE[1];
