@@ -833,3 +833,27 @@ crew door to the mooring station; photographed the gangway from the pier, the pa
 lanes from the bow and from the lobby's bulkhead, the engine room's door, the lower lobby both ways and its bicycles.
 Still open: the raised ramp's wall and the shut gate are proven by the walk's tests only (no photograph under way yet).
 
+### The trip audited in the running game (2026-10-12, after 6f went live)
+
+The creator: *"Audit the ferry trip."* Ridden in the headless game (the harness drives the same audit API as the MCP
+server), with her headings taken from her own frame once she was under way (walks aimed by the world's compass proved
+nothing while she turned):
+- **Minato → Kitano-jima → Minato on foot.** Up the gangway from the pier (the HUD turns to MINATO MARU · ALONGSIDE ·
+  MINATO OUTER PIER as he steps aboard), through the passage and the foyer, up stair P to the lobby; *Sail now* from the
+  open deck; AT SEA · BOUND FOR KITANO-JIMA, the town falling astern; ALONGSIDE · KITANO-JIMA PIER after the crossing;
+  down the ramp onto the pier (KITANO-JIMA AIRPORT · PASSENGER TERMINAL); back aboard, *Sail now*, BOUND FOR MINATO,
+  alongside Minato again. His place in her frame held through both crossings.
+- **Walls at sea.** Walking forward along the centreline he stops 0.68 m short of the stem at the raised ramp (local
+  z 16.57 = half her length − 0.4 − his radius), photographed with the ramp filling the bow. Walking to port in the
+  passage he stops at x 3.67 at the shut gate. Walking aft on the open deck he stops at the stern rail.
+- **Looked at on the way:** the lower lobby at sea (the crew door open on the water), the wheelhouse at sea (the chart
+  table, the fire panel), the open deck both ways.
+
+**Found and fixed.** The head camera (less than 0.85 m behind him in her rooms) kept the lens where the boom had
+stopped, pressed against the wall at his back; in the 1.3 m passage, the foyer and at the stairs' heads the near plane
+cut that wall in half across the frame (a blank grey screen with the gate shut). The lens now moves to his eyes, a
+hand's breadth back, and he is hidden; the cramped lift is skipped there. At the engine room's ladder foot the lens
+backed in under the rungs and looked up through them: the ladder's volume is now a lens box. Checked again: the
+passage facing the open gate (the pier and the sea through it), the passage looking aft (the stair), the stair head,
+the shut gate at sea, the raised ramp close to.
+
