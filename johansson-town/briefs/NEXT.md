@@ -200,14 +200,13 @@ Open:
 - On an iPhone or iPad, World installed on the Home Screen keeps its own storage, apart from Safari's, so a change made
   in Studio in Safari only reaches World played in Safari (Studio says so). A hand-off that crosses that (a link
   carrying the change) is not built.
-- Still in World, for the creator to decide: the Photo studio's per-photo wardrobe ("Dress the selected character for
-  the shoot. Their own clothes come back in town."), and `?avatar=` links that set the islander's look from a shared
-  code. Neither changes anything Studio owns, but both are dressing done in World.
+- Done 2026-10-12 (the creator: "yes"): the Photo studio's per-photo wardrobe is gone (everyone wears their own clothes,
+  as Studio dressed them), and a shared `?avatar=` link opens in Studio instead of changing the islander in World.
 - In first person, the hands keep the old skin and sleeve colours until World is reloaded (fists.js cannot recolour).
 - Placing furniture needs a mouse or touch; there is no keyboard way yet (World's build-mode.js).
 - The festivals' things are not built: Haarii boats, Tanabata bamboo, eisa drums, the tug-of-war rope. The news names
   the residents who turn out (happenings.js `news`); when these are built, the news can name them too.
-- Birthdays: none of the residents has a real one yet (all show the maker's 1 July). The creator sets them in
-  `johansson-town/src/people/birthdays.js`; setting them in Studio (the maker already has the fields) is not built.
+- Birthdays (the creator, 2026-10-12): Johansson 30 January, Thuan 15 March, the residents' made up on the creator's
+  instruction (`johansson-town/src/people/birthdays.js`). Setting them in Studio is not built; the profiles show them.
 - `jojo/town-studio/evidence/home-decorating.mjs` drove World's old "Arrange furniture"; it is evidence of that check,
   not a tool to run again.
