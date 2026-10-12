@@ -146,6 +146,21 @@ husband."* So:
   hours in the headless game, on main as well (an old resident-location record; not this batch's); the specials
   text in `activities.js` still says Thuan in places that are hers anyway.
 
+### 7b-3, built: Thuan's weekend, Jun's house (2026-10-12)
+
+- `social.js thuanWeekendAway/thuanWeekendPlan`: from the Friday 22:00 boat to the Monday 08:30 boat Thuan is **away,
+  "at home on Kitano-jima with her husband, Johansson"**; on Friday evening, after Minato with her sisters, she walks
+  to the ferry instead of home to Kitahama (rain sends her straight to the boat), and on Monday 08:30–09:00 she is
+  "arriving on the ferry from Kitano-jima". Read before her Kitahama room's sleep and breakfast. Day 0 is a
+  Wednesday (`town-clock.js`), so Friday is day 2.
+- `neighbours.js`: **Jun's off-duty home is kitano-2's gate** (the Shiroma house); he walks there from the terminal at
+  20:00 and is hidden indoors, as the island's other neighbours are at home.
+- Tests: `kitano-residents.test.mjs` (Thuan's weekend, the rota, Tetsuo's ferry day, Jun's home);
+  `thuan-daily-life` knows Friday.
+- Open: bodies at home on the island (Thuan in Johansson's house at the weekend, Tetsuo and Jun in theirs when the
+  player calls; today an island resident who is "away" has no body); the guide's portraits and backstories for the
+  new relationships.
+
 ## 4. Batch 7c: the crew at their posts (built 2026-10-12)
 
 The data is there (`people/ferry-crew.js`: the master, Mr Nakandakari the chief, Mr Higa Jr the oiler, Ms Uezu on deck,

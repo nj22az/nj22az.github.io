@@ -1,4 +1,5 @@
 import {onSakuraShift,isWeekend} from '../commerce/sakura-rota.js';
+import {townCalendarAt} from '../town-clock.js';
 import {izakayaJob} from './izakaya-hours.js';
 import {gardenPoint} from '../world/garden-layout.js';
 import {bookshopVisitPlan} from './bookshop-visits.js';
@@ -305,7 +306,29 @@ export const ferryWords=text=>typeof text!=='string'?text:text
  .replace(/the night shift bus/g,'the night ferry').replace(/the last bus/g,'the last ferry')
  .replace(/(on|for|to) the Harbour Line/g,'$1 the ferry').replace(/next Harbour Line departure/g,'next ferry')
  .replace(/running the Harbour Line/g,'working the ferry').replace(/left by bus/g,'left on the ferry');
+/**
+ * Thuan is Johansson's wife (the creator, 2026-10-12; docs/KITANO-JIMA.md §3): on weekdays she stays at 1 Kitahama, on
+ * Friday evening she takes the 22:00 boat home to Kitano-jima and is there with her husband until the Monday 08:30 boat.
+ */
+export function thuanWeekendAway(minutes){
+ const w=townCalendarAt(minutes).weekday,m=minuteOfDay(minutes);
+ return (w===5&&m>=1320)||w===6||w===0||(w===1&&m<510);
+}
+const THUAN_WEEKEND={place:'away',activity:'at home on Kitano-jima with her husband, Johansson'};
+export const thuanWeekendPlan=minutes=>{
+ if(thuanWeekendAway(minutes))return {...THUAN_WEEKEND,target:transitStop().exit};
+ const w=townCalendarAt(minutes).weekday,m=minuteOfDay(minutes);
+ if(w===1&&m>=510&&m<540)return {place:'bus',target:transitStop().arrival,activity:'arriving on the ferry from Kitano-jima'};
+ return null;
+};
 function commuterPlan(...args){
+ const [profile,minutes]=args;
+ if(profile.name==='Thuan'){
+  const weekend=thuanWeekendPlan(minutes);if(weekend)return weekend;
+  // Friday evening: after the handover she walks to the ferry instead of home to Kitahama.
+  const scheduled=commuterPlanOn(...args);
+  if(townCalendarAt(minutes).weekday===5&&minuteOfDay(minutes)>=1200&&['home','bus'].includes(scheduled.place))return {place:'bus',target:transitStop().queue,activity:'walking to the ferry, home to Kitano-jima for the weekend'};
+ }
  const scheduled=kitahamaPlan(args[0],commuterPlanOn(...args));
  const plan=bookshopVisitPlan(args[0],args[1],scheduled,args[3]);
  if(plan&&plan.activity)return {...plan,activity:ferryWords(plan.activity)};
@@ -391,6 +414,8 @@ export function residentPlan(profile,minutes,rain=false,state=null){
   const minute=minuteOfDay(minutes),sleeping=minute>=240&&minute<600,job=izakayaJob('Barfly',minutes);
   return {place:'izakaya',target:IZAKAYA_DOOR,activity:job?job.activity:sleeping?'asleep on his Minato stool':'having another beer at Minato',barflySleeping:sleeping};
  }
+ // Thuan's weekend is on Kitano-jima, before her Kitahama room's sleep and breakfast are read.
+ if(profile?.name==='Thuan'){const weekend=thuanWeekendPlan(minutes);if(weekend)return weekend;}
  // These homes remain playable after the island expansion. A night worker must
  // finish sleeping and breakfast before a generic shopping or ferry rule sends
  // them outside. The Minato closing shift finishes exactly at Thao's 04:00 bedtime.
