@@ -6,7 +6,7 @@ import {PORT_BUILDING} from './port-building.js';
 import {FERRY_DAY,rollPeriod,pitchPeriod} from './ferry-ship.js';
 import {buildFerryModel,GANGWAY_Z,WL,FERRY_HULL,FERRY_RAMP,FERRY_DECKS,FERRY_CASINGS,halfBreadth} from './ferry-model.js';
 import {MINATO_BERTH} from './minato-berth.js';
-import {FERRY_INSPECT} from './ferry-inspect.js';
+import {FERRY_INSPECT,FERRY_LADDER} from './ferry-inspect.js';
 import {OUTER_PIER} from './layout.js';
 import {BERTH_X,BERTH_Z,townArrival,townDeparture} from './ferry-paths.js';
 import {lanternGlow,windowGlow} from '../render/dusk.js';
@@ -129,6 +129,9 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
  // What you can look at aboard (ferry-inspect.js): prompts that move with her, offered only on the deck you stand on.
  if(register)for(const p of FERRY_INSPECT){const a=new THREE.Object3D();a.name='Ferry: '+p.title;a.position.set(...p.pos);a.userData.sameLevel=true;ferry.add(a);
   register(a,p.label,()=>onAction('inspect',p.title,p.text));}
+ // The engine-room ladder: down from the casing door, up from the floor plates (game.js moves him; ferry-inspect.js).
+ if(register)for(const [way,l] of Object.entries(FERRY_LADDER)){const a=new THREE.Object3D();a.name='Ferry: ladder '+way;a.position.set(...l.at);a.userData.sameLevel=true;ferry.add(a);
+  register(a,l.label,()=>onAction('ferry-ladder',way));}
  // And the crossing itself, asked for at the purser's window: to Kitano-jima from Minato, home from Kitano-jima.
  if(register){const a=new THREE.Object3D();a.name='Ferry: purser';a.position.set(-2.3,FERRY_DECKS.upper.y+1.2,FERRY_DECKS.saloon.aft+3.1);a.userData.sameLevel=true;ferry.add(a);
   register(a,'Ask the purser for the crossing',()=>onAction(run.berth==='airport'?'airport-return':'airport-ferry'));}

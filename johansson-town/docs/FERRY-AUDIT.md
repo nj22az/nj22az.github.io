@@ -857,3 +857,33 @@ backed in under the rungs and looked up through them: the ladder's volume is now
 passage facing the open gate (the pier and the sea through it), the passage looking aft (the stair), the stair head,
 the shut gate at sea, the raised ramp close to.
 
+
+## 8. Batch 6g: down to the engine room, ear defenders, no flashing, the crew's looks (2026-10-12)
+
+The creator, 2026-10-12, from the phone: *"I want to be able to go down in the engine room and he should take on ear
+protectors automatically when he goes down or anyone goes down"*; *"And I don't want flashing graphics like that"* (the
+hazard stripes at the engine-room door flickering in a yellow-and-black hatch); *"Flashing in the accommodation too and
+the oiler is cloned, why"*.
+
+- **Down and up** (`ferry-inspect.js FERRY_LADDER`, `ferry.js`, `game.js ferryLadder`): the casing door's prompt is now
+  *Go down to the engine room* and takes him through the veil to the floor plates at the ladder's foot; there, *Climb up
+  to the car deck* brings him back out through the door. The ladder is still walkable, and across its whole width now
+  (`er-ladder` floors: ±0.34 m, not ±0.12 m, which a thumb on a phone could not hit).
+- **Ear defenders** (`avatars/ear-defenders.js`): a black band and two yellow cups built to each head's measurements and
+  hung on the head bone. He puts them on whenever his feet are on an engine-room floor (`game.js updateEarDefenders`,
+  floors `er-…`) and takes them off when he comes up; the note at the ladder says so. The crew wear them at every post
+  below the car deck (`ferry-crew-aboard.js BELOW_DECK_PLACES`: the engine room and the steering gear), and their line
+  says "nobody goes below without them". Open: the sound. Below, the engines should be loud and the defenders should
+  muffle them (`townAudio`'s ferry channel); nothing is heard yet.
+- **No flashing** (`ferry-model.js createKit.block`): paint thinner than 2 cm (the vinyl floor coverings laid 3–8 mm over
+  the decks, the hazard stripes, painted signs) is drawn as its own class, `decal`, with a depth offset
+  (`polygonOffset -1/-4`). The note at `game.js`'s camera says why: a phone cannot tell a few millimetres apart at a few
+  metres, so two faces that close flicker between each other; an offset settles which is in front. The lower lobby and
+  saloon floors were the "accommodation" flicker.
+- **The oiler is not cloned** (`avatars/cast.js CREW_LOOKS`): the chief, the oiler and the deck hand had generated looks,
+  and the generator gave the oiler and Ms Uezu the same spiky hair, polo and trousers (it did not know "Ms" is a woman:
+  fixed too). They are drawn now: the chief grey and square-jawed in the navy boiler suit with reading glasses, Mr Higa
+  Jr with a buzz cut and a red kerchief in the same boiler suit, Ms Uezu with a swept ponytail under a white cap, a work
+  jacket and cropped trousers. Tests: `ferry-engine-room-access.test.mjs`.
+- Checked in the headless game at 12:06 alongside: the door prompt, the descent (he lands on `er-ladder-foot`, ear
+  defenders on, the chief below wearing his), the climb back (defenders off).

@@ -198,12 +198,25 @@ export const RESIDENT_GROUPS=Object.freeze({cast:Object.freeze(Object.keys(CAST_
 export const RESIDENT_NAMES=Object.freeze(Object.values(RESIDENT_GROUPS).flat());
 
 /** The recipe World draws somebody with, before any saved or published look. */
+/**
+ * The Minato Maru's crew (people/ferry-crew.js), drawn, not generated: the generator gave the oiler and the deck hand the
+ * same spiky hair and polo (the creator, 2026-10-12: "the oiler is cloned, why"). Kōji is among the neighbours.
+ */
+export const CREW_LOOKS=Object.freeze({
+ // The chief, 61: grey side-parted hair, a square jaw, reading glasses, the ship's navy boiler suit.
+ 'Mr Nakandakari':R({name:'Mr Nakandakari',age:'elder',head:{size:.5,shape:.5,form:'square',jaw:0.78,cheeks:0.5},body:{height:.5,build:.6,silhouette:'masculine',skin:'#c99a72'},hair:{style:'sidepart',colour:'#9a9a96'},eyes:{style:'gentle'},brows:{style:'bushy',colour:'#9a9a96'},nose:{style:'wide'},mouth:{style:'small'},glasses:{style:'round',colour:'#2b2b2b'},wrinkles:.6,outfit:{top:'overalls',topColour:'#2a3f6b',bottom:'trousers',bottomColour:'#2a3f6b',shoes:'#1c1c24',hat:'none'}}),
+ // The oiler, Mr Higa Jr, 24: a buzz cut, a round face, the boiler suit with the sleeves rolled, a kerchief.
+ 'Mr Higa Jr':R({name:'Mr Higa Jr',age:'adult',head:{size:.48,shape:.45,form:'round',jaw:0.55,cheeks:0.6},body:{height:.6,build:.45,silhouette:'masculine',skin:'#b27449'},hair:{style:'buzz',colour:'#1c1714'},eyes:{style:'round'},brows:{style:'straight'},nose:{style:'button'},mouth:{style:'grin'},outfit:{top:'overalls',topColour:'#2a3f6b',bottom:'trousers',bottomColour:'#2a3f6b',shoes:'#1c1c24',hat:'kerchief',hatColour:'#d8342c'}}),
+ // The deck hand, Ms Uezu, 38: a swept ponytail under a white cap, a work jacket over cropped trousers.
+ 'Ms Uezu':R({name:'Ms Uezu',age:'adult',head:{size:.47,shape:.55,form:'oval',jaw:0.45,cheeks:0.5},body:{height:.5,build:.4,silhouette:'feminine',skin:'#d8a77c'},hair:{style:'sweptponytail',colour:'#3a2618'},eyes:{style:'gentle'},brows:{style:'arched'},nose:{style:'dot'},mouth:{style:'smile'},outfit:{top:'jacket',topColour:'#3f6ea0',bottom:'cropped',bottomColour:'#2a3f6b',shoes:'#f4f1ea',hat:'cap',hatColour:'#f4f1ea'}}),
+});
 export function baseRecipe(name=''){return withBirthday(drawnRecipe(name),name);}
 function drawnRecipe(name){
  if(CAST_RECIPES[name])return aged(CAST_RECIPES[name],name);
  if(NEIGHBOUR_RECIPES[name])return aged(normalizeRecipe(withTownDials(NEIGHBOUR_RECIPES[name],name)),name);
+ if(CREW_LOOKS[name])return aged(CREW_LOOKS[name],name);
  const style=residentPersonality(name),r=seeded(name),any=list=>list[Math.floor(r()*list.length)];
- const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Nhung|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name));
+ const feminine=PROFILES.find(p=>p.name===name)?.female??(/female/.test(style.source||'')||/^(Mrs |Ms |Nhung|Reiko|Hana|Yoshiko|Emi|Naoko|Fumiko|Yui)/.test(name));
  const grey=/^#[a-f0-9]{6}$/i.test(style.hair||'')&&parseInt(style.hair.slice(1,3),16)>150;
  const hat=ACCESSORY_HAT[style.accessory]||(style.helmet?['helmet',style.helmet]:['none','#f4f1ea']);
  const generated=normalizeRecipe(withTownDials({name,age:ageClass(AGE_OF.get(name)),

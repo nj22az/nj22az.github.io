@@ -1,4 +1,5 @@
 import {createToolProp,fitToolProp} from './tools.js';
+import {wearEarDefenders} from './ear-defenders.js';
 import {appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
 import {buildAvatar,measure} from './build.js';
@@ -142,7 +143,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
  const root=new THREE.Group();root.name='Johansson (third person)';root.visible=false;scene.add(root);
  let avatar=buildAvatar(recipe,{shadows:true,faceSize:512}),animator=createAvatarAnimator(avatar,{bowDepth:.18});
  root.add(avatar.root);
- let expression='neutral',expressionUntil=0,speakUntil=0,time=0,seatMove='Sit',outfit='clothes',requested='clothes',held=null,lookPoint=null,move=null;
+ let expression='neutral',expressionUntil=0,speakUntil=0,time=0,seatMove='Sit',outfit='clothes',requested='clothes',held=null,lookPoint=null,move=null,earDefendersOn=false;
  const hand=()=>avatar.bones.handR;
  const api={
   root,loading:Promise.resolve(true),
@@ -163,6 +164,10 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
    *  lobby's after-bath clothes). Returns what is on. */
   wear(name){requested=BATH_OUTFITS.includes(name)?name:'clothes';outfit=avatar.wear(requested)||requested;return outfit;},
   get outfit(){return outfit;},
+  get measure(){return avatar.measure;},
+  /** Ear defenders on or off (avatars/ear-defenders.js); they survive a recipe swap. */
+  earDefenders(on){earDefendersOn=!!on;return wearEarDefenders(avatar,earDefendersOn);},
+  get earDefendersOn(){return earDefendersOn;},
   /** Where the third-person lens pivots: above the big head and clear of it to the right. */
   get lens(){const m=avatar.measure;return {eye:m.H+.14,side:m.Rh*m.headSX+.26,head:m.headCentre};},
   /** Hip height above the feet when seated, for game.js's seat fit. */
@@ -174,7 +179,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   setRecipe(next){
    const r=normalizeRecipe(next);avatar.root.removeFromParent();avatar.dispose();
    avatar=buildAvatar(r,{shadows:true,faceSize:512});animator=createAvatarAnimator(avatar,{bowDepth:.18});root.add(avatar.root);
-   outfit=avatar.wear(requested)||requested;if(held)hand().add(held);
+   outfit=avatar.wear(requested)||requested;if(held)hand().add(held);if(earDefendersOn)wearEarDefenders(avatar,true);
   },
   update(dt,state={}){
    time+=dt;root.visible=!!state.visible;

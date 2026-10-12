@@ -2,6 +2,9 @@ import * as THREE from '../../vendor/three.module.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_DAY} from '../world/ferry-ship.js';
 import {FERRY_ENGINE_ROOM} from '../world/ferry-interior.js';
 import {FERRY_CREW,FERRY_WATCH,crewFor} from './ferry-crew.js';
+import {wearEarDefenders} from '../avatars/ear-defenders.js';
+/** The places below the car deck, where the engines are: whoever stands there wears ear defenders. */
+export const BELOW_DECK_PLACES=Object.freeze(['engine-room','steering-gear']);
 
 /**
  * The Minato Maru's crew at their posts (Kitano-jima batch 7c; docs/KITANO-JIMA.md §4): one body per post, a child of
@@ -44,9 +47,9 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
  const body=name=>{
   if(bodies.has(name))return bodies.get(name);
   const g=new THREE.Group();g.name='Crew: '+name;g.userData.name=name;g.userData.ferryCrew=true;g.userData.hit=null;ferry.add(g);
-  characters?.attach(g,name);
+  const actor=characters?.attach(g,name)||null;
   const a=new THREE.Object3D();a.name='Crew prompt: '+name;a.position.set(0,1.2,0);a.userData.sameLevel=true;g.add(a);
-  const b={g,prompt:a,name,text:''};bodies.set(name,b);
+  const b={g,prompt:a,name,text:'',actor,earDefenders:false};bodies.set(name,b);
   register?.(a,'Talk to '+name,()=>onAction?.('inspect',name,b.text));
   return b;
  };
@@ -58,12 +61,13 @@ export function createFerryCrewAboard({run,characters,register,onAction,townBody
   for(const c of crewPlaces(p,minutes)){
    const b=body(c.name);aboard.add(c.name);
    b.g.visible=true;b.g.position.set(...c.pos);b.g.rotation.y=c.yaw;
-   b.text=`${c.name}, ${c.title.toLowerCase()} of the Minato Maru: ${c.doing}. ${crew[c.post].why}`;
+   b.earDefenders=BELOW_DECK_PLACES.includes(c.where);if(b.actor?.avatar)wearEarDefenders(b.actor.avatar,b.earDefenders);
+   b.text=`${c.name}, ${c.title.toLowerCase()} of the Minato Maru: ${c.doing}.${b.earDefenders?' Ear defenders on: nobody goes below without them.':''} ${crew[c.post].why}`;
   }
   for(const [name,b] of bodies)if(!aboard.has(name))b.g.visible=false;
   // The master's body in town is the bus driver's: hidden while he is aboard.
   const town=townBody('Bus driver');if(town){const masterAboard=aboard.has('Bus driver');town.userData.aboardFerry=masterAboard;if(masterAboard)town.visible=false;}
  }
  return {place,update(dt,minutes){place(minutes);const town=townBody('Bus driver');if(town?.userData.aboardFerry)town.visible=false;},get phase(){return phase;},bodies,
-  snapshot(){return [...bodies.values()].filter(b=>b.g.visible).map(b=>({name:b.name,pos:b.g.position.toArray()}));}};
+  snapshot(){return [...bodies.values()].filter(b=>b.g.visible).map(b=>({name:b.name,pos:b.g.position.toArray(),earDefenders:b.earDefenders}));}};
 }
