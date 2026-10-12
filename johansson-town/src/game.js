@@ -105,6 +105,7 @@ import {shoppingLanePoint} from './world/shopping-lane-plan.js';
 import {createWalkSurface} from './world/walk-surface.js';
 import {COAST_BOUNDS} from './world/island-coast.js';
 import {createNeighbours} from './people/neighbours.js';
+import {createFerryCrewAboard} from './people/ferry-crew-aboard.js';
 import {drawTownMap} from './world/map.js?snappy=1';
 import * as THREE from '../vendor/three.module.js';
 import { createTown } from './world/town.js?snappy=1';
@@ -367,7 +368,7 @@ let stickHintUntil=0;
 // A control under a finger must not be hidden out from under it. Any pointer release
 // ends every press, so a control can never stay pinned on by a touch we lost track of.
 const pressedControls=new Set();
-let neighbours=null,islandPlay=null;let photoOrigin=null,photoReturning=false;
+let neighbours=null,ferryCrew=null,islandPlay=null;let photoOrigin=null,photoReturning=false;
 let conversationName=null,conversationCamera=null,navigationTarget=null,beerService=null,tipsy=0,tipsyClock=null;
 let activeRoomLayout=null;
 let photoStudio=null,photoLoading=false,spawnScene=null;
@@ -839,6 +840,8 @@ neighbours=createNeighbours({parent:town,register:reg,characters,blocked:(x,z,r)
  const who=neighbours.talkTo(name,player.position);if(who)characters.gesture(who);activities.action(kind,name);
 }});
 world.neighbours=neighbours.entities;
+// The Minato Maru's crew at their posts, riding with her (people/ferry-crew-aboard.js).
+if(world.ferry)ferryCrew=createFerryCrewAboard({run:world.ferry,characters,register:reg,onAction:(kind,title,text)=>activities.action(kind,title,text),townBody:name=>world.people.find(p=>p.profile.name===name)?.g||null});
 // Thuan is the heaviest single asset in the town and she is kept at full detail, so
 // fetching her before the first frame put nine megabytes in front of the chunks the
 // game needs to start: on a 1.6 Mbps link that was most of the wait. She is still the
@@ -1687,6 +1690,7 @@ function advanceTown(dt,playerPaused,fastForward=false){
     workplaceResidents.update(dt,minutes,weather);bookshopCustomers.update(dt,minutes);
     castAI?.update(dt,minutes,weather);sakuraShop.update(dt);ramenGuests.sync(minutes,dt);ramenMeals.update(dt);satoKitchen?.update(dt);neighbourChats.update(dt,minutes,weather);
     if(current&&!catchingUp){world.ferry?.update(dt,minutes,elapsed);world.traffic?.update(dt,minutes);}
+    if(!catchingUp)ferryCrew?.update(dt,minutes);
     if(!current&&!catchingUp){const swell=hold();world.update(dt,elapsed,daylight(minutes),minutes);carry(swell);neighbours?.update(dt,minutes,player.position);if(!activities.state.quickTravelNotified&&travelProgress(activities.state).unlocked)activities.save();world.beats?.update(dt,elapsed,minutes);}
 }
 /** Keeps the town on the device clock; a gap of more than a minute is caught up, not jumped. */

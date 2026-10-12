@@ -57,24 +57,45 @@ the ferry: a crossing from the office, as the household registry says.
 - In the game: sailed over, walked the lane, read the gates' prompts, went in at Johansson's gate (his rooms, the exit
   label), looked at the row from the cargo court and at his house from the west.
 
-**Open after 7a.** The 待合所 waiting shelter at the pier (the brief's §6.2); the lane's own lamp; a path from the lane
-to Coral Bay; the yard-home at 2 Front-Row Yard still Chin's and Tetsuo's until 7b.
+**Found and fixed on the way.** The Okinawan kit records every house's service drop as a power node on the group it
+finishes, in the kit's own frame; the town's power station then strung feeders to those points read as Minato
+coordinates, and a wire hung over the coastal road at (−37, 44.5) became "ground" for the walk surface (the
+`garden-bridge-access` test caught it). The hamlet now finishes into its own group and drops that network: Minato's
+lines do not cross the strait. The island's own supply (a pole line from the airport's generator) is open.
 
-## 3. Batch 7b: the villagers (planned)
+**Open after 7a.** The 待合所 waiting shelter at the pier (the brief's §6.2); the lane's own lamp and power; a path from
+the lane to Coral Bay; the yard-home at 2 Front-Row Yard still Chin's and Tetsuo's until 7b.
 
-- **Chin and Tetsuo move to `kitano-3`.** Their work already faces the island: Tetsuo's kei truck collects the airport
-  cargo and his radio test is at the terminal; Chin's car lives in the airport yard. Their profiles' `home` getter
-  (`people/residents.js`) returns the hamlet gate; `world.homes`, the household registry and 2 Front-Row Yard (which
-  becomes the house to let in town) follow. At Minato they are **ferry commuters** (the existing commuter mode:
-  off the morning boat at the pier, to the workshop and the bookshop, the evening boat home); on the island they keep
-  **home life** at their house (the family-home interior with their futons, and their yard), and the ferry's purser
-  knows them by name.
+## 3. Batch 7b: the villagers (planned; the creator's lore of 2026-10-12 below rules)
+
+The creator, 2026-10-12, after 7a: *"Thuan is Johansson's wife, they live together but she stays on the port town in the
+weekdays and in the weekend she is home with her husband and Nhung covers in the shop and the book store is closed in
+the weekend. Sakura is always open, it should change to 24-7 and have Chin work the night shift; Chin is Thao's
+husband."* So:
+
+- **Johansson and Thuan are married.** Their home is `kitano-1` on Kitano-jima. On weekdays Thuan stays in Minato at
+  1 Kitahama (her weekday room, with Thao); on Friday evening she takes the ferry home to Kitano-jima and is there
+  with her husband until the Monday morning boat. The household registry, the nameplate (ヨハンソン: Johansson & Thuan)
+  and her "I live at…" line say so. In his house her futon lies beside his.
+- **Chin is Thao's husband**: he lives with Thao at 1 Kitahama, not in the Front-Row yard. Tetsuo, alone in 2 Front-Row
+  Yard, moves to Kitano-jima's house to let (`kitano-3`): his radio test is at the airport, his kei truck collects its
+  cargo. 2 Front-Row Yard becomes the house to let in town.
+- **Sakura Shōten is open 24 hours, seven days.** Thuan keeps the day shift on weekdays; **Chin works the night shift**
+  (every night, after the workshop closes); **Nhung covers the day shift at the weekend** while Thuan is on Kitano-jima.
+- **Front Row Books is closed at the weekend** (Nhung is at Sakura; Reiko's paper still comes out).
+- Island residents (Johansson's wife at weekends, Tetsuo) are **ferry commuters** at Minato and keep **home life** on the
+  island; Jun gets his house.
+
+
+- **Tetsuo moves to `kitano-3`** (his profile's `home` getter in `people/residents.js` returns the hamlet gate; `world.homes`,
+  the registry and 2 Front-Row Yard follow). At Minato he is a **ferry commuter** (off the morning boat, to the
+  workshop, the evening boat home); on the island he keeps **home life** at his house.
 - **Jun** gets his house: his routine's "off duty, home" is `kitano-2`'s yard and, when Johansson calls, his room.
 - **Nameplates and dialogue**: "I live at Kitano hamlet, across the water"; the ferry's bicycle-rack prompt is true.
 - Tests: `yard-homes` (2 Front-Row Yard to let), `continuous-life` (home owners' sites), `home-interiors`,
   `thuan-*` unaffected, a new `kitano-hamlet` test (the commute's timetable, the island home life).
 
-## 4. Batch 7c: the crew at their posts (planned)
+## 4. Batch 7c: the crew at their posts (built 2026-10-12)
 
 The data is there (`people/ferry-crew.js`: the master, Mr Nakandakari the chief, Mr Higa Jr the oiler, Ms Uezu on deck,
 Kōji her relief; `FERRY_WATCH` says where each is in every phase). Nobody is aboard. The batch: actors parented to the
@@ -84,3 +105,18 @@ purser at her window; under way, the master at the wheel, the chief by the engin
 with a look (recipes in `avatars/cast.js`, portraits for the guide), a prompt with a few lines of their own, and the
 purser's window selling nothing yet (section 7 of `docs/FERRY-AUDIT.md`). Tests: each post occupied in each phase, every
 actor on a floor of hers.
+
+**Built.** `src/people/ferry-crew-aboard.js`: one body per post of `FERRY_CREW`, a child of her group, placed by
+`FERRY_WATCH` for her phase (`watchPhase`: her own phase by day, *night* outside `FERRY_DAY`), at `CREW_POSTS` (the
+wheelhouse at the wheel, the port wing, the control booth, the floor plates by the engines for the oiler's watch, the
+aft mooring station, the bow between the bow houses, the foyer at the gangway, the car deck, the saloon's cross
+passage, the crew corridor by the mess and by the cabin), facing the work. The master is the bus driver, as
+`ferry-crew.js` says; his body in town is hidden while he is aboard. At night the chief and, on her week on, the deck
+hand. Each has a *Talk to* prompt that rides with her, saying what they are doing in this phase and why they have the
+job. Looks are the cast's recipes (generated for the three new faces until recipes are authored). Wired in `game.js`
+beside the neighbours and ticked with the town. Tests: `ferry-crew-aboard` (every post of every phase on one of her
+floors and clear of her walls; who is aboard by day and night; the bodies ride with her; the town body hidden). In the
+game: alongside, Mr Higa Jr in the foyer and Ms Uezu on the car deck with their prompts; at sea, Ms Uezu at the bow
+end of the car deck. Open: authored looks and portraits for Mr Nakandakari, Ms Uezu and Mr Higa Jr; the purser's post
+(the manning's eight); the crew moving between posts instead of appearing at them.
+

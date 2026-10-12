@@ -70,7 +70,13 @@ export function buildKitanoHamlet(world,options){
   const plate=new THREE.Object3D();plate.name='kitano nameplate:'+p.id;const [px,pz]=airportWorld(door[0]+(p.gate==='north'?1.3:-1.3),door[1]-(p.gate==='north'?.4:-.4));plate.position.set(px,y+1,pz);world.group.add(plate);
   options.register?.(plate,`Read the ${p.romaji} nameplate`,()=>options.onAction?.('read',`${p.family} · the ${p.romaji} house`,[KITANO_PLATES[p.id],residentsLine(p.id)].filter(Boolean).join('\n\n')));
  }
- kit.finish(island,'Kitano hamlet');
+ // Its own group under the island's: the kit's finish writes walk levels and a power network on the group it is
+ // given, and the island's group must not carry those (the town's power lines and the walk surface read them).
+ const hamlet=new THREE.Group();hamlet.name='Kitano hamlet';island.add(hamlet);
+ kit.finish(hamlet,'Kitano hamlet');
+ // The houses' service drops are in the island's frame, and Minato's power station does not reach across the strait:
+ // the hamlet has no town power network (Kitano-jima's own supply is an open item, docs/KITANO-JIMA.md).
+ delete hamlet.userData.powerNetwork;delete hamlet.userData.walkLevels;
  world.colliders.push(...colliders);
  return {colliders};
 }
