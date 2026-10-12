@@ -361,13 +361,13 @@ export function buildSchool(world,options){
   approachPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'07:30'};
  options.sites.push(site);
  anchor([SCHOOL.genkan.x,1.2,B.minZ-.5],'Go in to the classroom',()=>options.enter(site));
- // The mayor's office and the mayor's home: two more doors along the field face, each
- // its own room (interiors/town-hall.js), the way every door in town is its own site.
+ // The mayor's office and the clinic: more doors along the field face, each its own room (interiors/town-hall.js), the
+ // way every door in town is its own site. (The mayor's home was the east wing until batch 7a: Johansson lives on
+ // Kitano-jima now, kitano-hamlet.js.)
  for(const [id,title,jp,sub,x,label,line] of [
   ['community-kitchen','Community Kitchen',"Community Kitchen",'COMMUNITY CENTRE',27.0,'Go into the community kitchen','Open to every household · the women’s association on Saturdays'],
   ['mayor-office','Mayor’s Office',"Mayor’s Office",'MINATO TOWN HALL',30.6,'Go into the mayor’s office','Office hours 8:30–17:15 · petitions in the tray'],
   ['clinic','Minato Clinic',"Clinic",'DR KAKAZU',34.1,'Go into the clinic','Mon–Fri 9–12, 14–17 · Sat 9–12 · ring the bell after hours'],
-  ['mayor-home','Mayor’s House',"Mayor’s Home",'JOHANSSON',37.7,'Go home','Your rooms in the east wing'],
  ]){
   const at=[x,0,B.minZ-.7],s={id,title,jp,sub,x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',line,door:at,exitPosition:[x,0,B.minZ-1.4],approachPosition:[x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'00:00'};
   options.sites.push(s);

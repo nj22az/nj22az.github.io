@@ -3,6 +3,7 @@ import {AIRPORT_PLAZA} from './airport-district-plan.js';
 import {TROPIC_PLACES,tropicHeight,tropicSurface} from './tropical-island.js';
 import {SEA_LEVEL} from './ocean.js';
 import {GROUND_LAYER} from './ground-layers.js';
+import {KITANO_HAMLET_FLOORS} from './kitano-hamlet-layout.js';
 export function airportWorld(x,z){const a=AIRPORT_ISLAND,c=Math.cos(a.yaw),s=Math.sin(a.yaw);return [a.x+c*x+s*z,a.z-s*x+c*z];}
 export function airportLocal(x,z){const a=AIRPORT_ISLAND,dx=x-a.x,dz=z-a.z,c=Math.cos(a.yaw),s=Math.sin(a.yaw);return [c*dx-s*dz,s*dx+c*dz];}
 export const AIRPORT_HEIGHT=SEA_LEVEL+1.1;
@@ -17,6 +18,8 @@ export const AIRPORT_PUBLIC_FLOORS=Object.freeze([
  {id:'airport-terminal-plaza',...AIRPORT_PLAZA,y:AIRPORT_HEIGHT+.06},
  // The Hinata lookout deck stands just clear of the highest ground under it.
  {id:'kitano-lookout',...LOOK,y:SEA_LEVEL+lookTop+.12},
+ // Kitano hamlet's lane and yards (kitano-hamlet-layout.js), slabs over the uneven plateau south of the cargo court.
+ ...KITANO_HAMLET_FLOORS.map(f=>({...f,y:SEA_LEVEL+f.y})),
 ].map(Object.freeze));
 export const AIRPORT_LANDING=Object.freeze(airportWorld(...AIRPORT_JETTY.landing));
 export const AIRPORT_LANDING_HEIGHT=airportSurface(...AIRPORT_LANDING)?.y??AIRPORT_PIER_HEIGHT;
