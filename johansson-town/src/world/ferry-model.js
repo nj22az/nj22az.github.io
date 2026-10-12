@@ -195,17 +195,48 @@ function deckAndBulwarks(){
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('color',new THREE.Float32BufferAttribute(cc,3));g.computeVertexNormals();return g;
 }
 
-/** A maker's plate: lines of text on an aluminium plate, or a wordmark on a cover (ferry-interior.js plates). */
+/**
+ * A plate (ferry-interior.js plates): by `kind`, a maker's plate or label (lines of text on a plate), a `dial` (a round
+ * gauge with ticks, a red zone, the needle at `value` 0–1 and the label under the pivot), `chequer` (floor plates:
+ * raised diamonds, a seam every 0.6 m) or `grating` (bars over the red bilge). Texts are drawn on a canvas once;
+ * patterns repeat across the plane.
+ */
 function plateMesh(pl){
  if(typeof document==='undefined')return null;
- const W=512,H=Math.max(64,Math.round(512*pl.h/pl.w)),c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
- x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.strokeStyle=pl.fg;x.lineWidth=4;x.strokeRect(6,6,W-12,H-12);
- x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';
- const n=pl.lines.length,rowH=(H-20)/n;
- pl.lines.forEach((line,i)=>{const big=i===0||n===1;x.font=(big?'bold ':'')+Math.round(Math.min(rowH*.72,W/(line.length*.62)))+'px sans-serif';x.fillText(line,W/2,10+rowH*(i+.5));});
+ const kind=pl.kind||'text',c=document.createElement('canvas');let W=512,H=Math.max(64,Math.round(512*pl.h/pl.w)),repeat=null;
+ if(kind==='dial')W=H=256;if(kind==='chequer'||kind==='grating'){W=H=256;repeat=[pl.w/.6,pl.h/.6];}
+ c.width=W;c.height=H;const x=c.getContext('2d');
+ if(kind==='text'){
+  x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.strokeStyle=pl.fg;x.lineWidth=4;x.strokeRect(6,6,W-12,H-12);
+  x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';
+  const n=pl.lines.length,rowH=(H-20)/n;
+  pl.lines.forEach((line,i)=>{const big=i===0||n===1;x.font=(big?'bold ':'')+Math.round(Math.min(rowH*.72,W/(line.length*.62)))+'px sans-serif';x.fillText(line,W/2,10+rowH*(i+.5));});
+ }else if(kind==='dial'){
+  const cx=W/2,cy=H/2,R=W*.46,a0=Math.PI*.75,a1=Math.PI*2.25,ang=f=>a0+(a1-a0)*Math.max(0,Math.min(1,f));
+  x.fillStyle='#1c1f21';x.beginPath();x.arc(cx,cy,W/2,0,Math.PI*2);x.fill();                       // the bezel
+  x.fillStyle=pl.bg;x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.fill();                             // the face
+  if(pl.red){x.strokeStyle='#c2412f';x.lineWidth=W*.05;x.beginPath();x.arc(cx,cy,R*.82,ang(pl.red[0]),ang(pl.red[1]));x.stroke();}
+  x.strokeStyle=pl.fg;for(let i=0;i<=20;i++){const a=ang(i/20),big=i%5===0;x.lineWidth=big?W*.016:W*.008;
+   x.beginPath();x.moveTo(cx+Math.cos(a)*R*.9,cy+Math.sin(a)*R*.9);x.lineTo(cx+Math.cos(a)*R*(big?.72:.8),cy+Math.sin(a)*R*(big?.72:.8));x.stroke();}
+  x.fillStyle=pl.fg;x.textAlign='center';x.textBaseline='middle';x.font='bold '+Math.round(W*.11)+'px sans-serif';
+  if(pl.lines[0])x.fillText(pl.lines[0],cx,cy+R*.42);x.font=Math.round(W*.085)+'px sans-serif';if(pl.lines[1])x.fillText(pl.lines[1],cx,cy-R*.4);
+  const a=ang(pl.value??0);x.strokeStyle='#1c1f21';x.lineWidth=W*.02;x.beginPath();x.moveTo(cx-Math.cos(a)*R*.12,cy-Math.sin(a)*R*.12);x.lineTo(cx+Math.cos(a)*R*.86,cy+Math.sin(a)*R*.86);x.stroke();
+  x.fillStyle='#1c1f21';x.beginPath();x.arc(cx,cy,W*.04,0,Math.PI*2);x.fill();
+ }else if(kind==='chequer'){
+  x.fillStyle=pl.bg;x.fillRect(0,0,W,H);const n=8,s=W/n;
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){const px=i*s+s/2,py=j*s+s/2,along=(i+j)%2===0;x.save();x.translate(px,py);x.rotate(along?Math.PI/4:-Math.PI/4);
+   x.fillStyle=pl.fg;x.fillRect(-s*.1,-s*.34,s*.2,s*.68);x.fillStyle='#bfc4c6';x.fillRect(-s*.1,-s*.34,s*.2,s*.08);x.restore();}
+  x.strokeStyle='#5e6467';x.lineWidth=5;x.strokeRect(2,2,W-4,H-4);                                 // the plate's edge, a seam every tile
+ }else if(kind==='grating'){
+  x.fillStyle=pl.bg;x.fillRect(0,0,W,H);x.fillStyle=pl.fg;const n=12,s=W/n;for(let i=0;i<n;i++)x.fillRect(i*s,0,s*.55,H);
+  x.fillStyle='#4a5053';for(let j=0;j<4;j++)x.fillRect(0,j*H/4+H/8-3,W,6);
+ }
  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
- const mesh=new THREE.Mesh(new THREE.PlaneGeometry(pl.w,pl.h),new THREE.MeshStandardMaterial({map:tex,roughness:.5,metalness:.3,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));
- mesh.position.set(...pl.pos);mesh.rotation.y=pl.rotY;mesh.name=pl.name;return mesh;
+ if(repeat){tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(repeat[0],repeat[1]);}
+ const flat=repeat!==null,mat=new THREE.MeshStandardMaterial({map:tex,roughness:flat?.62:.5,metalness:flat?.35:.3,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
+ const geo=kind==='dial'?new THREE.CircleGeometry(pl.w/2,24):new THREE.PlaneGeometry(pl.w,pl.h);
+ const mesh=new THREE.Mesh(geo,mat);
+ mesh.position.set(...pl.pos);mesh.rotation.order='YXZ';mesh.rotation.y=pl.rotY;mesh.rotation.x=pl.rotX||0;mesh.name=pl.name;mesh.userData.plate=kind;return mesh;
 }
 
 /** Collects static parts by material and merges them. */
