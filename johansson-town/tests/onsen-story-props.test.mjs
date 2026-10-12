@@ -9,6 +9,10 @@ import {ONSEN_SIGNS} from '../src/world/interiors/onsen-signs.js';
 import {ONSEN_BOARD,ONSEN_CIRCUITS,CHAIR_TIMER,DRYER_CORD,MASSAGE_CHAIR,stageScenario,chairTimer,timerReads,trip,reset,isRunning,higaReset} from '../src/world/interiors/onsen-electrics.js';
 import {circleHitsRect} from '../physics.js';
 import {FEED_PLACES} from '../src/feed/places.js';
+import {CHAIR} from '../src/world/interiors/onsen-chair.js';
+import {provideCatalog} from './catalog-fixture.mjs';
+// The massage chair is World's catalogue's (assets/catalog): its model in hand, as the game has it before the door opens.
+await provideCatalog('massage-chair');
 
 // Plan batches 1 and 3 (shot-plan.md §7) for "Fujita's Ten Minutes of Heaven": walls a film can lift one at a time, and the
 // war's things, each with its purpose, each a state a film or capture-room.mjs can set.
@@ -46,11 +50,29 @@ test('the coin timer reads the chair’s own state: 10:00 for a coin, counting d
  const {room,layout}=build();
  assert.equal(CHAIR_TIMER.seconds,600);assert.ok(CHAIR_TIMER.why.length>40&&CHAIR_TIMER.period.length>40&&CHAIR_TIMER.for.length>30);
  assert.deepEqual(['0:00','0:01','0:59','1:00','9:58','10:00'],[0,.4,59,60,598,600].map(timerReads));
- const led=room.getObjectByName(CHAIR_TIMER.name),coinBox=box(room.getObjectByName('Massage chair coin box')),arm=meshes(room).filter(m=>m.name==='Massage chair arm').map(box).sort((a,b)=>a.min.z-b.min.z)[0];
- assert.ok(led&&visible(led),'the readout is on the coin box');
- assert.ok(coinBox.max.x<=arm.min.x+1e-6&&coinBox.max.x>arm.min.x-.002,'the coin box stands against the arm’s front');
- assert.ok(coinBox.max.y<arm.max.y&&coinBox.min.y>.5,'under the arm’s top, above the seat');
- const ledBox=box(led);assert.ok(ledBox.max.x<coinBox.min.x&&ledBox.max.x>coinBox.min.x-.006,'on its face, facing the lobby');
+ // The coin box is the chair's own (Studio's model): its face plate is the metal of the box ('Massage chair coin box
+ // (metal)'). The room's two live parts lie on it: the readout and the lamp, facing the lobby (-x), never off its edge.
+ const led=room.getObjectByName(CHAIR_TIMER.name),lamp=room.getObjectByName('Massage chair lamp'),coinBox=room.getObjectByName('Massage chair coin box');
+ assert.ok(led&&visible(led)&&lamp&&visible(lamp),'the readout and the lamp are on the coin box');
+ assert.equal(coinBox.parent.parent,layout.chair.object,'the coin box is part of the chair');
+ const plate=meshes(coinBox).find(m=>m.name==='Massage chair coin box (metal)'),ray=new THREE.Raycaster(),east=new THREE.Vector3(1,0,0);
+ const onPlate=(p,label,most)=>{ray.set(new THREE.Vector3(p.x-.2,p.y,p.z),east);ray.far=1;
+  const hit=ray.intersectObjects(meshes(layout.chair.object),false)[0];
+  assert.ok(hit&&hit.object===plate,label+' is in front of the face plate, not off its edge: '+(hit?.object.name||'nothing'));
+  assert.ok(hit.point.x-p.x>=-1e-6&&hit.point.x-p.x<=most,label+' lies on it: '+(hit.point.x-p.x).toFixed(4)+' m in front');};
+ const L=box(led);for(const [y,z] of [[L.min.y,L.min.z],[L.min.y,L.max.z],[L.max.y,L.min.z],[L.max.y,L.max.z],[(L.min.y+L.max.y)/2,(L.min.z+L.max.z)/2]])
+  onPlate(new THREE.Vector3(L.max.x,y+(y===L.min.y?1e-4:y===L.max.y?-1e-4:0),z+(z===L.min.z?1e-4:z===L.max.z?-1e-4:0)),'the readout',.001);
+ assert.ok(L.max.x-L.min.x<1e-6,'the readout is flat on the face, facing the lobby');
+ // The lamp is a lens on the plate: half of it sunk in it, so its middle (where its rim meets the plate) is on the plate's face.
+ const lampBox=box(lamp),lc=lampBox.getCenter(new THREE.Vector3());onPlate(lc,'the lamp’s rim',.0005);
+ assert.ok(Math.abs(lampBox.min.x-CHAIR.anchor('running-lamp')[0])<1e-4,'the lamp’s front at the running-lamp anchor');
+ assert.ok(lampBox.min.y>L.max.y,'the lamp over the readout');
+ // The box itself against the right arm's front and under its top (the arm pad's top, right-arm-top), above the seat.
+ const cb=box(coinBox),[,armTop]=CHAIR.anchor('right-arm-top');
+ assert.ok(cb.max.y<armTop&&cb.min.y>.5-1e-3,'under the arm’s top, and none of it below the seat’s top: '+cb.min.y.toFixed(4)+'–'+cb.max.y.toFixed(4));
+ ray.set(new THREE.Vector3(cb.min.x-.2,.45,(cb.min.z+cb.max.z)/2),east);const arm=ray.intersectObjects(meshes(layout.chair.object),false)[0];
+ const back=meshes(coinBox).filter(m=>m.name==='Massage chair coin box').map(box)[0];
+ assert.ok(arm&&Math.abs(back.max.x-arm.point.x)<.0015,'the coin box stands against the arm’s front: '+back.max.x.toFixed(4)+' / '+arm?.point.x.toFixed(4));
  // Page 4: two seconds of heaven, held.
  stageScenario('last-straw');ticks(layout,1);assert.equal(chairTimer().reads,'9:58');assert.equal(chairTimer().lit,true);
  // The blackout: the readout goes dark and the coin is forgotten; when the power comes back the chair stays still.
@@ -102,10 +124,15 @@ test('Fujita’s offering: three coffee milks on the chair’s arm when a story 
  const {room,layout}=build(),O=ONSEN_PROPS.offering,g=room.getObjectByName(O.name);
  assert.equal(visible(g),false,'nobody leaves milk on the chair: bare unless staged');
  assert.deepEqual(layout.props.stage({offering:'full'}).offering,'full');assert.equal(visible(g),true);
- const arm=meshes(room).filter(m=>m.name==='Massage chair arm').map(box).find(b=>Math.abs((b.min.z+b.max.z)/2-O.z)<.01),coin=box(room.getObjectByName('Massage chair coin box'));
- for(let i=1;i<=3;i++){const b=box(room.getObjectByName('Coffee milk '+i+' bottle'));
-  assert.ok(Math.abs(b.min.y-arm.max.y)<.001,'bottle '+i+' stands on the arm');
-  assert.ok(b.min.x>arm.min.x&&b.max.x<arm.max.x&&b.min.z>arm.min.z&&b.max.z<arm.max.z,'bottle '+i+' on the arm’s top, not over its edge');
+ // On the right arm's pad (the chair's body, 'Coin massage chair', at its right-arm-top anchor): straight down from every
+ // side of a bottle's foot the pad is right under it, flat at 0.71, so none stands over its edge.
+ assert.equal(O.on,'Coin massage chair');assert.deepEqual([O.z,O.top],[CHAIR.anchor('right-arm-top')[2],CHAIR.anchor('right-arm-top')[1]]);
+ const coin=box(room.getObjectByName('Massage chair coin box')),chairMeshes=meshes(layout.chair.object),ray=new THREE.Raycaster();
+ for(let i=1;i<=3;i++){const bottle=room.getObjectByName('Coffee milk '+i+' bottle'),b=box(bottle),c=b.getCenter(new THREE.Vector3()),r=O.bottle.r-.001;
+  for(const [dx,dz] of [[0,0],[r,0],[-r,0],[0,r],[0,-r]]){ray.set(new THREE.Vector3(c.x+dx,b.min.y+.01,c.z+dz),new THREE.Vector3(0,-1,0));ray.far=.05;
+   const hit=ray.intersectObjects(chairMeshes,false)[0];
+   assert.ok(hit&&hit.object.name==='Coin massage chair'&&Math.abs(hit.point.y-O.top)<.001,'bottle '+i+' stands on the arm pad, not over its edge: '+(hit?hit.object.name+' '+hit.point.y.toFixed(4):'nothing'));}
+  assert.ok(Math.abs(b.min.y-O.top)<.001,'bottle '+i+' on the pad’s top');
   assert.ok(b.min.x>coin.max.x+.03,'clear of the coin slot');assert.ok(visible(room.getObjectByName('Coffee milk '+i+' cap')),'capped');}
  const xs=O.xs;for(let i=1;i<xs.length;i++)assert.ok(xs[i]-xs[i-1]>2*O.bottle.r+.02,'lined up, not touching');
  layout.props.stage({offering:'empty'});for(let i=1;i<=3;i++){assert.equal(visible(room.getObjectByName('Coffee milk '+i+' cap')),false);assert.equal(visible(room.getObjectByName('Coffee milk '+i+' dregs')),true);}

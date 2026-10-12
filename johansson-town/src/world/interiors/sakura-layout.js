@@ -1,6 +1,7 @@
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import {MAGAZINE_RACK} from './sakura-magazine-rack.js';
 import {shelfCapacity} from '../../commerce/shop-stock.js';
+import {PRODUCTS} from '../../commerce/products-data.js';
 // Measured from the supplied convenience-store model, in metres at floor Y=0.
 const rect=(x,z,w,d,height=2.9)=>({x,z,w,d,height});
 
@@ -184,33 +185,38 @@ function bay(ids,site,x,z,yaw,stand){
  * One category to a gondola, as a konbini lays its floor (docs/SAKURA-SHOP-PLAN.md):
  * the pantry on the west island beside the chiller, sweets on the middle one on the
  * door's own line, and daily goods on the long east island, nearest the till.
+ *
+ * Which line stands where is each product's `shelf` (data/studio/products.json): a gondola line names its bay and its
+ * order on it (the first lines take the low boards). Today: the pantry's noodles, soups and curry on one face, the
+ * bottles and tins on the other; the sweets' rice crackers low, crisps at a grown-up's eye and biscuits on top, with
+ * chocolate and sweets low on the far face for children; daily goods' washing, paper and the bathroom, then batteries
+ * and stationery.
  */
-// Pantry: the noodles, soups and curry on one face, the bottles and tins on the other.
-bay(['noodles','soup','curry'],'west',-1.50,-.93,0,[-1.50,0,-.11]);
-bay(['soy','tuna','peaches'],'west',-1.50,-1.39,Math.PI,[-1.50,0,-2.21]);
-// Sweets: rice crackers on the low boards, crisps at a grown-up's eye, biscuits on top;
-// chocolate and sweets low on the far face for children.
-bay(['crackers','chips','biscuit'],'middle',.832,1.56,0,[.832,0,2.38]);
-bay(['candy','chocolate'],'middle',.832,1.10,Math.PI,[.832,0,.28]);
-// Daily goods: washing, paper, the bathroom; then batteries and stationery.
-bay(['detergent','soap'],'east',-3.319,1.56,0,[-3.319,0,2.38]);
-bay(['tissues','toothpaste'],'east',-1.669,1.56,0,[-1.669,0,2.38]);
-bay(['battery','notebook'],'east',-3.319,1.10,Math.PI,[-3.319,0,.28]);
-bay(['postcard'],'east',-1.669,1.10,Math.PI,[-1.669,0,.28]);
+export const AISLE_BAYS=Object.freeze({
+ 'west-front':{site:'west',x:-1.50,z:-.93,yaw:0,stand:[-1.50,0,-.11]},
+ 'west-back':{site:'west',x:-1.50,z:-1.39,yaw:Math.PI,stand:[-1.50,0,-2.21]},
+ 'middle-front':{site:'middle',x:.832,z:1.56,yaw:0,stand:[.832,0,2.38]},
+ 'middle-back':{site:'middle',x:.832,z:1.10,yaw:Math.PI,stand:[.832,0,.28]},
+ 'east-front-1':{site:'east',x:-3.319,z:1.56,yaw:0,stand:[-3.319,0,2.38]},
+ 'east-front-2':{site:'east',x:-1.669,z:1.56,yaw:0,stand:[-1.669,0,2.38]},
+ 'east-back-1':{site:'east',x:-3.319,z:1.10,yaw:Math.PI,stand:[-3.319,0,.28]},
+ 'east-back-2':{site:'east',x:-1.669,z:1.10,yaw:Math.PI,stand:[-1.669,0,.28]},
+});
+const shelved=fitting=>PRODUCTS.filter(p=>p.shelf.fitting===fitting);
+for(const [name,b] of Object.entries(AISLE_BAYS)){
+ const lines=PRODUCTS.filter(p=>p.shelf.bay===name&&p.shelf.fitting===b.site).sort((x,y)=>x.shelf.order-y.shelf.order).map(p=>p.id);
+ if(lines.length)bay(lines,b.site,b.x,b.z,b.yaw,b.stand);
+}
 /**
  * The cold cabinet at the back is the shop's magnet: drinks only, four columns of five
  * shelves, every shelf full. Fresh food has gone to the open chiller on the west wall,
  * where you reach it without opening a door. Beer is in the column nearest the till.
+ * (A drink's `shelf` names its column and its shelves, counted from the bottom.)
  */
-const COLD_CABINET=[
- {column:0,lines:[['tea',[0,1,2]],['coffee',[3,4]]]},
- {column:1,lines:[['water',[0,1,2]],['orange',[3,4]]]},
- {column:2,lines:[['cola',[0,1,2]],['soda',[3,4]]]},
- {column:3,lines:[['milk',[0,1]],['beer',[2,3,4]]]},
-];
-for(const {column,lines} of COLD_CABINET){
+export const FRIDGE_COLUMNS=4;
+for(let column=0;column<FRIDGE_COLUMNS;column++){
  const x=-1.60+column*1.33,stand=standBack(x,-3.48,[x,0,-2.78]);
- for(const [id,levels] of lines){
+ for(const {id,shelf:{levels}} of shelved('fridge').filter(p=>p.shelf.column===column).sort((a,b)=>a.shelf.levels[0]-b.shelf.levels[0])){
   const perLevel=shelfCapacity(id)/levels.length;
   SAKURA_SHELVES[id]={x,z:-3.48,levels:levels.map(l=>FRIDGE_LEVELS[l]),yaw:0,stand,spacing:.19,depth:.12,columns:facingsFor(perLevel,6),fridge:column,width:1.2,fitting:'fridge'};
  }
@@ -221,15 +227,16 @@ for(const {column,lines} of COLD_CABINET){
  * under them; sandwiches over bread; pudding over yoghurt.
  */
 export const CHILLER=Object.freeze({x0:-6.82,x1:-6.0,z0:-1.6,z1:2.45,levels:Object.freeze([.42,.76,1.1,1.44]),canopy:1.9});
-const CHILLED_BAYS=[['rice','bento',-.93],['sandwich','bread',.43],['pudding','yogurt',1.79]];
-for(const [upper,lower,z] of CHILLED_BAYS){
- const stand=standBack(-6.4,z,[-5.5,0,z]),L=CHILLER.levels;
- for(const [id,levels,x] of [[upper,[L[2],L[3]],-6.48],[lower,[L[0],L[1]],-6.4]])
-  SAKURA_SHELVES[id]={x,z,levels,yaw:Math.PI/2,stand,spacing:.2,depth:.13,columns:facingsFor(shelfCapacity(id)/levels.length,6),width:1.25,fitting:'chiller'};
+/** The chiller's three bays along the wall: a fresh line's `shelf` names its bay and its deck (upper or lower). */
+export const CHILLED_BAYS=Object.freeze([-.93,.43,1.79]);
+for(const [index,z] of CHILLED_BAYS.entries()){
+ const stand=standBack(-6.4,z,[-5.5,0,z]),L=CHILLER.levels,on=deck=>shelved('chiller').find(p=>p.shelf.bay===index&&p.shelf.deck===deck)?.id;
+ for(const [id,levels,x] of [[on('upper'),[L[2],L[3]],-6.48],[on('lower'),[L[0],L[1]],-6.4]])
+  if(id)SAKURA_SHELVES[id]={x,z,levels,yaw:Math.PI/2,stand,spacing:.2,depth:.13,columns:facingsFor(shelfCapacity(id)/levels.length,6),width:1.25,fitting:'chiller'};
 }
 /** The bun steamer on the counter, beside the hot case: two racks behind glass. */
 export const BUN_STEAMER=Object.freeze({x:4.8,z:2.45,w:.38,d:.52,top:FURNITURE_HEIGHTS.serviceCounter,h:.44});
-SAKURA_SHELVES.bun={x:BUN_STEAMER.x,z:BUN_STEAMER.z,levels:[BUN_STEAMER.top+.03,BUN_STEAMER.top+.23],columns:3,yaw:-Math.PI/2,stand:[4.05,0,BUN_STEAMER.z],spacing:.15,depth:.11,fitting:'steamer'};
+for(const {id} of shelved('steamer'))SAKURA_SHELVES[id]={x:BUN_STEAMER.x,z:BUN_STEAMER.z,levels:[BUN_STEAMER.top+.03,BUN_STEAMER.top+.23],columns:3,yaw:-Math.PI/2,stand:[4.05,0,BUN_STEAMER.z],spacing:.15,depth:.11,fitting:'steamer'};
 
 
 /**

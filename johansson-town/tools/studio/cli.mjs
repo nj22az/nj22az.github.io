@@ -15,7 +15,7 @@ if(!name||name==='help'||name==='--help'){
  console.log('Johansson Studio tools (node johansson-town/tools/studio/cli.mjs <tool> \'<json>\'):\n'+TOOLS.map(t=>`  ${t.name.padEnd(17)} ${t.description}`).join('\n'));
  process.exit(0);
 }
-const tool=TOOL_BY_NAME[name];
+const tool=Object.hasOwn(TOOL_BY_NAME,name)?TOOL_BY_NAME[name]:null;
 if(!tool){console.error(`There is no tool called ${name}. Run with no arguments to list them.`);process.exit(2);}
 let args;
 try{args=JSON.parse(json);}catch{console.error('The arguments must be JSON, e.g. \'{"name":"Mr Fujita"}\'.');process.exit(2);}
@@ -24,7 +24,7 @@ if(!parsed.success){console.error(JSON.stringify({error:'These arguments do not 
 const ctx=await context();
 try{
  const result=await callTool(name,parsed.data,ctx);
- const shown=tool.image&&!result.error?result.data:result;
+ const shown=result?.image&&result?.mimeType?result.data:result;
  console.log(JSON.stringify(shown,null,1));
  if(result.error||result.ok===false)process.exitCode=1;
 }finally{await ctx.close();}

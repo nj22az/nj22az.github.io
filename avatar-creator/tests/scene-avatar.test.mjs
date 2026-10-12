@@ -49,3 +49,12 @@ test('placed in a scene, a seated body sits on its seat or the floor and a stand
 test('Thuận\'s pleated skirt stays above the floor in a floor sit',{todo:'World: the skirt\'s spring bones dip about 6 cm into the floor (animate.js, being fixed with the floor sit)'},()=>{
  const p=placed(ORIGINAL_THUAN_RECIPE,{pose:'Sit',seat:0,size:1,floor:0});try{assert.ok(p.box.min.y>-.02,'lowest point '+p.box.min.y.toFixed(3));}finally{p.done();}
 });
+// Snapping sits characters of any size on any stool, so sitOn() no longer forces size 1: prove every size fits every height.
+test('small and large characters sit on low, standard and bar-height seats: the bottom on the seat, the feet above the floor',()=>{
+ const floor=.04;
+ for(const recipe of [CAST_RECIPES.Johansson,ORIGINAL_THUAN_RECIPE])for(const size of [.6,1.4])for(const seat of [.42,.46,.56])for(const pose of ['Sit','SitDrink']){
+  const p=placed(recipe,{pose,seat,size,floor}),label=`${recipe.name} ${pose} at size ${size} on a ${seat} m seat`;
+  try{assert.ok(Math.abs(p.bottom-(floor+seat))<.015,label+': the bottom on the seat ('+(p.bottom-floor).toFixed(3)+' m up)');assert.ok(p.feet>floor-.01,label+': feet not in the floor ('+(p.feet-floor).toFixed(3)+')');}
+  finally{p.done();}
+ }
+});

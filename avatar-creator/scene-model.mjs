@@ -1,4 +1,5 @@
 import {KNOWN_POSES,KNOWN_EXPRESSIONS} from './scene-catalogue.mjs';
+import {SNAP} from './scene-snap.mjs?v=20261011-2';
 export const SCENE_KEY='nj-studio-scene-v1';
 export const MAX_ACTORS=6;
 export const MAX_PANELS=4;
@@ -22,7 +23,7 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  out.top=text(raw.top);out.bottom=text(raw.bottom);
  out.actors=(Array.isArray(raw.actors)?raw.actors:[]).slice(0,MAX_ACTORS).filter(a=>a&&a.recipe&&typeof a.recipe==='object'&&!Array.isArray(a.recipe)).map((a,i)=>({
   id:'actor-'+i,name:text(a.name)||'Character',recipe:normalizeRecipe(a.recipe),
-  x:raw.version===2?clamp(a.x,-8,8,0):i*.65,z:raw.version===2?clamp(a.z,-8,8,0):0,size:raw.version===2?clamp(a.size,.6,1.4,1):1,seat:raw.version===2?text(a.seat):'',
+  x:raw.version===2?clamp(a.x,-SNAP.bounds,SNAP.bounds,0):i*.65,z:raw.version===2?clamp(a.z,-SNAP.bounds,SNAP.bounds,0):0,size:raw.version===2?clamp(a.size,.6,1.4,1):1,seat:raw.version===2?text(a.seat):'',
   turn:clamp(a.turn,-180,180,0),pose:KNOWN_POSES.has(a.pose)?a.pose:'Idle',
   expression:KNOWN_EXPRESSIONS.has(a.expression)?a.expression:'smile',speech:text(a.speech)
  }));return out;
@@ -43,5 +44,15 @@ export function restoreCharacter(state,removed){
  const actor=removed.actor;if(actor.seat&&state.actors.some(a=>a.seat===actor.seat)){actor.seat='';if(actor.pose==='Sit')actor.pose='Idle';}
  state.actors.splice(Math.min(removed.index,state.actors.length),0,actor);return actor;
 }
-export function moveCharacter(actor,x,z){actor.x=clamp(x,-8,8,actor.x);actor.z=clamp(z,-8,8,actor.z);}
+export function moveCharacter(actor,x,z){actor.x=clamp(x,-SNAP.bounds,SNAP.bounds,actor.x);actor.z=clamp(z,-SNAP.bounds,SNAP.bounds,actor.z);}
+/** Where a character is and how they stand: what Undo puts back. */
+export function placementOf(actor){return {x:actor.x,z:actor.z,seat:actor.seat||'',turn:actor.turn,pose:actor.pose,size:actor.size};}
+export function samePlacement(a,b){return !!a&&!!b&&['x','z','seat','turn','pose','size'].every(k=>a[k]===b[k]);}
+/** Put a character back where `placement` says; their seat only if nobody has taken it since (then a Sit becomes Idle). */
+export function applyPlacement(state,id,placement){
+ const actor=state.actors.find(a=>a.id===id);if(!actor||!placement)return null;
+ Object.assign(actor,{x:placement.x,z:placement.z,turn:placement.turn,pose:placement.pose,size:placement.size,seat:placement.seat||''});
+ if(actor.seat&&state.actors.some(a=>a!==actor&&a.seat===actor.seat)){actor.seat='';if(actor.pose==='Sit')actor.pose='Idle';}
+ return actor;
+}
 export function panelOrder(panels,index,delta){const to=index+delta;if(to<0||to>=panels.length)return;[panels[index],panels[to]]=[panels[to],panels[index]];}

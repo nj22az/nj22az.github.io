@@ -6,9 +6,13 @@ import {serveGame} from './static-server.mjs';
 import {analyseGrid} from './navigation.mjs';
 
 const root=resolve(fileURLToPath(new URL('../../',import.meta.url)));
+/** index.html with its compiled entry points (runtime/) pointed back at the source modules they are built from. */
+export const sourceIndex=html=>html.replace(/<link rel="modulepreload" data-town-runtime[^>]*>\n?/g,'')
+ .replace(/\.\/runtime\/boot-[A-Za-z0-9_-]+\.js/g,'./src/boot.js').replace(/\.\/runtime\/audio-[A-Za-z0-9_-]+\.js/g,'./src/audio/town-audio.js')
+ .replace(/\.\/runtime\/feed-[A-Za-z0-9_-]+\.js/g,'./src/feed/mount.js').replace(/\.\/runtime\/portraits-[A-Za-z0-9_-]+\.js/g,'./src/avatars/guide-portraits.js');
 export class TownAuditSession{
  constructor({launch=options=>chromium.launch(options),serve=serveGame}={}){this.launch=launch;this.serve=serve;this.generation=0;this.stopping=false;this.page=null;this.history=[];this.errors=[];this.findings=[];this.closing=false;}
- async start({viewport='desktop',spawn='sakura-bench',headless=true,time='12:00'}={}){
+ async start({viewport='desktop',spawn='sakura-bench',headless=true,time='12:00',source=false}={}){
   await this.close();if(this.stopping)throw Error('Test server is closing.');
   this.closing=false;this.errors=[];this.history=[];this.findings=[];const generation=this.generation;
   let preview,browser,context,page;const check=()=>{if(this.stopping||generation!==this.generation)throw Error('Test session startup was cancelled.');};
@@ -24,8 +28,12 @@ export class TownAuditSession{
    page.on('response',r=>{if(r.status()>=400)record({type:'asset',message:`${r.status()} ${r.url()}`});});
    page.on('requestfailed',r=>record({type:'request',message:`${r.url()} ${r.failure()?.errorText}`}));
    const url=new URL(preview.url);url.searchParams.set('audit','');url.searchParams.set('spawn',spawn);
-   await page.goto(url.href,{waitUntil:'domcontentloaded'});check();await page.locator('#enter').click();check();
-   await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__&&window.__JOHANSSON_AGENT_API__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp,null,{timeout:240000});check();
+   // source: the game straight from src/ (each module as it is on disk), so a change can be walked before runtime/ is
+   // rebuilt. Only the page's own index.html is rewritten, and only in this private session; it is slower to start.
+   // (A start may take minutes on a busy machine, from source or not, so it waits up to ten.)
+   if(source)await page.route(u=>u.origin===url.origin&&u.pathname===url.pathname,async route=>{const r=await route.fetch();route.fulfill({response:r,body:sourceIndex(await r.text())});});
+   await page.goto(url.href,{waitUntil:'domcontentloaded'});check();await page.locator('#enter').click({timeout:600000});check();
+   await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__&&window.__JOHANSSON_AGENT_API__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp,null,{timeout:600000});check();
    await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=true;window.__JOHANSSON_AUDIT__.renderFrozen=false;window.__JOHANSSON_AUDIT__.step(0);});check();
    return await this.observe();
   }catch(error){

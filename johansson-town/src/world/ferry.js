@@ -1,11 +1,12 @@
 import * as THREE from '../../vendor/three.module.js';
-import {waveHeight,SEA_LEVEL} from './ocean.js';
+import {waveHeight,SEA_LEVEL,setOceanHole} from './ocean.js';
 import {HARBOUR_LINE,BUS_DWELL,nextService} from '../people/commuter-schedule.js';
 import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,AIRPORT_PASSAGES,airportFerryPose} from './airport-ferry.js';
 import {PORT_BUILDING} from './port-building.js';
 import {FERRY_DAY,rollPeriod,pitchPeriod} from './ferry-ship.js';
 import {buildFerryModel,GANGWAY_Z,WL,FERRY_HULL,FERRY_RAMP} from './ferry-model.js';
 import {MINATO_BERTH} from './minato-berth.js';
+import {FERRY_INSPECT} from './ferry-inspect.js';
 import {OUTER_PIER} from './layout.js';
 import {BERTH_X,BERTH_Z,townArrival,townDeparture} from './ferry-paths.js';
 import {lanternGlow,windowGlow} from '../render/dusk.js';
@@ -98,8 +99,11 @@ export function buildFerry({shadows=false}={}){
  * @param {THREE.Object3D} options.parent
  * @returns the run, with the bus's interface.
  */
-export function createFerryRun({parent,shadows=false,colliders}={}){
+export function createFerryRun({parent,shadows=false,colliders,register=null,onAction=()=>{}}={}){
  const ferry=buildFerry({shadows});parent.add(ferry);
+ // What you can look at aboard (ferry-inspect.js): prompts that move with her, offered only on the deck you stand on.
+ if(register)for(const p of FERRY_INSPECT){const a=new THREE.Object3D();a.name='Ferry: '+p.title;a.position.set(...p.pos);a.userData.sameLevel=true;ferry.add(a);
+  register(a,p.label,()=>onAction('inspect',p.title,p.text));}
  let phase='away',t=0,service=null,serviceAt=null,lastMinutes=null,clock=0,yaw=0,x=FERRY_BERTH.x,z=FERRY_BERTH.z,exposure=0,shipSeconds=null,plan=null;
  let berth='town',localService=false,crossing=null;
  const DOOR=[FERRY_TERMINAL.queue[0],FERRY_TERMINAL.queue[1]];
@@ -114,6 +118,8 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
  const pose=()=>{
   const m=shipMotion(x,z,clock,exposure);
   ferry.position.set(x,m.y,z);ferry.rotation.set(m.pitch,yaw,m.roll);ferry.updateMatrixWorld(true);
+  // The sea stays outside her plating: no water inside her engine room (her parallel body, shipyard z 6 to 28).
+  setOceanHole(x,z,yaw,FERRY_HULL.beam/2-.15,11,-.25);
  };
  const place=()=>{
   const moored=phase==='waiting';
@@ -142,7 +148,7 @@ export function createFerryRun({parent,shadows=false,colliders}={}){
  // hull alongside stops the player stepping off the pier's open flank onto the water.
  const solid=colliders?{id:'ferry',moving:true,x:FERRY_BERTH.x,z:FERRY_BERTH.z,w:FERRY.beam,d:FERRY.length,height:3}:null;
  if(solid)colliders.push(solid);
- const trackSolid=()=>{if(!solid)return;const here=ferry.visible&&phase==='waiting';solid.x=here?x:1e6;solid.z=here?z:1e6;solid.yaw=yaw;};
+ const trackSolid=()=>{if(!ferry.visible)setOceanHole(0,0,0,0,0);if(!solid)return;const here=ferry.visible&&phase==='waiting';solid.x=here?x:1e6;solid.z=here?z:1e6;solid.yaw=yaw;};
  park();ferry.visible=false;trackSolid();
  const run={
   ferry,

@@ -96,7 +96,7 @@ test('at Kitano-jima: up the ramp from the pier',()=>{
 });
 
 test('every floor lies where the model draws it',()=>{
- const {run}=alongside();const ray=new THREE.Raycaster(),meshes=[];
+ const {run,walk}=alongside();const ray=new THREE.Raycaster(),meshes=[];
  run.ferry.traverse(o=>{if(o.isMesh&&o.visible!==false&&!/windows|markings/.test(o.name))meshes.push(o);});
  const parts={ship:run.ferry,ramp:run.ferry.userData.ramp,flap:run.ferry.userData.flap,gangway:run.ferry.userData.gangway};
  for(const f of FERRY_FLOORS){const m=parts[f.part].matrixWorld,sloped=Array.isArray(f.y);
@@ -105,7 +105,10 @@ test('every floor lies where the model draws it',()=>{
   for(const fx of [.25,.5,.75])for(const fz of [.25,.5,.75]){
    const lx=f.x[0]+(f.x[1]-f.x[0])*fx,lz=f.z[0]+(f.z[1]-f.z[0])*fz;if(f.inside&&!f.inside(lx,lz,.3))continue;
    const y=sloped?f.y[0]+(f.y[1]-f.y[0])*fz:f.y;
-   const p=new THREE.Vector3(lx,y,lz).applyMatrix4(m);ray.set(new THREE.Vector3(p.x,p.y+.5,p.z),new THREE.Vector3(0,-1,0));ray.far=1;
+   const p=new THREE.Vector3(lx,y,lz).applyMatrix4(m);
+   // Where something stands on the floor (an engine, a bunk), the walk stops you at it: not a place to stand.
+   if(walk.blocked(p.x,p.y,p.z,.02))continue;
+   ray.set(new THREE.Vector3(p.x,p.y+.5,p.z),new THREE.Vector3(0,-1,0));ray.far=1;
    const hit=ray.intersectObjects(meshes,true).find(h=>h.object.visible);
    if(ladder&&!hit)continue;
    assert.ok(hit,f.id+' has a surface at '+lx.toFixed(2)+','+lz.toFixed(2));
@@ -150,4 +153,35 @@ test('the walls keep you in: no walking through the house\'s side, into the toil
   ['through the wheelhouse\'s front',at(0,FERRY_DECKS.bridge.y,21),at(0,FERRY_DECKS.bridge.y,23.5)],
  ];
  for(const [what,a,b] of tries){const r=stroll(walk,colliders,[a.x,a.z,a.y],[[b.x,b.z]]);assert.notEqual(r.stopped,null,what);}
+});
+
+test('down into the engine room: the casing P door, the ladder through the car deck, round the engines to the control booth',()=>{
+ const {run,walk,colliders}=alongside();const Zs=zy=>zy-HALF,car=FERRY_DECKS.car.y;
+ const W=(x,zy)=>{const p=world(run,x,car,Zs(zy));return [p.x,p.z];};
+ const start=world(run,2.65,car,Zs(6.9));
+ const r=stroll(walk,colliders,[start.x,start.z,start.y],[W(3.575,6.9),W(3.575,8.65),W(3.575,9.6),W(3.1,9.65),W(2.9,10.5),W(2.9,13.0),W(2.9,13.68),W(0,13.68),W(0,10.0),W(0,13.68),W(-2.85,13.68),W(-2.85,11.3),W(-2.95,11.2),W(-2.95,10.6),W(-2.8,10.55)]);
+ assert.equal(r.stopped,null,'stopped at '+r.stopped+' local '+walk.local('ship',r.x,r.y,r.z).map(n=>n.toFixed(2)));
+ const ids=[...new Set(r.trail.map(t=>t[3]))];
+ for(const id of ['er-entrance','er-ladder','engine-room','control-booth'])assert.ok(ids.includes(id),id+' in '+ids);
+ for(let i=1;i<r.trail.length;i++)assert.ok(Math.abs(r.trail[i][1]-r.trail[i-1][1])<.16,'no jump at step '+i+' ('+r.trail[i-1][3]+' to '+r.trail[i][3]+')');
+ // And back up to the car deck.
+ const back=stroll(walk,colliders,[r.x,r.z,r.y],[W(-2.95,10.6),W(-2.95,11.2),W(-2.85,11.3),W(-2.85,13.68),W(2.9,13.68),W(2.9,10.5),W(3.1,9.65),W(3.575,9.6),W(3.575,8.65),W(3.575,6.9),W(2.65,6.9)]);
+ assert.equal(back.stopped,null,'back: stopped at '+back.stopped+' local '+walk.local('ship',back.x,back.y,back.z).map(n=>n.toFixed(2)));
+ assert.ok(Math.abs(back.y-start.y)<.02,'on the car deck again');
+ // Nobody walks through an engine, nor from the car deck down through the deck anywhere but the hatch.
+ const e=world(run,0,FERRY_DECKS.car.y-2.1,Zs(10.8));const into=world(run,1.6,FERRY_DECKS.car.y-2.1,Zs(10.8));
+ assert.notEqual(stroll(walk,colliders,[e.x,e.z,walk.floorBelow(e.x,e.z,e.y+.1).y],[[into.x,into.z]]).stopped,null,'the port main engine');
+});
+
+test('the crew house: in from the bridge deck\'s aft platform, along the corridor, into a cabin, the mess and the wheelhouse',()=>{
+ const {run,walk,colliders}=alongside();const Zs=zy=>zy-HALF,br=FERRY_DECKS.bridge.y;
+ const W=(x,zy)=>{const p=world(run,x,br,Zs(zy));return [p.x,p.z];};
+ const start=world(run,0,br,Zs(5.5));
+ const r=stroll(walk,colliders,[start.x,start.z,start.y],[W(0,6.6),W(0,12.05),W(1.6,12.05),W(0,12.05),W(0,14.55),W(1.0,14.55),W(0,14.55),W(0,20.5)]);
+ assert.equal(r.stopped,null,'stopped at '+r.stopped+' local '+walk.local('ship',r.x,r.y,r.z).map(n=>n.toFixed(2)));
+ const ids=[...new Set(r.trail.map(t=>t[3]))];
+ for(const id of ['bridge-deck-aft','crew-corridor','deckhand-cabin','mess','wheelhouse'])assert.ok(ids.includes(id),id+' in '+ids);
+ // The emergency-generator room from the platform.
+ const g=stroll(walk,colliders,[start.x,start.z,start.y],[W(1.6,5.6),W(1.6,6.5)]);
+ assert.equal(g.stopped,null,'into the EG room: '+g.stopped);assert.ok(g.trail.some(t=>t[3]==='eg-room'));
 });

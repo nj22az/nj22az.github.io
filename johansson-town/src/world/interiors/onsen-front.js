@@ -62,7 +62,10 @@ const TO_DOOR=0,TO_HOUSE=Math.PI;
 const pair=(yaw=TO_DOOR)=>Object.freeze([plain({dx:-.055,dz:0,yaw}),plain({dx:.055,dz:0,yaw})]);
 const spot=(x,z,shoes,why,note)=>plain({x,z,shoes,why,note});
 export const GENKAN_STEP=plain({z:3.6,clear:.5,
- why:'The agarikamachi: shoes come off on the stone side and wait there; nobody wears them on the wood. The middle metre (|x| < 0.5) stays clear for stepping up.'});
+ // Where it turns (room x): from the west wall along z 3.6 to here, then towards the street wall along this x.
+ turn:3,width:.12,
+ why:'The agarikamachi: shoes come off on the stone side and wait there; nobody wears them on the wood. The middle metre (|x| < 0.5) stays clear for stepping up.',
+ turnWhy:'The stone genkan belongs to the door and the getabako: it ends at x 3.0, past the shoe row (to x 1.6) and the umbrella stand, and the step turns there towards the street wall. East of it the lobby’s hinoki runs to the street wall, so the massage chair in that corner stands wholly on the boards and a bather in after-bath clothes reaches it barefoot, never stepping onto the stone.'});
 export const GENKAN_SPOTS=Object.freeze({
  Thuan:spot(-.66,3.82,pair(),
   'The sisters pay at the bandai first, so they step up on the bandai side. Thuan steps up nearest the middle and turns hers to the door, side by side, the way her grandmother taught her.',

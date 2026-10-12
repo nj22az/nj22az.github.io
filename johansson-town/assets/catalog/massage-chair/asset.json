@@ -3,7 +3,7 @@
  "id": "massage-chair",
  "name": "Coin massage chair",
  "kind": "furniture",
- "version": 3,
+ "version": 1,
  "purpose": {
   "for": "Bathers resting after the bath in Umi-no-yu's lobby: the regulars cooling down in their after-bath clothes, and Mr Fujita, whose back is always stiff from the boat.",
   "why": "Ten minutes of kneading for a ¥100 coin after a 42-degree soak; a sentō's lobby kept one so the regulars stayed for a coffee milk and the night game.",
@@ -94,18 +94,6 @@
   "minutes": 10
  },
  "anchors": {
-  "roller-track": {
-   "min": [
-    -0.25,
-    0.475,
-    -0.16
-   ],
-   "max": [
-    0.25,
-    0.985,
-    -0.13
-   ]
-  },
   "coin-slot": [
    -0.384,
    0.655,
@@ -135,6 +123,11 @@
    -0.405,
    0.71,
    0.05
+  ],
+  "roller-track": [
+   0,
+   0.76,
+   -0.125
   ]
  },
  "keepClear": [
@@ -928,56 +921,48 @@
    "yaw": -1.5708,
    "why": "Asset frame to room: room x = 4.505 - z, room z = 3.55 + x. The body's footprint is the old collider exactly (room x 4.2-4.81, z 3.1-4.0)."
   },
-  "keep": "World draws what changes while the chair runs: the readout of the time left (on the chair's own display), the light of its running lamp (the part with the role lamp), the rollers' travel up and down the roller-track box (the part with the role motor), and its own cord to the 1994 socket (the chair's loose cord, role cord, is hidden). See johansson-town/src/world/studio-assets.js and onsen-electrics.js."
+  "keep": "World keeps drawing what moves or lights: the coin timer's readout and lamp, the kneading rollers and the cord to the 1994 socket (onsen-electrics.js). The model names those parts and gives their anchors."
  },
  "notes": "A 1990s lobby massage chair, made up (no maker's name). Colours from World's palettes: the residents' cloth palette (src/avatars/recipe.js PALETTE.cloth); plate is the milk cooler's shelf grey (onsen-lobby.js) and lamp the onsen chair's running lamp (onsen-electrics.js). The sky-blue vinyl stands out from the lobby's brown wainscot, cream plaster and hinoki boards, from the red milk cooler beside it, and from the white and beige after-bath clothes of whoever sits in it. Its seat is 0.50 m (the onsen's seat and World's chair poses), not the 0.45 m of a real one.",
  "keepClearFrom": "modeller/tools/keep-clear.mjs on 2026-10-10: World's residents (src/avatars, read only) seated in every seated pose, in their clothes and after-bath clothes, and Mr Fujita in ChairUncurl and FrozenAbsurd with the cloud of hair; 5 cm bands with 5 mm to spare. Cloth that sinks into a seat's top is World's seat contact and is not counted.",
  "parts": [
   {
    "name": "Coin massage chair",
-   "role": "body",
    "loose": false,
    "note": ""
   },
   {
    "name": "Massage chair seat",
-   "role": "seat",
    "loose": false,
    "note": ""
   },
   {
    "name": "Massage chair back",
-   "role": "body",
    "loose": false,
    "note": ""
   },
   {
    "name": "Massage chair rollers",
-   "role": "motor",
    "loose": false,
    "note": ""
   },
   {
    "name": "Massage chair coin box",
-   "role": "coin-slot",
    "loose": false,
    "note": ""
   },
   {
    "name": "Massage chair lamp",
-   "role": "lamp",
    "loose": false,
    "note": ""
   },
   {
    "name": "Massage chair remote",
-   "role": "control",
    "loose": false,
    "note": ""
   },
   {
    "name": "Massage chair cord",
-   "role": "cord",
    "loose": true,
    "note": "Lies on the floor beside the chair. A room that wires the chair itself (Umi-no-yu draws its own cord to the 1994 socket) hides this part and starts its cord at the cord anchor."
   }
@@ -1043,11 +1028,6 @@
    "detail": "66 pieces in 8 part(s)."
   },
   {
-   "id": "roles",
-   "ok": true,
-   "detail": "8 part(s): body ×2, seat, motor, coin-slot, lamp, control, cord. World does not act on coin-slot, control yet: they are recorded for later and for the storyteller."
-  },
-  {
    "id": "floor",
    "ok": true,
    "detail": "Lowest point at y = 0.000 m; all 66 pieces rest on the floor or on each other."
@@ -1078,13 +1058,13 @@
    "detail": "Nothing of it in the 59 spaces the residents' bodies use (keepClear)."
   }
  ],
- "checked": "2026-10-11T08:46:23.802Z",
+ "checked": "2026-10-10T20:55:37.389Z",
  "hero": "hero.png",
  "source": {
   "from": "johansson-studio",
   "files": {
-   "asset.json": "57ec376e7ef9a4d90d6ec623eddc52310ec5c423",
-   "model.js": "4345fb1a46d92691505389b2a0c8e5cb9a49e2ab"
+   "asset.json": "ec5d845437e20daf99a462ac82106a6fc44f2cdc",
+   "model.js": "01187bdbfc6888b4bee520615f71d19fd3cfafdf"
   }
  }
 }

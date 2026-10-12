@@ -13,6 +13,8 @@ export const SHA256_PATTERN='^[0-9a-f]{64}$';
 export const CHANGE_ID_PATTERN='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}-[0-9]{2}(-[0-9]{2})?Z-[a-z0-9][a-z0-9-]{0,39}$';
 /** A field of a recipe, as a dotted path ("outfit.hat"); looks.js says which paths a look may set. */
 const PATH_PATTERN='^[a-z][a-zA-Z]*(\\.[a-z][a-zA-Z]*)?$';
+/** A field of a product, as a dotted path ("label", "brand.ink", "pack.back.ingredients"); rules.js PRODUCT_FIELDS lists them. */
+const PRODUCT_PATH='^[a-z][a-zA-Z]*(\\.[a-z][a-zA-Z]*){0,2}$';
 
 const text=(max,min=1)=>({type:'string',minLength:min,maxLength:max});
 const fields=(min=1)=>({type:'object',minProperties:min,maxProperties:80,propertyNames:{pattern:PATH_PATTERN},additionalProperties:{type:['string','number','boolean']}});
@@ -22,8 +24,8 @@ const id={type:'string',pattern:ID_PATTERN};
 const sha={type:'string',pattern:SHA256_PATTERN};
 
 /**
- * The steps. `target` is the data file a step changes; `ready` is false for steps whose data has not moved into
- * data/studio yet (products move in stage 2), which rules.js refuses in plain words.
+ * The steps. `target` is the data file a step changes (looks.json or products.json); `ready` is false for a step whose
+ * data has not moved into data/studio yet, which rules.js refuses in plain words.
  */
 export const OPS=Object.freeze({
  'look.set':{target:'looks',ready:true,summary:'Change some fields of a resident\'s look (their published Studio look, laid over how World draws them).',
@@ -37,11 +39,11 @@ export const OPS=Object.freeze({
   schema:step('character.set',{id,set:fields(),was:fields()},['id','set','was'])},
  'character.delete':{target:'looks',ready:true,summary:'Delete a Studio-only character. `was` is the sha256 of the record being deleted. Residents of World are never deleted.',
   schema:step('character.delete',{id,was:sha},['id','was'])},
- 'product.update':{target:'products',ready:false,summary:'Change fields of a product (its label, name, price, purpose or shelf). Stage 2.',
-  schema:step('product.update',{id,set:{type:'object',minProperties:1,maxProperties:20},was:{type:'object'},note:text(300,0)},['id','set','was'])},
- 'product.add':{target:'products',ready:false,summary:'Add a product, as a flavour of a line or as a new line, and say where it goes on the shelf. Stage 2.',
-  schema:step('product.add',{product:{type:'object'},place:{type:'object',additionalProperties:false,required:['mode'],properties:{mode:{enum:['flavour','free','share','replace']},target:id}}},['product','place'])},
- 'product.retire':{target:'products',ready:false,summary:'Take a product off sale, keep its record so old saves still work, and give its shelf to another line. Stage 2.',
+ 'product.update':{target:'products',ready:true,summary:'Change fields of a product by path ("label", "price", "brand.ink", "purpose.why", "shelf" …). Never its id, its inventoryName (old saves keep it) or its atlas cells. A designed label names its baked picture in the change\'s files.',
+  schema:step('product.update',{id,set:{type:'object',minProperties:1,maxProperties:20,propertyNames:{pattern:PRODUCT_PATH}},was:{type:'object',maxProperties:20,propertyNames:{pattern:PRODUCT_PATH}},note:text(300,0)},['id','set','was'])},
+ 'product.add':{target:'products',ready:true,summary:'Add a flavour to a line (place.mode "flavour", product {name, hue}: one more cell in the atlas, no shelf of its own), or a new line (a whole product record) that shares a line\'s shelf (share), takes the place of a line it retires (replace), or stands on free shelf (free). Its cells are given when it is applied.',
+  schema:step('product.add',{product:{type:'object',minProperties:1,maxProperties:40},place:{type:'object',additionalProperties:false,required:['mode'],properties:{mode:{enum:['flavour','free','share','replace']},target:id,why:text(300,0)}}},['product','place'])},
+ 'product.retire':{target:'products',ready:true,summary:'Take a product off sale: its record moves to the retired list (old saves still know it, its id is never used again) and its shelf goes to shelfTo, a line beside it. Refused while World\'s code still names it. `was` is the sha256 of the record being retired.',
   schema:step('product.retire',{id,why:text(300),shelfTo:id,was:sha},['id','why','was'])},
 });
 export const OP_NAMES=Object.freeze(Object.keys(OPS));

@@ -583,3 +583,63 @@ stair, across the lobby and through the carpet room into the saloon.
 **Open.** The toilets, the crew's rooms (cabins, mess, galley), the emergency-generator and CO₂ rooms and the engine
 room are behind closed doors; the compass deck (no ladder yet); the forecastle tops (vertical ladders: a climb); the
 crew aboard; tapping to walk aboard. In small rooms the third-person lens comes in close behind him.
+
+### Batch 6c: the engine room and the crew's spaces (2026-10-11)
+
+The creator, 2026-10-11: *"Build the engine room, accommodation spaces etc, be a ship construction engineer in the 90's"*,
+and *"The engine room needs focus too."*
+
+**What a 1990s yard drawing office would have caught in the general arrangement, and changed.**
+- *The engine room cannot start at z 5.* The hull's counter rises aft of z 10.5: at z 8 her bottom is already above the
+  floor plates' level (0.9 m over the keel), at z 5 above the tank top. The engine room is z 8.5–14 (floor plates at
+  0.9 m, 1.9 m clear under the car deck); aft of it a **shaft space** (z 5–8.5, over the counter, reached by a manhole)
+  carries the shafts to the stern tubes. The fresh-water tanks (z 2.6–5) and the steering-gear room (z 0.3–2.6) sit on
+  the counter (2.0 and 1.95 m over the keel), not below her bottom. (`ferry-ship.js` FERRY_GA.)
+- *The generators* stand athwartships forward of the mains (the length forward of the engines is 2 m, not enough for
+  them fore and aft), and *the control booth* moves aft to starboard (z 8.6–10.9), so the ladder's foot, the strip along
+  each side and the cross passage forward are free to walk.
+- *The crew's stair to the lobby* had no place a passenger would not walk into. The crew go up the open deck's ladders
+  to the bridge deck's aft platform and in through **their own door** between the emergency-generator and CO₂ rooms.
+
+**Built (ferry-interior.js; drawn and walked from the same list).**
+- **Engine room:** in by casing P's door (z 6.6–7.4) and a 53° ladder down through a hatch cut in the car deck (the
+  plating is open there, `ferry-model.js`), into the port aft corner. Two main engines (x ±1.55, six rocker covers, the
+  turbocharger forward, the lagged exhaust led aft to the uptake, a gauge board), their gearboxes and local control
+  stands aft, the shafts through the aft bulkhead in their seals; two generators athwartships forward (engine inboard,
+  alternator outboard); the control booth (the main switchboard on the aft bulkhead, the engine panel and log desk, a
+  chair, the telephone, a window to the engines); along starboard the two fire and general-service pumps, the bilge,
+  sanitary and hydrophore pumps; the 1.6 m³ fuel service tank (gauge glass, quick-closing valve) in the forward corner;
+  along port the air compressor and the two 150 L starting-air bottles against the aft bulkhead, the workbench and vice,
+  the purifier, the oily-water separator, two lubricating-oil drums; the sea chests and their valves low forward; the
+  fuel lines; the fire main's hydrant and extinguishers; CO₂ nozzles, lights and the coloured service pipes overhead
+  (fuel brown, sea water green, fresh water blue, fire main red); sounding pipes; the escape ladder in the aft starboard
+  corner; lining on her sides, chequer floor plates, the deckhead under the car deck.
+- **Crew house (bridge deck):** the corridor from the crew's door to the wheelhouse (whose aft door now stands open);
+  to port the crew cabin (two bunks), the deckhand's cabin, the mess (a table for six, benches, television, kettle, duty
+  board), the chief engineer's cabin; to starboard the chief officer's cabin, the crew WC and shower, the galley
+  (range and hood, sink, fridge-freezer, provision locker), the master's cabin (desk, bunk, safe); square ports in each.
+- **Emergency-generator room** (the 40 kVA set, the emergency switchboard, batteries, day tank, louvres) and **CO₂ room**
+  (four bottles in their rack, the release cabinet, the firemen's locker, the fan stops), open from the platform.
+- **Toilets** in the passenger deckhouse open: men's (a WC cubicle, two urinals, a basin) and women's (two cubicles, a
+  basin), tiled.
+- **What you can look at** (`ferry-inspect.js`): 17 prompts with her real figures (the main engine, the gearbox, a
+  generator, the main switchboard, the log, the pumps, the starting air, the service tank, the purifier, the emergency
+  generator, the CO₂, the wheel, the radar and console, the chart table, the purser's window, the mess, the galley).
+  A ship's prompt is offered only on the deck you stand on (`game.js`: no engine-room prompt through the car deck).
+
+**Two things the walk found.** The sea's surface ran through the engine room at waist height (it is below her
+waterline): the ocean is no longer drawn inside her parallel body (`ocean.js` `setOceanHole`, set by `ferry.js` each
+frame from her pose). And the third-person lens was held 35 cm over the town's ground, which is 1.9 m above her
+engine-room floor: aboard it follows her decks.
+
+**Checked.** `ferry-walk.test.mjs`: down into the engine room by the door, the ladder and round the engines to the
+control booth and back up, no jump over 0.16 m, no walking through an engine; the crew house from the platform: the
+corridor, a cabin, the mess, the wheelhouse; the EG room; every floor on the surface the model draws (where nothing
+stands on it). `ferry-ship.test.mjs` (the general arrangement, now with the shaft space; 33 meshes, about 39,000
+triangles: the cap is raised to 60,000 for her interiors). In the running game: photographed in the engine room
+(ladder foot, the aisle both ways, the port strip, the booth), the corridor, a cabin, the mess, the galley, the master's
+cabin, the EG room and the men's toilet; the engine's prompt offered below and not from the car deck above; the wheel's
+card read.
+
+**Open.** The steering-gear room and the bow-thruster room (hatches, not yet walked); the shaft space; the compass
+deck; the crew aboard at their posts; machinery that runs (the engines' sound and the switchboard as a live state).

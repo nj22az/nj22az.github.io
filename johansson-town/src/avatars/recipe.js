@@ -44,12 +44,36 @@ export const PARTS=Object.freeze({
  moustache:Object.freeze(['none','moustache','walrus','handlebar','pencil']),
  beard:Object.freeze(['none','stubble','beard','goatee','chinstrap']),
  facial:Object.freeze(['none','moustache','walrus','handlebar','pencil','stubble','beard','goatee','chinstrap']),
- top:Object.freeze(['tank','tee','kariyushi','polo','contrastpolo','blouse','jacket','apron','smock','sailor','sailorlong','police','hoodie','cardigan','overalls','sundress','festival','lighthouse','lantern','reef']),
+ top:Object.freeze(['tank','tee','kariyushi','polo','contrastpolo','blouse','jacket','apron','smock','sailor','sailorlong','police','hoodie','cardigan','overalls','sundress','festival','lighthouse','lantern','reef',
+  // The wardrobe plan's batch 2 (2026-10-11): painted on the body every top already has (garment.js).
+  'shirt','vest','knitvest','gymtee','baseball']),
  bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt','widepants','cropped','culottes','pleatedskirt']),
  footwear:Object.freeze(['barefoot','sneakers','sandals','shoes','boots']),
  hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon','squid','teapot','sunflower','paperboat','mountain']),
  earrings:Object.freeze(['none','studs','hoops']),
  neckwear:Object.freeze(['none','pendant','scarf']),
+});
+
+/** The prints a top can carry (garment.js), in the order the maker offers them. */
+export const PATTERNS=Object.freeze(['none','flowers','stripes','dots']);
+/** Bottoms that are skirts: they hang from the waist as cloth on springs (build.js, springs.js), not as two legs. */
+export const DRESS_BOTTOMS=Object.freeze(['skirt','longskirt','pleatedskirt']);
+/**
+ * Tops that carry a number (`outfit.number`, 1–99; 0 is none): the maker shows its number stepper only for these. The
+ * Seagulls jersey wears it on the back.
+ */
+export const NUMBERED_TOPS=Object.freeze(['baseball']);
+/**
+ * What the dice deal (randomRecipe): everyday clothes an islander might be wearing on any street, never a uniform, a
+ * costume or somebody's work clothes, so a stranger is never dressed as the police officer or a festival steward.
+ */
+export const DICE=Object.freeze({
+ tops:Object.freeze(['tee','kariyushi','polo','contrastpolo','blouse','jacket']),
+ skirtsAndWide:Object.freeze(['skirt','longskirt','widepants','cropped','culottes','pleatedskirt']),
+ trousers:Object.freeze(['shorts','trousers']),
+ bottomColours:Object.freeze(['#27304d','#6d7478','#c8b48a','#2b2b2b','#9a6a42','#2f5f9e']),
+ shoes:Object.freeze(['#6d4a32','#2b2b2b','#f4f1ea','#d8342c']),
+ footwear:Object.freeze(['sneakers','sandals','shoes','boots']),
 });
 
 const clamp=(v,lo=0,hi=1)=>Math.min(hi,Math.max(lo,Number.isFinite(+v)?+v:lo));
@@ -74,7 +98,7 @@ export const DEFAULT_RECIPE=Object.freeze({
  moleSpot:Object.freeze({x:.77,height:.33,size:.5}),
  // Everybody starts in the base layer -- a tank top, underwear and bare feet -- and
  // clothes are put on over it in the maker's wardrobe.
- outfit:Object.freeze({top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',shoes:'#6d4a32',hat:'none',hatColour:'#f4f1ea',accent:'#f4d23c'}),
+ outfit:Object.freeze({top:'tank',topColour:'#f4f1ea',pattern:'none',bottom:'underwear',bottomColour:'#7fb0d8',footwear:'barefoot',shoes:'#6d4a32',hat:'none',hatColour:'#f4f1ea',accent:'#f4d23c',number:0}),
  accessories:Object.freeze({earrings:'none',neckwear:'none',colour:'#e0b93a',necklaceColour:'#e0b93a',pin:false}),
  // What they wear in the water, and (adults) whether they wrap up in a bath towel or wear
  // their swimwear at Umi-no-yu's family bath (avatars/build.js, bathOutfit).
@@ -104,7 +128,9 @@ export function normalizeRecipe(input={}){
   facial:facialHair(r.facial,sub('facial',{colour:col,size:num,height:num})),
   blush:num(r.blush,d.blush),freckles:!!r.freckles,mole:!!r.mole,wrinkles:num(r.wrinkles,d.wrinkles),
   moleSpot:sub('moleSpot',{x:num,height:num,size:num}),
-  outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>['none','flowers','stripes','dots'].includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,bottomPattern:(v)=>v==='plaid'?'plaid':'none',footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col})),
+  outfit:legacyDressed(r.outfit,sub('outfit',{top:(v,f)=>pick(PARTS.top,v,f),topColour:col,pattern:(v,f)=>PATTERNS.includes(v)?v:f,bottom:(v,f)=>pick(PARTS.bottom,v,f),bottomColour:col,bottomPattern:(v)=>v==='plaid'?'plaid':'none',footwear:(v,f)=>pick(PARTS.footwear,v,f),shoes:col,hat:(v,f)=>pick(PARTS.hat,v,f),hatColour:col,accent:col,
+   // A shirt number, 0–99 (0: none), worn by the tops in NUMBERED_TOPS.
+   number:(v,f)=>(typeof v==='number'||typeof v==='string'&&v.trim()!=='')&&Number.isFinite(+v)?Math.min(99,Math.max(0,Math.round(+v))):f})),
   accessories:sub('accessories',{earrings:(v,f)=>pick(PARTS.earrings,v,f),neckwear:(v,f)=>pick(PARTS.neckwear,v,f),colour:col,necklaceColour:(v,f)=>col(v,col(r.accessories?.colour,f)),pin:flag}),
   swim:sub('swim',{colour:col,bath:(v,f)=>v==='swimwear'||v==='towel'?v:f}),
   profile:(()=>{
@@ -179,8 +205,8 @@ export function randomRecipe(seed=Math.random().toString(36)){
   glasses:{style:r()<.25?any(PARTS.glasses.slice(1)):'none',colour:any(['#2b2b2b','#8a4a3a','#c8a060','#e06a7a']),size:.35+r()*.3,height:.4+r()*.2},
   facial:{moustache:age==='adult'&&!feminine&&r()<.22?any(PARTS.moustache.slice(1)):'none',beard:age==='adult'&&!feminine&&r()<.2?any(PARTS.beard.slice(1)):'none',colour:'#3a2618',size:.35+r()*.3,height:.4+r()*.2},
   blush:feminine?.3+r()*.4:r()*.2,freckles:r()<.12,mole:r()<.1,moleSpot:{x:r(),height:r(),size:.3+r()*.4},wrinkles:older?.5+r()*.5:0,
-  outfit:{top:any(['tee','kariyushi','polo','contrastpolo','blouse','jacket']),topColour:any(pal.cloth),pattern:r()<.3?any(['flowers','stripes','dots']):'none',
-   bottom:feminine&&r()<.4?any(['skirt','longskirt','widepants','cropped','culottes','pleatedskirt']):any(['shorts','trousers']),bottomColour:any(['#27304d','#6d7478','#c8b48a','#2b2b2b','#9a6a42','#2f5f9e']),shoes:any(['#6d4a32','#2b2b2b','#f4f1ea','#d8342c']),footwear:any(['sneakers','sandals','shoes','boots']),hat:'none',hatColour:'#f4f1ea',accent:any(pal.cloth)},
+  outfit:{top:any(DICE.tops),topColour:any(pal.cloth),pattern:r()<.3?any(PATTERNS.slice(1)):'none',
+   bottom:feminine&&r()<.4?any(DICE.skirtsAndWide):any(DICE.trousers),bottomColour:any(DICE.bottomColours),shoes:any(DICE.shoes),footwear:any(DICE.footwear),hat:'none',hatColour:'#f4f1ea',accent:any(pal.cloth)},
   profile:{pace:r(),talk:r(),show:r(),outlook:r(),pitch:feminine?.45+r()*.5:r()*.6,speed:r(),month:1+Math.floor(r()*12),day:1+Math.floor(r()*28),favourite:any(pal.cloth)},
  });
 }
