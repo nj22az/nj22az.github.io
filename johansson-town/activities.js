@@ -26,6 +26,7 @@ import {albumView,albumLead} from './src/photo/pocket-album-view.js';
 import {wantsAnother} from './src/people/drunk.js';
 import {restoreTownCleanup,collectTownFind} from './src/commerce/town-cleanup.js';
 import {restoreSakura,recordSakuraSale} from './src/commerce/sakura-economy.js';
+import {GANAHA,ganahaGreeting,nextBoatLine} from './src/people/ganaha.js';
 import {fishAt,fishItem,pierFishOfItem,pierCatch,LEGACY_CATCH,aFish} from './src/world/okinawa/fish.js';
 import {printedModels} from './src/workshop/catalogue.js';
 import {restoreWorkshop,advancePrint} from './src/workshop/production.js';
@@ -1033,6 +1034,15 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
   // chooses, so a taman a friend asked for is never sold by mistake); Tama is given the least (a cat is happy with a mijun, and the player keeps the taman).
   const pierFishInBag=()=>fishAt('pier').filter(f=>state.inventory.includes(fishItem(f)));
   const cheapestPierFish=()=>pierFishInBag().sort((a,b)=>a.pierPrice-b.pierPrice)[0]||null;
+  // Ms Ganaha at the Port Terminal's ticket window (src/people/ganaha.js), the island's guide: what she says is read
+  // from the town's own timetable and fares. More questions come with the guide's later batches.
+  function ganaha(detail){
+   const ask=text=>show(GANAHA.name,text,[
+    ['When is the next boat?',()=>ask(nextBoatLine(getMinutes()))],
+    ...(typeof detail?.buy==='function'?[['A return to Kitano-jima, please',()=>{close();detail.buy();}]]:[]),
+    ['Goodbye',close]]);
+   ask(ganahaGreeting(getMinutes()));
+  }
   function fishing(){
     show('Harbour fishing','Cast a line. Wait for BITE, then reel in before the fish gets away.',[
       // Waiting for a bite is the time the town gets on without you.
@@ -1312,6 +1322,7 @@ export function createActivities({say,getResidentLocations=()=>null,onOpen=()=>{
       case 'city-trip':show('Evening boat to Naha','Thuan is at the terminal in a cardigan over the yellow blouse, with a cloth bag and the ferry tickets already bought. Fifty minutes across to Tomari, a taxi up to Kokusai-dōri, and a table by the window at Hoshizora, on the top floor of the Hotel Ryūsei. The last boat back leaves at half past eleven.',[['Board with Thuan',()=>{close();onTime(CITY_RESTAURANT.crossing);detail?.go?.();}],['Not tonight',close]]);break;
       case 'cat':cat();break;
       case 'fishing':fishing();break;
+      case 'ganaha':ganaha(detail);break;
       case 'arcade':arcade();break;
       case 'sakura-flyer':sakuraFlyer(name);break;
       case 'inspect':inspect(name,detail);break;
