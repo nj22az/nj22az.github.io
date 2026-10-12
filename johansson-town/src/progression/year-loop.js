@@ -6,7 +6,8 @@
  *
  * A save remembers which real year it is living (loopYear) and how many times its year has started over (loops).
  */
-export const YEAR_KEEPS=Object.freeze(['friendship','inventory','yen','homeDecor','avatarRecipe','sound','radioStation']);
+// The pocket album is kept as the decorating is: the photos are the player's own work.
+export const YEAR_KEEPS=Object.freeze(['friendship','inventory','yen','homeDecor','avatarRecipe','sound','radioStation','pocketAlbum','pocketTaken','pocketSeen']);
 // A friendship's per-day marks belong to the old year's days.
 const DAY_MARKS=['talkDay','giftDay','giftsToday','wantDoneDay'];
 

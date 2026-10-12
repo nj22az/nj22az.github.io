@@ -80,6 +80,19 @@ export function paint(shades,palette=POCKET_PALETTES.green,rgba=new Uint8Clamped
 }
 
 /**
+ * A photo as the carried camera takes it: the middle of `source` cropped to the camera's own frame (w x h, 128x112) and
+ * turned into shades (0 darkest … 3 lightest), one a pixel, row by row. `into` is a scratch canvas (made when not given).
+ */
+export function pocketShot(source,{w=128,h=112,levels=POCKET_LEVELS,edge=.6,into=null}={}){
+ const sw=source.width,sh=source.height,scale=Math.min(sw/w,sh/h),cw=w*scale,ch=h*scale;
+ const canvas=into||document.createElement('canvas');if(canvas.width!==w)canvas.width=w;if(canvas.height!==h)canvas.height=h;
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+ ctx.drawImage(source,(sw-cw)/2,(sh-ch)/2,cw,ch,0,0,w,h);
+ const img=ctx.getImageData(0,0,w,h);
+ return ditherLuma(expose(luma(img.data,w*h)),w,h,{levels,edge});
+}
+
+/**
  * The film on a picture: `source` (a canvas or image) shrunk to camera pixels and dithered, returned in `into` (a canvas,
  * made when not given). Draw it back up with image smoothing off to keep the pixels square.
  */
