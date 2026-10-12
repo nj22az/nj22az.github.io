@@ -1,20 +1,23 @@
 import {townDate} from '../town-clock.js';
 
 /**
- * Residents' birthdays, as 'MM-DD'. Only real ones go here: the creator sets them.
+ * Birthdays, as 'MM-DD'. Only real ones go here: the creator sets them (2026-10-12: "Johansson is
+ * January 30, Thuan march 15, make up the rest"). Johansson's and Thuan's are the creator's own;
+ * the residents' were chosen on the creator's instruction, one to a month where it could be, away
+ * from the town's festival days so a birthday is its own day.
  *
- * Every resident's maker profile carries a birthday field, but none has been chosen yet
- * (they all show the maker's starting value, 1 July), so the town knows no birthdays and
- * claims none. When the creator gives a resident a birthday, write it here, for example
- * `Nhung:'03-14'`. From then on, on that day of the town's 1997:
- *   - they greet Johansson with their birthday line (people/greetings.js),
+ * The maker profiles' own birthday field (1 July for everyone) is not used; recipeFor
+ * (avatars/cast.js) gives each profile the date here, so Studio shows it too. On that day
+ * of the town's 1997:
+ *   - a resident greets Johansson with their birthday line, and on his everyone wishes him
+ *     a happy birthday (people/greetings.js); Thuan says hers in her own conversation,
  *   - the evening before, the news says it is their birthday tomorrow (feed/evening-news.js),
  *   - and the day's moments, so the diary and the news, record it (activities.js).
- * Thuan is the town's own character: her birthday is the creator's to choose as well. Her
- * conversations are her own (thuanConversation), so she does not use the shared birthday
- * greeting; her birthday line would be written with her script when the date is set.
  */
 export const BIRTHDAYS=Object.freeze({
+ Johansson:'01-30',Thuan:'03-15',
+ 'Officer Mori':'02-18',Reiko:'04-02',Nhung:'05-08','Harbour master':'06-14',Barfly:'07-19',
+ 'Bus driver':'08-26',Chin:'09-03',Thao:'10-24','Mrs Sato':'11-22',Tetsuo:'12-04',
 });
 
 const VALID=/^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;

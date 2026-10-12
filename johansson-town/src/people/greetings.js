@@ -31,6 +31,11 @@ export const SITUATIONS=Object.freeze([
    ['{face:smug}Today,{p} {name},{p} I was born.{p:2} The sea was calm that day, they say.','{face:smug}My birthday.{p:2} Another year braved.'],
    ['{face:smile}Oh,{p} it’s my birthday.{p} Nearly forgot myself.','{face:smile}Birthday today.{p} Taking it easy.{p} More than usual.'],
    ['{face:neutral}It is my birthday.{p} I am telling you so it is on record.','{face:neutral}Another birthday.{p} The count is correct,{p} I checked.'])},
+ {id:'hisBirthday',why:'It is Johansson’s birthday (30 January).',when:s=>s.hisBirthday,
+  lines:G(['{face:happy}Happy birthday,{p} {name}!{p} The whole island knows.{p} I may have told them.','{face:happy}It’s your birthday!{p} Happy birthday!{p:2} Do you feel older?{p} You look the same!'],
+   ['{face:smug}Happy birthday,{p} {name}.{p:2} Another year of keeping this island in order.','{face:smile}Your birthday,{p} {name}.{p} The sea is calm in your honour.{p} Mostly.'],
+   ['{face:smile}Hey,{p} happy birthday.{p} Take it easy today,{p} OK?','{face:smile}Birthday,{p} huh?{p} Happy birthday,{p} {name}.'],
+   ['{face:neutral}Happy birthday,{p} {name}.{p} I have it written down.','{face:neutral}Many happy returns of the day,{p} {name}.{p} Do not work too hard.'])},
  {id:'away30',why:'Johansson has not played for thirty days or more (by the real calendar).',when:s=>s.daysAway>=30,
   lines:G(['{face:surprised}{big}{name}!{/big}{p} A whole month!{p} I thought you’d moved away!','{face:surprised}You’re back!{p} You’re really back!{p:2} Don’t do that again!'],
    ['{face:sad}A month,{p} {name}.{p:2} A whole month.{p} The tide came in and out sixty times.','{face:sad}I had given you up for lost at sea.{p:2} And yet,{p} here you are.'],
@@ -75,7 +80,7 @@ export function daysBetween(then,now=Date.now()){
 
 /**
  * The greeting for this moment. `situation` is
- * {theirBirthday, daysAway, weather:'sunny'|'cloudy'|'rain'|'typhoon', hour}.
+ * {theirBirthday, hisBirthday, daysAway, weather:'sunny'|'cloudy'|'rain'|'typhoon', hour}.
  * Returns {id, why, source, ...rendered line} (see markup.js renderLine).
  */
 export function greetingFor({speaker,temper='easy',situation={},playerName='Johansson',catchphrase='',day=0}){
