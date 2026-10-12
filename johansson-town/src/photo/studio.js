@@ -110,7 +110,7 @@ export function createPhotoStudio({scene,renderer,gameCamera,draw,getContext,onO
  function setBackdrop(name){
   const studio=set.set(name);(studio?set.scene:scene).add(stageGroup);if(studio)set.place(stageGroup);dirty=true;
  }
- // The Pocket camera film cannot be a CSS filter: the frame is shrunk and dithered on its own canvas, over the view.
+ // The pocket film (Pocket Gentleman, Pocket Lady) cannot be a CSS filter: the frame is shrunk and dithered on its own canvas, over the view.
  const pocketOf=()=>FILMS[field('film').value]?.pocket;
  function showPocket(){const palette=pocketOf();pocketView.hidden=!palette;if(palette)pocketFilm(canvas,{palette,into:pocketView});}
  function render(){if(!opened||document.hidden)return;const resized=size();if(!dirty&&!resized)return;dirty=false;updateView();drawView();showPocket();drawCaptions(overlay.getContext('2d'),overlay.width,overlay.height,captions());}

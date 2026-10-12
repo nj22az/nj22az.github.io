@@ -12,10 +12,11 @@
  * `people` and `place` are what was in the frame when the shutter went: the storyteller reads them (src/feed/).
  */
 import {townDate} from '../town-clock.js';
+import {pocketModelOfPhoto} from './pocket-models.js';
 
 export const ALBUM_SLOTS=30;
 export const PHOTO_W=128,PHOTO_H=112;
-export const PALETTES=Object.freeze(['green','grey']);
+export const PALETTES=Object.freeze(['green','grey','rose']);
 const MAX_PEOPLE=8,MAX_TEXT=80;
 
 /** Shades (0–3, one a pixel) as base64, four pixels a byte. */
@@ -118,10 +119,12 @@ export function photoMoment(photo,{seen=[]}={}){
  // How the words meet the place: its own phrase ("on the main shopping street"), or "at" its name.
  const who=photo.people,where=photo.place?(photo.place.at||'at '+placeIn(photo.place.title)):null;
  const first=who.filter(n=>!seen.includes(n));
- let text=who.length?`Took a photo of ${names(who)}${where?' '+where:''} with my pocket camera.`:where?`Took a photo ${where} with my pocket camera.`:'Took a photo with my pocket camera.';
+ // The camera by its name: the Pocket Gentleman or the Pocket Lady took it (its palette says which).
+ const with_=`with my ${pocketModelOfPhoto(photo).name} camera`;
+ let text=who.length?`Took a photo of ${names(who)}${where?' '+where:''} ${with_}.`:where?`Took a photo ${where} ${with_}.`:`Took a photo ${with_}.`;
  if(first.length)text+=` My first photo of ${names(first)}.`;
  const moment={id:'photo:'+photo.id,kind:first.length?'discovery':'note',text};
  if(who.length)moment.who=who.slice(0,4);
- if(first.length)moment.news=`${names(first)} ${first.length>1?'were':'was'} photographed by the mayor${where?' '+where:''} today. The mayor has a pocket camera.`;
+ if(first.length)moment.news=`${names(first)} ${first.length>1?'were':'was'} photographed by the mayor${where?' '+where:''} today. The mayor has a ${pocketModelOfPhoto(photo).name} camera.`;
  return moment;
 }

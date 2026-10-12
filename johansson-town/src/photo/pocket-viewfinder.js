@@ -1,9 +1,11 @@
 import {svg} from '../ui/icons.js';
 import {pocketShot,paint,POCKET_PALETTES} from './pocket-camera.js';
 import {PHOTO_W,PHOTO_H,ALBUM_SLOTS} from './pocket-album.js';
+import {POCKET_MODELS} from './pocket-models.js';
 
 /**
- * The pocket camera raised to the eye: the game's own view, cropped to the camera's 128x112 frame and turned into its
+ * The pocket camera raised to the eye, a Pocket Gentleman or a Pocket Lady (pocket-models.js: `model()`, the one the
+ * player carries; its body, name and screen shades). The game's own view, cropped to the camera's 128x112 frame and turned into its
  * four shades every frame (src/photo/pocket-camera.js), shown at a whole-pixel scale so the pixels stay square. The
  * shutter keeps that very frame (the shades the player saw), so the album holds what the screen showed.
  *
@@ -12,9 +14,13 @@ import {PHOTO_W,PHOTO_H,ALBUM_SLOTS} from './pocket-album.js';
  */
 export const REFRESH_MS=66;
 
-export function createPocketViewfinder({source,onShoot,onLower,count=()=>0,palette=()=>'green'}){
- const ui=document.createElement('section');ui.id='pocketViewfinder';ui.hidden=true;ui.setAttribute('aria-label','Pocket camera');
- ui.innerHTML=`<div class="pocket-body"><canvas class="pocket-screen" width="${PHOTO_W}" height="${PHOTO_H}" role="img" aria-label="What the camera sees"></canvas>
+export function createPocketViewfinder({source,onShoot,onLower,count=()=>0,model=()=>POCKET_MODELS.gentleman}){
+ // The model is taken once, when the camera is raised: its body, screen and photos stay one camera until it is lowered.
+ let held=POCKET_MODELS.gentleman;const palette=()=>held.palette;
+ const ui=document.createElement('section');ui.id='pocketViewfinder';ui.hidden=true;ui.setAttribute('aria-label','Pocket Gentleman camera');
+ // The body: the lens at the top (round, like a monocle), the screen in its bezel, the model's name under it.
+ ui.innerHTML=`<div class="pocket-body"><span class="pocket-lens" aria-hidden="true"></span><div class="pocket-bezel"><canvas class="pocket-screen" width="${PHOTO_W}" height="${PHOTO_H}" role="img" aria-label="What the camera sees"></canvas></div>
+ <p class="pocket-mark" aria-hidden="true"></p>
  <div class="pocket-controls"><button type="button" class="pocket-shutter" data-shutter aria-label="Take a photo" title="Take a photo (Space)">${svg('camera')}<span>Take</span></button>
  <p class="pocket-count" aria-live="polite"></p><button type="button" class="pocket-lower" data-lower aria-label="Put the camera away" title="Put the camera away (F)">${svg('close')}<span>Lower</span></button></div>
  <p class="pocket-said" role="status" aria-live="polite"></p></div>`;
@@ -25,7 +31,7 @@ export function createPocketViewfinder({source,onShoot,onLower,count=()=>0,palet
 
  // The screen is scaled by a whole number so every camera pixel is the same size on any screen.
  function fit(){
-  const room=Math.min(innerWidth*.86,(innerHeight-150)*PHOTO_W/PHOTO_H),scale=Math.max(1,Math.floor(room/PHOTO_W));
+  const room=Math.min(innerWidth*.8,(innerHeight-180)*PHOTO_W/PHOTO_H),scale=Math.max(1,Math.floor(room/PHOTO_W));
   screen.style.width=PHOTO_W*scale+'px';screen.style.height=PHOTO_H*scale+'px';
  }
  const tell=text=>{said.textContent=text;clearTimeout(sayTimer);if(text)sayTimer=setTimeout(()=>{said.textContent='';},3500);};
@@ -49,11 +55,12 @@ export function createPocketViewfinder({source,onShoot,onLower,count=()=>0,palet
   if(!raised)return {ok:false,text:'The camera is put away.'};
   if(!last)return {ok:false,text:'The camera is still waking up.'};
   if(performance.now()<flashUntil)return {ok:false,text:''};   // one photo a blink: a double tap keeps one, not two
-  const r=onShoot(last.slice())||{ok:false,text:'The photo could not be kept.'};
+  const r=onShoot(last.slice(),held.palette)||{ok:false,text:'The photo could not be kept.'};
   if(r.ok)flashUntil=performance.now()+120;
   if(r.text)tell(r.text);showCount();return r;
  }
- function raise(){if(raised)return;raised=true;last=null;lastAt=-Infinity;ui.hidden=false;document.documentElement.classList.add('pocket-raised');fit();showCount();tell('');ui.querySelector('[data-shutter]').focus({preventScroll:true});}
+ function raise(){if(raised)return;const m=held=model()||POCKET_MODELS.gentleman;ui.dataset.model=m.id;ui.setAttribute('aria-label',m.name+' camera');ui.querySelector('.pocket-mark').textContent=m.name;
+  raised=true;last=null;lastAt=-Infinity;ui.hidden=false;document.documentElement.classList.add('pocket-raised');fit();showCount();tell('');ui.querySelector('[data-shutter]').focus({preventScroll:true});}
  function lower(){if(!raised)return;raised=false;last=null;ui.hidden=true;document.documentElement.classList.remove('pocket-raised');tell('');onLower?.();}
  ui.querySelector('[data-shutter]').onclick=e=>{e.stopPropagation();shoot();};
  ui.querySelector('[data-lower]').onclick=e=>{e.stopPropagation();lower();};
