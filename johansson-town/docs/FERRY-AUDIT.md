@@ -763,7 +763,7 @@ order, each its own batch (never with ground or lighting):
 5. **Still open from before:** the steering-gear and bow-thruster rooms, the compass deck walked, mooring bitts at
    Kitano-jima, tap-to-walk aboard, the linkspan at Minato.
 
-### Batch 6f: the ways aboard widened, collision that holds, a smaller car deck (2026-10-12, planned)
+### Batch 6f: the ways aboard widened, collision that holds, a smaller car deck (2026-10-12)
 
 The creator, 2026-10-12: *"Collision onboard needs to be improved I don't want to clip through any ramp or door, the
 entrance through the gangway, and stairways needs to be widened, car deck doesn't have to be so big, eat in to the
@@ -811,4 +811,25 @@ and the stair as three separate 0.9 m ways.
   ferry's car deck shots (none photographed inside her yet).
 - Looked at in the game after each half: the gangway, the passage and foyer, both stairs, the ramp up and down from the
   car deck and from the quay, the gate at sea and at Kitano-jima; the lanes with a car aboard.
+
+**Built (two commits, 6f-a the widths and the walls, 6f-b the car deck and the lower lobby).** As designed above, with
+three changes found in the building: the gangway door hinges on its forward jamb and hooks back along the passage's
+forward wall (its aft side is now the foyer, so a leaf there would have closed the way); the gate leaf swings out and
+lies against the bulwark's outside, forward of the gate (1.34 m of leaf does not fit inside a 1.3 m passage); and the
+loading plan carries **one** 8-tonne truck on the centreline, not two side by side (in 2.75 m lanes they would stand
+0.25 m apart). The lower lobby's crew door is on the centreline, the bicycle rack (two bicycles) to port of it and the
+baggage shelf with the lifejacket lockers to starboard, so neither stands in the doorway. The forward bulkhead's fire
+doors are 1.1 m sliding doors at x ±1.0, their leaves parked outboard on the lobby side (a hinged 1.2 m leaf has no
+wall to hook back on between the door and the casing).
+
+**Checked.** Tests: `ferry-ship` (six places, a truck and two cars, every place clear of the casings, the foyer and the
+lower lobby, the lanes against the casings; every FERRY_WALK rectangle, the lower lobby and the foyer among them, has a
+drawn floor under it), `ferry-walk` (pier → gangway → passage → foyer → stair door → lane; the engine-room route from
+the lobby; stair P to the wheelhouse; the ramp down and back; under way), `ferry`, `airport-ferry`, `owned-vehicles`
+(the traffic's car place). In the game, before the cherry-pick (a worktree of the branch served to the harness): walked
+out along the gangway onto the pier and back in, aft through the foyer and up stair P, through the stair door onto the
+lane, down the ramp onto the quay, through the starboard fire door from the lobby onto the lane, and aft through the
+crew door to the mooring station; photographed the gangway from the pier, the passage and the foyer, the stair, the
+lanes from the bow and from the lobby's bulkhead, the engine room's door, the lower lobby both ways and its bicycles.
+Still open: the raised ramp's wall and the shut gate are proven by the walk's tests only (no photograph under way yet).
 

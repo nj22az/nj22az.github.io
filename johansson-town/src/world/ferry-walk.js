@@ -32,7 +32,7 @@ const floor=(id,part,x,z,y,inside=null)=>Object.freeze({id,part,x:Object.freeze(
  * may stand, where its edge is a bulwark or a rail rather than an open end.
  */
 export const FERRY_FLOORS=Object.freeze([
- // The car deck, bulwark to bulwark from the transom to the stem, open at the gangway gate (its 1 m opening in the
+ // The car deck, bulwark to bulwark from the transom to the stem, open at the gangway gate (its 1.4 m opening in the
  // port bulwark) and forward between the bow houses to the ramp.
  floor('car-deck','ship',[-HB,HB],[-HALF+.08,HALF],CAR,(x,z,r)=>{
   if(z<-HALF+.12+r)return false;
@@ -44,8 +44,8 @@ export const FERRY_FLOORS=Object.freeze([
  // The bow ramp's leaf and flap (ferry-model.js FERRY_RAMP): their tops, 0.07 and 0.05 over their pivots.
  floor('ramp','ramp',[-FERRY_RAMP.width/2,FERRY_RAMP.width/2],[0,FERRY_RAMP.leaf],.07,(x,z,r)=>Math.abs(x)<=FERRY_RAMP.clear/2-.05),
  floor('flap','flap',[-FERRY_RAMP.flapWidth/2,FERRY_RAMP.flapWidth/2],[0,FERRY_RAMP.flap],.05),
- // The gangway: 2 m of plank, 0.9 m wide between hand rails 0.43 m out.
- floor('gangway','gangway',[0,GANGWAY_LENGTH],[-.45,.45],.03,(x,z,r)=>Math.abs(z)<=.41-r),
+ // The gangway: 2 m of plank, 1.4 m wide between hand rails 0.68 m out (batch 6f).
+ floor('gangway','gangway',[0,GANGWAY_LENGTH],[-.7,.7],.03,(x,z,r)=>Math.abs(z)<=.66-r),
  // The stairs, the lobby, the corridor, the carpet room, the saloon, the walkways, the open deck, the ladders, the
  // bridge deck's aft platform, the wings and the wheelhouse (ferry-interior.js).
  ...FERRY_INTERIOR.floors.map(f=>floor(f.id,'ship',f.x,f.z,f.y,f.inside)),
@@ -57,10 +57,7 @@ const solid=(id,x,y,z,part='ship',walk=true,camera=true)=>Object.freeze({id,part
 export const FERRY_SOLIDS=Object.freeze([
  // The casings, the stairs' walls, the houses, their furniture (ferry-interior.js).
  ...FERRY_INTERIOR.boxes.filter(b=>b.solid||b.camera).map(b=>solid(b.name||'interior',[b.a[0],b.b[0]],[b.a[1],b.b[1]],[b.a[2],b.b[2]],'ship',b.solid,b.camera)),
- // The passage's inboard door, hooked back against the casing's face.
- solid('walkway-door-leaf',[3.03,C.inner],[CAR,CAR+2],[P.from-.95,P.from-.05]),
- // The walkway's rail on the lane side (ferry-model.js), and the pillars under the passenger deck's open ends.
- solid('walkway-rail',[2.17,2.23],[CAR,CAR+1.08],[Z(10),Z(15)]),
+ // The pillars under the passenger deck's open ends.
  ...[1,-1].flatMap(s=>[Z(.3),Z(22.7)].map(z=>solid('pillar',[s*3.75-.11,s*3.75+.11].sort((a,b)=>a-b),[CAR,PASS],[z-.11,z+.11]))),
  // The aft mooring station: the capstan and two pairs of bitts.
  solid('capstan',[-.3,.3],[CAR,CAR+.6],[Z(1.2)-.3,Z(1.2)+.3]),
@@ -71,7 +68,13 @@ export const FERRY_SOLIDS=Object.freeze([
  // The ramp's rams, from the bow houses to the leaf's edges: the outer edges of the leaf, near the hinge.
  ...[1,-1].map(s=>solid('ramp-ram',[s*1.98,s*2.4].sort((a,b)=>a-b),[0,2.6],[0,1.9],'ramp')),
  // The gangway's hand rails.
- ...[1,-1].map(s=>solid('gangway-rail',[0,GANGWAY_LENGTH],[0,1],[s*.41,s*.47].sort((a,b)=>a-b),'gangway')),
+ ...[1,-1].map(s=>solid('gangway-rail',[0,GANGWAY_LENGTH],[0,1],[s*.66,s*.72].sort((a,b)=>a-b),'gangway')),
+ // Her moving parts as walls (batch 6f), in her own frame, each open the other way from the part it follows (partOpen):
+ // the raised ramp across the bow while it is up or moving; the gate and the gangway door in her side while the
+ // gangway is in; the gangway door's leaf hooked back against the passage's forward wall while it is out.
+ solid('raised-ramp',[-2.3,2.3],[CAR,CAR+4.2],[HALF-.4,HALF+.1],'bow'),
+ solid('shut-gate',[HB-.25,HB+.1],[CAR,CAR+2.1],[P.from-.1,P.to+.1],'gate'),
+ solid('gangway-door-open',[HB-1.36,HB-.02],[CAR,CAR+2],[P.to-.08,P.to],'shore'),
 ]);
 
 /** The solids filed by part and by metre of z, so a test looks only at what is near (a person, or the lens, ±1.5 m). */
@@ -87,7 +90,7 @@ const BINS=Object.fromEntries(SOLID_PARTS.map(part=>{
  * run out, the ramp only while it is down), where they are in the world this frame, and the moves on them.
  */
 export function createFerryWalk(run){
- const ferry=run.ferry,parts={ship:ferry,ramp:ferry.userData.ramp,flap:ferry.userData.flap,gangway:ferry.userData.gangway};
+ const ferry=run.ferry,parts={ship:ferry,ramp:ferry.userData.ramp,flap:ferry.userData.flap,gangway:ferry.userData.gangway,bow:ferry,gate:ferry,shore:ferry};
  const inverse=Object.fromEntries(Object.keys(parts).map(k=>[k,new THREE.Matrix4()]));
  const v=new THREE.Vector3();
  // Each floor's four corners in the world, this frame.
@@ -97,6 +100,10 @@ export function createFerryWalk(run){
  function partOpen(part){
   if(!ferry.visible)return false;
   if(part==='gangway')return run.phase==='waiting'&&parts.gangway?.visible===true;
+  // The walls that stand while a moving part is the other way (FERRY_SOLIDS).
+  if(part==='bow')return !partOpen('ramp');
+  if(part==='gate')return !partOpen('gangway');
+  if(part==='shore')return partOpen('gangway');
   if(part==='ramp'||part==='flap')return run.phase==='waiting'&&(run.rampDown??0)>=1;
   // Her own decks are walked whenever she is there: alongside, and under way with him aboard (batch 6e).
   return true;
