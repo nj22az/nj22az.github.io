@@ -79,7 +79,7 @@ function outdoorSocket({rcd=false}={}){
 /** Soft mist: flat discs of fading white, each a canvas-free radial fade in its vertex colours. */
 function mistPuff(r){
  const geo=new THREE.CircleGeometry(r,24,0,Math.PI*2),P=geo.attributes.position,col=new Float32Array(P.count*4);
- for(let i=0;i<P.count;i++){const d=Math.hypot(P.getX(i),P.getY(i))/r;col.set([.92,.96,1,.7*(1-d)*(1-d)],i*4);}
+ for(let i=0;i<P.count;i++){const d=Math.hypot(P.getX(i),P.getY(i))/r;col.set([.78,.84,.92,.42*(1-d)*(1-d)],i*4);}
  geo.setAttribute('color',new THREE.BufferAttribute(col,4));geo.rotateX(-Math.PI/2);
  const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,depthWrite:false,opacity:1}));m.name='Mist';m.renderOrder=2;return m;
 }
@@ -92,7 +92,8 @@ function mistPuff(r){
  *     machine   the drinks machine's lit window and brand, 0 … 1 (it flickers dim when its compressor starts)
  *     cable     'reel' (Kōji's way: the reel in the socket, the machine and the lanterns in the reel) or 'fixed'
  *               (the machine back in its own socket, the lanterns on their own RCD socket by a proper cable)
- *     mist      0 … 1, the cold mist from the chute; pumpkins, peek, can, candles, salt, bucket: true / false;
+ *     mist      0 … 1, the cold mist from the chute; pumpkins (the ring), deco (jack-o'-lanterns on the crates, the bin and the
+ *               pole's foot; on by default), peek, can, candles, salt, bucket: true / false;
  *     riceBall  'plate' or false; dog: false or {pose:'sit'|'eat'|'stand', at:[x,z], yaw}
  *   update(minutes) the season and the evening (until a stage pins it), state (the last stage).
  */
@@ -107,9 +108,9 @@ export function buildHalloween(world,{shadows=false}={}){
  const strPts=[];for(let z=ties[0][2];z<=ties.at(-1)[2]+1e-6;z+=.25){const [x,y]=sagAt(z);strPts.push([x,y,z]);}
  const string=cable(strPts,.004,stringMat);string.name='Lantern string';group.add(string);
  const lanterns=[];
- for(let i=0;i<HALLOWEEN_ELECTRICS.lanterns;i++){const z=-33.3+i*1.02,[x,y]=sagAt(z);const l=add(buildPumpkinLantern(),x,y,z,Math.PI/2);l.name='Pumpkin lantern '+(i+1);lanterns.push(l);}
+ for(let i=0;i<HALLOWEEN_ELECTRICS.lanterns;i++){const z=-33.12+i*1.0,[x,y]=sagAt(z);const l=add(buildPumpkinLantern(),x,y,z,Math.PI/2);l.name='Pumpkin lantern '+(i+1);lanterns.push(l);}
  // ---- the cardboard ghosts on the shutter, at a child's eye height
- for(const [z,y,s] of [[-30.4,1.15,.5],[-28.7,1.35,.42],[-24.9,1.1,.48],[-22.9,1.3,.44]]){const o=add(buildObake({h:s,flat:true}),S.maxX+.2,y,z,Math.PI/2);o.name='Cardboard ghost';}
+ for(const [z,y,s] of [[-30.45,1.32,.66],[-28.55,1.45,.6],[-24.9,1.3,.66],[-22.9,1.42,.6]]){const o=add(buildObake({h:s,flat:true}),S.maxX+.2,y,z,Math.PI/2);o.name='Cardboard ghost';}
  // ---- the sockets, the reel, the cords
  const sock=add(outdoorSocket(),...H.socket.at,0);sock.name='Drinks machine outdoor socket';
  const rcd=add(outdoorSocket({rcd:true}),...H.rcd.at,0);rcd.name='Lantern socket with RCD';
@@ -128,6 +129,8 @@ export function buildHalloween(world,{shadows=false}={}){
  // ---- the story's things
  const ring=new THREE.Group();ring.name='Jack-o’-lanterns round the machine';group.add(ring);
  for(let i=0;i<7;i++){const a=-1.15+i*2.3/6,r=.95;add(buildJackOLantern({r:i%2?.14:.17}),M.front+Math.cos(a)*r,0,M.z+Math.sin(a)*r,Math.PI/2-a*.6,ring);}
+ const deco=new THREE.Group();deco.name='Jack-o’-lanterns on the frontage';group.add(deco);
+ for(const [x,y,z,r,ry] of [[S.maxX+.32,.84,-30.75,.15,Math.PI/2],[S.maxX+.32,.84,-30.2,.12,Math.PI/2+.3],[S.maxX+.4,.78,-29.4,.13,Math.PI/2-.2],[H.nobori[0]+.12,0,H.nobori[1]-.22,.14,Math.PI/2-.4]])add(buildJackOLantern({r}),x,y,z,ry,deco);
  const peek=add(buildObake({h:.36}),M.x+.12,1.89,M.z-.36,Math.PI/2);peek.name='Plush ghost peeking';peek.rotation.z=-.18;   // on top of the machine, leaning out over its front edge
  const can=new THREE.Group();can.name='A can in the take-out pocket';group.add(can);
  {const c=mesh(can,new THREE.CylinderGeometry(.033,.033,.12,14).rotateX(Math.PI/2),std(0x5a3b26,{roughness:.4,metalness:.4}),M.front+.03,.25,M.z);c.rotation.y=Math.PI/2;}
@@ -146,27 +149,31 @@ export function buildHalloween(world,{shadows=false}={}){
  mesh(bucket,new THREE.CylinderGeometry(.13,.1,.22,18,1,true),std(0xa9aeb1,{metalness:.6,roughness:.35,side:THREE.DoubleSide}),M.front+.2,.11,M.z);
  mesh(bucket,new THREE.CircleGeometry(.1,18).rotateX(-Math.PI/2),std(0x8d9295),M.front+.2,.005,M.z);
  const mist=new THREE.Group();mist.name='Mist from the can chute';group.add(mist);
- for(const [dx,dz,r,y] of [[.12,0,.45,.06],[.45,.3,.6,.05],[.5,-.35,.55,.07],[.95,.05,.7,.04],[.3,.65,.45,.05],[.3,-.65,.45,.06],[.08,0,.3,.22],[.1,.15,.25,.32]]){const p=mistPuff(r);p.position.set(M.front+dx,y,M.z+dz);mist.add(p);}
+ for(const [dx,dz,r,y] of [[.12,0,.55,.06],[.45,.3,.7,.05],[.5,-.35,.65,.07],[.95,.05,.85,.04],[.3,.65,.55,.05],[.3,-.65,.55,.06],[1.4,.2,.8,.03],[1.3,-.5,.7,.035],[.08,0,.35,.2],[.1,.15,.3,.3],[.06,-.12,.28,.26]]){const p=mistPuff(r);p.position.set(M.front+dx,y,M.z+dz);mist.add(p);}
  let dog=null;
- // the drinks machine's own lit window and brand (the town's machine at Sakura): dimmed with its compressor's start
- let machineLit=null;
- const findMachine=()=>{if(machineLit)return machineLit;machineLit=[];const w=new THREE.Vector3();
-  world.group.traverse(o=>{if(o.name==='Harbour vending machine'&&Math.hypot(o.position.x-M.x,o.position.z-M.z)<.3)o.traverse(m=>{if(m.isMesh&&m.material?.isMeshBasicMaterial&&m.material.map)machineLit.push({m:m.material,c:m.material.color.clone()});});});
-  void w;return machineLit;};
+ // the drinks machine's own lit window and brand (the town's machine at Sakura): dimmed with its compressor's start.
+ // Found afresh each time (the town may swap the machine's materials for its cel ones, or hydrate its model): every
+ // unlit (basic) material is darkened from its own colour, every glowing one from its own glow.
+ const machineObject=()=>{let m=null;world.group.traverse(o=>{if(!m&&o.name==='Harbour vending machine'&&Math.hypot(o.position.x-M.x,o.position.z-M.z)<.3)m=o;});return m;};
+ const dimMachine=k=>{const mach=machineObject();if(!mach)return 0;let n=0;
+  mach.traverse(o=>{if(!o.isMesh)return;for(const mat of [].concat(o.material)){if(!mat)continue;const u=mat.userData;
+   if(mat.isMeshBasicMaterial){u.hwColour??=mat.color.getHex();mat.color.setHex(u.hwColour).multiplyScalar(k);n++;}
+   else if(mat.emissive&&(u.hwGlow??=mat.emissiveIntensity)>0){mat.emissiveIntensity=u.hwGlow*k;n++;}}});
+  return n;};
  applyCelShading(group);
  group.traverse(o=>{if(o.isMesh){o.castShadow=shadows&&!o.material.transparent;o.receiveShadow=true;}});
  let pinned=false;
- const state={show:false,glow:0,machine:1,cable:'reel',mist:0,pumpkins:false,peek:false,can:false,candles:false,riceBall:false,salt:false,bucket:false,dog:false};
+ const state={show:false,glow:0,machine:1,cable:'reel',mist:0,pumpkins:false,deco:true,peek:false,can:false,candles:false,riceBall:false,salt:false,bucket:false,dog:false};
  const apply=()=>{
   group.visible=!!state.show;
   for(const l of lanterns)l.userData.lantern.setGlow(state.glow);
   reelWay.visible=state.cable==='reel';reel.visible=state.cable==='reel';fixedWay.visible=state.cable==='fixed';rcd.visible=state.cable==='fixed';
   for(const p of mist.children)p.material.opacity=THREE.MathUtils.clamp(state.mist,0,1);mist.visible=state.mist>0;
-  ring.visible=!!state.pumpkins;peek.visible=!!state.peek;can.visible=!!state.can;candles.visible=!!state.candles;salt.visible=!!state.salt;
+  ring.visible=!!state.pumpkins;deco.visible=!!state.deco;peek.visible=!!state.peek;can.visible=!!state.can;candles.visible=!!state.candles;salt.visible=!!state.salt;
   riceBall.visible=state.riceBall==='plate';bucket.visible=!!state.bucket;
   if(dog){dog.removeFromParent();dog=null;}
   if(state.dog){const d=state.dog;dog=buildDog({pose:d.pose||'sit'});applyCelShading(dog);dog.position.set(d.at[0],0,d.at[1]);dog.rotation.y=d.yaw??0;group.add(dog);}
-  for(const e of findMachine())e.m.color.copy(e.c).multiplyScalar(THREE.MathUtils.clamp(state.machine,0,1));
+  dimMachine(THREE.MathUtils.clamp(state.machine,0,1));
  };
  apply();
  const api={

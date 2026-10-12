@@ -34,7 +34,8 @@ test('the string, the lanterns, the ghosts and the reel are on Sakura’s fronta
  for(const l of h.lanterns){const b=box(l);
   assert.ok(b.min.y>1.82,'a lantern hangs above a head: '+l.name+' '+b.min.y.toFixed(2));
   assert.ok(b.max.y<2.62,'under the awning’s tie points');
-  assert.ok(b.min.x>SAKURA_BOX.maxX+.9&&b.max.x<-5.5,'over the pavement, in front of the awning');
+  assert.ok(b.min.x>SAKURA_BOX.maxX+.85&&b.max.x<-5.5,'over the pavement, in front of the awning');
+  assert.ok(b.min.z>-33.45,'clear of the cold-drinks banner');
   assert.ok(!b.intersectsBox(mb),'not in the machine');}
  const reel=h.group.getObjectByName('Cord reel'),rb=box(reel);
  assert.ok(!rb.intersectsBox(mb),'the reel stands clear of the machine');
