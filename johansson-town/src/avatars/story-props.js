@@ -171,7 +171,7 @@ export function buildCostume(avatar,kind){
  if(kind==='pumpkinSuit'){
   const g=new THREE.Group();g.name='Pumpkin suit';
   const orange=mat(0xe8812a,{roughness:.75}),dark=mat(0x2a1f18,{roughness:.9,side:THREE.DoubleSide}),green=mat(0x4f7a32,{roughness:.8,side:THREE.DoubleSide});
-  const rx=m.width/2+.07*k,ry=(m.shoulderY-m.hipY)/2+.06*k,rz=m.depth/2+.1*k,cy=(m.shoulderY+m.hipY)/2-m.hipY-.02*k;
+  const rx=m.shoulderX*.98,ry=(m.shoulderY-m.hipY)/2+.06*k,rz=m.depth/2+.13*k,cy=(m.shoulderY+m.hipY)/2-m.hipY-.02*k;   // narrow enough that the arms hang outside it
   for(let i=0;i<8;i++){const a=i/8*Math.PI*2,l=add(g,new THREE.SphereGeometry(1,18,14),orange,Math.sin(a)*rx*.38,cy,Math.cos(a)*rz*.38);l.scale.set(rx*.66,ry,rz*.66);}
   // the face, on the front (+z): two eyes, a nose and a grin, laid on the lobes' surface
   const face=new THREE.Group();face.position.set(0,cy,rz*1.0);g.add(face);

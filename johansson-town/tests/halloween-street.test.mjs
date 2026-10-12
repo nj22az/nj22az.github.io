@@ -87,7 +87,7 @@ test('the costumes fit the body that wears them: the pumpkin suit, the ghost she
    const o=storyProps(a).give(kind);a.root.updateMatrixWorld(true);
    const parts=o.userData.parts;assert.ok(parts.length>=1,who+' '+kind);
    const b=new THREE.Box3();for(const [,p] of parts)b.expandByObject(p);
-   if(kind==='pumpkinSuit'){assert.ok(b.min.y>m.hipY*.7&&b.max.y<m.headCentre+m.Rh*m.headSY+.2,who+': the pumpkin round the torso');assert.ok(b.max.x-b.min.x>m.width,'wider than the body');
+   if(kind==='pumpkinSuit'){assert.ok(b.min.y>m.hipY*.7&&b.max.y<m.headCentre+m.Rh*m.headSY+.2,who+': the pumpkin round the torso');assert.ok(b.max.x-b.min.x>m.shoulderX*2&&b.max.x-b.min.x<(m.shoulderX+m.armR)*2.1,'as wide as the shoulders, so the arms hang outside it');
     const face=parts[0][1].children.find(c=>c.isGroup),fp=face.getWorldPosition(new THREE.Vector3());assert.ok(fp.z<0,'its face on the front (the body faces -z)');}
    if(kind==='ghostSheet'){const sheet=parts[0][1];const sb=new THREE.Box3().setFromObject(sheet);assert.ok(sb.max.x>m.shoulderX+m.armR,who+': over the shoulders and arms');assert.ok(sb.min.y<m.hipY*.75,'down to the knees');
     const hood=parts[1][1],hb=new THREE.Box3().setFromObject(hood),crown=new THREE.Box3().setFromObject(a.face.head);assert.ok(hb.max.y>crown.max.y,'the hood over the crown');

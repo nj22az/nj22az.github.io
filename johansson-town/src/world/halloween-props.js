@@ -72,11 +72,11 @@ export function buildObake({h=.42,flat=false,can=false}={}){
   const pts=[];for(let i=0;i<=8;i++){const t=i/8;pts.push(new THREE.Vector2(R*(.98+.18*t),(h-R)*(1-t)));}
   const body=mesh(g,new THREE.LatheGeometry(pts,24),white,0,0,0);void body;
   for(let i=0;i<8;i++){const a=(i+.5)/8*Math.PI*2;mesh(g,new THREE.SphereGeometry(R*.2,10,8),white,Math.cos(a)*R*1.08,R*.08,Math.sin(a)*R*1.08);}
-  for(const sx of [-1,1]){const arm=mesh(g,new THREE.SphereGeometry(R*.24,10,8),white,sx*R*.95,h*.42,R*.35);arm.scale.set(1.3,.8,.9);
+  for(const sx of [-1,1]){const arm=can?mesh(g,new THREE.SphereGeometry(R*.22,10,8),white,sx*R*.42,h*.36,R*1.0):mesh(g,new THREE.SphereGeometry(R*.24,10,8),white,sx*R*.95,h*.42,R*.35);arm.scale.set(1.3,.8,.9);
    mesh(g,new THREE.SphereGeometry(h*.032,10,8),ink,sx*R*.33,h-R*1.02,R*.93);
    const cheek=mesh(g,new THREE.CircleGeometry(h*.05,14),pink,sx*R*.58,h-R*1.3,R*.83);cheek.lookAt(sx*R*2,h-R*1.3,R*3);}
-  const smile=new THREE.Mesh(new THREE.TorusGeometry(h*.045,h*.01,6,12,Math.PI),ink);smile.rotation.z=Math.PI;smile.position.set(0,h-R*1.22,R*.97);g.add(smile);
-  if(can){const c=mesh(g,new THREE.CylinderGeometry(R*.3,R*.3,R*.85,16),std(0x5a3b26,{roughness:.4,metalness:.4}),0,h*.4,R*.88,'Coffee can');
+  const smile=new THREE.Mesh(new THREE.TorusGeometry(h*.04,h*.011,6,14,Math.PI),ink);smile.rotation.z=Math.PI;smile.position.set(0,h-R*1.18,R*1.01);g.add(smile);
+  if(can){const c=mesh(g,new THREE.CylinderGeometry(R*.26,R*.26,R*.7,16),std(0x5a3b26,{roughness:.4,metalness:.4}),0,h*.4,R*1.02,'Coffee can');
    mesh(c,new THREE.CylinderGeometry(R*.305,R*.305,R*.3,16),std(0xf2e6cf),0,0,0);}
  }
  return g;
