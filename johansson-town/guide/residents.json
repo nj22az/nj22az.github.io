@@ -1360,7 +1360,7 @@
   "role": "Airport clerk",
   "place": "Kitano-jima Airport",
   "bio": "Jun checks commuter tickets, cabin bags and the weather before every boarding.",
-  "backstory": "Jun lives beside the terminal and takes lunch on the passenger walkway, watching the windsock. Maintenance records go through the dock workshop and the Community Hall; Jun knows a flight depends on people far beyond the boarding counter. The terminals are growing. The job, Jun says, is still about answering one passenger’s question properly.",
+  "backstory": "Jun lives in the port and comes over on the first boat; lunch is on the passenger walkway, watching the windsock. Maintenance records go through the dock workshop and the Community Hall; Jun knows a flight depends on people far beyond the boarding counter. The terminals are growing. The job, Jun says, is still about answering one passenger’s question properly.",
   "portrait": "assets/images/residents/41.webp",
   "islandPersonality": {
    "title": "A calm departure companion",
@@ -1377,7 +1377,7 @@
    "headline": "Kitano-jima’s airport clerk checks the sky first",
    "standfirst": "Jun checks commuter tickets, cabin bags and the weather before every boarding.",
    "body": [
-    "Jun lives beside the terminal and takes lunch on the passenger walkway, watching the windsock.",
+    "Jun lives in the port and comes over on the first boat; lunch is on the passenger walkway, watching the windsock.",
     "Maintenance records go through the dock workshop and the Community Hall; Jun knows a flight depends on people far beyond the boarding counter.",
     "The terminals are growing. The job, Jun says, is still about answering one passenger’s question properly."
    ],
@@ -1398,6 +1398,53 @@
      "film": "warm",
      "caption": "The last commuter flight.",
      "file": "assets/images/residents/shoot/jun-2.webp"
+    }
+   ]
+  }
+ },
+ {
+  "name": "Grandmother Chinen",
+  "role": "Keeper of the old Chinen house",
+  "place": "Kitano hamlet, Kitano-jima",
+  "bio": "Tetsuo’s mother keeps the old red-tile Chinen house at the end of the hamlet lane, and its garden.",
+  "backstory": "She was married into the Chinen house in 1958 and has outlived the roof twice. The typhoon of 1987 took the Shiromas’ roof next door and three of her tiles; she still counts that a win. Her son Tetsuo mends radios in Minato and comes over on the boat when he can, and eats like he is still fifteen. The mayor and his wife live at the end of the lane; Thuan brings her the shop’s day-old bread on Saturdays, and gets a bag of goya for it.",
+  "portrait": "assets/images/residents/grandmother-chinen.webp",
+  "islandPersonality": {
+   "title": "The lane’s weather station",
+   "traits": [
+    "Sharp-eyed",
+    "unhurried",
+    "generous with vegetables"
+   ],
+   "habit": "Sweeps the lane in front of her gate at half past six, whatever the weather.",
+   "ambition": "See the old house stand through one more typhoon season.",
+   "favourite": "The breeze at her gate at three in the afternoon"
+  },
+  "article": {
+   "headline": "The old Chinen house has lost three tiles in forty years",
+   "standfirst": "Tetsuo’s mother keeps the red-tile house at the end of Kitano hamlet, and knows every boat by its whistle.",
+   "body": [
+    "She was married into the Chinen house in 1958 and has outlived the roof twice; the typhoon of 1987 took the Shiromas’ roof next door and three of her tiles, which she still counts a win.",
+    "Her son Tetsuo mends radios in Minato and comes over on the boat when he can. She says he eats like he is still fifteen, and keeps a pot on for him anyway.",
+    "The mayor and his wife live at the end of the lane. Thuan brings the shop’s day-old bread on Saturdays and goes home with a bag of goya, which Grandmother Chinen calls a fair trade."
+   ],
+   "quote": "Three tiles in forty years. The house knows what it is doing.",
+   "photos": [
+    {
+     "pose": "Wave",
+     "expression": "happy",
+     "backdrop": "garden",
+     "film": "warm",
+     "caption": "At her gate, for the breeze.",
+     "file": "assets/images/residents/shoot/grandmother-chinen-1.webp"
+    },
+    {
+     "pose": "Point",
+     "expression": "neutral",
+     "backdrop": "sky",
+     "film": "film",
+     "caption": "Three tiles, she says, in forty years.",
+     "file": "assets/images/residents/shoot/grandmother-chinen-2.webp"
     }
    ]
   }

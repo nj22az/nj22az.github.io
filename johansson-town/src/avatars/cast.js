@@ -26,7 +26,7 @@ export const ORIGINAL_THUAN_RECIPE=R({name:'Thuan',
  nose:{style:'dot',size:.35,height:.5},mouth:{style:'smile',colour:'#cc3d52',size:.42,height:.5},
  glasses:{style:'round',colour:'#e06a7a'},blush:.65,
  outfit:HARBOUR_POLO_OUTFIT,swim:{colour:'#e98aa6'}});
-const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō','Grandmother Tokashiki']);
+const FEMALE_NEIGHBOURS=new Set(['Thuan','Mrs Higa','Mina','Grandmother Higa','Grandmother Chinen','Mrs Nakamura','Mrs Yonamine','Mrs Miyagi','Mrs Kamiya','Mrs Kinjō','Grandmother Tokashiki']);
 /** The birthday the town keeps (people/birthdays.js) is the one the profile shows, in World and in Studio. */
 function withBirthday(recipe,name){
  const date=BIRTHDAYS[name];if(!recipe||!date)return recipe;
@@ -146,6 +146,8 @@ export const NEIGHBOUR_RECIPES=castSet({
  Mina:R({head:{form:'oval',jaw:.35,cheeks:.6},body:{height:.4,build:.45,skin:'#d8ac87'},hair:{style:'bun',colour:'#3b2920'},eyes:{style:'gentle',size:.48},brows:{style:'arched'},nose:{style:'button'},mouth:{style:'smile'},outfit:{top:'apron',topColour:'#849267',bottom:'longskirt',bottomColour:'#5c6e75'}}),
  Jun:R({head:{form:'narrow',jaw:.4,cheeks:.3},body:{height:.53,build:.4,skin:'#dbb393'},hair:{style:'sidepart',colour:'#29241e'},eyes:{style:'almond'},brows:{style:'straight'},nose:{style:'line'},mouth:{style:'small'},glasses:{style:'half',colour:'#5b5c52'},outfit:{top:'polo',topColour:'#e0dac7',bottom:'trousers',bottomColour:'#3e596d'}}),
 
+ // Tetsuo's mother, who keeps the old Chinen house in Kitano hamlet (people/neighbours.js): small, a grey bun, a blouse and wide pants.
+ 'Grandmother Chinen':R({head:{size:.48,shape:.5,form:'round',jaw:0.65,cheeks:0.8},body:{height:.15,build:.55,silhouette:'feminine',skin:'#d6a67c'},hair:{style:'bun',colour:'#c9c7c1'},eyes:{style:'gentle',size:.4},brows:{style:'arched',colour:'#c9c7c1'},nose:{style:'dot'},mouth:{style:'smile'},wrinkles:.85,outfit:{top:'blouse',topColour:'#6f8aa6',bottom:'widepants',bottomColour:'#3b3f4a',shoes:'#e9e2d2',hat:'none'}}),
  'Grandmother Higa':R({head:{size:.48,shape:.5,form:'round',jaw:0.7,cheeks:0.85},body:{height:.2,build:.6,skin:'#dca97e'},hair:{style:'perm',colour:'#d8d6d0'},eyes:{style:'gentle',size:.4},brows:{style:'thin',colour:'#9a9a96'},nose:{style:'button',size:.55},mouth:{style:'smile',size:.45},glasses:{style:'half',colour:'#8a4a3a'},wrinkles:1,blush:.4,outfit:{top:'blouse',topColour:'#8a4ab8',pattern:'flowers',bottom:'longskirt',bottomColour:'#6d7478',shoes:'#2b2b2b'}}),
  'Mr Ōshiro':R({head:{size:.48,shape:.5,form:'narrow',jaw:0.45,cheeks:0.3},body:{height:.4,build:.4,skin:'#b27449'},hair:{style:'buzz',colour:'#d8d6d0'},eyes:{style:'narrow'},brows:{style:'bushy',colour:'#d8d6d0'},nose:{style:'hook',size:.6},mouth:{style:'flat'},facial:{style:'stubble',colour:'#d8d6d0'},wrinkles:.9,outfit:{top:'tee',topColour:'#f4f1ea',bottom:'trousers',bottomColour:'#6d7478',shoes:'#2b2b2b',hat:'straw',hatColour:'#e0c078'}}),
  'Uncle Kinjō':R({head:{size:.48,shape:.5,form:'square',jaw:0.8,cheeks:0.65},body:{height:.55,build:.75,skin:'#c98d62'},hair:{style:'crop',colour:'#5a3a22'},eyes:{style:'dot'},brows:{style:'thick'},nose:{style:'wide'},mouth:{style:'wide'},facial:{style:'moustache',colour:'#3a2618'},wrinkles:.5,outfit:{top:'polo',topColour:'#2a8a5a',bottom:'shorts',bottomColour:'#c8b48a',shoes:'#6d4a32',hat:'cap',hatColour:'#d8342c'}}),
