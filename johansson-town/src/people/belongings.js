@@ -83,7 +83,7 @@ export const BELONGINGS=Object.freeze({
  Jun:[{what:'boarding stamp',from:'work',keeps:'on the boarding counter',canon:false,
   tale:'Jun stamps every boarding pass with it.'}],
  'Grandmother Chinen':[{what:'bamboo broom',from:'own',keeps:'behind her gate, bristles up',canon:false,
-  tale:'She sweeps the lane in front of the old Chinen house with it at half past six, whatever the weather.'}],
+  tale:'She sweeps her bit of the lane at half past six, wet or dry.'}],
  Vy:[{what:'satchel',from:'own',keeps:'over her shoulder',canon:true,
   tale:'It is full of kanji, minus the ten Vy has not learned.'}],
  'Mr Toguchi':[{what:'hanging scale',from:'own',keeps:'on the side of his push cart',canon:true,
