@@ -180,6 +180,14 @@ that makes more or better stories.
 - **Plan a change before making it.** Before moving or resizing anything in a place, list what it affects: colliders, standing
   spots and walking routes, tests, residents' routines, and every film shot that photographed it (the studio's
   `remotion/tools/impact.py` lists the shots, marks and photographs). Then change it, and check each item on the list.
+- **The Minato Maru is a real ship** (the creator, 2026-10-12: "The ferry needs to be built like a realistic ferry in the
+  90's, the cartoon cel shading is just to make it more fun. Be a naval ship architect and build the ferry as a real ferry
+  would be built and make drawings, one should be able to build a real ferry from our documentation"). Her design book is
+  `johansson-town/docs/minato-maru/` (README: particulars, sheets, findings, the programme D1–D8). Every sheet is generated
+  from her data (`src/world/ferry-ship.js`, `ferry-model.js`, `ferry-interior.js`) by `node tools/ferry-drawings.mjs`:
+  change the data, run the tool, commit the sheets (`tests/ferry-design-book.test.mjs` fails on stale sheets). Decide ship
+  questions as a naval architect would (rules, weights, stability, structure) and record findings in the README rather
+  than fudge a number.
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten is a konbini *and* the
   town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading). Higa Liquor supplies
   all alcohol (to Sakura, Minato, Sato Ramen and the Coral Bay Bar on Kitano-jima); Front-Row Books & Stationery supplies office supplies; Rainflower

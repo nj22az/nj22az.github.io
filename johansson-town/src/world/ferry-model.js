@@ -112,7 +112,7 @@ export function keelY(z){
 const fullness=z=>z>Z(24)?7-4.2*((z-Z(24))/(HALF-Z(24))):z<Z(9)?7-2.5*((Z(9)-z)/(Z(9)+HALF)):7;
 const narrowing=z=>z>Z(26)?.12*((z-Z(26))/(HALF-Z(26)))**2:0;
 /** A point on the section at z, for θ from 0 (the keel, on the centreline) to π/2 (the deck edge). */
-function sectionPoint(z,theta){
+export function sectionPoint(z,theta){
  const n=fullness(z),k=keelY(z),top=deckEdge(z),hb=halfBreadth(z);
  const sn=Math.sin(theta),cs=Math.cos(theta);
  const y=k+(top-k)*(1-Math.pow(Math.max(0,cs),2/n));
