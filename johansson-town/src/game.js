@@ -88,7 +88,7 @@ import {lineFeeling} from './avatars/body-language.js';
 import {sharedMind,startMindIfChosen} from './people/thuan-mind.js';
 import {createNeighbourWriter} from './people/town-mind.js';
 import {MOVES} from './avatars/moves.js';
-import {createAvatarJohansson,playerRecipe,playerRecipeKey,importRecipeFromURL} from './avatars/actors.js';
+import {createAvatarJohansson,playerRecipe,playerRecipeKey} from './avatars/actors.js';
 import {setSwingFocus} from './avatars/springs.js';
 import {createBeerService,createDrinkProp,createBiteProp,setPropPortion,DRINKS} from './people/izakaya-beer.js';
 import {DRUNK,LAGER_ALCOHOL,soberUp,wantsAnother,drink as drinkUp} from './people/drunk.js';
@@ -513,8 +513,8 @@ const shopCarry=createShopCarry({holder:()=>johansson});
 // Third person unless you have asked for your own eyes: a life-sim is about seeing your
 // islander in the town (docs/AMPLIFY-AUDIT.md, decision 5). V switches.
 try{thirdPerson=globalThis.localStorage?.getItem(VIEW_KEY)!=='first';}catch{}
-// A shared link (?avatar=code) is somebody to walk the town as. Looks are made in Johansson Studio (src/studio-handoff.js).
-{const shared=importRecipeFromURL();if(shared)setTimeout(()=>say('Walking the town as '+(shared.name||'a new islander')+'.',4),4000);}
+// A shared link (?avatar=code) is forwarded to Johansson Studio by index.html: looks are made there (src/studio-handoff.js).
+
 // Johansson Studio saved a look, a wardrobe, Thuan's outfit or the home (src/studio-handoff.js): it shows here at once.
 // The keys are this saved game's, fixed when the town starts, so another tab switching player cannot dress this one.
 // A storage event reaches an open page; coming back to a page the browser kept (pageshow) or a hidden tab (iOS can

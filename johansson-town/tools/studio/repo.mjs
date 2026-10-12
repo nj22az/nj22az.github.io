@@ -132,7 +132,19 @@ export function openRepo(root=defaultRoot()){
   if(text===null||!info)return true;
   const pid=Number(text.split(' ')[0]);
   if(Number.isInteger(pid)&&pid>0&&alive(pid)&&Date.now()-info.mtimeMs<LOCK.stale)return false;
-  if(await readFile(lock,'utf8').catch(()=>null)===text)await unlink(lock).catch(()=>{});
+  // Only one process clears a left-behind lock, holding the breaker (lock.break): otherwise two can both see it as
+  // left behind, one clears it and takes the lock, and the other then deletes that new lock and writes alongside it.
+  // While the breaker is held nobody else can delete the lock, and nobody can take it until it is gone, so the check
+  // and the delete below are one step. A breaker over the stale age was itself left behind and is cleared.
+  const breaker=lock+'.break';
+  try{await writeFile(breaker,`${process.pid} ${Date.now()}\n`,{flag:'wx'});}
+  catch(e){
+   if(e.code!=='EEXIST')throw e;
+   const held=await lstat(breaker).catch(()=>null);if(held&&Date.now()-held.mtimeMs>LOCK.stale)await unlink(breaker).catch(()=>{});
+   return false;
+  }
+  try{if(await readFile(lock,'utf8').catch(()=>null)===text)await unlink(lock).catch(()=>{});}
+  finally{await unlink(breaker).catch(()=>{});}
   return true;
  }
  async function read(path,encoding='utf8'){
