@@ -111,15 +111,24 @@ export function createVendingMachine({shadows=false}={}){
   box(.16,.04,.02,.33,.69,front+.055,dark,'Note slot');
   const lever=box(.04,.05,.04,.33,.61,front+.065,new THREE.MeshStandardMaterial({color:0xd8342c,roughness:.4}),'Coin return lever');
   box(.08,.05,.03,.33,.55,front+.055,dark,'Change cup');
-  // The take-out flap: a dark pocket with a hinged clear flap across it.
-  box(W-.2,.2,.05,0,.3,front+.02,dark,'Take-out pocket');
-  const flap=canvasPanel(W-.24,.16,512,84,(ctx,w,h)=>{ctx.fillStyle='#3a4044';ctx.fillRect(0,0,w,h);ctx.fillStyle='#e8e8e2';ctx.font='bold 34px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('とりだし口 · TAKE OUT',w/2,h/2);});
-  flap.position.set(0,.3,front+.048);group.add(flap);
+  // The take-out pocket: an open bin standing out from the door (a light grey inside, so a can that has dropped shows),
+  // behind a hinged flap of clear smoked plastic; its name on the lip above. A dropped can lies on its floor
+  // (userData.takeOut: where, in the machine's own coordinates, its axis across the machine).
+  const pw=W-.2,pd=.085,inner=new THREE.MeshStandardMaterial({color:0x9aa1a5,roughness:.55,metalness:.2});
+  box(pw,.2,.01,0,.3,front+.005,inner,'Take-out pocket');
+  box(pw,.012,pd,0,.206,front+pd/2,inner,'Take-out pocket floor');
+  box(pw,.03,pd,0,.385,front+pd/2,dark,'Take-out pocket lip');
+  for(const sx of [-1,1])box(.012,.2,pd,sx*(pw/2-.006),.3,front+pd/2,dark,'Take-out pocket side');
+  const flap=new THREE.Mesh(new THREE.PlaneGeometry(pw-.03,.15),new THREE.MeshStandardMaterial({color:0x6f7f86,transparent:true,opacity:.32,roughness:.08,depthWrite:false}));
+  flap.position.set(0,.295,front+pd+.002);flap.name='Take-out flap';group.add(flap);
+  const plate=canvasPanel(pw-.04,.026,512,40,(ctx,w,h)=>{ctx.fillStyle='#2b2f33';ctx.fillRect(0,0,w,h);ctx.fillStyle='#e8e8e2';ctx.font='bold 26px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('とりだし口 · TAKE OUT',w/2,h/2+1);});
+  plate.position.set(0,.385,front+pd+.001);group.add(plate);
+  group.userData.takeOut={x:0,y:.212+.033,z:front+pd*.5};
   // Side panels: the brand, big, for anyone coming along the pavement.
   for(const s of [-1,1]){const side=canvasPanel(D-.08,1.0,320,460,(ctx,w,h)=>{ctx.fillStyle='#c8202a';ctx.fillRect(0,0,w,h);ctx.fillStyle='#fff8e8';ctx.textAlign='center';ctx.font='bold 70px sans-serif';ctx.fillText('MINATO',w/2,h*.4);ctx.fillText('DRINKS',w/2,h*.57);ctx.font='30px sans-serif';ctx.fillText('つめた〜い · あったか〜い',w/2,h*.75);});
     side.position.set(s*(W/2+.004),1.15,0);side.rotation.y=s*Math.PI/2;group.add(side);}
   group.userData.lever=lever;
-  return drawAsFew(group,lever);
+  const takeOut=group.userData.takeOut;const out=drawAsFew(group,lever);out.userData.takeOut=takeOut;return out;
 }
 
 /**

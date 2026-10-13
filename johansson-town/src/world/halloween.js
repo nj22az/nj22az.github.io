@@ -2,7 +2,8 @@ import * as THREE from '../../vendor/three.module.js';
 import {applyCelShading} from '../render/cel.js';
 import {townDate} from '../town-clock.js';
 import {SAKURA_BOX} from './okinawa/old-town.js';
-import {std,mesh,buildPumpkinLantern,buildJackOLantern,buildObake,buildDog,buildCordReel} from './halloween-props.js';
+import {buildFujitaDream} from './fujita-dream.js';
+import {std,mesh,buildPumpkinLantern,buildJackOLantern,buildObake,buildDog,buildCordReel,buildJCoffeeCan,J_COFFEE_CAN} from './halloween-props.js';
 export {buildPumpkinLantern,buildJackOLantern,buildObake,buildDog,buildCordReel};
 
 /**
@@ -96,6 +97,8 @@ function mistPuff(r){
  *               (the machine back in its own socket, the lanterns on their own RCD socket by a proper cable)
  *     mist      0 … 1, the cold mist from the chute; pumpkins (the ring), deco (jack-o'-lanterns on the crates, the bin and the
  *               pole's foot; on by default), peek, can, candles, salt, bucket: true / false;
+ *     bucket    true (with the night's free cans in it), 'empty' or false;
+ *     dream     Fujita's dream of his pension (fujita-dream.js): 'dream', 'pop' (it bursts) or false;
  *     riceBall  'plate' or false; dog: false or {pose:'sit'|'eat'|'stand', at:[x,z], yaw}
  *   update(minutes) the season and the evening (until a stage pins it), state (the last stage).
  */
@@ -139,7 +142,9 @@ export function buildHalloween(world,{shadows=false}={}){
  for(const [x,y,z,r,ry] of [[S.maxX+.32,.84,-30.75,.15,Math.PI/2],[S.maxX+.32,.84,-30.2,.12,Math.PI/2+.3],[S.maxX+.4,.78,-29.4,.13,Math.PI/2-.2],[H.nobori[0]+.12,0,H.nobori[1]-.22,.14,Math.PI/2-.4]])add(buildJackOLantern({r}),x,y,z,ry,deco);
  const peek=add(buildObake({h:.36}),M.x+.12,1.89,M.z-.36,Math.PI/2);peek.name='Plush ghost peeking';peek.rotation.z=-.18;   // on top of the machine, leaning out over its front edge
  const can=new THREE.Group();can.name='A can in the take-out pocket';group.add(can);
- {const c=mesh(can,new THREE.CylinderGeometry(.033,.033,.12,14).rotateX(Math.PI/2),std(0x5a3b26,{roughness:.4,metalness:.4}),M.front+.03,.25,M.z);c.rotation.y=Math.PI/2;}
+ // the free can: a J-Coffee, lying on the pocket's floor behind the clear flap (vending.js takeOut), across the machine
+ {const c=buildJCoffeeCan();c.rotation.x=Math.PI/2;c.rotation.y=-Math.PI/2+.4;   // its name to the street, tipped up a little
+ c.position.set(M.front+.042,.212+J_COFFEE_CAN.diameter/2,M.z-J_COFFEE_CAN.height/2+.04);can.add(c);}
  const candles=new THREE.Group();candles.name='Séance candles';group.add(candles);
  const flame=new THREE.MeshBasicMaterial({color:0xffd27a});
  for(let i=0;i<H.seance.candles;i++){const a=i/H.seance.candles*Math.PI*2,x=H.seance.centre[0]+Math.cos(a)*H.seance.radius,z=H.seance.centre[1]+Math.sin(a)*H.seance.radius;
@@ -152,11 +157,20 @@ export function buildHalloween(world,{shadows=false}={}){
  {const r=mesh(riceBall,new THREE.ConeGeometry(.055,.075,3),std(0xfbfaf4,{roughness:.95}),M.front+.32,.052,M.z+.42);r.rotation.y=Math.PI/2;r.scale.set(1,1,.55);
   mesh(riceBall,new THREE.BoxGeometry(.05,.035,.02),std(0x1e2a22),M.front+.32,.035,M.z+.43).rotation.y=Math.PI/2;}
  const bucket=new THREE.Group();bucket.name='Fujita’s bucket';group.add(bucket);
- mesh(bucket,new THREE.CylinderGeometry(.13,.1,.22,18,1,true),std(0xa9aeb1,{metalness:.6,roughness:.35,side:THREE.DoubleSide}),M.front+.2,.11,M.z);
- mesh(bucket,new THREE.CircleGeometry(.1,18).rotateX(-Math.PI/2),std(0x8d9295),M.front+.2,.005,M.z);
+ const bx=M.front+.27;   // in front of the take-out pocket (which stands .085 out from the door), under its chute
+ mesh(bucket,new THREE.CylinderGeometry(.13,.1,.22,18,1,true),std(0xa9aeb1,{metalness:.6,roughness:.35,side:THREE.DoubleSide}),bx,.11,M.z);
+ mesh(bucket,new THREE.CircleGeometry(.1,18).rotateX(-Math.PI/2),std(0x8d9295),bx,.005,M.z);
+ // the night's free cans in it: J-Coffee, two standing, one leaning on the rim with its name to the street
+ const bucketCans=new THREE.Group();bucketCans.name='Free cans in the bucket';bucket.add(bucketCans);
+ // the night's free cans in it (J-Coffee): five standing on the bottom, three standing on those, their tops and names
+ // over the rim, and one leaning on the rim with its name to the street
+ {const D=J_COFFEE_CAN.diameter,Hc=J_COFFEE_CAN.height,put=(x,y,z,ry,tilt=0)=>{const c=buildJCoffeeCan();c.position.set(bx+x,y,M.z+z);c.rotation.set(0,ry,tilt);bucketCans.add(c);return c;};
+  for(let i=0;i<5;i++){const a=i/5*Math.PI*2;put(Math.cos(a)*.058,.006,Math.sin(a)*.058,-Math.PI/2+(i-2)*.45);}
+  for(let i=0;i<3;i++){const a=(i+.5)/3*Math.PI*2;put(Math.cos(a)*.036,.006+Hc,Math.sin(a)*.036,-Math.PI/2+(i-1)*.4);}
+  put(.07,.006+Hc+D/2*Math.sin(.5),-.02,-Math.PI/2,.5);}
  const mist=new THREE.Group();mist.name='Mist from the can chute';group.add(mist);
  for(const [dx,dz,r,y] of [[.12,0,.55,.06],[.45,.3,.7,.05],[.5,-.35,.65,.07],[.95,.05,.85,.04],[.3,.65,.55,.05],[.3,-.65,.55,.06],[1.4,.2,.8,.03],[1.3,-.5,.7,.035],[.08,0,.35,.2],[.1,.15,.3,.3],[.06,-.12,.28,.26]]){const p=mistPuff(r);p.position.set(M.front+dx,y,M.z+dz);mist.add(p);}
- let dog=null;
+ let dog=null,dream=null;
  // the drinks machine's own lit window and brand (the town's machine at Sakura): dimmed with its compressor's start.
  // Found afresh each time (the town may swap the machine's materials for its cel ones, or hydrate its model): every
  // unlit (basic) material is darkened from its own colour, every glowing one from its own glow.
@@ -169,7 +183,7 @@ export function buildHalloween(world,{shadows=false}={}){
  applyCelShading(group);
  group.traverse(o=>{if(o.isMesh){o.castShadow=shadows&&!o.material.transparent;o.receiveShadow=true;}});
  let pinned=false;
- const state={show:false,glow:0,machine:1,cable:'reel',mist:0,pumpkins:false,deco:true,peek:false,can:false,candles:false,riceBall:false,salt:false,bucket:false,dog:false};
+ const state={show:false,glow:0,machine:1,cable:'reel',mist:0,pumpkins:false,deco:true,peek:false,can:false,candles:false,riceBall:false,salt:false,bucket:false,dog:false,dream:false};
  const apply=()=>{
   group.visible=!!state.show;
   for(const l of lanterns)l.userData.lantern.setGlow(state.glow);
@@ -177,10 +191,13 @@ export function buildHalloween(world,{shadows=false}={}){
   reelWay.visible=state.cable==='reel';reel.visible=state.cable==='reel';fixedWay.visible=state.cable==='fixed';rcd.visible=state.cable==='fixed';
   for(const p of mist.children)p.material.opacity=THREE.MathUtils.clamp(state.mist,0,1);mist.visible=state.mist>0;
   ring.visible=!!state.pumpkins;deco.visible=!!state.deco;peek.visible=!!state.peek;can.visible=!!state.can;candles.visible=!!state.candles;salt.visible=!!state.salt;
-  riceBall.visible=state.riceBall==='plate';bucket.visible=!!state.bucket;
+  riceBall.visible=state.riceBall==='plate';bucket.visible=!!state.bucket;bucketCans.visible=state.bucket!=='empty';
   if(dog){dog.removeFromParent();dog=null;}
   if(state.dog){const d=state.dog;dog=buildDog({pose:d.pose||'sit'});applyCelShading(dog);dog.position.set(d.at[0],0,d.at[1]);dog.rotation.y=d.yaw??0;group.add(dog);}
   dimMachine(THREE.MathUtils.clamp(state.machine,0,1));
+  // Fujita's dream (fujita-dream.js), built the first time a story asks for it: 'dream', or 'pop' (it bursts)
+  if(state.dream&&!dream){dream=buildFujitaDream();world.group.add(dream);}
+  if(dream){dream.visible=!!state.dream&&!!state.show;if(state.dream)dream.userData.dream.set(state.dream);}
  };
  apply();
  const api={

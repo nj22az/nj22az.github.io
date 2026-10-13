@@ -88,9 +88,51 @@ export function buildJackOLantern({r=.16}={}){
 }
 
 /**
+ * J-Coffee (ジェイコーヒー): the island's own canned black coffee, a made-up brand of Minato Drinks (no real maker). A
+ * standard 350 ml can (66 mm across, 122 mm tall, a cola can's shape, not the short 190 ml coffee can), black, with a
+ * bold cream "J-COFFEE" under a gold bean mark on its front and "BLACK · 無糖" under it, a big gold J on its back;
+ * aluminium rims and a ring-pull top. Origin at its base, standing; its front (the name) faces -z, so rotation.y = π
+ * shows it to +z and -π/2 to +x. Lay it on its side with rotation.x.
+ * Sold at ¥120 in the town's drinks machines (commerce/vending-catalogue.js 'j-coffee').
+ */
+export const J_COFFEE_CAN=Object.freeze({diameter:.066,height:.122,colour:'#141414',ink:'#f3e6c4',gold:'#d9a441'});
+let jLabel=null;
+function jCoffeeLabel(){
+ if(jLabel!==null)return jLabel;jLabel=undefined;
+ if(typeof document==='undefined'||!document.createElement)return jLabel;
+ const c=document.createElement('canvas');c.width=512;c.height=256;const x=c.getContext?.('2d');if(!x)return jLabel;
+ const C=J_COFFEE_CAN;x.fillStyle=C.colour;x.fillRect(0,0,512,256);
+ // the front (u .5): the bean mark, the name, a rule and the kind, the name kept within about a third of the way round
+ // so it reads whole from in front; the back (the seam): a big gold J, so the can is known from any side
+ x.fillStyle=C.gold;x.beginPath();x.ellipse(256,58,26,36,.5,0,Math.PI*2);x.fill();
+ x.strokeStyle=C.colour;x.lineWidth=6;x.beginPath();x.moveTo(238,31);x.bezierCurveTo(268,50,242,70,272,88);x.stroke();
+ x.fillStyle=C.ink;x.textAlign='center';x.textBaseline='middle';
+ x.font='900 50px "Arial Black", Arial, sans-serif';x.fillText('J-COFFEE',256,140,178);
+ x.fillRect(176,170,160,5);
+ x.font='bold 28px Arial, sans-serif';x.fillText('BLACK · 無糖',256,204,170);
+ x.fillStyle=C.gold;x.font='900 150px "Arial Black", Arial, sans-serif';for(const u of [0,512])x.fillText('J',u,138);
+ jLabel=new THREE.CanvasTexture(c);jLabel.colorSpace=THREE.SRGBColorSpace;jLabel.anisotropy=4;
+ return jLabel;
+}
+export function buildJCoffeeCan(){
+ const C=J_COFFEE_CAN,r=C.diameter/2,H=C.height,g=new THREE.Group();g.name='J-Coffee can';
+ const map=jCoffeeLabel();
+ const body=map?new THREE.MeshStandardMaterial({map,roughness:.32,metalness:.25}):std(C.colour,{roughness:.32,metalness:.25});
+ const alu=std(0xc9cdd0,{roughness:.3,metalness:.7});
+ mesh(g,new THREE.CylinderGeometry(r,r,H*.84,24,1,true),body,0,H*.5,0,'J-Coffee can body');
+ mesh(g,new THREE.CylinderGeometry(r*.84,r,H*.08,24),alu,0,H*.96,0,'J-Coffee can shoulder');
+ mesh(g,new THREE.CylinderGeometry(r,r*.84,H*.08,24),alu,0,H*.04,0,'J-Coffee can base');
+ mesh(g,new THREE.CircleGeometry(r*.84,24).rotateX(-Math.PI/2),alu,0,H+.0005,0);
+ mesh(g,new THREE.BoxGeometry(r*.5,.002,r*.3),std(0x9ea3a6,{metalness:.7,roughness:.3}),0,H+.002,r*.25,'Ring pull');
+ if(!map)mesh(g,new THREE.CylinderGeometry(r*1.005,r*1.005,H*.18,24,1,true),std(C.ink),0,H*.5,0,'J-Coffee band');
+ g.userData.product='j-coffee';
+ return g;
+}
+
+/**
  * An obake (お化け), the cute paper-and-plush ghost of a Japanese Halloween: a round white head running into a
  * wavy hem, two little arms, dot eyes, rosy cheeks and a small smile. `flat`: a cardboard cut-out (a single shape,
- * for taping to a shutter); else a plush figure. `can`: holding a coffee can in its arms. Faces +z; origin at its
+ * for taping to a shutter); else a plush figure. `can`: holding a J-Coffee can in its arms (buildJCoffeeCan, scaled to its arms). Faces +z; origin at its
  * base (the plush) or its middle (the cut-out).
  */
 export function buildObake({h=.42,flat=false,can=false}={}){
@@ -114,8 +156,7 @@ export function buildObake({h=.42,flat=false,can=false}={}){
    mesh(g,new THREE.SphereGeometry(h*.032,10,8),ink,sx*R*.33,h-R*1.02,R*.93);
    const cheek=mesh(g,new THREE.CircleGeometry(h*.05,14),pink,sx*R*.58,h-R*1.3,R*.83);cheek.lookAt(sx*R*2,h-R*1.3,R*3);}
   const smile=new THREE.Mesh(new THREE.TorusGeometry(h*.04,h*.011,6,14,Math.PI),ink);smile.rotation.z=Math.PI;smile.position.set(0,h-R*1.18,R*1.01);g.add(smile);
-  if(can){const c=mesh(g,new THREE.CylinderGeometry(R*.26,R*.26,R*.7,16),std(0x5a3b26,{roughness:.4,metalness:.4}),0,h*.4,R*1.02,'Coffee can');
-   mesh(c,new THREE.CylinderGeometry(R*.305,R*.305,R*.3,16),std(0xf2e6cf),0,0,0);}
+  if(can){const c=buildJCoffeeCan();const k=(R*.78)/J_COFFEE_CAN.height;c.scale.setScalar(k);c.position.set(0,h*.36-R*.16,R*1.02);c.rotation.y=Math.PI;c.name='J-Coffee can';g.add(c);}
  }
  return g;
 }
