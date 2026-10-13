@@ -175,6 +175,8 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
   const m=((minutes%1440)+1440)%1440,dark=lanternGlow(minutes)>=.5,inService=m>=FERRY_DAY.inService&&m<FERRY_DAY.shorePower;
   ferry.userData.setNavigationLights?.(underway&&dark);
   ferry.userData.setCabinLights?.(windowGlow(minutes)*(underway||inService?1:.12));
+  // The ramp floodlights: loading after dark (FERRY_LOADS `floodlights`), alongside and in service.
+  ferry.userData.setFloodlights?.(!underway&&dark&&inService);
  };
  // Nobody walks on the harbour, but the gangway's foot is on the pier: a collider for the
  // hull alongside stops the player stepping off the pier's open flank onto the water.

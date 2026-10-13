@@ -68,6 +68,10 @@ try{
   await shot('13-draft-marks-close',L(-5.2,.15,9.2),L(-2.9,0,9.6));
   await shot('14-load-line-close',L(-5.5,.4,-.5),L(-3.2,.3,-.5));
   await shot('15-car-deck',L(1.4,3.4,12.5),L(0,.6,1));
+  // The bow's working fittings (FERRY_DECK_FITTINGS): the barrier shut and the lanes red at sea, lifted and green with the ramp down.
+  await shot('18-bow-barrier-shut',L(-1.6,3.0,3),L(.3,2.2,14),'rampUp');
+  await shot('19-bow-barrier-open',L(-1.6,3.0,3),L(.3,2.2,14));
+  await shot('20-lane-signals-from-quay',L(3,2.4,24),L(0,4,12));
  }
  // The harbour from above and from the quay: basin, breakwater, piers, the ferry's berth.
  if(SETS.includes('harbour')){
@@ -104,6 +108,8 @@ try{
     const p=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.world.ferry.ferry.position.toArray());
     await view(name,null,[p[0]+dx,6,p[2]+dz],[p[0],2,p[2]],crossing(t));}
   await view('n4-night-alongside',23*60,L(9,4.5,18),L(0,1.2,0),`a=>{const r=a.world.ferry;r.parkAt('town');r.update(.1,23*60,0);}`);
+  // Loading after dark, in service: the ramp floodlights on (FERRY_LOADS `floodlights`), the lanes green.
+  await view('n5-night-loading',19*60+30,L(3,2.6,26),L(0,2.5,8),`a=>{const r=a.world.ferry;r.parkAt('town');r.update(.1,19*60+30,0);}`);
  }
  // Ad hoc views from a JSON file: [{name, minutes, pos:[x,y,z], at:[x,y,z], before:"a=>{…}"}].
  if(flag('views'))for(const v of JSON.parse(await readFile(resolve(flag('views')),'utf8')))await view(v.name,v.minutes??null,v.pos,v.at,v.before||null);

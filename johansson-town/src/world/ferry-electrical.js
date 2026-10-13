@@ -64,7 +64,7 @@ const TAGS=Object.freeze({
  chargers:kks({fn:'BRU',n:10,eq:'GU',no:1}),workshop:kks({fn:'SMA',n:20,eq:'AE',no:2,cmp:'-M'}),ballast:kks({fn:'GHA',n:10,eq:'AP',no:1,cmp:'-M'}),
  'light-passenger':kks({fn:'BRB',n:10,eq:'GS',no:11}),'light-car-deck':kks({fn:'BRB',n:10,eq:'GS',no:12}),'light-engine':kks({fn:'BRB',n:10,eq:'GS',no:13}),'light-crew':kks({fn:'BRB',n:10,eq:'GS',no:14}),
  floodlights:kks({fn:'BRB',n:10,eq:'GS',no:15}),searchlight:kks({fn:'CTA',n:10,eq:'GS',no:1}),'bridge-electronics':kks({fn:'CTA',n:10,eq:'GS',no:2}),'room-ac':kks({fn:'SAC',n:20,eq:'AH',no:1}),'galley-appliances':kks({fn:'GKB',n:30,eq:'GS',no:1}),
- kiosk:kks({fn:'BRB',n:10,eq:'GS',no:16}),vending:kks({fn:'BRB',n:10,eq:'GS',no:17}),tv:kks({fn:'BRB',n:10,eq:'GS',no:19}),'toilet-fans':kks({fn:'SAC',n:30,eq:'AN',no:1,cmp:'-M'}),
+ kiosk:kks({fn:'BRB',n:10,eq:'GS',no:16}),vending:kks({fn:'BRB',n:10,eq:'GS',no:17}),'lane-signals':kks({fn:'BRB',n:10,eq:'GS',no:20}),tv:kks({fn:'BRB',n:10,eq:'GS',no:19}),'toilet-fans':kks({fn:'SAC',n:30,eq:'AN',no:1,cmp:'-M'}),
  'emergency-light':kks({fn:'BRV',n:20,eq:'GS',no:11}),'nav-lights':kks({fn:'CTA',n:20,eq:'GS',no:1}),'emergency-radar':kks({fn:'CTA',n:10,eq:'GS',no:3}),'emergency-charger':kks({fn:'BRU',n:10,eq:'GU',no:3}),
 });
 export const loadTag=id=>TAGS[id]||null;

@@ -7,6 +7,7 @@ import {FERRY_MACHINERY,FERRY_ELECTRICS} from '../src/world/ferry-ship.js';
 import {FERRY_INTERIOR} from '../src/world/ferry-interior.js';
 import {FERRY_INSPECT} from '../src/world/ferry-inspect.js';
 import {createFerryRun} from '../src/world/ferry.js';
+import {FERRY_DECK_SIGNS} from '../src/world/ferry-model.js';
 installDOM();
 
 test('the Johansson Marine catalogue is the ship’s own data under the brand',()=>{
@@ -50,7 +51,7 @@ test('the main engines and generator sets are built as machines, in the livery, 
 test('the model draws the cylinders and hangs the plates on her; the prompts name the brand',()=>{
  const parent=new THREE.Group(),run=createFerryRun({parent,colliders:[]});
  const plates=[];run.ferry.traverse(o=>{if(o.isMesh&&o.userData.plate)plates.push(o);});
- assert.equal(plates.length,FERRY_INTERIOR.plates.length,'every plate is a textured plane on the ship');
+ assert.equal(plates.length,FERRY_INTERIOR.plates.length+FERRY_DECK_SIGNS.length,'every plate and deck sign is a textured plane on the ship');
  const metal=run.ferry.getObjectByName('Minato Maru metal');assert.ok(metal,'the metal class carries the machine parts');
  for(const id of ['main-engine','gearbox','generator']){const p=FERRY_INSPECT.find(p=>p.id===id);assert.match(p.title+' '+p.text,/Johansson Marine J[A-Z]/,id);}
 });

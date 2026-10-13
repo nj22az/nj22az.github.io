@@ -89,8 +89,9 @@ test('her machinery and systems meet the rules of her class',()=>{
 test('her switchboard: one generator at sea, both for the berth, shore power at night, the emergency generator in a blackout',()=>{
  const E=FERRY_ELECTRICS;
  assert.equal(E.generators.kW,E.generators.kVA*E.generators.pf);
- // The load analysis's totals (briefs/ferry-audit.md §3.4), rounded as the brief rounded them.
- const brief={sea:39.8,arrival:109.7,loading:45.6,night:10.3,blackout:9.9},lighting={sea:11.9,arrival:13.9,loading:14.5,night:6};
+ // The load analysis's totals (briefs/ferry-audit.md §3.4), rounded as the brief rounded them, and since 2026-10-13 the
+ // lane signals at the ramp (0.18 kW on the lighting board at sea, arriving and loading).
+ const brief={sea:40.1,arrival:110,loading:45.9,night:10.3,blackout:9.9},lighting={sea:12.2,arrival:14.2,loading:14.8,night:6};
  for(const c of FERRY_CONDITIONS){assert.ok(near(ferryDemand(c),brief[c],.15),c+' '+ferryDemand(c).toFixed(1));if(c in lighting)assert.ok(near(ferryDemand(c,{board:'LB'}),lighting[c],.15),c+' lighting');}
  // How each condition is carried, and how hard.
  const use=c=>ferryDemand(c)/ferrySupplyKW(c);

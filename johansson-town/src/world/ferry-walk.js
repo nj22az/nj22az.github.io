@@ -1,5 +1,5 @@
 import * as THREE from '../../vendor/three.module.js';
-import {FERRY_HULL,FERRY_DECKS,FERRY_RAMP,FERRY_CASINGS,GATE,GANGWAY_LENGTH,halfBreadth} from './ferry-model.js';
+import {FERRY_HULL,FERRY_DECKS,FERRY_RAMP,FERRY_CASINGS,FERRY_DECK_FITTINGS,GATE,GANGWAY_LENGTH,halfBreadth} from './ferry-model.js';
 import {FERRY_HEIGHTS,FERRY_SHIP} from './ferry-ship.js';
 import {FERRY_INTERIOR,underStair} from './ferry-interior.js';
 
@@ -22,6 +22,7 @@ export const FERRY_STEP=.24;
 /** A person, from the soles to the top of the head (physics.js standingHitsRect). */
 const TALL=1.82;
 const C=FERRY_CASINGS,P=C.passage,BHS=C.bowHouses;
+const BAR=FERRY_DECK_FITTINGS.barrier,SIG=FERRY_DECK_FITTINGS.signals;
 /** The inside face of her bulwark, off her side plating (ferry-model.js deckAndBulwarks). */
 const bulwarkIn=z=>halfBreadth(z)-.07;
 
@@ -73,6 +74,16 @@ export const FERRY_SOLIDS=Object.freeze([
  // the raised ramp across the bow while it is up or moving; the gate and the gangway door in her side while the
  // gangway is in; the gangway door's leaf hooked back against the passage's forward wall while it is out.
  solid('raised-ramp',[-2.3,2.3],[CAR,CAR+4.2],[HALF-.4,HALF+.1],'bow'),
+ // The car deck's working fittings (FERRY_DECK_FITTINGS): the vehicle barrier shut across the lanes while the ramp is
+ // up or moving, and its leaves standing upright on the walkways while it is down ('quay'); the barrier's posts, the
+ // lane-signal posts on the bow houses, the hydrants and the forward hose boxes.
+ solid('vehicle-barrier',[-BAR.pivot,BAR.pivot],[CAR,CAR+BAR.foot+BAR.height+.05],[BAR.z-.06,BAR.z+.06],'bow'),
+ ...[1,-1].map(s=>solid('vehicle-barrier-open',[s*BAR.pivot,s*(BAR.pivot+BAR.height+BAR.foot)].sort((a,b)=>a-b),[CAR,CAR+BAR.foot+BAR.leaf+.05],[BAR.z-.06,BAR.z+.06],'quay')),
+ ...[1,-1].map(s=>solid('barrier-post',[s*BAR.pivot,s*(BAR.pivot+.12)].sort((a,b)=>a-b),[CAR,CAR+1.1],[BAR.z-.06,BAR.z+.06])),
+ ...[1,-1].map(s=>solid('lane-signal-post',[s*(SIG.x-SIG.board[0]/2),s*(SIG.x+SIG.board[0]/2)].sort((a,b)=>a-b),[BHS.top,BHS.top+SIG.height+.1],[SIG.z-.45,SIG.z+.45])),
+ ...FERRY_DECK_FITTINGS.hydrants.map(h=>{const z=Z(h.zy),s=h.side;
+  if(h.on==='casing')return solid('hydrant',[s*(C.inner-.2),s*C.inner].sort((a,b)=>a-b),[CAR,CAR+.95],[z-.3,z+.12]);
+  return solid('hydrant',[s*(halfBreadth(z)-.32),s*halfBreadth(z)].sort((a,b)=>a-b),[CAR,CAR+.95],[z-.12,z+1.12]);}),
  solid('shut-gate',[HB-.25,HB+.1],[CAR,CAR+2.1],[P.from-.1,P.to+.1],'gate'),
  solid('gangway-door-open',[HB-1.36,HB-.02],[CAR,CAR+2],[P.to-.08,P.to],'shore'),
 ]);
@@ -90,7 +101,7 @@ const BINS=Object.fromEntries(SOLID_PARTS.map(part=>{
  * run out, the ramp only while it is down), where they are in the world this frame, and the moves on them.
  */
 export function createFerryWalk(run){
- const ferry=run.ferry,parts={ship:ferry,ramp:ferry.userData.ramp,flap:ferry.userData.flap,gangway:ferry.userData.gangway,bow:ferry,gate:ferry,shore:ferry};
+ const ferry=run.ferry,parts={ship:ferry,ramp:ferry.userData.ramp,flap:ferry.userData.flap,gangway:ferry.userData.gangway,bow:ferry,gate:ferry,shore:ferry,quay:ferry};
  const inverse=Object.fromEntries(Object.keys(parts).map(k=>[k,new THREE.Matrix4()]));
  const v=new THREE.Vector3();
  // Each floor's four corners in the world, this frame.
@@ -104,6 +115,7 @@ export function createFerryWalk(run){
   if(part==='bow')return !partOpen('ramp');
   if(part==='gate')return !partOpen('gangway');
   if(part==='shore')return partOpen('gangway');
+  if(part==='quay')return partOpen('ramp');
   if(part==='ramp'||part==='flap')return run.phase==='waiting'&&(run.rampDown??0)>=1;
   // Her own decks are walked whenever she is there: alongside, and under way with him aboard (batch 6e).
   return true;

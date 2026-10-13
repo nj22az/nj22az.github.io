@@ -47,8 +47,9 @@
 | Drink vending machines | lobby | LB | 105 | 2 | 0.6 | 6.7 | 0.7 | 0.7 | 0.7 | 0.7 |  | 1 | Canned coffee and tea |
 | Carpet-room television | carpet-room | LB | 105 | 1 | 0.08 | 0.8 | 0.1 | 0.1 | 0.1 |  |  |  |  |
 | Toilet exhaust fans | toilets | LB | 105 | 2 | 0.15 | 1.7 | 0.3 | 0.3 | 0.3 | 0.1 |  |  |  |
+| Lane signals at the ramp (2 posts, a board each way, 3 LED lamps a board, 15 W a lamp) | car-deck | LB | 105 | 1 | 0.18 | 1.9 | 0.18 | 0.18 | 0.18 |  |  |  | Red at sea and while the ramp moves, green when it is down: drivers on the quay and on the deck know when to go; off at night on shore power |
 | Emergency lighting (one fitting in four, the escapes, the muster stations) | corridor | ESB | 105 | 1 | 1.55 | 16.4 |  |  |  |  | 1.6 |  | Inside the lighting above in normal service |
 | Navigation lights (7 × 60 W) | compass-deck | ESB | 105 | 1 | 0.42 | 4.4 | 0.4 | 0.4 |  |  | 0.4 |  | Masthead, sidelights, stern light, all-round lights |
 | Radar and PA on the emergency supply | wheelhouse | ESB | 105 | 1 | 0.5 | 5.3 |  |  |  |  | 0.5 |  | Inside the bridge electronics normally |
 | 24 V emergency charger (radio, fire detection, alarm) | eg-room | ESB | 440 | 1 | 0.5 | 4.8 |  |  |  |  | 0.5 |  |  |
-| **Total kW** | | | | | | | 39.9 | 109.8 | 45.7 | 10.3 | 10 | | |
+| **Total kW** | | | | | | | 40.1 | 110 | 45.9 | 10.3 | 10 | | |

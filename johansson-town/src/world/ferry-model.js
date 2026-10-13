@@ -52,6 +52,29 @@ export const FERRY_CASINGS=Object.freeze({inner:2.75,aft:CAS0,fore:CAS1,top:CAS_
 /** The gangway: 2 m of aluminium plank with hand rails. */
 export const GANGWAY_LENGTH=2;
 
+/**
+ * The car deck's working fittings, as the creator's photographs of a working road ferry show them (2026-10-13): the
+ * vehicle barrier across the lanes at the bow, the lane-signal posts on the bow houses with the ramp floodlights, the
+ * car deck's four hydrants on the fire main (ferry-piping.js hCar1–4) with their hose boxes, and the red walkways
+ * outboard of the lanes forward of the casings. Model frame; the walk (ferry-walk.js) and the safety plan read them.
+ */
+export const FERRY_DECK_FITTINGS=Object.freeze({
+ /** Two leaves, red and white, hinged at the bow houses' inner faces 0.7 m aft of them (clear of the forward cars'
+  * noses at 28.7 m and the forecastle ladders): shut across the lanes at sea and while the ramp moves; with the ramp
+  * down each lifts outboard about its foot, like a level-crossing gate, and stands on the walkway. */
+ barrier:Object.freeze({z:Z(29.3),pivot:2.2,leaf:2.15,height:.9,foot:.08}),
+ /** A post on each bow house's top at its aft inner corner: a board each way (aft to the deck, forward to the quay),
+  * three lamps over each board's lanes, and a 500 W floodlight each way (the four ramp floodlights of FERRY_LOADS'
+  * `floodlights`). Lane 1 is the starboard lane, lane 2 the port, the truck's lane the centreline (FERRY_TRUCK_PLAN). */
+ signals:Object.freeze({x:2.62,z:BH0+.32,height:2.6,board:Object.freeze([1.0,.72]),boardY:1.2}),
+ /** The car deck's hydrants: aft on the casings' inner faces beside the hose boxes, forward on the bulwark at the walkway. */
+ hydrants:Object.freeze([
+  Object.freeze({id:'hCar1',side:1,zy:15.8,on:'casing'}),Object.freeze({id:'hCar2',side:-1,zy:15.8,on:'casing'}),
+  Object.freeze({id:'hCar3',side:1,zy:24,on:'bulwark'}),Object.freeze({id:'hCar4',side:-1,zy:24,on:'bulwark'})]),
+ /** The red walkways: from the casings' forward ends to the bow houses, between the lane line and the bulwark. */
+ walkway:Object.freeze({from:Z(20.2),to:BH0,inner:2.76}),
+});
+
 /** Where things are on her, along her (z) and up (y), model frame. */
 export const FERRY_DECKS=Object.freeze({
  /** The car deck: from the aft mooring station to the bow houses, two lanes of 2.75 m between the casings. */
@@ -315,6 +338,17 @@ function markings(){
  return {tex,cell:(i,j,w,h)=>[i/4,1-(j+h)/4,w/4,h/4]};
 }
 
+/**
+ * The signs on the car deck (Japanese, as aboard; plates like ferry-interior.js's, drawn by plateMesh): 非常口 over the
+ * engine room's escape door and 前に物を置かないでください (keep the way in front clear) on it; 消火ホース on the hose
+ * boxes forward (FERRY_DECK_FITTINGS.hydrants).
+ */
+export const FERRY_DECK_SIGNS=Object.freeze([
+  {name:'Emergency exit sign',lines:['非常口','EMERGENCY EXIT'],bg:'#1f7a4a',fg:'#f4f1e8',w:.6,h:.24,pos:[-2.705,CAR+2.15,Z(6.5)],rotY:Math.PI/2},
+  {name:'Keep clear sign',lines:['前に物を置かないでください','KEEP CLEAR'],bg:'#f4f1e8',fg:'#1d2326',w:.5,h:.2,pos:[-2.705,CAR+1.45,Z(6.5)],rotY:Math.PI/2},
+  ...FERRY_DECK_FITTINGS.hydrants.filter(h=>h.on==='bulwark').map(h=>{const z=Z(h.zy)+.775,x=h.side*(halfBreadth(z)-.305);
+   return {name:'Fire hose sign',lines:['消火ホース','FIRE HOSE'],bg:'#f4f1e8',fg:'#b03a2a',w:.5,h:.24,pos:[x,CAR+1.2,z],rotY:h.side>0?-Math.PI/2:Math.PI/2};})]);
+
 /** The ferry, whole. Returns the group with its moving parts in userData. */
 export function buildFerryModel({shadows=false}={}){
  const ferry=new THREE.Group();ferry.name='Minato Maru';
@@ -420,6 +454,43 @@ export function buildFerryModel({shadows=false}={}){
   kit.box('paint',[.06,.8,.75],[ax-side*.04,y,z],DARK);kit.box('metal',[.1,.75,.12],[ax+side*.03,y+.06,z],DARK);
   kit.box('metal',[.14,.14,.42],[ax+side*.04,y-.32,z],DARK);for(const k of [-1,1])kit.add('metal',new THREE.ConeGeometry(.08,.38,4),DARK,[ax+side*.04,y-.2,z+k*.2]);}
 
+ // ---- The car deck's working fittings (FERRY_DECK_FITTINGS, from the creator's photographs of a working road ferry).
+ const DF=FERRY_DECK_FITTINGS,HYD_RED=0xc8322a,BRASS=0xc9a24a,WALKRED=0xa8443a,SIGNBLUE=0x1f4f9e,PIPE=0xcfd3d4,SOOT=0x3a3a38;
+ // The red walkways outboard of the lanes, a hand's breadth inside the bulwark, followed plate by plate as she narrows.
+ for(const side of [1,-1]){const pts=[[DF.walkway.inner,DF.walkway.from],[DF.walkway.inner,DF.walkway.to]];
+  for(let z=DF.walkway.to;z>=DF.walkway.from-1e-6;z-=z>FWD?.5:z-DF.walkway.from||1)pts.push([halfBreadth(z)-.12,z]);
+  const sh=new THREE.Shape(pts.map(([x,z])=>new THREE.Vector2(side*x,-z)));const g=new THREE.ShapeGeometry(sh);g.rotateX(-Math.PI/2);g.translate(0,CAR+.008,0);kit.add('decal',g,WALKRED);}
+ // The hydrants: a red standpipe off the fire main, the valve with its handwheel on top, the brass instantaneous
+ // coupling turned inboard with its cap on a chain; the hose box beside each forward one (the aft ones' boxes are
+ // the casings', ferry-interior.js).
+ const hydrant=(x,z,[dx,dz])=>{
+  kit.cyl('paint',.05,.05,.62,[x,CAR+.31,z],HYD_RED,[0,0,0],8);kit.cyl('paint',.09,.09,.18,[x,CAR+.7,z],HYD_RED,[0,0,0],8);
+  kit.cyl('metal',.016,.016,.14,[x,CAR+.86,z],STEEL,[0,0,0],6);kit.cyl('paint',.11,.11,.025,[x,CAR+.93,z],HYD_RED,[0,0,0],10);
+  const at=d=>[x+dx*d,CAR+.66,z+dz*d];
+  kit.bar('paint',at(0),at(.16),.045,HYD_RED,8);kit.bar('metal',at(.16),at(.27),.06,BRASS,8);
+  // The cap's chain, hanging from the coupling to the valve body.
+  {const p=at(.22);kit.bar('metal',[p[0],p[1]-.05,p[2]],[p[0]-dx*.18,p[1]-.14,p[2]-dz*.18],.006,STEEL,3);}};
+ for(const h of DF.hydrants){const z=Z(h.zy),s=h.side;
+  // Aft, on the casing's face: the coupling turned aft along the casing, clear of a car's mirror in the lane.
+  if(h.on==='casing')hydrant(s*(FERRY_CASINGS.inner-.1),z,[0,-1]);
+  else{const x=s*(halfBreadth(z)-.2);hydrant(x,z,[-s,0]);
+   kit.block('paint',[s*(halfBreadth(z+.8)-.08),CAR+.75,z+.45],[s*(halfBreadth(z+.8)-.3),CAR+1.45,z+1.1],HYD_RED);}}
+ // The vehicle barrier's posts, at the bow houses' corners (the leaves move: below).
+ for(const side of [1,-1])kit.block('paint',[side*DF.barrier.pivot,CAR,DF.barrier.z-.06],[side*(DF.barrier.pivot+.12),CAR+1.1,DF.barrier.z+.06],0xf2efe6);
+ // The lane-signal posts on the bow houses: a galvanised post, the floodlights at its head, a board each way under
+ // three lamp housings (the boards and lamps themselves: below, so the lamps can change).
+ const SG=DF.signals;
+ for(const side of [1,-1]){const x=side*SG.x,z=SG.z,y0=BH_TOP+.06;
+  kit.cyl('metal',.055,.065,SG.height,[x,y0+SG.height/2,z],ZINC,[0,0,0],8);kit.block('metal',[x-.18,y0,z-.18],[x+.18,y0+.03,z+.18],ZINC);
+  for(const f of [-1,1]){
+   // The floodlight: a flat housing on a yoke, tilted down over the deck (aft) or the ramp and the quay (forward).
+   const fl=new THREE.BoxGeometry(.42,.32,.12);kit.add('paint',fl,0x5b6164,[x,y0+SG.height-.02,z+f*.3],[f*.45,0,0]);
+   // The lamp housings over the board: three black hoods, one over each lane.
+   kit.block('paint',[x-.47,y0+SG.boardY+SG.board[1]+.04,z+f*.09],[x+.47,y0+SG.boardY+SG.board[1]+.32,z+f*.2],0x1b1d1e);
+   // The board's body (its face, with the lanes, is drawn below).
+   kit.block('paint',[x-SG.board[0]/2,y0+SG.boardY,z+f*.12],[x+SG.board[0]/2,y0+SG.boardY+SG.board[1],z+f*.16],0x2a2f31);}
+ }
+
  // ---- The passenger deck over the car deck (its slab, cut open over the stairs, is in ferry-interior.js), pillars at
  // its open ends.
  const PD0=-HALF,PD1=Z(23);
@@ -465,7 +536,9 @@ export function buildFerryModel({shadows=false}={}){
  for(const side of [1,-1]){
   const f=new THREE.CylinderGeometry(.44,.5,FY1-FY0,16);f.scale(1,1,2);kit.add('paint',f,TEAL,[side*3.35,(FY0+FY1)/2,FZ]);
   const cap=new THREE.CylinderGeometry(.46,.46,.25,16);cap.scale(1,1,2);kit.add('paint',cap,DARK,[side*3.35,FY1-.12,FZ]);
-  for(const dz of [-.35,.35])kit.cyl('metal',.11,.11,.5,[side*3.35,FY1+.15,FZ+dz],DARK);
+  // Two exhausts a funnel (its main engine's and its generator's, ferry-piping.js 8.10): stainless pipes standing
+  // a metre clear of the cap, sooted at the lip, as the creator's photographs show them.
+  for(const dz of [-.35,.35]){kit.cyl('metal',.1,.1,1.15,[side*3.35,FY1+.42,FZ+dz],0xcfd3d4,[0,0,0],8);kit.cyl('metal',.104,.104,.14,[side*3.35,FY1+.93,FZ+dz],0x3a3a38,[0,0,0],8);}
  }
  kit.cyl('paint',.3,.3,1.1,[3.55,PASS+.55,Z(1.1)],WHITE,[Math.PI/2,0,0]);kit.box('metal',[.5,.25,1.1],[3.55,PASS+.15,Z(1.1)],STEEL);
  {const boat=new THREE.SphereGeometry(1,12,8);boat.scale(.6,.35,1.8);kit.add('paint',boat,ORANGE,[-3.17,PASS+.72,Z(2.4)]);
@@ -558,6 +631,54 @@ export function buildFerryModel({shadows=false}={}){
  }
  kit.finish(ferry);
 
+ // ---- The vehicle barrier: two leaves, each a red-and-white framed gate of white pickets, hinged at its foot on the
+ // post; shut across the lanes, it lifts outboard about the post to stand upright on the walkway.
+ const BAR=FERRY_DECK_FITTINGS.barrier,barrierLeaves=[];
+ for(const side of [1,-1]){
+  const leaf=new THREE.Group();leaf.name='Vehicle barrier '+(side>0?'port':'starboard');leaf.position.set(side*BAR.pivot,CAR+BAR.foot,BAR.z);ferry.add(leaf);
+  const k=createKit(shadows),L=BAR.leaf,Hh=BAR.height,n=Math.round(L/.3);
+  for(let i=0;i<n;i++){const a=-side*i*L/n,b=-side*(i+1)*L/n,hex=i%2?0xf2efe6:0xc8322a;
+   k.block('paint',[a,Hh-.07,-.03],[b,Hh,.03],hex);k.block('paint',[a,0,-.03],[b,.07,.03],hex);}
+  for(const x of [0,-side*L])k.block('paint',[x-.035,0,-.03],[x+.035,Hh,.03],0xc8322a);
+  for(let x=.3;x<L-.1;x+=.3)k.block('paint',[-side*x-.02,.07,-.02],[-side*x+.02,Hh-.07,.02],0xf2efe6);
+  k.finish(leaf);barrierLeaves.push({leaf,side});
+ }
+ /** 0 shut across the lanes, 1 lifted upright on the walkway. */
+ const setBarrier=open=>{for(const {leaf,side} of barrierLeaves)leaf.rotation.z=-side*Math.PI/2*open;};
+ // ---- The lane signals: the boards (lane 2, the truck's centre lane, lane 1, arrows ahead), the lamps over them
+ // (red, or green when the ramp is down), and the floodlights' lenses, lit after dark.
+ const signalLamps=[],floodLenses=[];
+ const laneBoards=()=>{
+  if(typeof document==='undefined')return null;const c=document.createElement('canvas');c.width=512;c.height=736;const x=c.getContext('2d');
+  for(const reversed of [false,true]){x.save();x.translate(0,reversed?368:0);
+  x.fillStyle='#1f4f9e';x.fillRect(0,0,512,368);x.strokeStyle='#f4f1e8';x.lineWidth=8;x.strokeRect(10,10,492,348);
+  const lanes=reversed?['1','truck','2']:['2','truck','1'];
+  lanes.forEach((l,i)=>{const cx=90+i*166;x.fillStyle='#f4f1e8';x.fillRect(cx-10,80,20,200);x.beginPath();x.moveTo(cx-38,92);x.lineTo(cx,30);x.lineTo(cx+38,92);x.fill();
+   if(i<2){x.fillRect(cx+73,24,6,320);}
+   if(l==='truck'){x.fillRect(cx+18,250,52,34);x.fillRect(cx+70,262,22,22);x.fillStyle='#1f4f9e';x.beginPath();x.arc(cx+30,288,9,0,7);x.arc(cx+80,288,9,0,7);x.fill();}
+   else{x.font='bold 96px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(l,cx+(i===0?-48:48),300);}});x.restore();}
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;};
+ // One mesh for the twelve lamps (they always show the same aspect), one for the four lenses, one for the boards each way.
+ const lampGeos=[],lensGeos=[];
+ for(const side of [1,-1])for(const f of [-1,1]){
+  const x=side*SG.x,y0=BH_TOP+.06;
+  // Aft, the board faces the deck (drivers going forward and off); forward it faces the quay (drivers coming aboard).
+  for(const k of [-1,0,1]){const g=new THREE.CircleGeometry(.09,8);if(f<0)g.rotateY(Math.PI);g.translate(x+k*.32,y0+SG.boardY+SG.board[1]+.17,SG.z+f*.205);lampGeos.push(g);}
+  const l=new THREE.PlaneGeometry(.36,.24);l.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(.45,f>0?0:Math.PI,0,'YXZ')));
+  l.translate(x,y0+SG.height-.02-.029,SG.z+f*(.3+.059));lensGeos.push(l);
+ }
+ const signalLamp=new THREE.Mesh(mergeGeometries(lampGeos,false),new THREE.MeshBasicMaterial({color:0x5a1410}));signalLamp.name='Lane signal lamps';ferry.add(signalLamp);signalLamps.push(signalLamp);
+ const flood=new THREE.Mesh(mergeGeometries(lensGeos,false),new THREE.MeshStandardMaterial({color:0xd9dcd6,emissive:0xfff2d0,emissiveIntensity:0,roughness:.3}));flood.name='Ramp floodlights';ferry.add(flood);floodLenses.push(flood);
+ {const faces=[];for(const side of [1,-1])for(const f of [-1,1]){const g=new THREE.PlaneGeometry(SG.board[0],SG.board[1]),uv=g.getAttribute('uv');
+   for(let i=0;i<uv.count;i++)uv.setY(i,f>0?uv.getY(i)/2:.5+uv.getY(i)/2);if(f<0)g.rotateY(Math.PI);
+   g.translate(side*SG.x,BH_TOP+.06+SG.boardY+SG.board[1]/2,SG.z+f*.162);faces.push(g);}
+  const tex=laneBoards(),board=new THREE.Mesh(mergeGeometries(faces,false),new THREE.MeshStandardMaterial({color:tex?0xffffff:0x1f4f9e,map:tex,roughness:.5}));
+  board.name='Lane signal boards';ferry.add(board);}
+ /** Green when the ramp is down on its landing; red at sea and while it moves. */
+ const setSignals=go=>{for(const l of signalLamps)l.material.color.setHex(go?0x38e070:0xff3424);};
+ // ---- The deck's signs (FERRY_DECK_SIGNS).
+ for(const pl of FERRY_DECK_SIGNS){const m=plateMesh(pl);if(m)ferry.add(m);}
+
  // ---- The bow ramp on its hinge at the stem: the 4 m leaf and the 2 m flap, and the two rams.
  const RAMP=FERRY_RAMP,ramp=new THREE.Group();ramp.name='Ferry bow ramp';ramp.position.set(0,CAR-.01,HALF-.05);ferry.add(ramp);
  const flap=new THREE.Group();flap.name='Ferry ramp flap';flap.position.set(0,0,RAMP.leaf);ramp.add(flap);
@@ -580,7 +701,7 @@ export function buildFerryModel({shadows=false}={}){
   const rl=len-bl*.55;r.rod.scale.set(1,rl,1);r.rod.quaternion.copy(q);r.rod.position.copy(pin).addScaledVector(dir,-rl/2);}};
  ferry.userData.ramp=ramp;ferry.userData.flap=flap;
  /** 0 raised (the leaf closes the bow, the flap folded back against it), 1 down at `slope` (radians below level), the flap in line. */
- ferry.userData.setRamp=(down,slope=.13)=>{ramp.rotation.x=-1.52*(1-down)+slope*down;flap.rotation.x=(1-down)*3.0;placeRams();};
+ ferry.userData.setRamp=(down,slope=.13)=>{ramp.rotation.x=-1.52*(1-down)+slope*down;flap.rotation.x=(1-down)*3.0;placeRams();setBarrier(down>=1?1:0);setSignals(down>=1);};
  /**
   * Down on its landing: the leaf's end rests on the landing (`landingY`, world) and the flap lies flat
   * on it, worked out from where the hinge is now, so the ramp stays on the quay as she heaves, rolls
@@ -591,6 +712,8 @@ export function buildFerryModel({shadows=false}={}){
   const K=landingY+.05-(e[5]*hy+e[9]*hz+e[13]),Rr=Math.hypot(e[5],e[9]);
   const a=Math.acos(Math.max(-1,Math.min(1,K/(Lf*Rr))))-Math.atan2(e[5],e[9]);
   ramp.rotation.x=a;flap.rotation.x=Math.atan2(e[9],e[5])-a;placeRams();
+  // Down on the landing: the barrier lifts and the lanes go green.
+  setBarrier(1);setSignals(true);
  };
  ferry.userData.setRamp(0);
  ferry.userData.deckY=CAR;
@@ -624,7 +747,10 @@ export function buildFerryModel({shadows=false}={}){
  ferry.userData.underway=(dt,speed)=>{for(const s of screws)s.rotation.z+=s.userData.hand*dt*speed*18;radar.rotation.y+=dt*(speed>0?2.6:0);};
  ferry.userData.setNavigationLights=on=>{for(const l of navLights)l.material.color.setHex(on?l.userData.on:0x333333);};
  ferry.userData.setCabinLights=level=>{glassMat.emissiveIntensity=.55*Math.max(0,Math.min(1,level));};
- ferry.userData.lights=on=>{ferry.userData.setCabinLights(on?1:0);ferry.userData.setNavigationLights(on);};
+ /** The ramp floodlights (FERRY_LOADS `floodlights`), lit with the deck lights after dark. */
+ ferry.userData.setFloodlights=on=>{for(const l of floodLenses)l.material.emissiveIntensity=on?1.2:0;};
+ ferry.userData.lights=on=>{ferry.userData.setCabinLights(on?1:0);ferry.userData.setNavigationLights(on);ferry.userData.setFloodlights(on);};
+ ferry.userData.setBarrier=setBarrier;ferry.userData.setSignals=setSignals;
  ferry.userData.model='Minato Maru';
  return ferry;
 }
