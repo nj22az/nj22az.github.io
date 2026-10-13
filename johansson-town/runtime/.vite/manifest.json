@@ -25,8 +25,8 @@
     "file": "izakaya-serving-visuals-NwVg9erV.js",
     "name": "izakaya-serving-visuals"
   },
-  "_onsen-DexBwF5a.js": {
-    "file": "onsen-DexBwF5a.js",
+  "_onsen-CJNo7JGi.js": {
+    "file": "onsen-CJNo7JGi.js",
     "name": "onsen",
     "isDynamicEntry": true,
     "imports": [
@@ -99,7 +99,7 @@
     ]
   },
   "src/boot.js": {
-    "file": "boot-BCjs2rCh.js",
+    "file": "boot-D53-RFpn.js",
     "name": "boot",
     "src": "src/boot.js",
     "isEntry": true,
@@ -115,7 +115,7 @@
     ]
   },
   "src/feed/mount.js": {
-    "file": "feed-olP3Cdsg.js",
+    "file": "feed-BtOj6nxC.js",
     "name": "feed",
     "src": "src/feed/mount.js",
     "isEntry": true,
@@ -128,7 +128,7 @@
     ]
   },
   "src/game.js?snappy=1": {
-    "file": "game-amxFj5Ud.js",
+    "file": "game-C2lBgZAE.js",
     "name": "game",
     "src": "src/game.js?snappy=1",
     "isDynamicEntry": true,
@@ -138,7 +138,7 @@
       "_actors-gpCmvMlq.js",
       "_icons-D2FwW5n5.js",
       "_town-audio-CxEq6_19.js",
-      "_onsen-DexBwF5a.js",
+      "_onsen-CJNo7JGi.js",
       "_sakura-interior-GjxV-SAH.js",
       "_compact-shops-BCBNig3w.js",
       "src/world/interiors/sato-ramen.js",
@@ -151,7 +151,7 @@
     ]
   },
   "src/scene/scene-world.js": {
-    "file": "scene-world-HYzPhtO1.js",
+    "file": "scene-world-4rSQ8tLl.js",
     "name": "scene-world",
     "src": "src/scene/scene-world.js",
     "isDynamicEntry": true,
@@ -168,7 +168,7 @@
       "src/world/interiors/sato-ramen.js",
       "_quarters-Ot-rth9r.js",
       "_compact-shops-BCBNig3w.js",
-      "_onsen-DexBwF5a.js",
+      "_onsen-CJNo7JGi.js",
       "src/world/interiors/town-hall.js"
     ]
   },

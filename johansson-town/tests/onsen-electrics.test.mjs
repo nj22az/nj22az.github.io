@@ -43,14 +43,14 @@ test('every mirror on its own branch: no branch is over its 20 A even with every
  // Everything at once is 60.46 A: a hair over the main's 60 A, under the 105 % it never trips below; the contract is 40 A.
  assert.ok(Math.abs(houseAmps()-60.46)<1e-9,'everything: '+houseAmps());
  assert.equal(tripSeconds(houseAmps(),ONSEN_BOARD.main.amps),Infinity,'the main never trips');
- assert.ok(Number.isFinite(tripSeconds(houseAmps(),ONSEN_CONTRACT.amps)),'the contract breaker does');
+ assert.ok(Number.isFinite(tripSeconds(houseAmps(),ONSEN_CONTRACT.amps)),'the supply breaker does');
  const ids=ONSEN_CIRCUITS.flatMap(c=>c.loads.map(l=>l.id));assert.equal(new Set(ids).size,ids.length,'every load on one circuit');
 });
 
-test('the contract breaker: 40 A, ahead of the board, and the busy evening trips it, not a branch and not the main',()=>{
+test('the supply breaker: 40 A, ahead of the board, and the busy evening trips it, not a branch and not the main',()=>{
  resetAll();stageScenario('rest');
  const C=ONSEN_CONTRACT;assert.equal(C.amps,40);assert.equal(C.id,'contract');assert.ok(C.amps<ONSEN_BOARD.main.amps,'smaller than the main');
- for(const k of ['why','where','period','region'])assert.ok(C[k].length>60,'the contract breaker says '+k);
+ for(const k of ['why','where','period','region'])assert.ok(C[k].length>60,'the supply breaker says '+k);
  assert.equal(C.label.amps,'40A');
  const at=(ids)=>houseAmps([...AT_REST,...ids]);
  // The busy evening's numbers (card.json): idle 9.46, three dryers 36, the pot 13, the chair 2.
@@ -65,7 +65,7 @@ test('the contract breaker: 40 A, ahead of the board, and the busy evening trips
  // What holds: without the pot and with one dryer fewer, or the pot with one dryer; the quiet evening.
  assert.ok(Math.abs(at(['dryer-1','dryer-2','massage-chair'])-35.46)<1e-9);assert.equal(tripSeconds(at(['dryer-1','dryer-2','massage-chair']),C.amps),Infinity,'two dryers and the chair hold');
  assert.equal(tripSeconds(at(['dryer-2','kettle']),C.amps),Infinity,'one dryer and the pot hold');
- // Staged and left to run: the contract breaker lets go first; every branch and the main stay up.
+ // Staged and left to run: the supply breaker lets go first; every branch and the main stay up.
  for(const id of ['dryer-1','dryer-2','dryer-3','kettle','massage-chair'])switchOn(id);
  const a=assess();assert.ok(a.contract.over);assert.equal(a.main.tripIn,Infinity,'the main carries 60.46 A (under 105 % of 60)');for(const c of a.circuits)assert.ok(!c.over,c.id);
  assert.deepEqual(advance(a.contract.tripIn*.5),[]);assert.equal(isLive('contract'),true,'still up halfway');
@@ -167,7 +167,7 @@ test('tripping a breaker drops its lever and puts its lamps out at once; reset b
  layout.dispose();
 });
 
-test('a branch trips on its own: its things go dead, the reset prompt appears; the main and the contract breaker take everything',()=>{
+test('a branch trips on its own: its things go dead, the reset prompt appears; the main and the supply breaker take everything',()=>{
  resetAll();stageScenario('rest');const {room,hits,actions,layout}=build();
  trip('changing-sockets');
  assert.equal(isPowered('dryer-1'),false);assert.equal(isPowered('massage-chair'),false);assert.equal(isPowered('fan'),true,'the fan is on the lobby circuit');
@@ -177,10 +177,10 @@ test('a branch trips on its own: its things go dead, the reset prompt appears; t
  trip('vanity-2');hits.find(h=>h.label==='Use a hair dryer').fn();assert.match(actions.at(-1)[2],/middle mirror dryer breaker has tripped/);
  hits.find(h=>h.label==='Reset the middle mirror dryer').fn();assert.equal(isLive('vanity-2'),true);
  hits.find(h=>h.label==='Use a hair dryer').fn();assert.match(actions.at(-1)[2],/circuit of its own/);
- // The contract breaker takes the whole house; its reset prompt is Mrs Higa's reset, the big things off first.
+ // The supply breaker takes the whole house; its reset prompt is Mrs Higa's reset, the big things off first.
  switchOn('dryer-1');switchOn('kettle');trip('contract');for(const c of ONSEN_CIRCUITS)assert.equal(isLive(c.id),false,c.id);
  hits.find(h=>h.label==='Use a hair dryer').fn();assert.match(actions.at(-1)[2],/whole house is dark/);
- const rc=hits.find(h=>h.label==='Reset the contract breaker');assert.equal(rc.o.visible,true);
+ const rc=hits.find(h=>h.label==='Reset the supply breaker');assert.equal(rc.o.visible,true);
  rc.fn();assert.match(actions.at(-1)[2],/Switch off what’s in your hand/);assert.match(actions.at(-1)[2],/stays/);
  assert.equal(isRunning('kettle'),false);assert.equal(isRunning('dryer-1'),false);assert.equal(isLive('lobby'),true);assert.equal(rc.o.visible,false);
  // The main breaker and the earth-leakage breaker cut every branch.
@@ -205,7 +205,7 @@ test('the board reads well: inspect text, labels in data, and the audit hook onl
  const [kind,title,text]=actions.at(-1);
  assert.equal(kind,'inspect');assert.match(title,/Breaker board/);
  for(const phrase of [/60 A main/,/earth-leakage/,/protects the cable/,/never fit a bigger breaker/,/changing-room sockets/,/bath pump/])assert.match(text,phrase);
- assert.match(text,/contract breaker, 契約 40A/);assert.match(text,/switch the big things off/);
+ assert.match(text,/supply breaker, 契約 40A/);assert.match(text,/switch the big things off/);
  layout.dispose();
  const {installDOM}=await import('./fixtures.mjs');installDOM();
  globalThis.window.__JOHANSSON_AUDIT__={};
@@ -218,17 +218,17 @@ test('the board reads well: inspect text, labels in data, and the audit hook onl
  ({layout}=build());layout.dispose();
 });
 
-test('the contract breaker hangs beside the board, on the stool side, a hand lower: on the wall, clipping nothing, in her reach',()=>{
+test('the supply breaker hangs beside the board, on the stool side, a hand lower: on the wall, clipping nothing, in her reach',()=>{
  resetAll();stageScenario('rest');const {room,layout}=build();
- const C=ONSEN_CONTRACT,cb=room.getObjectByName('Contract breaker'),b=new THREE.Box3().setFromObject(cb),board=new THREE.Box3().setFromObject(room.getObjectByName('Breaker board'));
+ const C=ONSEN_CONTRACT,cb=room.getObjectByName('Supply breaker'),b=new THREE.Box3().setFromObject(cb),board=new THREE.Box3().setFromObject(room.getObjectByName('Breaker board'));
  assert.ok(Math.abs(b.min.x-C.wallX)<.002,'its back on the wall face');
  assert.ok(b.min.z>board.max.z+.03&&b.max.z<ONSEN_BOARD.keeper.seat[2],'between the board and her stool: '+b.min.z.toFixed(3)+'..'+b.max.z.toFixed(3));
  assert.ok(b.max.y<board.max.y&&b.min.y>board.min.y,'a hand lower than the board’s top, within its height');
  const lever=room.getObjectByName('Breaker lever contract');assert.ok(lever.rotation.x<Math.PI/2,'lever up');
- assert.ok(room.getObjectByName('Contract breaker label'),'契約 40A on its face');
+ assert.ok(room.getObjectByName('Supply breaker label'),'契約 40A on its face');
  const own=new Set(meshes(cb)),shrunk=b.clone().expandByScalar(-.002);
  for(const o of meshes(room)){if(own.has(o)||o.userData.wall||/^(Umi-no-yu floor|Umi-no-yu sea view)$/.test(o.name)||o.parent?.name==='Umi-no-yu attendant')continue;const ob=new THREE.Box3().setFromObject(o);if(ob.isEmpty())continue;
-  assert.ok(!shrunk.intersectsBox(ob),'the contract breaker clips '+(o.name||o.type));}
+  assert.ok(!shrunk.intersectsBox(ob),'the supply breaker clips '+(o.name||o.type));}
  trip('contract');assert.ok(lever.rotation.x>Math.PI/2,'lever down when it lets go');reset('contract');
  layout.dispose();
 });
@@ -278,7 +278,7 @@ test('the cabinet hangs behind the bandai, its door shut, every lever in Mrs Hig
  const higa=room.getObjectByName('Umi-no-yu attendant');
  if(higa&&meshes(higa).length)for(const state of ['shut','open']){boardDoor(state);room.updateMatrixWorld(true);const v=new THREE.Vector3();
   // Each part of the board on its own (the open door's box is a thin slab; the board's whole box would take in her shoulder).
-  const parts=[...meshes(board),...meshes(room.getObjectByName('Contract breaker'))].map(m=>new THREE.Box3().setFromObject(m).expandByScalar(-.001)).filter(b=>!b.isEmpty()),solid={containsPoint:p=>parts.some(b=>b.containsPoint(p))};
+  const parts=[...meshes(board),...meshes(room.getObjectByName('Supply breaker'))].map(m=>new THREE.Box3().setFromObject(m).expandByScalar(-.001)).filter(b=>!b.isEmpty()),solid={containsPoint:p=>parts.some(b=>b.containsPoint(p))};
   for(let f=0;f<30*28;f++){layout.tick(1/30,1170);if(f%30)continue;room.updateMatrixWorld(true);
    for(const o of meshes(higa)){const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);if(o.isSkinnedMesh)o.applyBoneTransform(i,v);v.applyMatrix4(o.matrixWorld);
     assert.ok(!solid.containsPoint(v),`Mrs Higa (${o.name}) passes into the board at ${v.toArray().map(n=>n.toFixed(3))}, door ${state}`);}}}}

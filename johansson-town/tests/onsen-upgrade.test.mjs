@@ -11,13 +11,13 @@ import {provideCatalog} from './catalog-fixture.mjs';
 await provideCatalog('massage-chair');
 
 // The ending of "Fujita's Back" (page 9): Tetsuo locks the main off, gives the left mirror's dryer a branch of its own in an
-// add-on box under the full board, and fits a 60 A contract breaker. A later step the film and stories set by name; the
+// add-on box under the full board, and fits a 60 A supply breaker. A later step the film and stories set by name; the
 // town plays the board as it is.
 const build=()=>{const room=new THREE.Group(),hits=[],actions=[];const layout=buildOnsenInterior({room,reg:(o,label,fn)=>hits.push({o,label,fn}),action:(...a)=>actions.push(a),exit(){}});room.updateMatrixWorld(true);return {room,hits,actions,layout};};
 const meshes=root=>{const list=[];root.traverse(o=>{if(o.isMesh&&!o.isInstancedMesh)list.push(o);});return list;};
 const shown=o=>{for(let p=o;p;p=p.parent)if(!p.visible)return false;return true;};
 const box=o=>{o.updateWorldMatrix(true,true);return new THREE.Box3().setFromObject(o);};
-const UPGRADE_PARTS=['Add-on breaker box','Tape label changing-sockets (upgrade)','Tape label circuit list 1 (upgrade)','Tape label circuit list 9 (upgrade)','Contract breaker label (60A)'];
+const UPGRADE_PARTS=['Add-on breaker box','Tape label changing-sockets (upgrade)','Tape label circuit list 1 (upgrade)','Tape label circuit list 9 (upgrade)','Supply breaker label (60A)'];
 
 test('the town plays the board as it is: eight ways, 40 A, no lock, and none of the ending shows',()=>{
  const {room,layout}=build();
@@ -26,7 +26,7 @@ test('the town plays the board as it is: eight ways, 40 A, no lock, and none of 
   assert.equal(circuitOf('dryer-1'),'changing-sockets',name+': the left mirror shares circuit 1 with the chair');
   for(const n of UPGRADE_PARTS)assert.equal(shown(room.getObjectByName(n)),false,name+': '+n+' hidden');
   assert.equal(shown(room.getObjectByName('Main lock-out')),false,name+': no lock');
-  assert.ok(shown(room.getObjectByName('Contract breaker label')),name+': 契約 40A');}
+  assert.ok(shown(room.getObjectByName('Supply breaker label')),name+': 契約 40A');}
  // The blackout still happens on 40 A, which is why the upgrade is not the town's default.
  assert.equal(stageScenario('blackout').contract.live,false);
  assert.throws(()=>isLive('vanity-1'),/fitted in the upgrade/);
@@ -36,7 +36,7 @@ test('the town plays the board as it is: eight ways, 40 A, no lock, and none of 
  layout.dispose();stageScenario('rest');
 });
 
-test('the upgrade moves load between breakers and takes none away: the contract breaker sees the same 60.46 A, now on 60 A',()=>{
+test('the upgrade moves load between breakers and takes none away: the supply breaker sees the same 60.46 A, now on 60 A',()=>{
  const U=ONSEN_UPGRADE;
  for(const k of ['by','when','en','route'])assert.ok(U[k].length>20,k);
  for(const k of ['why','period'])assert.ok(U.box[k].length>60,'the box says '+k);
@@ -59,7 +59,7 @@ test('the upgrade moves load between breakers and takes none away: the contract 
  let a=stageScenario('upgraded');assert.equal(a.circuits.length,9);assert.equal(a.contract.rating,60);assert.ok(Math.abs(a.contract.amps-9.46)<1e-9,'at rest 9.46 A');
  assert.equal(circuitOf('dryer-1'),'vanity-1');assert.equal(circuitOf('massage-chair'),'changing-sockets');
  for(const id of all)switchOn(id);a=assess();
- assert.ok(Math.abs(a.contract.amps-before.contract.amps)<1e-9,'the same total the contract breaker sees: '+a.contract.amps);
+ assert.ok(Math.abs(a.contract.amps-before.contract.amps)<1e-9,'the same total the supply breaker sees: '+a.contract.amps);
  assert.ok(Math.abs(a.contract.amps-houseAmps())<1e-9&&Math.abs(houseAmps()-60.46)<1e-9);
  assert.ok(a.contract.amps>a.contract.rating,'a hair over the 60 A on its face');
  assert.equal(a.contract.tripIn,Infinity,'inside the 105 % a breaker carries: it holds');assert.equal(a.main.tripIn,Infinity);
@@ -83,12 +83,12 @@ test('locked out: the main off, locked and tagged; nothing puts it up until the 
  const L=ONSEN_LOCKOUT;
  for(const k of ['tag','padlock','clamp'])assert.ok(L[k].why.length>50,k);assert.ok(L.why.length>80&&L.door.length>40);
  assert.equal(L.tag.jp,'投入禁止');assert.equal(L.tag.head,'作業中');
- assert.match(L.why,/contract breaker .* still live/,'the lock does not make the contract breaker dead');
+ assert.match(L.why,/supply breaker .* still live/,'the lock does not make the supply breaker dead');
  for(const name of ['locked-out','upgraded-locked-out']){const s=ONSEN_SCENARIOS[name];assert.ok(s.lock&&s.down.includes('main')&&s.board==='open',name);assert.ok(s.en.length>60);}
  assert.equal(!!ONSEN_SCENARIOS['locked-out'].upgrade,false);assert.equal(ONSEN_SCENARIOS['upgraded-locked-out'].upgrade,true);
  assert.ok(ONSEN_SCENARIOS.upgraded.upgrade&&!ONSEN_SCENARIOS.upgraded.lock&&!ONSEN_SCENARIOS.upgraded.down.length);
  let a=stageScenario('locked-out');assert.equal(a.locked,true);assert.equal(isOn('main'),false);assert.equal(a.main.amps,0);
- for(const c of a.circuits)assert.equal(c.live,false,c.id+' dead');assert.equal(isLive('contract'),true,'the contract breaker, ahead of the main, is still live');
+ for(const c of a.circuits)assert.equal(c.live,false,c.id+' dead');assert.equal(isLive('contract'),true,'the supply breaker, ahead of the main, is still live');
  assert.equal(reset('main'),false,'locked: it stays down');resetAll();assert.equal(isOn('main'),false,'resetAll leaves a locked main down');
  assert.throws(()=>boardDoor('shut'),/will not shut over the lock-out/);assert.equal(boardDoor(),ONSEN_BOARD.door.open);
  assert.equal(lockOut(false),false);assert.equal(reset('main'),true);assert.equal(isLive('lobby'),true,'lock off, main up: the house comes back');
@@ -101,10 +101,10 @@ test('the add-on box under the board: on the wall, clear of the board, the pole 
  stageScenario('upgraded-locked-out');const {room,hits,actions,layout}=build();
  const X=ONSEN_UPGRADE.box,addon=room.getObjectByName(X.en),b=box(addon);
  for(const n of UPGRADE_PARTS)assert.ok(shown(room.getObjectByName(n)),n+' shows');
- assert.equal(shown(room.getObjectByName('Contract breaker label')),false,'the 40A label is gone with the old breaker');
+ assert.equal(shown(room.getObjectByName('Supply breaker label')),false,'the 40A label is gone with the old breaker');
  assert.ok(shown(room.getObjectByName('Main lock-out')),'the lock shows');
  assert.ok(Math.abs(b.min.x-X.wallX)<.002,'its back on the wall face');
- const board=box(room.getObjectByName('Breaker board')),contract=box(room.getObjectByName('Contract breaker'));
+ const board=box(room.getObjectByName('Breaker board')),contract=box(room.getObjectByName('Supply breaker'));
  assert.ok(Math.abs(b.max.y-board.min.y)<.002,'its conduit runs up into the board’s bottom');
  const body=box(room.getObjectByName('Add-on breaker box body'));assert.ok(body.max.y<board.min.y-.01&&body.min.z>board.min.z&&body.max.z<contract.min.z,'under the board, on the contract side');
  // Nothing clips it but the board its conduit enters; the noren pole lifts off its hooks under it.

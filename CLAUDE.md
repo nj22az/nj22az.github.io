@@ -180,6 +180,10 @@ that makes more or better stories.
 - **Plan a change before making it.** Before moving or resizing anything in a place, list what it affects: colliders, standing
   spots and walking routes, tests, residents' routines, and every film shot that photographed it (the studio's
   `remotion/tools/impact.py` lists the shots, marks and photographs). Then change it, and check each item on the list.
+- **English words, Japanese signs** (the creator, 2026-10-13: "We should use English terms even though it's in Japan, the
+  labels can be correct Japanese but teaching is in English and storytelling too and the gameplay"). Signs, labels and
+  packaging in the world are correct Japanese; every word a player reads in the UI, an inspect text, a story or a lesson
+  is plain English ("supply breaker", not a translated "contract breaker").
 - **The town's trade** (`johansson-town/src/commerce/merchandising.js`): Sakura Shōten is a konbini *and* the
   town's supplier of everyday goods, from its depot in the Quay Warehouse (Sakura Trading). Higa Liquor supplies
   all alcohol (to Sakura, Minato, Sato Ramen and the Coral Bay Bar on Kitano-jima); Front-Row Books & Stationery supplies office supplies; Rainflower

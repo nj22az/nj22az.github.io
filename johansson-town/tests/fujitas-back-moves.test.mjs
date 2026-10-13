@@ -17,7 +17,7 @@ installDOM();
  * The moves Fujita's Back needs (story v7; the shot plan's section 5), each on the person and in the clothes the story gives
  * it: Fujita stuck bent (standing, shuffling sideways, in the massage chair uncurling and stuck in a new shape, carried bent,
  * and carried stiff and level like a plank), the three women carrying him, Thao wound in her dryer's cord, Thuan under a
- * basket, Tetsuo reading and with his torch, Mrs Higa reaching back for the contract breaker; and Fujita's squinting eyes
+ * basket, Tetsuo reading and with his torch, Mrs Higa reaching back for the supply breaker; and Fujita's squinting eyes
  * following his face. Each plays as a move and as a pose the scene names, holds, and lets go smoothly
  * and the same every time; the feet, the seat or the carriers hold the body; the mittens are where they belong (on the back,
  * on the knee, under the load, at the paper's edges, round the torch) and in nothing; the props rest on what carries them.
